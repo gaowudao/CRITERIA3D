@@ -1,12 +1,12 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2012-01-17T17:57:50
+# CRITERIA 3D QT Project
 #
 #-------------------------------------------------
 
 QT       -= core gui
 
-TARGET = soilFluxes3D
+TARGET = criteria3D
 TEMPLATE = lib
 
 CONFIG += staticlib
