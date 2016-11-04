@@ -28,98 +28,102 @@
     marco.bittelli@unibo.it
 -----------------------------------------------------------------------------------*/
 
-
-#include "parameters.h"
-
-
-struct Tboundary{
-    short type;
-    float slope;
-	double waterFlow;                   // [m3 s-1]
-	double sumBoundaryWaterFlow;        // [m3] sum of boundary water flow
-	double prescribedTotalPotential;	   // [m] imposed total soil-water potential (H)
-    } ;
-
-struct TCrit3DStructure{
-    long nrLayers;
-    long nrNodes;
-    int nrLateralLinks;
-    int maxNrColumns;
-
-    void initialize()
-        {
-            nrLayers = 0;
-            nrNodes = 0;
-            nrLateralLinks = 0;
-            maxNrColumns = 0;
-        }
-    } ;
+#ifndef SOILFLUXES3DTYPES
+#define SOILFLUXES3DTYPES
 
 
-struct TlinkedNode{
-    long index;                 // index of linked elements
-    float area;                 // interface area [m^2]
-    float sumFlow;              // [m^3] sum of flow(i,j)
-    } ;
+    #include "parameters.h"
+
+    struct Tboundary{
+        short type;
+        float slope;
+        double waterFlow;                   // [m3 s-1]
+        double sumBoundaryWaterFlow;        // [m3] sum of boundary water flow
+        double prescribedTotalPotential;	   // [m] imposed total soil-water potential (H)
+        } ;
+
+    struct TCrit3DStructure{
+        long nrLayers;
+        long nrNodes;
+        int nrLateralLinks;
+        int maxNrColumns;
+
+        void initialize()
+            {
+                nrLayers = 0;
+                nrNodes = 0;
+                nrLateralLinks = 0;
+                maxNrColumns = 0;
+            }
+        } ;
 
 
-struct Tsoil{
-    double VG_alpha;            // [m^-1] Van Genutchen alpha parameter
-    double VG_n;                // [-] Van Genutchen n parameter
-    double VG_m;                // [-] Van Genutchen m parameter  ]0. , 1.[
-    double VG_he;               // [m] air-entry potential for modified VG formulation [0 , 1]
-    double VG_Sc;               // [-] reduction factor for modified VG formulation
-    double Theta_s;             // [m^3/m^3] saturated water content
-    double Theta_r;             // [m^3/m^3] residual water content
-    double K_sat;               // [m/sec] saturated hydraulic conductivity
-    double Mualem_L;            // [-] Mualem tortuosity parameter
-
-    double Roughness;           // [s/m^0.33] surface: Manning roughness
-    double Pond;                // [m] surface: height of immobilized water
-    } ;
+    struct TlinkedNode{
+        long index;                 // index of linked elements
+        float area;                 // interface area [m^2]
+        float sumFlow;              // [m^3] sum of flow(i,j)
+        } ;
 
 
- struct TCrit3Dnode{
-	
-	 double Se;					// [-] degree of saturation
-     double k;                  // [m s^-1] soil water conductivity
-     double H;                  // [m] pressure head
-	 double oldH;				// [m] previous pressure head
-	 double bestH;				// [m] pressure head of best iteration
-     double waterSinkSource;    // [m^3 s^-1] water sink source
-     double Qw;                 // [m^3 s^-1] water flow
+    struct Tsoil{
+        double VG_alpha;            // [m^-1] Van Genutchen alpha parameter
+        double VG_n;                // [-] Van Genutchen n parameter
+        double VG_m;                // [-] Van Genutchen m parameter  ]0. , 1.[
+        double VG_he;               // [m] air-entry potential for modified VG formulation [0 , 1]
+        double VG_Sc;               // [-] reduction factor for modified VG formulation
+        double Theta_s;             // [m^3/m^3] saturated water content
+        double Theta_r;             // [m^3/m^3] residual water content
+        double K_sat;               // [m/sec] saturated hydraulic conductivity
+        double Mualem_L;            // [-] Mualem tortuosity parameter
 
-	 double volume_area;			// [m^3] volume of sub-surface elements : [m^2] area of surface nodes
-	float x, y, z;              // [m] coordinates of the center of the element
-
-	Tsoil *Soil;                // soil pointer
-	Tboundary *boundary;        // boundary pointer
-	TlinkedNode up;				// upper link
-	TlinkedNode down;			// lower link
-	TlinkedNode *lateral;       // lateral link
-
-	bool isSurface;
-    } ;
+        double Roughness;           // [s/m^0.33] surface: Manning roughness
+        double Pond;                // [m] surface: height of immobilized water
+        } ;
 
 
- struct TmatrixElement{
-	long index;
-	double val;
-    } ;
+     struct TCrit3Dnode{
+
+         double Se;					// [-] degree of saturation
+         double k;                  // [m s^-1] soil water conductivity
+         double H;                  // [m] pressure head
+         double oldH;				// [m] previous pressure head
+         double bestH;				// [m] pressure head of best iteration
+         double waterSinkSource;    // [m^3 s^-1] water sink source
+         double Qw;                 // [m^3 s^-1] water flow
+
+         double volume_area;			// [m^3] volume of sub-surface elements : [m^2] area of surface nodes
+        float x, y, z;              // [m] coordinates of the center of the element
+
+        Tsoil *Soil;                // soil pointer
+        Tboundary *boundary;        // boundary pointer
+        TlinkedNode up;				// upper link
+        TlinkedNode down;			// lower link
+        TlinkedNode *lateral;       // lateral link
+
+        bool isSurface;
+        } ;
 
 
- struct Tbalance{
-    double storageWater;
-    double sinkSourceWater;
-    double waterMBE, waterMBR;
-    } ;
+     struct TmatrixElement{
+        long index;
+        double val;
+        } ;
 
 
- extern TCrit3DStructure myStructure;
- extern TParameters myParameters;
- extern TCrit3Dnode *myNode;
- extern TmatrixElement **A;
- extern double *b, *C0, *C, *X;
- extern double Courant;
+     struct Tbalance{
+        double storageWater;
+        double sinkSourceWater;
+        double waterMBE, waterMBR;
+        } ;
 
- extern Tbalance balanceCurrentTimeStep, balancePreviousTimeStep, balanceCurrentPeriod, balanceWholePeriod;
+
+     extern TCrit3DStructure myStructure;
+     extern TParameters myParameters;
+     extern TCrit3Dnode *myNode;
+     extern TmatrixElement **A;
+     extern double *b, *C0, *C, *X;
+     extern double Courant;
+
+     extern Tbalance balanceCurrentTimeStep, balancePreviousTimeStep, balanceCurrentPeriod, balanceWholePeriod;
+
+#endif

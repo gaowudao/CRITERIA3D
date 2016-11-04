@@ -14,5 +14,3 @@ void InitializeBalanceWater();
 bool waterBalance(double deltaT, int approxNr);
 
 void updateBalanceWaterWholePeriod();
-
-
