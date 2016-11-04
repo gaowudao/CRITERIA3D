@@ -24,10 +24,9 @@
     along with CRITERIA3D.  If not, see <http://www.gnu.org/licenses/>.
 
     contacts:
-    ftomei@arpa.emr.it
     fausto.tomei@gmail.com
-    gantolini@arpa.emr.it
-    avolta@arpa.emr.it
+    gantolini@arpae.it
+    avolta@arpae.it
     alberto.pistocchi@gecosistema.it
     marco.bittelli@unibo.it
 -----------------------------------------------------------------------------------*/
