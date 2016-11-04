@@ -1,6 +1,7 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2012-09-28T12:17:48
+# CRITERIA 3D
+# common constants and math functions
 #
 #-------------------------------------------------
 
