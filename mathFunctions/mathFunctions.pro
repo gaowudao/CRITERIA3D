@@ -14,10 +14,12 @@ CONFIG += staticlib
 SOURCES += \
     basicMath.cpp \
     gammafunction.cpp \
-    furtherMathFunctions.cpp
+    furtherMathFunctions.cpp \
+    statistics.cpp
 
 HEADERS += \
     commonConstants.h \
     basicMath.h \
     gammafunction.h \
-    furtherMathFunctions.h
+    furtherMathFunctions.h \
+    statistics.h

@@ -117,4 +117,39 @@ namespace basicMath
         return myNorm;
     }
 
+    bool findLinesIntersection(float q1, float m1, float q2, float m2, float* x, float* y)
+    {
+        if (m1 != m2)
+        {
+            *x = (q2 - q1) / (m1 - m2);
+            *y = m1 * (q2 - q1) / (m1 - m2) + q1;
+            return true;
+        }
+        else
+        {
+            *x = NODATA;
+            *y = NODATA;
+            return false;
+        }
+    }
+
+    bool findLinesIntersectionAboveThreshold(float q1, float m1, float q2, float m2, float myThreshold, float* x, float* y)
+    {
+        if (m1 != m2)
+        {
+            *x = (q2 - q1) / (m1 - m2);
+            *y = m1 * (q2 - q1) / (m1 - m2) + q1;
+            if (*x > myThreshold)
+                return true;
+            else
+                return false;
+        }
+        else
+        {
+            *x = NODATA;
+            *y = NODATA;
+            return false;
+        }
+    }
+
 }
