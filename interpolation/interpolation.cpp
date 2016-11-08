@@ -28,6 +28,7 @@
     ftomei@arpae.it
 -----------------------------------------------------------------------------------*/
 
+
 #include <stdlib.h>
 #include <math.h>
 #include <vector>
@@ -77,7 +78,6 @@ float genericR2;
 
 bool precipitationAllZero = false;
 int indexPointJacknife = NODATA;
-
 
 Crit3DInterpolationSettings currentSettings;
 
