@@ -28,7 +28,6 @@
     ftomei@arpae.it
 -----------------------------------------------------------------------------------*/
 
-
 #include "crit3dDate.h"
 #include "interpolationConstants.h"
 #include "interpolationSettings.h"
