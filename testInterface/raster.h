@@ -4,8 +4,8 @@
     #ifndef MAP_H
         #include "map.h"
     #endif
-    #ifndef POINTMAP_H
-        #include "pointmap.h"
+    #ifndef MAPGRAPHICSVIEW_H
+        #include "MapGraphicsView.h"
     #endif
 
     class QPainter;

@@ -19,12 +19,10 @@ LIBS += -L../MapGraphics/release -lMapGraphics
 SOURCES += main.cpp\
         mainwindow.cpp \
     raster.cpp \
-    pointmap.cpp \
     RasterObject.cpp
 
 HEADERS  += mainwindow.h \
     raster.h \
-    pointmap.h \
     RasterObject.h
 
 FORMS    += mainwindow.ui
