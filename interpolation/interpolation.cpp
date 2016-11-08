@@ -78,6 +78,7 @@ float genericR2;
 bool precipitationAllZero = false;
 int indexPointJacknife = NODATA;
 
+
 Crit3DInterpolationSettings currentSettings;
 
 void setInterpolationSettings(Crit3DInterpolationSettings* mySettings)
