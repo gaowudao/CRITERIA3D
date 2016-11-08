@@ -909,7 +909,7 @@
     }
 
 
-    ////////////////////////////////////////////////////////////////////////////////
+    /*//////////////////////////////////////////////////////////////////////////////
     // long double xLn_Gamma_Function( long double x )                            //
     //                                                                            //
     //  Description:                                                              //
@@ -935,7 +935,7 @@
     //     long double g;                                                         //
     //                                                                            //
     //     g = xLn_Gamma_Function( x );                                           //
-    ////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////*/
     long double xLn_Gamma_Function(long double x)
     {
 
@@ -950,7 +950,7 @@
     }
 
 
-    ////////////////////////////////////////////////////////////////////////////////
+    /*//////////////////////////////////////////////////////////////////////////////
     // static long double xLnGamma_Asymptotic_Expansion( long double x )          //
     //                                                                            //
     //  Description:                                                              //
@@ -972,14 +972,12 @@
     //     long double g;                                                         //
     //                                                                            //
     //     g = xlnGamma_Asymptotic_Expansion( x );                                //
-    ////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////*/
 
     //static long double const pi = 3.14159265358979323846264338L;
 
 
-    // Bernoulli numbers B(2),B(4),B(6),...,B(20).  Only B(2),...,B(6) currently //
-    // used.                                                                     //
-
+    // Bernoulli numbers B(2),B(4),B(6),...,B(20).  Only B(2),...,B(6) currently used.                                                                     //
     static const long double B[] = {   1.0L / (long double)(6 * 2 * 1),
                                       -1.0L / (long double)(30 * 4 * 3),
                                        1.0L / (long double)(42 * 6 * 5),
@@ -994,7 +992,9 @@
 
     static const int n = sizeof(B) / sizeof(long double);
 
-    static long double xLnGamma_Asymptotic_Expansion( long double x ) {
+
+    static long double xLnGamma_Asymptotic_Expansion( long double x )
+    {
        const int  m = 3;
        long double term[3];
        long double sum = 0.0L;

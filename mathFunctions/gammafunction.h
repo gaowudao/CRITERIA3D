@@ -1,7 +1,6 @@
 #ifndef GAMMAFUNCTION
 #define GAMMAFUNCTION
 
-
     static long double xSmall_x(long double x, long double nu);
     static long double xMedium_x(long double x, long double nu);
     static long double xLarge_x(long double x, long double nu);

@@ -129,7 +129,7 @@
 
     // -----------------MATHEMATICS---------------------
     #ifndef PI
-        #define PI  3.14159265358979
+        #define PI 3.141592653589793238462643383
     #endif
     #ifndef EPSILON
         #define EPSILON 1E-5
