@@ -1,11 +1,6 @@
-#ifndef COMMONCONSTANTS_H
-#define COMMONCONSTANTS_H
-
 /*-----------------------------------------------------------------------------------
-
-    CRITERIA 3D
-    Copyright (C) 2011 Fausto Tomei, Gabriele Antolini, Antonio Volta
-    Alberto Pistocchi, Marco Bittelli
+    Copyright 2016 Fausto Tomei, Gabriele Antolini,
+    Alberto Pistocchi, Marco Bittelli, Antonio Volta, Laura Costantini
 
     This file is part of CRITERIA3D.
     CRITERIA3D has been developed under contract issued by A.R.P.A. Emilia-Romagna
@@ -25,11 +20,11 @@
 
     contacts:
     fausto.tomei@gmail.com
-    gantolini@arpae.it
-    avolta@arpae.it
-    alberto.pistocchi@gecosistema.it
-    marco.bittelli@unibo.it
+    ftomei@arpae.it
 -----------------------------------------------------------------------------------*/
+
+#ifndef COMMONCONSTANTS_H
+#define COMMONCONSTANTS_H
 
     //general functions
     #ifndef minValue
@@ -51,6 +46,8 @@
     #ifndef DAY_SECONDS
         #define DAY_SECONDS 86400.0
     #endif
+
+    #define NO_CONVERGENCE -9999
 
     //criteria3D
     #define NOLINK -1

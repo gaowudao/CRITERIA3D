@@ -1,6 +1,6 @@
 #include <math.h>
 #include <float.h>
-#include <limits.h>    // required for LONG_MAX
+#include <limits.h>             // required for LONG_MAX
 #include "commonConstants.h"
 #include "gammafunction.h"
 

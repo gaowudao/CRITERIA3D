@@ -1,10 +1,6 @@
 #ifndef MATHEMATICALFUNCTIONS_H
 #define MATHEMATICALFUNCTIONS_H
 
-    #ifndef NO_CONVERGENCE
-        #define NO_CONVERGENCE -9999
-    #endif
-
     struct TfunctionInput{
         float x ;
         int nrPar ;

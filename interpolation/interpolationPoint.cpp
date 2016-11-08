@@ -1,11 +1,6 @@
 /*-----------------------------------------------------------------------------------
-    CRITERIA3D
-
-    Copyright 2016 Fausto Tomei, Gabriele Antolini,
+    COPYRIGHT 2016 Fausto Tomei, Gabriele Antolini,
     Alberto Pistocchi, Marco Bittelli, Antonio Volta, Laura Costantini
-
-    You should have received a copy of the GNU General Public License
-    along with Nome-Programma.  If not, see <http://www.gnu.org/licenses/>.
 
     This file is part of CRITERIA3D.
     CRITERIA3D has been developed under contract issued by A.R.P.A. Emilia-Romagna
@@ -23,7 +18,7 @@
     You should have received a copy of the GNU Lesser General Public License
     along with CRITERIA3D.  If not, see <http://www.gnu.org/licenses/>.
 
-    Contacts:
+    contacts:
     fausto.tomei@gmail.com
     ftomei@arpae.it
 -----------------------------------------------------------------------------------*/

@@ -1,8 +1,6 @@
 /*-----------------------------------------------------------------------------------
-
-    CRITERIA 3D
-    Copyright (C) 2011 Fausto Tomei, Gabriele Antolini, Antonio Volta
-    Alberto Pistocchi, Marco Bittelli
+    COPYRIGHT 2016 Fausto Tomei, Gabriele Antolini,
+    Alberto Pistocchi, Marco Bittelli, Antonio Volta, Laura Costantini
 
     This file is part of CRITERIA3D.
     CRITERIA3D has been developed under contract issued by A.R.P.A. Emilia-Romagna
@@ -21,12 +19,10 @@
     along with CRITERIA3D.  If not, see <http://www.gnu.org/licenses/>.
 
     contacts:
-    ftomei@arpa.emr.it
     fausto.tomei@gmail.com
-    gantolini@arpa.emr.it
-    alberto.pistocchi@gecosistema.it
-    marco.bittelli@unibo.it
+    ftomei@arpae.it
 -----------------------------------------------------------------------------------*/
+
 
 #include <math.h>
 #include <malloc.h>
