@@ -13,7 +13,4 @@
         double getLAISenescence(double LaiMin, double LAIStartSenescence, int daysFromStartSenescence);
     }
 
-    double degreeDays(double myTmin, double myTmax, double myLowerThreshold, double myUpperThreshold);
-
-
 #endif // LEAFDEVELOPMENT_H

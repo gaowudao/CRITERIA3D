@@ -121,10 +121,8 @@ namespace leafDevelopment
 
         return exp(a + b * daysFromStartSenescence);
     }
+
 }
 
 
-double degreeDays(double myTmin, double myTmax, double myLowerThreshold, double myUpperThreshold)
-{
-    return maxValue((myTmin + minValue(myTmax, myUpperThreshold)) / 2 - myLowerThreshold, 0);
-}
+

@@ -118,9 +118,9 @@
         return (isGrass(myCrop->type) || myCrop->type == FALLOW || myCrop->idCrop == "KIWIFRUIT" || myCrop->idCrop == "RICE");
     }
 
-
-    double degreeDays(double myTmin, double myTmax, double myLowerThreshold, double myUpperThreshold)
+    double computeDegreeDays(double myTmin, double myTmax, double myLowerThreshold, double myUpperThreshold)
     {
         return maxValue((myTmin + minValue(myTmax, myUpperThreshold)) / 2 - myLowerThreshold, 0);
     }
+
 

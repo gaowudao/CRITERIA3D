@@ -1017,7 +1017,7 @@ void Vintage_Grapevine::cumulatedResults()
     deltaTime.grossAssimilation = simulationStepInSeconds * assimilationInstant ; // canopy gross assimilation (mol m-2)
     deltaTime.respiration = simulationStepInSeconds * Vintage_Grapevine::plantRespiration() ;
     deltaTime.netAssimilation = deltaTime.grossAssimilation- deltaTime.respiration ;
-    deltaTime.netAssimilation = deltaTime.netAssimilation*12/1000.0/FC ;
+    deltaTime.netAssimilation = deltaTime.netAssimilation*12/1000.0/CARBONFACTOR ;
     statePlant.stateGrowth.cumulatedBiomass += deltaTime.netAssimilation ;
 
     deltaTime.transpiration = 0.;

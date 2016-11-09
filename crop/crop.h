@@ -60,5 +60,7 @@
     bool isPluriannual(speciesType myType);
     bool isGrass(speciesType myType);
     bool isWaterSurplusResistant(Crit3DCrop* myCrop);
+    double computeDegreeDays(double myTmin, double myTmax, double myLowerThreshold, double myUpperThreshold);
+
 
 #endif // CROP_H
