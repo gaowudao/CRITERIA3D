@@ -125,19 +125,19 @@
     // [J m-2 K-4] Stefan-Boltzmann constant
     #define STEFAN_BOLTZMANN 5.670400E-8
     // [J kg-1 K-1] specific heat at constant pressure
-    #define CP 1013
+    // #define CP 1013
 
     // -----------------MATHEMATICS---------------------
     #ifndef PI
         #define PI 3.141592653589793238462643383
     #endif
-    #ifndef EPSILON
-        #define EPSILON 1E-5
-    #endif
     #define EULER 2.718281828459
     #define DEG_TO_RAD 0.0174532925
     #define RAD_TO_DEG 57.2957795
     #define FUNCTION_CODE_SPHERICAL 0
+
+    // [Pa] default atmospheric pressure at sea level
+    #define SEA_LEVEL_PRESSURE 101325
 
 
 #endif // COMMONCONSTANTS_H

@@ -22,12 +22,10 @@
     Antonio Volta  avolta@arpae.it
 -----------------------------------------------------------------------------------*/
 
-
-#include <math.h>
 #include "commonConstants.h"
+#include "basicMath.h"
+#include <math.h>
 
-namespace basicMath
-{
     bool greaterThan(float a, float b)
     {
         return (fabs(a - b) > fabs(b / 100.));
@@ -91,6 +89,7 @@ namespace basicMath
         dist = sqrt(dist);
         return dist;
     }
+
     float distance2D(float x1,float y1, float x2, float y2)
     {
         float dist;
@@ -107,6 +106,7 @@ namespace basicMath
         myNorm = sqrt(myNorm);
         return myNorm;
     }
+
 
     bool findLinesIntersection(float q1, float m1, float q2, float m2, float* x, float* y)
     {
@@ -142,5 +142,3 @@ namespace basicMath
             return false;
         }
     }
-
-}

@@ -670,7 +670,7 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
             m2 = 0.;
             q2 = lapseRateT1;
         }
-        basicMath::findLinesIntersection(q1, m1, q2, m2, &lapseRateH1, &lapseRateT1);
+        findLinesIntersection(q1, m1, q2, m2, &lapseRateH1, &lapseRateT1);
         lapseRateT0 = q1;
         inversionLapseRate = m1;
         actualLapseRate = m2;
@@ -694,7 +694,7 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
         actualLapseRate = m2;
         if (r2 >= mySignificativeR2Inv)
         {
-            if (basicMath::findLinesIntersectionAboveThreshold(q, m, q2, m2, 40, &lapseRateH1, &lapseRateT1))
+            if (findLinesIntersectionAboveThreshold(q, m, q2, m2, 40, &lapseRateH1, &lapseRateT1))
             {
                 lapseRateT0 = q;
                 inversionLapseRate = m;
@@ -727,12 +727,12 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
         if (r2 >= mySignificativeR2)
         {
             actualLapseRate = minValue(m, 0.);
-            basicMath::findLinesIntersection(lapseRateT0, inversionLapseRate, q, actualLapseRate, &lapseRateH1, &lapseRateT1);
+            findLinesIntersection(lapseRateT0, inversionLapseRate, q, actualLapseRate, &lapseRateH1, &lapseRateT1);
         }
         else
         {
             actualLapseRate = climateLapseRate;
-            basicMath::findLinesIntersection(lapseRateT0, inversionLapseRate, lapseRateT1 - actualLapseRate * lapseRateH1, actualLapseRate, &lapseRateH1, &lapseRateT1);
+            findLinesIntersection(lapseRateT0, inversionLapseRate, lapseRateT1 - actualLapseRate * lapseRateH1, actualLapseRate, &lapseRateH1, &lapseRateT1);
         }
         return true;
     }
@@ -760,7 +760,7 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
         if (r2 >= mySignificativeR2)
         {
             actualLapseRate = minValue(m, 0.);
-            if (basicMath::findLinesIntersectionAboveThreshold(lapseRateT0, inversionLapseRate, q, actualLapseRate, 40, &lapseRateH1, &lapseRateT1))
+            if (findLinesIntersectionAboveThreshold(lapseRateT0, inversionLapseRate, q, actualLapseRate, 40, &lapseRateH1, &lapseRateT1))
                 return true;
         }
         else

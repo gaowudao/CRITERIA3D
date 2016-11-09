@@ -73,7 +73,6 @@ struct ToutputPlant
     double evaporation;
     double brixBerry;
     double brixMaximum;
-    //double* waterExtraction;
 };
 
 struct TstatePlant

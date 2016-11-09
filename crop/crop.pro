@@ -16,14 +16,12 @@ INCLUDEPATH += ../mathFunctions ../crit3dDate ../soil
 SOURCES += crop.cpp \
     root.cpp \
     development.cpp \
-    biomass.cpp \
-    grapevine.cpp
+    biomass.cpp
 
 HEADERS += crop.h \
     biomass.h \
     root.h \
-    development.h \
-    grapevine.h
+    development.h
 
 
 unix:!symbian {

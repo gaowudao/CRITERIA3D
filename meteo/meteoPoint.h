@@ -4,6 +4,9 @@
     #ifndef _GLIBCXX_STRING
         #include <string>
     #endif
+    #ifndef CRIT3DDATE_H
+        #include "crit3dDate.h"
+    #endif
     #ifndef QUALITY_H
         #include "quality.h"
     #endif
