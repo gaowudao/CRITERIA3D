@@ -15,21 +15,21 @@
     //-------------------------------------------------------------------------------------------
     //     Define additional photosynthetic parameters
     //-------------------------------------------------------------------------------------------
-    #define      HARD    46.39           //activation energy of RD0 (kJ mol-1)
-    #define      HAVCM   65.33           //activation energy of VCMOP (kJ mol-1)
-    #define      HAJM    43.9            //activation energy of JMOP (kJ mol-1 e-)
-    #define      HAKC    79.43           //activation energy of KCT0 (kJ mol-1)
-    #define      HAKO    36.38           //activation energy of KOT0 (kJ mol-1)
-    #define      HAGSTAR 37.83           //activation energy of Gamma_star (kJ mol-1)
-    #define      HD      200             //deactivation energy from Kattge & Knorr 2007 (kJ mol-1)
+    #define      HARD       46.39           //activation energy of RD0 (kJ mol-1)
+    #define      HAVCM      65.33           //activation energy of VCMOP (kJ mol-1)
+    #define      HAJM       43.9            //activation energy of JMOP (kJ mol-1 e-)
+    #define      HAKC       79.43           //activation energy of KCT0 (kJ mol-1)
+    #define      HAKO       36.38           //activation energy of KOT0 (kJ mol-1)
+    #define      HAGSTAR    37.83           //activation energy of Gamma_star (kJ mol-1)
+    #define      HDEACTIVATION  200         //deactivation energy from Kattge & Knorr 2007 (kJ mol-1)
 
-    #define      CRD     18.72           //scaling factor in RD0 response to temperature (-);
-    #define      CVCM    26.35           //scaling factor in VCMOP response to temperature (-);
-    #define      CVOM    22.98           //scaling factor in VOMOP response to temperature (-);
-    #define      CGSTAR  19.02           //scaling factor in Gamma_star response to temperature (-);
-    #define      CKC     38.05           //scaling factor in KCT0 response to temperature (-);
-    #define      CKO     20.30           //scaling factor in KOT0 response to temperature (-);
-    #define      CJM     17.7            //scaling factor in JMOP response to temperature (-);
+    #define      CRD        18.72           //scaling factor in RD0 response to temperature (-);
+    #define      CVCM       26.35           //scaling factor in VCMOP response to temperature (-);
+    #define      CVOM       22.98           //scaling factor in VOMOP response to temperature (-);
+    #define      CGSTAR     19.02           //scaling factor in Gamma_star response to temperature (-);
+    #define      CKC        38.05           //scaling factor in KCT0 response to temperature (-);
+    #define      CKO        20.30           //scaling factor in KOT0 response to temperature (-);
+    #define      CJM        17.7            //scaling factor in JMOP response to temperature (-);
 
     #define      CHLDEFAULT 500          // [g cm-2]
     #define      RUEGRASS 1.0            //maize: 1.5-2.0, vine: 0.6-1.0
