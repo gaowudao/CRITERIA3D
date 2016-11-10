@@ -3,13 +3,14 @@
 
 #include "MapGraphics_global.h"
 #include "MapGraphicsObject.h"
+#include "MapGraphicsView.h"
 
 
 class RasterObject : public MapGraphicsObject
 {
     Q_OBJECT
 public:
-    explicit RasterObject(int xpos, int ypos, int width, int height, MapGraphicsObject *parent = 0);
+    explicit RasterObject(int xpos, int ypos, int width, int height, MapGraphicsView* view, MapGraphicsObject *parent = 0);
     virtual ~RasterObject();
 
     //pure-virtual from MapGraphicsObject
@@ -17,9 +18,9 @@ public:
 
     //pure-virtual from MapGraphicsObject
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    
+
 signals:
-    
+
 public slots:
 
 protected:
@@ -31,7 +32,8 @@ private:
     int _ypos;
     int _width;
     int _height;
-    
+    MapGraphicsView* _view;
+
 };
 
 #endif // RASTEROBJECT_H

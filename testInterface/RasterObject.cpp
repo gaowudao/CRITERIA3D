@@ -7,12 +7,13 @@
 extern gis::Crit3DMapArea *mapArea;
 extern gis::Crit3DRasterGrid *DTM;
 
- RasterObject::RasterObject(int xpos, int ypos, int width, int height, MapGraphicsObject *parent) :
+ RasterObject::RasterObject(int xpos, int ypos, int width, int height, MapGraphicsView* view, MapGraphicsObject *parent) :
     MapGraphicsObject(true, parent), _xpos(xpos), _ypos(ypos), _width(width), _height(height)
 {
     this->setFlag(MapGraphicsObject::ObjectIsSelectable, false);
     this->setFlag(MapGraphicsObject::ObjectIsMovable, false);
     this->setFlag(MapGraphicsObject::ObjectIsFocusable);
+    _view = view;
 
      qDebug() << "rasterobject constructor xpos: " << _xpos << " ypos: " << _ypos;
      qDebug() << "rasterobject constructor w: " << _width << " h: " << _height;
@@ -48,7 +49,7 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     //qDebug() << "rasterobject paint";
     painter->setRenderHint(QPainter::Antialiasing, true);
     setMapCenter();
-    setMapResolution(painter);
+    setMapResolution(painter,_view);
     drawRaster(DTM, mapArea, painter);
 }
 

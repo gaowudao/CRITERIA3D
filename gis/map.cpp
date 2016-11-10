@@ -83,8 +83,12 @@ namespace gis
         this->isChanged = false;
         this->isSelecting = false;
 
-        this->metreToPixel = 1.0;
-        this->pixelToMetre = this->metreToPixel;
+        this->metreToPixelX = 1.0;
+        this->pixelToMetreX = this->metreToPixelX;
+
+        this->metreToPixelY = 1.0;
+        this->pixelToMetreY = this->metreToPixelY;
+
 
         activeAction = mapActionType::actionNone;
     }
@@ -111,10 +115,13 @@ namespace gis
         return true;
     }*/
 
-    void Crit3DMapArea::setResolution(double myPixelToMetre)
+    void Crit3DMapArea::setResolution(double myPixelToMetreX, double myPixelToMetreY)
     {
-        this->pixelToMetre = myPixelToMetre;
-        this->metreToPixel = 1.0 / this->pixelToMetre;
+        this->pixelToMetreX = myPixelToMetreX;
+        this->metreToPixelX = 1.0 / this->pixelToMetreX;
+
+        this->pixelToMetreY = myPixelToMetreY;
+        this->metreToPixelY = 1.0 / this->pixelToMetreY;
     }
 
 }

@@ -48,10 +48,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     view->setTileSource(composite);
 
-    //////////////////
-    //CompositeTileSourceConfigurationWidget * tileConfigWidget = new CompositeTileSourceConfigurationWidget(composite.toWeakRef(), &myMapWidget);
-    ///////////////////
-
     initializeMap();
 
     CircleObject* marker1 = new CircleObject(5.0, true, QColor(255,0,0,255), 0);
@@ -62,7 +58,6 @@ MainWindow::MainWindow(QWidget *parent) :
     marker1->setLatitude(point1.latitude());
     marker1->setLongitude(point1.longitude());
 
-    //marker1->setToolTip("marker1");
     view->scene()->addObject(marker1);
 
     view->setZoomLevel(8);
@@ -89,19 +84,11 @@ void MainWindow::on_actionLoad_Raster_triggered()
     {
         qDebug() << "creating raster";
 
-        //RasterObject * rasterObj = new RasterObject(this->view->window()->width(), this->view->window()->height());
-        RasterObject * rasterObj = new RasterObject(0,0,0,0);
+        RasterObject * rasterObj = new RasterObject(0,0,0,0,this->view);
 
         Position point1 (DTM->header->llCorner->x, DTM->header->llCorner->y, 0.0);
         rasterObj->setLatitude(point1.latitude());
         rasterObj->setLongitude(point1.longitude());
-
-        qDebug() << "rasterObj topleft x: " << rasterObj->boundingRect().topLeft().x() << " topleft y: " << rasterObj->boundingRect().topLeft().y();
-        qDebug() << "rasterObj bottomRight x: " << rasterObj->boundingRect().bottomRight().x() << " bottomRight y: " << rasterObj->boundingRect().bottomRight().y();
-        qDebug() << "rasterObj->boundingRect().center(): " << rasterObj->boundingRect().center();
-
-        qDebug() << "this->view->window()->width()" << this->view->window()->width();
-        qDebug() << "this->view->window()->height()" << this->view->window()->height();
 
         this->view->scene()->addObject(rasterObj);
 

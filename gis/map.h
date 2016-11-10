@@ -82,15 +82,17 @@
             Crit3DUtmPoint previousCenter;
             Crit3DPixel dragPosition;
 
-            double metreToPixel;
-            double pixelToMetre;
+            double metreToPixelX;
+            double pixelToMetreX;
+            double metreToPixelY;
+            double pixelToMetreY;
 
             mapActionType activeAction;
 
             Crit3DMapArea();
 
             void setUtmCenter(double x, double y);
-            void setResolution(double pixelToMetre);
+            void setResolution(double pixelToMetreX, double pixelToMetreY);
         };
     }
 

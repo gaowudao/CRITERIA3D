@@ -48,20 +48,50 @@ bool setMapCenter()
     return true;
 }
 
-//todo
-bool setMapResolution(QPainter *myPainter)
+bool setMapResolution(QPainter *myPainter, MapGraphicsView* view)
 {
 
     if(DTM == NULL) return false;
 
-    double width = DTM->header->nrCols * DTM->header->cellSize;
-    double height = DTM->header->nrRows * DTM->header->cellSize;
 
-    double dx = width / myPainter->window().width();
-    double dy = height / myPainter->window().height();
+    QPointF topLeft = view->mapToScene(QPoint(0.0,0.0));
+    QPointF topRight = view->mapToScene(QPoint(view->width(),0.0));
 
-    mapArea->setResolution(std::max(dx, dy));
+    QPointF bottomLeft = view->mapToScene(QPoint(0.0,view->height()));
+    QPointF bottomRight = view->mapToScene(QPoint(view->width(),view->height()));
 
+    const qreal widthLon = qAbs<qreal>(topLeft.x() - topRight.x());
+    const qreal heightlat = qAbs<qreal>(topLeft.y() - bottomLeft.y());
+
+    qreal dxdegree = widthLon / view->width();
+    qreal dydegree = heightlat / view->height();
+
+    qDebug() << "setMapResolution degree dx:" << dxdegree;
+    qDebug() << "setMapResolution degree dy:" << dydegree;
+
+    mapArea->setResolution(dxdegree, dydegree);
+
+/*
+ *  // widthMeters heightMeters for utm case
+ *
+    const qreal avgLat = (topLeft.y() + bottomLeft.y()) / 2.0;
+    const qreal lonPerMeter = degreesLonPerMeter(avgLat);
+    const qreal latPerMeter = degreesLatPerMeter(avgLat);
+
+    const qreal widthMeters = qMax<qreal>(widthLon / lonPerMeter, 5.0);
+    const qreal heightMeters = qMax<qreal>(heightlat / latPerMeter, 5.0);
+
+    qDebug() << "widthMeters:" << widthMeters;
+    qDebug() << "heightMeters:" << heightMeters;
+
+    double dxMeters = widthMeters / myPainter->window().width();
+    double dyMeters = heightMeters / myPainter->window().height();
+
+    qDebug() << "setMapResolution Meters dx:" << dxMeters;
+    qDebug() << "setMapResolution Meters dy:" << dyMeters;
+
+    mapArea->setResolution(std::max(dxMeters, dyMeters));
+*/
     return true;
 }
 
@@ -73,13 +103,15 @@ bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DMapArea* myMap, QPai
     if (! myMap->isCenterDefined) return false;
 
     gis::Crit3DPixel pixelCenter, pixelLL;
-    pixelCenter.x = myPainter->window().width() * 0.5;
-    pixelCenter.y = myPainter->window().height() * 0.5;
-    pixelLL.x = pixelCenter.x - (myMap->center.x - myRaster->header->llCorner->x) * myMap->metreToPixel;
-    pixelLL.y = pixelCenter.y - (myMap->center.y - myRaster->header->llCorner->y) * myMap->metreToPixel;
 
-    double pixelCellSize = myRaster->header->cellSize * myMap->metreToPixel;
-    int step = std::max(int(1. / pixelCellSize), 1);
+    pixelLL.x = 0;
+    pixelLL.y = 0;
+
+
+    double pixelCellSizeX = myRaster->header->cellSize * myMap->metreToPixelX;
+    double pixelCellSizeY = myRaster->header->cellSize * myMap->metreToPixelY;
+
+    int step = std::max(int(1. / (std::min(pixelCellSizeX,pixelCellSizeY))), 1);
 
     int x0, y0, x1, y1, x, y;
     float myValue;
@@ -92,13 +124,14 @@ bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DMapArea* myMap, QPai
     qDebug() << step;
     for (long myRow = 0; myRow < myRaster->header->nrRows; myRow += step)
     {
-        y1 = pixelLL.y + (myRow+step) * pixelCellSize;
+        y1 = pixelLL.y + (myRow+step) * pixelCellSizeY;
+
         if ((y1 > 0) && (y1 < myPainter->window().height()))
         {
             x0 = pixelLL.x;
             for (long myCol = 0; myCol < myRaster->header->nrCols; myCol += step)
             {
-                x1 = pixelLL.x + (myCol+step) * pixelCellSize;
+                x1 = pixelLL.x + (myCol+step) * pixelCellSizeX;
                 if ((x1 > 0) && (x1 < myPainter->window().width()))
                 {
                     myValue = myRaster->value[myRaster->header->nrRows - myRow - 1][myCol];
@@ -133,8 +166,7 @@ bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DMapArea* myMap, QPai
     return true;
 }
 
-
-
+/*
 void drawObject(MapGraphicsView* pointView)
 {
     CircleObject* marker1 = new CircleObject(50.0, false, QColor(255,0,0,0), 0);
@@ -148,3 +180,19 @@ void drawObject(MapGraphicsView* pointView)
     pointView->scene()->addObject(marker1);
 
 }
+
+qreal degreesLatPerMeter(const qreal latitude)
+{
+    const qreal latRad = latitude * (pi / 180.0);
+    qreal meters = 111132.954 - 559.822 * cos(2.0 * latRad) + 1.175 * cos(4.0 * latRad);
+    return 1.0 / meters;
+}
+
+qreal degreesLonPerMeter(const qreal latitude)
+{
+    const qreal latRad = latitude * (pi / 180.0);
+    qreal meters = (pi * A_EARTH * cos(latRad)) / (180.0 * sqrt(1.0 - NAV_E2 * pow(sin(latRad), 2.0)));
+    return 1.0 / meters;
+}
+
+*/
