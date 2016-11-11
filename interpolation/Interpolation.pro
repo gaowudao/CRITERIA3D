@@ -15,12 +15,14 @@ INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../meteo
 
 SOURCES += interpolation.cpp \
     interpolationSettings.cpp \
-    interpolationPoint.cpp
+    interpolationPoint.cpp \
+    kriging.cpp
 
 HEADERS += interpolation.h \
     interpolationSettings.h \
     interpolationPoint.h \
-    interpolationConstants.h
+    interpolationConstants.h \
+    kriging.h
 
 
 unix:!symbian {
