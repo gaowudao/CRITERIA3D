@@ -13,15 +13,11 @@
     class QPainter;
     class QString;
 
-    void initializeMap();
+    void initializeDTM();
     bool loadRaster(QString fileName, gis::Crit3DRasterGrid *raster);
-    bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DMapArea* myMap, QPainter* myPainter);
+    bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPainter* myPainter);
     //void drawObject(MapGraphicsView* pointView);
 
-    bool setMapCenter();
-    bool setMapResolution(QPainter *myPainter, MapGraphicsView* view);
-
-    //qreal degreesLatPerMeter(const qreal latitude);
-    //qreal degreesLonPerMeter(const qreal latitude);
+    bool setMapResolution(MapGraphicsView* view);
 
 #endif

@@ -31,14 +31,6 @@
 namespace gis
 {
 
-    Crit3DMapPoint::Crit3DMapPoint() {}
-
-    Crit3DMapPoint::Crit3DMapPoint(const Crit3DUtmPoint& utm, const Crit3DPixel& pixel)
-    {
-        this->utm = utm;
-        this->pixel = pixel;
-    }
-
     Crit3DUtmWindow::Crit3DUtmWindow() {}
 
     Crit3DUtmWindow::Crit3DUtmWindow(const Crit3DUtmPoint& v0, const Crit3DUtmPoint& v1)
@@ -76,52 +68,26 @@ namespace gis
     }
 
 
-    Crit3DMapArea::Crit3DMapArea()
+    Crit3DGeoMap::Crit3DGeoMap()
     {
-        this->isCenterDefined = false;
         this->isDrawing = false;
         this->isChanged = false;
         this->isSelecting = false;
 
-        this->metreToPixelX = 1.0;
-        this->pixelToMetreX = this->metreToPixelX;
+        this->degreeToPixelX = 1.0;
+        this->pixelToDegreeX = 1.0 / this->degreeToPixelX;
 
-        this->metreToPixelY = 1.0;
-        this->pixelToMetreY = this->metreToPixelY;
-
-
-        activeAction = mapActionType::actionNone;
+        this->degreeToPixelY = 1.0;
+        this->pixelToDegreeY = 1.0 / this->degreeToPixelY;
     }
 
-    void Crit3DMapArea::setUtmCenter(double x, double y)
+    void Crit3DGeoMap::setResolution(double dx, double dy)
     {
-        this->center.x = x;
-        this->center.y = y;
-        this->previousCenter = this->center;
+        this->pixelToDegreeX= dx;
+        this->degreeToPixelX = 1.0 / this->pixelToDegreeX;
 
-        this->isCenterDefined = true;
-    }
-
-    /*void Crit3DMapArea::setResolution(double pixelToMetre)
-    {
-        if (! this->isDefined) return false;
-
-        double mpx =  (double)pixelWidth / this->utmWidth;
-        double mpy = (double)pixelHeight / this->utmHeight;
-
-        this->metreToPixel = minValue(mpx, mpy) * this->zoomFactor;
-        this->pixelToMetre = 1.0 / this->metreToPixel;
-
-        return true;
-    }*/
-
-    void Crit3DMapArea::setResolution(double myPixelToMetreX, double myPixelToMetreY)
-    {
-        this->pixelToMetreX = myPixelToMetreX;
-        this->metreToPixelX = 1.0 / this->pixelToMetreX;
-
-        this->pixelToMetreY = myPixelToMetreY;
-        this->metreToPixelY = 1.0 / this->pixelToMetreY;
+        this->pixelToDegreeY = dy;
+        this->degreeToPixelY = 1.0 / this->pixelToDegreeY;
     }
 
 }

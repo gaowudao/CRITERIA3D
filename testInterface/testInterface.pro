@@ -11,9 +11,9 @@ TEMPLATE = app
 
 INCLUDEPATH += ../mathFunctions ../gis ../MapGraphics
 
-LIBS += -L../gis/release -lgis
-LIBS += -L../mathFunctions/release -lmathFunctions
-LIBS += -L../MapGraphics/release -lMapGraphics
+LIBS += -L../mathFunctions/debug -lmathFunctions
+LIBS += -L../gis/debug -lgis
+LIBS += -L../MapGraphics/debug -lMapGraphics
 
 
 SOURCES += main.cpp\

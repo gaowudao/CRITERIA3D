@@ -6,8 +6,11 @@
     #include "MapGraphicsView.h"
     #include "MapGraphicsScene.h"
 
-    namespace Ui {
-    class MainWindow;
+    class RasterObject;
+
+    namespace Ui
+    {
+        class MainWindow;
     }
 
     class MainWindow : public QMainWindow
@@ -24,8 +27,9 @@
     private:
         Ui::MainWindow* ui;
         MapGraphicsScene* scene;
-        MapGraphicsView * view;
-
+        MapGraphicsView* view;
+        RasterObject* rasterMap;
     };
+
 
 #endif // MAINWINDOW_H

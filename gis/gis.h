@@ -56,9 +56,18 @@
             double y;
 
             Crit3DUtmPoint();
-            Crit3DUtmPoint(double, double);
+            Crit3DUtmPoint(double x, double y);
 
             bool isInsideGrid(const Crit3DGridHeader& myGridHeader) const;
+        };
+
+        class  Crit3DGeoPoint {
+        public:
+            double latitude;
+            double longitude;
+
+            Crit3DGeoPoint();
+            Crit3DGeoPoint(double lat, double lon);
         };
 
 
@@ -132,8 +141,8 @@
             Crit3DEllipsoid();
         };
 
-        double computeDistance(Crit3DUtmPoint* p0, Crit3DUtmPoint* p1);
         float computeDistance(float x1, float y1, float x2, float y2);
+        double computeDistancePoint(Crit3DUtmPoint* p0, Crit3DUtmPoint *p1);
         bool updateMinMaxRasterGrid(Crit3DRasterGrid* myGrid);
         bool getRowColFromXY(const Crit3DRasterGrid &myGrid, double myX, double myY, long* myRow, long* myCol);
         bool isOutOfGridRowCol(long myRow, long myCol, const Crit3DRasterGrid &myGrid);

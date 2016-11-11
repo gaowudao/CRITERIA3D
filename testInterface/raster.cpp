@@ -10,20 +10,21 @@
 #include "mainwindow.h"
 
 gis::Crit3DRasterGrid *DTM;
-gis::Crit3DMapArea *mapArea;
+gis::Crit3DGeoMap *geoMap;
 
+using namespace std;
 
-void initializeMap()
+void initializeDTM()
 {
     DTM = new gis::Crit3DRasterGrid();
-    mapArea = new gis::Crit3DMapArea();
+    geoMap = new gis::Crit3DGeoMap();
 }
 
 
 bool loadRaster(QString myFileName, gis::Crit3DRasterGrid *myRaster)
 {
-    std::string* myError = new std::string();
-    std::string fileName = myFileName.left(myFileName.length()-4).toStdString();
+    string* myError = new std::string();
+    string fileName = myFileName.left(myFileName.length()-4).toStdString();
 
     if (gis::readEsriGrid(fileName, myRaster, myError))
     {
@@ -39,29 +40,20 @@ bool loadRaster(QString myFileName, gis::Crit3DRasterGrid *myRaster)
 }
 
 
-bool setMapCenter()
+bool setMapResolution(MapGraphicsView* view)
 {
     if(DTM == NULL) return false;
 
-    mapArea->setUtmCenter(DTM->header->llCorner->x + DTM->header->cellSize * DTM->header->nrCols / 2,
-                          DTM->header->llCorner->y + DTM->header->cellSize * DTM->header->nrRows / 2);
-    return true;
-}
+    QPointF bottomLeft = view->mapToScene(QPoint(0.0, 0.0));
+    QPointF topRight = view->mapToScene(QPoint(view->width(), view->height()));
 
-bool setMapResolution(QPainter *myPainter, MapGraphicsView* view)
-{
+    geoMap->bottomLeft.longitude = bottomLeft.x();
+    geoMap->bottomLeft.latitude = bottomLeft.y();
+    geoMap->topRight.longitude = topRight.x();
+    geoMap->topRight.latitude = topRight.y();
 
-    if(DTM == NULL) return false;
-
-
-    QPointF topLeft = view->mapToScene(QPoint(0.0,0.0));
-    QPointF topRight = view->mapToScene(QPoint(view->width(),0.0));
-
-    QPointF bottomLeft = view->mapToScene(QPoint(0.0,view->height()));
-    QPointF bottomRight = view->mapToScene(QPoint(view->width(),view->height()));
-
-    const qreal widthLon = qAbs<qreal>(topLeft.x() - topRight.x());
-    const qreal heightlat = qAbs<qreal>(topLeft.y() - bottomLeft.y());
+    const qreal widthLon = qAbs<qreal>(topRight.x() - bottomLeft.x());
+    const qreal heightlat = qAbs<qreal>(topRight.y() - bottomLeft.y());
 
     qreal dxdegree = widthLon / view->width();
     qreal dydegree = heightlat / view->height();
@@ -69,102 +61,79 @@ bool setMapResolution(QPainter *myPainter, MapGraphicsView* view)
     qDebug() << "setMapResolution degree dx:" << dxdegree;
     qDebug() << "setMapResolution degree dy:" << dydegree;
 
-    mapArea->setResolution(dxdegree, dydegree);
-
-/*
- *  // widthMeters heightMeters for utm case
- *
-    const qreal avgLat = (topLeft.y() + bottomLeft.y()) / 2.0;
-    const qreal lonPerMeter = degreesLonPerMeter(avgLat);
-    const qreal latPerMeter = degreesLatPerMeter(avgLat);
-
-    const qreal widthMeters = qMax<qreal>(widthLon / lonPerMeter, 5.0);
-    const qreal heightMeters = qMax<qreal>(heightlat / latPerMeter, 5.0);
-
-    qDebug() << "widthMeters:" << widthMeters;
-    qDebug() << "heightMeters:" << heightMeters;
-
-    double dxMeters = widthMeters / myPainter->window().width();
-    double dyMeters = heightMeters / myPainter->window().height();
-
-    qDebug() << "setMapResolution Meters dx:" << dxMeters;
-    qDebug() << "setMapResolution Meters dy:" << dyMeters;
-
-    mapArea->setResolution(std::max(dxMeters, dyMeters));
-*/
+    geoMap->setResolution(dxdegree, dydegree);
     return true;
 }
 
 
-bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DMapArea* myMap, QPainter* myPainter)
+bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPainter* myPainter)
 {
     if ( myRaster == NULL) return false;
     if (! myRaster->isLoaded) return false;
-    if (! myMap->isCenterDefined) return false;
 
-    gis::Crit3DPixel pixelCenter, pixelLL;
+    long row0, row1, col0, col1;
+    gis::getRowColFromXY(*myRaster, myMap->bottomLeft.longitude, myMap->bottomLeft.latitude, &row0, &col0);
+    gis::getRowColFromXY(*myRaster, myMap->topRight.longitude, myMap->topRight.latitude, &row1, &col1);
 
-    pixelLL.x = 0;
-    pixelLL.y = 0;
+    row0 = max(long(0), row0);
+    row1 = min(myRaster->header->nrRows, row1+1);
+    col0 = max(long(0), col0);
+    col1 = min(myRaster->header->nrCols, col1+1);
 
+    gis::Crit3DGeoPoint llCorner;
+    gis::Crit3DPixel pixelLL;
+    llCorner.longitude = myRaster->header->llCorner->x + col0 * myRaster->header->cellSize;
+    llCorner.latitude = myRaster->header->llCorner->y + (myRaster->header->nrRows - row1) * myRaster->header->cellSize;
+    pixelLL.x = (llCorner.longitude - myMap->referencePoint.longitude) * myMap->degreeToPixelX;
+    pixelLL.y = (llCorner.latitude - myMap->referencePoint.latitude) * myMap->degreeToPixelY;
 
-    double pixelCellSizeX = myRaster->header->cellSize * myMap->metreToPixelX;
-    double pixelCellSizeY = myRaster->header->cellSize * myMap->metreToPixelY;
+    double dx = myRaster->header->cellSize * myMap->degreeToPixelX;
+    double dy = myRaster->header->cellSize * myMap->degreeToPixelY;
 
-    int step = std::max(int(1. / (std::min(pixelCellSizeX,pixelCellSizeY))), 1);
+    int step = std::max(int(1. / (std::min(dx, dy))), 1);
 
     int x0, y0, x1, y1, x, y;
     float myValue;
     gis::Crit3DColor* myColor;
     QColor myQColor;
 
-    //qDebug() << "starting painting raster";
-
     y0 = pixelLL.y;
-    qDebug() << step;
-    for (long myRow = 0; myRow < myRaster->header->nrRows; myRow += step)
+    for (long myRow = row0; myRow < row1; myRow += step)
     {
-        y1 = pixelLL.y + (myRow+step) * pixelCellSizeY;
-
-        if ((y1 > 0) && (y1 < myPainter->window().height()))
+        y1 = pixelLL.y + (myRow-row0+step) * dy;
+        x0 = pixelLL.x;
+        for (long myCol = col0; myCol < col1; myCol += step)
         {
-            x0 = pixelLL.x;
-            for (long myCol = 0; myCol < myRaster->header->nrCols; myCol += step)
+            x1 = pixelLL.x + (myCol-col0+step) * dx;
+
+            myValue = myRaster->value[myRaster->header->nrRows - myRow - 1][myCol];
+            if (myValue != myRaster->header->flag)
             {
-                x1 = pixelLL.x + (myCol+step) * pixelCellSizeX;
-                if ((x1 > 0) && (x1 < myPainter->window().width()))
-                {
-                    myValue = myRaster->value[myRaster->header->nrRows - myRow - 1][myCol];
+                myColor = myRaster->colorScale->getColor(myValue);
 
-                    if (myValue != myRaster->header->flag)
-                    {
-                        myColor = myRaster->colorScale->getColor(myValue);
+                myQColor = QColor(myColor->red, myColor->green, myColor->blue);
+                myPainter->setPen(myQColor);
 
-                        //alpha = 128
-                        myQColor = QColor(myColor->red, myColor->green, myColor->blue, 128);
-                        myPainter->setPen(myQColor);
+                for (x = x0; x <= x1; x++)
+                   for (y = y0; y <= y1; y++)
+                       myPainter->drawPoint(x, y);
 
-                        for (x = x0; x <= x1; x++)
-                           for (y = y0; y <= y1; y++)
-                               myPainter->drawPoint(x, y);
-
-                        /*
-                        //codice per rettangoli
-                        dx = (x1 - x0);
-                        dy = (y1 - y0);
-                        myPainter->setBrush(myQColor);
-                        myPainter->drawRect(x0, y0, dx, dy);
-                        */
-                    }
-                }
-                x0 = ++x1;
+                /*
+                //codice per rettangoli
+                dx = (x1 - x0);
+                dy = (y1 - y0);
+                myPainter->setBrush(myQColor);
+                myPainter->drawRect(x0, y0, dx, dy);
+                */
             }
+            x0 = ++x1;
         }
         y0 = ++y1;
     }
 
     return true;
 }
+
 
 /*
 void drawObject(MapGraphicsView* pointView)

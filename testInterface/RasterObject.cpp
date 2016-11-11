@@ -4,19 +4,16 @@
 #include <QtDebug>
 #include <QKeyEvent>
 
-extern gis::Crit3DMapArea *mapArea;
+extern gis::Crit3DGeoMap *geoMap;
 extern gis::Crit3DRasterGrid *DTM;
 
- RasterObject::RasterObject(int xpos, int ypos, int width, int height, MapGraphicsView* view, MapGraphicsObject *parent) :
-    MapGraphicsObject(true, parent), _xpos(xpos), _ypos(ypos), _width(width), _height(height)
+ RasterObject::RasterObject(MapGraphicsView* view, MapGraphicsObject *parent) :
+    MapGraphicsObject(true, parent)
 {
     this->setFlag(MapGraphicsObject::ObjectIsSelectable, false);
     this->setFlag(MapGraphicsObject::ObjectIsMovable, false);
     this->setFlag(MapGraphicsObject::ObjectIsFocusable);
     _view = view;
-
-     qDebug() << "rasterobject constructor xpos: " << _xpos << " ypos: " << _ypos;
-     qDebug() << "rasterobject constructor w: " << _width << " h: " << _height;
 }
 
  RasterObject::~RasterObject()
@@ -31,13 +28,10 @@ extern gis::Crit3DRasterGrid *DTM;
   \return QRectF
  */
 
+
  QRectF RasterObject::boundingRect() const
 {
-    //qDebug() << "rasterobject boundingRect";
-    return QRectF(_xpos,
-                  _ypos,
-                  _width,
-                  _height);
+    return QRectF(0, 0, 0, 0);
 }
 
 
@@ -46,11 +40,13 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     Q_UNUSED(option)
     Q_UNUSED(widget)
 
-    //qDebug() << "rasterobject paint";
+    qDebug() << "paint";
     painter->setRenderHint(QPainter::Antialiasing, true);
-    setMapCenter();
-    setMapResolution(painter,_view);
-    drawRaster(DTM, mapArea, painter);
+    setMapResolution(_view);
+    drawRaster(DTM, geoMap, painter);
+
+    painter->setPen(QColor(0, 0, 0));
+    painter->drawRect(-2, -2, 4, 4);
 }
 
 

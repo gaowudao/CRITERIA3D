@@ -21,9 +21,8 @@
 
 #include "RasterObject.h"
 
-extern gis::Crit3DMapArea *mapArea;
+extern gis::Crit3DGeoMap *geoMap;
 extern gis::Crit3DRasterGrid *DTM;
-
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -32,36 +31,41 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     //Setup the MapGraphics scene and view
-    scene = new MapGraphicsScene(this);
-    view = new MapGraphicsView(scene,this);
-    //view = new PointMap(scene,this);
+    this->scene = new MapGraphicsScene(this);
+    this->view = new MapGraphicsView(scene,this);
 
     //The view will be our central widget
-    this->setCentralWidget(view);
+    this->setCentralWidget(this->view);
 
     //Setup some tile sources
-
     QSharedPointer<OSMTileSource> osmTiles(new OSMTileSource(OSMTileSource::OSMTiles), &QObject::deleteLater);
     QSharedPointer<CompositeTileSource> composite(new CompositeTileSource(), &QObject::deleteLater);
-
     composite->addSourceBottom(osmTiles);
+    this->view->setTileSource(composite);
 
-    view->setTileSource(composite);
+    //start: Bologna
+    Position Bologna(11.35, 44.5, 0.0);
 
-    initializeMap();
-
+    // marker example
     CircleObject* marker1 = new CircleObject(5.0, true, QColor(255,0,0,255), 0);
     marker1->setFlag(MapGraphicsObject::ObjectIsMovable, false);
     marker1->setFlag(MapGraphicsObject::ObjectIsSelectable, false);
+    marker1->setLatitude(Bologna.latitude());
+    marker1->setLongitude(Bologna.longitude());
+    this->view->scene()->addObject(marker1);
 
-    Position point1 (11.35, 44.5, 0.0);
-    marker1->setLatitude(point1.latitude());
-    marker1->setLongitude(point1.longitude());
+    //raster map
+    this->rasterMap = new RasterObject(this->view);
+    this->rasterMap->setOpacity(0.5);
+    this->rasterMap->setPos(Bologna.lonLat());
+    this->view->scene()->addObject(this->rasterMap);
 
-    view->scene()->addObject(marker1);
+    initializeDTM();
+    geoMap->referencePoint.latitude = Bologna.latitude();
+    geoMap->referencePoint.longitude = Bologna.longitude();
 
-    view->setZoomLevel(8);
-    view->centerOn(11.4, 44.5);
+    this->view->setZoomLevel(10);
+    this->view->centerOn(Bologna.lonLat());
 }
 
 
@@ -79,20 +83,5 @@ void MainWindow::on_actionLoad_Raster_triggered()
     if (fileName == "") return;
 
     qDebug() << "loading raster";
-
-    if (loadRaster(fileName, DTM))
-    {
-        qDebug() << "creating raster";
-
-        RasterObject * rasterObj = new RasterObject(0,0,0,0,this->view);
-
-        Position point1 (DTM->header->llCorner->x, DTM->header->llCorner->y, 0.0);
-        rasterObj->setLatitude(point1.latitude());
-        rasterObj->setLongitude(point1.longitude());
-
-        this->view->scene()->addObject(rasterObj);
-
-        this->view->repaint();
-        this->update();
-    }
+    loadRaster(fileName, DTM);
 }

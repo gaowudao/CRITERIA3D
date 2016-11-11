@@ -71,6 +71,18 @@ namespace gis
         this->y = myY;
     }
 
+    Crit3DGeoPoint::Crit3DGeoPoint()
+    {
+        this->latitude = NODATA;
+        this->longitude = NODATA;
+    }
+
+    Crit3DGeoPoint::Crit3DGeoPoint(double lat, double lon)
+    {
+        this->latitude = lat;
+        this->longitude = lon;
+    }
+
     bool Crit3DUtmPoint::isInsideGrid(const Crit3DGridHeader& myGridHeader) const
     {
         return (x >= myGridHeader.llCorner->x && x <= myGridHeader.llCorner->x + (myGridHeader.nrCols*myGridHeader.cellSize)
@@ -300,7 +312,7 @@ namespace gis
         return(true);
     }
 
-    double computeDistance(Crit3DUtmPoint* p0, Crit3DUtmPoint *p1)
+    double computeDistancePoint(Crit3DUtmPoint* p0, Crit3DUtmPoint *p1)
     {
             double dx, dy;
 

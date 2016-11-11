@@ -70,29 +70,25 @@
         };
 
 
-        class Crit3DMapArea
+        class Crit3DGeoMap
         {
         public:
-            bool isCenterDefined;
             bool isDrawing;
             bool isChanged;
             bool isSelecting;
 
-            Crit3DUtmPoint center;
-            Crit3DUtmPoint previousCenter;
-            Crit3DPixel dragPosition;
+            Crit3DGeoPoint referencePoint;
+            Crit3DGeoPoint bottomLeft;
+            Crit3DGeoPoint topRight;
 
-            double metreToPixelX;
-            double pixelToMetreX;
-            double metreToPixelY;
-            double pixelToMetreY;
+            double degreeToPixelX;
+            double pixelToDegreeX;
+            double degreeToPixelY;
+            double pixelToDegreeY;
 
-            mapActionType activeAction;
+            Crit3DGeoMap();
 
-            Crit3DMapArea();
-
-            void setUtmCenter(double x, double y);
-            void setResolution(double pixelToMetreX, double pixelToMetreY);
+            void setResolution(double dx, double dy);
         };
     }
 
