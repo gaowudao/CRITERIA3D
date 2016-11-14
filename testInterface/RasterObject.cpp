@@ -11,7 +11,7 @@ extern gis::Crit3DRasterGrid *DTM;
     MapGraphicsObject(true, parent)
 {
     this->setFlag(MapGraphicsObject::ObjectIsSelectable, false);
-    this->setFlag(MapGraphicsObject::ObjectIsMovable, false);
+    this->setFlag(MapGraphicsObject::ObjectIsMovable, true);
     this->setFlag(MapGraphicsObject::ObjectIsFocusable);
     _view = view;
 }

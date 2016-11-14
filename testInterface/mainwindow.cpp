@@ -56,7 +56,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //raster map
     this->rasterMap = new RasterObject(this->view);
-    this->rasterMap->setOpacity(0.5);
+    this->rasterMap->setOpacity(0.75);
     this->rasterMap->setPos(Bologna.lonLat());
     this->view->scene()->addObject(this->rasterMap);
 

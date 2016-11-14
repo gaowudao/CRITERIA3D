@@ -19,6 +19,8 @@ public:
     //pure-virtual from MapGraphicsObject
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
+
+
 signals:
 
 public slots:

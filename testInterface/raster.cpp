@@ -44,8 +44,11 @@ bool setMapResolution(MapGraphicsView* view)
 {
     if(DTM == NULL) return false;
 
-    QPointF bottomLeft = view->mapToScene(QPoint(0.0, 0.0));
-    QPointF topRight = view->mapToScene(QPoint(view->width(), view->height()));
+    //QPointF bottomLeft = view->mapToScene(QPoint(0.0, 0.0));
+    //QPointF topRight = view->mapToScene(QPoint(view->width(), view->height()));
+
+    QPointF bottomLeft = view->mapToScene(QPoint(0.0,view->height()));
+    QPointF topRight = view->mapToScene(QPoint(view->width(),0.0));
 
     geoMap->bottomLeft.longitude = bottomLeft.x();
     geoMap->bottomLeft.latitude = bottomLeft.y();
@@ -75,15 +78,15 @@ bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPain
     gis::getRowColFromXY(*myRaster, myMap->bottomLeft.longitude, myMap->bottomLeft.latitude, &row0, &col0);
     gis::getRowColFromXY(*myRaster, myMap->topRight.longitude, myMap->topRight.latitude, &row1, &col1);
 
-    row0 = max(long(0), row0);
-    row1 = min(myRaster->header->nrRows, row1+1);
-    col0 = max(long(0), col0);
-    col1 = min(myRaster->header->nrCols, col1+1);
+    row0 = min(myRaster->header->nrRows-1, max(long(0), row0));
+    row1 = min(myRaster->header->nrRows, max(long(0), row1));
+    col0 = min(myRaster->header->nrCols, max(long(0), col0));
+    col1 = min(myRaster->header->nrCols, max(long(0), col1));
 
     gis::Crit3DGeoPoint llCorner;
     gis::Crit3DPixel pixelLL;
     llCorner.longitude = myRaster->header->llCorner->x + col0 * myRaster->header->cellSize;
-    llCorner.latitude = myRaster->header->llCorner->y + (myRaster->header->nrRows - row1) * myRaster->header->cellSize;
+    llCorner.latitude = myRaster->header->llCorner->y + (myRaster->header->nrRows - row0) * myRaster->header->cellSize;
     pixelLL.x = (llCorner.longitude - myMap->referencePoint.longitude) * myMap->degreeToPixelX;
     pixelLL.y = (llCorner.latitude - myMap->referencePoint.latitude) * myMap->degreeToPixelY;
 
@@ -98,15 +101,15 @@ bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPain
     QColor myQColor;
 
     y0 = pixelLL.y;
-    for (long myRow = row0; myRow < row1; myRow += step)
+    for (long myRow = row0; myRow > row1; myRow -= step)
     {
-        y1 = pixelLL.y + (myRow-row0+step) * dy;
+        y1 = pixelLL.y + (row0- myRow + step) * dy;
         x0 = pixelLL.x;
         for (long myCol = col0; myCol < col1; myCol += step)
         {
             x1 = pixelLL.x + (myCol-col0+step) * dx;
 
-            myValue = myRaster->value[myRaster->header->nrRows - myRow - 1][myCol];
+            myValue = myRaster->value[myRow][myCol];
             if (myValue != myRaster->header->flag)
             {
                 myColor = myRaster->colorScale->getColor(myValue);
