@@ -9,8 +9,8 @@
 extern gis::Crit3DGeoMap *geoMap;
 extern gis::Crit3DRasterGrid *DTM;
 
- RasterObject::RasterObject(MapGraphicsView* view, MapGraphicsObject *parent) :
-    MapGraphicsObject(true, parent)
+ RasterObject::RasterObject(int xpos, int ypos, int width, int height, MapGraphicsView* view, MapGraphicsObject *parent) :
+    MapGraphicsObject(true, parent), _xpos(xpos), _ypos(ypos), _width(width), _height(height)
 {
     this->setFlag(MapGraphicsObject::ObjectIsSelectable, false);
     this->setFlag(MapGraphicsObject::ObjectIsMovable, false);
@@ -33,7 +33,10 @@ extern gis::Crit3DRasterGrid *DTM;
 
  QRectF RasterObject::boundingRect() const
 {
-    return QRectF(0, 0, 0, 0);
+     return QRectF(_xpos,
+                       _ypos,
+                       _width,
+                       _height);
 }
 
 
@@ -42,11 +45,10 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     Q_UNUSED(option)
     Q_UNUSED(widget)
 
-    //qDebug() << "paint";
+    //sqDebug() << "paint";
     painter->setRenderHint(QPainter::Antialiasing, true);
     setMapResolution(_view);
 
-    this->updateCenter();
     drawRaster(DTM, geoMap, painter);
 
     painter->setPen(QColor(0, 0, 0));
@@ -67,13 +69,4 @@ void RasterObject::keyReleaseEvent(QKeyEvent *event)
         event->ignore();
 }
 
-void RasterObject::updateCenter()
-{
-    QPointF newCenter = _view->center();
-    Position geoCenter (newCenter.x(), newCenter.y(), 0.0);
-
-    this->setPos(geoCenter.lonLat());
-    geoMap->referencePoint.latitude = geoCenter.latitude();
-    geoMap->referencePoint.longitude = geoCenter.longitude();
-}
 

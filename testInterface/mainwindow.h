@@ -5,6 +5,7 @@
     #include <QGridLayout>
     #include "MapGraphicsView.h"
     #include "MapGraphicsScene.h"
+    #include "Position.h"
 
     class RasterObject;
 
@@ -29,6 +30,7 @@
         MapGraphicsScene* scene;
         MapGraphicsView* view;
         RasterObject* rasterMap;
+        Position* startCenter;
     };
 
 

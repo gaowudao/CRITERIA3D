@@ -11,7 +11,7 @@ class RasterObject : public MapGraphicsObject
 {
     Q_OBJECT
 public:
-    explicit RasterObject(MapGraphicsView* view, MapGraphicsObject *parent = 0);
+    explicit RasterObject(int xpos, int ypos, int width, int height, MapGraphicsView* view, MapGraphicsObject *parent = 0);
     virtual ~RasterObject();
 
     //pure-virtual from MapGraphicsObject
@@ -20,20 +20,16 @@ public:
     //pure-virtual from MapGraphicsObject
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
-
-
-signals:
-
-public slots:
-
-private slots:
-    void updateCenter();
-
 protected:
     //virtual from MapGraphicsObject
     virtual void keyReleaseEvent(QKeyEvent *event);
 
 private:
+
+    int _xpos;
+    int _ypos;
+    int _width;
+    int _height;
     MapGraphicsView* _view;
 
 };

@@ -15,6 +15,7 @@
 extern gis::Crit3DGeoMap *geoMap;
 extern gis::Crit3DRasterGrid *DTM;
 
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -24,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //Setup the MapGraphics scene and view
     this->scene = new MapGraphicsScene(this);
     this->view = new MapGraphicsView(scene,this);
+    this->startCenter = new Position (11.35, 44.5, 0.0);
 
     //The view will be our central widget
     this->setCentralWidget(this->view);
@@ -34,29 +36,21 @@ MainWindow::MainWindow(QWidget *parent) :
     composite->addSourceBottom(osmTiles);
     this->view->setTileSource(composite);
 
-    //start: Bologna
-    Position Bologna(11.35, 44.5, 0.0);
 
     // marker example
     CircleObject* marker1 = new CircleObject(5.0, true, QColor(255,0,0,255), 0);
     marker1->setFlag(MapGraphicsObject::ObjectIsMovable, false);
     marker1->setFlag(MapGraphicsObject::ObjectIsSelectable, false);
-    marker1->setLatitude(Bologna.latitude());
-    marker1->setLongitude(Bologna.longitude());
+    marker1->setLatitude(startCenter->latitude());
+    marker1->setLongitude(startCenter->longitude());
     this->view->scene()->addObject(marker1);
 
-    //raster map
-    this->rasterMap = new RasterObject(this->view);
-    this->rasterMap->setOpacity(0.75);
-    this->rasterMap->setPos(Bologna.lonLat());
-    this->view->scene()->addObject(this->rasterMap);
-
     initializeDTM();
-    geoMap->referencePoint.latitude = Bologna.latitude();
-    geoMap->referencePoint.longitude = Bologna.longitude();
+    geoMap->referencePoint.latitude = startCenter->latitude();
+    geoMap->referencePoint.longitude = startCenter->longitude();
 
     this->view->setZoomLevel(10);
-    this->view->centerOn(Bologna.lonLat());
+    this->view->centerOn(startCenter->lonLat());
 }
 
 
@@ -69,10 +63,23 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_actionLoad_Raster_triggered()
 {
+
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Raster"), "",
                                            tr("ESRI grid files (*.flt)"));
     if (fileName == "") return;
 
     qDebug() << "loading raster";
     loadRaster(fileName, DTM);
+
+    qreal maxSizex = DTM->header->nrCols;
+    qreal maxSizey = DTM->header->nrRows;
+
+    qDebug() << "maxSizex"<< maxSizex;
+    qDebug() << "maxSizey"<< maxSizey;
+
+    this->rasterMap = new RasterObject(-maxSizex/2,-maxSizey/2, maxSizex, maxSizey,this->view);
+    this->rasterMap->setOpacity(0.75);
+    this->rasterMap->setPos(startCenter->lonLat());
+    this->view->scene()->addObject(this->rasterMap);
+
 }
