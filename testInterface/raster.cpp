@@ -3,7 +3,6 @@
 #include <QPainter>
 
 #include "CircleObject.h"
-#include "LineObject.h"
 #include "Position.h"
 
 #include "raster.h"
@@ -44,9 +43,6 @@ bool setMapResolution(MapGraphicsView* view)
 {
     if(DTM == NULL) return false;
 
-    //QPointF bottomLeft = view->mapToScene(QPoint(0.0, 0.0));
-    //QPointF topRight = view->mapToScene(QPoint(view->width(), view->height()));
-
     QPointF bottomLeft = view->mapToScene(QPoint(0.0,view->height()));
     QPointF topRight = view->mapToScene(QPoint(view->width(),0.0));
 
@@ -65,12 +61,15 @@ bool setMapResolution(MapGraphicsView* view)
     qDebug() << "setMapResolution degree dy:" << dydegree;
 
     geoMap->setResolution(dxdegree, dydegree);
+
+
     return true;
 }
 
 
 bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPainter* myPainter)
 {
+
     if ( myRaster == NULL) return false;
     if (! myRaster->isLoaded) return false;
 

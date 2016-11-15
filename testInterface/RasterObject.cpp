@@ -1,8 +1,10 @@
 #include "RasterObject.h"
 #include "raster.h"
+#include "Position.h"
 
 #include <QtDebug>
 #include <QKeyEvent>
+
 
 extern gis::Crit3DGeoMap *geoMap;
 extern gis::Crit3DRasterGrid *DTM;
@@ -11,7 +13,7 @@ extern gis::Crit3DRasterGrid *DTM;
     MapGraphicsObject(true, parent)
 {
     this->setFlag(MapGraphicsObject::ObjectIsSelectable, false);
-    this->setFlag(MapGraphicsObject::ObjectIsMovable, true);
+    this->setFlag(MapGraphicsObject::ObjectIsMovable, false);
     this->setFlag(MapGraphicsObject::ObjectIsFocusable);
     _view = view;
 }
@@ -40,9 +42,11 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     Q_UNUSED(option)
     Q_UNUSED(widget)
 
-    qDebug() << "paint";
+    //qDebug() << "paint";
     painter->setRenderHint(QPainter::Antialiasing, true);
     setMapResolution(_view);
+
+    this->updateCenter();
     drawRaster(DTM, geoMap, painter);
 
     painter->setPen(QColor(0, 0, 0));
@@ -62,3 +66,14 @@ void RasterObject::keyReleaseEvent(QKeyEvent *event)
     else
         event->ignore();
 }
+
+void RasterObject::updateCenter()
+{
+    QPointF newCenter = _view->center();
+    Position geoCenter (newCenter.x(), newCenter.y(), 0.0);
+
+    this->setPos(geoCenter.lonLat());
+    geoMap->referencePoint.latitude = geoCenter.latitude();
+    geoMap->referencePoint.longitude = geoCenter.longitude();
+}
+

@@ -2,7 +2,7 @@
 #include <QApplication>
 #include <QtNetwork/QNetworkProxy>
 #include <QDebug>
-#include <QString>
+//#include <QString>
 
 
 bool setProxy(QString hostName, int port)
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    setProxy("172.16.1.21", 8080);
+    //setProxy("172.16.1.21", 8080);
 
     MainWindow w;
     w.show();

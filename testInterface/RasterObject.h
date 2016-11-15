@@ -6,6 +6,7 @@
 #include "MapGraphicsView.h"
 
 
+
 class RasterObject : public MapGraphicsObject
 {
     Q_OBJECT
@@ -24,6 +25,9 @@ public:
 signals:
 
 public slots:
+
+private slots:
+    void updateCenter();
 
 protected:
     //virtual from MapGraphicsObject

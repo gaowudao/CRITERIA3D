@@ -1,25 +1,16 @@
 #include <QFileDialog>
+#include <QtDebug>
+
+#include "tileSources/OSMTileSource.h"
+#include "tileSources/CompositeTileSource.h"
+#include "CircleObject.h"
+#include "Position.h"
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "raster.h"
-
-#include "tileSources/GridTileSource.h"
-#include "tileSources/OSMTileSource.h"
-#include "tileSources/CompositeTileSource.h"
-#include "guts/CompositeTileSourceConfigurationWidget.h"
-
-#include "PolygonObject.h"
-
-#include <QSharedPointer>
-#include <QtDebug>
-#include <QThread>
-#include <QImage>
-
-#include "CircleObject.h"
-#include "LineObject.h"
-#include "Position.h"
-
 #include "RasterObject.h"
+
 
 extern gis::Crit3DGeoMap *geoMap;
 extern gis::Crit3DRasterGrid *DTM;
