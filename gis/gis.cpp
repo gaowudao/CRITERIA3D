@@ -260,6 +260,7 @@ namespace gis
         freeGrid();
     }
 
+
     // return X,Y of cell center
     Crit3DUtmPoint* Crit3DRasterGrid::utmPoint(long myRow, long myCol)
     {
@@ -276,12 +277,11 @@ namespace gis
 
     bool updateMinMaxRasterGrid(Crit3DRasterGrid* myGrid)
     {
-        float myValue, minimum, maximum;
-        bool isFirstValue;
+        float myValue;
+        bool isFirstValue = true;
+        float minimum = NODATA;
+        float maximum = NODATA;
 
-        isFirstValue = true;
-        minimum = NODATA;
-        maximum = NODATA;
         for (int myRow = 0; myRow < myGrid->header->nrRows; myRow++)
             for (int myCol = 0; myCol < myGrid->header->nrCols; myCol++)
             {
@@ -297,7 +297,7 @@ namespace gis
                     else
                     {
                         if (myValue < minimum) minimum = myValue;
-                        if (myValue > maximum) maximum = myValue;
+                        else if (myValue > maximum) maximum = myValue;
                     }
                 }
             }
@@ -311,6 +311,54 @@ namespace gis
         myGrid->colorScale->minimum = myGrid->minimum;
         return(true);
     }
+
+
+    bool updateColorScale(Crit3DRasterGrid* myGrid, long row0, long row1, long col0, long col1)
+    {
+        float myValue;
+        bool isFirstValue = true;
+        float minimum = NODATA;
+        float maximum = NODATA;
+
+        if (row0 > row1)
+        {
+            long tmp = row0;
+            row0 = row1;
+            row1 = tmp;
+        }
+        row0 = std::max(row0, long(0));
+        col0 = std::max(col0, long(0));
+        row1 = std::min(row1, myGrid->header->nrRows-1);
+        col1 = std::min(col1, myGrid->header->nrCols-1);
+
+        for (int myRow = row0; myRow <= row1; myRow++)
+            for (int myCol = col0; myCol <= col1; myCol++)
+            {
+                myValue = myGrid->value[myRow][myCol];
+                if (myValue != myGrid->header->flag)
+                {
+                    if (isFirstValue)
+                    {
+                        minimum = myValue;
+                        maximum = myValue;
+                        isFirstValue = false;
+                    }
+                    else
+                    {
+                        if (myValue < minimum) minimum = myValue;
+                        else if (myValue > maximum) maximum = myValue;
+                    }
+                }
+            }
+
+        //no values
+        if (isFirstValue) return(false);
+
+        myGrid->colorScale->maximum = maximum;
+        myGrid->colorScale->minimum = minimum;
+        return(true);
+    }
+
 
     double computeDistancePoint(Crit3DUtmPoint* p0, Crit3DUtmPoint *p1)
     {

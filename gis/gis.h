@@ -144,6 +144,7 @@
         float computeDistance(float x1, float y1, float x2, float y2);
         double computeDistancePoint(Crit3DUtmPoint* p0, Crit3DUtmPoint *p1);
         bool updateMinMaxRasterGrid(Crit3DRasterGrid* myGrid);
+        bool updateColorScale(Crit3DRasterGrid* myGrid, long row0, long row1, long col0, long col1);
         bool getRowColFromXY(const Crit3DRasterGrid &myGrid, double myX, double myY, long* myRow, long* myCol);
         bool isOutOfGridRowCol(long myRow, long myCol, const Crit3DRasterGrid &myGrid);
         void getUtmXYFromRowColSinglePrecision(const Crit3DRasterGrid& myGrid, long myRow, long myCol,float* myX,float* myY);

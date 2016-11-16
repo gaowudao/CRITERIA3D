@@ -62,18 +62,21 @@ bool setMapResolution(MapGraphicsView* view)
 
     geoMap->setResolution(dxdegree, dydegree);
 
-
     return true;
 }
 
 
 bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPainter* myPainter)
 {
-
     if ( myRaster == NULL) return false;
     if (! myRaster->isLoaded) return false;
 
     long row0, row1, col0, col1;
+    int x0, y0, x1, y1, x, y;
+    float myValue;
+    gis::Crit3DColor* myColor;
+    QColor myQColor;
+
     gis::getRowColFromXY(*myRaster, myMap->bottomLeft.longitude, myMap->bottomLeft.latitude, &row0, &col0);
     gis::getRowColFromXY(*myRaster, myMap->topRight.longitude, myMap->topRight.latitude, &row1, &col1);
 
@@ -81,6 +84,8 @@ bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPain
     row1 = min(myRaster->header->nrRows, max(long(0), row1));
     col0 = min(myRaster->header->nrCols, max(long(0), col0));
     col1 = min(myRaster->header->nrCols, max(long(0), col1));
+
+    gis::updateColorScale(myRaster, row0, row1, col0, col1);
 
     gis::Crit3DGeoPoint llCorner;
     gis::Crit3DPixel pixelLL;
@@ -91,13 +96,7 @@ bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPain
 
     double dx = myRaster->header->cellSize * myMap->degreeToPixelX;
     double dy = myRaster->header->cellSize * myMap->degreeToPixelY;
-
     int step = std::max(int(1. / (std::min(dx, dy))), 1);
-
-    int x0, y0, x1, y1, x, y;
-    float myValue;
-    gis::Crit3DColor* myColor;
-    QColor myQColor;
 
     y0 = pixelLL.y;
     for (long myRow = row0; myRow > row1; myRow -= step)

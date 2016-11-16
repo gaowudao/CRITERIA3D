@@ -36,7 +36,6 @@ MainWindow::MainWindow(QWidget *parent) :
     composite->addSourceBottom(osmTiles);
     this->view->setTileSource(composite);
 
-
     // marker example
     CircleObject* marker1 = new CircleObject(5.0, true, QColor(255,0,0,255), 0);
     marker1->setFlag(MapGraphicsObject::ObjectIsMovable, false);
@@ -78,8 +77,9 @@ void MainWindow::on_actionLoad_Raster_triggered()
     qDebug() << "maxSizey"<< maxSizey;
 
     this->rasterMap = new RasterObject(-maxSizex/2,-maxSizey/2, maxSizex, maxSizey,this->view);
-    this->rasterMap->setOpacity(0.75);
+    this->rasterMap->setOpacity(0.5);
     this->rasterMap->setPos(startCenter->lonLat());
     this->view->scene()->addObject(this->rasterMap);
 
+    QObject::connect(this->view, SIGNAL(mouseReleaseEvent(QMouseEvent*)), this->rasterMap, SLOT(moveCenter()));
 }

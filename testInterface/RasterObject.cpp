@@ -45,14 +45,20 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     Q_UNUSED(option)
     Q_UNUSED(widget)
 
-    //sqDebug() << "paint";
-    painter->setRenderHint(QPainter::Antialiasing, true);
+    //painter->setRenderHint(QPainter::Antialiasing, true);
     setMapResolution(_view);
 
     drawRaster(DTM, geoMap, painter);
 
     painter->setPen(QColor(0, 0, 0));
-    painter->drawRect(-2, -2, 4, 4);
+    painter->drawRect(-5, -5, 10, 10);
+}
+
+
+void RasterObject::moveCenter()
+{
+    QPointF newCenter = _view->mapToScene(QPoint(_view->width()/2, _view->height()/2));
+    this->setPos(newCenter);
 }
 
 

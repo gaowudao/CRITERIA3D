@@ -15,7 +15,6 @@ LIBS += -L../mathFunctions/debug -lmathFunctions
 LIBS += -L../gis/debug -lgis
 LIBS += -L../MapGraphics/debug -lMapGraphics
 
-
 SOURCES += main.cpp\
         mainwindow.cpp \
     raster.cpp \

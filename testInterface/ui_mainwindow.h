@@ -119,7 +119,7 @@ public:
 
     void retranslateUi(QMainWindow *MainWindow)
     {
-        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Raster", 0));
+        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Criteria3D", 0));
         actionLoad_Raster->setText(QApplication::translate("MainWindow", "Load Raster", 0));
         menuFile->setTitle(QApplication::translate("MainWindow", "File", 0));
     } // retranslateUi

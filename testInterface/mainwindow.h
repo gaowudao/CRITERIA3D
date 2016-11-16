@@ -25,6 +25,9 @@
     private slots:
         void on_actionLoad_Raster_triggered();
 
+    protected:
+        void mouseReleaseEvent();
+
     private:
         Ui::MainWindow* ui;
         MapGraphicsScene* scene;
