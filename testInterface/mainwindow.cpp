@@ -81,5 +81,8 @@ void MainWindow::on_actionLoad_Raster_triggered()
     this->rasterMap->setPos(startCenter->lonLat());
     this->view->scene()->addObject(this->rasterMap);
 
-    QObject::connect(this->view, SIGNAL(mouseReleaseEvent(QMouseEvent*)), this->rasterMap, SLOT(moveCenter()));
+}
+
+void MainWindow::mouseReleaseEvent(QMouseEvent *event){
+    this->rasterMap->moveCenter();
 }

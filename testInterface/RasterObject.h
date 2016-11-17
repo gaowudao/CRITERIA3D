@@ -19,12 +19,11 @@ public:
 
     //pure-virtual from MapGraphicsObject
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-
     void moveCenter();
 
 protected:
     //virtual from MapGraphicsObject
-    virtual void keyReleaseEvent(QKeyEvent *event);
+    virtual void keyReleaseEvent(QKeyEvent *event); 
 
 private:
 
