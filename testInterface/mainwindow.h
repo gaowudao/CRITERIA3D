@@ -26,7 +26,7 @@
         void on_actionLoad_Raster_triggered();
 
     protected:
-        void mouseReleaseEvent(QMouseEvent *event);
+        //void mouseReleaseEvent(QMouseEvent *event);
 
     private:
         Ui::MainWindow* ui;

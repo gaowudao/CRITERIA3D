@@ -87,9 +87,6 @@ bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPain
 
     gis::updateColorScale(myRaster, row0, row1, col0, col1);
 
-    qDebug() << "row0:" << row0;
-    qDebug() << "row1:" << row1;
-
     gis::Crit3DGeoPoint llCorner;
     gis::Crit3DPixel pixelLL;
     llCorner.longitude = myRaster->header->llCorner->x + col0 * myRaster->header->cellSize;

@@ -54,14 +54,14 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     painter->drawRect(-5, -5, 10, 10);
 }
 
-
+/*
 void RasterObject::moveCenter()
 {
     qDebug() << "moveCenter";
     QPointF newCenter = _view->mapToScene(QPoint(_view->width()/2, _view->height()/2));
     this->setPos(newCenter);
 }
-
+*/
 
 //protected
 //virtual from MapGraphicsObject
