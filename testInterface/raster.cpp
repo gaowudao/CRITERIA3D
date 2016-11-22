@@ -118,7 +118,7 @@ bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPain
                 lx = (x1 - x0);
                 ly = (y1 - y0);
 
-                if ((lx < 3) && (ly < 3))
+                if ((lx < 2) && (ly < 2))
                 {
                     for (x = x0; x <= x1; x++)
                        for (y = y0; y <= y1; y++)
