@@ -118,7 +118,7 @@ bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPain
                 lx = (x1 - x0);
                 ly = (y1 - y0);
 
-                if ((lx < 2) && (ly < 2))
+                if ((lx < 3) && (ly < 3))
                 {
                     for (x = x0; x <= x1; x++)
                        for (y = y0; y <= y1; y++)
@@ -128,7 +128,7 @@ bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPain
                 {
                     //rectangles
                     myPainter->setBrush(myQColor);
-                    myPainter->drawRect(x0, y0, lx, ly);
+                    myPainter->fillRect(x0, y0, lx+1, ly+1, myPainter->brush());
                 }
             }
             x0 = ++x1;

@@ -69,12 +69,12 @@ void MainWindow::on_actionLoad_Raster_triggered()
     if (fileName == "") return;
 
     qDebug() << "loading raster";
+    this->rasterMap->deleteLater();
+
     loadRaster(fileName, DTM);
 
-    this->rasterMap->deleteLater();
     this->rasterMap = new RasterObject(this->view);
-
-    this->rasterMap->setOpacity(0.5);
+    this->rasterMap->setOpacity(0.6);
     this->rasterMap->moveCenter();
     this->view->scene()->addObject(this->rasterMap);
 }
