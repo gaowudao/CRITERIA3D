@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //Setup the MapGraphics scene and view
     this->scene = new MapGraphicsScene(this);
     this->view = new MapGraphicsView(scene,this);
-    this->startCenter = new Position (11.35, 44.5, 0.0);
+    Position* startCenter = new Position (11.35, 44.5, 0.0);
 
     //The view will be our central widget
     this->setCentralWidget(this->view);
@@ -37,14 +37,15 @@ MainWindow::MainWindow(QWidget *parent) :
     this->view->setTileSource(composite);
 
     // marker example
+    /*
     CircleObject* marker1 = new CircleObject(5.0, true, QColor(255,0,0,255), 0);
     marker1->setFlag(MapGraphicsObject::ObjectIsMovable, false);
     marker1->setFlag(MapGraphicsObject::ObjectIsSelectable, false);
     marker1->setLatitude(startCenter->latitude());
     marker1->setLongitude(startCenter->longitude());
     this->view->scene()->addObject(marker1);
+    */
 
-    initializeDTM();
     geoMap->referencePoint.latitude = startCenter->latitude();
     geoMap->referencePoint.longitude = startCenter->longitude();
 
@@ -63,7 +64,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_actionLoad_Raster_triggered()
 {
-
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Raster"), "",
                                            tr("ESRI grid files (*.flt)"));
     if (fileName == "") return;
@@ -71,15 +71,14 @@ void MainWindow::on_actionLoad_Raster_triggered()
     qDebug() << "loading raster";
     loadRaster(fileName, DTM);
 
-    if (this->rasterMap != NULL)
-        free(this->rasterMap);
+    free(this->rasterMap);
     this->rasterMap = new RasterObject(this->view);
 
     this->rasterMap->setOpacity(0.5);
-    this->rasterMap->setPos(startCenter->lonLat());
+    this->rasterMap->moveCenter();
     this->view->scene()->addObject(this->rasterMap);
-
 }
+
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event){
     if (this->rasterMap != NULL)
@@ -89,8 +88,13 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event){
 
 void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
 {
+    Position newCenter = view->mapToScene(QPoint(event->pos().x(), event->pos().y()));
+    this->view->centerOn(newCenter.lonLat());
+
     if (event->button() == Qt::LeftButton)
         this->view->zoomIn();
+    else
+        this->view->zoomOut();
 
     if (this->rasterMap != NULL)
         this->rasterMap->moveCenter();

@@ -2,6 +2,7 @@
 #include <QApplication>
 #include <QtNetwork/QNetworkProxy>
 #include <QDebug>
+#include "raster.h"
 
 
 bool setProxy(QString hostName, int port)
@@ -30,6 +31,8 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     setProxy("172.16.1.21", 8080);
+
+    initializeDTM();
 
     MainWindow w;
     w.show();

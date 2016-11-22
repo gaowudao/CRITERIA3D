@@ -34,7 +34,6 @@
         MapGraphicsScene* scene;
         MapGraphicsView* view;
         RasterObject* rasterMap;
-        Position* startCenter;
     };
 
 

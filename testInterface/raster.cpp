@@ -13,6 +13,7 @@ gis::Crit3DGeoMap *geoMap;
 
 using namespace std;
 
+
 void initializeDTM()
 {
     DTM = new gis::Crit3DRasterGrid();
@@ -136,20 +137,6 @@ bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPain
 
 
 /*
-void drawObject(MapGraphicsView* pointView)
-{
-    CircleObject* marker1 = new CircleObject(50.0, false, QColor(255,0,0,0), 0);
-
-    Position point1 (11.4, 44.5, 0.0);
-
-    marker1->setLatitude(point1.latitude());
-    marker1->setLongitude(point1.longitude());
-
-    marker1->setToolTip("marker1");
-    pointView->scene()->addObject(marker1);
-
-}
-
 qreal degreesLatPerMeter(const qreal latitude)
 {
     const qreal latRad = latitude * (pi / 180.0);
@@ -163,5 +150,4 @@ qreal degreesLonPerMeter(const qreal latitude)
     qreal meters = (pi * A_EARTH * cos(latRad)) / (180.0 * sqrt(1.0 - NAV_E2 * pow(sin(latRad), 2.0)));
     return 1.0 / meters;
 }
-
 */
