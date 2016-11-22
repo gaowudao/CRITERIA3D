@@ -82,8 +82,9 @@ void MainWindow::on_actionLoad_Raster_triggered()
     this->view->scene()->addObject(this->rasterMap);
 
 }
-/*
+
+
 void MainWindow::mouseReleaseEvent(QMouseEvent *event){
     this->rasterMap->moveCenter();
 }
-*/
+

@@ -2,7 +2,6 @@
 #include <QApplication>
 #include <QtNetwork/QNetworkProxy>
 #include <QDebug>
-//#include <QString>
 
 
 bool setProxy(QString hostName, int port)
