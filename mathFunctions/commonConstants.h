@@ -113,6 +113,9 @@
     // [J s]
     #define PLANCK 6.626E-34
 
+    //[kg/m^3]
+    #define WATER_DENSITY 1000
+
     // -----------------TERMODYNAMICS-------------------
     // [K] zero Celsius
     #define	ZEROCELSIUS	273.15
@@ -124,8 +127,21 @@
     #endif
     // [J m-2 K-4] Stefan-Boltzmann constant
     #define STEFAN_BOLTZMANN 5.670400E-8
+    // Von Kármán constant
+    #define VON_KARMAN_CONST = 0.41;                      //[-]
     // [J kg-1 K-1] specific heat at constant pressure
-    // #define CP 1013
+    #define CP 1013
+    //[kJ/(kg °C)]
+    #define  HEAT_CAPACITY_WATER 4.18
+    #define  HEAT_CAPACITY_AIR  1
+    #define  HEAT_CAPACITY_SNOW 2.1                     //[kJ/(kg °C)]
+
+    // heat of fusion for ice at 0 °C
+    #define LATENT_HEAT_FUSION  335                     //[kJ/kg]
+    #define LATENT_HEAT_VAPORIZATION 2500               //[kJ/kg]
+
+    // air density, temperature 0 °C
+    #define  AIR_DENSITY 1.29                          //[kg/m^3]
 
     // -----------------MATHEMATICS---------------------
     #ifndef PI
