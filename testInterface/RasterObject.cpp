@@ -53,16 +53,17 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     drawRaster(DTM, geoMap, painter);
 }
 
-
+/*
 void RasterObject::moveCenter()
 {
+    qDebug() << "moveCenter";
     QPointF newCenter = _view->mapToScene(QPoint(_view->width()/2, _view->height()/2));
     geoMap->referencePoint.latitude = newCenter.y();
     geoMap->referencePoint.longitude = newCenter.x();
 
     this->setPos(newCenter);
 }
-
+*/
 
 //protected
 //virtual from MapGraphicsObject
