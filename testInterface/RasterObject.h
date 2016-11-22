@@ -11,7 +11,7 @@ class RasterObject : public MapGraphicsObject
 {
     Q_OBJECT
 public:
-    explicit RasterObject(int width, int height, MapGraphicsView* view, MapGraphicsObject *parent = 0);
+    explicit RasterObject(MapGraphicsView* view, MapGraphicsObject *parent = 0);
     virtual ~RasterObject();
 
     //pure-virtual from MapGraphicsObject
@@ -23,12 +23,10 @@ public:
 
 protected:
     //virtual from MapGraphicsObject
-    virtual void keyReleaseEvent(QKeyEvent *event); 
+    //virtual void keyReleaseEvent(QKeyEvent *event);
 
 private:
 
-    int _width;
-    int _height;
     MapGraphicsView* _view;
 
 };

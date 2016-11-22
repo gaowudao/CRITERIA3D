@@ -9,8 +9,8 @@
 extern gis::Crit3DGeoMap *geoMap;
 extern gis::Crit3DRasterGrid *DTM;
 
- RasterObject::RasterObject(int width, int height, MapGraphicsView* view, MapGraphicsObject *parent) :
-    MapGraphicsObject(true, parent), _width(width), _height(height)
+ RasterObject::RasterObject(MapGraphicsView* view, MapGraphicsObject *parent) :
+    MapGraphicsObject(true, parent)
 {
     this->setFlag(MapGraphicsObject::ObjectIsSelectable, false);
     this->setFlag(MapGraphicsObject::ObjectIsMovable, false);
@@ -29,14 +29,12 @@ extern gis::Crit3DRasterGrid *DTM;
 
   \return QRectF
  */
-
-
  QRectF RasterObject::boundingRect() const
 {
-     return QRectF(- _width *0.5,
-                   - _height *0.5,
-                   _width,
-                   _height);
+     return QRectF(- this->_view->width() *0.5,
+                   - this->_view->height() *0.5,
+                   this->_view->width(),
+                   this->_view->height());
 }
 
 
@@ -53,7 +51,7 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 
 void RasterObject::moveCenter()
 {
-    qDebug() << "moveCenter";
+    //qDebug() << "moveCenter";
     QPointF newCenter = _view->mapToScene(QPoint(_view->width()/2, _view->height()/2));
 
     geoMap->referencePoint.latitude = newCenter.y();
@@ -63,6 +61,7 @@ void RasterObject::moveCenter()
 }
 
 
+/*
 //protected
 //virtual from MapGraphicsObject
 void RasterObject::keyReleaseEvent(QKeyEvent *event)
@@ -75,5 +74,5 @@ void RasterObject::keyReleaseEvent(QKeyEvent *event)
     else
         event->ignore();
 }
-
+*/
 

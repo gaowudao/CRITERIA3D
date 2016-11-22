@@ -57,9 +57,6 @@ bool setMapResolution(MapGraphicsView* view)
     qreal dxdegree = widthLon / view->width();
     qreal dydegree = heightlat / view->height();
 
-    //qDebug() << "setMapResolution degree dx:" << dxdegree;
-    //qDebug() << "setMapResolution degree dy:" << dydegree;
-
     geoMap->setResolution(dxdegree, dydegree);
 
     return true;

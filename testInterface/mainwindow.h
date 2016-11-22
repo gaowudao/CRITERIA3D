@@ -27,6 +27,7 @@
 
     protected:
         void mouseReleaseEvent(QMouseEvent *event);
+        void mouseDoubleClickEvent(QMouseEvent * event);
 
     private:
         Ui::MainWindow* ui;

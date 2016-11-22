@@ -48,6 +48,7 @@ MainWindow::MainWindow(QWidget *parent) :
     geoMap->referencePoint.latitude = startCenter->latitude();
     geoMap->referencePoint.longitude = startCenter->longitude();
 
+    this->rasterMap = NULL;
     this->view->setZoomLevel(10);
     this->view->centerOn(startCenter->lonLat());
 }
@@ -70,21 +71,28 @@ void MainWindow::on_actionLoad_Raster_triggered()
     qDebug() << "loading raster";
     loadRaster(fileName, DTM);
 
-    qreal maxSizex = DTM->header->nrCols;
-    qreal maxSizey = DTM->header->nrRows;
+    if (this->rasterMap != NULL)
+        free(this->rasterMap);
+    this->rasterMap = new RasterObject(this->view);
 
-    qDebug() << "maxSizex"<< maxSizex;
-    qDebug() << "maxSizey"<< maxSizey;
-
-    this->rasterMap = new RasterObject(maxSizex, maxSizey, this->view);
     this->rasterMap->setOpacity(0.5);
     this->rasterMap->setPos(startCenter->lonLat());
     this->view->scene()->addObject(this->rasterMap);
 
 }
 
-
 void MainWindow::mouseReleaseEvent(QMouseEvent *event){
-    this->rasterMap->moveCenter();
+    if (this->rasterMap != NULL)
+        this->rasterMap->moveCenter();
+}
+
+
+void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
+{
+    if (event->button() == Qt::LeftButton)
+        this->view->zoomIn();
+
+    if (this->rasterMap != NULL)
+        this->rasterMap->moveCenter();
 }
 
