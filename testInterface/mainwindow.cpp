@@ -71,7 +71,7 @@ void MainWindow::on_actionLoad_Raster_triggered()
     qDebug() << "loading raster";
     loadRaster(fileName, DTM);
 
-    free(this->rasterMap);
+    this->rasterMap->deleteLater();
     this->rasterMap = new RasterObject(this->view);
 
     this->rasterMap->setOpacity(0.5);
