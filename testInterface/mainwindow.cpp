@@ -76,7 +76,7 @@ void MainWindow::on_actionLoad_Raster_triggered()
     qDebug() << "maxSizex"<< maxSizex;
     qDebug() << "maxSizey"<< maxSizey;
 
-    this->rasterMap = new RasterObject(-maxSizex/2,-maxSizey/2, maxSizex, maxSizey,this->view);
+    this->rasterMap = new RasterObject(maxSizex, maxSizey, this->view);
     this->rasterMap->setOpacity(0.5);
     this->rasterMap->setPos(startCenter->lonLat());
     this->view->scene()->addObject(this->rasterMap);

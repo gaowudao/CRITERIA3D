@@ -57,8 +57,8 @@ bool setMapResolution(MapGraphicsView* view)
     qreal dxdegree = widthLon / view->width();
     qreal dydegree = heightlat / view->height();
 
-    qDebug() << "setMapResolution degree dx:" << dxdegree;
-    qDebug() << "setMapResolution degree dy:" << dydegree;
+    //qDebug() << "setMapResolution degree dx:" << dxdegree;
+    //qDebug() << "setMapResolution degree dy:" << dydegree;
 
     geoMap->setResolution(dxdegree, dydegree);
 
@@ -80,6 +80,8 @@ bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPain
     gis::getRowColFromXY(*myRaster, myMap->bottomLeft.longitude, myMap->bottomLeft.latitude, &row0, &col0);
     gis::getRowColFromXY(*myRaster, myMap->topRight.longitude, myMap->topRight.latitude, &row1, &col1);
 
+    row1--; col1++;
+
     row0 = min(myRaster->header->nrRows-1, max(long(0), row0));
     row1 = min(myRaster->header->nrRows, max(long(0), row1));
     col0 = min(myRaster->header->nrCols, max(long(0), col0));
@@ -90,7 +92,7 @@ bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPain
     gis::Crit3DGeoPoint llCorner;
     gis::Crit3DPixel pixelLL;
     llCorner.longitude = myRaster->header->llCorner->x + col0 * myRaster->header->cellSize;
-    llCorner.latitude = myRaster->header->llCorner->y + (myRaster->header->nrRows - row0) * myRaster->header->cellSize;
+    llCorner.latitude = myRaster->header->llCorner->y + (myRaster->header->nrRows - row0 -1) * myRaster->header->cellSize;
     pixelLL.x = (llCorner.longitude - myMap->referencePoint.longitude) * myMap->degreeToPixelX;
     pixelLL.y = (llCorner.latitude - myMap->referencePoint.latitude) * myMap->degreeToPixelY;
 
