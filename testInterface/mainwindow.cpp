@@ -74,7 +74,7 @@ void MainWindow::on_actionLoad_Raster_triggered()
     loadRaster(fileName, DTM);
 
     this->rasterMap = new RasterObject(this->view);
-    this->rasterMap->setOpacity(0.6);
+    this->rasterMap->setOpacity(0.5);
     this->rasterMap->moveCenter();
     this->view->scene()->addObject(this->rasterMap);
 }
