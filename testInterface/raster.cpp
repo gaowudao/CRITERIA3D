@@ -90,7 +90,7 @@ bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPain
     gis::Crit3DGeoPoint llCorner;
     gis::Crit3DPixel pixelLL;
     llCorner.longitude = myRaster->header->llCorner->x + col0 * myRaster->header->cellSize;
-    llCorner.latitude = myRaster->header->llCorner->y + (myRaster->header->nrRows - row0 -1) * myRaster->header->cellSize;
+    llCorner.latitude = myRaster->header->llCorner->y + (myRaster->header->nrRows-1 - row0) * myRaster->header->cellSize;
     pixelLL.x = (llCorner.longitude - myMap->referencePoint.longitude) * myMap->degreeToPixelX;
     pixelLL.y = (llCorner.latitude - myMap->referencePoint.latitude) * myMap->degreeToPixelY;
 
