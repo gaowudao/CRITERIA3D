@@ -248,5 +248,70 @@ namespace gis
 
         return(false);
     }
+
+    bool getGeoExtentsFromUTMHeader(const Crit3DGisSettings& mySettings, const Crit3DGridHeader& utmHeader, Crit3DGridHeader *latLonHeader)
+    {
+        Crit3DGeoPoint v[4];
+
+        Crit3DUtmPoint myVertex = *(utmHeader.llCorner);
+        gis::getLatLonFromUtm(mySettings, myVertex, &(v[0]));
+
+        myVertex.x += utmHeader.nrCols *utmHeader.cellSize;
+        gis::getLatLonFromUtm(mySettings, myVertex, &(v[1]));
+
+        myVertex.y += utmHeader.nrRows *utmHeader.cellSize;
+        gis::getLatLonFromUtm(mySettings, myVertex, &(v[2]));
+
+        myVertex.x = utmHeader.llCorner->x;
+        gis::getLatLonFromUtm(mySettings, myVertex, &(v[3]));
+
+        return true;
+
+        /*
+        Dim myX As Double, myY As Double
+        Dim xLL As Double, yLL As Double, xUR As Double, yUR As Double
+        Dim i As Long
+
+        getExtentsFromLatLonHeader = False
+
+        With myLatLonHeader.latLonInfo
+            GIS_UTM_util.LatLonToUTM_ForceZone GIS.WGS84, myUTMZone, .Lat0, .Lon0, xLL, yLL
+            GIS_UTM_util.LatLonToUTM_ForceZone GIS.WGS84, myUTMZone, .Lat0 + .Ly * myLatLonHeader.nrRows, .Lon0 + .Lx * myLatLonHeader.nrCols, xUR, yUR
+
+            For i = 0 To myLatLonHeader.nrCols
+                GIS_UTM_util.LatLonToUTM_ForceZone GIS.WGS84, myUTMZone, .Lat0, .Lon0 + .Lx * i, myX, myY
+                If myY < yLL Then
+                    yLL = myY
+                End If
+                GIS_UTM_util.LatLonToUTM_ForceZone GIS.WGS84, myUTMZone, .Lat0 + .Ly * myLatLonHeader.nrRows, .Lon0 + .Lx * i, myX, myY
+                If myY > yUR Then
+                    yUR = myY
+                End If
+            Next i
+
+            For i = 0 To myLatLonHeader.nrRows
+                GIS_UTM_util.LatLonToUTM_ForceZone GIS.WGS84, myUTMZone, .Lat0 + .Ly * i, .Lon0, myX, myY
+                If myX < xLL Then
+                    xLL = myX
+                End If
+                GIS_UTM_util.LatLonToUTM_ForceZone GIS.WGS84, myUTMZone, .Lat0 + .Ly * i, .Lon0 + .Lx * myLatLonHeader.nrCols, myX, myY
+                If myX > xUR Then
+                    xUR = myX
+                End If
+            Next i
+        End With
+
+        With myUtmHeader
+            .cellSize = myCellSize
+            .xllCorner = Fix(xLL)
+            .yllCorner = Fix(yLL)
+            .nrRows = Fix((yUR - yLL) / .cellSize) + 1
+            .nrCols = Fix((xUR - xLL) / .cellSize) + 1
+        End With
+
+        getExtentsFromLatLonHeader = True
+                */
+
+    }
 }
 

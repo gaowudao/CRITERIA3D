@@ -70,7 +70,7 @@ bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPain
     if (! myRaster->isLoaded) return false;
 
     long row0, row1, col0, col1;
-    int x0, y0, x1, y1, x, y;
+    int x0, y0, x1, y1, x, y, lx, ly;
     float myValue;
     gis::Crit3DColor* myColor;
     QColor myQColor;
@@ -101,11 +101,11 @@ bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPain
     y0 = pixelLL.y;
     for (long myRow = row0; myRow > row1; myRow -= step)
     {
-        y1 = pixelLL.y + (row0- myRow + step) * dy;
+        y1 = pixelLL.y + (row0-myRow + step) * dy;
         x0 = pixelLL.x;
         for (long myCol = col0; myCol < col1; myCol += step)
         {
-            x1 = pixelLL.x + (myCol-col0+step) * dx;
+            x1 = pixelLL.x + (myCol-col0 + step) * dx;
 
             myValue = myRaster->value[myRow][myCol];
             if (myValue != myRaster->header->flag)
@@ -115,17 +115,21 @@ bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPain
                 myQColor = QColor(myColor->red, myColor->green, myColor->blue);
                 myPainter->setPen(myQColor);
 
-                for (x = x0; x <= x1; x++)
-                   for (y = y0; y <= y1; y++)
-                       myPainter->drawPoint(x, y);
+                lx = (x1 - x0);
+                ly = (y1 - y0);
 
-                /*
-                //codice per rettangoli
-                dx = (x1 - x0);
-                dy = (y1 - y0);
-                myPainter->setBrush(myQColor);
-                myPainter->drawRect(x0, y0, dx, dy);
-                */
+                if ((lx < 2) && (ly < 2))
+                {
+                    for (x = x0; x <= x1; x++)
+                       for (y = y0; y <= y1; y++)
+                           myPainter->drawPoint(x, y);
+                }
+                else
+                {
+                    //rectangles
+                    myPainter->setBrush(myQColor);
+                    myPainter->drawRect(x0, y0, lx, ly);
+                }
             }
             x0 = ++x1;
         }

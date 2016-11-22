@@ -437,6 +437,7 @@ namespace gis
             return this->value[myRow][myCol];
     }
 
+
     bool isOutOfGridXY(double x, double y, const Crit3DRasterGrid& myGrid)
     {
         if ((x < myGrid.header->llCorner->x) || (y < myGrid.header->llCorner->y)
@@ -446,10 +447,18 @@ namespace gis
         else return(false);
     }
 
+
     void getLatLonFromUtm(const Crit3DGisSettings& gisSettings, double utmX, double utmY, double *myLat, double *myLon)
     {
         gis::utmToLatLon(gisSettings.utmZone, gisSettings.isNorthernEmisphere, utmX, utmY, myLat, myLon);
     }
+
+
+    void getLatLonFromUtm(const Crit3DGisSettings& gisSettings, const Crit3DUtmPoint& utmPoint, Crit3DGeoPoint *geoPoint)
+    {
+        gis::utmToLatLon(gisSettings.utmZone, gisSettings.isNorthernEmisphere, utmPoint.x, utmPoint.y, &(geoPoint->latitude), &(geoPoint->longitude));
+    }
+
 
     void latLonToUtm(double lat, double lon, double *utmEasting, double *utmNorthing, int *zoneNumber)
     {
