@@ -12,8 +12,7 @@ TEMPLATE = app
 INCLUDEPATH += ../crit3dDate
 LIBS += -L../crit3dDate/release -lcrit3dDate
 
-INCLUDEPATH += ../mathFunctions
-LIBS += -L../mathFunctions/release -lmathFunctions
+
 
 INCLUDEPATH += ../gis
 LIBS += -L../gis/release -lgis
@@ -26,6 +25,9 @@ LIBS += -L../crop/release -lcrop
 
 INCLUDEPATH += ../interpolation
 LIBS += -L../interpolation/release -lInterpolation
+
+INCLUDEPATH += ../mathFunctions
+LIBS += -L../mathFunctions/release -lmathFunctions
 
 INCLUDEPATH += ../solarRadiation
 LIBS += -L../solarRadiation/release -lsolarRadiation
