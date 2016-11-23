@@ -5,6 +5,14 @@
 #include "gammaFunction.h"
 
 
+    static long double xSmall_x(long double x, long double nu);
+    static long double xMedium_x(long double x, long double nu);
+    static long double xLarge_x(long double x, long double nu);
+    static long double xGamma(long double x);
+    static long double Duplication_Formula( long double two_x );
+    static long double xLnGamma_Asymptotic_Expansion( long double x );
+
+
     ////////////////////////////////////////////////////////////////////////////////
     // double Entire_Incomplete_Gamma_Function(double x, double nu)               //
     //                                                                            //

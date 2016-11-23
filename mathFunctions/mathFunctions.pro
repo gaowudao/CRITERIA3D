@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# CRITERIA 3D
+# CRITERIA3D
 # common constants and math functions
 #
 #-------------------------------------------------
@@ -22,4 +22,5 @@ HEADERS += \
     basicMath.h \
     furtherMathFunctions.h \
     statistics.h \
+    gammaFunction.h \
     gammaFunction.h
