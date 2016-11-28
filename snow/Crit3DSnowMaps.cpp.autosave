@@ -1,0 +1,724 @@
+#include <math.h>
+#include "commonConstants.h"
+#include "Crit3DSnowMaps.h"
+
+
+/*
+Public Sub clearAllSnowMaps()
+
+    GIS.clearGrid Snow.SnowFallMap
+    GIS.clearGrid Snow.SnowMeltMap
+    GIS.clearGrid Snow.SnowWaterEquivalentMap
+    GIS.clearGrid Snow.IceContentMap
+    GIS.clearGrid Snow.LWContentMap
+    GIS.clearGrid Snow.InternalEnergyMap
+    GIS.clearGrid Snow.SnowSurfaceTempMap
+    GIS.clearGrid Snow.SurfaceInternalEnergyMap
+    GIS.clearGrid Snow.AgeOfSnowMap
+
+End Sub
+
+
+Public Sub ActiveAllSnowModelMap()
+
+    Snow.SnowMeltMap.isLoaded = True
+    Snow.SnowWaterEquivalentMap.isLoaded = True
+    Snow.IceContentMap.isLoaded = True
+    Snow.LWContentMap.isLoaded = True
+    Snow.InternalEnergyMap.isLoaded = True
+    Snow.SnowSurfaceTempMap.isLoaded = True
+    Snow.SurfaceInternalEnergyMap.isLoaded = True
+    Snow.AgeOfSnowMap.isLoaded = True
+
+End Sub
+
+
+Public Sub ResetAllSnowModelMap(ByRef grd As GIS.grid)
+
+    GIS.GridInitFrom grd, Radiation.TransmissivityMap
+    GIS.GridInitFrom grd, Snow.SnowMeltMap
+    GIS.GridInitFrom grd, Snow.IceContentMap
+    GIS.GridInitFrom grd, Snow.LWContentMap
+    GIS.GridInitFrom grd, Snow.InternalEnergyMap
+    GIS.GridInitFrom grd, Snow.SurfaceInternalEnergyMap
+    GIS.GridInitFrom grd, Snow.SnowSurfaceTempMap
+    GIS.GridInitFrom grd, Snow.AgeOfSnowMap
+    GIS.GridInitFrom grd, WaterBalance.TempH_Map
+    GIS.GridInitFrom grd, WaterBalance.HumidH_Map
+    GIS.GridInitFrom grd, WaterBalance.RainH_Map
+    GIS.GridInitFrom grd, WaterBalance.WindH_Map
+    GIS.GridInitFrom grd, WaterBalance.EvapH_Map
+
+    'occorre passare una mappa di stato
+    GIS.GridInitFromWithValue grd, Snow.SnowFallMap, 0
+    GIS.GridInitFromWithValue grd, Snow.SnowWaterEquivalentMap, 0
+
+End Sub
+*/
+
+/*---------------------------------
+' Initialize all maps
+'---------------------------------
+*/
+
+void Crit3DSnowMaps::initializeMaps()
+{
+    _snowFallMap = new gis::Crit3DRasterGrid;
+    _snowMeltMap = new gis::Crit3DRasterGrid;
+    _snowWaterEquivalentMap = new gis::Crit3DRasterGrid;
+    _iceContentMap = new gis::Crit3DRasterGrid;
+    _lWContentMap = new gis::Crit3DRasterGrid;
+    _internalEnergyMap = new gis::Crit3DRasterGrid;
+    _surfaceInternalEnergyMap = new gis::Crit3DRasterGrid;
+    _snowSurfaceTempMap = new gis::Crit3DRasterGrid;
+    _ageOfSnowMap = new gis::Crit3DRasterGrid;
+}
+
+Crit3DSnowMaps::Crit3DSnowMaps()
+{
+    this->initializeMaps();
+    _isLoaded = false;
+}
+
+Crit3DSnowMaps::Crit3DSnowMaps(const gis::Crit3DRasterGrid& dtmGrid, const gis::Crit3DGisSettings& gisSettings, meteo::Crit3DMeteoMaps* meteoMap, soil::Crit3DSoil* soil, float initSoilPackTemp, float initSnowSurfaceTemp)
+{
+    this->initializeMaps();
+
+    _snowFallMap->initializeGrid(dtmGrid);
+    _snowMeltMap->initializeGrid(dtmGrid);
+    _snowWaterEquivalentMap->initializeGrid(dtmGrid);
+    _iceContentMap->initializeGrid(dtmGrid);
+    _lWContentMap->initializeGrid(dtmGrid);
+    _internalEnergyMap->initializeGrid(dtmGrid);
+    _surfaceInternalEnergyMap->initializeGrid(dtmGrid);
+    _snowSurfaceTempMap->initializeGrid(dtmGrid);
+    _ageOfSnowMap->initializeGrid(dtmGrid);
+
+    _meteoMaps = meteoMap;
+    _soil = soil;
+
+    _initSoilPackTemp = initSoilPackTemp;
+    _initSnowSurfaceTemp = initSnowSurfaceTemp;
+
+    if (_meteoMaps.isLoaded)
+        _isLoaded = true;
+    else
+    {
+        qDebug() << "Check meteo map init";
+        isLoaded = false;
+    }
+
+}
+
+
+void Crit3DSnowMaps::resetSnowModel(gis::Crit3DRasterGrid* myGrd)
+{
+
+    float initSWE;     // [mm]
+    int bulkDensity;   // [kg/m^3]
+
+    double x, y;
+    //Dim index_soil As Integer, nrHorizon As Integer
+    //Dim myHorizon As MSoil.Thorizon
+
+
+    //parameters
+    // li ho inseriti da passare nel costruttore, oppure li inizializzo direttamente lì!?
+    _initSoilPackTemp = 3.4;         //[°C]
+    _initSnowSurfaceTemp = 5;        //[°C]
+
+    for (long row = 0; row < myGrd->header->nrRows; row++)
+    {
+        for (long col = 0; col < myGrd->header->nrCols; col++)
+        {
+
+            initSWE = myGrd->value[row][col];
+
+            if (initSWE != myGrd->header->flag)
+            {
+
+                //bulk density superficiale (1 cm)
+                bulkDensity = DEFAULT_BULK_DENSITY;
+
+                if (_soil.isLoaded)
+                {
+                    gis::getUtmXYFromRowCol(myGrd, row, col, &x, &y);
+//                   da reperire dato reale di bulk_density, ora messo a valore di default
+                    bulkDensity = DEFAULT_BULK_DENSITY;
+                    /*
+'                     If MSoil.readPointSoilHorizon(x, y, 1, index_soil, nrHorizon, myHorizon) Then
+'                         If myHorizon.bulkDensity <> Definitions.NO_DATA Then
+'                             bulk_density = myHorizon.bulkDensity * 1000         //[kg/m^3]
+'                         End If
+'                     End If
+*/
+                }
+                else
+                {
+                    qDebug() << "Missing soil map init";
+                }
+
+                _snowWaterEquivalentMap->value[row][col] = initSWE;
+
+                //from [mm] to [m]
+                // SnowWaterEquivalent
+                initSWE = initSWE / 1000;
+
+                _snowMeltMap->value[row][col] = 0;
+                _iceContentMap->value[row][col] = 0;
+                _lWContentMap->value[row][col] = 0;
+                _ageOfSnowMap->value[row][col] = 0;
+
+                _snowSurfaceTempMap->value[row][col] = _initSnowSurfaceTemp;
+
+                _surfaceInternalEnergyMap->value[row][col] = _initSnowSurfaceTemp * (WATER_DENSITY * HEAT_CAPACITY_SNOW * std::min(initSWE, SNOW_SKIN_THICKNESS) + SOIL_SPECIFIC_HEAT * std::max(0, SNOW_SKIN_THICKNESS - initSWE) * bulkDensity);
+
+        // tesi pag. 54
+                _internalEnergyMap->value[row][col] = _initSoilPackTemp * (WATER_DENSITY * HEAT_CAPACITY_SNOW * initSWE + bulkDensity * SNOW_DAMPING_DEPTH * SOIL_SPECIFIC_HEAT);
+            }
+        }
+    }
+
+}
+
+
+
+/*
+' Update rain and snowfall maps
+'---------------------------------
+*/
+Public Function ComputeSnowFall(ByRef grd As GIS.grid, ByVal info As Boolean) As Boolean
+
+    Dim row As Long, col As Long
+
+    Dim prec As Single                   '[mm]
+    Dim water As Single                  '[mm]
+    Dim temp As Single                   '[°C]
+
+    ComputeSnowFall = False
+
+    'preconditions
+    If WaterBalance.RainH_Map.isLoaded = False Or _
+        WaterBalance.RainH_Map.info.date_ <> passaggioDati.currentDay Or _
+        WaterBalance.RainH_Map.info.Hour_ <> passaggioDati.getCurrentHour Then
+        PragaShell.PragaErrMsg "Interpolate weather before."
+        Exit Function
+    End If
+
+    If info Then PragaShell.StartInfo "Compute Snowfall: " & format(passaggioDati.currentDay, "DD/MM/YYYY") & " H" & CStr(passaggioDati.getCurrentHour), 0
+
+    For row = 0 To grd.header.nrRows - 1
+        For col = 0 To grd.header.nrCols - 1
+
+            temp = WaterBalance.TempH_Map.Value(row, col)
+            prec = WaterBalance.RainH_Map.Value(row, col)
+
+            If temp <> TempH_Map.header.flag And prec <> RainH_Map.header.flag Then
+                water = prec
+                If water > 0 Then
+                    If temp < TEMP_MIN_WITH_RAIN Then
+                        water = 0
+                    ElseIf temp < TEMP_MAX_WITH_SNOW Then
+                        water = water * (temp - TEMP_MIN_WITH_RAIN) / (TEMP_MAX_WITH_SNOW - TEMP_MIN_WITH_RAIN)
+                    End If
+                End If
+
+                RainH_Map.Value(row, col) = water
+                SnowFallMap.Value(row, col) = prec - water
+            Else
+                SnowFallMap.Value(row, col) = SnowFallMap.header.flag
+            End If
+
+        Next col
+    Next row
+
+    GIS.SetGridInfo Snow.SnowFallMap, Definitions.HOURLY_SNOWFALL, currentDay, getCurrentHour
+
+
+    If info Then PragaShell.StopInfo
+
+    ComputeSnowFall = True
+
+End Function
+
+
+Public Function ComputeSnowBrooksModel(ByRef myGrd As GIS.grid) As Boolean
+
+    Dim myRow As Long, myCol As Long
+    Dim x As Double, y As Double, z As Single
+    Dim mySlope As Single, currentRatio As Single
+    Dim nodeIndex As Long
+    Dim soilIndex As Integer, nrHorizon As Integer
+    Dim myHorizon As MSoil.Thorizon
+    Dim IsWater As Boolean
+    Dim globalRadiation As Single, beamRadiation As Single
+
+    Dim Air_temp As Single              '[°C]
+    Dim prev_surf_temp As Single        '[°C]
+    Dim dew_point As Single             '[°C]
+    Dim Relative_humidity As Single     '[%]        [0,100]
+    Dim cloud_cover As Single           '[-]        [0-1]
+    Dim myEmissivity As Single          '[-]
+    Dim myClearSkyTransmissivity As Single  '[-]
+
+    Dim Wind_Speed As Single             '[m/s]
+    Dim aerodynamic_resistance As Single '[s/m]     aerodynamic resistance (for snow or vegetation)
+
+    Dim SWE As Single                   '[mm]       snow water equivalent depth
+    Dim Previous_SWE As Single          '[mm]
+    Dim Rain As Single                  '[mm]
+    Dim Snowfall As Single              '[mm]
+    Dim snowmelt As Single              '[mm]
+    Dim Evap_cond As Single             '[mm]
+    Dim LW_content As Single            '[mm]       liquid water
+    Dim freeWaterFlux As Single         '[mm]
+    Dim Ice_content As Single           '[mm]
+    Dim prevLiquidWaterContent As Single  '[mm]
+    Dim surfaceWaterContent As Single   '[mm]
+    Dim prevIceContent As Single        '[mm]
+    Dim Refreeze As Single              '[mm]
+
+    Dim age_of_snow As Single           '[days]
+
+    Dim Internal_energy As Single       '[kJ/m^2]
+    Dim Prev_int_energy As Single       '[kJ/m^2]
+    Dim Surface_int_energy As Single    '[kJ/m^2]
+    Dim prev_surf_int_energy As Single  '[kJ/m^2]
+
+    Dim Q_solar As Single               '[kJ/m^2]   integrale della radiazione solare
+    Dim Q_precip As Single              '[kJ/m^2]   avvezione (trasferimento di calore dalla precipitazione)
+    Dim Q_lw As Single                  '[kJ/m^2]   emissione di radiazione onda lunga (eq. Stefan Boltzmann)
+    Dim Q_h As Single                   '[kJ/m^2]   scambio di calore sensibile (dovuto al gradiente di temperatura)
+    Dim Q_v As Single                   '[kJ/m^2]   scambio di calore latente (vapore)
+    Dim Q_total As Single               '[kJ/m^2]
+    Dim Q_Water_heat As Single          '[kJ/m^2]
+    Dim Q_Water_kinetic As Single       '[kJ/m^2]
+
+    Dim albedo As Single                 '[-]
+    Dim Solar_rad_total As Single        '[W/m^2]
+    Dim bulk_density As Single           '[kg/m^3]
+    Dim Air_actual_vap_density As Single            '[kg/m^3]
+    Dim Water_actual_vap_density As Single          '[kg/m^3]
+    Dim LongWave_atmospheric_emissivity As Single   '[-]
+
+    Dim avgExchangeArea As Single       '[m2]
+    Dim avgMass                         '[kg]
+
+    ComputeSnowBrooksModel = False
+
+    'preconditions
+    If Not DBPointsManagement.isDBMeteoPointsLoaded Then
+        PragaShell.PragaErrMsg "Open DBPoints before."
+        Exit Function
+    End If
+
+    'controlla se già calcolato snowfall
+    'in questo caso sono pronte anche tutte le altre mappe
+    If Not Snow.SnowFallMap.isLoaded Or _
+        Snow.SnowFallMap.info.date_ <> passaggioDati.currentDay Or _
+        Snow.SnowFallMap.info.Hour_ <> passaggioDati.getCurrentHour Then
+        PragaShell.PragaErrMsg "Interpolate weather before."
+        Exit Function
+    End If
+
+    myClearSkyTransmissivity = Radiation.GetClearSkyTransmissivity
+
+    For myRow = 0 To myGrd.header.nrRows - 1
+        For myCol = 0 To myGrd.header.nrCols - 1
+            z = myGrd.Value(myRow, myCol)
+            If (z <> myGrd.header.flag) Then
+                GIS.getUtmXYFromRowCol myGrd.header, myRow, myCol, x, y
+
+                'gestione specchi d'acqua
+                IsWater = False
+                surfaceWaterContent = 0
+                If criteria3DModule.flgCriteria3D_Ready Then
+                    surfaceWaterContent = max(Crit3DNode(Crit3DIndexMap(0).Value(myRow, myCol)).waterContent, 0)    '[mm]
+                    If (surfaceWaterContent / 1000) > SNOW_MAX_WATER_CONTENT Then                                   '[m]
+                        IsWater = True
+                    End If
+                Else
+                    If MSoil.SoilMap.isLoaded Then
+                        'corpi d'acqua - calcolo inutile
+                        If MSoil.SoilMapType = Definitions.SOILMAP_TYPE_ER Then
+                            soilIndex = GIS.GetValueFromXY(MSoil.SoilMap, x, y)
+                            If soilIndex <> Definitions.NO_DATA Then
+                                If UCase(MSoil.soilList(soilIndex).Name) = "CORPI D'ACQUA" Then
+                                    IsWater = True
+                                End If
+                            End If
+                        End If
+                    End If
+                End If
+
+                If Not (IsWater) _
+                    And Radiation.GlobalRadiationMap.Value(myRow, myCol) <> Radiation.GlobalRadiationMap.header.flag _
+                    And Radiation.BeamRadiationMap.Value(myRow, myCol) <> Radiation.BeamRadiationMap.header.flag _
+                    And Snow.SnowFallMap.Value(myRow, myCol) <> Snow.SnowFallMap.header.flag _
+                    And SnowWaterEquivalentMap.Value(myRow, myCol) <> Snow.SnowWaterEquivalentMap.header.flag _
+                    And SnowSurfaceTempMap.Value(myRow, myCol) <> SnowSurfaceTempMap.header.flag Then
+
+                    '----------------------------------------
+                    ' lettura dati
+                    '----------------------------------------
+                    Air_temp = TempH_Map.Value(myRow, myCol)
+                    Rain = RainH_Map.Value(myRow, myCol)
+                    Relative_humidity = HumidH_Map.Value(myRow, myCol)
+                    Wind_Speed = WindH_Map.Value(myRow, myCol)
+                    Snowfall = SnowFallMap.Value(myRow, myCol)
+                    mySlope = GIS.slopeMap.Value(myRow, myCol) * DEG_TO_RAD
+
+                    ' ok
+                    If TransmissivityMap.Value(myRow, myCol) <> Definitions.NO_DATA Then
+                        cloud_cover = 1 - min(TransmissivityMap.Value(myRow, myCol) / myClearSkyTransmissivity, 1)
+                    Else
+                        cloud_cover = 0.1
+                    End If
+                    globalRadiation = Radiation.GlobalRadiationMap.Value(myRow, myCol)
+                    beamRadiation = Radiation.BeamRadiationMap.Value(myRow, myCol)
+
+                    'ombreggiamento per vegetazione (<=1m no ombreggiamento, >=5m ombreggiamento completo)
+                    Dim vegetationShadowing As Single
+                    vegetationShadowing = max(min((Snow.SNOW_VEGETATION_HEIGHT - 1) / 4, 1), 0)
+
+                    Solar_rad_total = globalRadiation - beamRadiation * vegetationShadowing
+
+                    prev_surf_temp = Snow.SnowSurfaceTempMap.Value(myRow, myCol)
+                    Previous_SWE = Snow.SnowWaterEquivalentMap.Value(myRow, myCol)
+                    Prev_int_energy = Snow.InternalEnergyMap.Value(myRow, myCol)
+                    prev_surf_int_energy = Snow.SurfaceInternalEnergyMap.Value(myRow, myCol)
+
+                    '----------------------------------------
+                    'COERENZA
+                    '----------------------------------------
+                    'controlli di coerenza per eventuali modifiche manuale su mappa SWE
+                    If prev_surf_temp < -30 Then
+                        prev_surf_temp = -30
+                    End If
+
+                    If Previous_SWE = 0 Then
+                        'neve tolta
+                        prevIceContent = 0
+                        prevLiquidWaterContent = 0
+                        age_of_snow = 0
+                    Else
+                        prevIceContent = IceContentMap.Value(myRow, myCol)
+                        prevLiquidWaterContent = LWContentMap.Value(myRow, myCol)
+                        age_of_snow = AgeOfSnowMap.Value(myRow, myCol)
+                        If (prevIceContent = 0) And (prevLiquidWaterContent = 0) Then
+                            ' neve aggiunta
+                            ' assegna valori standard di neve recente prossima alla fusione
+                            ' una settimana di età
+                            prevIceContent = Previous_SWE
+                            Prev_int_energy = -(Previous_SWE / 1000) * LATENT_HEAT_FUSION * WATER_DENSITY
+                            age_of_snow = 7
+
+                            prev_surf_temp = min(prev_surf_temp, -0.1)
+                            prev_surf_int_energy = min(prev_surf_int_energy, -0.1)
+                        End If
+
+                        'check on sum
+                        currentRatio = Previous_SWE / (prevIceContent + prevLiquidWaterContent)
+                        If Abs(currentRatio - 1) > 0.001 Then
+                            prevIceContent = prevIceContent * currentRatio
+                            prevLiquidWaterContent = prevLiquidWaterContent * currentRatio
+                        End If
+
+                    End If
+
+
+                    '----------------------------------------
+                    ' Vapor Density and Roughness Calculations
+                    '----------------------------------------
+
+                    'brooks originale
+                    If Previous_SWE > SNOW_MINIMUM_HEIGHT Then
+                        aerodynamic_resistance = aerodynamicResistanceCampbell77(True, 10, Wind_Speed, Snow.SNOW_VEGETATION_HEIGHT)
+                    Else
+                        aerodynamic_resistance = aerodynamicResistanceCampbell77(False, 10, Wind_Speed, Snow.SNOW_VEGETATION_HEIGHT)
+                    End If
+
+                    dew_point = Meteo.dewPoint(Relative_humidity, Air_temp)
+
+                    'ok
+                    Air_actual_vap_density = Exp((16.78 * dew_point - 116.9) / (dew_point + 237.3)) / ((ZEROCELSIUS + dew_point) * THERMO_WATER_VAPOR_CONST)
+
+                    'ok
+                    'over water
+                    Water_actual_vap_density = Exp((16.78 * prev_surf_temp - 116.9) / (prev_surf_temp + 237.3)) / ((ZEROCELSIUS + prev_surf_temp) * THERMO_WATER_VAPOR_CONST)
+
+                    'over ice
+                    ' controllare
+                    If Prev_int_energy <= 0 Then
+                        Water_actual_vap_density = Water_actual_vap_density * Exp(0.018 * LATENT_HEAT_FUSION * prev_surf_temp * 1000 / (8.3143 * (prev_surf_temp + ZEROCELSIUS) ^ 2))
+                    End If
+
+                    '-----------------------------------------------------------
+                    ' Atmospheric Emissivity Calculations for Longwave Radiation
+                    '-----------------------------------------------------------
+                    'formula Unsworth & Montieth (controllare)
+                    ' ok!
+                    LongWave_atmospheric_emissivity = (0.72 + 0.005 * Air_temp) * (1 - 0.84 * cloud_cover) + 0.84 * cloud_cover
+
+                    '-----------------------------------------------------------
+                    ' Age of snow & albedo
+                    '-----------------------------------------------------------
+
+                    If Snowfall > 0 And Rain = 0 Then
+                        age_of_snow = 1 / 24
+                    ElseIf Previous_SWE > 0 Then
+                        age_of_snow = age_of_snow + 1 / 24
+                    Else
+                        age_of_snow = 0
+                    End If
+
+                    AgeOfSnowMap.Value(myRow, myCol) = age_of_snow
+
+                    If (Previous_SWE > 0) Or (Snowfall > 0 And Rain = 0) Then
+                        'arrotondato rispetto alla formula originaria (Gray and O'Neill 1974)
+                        albedo = min(0.9, 0.8 * age_of_snow ^ -0.15)
+                    Else
+                        albedo = SOIL_ALBEDO
+                    End If
+
+                    '----------------------------------------
+                    ' Incoming Energy Fluxes
+                    '----------------------------------------
+                    Q_precip = HEAT_CAPACITY_WATER * WATER_DENSITY * (Rain / 1000) _
+                        * (max(0, Air_temp) - prev_surf_temp) _
+                        + (HEAT_CAPACITY_SNOW * WATER_DENSITY * (Snowfall / 1000) _
+                        * (min(0, Air_temp) - prev_surf_temp))
+
+                    ' energia acqua libera (TROY test)
+                    Q_Water_heat = 0
+                    Q_Water_kinetic = 0
+                    freeWaterFlux = 0
+                    If surfaceWaterContent > 0.1 Then
+                        'temperatura dell 'acqua: almeno 1 grado
+                        Q_Water_heat = HEAT_CAPACITY_WATER * surfaceWaterContent / 1000# _
+                            * WATER_DENSITY * (max(1#, (prev_surf_temp + Air_temp) / 2#) - prev_surf_temp)
+
+                        nodeIndex = GIS.GetValueFromXY(criteria3DModule.Crit3DIndexMap(0), x, y)
+                        If nodeIndex <> criteria3DModule.Crit3DIndexMap(0).header.flag Then
+                            '[m3/h]
+                            freeWaterFlux = criteria3DModule.getLateralFlow(nodeIndex, False)
+                            '[m2]
+                            avgExchangeArea = Crit3DIndexMap(0).header.cellSize * (surfaceWaterContent / 1000#)
+                            '[m/s]
+                            freeWaterFlux = (freeWaterFlux / avgExchangeArea) / 3600#
+                        End If
+
+                        'controllare formula en. cinetica
+                        If freeWaterFlux > 0.01 Then
+                            '[kg/m2]
+                            avgMass = (surfaceWaterContent / 1000#) * WATER_DENSITY
+                            '[kJ/m2]
+                            Q_Water_kinetic = 0.5 * avgMass * (freeWaterFlux * freeWaterFlux) / 1000#
+                        End If
+                    End If
+
+                    Q_solar = (1 - albedo) * (Solar_rad_total * 3600) / 1000
+
+                    If (Previous_SWE > SNOW_MINIMUM_HEIGHT) Then
+                        myEmissivity = SNOW_EMISSIVITY
+                    Else
+                        myEmissivity = SOIL_EMISSIVITY
+                    End If
+
+                    Q_lw = STEFAN_BOLTZMANN * 3.6 * _
+                        (LongWave_atmospheric_emissivity * (Air_temp + ZEROCELSIUS) ^ 4# _
+                        - myEmissivity * (prev_surf_temp + ZEROCELSIUS) ^ 4#)
+
+                    Q_h = HEAT_CAPACITY_AIR * AIR_DENSITY * (Air_temp - prev_surf_temp) _
+                            / (aerodynamic_resistance / 3600#)
+
+                    'FT calcolare solo se c'e' manto nevoso
+                    If Previous_SWE > SNOW_MINIMUM_HEIGHT Then
+                        Q_v = (LATENT_HEAT_VAPORIZATION + LATENT_HEAT_FUSION) * _
+                            (Air_actual_vap_density - Water_actual_vap_density) _
+                            / (aerodynamic_resistance / 3600)
+                    Else
+                        Q_v = 0
+                    End If
+
+                    Q_total = Q_solar + Q_precip + Q_lw + Q_h + Q_v + Q_Water_heat + Q_Water_kinetic
+
+                    '------------------------------------------------------
+                    ' Energy Balance
+                    '------------------------------------------------------
+
+                    'Evaporation/Condensation
+                    If Previous_SWE > SNOW_MINIMUM_HEIGHT Then
+                        Evap_cond = Q_v / ((LATENT_HEAT_FUSION + LATENT_HEAT_VAPORIZATION) * WATER_DENSITY) * 1000
+                        If Evap_cond < 0 Then
+                            'controllo aggiunto: può evaporare al massimo la neve presente
+                            Evap_cond = -min(Previous_SWE + Snowfall, -Evap_cond)
+                        End If
+                    Else
+                        Evap_cond = 0
+                    End If
+
+                    'sign of evaporation is negative
+                    If Evap_cond < 0 Then
+                        WaterBalance.EvapH_Map.Value(myRow, myCol) = -Evap_cond
+                    Else
+                        WaterBalance.EvapH_Map.Value(myRow, myCol) = 0
+                    End If
+
+                    'Refreeze
+                    If Previous_SWE > SNOW_MINIMUM_HEIGHT Then
+                        Refreeze = min((Rain + prevLiquidWaterContent), _
+                            max(0, -1000 / (LATENT_HEAT_FUSION * WATER_DENSITY) * (Prev_int_energy + Q_total))) _
+                            - min((Snowfall + prevIceContent + Evap_cond), _
+                            max(0, 1000 / (LATENT_HEAT_FUSION * WATER_DENSITY) * (Prev_int_energy + Q_total)))
+                    Else
+                        Refreeze = 0
+                    End If
+
+                    'Internal energy
+                    Internal_energy = Prev_int_energy + Q_total _
+                        + (Refreeze / 1000) * LATENT_HEAT_FUSION * WATER_DENSITY
+
+                    InternalEnergyMap.Value(myRow, myCol) = Internal_energy
+
+                    '------------------------------------------------------
+                    ' Snow Pack Mass
+                    '------------------------------------------------------
+
+                    'Ice content
+                    If Internal_energy > 0.001 Then
+                        Ice_content = 0
+                    Else
+                        Ice_content = max(prevIceContent + Snowfall + Refreeze + Evap_cond, 0)
+                    End If
+                    IceContentMap.Value(myRow, myCol) = Ice_content
+
+                    Dim waterHoldingCapacity As Single              '[%]
+                    waterHoldingCapacity = SNOW_WATER_HOLDING_CAPACITY / (1 - SNOW_WATER_HOLDING_CAPACITY)
+
+                    'Liquid water content
+                    If Abs(Internal_energy) < 0.001 Then
+                        LW_content = min(waterHoldingCapacity * Ice_content, prevLiquidWaterContent + Rain + surfaceWaterContent - Refreeze)
+                    Else
+                        LW_content = 0
+                    End If
+                    If LW_content < 0 Then LW_content = 0
+
+                    LWContentMap.Value(myRow, myCol) = LW_content
+
+                    'Snow water equivalent
+                    SWE = Ice_content + LW_content
+                    SnowWaterEquivalentMap.Value(myRow, myCol) = SWE
+
+                    'Snowmelt (or refreeze) - source/sink for Criteria3D
+                    snowmelt = Previous_SWE + Snowfall + Evap_cond - SWE
+                    Snow.SnowMeltMap.Value(myRow, myCol) = snowmelt
+
+                    'Snow surface energy
+                    If Abs(Internal_energy) < 0.001 Then
+                        Surface_int_energy = 0
+                    Else
+                        If SWE > 0 Then
+                            Surface_int_energy = min(0, prev_surf_int_energy + _
+                                (Q_total + (Refreeze / 1000) * LATENT_HEAT_FUSION * WATER_DENSITY) * _
+                                (min(SWE / 1000, SNOW_SKIN_THICKNESS) / SNOW_DAMPING_DEPTH _
+                                + max(SNOW_SKIN_THICKNESS - (SWE / 1000), 0) / SOIL_DAMPING_DEPTH))
+                        Else
+                            Surface_int_energy = prev_surf_int_energy _
+                                + (Q_total + (Refreeze / 1000) _
+                                * LATENT_HEAT_FUSION * WATER_DENSITY) _
+                                * (SNOW_SKIN_THICKNESS / SOIL_DAMPING_DEPTH)
+                        End If
+                    End If
+                    SurfaceInternalEnergyMap.Value(myRow, myCol) = Surface_int_energy
+
+                    bulk_density = DEFAULT_BULK_DENSITY
+                    If MSoil.SoilMap.isLoaded Then
+                        'bulk density superficiale (1 cm)
+                        'da reperire dato reale di bulk_density, ora messo a valore di default
+                         bulk_density = DEFAULT_BULK_DENSITY
+'                        If MSoil.readPointSoilHorizon(x, y, 1, soilIndex, nrHorizon, myHorizon) Then
+'                             If myHorizon.bulkDensity <> Definitions.NO_DATA Then
+'                                 bulk_density = myHorizon.bulkDensity * 1000         '[kg/m^3]
+'                             End If
+'                        End If
+                    End If
+
+                    SnowSurfaceTempMap.Value(myRow, myCol) = Surface_int_energy / _
+                        (WATER_DENSITY * HEAT_CAPACITY_SNOW * min(SWE / 1000, SNOW_SKIN_THICKNESS) _
+                        + SOIL_SPECIFIC_HEAT * max(0, SNOW_SKIN_THICKNESS - SWE / 1000) * bulk_density)
+
+                Else
+                    'snowfall diventa snowmelt negli specchi d'acqua
+                    Snow.SnowMeltMap.Value(myRow, myCol) = SnowFallMap.Value(myRow, myCol)
+
+                    IceContentMap.Value(myRow, myCol) = IceContentMap.header.flag
+                    LWContentMap.Value(myRow, myCol) = LWContentMap.header.flag
+                    SnowWaterEquivalentMap.Value(myRow, myCol) = SnowWaterEquivalentMap.header.flag
+                    SurfaceInternalEnergyMap.Value(myRow, myCol) = SurfaceInternalEnergyMap.header.flag
+                    SnowSurfaceTempMap.Value(myRow, myCol) = SnowSurfaceTempMap.header.flag
+                End If
+            End If
+        Next myCol
+    Next myRow
+
+    '------------------------------------------------------
+    ' Update maps
+    '------------------------------------------------------
+    GIS.SetGridInfo Snow.SnowMeltMap, HOURLY_SNOWMELT, currentDay, getCurrentHour
+    GIS.SetGridInfo Snow.SnowWaterEquivalentMap, HOURLY_SWE, currentDay, getCurrentHour
+
+
+    ActiveAllSnowModelMap
+
+    ComputeSnowBrooksModel = True
+
+End Function
+
+
+
+Public Function aerodynamicResistanceCampbell77(ByVal isSnow As Boolean, ByVal zRefWind As Single, _
+    ByVal myWindSpeed As Single, ByVal vegetativeHeight As Single) As Single
+
+    ' vegetativeHeight          (m) height of the vegetative
+    ' zRefWind                  (m) measurement height for wind
+    ' myWindSpeed               (m s-1) wind speed measured at reference height
+    ' zeroPlane                 (m) zero-plane displacement (snow = 0m, vegetative cover d = 0.64 times the height of the vegetative)
+    ' momentumRoughness         (m) momentum roughness parameter (for snow = 0.001m, for vegetative cover zm = 0.13 times the height of the vegetation)
+
+    Dim zeroPlane As Single, momentumRoughness As Single
+    Dim vaporRoughness As Single, log1 As Single, log2 As Single
+
+    'check on wind speed [m/s]
+    myWindSpeed = max(myWindSpeed, 0.2)
+
+    If isSnow Then
+        zeroPlane = 0
+        momentumRoughness = 0.001
+        log2 = 9.2      'equivalente a vegetativeHeight = 1
+        ' ?????
+    Else
+        'check on vegetativeHeight  [m]
+        vegetativeHeight = max(vegetativeHeight, 0.1)
+
+        ' pag 51: d is the height of the zero-plane displacement (for snow d = 0 m and for
+        'vegetative cover d = 0.64 times the height of the vegetative) quindi
+        ' zeroPlane = 0.64 * vegetativeHeight ?!
+        zeroPlane = 0.65 * vegetativeHeight
+
+        'momentumRoughness = 0.13 * vegetativeHeight da tesi
+        momentumRoughness = 0.1 * vegetativeHeight
+        log2 = 4        'equivalente a vegetativeHeight = 1
+        ' ?????
+    End If
+
+    If (zeroPlane > zRefWind) Then zeroPlane = zRefWind
+
+    ' formula 3.18 pag 51
+    log1 = Log((zRefWind - zeroPlane + momentumRoughness) / momentumRoughness)
+    ' come viene calcolato log2? manca il riferimento a Zt: measurement height for temperature
+    ' log2 = (Zt - d + Zh)/Zh
+    aerodynamicResistanceCampbell77 = log1 * log2 / (VON_KARMAN_CONST * VON_KARMAN_CONST * myWindSpeed)
+
+End Function
+
