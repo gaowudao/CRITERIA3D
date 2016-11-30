@@ -227,12 +227,14 @@ gis::Crit3DRasterGrid* Crit3DSnowMaps::getAgeOfSnowMap()
     return _ageOfSnowMap;
 }
 
-
+// è la forumula 3.27 a pag. 54 in cui ha diviso la surface come la somma dei contributi della parte "water" e di quella "soil"
 float computeSurfaceInternalEnergy(float initSnowSurfaceTemp,int bulkDensity, float initSWE)
 {
    return (initSnowSurfaceTemp * (WATER_DENSITY * HEAT_CAPACITY_SNOW * std::min(initSWE, static_cast<float>(SNOW_SKIN_THICKNESS)) + SOIL_SPECIFIC_HEAT * std::max(0.0f, static_cast<float>(SNOW_SKIN_THICKNESS) - initSWE) * bulkDensity) );
 }
 
+
+//InternalEnergyMap pag. 54 formula 3.29  initSoilPackTemp sarebbe da chiamare initSnowPackTemp ????
 float computeInternalEnergyMap(float initSoilPackTemp,int bulkDensity, float initSWE)
 {
     return ( initSoilPackTemp * (WATER_DENSITY * HEAT_CAPACITY_SNOW * initSWE + bulkDensity * SNOW_DAMPING_DEPTH * SOIL_SPECIFIC_HEAT) );

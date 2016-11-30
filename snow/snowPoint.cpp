@@ -152,6 +152,8 @@ void Crit3DSnowPoint::computeSnowBrooksModel(float myClearSkyTransmissivity)
         float windInt = *(_meteopoint->obsDataH->windInt);
 
 
+        //Pag. 49 forumula 3.10
+        //invertendo si ha cloudCover = 1 - Total transmittance/maximum clear sky transmissivity quindi myClearSkyTransmissivity sarebbe il maximum  ???
         if (_radpoint->transmissivity != NODATA)
             cloudCover = 1 - std::min(_radpoint->transmissivity / myClearSkyTransmissivity, 1.0f);
         else
@@ -197,6 +199,7 @@ void Crit3DSnowPoint::computeSnowBrooksModel(float myClearSkyTransmissivity)
              //neve aggiunta assegna valori standard di neve recente prossima alla fusione
              //una settimana di età
                 prevIceContent = previousSWE;
+                // Pag. 53 formula 3.23
                 prevInternalEnergy = -(previousSWE / 1000) * LATENT_HEAT_FUSION * WATER_DENSITY;
                 _ageOfSnow = 7;
 
@@ -238,7 +241,11 @@ void Crit3DSnowPoint::computeSnowBrooksModel(float myClearSkyTransmissivity)
           WaterActualVapDensity = exp((16.78 * prevSurfacetemp - 116.9) / (prevSurfacetemp + 237.3)) / ((ZEROCELSIUS + prevSurfacetemp) * THERMO_WATER_VAPOR_CONST);
 
           //over ice
-          // controllare
+          // ??????? controllare
+          // non trovo riferimenti a questa formula
+          // perchè amlcune sono define ed altre no?
+          // 8.3143 J/(mol*K)   is universal gas constant???
+          // 0.018 is [kg] vapor molar mass???
           if (prevInternalEnergy <= 0)
             WaterActualVapDensity = WaterActualVapDensity * exp(0.018 * LATENT_HEAT_FUSION * prevSurfacetemp * 1000 / (8.3143 * pow ((prevSurfacetemp + ZEROCELSIUS) , 2)) );
 

@@ -128,7 +128,7 @@
     // [J m-2 K-4] Stefan-Boltzmann constant
     #define STEFAN_BOLTZMANN 5.670400E-8
     // Von Kármán constant
-    #define VON_KARMAN_CONST = 0.41;                      //[-]
+    #define VON_KARMAN_CONST 0.41                      //[-]
     // [J kg-1 K-1] specific heat at constant pressure
     #define CP 1013
     //[kJ/(kg °C)]

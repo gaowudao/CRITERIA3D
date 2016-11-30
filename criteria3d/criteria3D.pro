@@ -12,8 +12,6 @@ TEMPLATE = app
 INCLUDEPATH += ../crit3dDate
 LIBS += -L../crit3dDate/release -lcrit3dDate
 
-
-
 INCLUDEPATH += ../gis
 LIBS += -L../gis/release -lgis
 
