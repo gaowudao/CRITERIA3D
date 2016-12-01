@@ -132,7 +132,7 @@
     // [J kg-1 K-1] specific heat at constant pressure
     #define CP 1013
 
-    #define HEAT_CAPACITY_WATER 4.18            //[kJ/(kg °C)]
+    #define HEAT_CAPACITY_WATER 4.184           //[kJ/(kg °C)]
     #define HEAT_CAPACITY_AIR  1.005            //[kJ/(kg °C)]
     #define HEAT_CAPACITY_SNOW 2.1              //[kJ/(kg °C)]
 
