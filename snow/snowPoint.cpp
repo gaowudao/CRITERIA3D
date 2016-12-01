@@ -2,7 +2,7 @@
 #include <algorithm>
 #include "commonConstants.h"
 #include "snowPoint.h"
-#include "snowparam.h"
+#include "snowParam.h"
 
 
 Crit3DSnowPoint::Crit3DSnowPoint(struct TradPoint* radpoint, Crit3DMeteoPoint* meteopoint)

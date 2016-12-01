@@ -1,7 +1,7 @@
 #include <cmath>
 #include "commonConstants.h"
 #include "snowMaps.h"
-#include "snowparam.h"
+#include "snowParam.h"
 #include "snowPoint.h"
 
 

@@ -141,7 +141,7 @@
     #define LATENT_HEAT_VAPORIZATION 2500               //[kJ/kg]
 
     // air density, temperature 0 °C
-    #define  AIR_DENSITY 1.29                          //[kg/m^3]
+    #define  AIR_DENSITY 1.29                           //[kg/m^3]
 
     // -----------------MATHEMATICS---------------------
     #ifndef PI

@@ -20,6 +20,6 @@ SOURCES += \
     snowPoint.cpp
 
 HEADERS += \
-    snowparam.h \
     snowMaps.h \
-    snowPoint.h
+    snowPoint.h \
+    snowParam.h
