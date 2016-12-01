@@ -22,7 +22,7 @@ public:
     Crit3DSnowMaps(const gis::Crit3DRasterGrid& dtmGrid, const gis::Crit3DGisSettings& gisSettings);
 
     void initializeMaps();
-    void resetSnowModel(gis::Crit3DRasterGrid* myGrd);
+    void resetSnowModel(gis::Crit3DRasterGrid* myGrd, Crit3DSnowPoint* snowPoint);
     void updateMap(Crit3DSnowPoint* snowPoint, int row, int col);
 
     gis::Crit3DRasterGrid* getSnowFallMap();
@@ -35,7 +35,7 @@ public:
     gis::Crit3DRasterGrid* getSnowSurfaceTempMap();
     gis::Crit3DRasterGrid* getAgeOfSnowMap();
 
-    static float computeSurfaceInternalEnergy(float initSnowSurfaceTemp,int bulkDensity, float initSWE);
+    static float computeSurfaceInternalEnergy(float initSnowSurfaceTemp,int bulkDensity, float initSWE, float snowSkinThickness);
     static float computeInternalEnergyMap(float initSoilPackTemp,int bulkDensity, float initSWE);
 
 

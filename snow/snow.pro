@@ -21,5 +21,4 @@ SOURCES += \
 
 HEADERS += \
     snowMaps.h \
-    snowPoint.h \
-    snowParam.h
+    snowPoint.h

@@ -1,7 +1,6 @@
 #include <cmath>
 #include "commonConstants.h"
 #include "snowMaps.h"
-#include "snowParam.h"
 #include "snowPoint.h"
 
 
@@ -117,7 +116,7 @@ void Crit3DSnowMaps::updateMap(Crit3DSnowPoint* snowPoint, int row, int col)
 
 }
 
-void Crit3DSnowMaps::resetSnowModel(gis::Crit3DRasterGrid* myGrd)
+void Crit3DSnowMaps::resetSnowModel(gis::Crit3DRasterGrid* myGrd, Crit3DSnowPoint* snowPoint)
 {
 
     float initSWE;     // [mm]
@@ -171,7 +170,9 @@ void Crit3DSnowMaps::resetSnowModel(gis::Crit3DRasterGrid* myGrd)
 
                 _snowSurfaceTempMap->value[row][col] = _initSnowSurfaceTemp;
 
-                _surfaceInternalEnergyMap->value[row][col] = Crit3DSnowMaps::computeSurfaceInternalEnergy(_initSnowSurfaceTemp, bulkDensity, initSWE);
+                float snowSkinThickness = snowPoint->getSnowSkinThickness();
+
+                _surfaceInternalEnergyMap->value[row][col] = Crit3DSnowMaps::computeSurfaceInternalEnergy(_initSnowSurfaceTemp, bulkDensity, initSWE, snowSkinThickness);
 
 
         // tesi pag. 54
@@ -228,9 +229,9 @@ gis::Crit3DRasterGrid* Crit3DSnowMaps::getAgeOfSnowMap()
 }
 
 // è la forumula 3.27 a pag. 54 in cui ha diviso la surface come la somma dei contributi della parte "water" e di quella "soil"
-float computeSurfaceInternalEnergy(float initSnowSurfaceTemp,int bulkDensity, float initSWE)
+float computeSurfaceInternalEnergy(float initSnowSurfaceTemp,int bulkDensity, float initSWE, float snowSkinThickness)
 {
-   return (initSnowSurfaceTemp * (WATER_DENSITY * HEAT_CAPACITY_SNOW * std::min(initSWE, static_cast<float>(SNOW_SKIN_THICKNESS)) + SOIL_SPECIFIC_HEAT * std::max(0.0f, static_cast<float>(SNOW_SKIN_THICKNESS) - initSWE) * bulkDensity) );
+   return (initSnowSurfaceTemp * (WATER_DENSITY * HEAT_CAPACITY_SNOW * std::min(initSWE, snowSkinThickness) + SOIL_SPECIFIC_HEAT * std::max(0.0f, snowSkinThickness - initSWE) * bulkDensity) );
 }
 
 

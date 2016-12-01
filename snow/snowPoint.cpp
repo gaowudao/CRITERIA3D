@@ -2,7 +2,6 @@
 #include <algorithm>
 #include "commonConstants.h"
 #include "snowPoint.h"
-#include "snowParam.h"
 
 
 Crit3DSnowPoint::Crit3DSnowPoint(struct TradPoint* radpoint, Crit3DMeteoPoint* meteopoint)
@@ -24,6 +23,16 @@ Crit3DSnowPoint::Crit3DSnowPoint(struct TradPoint* radpoint, Crit3DMeteoPoint* m
 
     _radpoint = radpoint;
     _meteopoint = meteopoint;
+
+    _parameters->snowSkinThickness = 0.02;            //[m]   ??? VARIE VERSIONI IN BROOKS: 3mm (nel testo), 2-3cm (nel codice) ???
+    _parameters->soilAlbedo = 0.2;                    //[-] bare soil - 20%
+    _parameters->snowVegetationHeight = 1;
+    _parameters->snowWaterHoldingCapacity = 0.05;
+    _parameters->snowMaxWaterContent = 0.1;
+    _parameters->tempMaxWithSnow = 2;                  // Valore originale (tesi Brooks): 0.5 gradi, 3 gradi un anno (problema inv. termica?)
+    _parameters->tempMinWithRain = -0.5;
+
+
 
 }
 
@@ -55,10 +64,10 @@ void Crit3DSnowPoint::computeSnowFall()
     float water = prec;
     if (water > 0)
     {
-        if (temp < TEMP_MIN_WITH_RAIN)
+        if (temp < _parameters->tempMinWithRain)
             water = 0;
-         else if (temp < TEMP_MAX_WITH_SNOW)
-            water = water * (temp - TEMP_MIN_WITH_RAIN) / (TEMP_MAX_WITH_SNOW - TEMP_MIN_WITH_RAIN);
+         else if (temp < _parameters->tempMaxWithSnow)
+            water = water * (temp - _parameters->tempMinWithRain) / (_parameters->tempMaxWithSnow - _parameters->tempMinWithRain);
      }
 
     _snowFall = prec - water;
@@ -125,7 +134,7 @@ void Crit3DSnowPoint::computeSnowBrooksModel(float myClearSkyTransmissivity)
      bool isWater = false;
      //if criteria3DModule.flgCriteria3D_Ready Then
      float surfaceWaterContent = std::max( _waterContent, 0.0f );    //[mm]
-     if ( (surfaceWaterContent / 1000) > SNOW_MAX_WATER_CONTENT )                                   //[m]
+     if ( (surfaceWaterContent / 1000) > _parameters->snowMaxWaterContent )                                   //[m]
         isWater = true;
 
      //else
@@ -167,7 +176,7 @@ void Crit3DSnowPoint::computeSnowBrooksModel(float myClearSkyTransmissivity)
 
         //ombreggiamento per vegetazione (<=1m no ombreggiamento, >=5m ombreggiamento completo)
         // non trovo riferimento
-        vegetationShadowing = std::max( std::min((SNOW_VEGETATION_HEIGHT - 1) / 4, 1), 0);
+        vegetationShadowing = std::max( std::min((_parameters->snowVegetationHeight - 1) / 4, 1.0f), 0.0f);
 
         solarRadTot = globalRadiation - beamRadiation * vegetationShadowing;
 
@@ -226,9 +235,9 @@ void Crit3DSnowPoint::computeSnowBrooksModel(float myClearSkyTransmissivity)
 
          // brooks originale
          if ( previousSWE > SNOW_MINIMUM_HEIGHT)
-            aerodynamicResistance = Crit3DSnowPoint::aerodynamicResistanceCampbell77(true, 10, windInt, SNOW_VEGETATION_HEIGHT);
+            aerodynamicResistance = Crit3DSnowPoint::aerodynamicResistanceCampbell77(true, 10, windInt, _parameters->snowVegetationHeight);
          else
-            aerodynamicResistance = Crit3DSnowPoint::aerodynamicResistanceCampbell77(false, 10, windInt, SNOW_VEGETATION_HEIGHT);
+            aerodynamicResistance = Crit3DSnowPoint::aerodynamicResistanceCampbell77(false, 10, windInt, _parameters->snowVegetationHeight);
 
 
           // dew_point = Meteo.dewPoint(relHum, tAir)
@@ -281,7 +290,7 @@ void Crit3DSnowPoint::computeSnowBrooksModel(float myClearSkyTransmissivity)
              * */
             albedo = std::min(0.9, 0.8 * pow ( _ageOfSnow , -0.15));
           else
-            albedo = SOIL_ALBEDO;
+            albedo = _parameters->soilAlbedo;
 
 
           /*----------------------------------------
@@ -323,6 +332,7 @@ void Crit3DSnowPoint::computeSnowBrooksModel(float myClearSkyTransmissivity)
              }
              */
              //////////////////////////////////////////////////
+             // pag. 50 (3.14)
              QSolar = (1 - albedo) * (solarRadTot * 3600) / 1000;
 
              if (previousSWE > SNOW_MINIMUM_HEIGHT)
@@ -330,13 +340,21 @@ void Crit3DSnowPoint::computeSnowBrooksModel(float myClearSkyTransmissivity)
              else
                 myEmissivity = SOIL_EMISSIVITY;
 
+             // pag. 50 (3.15)
              QLongWave = STEFAN_BOLTZMANN * 3.6 * (longWaveAtmEmissivity * pow( (tAir + ZEROCELSIUS), 4.0) - myEmissivity * pow ((prevSurfacetemp + ZEROCELSIUS) , 4.0));
 
+             // pag. 50 (3.17)
              QTempGradient = HEAT_CAPACITY_AIR * AIR_DENSITY * (tAir - prevSurfacetemp) / (aerodynamicResistance / 3600.0);
 
              // FT calcolare solo se c'e' manto nevoso
              if (previousSWE > SNOW_MINIMUM_HEIGHT)
+             {
+                // pag. 51 (3.19)
+                // ERRORE? manca il fattore WATER_DENSITY ???
+                // dovrebbe essere:
+                // QVaporGradient = (LATENT_HEAT_VAPORIZATION + LATENT_HEAT_FUSION) * WATER_DENSITY *(AirActualVapDensity - WaterActualVapDensity) / (aerodynamicResistance / 3600);
                 QVaporGradient = (LATENT_HEAT_VAPORIZATION + LATENT_HEAT_FUSION) * (AirActualVapDensity - WaterActualVapDensity) / (aerodynamicResistance / 3600);
+             }
              else
                 QVaporGradient = 0;
 
@@ -386,7 +404,7 @@ void Crit3DSnowPoint::computeSnowBrooksModel(float myClearSkyTransmissivity)
                 _iceContent = std::max(prevIceContent + _snowFall + refreeze + EvapCond, 0.0f);
 
 
-               float waterHoldingCapacity = SNOW_WATER_HOLDING_CAPACITY / (1 - SNOW_WATER_HOLDING_CAPACITY); //[%]
+               float waterHoldingCapacity = _parameters->snowWaterHoldingCapacity / (1 - _parameters->snowWaterHoldingCapacity); //[%]
 
                // Liquid water content
                if (abs(_internalEnergy) < 0.001)
@@ -412,9 +430,9 @@ void Crit3DSnowPoint::computeSnowBrooksModel(float myClearSkyTransmissivity)
                else
                {
                         if (_snowWaterEquivalent > 0)
-                            _surfaceInternalEnergy = std::min(0.0f, prevSurfaceIntEnergy + (QTotal + (refreeze / 1000) * LATENT_HEAT_FUSION * WATER_DENSITY) * (std::min(_snowWaterEquivalent / 1000, SNOW_SKIN_THICKNESS) / SNOW_DAMPING_DEPTH + std::max(SNOW_SKIN_THICKNESS - (_snowWaterEquivalent / 1000), 0.0f) / SOIL_DAMPING_DEPTH));
+                            _surfaceInternalEnergy = std::min(0.0f, prevSurfaceIntEnergy + (QTotal + (refreeze / 1000) * LATENT_HEAT_FUSION * WATER_DENSITY) * (std::min(_snowWaterEquivalent / 1000, _parameters->snowSkinThickness) / SNOW_DAMPING_DEPTH + std::max(_parameters->snowSkinThickness - (_snowWaterEquivalent / 1000), 0.0f) / SOIL_DAMPING_DEPTH));
                         else
-                            _surfaceInternalEnergy = prevSurfaceIntEnergy + (QTotal + (refreeze / 1000) * LATENT_HEAT_FUSION * WATER_DENSITY) * (SNOW_SKIN_THICKNESS / SOIL_DAMPING_DEPTH);
+                            _surfaceInternalEnergy = prevSurfaceIntEnergy + (QTotal + (refreeze / 1000) * LATENT_HEAT_FUSION * WATER_DENSITY) * (_parameters->snowSkinThickness / SOIL_DAMPING_DEPTH);
                }
 
 
@@ -431,7 +449,7 @@ void Crit3DSnowPoint::computeSnowBrooksModel(float myClearSkyTransmissivity)
 '                        End If
                     End If
                  */
-                _snowSurfaceTemp = _surfaceInternalEnergy / (WATER_DENSITY * HEAT_CAPACITY_SNOW * std::min(_snowWaterEquivalent / 1000, SNOW_SKIN_THICKNESS) + SOIL_SPECIFIC_HEAT * std::max(0.0f, SNOW_SKIN_THICKNESS - _snowWaterEquivalent / 1000) * bulk_density);
+                _snowSurfaceTemp = _surfaceInternalEnergy / (WATER_DENSITY * HEAT_CAPACITY_SNOW * std::min(_snowWaterEquivalent / 1000, _parameters->snowSkinThickness) + SOIL_SPECIFIC_HEAT * std::max(0.0f, _parameters->snowSkinThickness - _snowWaterEquivalent / 1000) * bulk_density);
            }
            else
            {
@@ -501,6 +519,40 @@ float Crit3DSnowPoint::getAgeOfSnow()
     return _ageOfSnow;
 }
 
+float Crit3DSnowPoint::getSnowSkinThickness()
+{
+    return _parameters->snowSkinThickness;
+}
+
+float Crit3DSnowPoint::getSoilAlbedo()
+{
+    return _parameters->soilAlbedo;
+}
+
+float Crit3DSnowPoint::getSnowVegetationHeight()
+{
+    return _parameters->snowVegetationHeight;
+}
+
+float Crit3DSnowPoint::getSnowWaterHoldingCapacity()
+{
+    return _parameters->snowWaterHoldingCapacity;
+}
+
+float Crit3DSnowPoint::getSnowMaxWaterContent()
+{
+    return _parameters->snowMaxWaterContent;
+}
+
+float Crit3DSnowPoint::getTempMaxWithSnow()
+{
+    return _parameters->tempMaxWithSnow;
+}
+
+float Crit3DSnowPoint::getTempMinWithRain()
+{
+    return _parameters->tempMinWithRain;
+}
 
 float Crit3DSnowPoint::aerodynamicResistanceCampbell77(bool isSnow , float zRefWind, float myWindSpeed, float vegetativeHeight)
 {
