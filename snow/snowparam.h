@@ -26,7 +26,7 @@
     #define SNOW_WATER_HOLDING_CAPACITY 0.05f   //[-]
 
     //acqua libera (torrenti, laghetti)
-    #define SNOW_MAX_WATER_CONTENT 0.1f //[m]
+    #define SNOW_MAX_WATER_CONTENT 0.1f         //[m]
 
     // Valore originale (tesi Brooks): 0.5 gradi, 3 gradi un anno (problema inv. termica?)
     #define TEMP_MAX_WITH_SNOW 2                //[°C]
