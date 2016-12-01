@@ -136,7 +136,8 @@
     #define HEAT_CAPACITY_AIR  1                //[kJ/(kg °C)]
     #define HEAT_CAPACITY_SNOW 2.1              //[kJ/(kg °C)]
 
-    #define THERMO_WATER_VAPOR_CONST 0.4615f    //[kJ/(kg °K)]
+    //specific gas constant of water vapor
+    #define THERMO_WATER_VAPOR 0.4615f          //[kJ/(kg °K)]
 
     // heat of fusion for ice at 0 °C
     #define LATENT_HEAT_FUSION  335                     //[kJ/kg]

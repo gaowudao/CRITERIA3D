@@ -237,11 +237,11 @@ void Crit3DSnowPoint::computeSnowBrooksModel(float myClearSkyTransmissivity)
           //ok pag.52 (3.20)
           // source: Jensen et al. (1990) and Tetens (1930)
           // saturated vapor density
-          AirActualVapDensity = exp((16.78 * dewPoint - 116.9) / (dewPoint + 237.3)) / ((ZEROCELSIUS + dewPoint) * THERMO_WATER_VAPOR_CONST);
+          AirActualVapDensity = exp((16.78 * dewPoint - 116.9) / (dewPoint + 237.3)) / ((ZEROCELSIUS + dewPoint) * THERMO_WATER_VAPOR);
 
           //ok
           //over water (? over snow?)
-          WaterActualVapDensity = exp((16.78 * prevSurfacetemp - 116.9) / (prevSurfacetemp + 237.3)) / ((ZEROCELSIUS + prevSurfacetemp) * THERMO_WATER_VAPOR_CONST);
+          WaterActualVapDensity = exp((16.78 * prevSurfacetemp - 116.9) / (prevSurfacetemp + 237.3)) / ((ZEROCELSIUS + prevSurfacetemp) * THERMO_WATER_VAPOR);
 
           //over ice
           // ??????? controllare
