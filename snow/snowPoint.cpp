@@ -87,6 +87,8 @@ void Crit3DSnowPoint::computeSnowBrooksModel(float myClearSkyTransmissivity)
 
     float QSolar;                   // [kJ/m^2]   integrale della radiazione solare
     float QPrecip;                  // [kJ/m^2]   avvezione (trasferimento di calore dalla precipitazione)
+    float QPrecipW;                 // [kJ/m^2]
+    float QPrecipS;                 // [kJ/m^2]
     float QLongWave;                // [kJ/m^2]   emissione di radiazione onda lunga (eq. Stefan Boltzmann)
     float QTempGradient;            // [kJ/m^2]   scambio di calore sensibile (dovuto al gradiente di temperatura)
     float QVaporGradient;           // [kJ/m^2]   scambio di calore latente (vapore)
@@ -232,7 +234,8 @@ void Crit3DSnowPoint::computeSnowBrooksModel(float myClearSkyTransmissivity)
           // dew_point = Meteo.dewPoint(relHum, tAir)
           float dewPoint = *(_meteopoint->obsDataH->tDew);
 
-          //ok pag.52
+          //ok pag.52 (3.20)
+          // source: Jensen et al. (1990) and Tetens (1930)
           // saturated vapor density
           AirActualVapDensity = exp((16.78 * dewPoint - 116.9) / (dewPoint + 237.3)) / ((ZEROCELSIUS + dewPoint) * THERMO_WATER_VAPOR_CONST);
 
@@ -284,10 +287,12 @@ void Crit3DSnowPoint::computeSnowBrooksModel(float myClearSkyTransmissivity)
           /*----------------------------------------
           ///////////Incoming Energy Fluxes
           //----------------------------------------*/
-          // controllare
-          QPrecip = HEAT_CAPACITY_WATER * WATER_DENSITY * (prec / 1000) * (std::max(0.0f, tAir) - prevSurfacetemp) + (HEAT_CAPACITY_SNOW * WATER_DENSITY * (_snowFall / 1000) * (std::min(0.0f, tAir) - prevSurfacetemp));
+          // pag. 52 (3.22) considerando i 2 contributi invece che solo uno
+          QPrecipW = HEAT_CAPACITY_WATER * WATER_DENSITY * (prec / 1000) * (std::max(0.0f, tAir) - prevSurfacetemp);
+          QPrecipS = (HEAT_CAPACITY_SNOW * WATER_DENSITY * (_snowFall / 1000) * (std::min(0.0f, tAir) - prevSurfacetemp));
+          QPrecip = QPrecipW + QPrecipS;
 
-          // energia acqua libera (TROY test)
+          // energia acqua libera (TROY site test)
           QWaterHeat = 0;
           QWaterKinetic = 0;
           freeWaterFlux = 0;
