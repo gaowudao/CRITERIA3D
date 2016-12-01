@@ -131,10 +131,12 @@
     #define VON_KARMAN_CONST 0.41                      //[-]
     // [J kg-1 K-1] specific heat at constant pressure
     #define CP 1013
-    //[kJ/(kg °C)]
-    #define  HEAT_CAPACITY_WATER 4.18
-    #define  HEAT_CAPACITY_AIR  1
-    #define  HEAT_CAPACITY_SNOW 2.1                     //[kJ/(kg °C)]
+
+    #define HEAT_CAPACITY_WATER 4.18            //[kJ/(kg °C)]
+    #define HEAT_CAPACITY_AIR  1                //[kJ/(kg °C)]
+    #define HEAT_CAPACITY_SNOW 2.1              //[kJ/(kg °C)]
+
+    #define THERMO_WATER_VAPOR_CONST 0.4615f    //[J/(kg °K)]
 
     // heat of fusion for ice at 0 °C
     #define LATENT_HEAT_FUSION  335                     //[kJ/kg]
