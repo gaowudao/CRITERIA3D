@@ -323,7 +323,6 @@ void Crit3DSnowPoint::computeSnowBrooksModel(float myClearSkyTransmissivity)
                             freeWaterFlux = (freeWaterFlux / avgExchangeArea) / 3600.0
                         End If
 
-                        //controllare formula en. cinetica
                         if (freeWaterFlux > 0.01)
                         {
                             avgMass = (surfaceWaterContent / 1000.0) * WATER_DENSITY; //[kg/m2]
@@ -367,6 +366,7 @@ void Crit3DSnowPoint::computeSnowBrooksModel(float myClearSkyTransmissivity)
              //Evaporation/Condensation
              if (previousSWE > SNOW_MINIMUM_HEIGHT)
              {
+                // pag 51 (3.21)
                 EvapCond = QVaporGradient / ((LATENT_HEAT_FUSION + LATENT_HEAT_VAPORIZATION) * WATER_DENSITY) * 1000;
                 if (EvapCond < 0)
                     //controllo aggiunto: può evaporare al massimo la neve presente
@@ -385,7 +385,11 @@ void Crit3DSnowPoint::computeSnowBrooksModel(float myClearSkyTransmissivity)
 
               // refreeze
               if (previousSWE > SNOW_MINIMUM_HEIGHT)
-                refreeze = std::min((prec + prevLWaterContent), std::max(0.0f, -1000 / (LATENT_HEAT_FUSION * WATER_DENSITY) * (prevInternalEnergy + QTotal)))- std::min((_snowFall + prevIceContent + EvapCond), std::max(0.0f, 1000 / (LATENT_HEAT_FUSION * WATER_DENSITY) * (prevInternalEnergy + QTotal)));
+              {
+                float wFreeze = std::min((prec + prevLWaterContent), std::max(0.0f, -1000 / (LATENT_HEAT_FUSION * WATER_DENSITY) * (prevInternalEnergy + QTotal)));
+                float wThaw =  std::min((_snowFall + prevIceContent + EvapCond), std::max(0.0f, 1000 / (LATENT_HEAT_FUSION * WATER_DENSITY) * (prevInternalEnergy + QTotal)));
+                refreeze = wFreeze - wThaw;
+              }
               else
                 refreeze = 0;
 
