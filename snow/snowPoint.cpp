@@ -94,6 +94,8 @@ void Crit3DSnowPoint::computeSnowBrooksModel(float myClearSkyTransmissivity)
     float freeWaterFlux;                // [mm]
     float avgMass;                      // [kg]
 
+    // tutte le unità di misura dei Q: dovrebbero essere [kJ/(m^2*s)] !
+
     float QSolar;                   // [kJ/m^2]   integrale della radiazione solare
     float QPrecip;                  // [kJ/m^2]   avvezione (trasferimento di calore dalla precipitazione)
     float QPrecipW;                 // [kJ/m^2]
@@ -354,7 +356,7 @@ void Crit3DSnowPoint::computeSnowBrooksModel(float myClearSkyTransmissivity)
                 // manca il fattore WATER_DENSITY ???
                 // dovrebbe essere:
                 // QVaporGradient = (LATENT_HEAT_VAPORIZATION + LATENT_HEAT_FUSION) * WATER_DENSITY *(AirActualVapDensity - WaterActualVapDensity) / (aerodynamicResistance / 3600);
-                // coerente però con il codice in appendice
+                // coerente però con il codice in appendice, inoltre le unità di misura tornano  NON mettendo il fattore WATER_DENSITY
                 QVaporGradient = (LATENT_HEAT_VAPORIZATION + LATENT_HEAT_FUSION) * (AirActualVapDensity - WaterActualVapDensity) / (aerodynamicResistance / 3600);
              }
              else
