@@ -284,6 +284,8 @@ void Crit3DSnowPoint::computeSnowBrooksModel(float myClearSkyTransmissivity)
           if ( (previousSWE > 0) || (_snowFall > 0 && prec == 0))
             //arrotondato rispetto alla formula originaria (Gray and O'Neill 1974)
             //  U.S. Army Corps  U.S. Army Corps arrotonda così : albedo = 0.74 * _ageOfSnow^(-0..191)
+            // il codice dell'appendice A della tesi invece
+            // min(0.95,0.7383*snow.age^(-0.1908)),0.2)'
             // in letteratura ci sono tantissime stime e per il calcolo dell'albedo della snow surface,con dipendenze anche ad es. da solar zenith angle o cloud cover o snowpack thickness o snow density ecc...
             /*
              * O'NEILL, A.D.J. GRAY D.M.1973. Spatial and temporal variations of the albedo of prairie snowpacks. The Role of Snow and Ice in Hydrology: Proceedings of the Banff Syn~posia, 1972. Unesc - WMO -IAHS, Geneva -Budapest-Paris, Vol. 1,  pp. 176-186
@@ -349,9 +351,10 @@ void Crit3DSnowPoint::computeSnowBrooksModel(float myClearSkyTransmissivity)
              if (previousSWE > SNOW_MINIMUM_HEIGHT)
              {
                 // pag. 51 (3.19)
-                // ERRORE? manca il fattore WATER_DENSITY ???
+                // manca il fattore WATER_DENSITY ???
                 // dovrebbe essere:
                 // QVaporGradient = (LATENT_HEAT_VAPORIZATION + LATENT_HEAT_FUSION) * WATER_DENSITY *(AirActualVapDensity - WaterActualVapDensity) / (aerodynamicResistance / 3600);
+                // coerente però con il codice in appendice
                 QVaporGradient = (LATENT_HEAT_VAPORIZATION + LATENT_HEAT_FUSION) * (AirActualVapDensity - WaterActualVapDensity) / (aerodynamicResistance / 3600);
              }
              else
@@ -386,6 +389,7 @@ void Crit3DSnowPoint::computeSnowBrooksModel(float myClearSkyTransmissivity)
               // refreeze
               if (previousSWE > SNOW_MINIMUM_HEIGHT)
               {
+                // pag. 53 (3.25) (3.26) (3.24)
                 float wFreeze = std::min((prec + prevLWaterContent), std::max(0.0f, -1000 / (LATENT_HEAT_FUSION * WATER_DENSITY) * (prevInternalEnergy + QTotal)));
                 float wThaw =  std::min((_snowFall + prevIceContent + EvapCond), std::max(0.0f, 1000 / (LATENT_HEAT_FUSION * WATER_DENSITY) * (prevInternalEnergy + QTotal)));
                 refreeze = wFreeze - wThaw;
@@ -457,7 +461,7 @@ void Crit3DSnowPoint::computeSnowBrooksModel(float myClearSkyTransmissivity)
            }
            else
            {
-                    //snowfall diventa snowmelt negli specchi d'acqua
+            //snowfall diventa snowmelt negli specchi d'acqua
             _snowMelt = _snowFall;
             _iceContent = NODATA;
             _lWContent = NODATA;
