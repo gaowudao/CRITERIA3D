@@ -4,60 +4,6 @@
 #include "snowPoint.h"
 
 
-/*
-Public Sub clearAllSnowMaps()
-
-    GIS.clearGrid Snow.SnowFallMap
-    GIS.clearGrid Snow.SnowMeltMap
-    GIS.clearGrid Snow.SnowWaterEquivalentMap
-    GIS.clearGrid Snow.IceContentMap
-    GIS.clearGrid Snow.LWContentMap
-    GIS.clearGrid Snow.InternalEnergyMap
-    GIS.clearGrid Snow.SnowSurfaceTempMap
-    GIS.clearGrid Snow.SurfaceInternalEnergyMap
-    GIS.clearGrid Snow.AgeOfSnowMap
-
-End Sub
-
-
-Public Sub ActiveAllSnowModelMap()
-
-    Snow.SnowMeltMap.isLoaded = True
-    Snow.SnowWaterEquivalentMap.isLoaded = True
-    Snow.IceContentMap.isLoaded = True
-    Snow.LWContentMap.isLoaded = True
-    Snow.InternalEnergyMap.isLoaded = True
-    Snow.SnowSurfaceTempMap.isLoaded = True
-    Snow.SurfaceInternalEnergyMap.isLoaded = True
-    Snow.AgeOfSnowMap.isLoaded = True
-
-End Sub
-
-
-Public Sub ResetAllSnowModelMap(ByRef grd As GIS.grid)
-
-    GIS.GridInitFrom grd, Radiation.TransmissivityMap
-    GIS.GridInitFrom grd, Snow.SnowMeltMap
-    GIS.GridInitFrom grd, Snow.IceContentMap
-    GIS.GridInitFrom grd, Snow.LWContentMap
-    GIS.GridInitFrom grd, Snow.InternalEnergyMap
-    GIS.GridInitFrom grd, Snow.SurfaceInternalEnergyMap
-    GIS.GridInitFrom grd, Snow.SnowSurfaceTempMap
-    GIS.GridInitFrom grd, Snow.AgeOfSnowMap
-    GIS.GridInitFrom grd, WaterBalance.TempH_Map
-    GIS.GridInitFrom grd, WaterBalance.HumidH_Map
-    GIS.GridInitFrom grd, WaterBalance.RainH_Map
-    GIS.GridInitFrom grd, WaterBalance.WindH_Map
-    GIS.GridInitFrom grd, WaterBalance.EvapH_Map
-
-    'occorre passare una mappa di stato
-    GIS.GridInitFromWithValue grd, Snow.SnowFallMap, 0
-    GIS.GridInitFromWithValue grd, Snow.SnowWaterEquivalentMap, 0
-
-End Sub
-*/
-
-
 Crit3DSnowMaps::Crit3DSnowMaps()
 {
     this->initializeMaps();
@@ -83,11 +29,10 @@ Crit3DSnowMaps::Crit3DSnowMaps(const gis::Crit3DRasterGrid& dtmGrid)
 
 }
 
-/*---------------------------------
-' Initialize all maps
-'---------------------------------
-*/
 
+/*---------------------------------
+ Initialize all maps
+ ---------------------------------*/
 void Crit3DSnowMaps::initializeMaps()
 {
     _snowFallMap = new gis::Crit3DRasterGrid;
@@ -101,9 +46,9 @@ void Crit3DSnowMaps::initializeMaps()
     _ageOfSnowMap = new gis::Crit3DRasterGrid;
 }
 
+
 void Crit3DSnowMaps::updateMap(Crit3DSnowPoint* snowPoint, int row, int col)
 {
-
     _snowFallMap->value[row][col] = snowPoint->getSnowFall();
     _snowMeltMap->value[row][col] = snowPoint->getSnowMelt();
     _snowWaterEquivalentMap->value[row][col] = snowPoint->getSnowWaterEquivalent();
@@ -113,8 +58,8 @@ void Crit3DSnowMaps::updateMap(Crit3DSnowPoint* snowPoint, int row, int col)
     _surfaceInternalEnergyMap->value[row][col] = snowPoint->getSurfaceInternalEnergy();
     _snowSurfaceTempMap->value[row][col] = snowPoint->getSnowSurfaceTemp();
     _ageOfSnowMap->value[row][col] = snowPoint->getAgeOfSnow();
-
 }
+
 
 void Crit3DSnowMaps::resetSnowModel(gis::Crit3DRasterGrid* sweGrid, Crit3DSnowPoint* snowPoint)
 {
@@ -206,7 +151,7 @@ float computeSurfaceInternalEnergy(float initSnowSurfaceTemp,int bulkDensity, fl
 }
 
 
-//InternalEnergyMap pag. 54 formula 3.29  initSoilPackTemp sarebbe da chiamare initSnowPackTemp ????
+// InternalEnergyMap pag. 54 formula 3.29  initSoilPackTemp sarebbe da chiamare initSnowPackTemp ????
 float computeInternalEnergyMap(float initSoilPackTemp,int bulkDensity, float initSWE)
 {
     return ( initSoilPackTemp * (WATER_DENSITY * HEAT_CAPACITY_SNOW * initSWE + bulkDensity * SNOW_DAMPING_DEPTH * SOIL_SPECIFIC_HEAT) );
