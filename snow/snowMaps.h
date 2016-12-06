@@ -19,7 +19,7 @@ class Crit3DSnowMaps
 public:
     Crit3DSnowMaps();
     ~Crit3DSnowMaps();
-    Crit3DSnowMaps(const gis::Crit3DRasterGrid& dtmGrid, const gis::Crit3DGisSettings& gisSettings);
+    Crit3DSnowMaps(const gis::Crit3DRasterGrid& dtmGrid);
 
     void initializeMaps();
     void resetSnowModel(gis::Crit3DRasterGrid* myGrd, Crit3DSnowPoint* snowPoint);

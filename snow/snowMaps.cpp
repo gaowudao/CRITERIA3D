@@ -64,7 +64,7 @@ Crit3DSnowMaps::Crit3DSnowMaps()
     _isLoaded = false;
 }
 
-Crit3DSnowMaps::Crit3DSnowMaps(const gis::Crit3DRasterGrid& dtmGrid, const gis::Crit3DGisSettings& gisSettings)
+Crit3DSnowMaps::Crit3DSnowMaps(const gis::Crit3DRasterGrid& dtmGrid)
 {
     this->initializeMaps();
 
@@ -116,51 +116,24 @@ void Crit3DSnowMaps::updateMap(Crit3DSnowPoint* snowPoint, int row, int col)
 
 }
 
-void Crit3DSnowMaps::resetSnowModel(gis::Crit3DRasterGrid* myGrd, Crit3DSnowPoint* snowPoint)
+void Crit3DSnowMaps::resetSnowModel(gis::Crit3DRasterGrid* sweGrid, Crit3DSnowPoint* snowPoint)
 {
+    float initSWE;              // [mm]
+    int surfaceBulkDensity;     // [kg/m^3]
 
-    float initSWE;     // [mm]
-    int bulkDensity;   // [kg/m^3]
-
-    double x, y;
-    //Dim index_soil As Integer, nrHorizon As Integer
-    //Dim myHorizon As MSoil.Thorizon
-
-    for (long row = 0; row < myGrd->header->nrRows; row++)
+    for (long row = 0; row < sweGrid->header->nrRows; row++)
     {
-        for (long col = 0; col < myGrd->header->nrCols; col++)
+        for (long col = 0; col < sweGrid->header->nrCols; col++)
         {
-
-            initSWE = myGrd->value[row][col];
-
-            if (initSWE != myGrd->header->flag)
+            initSWE = sweGrid->value[row][col];
+            if (initSWE != sweGrid->header->flag)
             {
+                // TODO usare dato reale bulk density
+                surfaceBulkDensity = DEFAULT_BULK_DENSITY;
 
-                //bulk density superficiale (1 cm)
-                bulkDensity = DEFAULT_BULK_DENSITY;
-/*
-                if (_soil.isLoaded)
-                {
-                    gis::getUtmXYFromRowCol(myGrd, row, col, &x, &y);
-//                   da eperire dato reale di bulk_density, ora messo a valore di default
-                    bulkDensity = DEFAULT_BULK_DENSITY;
-
-'                     If MSoil.readPointSoilHorizon(x, y, 1, index_soil, nrHorizon, myHorizon) Then
-'                         If myHorizon.bulkDensity <> Definitions.NO_DATA Then
-'                             bulk_density = myHorizon.bulkDensity * 1000         //[kg/m^3]
-'                         End If
-'                     End If
-
-                }
-                else
-                {
-                    qDebug() << "Missing soil map init";
-                }
-*/
                 _snowWaterEquivalentMap->value[row][col] = initSWE;
 
                 //from [mm] to [m]
-                // SnowWaterEquivalent
                 initSWE = initSWE / 1000;
 
                 _snowMeltMap->value[row][col] = 0;
@@ -172,16 +145,14 @@ void Crit3DSnowMaps::resetSnowModel(gis::Crit3DRasterGrid* myGrd, Crit3DSnowPoin
 
                 float snowSkinThickness = snowPoint->getSnowSkinThickness();
 
-                _surfaceInternalEnergyMap->value[row][col] = Crit3DSnowMaps::computeSurfaceInternalEnergy(_initSnowSurfaceTemp, bulkDensity, initSWE, snowSkinThickness);
+                _surfaceInternalEnergyMap->value[row][col] = Crit3DSnowMaps::computeSurfaceInternalEnergy(_initSnowSurfaceTemp, surfaceBulkDensity, initSWE, snowSkinThickness);
 
-
-        // tesi pag. 54
-                _internalEnergyMap->value[row][col] = Crit3DSnowMaps::computeInternalEnergyMap(_initSnowSurfaceTemp, bulkDensity, initSWE);
+                _internalEnergyMap->value[row][col] = Crit3DSnowMaps::computeInternalEnergyMap(_initSnowSurfaceTemp, surfaceBulkDensity, initSWE);
             }
         }
     }
-
 }
+
 
 gis::Crit3DRasterGrid* Crit3DSnowMaps::getSnowFallMap()
 {

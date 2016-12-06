@@ -28,11 +28,11 @@
 #define SNOW_MINIMUM_HEIGHT 2               //[mm]
 
 
-struct Tparameters {
+struct snowParameters {
     float snowSkinThickness;              //[m]
     float soilAlbedo;                     //[-] bare soil
     float snowVegetationHeight;           //[m] height of vegetation
-    float snowWaterHoldingCapacity;       // percentuale di acqua libera che il manto nevoso può trattenere
+    float snowWaterHoldingCapacity;       //[-] percentuale di acqua libera che il manto nevoso può trattenere
     float snowMaxWaterContent;            //[m] acqua libera (torrenti, laghetti)
     float tempMaxWithSnow;                //[°C]
     float tempMinWithRain;                //[°C]
@@ -41,12 +41,12 @@ struct Tparameters {
 class Crit3DSnowPoint
 {
 public:
-    Crit3DSnowPoint(struct TradPoint* radpoint, Crit3DMeteoPoint* meteopoint);
+    Crit3DSnowPoint(struct TradPoint* radpoint, float temp, float prec, float relHum, float windInt, float clearSkyTransmissivity);
     ~Crit3DSnowPoint();
 
     bool checkValidPoint();
     void computeSnowFall();
-    void computeSnowBrooksModel(float myClearSkyTransmissivity);
+    void computeSnowBrooksModel();
 
     float getSnowFall();
     float getSnowMelt();
@@ -69,7 +69,18 @@ public:
     static float aerodynamicResistanceCampbell77(bool isSnow , float zRefWind, float myWindSpeed, float vegetativeHeight);
 
 private:
+    // input
+    TradPoint* _radpoint;
+    float _clearSkyTransmissivity;  // [-]
+    float _prec;                    // [mm]
+    float _airT;                    // [°C]
+    float _airRH;                   // [%]
+    float _windInt;                 // [m/s]
+    float _waterContent;
+    float _evaporation;
+    struct snowParameters* _parameters;
 
+    // output
     float _snowFall;
     float _snowMelt;
     float _snowWaterEquivalent;
@@ -79,14 +90,6 @@ private:
     float _surfaceInternalEnergy;
     float _snowSurfaceTemp;
     float _ageOfSnow;
-
-    float _slope;
-    struct TradPoint* _radpoint;
-    Crit3DMeteoPoint* _meteopoint;
-    float _waterContent;
-    float _evaporation;
-    struct Tparameters* _parameters;
-
 };
 
 #endif // SNOWPOINT_H
