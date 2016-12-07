@@ -26,7 +26,7 @@ Crit3DSnowPoint::Crit3DSnowPoint(struct TradPoint* radpoint, float temp, float p
     _airRH = relHum;
     _windInt = windInt;
 
-    _parameters->snowSkinThickness = 0.02;            //[m] ??? VARIE VERSIONI IN BROOKS: 3mm (nel testo), 2-3cm (nel codice) ???
+    _parameters->snowSkinThickness = 0.02;            //[m] LC: VARIE VERSIONI IN BROOKS: 3mm (nel testo), 2-3cm (nel codice)
     _parameters->soilAlbedo = 0.2;                    //[-] bare soil - 20%
     _parameters->snowVegetationHeight = 1;
     _parameters->snowWaterHoldingCapacity = 0.05;
@@ -209,11 +209,11 @@ void Crit3DSnowPoint::computeSnowBrooksModel()
           AirActualVapDensity = exp((16.78 * dewPoint - 116.9) / (dewPoint + 237.3)) / ((ZEROCELSIUS + dewPoint) * THERMO_WATER_VAPOR);
 
           //ok
-          //over water (? over snow?)
+          //over water ( over snow?)
           WaterActualVapDensity = exp((16.78 * prevSurfacetemp - 116.9) / (prevSurfacetemp + 237.3)) / ((ZEROCELSIUS + prevSurfacetemp) * THERMO_WATER_VAPOR);
 
           //over ice
-          // ??????? controllare
+          // LC: controllare
           // non trovo riferimenti a questa formula
           // perchè amlcune sono define ed altre no?
           // 8.3143 J/(mol*K)   is universal gas constant???
@@ -242,7 +242,7 @@ void Crit3DSnowPoint::computeSnowBrooksModel()
             _ageOfSnow = 0;
 
           if ( (previousSWE > 0) || (_snowFall > 0 && _prec == 0))
-            //arrotondato rispetto alla formula originaria (Gray and O'Neill 1974)
+            // LC: arrotondato rispetto alla formula originaria (Gray and O'Neill 1974)
             // U.S. Army Corps arrotonda così : albedo = 0.74 * _ageOfSnow^(-0..191)
             // il codice dell'appendice A della tesi invece
             // min(0.95,0.7383*snow.age^(-0.1908)),0.2)'
@@ -311,7 +311,7 @@ void Crit3DSnowPoint::computeSnowBrooksModel()
              // FT calcolare solo se c'e' manto nevoso
              if (previousSWE > SNOW_MINIMUM_HEIGHT)
              {
-                // pag. 51 (3.19)
+                // LC: pag. 51 (3.19)
                 // manca il fattore WATER_DENSITY ???
                 // dovrebbe essere:
                 // QVaporGradient = (LATENT_HEAT_VAPORIZATION + LATENT_HEAT_FUSION) * WATER_DENSITY *(AirActualVapDensity - WaterActualVapDensity) / (aerodynamicResistance / 3600);
@@ -539,9 +539,9 @@ float Crit3DSnowPoint::aerodynamicResistanceCampbell77(bool isSnow , float zRefW
         //check on vegetativeHeight  [m]
         vegetativeHeight = std::max(vegetativeHeight, 0.1f);
 
-        //pag 51: d is the height of the zero-plane displacement (for snow d = 0 m and for
-        //vegetative cover d = 0.64 times the height of the vegetative) quindi
-        //era: zeroPlane = 0.65 * vegetativeHeight ?!
+        //LC: pag 51: d is the height of the zero-plane displacement (for snow d = 0 m and for
+        //vegetative cover d = 0.64 times the height of the vegetative).
+        //in origine era: zeroPlane = 0.65 * vegetativeHeight ?!
         zeroPlane = 0.64 * vegetativeHeight;
 
         momentumRoughness = 0.13 * vegetativeHeight;

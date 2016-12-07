@@ -151,7 +151,7 @@ float computeSurfaceInternalEnergy(float initSnowSurfaceTemp,int bulkDensity, fl
 }
 
 
-// InternalEnergyMap pag. 54 formula 3.29  initSoilPackTemp sarebbe da chiamare initSnowPackTemp ????
+// LC: InternalEnergyMap pag. 54 formula 3.29  initSoilPackTemp sarebbe da chiamare initSnowPackTemp ????
 float computeInternalEnergyMap(float initSoilPackTemp,int bulkDensity, float initSWE)
 {
     return ( initSoilPackTemp * (WATER_DENSITY * HEAT_CAPACITY_SNOW * initSWE + bulkDensity * SNOW_DAMPING_DEPTH * SOIL_SPECIFIC_HEAT) );
