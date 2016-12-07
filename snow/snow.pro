@@ -8,12 +8,7 @@ CONFIG += staticlib
 
 TEMPLATE = lib
 
-INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../MapGraphics ../meteo ../solarRadiation
-
-LIBS += -L../mathFunctions/debug -lmathFunctions
-LIBS += -L../gis/debug -lgis
-LIBS += -L../meteo/release -lmeteo
-LIBS += -L../solarRadiation/release -lsolarRadiation
+INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../meteo ../solarRadiation
 
 SOURCES += \
     snowMaps.cpp \

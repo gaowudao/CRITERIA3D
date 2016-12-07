@@ -2,6 +2,7 @@
 #include <algorithm>
 #include "commonConstants.h"
 #include "snowPoint.h"
+#include "meteoPoint.h"
 
 
 Crit3DSnowPoint::Crit3DSnowPoint(struct TradPoint* radpoint, float temp, float prec, float relHum, float windInt, float clearSkyTransmissivity)

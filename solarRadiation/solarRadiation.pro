@@ -11,11 +11,7 @@ TARGET = solarRadiation
 TEMPLATE = lib
 CONFIG += staticlib
 
-INCLUDEPATH += ../crit3dDate
-
-INCLUDEPATH += ../mathFunctions
-
-INCLUDEPATH += ../gis
+INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis
 
 SOURCES += \
     solPos.cpp \
