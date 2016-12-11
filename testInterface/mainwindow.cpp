@@ -22,28 +22,32 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    //Setup the MapGraphics scene and view
+    /*!
+     * Setup the MapGraphics scene and view
+     */
     this->scene = new MapGraphicsScene(this);
     this->view = new MapGraphicsView(scene,this);
     Position* startCenter = new Position (11.35, 44.5, 0.0);
 
-    //The view will be our central widget
-    this->setCentralWidget(this->view);
 
-    //Setup some tile sources
+    this->setCentralWidget(this->view); /**< The view will be our central widget */
+
+    /*!
+     * Setup some tile sources
+     */
     QSharedPointer<OSMTileSource> osmTiles(new OSMTileSource(OSMTileSource::OSMTiles), &QObject::deleteLater);
     QSharedPointer<CompositeTileSource> composite(new CompositeTileSource(), &QObject::deleteLater);
     composite->addSourceBottom(osmTiles);
     this->view->setTileSource(composite);
 
-    // marker example
-    /*
-    CircleObject* marker1 = new CircleObject(5.0, true, QColor(255,0,0,255), 0);
-    marker1->setFlag(MapGraphicsObject::ObjectIsMovable, false);
-    marker1->setFlag(MapGraphicsObject::ObjectIsSelectable, false);
-    marker1->setLatitude(startCenter->latitude());
-    marker1->setLongitude(startCenter->longitude());
-    this->view->scene()->addObject(marker1);
+    /*!
+     * marker example
+     * CircleObject* marker1 = new CircleObject(5.0, true, QColor(255,0,0,255), 0);
+     * marker1->setFlag(MapGraphicsObject::ObjectIsMovable, false);
+     * marker1->setFlag(MapGraphicsObject::ObjectIsSelectable, false);
+     * marker1->setLatitude(startCenter->latitude());
+     * marker1->setLongitude(startCenter->longitude());
+     * this->view->scene()->addObject(marker1);
     */
 
     geoMap->referencePoint.latitude = startCenter->latitude();

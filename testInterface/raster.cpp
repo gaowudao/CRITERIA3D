@@ -126,7 +126,9 @@ bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPain
                 }
                 else
                 {
-                    //rectangles
+                    /*!
+                      Rectangles
+                    */
                     myPainter->setBrush(myQColor);
                     myPainter->fillRect(x0, y0, lx+1, ly+1, myPainter->brush());
                 }
@@ -140,18 +142,18 @@ bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPain
 }
 
 
-/*
-qreal degreesLatPerMeter(const qreal latitude)
-{
-    const qreal latRad = latitude * (pi / 180.0);
-    qreal meters = 111132.954 - 559.822 * cos(2.0 * latRad) + 1.175 * cos(4.0 * latRad);
-    return 1.0 / meters;
-}
 
-qreal degreesLonPerMeter(const qreal latitude)
-{
-    const qreal latRad = latitude * (pi / 180.0);
-    qreal meters = (pi * A_EARTH * cos(latRad)) / (180.0 * sqrt(1.0 - NAV_E2 * pow(sin(latRad), 2.0)));
-    return 1.0 / meters;
-}
-*/
+//qreal degreesLatPerMeter(const qreal latitude)
+//{
+//    const qreal latRad = latitude * (pi / 180.0);
+//    qreal meters = 111132.954 - 559.822 * cos(2.0 * latRad) + 1.175 * cos(4.0 * latRad);
+//    return 1.0 / meters;
+//}
+
+//qreal degreesLonPerMeter(const qreal latitude)
+//{
+//    const qreal latRad = latitude * (pi / 180.0);
+//    qreal meters = (pi * A_EARTH * cos(latRad)) / (180.0 * sqrt(1.0 - NAV_E2 * pow(sin(latRad), 2.0)));
+//    return 1.0 / meters;
+//}
+

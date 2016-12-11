@@ -27,7 +27,6 @@ extern gis::Crit3DRasterGrid *DTM;
   rectangle you want in PIXELS. If false, this should return the size of the rectangle in METERS. The
   rectangle should be centered at (0,0) regardless.
 
-  \return QRectF
  */
  QRectF RasterObject::boundingRect() const
 {
@@ -60,18 +59,18 @@ void RasterObject::moveCenter()
 }
 
 
-/*
+
 //protected
 //virtual from MapGraphicsObject
-void RasterObject::keyReleaseEvent(QKeyEvent *event)
-{
-    if (event->matches(QKeySequence::Delete))
-    {
-        this->deleteLater();
-        event->accept();
-    }
-    else
-        event->ignore();
-}
-*/
+//void RasterObject::keyReleaseEvent(QKeyEvent *event)
+//{
+//    if (event->matches(QKeySequence::Delete))
+//    {
+//        this->deleteLater();
+//        event->accept();
+//    }
+//    else
+//        event->ignore();
+//}
+
 

@@ -14,19 +14,34 @@
         class MainWindow;
     }
 
+    /*!
+     * \brief The MainWindow class
+     */
     class MainWindow : public QMainWindow
     {
         Q_OBJECT
 
     public:
+
         explicit MainWindow(QWidget *parent = 0);
         ~MainWindow();
 
     private slots:
+        /*!
+         * \brief on_actionLoad_Raster_triggered load Raster
+         */
         void on_actionLoad_Raster_triggered();
 
     protected:
+        /*!
+         * \brief mouseReleaseEvent call moveCenter
+         * \param event
+         */
         void mouseReleaseEvent(QMouseEvent *event);
+        /*!
+         * \brief mouseDoubleClickEvent implements zoom In and zoom Out
+         * \param event
+         */
         void mouseDoubleClickEvent(QMouseEvent * event);
 
     private:
