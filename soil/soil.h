@@ -5,6 +5,9 @@
 
         enum units {METER, KPA, CM};
 
+        /*!
+         * \brief The Crit3DTexture class
+         */
         class Crit3DTexture
         {
         public:
@@ -15,7 +18,13 @@
             int classNL;
 
             Crit3DTexture();
-            Crit3DTexture (float mySand, float mySilt, float myClay);
+            /*!
+             * \brief Crit3DTexture class constructor
+             * \param sand fraction of sand [-]
+             * \param silt fraction of silt [-]
+             * \param clay fraction of clay [-]
+             */
+            Crit3DTexture (float sand, float silt, float clay);
         };
 
         class Crit3DVanGenuchten
