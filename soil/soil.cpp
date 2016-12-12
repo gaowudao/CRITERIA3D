@@ -329,14 +329,12 @@ namespace soil
     }
 
 
-    /*-----------------------------------------------------------------------
-    // compute water potential from volumetric water content
-    // only for modified van genuchten
-    //-----------------------------------------------------------------------
-    // theta            [m^3 m-3] volumetric water content
-    // Se               [-] degree of saturation
-    // psi              [same unit of vanGenuchten.he] water potential
-    //-----------------------------------------------------------------------*/
+    /*!
+     * \brief Compute water potential from volumetric water content
+     * \param theta  [m^3 m-3] volumetric water content
+     * \param horizon pointer to Crit3DHorizon class
+     * \return [same unit of vanGenuchten.he] water potential
+     */
     double psiFromTheta(double theta, Crit3DHorizon* horizon)
 
     {
@@ -347,22 +345,20 @@ namespace soil
     }
 
 
-    /*-----------------------------------------------------------------------
-    // compute water content from water potential (with sign)
-    // only for modified van genuchten
-    //-----------------------------------------------------------------------
-    // theta            [m^3 m-3] volumetric water content
-    // Se               [-] degree of saturation
-    // psi              [same unit of vanGenuchten.he] water potential
-    //-----------------------------------------------------------------------*/
+    /*!
+     * \brief Compute water content from signed water potential
+     * \param signPsi water potential [same unit of vanGenuchten.he]
+     * \param horizon pointer to Crit3DHorizon class
+     * \return volumetric water content [m^3 m-3]
+     */
     double thetaFromSignPsi(double signPsi, Crit3DHorizon* horizon)
-
     {
         if (signPsi >= 0.0) return horizon->vanGenuchten.thetaS;
 
         double psi = fabs(signPsi);
         if (psi <=  horizon->vanGenuchten.he) return horizon->vanGenuchten.thetaS;
 
+        //[-] degree of saturation
         double Se = pow(1.0 + pow(horizon->vanGenuchten.alpha * psi, horizon->vanGenuchten.n),
                         - horizon->vanGenuchten.m) / horizon->vanGenuchten.sc;
 

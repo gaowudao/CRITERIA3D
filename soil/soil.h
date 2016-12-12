@@ -140,7 +140,6 @@
      double psiFromTheta(double theta, Crit3DHorizon* horizon);
      double thetaFromSignPsi(double signPsi, Crit3DHorizon* horizon);
      double waterConductivity(double Se, Crit3DHorizon* horizon);
-
      double estimateBulkDensity(Crit3DHorizon* mySoil, double totalPorosity);
      double estimateSaturatedConductivity(Crit3DHorizon* mySoil, double bulkDensity);
      double estimateTotalPorosity(Crit3DHorizon* mySoil, double bulkDensity);

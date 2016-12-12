@@ -144,8 +144,10 @@ Functions</h2></td></tr>
 <tr class="memitem:a1ac6b10a706001de0ffc8db7ec44a859"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesoil.html#a1ac6b10a706001de0ffc8db7ec44a859">SeFromTheta</a> (double theta, <a class="el" href="classsoil_1_1_crit3_d_horizon.html">Crit3DHorizon</a> *horizon)</td></tr>
 <tr class="separator:a1ac6b10a706001de0ffc8db7ec44a859"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abea83f340ea025c08efed20dd5bec42a"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesoil.html#abea83f340ea025c08efed20dd5bec42a">psiFromTheta</a> (double theta, <a class="el" href="classsoil_1_1_crit3_d_horizon.html">Crit3DHorizon</a> *horizon)</td></tr>
+<tr class="memdesc:abea83f340ea025c08efed20dd5bec42a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute water potential from volumetric water content.  <a href="#abea83f340ea025c08efed20dd5bec42a">More...</a><br /></td></tr>
 <tr class="separator:abea83f340ea025c08efed20dd5bec42a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a348bb05759744d26bac8b26122ab272c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesoil.html#a348bb05759744d26bac8b26122ab272c">thetaFromSignPsi</a> (double signPsi, <a class="el" href="classsoil_1_1_crit3_d_horizon.html">Crit3DHorizon</a> *horizon)</td></tr>
+<tr class="memdesc:a348bb05759744d26bac8b26122ab272c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute water content from signed water potential.  <a href="#a348bb05759744d26bac8b26122ab272c">More...</a><br /></td></tr>
 <tr class="separator:a348bb05759744d26bac8b26122ab272c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5528f7cd486c10ec0afe8d95aa21d0b2"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesoil.html#a5528f7cd486c10ec0afe8d95aa21d0b2">waterConductivity</a> (double Se, <a class="el" href="classsoil_1_1_crit3_d_horizon.html">Crit3DHorizon</a> *horizon)</td></tr>
 <tr class="separator:a5528f7cd486c10ec0afe8d95aa21d0b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -477,6 +479,16 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Compute water potential from volumetric water content. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">theta</td><td>[m^3 m-3] volumetric water content </td></tr>
+    <tr><td class="paramname">horizon</td><td>pointer to <a class="el" href="classsoil_1_1_crit3_d_horizon.html">Crit3DHorizon</a> class </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>[same unit of vanGenuchten.he] water potential </dd></dl>
+
 </div>
 </div>
 <a id="a1ac6b10a706001de0ffc8db7ec44a859"></a>
@@ -532,6 +544,16 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Compute water content from signed water potential. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">signPsi</td><td>water potential [same unit of vanGenuchten.he] </td></tr>
+    <tr><td class="paramname">horizon</td><td>pointer to <a class="el" href="classsoil_1_1_crit3_d_horizon.html">Crit3DHorizon</a> class </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>volumetric water content [m^3 m-3] </dd></dl>
 
 </div>
 </div>

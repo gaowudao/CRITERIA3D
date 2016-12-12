@@ -122,10 +122,6 @@ void Crit3DSnowPoint::computeSnowBrooksModel()
       {
         float dewPoint = tDewFromRelHum(_airRH, _airT);     // [°C]
 
-        //LC Pag. 49 forumula 3.10
-        // invertendo si ha cloudCover = 1 - Total transmittance/maximum clear sky transmissivity
-        // quindi clearSkyTransmissivity sarebbe il maximum  ???
-        // FT si, l'ho spostata nei parametri perchè potrebbe cambiare
         if (_radpoint->transmissivity != NODATA)
             cloudCover = 1 - std::min(_radpoint->transmissivity / _clearSkyTransmissivity, 1.0f);
         else
@@ -134,12 +130,8 @@ void Crit3DSnowPoint::computeSnowBrooksModel()
         globalRadiation = _radpoint->global;
         beamRadiation = _radpoint->beam;
 
-
-        // LC non trovo riferimento
-        // FT: l'ho aggiunto al modello per tenere conto dell'ombreggiamento dovuto alla vegetazione - va migliorato
-
         // ombreggiamento per vegetazione (4m sopra manto nevoso: ombreggiamento completo)
-        // TODO aggiungere LAI se disponibile
+        // TODO migliorare - aggiungere LAI se disponibile
         float maxSnowDensity = 10;          // 1 mm snow = 1 cm water
         float maxVegetationHeight = 4;      // [m]
         float vegetationShadowing;          // [-]
@@ -217,10 +209,9 @@ void Crit3DSnowPoint::computeSnowBrooksModel()
           // LC: controllare
           // non trovo riferimenti a questa formula
           // perchè amlcune sono define ed altre no?
-          // 8.3143 J/(mol*K)   is universal gas constant???
           // 0.018 is [kg] vapor molar mass???
           if (prevInternalEnergy <= 0)
-            WaterActualVapDensity = WaterActualVapDensity * exp(0.018 * LATENT_HEAT_FUSION * prevSurfacetemp * 1000 / (8.3143 * pow ((prevSurfacetemp + ZEROCELSIUS) , 2)) );
+            WaterActualVapDensity = WaterActualVapDensity * exp(0.018 * LATENT_HEAT_FUSION * prevSurfacetemp * 1000 / (R_GAS * pow ((prevSurfacetemp + ZEROCELSIUS) , 2)) );
 
 
           /*-----------------------------------------------------------
@@ -243,17 +234,12 @@ void Crit3DSnowPoint::computeSnowBrooksModel()
             _ageOfSnow = 0;
 
           if ( (previousSWE > 0) || (_snowFall > 0 && _prec == 0))
-            // LC: arrotondato rispetto alla formula originaria (Gray and O'Neill 1974)
-            // U.S. Army Corps arrotonda così : albedo = 0.74 * _ageOfSnow^(-0..191)
-            // il codice dell'appendice A della tesi invece
-            // min(0.95,0.7383*snow.age^(-0.1908)),0.2)'
-            // in letteratura ci sono tantissime stime e per il calcolo dell'albedo della snow surface,con dipendenze anche ad es. da solar zenith angle o cloud cover o snowpack thickness o snow density ecc...
-            /*
-             * O'NEILL, A.D.J. GRAY D.M.1973. Spatial and temporal variations of the albedo of prairie snowpacks. The Role of Snow and Ice in Hydrology: Proceedings of the Banff Syn~posia, 1972. Unesc - WMO -IAHS, Geneva -Budapest-Paris, Vol. 1,  pp. 176-186
-             * */
-            albedo = std::min(0.9, 0.8 * pow ( _ageOfSnow , -0.15));
+                /* O'NEILL, A.D.J. GRAY D.M.1973. Spatial and temporal variations of the albedo of prairie snowpacks. The Role of Snow and Ice in Hydrology: Proceedings of the Banff Syn~posia, 1972. Unesc - WMO -IAHS, Geneva -Budapest-Paris, Vol. 1,  pp. 176-186
+                * arrotondato da U.S. Army Corps
+                */
+                albedo = std::min(0.9, 0.74 * pow ( _ageOfSnow , -0.19));
           else
-            albedo = _parameters->soilAlbedo;
+                albedo = _parameters->soilAlbedo;
 
 
           /*----------------------------------------
@@ -540,9 +526,7 @@ float Crit3DSnowPoint::aerodynamicResistanceCampbell77(bool isSnow , float zRefW
         //check on vegetativeHeight  [m]
         vegetativeHeight = std::max(vegetativeHeight, 0.1f);
 
-        //LC: pag 51: d is the height of the zero-plane displacement (for snow d = 0 m and for
-        //vegetative cover d = 0.64 times the height of the vegetative).
-        //in origine era: zeroPlane = 0.65 * vegetativeHeight ?!
+        //pag 51: the height of the zero-plane displacement
         zeroPlane = 0.64 * vegetativeHeight;
 
         momentumRoughness = 0.13 * vegetativeHeight;
