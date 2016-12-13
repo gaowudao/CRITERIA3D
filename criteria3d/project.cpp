@@ -402,7 +402,7 @@ bool Crit3DProject::loadClimateParameters()
         return(false);
     }
 
-    //read values
+    /*! read values */
     Crit3DClimateParameters myParameters;
     int i;
     while (myQuery.next())
@@ -424,7 +424,8 @@ bool Crit3DProject::loadSettings()
 {
     if (!loadClimateParameters()) return false;
     if (!loadVanGenuchtenParameters()) return false;
-    // load crop parameters
+
+    /*! load crop parameters */
     return true;
 }
 
@@ -491,13 +492,13 @@ bool Crit3DProject::loadVanGenuchtenParameters()
         return(false);
     }
 
-    //read values
+    /*! read values */
     int id, j;
     float myValue;
     while (query.next())
     {
         id = query.value(0).toInt();
-        //check data
+        /*! check data */
         for (j = 0; j <= 7; j++)
             if (! getValue(query.value(j), &myValue))
             {
@@ -545,7 +546,7 @@ bool Crit3DProject::loadHorizons(soil::Crit3DSoil* outputSoil, int idSoil)
     int i = 0;
     while (query.next())
     {
-        //check depth
+        /*! check depth */
         idHorizon = query.value(1).toInt();
         getValue(query.value(2), &(mySoil->horizon[i].upperDepth));
         getValue(query.value(3), &(mySoil->horizon[i].lowerDepth));
@@ -556,19 +557,19 @@ bool Crit3DProject::loadHorizons(soil::Crit3DSoil* outputSoil, int idSoil)
                     + " horizon " + QString::number(idHorizon);
             return(false);
         }
-        //[cm]->[m]
+
+        /*! [cm]->[m] */
         mySoil->horizon[i].upperDepth /= 100.0;
         mySoil->horizon[i].lowerDepth /= 100.0;
 
-        //check skeleton
+        /*! check skeleton*/
         getValue(query.value(4), &skeleton);
         if (skeleton == NODATA)
             mySoil->horizon[i].coarseFragments = 0.;
         else
-            //[0,1]
-            mySoil->horizon[i].coarseFragments = skeleton / 100.0;
+            mySoil->horizon[i].coarseFragments = skeleton / 100.0; /*!< [0,1] */
 
-        //texture
+        /*! texture */
         getValue(query.value(5), &idTexture);
         getValue(query.value(6), &sand);
         getValue(query.value(7), &silt);
@@ -582,7 +583,7 @@ bool Crit3DProject::loadHorizons(soil::Crit3DSoil* outputSoil, int idSoil)
                     return (false);
             }
 
-            //check Texture
+            /*! check Texture */
             idTexture = soil::getUSDATextureClass(sand, silt, clay);
             if (idTexture == NODATA)
             {
@@ -597,12 +598,12 @@ bool Crit3DProject::loadHorizons(soil::Crit3DSoil* outputSoil, int idSoil)
         mySoil->horizon[i].texture.silt = silt;
         mySoil->horizon[i].texture.clay = clay;
 
-        //default values
+        /*! default values */
         mySoil->horizon[i].texture.classUSDA = idTexture;
         mySoil->horizon[i].vanGenuchten = soilClass[idTexture].vanGenuchten;
         mySoil->horizon[i].waterConductivity = soilClass[idTexture].waterConductivity;
 
-        //organic matter
+        /*! organic matter */
         getValue(query.value(9), &organicMatter);
         if (organicMatter == NODATA)
             organicMatter = 0.005;      //minimum value: 0.5%
@@ -610,7 +611,7 @@ bool Crit3DProject::loadHorizons(soil::Crit3DSoil* outputSoil, int idSoil)
             organicMatter /= 100.0;     //[0-1]
         mySoil->horizon[i].organicMatter = organicMatter;
 
-        //bulk density and porosity
+        /*! bulk density and porosity */
         getValue(query.value(10), &bulkDensity);
         getValue(query.value(11), &porosity);
 
@@ -621,7 +622,7 @@ bool Crit3DProject::loadHorizons(soil::Crit3DSoil* outputSoil, int idSoil)
 
         mySoil->horizon[i].bulkDensity = bulkDensity;
 
-        //saturated conductivity
+        /*! saturated conductivity */
         getValue(query.value(12), &ksat);
         if (ksat != NODATA)
         {
@@ -634,7 +635,7 @@ bool Crit3DProject::loadHorizons(soil::Crit3DSoil* outputSoil, int idSoil)
         }
         mySoil->horizon[i].waterConductivity.kSat = ksat;
 
-        //update with skeleton
+        /*! update with skeleton */
         mySoil->horizon[i].vanGenuchten.thetaS = porosity * (1.0 - mySoil->horizon[i].coarseFragments);
         mySoil->horizon[i].vanGenuchten.thetaR = mySoil->horizon[i].vanGenuchten.thetaR * (1.0 - mySoil->horizon[i].coarseFragments);
 
@@ -775,7 +776,7 @@ bool Crit3DProject::loadDBPoints()
     nrMeteoPoints = query.size();
     meteoPoints = new Crit3DMeteoPoint[nrMeteoPoints];
 
-    //read values
+    /*! read values */
     int i = 0;
     while (query.next())
     {
@@ -810,7 +811,14 @@ bool Crit3DProject::meteoDataLoaded(const Crit3DTime& myTimeIni, const Crit3DTim
 }
 
 
-// observed data: aggregation hourly
+/*!
+ * \brief observed data: aggregation hourly
+ * \param indexPoint
+ * \param d1 date
+ * \param d2 date
+ * \param tableName
+ * \return ture if data are available, false otherwise
+ */
 bool Crit3DProject::loadObsDataHourly(int indexPoint, QDate d1, QDate d2, QString tableName)
 {
     QDate myDate;
@@ -844,12 +852,12 @@ bool Crit3DProject::loadObsDataHourly(int indexPoint, QDate d1, QDate d2, QStrin
     }
     else if (myQuery.size() == 0) return(false);
 
-    //read values
+    /*! read values */
     while (myQuery.next())
     {
         myDate = myQuery.value(0).toDate();
         myHour = myQuery.value(1).toInt();
-        //transform local time in UTC
+        /*! transform local time in UTC */
         if (!myPoint->isUTC)
         {
             myHour -= this->gisSettings.timeZone;
@@ -953,12 +961,12 @@ bool Crit3DProject::loadObsDataHourlyVar(int indexPoint, meteoVariable myVar, QD
 
     QDate pointFirstDate = getQDate(myPoint->obsDataH[0].date);
 
-    //read values
+    /*! read values */
     while (myQuery.next())
     {
         myDate = myQuery.value(0).toDate();
         myHour = myQuery.value(1).toInt();
-        //transform local time in UTC
+        /*! transform local time in UTC */
         if (!myPoint->isUTC)
         {
             myHour -= this->gisSettings.timeZone;
@@ -1065,7 +1073,7 @@ bool removeDirectory(QString myPath)
     QDir myDirectory(myPath);
     myDirectory.setNameFilters(QStringList() << "*.*");
     myDirectory.setFilter(QDir::Files);
-    //remove all files
+    /*! remove all files */
     foreach(QString myFile, myDirectory.entryList())
     {
         myDirectory.remove(myFile);
@@ -1083,7 +1091,7 @@ bool Crit3DProject::LoadObsDataFilled(QDateTime firstTime, QDateTime lastTime)
 
     if (! this->loadObsDataAllPoints(d1, d2)) return(false);
 
-    // Replace missing data
+    /*! Replace missing data */
     long nrReplacedData = 0;
     Crit3DTime myTime = getCrit3DTime(firstTime);
     long nrHours = firstTime.secsTo(lastTime) / 3600;
@@ -1155,7 +1163,7 @@ bool Crit3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool isS
         {
             if (isSaveOutput)
             {
-                //create output directories
+                /*! create output directories */
                 myOutputPathDaily = this->path + this->dailyOutputPath + myDate.toString("yyyy/MM/dd/");
                 myOutputPathHourly = this->path + "hourly_output/" + myDate.toString("yyyy/MM/dd/");
                 this->logInfo("daily Output path: " + myOutputPathDaily);
@@ -1167,7 +1175,7 @@ bool Crit3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool isS
                 }
             }
 
-            // load average air temperature map, if exists
+            /*! load average air temperature map, if exists*/
             loadDailyMeteoMap(this, airTemperatureMean, myDate.addDays(-1), myArea);
 
             if (! modelDailyCycle(isInitialState, getCrit3DDate(myDate), finalHour, this, myOutputPathHourly, isSaveOutput, myArea))
@@ -1197,14 +1205,14 @@ bool Crit3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool isS
                 if (removeDirectory(myOutputPathHourly)) this->logInfo("Delete hourly files");
             }
 
-            //load daily map (for desease)
+            /*! load daily map (for desease) */
             if (! loadDailyMeteoMap(this, airTemperatureMean, myDate, myArea)) return false;
             if (! loadDailyMeteoMap(this, airHumidityMean, myDate, myArea)) return false;
             if (! loadDailyMeteoMap(this, precipitation, myDate, myArea))  return false;
             if (! loadDailyMeteoMap(this, wetnessDuration, myDate, myArea)) return false;
             updateThermalSum(this, myDate);
 
-            //state and output
+            /*! state and output */
             saveStateAndOutput(myDate, myArea);
         }
     }

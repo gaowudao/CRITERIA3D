@@ -17,10 +17,15 @@
         std::string idCrop;
         speciesType type;
 
-        // root
+        /*!
+         * \brief roots
+         */
         Crit3DRoot roots;
 
-        // crop cycle
+
+        /*!
+         * \brief crop cycle
+         */
         int sowingDoy;
         int doyStartSenescence;
         int plantCycle;
@@ -30,21 +35,28 @@
         double upperThermalThreshold;
         double degreeDaysIncrease, degreeDaysDecrease, degreeDaysEmergence;
 
-        // water need
+        /*!
+         * \brief water need
+         */
         double kcMax;
         int degreeDaysMaxSensibility;
-        double psiLeaf;                         // [cm]
-        double stressTolerance;                 // []
+        double psiLeaf;                         /*!< [cm] */
+        double stressTolerance;                 /*!< [] */
         double frac_read_avail_water_min;
         double frac_read_avail_water_max;
 
-        // irrigation
+        /*!
+         * \brief irrigation
+         */
         int irrigationShift;
         double irrigationVolume;
         int degreeDaysStartIrrigation, degreeDaysEndIrrigation;
         double maxSurfacePuddle;
 
-        // VARIABLES
+
+        /*!
+         * \brief variables
+         */
         double degreeDays;
         bool isLiving;
         bool isEmerged;

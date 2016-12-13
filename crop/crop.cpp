@@ -39,7 +39,9 @@
         idCrop = "";
         type = HERBACEOUS_ANNUAL;
 
-        //crop cycle
+        /*!
+         * \brief crop cycle
+         */
         isLiving = false;
         isEmerged = false;
         sowingDoy = NODATA;
@@ -56,15 +58,20 @@
         degreeDaysDecrease = NODATA;
         degreeDaysEmergence = NODATA;
 
-        //water need
+
+        /*!
+         * \brief water need
+         */
         kcMax  = NODATA;
         degreeDaysMaxSensibility = NODATA;
         psiLeaf = NODATA;
-        stressTolerance = NODATA;              //[0-1]
+        stressTolerance = NODATA;              /*!<  [0-1] */
         frac_read_avail_water_min = NODATA;
         frac_read_avail_water_max = NODATA;
 
-        //irrigation
+        /*!
+         * \brief irrigation
+         */
         irrigationShift = NODATA;
         irrigationVolume = NODATA;
         degreeDaysStartIrrigation = NODATA;
@@ -92,7 +99,7 @@
 
     speciesType getCropType(std::string cropType)
     {
-        // lower case
+        /*!  lower case */
         std::transform(cropType.begin(), cropType.end(), cropType.begin(), ::tolower);
 
         if (cropType == "herbaceous")

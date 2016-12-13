@@ -34,7 +34,7 @@ namespace gis
 {
     Crit3DEllipsoid::Crit3DEllipsoid()
     {
-        // WGS84
+        /*!  WGS84 */
         this->equatorialRadius = 6378137.0 ;
         this->eccentricitySquared = 6.69438000426083E-03;
     }
@@ -261,7 +261,12 @@ namespace gis
     }
 
 
-    // return X,Y of cell center
+    /*!
+     * \brief return X,Y of cell center
+     * \param myRow
+     * \param myCol
+     * \return Crit3DUtmPoint pointer
+     */
     Crit3DUtmPoint* Crit3DRasterGrid::utmPoint(long myRow, long myCol)
     {
         double x, y;
@@ -302,7 +307,7 @@ namespace gis
                 }
             }
 
-        //no values
+        /*!  no values */
         if (isFirstValue) return(false);
 
         myGrid->maximum = maximum;
@@ -351,7 +356,7 @@ namespace gis
                 }
             }
 
-        //no values
+        /*!  no values */
         if (isFirstValue) return(false);
 
         myGrid->colorScale->maximum = maximum;
@@ -460,20 +465,21 @@ namespace gis
     }
 
 
+    /*!
+     * \brief Converts lat/long to UTM coords.  Equations from USGS Bulletin 1532.
+     * Source:
+     *      Defense Mapping Agency. 1987b. DMA Technical Report:
+     *      Supplement to Department of Defense World Geodetic System.
+     *      1984 Technical Report. Part I and II. Washington, DC: Defense Mapping Agency
+     * \param lat in decimal degrees
+     * \param lon in decimal degrees
+     * \param utmEasting: East Longitudes are positive, West longitudes are negative.
+     * \param utmNorthing: North latitudes are positive, South latitudes are negative.
+     * \param zoneNumber
+     */
     void latLonToUtm(double lat, double lon, double *utmEasting, double *utmNorthing, int *zoneNumber)
     {
-        /* -------------------------------------------------------------------------------
-           Converts lat/long to UTM coords.  Equations from USGS Bulletin 1532.
-           East Longitudes are positive, West longitudes are negative.
-           North latitudes are positive, South latitudes are negative.
-           Lat and Lon are in decimal degrees.
-         -------------------------------------------------------------------------------
-           Source:
-           Defense Mapping Agency. 1987b. DMA Technical Report:
-           Supplement to Department of Defense World Geodetic System.
-           1984 Technical Report. Part I and II. Washington, DC: Defense Mapping Agency
-         -------------------------------------------------------------------------------
-        */
+
         static double ellipsoidK0 = 0.9996;
         double eccSquared, lonOrigin, eccPrimeSquared, ae, a, n;
         double t, c,m,lonTemp, latRad,lonRad,lonOriginRad;
@@ -483,16 +489,16 @@ namespace gis
         ae = referenceEllipsoid.equatorialRadius;
         eccSquared = referenceEllipsoid.eccentricitySquared;
 
-        // Make sure the longitude is between -180.00 .. 179.9:
+        //!< Make sure the longitude is between -180.00 .. 179.9: */
         lonTemp = (lon + 180) - (floor)((lon + 180) / 360) * 360 - 180;
 
         latRad = lat * DEG_TO_RAD ;
         lonRad = lonTemp * DEG_TO_RAD ;
         *zoneNumber = (int)ceil((lonTemp + 180.) / 6);
 
-        // Special zones for Norway:
+        //!<  Special zones for Norway: */
         if ((lat >= 56.0) && (lat < 64.0) && (lonTemp >= 3.0) && (lonTemp < 12.0)) (*zoneNumber) = 32 ;
-        // Special zones for Svalbard:
+        //!<  Special zones for Svalbard: */
         if ((lat >= 72.0)&&(lat < 84.0))
         {
             if ((lonTemp >= 0) && (lonTemp < 9.0)) (*zoneNumber) = 31;
@@ -501,7 +507,7 @@ namespace gis
             else if ((lonTemp >= 33.0)&& (lonTemp < 42.0)) (*zoneNumber) = 3;
         }
 
-        // puts origin in middle of zone
+        //!<  puts origin in middle of zone */
         lonOrigin = ((*zoneNumber) - 1) * 6 - 180 + 3;
         lonOriginRad = lonOrigin * DEG_TO_RAD;
 
@@ -530,16 +536,17 @@ namespace gis
                     + (61 - 58 * t + t * t + 600 * c
                     - 330 * eccPrimeSquared) * a * a * a * a * a * a / 720)));
 
-        // offset for southern hemisphere:
+        //!<  offset for southern hemisphere: */
         if (lat < 0) (*utmNorthing) += 10000000.0;
     }
 
 
     void latLonToUtmForceZone(int zoneNumber, double lat, double lon, double *utmEasting, double *utmNorthing)
     {
-    //-------------------------------------------------------------------------------
-    // equivalent to LatLonToUTM forcing UTM zone
-    //-------------------------------------------------------------------------------
+
+        /*!
+          equivalent to LatLonToUTM forcing UTM zone.
+        */
         double eccSquared, lonOrigin, eccPrimeSquared, ae, a, n , t, c,m,lonTemp, latRad,lonRad,lonOriginRad;
         static double ellipsoidK0 = 0.9996;
 
@@ -547,13 +554,13 @@ namespace gis
         ae = referenceEllipsoid.equatorialRadius;
         eccSquared = referenceEllipsoid.eccentricitySquared;
 
-        // make sure the longitude is between -180.00 .. 179.9:
+        //!<  make sure the longitude is between -180.00 .. 179.9: */
         lonTemp = (lon + 180) - (floor)((lon + 180) / 360) * 360 - 180;
 
         latRad = lat * DEG_TO_RAD;
         lonRad = lonTemp * DEG_TO_RAD;
 
-        // puts origin in middle of zone
+        //!<  puts origin in middle of zone */
         lonOrigin = (zoneNumber - 1) * 6 - 180 + 3;
         lonOriginRad = lonOrigin * DEG_TO_RAD;
 
@@ -582,20 +589,24 @@ namespace gis
                     + (61 - 58 * t + t * t + 600 * c
                     - 330 * eccPrimeSquared) * a * a * a * a * a * a / 720)));
 
-        // offset for southern hemisphere:
+        //!<  offset for southern hemisphere: */
         if (lat < 0) (*utmNorthing) += 10000000.0;
 
     }
 
 
+    /*!
+     * \brief Converts UTM coords to Lat/Lng.  Equations from USGS Bulletin 1532.
+     * \param zoneNumber
+     * \param north
+     * \param utmEasting: East Longitudes are positive, West longitudes are negative.
+     * \param utmNorthing: North latitudes are positive, South latitudes are negative.
+     * \param lat in decimal degrees.
+     * \param lon in decimal degrees.
+     */
     void utmToLatLon(int zoneNumber, bool north, double utmEasting, double utmNorthing, double *lat, double *lon)
     {
-        // -------------------------------------------------------------------------------
-        //   Converts UTM coords to Lat/Lng.  Equations from USGS Bulletin 1532.
-        //   East Longitudes are positive, West longitudes are negative.
-        //   North latitudes are positive, South latitudes are negative.
-        //   Lat and Lng are in decimal degrees.
-        // -------------------------------------------------------------------------------
+
 
         double ae, e1, eccSquared, eccPrimeSquared, n1, t1, c1, r1, d, m, x, y;
         double longOrigin , mu , phi1Rad;
@@ -607,11 +618,11 @@ namespace gis
 
         e1 = (1.0 - sqrt(1.0 - eccSquared)) / (1.0 + sqrt(1.0 - eccSquared));
 
-        // offset for longitude
+        /*! offset for longitude */
         x = utmEasting - 500000.0;
         y = utmNorthing;
 
-        //offset used for southern hemisphere
+        /*! offset used for southern hemisphere */
         if (north == false)    y -= 10000000.0;
 
         eccPrimeSquared = (eccSquared) / (1.0 - eccSquared);
@@ -644,7 +655,7 @@ namespace gis
             + 8.0 * eccPrimeSquared + 24.0 * t1 * t1)
             * d * d * d * d * d / 120.0) / cos(phi1Rad);
 
-        // puts origin in middle of zone
+        /*! puts origin in middle of zone */
         longOrigin = (float)(zoneNumber - 1) * 6 - 180 + 3;
 
         *lon *= RAD_TO_DEG ;
@@ -652,9 +663,11 @@ namespace gis
     }
 
 
-    // UTM zone:   [1,60]
-    // Time zone:  [-12,12]
-    // lon:       [-180,180]
+    /*!
+    * UTM zone:   [1,60]
+    * Time zone:  [-12,12]
+    * lon:       [-180,180]
+    */
     bool isValidUtmTimeZone(int utmZone, int timeZone)
     {
         float lonUtmZone , lonTimeZone;
@@ -744,21 +757,21 @@ namespace gis
                     else
                         dz_dx = EPSILON;
 
-                    // slope in degrees
+                    /*! slope in degrees */
                     mySlope = atan(sqrt(dz_dx * dz_dx + dz_dy * dz_dy)) * RAD_TO_DEG;
                     slopeMap->value[myRow][myCol] = (float)mySlope;
 
-                    // avoid arctan to infinite
+                    /*! avoid arctan to infinite */
                     if (dz_dx == 0.) dz_dx = EPSILON;
 
-                    // compute with zero to east
+                    /*! compute with zero to east */
                     myAspect = 0.0;
                     if (dz_dx > 0)
                         myAspect = atan(dz_dy / dz_dx);
                     else if (dz_dx < 0)
                         myAspect = PI + atan(dz_dy / dz_dx);
 
-                    // convert to zero from north and to degrees
+                    /*! convert to zero from north and to degrees */
                     myAspect += (PI / 2.);
                     myAspect *= RAD_TO_DEG;
 
@@ -850,7 +863,13 @@ namespace gis
         return true;
     }
 
-    // return true if value(row, col) > all values of neighbours
+    /*!
+     * \brief return true if value(row, col) > all values of neighbours
+     * \param myGrid Crit3DRasterGrid
+     * \param row
+     * \param col
+     * \return true/false
+     */
     bool isStrictMaximum(const Crit3DRasterGrid& myGrid, long row, long col)
     {
         float z, adjZ;
@@ -878,7 +897,14 @@ namespace gis
         return (z > adjZ);
     }
 
-    // return true if value(row, col) <= value of neighbours
+
+    /*!
+     * \brief return true if value(row, col) <= value of neighbours
+     * \param myGrid Crit3DRasterGrid
+     * \param row
+     * \param col
+     * \return true/false
+     */
     bool isMinimum(const Crit3DRasterGrid& myGrid, long row, long col)
     {
         float z = myGrid.getValueFromRowCol(row, col);
@@ -890,7 +916,14 @@ namespace gis
         return true;
     }
 
-    // return true if (row, col) is a minimum, or adjacent to a minimum
+
+    /*!
+     * \brief return true if (row, col) is a minimum, or adjacent to a minimum
+     * \param myGrid Crit3DRasterGrid&
+     * \param row
+     * \param col
+     * \return true/false
+     */
     bool isMinimumOrNearMinimum(const Crit3DRasterGrid& myGrid, long row, long col)
     {
         float z = myGrid.getValueFromRowCol(row, col);
@@ -903,7 +936,14 @@ namespace gis
     }
 
 
-    // return true if is valid, and one neighbour (at least) is nodata
+
+    /*!
+     * \brief return true if is valid, and one neighbour (at least) is nodata
+     * \param myGrid
+     * \param row
+     * \param col
+     * \return true/false
+     */
     bool isBoundary(const Crit3DRasterGrid& myGrid, long row, long col)
     {
         float z = myGrid.getValueFromRowCol(row, col);
@@ -975,7 +1015,7 @@ namespace gis
         for (long row = 0; row < outputMap->header->nrRows ; row++)
             for (long col = 0; col < outputMap->header->nrCols; col++)
             {
-                //center
+                /*! center */
                 getUtmXYFromRowCol(*outputMap, row, col, &x, &y);
                 valuesList.resize(0);
 

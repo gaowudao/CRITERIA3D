@@ -57,10 +57,14 @@ using namespace std;
 namespace gis
     {
 
-    //-------------------------------------------------------------------
-    // Read a ESRI grid header file (.hdr)
-    // llCorner is lower-left corner
-    // ------------------------------------------------------------------
+
+/*!
+     * \brief Read a ESRI grid header file (.hdr). llCorner is lower-left corner
+     * \param myFileName string
+     * \param myHeader Crit3DGridHeader pointer
+     * \param myError string pointer
+     * \return true on success, false otherwise
+     */
     bool readEsriGridHeader(string myFileName, gis::Crit3DGridHeader *myHeader, string* myError)
     {
         string myLine, myKey, upKey, myValue;

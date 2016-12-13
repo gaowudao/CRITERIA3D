@@ -70,9 +70,15 @@ bool isDataPresent(Crit3DProject* myProject, meteoVariable myVar, Crit3DTime myD
     return false;
 }
 
-// ---------------------------------------------------------------
-// Try to cover missing data
-// ---------------------------------------------------------------
+
+/*!
+ * \brief Try to cover missing data
+ * \param myProject pointer to Crit3DProject
+ * \param myVar
+ * \param myDateTime
+ * \param nrReplacedData
+ * \return true if data has been replaced, false otherwise
+ */
 bool checkLackOfData(Crit3DProject* myProject, meteoVariable myVar, Crit3DTime myDateTime, long* nrReplacedData)
 {
     if (isDataPresent(myProject, myVar, myDateTime))
