@@ -1,10 +1,10 @@
-/* -------------------------------------------------
-     Kriging Interpolator
+/*!
+     \brief Kriging Interpolator
 
      based on: Chao-yi Lang
      July, 1995
      lang@cs.cornell.edu
- ------------------------------------------------- */
+*/
 
     #include <malloc.h>
     #include <math.h>
@@ -12,17 +12,18 @@
 
     #include "kriging.h"
 
-    // global variables
+    /*! global variables */
     short mode;
     int dim;
     double range, nugget, sill, sill_nugget, slope;
     double *D, *V, *weight, *VM, *pos, *val;
 
 
-/* ----------------------------------------------
-    matrixInversion
-    no pivoting - assume che sia di rango n
- ------------------------------------------------ */
+    /*!
+     * \brief no pivoting - assume rank n
+     * \param A matrix double pointer
+     * \return true on success, false otherwise
+     */
     bool matrixInversion(double *A)
     {
         double *inverseA, rapporto;
@@ -30,12 +31,12 @@
 
         inverseA = (double *) malloc(sizeof(double) * dim *dim);
 
-        // inizializza = matrice Identità
+        /*! inizializza = matrice Identità */
         for (i = 0; i < dim; i++)
             for(j = 0; j < dim; j++)
                 inverseA[i*dim+j] = (i == j) ? 1. : 0. ;
 
-        // step 1: A diventa triangolare sup , inverseA triangolare inf
+        /*! step 1: A diventa triangolare sup , inverseA triangolare inf */
         for (iter = 0; iter < (dim-1); iter++)
         {
             first_row = iter + 1;
@@ -50,7 +51,7 @@
             }
         }
 
-        // step 2: A diventa diagonale
+        /*! step 2: A diventa diagonale */
         for (iter = dim - 1; iter > 0; iter--)
         {
             first_row = iter - 1;
@@ -63,12 +64,12 @@
             }
         }
 
-        // step 3: divide per la diagonale e ottiene inverseA
+        /*! step 3: divide per la diagonale e ottiene inverseA */
         for(i = 0; i < dim; i++)
             for (j = 0; j < dim; j++)
                 inverseA[i*dim+j] /= A[i*dim+i];
 
-        // salva matrice inversa e libera memoria
+        /*! salva matrice inversa e libera memoria */
         for(i = 0; i < dim; i++)
             for (j = 0; j < dim; j++)
                 A[i*dim+j] = inverseA[i*dim+j];
@@ -79,23 +80,19 @@
     }
 
 
-/* -----------------------------------------------------------
-    krigingVariogram
-    costruisce la matrice delle distanze e il variogramma
- ----- INPUT -------------------------------------------------
 
-    pos[N*2]	[i*2]   x i-esima stazione
-                [i*2+1] y i-esima stazione
-
-    val[N]		dati stazione
-
-    n_item		numero di stazioni
-
-    mode		1   Spher mode
-                2   Expon mode
-                3   Gauss mode
-                4   Linear mode
- ------------------------------------------------------------ */
+    /*!
+     * \brief costruisce la matrice delle distanze e il variogramma
+     * \param myPos pos[N*2]	[i*2]   x i-esima stazione  [i*2+1] y i-esima stazione
+     * \param myVal dati stazione
+     * \param nrItems numero di stazioni
+     * \param myMode mode 1-Spher mode 2-Expon mode 3-Gauss mode 4-Linear mode
+     * \param myRange
+     * \param myNugget
+     * \param mySill
+     * \param mySlope
+     * \return
+     */
     bool krigingVariogram(double *myPos, double *myVal, int nrItems, short myMode,
                           double myRange, double myNugget, double mySill, double mySlope)
     {
@@ -103,7 +100,7 @@
         double dx, dy, tmp;
         double *Cd;
 
-        // global variables
+        /*! global variables */
         mode	= myMode;
         dim		= nrItems + 1;
         range = myRange;
@@ -121,7 +118,7 @@
         pos		= (double *) malloc (sizeof (double) * nrItems * 2);
         val		= (double *) malloc (sizeof (double) * nrItems);
 
-        // salva matrici posizione e valore
+        /*! salva matrici posizione e valore */
         for (i=0; i < nrItems; i++)
         {
             pos[i*2]	= myPos[i*2];
@@ -129,7 +126,7 @@
             val[i]		= myVal[i];
         }
 
-        // matrice (triangolare sup) delle distanze
+        /*! matrice (triangolare sup) delle distanze */
         for (i=0; i < nrItems; i++)
         {
             for (j=i; j < nrItems; j++)
@@ -140,11 +137,12 @@
             }
         }
 
-        // inizializza ultima riga e colonna del variogramma
-        // es:	0 0 0 1
-        //		0 0 0 1
-        //		0 0 0 1
-        //		1 1 1 0
+        /*! inizializza ultima riga e colonna del variogramma
+        * es:	0 0 0 1
+        *		0 0 0 1
+        *		0 0 0 1
+        *		1 1 1 0 */
+
         for (i = 0; i < nrItems; i++)
         {
             V[i*dim +dim -1] = 1;
@@ -152,7 +150,7 @@
         }
         V[(dim-1)*(dim)+i] = 0;
 
-        /* calcola il variogramma e lo salva in V */
+        /*! calcola il variogramma e lo salva in V */
         for (i = 0; i < nrItems; i++)
         {
             for (j = i; j < nrItems; j++)
@@ -160,7 +158,8 @@
                 tmp = Cd[i*dim+j] / range;
                 switch (mode)
                 {
-                    case 1 : /* Spherical */
+                /*! Spherical */
+                    case 1 :
                             if (Cd[i*dim+j] < range)
                             {
                                 V[i*dim+j] = V[j*dim+i] = nugget + sill_nugget *
@@ -168,29 +167,32 @@
                             }
                             else V[i*dim+j] = V[j*dim+i] = nugget + sill_nugget;
                             break;
-
-                    case 2 : /* Exponential */
+                /*! Exponential */
+                    case 2 :
                             V[i*dim+j] = V[j*dim+i] = nugget + sill_nugget *
                                         (1. - exp(-3.* tmp));
                             break;
 
-                    case 3 : /* Gaussian */
+                /*! Gaussian */
+                    case 3 :
                             V[i*dim+j] = V[j*dim+i] = nugget + sill_nugget *
                                         (1. - exp(-4.* tmp * tmp));
                             break;
 
-                    case 4 : /* Linear */
+                /*! Linear */
+                    case 4 :
                             V[i*dim+j] = V[j*dim+i] = nugget + slope * Cd[i*dim+j];
                             break;
 
-                    default: /* Default: linear */
+                /*! Default: linear */
+                    default:
                             V[i*dim+j] = V[j*dim+i] = nugget + slope * Cd[i*dim+j];
                             break;
                 }
             }
         }
 
-        /* inverte variogramma e libera memoria*/
+        /*! inverte variogramma e libera memoria*/
         matrixInversion(V);
 
         free(Cd);
@@ -199,21 +201,18 @@
     }
 
 
-/* ----------------------------------------------------
-    krigingSetWeight
-    assegna i pesi dei punti misura rispetto a P(x,y)
-    e li salva nella matrice weight
-   -- INPUT -------------------------------------------
-    x_p			x point
-    y_p			y point
-  ----------------------------------------------------- */
+/*!
+ * \brief assegna i pesi dei punti misura rispetto a P(x,y) e li salva nella matrice weight
+ * \param x_p x point
+ * \param y_p y point
+ * \return true on success, false otherwise
+ */
 bool krigingSetWeight(double x_p, double y_p)
     {
         int i, j;
         double dx, dy, tmp, h;
 
-        // calcola le distanze tra P e i punti di misura
-        // e calcola il variogramma (memorizzato in D)
+        /*! calcola le distanze tra P e i punti di misura e calcola il variogramma (memorizzato in D) */
         for (i=0; i < dim-1; i++)
             {
             dx = pos[i*2] - x_p;
@@ -222,33 +221,37 @@ bool krigingSetWeight(double x_p, double y_p)
             tmp = h / range;
             switch( mode )
                 {
-                case 1 : /* Sferico */
+            /*! Sferico */
+                case 1 :
                          if ( h < range )
                             D[i] = nugget + sill_nugget * (1.5 * tmp - 0.5 * tmp * tmp * tmp);
                          else
                             D[i] = nugget + sill_nugget;
                          break;
-
-                case 2 : /* Esponenziale */
+            /*! Esponenziale */
+                case 2 :
                          D[i] = nugget + sill_nugget * (1. - exp(-3.* tmp));
                          break;
 
-                case 3 : /* Gaussiano */
+            /*! Gaussiano */
+                case 3 :
                          D[i] = nugget + sill_nugget * (1. - exp(-4.* tmp * tmp));
                          break;
 
-                case 4 : /* Lineare */
+            /*! Lineare */
+                case 4 :
                          D[i] = nugget + slope * h;
                          break;
 
-                default: /* Default: Lineare */
+            /*! Default: Lineare */
+                default:
                          D[i] = nugget + slope * h;
                          break;
                 }
         }
         D[dim-1] = 1;
 
-        /* calcola i pesi */
+        /*! calcola i pesi */
         for (i=0; i < dim-1; i++)
             {
             weight[i] = 0;
@@ -260,9 +263,10 @@ bool krigingSetWeight(double x_p, double y_p)
     }
 
 
-/* -----------------------------------------------------
-    return interpolated value in the point (x_p, y_p)
-   -----------------------------------------------------*/
+/*!
+ * \brief return interpolated value in the point (x_p, y_p)
+ * \return result
+ */
 double krigingResult()
     {
         double result = 0.0;
@@ -274,9 +278,11 @@ double krigingResult()
     }
 
 
-/* ----------------------------------------------
-    Root Mean Square Error
-  ----------------------------------------------- */
+
+/*!
+ * \brief Root Mean Square Error
+ * \return result
+ */
 double krigingRMSE()
     {
         double error = 0.0;

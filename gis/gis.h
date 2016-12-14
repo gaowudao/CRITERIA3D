@@ -1,5 +1,5 @@
-/*-----------------------------------------------------------------------------------
-    COPYRIGHT 2010-2016 Fausto Tomei, Gabriele Antolini,
+/*!
+    \copyright 2010-2016 Fausto Tomei, Gabriele Antolini,
     Alberto Pistocchi, Marco Bittelli, Antonio Volta, Laura Costantini
 
     This file is part of CRITERIA3D.
@@ -21,7 +21,7 @@
     contacts:
     fausto.tomei@gmail.com
     ftomei@arpae.it
------------------------------------------------------------------------------------*/
+*/
 
 #ifndef GIS_H
 #define GIS_H

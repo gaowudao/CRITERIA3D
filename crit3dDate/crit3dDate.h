@@ -1,7 +1,7 @@
-/*-----------------------------------------------------------------------------------
+/*!
     CRITERIA3D
 
-    Copyright 2016 Fausto Tomei, Gabriele Antolini,
+    \copyright 2016 Fausto Tomei, Gabriele Antolini,
     Alberto Pistocchi, Marco Bittelli, Antonio Volta, Laura Costantini
 
     You should have received a copy of the GNU General Public License
@@ -26,7 +26,7 @@
     contacts:
     fausto.tomei@gmail.com
     ftomei@arpae.it
------------------------------------------------------------------------------------*/
+*/
  
 #ifndef CRIT3DDATE_H
 #define CRIT3DDATE_H

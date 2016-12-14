@@ -1,5 +1,5 @@
-/*-----------------------------------------------------------------------------------
-    COPYRIGHT 2010-2016 Fausto Tomei, Gabriele Antolini,
+/*!
+    \copyright 2010-2016 Fausto Tomei, Gabriele Antolini,
     Alberto Pistocchi, Marco Bittelli, Antonio Volta, Laura Costantini
 
     This file is part of CRITERIA3D.
@@ -21,7 +21,7 @@
     contacts:
     fausto.tomei@gmail.com
     ftomei@arpae.it
------------------------------------------------------------------------------------*/
+*/
 
 
 #include <algorithm>
@@ -120,16 +120,20 @@ namespace gis
     }
 
 
-    /*-------------------------------------------------------------------
-    / Read a ESRI grid data file (.flt)
-    / -------------------------------------------------------------------*/
+    /*!
+     * \brief Read a ESRI grid data file (.flt)
+     * \param myFileName string name file
+     * \param myGrid Crit3DRasterGrid pointer
+     * \param myError string pointer
+     * \return true on success, false otherwise
+     */
     bool readEsriGridFlt(string myFileName, gis::Crit3DRasterGrid *myGrid, string *myError)
     {
         myFileName += ".flt";
 
         FILE* filePointer;
 
-        //alloc memory
+        /*! alloc memory */
         myGrid->value = (float **) calloc(myGrid->header->nrRows, sizeof(float *));
         for (long myRow = 0; myRow < myGrid->header->nrRows; myRow++)
         {
@@ -158,9 +162,13 @@ namespace gis
     }
 
 
-    /*-------------------------------------------------------------------
-    / Write a ESRI grid header file (.hdr)
-    / -------------------------------------------------------------------*/
+    /*!
+     * \brief Write a ESRI grid header file (.hdr)
+     * \param myFileName string name file
+     * \param myHeader Crit3DGridHeader pointer
+     * \param myError string pointer
+     * \return true on success, false otherwise
+     */
     bool writeEsriGridHeader(string myFileName, gis::Crit3DGridHeader *myHeader, string* myError)
     {
         myFileName += ".hdr";
@@ -186,11 +194,11 @@ namespace gis
 
         myFile << "cellsize      " << myHeader->cellSize << "\n";
 
-        // different version of NODATA
+        /*! different version of NODATA */
         myFile << "NODATA_value  " << myHeader->flag << "\n";
         myFile << "NODATA        " << myHeader->flag << "\n";
 
-        // crucial information
+        /*! crucial information */
         myFile << "byteorder     LSBFIRST" << "\n";
 
         myFile.close();
@@ -198,9 +206,14 @@ namespace gis
         return(true);
     }
 
-    /*-------------------------------------------------------------------
-    / write a ESRI grid data file (.flt)
-    / -------------------------------------------------------------------*/
+
+    /*!
+     * \brief write a ESRI grid data file (.flt)
+     * \param myFileName string name file
+     * \param myHeader Crit3DGridHeader pointer
+     * \param myError string pointer
+     * \return true on success, false otherwise
+     */
     bool writeEsriGridFlt(string myFileName, gis::Crit3DRasterGrid *myGrid, string *myError)
     {
         myFileName += ".flt";

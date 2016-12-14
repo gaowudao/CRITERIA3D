@@ -1,5 +1,5 @@
-/*-----------------------------------------------------------------------------------
-    COPYRIGHT 2016 Fausto Tomei, Gabriele Antolini,
+/*!
+    \copyright 2016 Fausto Tomei, Gabriele Antolini,
     Alberto Pistocchi, Marco Bittelli, Antonio Volta, Laura Costantini
 
     This file is part of CRITERIA3D.
@@ -21,7 +21,7 @@
     contacts:
     fausto.tomei@gmail.com
     ftomei@arpae.it
------------------------------------------------------------------------------------*/
+*/
 
 
 #include <stdlib.h>
@@ -448,7 +448,7 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
     mySignificativeR2 = maxValue(currentSettings.getGenericPearsonThreshold(), 0.2);
     mySignificativeR2Inv = maxValue(currentSettings.getGenericPearsonThreshold(), 0.1);
 
-    // initialize
+    /*! initialize */
     initializeOrography();
 
     if (climateExists)
@@ -460,7 +460,7 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
 
     maxPointsZ = getMaxHeight();
 
-    // not enough data to define a curve (use climate)
+    /*! not enough data to define a curve (use climate) */
     if (interpolationPointList.size() < MIN_REGRESSION_POINTS)
     {
         inversionIsSignificative = false;
@@ -471,7 +471,7 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
         return true;
     }
 
-    // find intervals averages
+    /*! find intervals averages */
     heightInf = getMinHeight();
     heightSup = heightInf;
     deltaZ = DELTAZ_INI;
@@ -493,7 +493,7 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
         heightInf = heightSup;
     }
 
-    // find inversion height
+    /*! find inversion height */
     inversionIsSignificative = false;
     lapseRateT1 = myIntervalsValues.at(0);
     lapseRateH1 = myIntervalsHeight.at(0);
@@ -505,11 +505,11 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
             inversionIsSignificative = true;
         }
 
-    // no inversion: try regression with all data
+    /*! no inversion: try regression with all data */
     if (! inversionIsSignificative)
         return (regressionGeneric(proxyVars::height, false));
 
-    // create vectors below and above inversion
+    /*! create vectors below and above inversion */
     for (i = 1; i < long(interpolationPointList.size()); i++)
         if ((interpolationPointList.at(i)).point->z != NODATA && (interpolationPointList.at(i)).isActive)
         {
@@ -526,7 +526,7 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
         }
 
 
-    // create vectors of height intervals below and above inversion
+    /*! create vectors of height intervals below and above inversion */
     for (i = 0; i < long(myIntervalsValues.size()); i++)
         if (myIntervalsHeight.at(i) <= lapseRateH1)
         {
@@ -540,7 +540,7 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
         }
 
 
-    // only positive lapse rate
+    /*! only positive lapse ratec*/
     if (inversionIsSignificative && myIntervalsValues1.size() == myIntervalsValues.size())
     {
         regressionSimple(proxyVars::height, false, &m, &q, &r2);
@@ -577,19 +577,19 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
         return true;
     }
 
-    // check inversion significance
+    /*! check inversion significance */
     statistics::linearRegression(myHeights1.data(), myData1.data(), myHeights1.size(), false, &q1, &m1, &r2_values);
     if (myIntervalsValues1.size() > 2)
         statistics::linearRegression(myIntervalsHeight1.data(), myIntervalsValues1.data(), (long) myIntervalsHeight1.size(), false, &q, &m, &r2_intervals);
     else
         r2_intervals = 0.;
 
-    // inversion is not significant with data neither with intervals
+    /*! inversion is not significant with data neither with intervals */
     if (r2_values < mySignificativeR2Inv && r2_intervals < mySignificativeR2Inv)
     {
         regressionSimple(proxyVars::height, false, &m, &q, &actualR2);
 
-        // case 0: regression with all data much significant
+        /*! case 0: regression with all data much significant */
         if (actualR2 >= 0.5)
         {
             inversionIsSignificative = false;
@@ -600,7 +600,7 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
             return true;
         }
 
-        // caso 1: analysis only above inversion, flat lapse rate below
+        /*! case 1: analysis only above inversion, flat lapse rate below */
         inversionLapseRate = 0.;
         statistics::linearRegression(myHeights2.data(), myData2.data(), myHeights2.size(), false, &q2, &m2, &actualR2);
 
@@ -633,7 +633,7 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
         lapseRateT0 = q;
         lapseRateT1 = NODATA;
 
-        // case 2: regression with data
+        /*! case 2: regression with data */
         regressionSimple(proxyVars::height, false, &m, &q, &actualR2);
         actualR2Levels = NODATA;
 
@@ -656,7 +656,7 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
 
     }
 
-    // significance analysis
+    /*! significance analysis */
     statistics::linearRegression(myHeights1.data(), myData1.data(), myHeights1.size(), false, &q1, &m1, &r21);
     statistics::linearRegression(myHeights2.data(), myData2.data(), myHeights2.size(), false, &q2, &m2, &r22);
 
@@ -771,7 +771,7 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
 
     }
 
-    // check max lapse rate (20 C / 1000 m)
+    /*! check max lapse rate (20 C / 1000 m) */
     if (actualLapseRate < -0.02)
         actualLapseRate = (float)-0.02;
 
@@ -1127,7 +1127,7 @@ float interpolateSimple(meteoVariable myVar, float myZ, float myOrogIndex, float
 {
     double myResult = NODATA;
 
-    // interpolate residuals
+    /*! interpolate residuals */
     if (currentSettings.getInterpolationMethod() == geostatisticsMethods::idw)
     {
         myResult = inverseDistanceWeighted(interpolationPointList);
