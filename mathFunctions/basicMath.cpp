@@ -1,5 +1,5 @@
-/*-----------------------------------------------------------------------------------
-    Copyright 2016 Fausto Tomei, Gabriele Antolini,
+/*!
+    \copyright 2016 Fausto Tomei, Gabriele Antolini,
     Alberto Pistocchi, Marco Bittelli, Antonio Volta, Laura Costantini
 
     This file is part of CRITERIA3D.
@@ -20,7 +20,7 @@
 
     Contacts:
     Antonio Volta  avolta@arpae.it
------------------------------------------------------------------------------------*/
+*/
 
 #include "commonConstants.h"
 #include "basicMath.h"

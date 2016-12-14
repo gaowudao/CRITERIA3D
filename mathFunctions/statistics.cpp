@@ -1,5 +1,5 @@
-/*-----------------------------------------------------------------------------------
-    Copyright 2016 Fausto Tomei, Gabriele Antolini,
+/*!
+    \copyright 2016 Fausto Tomei, Gabriele Antolini,
     Alberto Pistocchi, Marco Bittelli, Antonio Volta, Laura Costantini
 
     This file is part of CRITERIA3D.
@@ -21,7 +21,7 @@
     Contacts:
     fausto.tomei@gmail.com
     ftomei@arpae.it
------------------------------------------------------------------------------------*/
+*/
 
 #include <math.h>
 #include <malloc.h>
@@ -73,24 +73,24 @@ namespace statistics
 
     void linearRegression( float* x,  float* y, long nrItems, bool zeroIntercept, float* y_intercept, float* mySlope, float* r2)
     {
-       double SUMx = 0;         //sum of x values
-       double SUMy = 0;         //sum of y values
-       double SUMxy = 0;        //sum of x * y
-       double SUMxx = 0;        //sum of x^2
-       double AVGy = 0;         //mean of y
-       double AVGx = 0;         //mean of x
-       double dy = 0;           //squared of the discrepancies
-       double SUM_dy = 0;       //sum of squared of the discrepancies
-       double SUMres = 0;       //sum of squared residue
-       double res = 0;          //residue squared
+       double SUMx = 0;         /*!< sum of x values */
+       double SUMy = 0;         /*!< sum of y values */
+       double SUMxy = 0;        /*!< sum of x * y */
+       double SUMxx = 0;        /*!< sum of x^2 */
+       double AVGy = 0;         /*!< mean of y */
+       double AVGx = 0;         /*!< mean of x */
+       double dy = 0;           /*!< squared of the discrepancies */
+       double SUM_dy = 0;       /*!< sum of squared of the discrepancies */
+       double SUMres = 0;       /*!< sum of squared residue */
+       double res = 0;          /*!< residue squared */
 
        long nrValidItems = 0;
 
-       *mySlope = 0;             //slope of regression line
-       *y_intercept = 0;         //y intercept of regression line
-       *r2 = 0;                  //coefficient of determination
+       *mySlope = 0;             /*!< slope of regression line */
+       *y_intercept = 0;         /*!< y intercept of regression line */
+       *r2 = 0;                  /*!< coefficient of determination */
 
-       // calculate various sums
+       /*! calculate various sums */
        for (int i = 0; i < nrItems; i++)
            if ((x[i] != NODATA) && (y[i] != NODATA))
            {
@@ -101,7 +101,7 @@ namespace statistics
                 SUMxx += x[i] * x[i];
            }
 
-        // means of x and y
+        /*! means of x and y */
         AVGy = SUMy / nrValidItems;
         AVGx = SUMx / nrValidItems;
 
@@ -116,26 +116,26 @@ namespace statistics
             *y_intercept = 0.;
         }
 
-        // calculate squared residues and their sum
+        /*! calculate squared residues and their sum */
         for (int i = 0; i < nrItems; i++)
            if ((x[i] != NODATA) && (y[i] != NODATA))
            {
-              // sum of squared of the discrepancies
+              /*! sum of squared of the discrepancies */
               dy = y[i] - (*y_intercept + *mySlope * x[i]);
               dy *= dy;
               SUM_dy += dy;
 
-              // sum of squared residues
+              /*! sum of squared residues */
               res = y[i] - AVGy;
               res *= res;
               SUMres += res;
            }
 
-        // calculate r^2 (coefficient of determination)
-*r2 = (SUMres - SUM_dy) / SUMres;
+        /*! calculate r^2 (coefficient of determination) */
+        *r2 = (SUMres - SUM_dy) / SUMres;
     }
 
-    //Variance
+    /*! Variance */
     float variance(float *myList, int nrList)
     {
         float myMean,myDiff,squareDiff;
@@ -186,7 +186,7 @@ namespace statistics
     {
         return (sqrt(variance(myList,nrList)));
     }
-    // covariance
+    /*! covariance */
     float covariance(float *myList1, int nrList1,float *myList2, int nrList2)
     {
         float myMean1,myMean2,myDiff1,myDiff2,prodDiff;

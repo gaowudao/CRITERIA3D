@@ -30,14 +30,14 @@
         class Crit3DVanGenuchten
         {
         public:
-            double alpha;                   //[kPa^-1] Van Genuchten parameter
-            double n;                       //[-] Van Genuchten parameter
-            double m;                       //[-] Van Genuchten parameter (restricted: 1-1/n)
-            double he;                      //[kPa] air potential (modified VG - Ippisch, 2006)
-            double sc;                      //[-] reduction factor (modified VG - Ippisch, 2006)
-            double thetaR;                  //[m^3 m^-3]
-            double thetaS;                  //[m^3 m^-3] volumetric water content at saturation
-            double refThetaS;               //[m^3 m^-3] reference volumetric water content at saturation
+            double alpha;                   /*!<  [kPa^-1] Van Genuchten parameter */
+            double n;                       /*!<  [-] Van Genuchten parameter */
+            double m;                       /*!<  [-] Van Genuchten parameter (restricted: 1-1/n) */
+            double he;                      /*!<  [kPa] air potential (modified VG - Ippisch, 2006) */
+            double sc;                      /*!<  [-] reduction factor (modified VG - Ippisch, 2006) */
+            double thetaR;                  /*!<  [m^3 m^-3] */
+            double thetaS;                  /*!<  [m^3 m^-3] volumetric water content at saturation */
+            double refThetaS;               /*!<  [m^3 m^-3] reference volumetric water content at saturation */
 
             Crit3DVanGenuchten();
         };

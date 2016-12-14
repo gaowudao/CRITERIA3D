@@ -1,5 +1,5 @@
-/*-----------------------------------------------------------------------------------
-    Copyright 2016 Fausto Tomei, Gabriele Antolini,
+/*!
+    \copyright 2016 Fausto Tomei, Gabriele Antolini,
     Alberto Pistocchi, Marco Bittelli, Antonio Volta, Laura Costantini
 
     This file is part of CRITERIA3D.
@@ -21,7 +21,7 @@
     contacts:
     fausto.tomei@gmail.com
     ftomei@arpae.it
------------------------------------------------------------------------------------*/
+*/
 
 #include <math.h>
 
@@ -111,16 +111,16 @@ double computeSatVapPressure(double myT)
 
 double dailyExtrRadiation(double myLat, int myDoy)
 {
-    /*
+    /*!
     2011 GA
     da quaderno FAO
     MJ m-2 d-1
     */
 
-    double OmegaS;                               //[rad] sunset hour angle
-    double Phi;                                  //[rad] latitude in radiants
-    double delta;                                //[rad] solar declination
-    double dr;                                   //[-] inverse Earth-Sun relative distance
+    double OmegaS;                               /*!< [rad] sunset hour angle */
+    double Phi;                                  /*!< [rad] latitude in radiants */
+    double delta;                                /*!< [rad] solar declination */
+    double dr;                                   /*!< [-] inverse Earth-Sun relative distance */
 
     Phi = PI / 180 * myLat;
     delta = 0.4093 * sin((2 * PI / 365) * myDoy - 1.39);
@@ -130,71 +130,94 @@ double dailyExtrRadiation(double myLat, int myDoy)
     return SOLAR_CONSTANT * DAY_SECONDS / 1000000 * dr / PI * (OmegaS * sin(Phi) * sin(delta) + cos(Phi) * cos(delta) * sin(OmegaS));
 }
 
+/*!
+ * \brief [J kg-1] latent heat of vaporization
+ * \param myTCelsius
+ * \return result
+ */
 double LatentHeatVaporization(double myTCelsius)
-// [J kg-1] latent heat of vaporization
 {
     return (2501000. - 2361. * myTCelsius);
 }
 
+/*!
+ * \brief [kPa °C-1] psychrometric instrument constant
+ * \param myPressure
+ * \param myTemp
+ * \return result
+ */
 double Psychro(double myPressure, double myTemp)
-// [kPa °C-1] psychrometric instrument constant
 {
     return CP * myPressure / (RATIO_WATER_VD * LatentHeatVaporization(myTemp));
 }
 
+/*!
+ * \brief [kPa] pressure
+ * \param myElevation
+ * \return result
+ */
 double pressureFromElevation(double myElevation)
-// [kPa]
 {
     return 101.3 * pow((1 - 0.0065 * myElevation / 293), 5.26);
 }
 
+/*!
+ * \brief [] net surface emissivity
+ * \param myVP
+ * \return result
+ */
 double emissivityFromVaporPressure(double myVP)
-// [] net surface emissivity
 {
     return 0.34 - 0.14 * sqrt(myVP);
 }
 
-// [Pa K-1] slope of saturation vapor pressure curve
+/*!
+ * \brief [Pa K-1] slope of saturation vapor pressure curve
+ * \param airTCelsius
+ * \param satVapPressure
+ * \return result
+ */
 double SaturationSlope(double airTCelsius, double satVapPressure)
 {
     return (17.502 * 240.97 * satVapPressure / ((240.97 + airTCelsius) * (240.97 + airTCelsius)));
 }
 
 
-/************************************************************************************
-2016 GA
-'   myDOY                           [] day of year
-'   myLatitude                      [°] latitude in decimal degrees
-'   myTmin                          [°C] daily minimum temperature
-'   myTmax                          [°C] daily maximum temperature
-'   myUmed                          [%] daily average relative humidity
-'   myVmed10                        [m s-1] daily average wind intensity
-'   mySWGlobRad                     [MJ m-2 d-1] daily global short wave radiation
-
-' comments: G is ignored for now (if heat is active, should be added)
-***************************************************************************************/
+/*!
+ * \brief 2016 GA. comments: G is ignored for now (if heat is active, should be added)
+ * \param myDOY [] day of year
+ * \param myElevation
+ * \param myLatitude [°] latitude in decimal degrees
+ * \param myTmin [°C] daily minimum temperature
+ * \param myTmax [°C] daily maximum temperature
+ * \param myTminDayAfter
+ * \param myUmed [%] daily average relative humidity
+ * \param myVmed10 [m s-1] daily average wind intensity
+ * \param mySWGlobRad [MJ m-2 d-1] daily global short wave radiation
+ * \return result
+ */
 double ET0_Penman_daily(int myDOY, float myElevation, float myLatitude,
                         float myTmin, float myTmax, float myTminDayAfter,
                         float myUmed, float myVmed10, float mySWGlobRad)
 {
         double MAXTRANSMISSIVITY = 0.75;
 
-        double myPressure;                   //[kPa] atmospheric pressure
-        double myDailySB;                    //[MJ m-2 d-1 K-4] Stefan Boltzmann constant
-        double myPsychro;                    //[kPa °C-1] psychrometric instrument constant
-        double myTmed;                       //[°C] daily average temperature
-        double myTransmissivity;             //[] global atmospheric trasmissivity
-        double myVapPress;                   //[kPa] actual vapor pressure
-        double mySatVapPress;                //[kPa] actual average vapor pressure
-        double myExtraRad;                   //[MJ m-2 d-1] extraterrestrial radiation
-        double mySWNetRad;                   //[MJ m-2 d-1] net short wave radiation
-        double myLWNetRad;                   //[MJ m-2 d-1] net long wave emitted radiation
-        double myNetRad;                     //[MJ m-2 d-1] net surface radiation
-        double delta;                        //[kPa °C-1] slope of vapour pressure curve
-        double vmed2;                        //[m s-1] average wind speed estimated at 2 meters
-        double EvapDemand;                   //[mm d-1] evaporative demand of atmosphere
-        double myEmissivity;                 //[] surface emissivity
-        double myLambda;                     //[MJ kg-1] latent heat of vaporization
+        double myPressure;                   /*!<  [kPa] atmospheric pressure */
+        double myDailySB;                    /*!<  [MJ m-2 d-1 K-4] Stefan Boltzmann constant */
+        double myPsychro;                    /*!<  [kPa °C-1] psychrometric instrument constant */
+        double myTmed;                       /*!<  [°C] daily average temperature */
+        double myTransmissivity;             /*!<  [] global atmospheric trasmissivity */
+        double myVapPress;                   /*!<  [kPa] actual vapor pressure */
+        double mySatVapPress;                /*!<  [kPa] actual average vapor pressure */
+        double myExtraRad;                   /*!<  [MJ m-2 d-1] extraterrestrial radiation */
+        double mySWNetRad;                   /*!<  [MJ m-2 d-1] net short wave radiation */
+        double myLWNetRad;                   /*!<  [MJ m-2 d-1] net long wave emitted radiation */
+        double myNetRad;                     /*!<  [MJ m-2 d-1] net surface radiation */
+        double delta;                        /*!<  [kPa °C-1] slope of vapour pressure curve */
+        double vmed2;                        /*!<  [m s-1] average wind speed estimated at 2 meters */
+        double EvapDemand;                   /*!<  [mm d-1] evaporative demand of atmosphere */
+        double myEmissivity;                 /*!<  [] surface emissivity */
+        double myLambda;                     /*!<  [MJ kg-1] latent heat of vaporization */
 
 
         if (myTmin == NODATA || myTmax == NODATA || myVmed10 == NODATA || myUmed == NODATA || myUmed < 0 || myUmed > 100 || myTminDayAfter == NODATA)
@@ -212,7 +235,8 @@ double ET0_Penman_daily(int myDOY, float myElevation, float myLatitude,
 
         myPsychro = Psychro(myPressure, myTmed);
 
-        /*
+        /*!
+        \brief
         differs from the one presented in the FAO Irrigation and Drainage Paper N° 56.
         Analysis with several climatic data sets proved that more accurate estimates of ea can be
         obtained using es(Tmed) than with the equation reported in the FAO paper if only mean
@@ -221,16 +245,16 @@ double ET0_Penman_daily(int myDOY, float myElevation, float myLatitude,
 
         mySatVapPress = 0.6108 * exp(17.27 * myTmed / (myTmed + 237.3));
         myVapPress = mySatVapPress * myUmed / 100;
-        delta = SaturationSlope(myTmed, mySatVapPress) / 1000;    //to kPa
+        delta = SaturationSlope(myTmed, mySatVapPress) / 1000;    /*!<  to kPa */
 
-        myDailySB = STEFAN_BOLTZMANN * DAY_SECONDS / 1000000;       // to MJ
+        myDailySB = STEFAN_BOLTZMANN * DAY_SECONDS / 1000000;       /*!<   to MJ */
         myEmissivity = emissivityFromVaporPressure(myVapPress);
         myLWNetRad = myDailySB * (pow(myTmax + 273, 4) + pow(myTmin + 273, 4) / 2) * myEmissivity * (1.35 * (myTransmissivity / MAXTRANSMISSIVITY) - 0.35);
 
         mySWNetRad = mySWGlobRad * (1 - ALBEDO_CROP_REFERENCE);
         myNetRad = (mySWNetRad - myLWNetRad);
 
-        myLambda = LatentHeatVaporization(myTmed) / 1000000; //to MJ
+        myLambda = LatentHeatVaporization(myTmed) / 1000000; /*!<  to MJ */
 
         vmed2 = myVmed10 * 0.748;
 
@@ -241,33 +265,34 @@ double ET0_Penman_daily(int myDOY, float myElevation, float myLatitude,
 }
 
 
-/*-----------------------------------------------------------------------------------------
-http://www.cimis.water.ca.gov/cimis/infoEtoPmEquation.jsp
-/----------------------INPUT---------------------------------------------------------------
-heigth                                     elevation above mean sea level (meters)
-normalizedTransmissivity                   normalized tramissivity [0-1] ()
-globalSWRadiation                          net Short Wave radiation (W m-2)
-airTemp                                    air temperature (C)
-airHum                                     relative humidity (%)
-windSpeed                                  wind speed at 2 meters (m s-1)
-------------------------------------------------------------------------------------------*/
+
+/*!
+ * \brief ET0_Penman_hourly http://www.cimis.water.ca.gov/cimis/infoEtoPmEquation.jsp
+ * \param heigth elevation above mean sea level (meters)
+ * \param normalizedTransmissivity normalized tramissivity [0-1] ()
+ * \param globalSWRadiation net Short Wave radiation (W m-2)
+ * \param airTemp air temperature (C)
+ * \param airHum relative humidity (%)
+ * \param windSpeed10 wind speed at 2 meters (m s-1)
+ * \return result
+ */
 double ET0_Penman_hourly(double heigth, double normalizedTransmissivity, double globalSWRadiation,
                 double airTemp, double airHum, double windSpeed10)
 {
-    double mySigma;                              //Steffan-Boltzman constant J m-2 h-1 K-4
-    double es;                                   //saturation vapor pressure (kPa) at the mean hourly air temperature in C
-    double ea;                                   //actual vapor pressure (kPa) at the mean hourly air temperature in C
-    double emissivity;                           //net emissivity of the surface
-    double netRadiation;                         //net radiation (J m-2 h-1)
-    double netLWRadiation;                       //net longwave radiation (J m-2 h-1)
-    double g;                                    //soil heat flux density (J m-2 h-1)
-    double Cd;                                   //bulk surface resistance and aerodynamic resistance coefficient
-    double tAirK;                                //air temperature (Kelvin)
-    double windSpeed2;                           //wind speed at 2 meters (m s-1)
-    double delta;                                //slope of saturation vapor pressure curve (kPa C-1) at mean air temperature
-    double pressure;                             //barometric pressure (kPa)
-    double lambda;                               //latent heat of vaporization in (J kg-1)
-    double gamma;                                //psychrometric constant (kPa C-1)
+    double mySigma;                              /*!<  Steffan-Boltzman constant J m-2 h-1 K-4 */
+    double es;                                   /*!<  saturation vapor pressure (kPa) at the mean hourly air temperature in C */
+    double ea;                                   /*!<  actual vapor pressure (kPa) at the mean hourly air temperature in C */
+    double emissivity;                           /*!<  net emissivity of the surface */
+    double netRadiation;                         /*!<  net radiation (J m-2 h-1) */
+    double netLWRadiation;                       /*!<  net longwave radiation (J m-2 h-1) */
+    double g;                                    /*!<  soil heat flux density (J m-2 h-1) */
+    double Cd;                                   /*!<  bulk surface resistance and aerodynamic resistance coefficient */
+    double tAirK;                                /*!<  air temperature (Kelvin) */
+    double windSpeed2;                           /*!<  wind speed at 2 meters (m s-1) */
+    double delta;                                /*!<  slope of saturation vapor pressure curve (kPa C-1) at mean air temperature */
+    double pressure;                             /*!<  barometric pressure (kPa) */
+    double lambda;                               /*!<  latent heat of vaporization in (J kg-1) */
+    double gamma;                                /*!<  psychrometric constant (kPa C-1) */
     double firstTerm, secondTerm, denominator;
 
 
@@ -278,10 +303,10 @@ double ET0_Penman_hourly(double heigth, double normalizedTransmissivity, double 
     mySigma = STEFAN_BOLTZMANN * HOUR_SECONDS;
     netLWRadiation = minValue(normalizedTransmissivity, 1) * emissivity * mySigma * (pow(tAirK, 4));
 
-    // from [W m-2] to [J h-1 m-2]
+    /*!   from [W m-2] to [J h-1 m-2] */
     netRadiation = ALBEDO_CROP_REFERENCE * (3600 * globalSWRadiation) - netLWRadiation;
 
-    // values for grass
+    /*!   values for grass */
     if (netRadiation > 0)
     {   g = 0.1 * netRadiation;
         Cd = 0.24;
@@ -292,7 +317,7 @@ double ET0_Penman_hourly(double heigth, double normalizedTransmissivity, double 
         Cd = 0.96;
     }
 
-    delta = SaturationSlope(airTemp, es) / 1000;    //to kPa;
+    delta = SaturationSlope(airTemp, es) / 1000;    /*!<  to kPa */
 
     pressure = 101.3 * pow(((293 - 0.0065 * heigth) / 293), 5.26);
 
@@ -309,17 +334,15 @@ double ET0_Penman_hourly(double heigth, double normalizedTransmissivity, double 
 }
 
 
-/*--------------------- Input ------------------------------------------
-KT                     [-] Samani empirical coefficient
-myDoy                  [-] Day number (Jan 1st = 1)
-myLat                  [degrees] Latitude
-Tmax                   [°C] daily maximum air temperature
-Tmin                   [°C] daily minimum air temperature
--------------- Output ------------------------------------------------
-ET0_Hargreaves         [mm d-1] potential evapotranspiration
--------------- Notes -------------------------------------------------
-Trange minimum         0.25°C  equivalent to 8.5% transimissivity
-----------------------------------------------------------------------*/
+/*!
+ * \brief computes [mm d-1] potential evapotranspiration. Trange minimum: 0.25°C  equivalent to 8.5% transimissivity
+ * \param KT [-] Samani empirical coefficient
+ * \param myLat [degrees] Latitude
+ * \param myDoy [-] Day number (Jan 1st = 1)
+ * \param tmax [°C] daily maximum air temperature
+ * \param tmin [°C] daily minimum air temperature
+ * \return result
+ */
 double ET0_Hargreaves(double KT, double myLat, int myDoy, double tmax, double tmin)
 {
     double tavg, deltaT, extraTerrRadiation;

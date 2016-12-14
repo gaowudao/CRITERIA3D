@@ -1,5 +1,5 @@
-/*-----------------------------------------------------------------------------------   
-    Copyright 2016 Fausto Tomei, Gabriele Antolini,
+/*!
+    \copyright 2016 Fausto Tomei, Gabriele Antolini,
     Alberto Pistocchi, Marco Bittelli, Antonio Volta, Laura Costantini
 
     This file is part of CRITERIA3D.
@@ -20,7 +20,7 @@
 
     Contacts:
     Antonio Volta  avolta@arpae.it
------------------------------------------------------------------------------------*/
+*/
 
 #include <math.h>
 #include <malloc.h>
@@ -49,11 +49,11 @@ float blackBodyShape(TfunctionInput fInput)
 
 namespace integration
 {
-    // this is a set for function integrations by means of the Simpson
+    /*! this is a set for function integrations by means of the Simpson */
 
     float qsimpParametric(float (*func)(TfunctionInput), int nrPar, float *par,float a , float b , float EPS)
     {
-        // this function calculates definte integrals using the Simpson rule
+        /*! this function calculates definte integrals using the Simpson rule */
         if (a > b)
         {
             return (-qsimpParametric(func,nrPar, par , b, a , EPS)); //recursive formula
@@ -170,7 +170,7 @@ namespace integration
 
     float qsimp(float (*func)(float),float a , float b , float EPS)
     {
-        // this function calculates definte integrals using the Simpson rule
+        /*! this function calculates definte integrals using the Simpson rule */
         if (a > b)
         {
             return (-qsimp(func,b, a , EPS)); //recursive formula
