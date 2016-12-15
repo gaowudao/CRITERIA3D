@@ -5,16 +5,16 @@
         #include "gis.h"
     #endif
 
-    // Surface pressure (millibars) used for refraction correction and RelOptAirMassCorr
+    /*! Surface pressure (millibars) used for refraction correction and RelOptAirMassCorr */
     #define PRESSURE_DEFAULT 1013
-    //Ambient dry-bulb temperature (degrees C) used for refraction correction
+    /*! Ambient dry-bulb temperature (degrees C) used for refraction correction */
     #define TEMPERATURE_DEFAULT 15
 
-    // Eppley shadow band width (cm)
+    /*! Eppley shadow band width (cm) */
     #define SBWID 7.6
-    // Eppley shadow band radius (cm)
+    /*! Eppley shadow band radius (cm) */
     #define SBRAD 31.7
-    // Drummond factor for partly cloudy skies
+    /*! Drummond factor for partly cloudy skies */
     #define SBSKY 0.04
 
     #define TRANSMISSIVITY_SAMANI_COEFF_DEFAULT 0.17
@@ -31,17 +31,17 @@
     struct TsunPosition
     {
         float hourDecimal;
-        float rise;                     //Sunrise time, from midnight, local, WITHOUT refraction [s]
-        float set;                      //Sunset time, from midnight, local, WITHOUT refraction [s]
-        float azimuth;                  //Solar azimuth angle [degrees, N=0, E=90, S=180, W = 270]
-        float elevation;                //Solar elevation, no atmospheric correction
-        float elevationRefr;            //Solar elevation angle refracted [deg.From horizon]
-        float incidence;                //Solar incidence angle on Panel [deg]
-        float relOptAirMass;            //Relative optical airmass []
-        float relOptAirMassCorr;        //Pressure-corrected airmass []
-        float extraIrradianceNormal;    //Extraterrestrial (top-of-atmosphere) direct normal solar irradiance [W m-2]
-        float extraIrradianceHorizontal;//Extraterrestrial (top-of-atmosphere) global horizontal solar irradiance [W m-2]
-        bool shadow;                    //Boolean for "Sun is not visible"
+        float rise;                     /*!<  Sunrise time, from midnight, local, WITHOUT refraction [s] */
+        float set;                      /*!<  Sunset time, from midnight, local, WITHOUT refraction [s] */
+        float azimuth;                  /*!<  Solar azimuth angle [degrees, N=0, E=90, S=180, W = 270] */
+        float elevation;                /*!<  Solar elevation, no atmospheric correction */
+        float elevationRefr;            /*!<  Solar elevation angle refracted [deg.From horizon] */
+        float incidence;                /*!<  Solar incidence angle on Panel [deg] */
+        float relOptAirMass;            /*!<  Relative optical airmass [] */
+        float relOptAirMassCorr;        /*!<  Pressure-corrected airmass [] */
+        float extraIrradianceNormal;    /*!<  Extraterrestrial (top-of-atmosphere) direct normal solar irradiance [W m-2] */
+        float extraIrradianceHorizontal;/*!<  Extraterrestrial (top-of-atmosphere) global horizontal solar irradiance [W m-2] */
+        bool shadow;                    /*!<  Boolean for "Sun is not visible" */
     };
 
     struct TradPoint

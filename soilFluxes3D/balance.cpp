@@ -1,7 +1,7 @@
-/*-----------------------------------------------------------------------------------
+/*!
 
     CRITERIA 3D
-    Copyright (C) 2011 Fausto Tomei, Gabriele Antolini, Alberto Pistocchi,
+    \copyright (C) 2011 Fausto Tomei, Gabriele Antolini, Alberto Pistocchi,
     Antonio Volta, Giulia Villani, Marco Bittelli
 
     This file is part of CRITERIA3D.
@@ -26,7 +26,7 @@
     gantolini@arpa.emr.it
     alberto.pistocchi@gecosistema.it
     marco.bittelli@unibo.it
------------------------------------------------------------------------------------*/
+*/
 
 
 #include <stdio.h>
@@ -61,13 +61,18 @@ void halveTimeStep()
 }
 
 
-// check if the link corresponds to the n node
+/*!
+ * \brief check if the link corresponds to the n node
+ * \param n
+ * \param myLink TlinkedNode pointer
+ * \return true/false
+ */
 inline bool link_uguali(long n, TlinkedNode *myLink)
 {
      if ((myLink != NULL) && ((*myLink).index == n)) return (true);
      else return (false);
 }
-//------------------------------------------------------------------------------
+
 
 
 void InitializeBalanceWater()
@@ -88,7 +93,7 @@ void InitializeBalanceWater()
      balanceWholePeriod.waterMBE = 0.;
      balanceWholePeriod.waterMBR = 0.;
 
-    // initialize link flow
+    /*! initialize link flow */
     for (long n = 0; n < myStructure.nrNodes; n++)
         {
         myNode[n].up.sumFlow = 0.;
@@ -97,17 +102,18 @@ void InitializeBalanceWater()
              myNode[n].lateral[i].sumFlow = 0.;
         }
 
-    // initialize boundary flow
+    /*! initialize boundary flow */
     for (long n = 0; n < myStructure.nrNodes; n++)
         if (myNode[n].boundary != NULL)
             myNode[n].boundary->sumBoundaryWaterFlow = 0.;
 }
 
 
+/*!
+ * \brief computes total water content          [m^3]
+ * \return result
+ */
 double computeTotalWaterContent()
-//-----------------------------------------------------------------------------
-// return total water content          [m^3]
-//-----------------------------------------------------------------------------
 {
    double theta, sum = 0.0;
 
@@ -125,10 +131,12 @@ double computeTotalWaterContent()
 }
 
 
+/*!
+ * \brief computes sum of water sink/source          [m^3]
+ * \param deltaT
+ * \return result
+ */
 double sumWaterFlow(double deltaT)
-//-----------------------------------------------------------------------------
-// return sum of water sink/source          [m^3]
-//-----------------------------------------------------------------------------
 {
     double sum = 0.0;
     for (long n = 0; n < myStructure.nrNodes; n++)
@@ -136,7 +144,7 @@ double sumWaterFlow(double deltaT)
             sum += myNode[n].Qw * deltaT;
     return (sum);
 }
-//------------------------------------------------------------------------------
+
 
 
 void computeMassBalance(double deltaT)
@@ -149,14 +157,14 @@ void computeMassBalance(double deltaT)
 
      balanceCurrentTimeStep.waterMBE = dStorage - balanceCurrentTimeStep.sinkSourceWater;
 
-	 //reference water: sumWaterFlow or 1percent of storage
+     /*! reference water: sumWaterFlow or 1percent of storage */
 	 double denominator = maxValue(fabs(balanceCurrentTimeStep.sinkSourceWater), balanceCurrentTimeStep.storageWater * 1e-2);
-	 //no water - minimum 1 liter
+     /*! no water - minimum 1 liter */
 	 denominator = maxValue(denominator, 0.001);
 
 	 balanceCurrentTimeStep.waterMBR = balanceCurrentTimeStep.waterMBE / denominator;
 }
-//------------------------------------------------------------------------------
+
 
 
 
@@ -167,16 +175,20 @@ double getMatrixValue(long i, TlinkedNode *link)
         int j = 1;
         while ((j < myStructure.maxNrColumns) && (A[i][j].index != NOLINK) && (A[i][j].index != (*link).index)) j++;
 
-        // Rebuild the A elements (previously normalized)
+        /*! Rebuild the A elements (previously normalized) */
 		if (A[i][j].index == (*link).index)
 			return (A[i][j].val * A[i][0].val);
         }
 	return double(INDEX_ERROR);
 }
-//------------------------------------------------------------------------------
 
 
-// updating of in- and out-flows [m^3]
+/*!
+ * \brief updating of in- and out-flows [m^3]
+ * \param index
+ * \param link TlinkedNode pointer
+ * \param delta_t
+ */
 void update_flux(long index, TlinkedNode *link, double delta_t)
 {
     if (link->index != NOLINK)
@@ -184,7 +196,7 @@ void update_flux(long index, TlinkedNode *link, double delta_t)
         (*link).sumFlow += float(getWaterExchange(index, link, delta_t));
     }
 }
-//------------------------------------------------------------------------------
+
 
 
 void saveBestStep()
@@ -192,7 +204,7 @@ void saveBestStep()
 	for (long n = 0; n < myStructure.nrNodes; n++)
 		myNode[n].bestH = myNode[n].H;
 }
-//------------------------------------------------------------------------------
+
 
 
 
@@ -202,24 +214,23 @@ void restoreBestStep(double deltaT)
     {
         myNode[n].H = myNode[n].bestH;
 
-        // compute new soil moisture (only sub-surface nodes)
+        /*! compute new soil moisture (only sub-surface nodes) */
         if (!myNode[n].isSurface)
                 myNode[n].Se = computeSe(n);
     }
 
      computeMassBalance(deltaT);
 }
-//------------------------------------------------------------------------------
 
 
 void acceptStep(double deltaT)
 {
-    // update balanceCurrentPeriod and balanceWholePeriod
+    /*! update balanceCurrentPeriod and balanceWholePeriod */
     balancePreviousTimeStep.storageWater = balanceCurrentTimeStep.storageWater;
     balancePreviousTimeStep.sinkSourceWater = balanceCurrentTimeStep.sinkSourceWater;
     balanceCurrentPeriod.sinkSourceWater += balanceCurrentTimeStep.sinkSourceWater;
 
-    // update sum of flow
+    /*! update sum of flow */
     for (long i = 0; i < myStructure.nrNodes; i++)
         {
 		update_flux(i, &(myNode[i].up), deltaT);
@@ -240,26 +251,26 @@ bool waterBalance(double deltaT, int approxNr)
 
 	isHalfTimeStepForced = false;
 
-	// error better than previuosly
+    /*! error better than previuosly */
 	if ((approxNr == 0) || (MBRerror < bestMBRerror))
 	{
 		saveBestStep();
 		bestMBRerror = MBRerror;
 	}
 
-    // best case
+    /*! best case */
     if (MBRerror < myParameters.MBRThreshold)
         {
         acceptStep(deltaT);
 		if ((approxNr < 2) && (Courant < 0.5) && (MBRerror < (myParameters.MBRThreshold * 0.5)))
             {
-            // system is stable: double time step
+            /*! system is stable: double time step */
             doubleTimeStep();
             }
         return (true);
         }
 
-    // worst case: error high or last approximation
+    /*! worst case: error high or last approximation */
     if ((MBRerror > (bestMBRerror * 2.0))
         ||(approxNr == (myParameters.maxApproximationsNumber-1)))
         {
@@ -280,19 +291,19 @@ bool waterBalance(double deltaT, int approxNr)
     // default
     return (false);
 }
-//------------------------------------------------------------------------------
+
 
 
 void updateBalanceWaterWholePeriod()
 {
-    // update the flows in the balance (balanceWholePeriod)
+    /*! update the flows in the balance (balanceWholePeriod) */
     balanceWholePeriod.sinkSourceWater  += balanceCurrentPeriod.sinkSourceWater;
 
     double deltaStoragePeriod = balanceCurrentTimeStep.storageWater - balanceCurrentPeriod.storageWater;
 
     double deltaStorageHistorical = balanceCurrentTimeStep.storageWater - balanceWholePeriod.storageWater;
 
-    // compute waterMBE and waterMBR
+    /*! compute waterMBE and waterMBR */
     balanceCurrentPeriod.waterMBE = fabs(deltaStoragePeriod - balanceCurrentPeriod.sinkSourceWater);
     if ((balanceWholePeriod.storageWater == 0.) && (balanceWholePeriod.sinkSourceWater == 0.)) balanceWholePeriod.waterMBR = 1.;
     else if (balanceCurrentTimeStep.storageWater > fabs(balanceWholePeriod.sinkSourceWater))
@@ -300,10 +311,10 @@ void updateBalanceWaterWholePeriod()
     else
         balanceWholePeriod.waterMBR = deltaStorageHistorical / balanceWholePeriod.sinkSourceWater;
 
-    // update storageWater in balanceCurrentPeriod
+    /*! update storageWater in balanceCurrentPeriod */
     balanceCurrentPeriod.storageWater = balanceCurrentTimeStep.storageWater;
 }
-//------------------------------------------------------------------------------
+
 
 
 bool getForcedHalvedTime()

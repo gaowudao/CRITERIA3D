@@ -1,7 +1,7 @@
-/*-----------------------------------------------------------------------------------
+/*!
 
     CRITERIA 3D
-    Copyright (C) 2011 Fausto Tomei, Gabriele Antolini, Alberto Pistocchi,
+    \copyright (C) 2011 Fausto Tomei, Gabriele Antolini, Alberto Pistocchi,
     Antonio Volta, Giulia Villani, Marco Bittelli
 
     This file is part of CRITERIA3D.
@@ -26,7 +26,7 @@
     gantolini@arpa.emr.it
     alberto.pistocchi@gecosistema.it
     marco.bittelli@unibo.it
------------------------------------------------------------------------------------*/
+*/
 
 #include <stdio.h>
 #include <math.h>
@@ -41,9 +41,8 @@
 #include "header/water.h"
 #include "header/boundary.h"
 
-//------------------------------------------
-// global variables
-//------------------------------------------
+/*! global variables */
+
 TParameters myParameters;
 TCrit3DStructure myStructure;
 
@@ -57,7 +56,7 @@ double *b = NULL;
 
 Tsoil Soil_List[MAX_SOILS][MAX_HORIZONS];
 Tsoil Surface_List[MAX_SURFACES];
-//------------------------------------------
+
 
 
 namespace soilFluxes3D {
@@ -76,7 +75,7 @@ namespace soilFluxes3D {
 
 	int DLL_EXPORT __STDCALL initialize(long nrNodes, int nrLayers, int nrLateralLinks)
 {
-    // clean the old data structures
+    /*! clean the old data structures */
     cleanMemory();
 
     myParameters.initialize();
@@ -85,10 +84,10 @@ namespace soilFluxes3D {
     myStructure.nrNodes = nrNodes;
     myStructure.nrLayers = nrLayers;
     myStructure.nrLateralLinks = nrLateralLinks;
-    // max nr columns = nr. of lateral links + 2 columns for up and down link + 1 column for diagonal
+    /*! max nr columns = nr. of lateral links + 2 columns for up and down link + 1 column for diagonal */
     myStructure.maxNrColumns = nrLateralLinks + 2 + 1;
 
-    // build the nodes vector
+    /*! build the nodes vector */
     myNode = (TCrit3Dnode *) calloc(myStructure.nrNodes, sizeof(TCrit3Dnode));
 	for (long i = 0; i < myStructure.nrNodes; i++)
 	{
@@ -100,7 +99,7 @@ namespace soilFluxes3D {
         for (short l = 0; l < myStructure.nrLateralLinks; l++) myNode[i].lateral[l].index = NOLINK;
     }
 
-    // build the matrix
+    /*! build the matrix */
     if (myNode == NULL)
         {return(MEMORY_ERROR);}
     else
@@ -111,9 +110,9 @@ namespace soilFluxes3D {
 	int DLL_EXPORT __STDCALL setNumericalParameters(float minDeltaT, float maxDeltaT, int maxIterationNumber,
                         int maxApproximationsNumber, int ResidualTolerance, float MBRThreshold)
  {
-	 //-----------------------------------------------------------------------------
-     // Set numerical solution parameters
-	 //-----------------------------------------------------------------------------
+     /*!
+        \brief Set numerical solution parameters
+     */
 
         if (minDeltaT < 0.1) minDeltaT = float(0.1);
         if (minDeltaT > 3600) minDeltaT = 3600;
@@ -149,17 +148,21 @@ namespace soilFluxes3D {
  }
 
 
+    /*!
+     * \brief Set hydraulic properties
+     *  default values:
+     *  waterRetentionCurve = MODIFIED_VANGENUCHTEN
+     *  conductivityMean = MEAN_LOG
+     *  k_lateral_vertical_ratio = 10
+     * \param waterRetentionCurve
+     * \param conductivityMeanType
+     * \param horizVertRatioConductivity
+     * \return OK/ERROR
+     */
+
 	int DLL_EXPORT __STDCALL setHydraulicProperties(int waterRetentionCurve,
                         int conductivityMeanType, float horizVertRatioConductivity)
  {
-	 //-----------------------------------------------------------------------------
-	 // Set hydraulic properties
-	 //-----------------------------------------------------------------------------
-	 // default values:
-     // waterRetentionCurve = MODIFIED_VANGENUCHTEN
-     // conductivityMean = MEAN_LOG
-	 // k_lateral_vertical_ratio = 10
-	 //-----------------------------------------------------------------------------
 
 	myParameters.waterRetentionCurve = waterRetentionCurve;
 
@@ -177,12 +180,23 @@ namespace soilFluxes3D {
 	}
  }
 
+    /*!
+     * \brief Set node position and properties
+     * \param myIndex
+     * \param x
+     * \param y
+     * \param z
+     * \param volume_or_area
+     * \param isSurface
+     * \param isBoundary
+     * \param boundaryType
+     * \param slope
+     * \return
+     */
 	int DLL_EXPORT __STDCALL setNode(long myIndex, float x, float y, float z, double volume_or_area, bool isSurface,
                         bool isBoundary, int boundaryType, float slope)
  {
-	//-------------------------------------------------------------------------------------------
-	// Set node position and properties
-	//-------------------------------------------------------------------------------------------
+
 
     if (myNode == NULL) return(MEMORY_ERROR);
     if ((myIndex < 0) || (myIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
@@ -196,7 +210,7 @@ namespace soilFluxes3D {
     myNode[myIndex].x = x;
     myNode[myIndex].y = y;
     myNode[myIndex].z = z;
-    myNode[myIndex].volume_area = volume_or_area;   // area on surface elements, volume on sub-surface
+    myNode[myIndex].volume_area = volume_or_area;   /*!< area on surface elements, volume on sub-surface */
 
 	myNode[myIndex].isSurface = isSurface;
 
@@ -206,7 +220,7 @@ namespace soilFluxes3D {
 
 	int DLL_EXPORT __STDCALL setNodeLink(long n, long linkIndex, int direction, float interfaceArea)
  {
-    // error check
+    /*! error check */
     if (myNode == NULL) return(MEMORY_ERROR);
 
     if ((n < 0) || (n >= myStructure.nrNodes) || (linkIndex < 0) || (linkIndex >= myStructure.nrNodes))
@@ -240,7 +254,12 @@ namespace soilFluxes3D {
  }
 
 
- // Assign surface index to node
+    /*!
+     * \brief Assign surface index to node
+     * \param nodeIndex
+     * \param surfaceIndex
+     * \return
+     */
 	int DLL_EXPORT __STDCALL setNodeSurface(long nodeIndex, int surfaceIndex)
  {
 	if (myNode == NULL) return(MEMORY_ERROR);
@@ -253,7 +272,13 @@ namespace soilFluxes3D {
  }
 
 
- // Assign soil to node
+    /*!
+     * \brief Assign soil to node
+     * \param nodeIndex
+     * \param soilIndex
+     * \param horizonIndex
+     * \return
+     */
 	int DLL_EXPORT __STDCALL setNodeSoil(long nodeIndex, int soilIndex, int horizonIndex)
  {
 	if (myNode == NULL) return(MEMORY_ERROR);
@@ -267,20 +292,24 @@ namespace soilFluxes3D {
  }
 
 
+    /*!
+     * \brief Set soil myParameters
+     * \param nSoil
+     * \param nHorizon
+     * \param VG_alpha [m^-1]      Van Genutchen alpha parameter - (warning! usually cm^-1 in literature)
+     * \param VG_n     [-]         n Van Genutchen  ]1, 10]
+     * \param VG_m
+     * \param VG_he
+     * \param ThetaR    [m^3/m^3]   residual water content
+     * \param ThetaS    [m^3/m^3]   saturated water content
+     * \param Ksat      [m/s]       saturated hydraulic conductivity
+     * \param L         [-]         tortuosity (Mualem formula)
+     * \return OK/ERROR
+     */
 	int DLL_EXPORT __STDCALL setSoilProperties(int nSoil, int nHorizon, double VG_alpha, double VG_n, double VG_m,
                         double VG_he, double ThetaR, double ThetaS, double Ksat, double L)
  {
-	//----------------------------------------------------------------------------------------------
-	// Set soil myParameters
-    //----------------------------------------------------------------------------------------------
-    // VG_alpha             [m^-1]      Van Genutchen alpha parameter
-    //                                  (warning! usually cm^-1 in literature)
-	// N                    [-]         n Van Genutchen  ]1, 10]
-    // Theta_r              [m^3/m^3]   residual water content
-    // Theta_s              [m^3/m^3]   saturated water content
-    // Ksat                 [m/s]       saturated hydraulic conductivity
-    // L                    [-]         tortuosity (Mualem formula)
-	//----------------------------------------------------------------------------------------------
+
 
 	if ((nSoil < 0) || (nSoil >= MAX_SOILS)) return(INDEX_ERROR);
 
@@ -318,13 +347,15 @@ namespace soilFluxes3D {
  }
 
 
+    /*!
+     * \brief Set current matric potential
+     * \param nodeIndex
+     * \param potential [m]
+     * \return OK/ERROR
+     */
 	int DLL_EXPORT __STDCALL setMatricPotential(long nodeIndex, double potential)
  {
- //----------------------------------------------------------------------------------------------
- // Set current matric potential
- //----- Input ----------------------------------------------------------------------------------
- // myPotential              [m]
- //----------------------------------------------------------------------------------------------
+
 
      if (myNode == NULL)
          return(MEMORY_ERROR);
@@ -349,13 +380,14 @@ namespace soilFluxes3D {
  }
 
 
+    /*!
+     * \brief Set current total potential
+     * \param nodeIndex
+     * \param totalPotential [m]
+     * \return OK/ERROR
+     */
 	int DLL_EXPORT __STDCALL setTotalPotential(long nodeIndex, double totalPotential)
  {
-	 //----------------------------------------------------------------------------------------------
-     // Set current total potential
-	 //----- Input ----------------------------------------------------------------------------------
-     // totalPotential              [m]
-	 //----------------------------------------------------------------------------------------------
 
 	 if (myNode == NULL)
 		 return(MEMORY_ERROR);
@@ -381,13 +413,15 @@ namespace soilFluxes3D {
  }
 
 
+    /*!
+     * \brief Set current volumetric water content
+     * \param nodeIndex
+     * \param waterContent [m^3 m^-3]
+     * \return OK/ERROR
+     */
 	int DLL_EXPORT __STDCALL setWaterContent(long nodeIndex, double waterContent)
  {
-	//----------------------------------------------------------------------------------------------
-    // Set current volumetric water content
-	//----- Input ----------------------------------------------------------------------------------
-    // waterContent              [m^3 m^-3]
-	//----------------------------------------------------------------------------------------------
+
 
     if (myNode == NULL) return(MEMORY_ERROR);
 
@@ -397,7 +431,7 @@ namespace soilFluxes3D {
 
     if (myNode[nodeIndex].isSurface)
             {
-			//surface
+            /*! surface */
             myNode[nodeIndex].H = myNode[nodeIndex].z + waterContent;
             myNode[nodeIndex].oldH = myNode[nodeIndex].H;
             myNode[nodeIndex].Se = 1.;
@@ -416,13 +450,14 @@ namespace soilFluxes3D {
  }
 
 
+    /*!
+     * \brief Set current water sink/source
+     * \param nodeIndex
+     * \param waterSinkSource [m^3/sec] flow
+     * \return OK/ERROR
+     */
 	int DLL_EXPORT __STDCALL setWaterSinkSource(long nodeIndex, double waterSinkSource)
  {
-    //----------------------------------------------------------------------------------------------
-    // Set current water sink/source
-    //----- Input ----------------------------------------------------------------------------------
-    // waterSinkSource   [m^3/sec] flow
-    //----------------------------------------------------------------------------------------------
 
     if (myNode == NULL) return(MEMORY_ERROR);
     if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
@@ -433,13 +468,15 @@ namespace soilFluxes3D {
  }
 
 
+    /*!
+     * \brief Set prescribed Total Potential
+     * \param nodeIndex
+     * \param prescribedTotalPotential [m]
+     * \return OK/ERROR
+     */
 	int DLL_EXPORT __STDCALL setPrescribedTotalPotential(long nodeIndex, double prescribedTotalPotential)
  {
-	 //----------------------------------------------------------------------------------------------
-	 // Set prescribed Total Potential
-	 //----- Input ----------------------------------------------------------------------------------
-     // prescribedTotalPotential   [m]
-	 //----------------------------------------------------------------------------------------------
+
     if (myNode == NULL) return(MEMORY_ERROR);
     if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
     if (myNode[nodeIndex].boundary == NULL) return(BOUNDARY_ERROR);
@@ -451,74 +488,72 @@ namespace soilFluxes3D {
  }
 
 
+    /*!
+     * \brief return water content
+     * \param nodeIndex
+     * \return  surface: [m] surface water height , sub-surface: [m^3 m^-3] volumetric water content
+     */
 	double DLL_EXPORT __STDCALL getWaterContent(long nodeIndex)
- //-----------------------------------------------------------------------------
- // return water content
- //----- Output ----------------------------------------------------------------
- // surface:							 [m] surface water height
- // sub-surface							 [m^3 m^-3] volumetric water content
- //-----------------------------------------------------------------------------
+
  {
         if (myNode == NULL) return(MEMORY_ERROR);
         if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
 
         if  (myNode[nodeIndex].isSurface)
-			//surface
+            /*! surface */
             return (myNode[nodeIndex].H - myNode[nodeIndex].z);
         else
-			//sub-surface
+            /*! sub-surface */
             return (theta_from_Se(nodeIndex));
  }
 
 
+    /*!
+     * \brief return available water content (over wilting point)
+     * \param index
+     * \return  surface: [m] 0-1 water presence, sub-surface: [m^3 m^-3] awc
+     */
 	double DLL_EXPORT __STDCALL getAvailableWaterContent(long index)
- //-----------------------------------------------------------------------------
- // return available water content (over wilting point)
- //----- Output ----------------------------------------------------------------
- // surface:							 [m] 0-1 water presence
- // sub-surface							 [m^3 m^-3] awc
- //-----------------------------------------------------------------------------
  {
         if (myNode == NULL) return(MEMORY_ERROR);
         if ((index < 0) || (index >= myStructure.nrNodes)) return(INDEX_ERROR);
 
         if  (myNode[index].isSurface)
-            //surface
+            /*! surface */
             return (myNode[index].H - myNode[index].z);
         else
-            //sub-surface
+            /*! sub-surface */
             return maxValue(0.0, theta_from_Se(index) - theta_from_sign_Psi(-160, index));
  }
 
 
+    /*!
+     * \brief return current deficit from fieldCapacity [m]
+     * \param index
+     * \param fieldCapacity
+     * \return surface:	0, sub-surface: [m^3 m^-3]
+     */
 	double DLL_EXPORT __STDCALL getWaterDeficit(long index, double fieldCapacity)
- //-----------------------------------------------------------------------------
- // return current deficit from fieldCapacity [m]
- //----- Output ----------------------------------------------------------------
- // surface:							 0
- // sub-surface							 [m^3 m^-3]
- //-----------------------------------------------------------------------------
  {
         if (myNode == NULL) return(MEMORY_ERROR);
         if ((index < 0) || (index >= myStructure.nrNodes)) return(INDEX_ERROR);
 
         if  (myNode[index].isSurface)
-            //surface
+            /*! surface */
             return (0.0);
         else
-            //sub-surface
+            /*! sub-surface */
             return (theta_from_sign_Psi(-fieldCapacity, index) - theta_from_Se(index));
  }
 
 
 
+/*!
+  * \brief return degree of saturation (normalized water content)
+  * \param nodeIndex
+  * \return surface: [-] water presence 0-100 , sub-surface: [%] degree of saturation
+  */
  double DLL_EXPORT __STDCALL getDegreeOfSaturation(long nodeIndex)
- //-----------------------------------------------------------------------------
- // return degree of saturation (normalized water content)
- //----- Output ----------------------------------------------------------------
- // surface:							 [-] water presence 0-100
- // sub-surface							 [%] degree of saturation
- //-----------------------------------------------------------------------------
  {
         if (myNode == NULL) return(MEMORY_ERROR);
         if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
@@ -535,23 +570,24 @@ namespace soilFluxes3D {
  }
 
 
+ /*!
+  * \brief computes total water content          [m^3]
+  * \return result
+  */
  double DLL_EXPORT __STDCALL getTotalWaterContent()
- //-----------------------------------------------------------------------------
- // return total water content          [m^3]
- //-----------------------------------------------------------------------------
  {
     return(computeTotalWaterContent());
  }
 
 
+ /*!
+  * \brief computes hydraulic conductivity                [m/s]
+  * \param nodeIndex
+  * \return result
+  */
  double DLL_EXPORT __STDCALL getWaterConductivity(long nodeIndex)
- //------------------------------------------------------------------------
- // return hydraulic conductivity
- //----- Output -----------------------------------------------------------
- // hydraulic conductivity                [m/s]
- //------------------------------------------------------------------------
  {
-    //error check
+    /*! error check */
     if (myNode == NULL) return(MEMORY_ERROR);
     if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
 
@@ -559,12 +595,12 @@ namespace soilFluxes3D {
  }
 
 
+ /*!
+  * \brief comoputes matric potential (psi)           [m]
+  * \param nodeIndex [-]
+  * \return result
+  */
  double DLL_EXPORT __STDCALL getMatricPotential(long nodeIndex)
- //-----------------------------------------------------------------------------
- // Return matric potential (psi)           [m]
- //----- Input -----------------------------------------------------------------
- // node index                              [-]
- //-----------------------------------------------------------------------------
  {
     if (myNode == NULL) return(MEMORY_ERROR);
     if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
@@ -573,10 +609,12 @@ namespace soilFluxes3D {
  }
 
 
+ /*!
+  * \brief computes total potential H (psi + z)      [m]
+  * \param nodeIndex
+  * \return result
+  */
  double DLL_EXPORT __STDCALL getTotalPotential(long nodeIndex)
- //-----------------------------------------------------------------------------
- // Return total potential H (psi + z)      [m]
- //-----------------------------------------------------------------------------
  {
 	 if (myNode == NULL) return(MEMORY_ERROR);
 	 if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
@@ -585,10 +623,13 @@ namespace soilFluxes3D {
  }
 
 
+ /*!
+  * \brief computes [m^3] maximum integrated flow over the time step
+  * \param n
+  * \param direction
+  * \return result
+  */
  double DLL_EXPORT __STDCALL getWaterFlow(long n, short direction)
- //-------------------------------------------------------------------
- // [m^3] maximum integrated flow over the time step
- //-------------------------------------------------------------------
  {
     if (myNode == NULL) return MEMORY_ERROR;
     if ((n < 0) || (n >= myStructure.nrNodes)) return INDEX_ERROR;
@@ -619,10 +660,12 @@ namespace soilFluxes3D {
  }
 
 
+ /*!
+  * \brief computes [m^3] integrated flow over the time step
+  * \param n
+  * \return result
+  */
  double DLL_EXPORT __STDCALL getSumLateralWaterFlow(long n)
- //-------------------------------------------------------------------
- // [m^3] integrated flow over the time step
- //-------------------------------------------------------------------
  {
     if (myNode == NULL) return MEMORY_ERROR;
     if ((n < 0) || (n >= myStructure.nrNodes)) return INDEX_ERROR;
@@ -647,11 +690,14 @@ namespace soilFluxes3D {
  }
 
 
+ /*!
+  * \brief computes [m^3] integrated water flow from boundary over the time step
+  * \param nodeIndex
+  * \return result
+  */
  double DLL_EXPORT __STDCALL getBoundaryWaterFlow(long nodeIndex)
  {
- //-------------------------------------------------------------------
- // [m^3] integrated water flow from boundary over the time step
- //-------------------------------------------------------------------
+
     if (myNode == NULL) return(MEMORY_ERROR);
     if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
 
@@ -661,11 +707,14 @@ namespace soilFluxes3D {
  }
 
 
+ /*!
+  * \brief computes [m^3] integrated water flow from boundary over the time step
+  * \param boundaryType
+  * \return result
+  */
  double DLL_EXPORT __STDCALL getBoundaryWaterSumFlow(int boundaryType)
  {
- //-------------------------------------------------------------------
- // [m^3] integrated water flow from boundary over the time step
- //-------------------------------------------------------------------
+
     double sumBoundaryFlow = 0.0;
 
     for (long n = 0; n < myStructure.nrNodes; n++)
@@ -677,10 +726,11 @@ namespace soilFluxes3D {
  }
 
 
+ /*!
+  * \brief computes a period of time [s]
+  * \param myPeriod
+  */
  void DLL_EXPORT __STDCALL computePeriod(double myPeriod)
-// ---------------------------------------------------------------------------
-// compute a period of time [s]
-// ---------------------------------------------------------------------------
     {
 		double deltaT, ResidualTime, sumTime = 0.0;
 
@@ -698,10 +748,12 @@ namespace soilFluxes3D {
     }
 
 
+ /*!
+ * \brief computes a single step of time [s]
+ * \param maxTime
+ * \return result
+ */
 double DLL_EXPORT __STDCALL computeStep(double maxTime)
-// ---------------------------------------------------------------------------
-// compute a single step of time [s]
-// ---------------------------------------------------------------------------
 	{
 		double deltaT;
 		computeWater(maxTime, &deltaT);

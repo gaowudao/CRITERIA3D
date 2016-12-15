@@ -1,7 +1,7 @@
-/*-----------------------------------------------------------------------------------
+/*!
 
     CRITERIA 3D
-    Copyright (C) 2011 Fausto Tomei, Gabriele Antolini, Alberto Pistocchi,
+    \copyright (C) 2011 Fausto Tomei, Gabriele Antolini, Alberto Pistocchi,
     Antonio Volta, Giulia Villani, Marco Bittelli
 
     This file is part of CRITERIA3D.
@@ -26,7 +26,7 @@
     gantolini@arpa.emr.it
     alberto.pistocchi@gecosistema.it
     marco.bittelli@unibo.it
------------------------------------------------------------------------------------*/
+*/
 
 #include <stdio.h>
 #include <malloc.h>
@@ -35,7 +35,7 @@
 
 void cleanArrays()
 {
-    // free matrix A
+    /*! free matrix A */
     if (A != NULL)
     {
             for (long i=0; i < myStructure.nrNodes; i++)
@@ -44,7 +44,7 @@ void cleanArrays()
             A = NULL;
     }
 
-    // free arrays
+    /*! free arrays */
     if (b != NULL){ free(b); b = NULL; }
     if (C != NULL){ free(C); C = NULL; }
     if (C0 != NULL){ free(C0); C0 = NULL; }
@@ -67,24 +67,25 @@ void cleanNodes()
 }
 
 
-//---------------------------------------------------------------
-// initialize matrix and arrays
-//---------------------------------------------------------------
+/*!
+ * \brief initialize matrix and arrays
+ * \return OK/ERROR
+ */
 int initializeArrays()
 {
     long i, j, n;
 
-    // clean previous arrays
+    /*! clean previous arrays */
     cleanArrays();
 
-    // matrix solver: rows
+    /*! matrix solver: rows */
     A = (TmatrixElement **) calloc(myStructure.nrNodes, sizeof(TmatrixElement *));
 
-    // matrix solver: columns
+    /*! matrix solver: columns */
     for (i = 0; i < myStructure.nrNodes; i++)
             A[i] = (TmatrixElement *) calloc(myStructure.maxNrColumns, sizeof(TmatrixElement));
 
-    // initialize matrix solver
+    /*! initialize matrix solver */
     for (i = 0; i < myStructure.nrNodes; i++)
         for (j = 0; j < (myStructure.nrLateralLinks + 2); j++)
         {
@@ -97,11 +98,11 @@ int initializeArrays()
 
     X = (double *) calloc(myStructure.nrNodes, sizeof(double));
 
-    /* mass diagonal matrix */
+    /*! mass diagonal matrix */
     C = (double *) calloc(myStructure.nrNodes, sizeof(double));
     for (n = 0; n < myStructure.nrNodes; n++) C[n] = 0.;
 
-    /* mass diagonal matrix */
+    /*! mass diagonal matrix */
     C0 = (double *) calloc(myStructure.nrNodes, sizeof(double));
     for (n = 0; n < myStructure.nrNodes; n++) C0[n] = 0.;
 

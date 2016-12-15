@@ -5,25 +5,29 @@
         #include "radiationDefinitions.h"
     #endif
 
-    //Junsei Kondo, Hiromi Yamazawa, Measurement of snow surface emissivity
-    #define SNOW_EMISSIVITY 0.97f               //[-]
-    #define SOIL_EMISSIVITY 0.92f               //[-] soil (average)
+    /*!
+     * \brief
+     * Junsei Kondo, Hiromi Yamazawa, Measurement of snow surface emissivity
+    */
 
-    #define SOIL_SPECIFIC_HEAT 2.1f             //[KJ/kg/°C]
-    #define DEFAULT_BULK_DENSITY 1300           //[kg/m^3]
-    #define SOIL_DAMPING_DEPTH 0.3f             //[m]
-    #define SNOW_DAMPING_DEPTH 0.05f            //[m]
-    #define SNOW_MINIMUM_HEIGHT 2               //[mm]
+    #define SNOW_EMISSIVITY 0.97f               /*!< [-] */
+    #define SOIL_EMISSIVITY 0.92f               /*!<  [-] soil (average) */
+
+    #define SOIL_SPECIFIC_HEAT 2.1f             /*!<  [KJ/kg/°C] */
+    #define DEFAULT_BULK_DENSITY 1300           /*!<  [kg/m^3] */
+    #define SOIL_DAMPING_DEPTH 0.3f             /*!<  [m] */
+    #define SNOW_DAMPING_DEPTH 0.05f            /*!<  [m] */
+    #define SNOW_MINIMUM_HEIGHT 2               /*!<  [mm] */
 
 
     struct snowParameters {
-        float snowSkinThickness;              //[m]
-        float soilAlbedo;                     //[-] bare soil
-        float snowVegetationHeight;           //[m] height of vegetation
-        float snowWaterHoldingCapacity;       //[-] percentuale di acqua libera che il manto nevoso può trattenere
-        float snowMaxWaterContent;            //[m] acqua libera (torrenti, laghetti)
-        float tempMaxWithSnow;                //[°C]
-        float tempMinWithRain;                //[°C]
+        float snowSkinThickness;              /*!<  [m] */
+        float soilAlbedo;                     /*!<  [-] bare soil */
+        float snowVegetationHeight;           /*!<  [m] height of vegetation */
+        float snowWaterHoldingCapacity;       /*!<  [-] percentuale di acqua libera che il manto nevoso può trattenere */
+        float snowMaxWaterContent;            /*!<  [m] acqua libera (torrenti, laghetti) */
+        float tempMaxWithSnow;                /*!<  [°C] */
+        float tempMinWithRain;                /*!<  [°C] */
     };
 
     class Crit3DSnowPoint
@@ -57,18 +61,18 @@
         static float aerodynamicResistanceCampbell77(bool isSnow , float zRefWind, float myWindSpeed, float vegetativeHeight);
 
     private:
-        // input
+        /*! input */
         TradPoint* _radpoint;
-        float _clearSkyTransmissivity;  // [-]
-        float _prec;                    // [mm]
-        float _airT;                    // [°C]
-        float _airRH;                   // [%]
-        float _windInt;                 // [m/s]
+        float _clearSkyTransmissivity;  /*!<   [-] */
+        float _prec;                    /*!<   [mm] */
+        float _airT;                    /*!<   [°C] */
+        float _airRH;                   /*!<   [%] */
+        float _windInt;                 /*!<   [m/s] */
         float _waterContent;
         float _evaporation;
         struct snowParameters* _parameters;
 
-        // output
+        /*! output */
         float _snowFall;
         float _snowMelt;
         float _snowWaterEquivalent;

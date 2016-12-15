@@ -1,7 +1,7 @@
-/*-----------------------------------------------------------------------------------
+/*!
 
     CRITERIA 3D
-    Copyright (C) 2011 Fausto Tomei, Gabriele Antolini, Alberto Pistocchi,
+    \copyright (C) 2011 Fausto Tomei, Gabriele Antolini, Alberto Pistocchi,
     Antonio Volta, Giulia Villani, Marco Bittelli
 
     This file is part of CRITERIA3D.
@@ -26,7 +26,7 @@
     gantolini@arpa.emr.it
     alberto.pistocchi@gecosistema.it
     marco.bittelli@unibo.it
------------------------------------------------------------------------------------*/
+*/
 
 #include <stdio.h>
 #include <math.h>
@@ -119,15 +119,15 @@ double GaussSeidelIterationWater(int direction)
             j++;
         }
 
-        // surface check
+        /*! surface check */
         if (myNode[i].isSurface)
             if (newX < myNode[i].z)
                 newX = myNode[i].z;
 
-        // water potential [m]
+        /*! water potential [m] */
         psi = fabs(newX - myNode[i].z);
 
-        // infinity norm (normalized if psi > 1m)
+        /*! infinity norm (normalized if psi > 1m) */
         if (psi > 1.0)
             norm = (fabs(newX - X[i])) / psi;
         else

@@ -1,7 +1,7 @@
-/*-----------------------------------------------------------------------------------
+/*!
 
     CRITERIA 3D
-    Copyright (C) 2011 Fausto Tomei, Gabriele Antolini, Alberto Pistocchi,
+    \copyright (C) 2011 Fausto Tomei, Gabriele Antolini, Alberto Pistocchi,
     Antonio Volta, Giulia Villani, Marco Bittelli
 
     This file is part of CRITERIA3D.
@@ -26,7 +26,7 @@
     gantolini@arpa.emr.it
     alberto.pistocchi@gecosistema.it
     marco.bittelli@unibo.it
------------------------------------------------------------------------------------*/
+*/
 
 //#include "stdafx.h"
 
@@ -42,7 +42,14 @@
 #include "header/boundary.h"
 
 
-// [m^3] water flow between node i and Link
+
+/*!
+ * \brief [m^3] water flow between node i and Link
+ * \param i
+ * \param link TlinkedNode pointer
+ * \param deltaT
+ * \return result
+ */
 double getWaterExchange(long i, TlinkedNode *link, double deltaT)
 {
 	if (link != NULL)
@@ -56,7 +63,12 @@ double getWaterExchange(long i, TlinkedNode *link, double deltaT)
 }
 
 
-// [m^3 s-1] water flow between node index and Link
+/*!
+ * \brief [m^3 s-1] water flow between node index and Link
+ * \param i
+ * \param link TlinkedNode pointer
+ * \return result
+ */
 double getWaterFlux(long i, TlinkedNode *link)
 {
     if (link != NULL)
@@ -70,10 +82,17 @@ double getWaterFlux(long i, TlinkedNode *link)
 }
 
 
-//------------------------------------------------------------------------------------
-// Manning formulation
-// Qij=((Hi+Hj-zi-zj)/2)^(5/3) * Sij / roughness * sqrt(abs(Hi-Hj)/Lij) * sgn(Hi-Hj)
-//------------------------------------------------------------------------------------
+/*!
+ * \brief runoff
+ * Manning formulation
+ * Qij=((Hi+Hj-zi-zj)/2)^(5/3) * Sij / roughness * sqrt(abs(Hi-Hj)/Lij) * sgn(Hi-Hj)
+ * \param i
+ * \param j
+ * \param link TlinkedNode pointer
+ * \param deltaT
+ * \param approximationNr
+ * \return result
+ */
 double runoff(long i, long j, TlinkedNode *link, double deltaT, unsigned long approximationNr)
 {
     double Hi, Hj;
@@ -116,7 +135,6 @@ double runoff(long i, long j, TlinkedNode *link, double deltaT, unsigned long ap
     Courant = maxValue(Courant, v * deltaT / cellDistance);
     return (v * flowArea) / dH;
 }
-//------------------------------------------------------------------------------
 
 
 
@@ -124,18 +142,18 @@ double infiltration(long sup, long inf, TlinkedNode *link, double deltaT)
 {
  double cellDistance = (myNode[sup].z - myNode[inf].z) * 2.0;
 
- // unsaturated
+ /*! unsaturated */
  if (myNode[inf].H < myNode[sup].z)
         {
-        // surface water content [m]
+        /*! surface water content [m] */
         // double surfaceH = (myNode[sup].H + myNode[sup].oldH) * 0.5;
 		double surfaceH = myNode[sup].H;
 
-        // maximum water infiltration rate [m/s]
+        /*! maximum water infiltration rate [m/s] */
         double maxInfiltrationRate = (surfaceH - myNode[sup].z) / deltaT;
         if (maxInfiltrationRate <= 0.0) return(0.0);
 
-        //first soil layer: mean between current k and k_sat
+        /*! first soil layer: mean between current k and k_sat */
         double meanK = computeMean(myNode[inf].k, myNode[inf].Soil->K_sat);
 
         double dH = myNode[sup].H - myNode[inf].H;
@@ -146,7 +164,7 @@ double infiltration(long sup, long inf, TlinkedNode *link, double deltaT)
         return (k * link->area) / cellDistance;
         }
 
- // saturated
+ /*! saturated */
  else
     {
         return(myNode[inf].Soil->K_sat * link->area) / cellDistance;
@@ -161,7 +179,7 @@ double redistribution(long i, TlinkedNode *link, int linkType)
     double k1 = myNode[i].k;
     double k2 = myNode[(*link).index].k;
 
-    //horizontal
+    /*! horizontal */
     if (linkType == LATERAL)
     {
         cellDistance = distance(i, (*link).index);
@@ -176,7 +194,6 @@ double redistribution(long i, TlinkedNode *link, int linkType)
 
     return (k * link->area) / cellDistance;
 }
-//------------------------------------------------------------------------------
 
 
 
@@ -227,7 +244,7 @@ bool computationLoop(double deltaT)
             }
         }
 
-        // hydraulic conductivity and theta derivative
+        /*! hydraulic conductivity and theta derivative */
         for (i = 0; i < myStructure.nrNodes; i++)
         {
             C0[i] = 0.;
@@ -241,7 +258,7 @@ bool computationLoop(double deltaT)
         // update boundary conditions
         // updateBoundaryWater(deltaT);
 
-        // compute the matrix elements
+        /*! computes the matrix elements */
         for (i = 0; i < myStructure.nrNodes; i++)
         {
             j = 1;
@@ -250,7 +267,7 @@ bool computationLoop(double deltaT)
                     if (computeFlux(i, j, &(myNode[i].lateral[l]), deltaT, approximationNr, LATERAL)) j++;
             if (computeFlux(i, j, &(myNode[i].down), deltaT, approximationNr, DOWN)) j++;
 
-            // closure
+            /*! closure */
             while (j < myStructure.maxNrColumns) A[i][j++].index = NOLINK;
 
             j = 1; sum = 0.;
@@ -261,13 +278,13 @@ bool computationLoop(double deltaT)
                 j++;
             }
 
-            // sum of the diagonal elements
+            /*! sum of the diagonal elements */
             A[i][0].val = C[i]/deltaT + sum;
 
-            // b vector(vector of constant terms)
+            /*! b vector(vector of constant terms) */
             b[i] = ((C[i] / deltaT) * myNode[i].oldH) + myNode[i].Qw + C0[i];
 
-            // preconditioning
+            /*! preconditioning */
             j = 1;
             while ((j < myStructure.maxNrColumns) && (A[i][j].index != NOLINK))
                     A[i][j++].val /= A[i][0].val;
@@ -290,7 +307,7 @@ bool computationLoop(double deltaT)
                 return (false);
             }
 
-        // set new potential - compute new degree of saturation
+        /*! set new potential - compute new degree of saturation */
         for (i = 0; i < myStructure.nrNodes; i++)
         {
             myNode[i].H = X[i];
@@ -298,7 +315,7 @@ bool computationLoop(double deltaT)
                 myNode[i].Se = computeSe(i);
         }
 
-        // water balance
+        /*! water balance */
         isValidStep = waterBalance(deltaT, approximationNr);
         if (getForcedHalvedTime()) return (false);
         }
@@ -306,37 +323,33 @@ bool computationLoop(double deltaT)
 
     return (isValidStep);
  }
-//------------------------------------------------------------------------------
 
 
 
-
+/*!
+  * \brief computes water balance in the assigned balanceCurrentPeriod.
+  * We assume that, by means of maxTime, we are sure to not exit from meteorology of the assigned hour
+  * \param maxTime [s] balanceCurrentPeriod maximum for computation (max 3600 s)
+  * \param acceptedTime [s] current seconds for simulation step
+  * \return
+  */
  bool computeWater(double maxTime, double *acceptedTime)
-// -----------------------------------------------------------------------------
-// this function computes water balance in the assigned balanceCurrentPeriod.
-// We assume that, by means of maxTime, we are sure to not exit from meteorology of the assigned hour
-//
-// ----- Input -----------------------------------------------------------------
-// maxTime               [s] balanceCurrentPeriod maximum for computation (max 3600 s)
-// ----- Output ----------------------------------------------------------------
-// acceptedTime         [s] current seconds for simulation step
-// -----------------------------------------------------------------------------
 {
  bool isStepOK = false;
 
  while (!isStepOK)
-        {
+ {
         *acceptedTime = minValue(myParameters.current_delta_t, maxTime);
 
-        // save the instantaneous H values - Prepare the solutions vector (X = H)
+        /*! save the instantaneous H values - Prepare the solutions vector (X = H) */
         for (long n = 0; n < myStructure.nrNodes; n++)
                 {
                 myNode[n].oldH = myNode[n].H;
                 X[n] = myNode[n].H;
                 }
 
-        // assign Theta_e
-        // for the surface nodes C = area
+        /*! assign Theta_e
+            for the surface nodes C = area */
         for (long n = 0; n < myStructure.nrNodes; n++)
         {
             if (myNode[n].isSurface)
@@ -345,13 +358,13 @@ bool computationLoop(double deltaT)
                 myNode[n].Se = computeSe(n);
         }
 
-		// update boundary conditions
+        /*! update boundary conditions */
 		updateBoundaryWater(*acceptedTime);
 
         isStepOK = computationLoop(*acceptedTime);
 
 		if (!isStepOK) restoreWater();
-        }
+  }
 
  return (isStepOK);
 

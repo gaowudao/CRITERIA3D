@@ -1,7 +1,7 @@
-/*-----------------------------------------------------------------------------------
+/*!
 
     CRITERIA 3D
-    Copyright (C) 2011 Fausto Tomei, Alberto Pistocchi, Marco Bittelli,
+    \copyright (C) 2011 Fausto Tomei, Alberto Pistocchi, Marco Bittelli,
     Gabriele Antolini, Antonio Volta
 
     This file is part of CRITERIA3D.
@@ -27,39 +27,47 @@
     gantolini@arpa.emr.it
     avolta@arpa.emr.it
 
------------------------------------------------------------------------------------*/
+*/
 
 #include <math.h>
 #include "header/types.h"
 #include "header/soilPhysics.h"
 
 
+     /*!
+     * \brief Computes volumetric water content from current degree of saturation
+     * \param myIndex
+     * \return result
+     */
 	double theta_from_Se (unsigned long myIndex)
-	//------------------------------------------------------------------------------
-    // Compute volumetric water content from current degree of saturation
-	//------------------------------------------------------------------------------
 	{
 		return ((myNode[myIndex].Se * (myNode[myIndex].Soil->Theta_s - myNode[myIndex].Soil->Theta_r)) + myNode[myIndex].Soil->Theta_r);
 	}
 
+    /*!
+     * \brief Computes volumetric water content from degree of saturation
+     * \param Se
+     * \param myIndex
+     * \return result
+     */
 	double theta_from_Se (double Se, unsigned long myIndex)
-	//------------------------------------------------------------------------------
-	// Compute volumetric water content from degree of saturation
-	//------------------------------------------------------------------------------
 	{
 		return ((Se * (myNode[myIndex].Soil->Theta_s - myNode[myIndex].Soil->Theta_r)) + myNode[myIndex].Soil->Theta_r);
 	}
 
+    /*!
+     * \brief Computes volumetric water content from water potential (with sign)
+     * \param signPsi
+     * \param index
+     * \return result
+     */
     double theta_from_sign_Psi (double signPsi, unsigned long index)
-	//---------------------------------------------------------------------------
-	// Compute volumetric water content from water potential (with sign)
-	//---------------------------------------------------------------------------
 	{
         if (myNode[index].isSurface) return 1.;
 
         if (signPsi >= 0.0)
         {
-            //saturated
+            /*! saturated */
             return myNode[index].Soil->Theta_s;
         }
 		else
@@ -70,23 +78,27 @@
 	}
 
 
+    /*!
+     * \brief Computes degree of saturation from volumetric water content
+     * \param myIndex
+     * \param theta
+     * \return result
+     */
 	double Se_from_theta (unsigned long myIndex, double theta)
-	//------------------------------------------------------------------------
-	// Compute degree of saturation from volumetric water content
-	//------------------------------------------------------------------------
 	{
-		// check range
+        /*! check range */
 		if (theta >= myNode[myIndex].Soil->Theta_s) return(1.);
 		else if (theta <= myNode[myIndex].Soil->Theta_r) return(0.);
 		else return ((theta - myNode[myIndex].Soil->Theta_r) / (myNode[myIndex].Soil->Theta_s - myNode[myIndex].Soil->Theta_r));
 	}
 
+    /*!
+     * \brief Computes degree of saturation from matric potential (Van Genutchen) Se = [1+(alfa*|h|)^n]^-m
+     * \param myPsi
+     * \param mySoil
+     * \return result Se
+     */
     double computeSefromPsi(double myPsi, Tsoil *mySoil)
-	//------------------------------------------------------------------------------
-	// compute degree of saturation from matric potential (Van Genutchen)
-	//
-	// Se = [1+(alfa*|h|)^n]^-m
-	//------------------------------------------------------------------------------
 	{
 		double Se = NODATA;
 
@@ -104,26 +116,31 @@
 		return Se;
 	}
 
+    /*!
+     * \brief Computes current degree of saturation
+     * \param myIndex
+     * \return result
+     */
     double computeSe(unsigned long myIndex)
-    //------------------------------------------------------------------------------
-    // Compute current degree of saturation
-    //------------------------------------------------------------------------------
     {
-        // saturated
+        /*! saturated */
         if (myNode[myIndex].H >= myNode[myIndex].z) return 1.;
 
-        double psi = fabs(myNode[myIndex].H - myNode[myIndex].z);   //[m]
+        double psi = fabs(myNode[myIndex].H - myNode[myIndex].z);   /*!< [m] */
 
         return computeSefromPsi(psi, myNode[myIndex].Soil);
     }
 
 
+    /*!
+     * \brief Computes hydraulic conductivity [m/sec]  (Mualem)
+     * K(Se) = Ksat * Se^(L) * {1-[1-Se^(1/m)]^m}^2
+     * WARNING: very low values are possible (es: 10^12)
+     * \param Se
+     * \param mySoil Tsoil pointer
+     * \return result
+     */
     double computeWaterConductivity(double Se, Tsoil *mySoil)
-	//------------------------------------------------------------------------------
-	// Compute hydraulic conductivity [m/sec]  (Mualem)
-	// K(Se) = Ksat * Se^(L) * {1-[1-Se^(1/m)]^m}^2
-    // WARNING: very low values are possible (es: 10^12)
-	//------------------------------------------------------------------------------
 	{
 		if (Se >= 1.) return(mySoil->K_sat );
 
@@ -140,12 +157,18 @@
 	}
 
 
+    /*!
+     * \brief Computes hydraulic conductivity [m/sec]  (Mualem)
+     * K(Se) = Ksat * Se^(L) * {1-[1-Se^(1/m)]^m}^2
+     * WARNING: very low values are possible (es: 10^12)
+     * \param Ksat
+     * \param Se
+     * \param VG_Sc
+     * \param VG_m
+     * \param Mualem_L
+     * \return result
+     */
     double compute_K_Mualem(double Ksat, double Se, double VG_Sc, double, double VG_m, double Mualem_L)
-	//------------------------------------------------------------------------------
-	// Compute hydraulic conductivity [m/sec]  (Mualem)
-	// K(Se) = Ksat * Se^(L) * {1-[1-Se^(1/m)]^m}^2
-    // WARNING: very low values are possible (es: 10^12)
-	//------------------------------------------------------------------------------
 	{
 		if (Se >= 1.) return(Ksat);
 		double temp= NODATA;
@@ -164,19 +187,23 @@
 	}
 
 
+    /*!
+     * \brief Computes current soil water conductivity [m sec^-1]
+     * \param myIndex
+     * \return result
+     */
     double computeK(unsigned long myIndex)
-	//------------------------------------------------------------------------------
-    // Compute current soil water conductivity [m sec^-1]
-	//------------------------------------------------------------------------------
     {
 		return(compute_K_Mualem(myNode[myIndex].Soil->K_sat, myNode[myIndex].Se, myNode[myIndex].Soil->VG_Sc, myNode[myIndex].Soil->VG_n,  myNode[myIndex].Soil->VG_m, myNode[myIndex].Soil->Mualem_L));
     }
 
 
+    /*!
+     * \brief Computes Water Potential from degree of saturation
+     * \param myIndex
+     * \return result
+     */
     double psi_from_Se(unsigned long myIndex)
-	//------------------------------------------------------------------------------
-	// compute Water Potential from degree of saturation
-	//------------------------------------------------------------------------------
 	{
 		double m = myNode[myIndex].Soil->VG_m;
 		double temp = NODATA;
@@ -190,14 +217,14 @@
 	}
 
 
+    /*!
+     * \brief Computes dTheta/dH  (Van Genutchen)
+     * dTheta/dH = dSe/dH (Theta_s-Theta_r)
+     * dSe/dH = -sgn(H-z) alfa n m [1+(alfa|(H-z)|)^n]^(-m-1) (alfa|(H-z)|)^n-1
+     * \param myIndex
+     * \return result
+     */
 	double dTheta_dH(unsigned long myIndex)
-	//---------------------------------------------------------------------------------
-	// Compute dTheta/dH  (Van Genutchen)
-	//
-	// dTheta/dH = dSe/dH (Theta_s-Theta_r)
-	//
-	// dSe/dH = -sgn(H-z) alfa n m [1+(alfa|(H-z)|)^n]^(-m-1) (alfa|(H-z)|)^n-1
-	//---------------------------------------------------------------------------------
 	 {
      double alfa = myNode[myIndex].Soil->VG_alpha;
 	 double n    = myNode[myIndex].Soil->VG_n;
@@ -241,7 +268,7 @@
 		}
 		else
 		{
-			// sub-surface
+            /*! sub-surface */
 			double myPsiMean = myHMean - myNode[i].z;
             return (theta_from_sign_Psi(myPsiMean, i ));
 		}

@@ -1,7 +1,7 @@
-/*-----------------------------------------------------------------------------------
+/*!
 
     CRITERIA 3D
-    Copyright (C) 2011 Fausto Tomei, Gabriele Antolini, Alberto Pistocchi,
+    \copyright (C) 2011 Fausto Tomei, Gabriele Antolini, Alberto Pistocchi,
     Antonio Volta, Giulia Villani, Marco Bittelli
 
     This file is part of CRITERIA3D.
@@ -26,7 +26,7 @@
     gantolini@arpa.emr.it
     alberto.pistocchi@gecosistema.it
     marco.bittelli@unibo.it
------------------------------------------------------------------------------------*/
+*/
 
 #include <stdio.h>
 #include <math.h>
@@ -69,33 +69,33 @@ void updateBoundaryWater(double deltaT)
 
     for (long i = 0; i < myStructure.nrNodes; i++)
     {
-        //extern sink/source
+        /*! extern sink/source */
         myNode[i].Qw = myNode[i].waterSinkSource;
 
         if (myNode[i].boundary != NULL)
         {
-            //initialize
+            /*! initialize */
             myNode[i].boundary->waterFlow = 0.;
             if (myNode[i].boundary->type == BOUNDARY_RUNOFF)
             {
-                //current surface water available to runoff [m]
+                /*! current surface water available to runoff [m] */
                 avgH = (myNode[i].H + myNode[i].oldH) * 0.5;
                 Hs = maxValue(avgH - (myNode[i].z + myNode[i].Soil->Pond), 0.0);
                 if (Hs > EPSILON_mm)
                 {
-                    area = myNode[i].volume_area;       // [m^2] (surface)
-                    boundarySide = sqrt(area);          // [m] approximation: side = sqrt(area)
-                    maxFlow = (Hs * area) / deltaT;     // [m^3 s^-1] max available flow in time step
-                    boundaryArea = boundarySide * Hs;   // [m^2]
-                    // [m^3 s^-1] Manning
+                    area = myNode[i].volume_area;       /*!<  [m^2] (surface)  */
+                    boundarySide = sqrt(area);          /*!<  [m] approximation: side = sqrt(area)  */
+                    maxFlow = (Hs * area) / deltaT;     /*!<  [m^3 s^-1] max available flow in time step  */
+                    boundaryArea = boundarySide * Hs;   /*!<  [m^2]  */
+                    /*! [m^3 s^-1] Manning */
                     flow = boundaryArea *(pow(Hs, (2./3.)) / myNode[i].Soil->Roughness) * sqrt(myNode[i].boundary->slope);
                     myNode[i].boundary->waterFlow = -minValue(flow, maxFlow);
                 }
             }
             else if (myNode[i].boundary->type == BOUNDARY_FREEDRAINAGE)
             {
-                // [m^3 s^-1] Darcy unit gradient
-                // dH=dz=L  ->  q=K(h)
+                /*! [m^3 s^-1] Darcy unit gradient */
+                /*! dH=dz=L  ->  q=K(h) */
                 myNode[i].boundary->waterFlow = -myNode[i].k * myNode[i].up.area;
             }
 
@@ -103,7 +103,7 @@ void updateBoundaryWater(double deltaT)
             {
                 // TODO approximation: boundary area equal to other lateral link
 				area = myNode[i].lateral[0].area;
-                // [m^3 s^-1] Darcy,  gradient = slope (dH=dz)
+                /*! [m^3 s^-1] Darcy,  gradient = slope (dH=dz) */
                 myNode[i].boundary->waterFlow = -myNode[i].k * area * myNode[i].boundary->slope
                                             * myParameters.k_lateral_vertical_ratio;
             }

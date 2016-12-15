@@ -1,3 +1,33 @@
+/*!
+    CRITERIA3D
+
+    \copyright 2010-2016 Fausto Tomei, Gabriele Antolini,
+    Alberto Pistocchi, Marco Bittelli, Antonio Volta, Laura Costantini
+
+    You should have received a copy of the GNU General Public License
+    along with Nome-Programma.  If not, see <http://www.gnu.org/licenses/>.
+
+    This file is part of CRITERIA3D.
+    CRITERIA3D has been developed under contract issued by A.R.P.A. Emilia-Romagna
+
+    CRITERIA3D is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    CRITERIA3D is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with CRITERIA3D.  If not, see <http://www.gnu.org/licenses/>.
+
+    contacts:
+    fausto.tomei@gmail.com
+    ftomei@arpae.it
+*/
+
 #include <cmath>
 #include "commonConstants.h"
 #include "snowMaps.h"
@@ -30,9 +60,9 @@ Crit3DSnowMaps::Crit3DSnowMaps(const gis::Crit3DRasterGrid& dtmGrid)
 }
 
 
-/*---------------------------------
- Initialize all maps
- ---------------------------------*/
+/*!
+ * \brief Initialize all maps
+ */
 void Crit3DSnowMaps::initializeMaps()
 {
     _snowFallMap = new gis::Crit3DRasterGrid;
@@ -63,8 +93,8 @@ void Crit3DSnowMaps::updateMap(Crit3DSnowPoint* snowPoint, int row, int col)
 
 void Crit3DSnowMaps::resetSnowModel(gis::Crit3DRasterGrid* sweGrid, Crit3DSnowPoint* snowPoint)
 {
-    float initSWE;              // [mm]
-    int surfaceBulkDensity;     // [kg/m^3]
+    float initSWE;              /*!<   [mm] */
+    int surfaceBulkDensity;     /*!<   [kg/m^3] */
 
     for (long row = 0; row < sweGrid->header->nrRows; row++)
     {
@@ -78,7 +108,7 @@ void Crit3DSnowMaps::resetSnowModel(gis::Crit3DRasterGrid* sweGrid, Crit3DSnowPo
 
                 _snowWaterEquivalentMap->value[row][col] = initSWE;
 
-                //from [mm] to [m]
+                /*! from [mm] to [m] */
                 initSWE = initSWE / 1000;
 
                 _snowMeltMap->value[row][col] = 0;
