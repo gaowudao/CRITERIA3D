@@ -149,36 +149,43 @@ namespace soil
         if (fabs(sum - 100.0) > 2.0) return NODATA;
 
         int myClass = NODATA;
-        //clay
+        /*! clay */
         if (clay >= 40) myClass = 12;
-        //silty clay
+        /*! silty clay */
         if ((silt >= 40) && (clay >= 40)) myClass = 11;
-        // sandy clay
+        /*! sandy clay */
         if ((clay >= 35) && (sand >= 45)) myClass = 10;
-        // silty loam
+        /*! silty loam */
         if (((clay < 27.5) && (silt >= 50) & (silt <= 80)) || ((clay >= 12.5) && (silt >= 80))) myClass = 4;
-        // silt
+        /*! silt */
         if ((clay < 12.5) && (silt >= 80)) myClass = 6;
-        // silty clay loam
+        /*! silty clay loam */
         if ((clay < 40) && (sand < 20) && (clay >= 27.5)) myClass = 8;
-        // loamy sand
+        /*! loamy sand */
         if (((clay < 20) && (sand >= 52.5)) ||
            ((clay < 7.5) && (silt < 50) && (sand >= 42.5) && (sand <= 52.5))) myClass = 3;
-        // sandy loam
+        /*! sandy loam */
         if ((sand >= 70) && (clay <= (sand - 70))) myClass = 2;
-        // sand
+        /*! sand */
         if ((sand >= 85) && (clay <= (2 * sand -170))) myClass = 1;
-        // sandy clay loam
+        /*! sandy clay loam */
         if ((clay >= 20) && (clay < 35) && (sand >= 45) && (silt < 27.5)) myClass = 7;
-        // loam
+        /*! loam */
         if ((clay >= 7.5) && (clay < 27.5) && (sand < 52.5)  && (silt >= 27.5) & (silt < 50)) myClass = 5;
-        // clay loam
+        /*! clay loam */
         if ((clay >= 27.5) && (clay < 40) && (sand >= 20) && (sand < 45)) myClass = 9;
 
         return myClass;
     }
 
-    // NL texture (used by Driessen) different from USDA only in clay zone
+
+    /*!
+     * \brief NL texture (used by Driessen) different from USDA only in clay zone
+     * \param sand
+     * \param silt
+     * \param clay
+     * \return result
+     */
     int getNLTextureClass(float sand, float silt, float clay)
     {
         if ((sand == NODATA) || (silt == NODATA) || (clay == NODATA)) return NODATA;
@@ -186,14 +193,14 @@ namespace soil
         float sum = sand + clay + silt;
         if (fabs(sum - 100.0) > 2.0) return NODATA;
 
-        //heavy clay
+        /*! heavy clay */
         if (clay >= 65) return 12;
 
         if (clay > 40)
         {
-            //silty clay
+            /*! silty clay */
             if (silt > 40)return 11;
-            //light clay
+            /*! light clay */
             else return 10;
         }
         else return getUSDATextureClass(sand, silt, clay);
@@ -204,7 +211,7 @@ namespace soil
     {
         if (organicMatter == NODATA) organicMatter = 0.01;
 
-        //[Driessen]
+        /*! [Driessen] */
         return 1.0 / ((1.0 - organicMatter) / 2.65 + organicMatter / 1.43);
     }
 
@@ -257,12 +264,17 @@ namespace soil
     }
 
 
-    //F.ZINONI: Field Capacity potential as clay function
+    /*!
+     * \brief F.ZINONI: Field Capacity potential as clay function
+     * \param horizon
+     * \param unit
+     * \return result
+     */
     double getFieldCapacity(Crit3DHorizon* horizon, soil::units unit)
     {
-        //kPa
-        double fcMin = -10;                 //[kPa] clay < 20%
-        double fcMax = -33;                 //[kPa] clay > 50%
+
+        double fcMin = -10;                 /*!< [kPa] clay < 20% */
+        double fcMax = -33;                 /*!< [kPa] clay > 50% */
 
         if (unit == CM)
         {
@@ -286,7 +298,11 @@ namespace soil
     }
 
 
-    //[m] WP = Wilting Point
+    /*!
+     * \brief [m] WP = Wilting Point
+     * \param unit
+     * \return wilting point
+     */
     double getWiltingPoint(soil::units unit)
     {           
         if (unit == KPA)
@@ -313,12 +329,12 @@ namespace soil
     }
 
 
-    /*------------------------------------------------------------------------
-    // Compute degree of saturation from volumetric water content
-    //------------------------------------------------------------------------
-    // Se               [-] degree of saturation
-    // theta            [m^3 m-3] volumetric water content
-    //------------------------------------------------------------------------*/
+    /*!
+     * \brief Compute degree of saturation from volumetric water content
+     * \param theta [m^3 m-3] volumetric water content
+     * \param horizon pointer to Crit3DHorizon class
+     * \return [-] degree of saturation
+     */
     double SeFromTheta(double theta, Crit3DHorizon* horizon)
     {
         // check range
@@ -367,14 +383,15 @@ namespace soil
     }
 
 
-    /*-------------------------------------------------------------------------
-    // Compute hydraulic conductivity [m/sec] for modified Van Genuchten
-    // Mualem equation
-    // ------------------------------------------------------------------------
-    // K(Se) = Ksat * Se^(L) * {1-[1-Se^(1/m)]^m}^2
-    // WARNING: very low values are possible (es: 10^12)
-    // units are the same of .kSat (usually cm d-1)
-    //------------------------------------------------------------------------*/
+    /*!
+     * \brief Compute hydraulic conductivity [m/sec] for modified Van Genuchten
+     *        Mualem equation
+     *        WARNING: very low values are possible (es: 10^12) units are the same of .kSat (usually cm d-1)
+     *        K(Se) = Ksat * Se^(L) * {1-[1-Se^(1/m)]^m}^2
+     * \param Se [-] degree of saturation
+     * \param horizon pointer to Crit3DHorizon class
+     * \return
+     */
     double waterConductivity(double Se, Crit3DHorizon* horizon)
     {
         if (Se >= 1.) return(horizon->waterConductivity.kSat);

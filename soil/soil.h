@@ -42,14 +42,14 @@
             Crit3DVanGenuchten();
         };
 
-        // Driessen parameters for empirical infiltration model
-        // van Keulen, Wolf, 1986
+        /*! Driessen parameters for empirical infiltration model
+         * van Keulen, Wolf, 1986 */
         class Crit3DDriessen
         {
         public:
-            double k0;                          // [cm day^-1] saturated hydraulic conductivity
-            double maxSorptivity;               // [cm day^-1/2] maximum sorptivity (sorptivity of a completely dry matrix)
-            double gravConductivity;            // [cm day^-1] infiltration due to gravitational force
+            double k0;                          /*!<   [cm day^-1] saturated hydraulic conductivity */
+            double maxSorptivity;               /*!<   [cm day^-1/2] maximum sorptivity (sorptivity of a completely dry matrix) */
+            double gravConductivity;            /*!<   [cm day^-1] infiltration due to gravitational force */
 
             Crit3DDriessen();
         };
@@ -57,8 +57,8 @@
         class Crit3DWaterConductivity
         {
         public:
-            double kSat;                        // [cm day^-1] saturated conductivity
-            double l;                           // [-] tortuosity parameter (Van Genuchten - Mualem)
+            double kSat;                        /*!<   [cm day^-1] saturated conductivity  */
+            double l;                           /*!<   [-] tortuosity parameter (Van Genuchten - Mualem)  */
 
             Crit3DWaterConductivity();
         };
@@ -74,16 +74,16 @@
         class Crit3DHorizon
         {
         public:
-            double upperDepth, lowerDepth;      // [m]
-            double coarseFragments;             // [-] 0-1
-            double organicMatter;               // [-] 0-1
-            double bulkDensity;                 // [g/cm^3]
-            double fieldCapacity;               // [kPa]
-            double wiltingPoint;                // [kPa]
-            double waterContentFC;              // [m^3 m^-3]
-            double waterContentWP;              // [m^3 m^-3]
-            double PH;                          // [-]
-            double CEC;                         // [meq/100g]
+            double upperDepth, lowerDepth;      /*!<   [m]   */
+            double coarseFragments;             /*!<   [-] 0-1  */
+            double organicMatter;               /*!<   [-] 0-1  */
+            double bulkDensity;                 /*!<   [g/cm^3]  */
+            double fieldCapacity;               /*!<   [kPa]  */
+            double wiltingPoint;                /*!<   [kPa]  */
+            double waterContentFC;              /*!<   [m^3 m^-3]  */
+            double waterContentWP;              /*!<   [m^3 m^-3]  */
+            double PH;                          /*!<   [-]  */
+            double CEC;                         /*!<   [meq/100g]  */
 
             Crit3DTexture texture;
             Crit3DVanGenuchten vanGenuchten;
@@ -98,7 +98,7 @@
         public:
             int id;
             int nrHorizons;
-            double totalDepth;                  // [m]
+            double totalDepth;                  /*!<   [m] */
             Crit3DHorizon* horizon;
 
             Crit3DSoil();
@@ -109,18 +109,18 @@
         class Crit3DLayer
         {
         public:
-            double depth;               // [m]
-            double thickness;           // [m]
-            double waterContent;        // [mm]
-            double soilFraction;        // [-]fraction of soil (1 - coarse fragment fraction)
-            double SAT;                 // [mm] water content at saturation
-            double FC;                  // [mm] water content at field capacity
-            double WP;                  // [mm] water content at wilting point
-            double HH;                  // [mm] water content at hygroscopic humidity
-            double critical;            // [mm] water content at critical point for water movement (typical FC)
-            double maxInfiltration;     // [mm]
-            double flux;                // [mm]
-            double runoff;              // [mm]
+            double depth;               /*!<   [m] */
+            double thickness;           /*!<   [m] */
+            double waterContent;        /*!<   [mm] */
+            double soilFraction;        /*!<   [-]fraction of soil (1 - coarse fragment fraction) */
+            double SAT;                 /*!<   [mm] water content at saturation  */
+            double FC;                  /*!<   [mm] water content at field capacity */
+            double WP;                  /*!<   [mm] water content at wilting point  */
+            double HH;                  /*!<   [mm] water content at hygroscopic humidity */
+            double critical;            /*!<   [mm] water content at critical point for water movement (typical FC)  */
+            double maxInfiltration;     /*!<   [mm]  */
+            double flux;                /*!<   [mm]  */
+            double runoff;              /*!<   [mm]  */
 
             Crit3DHorizon *horizon;
 
