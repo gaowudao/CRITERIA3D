@@ -110,6 +110,7 @@
             void emptyGrid();
 
             Crit3DRasterGrid();
+            Crit3DRasterGrid(const Crit3DGridHeader& myHeader);
             ~Crit3DRasterGrid();
 
             bool initializeGrid(const Crit3DRasterGrid& myInitGrid);
@@ -180,6 +181,9 @@
 
         bool computeSlopeAspectMaps(const gis::Crit3DRasterGrid& myDtm,
                                gis::Crit3DRasterGrid* slopeMap, gis::Crit3DRasterGrid* aspectMap);
+
+        bool getGeoExtentsFromUTMHeader(const Crit3DGisSettings& mySettings,
+                                        Crit3DGridHeader *utmHeader, Crit3DGridHeader *latLonHeader);
     }
 
 

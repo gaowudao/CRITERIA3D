@@ -266,69 +266,52 @@ namespace gis
         return(false);
     }
 
-    bool getGeoExtentsFromUTMHeader(const Crit3DGisSettings& mySettings, const Crit3DGridHeader& utmHeader, Crit3DGridHeader *latLonHeader)
+    bool getGeoExtentsFromUTMHeader(const Crit3DGisSettings& mySettings, Crit3DGridHeader *utmHeader, Crit3DGridHeader *latLonHeader)
     {
         Crit3DGeoPoint v[4];
 
-        Crit3DUtmPoint myVertex = *(utmHeader.llCorner);
+        // compute vertexes
+        Crit3DUtmPoint myVertex = *(utmHeader->llCorner);
         gis::getLatLonFromUtm(mySettings, myVertex, &(v[0]));
-
-        myVertex.x += utmHeader.nrCols *utmHeader.cellSize;
+        myVertex.x += utmHeader->nrCols * utmHeader->cellSize;
         gis::getLatLonFromUtm(mySettings, myVertex, &(v[1]));
-
-        myVertex.y += utmHeader.nrRows *utmHeader.cellSize;
+        myVertex.y += utmHeader->nrRows * utmHeader->cellSize;
         gis::getLatLonFromUtm(mySettings, myVertex, &(v[2]));
-
-        myVertex.x = utmHeader.llCorner->x;
+        myVertex.x = utmHeader->llCorner->x;
         gis::getLatLonFromUtm(mySettings, myVertex, &(v[3]));
 
+        // compute LLcorner and URcorner
+        Crit3DGeoPoint LLcorner, URcorner;
+        LLcorner.latitude = max(v[0].latitude, v[1].latitude);
+        LLcorner.longitude = max(v[0].longitude, v[3].longitude);
+        URcorner.latitude = max(v[2].latitude, v[3].latitude);
+        URcorner.longitude = max(v[1].longitude, v[2].longitude);
+        latLonHeader->llCorner->x = LLcorner.longitude;
+        latLonHeader->llCorner->y = LLcorner.latitude;
+
+        // center
+        Crit3DGeoPoint center, center_1;
+        Crit3DUtmPoint utmCenter = *(utmHeader->llCorner);
+        utmCenter.x += utmHeader->nrCols *0.5 * utmHeader->cellSize;
+        utmCenter.y += utmHeader->nrRows *0.5 * utmHeader->cellSize;
+        gis::getLatLonFromUtm(mySettings, utmCenter, &(center));
+        utmCenter.x += utmHeader->cellSize;
+        utmCenter.y += utmHeader->cellSize;
+        gis::getLatLonFromUtm(mySettings, utmCenter, &(center_1));
+
+        // set cellsize
+        double dx = center_1.longitude - center.longitude;
+        double dy = center_1.latitude - center.latitude;
+        latLonHeader->cellSize = min(dx, dy);
+
+        // set rows and cols
+        latLonHeader->nrRows = (long)floor((URcorner.latitude - LLcorner.latitude) / latLonHeader->cellSize) + 1;
+        latLonHeader->nrCols = (long)floor((URcorner.longitude - LLcorner.longitude) / latLonHeader->cellSize) + 1;
+
+        //set flag
+        latLonHeader->flag = utmHeader->flag;
+
         return true;
-
-        /*
-        Dim myX As Double, myY As Double
-        Dim xLL As Double, yLL As Double, xUR As Double, yUR As Double
-        Dim i As Long
-
-        getExtentsFromLatLonHeader = False
-
-        With myLatLonHeader.latLonInfo
-            GIS_UTM_util.LatLonToUTM_ForceZone GIS.WGS84, myUTMZone, .Lat0, .Lon0, xLL, yLL
-            GIS_UTM_util.LatLonToUTM_ForceZone GIS.WGS84, myUTMZone, .Lat0 + .Ly * myLatLonHeader.nrRows, .Lon0 + .Lx * myLatLonHeader.nrCols, xUR, yUR
-
-            For i = 0 To myLatLonHeader.nrCols
-                GIS_UTM_util.LatLonToUTM_ForceZone GIS.WGS84, myUTMZone, .Lat0, .Lon0 + .Lx * i, myX, myY
-                If myY < yLL Then
-                    yLL = myY
-                End If
-                GIS_UTM_util.LatLonToUTM_ForceZone GIS.WGS84, myUTMZone, .Lat0 + .Ly * myLatLonHeader.nrRows, .Lon0 + .Lx * i, myX, myY
-                If myY > yUR Then
-                    yUR = myY
-                End If
-            Next i
-
-            For i = 0 To myLatLonHeader.nrRows
-                GIS_UTM_util.LatLonToUTM_ForceZone GIS.WGS84, myUTMZone, .Lat0 + .Ly * i, .Lon0, myX, myY
-                If myX < xLL Then
-                    xLL = myX
-                End If
-                GIS_UTM_util.LatLonToUTM_ForceZone GIS.WGS84, myUTMZone, .Lat0 + .Ly * i, .Lon0 + .Lx * myLatLonHeader.nrCols, myX, myY
-                If myX > xUR Then
-                    xUR = myX
-                End If
-            Next i
-        End With
-
-        With myUtmHeader
-            .cellSize = myCellSize
-            .xllCorner = Fix(xLL)
-            .yllCorner = Fix(yLL)
-            .nrRows = Fix((yUR - yLL) / .cellSize) + 1
-            .nrCols = Fix((xUR - xLL) / .cellSize) + 1
-        End With
-
-        getExtentsFromLatLonHeader = True
-                */
-
     }
 }
 

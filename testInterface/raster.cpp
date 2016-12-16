@@ -20,14 +20,37 @@ void initializeDTM()
     geoMap = new gis::Crit3DGeoMap();
 }
 
-
 bool loadRaster(QString myFileName, gis::Crit3DRasterGrid *myRaster)
 {
     string* myError = new std::string();
     string fileName = myFileName.left(myFileName.length()-4).toStdString();
 
-    if (gis::readEsriGrid(fileName, myRaster, myError))
+    gis::Crit3DRasterGrid utmRaster;
+    if (gis::readEsriGrid(fileName, &(utmRaster), myError))
     {
+
+        gis::Crit3DGisSettings mySettings;
+        gis::Crit3DGridHeader myLatLonHeader;
+        gis::getGeoExtentsFromUTMHeader(mySettings, utmRaster.header, &myLatLonHeader);
+
+        *myRaster = gis::Crit3DRasterGrid(myLatLonHeader);
+        myRaster->header->nrCols = myLatLonHeader.nrCols;
+        myRaster->header->nrRows = myLatLonHeader.nrRows;
+
+        // transform
+        double lat, lon, x, y;
+        for (long row = 0; row < myRaster->header->nrRows; row++)
+            for (long col = 0; col < myRaster->header->nrCols; col++)
+            {
+                gis::getUtmXYFromRowCol(*(myRaster), row, col, &(lon), &(lat));
+                gis::latLonToUtm(lat, lon, &x, &y, &(mySettings.utmZone));
+                myRaster->value[row][col] = gis::getValueFromXY(utmRaster, x, y);
+            }
+
+        myRaster->isLoaded = true;
+        updateMinMaxRasterGrid(myRaster);
+
+        // colorscale
         gis::setDefaultDTMScale(myRaster->colorScale);
         qDebug() << "Raster Ok.";
         return (true);

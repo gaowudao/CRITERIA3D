@@ -23,9 +23,9 @@
     ftomei@arpae.it
 */
 
-
 #include <math.h>
 #include <malloc.h>
+#include <algorithm>
 
 #include "commonConstants.h"
 #include "gis.h"
@@ -131,6 +131,29 @@ namespace gis
         minimum = NODATA;
         maximum = NODATA;
         value = NULL;
+    }
+
+    Crit3DRasterGrid::Crit3DRasterGrid(const Crit3DGridHeader& myHeader)
+    {
+        isLoaded = false;
+        timeString = "";
+
+        header = new Crit3DGridHeader();
+        *(header) = myHeader;
+
+        colorScale = new Crit3DColorScale();
+
+        long myRow, myCol;
+        value = (float **) calloc(header->nrRows, sizeof(float *));
+        for (myRow = 0; myRow < header->nrRows; myRow++)
+            value[myRow] = (float *) calloc(header->nrCols, sizeof(float));
+
+        for (myRow = 0; myRow < header->nrRows; myRow++)
+            for (myCol = 0; myCol < header->nrCols; myCol++)
+                value[myRow][myCol] = header->flag;
+
+        minimum = header->flag;
+        maximum = header->flag;
     }
 
     bool Crit3DRasterGrid::initializeGrid(const Crit3DRasterGrid& myInitGrid)
@@ -593,7 +616,6 @@ namespace gis
         if (lat < 0) (*utmNorthing) += 10000000.0;
 
     }
-
 
     /*!
      * \brief Converts UTM coords to Lat/Lng.  Equations from USGS Bulletin 1532.
