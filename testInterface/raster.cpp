@@ -34,6 +34,7 @@ bool loadRaster(QString myFileName, gis::Crit3DRasterGrid *myRaster)
         gis::getGeoExtentsFromUTMHeader(mySettings, utmRaster.header, &myLatLonHeader);
 
         *myRaster = gis::Crit3DRasterGrid(myLatLonHeader);
+        //TODO check memory
         myRaster->header->nrCols = myLatLonHeader.nrCols;
         myRaster->header->nrRows = myLatLonHeader.nrRows;
 
