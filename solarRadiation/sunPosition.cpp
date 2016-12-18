@@ -1,4 +1,4 @@
-/*----------------------------------------------------------------------------
+/*! ----------------------------------------------------------------------------
 * $Id: g_solposition.c,v 2.2 2006/02/09 03:09:03 glynn Exp $
 *
 *   G_calc_solar_position() calculates solar position parameters from
@@ -30,7 +30,7 @@
 #include "solPos.h"
 #include "sunPosition.h"
 
-struct posdata pd, *pdat; /* declare solpos data struct and a pointer for it */
+struct posdata pd, *pdat; /*!< declare solpos data struct and a pointer for it */
 
 
 long RSUN_compute_solar_position (float longitude, float latitude, int myTimezone,
@@ -39,7 +39,7 @@ long RSUN_compute_solar_position (float longitude, float latitude, int myTimezon
                 float sbwid, float sbrad, float sbsky)
 {
 
-    /* Note: this code is valid from year 1950 to 2050 (solpos restriction)
+    /*! Note: this code is valid from year 1950 to 2050 (solpos restriction)
      - the algorithm will compensate for leap year.
      - longitude, latitude: decimal degree
      - timezone: DO NOT ADJUST FOR DAYLIGHT SAVINGS TIME.
@@ -49,34 +49,34 @@ long RSUN_compute_solar_position (float longitude, float latitude, int myTimezon
      - time: local time from your watch
      */
 
-    long retval;             /* to capture S_solpos return codes */
+    long retval;             /*!< to capture S_solpos return codes */
 
-    pdat = &pd;   /* point to the structure for convenience */
+    pdat = &pd;   /*!< point to the structure for convenience */
 
-    /* Initialize structure to default values. (Optional only if ALL input
+    /*! Initialize structure to default values. (Optional only if ALL input
        parameters are initialized in the calling code, which they are not
        in this example.) */
 
     S_init(pdat);
 
-    pdat->longitude = longitude;  /* Note that latitude and longitude are  */
-    pdat->latitude  = latitude;   /*   in DECIMAL DEGREES, not Deg/Min/Sec */
-    pdat->timezone  = myTimezone;   /* DO NOT ADJUST FOR DAYLIGHT SAVINGS TIME. */
+    pdat->longitude = longitude;  /*!< Note that latitude and longitude are  */
+    pdat->latitude  = latitude;   /*!<   in DECIMAL DEGREES, not Deg/Min/Sec */
+    pdat->timezone  = myTimezone;   /*!< DO NOT ADJUST FOR DAYLIGHT SAVINGS TIME. */
 
-    pdat->year      = year;       /* The year */
+    pdat->year      = year;       /*!< The year */
     pdat->function &= ~S_DOY;
     pdat->month     = month;
-    pdat->day       = day;        /* the algorithm will compensate for leap year, so
+    pdat->day       = day;        /*!< the algorithm will compensate for leap year, so
                                      you just count days). S_solpos can be
                                      configured to accept day-of-the year */
 
-    /* The time of day (STANDARD (GMT) time)*/
+    /*! The time of day (STANDARD (GMT) time)*/
 
     pdat->hour      = hour;
     pdat->minute    = minute;
     pdat->second    = second;
 
-    /* The temperature is used for the
+    /*! The temperature is used for the
        atmospheric refraction correction, and the pressure is used for the
        refraction correction and the pressure-corrected airmass. */
 
@@ -90,8 +90,8 @@ long RSUN_compute_solar_position (float longitude, float latitude, int myTimezon
     pdat->sbrad		= sbrad;
     pdat->sbsky		= sbsky;
 
-    /* perform the calculation */
-    retval = S_solpos (pdat);  /* S_solpos function call: returns long value */
+    /*! perform the calculation */
+    retval = S_solpos (pdat);  /*!< S_solpos function call: returns long value */
 
     return retval;
 
