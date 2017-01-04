@@ -9,7 +9,6 @@
  /*!
   * Assign physical and miscellaneous constants
   */
-
     #define      CARBONFACTOR 0.5           // coeff for conversion of carbon into DM, kgC kgDM-1
     #define      GAMMA  66.2                // psychrometer constant, Pa K-1
     #define      LATENT  43956              // latent heat of vaporization, J mol-1
@@ -20,7 +19,6 @@
  /*!
   * Define additional photosynthetic parameters
   */
-
     #define      HARD       46.39           //activation energy of RD0 (kJ mol-1)
     #define      HAVCM      65.33           //activation energy of VCMOP (kJ mol-1)
     #define      HAJM       43.9            //activation energy of JMOP (kJ mol-1 e-)

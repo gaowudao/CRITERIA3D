@@ -1,9 +1,17 @@
 /*!
-    \copyright 2016 Fausto Tomei, Gabriele Antolini,
-    Alberto Pistocchi, Marco Bittelli, Antonio Volta, Laura Costantini
+    \file development.cpp
 
+    \abstract
+    Leaf area index development functions
+
+    \authors
+    Fausto Tomei        ftomei@arpae.it
+    Gabriele Antolini   gantolini@arpe.it
+    Antonio Volta       avolta@arpae.it
+
+    \copyright
     This file is part of CRITERIA3D.
-    CRITERIA3D has been developed under contract issued by A.R.P.A. Emilia-Romagna
+    CRITERIA3D has been developed under contract issued by ARPAE Emilia-Romagna
 
     CRITERIA3D is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
@@ -18,10 +26,8 @@
     You should have received a copy of the GNU Lesser General Public License
     along with CRITERIA3D.  If not, see <http://www.gnu.org/licenses/>.
 
-    contacts:
-    fausto.tomei@gmail.com
-    ftomei@arpae.it
 */
+
 
 #include <math.h>
 #include "commonConstants.h"
@@ -32,27 +38,43 @@
 
 namespace leafDevelopment
 {
+    /*!
+     * \brief getTheoreticalLAIGrowth   return theoritical (not stressed) Leaf Area Index from degree days
+     * \param degreeDays    [DD]
+     * \param a             [-] LAI shape form factor a
+     * \param b             [DD^-1] LAI shape form factor b
+     * \param laiMIN        [m^2 m^-2]
+     * \param laiMAX        [m^2 m^-2]
+     * \return LAI          [m^2 m^-2]
+     */
     double getTheoreticalLAIGrowth(double degreeDays, double a, double b,double laiMIN,double laiMAX)
     {
-        double lai;
-        lai = laiMIN + (laiMAX-laiMIN)/(1 + exp(a+b*degreeDays));
+        double lai = laiMIN + (laiMAX-laiMIN)/(1 + exp(a+b*degreeDays));
         return lai;
     }
 
+    /*!
+     * \brief getDDfromLAIGrowth
+     * \param lai           [m^2 m^-2] current Leaf Area Index
+     * \param a             [-] LAI shape form factor a
+     * \param b             [DD^-1] LAI shape form factor b
+     * \param laiMIN        [m^2 m^-2]
+     * \param laiMAX        [m^2 m^-2]
+     * \return degreeDays
+     */
     double getDDfromLAIGrowth(double lai, double a, double b,double laiMIN,double laiMAX)
     {
-        double DD;
-        DD = (1/b)*(log((laiMAX - lai)/(lai - laiMIN)) - a);
-        return DD;
+        double degreeDays = (1/b)*(log((laiMAX - lai)/(lai - laiMIN)) - a);
+        return degreeDays;
     }
 
 
     //Antonio - fuori MOSES
     double getNewLai(double fractionTranspirableSoilWater, double previousLai, double a, double b,double laiMIN,double laiMAX,double growthDD,double emergenceDD,double currentDD,double thermalUnits,bool *isSenescence,double* actualLaiMax)
     {
-        double newLai;
         if (currentDD <= emergenceDD) return laiMIN;
 
+        double newLai;
         if (!(*isSenescence))
         {
             if (previousLai < laiMIN + 0.3) // to evaluate 0.3 - no stress in early growth
