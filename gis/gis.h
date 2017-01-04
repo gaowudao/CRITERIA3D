@@ -1,26 +1,27 @@
 /*!
-    \copyright 2010-2016 Fausto Tomei, Gabriele Antolini,
-    Alberto Pistocchi, Marco Bittelli, Antonio Volta, Laura Costantini
+    \file gis.h
+
+    \abstract Gis structures: UTM point and raster
 
     This file is part of CRITERIA3D.
-    CRITERIA3D has been developed under contract issued by A.R.P.A. Emilia-Romagna
 
+    CRITERIA3D has been developed under contract issued by A.R.P.A.E. Emilia-Romagna.
+
+    \copyright
     CRITERIA3D is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
-
     CRITERIA3D is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU Lesser General Public License for more details.
-
     You should have received a copy of the GNU Lesser General Public License
     along with CRITERIA3D.  If not, see <http://www.gnu.org/licenses/>.
 
-    contacts:
-    fausto.tomei@gmail.com
-    ftomei@arpae.it
+    \authors
+    Fausto Tomei ftomei@arpae.it
+    Gabriele Antolini gantolini@arpae.it
 */
 
 #ifndef GIS_H
@@ -110,17 +111,22 @@
             void emptyGrid();
 
             Crit3DRasterGrid();
-            Crit3DRasterGrid(const Crit3DGridHeader& myHeader);
             ~Crit3DRasterGrid();
 
-            bool initializeGrid(const Crit3DRasterGrid& myInitGrid);
-            bool initializeGrid(const Crit3DRasterGrid& myInitGrid, float myInitValue);
-            bool setConstantValue(float myInitValue);
+            void setConstantValue(float initValue);
+
+            bool initializeGrid();
+            bool initializeGrid(float initValue);
+            bool initializeGrid(const Crit3DRasterGrid& initGrid);
+            bool initializeGrid(const Crit3DGridHeader& initHeader);
+            bool initializeGrid(const Crit3DRasterGrid& initGrid, float initValue);
+
             bool setConstantValueWithBase(float myInitValue, const Crit3DRasterGrid& myInitGrid);
             float getValueFromRowCol(long myRow, long myCol) const;
             float neighbourValue(long myRow, long myCol) const;
             Crit3DPoint mapCenter();
         };
+
 
         class Crit3DGisSettings
         {

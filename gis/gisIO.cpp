@@ -57,12 +57,11 @@ using namespace std;
 namespace gis
     {
 
-
-/*!
-     * \brief Read a ESRI grid header file (.hdr). llCorner is lower-left corner
-     * \param myFileName string
-     * \param myHeader Crit3DGridHeader pointer
-     * \param myError string pointer
+    /*!
+     * \brief Read a ESRI grid header file (.hdr)
+     * \param myFileName    string
+     * \param myHeader      Crit3DGridHeader pointer
+     * \param myError       string pointer
      * \return true on success, false otherwise
      */
     bool readEsriGridHeader(string myFileName, gis::Crit3DGridHeader *myHeader, string* myError)
@@ -85,6 +84,7 @@ namespace gis
             if (splitKeyValue(myLine, &myKey, &myValue))
             {
                 upKey = upperCase(myKey);
+
                 if ((upKey == "NCOLS") || (upKey == "NROWS") || (upKey == "CELLSIZE")
                     ||    (upKey == "XLLCORNER") || (upKey == "YLLCORNER")
                     ||    (upKey == "NODATA_VALUE") || (upKey == "NODATA"))
@@ -96,6 +96,7 @@ namespace gis
                 else if (upKey == "NROWS")
                     myHeader->nrRows = ::atoi(myValue.c_str());
 
+                // LLCORNER is the lower-left corner
                 else if (upKey == "XLLCORNER")
                     myHeader->llCorner->x = ::atof(myValue.c_str());
 
@@ -122,39 +123,32 @@ namespace gis
 
     /*!
      * \brief Read a ESRI grid data file (.flt)
-     * \param myFileName string name file
+     * \param fileName string name file
      * \param myGrid Crit3DRasterGrid pointer
      * \param myError string pointer
      * \return true on success, false otherwise
      */
-    bool readEsriGridFlt(string myFileName, gis::Crit3DRasterGrid *myGrid, string *myError)
+    bool readEsriGridFlt(string fileName, gis::Crit3DRasterGrid *myGrid, string *myError)
     {
-        myFileName += ".flt";
+        fileName += ".flt";
 
         FILE* filePointer;
 
-        /*! alloc memory */
-        myGrid->value = (float **) calloc(myGrid->header->nrRows, sizeof(float *));
-        for (long myRow = 0; myRow < myGrid->header->nrRows; myRow++)
+        if (! myGrid->initializeGrid())
         {
-            myGrid->value[myRow] = (float *) calloc(myGrid->header->nrCols, sizeof(float));
-            if (myGrid->value[myRow] == NULL)
-            {
-                *myError = "Memory error: file too big.";
-                myGrid->freeGrid();
-                return(false);
-            }
+            *myError = "Memory error: file too big.";
+            return(false);
         }
 
-        filePointer = fopen (myFileName.c_str(), "rb" );
+        filePointer = fopen (fileName.c_str(), "rb" );
         if (filePointer == NULL)
         {
             *myError = "File .flt error.";
             return(false);
         }
 
-        for (long myRow = 0; myRow < myGrid->header->nrRows; myRow++)
-            fread (myGrid->value[myRow], sizeof(float), myGrid->header->nrCols, filePointer);
+        for (long row = 0; row < myGrid->header->nrRows; row++)
+            fread (myGrid->value[row], sizeof(float), myGrid->header->nrCols, filePointer);
 
         fclose (filePointer);
 
@@ -194,11 +188,11 @@ namespace gis
 
         myFile << "cellsize      " << myHeader->cellSize << "\n";
 
-        /*! different version of NODATA */
+        // different version of NODATA
         myFile << "NODATA_value  " << myHeader->flag << "\n";
         myFile << "NODATA        " << myHeader->flag << "\n";
 
-        /*! crucial information */
+        // crucial information
         myFile << "byteorder     LSBFIRST" << "\n";
 
         myFile.close();
@@ -208,7 +202,7 @@ namespace gis
 
 
     /*!
-     * \brief write a ESRI grid data file (.flt)
+     * \brief Write a ESRI grid data file (.flt)
      * \param myFileName string name file
      * \param myHeader Crit3DGridHeader pointer
      * \param myError string pointer

@@ -20,7 +20,8 @@ void initializeDTM()
     geoMap = new gis::Crit3DGeoMap();
 }
 
-bool loadRaster(QString myFileName, gis::Crit3DRasterGrid *myRaster)
+
+bool loadRaster(QString myFileName, gis::Crit3DRasterGrid *outputRaster)
 {
     string* myError = new std::string();
     string fileName = myFileName.left(myFileName.length()-4).toStdString();
@@ -28,31 +29,27 @@ bool loadRaster(QString myFileName, gis::Crit3DRasterGrid *myRaster)
     gis::Crit3DRasterGrid utmRaster;
     if (gis::readEsriGrid(fileName, &(utmRaster), myError))
     {
-
         gis::Crit3DGisSettings mySettings;
         gis::Crit3DGridHeader myLatLonHeader;
         gis::getGeoExtentsFromUTMHeader(mySettings, utmRaster.header, &myLatLonHeader);
 
-        *myRaster = gis::Crit3DRasterGrid(myLatLonHeader);
-        //TODO check memory
-        myRaster->header->nrCols = myLatLonHeader.nrCols;
-        myRaster->header->nrRows = myLatLonHeader.nrRows;
+        outputRaster->initializeGrid(myLatLonHeader);
 
         // transform
         double lat, lon, x, y;
-        for (long row = 0; row < myRaster->header->nrRows; row++)
-            for (long col = 0; col < myRaster->header->nrCols; col++)
+        for (long row = 0; row < outputRaster->header->nrRows; row++)
+            for (long col = 0; col < outputRaster->header->nrCols; col++)
             {
-                gis::getUtmXYFromRowCol(*(myRaster), row, col, &(lon), &(lat));
-                gis::latLonToUtm(lat, lon, &x, &y, &(mySettings.utmZone));
-                myRaster->value[row][col] = gis::getValueFromXY(utmRaster, x, y);
+                gis::getUtmXYFromRowCol(*(outputRaster), row, col, &(lon), &(lat));
+                gis::latLonToUtmForceZone(mySettings.utmZone, lat, lon, &x, &y);
+                outputRaster->value[row][col] = gis::getValueFromXY(utmRaster, x, y);
             }
 
-        myRaster->isLoaded = true;
-        updateMinMaxRasterGrid(myRaster);
+        outputRaster->isLoaded = true;
+        updateMinMaxRasterGrid(outputRaster);
 
         // colorscale
-        gis::setDefaultDTMScale(myRaster->colorScale);
+        gis::setDefaultDTMScale(outputRaster->colorScale);
         qDebug() << "Raster Ok.";
         return (true);
     }
@@ -94,7 +91,7 @@ bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPain
     if (! myRaster->isLoaded) return false;
 
     long row0, row1, col0, col1;
-    int x0, y0, x1, y1, x, y, lx, ly;
+    int x0, y0, x1, y1, lx, ly;
     float myValue;
     gis::Crit3DColor* myColor;
     QColor myQColor;
@@ -105,7 +102,7 @@ bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPain
     row1--; col1++;
 
     row0 = min(myRaster->header->nrRows-1, max(long(0), row0));
-    row1 = min(myRaster->header->nrRows, max(long(0), row1));
+    row1 = min(myRaster->header->nrRows-1, max(long(0), row1));
     col0 = min(myRaster->header->nrCols, max(long(0), col0));
     col1 = min(myRaster->header->nrCols, max(long(0), col1));
 
@@ -125,7 +122,7 @@ bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPain
     y0 = pixelLL.y;
     for (long myRow = row0; myRow > row1; myRow -= step)
     {
-        y1 = pixelLL.y + (row0-myRow + step) * dy;
+        y1 = pixelLL.y + (row0-myRow-1 + step) * dy;
         x0 = pixelLL.x;
         for (long myCol = col0; myCol < col1; myCol += step)
         {
@@ -139,23 +136,12 @@ bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPain
                 myQColor = QColor(myColor->red, myColor->green, myColor->blue);
                 myPainter->setPen(myQColor);
 
-                lx = (x1 - x0);
-                ly = (y1 - y0);
+                lx = (x1 - x0) +1;
+                ly = (y1 - y0) +1;
 
-                if ((lx < 2) && (ly < 2))
-                {
-                    for (x = x0; x <= x1; x++)
-                       for (y = y0; y <= y1; y++)
-                           myPainter->drawPoint(x, y);
-                }
-                else
-                {
-                    /*!
-                      Rectangles
-                    */
-                    myPainter->setBrush(myQColor);
-                    myPainter->fillRect(x0, y0, lx+1, ly+1, myPainter->brush());
-                }
+                // Rectangles
+                myPainter->setBrush(myQColor);
+                myPainter->fillRect(x0, y0, lx, ly, myPainter->brush());
             }
             x0 = ++x1;
         }

@@ -1,27 +1,29 @@
 /*!
-    \copyright 2010-2016 Fausto Tomei, Gabriele Antolini,
-    Alberto Pistocchi, Marco Bittelli, Antonio Volta, Laura Costantini
+    \file gis.cpp
+
+    \abstract Gis structures and functions
 
     This file is part of CRITERIA3D.
-    CRITERIA3D has been developed under contract issued by A.R.P.A. Emilia-Romagna
 
+    CRITERIA3D has been developed by A.R.P.A.E. Emilia-Romagna.
+
+    \copyright
     CRITERIA3D is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
-
     CRITERIA3D is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU Lesser General Public License for more details.
-
     You should have received a copy of the GNU Lesser General Public License
     along with CRITERIA3D.  If not, see <http://www.gnu.org/licenses/>.
 
-    contacts:
-    fausto.tomei@gmail.com
-    ftomei@arpae.it
+    \authors
+    Fausto Tomei ftomei@arpae.it
+    Gabriele Antolini gantolini@arpae.it
 */
+
 
 #include <math.h>
 #include <malloc.h>
@@ -133,113 +135,97 @@ namespace gis
         value = NULL;
     }
 
-    Crit3DRasterGrid::Crit3DRasterGrid(const Crit3DGridHeader& myHeader)
+
+    void Crit3DRasterGrid::setConstantValue(float initValue)
     {
-        isLoaded = false;
-        timeString = "";
+        for (long row = 0; row < this->header->nrRows; row++)
+            for (long col = 0; col < header->nrCols; col++)
+                value[row][col] = initValue;
 
-        header = new Crit3DGridHeader();
-        *(header) = myHeader;
-
-        colorScale = new Crit3DColorScale();
-
-        long myRow, myCol;
-        value = (float **) calloc(header->nrRows, sizeof(float *));
-        for (myRow = 0; myRow < header->nrRows; myRow++)
-            value[myRow] = (float *) calloc(header->nrCols, sizeof(float));
-
-        for (myRow = 0; myRow < header->nrRows; myRow++)
-            for (myCol = 0; myCol < header->nrCols; myCol++)
-                value[myRow][myCol] = header->flag;
-
-        minimum = header->flag;
-        maximum = header->flag;
+        this->minimum = initValue;
+        this->maximum = initValue;
     }
 
-    bool Crit3DRasterGrid::initializeGrid(const Crit3DRasterGrid& myInitGrid)
+
+    bool Crit3DRasterGrid::initializeGrid()
     {
-        this->freeGrid();
+        this->value = (float **) calloc(this->header->nrRows, sizeof(float *));
 
-        *header = *(myInitGrid.header);
-        *colorScale = *(myInitGrid.colorScale);
+        for (long row = 0; row < this->header->nrRows; row++)
+        {
+            this->value[row] = (float *) calloc(this->header->nrCols, sizeof(float));
+            if (this->value[row] == NULL)
+            {
+                // Memory error: file too big
+                this->freeGrid();
+                return false;
+            }
+        }
 
-        minimum = (float)header->flag;
-        maximum = (float)header->flag;
-
-        long myRow, myCol;
-
-        value = (float **) calloc(header->nrRows, sizeof(float *));
-        for (myRow = 0; myRow < header->nrRows; myRow++)
-            value[myRow] = (float *) calloc(header->nrCols, sizeof(float));
-
-        for (myRow = 0; myRow < header->nrRows; myRow++)
-            for (myCol = 0; myCol < header->nrCols; myCol++)
-                value[myRow][myCol] = header->flag;
-
-        isLoaded = true;
-
-        return (true);
+        return true;
     }
 
-    bool Crit3DRasterGrid::initializeGrid(const Crit3DRasterGrid& myInitGrid, float myInitValue)
+
+    bool Crit3DRasterGrid::initializeGrid(float initValue)
+    {
+        if (! this->initializeGrid()) return false;
+
+        this->setConstantValue(initValue);
+
+        this->isLoaded = true;
+        return true;
+    }
+
+
+    bool Crit3DRasterGrid::initializeGrid(const Crit3DGridHeader& initHeader)
     {
         this->freeGrid();
 
-        *header = *(myInitGrid.header);
-        *colorScale = *(myInitGrid.colorScale);
+        *(this->header) = initHeader;
+        this->colorScale = new Crit3DColorScale();
 
-        minimum = myInitValue;
-        maximum = myInitValue;
-
-        value = (float **) calloc(header->nrRows, sizeof(float *));
-        for (long myRow = 0; myRow < header->nrRows; myRow++)
-            value[myRow] = (float *) calloc(header->nrCols, sizeof(float));
-
-        for (long myRow = 0; myRow < header->nrRows; myRow++)
-            for (long myCol = 0; myCol < header->nrCols; myCol++)
-                value[myRow][myCol] = myInitValue;
-
-        isLoaded = true;
-
-        return (true);
-
+        return this->initializeGrid(this->header->flag);
     }
 
-    bool Crit3DRasterGrid::setConstantValue(float myInitValue)
+
+    bool Crit3DRasterGrid::initializeGrid(const Crit3DRasterGrid& initGrid)
     {
-        if (! isLoaded) return false;
+        this->freeGrid();
 
-        minimum = myInitValue;
-        maximum = myInitValue;
+        *(this->header) = *(initGrid.header);
+        *(this->colorScale) = *(initGrid.colorScale);
 
-        for (long myRow = 0; myRow < header->nrRows; myRow++)
-            for (long myCol = 0; myCol < header->nrCols; myCol++)
-                value[myRow][myCol] = myInitValue;
-
-        if (! gis::updateMinMaxRasterGrid(this))
-            return (false);
-
-        return (true);
+        return this->initializeGrid(this->header->flag);
     }
 
-    bool Crit3DRasterGrid::setConstantValueWithBase(float myInitValue, const Crit3DRasterGrid& myInitGrid)
+
+    bool Crit3DRasterGrid::initializeGrid(const Crit3DRasterGrid& initGrid, float initValue)
     {
-        if (! isLoaded) return false;
-        if (! (*(header) == *(myInitGrid.header))) return false;
+        this->freeGrid();
 
-        minimum = myInitValue;
-        maximum = myInitValue;
+        *header = *(initGrid.header);
+        *colorScale = *(initGrid.colorScale);
 
-        for (long myRow = 0; myRow < header->nrRows; myRow++)
-            for (long myCol = 0; myCol < header->nrCols; myCol++)
-                if (myInitGrid.value[myRow][myCol] != myInitGrid.header->flag)
-                    value[myRow][myCol] = myInitValue;
-
-        if (! gis::updateMinMaxRasterGrid(this))
-            return (false);
-
-        return (true);
+        return this->initializeGrid(initValue);
     }
+
+
+    bool Crit3DRasterGrid::setConstantValueWithBase(float initValue, const Crit3DRasterGrid& initGrid)
+    {
+        if (! this->isLoaded) return false;
+        if (! (*(this->header) == *(initGrid.header))) return false;
+
+        this->minimum = initValue;
+        this->maximum = initValue;
+
+        for (long row = 0; row < this->header->nrRows; row++)
+            for (long col = 0; col < this->header->nrCols; col++)
+                if (initGrid.value[row][col] != initGrid.header->flag)
+                    this->value[row][col] = initValue;
+
+        return gis::updateMinMaxRasterGrid(this);
+    }
+
 
     Crit3DPoint Crit3DRasterGrid::mapCenter()
     {

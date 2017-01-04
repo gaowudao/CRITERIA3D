@@ -5,9 +5,10 @@
     Leaf area index development functions
 
     \authors
+    Antonio Volta       avolta@arpae.it
     Fausto Tomei        ftomei@arpae.it
     Gabriele Antolini   gantolini@arpe.it
-    Antonio Volta       avolta@arpae.it
+
 
     \copyright
     This file is part of CRITERIA3D.
