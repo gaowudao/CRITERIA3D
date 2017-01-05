@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>722</width>
-    <height>433</height>
+    <width>921</width>
+    <height>482</height>
    </rect>
   </property>
   <property name="palette">
@@ -431,13 +431,61 @@
   <property name="animated">
    <bool>false</bool>
   </property>
-  <widget class="QWidget" name="centralWidget"/>
+  <widget class="QWidget" name="centralWidget">
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>2000</width>
+     <height>2000</height>
+    </size>
+   </property>
+   <widget class="QPushButton" name="prova">
+    <property name="geometry">
+     <rect>
+      <x>650</x>
+      <y>50</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>prova</string>
+    </property>
+   </widget>
+   <widget class="QWidget" name="widgetMap" native="true">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>30</y>
+      <width>461</width>
+      <height>371</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>0</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>1024</width>
+      <height>768</height>
+     </size>
+    </property>
+   </widget>
+  </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>722</width>
+     <width>921</width>
      <height>21</height>
     </rect>
    </property>
@@ -449,7 +497,17 @@
    </widget>
    <addaction name="menuFile"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
   <action name="actionLoad_Raster">
    <property name="text">
     <string>Load Raster</string>

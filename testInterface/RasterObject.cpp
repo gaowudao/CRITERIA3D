@@ -50,7 +50,7 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 
 void RasterObject::moveCenter()
 {
-    QPointF newCenter = _view->mapToScene(QPoint(_view->width()/2, _view->height()/2));
+    QPointF newCenter = _view->mapToScene(QPoint(_view->width() * 0.5, _view->height() * 0.5));
 
     geoMap->referencePoint.latitude = newCenter.y();
     geoMap->referencePoint.longitude = newCenter.x();

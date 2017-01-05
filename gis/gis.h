@@ -121,9 +121,8 @@
             bool initializeGrid(const Crit3DGridHeader& initHeader);
             bool initializeGrid(const Crit3DRasterGrid& initGrid, float initValue);
 
-            bool setConstantValueWithBase(float myInitValue, const Crit3DRasterGrid& myInitGrid);
+            bool setConstantValueWithBase(float initValue, const Crit3DRasterGrid& initGrid);
             float getValueFromRowCol(long myRow, long myCol) const;
-            float neighbourValue(long myRow, long myCol) const;
             Crit3DPoint mapCenter();
         };
 
@@ -157,7 +156,10 @@
         void getUtmXYFromRowColSinglePrecision(const Crit3DRasterGrid& myGrid, long myRow, long myCol,float* myX,float* myY);
         void getUtmXYFromRowCol(const Crit3DRasterGrid& myGrid,long myRow,long myCol,double* myX,double* myY);
         float getValueFromXY(const Crit3DRasterGrid& myGrid, double x, double y);
-        bool isOutOfGridXY(double myX, double myY, const Crit3DRasterGrid &myGrid);
+
+        bool isOutOfGridXY(double x, double y, Crit3DGridHeader* header);
+        Crit3DGeoPoint* getRasterGeoCenter(Crit3DGridHeader* header);
+        double getRasterMaxSize(Crit3DGridHeader* header);
 
         bool isMinimum(const Crit3DRasterGrid& myGrid, long row, long col);
         bool isMinimumOrNearMinimum(const Crit3DRasterGrid& myGrid, long row, long col);

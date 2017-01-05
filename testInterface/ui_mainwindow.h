@@ -17,7 +17,8 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
-#include <QtWidgets/QStatusBar>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QToolBar>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -27,15 +28,17 @@ class Ui_MainWindow
 public:
     QAction *actionLoad_Raster;
     QWidget *centralWidget;
+    QPushButton *prova;
+    QWidget *widgetMap;
     QMenuBar *menuBar;
     QMenu *menuFile;
-    QStatusBar *statusBar;
+    QToolBar *toolBar;
 
     void setupUi(QMainWindow *MainWindow)
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(722, 433);
+        MainWindow->resize(921, 482);
         QPalette palette;
         QBrush brush(QColor(0, 0, 0, 255));
         brush.setStyle(Qt::SolidPattern);
@@ -98,16 +101,26 @@ public:
         actionLoad_Raster->setObjectName(QStringLiteral("actionLoad_Raster"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
+        centralWidget->setMinimumSize(QSize(0, 0));
+        centralWidget->setMaximumSize(QSize(2000, 2000));
+        prova = new QPushButton(centralWidget);
+        prova->setObjectName(QStringLiteral("prova"));
+        prova->setGeometry(QRect(650, 50, 75, 23));
+        widgetMap = new QWidget(centralWidget);
+        widgetMap->setObjectName(QStringLiteral("widgetMap"));
+        widgetMap->setGeometry(QRect(50, 30, 461, 371));
+        widgetMap->setMinimumSize(QSize(0, 0));
+        widgetMap->setMaximumSize(QSize(1024, 768));
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 722, 21));
+        menuBar->setGeometry(QRect(0, 0, 921, 21));
         menuFile = new QMenu(menuBar);
         menuFile->setObjectName(QStringLiteral("menuFile"));
         MainWindow->setMenuBar(menuBar);
-        statusBar = new QStatusBar(MainWindow);
-        statusBar->setObjectName(QStringLiteral("statusBar"));
-        MainWindow->setStatusBar(statusBar);
+        toolBar = new QToolBar(MainWindow);
+        toolBar->setObjectName(QStringLiteral("toolBar"));
+        MainWindow->addToolBar(Qt::TopToolBarArea, toolBar);
 
         menuBar->addAction(menuFile->menuAction());
         menuFile->addAction(actionLoad_Raster);
@@ -121,7 +134,9 @@ public:
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Criteria3D", 0));
         actionLoad_Raster->setText(QApplication::translate("MainWindow", "Load Raster", 0));
+        prova->setText(QApplication::translate("MainWindow", "prova", 0));
         menuFile->setTitle(QApplication::translate("MainWindow", "File", 0));
+        toolBar->setWindowTitle(QApplication::translate("MainWindow", "toolBar", 0));
     } // retranslateUi
 
 };

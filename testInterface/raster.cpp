@@ -120,15 +120,15 @@ bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPain
     int step = std::max(int(1. / (std::min(dx, dy))), 1);
 
     y0 = pixelLL.y;
-    for (long myRow = row0; myRow > row1; myRow -= step)
+    for (long row = row0; row > row1; row -= step)
     {
-        y1 = pixelLL.y + (row0-myRow-1 + step) * dy;
+        y1 = pixelLL.y + (row0 - row + step) * dy;
         x0 = pixelLL.x;
-        for (long myCol = col0; myCol < col1; myCol += step)
+        for (long col = col0; col < col1; col += step)
         {
-            x1 = pixelLL.x + (myCol-col0 + step) * dx;
+            x1 = pixelLL.x + (col-col0 + step) * dx;
 
-            myValue = myRaster->value[myRow][myCol];
+            myValue = myRaster->value[row][col];
             if (myValue != myRaster->header->flag)
             {
                 myColor = myRaster->colorScale->getColor(myValue);

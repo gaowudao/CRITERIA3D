@@ -29,18 +29,18 @@ MainWindow::MainWindow(QWidget *parent) :
     this->view = new MapGraphicsView(scene,this);
     Position* startCenter = new Position (11.35, 44.5, 0.0);
 
+    // this->setCentralWidget(this->view);
+    QVBoxLayout layout;
+    layout.addWidget(this->view);
+    this->ui->widgetMap->setLayout(&layout);
 
-    this->setCentralWidget(this->view); /**< The view will be our central widget */
-
-    /*!
-     * Setup some tile sources
-     */
+    // Setup some tile sources
     QSharedPointer<OSMTileSource> osmTiles(new OSMTileSource(OSMTileSource::OSMTiles), &QObject::deleteLater);
     QSharedPointer<CompositeTileSource> composite(new CompositeTileSource(), &QObject::deleteLater);
     composite->addSourceBottom(osmTiles);
     this->view->setTileSource(composite);
 
-    /*!
+    /*
      * marker example
      * CircleObject* marker1 = new CircleObject(5.0, true, QColor(255,0,0,255), 0);
      * marker1->setFlag(MapGraphicsObject::ObjectIsMovable, false);
@@ -66,6 +66,11 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::resizeEvent()
+{
+    this->ui->widgetMap->setGeometry(0, 0, this->width()*0.66, this->height());
+}
+
 void MainWindow::on_actionLoad_Raster_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Raster"), "",
@@ -78,8 +83,15 @@ void MainWindow::on_actionLoad_Raster_triggered()
     loadRaster(fileName, DTM);
 
     this->rasterMap = new RasterObject(this->view);
-    this->rasterMap->setOpacity(0.66);
+    this->rasterMap->setOpacity(0.5);
+
+    gis::Crit3DGeoPoint* center = gis::getRasterGeoCenter(DTM->header);
+    float size = gis::getRasterMaxSize(DTM->header);
+    size = log2(1000.0/size);
+    this->view->setZoomLevel(quint8(size));
+    this->view->centerOn(qreal(center->longitude), qreal(center->latitude));
     this->rasterMap->moveCenter();
+
     this->view->scene()->addObject(this->rasterMap);
 }
 

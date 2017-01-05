@@ -38,11 +38,14 @@
          * \param event
          */
         void mouseReleaseEvent(QMouseEvent *event);
+
         /*!
          * \brief mouseDoubleClickEvent implements zoom In and zoom Out
          * \param event
          */
         void mouseDoubleClickEvent(QMouseEvent * event);
+
+        void resizeEvent();
 
     private:
         Ui::MainWindow* ui;

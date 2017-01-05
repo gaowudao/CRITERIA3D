@@ -286,23 +286,23 @@ namespace gis
         // center
         Crit3DGeoPoint center, center_1;
         Crit3DUtmPoint utmCenter = *(utmHeader->llCorner);
-        utmCenter.x += utmHeader->nrCols *0.5 * utmHeader->cellSize;
-        utmCenter.y += utmHeader->nrRows *0.5 * utmHeader->cellSize;
+        utmCenter.x += utmHeader->nrCols * utmHeader->cellSize *0.5;
+        utmCenter.y += utmHeader->nrRows * utmHeader->cellSize *0.5;
         gis::getLatLonFromUtm(mySettings, utmCenter, &(center));
         utmCenter.x += utmHeader->cellSize;
         utmCenter.y += utmHeader->cellSize;
         gis::getLatLonFromUtm(mySettings, utmCenter, &(center_1));
 
-        // set cellsize
+        // cellsize
         double dx = center_1.longitude - center.longitude;
         double dy = center_1.latitude - center.latitude;
-        latLonHeader->cellSize = min(dx, dy);
+        latLonHeader->cellSize = max(dx, dy);
 
-        // set rows and cols
+        // nr of rows and cols
         latLonHeader->nrRows = (long)floor((URcorner.latitude - LLcorner.latitude) / latLonHeader->cellSize) + 1;
         latLonHeader->nrCols = (long)floor((URcorner.longitude - LLcorner.longitude) / latLonHeader->cellSize) + 1;
 
-        //set flag
+        // flag
         latLonHeader->flag = utmHeader->flag;
 
         return true;

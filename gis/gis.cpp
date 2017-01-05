@@ -426,21 +426,9 @@ namespace gis
     {
         long myRow, myCol;
 
-        if (gis::isOutOfGridXY(x, y, myGrid)) return myGrid.header->flag ;
+        if (gis::isOutOfGridXY(x, y, myGrid.header)) return myGrid.header->flag ;
         getRowColFromXY(myGrid, x, y, &myRow, &myCol);
         return myGrid.value[myRow][myCol];
-    }
-
-    float Crit3DRasterGrid::neighbourValue(long myRow, long myCol) const
-    {
-        for (int dx = -1; dx<=1; dx++)
-            for (int dy = -1; dy<=1; dy++)
-                if (myRow + dy >= 0 && myRow + dy < this->header->nrRows &&
-                        myCol + dx >= 0 && myCol + dx < this->header->nrCols)
-                    if (this->value[myRow + dy][myCol + dx] != this->header->flag)
-                        return this->value[myRow + dy][myCol + dx];
-
-        return this->header->flag;
     }
 
     float Crit3DRasterGrid::getValueFromRowCol(long myRow, long myCol) const
@@ -451,14 +439,28 @@ namespace gis
             return this->value[myRow][myCol];
     }
 
-
-    bool isOutOfGridXY(double x, double y, const Crit3DRasterGrid& myGrid)
+    bool isOutOfGridXY(double x, double y, Crit3DGridHeader* header)
     {
-        if ((x < myGrid.header->llCorner->x) || (y < myGrid.header->llCorner->y)
-            || (x >= (myGrid.header->llCorner->x + (myGrid.header->nrCols * myGrid.header->cellSize)))
-            || (y >= (myGrid.header->llCorner->y + (myGrid.header->nrRows * myGrid.header->cellSize))))
+        if ((x < header->llCorner->x) || (y < header->llCorner->y)
+            || (x >= (header->llCorner->x + (header->nrCols * header->cellSize)))
+            || (y >= (header->llCorner->y + (header->nrRows * header->cellSize))))
             return(true);
         else return(false);
+    }
+
+
+    Crit3DGeoPoint* getRasterGeoCenter(Crit3DGridHeader* header)
+    {
+        Crit3DGeoPoint* center = new(Crit3DGeoPoint);
+        center->latitude = header->llCorner->y + (header->nrRows * header->cellSize * 0.5);
+        center->longitude = header->llCorner->x + (header->nrCols * header->cellSize * 0.5);
+
+        return(center);
+    }
+
+    double getRasterMaxSize(Crit3DGridHeader* header)
+    {
+        return std::max(header->nrRows, header->nrCols) * header->cellSize;
     }
 
 
@@ -1029,7 +1031,7 @@ namespace gis
 
                 for (i = -dim; i <= dim; i++)
                     for (j = -dim; j <= dim; j++)
-                        if (! gis::isOutOfGridXY(x+(i*step), y+(j*step), inputMap))
+                        if (! gis::isOutOfGridXY(x+(i*step), y+(j*step), inputMap.header))
                         {
                             gis::getRowColFromXY(inputMap, x+(i*step), y+(j*step), &inputRow, &inputCol);
                             value = inputMap.value[inputRow][inputCol];
