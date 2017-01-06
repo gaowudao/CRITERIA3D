@@ -107,10 +107,10 @@ namespace gis
         myScale->color = new Crit3DColor[myScale->nrColors];
         myScale->classification = classificationMethod::EqualInterval;
 
-        myScale->keyColor[0] = Crit3DColor(32, 128, 16);         /*!<  green */
-        myScale->keyColor[1] = Crit3DColor(255, 196, 18);        /*!<  yellow */
-        myScale->keyColor[2] = Crit3DColor(110, 64, 18);         /*!<  brown */
-        myScale->keyColor[3] = Crit3DColor(200, 200, 200);       /*!<  lightgrey */
+        myScale->keyColor[0] = Crit3DColor(32, 128, 32);         /*!<  green */
+        myScale->keyColor[1] = Crit3DColor(255, 196, 32);        /*!<  yellow */
+        myScale->keyColor[2] = Crit3DColor(128, 64, 32);         /*!<  brown */
+        myScale->keyColor[3] = Crit3DColor(225, 225, 225);       /*!<  lightgrey */
 
         return(myScale->classify());
     }

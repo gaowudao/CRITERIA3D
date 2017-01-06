@@ -42,7 +42,6 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     Q_UNUSED(option)
     Q_UNUSED(widget)
 
-    //painter->setRenderHint(QPainter::Antialiasing, true);
     setMapResolution(_view);
     drawRaster(DTM, geoMap, painter);
 }
@@ -58,19 +57,5 @@ void RasterObject::moveCenter()
     this->setPos(newCenter);
 }
 
-
-
-//protected
-//virtual from MapGraphicsObject
-//void RasterObject::keyReleaseEvent(QKeyEvent *event)
-//{
-//    if (event->matches(QKeySequence::Delete))
-//    {
-//        this->deleteLater();
-//        event->accept();
-//    }
-//    else
-//        event->ignore();
-//}
 
 

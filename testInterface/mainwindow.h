@@ -32,6 +32,8 @@
          */
         void on_actionLoad_Raster_triggered();
 
+        void on_opacitySlider_sliderMoved(int position);
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
@@ -45,13 +47,18 @@
          */
         void mouseDoubleClickEvent(QMouseEvent * event);
 
-        void resizeEvent();
+        void mouseMoveEvent(QMouseEvent * event);
+
+        void resizeEvent(QResizeEvent * event);
 
     private:
         Ui::MainWindow* ui;
         MapGraphicsScene* scene;
         MapGraphicsView* view;
         RasterObject* rasterMap;
+
+        QPoint MainWindow::getMapPoint(QPoint* point) const;
+
     };
 
 

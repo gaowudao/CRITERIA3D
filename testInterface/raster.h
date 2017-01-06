@@ -4,23 +4,15 @@
     #ifndef MAP_H
         #include "map.h"
     #endif
-//    #ifndef POINTMAP_H
-//        #include "pointmap.h"
-//    #endif
 
-#include "MapGraphicsView.h"
-
-/*! \file raster.h
-*/
+    #include "MapGraphicsView.h"
 
     class QPainter;
     class QString;
 
-    /*!
-     * \brief initializeDTM
-     */
-    void initializeDTM();
+    extern bool isDrawing;
 
+    void initializeDTM();
 
     /*!
      * \brief loadRaster
@@ -30,7 +22,6 @@
      */
     bool loadRaster(QString fileName, gis::Crit3DRasterGrid *raster);
 
-
     /*!
      * \brief drawRaster
      * \param myRaster a Crit3DRasterGrid pointer
@@ -39,8 +30,9 @@
      * \return true if everything is ok, false otherwise
      */
     bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPainter* myPainter);
+
     //void drawObject(MapGraphicsView* pointView);
 
-    bool setMapResolution(MapGraphicsView* view);
+    bool setMapResolution(MapGraphicsView* map);
 
 #endif

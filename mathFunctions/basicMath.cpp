@@ -69,31 +69,31 @@
 
     void directRotation(float *point, float angle)
     {
-        point[0] = cos(angle)*point[0] - sin(angle)*point[1];
-        point[0] = sin(angle)*point[0] + cos(angle)*point[1];
+        point[0] = cosf(angle)*point[0] - sinf(angle)*point[1];
+        point[0] = sinf(angle)*point[0] + cosf(angle)*point[1];
     }
 
     void inverseRotation(float *point, float angle)
     {
         angle *=-1;
-        point[0] = cos(angle)*point[0] - sin(angle)*point[1];
-        point[0] = sin(angle)*point[0] + cos(angle)*point[1];
+        point[0] = cosf(angle)*point[0] - sinf(angle)*point[1];
+        point[0] = sinf(angle)*point[0] + cosf(angle)*point[1];
     }
 
     float distance(float* x,float* y, int vectorLength)
     {
         float dist = 0 ;
         for (int i=0; i<vectorLength;i++)
-            dist = pow(x[i]-y[i],2);
+            dist = powf(x[i]-y[i],2);
 
-        dist = sqrt(dist);
+        dist = sqrtf(dist);
         return dist;
     }
 
     float distance2D(float x1,float y1, float x2, float y2)
     {
         float dist;
-        dist = sqrt(pow((x1-x2),2) + pow((y1-y2),2));
+        dist = sqrtf(powf((x1-x2),2) + powf((y1-y2),2));
         return dist;
     }
 
@@ -101,9 +101,9 @@
     {
         float myNorm = 0 ;
         for (int i=0; i<vectorLength;i++)
-            myNorm = pow(x[i],2);
+            myNorm = powf(x[i],2);
 
-        myNorm = sqrt(myNorm);
+        myNorm = sqrtf(myNorm);
         return myNorm;
     }
 

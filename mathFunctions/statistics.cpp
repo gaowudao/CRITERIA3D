@@ -37,10 +37,10 @@ namespace statistics
         float sigma=0;
         for (int i=0; i< nrData; i++)
         {
-            sigma += pow(measured[i]-simulated[i],2);
+            sigma += powf(measured[i]-simulated[i],2);
         }
         sigma /= nrData;
-        sigma = sqrt(sigma);
+        sigma = sqrtf(sigma);
         return sigma;
     }
 
@@ -51,12 +51,12 @@ namespace statistics
         float coefVar;
         for (int i=0; i< nrData; i++)
         {
-            sigma += pow(measured[i]-simulated[i],2);
+            sigma += powf(measured[i]-simulated[i],2);
             measuredMean += measured[i];
         }
         sigma /= nrData;
         measuredMean /= nrData;
-        sigma = sqrt(sigma);
+        sigma = sqrtf(sigma);
         coefVar = sigma / measuredMean ;
         return coefVar;
     }
@@ -107,12 +107,12 @@ namespace statistics
 
         if (!zeroIntercept)
         {
-            *mySlope = (SUMxy - SUMx * SUMy / nrValidItems) / (SUMxx - SUMx * SUMx / nrValidItems);
-            *y_intercept = AVGy - *mySlope * AVGx;
+            *mySlope = float((SUMxy - SUMx * SUMy / nrValidItems) / (SUMxx - SUMx * SUMx / nrValidItems));
+            *y_intercept = float(AVGy - *mySlope * AVGx);
         }
         else
         {
-            *mySlope = SUMxy/SUMxx;
+            *mySlope = float(SUMxy / SUMxx);
             *y_intercept = 0.;
         }
 
@@ -132,7 +132,7 @@ namespace statistics
            }
 
         /*! calculate r^2 (coefficient of determination) */
-        *r2 = (SUMres - SUM_dy) / SUMres;
+        *r2 = float((SUMres - SUM_dy) / SUMres);
     }
 
     /*! Variance */
@@ -152,7 +152,7 @@ namespace statistics
             if (myList[i]!= NODATA)
             {
                 myDiff = (myList[i] - myMean);
-                squareDiff += pow(myDiff,2);
+                squareDiff += powf(myDiff, 2);
                 nrValidValues++;
             }
         }
@@ -184,7 +184,7 @@ namespace statistics
 
     float standardDeviation(float *myList, int nrList)
     {
-        return (sqrt(variance(myList,nrList)));
+        return sqrtf(variance(myList,nrList));
     }
     /*! covariance */
     float covariance(float *myList1, int nrList1,float *myList2, int nrList2)

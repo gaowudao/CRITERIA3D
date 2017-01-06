@@ -11,7 +11,7 @@
 #include "raster.h"
 #include "RasterObject.h"
 
-
+#define TOOLSWIDTH 200
 extern gis::Crit3DGeoMap *geoMap;
 extern gis::Crit3DRasterGrid *DTM;
 
@@ -26,13 +26,9 @@ MainWindow::MainWindow(QWidget *parent) :
      * Setup the MapGraphics scene and view
      */
     this->scene = new MapGraphicsScene(this);
-    this->view = new MapGraphicsView(scene,this);
-    Position* startCenter = new Position (11.35, 44.5, 0.0);
+    this->view = new MapGraphicsView(scene, this->ui->widgetMap);
 
-    // this->setCentralWidget(this->view);
-    QVBoxLayout layout;
-    layout.addWidget(this->view);
-    this->ui->widgetMap->setLayout(&layout);
+    Position* startCenter = new Position (11.35, 44.5, 0.0);
 
     // Setup some tile sources
     QSharedPointer<OSMTileSource> osmTiles(new OSMTileSource(OSMTileSource::OSMTiles), &QObject::deleteLater);
@@ -56,6 +52,8 @@ MainWindow::MainWindow(QWidget *parent) :
     this->rasterMap = NULL;
     this->view->setZoomLevel(10);
     this->view->centerOn(startCenter->lonLat());
+
+    //this->setMouseTracking(true);
 }
 
 
@@ -64,11 +62,6 @@ MainWindow::~MainWindow()
     delete view;
     delete scene;
     delete ui;
-}
-
-void MainWindow::resizeEvent()
-{
-    this->ui->widgetMap->setGeometry(0, 0, this->width()*0.66, this->height());
 }
 
 void MainWindow::on_actionLoad_Raster_triggered()
@@ -83,36 +76,74 @@ void MainWindow::on_actionLoad_Raster_triggered()
     loadRaster(fileName, DTM);
 
     this->rasterMap = new RasterObject(this->view);
-    this->rasterMap->setOpacity(0.5);
+    this->rasterMap->setOpacity(this->ui->opacitySlider->value() / 100.0);
 
-    gis::Crit3DGeoPoint* center = gis::getRasterGeoCenter(DTM->header);
     float size = gis::getRasterMaxSize(DTM->header);
     size = log2(1000.0/size);
     this->view->setZoomLevel(quint8(size));
+
+    gis::Crit3DGeoPoint* center = gis::getRasterGeoCenter(DTM->header);
     this->view->centerOn(qreal(center->longitude), qreal(center->latitude));
     this->rasterMap->moveCenter();
 
     this->view->scene()->addObject(this->rasterMap);
 }
 
-
 void MainWindow::mouseReleaseEvent(QMouseEvent *event){
+    Q_UNUSED(event)
+
     if (this->rasterMap != NULL)
         this->rasterMap->moveCenter();
 }
-
 
 void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
 {
-    Position newCenter = view->mapToScene(QPoint(event->pos().x(), event->pos().y()));
-    this->view->centerOn(newCenter.lonLat());
+    QPoint mapPoint = getMapPoint(&(event->pos()));
+    if ((mapPoint.x() <= 0) || (mapPoint.y() <= 0)) return;
 
-    if (event->button() == Qt::LeftButton)
-        this->view->zoomIn();
-    else
-        this->view->zoomOut();
+    Position newCenter = this->view->mapToScene(mapPoint);
+    this->ui->statusBar->showMessage(QString::number(newCenter.latitude()) + " " + QString::number(newCenter.longitude()));
 
-    if (this->rasterMap != NULL)
-        this->rasterMap->moveCenter();
+    isDrawing = false;
+        if (event->button() == Qt::LeftButton)
+            this->view->zoomIn();
+        else
+            this->view->zoomOut();
+
+        this->view->centerOn(newCenter.lonLat());
+
+        if (this->rasterMap != NULL) this->rasterMap->moveCenter();
+    isDrawing = true;
 }
 
+void MainWindow::mouseMoveEvent(QMouseEvent * event)
+{
+    QPoint mapPoint = getMapPoint(&(event->pos()));
+    Position geoPoint = this->view->mapToScene(mapPoint);
+    this->ui->statusBar->showMessage(QString::number(geoPoint.latitude()) + " " + QString::number(geoPoint.longitude()));
+}
+
+void MainWindow::resizeEvent(QResizeEvent * event)
+{
+    Q_UNUSED(event)
+
+    this->ui->widgetMap->setGeometry(TOOLSWIDTH, 0, this->width()-TOOLSWIDTH, this->height()-40);
+    this->view->resize(this->ui->widgetMap->size());
+}
+
+QPoint MainWindow::getMapPoint(QPoint* point) const
+{
+    QPoint mapPoint;
+    int dx, dy;
+    dx = this->ui->widgetMap->x() + 10;
+    dy = + this->ui->widgetMap->y() + this->ui->menuBar->height() + 10;
+    mapPoint.setX(point->x() - dx);
+    mapPoint.setY(point->y() - dy);
+    return mapPoint;
+}
+
+void MainWindow::on_opacitySlider_sliderMoved(int position)
+{
+    if (this->rasterMap != NULL)
+        this->rasterMap->setOpacity(position / 100.0);
+}

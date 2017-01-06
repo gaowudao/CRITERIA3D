@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.7.0
+** Created by: Qt User Interface Compiler version 5.7.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -17,8 +17,8 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
-#include <QtWidgets/QPushButton>
-#include <QtWidgets/QToolBar>
+#include <QtWidgets/QSlider>
+#include <QtWidgets/QStatusBar>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -28,17 +28,17 @@ class Ui_MainWindow
 public:
     QAction *actionLoad_Raster;
     QWidget *centralWidget;
-    QPushButton *prova;
     QWidget *widgetMap;
+    QSlider *opacitySlider;
     QMenuBar *menuBar;
     QMenu *menuFile;
-    QToolBar *toolBar;
+    QStatusBar *statusBar;
 
     void setupUi(QMainWindow *MainWindow)
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(921, 482);
+        MainWindow->resize(953, 620);
         QPalette palette;
         QBrush brush(QColor(0, 0, 0, 255));
         brush.setStyle(Qt::SolidPattern);
@@ -103,24 +103,27 @@ public:
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         centralWidget->setMinimumSize(QSize(0, 0));
         centralWidget->setMaximumSize(QSize(2000, 2000));
-        prova = new QPushButton(centralWidget);
-        prova->setObjectName(QStringLiteral("prova"));
-        prova->setGeometry(QRect(650, 50, 75, 23));
         widgetMap = new QWidget(centralWidget);
         widgetMap->setObjectName(QStringLiteral("widgetMap"));
-        widgetMap->setGeometry(QRect(50, 30, 461, 371));
-        widgetMap->setMinimumSize(QSize(0, 0));
-        widgetMap->setMaximumSize(QSize(1024, 768));
+        widgetMap->setGeometry(QRect(200, 10, 731, 551));
+        widgetMap->setMouseTracking(true);
+        opacitySlider = new QSlider(centralWidget);
+        opacitySlider->setObjectName(QStringLiteral("opacitySlider"));
+        opacitySlider->setGeometry(QRect(10, 30, 160, 22));
+        opacitySlider->setToolTipDuration(2);
+        opacitySlider->setMaximum(100);
+        opacitySlider->setValue(66);
+        opacitySlider->setOrientation(Qt::Horizontal);
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 921, 21));
+        menuBar->setGeometry(QRect(0, 0, 953, 26));
         menuFile = new QMenu(menuBar);
         menuFile->setObjectName(QStringLiteral("menuFile"));
         MainWindow->setMenuBar(menuBar);
-        toolBar = new QToolBar(MainWindow);
-        toolBar->setObjectName(QStringLiteral("toolBar"));
-        MainWindow->addToolBar(Qt::TopToolBarArea, toolBar);
+        statusBar = new QStatusBar(MainWindow);
+        statusBar->setObjectName(QStringLiteral("statusBar"));
+        MainWindow->setStatusBar(statusBar);
 
         menuBar->addAction(menuFile->menuAction());
         menuFile->addAction(actionLoad_Raster);
@@ -132,11 +135,15 @@ public:
 
     void retranslateUi(QMainWindow *MainWindow)
     {
-        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Criteria3D", 0));
-        actionLoad_Raster->setText(QApplication::translate("MainWindow", "Load Raster", 0));
-        prova->setText(QApplication::translate("MainWindow", "prova", 0));
-        menuFile->setTitle(QApplication::translate("MainWindow", "File", 0));
-        toolBar->setWindowTitle(QApplication::translate("MainWindow", "toolBar", 0));
+        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Criteria3D", Q_NULLPTR));
+        actionLoad_Raster->setText(QApplication::translate("MainWindow", "Load Raster", Q_NULLPTR));
+#ifndef QT_NO_TOOLTIP
+        opacitySlider->setToolTip(QApplication::translate("MainWindow", "Raster opacity", Q_NULLPTR));
+#endif // QT_NO_TOOLTIP
+#ifndef QT_NO_ACCESSIBILITY
+        opacitySlider->setAccessibleName(QApplication::translate("MainWindow", "Raster opacity", Q_NULLPTR));
+#endif // QT_NO_ACCESSIBILITY
+        menuFile->setTitle(QApplication::translate("MainWindow", "File", Q_NULLPTR));
     } // retranslateUi
 
 };

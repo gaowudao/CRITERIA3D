@@ -82,11 +82,11 @@ namespace integration
         for ( short k=0 ; k < 10 ; k++)
         {
             average_s  += old_s[k];
-            average_s2 += pow(old_s[k],2) ;
+            average_s2 += powf(old_s[k],2) ;
         }
         average_s  /= 10.0 ;
         average_s2 /= 10.0 ;
-        variance = average_s2 - pow(average_s,2) ;
+        variance = average_s2 - powf(average_s,2) ;
 
         if (variance < 0.01*fabs(s1)) return s ; // s is converging slowly
         else return average_s ; // s ondulates
@@ -200,11 +200,11 @@ namespace integration
         for ( short k=0 ; k < 10 ; k++)
         {
             average_s  += old_s[k];
-            average_s2 += pow(old_s[k],2) ;
+            average_s2 += powf(old_s[k],2) ;
         }
         average_s  /= 10.0 ;
         average_s2 /= 10.0 ;
-        variance = average_s2 - pow(average_s,2) ;
+        variance = average_s2 - powf(average_s,2) ;
         //nerror("Too many steps in routine qsimp");
         if (variance < 0.01*fabs(s1)) return s ; // s is converging slowly
         else return average_s ; // s ondulates

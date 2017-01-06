@@ -30,7 +30,6 @@
 
 namespace gis
 {
-
     Crit3DUtmWindow::Crit3DUtmWindow() {}
 
     Crit3DUtmWindow::Crit3DUtmWindow(const Crit3DUtmPoint& v0, const Crit3DUtmPoint& v1)
@@ -67,7 +66,6 @@ namespace gis
         return abs(this->v1.y - this->v0.y);
     }
 
-
     Crit3DGeoMap::Crit3DGeoMap()
     {
         this->isDrawing = false;
@@ -89,5 +87,4 @@ namespace gis
         this->pixelToDegreeY = dy;
         this->degreeToPixelY = 1.0 / this->pixelToDegreeY;
     }
-
 }

@@ -10,21 +10,21 @@
 
 gis::Crit3DRasterGrid *DTM;
 gis::Crit3DGeoMap *geoMap;
-
-using namespace std;
+bool isDrawing = false;
 
 
 void initializeDTM()
 {
     DTM = new gis::Crit3DRasterGrid();
     geoMap = new gis::Crit3DGeoMap();
+    isDrawing = false;
 }
 
 
 bool loadRaster(QString myFileName, gis::Crit3DRasterGrid *outputRaster)
 {
-    string* myError = new std::string();
-    string fileName = myFileName.left(myFileName.length()-4).toStdString();
+    std::string* myError = new std::string();
+    std::string fileName = myFileName.left(myFileName.length()-4).toStdString();
 
     gis::Crit3DRasterGrid utmRaster;
     if (gis::readEsriGrid(fileName, &(utmRaster), myError))
@@ -51,6 +51,7 @@ bool loadRaster(QString myFileName, gis::Crit3DRasterGrid *outputRaster)
         // colorscale
         gis::setDefaultDTMScale(outputRaster->colorScale);
         qDebug() << "Raster Ok.";
+        isDrawing = true;
         return (true);
     }
     else
@@ -61,12 +62,12 @@ bool loadRaster(QString myFileName, gis::Crit3DRasterGrid *outputRaster)
 }
 
 
-bool setMapResolution(MapGraphicsView* view)
+bool setMapResolution(MapGraphicsView* map)
 {
     if(DTM == NULL) return false;
 
-    QPointF bottomLeft = view->mapToScene(QPoint(0.0,view->height()));
-    QPointF topRight = view->mapToScene(QPoint(view->width(),0.0));
+    QPointF bottomLeft = map->mapToScene(QPoint(0.0, map->height()));
+    QPointF topRight = map->mapToScene(QPoint(map->width(),0.0));
 
     geoMap->bottomLeft.longitude = bottomLeft.x();
     geoMap->bottomLeft.latitude = bottomLeft.y();
@@ -76,8 +77,8 @@ bool setMapResolution(MapGraphicsView* view)
     const qreal widthLon = qAbs<qreal>(topRight.x() - bottomLeft.x());
     const qreal heightlat = qAbs<qreal>(topRight.y() - bottomLeft.y());
 
-    qreal dxdegree = widthLon / view->width();
-    qreal dydegree = heightlat / view->height();
+    qreal dxdegree = widthLon / map->width();
+    qreal dydegree = heightlat / map->height();
 
     geoMap->setResolution(dxdegree, dydegree);
 
@@ -87,8 +88,10 @@ bool setMapResolution(MapGraphicsView* view)
 
 bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPainter* myPainter)
 {
+    if (! isDrawing) return false;
     if ( myRaster == NULL) return false;
     if (! myRaster->isLoaded) return false;
+    //qDebug() << "redraw";
 
     long row0, row1, col0, col1;
     int x0, y0, x1, y1, lx, ly;
@@ -101,10 +104,10 @@ bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPain
 
     row1--; col1++;
 
-    row0 = min(myRaster->header->nrRows-1, max(long(0), row0));
-    row1 = min(myRaster->header->nrRows-1, max(long(0), row1));
-    col0 = min(myRaster->header->nrCols, max(long(0), col0));
-    col1 = min(myRaster->header->nrCols, max(long(0), col1));
+    row0 = std::min(myRaster->header->nrRows-1, std::max(long(0), row0));
+    row1 = std::min(myRaster->header->nrRows-1, std::max(long(0), row1));
+    col0 = std::min(myRaster->header->nrCols, std::max(long(0), col0));
+    col1 = std::min(myRaster->header->nrCols, std::max(long(0), col1));
 
     gis::updateColorScale(myRaster, row0, row1, col0, col1);
 
@@ -132,15 +135,11 @@ bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPain
             if (myValue != myRaster->header->flag)
             {
                 myColor = myRaster->colorScale->getColor(myValue);
-
                 myQColor = QColor(myColor->red, myColor->green, myColor->blue);
-                myPainter->setPen(myQColor);
+                myPainter->setBrush(myQColor);
 
                 lx = (x1 - x0) +1;
                 ly = (y1 - y0) +1;
-
-                // Rectangles
-                myPainter->setBrush(myQColor);
                 myPainter->fillRect(x0, y0, lx, ly, myPainter->brush());
             }
             x0 = ++x1;
@@ -151,19 +150,4 @@ bool drawRaster(gis::Crit3DRasterGrid* myRaster, gis::Crit3DGeoMap* myMap, QPain
     return true;
 }
 
-
-
-//qreal degreesLatPerMeter(const qreal latitude)
-//{
-//    const qreal latRad = latitude * (pi / 180.0);
-//    qreal meters = 111132.954 - 559.822 * cos(2.0 * latRad) + 1.175 * cos(4.0 * latRad);
-//    return 1.0 / meters;
-//}
-
-//qreal degreesLonPerMeter(const qreal latitude)
-//{
-//    const qreal latRad = latitude * (pi / 180.0);
-//    qreal meters = (pi * A_EARTH * cos(latRad)) / (180.0 * sqrt(1.0 - NAV_E2 * pow(sin(latRad), 2.0)));
-//    return 1.0 / meters;
-//}
 
