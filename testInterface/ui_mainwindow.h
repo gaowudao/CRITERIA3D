@@ -13,6 +13,7 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
+#include <QtWidgets/QGroupBox>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
@@ -29,7 +30,9 @@ public:
     QAction *actionLoad_Raster;
     QWidget *centralWidget;
     QWidget *widgetMap;
+    QGroupBox *groupBoxRaster;
     QSlider *opacitySlider;
+    QWidget *widgetColorLegend;
     QMenuBar *menuBar;
     QMenu *menuFile;
     QStatusBar *statusBar;
@@ -38,7 +41,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(953, 620);
+        MainWindow->resize(1024, 768);
         QPalette palette;
         QBrush brush(QColor(0, 0, 0, 255));
         brush.setStyle(Qt::SolidPattern);
@@ -96,6 +99,13 @@ public:
         palette.setBrush(QPalette::Disabled, QPalette::ToolTipBase, brush4);
         palette.setBrush(QPalette::Disabled, QPalette::ToolTipText, brush);
         MainWindow->setPalette(palette);
+        QFont font;
+        font.setFamily(QStringLiteral("Arial"));
+        font.setPointSize(10);
+        font.setBold(false);
+        font.setWeight(50);
+        MainWindow->setFont(font);
+        MainWindow->setAutoFillBackground(false);
         MainWindow->setAnimated(false);
         actionLoad_Raster = new QAction(MainWindow);
         actionLoad_Raster->setObjectName(QStringLiteral("actionLoad_Raster"));
@@ -105,19 +115,143 @@ public:
         centralWidget->setMaximumSize(QSize(2000, 2000));
         widgetMap = new QWidget(centralWidget);
         widgetMap->setObjectName(QStringLiteral("widgetMap"));
-        widgetMap->setGeometry(QRect(200, 10, 731, 551));
+        widgetMap->setGeometry(QRect(220, 0, 731, 561));
+        QFont font1;
+        font1.setFamily(QStringLiteral("Arial"));
+        widgetMap->setFont(font1);
         widgetMap->setMouseTracking(true);
-        opacitySlider = new QSlider(centralWidget);
+        groupBoxRaster = new QGroupBox(centralWidget);
+        groupBoxRaster->setObjectName(QStringLiteral("groupBoxRaster"));
+        groupBoxRaster->setGeometry(QRect(0, 420, 211, 141));
+        QPalette palette1;
+        palette1.setBrush(QPalette::Active, QPalette::WindowText, brush);
+        palette1.setBrush(QPalette::Active, QPalette::Button, brush1);
+        palette1.setBrush(QPalette::Active, QPalette::Light, brush1);
+        palette1.setBrush(QPalette::Active, QPalette::Midlight, brush1);
+        palette1.setBrush(QPalette::Active, QPalette::Dark, brush2);
+        palette1.setBrush(QPalette::Active, QPalette::Mid, brush3);
+        palette1.setBrush(QPalette::Active, QPalette::Text, brush);
+        palette1.setBrush(QPalette::Active, QPalette::BrightText, brush1);
+        palette1.setBrush(QPalette::Active, QPalette::ButtonText, brush);
+        palette1.setBrush(QPalette::Active, QPalette::Base, brush1);
+        palette1.setBrush(QPalette::Active, QPalette::Window, brush1);
+        palette1.setBrush(QPalette::Active, QPalette::Shadow, brush);
+        palette1.setBrush(QPalette::Active, QPalette::AlternateBase, brush1);
+        palette1.setBrush(QPalette::Active, QPalette::ToolTipBase, brush4);
+        palette1.setBrush(QPalette::Active, QPalette::ToolTipText, brush);
+        palette1.setBrush(QPalette::Inactive, QPalette::WindowText, brush);
+        palette1.setBrush(QPalette::Inactive, QPalette::Button, brush1);
+        palette1.setBrush(QPalette::Inactive, QPalette::Light, brush1);
+        palette1.setBrush(QPalette::Inactive, QPalette::Midlight, brush1);
+        palette1.setBrush(QPalette::Inactive, QPalette::Dark, brush2);
+        palette1.setBrush(QPalette::Inactive, QPalette::Mid, brush3);
+        palette1.setBrush(QPalette::Inactive, QPalette::Text, brush);
+        palette1.setBrush(QPalette::Inactive, QPalette::BrightText, brush1);
+        palette1.setBrush(QPalette::Inactive, QPalette::ButtonText, brush);
+        palette1.setBrush(QPalette::Inactive, QPalette::Base, brush1);
+        palette1.setBrush(QPalette::Inactive, QPalette::Window, brush1);
+        palette1.setBrush(QPalette::Inactive, QPalette::Shadow, brush);
+        palette1.setBrush(QPalette::Inactive, QPalette::AlternateBase, brush1);
+        palette1.setBrush(QPalette::Inactive, QPalette::ToolTipBase, brush4);
+        palette1.setBrush(QPalette::Inactive, QPalette::ToolTipText, brush);
+        palette1.setBrush(QPalette::Disabled, QPalette::WindowText, brush2);
+        palette1.setBrush(QPalette::Disabled, QPalette::Button, brush1);
+        palette1.setBrush(QPalette::Disabled, QPalette::Light, brush1);
+        palette1.setBrush(QPalette::Disabled, QPalette::Midlight, brush1);
+        palette1.setBrush(QPalette::Disabled, QPalette::Dark, brush2);
+        palette1.setBrush(QPalette::Disabled, QPalette::Mid, brush3);
+        palette1.setBrush(QPalette::Disabled, QPalette::Text, brush2);
+        palette1.setBrush(QPalette::Disabled, QPalette::BrightText, brush1);
+        palette1.setBrush(QPalette::Disabled, QPalette::ButtonText, brush2);
+        palette1.setBrush(QPalette::Disabled, QPalette::Base, brush1);
+        palette1.setBrush(QPalette::Disabled, QPalette::Window, brush1);
+        palette1.setBrush(QPalette::Disabled, QPalette::Shadow, brush);
+        palette1.setBrush(QPalette::Disabled, QPalette::AlternateBase, brush1);
+        palette1.setBrush(QPalette::Disabled, QPalette::ToolTipBase, brush4);
+        palette1.setBrush(QPalette::Disabled, QPalette::ToolTipText, brush);
+        groupBoxRaster->setPalette(palette1);
+        QFont font2;
+        font2.setPointSize(10);
+        groupBoxRaster->setFont(font2);
+        groupBoxRaster->setAutoFillBackground(false);
+        groupBoxRaster->setTitle(QStringLiteral("Raster"));
+        groupBoxRaster->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
+        opacitySlider = new QSlider(groupBoxRaster);
         opacitySlider->setObjectName(QStringLiteral("opacitySlider"));
-        opacitySlider->setGeometry(QRect(10, 30, 160, 22));
-        opacitySlider->setToolTipDuration(2);
+        opacitySlider->setGeometry(QRect(20, 30, 171, 22));
+        opacitySlider->setToolTipDuration(-1);
+#ifndef QT_NO_STATUSTIP
+        opacitySlider->setStatusTip(QStringLiteral(""));
+#endif // QT_NO_STATUSTIP
+#ifndef QT_NO_WHATSTHIS
+        opacitySlider->setWhatsThis(QStringLiteral(""));
+#endif // QT_NO_WHATSTHIS
         opacitySlider->setMaximum(100);
         opacitySlider->setValue(66);
         opacitySlider->setOrientation(Qt::Horizontal);
+        widgetColorLegend = new QWidget(groupBoxRaster);
+        widgetColorLegend->setObjectName(QStringLiteral("widgetColorLegend"));
+        widgetColorLegend->setGeometry(QRect(-1, 70, 211, 50));
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 953, 26));
+        menuBar->setGeometry(QRect(0, 0, 1024, 26));
+        QPalette palette2;
+        palette2.setBrush(QPalette::Active, QPalette::WindowText, brush);
+        QBrush brush5(QColor(170, 170, 255, 255));
+        brush5.setStyle(Qt::SolidPattern);
+        palette2.setBrush(QPalette::Active, QPalette::Button, brush5);
+        palette2.setBrush(QPalette::Active, QPalette::Light, brush1);
+        QBrush brush6(QColor(212, 212, 255, 255));
+        brush6.setStyle(Qt::SolidPattern);
+        palette2.setBrush(QPalette::Active, QPalette::Midlight, brush6);
+        QBrush brush7(QColor(85, 85, 127, 255));
+        brush7.setStyle(Qt::SolidPattern);
+        palette2.setBrush(QPalette::Active, QPalette::Dark, brush7);
+        QBrush brush8(QColor(113, 113, 170, 255));
+        brush8.setStyle(Qt::SolidPattern);
+        palette2.setBrush(QPalette::Active, QPalette::Mid, brush8);
+        palette2.setBrush(QPalette::Active, QPalette::Text, brush);
+        palette2.setBrush(QPalette::Active, QPalette::BrightText, brush1);
+        palette2.setBrush(QPalette::Active, QPalette::ButtonText, brush);
+        palette2.setBrush(QPalette::Active, QPalette::Base, brush1);
+        palette2.setBrush(QPalette::Active, QPalette::Window, brush5);
+        palette2.setBrush(QPalette::Active, QPalette::Shadow, brush);
+        palette2.setBrush(QPalette::Active, QPalette::AlternateBase, brush6);
+        palette2.setBrush(QPalette::Active, QPalette::ToolTipBase, brush4);
+        palette2.setBrush(QPalette::Active, QPalette::ToolTipText, brush);
+        palette2.setBrush(QPalette::Inactive, QPalette::WindowText, brush);
+        palette2.setBrush(QPalette::Inactive, QPalette::Button, brush5);
+        palette2.setBrush(QPalette::Inactive, QPalette::Light, brush1);
+        palette2.setBrush(QPalette::Inactive, QPalette::Midlight, brush6);
+        palette2.setBrush(QPalette::Inactive, QPalette::Dark, brush7);
+        palette2.setBrush(QPalette::Inactive, QPalette::Mid, brush8);
+        palette2.setBrush(QPalette::Inactive, QPalette::Text, brush);
+        palette2.setBrush(QPalette::Inactive, QPalette::BrightText, brush1);
+        palette2.setBrush(QPalette::Inactive, QPalette::ButtonText, brush);
+        palette2.setBrush(QPalette::Inactive, QPalette::Base, brush1);
+        palette2.setBrush(QPalette::Inactive, QPalette::Window, brush5);
+        palette2.setBrush(QPalette::Inactive, QPalette::Shadow, brush);
+        palette2.setBrush(QPalette::Inactive, QPalette::AlternateBase, brush6);
+        palette2.setBrush(QPalette::Inactive, QPalette::ToolTipBase, brush4);
+        palette2.setBrush(QPalette::Inactive, QPalette::ToolTipText, brush);
+        palette2.setBrush(QPalette::Disabled, QPalette::WindowText, brush7);
+        palette2.setBrush(QPalette::Disabled, QPalette::Button, brush5);
+        palette2.setBrush(QPalette::Disabled, QPalette::Light, brush1);
+        palette2.setBrush(QPalette::Disabled, QPalette::Midlight, brush6);
+        palette2.setBrush(QPalette::Disabled, QPalette::Dark, brush7);
+        palette2.setBrush(QPalette::Disabled, QPalette::Mid, brush8);
+        palette2.setBrush(QPalette::Disabled, QPalette::Text, brush7);
+        palette2.setBrush(QPalette::Disabled, QPalette::BrightText, brush1);
+        palette2.setBrush(QPalette::Disabled, QPalette::ButtonText, brush7);
+        palette2.setBrush(QPalette::Disabled, QPalette::Base, brush5);
+        palette2.setBrush(QPalette::Disabled, QPalette::Window, brush5);
+        palette2.setBrush(QPalette::Disabled, QPalette::Shadow, brush);
+        palette2.setBrush(QPalette::Disabled, QPalette::AlternateBase, brush5);
+        palette2.setBrush(QPalette::Disabled, QPalette::ToolTipBase, brush4);
+        palette2.setBrush(QPalette::Disabled, QPalette::ToolTipText, brush);
+        menuBar->setPalette(palette2);
+        menuBar->setAutoFillBackground(false);
         menuFile = new QMenu(menuBar);
         menuFile->setObjectName(QStringLiteral("menuFile"));
         MainWindow->setMenuBar(menuBar);
@@ -141,8 +275,14 @@ public:
         opacitySlider->setToolTip(QApplication::translate("MainWindow", "Raster opacity", Q_NULLPTR));
 #endif // QT_NO_TOOLTIP
 #ifndef QT_NO_ACCESSIBILITY
-        opacitySlider->setAccessibleName(QApplication::translate("MainWindow", "Raster opacity", Q_NULLPTR));
+        opacitySlider->setAccessibleName(QString());
 #endif // QT_NO_ACCESSIBILITY
+#ifndef QT_NO_ACCESSIBILITY
+        opacitySlider->setAccessibleDescription(QString());
+#endif // QT_NO_ACCESSIBILITY
+#ifndef QT_NO_TOOLTIP
+        widgetColorLegend->setToolTip(QApplication::translate("MainWindow", "Raster colors", Q_NULLPTR));
+#endif // QT_NO_TOOLTIP
         menuFile->setTitle(QApplication::translate("MainWindow", "File", Q_NULLPTR));
     } // retranslateUi
 

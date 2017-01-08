@@ -16,13 +16,15 @@ LIBS += -L../gis/release -lgis
 LIBS += -L../MapGraphics/release -lMapGraphics
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
-    raster.cpp \
-    RasterObject.cpp
+    mainwindow.cpp \
+    RasterObject.cpp \
+    colorlegend.cpp \
+    raster.cpp
 
 HEADERS  += mainwindow.h \
-    raster.h \
-    RasterObject.h
+    RasterObject.h \
+    colorlegend.h \
+    raster.h
 
 FORMS    += mainwindow.ui
 

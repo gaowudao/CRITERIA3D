@@ -323,9 +323,9 @@ namespace gis
         myGrid->minimum = minimum;
         myGrid->colorScale->maximum = myGrid->maximum;
         myGrid->colorScale->minimum = myGrid->minimum;
+        roundColorScale(myGrid->colorScale, 4);
         return(true);
     }
-
 
     bool updateColorScale(Crit3DRasterGrid* myGrid, long row0, long row1, long col0, long col1)
     {
@@ -365,11 +365,12 @@ namespace gis
                 }
             }
 
-        /*!  no values */
-        if (isFirstValue) return(false);
-
         myGrid->colorScale->maximum = maximum;
         myGrid->colorScale->minimum = minimum;
+        //  no values
+        if (isFirstValue) return(false);
+
+        roundColorScale(myGrid->colorScale, 4);
         return(true);
     }
 

@@ -3,16 +3,13 @@
 
 #include "tileSources/OSMTileSource.h"
 #include "tileSources/CompositeTileSource.h"
-#include "CircleObject.h"
-#include "Position.h"
-
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "Position.h"
 #include "raster.h"
-#include "RasterObject.h"
 
-#define TOOLSWIDTH 200
-extern gis::Crit3DGeoMap *geoMap;
+
+#define TOOLSWIDTH 220
 extern gis::Crit3DRasterGrid *DTM;
 
 
@@ -22,36 +19,30 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    /*!
-     * Setup the MapGraphics scene and view
-     */
-    this->scene = new MapGraphicsScene(this);
-    this->view = new MapGraphicsView(scene, this->ui->widgetMap);
+    // Setup the MapGraphics Scene and View
+    this->mapScene = new MapGraphicsScene(this);
+    this->mapView = new MapGraphicsView(mapScene, this->ui->widgetMap);
+    this->legend = new ColorLegend(this->ui->widgetColorLegend);
+    this->legend->resize(this->ui->widgetColorLegend->size());
 
-    Position* startCenter = new Position (11.35, 44.5, 0.0);
-
-    // Setup some tile sources
+    // Setup tile sources
     QSharedPointer<OSMTileSource> osmTiles(new OSMTileSource(OSMTileSource::OSMTiles), &QObject::deleteLater);
     QSharedPointer<CompositeTileSource> composite(new CompositeTileSource(), &QObject::deleteLater);
     composite->addSourceBottom(osmTiles);
-    this->view->setTileSource(composite);
+    this->mapView->setTileSource(composite);
 
-    /*
-     * marker example
-     * CircleObject* marker1 = new CircleObject(5.0, true, QColor(255,0,0,255), 0);
-     * marker1->setFlag(MapGraphicsObject::ObjectIsMovable, false);
-     * marker1->setFlag(MapGraphicsObject::ObjectIsSelectable, false);
-     * marker1->setLatitude(startCenter->latitude());
-     * marker1->setLongitude(startCenter->longitude());
-     * this->view->scene()->addObject(marker1);
-    */
+    // Set start size and position
+    Position* startCenter = new Position (11.35, 44.5, 0.0);
+    this->mapView->setZoomLevel(10);
+    this->mapView->centerOn(startCenter->lonLat());
 
-    geoMap->referencePoint.latitude = startCenter->latitude();
-    geoMap->referencePoint.longitude = startCenter->longitude();
+    DTM = new gis::Crit3DRasterGrid();
 
-    this->rasterMap = NULL;
-    this->view->setZoomLevel(10);
-    this->view->centerOn(startCenter->lonLat());
+    // Set raster object
+    this->rasterObj = new RasterObject(this->mapView);
+    this->rasterObj->setOpacity(this->ui->opacitySlider->value() / 100.0);
+    this->rasterObj->setColorLegend(this->legend);
+    this->mapView->scene()->addObject(this->rasterObj);
 
     //this->setMouseTracking(true);
 }
@@ -59,41 +50,41 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    delete view;
-    delete scene;
+    delete rasterObj;
+    delete legend;
+    delete mapView;
+    delete mapScene;
     delete ui;
 }
 
 void MainWindow::on_actionLoad_Raster_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Raster"), "",
-                                           tr("ESRI grid files (*.flt)"));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open rasterObj"), "", tr("ESRI grid files (*.flt)"));
     if (fileName == "") return;
 
     qDebug() << "loading raster";
-    this->rasterMap->deleteLater();
+    if (!loadRaster(fileName, DTM)) return;
 
-    loadRaster(fileName, DTM);
+    // center map
+    gis::Crit3DGeoPoint* center = gis::getRasterGeoCenter(DTM->header);
+    this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
 
-    this->rasterMap = new RasterObject(this->view);
-    this->rasterMap->setOpacity(this->ui->opacitySlider->value() / 100.0);
-
+    // resize map
     float size = gis::getRasterMaxSize(DTM->header);
     size = log2(1000.0/size);
-    this->view->setZoomLevel(quint8(size));
+    this->mapView->setZoomLevel(quint8(size));
+    this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
 
-    gis::Crit3DGeoPoint* center = gis::getRasterGeoCenter(DTM->header);
-    this->view->centerOn(qreal(center->longitude), qreal(center->latitude));
-    this->rasterMap->moveCenter();
-
-    this->view->scene()->addObject(this->rasterMap);
+    // active raster object
+    this->rasterObj->updateCenter();
+    this->rasterObj->setDrawing(true);
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event){
     Q_UNUSED(event)
 
-    if (this->rasterMap != NULL)
-        this->rasterMap->moveCenter();
+    if (this->rasterObj != NULL)
+        this->rasterObj->updateCenter();
 }
 
 void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
@@ -101,25 +92,26 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
     QPoint mapPoint = getMapPoint(&(event->pos()));
     if ((mapPoint.x() <= 0) || (mapPoint.y() <= 0)) return;
 
-    Position newCenter = this->view->mapToScene(mapPoint);
+    Position newCenter = this->mapView->mapToScene(mapPoint);
     this->ui->statusBar->showMessage(QString::number(newCenter.latitude()) + " " + QString::number(newCenter.longitude()));
 
-    isDrawing = false;
+    this->rasterObj->setDrawing(false);
         if (event->button() == Qt::LeftButton)
-            this->view->zoomIn();
+            this->mapView->zoomIn();
         else
-            this->view->zoomOut();
+            this->mapView->zoomOut();
 
-        this->view->centerOn(newCenter.lonLat());
-
-        if (this->rasterMap != NULL) this->rasterMap->moveCenter();
-    isDrawing = true;
+        this->mapView->centerOn(newCenter.lonLat());
+        this->rasterObj->updateCenter();
+    this->rasterObj->setDrawing(true);
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent * event)
 {
     QPoint mapPoint = getMapPoint(&(event->pos()));
-    Position geoPoint = this->view->mapToScene(mapPoint);
+    if ((mapPoint.x() <= 0) || (mapPoint.y() <= 0)) return;
+
+    Position geoPoint = this->mapView->mapToScene(mapPoint);
     this->ui->statusBar->showMessage(QString::number(geoPoint.latitude()) + " " + QString::number(geoPoint.longitude()));
 }
 
@@ -127,8 +119,10 @@ void MainWindow::resizeEvent(QResizeEvent * event)
 {
     Q_UNUSED(event)
 
-    this->ui->widgetMap->setGeometry(TOOLSWIDTH, 0, this->width()-TOOLSWIDTH, this->height()-40);
-    this->view->resize(this->ui->widgetMap->size());
+    this->ui->widgetMap->setGeometry(TOOLSWIDTH, 0, this->width()-TOOLSWIDTH, this->height() - 40);
+    this->mapView->resize(this->ui->widgetMap->size());
+
+    this->ui->groupBoxRaster->move(10, this->height() - this->ui->groupBoxRaster->height() - 50);
 }
 
 QPoint MainWindow::getMapPoint(QPoint* point) const
@@ -144,6 +138,8 @@ QPoint MainWindow::getMapPoint(QPoint* point) const
 
 void MainWindow::on_opacitySlider_sliderMoved(int position)
 {
-    if (this->rasterMap != NULL)
-        this->rasterMap->setOpacity(position / 100.0);
+    if (this->rasterObj != NULL)
+        this->rasterObj->setOpacity(position / 100.0);
 }
+
+

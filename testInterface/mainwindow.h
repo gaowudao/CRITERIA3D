@@ -5,9 +5,8 @@
     #include <QGridLayout>
     #include "MapGraphicsView.h"
     #include "MapGraphicsScene.h"
-    #include "Position.h"
-
-    class RasterObject;
+    #include "RasterObject.h"
+    #include "colorlegend.h"
 
     namespace Ui
     {
@@ -53,9 +52,10 @@
 
     private:
         Ui::MainWindow* ui;
-        MapGraphicsScene* scene;
-        MapGraphicsView* view;
-        RasterObject* rasterMap;
+        MapGraphicsScene* mapScene;
+        MapGraphicsView* mapView;
+        RasterObject* rasterObj;
+        ColorLegend* legend;
 
         QPoint MainWindow::getMapPoint(QPoint* point) const;
 

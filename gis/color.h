@@ -54,7 +54,7 @@
             bool classify();
 
             Crit3DColor* getColor(float myValue);
-            void setColorScale(const Crit3DColorScale& myColorScale);
+            int getColorIndex(float myValue);
         };
 
         bool setDefaultDTMScale(Crit3DColorScale* myScale);
@@ -64,6 +64,7 @@
         bool setRadiationScale(Crit3DColorScale* myScale);
         bool setWindIntensityScale(Crit3DColorScale* myScale);
         bool setLeafWetnessScale(Crit3DColorScale* myScale);
+        bool roundColorScale(Crit3DColorScale* myScale, int nrIntervals);
     }
 
 #endif // COLOR_H

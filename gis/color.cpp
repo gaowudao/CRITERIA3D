@@ -90,19 +90,36 @@ namespace gis
     {
         int myIndex = 0;
 
-        if (classification == classificationMethod::EqualInterval)
-        {
-            myIndex = (int)((nrColors-1) * ((myValue - minimum) / (maximum - minimum)));
-        }
+        if (myValue <= minimum)
+            myIndex = 0;
+        else if (myValue >= maximum)
+            myIndex = nrColors-1;
+        else
+            if (classification == classificationMethod::EqualInterval)
+            {
+                myIndex = int(round((nrColors-1) * ((myValue - minimum) / (maximum - minimum))));
+            }
 
         return(&color[myIndex]);
+    }
+
+
+    int Crit3DColorScale::getColorIndex(float myValue)
+    {       
+        if (myValue <= minimum)
+            return 0;
+        else if (myValue >= maximum)
+            return nrColors-1;
+        else if (classification == classificationMethod::EqualInterval)
+            return int(round((nrColors-1) * ((myValue - minimum) / (maximum - minimum))));
+        else return 0;
     }
 
 
     bool setDefaultDTMScale(Crit3DColorScale* myScale)
     {
         myScale->nrKeyColors = 4;
-        myScale->nrColors = 256;
+        myScale->nrColors = 128;
         myScale->keyColor = new Crit3DColor[myScale->nrKeyColors];
         myScale->color = new Crit3DColor[myScale->nrColors];
         myScale->classification = classificationMethod::EqualInterval;
@@ -202,6 +219,30 @@ namespace gis
         myScale->keyColor[2] = Crit3DColor(255, 0, 0);
 
         return(myScale->classify());
+    }
+
+    /*!
+     * \brief roundColorScale round colorScale values on the second digit of each range.
+     * It requires that nrColors is a multiply of nrIntervals for a correct visualization in the colors legend.
+     * It is projected for a legend of nrIntervals+1 levels (i.e= 4 intervals, 5 levels)
+     * \param myScale
+     * \param nrIntervals
+     * \return
+     */
+    bool roundColorScale(Crit3DColorScale* myScale, int nrIntervals)
+    {
+        float avg = myScale->minimum + (myScale->maximum - myScale->minimum) / 2;
+        float level = (myScale->maximum - myScale->minimum) / nrIntervals;
+
+        float myLog = log10(level);
+        float myExp = floor(myLog)-1 ;
+        float pow10 = powf(10.0, myExp);
+        float roundLevel = ceil(level / pow10) * pow10;
+        float roundAvg = round(avg / pow10) * pow10;
+
+        myScale->minimum = roundAvg - roundLevel*(nrIntervals/2);
+        myScale->maximum = roundAvg + roundLevel*(nrIntervals/2);
+        return true;
     }
 
 }

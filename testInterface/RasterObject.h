@@ -4,6 +4,8 @@
 #include "MapGraphics_global.h"
 #include "MapGraphicsObject.h"
 #include "MapGraphicsView.h"
+#include "colorlegend.h"
+#include "map.h"
 
 
 /*!
@@ -19,10 +21,6 @@ public:
      * \param parent MapGraphicsObject
      */
     explicit RasterObject(MapGraphicsView* view, MapGraphicsObject *parent = 0);
-    /*!
-     * \brief ~RasterObject destructor
-     */
-    virtual ~RasterObject();
 
     /*!
      * \brief boundingRect pure-virtual from MapGraphicsObject
@@ -38,19 +36,23 @@ public:
      * \param widget a QWidget pointer
      */
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    /*!
-     * \brief moveCenter
-     */
-    void moveCenter();
+
+    void updateCenter();
+    void setDrawing(bool value);
+    void setColorLegend(ColorLegend* myLegend);
 
 protected:
     //virtual from MapGraphicsObject
-    //virtual void keyReleaseEvent(QKeyEvent *event);
 
 private:
-
     MapGraphicsView* _view;
+    gis::Crit3DGeoMap* geoMap;
+    ColorLegend* legend;
+    bool isDrawing;
 
+    bool setMapResolution();
+    bool drawRaster(gis::Crit3DRasterGrid* myRaster, QPainter* myPainter);
 };
+
 
 #endif // RASTEROBJECT_H
