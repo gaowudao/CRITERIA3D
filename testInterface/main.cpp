@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    //setProxy("172.16.1.21", 8080);
+    setProxy("172.16.1.21", 8080);
 
     MainWindow w;
     w.show();

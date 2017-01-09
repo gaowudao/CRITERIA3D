@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.7.1
+** Created by: Qt User Interface Compiler version 5.7.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -269,10 +269,10 @@ public:
 
     void retranslateUi(QMainWindow *MainWindow)
     {
-        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Criteria3D", Q_NULLPTR));
-        actionLoad_Raster->setText(QApplication::translate("MainWindow", "Load Raster", Q_NULLPTR));
+        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Criteria3D", 0));
+        actionLoad_Raster->setText(QApplication::translate("MainWindow", "Load Raster", 0));
 #ifndef QT_NO_TOOLTIP
-        opacitySlider->setToolTip(QApplication::translate("MainWindow", "Raster opacity", Q_NULLPTR));
+        opacitySlider->setToolTip(QApplication::translate("MainWindow", "Raster opacity", 0));
 #endif // QT_NO_TOOLTIP
 #ifndef QT_NO_ACCESSIBILITY
         opacitySlider->setAccessibleName(QString());
@@ -281,9 +281,9 @@ public:
         opacitySlider->setAccessibleDescription(QString());
 #endif // QT_NO_ACCESSIBILITY
 #ifndef QT_NO_TOOLTIP
-        widgetColorLegend->setToolTip(QApplication::translate("MainWindow", "Raster colors", Q_NULLPTR));
+        widgetColorLegend->setToolTip(QApplication::translate("MainWindow", "Raster colors", 0));
 #endif // QT_NO_TOOLTIP
-        menuFile->setTitle(QApplication::translate("MainWindow", "File", Q_NULLPTR));
+        menuFile->setTitle(QApplication::translate("MainWindow", "File", 0));
     } // retranslateUi
 
 };

@@ -27,11 +27,11 @@ void RasterObject::setDrawing(bool value)
  this->isDrawing = value;
 }
 
-void RasterObject::setColorLegend(ColorLegend* myLegend)
+/*void RasterObject::setColorLegend(ColorLegend* myLegend)
 {
  this->legend = myLegend;
 }
-
+*/
 /*!
 \brief You need to implement this. If sizeIsZoomInvariant() is true, this should return the size of the
  rectangle you want in PIXELS. If false, this should return the size of the rectangle in METERS. The
@@ -53,7 +53,7 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 
     this->setMapResolution();
     drawRaster(DTM, painter);
-    this->legend->update();
+   // this->legend->update();
 }
 
 
