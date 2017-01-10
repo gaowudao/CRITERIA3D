@@ -23,7 +23,7 @@
     ftomei@arpae.it
 */
 
-
+#include <algorithm>
 #include "commonConstants.h"
 #include "gis.h"
 
@@ -234,8 +234,9 @@ namespace gis
         float avg = myScale->minimum + (myScale->maximum - myScale->minimum) / 2;
         float level = (myScale->maximum - myScale->minimum) / nrIntervals;
 
-        float myLog = log10(level);
-        float myExp = floor(myLog)-1 ;
+        float logLevel = log10(level);
+        float logAvg = log10(avg);
+        float myExp = std::max(floor(logLevel)-1, floor(logAvg)-1);
         float pow10 = powf(10.0, myExp);
         float roundLevel = ceil(level / pow10) * pow10;
         float roundAvg = round(avg / pow10) * pow10;

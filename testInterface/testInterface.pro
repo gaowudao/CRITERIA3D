@@ -18,13 +18,13 @@ LIBS += -L../MapGraphics/release -lMapGraphics
 SOURCES += main.cpp\
     mainwindow.cpp \
     RasterObject.cpp \
-    #colorlegend.cpp \
-    raster.cpp
+    raster.cpp \
+    colorlegend.cpp
 
 HEADERS  += mainwindow.h \
     RasterObject.h \
-    #colorlegend.h \
-    raster.h
+    raster.h \
+    colorlegend.h
 
 FORMS    += mainwindow.ui
 

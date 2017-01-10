@@ -22,8 +22,8 @@ MainWindow::MainWindow(QWidget *parent) :
     // Setup the MapGraphics Scene and View
     this->mapScene = new MapGraphicsScene(this);
     this->mapView = new MapGraphicsView(mapScene, this->ui->widgetMap);
-   // this->legend = new ColorLegend(this->ui->widgetColorLegend);
-  //  this->legend->resize(this->ui->widgetColorLegend->size());
+    this->legend = new ColorLegend(this->ui->widgetColorLegend);
+    this->legend->resize(this->ui->widgetColorLegend->size());
 
     // Setup tile sources
     QSharedPointer<OSMTileSource> osmTiles(new OSMTileSource(OSMTileSource::OSMTiles), &QObject::deleteLater);
@@ -41,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // Set raster object
     this->rasterObj = new RasterObject(this->mapView);
     this->rasterObj->setOpacity(this->ui->opacitySlider->value() / 100.0);
-  //  this->rasterObj->setColorLegend(this->legend);
+    this->rasterObj->setColorLegend(this->legend);
     this->mapView->scene()->addObject(this->rasterObj);
 
     //this->setMouseTracking(true);

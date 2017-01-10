@@ -4,7 +4,7 @@
 #include "MapGraphics_global.h"
 #include "MapGraphicsObject.h"
 #include "MapGraphicsView.h"
-//#include "colorlegend.h"
+#include "colorlegend.h"
 #include "map.h"
 
 
@@ -39,7 +39,7 @@ public:
 
     void updateCenter();
     void setDrawing(bool value);
-    //void setColorLegend(ColorLegend* myLegend);
+    void setColorLegend(ColorLegend* myLegend);
 
 protected:
     //virtual from MapGraphicsObject
@@ -47,7 +47,7 @@ protected:
 private:
     MapGraphicsView* _view;
     gis::Crit3DGeoMap* geoMap;
-   // ColorLegend* legend;
+    ColorLegend* legend;
     bool isDrawing;
 
     bool setMapResolution();

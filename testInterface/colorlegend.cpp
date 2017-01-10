@@ -46,7 +46,12 @@ bool drawColorLegend(gis::Crit3DRasterGrid* myRaster, QPainter* myPainter)
         myPainter->setBrush(myQColor);
         myPainter->fillRect(DELTA+dx*i, 0, ceil(dx), 20, myPainter->brush());
         if ((i % n) == 0)
-            myPainter->drawText(DELTA*0.5 + dx*i, 40, QString::number(value));
+        {
+            if (int(value) == value)
+                myPainter->drawText(DELTA*0.5 + dx*i, 40, QString::number(value));
+            else
+                myPainter->drawText(DELTA*0.5 + dx*i, 40, QString::number(value,'g',1));
+        }
         value += step;
     }
 

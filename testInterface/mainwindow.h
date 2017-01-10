@@ -6,7 +6,7 @@
     #include "MapGraphicsView.h"
     #include "MapGraphicsScene.h"
     #include "RasterObject.h"
-    //#include "colorlegend.h"
+    #include "colorlegend.h"
 
     namespace Ui
     {
@@ -55,7 +55,7 @@
         MapGraphicsScene* mapScene;
         MapGraphicsView* mapView;
         RasterObject* rasterObj;
-        //ColorLegend* legend;
+        ColorLegend* legend;
 
         QPoint MainWindow::getMapPoint(QPoint* point) const;
 
