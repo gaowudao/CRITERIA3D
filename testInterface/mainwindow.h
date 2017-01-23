@@ -5,8 +5,10 @@
     #include <QGridLayout>
     #include "MapGraphicsView.h"
     #include "MapGraphicsScene.h"
+    #include "tileSources/OSMTileSource.h"
     #include "RasterObject.h"
     #include "colorlegend.h"
+
 
     namespace Ui
     {
@@ -33,6 +35,14 @@
 
         void on_opacitySlider_sliderMoved(int position);
 
+        void on_actionOpenstreetmap_triggered();
+
+        void on_actionWikimedia_Maps_triggered();
+
+        void on_actionTerrain_triggered();
+
+        void on_actionToner_lite_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
@@ -56,6 +66,8 @@
         MapGraphicsView* mapView;
         RasterObject* rasterObj;
         ColorLegend* legend;
+
+        void setMapSource(OSMTileSource::OSMTileType mySource);
 
         QPoint MainWindow::getMapPoint(QPoint* point) const;
 

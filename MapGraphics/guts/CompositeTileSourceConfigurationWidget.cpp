@@ -80,24 +80,13 @@ void CompositeTileSourceConfigurationWidget::addOSMTileLayer()
 }
 
 //private slot
-void CompositeTileSourceConfigurationWidget::addMapQuestLayer()
+void CompositeTileSourceConfigurationWidget::addWikimediaMapsLayer()
 {
     QSharedPointer<CompositeTileSource> composite = _composite.toStrongRef();
     if (composite.isNull())
         return;
 
-    QSharedPointer<OSMTileSource> source(new OSMTileSource(OSMTileSource::MapQuestOSMTiles));
-    composite->addSourceTop(source);
-}
-
-//private slot
-void CompositeTileSourceConfigurationWidget::addMapQuestSatLayer()
-{
-    QSharedPointer<CompositeTileSource> composite = _composite.toStrongRef();
-    if (composite.isNull())
-        return;
-
-    QSharedPointer<OSMTileSource> source(new OSMTileSource(OSMTileSource::MapQuestAerialTiles));
+    QSharedPointer<OSMTileSource> source(new OSMTileSource(OSMTileSource::WikimediaMaps));
     composite->addSourceTop(source);
 }
 

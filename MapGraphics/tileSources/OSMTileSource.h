@@ -16,8 +16,9 @@ public:
     enum OSMTileType
     {
         OSMTiles,
-        MapQuestOSMTiles,
-        MapQuestAerialTiles
+        WikimediaMaps,
+        Terrain,
+        TonerLite
     };
 
 public:

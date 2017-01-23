@@ -969,7 +969,7 @@
      <x>0</x>
      <y>0</y>
      <width>1024</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="palette">
@@ -1396,12 +1396,42 @@
     </property>
     <addaction name="actionLoad_Raster"/>
    </widget>
+   <widget class="QMenu" name="menuMap_server">
+    <property name="title">
+     <string>Map type</string>
+    </property>
+    <addaction name="actionOpenstreetmap"/>
+    <addaction name="actionWikimedia_Maps"/>
+    <addaction name="actionTerrain"/>
+    <addaction name="actionToner_lite"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuMap_server"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionLoad_Raster">
    <property name="text">
     <string>Load Raster</string>
+   </property>
+  </action>
+  <action name="actionOpenstreetmap">
+   <property name="text">
+    <string>OpenStreetMap</string>
+   </property>
+  </action>
+  <action name="actionWikimedia_Maps">
+   <property name="text">
+    <string>Wikimedia maps</string>
+   </property>
+  </action>
+  <action name="actionTerrain">
+   <property name="text">
+    <string>Terrain</string>
+   </property>
+  </action>
+  <action name="actionToner_lite">
+   <property name="text">
+    <string>Toner lite</string>
    </property>
   </action>
  </widget>

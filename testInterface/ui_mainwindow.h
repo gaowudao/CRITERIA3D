@@ -28,6 +28,10 @@ class Ui_MainWindow
 {
 public:
     QAction *actionLoad_Raster;
+    QAction *actionOpenstreetmap;
+    QAction *actionWikimedia_Maps;
+    QAction *actionTerrain;
+    QAction *actionToner_lite;
     QWidget *centralWidget;
     QWidget *widgetMap;
     QGroupBox *groupBoxRaster;
@@ -35,6 +39,7 @@ public:
     QWidget *widgetColorLegend;
     QMenuBar *menuBar;
     QMenu *menuFile;
+    QMenu *menuMap_server;
     QStatusBar *statusBar;
 
     void setupUi(QMainWindow *MainWindow)
@@ -109,6 +114,14 @@ public:
         MainWindow->setAnimated(false);
         actionLoad_Raster = new QAction(MainWindow);
         actionLoad_Raster->setObjectName(QStringLiteral("actionLoad_Raster"));
+        actionOpenstreetmap = new QAction(MainWindow);
+        actionOpenstreetmap->setObjectName(QStringLiteral("actionOpenstreetmap"));
+        actionWikimedia_Maps = new QAction(MainWindow);
+        actionWikimedia_Maps->setObjectName(QStringLiteral("actionWikimedia_Maps"));
+        actionTerrain = new QAction(MainWindow);
+        actionTerrain->setObjectName(QStringLiteral("actionTerrain"));
+        actionToner_lite = new QAction(MainWindow);
+        actionToner_lite->setObjectName(QStringLiteral("actionToner_lite"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         centralWidget->setMinimumSize(QSize(0, 0));
@@ -195,7 +208,7 @@ public:
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 1024, 26));
+        menuBar->setGeometry(QRect(0, 0, 1024, 21));
         QPalette palette2;
         palette2.setBrush(QPalette::Active, QPalette::WindowText, brush);
         QBrush brush5(QColor(170, 170, 255, 255));
@@ -254,13 +267,20 @@ public:
         menuBar->setAutoFillBackground(false);
         menuFile = new QMenu(menuBar);
         menuFile->setObjectName(QStringLiteral("menuFile"));
+        menuMap_server = new QMenu(menuBar);
+        menuMap_server->setObjectName(QStringLiteral("menuMap_server"));
         MainWindow->setMenuBar(menuBar);
         statusBar = new QStatusBar(MainWindow);
         statusBar->setObjectName(QStringLiteral("statusBar"));
         MainWindow->setStatusBar(statusBar);
 
         menuBar->addAction(menuFile->menuAction());
+        menuBar->addAction(menuMap_server->menuAction());
         menuFile->addAction(actionLoad_Raster);
+        menuMap_server->addAction(actionOpenstreetmap);
+        menuMap_server->addAction(actionWikimedia_Maps);
+        menuMap_server->addAction(actionTerrain);
+        menuMap_server->addAction(actionToner_lite);
 
         retranslateUi(MainWindow);
 
@@ -271,6 +291,10 @@ public:
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Criteria3D", 0));
         actionLoad_Raster->setText(QApplication::translate("MainWindow", "Load Raster", 0));
+        actionOpenstreetmap->setText(QApplication::translate("MainWindow", "OpenStreetMap", 0));
+        actionWikimedia_Maps->setText(QApplication::translate("MainWindow", "Wikimedia maps", 0));
+        actionTerrain->setText(QApplication::translate("MainWindow", "Terrain", 0));
+        actionToner_lite->setText(QApplication::translate("MainWindow", "Toner lite", 0));
 #ifndef QT_NO_TOOLTIP
         opacitySlider->setToolTip(QApplication::translate("MainWindow", "Raster opacity", 0));
 #endif // QT_NO_TOOLTIP
@@ -284,6 +308,7 @@ public:
         widgetColorLegend->setToolTip(QApplication::translate("MainWindow", "Raster colors", 0));
 #endif // QT_NO_TOOLTIP
         menuFile->setTitle(QApplication::translate("MainWindow", "File", 0));
+        menuMap_server->setTitle(QApplication::translate("MainWindow", "Map type", 0));
     } // retranslateUi
 
 };

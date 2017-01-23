@@ -70,26 +70,30 @@ QString OSMTileSource::name() const
     switch(_tileType)
     {
     case OSMTiles:
-        return "OpenStreetMap Tiles";
+        return "OpenStreetMap standard tiles";
         break;
 
-    case MapQuestOSMTiles:
-        return "MapQuestOSM Tiles";
+    case WikimediaMaps:
+        return "Wikimedia Maps tiles";
         break;
 
-    case MapQuestAerialTiles:
-        return "MapQuest Aerial Tiles";
+    case Terrain:
+        return "Stamen Terrain tiles";
+        break;
+
+    case TonerLite:
+        return "Stamen Toner tiles";
         break;
 
     default:
-        return "Unknown Tiles";
+        return "Unknown tiles";
         break;
     }
 }
 
 QString OSMTileSource::tileFileExtension() const
 {
-    if (_tileType == OSMTiles || _tileType == MapQuestOSMTiles)
+    if ((_tileType == OSMTiles) || (_tileType == WikimediaMaps))
         return "png";
     else
         return "jpg";
@@ -109,15 +113,26 @@ void OSMTileSource::fetchTile(quint32 x, quint32 y, quint8 z)
         host = "http://b.tile.openstreetmap.org";
         url = "/%1/%2/%3.png";
     }
-    else if (_tileType == MapQuestOSMTiles)
+    else if (_tileType == WikimediaMaps)
     {
-        host = "http://otile1.mqcdn.com";
-        url = "/tiles/1.0.0/osm/%1/%2/%3.jpg";
+        host = "https://maps.wikimedia.org";
+        url = "/osm-intl/%1/%2/%3.png";
+    }
+    else if (_tileType == Terrain)
+    {
+        host = "http://tile.stamen.com";
+        url = "/terrain/%1/%2/%3.png";
+    }
+    else if (_tileType == TonerLite)
+    {
+        host = "http://tile.stamen.com";
+        url = "/toner-lite/%1/%2/%3.png";
     }
     else
     {
-        host = "http://otile1.mqcdn.com";
-        url = "/tiles/1.0.0/sat/%1/%2/%3.jpg";
+        //default openstreetmap
+        host = "http://b.tile.openstreetmap.org";
+        url = "/%1/%2/%3.png";
     }
 
 

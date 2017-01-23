@@ -2,7 +2,9 @@
 #include <QtDebug>
 
 #include "tileSources/OSMTileSource.h"
+#include "tileSources/GridTileSource.h"
 #include "tileSources/CompositeTileSource.h"
+#include "guts/CompositeTileSourceConfigurationWidget.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "Position.h"
@@ -19,17 +21,14 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    // Setup the MapGraphics Scene and View
+    // Set the MapGraphics Scene and View
     this->mapScene = new MapGraphicsScene(this);
     this->mapView = new MapGraphicsView(mapScene, this->ui->widgetMap);
     this->legend = new ColorLegend(this->ui->widgetColorLegend);
     this->legend->resize(this->ui->widgetColorLegend->size());
 
-    // Setup tile sources
-    QSharedPointer<OSMTileSource> osmTiles(new OSMTileSource(OSMTileSource::OSMTiles), &QObject::deleteLater);
-    QSharedPointer<CompositeTileSource> composite(new CompositeTileSource(), &QObject::deleteLater);
-    composite->addSourceBottom(osmTiles);
-    this->mapView->setTileSource(composite);
+    // Set tiles source
+    this->setMapSource(OSMTileSource::OSMTiles);
 
     // Set start size and position
     Position* startCenter = new Position (11.35, 44.5, 0.0);
@@ -51,11 +50,22 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete rasterObj;
-    //delete legend;
+    delete legend;
     delete mapView;
     delete mapScene;
     delete ui;
 }
+
+
+void MainWindow::setMapSource(OSMTileSource::OSMTileType mySource)
+{
+    QSharedPointer<OSMTileSource> myTiles(new OSMTileSource(mySource), &QObject::deleteLater);
+    QSharedPointer<CompositeTileSource> composite(new CompositeTileSource(), &QObject::deleteLater);
+    composite->addSourceBottom(myTiles);
+
+    this->mapView->setTileSource(composite);
+}
+
 
 void MainWindow::on_actionLoad_Raster_triggered()
 {
@@ -143,3 +153,23 @@ void MainWindow::on_opacitySlider_sliderMoved(int position)
 }
 
 
+void MainWindow::on_actionOpenstreetmap_triggered()
+{
+    this->setMapSource(OSMTileSource::OSMTiles);
+}
+
+
+void MainWindow::on_actionWikimedia_Maps_triggered()
+{
+    this->setMapSource(OSMTileSource::WikimediaMaps);
+}
+
+void MainWindow::on_actionTerrain_triggered()
+{
+    this->setMapSource(OSMTileSource::Terrain);
+}
+
+void MainWindow::on_actionToner_lite_triggered()
+{
+    this->setMapSource(OSMTileSource::TonerLite);
+}
