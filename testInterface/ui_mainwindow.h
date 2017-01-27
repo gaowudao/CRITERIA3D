@@ -27,11 +27,13 @@ QT_BEGIN_NAMESPACE
 class Ui_MainWindow
 {
 public:
-    QAction *actionLoad_Raster;
-    QAction *actionOpenstreetmap;
-    QAction *actionWikimedia_Maps;
-    QAction *actionTerrain;
-    QAction *actionToner_lite;
+    QAction *actionLoadRaster;
+    QAction *actionSetUTMzone;
+    QAction *actionProxy;
+    QAction *actionMapOpenStreetMap;
+    QAction *actionMapWikimedia;
+    QAction *actionMapTerrain;
+    QAction *actionMapToner;
     QWidget *centralWidget;
     QWidget *widgetMap;
     QGroupBox *groupBoxRaster;
@@ -40,6 +42,9 @@ public:
     QMenuBar *menuBar;
     QMenu *menuFile;
     QMenu *menuMap_server;
+    QMenu *menuGIS_settings;
+    QMenu *menuGIS;
+    QMenu *menuMap;
     QStatusBar *statusBar;
 
     void setupUi(QMainWindow *MainWindow)
@@ -112,16 +117,20 @@ public:
         MainWindow->setFont(font);
         MainWindow->setAutoFillBackground(false);
         MainWindow->setAnimated(false);
-        actionLoad_Raster = new QAction(MainWindow);
-        actionLoad_Raster->setObjectName(QStringLiteral("actionLoad_Raster"));
-        actionOpenstreetmap = new QAction(MainWindow);
-        actionOpenstreetmap->setObjectName(QStringLiteral("actionOpenstreetmap"));
-        actionWikimedia_Maps = new QAction(MainWindow);
-        actionWikimedia_Maps->setObjectName(QStringLiteral("actionWikimedia_Maps"));
-        actionTerrain = new QAction(MainWindow);
-        actionTerrain->setObjectName(QStringLiteral("actionTerrain"));
-        actionToner_lite = new QAction(MainWindow);
-        actionToner_lite->setObjectName(QStringLiteral("actionToner_lite"));
+        actionLoadRaster = new QAction(MainWindow);
+        actionLoadRaster->setObjectName(QStringLiteral("actionLoadRaster"));
+        actionSetUTMzone = new QAction(MainWindow);
+        actionSetUTMzone->setObjectName(QStringLiteral("actionSetUTMzone"));
+        actionProxy = new QAction(MainWindow);
+        actionProxy->setObjectName(QStringLiteral("actionProxy"));
+        actionMapOpenStreetMap = new QAction(MainWindow);
+        actionMapOpenStreetMap->setObjectName(QStringLiteral("actionMapOpenStreetMap"));
+        actionMapWikimedia = new QAction(MainWindow);
+        actionMapWikimedia->setObjectName(QStringLiteral("actionMapWikimedia"));
+        actionMapTerrain = new QAction(MainWindow);
+        actionMapTerrain->setObjectName(QStringLiteral("actionMapTerrain"));
+        actionMapToner = new QAction(MainWindow);
+        actionMapToner->setObjectName(QStringLiteral("actionMapToner"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         centralWidget->setMinimumSize(QSize(0, 0));
@@ -269,6 +278,12 @@ public:
         menuFile->setObjectName(QStringLiteral("menuFile"));
         menuMap_server = new QMenu(menuBar);
         menuMap_server->setObjectName(QStringLiteral("menuMap_server"));
+        menuGIS_settings = new QMenu(menuBar);
+        menuGIS_settings->setObjectName(QStringLiteral("menuGIS_settings"));
+        menuGIS = new QMenu(menuGIS_settings);
+        menuGIS->setObjectName(QStringLiteral("menuGIS"));
+        menuMap = new QMenu(menuGIS_settings);
+        menuMap->setObjectName(QStringLiteral("menuMap"));
         MainWindow->setMenuBar(menuBar);
         statusBar = new QStatusBar(MainWindow);
         statusBar->setObjectName(QStringLiteral("statusBar"));
@@ -276,11 +291,16 @@ public:
 
         menuBar->addAction(menuFile->menuAction());
         menuBar->addAction(menuMap_server->menuAction());
-        menuFile->addAction(actionLoad_Raster);
-        menuMap_server->addAction(actionOpenstreetmap);
-        menuMap_server->addAction(actionWikimedia_Maps);
-        menuMap_server->addAction(actionTerrain);
-        menuMap_server->addAction(actionToner_lite);
+        menuBar->addAction(menuGIS_settings->menuAction());
+        menuFile->addAction(actionLoadRaster);
+        menuGIS_settings->addAction(menuGIS->menuAction());
+        menuGIS_settings->addAction(menuMap->menuAction());
+        menuGIS_settings->addAction(actionProxy);
+        menuGIS->addAction(actionSetUTMzone);
+        menuMap->addAction(actionMapOpenStreetMap);
+        menuMap->addAction(actionMapWikimedia);
+        menuMap->addAction(actionMapTerrain);
+        menuMap->addAction(actionMapToner);
 
         retranslateUi(MainWindow);
 
@@ -290,11 +310,13 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Criteria3D", 0));
-        actionLoad_Raster->setText(QApplication::translate("MainWindow", "Load Raster", 0));
-        actionOpenstreetmap->setText(QApplication::translate("MainWindow", "OpenStreetMap", 0));
-        actionWikimedia_Maps->setText(QApplication::translate("MainWindow", "Wikimedia maps", 0));
-        actionTerrain->setText(QApplication::translate("MainWindow", "Terrain", 0));
-        actionToner_lite->setText(QApplication::translate("MainWindow", "Toner lite", 0));
+        actionLoadRaster->setText(QApplication::translate("MainWindow", "Load Raster", 0));
+        actionSetUTMzone->setText(QApplication::translate("MainWindow", "UTM zone", 0));
+        actionProxy->setText(QApplication::translate("MainWindow", "Proxy", 0));
+        actionMapOpenStreetMap->setText(QApplication::translate("MainWindow", "OpenStreetMap", 0));
+        actionMapWikimedia->setText(QApplication::translate("MainWindow", "Wikimedia", 0));
+        actionMapTerrain->setText(QApplication::translate("MainWindow", "Terrain", 0));
+        actionMapToner->setText(QApplication::translate("MainWindow", "Toner", 0));
 #ifndef QT_NO_TOOLTIP
         opacitySlider->setToolTip(QApplication::translate("MainWindow", "Raster opacity", 0));
 #endif // QT_NO_TOOLTIP
@@ -308,7 +330,10 @@ public:
         widgetColorLegend->setToolTip(QApplication::translate("MainWindow", "Raster colors", 0));
 #endif // QT_NO_TOOLTIP
         menuFile->setTitle(QApplication::translate("MainWindow", "File", 0));
-        menuMap_server->setTitle(QApplication::translate("MainWindow", "Map type", 0));
+        menuMap_server->setTitle(QApplication::translate("MainWindow", "Edit", 0));
+        menuGIS_settings->setTitle(QApplication::translate("MainWindow", "Settings", 0));
+        menuGIS->setTitle(QApplication::translate("MainWindow", "GIS", 0));
+        menuMap->setTitle(QApplication::translate("MainWindow", "Map", 0));
     } // retranslateUi
 
 };

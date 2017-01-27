@@ -1,13 +1,14 @@
 #include <QtDebug>
 #include "commonConstants.h"
 #include "RasterObject.h"
+#include "project.h"
 
 /*
 #include "CircleObject.h"
 #include "Position.h"
 */
 
-extern gis::Crit3DRasterGrid *DTM;
+extern Crit3DProject myProject;
 
 RasterObject::RasterObject(MapGraphicsView* view, MapGraphicsObject *parent) :
     MapGraphicsObject(true, parent)
@@ -55,7 +56,7 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     Q_UNUSED(widget)
 
     this->setMapResolution();
-    drawRaster(DTM, painter);
+    drawRaster(&(myProject.DTM), painter);
     this->legend->update();
 }
 
@@ -110,7 +111,6 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid* myRaster, QPainter* myPaint
         myRaster->maximum = NODATA;
         return false;
     }
-    //qDebug() << "draw Raster";
 
     int x0, y0, x1, y1, lx, ly;
     float myValue;
@@ -122,6 +122,8 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid* myRaster, QPainter* myPaint
     row1 = std::min(myRaster->header->nrRows-1, std::max(long(0), row1));
     col0 = std::min(myRaster->header->nrCols-1, std::max(long(0), col0));
     col1 = std::min(myRaster->header->nrCols-1, std::max(long(0), col1));
+
+    //qDebug() << "draw Raster" << row0 << row1;
 
     gis::updateColorScale(myRaster, row0, row1, col0, col1);
 

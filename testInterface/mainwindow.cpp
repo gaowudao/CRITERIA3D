@@ -8,11 +8,12 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "Position.h"
-#include "raster.h"
+#include "formSingleValue.h"
+#include "project.h"
 
 
 #define TOOLSWIDTH 220
-extern gis::Crit3DRasterGrid *DTM;
+extern Crit3DProject myProject;
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -34,8 +35,6 @@ MainWindow::MainWindow(QWidget *parent) :
     Position* startCenter = new Position (11.35, 44.5, 0.0);
     this->mapView->setZoomLevel(10);
     this->mapView->centerOn(startCenter->lonLat());
-
-    DTM = new gis::Crit3DRasterGrid();
 
     // Set raster object
     this->rasterObj = new RasterObject(this->mapView);
@@ -67,20 +66,20 @@ void MainWindow::setMapSource(OSMTileSource::OSMTileType mySource)
 }
 
 
-void MainWindow::on_actionLoad_Raster_triggered()
+void MainWindow::on_actionLoadRaster_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open rasterObj"), "", tr("ESRI grid files (*.flt)"));
     if (fileName == "") return;
 
     qDebug() << "loading raster";
-    if (!loadRaster(fileName, DTM)) return;
+    if (!myProject.loadRaster(fileName)) return;
 
     // center map
-    gis::Crit3DGeoPoint* center = gis::getRasterGeoCenter(DTM->header);
+    gis::Crit3DGeoPoint* center = gis::getRasterGeoCenter(myProject.DTM.header);
     this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
 
     // resize map
-    float size = gis::getRasterMaxSize(DTM->header);
+    float size = gis::getRasterMaxSize(myProject.DTM.header);
     size = log2(1000.0/size);
     this->mapView->setZoomLevel(quint8(size));
     this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
@@ -152,24 +151,47 @@ void MainWindow::on_opacitySlider_sliderMoved(int position)
         this->rasterObj->setOpacity(position / 100.0);
 }
 
+void MainWindow::on_actionMapToner_triggered()
+{
+    this->setMapSource(OSMTileSource::TonerLite);
+}
 
-void MainWindow::on_actionOpenstreetmap_triggered()
+void MainWindow::on_actionMapOpenStreetMap_triggered()
 {
     this->setMapSource(OSMTileSource::OSMTiles);
 }
 
-
-void MainWindow::on_actionWikimedia_Maps_triggered()
+void MainWindow::on_actionMapWikimedia_triggered()
 {
     this->setMapSource(OSMTileSource::WikimediaMaps);
 }
 
-void MainWindow::on_actionTerrain_triggered()
+void MainWindow::on_actionMapTerrain_triggered()
 {
     this->setMapSource(OSMTileSource::Terrain);
 }
 
-void MainWindow::on_actionToner_lite_triggered()
+void MainWindow::on_actionSetUTMzone_triggered()
 {
-    this->setMapSource(OSMTileSource::TonerLite);
+    FormSingleValue myForm;
+    myForm.setValue(QString::number(myProject.gisSettings.utmZone));
+    myForm.setModal(true);
+    myForm.show();
+
+    int utmZone;
+    bool isOk = false;
+    while (! isOk)
+    {
+        int myReturn = myForm.exec();
+        if (myReturn == QDialog::Rejected) return;
+
+        utmZone = myForm.getValue().toInt(&isOk);
+        if (! isOk) qDebug("Wrong value!");
+    }
+
+    myProject.gisSettings.utmZone = utmZone;
 }
+
+
+
+

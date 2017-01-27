@@ -1394,44 +1394,74 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionLoad_Raster"/>
+    <addaction name="actionLoadRaster"/>
    </widget>
    <widget class="QMenu" name="menuMap_server">
     <property name="title">
-     <string>Map type</string>
+     <string>Edit</string>
     </property>
-    <addaction name="actionOpenstreetmap"/>
-    <addaction name="actionWikimedia_Maps"/>
-    <addaction name="actionTerrain"/>
-    <addaction name="actionToner_lite"/>
+   </widget>
+   <widget class="QMenu" name="menuGIS_settings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <widget class="QMenu" name="menuGIS">
+     <property name="title">
+      <string>GIS</string>
+     </property>
+     <addaction name="actionSetUTMzone"/>
+    </widget>
+    <widget class="QMenu" name="menuMap">
+     <property name="title">
+      <string>Map</string>
+     </property>
+     <addaction name="actionMapOpenStreetMap"/>
+     <addaction name="actionMapWikimedia"/>
+     <addaction name="actionMapTerrain"/>
+     <addaction name="actionMapToner"/>
+    </widget>
+    <addaction name="menuGIS"/>
+    <addaction name="menuMap"/>
+    <addaction name="actionProxy"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuMap_server"/>
+   <addaction name="menuGIS_settings"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionLoad_Raster">
+  <action name="actionLoadRaster">
    <property name="text">
     <string>Load Raster</string>
    </property>
   </action>
-  <action name="actionOpenstreetmap">
+  <action name="actionSetUTMzone">
+   <property name="text">
+    <string>UTM zone</string>
+   </property>
+  </action>
+  <action name="actionProxy">
+   <property name="text">
+    <string>Proxy</string>
+   </property>
+  </action>
+  <action name="actionMapOpenStreetMap">
    <property name="text">
     <string>OpenStreetMap</string>
    </property>
   </action>
-  <action name="actionWikimedia_Maps">
+  <action name="actionMapWikimedia">
    <property name="text">
-    <string>Wikimedia maps</string>
+    <string>Wikimedia</string>
    </property>
   </action>
-  <action name="actionTerrain">
+  <action name="actionMapTerrain">
    <property name="text">
     <string>Terrain</string>
    </property>
   </action>
-  <action name="actionToner_lite">
+  <action name="actionMapToner">
    <property name="text">
-    <string>Toner lite</string>
+    <string>Toner</string>
    </property>
   </action>
  </widget>

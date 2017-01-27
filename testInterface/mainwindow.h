@@ -31,17 +31,19 @@
         /*!
          * \brief on_actionLoad_Raster_triggered load Raster
          */
-        void on_actionLoad_Raster_triggered();
+        void on_actionLoadRaster_triggered();
 
         void on_opacitySlider_sliderMoved(int position);
 
-        void on_actionOpenstreetmap_triggered();
+        void on_actionMapToner_triggered();
 
-        void on_actionWikimedia_Maps_triggered();
+        void on_actionMapOpenStreetMap_triggered();
 
-        void on_actionTerrain_triggered();
+        void on_actionMapWikimedia_triggered();
 
-        void on_actionToner_lite_triggered();
+        void on_actionMapTerrain_triggered();
+
+        void on_actionSetUTMzone_triggered();
 
     protected:
         /*!

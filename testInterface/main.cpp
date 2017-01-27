@@ -2,8 +2,9 @@
 #include <QApplication>
 #include <QtNetwork/QNetworkProxy>
 #include <QDebug>
+#include "project.h"
 
-
+Crit3DProject myProject;
 
 bool setProxy(QString hostName, int port)
 {

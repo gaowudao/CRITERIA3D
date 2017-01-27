@@ -1,9 +1,10 @@
 #include "commonConstants.h"
 #include "colorlegend.h"
+#include "project.h"
 #include <QPainter>
 #include <QDebug>
 
-extern gis::Crit3DRasterGrid *DTM;
+extern Crit3DProject myProject;
 
 ColorLegend::ColorLegend(QWidget *parent) :
     QWidget(parent)
@@ -15,7 +16,7 @@ ColorLegend::~ColorLegend()
 void ColorLegend::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
-    drawColorLegend(DTM, &painter);
+    drawColorLegend(&(myProject.DTM), &painter);
 }
 
 
