@@ -11,17 +11,17 @@ TEMPLATE = app
 
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../meteo ../interpolation ../solarRadiation ../soil ../crop
 
-LIBS += -L../crit3dDate/release -lcrit3dDate
-LIBS += -L../mathFunctions/release -lmathFunctions
-LIBS += -L../gis/release -lgis
-LIBS += -L../meteo/release -lmeteo
-LIBS += -L../crop/release -lcrop
-LIBS += -L../interpolation/release -lInterpolation
-LIBS += -L../solarRadiation/release -lsolarRadiation
-LIBS += -L../soil/release -lsoil
+LIBS += -L../crit3dDate/debug -lcrit3dDate
+LIBS += -L../mathFunctions/debug -lmathFunctions
+LIBS += -L../gis/debug -lgis
+LIBS += -L../meteo/debug -lmeteo
+LIBS += -L../crop/debug -lcrop
+LIBS += -L../interpolation/debug -lInterpolation
+LIBS += -L../solarRadiation/debug -lsolarRadiation
+LIBS += -L../soil/debug -lsoil
 
 INCLUDEPATH += ../soilFluxes3D/header
-LIBS += -L../soilFluxes3D/release -lsoilFluxes3D
+LIBS += -L../soilFluxes3D/debug -lsoilFluxes3D
 
 SOURCES += main.cpp \
     mainwindow.cpp \

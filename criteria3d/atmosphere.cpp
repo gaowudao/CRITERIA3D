@@ -547,8 +547,9 @@ bool computeET0Map(Crit3DProject* myProject)
             {
                 myGlobalRadiation = myProject->meteoMaps->radiationMaps->globalRadiationMap->value[myRow][myCol];
 
-                if (myGlobalRadiation == myProject->meteoMaps->radiationMaps->globalRadiationMap->header->flag)
-                    myGlobalRadiation = myProject->meteoMaps->radiationMaps->globalRadiationMap->neighbourValue(myRow, myCol);
+                //cercare soluzione migliore
+                //if (myGlobalRadiation == myProject->meteoMaps->radiationMaps->globalRadiationMap->header->flag)
+                //    myGlobalRadiation = myProject->meteoMaps->radiationMaps->globalRadiationMap->neighbourValue(myRow, myCol);
 
                 myTransmissivity = myProject->meteoMaps->radiationMaps->transmissivityMap->value[myRow][myCol];
                 myClearSkyTransmissivity = myProject->meteoMaps->radiationMaps->clearSkyTransmissivityMap->value[myRow][myCol];
