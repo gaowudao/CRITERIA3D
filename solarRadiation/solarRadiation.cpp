@@ -586,7 +586,7 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
         isPointIlluminated = isIlluminated(localTime.time, (*mySunPosition).rise, (*mySunPosition).set, (*mySunPosition).elevationRefr);
         if (radiationSettings.getComputeShadowing())
         {
-            if (gis::isOutOfGridXY(myPoint->x, myPoint->y, myDtm))
+            if (gis::isOutOfGridXY(myPoint->x, myPoint->y, myDtm.header))
                 (*mySunPosition).shadow = ! isPointIlluminated;
             else
             {
