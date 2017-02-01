@@ -114,6 +114,10 @@
         double storageWater;
         double sinkSourceWater;
         double waterMBE, waterMBR;
+
+        double storageHeat;
+        double sinkSourceHeat;
+        double heatMBE, heatMBR;
         } ;
 
 

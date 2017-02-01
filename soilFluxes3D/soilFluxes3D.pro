@@ -33,4 +33,5 @@ HEADERS += \
     header/solver.h \
     header/memory.h \
     header/soilPhysics.h \
-    header/soilFluxes3D.h
+    header/soilFluxes3D.h \
+    header/extra.h

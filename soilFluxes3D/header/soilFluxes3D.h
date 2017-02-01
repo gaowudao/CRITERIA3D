@@ -70,8 +70,34 @@
     __EXTERN double DLL_EXPORT __STDCALL getWaterFlow(long index, short direction);
     __EXTERN double DLL_EXPORT __STDCALL getSumLateralWaterFlow(long n);
 
-    //HEAT
+    // HEAT
+    __EXTERN int DLL_EXPORT __STDCALL setHeatProcesses(bool computeHeatAdvection, bool computeHeatLatent);
+    __EXTERN int DLL_EXPORT __STDCALL SetHeatSinkSource(long nodeIndex, double myHeatFlow);
+    __EXTERN int DLL_EXPORT __STDCALL SetTemperature(long nodeIndex, double myT);
+    __EXTERN int DLL_EXPORT __STDCALL SetGroundWaterTemperature(double myTemperature);
+    __EXTERN int DLL_EXPORT __STDCALL SetHeatBoundaryHeight(long nodeIndex, double myHeight);
+    __EXTERN int DLL_EXPORT __STDCALL SetHeatBoundaryTemperature(long nodeIndex, double myTemperature);
+    __EXTERN int DLL_EXPORT __STDCALL SetHeatBoundaryRelativeHumidity(long nodeIndex, double myRelativeHumidity);
+    __EXTERN int DLL_EXPORT __STDCALL SetHeatBoundaryRoughness(long nodeIndex, double myRoughness);
+    __EXTERN int DLL_EXPORT __STDCALL SetHeatBoundaryWindSpeed(long nodeIndex, double myWindSpeed);
+    __EXTERN int DLL_EXPORT __STDCALL SetHeatBoundaryRainTemperature(long nodeIndex, double myTemperature);
+    __EXTERN int DLL_EXPORT __STDCALL SetHeatBoundaryGlobalIrradiance(long nodeIndex, double myGlobalIrradiance);
+    __EXTERN int DLL_EXPORT __STDCALL SetHeatBoundaryNetIrradiance(long nodeIndex, double myNetIrradiance);
 
+    __EXTERN double DLL_EXPORT __STDCALL GetHeatMBR();
+    __EXTERN double DLL_EXPORT __STDCALL getTemperature(long nodeIndex);
+    __EXTERN double DLL_EXPORT __STDCALL getHeat(long nodeIndex);
+    __EXTERN double DLL_EXPORT __STDCALL getNodeVapor(long nodeIndex);
+    __EXTERN double DLL_EXPORT __STDCALL getDiffusiveHeatFlux(long nodeIndex, short myDirection);
+    __EXTERN double DLL_EXPORT __STDCALL getIsothermalLatentHeatFlux(long nodeIndex, short myDirection);
+    __EXTERN double DLL_EXPORT __STDCALL getThermalLatentHeatFlux(long nodeIndex, short myDirection);
+    __EXTERN double DLL_EXPORT __STDCALL getBoundarySensibleFlux(long nodeIndex);
+    __EXTERN double DLL_EXPORT __STDCALL getBoundaryAdvectiveFlux(long nodeIndex);
+    __EXTERN double DLL_EXPORT __STDCALL getBoundaryLatentFlux(long nodeIndex);
+    __EXTERN double DLL_EXPORT __STDCALL getBoundaryRadiativeFlux(long nodeIndex);
+    __EXTERN double DLL_EXPORT __STDCALL getBoundaryAerodynamicConductance(long nodeIndex);
+    __EXTERN double DLL_EXPORT __STDCALL getBoundaryAerodynamicConductanceOpenWater(long nodeIndex);
+    __EXTERN double DLL_EXPORT __STDCALL getBoundarySoilConductance(long nodeIndex);
 
     //SOLUTES
 
