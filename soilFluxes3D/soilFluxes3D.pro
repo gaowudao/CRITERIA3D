@@ -21,7 +21,9 @@ SOURCES +=  \
     solver.cpp \
     memory.cpp \
     soilPhysics.cpp \
-    soilFluxes3D.cpp
+    soilFluxes3D.cpp \
+    heat.cpp \
+    physics.cpp
 
 
 HEADERS += \
@@ -34,4 +36,6 @@ HEADERS += \
     header/memory.h \
     header/soilPhysics.h \
     header/soilFluxes3D.h \
-    header/extra.h
+    header/extra.h \
+    header/heat.h \
+    header/physics.h

@@ -29,6 +29,8 @@
                               int maxIterationNumber, int maxApproximationsNumber,
                               int errorMagnitude, float MBRMagnitude);
 
+    __EXTERN void setProcesses(bool computeHeat_, bool computeSolutes_);
+
     //TOPOLOGY
     __EXTERN int DLL_EXPORT __STDCALL setNode(long myIndex, float x, float y, float z, double volume_or_area,
                                         bool isSurface, bool isBoundary, int boundaryType, float slope);

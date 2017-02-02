@@ -46,6 +46,25 @@ void initializeBoundary(Tboundary *myBoundary, int myType, float slope)
     (*myBoundary).waterFlow = 0.;
     (*myBoundary).sumBoundaryWaterFlow = 0;
 	(*myBoundary).prescribedTotalPotential = NODATA;
+
+    if (myStructure.computeHeat)
+    {
+        (*myBoundary).Heat = new(TboundaryHeat);
+        (*myBoundary).Heat->invariantFluxes = 0.;
+        (*myBoundary).Heat->temperature = NODATA;
+        (*myBoundary).Heat->height = NODATA;
+        (*myBoundary).Heat->relativeHumidity = NODATA;
+        (*myBoundary).Heat->vaporConcentration = NODATA;
+        (*myBoundary).Heat->roughnessHeight = NODATA;
+        (*myBoundary).Heat->windSpeed = NODATA;
+        (*myBoundary).Heat->globalIrradiance = NODATA;
+        (*myBoundary).Heat->netIrradiance = NODATA;
+        (*myBoundary).Heat->sensibleFlux = 0.;
+        (*myBoundary).Heat->latentFlux = 0.;
+        (*myBoundary).Heat->aerodynamicConductance = NODATA;
+        (*myBoundary).Heat->soilConductance = NODATA;
+    }
+    else (*myBoundary).Heat = NULL;
 }
 
 

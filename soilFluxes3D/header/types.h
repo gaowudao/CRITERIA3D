@@ -33,6 +33,7 @@
 
 
     #include "parameters.h"
+    #include "extra.h"
 
     struct Tboundary{
         short type;
@@ -40,7 +41,9 @@
         double waterFlow;                   /*!< [m3 s-1] */
         double sumBoundaryWaterFlow;        /*!< [m3] sum of boundary water flow */
         double prescribedTotalPotential;	   /*!< [m] imposed total soil-water potential (H) */
-        } ;
+
+        TboundaryHeat *Heat;
+    } ;
 
     struct TCrit3DStructure{
         long nrLayers;
@@ -48,12 +51,17 @@
         int nrLateralLinks;
         int maxNrColumns;
 
+        bool computeHeat;
+        bool computeSolutes;
+
         void initialize()
             {
                 nrLayers = 0;
                 nrNodes = 0;
                 nrLateralLinks = 0;
                 maxNrColumns = 0;
+                computeHeat = false;
+                computeSolutes = false;
             }
         } ;
 
@@ -100,6 +108,8 @@
         TlinkedNode down;			/*!< lower link */
         TlinkedNode *lateral;       /*!< lateral link */
 
+        TCrit3DnodeExtra* extra;    /*!< extra variables for heat and solutes */
+
         bool isSurface;
         } ;
 
@@ -119,7 +129,6 @@
         double sinkSourceHeat;
         double heatMBE, heatMBR;
         } ;
-
 
      extern TCrit3DStructure myStructure;
      extern TParameters myParameters;
