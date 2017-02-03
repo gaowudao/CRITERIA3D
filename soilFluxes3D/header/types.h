@@ -40,7 +40,8 @@
         float slope;
         double waterFlow;                   /*!< [m3 s-1] */
         double sumBoundaryWaterFlow;        /*!< [m3] sum of boundary water flow */
-        double prescribedTotalPotential;	   /*!< [m] imposed total soil-water potential (H) */
+        double prescribedTotalPotential;	/*!< [m] imposed total soil-water potential (H) */
+        double advectiveHeatFlux;           /*!< [W m-2] boundary advective heat flow density  */
 
         TboundaryHeat *Heat;
     } ;
@@ -53,6 +54,8 @@
 
         bool computeHeat;
         bool computeSolutes;
+        bool computeHeatAdvective;
+        bool computeHeatLatent;
 
         void initialize()
             {
@@ -62,6 +65,8 @@
                 maxNrColumns = 0;
                 computeHeat = false;
                 computeSolutes = false;
+                computeHeatAdvective = false;
+                computeHeatLatent = false;
             }
         } ;
 
@@ -70,6 +75,8 @@
         long index;                 /*!< index of linked elements */
         float area;                 /*!< interface area [m^2] */
         float sumFlow;              /*!< [m^3] sum of flow(i,j) */
+
+        TCrit3DLinkedNodeExtra* linkedExtra;    /*!< extra variables for heat flux */
         } ;
 
 
@@ -86,6 +93,10 @@
 
         double Roughness;           /*!< [s/m^0.33] surface: Manning roughness */
         double Pond;                /*!< [m] surface: height of immobilized water */
+
+        //for heat
+        double organicMatter;       /*!< [] fraction of organic matter */
+        double clay;                /*!< [] fraction of clay */
         } ;
 
 
@@ -139,4 +150,5 @@
 
      extern Tbalance balanceCurrentTimeStep, balancePreviousTimeStep, balanceCurrentPeriod, balanceWholePeriod;
 
+     extern TgroundWater groundWater;
 #endif

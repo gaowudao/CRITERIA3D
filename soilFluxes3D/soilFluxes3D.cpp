@@ -42,6 +42,7 @@
 #include "header/boundary.h"
 #include "header/heat.h"
 #include "header/physics.h"
+#include "header/extra.h"
 
 /*! global variables */
 
@@ -77,6 +78,15 @@ namespace soilFluxes3D {
         //clean balance
 	}
 
+    void initializeHeatFluxes(TCrit3DLinkedNodeExtra *myLinkExtra)
+    {
+        (*myLinkExtra).heatFlux = new(THeatFlux);
+        (*myLinkExtra).heatFlux->diffusive = 0.;
+        (*myLinkExtra).heatFlux->isothermLatent = 0.;
+        (*myLinkExtra).heatFlux->thermLatent = 0.;
+        (*myLinkExtra).heatFlux->advective = 0.;
+    }
+
 	int DLL_EXPORT __STDCALL initialize(long nrNodes, int nrLayers, int nrLateralLinks)
 {
     /*! clean the old data structures */
@@ -101,12 +111,24 @@ namespace soilFluxes3D {
 		myNode[i].boundary = NULL;
 		myNode[i].up.index = NOLINK;
 		myNode[i].down.index = myNode[i].up.index = NOLINK;
+
+        if (myStructure.computeHeat || myStructure.computeSolutes)
+        {
+            myNode[i].up.linkedExtra = new(TCrit3DLinkedNodeExtra);
+            myNode[i].down.linkedExtra = new(TCrit3DLinkedNodeExtra);
+        }
+
         myNode[i].lateral = (TlinkedNode *) calloc(myStructure.nrLateralLinks, sizeof(TlinkedNode));
-        for (short l = 0; l < myStructure.nrLateralLinks; l++) myNode[i].lateral[l].index = NOLINK;
+        for (short l = 0; l < myStructure.nrLateralLinks; l++)
+        {
+            myNode[i].lateral[l].index = NOLINK;
+            if (myStructure.computeHeat || myStructure.computeSolutes)
+                myNode[i].lateral[l].linkedExtra = new(TCrit3DLinkedNodeExtra);
+        }
 
         myNode[i].extra = NULL;
         if (myStructure.computeHeat || myStructure.computeSolutes)
-            myNode[i].extra = new TCrit3DnodeExtra();
+            myNode[i].extra = new(TCrit3DnodeExtra);
     }
 
     /*! build the matrix */
@@ -247,12 +269,14 @@ namespace soilFluxes3D {
         case UP :
                     myNode[n].up.index = linkIndex;
                     myNode[n].up.area = interfaceArea;
-					myNode[n].up.sumFlow = 0;
+                    myNode[n].up.sumFlow = 0;
+                    if (myStructure.computeHeat) initializeHeatFluxes(myNode[n].up.linkedExtra);
                     break;
         case DOWN :
                     myNode[n].down.index = linkIndex;
                     myNode[n].down.area = interfaceArea;
 					myNode[n].down.sumFlow = 0;
+                    if (myStructure.computeHeat) initializeHeatFluxes(myNode[n].down.linkedExtra);
                     break;
         case LATERAL :
                     j = 0;
@@ -261,6 +285,7 @@ namespace soilFluxes3D {
                     myNode[n].lateral[j].index = linkIndex;
                     myNode[n].lateral[j].area = interfaceArea;
 					myNode[n].lateral[j].sumFlow = 0;
+                    if (myStructure.computeHeat) initializeHeatFluxes(myNode[n].lateral[j].linkedExtra);
                     break;
         default :
                     return(PARAMETER_ERROR);
@@ -321,8 +346,8 @@ namespace soilFluxes3D {
      * \param L         [-]         tortuosity (Mualem formula)
      * \return OK/ERROR
      */
-	int DLL_EXPORT __STDCALL setSoilProperties(int nSoil, int nHorizon, double VG_alpha, double VG_n, double VG_m,
-                        double VG_he, double ThetaR, double ThetaS, double Ksat, double L)
+    int DLL_EXPORT __STDCALL setSoilProperties(int nSoil, int nHorizon, double VG_alpha, double VG_n, double VG_m,
+                        double VG_he, double ThetaR, double ThetaS, double Ksat, double L, double organicMatter, double clay)
  {
 
 
@@ -345,6 +370,9 @@ namespace soilFluxes3D {
     Soil_List[nSoil][nHorizon].Theta_s = ThetaS;
     Soil_List[nSoil][nHorizon].K_sat = Ksat;
     Soil_List[nSoil][nHorizon].Mualem_L = L;
+
+    Soil_List[nSoil][nHorizon].organicMatter = organicMatter;
+    Soil_List[nSoil][nHorizon].clay = clay;
 
     return(CRIT3D_OK);
  }
@@ -698,7 +726,6 @@ namespace soilFluxes3D {
     InitializeBalanceWater();
 }
 
-
  double DLL_EXPORT __STDCALL getWaterMBR()
  {
     return (balanceWholePeriod.waterMBR);
@@ -1012,12 +1039,12 @@ int DLL_EXPORT __STDCALL SetHeatBoundaryHeight(long nodeIndex, double myHeight)
    return(CRIT3D_OK);
 }
 
-/*
+
 /*!
  * \brief return node temperature
  * \param nodeIndex
- * \return  temperature [K]
-
+ * \return temperature [K]
+*/
 double DLL_EXPORT __STDCALL getTemperature(long nodeIndex)
 {
     if (myNode == NULL) return(TOPOGRAPHY_ERROR);
@@ -1029,14 +1056,13 @@ double DLL_EXPORT __STDCALL getTemperature(long nodeIndex)
 }
 
 /*!
- * \brief return thermal latent heat flux
+ * \brief return instantaneous thermally driven latent heat flux
  * \param nodeIndex
  * \param myDirection
  * \return thermal latent heat flux [W m-2]
-
+*/
 double DLL_EXPORT __STDCALL getThermalLatentHeatFlux(long nodeIndex, short myDirection)
-{   // [W m-2] instantaneous thermally driven latent heat flow
-
+{
     if (myNode == NULL) return(TOPOGRAPHY_ERROR);
     if ((nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
     if (! myStructure.computeHeat && ! myStructure.computeHeatAdvective && ! myStructure.computeHeatLatent) return (MISSING_DATA_ERROR);
@@ -1045,70 +1071,111 @@ double DLL_EXPORT __STDCALL getThermalLatentHeatFlux(long nodeIndex, short myDir
     switch (myDirection)
     {
     case UP:
-        if (myNode[nodeIndex].up != NULL && myNode[nodeIndex].up->heatFlux != NULL)  return (myNode[nodeIndex].up->heatFlux->thermLatent);
-        else return(INDEX_ERROR);
+        if (myNode[nodeIndex].up.linkedExtra != NULL)
+            return (myNode[nodeIndex].up.linkedExtra->heatFlux->thermLatent);
+        else
+            return(INDEX_ERROR);
 
     case DOWN:
-        if (myNode[nodeIndex].down != NULL && myNode[nodeIndex].down->heatFlux != NULL)  return (myNode[nodeIndex].down->heatFlux->thermLatent);
-        else return(INDEX_ERROR);
+        if (myNode[nodeIndex].down.linkedExtra != NULL)
+            return (myNode[nodeIndex].down.linkedExtra->heatFlux->thermLatent);
+        else
+            return(INDEX_ERROR);
 
-    case LATERAL: return(INDEX_ERROR);
+    case LATERAL:
+        for (short i = 0; i < myStructure.nrLateralLinks; i++)
+            if (myNode[nodeIndex].lateral[i].index != NOLINK)
+                if (myNode[nodeIndex].lateral[i].linkedExtra != NULL)
+                    return (myNode[nodeIndex].lateral[i].linkedExtra->heatFlux->thermLatent);
 
     default : return(INDEX_ERROR);
     }
 }
 
-double DLL_EXPORT getIsothermalLatentHeatFlux(long nodeIndex, short myDirection)
-{   // [W m-2] instantaneous isothermal latent heat flow
-
+/*!
+ * \brief return instantaneous isothermal latent heat flux
+ * \param nodeIndex
+ * \param myDirection
+ * \return isothermal latent heat flux [W m-2]
+*/
+double DLL_EXPORT __STDCALL getIsothermalLatentHeatFlux(long nodeIndex, short myDirection)
+{
     if (myNode == NULL) return(TOPOGRAPHY_ERROR);
-    if ((nodeIndex < myStructure.nrSurfaceLayerNodes) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
+    if (nodeIndex >= myStructure.nrNodes) return(INDEX_ERROR);
     if (! myStructure.computeHeat && ! myStructure.computeHeatLatent) return (MISSING_DATA_ERROR);
+    if (myNode->extra == NULL) return (MEMORY_ERROR);
 
     switch (myDirection)
     {
     case UP:
-        if (myNode[nodeIndex].up != NULL && myNode[nodeIndex].up->heatFlux != NULL)  return (myNode[nodeIndex].up->heatFlux->isothermLatent);
-        else return(INDEX_ERROR);
+        if (myNode[nodeIndex].up.linkedExtra != NULL)
+            return (myNode[nodeIndex].up.linkedExtra->heatFlux->isothermLatent);
+        else
+            return(INDEX_ERROR);
 
     case DOWN:
-        if (myNode[nodeIndex].down != NULL && myNode[nodeIndex].down->heatFlux != NULL)  return (myNode[nodeIndex].down->heatFlux->isothermLatent);
-        else return(INDEX_ERROR);
+        if (myNode[nodeIndex].down.linkedExtra != NULL)
+            return (myNode[nodeIndex].down.linkedExtra->heatFlux->isothermLatent);
+        else
+            return(INDEX_ERROR);
 
-    case LATERAL: return(INDEX_ERROR);
+    case LATERAL:
+        for (short i = 0; i < myStructure.nrLateralLinks; i++)
+            if (myNode[nodeIndex].lateral[i].index != NOLINK)
+                if (myNode[nodeIndex].lateral[i].linkedExtra != NULL)
+                    return (myNode[nodeIndex].lateral[i].linkedExtra->heatFlux->isothermLatent);
 
     default : return(INDEX_ERROR);
     }
 }
 
-double DLL_EXPORT getDiffusiveHeatFlux(long nodeIndex, short myDirection)
-{   // [W m-2] instantaneous latent + advective heat flow
-
+/*!
+ * \brief return instantaneous diffusive heat flux
+ * \param nodeIndex
+ * \param myDirection
+ * \return diffusive heat flux [W m-2]
+*/
+double DLL_EXPORT __STDCALL getDiffusiveHeatFlux(long nodeIndex, short myDirection)
+{
     if (myNode == NULL) return(TOPOGRAPHY_ERROR);
     if ((nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
-    if (! myStructure.computeHeat && ! myStructure.computeHeatSensible) return (MISSING_DATA_ERROR);
+    if (! myStructure.computeHeat) return (MISSING_DATA_ERROR);
+    if (myNode->extra == NULL) return (MEMORY_ERROR);
 
     switch (myDirection)
     {
     case UP:
-        if (myNode[nodeIndex].up != NULL && myNode[nodeIndex].up->heatFlux != NULL)  return (myNode[nodeIndex].up->heatFlux->diffusive);
-        else return(INDEX_ERROR);
+        if (myNode[nodeIndex].up.linkedExtra != NULL)
+            return (myNode[nodeIndex].up.linkedExtra->heatFlux->diffusive);
+        else
+            return(INDEX_ERROR);
 
     case DOWN:
-        if (myNode[nodeIndex].down != NULL && myNode[nodeIndex].down->heatFlux != NULL)  return (myNode[nodeIndex].down->heatFlux->diffusive);
-        else return(INDEX_ERROR);
+        if (myNode[nodeIndex].down.linkedExtra != NULL)
+            return (myNode[nodeIndex].down.linkedExtra->heatFlux->diffusive);
+        else
+            return(INDEX_ERROR);
 
-    case LATERAL: return(INDEX_ERROR);
+    case LATERAL:
+        for (short i = 0; i < myStructure.nrLateralLinks; i++)
+            if (myNode[nodeIndex].lateral[i].index != NOLINK)
+                if (myNode[nodeIndex].lateral[i].linkedExtra != NULL)
+                    return (myNode[nodeIndex].lateral[i].linkedExtra->heatFlux->diffusive);
 
     default : return(INDEX_ERROR);
     }
 }
 
+/*!
+ * \brief return boundary sensible heat flux
+ * \param nodeIndex
+ * \return sensbile latent heat flux [W m-2]
+*/
 double DLL_EXPORT getBoundarySensibleFlux(long nodeIndex)
 {
     if (myNode == NULL) return (TOPOGRAPHY_ERROR);
-    if ((nodeIndex < myStructure.nrSurfaceLayerNodes) || (nodeIndex >= myStructure.nrNodes)) return (INDEX_ERROR);
-    if (! myStructure.computeHeat || ! myStructure.computeHeatSensible) return (MISSING_DATA_ERROR);
+    if (nodeIndex >= myStructure.nrNodes) return (INDEX_ERROR);
+    if (! myStructure.computeHeat) return (MISSING_DATA_ERROR);
     if (myNode[nodeIndex].boundary == NULL) return (INDEX_ERROR);
     if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT) return (INDEX_ERROR);
 
@@ -1116,10 +1183,16 @@ double DLL_EXPORT getBoundarySensibleFlux(long nodeIndex)
     return (myNode[nodeIndex].boundary->Heat->sensibleFlux);
 }
 
+
+/*!
+ * \brief return boundary latent heat flux
+ * \param nodeIndex
+ * \return latent heat flux [W m-2]
+*/
 double DLL_EXPORT getBoundaryLatentFlux(long nodeIndex)
 {
     if (myNode == NULL) return (TOPOGRAPHY_ERROR);
-    if ((nodeIndex < myStructure.nrSurfaceLayerNodes) || (nodeIndex >= myStructure.nrNodes)) return (INDEX_ERROR);
+    if (nodeIndex >= myStructure.nrNodes) return (INDEX_ERROR);
     if (! myStructure.computeHeat || ! myStructure.computeHeatLatent) return (MISSING_DATA_ERROR);
     if (myNode[nodeIndex].boundary == NULL) return (INDEX_ERROR);
     if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT) return (INDEX_ERROR);
@@ -1128,21 +1201,32 @@ double DLL_EXPORT getBoundaryLatentFlux(long nodeIndex)
     return (myNode[nodeIndex].boundary->Heat->latentFlux);
 }
 
+/*!
+ * \brief return boundary advective heat flux
+ * \param nodeIndex
+ * \return advective heat flux [W m-2]
+*/
 double DLL_EXPORT getBoundaryAdvectiveFlux(long nodeIndex)
 {
     if (myNode == NULL) return (TOPOGRAPHY_ERROR);
-    if ((nodeIndex < myStructure.nrSurfaceLayerNodes) || (nodeIndex >= myStructure.nrNodes)) return (INDEX_ERROR);
+    if (nodeIndex >= myStructure.nrNodes) return (INDEX_ERROR);
     if (! myStructure.computeHeat || ! myStructure.computeHeatAdvective) return (MISSING_DATA_ERROR);
     if (myNode[nodeIndex].boundary == NULL) return (INDEX_ERROR);
+    if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT) return (INDEX_ERROR);
 
     // boundary advective heat flow density
     return (myNode[nodeIndex].boundary->advectiveHeatFlux);
 }
 
+/*!
+ * \brief return boundary radiative heat flux
+ * \param nodeIndex
+ * \return radiative heat flux [W m-2]
+*/
 double DLL_EXPORT getBoundaryRadiativeFlux(long nodeIndex)
 {
     if (myNode == NULL) return (TOPOGRAPHY_ERROR);
-    if ((nodeIndex < myStructure.nrSurfaceLayerNodes) || (nodeIndex >= myStructure.nrNodes)) return (INDEX_ERROR);
+    if (nodeIndex >= myStructure.nrNodes) return (INDEX_ERROR);
     if (! myStructure.computeHeat) return (MISSING_DATA_ERROR);
     if (myNode[nodeIndex].boundary == NULL) return (INDEX_ERROR);
     if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT) return (INDEX_ERROR);
@@ -1151,10 +1235,15 @@ double DLL_EXPORT getBoundaryRadiativeFlux(long nodeIndex)
     return (myNode[nodeIndex].boundary->Heat->radiativeFlux);
 }
 
+/*!
+ * \brief return boundary aerodynamic conductance
+ * \param nodeIndex
+ * \return aerodynamic conductance [m s-1]
+*/
 double DLL_EXPORT getBoundaryAerodynamicConductance(long nodeIndex)
 {
     if (myNode == NULL) return (TOPOGRAPHY_ERROR);
-    if ((nodeIndex < myStructure.nrSurfaceLayerNodes) || (nodeIndex >= myStructure.nrNodes)) return (INDEX_ERROR);
+    if (nodeIndex >= myStructure.nrNodes) return (INDEX_ERROR);
     if (! myStructure.computeHeat) return (MISSING_DATA_ERROR);
     if (myNode[nodeIndex].boundary == NULL) return (INDEX_ERROR);
     if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT) return (INDEX_ERROR);
@@ -1164,6 +1253,11 @@ double DLL_EXPORT getBoundaryAerodynamicConductance(long nodeIndex)
 }
 
 /*
+/*!
+ * \brief return boundary aerodynamic conductance for open water
+ * \param nodeIndex
+ * \return aerodynamic conductance [m s-1]
+
 double DLL_EXPORT getBoundaryAerodynamicConductanceOpenWater(long nodeIndex)
 {
     if (myNode == NULL) return (TOPOGRAPHY_ERROR);
@@ -1175,11 +1269,17 @@ double DLL_EXPORT getBoundaryAerodynamicConductanceOpenWater(long nodeIndex)
     // boundary aerodynamic resistance
     return (myNode[nodeIndex].boundary->Heat->aerodynamicConductanceOpenWater);
 }
+*/
 
+/*!
+ * \brief return boundary soil conductance
+ * \param nodeIndex
+ * \return soil conductance [m s-1]
+*/
 double DLL_EXPORT getBoundarySoilConductance(long nodeIndex)
 {
     if (myNode == NULL) return (TOPOGRAPHY_ERROR);
-    if ((nodeIndex < myStructure.nrSurfaceLayerNodes) || (nodeIndex >= myStructure.nrNodes)) return (INDEX_ERROR);
+    if (nodeIndex >= myStructure.nrNodes) return (INDEX_ERROR);
     if (! myStructure.computeHeat) return (MISSING_DATA_ERROR);
     if (myNode[nodeIndex].boundary == NULL) return (INDEX_ERROR);
     if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT) return (INDEX_ERROR);
@@ -1187,32 +1287,42 @@ double DLL_EXPORT getBoundarySoilConductance(long nodeIndex)
     // boundary soil conductance
     return (myNode[nodeIndex].boundary->Heat->soilConductance);
 }
- double DLL_EXPORT getNodeVapor(long nodeIndex)
- {
-        if (myNode == NULL) return(TOPOGRAPHY_ERROR);
-        if ((nodeIndex < myStructure.nrSurfaceLayerNodes) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
-        if (! myStructure.computeHeat || ! myStructure.computeHeatLatent) return (MISSING_DATA_ERROR);
 
-        double mySatVapPressure, mySatVapConcentration, myRelHum;
-        double myVapor;
-
-        mySatVapPressure = SaturationVaporPressure(myNode[nodeIndex].T - ZEROCELSIUS);
-        mySatVapConcentration = VaporConcentrationFromPressure(mySatVapPressure, myNode[nodeIndex].T);
-        myRelHum = getSoilRelativeHumidity(soil::getPsiMean(nodeIndex), myNode[nodeIndex].T);
-
-        myVapor = mySatVapConcentration * myRelHum;
-
-        return (myVapor);
- }
-
- double DLL_EXPORT getHeat(long nodeIndex)
- { // [J] node heat storage
-        if (myNode == NULL) return(TOPOGRAPHY_ERROR);
-        if ((nodeIndex < myStructure.nrSurfaceLayerNodes) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
-        if (! myStructure.computeHeat) return (MISSING_DATA_ERROR);
-
-        return(getSpecificHeat(nodeIndex, myNode[nodeIndex].H) * myNode[nodeIndex].VolumeS0 * myNode[nodeIndex].T);
- }
+/*!
+ * \brief return vapor concentration
+ * \param nodeIndex
+ * \return vapor concentration [kg m-3]
 */
+double DLL_EXPORT getNodeVapor(long nodeIndex)
+{
+    if (myNode == NULL) return(TOPOGRAPHY_ERROR);
+    if (nodeIndex >= myStructure.nrNodes) return(INDEX_ERROR);
+    if (! myStructure.computeHeat || ! myStructure.computeHeatLatent) return (MISSING_DATA_ERROR);
+
+    double mySatVapPressure, mySatVapConcentration, myRelHum;
+    double myVapor;
+
+    mySatVapPressure = SaturationVaporPressure(myNode[nodeIndex].extra->Heat->T - ZEROCELSIUS);
+    mySatVapConcentration = VaporConcentrationFromPressure(mySatVapPressure, myNode[nodeIndex].extra->Heat->T);
+    myRelHum = getSoilRelativeHumidity(getPsiMean(nodeIndex), myNode[nodeIndex].extra->Heat->T);
+
+    myVapor = mySatVapConcentration * myRelHum;
+
+    return (myVapor);
+}
+
+/*!
+ * \brief return heat storage
+ * \param nodeIndex
+ * \return heat storage [J]
+*/
+double DLL_EXPORT getHeat(long nodeIndex)
+{
+    if (myNode == NULL) return(TOPOGRAPHY_ERROR);
+    if (nodeIndex >= myStructure.nrNodes) return(INDEX_ERROR);
+    if (! myStructure.computeHeat) return (MISSING_DATA_ERROR);
+
+    return(getSpecificHeat(nodeIndex, myNode[nodeIndex].H) * myNode[nodeIndex].volume_area * myNode[nodeIndex].extra->Heat->T);
+}
 
 }

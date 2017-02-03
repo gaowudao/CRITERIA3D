@@ -294,3 +294,22 @@
 
     double getHMean(long i)
     { return (myNode[i].oldH * 0.5 + myNode[i].H * 0.5);}
+
+    /*!
+     * \brief estimate bulk density
+     * \param myIndex
+     * \return result
+     */
+    double getBulkDensity(long myIndex)
+    {
+        if (myNode[myIndex].isSurface)
+            return(0.);
+        else
+        {
+            if (myNode[myIndex].Soil->organicMatter != NODATA)
+                return (1- myNode[myIndex].Soil->Theta_s) * (1./ (0.38 + 0.57 * myNode[myIndex].Soil->organicMatter));
+            else
+                // assume a very low treshold of OrganicMatter
+                return (1- myNode[myIndex].Soil->Theta_s) * 2.63;
+        }
+    }

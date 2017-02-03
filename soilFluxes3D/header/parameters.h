@@ -18,6 +18,7 @@
     int waterRetentionCurve;
     int conductivityMean;
     float k_lateral_vertical_ratio;
+    double heatWeightingFactor;
 
     void initialize()
         {
@@ -32,6 +33,7 @@
         waterRetentionCurve = MODIFIEDVANGENUCHTEN;
         conductivityMean = MEAN_LOGARITHMIC;
         k_lateral_vertical_ratio = 10.;
+        heatWeightingFactor = 0.5;
         }
     } ;
 

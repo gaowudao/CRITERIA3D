@@ -28,3 +28,5 @@ double getThetaMean(long i);
 double getHMean(long i);
 
 double getPsiMean(long i);
+
+double getBulkDensity(long myIndex);

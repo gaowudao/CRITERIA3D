@@ -40,7 +40,8 @@
     //SOIL
     __EXTERN int DLL_EXPORT __STDCALL setSoilProperties(int nrSoil, int nrHorizon, double VG_alpha,
                                         double VG_n, double VG_m, double VG_he,
-                                        double ThetaR, double ThetaS, double Ksat, double L);
+                                        double ThetaR, double ThetaS, double Ksat, double L,
+                                        double organicMatter, double clay);
 
     __EXTERN int DLL_EXPORT __STDCALL setNodeSoil(long nodeIndex, int soilIndex, int horizonIndex);
 
