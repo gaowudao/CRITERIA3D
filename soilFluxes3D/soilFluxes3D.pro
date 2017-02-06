@@ -23,7 +23,8 @@ SOURCES +=  \
     soilPhysics.cpp \
     soilFluxes3D.cpp \
     heat.cpp \
-    physics.cpp
+    physics.cpp \
+    extra.cpp
 
 
 HEADERS += \

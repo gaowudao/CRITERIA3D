@@ -23,13 +23,11 @@
 
     //INITIALIZATION
     __EXTERN void DLL_EXPORT __STDCALL cleanMemory();
-    __EXTERN int DLL_EXPORT __STDCALL initialize(long nrNodes, int nrLayers, int nrLateralLinks);
+    __EXTERN int DLL_EXPORT __STDCALL initialize(long nrNodes, int nrLayers, int nrLateralLinks, bool computeHeat_, bool computeSolutes_, bool computeHeatLatent_, bool computeHeatAdvective_);
 
     __EXTERN int DLL_EXPORT __STDCALL setNumericalParameters(float minDeltaT, float maxDeltaT,
                               int maxIterationNumber, int maxApproximationsNumber,
                               int errorMagnitude, float MBRMagnitude);
-
-    __EXTERN void setProcesses(bool computeHeat_, bool computeSolutes_);
 
     //TOPOLOGY
     __EXTERN int DLL_EXPORT __STDCALL setNode(long myIndex, float x, float y, float z, double volume_or_area,
@@ -74,7 +72,6 @@
     __EXTERN double DLL_EXPORT __STDCALL getSumLateralWaterFlow(long n);
 
     // HEAT
-    __EXTERN int DLL_EXPORT __STDCALL setHeatProcesses(bool computeHeatAdvection, bool computeHeatLatent);
     __EXTERN int DLL_EXPORT __STDCALL SetHeatSinkSource(long nodeIndex, double myHeatFlow);
     __EXTERN int DLL_EXPORT __STDCALL SetTemperature(long nodeIndex, double myT);
     __EXTERN int DLL_EXPORT __STDCALL SetGroundWaterTemperature(double myTemperature);

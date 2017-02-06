@@ -87,13 +87,20 @@ namespace soilFluxes3D {
         (*myLinkExtra).heatFlux->advective = 0.;
     }
 
-	int DLL_EXPORT __STDCALL initialize(long nrNodes, int nrLayers, int nrLateralLinks)
+    int DLL_EXPORT __STDCALL initialize(long nrNodes, int nrLayers, int nrLateralLinks,
+                                        bool computeHeat_, bool computeSolutes_,
+                                        bool computeHeatLatent_, bool computeHeatAdvective_)
 {
     /*! clean the old data structures */
     cleanMemory();
 
     myParameters.initialize();
     myStructure.initialize();
+
+    myStructure.computeHeat = computeHeat_;
+    myStructure.computeSolutes = computeSolutes_;
+    myStructure.computeHeatLatent = computeHeatLatent_;
+    myStructure.computeHeatAdvective = computeHeatAdvective_;
 
     groundWater.initialize();
 
@@ -112,12 +119,6 @@ namespace soilFluxes3D {
 		myNode[i].up.index = NOLINK;
 		myNode[i].down.index = myNode[i].up.index = NOLINK;
 
-        if (myStructure.computeHeat || myStructure.computeSolutes)
-        {
-            myNode[i].up.linkedExtra = new(TCrit3DLinkedNodeExtra);
-            myNode[i].down.linkedExtra = new(TCrit3DLinkedNodeExtra);
-        }
-
         myNode[i].lateral = (TlinkedNode *) calloc(myStructure.nrLateralLinks, sizeof(TlinkedNode));
         for (short l = 0; l < myStructure.nrLateralLinks; l++)
         {
@@ -125,10 +126,6 @@ namespace soilFluxes3D {
             if (myStructure.computeHeat || myStructure.computeSolutes)
                 myNode[i].lateral[l].linkedExtra = new(TCrit3DLinkedNodeExtra);
         }
-
-        myNode[i].extra = NULL;
-        if (myStructure.computeHeat || myStructure.computeSolutes)
-            myNode[i].extra = new(TCrit3DnodeExtra);
     }
 
     /*! build the matrix */
@@ -137,12 +134,6 @@ namespace soilFluxes3D {
     else
 		{return(initializeArrays());}
  }
-
-    void DLL_EXPORT __STDCALL setProcesses(bool computeHeat_, bool computeSolutes_)
-    {
-        myStructure.computeHeat = computeHeat_;
-        myStructure.computeSolutes = computeSolutes_;
-    }
 
 	int DLL_EXPORT __STDCALL setNumericalParameters(float minDeltaT, float maxDeltaT, int maxIterationNumber,
                         int maxApproximationsNumber, int ResidualTolerance, float MBRThreshold)
@@ -244,6 +235,12 @@ namespace soilFluxes3D {
 		initializeBoundary(myNode[myIndex].boundary, boundaryType, slope);
 	}
 
+    if (myStructure.computeHeat || myStructure.computeSolutes)
+    {
+        myNode[myIndex].extra = new(TCrit3DnodeExtra);
+        initializeExtra(myNode[myIndex].extra, myStructure.computeHeat, myStructure.computeSolutes);
+    }
+
     myNode[myIndex].x = x;
     myNode[myIndex].y = y;
     myNode[myIndex].z = z;
@@ -270,13 +267,25 @@ namespace soilFluxes3D {
                     myNode[n].up.index = linkIndex;
                     myNode[n].up.area = interfaceArea;
                     myNode[n].up.sumFlow = 0;
-                    if (myStructure.computeHeat) initializeHeatFluxes(myNode[n].up.linkedExtra);
+
+                    if (myStructure.computeHeat || myStructure.computeSolutes)
+                    {
+                        myNode[n].up.linkedExtra = new(TCrit3DLinkedNodeExtra);
+                        initializeLinkExtra(myNode[n].up.linkedExtra, myStructure.computeHeat, myStructure.computeSolutes);
+                    }
+
                     break;
         case DOWN :
                     myNode[n].down.index = linkIndex;
                     myNode[n].down.area = interfaceArea;
 					myNode[n].down.sumFlow = 0;
-                    if (myStructure.computeHeat) initializeHeatFluxes(myNode[n].down.linkedExtra);
+
+                    if (myStructure.computeHeat || myStructure.computeSolutes)
+                    {
+                        myNode[n].down.linkedExtra = new(TCrit3DLinkedNodeExtra);
+                        initializeLinkExtra(myNode[n].down.linkedExtra, myStructure.computeHeat, myStructure.computeSolutes);
+                    }
+
                     break;
         case LATERAL :
                     j = 0;
@@ -285,7 +294,13 @@ namespace soilFluxes3D {
                     myNode[n].lateral[j].index = linkIndex;
                     myNode[n].lateral[j].area = interfaceArea;
 					myNode[n].lateral[j].sumFlow = 0;
-                    if (myStructure.computeHeat) initializeHeatFluxes(myNode[n].lateral[j].linkedExtra);
+
+                    if (myStructure.computeHeat || myStructure.computeSolutes)
+                    {
+                        myNode[n].lateral[j].linkedExtra = new(TCrit3DLinkedNodeExtra);
+                        initializeLinkExtra(myNode[n].lateral[j].linkedExtra, myStructure.computeHeat, myStructure.computeSolutes);
+                    }
+
                     break;
         default :
                     return(PARAMETER_ERROR);
@@ -724,6 +739,8 @@ namespace soilFluxes3D {
  void DLL_EXPORT __STDCALL initializeBalance()
 {
     InitializeBalanceWater();
+    if (myStructure.computeHeat)
+        initializeBalanceHeat();
 }
 
  double DLL_EXPORT __STDCALL getWaterMBR()
@@ -1322,7 +1339,12 @@ double DLL_EXPORT getHeat(long nodeIndex)
     if (nodeIndex >= myStructure.nrNodes) return(INDEX_ERROR);
     if (! myStructure.computeHeat) return (MISSING_DATA_ERROR);
 
-    return(getSpecificHeat(nodeIndex, myNode[nodeIndex].H) * myNode[nodeIndex].volume_area * myNode[nodeIndex].extra->Heat->T);
+    double a = myNode[nodeIndex].extra->Heat->T;
+
+    if (myNode[nodeIndex].H != NODATA && myNode[nodeIndex].extra->Heat->T != NODATA)
+        return(getSpecificHeat(nodeIndex, myNode[nodeIndex].H) * myNode[nodeIndex].volume_area * myNode[nodeIndex].extra->Heat->T);
+    else
+        return (NODATA);
 }
 
 }
