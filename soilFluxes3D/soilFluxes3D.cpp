@@ -802,12 +802,14 @@ namespace soilFluxes3D {
 		while (sumTime < myPeriod)
         {
 			ResidualTime = myPeriod - sumTime;
-            //computeWater(ResidualTime, &deltaT);
 			deltaT = computeStep(ResidualTime);
 			sumTime += deltaT;
         }
 
         updateBalanceWaterWholePeriod();
+
+        if (myStructure.computeHeat) updateBalanceHeatWholePeriod();
+
     }
 
 
@@ -1338,8 +1340,6 @@ double DLL_EXPORT getHeat(long nodeIndex)
     if (myNode == NULL) return(TOPOGRAPHY_ERROR);
     if (nodeIndex >= myStructure.nrNodes) return(INDEX_ERROR);
     if (! myStructure.computeHeat) return (MISSING_DATA_ERROR);
-
-    double a = myNode[nodeIndex].extra->Heat->T;
 
     if (myNode[nodeIndex].H != NODATA && myNode[nodeIndex].extra->Heat->T != NODATA)
         return(getSpecificHeat(nodeIndex, myNode[nodeIndex].H) * myNode[nodeIndex].volume_area * myNode[nodeIndex].extra->Heat->T);
