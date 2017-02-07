@@ -418,7 +418,7 @@ double computeHeatStorage()
 	return myHeatStorage;
 }
 
-void computeBalanceHeat(float myTimeStep)
+void computeBalanceHeat(double myTimeStep)
 {
 	double myHeatSinkSourceSum = 0.;
 
@@ -541,7 +541,7 @@ void restoreHeat()
 	// ripristinare vecchi vapori al boundary?
 }
 
-bool computeHeatLoop(float myTimeStep)
+bool computeHeatLoop(double myTimeStep)
 {
 
 	long i, j;
@@ -623,7 +623,7 @@ bool computeHeatLoop(float myTimeStep)
 	return (isStepOK);
 }
 
-bool computeHeat(float myTime)
+bool computeHeat(double myTime)
 // ----- Input -----------------------------------------------------------------
 // myTime          [s] computation period
 // -----------------------------------------------------------------------------

@@ -39,6 +39,8 @@
 #include "header/water.h"
 #include "header/physics.h"
 
+#include <iostream>
+
 void initializeBoundary(Tboundary *myBoundary, int myType, float slope)
 {
 	(*myBoundary).type = myType;
@@ -259,16 +261,32 @@ void updateBoundaryWater(double deltaT)
     }
 }
 
+
 void updateBoundaryHeat()
 {
+    double a;
+
     for (long i = 0; i < myStructure.nrNodes; i++)
-        if (myNode[i].boundary != NULL)
+        if (myNode[i].boundary != NULL && myNode[i].extra->Heat != NULL)
         {
             myNode[i].extra->Heat->Qh = 0.;
             myNode[i].boundary->advectiveHeatFlux = 0.;
 
             if (myNode[i].boundary->type == BOUNDARY_HEAT)
             {
+
+                if ( myStructure.computeHeatLatent)
+                    // update aerodynamic conductance
+                    myNode[i].boundary->Heat->aerodynamicConductance = AerodynamicConductance(myNode[i].boundary->Heat->height,
+                                                                     myNode[i].extra->Heat->T,
+                                                                     myNode[i].boundary->Heat->roughnessHeight,
+                                                                     myNode[i].boundary->Heat->temperature,
+                                                                     myNode[i].boundary->Heat->windSpeed);
+
+                if (myStructure.computeHeatLatent)
+                    // update soil surface conductance
+                    myNode[i].boundary->Heat->soilConductance = 1./ computeSoilSurfaceResistance(getThetaMean(i));
+
                 // update surface water energy budget
                 /*if (getSurfaceWaterFraction(myNode[i].up->index) > 0.0)
                 {
@@ -312,6 +330,7 @@ void updateBoundaryHeat()
                         myNode[i].boundary->Heat->radiativeFlux + myNode[i].boundary->Heat->sensibleFlux +
                         myNode[i].boundary->Heat->latentFlux + myNode[i].boundary->advectiveHeatFlux);
 
+                a = myNode[i].extra->Heat->Qh;
             }
             else if (myNode[i].boundary->type == BOUNDARY_FREEDRAINAGE && myStructure.computeHeatAdvective)
                 // supposing same temperature

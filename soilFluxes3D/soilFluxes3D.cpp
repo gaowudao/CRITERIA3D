@@ -822,7 +822,14 @@ double DLL_EXPORT __STDCALL computeStep(double maxTime)
 	{
 		double deltaT;
 		computeWater(maxTime, &deltaT);
-		return deltaT;
+
+        if (myStructure.computeHeat)
+        {
+            updateBoundaryHeat();
+            computeHeat(deltaT);
+        }
+
+        return deltaT;
 	}
 
 /*!

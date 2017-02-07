@@ -142,6 +142,32 @@ double GaussSeidelIterationWater(int direction)
     return(infinityNorm);
  }
 
+double GaussSeidelIterationHeat()
+{
+    double delta, new_x, norma_inf = 0.;
+    short j;
+
+    for (long i = 0; i < myStructure.nrNodes; i++)
+        if (!myNode[i].isSurface)
+        {
+            if (A[i][0].val != 0.)
+            {
+                j = 1;
+                new_x = b[i];
+                while ((A[i][j].index != NOLINK) && (j < myStructure.nrNodes))
+                {
+                    new_x -= A[i][j].val * X[A[i][j].index];
+                    j++;
+                }
+
+                delta = fabs(new_x - X[i]);
+                if (delta > norma_inf) norma_inf = delta;
+                X[i] = new_x;
+            }
+        }
+
+    return(norma_inf);
+ }
 
 bool GaussSeidelRelaxation (int approximation, double residualTolerance, int process)
 {
@@ -154,7 +180,10 @@ bool GaussSeidelRelaxation (int approximation, double residualTolerance, int pro
 
     while ((norm > residualTolerance) && (iteration < maxIterationsNr))
 	{
-        if (process == PROCESS_WATER)
+        if (process == PROCESS_HEAT)
+            norm = GaussSeidelIterationHeat();
+
+        else if (process == PROCESS_WATER)
         {
             if (iteration%2 == 0)
                 norm = GaussSeidelIterationWater(DOWN);
