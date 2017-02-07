@@ -31,6 +31,10 @@
 #ifndef TYPESEXTRA_H
 #define TYPESEXTRA_H
 
+#ifndef COMMONCONSTANTS_H
+    #include "commonConstants.h"
+#endif
+
 struct TboundaryHeat{
     double temperature;                     /*!< [K] temperature of the boundary (ex. air temperature) */
     double relativeHumidity;                /*!< [] relative humidity */

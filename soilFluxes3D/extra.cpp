@@ -31,6 +31,7 @@
 #include "commonConstants.h"
 #include "header/extra.h"
 #include <math.h>
+#include <stdio.h>
 
 
 void initializeExtraHeat(TCrit3DNodeHeat* myNodeExtraHeat)
