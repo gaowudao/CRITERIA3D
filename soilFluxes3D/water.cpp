@@ -226,7 +226,7 @@ bool computeFlux(long i, int matrixIndex, TlinkedNode *link, double deltaT, unsi
 }
 
 
-bool computationLoop(double deltaT)
+bool waterFlowComputation(double deltaT)
  {
      bool isValidStep;
      long i;  short j;
@@ -361,7 +361,7 @@ bool computationLoop(double deltaT)
         /*! update boundary conditions */
 		updateBoundaryWater(*acceptedTime);
 
-        isStepOK = computationLoop(*acceptedTime);
+        isStepOK = waterFlowComputation(*acceptedTime);
 
 		if (!isStepOK) restoreWater();
   }

@@ -1,5 +1,5 @@
 
-bool computationLoop(double deltaT);
+bool waterFlowComputation(double deltaT);
 
 double getWaterFlux(long index, TlinkedNode *link);
 
