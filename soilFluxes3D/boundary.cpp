@@ -53,7 +53,7 @@ void initializeBoundary(Tboundary *myBoundary, int myType, float slope)
     if (myStructure.computeHeat)
     {
         (*myBoundary).Heat = new(TboundaryHeat);
-        (*myBoundary).Heat->invariantFluxes = 0.;
+
         (*myBoundary).Heat->temperature = NODATA;
         (*myBoundary).Heat->height = NODATA;
         (*myBoundary).Heat->relativeHumidity = NODATA;
@@ -62,11 +62,15 @@ void initializeBoundary(Tboundary *myBoundary, int myType, float slope)
         (*myBoundary).Heat->windSpeed = NODATA;
         (*myBoundary).Heat->globalIrradiance = NODATA;
         (*myBoundary).Heat->netIrradiance = NODATA;
-        (*myBoundary).Heat->sensibleFlux = 0.;
-        (*myBoundary).Heat->latentFlux = 0.;
+
         (*myBoundary).Heat->aerodynamicConductance = NODATA;
         (*myBoundary).Heat->soilConductance = NODATA;
         (*myBoundary).Heat->albedo = NODATA;
+
+        (*myBoundary).Heat->invariantFluxes = 0.;
+        (*myBoundary).Heat->radiativeFlux = 0;
+        (*myBoundary).Heat->latentFlux = 0;
+        (*myBoundary).Heat->sensibleFlux = 0;
     }
     else (*myBoundary).Heat = NULL;
 }
@@ -266,15 +270,13 @@ void updateBoundaryHeat()
 {
     for (long i = 0; i < myStructure.nrNodes; i++)
     {
-        myNode[i].extra->Heat->Qh = 0.;
-
         if (myNode[i].boundary != NULL && myNode[i].extra->Heat != NULL)
         {
+            myNode[i].extra->Heat->Qh = 0.;
             myNode[i].boundary->advectiveHeatFlux = 0.;
 
             if (myNode[i].boundary->type == BOUNDARY_HEAT)
             {
-
                 // update aerodynamic conductance
                 myNode[i].boundary->Heat->aerodynamicConductance =
                         AerodynamicConductance(myNode[i].boundary->Heat->height,
