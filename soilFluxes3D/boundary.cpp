@@ -264,24 +264,24 @@ void updateBoundaryWater(double deltaT)
 
 void updateBoundaryHeat()
 {
-    double a;
-
     for (long i = 0; i < myStructure.nrNodes; i++)
+    {
+        myNode[i].extra->Heat->Qh = 0.;
+
         if (myNode[i].boundary != NULL && myNode[i].extra->Heat != NULL)
         {
-            myNode[i].extra->Heat->Qh = 0.;
             myNode[i].boundary->advectiveHeatFlux = 0.;
 
             if (myNode[i].boundary->type == BOUNDARY_HEAT)
             {
 
-                if ( myStructure.computeHeatLatent)
-                    // update aerodynamic conductance
-                    myNode[i].boundary->Heat->aerodynamicConductance = AerodynamicConductance(myNode[i].boundary->Heat->height,
-                                                                     myNode[i].extra->Heat->T,
-                                                                     myNode[i].boundary->Heat->roughnessHeight,
-                                                                     myNode[i].boundary->Heat->temperature,
-                                                                     myNode[i].boundary->Heat->windSpeed);
+                // update aerodynamic conductance
+                myNode[i].boundary->Heat->aerodynamicConductance =
+                        AerodynamicConductance(myNode[i].boundary->Heat->height,
+                            myNode[i].extra->Heat->T,
+                            myNode[i].boundary->Heat->roughnessHeight,
+                            myNode[i].boundary->Heat->temperature,
+                            myNode[i].boundary->Heat->windSpeed);
 
                 if (myStructure.computeHeatLatent)
                     // update soil surface conductance
@@ -330,7 +330,12 @@ void updateBoundaryHeat()
                         myNode[i].boundary->Heat->radiativeFlux + myNode[i].boundary->Heat->sensibleFlux +
                         myNode[i].boundary->Heat->latentFlux + myNode[i].boundary->advectiveHeatFlux);
 
-                a = myNode[i].extra->Heat->Qh;
+                /*qDebug() << "invariant: " << myNode[i].boundary->Heat->invariantFluxes;
+                qDebug() << "radiative: " << myNode[i].boundary->Heat->radiativeFlux;
+                qDebug() << "sensible: " << myNode[i].boundary->Heat->sensibleFlux;
+                qDebug() << "latent: " << myNode[i].boundary->Heat->latentFlux;
+                qDebug() << "advective: " << myNode[i].boundary->advectiveHeatFlux;
+                */
             }
             else if (myNode[i].boundary->type == BOUNDARY_FREEDRAINAGE && myStructure.computeHeatAdvective)
                 // supposing same temperature
@@ -351,5 +356,5 @@ void updateBoundaryHeat()
             }
 
         }
-
+    }
 }

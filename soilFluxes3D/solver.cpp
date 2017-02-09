@@ -154,7 +154,7 @@ double GaussSeidelIterationHeat()
             {
                 j = 1;
                 new_x = b[i];
-                while ((A[i][j].index != NOLINK) && (j < myStructure.nrNodes))
+                while ((A[i][j].index != NOLINK) && (j < myStructure.maxNrColumns))
                 {
                     new_x -= A[i][j].val * X[A[i][j].index];
                     j++;

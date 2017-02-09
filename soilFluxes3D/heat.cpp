@@ -358,7 +358,7 @@ double soilConduction(long myIndex, TlinkedNode *myLink)
     return (zeta * meanKh);
 }
 
-bool newHeatLink(long i, int myMatrixIndex, TlinkedNode *myLink)
+bool computeHeatFlux(long i, int myMatrixIndex, TlinkedNode *myLink)
 {
     double myConduction, myAdvection = 0., myLatent = 0.;
 
@@ -484,7 +484,7 @@ void storeHeatFlows(long myIndex, TlinkedNode *myLink)
         long myLinkIndex = (*myLink).index;
 
         int j = 1;
-        while ((j < myStructure.nrNodes) && (A[myIndex][j].index != NOLINK) && (A[myIndex][j].index != myLinkIndex)) j++;
+        while ((j < myStructure.maxNrColumns) && (A[myIndex][j].index != NOLINK) && (A[myIndex][j].index != myLinkIndex)) j++;
 
         if (A[myIndex][j].index == myLinkIndex)
         {
@@ -507,10 +507,18 @@ void updateBalanceHeat()
     // update heat fluxes
     for (long i = 1; i < myStructure.nrNodes; i++)
     {
-        if (myNode[i].up.linkedExtra->heatFlux != NULL) storeHeatFlows(i, &(myNode[i].up));
-        if (myNode[i].down.linkedExtra->heatFlux != NULL) storeHeatFlows(i, &(myNode[i].down));
+        if (myNode[i].up.index != NOLINK)
+            if (myNode[i].up.linkedExtra->heatFlux != NULL)
+                storeHeatFlows(i, &(myNode[i].up));
+
+        if (myNode[i].down.index != NOLINK)
+            if (myNode[i].down.linkedExtra->heatFlux != NULL)
+                storeHeatFlows(i, &(myNode[i].down));
+
         for (short j = 0; j < myStructure.nrLateralLinks; j++)
-            if (myNode[i].lateral[j].linkedExtra->heatFlux != NULL) storeHeatFlows(i, &(myNode[i].lateral[j]));
+            if (myNode[i].lateral[j].index != NOLINK)
+                if (myNode[i].lateral[j].linkedExtra->heatFlux != NULL)
+                    storeHeatFlows(i, &(myNode[i].lateral[j]));
     }
 }
 
@@ -541,7 +549,7 @@ void restoreHeat()
 	// ripristinare vecchi vapori al boundary?
 }
 
-bool computeHeatLoop(double myTimeStep)
+bool heatFlowComputation(double myTimeStep)
 {
 
 	long i, j;
@@ -562,19 +570,18 @@ bool computeHeatLoop(double myTimeStep)
 
         for (i = 1; i < myStructure.nrNodes; i++)
 			{
-
                 C0[i] = 0.;
 
                 myVolume = myNode[i].volume_area;
 
 				j = 1;
-                if (newHeatLink(i, j, &(myNode[i].up))) j++;
+                if (computeHeatFlux(i, j, &(myNode[i].up))) j++;
                 for (short l = 0; l < myStructure.nrLateralLinks; l++)
-                    if (newHeatLink(i, j, &(myNode[i].lateral[l]))) j++;
-                if (newHeatLink(i, j, &(myNode[i].down))) j++;
+                    if (computeHeatFlux(i, j, &(myNode[i].lateral[l]))) j++;
+                if (computeHeatFlux(i, j, &(myNode[i].down))) j++;
 
                 // closure
-                while (j < myStructure.nrNodes)
+                while (j < myStructure.maxNrColumns)
                     A[i][j++].index = NOLINK;
 
 				j = 1;
@@ -582,7 +589,7 @@ bool computeHeatLoop(double myTimeStep)
 				sumFlow0 = 0;
                 myDeltaTemp0 = 0;
 
-                while ((j < myStructure.nrNodes) && (A[i][j].index != NOLINK))
+                while ((j < myStructure.maxNrColumns) && (A[i][j].index != NOLINK))
 				{
 					sumStiffness += (A[i][j].val * myParameters.heatWeightingFactor);
                     myDeltaTemp0 = myNode[A[i][j].index].extra->Heat->oldT - myNode[i].extra->Heat->oldT;
@@ -600,7 +607,7 @@ bool computeHeatLoop(double myTimeStep)
 				{
 					b[i] /= A[i][0].val;
 					j = 1;
-                    while ((j < myStructure.nrNodes) && (A[i][j].index != NOLINK))
+                    while ((j < myStructure.maxNrColumns) && (A[i][j].index != NOLINK))
 						A[i][j++].val /= A[i][0].val;
 				}
 			}
@@ -632,6 +639,6 @@ bool computeHeat(double myTime)
     for (long n = 1; n < myStructure.nrNodes; n++)
         myNode[n].extra->Heat->oldT = myNode[n].extra->Heat->T;
 
-	return (computeHeatLoop(myTime));
+    return (heatFlowComputation(myTime));
 }
 
