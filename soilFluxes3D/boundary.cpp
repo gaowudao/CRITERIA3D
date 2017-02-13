@@ -71,6 +71,8 @@ void initializeBoundary(Tboundary *myBoundary, int myType, float slope)
         (*myBoundary).Heat->radiativeFlux = 0;
         (*myBoundary).Heat->latentFlux = 0;
         (*myBoundary).Heat->sensibleFlux = 0;
+
+        (*myBoundary).Heat->fixedTemperature = NODATA;
     }
     else (*myBoundary).Heat = NULL;
 }
@@ -313,6 +315,7 @@ void updateBoundaryHeat()
                 myNode[i].boundary->Heat->sensibleFlux = 0.;
                 myNode[i].boundary->Heat->latentFlux = 0.;
                 myNode[i].boundary->advectiveHeatFlux = 0.;
+                myNode[i].boundary->Heat->radiativeFlux = 0.;
 
                 if (myNode[i].boundary->Heat->netIrradiance == NODATA)
                     myNode[i].boundary->Heat->radiativeFlux = computeNetRadiationFlow(i);
@@ -330,18 +333,21 @@ void updateBoundaryHeat()
 
                 myNode[i].extra->Heat->Qh += myNode[i].up.area * (myNode[i].boundary->Heat->invariantFluxes +
                         myNode[i].boundary->Heat->radiativeFlux + myNode[i].boundary->Heat->sensibleFlux +
-                        myNode[i].boundary->Heat->latentFlux + myNode[i].boundary->advectiveHeatFlux);
-
-                /*qDebug() << "invariant: " << myNode[i].boundary->Heat->invariantFluxes;
-                qDebug() << "radiative: " << myNode[i].boundary->Heat->radiativeFlux;
-                qDebug() << "sensible: " << myNode[i].boundary->Heat->sensibleFlux;
-                qDebug() << "latent: " << myNode[i].boundary->Heat->latentFlux;
-                qDebug() << "advective: " << myNode[i].boundary->advectiveHeatFlux;
-                */
+                        myNode[i].boundary->Heat->latentFlux + myNode[i].boundary->advectiveHeatFlux);            
             }
             else if (myNode[i].boundary->type == BOUNDARY_FREEDRAINAGE && myStructure.computeHeatAdvective)
                 // supposing same temperature
                 myNode[i].boundary->advectiveHeatFlux = 0.;
+
+                // controllare se flussi avvettivi possono esserci con temperatura fissa
+                // ripetere anche per BOUNDARY_PRESCRIBEDTOTALPOTENTIAL
+                if (myNode[i].boundary->Heat->fixedTemperature != NODATA)
+                {
+                    // da finire
+                    //double myK = myNode[i].extra->Heat->Kh;
+                    //myNode[i].boundary->Heat->sensibleFlux = myK * ()
+                    myNode[i].extra->Heat->Qh = myNode[i].boundary->Heat->sensibleFlux;
+                }
 
             else if (myNode[i].boundary->type == BOUNDARY_FREELATERALDRAINAGE && myStructure.computeHeatAdvective)
                 // supposing same temperature

@@ -5,7 +5,7 @@
 #
 #-------------------------------------------------
 
-QT          -= core gui
+QT          -= gui core
 
 TARGET = soilFluxes3D
 TEMPLATE = lib
