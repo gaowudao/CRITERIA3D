@@ -753,6 +753,11 @@ namespace soilFluxes3D {
      return (balanceWholePeriod.heatMBR);
   }
 
+ double DLL_EXPORT __STDCALL GetHeatMBE()
+  {
+     return (balanceWholePeriod.heatMBE);
+  }
+
  /*!
   * \brief computes [m^3] integrated water flow from boundary over the time step
   * \param nodeIndex
@@ -825,7 +830,7 @@ double DLL_EXPORT __STDCALL computeStep(double maxTime)
         if (myStructure.computeHeat)
         {
             updateBoundaryHeat();
-            computeHeat(deltaT);
+            HeatComputation(deltaT);
         }
 
         return deltaT;
@@ -870,10 +875,10 @@ int DLL_EXPORT __STDCALL SetFixedTemperature(long nodeIndex, double myT)
    if (myNode == NULL) return(MEMORY_ERROR);
    if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
    if (myNode[nodeIndex].boundary == NULL) return(BOUNDARY_ERROR);
-   if (myNode[nodeIndex].boundary->type != BOUNDARY_PRESCRIBEDTOTALPOTENTIAL ||
+   if (myNode[nodeIndex].boundary->type != BOUNDARY_PRESCRIBEDTOTALPOTENTIAL &&
            myNode[nodeIndex].boundary->type != BOUNDARY_FREEDRAINAGE) return(BOUNDARY_ERROR);
 
-   myNode[nodeIndex].boundary->Heat->fixedTemperature = myT;
+   myNode[nodeIndex].boundary->fixedTemperature = myT;
 
    return(CRIT3D_OK);
 }
@@ -1365,11 +1370,11 @@ double DLL_EXPORT getHeat(long nodeIndex)
     if (myNode == NULL) return(TOPOGRAPHY_ERROR);
     if (nodeIndex >= myStructure.nrNodes) return(INDEX_ERROR);
     if (! myStructure.computeHeat) return (MISSING_DATA_ERROR);
+    if (myNode[nodeIndex].extra->Heat == NULL) return MISSING_DATA_ERROR;
+    if (myNode[nodeIndex].H == NODATA || myNode[nodeIndex].extra->Heat->T == NODATA) return MISSING_DATA_ERROR;
 
-    if (myNode[nodeIndex].H != NODATA && myNode[nodeIndex].extra->Heat->T != NODATA)
-        return(getSpecificHeat(nodeIndex, myNode[nodeIndex].H) * myNode[nodeIndex].volume_area * myNode[nodeIndex].extra->Heat->T);
-    else
-        return (NODATA);
+    return (getHeatCapacity(nodeIndex, myNode[nodeIndex].H) * myNode[nodeIndex].volume_area * myNode[nodeIndex].extra->Heat->T);
+
 }
 
 }

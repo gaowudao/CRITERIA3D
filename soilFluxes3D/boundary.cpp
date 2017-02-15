@@ -37,6 +37,7 @@
 #include "header/boundary.h"
 #include "header/soilFluxes3D.h"
 #include "header/water.h"
+#include "header/heat.h"
 #include "header/physics.h"
 
 #include <iostream>
@@ -49,6 +50,7 @@ void initializeBoundary(Tboundary *myBoundary, int myType, float slope)
     (*myBoundary).sumBoundaryWaterFlow = 0;
 	(*myBoundary).prescribedTotalPotential = NODATA;
     (*myBoundary).advectiveHeatFlux = 0.;
+    (*myBoundary).fixedTemperature = NODATA;
 
     if (myStructure.computeHeat)
     {
@@ -71,8 +73,6 @@ void initializeBoundary(Tboundary *myBoundary, int myType, float slope)
         (*myBoundary).Heat->radiativeFlux = 0;
         (*myBoundary).Heat->latentFlux = 0;
         (*myBoundary).Heat->sensibleFlux = 0;
-
-        (*myBoundary).Heat->fixedTemperature = NODATA;
     }
     else (*myBoundary).Heat = NULL;
 }
@@ -335,32 +335,27 @@ void updateBoundaryHeat()
                         myNode[i].boundary->Heat->radiativeFlux + myNode[i].boundary->Heat->sensibleFlux +
                         myNode[i].boundary->Heat->latentFlux + myNode[i].boundary->advectiveHeatFlux);            
             }
-            else if (myNode[i].boundary->type == BOUNDARY_FREEDRAINAGE && myStructure.computeHeatAdvective)
-                // supposing same temperature
-                myNode[i].boundary->advectiveHeatFlux = 0.;
-
+            else if (myNode[i].boundary->type == BOUNDARY_FREEDRAINAGE)
+            {
                 // controllare se flussi avvettivi possono esserci con temperatura fissa
                 // ripetere anche per BOUNDARY_PRESCRIBEDTOTALPOTENTIAL
-                if (myNode[i].boundary->Heat->fixedTemperature != NODATA)
+                if (myNode[i].boundary->fixedTemperature != NODATA)
                 {
-                    // da finire
-                    //double myK = myNode[i].extra->Heat->Kh;
-                    //myNode[i].boundary->Heat->sensibleFlux = myK * ()
-                    myNode[i].extra->Heat->Qh = myNode[i].boundary->Heat->sensibleFlux;
+                    double boundaryHeatConductivity = getHeatConductivity(i);
+                    double deltaT = myNode[i].boundary->fixedTemperature - myNode[i].extra->Heat->T;
+                    double deltaZ = myNode[i-1].z - myNode[i].z;
+                    myNode[i].extra->Heat->Qh = boundaryHeatConductivity*deltaT/deltaZ;
                 }
+            }
 
-            else if (myNode[i].boundary->type == BOUNDARY_FREELATERALDRAINAGE && myStructure.computeHeatAdvective)
-                // supposing same temperature
-                myNode[i].boundary->advectiveHeatFlux = 0.;
-
-            else if (myNode[i].boundary->type == BOUNDARY_PRESCRIBEDTOTALPOTENTIAL && myStructure.computeHeatAdvective)
+            else if (myNode[i].boundary->type == BOUNDARY_PRESCRIBEDTOTALPOTENTIAL)
             {
-                myNode[i].boundary->advectiveHeatFlux = 0.;
-                if (groundWater.temperature != NODATA)
-                {
-                    myNode[i].boundary->advectiveHeatFlux = myNode[i].Qw * VolSpecHeatH2O * (myNode[i].extra->Heat->T - groundWater.temperature) / myNode[i].up.area;
-                    myNode[i].extra->Heat->Qh += myNode[i].up.area * myNode[i].boundary->advectiveHeatFlux;
-                }
+                if (myStructure.computeHeatAdvective)
+                    if (groundWater.temperature != NODATA)
+                    {
+                        myNode[i].boundary->advectiveHeatFlux = myNode[i].Qw * VolSpecHeatH2O * (myNode[i].extra->Heat->T - groundWater.temperature) / myNode[i].up.area;
+                        myNode[i].extra->Heat->Qh += myNode[i].up.area * myNode[i].boundary->advectiveHeatFlux;
+                    }
             }
 
         }

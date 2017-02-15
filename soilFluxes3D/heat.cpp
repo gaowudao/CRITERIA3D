@@ -113,13 +113,13 @@ double getSpecificHeat(long i)
 }
 
 /*!
- * \brief [J m-3 K-1] specific heat
+ * \brief [J m-3 K-1] volumetric heat capacity
  * \param i
  * \param myH
  * \return result
  */
-double getSpecificHeat(long i, double myH)
-{ // [J m-3 K-1]
+double getHeatCapacity(long i, double myH)
+{
     double mySpecificHeat;
 
     double myPressure = PressureFromAltitude(myNode[i].z);
@@ -131,6 +131,7 @@ double getSpecificHeat(long i, double myH)
     mySpecificHeat = ((1. - myNode[i].Soil->Theta_s) * VolSpecHeatMineral +
                       myTheta * VolSpecHeatH2O +
                       AirVolumetricSpecificHeat(myPressure, myNode[i].extra->Heat->T) * airFraction);
+    //rivedere la somma (dovrebbe forse essere per frazioni di peso, non di volume
 
     return mySpecificHeat;
 }
@@ -348,7 +349,7 @@ double soilConduction(long myIndex, TlinkedNode *myLink)
 	long myLinkIndex = (*myLink).index;
     double myDistance = distance(myIndex, myLinkIndex);
 
-    zeta = (*myLink).area / myDistance;
+    zeta = myLink->area / myDistance;
 
 	myConductivity = getHeatConductivity(myIndex);
 	linkConductivity = getHeatConductivity(myLinkIndex);
@@ -359,41 +360,39 @@ double soilConduction(long myIndex, TlinkedNode *myLink)
 
 bool computeHeatFlux(long i, int myMatrixIndex, TlinkedNode *myLink)
 {
-    double myConduction, myAdvection = 0., myLatent = 0.;
+    if (myLink == NULL) return false;
+    if ((*myLink).index == NOLINK) return false;
 
-	if (myLink == NULL) return (false);
-	else
-	{
-		long myLinkIndex = (*myLink).index;
+    long myLinkIndex = (*myLink).index;
+    double myConduction, myAdvection, myLatent;
 
-        myConduction = 0.;
-        myAdvection = 0.;
-        myLatent = 0.;
+    myConduction = 0.;
+    myAdvection = 0.;
+    myLatent = 0.;
 
-        if (!myNode[myLinkIndex].isSurface)
+    if (!myNode[myLinkIndex].isSurface)
+    {
+        myConduction = soilConduction(i, myLink);
+        if (myStructure.computeHeatAdvective)
         {
-            myConduction = soilConduction(i, myLink);
-            if (myStructure.computeHeatAdvective)
-            {
-                myAdvection = soilAdvection(i, myLink);
-                if (myLink->linkedExtra->heatFlux != NULL)
-                    myLink->linkedExtra->heatFlux->advective = myAdvection;
-            }
-            if (myStructure.computeHeatLatent)
-            {
-                myLatent = soilLatentIsothermal(i, myLink);
-                if (myLink->linkedExtra->heatFlux != NULL)
-                    myLink->linkedExtra->heatFlux->isothermLatent = myLatent;
-            }
+            myAdvection = soilAdvection(i, myLink);
+            if (myLink->linkedExtra->heatFlux != NULL)
+                myLink->linkedExtra->heatFlux->advective = myAdvection;
         }
+        if (myStructure.computeHeatLatent)
+        {
+            myLatent = soilLatentIsothermal(i, myLink);
+            if (myLink->linkedExtra->heatFlux != NULL)
+                myLink->linkedExtra->heatFlux->isothermLatent = myLatent;
+        }
+    }
 
-		A[i][myMatrixIndex].index = myLinkIndex;
-		A[i][myMatrixIndex].val = myConduction;
+    A[i][myMatrixIndex].index = myLinkIndex;
+    A[i][myMatrixIndex].val = myConduction;
 
-        C0[i] += myAdvection + myLatent;
+    C0[i] += myAdvection + myLatent;
 
-		return (true);
-	}
+    return (true);
 }
 
 double computeHeatStorage()
@@ -418,8 +417,8 @@ void computeHeatBalance(double myTimeStep)
     double deltaHeatStorage = balanceCurrentTimeStep.storageHeat - balancePreviousTimeStep.storageHeat;
     balanceCurrentTimeStep.heatMBE = deltaHeatStorage - balanceCurrentTimeStep.sinkSourceHeat;
 
-    double referenceHeat = maxValue(fabs(balanceCurrentTimeStep.sinkSourceHeat), balanceCurrentTimeStep.storageHeat * 1e-5);
-    balanceCurrentTimeStep.heatMBR = balanceCurrentTimeStep.heatMBE / referenceHeat;
+    double referenceHeat = maxValue(fabs(balanceCurrentTimeStep.sinkSourceHeat), balanceCurrentTimeStep.storageHeat * 1e-3);
+    balanceCurrentTimeStep.heatMBR = 1. - balanceCurrentTimeStep.heatMBE / referenceHeat;
 }
 
 void storeHeatFlows(long myIndex, TlinkedNode *myLink)
@@ -470,16 +469,7 @@ void updateBalanceHeat()
 bool heatBalance(double timeStep, int myApprox)
 {
     computeHeatBalance(timeStep);
-
-    double myMBRError = fabs(balanceCurrentTimeStep.heatMBR);
-
-    if ((myMBRError < myParameters.MBRThreshold) || (myApprox == (myParameters.maxApproximationsNumber - 1)))
-    {
-        updateBalanceHeat();
-        return true;
-    }
-    else
-        return false;
+    return ((fabs(1.-balanceCurrentTimeStep.heatMBR) < myParameters.MBRThreshold) || (myApprox == (myParameters.maxApproximationsNumber - 1)));
 }
 
 void initializeBalanceHeat()
@@ -512,7 +502,8 @@ void updateBalanceHeatWholePeriod()
     double deltaStorageHistorical = balanceCurrentTimeStep.storageHeat - balanceWholePeriod.storageHeat;
 
     /*! compute MBE and MBR */
-    balanceCurrentPeriod.heatMBE = fabs(deltaStoragePeriod - balanceCurrentPeriod.sinkSourceHeat);
+    balanceCurrentPeriod.heatMBE = deltaStoragePeriod - balanceCurrentPeriod.sinkSourceHeat;
+    balanceWholePeriod.heatMBE = deltaStorageHistorical - balanceWholePeriod.sinkSourceHeat;
     if ((balanceWholePeriod.storageHeat == 0.) && (balanceWholePeriod.sinkSourceHeat == 0.)) balanceWholePeriod.heatMBR = 1.;
     else if (balanceCurrentTimeStep.storageHeat > fabs(balanceWholePeriod.sinkSourceHeat))
         balanceWholePeriod.heatMBR = balanceCurrentTimeStep.storageHeat / (balanceWholePeriod.storageHeat + balanceWholePeriod.sinkSourceHeat);
@@ -530,13 +521,12 @@ void restoreHeat()
 	// ripristinare vecchi vapori al boundary?
 }
 
-bool computeHeat(double myTimeStep)
+bool HeatComputation(double myTimeStep)
 {
 
 	long i, j;
     bool isValidStep = false;
-	double sumStiffness, sumFlow0, myDeltaTemp0;
-    double myVolume;
+    double sum, sumFlow0, myDeltaTemp0;
 	int myApprox = 0;
 
 	do  {
@@ -544,17 +534,15 @@ bool computeHeat(double myTimeStep)
 		if (myApprox == 0)
             for (i = 1; i < myStructure.nrNodes; i++)
 			{
-                myNode[i].extra->Heat->oldT = myNode[i].extra->Heat->T;
-				A[i][0].index = i;
+                A[i][0].index = i;
                 X[i] = myNode[i].extra->Heat->T;
-                C[i] = getSpecificHeat(i, myNode[i].H);
+                myNode[i].extra->Heat->oldT = myNode[i].extra->Heat->T;
 			}
 
         for (i = 1; i < myStructure.nrNodes; i++)
 			{
                 C0[i] = 0.;
-
-                myVolume = myNode[i].volume_area;
+                C[i] = getHeatCapacity(i, myNode[i].H) * myNode[i].volume_area;
 
 				j = 1;
                 if (computeHeatFlux(i, j, &(myNode[i].up))) j++;
@@ -567,22 +555,23 @@ bool computeHeat(double myTimeStep)
                     A[i][j++].index = NOLINK;
 
 				j = 1;
-				sumStiffness = 0.;
+                sum = 0.;
 				sumFlow0 = 0;
                 myDeltaTemp0 = 0;
 
                 while ((j < myStructure.maxNrColumns) && (A[i][j].index != NOLINK))
 				{
-					sumStiffness += (A[i][j].val * myParameters.heatWeightingFactor);
-                    myDeltaTemp0 = myNode[A[i][j].index].extra->Heat->oldT - myNode[i].extra->Heat->oldT;
-					sumFlow0 += A[i][j].val * (1. - myParameters.heatWeightingFactor) * myDeltaTemp0;
-					A[i][j++].val *= -(myParameters.heatWeightingFactor);
+                    sum += A[i][j].val; // * myParameters.heatWeightingFactor);
+                    //myDeltaTemp0 = myNode[A[i][j].index].extra->Heat->oldT - myNode[i].extra->Heat->oldT;
+                    //sumFlow0 += A[i][j].val * (1. - myParameters.heatWeightingFactor) * myDeltaTemp0;
+                    A[i][j++].val *= -1.0; // -(myParameters.heatWeightingFactor);
 				}
 
-				// sommatoria sulla diagonale
-                A[i][0].val =  getSpecificHeat(i, myNode[i].H) * myVolume / (double)myTimeStep + sumStiffness;
+                /*! sum of diagonal elements */
+                A[i][0].val =  C[i] / myTimeStep + sum;
 
-                b[i] = C[i] * myVolume * myNode[i].extra->Heat->oldT / (double)myTimeStep + sumFlow0 + myNode[i].extra->Heat->Qh + C0[i];
+                /*! b vector (constant terms */
+                b[i] = C[i] * myNode[i].extra->Heat->oldT / myTimeStep + myNode[i].extra->Heat->Qh + C0[i]; // + sumFlow0 ;
 
 				// precondizionamento
 				if (A[i][0].val > 0)
@@ -603,6 +592,8 @@ bool computeHeat(double myTimeStep)
         isValidStep = heatBalance(myTimeStep, myApprox);
 
         } while ((!isValidStep) && (++myApprox < myParameters.maxApproximationsNumber));
+
+    updateBalanceHeat();
 
 	// save old temperatures
     for (long n = 1; n < myStructure.nrNodes; n++)

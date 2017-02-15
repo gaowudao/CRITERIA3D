@@ -42,6 +42,7 @@
         double sumBoundaryWaterFlow;        /*!< [m3] sum of boundary water flow */
         double prescribedTotalPotential;	/*!< [m] imposed total soil-water potential (H) */
         double advectiveHeatFlux;           /*!< [W m-2] boundary advective heat flow density  */
+        double fixedTemperature;            /*!< [K] fixed temperature */
 
         TboundaryHeat *Heat;
     } ;
