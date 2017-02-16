@@ -32,7 +32,7 @@
 #include <math.h>
 #include "header/types.h"
 #include "header/soilPhysics.h"
-
+#include "header/solver.h"
 
      /*!
      * \brief Computes volumetric water content from current degree of saturation
@@ -259,7 +259,7 @@
 
     double getThetaMean(long i)
 	{
-		double myHMean = myNode[i].oldH * 0.5 + myNode[i].H * 0.5;
+        double myHMean = getHMean(i);
 
 		if (myNode[i].isSurface)
 		{
@@ -269,11 +269,15 @@
 		else
 		{
             /*! sub-surface */
-			double myPsiMean = myHMean - myNode[i].z;
-            return (theta_from_sign_Psi(myPsiMean, i ));
+            return (getTheta(i, myHMean));
 		}
 	}
 
+    double getTheta(long i, double H)
+    {
+        double psi = H - myNode[i].z;
+        return (theta_from_sign_Psi(psi, i));
+    }
 
     double getPsiMean(long i)
 	{
@@ -293,10 +297,12 @@
 
 
     double getHMean(long i)
-    { return (myNode[i].oldH * 0.5 + myNode[i].H * 0.5);}
+    {
+        return computeMean(myNode[i].oldH, myNode[i].H);
+    }
 
     /*!
-     * \brief estimate bulk density
+     * \brief estimate bulk density (Mg m-3)
      * \param myIndex
      * \return result
      */

@@ -180,7 +180,7 @@ namespace soilFluxes3D {
      * \brief Set hydraulic properties
      *  default values:
      *  waterRetentionCurve = MODIFIED_VANGENUCHTEN
-     *  conductivityMean = MEAN_LOG
+     *  meanType = MEAN_LOG
      *  k_lateral_vertical_ratio = 10
      * \param waterRetentionCurve
      * \param conductivityMeanType
@@ -194,7 +194,7 @@ namespace soilFluxes3D {
 
 	myParameters.waterRetentionCurve = waterRetentionCurve;
 
-    myParameters.conductivityMean = conductivityMeanType;
+    myParameters.meanType = conductivityMeanType;
 
 	if  ((horizVertRatioConductivity >= 1) && (horizVertRatioConductivity <= 100))
     {
@@ -803,6 +803,7 @@ namespace soilFluxes3D {
 		double deltaT, ResidualTime, sumTime = 0.0;
 
         balanceCurrentPeriod.sinkSourceWater = 0.;
+        balanceCurrentPeriod.sinkSourceHeat = 0.;
 
 		while (sumTime < myPeriod)
         {
@@ -1365,15 +1366,15 @@ double DLL_EXPORT getNodeVapor(long nodeIndex)
  * \param nodeIndex
  * \return heat storage [J]
 */
-double DLL_EXPORT getHeat(long nodeIndex)
+double DLL_EXPORT getHeat(long i)
 {
     if (myNode == NULL) return(TOPOGRAPHY_ERROR);
-    if (nodeIndex >= myStructure.nrNodes) return(INDEX_ERROR);
+    if (i >= myStructure.nrNodes) return(INDEX_ERROR);
     if (! myStructure.computeHeat) return (MISSING_DATA_ERROR);
-    if (myNode[nodeIndex].extra->Heat == NULL) return MISSING_DATA_ERROR;
-    if (myNode[nodeIndex].H == NODATA || myNode[nodeIndex].extra->Heat->T == NODATA) return MISSING_DATA_ERROR;
+    if (myNode[i].extra->Heat == NULL) return MISSING_DATA_ERROR;
+    if (myNode[i].H == NODATA || myNode[i].extra->Heat->T == NODATA) return MISSING_DATA_ERROR;
 
-    return (getHeatCapacity(nodeIndex, myNode[nodeIndex].H) * myNode[nodeIndex].volume_area * myNode[nodeIndex].extra->Heat->T);
+    return (soilHeatCapacity(i, myNode[i].H) * myNode[i].volume_area  * myNode[i].extra->Heat->T);
 
 }
 

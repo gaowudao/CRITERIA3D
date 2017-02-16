@@ -25,6 +25,8 @@ double compute_K_Mualem(double Ksat, double Se, double VG_Sc, double VG_m, doubl
 
 double getThetaMean(long i);
 
+double getTheta(long i, double H);
+
 double getHMean(long i);
 
 double getPsiMean(long i);

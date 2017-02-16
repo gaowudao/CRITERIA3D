@@ -118,22 +118,10 @@ double getSpecificHeat(long i)
  * \param myH
  * \return result
  */
-double getHeatCapacity(long i, double myH)
+double soilHeatCapacity(long i, double H)
 {
-    double mySpecificHeat;
-
-    double myPressure = PressureFromAltitude(myNode[i].z);
-
-    double myTheta = theta_from_sign_Psi(myH - myNode[i].z, i);
-
-    double airFraction = myNode[i].Soil->Theta_s - myTheta;
-
-    mySpecificHeat = ((1. - myNode[i].Soil->Theta_s) * VolSpecHeatMineral +
-                      myTheta * VolSpecHeatH2O +
-                      AirVolumetricSpecificHeat(myPressure, myNode[i].extra->Heat->T) * airFraction);
-    //rivedere la somma (dovrebbe forse essere per frazioni di peso, non di volume
-
-    return mySpecificHeat;
+    double theta=0.3;//getTheta(i, H);
+    return getBulkDensity(i) / 2.65 * VolSpecHeatMineral + theta * VolSpecHeatH2O;
 }
 
 /*!
@@ -244,7 +232,7 @@ double getAirHeatConductivity(long i)
  * \param i
  * \return result
  */
-double getHeatConductivity(long i)
+double soilHeatConductivity(long i)
 {
 	double ga = 0.088;				// [] deVries shape factor; assume same for all mineral soils
 	double gc;						// [] shape factor
@@ -351,9 +339,9 @@ double soilConduction(long myIndex, TlinkedNode *myLink)
 
     zeta = myLink->area / myDistance;
 
-	myConductivity = getHeatConductivity(myIndex);
-	linkConductivity = getHeatConductivity(myLinkIndex);
-	meanKh = computeMean(myConductivity, linkConductivity);
+    myConductivity = soilHeatConductivity(myIndex);
+    linkConductivity = soilHeatConductivity(myLinkIndex);
+    meanKh = computeMean(myConductivity, linkConductivity);
 
     return (zeta * meanKh);
 }
@@ -417,7 +405,7 @@ void computeHeatBalance(double myTimeStep)
     double deltaHeatStorage = balanceCurrentTimeStep.storageHeat - balancePreviousTimeStep.storageHeat;
     balanceCurrentTimeStep.heatMBE = deltaHeatStorage - balanceCurrentTimeStep.sinkSourceHeat;
 
-    double referenceHeat = maxValue(fabs(balanceCurrentTimeStep.sinkSourceHeat), balanceCurrentTimeStep.storageHeat * 1e-3);
+    double referenceHeat = maxValue(fabs(balanceCurrentTimeStep.sinkSourceHeat), balanceCurrentTimeStep.storageHeat * 1e-5);
     balanceCurrentTimeStep.heatMBR = 1. - balanceCurrentTimeStep.heatMBE / referenceHeat;
 }
 
@@ -542,7 +530,7 @@ bool HeatComputation(double myTimeStep)
         for (i = 1; i < myStructure.nrNodes; i++)
 			{
                 C0[i] = 0.;
-                C[i] = getHeatCapacity(i, myNode[i].H) * myNode[i].volume_area;
+                C[i] = soilHeatCapacity(i, computeMean(myNode[i].oldH, myNode[i].H)) * myNode[i].volume_area;
 
 				j = 1;
                 if (computeHeatFlux(i, j, &(myNode[i].up))) j++;
@@ -570,7 +558,7 @@ bool HeatComputation(double myTimeStep)
                 /*! sum of diagonal elements */
                 A[i][0].val =  C[i] / myTimeStep + sum;
 
-                /*! b vector (constant terms */
+                /*! b vector (constant terms) */
                 b[i] = C[i] * myNode[i].extra->Heat->oldT / myTimeStep + myNode[i].extra->Heat->Qh + C0[i]; // + sumFlow0 ;
 
 				// precondizionamento

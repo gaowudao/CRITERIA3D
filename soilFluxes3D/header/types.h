@@ -146,7 +146,8 @@
      extern TParameters myParameters;
      extern TCrit3Dnode *myNode;
      extern TmatrixElement **A;
-     extern double *b, *C0, *C, *X;
+     extern double *b, *C, *X;
+     extern double *C0;         //array accessorio per flussi avvettivi e latenti
      extern double Courant;
 
      extern Tbalance balanceCurrentTimeStep, balancePreviousTimeStep, balanceCurrentPeriod, balanceWholePeriod;

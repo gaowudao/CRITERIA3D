@@ -341,7 +341,7 @@ void updateBoundaryHeat()
                 // ripetere anche per BOUNDARY_PRESCRIBEDTOTALPOTENTIAL
                 if (myNode[i].boundary->fixedTemperature != NODATA)
                 {
-                    double boundaryHeatConductivity = getHeatConductivity(i);
+                    double boundaryHeatConductivity = soilHeatConductivity(i);
                     double deltaT = myNode[i].boundary->fixedTemperature - myNode[i].extra->Heat->T;
                     double deltaZ = myNode[i-1].z - myNode[i].z;
                     myNode[i].extra->Heat->Qh = boundaryHeatConductivity*deltaT/deltaZ;

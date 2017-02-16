@@ -16,7 +16,7 @@
     int iterazioni_max;
     int maxApproximationsNumber;
     int waterRetentionCurve;
-    int conductivityMean;
+    int meanType;
     float k_lateral_vertical_ratio;
     double heatWeightingFactor;
 
@@ -31,7 +31,7 @@
         MBRThreshold = 1E-6;
         ResidualTolerance = 1E-10;
         waterRetentionCurve = MODIFIEDVANGENUCHTEN;
-        conductivityMean = MEAN_LOGARITHMIC;
+        meanType = MEAN_LOGARITHMIC;
         k_lateral_vertical_ratio = 10.;
         heatWeightingFactor = 0.5;
         }

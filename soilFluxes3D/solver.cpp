@@ -49,24 +49,23 @@ double distance2D(unsigned long i, unsigned long j)
     return (sqrt(square(fabs(myNode[i].x - myNode[j].x)) + square(fabs(myNode[i].y - myNode[j].y))));
 }
 
-
-double logarithmicMean(double k1, double k2)
+double logarithmicMean(double v1, double v2)
 {
-    if (k1 == k2)
-        return(k1);
+    if (v1 == v2)
+        return(v1);
     else
-        return((k1 - k2) / log(k1/k2));
+        return((v1 - v2) / log(v1/v2));
 }
 
-double computeMean(double k1, double k2)
+double computeMean(double v1, double v2)
 {
-    if (myParameters.conductivityMean == MEAN_LOGARITHMIC)
-        return(logarithmicMean(k1, k2));
-    else if (myParameters.conductivityMean == MEAN_GEOMETRIC)
-        return(sqrt(k1 * k2));
+    if (myParameters.meanType == MEAN_LOGARITHMIC)
+        return(logarithmicMean(v1, v2));
+    else if (myParameters.meanType == MEAN_GEOMETRIC)
+        return(sign(v1)*sqrt(v1 * v2));
     else
         //default: logarithmic
-        return(logarithmicMean(k1, k2));
+        return(logarithmicMean(v1, v2));
 }
 
 
