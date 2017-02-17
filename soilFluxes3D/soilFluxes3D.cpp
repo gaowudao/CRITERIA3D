@@ -88,7 +88,7 @@ namespace soilFluxes3D {
     }
 
     int DLL_EXPORT __STDCALL initialize(long nrNodes, int nrLayers, int nrLateralLinks,
-                                        bool computeHeat_, bool computeSolutes_,
+                                        bool computeWater_, bool computeHeat_, bool computeSolutes_,
                                         bool computeHeatLatent_, bool computeHeatAdvective_)
 {
     /*! clean the old data structures */
@@ -97,6 +97,7 @@ namespace soilFluxes3D {
     myParameters.initialize();
     myStructure.initialize();
 
+    myStructure.computeWater = computeWater_;
     myStructure.computeHeat = computeHeat_;
     myStructure.computeSolutes = computeSolutes_;
     myStructure.computeHeatLatent = computeHeatLatent_;
@@ -812,7 +813,7 @@ namespace soilFluxes3D {
 			sumTime += deltaT;
         }
 
-        updateBalanceWaterWholePeriod();
+        if (myStructure.computeWater) updateBalanceWaterWholePeriod();
         if (myStructure.computeHeat) updateBalanceHeatWholePeriod();
 
     }
@@ -825,8 +826,11 @@ namespace soilFluxes3D {
  */
 double DLL_EXPORT __STDCALL computeStep(double maxTime)
 	{
-		double deltaT;
-		computeWater(maxTime, &deltaT);
+        double deltaT;
+        if (myStructure.computeWater)
+            computeWater(maxTime, &deltaT);
+        else
+            deltaT = maxTime;
 
         if (myStructure.computeHeat)
         {
@@ -834,7 +838,7 @@ double DLL_EXPORT __STDCALL computeStep(double maxTime)
             HeatComputation(deltaT);
         }
 
-        return deltaT;
+        return maxTime;
 	}
 
 /*!

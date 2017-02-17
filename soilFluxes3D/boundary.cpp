@@ -80,18 +80,21 @@ void initializeBoundary(Tboundary *myBoundary, int myType, float slope)
 double computeSoilSurfaceResistance(double myThetaTop)
 {	// soil surface resistance (s m-1)
     // Van De Griend and Owe (1994)
-    const double THETAMIN = 0.20;
+    const double THETAMIN = 0.22;
     return (10 * exp(0.3563 * (THETAMIN - myThetaTop) * 100.));
 }
 
 double computeNetRadiationFlow(long i)
 {
+    // da sistemare!!!
     // net incoming radiative flow (W m-2)
     // assuming up node is surface
     long myUpIndex = myNode[i].up.index;
     double myFlow = 0.;
     if (myNode[myUpIndex].isSurface && (myNode[i].boundary != NULL))
     {
+        return 0.;
+
         double myNetShortWave = (1. - myNode[myUpIndex].boundary->Heat->albedo) *
                 myNode[i].boundary->Heat->globalIrradiance;
 
@@ -100,7 +103,7 @@ double computeNetRadiationFlow(long i)
 
         double myNetLongWave = cloudFactor * emissivity * STEFANBOLTZMANN * pow(myNode[i].extra->Heat->T , 4);
 
-        myFlow = myNetShortWave + myNetLongWave;
+        myFlow = myNetShortWave - myNetLongWave;
     }
 
     return myFlow;
@@ -337,8 +340,13 @@ void updateBoundaryHeat()
             }
             else if (myNode[i].boundary->type == BOUNDARY_FREEDRAINAGE)
             {
-                // controllare se flussi avvettivi possono esserci con temperatura fissa
-                // ripetere anche per BOUNDARY_PRESCRIBEDTOTALPOTENTIAL
+                if (myStructure.computeHeatAdvective)
+                    if (groundWater.temperature != NODATA)
+                    {
+                        myNode[i].boundary->advectiveHeatFlux = myNode[i].Qw * VolSpecHeatH2O * (myNode[i].extra->Heat->T - myNode[i].boundary->fixedTemperature) / myNode[i].up.area;
+                        myNode[i].extra->Heat->Qh += myNode[i].up.area * myNode[i].boundary->advectiveHeatFlux;
+                    }
+
                 if (myNode[i].boundary->fixedTemperature != NODATA)
                 {
                     double boundaryHeatConductivity = soilHeatConductivity(i);
@@ -350,6 +358,13 @@ void updateBoundaryHeat()
 
             else if (myNode[i].boundary->type == BOUNDARY_PRESCRIBEDTOTALPOTENTIAL)
             {
+                if (myStructure.computeHeatAdvective)
+                    if (groundWater.temperature != NODATA)
+                    {
+                        myNode[i].boundary->advectiveHeatFlux = myNode[i].Qw * VolSpecHeatH2O * (myNode[i].extra->Heat->T - myNode[i].boundary->fixedTemperature) / myNode[i].up.area;
+                        myNode[i].extra->Heat->Qh += myNode[i].up.area * myNode[i].boundary->advectiveHeatFlux;
+                    }
+
                 if (myStructure.computeHeatAdvective)
                     if (groundWater.temperature != NODATA)
                     {

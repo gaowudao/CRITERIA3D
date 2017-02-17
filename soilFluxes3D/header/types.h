@@ -53,6 +53,7 @@
         int nrLateralLinks;
         int maxNrColumns;
 
+        bool computeWater;
         bool computeHeat;
         bool computeSolutes;
         bool computeHeatAdvective;
@@ -64,6 +65,7 @@
                 nrNodes = 0;
                 nrLateralLinks = 0;
                 maxNrColumns = 0;
+                computeWater = true;
                 computeHeat = false;
                 computeSolutes = false;
                 computeHeatAdvective = false;

@@ -115,12 +115,12 @@ double getSpecificHeat(long i)
 /*!
  * \brief [J m-3 K-1] volumetric heat capacity
  * \param i
- * \param myH
+ * \param H
  * \return result
  */
 double soilHeatCapacity(long i, double H)
 {
-    double theta=0.3;//getTheta(i, H);
+    double theta=getTheta(i, H);
     return getBulkDensity(i) / 2.65 * VolSpecHeatMineral + theta * VolSpecHeatH2O;
 }
 
@@ -526,6 +526,8 @@ bool HeatComputation(double myTimeStep)
                 X[i] = myNode[i].extra->Heat->T;
                 myNode[i].extra->Heat->oldT = myNode[i].extra->Heat->T;
 			}
+
+        updateBoundaryHeat();
 
         for (i = 1; i < myStructure.nrNodes; i++)
 			{
