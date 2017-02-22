@@ -122,7 +122,7 @@ double computeAtmosphericSensibleFlow(long i)
     return (myCvAir * myDeltaT * myNode[i].boundary->Heat->aerodynamicConductance);
 }
 
-double computeAtmosphericlatentFlux(long i)
+double computeAtmosphericLatentFlux(long i)
 {
     // atmospheric latent flow from soil (m3 m-2 s-1)
 
@@ -136,10 +136,9 @@ double computeAtmosphericlatentFlux(long i)
     double myVaporFlow = myDeltaVapor * myTotalConductance;
 
     // m3 m-2 s-1
-    double myWaterDensity = 1000.;
-    double mylatentFlux = myVaporFlow / myWaterDensity;
+    double myLatentFlux = myVaporFlow / WATER_DENSITY;
 
-    return mylatentFlux;
+    return myLatentFlux;
 }
 
 double computeAtmosphericlatentFluxOpenWater(long i)
@@ -166,8 +165,7 @@ double computeAtmosphericlatentFluxOpenWater(long i)
     double myVaporFlow = myDeltaVapor * myNode[myHeatBoundaryIndex].boundary->Heat->aerodynamicConductance;
 
     // m3 m-2 s-1
-    double myWaterDensity = 1000.;
-    double mylatentFlux = myVaporFlow / myWaterDensity;
+    double mylatentFlux = myVaporFlow / WATER_DENSITY;
 
     return mylatentFlux;
 }
@@ -178,7 +176,6 @@ double computeAtmosphericLatentHeatFlow(long i)
 
     double latentHeatFlow = 0.;
     // J s-1
-    double waterDensity = 1000.; //kg m-3
 
     if (myNode[i].boundary != NULL)
         if (myNode[i].boundary->type == BOUNDARY_HEAT)
@@ -186,7 +183,7 @@ double computeAtmosphericLatentHeatFlow(long i)
             // J kg-1
             double lambda = LatentHeatVaporization(myNode[i].extra->Heat->T - ZEROCELSIUS);
             // waterFlow = vapor sink source
-            latentHeatFlow = lambda * myNode[i].boundary->waterFlow * waterDensity;
+            latentHeatFlow = lambda * myNode[i].boundary->waterFlow * WATER_DENSITY;
         }
 
     return latentHeatFlow;
@@ -201,6 +198,27 @@ double getSurfaceWaterFraction(int i)
         double h = maxValue(myNode[i].H - myNode[i].z, 0.0);
         return 1.0 - maxValue(0.0, myNode[i].Soil->Pond - h) / myNode[i].Soil->Pond;
     }
+}
+
+void updateBoundary()
+{
+    for (long i = 0; i < myStructure.nrNodes; i++)
+        if (myNode[i].boundary != NULL && myNode[i].extra->Heat != NULL)
+            if (myStructure.computeHeat)
+                if (myNode[i].boundary->type == BOUNDARY_HEAT)
+                {
+                    // update aerodynamic conductance
+                    myNode[i].boundary->Heat->aerodynamicConductance =
+                            AerodynamicConductance(myNode[i].boundary->Heat->height,
+                                myNode[i].extra->Heat->T,
+                                myNode[i].boundary->Heat->roughnessHeight,
+                                myNode[i].boundary->Heat->temperature,
+                                myNode[i].boundary->Heat->windSpeed);
+
+                    if (myStructure.computeHeatLatent)
+                        // update soil surface conductance
+                        myNode[i].boundary->Heat->soilConductance = 1./ computeSoilSurfaceResistance(getThetaMean(i));
+                }
 }
 
 
@@ -266,6 +284,31 @@ void updateBoundaryWater(double deltaT)
             }
 
             myNode[i].Qw += myNode[i].boundary->waterFlow;
+
+            if (myNode[i].boundary->type == BOUNDARY_HEAT)
+            {
+                if (myStructure.computeHeatLatent)
+                {
+                    double surfaceVaporSinkSource, subVaporSinkSource, waterPondFraction;
+
+                    waterPondFraction = 0.0;
+                    surfaceVaporSinkSource = 0.0;
+                    if (myNode[myNode[i].up.index].isSurface)
+                        {
+                            long mySurfaceIndex = myNode[i].up.index;
+                            waterPondFraction = getSurfaceWaterFraction(mySurfaceIndex);
+                            if (waterPondFraction > 0.)
+                            {
+                                surfaceVaporSinkSource = waterPondFraction * computeAtmosphericlatentFluxOpenWater(mySurfaceIndex) * myNode[mySurfaceIndex].volume_area;
+                                myNode[mySurfaceIndex].Qw += surfaceVaporSinkSource;
+                            }
+                        }
+
+                    subVaporSinkSource = (1. - waterPondFraction) * computeAtmosphericLatentFlux(i) * myNode[i].up.area;
+                    myNode[i].Qw += subVaporSinkSource;
+                    myNode[i].boundary->waterFlow = subVaporSinkSource + surfaceVaporSinkSource;
+                }
+            }
         }
     }
 }
@@ -281,19 +324,7 @@ void updateBoundaryHeat()
             myNode[i].boundary->advectiveHeatFlux = 0.;
 
             if (myNode[i].boundary->type == BOUNDARY_HEAT)
-            {
-                // update aerodynamic conductance
-                myNode[i].boundary->Heat->aerodynamicConductance =
-                        AerodynamicConductance(myNode[i].boundary->Heat->height,
-                            myNode[i].extra->Heat->T,
-                            myNode[i].boundary->Heat->roughnessHeight,
-                            myNode[i].boundary->Heat->temperature,
-                            myNode[i].boundary->Heat->windSpeed);
-
-                if (myStructure.computeHeatLatent)
-                    // update soil surface conductance
-                    myNode[i].boundary->Heat->soilConductance = 1./ computeSoilSurfaceResistance(getThetaMean(i));
-
+            {  
                 // update surface water energy budget
                 /*if (getSurfaceWaterFraction(myNode[i].up->index) > 0.0)
                 {

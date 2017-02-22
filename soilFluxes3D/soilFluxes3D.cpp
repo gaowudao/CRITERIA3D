@@ -95,13 +95,19 @@ namespace soilFluxes3D {
     cleanMemory();
 
     myParameters.initialize();
-    myStructure.initialize();
+    myStructure.initialize();   
 
     myStructure.computeWater = computeWater_;
     myStructure.computeHeat = computeHeat_;
     myStructure.computeSolutes = computeSolutes_;
     myStructure.computeHeatLatent = computeHeatLatent_;
     myStructure.computeHeatAdvective = computeHeatAdvective_;
+
+    if (myStructure.computeHeatAdvective || myStructure.computeHeatLatent)
+    {
+        myStructure.computeHeat = true;
+        myStructure.computeWater = true;
+    }
 
     groundWater.initialize();
 
@@ -825,21 +831,24 @@ namespace soilFluxes3D {
  * \return result
  */
 double DLL_EXPORT __STDCALL computeStep(double maxTime)
-	{
-        double deltaT;
-        if (myStructure.computeWater)
-            computeWater(maxTime, &deltaT);
-        else
-            deltaT = maxTime;
+{
+    double deltaT;
 
-        if (myStructure.computeHeat)
-        {
-            updateBoundaryHeat();
-            HeatComputation(deltaT);
-        }
+    updateBoundary();
 
-        return maxTime;
-	}
+    if (myStructure.computeWater)
+        computeWater(maxTime, &deltaT);
+    else
+        deltaT = maxTime;
+
+    if (myStructure.computeHeat)
+    {
+        updateBoundaryHeat();
+        HeatComputation(deltaT);
+    }
+
+    return maxTime;
+}
 
 /*!
  * \brief Set temperature
@@ -1119,7 +1128,7 @@ double DLL_EXPORT __STDCALL getThermalLatentHeatFlux(long nodeIndex, short myDir
 {
     if (myNode == NULL) return(TOPOGRAPHY_ERROR);
     if ((nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
-    if (! myStructure.computeHeat && ! myStructure.computeHeatAdvective && ! myStructure.computeHeatLatent) return (MISSING_DATA_ERROR);
+    if (! myStructure.computeHeat && ! myStructure.computeHeatLatent) return (MISSING_DATA_ERROR);
     if (myNode->extra == NULL) return (MEMORY_ERROR);
 
     switch (myDirection)

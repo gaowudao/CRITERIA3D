@@ -40,7 +40,7 @@
 #include "header/solver.h"
 #include "header/balance.h"
 #include "header/boundary.h"
-
+#include "header/heat.h"
 
 
 /*!
@@ -192,10 +192,41 @@ double redistribution(long i, TlinkedNode *link, int linkType)
     }
     double k = computeMean(k1, k2);
 
+    // vapor isothermal flow
+    if (myStructure.computeHeat && myStructure.computeHeatLatent)
+    {
+        double kv = getMeanIsothermalVaporConductivity(i, (*link).index);
+        // from kg s m-3 to m s-1
+        kv *= (GRAVITY / WATER_DENSITY);
+
+        k += kv;
+    }
+
     return (k * link->area) / cellDistance;
 }
 
+double thermalVaporFlow(long i, TlinkedNode *myLink)
+{//-Dvhrs dT/dz
+    // kg m-1 s-1 K-1
+    long j = (*myLink).index;
 
+    double myTMean = computeMean(myNode[i].extra->Heat->T, myNode[i].extra->Heat->oldT);
+    double myTLinkMean = computeMean(myNode[j].extra->Heat->T, myNode[j].extra->Heat->oldT);
+
+    double Kvt = getNonIsothermalAirVaporConductivity(i, myTMean);
+    double KvtLink = getNonIsothermalAirVaporConductivity(j, myTLinkMean);
+
+    double meanKv = computeMean(Kvt, KvtLink);
+
+    // m2 s-1 K-1
+    meanKv /= WATER_DENSITY;
+
+    // m s-1
+    double myFlowDensity = meanKv * (myTMean - myTLinkMean) / distance(i, j);
+
+    // m3 s-1
+    return (myFlowDensity * (*myLink).area);
+}
 
 bool computeFlux(long i, int matrixIndex, TlinkedNode *link, double deltaT, unsigned long myApprox, int linkType)
 {
@@ -221,6 +252,17 @@ bool computeFlux(long i, int matrixIndex, TlinkedNode *link, double deltaT, unsi
 
     A[i][matrixIndex].index = j;
     A[i][matrixIndex].val = val;
+
+    // thermal vapor flow
+    if (myStructure.computeHeat && myStructure.computeHeatLatent &&
+        ! myNode[i].isSurface && ! myNode[j].isSurface)
+    {
+        double myLatent;
+        myLatent = thermalVaporFlow(i, link);
+        C0[i] += myLatent;
+        if (link->linkedExtra->heatFlux != NULL)
+            link->linkedExtra->heatFlux->thermLatent = myLatent;
+    }
 
     return (true);
 }
@@ -359,6 +401,7 @@ bool waterFlowComputation(double deltaT)
         }
 
         /*! update boundary conditions */
+        updateBoundary();
 		updateBoundaryWater(*acceptedTime);
 
         isStepOK = waterFlowComputation(*acceptedTime);
