@@ -1,11 +1,14 @@
 #ifndef ROOT_H
 #define ROOT_H
 
+    #ifndef SOIL_H
+        #include "soil.h"
+    #endif
+
     enum rootDistributionType {CYLINDRICAL_DISTRIBUTION, CARDIOID_DISTRIBUTION, GAMMA_DISTRIBUTION};
     enum rootGrowthType {LINEAR, EXPONENTIAL, LOGISTIC};
 
     class Crit3DCrop;
-    class Crit3DLayer;
 
     class Crit3DRoot
     {
@@ -45,13 +48,13 @@
 
     namespace root
     {
-        int nrAtoms(Crit3DLayer* layers, int nrLayers, double rootDepthMin, double* minThickness, int* atoms);
+        int nrAtoms(soil::Crit3DLayer* layers, int nrLayers, double rootDepthMin, double* minThickness, int* atoms);
         double getRootLength(Crit3DRoot* myRoot, double currentDD, double emergenceDD);
         rootDistributionType getRootDistributionType(int rootShape);
 
         double computeRootLength(Crit3DCrop* myCrop, double soilDepth, double currentDD);
         double computeRootDepth(Crit3DCrop* myCrop, double soilDepth, double currentDD);
-        bool computeRootDensity(Crit3DCrop* myCrop, Crit3DLayer* layers, int nrLayers, double soilDepth);
+        bool computeRootDensity(Crit3DCrop* myCrop, soil::Crit3DLayer* layers, int nrLayers, double soilDepth);
     }
 
 #endif // ROOT_H
