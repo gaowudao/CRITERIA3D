@@ -99,7 +99,7 @@
 
     speciesType getCropType(std::string cropType)
     {
-        /*!  lower case */
+        // lower case
         std::transform(cropType.begin(), cropType.end(), cropType.begin(), ::tolower);
 
         if (cropType == "herbaceous")

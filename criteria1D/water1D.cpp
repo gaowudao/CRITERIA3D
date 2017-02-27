@@ -6,12 +6,13 @@
 #include "crop.h"
 
 
-
+/*!
+ * \brief getWaterContent
+ * \param myLayer
+ * \param availableWater    [-] fraction of water between wilting point and field capacity
+ * \return                  [mm] water content in the layer
+ */
 double getWaterContent(soil::Crit3DLayer *myLayer, double availableWater)
-// --------------------------------------------------------------------------------
-// availableWater   [-] fraction of water between wilting point and field capacity
-// waterContent     [mm] water content in the layer
-// --------------------------------------------------------------------------------
 {
     if (availableWater < 0)
         return (myLayer->WP);
@@ -22,15 +23,15 @@ double getWaterContent(soil::Crit3DLayer *myLayer, double availableWater)
 }
 
 
-
+/*!
+ * \brief initializeWater
+ * \param myCase
+ * Assign two different initial available water
+ * initialAW[0]         [-] available water in the ploughed soil layer
+ * initialAW[1]         [-] available water in the deep soil
+ */
 void initializeWater(Criteria1D* myCase)
-// ----------------------------------------------------------------------------
-// Assign two different initial available water
-// initialAW[0]         [-] available water in the ploughed soil layer
-// initialAW[1]         [-] available water in the deep soil
-//
-// TODO migliorare in base a stagione come in Vintage (anche in BDP?)
-// ----------------------------------------------------------------------------
+// TODO migliorare in base a stagione come in Vintage
 {
     myCase->layer[0].waterContent = 0.0;
     for (int i = 1; i < myCase->nrLayers; i++)
