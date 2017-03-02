@@ -58,6 +58,7 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     this->setMapResolution();
     drawRaster(&(myProject.DTM), painter);
     this->legend->update();
+    //drawPoints()  visualizza anagrafica stazioni
 }
 
 
