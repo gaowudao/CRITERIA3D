@@ -397,16 +397,18 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, QString *myError
         return false;
     }
 
-    // SQLITE doesn't support SIZE
-    int nrDays = query.at() + 1;
     query.first();
-    QDate myDate = query.value("date").toDate();
+    QDate firstDate = query.value("date").toDate();
+    query.last();
+    QDate lastDate = query.value("date").toDate();
+
+    int nrDays = firstDate.daysTo(lastDate) + 1;
 
     // Short term forecast
     if (this->isShortTermForecast)
         nrDays += this->daysOfForecast;
 
-    this->meteoPoint.initializeObsDataD(nrDays, getCrit3DDate(myDate));
+    this->meteoPoint.initializeObsDataD(nrDays, getCrit3DDate(firstDate));
 
     //std::cout << "Read weather data...";
     if (! readMeteoData(&query, myError)) return false;
@@ -444,7 +446,7 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, QString *myError
 
         if (! readMeteoData(&query, myError)) return false;
         // TODO check on last date
-        // creare un reduce nrObsDataDaysD in meteo.pro
+        // creare un reduceNrObsDataDaysD in meteo.pro
     }
 
     return true;
@@ -454,43 +456,51 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, QString *myError
 bool Criteria1D::readMeteoData(QSqlQuery * query, QString *myError)
 {
     float tmin, tmax, tmed, prec, et0;
-    QDate myDate;
+    QDate myDate, previousDate;
 
+    previousDate.setDate(1900,1,1);
     query->first();
+
     do
     {
         myDate = query->value("date").toDate();
+
         if (! myDate.isValid())
         {
             *myError = "Wrong date format: " + query->value("date").toString();
             return false;
         }
 
-        // mandatory
-        getValue(query->value("tmin"), &tmin);
-        getValue(query->value("tmax"), &tmax);
-        if ((tmin == NODATA) || (tmax == NODATA))
+        if (myDate != previousDate)
         {
-            *myError = "Missing temperature: " + myDate.toString();
-            return false;
-        }
-        getValue(query->value("prec"), &prec);
-        if (prec == NODATA)
-        {
-            *myError = "Missing precipitation: " + myDate.toString();
-            return false;
+            // mandatory
+            getValue(query->value("tmin"), &tmin);
+            getValue(query->value("tmax"), &tmax);
+            if ((tmin == NODATA) || (tmax == NODATA))
+            {
+                *myError = "Missing temperature: " + myDate.toString();
+                return false;
+            }
+            getValue(query->value("prec"), &prec);
+            if (prec == NODATA)
+            {
+                *myError = "Missing precipitation: " + myDate.toString();
+                return false;
+            }
+
+            // facoltativi
+            getValue(query->value("tavg"), &tmed);
+            getValue(query->value("etp"), &et0);
+            if (tmed == NODATA) tmed = (tmin + tmax) * 0.5;
+
+            this->meteoPoint.setMeteoPointValueD(getCrit3DDate(myDate), airTemperatureMin, (float)tmin);
+            this->meteoPoint.setMeteoPointValueD(getCrit3DDate(myDate), airTemperatureMax, (float)tmax);
+            this->meteoPoint.setMeteoPointValueD(getCrit3DDate(myDate), airTemperatureMean, (float)tmed);
+            this->meteoPoint.setMeteoPointValueD(getCrit3DDate(myDate), precipitation, (float)prec);
+            this->meteoPoint.setMeteoPointValueD(getCrit3DDate(myDate), potentialEvapotranspiration, (float)et0);
         }
 
-        // facoltativi
-        getValue(query->value("tavg"), &tmed);
-        getValue(query->value("etp"), &et0);
-        if (tmed == NODATA) tmed = (tmin + tmax) * 0.5;
-
-        this->meteoPoint.setMeteoPointValueD(getCrit3DDate(myDate), airTemperatureMin, (float)tmin);
-        this->meteoPoint.setMeteoPointValueD(getCrit3DDate(myDate), airTemperatureMax, (float)tmax);
-        this->meteoPoint.setMeteoPointValueD(getCrit3DDate(myDate), airTemperatureMean, (float)tmed);
-        this->meteoPoint.setMeteoPointValueD(getCrit3DDate(myDate), precipitation, (float)prec);
-        this->meteoPoint.setMeteoPointValueD(getCrit3DDate(myDate), potentialEvapotranspiration, (float)et0);
+        previousDate = myDate;
 
     } while(query->next());
 

@@ -56,7 +56,9 @@ bool setCrit3DSoils(Crit3DProject* myProject)
                      myHorizon->vanGenuchten.thetaR,
                      myHorizon->vanGenuchten.thetaS,
                      myHorizon->waterConductivity.kSat / 360000.0,
-                     myHorizon->waterConductivity.l);
+                     myHorizon->waterConductivity.l,
+                     myHorizon->organicMatter,
+                     myHorizon->texture.clay);
 
                  if (isCrit3dError(myResult, &myError))
                  {
@@ -1048,7 +1050,7 @@ bool initializeWaterBalance(Crit3DProject* myProject)
     setBoundary(myProject);
 
     int nrLateralLink = 8;
-    int myResult = soilFluxes3D::initialize(myProject->nrNodes, myProject->nrSoilLayers, nrLateralLink);
+    int myResult = soilFluxes3D::initialize(myProject->nrNodes, myProject->nrSoilLayers, nrLateralLink, true, false, false, false, false);
     if (isCrit3dError(myResult, &myError))
     {
         myProject->projectError = "initializeCriteria3D:" + myError;

@@ -98,8 +98,8 @@
         double Pond;                /*!< [m] surface: height of immobilized water */
 
         //for heat
-        double organicMatter;       /*!< [] fraction of organic matter */
-        double clay;                /*!< [] fraction of clay */
+        double organicMatter;       /*!< [-] fraction of organic matter */
+        double clay;                /*!< [-] fraction of clay */
         } ;
 
 

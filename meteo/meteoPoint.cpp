@@ -216,7 +216,7 @@ void Crit3DMeteoPoint::emptyVarObsDataD(meteoVariable myVar, const Crit3DDate& m
             obsDataD[i].rhMin = NODATA;
         else if (myVar == airHumidityMean)
             obsDataD[i].rhAvg = NODATA;
-        else if (myVar == globalRadiation)
+        else if (myVar == dalilyGlobalRadiation)
             obsDataD[i].globRad = NODATA;
         else if (myVar == windIntensityMean)
             obsDataD[i].windIntAvg = NODATA;
@@ -390,7 +390,7 @@ bool Crit3DMeteoPoint::setMeteoPointValueD(const Crit3DDate& myDate, meteoVariab
         obsDataD[i].rhMin = myValue;
     else if (myVar == airHumidityMean)
         obsDataD[i].rhAvg = myValue;
-    else if (myVar == globalRadiation)
+    else if (myVar == dalilyGlobalRadiation)
         obsDataD[i].globRad = myValue;
     else if (myVar == windIntensityMean)
         obsDataD[i].windIntAvg = myValue;
@@ -462,7 +462,7 @@ float Crit3DMeteoPoint::getMeteoPointValueD(const Crit3DDate& myDate, meteoVaria
         return (float)(obsDataD[dateIndex].rhMin);
     else if (myVar == airHumidityMean)
         return (obsDataD[dateIndex].rhAvg);
-    else if (myVar == globalRadiation)
+    else if (myVar == dalilyGlobalRadiation)
         return (obsDataD[dateIndex].globRad);
     else if (myVar == windIntensityMean)
         return (obsDataD[dateIndex].windIntAvg);

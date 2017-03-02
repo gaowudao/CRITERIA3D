@@ -33,7 +33,7 @@ QString getVarNameFromMeteoVariable(meteoVariable myVar)
         return "diffrad";
     else if (myVar == reflectedIrradiance)
         return "reflrad";
-    else if (myVar == globalRadiation)
+    else if (myVar == dalilyGlobalRadiation)
         return "globrad";
     else if (myVar == directRadiation)
         return "dirrad";
