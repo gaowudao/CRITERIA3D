@@ -269,8 +269,8 @@ void Crit3DSnowPoint::computeSnowBrooksModel()
 
           /*! \brief Incoming Energy Fluxes */
           // pag. 52 (3.22) considerando i 2 contributi invece che solo uno
-          QPrecipW = HEAT_CAPACITY_WATER * WATER_DENSITY * (_prec / 1000) * (std::max(0.0f, _airT) - prevSurfacetemp);
-          QPrecipS = (HEAT_CAPACITY_SNOW * WATER_DENSITY * (_snowFall / 1000) * (std::min(0.0f, _airT) - prevSurfacetemp));
+          QPrecipW = HEAT_CAPACITY_WATER / 1000. * (_prec / 1000) * (std::max(0.0f, _airT) - prevSurfacetemp);
+          QPrecipS = (HEAT_CAPACITY_SNOW / 1000. * (_snowFall / 1000) * (std::min(0.0f, _airT) - prevSurfacetemp));
           QPrecip = QPrecipW + QPrecipS;
 
           // energia acqua libera (TROY site test)
@@ -316,7 +316,7 @@ void Crit3DSnowPoint::computeSnowBrooksModel()
              QLongWave = STEFAN_BOLTZMANN * 3.6 * (longWaveAtmEmissivity * pow( (_airT + ZEROCELSIUS), 4.0) - myEmissivity * pow ((prevSurfacetemp + ZEROCELSIUS) , 4.0));
 
              // pag. 50 (3.17)
-             QTempGradient = HEAT_CAPACITY_AIR * AIR_DENSITY * (_airT - prevSurfacetemp) / (aerodynamicResistance / 3600.0);
+             QTempGradient = HEAT_CAPACITY_AIR / 1000. * (_airT - prevSurfacetemp) / (aerodynamicResistance / 3600.0);
 
              // FT calcolare solo se c'e' manto nevoso
              if (previousSWE > SNOW_MINIMUM_HEIGHT)
@@ -424,7 +424,7 @@ void Crit3DSnowPoint::computeSnowBrooksModel()
 '                        End If
                     End If
                  */
-                _snowSurfaceTemp = _surfaceInternalEnergy / (WATER_DENSITY * HEAT_CAPACITY_SNOW * std::min(_snowWaterEquivalent / 1000, _parameters->snowSkinThickness) + SOIL_SPECIFIC_HEAT * std::max(0.0f, _parameters->snowSkinThickness - _snowWaterEquivalent / 1000) * bulk_density);
+                _snowSurfaceTemp = _surfaceInternalEnergy / (HEAT_CAPACITY_SNOW / 1000. * std::min(_snowWaterEquivalent / 1000, _parameters->snowSkinThickness) + SOIL_SPECIFIC_HEAT * std::max(0.0f, _parameters->snowSkinThickness - _snowWaterEquivalent / 1000) * bulk_density);
            }
            else
            {

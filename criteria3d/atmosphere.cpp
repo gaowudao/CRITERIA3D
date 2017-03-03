@@ -10,6 +10,7 @@
 #include "dataHandler.h"
 #include "atmosphere.h"
 #include "project.h"
+#include "meteo.h"
 #include "commonConstants.h"
 
 //cout

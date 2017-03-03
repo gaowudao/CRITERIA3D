@@ -192,16 +192,6 @@ double redistribution(long i, TlinkedNode *link, int linkType)
     }
     double k = computeMean(k1, k2);
 
-    // vapor isothermal flow
-    if (myStructure.computeHeat && myStructure.computeHeatLatent)
-    {
-        double kv = getMeanIsothermalVaporConductivity(i, (*link).index);
-        // from kg s m-3 to m s-1
-        kv *= (GRAVITY / WATER_DENSITY);
-
-        k += kv;
-    }
-
     return (k * link->area) / cellDistance;
 }
 
@@ -254,7 +244,7 @@ bool computeFlux(long i, int matrixIndex, TlinkedNode *link, double deltaT, unsi
     A[i][matrixIndex].val = val;
 
     // thermal vapor flow
-    if (myStructure.computeHeat && myStructure.computeHeatLatent &&
+    /*if (myStructure.computeHeat && myStructure.computeHeatLatent &&
         ! myNode[i].isSurface && ! myNode[j].isSurface)
     {
         double myLatent;
@@ -262,7 +252,7 @@ bool computeFlux(long i, int matrixIndex, TlinkedNode *link, double deltaT, unsi
         C0[i] += myLatent;
         if (link->linkedExtra->heatFlux != NULL)
             link->linkedExtra->heatFlux->thermLatent = myLatent;
-    }
+    }*/
 
     return (true);
 }

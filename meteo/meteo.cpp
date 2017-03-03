@@ -26,6 +26,7 @@
 #include <math.h>
 
 #include "commonConstants.h"
+#include "physics.h"
 #include "meteo.h"
 
 
@@ -104,11 +105,6 @@ float relHumFromTdew(float DewT, float airT)
     }
 }
 
-double computeSatVapPressure(double myT)
-{
-    return float(0.611 * exp(17.502 * myT / (myT + 240.97)));
-}
-
 double dailyExtrRadiation(double myLat, int myDoy)
 {
     /*!
@@ -130,36 +126,6 @@ double dailyExtrRadiation(double myLat, int myDoy)
     return SOLAR_CONSTANT * DAY_SECONDS / 1000000 * dr / PI * (OmegaS * sin(Phi) * sin(delta) + cos(Phi) * cos(delta) * sin(OmegaS));
 }
 
-/*!
- * \brief [J kg-1] latent heat of vaporization
- * \param myTCelsius
- * \return result
- */
-double LatentHeatVaporization(double myTCelsius)
-{
-    return (2501000. - 2361. * myTCelsius);
-}
-
-/*!
- * \brief [kPa °C-1] psychrometric instrument constant
- * \param myPressure
- * \param myTemp
- * \return result
- */
-double Psychro(double myPressure, double myTemp)
-{
-    return CP * myPressure / (RATIO_WATER_VD * LatentHeatVaporization(myTemp));
-}
-
-/*!
- * \brief [kPa] pressure
- * \param myElevation
- * \return result
- */
-double pressureFromElevation(double myElevation)
-{
-    return 101.3 * pow((1 - 0.0065 * myElevation / 293), 5.26);
-}
 
 /*!
  * \brief [] net surface emissivity
@@ -169,17 +135,6 @@ double pressureFromElevation(double myElevation)
 double emissivityFromVaporPressure(double myVP)
 {
     return 0.34 - 0.14 * sqrt(myVP);
-}
-
-/*!
- * \brief [Pa K-1] slope of saturation vapor pressure curve
- * \param airTCelsius
- * \param satVapPressure
- * \return result
- */
-double SaturationSlope(double airTCelsius, double satVapPressure)
-{
-    return (17.502 * 240.97 * satVapPressure / ((240.97 + airTCelsius) * (240.97 + airTCelsius)));
 }
 
 
@@ -296,7 +251,7 @@ double ET0_Penman_hourly(double heigth, double normalizedTransmissivity, double 
     double firstTerm, secondTerm, denominator;
 
 
-    es = computeSatVapPressure(airTemp);
+    es = SaturationVaporPressure(airTemp) / 1000.;
     ea = airHum * es / 100.0;
     emissivity = emissivityFromVaporPressure(ea);
     tAirK = airTemp + ZEROCELSIUS;
@@ -319,7 +274,7 @@ double ET0_Penman_hourly(double heigth, double normalizedTransmissivity, double 
 
     delta = SaturationSlope(airTemp, es) / 1000;    /*!<  to kPa */
 
-    pressure = 101.3 * pow(((293 - 0.0065 * heigth) / 293), 5.26);
+    pressure = PressureFromAltitude(heigth)/1000.;
 
     gamma = Psychro(pressure, airTemp);
     lambda = LatentHeatVaporization(airTemp);

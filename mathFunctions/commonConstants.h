@@ -117,24 +117,48 @@
     #define WATER_DENSITY 1000
 
     // -----------------TERMODYNAMICS-------------------
+    // [kg mol-1] molecular mass of water
+    #define	MH2O	0.018
+    // [kg mol-1] mass of molecular oxygen (O2)
+    #define	MO2		0.032
+    // [kg mol-1] mass of molecular nitrogen (N2)
+    #define	MN2		0.028
     // [K] zero Celsius
     #define	ZEROCELSIUS	273.15
     // [] ratio molecular weight of water vapour/dry air
     #define RATIO_WATER_VD 0.622
     // [J K-1 mol-1] universal gas constant
-    #ifndef R_GAS
-        #define R_GAS 8.31447215
-    #endif
-    // [J m-2 K-4] Stefan-Boltzmann constant
-    #define STEFAN_BOLTZMANN 5.670400E-8
-    // Von Kármán constant
-    #define VON_KARMAN_CONST 0.41                      //[-]
+    #define R_GAS 8.31447215
+    // [J kg-1 K-1] specific gas constant for dry air
+    #define R_DRY_AIR 287.058
+
+    // [K m-1] constant lapse rate of moist air
+    #define LAPSE_RATE_MOIST_AIR 0.0065
+    // [Pa] standard atmospheric pressure at sea level
+    #define P0 101300
+    // [K] temperature at reference pressure level (P0)
+    #define TP0 293.16
+
+    // [W m-1 K-1] thermal conductivity of water
+    #define KH_H2O 0.57
+    // [W m-1 K-1] average thermal conductivity of soil minerals (no quartz)
+    #define KH_mineral 2.5
+
+    // [W m-2 K-4] Stefan-Boltzmann constant
+    #define STEFAN_BOLTZMANN 5.670373E-8
+    // [] Von Kármán constant
+    #define VON_KARMAN_CONST 0.41
     // [J kg-1 K-1] specific heat at constant pressure
     #define CP 1013
 
-    #define HEAT_CAPACITY_WATER 4.184           //[kJ/(kg °C)]
-    #define HEAT_CAPACITY_AIR  1.005            //[kJ/(kg °C)]
-    #define HEAT_CAPACITY_SNOW 2.1              //[kJ/(kg °C)]
+    // [J m-3 K-1] volumetric specific heat
+    #define HEAT_CAPACITY_WATER 4182000
+    #define HEAT_CAPACITY_AIR  1005000
+    #define HEAT_CAPACITY_SNOW 2100000
+    #define HEAT_CAPACITY_MINERAL 2310000
+
+    // [J mol-1 K-1] molar specific heat of air at constant pressure
+    #define HEAT_CAPACITY_AIR_MOLAR 29.3
 
     //specific gas constant of water vapor
     #define THERMO_WATER_VAPOR 0.4615f          //[kJ/(kg °K)]
@@ -145,6 +169,10 @@
 
     // air density, temperature 0 °C
     #define  AIR_DENSITY 1.29                           //[kg/m^3]
+
+    // [m2 s-1] vapor diffusivity at standard conditions
+    #define	 VAPOR_DIFFUSIVITY0 0.0000212
+
 
     // -----------------MATHEMATICS---------------------
     #ifndef PI

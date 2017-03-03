@@ -15,7 +15,8 @@ SOURCES += \
     basicMath.cpp \
     furtherMathFunctions.cpp \
     statistics.cpp \
-    gammaFunction.cpp
+    gammaFunction.cpp \
+    physics.cpp
 
 HEADERS += \
     commonConstants.h \
@@ -23,4 +24,5 @@ HEADERS += \
     furtherMathFunctions.h \
     statistics.h \
     gammaFunction.h \
-    gammaFunction.h
+    gammaFunction.h \
+    physics.h

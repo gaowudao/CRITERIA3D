@@ -32,6 +32,7 @@
 #include <math.h>
 #include <malloc.h>
 
+#include "physics.h"
 #include "header/types.h"
 #include "header/memory.h"
 #include "header/soilPhysics.h"
@@ -41,7 +42,6 @@
 #include "header/water.h"
 #include "header/boundary.h"
 #include "header/heat.h"
-#include "header/physics.h"
 #include "header/extra.h"
 
 /*! global variables */
@@ -841,11 +841,11 @@ double DLL_EXPORT __STDCALL computeStep(double maxTime)
     else
         deltaT = maxTime;
 
-    if (myStructure.computeHeat)
+    /*if (myStructure.computeHeat)
     {
         updateBoundaryHeat();
         HeatComputation(deltaT);
-    }
+    }*/
 
     return maxTime;
 }
@@ -1265,6 +1265,23 @@ double DLL_EXPORT getBoundaryLatentFlux(long nodeIndex)
 }
 
 /*!
+ * \brief return evaporation
+ * \param nodeIndex
+ * \return latent water flux [m3 m-2]
+*/
+double DLL_EXPORT getBoundaryEvaporation(long nodeIndex)
+{
+    if (myNode == NULL) return (TOPOGRAPHY_ERROR);
+    if (nodeIndex >= myStructure.nrNodes) return (INDEX_ERROR);
+    if (! myStructure.computeHeat || ! myStructure.computeHeatLatent) return (MISSING_DATA_ERROR);
+    if (myNode[nodeIndex].boundary == NULL) return (INDEX_ERROR);
+    if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT) return (INDEX_ERROR);
+
+    // boundary latent heat flow density
+    return (-myNode[nodeIndex].boundary->waterFlow);
+}
+
+/*!
  * \brief return boundary advective heat flux
  * \param nodeIndex
  * \return advective heat flux [W m-2]
@@ -1356,22 +1373,16 @@ double DLL_EXPORT getBoundarySoilConductance(long nodeIndex)
  * \param nodeIndex
  * \return vapor concentration [kg m-3]
 */
-double DLL_EXPORT getNodeVapor(long nodeIndex)
+double DLL_EXPORT getNodeVapor(long i)
 {
     if (myNode == NULL) return(TOPOGRAPHY_ERROR);
-    if (nodeIndex >= myStructure.nrNodes) return(INDEX_ERROR);
+    if (i >= myStructure.nrNodes) return(INDEX_ERROR);
     if (! myStructure.computeHeat || ! myStructure.computeHeatLatent) return (MISSING_DATA_ERROR);
 
-    double mySatVapPressure, mySatVapConcentration, myRelHum;
-    double myVapor;
+    double Psi = myNode[i].H - myNode[i].z;
+    double T = myNode[i].extra->Heat->T;
 
-    mySatVapPressure = SaturationVaporPressure(myNode[nodeIndex].extra->Heat->T - ZEROCELSIUS);
-    mySatVapConcentration = VaporConcentrationFromPressure(mySatVapPressure, myNode[nodeIndex].extra->Heat->T);
-    myRelHum = getSoilRelativeHumidity(getPsiMean(nodeIndex), myNode[nodeIndex].extra->Heat->T);
-
-    myVapor = mySatVapConcentration * myRelHum;
-
-    return (myVapor);
+    return VaporFromPsiTemp(Psi, T);
 }
 
 /*!

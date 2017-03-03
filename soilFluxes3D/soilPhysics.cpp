@@ -33,6 +33,7 @@
 #include "header/types.h"
 #include "header/soilPhysics.h"
 #include "header/solver.h"
+#include "header/heat.h"
 
      /*!
      * \brief Computes volumetric water content from current degree of saturation
@@ -188,13 +189,27 @@
 
 
     /*!
-     * \brief Computes current soil water conductivity [m sec^-1]
+     * \brief Computes current soil water total (liquid + vapor) conductivity [m sec^-1]
      * \param myIndex
      * \return result
      */
     double computeK(unsigned long myIndex)
     {
-		return(compute_K_Mualem(myNode[myIndex].Soil->K_sat, myNode[myIndex].Se, myNode[myIndex].Soil->VG_Sc, myNode[myIndex].Soil->VG_n,  myNode[myIndex].Soil->VG_m, myNode[myIndex].Soil->Mualem_L));
+        double k = compute_K_Mualem(myNode[myIndex].Soil->K_sat, myNode[myIndex].Se,
+                                myNode[myIndex].Soil->VG_Sc, myNode[myIndex].Soil->VG_n,
+                                myNode[myIndex].Soil->VG_m, myNode[myIndex].Soil->Mualem_L);
+
+        // vapor isothermal flow
+        if (myStructure.computeHeat && myStructure.computeHeatLatent)
+        {
+            double kv = IsothermalVaporConductivity(myIndex, myNode[myIndex].extra->Heat->T);
+            // from kg s m-3 to m s-1
+            kv *= (GRAVITY / WATER_DENSITY);
+
+            k += kv;
+        }
+
+        return k;
     }
 
 
@@ -279,27 +294,18 @@
         return (theta_from_sign_Psi(psi, i));
     }
 
-    double getPsiMean(long i)
-	{
-		double meanH = myNode[i].oldH * 0.5 + myNode[i].H * 0.5;
-
-		if (myNode[i].isSurface)
-		{
-            double mySurfaceWater = maxValue(meanH - myNode[i].z, 0.);		//[m]
-			if (mySurfaceWater > 0.000001)
-				return (0.);
-			else
-                return (minValue(mySurfaceWater / 0.01, 1.));
-		}
-		else
-            return minValue(0., meanH - myNode[i].z);
-	}
-
-
     double getHMean(long i)
     {
         return computeMean(myNode[i].oldH, myNode[i].H);
     }
+
+    double getPsiMean(long i)
+	{
+        double Psi; //J kg-1
+        double meanH = getHMean(i);
+        Psi = minValue(0., (meanH - myNode[i].z));
+        return Psi;
+	}
 
     /*!
      * \brief estimate bulk density (Mg m-3)
