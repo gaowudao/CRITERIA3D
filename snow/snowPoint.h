@@ -9,7 +9,6 @@
      * \brief
      * Junsei Kondo, Hiromi Yamazawa, Measurement of snow surface emissivity
     */
-
     #define SNOW_EMISSIVITY 0.97f               /*!< [-] */
     #define SOIL_EMISSIVITY 0.92f               /*!<  [-] soil (average) */
 

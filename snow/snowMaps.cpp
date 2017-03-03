@@ -174,7 +174,7 @@ gis::Crit3DRasterGrid* Crit3DSnowMaps::getAgeOfSnowMap()
     return _ageOfSnowMap;
 }
 
-// è la forumula 3.27 a pag. 54 in cui ha diviso la surface come la somma dei contributi della parte "water" e di quella "soil"
+// è la formula 3.27 a pag. 54 in cui ha diviso la surface come la somma dei contributi della parte "water" e di quella "soil"
 float computeSurfaceInternalEnergy(float initSnowSurfaceTemp,int bulkDensity, float initSWE, float snowSkinThickness)
 {
    return (initSnowSurfaceTemp * (HEAT_CAPACITY_SNOW / 1000. * std::min(initSWE, snowSkinThickness) + SOIL_SPECIFIC_HEAT * std::max(0.0f, snowSkinThickness - initSWE) * bulkDensity) );
