@@ -493,10 +493,10 @@ bool Criteria1D::readMeteoData(QSqlQuery * query, QString *myError)
             getValue(query->value("etp"), &et0);
             if (tmed == NODATA) tmed = (tmin + tmax) * 0.5;
 
-            this->meteoPoint.setMeteoPointValueD(getCrit3DDate(myDate), airTemperatureMin, (float)tmin);
-            this->meteoPoint.setMeteoPointValueD(getCrit3DDate(myDate), airTemperatureMax, (float)tmax);
-            this->meteoPoint.setMeteoPointValueD(getCrit3DDate(myDate), airTemperatureMean, (float)tmed);
-            this->meteoPoint.setMeteoPointValueD(getCrit3DDate(myDate), precipitation, (float)prec);
+            this->meteoPoint.setMeteoPointValueD(getCrit3DDate(myDate), dailyAirTemperatureMin, (float)tmin);
+            this->meteoPoint.setMeteoPointValueD(getCrit3DDate(myDate), dailyAirTemperatureMax, (float)tmax);
+            this->meteoPoint.setMeteoPointValueD(getCrit3DDate(myDate), dailyAirTemperatureAvg, (float)tmed);
+            this->meteoPoint.setMeteoPointValueD(getCrit3DDate(myDate), dailyPrecipitation, (float)prec);
             this->meteoPoint.setMeteoPointValueD(getCrit3DDate(myDate), potentialEvapotranspiration, (float)et0);
         }
 

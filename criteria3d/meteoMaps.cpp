@@ -78,13 +78,13 @@ gis::Crit3DRasterGrid* Crit3DMeteoMaps::getMapFromVar(meteoVariable myVar)
 {
     if (myVar == airTemperature)
         return airTemperatureMap;
-    else if (myVar == airTemperatureMean)
+    else if (myVar == dailyAirTemperatureAvg)
         return avgDailyTemperature;
     else if (myVar == precipitation)
         return precipitationMap;
     else if (myVar == airHumidity)
         return airHumidityMap;
-    else if (myVar == airHumidityMean)
+    else if (myVar == dailyAirHumidityAvg)
         //todo: aggiungere mappa daily
         return airHumidityMap;
     else if (myVar == airDewTemperature)

@@ -426,7 +426,8 @@ void Crit3DSnowPoint::computeSnowBrooksModel()
 '                        End If
                     End If
                  */
-                _snowSurfaceTemp = _surfaceInternalEnergy / (HEAT_CAPACITY_SNOW / 1000. * std::min(_snowWaterEquivalent / 1000, _parameters->snowSkinThickness) + SOIL_SPECIFIC_HEAT * std::max(0.0f, _parameters->snowSkinThickness - _snowWaterEquivalent / 1000) * bulk_density);
+                _snowSurfaceTemp = _surfaceInternalEnergy / ((HEAT_CAPACITY_SNOW / 1000.) * std::min(_snowWaterEquivalent / 1000., _parameters->snowSkinThickness)
+                                   + SOIL_SPECIFIC_HEAT * std::max(0.0f, _parameters->snowSkinThickness - _snowWaterEquivalent / 1000) * bulk_density);
            }
            else
            {

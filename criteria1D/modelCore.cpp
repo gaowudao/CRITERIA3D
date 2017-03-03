@@ -83,8 +83,8 @@ bool computeModel(Criteria1D* myCase, QString* myError, const Crit3DDate& firstD
             return false;
         }
 
-        tmin = myCase->meteoPoint.getMeteoPointValueD(myDate, airTemperatureMin);
-        tmax = myCase->meteoPoint.getMeteoPointValueD(myDate, airTemperatureMax);
+        tmin = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyAirTemperatureMin);
+        tmax = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyAirTemperatureMax);
         prec = myCase->meteoPoint.getMeteoPointValueD(myDate, precipitation);
         etp = myCase->meteoPoint.getMeteoPointValueD(myDate, potentialEvapotranspiration);
         if (myDate < lastDate)

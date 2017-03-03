@@ -402,12 +402,12 @@ namespace radiation
         //Bh                     beam irradiance on a horizontal surface                                     [W m-2]
         //Dh                     diffuse irradiance on a horizontal surface
 
-        float cosSlope, sinSlope;
-        float slopeRad, aspectRad, elevRad, azimRad;
-        float sinElev;
-        float Kb;        /*!< amount of beam irradiance available [] */
-        float Fg, r_sky, Fx, Aln;
-        float n;
+        double cosSlope, sinSlope;
+        double slopeRad, aspectRad, elevRad, azimRad;
+        double sinElev;
+        double Kb;        /*!< amount of beam irradiance available [] */
+        double Fg, r_sky, Fx, Aln;
+        double n;
         sinElev = maxValue(getSinDecimalDegree(mySunPosition->elevation), 0.001);
         cosSlope = getCosDecimalDegree(myPoint->slope);
         sinSlope = getSinDecimalDegree(myPoint->slope);
@@ -440,13 +440,13 @@ namespace radiation
                 Fx = (n * Fg + r_sky) * (1.0 - Kb) + Kb * sinSlope * getCosDecimalDegree(Aln * RAD_TO_DEG) / (0.1 - 0.008 * elevRad);
             }
         }
-        return (diffuseIrradianceHor * Fx);
+        return float(diffuseIrradianceHor * Fx);
     }
 
 
-    float reflectedRadiation(float beamIrradianceHor, float diffuseIrradianceHor, float myAlbedo, float mySlope)
+    float getReflectedIrradiance(float beamIrradianceHor, float diffuseIrradianceHor, float myAlbedo, float mySlope)
     {
-        if (mySlope > 0) return (myAlbedo * (beamIrradianceHor + diffuseIrradianceHor) * (1 - getCosDecimalDegree(mySlope)) / 2.0); //Muneer 1997
+        if (mySlope > 0) return (myAlbedo * (beamIrradianceHor + diffuseIrradianceHor) * (1 - getCosDecimalDegree(mySlope)) / 2.); //Muneer 1997
         else return 0 ;
     }
 
@@ -656,7 +656,7 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
                     myPoint->beam = 0;
 
                 myPoint->diffuse = clearSkyDiffuseInclined(Bh, dH, mySunPosition, myPoint);
-                myPoint->reflected = reflectedRadiation(Bh, dH, myAlbedo, myPoint->slope);
+                myPoint->reflected = getReflectedIrradiance(Bh, dH, myAlbedo, myPoint->slope);
                 myPoint->global = myPoint->beam + myPoint->diffuse + myPoint->reflected;
             }
         }
@@ -1028,10 +1028,10 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
                 sumPotentialRad+= myRadPoint.global ;
             }
         }
-        ratioTransmissivity = maxValue(sumMeasuredRad/sumPotentialRad, 0.0);
+        ratioTransmissivity = maxValue(sumMeasuredRad/sumPotentialRad, float(0.0));
         myTransmissivity = ratioTransmissivity * myClearSkyTransmissivity;
         /*! transmissivity can't be over 0.85 */
-        return minValue(myTransmissivity, 0.85);
+        return minValue(myTransmissivity, float(0.85));
     }
 
     void getTime(double decimalTime, int* myHour, int* myMinute, int* mySecond)

@@ -43,11 +43,12 @@
     #define FIELD_METEO_VARIABLE_NAME "variable"
 
 
-    enum meteoVariable {airTemperature, airTemperatureMin, airTemperatureMax, airTemperatureMean,
-                        precipitation, precipitationSum, airHumidity, airHumidityMin, airHumidityMax, airHumidityMean, airDewTemperature,
+    enum meteoVariable {airTemperature, dailyAirTemperatureMin, dailyAirTemperatureMax, dailyAirTemperatureAvg,
+                        precipitation, dailyPrecipitation,
+                        airHumidity, dailyAirHumidityMin, dailyAirHumidityMax, dailyAirHumidityAvg, airDewTemperature,
                         globalIrradiance, directIrradiance, diffuseIrradiance, reflectedIrradiance,
-                        dalilyGlobalRadiation, directRadiation, diffuseRadiation, reflectedRadiation,
-                        windIntensity, windIntensityMean, windDirection, windDirectionPrevailing,
+                        dailyGlobalRadiation, dailyDirectRadiation, dailyDiffuseRadiation, dailyReflectedRadiation,
+                        windIntensity, dailyWindIntensityAvg, windDirection, windDirectionPrevailing,
                         wetnessDuration, atmPressure, atmTransmissivity, potentialEvapotranspiration,
                         realEvaporation, waterTableDepth, noMeteoVar};
 

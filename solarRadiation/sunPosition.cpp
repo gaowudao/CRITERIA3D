@@ -59,9 +59,9 @@ long RSUN_compute_solar_position (float longitude, float latitude, int myTimezon
 
     S_init(pdat);
 
-    pdat->longitude = longitude;  /*!< Note that latitude and longitude are  */
-    pdat->latitude  = latitude;   /*!<   in DECIMAL DEGREES, not Deg/Min/Sec */
-    pdat->timezone  = myTimezone;   /*!< DO NOT ADJUST FOR DAYLIGHT SAVINGS TIME. */
+    pdat->longitude = longitude;        /*!< Note that latitude and longitude are  */
+    pdat->latitude  = latitude;         /*!<   in DECIMAL DEGREES, not Deg/Min/Sec */
+    pdat->timezone  = float(myTimezone);   /*!< DO NOT ADJUST FOR DAYLIGHT SAVINGS TIME. */
 
     pdat->year      = year;       /*!< The year */
     pdat->function &= ~S_DOY;

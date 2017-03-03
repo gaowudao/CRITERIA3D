@@ -777,37 +777,37 @@ meteoVariable getMeteoVarFromAggregationType(meteoVariable myVar, aggregationTyp
     if (myVar == airTemperature)
     {
         if (myAggregation == aggregationMin)
-            return airTemperatureMin;
+            return dailyAirTemperatureMin;
         else if (myAggregation == aggregationMax)
-            return airTemperatureMax;
+            return dailyAirTemperatureMax;
         else if (myAggregation == aggregationMean)
-            return airTemperatureMean;
+            return dailyAirTemperatureAvg;
     }
     else if (myVar == airHumidity)
     {
         if (myAggregation == aggregationMin)
-            return airHumidityMin;
+            return dailyAirHumidityMin;
         else if (myAggregation == aggregationMax)
-            return airHumidityMax;
+            return dailyAirHumidityMax;
         else if (myAggregation == aggregationMean)
-            return airHumidityMean;
+            return dailyAirHumidityAvg;
     }
     else if (myVar == windIntensity)
-        return windIntensityMean;
+        return dailyWindIntensityAvg;
     else if (myVar == precipitation)
-        return precipitationSum;
+        return dailyPrecipitation;
     else if (myVar == potentialEvapotranspiration)
         return potentialEvapotranspiration;
     else if (myVar == realEvaporation)
         return realEvaporation;
     else if (myVar == globalIrradiance)
-        return dalilyGlobalRadiation;
+        return dailyGlobalRadiation;
     else if (myVar == directIrradiance)
-        return directRadiation;
+        return dailyDirectRadiation;
     else if (myVar == diffuseIrradiance)
-        return diffuseRadiation;
+        return dailyDiffuseRadiation;
     else if (myVar == reflectedIrradiance)
-        return reflectedRadiation;
+        return dailyReflectedRadiation;
     else if (myVar == wetnessDuration)
         return wetnessDuration;
 

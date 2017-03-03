@@ -202,25 +202,25 @@ void Crit3DMeteoPoint::emptyVarObsDataD(meteoVariable myVar, const Crit3DDate& m
     residual = NODATA;
 
     for (int i = indexIni; i <= indexFin; i++)
-        if (myVar == airTemperatureMax)
+        if (myVar == dailyAirTemperatureMax)
             obsDataD[i].tMax = NODATA;
-        else if (myVar == airTemperatureMin)
+        else if (myVar == dailyAirTemperatureMin)
             obsDataD[i].tMin = NODATA;
-        else if (myVar == airTemperatureMin)
+        else if (myVar == dailyAirTemperatureMin)
             obsDataD[i].tAvg = NODATA;
         else if (myVar == precipitation)
             obsDataD[i].prec = NODATA;
-        else if (myVar == airHumidityMax)
+        else if (myVar == dailyAirHumidityMax)
             obsDataD[i].rhMax = NODATA;
-        else if (myVar == airHumidityMin)
+        else if (myVar == dailyAirHumidityMin)
             obsDataD[i].rhMin = NODATA;
-        else if (myVar == airHumidityMean)
+        else if (myVar == dailyAirHumidityAvg)
             obsDataD[i].rhAvg = NODATA;
-        else if (myVar == dalilyGlobalRadiation)
+        else if (myVar == dailyGlobalRadiation)
             obsDataD[i].globRad = NODATA;
-        else if (myVar == windIntensityMean)
+        else if (myVar == dailyWindIntensityAvg)
             obsDataD[i].windIntAvg = NODATA;
-        else if (myVar == airHumidityMean)
+        else if (myVar == dailyAirHumidityAvg)
             obsDataD[i].rhAvg = NODATA;
 }
 
@@ -376,23 +376,23 @@ bool Crit3DMeteoPoint::setMeteoPointValueD(const Crit3DDate& myDate, meteoVariab
     long i = obsDataD[0].date.daysTo(myDate);
     if (i < 0) return false;
 
-    if (myVar == airTemperatureMax)
+    if (myVar == dailyAirTemperatureMax)
         obsDataD[i].tMax = myValue;
-    else if (myVar == airTemperatureMin)
+    else if (myVar == dailyAirTemperatureMin)
         obsDataD[i].tMin = myValue;
-    else if (myVar == airTemperatureMean)
+    else if (myVar == dailyAirTemperatureAvg)
         obsDataD[i].tAvg = myValue;
-    else if (myVar == precipitation)
+    else if (myVar == dailyPrecipitation)
         obsDataD[i].prec = myValue;
-    else if (myVar == airHumidityMax)
+    else if (myVar == dailyAirHumidityMax)
         obsDataD[i].rhMax = myValue;
-    else if (myVar == airHumidityMin)
+    else if (myVar == dailyAirHumidityMin)
         obsDataD[i].rhMin = myValue;
-    else if (myVar == airHumidityMean)
+    else if (myVar == dailyAirHumidityAvg)
         obsDataD[i].rhAvg = myValue;
-    else if (myVar == dalilyGlobalRadiation)
+    else if (myVar == dailyGlobalRadiation)
         obsDataD[i].globRad = myValue;
-    else if (myVar == windIntensityMean)
+    else if (myVar == dailyWindIntensityAvg)
         obsDataD[i].windIntAvg = myValue;
     else if (myVar == windDirectionPrevailing)
         obsDataD[i].windDirPrev = myValue;
@@ -448,23 +448,23 @@ float Crit3DMeteoPoint::getMeteoPointValueD(const Crit3DDate& myDate, meteoVaria
     int dateIndex = obsDataD[0].date.daysTo(myDate);
     if ((dateIndex < 0) || (dateIndex >= nrObsDataDaysD)) return NODATA;
 
-    if (myVar == airTemperatureMax)
+    if (myVar == dailyAirTemperatureMax)
         return (obsDataD[dateIndex].tMax);
-    else if (myVar == airTemperatureMin)
+    else if (myVar == dailyAirTemperatureMin)
         return (obsDataD[dateIndex].tMin);
-    else if (myVar == airTemperatureMean)
+    else if (myVar == dailyAirTemperatureAvg)
         return (obsDataD[dateIndex].tAvg);
     else if (myVar == precipitation)
         return (obsDataD[dateIndex].prec);
-    else if (myVar == airHumidityMax)
+    else if (myVar == dailyAirHumidityMax)
         return (obsDataD[dateIndex].rhMax);
-    else if (myVar == airHumidityMin)
+    else if (myVar == dailyAirHumidityMin)
         return (float)(obsDataD[dateIndex].rhMin);
-    else if (myVar == airHumidityMean)
+    else if (myVar == dailyAirHumidityAvg)
         return (obsDataD[dateIndex].rhAvg);
-    else if (myVar == dalilyGlobalRadiation)
+    else if (myVar == dailyGlobalRadiation)
         return (obsDataD[dateIndex].globRad);
-    else if (myVar == windIntensityMean)
+    else if (myVar == dailyWindIntensityAvg)
         return (obsDataD[dateIndex].windIntAvg);
     else if (myVar == windDirectionPrevailing)
         return (obsDataD[dateIndex].windDirPrev);

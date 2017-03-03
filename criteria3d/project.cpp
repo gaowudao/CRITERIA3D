@@ -1176,7 +1176,7 @@ bool Crit3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool isS
             }
 
             /*! load average air temperature map, if exists*/
-            loadDailyMeteoMap(this, airTemperatureMean, myDate.addDays(-1), myArea);
+            loadDailyMeteoMap(this, dailyAirTemperatureAvg, myDate.addDays(-1), myArea);
 
             if (! modelDailyCycle(isInitialState, getCrit3DDate(myDate), finalHour, this, myOutputPathHourly, isSaveOutput, myArea))
             {
@@ -1206,8 +1206,8 @@ bool Crit3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool isS
             }
 
             /*! load daily map (for desease) */
-            if (! loadDailyMeteoMap(this, airTemperatureMean, myDate, myArea)) return false;
-            if (! loadDailyMeteoMap(this, airHumidityMean, myDate, myArea)) return false;
+            if (! loadDailyMeteoMap(this, dailyAirTemperatureAvg, myDate, myArea)) return false;
+            if (! loadDailyMeteoMap(this, dailyAirHumidityAvg, myDate, myArea)) return false;
             if (! loadDailyMeteoMap(this, precipitation, myDate, myArea))  return false;
             if (! loadDailyMeteoMap(this, wetnessDuration, myDate, myArea)) return false;
             updateThermalSum(this, myDate);

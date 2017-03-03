@@ -7,23 +7,23 @@ QString getVarNameFromMeteoVariable(meteoVariable myVar)
 {
     if (myVar == airTemperature)
         return "tair";
-    else if (myVar == airTemperatureMin)
+    else if (myVar == dailyAirTemperatureMin)
         return "tmin";
-    else if (myVar == airTemperatureMax)
+    else if (myVar == dailyAirTemperatureMax)
         return "tmax";
-    else if (myVar == airTemperatureMean)
+    else if (myVar == dailyAirTemperatureAvg)
         return "tavg";
     else if (myVar == precipitation)
         return "prec";
-    else if (myVar == precipitationSum)
+    else if (myVar == dailyPrecipitation)
         return "prec";
     else if (myVar == airHumidity)
         return "rhair";
-    else if (myVar == airHumidityMin)
+    else if (myVar == dailyAirHumidityMin)
         return "rhmin";
-    else if (myVar == airHumidityMax)
+    else if (myVar == dailyAirHumidityMax)
         return "rhmax";
-    else if (myVar == airHumidityMean)
+    else if (myVar == dailyAirHumidityAvg)
         return "rhavg";
     else if (myVar == globalIrradiance)
         return "globrad";
@@ -33,17 +33,17 @@ QString getVarNameFromMeteoVariable(meteoVariable myVar)
         return "diffrad";
     else if (myVar == reflectedIrradiance)
         return "reflrad";
-    else if (myVar == dalilyGlobalRadiation)
+    else if (myVar == dailyGlobalRadiation)
         return "globrad";
-    else if (myVar == directRadiation)
+    else if (myVar == dailyDirectRadiation)
         return "dirrad";
-    else if (myVar == diffuseRadiation)
+    else if (myVar == dailyDiffuseRadiation)
         return "diffrad";
-    else if (myVar == reflectedRadiation)
+    else if (myVar == dailyReflectedRadiation)
         return "reflrad";
     else if (myVar == windIntensity)
         return "wind";
-    else if (myVar == windIntensityMean)
+    else if (myVar == dailyWindIntensityAvg)
         return "windavg";
     else if (myVar == wetnessDuration)
         return "leafWetness";
@@ -61,9 +61,9 @@ meteoVariable getMeteoVariableFromVarName(QString myVar)
     if (myVar == "tair")
         return airTemperature;
     if (myVar == "tmin")
-        return airTemperatureMin;
+        return dailyAirTemperatureMin;
     if (myVar == "tmax")
-        return airTemperatureMax;
+        return dailyAirTemperatureMax;
     else if (myVar == "prec")
         return precipitation;
     else if (myVar == "rhair")
