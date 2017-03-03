@@ -113,8 +113,11 @@
     // [J s]
     #define PLANCK 6.626E-34
 
-    //[kg/m^3]
+    // [kg m-3]
     #define WATER_DENSITY 1000
+
+    // [kg m-3] air density, temperature 0 °C
+    #define  AIR_DENSITY 1.29
 
     // -----------------TERMODYNAMICS-------------------
     // [kg mol-1] molecular mass of water
@@ -159,16 +162,6 @@
 
     // [J mol-1 K-1] molar specific heat of air at constant pressure
     #define HEAT_CAPACITY_AIR_MOLAR 29.3
-
-    //specific gas constant of water vapor
-    #define THERMO_WATER_VAPOR 0.4615f          //[kJ/(kg °K)]
-
-    // heat of fusion for ice at 0 °C
-    #define LATENT_HEAT_FUSION  335                     //[kJ/kg]
-    #define LATENT_HEAT_VAPORIZATION 2500               //[kJ/kg]
-
-    // air density, temperature 0 °C
-    #define  AIR_DENSITY 1.29                           //[kg/m^3]
 
     // [m2 s-1] vapor diffusivity at standard conditions
     #define	 VAPOR_DIFFUSIVITY0 0.0000212
