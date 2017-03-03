@@ -14,6 +14,8 @@ CONFIG += staticlib
 
 DEFINES += DBMETEOPOINTS_LIBRARY
 
+INCLUDEPATH += ../mathFunctions ../meteo
+
 SOURCES += dbMeteoPoints.cpp \
     download.cpp
 
