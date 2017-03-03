@@ -486,7 +486,7 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
 
             myAvg = findHeightIntervalAvgValue(heightInf, heightSup, maxPointsZ);
         }
-        myIntervalsHeight.push_back((heightSup + heightInf) / 2.);
+        myIntervalsHeight.push_back((heightSup + heightInf) / float(2.));
         myIntervalsValues.push_back(myAvg);
 
         deltaZ = DELTAZ_INI * exp(heightInf / currentSettings.getMaxHeightInversion());
@@ -726,7 +726,7 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
 
         if (r2 >= mySignificativeR2)
         {
-            actualLapseRate = minValue(m, 0.);
+            actualLapseRate = minValue(m, float(0.));
             findLinesIntersection(lapseRateT0, inversionLapseRate, q, actualLapseRate, &lapseRateH1, &lapseRateT1);
         }
         else
@@ -930,7 +930,7 @@ float interpolatePrec()
         else
             myResult = 0.;
 
-    return ((myResult < 0 && myResult != NODATA) ? 0. : myResult);
+    return ((myResult < 0. && myResult != NODATA) ? 0. : myResult);
 }
 
 bool getDetrendActive(int myPosition)
@@ -1125,7 +1125,7 @@ bool preInterpolation(meteoVariable myVar)
 
 float interpolateSimple(meteoVariable myVar, float myZ, float myOrogIndex, float myDistSea, float myUrban, float myAspect)
 {
-    double myResult = NODATA;
+    float myResult = NODATA;
 
     /*! interpolate residuals */
     if (currentSettings.getInterpolationMethod() == geostatisticsMethods::idw)
