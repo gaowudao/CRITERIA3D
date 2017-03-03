@@ -35,6 +35,8 @@
 #include "meteoPoint.h"
 
 
+//TODO ora le costanti sono in [J m-3 K-1] (dividere per 1000)
+
 Crit3DSnowPoint::Crit3DSnowPoint(struct TradPoint* radpoint, float temp, float prec, float relHum, float windInt, float clearSkyTransmissivity)
 {
     _snowFall = NODATA;
@@ -269,8 +271,8 @@ void Crit3DSnowPoint::computeSnowBrooksModel()
 
           /*! \brief Incoming Energy Fluxes */
           // pag. 52 (3.22) considerando i 2 contributi invece che solo uno
-          QPrecipW = HEAT_CAPACITY_WATER / 1000. * (_prec / 1000) * (std::max(0.0f, _airT) - prevSurfacetemp);
-          QPrecipS = (HEAT_CAPACITY_SNOW / 1000. * (_snowFall / 1000) * (std::min(0.0f, _airT) - prevSurfacetemp));
+          QPrecipW = (HEAT_CAPACITY_WATER / 1000.) * (_prec / 1000.) * (std::max(0.0f, _airT) - prevSurfacetemp);
+          QPrecipS = (HEAT_CAPACITY_SNOW / 1000.) * (_snowFall / 1000.) * (std::min(0.0f, _airT) - prevSurfacetemp);
           QPrecip = QPrecipW + QPrecipS;
 
           // energia acqua libera (TROY site test)
@@ -279,7 +281,7 @@ void Crit3DSnowPoint::computeSnowBrooksModel()
           if (surfaceWaterContent > 0.1)
           {
             //temperatura dell 'acqua: almeno 1 grado
-            QWaterHeat = HEAT_CAPACITY_WATER * surfaceWaterContent / 1000 * WATER_DENSITY * (std::max(1.0, (prevSurfacetemp + _airT) / 2.0) - prevSurfacetemp);
+            QWaterHeat = (HEAT_CAPACITY_WATER / 1000.) * (surfaceWaterContent / 1000.) * (std::max(1.0, (prevSurfacetemp + _airT) / 2.0) - prevSurfacetemp);
 
             //////////////////////////////////////////////////
             // TO DO
