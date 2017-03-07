@@ -212,7 +212,7 @@ double getNonIsothermalAirVaporConductivity(long i, double myTMean)
 	// correction factor for return flow of water
     fw = getWaterReturnFlowFactor(getThetaMean(i), myNode[i].Soil->clay, myTMean);
 
-    return (Dv * slopesvc * hr * Stefan * fw);
+    return (Dv * slopesvc * hr);
 
 }
 

@@ -122,17 +122,13 @@ double computeAtmosphericSensibleFlow(long i)
     return (myCvAir * myDeltaT * myNode[i].boundary->Heat->aerodynamicConductance);
 }
 
+/*!
+ * \brief [m3 m-2 s-1] atmospheric latent flow from soil
+ * \param i
+ * \return result
+ */
 double computeAtmosphericLatentFlux(long i)
 {
-    // atmospheric latent flow from soil (m3 m-2 s-1)
-    double Ep = 0.2/3600./WATER_DENSITY;
-    double H=myNode[i].H;
-    double Psi=(H-myNode[i].z)*GRAVITY; //J kg-1
-    double hs=exp(MH2O*Psi/(R_GAS*myNode[i].extra->Heat->T));
-    double area=myNode[i].up.area;
-    double E = -(Ep*(hs-0.5)/(1.-0.5))/area;
-    return E;
-
     // kg m-3
     double myDeltaVapor = myNode[i].boundary->Heat->vaporConcentration - soilFluxes3D::getNodeVapor(i);
 
