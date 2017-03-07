@@ -9,20 +9,20 @@ QT       += network sql
 QT       -= gui
 
 TARGET = dbMeteoPoints
-TEMPLATE = lib
-CONFIG += staticlib
 
-DEFINES += DBMETEOPOINTS_LIBRARY
+#TEMPLATE = lib
+#CONFIG += staticlib
+#DEFINES += DBMETEOPOINTS_LIBRARY
+
+TEMPLATE = app #solo x test
 
 INCLUDEPATH += ../mathFunctions ../meteo
 
 SOURCES += dbMeteoPoints.cpp \
-    download.cpp
+    download.cpp \
+    main.cpp
 
 HEADERS += dbMeteoPoints.h \
     download.h
 
-unix {
-    target.path = /usr/lib
-    INSTALLS += target
-}
+
