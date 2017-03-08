@@ -11,10 +11,11 @@
 #include <QString>
 #include <QtNetwork>
 
-QString getURL(QString dbName, QString dataset)
+QString getDatasetURL(QString dbName, QString dataset)
 {
 
     QSqlDatabase db = QSqlDatabase::addDatabase( "QSQLITE" );
+    QString url = NULL;
 
     db.setDatabaseName( dbName );
 
@@ -38,19 +39,130 @@ QString getURL(QString dbName, QString dataset)
         qDebug( "Selected!" );
 
         if (qry.next())
-        {
-            QString url = qry.value(0).toString();
-            db.close();
+            url = qry.value(0).toString();
 
-            return url;
-        }
         else
             qDebug( "Error: dataset not found" );
 
     }
 
     db.close();
-    return QString::null;
+    return url;
+
+}
+
+QStringList getDatasetsActive(QString dbName)
+{
+    QStringList activeList;
+    QSqlDatabase db = QSqlDatabase::addDatabase( "QSQLITE" );
+
+    db.setDatabaseName( dbName );
+
+    if( !db.open() )
+    {
+        qDebug() << db.lastError();
+        qFatal( "Failed to connect." );
+    }
+
+    qDebug( "Connected!" );
+
+    QSqlQuery qry;
+
+    qry.prepare( "SELECT dataset FROM datasets WHERE active = 1" );
+
+    if( !qry.exec() )
+        qDebug() << qry.lastError();
+    else
+    {
+        qDebug( "Selected!" );
+
+        while (qry.next())
+        {
+            QString active = qry.value(0).toString();
+            activeList << active;
+
+        }
+
+    }
+
+    db.close();
+    return activeList;
+
+}
+
+QString getVarName(QString dbName, int id)
+{
+    QSqlDatabase db = QSqlDatabase::addDatabase( "QSQLITE" );
+    QString varName = NULL;
+
+    db.setDatabaseName( dbName );
+
+    if( !db.open() )
+    {
+        qDebug() << db.lastError();
+        qFatal( "Failed to connect." );
+    }
+
+    qDebug( "Connected!" );
+
+    QSqlQuery qry;
+
+    qry.prepare( "SELECT variable FROM variable_properties WHERE id_arkimet = :id" );
+    qry.bindValue(":id", id);
+
+    if( !qry.exec() )
+        qDebug() << qry.lastError();
+    else
+    {
+        qDebug( "Selected!" );
+
+        if (qry.next())
+            varName = qry.value(0).toString();
+
+        else
+            qDebug( "Error: dataset not found" );
+
+    }
+
+    db.close();
+    return varName;
+}
 
 
+int getId(QString dbName, QString VarName)
+{
+    QSqlDatabase db = QSqlDatabase::addDatabase( "QSQLITE" );
+    int id = 0;
+
+    db.setDatabaseName( dbName );
+
+    if( !db.open() )
+    {
+        qDebug() << db.lastError();
+        qFatal( "Failed to connect." );
+    }
+
+    qDebug( "Connected!" );
+
+    QSqlQuery qry;
+
+    qry.prepare( "SELECT id_arkimet FROM variable_properties WHERE variable = :VarName" );
+    qry.bindValue(":VarName", VarName);
+
+    if( !qry.exec() )
+        qDebug() << qry.lastError();
+    else
+    {
+        qDebug( "Selected!" );
+
+        if (qry.next())
+            id = qry.value(0).toInt();
+
+        else
+            qDebug( "Error: dataset not found" );
+
+    }
+
+    db.close();
+    return id;
 }

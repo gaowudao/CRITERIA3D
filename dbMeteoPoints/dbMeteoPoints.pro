@@ -19,8 +19,8 @@ TEMPLATE = app #solo x test
 INCLUDEPATH += ../mathFunctions ../meteo
 
 SOURCES += dbMeteoPoints.cpp \
-    download.cpp \
-    main.cpp
+    main.cpp \
+    download.cpp
 
 HEADERS += dbMeteoPoints.h \
     download.h
