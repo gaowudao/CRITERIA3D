@@ -167,15 +167,14 @@ double VaporFromPsiTemp(double Psi, double T)
 }
 
 /*!
- * \brief [kg m-1 s-1 K-1] non isothermal air vapor conductivity
- * DTvap in Hammel et al. (1981)
+ * \brief [kg m-1 s-1 K-1] non isothermal vapor conductivity
  * \param i
- * \param myTMean
+ * \param temperature (K)
+ * \param psi (m)
  * \return result
  */
-double getNonIsothermalAirVaporConductivity(long i, double myTMean)
+double ThermalVaporConductivity(long i, double temperature, double psi)
 {
-	double fw;						// [] liquid return flow cutoff
     double myPressure;				// [Pa] total air pressure
 	double Dv;						// [m2 s-1] vapor diffusivity
 	double svp;						// [Pa] saturation vapor pressure
@@ -184,33 +183,26 @@ double getNonIsothermalAirVaporConductivity(long i, double myTMean)
     double myVapor;					// [kg m-3] vapor concentration
 	double myVaporPressure;			// [Pa] vapor partial pressure
 	double hr;						// [] relative humidity
-	double Stefan;					// [Pa-1] Stefan correction factor
-	double myTCelsiusMean;
+    double tempCelsius;             // [°C] temperature
 
-    myTCelsiusMean = myTMean - ZEROCELSIUS;
+    tempCelsius = temperature - ZEROCELSIUS;
 
     myPressure = PressureFromAltitude(myNode[i].z);
 
 	// vapor diffusivity
-    Dv = getSoilVaporDiffusivity(i, myTMean);
+    Dv = getSoilVaporDiffusivity(i, temperature);
 
 	// slope of saturation vapor pressure
-    svp = SaturationVaporPressure(myTCelsiusMean);
-    slopesvp = SaturationSlope(myTCelsiusMean, svp);
+    svp = SaturationVaporPressure(tempCelsius);
+    slopesvp = SaturationSlope(tempCelsius, svp);
 
-    // slope of saturation vapor density
-    slopesvc = MH2O / (R_GAS * myNode[i].extra->Heat->T) * (slopesvp - svp / myNode[i].extra->Heat->T);
+    // slope of saturation vapor concentration
+    slopesvc = slopesvp * MH2O * AirMolarDensity(myPressure, temperature) / myPressure;
 
 	// relative humidity
-    myVapor = soilFluxes3D::getNodeVapor(i);
-    myVaporPressure = VaporPressureFromConcentration(myVapor, myTMean);
+    myVapor = VaporFromPsiTemp(psi, temperature);
+    myVaporPressure = VaporPressureFromConcentration(myVapor, temperature);
 	hr = myVaporPressure / svp;
-
-    // Stefan correction factor (De Vries, 1957)
-    Stefan = myPressure / (myPressure - (hr * myVaporPressure));
-
-	// correction factor for return flow of water
-    fw = getWaterReturnFlowFactor(getThetaMean(i), myNode[i].Soil->clay, myTMean);
 
     return (Dv * slopesvc * hr);
 
@@ -221,13 +213,14 @@ double getNonIsothermalAirVaporConductivity(long i, double myTMean)
  * \param i
  * \return result
  */
-double getAirHeatConductivity(long i)
+double AirHeatConductivity(long i)
 {
     double Kda;						// [J s-1 m-1 K-1] thermal conductivity of dry air
     double Ka;						// [J s-1 m-1 K-1] thermal conductivity of air
     double myDtvap;                 // [kg m-1 s-1 K-1] non isothermal vapor conductivity
     double myLambda;				// [J kg-1] latent heat of vaporization
-    double myTCelsiusMean;          // [�C]
+    double myTCelsiusMean;          // [degC]
+    double psiMean;
 
     // dry air conductivity
     myTCelsiusMean = myNode[i].extra->Heat->T - ZEROCELSIUS;
@@ -235,10 +228,12 @@ double getAirHeatConductivity(long i)
 
     Ka = Kda;
 
+    psiMean = getPsiMean(i);
+
     if (myStructure.computeHeatLatent)
     {
         myLambda = LatentHeatVaporization(myNode[i].extra->Heat->T - ZEROCELSIUS);
-        myDtvap = getNonIsothermalAirVaporConductivity(i, myNode[i].extra->Heat->T);
+        myDtvap = ThermalVaporConductivity(i, myNode[i].extra->Heat->T, psiMean);
         Ka += myLambda * myDtvap;
     }
 
@@ -274,7 +269,7 @@ double soilHeatConductivity(long i)
 	Kw = 0.554 + 0.0024 * myTCelsiusMean - 0.00000987 * myTCelsiusMean * myTCelsiusMean;
 
 	// air conductivity
-	Ka = getAirHeatConductivity(i);
+    Ka = AirHeatConductivity(i);
 
     xw = getThetaMean(i);
 

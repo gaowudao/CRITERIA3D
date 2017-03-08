@@ -3,7 +3,7 @@ double getSoilRelativeHumidity(double myPsi, double myT);
 double soilHeatCapacity(long i, double H);
 double soilHeatConductivity(long i);
 double VaporFromPsiTemp(double Psi, double T);
-double getNonIsothermalAirVaporConductivity(long i, double myTMean);
+double ThermalVaporConductivity(long i, double myTMean, double psi);
 void restoreHeat();
 void initializeBalanceHeat();
 void updateBalanceHeatWholePeriod();
