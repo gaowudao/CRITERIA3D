@@ -166,3 +166,45 @@ int getId(QString dbName, QString VarName)
     db.close();
     return id;
 }
+
+void fillPointProperties(QString dbName, TPointProperties* pointProp)
+{
+    QSqlDatabase db = QSqlDatabase::addDatabase( "QSQLITE" );
+
+    db.setDatabaseName( dbName );
+
+    if( !db.open() )
+    {
+        qDebug() << db.lastError();
+        qFatal( "Failed to connect." );
+    }
+
+    qDebug( "Connected!" );
+
+    QSqlQuery qry;
+
+    qry.prepare( "INSERT INTO point_properties (id_point, id_network, latitude, longitude, latInt, lonInt, utm_x, utm_y, altitude, state, region, province, municipality) VALUES (:id_point, :dataset, :id_network, :latitude, :longitude, :latInt, :lonInt, :utm_x, :utm_y, :altitude, :state, :region, :province, :municipality)" );
+
+    qry.bindValue(":id_point", pointProp->id);
+    qry.bindValue(":id_network", pointProp->network);
+    qry.bindValue(":latitude", pointProp->lat);
+    qry.bindValue(":longitude", pointProp->lon);
+    qry.bindValue(":latInt", pointProp->latInt);
+    qry.bindValue(":lonInt", pointProp->lonInt);
+    qry.bindValue(":utm_x", pointProp->utm_x);
+    qry.bindValue(":utm_y", pointProp->utm_y);
+    qry.bindValue(":altitude", pointProp->altitude);
+    qry.bindValue(":state", pointProp->state);
+    qry.bindValue(":region", pointProp->region);
+    qry.bindValue(":province", pointProp->province);
+    qry.bindValue(":municipality", pointProp->municipality);
+
+    if( !qry.exec() )
+        qDebug() << qry.lastError();
+    else
+        qDebug( "successfully inserted" );
+
+
+    db.close();
+
+}
