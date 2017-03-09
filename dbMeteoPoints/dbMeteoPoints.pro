@@ -4,9 +4,11 @@
 #
 #-------------------------------------------------
 
-QT       += network sql
+#QT       += network sql
 
-QT       -= gui
+#QT       -= gui
+
+QT       += core gui sql widgets network #solo x test
 
 TARGET = dbMeteoPoints
 
@@ -20,9 +22,11 @@ INCLUDEPATH += ../mathFunctions ../meteo
 
 SOURCES += dbMeteoPoints.cpp \
     main.cpp \
-    download.cpp
+    download.cpp \
+    mainwindow.cpp
 
 HEADERS += dbMeteoPoints.h \
-    download.h
+    download.h \
+    mainwindow.h
 
 
