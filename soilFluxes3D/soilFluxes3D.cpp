@@ -1390,7 +1390,7 @@ double DLL_EXPORT getNodeVapor(long i)
  * \param nodeIndex
  * \return heat storage [J]
 */
-double DLL_EXPORT getHeat(long i)
+double DLL_EXPORT getHeat(long i, double theta)
 {
     if (myNode == NULL) return(TOPOGRAPHY_ERROR);
     if (i >= myStructure.nrNodes) return(INDEX_ERROR);
@@ -1398,8 +1398,11 @@ double DLL_EXPORT getHeat(long i)
     if (myNode[i].extra->Heat == NULL) return MISSING_DATA_ERROR;
     if (myNode[i].H == NODATA || myNode[i].extra->Heat->T == NODATA) return MISSING_DATA_ERROR;
 
-    return (soilHeatCapacity(i, myNode[i].H) * myNode[i].volume_area  * myNode[i].extra->Heat->T);
+    double airFraction = myNode[i].Soil->Theta_s - theta;
+    double sensibleHeat = SoilHeatCapacity(i, theta) * myNode[i].volume_area  * myNode[i].extra->Heat->T;
+    double latentHeat = airFraction * WATER_DENSITY * LatentHeatVaporization(myNode[i].extra->Heat->T - ZEROCELSIUS);
 
+    return (sensibleHeat + latentHeat);
 }
 
 }

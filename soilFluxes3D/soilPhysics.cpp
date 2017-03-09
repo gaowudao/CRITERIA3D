@@ -202,7 +202,8 @@
         // vapor isothermal flow
         if (myStructure.computeHeat && myStructure.computeHeatLatent)
         {
-            double kv = IsothermalVaporConductivity(myIndex, myNode[myIndex].extra->Heat->T);
+            double avgT = computeMean(myNode[myIndex].extra->Heat->T, myNode[myIndex].extra->Heat->oldT);
+            double kv = IsothermalVaporConductivity(myIndex, myNode[myIndex].H - myNode[myIndex].z, avgT);
             // from kg s m-3 to m s-1
             kv *= (GRAVITY / WATER_DENSITY);
 

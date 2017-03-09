@@ -1,7 +1,7 @@
-double IsothermalVaporConductivity(long i, double myT);
-double getSoilRelativeHumidity(double myPsi, double myT);
-double soilHeatCapacity(long i, double H);
-double soilHeatConductivity(long i);
+double IsothermalVaporConductivity(long i, double Psi, double myT);
+double SoilRelativeHumidity(double myPsi, double myT);
+double SoilHeatCapacity(long i, double theta);
+double SoilHeatConductivity(long i);
 double VaporFromPsiTemp(double Psi, double T);
 double ThermalVaporConductivity(long i, double myTMean, double psi);
 void restoreHeat();

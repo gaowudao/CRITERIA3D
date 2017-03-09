@@ -88,7 +88,7 @@
     __EXTERN double DLL_EXPORT __STDCALL GetHeatMBR();    
     __EXTERN double DLL_EXPORT __STDCALL GetHeatMBE();
     __EXTERN double DLL_EXPORT __STDCALL getTemperature(long nodeIndex);
-    __EXTERN double DLL_EXPORT __STDCALL getHeat(long nodeIndex);
+    __EXTERN double DLL_EXPORT __STDCALL getHeat(long nodeIndex, double theta);
     __EXTERN double DLL_EXPORT __STDCALL getNodeVapor(long nodeIndex);
     __EXTERN double DLL_EXPORT __STDCALL getDiffusiveHeatFlux(long nodeIndex, short myDirection);
     __EXTERN double DLL_EXPORT __STDCALL getIsothermalLatentHeatFlux(long nodeIndex, short myDirection);
