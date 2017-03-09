@@ -54,7 +54,13 @@ double PressureFromAltitude(double myHeight)
     return myPressure;
 }
 
-double MolarDensity(double myPressure, double myT)
+/*!
+ * \brief [mol m-3] air molar density
+ * \param myPressure (Pa)
+ * \param myT (K)
+ * \return result
+ */
+double AirMolarDensity(double myPressure, double myT)
 // Boyle-Charles law
 // mol m-3
 { return 44.65 * (myPressure / P0) * (ZEROCELSIUS / myT);}
@@ -62,7 +68,7 @@ double MolarDensity(double myPressure, double myT)
 double VolumetricLatentHeatVaporization(double myPressure, double myT)
 // [J m-3] latent heat of vaporization
 {
-    double rhoair = MolarDensity(myPressure, myT); // [mol m-3] molar density of air
+    double rhoair = AirMolarDensity(myPressure, myT); // [mol m-3] molar density of air
     return (rhoair * (45144. - 48. * (myT - ZEROCELSIUS)));	// Campbell 1994
 }
 
@@ -77,13 +83,17 @@ double VaporConcentrationFromPressure(double myPressure, double myT)
 double AirVolumetricSpecificHeat(double myPressure, double myT)
 { // (J m-3 K-1) volumetric specific heat of air
 
-    double myMolarDensity = MolarDensity(myPressure, myT); // mol m-3
+    double myMolarDensity = AirMolarDensity(myPressure, myT); // mol m-3
     double mySpHeat = (HEAT_CAPACITY_AIR_MOLAR * myMolarDensity);
     return (mySpHeat);
 }
 
+/*!
+ * \brief [Pa] saturation vapor pressure
+ * \param myTCelsius [degC]
+ * \return result
+ */
 double SaturationVaporPressure(double myTCelsius)
-// [Pa] saturation vapor pressure
 {	return 611 * exp(17.502 * myTCelsius / (myTCelsius + 240.97));}
 
 /*!
@@ -94,7 +104,7 @@ double SaturationVaporPressure(double myTCelsius)
  */
 double SaturationSlope(double airTCelsius, double satVapPressure)
 {
-    return (17.502 * 240.97 * satVapPressure / ((240.97 + airTCelsius) * (240.97 + airTCelsius)));
+    return (4098. * satVapPressure / ((237.3 + airTCelsius) * (237.3 + airTCelsius)));
 }
 
 double getAirVaporDeficit(double myT, double myVapor)

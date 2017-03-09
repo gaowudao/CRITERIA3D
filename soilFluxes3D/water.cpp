@@ -203,8 +203,8 @@ double thermalVaporFlow(long i, TlinkedNode *myLink)
     double myTMean = computeMean(myNode[i].extra->Heat->T, myNode[i].extra->Heat->oldT);
     double myTLinkMean = computeMean(myNode[j].extra->Heat->T, myNode[j].extra->Heat->oldT);
 
-    double Kvt = getNonIsothermalAirVaporConductivity(i, myTMean);
-    double KvtLink = getNonIsothermalAirVaporConductivity(j, myTLinkMean);
+    double Kvt = ThermalVaporConductivity(i, myTMean, myNode[i].H - myNode[i].z);
+    double KvtLink = ThermalVaporConductivity(j, myTLinkMean, myNode[j].H - myNode[j].z);
 
     double meanKv = computeMean(Kvt, KvtLink);
 
@@ -244,7 +244,7 @@ bool computeFlux(long i, int matrixIndex, TlinkedNode *link, double deltaT, unsi
     A[i][matrixIndex].val = val;
 
     // thermal vapor flow
-    /*if (myStructure.computeHeat && myStructure.computeHeatLatent &&
+    if (myStructure.computeHeat && myStructure.computeHeatLatent &&
         ! myNode[i].isSurface && ! myNode[j].isSurface)
     {
         double myLatent;
@@ -252,7 +252,7 @@ bool computeFlux(long i, int matrixIndex, TlinkedNode *link, double deltaT, unsi
         C0[i] += myLatent;
         if (link->linkedExtra->heatFlux != NULL)
             link->linkedExtra->heatFlux->thermLatent = myLatent;
-    }*/
+    }
 
     return (true);
 }

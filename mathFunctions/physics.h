@@ -2,7 +2,7 @@
 #define PHYSICS_H
 
     double PressureFromAltitude(double myHeight);
-    double AirMolarMass(double myVaporPressure);
+    double AirMolarDensity(double myPressure, double myT);
     double AirVolumetricSpecificHeat(double myPressure, double myT);
     double SaturationVaporPressure(double myTCelsius);
     double SaturationSlope(double myTCelsius, double mySatVapPressure);
