@@ -18,6 +18,7 @@ double psi_from_Se(unsigned long myIndex);
 double computeSe(unsigned long myIndex);
 
 double dTheta_dH(unsigned long myIndex);
+double dThetav_dH(unsigned long myIndex, double temperature, double dTheta_dH);
 
 double computeK(unsigned long myIndex);
 

@@ -49,8 +49,8 @@
  * \param myTemperature
  * \return result
  */
-double getVaporBinaryDiffusivity(double myPressure, double myTemperature)
-{	return (VAPOR_DIFFUSIVITY0 * (P0 / myPressure) * pow(myTemperature / ZEROCELSIUS, 1.75)); }
+double VaporBinaryDiffusivity(double myTemperature)
+{	return (VAPOR_DIFFUSIVITY0 * pow(myTemperature / ZEROCELSIUS, 2)); }
 
 /*!
  * \brief [m2 s-1] vapor diffusivity
@@ -58,17 +58,15 @@ double getVaporBinaryDiffusivity(double myPressure, double myTemperature)
  * \param myT
  * \return result
  */
-double getSoilVaporDiffusivity(long i, double myT)
+double SoilVaporDiffusivity(double ThetaS, double Theta, double myT)
 {
 	double binaryDiffusivity;	// [m2 s-1]
 	double airFilledPorosity;	// [m3 m-3]
-	double myPressure;			// [Pa]
     double const beta = 0.66;	// [] Penman 1940
     double const emme = 1;      // [] idem
 
-    myPressure = PressureFromAltitude(myNode[i].z);
-	binaryDiffusivity = getVaporBinaryDiffusivity(myPressure, myT);
-    airFilledPorosity = myNode[i].Soil->Theta_s - getThetaMean(i);
+    binaryDiffusivity = VaporBinaryDiffusivity(myT);
+    airFilledPorosity = ThetaS - Theta;
 
     return (binaryDiffusivity  * beta * pow(airFilledPorosity, emme));
 }
@@ -79,7 +77,7 @@ double getSoilVaporDiffusivity(long i, double myT)
  * \param myT
  * \return result
  */
-double getSoilRelativeHumidity(double myPsi, double myT)
+double SoilRelativeHumidity(double myPsi, double myT)
 {	return (exp(MH2O * (myPsi * GRAVITY) / (R_GAS * myT))); }
 
 /*!
@@ -88,10 +86,11 @@ double getSoilRelativeHumidity(double myPsi, double myT)
  * \param myT
  * \return result
  */
-double IsothermalVaporConductivity(long i, double myT)
+double IsothermalVaporConductivity(long i, double Psi, double myT)
 {
-	double Dv = getSoilVaporDiffusivity(i, myT);
-    double vapor = soilFluxes3D::getNodeVapor(i);
+    double theta = theta_from_sign_Psi(Psi, i);
+    double Dv = SoilVaporDiffusivity(myNode[i].Soil->Theta_s, theta, myT);
+    double vapor = VaporFromPsiTemp(Psi, myT);
     return (Dv * vapor * MH2O / (R_GAS * myT));
 }
 
@@ -101,7 +100,7 @@ double IsothermalVaporConductivity(long i, double myT)
  * \param i
  * \return result
  */
-double getSpecificHeat(long i)
+double SoilSpecificHeat(long i)
 {   /* Soil specific heat according to Campbell "Soil physics with basic" pp 31-32
 	INPUT:
 	bulk density [Mg m-3]
@@ -119,10 +118,9 @@ double getSpecificHeat(long i)
  * \param H
  * \return result
  */
-double soilHeatCapacity(long i, double H)
+double SoilHeatCapacity(long i, double theta)
 {
-    double theta=getTheta(i, H);
-    return getBulkDensity(i) / 2.65 * HEAT_CAPACITY_MINERAL + theta * HEAT_CAPACITY_WATER;
+    return getBulkDensity(i) / 2.65 * HEAT_CAPACITY_MINERAL + theta * HEAT_CAPACITY_WATER + (myNode[i].Soil->Theta_s - theta) * HEAT_CAPACITY_AIR;
 }
 
 /*!
@@ -133,7 +131,7 @@ double soilHeatCapacity(long i, double H)
  * \param myTemperature
  * \return result
  */
-double getWaterReturnFlowFactor(double myTheta, double myClayFraction, double myTemperature)
+double WaterReturnFlowFactor(double myTheta, double myClayFraction, double myTemperature)
 {
     double Q0, Q;                                   // [] power
     double xw0 = 0.33 * myClayFraction + 0.078;		// [] cutoff water content
@@ -160,7 +158,7 @@ double VaporFromPsiTemp(double Psi, double T)
 
     mySatVapPressure = SaturationVaporPressure(T - ZEROCELSIUS);
     mySatVapConcentration = VaporConcentrationFromPressure(mySatVapPressure, T);
-    myRelHum = getSoilRelativeHumidity(Psi, T);
+    myRelHum = SoilRelativeHumidity(Psi, T);
 
     return mySatVapConcentration * myRelHum;
 
@@ -184,13 +182,18 @@ double ThermalVaporConductivity(long i, double temperature, double psi)
 	double myVaporPressure;			// [Pa] vapor partial pressure
 	double hr;						// [] relative humidity
     double tempCelsius;             // [°C] temperature
+    double theta;                   // [m3 m-3] volumetric water content
+    double eta;                     // [] enhancement factor
+    double satDegree;               // [] degree of saturation
 
     tempCelsius = temperature - ZEROCELSIUS;
 
     myPressure = PressureFromAltitude(myNode[i].z);
 
+    theta = theta_from_sign_Psi(psi, i);
+
 	// vapor diffusivity
-    Dv = getSoilVaporDiffusivity(i, temperature);
+    Dv = SoilVaporDiffusivity(myNode[i].Soil->Theta_s, theta, temperature);
 
 	// slope of saturation vapor pressure
     svp = SaturationVaporPressure(tempCelsius);
@@ -204,7 +207,11 @@ double ThermalVaporConductivity(long i, double temperature, double psi)
     myVaporPressure = VaporPressureFromConcentration(myVapor, temperature);
 	hr = myVaporPressure / svp;
 
-    return (Dv * slopesvc * hr);
+    // enhancement factor (Cass et al. 1984)
+    satDegree = theta / myNode[i].Soil->Theta_s;
+    eta = 9.5 + 3. * satDegree - 8.5 * exp(-pow((1. + 2.6/sqrt(myNode[i].Soil->clay))*satDegree, 4));
+
+    return (eta * Dv * slopesvc * hr);
 
 }
 
@@ -246,7 +253,7 @@ double AirHeatConductivity(long i)
  * \param i
  * \return result
  */
-double soilHeatConductivity(long i)
+double SoilHeatConductivity(long i)
 {
 	double ga = 0.088;				// [] deVries shape factor; assume same for all mineral soils
 	double gc;						// [] shape factor
@@ -273,7 +280,7 @@ double soilHeatConductivity(long i)
 
     xw = getThetaMean(i);
 
-    fw = getWaterReturnFlowFactor(xw, myNode[i].Soil->clay, myTCelsiusMean + ZEROCELSIUS);
+    fw = WaterReturnFlowFactor(xw, myNode[i].Soil->clay, myTCelsiusMean + ZEROCELSIUS);
 	Kf = Ka + fw * (Kw - Ka);
 
 	gc = 1. - 2. * ga;
@@ -290,17 +297,21 @@ double soilHeatConductivity(long i)
 
 }
 
-double getMeanIsothermalVaporConductivity(long myIndex, long myLinkIndex)
+double MeanIsothermalVaporConductivity(long i, long linkIndex)
 {
     double myKv, myLinkKv;				// (kg m-3 s-1) vapor conductivity
+    double avgPsi, avgPsiLink;
 
-    myKv = IsothermalVaporConductivity(myIndex, myNode[myIndex].extra->Heat->T);
-    myLinkKv = IsothermalVaporConductivity(myLinkIndex, myNode[myLinkIndex].extra->Heat->T);
+    avgPsi = computeMean(myNode[i].H, myNode[i].oldH) - myNode[i].z;
+    avgPsiLink = computeMean(myNode[linkIndex].H, myNode[linkIndex].oldH) - myNode[linkIndex].z;
+
+    myKv = IsothermalVaporConductivity(i, avgPsi, myNode[i].extra->Heat->T);
+    myLinkKv = IsothermalVaporConductivity(linkIndex, avgPsiLink, myNode[linkIndex].extra->Heat->T);
 
 	return (computeMean(myKv, myLinkKv));
 }
 
-double soilLatentIsothermal(long myIndex, TlinkedNode *myLink)
+double SoilLatentIsothermal(long myIndex, TlinkedNode *myLink)
 {	// isothermal latent heat
     // the thermal component is already explicitly computed inside getHeatConductivity
 
@@ -315,7 +326,7 @@ double soilLatentIsothermal(long myIndex, TlinkedNode *myLink)
     myLambda = LatentHeatVaporization(myNode[myIndex].extra->Heat->T - ZEROCELSIUS);
     linkLambda = LatentHeatVaporization(myNode[myLinkIndex].extra->Heat->T - ZEROCELSIUS);
 
-	myKv = getMeanIsothermalVaporConductivity(myIndex, myLinkIndex);
+    myKv = MeanIsothermalVaporConductivity(myIndex, myLinkIndex);
     meanLambda = computeMean(myLambda, linkLambda);
 
 	// conversion to J/kg (m2/s2)
@@ -329,7 +340,7 @@ double soilLatentIsothermal(long myIndex, TlinkedNode *myLink)
     return (mylatentFlux);
 }
 
-double soilAdvection(long i, TlinkedNode *myLink)
+double SoilAdvection(long i, TlinkedNode *myLink)
 {
 	long myLinkIndex;
     double myDeltaT;
@@ -343,7 +354,7 @@ double soilAdvection(long i, TlinkedNode *myLink)
     return (HEAT_CAPACITY_WATER * myWaterFlow * myDeltaT);
 }
 
-double soilConduction(long myIndex, TlinkedNode *myLink)
+double SoilConduction(long myIndex, TlinkedNode *myLink)
 {
 	double myConductivity, linkConductivity, meanKh;
     double zeta;
@@ -353,8 +364,8 @@ double soilConduction(long myIndex, TlinkedNode *myLink)
 
     zeta = myLink->area / myDistance;
 
-    myConductivity = soilHeatConductivity(myIndex);
-    linkConductivity = soilHeatConductivity(myLinkIndex);
+    myConductivity = SoilHeatConductivity(myIndex);
+    linkConductivity = SoilHeatConductivity(myLinkIndex);
     meanKh = computeMean(myConductivity, linkConductivity);
 
     return (zeta * meanKh);
@@ -374,16 +385,16 @@ bool computeHeatFlux(long i, int myMatrixIndex, TlinkedNode *myLink)
 
     if (!myNode[myLinkIndex].isSurface)
     {
-        myConduction = soilConduction(i, myLink);
+        myConduction = SoilConduction(i, myLink);
         if (myStructure.computeHeatAdvective)
         {
-            myAdvection = soilAdvection(i, myLink);
+            myAdvection = SoilAdvection(i, myLink);
             if (myLink->linkedExtra->heatFlux != NULL)
                 myLink->linkedExtra->heatFlux->advective = myAdvection;
         }
         if (myStructure.computeHeatLatent)
         {
-            myLatent = soilLatentIsothermal(i, myLink);
+            myLatent = SoilLatentIsothermal(i, myLink);
             if (myLink->linkedExtra->heatFlux != NULL)
                 myLink->linkedExtra->heatFlux->isothermLatent = myLatent;
         }
@@ -401,7 +412,7 @@ double computeHeatStorage()
 { // [J]
     double myHeatStorage = 0.;
     for (long i = 1; i < myStructure.nrNodes; i++)
-        myHeatStorage += soilFluxes3D::getHeat(i);
+        myHeatStorage += soilFluxes3D::getHeat(i, getThetaMean(i));
     return myHeatStorage;
 }
 
@@ -546,7 +557,7 @@ bool HeatComputation(double myTimeStep)
         for (i = 1; i < myStructure.nrNodes; i++)
 			{
                 C0[i] = 0.;
-                C[i] = soilHeatCapacity(i, computeMean(myNode[i].oldH, myNode[i].H)) * myNode[i].volume_area;
+                C[i] = SoilHeatCapacity(i, computeMean(myNode[i].oldH, myNode[i].H)) * myNode[i].volume_area;
 
 				j = 1;
                 if (computeHeatFlux(i, j, &(myNode[i].up))) j++;

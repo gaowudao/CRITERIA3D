@@ -195,27 +195,47 @@ double redistribution(long i, TlinkedNode *link, int linkType)
     return (k * link->area) / cellDistance;
 }
 
+/*!
+ * \brief [m3 s-1] Thermal vapor flux
+ * \param i
+ * \param myLink
+ * \return result
+ */
 double thermalVaporFlow(long i, TlinkedNode *myLink)
-{//-Dvhrs dT/dz
-    // kg m-1 s-1 K-1
+{
     long j = (*myLink).index;
 
+    // K
     double myTMean = computeMean(myNode[i].extra->Heat->T, myNode[i].extra->Heat->oldT);
     double myTLinkMean = computeMean(myNode[j].extra->Heat->T, myNode[j].extra->Heat->oldT);
 
+    // kg m-1 s-1 K-1
     double Kvt = ThermalVaporConductivity(i, myTMean, myNode[i].H - myNode[i].z);
     double KvtLink = ThermalVaporConductivity(j, myTLinkMean, myNode[j].H - myNode[j].z);
-
     double meanKv = computeMean(Kvt, KvtLink);
 
-    // m2 s-1 K-1
-    meanKv /= WATER_DENSITY;
-
-    // m s-1
+    // kg m-2 s-1
     double myFlowDensity = meanKv * (myTMean - myTLinkMean) / distance(i, j);
 
     // m3 s-1
-    return (myFlowDensity * (*myLink).area);
+    return (myFlowDensity * (*myLink).area / WATER_DENSITY);
+}
+
+/*!
+ * \brief [m3 s-1] Thermal liquid flux TODO!
+ * \param i
+ * \param myLink
+ * \return result
+ */
+double thermalLiquidFlow() //long i, TlinkedNode *myLink)
+{
+    //long j = (*myLink).index;
+
+    // K
+    //double myTMean = computeMean(myNode[i].extra->Heat->T, myNode[i].extra->Heat->oldT);
+    //double myTLinkMean = computeMean(myNode[j].extra->Heat->T, myNode[j].extra->Heat->oldT);
+
+    return 0.;
 }
 
 bool computeFlux(long i, int matrixIndex, TlinkedNode *link, double deltaT, unsigned long myApprox, int linkType)
@@ -250,6 +270,7 @@ bool computeFlux(long i, int matrixIndex, TlinkedNode *link, double deltaT, unsi
         double myLatent;
         myLatent = thermalVaporFlow(i, link);
         C0[i] += myLatent;
+
         if (link->linkedExtra->heatFlux != NULL)
             link->linkedExtra->heatFlux->thermLatent = myLatent;
     }
@@ -263,6 +284,8 @@ bool waterFlowComputation(double deltaT)
      bool isValidStep;
      long i;  short j;
      double sum;
+     double dThetadH;
+     double avgTemperature;
 
      int approximationNr = 0;
      do
@@ -283,7 +306,15 @@ bool waterFlowComputation(double deltaT)
             if (!myNode[i].isSurface)
             {
                  myNode[i].k = computeK(i);
-                 C[i] = myNode[i].volume_area  * dTheta_dH(i);
+                 dThetadH = dTheta_dH(i);
+                 C[i] = myNode[i].volume_area  * dThetadH;
+
+                 if (myStructure.computeHeat && myStructure.computeHeatLatent)
+                 {
+                     avgTemperature = computeMean(myNode[i].extra->Heat->T, myNode[i].extra->Heat->oldT);
+                     double dthetavdh = dThetav_dH(i, avgTemperature, dThetadH);
+                     C[i] += myNode[i].volume_area  * dthetavdh;
+                 }
             }
         }
 
