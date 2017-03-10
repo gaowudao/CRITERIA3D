@@ -238,17 +238,17 @@
      * \param myIndex
      * \return derivative of vapor volumetric content with respect to H
      */
-     double dThetav_dH(unsigned long i, double temperature, double dTheta_dH)
-     {
-        double psi = myNode[i].H - myNode[i].z;
-        double hr = exp(MH2O * psi / (R_GAS * temperature));
+    double dThetav_dH(unsigned long i, double temperature, double dTheta_dH)
+    {
+        double h = myNode[i].H - myNode[i].z;
+        double hr = SoilRelativeHumidity(h, temperature);
         double satVapPressure = SaturationVaporPressure(temperature - ZEROCELSIUS);
         double satVapConc = VaporConcentrationFromPressure(satVapPressure, temperature);
-        double theta = theta_from_sign_Psi(psi, i);
-
-        return (satVapConc * hr / WATER_DENSITY) *
-                ((myNode[i].Soil->Theta_s - theta) * MH2O / (R_GAS * temperature) - dTheta_dH);
-     }
+        double theta = theta_from_sign_Psi(h, i);
+        double dThetav_dPsi = (satVapConc * hr / WATER_DENSITY) *
+                ((myNode[i].Soil->Theta_s - theta) * MH2O / (R_GAS * temperature) - dTheta_dH / GRAVITY);
+        return dThetav_dPsi * GRAVITY;
+    }
 
     /*!
      * \brief [m-1] dTheta/dH  (Van Genutchen)
@@ -319,7 +319,7 @@
 
     double getPsiMean(long i)
 	{
-        double Psi; //J kg-1
+        double Psi;
         double meanH = getHMean(i);
         Psi = minValue(0., (meanH - myNode[i].z));
         return Psi;
