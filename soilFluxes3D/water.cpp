@@ -284,6 +284,8 @@ bool waterFlowComputation(double deltaT)
      bool isValidStep;
      long i;  short j;
      double sum;
+     double dThetadH;
+     double avgTemperature;
 
      int approximationNr = 0;
      do
@@ -304,7 +306,15 @@ bool waterFlowComputation(double deltaT)
             if (!myNode[i].isSurface)
             {
                  myNode[i].k = computeK(i);
-                 C[i] = myNode[i].volume_area  * dTheta_dH(i);
+                 dThetadH = dTheta_dH(i);
+                 C[i] = myNode[i].volume_area  * dThetadH;
+
+                 if (myStructure.computeHeat && myStructure.computeHeatLatent)
+                 {
+                     avgTemperature = computeMean(myNode[i].extra->Heat->T, myNode[i].extra->Heat->oldT);
+                     double dthetavdh = dThetav_dH(i, avgTemperature, dThetadH);
+                     C[i] += myNode[i].volume_area  * dthetavdh;
+                 }
             }
         }
 

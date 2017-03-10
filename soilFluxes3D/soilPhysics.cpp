@@ -30,6 +30,7 @@
 */
 
 #include <math.h>
+#include "physics.h"
 #include "header/types.h"
 #include "header/soilPhysics.h"
 #include "header/solver.h"
@@ -232,13 +233,29 @@
         return((1./ myNode[myIndex].Soil->VG_alpha) * pow(temp, 1./ myNode[myIndex].Soil->VG_n));
 	}
 
+    /*!
+     * \brief [m-1] dThetaV/dH
+     * \param myIndex
+     * \return derivative of vapor volumetric content with respect to H
+     */
+     double dThetav_dH(unsigned long i, double temperature, double dTheta_dH)
+     {
+        double psi = myNode[i].H - myNode[i].z;
+        double hr = exp(MH2O * psi / (R_GAS * temperature));
+        double satVapPressure = SaturationVaporPressure(temperature - ZEROCELSIUS);
+        double satVapConc = VaporConcentrationFromPressure(satVapPressure, temperature);
+        double theta = theta_from_sign_Psi(psi, i);
+
+        return (satVapConc * hr / WATER_DENSITY) *
+                ((myNode[i].Soil->Theta_s - theta) * MH2O / (R_GAS * temperature) - dTheta_dH);
+     }
 
     /*!
-     * \brief Computes dTheta/dH  (Van Genutchen)
+     * \brief [m-1] dTheta/dH  (Van Genutchen)
      * dTheta/dH = dSe/dH (Theta_s-Theta_r)
      * dSe/dH = -sgn(H-z) alfa n m [1+(alfa|(H-z)|)^n]^(-m-1) (alfa|(H-z)|)^n-1
      * \param myIndex
-     * \return result
+     * \return derivative of water volumetric content with respect to H
      */
 	double dTheta_dH(unsigned long myIndex)
 	 {
