@@ -9,7 +9,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 
     QStringList datasets;
-    datasets << "agrmet" << "cer" ;
+    //datasets << "agrmet" << "cer" ;
+    datasets << "agrmet";
 
     Download* downloadTest = new Download(this);
     QString dbName = "/home/laura/criteria3D/DATA/template/prova.db";
