@@ -497,7 +497,7 @@ bool Criteria1D::readMeteoData(QSqlQuery * query, QString *myError)
             this->meteoPoint.setMeteoPointValueD(getCrit3DDate(myDate), dailyAirTemperatureMax, (float)tmax);
             this->meteoPoint.setMeteoPointValueD(getCrit3DDate(myDate), dailyAirTemperatureAvg, (float)tmed);
             this->meteoPoint.setMeteoPointValueD(getCrit3DDate(myDate), dailyPrecipitation, (float)prec);
-            this->meteoPoint.setMeteoPointValueD(getCrit3DDate(myDate), potentialEvapotranspiration, (float)et0);
+            this->meteoPoint.setMeteoPointValueD(getCrit3DDate(myDate), dailyPotentialEvapotranspiration, (float)et0);
         }
 
         previousDate = myDate;

@@ -49,7 +49,8 @@
                         globalIrradiance, directIrradiance, diffuseIrradiance, reflectedIrradiance,
                         dailyGlobalRadiation, dailyDirectRadiation, dailyDiffuseRadiation, dailyReflectedRadiation,
                         windIntensity, dailyWindIntensityAvg, windDirection, windDirectionPrevailing,
-                        wetnessDuration, atmPressure, atmTransmissivity, potentialEvapotranspiration,
+                        wetnessDuration, atmPressure, atmTransmissivity,
+                        PotentialEvapotranspiration, dailyPotentialEvapotranspiration,
                         realEvaporation, waterTableDepth, noMeteoVar};
 
     enum surfaceType   {SurfaceTypeWater, SurfaceTypeSoil, SurfaceTypeCrop};

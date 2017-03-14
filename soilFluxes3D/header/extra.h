@@ -68,6 +68,7 @@ struct THeatFlux{
     double advective;                   // [W]
     double diffusive;                   // [W]
     double thermLatent;                 // [W]
+    double waterFlux;                   // [m3 s-1]
     } ;
 
 struct TCrit3DNodeHeat{

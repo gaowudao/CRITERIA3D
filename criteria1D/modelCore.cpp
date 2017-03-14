@@ -43,7 +43,7 @@ bool computeModel(Criteria1D* myCase, QString* myError, const Crit3DDate& firstD
     Crit3DDate myDate;
     long myIndex;
     int doy;
-    double tmin, tmax, prec, etp, tomorrowPrec, irrigation;
+    double tmin, tmax, prec, et0, tomorrowPrec, irrigation;
     bool isFirstDay = true;
 
     if (myCase->meteoPoint.latitude == NODATA)
@@ -86,7 +86,7 @@ bool computeModel(Criteria1D* myCase, QString* myError, const Crit3DDate& firstD
         tmin = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyAirTemperatureMin);
         tmax = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyAirTemperatureMax);
         prec = myCase->meteoPoint.getMeteoPointValueD(myDate, precipitation);
-        etp = myCase->meteoPoint.getMeteoPointValueD(myDate, potentialEvapotranspiration);
+        et0 = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyPotentialEvapotranspiration);
         if (myDate < lastDate)
             tomorrowPrec = myCase->meteoPoint.getMeteoPointValueD(myDate.addDays(1), precipitation);
         else
@@ -128,7 +128,7 @@ bool computeModel(Criteria1D* myCase, QString* myError, const Crit3DDate& firstD
                     myCase->output.dailySurfaceRunoff -= floor(myCase->output.dailySurfaceRunoff);
                 }
 
-        if (! cropWaterDemand(myCase, doy, tmax, tmin, etp))
+        if (! cropWaterDemand(myCase, doy, tmax, tmin, et0))
             return false;
 
         if (! evaporation(myCase))

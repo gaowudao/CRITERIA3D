@@ -21,6 +21,7 @@
         float* rhAir;
         float* tDew;
         float* irradiance;
+        float* et0;
         float* windInt;
         float* pressure;
         int* wetDuration;
@@ -37,6 +38,7 @@
         float rhMax;
         float rhAvg;
         float globRad;
+        float et0;
         float windIntAvg;
         float windDirPrev;
         float waterTableDepth;

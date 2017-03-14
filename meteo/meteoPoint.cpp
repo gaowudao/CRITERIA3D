@@ -82,6 +82,7 @@ void Crit3DMeteoPoint::initializeObsDataH(int myHourlyFraction, int numberOfDays
         obsDataH[i].rhAir = (float *) calloc(nrDayValues, sizeof(float));
         obsDataH[i].tDew = (float *) calloc(nrDayValues, sizeof(float));
         obsDataH[i].irradiance = (float *) calloc(nrDayValues, sizeof(float));
+        obsDataH[i].et0 = (float *) calloc(nrDayValues, sizeof(float));
         obsDataH[i].windInt = (float *) calloc(nrDayValues, sizeof(float));
         obsDataH[i].pressure = (float *) calloc(nrDayValues, sizeof(float));
         obsDataH[i].wetDuration = (int *) calloc(nrDayValues, sizeof(int));
@@ -93,6 +94,7 @@ void Crit3DMeteoPoint::initializeObsDataH(int myHourlyFraction, int numberOfDays
             obsDataH[i].rhAir[j] = NODATA;
             obsDataH[i].tDew[j] = NODATA;
             obsDataH[i].irradiance[j] = NODATA;
+            obsDataH[i].et0[j] = NODATA;
             obsDataH[i].windInt[j] = NODATA;
             obsDataH[i].pressure[j] = NODATA;
             obsDataH[i].wetDuration[j] = NODATA;
@@ -121,6 +123,7 @@ void Crit3DMeteoPoint::initializeObsDataD(int numberOfDays, const Crit3DDate& fi
         obsDataD[i].rhMin = NODATA;
         obsDataD[i].rhAvg = NODATA;
         obsDataD[i].globRad = NODATA;
+        obsDataD[i].et0 = NODATA;
         obsDataD[i].windIntAvg = NODATA;
         obsDataD[i].windDirPrev = NODATA;
         obsDataD[i].waterTableDepth = NODATA;
@@ -356,6 +359,8 @@ bool Crit3DMeteoPoint::setMeteoPointValueH(const Crit3DDate& myDate, int myHour,
         obsDataH[i].tDew[myHourlyIndex] = myValue;
     else if (myVar == globalIrradiance)
         obsDataH[i].irradiance[myHourlyIndex] = myValue;
+    else if (myVar == PotentialEvapotranspiration)
+        obsDataH[i].et0[myHourlyIndex] = myValue;
     else if (myVar == windIntensity)
         obsDataH[i].windInt[myHourlyIndex] = myValue;
     else if (myVar == wetnessDuration)
@@ -392,6 +397,8 @@ bool Crit3DMeteoPoint::setMeteoPointValueD(const Crit3DDate& myDate, meteoVariab
         obsDataD[i].rhAvg = myValue;
     else if (myVar == dailyGlobalRadiation)
         obsDataD[i].globRad = myValue;
+    else if (myVar == dailyPotentialEvapotranspiration)
+         obsDataD[i].et0 = myValue;
     else if (myVar == dailyWindIntensityAvg)
         obsDataD[i].windIntAvg = myValue;
     else if (myVar == windDirectionPrevailing)
@@ -428,6 +435,8 @@ float Crit3DMeteoPoint::getMeteoPointValueH(const Crit3DDate& myDate, int myHour
     }
     else if (myVar == globalIrradiance)
         return (obsDataH[dateIndex].irradiance[h]);
+    else if (myVar == PotentialEvapotranspiration)
+        return (obsDataH[dateIndex].et0[h]);
     else if (myVar == windIntensity)
         return (obsDataH[dateIndex].windInt[h]);
     else if (myVar == wetnessDuration)
@@ -464,6 +473,8 @@ float Crit3DMeteoPoint::getMeteoPointValueD(const Crit3DDate& myDate, meteoVaria
         return (obsDataD[dateIndex].rhAvg);
     else if (myVar == dailyGlobalRadiation)
         return (obsDataD[dateIndex].globRad);
+    else if (myVar == dailyPotentialEvapotranspiration)
+        return (obsDataD[dateIndex].et0);
     else if (myVar == dailyWindIntensityAvg)
         return (obsDataD[dateIndex].windIntAvg);
     else if (myVar == windDirectionPrevailing)

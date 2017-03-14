@@ -206,22 +206,23 @@ double getSurfaceWaterFraction(int i)
 void updateBoundary()
 {
     for (long i = 0; i < myStructure.nrNodes; i++)
-        if (myNode[i].boundary != NULL && myNode[i].extra->Heat != NULL)
+        if (myNode[i].boundary != NULL)
             if (myStructure.computeHeat)
-                if (myNode[i].boundary->type == BOUNDARY_HEAT)
-                {
-                    // update aerodynamic conductance
-                    myNode[i].boundary->Heat->aerodynamicConductance =
-                            AerodynamicConductance(myNode[i].boundary->Heat->height,
-                                myNode[i].extra->Heat->T,
-                                myNode[i].boundary->Heat->roughnessHeight,
-                                myNode[i].boundary->Heat->temperature,
-                                myNode[i].boundary->Heat->windSpeed);
+                if (myNode[i].extra->Heat != NULL)
+                    if (myNode[i].boundary->type == BOUNDARY_HEAT)
+                    {
+                        // update aerodynamic conductance
+                        myNode[i].boundary->Heat->aerodynamicConductance =
+                                AerodynamicConductance(myNode[i].boundary->Heat->height,
+                                    myNode[i].extra->Heat->T,
+                                    myNode[i].boundary->Heat->roughnessHeight,
+                                    myNode[i].boundary->Heat->temperature,
+                                    myNode[i].boundary->Heat->windSpeed);
 
-                    if (myStructure.computeHeatLatent)
-                        // update soil surface conductance
-                        myNode[i].boundary->Heat->soilConductance = 1./ computeSoilSurfaceResistance(getThetaMean(i));
-                }
+                        if (myStructure.computeHeatLatent)
+                            // update soil surface conductance
+                            myNode[i].boundary->Heat->soilConductance = 1./ computeSoilSurfaceResistance(getThetaMean(i));
+                    }
 }
 
 
@@ -233,33 +234,34 @@ void updateBoundaryWater(double deltaT)
 
     for (long i = 0; i < myStructure.nrNodes; i++)
     {
-        /*! extern sink/source */
+        // extern sink/source
         myNode[i].Qw = myNode[i].waterSinkSource;
 
+        /*
         if (myNode[i].boundary != NULL)
         {
-            /*! initialize */
+            // initialize
             myNode[i].boundary->waterFlow = 0.;
             if (myNode[i].boundary->type == BOUNDARY_RUNOFF)
             {
-                /*! current surface water available to runoff [m] */
+                // current surface water available to runoff [m]
                 avgH = (myNode[i].H + myNode[i].oldH) * 0.5;
                 Hs = maxValue(avgH - (myNode[i].z + myNode[i].Soil->Pond), 0.0);
                 if (Hs > EPSILON_mm)
                 {
-                    area = myNode[i].volume_area;       /*!<  [m^2] (surface)  */
-                    boundarySide = sqrt(area);          /*!<  [m] approximation: side = sqrt(area)  */
-                    maxFlow = (Hs * area) / deltaT;     /*!<  [m^3 s^-1] max available flow in time step  */
-                    boundaryArea = boundarySide * Hs;   /*!<  [m^2]  */
-                    /*! [m^3 s^-1] Manning */
+                    area = myNode[i].volume_area;       //  [m^2] (surface)
+                    boundarySide = sqrt(area);          //  [m] approximation: side = sqrt(area)
+                    maxFlow = (Hs * area) / deltaT;     //  [m^3 s^-1] max available flow in time step
+                    boundaryArea = boundarySide * Hs;   //  [m^2]
+                    // [m^3 s^-1] Manning
                     flow = boundaryArea *(pow(Hs, (2./3.)) / myNode[i].Soil->Roughness) * sqrt(myNode[i].boundary->slope);
                     myNode[i].boundary->waterFlow = -minValue(flow, maxFlow);
                 }
             }
             else if (myNode[i].boundary->type == BOUNDARY_FREEDRAINAGE)
             {
-                /*! [m^3 s^-1] Darcy unit gradient */
-                /*! dH=dz=L  ->  q=K(h) */
+                // [m^3 s^-1] Darcy unit gradient
+                // dH=dz=L  ->  q=K(h)
                 myNode[i].boundary->waterFlow = -myNode[i].k * myNode[i].up.area;
             }
 
@@ -267,7 +269,7 @@ void updateBoundaryWater(double deltaT)
             {
                 // TODO approximation: boundary area equal to other lateral link
 				area = myNode[i].lateral[0].area;
-                /*! [m^3 s^-1] Darcy,  gradient = slope (dH=dz) */
+                // [m^3 s^-1] Darcy,  gradient = slope (dH=dz)
                 myNode[i].boundary->waterFlow = -myNode[i].k * area * myNode[i].boundary->slope
                                             * myParameters.k_lateral_vertical_ratio;
             }
@@ -287,6 +289,7 @@ void updateBoundaryWater(double deltaT)
             }
 
             myNode[i].Qw += myNode[i].boundary->waterFlow;
+
 
             if (myNode[i].boundary->type == BOUNDARY_HEAT)
             {
@@ -313,6 +316,7 @@ void updateBoundaryWater(double deltaT)
                 }
             }
         }
+        */
     }
 }
 
@@ -321,92 +325,98 @@ void updateBoundaryHeat()
 {
     for (long i = 0; i < myStructure.nrNodes; i++)
     {
-        if (myNode[i].boundary != NULL && myNode[i].extra->Heat != NULL)
+        if (myNode[i].extra->Heat != NULL)
         {
             myNode[i].extra->Heat->Qh = 0.;
-            myNode[i].boundary->advectiveHeatFlux = 0.;
 
-            if (myNode[i].boundary->type == BOUNDARY_HEAT)
-            {  
-                // update surface water energy budget
-                /*if (getSurfaceWaterFraction(myNode[i].up->index) > 0.0)
-                {
-                    long mySurfaceIndex = myNode[i].up->index;
+            /*
 
-                    //heat from soil (m3)
-                    double myUpwardFlow = criteria3D::getWaterFlow(i, UP);
-                    double myUpwardHeat = myUpwardFlow * HEAT_CAPACITY_WATER * (myNode[i].T - myNode[mySurfaceIndex].T);
-
-                    //heat from atmosphere (rain and irrigation)
-                    double myDownwardHeat = myNode[mySurfaceIndex].Qw * HEAT_CAPACITY_WATER * myParameters.actual_delta_t * (myNode[i].boundary->Heat->rainTemperature - myNode[mySurfaceIndex].T);
-
-                    //previous heat content
-                    double myPreviousHeat = 0.;
-                    if (myNode[mySurfaceIndex].oldH > 0)
-                        myPreviousHeat = myNode[mySurfaceIndex].oldH * myNode[mySurfaceIndex].VolumeS0 * HEAT_CAPACITY_WATER * myNode[mySurfaceIndex].T;
-
-                    double myCurrentHeat = myPreviousHeat + myUpwardHeat + myDownwardHeat;
-                    myNode[mySurfaceIndex].T = myCurrentHeat / (HEAT_CAPACITY_WATER * myNode[mySurfaceIndex].H * myNode[mySurfaceIndex].VolumeS0);
-                }*/
-
-                myNode[i].boundary->Heat->sensibleFlux = 0.;
-                myNode[i].boundary->Heat->latentFlux = 0.;
-                myNode[i].boundary->advectiveHeatFlux = 0.;
-                myNode[i].boundary->Heat->radiativeFlux = 0.;
-
-                if (myNode[i].boundary->Heat->netIrradiance == NODATA)
-                    myNode[i].boundary->Heat->radiativeFlux = computeNetRadiationFlow(i);
-                else
-                    myNode[i].boundary->Heat->radiativeFlux = myNode[i].boundary->Heat->netIrradiance;
-
-                myNode[i].boundary->Heat->sensibleFlux += computeAtmosphericSensibleFlow(i);
-
-                if (myStructure.computeHeatLatent)
-                    myNode[i].boundary->Heat->latentFlux += computeAtmosphericLatentHeatFlow(i) / myNode[i].up.area;
-
-                // getWaterFlow because i need flow between two nodes inside the system
-                if (myStructure.computeHeatAdvective && myNode[myNode[i].up.index].isSurface)
-                    myNode[i].boundary->advectiveHeatFlux += soilFluxes3D::getWaterFlow(i, UP) * HEAT_CAPACITY_WATER * (myNode[i].boundary->Heat->rainTemperature - myNode[i].extra->Heat->T) / myNode[i].up.area;
-
-                myNode[i].extra->Heat->Qh += myNode[i].up.area * (myNode[i].boundary->Heat->invariantFluxes +
-                        myNode[i].boundary->Heat->radiativeFlux + myNode[i].boundary->Heat->sensibleFlux +
-                        myNode[i].boundary->Heat->latentFlux + myNode[i].boundary->advectiveHeatFlux);            
-            }
-            else if (myNode[i].boundary->type == BOUNDARY_FREEDRAINAGE)
+            if (myNode[i].boundary != NULL)
             {
-                if (myStructure.computeHeatAdvective)
-                    if (groundWater.temperature != NODATA)
+                myNode[i].boundary->advectiveHeatFlux = 0.;
+
+                if (myNode[i].boundary->type == BOUNDARY_HEAT)
+                {
+                    // update surface water energy budget
+                    /*if (getSurfaceWaterFraction(myNode[i].up->index) > 0.0)
                     {
-                        myNode[i].boundary->advectiveHeatFlux = myNode[i].Qw * HEAT_CAPACITY_WATER * (myNode[i].extra->Heat->T - myNode[i].boundary->fixedTemperature) / myNode[i].up.area;
-                        myNode[i].extra->Heat->Qh += myNode[i].up.area * myNode[i].boundary->advectiveHeatFlux;
+                        long mySurfaceIndex = myNode[i].up->index;
+
+                        //heat from soil (m3)
+                        double myUpwardFlow = criteria3D::getWaterFlow(i, UP);
+                        double myUpwardHeat = myUpwardFlow * HEAT_CAPACITY_WATER * (myNode[i].T - myNode[mySurfaceIndex].T);
+
+                        //heat from atmosphere (rain and irrigation)
+                        double myDownwardHeat = myNode[mySurfaceIndex].Qw * HEAT_CAPACITY_WATER * myParameters.actual_delta_t * (myNode[i].boundary->Heat->rainTemperature - myNode[mySurfaceIndex].T);
+
+                        //previous heat content
+                        double myPreviousHeat = 0.;
+                        if (myNode[mySurfaceIndex].oldH > 0)
+                            myPreviousHeat = myNode[mySurfaceIndex].oldH * myNode[mySurfaceIndex].VolumeS0 * HEAT_CAPACITY_WATER * myNode[mySurfaceIndex].T;
+
+                        double myCurrentHeat = myPreviousHeat + myUpwardHeat + myDownwardHeat;
+                        myNode[mySurfaceIndex].T = myCurrentHeat / (HEAT_CAPACITY_WATER * myNode[mySurfaceIndex].H * myNode[mySurfaceIndex].VolumeS0);
                     }
 
-                if (myNode[i].boundary->fixedTemperature != NODATA)
+                    myNode[i].boundary->Heat->sensibleFlux = 0.;
+                    myNode[i].boundary->Heat->latentFlux = 0.;
+                    myNode[i].boundary->advectiveHeatFlux = 0.;
+                    myNode[i].boundary->Heat->radiativeFlux = 0.;
+
+                    if (myNode[i].boundary->Heat->netIrradiance == NODATA)
+                        myNode[i].boundary->Heat->radiativeFlux = computeNetRadiationFlow(i);
+                    else
+                        myNode[i].boundary->Heat->radiativeFlux = myNode[i].boundary->Heat->netIrradiance;
+
+                    myNode[i].boundary->Heat->sensibleFlux += computeAtmosphericSensibleFlow(i);
+
+                    if (myStructure.computeHeatLatent)
+                        myNode[i].boundary->Heat->latentFlux += computeAtmosphericLatentHeatFlow(i) / myNode[i].up.area;
+
+                    // getWaterFlow because i need flow between two nodes inside the system
+                    if (myStructure.computeHeatAdvective && myNode[myNode[i].up.index].isSurface)
+                        myNode[i].boundary->advectiveHeatFlux += soilFluxes3D::getWaterFlow(i, UP) * HEAT_CAPACITY_WATER * (myNode[i].boundary->Heat->rainTemperature - myNode[i].extra->Heat->T) / myNode[i].up.area;
+
+                    myNode[i].extra->Heat->Qh += myNode[i].up.area * (myNode[i].boundary->Heat->invariantFluxes +
+                            myNode[i].boundary->Heat->radiativeFlux + myNode[i].boundary->Heat->sensibleFlux +
+                            myNode[i].boundary->Heat->latentFlux + myNode[i].boundary->advectiveHeatFlux);
+                }
+                else if (myNode[i].boundary->type == BOUNDARY_FREEDRAINAGE)
                 {
-                    double boundaryHeatConductivity = soilHeatConductivity(i);
-                    double deltaT = myNode[i].boundary->fixedTemperature - myNode[i].extra->Heat->T;
-                    double deltaZ = myNode[i-1].z - myNode[i].z;
-                    myNode[i].extra->Heat->Qh = boundaryHeatConductivity*deltaT/deltaZ;
+                    if (myStructure.computeHeatAdvective)
+                        if (groundWater.temperature != NODATA)
+                        {
+                            myNode[i].boundary->advectiveHeatFlux = myNode[i].Qw * HEAT_CAPACITY_WATER * (myNode[i].extra->Heat->T - myNode[i].boundary->fixedTemperature) / myNode[i].up.area;
+                            myNode[i].extra->Heat->Qh += myNode[i].up.area * myNode[i].boundary->advectiveHeatFlux;
+                        }
+
+                    if (myNode[i].boundary->fixedTemperature != NODATA)
+                    {
+                        double boundaryHeatConductivity = SoilHeatConductivity(i);
+                        double deltaT = myNode[i].boundary->fixedTemperature - myNode[i].extra->Heat->T;
+                        double deltaZ = myNode[i-1].z - myNode[i].z;
+                        myNode[i].extra->Heat->Qh = boundaryHeatConductivity*deltaT/deltaZ;
+                    }
+                }
+
+                else if (myNode[i].boundary->type == BOUNDARY_PRESCRIBEDTOTALPOTENTIAL)
+                {
+                    if (myStructure.computeHeatAdvective)
+                        if (groundWater.temperature != NODATA)
+                        {
+                            myNode[i].boundary->advectiveHeatFlux = myNode[i].Qw * HEAT_CAPACITY_WATER * (myNode[i].extra->Heat->T - myNode[i].boundary->fixedTemperature) / myNode[i].up.area;
+                            myNode[i].extra->Heat->Qh += myNode[i].up.area * myNode[i].boundary->advectiveHeatFlux;
+                        }
+
+                    if (myStructure.computeHeatAdvective)
+                        if (groundWater.temperature != NODATA)
+                        {
+                            myNode[i].boundary->advectiveHeatFlux = myNode[i].Qw * HEAT_CAPACITY_WATER * (myNode[i].extra->Heat->T - groundWater.temperature) / myNode[i].up.area;
+                            myNode[i].extra->Heat->Qh += myNode[i].up.area * myNode[i].boundary->advectiveHeatFlux;
+                        }
                 }
             }
-
-            else if (myNode[i].boundary->type == BOUNDARY_PRESCRIBEDTOTALPOTENTIAL)
-            {
-                if (myStructure.computeHeatAdvective)
-                    if (groundWater.temperature != NODATA)
-                    {
-                        myNode[i].boundary->advectiveHeatFlux = myNode[i].Qw * HEAT_CAPACITY_WATER * (myNode[i].extra->Heat->T - myNode[i].boundary->fixedTemperature) / myNode[i].up.area;
-                        myNode[i].extra->Heat->Qh += myNode[i].up.area * myNode[i].boundary->advectiveHeatFlux;
-                    }
-
-                if (myStructure.computeHeatAdvective)
-                    if (groundWater.temperature != NODATA)
-                    {
-                        myNode[i].boundary->advectiveHeatFlux = myNode[i].Qw * HEAT_CAPACITY_WATER * (myNode[i].extra->Heat->T - groundWater.temperature) / myNode[i].up.area;
-                        myNode[i].extra->Heat->Qh += myNode[i].up.area * myNode[i].boundary->advectiveHeatFlux;
-                    }
-            }
-
+            */
         }
     }
 }

@@ -156,7 +156,7 @@
 
     // [J m-3 K-1] volumetric specific heat
     #define HEAT_CAPACITY_WATER 4182000
-    #define HEAT_CAPACITY_AIR  1005000
+    #define HEAT_CAPACITY_AIR  1290
     #define HEAT_CAPACITY_SNOW 2100000
     #define HEAT_CAPACITY_MINERAL 2310000
 

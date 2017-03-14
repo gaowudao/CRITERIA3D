@@ -841,11 +841,11 @@ double DLL_EXPORT __STDCALL computeStep(double maxTime)
     else
         deltaT = maxTime;
 
-    /*if (myStructure.computeHeat)
+    if (myStructure.computeHeat)
     {
         updateBoundaryHeat();
         HeatComputation(deltaT);
-    }*/
+    }
 
     return maxTime;
 }
@@ -1379,10 +1379,10 @@ double DLL_EXPORT getNodeVapor(long i)
     if (i >= myStructure.nrNodes) return(INDEX_ERROR);
     if (! myStructure.computeHeat || ! myStructure.computeHeatLatent) return (MISSING_DATA_ERROR);
 
-    double Psi = myNode[i].H - myNode[i].z;
+    double h = myNode[i].H - myNode[i].z;
     double T = myNode[i].extra->Heat->T;
 
-    return VaporFromPsiTemp(Psi, T);
+    return VaporFromPsiTemp(h, T);
 }
 
 /*!
@@ -1390,16 +1390,25 @@ double DLL_EXPORT getNodeVapor(long i)
  * \param nodeIndex
  * \return heat storage [J]
 */
-double DLL_EXPORT getHeat(long i)
+double DLL_EXPORT getHeat(long i, double h)
 {
     if (myNode == NULL) return(TOPOGRAPHY_ERROR);
     if (i >= myStructure.nrNodes) return(INDEX_ERROR);
     if (! myStructure.computeHeat) return (MISSING_DATA_ERROR);
     if (myNode[i].extra->Heat == NULL) return MISSING_DATA_ERROR;
-    if (myNode[i].H == NODATA || myNode[i].extra->Heat->T == NODATA) return MISSING_DATA_ERROR;
+    if (myNode[i].extra->Heat->T == NODATA) return MISSING_DATA_ERROR;
 
-    return (soilHeatCapacity(i, myNode[i].H) * myNode[i].volume_area  * myNode[i].extra->Heat->T);
+    double theta = theta_from_sign_Psi(h, i);
+    double myHeat = SoilHeatCapacity(i, theta) * myNode[i].volume_area  * myNode[i].extra->Heat->T;
 
+    if (myStructure.computeHeatLatent)
+    {
+        double vaporConc = VaporFromPsiTemp(h, myNode[i].extra->Heat->T);
+        double airFraction = myNode[i].Soil->Theta_s - theta;
+        myHeat += vaporConc * airFraction * LatentHeatVaporization(myNode[i].extra->Heat->T - ZEROCELSIUS);
+    }
+
+    return (myHeat);
 }
 
 }

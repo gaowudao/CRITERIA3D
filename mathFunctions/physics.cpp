@@ -120,7 +120,7 @@ double getAirVaporDeficit(double myT, double myVapor)
  * \return result
  */
 double LatentHeatVaporization(double myTCelsius)
-{	return (2501000. - 2361. * myTCelsius); }
+{	return (2501000. - 2369.2 * myTCelsius); }
 
 
 /*!
