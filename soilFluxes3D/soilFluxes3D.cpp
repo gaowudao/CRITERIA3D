@@ -843,7 +843,7 @@ double DLL_EXPORT __STDCALL computeStep(double maxTime)
 
     if (myStructure.computeHeat)
     {
-        updateBoundaryHeat_();
+        updateBoundaryHeat();
         HeatComputation(deltaT);
     }
 

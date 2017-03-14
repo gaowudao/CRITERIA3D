@@ -166,8 +166,6 @@ void computeMassBalance(double deltaT)
 }
 
 
-
-
 double getMatrixValue(long i, TlinkedNode *link)
 {
 	if (link != NULL)

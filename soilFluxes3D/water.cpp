@@ -78,7 +78,7 @@ double getWaterFlux(long i, TlinkedNode *link)
         return (flow);
         }
     else
-		return(double(INDEX_ERROR));
+        return(0.);
 }
 
 
@@ -215,7 +215,7 @@ double thermalVaporFlow(long i, TlinkedNode *myLink)
     double meanKv = computeMean(Kvt, KvtLink);
 
     // kg m-2 s-1
-    double myFlowDensity = meanKv * (myTMean - myTLinkMean) / distance(i, j);
+    double myFlowDensity = meanKv * (myTLinkMean - myTMean) / distance(i, j);
 
     // m3 s-1
     return (myFlowDensity * (*myLink).area / WATER_DENSITY);
@@ -309,6 +309,7 @@ bool waterFlowComputation(double deltaT)
                  dThetadH = dTheta_dH(i);
                  C[i] = myNode[i].volume_area  * dThetadH;
 
+                 // vapor capacity term
                  if (myStructure.computeHeat && myStructure.computeHeatLatent)
                  {
                      avgTemperature = computeMean(myNode[i].extra->Heat->T, myNode[i].extra->Heat->oldT);
@@ -423,8 +424,7 @@ bool waterFlowComputation(double deltaT)
 
         /*! update boundary conditions */
         updateBoundary();
-        //updateBoundaryWater(*acceptedTime);
-        updateBoundaryWater_();
+        updateBoundaryWater(*acceptedTime);
 
         isStepOK = waterFlowComputation(*acceptedTime);
 
