@@ -12,9 +12,10 @@ MainWindow::MainWindow(QWidget *parent) :
     //datasets << "agrmet" << "cer" ;
     datasets << "agrmet";
 
-    Download* downloadTest = new Download(this);
-    QString dbName = "/home/laura/criteria3D/DATA/template/prova.db";
-    downloadTest->getPointProperties(datasets,dbName);
+    Download* download = new Download("/home/laura/criteria3D/DATA/template/prova.db", this);
+    //downloadTest->getPointProperties(datasets);
+
+    download->debugFromFile();
 
 }
 

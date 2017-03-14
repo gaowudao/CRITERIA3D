@@ -43,14 +43,9 @@ int main(int argc, char *argv[])
 
     //setProxy("172.16.1.21", 8080);
 
-    //MainWindow w;
-    //w.show();
+    MainWindow w;
+    w.show();
 
-    //////////test
-    Download* downloadTest = new Download();
-    QString dbName = "/home/laura/criteria3D/DATA/template/prova.db";
-    downloadTest->debugFromFile();
-    ///
 
 
     return a.exec();
