@@ -2,10 +2,11 @@
 #define DBMETEOPOINTS_H
 
 #include <QString>
+#include <QtSql>
 
 struct TPointProperties {
     int id;
-    int name;
+    QString name;
     QString network;
     double lat;
     double lon;
@@ -20,10 +21,27 @@ struct TPointProperties {
     QString municipality;
 };
 
-QString getDatasetURL(QString dbName, QString dataset);
-QStringList getDatasetsActive(QString dbName);
-QString getVarName(QString dbName, int id);
-int getId(QString dbName, QString VarName);
-void fillPointProperties(QString dbName, TPointProperties* pointProp);
+
+
+class DbMeteoPoints : public QObject
+{
+    Q_OBJECT
+    public:
+        explicit DbMeteoPoints(QString dbName);
+        ~DbMeteoPoints();
+        void dbManager();
+        QString getDatasetURL(QString dataset);
+        QStringList getDatasetsActive();
+        QString getVarName(int id);
+        int getId(QString VarName);
+        bool fillPointProperties(TPointProperties* pointProp);
+    private:
+        QSqlDatabase _db;
+    signals:
+
+    protected slots:
+
+};
+
 
 #endif // DBMETEOPOINTS_H

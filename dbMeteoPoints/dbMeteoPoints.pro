@@ -18,12 +18,15 @@ TARGET = dbMeteoPoints
 
 TEMPLATE = app #solo x test
 
-INCLUDEPATH += ../mathFunctions ../meteo
+INCLUDEPATH += ../mathFunctions ../gis ../meteo
+
+LIBS += -L../mathFunctions/release -lmathFunctions
+LIBS += -L../gis/release -lgis
 
 SOURCES += dbMeteoPoints.cpp \
-    main.cpp \
     download.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    main.cpp
 
 HEADERS += dbMeteoPoints.h \
     download.h \
