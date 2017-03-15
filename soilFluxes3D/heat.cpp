@@ -64,8 +64,11 @@ void computeHeatBalance(double myTimeStep)
     double deltaHeatStorage = balanceCurrentTimeStep.storageHeat - balancePreviousTimeStep.storageHeat;
     balanceCurrentTimeStep.heatMBE = deltaHeatStorage - balanceCurrentTimeStep.sinkSourceHeat;
 
-    double referenceHeat = maxValue(fabs(balanceCurrentTimeStep.sinkSourceHeat), balanceCurrentTimeStep.storageHeat * 1e-5);
+    double referenceHeat = maxValue(fabs(balanceCurrentTimeStep.sinkSourceHeat), balanceCurrentTimeStep.storageHeat * 1e-6);
     balanceCurrentTimeStep.heatMBR = 1. - balanceCurrentTimeStep.heatMBE / referenceHeat;
+
+    double mbr = balanceCurrentTimeStep.heatMBR;
+    double mbe = balanceCurrentTimeStep.heatMBE;
 }
 
 void storeHeatFlows(long myIndex, TlinkedNode *myLink)
@@ -583,8 +586,6 @@ bool HeatComputation(double myTimeStep)
                 if (myStructure.computeHeat) saveWaterFluxes();
 			}
 
-
-
         for (i = 1; i < myStructure.nrNodes; i++)
 			{
                 C0[i] = 0.;
@@ -610,17 +611,17 @@ bool HeatComputation(double myTimeStep)
 
                 while ((j < myStructure.maxNrColumns) && (A[i][j].index != NOLINK))
 				{
-                    sum += A[i][j].val; // * myParameters.heatWeightingFactor);
-                    //myDeltaTemp0 = myNode[A[i][j].index].extra->Heat->oldT - myNode[i].extra->Heat->oldT;
-                    //sumFlow0 += A[i][j].val * (1. - myParameters.heatWeightingFactor) * myDeltaTemp0;
-                    A[i][j++].val *= -1.0; // -(myParameters.heatWeightingFactor);
+                    sum += A[i][j].val * myParameters.heatWeightingFactor;
+                    myDeltaTemp0 = myNode[A[i][j].index].extra->Heat->oldT - myNode[i].extra->Heat->oldT;
+                    sumFlow0 += A[i][j].val * (1. - myParameters.heatWeightingFactor) * myDeltaTemp0;
+                    A[i][j++].val *= -(myParameters.heatWeightingFactor);
 				}
 
                 /*! sum of diagonal elements */
                 A[i][0].val =  C[i] / myTimeStep + sum;
 
                 /*! b vector (constant terms) */
-                b[i] = C[i] * myNode[i].extra->Heat->oldT / myTimeStep + myNode[i].extra->Heat->Qh + C0[i]; // + sumFlow0 ;
+                b[i] = C[i] * myNode[i].extra->Heat->oldT / myTimeStep + myNode[i].extra->Heat->Qh + C0[i] + sumFlow0 ;
 
 				// precondizionamento
 				if (A[i][0].val > 0)
