@@ -154,5 +154,4 @@
 
      extern Tbalance balanceCurrentTimeStep, balancePreviousTimeStep, balanceCurrentPeriod, balanceWholePeriod;
 
-     extern TgroundWater groundWater;
 #endif

@@ -39,7 +39,6 @@ struct TboundaryHeat{
     double temperature;                     /*!< [K] temperature of the boundary (ex. air temperature) */
     double relativeHumidity;                /*!< [] relative humidity */
     double vaporConcentration;              /*!< [kg m-3] water vapour concentration */
-    double invariantFluxes;                 /*!< [W] fluxes which are not to be updated inside */
     double height;                          /*!< [m] reference height */
     double roughnessHeight;                 /*!< [m] surface roughness height */
     double windSpeed;                       /*!< [m s-1] wind speed */
@@ -54,19 +53,10 @@ struct TboundaryHeat{
     double albedo;                          /*!< [] albedo */
 };
 
-struct TgroundWater{                        /*!< [K] ground water temperature */
-    double temperature;
-
-    void initialize()
-    {
-         temperature = NODATA;
-    }
-};
-
 struct THeatFlux{
+    double diffusive;                   // [W]
     double isothermLatent;  			// [W]
     double advective;                   // [W]
-    double diffusive;                   // [W]
     double thermLatent;                 // [W]
     double waterFlux;                   // [m3 s-1]
     } ;
@@ -74,9 +64,8 @@ struct THeatFlux{
 struct TCrit3DNodeHeat{
     double T;					/*!< [K] node temperature */
     double oldT;				/*!< [K] old node temperature */
-    double Kh;					/*!< [W m^-1 K^-1] thermal conductivity */
-    double vapor;				/*!< [kg] water vapor concentration */
-    double Qh;					/*!< [W] heat sink/source */
+    double Qh;					/*!< [W] heat flow */
+    double sinkSource;          /*!< [W] heat sink/source */
 };
 
 struct TCrit3DLinkedNodeExtra{

@@ -69,7 +69,6 @@ void initializeBoundary(Tboundary *myBoundary, int myType, float slope)
         (*myBoundary).Heat->soilConductance = NODATA;
         (*myBoundary).Heat->albedo = NODATA;
 
-        (*myBoundary).Heat->invariantFluxes = 0.;
         (*myBoundary).Heat->radiativeFlux = 0;
         (*myBoundary).Heat->latentFlux = 0;
         (*myBoundary).Heat->sensibleFlux = 0;
@@ -314,8 +313,7 @@ void updateBoundaryWater(double deltaT)
                     myNode[i].Qw += subVaporSinkSource;
                     myNode[i].boundary->waterFlow = subVaporSinkSource + surfaceVaporSinkSource;
                 }
-            }
-            */
+            }*/
         }
     }
 }
@@ -327,7 +325,7 @@ void updateBoundaryHeat()
     {
         if (myNode[i].extra->Heat != NULL)
         {
-            myNode[i].extra->Heat->Qh = 0.;
+            myNode[i].extra->Heat->Qh = myNode[i].extra->Heat->sinkSource;
 
             if (myNode[i].boundary != NULL)
             {
@@ -376,11 +374,13 @@ void updateBoundaryHeat()
                         myNode[i].boundary->advectiveHeatFlux += soilFluxes3D::getWaterFlow(i, UP) * HEAT_CAPACITY_WATER * (myNode[i].boundary->Heat->rainTemperature - myNode[i].extra->Heat->T) / myNode[i].up.area;
                     */
 
-                    myNode[i].extra->Heat->Qh += myNode[i].up.area * (myNode[i].boundary->Heat->invariantFluxes +
-                            myNode[i].boundary->Heat->radiativeFlux + myNode[i].boundary->Heat->sensibleFlux +
-                            myNode[i].boundary->Heat->latentFlux + myNode[i].boundary->advectiveHeatFlux);
+                    myNode[i].extra->Heat->Qh += myNode[i].up.area * (myNode[i].boundary->Heat->radiativeFlux +
+                                                                      myNode[i].boundary->Heat->sensibleFlux +
+                                                                      myNode[i].boundary->Heat->latentFlux +
+                                                                      myNode[i].boundary->advectiveHeatFlux);
                 }
-                else if (myNode[i].boundary->type == BOUNDARY_FREEDRAINAGE)
+                else if (myNode[i].boundary->type == BOUNDARY_FREEDRAINAGE ||
+                         myNode[i].boundary->type == BOUNDARY_PRESCRIBEDTOTALPOTENTIAL)
                 {
                     if (myStructure.computeHeatAdvective)
                     {
@@ -395,6 +395,8 @@ void updateBoundaryHeat()
                         myNode[i].boundary->advectiveHeatFlux = myHeatFlux;
 
                         myNode[i].extra->Heat->Qh += myNode[i].up.area * myNode[i].boundary->advectiveHeatFlux;
+                    }
+
                     /*
                     if (myNode[i].boundary->fixedTemperature != NODATA)
                     {
@@ -403,25 +405,8 @@ void updateBoundaryHeat()
                         double deltaZ = myNode[i-1].z - myNode[i].z;
                         myNode[i].extra->Heat->Qh = boundaryHeatConductivity*deltaT/deltaZ;
                     }*/
-                    }
-                }
 
-                else if (myNode[i].boundary->type == BOUNDARY_PRESCRIBEDTOTALPOTENTIAL)
-                {
-                    if (myStructure.computeHeatAdvective)
-                        if (groundWater.temperature != NODATA)
-                        {
-                            myNode[i].boundary->advectiveHeatFlux = myNode[i].Qw * HEAT_CAPACITY_WATER * (myNode[i].extra->Heat->T - myNode[i].boundary->fixedTemperature) / myNode[i].up.area;
-                            myNode[i].extra->Heat->Qh += myNode[i].up.area * myNode[i].boundary->advectiveHeatFlux;
-                        }
-
-                    if (myStructure.computeHeatAdvective)
-                        if (groundWater.temperature != NODATA)
-                        {
-                            myNode[i].boundary->advectiveHeatFlux = myNode[i].Qw * HEAT_CAPACITY_WATER * (myNode[i].extra->Heat->T - groundWater.temperature) / myNode[i].up.area;
-                            myNode[i].extra->Heat->Qh += myNode[i].up.area * myNode[i].boundary->advectiveHeatFlux;
-                        }
-                }
+                }                
             }
         }
     }

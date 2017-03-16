@@ -38,9 +38,7 @@ void initializeExtraHeat(TCrit3DNodeHeat* myNodeExtraHeat)
 {
     (*myNodeExtraHeat).T = ZEROCELSIUS + 20;
     (*myNodeExtraHeat).oldT = ZEROCELSIUS + 20;
-    (*myNodeExtraHeat).Kh = 0;
     (*myNodeExtraHeat).Qh = 0;
-    (*myNodeExtraHeat).vapor = 0;
 }
 
 void initializeExtra(TCrit3DnodeExtra *myNodeExtra, bool computeHeat, bool computeSolutes)
@@ -68,6 +66,7 @@ void initializeLinkExtra(TCrit3DLinkedNodeExtra* myLinkedNodeExtra, bool compute
         (*myLinkedNodeExtra).heatFlux->diffusive = 0;
         (*myLinkedNodeExtra).heatFlux->isothermLatent = 0;
         (*myLinkedNodeExtra).heatFlux->thermLatent = 0;
+        (*myLinkedNodeExtra).heatFlux->waterFlux = 0.;
     }
     else (*myLinkedNodeExtra).heatFlux = NULL;
 

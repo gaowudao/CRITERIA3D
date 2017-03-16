@@ -34,6 +34,7 @@
 #include <math.h>
 #include <malloc.h>
 
+#include "physics.h"
 #include "header/types.h"
 #include "header/water.h"
 #include "header/soilPhysics.h"
@@ -218,7 +219,9 @@ double thermalVaporFlow(long i, TlinkedNode *myLink)
     double myFlowDensity = meanKv * (myTLinkMean - myTMean) / distance(i, j);
 
     // m3 s-1
-    return (myFlowDensity * (*myLink).area / WATER_DENSITY);
+    double myFlow = myFlowDensity * (*myLink).area / WATER_DENSITY;
+
+    return (myFlow);
 }
 
 /*!
@@ -267,12 +270,9 @@ bool computeFlux(long i, int matrixIndex, TlinkedNode *link, double deltaT, unsi
     if (myStructure.computeHeat && myStructure.computeHeatLatent &&
         ! myNode[i].isSurface && ! myNode[j].isSurface)
     {
-        double myLatent;
-        myLatent = thermalVaporFlow(i, link);
-        C0[i] += myLatent;
-
-        if (link->linkedExtra->heatFlux != NULL)
-            link->linkedExtra->heatFlux->thermLatent = myLatent;
+        double vaporThermal;
+        vaporThermal = thermalVaporFlow(i, link);
+        C0[i] += vaporThermal;
     }
 
     return (true);
@@ -320,7 +320,7 @@ bool waterFlowComputation(double deltaT)
         }
 
         // update boundary conditions
-        updateBoundaryWater(deltaT);
+        // updateBoundaryWater(deltaT);
 
         /*! computes the matrix elements */
         for (i = 0; i < myStructure.nrNodes; i++)

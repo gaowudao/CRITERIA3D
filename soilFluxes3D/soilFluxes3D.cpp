@@ -52,8 +52,6 @@ TCrit3DStructure myStructure;
 TCrit3Dnode *myNode = NULL;
 TmatrixElement **A = NULL;
 
-TgroundWater groundWater;
-
 double *C0 = NULL;
 double *C = NULL;
 double *X = NULL;
@@ -108,8 +106,6 @@ namespace soilFluxes3D {
         myStructure.computeHeat = true;
         myStructure.computeWater = true;
     }
-
-    groundWater.initialize();
 
     myStructure.nrNodes = nrNodes;
     myStructure.nrLayers = nrLayers;
@@ -898,17 +894,6 @@ int DLL_EXPORT __STDCALL SetFixedTemperature(long nodeIndex, double myT)
 }
 
 /*!
- * \brief Set ground water temperature
- * \param myTemperature [K]
- * \return OK/ERROR
- */
-int DLL_EXPORT SetGroundWaterTemperature(double myTemperature)
-{
-    groundWater.temperature = myTemperature;
-    return(CRIT3D_OK);
-}
-
-/*!
  * \brief Set boundary wind speed
  * \param nodeIndex
  * \param myWindSpeed [m s-1]
@@ -968,7 +953,7 @@ int DLL_EXPORT __STDCALL SetHeatBoundaryRoughness(long nodeIndex, double myRough
 }
 
 /*!
- * \brief Set heat sink source
+ * \brief Set heat sink/source
  * \param nodeIndex
  * \param myHeatFlow [W]
  * \return OK/ERROR
@@ -981,10 +966,7 @@ int DLL_EXPORT __STDCALL SetHeatSinkSource(long nodeIndex, double myHeatFlow)
    if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes))
        return(INDEX_ERROR);
 
-   if (myNode[nodeIndex].boundary != NULL && myNode[nodeIndex].boundary->Heat != NULL)
-       myNode[nodeIndex].boundary->Heat->invariantFluxes = myHeatFlow;
-   else
-       myNode[nodeIndex].extra->Heat->Qh = myHeatFlow;
+   myNode[nodeIndex].extra->Heat->sinkSource = myHeatFlow;
 
    return(CRIT3D_OK);
 }
@@ -1398,14 +1380,12 @@ double DLL_EXPORT getHeat(long i, double h)
     if (myNode[i].extra->Heat == NULL) return MISSING_DATA_ERROR;
     if (myNode[i].extra->Heat->T == NODATA) return MISSING_DATA_ERROR;
 
-    double theta = theta_from_sign_Psi(h, i);
-    double myHeat = SoilHeatCapacity(i, theta) * myNode[i].volume_area  * myNode[i].extra->Heat->T;
+    double myHeat = SoilHeatCapacity(i, h, myNode[i].extra->Heat->T) * myNode[i].volume_area  * myNode[i].extra->Heat->T;
 
     if (myStructure.computeHeatLatent)
     {
-        double vaporConc = VaporFromPsiTemp(h, myNode[i].extra->Heat->T);
-        double airFraction = myNode[i].Soil->Theta_s - theta;
-        myHeat += vaporConc * airFraction * LatentHeatVaporization(myNode[i].extra->Heat->T - ZEROCELSIUS);
+        double thetaV = VaporThetaV(h, myNode[i].extra->Heat->T, i);
+        myHeat += thetaV * LatentHeatVaporization(myNode[i].extra->Heat->T - ZEROCELSIUS);
     }
 
     return (myHeat);
