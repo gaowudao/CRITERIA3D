@@ -43,6 +43,11 @@ int main(int argc, char *argv[])
 
     //setProxy("172.16.1.21", 8080);
 
+//    QList<int> test;
+//    DbMeteoPoints* prova = new DbMeteoPoints("/home/laura/criteria3D/DATA/template/prova.db");
+//    test = prova->getHourlyVar();
+//    qDebug() << test;
+
     MainWindow w;
     w.show();
 

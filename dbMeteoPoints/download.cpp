@@ -236,7 +236,7 @@ void Download::downloadMetadata(QJsonObject obj)
     }
 
     double utmx, utmy;
-    int utmZone = 32; // dove far inserire la utmZone?
+    int utmZone = 32; // dove far inserire la utmZone? c'è funzione che data lat,lon restituisce utm zone?
     gis::latLonToUtmForceZone(utmZone, pointProp->lat, pointProp->lon, &utmx, &utmy);
     pointProp->utm_x = utmx;
     pointProp->utm_y = utmy;
@@ -245,3 +245,12 @@ void Download::downloadMetadata(QJsonObject obj)
 
 }
 
+
+void Download::downloadDailyVar(Crit3DDate dataStartInput, Crit3DDate dataEndInput, QStringList dataset, QList<int> station, QList<int> variable)
+{
+
+    // x ogni dataset chiamare la getDatasetURL, a cui concatenare
+    // sURL = "http://arkioss.metarpa:8090/dataset/cer" & "/query?query=" & reftime & ";area: " & stationlist & ";product:" & variablelist & "&style=postprocess"
+    // se station è array vuoto -> tutte le stazioni (omettere nell'url area: in modo le prenda tutte), se variable è array vuoto -> tutte le variabili giornaliere getDailyVar
+
+}

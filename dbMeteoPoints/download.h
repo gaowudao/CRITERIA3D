@@ -4,6 +4,9 @@
 #include <QNetworkRequest>
 #include <QtNetwork>
 #include "dbMeteoPoints.h"
+#ifndef CRIT3DDATE_H
+    #include "crit3dDate.h"
+#endif
 #ifndef GIS_H
     #include "gis.h"
 #endif
@@ -17,6 +20,7 @@ class Download : public QObject
         ~Download();
         void getPointProperties(QStringList datasetList);
         void downloadMetadata(QJsonObject obj);
+        void downloadDailyVar(Crit3DDate dataStartInput, Crit3DDate dataEndInput, QStringList dataset, QList<int> station, QList<int> variable);
         void debugFromFile(); //cancellare
     private:
         QNetworkAccessManager* _manager;

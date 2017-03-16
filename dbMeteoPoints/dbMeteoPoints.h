@@ -33,6 +33,8 @@ class DbMeteoPoints : public QObject
         QString getDatasetURL(QString dataset);
         QStringList getDatasetsActive();
         QString getVarName(int id);
+        QList<int> getDailyVar();
+        QList<int> getHourlyVar();
         int getId(QString VarName);
         bool fillPointProperties(TPointProperties* pointProp);
     private:

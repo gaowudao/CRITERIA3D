@@ -136,6 +136,58 @@ int DbMeteoPoints::getId(QString VarName)
     return id;
 }
 
+QList<int> DbMeteoPoints::getDailyVar()
+{
+    QList<int> dailyVarList;
+    QSqlQuery qry;
+
+    qry.prepare( "SELECT id_arkimet FROM variable_properties WHERE aggregation_time = 86400" );
+
+    if( !qry.exec() )
+        qDebug() << qry.lastError();
+    else
+    {
+        qDebug( "Selected!" );
+
+        while (qry.next())
+        {
+            int id = qry.value(0).toInt();
+            dailyVarList << id;
+
+        }
+
+    }
+
+    return dailyVarList;
+
+}
+
+QList<int> DbMeteoPoints::getHourlyVar()
+{
+    QList<int> hourlyVarList;
+    QSqlQuery qry;
+
+    qry.prepare( "SELECT id_arkimet FROM variable_properties WHERE aggregation_time < 86400" );
+
+    if( !qry.exec() )
+        qDebug() << qry.lastError();
+    else
+    {
+        qDebug( "Selected!" );
+
+        while (qry.next())
+        {
+            int id = qry.value(0).toInt();
+            hourlyVarList << id;
+
+        }
+
+    }
+
+    return hourlyVarList;
+
+}
+
 bool DbMeteoPoints::fillPointProperties(TPointProperties* pointProp)
 {
 
