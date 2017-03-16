@@ -403,7 +403,7 @@ void updateBoundaryHeat()
                         double boundaryHeatConductivity = SoilHeatConductivity(i);
                         double deltaT = myNode[i].boundary->fixedTemperature - myNode[i].extra->Heat->T;
                         double deltaZ = myNode[i-1].z - myNode[i].z;
-                        myNode[i].extra->Heat->Qh = boundaryHeatConductivity*deltaT/deltaZ;
+                        myNode[i].extra->Heat->Qh += boundaryHeatConductivity*deltaT/deltaZ;
                     }*/
 
                 }                

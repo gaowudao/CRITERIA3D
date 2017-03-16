@@ -393,8 +393,8 @@ double AirHeatConductivity(long i)
         coeff= myLambda;
 
         // advective heat flux associated with thermal vapor flux
-        //if (myStructure.computeHeatAdvective)
-        //    coeff += myNode[i].extra->Heat->T * HEAT_CAPACITY_AIR;
+        if (myStructure.computeHeatAdvective)
+            coeff += myNode[i].extra->Heat->T * HEAT_CAPACITY_WATER;
 
         myKvt = ThermalVaporConductivity(i, myNode[i].extra->Heat->T, hMean);
         Ka += coeff * myKvt;
@@ -467,7 +467,7 @@ double MeanIsothermalVaporConductivity(long i, long linkIndex)
     return (computeMean(myKvi, myLinkKvi));
 }
 
-double SoilLatentIsothermal(long myIndex, TlinkedNode *myLink)
+double SoilLatentIsothermal(long i, TlinkedNode *myLink)
 {	// isothermal latent heat
     // the thermal component is already explicitly computed inside getHeatConductivity
 
@@ -478,27 +478,27 @@ double SoilLatentIsothermal(long myIndex, TlinkedNode *myLink)
     double myLatentFlux;						// (J m-1 s-1) latent heat flow
     double coeff;
 
-    long myLinkIndex = (*myLink).index;
+    long j = (*myLink).index;
 
-    myLambda = LatentHeatVaporization(myNode[myIndex].extra->Heat->T - ZEROCELSIUS);
-    linkLambda = LatentHeatVaporization(myNode[myLinkIndex].extra->Heat->T - ZEROCELSIUS);
+    myLambda = LatentHeatVaporization(myNode[i].extra->Heat->T - ZEROCELSIUS);
+    linkLambda = LatentHeatVaporization(myNode[j].extra->Heat->T - ZEROCELSIUS);
 
-    myKv = MeanIsothermalVaporConductivity(myIndex, myLinkIndex);
+    myKv = MeanIsothermalVaporConductivity(i, j);
     meanLambda = computeMean(myLambda, linkLambda);
 
 	// conversion to J/kg (m2/s2)
-    myPsi = (getHMean(myIndex) - myNode[myIndex].z) * GRAVITY;
-    myLinkPsi = (getHMean(myLinkIndex) - myNode[myLinkIndex].z) * GRAVITY;
+    myPsi = (getHMean(i) - myNode[i].z) * GRAVITY;
+    myLinkPsi = (getHMean(j) - myNode[j].z) * GRAVITY;
 
     myDeltaPsi = (myLinkPsi - myPsi);
 
     coeff = meanLambda;
 
     // advective heat flux associated with isothermal vapor flux
-    //if (myStructure.computeHeatAdvective)
-    //    coeff += myNode[i].extra->Heat->T * HEAT_CAPACITY_WATER;
+    if (myStructure.computeHeatAdvective)
+        coeff += myNode[i].extra->Heat->T * HEAT_CAPACITY_WATER;
 
-    myLatentFlux = coeff * myKv * myDeltaPsi / distance(myIndex, myLinkIndex);
+    myLatentFlux = coeff * myKv * myDeltaPsi / distance(i, j);
 
     return (myLatentFlux);
 }
