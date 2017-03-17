@@ -914,25 +914,6 @@ int DLL_EXPORT __STDCALL SetHeatBoundaryWindSpeed(long nodeIndex, double myWindS
 }
 
 /*!
- * \brief Set boundary rain temperature
- * \param nodeIndex
- * \param myTemperature [K]
- * \return OK/ERROR
- */
-int DLL_EXPORT __STDCALL SetHeatBoundaryRainTemperature(long nodeIndex, double myTemperature)
-{
-   if (myNode == NULL) return(MEMORY_ERROR);
-   if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
-
-   if (myNode[nodeIndex].boundary == NULL || myNode[nodeIndex].boundary->Heat == NULL)
-       return (BOUNDARY_ERROR);
-
-   myNode[nodeIndex].boundary->Heat->rainTemperature = myTemperature;
-
-   return(CRIT3D_OK);
-}
-
-/*!
  * \brief Set boundary roughness height
  * \param nodeIndex
  * \param myRoughness [m]
@@ -1385,7 +1366,7 @@ double DLL_EXPORT getHeat(long i, double h)
     if (myStructure.computeHeatLatent)
     {
         double thetaV = VaporThetaV(h, myNode[i].extra->Heat->T, i);
-        myHeat += thetaV * LatentHeatVaporization(myNode[i].extra->Heat->T - ZEROCELSIUS);
+        myHeat += thetaV * LatentHeatVaporization(myNode[i].extra->Heat->T - ZEROCELSIUS) * WATER_DENSITY * myNode[i].volume_area;
     }
 
     return (myHeat);

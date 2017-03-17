@@ -213,7 +213,7 @@ double AerodynamicConductanceOpenwater(double myHeight, double mySurface, double
 {	// aerodynamic resistance for an open water surface (s m-1)
     // McJannet et al 2008
 
-    // controllare unita' di misura!!
+    // CONTROLLARE UNITA' DI MISURA!!
 
     double myPressure;		// Pa
     double myT;				// K

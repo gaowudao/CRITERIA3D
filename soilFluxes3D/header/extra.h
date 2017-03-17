@@ -42,7 +42,6 @@ struct TboundaryHeat{
     double height;                          /*!< [m] reference height */
     double roughnessHeight;                 /*!< [m] surface roughness height */
     double windSpeed;                       /*!< [m s-1] wind speed */
-    double rainTemperature;                 /*!< [K] temperature of rain water */
     double globalIrradiance;                /*!< [W m-2] global shortwave irradiance */
     double netIrradiance;                   /*!< [W m-2] net irradiance */
     double sensibleFlux;                    /*!< [W m-2] boundary sensible heat flow density */
