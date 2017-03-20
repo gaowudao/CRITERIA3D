@@ -4,6 +4,10 @@
 #include <QString>
 #include <QtSql>
 
+#ifndef CRIT3DDATE_H
+    #include "crit3dDate.h"
+#endif
+
 struct TPointProperties {
     int id;
     QString name;
@@ -21,7 +25,9 @@ struct TPointProperties {
     QString municipality;
 };
 
-
+#define PREC_ID 250
+#define RAD_ID 706
+#define DAILY_TO_INTEGRAL_RAD 86400
 
 class DbMeteoPoints : public QObject
 {
@@ -37,6 +43,9 @@ class DbMeteoPoints : public QObject
         QList<int> getHourlyVar();
         int getId(QString VarName);
         bool fillPointProperties(TPointProperties* pointProp);
+        void initStationsTables(Crit3DDate dataStartInput, Crit3DDate dataEndInput, QList<int> stations);
+        void insertVarValue(QString station, QString date, int varType, double varValue, QString flag);
+        int arkIdmap(int arkId);
     private:
         QSqlDatabase _db;
     signals:

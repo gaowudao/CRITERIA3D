@@ -2,54 +2,44 @@
 #include "dbMeteoPoints.h"
 #include "commonConstants.h"
 
+#include <QEventLoop>
+
 #include <QDebug>
 #include <QObject>
 #include <QFile> //debug
 #include <QTextStream> //debug
 
+#include <QStringBuilder>
 
+const QByteArray Download::_authorization = QString("Basic " + QString("ugo:Ul1ss&").toLocal8Bit().toBase64()).toLocal8Bit();
 
-Download::Download(QString dbName, QObject* parent)
+Download::Download(QString dbName, QObject* parent) : QObject(parent)
 {
-
     _dbMeteo = new DbMeteoPoints(dbName);
-
-    _manager = new QNetworkAccessManager(this);
-    connect(_manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
 }
 
 Download::~Download()
 {
-    delete _manager;
     delete _dbMeteo;
 }
 
 void Download::getPointProperties(QStringList datasetList)
 {
 
+    QEventLoop loop;
+
+    QNetworkAccessManager* manager = new QNetworkAccessManager(this);
+    connect(manager, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
+
     _datasetsList = datasetList;
 
     QNetworkRequest request;
-    QNetworkReply* reply;
+    request.setUrl(QUrl("http://meteozen.metarpa/simcstations/api/stations"));
+    request.setRawHeader("Authorization", _authorization);
 
-    QString url = "http://meteozen.metarpa/simcstations/api/stations";
+    QNetworkReply* reply = manager->get(request);  // GET
 
-    QUrl stations(url);
-    // HTTP Basic authentication header value: base64(username:password)
-    QString concatenated = "ugo:Ul1ss&";  //username:password
-    QByteArray data = concatenated.toLocal8Bit().toBase64();
-    QString headerData = "Basic " + data;
-    qDebug() << "headerData" << headerData;
-    request.setUrl(stations);
-    request.setRawHeader("Authorization", headerData.toLocal8Bit());
-
-    reply = _manager->get(request);  // GET
-
-}
-
-// DA CONTROLLARE
-void Download::replyFinished(QNetworkReply* reply)
-{
+    loop.exec();
 
     if (reply->error() != QNetworkReply::NoError)
             qDebug( "Error!" );
@@ -105,6 +95,9 @@ void Download::replyFinished(QNetworkReply* reply)
          else
             qDebug() << "Invalid JSON...\n" << endl;
     }
+
+    delete reply;
+    delete manager;
 }
 
 // da cancellare, solo x test senza bisogno della rete
@@ -246,11 +239,123 @@ void Download::downloadMetadata(QJsonObject obj)
 }
 
 
-void Download::downloadDailyVar(Crit3DDate dataStartInput, Crit3DDate dataEndInput, QStringList dataset, QList<int> station, QList<int> variable)
+void Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStringList datasets, QList<int> stations, QList<int> variables, bool precSelection)
 {
 
-    // x ogni dataset chiamare la getDatasetURL, a cui concatenare
-    // sURL = "http://arkioss.metarpa:8090/dataset/cer" & "/query?query=" & reftime & ";area: " & stationlist & ";product:" & variablelist & "&style=postprocess"
-    // se station è array vuoto -> tutte le stazioni (omettere nell'url area: in modo le prenda tutte), se variable è array vuoto -> tutte le variabili giornaliere getDailyVar
+    // create station tables
+    _dbMeteo->initStationsTables(dateStart, dateEnd, stations);
+
+    QString area;
+    if (!stations.empty())
+    {
+
+        area = QString(";area: VM2,%1").arg(stations[0]);
+
+        for (int i = 1; i < stations.size(); i++)
+        {
+            area = area % QString(" or VM2,%1").arg(stations[i]);
+        }
+    }
+
+    QString product;
+    if (!variables.empty()) {
+
+        product = QString(";product: VM2,%1").arg(variables[0]);
+
+        for (int i = 1; i < variables.size(); i++)
+        {
+            product = product % QString(" or VM2,%1").arg(variables[i]);
+        }
+    }
+
+    for (Crit3DDate i = dateStart.addDays(180); dateEnd >= dateStart; i = dateStart.addDays(180))
+    {
+
+        if (i > dateEnd)
+            i = dateEnd;
+
+        // reftime
+        QString refTime = QString("reftime:>=%1,<=%2").arg(QString::fromStdString(dateStart.toStdString())).arg(QString::fromStdString(i.toStdString()));
+
+        foreach (QString dataset, datasets) {
+
+            QEventLoop loop;
+
+            QNetworkAccessManager* manager = new QNetworkAccessManager(this);
+            connect(manager, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
+
+            QUrl url = QUrl(QString("%1/query?query=%2%3%4&style=postprocess").arg(_dbMeteo->getDatasetURL(dataset)).arg(refTime).arg(area).arg(product));
+
+            QNetworkRequest request;
+            request.setUrl(url);
+            request.setRawHeader("Authorization", _authorization);
+
+            QNetworkReply* reply = manager->get(request);  // GET
+            loop.exec();
+
+            if (reply->error() != QNetworkReply::NoError)
+                    qDebug( "Error!" );
+            else
+            {
+
+                for (QString line = QString(reply->readLine()); !(line.isNull() || line.isEmpty());  line = QString(reply->readLine()))
+                {
+
+                    QStringList fields = line.split(",");
+
+                    QString date = QString("%1-%2-%3 %4:%500").arg(fields[0].left(4))
+                                                               .arg(fields[0].mid(4, 2))
+                                                               .arg(fields[0].mid(6, 2))
+                                                               .arg(fields[0].mid(8, 2))
+                                                               .arg(fields[0].mid(10, 2));
+                    QString station = fields[1];
+                    int arkId = fields[2].toInt();
+                    double varValue = fields[3].toDouble();
+                    QString flag = fields[6];
+
+
+                    if (arkId == PREC_ID) {
+                        if (precSelection)
+                        {
+                            if (date.mid(8,2) == "08")
+                            {
+                                continue;
+                            }
+                        } else
+                        {
+                            if (date.mid(8,2) == "00")
+                            {
+                                continue;
+                            }
+                            else
+                                date.mid(8,2) = "00";
+                        }
+
+                    }
+
+//                    conversion from average daily radiation to integral radiation
+                    if (arkId == RAD_ID)
+                    {
+                        varValue *= DAILY_TO_INTEGRAL_RAD;
+                    }
+
+                    int id = _dbMeteo->arkIdmap(arkId);
+
+                    if (!(station.isEmpty() || station.isEmpty()))
+                    {
+                        _dbMeteo->insertVarValue(station, date, id, varValue, flag);
+                    }
+
+                    dateStart = i.addDays(1);
+
+                }
+            }
+
+            delete reply;
+            delete manager;
+        }
+
+    }
+
 
 }

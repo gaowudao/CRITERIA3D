@@ -20,16 +20,19 @@ class Download : public QObject
         ~Download();
         void getPointProperties(QStringList datasetList);
         void downloadMetadata(QJsonObject obj);
-        void downloadDailyVar(Crit3DDate dataStartInput, Crit3DDate dataEndInput, QStringList dataset, QList<int> station, QList<int> variable);
+        void downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStringList datasets, QList<int> stations, QList<int> variables, bool precSelection);
         void debugFromFile(); //cancellare
+
     private:
-        QNetworkAccessManager* _manager;
+        //QNetworkAccessManager* _manager;
         QStringList _datasetsList;
         DbMeteoPoints* _dbMeteo;
-    signals:
-        void finished(QNetworkReply*);
-    protected slots:
-        void replyFinished(QNetworkReply* reply);
+
+        static const QByteArray _authorization;
+//    signals:
+//        void finished(QNetworkReply*);
+//    protected slots:
+//        void getPointPropertiesReady(QNetworkReply* reply);
 };
 
 #endif // DOWNLOAD_H
