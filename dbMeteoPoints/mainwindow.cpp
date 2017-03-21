@@ -2,6 +2,9 @@
 #include "download.h"
 
 // test
+#ifndef CRIT3DDATE_H
+    #include "crit3dDate.h" //solo x test, cancellare
+#endif
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -13,9 +16,18 @@ MainWindow::MainWindow(QWidget *parent) :
     datasets << "agrmet";
 
     Download* download = new Download("/home/laura/criteria3D/DATA/template/prova.db", this);
-    //downloadTest->getPointProperties(datasets);
+    //download->getPointProperties(datasets);
 
-    download->debugFromFile();
+    Crit3DDate dateStart(1,1,2017);
+    Crit3DDate dateEnd(10,1,2017);
+    QList<int> stations;
+    stations << 2287 << 2288 << 2289;
+    QList<int> variable;
+    variable << 232 << 233 << 231 << 250 << 241 << 242 << 240 << 706 << 227 << 230;
+    bool precSelection = true;
+    download->downloadDailyVar(dateStart, dateEnd, datasets, stations, variable, precSelection);
+
+    //download->debugFromFile();
 
 }
 

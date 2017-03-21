@@ -303,7 +303,7 @@ void Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStrin
 
                     QStringList fields = line.split(",");
 
-                    QString date = QString("%1-%2-%3 %4:%500").arg(fields[0].left(4))
+                    QString date = QString("%1-%2-%3 %4:%5:00").arg(fields[0].left(4))
                                                                .arg(fields[0].mid(4, 2))
                                                                .arg(fields[0].mid(6, 2))
                                                                .arg(fields[0].mid(8, 2))
@@ -315,20 +315,17 @@ void Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStrin
 
 
                     if (arkId == PREC_ID) {
-                        if (precSelection)
+
+                        if ((precSelection && fields[0].mid(8,2) == "08") || (!precSelection && fields[0].mid(8,2) == "00"))
                         {
-                            if (date.mid(8,2) == "08")
-                            {
                                 continue;
-                            }
-                        } else
+                        }
+                        else if (!precSelection && fields[0].mid(8,2) == "08")
                         {
-                            if (date.mid(8,2) == "00")
-                            {
-                                continue;
-                            }
-                            else
-                                date.mid(8,2) = "00";
+                            date = QString("%1-%2-%3 00:%4:00").arg(fields[0].left(4))
+                                                              .arg(fields[0].mid(4, 2))
+                                                              .arg(fields[0].mid(6, 2))
+                                                              .arg(fields[0].mid(10, 2));
                         }
 
                     }
