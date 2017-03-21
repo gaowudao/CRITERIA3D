@@ -261,17 +261,7 @@ void updateBoundaryWater(double deltaT)
                 // [m^3 s^-1] Darcy unit gradient
                 // dH=dz=L  ->  q=K(h)
                 double myFlux = -myNode[i].k * myNode[i].up.area;
-                myNode[i].boundary->waterFlow = myFlux;
-
-                // thermal vapor boundary flux
-                if (myStructure.computeHeat)
-                    if (myStructure.computeHeatLatent)
-                    {
-                        double Kvt = ThermalVaporConductivity(i, myNode[i].extra->Heat->T, myNode[i].H - myNode[i].z);
-                        double myFlowDensity = Kvt * (myNode[i].boundary->fixedTemperature -  myNode[i].extra->Heat->T) / (myNode[i-1].z - myNode[i].z);
-                        double myFlow = myFlowDensity * myNode[i].up.area / WATER_DENSITY;
-                        myNode[i].boundary->waterFlow += myFlow;
-                    }
+                myNode[i].boundary->waterFlow = myFlux;               
             }
 
             else if (myNode[i].boundary->type == BOUNDARY_FREELATERALDRAINAGE)
@@ -299,7 +289,6 @@ void updateBoundaryWater(double deltaT)
 
             myNode[i].Qw += myNode[i].boundary->waterFlow;
 
-            /*
             if (myNode[i].boundary->type == BOUNDARY_HEAT)
             {
                 if (myStructure.computeHeatLatent)
@@ -323,7 +312,7 @@ void updateBoundaryWater(double deltaT)
                     myNode[i].Qw += subVaporSinkSource;
                     myNode[i].boundary->waterFlow = subVaporSinkSource + surfaceVaporSinkSource;
                 }
-            }*/
+            }
         }
     }
 }
@@ -372,7 +361,6 @@ void updateBoundaryHeat()
                     myNode[i].boundary->Heat->latentFlux = 0.;
                     myNode[i].boundary->Heat->radiativeFlux = 0.;
 
-                    /*
                     if (myNode[i].boundary->Heat->netIrradiance == NODATA)
                         myNode[i].boundary->Heat->radiativeFlux = computeNetRadiationFlow(i);
                     else
@@ -383,10 +371,8 @@ void updateBoundaryHeat()
                     if (myStructure.computeHeatLatent)
                         myNode[i].boundary->Heat->latentFlux += computeAtmosphericLatentHeatFlow(i) / myNode[i].up.area;
 
-                    */
-
                     // advective heat from rain or evaporation
-                    if (myStructure.computeHeatAdvective && myNode[myNode[i].up.index].isSurface)
+                    if (myStructure.computeHeatAdvective)
                     {
                         waterFlux = getWaterFlux(i, &myNode[i].up);
                         advTemperature = myNode[i].boundary->Heat->temperature;
@@ -417,6 +403,7 @@ void updateBoundaryHeat()
                         myNode[i].extra->Heat->Qh += myNode[i].up.area * myNode[i].boundary->advectiveHeatFlux;
                     }
 
+
                     if (myNode[i].boundary->fixedTemperature != NODATA)
                     {
                         double boundaryHeatConductivity = SoilHeatConductivity(i, myNode[i].extra->Heat->T, myNode[i].H - myNode[i].z);
@@ -424,6 +411,7 @@ void updateBoundaryHeat()
                         double deltaZ = myNode[i-1].z - myNode[i].z;
                         myNode[i].extra->Heat->Qh += boundaryHeatConductivity * deltaT / deltaZ * myNode[i].up.area;
                     }
+
                 }                
             }
         }
