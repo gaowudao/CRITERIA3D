@@ -375,9 +375,12 @@ void updateBoundaryHeat()
                     if (myStructure.computeHeatAdvective)
                     {
                         waterFlux = getWaterFlux(i, &myNode[i].up);
-                        advTemperature = myNode[i].boundary->Heat->temperature;
-                        heatFlux =  waterFlux * HEAT_CAPACITY_WATER * advTemperature / myNode[i].up.area;
-                        myNode[i].boundary->advectiveHeatFlux = heatFlux;
+                        if (waterFlux != NODATA)
+                        {
+                            advTemperature = myNode[i].boundary->Heat->temperature;
+                            heatFlux =  waterFlux * HEAT_CAPACITY_WATER * advTemperature / myNode[i].up.area;
+                            myNode[i].boundary->advectiveHeatFlux = heatFlux;
+                        }
                     }
 
                     myNode[i].extra->Heat->Qh += myNode[i].up.area * (myNode[i].boundary->Heat->radiativeFlux +

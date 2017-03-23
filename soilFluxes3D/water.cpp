@@ -75,7 +75,8 @@ double getWaterFlux(long i, TlinkedNode *link)
     if (link != NULL)
         {
 		double matrixValue = getMatrixValue(i, link);
-		double flow = matrixValue * (myNode[i].H - myNode[link->index].H);
+        double flow = NODATA;
+        if (matrixValue != INDEX_ERROR) flow = matrixValue * (myNode[i].H - myNode[link->index].H);
         return (flow);
         }
     else

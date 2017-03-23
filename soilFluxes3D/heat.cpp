@@ -573,6 +573,8 @@ bool computeHeatFlux(long i, int myMatrixIndex, TlinkedNode *myLink)
             if (myLink->linkedExtra->heatFlux != NULL)
                 myLink->linkedExtra->heatFlux->isothermLatent = myLatent;
         }
+
+        if (myStructure.computeHeatAdvective)
         {
             myAdvection = SoilHeatAdvection(i, myLink);
             if (myLink->linkedExtra->heatFlux != NULL)
@@ -651,7 +653,7 @@ bool HeatComputation(double myTimeStep)
                 heatCapacityVar += dthetav * LatentHeatVaporization(myNode[i].extra->Heat->T - ZEROCELSIUS) * WATER_DENSITY;
                 heatCapacityVar *= myNode[i].volume_area;
 
-                avgh = computeMean(myNode[i].oldH, myNode[i].H);
+                avgh = computeMean(myNode[i].oldH, myNode[i].H) - myNode[i].z;
 
                 C[i] = SoilHeatCapacity(i, avgh, myNode[i].extra->Heat->T) * myNode[i].volume_area;
 
