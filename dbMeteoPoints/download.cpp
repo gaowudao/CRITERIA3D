@@ -246,27 +246,35 @@ void Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStrin
     _dbMeteo->initStationsTables(dateStart, dateEnd, stations);
 
     QString area;
-    if (!stations.empty())
+
+    area = QString(";area: VM2,%1").arg(stations[0]);
+
+    for (int i = 1; i < stations.size(); i++)
     {
-
-        area = QString(";area: VM2,%1").arg(stations[0]);
-
-        for (int i = 1; i < stations.size(); i++)
-        {
-            area = area % QString(" or VM2,%1").arg(stations[i]);
-        }
+        area = area % QString(" or VM2,%1").arg(stations[i]);
     }
 
     QString product;
-    if (!variables.empty()) {
 
-        product = QString(";product: VM2,%1").arg(variables[0]);
+    // LC variables non sarà mai vuoto, altrimenti scaricherebbe tutte le variabili, anche le orarie e semiorarie. Nella funzione che chiama downloadDailyVar passare la lista
+    // di tutte le variabili giornaliere. Stessa cosa per le stazioni, l'array lo riempie opportunamente la funzione che chiama downloadDailyVar
 
-        for (int i = 1; i < variables.size(); i++)
-        {
-            product = product % QString(" or VM2,%1").arg(variables[i]);
-        }
+    product = QString(";product: VM2,%1").arg(variables[0]);
+
+    for (int i = 1; i < variables.size(); i++)
+    {
+        product = product % QString(" or VM2,%1").arg(variables[i]);
     }
+
+//    if (!variables.empty()) {
+
+//        product = QString(";product: VM2,%1").arg(variables[0]);
+
+//        for (int i = 1; i < variables.size(); i++)
+//        {
+//            product = product % QString(" or VM2,%1").arg(variables[i]);
+//        }
+//    }
 
     for (Crit3DDate i = dateStart.addDays(180); dateEnd >= dateStart; i = dateStart.addDays(180))
     {
@@ -286,6 +294,8 @@ void Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStrin
 
             QUrl url = QUrl(QString("%1/query?query=%2%3%4&style=postprocess").arg(_dbMeteo->getDatasetURL(dataset)).arg(refTime).arg(area).arg(product));
 
+            qDebug() << url ;
+
             QNetworkRequest request;
             request.setUrl(url);
             request.setRawHeader("Authorization", _authorization);
@@ -303,7 +313,7 @@ void Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStrin
 
                     QStringList fields = line.split(",");
 
-                    QString date = QString("%1-%2-%3 %4:%500").arg(fields[0].left(4))
+                    QString date = QString("%1-%2-%3 %4:%5:00").arg(fields[0].left(4))
                                                                .arg(fields[0].mid(4, 2))
                                                                .arg(fields[0].mid(6, 2))
                                                                .arg(fields[0].mid(8, 2))
@@ -315,20 +325,17 @@ void Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStrin
 
 
                     if (arkId == PREC_ID) {
-                        if (precSelection)
+
+                        if ((precSelection && fields[0].mid(8,2) == "08") || (!precSelection && fields[0].mid(8,2) == "00"))
                         {
-                            if (date.mid(8,2) == "08")
-                            {
                                 continue;
-                            }
-                        } else
+                        }
+                        else if (!precSelection && fields[0].mid(8,2) == "08")
                         {
-                            if (date.mid(8,2) == "00")
-                            {
-                                continue;
-                            }
-                            else
-                                date.mid(8,2) = "00";
+                            date = QString("%1-%2-%3 00:%4:00").arg(fields[0].left(4))
+                                                              .arg(fields[0].mid(4, 2))
+                                                              .arg(fields[0].mid(6, 2))
+                                                              .arg(fields[0].mid(10, 2));
                         }
 
                     }

@@ -253,13 +253,13 @@ void DbMeteoPoints::initStationsTables(Crit3DDate dataStartInput, Crit3DDate dat
 
     foreach(int station, stations)
     {
-        QString statement = QString("CREATE TABLE IF NOT EXISTS %1_D (date_time TEXT, id_variable INTEGER, value REAL, PRIMARY KEY(date_time,id_variable))").arg(station);
+        QString statement = QString("CREATE TABLE IF NOT EXISTS `%1_D` (date_time TEXT, id_variable INTEGER, value REAL, PRIMARY KEY(date_time,id_variable))").arg(station);
         qDebug() << "initStationsTables - Create " << statement;
 
         QSqlQuery qry(statement, _db);
         qry.exec();
 
-        statement = QString("DELETE FROM %1_D WHERE date_time >= DATE('%2') AND date_time, < DATE('%3', '+1 day')").arg(station).arg(startDate).arg(endDate);
+        statement = QString("DELETE FROM `%1_D` WHERE date_time >= DATE('%2') AND date_time < DATE('%3', '+1 day')").arg(station).arg(startDate).arg(endDate);
         qDebug() << "initStationsTables - Delete " << statement;
 
         qry = QSqlQuery(statement, _db);
@@ -275,7 +275,7 @@ void DbMeteoPoints::insertVarValue(QString station, QString date, int varType, d
         varValue = NODATA;
     }
 
-    QString statement = QString("INSERT INTO %1_D VALUES('%2', '%3', '%4')").arg(station).arg(date).arg(varType).arg(varValue);
+    QString statement = QString("INSERT INTO `%1_D` VALUES('%2', '%3', '%4')").arg(station).arg(date).arg(varType).arg(varValue);
 
     QSqlQuery qry = QSqlQuery(statement, _db);
     qry.exec();
