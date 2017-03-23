@@ -35,6 +35,7 @@ Crit3DMeteoPoint::Crit3DMeteoPoint()
 {
         name = "";
         id = "";
+        dataset = "";
         isUTC = true;
         nrObsDataDaysH = 0;
         nrObsDataDaysD = 0;

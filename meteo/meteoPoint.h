@@ -46,12 +46,14 @@
 
     class Crit3DMeteoPoint {
     public:
-        double latitude;
-        double longitude;
-        gis::Crit3DPoint point;
-
         std::string name;
         std::string id;
+        std::string dataset;
+
+        gis::Crit3DPoint point;
+        double latitude;
+        double longitude;
+
         bool isUTC;
         int hourlyFraction;
         long nrObsDataDaysH;
