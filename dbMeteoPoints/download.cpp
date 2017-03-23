@@ -1,6 +1,7 @@
 #include "download.h"
 #include "dbMeteoPoints.h"
 #include "commonConstants.h"
+#include "variableslist.h"
 
 #include <QEventLoop>
 
@@ -367,6 +368,7 @@ void Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStrin
 
 }
 
+//TO DO
 void Download::downloadHourlyVar(Crit3DTime dateStartTime, Crit3DTime dateEndTime, QStringList datasets, QList<int> stations, QList<int> variables)
 {
     // create station tables
@@ -382,6 +384,13 @@ void Download::downloadHourlyVar(Crit3DTime dateStartTime, Crit3DTime dateEndTim
     }
 
     QString product;
+
+    QList<VariablesList> variableList = _dbMeteo->getHourlyVarFields(variables);
+
+//    qDebug() << "arkId[0] = " << variableList.at(0).arkId();
+//    qDebug() << "id[0] = " << variableList.at(0).id();
+//    qDebug() << "varName[0] = " << variableList.at(0).varName();
+//    qDebug() << "frequency[0] = " << variableList.at(0).frequency();
 
     product = QString(";product: VM2,%1").arg(variables[0]);
 
@@ -457,11 +466,6 @@ void Download::downloadHourlyVar(Crit3DTime dateStartTime, Crit3DTime dateEndTim
                     int arkId = fields[2].toInt();
                     double varValue = fields[3].toDouble();
                     QString flag = fields[6];
-
-
-                    int id = _dbMeteo->arkIdmap(arkId);
-
-
 
                     dateStartTime = i.addSeconds(1800);
 

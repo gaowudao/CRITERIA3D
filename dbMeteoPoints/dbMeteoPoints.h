@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QtSql>
+#include "variableslist.h"
 
 #ifndef CRIT3DDATE_H
     #include "crit3dDate.h"
@@ -43,6 +44,7 @@ class DbMeteoPoints : public QObject
         QList<int> getHourlyVar();
         int getId(QString VarName);
         bool fillPointProperties(TPointProperties* pointProp);
+        QList<VariablesList> getHourlyVarFields(QList<int> id);
         void initStationsDailyTables(Crit3DDate dataStartInput, Crit3DDate dataEndInput, QList<int> stations);
         void initStationsHourlyTables(Crit3DTime dataStartInput, Crit3DTime dataEndInput, QList<int> stations);
         void createTmpTable(QString tmpTable);
