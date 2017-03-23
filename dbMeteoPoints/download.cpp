@@ -243,7 +243,7 @@ void Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStrin
 {
 
     // create station tables
-    _dbMeteo->initStationsTables(dateStart, dateEnd, stations);
+    _dbMeteo->initStationsDailyTables(dateStart, dateEnd, stations);
 
     QString area;
 
@@ -365,4 +365,112 @@ void Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStrin
     }
 
 
+}
+
+void Download::downloadHourlyVar(Crit3DTime dateStartTime, Crit3DTime dateEndTime, QStringList datasets, QList<int> stations, QList<int> variables)
+{
+    // create station tables
+    _dbMeteo->initStationsHourlyTables(dateStartTime, dateEndTime, stations);
+
+    QString area;
+
+    area = QString(";area: VM2,%1").arg(stations[0]);
+
+    for (int i = 1; i < stations.size(); i++)
+    {
+        area = area % QString(" or VM2,%1").arg(stations[i]);
+    }
+
+    QString product;
+
+    product = QString(";product: VM2,%1").arg(variables[0]);
+
+    for (int i = 1; i < variables.size(); i++)
+    {
+        product = product % QString(" or VM2,%1").arg(variables[i]);
+    }
+
+    int nrData = (difference(dateStartTime.date.addDays(1), dateEndTime.date) * 24 * stations.size());
+
+    int nrSteps = qMax(1, (nrData / datasets.size()) / 3000);
+    int stepDate = qMax(1, difference(dateStartTime.date.addDays(1), dateEndTime.date) / nrSteps);
+
+    dateStartTime = dateStartTime.addSeconds(-1800);
+    dateEndTime.date = dateEndTime.date.addDays(1);
+    dateEndTime = dateEndTime.addSeconds(-3600);
+
+
+
+    Crit3DTime i = dateStartTime;
+
+    for (i.date = dateStartTime.date.addDays(stepDate); dateEndTime >= dateStartTime; i.date = dateStartTime.date.addDays(stepDate))
+    {
+
+
+        if (i > dateEndTime)
+            i = dateEndTime;
+       else
+            i = i.addSeconds(-1800);
+
+
+        // reftime
+        QString refTime = QString("reftime:>=%1,<=%2").arg(QString::fromStdString(dateStartTime.toStdString())).arg(QString::fromStdString(i.toStdString()));
+        qDebug() << refTime;
+
+        _dbMeteo->createTmpTable("TmpHourlyData");
+
+        foreach (QString dataset, datasets)
+        {
+
+            QEventLoop loop;
+
+            QNetworkAccessManager* manager = new QNetworkAccessManager(this);
+            connect(manager, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
+
+            QUrl url = QUrl(QString("%1/query?query=%2%3%4&style=postprocess").arg(_dbMeteo->getDatasetURL(dataset)).arg(refTime).arg(area).arg(product));
+
+            qDebug() << url ;
+
+            QNetworkRequest request;
+            request.setUrl(url);
+            request.setRawHeader("Authorization", _authorization);
+
+            QNetworkReply* reply = manager->get(request);  // GET
+            loop.exec();
+
+            if (reply->error() != QNetworkReply::NoError)
+                    qDebug( "Error!" );
+            else
+            {
+
+                for (QString line = QString(reply->readLine()); !(line.isNull() || line.isEmpty());  line = QString(reply->readLine()))
+                {
+
+                    QStringList fields = line.split(",");
+
+                    QString date = QString("%1-%2-%3 %4:%5:00").arg(fields[0].left(4))
+                                                               .arg(fields[0].mid(4, 2))
+                                                               .arg(fields[0].mid(6, 2))
+                                                               .arg(fields[0].mid(8, 2))
+                                                               .arg(fields[0].mid(10, 2));
+                    QString station = fields[1];
+                    int arkId = fields[2].toInt();
+                    double varValue = fields[3].toDouble();
+                    QString flag = fields[6];
+
+
+                    int id = _dbMeteo->arkIdmap(arkId);
+
+
+
+                    dateStartTime = i.addSeconds(1800);
+
+                }
+            }
+
+            delete reply;
+            delete manager;
+         }
+
+    }
 }

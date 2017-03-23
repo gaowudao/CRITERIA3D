@@ -214,6 +214,7 @@ std::string Crit3DDate::toStdString()
     sprintf (myStr, "%d-%02d-%02d", this->year, this->month, this->day);
 
     return std::string(myStr);
+
 }
 
 int difference(Crit3DDate myDatefirst, Crit3DDate myDatelast)

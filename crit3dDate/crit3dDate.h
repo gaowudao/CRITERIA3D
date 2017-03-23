@@ -82,6 +82,7 @@
         int getHour() const;
         int getMinutes() const;
         float getSeconds() const;
+        std::string toStdString();
     };
 
     // functions
