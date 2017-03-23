@@ -321,7 +321,7 @@ bool waterFlowComputation(double deltaT)
         }
 
         // update boundary conditions
-        updateBoundaryWater(deltaT);
+        //updateBoundaryWater(deltaT);
 
         /*! computes the matrix elements */
         for (i = 0; i < myStructure.nrNodes; i++)

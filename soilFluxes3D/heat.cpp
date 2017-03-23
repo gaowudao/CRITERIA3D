@@ -313,7 +313,7 @@ double VaporFromPsiTemp(double h, double T)
 }
 
 /*!
- * \brief [kg m-1 s-1 K-1] non isothermal vapor conductivity
+ * \brief [kg m-1 s-1 K-1] thermal vapor conductivity
  * \param i
  * \param temperature (K)
  * \param h (m)
@@ -454,20 +454,6 @@ double SoilHeatConductivity(long i, double T, double h)
 
 }
 
-double MeanIsothermalVaporConductivity(long i, long linkIndex)
-{
-    double myKvi, myLinkKvi;        // (kg m-3 s-1) isothermal vapor conductivity
-    double avgPsi, avgPsiLink;
-
-    avgPsi = computeMean(myNode[i].H, myNode[i].oldH) - myNode[i].z;
-    avgPsiLink = computeMean(myNode[linkIndex].H, myNode[linkIndex].oldH) - myNode[linkIndex].z;
-
-    myKvi = IsothermalVaporConductivity(i, avgPsi, myNode[i].extra->Heat->T);
-    myLinkKvi = IsothermalVaporConductivity(linkIndex, avgPsiLink, myNode[linkIndex].extra->Heat->T);
-
-    return (computeMean(myKvi, myLinkKvi));
-}
-
 /*!
  * \brief isothermal latent heat flux
  * \param i
@@ -476,34 +462,40 @@ double MeanIsothermalVaporConductivity(long i, long linkIndex)
  */
 double SoilLatentIsothermal(long i, TlinkedNode *myLink)
 {
-    double myLambda, linkLambda, meanLambda;	// [J kg-1] latent heat of vaporization
-    double myKv;								// [kg s m-3] vapor conductivity
-    double myPsi, myLinkPsi;					// [J kg-1] water matric potential
-    double myDeltaPsi;							// [J kg-1] water potential difference
+    double lambda, lambdaLink, avgLambda;       // [J kg-1] latent heat of vaporization
+    double myKvi;								// [kg s m-3] vapor conductivity
+    double psi, psiLink;                        // [J kg-1] water matric potential
+    double deltaPsi;							// [J kg-1] water potential difference
     double myLatentFlux;						// [J m-1 s-1] latent heat flow
     double coeff;                               // [J kg-1]
+    double Kvi, KviLink;                        // [kg m-3 s-1] isothermal vapor conductivity
+    double havg, havglink;                      // [m] average matric potentials
 
     long j = (*myLink).index;
 
-    myLambda = LatentHeatVaporization(myNode[i].extra->Heat->T - ZEROCELSIUS);
-    linkLambda = LatentHeatVaporization(myNode[j].extra->Heat->T - ZEROCELSIUS);
+    lambda = LatentHeatVaporization(myNode[i].extra->Heat->T - ZEROCELSIUS);
+    lambdaLink = LatentHeatVaporization(myNode[j].extra->Heat->T - ZEROCELSIUS);
+    avgLambda = computeMean(lambda, lambdaLink);
 
-    myKv = MeanIsothermalVaporConductivity(i, j);
-    meanLambda = computeMean(myLambda, linkLambda);
+    havg = computeMean(myNode[i].H, myNode[i].oldH) - myNode[i].z;
+    havglink = computeMean(myNode[j].H, myNode[j].oldH) - myNode[j].z;
 
-	// conversion to J/kg (m2/s2)
-    myPsi = (getHMean(i) - myNode[i].z) * GRAVITY;
-    myLinkPsi = (getHMean(j) - myNode[j].z) * GRAVITY;
+    Kvi = IsothermalVaporConductivity(i, havg, myNode[i].extra->Heat->T);
+    KviLink = IsothermalVaporConductivity(j, havglink, myNode[j].extra->Heat->T);
+    myKvi = computeMean(Kvi, KviLink);
 
-    myDeltaPsi = (myLinkPsi - myPsi);
+    psi = havg * GRAVITY;
+    psiLink = havglink * GRAVITY;
 
-    coeff = meanLambda;
+    deltaPsi = (psiLink - psi);
+
+    coeff = avgLambda;
 
     // advective heat flux associated with isothermal vapor flux
     if (myStructure.computeHeatAdvective)
         coeff += myNode[i].extra->Heat->T * HEAT_CAPACITY_AIR / WATER_DENSITY;
 
-    myLatentFlux = coeff * myKv * myDeltaPsi / distance(i, j) * myLink->area;
+    myLatentFlux = coeff * myKvi * deltaPsi / distance(i, j) * myLink->area;
 
     return (myLatentFlux);
 }

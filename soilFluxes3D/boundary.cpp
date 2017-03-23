@@ -122,7 +122,7 @@ double computeAtmosphericSensibleFlow(long i)
 }
 
 /*!
- * \brief [m3 m-2 s-1] atmospheric latent flow from soil
+ * \brief [m3 m-2 s-1] atmospheric latent flow from soil (evaporation)
  * \param i
  * \return result
  */
@@ -172,12 +172,14 @@ double computeAtmosphericlatentFluxOpenWater(long i)
     return mylatentFlux;
 }
 
+/*!
+ * \brief [W m-2] atmospheric heat latent flow from soil (evaporation)
+ * \param i
+ * \return result
+ */
 double computeAtmosphericLatentHeatFlow(long i)
 {
-    // atmospheric latent heat flow (W m-2)
-
     double latentHeatFlow = 0.;
-    // J s-1
 
     if (myNode[i].boundary != NULL)
         if (myNode[i].boundary->type == BOUNDARY_HEAT)
@@ -300,7 +302,7 @@ void updateBoundaryWater(double deltaT)
                     if (myNode[myNode[i].up.index].isSurface)
                         {
                             long mySurfaceIndex = myNode[i].up.index;
-                            waterPondFraction = getSurfaceWaterFraction(mySurfaceIndex);
+                            waterPondFraction = 0.; // getSurfaceWaterFraction(mySurfaceIndex);
                             if (waterPondFraction > 0.)
                             {
                                 surfaceVaporSinkSource = waterPondFraction * computeAtmosphericlatentFluxOpenWater(mySurfaceIndex) * myNode[mySurfaceIndex].volume_area;
@@ -405,7 +407,6 @@ void updateBoundaryHeat()
 
                         myNode[i].extra->Heat->Qh += myNode[i].up.area * myNode[i].boundary->advectiveHeatFlux;
                     }
-
 
                     if (myNode[i].boundary->fixedTemperature != NODATA)
                     {
