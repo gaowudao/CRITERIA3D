@@ -252,7 +252,7 @@ double SoilSpecificHeat(long i)
 	volumetric specific heat [J m-3 K-1]
 	*/
 
-    return (getBulkDensity(i) / 2.65 * HEAT_CAPACITY_MINERAL + theta_from_Se(myNode[i].Se ,i) * HEAT_CAPACITY_WATER);
+    return (estimateBulkDensity(i) / 2.65 * HEAT_CAPACITY_MINERAL + theta_from_Se(myNode[i].Se ,i) * HEAT_CAPACITY_WATER);
 }
 
 /*!
@@ -266,7 +266,7 @@ double SoilHeatCapacity(long i, double h, double T)
 {
     double theta = theta_from_sign_Psi(h, i);
     double thetaV = VaporThetaV(h, T, i);
-    return getBulkDensity(i) / 2.65 * HEAT_CAPACITY_MINERAL +
+    return estimateBulkDensity(i) / 2.65 * HEAT_CAPACITY_MINERAL +
             theta * HEAT_CAPACITY_WATER +
             thetaV * HEAT_CAPACITY_AIR;
 }

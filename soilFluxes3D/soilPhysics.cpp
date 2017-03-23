@@ -326,20 +326,39 @@
 	}
 
     /*!
-     * \brief estimate bulk density (Mg m-3)
-     * \param myIndex
-     * \return result
+     * \brief estimate particle density
+     * \param fractionOrganicMatter
+     * \return particle density (Mg m-3)
+     * \ from Driessen (1992), according also to Pilatti (2006)
+     * \ equivalent to 2.65 (quartz) when organic matter = 0
      */
-    double getBulkDensity(long myIndex)
+    double ParticleDensity(double fractionOrganicMatter)
     {
-        if (myNode[myIndex].isSurface)
-            return(0.);
+        if (fractionOrganicMatter == NODATA)
+            fractionOrganicMatter = 0.5;
+        return (1./(0.377 + 0.57 * fractionOrganicMatter));
+    }
+
+    /*!
+     * \brief estimate bulk density
+     * \param i
+     * \return bulk density (Mg m-3)
+     */
+    double estimateBulkDensity(long i)
+    {
+        double particleDensity;
+        double totalPorosity;
+        double smallPorosity;
+
+        particleDensity = ParticleDensity(myNode[i].Soil->organicMatter);
+
+        // very small pores not water fillable
+        if (myNode[i].Soil->clay > 40)
+            smallPorosity = 0.03;
         else
-        {
-            if (myNode[myIndex].Soil->organicMatter != NODATA)
-                return (1- myNode[myIndex].Soil->Theta_s) * (1./ (0.38 + 0.57 * myNode[myIndex].Soil->organicMatter));
-            else
-                // assume a very low treshold of OrganicMatter
-                return (1- myNode[myIndex].Soil->Theta_s) * 2.63;
-        }
+            smallPorosity = 0.05;
+
+        totalPorosity = myNode[i].Soil->Theta_s + smallPorosity;
+
+        return (1. - totalPorosity) * particleDensity;
     }

@@ -424,8 +424,8 @@ bool waterFlowComputation(double deltaT)
         }
 
         /*! update boundary conditions */
-        //updateBoundary();
-        //updateBoundaryWater(*acceptedTime);
+        updateBoundary();
+        updateBoundaryWater(*acceptedTime);
 
         isStepOK = waterFlowComputation(*acceptedTime);
 
