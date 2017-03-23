@@ -79,8 +79,8 @@ void initializeBoundary(Tboundary *myBoundary, int myType, float slope)
 double computeSoilSurfaceResistance(double myThetaTop)
 {	// soil surface resistance (s m-1)
     // Van De Griend and Owe (1994)
-    const double THETAMIN = 0.22;
-    return (10 * exp(0.3563 * (THETAMIN - myThetaTop)));
+    const double THETAMIN = 0.15;
+    return (10 * exp(0.3563 * (THETAMIN - myThetaTop) * 100));
 }
 
 double computeNetRadiationFlow(long i)
@@ -222,7 +222,10 @@ void updateBoundary()
 
                         if (myStructure.computeHeatLatent)
                             // update soil surface conductance
-                            myNode[i].boundary->Heat->soilConductance = 1./ computeSoilSurfaceResistance(getThetaMean(i));
+                        {
+                            double theta = theta_from_sign_Psi(myNode[i].H - myNode[i].z, i);
+                            myNode[i].boundary->Heat->soilConductance = 1./ computeSoilSurfaceResistance(theta);
+                        }
                     }
 }
 
