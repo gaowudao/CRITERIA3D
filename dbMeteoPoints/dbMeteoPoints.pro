@@ -27,10 +27,12 @@ LIBS += -L../crit3dDate/release -lcrit3dDate
 SOURCES += dbMeteoPoints.cpp \
     download.cpp \
     mainwindow.cpp \
-    main.cpp
+    main.cpp \
+    variableslist.cpp
 
 HEADERS += dbMeteoPoints.h \
     download.h \
-    mainwindow.h
+    mainwindow.h \
+    variableslist.h
 
 

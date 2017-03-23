@@ -83,6 +83,43 @@ QStringList DbMeteoPoints::getDatasetsActive()
 
 }
 
+QList<VariablesList> DbMeteoPoints::getHourlyVarFields(QList<int> id)
+{
+
+    QList<VariablesList> variableList;
+
+    QString idlist = QString("(%1").arg(id[0]);
+
+    for (int i = 1; i < id.size(); i++)
+    {
+        idlist = idlist % QString(",%1").arg(id[i]);
+    }
+    idlist = idlist % QString(")");
+
+    qDebug() << "idlist " << idlist;
+
+    QString statement = QString("SELECT * FROM variable_properties WHERE id_arkimet IN %1").arg(idlist);
+
+    QSqlQuery qry(statement, _db);
+
+    if( !qry.exec() )
+        qDebug() << qry.lastError();
+    else
+    {
+        qDebug( "Selected!" );
+
+        while (qry.next())
+        {
+            variableList.append(VariablesList(qry.value(0).toInt(), qry.value(1).toInt(), qry.value(2).toString(), qry.value(5).toInt() ));
+        }
+
+
+    }
+    qDebug () << qry.lastQuery();
+    return variableList;
+
+}
+
 QString DbMeteoPoints::getVarName(int id)
 {
 
@@ -191,22 +228,7 @@ QList<int> DbMeteoPoints::getHourlyVar()
 bool DbMeteoPoints::fillPointProperties(TPointProperties* pointProp)
 {
 
-//    ////////////debug//////
-//    qDebug() << "pointProp->id" << pointProp->id << endl;
-//    qDebug() << "pointProp->name" << pointProp->name << endl;
-//    qDebug() << "pointProp->network" << pointProp->network << endl;
-//    qDebug() << "pointProp->lat" << pointProp->lat << endl;
-//    qDebug() << "pointProp->lon" << pointProp->lon << endl;
-//    qDebug() << "pointProp->latInt" << pointProp->latInt << endl;
-//    qDebug() << "pointProp->lonInt" << pointProp->lonInt << endl;
-//    qDebug() << "pointProp->utm_x" << pointProp->utm_x << endl;
-//    qDebug() << "pointProp->utm_y" << pointProp->utm_y << endl;
-//    qDebug() << "pointProp->altitude" << pointProp->altitude << endl;
-//    qDebug() << "pointProp->state" << pointProp->state << endl;
-//    qDebug() << "pointProp->region" << pointProp->region << endl;
-//    qDebug() << "pointProp->province" << pointProp->province << endl;
-//    qDebug() << "pointProp->municipality" << pointProp->municipality << endl;
-//    ///
+
     bool success = false;
     QSqlQuery qry(_db);
 
