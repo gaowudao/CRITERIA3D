@@ -47,8 +47,11 @@ class DbMeteoPoints : public QObject
         QList<VariablesList> getHourlyVarFields(QList<int> id);
         void initStationsDailyTables(Crit3DDate dataStartInput, Crit3DDate dataEndInput, QList<int> stations);
         void initStationsHourlyTables(Crit3DTime dataStartInput, Crit3DTime dataEndInput, QList<int> stations);
-        void createTmpTable(QString tmpTable);
-        void insertVarValue(QString station, QString date, int varType, double varValue, QString flag);
+        void createTmpTable();
+        void insertDailyValue(QString station, QString date, int varType, double varValue, QString flag);
+        void insertHourlyValue(QString station, QString date, int varType, double varValue, QString flag);
+        void insertOrUpdate(QString date, QString id_point, int id_variable, QString variable_name, double value, int frequency, QString flag);
+        void saveHourlyData();
         int arkIdmap(int arkId);
     private:
         QSqlDatabase _db;

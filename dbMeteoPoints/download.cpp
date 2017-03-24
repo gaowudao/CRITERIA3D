@@ -257,25 +257,12 @@ void Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStrin
 
     QString product;
 
-    // LC variables non sarà mai vuoto, altrimenti scaricherebbe tutte le variabili, anche le orarie e semiorarie. Nella funzione che chiama downloadDailyVar passare la lista
-    // di tutte le variabili giornaliere. Stessa cosa per le stazioni, l'array lo riempie opportunamente la funzione che chiama downloadDailyVar
-
     product = QString(";product: VM2,%1").arg(variables[0]);
 
     for (int i = 1; i < variables.size(); i++)
     {
         product = product % QString(" or VM2,%1").arg(variables[i]);
     }
-
-//    if (!variables.empty()) {
-
-//        product = QString(";product: VM2,%1").arg(variables[0]);
-
-//        for (int i = 1; i < variables.size(); i++)
-//        {
-//            product = product % QString(" or VM2,%1").arg(variables[i]);
-//        }
-//    }
 
     for (Crit3DDate i = dateStart.addDays(180); dateEnd >= dateStart; i = dateStart.addDays(180))
     {
@@ -351,7 +338,7 @@ void Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStrin
 
                     if (!(station.isEmpty() || station.isEmpty()))
                     {
-                        _dbMeteo->insertVarValue(station, date, id, varValue, flag);
+                        _dbMeteo->insertDailyValue(station, date, id, varValue, flag);
                     }
 
                     dateStart = i.addDays(1);
@@ -368,7 +355,7 @@ void Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStrin
 
 }
 
-//TO DO
+
 void Download::downloadHourlyVar(Crit3DTime dateStartTime, Crit3DTime dateEndTime, QStringList datasets, QList<int> stations, QList<int> variables)
 {
     // create station tables
@@ -387,10 +374,6 @@ void Download::downloadHourlyVar(Crit3DTime dateStartTime, Crit3DTime dateEndTim
 
     QList<VariablesList> variableList = _dbMeteo->getHourlyVarFields(variables);
 
-//    qDebug() << "arkId[0] = " << variableList.at(0).arkId();
-//    qDebug() << "id[0] = " << variableList.at(0).id();
-//    qDebug() << "varName[0] = " << variableList.at(0).varName();
-//    qDebug() << "frequency[0] = " << variableList.at(0).frequency();
 
     product = QString(";product: VM2,%1").arg(variables[0]);
 
@@ -409,7 +392,7 @@ void Download::downloadHourlyVar(Crit3DTime dateStartTime, Crit3DTime dateEndTim
     dateEndTime = dateEndTime.addSeconds(-3600);
 
 
-
+    _dbMeteo->createTmpTable();
     Crit3DTime i = dateStartTime;
 
     for (i.date = dateStartTime.date.addDays(stepDate); dateEndTime >= dateStartTime; i.date = dateStartTime.date.addDays(stepDate))
@@ -425,8 +408,6 @@ void Download::downloadHourlyVar(Crit3DTime dateStartTime, Crit3DTime dateEndTim
         // reftime
         QString refTime = QString("reftime:>=%1,<=%2").arg(QString::fromStdString(dateStartTime.toStdString())).arg(QString::fromStdString(i.toStdString()));
         qDebug() << refTime;
-
-        _dbMeteo->createTmpTable("TmpHourlyData");
 
         foreach (QString dataset, datasets)
         {
@@ -462,10 +443,29 @@ void Download::downloadHourlyVar(Crit3DTime dateStartTime, Crit3DTime dateEndTim
                                                                .arg(fields[0].mid(6, 2))
                                                                .arg(fields[0].mid(8, 2))
                                                                .arg(fields[0].mid(10, 2));
-                    QString station = fields[1];
+                    QString id_point = fields[1];
                     int arkId = fields[2].toInt();
                     double varValue = fields[3].toDouble();
                     QString flag = fields[6];
+
+                    int frequency;
+                    QString varName;
+
+                    for (int z = 0; z < variableList.size(); z++)
+                    {
+                        if (variableList[z].arkId() == arkId)
+                        {
+                            frequency = variableList[z].frequency();
+                            varName = variableList[z].varName();
+                        }
+
+                    }
+                    int id = _dbMeteo->arkIdmap(arkId);
+
+                    if (!(id_point.isEmpty() || id_point.isEmpty()))
+                    {
+                        _dbMeteo->insertOrUpdate(date, id_point, id, varName, varValue, frequency, flag);
+                    }
 
                     dateStartTime = i.addSeconds(1800);
 

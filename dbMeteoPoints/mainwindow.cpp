@@ -19,11 +19,13 @@ MainWindow::MainWindow(QWidget *parent) :
     //download->getPointProperties(datasets);
 
     Crit3DDate dateStart(1,1,2017);
-    Crit3DDate dateEnd(10,2,2017);
+    Crit3DDate dateEnd(2,1,2017);
     QList<int> stations;
-    stations << 2287 << 2288 << 2289 << 7353;
+    stations << 7353;
     QList<int> variable;
-    variable << 232 << 233 << 231 << 250 << 241 << 242 << 240 << 706 << 227 << 230;
+    //variable << 232 << 233 << 231 << 250 << 241 << 242 << 240 << 706 << 227 << 230;
+    //variable << 166 << 165 << 158 << 139 << 164 << 159 ;
+    variable << 158 ;
     bool precSelection = true;
     //download->downloadDailyVar(dateStart, dateEnd, datasets, stations, variable, precSelection);
 

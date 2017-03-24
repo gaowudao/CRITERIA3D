@@ -96,8 +96,6 @@ QList<VariablesList> DbMeteoPoints::getHourlyVarFields(QList<int> id)
     }
     idlist = idlist % QString(")");
 
-    qDebug() << "idlist " << idlist;
-
     QString statement = QString("SELECT * FROM variable_properties WHERE id_arkimet IN %1").arg(idlist);
 
     QSqlQuery qry(statement, _db);
@@ -312,15 +310,15 @@ void DbMeteoPoints::initStationsHourlyTables(Crit3DTime dataStartInput, Crit3DTi
 
 }
 
-void DbMeteoPoints::createTmpTable(QString tmpTable)
+void DbMeteoPoints::createTmpTable()
 {
-    QString statement = QString("CREATE TABLE IF NOT EXISTS `%1` (date_time TEXT, id_point INTEGER, id_variable INTEGER, variable_name TEXT, value REAL, frequency INTEGER, PRIMARY KEY(date_time,id_variable))").arg(tmpTable);
+    QString statement = QString("CREATE TABLE IF NOT EXISTS TmpHourlyData (date_time TEXT, id_point INTEGER, id_variable INTEGER, variable_name TEXT, value REAL, frequency INTEGER, PRIMARY KEY(date_time,id_point,variable_name))");
     qDebug() << "createTmpTable - Create " << statement;
 
     QSqlQuery qry(statement, _db);
     qry.exec();
 
-    statement = QString("DELETE FROM `%1`").arg(tmpTable);
+    statement = QString("DELETE FROM TmpHourlyData");
     qDebug() << "createTmpTable - Delete all records" << statement;
 
     qry = QSqlQuery(statement, _db);
@@ -329,7 +327,7 @@ void DbMeteoPoints::createTmpTable(QString tmpTable)
 
 }
 
-void DbMeteoPoints::insertVarValue(QString station, QString date, int varType, double varValue, QString flag)
+void DbMeteoPoints::insertDailyValue(QString station, QString date, int varType, double varValue, QString flag)
 {
     if (flag.left(1) == "1" || flag.left(1) == "054") {
         // dato invalidato o non plausibile
@@ -337,6 +335,79 @@ void DbMeteoPoints::insertVarValue(QString station, QString date, int varType, d
     }
 
     QString statement = QString("INSERT INTO `%1_D` VALUES('%2', '%3', '%4')").arg(station).arg(date).arg(varType).arg(varValue);
+
+    QSqlQuery qry = QSqlQuery(statement, _db);
+    qry.exec();
+
+}
+
+void DbMeteoPoints::insertHourlyValue(QString station, QString date, int varType, double varValue, QString flag)
+{
+    if (flag.left(1) == "1" || flag.left(1) == "054") {
+        // dato invalidato o non plausibile
+        varValue = NODATA;
+    }
+
+    QString statement = QString("INSERT INTO `%1_H` VALUES('%2', '%3', '%4')").arg(station).arg(date).arg(varType).arg(varValue);
+
+    QSqlQuery qry = QSqlQuery(statement, _db);
+    qry.exec();
+
+}
+
+// TO DO
+void DbMeteoPoints::saveHourlyData()
+{
+
+    QString statement = QString("SELECT * FROM TmpHourlyData");
+
+    QSqlQuery qry(statement, _db);
+
+    if( !qry.exec() )
+        qDebug() << qry.lastError();
+    else
+    {
+        qDebug( "Selected!" );
+
+        while (qry.next())
+        {
+            QString date = qry.value(0).toString();
+            QString id_point = qry.value(1).toString();
+            int id_variable = qry.value(2).toInt();
+            QString variable_name = qry.value(3).toString();
+            double value = qry.value(4).toDouble();
+            int frequency = qry.value(5).toInt();
+
+            if (frequency == 60)
+            {
+                insertHourlyValue(id_point, date, id_variable , value, "0");
+            }
+            else
+            {
+                if (variable_name == "HOURLY_RAD")
+                {
+                    if ( date.mid(14,2) == "30")
+                    {
+
+                    }
+                }
+            }
+
+
+        }
+
+    }
+
+}
+
+void DbMeteoPoints::insertOrUpdate(QString date, QString id_point, int id_variable, QString variable_name, double value, int frequency, QString flag)
+{
+    if (flag.left(1) == "1" || flag.left(1) == "054") {
+        // dato invalidato o non plausibile
+        value = NODATA;
+    }
+
+    QString statement = QString("REPLACE INTO TmpHourlyData SELECT '%1', %2, %3, '%4', %5, %6 WHERE %6 > (SELECT COALESCE((SELECT frequency FROM TmpHourlyData WHERE date_time = '%1' AND id_point = %2 AND variable_name = '%4'), 0))").arg(date).arg(id_point).arg(id_variable).arg(variable_name).arg(value).arg(frequency);
 
     QSqlQuery qry = QSqlQuery(statement, _db);
     qry.exec();
