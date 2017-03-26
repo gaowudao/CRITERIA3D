@@ -341,14 +341,14 @@ void DbMeteoPoints::insertDailyValue(QString station, QString date, int varType,
 
 }
 
-void DbMeteoPoints::insertHourlyValue(QString station, QString date, int varType, double varValue, QString flag)
+void DbMeteoPoints::insertHourlyValue(QString station, QString date, int varType, double varValue, QString flag, int minuteToHour)
 {
     if (flag.left(1) == "1" || flag.left(1) == "054") {
         // dato invalidato o non plausibile
         varValue = NODATA;
     }
 
-    QString statement = QString("INSERT INTO `%1_H` VALUES('%2', '%3', '%4')").arg(station).arg(date).arg(varType).arg(varValue);
+    QString statement = QString("INSERT INTO `%1_H` VALUES(DATETIME('%2', +%3 minutes), '%4', '%5')").arg(station).arg(date).arg(minuteToHour).arg(varType).arg(varValue);
 
     QSqlQuery qry = QSqlQuery(statement, _db);
     qry.exec();
@@ -388,13 +388,20 @@ void DbMeteoPoints::saveHourlyData()
                 {
                     if ( date.mid(14,2) == "30")
                     {
-
+                        insertHourlyValue(id_point, date, id_variable, value, 0, 30);
+                    }
+                }
+                else if (variable_name == "HOURLY_WIND_INT" || variable_name == "HOURLY_WIND_DIR" )
+                {
+                    if ( date.mid(14,2) == "00")
+                    {
+                        insertHourlyValue(id_point, date, id_variable, value, 0);
                     }
                 }
             }
 
-
         }
+
 
     }
 

@@ -467,14 +467,15 @@ void Download::downloadHourlyVar(Crit3DTime dateStartTime, Crit3DTime dateEndTim
                         _dbMeteo->insertOrUpdate(date, id_point, id, varName, varValue, frequency, flag);
                     }
 
-                    dateStartTime = i.addSeconds(1800);
+
 
                 }
             }
-
+            _dbMeteo->saveHourlyData();
             delete reply;
             delete manager;
          }
 
+        dateStartTime = i.addSeconds(1800);
     }
 }
