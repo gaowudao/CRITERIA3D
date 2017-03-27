@@ -331,12 +331,17 @@ void DbMeteoPoints::createTmpTable()
 void DbMeteoPoints::deleteTmpTable()
 {
 
-    QString statement = QString("DELETE * FROM TmpHourlyData");
-    qDebug() << "deleteTmpTable - Delete TmpHourlyData table" << statement;
+    QSqlQuery qry(_db);
 
-    QSqlQuery qry = QSqlQuery(statement, _db);
-    qry.exec();
+    qry.prepare( "DROP TABLE TmpHourlyData" );
 
+    if( !qry.exec() )
+        qDebug() << qry.lastError();
+    else
+    {
+        qDebug( "Drop table" );
+
+    }
 
 }
 
@@ -347,10 +352,13 @@ void DbMeteoPoints::insertDailyValue(QString station, QString date, int varType,
         varValue = NODATA;
     }
 
-    QString statement = QString("INSERT INTO `%1_D` VALUES('%2', '%3', '%4')").arg(station).arg(date).arg(varType).arg(varValue);
+    if (varValue !=NODATA)
+    {
+        QString statement = QString("INSERT INTO `%1_D` VALUES('%2', '%3', '%4')").arg(station).arg(date).arg(varType).arg(varValue);
 
-    QSqlQuery qry = QSqlQuery(statement, _db);
-    qry.exec();
+        QSqlQuery qry = QSqlQuery(statement, _db);
+        qry.exec();
+    }
 
 }
 
@@ -361,12 +369,15 @@ void DbMeteoPoints::insertHourlyValue(QString station, QString date, int varType
         varValue = NODATA;
     }
 
-    QString statement = QString("INSERT INTO `%1_H` VALUES(DATETIME('%2', '+%3 minutes'), '%4', '%5')").arg(station).arg(date).arg(minuteToHour).arg(varType).arg(varValue);
+    if (varValue !=NODATA)
+    {
+        QString statement = QString("INSERT INTO `%1_H` VALUES(DATETIME('%2', '+%3 minutes'), '%4', '%5')").arg(station).arg(date).arg(minuteToHour).arg(varType).arg(varValue);
 
-    //qDebug() << "insertHourlyValue" << statement;
+        //qDebug() << "insertHourlyValue" << statement;
 
-    QSqlQuery qry = QSqlQuery(statement, _db);
-    qry.exec();
+        QSqlQuery qry = QSqlQuery(statement, _db);
+        qry.exec();
+    }
 
 }
 
@@ -462,10 +473,13 @@ void DbMeteoPoints::insertOrUpdate(QString date, QString id_point, int id_variab
         value = NODATA;
     }
 
-    QString statement = QString("REPLACE INTO TmpHourlyData SELECT '%1', %2, %3, '%4', %5, %6 WHERE %6 > (SELECT COALESCE((SELECT frequency FROM TmpHourlyData WHERE date_time = '%1' AND id_point = %2 AND variable_name = '%4'), 0))").arg(date).arg(id_point).arg(id_variable).arg(variable_name).arg(value).arg(frequency);
+    if (value !=NODATA)
+    {
+        QString statement = QString("REPLACE INTO TmpHourlyData SELECT '%1', %2, %3, '%4', %5, %6 WHERE %6 > (SELECT COALESCE((SELECT frequency FROM TmpHourlyData WHERE date_time = '%1' AND id_point = %2 AND variable_name = '%4'), 0))").arg(date).arg(id_point).arg(id_variable).arg(variable_name).arg(value).arg(frequency);
 
-    QSqlQuery qry = QSqlQuery(statement, _db);
-    qry.exec();
+        QSqlQuery qry = QSqlQuery(statement, _db);
+        qry.exec();
+    }
 
 }
 
