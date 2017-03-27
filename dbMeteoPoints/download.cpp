@@ -35,7 +35,7 @@ void Download::getPointProperties(QStringList datasetList)
     _datasetsList = datasetList;
 
     QNetworkRequest request;
-    request.setUrl(QUrl("http://meteozen.metarpa/simcstations/api/stations"));
+    request.setUrl(QUrl("http://meteozen.metarpa/simcstations/api/v1/stations"));
     request.setRawHeader("Authorization", _authorization);
 
     QNetworkReply* reply = manager->get(request);  // GET
@@ -51,20 +51,9 @@ void Download::getPointProperties(QStringList datasetList)
 
         QJsonParseError *error = new QJsonParseError();
         QJsonDocument doc = QJsonDocument::fromJson(data.toUtf8(), error);
-        //qDebug() << data.length();
 
         qDebug() << "err: " << error->errorString() << " -> " << error->offset;
 
-        ///////////////////debug/////////////
-//        QString filename = "debug.txt";
-//            QFile file(filename);
-//            if (file.open(QIODevice::ReadWrite)) {
-//                QTextStream stream(&file);
-//                stream << data << endl;
-//                stream.flush();
-//                file.close();
-//            }
-        ///////////////////
         // check validity of the document
         if(!doc.isNull() && doc.isArray())
         {
@@ -102,6 +91,7 @@ void Download::getPointProperties(QStringList datasetList)
 }
 
 // da cancellare, solo x test senza bisogno della rete
+/*
 void Download::debugFromFile()
 {
 
@@ -157,7 +147,7 @@ void Download::debugFromFile()
          else
             qDebug() << "Invalid JSON..." << endl;
  }
-
+*/
 
 void Download::downloadMetadata(QJsonObject obj)
 {
@@ -407,7 +397,6 @@ void Download::downloadHourlyVar(Crit3DTime dateStartTime, Crit3DTime dateEndTim
 
         // reftime
         QString refTime = QString("reftime:>=%1,<=%2").arg(QString::fromStdString(dateStartTime.toStdString())).arg(QString::fromStdString(i.toStdString()));
-        qDebug() << refTime;
 
         foreach (QString dataset, datasets)
         {
@@ -478,4 +467,5 @@ void Download::downloadHourlyVar(Crit3DTime dateStartTime, Crit3DTime dateEndTim
 
         dateStartTime = i.addSeconds(1800);
     }
+    _dbMeteo->deleteTmpTable();
 }

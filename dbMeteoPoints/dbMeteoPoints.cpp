@@ -8,6 +8,8 @@
 #include <QSqlRecord>
 
 #include <QString>
+#include <QStringBuilder>
+
 #include <QtNetwork>
 
 DbMeteoPoints::DbMeteoPoints(QString dbName)
@@ -113,7 +115,7 @@ QList<VariablesList> DbMeteoPoints::getHourlyVarFields(QList<int> id)
 
 
     }
-    qDebug () << qry.lastQuery();
+    //qDebug () << qry.lastQuery();
     return variableList;
 
 }
@@ -260,7 +262,6 @@ bool DbMeteoPoints::fillPointProperties(TPointProperties* pointProp)
         qDebug( "successfully inserted" );
         success = true;
     }
-    //qDebug() << qry.lastQuery();
 
     return success;
 
@@ -274,13 +275,13 @@ void DbMeteoPoints::initStationsDailyTables(Crit3DDate dataStartInput, Crit3DDat
     foreach(int station, stations)
     {
         QString statement = QString("CREATE TABLE IF NOT EXISTS `%1_D` (date_time TEXT, id_variable INTEGER, value REAL, PRIMARY KEY(date_time,id_variable))").arg(station);
-        qDebug() << "initStationsDailyTables - Create " << statement;
+        //qDebug() << "initStationsDailyTables - Create " << statement;
 
         QSqlQuery qry(statement, _db);
         qry.exec();
 
         statement = QString("DELETE FROM `%1_D` WHERE date_time >= DATE('%2') AND date_time < DATE('%3', '+1 day')").arg(station).arg(startDate).arg(endDate);
-        qDebug() << "initStationsDailyTables - Delete " << statement;
+        //qDebug() << "initStationsDailyTables - Delete " << statement;
 
         qry = QSqlQuery(statement, _db);
         qry.exec();
@@ -296,13 +297,13 @@ void DbMeteoPoints::initStationsHourlyTables(Crit3DTime dataStartInput, Crit3DTi
     foreach(int station, stations)
     {
         QString statement = QString("CREATE TABLE IF NOT EXISTS `%1_H` (date_time TEXT, id_variable INTEGER, value REAL, PRIMARY KEY(date_time,id_variable))").arg(station);
-        qDebug() << "initStationsHourlyTables - Create " << statement;
+        //qDebug() << "initStationsHourlyTables - Create " << statement;
 
         QSqlQuery qry(statement, _db);
         qry.exec();
 
         statement = QString("DELETE FROM `%1_H` WHERE date_time >= DATE('%2') AND date_time < DATE('%3', '+1 day')").arg(station).arg(startDate).arg(endDate);
-        qDebug() << "initStationsHourlyTables - Delete " << statement;
+        //qDebug() << "initStationsHourlyTables - Delete " << statement;
 
         qry = QSqlQuery(statement, _db);
         qry.exec();
@@ -313,15 +314,27 @@ void DbMeteoPoints::initStationsHourlyTables(Crit3DTime dataStartInput, Crit3DTi
 void DbMeteoPoints::createTmpTable()
 {
     QString statement = QString("CREATE TABLE IF NOT EXISTS TmpHourlyData (date_time TEXT, id_point INTEGER, id_variable INTEGER, variable_name TEXT, value REAL, frequency INTEGER, PRIMARY KEY(date_time,id_point,variable_name))");
-    qDebug() << "createTmpTable - Create " << statement;
+    //qDebug() << "createTmpTable - Create " << statement;
 
     QSqlQuery qry(statement, _db);
     qry.exec();
 
     statement = QString("DELETE FROM TmpHourlyData");
-    qDebug() << "createTmpTable - Delete all records" << statement;
+    //qDebug() << "createTmpTable - Delete all records" << statement;
 
     qry = QSqlQuery(statement, _db);
+    qry.exec();
+
+
+}
+
+void DbMeteoPoints::deleteTmpTable()
+{
+
+    QString statement = QString("DELETE * FROM TmpHourlyData");
+    qDebug() << "deleteTmpTable - Delete TmpHourlyData table" << statement;
+
+    QSqlQuery qry = QSqlQuery(statement, _db);
     qry.exec();
 
 
@@ -330,7 +343,7 @@ void DbMeteoPoints::createTmpTable()
 void DbMeteoPoints::insertDailyValue(QString station, QString date, int varType, double varValue, QString flag)
 {
     if (flag.left(1) == "1" || flag.left(1) == "054") {
-        // dato invalidato o non plausibile
+        // invalid data
         varValue = NODATA;
     }
 
@@ -344,23 +357,24 @@ void DbMeteoPoints::insertDailyValue(QString station, QString date, int varType,
 void DbMeteoPoints::insertHourlyValue(QString station, QString date, int varType, double varValue, QString flag, int minuteToHour)
 {
     if (flag.left(1) == "1" || flag.left(1) == "054") {
-        // dato invalidato o non plausibile
+        // invalid data
         varValue = NODATA;
     }
 
-    QString statement = QString("INSERT INTO `%1_H` VALUES(DATETIME('%2', +%3 minutes), '%4', '%5')").arg(station).arg(date).arg(minuteToHour).arg(varType).arg(varValue);
+    QString statement = QString("INSERT INTO `%1_H` VALUES(DATETIME('%2', '+%3 minutes'), '%4', '%5')").arg(station).arg(date).arg(minuteToHour).arg(varType).arg(varValue);
+
+    //qDebug() << "insertHourlyValue" << statement;
 
     QSqlQuery qry = QSqlQuery(statement, _db);
     qry.exec();
 
 }
 
-// TO DO
+
 void DbMeteoPoints::saveHourlyData()
 {
 
     QString statement = QString("SELECT * FROM TmpHourlyData");
-
     QSqlQuery qry(statement, _db);
 
     if( !qry.exec() )
@@ -372,37 +386,71 @@ void DbMeteoPoints::saveHourlyData()
         while (qry.next())
         {
             QString date = qry.value(0).toString();
-            QString id_point = qry.value(1).toString();
+            QString station = qry.value(1).toString();
             int id_variable = qry.value(2).toInt();
             QString variable_name = qry.value(3).toString();
             double value = qry.value(4).toDouble();
             int frequency = qry.value(5).toInt();
 
-            if (frequency == 60)
+            if (frequency == 3600)
             {
-                insertHourlyValue(id_point, date, id_variable , value, "0");
+                insertHourlyValue(station, date, id_variable , value, "0", 0);
             }
             else
             {
-                if (variable_name == "HOURLY_RAD")
+                if (variable_name == "HOURLY_RAD" && date.mid(14,2) == "30")
                 {
-                    if ( date.mid(14,2) == "30")
-                    {
-                        insertHourlyValue(id_point, date, id_variable, value, 0, 30);
-                    }
+                    insertHourlyValue(station, date, id_variable, value, "0", 30);
                 }
-                else if (variable_name == "HOURLY_WIND_INT" || variable_name == "HOURLY_WIND_DIR" )
+                else if ((variable_name == "HOURLY_WIND_INT" || variable_name == "HOURLY_WIND_DIR" ) && date.mid(14,2) == "00")
                 {
-                    if ( date.mid(14,2) == "00")
-                    {
-                        insertHourlyValue(id_point, date, id_variable, value, 0);
-                    }
+                    insertHourlyValue(station, date, id_variable, value, "0", 0);
                 }
             }
-
         }
 
+        statement = QString("DELETE FROM TmpHourlyData WHERE frequency = 3600 OR variable_name IN ('HOURLY_RAD', 'HOURLY_WIND_INT', 'HOURLY_WIND_DIR')");
+        qry = QSqlQuery(statement, _db);
+        qry.exec();
 
+        QStringList stations;
+
+        statement = QString("SELECT DISTINCT id_point FROM TmpHourlyData");
+        qry = QSqlQuery(statement, _db);
+        qry.exec();
+
+        while (qry.next())
+        {
+            stations.append(qry.value(0).toString());
+        }
+
+        statement = QString("INSERT INTO `%1_H` ");
+        statement = statement % "SELECT aggregate_date, variable_name, aggregate_value FROM (";
+        statement = statement % "SELECT aggregate_date, variable_name, SUM(value) AS aggregate_value, SUM(frequency) AS aggregate_frequency FROM (";
+        statement = statement % "SELECT datetime(date_time, '+' || (SELECT CASE WHEN strftime('%M', date_time) = 0 THEN 0 ELSE 60 - strftime('%M', date_time) END) || ' minutes') AS aggregate_date, ";
+        statement = statement % "variable_name, value, frequency FROM TmpHourlyData WHERE id_point = %1 AND variable_name like '%PREC%'";
+        statement = statement % ") group by aggregate_date, variable_name) WHERE aggregate_frequency = 3600";
+        statement = statement % " UNION ALL ";
+        statement = statement % "SELECT aggregate_date, variable_name, aggregate_value FROM (";
+        statement = statement % "SELECT aggregate_date, variable_name, AVG(value) AS aggregate_value FROM (";
+        statement = statement % "SELECT datetime(date_time, '+' || (SELECT CASE WHEN strftime('%M', date_time) = 0 THEN 0 ELSE 60 - strftime('%M', date_time) END) || ' minutes') AS aggregate_date, ";
+        statement = statement % "variable_name, value FROM TmpHourlyData WHERE id_point = %1 AND variable_name like '%AVG%'";
+        statement = statement % ") group by aggregate_date, variable_name)";
+
+        QString delStationStatement = QString("DELETE FROM TmpHourlyData WHERE id_point = :id_point");
+
+
+        foreach (QString station, stations) {
+
+
+            qry = QSqlQuery(statement.arg(station), _db);
+            qry.exec();
+
+            qry = QSqlQuery(delStationStatement, _db);
+            qry.bindValue(":id_point", station);
+            qry.exec();
+
+        }
     }
 
 }
@@ -410,7 +458,7 @@ void DbMeteoPoints::saveHourlyData()
 void DbMeteoPoints::insertOrUpdate(QString date, QString id_point, int id_variable, QString variable_name, double value, int frequency, QString flag)
 {
     if (flag.left(1) == "1" || flag.left(1) == "054") {
-        // dato invalidato o non plausibile
+        // invalid data
         value = NODATA;
     }
 
