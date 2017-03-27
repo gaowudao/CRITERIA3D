@@ -314,17 +314,27 @@ void DbMeteoPoints::initStationsHourlyTables(Crit3DTime dataStartInput, Crit3DTi
 void DbMeteoPoints::createTmpTable()
 {
 
-    QString statement = QString("CREATE TABLE IF NOT EXISTS TmpHourlyData (date_time TEXT, id_point INTEGER, id_variable INTEGER, variable_name TEXT, value REAL, frequency INTEGER, PRIMARY KEY(date_time,id_point,variable_name))");
-    //qDebug() << "createTmpTable - Create " << statement;
+    QSqlQuery qry(_db);
+    qry.prepare("CREATE TABLE IF NOT EXISTS TmpHourlyData (date_time TEXT, id_point INTEGER, id_variable INTEGER, variable_name TEXT, value REAL, frequency INTEGER, PRIMARY KEY(date_time,id_point,variable_name))");
+    if( !qry.exec() )
+    {
+        qDebug() << qry.lastError();
+    }
+    else
+    {
+        qDebug( "createTmpTable - Create" );
+    }
 
-    QSqlQuery qry(statement, _db);
-    qry.exec();
+    qry.prepare("DELETE FROM TmpHourlyData");
 
-    statement = QString("DELETE FROM TmpHourlyData");
-    //qDebug() << "createTmpTable - Delete all records" << statement;
-
-    qry = QSqlQuery(statement, _db);
-    qry.exec();
+    if( !qry.exec() )
+    {
+        qDebug() << qry.lastError();
+    }
+    else
+    {
+        qDebug( "createTmpTable - Delete all records" );
+    }
 
 
 }

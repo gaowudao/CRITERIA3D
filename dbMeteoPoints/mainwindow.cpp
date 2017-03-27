@@ -24,8 +24,8 @@ MainWindow::MainWindow(QWidget *parent) :
     stations << 7353 << 2308 << 6238;
     QList<int> variable;
     //variable << 232 << 233 << 231 << 250 << 241 << 242 << 240 << 706 << 227 << 230;
-    //variable << 166 << 165 << 139 << 164 << 159 << 158 << 78;
-    variable << 159 ;
+    variable << 166 << 165 << 139 << 164 << 159 << 158 << 78;
+
     bool precSelection = true;
     //download->downloadDailyVar(dateStart, dateEnd, datasets, stations, variable, precSelection);
 

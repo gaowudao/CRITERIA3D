@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.7.0
+** Created by: Qt User Interface Compiler version 5.7.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -309,16 +309,16 @@ public:
 
     void retranslateUi(QMainWindow *MainWindow)
     {
-        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Criteria3D", 0));
-        actionLoadRaster->setText(QApplication::translate("MainWindow", "Load Raster", 0));
-        actionSetUTMzone->setText(QApplication::translate("MainWindow", "UTM zone", 0));
-        actionProxy->setText(QApplication::translate("MainWindow", "Proxy", 0));
-        actionMapOpenStreetMap->setText(QApplication::translate("MainWindow", "OpenStreetMap", 0));
-        actionMapWikimedia->setText(QApplication::translate("MainWindow", "Wikimedia", 0));
-        actionMapTerrain->setText(QApplication::translate("MainWindow", "Terrain", 0));
-        actionMapToner->setText(QApplication::translate("MainWindow", "Toner", 0));
+        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Criteria3D", Q_NULLPTR));
+        actionLoadRaster->setText(QApplication::translate("MainWindow", "Load Raster", Q_NULLPTR));
+        actionSetUTMzone->setText(QApplication::translate("MainWindow", "UTM zone", Q_NULLPTR));
+        actionProxy->setText(QApplication::translate("MainWindow", "Proxy", Q_NULLPTR));
+        actionMapOpenStreetMap->setText(QApplication::translate("MainWindow", "OpenStreetMap", Q_NULLPTR));
+        actionMapWikimedia->setText(QApplication::translate("MainWindow", "Wikimedia", Q_NULLPTR));
+        actionMapTerrain->setText(QApplication::translate("MainWindow", "Terrain", Q_NULLPTR));
+        actionMapToner->setText(QApplication::translate("MainWindow", "Toner", Q_NULLPTR));
 #ifndef QT_NO_TOOLTIP
-        opacitySlider->setToolTip(QApplication::translate("MainWindow", "Raster opacity", 0));
+        opacitySlider->setToolTip(QApplication::translate("MainWindow", "Raster opacity", Q_NULLPTR));
 #endif // QT_NO_TOOLTIP
 #ifndef QT_NO_ACCESSIBILITY
         opacitySlider->setAccessibleName(QString());
@@ -327,13 +327,13 @@ public:
         opacitySlider->setAccessibleDescription(QString());
 #endif // QT_NO_ACCESSIBILITY
 #ifndef QT_NO_TOOLTIP
-        widgetColorLegend->setToolTip(QApplication::translate("MainWindow", "Raster colors", 0));
+        widgetColorLegend->setToolTip(QApplication::translate("MainWindow", "Raster colors", Q_NULLPTR));
 #endif // QT_NO_TOOLTIP
-        menuFile->setTitle(QApplication::translate("MainWindow", "File", 0));
-        menuMap_server->setTitle(QApplication::translate("MainWindow", "Edit", 0));
-        menuGIS_settings->setTitle(QApplication::translate("MainWindow", "Settings", 0));
-        menuGIS->setTitle(QApplication::translate("MainWindow", "GIS", 0));
-        menuMap->setTitle(QApplication::translate("MainWindow", "Map", 0));
+        menuFile->setTitle(QApplication::translate("MainWindow", "File", Q_NULLPTR));
+        menuMap_server->setTitle(QApplication::translate("MainWindow", "Edit", Q_NULLPTR));
+        menuGIS_settings->setTitle(QApplication::translate("MainWindow", "Settings", Q_NULLPTR));
+        menuGIS->setTitle(QApplication::translate("MainWindow", "GIS", Q_NULLPTR));
+        menuMap->setTitle(QApplication::translate("MainWindow", "Map", Q_NULLPTR));
     } // retranslateUi
 
 };
