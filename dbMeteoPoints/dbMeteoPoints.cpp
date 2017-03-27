@@ -313,6 +313,7 @@ void DbMeteoPoints::initStationsHourlyTables(Crit3DTime dataStartInput, Crit3DTi
 
 void DbMeteoPoints::createTmpTable()
 {
+
     QString statement = QString("CREATE TABLE IF NOT EXISTS TmpHourlyData (date_time TEXT, id_point INTEGER, id_variable INTEGER, variable_name TEXT, value REAL, frequency INTEGER, PRIMARY KEY(date_time,id_point,variable_name))");
     //qDebug() << "createTmpTable - Create " << statement;
 
@@ -436,17 +437,17 @@ void DbMeteoPoints::saveHourlyData()
         }
 
         statement = QString("INSERT INTO `%1_H` ");
-        statement = statement % "SELECT aggregate_date, variable_name, aggregate_value FROM (";
-        statement = statement % "SELECT aggregate_date, variable_name, SUM(value) AS aggregate_value, SUM(frequency) AS aggregate_frequency FROM (";
+        statement = statement % "SELECT aggregate_date, id_variable, aggregate_value FROM (";
+        statement = statement % "SELECT aggregate_date, id_variable, SUM(value) AS aggregate_value, SUM(frequency) AS aggregate_frequency FROM (";
         statement = statement % "SELECT datetime(date_time, '+' || (SELECT CASE WHEN strftime('%M', date_time) = 0 THEN 0 ELSE 60 - strftime('%M', date_time) END) || ' minutes') AS aggregate_date, ";
-        statement = statement % "variable_name, value, frequency FROM TmpHourlyData WHERE id_point = %1 AND variable_name like '%PREC%'";
+        statement = statement % "id_variable, value, frequency FROM TmpHourlyData WHERE id_point = %1 AND variable_name like '%PREC%'";
         statement = statement % ") group by aggregate_date, variable_name) WHERE aggregate_frequency = 3600";
         statement = statement % " UNION ALL ";
-        statement = statement % "SELECT aggregate_date, variable_name, aggregate_value FROM (";
-        statement = statement % "SELECT aggregate_date, variable_name, AVG(value) AS aggregate_value FROM (";
+        statement = statement % "SELECT aggregate_date, id_variable, aggregate_value FROM (";
+        statement = statement % "SELECT aggregate_date, id_variable, AVG(value) AS aggregate_value FROM (";
         statement = statement % "SELECT datetime(date_time, '+' || (SELECT CASE WHEN strftime('%M', date_time) = 0 THEN 0 ELSE 60 - strftime('%M', date_time) END) || ' minutes') AS aggregate_date, ";
-        statement = statement % "variable_name, value FROM TmpHourlyData WHERE id_point = %1 AND variable_name like '%AVG%'";
-        statement = statement % ") group by aggregate_date, variable_name)";
+        statement = statement % "id_variable, value FROM TmpHourlyData WHERE id_point = %1 AND variable_name like '%AVG%'";
+        statement = statement % ") group by aggregate_date, id_variable)";
 
         QString delStationStatement = QString("DELETE FROM TmpHourlyData WHERE id_point = :id_point");
 

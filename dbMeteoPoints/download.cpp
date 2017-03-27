@@ -296,7 +296,7 @@ void Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStrin
                                                                .arg(fields[0].mid(6, 2))
                                                                .arg(fields[0].mid(8, 2))
                                                                .arg(fields[0].mid(10, 2));
-                    QString station = fields[1];
+                    QString id_point = fields[1];
                     int arkId = fields[2].toInt();
                     double varValue = fields[3].toDouble();
                     QString flag = fields[6];
@@ -326,9 +326,9 @@ void Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStrin
 
                     int id = _dbMeteo->arkIdmap(arkId);
 
-                    if (!(station.isEmpty() || station.isEmpty()))
+                    if (!(id_point.isEmpty() || id_point.isEmpty()))
                     {
-                        _dbMeteo->insertDailyValue(station, date, id, varValue, flag);
+                        _dbMeteo->insertDailyValue(id_point, date, id, varValue, flag);
                     }
 
                     dateStart = i.addDays(1);
