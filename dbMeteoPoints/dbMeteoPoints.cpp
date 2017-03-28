@@ -42,7 +42,9 @@ QString DbMeteoPoints::getDatasetURL(QString dataset)
     qry.bindValue(":dataset", dataset);
 
     if( !qry.exec() )
+    {
         qDebug() << qry.lastError();
+    }
     else
     {
         qDebug( "Selected!" );
@@ -67,7 +69,9 @@ QStringList DbMeteoPoints::getDatasetsActive()
     qry.prepare( "SELECT dataset FROM datasets WHERE active = 1" );
 
     if( !qry.exec() )
+    {
         qDebug() << qry.lastError();
+    }
     else
     {
         qDebug( "Selected!" );
@@ -115,8 +119,8 @@ QList<VariablesList> DbMeteoPoints::getHourlyVarFields(QList<int> id)
 
 
     }
-    //qDebug () << qry.lastQuery();
     return variableList;
+
 
 }
 
@@ -130,7 +134,9 @@ QString DbMeteoPoints::getVarName(int id)
     qry.bindValue(":id", id);
 
     if( !qry.exec() )
+    {
         qDebug() << qry.lastError();
+    }
     else
     {
         qDebug( "Selected!" );
@@ -157,7 +163,9 @@ int DbMeteoPoints::getId(QString VarName)
     qry.bindValue(":VarName", VarName);
 
     if( !qry.exec() )
+    {
         qDebug() << qry.lastError();
+    }
     else
     {
         qDebug( "Selected!" );
@@ -181,7 +189,9 @@ QList<int> DbMeteoPoints::getDailyVar()
     qry.prepare( "SELECT id_arkimet FROM variable_properties WHERE aggregation_time = 86400" );
 
     if( !qry.exec() )
+    {
         qDebug() << qry.lastError();
+    }
     else
     {
         qDebug( "Selected!" );
@@ -207,7 +217,9 @@ QList<int> DbMeteoPoints::getHourlyVar()
     qry.prepare( "SELECT id_arkimet FROM variable_properties WHERE aggregation_time < 86400" );
 
     if( !qry.exec() )
+    {
         qDebug() << qry.lastError();
+    }
     else
     {
         qDebug( "Selected!" );
@@ -347,7 +359,9 @@ void DbMeteoPoints::deleteTmpTable()
     qry.prepare( "DROP TABLE TmpHourlyData" );
 
     if( !qry.exec() )
+    {
         qDebug() << qry.lastError();
+    }
     else
     {
         qDebug( "Drop table" );
@@ -375,6 +389,7 @@ void DbMeteoPoints::insertDailyValue(QString station, QString date, int varType,
 
 void DbMeteoPoints::insertHourlyValue(QString station, QString date, int varType, double varValue, QString flag, int minuteToHour)
 {
+
     if (flag.left(1) == "1" || flag.left(1) == "054") {
         // invalid data
         varValue = NODATA;

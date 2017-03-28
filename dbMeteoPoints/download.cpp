@@ -364,7 +364,6 @@ void Download::downloadHourlyVar(Crit3DTime dateStartTime, Crit3DTime dateEndTim
 
     QList<VariablesList> variableList = _dbMeteo->getHourlyVarFields(variables);
 
-
     product = QString(";product: VM2,%1").arg(variables[0]);
 
     for (int i = 1; i < variables.size(); i++)
