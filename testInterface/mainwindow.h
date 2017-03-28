@@ -71,7 +71,7 @@
 
         void setMapSource(OSMTileSource::OSMTileType mySource);
 
-        QPoint MainWindow::getMapPoint(QPoint* point) const;
+        QPoint getMapPoint(QPoint* point) const;
 
     };
 

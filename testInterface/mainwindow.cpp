@@ -10,6 +10,7 @@
 #include "Position.h"
 #include "formSingleValue.h"
 #include "project.h"
+#include <cmath>
 
 
 #define TOOLSWIDTH 220
@@ -98,7 +99,8 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event){
 
 void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
 {
-    QPoint mapPoint = getMapPoint(&(event->pos()));
+    QPoint pos = event->pos();
+    QPoint mapPoint = getMapPoint(&pos);
     if ((mapPoint.x() <= 0) || (mapPoint.y() <= 0)) return;
 
     Position newCenter = this->mapView->mapToScene(mapPoint);
@@ -117,7 +119,8 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
 
 void MainWindow::mouseMoveEvent(QMouseEvent * event)
 {
-    QPoint mapPoint = getMapPoint(&(event->pos()));
+    QPoint pos = event->pos();
+    QPoint mapPoint = getMapPoint(&pos);
     if ((mapPoint.x() <= 0) || (mapPoint.y() <= 0)) return;
 
     Position geoPoint = this->mapView->mapToScene(mapPoint);

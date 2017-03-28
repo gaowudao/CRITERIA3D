@@ -3,6 +3,7 @@
 #include "project.h"
 #include <QPainter>
 #include <QDebug>
+#include <cmath>
 
 extern Crit3DProject myProject;
 

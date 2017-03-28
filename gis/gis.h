@@ -37,6 +37,8 @@
         #include "color.h"
     #endif
 
+#include <cmath>
+
     enum operationType {operationMin, operationMax, operationSum, operationSubtract, operationProduct, operationDivide};
 
     namespace gis
