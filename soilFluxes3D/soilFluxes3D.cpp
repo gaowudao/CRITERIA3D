@@ -843,7 +843,7 @@ double DLL_EXPORT __STDCALL computeStep(double maxTime)
         HeatComputation(deltaT);
     }
 
-    return maxTime;
+    return deltaT;
 }
 
 /*!

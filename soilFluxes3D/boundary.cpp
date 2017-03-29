@@ -325,10 +325,6 @@ void updateBoundaryWater(double deltaT)
 
 void updateBoundaryHeat()
 {
-    double advTemperature;
-    double waterFlux;
-    double heatFlux;
-
     for (long i = 0; i < myStructure.nrNodes; i++)
     {
         if (myNode[i].extra->Heat != NULL)
@@ -377,7 +373,7 @@ void updateBoundaryHeat()
                         myNode[i].boundary->Heat->latentFlux += computeAtmosphericLatentHeatFlow(i) / myNode[i].up.area;
 
                     // advective heat from rain or evaporation
-                    if (myStructure.computeHeatAdvective)
+                    /*if (myStructure.computeHeatAdvective)
                     {
                         waterFlux = getWaterFlux(i, &myNode[i].up);
                         if (waterFlux != NODATA)
@@ -386,7 +382,7 @@ void updateBoundaryHeat()
                             heatFlux =  waterFlux * HEAT_CAPACITY_WATER * advTemperature / myNode[i].up.area;
                             myNode[i].boundary->advectiveHeatFlux = heatFlux;
                         }
-                    }
+                    }*/
 
                     myNode[i].extra->Heat->Qh += myNode[i].up.area * (myNode[i].boundary->Heat->radiativeFlux +
                                                                       myNode[i].boundary->Heat->sensibleFlux +
@@ -396,6 +392,7 @@ void updateBoundaryHeat()
                 else if (myNode[i].boundary->type == BOUNDARY_FREEDRAINAGE ||
                          myNode[i].boundary->type == BOUNDARY_PRESCRIBEDTOTALPOTENTIAL)
                 {
+                    /*
                     if (myStructure.computeHeatAdvective)
                     {
                          waterFlux = myNode[i].boundary->waterFlow;
@@ -409,7 +406,7 @@ void updateBoundaryHeat()
                         myNode[i].boundary->advectiveHeatFlux = heatFlux;
 
                         myNode[i].extra->Heat->Qh += myNode[i].up.area * myNode[i].boundary->advectiveHeatFlux;
-                    }
+                    }*/
 
                     if (myNode[i].boundary->fixedTemperature != NODATA)
                     {

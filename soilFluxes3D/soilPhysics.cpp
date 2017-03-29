@@ -348,17 +348,17 @@
     {
         double particleDensity;
         double totalPorosity;
-        double smallPorosity;
 
         particleDensity = ParticleDensity(myNode[i].Soil->organicMatter);
 
+        totalPorosity = myNode[i].Soil->Theta_s;
+
         // very small pores not water fillable
         if (myNode[i].Soil->clay > 40)
-            smallPorosity = 0.03;
+            totalPorosity *= 1.03;
         else
-            smallPorosity = 0.05;
+            totalPorosity *= 1.05;
 
-        totalPorosity = myNode[i].Soil->Theta_s + smallPorosity;
 
         return (1. - totalPorosity) * particleDensity;
     }
