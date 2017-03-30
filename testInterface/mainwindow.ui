@@ -969,7 +969,7 @@
      <x>0</x>
      <y>0</y>
      <width>1024</width>
-     <height>21</height>
+     <height>30</height>
     </rect>
    </property>
    <property name="palette">
@@ -1392,9 +1392,12 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>Fi&amp;le</string>
     </property>
     <addaction name="actionLoadRaster"/>
+    <addaction name="actionNew_meteo_points_DB"/>
+    <addaction name="actionOpen_meteo_points_DB"/>
+    <addaction name="actionDownload_meteo_data"/>
    </widget>
    <widget class="QMenu" name="menuMap_server">
     <property name="title">
@@ -1403,17 +1406,17 @@
    </widget>
    <widget class="QMenu" name="menuGIS_settings">
     <property name="title">
-     <string>Settings</string>
+     <string>Settin&amp;gs</string>
     </property>
     <widget class="QMenu" name="menuGIS">
      <property name="title">
-      <string>GIS</string>
+      <string>&amp;GIS</string>
      </property>
      <addaction name="actionSetUTMzone"/>
     </widget>
     <widget class="QMenu" name="menuMap">
      <property name="title">
-      <string>Map</string>
+      <string>&amp;Map</string>
      </property>
      <addaction name="actionMapOpenStreetMap"/>
      <addaction name="actionMapWikimedia"/>
@@ -1431,37 +1434,52 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionLoadRaster">
    <property name="text">
-    <string>Load Raster</string>
+    <string>&amp;Load Raster</string>
    </property>
   </action>
   <action name="actionSetUTMzone">
    <property name="text">
-    <string>UTM zone</string>
+    <string>&amp;UTM zone</string>
    </property>
   </action>
   <action name="actionProxy">
    <property name="text">
-    <string>Proxy</string>
+    <string>&amp;Proxy</string>
    </property>
   </action>
   <action name="actionMapOpenStreetMap">
    <property name="text">
-    <string>OpenStreetMap</string>
+    <string>&amp;OpenStreetMap</string>
    </property>
   </action>
   <action name="actionMapWikimedia">
    <property name="text">
-    <string>Wikimedia</string>
+    <string>&amp;Wikimedia</string>
    </property>
   </action>
   <action name="actionMapTerrain">
    <property name="text">
-    <string>Terrain</string>
+    <string>&amp;Terrain</string>
    </property>
   </action>
   <action name="actionMapToner">
    <property name="text">
-    <string>Toner</string>
+    <string>To&amp;ner</string>
+   </property>
+  </action>
+  <action name="actionNew_meteo_points_DB">
+   <property name="text">
+    <string>New meteo points DB</string>
+   </property>
+  </action>
+  <action name="actionOpen_meteo_points_DB">
+   <property name="text">
+    <string>Open meteo points DB</string>
+   </property>
+  </action>
+  <action name="actionDownload_meteo_data">
+   <property name="text">
+    <string>Download meteo data</string>
    </property>
   </action>
  </widget>

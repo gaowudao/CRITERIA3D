@@ -1,6 +1,8 @@
 #include <QFileDialog>
 #include <QtDebug>
+#include <QCheckBox>
 
+#include "dbMeteoPoints.h"
 #include "tileSources/OSMTileSource.h"
 #include "tileSources/GridTileSource.h"
 #include "tileSources/CompositeTileSource.h"
@@ -69,6 +71,7 @@ void MainWindow::setMapSource(OSMTileSource::OSMTileType mySource)
 
 void MainWindow::on_actionLoadRaster_triggered()
 {
+
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open rasterObj"), "", tr("ESRI grid files (*.flt)"));
     if (fileName == "") return;
 
@@ -88,6 +91,56 @@ void MainWindow::on_actionLoadRaster_triggered()
     // active raster object
     this->rasterObj->updateCenter();
     this->rasterObj->setDrawing(true);
+}
+
+void MainWindow::on_actionNew_meteo_points_DB_triggered()
+{
+    QString templateName = QFileDialog::getOpenFileName(this, tr("Choose template DB meteo"), "", tr("DB files (*.db)"));
+    if (templateName == "")
+    {
+        qDebug() << "missing template";
+        return;
+    }
+    else
+    {
+        QString dBName = QFileDialog::getSaveFileName(this, tr("Save as"), "", tr("DB files (*.db)"));
+        if (dBName == "")
+        {
+            qDebug() << "missing new db file name";
+            return;
+        }
+        else
+        {
+            QFile::copy(templateName, dBName);
+
+            DbMeteoPoints* dbmeteo = new DbMeteoPoints(dBName);
+            QStringList dataset = dbmeteo->getDatasetsList();
+
+            QWidget* checkBoxes = new QWidget();
+            checkBoxes->setWindowTitle("Datasets");
+            checkBoxes->setFixedWidth(500);
+            QVBoxLayout* layout = new QVBoxLayout;
+            checkBoxes->setLayout(layout);
+            for (unsigned int i = 0; i < dataset.size(); i++)
+            {
+                QCheckBox* dat = new QCheckBox;
+                dat->setText(QString(dataset[i]));
+                layout->addWidget(dat);
+                checkBoxes->show();
+            }
+
+        }
+    }
+}
+
+void MainWindow::on_actionOpen_meteo_points_DB_triggered()
+{
+
+}
+
+void MainWindow::on_actionDownload_meteo_data_triggered()
+{
+
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event){

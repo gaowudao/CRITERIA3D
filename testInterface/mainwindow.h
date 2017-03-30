@@ -33,6 +33,12 @@
          */
         void on_actionLoadRaster_triggered();
 
+        void on_actionNew_meteo_points_DB_triggered();
+
+        void on_actionOpen_meteo_points_DB_triggered();
+
+        void on_actionDownload_meteo_data_triggered();
+
         void on_opacitySlider_sliderMoved(int position);
 
         void on_actionMapToner_triggered();

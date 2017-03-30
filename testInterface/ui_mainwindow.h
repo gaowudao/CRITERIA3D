@@ -34,6 +34,9 @@ public:
     QAction *actionMapWikimedia;
     QAction *actionMapTerrain;
     QAction *actionMapToner;
+    QAction *actionNew_meteo_points_DB;
+    QAction *actionOpen_meteo_points_DB;
+    QAction *actionDownload_meteo_data;
     QWidget *centralWidget;
     QWidget *widgetMap;
     QGroupBox *groupBoxRaster;
@@ -131,6 +134,12 @@ public:
         actionMapTerrain->setObjectName(QStringLiteral("actionMapTerrain"));
         actionMapToner = new QAction(MainWindow);
         actionMapToner->setObjectName(QStringLiteral("actionMapToner"));
+        actionNew_meteo_points_DB = new QAction(MainWindow);
+        actionNew_meteo_points_DB->setObjectName(QStringLiteral("actionNew_meteo_points_DB"));
+        actionOpen_meteo_points_DB = new QAction(MainWindow);
+        actionOpen_meteo_points_DB->setObjectName(QStringLiteral("actionOpen_meteo_points_DB"));
+        actionDownload_meteo_data = new QAction(MainWindow);
+        actionDownload_meteo_data->setObjectName(QStringLiteral("actionDownload_meteo_data"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         centralWidget->setMinimumSize(QSize(0, 0));
@@ -217,7 +226,7 @@ public:
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 1024, 21));
+        menuBar->setGeometry(QRect(0, 0, 1024, 30));
         QPalette palette2;
         palette2.setBrush(QPalette::Active, QPalette::WindowText, brush);
         QBrush brush5(QColor(170, 170, 255, 255));
@@ -293,6 +302,9 @@ public:
         menuBar->addAction(menuMap_server->menuAction());
         menuBar->addAction(menuGIS_settings->menuAction());
         menuFile->addAction(actionLoadRaster);
+        menuFile->addAction(actionNew_meteo_points_DB);
+        menuFile->addAction(actionOpen_meteo_points_DB);
+        menuFile->addAction(actionDownload_meteo_data);
         menuGIS_settings->addAction(menuGIS->menuAction());
         menuGIS_settings->addAction(menuMap->menuAction());
         menuGIS_settings->addAction(actionProxy);
@@ -310,13 +322,16 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Criteria3D", Q_NULLPTR));
-        actionLoadRaster->setText(QApplication::translate("MainWindow", "Load Raster", Q_NULLPTR));
-        actionSetUTMzone->setText(QApplication::translate("MainWindow", "UTM zone", Q_NULLPTR));
-        actionProxy->setText(QApplication::translate("MainWindow", "Proxy", Q_NULLPTR));
-        actionMapOpenStreetMap->setText(QApplication::translate("MainWindow", "OpenStreetMap", Q_NULLPTR));
-        actionMapWikimedia->setText(QApplication::translate("MainWindow", "Wikimedia", Q_NULLPTR));
-        actionMapTerrain->setText(QApplication::translate("MainWindow", "Terrain", Q_NULLPTR));
-        actionMapToner->setText(QApplication::translate("MainWindow", "Toner", Q_NULLPTR));
+        actionLoadRaster->setText(QApplication::translate("MainWindow", "&Load Raster", Q_NULLPTR));
+        actionSetUTMzone->setText(QApplication::translate("MainWindow", "&UTM zone", Q_NULLPTR));
+        actionProxy->setText(QApplication::translate("MainWindow", "&Proxy", Q_NULLPTR));
+        actionMapOpenStreetMap->setText(QApplication::translate("MainWindow", "&OpenStreetMap", Q_NULLPTR));
+        actionMapWikimedia->setText(QApplication::translate("MainWindow", "&Wikimedia", Q_NULLPTR));
+        actionMapTerrain->setText(QApplication::translate("MainWindow", "&Terrain", Q_NULLPTR));
+        actionMapToner->setText(QApplication::translate("MainWindow", "To&ner", Q_NULLPTR));
+        actionNew_meteo_points_DB->setText(QApplication::translate("MainWindow", "New meteo points DB", Q_NULLPTR));
+        actionOpen_meteo_points_DB->setText(QApplication::translate("MainWindow", "Open meteo points DB", Q_NULLPTR));
+        actionDownload_meteo_data->setText(QApplication::translate("MainWindow", "Download meteo data", Q_NULLPTR));
 #ifndef QT_NO_TOOLTIP
         opacitySlider->setToolTip(QApplication::translate("MainWindow", "Raster opacity", Q_NULLPTR));
 #endif // QT_NO_TOOLTIP
@@ -329,11 +344,11 @@ public:
 #ifndef QT_NO_TOOLTIP
         widgetColorLegend->setToolTip(QApplication::translate("MainWindow", "Raster colors", Q_NULLPTR));
 #endif // QT_NO_TOOLTIP
-        menuFile->setTitle(QApplication::translate("MainWindow", "File", Q_NULLPTR));
+        menuFile->setTitle(QApplication::translate("MainWindow", "Fi&le", Q_NULLPTR));
         menuMap_server->setTitle(QApplication::translate("MainWindow", "Edit", Q_NULLPTR));
-        menuGIS_settings->setTitle(QApplication::translate("MainWindow", "Settings", Q_NULLPTR));
-        menuGIS->setTitle(QApplication::translate("MainWindow", "GIS", Q_NULLPTR));
-        menuMap->setTitle(QApplication::translate("MainWindow", "Map", Q_NULLPTR));
+        menuGIS_settings->setTitle(QApplication::translate("MainWindow", "Settin&gs", Q_NULLPTR));
+        menuGIS->setTitle(QApplication::translate("MainWindow", "&GIS", Q_NULLPTR));
+        menuMap->setTitle(QApplication::translate("MainWindow", "&Map", Q_NULLPTR));
     } // retranslateUi
 
 };
