@@ -266,7 +266,8 @@ double SoilHeatCapacity(long i, double h, double T)
 {
     double theta = theta_from_sign_Psi(h, i);
     double thetaV = VaporThetaV(h, T, i);
-    return estimateBulkDensity(i) / 2.65 * HEAT_CAPACITY_MINERAL +
+    double bulkDensity = estimateBulkDensity(i);
+    return bulkDensity / 2.65 * HEAT_CAPACITY_MINERAL +
             theta * HEAT_CAPACITY_WATER +
             thetaV * HEAT_CAPACITY_AIR;
 }
@@ -625,6 +626,9 @@ bool HeatComputation(double myTimeStep)
                 X[i] = myNode[i].extra->Heat->T;
                 myNode[i].extra->Heat->oldT = myNode[i].extra->Heat->T;
 
+                avgh = computeMean(myNode[i].oldH, myNode[i].H) - myNode[i].z;
+                C[i] = SoilHeatCapacity(i, avgh, myNode[i].extra->Heat->T) * myNode[i].volume_area;
+
                 if (myStructure.computeHeat) saveWaterFluxes();
 			}
 
@@ -644,10 +648,6 @@ bool HeatComputation(double myTimeStep)
                 heatCapacityVar += dthetav * HEAT_CAPACITY_AIR * myNode[i].extra->Heat->T;
                 heatCapacityVar += dthetav * LatentHeatVaporization(myNode[i].extra->Heat->T - ZEROCELSIUS) * WATER_DENSITY;
                 heatCapacityVar *= myNode[i].volume_area;
-
-                avgh = computeMean(myNode[i].oldH, myNode[i].H) - myNode[i].z;
-
-                C[i] = SoilHeatCapacity(i, avgh, myNode[i].extra->Heat->T) * myNode[i].volume_area;
 
 				j = 1;
                 if (computeHeatFlux(i, j, &(myNode[i].up))) j++;
@@ -673,10 +673,11 @@ bool HeatComputation(double myTimeStep)
 				}
 
                 /*! sum of diagonal elements */
-                A[i][0].val =  C[i] / myTimeStep + sum;
+                avgh = computeMean(myNode[i].oldH, myNode[i].H) - myNode[i].z;
+                A[i][0].val = SoilHeatCapacity(i, avgh, myNode[i].extra->Heat->T) * myNode[i].volume_area / myTimeStep + sum;
 
                 /*! b vector (constant terms) */
-                b[i] = C[i] * myNode[i].extra->Heat->oldT / myTimeStep - heatCapacityVar / myTimeStep + myNode[i].extra->Heat->Qh + C0[i] + sumFlow0 ;
+                b[i] = C[i] * myNode[i].extra->Heat->oldT / myTimeStep - heatCapacityVar / myTimeStep + myNode[i].extra->Heat->Qh + C0[i] + sumFlow0;
 
 				// precondizionamento
 				if (A[i][0].val > 0)

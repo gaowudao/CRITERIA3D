@@ -288,11 +288,6 @@ float cropIrrigationDemand(Criteria1D* myCase, float currentPrec, float nextPrec
         || (! myCase->myCrop.isLiving)
         || (myCase->myCrop.irrigationVolume == 0)) return 0;
 
-    // check alfalfa
-    // TODO migliorare
-    if ((myCase->myCrop.idCrop == "ALFALFA")
-       && (doy >= 243)) return 0;
-
     // check irrigation period
     if (myCase->myCrop.degreeDays < myCase->myCrop.degreeDaysStartIrrigation ||
             myCase->myCrop.degreeDays > myCase->myCrop.degreeDaysEndIrrigation) return 0.;
