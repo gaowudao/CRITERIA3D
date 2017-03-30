@@ -51,7 +51,6 @@ class DbMeteoPoints : public QObject
         void createTmpTable();
         void deleteTmpTable();
         void insertDailyValue(QString station, QString date, int varType, double varValue, QString flag);
-//        void insertHourlyValue(QString station, QString date, int varType, double varValue, QString flag, int minuteToHour = 0);
         void insertOrUpdate(QString date, QString id_point, int id_variable, QString variable_name, double value, int frequency, QString flag);
         void saveHourlyData();
         int arkIdmap(int arkId);

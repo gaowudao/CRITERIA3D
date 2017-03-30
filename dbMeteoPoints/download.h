@@ -22,7 +22,6 @@ class Download : public QObject
         void downloadMetadata(QJsonObject obj);
         void downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStringList datasets, QList<int> stations, QList<int> variables, bool precSelection);
         void downloadHourlyVar(Crit3DTime dateStartTime, Crit3DTime dateEndTime, QStringList datasets, QList<int> stations, QList<int> variables);
-        void debugFromFile(); //cancellare
 
     private:
         QStringList _datasetsList;
