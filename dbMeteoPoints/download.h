@@ -25,15 +25,11 @@ class Download : public QObject
         void debugFromFile(); //cancellare
 
     private:
-        //QNetworkAccessManager* _manager;
         QStringList _datasetsList;
         DbMeteoPoints* _dbMeteo;
 
         static const QByteArray _authorization;
-//    signals:
-//        void finished(QNetworkReply*);
-//    protected slots:
-//        void getPointPropertiesReady(QNetworkReply* reply);
+
 };
 
 #endif // DOWNLOAD_H

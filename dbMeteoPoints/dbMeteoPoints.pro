@@ -4,19 +4,15 @@
 #
 #-------------------------------------------------
 
-#QT       += network sql
+QT       += network sql
 
-#QT       -= gui
-
-QT       += core gui sql widgets network #solo x test
+QT       -= gui
 
 TARGET = dbMeteoPoints
 
-#TEMPLATE = lib
-#CONFIG += staticlib
-#DEFINES += DBMETEOPOINTS_LIBRARY
-
-TEMPLATE = app #solo x test
+TEMPLATE = lib
+CONFIG += staticlib
+DEFINES += DBMETEOPOINTS_LIBRARY
 
 INCLUDEPATH += ../mathFunctions ../gis ../meteo ../crit3dDate
 
@@ -26,13 +22,10 @@ LIBS += -L../crit3dDate/release -lcrit3dDate
 
 SOURCES += dbMeteoPoints.cpp \
     download.cpp \
-    mainwindow.cpp \
-    main.cpp \
     variableslist.cpp
 
 HEADERS += dbMeteoPoints.h \
     download.h \
-    mainwindow.h \
     variableslist.h
 
 

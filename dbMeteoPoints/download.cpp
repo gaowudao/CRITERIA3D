@@ -7,8 +7,6 @@
 
 #include <QDebug>
 #include <QObject>
-#include <QFile> //debug
-#include <QTextStream> //debug
 
 #include <QStringBuilder>
 
@@ -90,64 +88,6 @@ void Download::getPointProperties(QStringList datasetList)
     delete manager;
 }
 
-// da cancellare, solo x test senza bisogno della rete
-/*
-void Download::debugFromFile()
-{
-
-    QString data;
-    _datasetsList << "agrmet" << "cer" ;
-
-    qDebug() << "_datasetsList" << _datasetsList << endl;
-        QString filename = "stations_aut.txt";
-        QFile file(filename);
-        if (file.open(QIODevice::ReadWrite))
-        {
-                QTextStream in(&file);
-                data = in.readAll();
-                file.close();
-         }
-
-        QJsonParseError *error = new QJsonParseError();
-        QJsonDocument doc = QJsonDocument::fromJson(data.toUtf8(), error);
-        qDebug() << data.length();
-
-        qDebug() << "err: " << error->errorString() << " -> " << error->offset;
-
-
-        if(!doc.isNull() && doc.isArray())
-        {
-            QJsonArray jsonArr = doc.array();
-            qDebug() << "elems: " << jsonArr.size() << endl;
-
-            for(int index=0; index<jsonArr.size(); index++)
-            {
-                QJsonObject obj = jsonArr[index].toObject();
-
-                foreach(QString item, _datasetsList)
-                {
-                    QJsonValue jsonNetwork = obj.value("network");
-
-                    if (jsonNetwork.isUndefined())
-                            qDebug() << "Key id does not exist" << endl;
-                    else if (!jsonNetwork.isString())
-                        qDebug() << "Value not string" << endl;
-                    else
-                    {
-                        if (jsonNetwork == item)
-                        {
-                            qDebug() << "jsonNetwork metadata: " << jsonNetwork << endl;
-                            this->downloadMetadata(obj);
-                            //qDebug() << jsonNetwork.toString();
-                        }
-                    }
-                }
-            }
-        }
-         else
-            qDebug() << "Invalid JSON..." << endl;
- }
-*/
 
 void Download::downloadMetadata(QJsonObject obj)
 {

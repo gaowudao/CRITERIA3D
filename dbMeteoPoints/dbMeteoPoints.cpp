@@ -89,6 +89,34 @@ QStringList DbMeteoPoints::getDatasetsActive()
 
 }
 
+QStringList DbMeteoPoints::getDatasetsList()
+{
+    QStringList datasetList;
+    QSqlQuery qry(_db);
+
+    qry.prepare( "SELECT * FROM datasets" );
+
+    if( !qry.exec() )
+    {
+        qDebug() << qry.lastError();
+    }
+    else
+    {
+        qDebug( "Selected!" );
+
+        while (qry.next())
+        {
+            QString dataset = qry.value(0).toString();
+            datasetList << dataset;
+
+        }
+
+    }
+
+    return datasetList;
+
+}
+
 QList<VariablesList> DbMeteoPoints::getHourlyVarFields(QList<int> id)
 {
 
@@ -387,107 +415,184 @@ void DbMeteoPoints::insertDailyValue(QString station, QString date, int varType,
 
 }
 
-void DbMeteoPoints::insertHourlyValue(QString station, QString date, int varType, double varValue, QString flag, int minuteToHour)
-{
+//void DbMeteoPoints::insertHourlyValue(QString station, QString date, int varType, double varValue, QString flag, int minuteToHour)
+//{
 
-    if (flag.left(1) == "1" || flag.left(1) == "054") {
-        // invalid data
-        varValue = NODATA;
-    }
+//    if (flag.left(1) == "1" || flag.left(1) == "054") {
+//        // invalid data
+//        varValue = NODATA;
+//    }
 
-    if (varValue !=NODATA)
-    {
-        QString statement = QString("INSERT INTO `%1_H` VALUES(DATETIME('%2', '+%3 minutes'), '%4', '%5')").arg(station).arg(date).arg(minuteToHour).arg(varType).arg(varValue);
+//    if (varValue !=NODATA)
+//    {
+//        QString statement = QString("INSERT INTO `%1_H` VALUES(DATETIME('%2', '+%3 minutes'), '%4', '%5')").arg(station).arg(date).arg(minuteToHour).arg(varType).arg(varValue);
 
-        //qDebug() << "insertHourlyValue" << statement;
+//        //qDebug() << "insertHourlyValue" << statement;
 
-        QSqlQuery qry = QSqlQuery(statement, _db);
-        qry.exec();
-    }
+//        QSqlQuery qry = QSqlQuery(statement, _db);
+//        qry.exec();
+//    }
 
-}
+//}
 
+
+//void DbMeteoPoints::saveHourlyData()
+//{
+
+//    QString statement = QString("SELECT * FROM TmpHourlyData");
+//    QSqlQuery qry(statement, _db);
+
+//    if( !qry.exec() )
+//        qDebug() << qry.lastError();
+//    else
+//    {
+//        qDebug( "Selected!" );
+
+//        while (qry.next())
+//        {
+//            QString date = qry.value(0).toString();
+//            QString station = qry.value(1).toString();
+//            int id_variable = qry.value(2).toInt();
+//            QString variable_name = qry.value(3).toString();
+//            double value = qry.value(4).toDouble();
+//            int frequency = qry.value(5).toInt();
+
+//            if (frequency == 3600)
+//            {
+//                insertHourlyValue(station, date, id_variable , value, "0", 0);
+//            }
+//            else
+//            {
+//                if (variable_name == "HOURLY_RAD" && date.mid(14,2) == "30")
+//                {
+//                    insertHourlyValue(station, date, id_variable, value, "0", 30);
+//                }
+//                else if ((variable_name == "HOURLY_WIND_INT" || variable_name == "HOURLY_WIND_DIR" ) && date.mid(14,2) == "00")
+//                {
+//                    insertHourlyValue(station, date, id_variable, value, "0", 0);
+//                }
+//            }
+//        }
+
+//        statement = QString("DELETE FROM TmpHourlyData WHERE frequency = 3600 OR variable_name IN ('HOURLY_RAD', 'HOURLY_WIND_INT', 'HOURLY_WIND_DIR')");
+//        qry = QSqlQuery(statement, _db);
+//        qry.exec();
+
+//        QStringList stations;
+
+//        statement = QString("SELECT DISTINCT id_point FROM TmpHourlyData");
+//        qry = QSqlQuery(statement, _db);
+//        qry.exec();
+
+//        while (qry.next())
+//        {
+//            stations.append(qry.value(0).toString());
+//        }
+
+//        statement = QString("INSERT INTO `%1_H` ");
+//        statement = statement % "SELECT aggregate_date, id_variable, aggregate_value FROM (";
+//        statement = statement % "SELECT aggregate_date, id_variable, SUM(value) AS aggregate_value, SUM(frequency) AS aggregate_frequency FROM (";
+//        statement = statement % "SELECT datetime(date_time, '+' || (SELECT CASE WHEN strftime('%M', date_time) = 0 THEN 0 ELSE 60 - strftime('%M', date_time) END) || ' minutes') AS aggregate_date, ";
+//        statement = statement % "id_variable, value, frequency FROM TmpHourlyData WHERE id_point = %1 AND variable_name like '%PREC%'";
+//        statement = statement % ") group by aggregate_date, id_variable) WHERE aggregate_frequency = 3600";
+//        statement = statement % " UNION ALL ";
+//        statement = statement % "SELECT aggregate_date, id_variable, aggregate_value FROM (";
+//        statement = statement % "SELECT aggregate_date, id_variable, AVG(value) AS aggregate_value FROM (";
+//        statement = statement % "SELECT datetime(date_time, '+' || (SELECT CASE WHEN strftime('%M', date_time) = 0 THEN 0 ELSE 60 - strftime('%M', date_time) END) || ' minutes') AS aggregate_date, ";
+//        statement = statement % "id_variable, value FROM TmpHourlyData WHERE id_point = %1 AND variable_name like '%AVG%'";
+//        statement = statement % ") group by aggregate_date, id_variable)";
+
+//        QString delStationStatement = QString("DELETE FROM TmpHourlyData WHERE id_point = :id_point");
+
+
+//        foreach (QString station, stations) {
+
+
+//            qry = QSqlQuery(statement.arg(station), _db);
+//            qry.exec();
+
+//            qry = QSqlQuery(delStationStatement, _db);
+//            qry.bindValue(":id_point", station);
+//            qry.exec();
+
+//        }
+//    }
+
+//}
 
 void DbMeteoPoints::saveHourlyData()
 {
 
-    QString statement = QString("SELECT * FROM TmpHourlyData");
-    QSqlQuery qry(statement, _db);
+    QStringList stations;
 
-    if( !qry.exec() )
-        qDebug() << qry.lastError();
-    else
+    QString statement = QString("SELECT DISTINCT id_point FROM TmpHourlyData");
+    QSqlQuery qry = QSqlQuery(statement, _db);
+    qry.exec();
+
+    while (qry.next())
     {
-        qDebug( "Selected!" );
+        stations.append(qry.value(0).toString());
+    }
 
-        while (qry.next())
-        {
-            QString date = qry.value(0).toString();
-            QString station = qry.value(1).toString();
-            int id_variable = qry.value(2).toInt();
-            QString variable_name = qry.value(3).toString();
-            double value = qry.value(4).toDouble();
-            int frequency = qry.value(5).toInt();
+    statement = QString("INSERT INTO `%1_H` ");
+    statement = statement % "SELECT date_time, id_variable, value FROM TmpHourlyData WHERE id_point = %1 AND frequency = 3600";
 
-            if (frequency == 3600)
-            {
-                insertHourlyValue(station, date, id_variable , value, "0", 0);
-            }
-            else
-            {
-                if (variable_name == "HOURLY_RAD" && date.mid(14,2) == "30")
-                {
-                    insertHourlyValue(station, date, id_variable, value, "0", 30);
-                }
-                else if ((variable_name == "HOURLY_WIND_INT" || variable_name == "HOURLY_WIND_DIR" ) && date.mid(14,2) == "00")
-                {
-                    insertHourlyValue(station, date, id_variable, value, "0", 0);
-                }
-            }
-        }
+    foreach (QString station, stations) {
+        qry = QSqlQuery(statement.arg(station), _db);
+        qry.exec();
+    }
 
-        statement = QString("DELETE FROM TmpHourlyData WHERE frequency = 3600 OR variable_name IN ('HOURLY_RAD', 'HOURLY_WIND_INT', 'HOURLY_WIND_DIR')");
-        qry = QSqlQuery(statement, _db);
+    statement = QString("DELETE FROM TmpHourlyData WHERE frequency = 3600");
+    qry = QSqlQuery(statement, _db);
+    qry.exec();
+
+    statement = QString("INSERT INTO `%1_H` ");
+    statement = statement % "SELECT date_time, id_variable, value FROM TmpHourlyData WHERE ";
+    statement = statement % "id_point = %1 AND variable_name IN ('HOURLY_WIND_INT', 'HOURLY_WIND_DIR') AND strftime('%M', date_time) = '00'";
+
+    foreach (QString station, stations) {
+        qry = QSqlQuery(statement.arg(station), _db);
+        qry.exec();
+    }
+
+    statement = QString("INSERT INTO `%1_H` ");
+    statement = statement % "SELECT DATETIME(date_time, '+30 minutes'), id_variable, value FROM TmpHourlyData WHERE ";
+    statement = statement % "id_point = %1 AND variable_name = 'HOURLY_RAD' AND strftime('%M', date_time) = '30'";
+
+    foreach (QString station, stations) {
+        qry = QSqlQuery(statement.arg(station), _db);
+        qry.exec();
+    }
+
+    statement = QString("DELETE FROM TmpHourlyData WHERE variable_name IN ('HOURLY_RAD', 'HOURLY_WIND_INT', 'HOURLY_WIND_DIR')");
+    qry = QSqlQuery(statement, _db);
+    qry.exec();
+
+    statement = QString("INSERT INTO `%1_H` ");
+    statement = statement % "SELECT aggregate_date, id_variable, aggregate_value FROM (";
+    statement = statement % "SELECT aggregate_date, id_variable, SUM(value) AS aggregate_value, SUM(frequency) AS aggregate_frequency FROM (";
+    statement = statement % "SELECT datetime(date_time, '+' || (SELECT CASE WHEN strftime('%M', date_time) = '00' THEN 0 ELSE 60 - strftime('%M', date_time) END) || ' minutes') AS aggregate_date, ";
+    statement = statement % "id_variable, value, frequency FROM TmpHourlyData WHERE id_point = %1 AND variable_name like '%PREC%'";
+    statement = statement % ") group by aggregate_date, id_variable) WHERE aggregate_frequency = 3600";
+    statement = statement % " UNION ALL ";
+    statement = statement % "SELECT aggregate_date, id_variable, aggregate_value FROM (";
+    statement = statement % "SELECT aggregate_date, id_variable, AVG(value) AS aggregate_value FROM (";
+    statement = statement % "SELECT datetime(date_time, '+' || (SELECT CASE WHEN strftime('%M', date_time) = '00' THEN 0 ELSE 60 - strftime('%M', date_time) END) || ' minutes') AS aggregate_date, ";
+    statement = statement % "id_variable, value FROM TmpHourlyData WHERE id_point = %1 AND variable_name like '%AVG%'";
+    statement = statement % ") group by aggregate_date, id_variable)";
+
+    QString delStationStatement = QString("DELETE FROM TmpHourlyData WHERE id_point = :id_point");
+
+    foreach (QString station, stations) {
+
+
+        qry = QSqlQuery(statement.arg(station), _db);
         qry.exec();
 
-        QStringList stations;
-
-        statement = QString("SELECT DISTINCT id_point FROM TmpHourlyData");
-        qry = QSqlQuery(statement, _db);
+        qry = QSqlQuery(delStationStatement, _db);
+        qry.bindValue(":id_point", station);
         qry.exec();
 
-        while (qry.next())
-        {
-            stations.append(qry.value(0).toString());
-        }
-
-        statement = QString("INSERT INTO `%1_H` ");
-        statement = statement % "SELECT aggregate_date, id_variable, aggregate_value FROM (";
-        statement = statement % "SELECT aggregate_date, id_variable, SUM(value) AS aggregate_value, SUM(frequency) AS aggregate_frequency FROM (";
-        statement = statement % "SELECT datetime(date_time, '+' || (SELECT CASE WHEN strftime('%M', date_time) = 0 THEN 0 ELSE 60 - strftime('%M', date_time) END) || ' minutes') AS aggregate_date, ";
-        statement = statement % "id_variable, value, frequency FROM TmpHourlyData WHERE id_point = %1 AND variable_name like '%PREC%'";
-        statement = statement % ") group by aggregate_date, variable_name) WHERE aggregate_frequency = 3600";
-        statement = statement % " UNION ALL ";
-        statement = statement % "SELECT aggregate_date, id_variable, aggregate_value FROM (";
-        statement = statement % "SELECT aggregate_date, id_variable, AVG(value) AS aggregate_value FROM (";
-        statement = statement % "SELECT datetime(date_time, '+' || (SELECT CASE WHEN strftime('%M', date_time) = 0 THEN 0 ELSE 60 - strftime('%M', date_time) END) || ' minutes') AS aggregate_date, ";
-        statement = statement % "id_variable, value FROM TmpHourlyData WHERE id_point = %1 AND variable_name like '%AVG%'";
-        statement = statement % ") group by aggregate_date, id_variable)";
-
-        QString delStationStatement = QString("DELETE FROM TmpHourlyData WHERE id_point = :id_point");
-
-
-        foreach (QString station, stations) {
-
-
-            qry = QSqlQuery(statement.arg(station), _db);
-            qry.exec();
-
-            qry = QSqlQuery(delStationStatement, _db);
-            qry.bindValue(":id_point", station);
-            qry.exec();
-
-        }
     }
 
 }
@@ -501,7 +606,9 @@ void DbMeteoPoints::insertOrUpdate(QString date, QString id_point, int id_variab
 
     if (value !=NODATA)
     {
-        QString statement = QString("REPLACE INTO TmpHourlyData SELECT '%1', %2, %3, '%4', %5, %6 WHERE %6 > (SELECT COALESCE((SELECT frequency FROM TmpHourlyData WHERE date_time = '%1' AND id_point = %2 AND variable_name = '%4'), 0))").arg(date).arg(id_point).arg(id_variable).arg(variable_name).arg(value).arg(frequency);
+        QString statement = QString("REPLACE INTO TmpHourlyData SELECT '%1', %2, %3, '%4', %5, %6 WHERE %6 > (SELECT COALESCE((");
+        statement = statement % "SELECT frequency FROM TmpHourlyData WHERE date_time = '%1' AND id_point = %2 AND variable_name = '%4'), 0))";
+        statement = statement.arg(date).arg(id_point).arg(id_variable).arg(variable_name).arg(value).arg(frequency);
 
         QSqlQuery qry = QSqlQuery(statement, _db);
         qry.exec();
