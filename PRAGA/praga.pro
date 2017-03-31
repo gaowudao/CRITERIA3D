@@ -6,7 +6,7 @@
 
 QT       += core gui widgets network sql
 
-TARGET = testInterface
+TARGET = PRAGA
 TEMPLATE = app
 
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../MapGraphics ../dbMeteoPoints
@@ -19,13 +19,13 @@ LIBS += -L../crit3dDate/release -lcrit3dDate
 
 SOURCES += main.cpp\
     mainwindow.cpp \
-    RasterObject.cpp \
+    rasterObject.cpp \
     colorlegend.cpp \
     formSingleValue.cpp \
     project.cpp
 
 HEADERS  += mainwindow.h \
-    RasterObject.h \
+    rasterObject.h \
     colorlegend.h \
     formSingleValue.h \
     project.h
