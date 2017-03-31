@@ -258,7 +258,7 @@ void Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStrin
 
                     }
 
-//                    conversion from average daily radiation to integral radiation
+//                  conversion from average daily radiation to integral radiation
                     if (arkId == RAD_ID)
                     {
                         varValue *= DAILY_TO_INTEGRAL_RAD;
@@ -394,8 +394,6 @@ void Download::downloadHourlyVar(Crit3DTime dateStartTime, Crit3DTime dateEndTim
                     {
                         _dbMeteo->insertOrUpdate(date, id_point, id, varName, varValue, frequency, flag);
                     }
-
-
 
                 }
             }

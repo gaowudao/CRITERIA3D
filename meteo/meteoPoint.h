@@ -49,10 +49,16 @@
         std::string name;
         std::string id;
         std::string dataset;
+        std::string state;
+        std::string region;
+        std::string province;
+        std::string municipality;
 
         gis::Crit3DPoint point;
         double latitude;
         double longitude;
+        int latInt;
+        int lonInt;
 
         bool isUTC;
         int hourlyFraction;
@@ -64,7 +70,6 @@
         float residual;
 
         Crit3DMeteoPoint();
-        Crit3DMeteoPoint(std::string, std::string, bool isUTC);
 
         void initializeObsDataH(int hourlyFraction, int numberOfDays, const Crit3DDate& firstDate);
         void emptyVarObsDataH(meteoVariable myVar, const Crit3DDate& myDate);

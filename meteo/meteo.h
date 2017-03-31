@@ -50,7 +50,7 @@
                         dailyGlobalRadiation, dailyDirectRadiation, dailyDiffuseRadiation, dailyReflectedRadiation,
                         windIntensity, dailyWindIntensityAvg, windDirection, windDirectionPrevailing,
                         wetnessDuration, atmPressure, atmTransmissivity,
-                        PotentialEvapotranspiration, dailyPotentialEvapotranspiration,
+                        potentialEvapotranspiration, dailyPotentialEvapotranspiration,
                         realEvaporation, waterTableDepth, noMeteoVar};
 
     enum surfaceType   {SurfaceTypeWater, SurfaceTypeSoil, SurfaceTypeCrop};

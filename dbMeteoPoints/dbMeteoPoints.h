@@ -12,14 +12,15 @@
 struct TPointProperties {
     int id;
     QString name;
-    QString network;
     double lat;
     double lon;
-    int latInt;
-    int lonInt;
     double utm_x;
     double utm_y;
     float altitude;
+
+    int latInt;
+    int lonInt;
+    QString network;
     QString state;
     QString region;
     QString province;

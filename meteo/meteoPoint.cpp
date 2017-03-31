@@ -33,36 +33,29 @@
 
 Crit3DMeteoPoint::Crit3DMeteoPoint()
 {
-        name = "";
-        id = "";
-        dataset = "";
-        isUTC = true;
-        nrObsDataDaysH = 0;
-        nrObsDataDaysD = 0;
-        hourlyFraction = 1;
-        myQuality = quality::missing;
-        residual = NODATA;
-        latitude = NODATA;
-        longitude = NODATA;
-        obsDataH = NULL;
-        obsDataD = NULL;
+        this->name = "";
+        this->id = "";
+        this->isUTC = true;
+
+        this->dataset = "";
+        this->municipality = "";
+        this->state = "";
+        this->region = "";
+        this->province = "";
+
+        this->nrObsDataDaysH = 0;
+        this->nrObsDataDaysD = 0;
+        this->hourlyFraction = 1;
+        this->myQuality = quality::missing;
+        this->residual = NODATA;
+        this->latitude = NODATA;
+        this->longitude = NODATA;
+        this->latInt = NODATA;
+        this->lonInt = NODATA;
+        this->obsDataH = NULL;
+        this->obsDataD = NULL;
 }
 
-Crit3DMeteoPoint::Crit3DMeteoPoint(std::string myName, std::string myId, bool _isUTC)
-{
-        name = myName;
-        id = myId;
-        isUTC = _isUTC;
-        nrObsDataDaysD = 0;
-        nrObsDataDaysH = 0;
-        hourlyFraction = 1;
-        myQuality = quality::missing;
-        residual = NODATA;
-        latitude = NODATA;
-        longitude = NODATA;
-        obsDataH = NULL;
-        obsDataD = NULL;
-}
 
 void Crit3DMeteoPoint::initializeObsDataH(int myHourlyFraction, int numberOfDays, const Crit3DDate& firstDate)
 {
@@ -360,7 +353,7 @@ bool Crit3DMeteoPoint::setMeteoPointValueH(const Crit3DDate& myDate, int myHour,
         obsDataH[i].tDew[myHourlyIndex] = myValue;
     else if (myVar == globalIrradiance)
         obsDataH[i].irradiance[myHourlyIndex] = myValue;
-    else if (myVar == PotentialEvapotranspiration)
+    else if (myVar == potentialEvapotranspiration)
         obsDataH[i].et0[myHourlyIndex] = myValue;
     else if (myVar == windIntensity)
         obsDataH[i].windInt[myHourlyIndex] = myValue;
@@ -436,7 +429,7 @@ float Crit3DMeteoPoint::getMeteoPointValueH(const Crit3DDate& myDate, int myHour
     }
     else if (myVar == globalIrradiance)
         return (obsDataH[dateIndex].irradiance[h]);
-    else if (myVar == PotentialEvapotranspiration)
+    else if (myVar == potentialEvapotranspiration)
         return (obsDataH[dateIndex].et0[h]);
     else if (myVar == windIntensity)
         return (obsDataH[dateIndex].windInt[h]);
