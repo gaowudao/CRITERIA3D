@@ -6,7 +6,7 @@
     #include "MapGraphicsView.h"
     #include "MapGraphicsScene.h"
     #include "tileSources/OSMTileSource.h"
-    #include "RasterObject.h"
+    #include "rasterObject.h"
     #include "colorlegend.h"
 
 

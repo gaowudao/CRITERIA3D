@@ -1,6 +1,6 @@
 #include <QtDebug>
 #include "commonConstants.h"
-#include "RasterObject.h"
+#include "rasterObject.h"
 #include "project.h"
 
 /*
