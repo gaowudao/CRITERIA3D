@@ -83,6 +83,12 @@ double computeSoilSurfaceResistance(double myThetaTop)
     return (10 * exp(0.3563 * (THETAMIN - myThetaTop) * 100));
 }
 
+double computeSoilSurfaceResistanceCG(double theta, double thetaSat)
+{	// soil surface resistance (s m-1)
+    // Camillo and Gurney (1986)
+    return (-805 + 4140 * (thetaSat - theta));
+}
+
 double computeNetRadiationFlow(long i)
 {
     // da sistemare!!!
