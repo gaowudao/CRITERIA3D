@@ -5,7 +5,7 @@
 #include <QDebug>
 #include <cmath>
 
-extern Crit3DProject myProject;
+extern Project myProject;
 
 ColorLegend::ColorLegend(QWidget *parent) :
     QWidget(parent)

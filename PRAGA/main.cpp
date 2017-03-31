@@ -4,7 +4,7 @@
 #include <QDebug>
 #include "project.h"
 
-Crit3DProject myProject;
+Project myProject;
 
 bool setProxy(QString hostName, int port)
 {

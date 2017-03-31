@@ -2,7 +2,6 @@
 #include <QtDebug>
 #include <QCheckBox>
 
-#include "dbMeteoPoints.h"
 #include "tileSources/OSMTileSource.h"
 #include "tileSources/GridTileSource.h"
 #include "tileSources/CompositeTileSource.h"
@@ -11,12 +10,12 @@
 #include "ui_mainwindow.h"
 #include "Position.h"
 #include "formSingleValue.h"
+#include "dbMeteoPoints.h"
 #include "project.h"
-#include <cmath>
 
 
 #define TOOLSWIDTH 220
-extern Crit3DProject myProject;
+extern Project myProject;
 
 
 MainWindow::MainWindow(QWidget *parent) :

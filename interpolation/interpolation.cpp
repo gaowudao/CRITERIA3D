@@ -116,8 +116,8 @@ void assignDistances(vector <Crit3DInterpolationDataPoint> *myPoints, float x, f
 {
     for (int i = 0; i < (int)(myPoints->size()) ; i++)
     {
-        myPoints->at(i).distance = gis::computeDistance(x, y, (myPoints->at(i)).point->utm.x , (myPoints->at(i)).point->utm.y);
-        myPoints->at(i).deltaZ = fabs(myPoints->at(i).point->z - z);
+        myPoints->at(i).distance = gis::computeDistance(x, y, float((myPoints->at(i)).point->utm.x) , float((myPoints->at(i)).point->utm.y));
+        myPoints->at(i).deltaZ = float(fabs(myPoints->at(i).point->z - z));
     }
 }
 
@@ -516,12 +516,12 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
             if ((interpolationPointList.at(i)).point->z <= lapseRateH1)
             {
                 myData1.push_back((interpolationPointList.at(i)).value);
-                myHeights1.push_back((interpolationPointList.at(i)).point->z);
+                myHeights1.push_back(float((interpolationPointList.at(i)).point->z));
             }
             else
             {
                 myData2.push_back((interpolationPointList.at(i)).value);
-                myHeights2.push_back((interpolationPointList.at(i)).point->z);
+                myHeights2.push_back(float((interpolationPointList.at(i)).point->z));
             }
         }
 
@@ -822,8 +822,10 @@ float inverseDistanceWeighted(vector <Crit3DInterpolationDataPoint> myPointList)
             return myPoint->value;
     }
 
-    if (sumWeights > 0) return sum/sumWeights;
-    else return NODATA ;
+    if (sumWeights > 0.0)
+        return float(sum / sumWeights);
+    else
+        return NODATA;
 }
 
 float gaussWeighted(vector <Crit3DInterpolationDataPoint> myPointList)
@@ -851,8 +853,10 @@ float gaussWeighted(vector <Crit3DInterpolationDataPoint> myPointList)
             return myPoint->value;
     }
 
-    if (sumWeights > 0) return sum/sumWeights;
-    else return NODATA ;
+    if (sumWeights > 0.0)
+        return float(sum / sumWeights);
+    else
+        return NODATA;
 }
 
 bool checkPrecipitationZero(int* nrPrecNotNull, bool* flatPrecipitation)
@@ -930,7 +934,7 @@ float interpolatePrec()
         else
             myResult = 0.;
 
-    return ((myResult < 0. && myResult != NODATA) ? 0. : myResult);
+    return ((myResult < 0 && myResult != NODATA) ? 0 : myResult);
 }
 
 bool getDetrendActive(int myPosition)

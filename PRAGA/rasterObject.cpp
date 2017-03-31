@@ -8,7 +8,7 @@
 #include "Position.h"
 */
 
-extern Crit3DProject myProject;
+extern Project myProject;
 
 RasterObject::RasterObject(MapGraphicsView* view, MapGraphicsObject *parent) :
     MapGraphicsObject(true, parent)

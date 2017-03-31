@@ -5,8 +5,7 @@
         #include "gis.h"
     #endif
 
-    class Crit3DInterpolationDataPoint
-    {
+    class Crit3DInterpolationDataPoint {
     private:
         float orogIndex;
         float urbanFraction;

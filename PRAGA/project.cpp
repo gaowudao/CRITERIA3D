@@ -2,9 +2,10 @@
 #include <QtDebug>
 
 
-Crit3DProject::Crit3DProject()
+Project::Project()
 {
-
+    nrMeteoPoints = 0;
+    meteoPoints = NULL;
 }
 
 
@@ -14,7 +15,7 @@ Crit3DProject::Crit3DProject()
  * \param raster a Crit3DRasterGrid pointer
  * \return true if everything is ok, false otherwise
  */
-bool Crit3DProject::loadRaster(QString myFileName)
+bool Project::loadRaster(QString myFileName)
 {
     std::string* myError = new std::string();
     std::string fileName = myFileName.left(myFileName.length()-4).toStdString();

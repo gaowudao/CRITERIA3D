@@ -1,24 +1,26 @@
-#ifndef CRIT3DPROJECT_H
-#define CRIT3DPROJECT_H
+#ifndef PROJECT_H
+#define PROJECT_H
 
-#ifndef GIS_H
-    #include "gis.h"
-#endif
-#ifndef QSTRING_H
-    #include <QString>
-#endif
+    #ifndef METEOPOINT_H
+        #include "meteoPoint.h"
+    #endif
+    #ifndef QSTRING_H
+        #include <QString>
+    #endif
 
-class Crit3DProject
-{
-public:
-    Crit3DProject();
+    class Project {
+    public:
+        int nrMeteoPoints;
+        Crit3DMeteoPoint *meteoPoints;
 
-    gis::Crit3DRasterGrid DTM;
-    gis::Crit3DRasterGrid rowMatrix;
-    gis::Crit3DRasterGrid colMatrix;
-    gis::Crit3DGisSettings gisSettings;
+        gis::Crit3DRasterGrid DTM;
+        gis::Crit3DRasterGrid rowMatrix;
+        gis::Crit3DRasterGrid colMatrix;
+        gis::Crit3DGisSettings gisSettings;
 
-    bool loadRaster(QString myFileName);
-};
+        Project();
 
-#endif // CRIT3DPROJECT_H
+        bool loadRaster(QString myFileName);
+    };
+
+#endif // PROJECT_H

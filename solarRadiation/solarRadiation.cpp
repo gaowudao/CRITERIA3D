@@ -192,7 +192,7 @@ namespace radiation
 
     float linkeSinusoidal(float amplitude , float phase , float average , int doy)
     {
-        return amplitude * (1.0 - cos(doy / 365.0 * 2.0 * PI - phase)) + average ;
+        return float(amplitude * (1.0 - cos(doy / 365.0 * 2.0 * PI - phase)) + average);
     }
 
     /*!
@@ -446,8 +446,11 @@ namespace radiation
 
     float getReflectedIrradiance(float beamIrradianceHor, float diffuseIrradianceHor, float myAlbedo, float mySlope)
     {
-        if (mySlope > 0) return (myAlbedo * (beamIrradianceHor + diffuseIrradianceHor) * (1 - getCosDecimalDegree(mySlope)) / 2.); //Muneer 1997
-        else return 0 ;
+        if (mySlope > 0)
+            //Muneer 1997
+            return (float)(myAlbedo * (beamIrradianceHor + diffuseIrradianceHor) * (1 - getCosDecimalDegree(mySlope)) / 2.);
+        else
+            return 0;
     }
 
 
@@ -847,25 +850,24 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
         float myClearSkyTransmissivity, float myTransmissivity)
     {
         int myDoy;
-        float timeAdjustment;   /*!<  hours */
-        float timeEq;           /*!<  hours */
-        float solarTime;        /*!<  hours */
-        float correctionLong;   /*!<  hours */
+        double timeAdjustment;   /*!<  hours */
+        double timeEq;           /*!<  hours */
+        double solarTime;        /*!<  hours */
+        double correctionLong;   /*!<  hours */
 
-        float solarDeclination; /*!<  radians */
-        float elevationAngle;   /*!<  radians */
-        float incidenceAngle;   /*!<  radians */
-        float azimuthSouth;     /*!<  radians */
-        float azimuthNorth;     /*!<  radians */
+        double solarDeclination; /*!<  radians */
+        double elevationAngle;   /*!<  radians */
+        double incidenceAngle;   /*!<  radians */
+        double azimuthSouth;     /*!<  radians */
+        double azimuthNorth;     /*!<  radians */
 
-        float td, Tt;  /*!<  [-] */
-        float coeffBH; /*!<  [-] */
+        double coeffBH; /*!<  [-] */
 
-        float extraTerrestrialRad; /*!<  [W/m2] */
-        float radDiffuse; /*!<  [W/m2] */
-        float radBeam; /*!<  [W/m2] */
-        float radReflected; /*!<  [W/m2] */
-        float radTotal; /*!<  [W/m2] */
+        double extraTerrestrialRad; /*!<  [W/m2] */
+        double radDiffuse; /*!<  [W/m2] */
+        double radBeam; /*!<  [W/m2] */
+        double radReflected; /*!<  [W/m2] */
+        double radTotal; /*!<  [W/m2] */
 
         myDoy = getDoyFromDate(*myDate);
 
@@ -910,8 +912,8 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
                                         cos(elevationAngle) * cos(azimuthNorth - myPoint->aspect)
                                         + getCosDecimalDegree(myPoint->slope) * sin(elevationAngle)));
 
-        Tt = myClearSkyTransmissivity;
-        td = 0.1;
+        float Tt = myClearSkyTransmissivity;
+        float td = float(0.1);
         if (radiationSettings.getComputeRealData())
         {
             if (myTransmissivity != NODATA)
