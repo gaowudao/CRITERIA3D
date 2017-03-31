@@ -268,7 +268,7 @@ bool computeFlux(long i, int matrixIndex, TlinkedNode *link, double deltaT, unsi
     A[i][matrixIndex].val = val;
 
     // thermal vapor flow
-    if (myStructure.computeHeat && myStructure.computeHeatLatent &&
+    if (myStructure.computeHeat &&
         ! myNode[i].isSurface && ! myNode[j].isSurface)
     {
         double vaporThermal;
@@ -311,7 +311,7 @@ bool waterFlowComputation(double deltaT)
                  C[i] = myNode[i].volume_area  * dThetadH;
 
                  // vapor capacity term
-                 if (myStructure.computeHeat && myStructure.computeHeatLatent)
+                 if (myStructure.computeHeat)
                  {
                      avgTemperature = computeMean(myNode[i].extra->Heat->T, myNode[i].extra->Heat->oldT);
                      double dthetavdh = dThetav_dH(i, avgTemperature, dThetadH);

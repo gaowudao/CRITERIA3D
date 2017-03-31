@@ -386,15 +386,14 @@ double AirHeatConductivity(long i, double T, double h)
 
     Ka = Kda;
 
-    if (myStructure.computeHeatLatent)
+    if (myStructure.computeWater)
     {
         myLambda = LatentHeatVaporization(T - ZEROCELSIUS);
 
         coeff= myLambda;
 
         // advective heat flux associated with thermal vapor flux
-        if (myStructure.computeHeatAdvective)
-            coeff += T * HEAT_CAPACITY_AIR / WATER_DENSITY;
+        coeff += T * HEAT_CAPACITY_AIR / WATER_DENSITY;
 
         myKvt = ThermalVaporConductivity(i, T, h);
         Ka += coeff * myKvt;
@@ -493,7 +492,7 @@ double SoilLatentIsothermal(long i, TlinkedNode *myLink)
     coeff = avgLambda;
 
     // advective heat flux associated with isothermal vapor flux
-    if (myStructure.computeHeatAdvective)
+    if (myStructure.computeWater)
         coeff += myNode[i].extra->Heat->T * HEAT_CAPACITY_AIR / WATER_DENSITY;
 
     myLatentFlux = coeff * myKvi * deltaPsi / distance(i, j) * myLink->area;
@@ -560,15 +559,12 @@ bool computeHeatFlux(long i, int myMatrixIndex, TlinkedNode *myLink)
     if (!myNode[myLinkIndex].isSurface)
     {
         myConduction = SoilConduction(i, myLink);
-        if (myStructure.computeHeatLatent)
+        if (myStructure.computeWater)
         {
             myLatent = SoilLatentIsothermal(i, myLink);
             if (myLink->linkedExtra->heatFlux != NULL)
                 myLink->linkedExtra->heatFlux->isothermLatent = myLatent;
-        }
 
-        if (myStructure.computeHeatAdvective)
-        {
             myAdvection = SoilHeatAdvection(i, myLink);
             if (myLink->linkedExtra->heatFlux != NULL)
                 myLink->linkedExtra->heatFlux->advective = myAdvection;

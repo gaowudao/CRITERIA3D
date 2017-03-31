@@ -192,7 +192,7 @@ void update_flux(long index, TlinkedNode *link, double delta_t)
     if (link->index != NOLINK)
     {
         (*link).sumFlow += float(getWaterExchange(index, link, delta_t));
-        if (myStructure.computeHeat && myStructure.computeHeatLatent && link->linkedExtra->heatFlux != NULL)
+        if (myStructure.computeHeat && myStructure.computeWater && link->linkedExtra->heatFlux != NULL)
             link->linkedExtra->heatFlux->thermLatent = C0[index];
     }
 }
