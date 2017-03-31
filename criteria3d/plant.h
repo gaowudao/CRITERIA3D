@@ -83,8 +83,8 @@
         gis::Crit3DRasterGrid* getMapFromVar(plantVariable myVar);
     };
 
-    bool setStatePlantfromMap(long row, long col , Crit3DProject* myProject);
-    bool getStatePlantToMap(long row,long col, Crit3DProject* myProject, TstatePlant* statePlant);
+    //bool setStatePlantfromMap(long row, long col , Crit3DProject* myProject);
+    //bool getStatePlantToMap(long row,long col, Crit3DProject* myProject, TstatePlant* statePlant);
     bool getOutputPlantToMap(long row, long col, Crit3DProject* myProject);
     bool passPlantTranspirationProfileToMap(long row, long col, Crit3DProject* myProject);
 

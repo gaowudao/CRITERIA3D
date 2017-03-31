@@ -1050,7 +1050,7 @@ bool initializeWaterBalance(Crit3DProject* myProject)
     setBoundary(myProject);
 
     int nrLateralLink = 8;
-    int myResult = soilFluxes3D::initialize(myProject->nrNodes, myProject->nrSoilLayers, nrLateralLink, true, false, false, false, false);
+    int myResult = soilFluxes3D::initialize(myProject->nrNodes, myProject->nrSoilLayers, nrLateralLink, true, false, false);
     if (isCrit3dError(myResult, &myError))
     {
         myProject->projectError = "initializeCriteria3D:" + myError;

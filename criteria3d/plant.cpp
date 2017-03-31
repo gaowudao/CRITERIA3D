@@ -238,9 +238,9 @@ bool setStatePlantfromMap(long row, long col , Crit3DProject* myProject)
 }
 */
 
+/*
 bool getStatePlantToMap(long row,long col, Crit3DProject* myProject, TstatePlant* statePlant)
 {
-    /*
     myProject->statePlantMaps->fruitBiomassIndexMap->value[row][col] = statePlant->stateGrowth.fruitBiomassIndex;
     myProject->statePlantMaps->isHarvestedMap->value[row][col] = statePlant->stateGrowth.isHarvested;
     myProject->statePlantMaps->fruitBiomassMap->value[row][col] = statePlant->stateGrowth.fruitBiomass ;
@@ -266,7 +266,6 @@ bool getStatePlantToMap(long row,long col, Crit3DProject* myProject, TstatePlant
         myProject->outputPlantMaps->wineYieldMap->value[row][col] = myProject->statePlantMaps->fruitBiomassMap->value[row][col] *240.0;
     else
         myProject->outputPlantMaps->wineYieldMap->value[row][col] = myProject->outputPlantMaps->wineYieldMap->header->flag;
-    */
 
     //delta brix
     myProject->outputPlantMaps->deltaBrixMap->value[row][col] = myProject->outputPlantMaps->deltaBrixMap->header->flag;
@@ -276,6 +275,7 @@ bool getStatePlantToMap(long row,long col, Crit3DProject* myProject, TstatePlant
 
     return(true);
 }
+*/
 
 bool savePlantState(Crit3DProject* myProject, plantVariable myVar, QDate myDate, QString myPath, QString myArea)
 {
