@@ -56,8 +56,6 @@
         bool computeWater;
         bool computeHeat;
         bool computeSolutes;
-        bool computeHeatAdvective;
-        bool computeHeatLatent;
 
         void initialize()
             {
@@ -68,8 +66,6 @@
                 computeWater = true;
                 computeHeat = false;
                 computeSolutes = false;
-                computeHeatAdvective = false;
-                computeHeatLatent = false;
             }
         } ;
 

@@ -201,7 +201,7 @@
                                 myNode[myIndex].Soil->VG_m, myNode[myIndex].Soil->Mualem_L);
 
         // vapor isothermal flow
-        if (myStructure.computeHeat && myStructure.computeHeatLatent)
+        if (myStructure.computeHeat)
         {
             double avgT = computeMean(myNode[myIndex].extra->Heat->T, myNode[myIndex].extra->Heat->oldT);
             double kv = IsothermalVaporConductivity(myIndex, myNode[myIndex].H - myNode[myIndex].z, avgT);
