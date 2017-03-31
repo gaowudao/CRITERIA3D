@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1024</width>
+    <width>1368</width>
     <height>768</height>
    </rect>
   </property>
@@ -434,7 +434,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>Criteria3D</string>
+   <string>PRAGA</string>
   </property>
   <property name="autoFillBackground">
    <bool>false</bool>
@@ -968,8 +968,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1024</width>
-     <height>30</height>
+     <width>1368</width>
+     <height>21</height>
     </rect>
    </property>
    <property name="palette">
