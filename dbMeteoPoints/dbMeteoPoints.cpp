@@ -100,7 +100,7 @@ void DbMeteoPoints::setDatasetsActive(QString active)
         qDebug() << qry.lastError();
     else
     {
-        qDebug( "set active" );
+        qDebug( "set active!" );
     }
 
 
@@ -534,17 +534,17 @@ int DbMeteoPoints::arkIdmap(int arkId)
 
     switch(arkId)
     {
-        case 139:
-            return 51;
         case 158:
-            return 52;
+            return 51;
         case 159:
+            return 52;
+        case 139:
             return 53;
         case 164:
             return 54;
-        case 165:
-            return 55;
         case 166:
+            return 55;
+        case 165:
             return 56;
         case 78:
             return 101;
