@@ -5,25 +5,8 @@
 #include <QtSql>
 #include "variableslist.h"
 #include "dbMeteoPoints.h"
+#include "meteoPoint.h"
 
-
-struct TPointProperties {
-    int id;
-    QString name;
-    double lat;
-    double lon;
-    double utm_x;
-    double utm_y;
-    float altitude;
-
-    int latInt;
-    int lonInt;
-    QString network;
-    QString state;
-    QString region;
-    QString province;
-    QString municipality;
-};
 
 #define PREC_ID 250
 #define RAD_ID 706
@@ -41,7 +24,7 @@ class DbArkimet : public DbMeteoPoints
         QList<int> getDailyVar();
         QList<int> getHourlyVar();
         int getId(QString VarName);
-        bool fillPointProperties(TPointProperties* pointProp);
+        bool fillPointProperties(Crit3DMeteoPoint* pointProp);
         QList<VariablesList> getHourlyVarFields(QList<int> id);
         void initStationsDailyTables(Crit3DDate dataStartInput, Crit3DDate dataEndInput, QList<int> stations);
         void initStationsHourlyTables(Crit3DTime dataStartInput, Crit3DTime dataEndInput, QList<int> stations);

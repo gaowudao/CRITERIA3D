@@ -172,31 +172,31 @@ QList<int> DbArkimet::getHourlyVar()
 
 }
 
-bool DbArkimet::fillPointProperties(TPointProperties* pointProp)
+bool DbArkimet::fillPointProperties(Crit3DMeteoPoint *pointProp)
 {
 
 
     bool success = false;
     QSqlQuery qry(_db);
 
-    qry.prepare( "INSERT INTO point_properties (id_point, name, network, latitude, longitude, latInt, lonInt, utm_x, utm_y, altitude, state, region, province, municipality)"
-                                      " VALUES (:id_point, :name, :network, :latitude, :longitude, :latInt, :lonInt, :utm_x, :utm_y, :altitude, :state, :region, :province, :municipality)" );
+    qry.prepare( "INSERT INTO point_properties (id_point, name, dataset, latitude, longitude, latInt, lonInt, utm_x, utm_y, altitude, state, region, province, municipality)"
+                                      " VALUES (:id_point, :name, :dataset, :latitude, :longitude, :latInt, :lonInt, :utm_x, :utm_y, :altitude, :state, :region, :province, :municipality)" );
 
 
-    qry.bindValue(":id_point", pointProp->id);
-    qry.bindValue(":name", pointProp->name);
-    qry.bindValue(":network", pointProp->network);
-    qry.bindValue(":latitude", pointProp->lat);
-    qry.bindValue(":longitude", pointProp->lon);
+    qry.bindValue(":id_point", QString::fromStdString(pointProp->id));
+    qry.bindValue(":name", QString::fromStdString(pointProp->name));
+    qry.bindValue(":dataset", QString::fromStdString(pointProp->dataset));
+    qry.bindValue(":latitude", pointProp->latitude);
+    qry.bindValue(":longitude", pointProp->longitude);
     qry.bindValue(":latInt", pointProp->latInt);
     qry.bindValue(":lonInt", pointProp->lonInt);
-    qry.bindValue(":utm_x", pointProp->utm_x);
-    qry.bindValue(":utm_y", pointProp->utm_y);
-    qry.bindValue(":altitude", pointProp->altitude);
-    qry.bindValue(":state", pointProp->state);
-    qry.bindValue(":region", pointProp->region);
-    qry.bindValue(":province", pointProp->province);
-    qry.bindValue(":municipality", pointProp->municipality);
+    qry.bindValue(":utm_x", pointProp->point.utm.x);
+    qry.bindValue(":utm_y", pointProp->point.utm.y);
+    qry.bindValue(":altitude", pointProp->point.z);
+    qry.bindValue(":state", QString::fromStdString(pointProp->state));
+    qry.bindValue(":region", QString::fromStdString(pointProp->region));
+    qry.bindValue(":province", QString::fromStdString(pointProp->province));
+    qry.bindValue(":municipality", QString::fromStdString(pointProp->municipality));
 
 
     if( !qry.exec() )

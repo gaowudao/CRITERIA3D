@@ -8,12 +8,6 @@
     #include "crit3dDate.h"
 #endif
 
-
-
-#define PREC_ID 250
-#define RAD_ID 706
-#define DAILY_TO_INTEGRAL_RAD 86400
-
 class DbMeteoPoints : public QObject
 {
     Q_OBJECT

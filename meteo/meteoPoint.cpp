@@ -54,6 +54,7 @@ Crit3DMeteoPoint::Crit3DMeteoPoint()
         this->lonInt = NODATA;
         this->obsDataH = NULL;
         this->obsDataD = NULL;
+
 }
 
 
