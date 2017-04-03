@@ -4,6 +4,7 @@
 #include <QNetworkRequest>
 #include <QtNetwork>
 #include "dbMeteoPoints.h"
+#include "dbArkimet.h"
 #ifndef CRIT3DDATE_H
     #include "crit3dDate.h"
 #endif
@@ -25,7 +26,7 @@ class Download : public QObject
 
     private:
         QStringList _datasetsList;
-        DbMeteoPoints* _dbMeteo;
+        DbArkimet* _dbMeteo;
 
         static const QByteArray _authorization;
 

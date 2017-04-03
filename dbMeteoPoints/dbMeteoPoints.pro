@@ -16,12 +16,16 @@ DEFINES += DBMETEOPOINTS_LIBRARY
 
 INCLUDEPATH += ../mathFunctions ../gis ../meteo ../crit3dDate
 
-SOURCES += dbMeteoPoints.cpp \
+SOURCES += \
     download.cpp \
-    variableslist.cpp
+    variableslist.cpp \
+    dbMeteoPoints.cpp \
+    dbArkimet.cpp
 
-HEADERS += dbMeteoPoints.h \
+HEADERS += \
     download.h \
-    variableslist.h
+    variableslist.h \
+    dbMeteoPoints.h \
+    dbArkimet.h
 
 

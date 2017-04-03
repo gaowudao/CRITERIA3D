@@ -1,5 +1,6 @@
 #include "download.h"
 #include "dbMeteoPoints.h"
+#include "dbArkimet.h"
 #include "commonConstants.h"
 #include "variableslist.h"
 
@@ -14,7 +15,7 @@ const QByteArray Download::_authorization = QString("Basic " + QString("ugo:Ul1s
 
 Download::Download(QString dbName, QObject* parent) : QObject(parent)
 {
-    _dbMeteo = new DbMeteoPoints(dbName);
+    _dbMeteo = new DbArkimet(dbName);
 }
 
 Download::~Download()

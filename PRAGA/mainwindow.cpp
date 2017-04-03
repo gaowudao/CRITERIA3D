@@ -11,6 +11,7 @@
 #include "Position.h"
 #include "formSingleValue.h"
 #include "dbMeteoPoints.h"
+#include "dbArkimet.h"
 #include "project.h"
 
 
@@ -112,7 +113,7 @@ void MainWindow::on_actionNew_meteo_points_DB_triggered()
         {
             QFile::copy(templateName, dBName);
 
-            DbMeteoPoints* dbmeteo = new DbMeteoPoints(dBName);
+            DbArkimet* dbmeteo = new DbArkimet(dBName);
             QStringList dataset = dbmeteo->getDatasetsList();
 
             QWidget* checkBoxes = new QWidget();
