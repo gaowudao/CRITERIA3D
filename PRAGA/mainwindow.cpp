@@ -19,7 +19,7 @@
 extern Project myProject;
 
 
-MainWindow::MainWindow(QWidget *parent) :
+MainWindow::MainWindow(environment menu, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
@@ -46,6 +46,26 @@ MainWindow::MainWindow(QWidget *parent) :
     this->mapView->scene()->addObject(this->rasterObj);
 
     //this->setMouseTracking(true);
+
+    this->menu = menu;
+
+    //set menu
+    switch(this->menu)
+    {
+        case praga  :
+            ui->actionDownload_meteo_data->setVisible(true);
+            ui->actionArkimet->setVisible(true);
+            break;
+        case criteria1D:
+            ui->actionDownload_meteo_data->setVisible(false);
+            ui->actionArkimet->setVisible(false);
+            break;
+        case criteria3D :
+            ui->actionDownload_meteo_data->setVisible(false);
+            ui->actionArkimet->setVisible(false);
+            break;
+    }
+
 }
 
 

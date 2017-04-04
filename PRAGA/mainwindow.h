@@ -8,6 +8,7 @@
     #include "tileSources/OSMTileSource.h"
     #include "rasterObject.h"
     #include "colorlegend.h"
+    #include "guiConfiguration.h"
 
 
     namespace Ui
@@ -24,7 +25,7 @@
 
     public:
 
-        explicit MainWindow(QWidget *parent = 0);
+        explicit MainWindow(environment menu, QWidget *parent = 0);
         ~MainWindow();
 
     private slots:
@@ -74,6 +75,7 @@
         MapGraphicsView* mapView;
         RasterObject* rasterObj;
         ColorLegend* legend;
+        environment menu;
 
         void setMapSource(OSMTileSource::OSMTileType mySource);
 

@@ -969,7 +969,7 @@
      <x>0</x>
      <y>0</y>
      <width>1368</width>
-     <height>21</height>
+     <height>30</height>
     </rect>
    </property>
    <property name="palette">
@@ -1394,9 +1394,18 @@
     <property name="title">
      <string>Fi&amp;le</string>
     </property>
+    <widget class="QMenu" name="menu_New_meteo_points_DB">
+     <property name="title">
+      <string>&amp;New meteo points DB</string>
+     </property>
+     <addaction name="separator"/>
+     <addaction name="actionArkimet"/>
+     <addaction name="actionCSV"/>
+     <addaction name="separator"/>
+    </widget>
     <addaction name="actionLoadRaster"/>
-    <addaction name="actionNew_meteo_points_DB"/>
     <addaction name="actionOpen_meteo_points_DB"/>
+    <addaction name="menu_New_meteo_points_DB"/>
     <addaction name="actionDownload_meteo_data"/>
    </widget>
    <widget class="QMenu" name="menuMap_server">
@@ -1467,19 +1476,24 @@
     <string>To&amp;ner</string>
    </property>
   </action>
-  <action name="actionNew_meteo_points_DB">
-   <property name="text">
-    <string>New meteo points DB</string>
-   </property>
-  </action>
   <action name="actionOpen_meteo_points_DB">
    <property name="text">
-    <string>Open meteo points DB</string>
+    <string>&amp;Open meteo points DB</string>
    </property>
   </action>
   <action name="actionDownload_meteo_data">
    <property name="text">
-    <string>Download meteo data</string>
+    <string>&amp;Download meteo data</string>
+   </property>
+  </action>
+  <action name="actionArkimet">
+   <property name="text">
+    <string>from Arkimet</string>
+   </property>
+  </action>
+  <action name="actionCSV">
+   <property name="text">
+    <string>from CSV</string>
    </property>
   </action>
  </widget>

@@ -29,7 +29,8 @@ HEADERS  += mainwindow.h \
     rasterObject.h \
     colorlegend.h \
     formSingleValue.h \
-    project.h
+    project.h \
+    guiConfiguration.h
 
 FORMS    += mainwindow.ui \
     formSingleValue.ui

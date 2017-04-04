@@ -33,7 +33,8 @@ int main(int argc, char *argv[])
 
     //setProxy("172.16.1.21", 8080);
 
-    MainWindow w;
+    environment test = praga;
+    MainWindow w(test);
     w.show();
 
     return a.exec();
