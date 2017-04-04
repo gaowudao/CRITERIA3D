@@ -1,6 +1,7 @@
 #include <QFileDialog>
 #include <QtDebug>
 #include <QCheckBox>
+#include <QDialogButtonBox>
 
 #include "tileSources/OSMTileSource.h"
 #include "tileSources/GridTileSource.h"
@@ -113,8 +114,10 @@ void MainWindow::on_actionLoadRaster_triggered()
     this->rasterObj->setDrawing(true);
 }
 
-void MainWindow::on_actionNew_meteo_points_DB_triggered()
+
+void MainWindow::on_actionArkimet_triggered()
 {
+
     QString templateName = QFileDialog::getOpenFileName(this, tr("Choose template DB meteo"), "", tr("DB files (*.db)"));
     if (templateName == "")
     {
@@ -146,9 +149,13 @@ void MainWindow::on_actionNew_meteo_points_DB_triggered()
                 QCheckBox* dat = new QCheckBox;
                 dat->setText(QString(dataset[i]));
                 layout->addWidget(dat);
-                checkBoxes->show();
             }
-
+            QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
+                                                 | QDialogButtonBox::Cancel);
+            connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+            connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+            layout->addWidget(buttonBox);
+            checkBoxes->show();
         }
     }
 }
