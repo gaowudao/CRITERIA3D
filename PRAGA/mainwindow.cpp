@@ -139,26 +139,75 @@ void MainWindow::on_actionArkimet_triggered()
             DbArkimet* dbmeteo = new DbArkimet(dBName);
             QStringList dataset = dbmeteo->getDatasetsList();
 
-            QWidget* checkBoxes = new QWidget();
-            checkBoxes->setWindowTitle("Datasets");
-            checkBoxes->setFixedWidth(500);
+            QDialog *datasetDialog = new QDialog;
+            datasetDialog->setWindowTitle("Datasets");
+            datasetDialog->setFixedWidth(500);
             QVBoxLayout* layout = new QVBoxLayout;
-            checkBoxes->setLayout(layout);
+            QCheckBox* dat;
+
             for (int i = 0; i < dataset.size(); i++)
             {
-                QCheckBox* dat = new QCheckBox;
-                dat->setText(QString(dataset[i]));
+                qDebug() << dataset[i];
+                dat = new QCheckBox(dataset[i]);
                 layout->addWidget(dat);
             }
+
+
             QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
                                                  | QDialogButtonBox::Cancel);
-            connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
-            connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+
+
+            connect(buttonBox, SIGNAL(accepted()), datasetDialog, SLOT(accept()));
+            connect(buttonBox, SIGNAL(rejected()), datasetDialog, SLOT(reject()));
+
+
             layout->addWidget(buttonBox);
-            checkBoxes->show();
+            datasetDialog->setLayout(layout);
+
+            datasetDialog->exec();
+            if (datasetDialog->result() == QDialog::Rejected)
+            {
+
+                delete layout;
+                delete buttonBox;
+                delete datasetDialog;
+                return;
+            }
+            if (datasetDialog->result() == QDialog::Accepted)
+            {
+
+                QList<QCheckBox *> list = datasetDialog->findChildren<QCheckBox *>();
+
+                QStringList myStringList;
+                foreach (QCheckBox *checkBox, list)
+                {
+
+                    if (checkBox->isChecked())
+                    {
+                        myStringList.append(checkBox->text());
+                    }
+
+                }
+                QString datasetSelected = QString("'%1'").arg(myStringList[0]);
+
+                for (int i = 1; i < myStringList.size(); i++)
+                {
+                    datasetSelected = datasetSelected % QString(",'%1'").arg(myStringList[i]);
+                }
+                qDebug() << datasetSelected;
+                dbmeteo->setDatasetsActive(datasetSelected);
+                delete layout;
+                delete buttonBox;
+                delete datasetDialog;
+
+            }
+
+
+
         }
     }
 }
+
 
 void MainWindow::on_actionOpen_meteo_points_DB_triggered()
 {

@@ -34,7 +34,6 @@
          */
         void on_actionLoadRaster_triggered();
 
-        //void on_actionNew_meteo_points_DB_triggered();
         void on_actionArkimet_triggered();
 
         void on_actionOpen_meteo_points_DB_triggered();
