@@ -183,13 +183,11 @@ double AerodynamicConductance(double myHeight,
     psiM = 0.;
     psiH = 0.;
     Ch = AirVolumetricSpecificHeat(PressureFromAltitude(myHeight), myAirTemperature);
-    uStar = VONKARMAN * myWindSpeed / (log((myHeight - zeroPlane) / roughnessMomentum));
-    K = VONKARMAN * uStar / (log((myHeight - zeroPlane) / roughnessHeat));
 
     for (short i = 1; i <= 3; i++)
     {
         uStar = VONKARMAN * myWindSpeed / (log((myHeight - zeroPlane + roughnessMomentum) / roughnessMomentum) + psiM);
-        K = VONKARMAN * uStar / (log((myHeight - zeroPlane + roughnessHeat) / roughnessHeat) + psiH);
+        K = VONKARMAN * uStar * Ch / (log((myHeight - zeroPlane + roughnessHeat) / roughnessHeat) + psiH);
         H = K * (mySoilSurfaceTemperature - myAirTemperature);
         Sp = -VONKARMAN * myHeight * GRAVITY * H / (Ch * myAirTemperature * (pow(uStar, 3)));
         if (Sp > 0)
