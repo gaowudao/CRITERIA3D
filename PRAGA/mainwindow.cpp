@@ -3,6 +3,8 @@
 #include <QCheckBox>
 #include <QDialogButtonBox>
 
+#include <QStringBuilder>
+
 #include "tileSources/OSMTileSource.h"
 #include "tileSources/GridTileSource.h"
 #include "tileSources/CompositeTileSource.h"
@@ -143,15 +145,20 @@ void MainWindow::on_actionArkimet_triggered()
             datasetDialog->setWindowTitle("Datasets");
             datasetDialog->setFixedWidth(500);
             QVBoxLayout* layout = new QVBoxLayout;
-            QCheckBox* dat;
 
             for (int i = 0; i < dataset.size(); i++)
             {
-                qDebug() << dataset[i];
-                dat = new QCheckBox(dataset[i]);
+                QCheckBox* dat = new QCheckBox(dataset[i]);
                 layout->addWidget(dat);
+
+                datasetCheckbox.append(dat);
             }
 
+            QCheckBox* all = new QCheckBox("ALL");
+            layout->addWidget(all);
+
+            connect(all, SIGNAL(toggled(bool)), this, SLOT(enableAll(bool)));
+            //connect(all, SIGNAL(toggled(bool)), this, SLOT(enableAll(bool)));
 
             QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
                                                  | QDialogButtonBox::Cancel);
@@ -176,25 +183,20 @@ void MainWindow::on_actionArkimet_triggered()
             if (datasetDialog->result() == QDialog::Accepted)
             {
 
-                QList<QCheckBox *> list = datasetDialog->findChildren<QCheckBox *>();
-
-                QStringList myStringList;
-                foreach (QCheckBox *checkBox, list)
+                QString datasetSelected = "";
+                foreach (QCheckBox *checkBox, datasetCheckbox)
                 {
 
                     if (checkBox->isChecked())
                     {
-                        myStringList.append(checkBox->text());
+                        datasetSelected = datasetSelected % "'" % checkBox->text() % "',";
                     }
 
                 }
-                QString datasetSelected = QString("'%1'").arg(myStringList[0]);
 
-                for (int i = 1; i < myStringList.size(); i++)
-                {
-                    datasetSelected = datasetSelected % QString(",'%1'").arg(myStringList[i]);
-                }
-                qDebug() << datasetSelected;
+                if (!datasetSelected.isEmpty())
+                    datasetSelected = datasetSelected.left(datasetSelected.size() - 1);
+
                 dbmeteo->setDatasetsActive(datasetSelected);
                 delete layout;
                 delete buttonBox;
@@ -208,6 +210,15 @@ void MainWindow::on_actionArkimet_triggered()
     }
 }
 
+void MainWindow::enableAll(bool toggled)
+{
+
+    foreach (QCheckBox *checkBox, datasetCheckbox)
+    {
+        checkBox->setChecked(toggled);
+    }
+
+}
 
 void MainWindow::on_actionOpen_meteo_points_DB_triggered()
 {

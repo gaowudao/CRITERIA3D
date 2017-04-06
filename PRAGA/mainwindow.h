@@ -3,6 +3,8 @@
 
     #include <QMainWindow>
     #include <QGridLayout>
+    #include <QList>
+    #include <QCheckBox>
     #include "MapGraphicsView.h"
     #include "MapGraphicsScene.h"
     #include "tileSources/OSMTileSource.h"
@@ -52,6 +54,9 @@
 
         void on_actionSetUTMzone_triggered();
 
+        void enableAll(bool toggled);
+
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
@@ -76,6 +81,8 @@
         RasterObject* rasterObj;
         ColorLegend* legend;
         environment menu;
+
+        QList<QCheckBox*> datasetCheckbox;
 
         void setMapSource(OSMTileSource::OSMTileType mySource);
 
