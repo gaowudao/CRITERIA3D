@@ -455,12 +455,19 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, QString *myError
 
 bool Criteria1D::readMeteoData(QSqlQuery * query, QString *myError)
 {
+    const int MAX_MISSING_DAYS = 3;
     float tmin, tmax, tmed, prec, et0;
+    float prevTmin, prevTmax;
     QDate myDate, previousDate;
+    int nrMissingTemp, nrMissingPrec;
 
     previousDate.setDate(1900,1,1);
-    query->first();
+    tmin = NODATA;
+    tmax = NODATA;
+    nrMissingTemp = 0;
+    nrMissingPrec = 0;
 
+    query->first();
     do
     {
         myDate = query->value("date").toDate();
@@ -473,20 +480,43 @@ bool Criteria1D::readMeteoData(QSqlQuery * query, QString *myError)
 
         if (myDate != previousDate)
         {
+            prevTmax = tmax;
+            prevTmin = tmin;
+
             // mandatory
             getValue(query->value("tmin"), &tmin);
             getValue(query->value("tmax"), &tmax);
             if ((tmin == NODATA) || (tmax == NODATA))
             {
-                *myError = "Missing temperature: " + myDate.toString();
-                return false;
+                if (nrMissingTemp < MAX_MISSING_DAYS)
+                {
+                    nrMissingTemp++;
+                    if (tmin == NODATA) tmin = prevTmin;
+                    if (tmax == NODATA) tmax = prevTmax;
+                }
+                else
+                {
+                    *myError = "Missing too much temperature: " + myDate.toString();
+                    return false;
+                }
             }
+            else nrMissingTemp = 0;
+
             getValue(query->value("prec"), &prec);
             if (prec == NODATA)
             {
-                *myError = "Missing precipitation: " + myDate.toString();
-                return false;
+                if (nrMissingPrec < MAX_MISSING_DAYS)
+                {
+                    nrMissingPrec++;
+                    prec = 0;
+                }
+                else
+                {
+                    *myError = "Missing too much precipitation: " + myDate.toString();
+                    return false;
+                }
             }
+            else nrMissingPrec = 0;
 
             // facoltativi
             getValue(query->value("tavg"), &tmed);

@@ -103,7 +103,7 @@ bool computeModel(Criteria1D* myCase, QString* myError, const Crit3DDate& firstD
         // IRRIGATION
         if (myCase->myCrop.isLiving)
         {
-            irrigation = cropIrrigationDemand(myCase, prec, tomorrowPrec, doy);
+            irrigation = cropIrrigationDemand(myCase, prec, tomorrowPrec);
             if (irrigation > 0 && myCase->optimizeIrrigation)
             {
                 irrigateCrop(myCase, irrigation);
