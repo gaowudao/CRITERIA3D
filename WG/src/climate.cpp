@@ -115,8 +115,9 @@ bool computeWGClimate(int nData, Crit3DDate inputFirstDate, float *inputTMin, fl
             wGen->monthly.dw_Tmax[m] = NODATA;
         }
     }
-    /* DEBUG
-    //--------------------------------- WRITE CLIMATE -----------------------------------
+
+
+    /*--------------------------------- WRITE CLIMATE -----------------------------------
     QString filename="climateWG.txt";
     qDebug() << "...Write WG climate file -->" << filename;
     QFile file(filename);
@@ -143,7 +144,6 @@ bool computeWGClimate(int nData, Crit3DDate inputFirstDate, float *inputTMin, fl
 
 /*-----------------------------------------------------
     climateGenerator
--------------------------------------------------------
     Generates a climate starting from daily weather
 -------------------------------------------------------*/
 bool climateGenerator(int nData, TinputObsData climateDailyObsData, Crit3DDate climateDateIni, Crit3DDate climateDateFin, float precThreshold, float minPercData, TwheatherGenClimate* wGen)
