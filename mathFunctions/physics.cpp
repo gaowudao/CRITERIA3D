@@ -207,32 +207,37 @@ double AerodynamicConductance(double myHeight,
 
 }
 
-double AerodynamicConductanceOpenwater(double myHeight, double mySurface, double myAirTemperature,
-                                      double myRelativeHumidity, double myWindSpeed)
+/*!
+* \brief computes aerodynamic conductance for open water
+* \param myHeight: reference height (m)
+* \param myWaterBodySurface: surface of water body (m2)
+* \param myAirTemperature: air temperature (m)
+* \param myWindSpeed: wind speed (m s-1)
+* \return aerodynamic conductance for heat and vapor [m s-1]
+* from Campbell Norman 1998
+*/
+double AerodynamicConductanceOpenwater(double myHeight, double myWaterBodySurface, double myAirTemperature, double myWindSpeed10)
 {	// aerodynamic resistance for an open water surface (s m-1)
     // McJannet et al 2008
-
-    // CONTROLLARE UNITA' DI MISURA!!
 
     double myPressure;		// Pa
     double myT;				// K
     double myVolSpecHeat;	// J m-3 K-1
     double mySpecHeat;		// J kg-1 K-1
-    double myPsycro;		// Pa K-1
-    double myLambda;		// (J kg-1) latent heat of vaporization
+    double myPsycro;		// kPa K-1
     double windFunction;	// (MJ m-2 d-1 kPa-1) wind function (Sweers 1976)
     double myDensity;		// air density (kg m-3)
 
     myPressure = PressureFromAltitude(myHeight);
     myT = myAirTemperature;
-    myDensity = AirDensity(myAirTemperature, myRelativeHumidity);
+    myDensity = AirDensity(myAirTemperature, 1.);
     myVolSpecHeat = AirVolumetricSpecificHeat(myPressure, myT);
     mySpecHeat = myVolSpecHeat / myDensity;
-    myLambda = LatentHeatVaporization(myT - 273.16);
+    myPsycro = Psychro(myPressure, myT);
 
-    myPsycro = (mySpecHeat * myPressure) / (RATIO_WATER_VD * myLambda);
-    windFunction = pow((5. / mySurface), 0.05) * (3.8 + 1.57 * myWindSpeed);
+    windFunction = pow((5. / (myWaterBodySurface * 1000000)), 0.05) * (3.8 + 1.57 * myWindSpeed10);
+    windFunction *= 1000000 / DAY_SECONDS; //to J m-2 s-1 kPa
 
-    // conversion to SI unit
-    return (1. / (myVolSpecHeat / (myPsycro * windFunction / 86.4)));
+    return (1. / (myVolSpecHeat / (myPsycro * windFunction)));
 }
+

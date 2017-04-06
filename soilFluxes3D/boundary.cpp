@@ -149,34 +149,6 @@ double computeAtmosphericLatentFlux(long i)
     return myLatentFlux;
 }
 
-double computeAtmosphericlatentFluxOpenWater(long i)
-{
-    // atmospheric latent flow from surface open water (m3 m-2 s-1)
-
-    // valid only for surface nodes
-    if (myNode[i].boundary == NULL) return 0.;
-    if (myNode[myNode[i].down.index].boundary == NULL) return 0.;
-    if (myNode[myNode[i].down.index].boundary->type != BOUNDARY_HEAT) return 0.;
-
-    long myHeatBoundaryIndex = myNode[i].down.index;
-
-    double mySatVapPressure, mySatVapConcentration;
-
-    // assuming surface temperature same as first soil node
-    mySatVapPressure = SaturationVaporPressure(myNode[myHeatBoundaryIndex].extra->Heat->T - ZEROCELSIUS);
-    mySatVapConcentration = VaporConcentrationFromPressure(mySatVapPressure, myNode[myHeatBoundaryIndex].extra->Heat->T);
-
-    // kg m-3
-    double myDeltaVapor = myNode[myHeatBoundaryIndex].boundary->Heat->vaporConcentration - mySatVapConcentration;
-
-    // kg m-2 s-1
-    double myVaporFlow = myDeltaVapor * myNode[myHeatBoundaryIndex].boundary->Heat->aerodynamicConductance;
-
-    // m3 m-2 s-1
-    double mylatentFlux = myVaporFlow / WATER_DENSITY;
-
-    return mylatentFlux;
-}
 
 /*!
  * \brief [W m-2] atmospheric heat latent flow from soil (evaporation)
@@ -298,32 +270,10 @@ void updateBoundaryWater(double deltaT)
                 myNode[i].boundary->waterFlow = meanK * (myNode[i].boundary->prescribedTotalPotential - myNode[i].H) * myNode[i].up.area;
             }
 
+            else if (myNode[i].boundary->type == BOUNDARY_HEAT)
+                myNode[i].boundary->waterFlow = computeAtmosphericLatentFlux(i) * myNode[i].up.area;
+
             myNode[i].Qw += myNode[i].boundary->waterFlow;
-
-            if (myNode[i].boundary->type == BOUNDARY_HEAT)
-            {
-                if (myStructure.computeWater)
-                {
-                    double surfaceVaporSinkSource, subVaporSinkSource, waterPondFraction;
-
-                    waterPondFraction = 0.0;
-                    surfaceVaporSinkSource = 0.0;
-                    if (myNode[myNode[i].up.index].isSurface)
-                        {
-                            long mySurfaceIndex = myNode[i].up.index;
-                            waterPondFraction = 0.; // getSurfaceWaterFraction(mySurfaceIndex);
-                            if (waterPondFraction > 0.)
-                            {
-                                surfaceVaporSinkSource = waterPondFraction * computeAtmosphericlatentFluxOpenWater(mySurfaceIndex) * myNode[mySurfaceIndex].volume_area;
-                                myNode[mySurfaceIndex].Qw += surfaceVaporSinkSource;
-                            }
-                        }
-
-                    subVaporSinkSource = (1. - waterPondFraction) * computeAtmosphericLatentFlux(i) * myNode[i].up.area;
-                    myNode[i].Qw += subVaporSinkSource;
-                    myNode[i].boundary->waterFlow = subVaporSinkSource + surfaceVaporSinkSource;
-                }
-            }
         }
     }
 }
@@ -345,27 +295,6 @@ void updateBoundaryHeat()
 
                 if (myNode[i].boundary->type == BOUNDARY_HEAT)
                 {
-                    // update surface water energy budget
-                    /*if (getSurfaceWaterFraction(myNode[i].up->index) > 0.0)
-                    {
-                        long mySurfaceIndex = myNode[i].up->index;
-
-                        //heat from soil (m3)
-                        double myUpwardFlow = criteria3D::getWaterFlow(i, UP);
-                        double myUpwardHeat = myUpwardFlow * HEAT_CAPACITY_WATER * (myNode[i].T - myNode[mySurfaceIndex].T);
-
-                        //heat from atmosphere (rain and irrigation)
-                        double myDownwardHeat = myNode[mySurfaceIndex].Qw * HEAT_CAPACITY_WATER * myParameters.actual_delta_t * (myNode[i].boundary->Heat->rainTemperature - myNode[mySurfaceIndex].T);
-
-                        //previous heat content
-                        double myPreviousHeat = 0.;
-                        if (myNode[mySurfaceIndex].oldH > 0)
-                            myPreviousHeat = myNode[mySurfaceIndex].oldH * myNode[mySurfaceIndex].VolumeS0 * HEAT_CAPACITY_WATER * myNode[mySurfaceIndex].T;
-
-                        double myCurrentHeat = myPreviousHeat + myUpwardHeat + myDownwardHeat;
-                        myNode[mySurfaceIndex].T = myCurrentHeat / (HEAT_CAPACITY_WATER * myNode[mySurfaceIndex].H * myNode[mySurfaceIndex].VolumeS0);
-                    }*/
-
                     myNode[i].boundary->Heat->sensibleFlux = 0.;
                     myNode[i].boundary->Heat->latentFlux = 0.;
                     myNode[i].boundary->Heat->radiativeFlux = 0.;

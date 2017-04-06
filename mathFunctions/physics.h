@@ -14,7 +14,6 @@
     double Psychro(double myPressure, double myTemp);
     double AerodynamicConductance(double myHeight, double mySoilSurfaceTemperature, double myRoughnessHeight,
                                   double myAirTemperature, double myWindSpeed);
-    double AerodynamicConductanceOpenwater(double myHeight, double mySurface, double myAirTemperature,
-                                      double myRelativeHumidity, double myWindSpeed);
+    double AerodynamicConductanceOpenwater(double myHeight, double myWaterBodySurface, double myAirTemperature, double myWindSpeed10);
 
 #endif // PHYSICS_H
