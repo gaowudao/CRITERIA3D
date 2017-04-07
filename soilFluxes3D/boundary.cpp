@@ -271,7 +271,10 @@ void updateBoundaryWater(double deltaT)
             }
 
             else if (myNode[i].boundary->type == BOUNDARY_HEAT)
-                myNode[i].boundary->waterFlow = computeAtmosphericLatentFlux(i) * myNode[i].up.area;
+            {
+                if (myStructure.computeHeat)
+                    myNode[i].boundary->waterFlow = computeAtmosphericLatentFlux(i) * myNode[i].up.area;
+            }
 
             myNode[i].Qw += myNode[i].boundary->waterFlow;
         }
