@@ -1,6 +1,7 @@
 #include <QFileDialog>
 #include <QtDebug>
 #include <QCheckBox>
+#include <QMessageBox>
 #include <QDialogButtonBox>
 
 #include <QStringBuilder>
@@ -171,41 +172,53 @@ void MainWindow::on_actionArkimet_triggered()
             layout.addWidget(buttonBox);
             datasetDialog.setLayout(&layout);
 
-            datasetDialog.exec();
-            if (datasetDialog.result() == QDialog::Rejected)
-            {
-
-                delete buttonBox;
-                delete all;
-                return;
-            }
-            if (datasetDialog.result() == QDialog::Accepted)
-            {
-
-                QString datasetSelected = "";
-                foreach (QCheckBox *checkBox, datasetCheckbox)
-                {
-
-                    if (checkBox->isChecked())
-                    {
-                        datasetSelected = datasetSelected % "'" % checkBox->text() % "',";
-                    }
-
-                }
-
-                if (!datasetSelected.isEmpty())
-                    datasetSelected = datasetSelected.left(datasetSelected.size() - 1);
-
+            QString datasetSelected = on_actionArkimet_Dataset(&datasetDialog);
+            if (!datasetSelected.isEmpty())
                 dbmeteo->setDatasetsActive(datasetSelected);
-                delete all;
-                delete buttonBox;
 
-            }
-
-
-
+            delete buttonBox;
+            delete all;
         }
     }
+}
+
+QString MainWindow::on_actionArkimet_Dataset(QDialog* datasetDialog) {
+
+        datasetDialog->exec();
+
+        if (datasetDialog->result() == QDialog::Rejected)
+        {
+            return "";
+        }
+        if (datasetDialog->result() == QDialog::Accepted)
+        {
+
+            QString datasetSelected = "";
+            foreach (QCheckBox *checkBox, datasetCheckbox)
+            {
+
+                if (checkBox->isChecked())
+                {
+                    datasetSelected = datasetSelected % "'" % checkBox->text() % "',";
+                }
+
+            }
+
+            if (!datasetSelected.isEmpty())
+            {
+                datasetSelected = datasetSelected.left(datasetSelected.size() - 1);
+                return datasetSelected;
+            }
+            else
+            {
+                QMessageBox msgBox;
+                msgBox.setText("Select a dataset");
+                msgBox.exec();
+                return on_actionArkimet_Dataset(datasetDialog);
+            }
+
+        }
+
 }
 
 void MainWindow::enableAll(bool toggled)

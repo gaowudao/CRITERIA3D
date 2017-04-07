@@ -38,6 +38,8 @@
 
         void on_actionArkimet_triggered();
 
+        QString on_actionArkimet_Dataset(QDialog* datasetDialog);
+
         void on_actionOpen_meteo_points_DB_triggered();
 
         void on_actionDownload_meteo_data_triggered();
