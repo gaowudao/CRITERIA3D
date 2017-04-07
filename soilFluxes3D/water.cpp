@@ -392,9 +392,9 @@ bool waterFlowComputation(double deltaT)
 
 
 /*!
-  * \brief computes water balance in the assigned balanceCurrentPeriod.
+  * \brief computes water balance in the assigned period.
   * We assume that, by means of maxTime, we are sure to not exit from meteorology of the assigned hour
-  * \param maxTime [s] balanceCurrentPeriod maximum for computation (max 3600 s)
+  * \param maxTime [s] maximum period for computation (max 3600 s)
   * \param acceptedTime [s] current seconds for simulation step
   * \return
   */

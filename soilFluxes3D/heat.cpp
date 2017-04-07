@@ -1,7 +1,7 @@
-/*-----------------------------------------------------------------------------------
+/*!
 
     CRITERIA 3D
-    Copyright (C) 2011 Fausto Tomei, Gabriele Antolini, Alberto Pistocchi,
+    \copyright (C) 2011 Fausto Tomei, Gabriele Antolini, Alberto Pistocchi,
     Antonio Volta, Giulia Villani, Marco Bittelli
 
     This file is part of CRITERIA3D.
@@ -26,21 +26,25 @@
     gantolini@arpa.emr.it
     alberto.pistocchi@gecosistema.it
     marco.bittelli@unibo.it
------------------------------------------------------------------------------------*/
+*/
 
 
 #include <math.h>
 #include <stdlib.h>
 
+#include <QDebug>
+
 #include "physics.h"
 #include "header/types.h"
 #include "header/heat.h"
 #include "header/soilPhysics.h"
+#include "header/balance.h"
 #include "header/water.h"
 #include "header/solver.h"
 #include "header/soilFluxes3D.h"
 #include "header/boundary.h"
 
+double CourantHeat, fluxCourant;
 
 double computeHeatStorage()
 { // [J]
@@ -520,7 +524,9 @@ double SoilHeatAdvection(long i, TlinkedNode *myLink)
     else
         Tadv = myNode[myLink->index].extra->Heat->T;
 
-    return (HEAT_CAPACITY_WATER * myWaterFlow * Tadv);
+    fluxCourant += HEAT_CAPACITY_WATER * myWaterFlow;
+
+    return (fluxCourant * Tadv);
 }
 
 double SoilConduction(long i, TlinkedNode *myLink)
@@ -544,17 +550,19 @@ double SoilConduction(long i, TlinkedNode *myLink)
     return (zeta * meanKh);
 }
 
-bool computeHeatFlux(long i, int myMatrixIndex, TlinkedNode *myLink)
+bool computeHeatFlux(long i, int myMatrixIndex, TlinkedNode *myLink, double deltaT)
 {
     if (myLink == NULL) return false;
     if ((*myLink).index == NOLINK) return false;
 
     long myLinkIndex = (*myLink).index;
     double myConduction, myAdvection, myLatent;
+    double nodeDistance;
 
     myConduction = 0.;
     myAdvection = 0.;
     myLatent = 0.;
+    fluxCourant = 0.;
 
     if (!myNode[myLinkIndex].isSurface)
     {
@@ -575,6 +583,12 @@ bool computeHeatFlux(long i, int myMatrixIndex, TlinkedNode *myLink)
     A[i][myMatrixIndex].val = myConduction;
 
     C0[i] += myAdvection + myLatent;
+
+    if (fluxCourant != 0)
+    {
+        nodeDistance = distance(i, myLinkIndex);
+        CourantHeat = maxValue(CourantHeat, fabs(fluxCourant) * deltaT / (C[i] * nodeDistance));
+    }
 
     return (true);
 }
@@ -611,6 +625,8 @@ bool HeatComputation(double myTimeStep)
     double heatCapacityVar;
     double dtheta, dthetav;
 
+    CourantHeat = 0.;
+
     for (i = 1; i < myStructure.nrNodes; i++)
     {
         A[i][0].index = i;
@@ -641,10 +657,10 @@ bool HeatComputation(double myTimeStep)
         heatCapacityVar *= myNode[i].volume_area;
 
         j = 1;
-        if (computeHeatFlux(i, j, &(myNode[i].up))) j++;
+        if (computeHeatFlux(i, j, &(myNode[i].up), myTimeStep)) j++;
         for (short l = 0; l < myStructure.nrLateralLinks; l++)
-            if (computeHeatFlux(i, j, &(myNode[i].lateral[l]))) j++;
-        if (computeHeatFlux(i, j, &(myNode[i].down))) j++;
+            if (computeHeatFlux(i, j, &(myNode[i].lateral[l]), myTimeStep)) j++;
+        if (computeHeatFlux(i, j, &(myNode[i].down), myTimeStep)) j++;
 
         // closure
         while (j < myStructure.maxNrColumns)
@@ -679,6 +695,14 @@ bool HeatComputation(double myTimeStep)
                 A[i][j++].val /= A[i][0].val;
         }
     }
+
+    if (CourantHeat > 1.0)
+        if (myTimeStep > myParameters.delta_t_min)
+        {
+            halveTimeStep();
+            setForcedHalvedTime(true);
+            return (false);
+        }
 
     GaussSeidelRelaxation(0, myParameters.ResidualTolerance, PROCESS_HEAT);
 

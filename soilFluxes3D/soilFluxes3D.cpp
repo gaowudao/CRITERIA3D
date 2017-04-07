@@ -32,6 +32,8 @@
 #include <math.h>
 #include <malloc.h>
 
+#include <QDebug>
+
 #include "physics.h"
 #include "header/types.h"
 #include "header/memory.h"
@@ -801,9 +803,24 @@ namespace soilFluxes3D {
 
 		while (sumTime < myPeriod)
         {
+            if (sumTime == 912)
+            {
+                qDebug() << "H1: " << myNode[1].H;
+                qDebug() << "oldH1: " << myNode[1].oldH;
+            }
+
 			ResidualTime = myPeriod - sumTime;
 			deltaT = computeStep(ResidualTime);
 			sumTime += deltaT;
+
+            if (myStructure.computeHeat)
+            {
+                qDebug() << "sumTime: " <<  sumTime;
+                qDebug() << "T1= " << myNode[1].extra->Heat->T-ZEROCELSIUS;
+                qDebug() << "T2= " << myNode[2].extra->Heat->T-ZEROCELSIUS;
+                qDebug() << "T3= " << myNode[3].extra->Heat->T-ZEROCELSIUS;
+                qDebug() << "T4= " << myNode[4].extra->Heat->T-ZEROCELSIUS;
+            }
         }
 
         if (myStructure.computeWater) updateBalanceWaterWholePeriod();
@@ -831,7 +848,12 @@ double DLL_EXPORT __STDCALL computeStep(double maxTime)
     if (myStructure.computeHeat)
     {
         updateBoundaryHeat();
-        HeatComputation(deltaT);
+        if (! HeatComputation(deltaT))
+        {
+            restoreHeat();
+            if (myStructure.computeWater) restoreWater();
+            deltaT = computeStep(myParameters.current_delta_t);
+        }
     }
 
     return deltaT;
