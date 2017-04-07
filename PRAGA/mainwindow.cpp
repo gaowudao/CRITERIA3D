@@ -175,6 +175,11 @@ void MainWindow::on_actionArkimet_triggered()
             QString datasetSelected = on_actionArkimet_Dataset(&datasetDialog);
             if (!datasetSelected.isEmpty())
                 dbmeteo->setDatasetsActive(datasetSelected);
+            else
+            {
+                QFile::remove(dBName);
+                delete dbmeteo;
+            }
 
             delete buttonBox;
             delete all;
