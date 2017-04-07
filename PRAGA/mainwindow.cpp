@@ -141,46 +141,45 @@ void MainWindow::on_actionArkimet_triggered()
             DbArkimet* dbmeteo = new DbArkimet(dBName);
             QStringList dataset = dbmeteo->getDatasetsList();
 
-            QDialog *datasetDialog = new QDialog;
-            datasetDialog->setWindowTitle("Datasets");
-            datasetDialog->setFixedWidth(500);
-            QVBoxLayout* layout = new QVBoxLayout;
+            QDialog datasetDialog;
+            datasetDialog.setWindowTitle("Datasets");
+            datasetDialog.setFixedWidth(500);
+            QVBoxLayout layout;
 
             for (int i = 0; i < dataset.size(); i++)
             {
                 QCheckBox* dat = new QCheckBox(dataset[i]);
-                layout->addWidget(dat);
+                layout.addWidget(dat);
 
                 datasetCheckbox.append(dat);
             }
 
             QCheckBox* all = new QCheckBox("ALL");
-            layout->addWidget(all);
+            layout.addSpacing(30);
+            layout.addWidget(all);
 
             connect(all, SIGNAL(toggled(bool)), this, SLOT(enableAll(bool)));
-            //connect(all, SIGNAL(toggled(bool)), this, SLOT(enableAll(bool)));
 
             QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
                                                  | QDialogButtonBox::Cancel);
 
 
-            connect(buttonBox, SIGNAL(accepted()), datasetDialog, SLOT(accept()));
-            connect(buttonBox, SIGNAL(rejected()), datasetDialog, SLOT(reject()));
+            connect(buttonBox, SIGNAL(accepted()), &datasetDialog, SLOT(accept()));
+            connect(buttonBox, SIGNAL(rejected()), &datasetDialog, SLOT(reject()));
 
 
-            layout->addWidget(buttonBox);
-            datasetDialog->setLayout(layout);
+            layout.addWidget(buttonBox);
+            datasetDialog.setLayout(&layout);
 
-            datasetDialog->exec();
-            if (datasetDialog->result() == QDialog::Rejected)
+            datasetDialog.exec();
+            if (datasetDialog.result() == QDialog::Rejected)
             {
 
-                delete layout;
                 delete buttonBox;
-                delete datasetDialog;
+                delete all;
                 return;
             }
-            if (datasetDialog->result() == QDialog::Accepted)
+            if (datasetDialog.result() == QDialog::Accepted)
             {
 
                 QString datasetSelected = "";
@@ -198,9 +197,8 @@ void MainWindow::on_actionArkimet_triggered()
                     datasetSelected = datasetSelected.left(datasetSelected.size() - 1);
 
                 dbmeteo->setDatasetsActive(datasetSelected);
-                delete layout;
+                delete all;
                 delete buttonBox;
-                delete datasetDialog;
 
             }
 
