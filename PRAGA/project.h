@@ -4,14 +4,17 @@
     #ifndef METEOPOINT_H
         #include "meteoPoint.h"
     #endif
+
     #ifndef QSTRING_H
         #include <QString>
     #endif
 
+    #include <QList>
+
     class Project {
     public:
         int nrMeteoPoints;
-        Crit3DMeteoPoint *meteoPoints;
+        QList<Crit3DMeteoPoint> meteoPoints;
 
         gis::Crit3DRasterGrid DTM;
         gis::Crit3DRasterGrid rowMatrix;

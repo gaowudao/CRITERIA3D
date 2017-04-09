@@ -16,6 +16,7 @@
 #include "formSingleValue.h"
 #include "dbMeteoPoints.h"
 #include "dbArkimet.h"
+#include "download.h"
 #include "project.h"
 
 
@@ -139,7 +140,9 @@ void MainWindow::on_actionArkimet_triggered()
         {
             QFile::copy(templateName, dBName);
 
-            DbArkimet* dbmeteo = new DbArkimet(dBName);
+            Download pointProperties(dBName);
+            DbArkimet* dbmeteo = pointProperties.getDbArkimet();
+
             QStringList dataset = dbmeteo->getDatasetsList();
 
             QDialog datasetDialog;
@@ -174,7 +177,11 @@ void MainWindow::on_actionArkimet_triggered()
 
             QString datasetSelected = on_actionArkimet_Dataset(&datasetDialog);
             if (!datasetSelected.isEmpty())
+            {
                 dbmeteo->setDatasetsActive(datasetSelected);
+                QStringList datasets = datasetSelected.split(",");
+                pointProperties.getPointProperties(datasets);
+            }
             else
             {
                 QFile::remove(dBName);

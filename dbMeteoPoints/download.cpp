@@ -23,6 +23,11 @@ Download::~Download()
     delete _dbMeteo;
 }
 
+DbArkimet* Download::getDbArkimet()
+{
+    return _dbMeteo;
+}
+
 void Download::getPointProperties(QStringList datasetList)
 {
 
