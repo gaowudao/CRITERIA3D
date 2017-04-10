@@ -315,7 +315,7 @@ void updateBoundaryHeat()
                     // advective heat from rain or evaporation
                     if (myStructure.computeWater)
                     {
-                        waterFlux = getWaterFlux(i, &myNode[i].up);
+                        waterFlux = myNode[i].up.linkedExtra->heatFlux->waterFlux;
                         if (waterFlux != NODATA)
                         {
                             advTemperature = myNode[i].boundary->Heat->temperature;

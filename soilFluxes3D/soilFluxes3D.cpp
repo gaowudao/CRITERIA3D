@@ -836,27 +836,38 @@ namespace soilFluxes3D {
  */
 double DLL_EXPORT __STDCALL computeStep(double maxTime)
 {
-    double deltaT;
+    double dtWater, dtHeat;
 
     updateBoundary();
 
     if (myStructure.computeWater)
-        computeWater(maxTime, &deltaT);
+        computeWater(maxTime, &dtWater);
     else
-        deltaT = maxTime;
+        dtWater = maxTime;
+
+    dtHeat = dtWater;
 
     if (myStructure.computeHeat)
     {
+        saveWaterFluxes();
         updateBoundaryHeat();
-        if (! HeatComputation(deltaT))
+
+        double dtHeatSum = 0;
+        while (dtHeatSum < dtWater)
         {
-            restoreHeat();
-            if (myStructure.computeWater) restoreWater();
-            deltaT = computeStep(myParameters.current_delta_t);
+            if (HeatComputation(minValue(dtHeat, dtWater - dtHeatSum)))
+            {
+                dtHeatSum += dtHeat;
+            }
+            else
+            {
+                restoreHeat();
+                dtHeat *= 0.5;
+            }
         }
     }
 
-    return deltaT;
+    return dtWater;
 }
 
 /*!

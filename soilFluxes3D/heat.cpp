@@ -169,7 +169,6 @@ void restoreHeat()
 {
     for (long i = 0; i < myStructure.nrNodes; i++)
         myNode[i].extra->Heat->T = myNode[i].extra->Heat->oldT;
-    // ripristinare vecchi vapori al boundary?
 }
 
 
@@ -635,8 +634,6 @@ bool HeatComputation(double myTimeStep)
 
         avgh = computeMean(myNode[i].oldH, myNode[i].H) - myNode[i].z;
         C[i] = SoilHeatCapacity(i, avgh, myNode[i].extra->Heat->T) * myNode[i].volume_area;
-
-        if (myStructure.computeHeat) saveWaterFluxes();
     }
 
     for (i = 1; i < myStructure.nrNodes; i++)

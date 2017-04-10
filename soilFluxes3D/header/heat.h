@@ -8,5 +8,6 @@ double ThermalVaporConductivity(long i, double myTMean, double h);
 void restoreHeat();
 void initializeBalanceHeat();
 void updateBalanceHeatWholePeriod();
+void saveWaterFluxes();
 bool HeatComputation(double myTime);
 
