@@ -3,8 +3,9 @@
 #include <QCheckBox>
 #include <QMessageBox>
 #include <QDialogButtonBox>
-
 #include <QStringBuilder>
+#include <QMovie>
+#include <QLabel>
 
 #include "tileSources/OSMTileSource.h"
 #include "tileSources/GridTileSource.h"
@@ -140,12 +141,14 @@ void MainWindow::on_actionArkimet_triggered()
         {
             QFile::copy(templateName, dBName);
 
-            Download pointProperties(dBName);
-            DbArkimet* dbmeteo = pointProperties.getDbArkimet();
+            Download* pointProperties = new Download(dBName);
+            DbArkimet* dbmeteo = pointProperties->getDbArkimet();
+
 
             QStringList dataset = dbmeteo->getDatasetsList();
 
             QDialog datasetDialog;
+
             datasetDialog.setWindowTitle("Datasets");
             datasetDialog.setFixedWidth(500);
             QVBoxLayout layout;
@@ -176,17 +179,36 @@ void MainWindow::on_actionArkimet_triggered()
             datasetDialog.setLayout(&layout);
 
             QString datasetSelected = on_actionArkimet_Dataset(&datasetDialog);
+
             if (!datasetSelected.isEmpty())
             {
                 dbmeteo->setDatasetsActive(datasetSelected);
-                QStringList datasets = datasetSelected.split(",");
-                pointProperties.getPointProperties(datasets);
+                QStringList datasets = datasetSelected.remove("'").split(",");
+
+//                QLabel *lbl = new QLabel;
+//                QMovie *movie = new QMovie("loader.gif");
+//                layout.addWidget(lbl);
+//                lbl->setMovie(movie);
+//                lbl->show();
+//                movie->start();
+//                pointProperties->getPointProperties(datasets);
+//                delete movie;
+//                delete lbl;
+
+                pointProperties->getPointProperties(datasets);
+                QMessageBox *msgBox = new QMessageBox(this);
+                msgBox->setText("Completed");
+                msgBox->exec();
+
+                delete msgBox;
+
             }
             else
             {
                 QFile::remove(dBName);
                 delete dbmeteo;
             }
+
 
             delete buttonBox;
             delete all;
@@ -198,10 +220,6 @@ QString MainWindow::on_actionArkimet_Dataset(QDialog* datasetDialog) {
 
         datasetDialog->exec();
 
-        if (datasetDialog->result() == QDialog::Rejected)
-        {
-            return "";
-        }
         if (datasetDialog->result() == QDialog::Accepted)
         {
 
@@ -230,8 +248,11 @@ QString MainWindow::on_actionArkimet_Dataset(QDialog* datasetDialog) {
             }
 
         }
+        else
+            return "";
 
 }
+
 
 void MainWindow::enableAll(bool toggled)
 {

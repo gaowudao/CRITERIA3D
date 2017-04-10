@@ -66,6 +66,7 @@ void Download::getPointProperties(QStringList datasetList)
             for(int index=0; index<jsonArr.size(); ++index)
             {
                 QJsonObject obj = jsonArr[index].toObject();
+
                 foreach(QString item, _datasetsList)
                 {
                     QJsonValue jsonDataset = obj.value("network");
@@ -78,9 +79,7 @@ void Download::getPointProperties(QStringList datasetList)
                     {
                         if (jsonDataset == item)
                         {
-                            qDebug() << jsonDataset;
                             this->downloadMetadata(obj);
-                            //qDebug() << jsonDataset.toString();
                         }
                     }
                 }
@@ -102,15 +101,20 @@ void Download::downloadMetadata(QJsonObject obj)
     Crit3DMeteoPoint* pointProp = new Crit3DMeteoPoint();
 
     QJsonValue jsonId = obj.value("id");
-    if (jsonId.isNull())
-          qDebug() << "Id is null" << endl;
 
-    pointProp->id = jsonId.toString().toStdString();
+    if (jsonId.isNull())
+    {
+          qDebug() << "Id is empty" << endl;
+          return;
+    }
+
+    int idInt = jsonId.toInt();
+    pointProp->id = std::to_string(idInt);
 
     QJsonValue jsonName = obj.value("name");
     if (jsonName.isNull())
           qDebug() << "name is null" << endl;
-    pointProp->name = jsonName.toString().toStdString(); ;
+    pointProp->name = jsonName.toString().toStdString();
 
     QJsonValue jsonNetwork = obj.value("network");
     pointProp->dataset = jsonNetwork.toString().toStdString();

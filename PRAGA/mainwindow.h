@@ -59,6 +59,7 @@
         void enableAll(bool toggled);
 
 
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
