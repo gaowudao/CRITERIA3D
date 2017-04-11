@@ -152,7 +152,8 @@ double AirDensity(double myTemperature, double myRelativeHumidity)
 
 /*!
 * \brief computes aerodynamic conductance
-* \param myHeight: reference height
+* \param heightTemperature: reference height for temperature and humidity measurement
+* \param heightWind: reference height for wind measurement
 * \param mySoilSurfaceTemperature: soil temperature (K)
 * \param myRoughnessHeight: roughness height (m)
 * \param myAirTemperature: air temperature (m)
@@ -188,13 +189,13 @@ double AerodynamicConductance(double heightTemperature,
 
     for (short i = 1; i <= 3; i++)
     {
-        uStar = VONKARMAN * windSpeed / (log((heightWind - zeroPlane + roughnessMomentum) / roughnessMomentum) + psiM);
-        K = VONKARMAN * uStar / (log((heightTemperature - zeroPlane + roughnessHeat) / roughnessHeat) + psiH);
+        uStar = VONKARMAN * windSpeed / (log((heightWind - zeroPlane) / roughnessMomentum) + psiM);
+        K = VONKARMAN * uStar / (log((heightTemperature - zeroPlane) / roughnessHeat) + psiH);
         H = K * Ch * (soilSurfaceTemperature - airTemperature);
         Sp = -VONKARMAN * heightWind * GRAVITY * H / (Ch * airTemperature * (pow(uStar, 3)));
         if (Sp > 0)
         {// stability
-            psiH = 6 * log(1 + Sp);
+            psiH = 4.7 * Sp;
             psiM = psiH;
         }
         else

@@ -56,20 +56,23 @@ void initializeBoundary(Tboundary *myBoundary, int myType, float slope)
     {
         (*myBoundary).Heat = new(TboundaryHeat);
 
-        (*myBoundary).Heat->temperature = NODATA;
+        //surface characteristics
         (*myBoundary).Heat->heightWind = NODATA;
         (*myBoundary).Heat->heightTemperature = NODATA;
-        (*myBoundary).Heat->relativeHumidity = NODATA;
-        (*myBoundary).Heat->vaporConcentration = NODATA;
         (*myBoundary).Heat->roughnessHeight = NODATA;
-        (*myBoundary).Heat->windSpeed = NODATA;
-        (*myBoundary).Heat->globalIrradiance = NODATA;
-        (*myBoundary).Heat->netIrradiance = NODATA;
-
         (*myBoundary).Heat->aerodynamicConductance = NODATA;
         (*myBoundary).Heat->soilConductance = NODATA;
         (*myBoundary).Heat->albedo = NODATA;
 
+        //atmospheric variables
+        (*myBoundary).Heat->temperature = NODATA;
+        (*myBoundary).Heat->relativeHumidity = NODATA;
+        (*myBoundary).Heat->vaporConcentration = NODATA;
+        (*myBoundary).Heat->windSpeed = NODATA;
+        (*myBoundary).Heat->globalIrradiance = NODATA;
+        (*myBoundary).Heat->netIrradiance = NODATA;
+
+        //surface energy fluxes
         (*myBoundary).Heat->radiativeFlux = 0;
         (*myBoundary).Heat->latentFlux = 0;
         (*myBoundary).Heat->sensibleFlux = 0;
@@ -80,7 +83,7 @@ void initializeBoundary(Tboundary *myBoundary, int myType, float slope)
 double computeSoilSurfaceResistance(double myThetaTop)
 {	// soil surface resistance (s m-1)
     // Van De Griend and Owe (1994)
-    const double THETAMIN = 0.22;
+    const double THETAMIN = 0.15;
     return (10 * exp(0.3563 * (THETAMIN - myThetaTop) * 100));
 }
 
