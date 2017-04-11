@@ -4,8 +4,6 @@
 #include <QMessageBox>
 #include <QDialogButtonBox>
 #include <QStringBuilder>
-#include <QMovie>
-#include <QLabel>
 
 #include "tileSources/OSMTileSource.h"
 #include "tileSources/GridTileSource.h"
@@ -131,17 +129,17 @@ void MainWindow::on_actionArkimet_triggered()
     }
     else
     {
-        QString dBName = QFileDialog::getSaveFileName(this, tr("Save as"), "", tr("DB files (*.db)"));
-        if (dBName == "")
+        QString dbName = QFileDialog::getSaveFileName(this, tr("Save as"), "", tr("DB files (*.db)"));
+        if (dbName == "")
         {
             qDebug() << "missing new db file name";
             return;
         }
         else
         {
-            QFile::copy(templateName, dBName);
+            QFile::copy(templateName, dbName);
 
-            Download* pointProperties = new Download(dBName);
+            Download* pointProperties = new Download(dbName);
             DbArkimet* dbmeteo = pointProperties->getDbArkimet();
 
 
@@ -185,17 +183,8 @@ void MainWindow::on_actionArkimet_triggered()
                 dbmeteo->setDatasetsActive(datasetSelected);
                 QStringList datasets = datasetSelected.remove("'").split(",");
 
-//                QLabel *lbl = new QLabel;
-//                QMovie *movie = new QMovie("loader.gif");
-//                layout.addWidget(lbl);
-//                lbl->setMovie(movie);
-//                lbl->show();
-//                movie->start();
-//                pointProperties->getPointProperties(datasets);
-//                delete movie;
-//                delete lbl;
-
                 pointProperties->getPointProperties(datasets);
+
                 QMessageBox *msgBox = new QMessageBox(this);
                 msgBox->setText("Completed");
                 msgBox->exec();
@@ -205,7 +194,7 @@ void MainWindow::on_actionArkimet_triggered()
             }
             else
             {
-                QFile::remove(dBName);
+                QFile::remove(dbName);
                 delete dbmeteo;
             }
 
@@ -266,6 +255,36 @@ void MainWindow::enableAll(bool toggled)
 
 void MainWindow::on_actionOpen_meteo_points_DB_triggered()
 {
+    QString dbName = QFileDialog::getOpenFileName(this, tr("Open DB meteo"), "", tr("DB files (*.db)"));
+    if (dbName == "")
+    {
+        return;
+    }
+    Download* db = new Download(dbName);
+    DbArkimet* dbArkimet = db->getDbArkimet();
+    myProject.meteoPoints = dbArkimet->getPropertiesFromDb();
+
+    /*
+    qDebug() << QString::fromStdString(myProject.meteoPoints[0].name);
+    qDebug() << QString::fromStdString(myProject.meteoPoints[0].dataset);
+
+    qDebug() << myProject.meteoPoints[0].latitude;
+    qDebug() << myProject.meteoPoints[0].longitude;
+
+    qDebug() << myProject.meteoPoints[0].latInt;
+    qDebug() << myProject.meteoPoints[0].lonInt;
+
+    qDebug() << myProject.meteoPoints[0].point.utm.x;
+    qDebug() << myProject.meteoPoints[0].point.utm.y;
+    qDebug() << myProject.meteoPoints[0].point.z;
+
+    qDebug() << QString::fromStdString(myProject.meteoPoints[0].state);
+    qDebug() << QString::fromStdString(myProject.meteoPoints[0].region);
+    qDebug() << QString::fromStdString(myProject.meteoPoints[0].province);
+    qDebug() << QString::fromStdString(myProject.meteoPoints[0].municipality);
+
+    qDebug() << myProject.meteoPoints[0].isUTC;
+    */
 
 }
 
