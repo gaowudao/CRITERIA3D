@@ -210,18 +210,16 @@ double AerodynamicConductance(double heightTemperature,
 }
 
 /*!
-* \brief computes aerodynamic conductance for open water
+* \brief computes aerodynamic conductance for an open water surface
 * \param myHeight: reference height (m)
 * \param myWaterBodySurface: surface of water body (m2)
 * \param myAirTemperature: air temperature (m)
 * \param myWindSpeed: wind speed (m s-1)
 * \return aerodynamic conductance for heat and vapor [m s-1]
-* from Campbell Norman 1998
+* McJannet et al 2008
 */
 double AerodynamicConductanceOpenwater(double myHeight, double myWaterBodySurface, double myAirTemperature, double myWindSpeed10)
-{	// aerodynamic resistance for an open water surface (s m-1)
-    // McJannet et al 2008
-
+{
     double myPressure;		// Pa
     double myT;				// K
     double myVolSpecHeat;	// J m-3 K-1

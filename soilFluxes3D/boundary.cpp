@@ -93,34 +93,15 @@ double computeSoilSurfaceResistanceCG(double theta, double thetaSat)
     return (-805 + 4140 * (thetaSat - theta));
 }
 
-double computeNetRadiationFlow(long i)
-{
-    // da sistemare!!!
-    // net incoming radiative flow (W m-2)
-    // assuming up node is surface
-    long myUpIndex = myNode[i].up.index;
-    double myFlow = 0.;
-    if (myNode[myUpIndex].isSurface && (myNode[i].boundary != NULL))
-    {
-        return 0.;
-
-        double myNetShortWave = (1. - myNode[myUpIndex].boundary->Heat->albedo) *
-                myNode[i].boundary->Heat->globalIrradiance;
-
-        double cloudFactor = 1;     // () cloudiness factor
-        double emissivity = 0.9;    // () net emissivity
-
-        double myNetLongWave = cloudFactor * emissivity * STEFAN_BOLTZMANN * pow(myNode[i].extra->Heat->T , 4);
-
-        myFlow = myNetShortWave - myNetLongWave;
-    }
-
-    return myFlow;
-}
-
+/*!
+ * \brief atmospheric sensible heat flux
+ * \param i
+ * \return latent heat (W m-2)
+ */
 double computeAtmosphericSensibleFlow(long i)
 {
-    // atmospheric sensible heat flow (W m-2)
+    if (myNode[i].boundary->Heat == NULL || ! myNode[myNode[i].up.index].isSurface)
+        return 0;
 
     double myPressure = PressureFromAltitude(myNode[i].z);
 
@@ -132,12 +113,15 @@ double computeAtmosphericSensibleFlow(long i)
 }
 
 /*!
- * \brief [m3 m-2 s-1] atmospheric latent flow from soil (evaporation)
+ * \brief atmospheric latent flux (evaporation/condensation)
  * \param i
- * \return result
+ * \return latent flux (m3 m-2 s-1)
  */
 double computeAtmosphericLatentFlux(long i)
 {
+    if (myNode[i].boundary->Heat == NULL || ! myNode[myNode[i].up.index].isSurface)
+        return 0;
+
     // kg m-3
     double myDeltaVapor = myNode[i].boundary->Heat->vaporConcentration - soilFluxes3D::getNodeVapor(i);
 
@@ -155,22 +139,21 @@ double computeAtmosphericLatentFlux(long i)
 
 
 /*!
- * \brief [W m-2] atmospheric heat latent flow from soil (evaporation)
+ * \brief atmospheric latent heat flux (evaporation/condensation)
  * \param i
- * \return result
+ * \return latent flux (W m-2)
  */
 double computeAtmosphericLatentHeatFlow(long i)
 {
+    if (myNode[i].boundary->Heat == NULL || ! myNode[myNode[i].up.index].isSurface)
+        return 0;
+
     double latentHeatFlow = 0.;
 
-    if (myNode[i].boundary != NULL)
-        if (myNode[i].boundary->type == BOUNDARY_HEAT)
-        {
-            // J kg-1
-            double lambda = LatentHeatVaporization(myNode[i].extra->Heat->T - ZEROCELSIUS);
-            // waterFlow = vapor sink source
-            latentHeatFlow = lambda * myNode[i].boundary->waterFlow * WATER_DENSITY;
-        }
+    // J kg-1
+    double lambda = LatentHeatVaporization(myNode[i].extra->Heat->T - ZEROCELSIUS);
+    // waterFlow = vapor sink source
+    latentHeatFlow = lambda * myNode[i].boundary->waterFlow * WATER_DENSITY;
 
     return latentHeatFlow;
 }
@@ -308,8 +291,6 @@ void updateBoundaryHeat()
                     myNode[i].boundary->Heat->radiativeFlux = 0.;
 
                     if (myNode[i].boundary->Heat->netIrradiance == NODATA)
-                        myNode[i].boundary->Heat->radiativeFlux = computeNetRadiationFlow(i);
-                    else
                         myNode[i].boundary->Heat->radiativeFlux = myNode[i].boundary->Heat->netIrradiance;
 
                     myNode[i].boundary->Heat->sensibleFlux += computeAtmosphericSensibleFlow(i);
