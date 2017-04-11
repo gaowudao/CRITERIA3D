@@ -12,8 +12,8 @@
     double VolumetricLatentHeatVaporization(double myPressure, double myT);
     double LatentHeatVaporization(double myTCelsius);
     double Psychro(double myPressure, double myTemp);
-    double AerodynamicConductance(double myHeight, double mySoilSurfaceTemperature, double myRoughnessHeight,
-                                  double myAirTemperature, double myWindSpeed);
+    double AerodynamicConductance(double heightTemperature, double heightWind, double soilSurfaceTemperature,
+                                  double roughnessHeight, double airTemperature, double windSpeed);
     double AerodynamicConductanceOpenwater(double myHeight, double myWaterBodySurface, double myAirTemperature, double myWindSpeed10);
 
 #endif // PHYSICS_H

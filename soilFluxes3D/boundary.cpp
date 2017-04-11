@@ -57,7 +57,8 @@ void initializeBoundary(Tboundary *myBoundary, int myType, float slope)
         (*myBoundary).Heat = new(TboundaryHeat);
 
         (*myBoundary).Heat->temperature = NODATA;
-        (*myBoundary).Heat->height = NODATA;
+        (*myBoundary).Heat->heightWind = NODATA;
+        (*myBoundary).Heat->heightTemperature = NODATA;
         (*myBoundary).Heat->relativeHumidity = NODATA;
         (*myBoundary).Heat->vaporConcentration = NODATA;
         (*myBoundary).Heat->roughnessHeight = NODATA;
@@ -192,7 +193,8 @@ void updateBoundary()
                     {
                         // update aerodynamic conductance
                         myNode[i].boundary->Heat->aerodynamicConductance =
-                                AerodynamicConductance(myNode[i].boundary->Heat->height,
+                                AerodynamicConductance(myNode[i].boundary->Heat->heightTemperature,
+                                    myNode[i].boundary->Heat->heightWind,
                                     myNode[i].extra->Heat->T,
                                     myNode[i].boundary->Heat->roughnessHeight,
                                     myNode[i].boundary->Heat->temperature,

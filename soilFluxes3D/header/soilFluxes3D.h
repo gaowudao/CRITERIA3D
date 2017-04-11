@@ -74,7 +74,8 @@
     // HEAT
     __EXTERN int DLL_EXPORT __STDCALL SetHeatSinkSource(long nodeIndex, double myHeatFlow);
     __EXTERN int DLL_EXPORT __STDCALL SetTemperature(long nodeIndex, double myT);
-    __EXTERN int DLL_EXPORT __STDCALL SetHeatBoundaryHeight(long nodeIndex, double myHeight);
+    __EXTERN int DLL_EXPORT __STDCALL SetHeatBoundaryHeightWind(long nodeIndex, double myHeight);
+    __EXTERN int DLL_EXPORT __STDCALL SetHeatBoundaryHeightTemperature(long nodeIndex, double myHeight);
     __EXTERN int DLL_EXPORT __STDCALL SetHeatBoundaryTemperature(long nodeIndex, double myTemperature);
     __EXTERN int DLL_EXPORT __STDCALL SetHeatBoundaryRelativeHumidity(long nodeIndex, double myRelativeHumidity);
     __EXTERN int DLL_EXPORT __STDCALL SetHeatBoundaryRoughness(long nodeIndex, double myRoughness);

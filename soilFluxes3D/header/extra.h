@@ -39,7 +39,8 @@ struct TboundaryHeat{
     double temperature;                     /*!< [K] temperature of the boundary (ex. air temperature) */
     double relativeHumidity;                /*!< [] relative humidity */
     double vaporConcentration;              /*!< [kg m-3] water vapour concentration */
-    double height;                          /*!< [m] reference height */
+    double heightWind;                      /*!< [m] reference height for wind measurement */
+    double heightTemperature;               /*!< [m] reference height for temperature and humidity measurement */
     double roughnessHeight;                 /*!< [m] surface roughness height */
     double windSpeed;                       /*!< [m s-1] wind speed */
     double globalIrradiance;                /*!< [W m-2] global shortwave irradiance */

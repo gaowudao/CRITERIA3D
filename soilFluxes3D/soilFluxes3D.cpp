@@ -1071,12 +1071,12 @@ int DLL_EXPORT __STDCALL SetHeatBoundaryRelativeHumidity(long nodeIndex, double 
 }
 
 /*!
- * \brief Set boundary reference height
+ * \brief Set boundary reference height for wind
  * \param nodeIndex
  * \param myHeight [m]
  * \return OK/ERROR
  */
-int DLL_EXPORT __STDCALL SetHeatBoundaryHeight(long nodeIndex, double myHeight)
+int DLL_EXPORT __STDCALL SetHeatBoundaryHeightWind(long nodeIndex, double myHeight)
 {
    if (myNode == NULL) return(MEMORY_ERROR);
    if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
@@ -1084,11 +1084,30 @@ int DLL_EXPORT __STDCALL SetHeatBoundaryHeight(long nodeIndex, double myHeight)
    if (myNode[nodeIndex].boundary == NULL || myNode[nodeIndex].boundary->Heat == NULL)
        return (BOUNDARY_ERROR);
 
-   myNode[nodeIndex].boundary->Heat->height = myHeight;
+   myNode[nodeIndex].boundary->Heat->heightWind = myHeight;
 
    return(CRIT3D_OK);
 }
 
+
+/*!
+ * \brief Set boundary reference height for temperature
+ * \param nodeIndex
+ * \param myHeight [m]
+ * \return OK/ERROR
+ */
+int DLL_EXPORT __STDCALL SetHeatBoundaryHeightTemperature(long nodeIndex, double myHeight)
+{
+   if (myNode == NULL) return(MEMORY_ERROR);
+   if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
+
+   if (myNode[nodeIndex].boundary == NULL || myNode[nodeIndex].boundary->Heat == NULL)
+       return (BOUNDARY_ERROR);
+
+   myNode[nodeIndex].boundary->Heat->heightTemperature = myHeight;
+
+   return(CRIT3D_OK);
+}
 
 /*!
  * \brief return node temperature

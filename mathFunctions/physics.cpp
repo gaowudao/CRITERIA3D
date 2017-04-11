@@ -160,11 +160,12 @@ double AirDensity(double myTemperature, double myRelativeHumidity)
 * \return aerodynamic conductance for heat and vapor [m s-1]
 * from Campbell Norman 1998
 */
-double AerodynamicConductance(double myHeight,
-                              double mySoilSurfaceTemperature,
-                              double myRoughnessHeight,
-                              double myAirTemperature,
-                              double myWindSpeed)
+double AerodynamicConductance(double heightTemperature,
+                              double heightWind,
+                              double soilSurfaceTemperature,
+                              double roughnessHeight,
+                              double airTemperature,
+                              double windSpeed)
 {
     double K;							// (m s-1) aerodynamic conductance
     double psiM, psiH;					// () stability correction factors for momentum and for heat
@@ -177,20 +178,20 @@ double AerodynamicConductance(double myHeight,
     double H;                           // (W m-2) sensible heat flux
     double Ch;                          // (J m-3 K-1) volumetric specific heat of air
 
-    zeroPlane = 0.77 * myRoughnessHeight;
-    roughnessMomentum = 0.13 * myRoughnessHeight;
+    zeroPlane = 0.77 * roughnessHeight;
+    roughnessMomentum = 0.13 * roughnessHeight;
     roughnessHeat = 0.2 * roughnessMomentum;
 
     psiM = 0.;
     psiH = 0.;
-    Ch = AirVolumetricSpecificHeat(PressureFromAltitude(myHeight), myAirTemperature);
+    Ch = AirVolumetricSpecificHeat(PressureFromAltitude(heightWind), airTemperature);
 
     for (short i = 1; i <= 3; i++)
     {
-        uStar = VONKARMAN * myWindSpeed / (log((myHeight - zeroPlane + roughnessMomentum) / roughnessMomentum) + psiM);
-        K = VONKARMAN * uStar / (log((myHeight - zeroPlane + roughnessHeat) / roughnessHeat) + psiH);
-        H = K * Ch * (mySoilSurfaceTemperature - myAirTemperature);
-        Sp = -VONKARMAN * myHeight * GRAVITY * H / (Ch * myAirTemperature * (pow(uStar, 3)));
+        uStar = VONKARMAN * windSpeed / (log((heightWind - zeroPlane + roughnessMomentum) / roughnessMomentum) + psiM);
+        K = VONKARMAN * uStar / (log((heightTemperature - zeroPlane + roughnessHeat) / roughnessHeat) + psiH);
+        H = K * Ch * (soilSurfaceTemperature - airTemperature);
+        Sp = -VONKARMAN * heightWind * GRAVITY * H / (Ch * airTemperature * (pow(uStar, 3)));
         if (Sp > 0)
         {// stability
             psiH = 6 * log(1 + Sp);
