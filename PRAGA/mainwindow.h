@@ -9,6 +9,7 @@
     #include "MapGraphicsScene.h"
     #include "tileSources/OSMTileSource.h"
     #include "rasterObject.h"
+    #include "stationMarker.h"
     #include "colorlegend.h"
     #include "guiConfiguration.h"
 
@@ -57,6 +58,8 @@
         void on_actionSetUTMzone_triggered();
 
         void enableAll(bool toggled);
+
+        void displayMeteoPoints();
 
 
 

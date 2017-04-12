@@ -206,7 +206,7 @@ bool DbArkimet::fillPointProperties(Crit3DMeteoPoint *pointProp)
     }
     else
     {
-        qDebug( "successfully inserted" );
+        //qDebug( "successfully inserted" );
         success = true;
     }
 

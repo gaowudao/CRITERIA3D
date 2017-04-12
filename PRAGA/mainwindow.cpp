@@ -189,7 +189,11 @@ void MainWindow::on_actionArkimet_triggered()
                 msgBox->setText("Completed");
                 msgBox->exec();
 
+                myProject.meteoPoints = dbmeteo->getPropertiesFromDb();
+                myProject.nrMeteoPoints = myProject.meteoPoints.size();
+                delete pointProperties;
                 delete msgBox;
+                displayMeteoPoints();
 
             }
             else
@@ -263,28 +267,23 @@ void MainWindow::on_actionOpen_meteo_points_DB_triggered()
     Download* db = new Download(dbName);
     DbArkimet* dbArkimet = db->getDbArkimet();
     myProject.meteoPoints = dbArkimet->getPropertiesFromDb();
+    myProject.nrMeteoPoints = myProject.meteoPoints.size();
+    delete db;
+    displayMeteoPoints();
 
-    /*
-    qDebug() << QString::fromStdString(myProject.meteoPoints[0].name);
-    qDebug() << QString::fromStdString(myProject.meteoPoints[0].dataset);
+}
 
-    qDebug() << myProject.meteoPoints[0].latitude;
-    qDebug() << myProject.meteoPoints[0].longitude;
+void MainWindow::displayMeteoPoints()
+{
 
-    qDebug() << myProject.meteoPoints[0].latInt;
-    qDebug() << myProject.meteoPoints[0].lonInt;
-
-    qDebug() << myProject.meteoPoints[0].point.utm.x;
-    qDebug() << myProject.meteoPoints[0].point.utm.y;
-    qDebug() << myProject.meteoPoints[0].point.z;
-
-    qDebug() << QString::fromStdString(myProject.meteoPoints[0].state);
-    qDebug() << QString::fromStdString(myProject.meteoPoints[0].region);
-    qDebug() << QString::fromStdString(myProject.meteoPoints[0].province);
-    qDebug() << QString::fromStdString(myProject.meteoPoints[0].municipality);
-
-    qDebug() << myProject.meteoPoints[0].isUTC;
-    */
+    for (int i = 0; i < myProject.nrMeteoPoints; i++)
+    {
+        StationMarker* point = new StationMarker(5.0, true, QColor(0,0,0,0), this->mapView);
+        point->setFlag(MapGraphicsObject::ObjectIsMovable, false);
+        point->setLatitude(myProject.meteoPoints[i].latitude);
+        point->setLongitude(myProject.meteoPoints[i].longitude);
+        this->mapView->scene()->addObject(point);
+    }
 
 }
 
@@ -315,8 +314,8 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
         else
             this->mapView->zoomOut();
 
-        this->mapView->centerOn(newCenter.lonLat());
-        this->rasterObj->updateCenter();
+    this->mapView->centerOn(newCenter.lonLat());
+    this->rasterObj->updateCenter();
     this->rasterObj->setDrawing(true);
 }
 

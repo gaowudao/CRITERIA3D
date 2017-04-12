@@ -23,14 +23,16 @@ SOURCES += main.cpp\
     rasterObject.cpp \
     colorlegend.cpp \
     formSingleValue.cpp \
-    project.cpp
+    project.cpp \
+    stationMarker.cpp
 
 HEADERS  += mainwindow.h \
     rasterObject.h \
     colorlegend.h \
     formSingleValue.h \
     project.h \
-    guiConfiguration.h
+    guiConfiguration.h \
+    stationMarker.h
 
 FORMS    += mainwindow.ui \
     formSingleValue.ui
