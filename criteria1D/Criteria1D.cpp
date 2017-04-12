@@ -455,7 +455,7 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, QString *myError
 
 bool Criteria1D::readMeteoData(QSqlQuery * query, QString *myError)
 {
-    const int MAX_MISSING_DAYS = 3;
+    const int MAX_MISSING_DAYS = 1;
     float tmin, tmax, tmed, prec, et0;
     float prevTmin, prevTmax;
     QDate myDate, previousDate;

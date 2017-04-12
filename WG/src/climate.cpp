@@ -19,7 +19,7 @@
     float       *inputTMax      [°C] array(1...nData) of maximum temp. data
     float       *inputPrec      [mm] array(1...nData) of precipitation data
 -------------------------------------------------------------------*/
-bool computeWGClimate(int nData, Crit3DDate inputFirstDate, float *inputTMin, float *inputTMax, float *inputPrec, float precThreshold, float minPercData, TwheatherGenClimate* wGen)
+bool computeWGClimate(int nrDays, Crit3DDate inputFirstDate, float *inputTMin, float *inputTMax, float *inputPrec, float precThreshold, float minPercData, TwheatherGenClimate* wGen)
 {
     int nValidData = 0;
     double dataPresence = 0;
@@ -31,7 +31,7 @@ bool computeWGClimate(int nData, Crit3DDate inputFirstDate, float *inputTMin, fl
     int nWetDays[12] = {0};
     int nWetWetDays[12] = {0};
     int nDryDays[12] = {0};
-    int numData[12] = {0};
+    int nrData[12] = {0};
     float sumTmaxWet[12] = {0};
     float sumTmaxDry[12] = {0};
     int daysInMonth;
@@ -42,7 +42,7 @@ bool computeWGClimate(int nData, Crit3DDate inputFirstDate, float *inputTMin, fl
     //read data
     Crit3DDate tmpCurrentDate;
     int m;
-    for (int n = 0; n < nData; n++)
+    for (int n = 0; n < nrDays; n++)
     {
         tmpCurrentDate = inputFirstDate.addDays(n);
         m = tmpCurrentDate.month-1;
@@ -51,7 +51,7 @@ bool computeWGClimate(int nData, Crit3DDate inputFirstDate, float *inputTMin, fl
         if ( (inputTMin[n] != NODATA) && (inputTMax[n] != NODATA) && (inputPrec[n] != NODATA) )
         {
             nValidData = nValidData + 1;
-            numData[m] = numData[m] + 1;
+            nrData[m] = nrData[m] + 1;
             sumTMin[m] = sumTMin[m] + inputTMin[n];
             sumTMin2[m] = sumTMin2[m] + (inputTMin[n] * inputTMin[n]);
             sumTMax[m] = sumTMax[m] + inputTMax[n];
@@ -74,26 +74,26 @@ bool computeWGClimate(int nData, Crit3DDate inputFirstDate, float *inputTMin, fl
         }
     }
 
-    dataPresence = (double)nValidData / (double)nData;
+    dataPresence = (double)nValidData / (double)nrDays;
     if (dataPresence < minPercData)
         return false;
 
     // compute Climate
     for (m=0; m<12; m++)
     {
-        if (numData[m] > 0)
+        if (nrData[m] > 0)
         {
-            wGen->monthly.monthlyTmax[m] = sumTMax[m] / numData[m]; //computes mean monthly values of maximum temperature
-            wGen->monthly.monthlyTmin[m] = sumTMin[m] / numData[m]; //computes mean monthly values of minimum temperature
+            wGen->monthly.monthlyTmax[m] = sumTMax[m] / nrData[m]; //computes mean monthly values of maximum temperature
+            wGen->monthly.monthlyTmin[m] = sumTMin[m] / nrData[m]; //computes mean monthly values of minimum temperature
 
             if (m !=11)
                 daysInMonth = monthends[m+1] - monthends[m];
             else
                 daysInMonth = 31; //December
 
-            wGen->monthly.sumPrec[m] = sumPrec[m] / numData[m] * daysInMonth;
+            wGen->monthly.sumPrec[m] = sumPrec[m] / nrData[m] * daysInMonth;
 
-            wGen->monthly.fractionWetDays[m] = ((double)nWetDays[m] / (double)numData[m]);
+            wGen->monthly.fractionWetDays[m] = ((double)nWetDays[m] / (double)nrData[m]);
             wGen->monthly.probabilityWetWet[m] = ((double)nWetWetDays[m] / (double)nWetDays[m]);
 
             if ( (nDryDays[m] > 0) && (nWetDays[m] > 0) )
@@ -101,8 +101,8 @@ bool computeWGClimate(int nData, Crit3DDate inputFirstDate, float *inputTMin, fl
             else
                 wGen->monthly.dw_Tmax[m] = 0;
 
-            wGen->monthly.stDevTmax[m] = sqrt( std::max(numData[m]*sumTMax2[m]-(sumTMax[m]*sumTMax[m]),(float)0.0) / (numData[m]*(numData[m]-1)));
-            wGen->monthly.stDevTmin[m] = sqrt( std::max(numData[m]*sumTMin2[m]-(sumTMin[m]*sumTMin[m]),(float)0.0) / (numData[m]*(numData[m]-1)));
+            wGen->monthly.stDevTmax[m] = sqrt( std::max(nrData[m]*sumTMax2[m]-(sumTMax[m]*sumTMax[m]),(float)0.0) / (nrData[m]*(nrData[m]-1)));
+            wGen->monthly.stDevTmin[m] = sqrt( std::max(nrData[m]*sumTMin2[m]-(sumTMin[m]*sumTMin[m]),(float)0.0) / (nrData[m]*(nrData[m]-1)));
         }
         else
         {
@@ -146,26 +146,26 @@ bool computeWGClimate(int nData, Crit3DDate inputFirstDate, float *inputTMin, fl
     climateGenerator
     Generates a climate starting from daily weather
 -------------------------------------------------------*/
-bool climateGenerator(int nData, TinputObsData climateDailyObsData, Crit3DDate climateDateIni, Crit3DDate climateDateFin, float precThreshold, float minPercData, TwheatherGenClimate* wGen)
+bool climateGenerator(int nrData, TinputObsData climateDailyObsData, Crit3DDate climateDateIni, Crit3DDate climateDateFin, float precThreshold, float minPercData, TwheatherGenClimate* wGen)
 
 {
-    int startIndex, numDays;
+    int startIndex, nrDays;
     TinputObsData newDailyObsData;
     bool result = false;
 
-    startIndex = difference(climateDailyObsData.inputFirstDate,climateDateIni); // starts from 0
-    numDays = difference(climateDateIni,climateDateFin)+1;
+    startIndex = difference(climateDailyObsData.inputFirstDate, climateDateIni); // starts from 0
+    nrDays = difference(climateDateIni,climateDateFin)+1;
 
     newDailyObsData.inputFirstDate = climateDateIni;
-    newDailyObsData.inputTMin = (float*)malloc(numDays*sizeof(float));
-    newDailyObsData.inputTMax = (float*)malloc(numDays*sizeof(float));
-    newDailyObsData.inputPrecip = (float*)malloc(numDays*sizeof(float));
+    newDailyObsData.inputTMin = (float*)malloc(nrDays*sizeof(float));
+    newDailyObsData.inputTMax = (float*)malloc(nrDays*sizeof(float));
+    newDailyObsData.inputPrecip = (float*)malloc(nrDays*sizeof(float));
 
     int j = 0;
 
-    for (int i = 0; i < nData; i++)
+    for (int i = 0; i < nrData; i++)
     {
-        if (i >= startIndex && i <= startIndex+numDays)
+        if (i >= startIndex && i < startIndex+nrDays)
         {
             newDailyObsData.inputTMin[j] = climateDailyObsData.inputTMin[i];
             newDailyObsData.inputTMax[j] = climateDailyObsData.inputTMax[i];
@@ -174,7 +174,7 @@ bool climateGenerator(int nData, TinputObsData climateDailyObsData, Crit3DDate c
         }
     }
 
-    result = computeWGClimate(numDays, newDailyObsData.inputFirstDate, newDailyObsData.inputTMin, newDailyObsData.inputTMax, newDailyObsData.inputPrecip, precThreshold, minPercData, wGen);
+    result = computeWGClimate(nrDays, newDailyObsData.inputFirstDate, newDailyObsData.inputTMin, newDailyObsData.inputTMax, newDailyObsData.inputPrecip, precThreshold, minPercData, wGen);
 
     free(newDailyObsData.inputTMin);
     free(newDailyObsData.inputTMax);
@@ -230,7 +230,7 @@ void computePeriodStatistic(float* seasonObsInputTMin, float* seasonObsInputTMax
         if ( (inputTMin[n] != NODATA) && (inputTMax[n] != NODATA) && (inputPrec[n] != NODATA) )
         {
             nValidData = nValidData + 1;
-            numData = numData + 1;
+            nrData = nrData + 1;
             sumTMin = sumTMin + inputTMin[n];
             sumTMax = sumTMax + inputTMax[n];
             sumPrec = sumPrec + inputPrec[n];
@@ -255,19 +255,19 @@ void computePeriodStatistic(float* seasonObsInputTMin, float* seasonObsInputTMax
     if (dataPresence < minPercData)
         return false;
 
-    if (numData > 0)
+    if (nrData > 0)
     {
-        statistic->periodMeanMinTemp.push_back(sumTMin / numData); //computes mean period values of minimum temperature
-        statistic->periodMeanMaxTemp.push_back(sumTMax / numData); //computes mean period values of maximum temperature
+        statistic->periodMeanMinTemp.push_back(sumTMin / nrData); //computes mean period values of minimum temperature
+        statistic->periodMeanMaxTemp.push_back(sumTMax / nrData); //computes mean period values of maximum temperature
 
         if (m !=11)
             daysInMonth = monthends[m+1] - monthends[m];
         else
             daysInMonth = 31; //December
 
-        statistic->periodPrecip.push_back(sumPrec[m] / numData[m] * daysInMonth);
+        statistic->periodPrecip.push_back(sumPrec[m] / nrData[m] * daysInMonth);
 
-        statistic->periodWetDaysFrequency.push_back(((double)nWetDays[m] / (double)numData[m]));
+        statistic->periodWetDaysFrequency.push_back(((double)nWetDays[m] / (double)nrData[m]));
         statistic->periodWetWetDaysFrequency.push_back(((double)nWetWetDays[m] / (double)nWetDays[m]));
 
         if ( (nDryDays > 0) && (nWetDays > 0) )

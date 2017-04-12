@@ -28,6 +28,7 @@ void printSeasonalForecastInfo(TXMLSeasonalAnomaly *XMLAnomaly)
     qDebug() << "number of repetitions = " << XMLAnomaly->repetitions;
     qDebug() << "anomaly year = " << XMLAnomaly->anomalyYear;
     qDebug() << "anomaly season = " << XMLAnomaly->anomalySeason;
+    qDebug() << "";
 }
 
 
@@ -46,7 +47,7 @@ int main(int argc, char *argv[])
         settingsFileName = argv[1];
     else
     {
-        //settingsFileName = "test.ini";
+        //settingsFileName = "\\\\praga-smr\\MOSES\\SWB\\DA_IT\\seasonalPredictions\\WG.ini";
         qDebug() << "USAGE:\n" << "WG settings.ini\n";
         return false;
     }
@@ -77,7 +78,7 @@ int main(int argc, char *argv[])
     if (outputPath.left(1) == ".") outputPath = path + outputPath;
     QDir outputDirectory(outputPath);
 
-    //output directory
+    //check output directory
     if (!outputDirectory.exists())
         if (!outputDirectory.mkdir(outputPath))
         {
