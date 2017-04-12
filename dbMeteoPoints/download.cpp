@@ -96,7 +96,6 @@ void Download::getPointProperties(QStringList datasetList)
 
 void Download::downloadMetadata(QJsonObject obj)
 {
-    qDebug() << "downloadMetadata";
 
     Crit3DMeteoPoint* pointProp = new Crit3DMeteoPoint();
 

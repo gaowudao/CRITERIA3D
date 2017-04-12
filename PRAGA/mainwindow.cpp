@@ -4,8 +4,6 @@
 #include <QMessageBox>
 #include <QDialogButtonBox>
 #include <QStringBuilder>
-#include <QMovie>
-#include <QLabel>
 
 #include "tileSources/OSMTileSource.h"
 #include "tileSources/GridTileSource.h"
@@ -131,17 +129,17 @@ void MainWindow::on_actionArkimet_triggered()
     }
     else
     {
-        QString dBName = QFileDialog::getSaveFileName(this, tr("Save as"), "", tr("DB files (*.db)"));
-        if (dBName == "")
+        QString dbName = QFileDialog::getSaveFileName(this, tr("Save as"), "", tr("DB files (*.db)"));
+        if (dbName == "")
         {
             qDebug() << "missing new db file name";
             return;
         }
         else
         {
-            QFile::copy(templateName, dBName);
+            QFile::copy(templateName, dbName);
 
-            Download* pointProperties = new Download(dBName);
+            Download* pointProperties = new Download(dbName);
             DbArkimet* dbmeteo = pointProperties->getDbArkimet();
 
 
@@ -185,27 +183,22 @@ void MainWindow::on_actionArkimet_triggered()
                 dbmeteo->setDatasetsActive(datasetSelected);
                 QStringList datasets = datasetSelected.remove("'").split(",");
 
-//                QLabel *lbl = new QLabel;
-//                QMovie *movie = new QMovie("loader.gif");
-//                layout.addWidget(lbl);
-//                lbl->setMovie(movie);
-//                lbl->show();
-//                movie->start();
-//                pointProperties->getPointProperties(datasets);
-//                delete movie;
-//                delete lbl;
-
                 pointProperties->getPointProperties(datasets);
+
                 QMessageBox *msgBox = new QMessageBox(this);
                 msgBox->setText("Completed");
                 msgBox->exec();
 
+                myProject.meteoPoints = dbmeteo->getPropertiesFromDb();
+                myProject.nrMeteoPoints = myProject.meteoPoints.size();
+                delete pointProperties;
                 delete msgBox;
+                displayMeteoPoints();
 
             }
             else
             {
-                QFile::remove(dBName);
+                QFile::remove(dbName);
                 delete dbmeteo;
             }
 
@@ -266,6 +259,31 @@ void MainWindow::enableAll(bool toggled)
 
 void MainWindow::on_actionOpen_meteo_points_DB_triggered()
 {
+    QString dbName = QFileDialog::getOpenFileName(this, tr("Open DB meteo"), "", tr("DB files (*.db)"));
+    if (dbName == "")
+    {
+        return;
+    }
+    Download* db = new Download(dbName);
+    DbArkimet* dbArkimet = db->getDbArkimet();
+    myProject.meteoPoints = dbArkimet->getPropertiesFromDb();
+    myProject.nrMeteoPoints = myProject.meteoPoints.size();
+    delete db;
+    displayMeteoPoints();
+
+}
+
+void MainWindow::displayMeteoPoints()
+{
+
+    for (int i = 0; i < myProject.nrMeteoPoints; i++)
+    {
+        StationMarker* point = new StationMarker(5.0, true, QColor(0,0,0,0), this->mapView);
+        point->setFlag(MapGraphicsObject::ObjectIsMovable, false);
+        point->setLatitude(myProject.meteoPoints[i].latitude);
+        point->setLongitude(myProject.meteoPoints[i].longitude);
+        this->mapView->scene()->addObject(point);
+    }
 
 }
 
@@ -296,8 +314,8 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
         else
             this->mapView->zoomOut();
 
-        this->mapView->centerOn(newCenter.lonLat());
-        this->rasterObj->updateCenter();
+    this->mapView->centerOn(newCenter.lonLat());
+    this->rasterObj->updateCenter();
     this->rasterObj->setDrawing(true);
 }
 

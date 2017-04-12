@@ -3,10 +3,6 @@
 #include "rasterObject.h"
 #include "project.h"
 
-/*
-#include "CircleObject.h"
-#include "Position.h"
-*/
 
 extern Project myProject;
 
