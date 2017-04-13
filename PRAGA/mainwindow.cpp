@@ -3,6 +3,9 @@
 #include <QCheckBox>
 #include <QMessageBox>
 #include <QDialogButtonBox>
+#include <QPushButton>
+#include <QLabel>
+#include <QCalendarWidget>
 #include <QStringBuilder>
 
 #include "tileSources/OSMTileSource.h"
@@ -289,6 +292,57 @@ void MainWindow::displayMeteoPoints()
 
 void MainWindow::on_actionDownload_meteo_data_triggered()
 {
+
+    QVBoxLayout mainLayout;
+    QHBoxLayout timeLayout;
+    QVBoxLayout dateLayout;
+    QHBoxLayout buttonLayout;
+
+    QDialog downloadDialog;
+
+    downloadDialog.setWindowTitle("Download Data");
+
+    QCheckBox* daily = new QCheckBox("Hourly");
+    QCheckBox* hourly = new QCheckBox("Daily");
+    timeLayout.addWidget(daily);
+    timeLayout.addWidget(hourly);
+
+    QCalendarWidget *calendar = new QCalendarWidget;
+    calendar->setGridVisible(true);
+    QLabel *label = new QLabel("Select date");
+    label->setAlignment(Qt::AlignCenter);
+    dateLayout.addWidget(label);
+    dateLayout.addWidget(calendar);
+
+    QDialogButtonBox* buttonBox = new QDialogButtonBox;
+    QPushButton* downloadButton = new QPushButton(tr("&Download"));
+    downloadButton->setCheckable(true);
+    downloadButton->setAutoDefault(false);
+
+    QPushButton* stopButton = new QPushButton(tr("&Stop"));
+    stopButton->setCheckable(true);
+    stopButton->setAutoDefault(false);
+
+    QPushButton* cancelButton = new QPushButton(tr("&Cancel"));
+    cancelButton->setCheckable(true);
+    cancelButton->setAutoDefault(false);
+
+    buttonBox->addButton(downloadButton, QDialogButtonBox::AcceptRole);
+    buttonBox->addButton(stopButton, QDialogButtonBox::RejectRole);
+    buttonBox->addButton(cancelButton, QDialogButtonBox::DestructiveRole);
+
+    connect(buttonBox, SIGNAL(accepted()), &downloadDialog, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), &downloadDialog, SLOT(reject()));
+    connect(buttonBox, SIGNAL(destructed()), &downloadDialog, SLOT(destruct()));
+
+    buttonLayout.addWidget(buttonBox);
+    mainLayout.addLayout(&timeLayout);
+    mainLayout.addLayout(&dateLayout);
+    mainLayout.addLayout(&buttonLayout);
+    downloadDialog.setLayout(&mainLayout);
+
+    downloadDialog.exec();
+
 
 }
 
