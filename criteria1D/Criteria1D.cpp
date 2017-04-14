@@ -523,11 +523,20 @@ bool Criteria1D::readMeteoData(QSqlQuery * query, QString *myError)
             getValue(query->value("etp"), &et0);
             if (tmed == NODATA) tmed = (tmin + tmax) * 0.5;
 
-            this->meteoPoint.setMeteoPointValueD(getCrit3DDate(myDate), dailyAirTemperatureMin, (float)tmin);
-            this->meteoPoint.setMeteoPointValueD(getCrit3DDate(myDate), dailyAirTemperatureMax, (float)tmax);
-            this->meteoPoint.setMeteoPointValueD(getCrit3DDate(myDate), dailyAirTemperatureAvg, (float)tmed);
-            this->meteoPoint.setMeteoPointValueD(getCrit3DDate(myDate), dailyPrecipitation, (float)prec);
-            this->meteoPoint.setMeteoPointValueD(getCrit3DDate(myDate), dailyPotentialEvapotranspiration, (float)et0);
+            Crit3DDate date = getCrit3DDate(myDate);
+            if (this->meteoPoint.obsDataD[0].date.daysTo(date) < this->meteoPoint.nrObsDataDaysD)
+            {
+                this->meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureMin, (float)tmin);
+                this->meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureMax, (float)tmax);
+                this->meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureAvg, (float)tmed);
+                this->meteoPoint.setMeteoPointValueD(date, dailyPrecipitation, (float)prec);
+                this->meteoPoint.setMeteoPointValueD(date, dailyPotentialEvapotranspiration, (float)et0);
+            }
+            else
+            {
+                *myError = "Wrong meteo data.";
+                return false;
+            }
         }
 
         previousDate = myDate;
