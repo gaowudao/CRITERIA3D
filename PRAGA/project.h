@@ -10,11 +10,13 @@
     #endif
 
     #include <QList>
+    #include <QDate>
 
     class Project {
     public:
-        int nrMeteoPoints;
         QList<Crit3DMeteoPoint> meteoPoints;
+        QDate startDate;
+        QDate endDate;
 
         gis::Crit3DRasterGrid DTM;
         gis::Crit3DRasterGrid rowMatrix;

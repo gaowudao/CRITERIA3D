@@ -4,7 +4,7 @@
 
 Project::Project()
 {
-    nrMeteoPoints = 0;
+
 }
 
 

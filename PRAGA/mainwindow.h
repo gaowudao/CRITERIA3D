@@ -61,6 +61,8 @@
 
         void displayMeteoPoints();
 
+        void slotClicked(const QDate& date);
+
 
 
     protected:

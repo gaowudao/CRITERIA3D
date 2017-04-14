@@ -193,7 +193,6 @@ void MainWindow::on_actionArkimet_triggered()
                 msgBox->exec();
 
                 myProject.meteoPoints = dbmeteo->getPropertiesFromDb();
-                myProject.nrMeteoPoints = myProject.meteoPoints.size();
                 delete pointProperties;
                 delete msgBox;
                 displayMeteoPoints();
@@ -270,7 +269,6 @@ void MainWindow::on_actionOpen_meteo_points_DB_triggered()
     Download* db = new Download(dbName);
     DbArkimet* dbArkimet = db->getDbArkimet();
     myProject.meteoPoints = dbArkimet->getPropertiesFromDb();
-    myProject.nrMeteoPoints = myProject.meteoPoints.size();
     delete db;
     displayMeteoPoints();
 
@@ -279,7 +277,7 @@ void MainWindow::on_actionOpen_meteo_points_DB_triggered()
 void MainWindow::displayMeteoPoints()
 {
 
-    for (int i = 0; i < myProject.nrMeteoPoints; i++)
+    for (int i = 0; i < myProject.meteoPoints.size(); i++)
     {
         StationMarker* point = new StationMarker(5.0, true, QColor(0,0,0,0), this->mapView);
         point->setFlag(MapGraphicsObject::ObjectIsMovable, false);
@@ -309,10 +307,12 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
 
     QCalendarWidget *calendar = new QCalendarWidget;
     calendar->setGridVisible(true);
-    QLabel *label = new QLabel("Select date");
+    QLabel *label = new QLabel("Enter download period");
     label->setAlignment(Qt::AlignCenter);
     dateLayout.addWidget(label);
     dateLayout.addWidget(calendar);
+
+    connect(calendar,SIGNAL(clicked(const QDate)),this,SLOT(slotClicked(const QDate)));
 
     QDialogButtonBox* buttonBox = new QDialogButtonBox;
     QPushButton* downloadButton = new QPushButton(tr("&Download"));
@@ -345,6 +345,27 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
 
 
 }
+
+void MainWindow::slotClicked(const QDate& date)
+{
+  if (!myProject.startDate.isValid())
+  {
+    myProject.startDate = date;
+    QMessageBox::information(NULL,"Start Date",date.toString());
+  }
+  else if (myProject.startDate.isValid() && !myProject.endDate.isValid())
+  {
+      myProject.endDate = date;
+      QMessageBox::information(NULL,"End Date",date.toString());
+  }
+  else if (myProject.startDate.isValid() && myProject.endDate.isValid())
+  {
+      myProject.startDate = date;
+      myProject.endDate.setDate(0,0,0);
+      QMessageBox::information(NULL,"Start Date",date.toString());
+  }
+}
+
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event){
     Q_UNUSED(event)
