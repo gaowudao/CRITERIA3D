@@ -5,6 +5,7 @@
 #include <QDialogButtonBox>
 #include <QPushButton>
 #include <QLabel>
+#include <QListWidget>
 #include <QCalendarWidget>
 #include <QStringBuilder>
 
@@ -291,60 +292,103 @@ void MainWindow::displayMeteoPoints()
 void MainWindow::on_actionDownload_meteo_data_triggered()
 {
 
+    QDialog downloadDialog;
     QVBoxLayout mainLayout;
-    QHBoxLayout timeLayout;
+    QHBoxLayout timeVarLayout;
     QVBoxLayout dateLayout;
     QHBoxLayout buttonLayout;
 
-    QDialog downloadDialog;
-
     downloadDialog.setWindowTitle("Download Data");
 
-    QCheckBox* daily = new QCheckBox("Hourly");
-    QCheckBox* hourly = new QCheckBox("Daily");
-    timeLayout.addWidget(daily);
-    timeLayout.addWidget(hourly);
+    QCheckBox daily("Hourly");
+    QCheckBox hourly("Daily");
 
-    QCalendarWidget *calendar = new QCalendarWidget;
-    calendar->setGridVisible(true);
-    QLabel *label = new QLabel("Enter download period");
-    label->setAlignment(Qt::AlignCenter);
-    dateLayout.addWidget(label);
-    dateLayout.addWidget(calendar);
+    QListWidget variable;
+    variable.setSelectionMode(QAbstractItemView::MultiSelection);
 
-    connect(calendar,SIGNAL(clicked(const QDate)),this,SLOT(slotClicked(const QDate)));
+    QListWidgetItem item1("Air Temperature");
+    QListWidgetItem item2("Precipitation");
+    QListWidgetItem item3("Air Humidity");
+    QListWidgetItem item4("Radiation");
+    QListWidgetItem item5("Wind");
+    QListWidgetItem item6("All variables");
 
-    QDialogButtonBox* buttonBox = new QDialogButtonBox;
-    QPushButton* downloadButton = new QPushButton(tr("&Download"));
-    downloadButton->setCheckable(true);
-    downloadButton->setAutoDefault(false);
+    variable.addItem(&item1);
+    variable.addItem(&item2);
+    variable.addItem(&item3);
+    variable.addItem(&item4);
+    variable.addItem(&item5);
+    variable.addItem(&item6);
 
-    QPushButton* stopButton = new QPushButton(tr("&Stop"));
-    stopButton->setCheckable(true);
-    stopButton->setAutoDefault(false);
+    timeVarLayout.addWidget(&daily);
+    timeVarLayout.addWidget(&hourly);
+    timeVarLayout.addWidget(&variable);
 
-    QPushButton* cancelButton = new QPushButton(tr("&Cancel"));
-    cancelButton->setCheckable(true);
-    cancelButton->setAutoDefault(false);
 
-    buttonBox->addButton(downloadButton, QDialogButtonBox::AcceptRole);
-    buttonBox->addButton(stopButton, QDialogButtonBox::RejectRole);
-    buttonBox->addButton(cancelButton, QDialogButtonBox::DestructiveRole);
+    QCalendarWidget calendar;
+    calendar.setGridVisible(true);
+    QLabel label("Enter download period");
+    label.setAlignment(Qt::AlignCenter);
+    dateLayout.addWidget(&label);
+    dateLayout.addWidget(&calendar);
 
-    connect(buttonBox, SIGNAL(accepted()), &downloadDialog, SLOT(accept()));
-    connect(buttonBox, SIGNAL(rejected()), &downloadDialog, SLOT(reject()));
-    connect(buttonBox, SIGNAL(destructed()), &downloadDialog, SLOT(destruct()));
 
-    buttonLayout.addWidget(buttonBox);
-    mainLayout.addLayout(&timeLayout);
+    connect(&calendar,SIGNAL(clicked(const QDate)),this,SLOT(slotClicked(const QDate)));
+
+    QDialogButtonBox buttonBox;
+    QPushButton downloadButton(tr("&Download"));
+    downloadButton.setCheckable(true);
+    downloadButton.setAutoDefault(false);
+
+    QPushButton stopButton(tr("&Stop"));
+    stopButton.setCheckable(true);
+    stopButton.setAutoDefault(false);
+
+    QPushButton cancelButton(tr("&Cancel"));
+    cancelButton.setCheckable(true);
+    cancelButton.setAutoDefault(false);
+
+    buttonBox.addButton(&downloadButton, QDialogButtonBox::AcceptRole);
+    buttonBox.addButton(&stopButton, QDialogButtonBox::RejectRole);
+    buttonBox.addButton(&cancelButton, QDialogButtonBox::DestructiveRole);
+
+    connect(&buttonBox, SIGNAL(accepted()), &downloadDialog, SLOT(accept()));
+    connect(&buttonBox, SIGNAL(rejected()), &downloadDialog, SLOT(reject()));
+    connect(&buttonBox, SIGNAL(destructed()), &downloadDialog, SLOT(destruct()));
+
+    buttonLayout.addWidget(&buttonBox);
+    mainLayout.addLayout(&timeVarLayout);
     mainLayout.addLayout(&dateLayout);
     mainLayout.addLayout(&buttonLayout);
     downloadDialog.setLayout(&mainLayout);
 
     downloadDialog.exec();
 
+    if (downloadDialog.result() == QDialog::Accepted)
+    {
+
+       if (!daily.isChecked() && !hourly.isChecked())
+       {
+           QMessageBox::information(NULL, "Missing parameter", "Select hourly or daily");
+           on_actionDownload_meteo_data_triggered();
+       }
+       else if (!myProject.startDate.isValid() || !myProject.endDate.isValid())
+       {
+           QMessageBox::information(NULL, "Missing parameter", "Select download period");
+           on_actionDownload_meteo_data_triggered();
+       }
+       else if (!item1.isSelected() && !item2.isSelected() && !item3.isSelected() && !item4.isSelected() && !item5.isSelected() && !item6.isSelected())
+       {
+           QMessageBox::information(NULL, "Missing parameter", "Select variable");
+           on_actionDownload_meteo_data_triggered();
+       }
+
+
+    }
 
 }
+
+
 
 void MainWindow::slotClicked(const QDate& date)
 {
@@ -355,8 +399,17 @@ void MainWindow::slotClicked(const QDate& date)
   }
   else if (myProject.startDate.isValid() && !myProject.endDate.isValid())
   {
-      myProject.endDate = date;
-      QMessageBox::information(NULL,"End Date",date.toString());
+      if (myProject.startDate < date)
+      {
+          myProject.endDate = date;
+          QMessageBox::information(NULL,"End Date",date.toString());
+      }
+      else
+      {
+          myProject.startDate.setDate(0,0,0);
+          myProject.endDate.setDate(0,0,0);
+          QMessageBox::information(NULL, "Invalid Date", "Last date is earlier than start date");
+      }
   }
   else if (myProject.startDate.isValid() && myProject.endDate.isValid())
   {
