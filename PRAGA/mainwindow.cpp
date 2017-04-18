@@ -340,21 +340,15 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
     downloadButton.setCheckable(true);
     downloadButton.setAutoDefault(false);
 
-    QPushButton stopButton(tr("&Stop"));
-    stopButton.setCheckable(true);
-    stopButton.setAutoDefault(false);
-
     QPushButton cancelButton(tr("&Cancel"));
     cancelButton.setCheckable(true);
     cancelButton.setAutoDefault(false);
 
     buttonBox.addButton(&downloadButton, QDialogButtonBox::AcceptRole);
-    buttonBox.addButton(&stopButton, QDialogButtonBox::RejectRole);
-    buttonBox.addButton(&cancelButton, QDialogButtonBox::DestructiveRole);
+    buttonBox.addButton(&cancelButton, QDialogButtonBox::RejectRole);
 
     connect(&buttonBox, SIGNAL(accepted()), &downloadDialog, SLOT(accept()));
     connect(&buttonBox, SIGNAL(rejected()), &downloadDialog, SLOT(reject()));
-    connect(&buttonBox, SIGNAL(destructed()), &downloadDialog, SLOT(destruct()));
 
     buttonLayout.addWidget(&buttonBox);
     mainLayout.addLayout(&timeVarLayout);
