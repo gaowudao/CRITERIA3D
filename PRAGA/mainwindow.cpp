@@ -289,7 +289,7 @@ void MainWindow::displayMeteoPoints()
 
     for (int i = 0; i < myProject.meteoPoints.size(); i++)
     {
-        StationMarker* point = new StationMarker(5.0, true, QColor(0,0,0,0), this->mapView);
+        StationMarker* point = new StationMarker(4.0, true, QColor(0,0,0,0), this->mapView);
         point->setFlag(MapGraphicsObject::ObjectIsMovable, false);
         point->setLatitude(myProject.meteoPoints[i].latitude);
         point->setLongitude(myProject.meteoPoints[i].longitude);
@@ -400,9 +400,9 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
                        var.append(item->text());
 
             }
-            delete item;
             if (daily.isChecked())
             {
+                bool precSelection = true;
                 if ( item2.isSelected() || item6.isSelected() )
                 {
                     QDialog precDialog;
@@ -421,17 +421,20 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
                     precLayout.addWidget(&confirm);
                     precDialog.setLayout(&precLayout);
                     precDialog.exec();
-                    //downloadDaily();
+
+                    if (second.isChecked())
+                        precSelection = false;
+
                 }
-                else
-                {
-                    //downloadDaily();
-                }
+
+                myProject.downloadArkimetDailyVar(var, precSelection);
             }
+
             if (hourly.isChecked())
             {
-
+                myProject.downloadArkimetHourlyVar(var);
             }
+            //delete item;
        }
 
 

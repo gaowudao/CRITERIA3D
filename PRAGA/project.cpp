@@ -51,3 +51,16 @@ bool Project::loadRaster(QString myFileName)
         return (false);
     }
 }
+
+
+void Project::downloadArkimetDailyVar(QList<QString> variables, bool precSelection)
+{
+
+    //downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStringList datasets, QList<int> stations, QList<int> variables, bool precSelection);
+
+}
+
+void Project::downloadArkimetHourlyVar(QList<QString> variables)
+{
+
+}
