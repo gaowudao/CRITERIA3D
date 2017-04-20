@@ -8,6 +8,7 @@
 #include <QListWidget>
 #include <QCalendarWidget>
 #include <QStringBuilder>
+#include <QRadioButton>
 
 #include "tileSources/OSMTileSource.h"
 #include "tileSources/GridTileSource.h"
@@ -125,6 +126,11 @@ void MainWindow::on_actionLoadRaster_triggered()
 void MainWindow::on_actionArkimet_triggered()
 {
 
+    if (myProject.pointProperties !=NULL)
+    {
+        resetProject();
+    }
+
     QString templateName = QFileDialog::getOpenFileName(this, tr("Choose template DB meteo"), "", tr("DB files (*.db)"));
     if (templateName == "")
     {
@@ -143,8 +149,8 @@ void MainWindow::on_actionArkimet_triggered()
         {
             QFile::copy(templateName, dbName);
 
-            Download* pointProperties = new Download(dbName);
-            DbArkimet* dbmeteo = pointProperties->getDbArkimet();
+            myProject.pointProperties = new Download(dbName);
+            DbArkimet* dbmeteo = myProject.pointProperties->getDbArkimet();
 
 
             QStringList dataset = dbmeteo->getDatasetsList();
@@ -187,14 +193,13 @@ void MainWindow::on_actionArkimet_triggered()
                 dbmeteo->setDatasetsActive(datasetSelected);
                 QStringList datasets = datasetSelected.remove("'").split(",");
 
-                pointProperties->getPointProperties(datasets);
+                myProject.pointProperties->getPointProperties(datasets);
 
                 QMessageBox *msgBox = new QMessageBox(this);
                 msgBox->setText("Completed");
                 msgBox->exec();
 
                 myProject.meteoPoints = dbmeteo->getPropertiesFromDb();
-                delete pointProperties;
                 delete msgBox;
                 displayMeteoPoints();
 
@@ -262,15 +267,19 @@ void MainWindow::enableAll(bool toggled)
 
 void MainWindow::on_actionOpen_meteo_points_DB_triggered()
 {
+
+    if (myProject.pointProperties !=NULL)
+    {
+        resetProject();
+    }
     QString dbName = QFileDialog::getOpenFileName(this, tr("Open DB meteo"), "", tr("DB files (*.db)"));
     if (dbName == "")
     {
         return;
     }
-    Download* db = new Download(dbName);
-    DbArkimet* dbArkimet = db->getDbArkimet();
+    myProject.pointProperties = new Download(dbName);
+    DbArkimet* dbArkimet = myProject.pointProperties->getDbArkimet();
     myProject.meteoPoints = dbArkimet->getPropertiesFromDb();
-    delete db;
     displayMeteoPoints();
 
 }
@@ -284,7 +293,8 @@ void MainWindow::displayMeteoPoints()
         point->setFlag(MapGraphicsObject::ObjectIsMovable, false);
         point->setLatitude(myProject.meteoPoints[i].latitude);
         point->setLongitude(myProject.meteoPoints[i].longitude);
-        this->mapView->scene()->addObject(point);
+        this->pointList.append(point);
+        this->mapView->scene()->addObject(this->pointList[i]);
     }
 
 }
@@ -300,8 +310,8 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
 
     downloadDialog.setWindowTitle("Download Data");
 
-    QCheckBox daily("Hourly");
-    QCheckBox hourly("Daily");
+    QCheckBox hourly("Hourly");
+    QCheckBox daily("Daily");
 
     QListWidget variable;
     variable.setSelectionMode(QAbstractItemView::MultiSelection);
@@ -312,6 +322,8 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
     QListWidgetItem item4("Radiation");
     QListWidgetItem item5("Wind");
     QListWidgetItem item6("All variables");
+    QFont font("Helvetica", 10, QFont::Bold);
+    item6.setFont(font);
 
     variable.addItem(&item1);
     variable.addItem(&item2);
@@ -375,6 +387,51 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
        {
            QMessageBox::information(NULL, "Missing parameter", "Select variable");
            on_actionDownload_meteo_data_triggered();
+       }
+       else
+       {
+
+            QListWidgetItem* item = 0;
+            QList<QString> var;
+            for (int i = 0; i < variable.count()-1; ++i)
+            {
+                   item = variable.item(i);
+                   if (item6.isSelected() || item->isSelected())
+                       var.append(item->text());
+
+            }
+            delete item;
+            if (daily.isChecked())
+            {
+                if ( item2.isSelected() || item6.isSelected() )
+                {
+                    QDialog precDialog;
+                    precDialog.setWindowTitle("Choose daily precipitation time");
+                    QVBoxLayout precLayout;
+                    QRadioButton first("0-24");
+                    QRadioButton second("08-08");
+
+                    QDialogButtonBox confirm(QDialogButtonBox::Ok);
+
+
+                    connect(&confirm, SIGNAL(accepted()), &precDialog, SLOT(accept()));
+
+                    precLayout.addWidget(&first);
+                    precLayout.addWidget(&second);
+                    precLayout.addWidget(&confirm);
+                    precDialog.setLayout(&precLayout);
+                    precDialog.exec();
+                    //downloadDaily();
+                }
+                else
+                {
+                    //downloadDaily();
+                }
+            }
+            if (hourly.isChecked())
+            {
+
+            }
        }
 
 
@@ -519,6 +576,20 @@ void MainWindow::on_actionSetUTMzone_triggered()
     myProject.gisSettings.utmZone = utmZone;
 }
 
+void MainWindow::resetProject()
+{
 
+    myProject.meteoPoints.clear();
+    myProject.startDate.setDate(0,0,0);
+    myProject.endDate.setDate(0,0,0);
+    datasetCheckbox.clear();
+    for (int i = 0; i < this->pointList.size(); i++)
+    {
+        this->mapView->scene()->removeObject(this->pointList[i]);
+        delete this->pointList[i];
+    }
+    this->pointList.clear();
+    delete myProject.pointProperties;
+}
 
 

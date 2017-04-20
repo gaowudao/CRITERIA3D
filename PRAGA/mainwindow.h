@@ -63,6 +63,8 @@
 
         void slotClicked(const QDate& date);
 
+        void resetProject();
+
 
 
     protected:
@@ -87,6 +89,7 @@
         MapGraphicsScene* mapScene;
         MapGraphicsView* mapView;
         RasterObject* rasterObj;
+        QList<StationMarker*> pointList;
         ColorLegend* legend;
         environment menu;
 

@@ -3,6 +3,7 @@
 #include "dbArkimet.h"
 #include "commonConstants.h"
 #include "variableslist.h"
+#include "qdatetime.h"
 
 #include <QEventLoop>
 

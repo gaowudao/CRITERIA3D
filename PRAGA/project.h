@@ -9,6 +9,10 @@
         #include <QString>
     #endif
 
+    #ifndef DOWNLOAD_H
+        #include <download.h>
+    #endif
+
     #include <QList>
     #include <QDate>
 
@@ -17,6 +21,7 @@
         QList<Crit3DMeteoPoint> meteoPoints;
         QDate startDate;
         QDate endDate;
+        Download* pointProperties;
 
         gis::Crit3DRasterGrid DTM;
         gis::Crit3DRasterGrid rowMatrix;
