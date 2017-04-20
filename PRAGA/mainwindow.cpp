@@ -147,6 +147,8 @@ void MainWindow::on_actionArkimet_triggered()
         }
         else
         {
+
+            QFile::remove(dbName);
             QFile::copy(templateName, dbName);
 
             myProject.pointProperties = new Download(dbName);
@@ -289,7 +291,7 @@ void MainWindow::displayMeteoPoints()
 
     for (int i = 0; i < myProject.meteoPoints.size(); i++)
     {
-        StationMarker* point = new StationMarker(4.0, true, QColor(0,0,0,0), this->mapView);
+        StationMarker* point = new StationMarker(4.0, true, QColor((Qt::white)), this->mapView);
         point->setFlag(MapGraphicsObject::ObjectIsMovable, false);
         point->setLatitude(myProject.meteoPoints[i].latitude);
         point->setLongitude(myProject.meteoPoints[i].longitude);
@@ -585,13 +587,16 @@ void MainWindow::resetProject()
     myProject.meteoPoints.clear();
     myProject.startDate.setDate(0,0,0);
     myProject.endDate.setDate(0,0,0);
+
     datasetCheckbox.clear();
+
     for (int i = 0; i < this->pointList.size(); i++)
     {
         this->mapView->scene()->removeObject(this->pointList[i]);
-        delete this->pointList[i];
     }
+    qDeleteAll(this->pointList.begin(), this->pointList.end());
     this->pointList.clear();
+
     delete myProject.pointProperties;
 }
 
