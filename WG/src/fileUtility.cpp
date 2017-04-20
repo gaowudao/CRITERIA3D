@@ -18,7 +18,7 @@ bool readCsv (QString namefile, char separator, float noData, TinputObsData* inp
         return false;
     }
 
-    QStringList listData;
+    QStringList listDate;
     QStringList listTMin;
     QStringList listTMax;
     QStringList listPrecip;
@@ -28,6 +28,7 @@ bool readCsv (QString namefile, char separator, float noData, TinputObsData* inp
     Crit3DDate tempDate;
 
     QString noDataString = QString::number(noData);
+    QString strDate;
 
     // header
     file.readLine();
@@ -44,24 +45,29 @@ bool readCsv (QString namefile, char separator, float noData, TinputObsData* inp
             return false;
         }
 
-        listData.append(line.split(separator)[0]);
+        //DATE
+        strDate = line.split(separator)[0];
+        //check presence of quotation
+        if (strDate.left(1) == "\"")
+            strDate = strDate.mid(1, strDate.length()-2);
+        listDate.append(strDate);
 
         // save the first date into the struct and check it is a valid date
         if (indexLine == 0)
         {
-            inputData->inputFirstDate.year = listData[indexLine].mid(0,4).toInt();
+            inputData->inputFirstDate.year = listDate[indexLine].mid(0,4).toInt();
             if (inputData->inputFirstDate.year == 0)
             {
                 qDebug() << "Invalid date format ";
                 return false;
             }
-            inputData->inputFirstDate.month = listData[indexLine].mid(5,2).toInt();
+            inputData->inputFirstDate.month = listDate[indexLine].mid(5,2).toInt();
             if (inputData->inputFirstDate.month == 0 || inputData->inputFirstDate.month > 12 )
             {
                 qDebug() << "Invalid date format ";
                 return false;
             }
-            inputData->inputFirstDate.day = listData[indexLine].mid(8,2).toInt();
+            inputData->inputFirstDate.day = listDate[indexLine].mid(8,2).toInt();
             if (inputData->inputFirstDate.day == 0 || inputData->inputFirstDate.day > 31)
             {
                 qDebug() << "Invalid date format ";
@@ -70,9 +76,9 @@ bool readCsv (QString namefile, char separator, float noData, TinputObsData* inp
         }
         else
         {
-            tempDate.year = listData[indexLine].mid(0,4).toInt();
-            tempDate.month = listData[indexLine].mid(5,2).toInt();
-            tempDate.day = listData[indexLine].mid(8,2).toInt();
+            tempDate.year = listDate[indexLine].mid(0,4).toInt();
+            tempDate.month = listDate[indexLine].mid(5,2).toInt();
+            tempDate.day = listDate[indexLine].mid(8,2).toInt();
 
             indexDate = difference(inputData->inputFirstDate , tempDate );
 
@@ -80,16 +86,16 @@ bool readCsv (QString namefile, char separator, float noData, TinputObsData* inp
             if (indexDate != indexLine)
             {
                 // insert nodata row
-                listData.removeLast();
+                listDate.removeLast();
                 for (int i = indexLine; i < indexDate ; i++)
                 {
-                    listData.append(noDataString);
+                    listDate.append(noDataString);
                     listTMin.append(noDataString);
                     listTMax.append(noDataString);
                     listPrecip.append(noDataString);
                     indexLine++;
                 }
-                listData.append(line.split(separator)[0]);
+                listDate.append(line.split(separator)[0]);
             }
         }
 
@@ -129,13 +135,13 @@ bool readCsv (QString namefile, char separator, float noData, TinputObsData* inp
         return false;
     }
 
-    if (listData.length() != listTMin.length() || (listData.length()!= listTMax.length() ) || (listData.length() != listPrecip.length()) )
+    if (listDate.length() != listTMin.length() || (listDate.length()!= listTMax.length() ) || (listDate.length() != listPrecip.length()) )
     {
         qDebug() << "list data - different size";
         return false;
     }
 
-    inputData->dataLenght = listData.length();
+    inputData->dataLenght = listDate.length();
 
     inputData->inputTMin = (float*)malloc( inputData->dataLenght *sizeof(float));
     inputData->inputTMax = (float*)malloc( inputData->dataLenght *sizeof(float));
@@ -151,7 +157,7 @@ bool readCsv (QString namefile, char separator, float noData, TinputObsData* inp
         if ((inputData->inputTMin[i] != noData) &&  (inputData->inputTMax[i] != noData)
              && (inputData->inputTMin[i] > inputData->inputTMax[i]))
         {
-            qDebug() << "WARNING: TMIN > TMAX: " << listData[i];
+            qDebug() << "WARNING: TMIN > TMAX: " << listDate[i];
             // switch
             inputData->inputTMin[i] = listTMax[i].toFloat();
             inputData->inputTMax[i] = listTMin[i].toFloat();

@@ -97,7 +97,7 @@ bool cropWaterDemand(Criteria1D* myCase, int myDoy, double tmax, double tmin, do
     double ke = 0.6;            // evaporation extinction factor (should be equal to light extinction factor)
     double maxEvapRatio = 0.66;
 
-    if (et0 != NODATA)
+    if ((et0 != NODATA) && (et0 > 0))
         myCase->output.dailyEt0 = et0;
     else
         myCase->output.dailyEt0 = ET0_Hargreaves(0.17, myCase->meteoPoint.latitude, myDoy, tmax, tmin);
