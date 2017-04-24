@@ -5,6 +5,9 @@
     #include <QGridLayout>
     #include <QList>
     #include <QCheckBox>
+    #include <QCalendarWidget>
+    #include <QDateEdit>
+    #include <QLabel>
     #include "MapGraphicsView.h"
     #include "MapGraphicsScene.h"
     #include "tileSources/OSMTileSource.h"
@@ -94,6 +97,12 @@
         environment menu;
 
         QList<QCheckBox*> datasetCheckbox;
+        QCalendarWidget* calendar;
+        QDateEdit* FirstDateEdit;
+        QLabel* FirstDateLabel;
+        QDateEdit* LastDateEdit;
+        QLabel* LastDateLabel;
+        bool initDate;
 
         void setMapSource(OSMTileSource::OSMTileType mySource);
 

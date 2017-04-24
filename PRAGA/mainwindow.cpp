@@ -4,9 +4,7 @@
 #include <QMessageBox>
 #include <QDialogButtonBox>
 #include <QPushButton>
-#include <QLabel>
 #include <QListWidget>
-#include <QCalendarWidget>
 #include <QStringBuilder>
 #include <QRadioButton>
 
@@ -307,7 +305,8 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
     QDialog downloadDialog;
     QVBoxLayout mainLayout;
     QHBoxLayout timeVarLayout;
-    QVBoxLayout dateLayout;
+    QVBoxLayout calendarLayout;
+    QHBoxLayout dateLayout;
     QHBoxLayout buttonLayout;
 
     downloadDialog.setWindowTitle("Download Data");
@@ -339,15 +338,33 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
     timeVarLayout.addWidget(&variable);
 
 
-    QCalendarWidget calendar;
-    calendar.setGridVisible(true);
+    calendar = new QCalendarWidget;
+    calendar->setGridVisible(true);
     QLabel label("Enter download period");
     label.setAlignment(Qt::AlignCenter);
-    dateLayout.addWidget(&label);
-    dateLayout.addWidget(&calendar);
 
+    FirstDateEdit = new QDateEdit;
+    FirstDateEdit->setDate(calendar->selectedDate());
+    FirstDateLabel = new QLabel(tr("&First Date:"));
+    FirstDateLabel->setBuddy(FirstDateEdit);
 
-    connect(&calendar,SIGNAL(clicked(const QDate)),this,SLOT(slotClicked(const QDate)));
+    LastDateEdit = new QDateEdit;
+    LastDateEdit->setDate(calendar->selectedDate());
+    LastDateLabel = new QLabel(tr("&Last Date:"));
+    LastDateLabel->setBuddy(LastDateEdit);
+
+    calendarLayout.addWidget(&label);
+    calendarLayout.addWidget(calendar);
+
+    dateLayout.addWidget(FirstDateLabel);
+    dateLayout.addWidget(FirstDateEdit);
+
+    dateLayout.addWidget(LastDateLabel);
+    dateLayout.addWidget(LastDateEdit);
+
+    connect(FirstDateEdit, SIGNAL(dateChanged(QDate)), calendar, SLOT(setSelectedDate(QDate)));
+    connect(LastDateEdit, SIGNAL(dateChanged(QDate)), calendar, SLOT(setSelectedDate(QDate)));
+    connect(calendar,SIGNAL(clicked(const QDate)),this,SLOT(slotClicked(const QDate)));
 
     QDialogButtonBox buttonBox;
     QPushButton downloadButton(tr("&Download"));
@@ -366,6 +383,7 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
 
     buttonLayout.addWidget(&buttonBox);
     mainLayout.addLayout(&timeVarLayout);
+    mainLayout.addLayout(&calendarLayout);
     mainLayout.addLayout(&dateLayout);
     mainLayout.addLayout(&buttonLayout);
     downloadDialog.setLayout(&mainLayout);
@@ -383,6 +401,7 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
        else if (!myProject.startDate.isValid() || !myProject.endDate.isValid())
        {
            QMessageBox::information(NULL, "Missing parameter", "Select download period");
+           initDate = true;
            on_actionDownload_meteo_data_triggered();
        }
        else if (!item1.isSelected() && !item2.isSelected() && !item3.isSelected() && !item4.isSelected() && !item5.isSelected() && !item6.isSelected())
@@ -393,6 +412,8 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
        else
        {
 
+           qDebug() << "myProject.startDate" << myProject.startDate;
+           qDebug() << "myProject.endDate" << myProject.endDate;
             QListWidgetItem* item = 0;
             QList<QString> var;
             for (int i = 0; i < variable.count()-1; ++i)
@@ -436,7 +457,7 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
             {
                 myProject.downloadArkimetHourlyVar(var);
             }
-            //delete item;
+
        }
 
 
@@ -448,31 +469,28 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
 
 void MainWindow::slotClicked(const QDate& date)
 {
-  if (!myProject.startDate.isValid())
+
+  if (initDate)
   {
     myProject.startDate = date;
-    QMessageBox::information(NULL,"Start Date",date.toString());
+    FirstDateEdit->setDate(calendar->selectedDate());
+    initDate = false;
   }
-  else if (myProject.startDate.isValid() && !myProject.endDate.isValid())
+  else
   {
-      if (myProject.startDate < date)
-      {
-          myProject.endDate = date;
-          QMessageBox::information(NULL,"End Date",date.toString());
-      }
-      else
-      {
-          myProject.startDate.setDate(0,0,0);
-          myProject.endDate.setDate(0,0,0);
-          QMessageBox::information(NULL, "Invalid Date", "Last date is earlier than start date");
-      }
+    if (myProject.startDate < date)
+    {
+        myProject.endDate = date;
+        LastDateEdit->setDate(calendar->selectedDate());
+    }
+    else
+    {
+        myProject.startDate.setDate(0,0,0);
+        QMessageBox::information(NULL, "Invalid Date", "Last date is earlier than start date");
+    }
+    initDate = true;
   }
-  else if (myProject.startDate.isValid() && myProject.endDate.isValid())
-  {
-      myProject.startDate = date;
-      myProject.endDate.setDate(0,0,0);
-      QMessageBox::information(NULL,"Start Date",date.toString());
-  }
+
 }
 
 
