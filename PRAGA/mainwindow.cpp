@@ -345,13 +345,19 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
 
     FirstDateEdit = new QDateEdit;
     FirstDateEdit->setDate(calendar->selectedDate());
-    FirstDateLabel = new QLabel(tr("&First Date:"));
+    FirstDateLabel = new QLabel(tr("&Start Date:"));
     FirstDateLabel->setBuddy(FirstDateEdit);
 
     LastDateEdit = new QDateEdit;
     LastDateEdit->setDate(calendar->selectedDate());
-    LastDateLabel = new QLabel(tr("&Last Date:"));
+    LastDateLabel = new QLabel(tr("&End Date:"));
     LastDateLabel->setBuddy(LastDateEdit);
+
+    if (myProject.startDate.isValid() && myProject.endDate.isValid())
+    {
+        FirstDateEdit->setDate(myProject.startDate);
+        LastDateEdit->setDate(myProject.endDate);
+    }
 
     calendarLayout.addWidget(&label);
     calendarLayout.addWidget(calendar);
@@ -393,6 +399,10 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
     if (downloadDialog.result() == QDialog::Accepted)
     {
 
+       myProject.startDate = FirstDateEdit->date();
+       myProject.endDate = LastDateEdit->date();
+       initDate = true;
+
        if (!daily.isChecked() && !hourly.isChecked())
        {
            QMessageBox::information(NULL, "Missing parameter", "Select hourly or daily");
@@ -401,7 +411,6 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
        else if (!myProject.startDate.isValid() || !myProject.endDate.isValid())
        {
            QMessageBox::information(NULL, "Missing parameter", "Select download period");
-           initDate = true;
            on_actionDownload_meteo_data_triggered();
        }
        else if (!item1.isSelected() && !item2.isSelected() && !item3.isSelected() && !item4.isSelected() && !item5.isSelected() && !item6.isSelected())
@@ -412,8 +421,6 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
        else
        {
 
-           qDebug() << "myProject.startDate" << myProject.startDate;
-           qDebug() << "myProject.endDate" << myProject.endDate;
             QListWidgetItem* item = 0;
             QList<QString> var;
             for (int i = 0; i < variable.count()-1; ++i)
@@ -485,7 +492,6 @@ void MainWindow::slotClicked(const QDate& date)
     }
     else
     {
-        myProject.startDate.setDate(0,0,0);
         QMessageBox::information(NULL, "Invalid Date", "Last date is earlier than start date");
     }
     initDate = true;
