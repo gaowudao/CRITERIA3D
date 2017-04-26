@@ -55,7 +55,6 @@ bool Project::loadRaster(QString myFileName)
 
 void Project::downloadArkimetDailyVar(QStringList variables, bool precSelection)
 {
-    qDebug() << "downloadArkimetDailyVar";
     Crit3DDate dateStart(startDate.day(), startDate.month(), startDate.year());
     Crit3DDate dateEnd(endDate.day(), endDate.month(), endDate.year());
     QStringList datasets;
@@ -94,8 +93,6 @@ void Project::downloadArkimetDailyVar(QStringList variables, bool precSelection)
             arkIdVar.append(arkIdWind);
     }
 
-    qDebug() << "arkIdVar" << arkIdVar;
-
     pointProperties->downloadDailyVar(dateStart, dateEnd, datasets, id, arkIdVar, precSelection);
 
 }
@@ -103,8 +100,11 @@ void Project::downloadArkimetDailyVar(QStringList variables, bool precSelection)
 void Project::downloadArkimetHourlyVar(QStringList variables)
 {
 
-    Crit3DTime dateStart(Crit3DDate (startDate.day(), startDate.month(), startDate.year()), 0);
-    Crit3DTime dateEnd(Crit3DDate (endDate.day(), endDate.month(), endDate.year()), 0);
+    Crit3DDate dateStart(startDate.day(), startDate.month(), startDate.year());
+    Crit3DDate dateEnd(endDate.day(), endDate.month(), endDate.year());
+
+    Crit3DTime dateTimeStart(dateStart, 0);
+    Crit3DTime dateTimeEnd(dateEnd, 0);
     QStringList datasets;
     QStringList id;
 
@@ -147,6 +147,6 @@ void Project::downloadArkimetHourlyVar(QStringList variables)
             arkIdVar.append(arkIdWind);
     }
 
-    pointProperties->downloadHourlyVar(dateStart, dateEnd, datasets, id, arkIdVar);
+    pointProperties->downloadHourlyVar(dateTimeStart, dateTimeEnd, datasets, id, arkIdVar);
 
 }

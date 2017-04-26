@@ -300,6 +300,7 @@ void Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStrin
 
 void Download::downloadHourlyVar(Crit3DTime dateStartTime, Crit3DTime dateEndTime, QStringList datasets, QStringList stations, QList<int> variables)
 {
+
     // create station tables
     _dbMeteo->initStationsHourlyTables(dateStartTime, dateEndTime, stations);
 
