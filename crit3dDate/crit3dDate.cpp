@@ -210,7 +210,7 @@ bool isNullDate(Crit3DDate myDate)
 
 std::string Crit3DDate::toStdString()
 {
-    char myStr[10];
+    char myStr[11];
     sprintf (myStr, "%d-%02d-%02d", this->year, this->month, this->day);
 
     return std::string(myStr);

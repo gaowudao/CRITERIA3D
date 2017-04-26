@@ -308,6 +308,8 @@ void Download::downloadHourlyVar(Crit3DTime dateStartTime, Crit3DTime dateEndTim
 
     area = QString(";area: VM2,%1").arg(stations[0]);
 
+    qDebug() << "downloadHourlyVar 2";
+
     for (int i = 1; i < stations.size(); i++)
     {
         area = area % QString(" or VM2,%1").arg(stations[i]);
@@ -419,3 +421,5 @@ void Download::downloadHourlyVar(Crit3DTime dateStartTime, Crit3DTime dateEndTim
     }
     _dbMeteo->deleteTmpTable();
 }
+
+

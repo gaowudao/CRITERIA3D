@@ -281,6 +281,7 @@ void DbArkimet::initStationsDailyTables(Crit3DDate dataStartInput, Crit3DDate da
 
 void DbArkimet::initStationsHourlyTables(Crit3DTime dataStartInput, Crit3DTime dataEndInput, QStringList stations)
 {
+
     QString startDate = QString::fromStdString(dataStartInput.toStdString());
     QString endDate = QString::fromStdString(dataEndInput.toStdString());
 
@@ -300,6 +301,7 @@ void DbArkimet::initStationsHourlyTables(Crit3DTime dataStartInput, Crit3DTime d
     }
 
 }
+
 
 void DbArkimet::createTmpTable()
 {

@@ -297,6 +297,8 @@ void MainWindow::displayMeteoPoints()
         this->mapView->scene()->addObject(this->pointList[i]);
     }
 
+    //this->mapView->scene()->addObject(QRect selectionRect);
+
 }
 
 void MainWindow::on_actionDownload_meteo_data_triggered()
