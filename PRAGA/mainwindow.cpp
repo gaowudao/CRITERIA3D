@@ -422,7 +422,7 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
        {
 
             QListWidgetItem* item = 0;
-            QList<QString> var;
+            QStringList var;
             for (int i = 0; i < variable.count()-1; ++i)
             {
                    item = variable.item(i);
@@ -456,7 +456,6 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
                         precSelection = false;
 
                 }
-
                 myProject.downloadArkimetDailyVar(var, precSelection);
             }
 

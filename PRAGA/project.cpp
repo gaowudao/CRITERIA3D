@@ -53,14 +53,100 @@ bool Project::loadRaster(QString myFileName)
 }
 
 
-void Project::downloadArkimetDailyVar(QList<QString> variables, bool precSelection)
+void Project::downloadArkimetDailyVar(QStringList variables, bool precSelection)
 {
+    qDebug() << "downloadArkimetDailyVar";
+    Crit3DDate dateStart(startDate.day(), startDate.month(), startDate.year());
+    Crit3DDate dateEnd(endDate.day(), endDate.month(), endDate.year());
+    QStringList datasets;
+    QStringList id;
 
-    //downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStringList datasets, QList<int> stations, QList<int> variables, bool precSelection);
+    QList<int> arkIdVar;
+
+    QList<int> arkIdAirTemp;
+    arkIdAirTemp << 231 << 232 << 233;
+    int arkIdPrec = 250;
+    QList<int> arkIdRH;
+    arkIdRH << 240 << 241 << 242;
+    int arkIdRadiation = 706;
+    QList<int> arkIdWind;
+    arkIdWind << 227 << 230;
+
+    for( int i=0; i < meteoPoints.size(); i++ )
+    {
+        if (!datasets.contains(QString::fromStdString(meteoPoints[i].dataset)))
+            datasets << QString::fromStdString(meteoPoints[i].dataset);
+        id << QString::fromStdString(meteoPoints[i].id);
+    }
+
+
+    for( int i=0; i < variables.size(); i++ )
+    {
+        if (variables[i] == "Air Temperature")
+            arkIdVar.append(arkIdAirTemp);
+        if (variables[i] == "Precipitation")
+            arkIdVar.append(arkIdPrec);
+        if (variables[i] == "Air Humidity")
+            arkIdVar.append(arkIdRH);
+        if (variables[i] == "Radiation")
+            arkIdVar.append(arkIdRadiation);
+        if (variables[i] == "Wind")
+            arkIdVar.append(arkIdWind);
+    }
+
+    qDebug() << "arkIdVar" << arkIdVar;
+
+    pointProperties->downloadDailyVar(dateStart, dateEnd, datasets, id, arkIdVar, precSelection);
 
 }
 
-void Project::downloadArkimetHourlyVar(QList<QString> variables)
+void Project::downloadArkimetHourlyVar(QStringList variables)
 {
+
+    Crit3DTime dateStart(Crit3DDate (startDate.day(), startDate.month(), startDate.year()), 0);
+    Crit3DTime dateEnd(Crit3DDate (endDate.day(), endDate.month(), endDate.year()), 0);
+    QStringList datasets;
+    QStringList id;
+
+    QList<int> arkIdVar;
+
+    QList<int> arkIdAirTemp;
+    arkIdAirTemp << 78 << 158;
+
+    QList<int> arkIdPrec;
+    arkIdPrec << 159 << 160;
+
+    QList<int> arkIdRH;
+    arkIdRH << 139 << 140;
+
+    QList<int> arkIdRadiation;
+    arkIdRadiation << 164 << 409;
+
+    QList<int> arkIdWind;
+    arkIdWind << 69 << 165 << 166 << 431;
+
+
+    for( int i=0; i < meteoPoints.size(); i++ )
+    {
+        if (!datasets.contains(QString::fromStdString(meteoPoints[i].dataset)))
+            datasets << QString::fromStdString(meteoPoints[i].dataset);
+        id << QString::fromStdString(meteoPoints[i].id);
+    }
+
+    for( int i=0; i < variables.size(); i++ )
+    {
+        if (variables[i] == "Air Temperature")
+            arkIdVar.append(arkIdAirTemp);
+        if (variables[i] == "Precipitation")
+            arkIdVar.append(arkIdPrec);
+        if (variables[i] == "Air Humidity")
+            arkIdVar.append(arkIdRH);
+        if (variables[i] == "Radiation")
+            arkIdVar.append(arkIdRadiation);
+        if (variables[i] == "Wind")
+            arkIdVar.append(arkIdWind);
+    }
+
+    pointProperties->downloadHourlyVar(dateStart, dateEnd, datasets, id, arkIdVar);
 
 }

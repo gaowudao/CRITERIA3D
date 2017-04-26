@@ -48,7 +48,7 @@ void Download::getPointProperties(QStringList datasetList)
     loop.exec();
 
     if (reply->error() != QNetworkReply::NoError)
-            qDebug( "Error!" );
+            qDebug( "Network Error" );
     else
     {
 
@@ -182,7 +182,7 @@ void Download::downloadMetadata(QJsonObject obj)
 }
 
 
-void Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStringList datasets, QList<int> stations, QList<int> variables, bool precSelection)
+void Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStringList datasets, QStringList stations, QList<int> variables, bool precSelection)
 {
 
     // create station tables
@@ -234,7 +234,7 @@ void Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStrin
             loop.exec();
 
             if (reply->error() != QNetworkReply::NoError)
-                    qDebug( "Error!" );
+                    qDebug( "Network Error" );
             else
             {
 
@@ -298,7 +298,7 @@ void Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStrin
 }
 
 
-void Download::downloadHourlyVar(Crit3DTime dateStartTime, Crit3DTime dateEndTime, QStringList datasets, QList<int> stations, QList<int> variables)
+void Download::downloadHourlyVar(Crit3DTime dateStartTime, Crit3DTime dateEndTime, QStringList datasets, QStringList stations, QList<int> variables)
 {
     // create station tables
     _dbMeteo->initStationsHourlyTables(dateStartTime, dateEndTime, stations);
@@ -369,7 +369,7 @@ void Download::downloadHourlyVar(Crit3DTime dateStartTime, Crit3DTime dateEndTim
             loop.exec();
 
             if (reply->error() != QNetworkReply::NoError)
-                    qDebug( "Error!" );
+                    qDebug( "Network Error" );
             else
             {
 

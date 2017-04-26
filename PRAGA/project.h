@@ -31,8 +31,8 @@
         Project();
 
         bool loadRaster(QString myFileName);
-        void downloadArkimetDailyVar(QList<QString> variables, bool precSelection);
-        void downloadArkimetHourlyVar(QList<QString> variables);
+        void downloadArkimetDailyVar(QStringList variables, bool precSelection);
+        void downloadArkimetHourlyVar(QStringList variables);
     };
 
 #endif // PROJECT_H

@@ -257,20 +257,20 @@ QList<Crit3DMeteoPoint> DbArkimet::getPropertiesFromDb()
 
 }
 
-void DbArkimet::initStationsDailyTables(Crit3DDate dataStartInput, Crit3DDate dataEndInput, QList<int> stations)
+void DbArkimet::initStationsDailyTables(Crit3DDate dataStartInput, Crit3DDate dataEndInput, QStringList stations)
 {
     QString startDate = QString::fromStdString(dataStartInput.toStdString());
     QString endDate = QString::fromStdString(dataEndInput.toStdString());
 
-    foreach(int station, stations)
+    for (int i = 0; i < stations.size(); i++)
     {
-        QString statement = QString("CREATE TABLE IF NOT EXISTS `%1_D` (date_time TEXT, id_variable INTEGER, value REAL, PRIMARY KEY(date_time,id_variable))").arg(station);
+        QString statement = QString("CREATE TABLE IF NOT EXISTS `%1_D` (date_time TEXT, id_variable INTEGER, value REAL, PRIMARY KEY(date_time,id_variable))").arg(stations[i]);
         //qDebug() << "initStationsDailyTables - Create " << statement;
 
         QSqlQuery qry(statement, _db);
         qry.exec();
 
-        statement = QString("DELETE FROM `%1_D` WHERE date_time >= DATE('%2') AND date_time < DATE('%3', '+1 day')").arg(station).arg(startDate).arg(endDate);
+        statement = QString("DELETE FROM `%1_D` WHERE date_time >= DATE('%2') AND date_time < DATE('%3', '+1 day')").arg(stations[i]).arg(startDate).arg(endDate);
         //qDebug() << "initStationsDailyTables - Delete " << statement;
 
         qry = QSqlQuery(statement, _db);
@@ -279,20 +279,20 @@ void DbArkimet::initStationsDailyTables(Crit3DDate dataStartInput, Crit3DDate da
 
 }
 
-void DbArkimet::initStationsHourlyTables(Crit3DTime dataStartInput, Crit3DTime dataEndInput, QList<int> stations)
+void DbArkimet::initStationsHourlyTables(Crit3DTime dataStartInput, Crit3DTime dataEndInput, QStringList stations)
 {
     QString startDate = QString::fromStdString(dataStartInput.toStdString());
     QString endDate = QString::fromStdString(dataEndInput.toStdString());
 
-    foreach(int station, stations)
+    for (int i = 0; i < stations.size(); i++)
     {
-        QString statement = QString("CREATE TABLE IF NOT EXISTS `%1_H` (date_time TEXT, id_variable INTEGER, value REAL, PRIMARY KEY(date_time,id_variable))").arg(station);
+        QString statement = QString("CREATE TABLE IF NOT EXISTS `%1_H` (date_time TEXT, id_variable INTEGER, value REAL, PRIMARY KEY(date_time,id_variable))").arg(stations[i]);
         //qDebug() << "initStationsHourlyTables - Create " << statement;
 
         QSqlQuery qry(statement, _db);
         qry.exec();
 
-        statement = QString("DELETE FROM `%1_H` WHERE date_time >= DATE('%2') AND date_time < DATE('%3', '+1 day')").arg(station).arg(startDate).arg(endDate);
+        statement = QString("DELETE FROM `%1_H` WHERE date_time >= DATE('%2') AND date_time < DATE('%3', '+1 day')").arg(stations[i]).arg(startDate).arg(endDate);
         //qDebug() << "initStationsHourlyTables - Delete " << statement;
 
         qry = QSqlQuery(statement, _db);
