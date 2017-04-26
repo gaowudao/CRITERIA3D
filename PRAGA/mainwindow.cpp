@@ -403,6 +403,13 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
        myProject.endDate = LastDateEdit->date();
        initDate = true;
 
+       if(myProject.meteoPoints.isEmpty())
+       {
+            QMessageBox::information(NULL, "DB not existing", "Create or Open DB before download");
+            downloadDialog.close();
+            return;
+       }
+
        if (!daily.isChecked() && !hourly.isChecked())
        {
            QMessageBox::information(NULL, "Missing parameter", "Select hourly or daily");
@@ -457,12 +464,21 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
 
                 }
                 myProject.downloadArkimetDailyVar(var, precSelection);
+                QMessageBox *msgBox = new QMessageBox(this);
+                msgBox->setText("Daily Download Completed");
+                msgBox->exec();
+                delete msgBox;
             }
 
             if (hourly.isChecked())
             {
                 myProject.downloadArkimetHourlyVar(var);
+                QMessageBox *msgBox = new QMessageBox(this);
+                msgBox->setText("Hourly Download Completed");
+                msgBox->exec();
+                delete msgBox;
             }
+
 
        }
 

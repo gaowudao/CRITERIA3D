@@ -146,7 +146,11 @@ void Project::downloadArkimetHourlyVar(QStringList variables)
         if (variables[i] == "Wind")
             arkIdVar.append(arkIdWind);
     }
-
+    qDebug() << "dateTimeStart" << QString::fromStdString(dateTimeStart.toStdString());
+    qDebug() << "dateTimeEnd" << QString::fromStdString(dateTimeEnd.toStdString());
+    qDebug() << "datasets" << datasets;
+    qDebug() << "id" << id;
+    qDebug() << "arkIdVar" << arkIdVar;
     pointProperties->downloadHourlyVar(dateTimeStart, dateTimeEnd, datasets, id, arkIdVar);
 
 }
