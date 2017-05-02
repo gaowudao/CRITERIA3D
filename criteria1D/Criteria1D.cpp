@@ -398,17 +398,17 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, QString *myError
     }
 
     query.first();
-    QDate firstDate = query.value("date").toDate();
+    QDate firstObsDate = query.value("date").toDate();
     query.last();
-    QDate lastDate = query.value("date").toDate();
+    QDate lastObsDate = query.value("date").toDate();
 
-    int nrDays = firstDate.daysTo(lastDate) + 1;
+    int nrDays = firstObsDate.daysTo(lastObsDate) + 1;
 
     // Short term forecast
     if (this->isShortTermForecast)
         nrDays += this->daysOfForecast;
 
-    this->meteoPoint.initializeObsDataD(nrDays, getCrit3DDate(firstDate));
+    this->meteoPoint.initializeObsDataD(nrDays, getCrit3DDate(firstObsDate));
 
     //std::cout << "Read weather data...";
     if (! readMeteoData(&query, myError)) return false;
@@ -435,6 +435,7 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, QString *myError
         query = this->dbForecast.exec(queryString);
         query.last();
 
+        //check query
         if (! query.isValid())
         {
             if (query.lastError().number() > 0)
@@ -444,9 +445,16 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, QString *myError
             return false;
         }
 
+        //check date
+        query.first();
+        QDate myDate = query.value("date").toDate();
+        if (myDate != lastObsDate.addDays(1))
+        {
+            *myError = "The forecast date doesn't match with observed data.";
+            return false;
+        }
+
         if (! readMeteoData(&query, myError)) return false;
-        // TODO check on last date
-        // creare un reduceNrObsDataDaysD in meteo.pro
     }
 
     return true;
