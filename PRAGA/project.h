@@ -1,6 +1,10 @@
 #ifndef PROJECT_H
 #define PROJECT_H
 
+    #ifndef GIS_H
+        #include "gis.h"
+    #endif
+
     #ifndef METEOPOINT_H
         #include "meteoPoint.h"
     #endif
@@ -16,9 +20,11 @@
     #include <QList>
     #include <QDate>
 
+
     class Project {
     public:
         QList<Crit3DMeteoPoint> meteoPoints;
+        QList<gis::Crit3DGeoPoint> meteoPointsSelected;
         QDate startDate;
         QDate endDate;
         Download* pointProperties;

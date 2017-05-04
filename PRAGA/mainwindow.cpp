@@ -287,10 +287,11 @@ void MainWindow::on_actionOpen_meteo_points_DB_triggered()
 void MainWindow::displayMeteoPoints()
 {
 
+    myProject.meteoPointsSelected.clear();
     for (int i = 0; i < myProject.meteoPoints.size(); i++)
     {
-        //StationMarker* point = new StationMarker(4.0, true, QColor((Qt::white)), this->mapView);
-        StationMarker* point = new StationMarker(4.0, true, QColor(255,255,255,255) , this->mapView);
+        StationMarker* point = new StationMarker(4.0, true, QColor((Qt::white)), this->mapView);
+        //StationMarker* point = new StationMarker(4.0, true, QColor(255,255,255,255) , this->mapView);
         point->setFlag(MapGraphicsObject::ObjectIsMovable, false);
         point->setLatitude(myProject.meteoPoints[i].latitude);
         point->setLongitude(myProject.meteoPoints[i].longitude);
@@ -627,6 +628,7 @@ void MainWindow::resetProject()
 {
 
     myProject.meteoPoints.clear();
+    myProject.meteoPointsSelected.clear();
     myProject.startDate.setDate(0,0,0);
     myProject.endDate.setDate(0,0,0);
 

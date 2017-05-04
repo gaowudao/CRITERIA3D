@@ -59,6 +59,7 @@ void Project::downloadArkimetDailyVar(QStringList variables, bool precSelection)
     Crit3DDate dateEnd(endDate.day(), endDate.month(), endDate.year());
     QStringList datasets;
     QStringList id;
+    bool skip = 0;
 
     QList<int> arkIdVar;
 
@@ -73,9 +74,22 @@ void Project::downloadArkimetDailyVar(QStringList variables, bool precSelection)
 
     for( int i=0; i < meteoPoints.size(); i++ )
     {
-        if (!datasets.contains(QString::fromStdString(meteoPoints[i].dataset)))
-            datasets << QString::fromStdString(meteoPoints[i].dataset);
-        id << QString::fromStdString(meteoPoints[i].id);
+        if (!meteoPointsSelected.isEmpty())
+        {
+            skip = 1;
+            for (int j = 0; j < meteoPointsSelected.size(); j++)
+            {
+                if (meteoPoints[i].latitude == meteoPointsSelected[j].latitude && meteoPoints[i].longitude == meteoPointsSelected[j].longitude)
+                    skip = 0;
+            }
+        }
+        if (!skip)
+        {
+            if (!datasets.contains(QString::fromStdString(meteoPoints[i].dataset)))
+                datasets << QString::fromStdString(meteoPoints[i].dataset);
+            id << QString::fromStdString(meteoPoints[i].id);
+        }
+
     }
 
 
@@ -107,6 +121,7 @@ void Project::downloadArkimetHourlyVar(QStringList variables)
     Crit3DTime dateTimeEnd(dateEnd, 0);
     QStringList datasets;
     QStringList id;
+    bool skip = 0;
 
     QList<int> arkIdVar;
 
@@ -128,9 +143,22 @@ void Project::downloadArkimetHourlyVar(QStringList variables)
 
     for( int i=0; i < meteoPoints.size(); i++ )
     {
-        if (!datasets.contains(QString::fromStdString(meteoPoints[i].dataset)))
-            datasets << QString::fromStdString(meteoPoints[i].dataset);
-        id << QString::fromStdString(meteoPoints[i].id);
+        if (!meteoPointsSelected.isEmpty())
+        {
+            skip = 1;
+            for (int j = 0; j < meteoPointsSelected.size(); j++)
+            {
+                if (meteoPoints[i].latitude == meteoPointsSelected[j].latitude && meteoPoints[i].longitude == meteoPointsSelected[j].longitude)
+                    skip = 0;
+            }
+        }
+        if (!skip)
+        {
+            if (!datasets.contains(QString::fromStdString(meteoPoints[i].dataset)))
+                datasets << QString::fromStdString(meteoPoints[i].dataset);
+            id << QString::fromStdString(meteoPoints[i].id);
+        }
+
     }
 
     for( int i=0; i < variables.size(); i++ )

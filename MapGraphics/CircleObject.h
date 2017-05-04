@@ -18,6 +18,7 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
     qreal radius() const;
+    QColor color() const;
     void setRadius(qreal radius);
     void setFillColor(const QColor& color);
     

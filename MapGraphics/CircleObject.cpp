@@ -47,6 +47,11 @@ void CircleObject::setRadius(qreal radius)
     this->redrawRequested();
 }
 
+QColor CircleObject::color() const
+{
+    return _fillColor;
+}
+
 void CircleObject::setFillColor(const QColor &color)
 {
     if (_fillColor == color)
