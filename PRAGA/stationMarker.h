@@ -12,6 +12,9 @@ class StationMarker : public CircleObject
         explicit StationMarker(qreal radius, bool sizeIsZoomInvariant, QColor fillColor, MapGraphicsView* view, CircleObject *parent = 0);
     private:
         MapGraphicsView* _view;
+
+    protected:
+        void mousePressEvent(QGraphicsSceneMouseEvent *event);
 };
 
 #endif // STATIONMARKER_H

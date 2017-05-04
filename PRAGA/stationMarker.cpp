@@ -18,6 +18,11 @@ StationMarker::StationMarker(qreal radius,bool sizeIsZoomInvariant, QColor fillC
 }
 
 
-//(qreal radius,bool sizeIsZoomInvariant, QColor fillColor, MapGraphicsObject *parent)
+void StationMarker::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
 
-//5.0, true, QColor(255,0,0,255)
+    this->setFillColor(QColor(255,0,0,255));
+
+}
+
+

@@ -289,7 +289,8 @@ void MainWindow::displayMeteoPoints()
 
     for (int i = 0; i < myProject.meteoPoints.size(); i++)
     {
-        StationMarker* point = new StationMarker(4.0, true, QColor((Qt::white)), this->mapView);
+        //StationMarker* point = new StationMarker(4.0, true, QColor((Qt::white)), this->mapView);
+        StationMarker* point = new StationMarker(4.0, true, QColor(255,255,255,255) , this->mapView);
         point->setFlag(MapGraphicsObject::ObjectIsMovable, false);
         point->setLatitude(myProject.meteoPoints[i].latitude);
         point->setLongitude(myProject.meteoPoints[i].longitude);

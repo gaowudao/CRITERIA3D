@@ -19,6 +19,7 @@ public:
 
     qreal radius() const;
     void setRadius(qreal radius);
+    void setFillColor(const QColor& color);
     
 signals:
     
