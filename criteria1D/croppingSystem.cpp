@@ -90,18 +90,12 @@ bool isSowingDoy(Crit3DCrop* myCrop, int myDoy)
 }
 
 
-bool cropWaterDemand(Criteria1D* myCase, int myDoy, double tmax, double tmin, double et0)
+bool cropWaterDemand(Criteria1D* myCase)
 {
     double Kc;                  // crop coefficient
     double TC;                  // momentary turbulence coefficient
     double ke = 0.6;            // evaporation extinction factor (should be equal to light extinction factor)
     double maxEvapRatio = 0.66;
-
-    if ((et0 != NODATA) && (et0 > 0))
-        myCase->output.dailyEt0 = et0;
-    else
-        myCase->output.dailyEt0 = ET0_Hargreaves(0.17, myCase->meteoPoint.latitude, myDoy, tmax, tmin);
-
 
     if (myCase->myCrop.idCrop == "" || ! myCase->myCrop.isLiving || myCase->myCrop.LAI == 0)
     {

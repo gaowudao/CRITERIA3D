@@ -13,7 +13,7 @@ bool resetCrop(Criteria1D* myCase);
 bool updateCrop(Criteria1D* myCase, QString* myError, Crit3DDate myDate, bool isFirstSimulationDay, double tmin, double tmax);
 
 float cropIrrigationDemand(Criteria1D* myCase, float myPrec, float nextPrec);
-bool cropWaterDemand(Criteria1D* myCase, int myDoy, double tmax, double tmin, double et0);
+bool cropWaterDemand(Criteria1D* myCase);
 bool irrigateCrop(Criteria1D* myCase, double irrigationDemand);
 
 bool evaporation(Criteria1D* myCase);

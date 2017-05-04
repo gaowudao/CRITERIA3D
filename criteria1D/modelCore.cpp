@@ -83,22 +83,36 @@ bool computeModel(Criteria1D* myCase, QString* myError, const Crit3DDate& firstD
             return false;
         }
 
+        prec = myCase->meteoPoint.getMeteoPointValueD(myDate, precipitation);
         tmin = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyAirTemperatureMin);
         tmax = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyAirTemperatureMax);
-        prec = myCase->meteoPoint.getMeteoPointValueD(myDate, precipitation);
-        et0 = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyPotentialEvapotranspiration);
+
+        if ((prec == NODATA) || (tmin == NODATA) || (tmax == NODATA))
+        {
+            *myError = "Missing weather data: " + QString::fromStdString(myDate.toStdString());
+            return false;
+        }
+
+        myCase->output.dailyPrec = prec;
         if (myDate < lastDate)
             tomorrowPrec = myCase->meteoPoint.getMeteoPointValueD(myDate.addDays(1), precipitation);
         else
             tomorrowPrec = 0;
 
-        myCase->output.dailyPrec = prec;
+        // ET0
+        et0 = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyPotentialEvapotranspiration);
+        if ((et0 != NODATA) && (et0 > 0))
+            myCase->output.dailyEt0 = et0;
+        else
+            myCase->output.dailyEt0 = ET0_Hargreaves(0.17, myCase->meteoPoint.latitude, doy, tmax, tmin);
 
         // CROP
         if (! updateCrop(myCase, myError, myDate, isFirstDay, tmin, tmax))
             return false;
 
-        // ***** SUB_SOIL_Risalita_da_falda (TODO)
+
+        // ***** Risalita da falda (TODO)
+
 
         // IRRIGATION
         if (myCase->myCrop.isLiving)
@@ -128,7 +142,7 @@ bool computeModel(Criteria1D* myCase, QString* myError, const Crit3DDate& firstD
                     myCase->output.dailySurfaceRunoff -= floor(myCase->output.dailySurfaceRunoff);
                 }
 
-        if (! cropWaterDemand(myCase, doy, tmax, tmin, et0))
+        if (! cropWaterDemand(myCase))
             return false;
 
         if (! evaporation(myCase))
