@@ -1,12 +1,10 @@
-#include "dbArkimet.h"
 #include "commonConstants.h"
+#include "dbArkimet.h"
 
 #include <QDebug>
-
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlRecord>
-
 #include <QString>
 #include <QStringBuilder>
 

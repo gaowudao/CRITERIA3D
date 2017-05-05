@@ -5,7 +5,9 @@
 #include <QtSql>
 #include "variableslist.h"
 #include "dbMeteoPoints.h"
-#include "meteoPoint.h"
+#ifndef METEOPOINT_H
+    #include "meteoPoint.h"
+#endif
 
 
 #define PREC_ID 250
