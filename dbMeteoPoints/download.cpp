@@ -332,7 +332,7 @@ void Download::downloadHourlyVar(Crit3DTime dateStartTime, Crit3DTime dateEndTim
     int stepDate = qMax(1, difference(dateStartTime.date.addDays(1), dateEndTime.date) / nrSteps);
 
     dateStartTime = dateStartTime.addSeconds(-1800);
-    dateEndTime.date = dateEndTime.date.addDays(1);
+    dateEndTime.date = dateEndTime.date.addDays(5);
     dateEndTime = dateEndTime.addSeconds(-3600);
 
 

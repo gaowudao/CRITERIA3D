@@ -357,7 +357,8 @@ void DbArkimet::insertDailyValue(QString station, QString date, int varType, dou
 
     if (varValue !=NODATA)
     {
-        QString statement = QString("INSERT INTO `%1_D` VALUES('%2', '%3', '%4')").arg(station).arg(date).arg(varType).arg(varValue);
+        double valueRound = static_cast<double>(static_cast<int>(varValue*10+0.5))/10.0;
+        QString statement = QString("INSERT INTO `%1_D` VALUES('%2', '%3', '%4')").arg(station).arg(date).arg(varType).arg(valueRound);
 
         QSqlQuery qry = QSqlQuery(statement, _db);
         qry.exec();
@@ -452,9 +453,10 @@ void DbArkimet::insertOrUpdate(QString date, QString id_point, int id_variable, 
 
     if (value !=NODATA)
     {
+        double valueRound = static_cast<double>(static_cast<int>(value*10+0.5))/10.0;
         QString statement = QString("REPLACE INTO TmpHourlyData SELECT '%1', %2, %3, '%4', %5, %6 WHERE %6 > (SELECT COALESCE((");
         statement = statement % "SELECT frequency FROM TmpHourlyData WHERE date_time = '%1' AND id_point = %2 AND variable_name = '%4'), 0))";
-        statement = statement.arg(date).arg(id_point).arg(id_variable).arg(variable_name).arg(value).arg(frequency);
+        statement = statement.arg(date).arg(id_point).arg(id_variable).arg(variable_name).arg(valueRound).arg(frequency);
 
         QSqlQuery qry = QSqlQuery(statement, _db);
         qry.exec();

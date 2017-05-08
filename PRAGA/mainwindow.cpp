@@ -447,6 +447,7 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
                 if ( item2.isSelected() || item6.isSelected() )
                 {
                     QDialog precDialog;
+                    precDialog.setFixedWidth(350);
                     precDialog.setWindowTitle("Choose daily precipitation time");
                     QVBoxLayout precLayout;
                     QRadioButton first("0-24");
@@ -504,7 +505,7 @@ void MainWindow::slotClicked(const QDate& date)
   }
   else
   {
-    if (myProject.startDate < date)
+    if (myProject.startDate <= date)
     {
         myProject.endDate = date;
         LastDateEdit->setDate(calendar->selectedDate());
