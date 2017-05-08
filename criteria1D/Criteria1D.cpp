@@ -404,13 +404,12 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, QString *myError
 
     int nrDays = firstObsDate.daysTo(lastObsDate) + 1;
 
-    // Short term forecast
+    // increase nr of days (forecast)
     if (this->isShortTermForecast)
         nrDays += this->daysOfForecast;
 
     this->meteoPoint.initializeObsDataD(nrDays, getCrit3DDate(firstObsDate));
 
-    //std::cout << "Read weather data...";
     if (! readMeteoData(&query, myError)) return false;
 
     // SHORT TERM FORECAST

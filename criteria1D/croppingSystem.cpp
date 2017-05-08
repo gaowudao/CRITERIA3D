@@ -249,16 +249,27 @@ double getTotalDeficit(Criteria1D* myCase)
 }
 
 
-// sum of readily available water (mm) in surface and in the rooting zone
+/*!
+ * \brief getReadilyAvailableWater
+ * \param myCase
+ * \return sum of readily available water (mm) in the rooting zone (minimum first meter of soil)
+ */
 double getReadilyAvailableWater(Criteria1D* myCase)
 {
     if (! myCase->myCrop.isLiving) return NODATA;
 
     double threshold;
+    int lastLayer = 0;
+
+    while ((lastLayer < (myCase->nrLayers-1)) && (myCase->layer[lastLayer].depth < 1.0))
+        lastLayer++;
+
+    lastLayer = maxValue(lastLayer, myCase->myCrop.roots.lastRootLayer);
+
     // surface water
     double RAW = myCase->layer[0].waterContent;
 
-    for (int i = 1; i <= myCase->myCrop.roots.lastRootLayer; i++)
+    for (int i = 1; i <= lastLayer; i++)
     {
         if (i < myCase->myCrop.roots.firstRootLayer)
             threshold = myCase->layer[i].FC;
@@ -450,7 +461,7 @@ bool cropTranspiration(Criteria1D* myCase)
 
         if (myCase->layer[i].waterContent > surplusThreshold)
         {
-            // water surplus
+            //WATER SURPLUS
             myCase->myCrop.roots.transpiration[i] = myCase->output.dailyMaxTranspiration * myCase->myCrop.roots.rootDensity[i] *
                     (myCase->layer[i].SAT - myCase->layer[i].waterContent) / (myCase->layer[i].SAT - surplusThreshold);
 
@@ -460,7 +471,7 @@ bool cropTranspiration(Criteria1D* myCase)
         }
         else if (myCase->layer[i].waterContent < waterScarcityThreshold)
         {
-            // water scarcity
+            //WATER SCARSITY
             myCase->myCrop.roots.transpiration[i] = myCase->output.dailyMaxTranspiration * myCase->myCrop.roots.rootDensity[i] *
                     (myCase->layer[i].waterContent - cropWP) / (waterScarcityThreshold - cropWP);
 
@@ -470,7 +481,7 @@ bool cropTranspiration(Criteria1D* myCase)
         }
         else
         {
-            // normal conditions
+            //normal conditions
             myCase->myCrop.roots.transpiration[i] = myCase->output.dailyMaxTranspiration * myCase->myCrop.roots.rootDensity[i];
 
             TRs += myCase->myCrop.roots.transpiration[i];

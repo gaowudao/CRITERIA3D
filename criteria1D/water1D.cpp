@@ -31,7 +31,7 @@ double getWaterContent(soil::Crit3DLayer *myLayer, double availableWater)
  * initialAW[1]         [-] available water in the deep soil
  */
 void initializeWater(Criteria1D* myCase)
-// TODO migliorare in base a stagione come in Vintage
+// TODO migliorare - variare in base al mese come in Vintage
 {
     myCase->layer[0].waterContent = 0.0;
     for (int i = 1; i < myCase->nrLayers; i++)
@@ -71,7 +71,7 @@ bool empiricalInfiltration(Criteria1D* myCase, QString* myError, float prec, flo
     }
 
     // Average degree of saturation (ploughed soil)
-    // TODO strati geometrici
+    // TODO gestire strati geometrici
     i = 1;
     nrPloughLayers = 0;
     avgPloughSat = 0.0;
@@ -84,8 +84,7 @@ bool empiricalInfiltration(Criteria1D* myCase, QString* myError, float prec, flo
     avgPloughSat /= nrPloughLayers;
 
     // compute max infiltration:
-    // infiltration due to gravitational force and permeability
-    // Driessen, 1986
+    // infiltration due to gravitational force and permeability (Driessen, 1986)
     double permFactor = 1.0 - avgPloughSat;
     for (i = 1; i< myCase->nrLayers; i++)
     {
@@ -107,10 +106,10 @@ bool empiricalInfiltration(Criteria1D* myCase, QString* myError, float prec, flo
             myCase->layer[l].flux += fluxLayer;
             myCase->layer[l].waterContent -= fluxLayer;
 
-            // TODO tradurre
-            // cerco il punto di arrivo del fronte, saturando virtualmente il profilo sottostante con la quantità di Imax
-            // Tengo conto degli Imax  e i flussi già passati degli strati sottostanti prendendo il minimo
-            // Ogni passo tolgo la parte che va a saturare lo strato
+            // TODO translate
+            // cerca il punto di arrivo del fronte, saturando virtualmente il profilo sottostante con la quantità Imax
+            // tiene conto degli Imax  e dei flussi già passati dagli strati sottostanti prendendo il minimo
+            // ogni passo toglie la parte che va a saturare lo strato
             if (l == (myCase->nrLayers-1))
                 reached = l;
             else
@@ -136,7 +135,7 @@ bool empiricalInfiltration(Criteria1D* myCase, QString* myError, float prec, flo
             // move water and compute fluxes
             for (i = l+1; i <= reached; i++)
             {
-                // TODO tradurre
+                // TODO translate
                 // ridefinisco fluxLayer in base allo stato idrico dello strato sottostante
                 // a CC, fluxLayer non varia, sotto CC tolgo il deficit al fluxLayer, in surplus, aggiungo il surplus al fluxLayer
                 if (myCase->layer[i].waterContent > myCase->layer[i].critical)
@@ -166,6 +165,7 @@ bool empiricalInfiltration(Criteria1D* myCase, QString* myError, float prec, flo
                 }
                 else
                 {
+                    // TODO translate
                     // passa residualFlux, varFlux=Imax e si crea un surplus (localflux)
                     localFlux = fluxLayer - residualFlux;
                     fluxLayer = residualFlux;
@@ -211,7 +211,7 @@ bool empiricalInfiltration(Criteria1D* myCase, QString* myError, float prec, flo
                 fluxLayer = 0;
             }
 
-            // surpuls distribution (saturated layers)
+            // surplus distribution (saturated layers)
             i = reached;
             while ((fluxLayer > 0) && (i >= l+1))
             {
@@ -257,13 +257,11 @@ bool surfaceRunoff(Criteria1D* myCase)
     double clodHeight;           // [mm] effective height of clod
     double roughness;            // [mm]
 
+    // questo riassume brutalmente algoritmi su operazioni colturali, zolla, pendenza
     if (isPluriannual(myCase->myCrop.type))
         clodHeight = 0.0;
     else
-    {
-        // TODO: algoritmo operazioni colturali, zolla, pendenza
         clodHeight = 5.0;
-    }
 
     roughness = myCase->myCrop.maxSurfacePuddle + clodHeight;
 
