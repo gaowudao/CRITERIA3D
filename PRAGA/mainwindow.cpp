@@ -25,7 +25,6 @@
 #define TOOLSWIDTH 220
 extern Project myProject;
 
-
 MainWindow::MainWindow(environment menu, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -124,10 +123,7 @@ void MainWindow::on_actionLoadRaster_triggered()
 void MainWindow::on_actionArkimet_triggered()
 {
 
-    if (myProject.pointProperties !=NULL)
-    {
-        resetProject();
-    }
+    resetProject();
 
     QString templateName = QFileDialog::getOpenFileName(this, tr("Choose template DB meteo"), "", tr("DB files (*.db)"));
     if (templateName == "")
@@ -268,10 +264,9 @@ void MainWindow::enableAll(bool toggled)
 void MainWindow::on_actionOpen_meteo_points_DB_triggered()
 {
 
-    if (myProject.pointProperties !=NULL)
-    {
-        resetProject();
-    }
+    resetProject();
+    qDebug() << "on_actionOpen_meteo_points_DB_triggered reset done";
+
     QString dbName = QFileDialog::getOpenFileName(this, tr("Open DB meteo"), "", tr("DB files (*.db)"));
     if (dbName == "")
     {
@@ -629,7 +624,9 @@ void MainWindow::resetProject()
 {
 
     myProject.meteoPoints.clear();
+
     myProject.meteoPointsSelected.clear();
+
     myProject.startDate.setDate(0,0,0);
     myProject.endDate.setDate(0,0,0);
 
@@ -642,7 +639,11 @@ void MainWindow::resetProject()
     qDeleteAll(this->pointList.begin(), this->pointList.end());
     this->pointList.clear();
 
-    delete myProject.pointProperties;
+    if (myProject.pointProperties != NULL)
+    {
+        delete myProject.pointProperties;
+    }
+
 }
 
 

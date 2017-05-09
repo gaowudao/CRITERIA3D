@@ -12,15 +12,7 @@
 
 DbArkimet::DbArkimet(QString dbName) : DbMeteoPoints(dbName)
 {
-
 }
-
-
-DbArkimet::~DbArkimet()
-{
-
-}
-
 
 QList<VariablesList> DbArkimet::getHourlyVarFields(QList<int> id)
 {

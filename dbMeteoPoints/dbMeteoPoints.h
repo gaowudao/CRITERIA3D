@@ -19,7 +19,7 @@ class DbMeteoPoints : public QObject
         QStringList getDatasetsList();
         QStringList getDatasetsActive();
         void setDatasetsActive(QString active);
-    private:
+    protected:
         QSqlDatabase _db;
     signals:
 

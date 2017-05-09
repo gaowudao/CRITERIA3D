@@ -19,7 +19,6 @@ class DbArkimet : public DbMeteoPoints
 
     public:
         explicit DbArkimet(QString dbName);
-        ~DbArkimet();
         void dbManager();
 
         QString getVarName(int id);
@@ -37,8 +36,6 @@ class DbArkimet : public DbMeteoPoints
         void insertOrUpdate(QString date, QString id_point, int id_variable, QString variable_name, double value, int frequency, QString flag);
         void saveHourlyData();
         int arkIdmap(int arkId);
-    private:
-        QSqlDatabase _db;
     signals:
 
     protected slots:
