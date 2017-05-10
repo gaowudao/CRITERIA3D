@@ -24,24 +24,37 @@ void StationMarker::mousePressEvent(QGraphicsSceneMouseEvent *event)
     gis::Crit3DGeoPoint pointSelected;
     pointSelected.latitude = this->latitude();
     pointSelected.longitude = this->longitude();
+    QPoint pos(this->longitude(), this->latitude());
 
-    QColor color = this->color();
-    if ( color ==  Qt::white )
+    if (event->buttons() & Qt::LeftButton)
     {
-        //this->setFillColor(QColor(255,0,0,255));
-        this->setFillColor(QColor((Qt::red)));
-        myProject.meteoPointsSelected << pointSelected;
-    }
-    else
-    {
-        this->setFillColor(QColor((Qt::white)));
-        for (int i = 0; i < myProject.meteoPointsSelected.size(); i++)
+        QColor color = this->color();
+        if ( color ==  Qt::white )
         {
-            if (myProject.meteoPointsSelected[i].latitude == pointSelected.latitude && myProject.meteoPointsSelected[i].longitude == pointSelected.longitude)
-                myProject.meteoPointsSelected.removeAt(i);
+            //this->setFillColor(QColor(255,0,0,255));
+            this->setFillColor(QColor((Qt::red)));
+            myProject.meteoPointsSelected << pointSelected;
         }
+        else
+        {
+            this->setFillColor(QColor((Qt::white)));
+            for (int i = 0; i < myProject.meteoPointsSelected.size(); i++)
+            {
+                if (myProject.meteoPointsSelected[i].latitude == pointSelected.latitude && myProject.meteoPointsSelected[i].longitude == pointSelected.longitude)
+                    myProject.meteoPointsSelected.removeAt(i);
+            }
+        }
+    }
+    else if (event->buttons() & Qt::RightButton)
+    {
+
+        QMenu menu;
+        menu.addAction("Menu Item 1");
+        menu.addAction("Menu Item 2");
+        menu.addAction("Menu Item 3");
+        menu.exec(QCursor::pos());
+
     }
 
 }
-
 
