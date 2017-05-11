@@ -281,6 +281,7 @@ void MainWindow::on_actionOpen_meteo_points_DB_triggered()
 
 void MainWindow::displayMeteoPoints()
 {
+    QApplication::setOverrideCursor(Qt::ArrowCursor);
 
     myProject.meteoPointsSelected.clear();
     for (int i = 0; i < myProject.meteoPoints.size(); i++)
@@ -550,6 +551,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent * event)
 
     Position geoPoint = this->mapView->mapToScene(mapPoint);
     this->ui->statusBar->showMessage(QString::number(geoPoint.latitude()) + " " + QString::number(geoPoint.longitude()));
+
 }
 
 void MainWindow::resizeEvent(QResizeEvent * event)
@@ -645,5 +647,6 @@ void MainWindow::resetProject()
     }
 
 }
+
 
 

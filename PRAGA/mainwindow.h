@@ -87,6 +87,7 @@
 
         void resizeEvent(QResizeEvent * event);
 
+
     private:
         Ui::MainWindow* ui;
         MapGraphicsScene* mapScene;

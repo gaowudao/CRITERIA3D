@@ -6,7 +6,7 @@
 extern Project myProject;
 
 
-StationMarker::StationMarker(qreal radius,bool sizeIsZoomInvariant, QColor fillColor, MapGraphicsView* view, CircleObject *parent) :
+StationMarker::StationMarker(qreal radius,bool sizeIsZoomInvariant, QColor fillColor, MapGraphicsView* view, MapGraphicsObject *parent) :
     CircleObject(radius, sizeIsZoomInvariant, fillColor, parent)
 {
 
@@ -14,13 +14,13 @@ StationMarker::StationMarker(qreal radius,bool sizeIsZoomInvariant, QColor fillC
     this->setFlag(MapGraphicsObject::ObjectIsMovable);
     this->setFlag(MapGraphicsObject::ObjectIsFocusable);
     _view = view;
-
 }
 
 
 void StationMarker::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
 
+    this->setToolTip("test");
     gis::Crit3DGeoPoint pointSelected;
     pointSelected.latitude = this->latitude();
     pointSelected.longitude = this->longitude();
@@ -49,10 +49,23 @@ void StationMarker::mousePressEvent(QGraphicsSceneMouseEvent *event)
     {
 
         QMenu menu;
-        menu.addAction("Menu Item 1");
-        menu.addAction("Menu Item 2");
-        menu.addAction("Menu Item 3");
-        menu.exec(QCursor::pos());
+        QAction *firstItem = menu.addAction("Menu Item 1");
+        QAction *secondItem = menu.addAction("Menu Item 2");
+        QAction *thirdItem = menu.addAction("Menu Item 3");
+        QAction *selection =  menu.exec(QCursor::pos());
+
+        if (selection == firstItem)
+        {
+            this->setFillColor(QColor((Qt::yellow)));
+        }
+        else if (selection == secondItem)
+        {
+            this->setFillColor(QColor((Qt::blue)));
+        }
+        else if (selection == thirdItem)
+        {
+            this->setFillColor(QColor((Qt::green)));
+        }
 
     }
 
