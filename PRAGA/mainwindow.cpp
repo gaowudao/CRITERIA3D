@@ -291,8 +291,11 @@ void MainWindow::displayMeteoPoints()
         point->setFlag(MapGraphicsObject::ObjectIsMovable, false);
         point->setLatitude(myProject.meteoPoints[i].latitude);
         point->setLongitude(myProject.meteoPoints[i].longitude);
+
         this->pointList.append(point);
         this->mapView->scene()->addObject(this->pointList[i]);
+
+        point->setToolTip();
     }
 
     //this->mapView->scene()->addObject(QRect selectionRect);
