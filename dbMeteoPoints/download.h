@@ -19,10 +19,10 @@ class Download : public QObject
     public:
         explicit Download(QString dbName, QObject* parent = 0);
         ~Download();
-        void getPointProperties(QStringList datasetList);
+        bool getPointProperties(QStringList datasetList);
         void downloadMetadata(QJsonObject obj);
-        void downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStringList datasets, QStringList stations, QList<int> variables, bool precSelection);
-        void downloadHourlyVar(Crit3DTime dateStartTime, Crit3DTime dateEndTime, QStringList datasets, QStringList stations, QList<int> variables);
+        bool downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStringList datasets, QStringList stations, QList<int> variables, bool precSelection);
+        bool downloadHourlyVar(Crit3DTime dateStartTime, Crit3DTime dateEndTime, QStringList datasets, QStringList stations, QList<int> variables);
         DbArkimet* getDbArkimet();
 
     private:

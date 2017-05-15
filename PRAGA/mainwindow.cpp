@@ -16,6 +16,7 @@
 #include "ui_mainwindow.h"
 #include "Position.h"
 #include "formSingleValue.h"
+#include "formDownload.h"
 #include "dbMeteoPoints.h"
 #include "dbArkimet.h"
 #include "download.h"
@@ -189,15 +190,35 @@ void MainWindow::on_actionArkimet_triggered()
                 dbmeteo->setDatasetsActive(datasetSelected);
                 QStringList datasets = datasetSelected.remove("'").split(",");
 
-                myProject.pointProperties->getPointProperties(datasets);
+                QApplication::setOverrideCursor(Qt::WaitCursor);
 
+                FormDownload downloadWindow;
+                downloadWindow.setModal(true);
+                downloadWindow.show();
                 QMessageBox *msgBox = new QMessageBox(this);
-                msgBox->setText("Completed");
-                msgBox->exec();
 
-                myProject.meteoPoints = dbmeteo->getPropertiesFromDb();
-                delete msgBox;
-                displayMeteoPoints();
+                if (myProject.pointProperties->getPointProperties(datasets))
+                {
+                    downloadWindow.close();
+                    QApplication::restoreOverrideCursor();
+
+                    msgBox->setText("Download Point Properties completed");
+                    msgBox->exec();
+
+                    myProject.meteoPoints = dbmeteo->getPropertiesFromDb();
+                    delete msgBox;
+                    displayMeteoPoints();
+                }
+                else
+                {
+                    downloadWindow.close();
+                    QApplication::restoreOverrideCursor();
+
+                    msgBox->setText("Download Error");
+                    msgBox->exec();
+                    delete msgBox;
+
+                }
 
             }
             else
@@ -467,18 +488,53 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
                         precSelection = false;
 
                 }
-                myProject.downloadArkimetDailyVar(var, precSelection);
+                QApplication::setOverrideCursor(Qt::WaitCursor);
+                FormDownload downloadWindow;
+                downloadWindow.setModal(true);
+                downloadWindow.show();
+
                 QMessageBox *msgBox = new QMessageBox(this);
-                msgBox->setText("Daily Download Completed");
+
+                if ( myProject.downloadArkimetDailyVar(var, precSelection))
+                {
+                    downloadWindow.close();
+                    QApplication::restoreOverrideCursor();
+
+                    msgBox->setText("Daily Download Completed");
+                }
+                else
+                {
+                    downloadWindow.close();
+                    QApplication::restoreOverrideCursor();
+
+                    msgBox->setText("Daily Download Error");
+                }
                 msgBox->exec();
                 delete msgBox;
             }
 
             if (hourly.isChecked())
             {
-                myProject.downloadArkimetHourlyVar(var);
+
+                QApplication::setOverrideCursor(Qt::WaitCursor);
+                FormDownload downloadWindow;
+                downloadWindow.setModal(true);
+                downloadWindow.show();
+
                 QMessageBox *msgBox = new QMessageBox(this);
-                msgBox->setText("Hourly Download Completed");
+                if (myProject.downloadArkimetHourlyVar(var))
+                {
+                    downloadWindow.close();
+                    QApplication::restoreOverrideCursor();
+                    msgBox->setText("Hourly Download Completed");
+
+                }
+                else
+                {
+                    downloadWindow.close();
+                    QApplication::restoreOverrideCursor();
+                    msgBox->setText("Hourly Download Error");
+                }
                 msgBox->exec();
                 delete msgBox;
             }

@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     colorlegend.cpp \
     formSingleValue.cpp \
     project.cpp \
-    stationMarker.cpp
+    stationMarker.cpp \
+    formDownload.cpp
 
 HEADERS  += mainwindow.h \
     rasterObject.h \
@@ -33,9 +34,11 @@ HEADERS  += mainwindow.h \
     formSingleValue.h \
     project.h \
     guiConfiguration.h \
-    stationMarker.h
+    stationMarker.h \
+    formDownload.h
 
 FORMS    += mainwindow.ui \
-    formSingleValue.ui
+    formSingleValue.ui \
+    formDownload.ui
 
 DISTFILES +=
