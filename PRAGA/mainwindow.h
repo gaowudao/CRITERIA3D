@@ -60,6 +60,8 @@
 
         void on_actionSetUTMzone_triggered();
 
+        void on_actionRectangle_Selection_triggered();
+
         void enableAll(bool toggled);
 
         void displayMeteoPoints();

@@ -1436,9 +1436,16 @@
     <addaction name="menuMap"/>
     <addaction name="actionProxy"/>
    </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionRectangle_Selection"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuMap_server"/>
    <addaction name="menuGIS_settings"/>
+   <addaction name="menuTools"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionLoadRaster">
@@ -1494,6 +1501,11 @@
   <action name="actionCSV">
    <property name="text">
     <string>from CSV</string>
+   </property>
+  </action>
+  <action name="actionRectangle_Selection">
+   <property name="text">
+    <string>Rectangle Selection</string>
    </property>
   </action>
  </widget>

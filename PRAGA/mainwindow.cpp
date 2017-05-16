@@ -319,8 +319,6 @@ void MainWindow::displayMeteoPoints()
         point->setToolTip();
     }
 
-    //this->mapView->scene()->addObject(QRect selectionRect);
-
 }
 
 void MainWindow::on_actionDownload_meteo_data_triggered()
@@ -679,6 +677,11 @@ void MainWindow::on_actionSetUTMzone_triggered()
     }
 
     myProject.gisSettings.utmZone = utmZone;
+}
+
+void MainWindow::on_actionRectangle_Selection_triggered()
+{
+
 }
 
 void MainWindow::resetProject()
