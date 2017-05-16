@@ -33,7 +33,7 @@ DbArkimet* Download::getDbArkimet()
 bool Download::getPointProperties(QStringList datasetList)
 {
 
-    bool result;
+    bool result = true;
     QEventLoop loop;
 
     QNetworkAccessManager* manager = new QNetworkAccessManager(this);
