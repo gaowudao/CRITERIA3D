@@ -465,16 +465,20 @@ bool Criteria1D::readMeteoData(QSqlQuery * query, QString *myError)
     const int MAX_MISSING_DAYS = 3;
     float tmin, tmax, tmed, prec, et0;
     float prevTmin, prevTmax;
-    QDate myDate, previousDate;
+    QDate myDate, expectedDate, previousDate;
+    Crit3DDate date;
     int nrMissingTemp, nrMissingPrec;
 
-    previousDate.setDate(1900,1,1);
     tmin = NODATA;
     tmax = NODATA;
     nrMissingTemp = 0;
     nrMissingPrec = 0;
 
     query->first();
+    myDate = query->value("date").toDate();
+    expectedDate = myDate;
+    previousDate = myDate.addDays(-1);
+
     do
     {
         myDate = query->value("date").toDate();
@@ -487,6 +491,36 @@ bool Criteria1D::readMeteoData(QSqlQuery * query, QString *myError)
 
         if (myDate != previousDate)
         {
+            if (myDate != expectedDate)
+            {
+                if (expectedDate.daysTo(myDate) > MAX_MISSING_DAYS)
+                {
+                    *myError = "Wrong METEO: too many missing data." + expectedDate.toString();
+                    return false;
+                }
+                else
+                {
+                    // fill missing data
+                    while (myDate != expectedDate)
+                    {
+                        tmin = prevTmin;
+                        tmax = prevTmax;
+                        tmed = (tmin + tmax) * 0.5;
+                        prec = 0;
+                        et0 = NODATA;
+
+                        date = getCrit3DDate(expectedDate);
+                        this->meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureMin, tmin);
+                        this->meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureMax, tmax);
+                        this->meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureAvg, tmed);
+                        this->meteoPoint.setMeteoPointValueD(date, dailyPrecipitation, prec);
+                        this->meteoPoint.setMeteoPointValueD(date, dailyPotentialEvapotranspiration, et0);
+
+                        expectedDate = expectedDate.addDays(1);
+                    }
+                }
+            }
+
             prevTmax = tmax;
             prevTmin = tmin;
 
@@ -503,7 +537,7 @@ bool Criteria1D::readMeteoData(QSqlQuery * query, QString *myError)
                 }
                 else
                 {
-                    *myError = "Missing too much temperature: " + myDate.toString();
+                    *myError = "Wrong METEO: too many missing data " + myDate.toString();
                     return false;
                 }
             }
@@ -519,18 +553,18 @@ bool Criteria1D::readMeteoData(QSqlQuery * query, QString *myError)
                 }
                 else
                 {
-                    *myError = "Missing too much precipitation: " + myDate.toString();
+                    *myError = "Wrong METEO: too many missing data " + myDate.toString();
                     return false;
                 }
             }
             else nrMissingPrec = 0;
 
-            // facoltativi
+            // not mandatory
             getValue(query->value("tavg"), &tmed);
             getValue(query->value("etp"), &et0);
             if (tmed == NODATA) tmed = (tmin + tmax) * 0.5;
 
-            Crit3DDate date = getCrit3DDate(myDate);
+            date = getCrit3DDate(myDate);
             if (this->meteoPoint.obsDataD[0].date.daysTo(date) < this->meteoPoint.nrObsDataDaysD)
             {
                 this->meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureMin, (float)tmin);
@@ -541,12 +575,13 @@ bool Criteria1D::readMeteoData(QSqlQuery * query, QString *myError)
             }
             else
             {
-                *myError = "Wrong meteo data.";
+                *myError = "Wrong METEO: index out of range.";
                 return false;
             }
-        }
 
-        previousDate = myDate;
+            previousDate = myDate;
+            expectedDate = myDate.addDays(1);
+        }
 
     } while(query->next());
 
