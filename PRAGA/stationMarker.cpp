@@ -39,7 +39,7 @@ void StationMarker::setToolTip()
         }
 
     }
-    QString toolTipText = QString("id_point = %1 <br/> %2 <br/> %3 <br/> altitude = %4m <br/> %5").arg(idpoint).arg(name).arg(dataset).arg(altitude).arg(municipality);
+    QString toolTipText = QString("%1 <br/> <b> %2 </b> <br/> %3 <br/> altitude = %4m <br/> %5").arg(idpoint).arg(name).arg(dataset).arg(altitude).arg(municipality);
     CircleObject::setToolTip(toolTipText);
 }
 

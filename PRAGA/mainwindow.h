@@ -8,6 +8,7 @@
     #include <QCalendarWidget>
     #include <QDateEdit>
     #include <QLabel>
+    #include <QRubberBand>
     #include "MapGraphicsView.h"
     #include "MapGraphicsScene.h"
     #include "tileSources/OSMTileSource.h"
@@ -87,6 +88,8 @@
 
         void mouseMoveEvent(QMouseEvent * event);
 
+        void mousePressEvent(QMouseEvent *event);
+
         void resizeEvent(QResizeEvent * event);
 
 
@@ -98,6 +101,10 @@
         QList<StationMarker*> pointList;
         ColorLegend* legend;
         environment menu;
+        QRubberBand *rubberBand;
+        bool moveRubberBand;
+        bool enableRubberBand;
+        QPoint rubberBandOffset;
 
         QList<QCheckBox*> datasetCheckbox;
         QCalendarWidget* calendar;

@@ -73,6 +73,8 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
             break;
     }
 
+    this->enableRubberBand = false;
+    this->moveRubberBand = false;
 }
 
 
@@ -576,6 +578,8 @@ void MainWindow::slotClicked(const QDate& date)
 void MainWindow::mouseReleaseEvent(QMouseEvent *event){
     Q_UNUSED(event)
 
+    moveRubberBand = false;
+
     if (this->rasterObj != NULL)
         this->rasterObj->updateCenter();
 }
@@ -609,6 +613,26 @@ void MainWindow::mouseMoveEvent(QMouseEvent * event)
     Position geoPoint = this->mapView->mapToScene(mapPoint);
     this->ui->statusBar->showMessage(QString::number(geoPoint.latitude()) + " " + QString::number(geoPoint.longitude()));
 
+    if (moveRubberBand)
+    {
+        qDebug() << "mouseMoveEvent";
+        rubberBand->move(event->pos() - rubberBandOffset);
+    }
+
+}
+
+void MainWindow::mousePressEvent(QMouseEvent *event)
+{
+    if (enableRubberBand)
+    {
+         qDebug() << "mousePressEvent";
+        if(rubberBand->geometry().contains(event->pos()))
+        {
+            qDebug() << "mousePressEvent contains";
+            rubberBandOffset = event->pos() - rubberBand->pos();
+            moveRubberBand = true;
+        }
+    }
 }
 
 void MainWindow::resizeEvent(QResizeEvent * event)
@@ -681,7 +705,12 @@ void MainWindow::on_actionSetUTMzone_triggered()
 
 void MainWindow::on_actionRectangle_Selection_triggered()
 {
+    enableRubberBand = true;
+    moveRubberBand = false;
+    rubberBand = new QRubberBand(QRubberBand::Rectangle, this);
 
+    rubberBand->setGeometry(this->mapView->width()*0.5,this->mapView->height()*0.5,100,100);
+    rubberBand->show();
 }
 
 void MainWindow::resetProject()

@@ -151,8 +151,7 @@ void Download::downloadMetadata(QJsonObject obj)
     pointProp->lonInt = jsonLonInt.toInt();
 
     QJsonValue jsonAltitude = obj.value("height");
-    pointProp->point.z = jsonAltitude.toString().toDouble();
-
+    pointProp->point.z = jsonAltitude.toDouble();
 
     QJsonValue jsonState = obj.value("country").toObject().value("name");
     pointProp->state = jsonState.toString().toStdString();
