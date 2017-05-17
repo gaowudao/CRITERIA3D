@@ -290,11 +290,11 @@ bool Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStrin
                         varValue *= DAILY_TO_INTEGRAL_RAD / 1000000.0;
                     }
 
-                    int id = _dbMeteo->arkIdmap(arkId);
+                    int id_var = _dbMeteo->arkIdmap(arkId);
 
                     if (!(id_point.isEmpty() || id_point.isEmpty()))
                     {
-                        _dbMeteo->insertDailyValue(id_point, date, id, varValue, flag);
+                        _dbMeteo->insertDailyValue(id_point, date, id_var, varValue, flag);
                     }
 
                     dateStart = i.addDays(1);

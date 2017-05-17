@@ -158,13 +158,13 @@ void Crit3DMeteoPoint::emptyVarObsDataH(meteoVariable myVar, const Crit3DDate& m
             }
 }
 
-void Crit3DMeteoPoint::emptyVarObsDataH(meteoVariable myVar, const Crit3DDate& myDateIni, const Crit3DDate& myDateFin)
+void Crit3DMeteoPoint::emptyVarObsDataH(meteoVariable myVar, const Crit3DDate& date1, const Crit3DDate& date2)
 {
-    if (! isDateIntervalLoadedH(myDateIni, myDateFin)) return;
+    if (! isDateIntervalLoadedH(date1, date2)) return;
 
     int nrDayValues = hourlyFraction * 24 + 1;
-    int indexIni = obsDataH[0].date.daysTo(myDateIni);
-    int indexFin = obsDataH[0].date.daysTo(myDateFin);
+    int indexIni = obsDataH[0].date.daysTo(date1);
+    int indexFin = obsDataH[0].date.daysTo(date2);
     residual = NODATA;
 
     for (int i = indexIni; i <= indexFin; i++)
@@ -191,12 +191,12 @@ void Crit3DMeteoPoint::emptyVarObsDataH(meteoVariable myVar, const Crit3DDate& m
         }
 }
 
-void Crit3DMeteoPoint::emptyVarObsDataD(meteoVariable myVar, const Crit3DDate& myDateIni, const Crit3DDate& myDateFin)
+void Crit3DMeteoPoint::emptyVarObsDataD(meteoVariable myVar, const Crit3DDate& date1, const Crit3DDate& date2)
 {
-    if (! isDateIntervalLoadedH(myDateIni, myDateFin)) return;
+    if (! isDateIntervalLoadedH(date1, date2)) return;
 
-    int indexIni = obsDataD[0].date.daysTo(myDateIni);
-    int indexFin = obsDataD[0].date.daysTo(myDateFin);
+    int indexIni = obsDataD[0].date.daysTo(date1);
+    int indexFin = obsDataD[0].date.daysTo(date2);
     residual = NODATA;
 
     for (int i = indexIni; i <= indexFin; i++)
@@ -232,13 +232,13 @@ bool Crit3DMeteoPoint::isDateLoadedH(const Crit3DDate& myDate)
         return (true);
 }
 
-bool Crit3DMeteoPoint::isDateIntervalLoadedH(const Crit3DDate& myDateIni, const Crit3DDate& myDateFin)
+bool Crit3DMeteoPoint::isDateIntervalLoadedH(const Crit3DDate& date1, const Crit3DDate& date2)
 {
     if (nrObsDataDaysH == 0)
         return false;
-    else if (myDateIni > myDateFin)
+    else if (date1 > date2)
         return false;
-    else if (myDateIni < obsDataH->date || myDateFin > (obsDataH->date.addDays(nrObsDataDaysH - 1)))
+    else if (date1 < obsDataH->date || date2 > (obsDataH->date.addDays(nrObsDataDaysH - 1)))
         return (false);
     else
         return (true);
@@ -254,13 +254,13 @@ bool Crit3DMeteoPoint::isDateLoadedD(const Crit3DDate& myDate)
         return (true);
 }
 
-bool Crit3DMeteoPoint::isDateIntervalLoadedD(const Crit3DDate& myDateIni, const Crit3DDate& myDateFin)
+bool Crit3DMeteoPoint::isDateIntervalLoadedD(const Crit3DDate& date1, const Crit3DDate& date2)
 {
     if (nrObsDataDaysD == 0)
         return false;
-    else if (myDateIni > myDateFin)
+    else if (date1 > date2)
         return false;
-    else if (myDateIni < obsDataD->date || myDateFin > (obsDataD->date.addDays(nrObsDataDaysD - 1)))
+    else if (date1 < obsDataD->date || date2 > (obsDataD->date.addDays(nrObsDataDaysD - 1)))
         return (false);
     else
         return (true);
@@ -339,31 +339,31 @@ void Crit3DMeteoPoint::cleanObsDataD()
 
 bool Crit3DMeteoPoint::setMeteoPointValueH(const Crit3DDate& myDate, int myHour, int myMinutes, meteoVariable myVar, float myValue)
 {
-    int myHourlyIndex = (hourlyFraction * myHour) + myMinutes % (60 / hourlyFraction);
+    int h = (hourlyFraction * myHour) + myMinutes % (60 / hourlyFraction);
     long i = obsDataH[0].date.daysTo(myDate);
 
-    if (i < 0) return false;
+    if ((i <0) || (i >= nrObsDataDaysH)) return false;
 
     if (myVar == airTemperature)
-        obsDataH[i].tAir[myHourlyIndex] = myValue;
+        obsDataH[i].tAir[h] = myValue;
     else if (myVar == precipitation)
-        obsDataH[i].prec[myHourlyIndex] = myValue;
+        obsDataH[i].prec[h] = myValue;
     else if (myVar == airHumidity)
-        obsDataH[i].rhAir[myHourlyIndex] = myValue;
+        obsDataH[i].rhAir[h] = myValue;
     else if (myVar == airDewTemperature)
-        obsDataH[i].tDew[myHourlyIndex] = myValue;
+        obsDataH[i].tDew[h] = myValue;
     else if (myVar == globalIrradiance)
-        obsDataH[i].irradiance[myHourlyIndex] = myValue;
+        obsDataH[i].irradiance[h] = myValue;
     else if (myVar == potentialEvapotranspiration)
-        obsDataH[i].et0[myHourlyIndex] = myValue;
+        obsDataH[i].et0[h] = myValue;
     else if (myVar == windIntensity)
-        obsDataH[i].windInt[myHourlyIndex] = myValue;
+        obsDataH[i].windInt[h] = myValue;
     else if (myVar == wetnessDuration)
-        obsDataH[i].wetDuration[myHourlyIndex] = (int)myValue;
+        obsDataH[i].wetDuration[h] = (int)myValue;
     else if (myVar == atmPressure)
-        obsDataH[i].pressure[myHourlyIndex] = myValue;
+        obsDataH[i].pressure[h] = myValue;
     else if (myVar == atmTransmissivity)
-        obsDataH[i].transmissivity[myHourlyIndex] = myValue;
+        obsDataH[i].transmissivity[h] = myValue;
     else
         return false;
 
@@ -411,35 +411,35 @@ float Crit3DMeteoPoint::getMeteoPointValueH(const Crit3DDate& myDate, int myHour
     if (myVar == noMeteoVar) return NODATA;
 
     int h = (hourlyFraction * myHour) + myMinutes % (60 / hourlyFraction);
-    int dateIndex = obsDataH[0].date.daysTo(myDate);
+    int i = obsDataH[0].date.daysTo(myDate);
 
-    if ((dateIndex < 0) || (dateIndex >= nrObsDataDaysH)) return NODATA;
+    if ((i < 0) || (i >= nrObsDataDaysH)) return NODATA;
 
     if (myVar == airTemperature)
-        return (obsDataH[dateIndex].tAir[h]);
+        return (obsDataH[i].tAir[h]);
     else if (myVar == precipitation)
-        return (obsDataH[dateIndex].prec[h]);
+        return (obsDataH[i].prec[h]);
     else if (myVar == airHumidity)
-        return (obsDataH[dateIndex].rhAir[h]);
+        return (obsDataH[i].rhAir[h]);
     else if (myVar == airDewTemperature)
     {
-        if (obsDataH[dateIndex].tDew[h] != NODATA)
-            return obsDataH[dateIndex].tDew[h];
+        if (obsDataH[i].tDew[h] != NODATA)
+            return obsDataH[i].tDew[h];
         else
-            return tDewFromRelHum(obsDataH[dateIndex].rhAir[h], obsDataH[dateIndex].tAir[h]);
+            return tDewFromRelHum(obsDataH[i].rhAir[h], obsDataH[i].tAir[h]);
     }
     else if (myVar == globalIrradiance)
-        return (obsDataH[dateIndex].irradiance[h]);
+        return (obsDataH[i].irradiance[h]);
     else if (myVar == potentialEvapotranspiration)
-        return (obsDataH[dateIndex].et0[h]);
+        return (obsDataH[i].et0[h]);
     else if (myVar == windIntensity)
-        return (obsDataH[dateIndex].windInt[h]);
+        return (obsDataH[i].windInt[h]);
     else if (myVar == wetnessDuration)
-        return (float)(obsDataH[dateIndex].wetDuration[h]);
+        return (float)(obsDataH[i].wetDuration[h]);
     else if (myVar == atmPressure)
-        return (obsDataH[dateIndex].pressure[h]);
+        return (obsDataH[i].pressure[h]);
     else if (myVar == atmTransmissivity)
-        return (obsDataH[dateIndex].transmissivity[h]);
+        return (obsDataH[i].transmissivity[h]);
     else
         return (NODATA);
 
@@ -449,33 +449,33 @@ float Crit3DMeteoPoint::getMeteoPointValueD(const Crit3DDate& myDate, meteoVaria
 {
     if (myVar == noMeteoVar) return NODATA;
 
-    int dateIndex = obsDataD[0].date.daysTo(myDate);
-    if ((dateIndex < 0) || (dateIndex >= nrObsDataDaysD)) return NODATA;
+    int i = obsDataD[0].date.daysTo(myDate);
+    if ((i < 0) || (i >= nrObsDataDaysD)) return NODATA;
 
     if (myVar == dailyAirTemperatureMax)
-        return (obsDataD[dateIndex].tMax);
+        return (obsDataD[i].tMax);
     else if (myVar == dailyAirTemperatureMin)
-        return (obsDataD[dateIndex].tMin);
+        return (obsDataD[i].tMin);
     else if (myVar == dailyAirTemperatureAvg)
-        return (obsDataD[dateIndex].tAvg);
+        return (obsDataD[i].tAvg);
     else if (myVar == precipitation)
-        return (obsDataD[dateIndex].prec);
+        return (obsDataD[i].prec);
     else if (myVar == dailyAirHumidityMax)
-        return (obsDataD[dateIndex].rhMax);
+        return (obsDataD[i].rhMax);
     else if (myVar == dailyAirHumidityMin)
-        return (float)(obsDataD[dateIndex].rhMin);
+        return (float)(obsDataD[i].rhMin);
     else if (myVar == dailyAirHumidityAvg)
-        return (obsDataD[dateIndex].rhAvg);
+        return (obsDataD[i].rhAvg);
     else if (myVar == dailyGlobalRadiation)
-        return (obsDataD[dateIndex].globRad);
+        return (obsDataD[i].globRad);
     else if (myVar == dailyPotentialEvapotranspiration)
-        return (obsDataD[dateIndex].et0);
+        return (obsDataD[i].et0);
     else if (myVar == dailyWindIntensityAvg)
-        return (obsDataD[dateIndex].windIntAvg);
+        return (obsDataD[i].windIntAvg);
     else if (myVar == windDirectionPrevailing)
-        return (obsDataD[dateIndex].windDirPrev);
+        return (obsDataD[i].windDirPrev);
     else if (myVar == waterTableDepth)
-        return (obsDataD[dateIndex].waterTableDepth);
+        return (obsDataD[i].waterTableDepth);
     else
         return (NODATA);
 

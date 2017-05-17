@@ -285,7 +285,6 @@ double getReadilyAvailableWater(Criteria1D* myCase)
 }
 
 
-
 float cropIrrigationDemand(Criteria1D* myCase, float currentPrec, float nextPrec)
 {
     // check crop

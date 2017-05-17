@@ -73,20 +73,20 @@
 
         void initializeObsDataH(int hourlyFraction, int numberOfDays, const Crit3DDate& firstDate);
         void emptyVarObsDataH(meteoVariable myVar, const Crit3DDate& myDate);
-        void emptyVarObsDataH(meteoVariable myVar, const Crit3DDate& myDateIni, const Crit3DDate& myDateFin);
+        void emptyVarObsDataH(meteoVariable myVar, const Crit3DDate& date1, const Crit3DDate& date2);
         void cleanObsDataH();
         bool isDateLoadedH(const Crit3DDate& myDate);
-        bool isDateIntervalLoadedH(const Crit3DDate& myDateIni, const Crit3DDate& myDateFin);
-        bool isDateIntervalLoadedH(const Crit3DTime& myTimeIni, const Crit3DTime& myTimeFin);
-        float obsDataConsistencyH(meteoVariable myVar, const Crit3DTime& myTimeIni, const Crit3DTime& myTimeFin);
+        bool isDateIntervalLoadedH(const Crit3DDate& date1, const Crit3DDate& date2);
+        bool isDateIntervalLoadedH(const Crit3DTime& time1, const Crit3DTime& time2);
+        float obsDataConsistencyH(meteoVariable myVar, const Crit3DTime& time1, const Crit3DTime& time2);
         float getMeteoPointValueH(const Crit3DDate& myDate, int myHour, int myMinutes, meteoVariable myVar);
         bool setMeteoPointValueH(const Crit3DDate& myDate, int myHour, int myMinutes, meteoVariable myVar, float myValue);
 
         void initializeObsDataD(int numberOfDays, const Crit3DDate& firstDate);
-        void emptyVarObsDataD(meteoVariable myVar, const Crit3DDate& myDateIni, const Crit3DDate& myDateFin);
+        void emptyVarObsDataD(meteoVariable myVar, const Crit3DDate& date1, const Crit3DDate& date2);
         void cleanObsDataD();
         bool isDateLoadedD(const Crit3DDate& myDate);
-        bool isDateIntervalLoadedD(const Crit3DDate& myDateIni, const Crit3DDate& myDateFin);
+        bool isDateIntervalLoadedD(const Crit3DDate& date1, const Crit3DDate& date2);
         float getMeteoPointValueD(const Crit3DDate& myDate, meteoVariable myVar);
         bool setMeteoPointValueD(const Crit3DDate& myDate, meteoVariable myVar, float myValue);
     };
