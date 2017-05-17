@@ -903,11 +903,6 @@ bool Crit3DProject::loadObsDataHourly(int indexPoint, QDate d1, QDate d2, QStrin
                         if ((myValue >= 0)&&(myValue < 75))
                         myPoint->obsDataH[i].windInt[j] = myValue;
                     }
-                    else if (myVar == atmPressure)
-                    {
-                        if ((myValue >= 800)&&(myValue <= 1100))
-                        myPoint->obsDataH[i].pressure[j] = myValue;
-                    }
                     else if (myVar == wetnessDuration)
                     {
                         if ((myValue >= 0)&&(myValue <= 60))
@@ -994,8 +989,6 @@ bool Crit3DProject::loadObsDataHourlyVar(int indexPoint, meteoVariable myVar, QD
                     myPoint->obsDataH[i].irradiance[j] = myValue;
                 else if (myVar == windIntensity)
                     myPoint->obsDataH[i].windInt[j] = myValue;
-                else if (myVar == atmPressure)
-                    myPoint->obsDataH[i].pressure[j] = myValue;
                 else if (myVar == wetnessDuration)
                     myPoint->obsDataH[i].wetDuration[j] = myValue;
             }

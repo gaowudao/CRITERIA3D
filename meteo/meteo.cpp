@@ -312,3 +312,27 @@ double ET0_Hargreaves(double KT, double myLat, int myDoy, double tmax, double tm
 
     return 0.0135 * (tavg + 17.78) * KT * (extraTerrRadiation / 2.456) * sqrt(deltaT);
 }
+
+
+meteoVariable getDefaultMeteoVariable(int id)
+{
+    if (id == 101) return(airTemperature);
+    else if (id == 102) return(precipitation);
+    else if (id == 103) return(airHumidity);
+    else if (id == 104) return(globalIrradiance);
+    else if (id == 105) return(windIntensity);
+    else if (id == 106) return(windDirection);
+
+    else if (id == 151) return(dailyAirTemperatureMin);
+    else if (id == 152) return(dailyAirTemperatureMax);
+    else if (id == 153) return(dailyAirTemperatureAvg);
+    else if (id == 154) return(dailyPrecipitation);
+    else if (id == 155) return(dailyAirHumidityMin);
+    else if (id == 156) return(dailyAirHumidityMax);
+    else if (id == 157) return(dailyAirHumidityAvg);
+    else if (id == 158) return(dailyGlobalRadiation);
+    else if (id == 159) return(dailyWindIntensityAvg);
+
+    else
+        return(noMeteoVar);
+}

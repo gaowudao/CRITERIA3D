@@ -23,7 +23,6 @@
         float* irradiance;
         float* et0;
         float* windInt;
-        float* pressure;
         int* wetDuration;
         float* transmissivity;
     };

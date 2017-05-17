@@ -145,7 +145,7 @@ float getMinHeight()
     for (long i = 0; i < long(interpolationPointList.size()); i++)
         if (interpolationPointList.at(i).point->z != NODATA)
             if (myZmin == NODATA || interpolationPointList.at(i).point->z < myZmin)
-                myZmin = interpolationPointList.at(i).point->z;
+                myZmin = float(interpolationPointList.at(i).point->z);
     return myZmin;
 }
 
@@ -157,7 +157,7 @@ float getMaxHeight()
     for (long i = 1; i < long(interpolationPointList.size()); i++)
         if ((interpolationPointList.at(i)).value != NODATA && (interpolationPointList.at(i)).isActive)
             if (zMax == NODATA || (interpolationPointList.at(i)).point->z > zMax)
-                zMax = (interpolationPointList.at(i)).point->z;
+                zMax = float(interpolationPointList.at(i).point->z);
 
 
     return zMax;
@@ -292,7 +292,7 @@ void regressionSimple(proxyVars::TProxyVar myProxy, bool isZeroIntercept, float*
         if (myPoint->isActive)
         {
             if (myProxy == proxyVars::height)
-                myProxyValue = myPoint->point->z;
+                myProxyValue = float(myPoint->point->z);
             else if (myProxy == proxyVars::urbanFraction)
                 myProxyValue = myPoint->getUrbanFraction();
             else if (myProxy == proxyVars::orogIndex)
@@ -445,8 +445,8 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
 
     float DELTAZ_INI = 80.;
 
-    mySignificativeR2 = maxValue(currentSettings.getGenericPearsonThreshold(), 0.2);
-    mySignificativeR2Inv = maxValue(currentSettings.getGenericPearsonThreshold(), 0.1);
+    mySignificativeR2 = maxValue(currentSettings.getGenericPearsonThreshold(), float(0.2));
+    mySignificativeR2Inv = maxValue(currentSettings.getGenericPearsonThreshold(), float(0.1));
 
     /*! initialize */
     initializeOrography();
@@ -595,7 +595,7 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
             inversionIsSignificative = false;
             lapseRateH1 = NODATA;
             inversionLapseRate = NODATA;
-            actualLapseRate = minValue(m, 0.);
+            actualLapseRate = minValue(m, float(0.0));
             actualR2Levels = NODATA;
             return true;
         }
@@ -608,7 +608,7 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
         {
             if (actualR2 >= mySignificativeR2)
             {
-                actualLapseRate = minValue(m2, 0.);
+                actualLapseRate = minValue(m2, float(0.0));
                 actualR2Levels = NODATA;
                 lapseRateT1 = q2 + lapseRateH1 * actualLapseRate;
                 lapseRateT0 = lapseRateT1;
@@ -619,7 +619,7 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
                 statistics::linearRegression(myIntervalsHeight2.data(), myIntervalsValues2.data(), myIntervalsHeight2.size(), false, &q2, &m2, &actualR2Levels);
                 if (actualR2Levels >= mySignificativeR2)
                 {
-                    actualLapseRate = minValue(m2, 0.);
+                    actualLapseRate = minValue(m2, float(0.0));
                     lapseRateT1 = q2 + lapseRateH1 * actualLapseRate;
                     lapseRateT0 = lapseRateT1;
                     return true;
@@ -639,7 +639,7 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
 
         if (actualR2 >= mySignificativeR2)
         {
-            actualLapseRate = minValue(m, 0.);
+            actualLapseRate = minValue(m, 0);
             lapseRateT0 = q;
             return true;
         }
@@ -759,7 +759,7 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
 
         if (r2 >= mySignificativeR2)
         {
-            actualLapseRate = minValue(m, 0.);
+            actualLapseRate = minValue(m, 0);
             if (findLinesIntersectionAboveThreshold(lapseRateT0, inversionLapseRate, q, actualLapseRate, 40, &lapseRateH1, &lapseRateT1))
                 return true;
         }
@@ -987,11 +987,11 @@ void detrend(meteoVariable myVar, proxyVars::TProxyVar myProxy)
                 {
                     if (inversionIsSignificative)
                         if (myPoint->point->z <= lapseRateH1)
-                            detrendValue = (maxValue(myPoint->point->z - lapseRateH0, 0) * inversionLapseRate);
+                            detrendValue = maxValue(float(myPoint->point->z) - lapseRateH0, 0) * inversionLapseRate;
                         else
-                            detrendValue = ((lapseRateH1 - lapseRateH0) * inversionLapseRate) + (myPoint->point->z - lapseRateH1) * actualLapseRate;
+                            detrendValue = ((lapseRateH1 - lapseRateH0) * inversionLapseRate) + (float(myPoint->point->z) - lapseRateH1) * actualLapseRate;
                     else
-                        detrendValue = maxValue(myPoint->point->z, 0) * actualLapseRate;
+                        detrendValue = maxValue(float(myPoint->point->z), 0) * actualLapseRate;
                 }
             }
 

@@ -79,7 +79,6 @@ void Crit3DMeteoPoint::initializeObsDataH(int myHourlyFraction, int numberOfDays
         obsDataH[i].irradiance = (float *) calloc(nrDayValues, sizeof(float));
         obsDataH[i].et0 = (float *) calloc(nrDayValues, sizeof(float));
         obsDataH[i].windInt = (float *) calloc(nrDayValues, sizeof(float));
-        obsDataH[i].pressure = (float *) calloc(nrDayValues, sizeof(float));
         obsDataH[i].wetDuration = (int *) calloc(nrDayValues, sizeof(int));
         obsDataH[i].transmissivity = (float *) calloc(nrDayValues, sizeof(float));
         for (int j = 0; j < nrDayValues; j++)
@@ -91,7 +90,6 @@ void Crit3DMeteoPoint::initializeObsDataH(int myHourlyFraction, int numberOfDays
             obsDataH[i].irradiance[j] = NODATA;
             obsDataH[i].et0[j] = NODATA;
             obsDataH[i].windInt[j] = NODATA;
-            obsDataH[i].pressure[j] = NODATA;
             obsDataH[i].wetDuration[j] = NODATA;
             obsDataH[i].transmissivity[j] = NODATA;
         }
@@ -149,8 +147,6 @@ void Crit3DMeteoPoint::emptyVarObsDataH(meteoVariable myVar, const Crit3DDate& m
                     obsDataH[i].irradiance[j] = NODATA;
                 else if (myVar == windIntensity)
                     obsDataH[i].windInt[j] = NODATA;
-                else if (myVar == atmPressure)
-                    obsDataH[i].pressure[j] = NODATA;
                 else if (myVar == wetnessDuration)
                     obsDataH[i].wetDuration[j] = NODATA;
                 else if (myVar == atmTransmissivity)
@@ -182,8 +178,6 @@ void Crit3DMeteoPoint::emptyVarObsDataH(meteoVariable myVar, const Crit3DDate& d
                 obsDataH[i].irradiance[j] = NODATA;
             else if (myVar == windIntensity)
                 obsDataH[i].windInt[j] = NODATA;
-            else if (myVar == atmPressure)
-                obsDataH[i].pressure[j] = NODATA;
             else if (myVar == wetnessDuration)
                 obsDataH[i].wetDuration[j] = NODATA;
             else if (myVar == atmTransmissivity)
@@ -322,7 +316,6 @@ void Crit3DMeteoPoint::cleanObsDataH()
             free(obsDataH[i].tDew);
             free(obsDataH[i].irradiance);
             free(obsDataH[i].windInt);
-            free(obsDataH[i].pressure);
             free(obsDataH[i].wetDuration);
         }
         free (obsDataH);
@@ -360,8 +353,6 @@ bool Crit3DMeteoPoint::setMeteoPointValueH(const Crit3DDate& myDate, int myHour,
         obsDataH[i].windInt[h] = myValue;
     else if (myVar == wetnessDuration)
         obsDataH[i].wetDuration[h] = (int)myValue;
-    else if (myVar == atmPressure)
-        obsDataH[i].pressure[h] = myValue;
     else if (myVar == atmTransmissivity)
         obsDataH[i].transmissivity[h] = myValue;
     else
@@ -436,8 +427,6 @@ float Crit3DMeteoPoint::getMeteoPointValueH(const Crit3DDate& myDate, int myHour
         return (obsDataH[i].windInt[h]);
     else if (myVar == wetnessDuration)
         return (float)(obsDataH[i].wetDuration[h]);
-    else if (myVar == atmPressure)
-        return (obsDataH[i].pressure[h]);
     else if (myVar == atmTransmissivity)
         return (obsDataH[i].transmissivity[h]);
     else

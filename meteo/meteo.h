@@ -74,4 +74,6 @@
                            float myTmin, float myTmax, float myTminDayAfter, float myUmed, float myVmed10, float mySWGlobRad);
     double ET0_Hargreaves(double KT, double myLat, int myDoy, double tmax, double tmin);
 
+    meteoVariable getDefaultMeteoVariable(int myVar);
+
 #endif // METEO_H
