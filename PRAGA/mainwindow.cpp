@@ -299,6 +299,99 @@ void MainWindow::on_actionOpen_meteo_points_DB_triggered()
     DbArkimet* dbArkimet = myProject.pointProperties->getDbArkimet();
     myProject.meteoPoints = dbArkimet->getPropertiesFromDb();
     displayMeteoPoints();
+    loadData();
+
+}
+
+void MainWindow::loadData()
+{
+
+    QDialog load;
+    QVBoxLayout mainLayout;
+    QHBoxLayout layoutTime;
+    QHBoxLayout layoutPeriod;
+    QHBoxLayout layoutOk;
+
+    load.setWindowTitle("Load Data from DB");
+    load.setFixedWidth(300);
+
+    QCheckBox daily("Daily");
+    QCheckBox hourly("Hourly");
+    layoutTime.addWidget(&daily);
+    layoutTime.addWidget(&hourly);
+
+    QRadioButton day("last day available");
+    QRadioButton all("all data");
+
+    layoutPeriod.addWidget(&day);
+    layoutPeriod.addWidget(&all);
+
+    QDialogButtonBox buttonBox(QDialogButtonBox::Ok
+                                         | QDialogButtonBox::Cancel);
+
+
+    connect(&buttonBox, SIGNAL(accepted()), &load, SLOT(accept()));
+    connect(&buttonBox, SIGNAL(rejected()), &load, SLOT(reject()));
+
+
+    layoutOk.addWidget(&buttonBox);
+
+    mainLayout.addLayout(&layoutTime);
+    mainLayout.addLayout(&layoutPeriod);
+    mainLayout.addLayout(&layoutOk);
+    load.setLayout(&mainLayout);
+    load.exec();
+
+    if (load.result() == QDialog::Accepted)
+    {
+
+       if (!daily.isChecked() && !hourly.isChecked())
+       {
+           QMessageBox::information(NULL, "Missing parameter", "Select hourly and/or daily");
+           loadData();
+       }
+       else if (!day.isChecked() && !all.isChecked())
+       {
+           QMessageBox::information(NULL, "Missing parameter", "Select loading period from DB");
+           loadData();
+       }
+       else
+       {
+
+            if (daily.isChecked())
+            {
+                if ( day.isChecked() )
+                {
+
+
+                }
+                else
+                {
+
+                }
+
+            }
+
+            if (hourly.isChecked())
+            {
+                if ( day.isChecked() )
+                {
+
+
+                }
+                else
+                {
+
+                }
+
+
+            }
+
+
+       }
+
+
+    }
 
 }
 

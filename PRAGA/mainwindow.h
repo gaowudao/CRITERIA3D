@@ -67,6 +67,8 @@
 
         void displayMeteoPoints();
 
+        void loadData();
+
         void slotClicked(const QDate& date);
 
         void resetProject();
