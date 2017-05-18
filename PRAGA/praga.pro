@@ -26,7 +26,8 @@ SOURCES += main.cpp\
     formSingleValue.cpp \
     project.cpp \
     stationMarker.cpp \
-    formDownload.cpp
+    formDownload.cpp \
+    rubberBand.cpp
 
 HEADERS  += mainwindow.h \
     rasterObject.h \
@@ -35,7 +36,8 @@ HEADERS  += mainwindow.h \
     project.h \
     guiConfiguration.h \
     stationMarker.h \
-    formDownload.h
+    formDownload.h \
+    rubberBand.h
 
 FORMS    += mainwindow.ui \
     formSingleValue.ui \

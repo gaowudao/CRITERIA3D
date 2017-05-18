@@ -606,6 +606,7 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
 
 void MainWindow::mouseMoveEvent(QMouseEvent * event)
 {
+
     QPoint pos = event->pos();
     QPoint mapPoint = getMapPoint(&pos);
     if ((mapPoint.x() <= 0) || (mapPoint.y() <= 0)) return;
@@ -616,7 +617,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent * event)
     if (moveRubberBand)
     {
         qDebug() << "mouseMoveEvent";
-        rubberBand->move(event->pos() - rubberBandOffset);
+        myRubberBand->move(event->pos() - rubberBandOffset);
     }
 
 }
@@ -626,10 +627,10 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     if (enableRubberBand)
     {
          qDebug() << "mousePressEvent";
-        if(rubberBand->geometry().contains(event->pos()))
+        if(myRubberBand->geometry().contains(event->pos()))
         {
             qDebug() << "mousePressEvent contains";
-            rubberBandOffset = event->pos() - rubberBand->pos();
+            rubberBandOffset = event->pos() - myRubberBand->pos();
             moveRubberBand = true;
         }
     }
@@ -707,11 +708,12 @@ void MainWindow::on_actionRectangle_Selection_triggered()
 {
     enableRubberBand = true;
     moveRubberBand = false;
-    rubberBand = new QRubberBand(QRubberBand::Rectangle, this);
+    myRubberBand = new RubberBand(QRubberBand::Rectangle, this);
 
-    rubberBand->setGeometry(this->mapView->width()*0.5,this->mapView->height()*0.5,100,100);
-    rubberBand->show();
+    myRubberBand->setGeometry(this->mapView->width()*0.5,this->mapView->height()*0.5,100,100);
+    myRubberBand->show();
 }
+
 
 void MainWindow::resetProject()
 {

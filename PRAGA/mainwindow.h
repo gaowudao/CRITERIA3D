@@ -8,7 +8,7 @@
     #include <QCalendarWidget>
     #include <QDateEdit>
     #include <QLabel>
-    #include <QRubberBand>
+    #include "rubberBand.h"
     #include "MapGraphicsView.h"
     #include "MapGraphicsScene.h"
     #include "tileSources/OSMTileSource.h"
@@ -101,7 +101,7 @@
         QList<StationMarker*> pointList;
         ColorLegend* legend;
         environment menu;
-        QRubberBand *rubberBand;
+        RubberBand *myRubberBand;
         bool moveRubberBand;
         bool enableRubberBand;
         QPoint rubberBandOffset;
