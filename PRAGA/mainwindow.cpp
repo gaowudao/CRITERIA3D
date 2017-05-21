@@ -299,11 +299,11 @@ void MainWindow::on_actionOpen_meteo_points_DB_triggered()
     DbArkimet* dbArkimet = myProject.pointProperties->getDbArkimet();
     myProject.meteoPoints = dbArkimet->getPropertiesFromDb();
     displayMeteoPoints();
-    loadData();
+    loadData(dbArkimet);
 
 }
 
-void MainWindow::loadData()
+void MainWindow::loadData(DbArkimet* dbArkimet)
 {
 
     QDialog load;
@@ -320,10 +320,14 @@ void MainWindow::loadData()
     layoutTime.addWidget(&daily);
     layoutTime.addWidget(&hourly);
 
-    QRadioButton day("last day available");
+    QRadioButton lastDay("last day available");
     QRadioButton all("all data");
 
-    layoutPeriod.addWidget(&day);
+    char dayHour;
+    QDateTime firstD;
+    QDateTime lastD;
+
+    layoutPeriod.addWidget(&lastDay);
     layoutPeriod.addWidget(&all);
 
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok
@@ -348,42 +352,38 @@ void MainWindow::loadData()
        if (!daily.isChecked() && !hourly.isChecked())
        {
            QMessageBox::information(NULL, "Missing parameter", "Select hourly and/or daily");
-           loadData();
+           loadData(dbArkimet);
        }
-       else if (!day.isChecked() && !all.isChecked())
+       else if (!lastDay.isChecked() && !all.isChecked())
        {
            QMessageBox::information(NULL, "Missing parameter", "Select loading period from DB");
-           loadData();
+           loadData(dbArkimet);
        }
        else
        {
-
+            dbArkimet->getLastDay('H');
+            dbArkimet->getFirstDay('H');
             if (daily.isChecked())
             {
-                if ( day.isChecked() )
+                dayHour = 'D';
+                lastD = dbArkimet->getLastDay(dayHour);
+                firstD = lastD;
+                if ( all.isChecked() )
                 {
-
-
-                }
-                else
-                {
-
+                    firstD = dbArkimet->getFirstDay(dayHour);
                 }
 
             }
 
             if (hourly.isChecked())
             {
-                if ( day.isChecked() )
+                dayHour = 'H';
+                lastD = dbArkimet->getLastDay(dayHour);
+                firstD = lastD;
+                if ( all.isChecked() )
                 {
-
-
+                    firstD = dbArkimet->getFirstDay(dayHour);
                 }
-                else
-                {
-
-                }
-
 
             }
 
@@ -393,6 +393,8 @@ void MainWindow::loadData()
 
     }
 
+    qDebug() << "firstD = " << firstD;
+    qDebug() << "lastD = " << lastD;
 }
 
 void MainWindow::displayMeteoPoints()

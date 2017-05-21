@@ -19,6 +19,8 @@ class DbMeteoPoints : public QObject
         QStringList getDatasetsList();
         QStringList getDatasetsActive();
         void setDatasetsActive(QString active);
+        QDateTime getLastDay(char dayHour);
+        QDateTime getFirstDay(char dayHour);
     protected:
         QSqlDatabase _db;
     signals:

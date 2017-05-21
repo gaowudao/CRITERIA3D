@@ -16,6 +16,7 @@
     #include "stationMarker.h"
     #include "colorlegend.h"
     #include "guiConfiguration.h"
+    #include "dbArkimet.h"
 
 
     namespace Ui
@@ -67,7 +68,7 @@
 
         void displayMeteoPoints();
 
-        void loadData();
+        void loadData(DbArkimet *dbArkimet);
 
         void slotClicked(const QDate& date);
 
