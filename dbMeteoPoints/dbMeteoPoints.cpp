@@ -164,7 +164,7 @@ QDateTime DbMeteoPoints::getLastDay(char dayHour)
     foreach (QString table, tables)
     {
 
-        QString statement = QString( "SELECT date_time FROM `%1` ORDER BY date(date_time) DESC Limit 1").arg(table);
+        QString statement = QString( "SELECT date_time FROM `%1` ORDER BY datetime(date_time) DESC Limit 1").arg(table);
         if( !qry.exec(statement) )
         {
             qDebug() << qry.lastError();
@@ -221,7 +221,7 @@ QDateTime DbMeteoPoints::getFirstDay(char dayHour)
     foreach (QString table, tables)
     {
 
-        QString statement = QString( "SELECT date_time FROM `%1` ORDER BY date(date_time) ASC Limit 1").arg(table);
+        QString statement = QString( "SELECT date_time FROM `%1` ORDER BY datetime(date_time) ASC Limit 1").arg(table);
         if( !qry.exec(statement) )
         {
             qDebug() << qry.lastError();
