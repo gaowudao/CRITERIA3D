@@ -379,7 +379,8 @@ void MainWindow::loadData(DbArkimet* dbArkimet)
             {
                 dayHour = 'H';
                 lastD = dbArkimet->getLastDay(dayHour);
-                firstD = lastD;
+                firstD.setDate(lastD.date());
+                firstD.setTime(QTime(0, 0, 0));
                 if ( all.isChecked() )
                 {
                     firstD = dbArkimet->getFirstDay(dayHour);
