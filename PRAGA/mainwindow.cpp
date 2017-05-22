@@ -299,7 +299,103 @@ void MainWindow::on_actionOpen_meteo_points_DB_triggered()
     DbArkimet* dbArkimet = myProject.pointProperties->getDbArkimet();
     myProject.meteoPoints = dbArkimet->getPropertiesFromDb();
     displayMeteoPoints();
+    loadData(dbArkimet);
 
+}
+
+void MainWindow::loadData(DbArkimet* dbArkimet)
+{
+
+    QDialog load;
+    QVBoxLayout mainLayout;
+    QHBoxLayout layoutTime;
+    QHBoxLayout layoutPeriod;
+    QHBoxLayout layoutOk;
+
+    load.setWindowTitle("Load Data from DB");
+    load.setFixedWidth(300);
+
+    QCheckBox daily("Daily");
+    QCheckBox hourly("Hourly");
+    layoutTime.addWidget(&daily);
+    layoutTime.addWidget(&hourly);
+
+    QRadioButton lastDay("last day available");
+    QRadioButton all("all data");
+
+    char dayHour;
+    QDateTime firstD;
+    QDateTime lastD;
+
+    layoutPeriod.addWidget(&lastDay);
+    layoutPeriod.addWidget(&all);
+
+    QDialogButtonBox buttonBox(QDialogButtonBox::Ok
+                                         | QDialogButtonBox::Cancel);
+
+
+    connect(&buttonBox, SIGNAL(accepted()), &load, SLOT(accept()));
+    connect(&buttonBox, SIGNAL(rejected()), &load, SLOT(reject()));
+
+
+    layoutOk.addWidget(&buttonBox);
+
+    mainLayout.addLayout(&layoutTime);
+    mainLayout.addLayout(&layoutPeriod);
+    mainLayout.addLayout(&layoutOk);
+    load.setLayout(&mainLayout);
+    load.exec();
+
+    if (load.result() == QDialog::Accepted)
+    {
+
+       if (!daily.isChecked() && !hourly.isChecked())
+       {
+           QMessageBox::information(NULL, "Missing parameter", "Select hourly and/or daily");
+           loadData(dbArkimet);
+       }
+       else if (!lastDay.isChecked() && !all.isChecked())
+       {
+           QMessageBox::information(NULL, "Missing parameter", "Select loading period from DB");
+           loadData(dbArkimet);
+       }
+       else
+       {
+            dbArkimet->getLastDay('H');
+            dbArkimet->getFirstDay('H');
+            if (daily.isChecked())
+            {
+                dayHour = 'D';
+                lastD = dbArkimet->getLastDay(dayHour);
+                firstD = lastD;
+                if ( all.isChecked() )
+                {
+                    firstD = dbArkimet->getFirstDay(dayHour);
+                }
+
+            }
+
+            if (hourly.isChecked())
+            {
+                dayHour = 'H';
+                lastD = dbArkimet->getLastDay(dayHour);
+                firstD.setDate(lastD.date());
+                firstD.setTime(QTime(0, 0, 0));
+                if ( all.isChecked() )
+                {
+                    firstD = dbArkimet->getFirstDay(dayHour);
+                }
+
+            }
+
+
+       }
+
+
+    }
+
+    qDebug() << "firstD = " << firstD;
+    qDebug() << "lastD = " << lastD;
 }
 
 void MainWindow::displayMeteoPoints()
@@ -606,6 +702,7 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
 
 void MainWindow::mouseMoveEvent(QMouseEvent * event)
 {
+
     QPoint pos = event->pos();
     QPoint mapPoint = getMapPoint(&pos);
     if ((mapPoint.x() <= 0) || (mapPoint.y() <= 0)) return;
@@ -616,7 +713,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent * event)
     if (moveRubberBand)
     {
         qDebug() << "mouseMoveEvent";
-        rubberBand->move(event->pos() - rubberBandOffset);
+        myRubberBand->move(event->pos() - rubberBandOffset);
     }
 
 }
@@ -626,10 +723,10 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     if (enableRubberBand)
     {
          qDebug() << "mousePressEvent";
-        if(rubberBand->geometry().contains(event->pos()))
+        if(myRubberBand->geometry().contains(event->pos()))
         {
             qDebug() << "mousePressEvent contains";
-            rubberBandOffset = event->pos() - rubberBand->pos();
+            rubberBandOffset = event->pos() - myRubberBand->pos();
             moveRubberBand = true;
         }
     }
@@ -707,11 +804,12 @@ void MainWindow::on_actionRectangle_Selection_triggered()
 {
     enableRubberBand = true;
     moveRubberBand = false;
-    rubberBand = new QRubberBand(QRubberBand::Rectangle, this);
+    myRubberBand = new RubberBand(QRubberBand::Rectangle, this);
 
-    rubberBand->setGeometry(this->mapView->width()*0.5,this->mapView->height()*0.5,100,100);
-    rubberBand->show();
+    myRubberBand->setGeometry(this->mapView->width()*0.5,this->mapView->height()*0.5,100,100);
+    myRubberBand->show();
 }
+
 
 void MainWindow::resetProject()
 {

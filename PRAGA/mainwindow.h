@@ -8,7 +8,7 @@
     #include <QCalendarWidget>
     #include <QDateEdit>
     #include <QLabel>
-    #include <QRubberBand>
+    #include "rubberBand.h"
     #include "MapGraphicsView.h"
     #include "MapGraphicsScene.h"
     #include "tileSources/OSMTileSource.h"
@@ -16,6 +16,7 @@
     #include "stationMarker.h"
     #include "colorlegend.h"
     #include "guiConfiguration.h"
+    #include "dbArkimet.h"
 
 
     namespace Ui
@@ -67,6 +68,8 @@
 
         void displayMeteoPoints();
 
+        void loadData(DbArkimet *dbArkimet);
+
         void slotClicked(const QDate& date);
 
         void resetProject();
@@ -101,7 +104,7 @@
         QList<StationMarker*> pointList;
         ColorLegend* legend;
         environment menu;
-        QRubberBand *rubberBand;
+        RubberBand *myRubberBand;
         bool moveRubberBand;
         bool enableRubberBand;
         QPoint rubberBandOffset;

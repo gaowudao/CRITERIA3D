@@ -343,10 +343,10 @@ bool Download::downloadHourlyVar(Crit3DTime dateStartTime, Crit3DTime dateEndTim
     int nrData = (difference(dateStartTime.date.addDays(1), dateEndTime.date) * 24 * stations.size());
 
     int nrSteps = qMax(1, (nrData / datasets.size()) / 3000);
-    int stepDate = qMax(1, difference(dateStartTime.date.addDays(1), dateEndTime.date) / nrSteps);
+    int stepDate = qMax(5, difference(dateStartTime.date.addDays(1), dateEndTime.date) / nrSteps);
 
     dateStartTime = dateStartTime.addSeconds(-1800);
-    dateEndTime.date = dateEndTime.date.addDays(5);
+    dateEndTime.date = dateEndTime.date.addDays(1);
     dateEndTime = dateEndTime.addSeconds(-3600);
 
 
