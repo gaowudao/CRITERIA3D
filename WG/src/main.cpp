@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
         settingsFileName = argv[1];
     else
     {
-        //settingsFileName = "\\\\praga-smr\\MOSES\\SWB\\DA_IT\\seasonalPredictions\\WG.ini";
+        //settingsFileName = "\\\\praga-smr\\MOSES\\SWB\\DA_SP\\seasonalPredictions\\WG.ini";
         qDebug() << "USAGE:\n" << "WG settings.ini\n";
         return false;
     }

@@ -420,49 +420,53 @@ void genTemps(float *tMax, float *tMin, float meanTMax, float meanTMin, float st
 
 bool assignXMLAnomaly(TXMLSeasonalAnomaly* XMLAnomaly, int modelIndex, int anomalyMonth1, int anomalyMonth2, TwheatherGenClimate* wGenNoAnomaly, TwheatherGenClimate* wGen)
 {
-
     unsigned int i = 0;
     QString myVar;
     float myValue = 0.0;
 
-    bool result = false;
+    bool result;
 
     // loop for all XMLValuesList (Tmin, Tmax, TminVar, TmaxVar, Prec3M, Wetdays)
     for (i = 0; i < XMLAnomaly->forecast.size(); i++)
     {
-        myVar = XMLAnomaly->forecast[i].type.toUpper();
-
-        if (XMLAnomaly->forecast[i].value[modelIndex] != NULL)
-            myValue = XMLAnomaly->forecast[i].value[modelIndex].toFloat();
-        else
-            myValue = NODATA;
-
-        if (myValue != NODATA && XMLAnomaly->forecast[i].attribute.toUpper() == "ANOMALY")
+        if (XMLAnomaly->forecast[i].attribute.toUpper() == "ANOMALY")
         {
-            if ( (myVar == "TMIN") || (myVar == "AVGTMIN") )
-                result = assignAnomalyNoPrec(myValue, anomalyMonth1, anomalyMonth2, wGenNoAnomaly->monthly.monthlyTmin, wGen->monthly.monthlyTmin);
-            else if ( (myVar == "TMAX") || (myVar == "AVGTMAX") )
-                result = assignAnomalyNoPrec(myValue, anomalyMonth1, anomalyMonth2, wGenNoAnomaly->monthly.monthlyTmax, wGen->monthly.monthlyTmax);
-            else if ( (myVar == "PREC3M") || (myVar == "PREC") )
-                result = assignAnomalyPrec(myValue, anomalyMonth1, anomalyMonth2, wGenNoAnomaly->monthly.sumPrec, wGen->monthly.sumPrec);
-            else if ( (myVar == "WETDAYSFREQUENCY") )
-                result = assignAnomalyNoPrec(myValue, anomalyMonth1, anomalyMonth2, wGenNoAnomaly->monthly.fractionWetDays, wGen->monthly.fractionWetDays);
-            else if ( (myVar == "WETWETDAYSFREQUENCY") )
-                result = assignAnomalyNoPrec(myValue, anomalyMonth1, anomalyMonth2, wGenNoAnomaly->monthly.probabilityWetWet, wGen->monthly.probabilityWetWet);
-            else if ( (myVar == "DELTATMAXDRYWET") )
-                result = assignAnomalyNoPrec(myValue, anomalyMonth1, anomalyMonth2, wGenNoAnomaly->monthly.dw_Tmax, wGen->monthly.dw_Tmax);
+            myVar = XMLAnomaly->forecast[i].type.toUpper();
+            result = false;
+
+            if (XMLAnomaly->forecast[i].value[modelIndex] != NULL)
+                myValue = XMLAnomaly->forecast[i].value[modelIndex].toFloat();
+            else
+                myValue = NODATA;
+
+            if (myValue != NODATA)
+            {
+                if ( (myVar == "TMIN") || (myVar == "AVGTMIN") )
+                    result = assignAnomalyNoPrec(myValue, anomalyMonth1, anomalyMonth2, wGenNoAnomaly->monthly.monthlyTmin, wGen->monthly.monthlyTmin);
+                else if ( (myVar == "TMAX") || (myVar == "AVGTMAX") )
+                    result = assignAnomalyNoPrec(myValue, anomalyMonth1, anomalyMonth2, wGenNoAnomaly->monthly.monthlyTmax, wGen->monthly.monthlyTmax);
+                else if ( (myVar == "PREC3M") || (myVar == "PREC") )
+                    result = assignAnomalyPrec(myValue, anomalyMonth1, anomalyMonth2, wGenNoAnomaly->monthly.sumPrec, wGen->monthly.sumPrec);
+                else if ( (myVar == "WETDAYSFREQUENCY") )
+                    result = assignAnomalyNoPrec(myValue, anomalyMonth1, anomalyMonth2, wGenNoAnomaly->monthly.fractionWetDays, wGen->monthly.fractionWetDays);
+                else if ( (myVar == "WETWETDAYSFREQUENCY") )
+                    result = assignAnomalyNoPrec(myValue, anomalyMonth1, anomalyMonth2, wGenNoAnomaly->monthly.probabilityWetWet, wGen->monthly.probabilityWetWet);
+                else if ( (myVar == "DELTATMAXDRYWET") )
+                    result = assignAnomalyNoPrec(myValue, anomalyMonth1, anomalyMonth2, wGenNoAnomaly->monthly.dw_Tmax, wGen->monthly.dw_Tmax);
+            }
             else
             {
-                //qDebug() << "Unknown type" ;
-                return false;
+                // not critical variables
+                if ((myVar == "DELTATMAXDRYWET") || (myVar == "WETWETDAYSFREQUENCY"))
+                result = true;
             }
 
-            //qDebug() << "myValue" << myValue ;
             if (result == false)
-                return result;
+            {
+                qDebug() << "wrong anomaly: " + myVar;
+                return false;
+            }
         }
-        else
-            return false;
     }
 
     /* DEBUG
@@ -686,7 +690,7 @@ bool makeScenario(QString outputFileName, char separator, TXMLSeasonalAnomaly* X
     for (modelIndex = 0; modelIndex < numMembers; modelIndex++)
     {
         // assign anomaly
-        if ( !assignXMLAnomaly(XMLAnomaly, modelIndex, anomalyMonth1, anomalyMonth2, &wGenClimate, &wGen ) )
+        if ( !assignXMLAnomaly(XMLAnomaly, modelIndex, anomalyMonth1, anomalyMonth2, &wGenClimate, &wGen))
         {
                     qDebug() << "Error in Scenario: assignXMLAnomaly returns false";
                     return false;
