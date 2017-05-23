@@ -366,7 +366,8 @@ void MainWindow::loadData(DbArkimet* dbArkimet)
             {
                 dayHour = 'D';
                 lastD = dbArkimet->getLastDay(dayHour);
-                firstD = lastD;
+                firstD.setDate(lastD.date());
+                firstD.setTime(QTime(0, 0, 0));
                 if ( all.isChecked() )
                 {
                     firstD = dbArkimet->getFirstDay(dayHour);
@@ -376,10 +377,16 @@ void MainWindow::loadData(DbArkimet* dbArkimet)
                 Crit3DDate dateEnd(lastD.date().day(), lastD.date().month(), lastD.date().year());
                 dbArkimet->getDataFromDailyDb(dateStart, dateEnd, myProject.meteoPoints);
 
-                //qDebug() << "myProject.meteoPoints[0].id" << QString::fromStdString(myProject.meteoPoints[0].id);
+                /*
+                qDebug() << "myProject.meteoPoints[0].id" << QString::fromStdString(myProject.meteoPoints[0].id);
 
-                //qDebug() << "myProject.meteoPoints[0].obsDataD[0].date.day" << myProject.meteoPoints[0].obsDataD[0].date.day;
-                //qDebug() << "myProject.meteoPoints[0].obsDataD[0].tMin" << myProject.meteoPoints[0].obsDataD[0].tMin;
+                qDebug() << "myProject.meteoPoints[0].obsDataD[0].date.day" << myProject.meteoPoints[0].obsDataD[0].date.day;
+                qDebug() << "myProject.meteoPoints[0].obsDataD[0].tMin" << myProject.meteoPoints[0].obsDataD[0].tMin;
+
+                qDebug() << "myProject.meteoPoints[0].obsDataD[1].date.day" << myProject.meteoPoints[0].obsDataD[1].date.day;
+                qDebug() << "myProject.meteoPoints[0].obsDataD[1].tMin" << myProject.meteoPoints[0].obsDataD[1].tMin;
+                */
+
 
 
 

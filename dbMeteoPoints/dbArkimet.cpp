@@ -250,7 +250,7 @@ QList<Crit3DMeteoPoint> DbArkimet::getPropertiesFromDb()
 void DbArkimet::getDataFromDailyDb(Crit3DDate dateStart, Crit3DDate dateEnd, QList<Crit3DMeteoPoint> &meteoPointsList)
 {
 
-    int numberOfDays = difference(dateStart, dateEnd);
+    int numberOfDays = difference(dateStart, dateEnd)+1;
     QString startDate = QString::fromStdString(dateStart.toStdString());
     QString endDate = QString::fromStdString(dateEnd.toStdString());
 
@@ -270,8 +270,8 @@ void DbArkimet::getDataFromDailyDb(Crit3DDate dateStart, Crit3DDate dateEnd, QLi
             while (qry.next())
             {
                 QString dateStr = qry.value(0).toString();
-                QDateTime qDate = QDateTime::fromString(dateStr,"yyyy-MM-dd HH:mm:ss");
-                Crit3DDate date(qDate.date().day(), qDate.date().month(), qDate.date().year());
+                QDateTime qDateT = QDateTime::fromString(dateStr,"yyyy-MM-dd HH:mm:ss");
+                Crit3DDate date(qDateT.date().day(), qDateT.date().month(), qDateT.date().year());
 
                 int idVar = qry.value(1).toInt();
                 meteoVariable meteoVar = getDefaultMeteoVariable(idVar);
