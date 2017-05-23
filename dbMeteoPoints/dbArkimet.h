@@ -28,6 +28,7 @@ class DbArkimet : public DbMeteoPoints
         bool fillPointProperties(Crit3DMeteoPoint* pointProp);
         QList<Crit3DMeteoPoint> getPropertiesFromDb();
         void getDataFromDailyDb(Crit3DDate dateStart, Crit3DDate dateEnd, QList<Crit3DMeteoPoint> &meteoPointsList);
+        void getDataFromHourlyDb(Crit3DDate dateStart, Crit3DDate dateEnd, QList<Crit3DMeteoPoint> &meteoPointsList);
         QList<VariablesList> getHourlyVarFields(QList<int> id);
         void initStationsDailyTables(Crit3DDate dateStartInput, Crit3DDate dateEndInput, QStringList stations);
         void initStationsHourlyTables(Crit3DTime dateStartInput, Crit3DTime dateEndInput, QStringList stations);
