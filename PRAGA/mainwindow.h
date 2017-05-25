@@ -105,9 +105,6 @@
         ColorLegend* legend;
         environment menu;
         RubberBand *myRubberBand;
-        bool moveRubberBand;
-        bool enableRubberBand;
-        QPoint rubberBandOffset;
 
         QList<QCheckBox*> datasetCheckbox;
         QCalendarWidget* calendar;

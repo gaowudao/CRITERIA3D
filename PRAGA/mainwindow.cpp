@@ -30,6 +30,9 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+
+    this->myRubberBand = NULL;
+
     ui->setupUi(this);
 
     // Set the MapGraphics Scene and View
@@ -73,8 +76,6 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
             break;
     }
 
-    this->enableRubberBand = false;
-    this->moveRubberBand = false;
 }
 
 
@@ -707,10 +708,37 @@ void MainWindow::slotClicked(const QDate& date)
 void MainWindow::mouseReleaseEvent(QMouseEvent *event){
     Q_UNUSED(event)
 
-    moveRubberBand = false;
-
     if (this->rasterObj != NULL)
         this->rasterObj->updateCenter();
+
+    gis::Crit3DGeoPoint pointSelected;;
+    if (myRubberBand != NULL)
+    {
+
+        qDebug() << "myRubberBand->rect().bottomLeft()" << myRubberBand->rect().bottomLeft();
+        Position geoPointRect = this->mapView->mapToScene(myRubberBand->rect().bottomLeft());
+        qDebug() << "geoPointRect myRubberBand->rect().bottomLeft()" << geoPointRect;
+        foreach (StationMarker* marker, pointList)
+        {
+//            QPoint pos(marker->pos().x(), marker->pos().y());
+//            QPoint mapPoint = getMapPoint(&pos);
+//            qDebug() << "mapPoint.x()" << mapPoint.x();
+//            qDebug() << "mapPoint.y()" << mapPoint.y();
+
+            if (myRubberBand->rect().contains(marker->longitude(), marker->latitude()))
+            {
+                if ( marker->color() ==  Qt::white )
+                {
+                    marker->setFillColor(QColor((Qt::red)));
+                    pointSelected.latitude = marker->latitude();
+                    pointSelected.longitude = marker->longitude();
+                    myProject.meteoPointsSelected << pointSelected;
+                }
+            }
+        }
+        myRubberBand->hide();
+    }
+
 }
 
 void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
@@ -735,7 +763,6 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
 
 void MainWindow::mouseMoveEvent(QMouseEvent * event)
 {
-
     QPoint pos = event->pos();
     QPoint mapPoint = getMapPoint(&pos);
     if ((mapPoint.x() <= 0) || (mapPoint.y() <= 0)) return;
@@ -743,26 +770,25 @@ void MainWindow::mouseMoveEvent(QMouseEvent * event)
     Position geoPoint = this->mapView->mapToScene(mapPoint);
     this->ui->statusBar->showMessage(QString::number(geoPoint.latitude()) + " " + QString::number(geoPoint.longitude()));
 
-    if (moveRubberBand)
+    if (myRubberBand != NULL)
     {
-        qDebug() << "mouseMoveEvent";
-        myRubberBand->move(event->pos() - rubberBandOffset);
+        myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), mapPoint).normalized());
     }
 
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
-    if (enableRubberBand)
+
+    if (myRubberBand != NULL)
     {
-         qDebug() << "mousePressEvent";
-        if(myRubberBand->geometry().contains(event->pos()))
-        {
-            qDebug() << "mousePressEvent contains";
-            rubberBandOffset = event->pos() - myRubberBand->pos();
-            moveRubberBand = true;
-        }
+        QPoint pos = event->pos();
+        QPoint mapPoint = getMapPoint(&pos);
+        myRubberBand->setOrigin(mapPoint);
+        myRubberBand->setGeometry(QRect(mapPoint, QSize()));
+        myRubberBand->show();
     }
+
 }
 
 void MainWindow::resizeEvent(QResizeEvent * event)
@@ -835,11 +861,14 @@ void MainWindow::on_actionSetUTMzone_triggered()
 
 void MainWindow::on_actionRectangle_Selection_triggered()
 {
-    enableRubberBand = true;
-    moveRubberBand = false;
-    myRubberBand = new RubberBand(QRubberBand::Rectangle, this);
 
-    myRubberBand->setGeometry(this->mapView->width()*0.5,this->mapView->height()*0.5,100,100);
+    qDebug() << "on_actionRectangle_Selection_triggered" ;
+
+    myRubberBand = new RubberBand(QRubberBand::Rectangle, this->mapView);
+    QPoint origin(this->mapView->width()*0.5 , this->mapView->height()*0.5);
+    QPoint mapPoint = getMapPoint(&origin);
+    myRubberBand->setOrigin(mapPoint);
+    myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), QSize()));
     myRubberBand->show();
 }
 
