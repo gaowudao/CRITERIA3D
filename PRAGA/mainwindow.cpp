@@ -21,6 +21,7 @@
 #include "dbArkimet.h"
 #include "download.h"
 #include "project.h"
+#include "commonConstants.h"
 
 
 #define TOOLSWIDTH 220
@@ -715,17 +716,20 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event){
     if (myRubberBand != NULL)
     {
 
-        qDebug() << "myRubberBand->rect().bottomLeft()" << myRubberBand->rect().bottomLeft();
-        Position geoPointRect = this->mapView->mapToScene(myRubberBand->rect().bottomLeft());
-        qDebug() << "geoPointRect myRubberBand->rect().bottomLeft()" << geoPointRect;
+        QPointF delta = event->localPos();
+        QPoint pixelTopLeft = myRubberBand->rect().topLeft() + delta.toPoint();
+        QPoint pixelBottomRight = myRubberBand->rect().bottomRight() + delta.toPoint();
+
+        QPointF topLeft = this->mapView->mapToScene(getMapPoint(&pixelTopLeft));
+        QPointF bottomRight = this->mapView->mapToScene(getMapPoint(&pixelBottomRight));
+
+        QRectF rectF(topLeft, bottomRight);
+
+
         foreach (StationMarker* marker, pointList)
         {
-//            QPoint pos(marker->pos().x(), marker->pos().y());
-//            QPoint mapPoint = getMapPoint(&pos);
-//            qDebug() << "mapPoint.x()" << mapPoint.x();
-//            qDebug() << "mapPoint.y()" << mapPoint.y();
 
-            if (myRubberBand->rect().contains(marker->longitude(), marker->latitude()))
+            if (rectF.contains(marker->longitude(), marker->latitude()))
             {
                 if ( marker->color() ==  Qt::white )
                 {
@@ -863,6 +867,8 @@ void MainWindow::on_actionRectangle_Selection_triggered()
 {
 
     qDebug() << "on_actionRectangle_Selection_triggered" ;
+    if (myRubberBand != NULL)
+        delete myRubberBand;
 
     myRubberBand = new RubberBand(QRubberBand::Rectangle, this->mapView);
     QPoint origin(this->mapView->width()*0.5 , this->mapView->height()*0.5);
@@ -898,6 +904,3 @@ void MainWindow::resetProject()
     }
 
 }
-
-
-

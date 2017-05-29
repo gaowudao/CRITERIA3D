@@ -74,8 +74,6 @@
 
         void resetProject();
 
-
-
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
