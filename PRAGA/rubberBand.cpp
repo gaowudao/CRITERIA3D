@@ -16,6 +16,16 @@ QPoint RubberBand::getOrigin()
     return this->origin;
 }
 
+void RubberBand::setFirstCorner(QPointF firstCorner)
+{
+    this->firstCorner = firstCorner;
+}
+
+QPointF RubberBand::getFirstCorner()
+{
+    return this->firstCorner;
+}
+
 
 void RubberBand::paintEvent(QPaintEvent *event)
 {

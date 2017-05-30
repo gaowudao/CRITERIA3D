@@ -11,10 +11,13 @@ class RubberBand : public QRubberBand
     Q_OBJECT
 public:
     RubberBand(Shape s, QWidget *p = Q_NULLPTR);
-    void setOrigin(QPoint);
+    void setOrigin(QPoint origin);
     QPoint getOrigin();
+    void setFirstCorner(QPointF firstCorner);
+    QPointF getFirstCorner();
 private:
     QPoint origin;
+    QPointF firstCorner;
 
 signals:
 
