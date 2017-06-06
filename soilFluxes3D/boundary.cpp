@@ -290,7 +290,7 @@ void updateBoundaryHeat()
                     myNode[i].boundary->Heat->latentFlux = 0.;
                     myNode[i].boundary->Heat->radiativeFlux = 0.;
 
-                    if (myNode[i].boundary->Heat->netIrradiance == NODATA)
+                    if (myNode[i].boundary->Heat->netIrradiance != NODATA)
                         myNode[i].boundary->Heat->radiativeFlux = myNode[i].boundary->Heat->netIrradiance;
 
                     myNode[i].boundary->Heat->sensibleFlux += computeAtmosphericSensibleFlow(i);

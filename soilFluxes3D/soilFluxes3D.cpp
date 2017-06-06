@@ -803,11 +803,6 @@ namespace soilFluxes3D {
 
 		while (sumTime < myPeriod)
         {
-            /*if (sumTime == 912)
-            {
-                qDebug() << "H1: " << myNode[1].H;
-                qDebug() << "oldH1: " << myNode[1].oldH;
-            }*/
 
 			ResidualTime = myPeriod - sumTime;
 			deltaT = computeStep(ResidualTime);
