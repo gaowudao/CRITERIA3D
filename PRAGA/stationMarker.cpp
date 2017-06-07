@@ -96,7 +96,6 @@ void StationMarker::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 }
 
-
 //////////////// abilitare sotto se si preferisce selezionare la stazione con doppio click invece che con singolo click di sinistra ed al singolo click collegare altre azioni///////////////
 /*
 void StationMarker::mousePressEvent(QGraphicsSceneMouseEvent *event)

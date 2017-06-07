@@ -74,8 +74,6 @@
 
         void resetProject();
 
-
-
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
@@ -105,9 +103,6 @@
         ColorLegend* legend;
         environment menu;
         RubberBand *myRubberBand;
-        bool moveRubberBand;
-        bool enableRubberBand;
-        QPoint rubberBandOffset;
 
         QList<QCheckBox*> datasetCheckbox;
         QCalendarWidget* calendar;

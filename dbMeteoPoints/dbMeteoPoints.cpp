@@ -246,3 +246,5 @@ QDateTime DbMeteoPoints::getFirstDay(char dayHour)
 
     return firstDay;
 }
+
+

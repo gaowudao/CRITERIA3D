@@ -21,6 +21,7 @@
 #include "dbArkimet.h"
 #include "download.h"
 #include "project.h"
+#include "commonConstants.h"
 
 
 #define TOOLSWIDTH 220
@@ -30,6 +31,9 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+
+    this->myRubberBand = NULL;
+
     ui->setupUi(this);
 
     // Set the MapGraphics Scene and View
@@ -73,8 +77,6 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
             break;
     }
 
-    this->enableRubberBand = false;
-    this->moveRubberBand = false;
 }
 
 
@@ -361,17 +363,31 @@ void MainWindow::loadData(DbArkimet* dbArkimet)
        }
        else
        {
-            dbArkimet->getLastDay('H');
-            dbArkimet->getFirstDay('H');
+
             if (daily.isChecked())
             {
                 dayHour = 'D';
                 lastD = dbArkimet->getLastDay(dayHour);
-                firstD = lastD;
+                firstD.setDate(lastD.date());
+                firstD.setTime(QTime(0, 0, 0));
                 if ( all.isChecked() )
                 {
                     firstD = dbArkimet->getFirstDay(dayHour);
                 }
+
+                Crit3DDate dateStart(firstD.date().day(), firstD.date().month(), firstD.date().year());
+                Crit3DDate dateEnd(lastD.date().day(), lastD.date().month(), lastD.date().year());
+                dbArkimet->getDataFromDailyDb(dateStart, dateEnd, myProject.meteoPoints);
+
+                /*
+                qDebug() << "myProject.meteoPoints[0].id" << QString::fromStdString(myProject.meteoPoints[0].id);
+
+                qDebug() << "myProject.meteoPoints[0].obsDataD[0].date.day" << myProject.meteoPoints[0].obsDataD[0].date.day;
+                qDebug() << "myProject.meteoPoints[0].obsDataD[0].tMin" << myProject.meteoPoints[0].obsDataD[0].tMin;
+
+                qDebug() << "myProject.meteoPoints[0].obsDataD[1].date.day" << myProject.meteoPoints[0].obsDataD[1].date.day;
+                qDebug() << "myProject.meteoPoints[0].obsDataD[1].tMin" << myProject.meteoPoints[0].obsDataD[1].tMin;
+                */
 
             }
 
@@ -385,6 +401,25 @@ void MainWindow::loadData(DbArkimet* dbArkimet)
                 {
                     firstD = dbArkimet->getFirstDay(dayHour);
                 }
+
+                Crit3DDate dateStart(firstD.date().day(), firstD.date().month(), firstD.date().year());
+                Crit3DDate dateEnd(lastD.date().day(), lastD.date().month(), lastD.date().year());
+                dbArkimet->getDataFromHourlyDb(dateStart, dateEnd, myProject.meteoPoints);
+
+                /*
+                qDebug() << "myProject.meteoPoints[0].id" << QString::fromStdString(myProject.meteoPoints[0].id);
+
+                qDebug() << "myProject.meteoPoints[0].obsDataD[0].date.day" << myProject.meteoPoints[0].obsDataH[0].date.day;
+                qDebug() << "myProject.meteoPoints[0].obsDataD[0].tAir" << myProject.meteoPoints[0].obsDataH[0].tAir;
+
+                qDebug() << "myProject.meteoPoints[0].obsDataD[1].date.day" << myProject.meteoPoints[0].obsDataH[1].date.day;
+                qDebug() << "myProject.meteoPoints[0].obsDataD[1].tAir" << myProject.meteoPoints[0].obsDataH[1].tAir;
+
+                qDebug() << "myProject.meteoPoints[0].obsDataD[1].date.day" << myProject.meteoPoints[0].obsDataH[6].date.day;
+                qDebug() << "myProject.meteoPoints[0].obsDataD[1].rhAir[0]" << myProject.meteoPoints[0].obsDataH[6].rhAir[0];
+                qDebug() << "myProject.meteoPoints[0].obsDataD[1].rhAir[1]" << myProject.meteoPoints[0].obsDataH[6].rhAir[1];
+                */
+
 
             }
 
@@ -674,10 +709,77 @@ void MainWindow::slotClicked(const QDate& date)
 void MainWindow::mouseReleaseEvent(QMouseEvent *event){
     Q_UNUSED(event)
 
-    moveRubberBand = false;
-
     if (this->rasterObj != NULL)
         this->rasterObj->updateCenter();
+
+    gis::Crit3DGeoPoint pointSelected;;
+    if (myRubberBand != NULL && myRubberBand->isVisible())
+    {
+
+        QPointF lastCornerOffset = event->localPos();
+        QPointF firstCornerOffset = myRubberBand->getFirstCorner();
+        QPoint pixelTopLeft;
+        QPoint pixelBottomRight;
+
+
+
+        if (firstCornerOffset.y() > lastCornerOffset.y())
+        {
+            if (firstCornerOffset.x() > lastCornerOffset.x())
+            {
+                qDebug() << "bottom to left";
+                pixelTopLeft = lastCornerOffset.toPoint();
+                pixelBottomRight = firstCornerOffset.toPoint();
+            }
+            else
+            {
+                qDebug() << "bottom to right";
+
+                pixelTopLeft = QPoint(firstCornerOffset.toPoint().x(), lastCornerOffset.toPoint().y());
+                pixelBottomRight = QPoint(lastCornerOffset.toPoint().x(), firstCornerOffset.toPoint().y());
+
+            }
+        }
+        else
+        {
+            if (firstCornerOffset.x() > lastCornerOffset.x())
+            {
+                qDebug() << "top to left";
+                pixelTopLeft = QPoint(lastCornerOffset.toPoint().x(), firstCornerOffset.toPoint().y());
+                pixelBottomRight = QPoint(firstCornerOffset.toPoint().x(), lastCornerOffset.toPoint().y());
+
+            }
+            else
+            {
+                qDebug() << "top to right";
+                pixelTopLeft = firstCornerOffset.toPoint();
+                pixelBottomRight = lastCornerOffset.toPoint();
+            }
+        }
+
+
+        QPointF topLeft = this->mapView->mapToScene(getMapPoint(&pixelTopLeft));
+        QPointF bottomRight = this->mapView->mapToScene(getMapPoint(&pixelBottomRight));
+        QRectF rectF(topLeft, bottomRight);
+
+
+        foreach (StationMarker* marker, pointList)
+        {
+
+            if (rectF.contains(marker->longitude(), marker->latitude()))
+            {
+                if ( marker->color() ==  Qt::white )
+                {
+                    marker->setFillColor(QColor((Qt::red)));
+                    pointSelected.latitude = marker->latitude();
+                    pointSelected.longitude = marker->longitude();
+                    myProject.meteoPointsSelected << pointSelected;
+                }
+            }
+        }
+        myRubberBand->hide();
+    }
+
 }
 
 void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
@@ -702,7 +804,6 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
 
 void MainWindow::mouseMoveEvent(QMouseEvent * event)
 {
-
     QPoint pos = event->pos();
     QPoint mapPoint = getMapPoint(&pos);
     if ((mapPoint.x() <= 0) || (mapPoint.y() <= 0)) return;
@@ -710,26 +811,31 @@ void MainWindow::mouseMoveEvent(QMouseEvent * event)
     Position geoPoint = this->mapView->mapToScene(mapPoint);
     this->ui->statusBar->showMessage(QString::number(geoPoint.latitude()) + " " + QString::number(geoPoint.longitude()));
 
-    if (moveRubberBand)
+
+    if (myRubberBand != NULL)
     {
-        qDebug() << "mouseMoveEvent";
-        myRubberBand->move(event->pos() - rubberBandOffset);
+        myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), mapPoint).normalized());
     }
 
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
-    if (enableRubberBand)
+
+    if (event->button() == Qt::RightButton)
     {
-         qDebug() << "mousePressEvent";
-        if(myRubberBand->geometry().contains(event->pos()))
+        if (myRubberBand != NULL)
         {
-            qDebug() << "mousePressEvent contains";
-            rubberBandOffset = event->pos() - myRubberBand->pos();
-            moveRubberBand = true;
+            QPoint pos = event->pos();
+            QPointF firstCorner = event->localPos();
+            myRubberBand->setFirstCorner(firstCorner);
+            QPoint mapPoint = getMapPoint(&pos);
+            myRubberBand->setOrigin(mapPoint);
+            myRubberBand->setGeometry(QRect(mapPoint, QSize()));
+            myRubberBand->show();
         }
     }
+
 }
 
 void MainWindow::resizeEvent(QResizeEvent * event)
@@ -802,18 +908,24 @@ void MainWindow::on_actionSetUTMzone_triggered()
 
 void MainWindow::on_actionRectangle_Selection_triggered()
 {
-    enableRubberBand = true;
-    moveRubberBand = false;
-    myRubberBand = new RubberBand(QRubberBand::Rectangle, this);
 
-    myRubberBand->setGeometry(this->mapView->width()*0.5,this->mapView->height()*0.5,100,100);
-    myRubberBand->show();
+    qDebug() << "on_actionRectangle_Selection_triggered" ;
+    if (myRubberBand != NULL)
+        delete myRubberBand;
+
+    myRubberBand = new RubberBand(QRubberBand::Rectangle, this->mapView);
+    QPoint origin(this->mapView->width()*0.5 , this->mapView->height()*0.5);
+    QPoint mapPoint = getMapPoint(&origin);
+    myRubberBand->setOrigin(mapPoint);
+    myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), QSize()));
+    //myRubberBand->show();
 }
 
 
 void MainWindow::resetProject()
 {
 
+    this->myRubberBand = NULL;
     myProject.meteoPoints.clear();
 
     myProject.meteoPointsSelected.clear();
@@ -836,6 +948,3 @@ void MainWindow::resetProject()
     }
 
 }
-
-
-

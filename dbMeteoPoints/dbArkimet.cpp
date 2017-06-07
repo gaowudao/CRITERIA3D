@@ -247,10 +247,89 @@ QList<Crit3DMeteoPoint> DbArkimet::getPropertiesFromDb()
 
 }
 
-void DbArkimet::initStationsDailyTables(Crit3DDate dataStartInput, Crit3DDate dataEndInput, QStringList stations)
+void DbArkimet::getDataFromDailyDb(Crit3DDate dateStart, Crit3DDate dateEnd, QList<Crit3DMeteoPoint> &meteoPointsList)
 {
-    QString startDate = QString::fromStdString(dataStartInput.toStdString());
-    QString endDate = QString::fromStdString(dataEndInput.toStdString());
+
+    int numberOfDays = difference(dateStart, dateEnd)+1;
+    QString startDate = QString::fromStdString(dateStart.toStdString());
+    QString endDate = QString::fromStdString(dateEnd.toStdString());
+
+    QSqlQuery qry(_db);
+
+    for (int i = 0; i < meteoPointsList.size(); i++)
+    {
+
+        meteoPointsList[i].initializeObsDataD(numberOfDays, dateStart);
+        QString statement = QString( "SELECT * FROM `%1_D` WHERE date_time >= DATE('%2') AND date_time < DATE('%3', '+1 day')").arg(QString::fromStdString(meteoPointsList[i].id)).arg(startDate).arg(endDate);
+        if( !qry.exec(statement) )
+        {
+            qDebug() << qry.lastError();
+        }
+        else
+        {
+            while (qry.next())
+            {
+                QString dateStr = qry.value(0).toString();
+                QDateTime qDateT = QDateTime::fromString(dateStr,"yyyy-MM-dd HH:mm:ss");
+                Crit3DDate date(qDateT.date().day(), qDateT.date().month(), qDateT.date().year());
+
+                int idVar = qry.value(1).toInt();
+                meteoVariable meteoVar = getDefaultMeteoVariable(idVar);
+
+                float value = qry.value(2).toFloat();
+                meteoPointsList[i].setMeteoPointValueD(date, meteoVar, value);
+            }
+
+        }
+    }
+
+
+}
+
+void DbArkimet::getDataFromHourlyDb(Crit3DDate dateStart, Crit3DDate dateEnd, QList<Crit3DMeteoPoint> &meteoPointsList)
+{
+
+    int numberOfDays = difference(dateStart, dateEnd)+1;
+    int myHourlyFraction = 1;
+    QString startDate = QString::fromStdString(dateStart.toStdString());
+    QString endDate = QString::fromStdString(dateEnd.toStdString());
+
+    QSqlQuery qry(_db);
+
+    for (int i = 0; i < meteoPointsList.size(); i++)
+    {
+
+        meteoPointsList[i].initializeObsDataH(myHourlyFraction, numberOfDays, dateStart);
+        QString statement = QString( "SELECT * FROM `%1_H` WHERE date_time >= DATE('%2') AND date_time < DATE('%3', '+1 day')").arg(QString::fromStdString(meteoPointsList[i].id)).arg(startDate).arg(endDate);
+        if( !qry.exec(statement) )
+        {
+            qDebug() << qry.lastError();
+        }
+        else
+        {
+            while (qry.next())
+            {
+                QString dateStr = qry.value(0).toString();
+                QDateTime qDateT = QDateTime::fromString(dateStr,"yyyy-MM-dd HH:mm:ss");
+                Crit3DDate date(qDateT.date().day(), qDateT.date().month(), qDateT.date().year());
+
+                int idVar = qry.value(1).toInt();
+                meteoVariable meteoVar = getDefaultMeteoVariable(idVar);
+
+                float value = qry.value(2).toFloat();
+                meteoPointsList[i].setMeteoPointValueH(date, qDateT.time().hour(), qDateT.time().minute(), meteoVar, value);
+            }
+
+        }
+    }
+
+
+}
+
+void DbArkimet::initStationsDailyTables(Crit3DDate dateStartInput, Crit3DDate dateEndInput, QStringList stations)
+{
+    QString startDate = QString::fromStdString(dateStartInput.toStdString());
+    QString endDate = QString::fromStdString(dateEndInput.toStdString());
 
     for (int i = 0; i < stations.size(); i++)
     {
@@ -269,11 +348,11 @@ void DbArkimet::initStationsDailyTables(Crit3DDate dataStartInput, Crit3DDate da
 
 }
 
-void DbArkimet::initStationsHourlyTables(Crit3DTime dataStartInput, Crit3DTime dataEndInput, QStringList stations)
+void DbArkimet::initStationsHourlyTables(Crit3DTime dateStartInput, Crit3DTime dateEndInput, QStringList stations)
 {
 
-    QString startDate = QString::fromStdString(dataStartInput.toStdString());
-    QString endDate = QString::fromStdString(dataEndInput.toStdString());
+    QString startDate = QString::fromStdString(dateStartInput.toStdString());
+    QString endDate = QString::fromStdString(dateEndInput.toStdString());
 
     for (int i = 0; i < stations.size(); i++)
     {
