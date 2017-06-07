@@ -152,6 +152,7 @@ bool computeModel(Criteria1D* myCase, QString* myError, const Crit3DDate& firstD
             return false;
 
         myCase->output.dailyCropAvailableWater = getReadilyAvailableWater(myCase);
+        myCase->output.dailySoilWaterDeficit = getSoilWaterDeficit(myCase);
 
         if (! myCase->isSeasonalForecast)
         {

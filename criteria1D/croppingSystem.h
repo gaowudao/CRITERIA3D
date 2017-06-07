@@ -24,5 +24,6 @@ bool isSowingDoy(Crit3DCrop* myCrop, int myDoy);
 
 double getTotalEasyWater(Criteria1D* myCase);
 double getReadilyAvailableWater(Criteria1D* myCase);
+double getSoilWaterDeficit(Criteria1D* myCase);
 
 #endif // CROPPINGSYSTEM

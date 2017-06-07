@@ -94,7 +94,7 @@ bool cropWaterDemand(Criteria1D* myCase)
 {
     double Kc;                  // crop coefficient
     double TC;                  // momentary turbulence coefficient
-    double ke = 0.6;            // evaporation extinction factor (should be equal to light extinction factor)
+    double ke = 0.6;            // evaporation extinction factor (equal to light extinction factor?)
     double maxEvapRatio = 0.66;
 
     if (myCase->myCrop.idCrop == "" || ! myCase->myCrop.isLiving || myCase->myCrop.LAI == 0)
@@ -211,16 +211,17 @@ double getTotalEasyWater(Criteria1D* myCase)
 
     if (! myCase->myCrop.isLiving) return myEasyWater;
     if (myCase->myCrop.roots.rootDepth <= myCase->myCrop.roots.rootDepthMin) return myEasyWater;
+    if (myCase->myCrop.roots.firstRootLayer == NODATA) return myEasyWater;
 
     double myDepth;
     double densMax = 0.0;
     double threshold, deltaAW;
     int i;
 
-    for (i=myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
+    for (i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
        densMax = maxValue(densMax, myCase->myCrop.roots.rootDensity[i]);
 
-    for (i=myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
+    for (i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
     {
         threshold = myCase->layer[i].FC -
                 myCase->myCrop.waterStressSensibility * (myCase->layer[i].FC - myCase->layer[i].WP);
@@ -238,11 +239,16 @@ double getTotalEasyWater(Criteria1D* myCase)
     return myEasyWater;
 }
 
-double getTotalDeficit(Criteria1D* myCase)
+// soil water deficit [mm]
+double getSoilWaterDeficit(Criteria1D* myCase)
 {
-    double myDeficit = 0.0;
+    //check
+    if (! myCase->myCrop.isLiving) return NODATA;
+    if (myCase->myCrop.roots.rootDepth <= myCase->myCrop.roots.rootDepthMin) return NODATA;
+    if (myCase->myCrop.roots.firstRootLayer == NODATA) return NODATA;
 
-    for (int i=myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
+    double myDeficit = 0.0;
+    for (int i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
         myDeficit += myCase->layer[i].FC - myCase->layer[i].waterContent;
 
     return maxValue(myDeficit, 0.0);
@@ -257,6 +263,8 @@ double getTotalDeficit(Criteria1D* myCase)
 double getReadilyAvailableWater(Criteria1D* myCase)
 {
     if (! myCase->myCrop.isLiving) return NODATA;
+    if (myCase->myCrop.roots.rootDepth <= myCase->myCrop.roots.rootDepthMin) return NODATA;
+    if (myCase->myCrop.roots.firstRootLayer == NODATA) return NODATA;
 
     double threshold;
     int lastLayer = 0;
@@ -318,7 +326,7 @@ float cropIrrigationDemand(Criteria1D* myCase, float currentPrec, float nextPrec
     daysSinceIrrigation = 0;
 
     if (myCase->optimizeIrrigation)
-        return minValue(getTotalDeficit(myCase), myCase->myCrop.irrigationVolume);
+        return minValue(getSoilWaterDeficit(myCase), myCase->myCrop.irrigationVolume);
     else
         return myCase->myCrop.irrigationVolume;
 }
@@ -410,10 +418,11 @@ bool evaporation(Criteria1D* myCase)
 
 bool cropTranspiration(Criteria1D* myCase)
 {
-
+    //check
     if (myCase->myCrop.idCrop == "") return false;
     if (! myCase->myCrop.isLiving) return true;
     if (myCase->myCrop.roots.rootDepth <= myCase->myCrop.roots.rootDepthMin) return true;
+    if (myCase->myCrop.roots.firstRootLayer == NODATA) return true;
 
     double theta;                                   // [m3 m-3] volumetric water content
     double soilThickness;                           // [mm] thickness of soil layer
@@ -440,7 +449,6 @@ bool cropTranspiration(Criteria1D* myCase)
     bool* isStressed = (bool*) calloc(myCase->nrLayers, sizeof(bool));
     for (i=0; i < myCase->nrLayers; i++) isStressed[i] = false;
 
-    //TODO check on kiwifruit
     if (isWaterSurplusResistant(&(myCase->myCrop)))
         WSS = 0.0;
     else
@@ -513,7 +521,7 @@ bool cropTranspiration(Criteria1D* myCase)
         }
     }
 
-    for (i=myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
+    for (i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
     {
         myCase->layer[i].waterContent -= myCase->myCrop.roots.transpiration[i];
         myCase->output.dailyTranspiration += myCase->myCrop.roots.transpiration[i];
@@ -527,15 +535,14 @@ bool cropTranspiration(Criteria1D* myCase)
 }
 
 
+// OLD version - following Driessen (1992)Land-use systems analysis, p89-108
 bool cropTranspiration_old(Criteria1D* myCase)
 {
-    // following Driessen (1992)Land-use systems analysis, p89-108
-
+    //check
     if (myCase->myCrop.idCrop == "") return false;
-
     if (! myCase->myCrop.isLiving) return true;
-
     if (myCase->myCrop.roots.rootDepth <= myCase->myCrop.roots.rootDepthMin) return true;
+    if (myCase->myCrop.roots.firstRootLayer == NODATA) return true;
 
     double psi;                                     // [kPa] water potential
     double avgPSI;                                  // [cm] average water potential of rooted soil
@@ -598,7 +605,7 @@ bool cropTranspiration_old(Criteria1D* myCase)
     else
         WSS = 0.5;
 
-    for (i=myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
+    for (i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
     {
         criticalWC = myCase->layer[i].SAT - (WSS * (myCase->layer[i].SAT - myCase->layer[i].FC));
         theta = soil::thetaFromSignPsi(-myCase->myCrop.psiLeaf * 101.0 / 1033.0, myCase->layer[i].horizon);
@@ -665,7 +672,7 @@ bool cropTranspiration_old(Criteria1D* myCase)
         }
     }
 
-    for (i=myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
+    for (i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
     {
         myCase->layer[i].waterContent -= myCase->myCrop.roots.transpiration[i];
         myCase->output.dailyTranspiration += myCase->myCrop.roots.transpiration[i];
@@ -701,11 +708,9 @@ bool updateCrop(Criteria1D* myCase, QString* myError, Crit3DDate myDate, bool is
         }
 
         // check end of year for pluriannual
-        if(myCase->meteoPoint.latitude >= 0 && myDate.month == 1 && myDate.day == 1 ||
-           myCase->meteoPoint.latitude < 0 && myDate.month == 7 && myDate.day == 1)
-        {
+        if(((myCase->meteoPoint.latitude >= 0) && (myDate.month == 1) && (myDate.day == 1))
+        || ((myCase->meteoPoint.latitude < 0) && (myDate.month == 7) && (myDate.day == 1)))
             isCropToReset = true;
-        }
     }
     else
     {

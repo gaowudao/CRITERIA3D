@@ -35,6 +35,7 @@ public:
     double dailyMaxTranspiration;
     double dailyTranspiration;
     double dailyCropAvailableWater;
+    double dailySoilWaterDeficit;
 
     Criteria1DOutput();
     void initializeDaily();

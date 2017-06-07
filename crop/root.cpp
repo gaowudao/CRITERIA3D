@@ -341,7 +341,7 @@ namespace root
                                         numberOfTopUnrootedLayers, totalLayers, densityThinLayers);
             }
 
-            int counter =0;
+            int counter=0;
             for (layer=0; layer<nrLayers; layer++)
             {
                 for (j=counter; j<counter + atoms[layer]; j++)
@@ -384,26 +384,28 @@ namespace root
             myCrop->roots.rootDensity[i] *= layers[i].soilFraction;
             rootDensitySum += myCrop->roots.rootDensity[i];
         }
-        for (i=0 ; i<nrLayers ; i++)
-        {
-            myCrop->roots.rootDensity[i] /= rootDensitySum;
-        }
 
-        myCrop->roots.firstRootLayer = 0;
-        layer = 0;
-        while ((myCrop->roots.rootDensity[layer] == 0)
-               && (layer < nrLayers))
+        if (rootDensitySum > 0.0)
         {
-            layer++;
-            (myCrop->roots.firstRootLayer)++;
-        }
+            for (i=0 ; i<nrLayers ; i++)
+                myCrop->roots.rootDensity[i] /= rootDensitySum;
 
-        myCrop->roots.lastRootLayer = myCrop->roots.firstRootLayer;
-        while ((myCrop->roots.rootDensity[layer] != 0)
-            && (layer < nrLayers))
-        {
-            (myCrop->roots.lastRootLayer) = layer;
-            layer++;
+            myCrop->roots.firstRootLayer = 0;
+            layer = 0;
+            while ((myCrop->roots.rootDensity[layer] == 0)
+                   && (layer < nrLayers))
+            {
+                layer++;
+                (myCrop->roots.firstRootLayer)++;
+            }
+
+            myCrop->roots.lastRootLayer = myCrop->roots.firstRootLayer;
+            while ((myCrop->roots.rootDensity[layer] != 0)
+                && (layer < nrLayers))
+            {
+                (myCrop->roots.lastRootLayer) = layer;
+                layer++;
+            }
         }
 
         return true;

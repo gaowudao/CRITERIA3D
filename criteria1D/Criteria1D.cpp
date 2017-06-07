@@ -68,6 +68,7 @@ void Criteria1DOutput::initializeDaily()
     this->dailyMaxEvaporation = 0.0;
     this->dailyTranspiration = 0.0;
     this->dailyCropAvailableWater = 0.0;
+    this->dailySoilWaterDeficit = 0.0;
 }
 
 Criteria1DOutput::Criteria1DOutput()
@@ -463,16 +464,16 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, QString *myError
 bool Criteria1D::readMeteoData(QSqlQuery * query, QString *myError)
 {
     const int MAX_MISSING_DAYS = 3;
-    float tmin, tmax, tmed, prec, et0;
-    float prevTmin, prevTmax;
+    float tmed, prec, et0;
     QDate myDate, expectedDate, previousDate;
     Crit3DDate date;
-    int nrMissingTemp, nrMissingPrec;
 
-    tmin = NODATA;
-    tmax = NODATA;
-    nrMissingTemp = 0;
-    nrMissingPrec = 0;
+    float tmin = NODATA;
+    float tmax = NODATA;
+    float prevTmin = NODATA;
+    float prevTmax = NODATA;
+    int nrMissingTemp = 0;
+    int nrMissingPrec = 0;
 
     query->first();
     myDate = query->value("date").toDate();
@@ -670,9 +671,8 @@ bool Criteria1D::createOutputTable(QString* myError)
 
     queryString = "CREATE TABLE '" + this->idCase + "'"
             + " ( DATE TEXT,"
-            + " PREC REAL, IRRIGATION REAL, RAW REAL, DRAINAGE REAL, RUNOFF REAL, ET0 REAL,"
-            + " EVAP_MAX REAL, TRANSP_MAX, EVAP REAL, TRANSP REAL,"
-            + " LAI REAL, ROOTDEPTH REAL )";
+            + " PREC REAL, IRRIGATION REAL, RAW REAL, DEFICIT REAL, DRAINAGE REAL, RUNOFF REAL, ET0 REAL,"
+            + " EVAP_MAX REAL, TRANSP_MAX, EVAP REAL, TRANSP REAL, LAI REAL, ROOTDEPTH REAL )";
     myQuery = this->dbOutput.exec(queryString);
 
     if (myQuery.lastError().number() > 0)
@@ -689,7 +689,7 @@ void Criteria1D::prepareOutput(Crit3DDate myDate, bool isFirst)
 {
     if (isFirst)
         this->outputString = "INSERT INTO '" + this->idCase + "'"
-            + " (DATE, PREC, IRRIGATION, RAW, DRAINAGE, RUNOFF, ET0,"
+            + " (DATE, PREC, IRRIGATION, RAW, DEFICIT, DRAINAGE, RUNOFF, ET0,"
             + " EVAP_MAX, TRANSP_MAX, EVAP, TRANSP, LAI, ROOTDEPTH) "
             + " VALUES ";
     else
@@ -700,6 +700,7 @@ void Criteria1D::prepareOutput(Crit3DDate myDate, bool isFirst)
             + "," + QString::number(this->output.dailyPrec)
             + "," + QString::number(this->output.dailyIrrigation)
             + "," + QString::number(this->output.dailyCropAvailableWater)
+            + "," + QString::number(this->output.dailySoilWaterDeficit)
             + "," + QString::number(this->output.dailyDrainage)
             + "," + QString::number(this->output.dailySurfaceRunoff)
             + "," + QString::number(this->output.dailyEt0)

@@ -120,6 +120,7 @@
             return HERBACEOUS_ANNUAL;
     }
 
+    // TODO check on kiwifruit
     bool isWaterSurplusResistant(Crit3DCrop* myCrop)
     {
         return (isGrass(myCrop->type) || myCrop->type == FALLOW || myCrop->idCrop == "KIWIFRUIT" || myCrop->idCrop == "RICE");
