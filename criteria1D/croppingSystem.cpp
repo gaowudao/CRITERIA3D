@@ -315,10 +315,10 @@ float cropIrrigationDemand(Criteria1D* myCase, float currentPrec, float nextPrec
 
     // check stress tolerance
     double threshold = 1. - myCase->myCrop.stressTolerance;
-    if ((myCase->myCrop.lastWaterStress - threshold) < 0.001) return 0.;
+    if (myCase->myCrop.lastWaterStress < threshold)return 0.;
 
     // check readily available water (depending on water sensitivity)
-    if (getTotalEasyWater(myCase) > 0.) return 0.;
+    if (getTotalEasyWater(myCase) > 5.) return 0.;
 
     // all check passed --> IRRIGATION
 
