@@ -464,10 +464,9 @@ void DbArkimet::saveHourlyData()
     qry = QSqlQuery(statement, _db);
     qry.exec();
 
-    //wind: TO DO prevailing HH:00 data
     statement = QString("INSERT INTO `%1_H` ");
     statement = statement % "SELECT date_time, id_variable, value FROM TmpHourlyData WHERE ";
-    statement = statement % "id_point = %1 AND variable_name IN ('HOURLY_WIND_INT', 'HOURLY_WIND_DIR') AND strftime('%M', date_time) = '00'";
+    statement = statement % "id_point = %1 AND variable_name = 'W_DIR' AND strftime('%M', date_time) = '00'";
 
     foreach (QString station, stations) {
         qry = QSqlQuery(statement.arg(station), _db);
@@ -477,17 +476,19 @@ void DbArkimet::saveHourlyData()
     //rad:TO DO prevailing HH:30 data
     statement = QString("INSERT INTO `%1_H` ");
     statement = statement % "SELECT DATETIME(date_time, '+30 minutes'), id_variable, value FROM TmpHourlyData WHERE ";
-    statement = statement % "id_point = %1 AND variable_name = 'HOURLY_RAD' AND strftime('%M', date_time) = '30'";
+    statement = statement % "id_point = %1 AND variable_name = 'RAD' AND strftime('%M', date_time) = '30'";
 
     foreach (QString station, stations) {
         qry = QSqlQuery(statement.arg(station), _db);
         qry.exec();
     }
 
-    statement = QString("DELETE FROM TmpHourlyData WHERE variable_name IN ('HOURLY_RAD', 'HOURLY_WIND_INT', 'HOURLY_WIND_DIR')");
+    statement = QString("DELETE FROM TmpHourlyData WHERE variable_name IN ('RAD', 'W_DIR')");
     qry = QSqlQuery(statement, _db);
     qry.exec();
 
+    // la media funziona su tutte le var che hanno AVG nel nome (Temperature, RH, Wind intensity)
+    // i minuti del campo date_time vengono portati a 60 dalla funzione datetime quindi tutto si uniforma all'ora di riferimento
     statement = QString("INSERT INTO `%1_H` ");
     statement = statement % "SELECT aggregate_date, id_variable, aggregate_value FROM (";
     statement = statement % "SELECT aggregate_date, id_variable, SUM(value) AS aggregate_value, SUM(frequency) AS aggregate_frequency FROM (";
