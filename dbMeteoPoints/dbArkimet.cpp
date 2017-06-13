@@ -464,6 +464,7 @@ void DbArkimet::saveHourlyData()
     qry = QSqlQuery(statement, _db);
     qry.exec();
 
+    //wind: TO DO prevailing HH:00 data
     statement = QString("INSERT INTO `%1_H` ");
     statement = statement % "SELECT date_time, id_variable, value FROM TmpHourlyData WHERE ";
     statement = statement % "id_point = %1 AND variable_name IN ('HOURLY_WIND_INT', 'HOURLY_WIND_DIR') AND strftime('%M', date_time) = '00'";
@@ -473,6 +474,7 @@ void DbArkimet::saveHourlyData()
         qry.exec();
     }
 
+    //rad:TO DO prevailing HH:30 data
     statement = QString("INSERT INTO `%1_H` ");
     statement = statement % "SELECT DATETIME(date_time, '+30 minutes'), id_variable, value FROM TmpHourlyData WHERE ";
     statement = statement % "id_point = %1 AND variable_name = 'HOURLY_RAD' AND strftime('%M', date_time) = '30'";
