@@ -156,7 +156,9 @@
         bool getRowColFromXY(const Crit3DRasterGrid &myGrid, double myX, double myY, long* myRow, long* myCol);
         bool isOutOfGridRowCol(long myRow, long myCol, const Crit3DRasterGrid &myGrid);
         void getUtmXYFromRowColSinglePrecision(const Crit3DRasterGrid& myGrid, long myRow, long myCol,float* myX,float* myY);
-        void getUtmXYFromRowCol(const Crit3DRasterGrid& myGrid,long myRow,long myCol,double* myX,double* myY);
+        void getUtmXYFromRowCol(const Crit3DRasterGrid& myGrid, long myRow, long myCol ,double* myX, double* myY);
+        void getUtmXYFromRowCol(const Crit3DGridHeader& myHeader,long myRow, long myCol, double* myX, double* myY);
+        void getLatLonFromRowCol(const Crit3DGridHeader& myHeader, long myRow, long myCol, double* lat, double* lon);
         float getValueFromXY(const Crit3DRasterGrid& myGrid, double x, double y);
 
         bool isOutOfGridXY(double x, double y, Crit3DGridHeader* header);

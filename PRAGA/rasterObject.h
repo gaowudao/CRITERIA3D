@@ -6,6 +6,7 @@
 #include "MapGraphicsView.h"
 #include "colorlegend.h"
 #include "map.h"
+#include "project.h"
 
 
 /*!
@@ -51,7 +52,7 @@ private:
     bool isDrawing;
 
     bool setMapResolution();
-    bool drawRaster(gis::Crit3DRasterGrid* myRaster, QPainter* myPainter);
+    bool drawRaster(Project* myProject, gis::Crit3DRasterGrid *myRaster, QPainter* myPainter);
 };
 
 

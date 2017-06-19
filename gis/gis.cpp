@@ -423,6 +423,18 @@ namespace gis
             *myY = myGrid.header->llCorner->y + myGrid.header->cellSize * (myGrid.header->nrRows - myRow - 0.5);
     }
 
+    void getUtmXYFromRowCol(const Crit3DGridHeader& myHeader, long myRow, long myCol, double* myX, double* myY)
+    {
+            *myX = myHeader.llCorner->x + myHeader.cellSize * (myCol + 0.5);
+            *myY = myHeader.llCorner->y + myHeader.cellSize * (myHeader.nrRows - myRow - 0.5);
+    }
+
+    void getLatLonFromRowCol(const Crit3DGridHeader& myHeader, long myRow, long myCol, double* lat, double* lon)
+    {
+            *lon = myHeader.llCorner->x + myHeader.cellSize * (myCol + 0.5);
+            *lat = myHeader.llCorner->y + myHeader.cellSize * (myHeader.nrRows - myRow - 0.5);
+    }
+
     float getValueFromXY(const Crit3DRasterGrid& myGrid, double x, double y)
     {
         long myRow, myCol;

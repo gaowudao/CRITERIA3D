@@ -1,7 +1,6 @@
 #include <QtDebug>
 #include "commonConstants.h"
 #include "rasterObject.h"
-#include "project.h"
 
 
 extern Project myProject;
@@ -52,9 +51,9 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     Q_UNUSED(widget)
 
     this->setMapResolution();
-    drawRaster(&(myProject.DTM), painter);
+    //TO DO scelta della mappa da visualizzare
+    drawRaster(&myProject, &(myProject.DTM), painter);
     this->legend->update();
-    //drawPoints()  visualizza anagrafica stazioni
 }
 
 
@@ -88,52 +87,57 @@ bool RasterObject::setMapResolution()
 }
 
 
-bool RasterObject::drawRaster(gis::Crit3DRasterGrid* myRaster, QPainter* myPainter)
+bool RasterObject::drawRaster(Project* myProject, gis::Crit3DRasterGrid *myRaster, QPainter* myPainter)
 {
     if (! this->isDrawing) return false;
-    if ( myRaster == NULL) return false;
+    if ( myProject == NULL) return false;
     if (! myRaster->isLoaded) return false;
 
+    // current view extent
     long row0, row1, col0, col1;
-    gis::getRowColFromXY(*myRaster, this->geoMap->bottomLeft.longitude, this->geoMap->bottomLeft.latitude, &row0, &col0);
-    gis::getRowColFromXY(*myRaster, this->geoMap->topRight.longitude, this->geoMap->topRight.latitude, &row1, &col1);
+    gis::getRowColFromXY(myProject->rowMatrix, this->geoMap->bottomLeft.longitude, this->geoMap->bottomLeft.latitude, &row0, &col0);
+    gis::getRowColFromXY(myProject->rowMatrix, this->geoMap->topRight.longitude, this->geoMap->topRight.latitude, &row1, &col1);
 
-    //check limits
+    // check extent
     if (((col0 < 0) && (col1 < 0))
     || ((row0 < 0) && (row1 < 0))
-    || ((col0 >= myRaster->header->nrCols) && (col1 >= myRaster->header->nrCols))
-    || ((row0 >= myRaster->header->nrRows) && (row1 >= myRaster->header->nrRows)))
+    || ((col0 >= myProject->rowMatrix.header->nrCols) && (col1 >= myProject->rowMatrix.header->nrCols))
+    || ((row0 >= myProject->rowMatrix.header->nrRows) && (row1 >= myProject->rowMatrix.header->nrRows)))
     {
         myRaster->minimum = NODATA;
         myRaster->maximum = NODATA;
         return false;
     }
 
-    int x0, y0, x1, y1, lx, ly;
-    float myValue;
-    gis::Crit3DColor* myColor;
-    QColor myQColor;
+    row1--;  //Serve veramente?
+    row0 = std::min(myProject->rowMatrix.header->nrRows-1, std::max(long(0), row0));
+    row1 = std::min(myProject->rowMatrix.header->nrRows-1, std::max(long(0), row1));
+    col0 = std::min(myProject->rowMatrix.header->nrCols-1, std::max(long(0), col0));
+    col1 = std::min(myProject->rowMatrix.header->nrCols-1, std::max(long(0), col1));
 
-    row1--;
-    row0 = std::min(myRaster->header->nrRows-1, std::max(long(0), row0));
-    row1 = std::min(myRaster->header->nrRows-1, std::max(long(0), row1));
-    col0 = std::min(myRaster->header->nrCols-1, std::max(long(0), col0));
-    col1 = std::min(myRaster->header->nrCols-1, std::max(long(0), col1));
-
-    //qDebug() << "draw Raster" << row0 << row1;
-
-    gis::updateColorScale(myRaster, row0, row1, col0, col1);
+    // dynamic color scale
+    gis::updateColorScale(myRaster, myProject->rowMatrix.value[row0][col0],
+                                    myProject->rowMatrix.value[row1][col1],
+                                    myProject->colMatrix.value[row0][col0],
+                                    myProject->colMatrix.value[row1][col1]);
 
     gis::Crit3DGeoPoint llCorner;
     gis::Crit3DPixel pixelLL;
-    llCorner.longitude = myRaster->header->llCorner->x + col0 * myRaster->header->cellSize;
-    llCorner.latitude = myRaster->header->llCorner->y + (myRaster->header->nrRows-1 - row0) * myRaster->header->cellSize;
+    llCorner.longitude = myProject->rowMatrix.header->llCorner->x + col0 * myProject->rowMatrix.header->cellSize;
+    llCorner.latitude = myProject->rowMatrix.header->llCorner->y
+            + (myProject->rowMatrix.header->nrRows-1 - row0) * myProject->rowMatrix.header->cellSize;
     pixelLL.x = (llCorner.longitude - this->geoMap->referencePoint.longitude) * this->geoMap->degreeToPixelX;
     pixelLL.y = (llCorner.latitude - this->geoMap->referencePoint.latitude) * this->geoMap->degreeToPixelY;
 
-    double dx = myRaster->header->cellSize * this->geoMap->degreeToPixelX;
-    double dy = myRaster->header->cellSize * this->geoMap->degreeToPixelY;
+    double dx = myProject->rowMatrix.header->cellSize * this->geoMap->degreeToPixelX;
+    double dy = myProject->rowMatrix.header->cellSize * this->geoMap->degreeToPixelY;
     int step = std::max(int(1. / (std::min(dx, dy))), 1);
+
+    int x0, y0, x1, y1, lx, ly;
+    long utmRow, utmCol;
+    gis::Crit3DColor* myColor;
+    QColor myQColor;
+    float myValue;
 
     y0 = pixelLL.y;
     for (long row = row0; row >= row1; row -= step)
@@ -144,7 +148,10 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid* myRaster, QPainter* myPaint
         {
             x1 = pixelLL.x + (col-col0 + step) * dx;
 
-            myValue = myRaster->value[row][col];
+            utmRow = myProject->rowMatrix.value[row][col];
+            utmCol = myProject->colMatrix.value[row][col];
+            myValue = myRaster->getValueFromRowCol(utmRow, utmCol);
+
             if (myValue != myRaster->header->flag)
             {
                 myColor = myRaster->colorScale->getColor(myValue);
@@ -163,14 +170,4 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid* myRaster, QPainter* myPaint
     return true;
 }
 
-
-/*
- * marker example
- * CircleObject* marker1 = new CircleObject(5.0, true, QColor(255,0,0,255), 0);
- * marker1->setFlag(MapGraphicsObject::ObjectIsMovable, false);
- * marker1->setFlag(MapGraphicsObject::ObjectIsSelectable, false);
- * marker1->setLatitude(startCenter->latitude());
- * marker1->setLongitude(startCenter->longitude());
- * this->view->scene()->addObject(marker1);
-*/
 

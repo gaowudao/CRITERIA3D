@@ -19,15 +19,34 @@ bool Project::loadRaster(QString myFileName)
     std::string* myError = new std::string();
     std::string fileName = myFileName.left(myFileName.length()-4).toStdString();
 
-    gis::Crit3DRasterGrid UTMRaster;
-    if (gis::readEsriGrid(fileName, &(UTMRaster), myError))
+    if (gis::readEsriGrid(fileName, &(this->DTM), myError))
     {
+        this->DTM.isLoaded = true;
+        gis::updateMinMaxRasterGrid(&(this->DTM));
+        // colorscale
+        gis::setDefaultDTMScale(this->DTM.colorScale);
+
         gis::Crit3DGridHeader myLatLonHeader;
-        gis::getGeoExtentsFromUTMHeader(this->gisSettings, UTMRaster.header, &myLatLonHeader);
+        gis::getGeoExtentsFromUTMHeader(this->gisSettings, this->DTM.header, &myLatLonHeader);
 
-        this->DTM.initializeGrid(myLatLonHeader);
+        this->colMatrix.initializeGrid(myLatLonHeader);
+        this->rowMatrix.initializeGrid(myLatLonHeader);
 
+        double lat, lon, x, y;
+        long utmRow, utmCol;
+        for (long row = 0; row < myLatLonHeader.nrRows; row++)
+            for (long col = 0; col < myLatLonHeader.nrCols; col++)
+            {
+                gis::getLatLonFromRowCol(myLatLonHeader, row, col, &lat, &lon);
+                gis::latLonToUtmForceZone(this->gisSettings.utmZone, lat, lon, &x, &y);
+                gis::getRowColFromXY(this->DTM, x, y, &utmRow, &utmCol);
+                this->rowMatrix.value[row][col] = utmRow;
+                this->colMatrix.value[row][col] = utmCol;
+            }
+
+        /*
         // transform
+        this->DTM.initializeGrid(myLatLonHeader);
         double lat, lon, x, y;
         for (long row = 0; row < this->DTM.header->nrRows; row++)
             for (long col = 0; col < this->DTM.header->nrCols; col++)
@@ -36,12 +55,8 @@ bool Project::loadRaster(QString myFileName)
                 gis::latLonToUtmForceZone(this->gisSettings.utmZone, lat, lon, &x, &y);
                 this->DTM.value[row][col] = gis::getValueFromXY(UTMRaster, x, y);
             }
+        */
 
-        this->DTM.isLoaded = true;
-        gis::updateMinMaxRasterGrid(&(this->DTM));
-
-        // colorscale
-        gis::setDefaultDTMScale(this->DTM.colorScale);
         qDebug("Raster Ok.");
         return (true);
     }

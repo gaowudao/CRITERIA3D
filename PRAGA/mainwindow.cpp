@@ -110,11 +110,11 @@ void MainWindow::on_actionLoadRaster_triggered()
     if (!myProject.loadRaster(fileName)) return;
 
     // center map
-    gis::Crit3DGeoPoint* center = gis::getRasterGeoCenter(myProject.DTM.header);
+    gis::Crit3DGeoPoint* center = gis::getRasterGeoCenter(myProject.rowMatrix.header);
     this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
 
     // resize map
-    float size = gis::getRasterMaxSize(myProject.DTM.header);
+    float size = gis::getRasterMaxSize(myProject.rowMatrix.header);
     size = log2(1000.0/size);
     this->mapView->setZoomLevel(quint8(size));
     this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
