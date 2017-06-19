@@ -31,7 +31,6 @@
 #ifndef SOILFLUXES3DTYPES
 #define SOILFLUXES3DTYPES
 
-
     #include "parameters.h"
     #include "extra.h"
 
@@ -41,10 +40,8 @@
         double waterFlow;                   /*!< [m3 s-1] */
         double sumBoundaryWaterFlow;        /*!< [m3] sum of boundary water flow */
         double prescribedTotalPotential;	/*!< [m] imposed total soil-water potential (H) */
-        double advectiveHeatFlux;           /*!< [W m-2] boundary advective heat flow density  */
-        double fixedTemperature;            /*!< [K] fixed temperature */
 
-        TboundaryHeat *Heat;
+        TboundaryHeat *Heat;                /*!< extra variables for heat flux */
     } ;
 
     struct TCrit3DStructure{

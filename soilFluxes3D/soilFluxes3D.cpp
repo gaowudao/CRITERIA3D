@@ -904,10 +904,11 @@ int DLL_EXPORT __STDCALL SetFixedTemperature(long nodeIndex, double myT)
    if (myNode == NULL) return(MEMORY_ERROR);
    if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
    if (myNode[nodeIndex].boundary == NULL) return(BOUNDARY_ERROR);
+   if (myNode[nodeIndex].boundary->Heat == NULL) return(BOUNDARY_ERROR);
    if (myNode[nodeIndex].boundary->type != BOUNDARY_PRESCRIBEDTOTALPOTENTIAL &&
            myNode[nodeIndex].boundary->type != BOUNDARY_FREEDRAINAGE) return(BOUNDARY_ERROR);
 
-   myNode[nodeIndex].boundary->fixedTemperature = myT;
+   myNode[nodeIndex].boundary->Heat->fixedTemperature = myT;
 
    return(CRIT3D_OK);
 }
@@ -1292,11 +1293,12 @@ double DLL_EXPORT getBoundaryAdvectiveFlux(long nodeIndex)
     if (myNode == NULL) return (TOPOGRAPHY_ERROR);
     if (nodeIndex >= myStructure.nrNodes) return (INDEX_ERROR);
     if (! myStructure.computeHeat || ! myStructure.computeWater) return (MISSING_DATA_ERROR);
-    if (myNode[nodeIndex].boundary == NULL) return (INDEX_ERROR);
-    if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT) return (INDEX_ERROR);
+    if (myNode[nodeIndex].boundary == NULL) return (BOUNDARY_ERROR);
+    if (myNode[nodeIndex].boundary->Heat == NULL) return (BOUNDARY_ERROR);
+    if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT) return (BOUNDARY_ERROR);
 
     // boundary advective heat flow density
-    return (myNode[nodeIndex].boundary->advectiveHeatFlux);
+    return (myNode[nodeIndex].boundary->Heat->advectiveHeatFlux);
 }
 
 /*!

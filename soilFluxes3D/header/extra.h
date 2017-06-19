@@ -51,6 +51,8 @@ struct TboundaryHeat{
     double aerodynamicConductance;          /*!< [m s-1] aerodynamic conductance for heat */
     double soilConductance;                 /*!< [m s-1] soil conductance */
     double albedo;                          /*!< [] albedo */
+    double fixedTemperature;                /*!< [K] fixed temperature */
+    double advectiveHeatFlux;               /*!< [W m-2] boundary advective heat flow density  */
 };
 
 struct THeatFlux{
