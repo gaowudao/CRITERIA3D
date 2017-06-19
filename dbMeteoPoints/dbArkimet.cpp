@@ -6,9 +6,8 @@
 #include <QSqlQuery>
 #include <QSqlRecord>
 #include <QString>
-#include <QStringBuilder>
+//#include <QStringBuilder>
 
-//#include <QtNetwork>
 
 DbArkimet::DbArkimet(QString dbName) : DbMeteoPoints(dbName)
 {
@@ -16,7 +15,6 @@ DbArkimet::DbArkimet(QString dbName) : DbMeteoPoints(dbName)
 
 QList<VariablesList> DbArkimet::getHourlyVarFields(QList<int> id)
 {
-
     QList<VariablesList> variableList;
 
     QString idlist = QString("(%1").arg(id[0]);
@@ -41,17 +39,14 @@ QList<VariablesList> DbArkimet::getHourlyVarFields(QList<int> id)
         {
             variableList.append(VariablesList(qry.value(0).toInt(), qry.value(1).toInt(), qry.value(2).toString(), qry.value(5).toInt() ));
         }
-
-
     }
+
     return variableList;
-
-
 }
+
 
 QString DbArkimet::getVarName(int id)
 {
-
     QString varName = NULL;
     QSqlQuery qry(_db);
 
@@ -71,7 +66,6 @@ QString DbArkimet::getVarName(int id)
 
         else
             qDebug( "Error: dataset not found" );
-
     }
 
     return varName;
@@ -80,7 +74,6 @@ QString DbArkimet::getVarName(int id)
 
 int DbArkimet::getId(QString VarName)
 {
-
     int id = 0;
     QSqlQuery qry(_db);
 
@@ -100,11 +93,11 @@ int DbArkimet::getId(QString VarName)
 
         else
             qDebug( "Error: dataset not found" );
-
     }
 
     return id;
 }
+
 
 QList<int> DbArkimet::getDailyVar()
 {
@@ -125,14 +118,12 @@ QList<int> DbArkimet::getDailyVar()
         {
             int id = qry.value(0).toInt();
             dailyVarList << id;
-
         }
-
     }
 
     return dailyVarList;
-
 }
+
 
 QList<int> DbArkimet::getHourlyVar()
 {
@@ -153,178 +144,13 @@ QList<int> DbArkimet::getHourlyVar()
         {
             int id = qry.value(0).toInt();
             hourlyVarList << id;
-
         }
-
     }
 
     return hourlyVarList;
-
 }
 
-bool DbArkimet::fillPointProperties(Crit3DMeteoPoint *pointProp)
-{
 
-
-    bool success = false;
-    QSqlQuery qry(_db);
-
-    qry.prepare( "INSERT INTO point_properties (id_point, name, dataset, latitude, longitude, latInt, lonInt, utm_x, utm_y, altitude, state, region, province, municipality)"
-                                      " VALUES (:id_point, :name, :dataset, :latitude, :longitude, :latInt, :lonInt, :utm_x, :utm_y, :altitude, :state, :region, :province, :municipality)" );
-
-
-    qry.bindValue(":id_point", QString::fromStdString(pointProp->id));
-    qry.bindValue(":name", QString::fromStdString(pointProp->name));
-    qry.bindValue(":dataset", QString::fromStdString(pointProp->dataset));
-    qry.bindValue(":latitude", pointProp->latitude);
-    qry.bindValue(":longitude", pointProp->longitude);
-    qry.bindValue(":latInt", pointProp->latInt);
-    qry.bindValue(":lonInt", pointProp->lonInt);
-    qry.bindValue(":utm_x", pointProp->point.utm.x);
-    qry.bindValue(":utm_y", pointProp->point.utm.y);
-    qry.bindValue(":altitude", pointProp->point.z);
-    qry.bindValue(":state", QString::fromStdString(pointProp->state));
-    qry.bindValue(":region", QString::fromStdString(pointProp->region));
-    qry.bindValue(":province", QString::fromStdString(pointProp->province));
-    qry.bindValue(":municipality", QString::fromStdString(pointProp->municipality));
-
-
-    if( !qry.exec() )
-    {
-        success = false;
-        qDebug() << qry.lastError();
-    }
-    else
-    {
-        //qDebug( "successfully inserted" );
-        success = true;
-    }
-
-    return success;
-
-}
-
-QList<Crit3DMeteoPoint> DbArkimet::getPropertiesFromDb()
-{
-
-    QList<Crit3DMeteoPoint> meteoPointsList;
-    Crit3DMeteoPoint meteoPoint;
-    QSqlQuery qry(_db);
-
-    qry.prepare( "SELECT id_point, name, dataset, latitude, longitude, latInt, lonInt, utm_x, utm_y, altitude, state, region, province, municipality, is_utc from point_properties" );
-
-    if( !qry.exec() )
-    {
-        qDebug() << qry.lastError();
-    }
-    else
-    {
-        while (qry.next())
-        {
-            meteoPoint.id = qry.value(0).toString().toStdString();
-            meteoPoint.name = qry.value(1).toString().toStdString();
-            meteoPoint.dataset = qry.value(2).toString().toStdString();
-            meteoPoint.latitude = qry.value(3).toDouble();
-            meteoPoint.longitude = qry.value(4).toDouble();
-            meteoPoint.latInt = qry.value(5).toInt();
-            meteoPoint.lonInt = qry.value(6).toInt();
-            meteoPoint.point.utm.x = qry.value(7).toDouble();
-            meteoPoint.point.utm.y = qry.value(8).toDouble();
-            meteoPoint.point.z = qry.value(9).toDouble();
-            meteoPoint.state = qry.value(10).toString().toStdString();
-            meteoPoint.region = qry.value(11).toString().toStdString();
-            meteoPoint.province = qry.value(12).toString().toStdString();
-            meteoPoint.municipality = qry.value(13).toString().toStdString();
-            meteoPoint.isUTC = qry.value(14).toBool();
-
-            meteoPointsList << meteoPoint;
-
-        }
-
-    }
-
-    return meteoPointsList;
-
-}
-
-void DbArkimet::getDataFromDailyDb(Crit3DDate dateStart, Crit3DDate dateEnd, QList<Crit3DMeteoPoint> &meteoPointsList)
-{
-
-    int numberOfDays = difference(dateStart, dateEnd)+1;
-    QString startDate = QString::fromStdString(dateStart.toStdString());
-    QString endDate = QString::fromStdString(dateEnd.toStdString());
-
-    QSqlQuery qry(_db);
-
-    for (int i = 0; i < meteoPointsList.size(); i++)
-    {
-
-        meteoPointsList[i].initializeObsDataD(numberOfDays, dateStart);
-        QString statement = QString( "SELECT * FROM `%1_D` WHERE date_time >= DATE('%2') AND date_time < DATE('%3', '+1 day')").arg(QString::fromStdString(meteoPointsList[i].id)).arg(startDate).arg(endDate);
-        if( !qry.exec(statement) )
-        {
-            qDebug() << qry.lastError();
-        }
-        else
-        {
-            while (qry.next())
-            {
-                QString dateStr = qry.value(0).toString();
-                QDateTime qDateT = QDateTime::fromString(dateStr,"yyyy-MM-dd HH:mm:ss");
-                Crit3DDate date(qDateT.date().day(), qDateT.date().month(), qDateT.date().year());
-
-                int idVar = qry.value(1).toInt();
-                meteoVariable meteoVar = getDefaultMeteoVariable(idVar);
-
-                float value = qry.value(2).toFloat();
-                meteoPointsList[i].setMeteoPointValueD(date, meteoVar, value);
-            }
-
-        }
-    }
-
-
-}
-
-void DbArkimet::getDataFromHourlyDb(Crit3DDate dateStart, Crit3DDate dateEnd, QList<Crit3DMeteoPoint> &meteoPointsList)
-{
-
-    int numberOfDays = difference(dateStart, dateEnd)+1;
-    int myHourlyFraction = 1;
-    QString startDate = QString::fromStdString(dateStart.toStdString());
-    QString endDate = QString::fromStdString(dateEnd.toStdString());
-
-    QSqlQuery qry(_db);
-
-    for (int i = 0; i < meteoPointsList.size(); i++)
-    {
-
-        meteoPointsList[i].initializeObsDataH(myHourlyFraction, numberOfDays, dateStart);
-        QString statement = QString( "SELECT * FROM `%1_H` WHERE date_time >= DATE('%2') AND date_time < DATE('%3', '+1 day')").arg(QString::fromStdString(meteoPointsList[i].id)).arg(startDate).arg(endDate);
-        if( !qry.exec(statement) )
-        {
-            qDebug() << qry.lastError();
-        }
-        else
-        {
-            while (qry.next())
-            {
-                QString dateStr = qry.value(0).toString();
-                QDateTime qDateT = QDateTime::fromString(dateStr,"yyyy-MM-dd HH:mm:ss");
-                Crit3DDate date(qDateT.date().day(), qDateT.date().month(), qDateT.date().year());
-
-                int idVar = qry.value(1).toInt();
-                meteoVariable meteoVar = getDefaultMeteoVariable(idVar);
-
-                float value = qry.value(2).toFloat();
-                meteoPointsList[i].setMeteoPointValueH(date, qDateT.time().hour(), qDateT.time().minute(), meteoVar, value);
-            }
-
-        }
-    }
-
-
-}
 
 void DbArkimet::initStationsDailyTables(Crit3DDate dateStartInput, Crit3DDate dateEndInput, QStringList stations)
 {
@@ -348,6 +174,7 @@ void DbArkimet::initStationsDailyTables(Crit3DDate dateStartInput, Crit3DDate da
 
 }
 
+
 void DbArkimet::initStationsHourlyTables(Crit3DTime dateStartInput, Crit3DTime dateEndInput, QStringList stations)
 {
 
@@ -368,7 +195,6 @@ void DbArkimet::initStationsHourlyTables(Crit3DTime dateStartInput, Crit3DTime d
         qry = QSqlQuery(statement, _db);
         qry.exec();
     }
-
 }
 
 
@@ -397,8 +223,8 @@ void DbArkimet::createTmpTable()
         qDebug( "createTmpTable - Delete all records" );
     }
 
-
 }
+
 
 void DbArkimet::deleteTmpTable()
 {
@@ -414,10 +240,10 @@ void DbArkimet::deleteTmpTable()
     else
     {
         qDebug( "Drop table" );
-
     }
 
 }
+
 
 void DbArkimet::insertDailyValue(QString station, QString date, int varType, double varValue, QString flag)
 {
@@ -535,12 +361,11 @@ void DbArkimet::insertOrUpdate(QString date, QString id_point, int id_variable, 
         QSqlQuery qry = QSqlQuery(statement, _db);
         qry.exec();
     }
-
 }
+
 
 int DbArkimet::arkIdmap(int arkId)
 {
-
     switch(arkId)
     {
         case 158:
