@@ -37,22 +37,19 @@
 
 struct TboundaryHeat{
     double temperature;                     /*!< [K] temperature of the boundary (ex. air temperature) */
-    double relativeHumidity;                /*!< [] relative humidity */
-    double vaporConcentration;              /*!< [kg m-3] water vapour concentration */
+    double relativeHumidity;                /*!< [%] relative humidity */
+    double windSpeed;                       /*!< [m s-1] wind speed */
+    double netIrradiance;                   /*!< [W m-2] net irradiance */
     double heightWind;                      /*!< [m] reference height for wind measurement */
     double heightTemperature;               /*!< [m] reference height for temperature and humidity measurement */
     double roughnessHeight;                 /*!< [m] surface roughness height */
-    double windSpeed;                       /*!< [m s-1] wind speed */
-    double globalIrradiance;                /*!< [W m-2] global shortwave irradiance */
-    double netIrradiance;                   /*!< [W m-2] net irradiance */
     double sensibleFlux;                    /*!< [W m-2] boundary sensible heat flow density */
     double latentFlux;                      /*!< [W m-2] boundary latent heat flow density */
     double radiativeFlux;                   /*!< [W m-2] boundary net radiative flow density */
+    double advectiveHeatFlux;               /*!< [W m-2] boundary advective heat flow density  */
     double aerodynamicConductance;          /*!< [m s-1] aerodynamic conductance for heat */
     double soilConductance;                 /*!< [m s-1] soil conductance */
-    double albedo;                          /*!< [] albedo */
     double fixedTemperature;                /*!< [K] fixed temperature */
-    double advectiveHeatFlux;               /*!< [W m-2] boundary advective heat flow density  */
 };
 
 struct THeatFlux{

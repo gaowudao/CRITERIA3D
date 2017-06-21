@@ -23,7 +23,8 @@
 
     //INITIALIZATION
     __EXTERN void DLL_EXPORT __STDCALL cleanMemory();
-    __EXTERN int DLL_EXPORT __STDCALL initialize(long nrNodes, int nrLayers, int nrLateralLinks, bool comuteWater_, bool computeHeat_, bool computeSolutes_, int saveHeatFluxes_);
+    __EXTERN int DLL_EXPORT __STDCALL initialize(long nrNodes, int nrLayers, int nrLateralLinks, bool computeWater_, bool computeHeat_, bool computeSolutes_);
+    __EXTERN void initializeHeat(int saveHeatFluxes_);
 
     __EXTERN int DLL_EXPORT __STDCALL setNumericalParameters(float minDeltaT, float maxDeltaT,
                               int maxIterationNumber, int maxApproximationsNumber,
@@ -80,7 +81,6 @@
     __EXTERN int DLL_EXPORT __STDCALL SetHeatBoundaryRelativeHumidity(long nodeIndex, double myRelativeHumidity);
     __EXTERN int DLL_EXPORT __STDCALL SetHeatBoundaryRoughness(long nodeIndex, double myRoughness);
     __EXTERN int DLL_EXPORT __STDCALL SetHeatBoundaryWindSpeed(long nodeIndex, double myWindSpeed);
-    __EXTERN int DLL_EXPORT __STDCALL SetHeatBoundaryGlobalIrradiance(long nodeIndex, double myGlobalIrradiance);
     __EXTERN int DLL_EXPORT __STDCALL SetHeatBoundaryNetIrradiance(long nodeIndex, double myNetIrradiance);
     __EXTERN int DLL_EXPORT __STDCALL SetFixedTemperature(long nodeIndex, double myT);
 

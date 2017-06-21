@@ -78,9 +78,13 @@ namespace soilFluxes3D {
         //clean balance
 	}
 
+    void DLL_EXPORT __STDCALL initializeHeat(int saveHeatFluxes_)
+{
+    myStructure.saveHeatFluxes = saveHeatFluxes_;
+}
+
     int DLL_EXPORT __STDCALL initialize(long nrNodes, int nrLayers, int nrLateralLinks,
-                                        bool computeWater_, bool computeHeat_, bool computeSolutes_,
-                                        int saveHeatFluxes_)
+                                        bool computeWater_, bool computeHeat_, bool computeSolutes_)
 {
     /*! clean the old data structures */
     cleanMemory();
@@ -92,7 +96,7 @@ namespace soilFluxes3D {
     myStructure.computeHeat = computeHeat_;
     myStructure.computeSolutes = computeSolutes_;
 
-    myStructure.saveHeatFluxes = saveHeatFluxes_;
+    myStructure.saveHeatFluxes = SAVE_HEATFLUXES_NONE;
 
     myStructure.nrNodes = nrNodes;
     myStructure.nrLayers = nrLayers;
@@ -989,28 +993,6 @@ int DLL_EXPORT __STDCALL SetHeatBoundaryTemperature(long nodeIndex, double myTem
 }
 
 /*!
- * \brief Set boundary global irradiance
- * \param nodeIndex
- * \param myGlobalIrradiance [W m-2]
- * \return OK/ERROR
- */
-int DLL_EXPORT __STDCALL SetHeatBoundaryGlobalIrradiance(long nodeIndex, double myGlobalIrradiance)
-{
-   if (myNode == NULL)
-       return(MEMORY_ERROR);
-
-   if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes))
-       return(INDEX_ERROR);
-
-   if (myNode[nodeIndex].boundary == NULL || myNode[nodeIndex].boundary->Heat == NULL)
-       return (BOUNDARY_ERROR);
-
-   myNode[nodeIndex].boundary->Heat->globalIrradiance = myGlobalIrradiance;
-
-   return(CRIT3D_OK);
-}
-
-/*!
  * \brief Set boundary net irradiance
  * \param nodeIndex
  * \param myNetIrradiance [W m-2]
@@ -1050,12 +1032,6 @@ int DLL_EXPORT __STDCALL SetHeatBoundaryRelativeHumidity(long nodeIndex, double 
        return (BOUNDARY_ERROR);
 
    myNode[nodeIndex].boundary->Heat->relativeHumidity = myRelativeHumidity;
-
-   double PressSat, ConcVapSat;
-   PressSat = SaturationVaporPressure(myNode[nodeIndex].boundary->Heat->temperature - ZEROCELSIUS);
-   ConcVapSat = VaporConcentrationFromPressure(PressSat, myNode[nodeIndex].boundary->Heat->temperature);
-
-   myNode[nodeIndex].boundary->Heat->vaporConcentration = ConcVapSat * (myNode[nodeIndex].boundary->Heat->relativeHumidity / 100.);
 
    return(CRIT3D_OK);
 }

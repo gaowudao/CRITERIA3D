@@ -60,14 +60,11 @@ void initializeBoundary(Tboundary *myBoundary, int myType, float slope)
         (*myBoundary).Heat->roughnessHeight = NODATA;
         (*myBoundary).Heat->aerodynamicConductance = NODATA;
         (*myBoundary).Heat->soilConductance = NODATA;
-        (*myBoundary).Heat->albedo = NODATA;
 
         //atmospheric variables
         (*myBoundary).Heat->temperature = NODATA;
         (*myBoundary).Heat->relativeHumidity = NODATA;
-        (*myBoundary).Heat->vaporConcentration = NODATA;
         (*myBoundary).Heat->windSpeed = NODATA;
-        (*myBoundary).Heat->globalIrradiance = NODATA;
         (*myBoundary).Heat->netIrradiance = NODATA;
 
         //surface energy fluxes
@@ -124,8 +121,14 @@ double computeAtmosphericLatentFlux(long i)
     if (myNode[i].boundary->Heat == NULL || ! myNode[myNode[i].up.index].isSurface)
         return 0;
 
+    double PressSat, ConcVapSat, BoundaryVapor;
+
+    PressSat = SaturationVaporPressure(myNode[i].boundary->Heat->temperature - ZEROCELSIUS);
+    ConcVapSat = VaporConcentrationFromPressure(PressSat, myNode[i].boundary->Heat->temperature);
+    BoundaryVapor = ConcVapSat * (myNode[i].boundary->Heat->relativeHumidity / 100.);
+
     // kg m-3
-    double myDeltaVapor = myNode[i].boundary->Heat->vaporConcentration - soilFluxes3D::getNodeVapor(i);
+    double myDeltaVapor = BoundaryVapor - soilFluxes3D::getNodeVapor(i);
 
     // m s-1
     double myTotalConductance = 1./((1./myNode[i].boundary->Heat->aerodynamicConductance) + (1. / myNode[i].boundary->Heat->soilConductance));
