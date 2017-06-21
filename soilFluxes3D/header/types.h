@@ -57,6 +57,8 @@
         bool computeHeat;
         bool computeSolutes;
 
+        int saveHeatFluxes;
+
         void initialize()
             {
                 nrLayers = 0;

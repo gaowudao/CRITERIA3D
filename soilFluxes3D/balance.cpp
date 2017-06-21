@@ -32,11 +32,13 @@
 #include <stdio.h>
 #include <math.h>
 
+#include "commonConstants.h"
 #include "header/types.h"
 #include "header/balance.h"
 #include "header/soilPhysics.h"
 #include "header/solver.h"
 #include "header/boundary.h"
+#include "header/heat.h"
 #include "header/water.h"
 
 
@@ -192,8 +194,8 @@ void update_flux(long index, TlinkedNode *link, double delta_t)
     if (link->index != NOLINK)
     {
         (*link).sumFlow += float(getWaterExchange(index, link, delta_t));
-        if (myStructure.computeHeat && myStructure.computeWater && link->linkedExtra->heatFlux != NULL)
-            link->linkedExtra->heatFlux->thermLatent = C0[index];
+
+        updateHeatFlux(link, HEATFLUX_LATENT_THERMAL, C0[index]);
     }
 }
 

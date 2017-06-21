@@ -34,6 +34,7 @@
 
 #include <QDebug>
 
+#include "commonConstants.h"
 #include "physics.h"
 #include "header/types.h"
 #include "header/heat.h"
@@ -72,25 +73,38 @@ void computeHeatBalance(double myTimeStep)
     balanceCurrentTimeStep.heatMBR = 1. - balanceCurrentTimeStep.heatMBE / referenceHeat;
 }
 
-void storeHeatFlows(long myIndex, TlinkedNode *myLink)
+void updateHeatFlux(TlinkedNode* myLink, int fluxType, double myValue)
+{
+    if (myLink == NULL) return;
+    if (myLink->linkedExtra == NULL) return;
+    if (myLink->linkedExtra->heatFlux == NULL) return;
+
+    if (myStructure.saveHeatFluxes == SAVE_HEATFLUXES_TOTAL)
+        myLink->linkedExtra->heatFlux->fluxes[HEATFLUX_TOTAL] += float(myValue);
+    else if (myStructure.saveHeatFluxes == SAVE_HEATFLUXES_ALL)
+        myLink->linkedExtra->heatFlux->fluxes[fluxType] = float(myValue);
+
+}
+
+void saveDiffusiveHeaFlux(long myIndex, TlinkedNode *myLink)
 // [W m-2] heat flow between node myNode[myIndex] and link node myLink
 {
    if (myLink != NULL && ! myNode[myLink->index].isSurface)
    {
         long myLinkIndex = (*myLink).index;
+        double myValue, myA;
 
         int j = 1;
         while ((j < myStructure.maxNrColumns) && (A[myIndex][j].index != NOLINK) && (A[myIndex][j].index != myLinkIndex)) j++;
 
         if (A[myIndex][j].index == myLinkIndex)
         {
-            double myA = (A[myIndex][j].val * A[myIndex][0].val);
-            myLink->linkedExtra->heatFlux->diffusive = myA * (myNode[myIndex].extra->Heat->T - myNode[myLinkIndex].extra->Heat->T) * myParameters.heatWeightingFactor;
-            myLink->linkedExtra->heatFlux->diffusive += myA * (myNode[myIndex].extra->Heat->oldT - myNode[myLinkIndex].extra->Heat->oldT) * (1. - myParameters.heatWeightingFactor);
-        }
-        else
-            myLink->linkedExtra->heatFlux->diffusive = NODATA;
-    }
+            myA = (A[myIndex][j].val * A[myIndex][0].val);
+            myValue = myA * (myNode[myIndex].extra->Heat->T - myNode[myLinkIndex].extra->Heat->T) * myParameters.heatWeightingFactor;
+            myValue += myA * (myNode[myIndex].extra->Heat->oldT - myNode[myLinkIndex].extra->Heat->oldT) * (1. - myParameters.heatWeightingFactor);
+            updateHeatFlux(myLink, HEATFLUX_DIFFUSIVE, myValue);
+        }       
+   }
 }
 
 void updateBalanceHeat()
@@ -104,16 +118,16 @@ void updateBalanceHeat()
     {
         if (myNode[i].up.index != NOLINK)
             if (myNode[i].up.linkedExtra->heatFlux != NULL)
-                storeHeatFlows(i, &(myNode[i].up));
+                saveDiffusiveHeaFlux(i, &(myNode[i].up));
 
         if (myNode[i].down.index != NOLINK)
             if (myNode[i].down.linkedExtra->heatFlux != NULL)
-                storeHeatFlows(i, &(myNode[i].down));
+                saveDiffusiveHeaFlux(i, &(myNode[i].down));
 
         for (short j = 0; j < myStructure.nrLateralLinks; j++)
             if (myNode[i].lateral[j].index != NOLINK)
                 if (myNode[i].lateral[j].linkedExtra->heatFlux != NULL)
-                    storeHeatFlows(i, &(myNode[i].lateral[j]));
+                    saveDiffusiveHeaFlux(i, &(myNode[i].lateral[j]));
     }
 }
 
@@ -142,6 +156,17 @@ void initializeBalanceHeat()
      balanceCurrentTimeStep.storageHeat = balanceWholePeriod.storageHeat;
      balancePreviousTimeStep.storageHeat = balanceWholePeriod.storageHeat;
      balanceCurrentPeriod.storageHeat = balanceWholePeriod.storageHeat;
+
+     /*! initialize link flow */
+     if (myStructure.saveHeatFluxes == SAVE_HEATFLUXES_TOTAL)
+         for (long n = 0; n < myStructure.nrNodes; n++)
+         {
+             myNode[n].up.linkedExtra->heatFlux->fluxes[HEATFLUX_TOTAL] = 0.;
+             myNode[n].down.linkedExtra->heatFlux->fluxes[HEATFLUX_TOTAL] = 0.;
+             for (short i = 0; i < myStructure.nrLateralLinks; i++)
+                myNode[n].lateral[i].linkedExtra->heatFlux->fluxes[HEATFLUX_TOTAL] = 0.;
+         }
+
 }
 
 void updateBalanceHeatWholePeriod()
@@ -569,12 +594,10 @@ bool computeHeatFlux(long i, int myMatrixIndex, TlinkedNode *myLink, double delt
         if (myStructure.computeWater)
         {
             myLatent = SoilLatentIsothermal(i, myLink);
-            if (myLink->linkedExtra->heatFlux != NULL)
-                myLink->linkedExtra->heatFlux->isothermLatent = myLatent;
+            updateHeatFlux(myLink, HEATFLUX_LATENT_ISOTHERMAL, myLatent);
 
             myAdvection = SoilHeatAdvection(i, myLink);
-            if (myLink->linkedExtra->heatFlux != NULL)
-                myLink->linkedExtra->heatFlux->advective = myAdvection;
+            updateHeatFlux(myLink, HEATFLUX_ADVECTIVE, myAdvection);
         }
     }
 

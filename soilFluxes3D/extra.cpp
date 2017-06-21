@@ -28,10 +28,12 @@
     marco.bittelli@unibo.it
 */
 
-#include "commonConstants.h"
-#include "header/extra.h"
 #include <math.h>
 #include <stdio.h>
+
+#include "commonConstants.h"
+#include "header/extra.h"
+#include "header/types.h"
 
 
 void initializeExtraHeat(TCrit3DNodeHeat* myNodeExtraHeat)
@@ -62,11 +64,15 @@ void initializeLinkExtra(TCrit3DLinkedNodeExtra* myLinkedNodeExtra, bool compute
     {
         myLinkedNodeExtra->heatFlux = new(THeatFlux);
 
-        (*myLinkedNodeExtra).heatFlux->advective = 0;
-        (*myLinkedNodeExtra).heatFlux->diffusive = 0;
-        (*myLinkedNodeExtra).heatFlux->isothermLatent = 0;
-        (*myLinkedNodeExtra).heatFlux->thermLatent = 0;
         (*myLinkedNodeExtra).heatFlux->waterFlux = 0.;
+
+        if (myStructure.saveHeatFluxes == SAVE_HEATFLUXES_ALL)
+            (*myLinkedNodeExtra).heatFlux->fluxes = new float(4);
+        else if (myStructure.saveHeatFluxes = SAVE_HEATFLUXES_TOTAL)
+            (*myLinkedNodeExtra).heatFlux->fluxes = new float(1);
+        else
+            (*myLinkedNodeExtra).heatFlux->fluxes = NULL;
+
     }
     else (*myLinkedNodeExtra).heatFlux = NULL;
 

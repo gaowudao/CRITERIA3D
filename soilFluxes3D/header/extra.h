@@ -54,11 +54,8 @@ struct TboundaryHeat{
 };
 
 struct THeatFlux{
-    double diffusive;                   // [W]
-    double isothermLatent;  			// [W]
-    double advective;                   // [W]
-    double thermLatent;                 // [W]
-    double waterFlux;                   // [m3 s-1]
+    float waterFlux;                    // [m3 s-1]
+    float* fluxes;                      // [W]
     } ;
 
 struct TCrit3DNodeHeat{

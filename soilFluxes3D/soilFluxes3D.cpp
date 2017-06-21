@@ -78,17 +78,9 @@ namespace soilFluxes3D {
         //clean balance
 	}
 
-    void initializeHeatFluxes(TCrit3DLinkedNodeExtra *myLinkExtra)
-    {
-        (*myLinkExtra).heatFlux = new(THeatFlux);
-        (*myLinkExtra).heatFlux->diffusive = 0.;
-        (*myLinkExtra).heatFlux->isothermLatent = 0.;
-        (*myLinkExtra).heatFlux->thermLatent = 0.;
-        (*myLinkExtra).heatFlux->advective = 0.;
-    }
-
     int DLL_EXPORT __STDCALL initialize(long nrNodes, int nrLayers, int nrLateralLinks,
-                                        bool computeWater_, bool computeHeat_, bool computeSolutes_)
+                                        bool computeWater_, bool computeHeat_, bool computeSolutes_,
+                                        int saveHeatFluxes_)
 {
     /*! clean the old data structures */
     cleanMemory();
@@ -99,6 +91,8 @@ namespace soilFluxes3D {
     myStructure.computeWater = computeWater_;
     myStructure.computeHeat = computeHeat_;
     myStructure.computeSolutes = computeSolutes_;
+
+    myStructure.saveHeatFluxes = saveHeatFluxes_;
 
     myStructure.nrNodes = nrNodes;
     myStructure.nrLayers = nrLayers;
@@ -1128,21 +1122,21 @@ double DLL_EXPORT __STDCALL getTemperature(long nodeIndex)
 double DLL_EXPORT __STDCALL getThermalLatentHeatFlux(long nodeIndex, short myDirection)
 {
     if (myNode == NULL) return(TOPOGRAPHY_ERROR);
+    if (myNode->extra == NULL) return (MEMORY_ERROR);
     if ((nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
     if (! myStructure.computeHeat || ! myStructure.computeWater) return (MISSING_DATA_ERROR);
-    if (myNode->extra == NULL) return (MEMORY_ERROR);
 
     switch (myDirection)
     {
     case UP:
         if (myNode[nodeIndex].up.linkedExtra != NULL)
-            return (myNode[nodeIndex].up.linkedExtra->heatFlux->thermLatent);
+            return (myNode[nodeIndex].up.linkedExtra->heatFlux->fluxes[HEATFLUX_LATENT_THERMAL]);
         else
             return(INDEX_ERROR);
 
     case DOWN:
         if (myNode[nodeIndex].down.linkedExtra != NULL)
-            return (myNode[nodeIndex].down.linkedExtra->heatFlux->thermLatent);
+            return (myNode[nodeIndex].down.linkedExtra->heatFlux->fluxes[HEATFLUX_LATENT_THERMAL]);
         else
             return(INDEX_ERROR);
 
@@ -1150,7 +1144,7 @@ double DLL_EXPORT __STDCALL getThermalLatentHeatFlux(long nodeIndex, short myDir
         for (short i = 0; i < myStructure.nrLateralLinks; i++)
             if (myNode[nodeIndex].lateral[i].index != NOLINK)
                 if (myNode[nodeIndex].lateral[i].linkedExtra != NULL)
-                    return (myNode[nodeIndex].lateral[i].linkedExtra->heatFlux->thermLatent);
+                    return (myNode[nodeIndex].lateral[i].linkedExtra->heatFlux->fluxes[HEATFLUX_LATENT_THERMAL]);
 
     default : return(INDEX_ERROR);
     }
@@ -1165,21 +1159,21 @@ double DLL_EXPORT __STDCALL getThermalLatentHeatFlux(long nodeIndex, short myDir
 double DLL_EXPORT __STDCALL getIsothermalLatentHeatFlux(long nodeIndex, short myDirection)
 {
     if (myNode == NULL) return(TOPOGRAPHY_ERROR);
+    if (myNode->extra == NULL) return (MEMORY_ERROR);
     if (nodeIndex >= myStructure.nrNodes) return(INDEX_ERROR);
     if (! myStructure.computeHeat && ! myStructure.computeWater) return (MISSING_DATA_ERROR);
-    if (myNode->extra == NULL) return (MEMORY_ERROR);
 
     switch (myDirection)
     {
     case UP:
         if (myNode[nodeIndex].up.linkedExtra != NULL)
-            return (myNode[nodeIndex].up.linkedExtra->heatFlux->isothermLatent);
+            return (myNode[nodeIndex].up.linkedExtra->heatFlux->fluxes[HEATFLUX_LATENT_ISOTHERMAL]);
         else
             return(INDEX_ERROR);
 
     case DOWN:
         if (myNode[nodeIndex].down.linkedExtra != NULL)
-            return (myNode[nodeIndex].down.linkedExtra->heatFlux->isothermLatent);
+            return (myNode[nodeIndex].down.linkedExtra->heatFlux->fluxes[HEATFLUX_LATENT_ISOTHERMAL]);
         else
             return(INDEX_ERROR);
 
@@ -1187,7 +1181,7 @@ double DLL_EXPORT __STDCALL getIsothermalLatentHeatFlux(long nodeIndex, short my
         for (short i = 0; i < myStructure.nrLateralLinks; i++)
             if (myNode[nodeIndex].lateral[i].index != NOLINK)
                 if (myNode[nodeIndex].lateral[i].linkedExtra != NULL)
-                    return (myNode[nodeIndex].lateral[i].linkedExtra->heatFlux->isothermLatent);
+                    return (myNode[nodeIndex].lateral[i].linkedExtra->heatFlux->fluxes[HEATFLUX_LATENT_ISOTHERMAL]);
 
     default : return(INDEX_ERROR);
     }
@@ -1202,21 +1196,21 @@ double DLL_EXPORT __STDCALL getIsothermalLatentHeatFlux(long nodeIndex, short my
 double DLL_EXPORT __STDCALL getDiffusiveHeatFlux(long nodeIndex, short myDirection)
 {
     if (myNode == NULL) return(TOPOGRAPHY_ERROR);
+    if (myNode->extra == NULL) return (MEMORY_ERROR);
     if ((nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
     if (! myStructure.computeHeat) return (MISSING_DATA_ERROR);
-    if (myNode->extra == NULL) return (MEMORY_ERROR);
 
     switch (myDirection)
     {
     case UP:
         if (myNode[nodeIndex].up.linkedExtra != NULL)
-            return (myNode[nodeIndex].up.linkedExtra->heatFlux->diffusive);
+            return (myNode[nodeIndex].up.linkedExtra->heatFlux->fluxes[HEATFLUX_DIFFUSIVE]);
         else
             return(INDEX_ERROR);
 
     case DOWN:
         if (myNode[nodeIndex].down.linkedExtra != NULL)
-            return (myNode[nodeIndex].down.linkedExtra->heatFlux->diffusive);
+            return (myNode[nodeIndex].down.linkedExtra->heatFlux->fluxes[HEATFLUX_DIFFUSIVE]);
         else
             return(INDEX_ERROR);
 
@@ -1224,7 +1218,7 @@ double DLL_EXPORT __STDCALL getDiffusiveHeatFlux(long nodeIndex, short myDirecti
         for (short i = 0; i < myStructure.nrLateralLinks; i++)
             if (myNode[nodeIndex].lateral[i].index != NOLINK)
                 if (myNode[nodeIndex].lateral[i].linkedExtra != NULL)
-                    return (myNode[nodeIndex].lateral[i].linkedExtra->heatFlux->diffusive);
+                    return (myNode[nodeIndex].lateral[i].linkedExtra->heatFlux->fluxes[HEATFLUX_DIFFUSIVE]);
 
     default : return(INDEX_ERROR);
     }
