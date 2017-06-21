@@ -73,7 +73,21 @@ void computeHeatBalance(double myTimeStep)
     balanceCurrentTimeStep.heatMBR = 1. - balanceCurrentTimeStep.heatMBE / referenceHeat;
 }
 
-void updateHeatFlux(TlinkedNode* myLink, int fluxType, double myValue)
+float readHeatFlux(TlinkedNode* myLink, int fluxType)
+{
+    if (myLink == NULL) return NODATA;
+    if (myLink->linkedExtra == NULL) return NODATA;
+    if (myLink->linkedExtra->heatFlux == NULL) return NODATA;
+
+    if (myStructure.saveHeatFluxes == SAVE_HEATFLUXES_TOTAL)
+        return myLink->linkedExtra->heatFlux->fluxes[HEATFLUX_TOTAL];
+    else if (myStructure.saveHeatFluxes == SAVE_HEATFLUXES_ALL)
+        return myLink->linkedExtra->heatFlux->fluxes[fluxType];
+    else
+        return NODATA;
+}
+
+void saveHeatFlux(TlinkedNode* myLink, int fluxType, double myValue)
 {
     if (myLink == NULL) return;
     if (myLink->linkedExtra == NULL) return;
@@ -102,7 +116,7 @@ void saveDiffusiveHeaFlux(long myIndex, TlinkedNode *myLink)
             myA = (A[myIndex][j].val * A[myIndex][0].val);
             myValue = myA * (myNode[myIndex].extra->Heat->T - myNode[myLinkIndex].extra->Heat->T) * myParameters.heatWeightingFactor;
             myValue += myA * (myNode[myIndex].extra->Heat->oldT - myNode[myLinkIndex].extra->Heat->oldT) * (1. - myParameters.heatWeightingFactor);
-            updateHeatFlux(myLink, HEATFLUX_DIFFUSIVE, myValue);
+            saveHeatFlux(myLink, HEATFLUX_DIFFUSIVE, myValue);
         }       
    }
 }
@@ -594,10 +608,10 @@ bool computeHeatFlux(long i, int myMatrixIndex, TlinkedNode *myLink, double delt
         if (myStructure.computeWater)
         {
             myLatent = SoilLatentIsothermal(i, myLink);
-            updateHeatFlux(myLink, HEATFLUX_LATENT_ISOTHERMAL, myLatent);
+            saveHeatFlux(myLink, HEATFLUX_LATENT_ISOTHERMAL, myLatent);
 
             myAdvection = SoilHeatAdvection(i, myLink);
-            updateHeatFlux(myLink, HEATFLUX_ADVECTIVE, myAdvection);
+            saveHeatFlux(myLink, HEATFLUX_ADVECTIVE, myAdvection);
         }
     }
 

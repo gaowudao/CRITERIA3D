@@ -898,10 +898,11 @@ int DLL_EXPORT __STDCALL SetFixedTemperature(long nodeIndex, double myT)
    if (myNode == NULL) return(MEMORY_ERROR);
    if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
    if (myNode[nodeIndex].boundary == NULL) return(BOUNDARY_ERROR);
+   if (myNode[nodeIndex].boundary->Heat == NULL) return(BOUNDARY_ERROR);
    if (myNode[nodeIndex].boundary->type != BOUNDARY_PRESCRIBEDTOTALPOTENTIAL &&
            myNode[nodeIndex].boundary->type != BOUNDARY_FREEDRAINAGE) return(BOUNDARY_ERROR);
 
-   myNode[nodeIndex].boundary->fixedTemperature = myT;
+   myNode[nodeIndex].boundary->Heat->fixedTemperature = myT;
 
    return(CRIT3D_OK);
 }
@@ -1114,111 +1115,40 @@ double DLL_EXPORT __STDCALL getTemperature(long nodeIndex)
 }
 
 /*!
- * \brief return instantaneous thermally driven latent heat flux
+ * \brief return instantaneous heat flux
  * \param nodeIndex
  * \param myDirection
- * \return thermal latent heat flux [W m-2]
+ * \return heat flux [W m-2]
 */
-double DLL_EXPORT __STDCALL getThermalLatentHeatFlux(long nodeIndex, short myDirection)
-{
-    if (myNode == NULL) return(TOPOGRAPHY_ERROR);
-    if (myNode->extra == NULL) return (MEMORY_ERROR);
-    if ((nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
-    if (! myStructure.computeHeat || ! myStructure.computeWater) return (MISSING_DATA_ERROR);
-
-    switch (myDirection)
-    {
-    case UP:
-        if (myNode[nodeIndex].up.linkedExtra != NULL)
-            return (myNode[nodeIndex].up.linkedExtra->heatFlux->fluxes[HEATFLUX_LATENT_THERMAL]);
-        else
-            return(INDEX_ERROR);
-
-    case DOWN:
-        if (myNode[nodeIndex].down.linkedExtra != NULL)
-            return (myNode[nodeIndex].down.linkedExtra->heatFlux->fluxes[HEATFLUX_LATENT_THERMAL]);
-        else
-            return(INDEX_ERROR);
-
-    case LATERAL:
-        for (short i = 0; i < myStructure.nrLateralLinks; i++)
-            if (myNode[nodeIndex].lateral[i].index != NOLINK)
-                if (myNode[nodeIndex].lateral[i].linkedExtra != NULL)
-                    return (myNode[nodeIndex].lateral[i].linkedExtra->heatFlux->fluxes[HEATFLUX_LATENT_THERMAL]);
-
-    default : return(INDEX_ERROR);
-    }
-}
-
-/*!
- * \brief return instantaneous isothermal latent heat flux
- * \param nodeIndex
- * \param myDirection
- * \return isothermal latent heat flux [W m-2]
-*/
-double DLL_EXPORT __STDCALL getIsothermalLatentHeatFlux(long nodeIndex, short myDirection)
-{
-    if (myNode == NULL) return(TOPOGRAPHY_ERROR);
-    if (myNode->extra == NULL) return (MEMORY_ERROR);
-    if (nodeIndex >= myStructure.nrNodes) return(INDEX_ERROR);
-    if (! myStructure.computeHeat && ! myStructure.computeWater) return (MISSING_DATA_ERROR);
-
-    switch (myDirection)
-    {
-    case UP:
-        if (myNode[nodeIndex].up.linkedExtra != NULL)
-            return (myNode[nodeIndex].up.linkedExtra->heatFlux->fluxes[HEATFLUX_LATENT_ISOTHERMAL]);
-        else
-            return(INDEX_ERROR);
-
-    case DOWN:
-        if (myNode[nodeIndex].down.linkedExtra != NULL)
-            return (myNode[nodeIndex].down.linkedExtra->heatFlux->fluxes[HEATFLUX_LATENT_ISOTHERMAL]);
-        else
-            return(INDEX_ERROR);
-
-    case LATERAL:
-        for (short i = 0; i < myStructure.nrLateralLinks; i++)
-            if (myNode[nodeIndex].lateral[i].index != NOLINK)
-                if (myNode[nodeIndex].lateral[i].linkedExtra != NULL)
-                    return (myNode[nodeIndex].lateral[i].linkedExtra->heatFlux->fluxes[HEATFLUX_LATENT_ISOTHERMAL]);
-
-    default : return(INDEX_ERROR);
-    }
-}
-
-/*!
- * \brief return instantaneous diffusive heat flux
- * \param nodeIndex
- * \param myDirection
- * \return diffusive heat flux [W m-2]
-*/
-double DLL_EXPORT __STDCALL getDiffusiveHeatFlux(long nodeIndex, short myDirection)
+float DLL_EXPORT __STDCALL getHeatFlux(long nodeIndex, short myDirection, int fluxType)
 {
     if (myNode == NULL) return(TOPOGRAPHY_ERROR);
     if (myNode->extra == NULL) return (MEMORY_ERROR);
     if ((nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
     if (! myStructure.computeHeat) return (MISSING_DATA_ERROR);
 
+    float myMaxFlux = 0.;
+    float myFlux;
+
     switch (myDirection)
     {
     case UP:
-        if (myNode[nodeIndex].up.linkedExtra != NULL)
-            return (myNode[nodeIndex].up.linkedExtra->heatFlux->fluxes[HEATFLUX_DIFFUSIVE]);
-        else
-            return(INDEX_ERROR);
+        return readHeatFlux(&(myNode[nodeIndex].up), fluxType);
+        break;
 
     case DOWN:
-        if (myNode[nodeIndex].down.linkedExtra != NULL)
-            return (myNode[nodeIndex].down.linkedExtra->heatFlux->fluxes[HEATFLUX_DIFFUSIVE]);
-        else
-            return(INDEX_ERROR);
+        return readHeatFlux(&(myNode[nodeIndex].down), fluxType);
+        break;
 
     case LATERAL:
         for (short i = 0; i < myStructure.nrLateralLinks; i++)
-            if (myNode[nodeIndex].lateral[i].index != NOLINK)
-                if (myNode[nodeIndex].lateral[i].linkedExtra != NULL)
-                    return (myNode[nodeIndex].lateral[i].linkedExtra->heatFlux->fluxes[HEATFLUX_DIFFUSIVE]);
+        {
+            myFlux = readHeatFlux(&(myNode[nodeIndex].lateral[i]), fluxType);
+            if (myFlux != NODATA && myFlux > fabs(myMaxFlux))
+                myMaxFlux = myFlux;
+        }
+        return myMaxFlux;
+        break;
 
     default : return(INDEX_ERROR);
     }
@@ -1286,11 +1216,12 @@ double DLL_EXPORT getBoundaryAdvectiveFlux(long nodeIndex)
     if (myNode == NULL) return (TOPOGRAPHY_ERROR);
     if (nodeIndex >= myStructure.nrNodes) return (INDEX_ERROR);
     if (! myStructure.computeHeat || ! myStructure.computeWater) return (MISSING_DATA_ERROR);
-    if (myNode[nodeIndex].boundary == NULL) return (INDEX_ERROR);
-    if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT) return (INDEX_ERROR);
+    if (myNode[nodeIndex].boundary == NULL) return (BOUNDARY_ERROR);
+    if (myNode[nodeIndex].boundary->Heat == NULL) return (BOUNDARY_ERROR);
+    if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT) return (BOUNDARY_ERROR);
 
     // boundary advective heat flow density
-    return (myNode[nodeIndex].boundary->advectiveHeatFlux);
+    return (myNode[nodeIndex].boundary->Heat->advectiveHeatFlux);
 }
 
 /*!

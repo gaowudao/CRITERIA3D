@@ -110,11 +110,11 @@ void MainWindow::on_actionLoadRaster_triggered()
     if (!myProject.loadRaster(fileName)) return;
 
     // center map
-    gis::Crit3DGeoPoint* center = gis::getRasterGeoCenter(myProject.DTM.header);
+    gis::Crit3DGeoPoint* center = gis::getRasterGeoCenter(myProject.rowMatrix.header);
     this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
 
     // resize map
-    float size = gis::getRasterMaxSize(myProject.DTM.header);
+    float size = gis::getRasterMaxSize(myProject.rowMatrix.header);
     size = log2(1000.0/size);
     this->mapView->setZoomLevel(quint8(size));
     this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
@@ -127,8 +127,7 @@ void MainWindow::on_actionLoadRaster_triggered()
 
 void MainWindow::on_actionArkimet_triggered()
 {
-
-    resetProject();
+    resetMeteoPoints();
 
     QString templateName = QFileDialog::getOpenFileName(this, tr("Choose template DB meteo"), "", tr("DB files (*.db)"));
     if (templateName == "")
@@ -146,15 +145,13 @@ void MainWindow::on_actionArkimet_triggered()
         }
         else
         {
-
             QFile::remove(dbName);
             QFile::copy(templateName, dbName);
 
-            myProject.pointProperties = new Download(dbName);
-            DbArkimet* dbmeteo = myProject.pointProperties->getDbArkimet();
+            Download * myDownload = new Download(dbName);
+            DbArkimet* myDbArkimet = myDownload->getDbArkimet();
 
-
-            QStringList dataset = dbmeteo->getDatasetsList();
+            QStringList dataset = myDbArkimet->getDatasetsList();
 
             QDialog datasetDialog;
 
@@ -179,10 +176,8 @@ void MainWindow::on_actionArkimet_triggered()
             QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
                                                  | QDialogButtonBox::Cancel);
 
-
             connect(buttonBox, SIGNAL(accepted()), &datasetDialog, SLOT(accept()));
             connect(buttonBox, SIGNAL(rejected()), &datasetDialog, SLOT(reject()));
-
 
             layout.addWidget(buttonBox);
             datasetDialog.setLayout(&layout);
@@ -191,7 +186,7 @@ void MainWindow::on_actionArkimet_triggered()
 
             if (!datasetSelected.isEmpty())
             {
-                dbmeteo->setDatasetsActive(datasetSelected);
+                myDbArkimet->setDatasetsActive(datasetSelected);
                 QStringList datasets = datasetSelected.remove("'").split(",");
 
                 QApplication::setOverrideCursor(Qt::WaitCursor);
@@ -201,15 +196,14 @@ void MainWindow::on_actionArkimet_triggered()
                 downloadWindow.show();
                 QMessageBox *msgBox = new QMessageBox(this);
 
-                if (myProject.pointProperties->getPointProperties(datasets))
+                if (myDownload->getPointProperties(datasets))
                 {
                     downloadWindow.close();
                     QApplication::restoreOverrideCursor();
 
-                    //msgBox->setText("Download Point Properties completed");
-                    //msgBox->exec();
+                    myProject.dbMeteoPoints = new DbMeteoPoints(dbName);
+                    myProject.meteoPoints = myProject.dbMeteoPoints->getPropertiesFromDb();
 
-                    myProject.meteoPoints = dbmeteo->getPropertiesFromDb();
                     delete msgBox;
                     displayMeteoPoints();
                 }
@@ -221,22 +215,20 @@ void MainWindow::on_actionArkimet_triggered()
                     msgBox->setText("Download Error");
                     msgBox->exec();
                     delete msgBox;
-
                 }
-
             }
             else
             {
                 QFile::remove(dbName);
-                delete dbmeteo;
+                delete myDbArkimet;
             }
-
 
             delete buttonBox;
             delete all;
         }
     }
 }
+
 
 QString MainWindow::on_actionArkimet_Dataset(QDialog* datasetDialog) {
 
@@ -288,24 +280,20 @@ void MainWindow::enableAll(bool toggled)
 
 void MainWindow::on_actionOpen_meteo_points_DB_triggered()
 {
-
-    resetProject();
-    qDebug() << "on_actionOpen_meteo_points_DB_triggered reset done";
+    resetMeteoPoints();
 
     QString dbName = QFileDialog::getOpenFileName(this, tr("Open DB meteo"), "", tr("DB files (*.db)"));
-    if (dbName == "")
-    {
-        return;
-    }
-    myProject.pointProperties = new Download(dbName);
-    DbArkimet* dbArkimet = myProject.pointProperties->getDbArkimet();
-    myProject.meteoPoints = dbArkimet->getPropertiesFromDb();
-    displayMeteoPoints();
-    loadData(dbArkimet);
+    if (dbName == "") return;
 
+    myProject.dbMeteoPoints = new DbMeteoPoints(dbName);
+    myProject.meteoPoints =  myProject.dbMeteoPoints->getPropertiesFromDb();
+    displayMeteoPoints();
+
+    loadMeteoPointsData(myProject.dbMeteoPoints);
 }
 
-void MainWindow::loadData(DbArkimet* dbArkimet)
+
+void MainWindow::loadMeteoPointsData(DbMeteoPoints* myDbMeteo)
 {
 
     QDialog load;
@@ -335,10 +323,8 @@ void MainWindow::loadData(DbArkimet* dbArkimet)
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok
                                          | QDialogButtonBox::Cancel);
 
-
     connect(&buttonBox, SIGNAL(accepted()), &load, SLOT(accept()));
     connect(&buttonBox, SIGNAL(rejected()), &load, SLOT(reject()));
-
 
     layoutOk.addWidget(&buttonBox);
 
@@ -354,30 +340,29 @@ void MainWindow::loadData(DbArkimet* dbArkimet)
        if (!daily.isChecked() && !hourly.isChecked())
        {
            QMessageBox::information(NULL, "Missing parameter", "Select hourly and/or daily");
-           loadData(dbArkimet);
+           return;
        }
        else if (!lastDay.isChecked() && !all.isChecked())
        {
            QMessageBox::information(NULL, "Missing parameter", "Select loading period from DB");
-           loadData(dbArkimet);
+           return;
        }
        else
        {
-
             if (daily.isChecked())
             {
                 dayHour = 'D';
-                lastD = dbArkimet->getLastDay(dayHour);
+                lastD = myDbMeteo->getLastDay(dayHour);
                 firstD.setDate(lastD.date());
                 firstD.setTime(QTime(0, 0, 0));
                 if ( all.isChecked() )
                 {
-                    firstD = dbArkimet->getFirstDay(dayHour);
+                    firstD = myDbMeteo->getFirstDay(dayHour);
                 }
 
                 Crit3DDate dateStart(firstD.date().day(), firstD.date().month(), firstD.date().year());
                 Crit3DDate dateEnd(lastD.date().day(), lastD.date().month(), lastD.date().year());
-                dbArkimet->getDataFromDailyDb(dateStart, dateEnd, myProject.meteoPoints);
+                myDbMeteo->getDataFromDailyDb(dateStart, dateEnd, myProject.meteoPoints);
 
                 /*
                 qDebug() << "myProject.meteoPoints[0].id" << QString::fromStdString(myProject.meteoPoints[0].id);
@@ -394,17 +379,17 @@ void MainWindow::loadData(DbArkimet* dbArkimet)
             if (hourly.isChecked())
             {
                 dayHour = 'H';
-                lastD = dbArkimet->getLastDay(dayHour);
+                lastD = myDbMeteo->getLastDay(dayHour);
                 firstD.setDate(lastD.date());
                 firstD.setTime(QTime(0, 0, 0));
                 if ( all.isChecked() )
                 {
-                    firstD = dbArkimet->getFirstDay(dayHour);
+                    firstD = myDbMeteo->getFirstDay(dayHour);
                 }
 
                 Crit3DDate dateStart(firstD.date().day(), firstD.date().month(), firstD.date().year());
                 Crit3DDate dateEnd(lastD.date().day(), lastD.date().month(), lastD.date().year());
-                dbArkimet->getDataFromHourlyDb(dateStart, dateEnd, myProject.meteoPoints);
+                myDbMeteo->getDataFromHourlyDb(dateStart, dateEnd, myProject.meteoPoints);
 
                 /*
                 qDebug() << "myProject.meteoPoints[0].id" << QString::fromStdString(myProject.meteoPoints[0].id);
@@ -419,19 +404,14 @@ void MainWindow::loadData(DbArkimet* dbArkimet)
                 qDebug() << "myProject.meteoPoints[0].obsDataD[1].rhAir[0]" << myProject.meteoPoints[0].obsDataH[6].rhAir[0];
                 qDebug() << "myProject.meteoPoints[0].obsDataD[1].rhAir[1]" << myProject.meteoPoints[0].obsDataH[6].rhAir[1];
                 */
-
-
             }
-
-
        }
-
-
     }
 
     qDebug() << "firstD = " << firstD;
     qDebug() << "lastD = " << lastD;
 }
+
 
 void MainWindow::displayMeteoPoints()
 {
@@ -441,7 +421,7 @@ void MainWindow::displayMeteoPoints()
     for (int i = 0; i < myProject.meteoPoints.size(); i++)
     {
         StationMarker* point = new StationMarker(5.0, true, QColor((Qt::white)), this->mapView);
-        //StationMarker* point = new StationMarker(4.0, true, QColor(255,255,255,255) , this->mapView);
+
         point->setFlag(MapGraphicsObject::ObjectIsMovable, false);
         point->setLatitude(myProject.meteoPoints[i].latitude);
         point->setLongitude(myProject.meteoPoints[i].longitude);
@@ -451,8 +431,8 @@ void MainWindow::displayMeteoPoints()
 
         point->setToolTip();
     }
-
 }
+
 
 void MainWindow::on_actionDownload_meteo_data_triggered()
 {
@@ -491,7 +471,6 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
     timeVarLayout.addWidget(&daily);
     timeVarLayout.addWidget(&hourly);
     timeVarLayout.addWidget(&variable);
-
 
     calendar = new QCalendarWidget;
     calendar->setGridVisible(true);
@@ -670,12 +649,8 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
                 delete msgBox;
             }
 
-
        }
-
-
     }
-
 }
 
 
@@ -922,9 +897,8 @@ void MainWindow::on_actionRectangle_Selection_triggered()
 }
 
 
-void MainWindow::resetProject()
+void MainWindow::resetMeteoPoints()
 {
-
     this->myRubberBand = NULL;
     myProject.meteoPoints.clear();
 
@@ -941,10 +915,4 @@ void MainWindow::resetProject()
     }
     qDeleteAll(this->pointList.begin(), this->pointList.end());
     this->pointList.clear();
-
-    if (myProject.pointProperties != NULL)
-    {
-        delete myProject.pointProperties;
-    }
-
 }

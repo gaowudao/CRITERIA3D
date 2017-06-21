@@ -195,7 +195,7 @@ void update_flux(long index, TlinkedNode *link, double delta_t)
     {
         (*link).sumFlow += float(getWaterExchange(index, link, delta_t));
 
-        updateHeatFlux(link, HEATFLUX_LATENT_THERMAL, C0[index]);
+        saveHeatFlux(link, HEATFLUX_LATENT_THERMAL, C0[index]);
     }
 }
 

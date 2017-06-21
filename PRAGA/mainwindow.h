@@ -68,11 +68,11 @@
 
         void displayMeteoPoints();
 
-        void loadData(DbArkimet *dbArkimet);
+        void loadMeteoPointsData(DbMeteoPoints* myDB);
 
         void slotClicked(const QDate& date);
 
-        void resetProject();
+        void resetMeteoPoints();
 
     protected:
         /*!

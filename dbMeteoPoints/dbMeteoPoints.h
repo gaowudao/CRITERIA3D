@@ -7,6 +7,9 @@
 #ifndef CRIT3DDATE_H
     #include "crit3dDate.h"
 #endif
+#ifndef METEOPOINT_H
+    #include "meteoPoint.h"
+#endif
 
 class DbMeteoPoints : public QObject
 {
@@ -16,11 +19,16 @@ class DbMeteoPoints : public QObject
         ~DbMeteoPoints();
         void dbManager();
         QString getDatasetURL(QString dataset);
+        QString getDbName();
         QStringList getDatasetsList();
         QStringList getDatasetsActive();
         void setDatasetsActive(QString active);
         QDateTime getLastDay(char dayHour);
         QDateTime getFirstDay(char dayHour);
+        bool fillPointProperties(Crit3DMeteoPoint* pointProp);
+        QList<Crit3DMeteoPoint> getPropertiesFromDb();
+        void getDataFromDailyDb(Crit3DDate dateStart, Crit3DDate dateEnd, QList<Crit3DMeteoPoint> &meteoPointsList);
+        void getDataFromHourlyDb(Crit3DDate dateStart, Crit3DDate dateEnd, QList<Crit3DMeteoPoint> &meteoPointsList);
     protected:
         QSqlDatabase _db;
     signals:

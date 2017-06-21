@@ -19,29 +19,31 @@ bool Project::loadRaster(QString myFileName)
     std::string* myError = new std::string();
     std::string fileName = myFileName.left(myFileName.length()-4).toStdString();
 
-    gis::Crit3DRasterGrid UTMRaster;
-    if (gis::readEsriGrid(fileName, &(UTMRaster), myError))
+    if (gis::readEsriGrid(fileName, &(this->DTM), myError))
     {
-        gis::Crit3DGridHeader myLatLonHeader;
-        gis::getGeoExtentsFromUTMHeader(this->gisSettings, UTMRaster.header, &myLatLonHeader);
-
-        this->DTM.initializeGrid(myLatLonHeader);
-
-        // transform
-        double lat, lon, x, y;
-        for (long row = 0; row < this->DTM.header->nrRows; row++)
-            for (long col = 0; col < this->DTM.header->nrCols; col++)
-            {
-                gis::getUtmXYFromRowCol(this->DTM, row, col, &(lon), &(lat));
-                gis::latLonToUtmForceZone(this->gisSettings.utmZone, lat, lon, &x, &y);
-                this->DTM.value[row][col] = gis::getValueFromXY(UTMRaster, x, y);
-            }
-
         this->DTM.isLoaded = true;
         gis::updateMinMaxRasterGrid(&(this->DTM));
-
         // colorscale
         gis::setDefaultDTMScale(this->DTM.colorScale);
+
+        gis::Crit3DGridHeader myLatLonHeader;
+        gis::getGeoExtentsFromUTMHeader(this->gisSettings, this->DTM.header, &myLatLonHeader);
+
+        this->colMatrix.initializeGrid(myLatLonHeader);
+        this->rowMatrix.initializeGrid(myLatLonHeader);
+
+        double lat, lon, x, y;
+        long utmRow, utmCol;
+        for (long row = 0; row < myLatLonHeader.nrRows; row++)
+            for (long col = 0; col < myLatLonHeader.nrCols; col++)
+            {
+                gis::getLatLonFromRowCol(myLatLonHeader, row, col, &lat, &lon);
+                gis::latLonToUtmForceZone(this->gisSettings.utmZone, lat, lon, &x, &y);
+                gis::getRowColFromXY(this->DTM, x, y, &utmRow, &utmCol);
+                this->rowMatrix.value[row][col] = utmRow;
+                this->colMatrix.value[row][col] = utmCol;
+            }
+
         qDebug("Raster Ok.");
         return (true);
     }
@@ -55,8 +57,8 @@ bool Project::loadRaster(QString myFileName)
 
 bool Project::downloadArkimetDailyVar(QStringList variables, bool precSelection)
 {
-    Crit3DDate dateStart(startDate.day(), startDate.month(), startDate.year());
-    Crit3DDate dateEnd(endDate.day(), endDate.month(), endDate.year());
+    Crit3DDate dateStart(this->startDate.day(), this->startDate.month(), this->startDate.year());
+    Crit3DDate dateEnd(this->endDate.day(), this->endDate.month(), this->endDate.year());
     QStringList datasets;
     QStringList id;
     bool skip = 0;
@@ -92,7 +94,6 @@ bool Project::downloadArkimetDailyVar(QStringList variables, bool precSelection)
 
     }
 
-
     for( int i=0; i < variables.size(); i++ )
     {
         if (variables[i] == "Air Temperature")
@@ -107,15 +108,17 @@ bool Project::downloadArkimetDailyVar(QStringList variables, bool precSelection)
             arkIdVar.append(arkIdWind);
     }
 
-    return pointProperties->downloadDailyVar(dateStart, dateEnd, datasets, id, arkIdVar, precSelection);
-
+    Download* myDownload = new Download(dbMeteoPoints->getDbName());
+    return myDownload->downloadDailyVar(dateStart, dateEnd, datasets, id, arkIdVar, precSelection);
 }
+
+
 
 bool Project::downloadArkimetHourlyVar(QStringList variables)
 {
 
-    Crit3DDate dateStart(startDate.day(), startDate.month(), startDate.year());
-    Crit3DDate dateEnd(endDate.day(), endDate.month(), endDate.year());
+    Crit3DDate dateStart(this->startDate.day(), this->startDate.month(), this->startDate.year());
+    Crit3DDate dateEnd(this->endDate.day(), this->endDate.month(), this->endDate.year());
 
     Crit3DTime dateTimeStart(dateStart, 0);
     Crit3DTime dateTimeEnd(dateEnd, 0);
@@ -140,7 +143,6 @@ bool Project::downloadArkimetHourlyVar(QStringList variables)
     QList<int> arkIdWind;
     arkIdWind << 69 << 165 << 166 << 431;
 
-
     for( int i=0; i < meteoPoints.size(); i++ )
     {
         if (!meteoPointsSelected.isEmpty())
@@ -158,7 +160,6 @@ bool Project::downloadArkimetHourlyVar(QStringList variables)
                 datasets << QString::fromStdString(meteoPoints[i].dataset);
             id << QString::fromStdString(meteoPoints[i].id);
         }
-
     }
 
     for( int i=0; i < variables.size(); i++ )
@@ -179,6 +180,7 @@ bool Project::downloadArkimetHourlyVar(QStringList variables)
     qDebug() << "datasets" << datasets;
     qDebug() << "id" << id;
     qDebug() << "arkIdVar" << arkIdVar;
-    return pointProperties->downloadHourlyVar(dateTimeStart, dateTimeEnd, datasets, id, arkIdVar);
 
+    Download* myDownload = new Download(dbMeteoPoints->getDbName());
+    return myDownload->downloadHourlyVar(dateTimeStart, dateTimeEnd, datasets, id, arkIdVar);
 }

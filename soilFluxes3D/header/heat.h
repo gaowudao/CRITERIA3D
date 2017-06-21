@@ -9,6 +9,7 @@ void restoreHeat();
 void initializeBalanceHeat();
 void updateBalanceHeatWholePeriod();
 void saveWaterFluxes();
-void updateHeatFlux(TlinkedNode* myLink, int fluxType, double myValue);
+void saveHeatFlux(TlinkedNode* myLink, int fluxType, double myValue);
+float readHeatFlux(TlinkedNode* myLink, int fluxType);
 bool HeatComputation(double myTime);
 

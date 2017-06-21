@@ -277,10 +277,19 @@ namespace gis
 
         // compute LLcorner and URcorner
         Crit3DGeoPoint LLcorner, URcorner;
-        LLcorner.latitude = max(v[0].latitude, v[1].latitude);
-        LLcorner.longitude = max(v[0].longitude, v[3].longitude);
-        URcorner.latitude = max(v[2].latitude, v[3].latitude);
+        LLcorner.longitude = min(v[0].longitude, v[3].longitude);
         URcorner.longitude = max(v[1].longitude, v[2].longitude);
+        if (mySettings.isNorthernEmisphere)
+        {
+            LLcorner.latitude = min(v[0].latitude, v[1].latitude);
+            URcorner.latitude = max(v[2].latitude, v[3].latitude);
+        }
+        else
+        {
+            LLcorner.latitude = max(v[0].latitude, v[1].latitude);
+            URcorner.latitude = min(v[2].latitude, v[3].latitude);
+        }
+
         latLonHeader->llCorner->x = LLcorner.longitude;
         latLonHeader->llCorner->y = LLcorner.latitude;
 
@@ -297,7 +306,8 @@ namespace gis
         // cellsize
         double dx = center_1.longitude - center.longitude;
         double dy = center_1.latitude - center.latitude;
-        latLonHeader->cellSize = max(dx, dy);
+        // average
+        latLonHeader->cellSize = (dx + dy) / 2;
 
         // nr of rows and cols
         latLonHeader->nrRows = (long)floor((URcorner.latitude - LLcorner.latitude) / latLonHeader->cellSize) + 1;

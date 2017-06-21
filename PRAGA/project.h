@@ -21,14 +21,12 @@
     #include <QDate>
 
 
-
     class Project {
     public:
         QList<Crit3DMeteoPoint> meteoPoints;
         QList<gis::Crit3DGeoPoint> meteoPointsSelected;
-        QDate startDate;
-        QDate endDate;
-        Download* pointProperties;
+        QDate startDate, endDate;
+        DbMeteoPoints* dbMeteoPoints;
 
         gis::Crit3DRasterGrid DTM;
         gis::Crit3DRasterGrid rowMatrix;

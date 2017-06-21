@@ -225,9 +225,9 @@ namespace soil
 
         return refBulkDensity;
 
-        // VALUTARE se introdurre (introdotto in praga)
-        /*
-        // values increase/decrease with depth, reference thetaSat at 33cm
+        /* VALUTARE se inserire (introdotto in praga)
+        // increase/decrease with depth, reference thetaSat at 33cm
+
         double depth = (mySoil->upperDepth + mySoil->lowerDepth) * 0.5;
         double depthCoeff = (depth - 0.33) * 0.1;
         return refBulkDensity * (1.0 + depthCoeff);

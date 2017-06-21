@@ -49,8 +49,6 @@ void initializeBoundary(Tboundary *myBoundary, int myType, float slope)
     (*myBoundary).waterFlow = 0.;
     (*myBoundary).sumBoundaryWaterFlow = 0;
 	(*myBoundary).prescribedTotalPotential = NODATA;
-    (*myBoundary).advectiveHeatFlux = 0.;
-    (*myBoundary).fixedTemperature = NODATA;
 
     if (myStructure.computeHeat)
     {
@@ -76,6 +74,10 @@ void initializeBoundary(Tboundary *myBoundary, int myType, float slope)
         (*myBoundary).Heat->radiativeFlux = 0;
         (*myBoundary).Heat->latentFlux = 0;
         (*myBoundary).Heat->sensibleFlux = 0;
+        (*myBoundary).Heat->advectiveHeatFlux = 0.;
+
+        //bottom boundary
+        (*myBoundary).Heat->fixedTemperature = NODATA;
     }
     else (*myBoundary).Heat = NULL;
 }
@@ -282,10 +284,9 @@ void updateBoundaryHeat()
 
             if (myNode[i].boundary != NULL)
             {
-                myNode[i].boundary->advectiveHeatFlux = 0.;
-
                 if (myNode[i].boundary->type == BOUNDARY_HEAT)
                 {
+                    myNode[i].boundary->Heat->advectiveHeatFlux = 0.;
                     myNode[i].boundary->Heat->sensibleFlux = 0.;
                     myNode[i].boundary->Heat->latentFlux = 0.;
                     myNode[i].boundary->Heat->radiativeFlux = 0.;
@@ -306,14 +307,14 @@ void updateBoundaryHeat()
                         {
                             advTemperature = myNode[i].boundary->Heat->temperature;
                             heatFlux =  waterFlux * HEAT_CAPACITY_WATER * advTemperature / myNode[i].up.area;
-                            myNode[i].boundary->advectiveHeatFlux = heatFlux;
+                            myNode[i].boundary->Heat->advectiveHeatFlux = heatFlux;
                         }
                     }
 
                     myNode[i].extra->Heat->Qh += myNode[i].up.area * (myNode[i].boundary->Heat->radiativeFlux +
                                                                       myNode[i].boundary->Heat->sensibleFlux +
                                                                       myNode[i].boundary->Heat->latentFlux +
-                                                                      myNode[i].boundary->advectiveHeatFlux);
+                                                                      myNode[i].boundary->Heat->advectiveHeatFlux);
                 }
                 else if (myNode[i].boundary->type == BOUNDARY_FREEDRAINAGE ||
                          myNode[i].boundary->type == BOUNDARY_PRESCRIBEDTOTALPOTENTIAL)
@@ -325,18 +326,18 @@ void updateBoundaryHeat()
                         if (waterFlux < 0)
                             advTemperature = myNode[i].extra->Heat->T;
                         else
-                            advTemperature = myNode[i].boundary->fixedTemperature;
+                            advTemperature = myNode[i].boundary->Heat->fixedTemperature;
 
                         heatFlux =  waterFlux * HEAT_CAPACITY_WATER * advTemperature / myNode[i].up.area;
-                        myNode[i].boundary->advectiveHeatFlux = heatFlux;
+                        myNode[i].boundary->Heat->advectiveHeatFlux = heatFlux;
 
-                        myNode[i].extra->Heat->Qh += myNode[i].up.area * myNode[i].boundary->advectiveHeatFlux;
+                        myNode[i].extra->Heat->Qh += myNode[i].up.area * myNode[i].boundary->Heat->advectiveHeatFlux;
                     }
 
-                    if (myNode[i].boundary->fixedTemperature != NODATA)
+                    if (myNode[i].boundary->Heat->fixedTemperature != NODATA)
                     {
                         double boundaryHeatConductivity = SoilHeatConductivity(i, myNode[i].extra->Heat->T, myNode[i].H - myNode[i].z);
-                        double deltaT = myNode[i].boundary->fixedTemperature - myNode[i].extra->Heat->T;
+                        double deltaT = myNode[i].boundary->Heat->fixedTemperature - myNode[i].extra->Heat->T;
                         double deltaZ = myNode[i-1].z - myNode[i].z;
                         myNode[i].extra->Heat->Qh += boundaryHeatConductivity * deltaT / deltaZ * myNode[i].up.area;
                     }
