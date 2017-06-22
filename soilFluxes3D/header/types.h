@@ -65,6 +65,7 @@
                 computeWater = true;
                 computeHeat = false;
                 computeSolutes = false;
+                saveHeatFluxes = SAVE_HEATFLUXES_NONE;
             }
         } ;
 

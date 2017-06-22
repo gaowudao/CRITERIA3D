@@ -68,15 +68,15 @@ void initializeLinkExtra(TCrit3DLinkedNodeExtra* myLinkedNodeExtra, bool compute
 
         if (myStructure.saveHeatFluxes == SAVE_HEATFLUXES_ALL)
         {
-            (*myLinkedNodeExtra).heatFlux->fluxes = new float(4);
+            (*myLinkedNodeExtra).heatFlux->fluxes = new float[4];
             (*myLinkedNodeExtra).heatFlux->fluxes[HEATFLUX_DIFFUSIVE] = NODATA;
             (*myLinkedNodeExtra).heatFlux->fluxes[HEATFLUX_LATENT_ISOTHERMAL] = NODATA;
             (*myLinkedNodeExtra).heatFlux->fluxes[HEATFLUX_LATENT_THERMAL] = NODATA;
             (*myLinkedNodeExtra).heatFlux->fluxes[HEATFLUX_ADVECTIVE] = NODATA;
         }
-        else if (myStructure.saveHeatFluxes = SAVE_HEATFLUXES_TOTAL)
+        else if (myStructure.saveHeatFluxes == SAVE_HEATFLUXES_TOTAL)
         {
-            (*myLinkedNodeExtra).heatFlux->fluxes = new float(1);
+            (*myLinkedNodeExtra).heatFlux->fluxes = new float[1];
             (*myLinkedNodeExtra).heatFlux->fluxes[HEATFLUX_TOTAL] = NODATA;
         }
         else
