@@ -96,8 +96,6 @@ namespace soilFluxes3D {
     myStructure.computeHeat = computeHeat_;
     myStructure.computeSolutes = computeSolutes_;
 
-    myStructure.saveHeatFluxes = SAVE_HEATFLUXES_NONE;
-
     myStructure.nrNodes = nrNodes;
     myStructure.nrLayers = nrLayers;
     myStructure.nrLateralLinks = nrLateralLinks;

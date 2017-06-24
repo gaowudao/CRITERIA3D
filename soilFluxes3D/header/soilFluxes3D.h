@@ -24,7 +24,7 @@
     //INITIALIZATION
     __EXTERN void DLL_EXPORT __STDCALL cleanMemory();
     __EXTERN int DLL_EXPORT __STDCALL initialize(long nrNodes, int nrLayers, int nrLateralLinks, bool computeWater_, bool computeHeat_, bool computeSolutes_);
-    __EXTERN void initializeHeat(int saveHeatFluxes_);
+    __EXTERN void DLL_EXPORT __STDCALL initializeHeat(int saveHeatFluxes_);
 
     __EXTERN int DLL_EXPORT __STDCALL setNumericalParameters(float minDeltaT, float maxDeltaT,
                               int maxIterationNumber, int maxApproximationsNumber,

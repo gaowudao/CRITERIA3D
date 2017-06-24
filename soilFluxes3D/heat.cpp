@@ -94,7 +94,12 @@ void saveHeatFlux(TlinkedNode* myLink, int fluxType, double myValue)
     if (myLink->linkedExtra->heatFlux == NULL) return;
 
     if (myStructure.saveHeatFluxes == SAVE_HEATFLUXES_TOTAL)
-        myLink->linkedExtra->heatFlux->fluxes[HEATFLUX_TOTAL] += float(myValue);
+    {
+        if (myLink->linkedExtra->heatFlux->fluxes[HEATFLUX_TOTAL] == NODATA)
+            myLink->linkedExtra->heatFlux->fluxes[HEATFLUX_TOTAL] = float(myValue);
+        else
+            myLink->linkedExtra->heatFlux->fluxes[HEATFLUX_TOTAL] += float(myValue);
+    }
     else if (myStructure.saveHeatFluxes == SAVE_HEATFLUXES_ALL)
         myLink->linkedExtra->heatFlux->fluxes[fluxType] = float(myValue);
 
@@ -175,10 +180,10 @@ void initializeBalanceHeat()
      if (myStructure.saveHeatFluxes == SAVE_HEATFLUXES_TOTAL)
          for (long n = 0; n < myStructure.nrNodes; n++)
          {
-             myNode[n].up.linkedExtra->heatFlux->fluxes[HEATFLUX_TOTAL] = 0.;
-             myNode[n].down.linkedExtra->heatFlux->fluxes[HEATFLUX_TOTAL] = 0.;
+             saveHeatFlux(&(myNode[n].up), HEATFLUX_TOTAL, 0.);
+             saveHeatFlux(&(myNode[n].down), HEATFLUX_TOTAL, 0.);
              for (short i = 0; i < myStructure.nrLateralLinks; i++)
-                myNode[n].lateral[i].linkedExtra->heatFlux->fluxes[HEATFLUX_TOTAL] = 0.;
+                saveHeatFlux(&(myNode[n].lateral[i]), HEATFLUX_TOTAL, 0.);
          }
 
 }
