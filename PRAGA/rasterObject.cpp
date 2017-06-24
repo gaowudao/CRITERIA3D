@@ -94,38 +94,40 @@ bool RasterObject::drawRaster(Project* myProject, gis::Crit3DRasterGrid *myRaste
     if (! myRaster->isLoaded) return false;
 
     // current view extent
-    long row0, row1, col0, col1;
-    gis::getRowColFromXY(myProject->rowMatrix, this->geoMap->bottomLeft.longitude, this->geoMap->bottomLeft.latitude, &row0, &col0);
-    gis::getRowColFromXY(myProject->rowMatrix, this->geoMap->topRight.longitude, this->geoMap->topRight.latitude, &row1, &col1);
+    long rowBottom, rowTop, col0, col1;
+    gis::getRowColFromXY(myProject->rowMatrix, this->geoMap->bottomLeft.longitude, this->geoMap->bottomLeft.latitude, &rowBottom, &col0);
+    gis::getRowColFromXY(myProject->rowMatrix, this->geoMap->topRight.longitude, this->geoMap->topRight.latitude, &rowTop, &col1);
 
-    // check extent
+    // check if current view is out of data
     if (((col0 < 0) && (col1 < 0))
-    || ((row0 < 0) && (row1 < 0))
+    || ((rowBottom < 0) && (rowTop < 0))
     || ((col0 >= myProject->rowMatrix.header->nrCols) && (col1 >= myProject->rowMatrix.header->nrCols))
-    || ((row0 >= myProject->rowMatrix.header->nrRows) && (row1 >= myProject->rowMatrix.header->nrRows)))
+    || ((rowBottom >= myProject->rowMatrix.header->nrRows) && (rowTop >= myProject->rowMatrix.header->nrRows)))
     {
         myRaster->minimum = NODATA;
         myRaster->maximum = NODATA;
         return false;
     }
 
-    row1--;  //Serve veramente?
-    row0 = std::min(myProject->rowMatrix.header->nrRows-1, std::max(long(0), row0));
-    row1 = std::min(myProject->rowMatrix.header->nrRows-1, std::max(long(0), row1));
+    // fix extent
+    rowTop--;
+    rowBottom = std::min(myProject->rowMatrix.header->nrRows-1, std::max(long(0), rowBottom));
+    rowTop = std::min(myProject->rowMatrix.header->nrRows-1, std::max(long(0), rowTop));
     col0 = std::min(myProject->rowMatrix.header->nrCols-1, std::max(long(0), col0));
     col1 = std::min(myProject->rowMatrix.header->nrCols-1, std::max(long(0), col1));
 
     // dynamic color scale
-    gis::updateColorScale(myRaster, myProject->rowMatrix.value[row0][col0],
-                                    myProject->rowMatrix.value[row1][col1],
-                                    myProject->colMatrix.value[row0][col0],
-                                    myProject->colMatrix.value[row1][col1]);
+    gis::Crit3DRasterWindow* latLonWindow = new gis::Crit3DRasterWindow(rowTop, col0, rowBottom, col1);
+    gis::Crit3DRasterWindow utmWindow;
+    gis::getUtmWindow(myProject->gisSettings, myProject->rowMatrix.header, myRaster->header, latLonWindow, &utmWindow);
+    gis::updateColorScale(myRaster, utmWindow);
 
+    // lower left position
     gis::Crit3DGeoPoint llCorner;
     gis::Crit3DPixel pixelLL;
     llCorner.longitude = myProject->rowMatrix.header->llCorner->x + col0 * myProject->rowMatrix.header->cellSize;
     llCorner.latitude = myProject->rowMatrix.header->llCorner->y
-            + (myProject->rowMatrix.header->nrRows-1 - row0) * myProject->rowMatrix.header->cellSize;
+            + (myProject->rowMatrix.header->nrRows-1 - rowBottom) * myProject->rowMatrix.header->cellSize;
     pixelLL.x = (llCorner.longitude - this->geoMap->referencePoint.longitude) * this->geoMap->degreeToPixelX;
     pixelLL.y = (llCorner.latitude - this->geoMap->referencePoint.latitude) * this->geoMap->degreeToPixelY;
 
@@ -140,27 +142,29 @@ bool RasterObject::drawRaster(Project* myProject, gis::Crit3DRasterGrid *myRaste
     float myValue;
 
     y0 = pixelLL.y;
-    for (long row = row0; row >= row1; row -= step)
+    for (long row = rowBottom; row >= rowTop; row -= step)
     {
-        y1 = pixelLL.y + (row0-row + step) * dy;
+        y1 = pixelLL.y + (rowBottom-row + step) * dy;
         x0 = pixelLL.x;
         for (long col = col0; col <= col1; col += step)
         {
             x1 = pixelLL.x + (col-col0 + step) * dx;
 
             utmRow = myProject->rowMatrix.value[row][col];
-            utmCol = myProject->colMatrix.value[row][col];
-            myValue = myRaster->getValueFromRowCol(utmRow, utmCol);
-
-            if (myValue != myRaster->header->flag)
+            if (utmRow != myProject->rowMatrix.header->flag)
             {
-                myColor = myRaster->colorScale->getColor(myValue);
-                myQColor = QColor(myColor->red, myColor->green, myColor->blue);
-                myPainter->setBrush(myQColor);
+                utmCol = myProject->colMatrix.value[row][col];
+                myValue = myRaster->getValueFromRowCol(utmRow, utmCol);
+                if (myValue != myRaster->header->flag)
+                {
+                    myColor = myRaster->colorScale->getColor(myValue);
+                    myQColor = QColor(myColor->red, myColor->green, myColor->blue);
+                    myPainter->setBrush(myQColor);
 
-                lx = (x1 - x0) +1;
-                ly = (y1 - y0) +1;
-                myPainter->fillRect(x0, y0, lx, ly, myPainter->brush());
+                    lx = (x1 - x0) +1;
+                    ly = (y1 - y0) +1;
+                    myPainter->fillRect(x0, y0, lx, ly, myPainter->brush());
+                }
             }
             x0 = ++x1;
         }

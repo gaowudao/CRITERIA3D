@@ -83,6 +83,25 @@
             Crit3DPoint(double, double, double);
         };
 
+
+        class  Crit3DRasterCell {
+        public:
+            long row;
+            long col;
+
+            Crit3DRasterCell();
+        };
+
+
+        class  Crit3DRasterWindow {
+        public:
+            Crit3DRasterCell v[2];
+
+            Crit3DRasterWindow();
+            Crit3DRasterWindow(long row1, long col1, long row2, long col2);
+        };
+
+
         class Crit3DGridHeader
         {
         public:
@@ -152,13 +171,16 @@
         float computeDistance(float x1, float y1, float x2, float y2);
         double computeDistancePoint(Crit3DUtmPoint* p0, Crit3DUtmPoint *p1);
         bool updateMinMaxRasterGrid(Crit3DRasterGrid* myGrid);
-        bool updateColorScale(Crit3DRasterGrid* myGrid, long row0, long row1, long col0, long col1);
-        bool getRowColFromXY(const Crit3DRasterGrid &myGrid, double myX, double myY, long* myRow, long* myCol);
+        bool updateColorScale(Crit3DRasterGrid* myGrid, long row0, long col0, long row1, long col1);
+        bool updateColorScale(Crit3DRasterGrid* myGrid, const Crit3DRasterWindow& myWindow);
+        void getRowColFromXY(const Crit3DRasterGrid &myGrid, double myX, double myY, long* myRow, long* myCol);
+        void getRowColFromXY(const Crit3DGridHeader& myHeader, const Crit3DUtmPoint& p, Crit3DRasterCell* v);
         bool isOutOfGridRowCol(long myRow, long myCol, const Crit3DRasterGrid &myGrid);
         void getUtmXYFromRowColSinglePrecision(const Crit3DRasterGrid& myGrid, long myRow, long myCol,float* myX,float* myY);
         void getUtmXYFromRowCol(const Crit3DRasterGrid& myGrid, long myRow, long myCol ,double* myX, double* myY);
         void getUtmXYFromRowCol(const Crit3DGridHeader& myHeader,long myRow, long myCol, double* myX, double* myY);
-        void getLatLonFromRowCol(const Crit3DGridHeader& myHeader, long myRow, long myCol, double* lat, double* lon);
+        void getLatLonFromRowCol(const Crit3DGridHeader& latLonHeader, long myRow, long myCol, double* lat, double* lon);
+        void getLatLonFromRowCol(const Crit3DGridHeader& latLonHeader, const Crit3DRasterCell& v, Crit3DGeoPoint* p);
         float getValueFromXY(const Crit3DRasterGrid& myGrid, double x, double y);
 
         bool isOutOfGridXY(double x, double y, Crit3DGridHeader* header);
@@ -173,6 +195,7 @@
         bool getNorthernEmisphere();
         void getLatLonFromUtm(const Crit3DGisSettings& gisSettings, double utmX,double utmY, double *myLat, double *myLon);
         void getLatLonFromUtm(const Crit3DGisSettings& gisSettings, const Crit3DUtmPoint& utmPoint, Crit3DGeoPoint *geoPoint);
+        void getUtmFromLatLon(const Crit3DGisSettings& gisSettings, const Crit3DGeoPoint& geoPoint, Crit3DUtmPoint* utmPoint);
 
         void latLonToUtm(double lat, double lon,double *utmEasting,double *utmNorthing,int *zoneNumber);
         void latLonToUtmForceZone(int zoneNumber, double lat, double lon, double *utmEasting, double *utmNorthing);
@@ -196,6 +219,9 @@
 
         bool getGeoExtentsFromUTMHeader(const Crit3DGisSettings& mySettings,
                                         Crit3DGridHeader *utmHeader, Crit3DGridHeader *latLonHeader);
+
+        bool getUtmWindow(const Crit3DGisSettings& mySettings, Crit3DGridHeader* latLonHeader, Crit3DGridHeader* utmHeader,
+                          Crit3DRasterWindow* latLonWindow, Crit3DRasterWindow *UtmWindow);
     }
 
 

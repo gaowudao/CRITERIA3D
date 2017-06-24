@@ -67,6 +67,24 @@ namespace gis
         this->y = NODATA;
     }
 
+    Crit3DRasterCell::Crit3DRasterCell()
+    {
+        this->row = NODATA;
+        this->col = NODATA;
+    }
+
+    Crit3DRasterWindow::Crit3DRasterWindow()
+    {
+    }
+
+    Crit3DRasterWindow::Crit3DRasterWindow(long row1, long col1, long row2, long col2)
+    {
+        this->v[0].row = row1;
+        this->v[0].col = col1;
+        this->v[1].row = row2;
+        this->v[1].col = col2;
+    }
+
     Crit3DUtmPoint::Crit3DUtmPoint(double myX, double myY)
     {
         this->x = myX;
@@ -229,14 +247,13 @@ namespace gis
 
     Crit3DPoint Crit3DRasterGrid::mapCenter()
     {
+        long myRow, myCol;
         Crit3DPoint myPoint;
+
         myPoint.utm.x = (header->llCorner->x + (header->nrCols * header->cellSize)/2.);
         myPoint.utm.y = (header->llCorner->y + (header->nrRows * header->cellSize)/2.);
-        long myRow, myCol;
-        if (getRowColFromXY(*this, myPoint.utm.x, myPoint.utm.y, &myRow, &myCol))
-            myPoint.z = this->value[myRow][myCol];
-        else
-            myPoint.z = this->header->flag;
+        getRowColFromXY(*this, myPoint.utm.x, myPoint.utm.y, &myRow, &myCol);
+        myPoint.z = this->value[myRow][myCol];
 
         return myPoint;
     }
@@ -327,7 +344,12 @@ namespace gis
         return(true);
     }
 
-    bool updateColorScale(Crit3DRasterGrid* myGrid, long row0, long row1, long col0, long col1)
+    bool updateColorScale(Crit3DRasterGrid* myGrid, const Crit3DRasterWindow& myWindow)
+    {
+        return updateColorScale(myGrid, myWindow.v[0].row, myWindow.v[0].col, myWindow.v[1].row, myWindow.v[1].col);
+    }
+
+    bool updateColorScale(Crit3DRasterGrid* myGrid, long row0, long col0, long row1, long col1)
     {
         float myValue;
         bool isFirstValue = true;
@@ -395,11 +417,16 @@ namespace gis
             return sqrt((dx * dx)+(dy * dy));
     }
 
-    bool getRowColFromXY(const Crit3DRasterGrid& myGrid, double myX, double myY, long* myRow, long* myCol)
+    void getRowColFromXY(const Crit3DRasterGrid& myGrid, double myX, double myY, long* myRow, long* myCol)
     {
         *myRow = (myGrid.header->nrRows - 1) - (int)floor((myY - myGrid.header->llCorner->y) / myGrid.header->cellSize);
         *myCol = (int)floor((myX - myGrid.header->llCorner->x) / myGrid.header->cellSize);
-        return true ;
+    }
+
+    void getRowColFromXY(const Crit3DGridHeader& myHeader, const Crit3DUtmPoint& p, Crit3DRasterCell* v)
+    {
+        v->row = (myHeader.nrRows - 1) - (int)floor((p.y - myHeader.llCorner->y) / myHeader.cellSize);
+        v->col = (int)floor((p.x - myHeader.llCorner->x) / myHeader.cellSize);
     }
 
     bool isOutOfGridRowCol(long myRow, long myCol, const Crit3DRasterGrid& myGrid)
@@ -429,10 +456,16 @@ namespace gis
             *myY = myHeader.llCorner->y + myHeader.cellSize * (myHeader.nrRows - myRow - 0.5);
     }
 
-    void getLatLonFromRowCol(const Crit3DGridHeader& myHeader, long myRow, long myCol, double* lat, double* lon)
+    void getLatLonFromRowCol(const Crit3DGridHeader& latLonHeader, long myRow, long myCol, double* lat, double* lon)
     {
-            *lon = myHeader.llCorner->x + myHeader.cellSize * (myCol + 0.5);
-            *lat = myHeader.llCorner->y + myHeader.cellSize * (myHeader.nrRows - myRow - 0.5);
+            *lon = latLonHeader.llCorner->x + latLonHeader.cellSize * (myCol + 0.5);
+            *lat = latLonHeader.llCorner->y + latLonHeader.cellSize * (latLonHeader.nrRows - myRow - 0.5);
+    }
+
+    void getLatLonFromRowCol(const Crit3DGridHeader& latLonHeader, const Crit3DRasterCell& v, Crit3DGeoPoint* p)
+    {
+            p->longitude = latLonHeader.llCorner->x + latLonHeader.cellSize * (v.col + 0.5);
+            p->latitude = latLonHeader.llCorner->y + latLonHeader.cellSize * (latLonHeader.nrRows - v.row - 0.5);
     }
 
     float getValueFromXY(const Crit3DRasterGrid& myGrid, double x, double y)
@@ -564,6 +597,10 @@ namespace gis
         if (lat < 0) (*utmNorthing) += 10000000.0;
     }
 
+    void getUtmFromLatLon(const Crit3DGisSettings& gisSettings, const Crit3DGeoPoint& geoPoint, Crit3DUtmPoint* utmPoint)
+    {
+        latLonToUtmForceZone(gisSettings.utmZone, geoPoint.latitude, geoPoint.longitude, &(utmPoint->x), &(utmPoint->y));
+    }
 
     void latLonToUtmForceZone(int zoneNumber, double lat, double lon, double *utmEasting, double *utmNorthing)
     {

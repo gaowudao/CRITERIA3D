@@ -40,8 +40,11 @@ bool Project::loadRaster(QString myFileName)
                 gis::getLatLonFromRowCol(myLatLonHeader, row, col, &lat, &lon);
                 gis::latLonToUtmForceZone(this->gisSettings.utmZone, lat, lon, &x, &y);
                 gis::getRowColFromXY(this->DTM, x, y, &utmRow, &utmCol);
-                this->rowMatrix.value[row][col] = utmRow;
-                this->colMatrix.value[row][col] = utmCol;
+                if (this->DTM.getValueFromRowCol(utmRow, utmCol) != this->DTM.header->flag)
+                {
+                    this->rowMatrix.value[row][col] = utmRow;
+                    this->colMatrix.value[row][col] = utmCol;
+                }
             }
 
         qDebug("Raster Ok.");

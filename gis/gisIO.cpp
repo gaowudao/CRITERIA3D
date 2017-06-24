@@ -318,5 +318,24 @@ namespace gis
 
         return true;
     }
+
+
+    bool getUtmWindow(const Crit3DGisSettings& mySettings, Crit3DGridHeader* latLonHeader, Crit3DGridHeader* utmHeader,
+                      Crit3DRasterWindow* latLonWindow, Crit3DRasterWindow* UtmWindow)
+    {
+        Crit3DGeoPoint p[2];
+        Crit3DUtmPoint utmPoint[2];
+
+        getLatLonFromRowCol(*latLonHeader, latLonWindow->v[0], &(p[0]));
+        getUtmFromLatLon(mySettings, p[0], &(utmPoint[0]));
+        getRowColFromXY(*utmHeader, utmPoint[0], &(UtmWindow->v[0]));
+
+        getLatLonFromRowCol(*latLonHeader, latLonWindow->v[1], &(p[1]));
+        getUtmFromLatLon(mySettings, p[1], &(utmPoint[1]));
+        getRowColFromXY(*utmHeader, utmPoint[1], &(UtmWindow->v[1]));
+
+        return true;
+    }
+
 }
 
