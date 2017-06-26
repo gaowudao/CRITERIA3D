@@ -191,6 +191,102 @@ void Download::downloadMetadata(QJsonObject obj)
 }
 
 
+bool Download::downloadDailyDataSinglePoint(Crit3DDate dateStart, Crit3DDate dateEnd, QString dataset, QString id, QList<int> variables, bool prec24)
+{
+    // initialize table
+    _dbMeteo->initStationsDailyTables(dateStart, dateEnd, QStringList() << id);
+
+    QString area = ";area: VM2," + id;
+
+    QString product;
+    product = QString(";product: VM2,%1").arg(variables[0]);
+
+    for (int i = 1; i < variables.size(); i++)
+    {
+        product = product % QString(" or VM2,%1").arg(variables[i]);
+    }
+
+    // reftime
+    QString refTime = QString("reftime:>=%1,<=%2").arg(QString::fromStdString(dateStart.toStdString())).arg(QString::fromStdString(dateEnd.toStdString()));
+
+    QEventLoop loop;
+    QNetworkAccessManager* manager = new QNetworkAccessManager(this);
+    connect(manager, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
+
+    QUrl url = QUrl(QString("%1/query?query=%2%3%4 &style=postprocess").arg(_dbMeteo->getDatasetURL(dataset)).arg(refTime).arg(area).arg(product));
+
+    QNetworkRequest request;
+    request.setUrl(url);
+    request.setRawHeader("Authorization", _authorization);
+
+    QNetworkReply* reply = manager->get(request);  // GET
+    loop.exec();
+
+    if (reply->error() != QNetworkReply::NoError)
+    {
+            qDebug( "Network Error" );
+            delete reply;
+            delete manager;
+            return false;
+    }
+    else
+    {
+        QStringList fields;
+        QString myDate, idPoint, flag;
+        int arkId, idVar;
+        double varValue;
+        for (QString line = QString(reply->readLine()); !(line.isNull() || line.isEmpty());  line = QString(reply->readLine()))
+        {
+            fields = line.split(",");
+            myDate = QString("%1-%2-%3 %4:%5:00").arg(fields[0].left(4))
+                                                       .arg(fields[0].mid(4, 2))
+                                                       .arg(fields[0].mid(6, 2))
+                                                       .arg(fields[0].mid(8, 2))
+                                                       .arg(fields[0].mid(10, 2));
+            idPoint = fields[1];
+            arkId = fields[2].toInt();
+            varValue = fields[3].toDouble();
+            flag = fields[6];
+
+            if (arkId == PREC_ID)
+            {
+                if ((prec24 && fields[0].mid(8,2) == "08") || (!prec24 && fields[0].mid(8,2) == "00"))
+                {
+                    //skip value
+                    continue;
+                }
+                else if (!prec24 && fields[0].mid(8,2) == "08")
+                {
+                    myDate = QString("%1-%2-%3 00:%4:00").arg(fields[0].left(4))
+                                                      .arg(fields[0].mid(4, 2))
+                                                      .arg(fields[0].mid(6, 2))
+                                                      .arg(fields[0].mid(10, 2));
+                }
+            }
+
+            //conversion from average daily radiation to integral radiation
+            if (arkId == RAD_ID)
+            {
+                varValue *= DAY_SECONDS / 1000000.0;
+            }
+
+            idVar = _dbMeteo->arkIdmap(arkId);
+
+            if (!(idPoint.isEmpty()))
+            {
+                _dbMeteo->insertDailyValue(idPoint, myDate, idVar, varValue, flag);
+            }
+        }
+
+        delete reply;
+        delete manager;
+    }
+
+    return true;
+}
+
+
+
 bool Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStringList datasets, QStringList stations, QList<int> variables, bool precSelection)
 {
 
@@ -215,14 +311,14 @@ bool Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStrin
         product = product % QString(" or VM2,%1").arg(variables[i]);
     }
 
-    for (Crit3DDate i = dateStart.addDays(180); dateEnd >= dateStart; i = dateStart.addDays(180))
+    for (Crit3DDate myDate = dateStart.addDays(180); dateEnd >= dateStart; myDate = dateStart.addDays(180))
     {
 
-        if (i > dateEnd)
-            i = dateEnd;
+        if (myDate > dateEnd)
+            myDate = dateEnd;
 
         // reftime
-        QString refTime = QString("reftime:>=%1,<=%2").arg(QString::fromStdString(dateStart.toStdString())).arg(QString::fromStdString(i.toStdString()));
+        QString refTime = QString("reftime:>=%1,<=%2").arg(QString::fromStdString(dateStart.toStdString())).arg(QString::fromStdString(myDate.toStdString()));
 
         foreach (QString dataset, datasets) {
 
@@ -233,7 +329,7 @@ bool Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStrin
 
             QUrl url = QUrl(QString("%1/query?query=%2%3%4&style=postprocess").arg(_dbMeteo->getDatasetURL(dataset)).arg(refTime).arg(area).arg(product));
 
-            qDebug() << url ;
+            qDebug() << dataset << QString::fromStdString(myDate.toStdString());
 
             QNetworkRequest request;
             request.setUrl(url);
@@ -241,6 +337,8 @@ bool Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStrin
 
             QNetworkReply* reply = manager->get(request);  // GET
             loop.exec();
+
+            qDebug() << "Query results" ;
 
             if (reply->error() != QNetworkReply::NoError)
             {
@@ -290,22 +388,21 @@ bool Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStrin
                         varValue *= DAY_SECONDS / 1000000.0;
                     }
 
+                    /*
                     int id_var = _dbMeteo->arkIdmap(arkId);
 
-                    if (!(id_point.isEmpty() || id_point.isEmpty()))
+                    if (!(id_point.isEmpty()))
                     {
                         _dbMeteo->insertDailyValue(id_point, date, id_var, varValue, flag);
-                    }
+                    }*/
 
-                    dateStart = i.addDays(1);
-
+                    dateStart = myDate.addDays(1);
                 }
             }
 
             delete reply;
             delete manager;
         }
-
     }
 
     return true;

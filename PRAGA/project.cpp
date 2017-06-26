@@ -1,5 +1,7 @@
 #include "project.h"
+#include <QLabel>
 #include <QtDebug>
+#include <QMessageBox>
 
 
 Project::Project()
@@ -58,15 +60,12 @@ bool Project::loadRaster(QString myFileName)
 }
 
 
-bool Project::downloadArkimetDailyVar(QStringList variables, bool precSelection)
+bool Project::downloadArkimetDailyVar(QStringList variables, bool prec24)
 {
     Crit3DDate dateStart(this->startDate.day(), this->startDate.month(), this->startDate.year());
     Crit3DDate dateEnd(this->endDate.day(), this->endDate.month(), this->endDate.year());
-    QStringList datasets;
-    QStringList id;
-    bool skip = 0;
-
-    QList<int> arkIdVar;
+    //QString id, dataset, name;
+    QStringList id, dataset;
 
     QList<int> arkIdAirTemp;
     arkIdAirTemp << 231 << 232 << 233;
@@ -77,26 +76,7 @@ bool Project::downloadArkimetDailyVar(QStringList variables, bool precSelection)
     QList<int> arkIdWind;
     arkIdWind << 227 << 230;
 
-    for( int i=0; i < meteoPoints.size(); i++ )
-    {
-        if (!meteoPointsSelected.isEmpty())
-        {
-            skip = 1;
-            for (int j = 0; j < meteoPointsSelected.size(); j++)
-            {
-                if (meteoPoints[i].latitude == meteoPointsSelected[j].latitude && meteoPoints[i].longitude == meteoPointsSelected[j].longitude)
-                    skip = 0;
-            }
-        }
-        if (!skip)
-        {
-            if (!datasets.contains(QString::fromStdString(meteoPoints[i].dataset)))
-                datasets << QString::fromStdString(meteoPoints[i].dataset);
-            id << QString::fromStdString(meteoPoints[i].id);
-        }
-
-    }
-
+    QList<int> arkIdVar;
     for( int i=0; i < variables.size(); i++ )
     {
         if (variables[i] == "Air Temperature")
@@ -111,8 +91,48 @@ bool Project::downloadArkimetDailyVar(QStringList variables, bool precSelection)
             arkIdVar.append(arkIdWind);
     }
 
+    /*
+    QLabel info;
+    info.setWindowTitle("DOWNLOAD daily data");
+    info.show();
+    */
+
     Download* myDownload = new Download(dbMeteoPoints->getDbName());
-    return myDownload->downloadDailyVar(dateStart, dateEnd, datasets, id, arkIdVar, precSelection);
+
+    bool skip = false;
+    for( int i=0; i < meteoPoints.size(); i++ )
+    {
+        if (!meteoPointsSelected.isEmpty())
+        {
+            skip = true;
+            for (int j = 0; j < meteoPointsSelected.size(); j++)
+            {
+                if (meteoPoints[i].latitude == meteoPointsSelected[j].latitude && meteoPoints[i].longitude == meteoPointsSelected[j].longitude)
+                    skip = false;
+            }
+        }
+
+        if (!skip)
+        {
+            /*id = QString::fromStdString(meteoPoints[i].id);
+            dataset = QString::fromStdString(meteoPoints[i].dataset);
+            name = QString::fromStdString(meteoPoints[i].name);
+
+            info.setText(id + "\n" + name);
+
+            if (! myDownload->downloadDailyDataSinglePoint(dateStart, dateEnd, dataset, id, arkIdVar, prec24))
+                return false;
+            */
+            id << QString::fromStdString(meteoPoints[i].id);
+            if (!dataset.contains(QString::fromStdString(meteoPoints[i].dataset)))
+                dataset << QString::fromStdString(meteoPoints[i].dataset);
+        }
+    }
+
+    if (! myDownload->downloadDailyVar(dateStart, dateEnd, dataset, id, arkIdVar, prec24)) return false;
+
+    //info.close();
+    return true;
 }
 
 

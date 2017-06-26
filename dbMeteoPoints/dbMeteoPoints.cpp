@@ -51,14 +51,11 @@ QString DbMeteoPoints::getDatasetURL(QString dataset)
     }
     else
     {
-        qDebug( "Selected!" );
-
         if (qry.next())
             url = qry.value(0).toString();
 
         else
             qDebug( "Error: dataset not found" );
-
     }
 
     return url;
@@ -78,7 +75,7 @@ QStringList DbMeteoPoints::getDatasetsActive()
     }
     else
     {
-        qDebug( "Selected!" );
+        qDebug( "getDatasetsActive Selected!" );
 
         while (qry.next())
         {
@@ -123,7 +120,7 @@ QStringList DbMeteoPoints::getDatasetsList()
     }
     else
     {
-        qDebug( "Selected!" );
+        qDebug( "getDatasetsList Selected!" );
 
         while (qry.next())
         {

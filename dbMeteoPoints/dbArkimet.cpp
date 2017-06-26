@@ -59,7 +59,7 @@ QString DbArkimet::getVarName(int id)
     }
     else
     {
-        qDebug( "Selected!" );
+        qDebug( "getVarName Selected!" );
 
         if (qry.next())
             varName = qry.value(0).toString();
@@ -86,7 +86,7 @@ int DbArkimet::getId(QString VarName)
     }
     else
     {
-        qDebug( "Selected!" );
+        qDebug( "getId Selected!" );
 
         if (qry.next())
             id = qry.value(0).toInt();
@@ -112,7 +112,7 @@ QList<int> DbArkimet::getDailyVar()
     }
     else
     {
-        qDebug( "Selected!" );
+        qDebug( "getDailyVar Selected!" );
 
         while (qry.next())
         {
@@ -166,7 +166,6 @@ void DbArkimet::initStationsDailyTables(Crit3DDate dateStartInput, Crit3DDate da
         qry.exec();
 
         statement = QString("DELETE FROM `%1_D` WHERE date_time >= DATE('%2') AND date_time < DATE('%3', '+1 day')").arg(stations[i]).arg(startDate).arg(endDate);
-        //qDebug() << "initStationsDailyTables - Delete " << statement;
 
         qry = QSqlQuery(statement, _db);
         qry.exec();

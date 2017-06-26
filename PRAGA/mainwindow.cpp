@@ -171,7 +171,7 @@ void MainWindow::on_actionArkimet_triggered()
             layout.addSpacing(30);
             layout.addWidget(all);
 
-            connect(all, SIGNAL(toggled(bool)), this, SLOT(enableAll(bool)));
+            connect(all, SIGNAL(toggled(bool)), this, SLOT(enableAllDataset(bool)));
 
             QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
                                                  | QDialogButtonBox::Cancel);
@@ -268,7 +268,7 @@ QString MainWindow::on_actionArkimet_Dataset(QDialog* datasetDialog) {
 }
 
 
-void MainWindow::enableAll(bool toggled)
+void MainWindow::enableAllDataset(bool toggled)
 {
 
     foreach (QCheckBox *checkBox, datasetCheckbox)
@@ -573,7 +573,7 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
             }
             if (daily.isChecked())
             {
-                bool precSelection = true;
+                bool prec24 = true;
                 if ( item2.isSelected() || item6.isSelected() )
                 {
                     QDialog precDialog;
@@ -585,7 +585,6 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
 
                     QDialogButtonBox confirm(QDialogButtonBox::Ok);
 
-
                     connect(&confirm, SIGNAL(accepted()), &precDialog, SLOT(accept()));
 
                     precLayout.addWidget(&first);
@@ -595,32 +594,20 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
                     precDialog.exec();
 
                     if (second.isChecked())
-                        precSelection = false;
-
+                        prec24 = false;
                 }
+
                 QApplication::setOverrideCursor(Qt::WaitCursor);
-                FormDownload downloadWindow;
-                downloadWindow.setModal(true);
-                downloadWindow.show();
 
-                QMessageBox *msgBox = new QMessageBox(this);
-
-                if ( myProject.downloadArkimetDailyVar(var, precSelection))
+                if (! myProject.downloadArkimetDailyVar(var, prec24))
                 {
-                    downloadWindow.close();
-                    QApplication::restoreOverrideCursor();
-
-                    msgBox->setText("Daily Download Completed");
-                }
-                else
-                {
-                    downloadWindow.close();
-                    QApplication::restoreOverrideCursor();
-
+                    QMessageBox *msgBox = new QMessageBox(this);
                     msgBox->setText("Daily Download Error");
+                    msgBox->exec();
+                    delete msgBox;
                 }
-                msgBox->exec();
-                delete msgBox;
+
+                QApplication::restoreOverrideCursor();
             }
 
             if (hourly.isChecked())

@@ -64,7 +64,7 @@
 
         void on_actionRectangle_Selection_triggered();
 
-        void enableAll(bool toggled);
+        void enableAllDataset(bool toggled);
 
         void displayMeteoPoints();
 
