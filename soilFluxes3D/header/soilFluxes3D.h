@@ -93,7 +93,6 @@
     __EXTERN double DLL_EXPORT __STDCALL getBoundarySensibleFlux(long nodeIndex);
     __EXTERN double DLL_EXPORT __STDCALL getBoundaryAdvectiveFlux(long nodeIndex);
     __EXTERN double DLL_EXPORT __STDCALL getBoundaryLatentFlux(long nodeIndex);
-    __EXTERN double DLL_EXPORT __STDCALL getBoundaryEvaporation(long nodeIndex);
     __EXTERN double DLL_EXPORT __STDCALL getBoundaryRadiativeFlux(long nodeIndex);
     __EXTERN double DLL_EXPORT __STDCALL getBoundaryAerodynamicConductance(long nodeIndex);
     __EXTERN double DLL_EXPORT __STDCALL getBoundaryAerodynamicConductanceOpenWater(long nodeIndex);

@@ -85,7 +85,7 @@ TlinkedNode* getLink(long i, long j)
 int calcola_iterazioni_max(int num_approssimazione)
 {
  float max_iterazioni = (float)myParameters.iterazioni_max / (float)myParameters.maxApproximationsNumber * (float)(num_approssimazione + 1);
- return(maxValue(20, int(max_iterazioni)));
+ return(max_value(20, int(max_iterazioni)));
 }
 
 

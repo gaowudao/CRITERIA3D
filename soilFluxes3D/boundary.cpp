@@ -169,8 +169,8 @@ double getSurfaceWaterFraction(int i)
         return 0.0;
     else
     {
-        double h = maxValue(myNode[i].H - myNode[i].z, 0.0);
-        return 1.0 - maxValue(0.0, myNode[i].Soil->Pond - h) / myNode[i].Soil->Pond;
+        double h = max_value(myNode[i].H - myNode[i].z, 0.0);
+        return 1.0 - max_value(0.0, myNode[i].Soil->Pond - h) / myNode[i].Soil->Pond;
     }
 }
 
@@ -220,7 +220,7 @@ void updateBoundaryWater(double deltaT)
             {
                 // current surface water available to runoff [m]
                 avgH = (myNode[i].H + myNode[i].oldH) * 0.5;
-                Hs = maxValue(avgH - (myNode[i].z + myNode[i].Soil->Pond), 0.0);
+                Hs = max_value(avgH - (myNode[i].z + myNode[i].Soil->Pond), 0.0);
                 if (Hs > EPSILON_mm)
                 {
                     area = myNode[i].volume_area;       //  [m^2] (surface)
@@ -229,7 +229,7 @@ void updateBoundaryWater(double deltaT)
                     boundaryArea = boundarySide * Hs;   //  [m^2]
                     // [m^3 s^-1] Manning
                     flow = boundaryArea *(pow(Hs, (2./3.)) / myNode[i].Soil->Roughness) * sqrt(myNode[i].boundary->slope);
-                    myNode[i].boundary->waterFlow = -minValue(flow, maxFlow);
+                    myNode[i].boundary->waterFlow = -min_value(flow, maxFlow);
                 }
             }
             else if (myNode[i].boundary->type == BOUNDARY_FREEDRAINAGE)

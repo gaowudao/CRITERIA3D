@@ -573,7 +573,7 @@ namespace soilFluxes3D {
             return (myNode[index].H - myNode[index].z);
         else
             /*! sub-surface */
-            return maxValue(0.0, theta_from_Se(index) - theta_from_sign_Psi(-160, index));
+            return max_value(0.0, theta_from_Se(index) - theta_from_sign_Psi(-160, index));
  }
 
 
@@ -846,7 +846,7 @@ double DLL_EXPORT __STDCALL computeStep(double maxTime)
         double dtHeatSum = 0;
         while (dtHeatSum < dtWater)
         {
-            if (HeatComputation(minValue(dtHeat, dtWater - dtHeatSum)))
+            if (HeatComputation(min_value(dtHeat, dtWater - dtHeatSum)))
             {
                 dtHeatSum += dtHeat;
             }
@@ -1161,23 +1161,6 @@ double DLL_EXPORT getBoundaryLatentFlux(long nodeIndex)
 
     // boundary latent heat flow density
     return (myNode[nodeIndex].boundary->Heat->latentFlux);
-}
-
-/*!
- * \brief return evaporation
- * \param nodeIndex
- * \return latent water flux [m3 m-2]
-*/
-double DLL_EXPORT getBoundaryEvaporation(long nodeIndex)
-{
-    if (myNode == NULL) return (TOPOGRAPHY_ERROR);
-    if (nodeIndex >= myStructure.nrNodes) return (INDEX_ERROR);
-    if (! myStructure.computeHeat || ! myStructure.computeWater) return (MISSING_DATA_ERROR);
-    if (myNode[nodeIndex].boundary == NULL) return (INDEX_ERROR);
-    if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT) return (INDEX_ERROR);
-
-    // boundary latent heat flow density
-    return (-myNode[nodeIndex].boundary->waterFlow);
 }
 
 /*!

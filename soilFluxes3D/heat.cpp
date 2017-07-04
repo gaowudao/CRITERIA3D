@@ -69,7 +69,7 @@ void computeHeatBalance(double myTimeStep)
     double deltaHeatStorage = balanceCurrentTimeStep.storageHeat - balancePreviousTimeStep.storageHeat;
     balanceCurrentTimeStep.heatMBE = deltaHeatStorage - balanceCurrentTimeStep.sinkSourceHeat;
 
-    double referenceHeat = maxValue(fabs(balanceCurrentTimeStep.sinkSourceHeat), balanceCurrentTimeStep.storageHeat * 1e-6);
+    double referenceHeat = max_value(fabs(balanceCurrentTimeStep.sinkSourceHeat), balanceCurrentTimeStep.storageHeat * 1e-6);
     balanceCurrentTimeStep.heatMBR = 1. - balanceCurrentTimeStep.heatMBE / referenceHeat;
 }
 
@@ -628,7 +628,7 @@ bool computeHeatFlux(long i, int myMatrixIndex, TlinkedNode *myLink, double delt
     if (fluxCourant != 0)
     {
         nodeDistance = distance(i, myLinkIndex);
-        CourantHeat = maxValue(CourantHeat, fabs(fluxCourant) * deltaT / (C[i] * nodeDistance));
+        CourantHeat = max_value(CourantHeat, fabs(fluxCourant) * deltaT / (C[i] * nodeDistance));
     }
 
     return (true);
