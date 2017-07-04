@@ -27,6 +27,14 @@
 #define COMMONCONSTANTS_H
 
     //general functions
+    #ifndef minValue
+        #define minValue(a, b) (((a) < (b))? (a) : (b))
+    #endif
+
+    #ifndef maxValue
+        #define maxValue(a, b) (((a) > (b))? (a) : (b))
+    #endif
+
     #ifndef min_value
         #define min_value(a, b) (((a) < (b))? (a) : (b))
     #endif

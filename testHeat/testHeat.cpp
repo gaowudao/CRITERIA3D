@@ -8,7 +8,6 @@
 #include <qglobal.h>
 #include <qlist.h>
 
-#include "commonConstants.h"
 #include "testHeat.h"
 #include "soilFluxes3D.h"
 #include "types.h"

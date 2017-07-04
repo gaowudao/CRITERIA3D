@@ -7,8 +7,9 @@
 #include <QTextStream>
 #include <QApplication>
 
-#include "commonConstants.h"
 #include "graphs.h"
+
+#include "commonConstants.h"
 
 long myHourIni, myHourFin, myCurrentHour;
 bool Initialized;
