@@ -46,7 +46,7 @@ float computeTminHourlyWeight(int myHour)
     if (myHour >= 6 && myHour <= 14)
         return (1 - ((float)myHour - 6) / 8);
     else if (myHour > 14)
-        return (1 - minValue((24 - (float)myHour) + 6, 12) / 12);
+        return (1 - min_value((24 - (float)myHour) + 6, 12) / 12);
     else
         return (1 - (6 - (float)myHour) / 12);
 }

@@ -36,8 +36,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    d_plot = new Plot( this );
-    ui->layoutPlot->addWidget(d_plot);
+    outPlot = new Plot( this );
+    ui->layoutPlot->addWidget(outPlot);
 }
 
 MainWindow::~MainWindow()
@@ -187,7 +187,7 @@ void MainWindow::on_pushRunAllPeriod_clicked()
     {
         getHourlyOutputAllPeriod(1, getNodesNumber(), myOutput, myHeatOutput);
 
-        d_plot->setSamples(myHeatOutput->profileOutput[0].temperature);
+        outPlot->setSamples(myHeatOutput->profileOutput[0].temperature);
 
         double myPIniHour, myPHours;
         double myT, myRH, myWS, myGR, myNR, myP;
@@ -230,7 +230,7 @@ void MainWindow::on_pushRunAllPeriod_clicked()
 
             getHourlyOutputAllPeriod(1, getNodesNumber(), myOutput, myHeatOutput);
 
-            d_plot->setSamples(myHeatOutput->profileOutput[myCurrentHour].temperature);
+            outPlot->setSamples(myHeatOutput->profileOutput[myCurrentHour].temperature);
 
             ui->prgBar->setValue(myCurrentHour);
 

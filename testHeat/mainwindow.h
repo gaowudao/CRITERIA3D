@@ -33,7 +33,7 @@ private:
     Ui::MainWindow *ui;
 
 private:
-    Plot *d_plot;
+    Plot * outPlot;
 
 };
 

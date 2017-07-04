@@ -19,6 +19,7 @@
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
+#include <QtWidgets/QListWidget>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPlainTextEdit>
@@ -110,6 +111,7 @@ public:
     QLineEdit *lineEditThetaR;
     QWidget *formLayoutWidget;
     QFormLayout *layoutPlot;
+    QListWidget *listWidget;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -118,7 +120,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(827, 841);
+        MainWindow->resize(742, 854);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         groupBox = new QGroupBox(centralWidget);
@@ -252,10 +254,10 @@ public:
         plainTextEdit->setGeometry(QRect(10, 250, 531, 61));
         pushInitialize = new QPushButton(centralWidget);
         pushInitialize->setObjectName(QStringLiteral("pushInitialize"));
-        pushInitialize->setGeometry(QRect(570, 260, 81, 23));
+        pushInitialize->setGeometry(QRect(610, 260, 81, 23));
         pushRunNextHour = new QPushButton(centralWidget);
         pushRunNextHour->setObjectName(QStringLiteral("pushRunNextHour"));
-        pushRunNextHour->setGeometry(QRect(570, 290, 81, 23));
+        pushRunNextHour->setGeometry(QRect(610, 290, 81, 23));
         groupBox_6 = new QGroupBox(centralWidget);
         groupBox_6->setObjectName(QStringLiteral("groupBox_6"));
         groupBox_6->setGeometry(QRect(10, 140, 151, 101));
@@ -274,7 +276,7 @@ public:
         prgBar->setValue(0);
         pushRunAllPeriod = new QPushButton(centralWidget);
         pushRunAllPeriod->setObjectName(QStringLiteral("pushRunAllPeriod"));
-        pushRunAllPeriod->setGeometry(QRect(570, 320, 81, 23));
+        pushRunAllPeriod->setGeometry(QRect(610, 320, 81, 23));
         pushLoadFileMeteo = new QPushButton(centralWidget);
         pushLoadFileMeteo->setObjectName(QStringLiteral("pushLoadFileMeteo"));
         pushLoadFileMeteo->setGeometry(QRect(710, 30, 81, 23));
@@ -356,16 +358,19 @@ public:
         lineEditThetaR->setGeometry(QRect(130, 80, 41, 20));
         formLayoutWidget = new QWidget(centralWidget);
         formLayoutWidget->setObjectName(QStringLiteral("formLayoutWidget"));
-        formLayoutWidget->setGeometry(QRect(10, 360, 691, 421));
+        formLayoutWidget->setGeometry(QRect(10, 360, 561, 421));
         layoutPlot = new QFormLayout(formLayoutWidget);
         layoutPlot->setSpacing(6);
         layoutPlot->setContentsMargins(11, 11, 11, 11);
         layoutPlot->setObjectName(QStringLiteral("layoutPlot"));
         layoutPlot->setContentsMargins(0, 0, 0, 0);
+        listWidget = new QListWidget(centralWidget);
+        listWidget->setObjectName(QStringLiteral("listWidget"));
+        listWidget->setGeometry(QRect(580, 360, 151, 421));
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 827, 21));
+        menuBar->setGeometry(QRect(0, 0, 742, 21));
         MainWindow->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWindow);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>827</width>
-    <height>841</height>
+    <width>742</width>
+    <height>854</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -573,7 +573,7 @@
    <widget class="QPushButton" name="pushInitialize">
     <property name="geometry">
      <rect>
-      <x>570</x>
+      <x>610</x>
       <y>260</y>
       <width>81</width>
       <height>23</height>
@@ -586,7 +586,7 @@
    <widget class="QPushButton" name="pushRunNextHour">
     <property name="geometry">
      <rect>
-      <x>570</x>
+      <x>610</x>
       <y>290</y>
       <width>81</width>
       <height>23</height>
@@ -660,7 +660,7 @@
    <widget class="QPushButton" name="pushRunAllPeriod">
     <property name="geometry">
      <rect>
-      <x>570</x>
+      <x>610</x>
       <y>320</y>
       <width>81</width>
       <height>23</height>
@@ -1008,11 +1008,21 @@
      <rect>
       <x>10</x>
       <y>360</y>
-      <width>691</width>
+      <width>561</width>
       <height>421</height>
      </rect>
     </property>
     <layout class="QFormLayout" name="layoutPlot"/>
+   </widget>
+   <widget class="QListWidget" name="listWidget">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>360</y>
+      <width>151</width>
+      <height>421</height>
+     </rect>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -1020,7 +1030,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>827</width>
+     <width>742</width>
      <height>21</height>
     </rect>
    </property>
