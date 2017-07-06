@@ -115,13 +115,12 @@ void MainWindow::on_pushInitialize_clicked()
 
     if (Initialized)
     {
-        ui->plainTextEdit->setPlainText(myOutput);
+        ui->labelInfo->setText("Model initialized.");
         ui->prgBar->setMaximum(myHourFin);
     }
     else
     {
-        myOutput = "Initialization failed";
-        ui->plainTextEdit->setPlainText(myOutput);
+        ui->labelInfo->setText("Initialization failed.");
     }
 
 }
@@ -163,7 +162,6 @@ void MainWindow::on_pushRunNextHour_clicked()
 
         getHourlyOutput(myCurrentHour, 0, getNodesNumber(), myOutput);
 
-        ui->plainTextEdit->setPlainText(myOutput);
         ui->prgBar->setValue(myCurrentHour);
     }
 }
@@ -182,63 +180,62 @@ void MainWindow::on_pushRunAllPeriod_clicked()
     if (Initialized)
         ui->prgBar->setMaximum(myHourFin);
     else
-        ui->plainTextEdit->setPlainText("Initialization failed");
-
-    if (Initialized)
     {
+        ui->labelInfo->setText("Initialization failed");
+        return;
+    }
+
+    getHourlyOutputAllPeriod(1, getNodesNumber(), myOutput, myHeatOutput);
+
+    outPlot->setSamples(myHeatOutput->profileOutput[0].temperature);
+
+    double myPIniHour, myPHours;
+    double myT, myRH, myWS, myGR, myNR, myP;
+
+    myPIniHour = ui->lineEditPrecStart->text().toInt();
+    myPHours = ui->lineEditPrecHours->text().toInt();
+    myGR = NODATA;
+    myNR = NODATA;
+
+    do
+    {
+        setHour(++myCurrentHour);
+
+        qApp->processEvents();
+
+        if (useInputData)
+        {
+            myT = myTempInput[myCurrentHour-1] + 273.16;
+            myP = myPrecInput[myCurrentHour-1];
+            myRH = myRHInput[myCurrentHour-1];
+            myWS = myWSInput[myCurrentHour-1];
+            myNR = myNetRadInput[myCurrentHour-1];
+        }
+        else
+        {
+            myT = ui->lineEditAtmT->text().toDouble() + 273.16;
+            myRH = ui->lineEditAtmRH->text().toDouble();
+            myWS = ui->lineEditAtmWS->text().toDouble();
+            myGR = ui->lineEditAtmGR->text().toDouble();
+
+            myNR = 0.;
+
+            if ((myCurrentHour >= myPIniHour) && (myCurrentHour < myPIniHour + myPHours))
+                myP = ui->lineEditPrecHourlyAmount->text().toDouble();
+            else
+                myP = 0.;
+        }
+
+        runTestHeat(myT, myRH, myWS, myNR, myP);
+
         getHourlyOutputAllPeriod(1, getNodesNumber(), myOutput, myHeatOutput);
 
-        outPlot->setSamples(myHeatOutput->profileOutput[0].temperature);
+        outPlot->setSamples(myHeatOutput->profileOutput[myCurrentHour].temperature);
 
-        double myPIniHour, myPHours;
-        double myT, myRH, myWS, myGR, myNR, myP;
+        ui->prgBar->setValue(myCurrentHour);
 
-        myPIniHour = ui->lineEditPrecStart->text().toInt();
-        myPHours = ui->lineEditPrecHours->text().toInt();
-        myGR = NODATA;
-        myNR = NODATA;
+    } while (myCurrentHour < myHourFin);
 
-        do
-        {
-            setHour(++myCurrentHour);
-
-            qApp->processEvents();
-
-            if (useInputData)
-            {
-                myT = myTempInput[myCurrentHour-1] + 273.16;
-                myP = myPrecInput[myCurrentHour-1];
-                myRH = myRHInput[myCurrentHour-1];
-                myWS = myWSInput[myCurrentHour-1];
-                myNR = myNetRadInput[myCurrentHour-1];
-            }
-            else
-            {
-                myT = ui->lineEditAtmT->text().toDouble() + 273.16;
-                myRH = ui->lineEditAtmRH->text().toDouble();
-                myWS = ui->lineEditAtmWS->text().toDouble();
-                myGR = ui->lineEditAtmGR->text().toDouble();
-
-                myNR = 0.;
-
-                if ((myCurrentHour >= myPIniHour) && (myCurrentHour < myPIniHour + myPHours))
-                    myP = ui->lineEditPrecHourlyAmount->text().toDouble();
-                else
-                    myP = 0.;
-            }
-
-            runTestHeat(myT, myRH, myWS, myNR, myP);
-
-            getHourlyOutputAllPeriod(1, getNodesNumber(), myOutput, myHeatOutput);
-
-            outPlot->setSamples(myHeatOutput->profileOutput[myCurrentHour].temperature);
-
-            ui->prgBar->setValue(myCurrentHour);
-
-        } while (myCurrentHour < myHourFin);
-
-        ui->plainTextEdit->setPlainText(myOutput);
-    }
 }
 
 
