@@ -16,7 +16,6 @@
 #include "ui_mainwindow.h"
 #include "Position.h"
 #include "formSingleValue.h"
-#include "formDownload.h"
 #include "dbMeteoPoints.h"
 #include "dbArkimet.h"
 #include "download.h"
@@ -191,27 +190,21 @@ void MainWindow::on_actionArkimet_triggered()
 
                 QApplication::setOverrideCursor(Qt::WaitCursor);
 
-                FormDownload downloadWindow;
-                downloadWindow.setModal(true);
-                downloadWindow.show();
-                QMessageBox *msgBox = new QMessageBox(this);
 
                 if (myDownload->getPointProperties(datasets))
                 {
-                    downloadWindow.close();
                     QApplication::restoreOverrideCursor();
 
                     myProject.dbMeteoPoints = new DbMeteoPoints(dbName);
                     myProject.meteoPoints = myProject.dbMeteoPoints->getPropertiesFromDb();
 
-                    delete msgBox;
                     displayMeteoPoints();
                 }
                 else
                 {
-                    downloadWindow.close();
                     QApplication::restoreOverrideCursor();
 
+                    QMessageBox *msgBox = new QMessageBox(this);
                     msgBox->setText("Download Error");
                     msgBox->exec();
                     delete msgBox;
@@ -614,21 +607,15 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
             {
 
                 QApplication::setOverrideCursor(Qt::WaitCursor);
-                FormDownload downloadWindow;
-                downloadWindow.setModal(true);
-                downloadWindow.show();
 
                 QMessageBox *msgBox = new QMessageBox(this);
                 if (myProject.downloadArkimetHourlyVar(var))
                 {
-                    downloadWindow.close();
                     QApplication::restoreOverrideCursor();
                     msgBox->setText("Hourly Download Completed");
-
                 }
                 else
                 {
-                    downloadWindow.close();
                     QApplication::restoreOverrideCursor();
                     msgBox->setText("Hourly Download Error");
                 }

@@ -11,12 +11,12 @@ TEMPLATE = app
 
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../MapGraphics ../meteo ../dbMeteoPoints
 
-LIBS += -L../dbMeteoPoints/release -ldbMeteoPoints
-LIBS += -L../meteo/release -lmeteo
-LIBS += -L../gis/release -lgis
-LIBS += -L../mathFunctions/release -lmathFunctions
-LIBS += -L../crit3dDate/release -lcrit3dDate
-LIBS += -L../MapGraphics/release -lMapGraphics
+LIBS += -L../dbMeteoPoints/debug -ldbMeteoPoints
+LIBS += -L../meteo/debug -lmeteo
+LIBS += -L../gis/debug -lgis
+LIBS += -L../mathFunctions/debug -lmathFunctions
+LIBS += -L../crit3dDate/debug -lcrit3dDate
+LIBS += -L../MapGraphics/debug -lMapGraphics
 
 
 SOURCES += main.cpp\
@@ -26,7 +26,6 @@ SOURCES += main.cpp\
     formSingleValue.cpp \
     project.cpp \
     stationMarker.cpp \
-    formDownload.cpp \
     rubberBand.cpp
 
 HEADERS  += mainwindow.h \
@@ -36,11 +35,9 @@ HEADERS  += mainwindow.h \
     project.h \
     guiConfiguration.h \
     stationMarker.h \
-    formDownload.h \
     rubberBand.h
 
 FORMS    += mainwindow.ui \
-    formSingleValue.ui \
-    formDownload.ui
+    formSingleValue.ui
 
 DISTFILES +=
