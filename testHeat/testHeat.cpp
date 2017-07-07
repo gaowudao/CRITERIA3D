@@ -381,21 +381,20 @@ void setSinkSources(double myHourlyPrec)
 }
 
 
-void emptyOutput()
+void heat_output::clean()
 {
-    output.errorOutput.clear();
-    output.landSurfaceOutput.clear();
-    output.profileOutput.clear();
+    nrValues = 0;
+    nrLayers = 0;
+
+    errorOutput.clear();
+    landSurfaceOutput.clear();
+    profileOutput.clear();
 }
 
 heat_output::heat_output()
 {
     nrValues = 0;
     nrLayers = 0;
-
-    this->errorOutput.clear();
-    this->landSurfaceOutput.clear();
-    this->profileOutput.clear();
 }
 void getHourlyOutputAllPeriod(long firstIndex, long lastIndex, heat_output* output)
 {

@@ -48,6 +48,8 @@ public:
     int nrValues;
     int nrLayers;
 
+    void clean();
+
     QVector<landSurfaceStatus> landSurfaceOutput;
     QVector<profileStatus> profileOutput;
     QVector<heatErrors> errorOutput;

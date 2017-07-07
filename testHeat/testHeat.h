@@ -56,5 +56,4 @@ bool runTestHeat(double myHourlyTemperature,  double myHourlyRelativeHumidity,
                  double myHourlyWindSpeed, double myHourlyNetIrradiance,
                  double myHourlyPrec);
 
-void emptyOutput();
 

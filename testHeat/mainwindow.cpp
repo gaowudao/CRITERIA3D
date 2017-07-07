@@ -31,7 +31,7 @@ bool meteoDataLoaded = false;
 bool soilDataLoaded = false;
 
 QString myTextOutput("");
-
+heat_output myHeatOutput;
 Qsoil *myInputSoils = NULL;
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -43,13 +43,11 @@ MainWindow::MainWindow(QWidget *parent) :
     outPlot = new Plot( this );
     ui->layoutPlot->addWidget(outPlot);
 
-    QListWidgetItem * itemSoilT = new QListWidgetItem();
-    itemSoilT->setText("soil temperature");
-    ui->listWidget->addItem(itemSoilT);
+    ui->listWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->listWidget->addItem("soil temperature");
+    ui->listWidget->addItem("soil water content");
 
-    QListWidgetItem * itemSoilWC = new QListWidgetItem;
-    itemSoilWC->setText("soil water content");
-    ui->listWidget->addItem(itemSoilWC);
+    connect(ui->listWidget, SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(itemClickedSlot(QListWidgetItem *)));
 
 }
 
@@ -180,13 +178,12 @@ void MainWindow::on_pushRunNextHour_clicked()
 
 void MainWindow::on_pushRunAllPeriod_clicked()
 {
-    emptyOutput();
-    heat_output* myHeatOutput = new heat_output();
+    myHeatOutput.clean();
 
     initializeModel();
 
     long nodesNr = getNodesNumber();
-    myHeatOutput->nrLayers = nodesNr;
+    myHeatOutput.nrLayers = nodesNr;
 
     if (Initialized)
         ui->prgBar->setMaximum(myHourFin);
@@ -196,7 +193,7 @@ void MainWindow::on_pushRunAllPeriod_clicked()
         return;
     }
 
-    getHourlyOutputAllPeriod(1, nodesNr, myHeatOutput);
+    getHourlyOutputAllPeriod(1, nodesNr, &myHeatOutput);
 
     double myPIniHour, myPHours;
     double myT, myRH, myWS, myGR, myNR, myP;
@@ -237,15 +234,16 @@ void MainWindow::on_pushRunAllPeriod_clicked()
 
         runTestHeat(myT, myRH, myWS, myNR, myP);
 
-        getHourlyOutputAllPeriod(1, getNodesNumber(), myHeatOutput);
+        getHourlyOutputAllPeriod(1, getNodesNumber(), &myHeatOutput);
 
         ui->prgBar->setValue(myCurrentHour);
 
     } while (myCurrentHour < myHourFin);
 
-    myTextOutput = myHeatOutput->getTextOutput();
+    myTextOutput = myHeatOutput.getTextOutput();
 
-    outPlot->drawProfile(outputType::soilTemperature, myHeatOutput);
+    outPlot->drawProfile(outputType::soilTemperature, &myHeatOutput);
+    ui->listWidget->item(outputType::soilTemperature)->setSelected(true);
 }
 
 
@@ -372,4 +370,10 @@ void MainWindow::on_pushCopyOutput_clicked()
 {
     QClipboard *myClip = QApplication::clipboard();
     myClip->setText(myTextOutput);
+}
+
+void MainWindow::on_listWidget_itemClicked(QListWidgetItem * selItem)
+{
+    outputType myType = (outputType)ui->listWidget->row(selItem);
+    outPlot->drawProfile(myType, &myHeatOutput);
 }

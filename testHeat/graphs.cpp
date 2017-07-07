@@ -9,7 +9,7 @@
 #include <qwt_plot_grid.h>
 #include <qwt_symbol.h>
 #include <qwt_legend.h>
-
+#include <qwt_plot_dict.h>
 
 class DistancePicker: public QwtPlotPicker
 {
@@ -78,20 +78,25 @@ void Plot::addCurve(QString myTitle, QwtPlotCurve::CurveStyle myStyle, QwtSymbol
 QVector<QPointF> getProfileSeries(heat_output* myOut, outputType myVar, int layerIndex)
 {
     QVector<QPointF> mySeries;
+    QPointF myPoint;
 
     switch (myVar)
     {
         case outputType::soilTemperature :
             for (int i=0; i<myOut->nrValues; i++)
             {
-                mySeries.push_back(myOut->profileOutput[i].temperature[layerIndex]);
+                myPoint.setX(i);
+                myPoint.setY(myOut->profileOutput[i].temperature[layerIndex].y());
+                mySeries.push_back(myPoint);
             }
         break;
 
         case outputType::soilWater :
             for (int i=0; i<myOut->nrValues; i++)
             {
-                mySeries.push_back(myOut->profileOutput[i].waterContent[layerIndex]);
+                myPoint.setX(i);
+                myPoint.setY(myOut->profileOutput[i].waterContent[layerIndex].y());
+                mySeries.push_back(myPoint);
             }
         break;
     }
@@ -101,27 +106,31 @@ QVector<QPointF> getProfileSeries(heat_output* myOut, outputType myVar, int laye
 
 void Plot::drawProfile(outputType graphType, heat_output* myOut)
 {
+    detachItems(QwtPlotItem::Rtti_PlotCurve, true);
+
     QVector<QPointF> mySeries;
 
     switch (graphType)
     {
         case outputType::soilTemperature :
+            for (int z=0; z<myOut->nrLayers; z++)
+            {
+                mySeries = getProfileSeries(myOut, graphType, z);
+                addCurve("soil temperature", QwtPlotCurve::Lines, NULL, mySeries);
+            }
+            break;
 
-        for (int z=0; z<myOut->nrLayers; z++)
-        {
-            mySeries = getProfileSeries(myOut, graphType, z);
-            addCurve("soil temperature", QwtPlotCurve::Lines, NULL, mySeries);
-        }
-        break;
-
-        for (int z=0; z<myOut->nrLayers; z++)
-        {
-            mySeries = getProfileSeries(myOut, graphType, z);
-            addCurve("soil water content", QwtPlotCurve::Lines, NULL, mySeries);
-        }
-        break;
+        case outputType::soilWater :
+            for (int z=0; z<myOut->nrLayers; z++)
+            {
+                mySeries = getProfileSeries(myOut, graphType, z);
+                addCurve("soil water content", QwtPlotCurve::Lines, NULL, mySeries);
+            }
+            break;
 
     }
+
+    replot();
 }
 
 

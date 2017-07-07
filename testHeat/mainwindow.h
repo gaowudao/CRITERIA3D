@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QListWidgetItem>
 
 class Plot;
 
@@ -30,6 +31,8 @@ private slots:
     bool initializeModel();
 
     void on_pushCopyOutput_clicked();
+
+    void on_listWidget_itemClicked(QListWidgetItem *selItem);
 
 private:
     Ui::MainWindow *ui;
