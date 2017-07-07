@@ -117,6 +117,7 @@ public:
     QPushButton *pushRunAllPeriod;
     QProgressBar *prgBar;
     QLabel *labelInfo;
+    QPushButton *pushCopyOutput;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -138,7 +139,7 @@ public:
         layoutPlot->setContentsMargins(0, 0, 0, 0);
         listWidget = new QListWidget(centralWidget);
         listWidget->setObjectName(QStringLiteral("listWidget"));
-        listWidget->setGeometry(QRect(10, 330, 401, 171));
+        listWidget->setGeometry(QRect(10, 330, 256, 161));
         tabWidget = new QTabWidget(centralWidget);
         tabWidget->setObjectName(QStringLiteral("tabWidget"));
         tabWidget->setGeometry(QRect(10, 10, 401, 311));
@@ -372,9 +373,11 @@ public:
         lineEditSimStop->setGeometry(QRect(70, 40, 31, 20));
         pushInitialize = new QPushButton(tab_5);
         pushInitialize->setObjectName(QStringLiteral("pushInitialize"));
+        pushInitialize->setEnabled(false);
         pushInitialize->setGeometry(QRect(150, 120, 81, 23));
         pushRunNextHour = new QPushButton(tab_5);
         pushRunNextHour->setObjectName(QStringLiteral("pushRunNextHour"));
+        pushRunNextHour->setEnabled(false);
         pushRunNextHour->setGeometry(QRect(150, 150, 81, 23));
         pushRunAllPeriod = new QPushButton(tab_5);
         pushRunAllPeriod->setObjectName(QStringLiteral("pushRunAllPeriod"));
@@ -391,6 +394,12 @@ public:
         font.setBold(true);
         font.setWeight(75);
         labelInfo->setFont(font);
+        pushCopyOutput = new QPushButton(tab_5);
+        pushCopyOutput->setObjectName(QStringLiteral("pushCopyOutput"));
+        pushCopyOutput->setGeometry(QRect(280, 40, 91, 51));
+        pushCopyOutput->setAcceptDrops(false);
+        pushCopyOutput->setAutoFillBackground(false);
+        pushCopyOutput->setAutoDefault(false);
         tabWidget->addTab(tab_5, QString());
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
@@ -491,6 +500,8 @@ public:
         pushRunNextHour->setText(QApplication::translate("MainWindow", "Run next hour", 0));
         pushRunAllPeriod->setText(QApplication::translate("MainWindow", "Run all period", 0));
         labelInfo->setText(QString());
+        pushCopyOutput->setText(QApplication::translate("MainWindow", "copy output \n"
+"to clipboard", 0));
         tabWidget->setTabText(tabWidget->indexOf(tab_5), QApplication::translate("MainWindow", "run model", 0));
     } // retranslateUi
 

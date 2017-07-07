@@ -148,146 +148,6 @@ void getHourlyOutput(long myHour, long firstIndex, long lastIndex, QString& mySt
 }
 
 
-void emptyOutput()
-{
-    output.errorOutput.clear();
-    output.landSurfaceOutput.clear();
-    output.profileOutput.clear();
-}
-
-heat_output::heat_output()
-{
-    nrValues = 0;
-    nrLayers = 0;
-
-    this->errorOutput.clear();
-    this->landSurfaceOutput.clear();
-    this->profileOutput.clear();
-}
-void getHourlyOutputAllPeriod(long firstIndex, long lastIndex, QString& myString, heat_output* output)
-{
-    long myIndex;
-    double myValue;
-    QPointF myPoint;
-    profileStatus myProfile;
-    landSurfaceStatus mySurfaceOutput;
-    heatErrors myErrors;
-
-    output->nrValues++;
-    output->profileOutput.append(myProfile);
-    output->landSurfaceOutput.append(mySurfaceOutput);
-    output->errorOutput.append(myErrors);
-
-    for (myIndex = firstIndex ; myIndex <= lastIndex ; myIndex++ )
-    {
-        myPoint.setX(myIndex);
-
-        myValue = soilFluxes3D::getTemperature(myIndex) - 273.16;
-        myPoint.setY(myValue);
-        output->profileOutput[output->nrValues-1].temperature.append(myPoint);
-        myString.append(QString::number(myValue,'f',4));
-        myString.append(QString(", "));
-
-        myValue = soilFluxes3D::getWaterContent(myIndex);
-        myPoint.setY(myValue);
-        output->profileOutput[output->nrValues-1].waterContent.append(myPoint);
-        myString.append(QString::number(myValue,'f',4));
-        myString.append(QString(", "));
-
-        myValue = soilFluxes3D::getHeatFlux(myIndex, UP, HEATFLUX_DIFFUSIVE);
-        myValue += soilFluxes3D::getHeatFlux(myIndex, UP, HEATFLUX_LATENT_ISOTHERMAL);
-        myValue += soilFluxes3D::getHeatFlux(myIndex, UP, HEATFLUX_LATENT_THERMAL);
-        myValue += soilFluxes3D::getHeatFlux(myIndex, UP, HEATFLUX_ADVECTIVE);
-        myPoint.setY(myValue);
-        output->profileOutput[output->nrValues-1].totalHeatFlux.append(myPoint);
-        myString.append(QString::number(myValue,'f',4));
-        myString.append(QString(", "));
-
-        myValue = soilFluxes3D::getHeatFlux(myIndex, UP, HEATFLUX_LATENT_ISOTHERMAL);
-        myPoint.setY(myValue);
-        output->profileOutput[output->nrValues-1].isothermalLatentHeatFlux.append(myPoint);
-        myString.append(QString::number(myValue,'f',4));
-        myString.append(QString(", "));
-
-        myValue = soilFluxes3D::getHeatFlux(myIndex, UP, HEATFLUX_LATENT_THERMAL);
-        myPoint.setY(myValue);
-        output->profileOutput[output->nrValues-1].thermalLatentHeatFlux.append(myPoint);
-
-        myValue = soilFluxes3D::getHeatFlux(myIndex, UP, HEATFLUX_DIFFUSIVE);
-        myPoint.setY(myValue);
-        output->profileOutput[output->nrValues-1].diffusiveHeatFlux.append(myPoint);
-
-        myValue = soilFluxes3D::getHeatFlux(myIndex, UP, HEATFLUX_ADVECTIVE);
-        myPoint.setY(myValue);
-        output->profileOutput[output->nrValues-1].advectiveheatFlux.append(myPoint);
-    }
-
-    myPoint.setX(output->landSurfaceOutput.size() + 1);
-
-    // net radiation (positive downward)
-    myValue = soilFluxes3D::getBoundaryRadiativeFlux(1);
-    myPoint.setY(myValue);
-    output->landSurfaceOutput[output->nrValues-1].netRadiation = myPoint;
-    myString.append(QString::number(myValue,'f',2));
-    myString.append(QString(", "));
-
-    // sensible heat (positive upward)
-    myValue = soilFluxes3D::getBoundarySensibleFlux(1);
-    myPoint.setY(myValue);
-    output->landSurfaceOutput[output->nrValues-1].sensibleHeat = myPoint;
-    myString.append(QString::number(myValue,'f',2));
-    myString.append(QString(", "));
-
-    myString.append(QString::number(soilFluxes3D::getBoundaryAdvectiveFlux(1),'f',2));
-    myString.append(QString(", "));
-
-    // latent heat (positive upward)
-    myValue = soilFluxes3D::getBoundaryLatentFlux(1);
-    myPoint.setY(myValue);
-    output->landSurfaceOutput[output->nrValues-1].latentHeat = myPoint;
-    myString.append(QString::number(myValue,'f',2));
-    myString.append(QString(", "));
-
-    //evaporation
-    myValue = -myValue * 1000 * 3600 * mySurface;
-    myString.append(QString::number(myValue,'f',6));
-    myString.append(QString(", "));
-
-    //aerodynamic resistance
-    myValue = soilFluxes3D::getBoundaryAerodynamicConductance(1);
-    myPoint.setY(myValue);
-    output->landSurfaceOutput[output->nrValues-1].aeroConductance = myPoint;
-    myString.append(QString::number(1./myValue,'f',6));
-    myString.append(QString(", "));
-
-    //soil surface resistance
-    myValue = soilFluxes3D::getBoundarySoilConductance(1);
-    myPoint.setY(myValue);
-    output->landSurfaceOutput[output->nrValues-1].soilConductance = myPoint;
-    myString.append(QString::number(1./myValue,'f',6));
-    myString.append(QString(", "));
-
-    //errors
-    myValue = soilFluxes3D::GetHeatMBR();
-    myPoint.setY(myValue);
-    output->errorOutput[output->nrValues-1].heatMBR = myPoint;
-    myString.append(QString::number(myValue,'f',12));
-    myString.append(QString(", "));
-
-    myValue = soilFluxes3D::GetHeatMBE();
-    myPoint.setY(myValue);
-    output->errorOutput[output->nrValues-1].heatMBE = myPoint;
-    myString.append(QString::number(myValue,'f',12));
-    myString.append(QString(", "));
-
-    myValue = soilFluxes3D::getWaterMBR();
-    myPoint.setY(myValue);
-    output->errorOutput[output->nrValues-1].waterMBR = myPoint;
-    myString.append(QString::number(myValue,'f',12));
-    myString.append(QString("\n"));
-
-}
-
 long getNodesNumber()
 {   return (NodesNumber - 1);}
 
@@ -519,6 +379,192 @@ void setSinkSources(double myHourlyPrec)
         }
     }
 }
+
+
+void emptyOutput()
+{
+    output.errorOutput.clear();
+    output.landSurfaceOutput.clear();
+    output.profileOutput.clear();
+}
+
+heat_output::heat_output()
+{
+    nrValues = 0;
+    nrLayers = 0;
+
+    this->errorOutput.clear();
+    this->landSurfaceOutput.clear();
+    this->profileOutput.clear();
+}
+void getHourlyOutputAllPeriod(long firstIndex, long lastIndex, heat_output* output)
+{
+    long myIndex;
+    double myValue;
+    QPointF myPoint;
+    profileStatus myProfile;
+    landSurfaceStatus mySurfaceOutput;
+    heatErrors myErrors;
+
+    output->nrValues++;
+    output->profileOutput.push_back(myProfile);
+    output->landSurfaceOutput.push_back(mySurfaceOutput);
+    output->errorOutput.push_back(myErrors);
+
+    for (myIndex = firstIndex ; myIndex <= lastIndex ; myIndex++ )
+    {
+        myPoint.setX(myIndex);
+
+        myValue = soilFluxes3D::getTemperature(myIndex) - 273.16;
+        myPoint.setY(myValue);
+        output->profileOutput[output->nrValues-1].temperature.push_back(myPoint);
+
+        myValue = soilFluxes3D::getWaterContent(myIndex);
+        myPoint.setY(myValue);
+        output->profileOutput[output->nrValues-1].waterContent.push_back(myPoint);
+
+        myValue = soilFluxes3D::getHeatFlux(myIndex, UP, HEATFLUX_DIFFUSIVE);
+        myValue += soilFluxes3D::getHeatFlux(myIndex, UP, HEATFLUX_LATENT_ISOTHERMAL);
+        myValue += soilFluxes3D::getHeatFlux(myIndex, UP, HEATFLUX_LATENT_THERMAL);
+        myValue += soilFluxes3D::getHeatFlux(myIndex, UP, HEATFLUX_ADVECTIVE);
+        myPoint.setY(myValue);
+        output->profileOutput[output->nrValues-1].totalHeatFlux.push_back(myPoint);
+
+        myValue = soilFluxes3D::getHeatFlux(myIndex, UP, HEATFLUX_LATENT_ISOTHERMAL);
+        myPoint.setY(myValue);
+        output->profileOutput[output->nrValues-1].isothermalLatentHeatFlux.push_back(myPoint);
+
+        myValue = soilFluxes3D::getHeatFlux(myIndex, UP, HEATFLUX_LATENT_THERMAL);
+        myPoint.setY(myValue);
+        output->profileOutput[output->nrValues-1].thermalLatentHeatFlux.push_back(myPoint);
+
+        myValue = soilFluxes3D::getHeatFlux(myIndex, UP, HEATFLUX_DIFFUSIVE);
+        myPoint.setY(myValue);
+        output->profileOutput[output->nrValues-1].diffusiveHeatFlux.push_back(myPoint);
+
+        myValue = soilFluxes3D::getHeatFlux(myIndex, UP, HEATFLUX_ADVECTIVE);
+        myPoint.setY(myValue);
+        output->profileOutput[output->nrValues-1].advectiveheatFlux.push_back(myPoint);
+    }
+
+    myPoint.setX(output->landSurfaceOutput.size() + 1);
+
+    // net radiation (positive downward)
+    myValue = soilFluxes3D::getBoundaryRadiativeFlux(1);
+    myPoint.setY(myValue);
+    output->landSurfaceOutput[output->nrValues-1].netRadiation = myPoint;
+
+    // sensible heat (positive upward)
+    myValue = soilFluxes3D::getBoundarySensibleFlux(1);
+    myPoint.setY(myValue);
+    output->landSurfaceOutput[output->nrValues-1].sensibleHeat = myPoint;
+
+    // latent heat (positive upward)
+    myValue = soilFluxes3D::getBoundaryLatentFlux(1);
+    myPoint.setY(myValue);
+    output->landSurfaceOutput[output->nrValues-1].latentHeat = myPoint;
+
+    //aerodynamic resistance
+    myValue = soilFluxes3D::getBoundaryAerodynamicConductance(1);
+    myPoint.setY(myValue);
+    output->landSurfaceOutput[output->nrValues-1].aeroConductance = myPoint;
+
+    //soil surface resistance
+    myValue = soilFluxes3D::getBoundarySoilConductance(1);
+    myPoint.setY(myValue);
+    output->landSurfaceOutput[output->nrValues-1].soilConductance = myPoint;
+
+    //errors
+    myValue = soilFluxes3D::GetHeatMBR();
+    myPoint.setY(myValue);
+    output->errorOutput[output->nrValues-1].heatMBR = myPoint;
+
+    myValue = soilFluxes3D::GetHeatMBE();
+    myPoint.setY(myValue);
+    output->errorOutput[output->nrValues-1].heatMBE = myPoint;
+
+    myValue = soilFluxes3D::getWaterMBR();
+    myPoint.setY(myValue);
+    output->errorOutput[output->nrValues-1].waterMBR = myPoint;
+}
+
+QString heat_output::getTextOutput()
+{
+    QString myString = "";
+    float myValue;
+
+    for (int i=0; i<nrValues; i++)
+    {
+        for (int j=0; j<nrLayers; j++)
+        {
+            myValue = profileOutput[i].temperature[j].y();
+            myString.append(QString::number(myValue,'f',4));
+            myString.append(QString(", "));
+        }
+
+        for (int j=0; j<nrLayers; j++)
+        {
+            myValue = profileOutput[i].waterContent[j].y();
+            myString.append(QString::number(myValue,'f',4));
+            myString.append(QString(", "));
+        }
+
+        for (int j=0; j<nrLayers; j++)
+        {
+            myValue = profileOutput[i].totalHeatFlux[j].y();
+            myString.append(QString::number(myValue,'f',4));
+            myString.append(QString(", "));
+        }
+
+        for (int j=0; j<nrLayers; j++)
+        {
+            myValue = profileOutput[i].isothermalLatentHeatFlux[j].y();
+            myString.append(QString::number(myValue,'f',4));
+            myString.append(QString(", "));
+        }
+
+        myValue = landSurfaceOutput[i].netRadiation.y();
+        myString.append(QString::number(myValue,'f',2));
+        myString.append(QString(", "));
+
+        myValue = landSurfaceOutput[i].sensibleHeat.y();
+        myString.append(QString::number(myValue,'f',2));
+        myString.append(QString(", "));
+
+        myValue = landSurfaceOutput[i].latentHeat.y();
+        myString.append(QString::number(myValue,'f',2));
+        myString.append(QString(", "));
+
+        //evaporation
+        myValue = -myValue * 1000 * 3600 * mySurface;
+        myString.append(QString::number(myValue,'f',6));
+        myString.append(QString(", "));
+
+        myValue = landSurfaceOutput[i].aeroConductance.y();
+        myString.append(QString::number(1./myValue,'f',6));
+        myString.append(QString(", "));
+
+        myValue = landSurfaceOutput[i].soilConductance.y();
+        myString.append(QString::number(1./myValue,'f',6));
+        myString.append(QString(", "));
+
+        myValue = errorOutput[i].heatMBR.y();
+        myString.append(QString::number(myValue,'f',12));
+        myString.append(QString(", "));
+
+        myValue = errorOutput[i].heatMBE.y();
+        myString.append(QString::number(myValue,'f',12));
+        myString.append(QString(", "));
+
+        myValue = errorOutput[i].waterMBR.y();
+        myString.append(QString::number(myValue,'f',12));
+        myString.append(QString("\n"));
+
+    }
+
+    return myString;
+}
+
 
 bool runTestHeat(double myHourlyTemperature,  double myHourlyRelativeHumidity,
                  double myHourlyWindSpeed, double myHourlyNetIrradiance,

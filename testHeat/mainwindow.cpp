@@ -6,6 +6,9 @@
 #include <QFile>
 #include <QTextStream>
 #include <QApplication>
+#include <qclipboard.h>
+
+#include "qwt_plot_curve.h"
 
 #include "graphs.h"
 
@@ -27,7 +30,7 @@ long myInputNumber;
 bool meteoDataLoaded = false;
 bool soilDataLoaded = false;
 
-QString myOutput("");
+QString myTextOutput("");
 
 Qsoil *myInputSoils = NULL;
 
@@ -39,6 +42,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
     outPlot = new Plot( this );
     ui->layoutPlot->addWidget(outPlot);
+
+    QListWidgetItem * itemSoilT = new QListWidgetItem();
+    itemSoilT->setText("soil temperature");
+    ui->listWidget->addItem(itemSoilT);
+
+    QListWidgetItem * itemSoilWC = new QListWidgetItem;
+    itemSoilWC->setText("soil water content");
+    ui->listWidget->addItem(itemSoilWC);
+
 }
 
 MainWindow::~MainWindow()
@@ -109,9 +121,7 @@ void MainWindow::on_pushInitialize_clicked()
 {
     Initialized = initializeModel();
 
-    myOutput = "";
-
-    getHourlyOutput(myHourIni, 0, getNodesNumber(), myOutput);
+    //getHourlyOutput(myHourIni, 0, getNodesNumber(), myOutput);
 
     if (Initialized)
     {
@@ -160,22 +170,23 @@ void MainWindow::on_pushRunNextHour_clicked()
 
         runTestHeat(myT, myRH, myWS, myNR, myP);
 
-        getHourlyOutput(myCurrentHour, 0, getNodesNumber(), myOutput);
+        //getHourlyOutput(myCurrentHour, 0, getNodesNumber(), myOutput);
 
         ui->prgBar->setValue(myCurrentHour);
     }
 }
 
+
+
 void MainWindow::on_pushRunAllPeriod_clicked()
 {
-
-    myOutput = "";
     emptyOutput();
     heat_output* myHeatOutput = new heat_output();
 
-    myHeatOutput->nrLayers = ceil(ui->lineEditDepth->text().toDouble() / ui->lineEditMinThickness->text().toDouble()) + 1;
-
     initializeModel();
+
+    long nodesNr = getNodesNumber();
+    myHeatOutput->nrLayers = nodesNr;
 
     if (Initialized)
         ui->prgBar->setMaximum(myHourFin);
@@ -185,9 +196,7 @@ void MainWindow::on_pushRunAllPeriod_clicked()
         return;
     }
 
-    getHourlyOutputAllPeriod(1, getNodesNumber(), myOutput, myHeatOutput);
-
-    outPlot->setSamples(myHeatOutput->profileOutput[0].temperature);
+    getHourlyOutputAllPeriod(1, nodesNr, myHeatOutput);
 
     double myPIniHour, myPHours;
     double myT, myRH, myWS, myGR, myNR, myP;
@@ -228,14 +237,15 @@ void MainWindow::on_pushRunAllPeriod_clicked()
 
         runTestHeat(myT, myRH, myWS, myNR, myP);
 
-        getHourlyOutputAllPeriod(1, getNodesNumber(), myOutput, myHeatOutput);
-
-        outPlot->setSamples(myHeatOutput->profileOutput[myCurrentHour].temperature);
+        getHourlyOutputAllPeriod(1, getNodesNumber(), myHeatOutput);
 
         ui->prgBar->setValue(myCurrentHour);
 
     } while (myCurrentHour < myHourFin);
 
+    myTextOutput = myHeatOutput->getTextOutput();
+
+    outPlot->drawProfile(outputType::soilTemperature, myHeatOutput);
 }
 
 
@@ -357,3 +367,9 @@ void MainWindow::on_chkBoxHeat_clicked()
 }
 
 
+
+void MainWindow::on_pushCopyOutput_clicked()
+{
+    QClipboard *myClip = QApplication::clipboard();
+    myClip->setText(myTextOutput);
+}

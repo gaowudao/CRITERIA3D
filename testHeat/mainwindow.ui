@@ -30,8 +30,8 @@
      <rect>
       <x>10</x>
       <y>330</y>
-      <width>401</width>
-      <height>171</height>
+      <width>256</width>
+      <height>161</height>
      </rect>
     </property>
    </widget>
@@ -978,6 +978,9 @@
       </widget>
      </widget>
      <widget class="QPushButton" name="pushInitialize">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>150</x>
@@ -991,6 +994,9 @@
       </property>
      </widget>
      <widget class="QPushButton" name="pushRunNextHour">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>150</x>
@@ -1047,6 +1053,29 @@
       </property>
       <property name="text">
        <string/>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushCopyOutput">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>40</y>
+        <width>91</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="acceptDrops">
+       <bool>false</bool>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="text">
+       <string>copy output 
+to clipboard</string>
+      </property>
+      <property name="autoDefault">
+       <bool>false</bool>
       </property>
      </widget>
     </widget>

@@ -4,45 +4,7 @@
 #include <qpoint.h>
 #include <qvector.h>
 #include <qdatetime.h>
-
-struct profileStatus{
-    QVector<QPointF> temperature;
-    QVector<QPointF> waterContent;
-    QVector<QPointF> totalHeatFlux;
-    QVector<QPointF> diffusiveHeatFlux;
-    QVector<QPointF> isothermalLatentHeatFlux;
-    QVector<QPointF> thermalLatentHeatFlux;
-    QVector<QPointF> advectiveheatFlux;
-};
-
-struct landSurfaceStatus{
-    QPointF sensibleHeat;
-    QPointF latentHeat;
-    QPointF netRadiation;
-    QPointF aeroConductance;
-    QPointF soilConductance;
-};
-
-struct heatErrors{
-    QDateTime myTime;
-    QPointF heatMBR;
-    QPointF heatMBE;
-    QPointF waterMBR;
-};
-
-class heat_output
-{
-public:
-
-    heat_output();
-
-    int nrValues;
-    int nrLayers;
-
-    QVector<landSurfaceStatus> landSurfaceOutput;
-    QVector<profileStatus> profileOutput;
-    QVector<heatErrors> errorOutput;
-};
+#include "graphs.h"
 
 struct Qsoil{
     double profSup;
@@ -85,7 +47,7 @@ void setProcesses(bool computeWaterProcess, bool computeHeatProcess, bool comput
 void setHour(long myHour);
 double getCurrentPrec(long myHour);
 void getHourlyOutput(long myHour, long firstIndex, long lastIndex, QString& myString);
-void getHourlyOutputAllPeriod(long firstIndex, long lastIndex, QString& myString, heat_output *output);
+void getHourlyOutputAllPeriod(long firstIndex, long lastIndex, heat_output *output);
 long getNodesNumber();
 void setSoilHorizonNumber(int myHorizonNumber);
 

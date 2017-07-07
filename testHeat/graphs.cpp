@@ -43,26 +43,13 @@ public:
 };
 
 Plot::Plot( QWidget *parent ):
-    QwtPlot( parent ),
-    d_curve( NULL )
+    QwtPlot( parent )
 {
     canvas()->setStyleSheet(
         "border: 1px solid Black;"
         "border-radius: 15px;"
         "background-color: white;"
     );
-
-    // attach curve
-    d_curve = new QwtPlotCurve( "test heat output" );
-    d_curve->setPen( QColor( "Purple" ) );
-
-    // when using QwtPlotCurve::ImageBuffer simple dots can be
-    // rendered in parallel on multicore systems.
-    d_curve->setRenderThreadCount( 0 ); // 0: use QThread::idealThreadCount()
-
-    d_curve->attach( this );
-
-    setSymbol( NULL );
 
     // panning with the left mouse button
     (void )new QwtPlotPanner( canvas() );
@@ -77,25 +64,65 @@ Plot::Plot( QWidget *parent ):
     picker->setRubberBandPen( QPen( Qt::blue ) );
 }
 
-void Plot::setSymbol( QwtSymbol *symbol )
+void Plot::addCurve(QString myTitle, QwtPlotCurve::CurveStyle myStyle, QwtSymbol* mySymbol, QVector<QPointF> &samples)
 {
-    d_curve->setSymbol( symbol );
+    QwtPlotCurve* myCurve = new QwtPlotCurve(myTitle);
 
-    if ( symbol == NULL )
+    myCurve->setPen( QColor( "Purple" ) );
+    myCurve->setStyle(myStyle);
+    myCurve->setSymbol(mySymbol);
+    myCurve->setSamples(samples);
+    myCurve->attach( this );
+}
+
+QVector<QPointF> getProfileSeries(heat_output* myOut, outputType myVar, int layerIndex)
+{
+    QVector<QPointF> mySeries;
+
+    switch (myVar)
     {
-        d_curve->setStyle( QwtPlotCurve::Lines );
+        case outputType::soilTemperature :
+            for (int i=0; i<myOut->nrValues; i++)
+            {
+                mySeries.push_back(myOut->profileOutput[i].temperature[layerIndex]);
+            }
+        break;
+
+        case outputType::soilWater :
+            for (int i=0; i<myOut->nrValues; i++)
+            {
+                mySeries.push_back(myOut->profileOutput[i].waterContent[layerIndex]);
+            }
+        break;
+    }
+
+    return mySeries;
+}
+
+void Plot::drawProfile(outputType graphType, heat_output* myOut)
+{
+    QVector<QPointF> mySeries;
+
+    switch (graphType)
+    {
+        case outputType::soilTemperature :
+
+        for (int z=0; z<myOut->nrLayers; z++)
+        {
+            mySeries = getProfileSeries(myOut, graphType, z);
+            addCurve("soil temperature", QwtPlotCurve::Lines, NULL, mySeries);
+        }
+        break;
+
+        for (int z=0; z<myOut->nrLayers; z++)
+        {
+            mySeries = getProfileSeries(myOut, graphType, z);
+            addCurve("soil water content", QwtPlotCurve::Lines, NULL, mySeries);
+        }
+        break;
+
     }
 }
-
-void Plot::setSamples( const QVector<QPointF> &samples )
-{
-    d_curve->setPen( Qt::black, 1);
-
-    d_curve->setSamples(samples );
-
-    replot();
-}
-
 
 
 

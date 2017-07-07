@@ -29,6 +29,8 @@ private slots:
 
     bool initializeModel();
 
+    void on_pushCopyOutput_clicked();
+
 private:
     Ui::MainWindow *ui;
 
