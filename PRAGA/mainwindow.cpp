@@ -64,15 +64,15 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
     {
         case praga  :
             ui->actionDownload_meteo_data->setVisible(true);
-            ui->actionArkimet->setVisible(true);
+            ui->actionMeteoPointsArkimet->setVisible(true);
             break;
         case criteria1D:
             ui->actionDownload_meteo_data->setVisible(false);
-            ui->actionArkimet->setVisible(false);
+            ui->actionMeteoPointsArkimet->setVisible(false);
             break;
         case criteria3D :
             ui->actionDownload_meteo_data->setVisible(false);
-            ui->actionArkimet->setVisible(false);
+            ui->actionMeteoPointsArkimet->setVisible(false);
             break;
     }
 
@@ -124,7 +124,7 @@ void MainWindow::on_actionLoadRaster_triggered()
 }
 
 
-void MainWindow::on_actionArkimet_triggered()
+void MainWindow::on_actionMeteoPointsArkimet_triggered()
 {
     resetMeteoPoints();
 
@@ -181,7 +181,7 @@ void MainWindow::on_actionArkimet_triggered()
             layout.addWidget(buttonBox);
             datasetDialog.setLayout(&layout);
 
-            QString datasetSelected = on_actionArkimet_Dataset(&datasetDialog);
+            QString datasetSelected = selectArkimetDataset(&datasetDialog);
 
             if (!datasetSelected.isEmpty())
             {
@@ -205,7 +205,7 @@ void MainWindow::on_actionArkimet_triggered()
                     QApplication::restoreOverrideCursor();
 
                     QMessageBox *msgBox = new QMessageBox(this);
-                    msgBox->setText("Download Error");
+                    msgBox->setText("Network Error");
                     msgBox->exec();
                     delete msgBox;
                 }
@@ -223,7 +223,7 @@ void MainWindow::on_actionArkimet_triggered()
 }
 
 
-QString MainWindow::on_actionArkimet_Dataset(QDialog* datasetDialog) {
+QString MainWindow::selectArkimetDataset(QDialog* datasetDialog) {
 
         datasetDialog->exec();
 
@@ -251,7 +251,7 @@ QString MainWindow::on_actionArkimet_Dataset(QDialog* datasetDialog) {
                 QMessageBox msgBox;
                 msgBox.setText("Select a dataset");
                 msgBox.exec();
-                return on_actionArkimet_Dataset(datasetDialog);
+                return selectArkimetDataset(datasetDialog);
             }
 
         }
@@ -288,7 +288,6 @@ void MainWindow::on_actionOpen_meteo_points_DB_triggered()
 
 void MainWindow::loadMeteoPointsData(DbMeteoPoints* myDbMeteo)
 {
-
     QDialog load;
     QVBoxLayout mainLayout;
     QHBoxLayout layoutTime;
@@ -401,8 +400,6 @@ void MainWindow::loadMeteoPointsData(DbMeteoPoints* myDbMeteo)
        }
     }
 
-    qDebug() << "firstD = " << firstD;
-    qDebug() << "lastD = " << lastD;
 }
 
 
@@ -628,7 +625,6 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
 }
 
 
-
 void MainWindow::slotClicked(const QDate& date)
 {
 
@@ -651,7 +647,6 @@ void MainWindow::slotClicked(const QDate& date)
     }
     initDate = true;
   }
-
 }
 
 
@@ -661,16 +656,14 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event){
     if (this->rasterObj != NULL)
         this->rasterObj->updateCenter();
 
-    gis::Crit3DGeoPoint pointSelected;;
+    gis::Crit3DGeoPoint pointSelected;
+
     if (myRubberBand != NULL && myRubberBand->isVisible())
     {
-
         QPointF lastCornerOffset = event->localPos();
         QPointF firstCornerOffset = myRubberBand->getFirstCorner();
         QPoint pixelTopLeft;
         QPoint pixelBottomRight;
-
-
 
         if (firstCornerOffset.y() > lastCornerOffset.y())
         {
@@ -686,7 +679,6 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event){
 
                 pixelTopLeft = QPoint(firstCornerOffset.toPoint().x(), lastCornerOffset.toPoint().y());
                 pixelBottomRight = QPoint(lastCornerOffset.toPoint().x(), firstCornerOffset.toPoint().y());
-
             }
         }
         else
@@ -696,7 +688,6 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event){
                 qDebug() << "top to left";
                 pixelTopLeft = QPoint(lastCornerOffset.toPoint().x(), firstCornerOffset.toPoint().y());
                 pixelBottomRight = QPoint(firstCornerOffset.toPoint().x(), lastCornerOffset.toPoint().y());
-
             }
             else
             {
@@ -728,8 +719,8 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event){
         }
         myRubberBand->hide();
     }
-
 }
+
 
 void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
 {
@@ -802,7 +793,7 @@ QPoint MainWindow::getMapPoint(QPoint* point) const
     QPoint mapPoint;
     int dx, dy;
     dx = this->ui->widgetMap->x() + 10;
-    dy = + this->ui->widgetMap->y() + this->ui->menuBar->height() + 10;
+    dy = + this->ui->widgetMap->y() + 10 + this->ui->menuBar->height();
     mapPoint.setX(point->x() - dx);
     mapPoint.setY(point->y() - dy);
     return mapPoint;
@@ -857,8 +848,6 @@ void MainWindow::on_actionSetUTMzone_triggered()
 
 void MainWindow::on_actionRectangle_Selection_triggered()
 {
-
-    qDebug() << "on_actionRectangle_Selection_triggered" ;
     if (myRubberBand != NULL)
         delete myRubberBand;
 
@@ -889,4 +878,55 @@ void MainWindow::resetMeteoPoints()
     }
     qDeleteAll(this->pointList.begin(), this->pointList.end());
     this->pointList.clear();
+}
+
+
+void MainWindow::on_actionChoose_variable_triggered()
+{
+    QDialog myDialog;
+    QVBoxLayout mainLayout;
+    QVBoxLayout layoutVariable;
+    QHBoxLayout layoutOk;
+
+    myDialog.setWindowTitle("Choose variable");
+    myDialog.setFixedWidth(300);
+
+    QRadioButton Tavg("Average temperature °C");
+    QRadioButton Tmin("Minimum temperature °C");
+    QRadioButton Tmax("Maximum temperature °C");
+    QRadioButton Prec("Precipitation mm");
+    QRadioButton RHavg("Average relative humidity %");
+    QRadioButton RHmin("Minimum relative humidity %");
+    QRadioButton RHmax("Maximum relative humidity %");
+    QRadioButton Rad("Solar radiation MJ m^-2");
+
+    layoutVariable.addWidget(&Tmin);
+    layoutVariable.addWidget(&Tavg);
+    layoutVariable.addWidget(&Tmax);
+    layoutVariable.addWidget(&Prec);
+    layoutVariable.addWidget(&RHmin);
+    layoutVariable.addWidget(&RHavg);
+    layoutVariable.addWidget(&RHmax);
+    layoutVariable.addWidget(&Rad);
+
+    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+
+    connect(&buttonBox, SIGNAL(accepted()), &myDialog, SLOT(accept()));
+    connect(&buttonBox, SIGNAL(rejected()), &myDialog, SLOT(reject()));
+
+    layoutOk.addWidget(&buttonBox);
+
+    mainLayout.addLayout(&layoutVariable);
+    mainLayout.addLayout(&layoutOk);
+    myDialog.setLayout(&mainLayout);
+    myDialog.exec();
+
+    if (myDialog.result() == QDialog::Accepted)
+    {
+       if (Tmin.isChecked())
+       {
+           QMessageBox::information(NULL, "Selected variable:", "Tmin");
+           return;
+       }
+    }
 }

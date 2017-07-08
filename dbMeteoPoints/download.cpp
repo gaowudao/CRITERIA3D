@@ -51,7 +51,7 @@ bool Download::getPointProperties(QStringList datasetList)
 
     if (reply->error() != QNetworkReply::NoError)
     {
-            qDebug( "Network Error" );
+            qDebug( "Network Error: " + reply->error());
             result = false;
     }
     else

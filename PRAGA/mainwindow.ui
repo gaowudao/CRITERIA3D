@@ -969,7 +969,7 @@
      <x>0</x>
      <y>0</y>
      <width>1368</width>
-     <height>30</height>
+     <height>26</height>
     </rect>
    </property>
    <property name="palette">
@@ -1396,22 +1396,26 @@
     </property>
     <widget class="QMenu" name="menu_New_meteo_points_DB">
      <property name="title">
-      <string>&amp;New meteo points DB</string>
+      <string>&amp;New DB meteo points</string>
      </property>
      <addaction name="separator"/>
-     <addaction name="actionArkimet"/>
-     <addaction name="actionCSV"/>
+     <addaction name="actionMeteoPointsArkimet"/>
+     <addaction name="actionMeteoPointsCSV"/>
      <addaction name="separator"/>
     </widget>
     <addaction name="actionLoadRaster"/>
-    <addaction name="actionOpen_meteo_points_DB"/>
+    <addaction name="separator"/>
     <addaction name="menu_New_meteo_points_DB"/>
+    <addaction name="actionOpen_meteo_points_DB"/>
+    <addaction name="separator"/>
     <addaction name="actionDownload_meteo_data"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuMap_server">
     <property name="title">
-     <string>Edit</string>
+     <string>Variable</string>
     </property>
+    <addaction name="actionChoose_variable"/>
    </widget>
    <widget class="QMenu" name="menuGIS_settings">
     <property name="title">
@@ -1450,7 +1454,7 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionLoadRaster">
    <property name="text">
-    <string>&amp;Load Raster</string>
+    <string>&amp;Load taster</string>
    </property>
   </action>
   <action name="actionSetUTMzone">
@@ -1485,7 +1489,7 @@
   </action>
   <action name="actionOpen_meteo_points_DB">
    <property name="text">
-    <string>&amp;Open meteo points DB</string>
+    <string>&amp;Open meteo points</string>
    </property>
   </action>
   <action name="actionDownload_meteo_data">
@@ -1493,12 +1497,12 @@
     <string>&amp;Download meteo data</string>
    </property>
   </action>
-  <action name="actionArkimet">
+  <action name="actionMeteoPointsArkimet">
    <property name="text">
     <string>from Arkimet</string>
    </property>
   </action>
-  <action name="actionCSV">
+  <action name="actionMeteoPointsCSV">
    <property name="text">
     <string>from CSV</string>
    </property>
@@ -1506,6 +1510,11 @@
   <action name="actionRectangle_Selection">
    <property name="text">
     <string>Rectangle Selection</string>
+   </property>
+  </action>
+  <action name="actionChoose_variable">
+   <property name="text">
+    <string>Choose variable</string>
    </property>
   </action>
  </widget>

@@ -20,6 +20,7 @@
     #include <QList>
     #include <QDate>
 
+    const QDate NULLDATE = QDate(1,1,1800);
 
     class Project {
     public:
@@ -32,6 +33,8 @@
         gis::Crit3DRasterGrid rowMatrix;
         gis::Crit3DRasterGrid colMatrix;
         gis::Crit3DGisSettings gisSettings;
+
+        meteoVariable currentVariable;
 
         Project();
 

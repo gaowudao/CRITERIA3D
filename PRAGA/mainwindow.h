@@ -42,9 +42,7 @@
          */
         void on_actionLoadRaster_triggered();
 
-        void on_actionArkimet_triggered();
-
-        QString on_actionArkimet_Dataset(QDialog* datasetDialog);
+        void on_actionMeteoPointsArkimet_triggered();
 
         void on_actionOpen_meteo_points_DB_triggered();
 
@@ -73,6 +71,8 @@
         void slotClicked(const QDate& date);
 
         void resetMeteoPoints();
+
+        void on_actionChoose_variable_triggered();
 
     protected:
         /*!
@@ -113,6 +113,7 @@
         bool initDate;
 
         void setMapSource(OSMTileSource::OSMTileType mySource);
+        QString selectArkimetDataset(QDialog* datasetDialog);
 
         QPoint getMapPoint(QPoint* point) const;
 

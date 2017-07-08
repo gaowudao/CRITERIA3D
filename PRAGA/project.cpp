@@ -6,7 +6,9 @@
 
 Project::Project()
 {
-
+    currentVariable = noMeteoVar;
+    startDate = NULLDATE;
+    endDate = NULLDATE;
 }
 
 
