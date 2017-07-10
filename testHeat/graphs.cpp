@@ -1,4 +1,3 @@
-#include "graphs.h"
 #include <qwt_plot_magnifier.h>
 #include <qwt_plot_panner.h>
 #include <qwt_plot_picker.h>
@@ -10,6 +9,9 @@
 #include <qwt_symbol.h>
 #include <qwt_legend.h>
 #include <qwt_plot_dict.h>
+
+#include "gis.h"
+#include "graphs.h"
 
 class DistancePicker: public QwtPlotPicker
 {
@@ -62,15 +64,18 @@ Plot::Plot( QWidget *parent ):
     DistancePicker *picker = new DistancePicker( canvas() );
     picker->setMousePattern( QwtPlotPicker::MouseSelect1, Qt::RightButton );
     picker->setRubberBandPen( QPen( Qt::blue ) );
+
+    QwtLegend *legend = new QwtLegend;
+    legend->setFrameStyle(QFrame::Box|QFrame::Sunken);
+    this->insertLegend(legend, QwtPlot::BottomLegend);
 }
 
-void Plot::addCurve(QString myTitle, QwtPlotCurve::CurveStyle myStyle, QwtSymbol* mySymbol, QVector<QPointF> &samples)
+void Plot::addCurve(QString myTitle, QwtPlotCurve::CurveStyle myStyle, QPen myPen, QVector<QPointF> &samples)
 {
     QwtPlotCurve* myCurve = new QwtPlotCurve(myTitle);
 
-    myCurve->setPen( QColor( "Purple" ) );
+    myCurve->setPen(myPen);
     myCurve->setStyle(myStyle);
-    myCurve->setSymbol(mySymbol);
     myCurve->setSamples(samples);
     myCurve->attach( this );
 }
@@ -108,6 +113,27 @@ void Plot::drawProfile(outputType graphType, heat_output* myOut)
 {
     detachItems(QwtPlotItem::Rtti_PlotCurve, true);
 
+    QPen myPen;
+
+    gis::Crit3DColorScale myColorScale;
+    myColorScale.nrKeyColors = 3;
+    myColorScale.nrColors = 256;
+    myColorScale.keyColor = new gis::Crit3DColor[myColorScale.nrKeyColors];
+    myColorScale.color = new gis::Crit3DColor[myColorScale.nrColors];
+    myColorScale.classification = classificationMethod::EqualInterval;
+    myColorScale.keyColor[0] = gis::Crit3DColor(0, 0, 255);         /*!< blue */
+    myColorScale.keyColor[1] = gis::Crit3DColor(255, 255, 0);       /*!< yellow */
+    myColorScale.keyColor[2] = gis::Crit3DColor(255, 0, 0);         /*!< red */
+    myColorScale.minimum = 0;
+    myColorScale.maximum = myOut->nrLayers-1;
+    myColorScale.classify();
+
+    gis::Crit3DColor* myColor;
+    QColor myQColor;
+    QString myTitle;
+
+    float myDepth;
+
     QVector<QPointF> mySeries;
 
     switch (graphType)
@@ -115,16 +141,34 @@ void Plot::drawProfile(outputType graphType, heat_output* myOut)
         case outputType::soilTemperature :
             for (int z=0; z<myOut->nrLayers; z++)
             {
+                myDepth = myOut->layerThickness * ((float)z + 0.5);
+
+                myColor = myColorScale.getColor(z);
+                myQColor = QColor(myColor->red, myColor->green, myColor->blue);
+                myPen.setColor(myQColor);
+
+                myTitle = "T-";
+                myTitle.append(QString::number(myDepth,'f',3));
+
                 mySeries = getProfileSeries(myOut, graphType, z);
-                addCurve("soil temperature", QwtPlotCurve::Lines, NULL, mySeries);
+                addCurve(myTitle, QwtPlotCurve::Lines, myPen, mySeries);
             }
             break;
 
         case outputType::soilWater :
             for (int z=0; z<myOut->nrLayers; z++)
             {
+                myDepth = myOut->layerThickness * ((float)z + 0.5);
+
+                myColor = myColorScale.getColor(z);
+                myQColor = QColor(myColor->red, myColor->green, myColor->blue);
+                myPen.setColor(myQColor);
+
+                myTitle = "WC-";
+                myTitle.append(QString::number(myDepth,'f',3));
+
                 mySeries = getProfileSeries(myOut, graphType, z);
-                addCurve("soil water content", QwtPlotCurve::Lines, NULL, mySeries);
+                addCurve(myTitle, QwtPlotCurve::Lines, myPen, mySeries);
             }
             break;
 

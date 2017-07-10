@@ -48,6 +48,8 @@ public:
     int nrValues;
     int nrLayers;
 
+    float layerThickness;
+
     void clean();
 
     QVector<landSurfaceStatus> landSurfaceOutput;
@@ -64,7 +66,7 @@ class Plot : public QwtPlot
 public:
     Plot( QWidget *parent = NULL );
 
-    void addCurve(QString myTitle, QwtPlotCurve::CurveStyle myStyle, QwtSymbol* mySymbol, QVector<QPointF> &samples);
+    void addCurve(QString myTitle, QwtPlotCurve::CurveStyle myStyle, QPen myPen, QVector<QPointF> &samples);
     void drawProfile(outputType graphType, heat_output* myOut);
 };
 

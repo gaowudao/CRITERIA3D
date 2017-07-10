@@ -11,9 +11,11 @@ TEMPLATE = app
 
 INCLUDEPATH += ../mathFunctions
 INCLUDEPATH += ../soilFluxes3D/header
+INCLUDEPATH += ../gis
 
 LIBS += -L../soilFluxes3D/debug -lsoilFluxes3D
 LIBS += -L../mathFunctions/debug -lmathFunctions
+LIBS += -L../gis/debug -lgis
 
 SOURCES += main.cpp\
     mainwindow.cpp \

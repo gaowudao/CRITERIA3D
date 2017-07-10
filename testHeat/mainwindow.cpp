@@ -184,6 +184,7 @@ void MainWindow::on_pushRunAllPeriod_clicked()
 
     long nodesNr = getNodesNumber();
     myHeatOutput.nrLayers = nodesNr;
+    myHeatOutput.layerThickness = ui->lineEditMinThickness->text().toFloat();
 
     if (Initialized)
         ui->prgBar->setMaximum(myHourFin);

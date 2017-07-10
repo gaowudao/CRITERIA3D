@@ -395,6 +395,7 @@ heat_output::heat_output()
 {
     nrValues = 0;
     nrLayers = 0;
+    layerThickness = 0.;
 }
 void getHourlyOutputAllPeriod(long firstIndex, long lastIndex, heat_output* output)
 {
