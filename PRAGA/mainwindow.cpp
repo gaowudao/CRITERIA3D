@@ -21,6 +21,7 @@
 #include "download.h"
 #include "project.h"
 #include "commonConstants.h"
+#include "utils.h"
 
 
 #define TOOLSWIDTH 250
@@ -51,7 +52,7 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
 
     // Set raster object
     this->rasterObj = new RasterObject(this->mapView);
-    this->rasterObj->setOpacity(this->ui->opacitySlider->value() / 100.0);
+    this->rasterObj->setOpacity(this->ui->rasterOpacitySlider->value() / 100.0);
     this->rasterObj->setColorLegend(this->legend);
     this->mapView->scene()->addObject(this->rasterObj);
 
@@ -108,6 +109,8 @@ void MainWindow::on_actionLoadRaster_triggered()
 
     qDebug() << "loading raster";
     if (!myProject.loadRaster(fileName)) return;
+
+    this->ui->rasterOpacitySlider->setEnabled(true);
 
     // center map
     gis::Crit3DGeoPoint* center = gis::getRasterGeoCenter(myProject.rowMatrix.header);
@@ -484,12 +487,6 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
     LastDateLabel = new QLabel(tr("&End Date:"));
     LastDateLabel->setBuddy(LastDateEdit);
 
-    if (myProject.startDate.isValid() && myProject.endDate.isValid())
-    {
-        FirstDateEdit->setDate(myProject.startDate);
-        LastDateEdit->setDate(myProject.endDate);
-    }
-
     calendarLayout.addWidget(&label);
     calendarLayout.addWidget(calendar);
 
@@ -530,8 +527,8 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
     if (downloadDialog.result() == QDialog::Accepted)
     {
 
-       myProject.startDate = FirstDateEdit->date();
-       myProject.endDate = LastDateEdit->date();
+       firstDate = FirstDateEdit->date();
+       lastDate = LastDateEdit->date();
        isFirstDate = true;
 
        if (!daily.isChecked() && !hourly.isChecked())
@@ -539,7 +536,7 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
            QMessageBox::information(NULL, "Missing parameter", "Select hourly or daily");
            on_actionDownload_meteo_data_triggered();
        }
-       else if (!myProject.startDate.isValid() || !myProject.endDate.isValid())
+       else if ((! firstDate.isValid()) || (! lastDate.isValid()))
        {
            QMessageBox::information(NULL, "Missing parameter", "Select download period");
            on_actionDownload_meteo_data_triggered();
@@ -589,7 +586,7 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
 
                 QApplication::setOverrideCursor(Qt::WaitCursor);
 
-                if (! myProject.downloadArkimetDailyVar(var, prec24))
+                if (! myProject.downloadArkimetDailyVar(var, prec24, getCrit3DDate(firstDate), getCrit3DDate(lastDate)))
                 {
                     QMessageBox *msgBox = new QMessageBox(this);
                     msgBox->setText("Daily Download Error");
@@ -606,7 +603,7 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
                 QApplication::setOverrideCursor(Qt::WaitCursor);
 
                 QMessageBox *msgBox = new QMessageBox(this);
-                if (myProject.downloadArkimetHourlyVar(var))
+                if (myProject.downloadArkimetHourlyVar(var, getCrit3DDate(firstDate), getCrit3DDate(lastDate)))
                 {
                     QApplication::restoreOverrideCursor();
                     msgBox->setText("Hourly Download Completed");
@@ -629,15 +626,15 @@ void MainWindow::setCalendarDate(const QDate& date)
 {
     if (isFirstDate)
     {
-        myProject.startDate = date;
+        firstDate = date;
         FirstDateEdit->setDate(calendar->selectedDate());
         isFirstDate = false;
     }
     else
     {
-        if (myProject.startDate <= date)
+        if (firstDate <= date)
         {
-            myProject.endDate = date;
+            lastDate = date;
             LastDateEdit->setDate(calendar->selectedDate());
         }
         else
@@ -867,8 +864,8 @@ void MainWindow::resetMeteoPoints()
 
     myProject.meteoPointsSelected.clear();
 
-    myProject.startDate.setDate(0,0,0);
-    myProject.endDate.setDate(0,0,0);
+    firstDate.setDate(0,0,0);
+    lastDate.setDate(0,0,0);
 
     datasetCheckbox.clear();
 

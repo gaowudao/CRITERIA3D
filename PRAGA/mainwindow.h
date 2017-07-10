@@ -105,6 +105,7 @@
         QDateEdit* LastDateEdit;
         QLabel* LastDateLabel;
         bool isFirstDate;
+        QDate firstDate, lastDate;
 
         void setMapSource(OSMTileSource::OSMTileType mySource);
         QString selectArkimetDataset(QDialog* datasetDialog);

@@ -7,9 +7,9 @@
 Project::Project()
 {
     currentVariable = noMeteoVar;
-    startDate = NULLDATE;
-    endDate = NULLDATE;
     currentFrequency = daily;
+    currentDate.setDate(0,0,0);
+    currentHour = 12;
 }
 
 
@@ -63,11 +63,8 @@ bool Project::loadRaster(QString myFileName)
 }
 
 
-bool Project::downloadArkimetDailyVar(QStringList variables, bool prec24)
+bool Project::downloadArkimetDailyVar(QStringList variables, bool prec24, Crit3DDate dateStart, Crit3DDate dateEnd)
 {
-    Crit3DDate dateStart(this->startDate.day(), this->startDate.month(), this->startDate.year());
-    Crit3DDate dateEnd(this->endDate.day(), this->endDate.month(), this->endDate.year());
-    //QString id, dataset, name;
     QStringList id, dataset;
 
     QList<int> arkIdAirTemp;
@@ -140,12 +137,8 @@ bool Project::downloadArkimetDailyVar(QStringList variables, bool prec24)
 
 
 
-bool Project::downloadArkimetHourlyVar(QStringList variables)
+bool Project::downloadArkimetHourlyVar(QStringList variables, Crit3DDate dateStart, Crit3DDate dateEnd)
 {
-
-    Crit3DDate dateStart(this->startDate.day(), this->startDate.month(), this->startDate.year());
-    Crit3DDate dateEnd(this->endDate.day(), this->endDate.month(), this->endDate.year());
-
     Crit3DTime dateTimeStart(dateStart, 0);
     Crit3DTime dateTimeEnd(dateEnd, 0);
     QStringList datasets;
@@ -210,3 +203,4 @@ bool Project::downloadArkimetHourlyVar(QStringList variables)
     Download* myDownload = new Download(dbMeteoPoints->getDbName());
     return myDownload->downloadHourlyVar(dateTimeStart, dateTimeEnd, datasets, id, arkIdVar);
 }
+

@@ -20,13 +20,10 @@
     #include <QList>
     #include <QDate>
 
-    const QDate NULLDATE = QDate(1,1,1800);
-
     class Project {
     public:
         QList<Crit3DMeteoPoint> meteoPoints;
         QList<gis::Crit3DGeoPoint> meteoPointsSelected;
-        QDate startDate, endDate;
         DbMeteoPoints* dbMeteoPoints;
 
         gis::Crit3DRasterGrid DTM;
@@ -36,12 +33,16 @@
 
         meteoVariable currentVariable;
         frequencyType currentFrequency;
+        QDate currentDate;
+        short currentHour;
 
         Project();
 
         bool loadRaster(QString myFileName);
-        bool downloadArkimetDailyVar(QStringList variables, bool precSelection);
-        bool downloadArkimetHourlyVar(QStringList variables);
+        bool downloadArkimetDailyVar(QStringList variables, bool precSelection, Crit3DDate dateStart, Crit3DDate dateEnd);
+        bool downloadArkimetHourlyVar(QStringList variables, Crit3DDate dateStart, Crit3DDate dateEnd);
     };
+
+    Crit3DDate getCrit3DDate(const QDate& myDate);
 
 #endif // PROJECT_H

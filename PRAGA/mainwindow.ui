@@ -911,7 +911,10 @@
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
     </property>
-    <widget class="QSlider" name="opacitySlider">
+    <widget class="QSlider" name="rasterOpacitySlider">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -966,9 +969,9 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>230</y>
+      <y>220</y>
       <width>241</width>
-      <height>151</height>
+      <height>181</height>
      </rect>
     </property>
     <property name="palette">
@@ -1404,13 +1407,13 @@
      <property name="geometry">
       <rect>
        <x>-1</x>
-       <y>90</y>
+       <y>120</y>
        <width>241</width>
        <height>50</height>
       </rect>
      </property>
      <property name="toolTip">
-      <string>Raster colors</string>
+      <string>Variable colors</string>
      </property>
     </widget>
     <widget class="QLabel" name="labelVariable">
@@ -1444,6 +1447,16 @@
       <string>Frequency:</string>
      </property>
     </widget>
+    <widget class="QDateTimeEdit" name="dateTimeEdit">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>90</y>
+       <width>141</width>
+       <height>22</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -1452,7 +1465,7 @@
      <x>0</x>
      <y>0</y>
      <width>1368</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="palette">
@@ -1939,8 +1952,8 @@
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuMap_server"/>
-   <addaction name="menuGIS_settings"/>
    <addaction name="menuTools"/>
+   <addaction name="menuGIS_settings"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionLoadRaster">

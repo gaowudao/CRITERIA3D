@@ -6,7 +6,6 @@
 #include <QSqlQuery>
 #include <QSqlRecord>
 #include <QString>
-//#include <QStringBuilder>
 
 
 DbArkimet::DbArkimet(QString dbName) : DbMeteoPoints(dbName)
