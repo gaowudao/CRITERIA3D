@@ -57,6 +57,8 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
     this->mapView->scene()->addObject(this->rasterObj);
 
     this->updateVariable();
+    this->ui->dateTimeEdit->setDate(myProject.currentDate);
+    this->ui->dateTimeEdit->setTime(QTime(myProject.currentHour,0,0,0));
 
     //this->setMouseTracking(true);
 
