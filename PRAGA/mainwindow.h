@@ -37,9 +37,7 @@
         ~MainWindow();
 
     private slots:
-        /*!
-         * \brief on_actionLoad_Raster_triggered load Raster
-         */
+
         void on_actionLoadRaster_triggered();
 
         void on_actionMeteoPointsArkimet_triggered();
@@ -62,17 +60,13 @@
 
         void on_actionRectangle_Selection_triggered();
 
-        void enableAllDataset(bool toggled);
+        void setCalendarDate(const QDate& date);
 
-        void displayMeteoPoints();
+        void on_actionVariableChoose_triggered();
 
-        void loadMeteoPointsData(DbMeteoPoints* myDB);
+        void on_actionVariableHourly_triggered();
 
-        void slotClicked(const QDate& date);
-
-        void resetMeteoPoints();
-
-        void on_actionChoose_variable_triggered();
+        void on_actionVariableDaily_triggered();
 
     protected:
         /*!
@@ -110,12 +104,19 @@
         QLabel* FirstDateLabel;
         QDateEdit* LastDateEdit;
         QLabel* LastDateLabel;
-        bool initDate;
+        bool isFirstDate;
 
         void setMapSource(OSMTileSource::OSMTileType mySource);
         QString selectArkimetDataset(QDialog* datasetDialog);
 
         QPoint getMapPoint(QPoint* point) const;
+
+        void updateVariable();
+        void resetMeteoPoints();
+        void displayMeteoPoints();
+        void enableAllDataset(bool toggled);
+
+        void loadMeteoPointsData(DbMeteoPoints* myDB);
 
     };
 

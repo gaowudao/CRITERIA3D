@@ -23,7 +23,7 @@
 #include "commonConstants.h"
 
 
-#define TOOLSWIDTH 220
+#define TOOLSWIDTH 250
 extern Project myProject;
 
 MainWindow::MainWindow(environment menu, QWidget *parent) :
@@ -38,8 +38,8 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
     // Set the MapGraphics Scene and View
     this->mapScene = new MapGraphicsScene(this);
     this->mapView = new MapGraphicsView(mapScene, this->ui->widgetMap);
-    this->legend = new ColorLegend(this->ui->widgetColorLegend);
-    this->legend->resize(this->ui->widgetColorLegend->size());
+    this->legend = new ColorLegend(this->ui->widgetColorLegendRaster);
+    this->legend->resize(this->ui->widgetColorLegendRaster->size());
 
     // Set tiles source
     this->setMapSource(OSMTileSource::OSMTiles);
@@ -54,6 +54,8 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
     this->rasterObj->setOpacity(this->ui->opacitySlider->value() / 100.0);
     this->rasterObj->setColorLegend(this->legend);
     this->mapView->scene()->addObject(this->rasterObj);
+
+    this->updateVariable();
 
     //this->setMouseTracking(true);
 
@@ -75,7 +77,6 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
             ui->actionMeteoPointsArkimet->setVisible(false);
             break;
     }
-
 }
 
 
@@ -427,6 +428,12 @@ void MainWindow::displayMeteoPoints()
 void MainWindow::on_actionDownload_meteo_data_triggered()
 {
 
+    if(myProject.meteoPoints.isEmpty())
+    {
+         QMessageBox::information(NULL, "DB not existing", "Create or Open a meteo points database before download");
+         return;
+    }
+
     QDialog downloadDialog;
     QVBoxLayout mainLayout;
     QHBoxLayout timeVarLayout;
@@ -494,7 +501,7 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
 
     connect(FirstDateEdit, SIGNAL(dateChanged(QDate)), calendar, SLOT(setSelectedDate(QDate)));
     connect(LastDateEdit, SIGNAL(dateChanged(QDate)), calendar, SLOT(setSelectedDate(QDate)));
-    connect(calendar,SIGNAL(clicked(const QDate)),this,SLOT(slotClicked(const QDate)));
+    connect(calendar,SIGNAL(clicked(const QDate)),this,SLOT(setCalendarDate(const QDate)));
 
     QDialogButtonBox buttonBox;
     QPushButton downloadButton(tr("&Download"));
@@ -525,14 +532,7 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
 
        myProject.startDate = FirstDateEdit->date();
        myProject.endDate = LastDateEdit->date();
-       initDate = true;
-
-       if(myProject.meteoPoints.isEmpty())
-       {
-            QMessageBox::information(NULL, "DB not existing", "Create or Open DB before download");
-            downloadDialog.close();
-            return;
-       }
+       isFirstDate = true;
 
        if (!daily.isChecked() && !hourly.isChecked())
        {
@@ -625,28 +625,27 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
 }
 
 
-void MainWindow::slotClicked(const QDate& date)
+void MainWindow::setCalendarDate(const QDate& date)
 {
-
-  if (initDate)
-  {
-    myProject.startDate = date;
-    FirstDateEdit->setDate(calendar->selectedDate());
-    initDate = false;
-  }
-  else
-  {
-    if (myProject.startDate <= date)
+    if (isFirstDate)
     {
-        myProject.endDate = date;
-        LastDateEdit->setDate(calendar->selectedDate());
+        myProject.startDate = date;
+        FirstDateEdit->setDate(calendar->selectedDate());
+        isFirstDate = false;
     }
     else
     {
-        QMessageBox::information(NULL, "Invalid Date", "Last date is earlier than start date");
+        if (myProject.startDate <= date)
+        {
+            myProject.endDate = date;
+            LastDateEdit->setDate(calendar->selectedDate());
+        }
+        else
+        {
+            QMessageBox::information(NULL, "Invalid Date", "Last date is earlier than start date");
+        }
+        isFirstDate = true;
     }
-    initDate = true;
-  }
 }
 
 
@@ -782,10 +781,11 @@ void MainWindow::resizeEvent(QResizeEvent * event)
 {
     Q_UNUSED(event)
 
-    this->ui->widgetMap->setGeometry(TOOLSWIDTH, 0, this->width()-TOOLSWIDTH, this->height() - 40);
+    this->ui->widgetMap->setGeometry(TOOLSWIDTH, 0, this->width()-TOOLSWIDTH, this->height()-40);
     this->mapView->resize(this->ui->widgetMap->size());
 
     this->ui->groupBoxRaster->move(10, this->height() - this->ui->groupBoxRaster->height() - 50);
+    this->ui->groupBoxVariable->move(10, this->ui->groupBoxRaster->y() - this->ui->groupBoxVariable->height() - 50);
 }
 
 QPoint MainWindow::getMapPoint(QPoint* point) const
@@ -881,7 +881,7 @@ void MainWindow::resetMeteoPoints()
 }
 
 
-void MainWindow::on_actionChoose_variable_triggered()
+void MainWindow::on_actionVariableChoose_triggered()
 {
     QDialog myDialog;
     QVBoxLayout mainLayout;
@@ -898,16 +898,32 @@ void MainWindow::on_actionChoose_variable_triggered()
     QRadioButton RHavg("Average relative humidity %");
     QRadioButton RHmin("Minimum relative humidity %");
     QRadioButton RHmax("Maximum relative humidity %");
-    QRadioButton Rad("Solar radiation MJ m^-2");
+    QRadioButton Rad("Solar radiation MJ m-2");
 
-    layoutVariable.addWidget(&Tmin);
-    layoutVariable.addWidget(&Tavg);
-    layoutVariable.addWidget(&Tmax);
-    layoutVariable.addWidget(&Prec);
-    layoutVariable.addWidget(&RHmin);
-    layoutVariable.addWidget(&RHavg);
-    layoutVariable.addWidget(&RHmax);
-    layoutVariable.addWidget(&Rad);
+    if (myProject.currentFrequency == daily)
+    {
+        layoutVariable.addWidget(&Tmin);
+        layoutVariable.addWidget(&Tavg);
+        layoutVariable.addWidget(&Tmax);
+        layoutVariable.addWidget(&Prec);
+        layoutVariable.addWidget(&RHmin);
+        layoutVariable.addWidget(&RHavg);
+        layoutVariable.addWidget(&RHmax);
+        layoutVariable.addWidget(&Rad);
+    }
+    else if (myProject.currentFrequency == hourly)
+    {
+        Tavg.setText("Average temperature °C");
+        Prec.setText("Precipitation mm");
+        RHavg.setText("Average relative humidity %");
+        Rad.setText("Solar irradiance W m-2");
+
+        layoutVariable.addWidget(&Tavg);
+        layoutVariable.addWidget(&Prec);
+        layoutVariable.addWidget(&RHavg);
+        layoutVariable.addWidget(&Rad);
+    }
+    else return;
 
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
@@ -923,10 +939,77 @@ void MainWindow::on_actionChoose_variable_triggered()
 
     if (myDialog.result() == QDialog::Accepted)
     {
-       if (Tmin.isChecked())
+       if (myProject.currentFrequency == daily)
        {
-           QMessageBox::information(NULL, "Selected variable:", "Tmin");
-           return;
+           if (Tmin.isChecked())
+               myProject.currentVariable = dailyAirTemperatureMin;
+           else if (Tmax.isChecked())
+               myProject.currentVariable = dailyAirTemperatureMax;
+           else if (Tavg.isChecked())
+               myProject.currentVariable = dailyAirTemperatureAvg;
+           else if (Prec.isChecked())
+               myProject.currentVariable = dailyPrecipitation;
+           else if (Rad.isChecked())
+               myProject.currentVariable = dailyGlobalRadiation;
+           else if (RHmin.isChecked())
+               myProject.currentVariable = dailyAirHumidityMin;
+           else if (RHmax.isChecked())
+               myProject.currentVariable = dailyAirHumidityMax;
+           else if (RHavg.isChecked())
+               myProject.currentVariable = dailyAirHumidityAvg;
+       }
+       else if (myProject.currentFrequency == hourly)
+       {
+           if (Tavg.isChecked())
+               myProject.currentVariable = airTemperature;
+           else if (RHavg.isChecked())
+               myProject.currentVariable = airHumidity;
+           else if (Prec.isChecked())
+               myProject.currentVariable = precipitation;
+           else if (Rad.isChecked())
+               myProject.currentVariable = globalIrradiance;
        }
     }
+
+    this->updateVariable();
+}
+
+
+void MainWindow::on_actionVariableHourly_triggered()
+{
+    this->ui->actionVariableHourly->setChecked(true);
+    if (this->ui->actionVariableDaily->isChecked())
+        this->ui->actionVariableDaily->setChecked(false);
+
+    myProject.currentFrequency = hourly;
+    this->updateVariable();
+}
+
+void MainWindow::on_actionVariableDaily_triggered()
+{
+    this->ui->actionVariableDaily->setChecked(true);
+    if (this->ui->actionVariableHourly->isChecked())
+        this->ui->actionVariableHourly->setChecked(false);
+
+    myProject.currentFrequency = daily;
+    this->updateVariable();
+}
+
+
+void MainWindow::updateVariable()
+{
+    if (myProject.currentFrequency == daily)
+        this->ui->labelFrequency->setText("Frequency: daily");
+    else if (myProject.currentFrequency == hourly)
+        this->ui->labelFrequency->setText("Frequency: hourly");
+
+    if ((myProject.currentVariable == airTemperature)
+            || (myProject.currentVariable == dailyAirTemperatureAvg))
+        this->ui->labelVariable->setText("Avg. Air Temperature °C");
+    else
+        this->ui->labelVariable->setText("None");
+
+    // TODO controllo della current variable e stampa
+    // Carica valori
+    // TODO colorLegend
 }

@@ -35,6 +35,7 @@
         gis::Crit3DGisSettings gisSettings;
 
         meteoVariable currentVariable;
+        frequencyType currentFrequency;
 
         Project();
 

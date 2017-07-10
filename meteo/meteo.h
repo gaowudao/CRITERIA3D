@@ -53,6 +53,8 @@
                         potentialEvapotranspiration, dailyPotentialEvapotranspiration,
                         realEvaporation, waterTableDepth, noMeteoVar};
 
+    enum frequencyType {hourly, daily, monthly};
+
     enum surfaceType   {SurfaceTypeWater, SurfaceTypeSoil, SurfaceTypeCrop};
 
     class Crit3DClimateParameters {
