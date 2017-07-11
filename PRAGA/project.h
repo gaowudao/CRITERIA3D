@@ -36,6 +36,7 @@
         gis::Crit3DRasterGrid rowMatrix;
         gis::Crit3DRasterGrid colMatrix;
         gis::Crit3DGisSettings gisSettings;
+        gis::Crit3DColorScale *colorScalePoints;
 
         meteoVariable currentVariable;
 

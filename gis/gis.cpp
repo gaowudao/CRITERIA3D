@@ -340,7 +340,6 @@ namespace gis
         myGrid->minimum = minimum;
         myGrid->colorScale->maximum = myGrid->maximum;
         myGrid->colorScale->minimum = myGrid->minimum;
-        roundColorScale(myGrid->colorScale, 4);
         return(true);
     }
 
@@ -392,7 +391,6 @@ namespace gis
         //  no values
         if (isFirstValue) return(false);
 
-        roundColorScale(myGrid->colorScale, 4);
         return(true);
     }
 

@@ -96,7 +96,8 @@
         MapGraphicsView* mapView;
         RasterObject* rasterObj;
         QList<StationMarker*> pointList;
-        ColorLegend* legend;
+        ColorLegend *rasterLegend;
+        ColorLegend *pointsLegend;
         environment menu;
         RubberBand *myRubberBand;
 

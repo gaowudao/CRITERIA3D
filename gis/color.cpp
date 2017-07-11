@@ -155,7 +155,7 @@ namespace gis
         myScale->color = new Crit3DColor[myScale->nrColors];
         myScale->classification = classificationMethod::EqualInterval;
 
-        myScale->keyColor[0] = Crit3DColor(255, 255, 255);
+        myScale->keyColor[0] = Crit3DColor(235, 235, 235);
         myScale->keyColor[1] = Crit3DColor(0, 255, 255);
         myScale->keyColor[2] = Crit3DColor(0, 0, 255);
 
@@ -222,27 +222,47 @@ namespace gis
     }
 
     /*!
-     * \brief roundColorScale round colorScale values on the second digit of each range.
+     * \brief roundColorScale round colorScale values on the second (or third) digit of each range.
      * It requires that nrColors is a multiply of nrIntervals for a correct visualization in the colors legend.
      * It is projected for a legend of nrIntervals+1 levels (i.e= 4 intervals, 5 levels)
      * \param myScale
      * \param nrIntervals
+     * \param lessRounded if true the round is on third digit
      * \return
      */
-    bool roundColorScale(Crit3DColorScale* myScale, int nrIntervals)
+    bool roundColorScale(Crit3DColorScale* myScale, int nrIntervals, bool lessRounded)
     {
+        if (myScale == NULL) return false;
+        if (myScale->minimum == NODATA || myScale->maximum == NODATA) return false;
+        if (nrIntervals < 1) return false;
+        if (myScale->minimum == myScale->maximum) return false;
+
         float avg = myScale->minimum + (myScale->maximum - myScale->minimum) / 2;
         float level = (myScale->maximum - myScale->minimum) / nrIntervals;
 
         float logLevel = log10(level);
         float logAvg = log10(avg);
-        float myExp = std::max(floor(logLevel)-1, floor(logAvg)-1);
+
+        float myExp;
+        if (lessRounded)
+            myExp = std::min(floor(logLevel)-1, floor(logAvg)-1);
+        else
+            myExp = std::max(floor(logLevel)-1, floor(logAvg)-1);
+
         float pow10 = powf(10.0, myExp);
         float roundLevel = ceil(level / pow10) * pow10;
         float roundAvg = round(avg / pow10) * pow10;
 
-        myScale->minimum = roundAvg - roundLevel*(nrIntervals/2);
-        myScale->maximum = roundAvg + roundLevel*(nrIntervals/2);
+        if (myScale->minimum == 0)
+        {
+            //precipitation
+            myScale->maximum = roundLevel * nrIntervals;
+        }
+        else
+        {
+            myScale->minimum = roundAvg - roundLevel*(nrIntervals/2);
+            myScale->maximum = roundAvg + roundLevel*(nrIntervals/2);
+        }
         return true;
     }
 

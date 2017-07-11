@@ -7,11 +7,12 @@
 
 Project::Project()
 {
-    currentVariable = noMeteoVar;
+    currentVariable = dailyAirTemperatureAvg;
     currentFrequency = daily;
     currentDate.setDate(1800,1,1);
     previousDate = currentDate;
     currentHour = 12;
+    colorScalePoints = new gis::Crit3DColorScale();
 }
 
 

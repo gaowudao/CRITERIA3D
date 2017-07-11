@@ -40,8 +40,14 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
     // Set the MapGraphics Scene and View
     this->mapScene = new MapGraphicsScene(this);
     this->mapView = new MapGraphicsView(mapScene, this->ui->widgetMap);
-    this->legend = new ColorLegend(this->ui->widgetColorLegendRaster);
-    this->legend->resize(this->ui->widgetColorLegendRaster->size());
+
+    this->rasterLegend = new ColorLegend(this->ui->widgetColorLegendRaster);
+    this->rasterLegend->resize(this->ui->widgetColorLegendRaster->size());
+    this->rasterLegend->colorScale = myProject.DTM.colorScale;
+
+    this->pointsLegend = new ColorLegend(this->ui->widgetColorLegendPoints);
+    this->pointsLegend->resize(this->ui->widgetColorLegendPoints->size());
+    this->pointsLegend->colorScale = myProject.colorScalePoints;
 
     // Set tiles source
     this->setMapSource(OSMTileSource::OSMTiles);
@@ -54,7 +60,7 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
     // Set raster object
     this->rasterObj = new RasterObject(this->mapView);
     this->rasterObj->setOpacity(this->ui->rasterOpacitySlider->value() / 100.0);
-    this->rasterObj->setColorLegend(this->legend);
+    this->rasterObj->setColorLegend(this->rasterLegend);
     this->mapView->scene()->addObject(this->rasterObj);
 
     this->updateVariable();
@@ -86,7 +92,8 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete rasterObj;
-    delete legend;
+    delete rasterLegend;
+    delete pointsLegend;
     delete mapView;
     delete mapScene;
     delete ui;
@@ -687,15 +694,12 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event){
             }
         }
 
-
         QPointF topLeft = this->mapView->mapToScene(getMapPoint(&pixelTopLeft));
         QPointF bottomRight = this->mapView->mapToScene(getMapPoint(&pixelBottomRight));
         QRectF rectF(topLeft, bottomRight);
 
-
         foreach (StationMarker* marker, pointList)
         {
-
             if (rectF.contains(marker->longitude(), marker->latitude()))
             {
                 if ( marker->color() ==  Qt::white )
@@ -1065,6 +1069,24 @@ void MainWindow::updateDateTime()
 {
     this->ui->dateTimeEdit->setDate(myProject.getCurrentDate());
     this->ui->dateTimeEdit->setTime(QTime(myProject.getCurrentHour(),0,0,0));
+}
+
+
+void MainWindow::on_dateTimeEdit_dateTimeChanged(const QDateTime &dateTime)
+{
+    //date
+    if (dateTime.date() != myProject.getCurrentDate())
+    {
+        myProject.setCurrentDate(dateTime.date());
+        myProject.loadMeteoPointsData(dateTime.date(), dateTime.date(), true);
+    }
+
+    //hour
+    if (dateTime.time().hour() != myProject.getCurrentHour())
+    {
+        myProject.setCurrentHour(dateTime.time().hour());
+    }
+
     redrawMeteoPoints();
 }
 
@@ -1098,23 +1120,53 @@ void MainWindow::redrawMeteoPoints()
         }
     }
 
+    myProject.colorScalePoints->minimum = minimum;
+    myProject.colorScalePoints->maximum = maximum;
+    gis::roundColorScale(myProject.colorScalePoints, 4, true);
+
+    if ((myProject.currentVariable == airTemperature)
+         || (myProject.currentVariable == dailyAirTemperatureAvg)
+         || (myProject.currentVariable == dailyAirTemperatureMax)
+         || (myProject.currentVariable == dailyAirTemperatureMin))
+         gis::setTemperatureScale(myProject.colorScalePoints);
+
+    else if ((myProject.currentVariable == airHumidity)
+         || (myProject.currentVariable == dailyAirHumidityAvg)
+         || (myProject.currentVariable == dailyAirHumidityMax)
+         || (myProject.currentVariable == dailyAirHumidityMin))
+         gis::setRelativeHumidityScale(myProject.colorScalePoints);
+
+    else if ((myProject.currentVariable == precipitation)
+         || (myProject.currentVariable == dailyPrecipitation))
+         gis::setPrecipitationScale(myProject.colorScalePoints);
+
+    else if ((myProject.currentVariable == globalIrradiance)
+         || (myProject.currentVariable == dailyGlobalRadiation))
+         gis::setRadiationScale(myProject.colorScalePoints);
+
+    pointsLegend->update();
     qDebug() << "Min, max: " << QString::number(minimum) << QString::number(maximum);
 
-}
-
-
-void MainWindow::on_dateTimeEdit_dateTimeChanged(const QDateTime &dateTime)
-{
-    //date
-    if (dateTime.date() != myProject.getCurrentDate())
+    gis::Crit3DColor *myColor;
+    for (int i = 0; i < myProject.meteoPoints.size(); i++)
     {
-        myProject.setCurrentDate(dateTime.date());
-        myProject.loadMeteoPointsData(dateTime.date(), dateTime.date(), true);
+        if (myProject.getFrequency() == daily)
+            v =  myProject.meteoPoints[i].getMeteoPointValueD(myDate, myProject.currentVariable);
+        else if (myProject.getFrequency() == hourly)
+            v =  myProject.meteoPoints[i].getMeteoPointValueH(myDate, hour, 0, myProject.currentVariable);
+
+        if (v == NODATA)
+        {
+            pointList[i]->setVisible(false);
+        }
+        else
+        {
+            pointList[i]->setVisible(true);
+            myColor = myProject.colorScalePoints->getColor(v);
+            pointList[i]->setFillColor(QColor(myColor->red, myColor->green, myColor->blue));
+        }
     }
 
-    //hour
-    if (dateTime.time().hour() != myProject.getCurrentHour())
-        myProject.setCurrentHour(dateTime.time().hour());
-
-    redrawMeteoPoints();
 }
+
+

@@ -12,10 +12,12 @@
         explicit ColorLegend(QWidget *parent = 0);
         ~ColorLegend();
 
+        gis::Crit3DColorScale *colorScale;
+
     private:
         void paintEvent(QPaintEvent *);
     };
 
-    bool drawColorLegend(gis::Crit3DRasterGrid* myRaster, QPainter* myPainter);
+    bool drawColorLegend(gis::Crit3DColorScale* colorScale, QPainter* myPainter);
 
 #endif // COLORLEGEND_H
