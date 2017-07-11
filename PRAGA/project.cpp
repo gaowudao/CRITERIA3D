@@ -8,7 +8,8 @@ Project::Project()
 {
     currentVariable = noMeteoVar;
     currentFrequency = daily;
-    currentDate.setDate(0,0,0);
+    currentDate.setDate(1800,1,1);
+    previousDate = currentDate;
     currentHour = 12;
 }
 
@@ -63,7 +64,7 @@ bool Project::loadRaster(QString myFileName)
 }
 
 
-bool Project::downloadArkimetDailyVar(QStringList variables, bool prec24, Crit3DDate dateStart, Crit3DDate dateEnd)
+bool Project::downloadDailyDataArkimet(QStringList variables, bool prec24, Crit3DDate dateStart, Crit3DDate dateEnd)
 {
     QStringList id, dataset;
 
@@ -90,12 +91,6 @@ bool Project::downloadArkimetDailyVar(QStringList variables, bool prec24, Crit3D
         if (variables[i] == "Wind")
             arkIdVar.append(arkIdWind);
     }
-
-    /*
-    QLabel info;
-    info.setWindowTitle("DOWNLOAD daily data");
-    info.show();
-    */
 
     Download* myDownload = new Download(dbMeteoPoints->getDbName());
 
@@ -131,13 +126,12 @@ bool Project::downloadArkimetDailyVar(QStringList variables, bool prec24, Crit3D
 
     if (! myDownload->downloadDailyVar(dateStart, dateEnd, dataset, id, arkIdVar, prec24)) return false;
 
-    //info.close();
     return true;
 }
 
 
 
-bool Project::downloadArkimetHourlyVar(QStringList variables, Crit3DDate dateStart, Crit3DDate dateEnd)
+bool Project::downloadHourlyDataArkimet(QStringList variables, Crit3DDate dateStart, Crit3DDate dateEnd)
 {
     Crit3DTime dateTimeStart(dateStart, 0);
     Crit3DTime dateTimeEnd(dateEnd, 0);
@@ -203,4 +197,41 @@ bool Project::downloadArkimetHourlyVar(QStringList variables, Crit3DDate dateSta
     Download* myDownload = new Download(dbMeteoPoints->getDbName());
     return myDownload->downloadHourlyVar(dateTimeStart, dateTimeEnd, datasets, id, arkIdVar);
 }
+
+
+void Project::setCurrentDate(QDate myDate)
+{
+    if (myDate != this->currentDate)
+    {
+        this->previousDate = this->currentDate;
+        this->currentDate = myDate;
+    }
+}
+
+void Project::setCurrentHour(short myHour)
+{
+    this->currentHour = myHour;
+}
+
+void Project::setFrequency(frequencyType myFrequency)
+{
+    this->currentFrequency = myFrequency;
+}
+
+QDate Project::getCurrentDate()
+{
+    return this->currentDate;
+}
+
+short Project::getCurrentHour()
+{
+    return this->currentHour;
+}
+
+frequencyType Project::getFrequency()
+{
+    return this->currentFrequency;
+}
+
+
 

@@ -14,6 +14,7 @@
 #include "guts/CompositeTileSourceConfigurationWidget.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "formInfo.h"
 #include "Position.h"
 #include "formSingleValue.h"
 #include "dbMeteoPoints.h"
@@ -57,10 +58,9 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
     this->mapView->scene()->addObject(this->rasterObj);
 
     this->updateVariable();
-    this->ui->dateTimeEdit->setDate(myProject.currentDate);
-    this->ui->dateTimeEdit->setTime(QTime(myProject.currentHour,0,0,0));
+    this->updateDateTime();
 
-    //this->setMouseTracking(true);
+    this->setMouseTracking(true);
 
     this->menu = menu;
 
@@ -204,7 +204,7 @@ void MainWindow::on_actionMeteoPointsArkimet_triggered()
                     myProject.dbMeteoPoints = new DbMeteoPoints(dbName);
                     myProject.meteoPoints = myProject.dbMeteoPoints->getPropertiesFromDb();
 
-                    displayMeteoPoints();
+                    this->addMeteoPoints();
                 }
                 else
                 {
@@ -239,12 +239,10 @@ QString MainWindow::selectArkimetDataset(QDialog* datasetDialog) {
             QString datasetSelected = "";
             foreach (QCheckBox *checkBox, datasetCheckbox)
             {
-
                 if (checkBox->isChecked())
                 {
                     datasetSelected = datasetSelected % "'" % checkBox->text() % "',";
                 }
-
             }
 
             if (!datasetSelected.isEmpty())
@@ -286,9 +284,10 @@ void MainWindow::on_actionOpen_meteo_points_DB_triggered()
 
     myProject.dbMeteoPoints = new DbMeteoPoints(dbName);
     myProject.meteoPoints =  myProject.dbMeteoPoints->getPropertiesFromDb();
-    displayMeteoPoints();
+    addMeteoPoints();
 
     loadMeteoPointsData(myProject.dbMeteoPoints);
+    this->updateDateTime();
 }
 
 
@@ -312,8 +311,6 @@ void MainWindow::loadMeteoPointsData(DbMeteoPoints* myDbMeteo)
     QRadioButton all("all data");
 
     char dayHour;
-    QDateTime firstD;
-    QDateTime lastD;
 
     layoutPeriod.addWidget(&lastDay);
     layoutPeriod.addWidget(&all);
@@ -332,84 +329,77 @@ void MainWindow::loadMeteoPointsData(DbMeteoPoints* myDbMeteo)
     load.setLayout(&mainLayout);
     load.exec();
 
-    if (load.result() == QDialog::Accepted)
+    if (load.result() != QDialog::Accepted)
+        return;
+
+    if (!daily.isChecked() && !hourly.isChecked())
     {
-
-       if (!daily.isChecked() && !hourly.isChecked())
-       {
-           QMessageBox::information(NULL, "Missing parameter", "Select hourly and/or daily");
-           return;
-       }
-       else if (!lastDay.isChecked() && !all.isChecked())
-       {
-           QMessageBox::information(NULL, "Missing parameter", "Select loading period from DB");
-           return;
-       }
-       else
-       {
-            if (daily.isChecked())
-            {
-                dayHour = 'D';
-                lastD = myDbMeteo->getLastDay(dayHour);
-                firstD.setDate(lastD.date());
-                firstD.setTime(QTime(0, 0, 0));
-                if ( all.isChecked() )
-                {
-                    firstD = myDbMeteo->getFirstDay(dayHour);
-                }
-
-                Crit3DDate dateStart(firstD.date().day(), firstD.date().month(), firstD.date().year());
-                Crit3DDate dateEnd(lastD.date().day(), lastD.date().month(), lastD.date().year());
-                myDbMeteo->getDataFromDailyDb(dateStart, dateEnd, myProject.meteoPoints);
-
-                /*
-                qDebug() << "myProject.meteoPoints[0].id" << QString::fromStdString(myProject.meteoPoints[0].id);
-
-                qDebug() << "myProject.meteoPoints[0].obsDataD[0].date.day" << myProject.meteoPoints[0].obsDataD[0].date.day;
-                qDebug() << "myProject.meteoPoints[0].obsDataD[0].tMin" << myProject.meteoPoints[0].obsDataD[0].tMin;
-
-                qDebug() << "myProject.meteoPoints[0].obsDataD[1].date.day" << myProject.meteoPoints[0].obsDataD[1].date.day;
-                qDebug() << "myProject.meteoPoints[0].obsDataD[1].tMin" << myProject.meteoPoints[0].obsDataD[1].tMin;
-                */
-
-            }
-
-            if (hourly.isChecked())
-            {
-                dayHour = 'H';
-                lastD = myDbMeteo->getLastDay(dayHour);
-                firstD.setDate(lastD.date());
-                firstD.setTime(QTime(0, 0, 0));
-                if ( all.isChecked() )
-                {
-                    firstD = myDbMeteo->getFirstDay(dayHour);
-                }
-
-                Crit3DDate dateStart(firstD.date().day(), firstD.date().month(), firstD.date().year());
-                Crit3DDate dateEnd(lastD.date().day(), lastD.date().month(), lastD.date().year());
-                myDbMeteo->getDataFromHourlyDb(dateStart, dateEnd, myProject.meteoPoints);
-
-                /*
-                qDebug() << "myProject.meteoPoints[0].id" << QString::fromStdString(myProject.meteoPoints[0].id);
-
-                qDebug() << "myProject.meteoPoints[0].obsDataD[0].date.day" << myProject.meteoPoints[0].obsDataH[0].date.day;
-                qDebug() << "myProject.meteoPoints[0].obsDataD[0].tAir" << myProject.meteoPoints[0].obsDataH[0].tAir;
-
-                qDebug() << "myProject.meteoPoints[0].obsDataD[1].date.day" << myProject.meteoPoints[0].obsDataH[1].date.day;
-                qDebug() << "myProject.meteoPoints[0].obsDataD[1].tAir" << myProject.meteoPoints[0].obsDataH[1].tAir;
-
-                qDebug() << "myProject.meteoPoints[0].obsDataD[1].date.day" << myProject.meteoPoints[0].obsDataH[6].date.day;
-                qDebug() << "myProject.meteoPoints[0].obsDataD[1].rhAir[0]" << myProject.meteoPoints[0].obsDataH[6].rhAir[0];
-                qDebug() << "myProject.meteoPoints[0].obsDataD[1].rhAir[1]" << myProject.meteoPoints[0].obsDataH[6].rhAir[1];
-                */
-            }
-       }
+       QMessageBox::information(NULL, "Missing parameter", "Select hourly and/or daily");
+       return;
     }
 
+    if (!lastDay.isChecked() && !all.isChecked())
+    {
+       QMessageBox::information(NULL, "Missing parameter", "Select loading period from DB");
+       return;
+    }
+
+    if (daily.isChecked())
+    {
+        dayHour = 'D';
+        lastDate = myDbMeteo->getLastDay(dayHour).date();
+        firstDate = lastDate;
+        if ( all.isChecked() )
+        {
+            firstDate = myDbMeteo->getFirstDay(dayHour).date();
+        }
+
+        Crit3DDate dateStart = getCrit3DDate(firstDate);
+        Crit3DDate dateEnd = getCrit3DDate(lastDate);
+
+        formInfo myInfo;
+        int step = myInfo.start("Load daily data...", myProject.meteoPoints.size());
+
+        for (int i=0; i < myProject.meteoPoints.size(); i++)
+        {
+            if ((i % step) == 0) myInfo.setValue(i);
+
+            myDbMeteo->getDailyData(dateStart, dateEnd, &(myProject.meteoPoints[i]));
+        }
+        myInfo.close();
+    }
+
+    if (hourly.isChecked())
+    {
+        dayHour = 'H';
+        lastDate = myDbMeteo->getLastDay(dayHour).date();
+        firstDate = lastDate;
+        if ( all.isChecked() )
+        {
+            firstDate = myDbMeteo->getFirstDay(dayHour).date();
+        }
+
+        Crit3DDate dateStart = getCrit3DDate(firstDate);
+        Crit3DDate dateEnd = getCrit3DDate(lastDate);
+
+        formInfo myInfo;
+        int step = myInfo.start("Load hourly data...", myProject.meteoPoints.size());
+
+        for (int i=0; i < myProject.meteoPoints.size(); i++)
+        {
+            if ((i % step) == 0) myInfo.setValue(i);
+
+            myDbMeteo->getHourlyData(dateStart, dateEnd, &(myProject.meteoPoints[i]));
+        }
+        myInfo.close();
+    }
+
+    myProject.setCurrentDate(lastDate);
+    myProject.setCurrentHour(12);
 }
 
 
-void MainWindow::displayMeteoPoints()
+void MainWindow::addMeteoPoints()
 {
     QApplication::setOverrideCursor(Qt::ArrowCursor);
 
@@ -432,7 +422,6 @@ void MainWindow::displayMeteoPoints()
 
 void MainWindow::on_actionDownload_meteo_data_triggered()
 {
-
     if(myProject.meteoPoints.isEmpty())
     {
          QMessageBox::information(NULL, "DB not existing", "Create or Open a meteo points database before download");
@@ -588,7 +577,7 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
 
                 QApplication::setOverrideCursor(Qt::WaitCursor);
 
-                if (! myProject.downloadArkimetDailyVar(var, prec24, getCrit3DDate(firstDate), getCrit3DDate(lastDate)))
+                if (! myProject.downloadDailyDataArkimet(var, prec24, getCrit3DDate(firstDate), getCrit3DDate(lastDate)))
                 {
                     QMessageBox *msgBox = new QMessageBox(this);
                     msgBox->setText("Daily Download Error");
@@ -605,7 +594,7 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
                 QApplication::setOverrideCursor(Qt::WaitCursor);
 
                 QMessageBox *msgBox = new QMessageBox(this);
-                if (myProject.downloadArkimetHourlyVar(var, getCrit3DDate(firstDate), getCrit3DDate(lastDate)))
+                if (myProject.downloadHourlyDataArkimet(var, getCrit3DDate(firstDate), getCrit3DDate(lastDate)))
                 {
                     QApplication::restoreOverrideCursor();
                     msgBox->setText("Hourly Download Completed");
@@ -618,7 +607,6 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
                 msgBox->exec();
                 delete msgBox;
             }
-
        }
     }
 }
@@ -740,6 +728,7 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
     this->rasterObj->setDrawing(true);
 }
 
+
 void MainWindow::mouseMoveEvent(QMouseEvent * event)
 {
     QPoint pos = event->pos();
@@ -749,13 +738,12 @@ void MainWindow::mouseMoveEvent(QMouseEvent * event)
     Position geoPoint = this->mapView->mapToScene(mapPoint);
     this->ui->statusBar->showMessage(QString::number(geoPoint.latitude()) + " " + QString::number(geoPoint.longitude()));
 
-
     if (myRubberBand != NULL)
     {
         myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), mapPoint).normalized());
     }
-
 }
+
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
@@ -784,7 +772,7 @@ void MainWindow::resizeEvent(QResizeEvent * event)
     this->mapView->resize(this->ui->widgetMap->size());
 
     this->ui->groupBoxRaster->move(10, this->height() - this->ui->groupBoxRaster->height() - 50);
-    this->ui->groupBoxVariable->move(10, this->ui->groupBoxRaster->y() - this->ui->groupBoxVariable->height() - 50);
+    this->ui->groupBoxVariable->move(10, this->ui->groupBoxRaster->y() - this->ui->groupBoxVariable->height() - 30);
 }
 
 QPoint MainWindow::getMapPoint(QPoint* point) const
@@ -798,7 +786,7 @@ QPoint MainWindow::getMapPoint(QPoint* point) const
     return mapPoint;
 }
 
-void MainWindow::on_opacitySlider_sliderMoved(int position)
+void MainWindow::on_rasterOpacitySlider_sliderMoved(int position)
 {
     if (this->rasterObj != NULL)
         this->rasterObj->setOpacity(position / 100.0);
@@ -899,7 +887,7 @@ void MainWindow::on_actionVariableChoose_triggered()
     QRadioButton RHmax("Maximum relative humidity %");
     QRadioButton Rad("Solar radiation MJ m-2");
 
-    if (myProject.currentFrequency == daily)
+    if (myProject.getFrequency() == daily)
     {
         layoutVariable.addWidget(&Tmin);
         layoutVariable.addWidget(&Tavg);
@@ -910,7 +898,7 @@ void MainWindow::on_actionVariableChoose_triggered()
         layoutVariable.addWidget(&RHmax);
         layoutVariable.addWidget(&Rad);
     }
-    else if (myProject.currentFrequency == hourly)
+    else if (myProject.getFrequency() == hourly)
     {
         Tavg.setText("Average temperature °C");
         Prec.setText("Precipitation mm");
@@ -938,7 +926,7 @@ void MainWindow::on_actionVariableChoose_triggered()
 
     if (myDialog.result() == QDialog::Accepted)
     {
-       if (myProject.currentFrequency == daily)
+       if (myProject.getFrequency() == daily)
        {
            if (Tmin.isChecked())
                myProject.currentVariable = dailyAirTemperatureMin;
@@ -957,7 +945,7 @@ void MainWindow::on_actionVariableChoose_triggered()
            else if (RHavg.isChecked())
                myProject.currentVariable = dailyAirHumidityAvg;
        }
-       else if (myProject.currentFrequency == hourly)
+       else if (myProject.getFrequency() == hourly)
        {
            if (Tavg.isChecked())
                myProject.currentVariable = airTemperature;
@@ -980,7 +968,7 @@ void MainWindow::on_actionVariableHourly_triggered()
     if (this->ui->actionVariableDaily->isChecked())
         this->ui->actionVariableDaily->setChecked(false);
 
-    myProject.currentFrequency = hourly;
+    myProject.setFrequency(hourly);
     this->updateVariable();
 }
 
@@ -990,25 +978,122 @@ void MainWindow::on_actionVariableDaily_triggered()
     if (this->ui->actionVariableHourly->isChecked())
         this->ui->actionVariableHourly->setChecked(false);
 
-    myProject.currentFrequency = daily;
+    myProject.setFrequency(daily);
     this->updateVariable();
 }
 
 
 void MainWindow::updateVariable()
 {
-    if (myProject.currentFrequency == daily)
+    // FREQUENCY
+    if (myProject.getFrequency() == daily)
+    {
         this->ui->labelFrequency->setText("Frequency: daily");
-    else if (myProject.currentFrequency == hourly)
+
+        //check
+        if (myProject.currentVariable == airTemperature)
+            myProject.currentVariable = dailyAirTemperatureAvg;
+
+        else if (myProject.currentVariable == precipitation)
+            myProject.currentVariable = dailyPrecipitation;
+
+        else if (myProject.currentVariable == globalIrradiance)
+            myProject.currentVariable = dailyGlobalRadiation;
+
+        else if (myProject.currentVariable == airHumidity)
+            myProject.currentVariable = dailyAirHumidityAvg;
+    }
+
+    else if (myProject.getFrequency() == hourly)
+    {
         this->ui->labelFrequency->setText("Frequency: hourly");
 
+        //check
+        if ((myProject.currentVariable == dailyAirTemperatureAvg)
+                || (myProject.currentVariable == dailyAirTemperatureMax)
+                || (myProject.currentVariable == dailyAirTemperatureMin))
+            myProject.currentVariable = airTemperature;
+
+        else if ((myProject.currentVariable == dailyAirHumidityAvg)
+                 || (myProject.currentVariable == dailyAirHumidityMax)
+                 || (myProject.currentVariable == dailyAirHumidityMin))
+             myProject.currentVariable = airHumidity;
+
+        else if (myProject.currentVariable == dailyPrecipitation)
+                myProject.currentVariable = precipitation;
+
+        else if (myProject.currentVariable == dailyGlobalRadiation)
+            myProject.currentVariable = globalIrradiance;
+    }
+
+    //VARIABLE
     if ((myProject.currentVariable == airTemperature)
             || (myProject.currentVariable == dailyAirTemperatureAvg))
-        this->ui->labelVariable->setText("Avg. Air Temperature °C");
+        this->ui->labelVariable->setText("Average air temperature °C");
+    else if ((myProject.currentVariable == airHumidity)
+            || (myProject.currentVariable == dailyAirHumidityAvg))
+        this->ui->labelVariable->setText("Average relative humidity %");
+    else if ((myProject.currentVariable == dailyPrecipitation)
+            ||  (myProject.currentVariable == precipitation))
+        this->ui->labelVariable->setText("Precipitation mm");
+    else if (myProject.currentVariable == dailyAirTemperatureMax)
+        this->ui->labelVariable->setText("Maximum air temperature °C");
+    else if (myProject.currentVariable == dailyAirTemperatureMin)
+        this->ui->labelVariable->setText("Minimum air temperature °C");
+    else if (myProject.currentVariable == dailyGlobalRadiation)
+        this->ui->labelVariable->setText("Global solar radiation MJ m-2");
+    else if (myProject.currentVariable == dailyAirHumidityMax)
+        this->ui->labelVariable->setText("Maximum relative humidity %");
+    else if (myProject.currentVariable == dailyAirHumidityMin)
+        this->ui->labelVariable->setText("Minimum relative humidity %");
+    else if (myProject.currentVariable == globalIrradiance)
+        this->ui->labelVariable->setText("Solar irradiance W m-2");
+
     else
         this->ui->labelVariable->setText("None");
 
-    // TODO controllo della current variable e stampa
-    // Carica valori
+    redrawMeteoPoints();
     // TODO colorLegend
+}
+
+
+void MainWindow::updateDateTime()
+{
+    this->ui->dateTimeEdit->setDate(myProject.getCurrentDate());
+    this->ui->dateTimeEdit->setTime(QTime(myProject.getCurrentHour(),0,0,0));
+    redrawMeteoPoints();
+}
+
+
+void MainWindow::redrawMeteoPoints()
+{
+    if (myProject.meteoPoints.size() == 0) return;
+
+    Crit3DDate myDate = getCrit3DDate(myProject.getCurrentDate());
+    int hour = myProject.getCurrentHour();
+
+    float v = NODATA;
+    float minimum = NODATA;
+    float maximum = NODATA;
+    for (int i = 0; i < myProject.meteoPoints.size(); i++)
+    {
+        if (myProject.getFrequency() == daily)
+            v =  myProject.meteoPoints[i].getMeteoPointValueD(myDate, myProject.currentVariable);
+        else if (myProject.getFrequency() == hourly)
+            v =  myProject.meteoPoints[i].getMeteoPointValueH(myDate, hour, 0, myProject.currentVariable);
+
+        if (v != NODATA)
+        {
+            if (minimum == NODATA)
+            {
+                minimum = v;
+                maximum = v;
+            }
+            else if (v < minimum) minimum = v;
+            else if (v > maximum) maximum = v;
+        }
+    }
+
+    qDebug() << "Min, max: " << QString::number(minimum) << QString::number(maximum);
+
 }

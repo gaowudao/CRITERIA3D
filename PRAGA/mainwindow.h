@@ -46,7 +46,7 @@
 
         void on_actionDownload_meteo_data_triggered();
 
-        void on_opacitySlider_sliderMoved(int position);
+        void on_rasterOpacitySlider_sliderMoved(int position);
 
         void on_actionMapToner_triggered();
 
@@ -113,8 +113,10 @@
         QPoint getMapPoint(QPoint* point) const;
 
         void updateVariable();
+        void updateDateTime();
         void resetMeteoPoints();
-        void displayMeteoPoints();
+        void addMeteoPoints();
+        void redrawMeteoPoints();
         void enableAllDataset(bool toggled);
 
         void loadMeteoPointsData(DbMeteoPoints* myDB);

@@ -159,7 +159,6 @@ QDateTime DbMeteoPoints::getLastDay(char dayHour)
             tables << table;
 
         }
-
     }
 
     foreach (QString table, tables)
@@ -245,39 +244,88 @@ QDateTime DbMeteoPoints::getFirstDay(char dayHour)
 }
 
 
-void DbMeteoPoints::getDataFromDailyDb(Crit3DDate dateStart, Crit3DDate dateEnd, QList<Crit3DMeteoPoint> &meteoPointsList)
+void DbMeteoPoints::getDailyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3DMeteoPoint *meteoPoint)
 {
+    QString dateStr;
+    meteoVariable variable;
+    QDateTime d;
+    int idVar;
+    float value;
+
+    int numberOfDays = difference(dateStart, dateEnd) +1;
+    QString startDate = QString::fromStdString(dateStart.toStdString());
+    QString endDate = QString::fromStdString(dateEnd.toStdString());
+
+    QSqlQuery myQuery(_db);
+
+    meteoPoint->initializeObsDataD(numberOfDays, dateStart);
+
+    QString tableName = QString::fromStdString(meteoPoint->id) + "_D";
+
+    QString statement = QString( "SELECT * FROM `%1` WHERE date_time >= DATE('%2') AND date_time < DATE('%3', '+1 day')")
+                                .arg(tableName).arg(startDate).arg(endDate);
+
+    if( !myQuery.exec(statement) )
+    {
+        qDebug() << myQuery.lastError();
+    }
+    else
+    {
+        while (myQuery.next())
+        {
+            dateStr = myQuery.value(0).toString();
+            d = QDateTime::fromString(dateStr, "yyyy-MM-dd HH:mm:ss");
+
+            idVar = myQuery.value(1).toInt();
+            variable = getDefaultMeteoVariable(idVar);
+
+            value = myQuery.value(2).toFloat();
+
+            meteoPoint->setMeteoPointValueD(Crit3DDate(d.date().day(), d.date().month(), d.date().year()), variable, value);
+        }
+    }
+}
+
+
+void DbMeteoPoints::getHourlyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3DMeteoPoint *meteoPoint)
+{
+    QString dateStr;
+    meteoVariable variable;
+    QDateTime d;
+    int idVar;
+    float value;
 
     int numberOfDays = difference(dateStart, dateEnd)+1;
+    int myHourlyFraction = 1;
     QString startDate = QString::fromStdString(dateStart.toStdString());
     QString endDate = QString::fromStdString(dateEnd.toStdString());
 
     QSqlQuery qry(_db);
 
-    for (int i = 0; i < meteoPointsList.size(); i++)
+    meteoPoint->initializeObsDataH(myHourlyFraction, numberOfDays, dateStart);
+
+    QString tableName = QString::fromStdString(meteoPoint->id) + "_H";
+
+    QString statement = QString( "SELECT * FROM `%1` WHERE date_time >= DATE('%2') AND date_time < DATE('%3', '+1 day')")
+                                 .arg(tableName).arg(startDate).arg(endDate);
+    if( !qry.exec(statement) )
     {
-
-        meteoPointsList[i].initializeObsDataD(numberOfDays, dateStart);
-        QString statement = QString( "SELECT * FROM `%1_D` WHERE date_time >= DATE('%2') AND date_time < DATE('%3', '+1 day')")
-                                   .arg(QString::fromStdString(meteoPointsList[i].id)).arg(startDate).arg(endDate);
-        if( !qry.exec(statement) )
+        qDebug() << qry.lastError();
+    }
+    else
+    {
+        while (qry.next())
         {
-            qDebug() << qry.lastError();
-        }
-        else
-        {
-            while (qry.next())
-            {
-                QString dateStr = qry.value(0).toString();
-                QDateTime qDateT = QDateTime::fromString(dateStr,"yyyy-MM-dd HH:mm:ss");
-                Crit3DDate date(qDateT.date().day(), qDateT.date().month(), qDateT.date().year());
+            dateStr = qry.value(0).toString();
+            d = QDateTime::fromString(dateStr,"yyyy-MM-dd HH:mm:ss");
 
-                int idVar = qry.value(1).toInt();
-                meteoVariable meteoVar = getDefaultMeteoVariable(idVar);
+            idVar = qry.value(1).toInt();
+            variable = getDefaultMeteoVariable(idVar);
 
-                float value = qry.value(2).toFloat();
-                meteoPointsList[i].setMeteoPointValueD(date, meteoVar, value);
-            }
+            value = qry.value(2).toFloat();
+
+            meteoPoint->setMeteoPointValueH(Crit3DDate(d.date().day(), d.date().month(), d.date().year()),
+                                                   d.time().hour(), d.time().minute(), variable, value);
         }
     }
 }
@@ -357,42 +405,7 @@ bool DbMeteoPoints::fillPointProperties(Crit3DMeteoPoint *myPoint)
 }
 
 
-void DbMeteoPoints::getDataFromHourlyDb(Crit3DDate dateStart, Crit3DDate dateEnd, QList<Crit3DMeteoPoint> &meteoPointsList)
-{
 
-    int numberOfDays = difference(dateStart, dateEnd)+1;
-    int myHourlyFraction = 1;
-    QString startDate = QString::fromStdString(dateStart.toStdString());
-    QString endDate = QString::fromStdString(dateEnd.toStdString());
-
-    QSqlQuery qry(_db);
-
-    for (int i = 0; i < meteoPointsList.size(); i++)
-    {
-        meteoPointsList[i].initializeObsDataH(myHourlyFraction, numberOfDays, dateStart);
-        QString statement = QString( "SELECT * FROM `%1_H` WHERE date_time >= DATE('%2') AND date_time < DATE('%3', '+1 day')")
-                                        .arg(QString::fromStdString(meteoPointsList[i].id)).arg(startDate).arg(endDate);
-        if( !qry.exec(statement) )
-        {
-            qDebug() << qry.lastError();
-        }
-        else
-        {
-            while (qry.next())
-            {
-                QString dateStr = qry.value(0).toString();
-                QDateTime qDateT = QDateTime::fromString(dateStr,"yyyy-MM-dd HH:mm:ss");
-                Crit3DDate date(qDateT.date().day(), qDateT.date().month(), qDateT.date().year());
-
-                int idVar = qry.value(1).toInt();
-                meteoVariable meteoVar = getDefaultMeteoVariable(idVar);
-
-                float value = qry.value(2).toFloat();
-                meteoPointsList[i].setMeteoPointValueH(date, qDateT.time().hour(), qDateT.time().minute(), meteoVar, value);
-            }
-        }
-    }
-}
 
 
 

@@ -21,6 +21,12 @@
     #include <QDate>
 
     class Project {
+    private:
+
+        frequencyType currentFrequency;
+        QDate previousDate, currentDate;
+        short currentHour;
+
     public:
         QList<Crit3DMeteoPoint> meteoPoints;
         QList<gis::Crit3DGeoPoint> meteoPointsSelected;
@@ -32,15 +38,19 @@
         gis::Crit3DGisSettings gisSettings;
 
         meteoVariable currentVariable;
-        frequencyType currentFrequency;
-        QDate currentDate;
-        short currentHour;
 
         Project();
 
+        void setCurrentDate(QDate myDate);
+        void setCurrentHour(short myHour);
+        void setFrequency(frequencyType myFrequency);
+        QDate getCurrentDate();
+        short getCurrentHour();
+        frequencyType getFrequency();
+
         bool loadRaster(QString myFileName);
-        bool downloadArkimetDailyVar(QStringList variables, bool precSelection, Crit3DDate dateStart, Crit3DDate dateEnd);
-        bool downloadArkimetHourlyVar(QStringList variables, Crit3DDate dateStart, Crit3DDate dateEnd);
+        bool downloadDailyDataArkimet(QStringList variables, bool precSelection, Crit3DDate dateStart, Crit3DDate dateEnd);
+        bool downloadHourlyDataArkimet(QStringList variables, Crit3DDate dateStart, Crit3DDate dateEnd);
     };
 
     Crit3DDate getCrit3DDate(const QDate& myDate);
