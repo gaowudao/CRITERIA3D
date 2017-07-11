@@ -68,6 +68,8 @@
 
         void on_actionVariableDaily_triggered();
 
+        void on_dateTimeEdit_dateTimeChanged(const QDateTime &dateTime);
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
@@ -118,8 +120,6 @@
         void addMeteoPoints();
         void redrawMeteoPoints();
         void enableAllDataset(bool toggled);
-
-        void loadMeteoPointsData(DbMeteoPoints* myDB);
 
     };
 

@@ -51,6 +51,9 @@
         bool loadRaster(QString myFileName);
         bool downloadDailyDataArkimet(QStringList variables, bool precSelection, Crit3DDate dateStart, Crit3DDate dateEnd);
         bool downloadHourlyDataArkimet(QStringList variables, Crit3DDate dateStart, Crit3DDate dateEnd);
+        bool loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo);
+        bool loadlastMeteoData();
+
     };
 
     Crit3DDate getCrit3DDate(const QDate& myDate);

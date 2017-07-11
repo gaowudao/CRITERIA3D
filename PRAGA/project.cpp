@@ -1,4 +1,5 @@
 #include "project.h"
+#include "forminfo.h"
 #include <QLabel>
 #include <QtDebug>
 #include <QMessageBox>
@@ -232,6 +233,54 @@ frequencyType Project::getFrequency()
 {
     return this->currentFrequency;
 }
+
+
+bool Project::loadlastMeteoData()
+{
+    QDate lastDateD = dbMeteoPoints->getLastDay(daily).date();
+    QDate lastDateH = dbMeteoPoints->getLastDay(hourly).date();
+
+    QDate lastDate = (lastDateD > lastDateH) ? lastDateD : lastDateH;
+
+    setCurrentDate(lastDate);
+    setCurrentHour(12);
+
+    return loadMeteoPointsData (lastDate, lastDate, true);
+}
+
+
+bool Project::loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo)
+{
+    //check
+    if (firstDate == QDate(1800,1,1)
+        || lastDate == QDate(1800,1,1)) return false;
+
+    bool isData = false;
+    formInfo myInfo;
+    int step;
+
+    QString infoStr = "Load data: " + firstDate.toString();
+
+    if (firstDate != lastDate)
+        infoStr += " - " + lastDate.toString();
+
+    if (showInfo)
+        step = myInfo.start(infoStr, meteoPoints.size());
+
+    for (int i=0; i < meteoPoints.size(); i++)
+    {
+        if (showInfo)
+            if ((i % step) == 0) myInfo.setValue(i);
+
+        if (dbMeteoPoints->getDailyData(getCrit3DDate(firstDate), getCrit3DDate(lastDate), &(meteoPoints[i]))) isData = true;
+        if (dbMeteoPoints->getHourlyData(getCrit3DDate(firstDate), getCrit3DDate(lastDate), &(meteoPoints[i]))) isData = true;
+    }
+
+    if (showInfo) myInfo.close();
+
+    return isData;
+}
+
 
 
 

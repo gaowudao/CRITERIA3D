@@ -286,11 +286,14 @@ void MainWindow::on_actionOpen_meteo_points_DB_triggered()
     myProject.meteoPoints =  myProject.dbMeteoPoints->getPropertiesFromDb();
     addMeteoPoints();
 
-    loadMeteoPointsData(myProject.dbMeteoPoints);
+    if (! myProject.loadlastMeteoData())
+        QMessageBox::information(NULL, "No Data", "No data in meteo points database");;
+
     this->updateDateTime();
 }
 
 
+/*
 void MainWindow::loadMeteoPointsData(DbMeteoPoints* myDbMeteo)
 {
     QDialog load;
@@ -397,6 +400,7 @@ void MainWindow::loadMeteoPointsData(DbMeteoPoints* myDbMeteo)
     myProject.setCurrentDate(lastDate);
     myProject.setCurrentHour(12);
 }
+*/
 
 
 void MainWindow::addMeteoPoints()
@@ -1096,4 +1100,21 @@ void MainWindow::redrawMeteoPoints()
 
     qDebug() << "Min, max: " << QString::number(minimum) << QString::number(maximum);
 
+}
+
+
+void MainWindow::on_dateTimeEdit_dateTimeChanged(const QDateTime &dateTime)
+{
+    //date
+    if (dateTime.date() != myProject.getCurrentDate())
+    {
+        myProject.setCurrentDate(dateTime.date());
+        myProject.loadMeteoPointsData(dateTime.date(), dateTime.date(), true);
+    }
+
+    //hour
+    if (dateTime.time().hour() != myProject.getCurrentHour())
+        myProject.setCurrentHour(dateTime.time().hour());
+
+    redrawMeteoPoints();
 }

@@ -1,5 +1,6 @@
 #include "dbMeteoPoints.h"
 #include "commonConstants.h"
+#include "meteo.h"
 
 #include <QDebug>
 
@@ -136,16 +137,20 @@ QStringList DbMeteoPoints::getDatasetsList()
 }
 
 
-QDateTime DbMeteoPoints::getLastDay(char dayHour)
+QDateTime DbMeteoPoints::getLastDay(frequencyType frequency)
 {
-
     QSqlQuery qry(_db);
     QStringList tables;
     QDateTime lastDay(QDate(1800, 1, 1), QTime(0, 0, 0));
 
-    qry.prepare( "SELECT name FROM sqlite_master WHERE type='table' AND name like :dayHour ESCAPE '^'");
-    qry.bindValue(":dayHour",  "%^_" + QString(dayHour)  + "%");
+    QString dayHour;
+    if (frequency == daily)
+        dayHour = "D";
+    else if (frequency == hourly)
+        dayHour = "H";
 
+    qry.prepare( "SELECT name FROM sqlite_master WHERE type='table' AND name like :dayHour ESCAPE '^'");
+    qry.bindValue(":dayHour",  "%^_" + dayHour  + "%");
 
     if( !qry.exec() )
     {
@@ -157,13 +162,11 @@ QDateTime DbMeteoPoints::getLastDay(char dayHour)
         {
             QString table = qry.value(0).toString();
             tables << table;
-
         }
     }
 
     foreach (QString table, tables)
     {
-
         QString statement = QString( "SELECT date_time FROM `%1` ORDER BY datetime(date_time) DESC Limit 1").arg(table);
         if( !qry.exec(statement) )
         {
@@ -171,7 +174,6 @@ QDateTime DbMeteoPoints::getLastDay(char dayHour)
         }
         else
         {
-
             if (qry.next())
             {
                 QString dateStr = qry.value(0).toString();
@@ -180,28 +182,29 @@ QDateTime DbMeteoPoints::getLastDay(char dayHour)
                 {
                     lastDay = date;
                 }
-
             }
-
         }
-
     }
 
     return lastDay;
 }
 
 
-QDateTime DbMeteoPoints::getFirstDay(char dayHour)
+QDateTime DbMeteoPoints::getFirstDay(frequencyType frequency)
 {
 
     QSqlQuery qry(_db);
     QStringList tables;
     QDateTime firstDay(QDate::currentDate(), QTime(0, 0, 0));
 
+    QString dayHour;
+    if (frequency == daily)
+        dayHour = "D";
+    else if (frequency == hourly)
+        dayHour = "H";
 
     qry.prepare( "SELECT name FROM sqlite_master WHERE type='table' AND name like :dayHour ESCAPE '^'");
-    qry.bindValue(":dayHour",  "%^_" + QString(dayHour)  + "%");
-
+    qry.bindValue(":dayHour",  "%^" + dayHour  + "%");
 
     if( !qry.exec() )
     {
@@ -213,14 +216,11 @@ QDateTime DbMeteoPoints::getFirstDay(char dayHour)
         {
             QString table = qry.value(0).toString();
             tables << table;
-
         }
-
     }
 
     foreach (QString table, tables)
     {
-
         QString statement = QString( "SELECT date_time FROM `%1` ORDER BY datetime(date_time) ASC Limit 1").arg(table);
         if( !qry.exec(statement) )
         {
@@ -228,7 +228,6 @@ QDateTime DbMeteoPoints::getFirstDay(char dayHour)
         }
         else
         {
-
             if (qry.next())
             {
                 QString dateStr = qry.value(0).toString();
@@ -244,7 +243,8 @@ QDateTime DbMeteoPoints::getFirstDay(char dayHour)
 }
 
 
-void DbMeteoPoints::getDailyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3DMeteoPoint *meteoPoint)
+
+bool DbMeteoPoints::getDailyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3DMeteoPoint *meteoPoint)
 {
     QString dateStr;
     meteoVariable variable;
@@ -268,6 +268,7 @@ void DbMeteoPoints::getDailyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3
     if( !myQuery.exec(statement) )
     {
         qDebug() << myQuery.lastError();
+        return false;
     }
     else
     {
@@ -284,10 +285,12 @@ void DbMeteoPoints::getDailyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3
             meteoPoint->setMeteoPointValueD(Crit3DDate(d.date().day(), d.date().month(), d.date().year()), variable, value);
         }
     }
+
+    return true;
 }
 
 
-void DbMeteoPoints::getHourlyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3DMeteoPoint *meteoPoint)
+bool DbMeteoPoints::getHourlyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3DMeteoPoint *meteoPoint)
 {
     QString dateStr;
     meteoVariable variable;
@@ -311,6 +314,7 @@ void DbMeteoPoints::getHourlyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit
     if( !qry.exec(statement) )
     {
         qDebug() << qry.lastError();
+        return false;
     }
     else
     {
@@ -328,6 +332,7 @@ void DbMeteoPoints::getHourlyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit
                                                    d.time().hour(), d.time().minute(), variable, value);
         }
     }
+    return true;
 }
 
 
