@@ -56,7 +56,6 @@ bool Download::getPointProperties(QStringList datasetList)
     }
     else
     {
-
         QString data = (QString) reply->readAll();
 
         QJsonParseError *error = new QJsonParseError();
@@ -78,7 +77,7 @@ bool Download::getPointProperties(QStringList datasetList)
                     QJsonValue jsonDataset = obj.value("network");
 
                     if (jsonDataset.isUndefined())
-                            qDebug() << "Key id does not exist";
+                        qDebug() << "Key id does not exist";
                     else if (!jsonDataset.isString())
                         qDebug() << "Value not string";
                     else
@@ -101,7 +100,6 @@ bool Download::getPointProperties(QStringList datasetList)
     delete reply;
     delete manager;
     return result;
-
 }
 
 
@@ -287,9 +285,8 @@ bool Download::downloadDailyDataSinglePoint(Crit3DDate dateStart, Crit3DDate dat
 
 
 
-bool Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStringList datasets, QStringList stations, QList<int> variables, bool precSelection)
+bool Download::downloadDailyData(Crit3DDate dateStart, Crit3DDate dateEnd, QStringList datasets, QStringList stations, QList<int> variables, bool precSelection)
 {
-
     // create station tables
     _dbMeteo->initStationsDailyTables(dateStart, dateEnd, stations);
 
@@ -388,13 +385,13 @@ bool Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStrin
                         varValue *= DAY_SECONDS / 1000000.0;
                     }
 
-                    /*
+
                     int id_var = _dbMeteo->arkIdmap(arkId);
 
                     if (!(id_point.isEmpty()))
                     {
                         _dbMeteo->insertDailyValue(id_point, date, id_var, varValue, flag);
-                    }*/
+                    }
 
                     dateStart = myDate.addDays(1);
                 }
@@ -409,7 +406,7 @@ bool Download::downloadDailyVar(Crit3DDate dateStart, Crit3DDate dateEnd, QStrin
 }
 
 
-bool Download::downloadHourlyVar(Crit3DTime dateStartTime, Crit3DTime dateEndTime, QStringList datasets, QStringList stations, QList<int> variables)
+bool Download::downloadHourlyData(Crit3DTime dateStartTime, Crit3DTime dateEndTime, QStringList datasets, QStringList stations, QList<int> variables)
 {
 
     // create station tables
@@ -453,12 +450,10 @@ bool Download::downloadHourlyVar(Crit3DTime dateStartTime, Crit3DTime dateEndTim
     for (i.date = dateStartTime.date.addDays(stepDate); dateEndTime >= dateStartTime; i.date = dateStartTime.date.addDays(stepDate))
     {
 
-
         if (i > dateEndTime)
             i = dateEndTime;
-       else
+        else
             i = i.addSeconds(-1800);
-
 
         // reftime
         QString refTime = QString("reftime:>=%1,<=%2").arg(QString::fromStdString(dateStartTime.toStdString())).arg(QString::fromStdString(i.toStdString()));

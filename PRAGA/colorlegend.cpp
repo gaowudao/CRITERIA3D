@@ -24,7 +24,7 @@ void ColorLegend::paintEvent(QPaintEvent *)
     drawColorLegend(colorScale, &painter);
 }
 
-bool drawColorLegend(gis::Crit3DColorScale* colorScale, QPainter* myPainter)
+bool drawColorLegend(Crit3DColorScale* colorScale, QPainter* myPainter)
 {
     if (colorScale == NULL) return false;
 
@@ -32,14 +32,14 @@ bool drawColorLegend(gis::Crit3DColorScale* colorScale, QPainter* myPainter)
     float maximum = colorScale->maximum;
     if ((minimum == NODATA) || (maximum == NODATA)) return false;
 
-    const int DELTA = 25;
+    const int DELTA = 20;
     int legendWidth = myPainter->window().width() - DELTA*2;
     int nrStep = colorScale->nrColors;
     float step = float(maximum - minimum) / float(nrStep);
     float dx = float(legendWidth) / float(nrStep+1);
     int n = nrStep/4;
 
-    gis::Crit3DColor* myColor;
+    Crit3DColor* myColor;
     QColor myQColor;
     float value = minimum;
 

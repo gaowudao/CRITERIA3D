@@ -1,8 +1,11 @@
-#include "project.h"
-#include "forminfo.h"
 #include <QLabel>
 #include <QtDebug>
 #include <QMessageBox>
+
+#include "project.h"
+#include "forminfo.h"
+#include "utils.h"
+#include "commonConstants.h"
 
 
 Project::Project()
@@ -12,7 +15,7 @@ Project::Project()
     currentDate.setDate(1800,1,1);
     previousDate = currentDate;
     currentHour = 12;
-    colorScalePoints = new gis::Crit3DColorScale();
+    colorScalePoints = new Crit3DColorScale();
 }
 
 
@@ -32,7 +35,7 @@ bool Project::loadRaster(QString myFileName)
         this->DTM.isLoaded = true;
         gis::updateMinMaxRasterGrid(&(this->DTM));
         // colorscale
-        gis::setDefaultDTMScale(this->DTM.colorScale);
+        setDefaultDTMScale(this->DTM.colorScale);
 
         gis::Crit3DGridHeader myLatLonHeader;
         gis::getGeoExtentsFromUTMHeader(this->gisSettings, this->DTM.header, &myLatLonHeader);
@@ -126,9 +129,7 @@ bool Project::downloadDailyDataArkimet(QStringList variables, bool prec24, Crit3
         }
     }
 
-    if (! myDownload->downloadDailyVar(dateStart, dateEnd, dataset, id, arkIdVar, prec24)) return false;
-
-    return true;
+    return myDownload->downloadDailyData(dateStart, dateEnd, dataset, id, arkIdVar, prec24);
 }
 
 
@@ -197,8 +198,9 @@ bool Project::downloadHourlyDataArkimet(QStringList variables, Crit3DDate dateSt
     qDebug() << "arkIdVar" << arkIdVar;
 
     Download* myDownload = new Download(dbMeteoPoints->getDbName());
-    return myDownload->downloadHourlyVar(dateTimeStart, dateTimeEnd, datasets, id, arkIdVar);
+    return myDownload->downloadHourlyData(dateTimeStart, dateTimeEnd, datasets, id, arkIdVar);
 }
+
 
 
 void Project::setCurrentDate(QDate myDate)
@@ -281,6 +283,62 @@ bool Project::loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo
 
     return isData;
 }
+
+
+void Project::getMeteoPointsRange(float *minimum, float *maximum)
+{
+    float v = NODATA;
+    *minimum = NODATA;
+    *maximum = NODATA;
+
+    for (int i = 0; i < meteoPoints.size(); i++)
+    {
+        if (currentFrequency == daily)
+            v =  meteoPoints[i].getMeteoPointValueD(getCrit3DDate(currentDate), currentVariable);
+        else if (currentFrequency == hourly)
+            v =  meteoPoints[i].getMeteoPointValueH(getCrit3DDate(currentDate), currentHour, 0, currentVariable);
+
+        if (v != NODATA)
+        {
+            if (*minimum == NODATA)
+            {
+                *minimum = v;
+                *maximum = v;
+            }
+            else if (v < *minimum) *minimum = v;
+            else if (v > *maximum) *maximum = v;
+        }
+    }
+}
+
+
+bool setColorScale(Crit3DColorScale *colorScale, meteoVariable variable)
+{
+    if (colorScale == NULL) return false;
+
+    switch(variable)
+    {
+        case airTemperature: case dailyAirTemperatureAvg: case dailyAirTemperatureMax: case dailyAirTemperatureMin:
+            setTemperatureScale(colorScale);
+            break;
+        case airHumidity: case dailyAirHumidityAvg: case dailyAirHumidityMax: case dailyAirHumidityMin:
+            setRelativeHumidityScale(colorScale);
+            break;
+        case precipitation: case dailyPrecipitation:
+            setPrecipitationScale(colorScale);
+            break;
+        case globalIrradiance: case dailyGlobalRadiation:
+            setRadiationScale(colorScale);
+            break;
+        default:
+            setTemperatureScale(colorScale);
+    }
+
+    return true;
+}
+
+
+
 
 
 

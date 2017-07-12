@@ -2,7 +2,7 @@
 #define COLORLEGEND_H
 
     #include <QWidget>
-    #include "gis.h"
+    #include "color.h"
 
     class ColorLegend : public QWidget
     {
@@ -12,12 +12,12 @@
         explicit ColorLegend(QWidget *parent = 0);
         ~ColorLegend();
 
-        gis::Crit3DColorScale *colorScale;
+        Crit3DColorScale *colorScale;
 
     private:
         void paintEvent(QPaintEvent *);
     };
 
-    bool drawColorLegend(gis::Crit3DColorScale* colorScale, QPainter* myPainter);
+    bool drawColorLegend(Crit3DColorScale* colorScale, QPainter* myPainter);
 
 #endif // COLORLEGEND_H
