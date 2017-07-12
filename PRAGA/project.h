@@ -36,7 +36,7 @@
         gis::Crit3DRasterGrid rowMatrix;
         gis::Crit3DRasterGrid colMatrix;
         gis::Crit3DGisSettings gisSettings;
-        gis::Crit3DColorScale *colorScalePoints;
+        Crit3DColorScale *colorScalePoints;
 
         meteoVariable currentVariable;
 
@@ -55,8 +55,10 @@
         bool loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo);
         bool loadlastMeteoData();
 
+        void getMeteoPointsRange(float *minimum, float *maximum);
+
     };
 
-    Crit3DDate getCrit3DDate(const QDate& myDate);
+    bool setColorScale(Crit3DColorScale *colorScale, meteoVariable variable);
 
 #endif // PROJECT_H

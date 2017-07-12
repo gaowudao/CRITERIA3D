@@ -123,7 +123,7 @@ bool RasterObject::drawRaster(Project* myProject, gis::Crit3DRasterGrid *myRaste
     gis::Crit3DRasterWindow utmWindow;
     gis::getUtmWindow(myProject->gisSettings, myProject->rowMatrix.header, myRaster->header, latLonWindow, &utmWindow);
     gis::updateColorScale(myRaster, utmWindow);
-    gis::roundColorScale(myRaster->colorScale, 4, false);
+    roundColorScale(myRaster->colorScale, 4, false);
 
     // lower left position
     gis::Crit3DGeoPoint llCorner;
@@ -140,7 +140,7 @@ bool RasterObject::drawRaster(Project* myProject, gis::Crit3DRasterGrid *myRaste
 
     int x0, y0, x1, y1, lx, ly;
     long utmRow, utmCol;
-    gis::Crit3DColor* myColor;
+    Crit3DColor* myColor;
     QColor myQColor;
     float myValue;
 

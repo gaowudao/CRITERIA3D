@@ -1,6 +1,7 @@
 #include "dbMeteoPoints.h"
 #include "commonConstants.h"
 #include "meteo.h"
+#include "meteoPoint.h"
 
 #include <QDebug>
 
