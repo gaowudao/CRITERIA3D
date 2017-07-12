@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
 
     environment test = praga;
 
+    QApplication::setOverrideCursor(Qt::ArrowCursor);
     MainWindow w(test);
     w.show();
 

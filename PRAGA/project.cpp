@@ -312,27 +312,28 @@ void Project::getMeteoPointsRange(float *minimum, float *maximum)
 }
 
 
-bool setColorScale(Crit3DColorScale *colorScale, meteoVariable variable)
+void Project::closeMeteoPointsDB()
 {
-    if (colorScale == NULL) return false;
+    dbMeteoPoints->disconnect();
+    dbMeteoPoints->deleteLater();
+    meteoPoints.clear();
+    meteoPointsSelected.clear();
+}
 
-    switch(variable)
-    {
-        case airTemperature: case dailyAirTemperatureAvg: case dailyAirTemperatureMax: case dailyAirTemperatureMin:
-            setTemperatureScale(colorScale);
-            break;
-        case airHumidity: case dailyAirHumidityAvg: case dailyAirHumidityMax: case dailyAirHumidityMin:
-            setRelativeHumidityScale(colorScale);
-            break;
-        case precipitation: case dailyPrecipitation:
-            setPrecipitationScale(colorScale);
-            break;
-        case globalIrradiance: case dailyGlobalRadiation:
-            setRadiationScale(colorScale);
-            break;
-        default:
-            setTemperatureScale(colorScale);
-    }
+
+bool Project::loadMeteoPointsDB(QString dbName, bool showInfo)
+{
+    if (dbName == "") return false;
+
+    closeMeteoPointsDB();
+
+    formInfo myInfo;
+    if (showInfo) myInfo.start("Load " + dbName, 0);
+
+    dbMeteoPoints = new DbMeteoPoints(dbName);
+    meteoPoints =  dbMeteoPoints->getPropertiesFromDb();
+
+    if (showInfo) myInfo.close();
 
     return true;
 }

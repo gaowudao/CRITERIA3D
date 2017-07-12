@@ -53,12 +53,12 @@
         bool downloadDailyDataArkimet(QStringList variables, bool precSelection, Crit3DDate dateStart, Crit3DDate dateEnd);
         bool downloadHourlyDataArkimet(QStringList variables, Crit3DDate dateStart, Crit3DDate dateEnd);
         bool loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo);
-        bool loadlastMeteoData();
-
         void getMeteoPointsRange(float *minimum, float *maximum);
 
+        bool loadlastMeteoData();
+        void closeMeteoPointsDB();
+        bool loadMeteoPointsDB(QString dbName, bool showInfo);
     };
 
-    bool setColorScale(Crit3DColorScale *colorScale, meteoVariable variable);
 
 #endif // PROJECT_H

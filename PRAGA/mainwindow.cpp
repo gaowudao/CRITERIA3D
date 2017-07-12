@@ -204,8 +204,7 @@ void MainWindow::on_actionMeteoPointsArkimet_triggered()
                 {
                     QApplication::restoreOverrideCursor();
 
-                    myProject.dbMeteoPoints = new DbMeteoPoints(dbName);
-                    myProject.meteoPoints = myProject.dbMeteoPoints->getPropertiesFromDb();
+                    myProject.loadMeteoPointsDB(dbName, true);
 
                     this->addMeteoPoints();
                 }
@@ -278,24 +277,18 @@ void MainWindow::enableAllDataset(bool toggled)
 
 }
 
+
 void MainWindow::on_actionOpen_meteo_points_DB_triggered()
 {
-    resetMeteoPoints();
-
     QString dbName = QFileDialog::getOpenFileName(this, tr("Open DB meteo"), "", tr("DB files (*.db)"));
     if (dbName == "") return;
 
-    formInfo myInfo;
-    myInfo.start("Load " + dbName, 0);
+    resetMeteoPoints();
+    myProject.loadMeteoPointsDB(dbName, true);
 
-        myProject.dbMeteoPoints = new DbMeteoPoints(dbName);
-        myProject.meteoPoints =  myProject.dbMeteoPoints->getPropertiesFromDb();
-        addMeteoPoints();
+    this->addMeteoPoints();
 
-    myInfo.close();
-
-    if (! myProject.loadlastMeteoData())
-        QMessageBox::information(NULL, "No Data", "No data in meteo points database");;
+    if (! myProject.loadlastMeteoData()) qDebug ("NO data");
 
     this->updateDateTime();
 }
@@ -304,8 +297,6 @@ void MainWindow::on_actionOpen_meteo_points_DB_triggered()
 
 void MainWindow::addMeteoPoints()
 {
-    QApplication::setOverrideCursor(Qt::ArrowCursor);
-
     myProject.meteoPointsSelected.clear();
     for (int i = 0; i < myProject.meteoPoints.size(); i++)
     {
@@ -756,11 +747,6 @@ void MainWindow::on_actionRectangle_Selection_triggered()
 
 void MainWindow::resetMeteoPoints()
 {
-    this->myRubberBand = NULL;
-    myProject.meteoPoints.clear();
-
-    myProject.meteoPointsSelected.clear();
-
     firstDate.setDate(0,0,0);
     lastDate.setDate(0,0,0);
 
@@ -772,6 +758,8 @@ void MainWindow::resetMeteoPoints()
     }
     qDeleteAll(this->pointList.begin(), this->pointList.end());
     this->pointList.clear();
+
+    this->myRubberBand = NULL;
 }
 
 

@@ -30,6 +30,9 @@
     #ifndef CRIT3DDATE_H
         #include "crit3dDate.h"
     #endif
+    #ifndef CRIT3DCOLOR_H
+        #include "color.h"
+    #endif
 
     #define ALBEDO_WATER 0.05
     #define ALBEDO_SOIL 0.15
@@ -70,12 +73,19 @@
 
     float relHumFromTdew(float dewT, float airT);
     float tDewFromRelHum(float rhAir, float airT);
+
     double ET0_Penman_hourly(double heigth, double normalizedTransmissivity, double globalSWRadiation,
                     double airTemp, double airHum, double windSpeed10);
+
     double ET0_Penman_daily(int myDOY, float myLatitude, float myPressure,
-                           float myTmin, float myTmax, float myTminDayAfter, float myUmed, float myVmed10, float mySWGlobRad);
+                    float myTmin, float myTmax, float myTminDayAfter,
+                    float myUmed, float myVmed10, float mySWGlobRad);
+
     double ET0_Hargreaves(double KT, double myLat, int myDoy, double tmax, double tmin);
 
     meteoVariable getDefaultMeteoVariable(int myVar);
+
+    bool setColorScale(Crit3DColorScale *colorScale, meteoVariable variable);
+
 
 #endif // METEO_H

@@ -94,20 +94,14 @@ QStringList DbMeteoPoints::getDatasetsActive()
 
 void DbMeteoPoints::setDatasetsActive(QString active)
 {
-
     QString statement = QString("UPDATE datasets SET active = 1 where dataset IN ( %1 )").arg(active);
 
     QSqlQuery qry(statement, _db);
 
     if( !qry.exec() )
         qDebug() << qry.lastError();
-    else
-    {
-        qDebug( "set active!" );
-    }
-
-
 }
+
 
 QStringList DbMeteoPoints::getDatasetsList()
 {
@@ -122,19 +116,14 @@ QStringList DbMeteoPoints::getDatasetsList()
     }
     else
     {
-        qDebug( "getDatasetsList Selected!" );
-
         while (qry.next())
         {
             QString dataset = qry.value(0).toString();
             datasetList << dataset;
-
         }
-
     }
 
     return datasetList;
-
 }
 
 

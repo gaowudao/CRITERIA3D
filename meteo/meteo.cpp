@@ -336,3 +336,29 @@ meteoVariable getDefaultMeteoVariable(int id)
     else
         return(noMeteoVar);
 }
+
+
+bool setColorScale(Crit3DColorScale *colorScale, meteoVariable variable)
+{
+    if (colorScale == NULL) return false;
+
+    switch(variable)
+    {
+        case airTemperature: case dailyAirTemperatureAvg: case dailyAirTemperatureMax: case dailyAirTemperatureMin:
+            setTemperatureScale(colorScale);
+            break;
+        case airHumidity: case dailyAirHumidityAvg: case dailyAirHumidityMax: case dailyAirHumidityMin:
+            setRelativeHumidityScale(colorScale);
+            break;
+        case precipitation: case dailyPrecipitation:
+            setPrecipitationScale(colorScale);
+            break;
+        case globalIrradiance: case dailyGlobalRadiation:
+            setRadiationScale(colorScale);
+            break;
+        default:
+            setTemperatureScale(colorScale);
+    }
+
+    return true;
+}
