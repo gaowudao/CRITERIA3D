@@ -86,18 +86,6 @@ void Plot::addCurve(QString myTitle, QwtPlotGappedCurve::CurveStyle myStyle, QPe
     myCurve->setStyle(myStyle);
     myCurve->setSamples(samples);
     myCurve->attach( this );
-
-    const QwtScaleMap xMap = canvasMap( myCurve->xAxis() );
-    const QwtScaleMap yMap = canvasMap( myCurve->yAxis() );
-
-    QRectF myRect = myCurve->scaleRect(xMap, yMap);
-
-    for (int i=50; i<100; i++)
-        samples[i].setY(NODATA);
-
-    QPainter* myPainter = this->paintEngine()->painter();
-
-    myCurve->drawSeries(myPainter, xMap, yMap, myRect, 0, samples.size());
 }
 
 QVector<QPointF> getProfileSeries(heat_output* myOut, outputType myVar, int layerIndex)
@@ -163,6 +151,9 @@ QVector<QPointF> getProfileSeries(heat_output* myOut, outputType myVar, int laye
 
     }
 
+    for (int i=50; i<100; i++)
+        mySeries[i].setY(NODATA);
+
     return mySeries;
 }
 
@@ -172,20 +163,20 @@ void Plot::drawProfile(outputType graphType, heat_output* myOut)
 
     QPen myPen;
 
-    gis::Crit3DColorScale myColorScale;
+    Crit3DColorScale myColorScale;
     myColorScale.nrKeyColors = 3;
     myColorScale.nrColors = 256;
-    myColorScale.keyColor = new gis::Crit3DColor[myColorScale.nrKeyColors];
-    myColorScale.color = new gis::Crit3DColor[myColorScale.nrColors];
+    myColorScale.keyColor = new Crit3DColor[myColorScale.nrKeyColors];
+    myColorScale.color = new Crit3DColor[myColorScale.nrColors];
     myColorScale.classification = classificationMethod::EqualInterval;
-    myColorScale.keyColor[0] = gis::Crit3DColor(0, 0, 255);         /*!< blue */
-    myColorScale.keyColor[1] = gis::Crit3DColor(255, 255, 0);       /*!< yellow */
-    myColorScale.keyColor[2] = gis::Crit3DColor(255, 0, 0);         /*!< red */
+    myColorScale.keyColor[0] = Crit3DColor(0, 0, 255);         /*!< blue */
+    myColorScale.keyColor[1] = Crit3DColor(255, 255, 0);       /*!< yellow */
+    myColorScale.keyColor[2] = Crit3DColor(255, 0, 0);         /*!< red */
     myColorScale.minimum = 0;
     myColorScale.maximum = myOut->nrLayers-1;
     myColorScale.classify();
 
-    gis::Crit3DColor* myColor;
+    Crit3DColor* myColor;
     QColor myQColor;
 
     float myDepth;
@@ -204,6 +195,7 @@ void Plot::drawProfile(outputType graphType, heat_output* myOut)
         addCurve(QString::number(myDepth,'f',3), QwtPlotCurve::Lines, myPen, mySeries);
     }
 
+    this->setAxisScale();
     replot();
 }
 
