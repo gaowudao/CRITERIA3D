@@ -70,6 +70,8 @@
 
         void on_dateTimeEdit_dateTimeChanged(const QDateTime &dateTime);
 
+        void enableAllDataset(bool toggled);
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
@@ -120,7 +122,6 @@
         void resetMeteoPoints();
         void addMeteoPoints();
         void redrawMeteoPoints();
-        void enableAllDataset(bool toggled);
 
     };
 

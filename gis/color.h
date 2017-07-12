@@ -23,8 +23,8 @@
     ftomei@arpae.it
 */
 
-#ifndef COLOR_H
-#define COLOR_H
+#ifndef CRIT3DCOLOR_H
+#define CRIT3DCOLOR_H
 
     namespace classificationMethod
     {
@@ -66,4 +66,4 @@
     bool roundColorScale(Crit3DColorScale* myScale, int nrIntervals, bool lessRounded);
 
 
-#endif // COLOR_H
+#endif // CRIT3DCOLOR_H
