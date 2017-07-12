@@ -401,6 +401,8 @@ void getHourlyOutputAllPeriod(long firstIndex, long lastIndex, heat_output* outp
 {
     long myIndex;
     double myValue;
+    double fluxDiff, fluxLtntIso, fluxLtntTh, fluxAdv, fluxTot;
+
     QPointF myPoint;
     profileStatus myProfile;
     landSurfaceStatus mySurfaceOutput;
@@ -423,27 +425,25 @@ void getHourlyOutputAllPeriod(long firstIndex, long lastIndex, heat_output* outp
         myPoint.setY(myValue);
         output->profileOutput[output->nrValues-1].waterContent.push_back(myPoint);
 
-        myValue = soilFluxes3D::getHeatFlux(myIndex, UP, HEATFLUX_DIFFUSIVE);
-        myValue += soilFluxes3D::getHeatFlux(myIndex, UP, HEATFLUX_LATENT_ISOTHERMAL);
-        myValue += soilFluxes3D::getHeatFlux(myIndex, UP, HEATFLUX_LATENT_THERMAL);
-        myValue += soilFluxes3D::getHeatFlux(myIndex, UP, HEATFLUX_ADVECTIVE);
-        myPoint.setY(myValue);
+        fluxTot = soilFluxes3D::getHeatFlux(myIndex, UP, HEATFLUX_TOTAL);
+        myPoint.setY(fluxTot);
         output->profileOutput[output->nrValues-1].totalHeatFlux.push_back(myPoint);
 
-        myValue = soilFluxes3D::getHeatFlux(myIndex, UP, HEATFLUX_LATENT_ISOTHERMAL);
-        myPoint.setY(myValue);
-        output->profileOutput[output->nrValues-1].isothermalLatentHeatFlux.push_back(myPoint);
+        fluxDiff = soilFluxes3D::getHeatFlux(myIndex, UP, HEATFLUX_DIFFUSIVE);
+        fluxLtntIso = soilFluxes3D::getHeatFlux(myIndex, UP, HEATFLUX_LATENT_ISOTHERMAL);
+        fluxLtntTh = soilFluxes3D::getHeatFlux(myIndex, UP, HEATFLUX_LATENT_THERMAL);
+        fluxAdv = soilFluxes3D::getHeatFlux(myIndex, UP, HEATFLUX_ADVECTIVE);
 
-        myValue = soilFluxes3D::getHeatFlux(myIndex, UP, HEATFLUX_LATENT_THERMAL);
-        myPoint.setY(myValue);
-        output->profileOutput[output->nrValues-1].thermalLatentHeatFlux.push_back(myPoint);
-
-        myValue = soilFluxes3D::getHeatFlux(myIndex, UP, HEATFLUX_DIFFUSIVE);
-        myPoint.setY(myValue);
+        myPoint.setY(fluxDiff);
         output->profileOutput[output->nrValues-1].diffusiveHeatFlux.push_back(myPoint);
 
-        myValue = soilFluxes3D::getHeatFlux(myIndex, UP, HEATFLUX_ADVECTIVE);
-        myPoint.setY(myValue);
+        myPoint.setY(fluxLtntIso);
+        output->profileOutput[output->nrValues-1].isothermalLatentHeatFlux.push_back(myPoint);
+
+        myPoint.setY(fluxLtntTh);
+        output->profileOutput[output->nrValues-1].thermalLatentHeatFlux.push_back(myPoint);
+
+        myPoint.setY(fluxAdv);
         output->profileOutput[output->nrValues-1].advectiveheatFlux.push_back(myPoint);
     }
 

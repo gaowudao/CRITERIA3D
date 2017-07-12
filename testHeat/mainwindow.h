@@ -25,14 +25,10 @@ private slots:
     void on_pushRunAllPeriod_clicked();  
     void on_pushLoadFileSoil_clicked();
     void on_pushLoadFileMeteo_clicked();
-    void on_chkBoxWater_clicked();
-    void on_chkBoxHeat_clicked();
+    void on_pushCopyOutput_clicked();
+    void on_listWidget_itemClicked(QListWidgetItem *selItem);
 
     bool initializeModel();
-
-    void on_pushCopyOutput_clicked();
-
-    void on_listWidget_itemClicked(QListWidgetItem *selItem);
 
 private:
     Ui::MainWindow *ui;

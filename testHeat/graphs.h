@@ -11,7 +11,13 @@ class QwtSymbol;
 enum outputType
 {
     soilTemperature = 0,
-    soilWater = 1
+    soilWater = 1,
+    totalHeatFlux = 2,
+    diffusiveHeatFlux = 3,
+    latentHeatFluxIso = 4,
+    latentHeatFluxTherm = 5,
+    energyBalance = 6,
+    errorBalance = 7
 };
 
 struct profileStatus{
@@ -59,6 +65,27 @@ public:
     QString getTextOutput();
 };
 
+////////////////////////////////////////////////////////////////////////////////
+/// This class is a plot curve that can have gaps at points
+/// with specific Y value.
+/// This specific "gap" value can be passed to constructors,
+/// it's zero by default.
+class QwtPlotGappedCurve: public QwtPlotCurve
+{
+public:
+    /// gapValue is an Y value which denotes missed data
+    QwtPlotGappedCurve(const QString &title, double gapValue = 0);
+
+    /// Override draw method to create gaps for missed Y values
+    virtual void drawSeries(QPainter *painter, const QwtScaleMap &xMap,
+                                                const QwtScaleMap &yMap, const QRectF &canvRect, int from, int to) const;
+
+private:
+    /// Value that denotes missed Y data at point
+    double gapValue_;
+};
+
+
 class Plot : public QwtPlot
 {
     Q_OBJECT
@@ -66,7 +93,7 @@ class Plot : public QwtPlot
 public:
     Plot( QWidget *parent = NULL );
 
-    void addCurve(QString myTitle, QwtPlotCurve::CurveStyle myStyle, QPen myPen, QVector<QPointF> &samples);
+    void addCurve(QString myTitle, QwtPlotGappedCurve::CurveStyle myStyle, QPen myPen, QVector<QPointF> &samples);
     void drawProfile(outputType graphType, heat_output* myOut);
 };
 

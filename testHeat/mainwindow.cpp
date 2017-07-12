@@ -46,9 +46,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->listWidget->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->listWidget->addItem("soil temperature");
     ui->listWidget->addItem("soil water content");
-
-    connect(ui->listWidget, SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(itemClickedSlot(QListWidgetItem *)));
-
+    ui->listWidget->addItem("total heat flux");
+    ui->listWidget->addItem("diffusive heat flux");
+    ui->listWidget->addItem("isothermal latent heat flux");
+    ui->listWidget->addItem("thermal latent heat flux");
+    ui->listWidget->addItem("surface energy balance");
+    ui->listWidget->addItem("error balance");
 }
 
 MainWindow::~MainWindow()
@@ -353,18 +356,6 @@ void MainWindow::on_pushLoadFileMeteo_clicked()
     myFile.close();
 
 }
-
-
-void MainWindow::on_chkBoxWater_clicked()
-{
-
-}
-
-void MainWindow::on_chkBoxHeat_clicked()
-{
-
-}
-
 
 
 void MainWindow::on_pushCopyOutput_clicked()

@@ -1,7 +1,5 @@
 #include <qwt_plot_magnifier.h>
 #include <qwt_plot_panner.h>
-#include <qwt_plot_picker.h>
-#include <qwt_picker_machine.h>
 #include <qwt_plot_curve.h>
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
@@ -12,37 +10,7 @@
 
 #include "gis.h"
 #include "graphs.h"
-
-class DistancePicker: public QwtPlotPicker
-{
-public:
-    DistancePicker( QWidget *canvas ):
-        QwtPlotPicker( canvas )
-    {
-        setTrackerMode( QwtPicker::ActiveOnly );
-        setStateMachine( new QwtPickerDragLineMachine() );
-        setRubberBand( QwtPlotPicker::PolygonRubberBand );
-    }
-
-    virtual QwtText trackerTextF( const QPointF &pos ) const
-    {
-        QwtText text;
-
-        const QPolygon points = selection();
-        if ( !points.isEmpty() )
-        {
-            QString num;
-            num.setNum( QLineF( pos, invTransform( points[0] ) ).length() );
-
-            QColor bg( Qt::white );
-            bg.setAlpha( 200 );
-
-            text.setBackgroundBrush( QBrush( bg ) );
-            text.setText( num );
-        }
-        return text;
-    }
-};
+#include "commonConstants.h"
 
 Plot::Plot( QWidget *parent ):
     QwtPlot( parent )
@@ -60,24 +28,76 @@ Plot::Plot( QWidget *parent ):
     QwtPlotMagnifier *magnifier = new QwtPlotMagnifier( canvas() );
     magnifier->setMouseButton( Qt::NoButton );
 
-    // distanve measurement with the right mouse button
-    DistancePicker *picker = new DistancePicker( canvas() );
-    picker->setMousePattern( QwtPlotPicker::MouseSelect1, Qt::RightButton );
-    picker->setRubberBandPen( QPen( Qt::blue ) );
-
     QwtLegend *legend = new QwtLegend;
     legend->setFrameStyle(QFrame::Box|QFrame::Sunken);
     this->insertLegend(legend, QwtPlot::BottomLegend);
 }
 
-void Plot::addCurve(QString myTitle, QwtPlotCurve::CurveStyle myStyle, QPen myPen, QVector<QPointF> &samples)
+QwtPlotGappedCurve::QwtPlotGappedCurve(const QString &title, double gapValue)
+:	QwtPlotCurve(title),
+    gapValue_(gapValue)
 {
-    QwtPlotCurve* myCurve = new QwtPlotCurve(myTitle);
+}
+
+void QwtPlotGappedCurve::drawSeries(QPainter *painter, const QwtScaleMap &xMap,
+                                                          const QwtScaleMap &yMap, const QRectF &canvRect, int from, int to) const
+{
+    if ( !painter || (int)dataSize() <= 0 )
+        return;
+
+    if (to < 0)
+        to = (int)dataSize() - 1;
+
+    int i = from;
+    while (i < to)
+    {
+        // If data begins with missed values,
+        // we need to find first non-missed point.
+            double y = sample(i).y();
+            while ((i < to) && (y == gapValue_))
+            {
+                ++i;
+                y = sample(i).y();
+            }
+        // First non-missed point will be the start of curve section.
+            int start = i;
+            y = sample(i).y();
+        // Find the last non-missed point, it will be the end of curve section.
+            while ((i < to) && (y != gapValue_))
+            {
+                ++i;
+                y = sample(i).y();
+            }
+        // Correct the end of the section if it is at missed point
+            int end = (y == gapValue_) ? i - 1 : i;
+
+        // Draw the curve section
+            if (start <= end)
+                    QwtPlotCurve::drawSeries(painter, xMap, yMap, canvRect, start, end);
+    }
+}
+
+
+void Plot::addCurve(QString myTitle, QwtPlotGappedCurve::CurveStyle myStyle, QPen myPen, QVector<QPointF> &samples)
+{
+    QwtPlotGappedCurve* myCurve = new QwtPlotGappedCurve(myTitle, NODATA);
 
     myCurve->setPen(myPen);
     myCurve->setStyle(myStyle);
     myCurve->setSamples(samples);
     myCurve->attach( this );
+
+    const QwtScaleMap xMap = canvasMap( myCurve->xAxis() );
+    const QwtScaleMap yMap = canvasMap( myCurve->yAxis() );
+
+    QRectF myRect = myCurve->scaleRect(xMap, yMap);
+
+    for (int i=50; i<100; i++)
+        samples[i].setY(NODATA);
+
+    QPainter* myPainter = this->paintEngine()->painter();
+
+    myCurve->drawSeries(myPainter, xMap, yMap, myRect, 0, samples.size());
 }
 
 QVector<QPointF> getProfileSeries(heat_output* myOut, outputType myVar, int layerIndex)
@@ -104,6 +124,43 @@ QVector<QPointF> getProfileSeries(heat_output* myOut, outputType myVar, int laye
                 mySeries.push_back(myPoint);
             }
         break;
+
+        case outputType::totalHeatFlux :
+            for (int i=0; i<myOut->nrValues; i++)
+            {
+                myPoint.setX(i);
+                myPoint.setY(myOut->profileOutput[i].totalHeatFlux[layerIndex].y());
+                mySeries.push_back(myPoint);
+            }
+        break;
+
+        case outputType::latentHeatFluxIso :
+            for (int i=0; i<myOut->nrValues; i++)
+            {
+                myPoint.setX(i);
+                myPoint.setY(myOut->profileOutput[i].isothermalLatentHeatFlux[layerIndex].y());
+                mySeries.push_back(myPoint);
+            }
+        break;
+
+        case outputType::latentHeatFluxTherm :
+            for (int i=0; i<myOut->nrValues; i++)
+            {
+                myPoint.setX(i);
+                myPoint.setY(myOut->profileOutput[i].thermalLatentHeatFlux[layerIndex].y());
+                mySeries.push_back(myPoint);
+            }
+        break;
+
+        case outputType::diffusiveHeatFlux :
+            for (int i=0; i<myOut->nrValues; i++)
+            {
+                myPoint.setX(i);
+                myPoint.setY(myOut->profileOutput[i].diffusiveHeatFlux[layerIndex].y());
+                mySeries.push_back(myPoint);
+            }
+        break;
+
     }
 
     return mySeries;
@@ -130,48 +187,21 @@ void Plot::drawProfile(outputType graphType, heat_output* myOut)
 
     gis::Crit3DColor* myColor;
     QColor myQColor;
-    QString myTitle;
 
     float myDepth;
 
     QVector<QPointF> mySeries;
 
-    switch (graphType)
+    for (int z=0; z<myOut->nrLayers; z++)
     {
-        case outputType::soilTemperature :
-            for (int z=0; z<myOut->nrLayers; z++)
-            {
-                myDepth = myOut->layerThickness * ((float)z + 0.5);
+        myDepth = myOut->layerThickness * ((float)z + 0.5);
 
-                myColor = myColorScale.getColor(z);
-                myQColor = QColor(myColor->red, myColor->green, myColor->blue);
-                myPen.setColor(myQColor);
+        myColor = myColorScale.getColor(z);
+        myQColor = QColor(myColor->red, myColor->green, myColor->blue);
+        myPen.setColor(myQColor);
 
-                myTitle = "T-";
-                myTitle.append(QString::number(myDepth,'f',3));
-
-                mySeries = getProfileSeries(myOut, graphType, z);
-                addCurve(myTitle, QwtPlotCurve::Lines, myPen, mySeries);
-            }
-            break;
-
-        case outputType::soilWater :
-            for (int z=0; z<myOut->nrLayers; z++)
-            {
-                myDepth = myOut->layerThickness * ((float)z + 0.5);
-
-                myColor = myColorScale.getColor(z);
-                myQColor = QColor(myColor->red, myColor->green, myColor->blue);
-                myPen.setColor(myQColor);
-
-                myTitle = "WC-";
-                myTitle.append(QString::number(myDepth,'f',3));
-
-                mySeries = getProfileSeries(myOut, graphType, z);
-                addCurve(myTitle, QwtPlotCurve::Lines, myPen, mySeries);
-            }
-            break;
-
+        mySeries = getProfileSeries(myOut, graphType, z);
+        addCurve(QString::number(myDepth,'f',3), QwtPlotCurve::Lines, myPen, mySeries);
     }
 
     replot();
