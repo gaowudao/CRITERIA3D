@@ -31,7 +31,7 @@ bool meteoDataLoaded = false;
 bool soilDataLoaded = false;
 
 QString myTextOutput("");
-heat_output myHeatOutput;
+Crit3DOut myHeatOutput;
 Qsoil *myInputSoils = NULL;
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -246,8 +246,8 @@ void MainWindow::on_pushRunAllPeriod_clicked()
 
     myTextOutput = myHeatOutput.getTextOutput();
 
-    outPlot->drawProfile(outputType::soilTemperature, &myHeatOutput);
-    ui->listWidget->item(outputType::soilTemperature)->setSelected(true);
+    outPlot->drawOutput(outputGroup::soilTemperature, &myHeatOutput);
+    ui->listWidget->item(outputGroup::soilTemperature)->setSelected(true);
 }
 
 
@@ -366,6 +366,6 @@ void MainWindow::on_pushCopyOutput_clicked()
 
 void MainWindow::on_listWidget_itemClicked(QListWidgetItem * selItem)
 {
-    outputType myType = (outputType)ui->listWidget->row(selItem);
-    outPlot->drawProfile(myType, &myHeatOutput);
+    outputGroup myType = (outputGroup)ui->listWidget->row(selItem);
+    outPlot->drawOutput(myType, &myHeatOutput);
 }

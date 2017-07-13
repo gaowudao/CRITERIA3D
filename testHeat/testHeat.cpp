@@ -14,7 +14,7 @@
 #include "boundary.h"
 #include "soilPhysics.h"
 
-heat_output output;
+Crit3DOut output;
 
 //structure
 short myDimension;
@@ -381,7 +381,7 @@ void setSinkSources(double myHourlyPrec)
 }
 
 
-void heat_output::clean()
+void Crit3DOut::clean()
 {
     nrValues = 0;
     nrLayers = 0;
@@ -391,13 +391,13 @@ void heat_output::clean()
     profileOutput.clear();
 }
 
-heat_output::heat_output()
+Crit3DOut::Crit3DOut()
 {
     nrValues = 0;
     nrLayers = 0;
     layerThickness = 0.;
 }
-void getHourlyOutputAllPeriod(long firstIndex, long lastIndex, heat_output* output)
+void getHourlyOutputAllPeriod(long firstIndex, long lastIndex, Crit3DOut *output)
 {
     long myIndex;
     double myValue;
@@ -488,7 +488,7 @@ void getHourlyOutputAllPeriod(long firstIndex, long lastIndex, heat_output* outp
     output->errorOutput[output->nrValues-1].waterMBR = myPoint;
 }
 
-QString heat_output::getTextOutput()
+QString Crit3DOut::getTextOutput()
 {
     QString myString = "";
     float myValue;

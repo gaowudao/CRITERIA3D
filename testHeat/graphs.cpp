@@ -77,6 +77,23 @@ void QwtPlotGappedCurve::drawSeries(QPainter *painter, const QwtScaleMap &xMap,
     }
 }
 
+outputType getOutputType(outputGroup myOut)
+{
+    if (myOut == soilTemperature ||
+        myOut == soilWater ||
+        myOut == totalHeatFlux ||
+        myOut == diffusiveHeatFlux ||
+        myOut == latentHeatFluxIso ||
+        myOut == latentHeatFluxTherm)
+
+        return outputType::profile;
+    else if (myOut == energyBalance ||
+             myOut == errorBalance)
+        return outputType::single;
+    else
+        return outputType::single;
+
+}
 
 void Plot::addCurve(QString myTitle, QwtPlotGappedCurve::CurveStyle myStyle, QPen myPen, QVector<QPointF> &samples)
 {
@@ -88,7 +105,7 @@ void Plot::addCurve(QString myTitle, QwtPlotGappedCurve::CurveStyle myStyle, QPe
     myCurve->attach( this );
 }
 
-QVector<QPointF> getProfileSeries(heat_output* myOut, outputType myVar, int layerIndex, float* minValue, float* maxValue)
+QVector<QPointF> getSingleSeries(Crit3DOut* myOut, outputVar myVar, float* minValue, float* maxValue)
 {
     QVector<QPointF> mySeries;
     QPointF myPoint;
@@ -103,27 +120,76 @@ QVector<QPointF> getProfileSeries(heat_output* myOut, outputType myVar, int laye
 
         switch (myVar)
         {
-            case outputType::soilTemperature :
+            case outputVar::surfaceNetIrradiance :
+                myVal = myOut->landSurfaceOutput[i].netRadiation.y();
+                break;
+
+            case outputVar::surfaceSensibleHeat :
+                myVal = myOut->landSurfaceOutput[i].sensibleHeat.y();
+                break;
+
+            case outputVar::surfaceLatentHeat :
+                myVal = myOut->landSurfaceOutput[i].latentHeat.y();
+                break;
+
+            case outputVar::MBR_heat :
+                myVal = myOut->errorOutput[i].heatMBR.y();
+                break;
+
+            case outputVar::MBR_water :
+                myVal = myOut->errorOutput[i].waterMBR.y();
+                break;
+
+            case outputVar::MBE_heat :
+                myVal = myOut->errorOutput[i].heatMBE.y();
+                break;
+        }
+
+        myPoint.setY(myVal);
+        mySeries.push_back(myPoint);
+        *minValue = (*minValue == NODATA) ? myVal : ((myVal < *minValue) ? myVal : *minValue);
+        *maxValue = (*maxValue == NODATA) ? myVal : ((myVal > *maxValue) ? myVal : *maxValue);
+    }
+
+    return mySeries;
+}
+
+QVector<QPointF> getProfileSeries(Crit3DOut* myOut, outputGroup myVar, int layerIndex, float* minValue, float* maxValue)
+{
+    QVector<QPointF> mySeries;
+    QPointF myPoint;
+    qreal myVal;
+
+    *minValue = NODATA;
+    *maxValue = NODATA;
+
+    for (int i=0; i<myOut->nrValues; i++)
+    {
+        myPoint.setX(i);
+
+        switch (myVar)
+        {
+            case outputGroup::soilTemperature :
                 myVal = myOut->profileOutput[i].temperature[layerIndex].y();
                 break;
 
-            case outputType::soilWater :
+            case outputGroup::soilWater :
                 myVal = myOut->profileOutput[i].waterContent[layerIndex].y();
                 break;
 
-            case outputType::totalHeatFlux :
+            case outputGroup::totalHeatFlux :
                 myVal = myOut->profileOutput[i].totalHeatFlux[layerIndex].y();
                 break;
 
-            case outputType::latentHeatFluxIso :
+            case outputGroup::latentHeatFluxIso :
                 myVal = myOut->profileOutput[i].isothermalLatentHeatFlux[layerIndex].y();
                 break;
 
-            case outputType::latentHeatFluxTherm :
+            case outputGroup::latentHeatFluxTherm :
                 myVal = myOut->profileOutput[i].thermalLatentHeatFlux[layerIndex].y();
                 break;
 
-            case outputType::diffusiveHeatFlux :
+            case outputGroup::diffusiveHeatFlux :
                 myVal = myOut->profileOutput[i].diffusiveHeatFlux[layerIndex].y();
                 break;
         }
@@ -134,31 +200,67 @@ QVector<QPointF> getProfileSeries(heat_output* myOut, outputType myVar, int laye
         *maxValue = (*maxValue == NODATA) ? myVal : ((myVal > *maxValue) ? myVal : *maxValue);
     }
 
-    for (int i=50; i<100; i++)
-        mySeries[i].setY(NODATA);
-
     return mySeries;
 }
 
-void Plot::drawProfile(outputType graphType, heat_output* myOut)
+void Plot::drawSingle(outputGroup graphType, Crit3DOut* myOut, Crit3DColorScale myColorScale)
 {
-    detachItems(QwtPlotItem::Rtti_PlotCurve, true);
-
     QPen myPen;
+    Crit3DColor* myColor;
+    QColor myQColor;
 
-    Crit3DColorScale myColorScale;
-    myColorScale.nrKeyColors = 3;
-    myColorScale.nrColors = 256;
-    myColorScale.keyColor = new Crit3DColor[myColorScale.nrKeyColors];
-    myColorScale.color = new Crit3DColor[myColorScale.nrColors];
-    myColorScale.classification = classificationMethod::EqualInterval;
-    myColorScale.keyColor[0] = Crit3DColor(0, 0, 255);         /*!< blue */
-    myColorScale.keyColor[1] = Crit3DColor(255, 255, 0);       /*!< yellow */
-    myColorScale.keyColor[2] = Crit3DColor(255, 0, 0);         /*!< red */
-    myColorScale.minimum = 0;
-    myColorScale.maximum = myOut->nrLayers-1;
-    myColorScale.classify();
+    QVector<QPointF> mySeries;
 
+    float minGraph, maxGraph, minSeries, maxSeries;
+    minGraph = maxGraph = minSeries = maxSeries = NODATA;
+
+    int myIndex = 0;
+
+    if (graphType == outputGroup::energyBalance)
+    {
+        myColor = myColorScale.getColor(myIndex);
+        myQColor = QColor(myColor->red, myColor->green, myColor->blue);
+        myPen.setColor(myQColor);
+        mySeries = getSingleSeries(myOut, outputVar::surfaceNetIrradiance, &minSeries, &maxSeries);
+        addCurve(outputVarString[(int)outputVar::surfaceNetIrradiance], QwtPlotCurve::Lines, myPen, mySeries);
+        minGraph = (minGraph == NODATA) ? minSeries : ((minSeries < minGraph) ? minSeries : minGraph);
+        maxGraph = (maxGraph == NODATA) ? maxSeries : ((maxSeries > maxGraph) ? maxSeries : maxGraph);
+
+        myIndex++;
+        myColor = myColorScale.getColor(myIndex);
+        myQColor = QColor(myColor->red, myColor->green, myColor->blue);
+        myPen.setColor(myQColor);
+        mySeries = getSingleSeries(myOut, outputVar::surfaceSensibleHeat, &minSeries, &maxSeries);
+        addCurve(outputVarString[(int)outputVar::surfaceSensibleHeat], QwtPlotCurve::Lines, myPen, mySeries);
+        minGraph = (minGraph == NODATA) ? minSeries : ((minSeries < minGraph) ? minSeries : minGraph);
+        maxGraph = (maxGraph == NODATA) ? maxSeries : ((maxSeries > maxGraph) ? maxSeries : maxGraph);
+
+        myIndex++;
+        myColor = myColorScale.getColor(myIndex);
+        myQColor = QColor(myColor->red, myColor->green, myColor->blue);
+        myPen.setColor(myQColor);
+        mySeries = getSingleSeries(myOut, outputVar::surfaceLatentHeat, &minSeries, &maxSeries);
+        addCurve(outputVarString[(int)outputVar::surfaceLatentHeat], QwtPlotCurve::Lines, myPen, mySeries);
+        minGraph = (minGraph == NODATA) ? minSeries : ((minSeries < minGraph) ? minSeries : minGraph);
+        maxGraph = (maxGraph == NODATA) ? maxSeries : ((maxSeries > maxGraph) ? maxSeries : maxGraph);
+    }
+    else if (graphType == outputGroup::errorBalance)
+    {
+    }
+
+    double eps = 0.0001;
+    if (fabs(minGraph-maxGraph) < eps)
+    {
+        minGraph -= eps;
+        maxGraph += eps;
+    }
+
+    this->setAxisScale(this->yLeft, minGraph, maxGraph);
+}
+
+void Plot::drawProfile(outputGroup graphType, Crit3DOut* myOut, Crit3DColorScale myColorScale)
+{
+    QPen myPen;
     Crit3DColor* myColor;
     QColor myQColor;
 
@@ -185,17 +287,52 @@ void Plot::drawProfile(outputType graphType, heat_output* myOut)
     }
 
     double eps = 0.0001;
-    if (fabs(minGraph-maxGraph) > eps)
+    if (fabs(minGraph-maxGraph) < eps)
     {
-        minGraph += eps;
+        minGraph -= eps;
         maxGraph += eps;
     }
 
     this->setAxisScale(this->yLeft, minGraph, maxGraph);
+}
+
+
+void Plot::drawOutput(outputGroup outGroup, Crit3DOut *myOut)
+{
+    detachItems(QwtPlotItem::Rtti_PlotCurve, true);
+
+    Crit3DColorScale myColorScale;
+
+    outputType outType = getOutputType(outGroup);
+    myColorScale.nrKeyColors = 3;
+    myColorScale.nrColors = 256;
+    myColorScale.keyColor = new Crit3DColor[myColorScale.nrKeyColors];
+    myColorScale.color = new Crit3DColor[myColorScale.nrColors];
+    myColorScale.classification = classificationMethod::EqualInterval;
+    myColorScale.keyColor[0] = Crit3DColor(0, 0, 255);         /*!< blue */
+    myColorScale.keyColor[1] = Crit3DColor(255, 255, 0);       /*!< yellow */
+    myColorScale.keyColor[2] = Crit3DColor(255, 0, 0);         /*!< red */
+    myColorScale.minimum = 0;
+
+    if (outType == outputType::profile)
+    {
+        myColorScale.maximum = myOut->nrLayers-1;
+        myColorScale.classify();
+        drawProfile(outGroup, myOut, myColorScale);
+    }
+    else
+    {
+        if (outGroup == outputGroup::errorBalance)
+            myColorScale.maximum = 3;
+        else if (outGroup ==outputGroup::energyBalance)
+            myColorScale.maximum = 3;
+
+        myColorScale.classify();
+        drawSingle(outGroup, myOut, myColorScale);
+    }
 
     replot();
 }
-
 
 
 

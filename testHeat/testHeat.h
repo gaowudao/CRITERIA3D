@@ -47,7 +47,7 @@ void setProcesses(bool computeWaterProcess, bool computeHeatProcess, bool comput
 void setHour(long myHour);
 double getCurrentPrec(long myHour);
 void getHourlyOutput(long myHour, long firstIndex, long lastIndex, QString& myString);
-void getHourlyOutputAllPeriod(long firstIndex, long lastIndex, heat_output *output);
+void getHourlyOutputAllPeriod(long firstIndex, long lastIndex, Crit3DOut *output);
 long getNodesNumber();
 void setSoilHorizonNumber(int myHorizonNumber);
 

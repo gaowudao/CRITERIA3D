@@ -7,8 +7,9 @@
 
 class QwtPlotCurve;
 class QwtSymbol;
+class Crit3DColorScale;
 
-enum outputType
+enum outputGroup
 {
     soilTemperature = 0,
     soilWater = 1,
@@ -18,6 +19,32 @@ enum outputType
     latentHeatFluxTherm = 5,
     energyBalance = 6,
     errorBalance = 7
+};
+
+enum outputVar
+{
+    surfaceNetIrradiance = 0,
+    surfaceSensibleHeat = 1,
+    surfaceLatentHeat = 2,
+    MBR_heat = 3,
+    MBE_heat = 4,
+    MBR_water = 5
+};
+
+static const char * outputVarString[] =
+{
+  "net irradiance",
+  "sensible heat",
+  "latent heat",
+  "MBR heat",
+  "MBE heat",
+  "MBR water"
+};
+
+enum outputType
+{
+    profile = 0,
+    single = 1
 };
 
 struct profileStatus{
@@ -45,11 +72,11 @@ struct heatErrors{
     QPointF waterMBR;
 };
 
-class heat_output
+class Crit3DOut
 {
 public:
 
-    heat_output();
+    Crit3DOut();
 
     int nrValues;
     int nrLayers;
@@ -93,8 +120,10 @@ class Plot : public QwtPlot
 public:
     Plot( QWidget *parent = NULL );
 
+    void drawOutput(outputGroup outGroup, Crit3DOut* myOut);
     void addCurve(QString myTitle, QwtPlotGappedCurve::CurveStyle myStyle, QPen myPen, QVector<QPointF> &samples);
-    void drawProfile(outputType graphType, heat_output* myOut);
+    void drawSingle(outputGroup graphType, Crit3DOut* myOut, Crit3DColorScale myColorScale);
+    void drawProfile(outputGroup graphType, Crit3DOut* myOut, Crit3DColorScale myColorScale);
 };
 
 #endif // GRAPHS_H
