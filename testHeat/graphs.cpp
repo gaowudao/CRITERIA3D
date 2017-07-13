@@ -88,67 +88,50 @@ void Plot::addCurve(QString myTitle, QwtPlotGappedCurve::CurveStyle myStyle, QPe
     myCurve->attach( this );
 }
 
-QVector<QPointF> getProfileSeries(heat_output* myOut, outputType myVar, int layerIndex)
+QVector<QPointF> getProfileSeries(heat_output* myOut, outputType myVar, int layerIndex, float* minValue, float* maxValue)
 {
     QVector<QPointF> mySeries;
     QPointF myPoint;
+    qreal myVal;
 
-    switch (myVar)
+    *minValue = NODATA;
+    *maxValue = NODATA;
+
+    for (int i=0; i<myOut->nrValues; i++)
     {
-        case outputType::soilTemperature :
-            for (int i=0; i<myOut->nrValues; i++)
-            {
-                myPoint.setX(i);
-                myPoint.setY(myOut->profileOutput[i].temperature[layerIndex].y());
-                mySeries.push_back(myPoint);
-            }
-        break;
+        myPoint.setX(i);
 
-        case outputType::soilWater :
-            for (int i=0; i<myOut->nrValues; i++)
-            {
-                myPoint.setX(i);
-                myPoint.setY(myOut->profileOutput[i].waterContent[layerIndex].y());
-                mySeries.push_back(myPoint);
-            }
-        break;
+        switch (myVar)
+        {
+            case outputType::soilTemperature :
+                myVal = myOut->profileOutput[i].temperature[layerIndex].y();
+                break;
 
-        case outputType::totalHeatFlux :
-            for (int i=0; i<myOut->nrValues; i++)
-            {
-                myPoint.setX(i);
-                myPoint.setY(myOut->profileOutput[i].totalHeatFlux[layerIndex].y());
-                mySeries.push_back(myPoint);
-            }
-        break;
+            case outputType::soilWater :
+                myVal = myOut->profileOutput[i].waterContent[layerIndex].y();
+                break;
 
-        case outputType::latentHeatFluxIso :
-            for (int i=0; i<myOut->nrValues; i++)
-            {
-                myPoint.setX(i);
-                myPoint.setY(myOut->profileOutput[i].isothermalLatentHeatFlux[layerIndex].y());
-                mySeries.push_back(myPoint);
-            }
-        break;
+            case outputType::totalHeatFlux :
+                myVal = myOut->profileOutput[i].totalHeatFlux[layerIndex].y();
+                break;
 
-        case outputType::latentHeatFluxTherm :
-            for (int i=0; i<myOut->nrValues; i++)
-            {
-                myPoint.setX(i);
-                myPoint.setY(myOut->profileOutput[i].thermalLatentHeatFlux[layerIndex].y());
-                mySeries.push_back(myPoint);
-            }
-        break;
+            case outputType::latentHeatFluxIso :
+                myVal = myOut->profileOutput[i].isothermalLatentHeatFlux[layerIndex].y();
+                break;
 
-        case outputType::diffusiveHeatFlux :
-            for (int i=0; i<myOut->nrValues; i++)
-            {
-                myPoint.setX(i);
-                myPoint.setY(myOut->profileOutput[i].diffusiveHeatFlux[layerIndex].y());
-                mySeries.push_back(myPoint);
-            }
-        break;
+            case outputType::latentHeatFluxTherm :
+                myVal = myOut->profileOutput[i].thermalLatentHeatFlux[layerIndex].y();
+                break;
 
+            case outputType::diffusiveHeatFlux :
+                myVal = myOut->profileOutput[i].diffusiveHeatFlux[layerIndex].y();
+                break;
+        }
+
+        myPoint.setY(myVal);
+        mySeries.push_back(myPoint);
+        *minValue = (*minValue == NODATA) ? myVal : ((myVal < *minValue) ? myVal : *minValue);
+        *maxValue = (*maxValue == NODATA) ? myVal : ((myVal > *maxValue) ? myVal : *maxValue);
     }
 
     for (int i=50; i<100; i++)
@@ -183,6 +166,9 @@ void Plot::drawProfile(outputType graphType, heat_output* myOut)
 
     QVector<QPointF> mySeries;
 
+    float minGraph, maxGraph, minSeries, maxSeries;
+    minGraph = maxGraph = minSeries = maxSeries = NODATA;
+
     for (int z=0; z<myOut->nrLayers; z++)
     {
         myDepth = myOut->layerThickness * ((float)z + 0.5);
@@ -191,11 +177,22 @@ void Plot::drawProfile(outputType graphType, heat_output* myOut)
         myQColor = QColor(myColor->red, myColor->green, myColor->blue);
         myPen.setColor(myQColor);
 
-        mySeries = getProfileSeries(myOut, graphType, z);
+        mySeries = getProfileSeries(myOut, graphType, z, &minSeries, &maxSeries);
+        minGraph = (minGraph == NODATA) ? minSeries : ((minSeries < minGraph) ? minSeries : minGraph);
+        maxGraph = (maxGraph == NODATA) ? maxSeries : ((maxSeries > maxGraph) ? maxSeries : maxGraph);
+
         addCurve(QString::number(myDepth,'f',3), QwtPlotCurve::Lines, myPen, mySeries);
     }
 
-    this->setAxisScale();
+    double eps = 0.0001;
+    if (fabs(minGraph-maxGraph) > eps)
+    {
+        minGraph += eps;
+        maxGraph += eps;
+    }
+
+    this->setAxisScale(this->yLeft, minGraph, maxGraph);
+
     replot();
 }
 
