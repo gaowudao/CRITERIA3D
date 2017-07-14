@@ -88,12 +88,12 @@ void InitializeBalanceWater()
 
      balanceCurrentTimeStep.sinkSourceWater = 0.;
      balancePreviousTimeStep.sinkSourceWater = 0.;
-     balanceCurrentTimeStep.waterMBR = 1.;
+     balanceCurrentTimeStep.waterMBR = 0.;
      balanceCurrentTimeStep.waterMBE = 0.;
      balanceCurrentPeriod.sinkSourceWater = 0.;
      balanceWholePeriod.sinkSourceWater = 0.;
      balanceWholePeriod.waterMBE = 0.;
-     balanceWholePeriod.waterMBR = 1.;
+     balanceWholePeriod.waterMBR = 0.;
 
     /*! initialize link flow */
     for (long n = 0; n < myStructure.nrNodes; n++)

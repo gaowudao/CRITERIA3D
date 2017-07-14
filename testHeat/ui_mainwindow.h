@@ -110,8 +110,6 @@ public:
     QLabel *label_12;
     QLabel *label_13;
     QLineEdit *lineEditSimStop;
-    QPushButton *pushInitialize;
-    QPushButton *pushRunNextHour;
     QPushButton *pushRunAllPeriod;
     QProgressBar *prgBar;
     QLabel *labelInfo;
@@ -334,6 +332,7 @@ public:
         chkBoxWater->setObjectName(QStringLiteral("chkBoxWater"));
         chkBoxWater->setEnabled(true);
         chkBoxWater->setGeometry(QRect(10, 30, 61, 17));
+        chkBoxWater->setChecked(true);
         chkBoxHeat = new QCheckBox(groupBox_6);
         chkBoxHeat->setObjectName(QStringLiteral("chkBoxHeat"));
         chkBoxHeat->setEnabled(true);
@@ -363,17 +362,14 @@ public:
         lineEditSimStop = new QLineEdit(groupBox_4);
         lineEditSimStop->setObjectName(QStringLiteral("lineEditSimStop"));
         lineEditSimStop->setGeometry(QRect(70, 40, 31, 20));
-        pushInitialize = new QPushButton(tab_5);
-        pushInitialize->setObjectName(QStringLiteral("pushInitialize"));
-        pushInitialize->setEnabled(false);
-        pushInitialize->setGeometry(QRect(150, 120, 81, 23));
-        pushRunNextHour = new QPushButton(tab_5);
-        pushRunNextHour->setObjectName(QStringLiteral("pushRunNextHour"));
-        pushRunNextHour->setEnabled(false);
-        pushRunNextHour->setGeometry(QRect(150, 150, 81, 23));
         pushRunAllPeriod = new QPushButton(tab_5);
         pushRunAllPeriod->setObjectName(QStringLiteral("pushRunAllPeriod"));
         pushRunAllPeriod->setGeometry(QRect(150, 180, 81, 23));
+        QFont font;
+        font.setPointSize(10);
+        font.setBold(true);
+        font.setWeight(75);
+        pushRunAllPeriod->setFont(font);
         prgBar = new QProgressBar(tab_5);
         prgBar->setObjectName(QStringLiteral("prgBar"));
         prgBar->setGeometry(QRect(20, 220, 351, 23));
@@ -381,10 +377,6 @@ public:
         labelInfo = new QLabel(tab_5);
         labelInfo->setObjectName(QStringLiteral("labelInfo"));
         labelInfo->setGeometry(QRect(20, 250, 311, 16));
-        QFont font;
-        font.setPointSize(10);
-        font.setBold(true);
-        font.setWeight(75);
         labelInfo->setFont(font);
         pushCopyOutput = new QPushButton(tab_5);
         pushCopyOutput->setObjectName(QStringLiteral("pushCopyOutput"));
@@ -407,7 +399,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        tabWidget->setCurrentIndex(1);
+        tabWidget->setCurrentIndex(5);
 
 
         QMetaObject::connectSlotsByName(MainWindow);
@@ -486,9 +478,7 @@ public:
         label_12->setText(QApplication::translate("MainWindow", "start (h)", 0));
         label_13->setText(QApplication::translate("MainWindow", "stop (h)", 0));
         lineEditSimStop->setText(QApplication::translate("MainWindow", "200", 0));
-        pushInitialize->setText(QApplication::translate("MainWindow", "Initialize", 0));
-        pushRunNextHour->setText(QApplication::translate("MainWindow", "Run next hour", 0));
-        pushRunAllPeriod->setText(QApplication::translate("MainWindow", "Run all period", 0));
+        pushRunAllPeriod->setText(QApplication::translate("MainWindow", "Run", 0));
         labelInfo->setText(QString());
         pushCopyOutput->setText(QApplication::translate("MainWindow", "copy output \n"
 "to clipboard", 0));

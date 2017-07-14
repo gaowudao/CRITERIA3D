@@ -45,7 +45,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>5</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -826,6 +826,9 @@
        <property name="text">
         <string>water</string>
        </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
       </widget>
       <widget class="QCheckBox" name="chkBoxHeat">
        <property name="enabled">
@@ -951,38 +954,6 @@
        </property>
       </widget>
      </widget>
-     <widget class="QPushButton" name="pushInitialize">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>150</x>
-        <y>120</y>
-        <width>81</width>
-        <height>23</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Initialize</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushRunNextHour">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>150</x>
-        <y>150</y>
-        <width>81</width>
-        <height>23</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Run next hour</string>
-      </property>
-     </widget>
      <widget class="QPushButton" name="pushRunAllPeriod">
       <property name="geometry">
        <rect>
@@ -992,8 +963,15 @@
         <height>23</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
       <property name="text">
-       <string>Run all period</string>
+       <string>Run</string>
       </property>
      </widget>
      <widget class="QProgressBar" name="prgBar">
