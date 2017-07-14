@@ -18,7 +18,8 @@ enum outputGroup
     latentHeatFluxIso = 4,
     latentHeatFluxTherm = 5,
     energyBalance = 6,
-    errorBalance = 7
+    surfaceResistances = 7,
+    errorBalance = 8
 };
 
 enum outputVar
@@ -26,9 +27,11 @@ enum outputVar
     surfaceNetIrradiance = 0,
     surfaceSensibleHeat = 1,
     surfaceLatentHeat = 2,
-    MBR_heat = 3,
-    MBE_heat = 4,
-    MBR_water = 5
+    aerodynamicResistence = 3,
+    soilSurfaceResistence = 4,
+    MBR_heat = 5,
+    MBE_heat = 6,
+    MBR_water = 7
 };
 
 static const char * outputVarString[] =
@@ -36,6 +39,8 @@ static const char * outputVarString[] =
   "net irradiance",
   "sensible heat",
   "latent heat",
+  "aerodynamic resistence",
+  "soil surface resistence",
   "MBR heat",
   "MBE heat",
   "MBR water"
@@ -121,7 +126,7 @@ public:
     Plot( QWidget *parent = NULL );
 
     void drawOutput(outputGroup outGroup, Crit3DOut* myOut);
-    void addCurve(QString myTitle, QwtPlotGappedCurve::CurveStyle myStyle, QPen myPen, QVector<QPointF> &samples);
+    void addCurve(QString myTitle, QwtPlotGappedCurve::CurveStyle myStyle, QPen myPen, QVector<QPointF> &samples, bool isSecondaryAxis);
     void drawSingle(outputGroup graphType, Crit3DOut* myOut, Crit3DColorScale myColorScale);
     void drawProfile(outputGroup graphType, Crit3DOut* myOut, Crit3DColorScale myColorScale);
 };

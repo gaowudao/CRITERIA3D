@@ -61,8 +61,6 @@ public:
     QLineEdit *lineEditAtmRH;
     QLineEdit *lineEditAtmWS;
     QLabel *label_11;
-    QLineEdit *lineEditAtmGR;
-    QLabel *label_27;
     QGroupBox *groupBox_9;
     QLineEdit *lineEditBottomT;
     QLabel *label_25;
@@ -208,12 +206,6 @@ public:
         label_11 = new QLabel(groupBox_3);
         label_11->setObjectName(QStringLiteral("label_11"));
         label_11->setGeometry(QRect(10, 60, 101, 16));
-        lineEditAtmGR = new QLineEdit(groupBox_3);
-        lineEditAtmGR->setObjectName(QStringLiteral("lineEditAtmGR"));
-        lineEditAtmGR->setGeometry(QRect(140, 80, 31, 20));
-        label_27 = new QLabel(groupBox_3);
-        label_27->setObjectName(QStringLiteral("label_27"));
-        label_27->setGeometry(QRect(10, 80, 121, 16));
         groupBox_9 = new QGroupBox(tabBoundary);
         groupBox_9->setObjectName(QStringLiteral("groupBox_9"));
         groupBox_9->setGeometry(QRect(20, 130, 181, 51));
@@ -415,7 +407,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        tabWidget->setCurrentIndex(5);
+        tabWidget->setCurrentIndex(1);
 
 
         QMetaObject::connectSlotsByName(MainWindow);
@@ -445,13 +437,11 @@ public:
         lineEditAtmRH->setText(QApplication::translate("MainWindow", "30", 0));
         lineEditAtmWS->setText(QApplication::translate("MainWindow", "5", 0));
         label_11->setText(QApplication::translate("MainWindow", "wind speed (m s-1)", 0));
-        lineEditAtmGR->setText(QApplication::translate("MainWindow", "3", 0));
-        label_27->setText(QApplication::translate("MainWindow", "global irradiance (W m-2)", 0));
         groupBox_9->setTitle(QApplication::translate("MainWindow", "Bottom boundary", 0));
         lineEditBottomT->setText(QApplication::translate("MainWindow", "25", 0));
         label_25->setText(QApplication::translate("MainWindow", "temperature (\302\260C)", 0));
         groupBox->setTitle(QApplication::translate("MainWindow", "Precipitation", 0));
-        lineEditPrecStart->setText(QApplication::translate("MainWindow", "1000", 0));
+        lineEditPrecStart->setText(QApplication::translate("MainWindow", "100", 0));
         label_5->setText(QApplication::translate("MainWindow", "start (h)", 0));
         label_6->setText(QApplication::translate("MainWindow", "hours", 0));
         lineEditPrecHours->setText(QApplication::translate("MainWindow", "4", 0));

@@ -167,9 +167,9 @@ void initializeBalanceHeat()
      balanceCurrentPeriod.heatMBE = 0.;
      balanceWholePeriod.waterMBE = 0.;
 
-     balanceCurrentTimeStep.heatMBR = 0;
-     balanceCurrentPeriod.heatMBR = 0.;
-     balanceWholePeriod.waterMBR = 0.;
+     balanceCurrentTimeStep.heatMBR = 1.;
+     balanceCurrentPeriod.heatMBR = 1.;
+     balanceWholePeriod.heatMBR = 1.;
 
      balanceWholePeriod.storageHeat = computeHeatStorage();
      balanceCurrentTimeStep.storageHeat = balanceWholePeriod.storageHeat;

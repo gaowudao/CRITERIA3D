@@ -51,6 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->listWidget->addItem("isothermal latent heat flux");
     ui->listWidget->addItem("thermal latent heat flux");
     ui->listWidget->addItem("surface energy balance");
+    ui->listWidget->addItem("surface resistences");
     ui->listWidget->addItem("error balance");
 }
 
@@ -200,11 +201,10 @@ void MainWindow::on_pushRunAllPeriod_clicked()
     getHourlyOutputAllPeriod(1, nodesNr, &myHeatOutput);
 
     double myPIniHour, myPHours;
-    double myT, myRH, myWS, myGR, myNR, myP;
+    double myT, myRH, myWS, myNR, myP;
 
     myPIniHour = ui->lineEditPrecStart->text().toInt();
     myPHours = ui->lineEditPrecHours->text().toInt();
-    myGR = NODATA;
     myNR = NODATA;
 
     do
@@ -226,8 +226,6 @@ void MainWindow::on_pushRunAllPeriod_clicked()
             myT = ui->lineEditAtmT->text().toDouble() + 273.16;
             myRH = ui->lineEditAtmRH->text().toDouble();
             myWS = ui->lineEditAtmWS->text().toDouble();
-            myGR = ui->lineEditAtmGR->text().toDouble();
-
             myNR = 0.;
 
             if ((myCurrentHour >= myPIniHour) && (myCurrentHour < myPIniHour + myPHours))

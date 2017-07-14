@@ -45,7 +45,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>5</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -315,32 +315,6 @@
         <string>wind speed (m s-1)</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEditAtmGR">
-       <property name="geometry">
-        <rect>
-         <x>140</x>
-         <y>80</y>
-         <width>31</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>3</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_27">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>80</y>
-         <width>121</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>global irradiance (W m-2)</string>
-       </property>
-      </widget>
      </widget>
      <widget class="QGroupBox" name="groupBox_9">
       <property name="geometry">
@@ -403,7 +377,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>1000</string>
+        <string>100</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_5">
