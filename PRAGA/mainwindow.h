@@ -52,7 +52,7 @@
 
         void on_actionMapOpenStreetMap_triggered();
 
-        void on_actionMapWikimedia_triggered();
+        void on_actionMapESRISatellite_triggered();
 
         void on_actionMapTerrain_triggered();
 
@@ -71,6 +71,8 @@
         void on_dateTimeEdit_dateTimeChanged(const QDateTime &dateTime);
 
         void enableAllDataset(bool toggled);
+
+        void on_actionVariableNone_triggered();
 
     protected:
         /*!

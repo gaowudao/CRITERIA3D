@@ -700,9 +700,9 @@ void MainWindow::on_actionMapOpenStreetMap_triggered()
     this->setMapSource(OSMTileSource::OSMTiles);
 }
 
-void MainWindow::on_actionMapWikimedia_triggered()
+void MainWindow::on_actionMapESRISatellite_triggered()
 {
-    this->setMapSource(OSMTileSource::WikimediaMaps);
+    this->setMapSource(OSMTileSource::ESRIWorldImagery);
 }
 
 void MainWindow::on_actionMapTerrain_triggered()
@@ -765,6 +765,12 @@ void MainWindow::resetMeteoPoints()
 
 void MainWindow::on_actionVariableChoose_triggered()
 {
+    if (myProject.getFrequency() == noFrequency)
+    {
+        QMessageBox::information(NULL, "No frequency", "Choose frequency before");
+        return;
+    }
+
     QDialog myDialog;
     QVBoxLayout mainLayout;
     QVBoxLayout layoutVariable;
@@ -851,17 +857,17 @@ void MainWindow::on_actionVariableChoose_triggered()
            else if (Rad.isChecked())
                myProject.currentVariable = globalIrradiance;
        }
-    }
 
-    this->updateVariable();
+       this->ui->actionVariableNone->setChecked(false);
+       this->updateVariable();
+    } 
 }
 
 
 void MainWindow::on_actionVariableHourly_triggered()
 {
     this->ui->actionVariableHourly->setChecked(true);
-    if (this->ui->actionVariableDaily->isChecked())
-        this->ui->actionVariableDaily->setChecked(false);
+    this->ui->actionVariableDaily->setChecked(false);
 
     myProject.setFrequency(hourly);
     this->updateVariable();
@@ -870,8 +876,7 @@ void MainWindow::on_actionVariableHourly_triggered()
 void MainWindow::on_actionVariableDaily_triggered()
 {
     this->ui->actionVariableDaily->setChecked(true);
-    if (this->ui->actionVariableHourly->isChecked())
-        this->ui->actionVariableHourly->setChecked(false);
+    this->ui->actionVariableHourly->setChecked(false);
 
     myProject.setFrequency(daily);
     this->updateVariable();
@@ -881,7 +886,11 @@ void MainWindow::on_actionVariableDaily_triggered()
 void MainWindow::updateVariable()
 {
     // FREQUENCY
-    if (myProject.getFrequency() == daily)
+    if (myProject.getFrequency() == noFrequency)
+    {
+        this->ui->labelFrequency->setText("Frequency: none");
+    }
+    else if (myProject.getFrequency() == daily)
     {
         this->ui->labelFrequency->setText("Frequency: daily");
 
@@ -948,7 +957,6 @@ void MainWindow::updateVariable()
         this->ui->labelVariable->setText("None");
 
     redrawMeteoPoints();
-    // TODO colorLegend
 }
 
 
@@ -994,25 +1002,32 @@ void MainWindow::redrawMeteoPoints()
 
     for (int i = 0; i < myProject.meteoPoints.size(); i++)
     {
-        if (myProject.getFrequency() == daily)
-            v =  myProject.meteoPoints[i].getMeteoPointValueD(getCrit3DDate(myProject.getCurrentDate()), myProject.currentVariable);
-        else if (myProject.getFrequency() == hourly)
-            v =  myProject.meteoPoints[i].getMeteoPointValueH(getCrit3DDate(myProject.getCurrentDate()), myProject.getCurrentHour(), 0, myProject.currentVariable);
-
-        if (v == NODATA)
+        if (myProject.getFrequency() == noFrequency || myProject.currentVariable == noMeteoVar)
         {
-            pointList[i]->setVisible(false);
+            pointList[i]->setVisible(true);
+            pointList[i]->setFillColor(QColor(Qt::white));
         }
         else
         {
-            pointList[i]->setVisible(true);
-            myColor = myProject.colorScalePoints->getColor(v);
-            pointList[i]->setFillColor(QColor(myColor->red, myColor->green, myColor->blue));
+            if (myProject.getFrequency() == daily)
+                v =  myProject.meteoPoints[i].getMeteoPointValueD(getCrit3DDate(myProject.getCurrentDate()), myProject.currentVariable);
+            else if (myProject.getFrequency() == hourly)
+                v =  myProject.meteoPoints[i].getMeteoPointValueH(getCrit3DDate(myProject.getCurrentDate()), myProject.getCurrentHour(), 0, myProject.currentVariable);
+
+            if (v == NODATA)
+            {
+                pointList[i]->setVisible(false);
+            }
+            else
+            {
+                pointList[i]->setVisible(true);
+                myColor = myProject.colorScalePoints->getColor(v);
+                pointList[i]->setFillColor(QColor(myColor->red, myColor->green, myColor->blue));
+            }
         }
     }
 
     pointsLegend->update();
-
 }
 
 
@@ -1136,3 +1151,14 @@ void MainWindow::loadMeteoPointsData(DbMeteoPoints* myDbMeteo)
 */
 
 
+
+void MainWindow::on_actionVariableNone_triggered()
+{
+    myProject.setFrequency(noFrequency);
+    myProject.currentVariable = noMeteoVar;
+    this->ui->actionVariableNone->setChecked(true);
+    this->ui->actionVariableDaily->setChecked(false);
+    this->ui->actionVariableHourly->setChecked(false);
+
+    this->updateVariable();
+}

@@ -56,7 +56,7 @@
                         potentialEvapotranspiration, dailyPotentialEvapotranspiration,
                         realEvaporation, waterTableDepth, noMeteoVar};
 
-    enum frequencyType {hourly, daily, monthly};
+    enum frequencyType {hourly, daily, monthly, noFrequency};
 
     enum surfaceType   {SurfaceTypeWater, SurfaceTypeSoil, SurfaceTypeCrop};
 

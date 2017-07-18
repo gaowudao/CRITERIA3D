@@ -19,13 +19,11 @@ StationMarker::StationMarker(qreal radius,bool sizeIsZoomInvariant, QColor fillC
 
 void StationMarker::setToolTip()
 {
-
     QString idpoint;
     QString name;
     QString dataset;
     double altitude = 0;
     QString municipality;
-
 
     for (int i = 0; i < myProject.meteoPoints.size(); i++)
     {
@@ -37,16 +35,15 @@ void StationMarker::setToolTip()
             altitude = myProject.meteoPoints[i].point.z;
             municipality = QString::fromStdString(myProject.meteoPoints[i].municipality);
         }
-
     }
-    QString toolTipText = QString("ID %1 <br/> <b> %2 </b> <br/> %3 <br/> %4 meters a.s.l. <br/> %5").arg(idpoint).arg(name).arg(dataset).arg(altitude).arg(municipality);
+    QString toolTipText = QString("<b> %1 </b> <br/> ID: %2 <br/> dataset: <b>%3</b> <br/> altitude: %4 m <br/> municipality: %5")
+                            .arg(name).arg(idpoint).arg(dataset).arg(altitude).arg(municipality);
     CircleObject::setToolTip(toolTipText);
 }
 
 
 void StationMarker::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-
     gis::Crit3DGeoPoint pointSelected;
     pointSelected.latitude = this->latitude();
     pointSelected.longitude = this->longitude();
@@ -56,7 +53,6 @@ void StationMarker::mousePressEvent(QGraphicsSceneMouseEvent *event)
         QColor color = this->color();
         if ( color ==  Qt::white )
         {
-            //this->setFillColor(QColor(255,0,0,255));
             this->setFillColor(QColor((Qt::red)));
             myProject.meteoPointsSelected << pointSelected;
         }
@@ -65,7 +61,8 @@ void StationMarker::mousePressEvent(QGraphicsSceneMouseEvent *event)
             this->setFillColor(QColor((Qt::white)));
             for (int i = 0; i < myProject.meteoPointsSelected.size(); i++)
             {
-                if (myProject.meteoPointsSelected[i].latitude == pointSelected.latitude && myProject.meteoPointsSelected[i].longitude == pointSelected.longitude)
+                if (myProject.meteoPointsSelected[i].latitude == pointSelected.latitude
+                    && myProject.meteoPointsSelected[i].longitude == pointSelected.longitude)
                     myProject.meteoPointsSelected.removeAt(i);
             }
         }

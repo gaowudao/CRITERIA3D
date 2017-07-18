@@ -27,7 +27,7 @@ private slots:
     void handleCurrentSelectionChanged(QModelIndex,QModelIndex);
     void handleCompositeChange();
     void addOSMTileLayer();
-    void addWikimediaMapsLayer();
+    void addESRISatLayer();
 
     void on_removeSourceButton_clicked();
 

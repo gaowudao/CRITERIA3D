@@ -16,7 +16,7 @@ public:
     enum OSMTileType
     {
         OSMTiles,
-        WikimediaMaps,
+        ESRIWorldImagery,
         Terrain,
         TonerLite
     };

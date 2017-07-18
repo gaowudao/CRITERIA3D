@@ -10,8 +10,8 @@
 
 Project::Project()
 {
-    currentVariable = dailyAirTemperatureAvg;
-    currentFrequency = daily;
+    currentVariable = noMeteoVar;
+    currentFrequency = noFrequency;
     currentDate.setDate(1800,1,1);
     previousDate = currentDate;
     currentHour = 12;
@@ -287,10 +287,13 @@ bool Project::loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo
 
 void Project::getMeteoPointsRange(float *minimum, float *maximum)
 {
-    float v = NODATA;
     *minimum = NODATA;
     *maximum = NODATA;
 
+    if (currentFrequency == noFrequency || currentVariable == noMeteoVar)
+        return;
+
+    float v = NODATA;
     for (int i = 0; i < meteoPoints.size(); i++)
     {
         if (currentFrequency == daily)

@@ -73,8 +73,8 @@ QString OSMTileSource::name() const
         return "OpenStreetMap standard tiles";
         break;
 
-    case WikimediaMaps:
-        return "Wikimedia Maps tiles";
+    case ESRIWorldImagery:
+        return "ESRI - World Imagery tiles";
         break;
 
     case Terrain:
@@ -93,7 +93,7 @@ QString OSMTileSource::name() const
 
 QString OSMTileSource::tileFileExtension() const
 {
-    if ((_tileType == OSMTiles) || (_tileType == WikimediaMaps))
+    if ((_tileType == OSMTiles) || (_tileType == ESRIWorldImagery))
         return "png";
     else
         return "jpg";
@@ -113,10 +113,10 @@ void OSMTileSource::fetchTile(quint32 x, quint32 y, quint8 z)
         host = "http://b.tile.openstreetmap.org";
         url = "/%1/%2/%3.png";
     }
-    else if (_tileType == WikimediaMaps)
+    else if (_tileType == ESRIWorldImagery)
     {
-        host = "https://maps.wikimedia.org";
-        url = "/osm-intl/%1/%2/%3.png";
+        host = "http://server.arcgisonline.com";
+        url = "/ArcGIS/rest/services/World_Imagery/MapServer/tile/%1/%3/%2.png";
     }
     else if (_tileType == Terrain)
     {
