@@ -32,10 +32,8 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include <QDebug>
-
-#include "commonConstants.h"
-#include "physics.h"
+#include "../mathFunctions/commonConstants.h"
+#include "../mathFunctions/physics.h"
 #include "header/types.h"
 #include "header/heat.h"
 #include "header/soilPhysics.h"
@@ -555,11 +553,9 @@ double SoilLatentIsothermal(long i, TlinkedNode *myLink)
  */
 double SoilHeatAdvection(long i, TlinkedNode *myLink)
 {
-	long myLinkIndex;
     double Tadv;
 	double myWaterFlow;
 
-	myLinkIndex = (*myLink).index;
     myWaterFlow = (*myLink).linkedExtra->heatFlux->waterFlux;
 
     if (myWaterFlow < 0.)
@@ -571,6 +567,7 @@ double SoilHeatAdvection(long i, TlinkedNode *myLink)
 
     return (fluxCourant * Tadv);
 }
+
 
 double SoilConduction(long i, TlinkedNode *myLink)
 {
@@ -640,17 +637,17 @@ void saveWaterFluxes()
         {
             if (&myNode[i].up != NULL)
                 if (myNode[i].up.linkedExtra != NULL)
-                    myNode[i].up.linkedExtra->heatFlux->waterFlux = getWaterFlux(i, &myNode[i].up);
+                    myNode[i].up.linkedExtra->heatFlux->waterFlux = float(getWaterFlux(i, &myNode[i].up));
 
             if (&myNode[i].down != NULL)
                 if (myNode[i].down.linkedExtra != NULL)
-                    myNode[i].down.linkedExtra->heatFlux->waterFlux = getWaterFlux(i, &myNode[i].down);
+                    myNode[i].down.linkedExtra->heatFlux->waterFlux = float(getWaterFlux(i, &myNode[i].down));
 
 
             for (short j = 0; j < myStructure.nrLateralLinks; j++)
                 if (&myNode[i].lateral[j] != NULL)
                     if (myNode[i].lateral[j].linkedExtra != NULL)
-                        myNode[i].lateral[j].linkedExtra->heatFlux->waterFlux = getWaterFlux(i, &myNode[i].lateral[j]);
+                        myNode[i].lateral[j].linkedExtra->heatFlux->waterFlux = float(getWaterFlux(i, &myNode[i].lateral[j]));
 
         }
 }

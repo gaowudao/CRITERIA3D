@@ -32,9 +32,7 @@
 #include <math.h>
 #include <malloc.h>
 
-#include <QDebug>
-
-#include "physics.h"
+#include "../mathFunctions/physics.h"
 #include "header/types.h"
 #include "header/memory.h"
 #include "header/soilPhysics.h"
@@ -1133,7 +1131,7 @@ float DLL_EXPORT __STDCALL getHeatFlux(long nodeIndex, short myDirection, int fl
  * \param nodeIndex
  * \return sensbile latent heat flux [W m-2]
 */
-double DLL_EXPORT getBoundarySensibleFlux(long nodeIndex)
+double DLL_EXPORT __STDCALL getBoundarySensibleFlux(long nodeIndex)
 {
     if (myNode == NULL) return (TOPOGRAPHY_ERROR);
     if (nodeIndex >= myStructure.nrNodes) return (INDEX_ERROR);
@@ -1151,7 +1149,7 @@ double DLL_EXPORT getBoundarySensibleFlux(long nodeIndex)
  * \param nodeIndex
  * \return latent heat flux [W m-2]
 */
-double DLL_EXPORT getBoundaryLatentFlux(long nodeIndex)
+double DLL_EXPORT __STDCALL getBoundaryLatentFlux(long nodeIndex)
 {
     if (myNode == NULL) return (TOPOGRAPHY_ERROR);
     if (nodeIndex >= myStructure.nrNodes) return (INDEX_ERROR);
@@ -1168,7 +1166,7 @@ double DLL_EXPORT getBoundaryLatentFlux(long nodeIndex)
  * \param nodeIndex
  * \return advective heat flux [W m-2]
 */
-double DLL_EXPORT getBoundaryAdvectiveFlux(long nodeIndex)
+double DLL_EXPORT __STDCALL getBoundaryAdvectiveFlux(long nodeIndex)
 {
     if (myNode == NULL) return (TOPOGRAPHY_ERROR);
     if (nodeIndex >= myStructure.nrNodes) return (INDEX_ERROR);
@@ -1186,7 +1184,7 @@ double DLL_EXPORT getBoundaryAdvectiveFlux(long nodeIndex)
  * \param nodeIndex
  * \return radiative heat flux [W m-2]
 */
-double DLL_EXPORT getBoundaryRadiativeFlux(long nodeIndex)
+double DLL_EXPORT __STDCALL getBoundaryRadiativeFlux(long nodeIndex)
 {
     if (myNode == NULL) return (TOPOGRAPHY_ERROR);
     if (nodeIndex >= myStructure.nrNodes) return (INDEX_ERROR);
@@ -1203,7 +1201,7 @@ double DLL_EXPORT getBoundaryRadiativeFlux(long nodeIndex)
  * \param nodeIndex
  * \return aerodynamic conductance [m s-1]
 */
-double DLL_EXPORT getBoundaryAerodynamicConductance(long nodeIndex)
+double DLL_EXPORT __STDCALL getBoundaryAerodynamicConductance(long nodeIndex)
 {
     if (myNode == NULL) return (TOPOGRAPHY_ERROR);
     if (nodeIndex >= myStructure.nrNodes) return (INDEX_ERROR);
@@ -1215,12 +1213,14 @@ double DLL_EXPORT getBoundaryAerodynamicConductance(long nodeIndex)
     return (myNode[nodeIndex].boundary->Heat->aerodynamicConductance);
 }
 
-/*
+
+
 /*!
  * \brief return boundary aerodynamic conductance for open water
  * \param nodeIndex
  * \return aerodynamic conductance [m s-1]
-
+*/
+/*
 double DLL_EXPORT getBoundaryAerodynamicConductanceOpenWater(long nodeIndex)
 {
     if (myNode == NULL) return (TOPOGRAPHY_ERROR);
@@ -1239,7 +1239,7 @@ double DLL_EXPORT getBoundaryAerodynamicConductanceOpenWater(long nodeIndex)
  * \param nodeIndex
  * \return soil conductance [m s-1]
 */
-double DLL_EXPORT getBoundarySoilConductance(long nodeIndex)
+double DLL_EXPORT __STDCALL getBoundarySoilConductance(long nodeIndex)
 {
     if (myNode == NULL) return (TOPOGRAPHY_ERROR);
     if (nodeIndex >= myStructure.nrNodes) return (INDEX_ERROR);
@@ -1256,7 +1256,7 @@ double DLL_EXPORT getBoundarySoilConductance(long nodeIndex)
  * \param nodeIndex
  * \return vapor concentration [kg m-3]
 */
-double DLL_EXPORT getNodeVapor(long i)
+double DLL_EXPORT __STDCALL getNodeVapor(long i)
 {
     if (myNode == NULL) return(TOPOGRAPHY_ERROR);
     if (i >= myStructure.nrNodes) return(INDEX_ERROR);
@@ -1273,7 +1273,7 @@ double DLL_EXPORT getNodeVapor(long i)
  * \param nodeIndex
  * \return heat storage [J]
 */
-double DLL_EXPORT getHeat(long i, double h)
+double DLL_EXPORT __STDCALL getHeat(long i, double h)
 {
     if (myNode == NULL) return(TOPOGRAPHY_ERROR);
     if (i >= myStructure.nrNodes) return(INDEX_ERROR);

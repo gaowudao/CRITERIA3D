@@ -28,13 +28,11 @@
     marco.bittelli@unibo.it
 */
 
-//#include "stdafx.h"
-
 #include <stdio.h>
 #include <math.h>
 #include <malloc.h>
 
-#include "physics.h"
+#include "../mathFunctions/physics.h"
 #include "header/types.h"
 #include "header/water.h"
 #include "header/soilPhysics.h"

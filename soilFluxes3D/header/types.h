@@ -101,15 +101,15 @@
 
      struct TCrit3Dnode{
 
-         double Se;					/*!< [-] degree of saturation */
-         double k;                  /*!< [m s^-1] soil water conductivity */
-         double H;                  /*!< [m] pressure head */
-         double oldH;				/*!< [m] previous pressure head */
-         double bestH;				/*!< [m] pressure head of best iteration */
-         double waterSinkSource;    /*!< [m^3 s^-1] water sink source */
-         double Qw;                 /*!< [m^3 s^-1] water flow */
+        double Se;					/*!< [-] degree of saturation */
+        double k;                  /*!< [m s^-1] soil water conductivity */
+        double H;                  /*!< [m] pressure head */
+        double oldH;				/*!< [m] previous pressure head */
+        double bestH;				/*!< [m] pressure head of best iteration */
+        double waterSinkSource;    /*!< [m^3 s^-1] water sink source */
+        double Qw;                 /*!< [m^3 s^-1] water flow */
 
-         double volume_area;		/*!< [m^3] volume of sub-surface elements : [m^2] area of surface nodes */
+        double volume_area;		/*!< [m^3] volume of sub-surface elements : [m^2] area of surface nodes */
         float x, y, z;              /*!< [m] coordinates of the center of the element */
 
         Tsoil *Soil;                /*!< soil pointer */

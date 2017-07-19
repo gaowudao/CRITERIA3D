@@ -31,7 +31,7 @@
 #include <math.h>
 #include <stdio.h>
 
-#include "commonConstants.h"
+#include "../mathFunctions/commonConstants.h"
 #include "header/extra.h"
 #include "header/types.h"
 

@@ -30,7 +30,7 @@
 */
 
 #include <math.h>
-#include "physics.h"
+#include "../mathFunctions/physics.h"
 #include "header/types.h"
 #include "header/soilPhysics.h"
 #include "header/solver.h"

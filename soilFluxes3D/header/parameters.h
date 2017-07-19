@@ -2,7 +2,7 @@
 #define PARAMETERS_H
 
 #ifndef COMMONCONSTANTS_H
-    #include "commonConstants.h"
+    #include "../mathFunctions/commonConstants.h"
 #endif
 
  struct TParameters{

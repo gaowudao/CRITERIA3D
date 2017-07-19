@@ -9,10 +9,7 @@ QT          -= gui
 
 TARGET = soilFluxes3D
 TEMPLATE = lib
-
 CONFIG += staticlib
-
-INCLUDEPATH += ../mathFunctions
 
 SOURCES +=  \
     boundary.cpp \
