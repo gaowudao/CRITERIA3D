@@ -19,8 +19,8 @@ class DbArkimet : public DbMeteoPoints
         QList<int> getHourlyVar();
         int getId(QString VarName);
         QList<VariablesList> getHourlyVarFields(QList<int> id);
-        void initStationsDailyTables(Crit3DDate dateStartInput, Crit3DDate dateEndInput, QStringList stations);
-        void initStationsHourlyTables(Crit3DTime dateStartInput, Crit3DTime dateEndInput, QStringList stations);
+        void initStationsDailyTables(QDate startDate, QDate endDate, QStringList stations);
+        void initStationsHourlyTables(QDate startDate, QDate endDate, QStringList stations);
         void createTmpTable();
         void deleteTmpTable();
         void insertDailyValue(QString station, QString date, int varType, double varValue, QString flag);

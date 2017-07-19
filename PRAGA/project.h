@@ -50,7 +50,7 @@
         frequencyType getFrequency();
 
         bool loadRaster(QString myFileName);
-        bool downloadDailyDataArkimet(QStringList variables, bool precSelection, Crit3DDate dateStart, Crit3DDate dateEnd);
+        bool downloadDailyDataArkimet(QStringList variables, bool precSelection, QDate startDate, QDate endDate, bool showInfo);
         bool downloadHourlyDataArkimet(QStringList variables, Crit3DDate dateStart, Crit3DDate dateEnd);
         bool loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo);
         void getMeteoPointsRange(float *minimum, float *maximum);
@@ -58,6 +58,8 @@
         bool loadlastMeteoData();
         void closeMeteoPointsDB();
         bool loadMeteoPointsDB(QString dbName, bool showInfo);
+        bool getMeteoPointSelected(int i);
+        bool updateMeteoPointsData();
     };
 
 

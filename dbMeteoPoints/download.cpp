@@ -189,14 +189,26 @@ void Download::downloadMetadata(QJsonObject obj)
 }
 
 
-bool Download::downloadDailyDataSinglePoint(Crit3DDate dateStart, Crit3DDate dateEnd, QString dataset, QString id, QList<int> variables, bool prec24)
+
+bool Download::downloadDailyData(QDate startDate, QDate endDate, QString dataset, QStringList stations, QList<int> variables, bool precSelection)
 {
-    // initialize table
-    _dbMeteo->initStationsDailyTables(dateStart, dateEnd, QStringList() << id);
+    QString area, product, refTime, myDate, idPoint, flag;
+    QStringList fields;
+    double value;
+    int idArkimet, idVar;
 
-    QString area = ";area: VM2," + id;
+    // create station tables
+    _dbMeteo->initStationsDailyTables(startDate, endDate, stations);
 
-    QString product;
+    refTime = QString("reftime:>=%1,<=%2").arg(startDate.toString("yyyy-MM-dd")).arg(endDate.toString("yyyy-MM-dd"));
+
+    area = QString(";area: VM2,%1").arg(stations[0]);
+
+    for (int i = 1; i < stations.size(); i++)
+    {
+        area = area % QString(" or VM2,%1").arg(stations[i]);
+    }
+
     product = QString(";product: VM2,%1").arg(variables[0]);
 
     for (int i = 1; i < variables.size(); i++)
@@ -204,20 +216,20 @@ bool Download::downloadDailyDataSinglePoint(Crit3DDate dateStart, Crit3DDate dat
         product = product % QString(" or VM2,%1").arg(variables[i]);
     }
 
-    // reftime
-    QString refTime = QString("reftime:>=%1,<=%2").arg(QString::fromStdString(dateStart.toStdString())).arg(QString::fromStdString(dateEnd.toStdString()));
-
     QEventLoop loop;
+
     QNetworkAccessManager* manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
 
-    QUrl url = QUrl(QString("%1/query?query=%2%3%4 &style=postprocess").arg(_dbMeteo->getDatasetURL(dataset)).arg(refTime).arg(area).arg(product));
+    QUrl url = QUrl(QString("%1/query?query=%2%3%4&style=postprocess")
+               .arg(_dbMeteo->getDatasetURL(dataset)).arg(refTime).arg(area).arg(product));
 
     QNetworkRequest request;
     request.setUrl(url);
     request.setRawHeader("Authorization", _authorization);
 
-    QNetworkReply* reply = manager->get(request);  // GET
+    // GET
+    QNetworkReply* reply = manager->get(request);
     loop.exec();
 
     if (reply->error() != QNetworkReply::NoError)
@@ -229,31 +241,27 @@ bool Download::downloadDailyDataSinglePoint(Crit3DDate dateStart, Crit3DDate dat
     }
     else
     {
-        QStringList fields;
-        QString myDate, idPoint, flag;
-        int arkId, idVar;
-        double varValue;
         for (QString line = QString(reply->readLine()); !(line.isNull() || line.isEmpty());  line = QString(reply->readLine()))
         {
             fields = line.split(",");
+
             myDate = QString("%1-%2-%3 %4:%5:00").arg(fields[0].left(4))
-                                                       .arg(fields[0].mid(4, 2))
-                                                       .arg(fields[0].mid(6, 2))
-                                                       .arg(fields[0].mid(8, 2))
-                                                       .arg(fields[0].mid(10, 2));
+                                                           .arg(fields[0].mid(4, 2))
+                                                           .arg(fields[0].mid(6, 2))
+                                                           .arg(fields[0].mid(8, 2))
+                                                           .arg(fields[0].mid(10, 2));
             idPoint = fields[1];
-            arkId = fields[2].toInt();
-            varValue = fields[3].toDouble();
+            idArkimet = fields[2].toInt();
+            value = fields[3].toDouble();
             flag = fields[6];
 
-            if (arkId == PREC_ID)
+            if (idArkimet == PREC_ID)
             {
-                if ((prec24 && fields[0].mid(8,2) == "08") || (!prec24 && fields[0].mid(8,2) == "00"))
+                if ((precSelection && fields[0].mid(8,2) == "08") || (!precSelection && fields[0].mid(8,2) == "00"))
                 {
-                    //skip value
                     continue;
                 }
-                else if (!prec24 && fields[0].mid(8,2) == "08")
+                else if (!precSelection && fields[0].mid(8,2) == "08")
                 {
                     myDate = QString("%1-%2-%3 00:%4:00").arg(fields[0].left(4))
                                                       .arg(fields[0].mid(4, 2))
@@ -262,145 +270,23 @@ bool Download::downloadDailyDataSinglePoint(Crit3DDate dateStart, Crit3DDate dat
                 }
             }
 
-            //conversion from average daily radiation to integral radiation
-            if (arkId == RAD_ID)
+            // conversion from average daily radiation to integral radiation
+            if (idArkimet == RAD_ID)
             {
-                varValue *= DAY_SECONDS / 1000000.0;
+                value *= DAY_SECONDS / 1000000.0;
             }
 
-            idVar = _dbMeteo->arkIdmap(arkId);
+            idVar = _dbMeteo->arkIdmap(idArkimet);
 
             if (!(idPoint.isEmpty()))
             {
-                _dbMeteo->insertDailyValue(idPoint, myDate, idVar, varValue, flag);
+                _dbMeteo->insertDailyValue(idPoint, myDate, idVar, value, flag);
             }
         }
-
-        delete reply;
-        delete manager;
     }
 
-    return true;
-}
-
-
-
-bool Download::downloadDailyData(Crit3DDate dateStart, Crit3DDate dateEnd, QStringList datasets, QStringList stations, QList<int> variables, bool precSelection)
-{
-    // create station tables
-    _dbMeteo->initStationsDailyTables(dateStart, dateEnd, stations);
-
-    QString area;
-
-    area = QString(";area: VM2,%1").arg(stations[0]);
-
-    for (int i = 1; i < stations.size(); i++)
-    {
-        area = area % QString(" or VM2,%1").arg(stations[i]);
-    }
-
-    QString product;
-
-    product = QString(";product: VM2,%1").arg(variables[0]);
-
-    for (int i = 1; i < variables.size(); i++)
-    {
-        product = product % QString(" or VM2,%1").arg(variables[i]);
-    }
-
-    for (Crit3DDate myDate = dateStart.addDays(180); dateEnd >= dateStart; myDate = dateStart.addDays(180))
-    {
-
-        if (myDate > dateEnd)
-            myDate = dateEnd;
-
-        // reftime
-        QString refTime = QString("reftime:>=%1,<=%2").arg(QString::fromStdString(dateStart.toStdString())).arg(QString::fromStdString(myDate.toStdString()));
-
-        foreach (QString dataset, datasets) {
-
-            QEventLoop loop;
-
-            QNetworkAccessManager* manager = new QNetworkAccessManager(this);
-            connect(manager, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
-
-            QUrl url = QUrl(QString("%1/query?query=%2%3%4&style=postprocess").arg(_dbMeteo->getDatasetURL(dataset)).arg(refTime).arg(area).arg(product));
-
-            qDebug() << dataset << QString::fromStdString(myDate.toStdString());
-
-            QNetworkRequest request;
-            request.setUrl(url);
-            request.setRawHeader("Authorization", _authorization);
-
-            QNetworkReply* reply = manager->get(request);  // GET
-            loop.exec();
-
-            qDebug() << "Query results" ;
-
-            if (reply->error() != QNetworkReply::NoError)
-            {
-                    qDebug( "Network Error" );
-                    delete reply;
-                    delete manager;
-                    return false;
-            }
-            else
-            {
-
-                for (QString line = QString(reply->readLine()); !(line.isNull() || line.isEmpty());  line = QString(reply->readLine()))
-                {
-
-                    QStringList fields = line.split(",");
-
-                    QString date = QString("%1-%2-%3 %4:%5:00").arg(fields[0].left(4))
-                                                               .arg(fields[0].mid(4, 2))
-                                                               .arg(fields[0].mid(6, 2))
-                                                               .arg(fields[0].mid(8, 2))
-                                                               .arg(fields[0].mid(10, 2));
-                    QString id_point = fields[1];
-                    int arkId = fields[2].toInt();
-                    double varValue = fields[3].toDouble();
-                    QString flag = fields[6];
-
-
-                    if (arkId == PREC_ID) {
-
-                        if ((precSelection && fields[0].mid(8,2) == "08") || (!precSelection && fields[0].mid(8,2) == "00"))
-                        {
-                                continue;
-                        }
-                        else if (!precSelection && fields[0].mid(8,2) == "08")
-                        {
-                            date = QString("%1-%2-%3 00:%4:00").arg(fields[0].left(4))
-                                                              .arg(fields[0].mid(4, 2))
-                                                              .arg(fields[0].mid(6, 2))
-                                                              .arg(fields[0].mid(10, 2));
-                        }
-
-                    }
-
-//                  conversion from average daily radiation to integral radiation
-                    if (arkId == RAD_ID)
-                    {
-                        varValue *= DAY_SECONDS / 1000000.0;
-                    }
-
-
-                    int id_var = _dbMeteo->arkIdmap(arkId);
-
-                    if (!(id_point.isEmpty()))
-                    {
-                        _dbMeteo->insertDailyValue(id_point, date, id_var, varValue, flag);
-                    }
-
-                    dateStart = myDate.addDays(1);
-                }
-            }
-
-            delete reply;
-            delete manager;
-        }
-    }
+    delete reply;
+    delete manager;
 
     return true;
 }
@@ -410,7 +296,7 @@ bool Download::downloadHourlyData(Crit3DTime dateStartTime, Crit3DTime dateEndTi
 {
 
     // create station tables
-    _dbMeteo->initStationsHourlyTables(dateStartTime, dateEndTime, stations);
+    //_dbMeteo->initStationsHourlyTables(dateStartTime, dateEndTime, stations);
 
     QString area;
 

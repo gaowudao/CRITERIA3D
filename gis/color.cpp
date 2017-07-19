@@ -162,7 +162,7 @@ bool setPrecipitationScale(Crit3DColorScale* myScale)
     myScale->color = new Crit3DColor[myScale->nrColors];
     myScale->classification = classificationMethod::EqualInterval;
 
-    myScale->keyColor[0] = Crit3DColor(235, 235, 235);
+    myScale->keyColor[0] = Crit3DColor(240, 240, 240);
     myScale->keyColor[1] = Crit3DColor(0, 255, 255);
     myScale->keyColor[2] = Crit3DColor(0, 0, 255);
 

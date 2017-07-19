@@ -151,10 +151,8 @@ QList<int> DbArkimet::getHourlyVar()
 
 
 
-void DbArkimet::initStationsDailyTables(Crit3DDate dateStartInput, Crit3DDate dateEndInput, QStringList stations)
+void DbArkimet::initStationsDailyTables(QDate startDate, QDate endDate, QStringList stations)
 {
-    QString startDate = QString::fromStdString(dateStartInput.toStdString());
-    QString endDate = QString::fromStdString(dateEndInput.toStdString());
 
     for (int i = 0; i < stations.size(); i++)
     {
@@ -164,7 +162,8 @@ void DbArkimet::initStationsDailyTables(Crit3DDate dateStartInput, Crit3DDate da
         QSqlQuery qry(statement, _db);
         qry.exec();
 
-        statement = QString("DELETE FROM `%1_D` WHERE date_time >= DATE('%2') AND date_time < DATE('%3', '+1 day')").arg(stations[i]).arg(startDate).arg(endDate);
+        statement = QString("DELETE FROM `%1_D` WHERE date_time >= DATE('%2') AND date_time < DATE('%3', '+1 day')")
+                        .arg(stations[i]).arg(startDate.toString("yyyy-MM-dd")).arg(endDate.toString("yyyy-MM-dd"));
 
         qry = QSqlQuery(statement, _db);
         qry.exec();
@@ -173,12 +172,8 @@ void DbArkimet::initStationsDailyTables(Crit3DDate dateStartInput, Crit3DDate da
 }
 
 
-void DbArkimet::initStationsHourlyTables(Crit3DTime dateStartInput, Crit3DTime dateEndInput, QStringList stations)
+void DbArkimet::initStationsHourlyTables(QDate startDate, QDate endDate, QStringList stations)
 {
-
-    QString startDate = QString::fromStdString(dateStartInput.toStdString());
-    QString endDate = QString::fromStdString(dateEndInput.toStdString());
-
     for (int i = 0; i < stations.size(); i++)
     {
         QString statement = QString("CREATE TABLE IF NOT EXISTS `%1_H` (date_time TEXT, id_variable INTEGER, value REAL, PRIMARY KEY(date_time,id_variable))").arg(stations[i]);
@@ -187,8 +182,8 @@ void DbArkimet::initStationsHourlyTables(Crit3DTime dateStartInput, Crit3DTime d
         QSqlQuery qry(statement, _db);
         qry.exec();
 
-        statement = QString("DELETE FROM `%1_H` WHERE date_time >= DATE('%2') AND date_time < DATE('%3', '+1 day')").arg(stations[i]).arg(startDate).arg(endDate);
-        //qDebug() << "initStationsHourlyTables - Delete " << statement;
+        statement = QString("DELETE FROM `%1_H` WHERE date_time >= DATE('%2') AND date_time < DATE('%3', '+1 day')")
+                        .arg(stations[i]).arg(startDate.toString("yyyy-MM-dd")).arg(endDate.toString("yyyy-MM-dd"));
 
         qry = QSqlQuery(statement, _db);
         qry.exec();

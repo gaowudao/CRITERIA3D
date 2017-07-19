@@ -433,7 +433,6 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
        }
        else
        {
-
             QListWidgetItem* item = 0;
             QStringList var;
             for (int i = 0; i < variable.count()-1; ++i)
@@ -471,7 +470,7 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
 
                 QApplication::setOverrideCursor(Qt::WaitCursor);
 
-                if (! myProject.downloadDailyDataArkimet(var, prec24, getCrit3DDate(firstDate), getCrit3DDate(lastDate)))
+                if (! myProject.downloadDailyDataArkimet(var, prec24, firstDate, lastDate, true))
                 {
                     QMessageBox *msgBox = new QMessageBox(this);
                     msgBox->setText("Daily Download Error");
@@ -501,6 +500,9 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
                 msgBox->exec();
                 delete msgBox;
             }
+
+            myProject.updateMeteoPointsData();
+            redrawMeteoPoints();
        }
     }
 }

@@ -68,10 +68,25 @@ bool Project::loadRaster(QString myFileName)
     }
 }
 
-
-bool Project::downloadDailyDataArkimet(QStringList variables, bool prec24, Crit3DDate dateStart, Crit3DDate dateEnd)
+bool Project::getMeteoPointSelected(int i)
 {
-    QStringList id, dataset;
+    if (meteoPointsSelected.isEmpty()) return true;
+
+    for (int j = 0; j < meteoPointsSelected.size(); j++)
+    {
+        if (meteoPoints[i].latitude == meteoPointsSelected[j].latitude && meteoPoints[i].longitude == meteoPointsSelected[j].longitude)
+            return true;
+    }
+
+    return false;
+}
+
+
+bool Project::downloadDailyDataArkimet(QStringList variables, bool prec24, QDate startDate, QDate endDate, bool showInfo)
+{
+    QString id, dataset;
+    QStringList datasetList;
+    QList<QStringList> idList;
 
     QList<int> arkIdAirTemp;
     arkIdAirTemp << 231 << 232 << 233;
@@ -99,39 +114,53 @@ bool Project::downloadDailyDataArkimet(QStringList variables, bool prec24, Crit3
 
     Download* myDownload = new Download(dbMeteoPoints->getDbName());
 
-    bool skip = false;
+    int index, nrPoints = 0;
     for( int i=0; i < meteoPoints.size(); i++ )
     {
-        if (!meteoPointsSelected.isEmpty())
+        if (getMeteoPointSelected(i))
         {
-            skip = true;
-            for (int j = 0; j < meteoPointsSelected.size(); j++)
-            {
-                if (meteoPoints[i].latitude == meteoPointsSelected[j].latitude && meteoPoints[i].longitude == meteoPointsSelected[j].longitude)
-                    skip = false;
-            }
-        }
+            nrPoints ++;
 
-        if (!skip)
-        {
-            /*id = QString::fromStdString(meteoPoints[i].id);
+            id = QString::fromStdString(meteoPoints[i].id);
             dataset = QString::fromStdString(meteoPoints[i].dataset);
-            name = QString::fromStdString(meteoPoints[i].name);
 
-            info.setText(id + "\n" + name);
-
-            if (! myDownload->downloadDailyDataSinglePoint(dateStart, dateEnd, dataset, id, arkIdVar, prec24))
-                return false;
-            */
-            id << QString::fromStdString(meteoPoints[i].id);
-            if (!dataset.contains(QString::fromStdString(meteoPoints[i].dataset)))
-                dataset << QString::fromStdString(meteoPoints[i].dataset);
+            if (!datasetList.contains(dataset))
+            {
+                datasetList << dataset;
+                QStringList myList;
+                myList << id;
+                idList.append(myList);
+            }
+            else
+            {
+                index = datasetList.indexOf(dataset);
+                idList[index].append(id);
+            }
         }
     }
 
-    return myDownload->downloadDailyData(dateStart, dateEnd, dataset, id, arkIdVar, prec24);
-}
+    formInfo myInfo;
+    QString infoStr = "Load data: " + startDate.toString("yyyy-MM-dd") + "  " + endDate.toString("yyyy-MM-dd");
+    if (showInfo) myInfo.start(infoStr, nrPoints);
 
+    int currentPoints = 0;
+    for( int i=0; i < datasetList.size(); i++ )
+    {
+        if (showInfo)
+        {
+            myInfo.setText(infoStr + " dataset:" + datasetList[i]);
+            myInfo.setValue(currentPoints);
+        }
+
+        myDownload->downloadDailyData(startDate, endDate, datasetList[i], idList[i], arkIdVar, prec24);
+
+        currentPoints += idList[i].size();
+    }
+
+    if (showInfo) myInfo.close();
+
+    return true;
+}
 
 
 bool Project::downloadHourlyDataArkimet(QStringList variables, Crit3DDate dateStart, Crit3DDate dateEnd)
@@ -249,6 +278,12 @@ bool Project::loadlastMeteoData()
     setCurrentHour(12);
 
     return loadMeteoPointsData (lastDate, lastDate, true);
+}
+
+
+bool Project::updateMeteoPointsData()
+{
+    return loadMeteoPointsData(currentDate, currentDate, true);
 }
 
 
