@@ -28,10 +28,10 @@
     marco.bittelli@unibo.it
 -----------------------------------------------------------------------------------*/
 
-
 #include <math.h>
 #include "physics.h"
 #include "commonConstants.h"
+
 
 /*!
  * \brief [Pa] pressure
@@ -54,31 +54,40 @@ double PressureFromAltitude(double myHeight)
     return myPressure;
 }
 
+
 /*!
- * \brief [mol m-3] air molar density
+ * \brief Boyle-Charles law
  * \param myPressure (Pa)
  * \param myT (K)
- * \return result
+ * \return air molar density [mol m-3]
  */
 double AirMolarDensity(double myPressure, double myT)
-// Boyle-Charles law
-// mol m-3
-{ return 44.65 * (myPressure / P0) * (ZEROCELSIUS / myT);}
+{
+    return 44.65 * (myPressure / P0) * (ZEROCELSIUS / myT);
+}
+
 
 double VolumetricLatentHeatVaporization(double myPressure, double myT)
 // [J m-3] latent heat of vaporization
 {
-    double rhoair = AirMolarDensity(myPressure, myT); // [mol m-3] molar density of air
-    return (rhoair * (45144. - 48. * (myT - ZEROCELSIUS)));	// Campbell 1994
+    double rhoAir = AirMolarDensity(myPressure, myT); // [mol m-3] molar density of air
+    return (rhoAir * (45144. - 48. * (myT - ZEROCELSIUS)));	// Campbell 1994
 }
+
 
 double VaporPressureFromConcentration(double myConcentration, double myT)
 // [Pa] convert vapor partial pressure from concentration in kg m-3
-{	return (myConcentration * R_GAS * myT / MH2O);}
+{
+    return (myConcentration * R_GAS * myT / MH2O);
+}
+
 
 double VaporConcentrationFromPressure(double myPressure, double myT)
 // [kg m-3] compute vapor concentration from pressure (Pa) and temperature (K)
-{ return (myPressure * MH2O / (R_GAS * myT));}
+{
+    return (myPressure * MH2O / (R_GAS * myT));
+}
+
 
 double AirVolumetricSpecificHeat(double myPressure, double myT)
 { // (J m-3 K-1) volumetric specific heat of air
@@ -88,13 +97,17 @@ double AirVolumetricSpecificHeat(double myPressure, double myT)
     return (mySpHeat);
 }
 
+
 /*!
  * \brief [Pa] saturation vapor pressure
  * \param myTCelsius [degC]
  * \return result
  */
 double SaturationVaporPressure(double myTCelsius)
-{	return 611 * exp(17.502 * myTCelsius / (myTCelsius + 240.97));}
+{
+    return 611 * exp(17.502 * myTCelsius / (myTCelsius + 240.97));
+}
+
 
 /*!
  * \brief [Pa K-1] slope of saturation vapor pressure curve
@@ -107,6 +120,7 @@ double SaturationSlope(double airTCelsius, double satVapPressure)
     return (4098. * satVapPressure / ((237.3 + airTCelsius) * (237.3 + airTCelsius)));
 }
 
+
 double getAirVaporDeficit(double myT, double myVapor)
 {
     double myVaporPressure = SaturationVaporPressure(myT - ZEROCELSIUS);
@@ -114,13 +128,16 @@ double getAirVaporDeficit(double myT, double myVapor)
     return (mySatVapor - myVapor);
 }
 
+
 /*!
  * \brief [J kg-1] latent heat of vaporization
  * \param myTCelsius
  * \return result
  */
 double LatentHeatVaporization(double myTCelsius)
-{	return (2501000. - 2369.2 * myTCelsius); }
+{
+    return (2501000. - 2369.2 * myTCelsius);
+}
 
 
 /*!
@@ -133,6 +150,7 @@ double Psychro(double myPressure, double myTemp)
 {
     return CP * myPressure / (RATIO_WATER_VD * LatentHeatVaporization(myTemp));
 }
+
 
 double AirDensity(double myTemperature, double myRelativeHumidity)
 {
@@ -149,6 +167,7 @@ double AirDensity(double myTemperature, double myRelativeHumidity)
 
     return (myDensity);
 }
+
 
 /*!
 * \brief computes aerodynamic conductance
@@ -170,7 +189,6 @@ double AerodynamicConductance(double heightTemperature,
 {
     double K;							// (m s-1) aerodynamic conductance
     double psiM, psiH;					// () stability correction factors for momentum and for heat
-    const double VONKARMAN = 0.4;		// () Von Karman constant
     double uStar;						// (m s-1) friction velocity
     double zeroPlane;					// (m) zero place displacement
     double roughnessMomentum;           // () surface roughness parameter for momentum
@@ -189,10 +207,10 @@ double AerodynamicConductance(double heightTemperature,
 
     for (short i = 1; i <= 3; i++)
     {
-        uStar = VONKARMAN * windSpeed / (log((heightWind - zeroPlane) / roughnessMomentum) + psiM);
-        K = VONKARMAN * uStar / (log((heightTemperature - zeroPlane) / roughnessHeat) + psiH);
+        uStar = VON_KARMAN_CONST * windSpeed / (log((heightWind - zeroPlane) / roughnessMomentum) + psiM);
+        K = VON_KARMAN_CONST * uStar / (log((heightTemperature - zeroPlane) / roughnessHeat) + psiH);
         H = K * Ch * (soilSurfaceTemperature - airTemperature);
-        Sp = -VONKARMAN * heightWind * GRAVITY * H / (Ch * airTemperature * (pow(uStar, 3)));
+        Sp = -VON_KARMAN_CONST * heightWind * GRAVITY * H / (Ch * airTemperature * (pow(uStar, 3)));
         if (Sp > 0)
         {// stability
             psiH = 4.7 * Sp;
@@ -209,6 +227,7 @@ double AerodynamicConductance(double heightTemperature,
 
 }
 
+
 /*!
 * \brief computes aerodynamic conductance for an open water surface
 * \param myHeight: reference height (m)
@@ -223,16 +242,12 @@ double AerodynamicConductanceOpenwater(double myHeight, double myWaterBodySurfac
     double myPressure;		// Pa
     double myT;				// K
     double myVolSpecHeat;	// J m-3 K-1
-    double mySpecHeat;		// J kg-1 K-1
     double myPsycro;		// kPa K-1
     double windFunction;	// (MJ m-2 d-1 kPa-1) wind function (Sweers 1976)
-    double myDensity;		// air density (kg m-3)
 
     myPressure = PressureFromAltitude(myHeight);
     myT = myAirTemperature;
-    myDensity = AirDensity(myAirTemperature, 1.);
     myVolSpecHeat = AirVolumetricSpecificHeat(myPressure, myT);
-    mySpecHeat = myVolSpecHeat / myDensity;
     myPsycro = Psychro(myPressure, myT);
 
     windFunction = pow((5. / (myWaterBodySurface * 1000000)), 0.05) * (3.8 + 1.57 * myWindSpeed10);
