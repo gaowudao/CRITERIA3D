@@ -29,6 +29,7 @@ class DbMeteoPoints : public QObject
         QList<Crit3DMeteoPoint> getPropertiesFromDb();
         bool getDailyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3DMeteoPoint *meteoPoint);
         bool getHourlyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3DMeteoPoint *meteoPoint);
+        void closeDatabase();
     protected:
         QSqlDatabase _db;
     signals:

@@ -281,18 +281,26 @@ void MainWindow::enableAllDataset(bool toggled)
 void MainWindow::on_actionOpen_meteo_points_DB_triggered()
 {
     QString dbName = QFileDialog::getOpenFileName(this, tr("Open DB meteo"), "", tr("DB files (*.db)"));
-    if (dbName == "") return;
 
-    resetMeteoPoints();
-    myProject.loadMeteoPointsDB(dbName, true);
+    if (dbName != "") this->loadMeteoPointsDB(dbName);
+}
+
+
+bool MainWindow::loadMeteoPointsDB(QString dbName)
+{
+    this->resetMeteoPoints();
+
+    if (!myProject.loadMeteoPointsDB(dbName, true))
+        return false;
 
     this->addMeteoPoints();
 
     if (! myProject.loadlastMeteoData()) qDebug ("NO data");
 
     this->updateDateTime();
-}
 
+    return true;
+}
 
 
 void MainWindow::addMeteoPoints()
@@ -501,8 +509,7 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
                 delete msgBox;
             }
 
-            myProject.updateMeteoPointsData();
-            redrawMeteoPoints();
+            this->loadMeteoPointsDB(myProject.dbMeteoPoints->getDbName());
        }
     }
 }
@@ -1008,6 +1015,8 @@ void MainWindow::redrawMeteoPoints()
         {
             pointList[i]->setVisible(true);
             pointList[i]->setFillColor(QColor(Qt::white));
+            myProject.meteoPoints[i].value = NODATA;
+            pointList[i]->setToolTip();
         }
         else
         {
@@ -1024,12 +1033,26 @@ void MainWindow::redrawMeteoPoints()
             {
                 pointList[i]->setVisible(true);
                 myColor = myProject.colorScalePoints->getColor(v);
-                pointList[i]->setFillColor(QColor(myColor->red, myColor->green, myColor->blue));
+                pointList[i]->setFillColor(QColor(myColor->red, myColor->green, myColor->blue));  
+                myProject.meteoPoints[i].value = v;
+                pointList[i]->setToolTip();
             }
         }
     }
 
     pointsLegend->update();
+}
+
+
+void MainWindow::on_actionVariableNone_triggered()
+{
+    myProject.setFrequency(noFrequency);
+    myProject.currentVariable = noMeteoVar;
+    this->ui->actionVariableNone->setChecked(true);
+    this->ui->actionVariableDaily->setChecked(false);
+    this->ui->actionVariableHourly->setChecked(false);
+
+    this->updateVariable();
 }
 
 
@@ -1153,14 +1176,3 @@ void MainWindow::loadMeteoPointsData(DbMeteoPoints* myDbMeteo)
 */
 
 
-
-void MainWindow::on_actionVariableNone_triggered()
-{
-    myProject.setFrequency(noFrequency);
-    myProject.currentVariable = noMeteoVar;
-    this->ui->actionVariableNone->setChecked(true);
-    this->ui->actionVariableDaily->setChecked(false);
-    this->ui->actionVariableHourly->setChecked(false);
-
-    this->updateVariable();
-}

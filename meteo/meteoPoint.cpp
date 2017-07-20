@@ -33,27 +33,31 @@
 
 Crit3DMeteoPoint::Crit3DMeteoPoint()
 {
-        this->name = "";
-        this->id = "";
-        this->isUTC = true;
+    this->name = "";
+    this->id = "";
+    this->isUTC = true;
 
-        this->dataset = "";
-        this->municipality = "";
-        this->state = "";
-        this->region = "";
-        this->province = "";
+    this->dataset = "";
+    this->municipality = "";
+    this->state = "";
+    this->region = "";
+    this->province = "";
 
-        this->nrObsDataDaysH = 0;
-        this->nrObsDataDaysD = 0;
-        this->hourlyFraction = 1;
-        this->myQuality = quality::missing;
-        this->residual = NODATA;
-        this->latitude = NODATA;
-        this->longitude = NODATA;
-        this->latInt = NODATA;
-        this->lonInt = NODATA;
-        this->obsDataH = NULL;
-        this->obsDataD = NULL;
+    this->nrObsDataDaysH = 0;
+    this->nrObsDataDaysD = 0;
+    this->hourlyFraction = 1;
+
+    this->myQuality = quality::missing;
+    this->value = NODATA;
+    this->residual = NODATA;
+
+    this->latitude = NODATA;
+    this->longitude = NODATA;
+    this->latInt = NODATA;
+    this->lonInt = NODATA;
+
+    this->obsDataH = NULL;
+    this->obsDataD = NULL;
 
 }
 

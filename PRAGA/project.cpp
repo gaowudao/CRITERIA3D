@@ -16,6 +16,7 @@ Project::Project()
     previousDate = currentDate;
     currentHour = 12;
     colorScalePoints = new Crit3DColorScale();
+    dbMeteoPoints = NULL;
 }
 
 
@@ -84,6 +85,8 @@ bool Project::getMeteoPointSelected(int i)
 
 bool Project::downloadDailyDataArkimet(QStringList variables, bool prec24, QDate startDate, QDate endDate, bool showInfo)
 {
+    const int MAXDAYS = 30;
+
     QString id, dataset;
     QStringList datasetList;
     QList<QStringList> idList;
@@ -140,21 +143,31 @@ bool Project::downloadDailyDataArkimet(QStringList variables, bool prec24, QDate
     }
 
     formInfo myInfo;
-    QString infoStr = "Load data: " + startDate.toString("yyyy-MM-dd") + "  " + endDate.toString("yyyy-MM-dd");
-    if (showInfo) myInfo.start(infoStr, nrPoints);
+    QString infoStr;
 
-    int currentPoints = 0;
+    int nrDays = startDate.daysTo(endDate) + 1;
+    if (showInfo) myInfo.start(infoStr, nrPoints*nrDays);
+
+    int currentPoints = 0.;
     for( int i=0; i < datasetList.size(); i++ )
     {
-        if (showInfo)
+        QDate date1 = startDate;
+        QDate date2 = std::min(date1.addDays(MAXDAYS-1), endDate);
+
+        while (date1 <= endDate)
         {
-            myInfo.setText(infoStr + " dataset:" + datasetList[i]);
-            myInfo.setValue(currentPoints);
+            if (showInfo)
+            {
+                myInfo.setText("Load data: " + date1.toString("yyyy-MM-dd") + " " + date2.toString("yyyy-MM-dd") + " dataset:" + datasetList[i]);
+                currentPoints += idList[i].size() * (date1.daysTo(date2) + 1);
+                myInfo.setValue(currentPoints);
+            }
+
+            myDownload->downloadDailyData(date1, date2, datasetList[i], idList[i], arkIdVar, prec24);
+
+            date1 = date2.addDays(1);
+            date2 = std::min(date1.addDays(MAXDAYS-1), endDate);
         }
-
-        myDownload->downloadDailyData(startDate, endDate, datasetList[i], idList[i], arkIdVar, prec24);
-
-        currentPoints += idList[i].size();
     }
 
     if (showInfo) myInfo.close();
@@ -290,8 +303,7 @@ bool Project::updateMeteoPointsData()
 bool Project::loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo)
 {
     //check
-    if (firstDate == QDate(1800,1,1)
-        || lastDate == QDate(1800,1,1)) return false;
+    if (firstDate == QDate(1800,1,1) || lastDate == QDate(1800,1,1)) return false;
 
     bool isData = false;
     formInfo myInfo;
@@ -352,8 +364,8 @@ void Project::getMeteoPointsRange(float *minimum, float *maximum)
 
 void Project::closeMeteoPointsDB()
 {
-    dbMeteoPoints->disconnect();
-    dbMeteoPoints->deleteLater();
+    if (dbMeteoPoints != NULL)
+        dbMeteoPoints->closeDatabase();
     meteoPoints.clear();
     meteoPointsSelected.clear();
 }

@@ -66,6 +66,7 @@
         TObsDataH *obsDataH;
         TObsDataD *obsDataD;
         quality::qualityValue myQuality;
+        float value;
         float residual;
 
         Crit3DMeteoPoint();

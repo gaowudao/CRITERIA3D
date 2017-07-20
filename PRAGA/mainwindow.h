@@ -125,6 +125,8 @@
         void addMeteoPoints();
         void redrawMeteoPoints();
 
+        bool loadMeteoPointsDB(QString dbName);
+
     };
 
 

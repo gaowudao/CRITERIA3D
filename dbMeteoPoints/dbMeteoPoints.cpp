@@ -30,8 +30,18 @@ DbMeteoPoints::DbMeteoPoints(QString dbName)
 
 DbMeteoPoints::~DbMeteoPoints()
 {
-    _db.close();
+    closeDatabase();
 }
+
+
+void DbMeteoPoints::closeDatabase()
+{
+    if ((_db.isValid()) && (_db.isOpen()))
+    {
+        _db.close();
+    }
+}
+
 
 QString DbMeteoPoints::getDbName()
 {
@@ -303,7 +313,7 @@ bool DbMeteoPoints::getHourlyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit
                                  .arg(tableName).arg(startDate).arg(endDate);
     if( !qry.exec(statement) )
     {
-        qDebug() << qry.lastError();
+        //qDebug() << qry.lastError();
         return false;
     }
     else

@@ -1,6 +1,7 @@
 #include <QtDebug>
 #include "stationMarker.h"
 #include "project.h"
+#include "commonConstants.h"
 
 
 extern Project myProject;
@@ -19,11 +20,10 @@ StationMarker::StationMarker(qreal radius,bool sizeIsZoomInvariant, QColor fillC
 
 void StationMarker::setToolTip()
 {
-    QString idpoint;
-    QString name;
-    QString dataset;
+    QString idpoint, name, dataset, value;
     double altitude = 0;
     QString municipality;
+    float myValue;
 
     for (int i = 0; i < myProject.meteoPoints.size(); i++)
     {
@@ -34,10 +34,19 @@ void StationMarker::setToolTip()
             dataset = QString::fromStdString(myProject.meteoPoints[i].dataset);
             altitude = myProject.meteoPoints[i].point.z;
             municipality = QString::fromStdString(myProject.meteoPoints[i].municipality);
+            myValue = myProject.meteoPoints[i].value;
+            value = QString::number(myValue);
         }
     }
+
     QString toolTipText = QString("<b> %1 </b> <br/> ID: %2 <br/> dataset: <b>%3</b> <br/> altitude: %4 m <br/> municipality: %5")
                             .arg(name).arg(idpoint).arg(dataset).arg(altitude).arg(municipality);
+
+    if (myValue != NODATA)
+    {
+        toolTipText = QString("value: <b> %1 </b> <br/> <br/>").arg(value) + toolTipText;
+    }
+
     CircleObject::setToolTip(toolTipText);
 }
 
