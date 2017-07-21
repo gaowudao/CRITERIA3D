@@ -274,7 +274,7 @@ bool initializeTestHeat(long *myHourIni, long *myHourFin, bool useInputSoils)
 
                     MyResult = soilFluxes3D::setWaterContent(NodoIndice, 0.);
 
-                    MyResult = soilFluxes3D::SetTemperature(NodoIndice, 273.16 + initialTemperatureTop);
+                    MyResult = soilFluxes3D::setTemperature(NodoIndice, 273.16 + initialTemperatureTop);
 					}
 
                 // elementi sottosuperficiali
@@ -292,7 +292,7 @@ bool initializeTestHeat(long *myHourIni, long *myHourFin, bool useInputSoils)
                     else if (NodoIndice == NodesNumber - 1)
                     {
                         MyResult = soilFluxes3D::setNode(NodoIndice, x ,y, myDepth[Strato], Spessore[Strato] * mySurface, false, true, BOUNDARY_FREEDRAINAGE, 0.0);
-                        MyResult = soilFluxes3D::SetFixedTemperature(NodoIndice, 273.16 + bottomTemperature);
+                        MyResult = soilFluxes3D::setFixedTemperature(NodoIndice, 273.16 + bottomTemperature);
                     }
                     else
                         MyResult = soilFluxes3D::setNode(NodoIndice, x, y, myDepth[Strato], Spessore[Strato] * mySurface, false, false, BOUNDARY_NONE, 0.0);
@@ -321,7 +321,7 @@ bool initializeTestHeat(long *myHourIni, long *myHourFin, bool useInputSoils)
                     else
                         printf("\n error in initial saturation degree!");
 
-                    MyResult = soilFluxes3D::SetTemperature(NodoIndice,
+                    MyResult = soilFluxes3D::setTemperature(NodoIndice,
                          273.16 + ((NodoIndice-1)*(initialTemperatureBottom-initialTemperatureTop)/(NodesNumber-2)+initialTemperatureTop));
 
                     if (MyResult != CRIT3D_OK) printf("\n error in SetTemperature!");
@@ -368,7 +368,7 @@ void setSinkSources(double myHourlyPrec)
 {
     for (long i=0; i<NodesNumber; i++)
     {
-        if (computeHeat) soilFluxes3D::SetHeatSinkSource(i, 0);
+        if (computeHeat) soilFluxes3D::setHeatSinkSource(i, 0);
 
         if (computeWater)
         {
@@ -475,11 +475,11 @@ void getHourlyOutputAllPeriod(long firstIndex, long lastIndex, Crit3DOut *output
     output->landSurfaceOutput[output->nrValues-1].soilConductance = myPoint;
 
     //errors
-    myValue = soilFluxes3D::GetHeatMBR();
+    myValue = soilFluxes3D::getHeatMBR();
     myPoint.setY(myValue);
     output->errorOutput[output->nrValues-1].heatMBR = myPoint;
 
-    myValue = soilFluxes3D::GetHeatMBE();
+    myValue = soilFluxes3D::getHeatMBE();
     myPoint.setY(myValue);
     output->errorOutput[output->nrValues-1].heatMBE = myPoint;
 
@@ -578,12 +578,12 @@ bool runTestHeat(double myHourlyTemperature,  double myHourlyRelativeHumidity,
 
     if (computeHeat)
     {
-        soilFluxes3D::SetHeatBoundaryHeightWind(1, 2);
-        soilFluxes3D::SetHeatBoundaryHeightTemperature(1, 1.5);
-        soilFluxes3D::SetHeatBoundaryTemperature(1, myHourlyTemperature);
-        soilFluxes3D::SetHeatBoundaryRelativeHumidity(1, myHourlyRelativeHumidity);
-        soilFluxes3D::SetHeatBoundaryWindSpeed(1, myHourlyWindSpeed);
-        soilFluxes3D::SetHeatBoundaryNetIrradiance(1, myHourlyNetIrradiance);
+        soilFluxes3D::setHeatBoundaryHeightWind(1, 2);
+        soilFluxes3D::setHeatBoundaryHeightTemperature(1, 1.5);
+        soilFluxes3D::setHeatBoundaryTemperature(1, myHourlyTemperature);
+        soilFluxes3D::setHeatBoundaryRelativeHumidity(1, myHourlyRelativeHumidity);
+        soilFluxes3D::setHeatBoundaryWindSpeed(1, myHourlyWindSpeed);
+        soilFluxes3D::setHeatBoundaryNetIrradiance(1, myHourlyNetIrradiance);
 
         surfaceWaterHeight = soilFluxes3D::getWaterContent(0);
         if (surfaceWaterHeight > RoughnessHeat)
@@ -593,7 +593,7 @@ bool runTestHeat(double myHourlyTemperature,  double myHourlyRelativeHumidity,
         else
             currentRoughness = RoughnessHeat;
 
-        soilFluxes3D::SetHeatBoundaryRoughness(1, currentRoughness);
+        soilFluxes3D::setHeatBoundaryRoughness(1, currentRoughness);
     }
 
     soilFluxes3D::computePeriod(HOUR_SECONDS);

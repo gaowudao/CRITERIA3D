@@ -76,7 +76,7 @@ namespace soilFluxes3D {
         //clean balance
 	}
 
-    void DLL_EXPORT __STDCALL initializeHeat(int saveHeatFluxes_)
+    void DLL_EXPORT __STDCALL initializeHeat(short saveHeatFluxes_)
 {
     myStructure.saveHeatFluxes = saveHeatFluxes_;
 }
@@ -738,12 +738,12 @@ namespace soilFluxes3D {
     return (balanceWholePeriod.waterMBR);
  }
 
- double DLL_EXPORT __STDCALL GetHeatMBR()
+ double DLL_EXPORT __STDCALL getHeatMBR()
   {
      return (balanceWholePeriod.heatMBR);
   }
 
- double DLL_EXPORT __STDCALL GetHeatMBE()
+ double DLL_EXPORT __STDCALL getHeatMBE()
   {
      return (balanceWholePeriod.heatMBE);
   }
@@ -865,7 +865,7 @@ double DLL_EXPORT __STDCALL computeStep(double maxTime)
  * \param myT [K]
  * \return OK/ERROR
  */
-int DLL_EXPORT __STDCALL SetTemperature(long nodeIndex, double myT)
+int DLL_EXPORT __STDCALL setTemperature(long nodeIndex, double myT)
 {
    //----------------------------------------------------------------------------------------------
    // Set current temperature of node
@@ -893,7 +893,7 @@ int DLL_EXPORT __STDCALL SetTemperature(long nodeIndex, double myT)
  * \param myT [K]
  * \return OK/ERROR
  */
-int DLL_EXPORT __STDCALL SetFixedTemperature(long nodeIndex, double myT)
+int DLL_EXPORT __STDCALL setFixedTemperature(long nodeIndex, double myT)
 {
    if (myNode == NULL) return(MEMORY_ERROR);
    if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
@@ -913,7 +913,7 @@ int DLL_EXPORT __STDCALL SetFixedTemperature(long nodeIndex, double myT)
  * \param myWindSpeed [m s-1]
  * \return OK/ERROR
  */
-int DLL_EXPORT __STDCALL SetHeatBoundaryWindSpeed(long nodeIndex, double myWindSpeed)
+int DLL_EXPORT __STDCALL setHeatBoundaryWindSpeed(long nodeIndex, double myWindSpeed)
 {
    if (myNode == NULL) return(MEMORY_ERROR);
    if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
@@ -933,7 +933,7 @@ int DLL_EXPORT __STDCALL SetHeatBoundaryWindSpeed(long nodeIndex, double myWindS
  * \param myRoughness [m]
  * \return OK/ERROR
  */
-int DLL_EXPORT __STDCALL SetHeatBoundaryRoughness(long nodeIndex, double myRoughness)
+int DLL_EXPORT __STDCALL setHeatBoundaryRoughness(long nodeIndex, double myRoughness)
 {
    if (myNode == NULL) return(MEMORY_ERROR);
    if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
@@ -953,7 +953,7 @@ int DLL_EXPORT __STDCALL SetHeatBoundaryRoughness(long nodeIndex, double myRough
  * \param myHeatFlow [W]
  * \return OK/ERROR
  */
-int DLL_EXPORT __STDCALL SetHeatSinkSource(long nodeIndex, double myHeatFlow)
+int DLL_EXPORT __STDCALL setHeatSinkSource(long nodeIndex, double myHeatFlow)
 {
    if (myNode == NULL)
        return(MEMORY_ERROR);
@@ -972,7 +972,7 @@ int DLL_EXPORT __STDCALL SetHeatSinkSource(long nodeIndex, double myHeatFlow)
  * \param myTemperature [K]
  * \return OK/ERROR
  */
-int DLL_EXPORT __STDCALL SetHeatBoundaryTemperature(long nodeIndex, double myTemperature)
+int DLL_EXPORT __STDCALL setHeatBoundaryTemperature(long nodeIndex, double myTemperature)
 {
    if (myNode == NULL)
        return(MEMORY_ERROR);
@@ -994,7 +994,7 @@ int DLL_EXPORT __STDCALL SetHeatBoundaryTemperature(long nodeIndex, double myTem
  * \param myNetIrradiance [W m-2]
  * \return OK/ERROR
  */
-int DLL_EXPORT __STDCALL SetHeatBoundaryNetIrradiance(long nodeIndex, double myNetIrradiance)
+int DLL_EXPORT __STDCALL setHeatBoundaryNetIrradiance(long nodeIndex, double myNetIrradiance)
 {
    if (myNode == NULL)
        return(MEMORY_ERROR);
@@ -1016,7 +1016,7 @@ int DLL_EXPORT __STDCALL SetHeatBoundaryNetIrradiance(long nodeIndex, double myN
  * \param myRelativeHumidity [%]
  * \return OK/ERROR
  */
-int DLL_EXPORT __STDCALL SetHeatBoundaryRelativeHumidity(long nodeIndex, double myRelativeHumidity)
+int DLL_EXPORT __STDCALL setHeatBoundaryRelativeHumidity(long nodeIndex, double myRelativeHumidity)
 {
    if (myNode == NULL)
        return(MEMORY_ERROR);
@@ -1038,7 +1038,7 @@ int DLL_EXPORT __STDCALL SetHeatBoundaryRelativeHumidity(long nodeIndex, double 
  * \param myHeight [m]
  * \return OK/ERROR
  */
-int DLL_EXPORT __STDCALL SetHeatBoundaryHeightWind(long nodeIndex, double myHeight)
+int DLL_EXPORT __STDCALL setHeatBoundaryHeightWind(long nodeIndex, double myHeight)
 {
    if (myNode == NULL) return(MEMORY_ERROR);
    if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
@@ -1058,7 +1058,7 @@ int DLL_EXPORT __STDCALL SetHeatBoundaryHeightWind(long nodeIndex, double myHeig
  * \param myHeight [m]
  * \return OK/ERROR
  */
-int DLL_EXPORT __STDCALL SetHeatBoundaryHeightTemperature(long nodeIndex, double myHeight)
+int DLL_EXPORT __STDCALL setHeatBoundaryHeightTemperature(long nodeIndex, double myHeight)
 {
    if (myNode == NULL) return(MEMORY_ERROR);
    if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
