@@ -97,14 +97,71 @@ MainWindow::~MainWindow()
 }
 
 
-void MainWindow::setMapSource(OSMTileSource::OSMTileType mySource)
+void MainWindow::on_rasterOpacitySlider_sliderMoved(int position)
 {
-    QSharedPointer<OSMTileSource> myTiles(new OSMTileSource(mySource), &QObject::deleteLater);
-    QSharedPointer<CompositeTileSource> composite(new CompositeTileSource(), &QObject::deleteLater);
-    composite->addSourceBottom(myTiles);
-
-    this->mapView->setTileSource(composite);
+    if (this->rasterObj != NULL)
+        this->rasterObj->setOpacity(position / 100.0);
 }
+
+
+void MainWindow::on_actionMapToner_triggered()
+{
+    this->setMapSource(OSMTileSource::TonerLite);
+}
+
+
+void MainWindow::on_actionMapOpenStreetMap_triggered()
+{
+    this->setMapSource(OSMTileSource::OSMTiles);
+}
+
+
+void MainWindow::on_actionMapESRISatellite_triggered()
+{
+    this->setMapSource(OSMTileSource::ESRIWorldImagery);
+}
+
+
+void MainWindow::on_actionMapTerrain_triggered()
+{
+    this->setMapSource(OSMTileSource::Terrain);
+}
+
+void MainWindow::on_actionSetUTMzone_triggered()
+{
+    FormSingleValue myForm;
+    myForm.setValue(QString::number(myProject.gisSettings.utmZone));
+    myForm.setModal(true);
+    myForm.show();
+
+    int utmZone;
+    bool isOk = false;
+    while (! isOk)
+    {
+        int myReturn = myForm.exec();
+        if (myReturn == QDialog::Rejected) return;
+
+        utmZone = myForm.getValue().toInt(&isOk);
+        if (! isOk) qDebug("Wrong value!");
+    }
+
+    myProject.gisSettings.utmZone = utmZone;
+}
+
+
+void MainWindow::on_actionRectangle_Selection_triggered()
+{
+    if (myRubberBand != NULL)
+        delete myRubberBand;
+
+    myRubberBand = new RubberBand(QRubberBand::Rectangle, this->mapView);
+    QPoint origin(this->mapView->width()*0.5 , this->mapView->height()*0.5);
+    QPoint mapPoint = getMapPoint(&origin);
+    myRubberBand->setOrigin(mapPoint);
+    myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), QSize()));
+    //myRubberBand->show();
+}
+
 
 
 void MainWindow::on_actionLoadRaster_triggered()
@@ -286,39 +343,15 @@ void MainWindow::on_actionOpen_meteo_points_DB_triggered()
 }
 
 
-bool MainWindow::loadMeteoPointsDB(QString dbName)
+void MainWindow::on_actionVariableNone_triggered()
 {
-    this->resetMeteoPoints();
+    myProject.setFrequency(noFrequency);
+    myProject.currentVariable = noMeteoVar;
+    this->ui->actionVariableNone->setChecked(true);
+    this->ui->actionVariableDaily->setChecked(false);
+    this->ui->actionVariableHourly->setChecked(false);
 
-    if (!myProject.loadMeteoPointsDB(dbName, true))
-        return false;
-
-    this->addMeteoPoints();
-
-    if (! myProject.loadlastMeteoData()) qDebug ("NO data");
-
-    this->updateDateTime();
-
-    return true;
-}
-
-
-void MainWindow::addMeteoPoints()
-{
-    myProject.meteoPointsSelected.clear();
-    for (int i = 0; i < myProject.meteoPoints.size(); i++)
-    {
-        StationMarker* point = new StationMarker(5.0, true, QColor((Qt::white)), this->mapView);
-
-        point->setFlag(MapGraphicsObject::ObjectIsMovable, false);
-        point->setLatitude(myProject.meteoPoints[i].latitude);
-        point->setLongitude(myProject.meteoPoints[i].longitude);
-
-        this->pointList.append(point);
-        this->mapView->scene()->addObject(this->pointList[i]);
-
-        point->setToolTip();
-    }
+    this->updateVariable();
 }
 
 
@@ -682,6 +715,7 @@ void MainWindow::resizeEvent(QResizeEvent * event)
     ui->widgetColorLegendPoints->resize(ui->groupBoxVariable->width(), ui->widgetColorLegendPoints->height());
 }
 
+
 QPoint MainWindow::getMapPoint(QPoint* point) const
 {
     QPoint mapPoint;
@@ -693,65 +727,7 @@ QPoint MainWindow::getMapPoint(QPoint* point) const
     return mapPoint;
 }
 
-void MainWindow::on_rasterOpacitySlider_sliderMoved(int position)
-{
-    if (this->rasterObj != NULL)
-        this->rasterObj->setOpacity(position / 100.0);
-}
 
-void MainWindow::on_actionMapToner_triggered()
-{
-    this->setMapSource(OSMTileSource::TonerLite);
-}
-
-void MainWindow::on_actionMapOpenStreetMap_triggered()
-{
-    this->setMapSource(OSMTileSource::OSMTiles);
-}
-
-void MainWindow::on_actionMapESRISatellite_triggered()
-{
-    this->setMapSource(OSMTileSource::ESRIWorldImagery);
-}
-
-void MainWindow::on_actionMapTerrain_triggered()
-{
-    this->setMapSource(OSMTileSource::Terrain);
-}
-
-void MainWindow::on_actionSetUTMzone_triggered()
-{
-    FormSingleValue myForm;
-    myForm.setValue(QString::number(myProject.gisSettings.utmZone));
-    myForm.setModal(true);
-    myForm.show();
-
-    int utmZone;
-    bool isOk = false;
-    while (! isOk)
-    {
-        int myReturn = myForm.exec();
-        if (myReturn == QDialog::Rejected) return;
-
-        utmZone = myForm.getValue().toInt(&isOk);
-        if (! isOk) qDebug("Wrong value!");
-    }
-
-    myProject.gisSettings.utmZone = utmZone;
-}
-
-void MainWindow::on_actionRectangle_Selection_triggered()
-{
-    if (myRubberBand != NULL)
-        delete myRubberBand;
-
-    myRubberBand = new RubberBand(QRubberBand::Rectangle, this->mapView);
-    QPoint origin(this->mapView->width()*0.5 , this->mapView->height()*0.5);
-    QPoint mapPoint = getMapPoint(&origin);
-    myRubberBand->setOrigin(mapPoint);
-    myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), QSize()));
-    //myRubberBand->show();
-}
 
 
 void MainWindow::resetMeteoPoints()
@@ -1016,7 +992,7 @@ void MainWindow::redrawMeteoPoints()
             pointList[i]->setVisible(true);
             pointList[i]->setFillColor(QColor(Qt::white));
             myProject.meteoPoints[i].value = NODATA;
-            pointList[i]->setToolTip();
+            pointList[i]->setToolTip(i);
         }
         else
         {
@@ -1035,7 +1011,7 @@ void MainWindow::redrawMeteoPoints()
                 myColor = myProject.colorScalePoints->getColor(v);
                 pointList[i]->setFillColor(QColor(myColor->red, myColor->green, myColor->blue));  
                 myProject.meteoPoints[i].value = v;
-                pointList[i]->setToolTip();
+                pointList[i]->setToolTip(i);
             }
         }
     }
@@ -1044,19 +1020,51 @@ void MainWindow::redrawMeteoPoints()
 }
 
 
-void MainWindow::on_actionVariableNone_triggered()
-{
-    myProject.setFrequency(noFrequency);
-    myProject.currentVariable = noMeteoVar;
-    this->ui->actionVariableNone->setChecked(true);
-    this->ui->actionVariableDaily->setChecked(false);
-    this->ui->actionVariableHourly->setChecked(false);
 
-    this->updateVariable();
+bool MainWindow::loadMeteoPointsDB(QString dbName)
+{
+    this->resetMeteoPoints();
+
+    if (!myProject.loadMeteoPointsDB(dbName, true))
+        return false;
+
+    this->addMeteoPoints();
+
+    if (! myProject.loadlastMeteoData()) qDebug ("NO data");
+
+    this->updateDateTime();
+
+    return true;
 }
 
 
+void MainWindow::addMeteoPoints()
+{
+    myProject.meteoPointsSelected.clear();
+    for (int i = 0; i < myProject.meteoPoints.size(); i++)
+    {
+        StationMarker* point = new StationMarker(5.0, true, QColor((Qt::white)), this->mapView);
 
+        point->setFlag(MapGraphicsObject::ObjectIsMovable, false);
+        point->setLatitude(myProject.meteoPoints[i].latitude);
+        point->setLongitude(myProject.meteoPoints[i].longitude);
+
+        this->pointList.append(point);
+        this->mapView->scene()->addObject(this->pointList[i]);
+
+        point->setToolTip(i);
+    }
+}
+
+
+void MainWindow::setMapSource(OSMTileSource::OSMTileType mySource)
+{
+    QSharedPointer<OSMTileSource> myTiles(new OSMTileSource(mySource), &QObject::deleteLater);
+    QSharedPointer<CompositeTileSource> composite(new CompositeTileSource(), &QObject::deleteLater);
+    composite->addSourceBottom(myTiles);
+
+    this->mapView->setTileSource(composite);
+}
 
 
 

@@ -15,35 +15,24 @@ StationMarker::StationMarker(qreal radius,bool sizeIsZoomInvariant, QColor fillC
     this->setFlag(MapGraphicsObject::ObjectIsMovable);
     this->setFlag(MapGraphicsObject::ObjectIsFocusable);
     _view = view;
-
 }
 
-void StationMarker::setToolTip()
-{
-    QString idpoint, name, dataset, value;
-    double altitude = 0;
-    QString municipality;
-    float myValue;
 
-    for (int i = 0; i < myProject.meteoPoints.size(); i++)
-    {
-        if (myProject.meteoPoints[i].latitude == this->latitude() && myProject.meteoPoints[i].longitude == this->longitude())
-        {
-            idpoint = QString::fromStdString(myProject.meteoPoints[i].id);
-            name = QString::fromStdString(myProject.meteoPoints[i].name);
-            dataset = QString::fromStdString(myProject.meteoPoints[i].dataset);
-            altitude = myProject.meteoPoints[i].point.z;
-            municipality = QString::fromStdString(myProject.meteoPoints[i].municipality);
-            myValue = myProject.meteoPoints[i].value;
-            value = QString::number(myValue);
-        }
-    }
+void StationMarker::setToolTip(int i)
+{
+    QString idpoint = QString::fromStdString(myProject.meteoPoints[i].id);
+    QString name = QString::fromStdString(myProject.meteoPoints[i].name);
+    QString dataset = QString::fromStdString(myProject.meteoPoints[i].dataset);
+    float altitude = myProject.meteoPoints[i].point.z;
+    QString municipality = QString::fromStdString(myProject.meteoPoints[i].municipality);
 
     QString toolTipText = QString("<b> %1 </b> <br/> ID: %2 <br/> dataset: <b>%3</b> <br/> altitude: %4 m <br/> municipality: %5")
                             .arg(name).arg(idpoint).arg(dataset).arg(altitude).arg(municipality);
 
+    float myValue = myProject.meteoPoints[i].value;
     if (myValue != NODATA)
     {
+        QString value = QString::number(myValue);
         toolTipText = QString("value: <b> %1 </b> <br/> <br/>").arg(value) + toolTipText;
     }
 

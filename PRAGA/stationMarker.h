@@ -13,7 +13,7 @@ class StationMarker : public CircleObject
 
     public:
         explicit StationMarker(qreal radius, bool sizeIsZoomInvariant, QColor fillColor, MapGraphicsView* view, MapGraphicsObject *parent = 0);
-        void setToolTip();
+        void setToolTip(int i);
 
     private:
         MapGraphicsView* _view;
