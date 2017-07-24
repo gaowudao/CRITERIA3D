@@ -208,14 +208,6 @@ bool isNullDate(Crit3DDate myDate)
     return ((myDate.day == 0) && (myDate.month == 0) && (myDate.year == 0));
 }
 
-std::string Crit3DDate::toStdString()
-{
-    char myStr[11];
-    sprintf (myStr, "%d-%02d-%02d", this->year, this->month, this->day);
-
-    return std::string(myStr);
-
-}
 
 int difference(Crit3DDate myDatefirst, Crit3DDate myDatelast)
 {
@@ -229,6 +221,7 @@ int difference(Crit3DDate myDatefirst, Crit3DDate myDatelast)
     return myDiff;
 }
 
+
 bool isLeapYear(int year)
 {
     bool leap = false ;
@@ -240,6 +233,7 @@ bool isLeapYear(int year)
     }
     return leap ;
 }
+
 
 int getDoyFromDate(const Crit3DDate& myDate)
 {
@@ -255,3 +249,14 @@ int getDoyFromDate(const Crit3DDate& myDate)
 
     return myDoy;
 }
+
+
+std::string Crit3DDate::toStdString()
+{
+    char myStr[11];
+    sprintf (myStr, "%d-%02d-%02d", this->year, this->month, this->day);
+
+    return std::string(myStr);
+
+}
+
