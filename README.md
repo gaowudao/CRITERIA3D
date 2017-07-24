@@ -17,9 +17,9 @@ PRAGA is a graphical user interface (use MapGraphics library) for the CRITERIA3D
 
 # Authors
 Fausto Tomei <ftomei@arpae.it>  <fausto.tomei@gmail.com>
-Gabriele Antolini	 <gantolini@arpae.it>
+Gabriele Antolini	 <gantolini@arpae.it>/br
 
-Laura Costantini  <laura.costantini0@gmail.com>
+Laura Costantini  <laura.costantini0@gmail.com>/br
 Antonio Volta		<volta.antonio@gmail.com>
 Alberto Pistocchi	 <alberto.pistocchi@gecosistema.it>
 Marco Bittelli   <marco.bittelli@unibo.it>
