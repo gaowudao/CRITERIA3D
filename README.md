@@ -17,15 +17,14 @@ it under the terms of the GNU Lesser General Public License as published by the 
 either version 3 of the License, or (at your option) any later version.
 
 # Authors
-Fausto Tomei <ftomei@arpae.it>  <fausto.tomei@gmail.com>
-Gabriele Antolini	 <gantolini@arpae.it>
+* Fausto Tomei <ftomei@arpae.it>  <fausto.tomei@gmail.com>
+* Gabriele Antolini	 <gantolini@arpae.it>
 
-  * Laura Costantini  <laura.costantini0@gmail.com>
-  * Antonio Volta		<volta.antonio@gmail.com>
+* Laura Costantini  <laura.costantini0@gmail.com>
+* Antonio Volta		<volta.antonio@gmail.com>
+* Alberto Pistocchi	 <alberto.pistocchi@gecosistema.it>
+* Marco Bittelli   <marco.bittelli@unibo.it>
+* Margot Van Soetendaal <margot@farnet.eu>
+* Vittorio Marletto <vmarletto@arpae.it>
 
-Alberto Pistocchi	 <alberto.pistocchi@gecosistema.it>
-Marco Bittelli   <marco.bittelli@unibo.it>
-Margot Van Soetendaal <margot@farnet.eu>
-Vittorio Marletto <vmarletto@arpae.it>
-Giulia Villani  <gvillani@arpae.it>
 
