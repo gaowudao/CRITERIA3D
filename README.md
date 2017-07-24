@@ -20,8 +20,9 @@ either version 3 of the License, or (at your option) any later version.
 Fausto Tomei <ftomei@arpae.it>  <fausto.tomei@gmail.com>
 Gabriele Antolini	 <gantolini@arpae.it>
 
-Laura Costantini  <laura.costantini0@gmail.com>
-Antonio Volta		<volta.antonio@gmail.com>
+  * Laura Costantini  <laura.costantini0@gmail.com>
+  * Antonio Volta		<volta.antonio@gmail.com>
+
 Alberto Pistocchi	 <alberto.pistocchi@gecosistema.it>
 Marco Bittelli   <marco.bittelli@unibo.it>
 Margot Van Soetendaal <margot@farnet.eu>
