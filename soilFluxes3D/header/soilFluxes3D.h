@@ -3,7 +3,7 @@
 
     //-------------------------------------------------
     // uncomment to compile as win32 dll
-    #define BUILD_DLL 1
+    // #define BUILD_DLL 1
     //-------------------------------------------------
 
     #ifdef BUILD_DLL
