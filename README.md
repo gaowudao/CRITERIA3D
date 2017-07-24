@@ -23,9 +23,9 @@ either version 3 of the License, or (at your option) any later version.
 
 Laura Costantini  <laura.costantini0@gmail.com>
 
-Antonio Volta		<volta.antonio@gmail.com>
+Antonio Volta		<antonio.volta@agromet.it>
 
-Alberto Pistocchi	 <alberto.pistocchi@gecosistema.it>
+Alberto Pistocchi	 <alberto.pistocchi@jrc.ec.europa.eu>
 
 Marco Bittelli   <marco.bittelli@unibo.it>
 
