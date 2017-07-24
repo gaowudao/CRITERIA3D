@@ -1,8 +1,7 @@
 /*!
-    Solar Radiation
-
+    \name Solar Radiation
     \copyright 2011 Fausto Tomei, Gabriele Antolini
-    This library use G_calc_solar_position() by Markus Neteler
+    \note  This library uses G_calc_solar_position() by Markus Neteler
 
     This library is part of CRITERIA3D.
     CRITERIA3D has been developed under contract issued by A.R.P.A. Emilia-Romagna
@@ -23,6 +22,7 @@
     contacts:
     fausto.tomei@gmail.com
     ftomei@arpae.it
+    gantolini@arpae.it
 */
 
 #include "commonConstants.h"
