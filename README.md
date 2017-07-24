@@ -18,7 +18,7 @@ either version 3 of the License, or (at your option) any later version.
 
 # Authors
 **Fausto Tomei** <ftomei@arpae.it>  <fausto.tomei@gmail.com>
-
+-----------------------------------------------------------
 **Gabriele Antolini**	 <gantolini@arpae.it>
 -----------------------------------------------------------
 
