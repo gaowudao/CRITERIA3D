@@ -1,16 +1,16 @@
 #ifndef PARAMETERS_H
 #define PARAMETERS_H
 
-#ifndef COMMONCONSTANTS_H
-    #include "../../mathFunctions/commonConstants.h"
-#endif
+    #ifndef COMMONCONSTANTS_H
+        #include "../../mathFunctions/commonConstants.h"
+    #endif
 
- struct TParameters{
+    struct TParameters{
     int numericalSolutionMethod;
     double MBRThreshold;
     double ResidualTolerance;
-	double delta_t_min;
-	double delta_t_max;
+    double delta_t_min;
+    double delta_t_max;
     double current_delta_t;
     int iterazioni_min;
     int iterazioni_max;
@@ -22,7 +22,7 @@
 
     void initialize()
         {
-		numericalSolutionMethod = RELAXATION;
+        numericalSolutionMethod = RELAXATION;
         delta_t_min = 1;
         delta_t_max = 600;
         current_delta_t = delta_t_max;
@@ -36,6 +36,5 @@
         heatWeightingFactor = 0.5;
         }
     } ;
-
 
 #endif  // PARAMETERS_H

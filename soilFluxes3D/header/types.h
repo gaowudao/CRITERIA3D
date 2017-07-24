@@ -1,33 +1,3 @@
-/*!
-
-    CRITERIA 3D
-    \copyright (C) 2011 Fausto Tomei, Gabriele Antolini, Alberto Pistocchi,
-    Antonio Volta, Giulia Villani, Marco Bittelli
-
-    This file is part of CRITERIA3D.
-    CRITERIA3D has been developed under contract issued by A.R.P.A. Emilia-Romagna
-
-    CRITERIA3D is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    CRITERIA3D is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public License
-    along with CRITERIA3D.  If not, see <http://www.gnu.org/licenses/>.
-
-    contacts:
-    ftomei@arpa.emr.it
-    fausto.tomei@gmail.com
-    gantolini@arpa.emr.it
-    alberto.pistocchi@gecosistema.it
-    marco.bittelli@unibo.it
-*/
-
 #ifndef SOILFLUXES3DTYPES
 #define SOILFLUXES3DTYPES
 
@@ -102,14 +72,14 @@
      struct TCrit3Dnode{
 
         double Se;					/*!< [-] degree of saturation */
-        double k;                  /*!< [m s^-1] soil water conductivity */
-        double H;                  /*!< [m] pressure head */
+        double k;                   /*!< [m s^-1] soil water conductivity */
+        double H;                   /*!< [m] pressure head */
         double oldH;				/*!< [m] previous pressure head */
         double bestH;				/*!< [m] pressure head of best iteration */
-        double waterSinkSource;    /*!< [m^3 s^-1] water sink source */
-        double Qw;                 /*!< [m^3 s^-1] water flow */
+        double waterSinkSource;     /*!< [m^3 s^-1] water sink source */
+        double Qw;                  /*!< [m^3 s^-1] water flow */
 
-        double volume_area;		/*!< [m^3] volume of sub-surface elements : [m^2] area of surface nodes */
+        double volume_area;         /*!< [m^3] volume of sub-surface elements : [m^2] area of surface nodes */
         float x, y, z;              /*!< [m] coordinates of the center of the element */
 
         Tsoil *Soil;                /*!< soil pointer */
@@ -150,4 +120,4 @@
 
      extern Tbalance balanceCurrentTimeStep, balancePreviousTimeStep, balanceCurrentPeriod, balanceWholePeriod;
 
-#endif
+#endif // SOILFLUXES3DTYPES
