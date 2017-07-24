@@ -19,43 +19,6 @@ int numMonthsInPeriod(int m1, int m2)
 }
 
 
-int getNumDaysInMonth(int myMonth, int myYear)
-{
-    int days = 0;
-    if (myMonth < 1 || myMonth > 12)
-    {
-        qDebug() << "Error invalid number of month";
-        return (-1);
-    }
-
-    switch (myMonth)
-    {
-        case(2):
-            if (isLeapYear(myYear))
-                days = 29;
-            else
-                days = 28;
-            break;
-        case(4):
-            days = 30;
-            break;
-        case(6):
-            days = 30;
-            break;
-        case(9):
-            days = 30;
-            break;
-        case(11):
-            days = 30;
-            break;
-        default:
-            days = 31;
-    }
-
-    return days;
-}
-
-
 // check if currentMETEO includes the last 9 months before wgDoy1
 // if it does returns the number of days equals to 9 months before wgDoy1
 int checkLastYearDate(Crit3DDate inputFirstDate, Crit3DDate inputLastDate, int dataLenght, int myPredictionYear, int* wgDoy1)
@@ -97,7 +60,7 @@ int checkLastYearDate(Crit3DDate inputFirstDate, Crit3DDate inputLastDate, int d
             monthIndex = monthIndex + 12 ;
             myPredictionYear = myPredictionYear - 1;
         }
-        totalDay = totalDay + getNumDaysInMonth(monthIndex, myPredictionYear );
+        totalDay = totalDay + getDaysInMonth(monthIndex, myPredictionYear);
     }
 
     if ( difference(inputFirstDate, predictionFirstDate) < totalDay || dataLenght < (totalDay-NRDAYSTOLERANCE) )
@@ -156,7 +119,7 @@ bool getDoyFromSeason(QString season, int myPredictionYear, int* wgDoy1, int* wg
 
     predictionLastDate.year = myPredictionYear;
     predictionLastDate.month = myMonth2;
-    predictionLastDate.day = getNumDaysInMonth(myMonth2, myPredictionYear);
+    predictionLastDate.day = getDaysInMonth(myMonth2, myPredictionYear);
 
     *wgDoy2 = getDoyFromDate(predictionLastDate);
 

@@ -85,15 +85,22 @@
         std::string toStdString();
     };
 
+
     // functions
     Crit3DTime getNullTime();
     Crit3DDate getNullDate();
     bool isNullDate(Crit3DDate);
+
     bool isLeapYear(int year);
+    int getDaysInMonth(int month, int year);
+    int getDefaultDaysInMonth(int month);
+
     int getDoyFromDate(const Crit3DDate& myDate);
     Crit3DDate getDateFromDoy(int myYear, int myDoy);
+
     Crit3DDate max(const Crit3DDate& myDate1, const Crit3DDate& myDate2);
     Crit3DDate min(const Crit3DDate& myDate1, const Crit3DDate& myDate2);
+
     int difference(Crit3DDate myDate1, Crit3DDate myDate2);
 
 #endif // CRIT3DDATE_H

@@ -84,7 +84,7 @@ bool computeWGClimate(int nrDays, Crit3DDate inputFirstDate, float *inputTMin, f
             wGen->monthly.monthlyTmax[m] = sumTMax[m] / nrData[m]; //computes mean monthly values of maximum temperature
             wGen->monthly.monthlyTmin[m] = sumTMin[m] / nrData[m]; //computes mean monthly values of minimum temperature
 
-            daysInMonth = getNumDaysInMonth(m+1, 2000);
+            daysInMonth = getDefaultDaysInMonth(m);
 
             wGen->monthly.sumPrec[m] = sumPrec[m] / nrData[m] * daysInMonth;
 

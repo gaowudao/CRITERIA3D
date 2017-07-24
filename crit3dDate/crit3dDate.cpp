@@ -34,6 +34,30 @@
 
 long daysInMonth[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
+
+// index: 1 - 12
+int getDaysInMonth(int month, int year)
+{
+    if (month < 1 || month > 12)
+        return (-1);
+
+    if(month == 2 && isLeapYear(year))
+        return 29;
+
+    else return daysInMonth[month-1];
+}
+
+
+// index: 0 - 11
+int getDefaultDaysInMonth(int month)
+{
+    if (month < 0 || month > 11)
+        return (-1);
+
+    else return daysInMonth[month];
+}
+
+
 Crit3DDate::Crit3DDate()
 {
     day = 0; month = 0; year = 0;

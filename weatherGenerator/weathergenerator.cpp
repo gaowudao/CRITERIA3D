@@ -153,7 +153,7 @@ void initializeWeather(TwheatherGenClimate* wGen)
 
         mpwd[m] = (1.0 - mpww[m]) * (fWetDays[m] / (1.0 - fWetDays[m]));
 
-        daysInMonth = getNumDaysInMonth(m+1, 2000);
+        daysInMonth = getDefaultDaysInMonth(m);
 
         // convert from total mm/month to average mm/wet day
         mMeanPrecip[m] = mMeanPrecip[m] / (fWetDays[m] * daysInMonth);
@@ -290,7 +290,6 @@ float weibull (float mean, float precThreshold)
         return w;
     else
         return precThreshold;
-
 }
 
 
@@ -360,6 +359,7 @@ void qSplineYearInterpolate(float *meanY, float *dayVal)
     dayVal[365] = dayVal[0];
 }
 
+
 // Computes maximum and minimum temperature
 void genTemps(float *tMax, float *tMin, float meanTMax, float meanTMin, float stdMax, float stdMin, float *resTMaxPrev, float *resTMinPrev)
 {
@@ -408,8 +408,8 @@ void genTemps(float *tMax, float *tMin, float meanTMax, float meanTMin, float st
 
     if (*tMax - *tMin < 1)
         *tMin = *tMax - 1;
-
 }
+
 
 bool assignXMLAnomaly(TXMLSeasonalAnomaly* XMLAnomaly, int modelIndex, int anomalyMonth1, int anomalyMonth2, TwheatherGenClimate* wGenNoAnomaly, TwheatherGenClimate* wGen)
 {
