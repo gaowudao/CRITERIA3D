@@ -41,7 +41,6 @@ public:
     void initializeDaily();
 };
 
-
 class Criteria1D
 {
 public:

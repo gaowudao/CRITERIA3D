@@ -11,6 +11,8 @@ TARGET = Criteria1D
 TEMPLATE = lib
 CONFIG += staticlib
 
+INCLUDEPATH += ../crit3dDate ../mathFunctions ../crop ../meteo ../soil ../gis
+
 SOURCES += Criteria1D.cpp \
     modelCore.cpp \
     dataHandler.cpp \
@@ -28,9 +30,4 @@ unix {
     INSTALLS += target
 }
 
-INCLUDEPATH += ../crit3dDate
-INCLUDEPATH += ../mathFunctions
-INCLUDEPATH += ../crop
-INCLUDEPATH += ../meteo
-INCLUDEPATH += ../soil
-INCLUDEPATH += ../gis
+
