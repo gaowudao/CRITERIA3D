@@ -373,17 +373,17 @@ void qualityControl(Crit3DProject* myProject, meteoVariable myVar, const Crit3DT
 bool postInterpolation(meteoVariable myVar, gis::Crit3DRasterGrid* myGrid)
 {
     if (myVar == airTemperature || myVar == airDewTemperature)
-        gis::setTemperatureScale(myGrid->colorScale);
+        setTemperatureScale(myGrid->colorScale);
     else if (myVar == precipitation)
-        gis::setPrecipitationScale(myGrid->colorScale);
+        setPrecipitationScale(myGrid->colorScale);
     else if (myVar == airHumidity)
-        gis::setRelativeHumidityScale(myGrid->colorScale);
+        setRelativeHumidityScale(myGrid->colorScale);
     else if (myVar == globalIrradiance)
-        gis::setRadiationScale(myGrid->colorScale);
+        setRadiationScale(myGrid->colorScale);
     else if (myVar == windIntensity)
-        gis::setWindIntensityScale(myGrid->colorScale);
+        setWindIntensityScale(myGrid->colorScale);
     else if (myVar == wetnessDuration)
-        gis::setLeafWetnessScale(myGrid->colorScale);
+        setLeafWetnessScale(myGrid->colorScale);
 
     return true;
 }
@@ -723,7 +723,7 @@ bool computeRadiationProjectDtm(Crit3DProject* myProject, const Crit3DTime& myCr
         }
 
     if (radiation::computeRadiationGridPresentTime(myProject->dtm, myProject->meteoMaps->radiationMaps, myCrit3DTime))
-        myResult = gis::setRadiationScale(myProject->meteoMaps->radiationMaps->globalRadiationMap->colorScale);
+        myResult = setRadiationScale(myProject->meteoMaps->radiationMaps->globalRadiationMap->colorScale);
     else
         myProject->projectError = "Function computeRadiationProjectDtm: error computing irradiance";
 

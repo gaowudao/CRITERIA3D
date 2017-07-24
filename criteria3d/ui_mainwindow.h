@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.7.0
+** Created by: Qt User Interface Compiler version 5.7.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -265,28 +265,28 @@ public:
 
     void retranslateUi(QMainWindow *MainWindow)
     {
-        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Criteria3D", 0));
-        menuFile_load_dtm->setText(QApplication::translate("MainWindow", "Load DTM", 0));
-        menuDB_Load_Points_Postgres->setText(QApplication::translate("MainWindow", "Load Points", 0));
-        menuDB_Load_data->setText(QApplication::translate("MainWindow", "Load data", 0));
-        actionView_data->setText(QApplication::translate("MainWindow", "view data", 0));
-        actionDateTime->setText(QApplication::translate("MainWindow", "dateTime", 0));
-        menuInterpolationAirTemperature->setText(QApplication::translate("MainWindow", "Air temperature", 0));
-        actionLoad_soil->setText(QApplication::translate("MainWindow", "Load soil parameters", 0));
-        menuInterpolationSolarIrradiance->setText(QApplication::translate("MainWindow", "Solar irradiance", 0));
-        actionLoad_Project->setText(QApplication::translate("MainWindow", "Load Project", 0));
-        actionInitialize_waterbalance->setText(QApplication::translate("MainWindow", "Initialize waterbalance", 0));
-        menuInterpolationPrecipitation->setText(QApplication::translate("MainWindow", "Precipitation", 0));
-        menuInterpolationWindIntensity->setText(QApplication::translate("MainWindow", "Wind intensity", 0));
-        menuInterpolationAirHumidity->setText(QApplication::translate("MainWindow", "Air humidity", 0));
-        actionTry_Model_cycle->setText(QApplication::translate("MainWindow", "Run models", 0));
-        menuInterpolationLeafWetness->setText(QApplication::translate("MainWindow", "Leaf wetness", 0));
-        actionClose_Project->setText(QApplication::translate("MainWindow", "Close Project", 0));
-        menuFile->setTitle(QApplication::translate("MainWindow", "File", 0));
-        menuDB->setTitle(QApplication::translate("MainWindow", "DB", 0));
-        menuModels->setTitle(QApplication::translate("MainWindow", "Models", 0));
-        menuInterpolation->setTitle(QApplication::translate("MainWindow", "Interpolation", 0));
-        toolBar->setWindowTitle(QApplication::translate("MainWindow", "toolBar", 0));
+        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Criteria3D", Q_NULLPTR));
+        menuFile_load_dtm->setText(QApplication::translate("MainWindow", "Load DTM", Q_NULLPTR));
+        menuDB_Load_Points_Postgres->setText(QApplication::translate("MainWindow", "Load Points", Q_NULLPTR));
+        menuDB_Load_data->setText(QApplication::translate("MainWindow", "Load data", Q_NULLPTR));
+        actionView_data->setText(QApplication::translate("MainWindow", "view data", Q_NULLPTR));
+        actionDateTime->setText(QApplication::translate("MainWindow", "dateTime", Q_NULLPTR));
+        menuInterpolationAirTemperature->setText(QApplication::translate("MainWindow", "Air temperature", Q_NULLPTR));
+        actionLoad_soil->setText(QApplication::translate("MainWindow", "Load soil parameters", Q_NULLPTR));
+        menuInterpolationSolarIrradiance->setText(QApplication::translate("MainWindow", "Solar irradiance", Q_NULLPTR));
+        actionLoad_Project->setText(QApplication::translate("MainWindow", "Load Project", Q_NULLPTR));
+        actionInitialize_waterbalance->setText(QApplication::translate("MainWindow", "Initialize waterbalance", Q_NULLPTR));
+        menuInterpolationPrecipitation->setText(QApplication::translate("MainWindow", "Precipitation", Q_NULLPTR));
+        menuInterpolationWindIntensity->setText(QApplication::translate("MainWindow", "Wind intensity", Q_NULLPTR));
+        menuInterpolationAirHumidity->setText(QApplication::translate("MainWindow", "Air humidity", Q_NULLPTR));
+        actionTry_Model_cycle->setText(QApplication::translate("MainWindow", "Run models", Q_NULLPTR));
+        menuInterpolationLeafWetness->setText(QApplication::translate("MainWindow", "Leaf wetness", Q_NULLPTR));
+        actionClose_Project->setText(QApplication::translate("MainWindow", "Close Project", Q_NULLPTR));
+        menuFile->setTitle(QApplication::translate("MainWindow", "File", Q_NULLPTR));
+        menuDB->setTitle(QApplication::translate("MainWindow", "DB", Q_NULLPTR));
+        menuModels->setTitle(QApplication::translate("MainWindow", "Models", Q_NULLPTR));
+        menuInterpolation->setTitle(QApplication::translate("MainWindow", "Interpolation", Q_NULLPTR));
+        toolBar->setWindowTitle(QApplication::translate("MainWindow", "toolBar", Q_NULLPTR));
     } // retranslateUi
 
 };

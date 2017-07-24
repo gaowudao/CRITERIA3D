@@ -263,7 +263,7 @@ vector <Crit3DInterpolationDataPoint> validPoints;
             if ((validPoints.at(i)).point->z != NODATA)
                 deltaZ.push_back(fabs(((float)(validPoints.at(i)).point->z) - z));
 
-        *devStDeltaZ = statistics::mean(deltaZ.data(), deltaZ.size());
+        *devStDeltaZ = statistics::mean(deltaZ.data(), int(deltaZ.size()));
 
         return true;
     }

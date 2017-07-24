@@ -66,7 +66,7 @@ void MainWindow::on_menuFile_load_dtm_triggered()
     if (myFileName != "")
         if (myProject.loadDTM(myFileName))
         {
-            gis::setDefaultDTMScale(myProject.dtm.colorScale);
+            setDefaultDTMScale(myProject.dtm.colorScale);
             myMapWidget.setCurrentView(dtmMap);
             this->update();
         }
@@ -168,7 +168,7 @@ void MainWindow::on_actionLoad_Project_triggered()
     {
         if (myProject.loadProject(myFileName))
         {
-            gis::setDefaultDTMScale(myProject.dtm.colorScale);
+            setDefaultDTMScale(myProject.dtm.colorScale);
             myMapWidget.setCurrentView(dtmMap);
         }
         else myProject.logError("Open project failed:\n " + myFileName);
