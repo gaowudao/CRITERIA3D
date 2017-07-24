@@ -33,4 +33,8 @@ Margot Van Soetendaal <margot@farnet.eu>
 
 Vittorio Marletto <vmarletto@arpae.it>
 
+Franco Zinoni <fzinoni@arpae.it>
+
+Tomaso Tonelli <ttonelli@arpae.it>
+
 
