@@ -7,7 +7,7 @@ SoilFluxex3D is a numerical solution for flow equations of water-heat-solutes in
 http://www.sciencedirect.com/science/article/pii/S0309170809001754
 
 # PRAGA (PRogram for AGrometeorological Analysis)
-PRAGA is a graphical user interface for all the libraries in the distribution.
+PRAGA is the Graphical User Interface to manage all the libraries in the distribution.
 
 It uses a modified version of MapGraphics library:
 https://github.com/raptorswing/MapGraphics
