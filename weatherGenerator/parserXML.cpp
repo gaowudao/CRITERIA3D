@@ -5,12 +5,9 @@
 #include "commonConstants.h"
 #include "parserXML.h"
 
-using namespace std;
-
 
 void initializeSeasonalAnomaly(TXMLSeasonalAnomaly *XMLAnomaly)
 {
-
    XMLAnomaly->point.name = "";
    XMLAnomaly->point.code = "";
    XMLAnomaly->point.latitude = NODATA;

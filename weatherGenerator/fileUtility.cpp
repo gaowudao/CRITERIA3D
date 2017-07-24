@@ -1,4 +1,3 @@
-#include "fileUtility.h"
 #include <QDebug>
 #include <QFile>
 #include <QTextStream>
@@ -6,6 +5,7 @@
 #include "commonConstants.h"
 #include "Crit3DDate.h"
 #include "weatherGenerator.h"
+#include "fileUtility.h"
 
 
 bool readMeteoDataCsv (QString namefile, char separator, float noData, TinputObsData* inputData)
