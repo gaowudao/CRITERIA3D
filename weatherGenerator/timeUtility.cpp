@@ -4,6 +4,7 @@
 
 #include "timeUtility.h"
 
+
 int numMonthsInPeriod(int m1, int m2)
 {
     int numMonthsInPeriod = 0;
@@ -178,6 +179,3 @@ void fixWgDoy(int wgDoy1, int wgDoy2, int predictionYear, int myYear, int* fixwg
         }
     }
 }
-
-
-
