@@ -2,10 +2,13 @@
 CRITERIA 3D provides a set of libraries for the agro-meteorological and climate analysis
 
 # SoilFluxex3D
-SoilFluxex3D is a numerical solution for three-dimensional flows of water-heat-solutues in the soil, coupling surface and subsurface flows.
+SoilFluxex3D is a numerical solution for three-dimensional flows of water-heat-solutes in the soil, 
+coupling surface and subsurface flows.
 
 # PRAGA (PRogram for AGrometeorological Analysis)
-PRAGA is a graphical user interface (use MapGraphics library) for the CRITERIA3D libraries.
+PRAGA is a graphical user interface for the CRITERIA3D libraries. 
+It uses a modified version of MapGraphics library:
+https://github.com/raptorswing/MapGraphics
 
 # License
 CRITERIA 3D libreries and PRAGA have been developed under contract issued by 
