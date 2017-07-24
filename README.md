@@ -17,8 +17,10 @@ it under the terms of the GNU Lesser General Public License as published by the 
 either version 3 of the License, or (at your option) any later version.
 
 # Authors
-* Fausto Tomei <ftomei@arpae.it>  <fausto.tomei@gmail.com>
-* Gabriele Antolini	 <gantolini@arpae.it>
+**Fausto Tomei** <ftomei@arpae.it>  <fausto.tomei@gmail.com>
+
+**Gabriele Antolini**	 <gantolini@arpae.it>
+
 
 Laura Costantini  <laura.costantini0@gmail.com>
 
