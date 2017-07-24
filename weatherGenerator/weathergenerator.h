@@ -84,7 +84,7 @@
 
     float normalRandom(int *gasDevIset,float *gasDevGset);
 
-    bool markov(float pwd,float pww, bool *wetPreviousDay);
+    bool markov(float pwd,float pww, bool wetPreviousDay);
     float weibull (float mean, float precThreshold);
 
     void qSplineYearInterpolate(float *meanY, float *dayVal);

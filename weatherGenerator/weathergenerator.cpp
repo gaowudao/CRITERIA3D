@@ -62,18 +62,21 @@ void newDay(int dayOfYear, float precThreshold, TwheatherGenClimate* wGen)
     dayOfYear = dayOfYear - 1;
 
     //Precipitation
-    if ( markov(wGen->daily.pwd[dayOfYear], wGen->daily.pww[dayOfYear], &(wGen->state.wetPreviousDay) ) )
+    bool isWetDay = markov(wGen->daily.pwd[dayOfYear], wGen->daily.pww[dayOfYear], wGen->state.wetPreviousDay);
+
+    if (isWetDay)
     {
-        //wet day
         meanTMax = wGen->daily.meanWetTMax[dayOfYear];
         wGen->state.precip = weibull(wGen->daily.meanPrecip[dayOfYear], precThreshold);
     }
     else
     {
-        //dry day
         meanTMax = wGen->daily.meanDryTMax[dayOfYear];
         wGen->state.precip = 0;
     }
+
+    //store information
+    wGen->state.wetPreviousDay = isWetDay;
 
     //temperature
     meanTMin = wGen->daily.meanTMin[dayOfYear];
@@ -83,7 +86,6 @@ void newDay(int dayOfYear, float precThreshold, TwheatherGenClimate* wGen)
     genTemps(&wGen->state.maxTemp, &wGen->state.minTemp, meanTMax, meanTMin, stdTMax, stdTMin,&(wGen->state.resTMaxPrev), &(wGen->state.resTMinPrev));
 
     wGen->state.currentDay = dayOfYear;
-
 }
 
 void initializeWeather(TwheatherGenClimate* wGen)
@@ -114,7 +116,7 @@ void initializeWeather(TwheatherGenClimate* wGen)
     wGen->state.precip = 0;
     wGen->state.resTMaxPrev = 0;
     wGen->state.resTMinPrev = 0;
-    wGen->state.wetPreviousDay = 0;
+    wGen->state.wetPreviousDay = false;
 
     for (int i = 0; i < 366; i++)
     {
@@ -167,40 +169,6 @@ void initializeWeather(TwheatherGenClimate* wGen)
     qSplineYearInterpolate(mMeanTMin, wGen->daily.meanTMin);
     qSplineYearInterpolate(mMinTempStd, wGen->daily.minTempStd);
     qSplineYearInterpolate(mMaxTempStd, wGen->daily.maxTempStd);
-
-    /* DEBUG
-    QString filename="initW.txt";
-    QFile file( filename );
-    file.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
-    QTextStream stream( &file );
-    for (m=0; m<12; m++)
-    {
-
-        stream << "month = " << m+1 << endl;
-        stream << "wGen->monthly.monthlyTmax = " << wGen->monthly.monthlyTmax[m] << endl;
-        stream << "wGen->monthly.monthlyTmin = " << wGen->monthly.monthlyTmin[m] << endl;
-        stream << "wGen->monthly.sumPrec = " << wGen->monthly.sumPrec[m] << endl;
-        stream << "wGen->monthly.dw_Tmax = " << wGen->monthly.dw_Tmax[m] << endl;
-        stream << "wGen->monthly.fractionWetDays = " << wGen->monthly.fractionWetDays[m] << endl;
-        stream << "wGen->monthly.stDevTmax = " << wGen->monthly.stDevTmax[m] << endl;
-        stream << "wGen->monthly.stDevTmin = " << wGen->monthly.stDevTmin[m] << endl;
-        stream << "------------------------------------------------------- " << endl;
-
-        stream << "mMaxTempStd[m] = " << mMaxTempStd[m] << endl;
-        stream << mMaxTempStd[m] << endl;
-        stream << mpww[m] << endl;
-        stream << mMeanPrecip[m] << endl;
-    }
-    stream << "------------------------------------------------------- " << endl;
-    stream << "------------------------------------------------------- " << endl;
-    for (m=0; m<366; m++)
-    {
-        //stream << wGen->daily.minTempStd[m] << endl;
-        //stream << wGen->daily.maxTempStd[m] << endl;
-        //stream << wGen->daily.pww[m] << endl;
-        //stream << wGen->daily.meanPrecip[m] << endl;
-    }
-    */
 }
 
 
@@ -240,20 +208,20 @@ float normalRandom(int *gasDevIset,float *gasDevGset)
     return normalRandom;
 }
 
-/*--------------------------------------------------------------
-    markov
-----------------------------------------------------------------
-    Returns rain or no rain with a markov chain
-----------------------------------------------------------------
-    float pwd            probability wet-dry
-    float pww            probability wet-wet
-    bool *wetPreviousDay true if the previous day has been a wet day, false otherwise
----------------------------------------------------------------*/
-bool markov(float pwd,float pww, bool *wetPreviousDay)
+
+
+/*!
+ * \brief markov     markov chain
+ * \param pwd     probability wet-dry
+ * \param pww     probability wet-wet
+ * \param wetPreviousDay   is true if the previous day has been a wet day, false otherwise
+ * \return true if the day is wet, false otherwise
+ */
+bool markov(float pwd,float pww, bool wetPreviousDay)
 {
     float c;
 
-    if (*wetPreviousDay)
+    if (wetPreviousDay)
         c = ((double) rand() / (RAND_MAX)) - pww;
 
     else
@@ -261,17 +229,9 @@ bool markov(float pwd,float pww, bool *wetPreviousDay)
 
 
     if (c <= 0)
-    {
-        //store last information
-        *wetPreviousDay = true;
-        return true; //rain - wet
-    }
+        return true;  //wet
     else
-    {
-        //store last information
-        *wetPreviousDay = false;
-        return false; //no rain - dry
-    }
+        return false; //dry
 }
 
 
