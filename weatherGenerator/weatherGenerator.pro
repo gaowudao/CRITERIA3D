@@ -1,8 +1,3 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2017-07-24T17:56:50
-#
-#-------------------------------------------------
 
 QT  += core xml
 QT  -= gui
@@ -13,15 +8,19 @@ CONFIG += staticlib
 
 INCLUDEPATH += ../crit3dDate ../mathFunctions
 
-SOURCES += weathergenerator.cpp \
+SOURCES += \
     timeUtility.cpp \
     parserXML.cpp \
-    wgClimate.cpp
+    wgClimate.cpp \
+    fileUtility.cpp \
+    weatherGenerator.cpp
 
-HEADERS += weathergenerator.h \
+HEADERS += \
     timeUtility.h \
     parserXML.h \
-    wgClimate.h
+    wgClimate.h \
+    fileUtility.h \
+    weatherGenerator.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

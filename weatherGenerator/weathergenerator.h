@@ -111,7 +111,5 @@
                                     TwheatherGenClimate* wGen, int predictionYear, int firstYear, int numRepetitions,
                                     int wgDoy1, int wgDoy2, float minPrec, ToutputDailyMeteo* mydailyData, bool last);
 
-    bool writeMeteoDataCsv (QString namefile, char separator, ToutputDailyMeteo* mydailyData);
-
 #endif // WEATHERGENERATOR_H
 

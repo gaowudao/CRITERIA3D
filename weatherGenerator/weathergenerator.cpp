@@ -14,6 +14,7 @@
 #include "commonConstants.h"
 #include "weatherGenerator.h"
 #include "timeUtility.h"
+#include "fileUtility.h"
 
 
 float getTMax(int dayOfYear, float precThreshold, TwheatherGenClimate* wGen)
@@ -729,15 +730,12 @@ bool computeSeasonalPredictions(TinputObsData *lastYearDailyObsData, int dataLen
     int fixwgDoy1 = wgDoy1;
     int fixwgDoy2 = wgDoy2;
 
-    // LAURA TODO etp e falda
-
-    //qDebug() << "computeSeasonalPredictions " ;
+    // TODO etp e falda
 
     currentIndex = mydailyData->dataLenght; //
 
     firstDate = mydailyData[currentIndex-1].date.addDays(1);
 
-    // wgDoy1 within myPredictionYear, wgDoy2 within myPredictionYear+1
     if (wgDoy1 < wgDoy2)
     {
         lastYear = firstYear + numRepetitions - 1;
@@ -861,48 +859,3 @@ bool isWGDate(Crit3DDate myDate, int wgDoy1, int wgDoy2)
 
     return isWGDate;
 }
-
-
-// write wg output
-bool writeMeteoDataCsv (QString namefile, char separator, ToutputDailyMeteo* mydailyData)
-{
-    QFile file(namefile);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
-        qDebug() << file.errorString();
-        return false;
-    }
-
-    QTextStream stream( &file );
-
-    QString myDate, tMin, tMax, tAvg, prec;
-    QString month, day;
-
-    stream << "date" << separator << "tmin" << separator << "tmax" << separator << "tavg"
-           << separator << "prec" << separator << "etp" << separator << "watertable\n";
-
-    for (int i=0; i < mydailyData->dataLenght; i++)
-    {
-        if (mydailyData[i].date.month < 10)
-            month = "0" + QString::number(mydailyData[i].date.month);
-        else
-            month = QString::number(mydailyData[i].date.month);
-
-        if (mydailyData[i].date.day < 10)
-            day = "0" + QString::number(mydailyData[i].date.day);
-        else
-            day = QString::number(mydailyData[i].date.day);
-
-        myDate = QString::number(mydailyData[i].date.year) + "-" + month + "-" + day;
-        tMin = QString::number(mydailyData[i].minTemp, 'f', 1);
-        tMax = QString::number(mydailyData[i].maxTemp, 'f', 1);
-        tAvg = QString::number((mydailyData[i].minTemp + mydailyData[i].maxTemp)*0.5, 'f', 1);
-        prec = QString::number(mydailyData[i].prec, 'f', 1);
-
-        stream << myDate << separator << tMin << separator << tMax << separator << tAvg
-               << separator << prec << separator << separator << "\n";
-
-    }
-
-    return true;
-}
-
