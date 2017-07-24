@@ -46,18 +46,18 @@
 
     struct TradPoint
     {
-        float x;
-        float y;
-        float height;
-        float lat;
-        float lon;
-        float slope;
-        float aspect;
-        float beam;
-        float diffuse;
-        float reflected;
-        float global;
-        float transmissivity;
+        double x;
+        double y;
+        double height;
+        double lat;
+        double lon;
+        double slope;
+        double aspect;
+        double beam;
+        double diffuse;
+        double reflected;
+        double global;
+        double transmissivity;
     };
 
     class Crit3DTransmissivityPoint

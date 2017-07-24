@@ -28,10 +28,9 @@
     ftomei@arpae.it
 */
 
-
 #include "commonConstants.h"
-#include "gis.h"
 #include "radiationSettings.h"
+
 
 Crit3DRadiationSettings::Crit3DRadiationSettings()
 {
@@ -56,6 +55,7 @@ Crit3DRadiationSettings::Crit3DRadiationSettings()
     transSettings.clearSky = CLEAR_SKY_TRANSMISSIVITY_DEFAULT;
 }
 
+
 void Crit3DRadiationSettings::setGisSettings(const gis::Crit3DGisSettings* mySettings)
 {
     gisSettings = new gis::Crit3DGisSettings();
@@ -64,6 +64,7 @@ void Crit3DRadiationSettings::setGisSettings(const gis::Crit3DGisSettings* mySet
     gisSettings->timeZone = mySettings->timeZone;
     gisSettings->isUTC = mySettings->isUTC;
 }
+
 
 bool Crit3DRadiationSettings::getComputeRealData()
 { return computeRealData;}

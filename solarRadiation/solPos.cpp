@@ -507,11 +507,11 @@ static void geometry ( struct posdata *pdat )
         /*!  Michalsky, J.  1988.  The Astronomical Almanac's algorithm for
             approximate solar position (1950-2050).  Solar Energy 40 (3),
             pp. 227-235. */
-    pdat->eclong  = pdat->mnlong + 1.915 * sin ( pdat->mnanom * raddeg ) +
-                    0.020 * sin ( 2.0 * pdat->mnanom * raddeg );
+    pdat->eclong  = float(pdat->mnlong + 1.915 * sin(pdat->mnanom * raddeg) +
+                    0.020 * sin ( 2.0 * pdat->mnanom * raddeg));
 
     /*! (dump the multiples of 360, so the answer is between 0 and 360) */
-    pdat->eclong -= 360.0 * (int) ( pdat->eclong / 360.0 );
+    pdat->eclong -= float(360.0 * (int) ( pdat->eclong / 360.0 ));
     if ( pdat->eclong < 0.0 )
         pdat->eclong += 360.0;
 
@@ -520,16 +520,13 @@ static void geometry ( struct posdata *pdat )
             approximate solar position (1950-2050).  Solar Energy 40 (3),
             pp. 227-235. */
 
-    /* 02 Feb 2001 SMW corrected sign in the following line */
-/*  pdat->ecobli = 23.439 + 4.0e-07 * pdat->ectime;     */
-    pdat->ecobli = 23.439 - 4.0e-07 * pdat->ectime;
+    pdat->ecobli = float(23.439 - 4.0e-07 * pdat->ectime);
 
     /*! Declination */
         /*!  Michalsky, J.  1988.  The Astronomical Almanac's algorithm for
             approximate solar position (1950-2050).  Solar Energy 40 (3),
             pp. 227-235. */
-    pdat->declin = degrad * asin ( sin (pdat->ecobli * raddeg) *
-                               sin (pdat->eclong * raddeg) );
+    pdat->declin = float(degrad * asin (sin (pdat->ecobli * raddeg) * sin (pdat->eclong * raddeg)));
 
     /*! Right ascension */
         /*!  Michalsky, J.  1988.  The Astronomical Almanac's algorithm for
@@ -551,7 +548,7 @@ static void geometry ( struct posdata *pdat )
     pdat->gmst  = 6.697375 + 0.0657098242 * pdat->ectime + pdat->utime;
 
     /*! (dump the multiples of 24, so the answer is between 0 and 24) */
-    pdat->gmst -= 24.0 * (int) ( pdat->gmst / 24.0 );
+    pdat->gmst -= float(24.0 * (int) (pdat->gmst / 24.0));
     if ( pdat->gmst < 0.0 )
         pdat->gmst += 24.0;
 
@@ -562,7 +559,7 @@ static void geometry ( struct posdata *pdat )
     pdat->lmst  = pdat->gmst * 15.0 + pdat->longitude;
 
     /*! (dump the multiples of 360, so the answer is between 0 and 360) */
-    pdat->lmst -= 360.0 * (int) ( pdat->lmst / 360.0 );
+    pdat->lmst -= float(360.0 * (int) ( pdat->lmst / 360.0));
     if ( pdat->lmst < 0.)
         pdat->lmst += 360.0;
 
