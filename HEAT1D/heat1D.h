@@ -51,8 +51,8 @@ void getHourlyOutputAllPeriod(long firstIndex, long lastIndex, Crit3DOut *output
 long getNodesNumber();
 void setSoilHorizonNumber(int myHorizonNumber);
 
-bool initializeTestHeat(long *myHourIni, long *myHourFin, bool useInputSoils);
-bool runTestHeat(double myHourlyTemperature,  double myHourlyRelativeHumidity,
+bool initializeHeat1D(long *myHourIni, long *myHourFin, bool useInputSoils);
+bool runHeat1D(double myHourlyTemperature,  double myHourlyRelativeHumidity,
                  double myHourlyWindSpeed, double myHourlyNetIrradiance,
                  double myHourlyPrec);
 

@@ -39,6 +39,7 @@ void initializeExtraHeat(TCrit3DNodeHeat* myNodeExtraHeat)
     (*myNodeExtraHeat).T = ZEROCELSIUS + 20;
     (*myNodeExtraHeat).oldT = ZEROCELSIUS + 20;
     (*myNodeExtraHeat).Qh = 0;
+    (*myNodeExtraHeat).sinkSource = 0.;
 }
 
 void initializeExtra(TCrit3DnodeExtra *myNodeExtra, bool computeHeat, bool computeSolutes)

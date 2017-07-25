@@ -236,6 +236,8 @@ namespace soilFluxes3D {
 
 	myNode[myIndex].isSurface = isSurface;
 
+    myNode[myIndex].waterSinkSource = 0.;
+
     return(CRIT3D_OK);
  }
 

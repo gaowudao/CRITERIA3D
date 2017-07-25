@@ -1,5 +1,3 @@
-// testHeat.cpp : main project file.
-
 #include <math.h>
 #include <malloc.h>
 #include <stdio.h>
@@ -205,7 +203,7 @@ bool initializeSoil(bool useInputSoils)
     else return true;
 }
 
-bool initializeTestHeat(long *myHourIni, long *myHourFin, bool useInputSoils)
+bool initializeHeat1D(long *myHourIni, long *myHourFin, bool useInputSoils)
 {
     int MyResult = 0;
     long FirstLayerNodesNumber;
@@ -566,7 +564,7 @@ QString Crit3DOut::getTextOutput()
 }
 
 
-bool runTestHeat(double myHourlyTemperature,  double myHourlyRelativeHumidity,
+bool runHeat1D(double myHourlyTemperature,  double myHourlyRelativeHumidity,
                  double myHourlyWindSpeed, double myHourlyNetIrradiance,
                  double myHourlyPrec)
 {

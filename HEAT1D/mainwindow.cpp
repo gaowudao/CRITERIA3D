@@ -112,7 +112,7 @@ bool MainWindow::initializeModel()
     if (! soilDataLoaded)
         setSoil(ui->lineEditThetaS->text().toDouble(), ui->lineEditThetaR->text().toDouble(), ui->lineEditClay->text().toDouble(), ui->lineEditOrganic->text().toDouble());
 
-    Initialized = initializeTestHeat(&myHourIni, &myHourFin, soilDataLoaded);
+    Initialized = initializeHeat1D(&myHourIni, &myHourFin, soilDataLoaded);
 
     myCurrentHour = myHourIni;
 
@@ -235,7 +235,7 @@ void MainWindow::on_pushRunAllPeriod_clicked()
                 myP = 0.;
         }
 
-        runTestHeat(myT, myRH, myWS, myNR, myP);
+        runHeat1D(myT, myRH, myWS, myNR, myP);
 
         getHourlyOutputAllPeriod(1, getNodesNumber(), &myHeatOutput);
 
