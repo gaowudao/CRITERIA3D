@@ -170,17 +170,6 @@ void initializeBalanceHeat()
      balanceCurrentTimeStep.storageHeat = balanceWholePeriod.storageHeat;
      balancePreviousTimeStep.storageHeat = balanceWholePeriod.storageHeat;
      balanceCurrentPeriod.storageHeat = balanceWholePeriod.storageHeat;
-
-     /*! initialize link flow */
-     if (myStructure.saveHeatFluxes == SAVE_HEATFLUXES_TOTAL)
-         for (long n = 0; n < myStructure.nrNodes; n++)
-         {
-             saveHeatFlux(&(myNode[n].up), HEATFLUX_TOTAL, 0.);
-             saveHeatFlux(&(myNode[n].down), HEATFLUX_TOTAL, 0.);
-             for (short i = 0; i < myStructure.nrLateralLinks; i++)
-                saveHeatFlux(&(myNode[n].lateral[i]), HEATFLUX_TOTAL, 0.);
-         }
-
 }
 
 void updateBalanceHeatWholePeriod()
@@ -210,6 +199,16 @@ void restoreHeat()
         myNode[i].extra->Heat->T = myNode[i].extra->Heat->oldT;
 }
 
+void initializeHeatFluxes()
+{
+    for (long n = 0; n < myStructure.nrNodes; n++)
+    {
+        initializeNodeHeatFlux(myNode[n].up.linkedExtra);
+        initializeNodeHeatFlux(myNode[n].down.linkedExtra);
+        for (short i = 0; i < myStructure.nrLateralLinks; i++)
+           initializeNodeHeatFlux(myNode[n].lateral[i].linkedExtra);
+    }
+}
 
 /*!
  * \brief [m3 m-3] vapor volumetric water equivalent

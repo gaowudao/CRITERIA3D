@@ -40,5 +40,6 @@
 
     void initializeExtra(TCrit3DnodeExtra *myNodeExtra, bool computeHeat, bool computeSolutes);
     void initializeLinkExtra(TCrit3DLinkedNodeExtra* myLinkedNodeExtra, bool computeHeat, bool computeSolutes);
+    void initializeNodeHeatFlux(TCrit3DLinkedNodeExtra* myLinkExtra);
 
 #endif // TYPESEXTRA_H

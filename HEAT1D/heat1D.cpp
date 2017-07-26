@@ -323,7 +323,7 @@ bool initializeHeat1D(long *myHourIni, long *myHourFin, bool useInputSoils)
         }
     }
 
-    soilFluxes3D::setNumericalParameters(1, 600, 100, 10, 12, 5);
+    soilFluxes3D::setNumericalParameters(1, 60, 100, 10, 12, 5);
 
     soilFluxes3D::initializeBalance();
 
