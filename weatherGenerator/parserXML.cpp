@@ -21,6 +21,7 @@ void initializeSeasonalAnomaly(TXMLSeasonalAnomaly *XMLAnomaly)
    XMLAnomaly->repetitions = NODATA;
    XMLAnomaly->anomalyYear = NODATA;
    XMLAnomaly->anomalySeason = "";
+   XMLAnomaly->forecast.clear();
 }
 
 

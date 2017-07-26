@@ -103,9 +103,9 @@
     bool assignAnomalyPrec(float myAnomaly, int anomalyMonth1, int anomalyMonth2,
                            float* myWGMonthlyVarNoAnomaly, float* myWGMonthlyVar);
 
-    bool makeScenario(QString outputFileName, char separator, TXMLSeasonalAnomaly* XMLAnomaly,
-                      TwheatherGenClimate wGenClimate, TinputObsData* lastYearDailyObsData,
-                      int numRepetitions, int myPredictionYear, int wgDoy1, int wgDoy2, float minPrec);
+    bool makeSeasonalForecast(QString outputFileName, char separator, TXMLSeasonalAnomaly* XMLAnomaly,
+                            TwheatherGenClimate wGenClimate, TinputObsData* lastYearDailyObsData,
+                            int numRepetitions, int myPredictionYear, int wgDoy1, int wgDoy2, float minPrec);
 
     bool computeSeasonalPredictions(TinputObsData *lastYearDailyObsData, int dataLenght,
                                     TwheatherGenClimate* wGen, int predictionYear, int firstYear, int numRepetitions,

@@ -560,13 +560,13 @@ bool assignAnomalyPrec(float myAnomaly, int anomalyMonth1, int anomalyMonth2, fl
 
 
 /*------------------------------------------------------------------------------
-    makeScenario
+    makeSeasonalForecast
 --------------------------------------------------------------------------------
     Generates a time series of daily data (Tmin, Tmax, Prec)
-    for a period of years equals to nrYears
+    for a period of nrYears = numMembers * numRepetitions
     Different members of anomalies loaded by xml files are added to the climate
 --------------------------------------------------------------------------------*/
-bool makeScenario(QString outputFileName, char separator, TXMLSeasonalAnomaly* XMLAnomaly, TwheatherGenClimate wGenClimate, TinputObsData* lastYearDailyObsData, int numRepetitions, int myPredictionYear, int wgDoy1, int wgDoy2, float minPrec)
+bool makeSeasonalForecast(QString outputFileName, char separator, TXMLSeasonalAnomaly* XMLAnomaly, TwheatherGenClimate wGenClimate, TinputObsData* lastYearDailyObsData, int numRepetitions, int myPredictionYear, int wgDoy1, int wgDoy2, float minPrec)
 {
     TwheatherGenClimate wGen;
     ToutputDailyMeteo* myDailyPredictions;
@@ -576,7 +576,7 @@ bool makeScenario(QString outputFileName, char separator, TXMLSeasonalAnomaly* X
 
     int modelIndex = 0;
     int numMembers;     // number of models into xml anomaly file
-    int numYears;       // number of years of the output series. It is the length of the virtual period where all the previsions (one for each model) are given one after another
+    int nrYears;        // number of years of the output series. It is the length of the virtual period where all the previsions (one for each model) are given one after another
     int myFirstYear;
     int myLastYear;
     int myNumValues;    // number of days between the first and the last prediction year
@@ -600,15 +600,15 @@ bool makeScenario(QString outputFileName, char separator, TXMLSeasonalAnomaly* X
     for (int i = 0; i<XMLAnomaly->modelMember.size(); i++)
       numMembers = numMembers +  XMLAnomaly->modelMember[i].toInt();
 
-    numYears = numMembers * numRepetitions;
+    nrYears = numMembers * numRepetitions;
 
     myFirstYear = myPredictionYear;
 
     // wgDoy1 within myPredictionYear, wgDoy2 within myPredictionYear+1
     if (wgDoy1 < wgDoy2)
-        myLastYear = myFirstYear + numYears - 1;
+        myLastYear = myFirstYear + nrYears - 1;
     else
-        myLastYear = myFirstYear + numYears;
+        myLastYear = myFirstYear + nrYears;
 
     seasonFirstDate = getDateFromDoy (myPredictionYear, wgDoy1);
     if (wgDoy1 < wgDoy2)
@@ -629,14 +629,15 @@ bool makeScenario(QString outputFileName, char separator, TXMLSeasonalAnomaly* X
         if (isLeapYear(i))
             addday = addday+1;
     }
-    myNumValues = numYears*365+addday+1;
-    myDailyPredictions = (ToutputDailyMeteo*)malloc(myNumValues*sizeof(ToutputDailyMeteo));
 
+    myNumValues = nrYears*365 +addday +1;
     if (myNumValues <= 0)
     {
         qDebug() << "Error Wrong Date";
         return false;
     }
+
+    myDailyPredictions = (ToutputDailyMeteo*)malloc(myNumValues*sizeof(ToutputDailyMeteo));
 
     // copy the last 9 months before wgDoy1
     for (tmp = 0; tmp < nrDaysBeforeWgDoy1; tmp++)
@@ -652,6 +653,7 @@ bool makeScenario(QString outputFileName, char separator, TXMLSeasonalAnomaly* X
             return false;
         }
     }
+
     qDebug() << "\n...Observed OK";
     myDailyPredictions->dataLenght = tmp;
 
