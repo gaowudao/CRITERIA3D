@@ -65,16 +65,7 @@ bool MainWindow::initializeModel()
 
     useInputData = ui->chkUseInput->isChecked() && (soilDataLoaded || meteoDataLoaded);
 
-    // geometry
-    setDimension(1);
-
-    if (ui->chkBoxGeometricProgression->isChecked())
-        setProgression(PROGRESSION_GEOMETRIC);
-    else
-        setProgression(PROGRESSION_ARITHMETIC);
-
-    setMinThickness(ui->lineEditMinThickness->text().toDouble());
-    setMaxThickness(ui->lineEditMaxThickness->text().toDouble());
+    setThickness(ui->lineEditThickness->text().toDouble());
     setTotalDepth(ui->lineEditDepth->text().toDouble());
 
     // initialization
@@ -189,7 +180,7 @@ void MainWindow::on_pushRunAllPeriod_clicked()
 
     long nodesNr = getNodesNumber();
     myHeatOutput.nrLayers = nodesNr;
-    myHeatOutput.layerThickness = ui->lineEditMinThickness->text().toFloat();
+    myHeatOutput.layerThickness = ui->lineEditThickness->text().toFloat();
 
     if (Initialized)
         ui->prgBar->setMaximum(myHourFin);

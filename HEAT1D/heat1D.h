@@ -30,13 +30,10 @@ struct Qsoil{
 
 extern Qsoil *myInputSoils;
 
-void setDimension(short myValue);
-void setProgression(short myProgressionType);
 void setSurface(double myArea, double myAlbedo, double myRoughness, double minWaterRunoff, double myRoughnessHeat);
 void setSoil(double thetaS_, double thetaR_, double clay_, double organicMatter_);
 void setTotalDepth(double myValue);
-void setMinThickness(double myValue);
-void setMaxThickness(double myValue);
+void setThickness(double myValue);
 void setSimulationStart(int myValue);
 void setSimulationStop(int myValue);
 void setInitialSaturation(double myValue);
