@@ -7,10 +7,10 @@
 
 
 /*!
- * \brief getWaterContent
+ * \brief
  * \param myLayer
- * \param availableWater    [-] fraction of water between wilting point and field capacity
- * \return                  [mm] water content in the layer
+ * \param availableWater   fraction of water between wilting point and field capacity [-]
+ * \return  water content in the layer [mm]
  */
 double getWaterContent(soil::Crit3DLayer *myLayer, double availableWater)
 {
@@ -24,14 +24,13 @@ double getWaterContent(soil::Crit3DLayer *myLayer, double availableWater)
 
 
 /*!
- * \brief initializeWater
- * \param myCase
+ * \brief
  * Assign two different initial available water
- * initialAW[0]         [-] available water in the ploughed soil layer
- * initialAW[1]         [-] available water in the deep soil
+ * in the ploughed soil layer
+ * and in the deep soil
  */
-void initializeWater(Criteria1D* myCase)
 // TODO migliorare - variare in base al mese come in Vintage
+void initializeWater(Criteria1D* myCase)
 {
     myCase->layer[0].waterContent = 0.0;
     for (int i = 1; i < myCase->nrLayers; i++)
@@ -44,18 +43,16 @@ void initializeWater(Criteria1D* myCase)
 }
 
 
+// TODO extend to geometric layers
 /*!
- * \brief infiltration
- * heuristic algorithm for 1D soil water infiltration and redistribution
- * it is based on P.M.Driessen, 1986, "The water balance of soil"
- * main author: M. van Soetendael
+ * \brief Heuristic algorithm for 1D soil water infiltration and redistribution
  * \param myCase
  * \param myError
- * \param prec                  [mm]
- * \param surfaceIrrigation     [mm]
- * \return
+ * \param prec      [mm]
+ * \param surfaceIrrigation [mm]
+ * \author Margot van Soetendael
+ * \note P.M.Driessen, 1986, "The water balance of soil"
  */
-// TODO extend to geometric layers
 bool infiltration(Criteria1D* myCase, QString* myError, float prec, float surfaceIrrigation)
 {
     int i, j, l, nrPloughLayers;
@@ -246,7 +243,10 @@ bool infiltration(Criteria1D* myCase, QString* myError, float prec, float surfac
     return true;
 }
 
-
+/*!
+ * \brief computeRunoff
+ * \param myCase
+ */
 bool computeRunoff(Criteria1D* myCase)
 {
     // initialize runoff
@@ -262,7 +262,11 @@ bool computeRunoff(Criteria1D* myCase)
     return true;
 }
 
-
+/*!
+ * \brief surfaceRunoff
+ * \param myCase
+ * \return
+ */
 bool surfaceRunoff(Criteria1D* myCase)
 {
     double clodHeight;           // [mm] effective height of clod
@@ -293,11 +297,9 @@ bool surfaceRunoff(Criteria1D* myCase)
 
 
 /*!
- * \brief subSurfaceRunoff
- * compute lateral drainage
- * it is based on Driessen, 1986, eq.58
- * \param myCase
- * \return
+ * \brief
+ * Compute lateral drainage
+ * \note P.M.Driessen, 1986, eq.58
  */
 bool subSurfaceRunoff(Criteria1D* myCase)
 {
