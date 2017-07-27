@@ -1,6 +1,7 @@
 #ifndef BALANCE_H
 #define BALANCE_H
 
+
     void halveTimeStep();
 
     bool getForcedHalvedTime();
