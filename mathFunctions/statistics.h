@@ -2,8 +2,6 @@
 #define STATISTICS_H
 
 
-
-
 namespace statistics
 {
     float rootMeanSquareError(float *measured , float *simulated , int nrData);
