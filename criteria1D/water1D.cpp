@@ -243,6 +243,7 @@ bool infiltration(Criteria1D* myCase, QString* myError, float prec, float surfac
     return true;
 }
 
+
 /*!
  * \brief computeRunoff
  * \param myCase
@@ -261,6 +262,7 @@ bool computeRunoff(Criteria1D* myCase)
 
     return true;
 }
+
 
 /*!
  * \brief surfaceRunoff
