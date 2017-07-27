@@ -9,7 +9,6 @@
         #include "parserXML.h"
     #endif
 
-
     struct TinputObsData
     {
         Crit3DDate inputFirstDate;

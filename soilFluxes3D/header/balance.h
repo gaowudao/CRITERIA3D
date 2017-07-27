@@ -1,16 +1,20 @@
+#ifndef BALANCE_H
+#define BALANCE_H
 
-void halveTimeStep();
+    void halveTimeStep();
 
-bool getForcedHalvedTime();
+    bool getForcedHalvedTime();
 
-void setForcedHalvedTime(bool isForced);
+    void setForcedHalvedTime(bool isForced);
 
-double computeTotalWaterContent();
+    double computeTotalWaterContent();
 
-double getMatrixValue(long i, TlinkedNode *link);
+    double getMatrixValue(long i, TlinkedNode *link);
 
-void InitializeBalanceWater();
+    void InitializeBalanceWater();
 
-bool waterBalance(double deltaT, int approxNr);
+    bool waterBalance(double deltaT, int approxNr);
 
-void updateBalanceWaterWholePeriod();
+    void updateBalanceWaterWholePeriod();
+
+#endif  // BALANCE_H

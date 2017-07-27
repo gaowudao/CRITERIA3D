@@ -9,13 +9,14 @@ QT       += core gui widgets network sql
 TARGET = PRAGA
 TEMPLATE = app
 
-INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../MapGraphics ../meteo ../dbMeteoPoints
+INCLUDEPATH += ../crit3dDate ../mathFunctions ../utilities ../gis ../MapGraphics ../meteo ../dbMeteoPoints
 
+LIBS += -L../mathFunctions/release -lmathFunctions
+LIBS += -L../crit3dDate/release -lcrit3dDate
+LIBS += -L../utilities/release -lutilities
 LIBS += -L../dbMeteoPoints/release -ldbMeteoPoints
 LIBS += -L../meteo/release -lmeteo
 LIBS += -L../gis/release -lgis
-LIBS += -L../mathFunctions/release -lmathFunctions
-LIBS += -L../crit3dDate/release -lcrit3dDate
 LIBS += -L../MapGraphics/release -lMapGraphics
 
 
@@ -27,7 +28,6 @@ SOURCES += main.cpp\
     project.cpp \
     stationMarker.cpp \
     rubberBand.cpp \
-    utils.cpp \
     formInfo.cpp
 
 HEADERS  += mainwindow.h \
@@ -38,7 +38,6 @@ HEADERS  += mainwindow.h \
     guiConfiguration.h \
     stationMarker.h \
     rubberBand.h \
-    utils.h \
     formInfo.h
 
 FORMS    += mainwindow.ui \
