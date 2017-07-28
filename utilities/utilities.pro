@@ -5,17 +5,20 @@
 #
 #-------------------------------------------------
 
-QT       -= gui
+QT      += core sql
+QT      -= gui
 
 TARGET = utilities
 TEMPLATE = lib
 CONFIG += staticlib
 
-INCLUDEPATH += ../crit3dDate ../mathFunctions
+INCLUDEPATH += ../crit3dDate ../mathFunctions ../crop ../soil
 
-SOURCES += utilities.cpp
+SOURCES += utilities.cpp \
+    dbTools.cpp
 
-HEADERS += utilities.h
+HEADERS += utilities.h \
+    dbTools.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

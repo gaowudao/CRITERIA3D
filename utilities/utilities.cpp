@@ -120,6 +120,7 @@ QString getFileName(QString filePath)
     return fileName;
 }
 
+
 QString getPath(QString filePath)
 {
     QString fileName = getFileName(filePath);

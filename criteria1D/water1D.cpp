@@ -1,8 +1,8 @@
 #include <math.h>
 
 #include "commonConstants.h"
-#include "Criteria1D.h"
 #include "water1D.h"
+#include "Criteria1D.h"
 #include "crop.h"
 
 
@@ -53,7 +53,7 @@ void initializeWater(Criteria1D* myCase)
  * \author Margot van Soetendael
  * \note P.M.Driessen, 1986, "The water balance of soil"
  */
-bool infiltration(Criteria1D* myCase, QString* myError, float prec, float surfaceIrrigation)
+bool infiltration(Criteria1D* myCase, std::string* myError, float prec, float surfaceIrrigation)
 {
     int i, j, l, nrPloughLayers;
     int reached = NODATA;            // [-] index of reached layer for surpuls water

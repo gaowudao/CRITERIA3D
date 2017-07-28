@@ -77,116 +77,11 @@ Criteria1DOutput::Criteria1DOutput()
 }
 
 
-bool Criteria1D::loadVanGenuchtenParameters(QString *myError)
+
+bool Criteria1D::loadSoil(std::string idSoilStr, std::string *myError)
 {
-    QString queryString = "SELECT id_texture, alpha, n, he, theta_r, theta_s, k_sat, l";
-    queryString += " FROM soil_vangenuchten";
-    queryString += " ORDER BY id_texture";
+    QString soilCode = QString::fromStdString(idSoilStr);
 
-    QSqlQuery query = this->dbParameters.exec(queryString);
-    query.last();
-    int tableSize = query.at() + 1;     //SQLITE doesn't support SIZE
-
-    if (tableSize == 0)
-    {
-        *myError = "Table soil_vangenuchten\n" + query.lastError().text();
-        return(false);
-    }
-    else if (tableSize != 12)
-    {
-        *myError = "Table soil_vangenuchten: wrong number of soil textures (must be 12)";
-        return(false);
-    }
-
-    //read values
-    int id, j;
-    float myValue;
-    double m;
-    query.first();
-    do
-    {
-        id = query.value(0).toInt();
-        //check data
-        for (j = 0; j <= 7; j++)
-            if (! getValue(query.value(j), &myValue))
-            {
-                *myError = "Table soil_van_genuchten: missing data in soil texture:" + QString::number(id);
-                return(false);
-            }
-
-        this->soilTexture[id].vanGenuchten.alpha = query.value(1).toDouble();    //[kPa^-1]
-        this->soilTexture[id].vanGenuchten.n = query.value(2).toDouble();
-        this->soilTexture[id].vanGenuchten.he = query.value(3).toDouble();       //[kPa]
-
-        m = 1.0 - 1.0 / this->soilTexture[id].vanGenuchten.n;
-        this->soilTexture[id].vanGenuchten.m = m;
-        this->soilTexture[id].vanGenuchten.sc = pow(1.0 + pow(this->soilTexture[id].vanGenuchten.alpha
-                                        * this->soilTexture[id].vanGenuchten.he, this->soilTexture[id].vanGenuchten.n), -m);
-
-        this->soilTexture[id].vanGenuchten.thetaR = query.value(4).toDouble();
-
-        //reference theta at saturation
-        this->soilTexture[id].vanGenuchten.refThetaS = query.value(5).toDouble();
-        this->soilTexture[id].vanGenuchten.thetaS = this->soilTexture[id].vanGenuchten.refThetaS;
-
-        this->soilTexture[id].waterConductivity.kSat = query.value(6).toDouble();
-        this->soilTexture[id].waterConductivity.l = query.value(7).toDouble();
-
-
-    } while(query.next());
-
-    return(true);
-
-}
-
-
-bool Criteria1D::loadDriessenParameters(QString *myError)
-{
-    QString queryString = "SELECT id_texture, k_sat, grav_conductivity, max_sorptivity";
-    queryString += " FROM soil_driessen";
-    queryString += " ORDER BY id_texture";
-
-    QSqlQuery query = this->dbParameters.exec(queryString);
-    query.last();
-    int tableSize = query.at() + 1;     //SQLITE doesn't support SIZE
-
-    if (tableSize == 0)
-    {
-        *myError = "Table soil_driessen\n" + query.lastError().text();
-        return(false);
-    }
-    else if (tableSize != 12)
-    {
-        *myError = "Table soil_driessen: wrong number of soil textures (must be 12)";
-        return(false);
-    }
-
-    //read values
-    int id, j;
-    float myValue;
-    query.first();
-    do
-    {
-        id = query.value(0).toInt();
-        //check data
-        for (j = 0; j <= 3; j++)
-            if (! getValue(query.value(j), &myValue))
-            {
-                *myError = "Table soil_driessen: missing data in soil texture:" + QString::number(id);
-                return(false);
-            }
-        this->soilTexture[id].Driessen.k0 = query.value(1).toFloat();
-        this->soilTexture[id].Driessen.gravConductivity = query.value(2).toFloat();
-        this->soilTexture[id].Driessen.maxSorptivity = query.value(3).toFloat();
-
-    } while(query.next());
-
-    return(true);
-}
-
-
-bool Criteria1D::loadSoil(QString soilCode, QString *myError)
-{
     QString queryString = "SELECT * FROM horizons ";
     queryString += "WHERE soil_code='" + soilCode + "' ORDER BY horizon_nr";
 
@@ -196,9 +91,9 @@ bool Criteria1D::loadSoil(QString soilCode, QString *myError)
     if (! query.isValid())
     {
         if (query.lastError().number() > 0)
-            *myError = "dbSoil error: " + query.lastError().text();
+            *myError = "dbSoil error: " + query.lastError().text().toStdString();
         else
-            *myError = "Missing soil:" + soilCode;
+            *myError = "Missing soil:" + idSoilStr;
         return(false);
     }
 
@@ -227,7 +122,7 @@ bool Criteria1D::loadSoil(QString soilCode, QString *myError)
             || ((idHorizon == 1) && (mySoil.horizon[i].upperDepth > 0))
             || ((idHorizon > 1) && (mySoil.horizon[i].upperDepth > mySoil.horizon[i-1].lowerDepth)))
         {
-            *myError = "Wrong depth in soil:" + soilCode + " horizon nr:" + QString::number(idHorizon);
+            *myError = "Wrong depth in soil:" + idSoilStr + " horizon nr:" + QString::number(idHorizon).toStdString();
             return(false);
         }
 
@@ -252,7 +147,7 @@ bool Criteria1D::loadSoil(QString soilCode, QString *myError)
         if (idTextureUSDA == NODATA)
         {
                 *myError = "Texture wrong! sand+silt+clay <> 1 in soil:"
-                        + soilCode + " horizon nr:" + QString::number(idHorizon);
+                        + idSoilStr + " horizon nr:" + QString::number(idHorizon).toStdString();
                 return (false);
         }
         idTextureNL =  soil::getNLTextureClass(sand, silt, clay);
@@ -314,7 +209,7 @@ bool Criteria1D::loadSoil(QString soilCode, QString *myError)
     mySoil.totalDepth = mySoil.horizon[nrHorizons-1].lowerDepth;
     if (mySoil.totalDepth < 0.5)
     {
-            *myError = "Texture wrong! soil depth < 50cm:" + soilCode;
+            *myError = "Texture wrong! soil depth < 50cm:" + idSoilStr;
             return (false);
     }
 
@@ -357,7 +252,7 @@ bool Criteria1D::loadSoil(QString soilCode, QString *myError)
 }
 
 
-bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, QString *myError)
+bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, std::string *myError)
 {
     QString queryString = "SELECT * FROM meteo_locations";
     queryString += " WHERE id_meteo='" + idMeteo + "'";
@@ -366,9 +261,9 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, QString *myError
     if (! query.isValid())
     {
         if (query.lastError().number() > 0)
-            *myError = "dbMeteo error: " + query.lastError().text();
+            *myError = "dbMeteo error: " + query.lastError().text().toStdString();
         else
-            *myError = "Missing meteo location:" + idMeteo;
+            *myError = "Missing meteo location:" + idMeteo.toStdString();
         return(false);
     }
     QString tableName = query.value("table_name").toString();
@@ -378,7 +273,7 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, QString *myError
         this->meteoPoint.latitude = myLat;
     else
     {
-        *myError = "Missing latitude in idMeteo: " + idMeteo;
+        *myError = "Missing latitude in idMeteo: " + idMeteo.toStdString();
         return false;
     }
 
@@ -392,9 +287,9 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, QString *myError
     if (! query.isValid())
     {
         if (query.lastError().number() > 0)
-            *myError = "dbMeteo error: " + query.lastError().text();
+            *myError = "dbMeteo error: " + query.lastError().text().toStdString();
         else
-            *myError = "Missing meteo table:" + tableName;
+            *myError = "Missing meteo table:" + tableName.toStdString();
         return false;
     }
 
@@ -423,9 +318,9 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, QString *myError
         if (! query.isValid())
         {
             if (query.lastError().number() > 0)
-                *myError = "dbForecast error: " + query.lastError().text();
+                *myError = "dbForecast error: " + query.lastError().text().toStdString();
             else
-                *myError = "Missing forecast location:" + idForecast;
+                *myError = "Missing forecast location:" + idForecast.toStdString();
             return false;
         }
         QString tableName = query.value("table_name").toString();
@@ -439,9 +334,9 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, QString *myError
         if (! query.isValid())
         {
             if (query.lastError().number() > 0)
-                *myError = "dbForecast error: " + query.lastError().text();
+                *myError = "dbForecast error: " + query.lastError().text().toStdString();
             else
-                *myError = "Missing forecast table:" + tableName;
+                *myError = "Missing forecast table:" + tableName.toStdString();
             return false;
         }
 
@@ -461,7 +356,7 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, QString *myError
 }
 
 
-bool Criteria1D::readMeteoData(QSqlQuery * query, QString *myError)
+bool Criteria1D::readMeteoData(QSqlQuery * query, std::string *myError)
 {
     const int MAX_MISSING_DAYS = 3;
     float tmed, prec, et0;
@@ -486,7 +381,7 @@ bool Criteria1D::readMeteoData(QSqlQuery * query, QString *myError)
 
         if (! myDate.isValid())
         {
-            *myError = "Wrong date format: " + query->value("date").toString();
+            *myError = "Wrong date format: " + query->value("date").toString().toStdString();
             return false;
         }
 
@@ -496,7 +391,7 @@ bool Criteria1D::readMeteoData(QSqlQuery * query, QString *myError)
             {
                 if (expectedDate.daysTo(myDate) > MAX_MISSING_DAYS)
                 {
-                    *myError = "Wrong METEO: too many missing data." + expectedDate.toString();
+                    *myError = "Wrong METEO: too many missing data." + expectedDate.toString().toStdString();
                     return false;
                 }
                 else
@@ -538,7 +433,7 @@ bool Criteria1D::readMeteoData(QSqlQuery * query, QString *myError)
                 }
                 else
                 {
-                    *myError = "Wrong METEO: too many missing data " + myDate.toString();
+                    *myError = "Wrong METEO: too many missing data " + myDate.toString().toStdString();
                     return false;
                 }
             }
@@ -554,7 +449,7 @@ bool Criteria1D::readMeteoData(QSqlQuery * query, QString *myError)
                 }
                 else
                 {
-                    *myError = "Wrong METEO: too many missing data " + myDate.toString();
+                    *myError = "Wrong METEO: too many missing data " + myDate.toString().toStdString();
                     return false;
                 }
             }
@@ -590,83 +485,15 @@ bool Criteria1D::readMeteoData(QSqlQuery * query, QString *myError)
 }
 
 
-bool Criteria1D::loadCropParameters(QString idCrop, QString *myError)
-{
-    QString queryString = "SELECT * FROM crop WHERE id_crop = '" + idCrop + "'";
 
-    QSqlQuery query = this->dbParameters.exec(queryString);
-    query.last();
-
-    if (! query.isValid())
-    {
-        if (query.lastError().number() > 0)
-            *myError = "dbParameters error: " + query.lastError().text();
-        else
-            *myError = "Missing crop: " + idCrop;
-        return(false);
-    }
-
-    myCrop.idCrop = idCrop.toStdString();
-
-    myCrop.type = getCropType(query.value("type").toString().toStdString());
-
-    myCrop.plantCycle = query.value("plant_cycle_max_duration").toInt();
-    getValue(query.value("sowing_doy"), &(myCrop.sowingDoy));
-
-    myCrop.thermalThreshold = query.value("thermal_threshold").toDouble();
-    myCrop.upperThermalThreshold = query.value("upper_thermal_threshold").toDouble();
-    myCrop.LAImax = query.value("lai_max").toDouble();
-    myCrop.LAImin = query.value("lai_min").toDouble();
-    myCrop.LAIcurve_a = query.value("lai_curve_factor_a").toDouble();
-    myCrop.LAIcurve_b = query.value("lai_curve_factor_b").toDouble();
-    myCrop.degreeDaysIncrease = query.value("degree_days_lai_increase").toInt();
-    myCrop.degreeDaysDecrease = query.value("degree_days_lai_decrease").toInt();
-    myCrop.degreeDaysEmergence = query.value("degree_days_emergence").toInt();
-
-    myCrop.roots.rootShape = root::getRootDistributionType(query.value("root_shape").toInt());
-    myCrop.roots.shapeDeformation = query.value("root_shape_deformation").toDouble();
-    myCrop.roots.rootDepthMin = query.value("root_depth_zero").toDouble();
-    myCrop.roots.rootDepthMax = query.value("root_depth_max").toDouble();
-
-    getValue(query.value("degree_days_root_increase"), &(myCrop.roots.degreeDaysRootGrowth));
-
-    myCrop.kcMax = query.value("kc_max").toDouble();
-
-    //water need
-    myCrop.degreeDaysMaxSensibility = query.value("degree_days_max_sensibility").toInt();
-    myCrop.psiLeaf = query.value("psi_leaf").toDouble();
-    myCrop.stressTolerance = query.value("stress_tolerance").toDouble();
-    myCrop.frac_read_avail_water_min = query.value("frac_read_avail_water_min").toDouble();
-    myCrop.frac_read_avail_water_max = query.value("frac_read_avail_water_max").toDouble();
-
-    getValue(query.value("irrigation_shift"), &(myCrop.irrigationShift));
-    getValue(query.value("degree_days_start_irrigation"), &(myCrop.degreeDaysStartIrrigation));
-    getValue(query.value("degree_days_end_irrigation"), &(myCrop.degreeDaysEndIrrigation));
-
-    //key value for irrigation
-    if (! getValue(query.value("irrigation_volume"), &(myCrop.irrigationVolume)))
-        myCrop.irrigationVolume = 0;
-
-    //LAI grass
-    if (! getValue(query.value("lai_grass"), &(myCrop.LAIgrass)))
-        myCrop.LAIgrass = 0;
-
-    //max surface puddle
-    if (! getValue(query.value("max_height_surface_puddle"), &(myCrop.maxSurfacePuddle)))
-        myCrop.maxSurfacePuddle = 0;
-
-    return true;
-}
-
-
-bool Criteria1D::createOutputTable(QString* myError)
+bool Criteria1D::createOutputTable(std::string* myError)
 {
     QString queryString = "DROP TABLE '" + this->idCase + "'";
     QSqlQuery myQuery = this->dbOutput.exec(queryString);
 
     if (myQuery.lastError().number() > 0)
     {
-        *myError = "Error in dropping table: " + this->idCase + "\n" + myQuery.lastError().text();
+        *myError = "Error in dropping table: " + this->idCase.toStdString() + "\n" + myQuery.lastError().text().toStdString();
     }
 
     queryString = "CREATE TABLE '" + this->idCase + "'"
@@ -677,7 +504,7 @@ bool Criteria1D::createOutputTable(QString* myError)
 
     if (myQuery.lastError().number() > 0)
     {
-        *myError = "Error in creating table: " + this->idCase + "\n" + myQuery.lastError().text();
+        *myError = "Error in creating table: " + this->idCase.toStdString() + "\n" + myQuery.lastError().text().toStdString();
         return false;
     }
 
@@ -714,13 +541,13 @@ void Criteria1D::prepareOutput(Crit3DDate myDate, bool isFirst)
 }
 
 
-bool Criteria1D::saveOutput(QString* myError)
+bool Criteria1D::saveOutput(std::string* myError)
 {
     QSqlQuery myQuery = this->dbOutput.exec(this->outputString);
 
     if (myQuery.lastError().type() != QSqlError::NoError)
     {
-        *myError = "Error in saving output:\n" + myQuery.lastError().text();
+        *myError = "Error in saving output:\n" + myQuery.lastError().text().toStdString();
         return false;
     }
 

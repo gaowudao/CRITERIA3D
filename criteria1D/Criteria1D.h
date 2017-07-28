@@ -1,104 +1,103 @@
 #ifndef CRITERIA1D_H
 #define CRITERIA1D_H
 
-#include "soil.h"
-#include "crop.h"
-#include "meteoPoint.h"
+    #include <string>
+    #include "soil.h"
+    #include "crop.h"
+    #include "meteoPoint.h"
 
-#include <QSqlDatabase>
+    #include <QSqlDatabase>
 
-class Criteria1DUnit
-{
+    class Criteria1DUnit
+    {
+        public:
+        QString idCase;
+        QString idCrop;
+        QString idSoil;
+        QString idMeteo;
+        QString idForecast;
+        QString idCropMoses;
+        int idSoilNumber;
+
+        Criteria1DUnit();
+    };
+
+    class Criteria1DOutput
+    {
     public:
-    QString idCase;
-    QString idCrop;
-    QString idSoil;
-    QString idMeteo;
-    QString idForecast;
-    QString idCropMoses;
-    int idSoilNumber;
+        double dailyPrec;
+        double dailySurfaceRunoff;
+        double dailySubsurfaceRunoff;
+        double dailyDrainage;
+        double dailyIrrigation;
+        double dailyEt0;
+        double dailyMaxEvaporation;
+        double dailyEvaporation;
+        double dailyMaxTranspiration;
+        double dailyTranspiration;
+        double dailyCropAvailableWater;
+        double dailySoilWaterDeficit;
 
-    Criteria1DUnit();
-};
+        Criteria1DOutput();
+        void initializeDaily();
+    };
 
-class Criteria1DOutput
-{
-public:
-    double dailyPrec;
-    double dailySurfaceRunoff;
-    double dailySubsurfaceRunoff;
-    double dailyDrainage;
-    double dailyIrrigation;
-    double dailyEt0;
-    double dailyMaxEvaporation;
-    double dailyEvaporation;
-    double dailyMaxTranspiration;
-    double dailyTranspiration;
-    double dailyCropAvailableWater;
-    double dailySoilWaterDeficit;
+    class Criteria1D
+    {
+    public:
+        QString idCase;
 
-    Criteria1DOutput();
-    void initializeDaily();
-};
+        // DATABASE
+        QSqlDatabase dbParameters;
+        QSqlDatabase dbSoil;
+        QSqlDatabase dbMeteo;
+        QSqlDatabase dbForecast;
+        QSqlDatabase dbOutput;
 
-class Criteria1D
-{
-public:
-    QString idCase;
+        // IRRIGATION seasonal forecast
+        bool isSeasonalForecast;
+        int firstSeasonMonth;
+        double* seasonalForecasts;
+        int nrSeasonalForecasts;
 
-    // DATABASE
-    QSqlDatabase dbParameters;
-    QSqlDatabase dbSoil;
-    QSqlDatabase dbMeteo;
-    QSqlDatabase dbForecast;
-    QSqlDatabase dbOutput;
+        // IRRIGATION short term forecast
+        bool isShortTermForecast;
+        int daysOfForecast;
 
-    // IRRIGATION seasonal forecast
-    bool isSeasonalForecast;
-    int firstSeasonMonth;
-    double* seasonalForecasts;
-    int nrSeasonalForecasts;
+        // SOIL
+        soil::Crit3DSoil mySoil;
+        soil::Crit3DSoilClass soilTexture[13];
+        soil::Crit3DLayer* layer;
+        int nrLayers;
+        double layerThickness;                  // [m]
+        double maxSimulationDepth;              // [m]
+        bool isGeometricLayer;
 
-    // IRRIGATION short term forecast
-    bool isShortTermForecast;
-    int daysOfForecast;
+        // CROP
+        Crit3DCrop myCrop;
+        bool optimizeIrrigation;
 
-    // SOIL
-    soil::Crit3DSoil mySoil;
-    soil::Crit3DSoilClass soilTexture[13];
-    soil::Crit3DLayer* layer;
-    int nrLayers;
-    double layerThickness;                  // [m]
-    double maxSimulationDepth;              // [m]
-    bool isGeometricLayer;
+        // WHEATER
+        Crit3DMeteoPoint meteoPoint;
 
-    // CROP
-    Crit3DCrop myCrop;
-    bool optimizeIrrigation;
+        // FIELD
+        double depthPloughedSoil;               // [m] depth of ploughed soil (working layer)
+        double initialAW[2];                    // [-] fraction of available water (between wilting point and field capacity)
 
-    // WHEATER
-    Crit3DMeteoPoint meteoPoint;
+        // OUTPUT
+        Criteria1DOutput output;
+        QString outputString;
 
-    // FIELD
-    double depthPloughedSoil;               // [m] depth of ploughed soil (working layer)
-    double initialAW[2];                    // [-] fraction of available water (between wilting point and field capacity)
+        Criteria1D();
 
-    // OUTPUT
-    Criteria1DOutput output;
-    QString outputString;
 
-    Criteria1D();
-
-    bool loadVanGenuchtenParameters(QString *myError);
-    bool loadDriessenParameters(QString *myError);
-    bool loadSoil(QString idSoil, QString *myError);
-    bool readMeteoData(QSqlQuery *query, QString *myError);
-    bool loadMeteo(QString idMeteo, QString idForecast, QString *myError);
-    bool loadCropParameters(QString idCrop, QString *myError);
-    bool createOutputTable(QString* myError);
-    void prepareOutput(Crit3DDate myDate, bool isFirst);
-    bool saveOutput(QString* myError);
-};
+        bool loadSoil(std::string idSoilStr, std::string *myError);
+        bool readMeteoData(QSqlQuery *query, std::string *myError);
+        bool loadMeteo(QString idMeteo, QString idForecast, std::string *myError);
+        bool createOutputTable(std::string* myError);
+        void prepareOutput(Crit3DDate myDate, bool isFirst);
+        bool saveOutput(std::string* myError);
+    };
 
 
 #endif // CRITERIA1D_H

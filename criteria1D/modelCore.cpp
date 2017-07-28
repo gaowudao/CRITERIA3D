@@ -6,26 +6,26 @@
 #include "Criteria1D.h"
 #include "croppingSystem.h"
 #include "water1D.h"
-#include "modelcore.h"
+#include "modelCore.h"
+#include "dbTools.h"
 
 
-bool runModel(Criteria1D* myCase, QString* myError, Criteria1DUnit *myUnit)
+bool runModel(Criteria1D* myCase, std::string* myError, Criteria1DUnit *myUnit)
 {
     myCase->idCase = myUnit->idCase;
 
-    if (! myCase->loadSoil(myUnit->idSoil, myError))
+    if (! myCase->loadSoil(myUnit->idSoil.toStdString(), myError))
         return false;
 
     if (! myCase->loadMeteo(myUnit->idMeteo, myUnit->idForecast, myError))
         return false;
 
-    if (! myCase->loadCropParameters(myUnit->idCrop, myError))
+    if (! loadCropParameters(myUnit->idCrop.toStdString(), &(myCase->myCrop), &(myCase->dbParameters), myError))
         return false;
 
     if (! myCase->isSeasonalForecast)
         if (! myCase->createOutputTable(myError))
             return false;
-
 
     // set computation period (tutti i dati meteo)
     Crit3DDate firstDate, lastDate;
@@ -37,7 +37,7 @@ bool runModel(Criteria1D* myCase, QString* myError, Criteria1DUnit *myUnit)
 }
 
 
-bool computeModel(Criteria1D* myCase, QString* myError, const Crit3DDate& firstDate, const Crit3DDate& lastDate)
+bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& firstDate, const Crit3DDate& lastDate)
 {
     Crit3DDate myDate;
     long myIndex;
@@ -78,7 +78,7 @@ bool computeModel(Criteria1D* myCase, QString* myError, const Crit3DDate& firstD
         myIndex = myCase->meteoPoint.obsDataD[0].date.daysTo(myDate);
         if ((myIndex < 0) || (myIndex >= myCase->meteoPoint.nrObsDataDaysD))
         {
-            *myError = "Missing weather data: " + QString::fromStdString(myDate.toStdString());
+            *myError = "Missing weather data: " + myDate.toStdString();
             return false;
         }
 
@@ -88,7 +88,7 @@ bool computeModel(Criteria1D* myCase, QString* myError, const Crit3DDate& firstD
 
         if ((prec == NODATA) || (tmin == NODATA) || (tmax == NODATA))
         {
-            *myError = "Missing weather data: " + QString::fromStdString(myDate.toStdString());
+            *myError = "Missing weather data: " + myDate.toStdString();
             return false;
         }
 

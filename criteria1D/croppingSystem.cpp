@@ -1,9 +1,11 @@
-#include "crit3dDate.h"
+
 #include "commonConstants.h"
+#include "crit3dDate.h"
 #include "development.h"
 #include "soil.h"
 #include "Criteria1D.h"
 #include "croppingSystem.h"
+#include "dbTools.h"
 
 
 double LAI_StartSenescence;
@@ -360,6 +362,7 @@ bool irrigateCrop(Criteria1D* myCase, double irrigationDemand)
     return true;
 }
 
+
 bool evaporation(Criteria1D* myCase)
 {
     // open water
@@ -686,7 +689,7 @@ bool cropTranspiration_old(Criteria1D* myCase)
 }
 
 
-bool updateCrop(Criteria1D* myCase, QString* myError, Crit3DDate myDate, bool isFirstSimulationDay, double tmin, double tmax)
+bool updateCrop(Criteria1D* myCase, std::string* myError, Crit3DDate myDate, bool isFirstSimulationDay, double tmin, double tmax)
 {
     *myError = "";
 
@@ -764,12 +767,12 @@ bool updateCrop(Criteria1D* myCase, QString* myError, Crit3DDate myDate, bool is
     }
 
     if (nextCrop != "")
-        if (! myCase->loadCropParameters(nextCrop, myError))
+        if (! loadCropParameters(nextCrop.toStdString(), &(myCase->myCrop), &(myCase->dbParameters), myError))
             return false;
 
     if (isCropToReset)
         if (! resetCrop(myCase))
-            *myError = "Error in resetting crop " + QString::fromStdString(myCase->myCrop.idCrop);
+            *myError = "Error in resetting crop " + myCase->myCrop.idCrop;
 
     // update degree days
     if (myCase->myCrop.isLiving)
@@ -778,16 +781,16 @@ bool updateCrop(Criteria1D* myCase, QString* myError, Crit3DDate myDate, bool is
     // update LAI
     if (myCase->myCrop.isLiving)
         if (! updateLai(myCase, currentDoy))
-            *myError = "Error in updating LAI for crop " + QString::fromStdString(myCase->myCrop.idCrop);
+            *myError = "Error in updating LAI for crop " + myCase->myCrop.idCrop;
 
     // update roots
     if (! updateRoots(myCase))
-        *myError = "Error in updating roots for crop " + QString::fromStdString(myCase->myCrop.idCrop);
+        *myError = "Error in updating roots for crop " + myCase->myCrop.idCrop;
 
     // update water stress sensibility
     if (myCase->myCrop.isLiving)
         if (! updateCropWaterStressSensibility(&(myCase->myCrop), currentDoy))
-            *myError = "Error in updating water stress sensibility for crop " + QString::fromStdString(myCase->myCrop.idCrop);
+            *myError = "Error in updating water stress sensibility for crop " + myCase->myCrop.idCrop;
 
     return true;
 }
