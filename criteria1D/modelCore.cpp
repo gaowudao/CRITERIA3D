@@ -82,7 +82,7 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
             return false;
         }
 
-        prec = myCase->meteoPoint.getMeteoPointValueD(myDate, precipitation);
+        prec = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyPrecipitation);
         tmin = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyAirTemperatureMin);
         tmax = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyAirTemperatureMax);
 
@@ -94,7 +94,7 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
 
         myCase->output.dailyPrec = prec;
         if (myDate < lastDate)
-            tomorrowPrec = myCase->meteoPoint.getMeteoPointValueD(myDate.addDays(1), precipitation);
+            tomorrowPrec = myCase->meteoPoint.getMeteoPointValueD(myDate.addDays(1), dailyPrecipitation);
         else
             tomorrowPrec = 0;
 

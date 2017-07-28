@@ -975,7 +975,8 @@ void detrend(meteoVariable myVar, proxyVars::TProxyVar myProxy)
     long myIndex;
     Crit3DInterpolationDataPoint* myPoint;
 
-    if (myVar != precipitation && myVar != globalIrradiance)
+    if (myVar != precipitation && myVar != dailyPrecipitation
+            && myVar != globalIrradiance && myVar != dailyGlobalRadiation)
     {
         for (myIndex = 0; myIndex < long(interpolationPointList.size()); myIndex++)
         {
@@ -1073,7 +1074,7 @@ float retrend(meteoVariable myVar, float myZ, float myOrogIndex, float mySeaDist
 bool preInterpolation(meteoVariable myVar)
 {
 
-    if (myVar == precipitation)
+    if (myVar == precipitation || myVar == dailyPrecipitation)
     {
         int nrPrecNotNull;
         bool isFlatPrecipitation;

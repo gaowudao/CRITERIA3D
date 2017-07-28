@@ -33,7 +33,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <CLRSupport>false</CLRSupport>
@@ -133,6 +133,9 @@
       <ShowProgress>LinkVerbose</ShowProgress>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>criteria3D.def</ModuleDefinitionFile>
+      <TurnOffAssemblyGeneration>true</TurnOffAssemblyGeneration>
+      <NoEntryPoint>true</NoEntryPoint>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
