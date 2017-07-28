@@ -828,7 +828,6 @@ double DLL_EXPORT __STDCALL computeStep(double maxTime)
     double dtWater, dtHeat;
 
     updateBoundary();
-    initializeHeatFluxes();
 
     if (myStructure.computeWater)
         computeWater(maxTime, &dtWater);

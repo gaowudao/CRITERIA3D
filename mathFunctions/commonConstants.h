@@ -105,10 +105,10 @@
     #define SAVE_HEATFLUXES_TOTAL 1
     #define SAVE_HEATFLUXES_ALL 2
     #define HEATFLUX_TOTAL 0
-    #define HEATFLUX_DIFFUSIVE 0
-    #define HEATFLUX_LATENT_ISOTHERMAL 1
-    #define HEATFLUX_LATENT_THERMAL 2
-    #define HEATFLUX_ADVECTIVE 3
+    #define HEATFLUX_DIFFUSIVE 1
+    #define HEATFLUX_LATENT_ISOTHERMAL 2
+    #define HEATFLUX_LATENT_THERMAL 3
+    #define HEATFLUX_ADVECTIVE 4
 
     // maximum number of solutes
     #define MAX_SOLUTES   6

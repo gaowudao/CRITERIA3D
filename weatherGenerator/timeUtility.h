@@ -1,11 +1,9 @@
 #ifndef TIMEUTILITY
 #define TIMEUTILITY
 
-    #ifndef CRIT3DDATE_H
-        #include "crit3dDate.h"
-    #endif
-
     #define NRDAYSTOLERANCE  15
+
+    class Crit3DDate;
 
     int numMonthsInPeriod(int m1, int m2);
 

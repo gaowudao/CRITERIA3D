@@ -7,10 +7,10 @@
 
 
 /*!
- * \brief getWaterContent
+ * \brief
  * \param myLayer
- * \param availableWater    [-] fraction of water between wilting point and field capacity
- * \return                  [mm] water content in the layer
+ * \param availableWater   fraction of water between wilting point and field capacity [-]
+ * \return  water content in the layer [mm]
  */
 double getWaterContent(soil::Crit3DLayer *myLayer, double availableWater)
 {
@@ -24,14 +24,13 @@ double getWaterContent(soil::Crit3DLayer *myLayer, double availableWater)
 
 
 /*!
- * \brief initializeWater
- * \param myCase
+ * \brief
  * Assign two different initial available water
- * initialAW[0]         [-] available water in the ploughed soil layer
- * initialAW[1]         [-] available water in the deep soil
+ * in the ploughed soil layer
+ * and in the deep soil
  */
-void initializeWater(Criteria1D* myCase)
 // TODO migliorare - variare in base al mese come in Vintage
+void initializeWater(Criteria1D* myCase)
 {
     myCase->layer[0].waterContent = 0.0;
     for (int i = 1; i < myCase->nrLayers; i++)
@@ -44,7 +43,17 @@ void initializeWater(Criteria1D* myCase)
 }
 
 
-bool empiricalInfiltration(Criteria1D* myCase, QString* myError, float prec, float surfaceIrrigation)
+// TODO extend to geometric layers
+/*!
+ * \brief Heuristic algorithm for 1D soil water infiltration and redistribution
+ * \param myCase
+ * \param myError
+ * \param prec      [mm]
+ * \param surfaceIrrigation [mm]
+ * \author Margot van Soetendael
+ * \note P.M.Driessen, 1986, "The water balance of soil"
+ */
+bool infiltration(Criteria1D* myCase, QString* myError, float prec, float surfaceIrrigation)
 {
     int i, j, l, nrPloughLayers;
     int reached = NODATA;            // [-] index of reached layer for surpuls water
@@ -71,7 +80,6 @@ bool empiricalInfiltration(Criteria1D* myCase, QString* myError, float prec, flo
     }
 
     // Average degree of saturation (ploughed soil)
-    // TODO gestire strati geometrici
     i = 1;
     nrPloughLayers = 0;
     avgPloughSat = 0.0;
@@ -83,8 +91,7 @@ bool empiricalInfiltration(Criteria1D* myCase, QString* myError, float prec, flo
     }
     avgPloughSat /= nrPloughLayers;
 
-    // compute max infiltration:
-    // infiltration due to gravitational force and permeability (Driessen, 1986)
+    // max infiltration due to gravitational force and permeability (Driessen, 1986)
     double permFactor = 1.0 - avgPloughSat;
     for (i = 1; i< myCase->nrLayers; i++)
     {
@@ -99,7 +106,7 @@ bool empiricalInfiltration(Criteria1D* myCase, QString* myError, float prec, flo
 
     for (l = myCase->nrLayers-1; l >= 0; l--)
     {
-        // find layer with water surplus
+        // find layer in water surplus
         if (myCase->layer[l].waterContent > myCase->layer[l].critical)
         {
             fluxLayer = minValue(myCase->layer[l].maxInfiltration, myCase->layer[l].waterContent - myCase->layer[l].critical);
@@ -107,7 +114,8 @@ bool empiricalInfiltration(Criteria1D* myCase, QString* myError, float prec, flo
             myCase->layer[l].waterContent -= fluxLayer;
 
             // TODO translate
-            // cerca il punto di arrivo del fronte, saturando virtualmente il profilo sottostante con la quantità Imax
+            // cerca il punto di arrivo del fronte
+            // saturando virtualmente il profilo sottostante con la quantità Imax
             // tiene conto degli Imax  e dei flussi già passati dagli strati sottostanti prendendo il minimo
             // ogni passo toglie la parte che va a saturare lo strato
             if (l == (myCase->nrLayers-1))
@@ -136,18 +144,19 @@ bool empiricalInfiltration(Criteria1D* myCase, QString* myError, float prec, flo
             for (i = l+1; i <= reached; i++)
             {
                 // TODO translate
-                // ridefinisco fluxLayer in base allo stato idrico dello strato sottostante
-                // a CC, fluxLayer non varia, sotto CC tolgo il deficit al fluxLayer, in surplus, aggiungo il surplus al fluxLayer
+                // ridefinisce fluxLayer in base allo stato idrico dello strato sottostante
+                // sotto Field Capacity tolgo il deficit al fluxLayer,
+                // in water surplus, aggiungo il surplus al fluxLayer
                 if (myCase->layer[i].waterContent > myCase->layer[i].critical)
                 {
-                    // this layer is in surplus
+                    // layer in water surplus (critical point: usually is FC)
                     waterSurplus = myCase->layer[i].waterContent - myCase->layer[i].critical;
                     fluxLayer += waterSurplus;
                     myCase->layer[i].waterContent -= waterSurplus;
                 }
                 else
                 {
-                    // this layer is before critical point (FC)
+                    // layer before critical point
                     waterDeficit = myCase->layer[i].critical - myCase->layer[i].waterContent;
                     localWater = minValue(fluxLayer, waterDeficit);
                     fluxLayer -= localWater;
@@ -160,18 +169,16 @@ bool empiricalInfiltration(Criteria1D* myCase, QString* myError, float prec, flo
 
                 if (residualFlux >= fluxLayer)
                 {
-                    // layer is in field capacity
                     myCase->layer[i].flux += fluxLayer;
                 }
                 else
                 {
-                    // TODO translate
-                    // passa residualFlux, varFlux=Imax e si crea un surplus (localflux)
+                    // si crea un surplus (localflux)
                     localFlux = fluxLayer - residualFlux;
                     fluxLayer = residualFlux;
                     myCase->layer[i].flux += fluxLayer;
 
-                    // surplus management (localflux)
+                    // surplus management
                     if (localFlux <= (myCase->layer[i].SAT - myCase->layer[i].waterContent))
                     {
                         // available space for water in the layer
@@ -180,7 +187,7 @@ bool empiricalInfiltration(Criteria1D* myCase, QString* myError, float prec, flo
                     }
                     else
                     {
-                        // Not enough space for water, upper layers are involved
+                        // not enough space for water, upper layers are involved
                         for (j = i; j >= l + 1; j--)
                         {
                             if (localFlux <= 0.0) break;
@@ -201,8 +208,9 @@ bool empiricalInfiltration(Criteria1D* myCase, QString* myError, float prec, flo
                         }
                     }
                 }
-            }
-            // end cycle l+1-->reached layer
+
+            } // end cycle l+1-->reached layer
+
 
             // drainage
             if ((reached == myCase->nrLayers-1) && (fluxLayer > 0))
@@ -228,14 +236,18 @@ bool empiricalInfiltration(Criteria1D* myCase, QString* myError, float prec, flo
                 myCase->layer[l].waterContent += fluxLayer;
                 myCase->layer[l].flux -= fluxLayer;
             }
-        }
-        // end if surplus layer
+
+        }  // end if surplus layer
     }
 
     return true;
 }
 
 
+/*!
+ * \brief computeRunoff
+ * \param myCase
+ */
 bool computeRunoff(Criteria1D* myCase)
 {
     // initialize runoff
@@ -252,12 +264,18 @@ bool computeRunoff(Criteria1D* myCase)
 }
 
 
+/*!
+ * \brief surfaceRunoff
+ * \param myCase
+ * \return
+ */
 bool surfaceRunoff(Criteria1D* myCase)
 {
     double clodHeight;           // [mm] effective height of clod
     double roughness;            // [mm]
 
-    // questo riassume brutalmente algoritmi su operazioni colturali, zolla, pendenza
+    // height of clod
+    // riassume brutalmente l'algoritmo su operazioni colturali
     if (isPluriannual(myCase->myCrop.type))
         clodHeight = 0.0;
     else
@@ -280,7 +298,11 @@ bool surfaceRunoff(Criteria1D* myCase)
 }
 
 
-//Driessen 1986, eq 58 (p.113)
+/*!
+ * \brief
+ * Compute lateral drainage
+ * \note P.M.Driessen, 1986, eq.58
+ */
 bool subSurfaceRunoff(Criteria1D* myCase)
 {
     double waterSurplus;                  // [mm]

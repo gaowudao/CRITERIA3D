@@ -2,6 +2,7 @@
 #include <QDate>
 #include <QString>
 
+#include "crit3dDate.h"
 #include "timeUtility.h"
 
 

@@ -37,10 +37,12 @@
 #include <QDebug>
 #include <QFile>
 
-#include "commonConstants.h"
+#include "crit3dDate.h"
 #include "weatherGenerator.h"
+#include "commonConstants.h"
 #include "timeUtility.h"
 #include "fileUtility.h"
+
 
 
 float getTMax(int dayOfYear, float precThreshold, TwheatherGenClimate* wGen)

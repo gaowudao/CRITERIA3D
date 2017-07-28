@@ -5,7 +5,6 @@
 #include "commonConstants.h"
 #include "Criteria1D.h"
 #include "croppingSystem.h"
-#include "datahandler.h"
 #include "water1D.h"
 #include "modelcore.h"
 
@@ -128,9 +127,10 @@ bool computeModel(Criteria1D* myCase, QString* myError, const Crit3DDate& firstD
         }
 
         // INFILTRATION
-        if (! empiricalInfiltration(myCase, myError, prec, irrigation))
+        if (! infiltration(myCase, myError, prec, irrigation))
             return false;
 
+        // RUNOFF
         if (! computeRunoff( myCase))
             return false;
 

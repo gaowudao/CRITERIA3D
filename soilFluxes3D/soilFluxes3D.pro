@@ -1,11 +1,15 @@
 #-------------------------------------------------
 #
-# CRITERIA3D
-# soil fluxes library
+# soilFluxes3D
+# numerical solution for flow equations
+# of water and heat in the soil
+# in a three-dimensional domain
+#
+# this library is part of CRITERIA3D
 #
 #-------------------------------------------------
 
-QT          -= gui
+QT          -= core gui
 
 TARGET = soilFluxes3D
 TEMPLATE = lib

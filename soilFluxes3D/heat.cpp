@@ -88,16 +88,15 @@ void saveHeatFlux(TlinkedNode* myLink, int fluxType, double myValue)
     if (myLink->linkedExtra == NULL) return;
     if (myLink->linkedExtra->heatFlux == NULL) return;
 
-    if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_TOTAL)
-    {
-        if (myLink->linkedExtra->heatFlux->fluxes[HEATFLUX_TOTAL] == NODATA)
-            myLink->linkedExtra->heatFlux->fluxes[HEATFLUX_TOTAL] = float(myValue);
-        else
-            myLink->linkedExtra->heatFlux->fluxes[HEATFLUX_TOTAL] += float(myValue);
-    }
-    else if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_ALL)
-        myLink->linkedExtra->heatFlux->fluxes[fluxType] = float(myValue);
+    if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_NONE) return;
 
+    if (myLink->linkedExtra->heatFlux->fluxes[HEATFLUX_TOTAL] == NODATA)
+        myLink->linkedExtra->heatFlux->fluxes[HEATFLUX_TOTAL] = float(myValue);
+    else
+        myLink->linkedExtra->heatFlux->fluxes[HEATFLUX_TOTAL] += float(myValue);
+
+    if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_ALL)
+        myLink->linkedExtra->heatFlux->fluxes[fluxType] = float(myValue);
 }
 
 
@@ -399,20 +398,22 @@ double ThermalVaporFlow(long i, TlinkedNode *myLink, int myProcess)
 
     // temperatures (K) and water potential (m)
     double myTMean, myTLinkMean, myH, myHLink;
-    if (myProcess == PROCESS_WATER)
+    if (myProcess == PROCESS_WATER && myStructure.computeWater)
     {
         myTMean = computeMean(myNode[i].extra->Heat->T, myNode[i].extra->Heat->oldT);
         myTLinkMean = computeMean(myNode[j].extra->Heat->T, myNode[j].extra->Heat->oldT);
         myH = myNode[i].H;
         myHLink = myNode[j].H;
     }
-    else
+    else if (myProcess = PROCESS_HEAT && myStructure.computeHeat)
     {
         myTMean = myNode[i].extra->Heat->T;
         myTLinkMean = myNode[j].extra->Heat->T;
         myH = computeMean(myNode[i].H, myNode[i].oldH);
         myHLink =computeMean(myNode[j].H, myNode[j].oldH);
     }
+    else
+        return NODATA;
 
     // kg m-1 s-1 K-1
     double Kvt = ThermalVaporConductivity(i, myTMean, myH - myNode[i].z);
@@ -658,8 +659,6 @@ void updateBalanceHeat()
     balancePreviousTimeStep.storageHeat = balanceCurrentTimeStep.storageHeat;
     balancePreviousTimeStep.sinkSourceHeat = balanceCurrentTimeStep.sinkSourceHeat;
     balanceCurrentPeriod.sinkSourceHeat += balanceCurrentTimeStep.sinkSourceHeat;
-
-    updateHeatFluxes();
 }
 
 bool heatBalance(double timeStep)
@@ -822,6 +821,7 @@ bool HeatComputation(double myTimeStep)
 
     heatBalance(myTimeStep);
     updateBalanceHeat();
+    updateHeatFluxes();
 
 	// save old temperatures
     for (long n = 1; n < myStructure.nrNodes; n++)

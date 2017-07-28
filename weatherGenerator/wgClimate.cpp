@@ -4,6 +4,7 @@
 #include "wgClimate.h"
 #include "weatherGenerator.h"
 #include "timeUtility.h"
+#include "crit3dDate.h"
 
 
 /*-----------------------------------------------------------------

@@ -1,10 +1,10 @@
+#ifndef WATER_H
+#define WATER_H
 
-bool waterFlowComputation(double deltaT);
+    bool waterFlowComputation(double deltaT);
+    double getWaterFlux(long index, TlinkedNode *link);
+    double getWaterExchange(long index, TlinkedNode *link, double deltaT);
+    bool computeWater(double maxTime, double *acceptedTime);
+    void restoreWater();
 
-double getWaterFlux(long index, TlinkedNode *link);
-
-double getWaterExchange(long index, TlinkedNode *link, double deltaT);
-
-bool computeWater(double maxTime, double *acceptedTime);
-
-void restoreWater();
+#endif  // WATER_H

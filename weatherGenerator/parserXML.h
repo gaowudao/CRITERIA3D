@@ -42,7 +42,6 @@
         std::vector<TXMLValuesList> forecast;
     };
 
-
     void initializeSeasonalAnomaly(TXMLSeasonalAnomaly *XMLAnomaly);
 
     bool parseXMLFile(QString xmlFileName, QDomDocument* xmlDoc);

@@ -1,10 +1,7 @@
 #ifndef WG_CLIMATE_H
 #define WG_CLIMATE_H
 
-    #ifndef CRIT3DDATE_H
-        #include "crit3dDate.h"
-    #endif
-
+    class Crit3DDate;
     struct TinputObsData;
     struct TwheatherGenClimate;
 
