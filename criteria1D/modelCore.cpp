@@ -20,7 +20,7 @@ bool runModel(Criteria1D* myCase, std::string* myError, Criteria1DUnit *myUnit)
     if (! myCase->loadMeteo(myUnit->idMeteo, myUnit->idForecast, myError))
         return false;
 
-    if (! loadCropParameters(myUnit->idCrop.toStdString(), &(myCase->myCrop), &(myCase->dbParameters), myError))
+    if (! loadCropParameters(myUnit->idCrop, &(myCase->myCrop), &(myCase->dbParameters), myError))
         return false;
 
     if (! myCase->isSeasonalForecast)

@@ -7,7 +7,7 @@
     class QSqlDatabase;
     class QString;
 
-    bool loadCropParameters(std::string idCropString, Crit3DCrop* myCrop, QSqlDatabase* dbCrop, std::string *myError);
+    bool loadCropParameters(QString idCrop, Crit3DCrop* myCrop, QSqlDatabase* dbCrop, std::string *myError);
     bool loadVanGenuchtenParameters(soil::Crit3DSoilClass *soilTexture, QSqlDatabase* dbParameters, std::string *myError);
     bool loadDriessenParameters(soil::Crit3DSoilClass *soilTexture, QSqlDatabase* dbParameters, std::string *myError);
     QString getIdSoil(QSqlDatabase* dbSoil, int idSoilNumber, std::string *myError);

@@ -767,7 +767,7 @@ bool updateCrop(Criteria1D* myCase, std::string* myError, Crit3DDate myDate, boo
     }
 
     if (nextCrop != "")
-        if (! loadCropParameters(nextCrop.toStdString(), &(myCase->myCrop), &(myCase->dbParameters), myError))
+        if (! loadCropParameters(nextCrop, &(myCase->myCrop), &(myCase->dbParameters), myError))
             return false;
 
     if (isCropToReset)

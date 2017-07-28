@@ -9,9 +9,9 @@
 #include "utilities.h"
 
 
-bool loadCropParameters(std::string idCropString, Crit3DCrop* myCrop, QSqlDatabase* dbCrop, std::string *myError)
+bool loadCropParameters(QString idCrop, Crit3DCrop* myCrop, QSqlDatabase* dbCrop, std::string *myError)
 {
-    QString idCrop = QString::fromStdString(idCropString);
+    std::string idCropString = idCrop.toStdString();
 
     QString queryString = "SELECT * FROM crop WHERE id_crop = '" + idCrop + "'";
 
