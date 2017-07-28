@@ -24,7 +24,7 @@
         bool computeHeat;
         bool computeSolutes;
 
-        int saveHeatFluxes;
+        int saveHeatFluxesType;
 
         void initialize()
             {
@@ -35,7 +35,7 @@
                 computeWater = true;
                 computeHeat = false;
                 computeSolutes = false;
-                saveHeatFluxes = SAVE_HEATFLUXES_NONE;
+                saveHeatFluxesType = SAVE_HEATFLUXES_NONE;
             }
         } ;
 

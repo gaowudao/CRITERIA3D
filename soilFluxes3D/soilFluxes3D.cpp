@@ -74,9 +74,9 @@ namespace soilFluxes3D {
         //clean balance
 	}
 
-    void DLL_EXPORT __STDCALL initializeHeat(short saveHeatFluxes_)
+    void DLL_EXPORT __STDCALL initializeHeat(short myType)
 {
-    myStructure.saveHeatFluxes = saveHeatFluxes_;
+    myStructure.saveHeatFluxesType = myType;
 }
 
     int DLL_EXPORT __STDCALL initialize(long nrNodes, int nrLayers, int nrLateralLinks,

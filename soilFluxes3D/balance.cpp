@@ -189,11 +189,7 @@ double getMatrixValue(long i, TlinkedNode *link)
 void update_flux(long index, TlinkedNode *link, double delta_t)
 {
     if (link->index != NOLINK)
-    {
         (*link).sumFlow += float(getWaterExchange(index, link, delta_t));
-
-        saveHeatFlux(link, HEATFLUX_LATENT_THERMAL, C0[index]);
-    }
 }
 
 

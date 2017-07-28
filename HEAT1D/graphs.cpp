@@ -237,8 +237,8 @@ void Plot::drawSingle(outputGroup graphType, Crit3DOut* myOut, Crit3DColorScale 
         myPen.setColor(myQColor);
         mySeries = getSingleSeries(myOut, outputVar::surfaceNetIrradiance, &minSeries, &maxSeries);
         addCurve(outputVarString[(int)outputVar::surfaceNetIrradiance], QwtPlotCurve::Lines, myPen, mySeries, false);
-        minGraph = (minGraph == NODATA) ? minSeries : ((minSeries < minGraph) ? minSeries : minGraph);
-        maxGraph = (maxGraph == NODATA) ? maxSeries : ((maxSeries > maxGraph) ? maxSeries : maxGraph);
+        minGraph = (minGraph == NODATA) ? minSeries : ((minSeries != NODATA && minSeries < minGraph) ? minSeries : minGraph);
+        maxGraph = (maxGraph == NODATA) ? maxSeries : ((maxSeries != NODATA && maxSeries > maxGraph) ? maxSeries : maxGraph);
 
         myIndex++;
         myColor = myColorScale.getColor(myIndex);
@@ -246,8 +246,8 @@ void Plot::drawSingle(outputGroup graphType, Crit3DOut* myOut, Crit3DColorScale 
         myPen.setColor(myQColor);
         mySeries = getSingleSeries(myOut, outputVar::surfaceSensibleHeat, &minSeries, &maxSeries);
         addCurve(outputVarString[(int)outputVar::surfaceSensibleHeat], QwtPlotCurve::Lines, myPen, mySeries, false);
-        minGraph = (minGraph == NODATA) ? minSeries : ((minSeries < minGraph) ? minSeries : minGraph);
-        maxGraph = (maxGraph == NODATA) ? maxSeries : ((maxSeries > maxGraph) ? maxSeries : maxGraph);
+        minGraph = (minGraph == NODATA) ? minSeries : ((minSeries != NODATA && minSeries < minGraph) ? minSeries : minGraph);
+        maxGraph = (maxGraph == NODATA) ? maxSeries : ((maxSeries != NODATA && maxSeries > maxGraph) ? maxSeries : maxGraph);
 
         myIndex++;
         myColor = myColorScale.getColor(myIndex);
@@ -255,8 +255,8 @@ void Plot::drawSingle(outputGroup graphType, Crit3DOut* myOut, Crit3DColorScale 
         myPen.setColor(myQColor);
         mySeries = getSingleSeries(myOut, outputVar::surfaceLatentHeat, &minSeries, &maxSeries);
         addCurve(outputVarString[(int)outputVar::surfaceLatentHeat], QwtPlotCurve::Lines, myPen, mySeries, false);
-        minGraph = (minGraph == NODATA) ? minSeries : ((minSeries < minGraph) ? minSeries : minGraph);
-        maxGraph = (maxGraph == NODATA) ? maxSeries : ((maxSeries > maxGraph) ? maxSeries : maxGraph);
+        minGraph = (minGraph == NODATA) ? minSeries : ((minSeries != NODATA && minSeries < minGraph) ? minSeries : minGraph);
+        maxGraph = (maxGraph == NODATA) ? maxSeries : ((maxSeries != NODATA && maxSeries > maxGraph) ? maxSeries : maxGraph);
     }
     else if (graphType == outputGroup::errorBalance)
     {
@@ -265,8 +265,8 @@ void Plot::drawSingle(outputGroup graphType, Crit3DOut* myOut, Crit3DColorScale 
         myPen.setColor(myQColor);
         mySeries = getSingleSeries(myOut, outputVar::MBR_heat, &minSeries, &maxSeries);
         addCurve(outputVarString[(int)outputVar::MBR_heat], QwtPlotCurve::Lines, myPen, mySeries, false);
-        minGraph = (minGraph == NODATA) ? minSeries : ((minSeries < minGraph) ? minSeries : minGraph);
-        maxGraph = (maxGraph == NODATA) ? maxSeries : ((maxSeries > maxGraph) ? maxSeries : maxGraph);
+        minGraph = (minGraph == NODATA) ? minSeries : ((minSeries != NODATA && minSeries < minGraph) ? minSeries : minGraph);
+        maxGraph = (maxGraph == NODATA) ? maxSeries : ((maxSeries != NODATA && maxSeries > maxGraph) ? maxSeries : maxGraph);
 
         myIndex++;
         myColor = myColorScale.getColor(myIndex);
@@ -274,9 +274,10 @@ void Plot::drawSingle(outputGroup graphType, Crit3DOut* myOut, Crit3DColorScale 
         myPen.setColor(myQColor);
         mySeries = getSingleSeries(myOut, outputVar::MBR_water, &minSeries, &maxSeries);
         addCurve(outputVarString[(int)outputVar::MBR_water], QwtPlotCurve::Lines, myPen, mySeries, false);
-        minGraph = (minGraph == NODATA) ? minSeries : ((minSeries < minGraph) ? minSeries : minGraph);
-        maxGraph = (maxGraph == NODATA) ? maxSeries : ((maxSeries > maxGraph) ? maxSeries : maxGraph);
+        minGraph = (minGraph == NODATA) ? minSeries : ((minSeries != NODATA && minSeries < minGraph && minSeries != 0.) ? minSeries : minGraph);
+        maxGraph = (maxGraph == NODATA) ? maxSeries : ((maxSeries != NODATA && maxSeries > maxGraph) ? maxSeries : maxGraph);
 
+        /*
         myIndex++;
         myColor = myColorScale.getColor(myIndex);
         myQColor = QColor(myColor->red, myColor->green, myColor->blue);
@@ -285,8 +286,9 @@ void Plot::drawSingle(outputGroup graphType, Crit3DOut* myOut, Crit3DColorScale 
         addCurve(outputVarString[(int)outputVar::MBE_heat], QwtPlotCurve::Lines, myPen, mySeries, true);
         minGraph2 = (minGraph2 == NODATA) ? minSeries : ((minSeries < minGraph2) ? minSeries : minGraph2);
         maxGraph2 = (maxGraph2 == NODATA) ? maxSeries : ((maxSeries > maxGraph2) ? maxSeries : maxGraph2);
+        */
 
-        yRightAxisActive = true;
+        yRightAxisActive = false;
     }
     else if (graphType == outputGroup::surfaceResistances)
     {
@@ -295,8 +297,8 @@ void Plot::drawSingle(outputGroup graphType, Crit3DOut* myOut, Crit3DColorScale 
         myPen.setColor(myQColor);
         mySeries = getSingleSeries(myOut, outputVar::aerodynamicResistence, &minSeries, &maxSeries);
         addCurve(outputVarString[(int)outputVar::aerodynamicResistence], QwtPlotCurve::Lines, myPen, mySeries, false);
-        minGraph = (minGraph == NODATA) ? minSeries : ((minSeries < minGraph) ? minSeries : minGraph);
-        maxGraph = (maxGraph == NODATA) ? maxSeries : ((maxSeries > maxGraph) ? maxSeries : maxGraph);
+        minGraph = (minGraph == NODATA) ? minSeries : ((minSeries != NODATA && minSeries < minGraph) ? minSeries : minGraph);
+        maxGraph = (maxGraph == NODATA) ? maxSeries : ((maxSeries != NODATA && maxSeries > maxGraph) ? maxSeries : maxGraph);
 
         myIndex++;
         myColor = myColorScale.getColor(myIndex);
@@ -304,8 +306,8 @@ void Plot::drawSingle(outputGroup graphType, Crit3DOut* myOut, Crit3DColorScale 
         myPen.setColor(myQColor);
         mySeries = getSingleSeries(myOut, outputVar::soilSurfaceResistence, &minSeries, &maxSeries);
         addCurve(outputVarString[(int)outputVar::soilSurfaceResistence], QwtPlotCurve::Lines, myPen, mySeries, false);
-        minGraph = (minGraph == NODATA) ? minSeries : ((minSeries < minGraph) ? minSeries : minGraph);
-        maxGraph = (maxGraph == NODATA) ? maxSeries : ((maxSeries > maxGraph) ? maxSeries : maxGraph);
+        minGraph = (minGraph == NODATA) ? minSeries : ((minSeries != NODATA && minSeries < minGraph) ? minSeries : minGraph);
+        maxGraph = (maxGraph == NODATA) ? maxSeries : ((maxSeries != NODATA && maxSeries > maxGraph) ? maxSeries : maxGraph);
     }
 
     double eps = 0.0001;
@@ -348,8 +350,8 @@ void Plot::drawProfile(outputGroup graphType, Crit3DOut* myOut, Crit3DColorScale
         myPen.setColor(myQColor);
 
         mySeries = getProfileSeries(myOut, graphType, z, &minSeries, &maxSeries);
-        minGraph = (minGraph == NODATA) ? minSeries : ((minSeries < minGraph) ? minSeries : minGraph);
-        maxGraph = (maxGraph == NODATA) ? maxSeries : ((maxSeries > maxGraph) ? maxSeries : maxGraph);
+        minGraph = (minGraph == NODATA) ? minSeries : ((minSeries != NODATA && minSeries < minGraph) ? minSeries : minGraph);
+        maxGraph = (maxGraph == NODATA) ? maxSeries : ((maxSeries != NODATA && maxSeries > maxGraph) ? maxSeries : maxGraph);
 
         addCurve(QString::number(myDepth,'f',3), QwtPlotCurve::Lines, myPen, mySeries, false);
     }
@@ -391,7 +393,7 @@ void Plot::drawOutput(outputGroup outGroup, Crit3DOut *myOut)
     else
     {
         if (outGroup == outputGroup::errorBalance)
-            myColorScale.maximum = 3;
+            myColorScale.maximum = 2;
         else if (outGroup ==outputGroup::energyBalance)
             myColorScale.maximum = 3;
         else if (outGroup == outputGroup::surfaceResistances)

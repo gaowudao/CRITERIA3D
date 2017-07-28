@@ -74,9 +74,9 @@ float readHeatFlux(TlinkedNode* myLink, int fluxType)
     if (myLink->linkedExtra == NULL) return NODATA;
     if (myLink->linkedExtra->heatFlux == NULL) return NODATA;
 
-    if (myStructure.saveHeatFluxes == SAVE_HEATFLUXES_TOTAL)
+    if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_TOTAL)
         return myLink->linkedExtra->heatFlux->fluxes[HEATFLUX_TOTAL];
-    else if (myStructure.saveHeatFluxes == SAVE_HEATFLUXES_ALL)
+    else if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_ALL)
         return myLink->linkedExtra->heatFlux->fluxes[fluxType];
     else
         return NODATA;
@@ -88,127 +88,19 @@ void saveHeatFlux(TlinkedNode* myLink, int fluxType, double myValue)
     if (myLink->linkedExtra == NULL) return;
     if (myLink->linkedExtra->heatFlux == NULL) return;
 
-    if (myStructure.saveHeatFluxes == SAVE_HEATFLUXES_TOTAL)
+    if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_TOTAL)
     {
         if (myLink->linkedExtra->heatFlux->fluxes[HEATFLUX_TOTAL] == NODATA)
             myLink->linkedExtra->heatFlux->fluxes[HEATFLUX_TOTAL] = float(myValue);
         else
             myLink->linkedExtra->heatFlux->fluxes[HEATFLUX_TOTAL] += float(myValue);
     }
-    else if (myStructure.saveHeatFluxes == SAVE_HEATFLUXES_ALL)
+    else if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_ALL)
         myLink->linkedExtra->heatFlux->fluxes[fluxType] = float(myValue);
 
 }
 
-void saveDiffusiveHeaFlux(long myIndex, TlinkedNode *myLink)
-// [W m-2] heat flow between node myNode[myIndex] and link node myLink
-{
-   if (myLink != NULL && ! myNode[myLink->index].isSurface)
-   {
-        long myLinkIndex = (*myLink).index;
-        double myValue, myA;
 
-        int j = 1;
-        while ((j < myStructure.maxNrColumns) && (A[myIndex][j].index != NOLINK) && (A[myIndex][j].index != myLinkIndex)) j++;
-
-        if (A[myIndex][j].index == myLinkIndex)
-        {
-            myA = (A[myIndex][j].val * A[myIndex][0].val);
-            myValue = myA * (myNode[myIndex].extra->Heat->T - myNode[myLinkIndex].extra->Heat->T) * myParameters.heatWeightingFactor;
-            myValue += myA * (myNode[myIndex].extra->Heat->oldT - myNode[myLinkIndex].extra->Heat->oldT) * (1. - myParameters.heatWeightingFactor);
-            saveHeatFlux(myLink, HEATFLUX_DIFFUSIVE, myValue);
-        }       
-   }
-}
-
-void updateBalanceHeat()
-{
-    balancePreviousTimeStep.storageHeat = balanceCurrentTimeStep.storageHeat;
-    balancePreviousTimeStep.sinkSourceHeat = balanceCurrentTimeStep.sinkSourceHeat;
-    balanceCurrentPeriod.sinkSourceHeat += balanceCurrentTimeStep.sinkSourceHeat;
-
-    // update heat fluxes
-    for (long i = 1; i < myStructure.nrNodes; i++)
-    {
-        if (myNode[i].up.index != NOLINK)
-            if (myNode[i].up.linkedExtra->heatFlux != NULL)
-                saveDiffusiveHeaFlux(i, &(myNode[i].up));
-
-        if (myNode[i].down.index != NOLINK)
-            if (myNode[i].down.linkedExtra->heatFlux != NULL)
-                saveDiffusiveHeaFlux(i, &(myNode[i].down));
-
-        for (short j = 0; j < myStructure.nrLateralLinks; j++)
-            if (myNode[i].lateral[j].index != NOLINK)
-                if (myNode[i].lateral[j].linkedExtra->heatFlux != NULL)
-                    saveDiffusiveHeaFlux(i, &(myNode[i].lateral[j]));
-    }
-}
-
-bool heatBalance(double timeStep)
-{
-    computeHeatBalance(timeStep);
-    return ((fabs(1.-balanceCurrentTimeStep.heatMBR) < myParameters.MBRThreshold));
-}
-
-void initializeBalanceHeat()
-{
-     balanceCurrentTimeStep.sinkSourceHeat = 0.;
-     balancePreviousTimeStep.sinkSourceHeat = 0.;
-     balanceCurrentPeriod.sinkSourceHeat = 0.;
-     balanceWholePeriod.sinkSourceHeat = 0.;
-
-     balanceCurrentTimeStep.heatMBE = 0.;
-     balanceCurrentPeriod.heatMBE = 0.;
-     balanceWholePeriod.waterMBE = 0.;
-
-     balanceCurrentTimeStep.heatMBR = 1.;
-     balanceCurrentPeriod.heatMBR = 1.;
-     balanceWholePeriod.heatMBR = 1.;
-
-     balanceWholePeriod.storageHeat = computeHeatStorage();
-     balanceCurrentTimeStep.storageHeat = balanceWholePeriod.storageHeat;
-     balancePreviousTimeStep.storageHeat = balanceWholePeriod.storageHeat;
-     balanceCurrentPeriod.storageHeat = balanceWholePeriod.storageHeat;
-}
-
-void updateBalanceHeatWholePeriod()
-{
-    /*! update the flows in the balance (balanceWholePeriod) */
-    balanceWholePeriod.sinkSourceHeat  += balanceCurrentPeriod.sinkSourceHeat;
-
-    double deltaStoragePeriod = balanceCurrentTimeStep.storageHeat - balanceCurrentPeriod.storageHeat;
-    double deltaStorageHistorical = balanceCurrentTimeStep.storageHeat - balanceWholePeriod.storageHeat;
-
-    /*! compute MBE and MBR */
-    balanceCurrentPeriod.heatMBE = deltaStoragePeriod - balanceCurrentPeriod.sinkSourceHeat;
-    balanceWholePeriod.heatMBE = deltaStorageHistorical - balanceWholePeriod.sinkSourceHeat;
-    if ((balanceWholePeriod.storageHeat == 0.) && (balanceWholePeriod.sinkSourceHeat == 0.)) balanceWholePeriod.heatMBR = 1.;
-    else if (balanceCurrentTimeStep.storageHeat > fabs(balanceWholePeriod.sinkSourceHeat))
-        balanceWholePeriod.heatMBR = balanceCurrentTimeStep.storageHeat / (balanceWholePeriod.storageHeat + balanceWholePeriod.sinkSourceHeat);
-    else
-        balanceWholePeriod.heatMBR = deltaStorageHistorical / balanceWholePeriod.sinkSourceHeat;
-
-    /*! update storageWater in balanceCurrentPeriod */
-    balanceCurrentPeriod.storageHeat = balanceCurrentTimeStep.storageHeat;
-}
-
-void restoreHeat()
-{
-    for (long i = 0; i < myStructure.nrNodes; i++)
-        myNode[i].extra->Heat->T = myNode[i].extra->Heat->oldT;
-}
-
-void initializeHeatFluxes()
-{
-    for (long n = 0; n < myStructure.nrNodes; n++)
-    {
-        initializeNodeHeatFlux(myNode[n].up.linkedExtra);
-        initializeNodeHeatFlux(myNode[n].down.linkedExtra);
-        for (short i = 0; i < myStructure.nrLateralLinks; i++)
-           initializeNodeHeatFlux(myNode[n].lateral[i].linkedExtra);
-    }
-}
 
 /*!
  * \brief [m3 m-3] vapor volumetric water equivalent
@@ -496,6 +388,64 @@ double SoilHeatConductivity(long i, double T, double h)
 }
 
 /*!
+ * \brief [m3 s-1] Thermal vapor flux
+ * \param i
+ * \param myLink
+ * \return result
+ */
+double ThermalVaporFlow(long i, TlinkedNode *myLink, int myProcess)
+{
+    long j = (*myLink).index;
+
+    // temperatures (K) and water potential (m)
+    double myTMean, myTLinkMean, myH, myHLink;
+    if (myProcess == PROCESS_WATER)
+    {
+        myTMean = computeMean(myNode[i].extra->Heat->T, myNode[i].extra->Heat->oldT);
+        myTLinkMean = computeMean(myNode[j].extra->Heat->T, myNode[j].extra->Heat->oldT);
+        myH = myNode[i].H;
+        myHLink = myNode[j].H;
+    }
+    else
+    {
+        myTMean = myNode[i].extra->Heat->T;
+        myTLinkMean = myNode[j].extra->Heat->T;
+        myH = computeMean(myNode[i].H, myNode[i].oldH);
+        myHLink =computeMean(myNode[j].H, myNode[j].oldH);
+    }
+
+    // kg m-1 s-1 K-1
+    double Kvt = ThermalVaporConductivity(i, myTMean, myH - myNode[i].z);
+    double KvtLink = ThermalVaporConductivity(j, myTLinkMean, myHLink - myNode[j].z);
+    double meanKv = computeMean(Kvt, KvtLink);
+
+    // kg m-2 s-1
+    double myFlowDensity = meanKv * (myTLinkMean - myTMean) / distance(i, j);
+
+    // m3 s-1
+    double myFlow = myFlowDensity * (*myLink).area / WATER_DENSITY;
+
+    return (myFlow);
+}
+
+/*!
+ * \brief [m3 s-1] Thermal liquid flux TODO!
+ * \param i
+ * \param myLink
+ * \return result
+ */
+double thermalLiquidFlow() //long i, TlinkedNode *myLink)
+{
+    //long j = (*myLink).index;
+
+    // K
+    //double myTMean = computeMean(myNode[i].extra->Heat->T, myNode[i].extra->Heat->oldT);
+    //double myTLinkMean = computeMean(myNode[j].extra->Heat->T, myNode[j].extra->Heat->oldT);
+
+    return 0.;
+}
+
+/*!
  * \brief isothermal latent heat flux
  * \param i
  * \param myLink
@@ -608,8 +558,8 @@ bool computeHeatFlux(long i, int myMatrixIndex, TlinkedNode *myLink, double delt
             myLatent = SoilLatentIsothermal(i, myLink);
             saveHeatFlux(myLink, HEATFLUX_LATENT_ISOTHERMAL, myLatent);
 
-            myAdvection = SoilHeatAdvection(i, myLink);
-            saveHeatFlux(myLink, HEATFLUX_ADVECTIVE, myAdvection);
+            //myAdvection = SoilHeatAdvection(i, myLink);
+            //saveHeatFlux(myLink, HEATFLUX_ADVECTIVE, myAdvection);
         }
     }
 
@@ -646,6 +596,135 @@ void saveWaterFluxes()
                         myNode[i].lateral[j].linkedExtra->heatFlux->waterFlux = float(getWaterFlux(i, &myNode[i].lateral[j]));
 
         }
+}
+
+void saveNodeHeatFlux(long myIndex, TlinkedNode *myLink)
+// [W] heat flow between node myNode[myIndex] and link node myLink
+{
+   if (myLink != NULL && ! myNode[myLink->index].isSurface)
+   {
+        long myLinkIndex = (*myLink).index;
+        double myDiffHeat, myA;
+
+        int j = 1;
+        while ((j < myStructure.maxNrColumns) && (A[myIndex][j].index != NOLINK) && (A[myIndex][j].index != myLinkIndex)) j++;
+
+        if (A[myIndex][j].index == myLinkIndex)
+        {
+            myA = (A[myIndex][j].val * A[myIndex][0].val);
+            myDiffHeat = myA * (myNode[myIndex].extra->Heat->T - myNode[myLinkIndex].extra->Heat->T) * myParameters.heatWeightingFactor;
+            myDiffHeat += myA * (myNode[myIndex].extra->Heat->oldT - myNode[myLinkIndex].extra->Heat->oldT) * (1. - myParameters.heatWeightingFactor);
+
+            // when saving separate fluxes, thermal latent heat has to be subtracted from diffusive,
+            // where is incorporated (see AirHeatConductivity)
+            if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_ALL)
+            {
+                double thermalLatentFlux = ThermalVaporFlow(myIndex, myLink, PROCESS_HEAT);
+                thermalLatentFlux *= WATER_DENSITY * LatentHeatVaporization(myNode[myIndex].extra->Heat->T - ZEROCELSIUS);
+                saveHeatFlux(myLink, HEATFLUX_LATENT_THERMAL, thermalLatentFlux);
+                saveHeatFlux(myLink, HEATFLUX_DIFFUSIVE, myDiffHeat - thermalLatentFlux);
+            }
+            else
+            {
+                saveHeatFlux(myLink, HEATFLUX_TOTAL, myDiffHeat);
+            }
+        }
+   }
+}
+
+void updateHeatFluxes()
+{
+    if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_NONE) return;
+
+    for (long i = 1; i < myStructure.nrNodes; i++)
+    {
+        if (myNode[i].up.index != NOLINK)
+            if (myNode[i].up.linkedExtra->heatFlux != NULL)
+                saveNodeHeatFlux(i, &(myNode[i].up));
+
+        if (myNode[i].down.index != NOLINK)
+            if (myNode[i].down.linkedExtra->heatFlux != NULL)
+                saveNodeHeatFlux(i, &(myNode[i].down));
+
+        for (short j = 0; j < myStructure.nrLateralLinks; j++)
+            if (myNode[i].lateral[j].index != NOLINK)
+                if (myNode[i].lateral[j].linkedExtra->heatFlux != NULL)
+                    saveNodeHeatFlux(i, &(myNode[i].lateral[j]));
+    }
+}
+
+void updateBalanceHeat()
+{
+    balancePreviousTimeStep.storageHeat = balanceCurrentTimeStep.storageHeat;
+    balancePreviousTimeStep.sinkSourceHeat = balanceCurrentTimeStep.sinkSourceHeat;
+    balanceCurrentPeriod.sinkSourceHeat += balanceCurrentTimeStep.sinkSourceHeat;
+
+    updateHeatFluxes();
+}
+
+bool heatBalance(double timeStep)
+{
+    computeHeatBalance(timeStep);
+    return ((fabs(1.-balanceCurrentTimeStep.heatMBR) < myParameters.MBRThreshold));
+}
+
+void initializeBalanceHeat()
+{
+     balanceCurrentTimeStep.sinkSourceHeat = 0.;
+     balancePreviousTimeStep.sinkSourceHeat = 0.;
+     balanceCurrentPeriod.sinkSourceHeat = 0.;
+     balanceWholePeriod.sinkSourceHeat = 0.;
+
+     balanceCurrentTimeStep.heatMBE = 0.;
+     balanceCurrentPeriod.heatMBE = 0.;
+     balanceWholePeriod.waterMBE = 0.;
+
+     balanceCurrentTimeStep.heatMBR = 1.;
+     balanceCurrentPeriod.heatMBR = 1.;
+     balanceWholePeriod.heatMBR = 1.;
+
+     balanceWholePeriod.storageHeat = computeHeatStorage();
+     balanceCurrentTimeStep.storageHeat = balanceWholePeriod.storageHeat;
+     balancePreviousTimeStep.storageHeat = balanceWholePeriod.storageHeat;
+     balanceCurrentPeriod.storageHeat = balanceWholePeriod.storageHeat;
+}
+
+void updateBalanceHeatWholePeriod()
+{
+    /*! update the flows in the balance (balanceWholePeriod) */
+    balanceWholePeriod.sinkSourceHeat  += balanceCurrentPeriod.sinkSourceHeat;
+
+    double deltaStoragePeriod = balanceCurrentTimeStep.storageHeat - balanceCurrentPeriod.storageHeat;
+    double deltaStorageHistorical = balanceCurrentTimeStep.storageHeat - balanceWholePeriod.storageHeat;
+
+    /*! compute MBE and MBR */
+    balanceCurrentPeriod.heatMBE = deltaStoragePeriod - balanceCurrentPeriod.sinkSourceHeat;
+    balanceWholePeriod.heatMBE = deltaStorageHistorical - balanceWholePeriod.sinkSourceHeat;
+    if ((balanceWholePeriod.storageHeat == 0.) && (balanceWholePeriod.sinkSourceHeat == 0.)) balanceWholePeriod.heatMBR = 1.;
+    else if (balanceCurrentTimeStep.storageHeat > fabs(balanceWholePeriod.sinkSourceHeat))
+        balanceWholePeriod.heatMBR = balanceCurrentTimeStep.storageHeat / (balanceWholePeriod.storageHeat + balanceWholePeriod.sinkSourceHeat);
+    else
+        balanceWholePeriod.heatMBR = deltaStorageHistorical / balanceWholePeriod.sinkSourceHeat;
+
+    /*! update storageWater in balanceCurrentPeriod */
+    balanceCurrentPeriod.storageHeat = balanceCurrentTimeStep.storageHeat;
+}
+
+void restoreHeat()
+{
+    for (long i = 0; i < myStructure.nrNodes; i++)
+        myNode[i].extra->Heat->T = myNode[i].extra->Heat->oldT;
+}
+
+void initializeHeatFluxes()
+{
+    for (long n = 0; n < myStructure.nrNodes; n++)
+    {
+        initializeNodeHeatFlux(myNode[n].up.linkedExtra);
+        initializeNodeHeatFlux(myNode[n].down.linkedExtra);
+        for (short i = 0; i < myStructure.nrLateralLinks; i++)
+           initializeNodeHeatFlux(myNode[n].lateral[i].linkedExtra);
+    }
 }
 
 bool HeatComputation(double myTimeStep)

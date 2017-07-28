@@ -31,6 +31,7 @@
 #include <malloc.h>
 
 #include "../mathFunctions/physics.h"
+#include "../mathFunctions/commonConstants.h"
 #include "header/types.h"
 #include "header/water.h"
 #include "header/soilPhysics.h"
@@ -193,50 +194,7 @@ double redistribution(long i, TlinkedNode *link, int linkType)
     return (k * link->area) / cellDistance;
 }
 
-/*!
- * \brief [m3 s-1] Thermal vapor flux
- * \param i
- * \param myLink
- * \return result
- */
-double thermalVaporFlow(long i, TlinkedNode *myLink)
-{
-    long j = (*myLink).index;
 
-    // K
-    double myTMean = computeMean(myNode[i].extra->Heat->T, myNode[i].extra->Heat->oldT);
-    double myTLinkMean = computeMean(myNode[j].extra->Heat->T, myNode[j].extra->Heat->oldT);
-
-    // kg m-1 s-1 K-1
-    double Kvt = ThermalVaporConductivity(i, myTMean, myNode[i].H - myNode[i].z);
-    double KvtLink = ThermalVaporConductivity(j, myTLinkMean, myNode[j].H - myNode[j].z);
-    double meanKv = computeMean(Kvt, KvtLink);
-
-    // kg m-2 s-1
-    double myFlowDensity = meanKv * (myTLinkMean - myTMean) / distance(i, j);
-
-    // m3 s-1
-    double myFlow = myFlowDensity * (*myLink).area / WATER_DENSITY;
-
-    return (myFlow);
-}
-
-/*!
- * \brief [m3 s-1] Thermal liquid flux TODO!
- * \param i
- * \param myLink
- * \return result
- */
-double thermalLiquidFlow() //long i, TlinkedNode *myLink)
-{
-    //long j = (*myLink).index;
-
-    // K
-    //double myTMean = computeMean(myNode[i].extra->Heat->T, myNode[i].extra->Heat->oldT);
-    //double myTLinkMean = computeMean(myNode[j].extra->Heat->T, myNode[j].extra->Heat->oldT);
-
-    return 0.;
-}
 
 bool computeFlux(long i, int matrixIndex, TlinkedNode *link, double deltaT, unsigned long myApprox, int linkType)
 {
@@ -268,7 +226,7 @@ bool computeFlux(long i, int matrixIndex, TlinkedNode *link, double deltaT, unsi
         ! myNode[i].isSurface && ! myNode[j].isSurface)
     {
         double vaporThermal;
-        vaporThermal = thermalVaporFlow(i, link);
+        vaporThermal = ThermalVaporFlow(i, link, PROCESS_WATER);
         C0[i] += vaporThermal;
     }
 

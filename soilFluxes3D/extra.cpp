@@ -63,9 +63,9 @@ void initializeNodeHeatFlux(TCrit3DLinkedNodeExtra* myLinkExtra)
     if (myLinkExtra->heatFlux == NULL) return;
     if (! myStructure.computeHeat) return;
 
-    if (myStructure.saveHeatFluxes == SAVE_HEATFLUXES_TOTAL)
+    if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_TOTAL)
         myLinkExtra->heatFlux->fluxes[HEATFLUX_TOTAL] = NODATA;
-    else if (myStructure.saveHeatFluxes == SAVE_HEATFLUXES_ALL)
+    else if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_ALL)
     {
         myLinkExtra->heatFlux->fluxes[HEATFLUX_DIFFUSIVE] = NODATA;
         myLinkExtra->heatFlux->fluxes[HEATFLUX_LATENT_ISOTHERMAL] = NODATA;
@@ -83,9 +83,9 @@ void initializeLinkExtra(TCrit3DLinkedNodeExtra* myLinkedNodeExtra, bool compute
 
         (*myLinkedNodeExtra).heatFlux->waterFlux = 0.;
 
-        if (myStructure.saveHeatFluxes == SAVE_HEATFLUXES_ALL)
+        if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_ALL)
             (*myLinkedNodeExtra).heatFlux->fluxes = new float[4];
-        else if (myStructure.saveHeatFluxes == SAVE_HEATFLUXES_TOTAL)
+        else if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_TOTAL)
             (*myLinkedNodeExtra).heatFlux->fluxes = new float[1];
         else
             (*myLinkedNodeExtra).heatFlux->fluxes = NULL;
