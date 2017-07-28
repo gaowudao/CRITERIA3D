@@ -67,7 +67,7 @@ namespace root
         }
         else
         {
-            myCrop->roots.rootLength = computeRootLength(myCrop,soilDepth,currentDD);
+            myCrop->roots.rootLength = computeRootLength(myCrop, soilDepth, currentDD);
             myCrop->roots.rootDepth = myCrop->roots.rootDepthMin + myCrop->roots.rootLength;
         }
 

@@ -231,8 +231,7 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, 
     }
 
     int nrHorizons = query.at() + 1;     //SQLITE doesn't support SIZE
-    mySoil->cleanSoil();
-    mySoil = new soil::Crit3DSoil(1, nrHorizons);
+    mySoil->initialize(1, nrHorizons);
 
     int idTextureUSDA, idTextureNL, idHorizon;
     double sand, silt, clay, organicMatter, coarseFragments;

@@ -124,12 +124,18 @@ namespace soil
         this->horizon = NULL;
     }
 
-    Crit3DSoil::Crit3DSoil(int idSoil, int myHorizonsNr)
+    Crit3DSoil::Crit3DSoil(int idSoil, int nrHorizons)
     {
+        this->initialize(idSoil, nrHorizons);
+    }
+
+    void Crit3DSoil::initialize(int idSoil, int nrHorizons)
+    {
+        this->cleanSoil();
         this->id = idSoil;
-        this->nrHorizons = myHorizonsNr;
+        this->nrHorizons = nrHorizons;
         this->horizon = new Crit3DHorizon[this->nrHorizons];
-        this->totalDepth = NODATA;
+        this->totalDepth = 0;
     }
 
     void Crit3DSoil::cleanSoil()
