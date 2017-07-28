@@ -188,7 +188,7 @@ bool loadDriessenParameters(soil::Crit3DSoilClass *soilTexture, QSqlDatabase* db
 }
 
 
-QString getIdSoil(QSqlDatabase* dbSoil, int idSoilNumber, std::string *myError)
+QString getIdSoilString(QSqlDatabase* dbSoil, int idSoilNumber, std::string *myError)
 {
     *myError = "";
     QString queryString = "SELECT * FROM soils WHERE id_soil='" + QString::number(idSoilNumber) +"'";
@@ -203,10 +203,10 @@ QString getIdSoil(QSqlDatabase* dbSoil, int idSoilNumber, std::string *myError)
         return "";
     }
 
-    QString idSoil;
-    getValue(query.value("soil_code"), &idSoil);
+    QString idSoilStr;
+    getValue(query.value("soil_code"), &idSoilStr);
 
-    return idSoil;
+    return idSoilStr;
 }
 
 
