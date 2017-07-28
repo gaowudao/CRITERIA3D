@@ -2,6 +2,7 @@
 #include "meteo.h"
 #include "dataHandler.h"
 #include "commonConstants.h"
+#include"utilities.h"
 
 QString getVarNameFromMeteoVariable(meteoVariable myVar)
 {
@@ -192,111 +193,6 @@ float readDataHourly(meteoVariable myVar, QString hourlyPath, QDateTime myTime, 
     return NODATA;
 }
 
-
-QString getFileNameFromString(QString myString)
-{
-    int myPos;
-    QString myChar, myFileName;
-    bool isSlashFound = false;
-
-    myFileName = "";
-    myPos = myString.length();
-    while ((!isSlashFound) && (myPos > 0))
-    {
-        myChar = myString.mid(myPos,1);
-        if ((myChar != "\\") && (myChar != "/"))
-        {
-            myFileName = myChar + myFileName;
-            myPos--;
-        }
-        else isSlashFound = true;
-    }
-
-    return myFileName;
-}
-
-
-QString getPathFromString(QString myString)
-{
-    QString myFileName, myPath;
-    myFileName = getFileNameFromString(myString);
-    myPath = myString.left(myString.length()-myFileName.length());
-    return myPath;
-}
-
-Crit3DDate getCrit3DDate(const QDate& myDate)
-{
-    Crit3DDate date;
-
-    date.day = myDate.day();
-    date.month = myDate.month();
-    date.year = myDate.year();
-    return date;
-}
-
-Crit3DTime getCrit3DTime(const QDateTime& myQTime)
-{
-    Crit3DTime myCrit3DTime;
-
-    myCrit3DTime.date.day = myQTime.date().day();
-    myCrit3DTime.date.month = myQTime.date().month();
-    myCrit3DTime.date.year = myQTime.date().year();
-    myCrit3DTime.time = myQTime.time().hour()*3600 + myQTime.time().minute()*60 + myQTime.time().second();
-
-    return myCrit3DTime;
-}
-
-QDate getQDate(Crit3DDate myDate)
-{
-    QDate date = QDate(myDate.year, myDate.month, myDate.day);
-    return date;
-}
-
-QDateTime getQDateTime(Crit3DTime myCrit3DTime)
-{
-    QDateTime myQDateTime;
-    QDate myQDate = QDate(myCrit3DTime.date.year, myCrit3DTime.date.month, myCrit3DTime.date.day);
-    myQDateTime.setDate(myQDate);
-    QTime myQTime = QTime(myCrit3DTime.getHour(), myCrit3DTime.getMinutes(), myCrit3DTime.getSeconds(), 0);
-    myQDateTime.setTime(myQTime);
-    return myQDateTime;
-}
-
-QString getQStringFromCrit3DTime(const Crit3DTime& myCrit3DTime)
-{
-    return getQDateTime(myCrit3DTime).toString();
-}
-
-bool getValue(QVariant myRs, float* myValue)
-{
-    if (myRs.isNull())
-        *myValue = NODATA;
-    else
-        *myValue = myRs.toFloat();
-
-    return (*myValue != NODATA);
-}
-
-bool getValue(QVariant myRs, double* myValue)
-{
-    if (myRs.isNull())
-        *myValue = NODATA;
-    else
-        *myValue = myRs.toDouble();
-
-    return (*myValue != NODATA);
-}
-
-
-bool getValue(QVariant myRs, int* myValue)
-{
-    if (myRs.isNull())
-        *myValue = NODATA;
-    else
-        *myValue = myRs.toInt();
-
-    return (*myValue != NODATA);
-}
 
 meteoVariable getMeteoVariable(int myVar)
 {

@@ -27,22 +27,10 @@
     #define OUTPUT_PLANT 2
     #define OUTPUT_SOIL 3
 
-    Crit3DDate getCrit3DDate(const QDate &myDate);
-    Crit3DDate getCrit3DDate(const QDateTime &myTime);
-    Crit3DTime getCrit3DTime(const QDateTime& myQTime);
-    QDate getQDate(Crit3DDate myDate);
-    QDateTime getQDateTime(Crit3DTime myCrit3DTime);
     float getTimeStepFromHourlyInterval(int myHourlyIntervals);
-    QString getQStringFromCrit3DTime(const Crit3DTime& myCrit3DTime);
-
-    bool getValue(QVariant myRs, int* myValue);
-    bool getValue(QVariant myRs, float* myValue);
-    bool getValue(QVariant myRs, double* myValue);
     meteoVariable getMeteoVariable(int myVar);
     int getMeteoVarIndex(meteoVariable myVar);
 
-    QString getFileNameFromString(QString myString);
-    QString getPathFromString(QString myString);
     QString getOutputNameDaily(QString producer, QString varName, QString strArea, QString notes, QDate myDate);
     QString getOutputNameHourly(meteoVariable myVar, Crit3DTime myTime, QString myArea);
     QString getOutputNameHourly(meteoVariable myVar, QDateTime myTime, QString myArea);

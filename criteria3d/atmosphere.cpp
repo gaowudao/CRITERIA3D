@@ -12,6 +12,7 @@
 #include "project.h"
 #include "meteo.h"
 #include "commonConstants.h"
+#include "utilities.h"
 
 //cout
 #include <iostream>
@@ -598,6 +599,7 @@ bool computeHumidityMap(const gis::Crit3DRasterGrid& myTemperatureMap,
     return postInterpolation(airDewTemperature, myHumidityMap);
 }
 
+
 bool interpolationProjectDtm(Crit3DProject* myProject, meteoVariable myVar,
                              const Crit3DTime& myCrit3DTime, bool isLoadData)
 {
@@ -636,7 +638,8 @@ bool interpolationProjectDtm(Crit3DProject* myProject, meteoVariable myVar,
 
     if (! isSuccessful) return false;
 
-    myMap->timeString = getQDateTime(myCrit3DTime).toString("yyyyMMdd:hhmm").toStdString();
+    Crit3DTime t = myCrit3DTime;
+    myMap->timeString = t.toStdString();
 
     if (postInterpolation(myVar, myMap))
         return true;
@@ -939,7 +942,9 @@ bool interpolateAndSaveHourlyMeteo(Crit3DProject* myProject, meteoVariable myVar
 {
     if (! interpolationProjectDtmMain(myProject, myVar, myCrit3DTime, false))
     {
-        myProject->logError("interpolateAndSave: interpolation of " + getVarNameFromMeteoVariable(myVar) + " at time: " + getQStringFromCrit3DTime(myCrit3DTime));
+        Crit3DTime t = myCrit3DTime;
+        QString myTimeStr = QString::fromStdString(t.toStdString());
+        myProject->logError("interpolateAndSave: interpolation of " + getVarNameFromMeteoVariable(myVar) + " at time: " + myTimeStr);
         return false;
     }
 

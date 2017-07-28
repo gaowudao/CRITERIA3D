@@ -9,7 +9,7 @@ QT  += core gui widgets xml sql
 TARGET = Criteria3D
 TEMPLATE = app
 
-INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../meteo ../interpolation ../solarRadiation ../soil ../crop
+INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../meteo ../interpolation ../solarRadiation ../soil ../crop ../utilities
 INCLUDEPATH += ../soilFluxes3D/header
 
 LIBS += -L../crit3dDate/release -lcrit3dDate
@@ -21,6 +21,7 @@ LIBS += -L../crop/release -lcrop
 LIBS += -L../interpolation/release -lInterpolation
 LIBS += -L../solarRadiation/release -lsolarRadiation
 LIBS += -L../soil/release -lsoil
+LIBS += -L../utilities/release -lutilities
 
 
 SOURCES += main.cpp \

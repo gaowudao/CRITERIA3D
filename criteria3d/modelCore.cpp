@@ -64,7 +64,7 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
 
     for (myCurrentTime = myFirstTime; myCurrentTime <= myLastTime; myCurrentTime = myCurrentTime.addSeconds(myTimeStep))
     {
-        myProject->logInfo("\n" + getQDateTime(myCurrentTime).toString("yyyy-MM-dd hh:mm"));
+        myProject->logInfo("\n" + QString::fromStdString(myCurrentTime.toStdString()));
 
         // meteo interpolation
         myProject->logInfo("Interpolate meteo data");

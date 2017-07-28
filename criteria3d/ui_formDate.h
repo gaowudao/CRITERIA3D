@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'formDate.ui'
 **
-** Created by: Qt User Interface Compiler version 5.7.1
+** Created by: Qt User Interface Compiler version 5.7.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -57,9 +57,9 @@ public:
 
     void retranslateUi(QDialog *formDate)
     {
-        formDate->setWindowTitle(QApplication::translate("formDate", "Dialog", Q_NULLPTR));
-        dateTimeEditFirst->setDisplayFormat(QApplication::translate("formDate", "dd/MM/yyyy HH.mm", Q_NULLPTR));
-        dateTimeEditLast->setDisplayFormat(QApplication::translate("formDate", "dd/MM/yyyy HH.mm", Q_NULLPTR));
+        formDate->setWindowTitle(QApplication::translate("formDate", "Dialog", 0));
+        dateTimeEditFirst->setDisplayFormat(QApplication::translate("formDate", "dd/MM/yyyy HH.mm", 0));
+        dateTimeEditLast->setDisplayFormat(QApplication::translate("formDate", "dd/MM/yyyy HH.mm", 0));
     } // retranslateUi
 
 };

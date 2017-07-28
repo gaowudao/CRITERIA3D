@@ -19,6 +19,7 @@
 #include "atmosphere.h"
 #include "solarRadiation.h"
 #include "project.h"
+#include "utilities.h"
 
 
 void Crit3DProject::initialize()

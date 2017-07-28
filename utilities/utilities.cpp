@@ -121,11 +121,13 @@ QString getFileName(QString filePath)
 }
 
 
+
 QString getPath(QString filePath)
 {
     QString fileName = getFileName(filePath);
     return filePath.left(filePath.length() - fileName.length());
 }
+
 
 
 

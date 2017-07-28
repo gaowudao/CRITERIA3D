@@ -6,6 +6,7 @@
 #include "plant.h"
 #include "dataHandler.h"
 #include "parserXML.h"
+#include "utilities.h"
 
 
 bool stopParsing(Crit3DProject* myProject, QString myWarning, bool isIgnored)
@@ -50,7 +51,7 @@ bool readXmlProject(Crit3DProject* myProject, QString xmlFileName)
 {
    myProject->logInfo("Read xml " + xmlFileName);
 
-   QString myPath = getPathFromString(xmlFileName);
+   QString myPath = getPath(xmlFileName);
    QDomDocument myDocument("Project");
    if (!parseXMLFile(myProject, xmlFileName, &myDocument))
    {

@@ -30,7 +30,7 @@
     #ifndef VECTOR_H
         #include <vector>
     #endif
-    #ifndef _GLIBCXX_STRING
+    #ifndef _STRING_
         #include <string>
     #endif
     #ifndef COLOR_H

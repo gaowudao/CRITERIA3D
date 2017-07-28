@@ -31,6 +31,7 @@
 #include <math.h>
 #include "crit3dDate.h"
 #include "commonConstants.h"
+#include <string>
 
 long daysInMonth[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
