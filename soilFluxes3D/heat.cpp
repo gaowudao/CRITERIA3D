@@ -74,9 +74,14 @@ float readHeatFlux(TlinkedNode* myLink, int fluxType)
     if (myLink->linkedExtra == NULL) return NODATA;
     if (myLink->linkedExtra->heatFlux == NULL) return NODATA;
 
-    if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_TOTAL)
+
+    if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_TOTAL && fluxType == HEATFLUX_TOTAL)
         return myLink->linkedExtra->heatFlux->fluxes[HEATFLUX_TOTAL];
-    else if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_ALL)
+    else if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_ALL && (fluxType == HEATFLUX_TOTAL ||
+            fluxType == HEATFLUX_DIFFUSIVE ||
+            fluxType == HEATFLUX_LATENT_ISOTHERMAL ||
+            fluxType == HEATFLUX_LATENT_THERMAL ||
+            fluxType == HEATFLUX_ADVECTIVE))
         return myLink->linkedExtra->heatFlux->fluxes[fluxType];
     else
         return NODATA;
@@ -737,6 +742,7 @@ bool HeatComputation(double myTimeStep)
     double heatCapacityVar;
     double dtheta, dthetav;
 
+    initializeHeatFluxes();
     CourantHeat = 0.;
 
     for (i = 1; i < myStructure.nrNodes; i++)
@@ -821,6 +827,7 @@ bool HeatComputation(double myTimeStep)
 
     heatBalance(myTimeStep);
     updateBalanceHeat();
+
     updateHeatFluxes();
 
 	// save old temperatures

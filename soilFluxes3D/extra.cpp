@@ -67,6 +67,7 @@ void initializeNodeHeatFlux(TCrit3DLinkedNodeExtra* myLinkExtra)
         myLinkExtra->heatFlux->fluxes[HEATFLUX_TOTAL] = NODATA;
     else if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_ALL)
     {
+        myLinkExtra->heatFlux->fluxes[HEATFLUX_TOTAL] = NODATA;
         myLinkExtra->heatFlux->fluxes[HEATFLUX_DIFFUSIVE] = NODATA;
         myLinkExtra->heatFlux->fluxes[HEATFLUX_LATENT_ISOTHERMAL] = NODATA;
         myLinkExtra->heatFlux->fluxes[HEATFLUX_LATENT_THERMAL] = NODATA;

@@ -220,7 +220,7 @@ bool initializeHeat1D(long *myHourIni, long *myHourFin, bool useInputSoils)
     myResult = soilFluxes3D::initialize(NodesNumber, (short) NodesNumber, 0, computeWater, computeHeat, computeSolutes);
     if (myResult != CRIT3D_OK) printf("\n error in initialize");
 
-    if (computeHeat) soilFluxes3D::initializeHeat(SAVE_HEATFLUXES_TOTAL);
+    if (computeHeat) soilFluxes3D::initializeHeat(SAVE_HEATFLUXES_ALL);
 
     soilFluxes3D::setHydraulicProperties(MODIFIEDVANGENUCHTEN, MEAN_LOGARITHMIC, 10.);
 
