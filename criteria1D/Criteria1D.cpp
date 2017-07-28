@@ -9,6 +9,8 @@
 #include "crit3dDate.h"
 #include "Criteria1D.h"
 #include "utilities.h"
+#include "dbTools.h"
+#include "dbToolsMOSES.h"
 #include "meteo.h"
 #include "root.h"
 
@@ -71,181 +73,62 @@ void Criteria1DOutput::initializeDaily()
     this->dailySoilWaterDeficit = 0.0;
 }
 
+
 Criteria1DOutput::Criteria1DOutput()
 {
     this->initializeDaily();
 }
 
 
-
-bool Criteria1D::loadSoil(std::string idSoilStr, std::string *myError)
+bool Criteria1D::setSoil(QString idSoil, std::string *myError)
 {
-    QString soilCode = QString::fromStdString(idSoilStr);
+    // load Soil
+    if (! loadSoil (&dbSoil, idSoil, &mySoil, &(soilTexture[0]), myError))
+        return false;
 
-    QString queryString = "SELECT * FROM horizons ";
-    queryString += "WHERE soil_code='" + soilCode + "' ORDER BY horizon_nr";
-
-    QSqlQuery query = this->dbSoil.exec(queryString);
-    query.last();
-
-    if (! query.isValid())
-    {
-        if (query.lastError().number() > 0)
-            *myError = "dbSoil error: " + query.lastError().text().toStdString();
-        else
-            *myError = "Missing soil:" + idSoilStr;
-        return(false);
-    }
-
-    int nrHorizons = query.at() + 1;     //SQLITE doesn't support SIZE
-    mySoil.cleanSoil();
-    mySoil = soil::Crit3DSoil(1, nrHorizons);
-
-    int idTextureUSDA, idTextureNL, idHorizon;
-    double sand, silt, clay, organicMatter, coarseFragments;
-    double lowerDepth, upperDepth, bulkDensity, theta_sat, ksat;
-    int i = 0;
-    query.first();
-    do
-    {
-        // horizon depth
-        idHorizon = query.value("horizon_nr").toInt();
-        getValue(query.value("upper_depth"), &upperDepth);
-        getValue(query.value("lower_depth"), &lowerDepth);
-
-        // [cm]->[m]
-        mySoil.horizon[i].upperDepth = upperDepth / 100.;
-        mySoil.horizon[i].lowerDepth = lowerDepth / 100.;
-
-        if ((mySoil.horizon[i].upperDepth == NODATA) || (mySoil.horizon[i].lowerDepth == NODATA)
-            || (mySoil.horizon[i].lowerDepth < mySoil.horizon[i].upperDepth)
-            || ((idHorizon == 1) && (mySoil.horizon[i].upperDepth > 0))
-            || ((idHorizon > 1) && (mySoil.horizon[i].upperDepth > mySoil.horizon[i-1].lowerDepth)))
-        {
-            *myError = "Wrong depth in soil:" + idSoilStr + " horizon nr:" + QString::number(idHorizon).toStdString();
-            return(false);
-        }
-
-        // coarse fragments %
-        getValue(query.value("coarse_fragment"), &coarseFragments);
-        if (coarseFragments == NODATA)
-            mySoil.horizon[i].coarseFragments = 0.;    //default = no coarse fragment
-        else
-            //[0,1]
-            mySoil.horizon[i].coarseFragments = coarseFragments / 100.0;
-
-        // sand silt clay [-]
-        getValue(query.value("sand"), &sand);
-        if (sand < 1) sand *= 100.0;
-        getValue(query.value("silt"), &silt);
-        if (silt < 1) silt *= 100.0;
-        getValue(query.value("clay"), &clay);
-        if (clay < 1) clay *= 100.0;
-
-        // texture
-        idTextureUSDA = soil::getUSDATextureClass(sand, silt, clay);
-        if (idTextureUSDA == NODATA)
-        {
-                *myError = "Texture wrong! sand+silt+clay <> 1 in soil:"
-                        + idSoilStr + " horizon nr:" + QString::number(idHorizon).toStdString();
-                return (false);
-        }
-        idTextureNL =  soil::getNLTextureClass(sand, silt, clay);
-
-        mySoil.horizon[i].texture.sand = sand;
-        mySoil.horizon[i].texture.silt = silt;
-        mySoil.horizon[i].texture.clay = clay;
-        mySoil.horizon[i].texture.classUSDA = idTextureUSDA;
-        mySoil.horizon[i].texture.classNL = idTextureNL;
-        mySoil.horizon[i].vanGenuchten = this->soilTexture[idTextureUSDA].vanGenuchten;
-        mySoil.horizon[i].waterConductivity = this->soilTexture[idTextureUSDA].waterConductivity;
-        mySoil.horizon[i].Driessen = this->soilTexture[idTextureNL].Driessen;
-
-        // organic matter (%)
-        getValue(query.value("organic_matter"), &organicMatter);
-        if ((organicMatter == NODATA) || (organicMatter == 0.0))
-            organicMatter = 0.005;       //default: 0.5%
-        else
-            organicMatter /= 100.0;     //[-]
-        mySoil.horizon[i].organicMatter = organicMatter;
-
-        // bulk density and porosity
-        getValue(query.value("bulk_density"), &bulkDensity);
-        if (bulkDensity <= 0) bulkDensity = NODATA;
-        getValue(query.value("theta_sat"), &theta_sat);
-        if (theta_sat <= 0) theta_sat = NODATA;
-
-        if ((theta_sat == NODATA) && (bulkDensity != NODATA))
-            theta_sat = soil::estimateTotalPorosity(&(mySoil.horizon[i]), bulkDensity);
-
-        if (theta_sat != NODATA)
-            mySoil.horizon[i].vanGenuchten.thetaS = theta_sat;
-
-        if (bulkDensity == NODATA)
-            bulkDensity = soil::estimateBulkDensity(&(mySoil.horizon[i]), theta_sat);
-
-        mySoil.horizon[i].bulkDensity = bulkDensity;
-
-        // SATURATED CONDUCTIVITY (cm/day)
-        getValue(query.value("ksat"), &ksat);
-        if ((ksat == NODATA) || (ksat <= 0))
-            ksat = soil::estimateSaturatedConductivity(&(mySoil.horizon[i]), bulkDensity);
-        /*else
-        {
-            if ((ksat < (mySoil.horizon[i].waterConductivity.kSat / 10.)) || (ksat > (mySoil.horizon[i].waterConductivity.kSat * 10.)))
-                logInfo("WARNING: Ksat out of class limit, in soil " + idSoil + " horizon " + QString::number(i));
-        }*/
-
-        mySoil.horizon[i].waterConductivity.kSat = ksat;
-
-        mySoil.horizon[i].fieldCapacity = soil::getFieldCapacity(&(mySoil.horizon[i]), soil::KPA);
-        mySoil.horizon[i].wiltingPoint = soil::getWiltingPoint(soil::KPA);
-        mySoil.horizon[i].waterContentFC = soil::getThetaFC(&(mySoil.horizon[i]));
-        mySoil.horizon[i].waterContentWP = soil::getThetaWP(&(mySoil.horizon[i]));
-
-        i++;
-    } while(query.next());
-
-    mySoil.totalDepth = mySoil.horizon[nrHorizons-1].lowerDepth;
-    if (mySoil.totalDepth < 0.5)
-    {
-            *myError = "Texture wrong! soil depth < 50cm:" + idSoilStr;
-            return (false);
-    }
-
-    // set layers
+    // nr of layers
     this->nrLayers = ceil(mySoil.totalDepth / layerThickness) + 1;
-    if (this->layer != NULL) free(this->layer);
+
+    // alloc memory
+    if (this->layer != NULL)
+        free(this->layer);
     this->layer = (soil::Crit3DLayer *) calloc(nrLayers, sizeof(soil::Crit3DLayer));
+
+    double soilFraction, hygroscopicHumidity;
+    int horizonIndex;
+    double depth = this->layerThickness / 2.0;
 
     // initialize layers
     layer[0].depth = 0.0;
     layer[0].thickness = 0.0;
-    double soilFraction, hygroscopicHumidity;
-    int horizonIndex;
-    double depth = this->layerThickness / 2.0;
-    for (i = 1; i < this->nrLayers; i++)
+    for (int i = 1; i < this->nrLayers; i++)
     {
         horizonIndex = soil::getHorizonIndex(&(mySoil), depth);
         layer[i].horizon = &(mySoil.horizon[horizonIndex]);
+
         soilFraction = (1.0 - layer[i].horizon->coarseFragments);
         layer[i].soilFraction = soilFraction;       // [-]
+
         layer[i].depth = depth;                     // [m]
         layer[i].thickness = this->layerThickness;  // [m]
 
         //[mm]
         layer[i].SAT = mySoil.horizon[horizonIndex].vanGenuchten.thetaS * soilFraction * this->layerThickness * 1000.0;
 
+        //[mm]
         layer[i].FC = mySoil.horizon[horizonIndex].waterContentFC * soilFraction * this->layerThickness * 1000.0;
         layer[i].critical = layer[i].FC;
 
+        //[mm]
         layer[i].WP = mySoil.horizon[horizonIndex].waterContentWP * soilFraction * this->layerThickness * 1000.0;
 
         // hygroscopic humidity: -2000 kPa
         hygroscopicHumidity = soil::thetaFromSignPsi(-2000, &(mySoil.horizon[horizonIndex]));
+
+        //[mm]
         layer[i].HH = hygroscopicHumidity * soilFraction * this->layerThickness * 1000.0;
 
-        depth += this->layerThickness;
+        depth += this->layerThickness;              //[m]
     }
 
     return(true);
@@ -256,7 +139,8 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, std::string *myE
 {
     QString queryString = "SELECT * FROM meteo_locations";
     queryString += " WHERE id_meteo='" + idMeteo + "'";
-    QSqlQuery query = this->dbMeteo.exec(queryString);
+
+    QSqlQuery query = dbMeteo.exec(queryString);
     query.last();
     if (! query.isValid())
     {
@@ -266,6 +150,7 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, std::string *myE
             *myError = "Missing meteo location:" + idMeteo.toStdString();
         return(false);
     }
+
     QString tableName = query.value("table_name").toString();
 
     double myLat, myLon;
@@ -300,13 +185,14 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, std::string *myE
 
     int nrDays = firstObsDate.daysTo(lastObsDate) + 1;
 
-    // increase nr of days (forecast)
+    // FORECAST: increase nr of days
     if (this->isShortTermForecast)
         nrDays += this->daysOfForecast;
 
     this->meteoPoint.initializeObsDataD(nrDays, getCrit3DDate(firstObsDate));
 
-    if (! readMeteoData(&query, myError)) return false;
+    // READ OBSERVED
+    if (! readMOSESDailyData(&query, &meteoPoint, myError)) return false;
 
     // SHORT TERM FORECAST
     if (this->isShortTermForecast)
@@ -349,137 +235,9 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, std::string *myE
             return false;
         }
 
-        if (! readMeteoData(&query, myError)) return false;
+        // READ FORECAST
+        if (! readMOSESDailyData(&query, &meteoPoint, myError)) return false;
     }
-
-    return true;
-}
-
-
-bool Criteria1D::readMeteoData(QSqlQuery * query, std::string *myError)
-{
-    const int MAX_MISSING_DAYS = 3;
-    float tmed, prec, et0;
-    QDate myDate, expectedDate, previousDate;
-    Crit3DDate date;
-
-    float tmin = NODATA;
-    float tmax = NODATA;
-    float prevTmin = NODATA;
-    float prevTmax = NODATA;
-    int nrMissingTemp = 0;
-    int nrMissingPrec = 0;
-
-    query->first();
-    myDate = query->value("date").toDate();
-    expectedDate = myDate;
-    previousDate = myDate.addDays(-1);
-
-    do
-    {
-        myDate = query->value("date").toDate();
-
-        if (! myDate.isValid())
-        {
-            *myError = "Wrong date format: " + query->value("date").toString().toStdString();
-            return false;
-        }
-
-        if (myDate != previousDate)
-        {
-            if (myDate != expectedDate)
-            {
-                if (expectedDate.daysTo(myDate) > MAX_MISSING_DAYS)
-                {
-                    *myError = "Wrong METEO: too many missing data." + expectedDate.toString().toStdString();
-                    return false;
-                }
-                else
-                {
-                    // fill missing data
-                    while (myDate != expectedDate)
-                    {
-                        tmin = prevTmin;
-                        tmax = prevTmax;
-                        tmed = (tmin + tmax) * 0.5;
-                        prec = 0;
-                        et0 = NODATA;
-
-                        date = getCrit3DDate(expectedDate);
-                        this->meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureMin, tmin);
-                        this->meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureMax, tmax);
-                        this->meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureAvg, tmed);
-                        this->meteoPoint.setMeteoPointValueD(date, dailyPrecipitation, prec);
-                        this->meteoPoint.setMeteoPointValueD(date, dailyPotentialEvapotranspiration, et0);
-
-                        expectedDate = expectedDate.addDays(1);
-                    }
-                }
-            }
-
-            prevTmax = tmax;
-            prevTmin = tmin;
-
-            // mandatory
-            getValue(query->value("tmin"), &tmin);
-            getValue(query->value("tmax"), &tmax);
-            if ((tmin == NODATA) || (tmax == NODATA))
-            {
-                if (nrMissingTemp < MAX_MISSING_DAYS)
-                {
-                    nrMissingTemp++;
-                    if (tmin == NODATA) tmin = prevTmin;
-                    if (tmax == NODATA) tmax = prevTmax;
-                }
-                else
-                {
-                    *myError = "Wrong METEO: too many missing data " + myDate.toString().toStdString();
-                    return false;
-                }
-            }
-            else nrMissingTemp = 0;
-
-            getValue(query->value("prec"), &prec);
-            if (prec == NODATA)
-            {
-                if (nrMissingPrec < MAX_MISSING_DAYS)
-                {
-                    nrMissingPrec++;
-                    prec = 0;
-                }
-                else
-                {
-                    *myError = "Wrong METEO: too many missing data " + myDate.toString().toStdString();
-                    return false;
-                }
-            }
-            else nrMissingPrec = 0;
-
-            // not mandatory
-            getValue(query->value("tavg"), &tmed);
-            getValue(query->value("etp"), &et0);
-            if (tmed == NODATA) tmed = (tmin + tmax) * 0.5;
-
-            date = getCrit3DDate(myDate);
-            if (this->meteoPoint.obsDataD[0].date.daysTo(date) < this->meteoPoint.nrObsDataDaysD)
-            {
-                this->meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureMin, (float)tmin);
-                this->meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureMax, (float)tmax);
-                this->meteoPoint.setMeteoPointValueD(date, dailyAirTemperatureAvg, (float)tmed);
-                this->meteoPoint.setMeteoPointValueD(date, dailyPrecipitation, (float)prec);
-                this->meteoPoint.setMeteoPointValueD(date, dailyPotentialEvapotranspiration, (float)et0);
-            }
-            else
-            {
-                *myError = "Wrong METEO: index out of range.";
-                return false;
-            }
-
-            previousDate = myDate;
-            expectedDate = myDate.addDays(1);
-        }
-
-    } while(query->next());
 
     return true;
 }

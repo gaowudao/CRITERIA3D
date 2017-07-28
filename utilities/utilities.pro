@@ -12,13 +12,15 @@ TARGET = utilities
 TEMPLATE = lib
 CONFIG += staticlib
 
-INCLUDEPATH += ../crit3dDate ../mathFunctions ../crop ../soil
+INCLUDEPATH += ../crit3dDate ../mathFunctions ../crop ../soil ../meteo ../gis
 
 SOURCES += utilities.cpp \
-    dbTools.cpp
+    dbTools.cpp \
+    dbToolsMOSES.cpp
 
 HEADERS += utilities.h \
-    dbTools.h
+    dbTools.h \
+    dbToolsMOSES.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

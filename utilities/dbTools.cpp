@@ -3,7 +3,8 @@
 #include <QSqlError>
 #include <QVariant>
 
-#include "dbtools.h"
+#include "commonConstants.h"
+#include "dbTools.h"
 #include "crop.h"
 #include "utilities.h"
 
@@ -185,3 +186,170 @@ bool loadDriessenParameters(soil::Crit3DSoilClass *soilTexture, QSqlDatabase* db
 
     return(true);
 }
+
+
+QString getIdSoil(QSqlDatabase* dbSoil, int idSoilNumber, std::string *myError)
+{
+    *myError = "";
+    QString queryString = "SELECT * FROM soils WHERE id_soil='" + QString::number(idSoilNumber) +"'";
+
+    QSqlQuery query = dbSoil->exec(queryString);
+    query.last();
+
+    if (! query.isValid())
+    {
+        if (query.lastError().number() > 0)
+            *myError = query.lastError().text().toStdString();
+        return "";
+    }
+
+    QString idSoil;
+    getValue(query.value("soil_code"), &idSoil);
+
+    return idSoil;
+}
+
+
+
+bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, soil::Crit3DSoilClass *soilTexture, std::string *myError)
+{
+    std::string idSoilStr = soilCode.toStdString();
+
+    QString queryString = "SELECT * FROM horizons ";
+    queryString += "WHERE soil_code='" + soilCode + "' ORDER BY horizon_nr";
+
+    QSqlQuery query = dbSoil->exec(queryString);
+    query.last();
+
+    if (! query.isValid())
+    {
+        if (query.lastError().number() > 0)
+            *myError = "dbSoil error: " + query.lastError().text().toStdString();
+        else
+            *myError = "Missing soil:" + idSoilStr;
+        return false;
+    }
+
+    int nrHorizons = query.at() + 1;     //SQLITE doesn't support SIZE
+    mySoil->cleanSoil();
+    mySoil = new soil::Crit3DSoil(1, nrHorizons);
+
+    int idTextureUSDA, idTextureNL, idHorizon;
+    double sand, silt, clay, organicMatter, coarseFragments;
+    double lowerDepth, upperDepth, bulkDensity, theta_sat, ksat;
+    int i = 0;
+    query.first();
+    do
+    {
+        // horizon depth
+        idHorizon = query.value("horizon_nr").toInt();
+        getValue(query.value("upper_depth"), &upperDepth);
+        getValue(query.value("lower_depth"), &lowerDepth);
+
+        // [cm]->[m]
+        mySoil->horizon[i].upperDepth = upperDepth / 100.;
+        mySoil->horizon[i].lowerDepth = lowerDepth / 100.;
+
+        if ((mySoil->horizon[i].upperDepth == NODATA) || (mySoil->horizon[i].lowerDepth == NODATA)
+            || (mySoil->horizon[i].lowerDepth < mySoil->horizon[i].upperDepth)
+            || ((idHorizon == 1) && (mySoil->horizon[i].upperDepth > 0))
+            || ((idHorizon > 1) && (mySoil->horizon[i].upperDepth > mySoil->horizon[i-1].lowerDepth)))
+        {
+            *myError = "Wrong depth in soil:" + idSoilStr + " horizon nr:" + QString::number(idHorizon).toStdString();
+            return false;
+        }
+
+        // coarse fragments %
+        getValue(query.value("coarse_fragment"), &coarseFragments);
+        if (coarseFragments == NODATA)
+            mySoil->horizon[i].coarseFragments = 0.;    //default = no coarse fragment
+        else
+            //[0,1]
+            mySoil->horizon[i].coarseFragments = coarseFragments / 100.0;
+
+        // sand silt clay [-]
+        getValue(query.value("sand"), &sand);
+        if (sand < 1) sand *= 100.0;
+        getValue(query.value("silt"), &silt);
+        if (silt < 1) silt *= 100.0;
+        getValue(query.value("clay"), &clay);
+        if (clay < 1) clay *= 100.0;
+
+        // texture
+        idTextureUSDA = soil::getUSDATextureClass(sand, silt, clay);
+        if (idTextureUSDA == NODATA)
+        {
+                *myError = "Texture wrong! sand+silt+clay <> 1 in soil:"
+                        + idSoilStr + " horizon nr:" + QString::number(idHorizon).toStdString();
+                return false;
+        }
+        idTextureNL =  soil::getNLTextureClass(sand, silt, clay);
+
+        mySoil->horizon[i].texture.sand = sand;
+        mySoil->horizon[i].texture.silt = silt;
+        mySoil->horizon[i].texture.clay = clay;
+        mySoil->horizon[i].texture.classUSDA = idTextureUSDA;
+        mySoil->horizon[i].texture.classNL = idTextureNL;
+        mySoil->horizon[i].vanGenuchten = soilTexture[idTextureUSDA].vanGenuchten;
+        mySoil->horizon[i].waterConductivity = soilTexture[idTextureUSDA].waterConductivity;
+        mySoil->horizon[i].Driessen = soilTexture[idTextureNL].Driessen;
+
+        // organic matter (%)
+        getValue(query.value("organic_matter"), &organicMatter);
+        if ((organicMatter == NODATA) || (organicMatter == 0.0))
+            organicMatter = 0.005;       //default: 0.5%
+        else
+            organicMatter /= 100.0;     //[-]
+        mySoil->horizon[i].organicMatter = organicMatter;
+
+        // bulk density and porosity
+        getValue(query.value("bulk_density"), &bulkDensity);
+        if (bulkDensity <= 0) bulkDensity = NODATA;
+        getValue(query.value("theta_sat"), &theta_sat);
+        if (theta_sat <= 0) theta_sat = NODATA;
+
+        if ((theta_sat == NODATA) && (bulkDensity != NODATA))
+            theta_sat = soil::estimateTotalPorosity(&(mySoil->horizon[i]), bulkDensity);
+
+        if (theta_sat != NODATA)
+            mySoil->horizon[i].vanGenuchten.thetaS = theta_sat;
+
+        if (bulkDensity == NODATA)
+            bulkDensity = soil::estimateBulkDensity(&(mySoil->horizon[i]), theta_sat);
+
+        mySoil->horizon[i].bulkDensity = bulkDensity;
+
+        // SATURATED CONDUCTIVITY (cm/day)
+        getValue(query.value("ksat"), &ksat);
+        if ((ksat == NODATA) || (ksat <= 0))
+            ksat = soil::estimateSaturatedConductivity(&(mySoil->horizon[i]), bulkDensity);
+        /*else
+        {
+            if ((ksat < (mySoil->horizon[i].waterConductivity.kSat / 10.)) || (ksat > (mySoil->horizon[i].waterConductivity.kSat * 10.)))
+                logInfo("WARNING: Ksat out of class limit, in soil " + idSoil + " horizon " + QString::number(i));
+        }*/
+
+        mySoil->horizon[i].waterConductivity.kSat = ksat;
+
+        mySoil->horizon[i].fieldCapacity = soil::getFieldCapacity(&(mySoil->horizon[i]), soil::KPA);
+        mySoil->horizon[i].wiltingPoint = soil::getWiltingPoint(soil::KPA);
+        mySoil->horizon[i].waterContentFC = soil::getThetaFC(&(mySoil->horizon[i]));
+        mySoil->horizon[i].waterContentWP = soil::getThetaWP(&(mySoil->horizon[i]));
+
+        i++;
+
+    } while(query.next());
+
+    mySoil->totalDepth = mySoil->horizon[nrHorizons-1].lowerDepth;
+
+    if (mySoil->totalDepth < 0.5)
+    {
+        *myError = "Texture wrong! soil depth < 50cm:" + idSoilStr;
+        return false;
+    }
+
+    return true;
+}
+
+
+

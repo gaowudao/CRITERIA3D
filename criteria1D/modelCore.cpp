@@ -14,7 +14,7 @@ bool runModel(Criteria1D* myCase, std::string* myError, Criteria1DUnit *myUnit)
 {
     myCase->idCase = myUnit->idCase;
 
-    if (! myCase->loadSoil(myUnit->idSoil.toStdString(), myError))
+    if (! myCase->setSoil(myUnit->idSoil, myError))
         return false;
 
     if (! myCase->loadMeteo(myUnit->idMeteo, myUnit->idForecast, myError))

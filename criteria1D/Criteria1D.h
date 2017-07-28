@@ -90,10 +90,8 @@
 
         Criteria1D();
 
-
-        bool loadSoil(std::string idSoilStr, std::string *myError);
-        bool readMeteoData(QSqlQuery *query, std::string *myError);
         bool loadMeteo(QString idMeteo, QString idForecast, std::string *myError);
+        bool setSoil(QString idSoil, std::string *myError);
         bool createOutputTable(std::string* myError);
         void prepareOutput(Crit3DDate myDate, bool isFirst);
         bool saveOutput(std::string* myError);
