@@ -402,14 +402,14 @@ void getHourlyOutputAllPeriod(long firstIndex, long lastIndex, Crit3DOut *output
         myPoint.setY(myValue);
         output->profileOutput[output->nrValues-1].waterContent.push_back(myPoint);
 
-        fluxTot = soilFluxes3D::getHeatFlux(myIndex, DOWN, HEATFLUX_TOTAL);
+        fluxTot = soilFluxes3D::getHeatFlux(myIndex, DOWN, HEATFLUX_TOTAL) / mySurface;
         myPoint.setY(fluxTot);
         output->profileOutput[output->nrValues-1].totalHeatFlux.push_back(myPoint);
 
-        fluxDiff = soilFluxes3D::getHeatFlux(myIndex, DOWN, HEATFLUX_DIFFUSIVE);
-        fluxLtntIso = soilFluxes3D::getHeatFlux(myIndex, DOWN, HEATFLUX_LATENT_ISOTHERMAL);
-        fluxLtntTh = soilFluxes3D::getHeatFlux(myIndex, DOWN, HEATFLUX_LATENT_THERMAL);
-        fluxAdv = soilFluxes3D::getHeatFlux(myIndex, DOWN, HEATFLUX_ADVECTIVE);
+        fluxDiff = soilFluxes3D::getHeatFlux(myIndex, DOWN, HEATFLUX_DIFFUSIVE) / mySurface;
+        fluxLtntIso = soilFluxes3D::getHeatFlux(myIndex, DOWN, HEATFLUX_LATENT_ISOTHERMAL) / mySurface;
+        fluxLtntTh = soilFluxes3D::getHeatFlux(myIndex, DOWN, HEATFLUX_LATENT_THERMAL) / mySurface;
+        fluxAdv = soilFluxes3D::getHeatFlux(myIndex, DOWN, HEATFLUX_ADVECTIVE) / mySurface;
 
         myPoint.setY(fluxDiff);
         output->profileOutput[output->nrValues-1].diffusiveHeatFlux.push_back(myPoint);

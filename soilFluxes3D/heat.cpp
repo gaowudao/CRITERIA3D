@@ -28,6 +28,7 @@
 
 #include <math.h>
 #include <stdlib.h>
+#include <QDebug>
 
 #include "../mathFunctions/commonConstants.h"
 #include "../mathFunctions/physics.h"
@@ -564,7 +565,7 @@ bool computeHeatFlux(long i, int myMatrixIndex, TlinkedNode *myLink, double delt
             myLatent = SoilLatentIsothermal(i, myLink);
             saveHeatFlux(myLink, HEATFLUX_LATENT_ISOTHERMAL, myLatent);
 
-            //myAdvection = SoilHeatAdvection(i, myLink);
+            myAdvection = SoilHeatAdvection(i, myLink);
             //saveHeatFlux(myLink, HEATFLUX_ADVECTIVE, myAdvection);
         }
     }
@@ -731,6 +732,15 @@ void initializeHeatFluxes()
     }
 }
 
+double computeMaximumDeltaT()
+{
+    double maxDeltaT = 0.;
+    for (long i = 1; i < myStructure.nrNodes; i++)
+        maxDeltaT = max_value(maxDeltaT, fabs(myNode[i].extra->Heat->T - myNode[i].extra->Heat->oldT));
+
+    return maxDeltaT;
+}
+
 bool HeatComputation(double myTimeStep)
 {
 
@@ -741,6 +751,7 @@ bool HeatComputation(double myTimeStep)
     double avgh;
     double heatCapacityVar;
     double dtheta, dthetav;
+    double maxDeltaT;
 
     initializeHeatFluxes();
     CourantHeat = 0.;
@@ -802,7 +813,7 @@ bool HeatComputation(double myTimeStep)
         /*! b vector (constant terms) */
         b[i] = C[i] * myNode[i].extra->Heat->oldT / myTimeStep - heatCapacityVar / myTimeStep + myNode[i].extra->Heat->Qh + C0[i] + sumFlow0;
 
-        // precondizionamento
+        // preconditioning
         if (A[i][0].val > 0)
         {
             b[i] /= A[i][0].val;
@@ -812,6 +823,7 @@ bool HeatComputation(double myTimeStep)
         }
     }
 
+    // avoiding oscillations (Courant number)
     if (CourantHeat > 1.0)
         if (myTimeStep > myParameters.delta_t_min)
         {
@@ -824,6 +836,18 @@ bool HeatComputation(double myTimeStep)
 
     for (i = 1; i < myStructure.nrNodes; i++)
         myNode[i].extra->Heat->T = X[i];
+
+    /*
+    // avoiding oscillations (maximum temperature change allowed)
+    maxDeltaT = computeMaximumDeltaT();
+    if (maxDeltaT > myParameters.heatMaximumDeltaT)
+        if (myTimeStep > myParameters.delta_t_min)
+        {
+            halveTimeStep();
+            setForcedHalvedTime(true);
+            return (false);
+        }
+    */
 
     heatBalance(myTimeStep);
     updateBalanceHeat();

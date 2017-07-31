@@ -801,15 +801,6 @@ namespace soilFluxes3D {
 			ResidualTime = myPeriod - sumTime;
 			deltaT = computeStep(ResidualTime);
 			sumTime += deltaT;
-
-            /*if (myStructure.computeHeat)
-            {
-                qDebug() << "sumTime: " <<  sumTime;
-                qDebug() << "T1= " << myNode[1].extra->Heat->T-ZEROCELSIUS;
-                qDebug() << "T2= " << myNode[2].extra->Heat->T-ZEROCELSIUS;
-                qDebug() << "T3= " << myNode[3].extra->Heat->T-ZEROCELSIUS;
-                qDebug() << "T4= " << myNode[4].extra->Heat->T-ZEROCELSIUS;
-            }*/
         }
 
         if (myStructure.computeWater) updateBalanceWaterWholePeriod();
@@ -1090,7 +1081,7 @@ double DLL_EXPORT __STDCALL getTemperature(long nodeIndex)
  * \brief return instantaneous heat flux
  * \param nodeIndex
  * \param myDirection
- * \return heat flux [W m-2]
+ * \return heat flux [W]
 */
 float DLL_EXPORT __STDCALL getHeatFlux(long nodeIndex, short myDirection, int fluxType)
 {

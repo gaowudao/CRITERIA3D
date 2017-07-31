@@ -337,12 +337,12 @@ void updateBoundaryHeat()
 
                     if (myNode[i].boundary->Heat->fixedTemperature != NODATA)
                     {
-                        double boundaryHeatConductivity = SoilHeatConductivity(i, myNode[i].extra->Heat->T, myNode[i].H - myNode[i].z);
+                        double avgH = computeMean(myNode[i].H, myNode[i].oldH);
+                        double boundaryHeatConductivity = SoilHeatConductivity(i, myNode[i].extra->Heat->T, avgH - myNode[i].z);
                         double deltaT = myNode[i].boundary->Heat->fixedTemperature - myNode[i].extra->Heat->T;
                         double deltaZ = myNode[i-1].z - myNode[i].z;
-                        myNode[i].extra->Heat->Qh += boundaryHeatConductivity * deltaT / deltaZ * myNode[i].up.area;
+                        myNode[i].extra->Heat->Qh += boundaryHeatConductivity * deltaT / 5. * myNode[i].up.area;
                     }
-
                 }                
             }
         }

@@ -19,6 +19,7 @@
     int meanType;
     float k_lateral_vertical_ratio;
     double heatWeightingFactor;
+    double heatMaximumDeltaT;
 
     void initialize()
         {
@@ -34,6 +35,7 @@
         meanType = MEAN_LOGARITHMIC;
         k_lateral_vertical_ratio = 10.;
         heatWeightingFactor = 0.5;
+        heatMaximumDeltaT = 0.5;
         }
     } ;
 

@@ -9,10 +9,10 @@
         double heightWind;                      /*!< [m] reference height for wind measurement */
         double heightTemperature;               /*!< [m] reference height for temperature and humidity measurement */
         double roughnessHeight;                 /*!< [m] surface roughness height */
-        double sensibleFlux;                    /*!< [W m-2] boundary sensible heat flow density */
-        double latentFlux;                      /*!< [W m-2] boundary latent heat flow density */
-        double radiativeFlux;                   /*!< [W m-2] boundary net radiative flow density */
-        double advectiveHeatFlux;               /*!< [W m-2] boundary advective heat flow density  */
+        double sensibleFlux;                    /*!< [W m-2] boundary sensible heat flux density */
+        double latentFlux;                      /*!< [W m-2] boundary latent heat flux density */
+        double radiativeFlux;                   /*!< [W m-2] boundary net radiative flux density */
+        double advectiveHeatFlux;               /*!< [W m-2] boundary advective heat flux density  */
         double aerodynamicConductance;          /*!< [m s-1] aerodynamic conductance for heat */
         double soilConductance;                 /*!< [m s-1] soil conductance */
         double fixedTemperature;                /*!< [K] fixed temperature */
