@@ -835,7 +835,7 @@ double DLL_EXPORT __STDCALL computeStep(double maxTime)
         double dtHeatSum = 0;
         while (dtHeatSum < dtWater)
         {
-            if (HeatComputation(min_value(dtHeat, dtWater - dtHeatSum)))
+            if (HeatComputation(min_value(dtHeat, dtWater - dtHeatSum), dtWater))
             {
                 dtHeatSum += dtHeat;
             }
