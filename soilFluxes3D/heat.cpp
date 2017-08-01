@@ -28,7 +28,6 @@
 
 #include <math.h>
 #include <stdlib.h>
-#include <QDebug>
 
 #include "../mathFunctions/commonConstants.h"
 #include "../mathFunctions/physics.h"
