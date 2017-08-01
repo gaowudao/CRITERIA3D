@@ -751,7 +751,6 @@ bool HeatComputation(double myTimeStep)
     double avgh;
     double heatCapacityVar;
     double dtheta, dthetav;
-    double maxDeltaT;
 
     initializeHeatFluxes();
     CourantHeat = 0.;
@@ -837,17 +836,19 @@ bool HeatComputation(double myTimeStep)
     for (i = 1; i < myStructure.nrNodes; i++)
         myNode[i].extra->Heat->T = X[i];
 
-    /*
     // avoiding oscillations (maximum temperature change allowed)
-    maxDeltaT = computeMaximumDeltaT();
+    /*double maxDeltaT = computeMaximumDeltaT();
+    double ratioDeltaT = maxDeltaT / myParameters.heatMaximumDeltaT;
     if (maxDeltaT > myParameters.heatMaximumDeltaT)
-        if (myTimeStep > myParameters.delta_t_min)
-        {
-            halveTimeStep();
-            setForcedHalvedTime(true);
-            return (false);
-        }
-    */
+    {
+        while (myTimeStep / myParameters.current_delta_t < ratioDeltaT && myParameters.current_delta_t > myParameters.delta_t_min)
+            {
+                halveTimeStep();
+                setForcedHalvedTime(true);
+            }
+
+        if (myParameters.current_delta_t > myParameters.delta_t_min) return false;
+    }*/
 
     heatBalance(myTimeStep);
     updateBalanceHeat();

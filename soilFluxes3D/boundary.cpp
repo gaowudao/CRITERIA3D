@@ -73,6 +73,7 @@ void initializeBoundary(Tboundary *myBoundary, int myType, float slope)
 
         //bottom boundary
         (*myBoundary).Heat->fixedTemperature = NODATA;
+        (*myBoundary).Heat->fixedTemperatureDepth = NODATA;
     }
     else (*myBoundary).Heat = NULL;
 }
@@ -178,7 +179,7 @@ void updateBoundary()
         if (myNode[i].boundary != NULL)
             if (myStructure.computeHeat)
                 if (myNode[i].extra->Heat != NULL)
-                    if (myNode[i].boundary->type == BOUNDARY_HEAT)
+                    if (myNode[i].boundary->type == BOUNDARY_HEAT_SURFACE)
                     {
                         // update aerodynamic conductance
                         myNode[i].boundary->Heat->aerodynamicConductance =
@@ -261,7 +262,7 @@ void updateBoundaryWater(double deltaT)
                 myNode[i].boundary->waterFlow = meanK * (myNode[i].boundary->prescribedTotalPotential - myNode[i].H) * myNode[i].up.area;
             }
 
-            else if (myNode[i].boundary->type == BOUNDARY_HEAT)
+            else if (myNode[i].boundary->type == BOUNDARY_HEAT_SURFACE)
             {
                 if (myStructure.computeHeat)
                     myNode[i].boundary->waterFlow = computeAtmosphericLatentFlux(i) * myNode[i].up.area;
@@ -285,7 +286,7 @@ void updateBoundaryHeat()
 
             if (myNode[i].boundary != NULL)
             {
-                if (myNode[i].boundary->type == BOUNDARY_HEAT)
+                if (myNode[i].boundary->type == BOUNDARY_HEAT_SURFACE)
                 {
                     myNode[i].boundary->Heat->advectiveHeatFlux = 0.;
                     myNode[i].boundary->Heat->sensibleFlux = 0.;
@@ -340,8 +341,7 @@ void updateBoundaryHeat()
                         double avgH = computeMean(myNode[i].H, myNode[i].oldH);
                         double boundaryHeatConductivity = SoilHeatConductivity(i, myNode[i].extra->Heat->T, avgH - myNode[i].z);
                         double deltaT = myNode[i].boundary->Heat->fixedTemperature - myNode[i].extra->Heat->T;
-                        double deltaZ = myNode[i-1].z - myNode[i].z;
-                        myNode[i].extra->Heat->Qh += boundaryHeatConductivity * deltaT / 5. * myNode[i].up.area;
+                        myNode[i].extra->Heat->Qh += boundaryHeatConductivity * deltaT / myNode[i].boundary->Heat->fixedTemperatureDepth * myNode[i].up.area;
                     }
                 }                
             }

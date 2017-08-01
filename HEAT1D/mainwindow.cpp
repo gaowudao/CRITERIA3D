@@ -97,7 +97,7 @@ bool MainWindow::initializeModel()
 
 
     // bottom boundary
-    setBottomTemperature(ui->lineEditBottomT->text().toDouble());
+    setBottomTemperature(ui->lineEditBottomT->text().toDouble(), ui->lineEditBottomZ->text().toDouble());
 
     // set soil
     if (! soilDataLoaded)

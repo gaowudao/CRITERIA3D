@@ -38,7 +38,7 @@ void setSimulationStart(int myValue);
 void setSimulationStop(int myValue);
 void setInitialSaturation(double myValue);
 void setInitialTemperature(double myValueTop, double myValueBottom);
-void setBottomTemperature(double myValue);
+void setBottomTemperature(double myValue, double myDepth);
 void setHeatProcesses(bool computeHeatAdvection, bool computeHeatLatent, bool computeHeatSensible);
 void setProcesses(bool computeWaterProcess, bool computeHeatProcess, bool computeSolutesProcess);
 void setHour(long myHour);

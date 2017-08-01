@@ -16,6 +16,7 @@
         double aerodynamicConductance;          /*!< [m s-1] aerodynamic conductance for heat */
         double soilConductance;                 /*!< [m s-1] soil conductance */
         double fixedTemperature;                /*!< [K] fixed temperature */
+        double fixedTemperatureDepth;           /*!< [m] depth of fixed temperature layer */
     };
 
     struct THeatFlux{
