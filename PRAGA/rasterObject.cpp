@@ -123,7 +123,7 @@ bool RasterObject::drawRaster(Project* myProject, gis::Crit3DRasterGrid *myRaste
     gis::Crit3DRasterWindow utmWindow;
     gis::getUtmWindow(myProject->gisSettings, myProject->rowMatrix.header, myRaster->header, latLonWindow, &utmWindow);
     gis::updateColorScale(myRaster, utmWindow);
-    roundColorScale(myRaster->colorScale, 4, false);
+    roundColorScale(myRaster->colorScale, 4, true);
 
     // lower left position
     gis::Crit3DGeoPoint llCorner;

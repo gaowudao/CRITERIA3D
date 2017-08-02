@@ -32,8 +32,6 @@ QList<VariablesList> DbArkimet::getHourlyVarFields(QList<int> id)
         qDebug() << qry.lastError();
     else
     {
-        qDebug( "Selected!" );
-
         while (qry.next())
         {
             variableList.append(VariablesList(qry.value(0).toInt(), qry.value(1).toInt(), qry.value(2).toString(), qry.value(5).toInt() ));
@@ -85,8 +83,6 @@ int DbArkimet::getId(QString VarName)
     }
     else
     {
-        qDebug( "getId Selected!" );
-
         if (qry.next())
             id = qry.value(0).toInt();
 
@@ -137,8 +133,6 @@ QList<int> DbArkimet::getHourlyVar()
     }
     else
     {
-        qDebug( "Selected!" );
-
         while (qry.next())
         {
             int id = qry.value(0).toInt();
@@ -177,7 +171,6 @@ void DbArkimet::initStationsHourlyTables(QDate startDate, QDate endDate, QString
     for (int i = 0; i < stations.size(); i++)
     {
         QString statement = QString("CREATE TABLE IF NOT EXISTS `%1_H` (date_time TEXT, id_variable INTEGER, value REAL, PRIMARY KEY(date_time,id_variable))").arg(stations[i]);
-        //qDebug() << "initStationsHourlyTables - Create " << statement;
 
         QSqlQuery qry(statement, _db);
         qry.exec();
@@ -193,48 +186,27 @@ void DbArkimet::initStationsHourlyTables(QDate startDate, QDate endDate, QString
 
 void DbArkimet::createTmpTable()
 {
+    this->deleteTmpTable();
 
     QSqlQuery qry(_db);
-    qry.prepare("CREATE TABLE IF NOT EXISTS TmpHourlyData (date_time TEXT, id_point INTEGER, id_variable INTEGER, variable_name TEXT, value REAL, frequency INTEGER, PRIMARY KEY(date_time,id_point,variable_name))");
+    qry.prepare("CREATE TABLE TmpHourlyData (date_time TEXT, id_point INTEGER, id_variable INTEGER, variable_name TEXT, value REAL, frequency INTEGER, PRIMARY KEY(date_time,id_point,variable_name))");
     if( !qry.exec() )
     {
         qDebug() << qry.lastError();
     }
-    else
-    {
-        qDebug( "createTmpTable - Create" );
-    }
-
-    qry.prepare("DELETE FROM TmpHourlyData");
-
-    if( !qry.exec() )
-    {
-        qDebug() << qry.lastError();
-    }
-    else
-    {
-        qDebug( "createTmpTable - Delete all records" );
-    }
-
 }
 
 
 void DbArkimet::deleteTmpTable()
 {
-
     QSqlQuery qry(_db);
 
     qry.prepare( "DROP TABLE TmpHourlyData" );
 
     if( !qry.exec() )
     {
-        qDebug() << qry.lastError();
+        //qDebug() << "DROP TABLE TmpHourlyData" << qry.lastError();
     }
-    else
-    {
-        qDebug( "Drop table" );
-    }
-
 }
 
 
@@ -259,7 +231,6 @@ void DbArkimet::insertDailyValue(QString station, QString date, int varType, dou
 
 void DbArkimet::saveHourlyData()
 {
-
     QStringList stations;
 
     QString statement = QString("SELECT DISTINCT id_point FROM TmpHourlyData");
@@ -306,6 +277,16 @@ void DbArkimet::saveHourlyData()
     qry = QSqlQuery(statement, _db);
     qry.exec();
 
+    // re-query stations
+    stations.clear();
+    statement = QString("SELECT DISTINCT id_point FROM TmpHourlyData");
+    qry = QSqlQuery(statement, _db);
+    qry.exec();
+    while (qry.next())
+    {
+        stations.append(qry.value(0).toString());
+    }
+
     // la media funziona su tutte le var che hanno AVG nel nome (Temperature, RH, Wind intensity)
     // i minuti del campo date_time vengono portati a 60 dalla funzione datetime quindi tutto si uniforma all'ora di riferimento
     statement = QString("INSERT INTO `%1_H` ");
@@ -325,17 +306,21 @@ void DbArkimet::saveHourlyData()
 
     foreach (QString station, stations) {
 
-
         qry = QSqlQuery(statement.arg(station), _db);
-        qry.exec();
+        if( !qry.exec() )
+        {
+            qDebug() << "error in hourly insert " << station << qry.lastError();
+        }
 
         qry = QSqlQuery(delStationStatement, _db);
         qry.bindValue(":id_point", station);
-        qry.exec();
-
+        if( !qry.exec() )
+        {
+            qDebug() << "error in delete " << station << qry.lastError();
+        }
     }
-
 }
+
 
 void DbArkimet::insertOrUpdate(QString date, QString id_point, int id_variable, QString variable_name, double value, int frequency, QString flag)
 {

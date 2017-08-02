@@ -87,8 +87,6 @@ QStringList DbMeteoPoints::getDatasetsActive()
     }
     else
     {
-        qDebug( "getDatasetsActive Selected!" );
-
         while (qry.next())
         {
             QString active = qry.value(0).toString();

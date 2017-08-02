@@ -60,19 +60,19 @@
 
         void on_actionRectangle_Selection_triggered();
 
-        void setCalendarDate(const QDate& date);
-
         void on_actionVariableChoose_triggered();
-
-        void on_actionVariableHourly_triggered();
-
-        void on_actionVariableDaily_triggered();
 
         void on_dateTimeEdit_dateTimeChanged(const QDateTime &dateTime);
 
-        void enableAllDataset(bool toggled);
-
         void on_actionVariableNone_triggered();
+
+        void on_rasterScaleButton_clicked();
+
+        void on_variableButton_clicked();
+
+        void on_frequencyButton_clicked();
+
+        void enableAllDataset(bool toggled);
 
     protected:
         /*!
@@ -96,23 +96,17 @@
 
     private:
         Ui::MainWindow* ui;
+
         MapGraphicsScene* mapScene;
         MapGraphicsView* mapView;
         RasterObject* rasterObj;
-        QList<StationMarker*> pointList;
         ColorLegend *rasterLegend;
         ColorLegend *pointsLegend;
-        environment menu;
+        QList<StationMarker*> pointList;
         RubberBand *myRubberBand;
 
+        environment menu;
         QList<QCheckBox*> datasetCheckbox;
-        QCalendarWidget* calendar;
-        QDateEdit* FirstDateEdit;
-        QLabel* FirstDateLabel;
-        QDateEdit* LastDateEdit;
-        QLabel* LastDateLabel;
-        bool isFirstDate;
-        QDate firstDate, lastDate;
 
         void setMapSource(OSMTileSource::OSMTileType mySource);
         QString selectArkimetDataset(QDialog* datasetDialog);
@@ -128,6 +122,10 @@
         bool loadMeteoPointsDB(QString dbName);
 
     };
+
+    bool chooseVariable();
+    bool chooseFrequency();
+    bool downloadMeteoData();
 
 
 #endif // MAINWINDOW_H

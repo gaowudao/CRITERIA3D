@@ -158,7 +158,7 @@ bool Project::downloadDailyDataArkimet(QStringList variables, bool prec24, QDate
         {
             if (showInfo)
             {
-                myInfo.setText("Load data: " + date1.toString("yyyy-MM-dd") + " " + date2.toString("yyyy-MM-dd") + " dataset:" + datasetList[i]);
+                myInfo.setText("Load data from: " + date1.toString("yyyy-MM-dd") + " to: " + date2.toString("yyyy-MM-dd") + " dataset:" + datasetList[i]);
                 currentPoints += idList[i].size() * (date1.daysTo(date2) + 1);
                 myInfo.setValue(currentPoints);
             }
@@ -171,55 +171,26 @@ bool Project::downloadDailyDataArkimet(QStringList variables, bool prec24, QDate
     }
 
     if (showInfo) myInfo.close();
-
     return true;
 }
 
 
-bool Project::downloadHourlyDataArkimet(QStringList variables, Crit3DDate dateStart, Crit3DDate dateEnd)
+bool Project::downloadHourlyDataArkimet(QStringList variables, QDate startDate, QDate endDate, bool showInfo)
 {
-    Crit3DTime dateTimeStart(dateStart, 0);
-    Crit3DTime dateTimeEnd(dateEnd, 0);
-    QStringList datasets;
-    QStringList id;
-    bool skip = 0;
-
-    QList<int> arkIdVar;
+    const int MAXDAYS = 1;
 
     QList<int> arkIdAirTemp;
     arkIdAirTemp << 78 << 158;
-
     QList<int> arkIdPrec;
     arkIdPrec << 159 << 160;
-
     QList<int> arkIdRH;
     arkIdRH << 139 << 140;
-
     QList<int> arkIdRadiation;
     arkIdRadiation << 164 << 409;
-
     QList<int> arkIdWind;
     arkIdWind << 69 << 165 << 166 << 431;
 
-    for( int i=0; i < meteoPoints.size(); i++ )
-    {
-        if (!meteoPointsSelected.isEmpty())
-        {
-            skip = 1;
-            for (int j = 0; j < meteoPointsSelected.size(); j++)
-            {
-                if (meteoPoints[i].latitude == meteoPointsSelected[j].latitude && meteoPoints[i].longitude == meteoPointsSelected[j].longitude)
-                    skip = 0;
-            }
-        }
-        if (!skip)
-        {
-            if (!datasets.contains(QString::fromStdString(meteoPoints[i].dataset)))
-                datasets << QString::fromStdString(meteoPoints[i].dataset);
-            id << QString::fromStdString(meteoPoints[i].id);
-        }
-    }
-
+    QList<int> arkIdVar;
     for( int i=0; i < variables.size(); i++ )
     {
         if (variables[i] == "Air Temperature")
@@ -233,16 +204,69 @@ bool Project::downloadHourlyDataArkimet(QStringList variables, Crit3DDate dateSt
         if (variables[i] == "Wind")
             arkIdVar.append(arkIdWind);
     }
-    qDebug() << "dateTimeStart" << QString::fromStdString(dateTimeStart.toStdString());
-    qDebug() << "dateTimeEnd" << QString::fromStdString(dateTimeEnd.toStdString());
-    qDebug() << "datasets" << datasets;
-    qDebug() << "id" << id;
-    qDebug() << "arkIdVar" << arkIdVar;
+
+    int index, nrPoints = 0;
+    QString id, dataset;
+    QStringList datasetList;
+    QList<QStringList> idList;
+
+    for( int i=0; i < meteoPoints.size(); i++ )
+    {
+        if (getMeteoPointSelected(i))
+        {
+            nrPoints ++;
+
+            id = QString::fromStdString(meteoPoints[i].id);
+            dataset = QString::fromStdString(meteoPoints[i].dataset);
+
+            if (!datasetList.contains(dataset))
+            {
+                datasetList << dataset;
+                QStringList myList;
+                myList << id;
+                idList.append(myList);
+            }
+            else
+            {
+                index = datasetList.indexOf(dataset);
+                idList[index].append(id);
+            }
+        }
+    }
 
     Download* myDownload = new Download(dbMeteoPoints->getDbName());
-    return myDownload->downloadHourlyData(dateTimeStart, dateTimeEnd, datasets, id, arkIdVar);
-}
 
+    formInfo myInfo;
+    QString infoStr;
+
+    int nrDays = startDate.daysTo(endDate) + 1;
+    if (showInfo) myInfo.start(infoStr, nrPoints*nrDays);
+
+    int currentPoints = 0.;
+    for( int i=0; i < datasetList.size(); i++ )
+    {
+        QDate date1 = startDate;
+        QDate date2 = std::min(date1.addDays(MAXDAYS-1), endDate);
+
+        while (date1 <= endDate)
+        {
+            if (showInfo)
+            {
+                myInfo.setText("Load data from: " + date1.toString("yyyy-MM-dd") + " to:" + date2.toString("yyyy-MM-dd") + " dataset:" + datasetList[i]);
+                currentPoints += idList[i].size() * (date1.daysTo(date2) + 1);
+                myInfo.setValue(currentPoints);
+            }
+
+            myDownload->downloadHourlyData(date1, date2, datasetList[i], idList[i], arkIdVar);
+
+            date1 = date2.addDays(1);
+            date2 = std::min(date1.addDays(MAXDAYS-1), endDate);
+        }
+    }
+
+    if (showInfo) myInfo.close();
+    return true;
+}
 
 
 void Project::setCurrentDate(QDate myDate)

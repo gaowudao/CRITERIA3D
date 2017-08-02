@@ -105,7 +105,6 @@ bool Download::getPointProperties(QStringList datasetList)
 
 void Download::downloadMetadata(QJsonObject obj)
 {
-
     Crit3DMeteoPoint* pointProp = new Crit3DMeteoPoint();
 
     QJsonValue jsonId = obj.value("id");
@@ -185,9 +184,7 @@ void Download::downloadMetadata(QJsonObject obj)
     pointProp->point.utm.y = utmy;
 
     _dbMeteo->fillPointProperties(pointProp);
-
 }
-
 
 
 bool Download::downloadDailyData(QDate startDate, QDate endDate, QString dataset, QStringList stations, QList<int> variables, bool precSelection)
@@ -284,7 +281,6 @@ bool Download::downloadDailyData(QDate startDate, QDate endDate, QString dataset
             }
         }
     }
-
     delete reply;
     delete manager;
 
@@ -292,131 +288,102 @@ bool Download::downloadDailyData(QDate startDate, QDate endDate, QString dataset
 }
 
 
-bool Download::downloadHourlyData(Crit3DTime dateStartTime, Crit3DTime dateEndTime, QStringList datasets, QStringList stations, QList<int> variables)
+bool Download::downloadHourlyData(QDate startDate, QDate endDate, QString dataset, QStringList stations, QList<int> variables)
 {
-
     // create station tables
-    //_dbMeteo->initStationsHourlyTables(dateStartTime, dateEndTime, stations);
+    _dbMeteo->initStationsHourlyTables(startDate, endDate, stations);
 
-    QString area;
-
-    area = QString(";area: VM2,%1").arg(stations[0]);
-
-    qDebug() << "downloadHourlyVar 2";
+    QString area = QString(";area: VM2,%1").arg(stations[0]);
 
     for (int i = 1; i < stations.size(); i++)
     {
         area = area % QString(" or VM2,%1").arg(stations[i]);
     }
 
-    QString product;
-
     QList<VariablesList> variableList = _dbMeteo->getHourlyVarFields(variables);
 
-    product = QString(";product: VM2,%1").arg(variables[0]);
+    QString product = QString(";product: VM2,%1").arg(variables[0]);
 
     for (int i = 1; i < variables.size(); i++)
     {
         product = product % QString(" or VM2,%1").arg(variables[i]);
     }
 
-    int nrData = (difference(dateStartTime.date.addDays(1), dateEndTime.date) * 24 * stations.size());
+    QDateTime startTime = QDateTime(startDate);
+    startTime = startTime.addSecs(-1800);
 
-    int nrSteps = qMax(1, (nrData / datasets.size()) / 3000);
-    int stepDate = qMax(5, difference(dateStartTime.date.addDays(1), dateEndTime.date) / nrSteps);
+    QDateTime endTime = QDateTime(endDate);
+    endTime = endTime.addSecs(3600 * 23);
 
-    dateStartTime = dateStartTime.addSeconds(-1800);
-    dateEndTime.date = dateEndTime.date.addDays(1);
-    dateEndTime = dateEndTime.addSeconds(-3600);
+    // reftime
+    QString refTime = QString("reftime:>=%1,<=%2").arg(startTime.toString("yyyy-MM-dd hh:mm")).arg(endTime.toString("yyyy-MM-dd hh:mm"));
 
+    QEventLoop loop;
 
-    _dbMeteo->createTmpTable();
-    Crit3DTime i = dateStartTime;
+    QNetworkAccessManager* manager = new QNetworkAccessManager(this);
+    connect(manager, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
 
-    for (i.date = dateStartTime.date.addDays(stepDate); dateEndTime >= dateStartTime; i.date = dateStartTime.date.addDays(stepDate))
+    QUrl url = QUrl(QString("%1/query?query=%2%3%4&style=postprocess").arg(_dbMeteo->getDatasetURL(dataset)).arg(refTime).arg(area).arg(product));
+
+    QNetworkRequest request;
+    request.setUrl(url);
+    request.setRawHeader("Authorization", _authorization);
+
+    QNetworkReply* reply = manager->get(request);  // GET
+    loop.exec();
+
+    if (reply->error() != QNetworkReply::NoError)
     {
-
-        if (i > dateEndTime)
-            i = dateEndTime;
-        else
-            i = i.addSeconds(-1800);
-
-        // reftime
-        QString refTime = QString("reftime:>=%1,<=%2").arg(QString::fromStdString(dateStartTime.toStdString())).arg(QString::fromStdString(i.toStdString()));
-
-        foreach (QString dataset, datasets)
-        {
-
-            QEventLoop loop;
-
-            QNetworkAccessManager* manager = new QNetworkAccessManager(this);
-            connect(manager, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
-
-            QUrl url = QUrl(QString("%1/query?query=%2%3%4&style=postprocess").arg(_dbMeteo->getDatasetURL(dataset)).arg(refTime).arg(area).arg(product));
-
-            qDebug() << url ;
-
-            QNetworkRequest request;
-            request.setUrl(url);
-            request.setRawHeader("Authorization", _authorization);
-
-            QNetworkReply* reply = manager->get(request);  // GET
-            loop.exec();
-
-            if (reply->error() != QNetworkReply::NoError)
-            {
-                    qDebug( "Network Error" );
-                    delete reply;
-                    delete manager;
-                    return false;
-            }
-            else
-            {
-
-                for (QString line = QString(reply->readLine()); !(line.isNull() || line.isEmpty());  line = QString(reply->readLine()))
-                {
-
-                    QStringList fields = line.split(",");
-
-                    QString date = QString("%1-%2-%3 %4:%5:00").arg(fields[0].left(4))
-                                                               .arg(fields[0].mid(4, 2))
-                                                               .arg(fields[0].mid(6, 2))
-                                                               .arg(fields[0].mid(8, 2))
-                                                               .arg(fields[0].mid(10, 2));
-                    QString id_point = fields[1];
-                    int arkId = fields[2].toInt();
-                    double varValue = fields[3].toDouble();
-                    QString flag = fields[6];
-
-                    int frequency;
-                    QString varName;
-
-                    for (int z = 0; z < variableList.size(); z++)
-                    {
-                        if (variableList[z].arkId() == arkId)
-                        {
-                            frequency = variableList[z].frequency();
-                            varName = variableList[z].varName();
-                        }
-
-                    }
-                    int id = _dbMeteo->arkIdmap(arkId);
-
-                    if (!(id_point.isEmpty() || id_point.isEmpty()))
-                    {
-                        _dbMeteo->insertOrUpdate(date, id_point, id, varName, varValue, frequency, flag);
-                    }
-
-                }
-            }
-            _dbMeteo->saveHourlyData();
+            qDebug( "Network Error" );
             delete reply;
             delete manager;
-         }
-
-        dateStartTime = i.addSeconds(1800);
+            return false;
     }
-    _dbMeteo->deleteTmpTable();
+    else
+    {
+        _dbMeteo->createTmpTable();
+
+        for (QString line = QString(reply->readLine()); !(line.isNull() || line.isEmpty());  line = QString(reply->readLine()))
+        {
+
+            QStringList fields = line.split(",");
+
+            QString date = QString("%1-%2-%3 %4:%5:00").arg(fields[0].left(4))
+                                                       .arg(fields[0].mid(4, 2))
+                                                       .arg(fields[0].mid(6, 2))
+                                                       .arg(fields[0].mid(8, 2))
+                                                       .arg(fields[0].mid(10, 2));
+            QString id_point = fields[1];
+            int arkId = fields[2].toInt();
+            double varValue = fields[3].toDouble();
+            QString flag = fields[6];
+
+            int frequency;
+            QString varName;
+
+            for (int z = 0; z < variableList.size(); z++)
+            {
+                if (variableList[z].arkId() == arkId)
+                {
+                    frequency = variableList[z].frequency();
+                    varName = variableList[z].varName();
+                }
+
+            }
+            int id = _dbMeteo->arkIdmap(arkId);
+
+            if (!(id_point.isEmpty() || id_point.isEmpty()))
+            {
+                _dbMeteo->insertOrUpdate(date, id_point, id, varName, varValue, frequency, flag);
+            }
+        }
+        _dbMeteo->saveHourlyData();
+        _dbMeteo->deleteTmpTable();
+
+        delete reply;
+        delete manager;
+    }
+
     return true;
 }
 

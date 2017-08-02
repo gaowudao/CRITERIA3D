@@ -25,6 +25,7 @@
 
 
 extern Project myProject;
+#define MAPBORDER 8
 
 MainWindow::MainWindow(environment menu, QWidget *parent) :
     QMainWindow(parent),
@@ -348,8 +349,6 @@ void MainWindow::on_actionVariableNone_triggered()
     myProject.setFrequency(noFrequency);
     myProject.currentVariable = noMeteoVar;
     this->ui->actionVariableNone->setChecked(true);
-    this->ui->actionVariableDaily->setChecked(false);
-    this->ui->actionVariableHourly->setChecked(false);
 
     this->updateVariable();
 }
@@ -357,218 +356,8 @@ void MainWindow::on_actionVariableNone_triggered()
 
 void MainWindow::on_actionDownload_meteo_data_triggered()
 {
-    if(myProject.meteoPoints.isEmpty())
-    {
-         QMessageBox::information(NULL, "DB not existing", "Create or Open a meteo points database before download");
-         return;
-    }
-
-    QDialog downloadDialog;
-    QVBoxLayout mainLayout;
-    QHBoxLayout timeVarLayout;
-    QVBoxLayout calendarLayout;
-    QHBoxLayout dateLayout;
-    QHBoxLayout buttonLayout;
-
-    downloadDialog.setWindowTitle("Download Data");
-
-    QCheckBox hourly("Hourly");
-    QCheckBox daily("Daily");
-
-    QListWidget variable;
-    variable.setSelectionMode(QAbstractItemView::MultiSelection);
-
-    QListWidgetItem item1("Air Temperature");
-    QListWidgetItem item2("Precipitation");
-    QListWidgetItem item3("Air Humidity");
-    QListWidgetItem item4("Radiation");
-    QListWidgetItem item5("Wind");
-    QListWidgetItem item6("All variables");
-    QFont font("Helvetica", 10, QFont::Bold);
-    item6.setFont(font);
-
-    variable.addItem(&item1);
-    variable.addItem(&item2);
-    variable.addItem(&item3);
-    variable.addItem(&item4);
-    variable.addItem(&item5);
-    variable.addItem(&item6);
-
-    timeVarLayout.addWidget(&daily);
-    timeVarLayout.addWidget(&hourly);
-    timeVarLayout.addWidget(&variable);
-
-    calendar = new QCalendarWidget;
-    calendar->setGridVisible(true);
-    QLabel label("Enter download period");
-    label.setAlignment(Qt::AlignCenter);
-
-    FirstDateEdit = new QDateEdit;
-    FirstDateEdit->setDate(calendar->selectedDate());
-    FirstDateLabel = new QLabel(tr("&Start Date:"));
-    FirstDateLabel->setBuddy(FirstDateEdit);
-
-    LastDateEdit = new QDateEdit;
-    LastDateEdit->setDate(calendar->selectedDate());
-    LastDateLabel = new QLabel(tr("&End Date:"));
-    LastDateLabel->setBuddy(LastDateEdit);
-
-    calendarLayout.addWidget(&label);
-    calendarLayout.addWidget(calendar);
-
-    dateLayout.addWidget(FirstDateLabel);
-    dateLayout.addWidget(FirstDateEdit);
-
-    dateLayout.addWidget(LastDateLabel);
-    dateLayout.addWidget(LastDateEdit);
-
-    connect(FirstDateEdit, SIGNAL(dateChanged(QDate)), calendar, SLOT(setSelectedDate(QDate)));
-    connect(LastDateEdit, SIGNAL(dateChanged(QDate)), calendar, SLOT(setSelectedDate(QDate)));
-    connect(calendar,SIGNAL(clicked(const QDate)),this,SLOT(setCalendarDate(const QDate)));
-
-    QDialogButtonBox buttonBox;
-    QPushButton downloadButton(tr("&Download"));
-    downloadButton.setCheckable(true);
-    downloadButton.setAutoDefault(false);
-
-    QPushButton cancelButton(tr("&Cancel"));
-    cancelButton.setCheckable(true);
-    cancelButton.setAutoDefault(false);
-
-    buttonBox.addButton(&downloadButton, QDialogButtonBox::AcceptRole);
-    buttonBox.addButton(&cancelButton, QDialogButtonBox::RejectRole);
-
-    connect(&buttonBox, SIGNAL(accepted()), &downloadDialog, SLOT(accept()));
-    connect(&buttonBox, SIGNAL(rejected()), &downloadDialog, SLOT(reject()));
-
-    buttonLayout.addWidget(&buttonBox);
-    mainLayout.addLayout(&timeVarLayout);
-    mainLayout.addLayout(&calendarLayout);
-    mainLayout.addLayout(&dateLayout);
-    mainLayout.addLayout(&buttonLayout);
-    downloadDialog.setLayout(&mainLayout);
-
-    downloadDialog.exec();
-
-    if (downloadDialog.result() == QDialog::Accepted)
-    {
-
-       firstDate = FirstDateEdit->date();
-       lastDate = LastDateEdit->date();
-       isFirstDate = true;
-
-       if (!daily.isChecked() && !hourly.isChecked())
-       {
-           QMessageBox::information(NULL, "Missing parameter", "Select hourly or daily");
-           on_actionDownload_meteo_data_triggered();
-       }
-       else if ((! firstDate.isValid()) || (! lastDate.isValid()))
-       {
-           QMessageBox::information(NULL, "Missing parameter", "Select download period");
-           on_actionDownload_meteo_data_triggered();
-       }
-       else if (!item1.isSelected() && !item2.isSelected() && !item3.isSelected() && !item4.isSelected() && !item5.isSelected() && !item6.isSelected())
-       {
-           QMessageBox::information(NULL, "Missing parameter", "Select variable");
-           on_actionDownload_meteo_data_triggered();
-       }
-       else
-       {
-            QListWidgetItem* item = 0;
-            QStringList var;
-            for (int i = 0; i < variable.count()-1; ++i)
-            {
-                   item = variable.item(i);
-                   if (item6.isSelected() || item->isSelected())
-                       var.append(item->text());
-
-            }
-            if (daily.isChecked())
-            {
-                bool prec24 = true;
-                if ( item2.isSelected() || item6.isSelected() )
-                {
-                    QDialog precDialog;
-                    precDialog.setFixedWidth(350);
-                    precDialog.setWindowTitle("Choose daily precipitation time");
-                    QVBoxLayout precLayout;
-                    QRadioButton first("0-24");
-                    QRadioButton second("08-08");
-
-                    QDialogButtonBox confirm(QDialogButtonBox::Ok);
-
-                    connect(&confirm, SIGNAL(accepted()), &precDialog, SLOT(accept()));
-
-                    precLayout.addWidget(&first);
-                    precLayout.addWidget(&second);
-                    precLayout.addWidget(&confirm);
-                    precDialog.setLayout(&precLayout);
-                    precDialog.exec();
-
-                    if (second.isChecked())
-                        prec24 = false;
-                }
-
-                QApplication::setOverrideCursor(Qt::WaitCursor);
-
-                if (! myProject.downloadDailyDataArkimet(var, prec24, firstDate, lastDate, true))
-                {
-                    QMessageBox *msgBox = new QMessageBox(this);
-                    msgBox->setText("Daily Download Error");
-                    msgBox->exec();
-                    delete msgBox;
-                }
-
-                QApplication::restoreOverrideCursor();
-            }
-
-            if (hourly.isChecked())
-            {
-
-                QApplication::setOverrideCursor(Qt::WaitCursor);
-
-                QMessageBox *msgBox = new QMessageBox(this);
-                if (myProject.downloadHourlyDataArkimet(var, getCrit3DDate(firstDate), getCrit3DDate(lastDate)))
-                {
-                    QApplication::restoreOverrideCursor();
-                    msgBox->setText("Hourly Download Completed");
-                }
-                else
-                {
-                    QApplication::restoreOverrideCursor();
-                    msgBox->setText("Hourly Download Error");
-                }
-                msgBox->exec();
-                delete msgBox;
-            }
-
-            this->loadMeteoPointsDB(myProject.dbMeteoPoints->getDbName());
-       }
-    }
-}
-
-
-void MainWindow::setCalendarDate(const QDate& date)
-{
-    if (isFirstDate)
-    {
-        firstDate = date;
-        FirstDateEdit->setDate(calendar->selectedDate());
-        isFirstDate = false;
-    }
-    else
-    {
-        if (firstDate <= date)
-        {
-            lastDate = date;
-            LastDateEdit->setDate(calendar->selectedDate());
-        }
-        else
-        {
-            QMessageBox::information(NULL, "Invalid Date", "Last date is earlier than start date");
-        }
-        isFirstDate = true;
-    }
+    if (downloadMeteoData())
+        this->loadMeteoPointsDB(myProject.dbMeteoPoints->getDbName());
 }
 
 
@@ -703,16 +492,18 @@ void MainWindow::resizeEvent(QResizeEvent * event)
     const int INFOHEIGHT = 40;
     const int TOOLSWIDTH = 250;
 
-    ui->widgetMap->setGeometry(TOOLSWIDTH, 0, this->width()-TOOLSWIDTH, this->height() -INFOHEIGHT + 6);
+    ui->widgetMap->setGeometry(TOOLSWIDTH, 0, this->width()-TOOLSWIDTH, this->height() -INFOHEIGHT + MAPBORDER);
     mapView->resize(ui->widgetMap->size());
 
-    ui->groupBoxRaster->move(5, this->height() - ui->groupBoxRaster->height() -INFOHEIGHT);
+    ui->groupBoxRaster->move(MAPBORDER/2, this->height() - ui->groupBoxRaster->height() -INFOHEIGHT);
     ui->groupBoxRaster->resize(TOOLSWIDTH, ui->groupBoxRaster->height());
-    ui->widgetColorLegendRaster->resize(ui->groupBoxRaster->width(), ui->widgetColorLegendRaster->height());
 
-    ui->groupBoxVariable->move(5, ui->groupBoxRaster->y() - ui->groupBoxVariable->height() - 20);
+    ui->groupBoxVariable->move(MAPBORDER/2, ui->groupBoxRaster->y() - ui->groupBoxVariable->height() - 20);
     ui->groupBoxVariable->resize(TOOLSWIDTH, ui->groupBoxVariable->height());
-    ui->widgetColorLegendPoints->resize(ui->groupBoxVariable->width(), ui->widgetColorLegendPoints->height());
+
+    //TODO sembrano non funzionare
+    ui->widgetColorLegendRaster->resize(TOOLSWIDTH, ui->widgetColorLegendPoints->height());
+    ui->widgetColorLegendPoints->resize(TOOLSWIDTH, ui->widgetColorLegendPoints->height());
 }
 
 
@@ -720,21 +511,16 @@ QPoint MainWindow::getMapPoint(QPoint* point) const
 {
     QPoint mapPoint;
     int dx, dy;
-    dx = this->ui->widgetMap->x() + 10;
-    dy = + this->ui->widgetMap->y() + 10 + this->ui->menuBar->height();
+    dx = this->ui->widgetMap->x() + MAPBORDER;
+    dy = this->ui->widgetMap->y() + this->ui->menuBar->height() + MAPBORDER ;
     mapPoint.setX(point->x() - dx);
     mapPoint.setY(point->y() - dy);
     return mapPoint;
 }
 
 
-
-
 void MainWindow::resetMeteoPoints()
 {
-    firstDate.setDate(0,0,0);
-    lastDate.setDate(0,0,0);
-
     datasetCheckbox.clear();
 
     for (int i = 0; i < this->pointList.size(); i++)
@@ -750,121 +536,11 @@ void MainWindow::resetMeteoPoints()
 
 void MainWindow::on_actionVariableChoose_triggered()
 {
-    if (myProject.getFrequency() == noFrequency)
+    if (chooseVariable())
     {
-        QMessageBox::information(NULL, "No frequency", "Choose frequency before");
-        return;
-    }
-
-    QDialog myDialog;
-    QVBoxLayout mainLayout;
-    QVBoxLayout layoutVariable;
-    QHBoxLayout layoutOk;
-
-    myDialog.setWindowTitle("Choose variable");
-    myDialog.setFixedWidth(300);
-
-    QRadioButton Tavg("Average temperature °C");
-    QRadioButton Tmin("Minimum temperature °C");
-    QRadioButton Tmax("Maximum temperature °C");
-    QRadioButton Prec("Precipitation mm");
-    QRadioButton RHavg("Average relative humidity %");
-    QRadioButton RHmin("Minimum relative humidity %");
-    QRadioButton RHmax("Maximum relative humidity %");
-    QRadioButton Rad("Solar radiation MJ m-2");
-
-    if (myProject.getFrequency() == daily)
-    {
-        layoutVariable.addWidget(&Tmin);
-        layoutVariable.addWidget(&Tavg);
-        layoutVariable.addWidget(&Tmax);
-        layoutVariable.addWidget(&Prec);
-        layoutVariable.addWidget(&RHmin);
-        layoutVariable.addWidget(&RHavg);
-        layoutVariable.addWidget(&RHmax);
-        layoutVariable.addWidget(&Rad);
-    }
-    else if (myProject.getFrequency() == hourly)
-    {
-        Tavg.setText("Average temperature °C");
-        Prec.setText("Precipitation mm");
-        RHavg.setText("Average relative humidity %");
-        Rad.setText("Solar irradiance W m-2");
-
-        layoutVariable.addWidget(&Tavg);
-        layoutVariable.addWidget(&Prec);
-        layoutVariable.addWidget(&RHavg);
-        layoutVariable.addWidget(&Rad);
-    }
-    else return;
-
-    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-
-    connect(&buttonBox, SIGNAL(accepted()), &myDialog, SLOT(accept()));
-    connect(&buttonBox, SIGNAL(rejected()), &myDialog, SLOT(reject()));
-
-    layoutOk.addWidget(&buttonBox);
-
-    mainLayout.addLayout(&layoutVariable);
-    mainLayout.addLayout(&layoutOk);
-    myDialog.setLayout(&mainLayout);
-    myDialog.exec();
-
-    if (myDialog.result() == QDialog::Accepted)
-    {
-       if (myProject.getFrequency() == daily)
-       {
-           if (Tmin.isChecked())
-               myProject.currentVariable = dailyAirTemperatureMin;
-           else if (Tmax.isChecked())
-               myProject.currentVariable = dailyAirTemperatureMax;
-           else if (Tavg.isChecked())
-               myProject.currentVariable = dailyAirTemperatureAvg;
-           else if (Prec.isChecked())
-               myProject.currentVariable = dailyPrecipitation;
-           else if (Rad.isChecked())
-               myProject.currentVariable = dailyGlobalRadiation;
-           else if (RHmin.isChecked())
-               myProject.currentVariable = dailyAirHumidityMin;
-           else if (RHmax.isChecked())
-               myProject.currentVariable = dailyAirHumidityMax;
-           else if (RHavg.isChecked())
-               myProject.currentVariable = dailyAirHumidityAvg;
-       }
-       else if (myProject.getFrequency() == hourly)
-       {
-           if (Tavg.isChecked())
-               myProject.currentVariable = airTemperature;
-           else if (RHavg.isChecked())
-               myProject.currentVariable = airHumidity;
-           else if (Prec.isChecked())
-               myProject.currentVariable = precipitation;
-           else if (Rad.isChecked())
-               myProject.currentVariable = globalIrradiance;
-       }
-
        this->ui->actionVariableNone->setChecked(false);
        this->updateVariable();
     } 
-}
-
-
-void MainWindow::on_actionVariableHourly_triggered()
-{
-    this->ui->actionVariableHourly->setChecked(true);
-    this->ui->actionVariableDaily->setChecked(false);
-
-    myProject.setFrequency(hourly);
-    this->updateVariable();
-}
-
-void MainWindow::on_actionVariableDaily_triggered()
-{
-    this->ui->actionVariableDaily->setChecked(true);
-    this->ui->actionVariableHourly->setChecked(false);
-
-    myProject.setFrequency(daily);
-    this->updateVariable();
 }
 
 
@@ -873,68 +549,74 @@ void MainWindow::updateVariable()
     // FREQUENCY
     if (myProject.getFrequency() == noFrequency)
     {
-        this->ui->labelFrequency->setText("Frequency: none");
+        this->ui->labelFrequency->setText("None");
     }
-    else if (myProject.getFrequency() == daily)
+    else
     {
-        this->ui->labelFrequency->setText("Frequency: daily");
+        if (myProject.currentVariable != noMeteoVar)
+            this->ui->actionVariableNone->setChecked(false);
 
-        //check
-        if (myProject.currentVariable == airTemperature)
-            myProject.currentVariable = dailyAirTemperatureAvg;
+        if (myProject.getFrequency() == daily)
+        {
+            this->ui->labelFrequency->setText("Daily");
 
-        else if (myProject.currentVariable == precipitation)
-            myProject.currentVariable = dailyPrecipitation;
+            //check
+            if (myProject.currentVariable == airTemperature)
+                myProject.currentVariable = dailyAirTemperatureAvg;
 
-        else if (myProject.currentVariable == globalIrradiance)
-            myProject.currentVariable = dailyGlobalRadiation;
+            else if (myProject.currentVariable == precipitation)
+                myProject.currentVariable = dailyPrecipitation;
 
-        else if (myProject.currentVariable == airHumidity)
-            myProject.currentVariable = dailyAirHumidityAvg;
-    }
+            else if (myProject.currentVariable == globalIrradiance)
+                myProject.currentVariable = dailyGlobalRadiation;
 
-    else if (myProject.getFrequency() == hourly)
-    {
-        this->ui->labelFrequency->setText("Frequency: hourly");
+            else if (myProject.currentVariable == airHumidity)
+                myProject.currentVariable = dailyAirHumidityAvg;
+        }
 
-        //check
-        if ((myProject.currentVariable == dailyAirTemperatureAvg)
-                || (myProject.currentVariable == dailyAirTemperatureMax)
-                || (myProject.currentVariable == dailyAirTemperatureMin))
-            myProject.currentVariable = airTemperature;
+        else if (myProject.getFrequency() == hourly)
+        {
+            this->ui->labelFrequency->setText("Hourly");
 
-        else if ((myProject.currentVariable == dailyAirHumidityAvg)
-                 || (myProject.currentVariable == dailyAirHumidityMax)
-                 || (myProject.currentVariable == dailyAirHumidityMin))
-             myProject.currentVariable = airHumidity;
+            //check
+            if ((myProject.currentVariable == dailyAirTemperatureAvg)
+                    || (myProject.currentVariable == dailyAirTemperatureMax)
+                    || (myProject.currentVariable == dailyAirTemperatureMin))
+                myProject.currentVariable = airTemperature;
 
-        else if (myProject.currentVariable == dailyPrecipitation)
-                myProject.currentVariable = precipitation;
+            else if ((myProject.currentVariable == dailyAirHumidityAvg)
+                     || (myProject.currentVariable == dailyAirHumidityMax)
+                     || (myProject.currentVariable == dailyAirHumidityMin))
+                 myProject.currentVariable = airHumidity;
 
-        else if (myProject.currentVariable == dailyGlobalRadiation)
-            myProject.currentVariable = globalIrradiance;
+            else if (myProject.currentVariable == dailyPrecipitation)
+                    myProject.currentVariable = precipitation;
+
+            else if (myProject.currentVariable == dailyGlobalRadiation)
+                myProject.currentVariable = globalIrradiance;
+        }
     }
 
     //VARIABLE
     if ((myProject.currentVariable == airTemperature)
             || (myProject.currentVariable == dailyAirTemperatureAvg))
-        this->ui->labelVariable->setText("Average air temperature °C");
+        this->ui->labelVariable->setText("Avg. air temperature °C");
     else if ((myProject.currentVariable == airHumidity)
             || (myProject.currentVariable == dailyAirHumidityAvg))
-        this->ui->labelVariable->setText("Average relative humidity %");
+        this->ui->labelVariable->setText("Avg. relative humidity %");
     else if ((myProject.currentVariable == dailyPrecipitation)
             ||  (myProject.currentVariable == precipitation))
         this->ui->labelVariable->setText("Precipitation mm");
     else if (myProject.currentVariable == dailyAirTemperatureMax)
-        this->ui->labelVariable->setText("Maximum air temperature °C");
+        this->ui->labelVariable->setText("Max. air temperature °C");
     else if (myProject.currentVariable == dailyAirTemperatureMin)
-        this->ui->labelVariable->setText("Minimum air temperature °C");
+        this->ui->labelVariable->setText("Min. air temperature °C");
     else if (myProject.currentVariable == dailyGlobalRadiation)
-        this->ui->labelVariable->setText("Global solar radiation MJ m-2");
+        this->ui->labelVariable->setText("Solar radiation MJ m-2");
     else if (myProject.currentVariable == dailyAirHumidityMax)
-        this->ui->labelVariable->setText("Maximum relative humidity %");
+        this->ui->labelVariable->setText("Max. relative humidity %");
     else if (myProject.currentVariable == dailyAirHumidityMin)
-        this->ui->labelVariable->setText("Minimum relative humidity %");
+        this->ui->labelVariable->setText("Min. relative humidity %");
     else if (myProject.currentVariable == globalIrradiance)
         this->ui->labelVariable->setText("Solar irradiance W m-2");
 
@@ -1068,119 +750,402 @@ void MainWindow::setMapSource(OSMTileSource::OSMTileType mySource)
 
 
 
-
-
-
-
-
-
-/*
-void MainWindow::loadMeteoPointsData(DbMeteoPoints* myDbMeteo)
+void MainWindow::on_rasterScaleButton_clicked()
 {
-    QDialog load;
+    if (!myProject.DTM.isLoaded)
+    {
+        QMessageBox::information(NULL, "No Raster", "Load raster before");
+        return;
+    }
+
+    QDialog myDialog;
     QVBoxLayout mainLayout;
-    QHBoxLayout layoutTime;
-    QHBoxLayout layoutPeriod;
+    QVBoxLayout layoutVariable;
     QHBoxLayout layoutOk;
 
-    load.setWindowTitle("Load Data from DB");
-    load.setFixedWidth(300);
+    myDialog.setWindowTitle("Choose color scale");
+    myDialog.setFixedWidth(300);
 
-    QCheckBox daily("Daily");
-    QCheckBox hourly("Hourly");
-    layoutTime.addWidget(&daily);
-    layoutTime.addWidget(&hourly);
+    QRadioButton DTM("Digital Terrain map m");
+    QRadioButton Temp("Temperature °C");
+    QRadioButton Prec("Precipitation mm");
+    QRadioButton RH("Relative humidity %");
+    QRadioButton Rad("Solar radiation MJ m-2");
+    QRadioButton Wind("Wind intensity m s-1");
 
-    QRadioButton lastDay("last day available");
-    QRadioButton all("all data");
+    layoutVariable.addWidget(&DTM);
+    layoutVariable.addWidget(&Temp);
+    layoutVariable.addWidget(&Prec);
+    layoutVariable.addWidget(&RH);
+    layoutVariable.addWidget(&Rad);
+    layoutVariable.addWidget(&Wind);
 
-    char dayHour;
+    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
-    layoutPeriod.addWidget(&lastDay);
-    layoutPeriod.addWidget(&all);
-
-    QDialogButtonBox buttonBox(QDialogButtonBox::Ok
-                                         | QDialogButtonBox::Cancel);
-
-    connect(&buttonBox, SIGNAL(accepted()), &load, SLOT(accept()));
-    connect(&buttonBox, SIGNAL(rejected()), &load, SLOT(reject()));
+    connect(&buttonBox, SIGNAL(accepted()), &myDialog, SLOT(accept()));
+    connect(&buttonBox, SIGNAL(rejected()), &myDialog, SLOT(reject()));
 
     layoutOk.addWidget(&buttonBox);
 
-    mainLayout.addLayout(&layoutTime);
-    mainLayout.addLayout(&layoutPeriod);
+    mainLayout.addLayout(&layoutVariable);
     mainLayout.addLayout(&layoutOk);
-    load.setLayout(&mainLayout);
-    load.exec();
+    myDialog.setLayout(&mainLayout);
+    myDialog.exec();
 
-    if (load.result() != QDialog::Accepted)
-        return;
-
-    if (!daily.isChecked() && !hourly.isChecked())
+    if (myDialog.result() == QDialog::Accepted)
     {
-       QMessageBox::information(NULL, "Missing parameter", "Select hourly and/or daily");
-       return;
+       if (DTM.isChecked())
+       {
+            setDefaultDTMScale(myProject.DTM.colorScale);
+            ui->labelRasterScale->setText("Digital Terrain Map  m");
+       }
+       else if (Temp.isChecked())
+       {
+           setTemperatureScale(myProject.DTM.colorScale);
+           ui->labelRasterScale->setText("Air temperature  °C");
+       }
+       else if (Prec.isChecked())
+       {
+           setPrecipitationScale(myProject.DTM.colorScale);
+           ui->labelRasterScale->setText("Precipitation  mm");
+       }
+       else if (RH.isChecked())
+       {
+           setRelativeHumidityScale(myProject.DTM.colorScale);
+           ui->labelRasterScale->setText("Relative humidity  %");
+       }
+       else if (Rad.isChecked())
+       {
+           setRadiationScale(myProject.DTM.colorScale);
+           ui->labelRasterScale->setText("Solar irradiance W m-2");
+       }
+       else if (Wind.isChecked())
+       {
+           setWindIntensityScale(myProject.DTM.colorScale);
+           ui->labelRasterScale->setText("Wind intensity  m s-1");
+       }
     }
-
-    if (!lastDay.isChecked() && !all.isChecked())
-    {
-       QMessageBox::information(NULL, "Missing parameter", "Select loading period from DB");
-       return;
-    }
-
-    if (daily.isChecked())
-    {
-        dayHour = 'D';
-        lastDate = myDbMeteo->getLastDay(dayHour).date();
-        firstDate = lastDate;
-        if ( all.isChecked() )
-        {
-            firstDate = myDbMeteo->getFirstDay(dayHour).date();
-        }
-
-        Crit3DDate dateStart = getCrit3DDate(firstDate);
-        Crit3DDate dateEnd = getCrit3DDate(lastDate);
-
-        formInfo myInfo;
-        int step = myInfo.start("Load daily data...", myProject.meteoPoints.size());
-
-        for (int i=0; i < myProject.meteoPoints.size(); i++)
-        {
-            if ((i % step) == 0) myInfo.setValue(i);
-
-            myDbMeteo->getDailyData(dateStart, dateEnd, &(myProject.meteoPoints[i]));
-        }
-        myInfo.close();
-    }
-
-    if (hourly.isChecked())
-    {
-        dayHour = 'H';
-        lastDate = myDbMeteo->getLastDay(dayHour).date();
-        firstDate = lastDate;
-        if ( all.isChecked() )
-        {
-            firstDate = myDbMeteo->getFirstDay(dayHour).date();
-        }
-
-        Crit3DDate dateStart = getCrit3DDate(firstDate);
-        Crit3DDate dateEnd = getCrit3DDate(lastDate);
-
-        formInfo myInfo;
-        int step = myInfo.start("Load hourly data...", myProject.meteoPoints.size());
-
-        for (int i=0; i < myProject.meteoPoints.size(); i++)
-        {
-            if ((i % step) == 0) myInfo.setValue(i);
-
-            myDbMeteo->getHourlyData(dateStart, dateEnd, &(myProject.meteoPoints[i]));
-        }
-        myInfo.close();
-    }
-
-    myProject.setCurrentDate(lastDate);
-    myProject.setCurrentHour(12);
 }
-*/
 
+
+void MainWindow::on_variableButton_clicked()
+{
+    if (chooseVariable())
+    {
+       this->ui->actionVariableNone->setChecked(false);
+       this->updateVariable();
+    }
+}
+
+
+void MainWindow::on_frequencyButton_clicked()
+{
+   if (chooseFrequency())
+       this->updateVariable();
+}
+
+
+bool chooseVariable()
+{
+    if (myProject.getFrequency() == noFrequency)
+    {
+        QMessageBox::information(NULL, "No frequency", "Choose frequency before");
+        return false;
+    }
+
+    QDialog myDialog;
+    QVBoxLayout mainLayout;
+    QVBoxLayout layoutVariable;
+    QHBoxLayout layoutOk;
+
+    myDialog.setWindowTitle("Choose variable");
+    myDialog.setFixedWidth(300);
+
+    QRadioButton Tavg("Average temperature °C");
+    QRadioButton Tmin("Minimum temperature °C");
+    QRadioButton Tmax("Maximum temperature °C");
+    QRadioButton Prec("Precipitation mm");
+    QRadioButton RHavg("Average relative humidity %");
+    QRadioButton RHmin("Minimum relative humidity %");
+    QRadioButton RHmax("Maximum relative humidity %");
+    QRadioButton Rad("Solar radiation MJ m-2");
+
+    if (myProject.getFrequency() == daily)
+    {
+        layoutVariable.addWidget(&Tmin);
+        layoutVariable.addWidget(&Tavg);
+        layoutVariable.addWidget(&Tmax);
+        layoutVariable.addWidget(&Prec);
+        layoutVariable.addWidget(&RHmin);
+        layoutVariable.addWidget(&RHavg);
+        layoutVariable.addWidget(&RHmax);
+        layoutVariable.addWidget(&Rad);
+    }
+    else if (myProject.getFrequency() == hourly)
+    {
+        Tavg.setText("Average temperature °C");
+        Prec.setText("Precipitation mm");
+        RHavg.setText("Average relative humidity %");
+        Rad.setText("Solar irradiance W m-2");
+
+        layoutVariable.addWidget(&Tavg);
+        layoutVariable.addWidget(&Prec);
+        layoutVariable.addWidget(&RHavg);
+        layoutVariable.addWidget(&Rad);
+    }
+    else return false;
+
+    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+
+    myDialog.connect(&buttonBox, SIGNAL(accepted()), &myDialog, SLOT(accept()));
+    myDialog.connect(&buttonBox, SIGNAL(rejected()), &myDialog, SLOT(reject()));
+
+    layoutOk.addWidget(&buttonBox);
+
+    mainLayout.addLayout(&layoutVariable);
+    mainLayout.addLayout(&layoutOk);
+    myDialog.setLayout(&mainLayout);
+    myDialog.exec();
+
+    if (myDialog.result() != QDialog::Accepted)
+        return false;
+
+   if (myProject.getFrequency() == daily)
+   {
+       if (Tmin.isChecked())
+           myProject.currentVariable = dailyAirTemperatureMin;
+       else if (Tmax.isChecked())
+           myProject.currentVariable = dailyAirTemperatureMax;
+       else if (Tavg.isChecked())
+           myProject.currentVariable = dailyAirTemperatureAvg;
+       else if (Prec.isChecked())
+           myProject.currentVariable = dailyPrecipitation;
+       else if (Rad.isChecked())
+           myProject.currentVariable = dailyGlobalRadiation;
+       else if (RHmin.isChecked())
+           myProject.currentVariable = dailyAirHumidityMin;
+       else if (RHmax.isChecked())
+           myProject.currentVariable = dailyAirHumidityMax;
+       else if (RHavg.isChecked())
+           myProject.currentVariable = dailyAirHumidityAvg;
+   }
+   else if (myProject.getFrequency() == hourly)
+   {
+       if (Tavg.isChecked())
+           myProject.currentVariable = airTemperature;
+       else if (RHavg.isChecked())
+           myProject.currentVariable = airHumidity;
+       else if (Prec.isChecked())
+           myProject.currentVariable = precipitation;
+       else if (Rad.isChecked())
+           myProject.currentVariable = globalIrradiance;
+   }
+   else
+       return false;
+
+   return true;
+}
+
+
+bool chooseFrequency()
+{
+    QDialog myDialog;
+    QVBoxLayout mainLayout;
+    QVBoxLayout layoutFrequency;
+    QHBoxLayout layoutOk;
+
+    myDialog.setWindowTitle("Choose frequency");
+    myDialog.setFixedWidth(300);
+
+    QRadioButton Daily("Daily");
+    QRadioButton Hourly("Hourly");
+
+    layoutFrequency.addWidget(&Daily);
+    layoutFrequency.addWidget(&Hourly);
+
+    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+
+    myDialog.connect(&buttonBox, SIGNAL(accepted()), &myDialog, SLOT(accept()));
+    myDialog.connect(&buttonBox, SIGNAL(rejected()), &myDialog, SLOT(reject()));
+
+    layoutOk.addWidget(&buttonBox);
+
+    mainLayout.addLayout(&layoutFrequency);
+    mainLayout.addLayout(&layoutOk);
+    myDialog.setLayout(&mainLayout);
+    myDialog.exec();
+
+    if (myDialog.result() != QDialog::Accepted)
+        return false;
+
+   if (Daily.isChecked())
+       myProject.setFrequency(daily);
+   else if (Hourly.isChecked())
+       myProject.setFrequency(hourly);
+
+   return true;
+}
+
+
+bool downloadMeteoData()
+{
+    if(myProject.meteoPoints.isEmpty())
+    {
+         QMessageBox::information(NULL, "DB not existing", "Create or Open a meteo points database before download");
+         return false;
+    }
+
+    QDialog downloadDialog;
+    QVBoxLayout mainLayout;
+    QHBoxLayout timeVarLayout;
+    QHBoxLayout dateLayout;
+    QHBoxLayout buttonLayout;
+
+    downloadDialog.setWindowTitle("Download Data");
+
+    QCheckBox hourly("Hourly");
+    QCheckBox daily("Daily");
+
+    QListWidget variable;
+    variable.setSelectionMode(QAbstractItemView::MultiSelection);
+
+    QListWidgetItem item1("Air Temperature");
+    QListWidgetItem item2("Precipitation");
+    QListWidgetItem item3("Air Humidity");
+    QListWidgetItem item4("Radiation");
+    QListWidgetItem item5("Wind");
+    QListWidgetItem item6("All variables");
+    QFont font("Helvetica", 10, QFont::Bold);
+    item6.setFont(font);
+
+    variable.addItem(&item1);
+    variable.addItem(&item2);
+    variable.addItem(&item3);
+    variable.addItem(&item4);
+    variable.addItem(&item5);
+    variable.addItem(&item6);
+
+    timeVarLayout.addWidget(&daily);
+    timeVarLayout.addWidget(&hourly);
+    timeVarLayout.addWidget(&variable);
+
+    QDateEdit *FirstDateEdit = new QDateEdit;
+    FirstDateEdit->setDate(QDate::currentDate());
+    QLabel *FirstDateLabel = new QLabel("   Start Date:");
+    FirstDateLabel->setBuddy(FirstDateEdit);
+
+    QDateEdit *LastDateEdit = new QDateEdit;
+    LastDateEdit->setDate(QDate::currentDate());
+    QLabel *LastDateLabel = new QLabel("    End Date:");
+    LastDateLabel->setBuddy(LastDateEdit);
+
+    dateLayout.addWidget(FirstDateLabel);
+    dateLayout.addWidget(FirstDateEdit);
+
+    dateLayout.addWidget(LastDateLabel);
+    dateLayout.addWidget(LastDateEdit);
+
+    QDialogButtonBox buttonBox;
+    QPushButton downloadButton("Download");
+    downloadButton.setCheckable(true);
+    downloadButton.setAutoDefault(false);
+
+    QPushButton cancelButton("Cancel");
+    cancelButton.setCheckable(true);
+    cancelButton.setAutoDefault(false);
+
+    buttonBox.addButton(&downloadButton, QDialogButtonBox::AcceptRole);
+    buttonBox.addButton(&cancelButton, QDialogButtonBox::RejectRole);
+
+    downloadDialog.connect(&buttonBox, SIGNAL(accepted()), &downloadDialog, SLOT(accept()));
+    downloadDialog.connect(&buttonBox, SIGNAL(rejected()), &downloadDialog, SLOT(reject()));
+
+    buttonLayout.addWidget(&buttonBox);
+    mainLayout.addLayout(&timeVarLayout);
+    mainLayout.addLayout(&dateLayout);
+    mainLayout.addLayout(&buttonLayout);
+    downloadDialog.setLayout(&mainLayout);
+
+    downloadDialog.exec();
+
+    if (downloadDialog.result() != QDialog::Accepted)
+        return false;
+
+   QDate firstDate = FirstDateEdit->date();
+   QDate lastDate = LastDateEdit->date();
+
+   if (!daily.isChecked() && !hourly.isChecked())
+   {
+       QMessageBox::information(NULL, "Missing parameter", "Select hourly or daily");
+       return downloadMeteoData();
+   }
+   else if ((! firstDate.isValid()) || (! lastDate.isValid()))
+   {
+       QMessageBox::information(NULL, "Missing parameter", "Select download period");
+       return downloadMeteoData();
+   }
+   else if (!item1.isSelected() && !item2.isSelected() && !item3.isSelected() && !item4.isSelected() && !item5.isSelected() && !item6.isSelected())
+   {
+       QMessageBox::information(NULL, "Missing parameter", "Select variable");
+       return downloadMeteoData();
+   }
+   else
+   {
+        QListWidgetItem* item = 0;
+        QStringList var;
+        for (int i = 0; i < variable.count()-1; ++i)
+        {
+               item = variable.item(i);
+               if (item6.isSelected() || item->isSelected())
+                   var.append(item->text());
+
+        }
+        if (daily.isChecked())
+        {
+            bool prec24 = true;
+            if ( item2.isSelected() || item6.isSelected() )
+            {
+                QDialog precDialog;
+                precDialog.setFixedWidth(350);
+                precDialog.setWindowTitle("Choose daily precipitation time");
+                QVBoxLayout precLayout;
+                QRadioButton first("0-24");
+                QRadioButton second("08-08");
+
+                QDialogButtonBox confirm(QDialogButtonBox::Ok);
+
+                precDialog.connect(&confirm, SIGNAL(accepted()), &precDialog, SLOT(accept()));
+
+                precLayout.addWidget(&first);
+                precLayout.addWidget(&second);
+                precLayout.addWidget(&confirm);
+                precDialog.setLayout(&precLayout);
+                precDialog.exec();
+
+                if (second.isChecked())
+                    prec24 = false;
+            }
+
+            if (! myProject.downloadDailyDataArkimet(var, prec24, firstDate, lastDate, true))
+            {
+                QMessageBox::information(NULL, "Error!", "Error in daily download");
+                return false;
+            }
+        }
+
+        if (hourly.isChecked())
+        {
+            // QApplication::setOverrideCursor(Qt::WaitCursor);
+            // QApplication::restoreOverrideCursor();
+
+            if (! myProject.downloadHourlyDataArkimet(var, firstDate, lastDate, true))
+            {
+                QMessageBox::information(NULL, "Error!", "Error in hourly download");
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
 

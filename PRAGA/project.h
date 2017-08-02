@@ -51,7 +51,7 @@
 
         bool loadRaster(QString myFileName);
         bool downloadDailyDataArkimet(QStringList variables, bool precSelection, QDate startDate, QDate endDate, bool showInfo);
-        bool downloadHourlyDataArkimet(QStringList variables, Crit3DDate dateStart, Crit3DDate dateEnd);
+        bool downloadHourlyDataArkimet(QStringList variables, QDate startDate, QDate endDate, bool showInfo);
         bool loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo);
         void getMeteoPointsRange(float *minimum, float *maximum);
 
