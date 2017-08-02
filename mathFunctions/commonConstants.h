@@ -159,6 +159,8 @@
     #define P0 101300
     // [K] temperature at reference pressure level (P0)
     #define TP0 293.16
+    // [g s-2] surface tension at 25 degC
+    #define GAMMA0 71.89
 
     // [W m-1 K-1] thermal conductivity of water
     #define KH_H2O 0.57

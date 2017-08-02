@@ -104,8 +104,6 @@ void saveHeatFlux(TlinkedNode* myLink, int fluxType, double myValue)
         myLink->linkedExtra->heatFlux->fluxes[fluxType] = float(myValue);
 }
 
-
-
 /*!
  * \brief [m3 m-3] vapor volumetric water equivalent
  * \param [m] h
@@ -119,7 +117,6 @@ double VaporThetaV(double h, double T, long i)
     double vaporConc = VaporFromPsiTemp(h, T);
     return (vaporConc / WATER_DENSITY * (myNode[i].Soil->Theta_s - theta));
 }
-
 
 /*!
  * \brief [m2 s-1] binary vapor diffusivity
@@ -247,7 +244,23 @@ double VaporFromPsiTemp(double h, double T)
     myRelHum = SoilRelativeHumidity(h, T);
 
     return mySatVapConcentration * myRelHum;
+}
 
+/*!
+ * \brief [m2 s-1 K-1] thermal liquid conductivity
+ * \param i
+ * \param temperature (K)
+ * \param h (m)
+ * \param Klh (m s-1) isotherma liquid conductivity
+ * \return result
+ */
+double ThermalLiquidConductivity(double temperature, double h, double Klh)
+{
+    double Gwt = 4.;        // [] gain factor (temperature dependence of soil water retention curve)
+    double dGammadT;        // [g s-2 K-1] derivative of surface tension with respect to temperature
+
+    dGammadT = -0.1425 - 0.000476 * temperature;
+    return (Klh * h * Gwt * dGammadT / GAMMA0);
 }
 
 /*!
@@ -392,12 +405,55 @@ double SoilHeatConductivity(long i, double T, double h)
 }
 
 /*!
+ * \brief [m3 s-1] Thermal liquid flux
+ * \param i
+ * \param myLink
+ * \return result
+ */
+double ThermalLiquidFlux(long i, TlinkedNode *myLink, int myProcess)
+{
+    long j = (*myLink).index;
+
+    // temperatures (K) and water potential (m)
+    double myTMean, myTLinkMean, myH, myHLink;
+    if (myProcess == PROCESS_WATER && myStructure.computeWater)
+    {
+        myTMean = computeMean(myNode[i].extra->Heat->T, myNode[i].extra->Heat->oldT);
+        myTLinkMean = computeMean(myNode[j].extra->Heat->T, myNode[j].extra->Heat->oldT);
+        myH = myNode[i].H;
+        myHLink = myNode[j].H;
+    }
+    else if (myProcess = PROCESS_HEAT && myStructure.computeHeat)
+    {
+        myTMean = myNode[i].extra->Heat->T;
+        myTLinkMean = myNode[j].extra->Heat->T;
+        myH = computeMean(myNode[i].H, myNode[i].oldH);
+        myHLink =computeMean(myNode[j].H, myNode[j].oldH);
+    }
+    else
+        return NODATA;
+
+    // m2 K-1 s-1
+    double Klt = ThermalLiquidConductivity(myTMean, myH - myNode[i].z, myNode[i].k);
+    double KltLink = ThermalLiquidConductivity(myTLinkMean, myHLink - myNode[j].z, myNode[j].k);
+    double meanKlt = computeMean(Klt, KltLink);
+
+    // m s-1
+    double myFlowDensity = meanKlt * (myTLinkMean - myTMean) / distance(i, j);
+
+    // m3 s-1
+    double myFlow = myFlowDensity * (*myLink).area;
+
+    return (myFlow);
+}
+
+/*!
  * \brief [m3 s-1] Thermal vapor flux
  * \param i
  * \param myLink
  * \return result
  */
-double ThermalVaporFlow(long i, TlinkedNode *myLink, int myProcess)
+double ThermalVaporFlux(long i, TlinkedNode *myLink, int myProcess)
 {
     long j = (*myLink).index;
 
@@ -434,23 +490,6 @@ double ThermalVaporFlow(long i, TlinkedNode *myLink, int myProcess)
     return (myFlow);
 }
 
-/*!
- * \brief [m3 s-1] Thermal liquid flux TODO!
- * \param i
- * \param myLink
- * \return result
- */
-double thermalLiquidFlow() //long i, TlinkedNode *myLink)
-{
-    //long j = (*myLink).index;
-
-    // K
-    //double myTMean = computeMean(myNode[i].extra->Heat->T, myNode[i].extra->Heat->oldT);
-    //double myTLinkMean = computeMean(myNode[j].extra->Heat->T, myNode[j].extra->Heat->oldT);
-
-    return 0.;
-}
-
 double getH_timeStep(long i, double timeStep, double timeStepWater)
 {
     return (myNode[i].H - myNode[i].oldH) / timeStepWater * timeStep + myNode[i].oldH;
@@ -462,7 +501,7 @@ double getH_timeStep(long i, double timeStep, double timeStepWater)
  * \param myLink
  * \return isothermal latent heat flux + advective associated [W]
  */
-double SoilLatentIsothermal(long i, TlinkedNode *myLink, double timeStep, double timeStepWater)
+double IsothermalLatentHeatFlux(long i, TlinkedNode *myLink, double timeStep, double timeStepWater)
 {
     double lambda, lambdaLink, avgLambda;       // [J kg-1] latent heat of vaporization
     double myKvi;								// [kg s m-3] vapor conductivity
@@ -506,13 +545,14 @@ double SoilLatentIsothermal(long i, TlinkedNode *myLink, double timeStep, double
 }
 
 /*!
- * \brief advective liquid water heat flux
+ * \brief advective isothermal liquid water heat flux
  * \param i
  * \param myLink
  * \return advective liquid water heat flux [W]
  */
-double SoilHeatAdvection(long i, TlinkedNode *myLink)
+double AdvectiveFlux(long i, TlinkedNode *myLink)
 {
+    // TODO!! da togliere contributo al flusso dovuto al flusso di vapore isotermico
     double Tadv;
 	double myWaterFlow;
 
@@ -529,7 +569,7 @@ double SoilHeatAdvection(long i, TlinkedNode *myLink)
 }
 
 
-double SoilConduction(long i, TlinkedNode *myLink, double timeStep, double timeStepWater)
+double Conduction(long i, TlinkedNode *myLink, double timeStep, double timeStepWater)
 {
 	double myConductivity, linkConductivity, meanKh;
     double zeta;
@@ -559,23 +599,23 @@ bool computeHeatFlux(long i, int myMatrixIndex, TlinkedNode *myLink, double time
     if ((*myLink).index == NOLINK) return false;
 
     long myLinkIndex = (*myLink).index;
-    double myConduction, myAdvection, myLatent;
+    double myConduction, myAdvectiveFlux, myLatentFlux;
     double nodeDistance;
 
     myConduction = 0.;
-    myAdvection = 0.;
-    myLatent = 0.;
+    myAdvectiveFlux = 0.;
+    myLatentFlux = 0.;
     fluxCourant = 0.;
 
     if (!myNode[myLinkIndex].isSurface)
     {
-        myConduction = SoilConduction(i, myLink, timeStep, timeStepWater);
+        myConduction = Conduction(i, myLink, timeStep, timeStepWater);
         if (myStructure.computeWater)
         {
-            myLatent = SoilLatentIsothermal(i, myLink, timeStep, timeStepWater);
-            saveHeatFlux(myLink, HEATFLUX_LATENT_ISOTHERMAL, myLatent);
+            myLatentFlux = IsothermalLatentHeatFlux(i, myLink, timeStep, timeStepWater);
+            saveHeatFlux(myLink, HEATFLUX_LATENT_ISOTHERMAL, myLatentFlux);
 
-            myAdvection = SoilHeatAdvection(i, myLink);
+            myAdvectiveFlux = AdvectiveFlux(i, myLink);
             //saveHeatFlux(myLink, HEATFLUX_ADVECTIVE, myAdvection);
         }
     }
@@ -583,7 +623,7 @@ bool computeHeatFlux(long i, int myMatrixIndex, TlinkedNode *myLink, double time
     A[i][myMatrixIndex].index = myLinkIndex;
     A[i][myMatrixIndex].val = myConduction;
 
-    C0[i] += myAdvection + myLatent;
+    C0[i] += myAdvectiveFlux + myLatentFlux;
 
     if (fluxCourant != 0)
     {
@@ -636,7 +676,7 @@ void saveNodeHeatFlux(long myIndex, TlinkedNode *myLink)
             // where is incorporated (see AirHeatConductivity)
             if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_ALL)
             {
-                double thermalLatentFlux = ThermalVaporFlow(myIndex, myLink, PROCESS_HEAT);
+                double thermalLatentFlux = ThermalVaporFlux(myIndex, myLink, PROCESS_HEAT);
                 thermalLatentFlux *= WATER_DENSITY * LatentHeatVaporization(myNode[myIndex].extra->Heat->T - ZEROCELSIUS);
                 saveHeatFlux(myLink, HEATFLUX_LATENT_THERMAL, thermalLatentFlux);
                 saveHeatFlux(myLink, HEATFLUX_DIFFUSIVE, myDiffHeat - thermalLatentFlux);
