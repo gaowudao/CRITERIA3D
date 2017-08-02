@@ -823,7 +823,7 @@ double DLL_EXPORT __STDCALL computeStep(double maxTime)
     if (myStructure.computeWater)
         computeWater(maxTime, &dtWater);
     else
-        dtWater = maxTime;
+        dtWater = min_value(maxTime, myParameters.delta_t_max);
 
     dtHeat = dtWater;
 
@@ -835,14 +835,14 @@ double DLL_EXPORT __STDCALL computeStep(double maxTime)
         double dtHeatSum = 0;
         while (dtHeatSum < dtWater)
         {
-            if (HeatComputation(min_value(dtHeat, dtWater - dtHeatSum)))
+            if (HeatComputation(min_value(dtHeat, dtWater - dtHeatSum), dtWater))
             {
                 dtHeatSum += dtHeat;
             }
             else
             {
                 restoreHeat();
-                dtHeat *= 0.5;
+                dtHeat = myParameters.current_delta_t;
             }
         }
     }
@@ -884,7 +884,7 @@ int DLL_EXPORT __STDCALL setTemperature(long nodeIndex, double myT)
  * \param myT [K]
  * \return OK/ERROR
  */
-int DLL_EXPORT __STDCALL setFixedTemperature(long nodeIndex, double myT)
+int DLL_EXPORT __STDCALL setFixedTemperature(long nodeIndex, double myT, double myDepth)
 {
    if (myNode == NULL) return(MEMORY_ERROR);
    if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
@@ -893,6 +893,7 @@ int DLL_EXPORT __STDCALL setFixedTemperature(long nodeIndex, double myT)
    if (myNode[nodeIndex].boundary->type != BOUNDARY_PRESCRIBEDTOTALPOTENTIAL &&
            myNode[nodeIndex].boundary->type != BOUNDARY_FREEDRAINAGE) return(BOUNDARY_ERROR);
 
+   myNode[nodeIndex].boundary->Heat->fixedTemperatureDepth = myDepth;
    myNode[nodeIndex].boundary->Heat->fixedTemperature = myT;
 
    return(CRIT3D_OK);
@@ -1128,7 +1129,7 @@ double DLL_EXPORT __STDCALL getBoundarySensibleFlux(long nodeIndex)
     if (nodeIndex >= myStructure.nrNodes) return (INDEX_ERROR);
     if (! myStructure.computeHeat) return (MISSING_DATA_ERROR);
     if (myNode[nodeIndex].boundary == NULL) return (INDEX_ERROR);
-    if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT) return (INDEX_ERROR);
+    if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT_SURFACE) return (INDEX_ERROR);
 
     // boundary sensible heat flow density
     return (myNode[nodeIndex].boundary->Heat->sensibleFlux);
@@ -1146,7 +1147,7 @@ double DLL_EXPORT __STDCALL getBoundaryLatentFlux(long nodeIndex)
     if (nodeIndex >= myStructure.nrNodes) return (INDEX_ERROR);
     if (! myStructure.computeHeat || ! myStructure.computeWater) return (MISSING_DATA_ERROR);
     if (myNode[nodeIndex].boundary == NULL) return (INDEX_ERROR);
-    if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT) return (INDEX_ERROR);
+    if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT_SURFACE) return (INDEX_ERROR);
 
     // boundary latent heat flow density
     return (myNode[nodeIndex].boundary->Heat->latentFlux);
@@ -1164,7 +1165,7 @@ double DLL_EXPORT __STDCALL getBoundaryAdvectiveFlux(long nodeIndex)
     if (! myStructure.computeHeat || ! myStructure.computeWater) return (MISSING_DATA_ERROR);
     if (myNode[nodeIndex].boundary == NULL) return (BOUNDARY_ERROR);
     if (myNode[nodeIndex].boundary->Heat == NULL) return (BOUNDARY_ERROR);
-    if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT) return (BOUNDARY_ERROR);
+    if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT_SURFACE) return (BOUNDARY_ERROR);
 
     // boundary advective heat flow density
     return (myNode[nodeIndex].boundary->Heat->advectiveHeatFlux);
@@ -1181,7 +1182,7 @@ double DLL_EXPORT __STDCALL getBoundaryRadiativeFlux(long nodeIndex)
     if (nodeIndex >= myStructure.nrNodes) return (INDEX_ERROR);
     if (! myStructure.computeHeat) return (MISSING_DATA_ERROR);
     if (myNode[nodeIndex].boundary == NULL) return (INDEX_ERROR);
-    if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT) return (INDEX_ERROR);
+    if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT_SURFACE) return (INDEX_ERROR);
 
     // boundary net radiative heat flow density
     return (myNode[nodeIndex].boundary->Heat->radiativeFlux);
@@ -1198,7 +1199,7 @@ double DLL_EXPORT __STDCALL getBoundaryAerodynamicConductance(long nodeIndex)
     if (nodeIndex >= myStructure.nrNodes) return (INDEX_ERROR);
     if (! myStructure.computeHeat) return (MISSING_DATA_ERROR);
     if (myNode[nodeIndex].boundary == NULL) return (INDEX_ERROR);
-    if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT) return (INDEX_ERROR);
+    if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT_SURFACE) return (INDEX_ERROR);
 
     // boundary aerodynamic resistance
     return (myNode[nodeIndex].boundary->Heat->aerodynamicConductance);
@@ -1236,7 +1237,7 @@ double DLL_EXPORT __STDCALL getBoundarySoilConductance(long nodeIndex)
     if (nodeIndex >= myStructure.nrNodes) return (INDEX_ERROR);
     if (! myStructure.computeHeat) return (MISSING_DATA_ERROR);
     if (myNode[nodeIndex].boundary == NULL) return (INDEX_ERROR);
-    if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT) return (INDEX_ERROR);
+    if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT_SURFACE) return (INDEX_ERROR);
 
     // boundary soil conductance
     return (myNode[nodeIndex].boundary->Heat->soilConductance);

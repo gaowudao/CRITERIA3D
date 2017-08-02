@@ -80,7 +80,7 @@
     __EXTERN int DLL_EXPORT __STDCALL setHeatBoundaryRoughness(long nodeIndex, double myRoughness);
     __EXTERN int DLL_EXPORT __STDCALL setHeatBoundaryWindSpeed(long nodeIndex, double myWindSpeed);
     __EXTERN int DLL_EXPORT __STDCALL setHeatBoundaryNetIrradiance(long nodeIndex, double myNetIrradiance);
-    __EXTERN int DLL_EXPORT __STDCALL setFixedTemperature(long nodeIndex, double myT);
+    __EXTERN int DLL_EXPORT __STDCALL setFixedTemperature(long nodeIndex, double myT, double myDepth);
 
     __EXTERN double DLL_EXPORT __STDCALL getTemperature(long nodeIndex);
     __EXTERN double DLL_EXPORT __STDCALL getHeat(long nodeIndex, double h);

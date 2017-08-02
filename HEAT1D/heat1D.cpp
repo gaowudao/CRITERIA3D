@@ -24,7 +24,7 @@ long SimulationStart, SimulationStop;
 double mySurface, Roughness, Plough, Albedo, RoughnessHeat;
 
 //bottom boundary
-double bottomTemperature;
+double bottomTemperature, bottomTemperatureDepth;
 
 //meteo
 double airRelativeHumidity, airTemperature, windSpeed, globalRad;
@@ -62,9 +62,10 @@ void setInitialTemperature(double myValueTop, double myValueBottom)
     initialTemperatureBottom = myValueBottom;
 }
 
-void setBottomTemperature(double myValue)
+void setBottomTemperature(double myValue, double myDepth)
 {
     bottomTemperature = myValue;
+    bottomTemperatureDepth = myDepth;
 }
 
 void setSoil(double thetaS_, double thetaR_, double clay_, double organicMatter_)
@@ -256,7 +257,7 @@ bool initializeHeat1D(long *myHourIni, long *myHourFin, bool useInputSoils)
             if (indexNode == 1)
             {
                 if (computeHeat)
-                    boundaryType = BOUNDARY_HEAT;
+                    boundaryType = BOUNDARY_HEAT_SURFACE;
                 else
                     boundaryType = BOUNDARY_NONE;
 
@@ -270,7 +271,7 @@ bool initializeHeat1D(long *myHourIni, long *myHourFin, bool useInputSoils)
 
                 if (computeHeat)
                 {
-                    myResult = soilFluxes3D::setFixedTemperature(indexNode, 273.16 + bottomTemperature);
+                    myResult = soilFluxes3D::setFixedTemperature(indexNode, 273.16 + bottomTemperature, bottomTemperatureDepth);
                     if (myResult != CRIT3D_OK) printf("\n error in setFixedTemperature!");
                 }
             }

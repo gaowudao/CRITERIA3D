@@ -90,7 +90,7 @@
     #define BOUNDARY_FREEDRAINAGE 3
     #define BOUNDARY_FREELATERALDRAINAGE 4
     #define BOUNDARY_PRESCRIBEDTOTALPOTENTIAL 5
-    #define BOUNDARY_HEAT 10
+    #define BOUNDARY_HEAT_SURFACE 10
     #define BOUNDARY_SOLUTEFLUX 30
     #define BOUNDARY_NONE 99
 
@@ -159,6 +159,8 @@
     #define P0 101300
     // [K] temperature at reference pressure level (P0)
     #define TP0 293.16
+    // [g s-2] surface tension at 25 degC
+    #define GAMMA0 71.89
 
     // [W m-1 K-1] thermal conductivity of water
     #define KH_H2O 0.57
