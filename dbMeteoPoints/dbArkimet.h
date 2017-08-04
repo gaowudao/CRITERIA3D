@@ -13,6 +13,7 @@ class DbArkimet : public DbMeteoPoints
     public:
         explicit DbArkimet(QString dbName);
         void dbManager();
+        QString queryString;
 
         QString getVarName(int id);
         QList<int> getDailyVar();
@@ -25,8 +26,9 @@ class DbArkimet : public DbMeteoPoints
         void deleteTmpTable();
         void insertDailyValue(QString station, QString date, int varType, double varValue, QString flag);
         void insertOrUpdate(QString date, QString id_point, int id_variable, QString variable_name, double value, int frequency, QString flag);
-        void saveHourlyData();
+        bool saveHourlyData();
         int arkIdmap(int arkId);
+        void appendQueryHourly(QString dateTime, QString idPoint, QString idVariable, QString varName, QString value, QString frequency, bool isFirstData);
     signals:
 
     protected slots:

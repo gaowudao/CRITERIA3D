@@ -280,11 +280,6 @@ void Criteria1D::prepareOutput(Crit3DDate myDate, bool isFirst)
     else
         this->outputString += ",";
 
-    if (this->myCrop.LAI != NODATA)
-    {
-        this->myCrop.LAI += 0.000001;
-    }
-
     this->outputString
             += "('" + QString::fromStdString(myDate.toStdString()) + "'"
             + "," + QString::number(this->output.dailyPrec)

@@ -1102,7 +1102,7 @@ bool downloadMeteoData()
         }
         if (daily.isChecked())
         {
-            bool prec24 = true;
+            bool prec0024 = true;
             if ( item2.isSelected() || item6.isSelected() )
             {
                 QDialog precDialog;
@@ -1123,10 +1123,10 @@ bool downloadMeteoData()
                 precDialog.exec();
 
                 if (second.isChecked())
-                    prec24 = false;
+                    prec0024 = false;
             }
 
-            if (! myProject.downloadDailyDataArkimet(var, prec24, firstDate, lastDate, true))
+            if (! myProject.downloadDailyDataArkimet(var, prec0024, firstDate, lastDate, true))
             {
                 QMessageBox::information(NULL, "Error!", "Error in daily download");
                 return false;

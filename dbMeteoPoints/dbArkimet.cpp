@@ -10,6 +10,7 @@
 
 DbArkimet::DbArkimet(QString dbName) : DbMeteoPoints(dbName)
 {
+    queryString = "";
 }
 
 QList<VariablesList> DbArkimet::getHourlyVarFields(QList<int> id)
@@ -189,7 +190,7 @@ void DbArkimet::createTmpTable()
     this->deleteTmpTable();
 
     QSqlQuery qry(_db);
-    qry.prepare("CREATE TABLE TmpHourlyData (date_time TEXT, id_point INTEGER, id_variable INTEGER, variable_name TEXT, value REAL, frequency INTEGER, PRIMARY KEY(date_time,id_point,variable_name))");
+    qry.prepare("CREATE TABLE TmpHourlyData (KEY TEXT, date_time TEXT, id_point INTEGER, id_variable INTEGER, variable_name TEXT, value REAL, frequency INTEGER)");
     if( !qry.exec() )
     {
         qDebug() << qry.lastError();
@@ -212,48 +213,95 @@ void DbArkimet::deleteTmpTable()
 
 void DbArkimet::insertDailyValue(QString station, QString date, int varType, double varValue, QString flag)
 {
-    if (flag.left(1) == "1" || flag.left(1) == "054") {
-        // invalid data
-        varValue = NODATA;
-    }
+    // invalid data
+    if (flag.left(1) == "1" || flag.left(1) == "054")
+        return;
 
-    if (varValue !=NODATA)
-    {
-        double valueRound = static_cast<double>(static_cast<int>(varValue*10+0.5))/10.0;
-        QString statement = QString("INSERT INTO `%1_D` VALUES('%2', '%3', '%4')").arg(station).arg(date).arg(varType).arg(valueRound);
+    double valueRound = static_cast<double>(static_cast<int>(varValue*10+0.5))/10.0;
+    QString statement = QString("INSERT INTO `%1_D` VALUES('%2', '%3', '%4')").arg(station).arg(date).arg(varType).arg(valueRound);
 
-        QSqlQuery qry = QSqlQuery(statement, _db);
-        qry.exec();
-    }
-
+    _db.exec(statement);
 }
 
 
-void DbArkimet::saveHourlyData()
+void DbArkimet::appendQueryHourly(QString dateTimeStr, QString idPoint, QString idVariable, QString varName, QString value, QString frequency, bool isFirstData)
 {
+    if (isFirstData)
+        queryString = "INSERT INTO TmpHourlyData VALUES ";
+    else
+        queryString += ",";
+
+    // build an hourly key
+    QDateTime myTime = QDateTime::fromString(dateTimeStr, "yyyy-MM-dd hh:mm:ss");
+    if (myTime.time().minute() > 0)
+    {
+        int hour = myTime.time().hour();
+        myTime.setTime(QTime(hour, 0, 0));
+        myTime.addSecs(3600);
+    }
+    QString key = varName + myTime.toString("yyyyMMddhh") + "_" + idPoint;
+
+    queryString += "('" + key + "'"
+            + ",'" + dateTimeStr + "'"
+            + "," + idPoint
+            + "," + idVariable
+            + ",'" + varName + "'"
+            + "," + value
+            + "," + frequency
+            + ")";
+}
+
+
+bool DbArkimet::saveHourlyData()
+{
+    // insert data into tmpTable
+    _db.exec(queryString);
+
+    // clean duplicate data
+    QString statement = "DELETE FROM TmpHourlyData WHERE frequency < 3600 ";
+    statement += "AND KEY IN (SELECT KEY FROM TmpHourlyData WHERE frequency = 3600)";
+    _db.exec(statement);
+
+    // query stations
+    statement = QString("SELECT DISTINCT id_point FROM TmpHourlyData");
+    QSqlQuery qry = _db.exec(statement);
+
     QStringList stations;
-
-    QString statement = QString("SELECT DISTINCT id_point FROM TmpHourlyData");
-    QSqlQuery qry = QSqlQuery(statement, _db);
-    qry.exec();
-
     while (qry.next())
     {
         stations.append(qry.value(0).toString());
     }
 
+    // INSERT data with frequency = 3600
     statement = QString("INSERT INTO `%1_H` ");
     statement = statement % "SELECT date_time, id_variable, value FROM TmpHourlyData WHERE id_point = %1 AND frequency = 3600";
+    foreach (QString station, stations)
+    {
+        statement = QString("INSERT INTO `%1_H` ").arg(station);
+        statement += QString("SELECT date_time, id_variable, value FROM TmpHourlyData ");
+        statement += QString("WHERE id_point = %1 AND frequency = 3600").arg(station);
 
-    foreach (QString station, stations) {
-        qry = QSqlQuery(statement.arg(station), _db);
-        qry.exec();
+        _db.exec(statement);
     }
 
+    // DELETE data with frequency = 3600
     statement = QString("DELETE FROM TmpHourlyData WHERE frequency = 3600");
-    qry = QSqlQuery(statement, _db);
-    qry.exec();
+    _db.exec(statement);
 
+    // re-query stations
+    stations.clear();
+    statement = QString("SELECT DISTINCT id_point FROM TmpHourlyData");
+    qry = _db.exec(statement);
+    while (qry.next())
+    {
+        stations.append(qry.value(0).toString());
+    }
+
+    // no more data
+    if (stations.isEmpty())
+        return true;
+
+    // WIND DIRECTION
     statement = QString("INSERT INTO `%1_H` ");
     statement = statement % "SELECT date_time, id_variable, value FROM TmpHourlyData WHERE ";
     statement = statement % "id_point = %1 AND variable_name = 'W_DIR' AND strftime('%M', date_time) = '00'";
@@ -263,7 +311,7 @@ void DbArkimet::saveHourlyData()
         qry.exec();
     }
 
-    //rad:TO DO prevailing HH:30 data
+    // RADIATION:TO DO prevailing HH:30 data
     statement = QString("INSERT INTO `%1_H` ");
     statement = statement % "SELECT DATETIME(date_time, '+30 minutes'), id_variable, value FROM TmpHourlyData WHERE ";
     statement = statement % "id_point = %1 AND variable_name = 'RAD' AND strftime('%M', date_time) = '30'";
@@ -273,19 +321,11 @@ void DbArkimet::saveHourlyData()
         qry.exec();
     }
 
+    // DELETE radiation and wind direction
     statement = QString("DELETE FROM TmpHourlyData WHERE variable_name IN ('RAD', 'W_DIR')");
     qry = QSqlQuery(statement, _db);
     qry.exec();
 
-    // re-query stations
-    stations.clear();
-    statement = QString("SELECT DISTINCT id_point FROM TmpHourlyData");
-    qry = QSqlQuery(statement, _db);
-    qry.exec();
-    while (qry.next())
-    {
-        stations.append(qry.value(0).toString());
-    }
 
     // la media funziona su tutte le var che hanno AVG nel nome (Temperature, RH, Wind intensity)
     // i minuti del campo date_time vengono portati a 60 dalla funzione datetime quindi tutto si uniforma all'ora di riferimento
@@ -304,8 +344,8 @@ void DbArkimet::saveHourlyData()
 
     QString delStationStatement = QString("DELETE FROM TmpHourlyData WHERE id_point = :id_point");
 
-    foreach (QString station, stations) {
-
+    foreach (QString station, stations)
+    {
         qry = QSqlQuery(statement.arg(station), _db);
         if( !qry.exec() )
         {
@@ -319,7 +359,10 @@ void DbArkimet::saveHourlyData()
             qDebug() << "error in delete " << station << qry.lastError();
         }
     }
+
+    return true;
 }
+
 
 
 void DbArkimet::insertOrUpdate(QString date, QString id_point, int id_variable, QString variable_name, double value, int frequency, QString flag)

@@ -83,7 +83,7 @@ bool Project::getMeteoPointSelected(int i)
 }
 
 
-bool Project::downloadDailyDataArkimet(QStringList variables, bool prec24, QDate startDate, QDate endDate, bool showInfo)
+bool Project::downloadDailyDataArkimet(QStringList variables, bool prec0024, QDate startDate, QDate endDate, bool showInfo)
 {
     const int MAXDAYS = 30;
 
@@ -163,7 +163,7 @@ bool Project::downloadDailyDataArkimet(QStringList variables, bool prec24, QDate
                 myInfo.setValue(currentPoints);
             }
 
-            myDownload->downloadDailyData(date1, date2, datasetList[i], idList[i], arkIdVar, prec24);
+            myDownload->downloadDailyData(date1, date2, datasetList[i], idList[i], arkIdVar, prec0024);
 
             date1 = date2.addDays(1);
             date2 = std::min(date1.addDays(MAXDAYS-1), endDate);

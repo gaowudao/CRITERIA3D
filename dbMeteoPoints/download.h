@@ -22,7 +22,7 @@ class Download : public QObject
         ~Download();
         bool getPointProperties(QStringList datasetList);
         void downloadMetadata(QJsonObject obj);
-        bool downloadDailyData(QDate startDate, QDate endDate, QString dataset, QStringList stations, QList<int> variables, bool precSelection);
+        bool downloadDailyData(QDate startDate, QDate endDate, QString dataset, QStringList stations, QList<int> variables, bool prec0024);
         bool downloadHourlyData(QDate startDate, QDate endDate, QString dataset, QStringList stations, QList<int> variables);
         DbArkimet* getDbArkimet();
 

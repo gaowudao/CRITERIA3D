@@ -187,9 +187,10 @@ void Download::downloadMetadata(QJsonObject obj)
 }
 
 
-bool Download::downloadDailyData(QDate startDate, QDate endDate, QString dataset, QStringList stations, QList<int> variables, bool precSelection)
+bool Download::downloadDailyData(QDate startDate, QDate endDate, QString dataset, QStringList stations, QList<int> variables, bool prec0024)
 {
-    QString area, product, refTime, myDate, idPoint, flag;
+    QString area, product, refTime, myDateStr, idPoint, flag;
+    QDate myDate;
     QStringList fields;
     double value;
     int idArkimet, idVar;
@@ -197,7 +198,8 @@ bool Download::downloadDailyData(QDate startDate, QDate endDate, QString dataset
     // create station tables
     _dbMeteo->initStationsDailyTables(startDate, endDate, stations);
 
-    refTime = QString("reftime:>=%1,<=%2").arg(startDate.toString("yyyy-MM-dd")).arg(endDate.toString("yyyy-MM-dd"));
+    // attenzione: il reference time dei giornalieri è a fine giornata (ore 00 di day+1)
+    refTime = QString("reftime:>%1,<=%2").arg(startDate.toString("yyyy-MM-dd")).arg(endDate.addDays(1).toString("yyyy-MM-dd"));
 
     area = QString(";area: VM2,%1").arg(stations[0]);
 
@@ -242,30 +244,21 @@ bool Download::downloadDailyData(QDate startDate, QDate endDate, QString dataset
         {
             fields = line.split(",");
 
-            myDate = QString("%1-%2-%3 %4:%5:00").arg(fields[0].left(4))
-                                                           .arg(fields[0].mid(4, 2))
-                                                           .arg(fields[0].mid(6, 2))
-                                                           .arg(fields[0].mid(8, 2))
-                                                           .arg(fields[0].mid(10, 2));
+            // warning: ref date arkimet: hour 00 of day+1
+            myDateStr = fields[0];
+            myDate = QDate::fromString(myDateStr.left(8), "yyyyMMdd");
+            myDate = myDate.addDays(-1);
+            myDateStr = myDate.toString("yyyy-MM-dd");
+
             idPoint = fields[1];
             idArkimet = fields[2].toInt();
-            value = fields[3].toDouble();
-            flag = fields[6];
 
             if (idArkimet == PREC_ID)
-            {
-                if ((precSelection && fields[0].mid(8,2) == "08") || (!precSelection && fields[0].mid(8,2) == "00"))
-                {
+                if ((prec0024 && fields[0].mid(8,2) == "08") || (!prec0024 && fields[0].mid(8,2) == "00"))
                     continue;
-                }
-                else if (!precSelection && fields[0].mid(8,2) == "08")
-                {
-                    myDate = QString("%1-%2-%3 00:%4:00").arg(fields[0].left(4))
-                                                      .arg(fields[0].mid(4, 2))
-                                                      .arg(fields[0].mid(6, 2))
-                                                      .arg(fields[0].mid(10, 2));
-                }
-            }
+
+            value = fields[3].toDouble();
+            flag = fields[6];
 
             // conversion from average daily radiation to integral radiation
             if (idArkimet == RAD_ID)
@@ -277,10 +270,11 @@ bool Download::downloadDailyData(QDate startDate, QDate endDate, QString dataset
 
             if (!(idPoint.isEmpty()))
             {
-                _dbMeteo->insertDailyValue(idPoint, myDate, idVar, value, flag);
+                _dbMeteo->insertDailyValue(idPoint, myDateStr, idVar, value, flag);
             }
         }
     }
+
     delete reply;
     delete manager;
 
@@ -343,40 +337,56 @@ bool Download::downloadHourlyData(QDate startDate, QDate endDate, QString datase
     {
         _dbMeteo->createTmpTable();
 
-        for (QString line = QString(reply->readLine()); !(line.isNull() || line.isEmpty());  line = QString(reply->readLine()))
+        QString line, dateTime, idPoint, flag, varName;
+        QString idVariable, value, frequency;
+        QStringList fields;
+        int i, idVarArkimet, nrData = 0;
+        bool isVarOk, isFirstData = true;
+
+        for (line = QString(reply->readLine()); !(line.isNull() || line.isEmpty());  line = QString(reply->readLine()))
         {
-
-            QStringList fields = line.split(",");
-
-            QString date = QString("%1-%2-%3 %4:%5:00").arg(fields[0].left(4))
+            fields = line.split(",");
+            dateTime = QString("%1-%2-%3 %4:%5:00").arg(fields[0].left(4))
                                                        .arg(fields[0].mid(4, 2))
                                                        .arg(fields[0].mid(6, 2))
                                                        .arg(fields[0].mid(8, 2))
                                                        .arg(fields[0].mid(10, 2));
-            QString id_point = fields[1];
-            int arkId = fields[2].toInt();
-            double varValue = fields[3].toDouble();
-            QString flag = fields[6];
-
-            int frequency;
-            QString varName;
-
-            for (int z = 0; z < variableList.size(); z++)
+            if (fields[1] != "")
             {
-                if (variableList[z].arkId() == arkId)
+                idPoint = fields[1];
+                idVarArkimet = fields[2].toInt();
+                idVariable = QString::number(_dbMeteo->arkIdmap(idVarArkimet));
+
+                if (fields[3] != "")
                 {
-                    frequency = variableList[z].frequency();
-                    varName = variableList[z].varName();
+                    value = fields[3];
+                    flag = fields[6];
+
+                    // invalid data
+                    if (flag.left(1) != "1" && flag.left(1) != "054")
+                    {
+                        isVarOk = false;
+                        for (i = 0; i < variableList.size(); i++)
+                        {
+                            if (variableList[i].arkId() == idVarArkimet)
+                            {
+                                frequency = QString::number(variableList[i].frequency());
+                                varName = variableList[i].varName();
+                                isVarOk = true;
+                            }
+                        }
+
+                        if (isVarOk)
+                        {
+                            _dbMeteo->appendQueryHourly(dateTime, idPoint, idVariable, varName, value, frequency, isFirstData);
+                            isFirstData = false;
+                            nrData++;
+                        }
+                    }
                 }
-
-            }
-            int id = _dbMeteo->arkIdmap(arkId);
-
-            if (!(id_point.isEmpty() || id_point.isEmpty()))
-            {
-                _dbMeteo->insertOrUpdate(date, id_point, id, varName, varValue, frequency, flag);
             }
         }
+        qDebug("Nr of data: %d", nrData);
         _dbMeteo->saveHourlyData();
         _dbMeteo->deleteTmpTable();
 
