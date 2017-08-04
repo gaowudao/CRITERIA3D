@@ -246,7 +246,7 @@ bool DbMeteoPoints::getDailyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3
 {
     QString dateStr;
     meteoVariable variable;
-    QDateTime d;
+    QDate d;
     int idVar;
     float value;
 
@@ -273,14 +273,14 @@ bool DbMeteoPoints::getDailyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3
         while (myQuery.next())
         {
             dateStr = myQuery.value(0).toString();
-            d = QDateTime::fromString(dateStr, "yyyy-MM-dd HH:mm:ss");
+            d = QDate::fromString(dateStr, "yyyy-MM-dd");
 
             idVar = myQuery.value(1).toInt();
             variable = getDefaultMeteoVariable(idVar);
 
             value = myQuery.value(2).toFloat();
 
-            meteoPoint->setMeteoPointValueD(Crit3DDate(d.date().day(), d.date().month(), d.date().year()), variable, value);
+            meteoPoint->setMeteoPointValueD(Crit3DDate(d.day(), d.month(), d.year()), variable, value);
         }
     }
 
