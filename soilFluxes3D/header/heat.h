@@ -12,7 +12,7 @@ double VaporThetaV(double h, double T, long i);
 void restoreHeat();
 void initializeBalanceHeat();
 void updateBalanceHeatWholePeriod();
-void saveWaterFluxes();
+void saveWaterFluxes(double timeStep);
 void initializeHeatFluxes();
 void saveHeatFlux(TlinkedNode* myLink, int fluxType, double myValue);
 float readHeatFlux(TlinkedNode* myLink, int fluxType);
