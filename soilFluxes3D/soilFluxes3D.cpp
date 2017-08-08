@@ -829,7 +829,7 @@ double DLL_EXPORT __STDCALL computeStep(double maxTime)
 
     if (myStructure.computeHeat)
     {
-        saveWaterFluxes(dtWater);
+        saveWaterFluxes();
         updateBoundaryHeat();
 
         double dtHeatSum = 0;

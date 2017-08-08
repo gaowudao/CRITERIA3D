@@ -83,6 +83,7 @@ void initializeLinkExtra(TCrit3DLinkedNodeExtra* myLinkedNodeExtra, bool compute
         myLinkedNodeExtra->heatFlux = new(THeatFlux);
 
         (*myLinkedNodeExtra).heatFlux->waterFlux = 0.;
+        (*myLinkedNodeExtra).heatFlux->vaporFlux = 0.;
 
         if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_ALL)
             (*myLinkedNodeExtra).heatFlux->fluxes = new float[4];

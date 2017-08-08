@@ -342,9 +342,6 @@ double AirHeatConductivity(long i, double T, double h)
 
         coeff= myLambda;
 
-        // advective heat flux associated with thermal vapor flux
-        coeff += T * HEAT_CAPACITY_AIR / WATER_DENSITY;
-
         myKvt = ThermalVaporConductivity(i, T, h);
         Ka += coeff * myKvt;
     }
@@ -448,7 +445,7 @@ double ThermalLiquidFlux(long i, TlinkedNode *myLink, int myProcess)
 }
 
 /*!
- * \brief [m3 s-1] Thermal vapor flux
+ * \brief [kg s-1] Thermal vapor flux
  * \param i
  * \param myLink
  * \return result
@@ -484,8 +481,8 @@ double ThermalVaporFlux(long i, TlinkedNode *myLink, int myProcess)
     // kg m-2 s-1
     double myFlowDensity = meanKv * (myTLinkMean - myTMean) / distance(i, j);
 
-    // m3 s-1
-    double myFlow = myFlowDensity * (*myLink).area / WATER_DENSITY;
+    // kg s-1
+    double myFlow = myFlowDensity * (*myLink).area;
 
     return (myFlow);
 }
@@ -536,7 +533,7 @@ double IsothermalVaporFlux(long i, TlinkedNode *myLink, double timeStep, double 
  * \brief isothermal latent heat flux
  * \param i
  * \param myLink
- * \return isothermal latent heat flux + advective associated [W]
+ * \return isothermal latent heat flux [W]
  */
 double IsothermalLatentHeatFlux(long i, TlinkedNode *myLink, double timeStep, double timeStepWater)
 {
@@ -562,24 +559,32 @@ double IsothermalLatentHeatFlux(long i, TlinkedNode *myLink, double timeStep, do
  */
 double AdvectiveFlux(long i, TlinkedNode *myLink)
 {
-    double Tadv;
-	double myWaterFlow;
+    double TliqAdv, TvapAdv;
+    double liqWaterFlux, vapWaterFlux;
+    double advection;
 
-    myWaterFlow = (*myLink).linkedExtra->heatFlux->waterFlux;
+    liqWaterFlux = (*myLink).linkedExtra->heatFlux->waterFlux;
 
-
-    if (myWaterFlow < 0.)
-        Tadv = myNode[i].extra->Heat->T;
+    if (liqWaterFlux < 0.)
+        TliqAdv = myNode[i].extra->Heat->T;
     else
-        Tadv = myNode[myLink->index].extra->Heat->T;
+        TliqAdv = myNode[myLink->index].extra->Heat->T;
 
-    // advective heat flux associated with isothermal vapor flux
-    //if (myStructure.computeWater)
-    //    coeff += myNode[i].extra->Heat->T * HEAT_CAPACITY_AIR / WATER_DENSITY;
+    fluxCourant += HEAT_CAPACITY_WATER * liqWaterFlux;
+    advection = fluxCourant * TliqAdv;
 
-    fluxCourant += HEAT_CAPACITY_WATER * myWaterFlow;
+    vapWaterFlux = (*myLink).linkedExtra->heatFlux->vaporFlux;
 
-    return (fluxCourant * Tadv);
+    if (vapWaterFlux < 0.)
+        TvapAdv = myNode[i].extra->Heat->T;
+    else
+        TvapAdv = myNode[myLink->index].extra->Heat->T;
+
+    double fluxCourantVap = HEAT_CAPACITY_WATER / WATER_DENSITY * vapWaterFlux;
+    fluxCourant += fluxCourantVap;
+    advection += fluxCourantVap * TvapAdv;
+
+    return (advection);
 }
 
 
@@ -648,36 +653,58 @@ bool computeHeatFlux(long i, int myMatrixIndex, TlinkedNode *myLink, double time
     return (true);
 }
 
-void saveNodeWaterFlux(long myIndex, TlinkedNode *myLink, double timeStep)
+// should be called only before heat computation, since A matrix should contain water flux values
+void saveNodeWaterFlux(long i, TlinkedNode *link)
 {
-    double isothermalFlux = 0.;
+    if (link == NULL) return;
 
-    //compute isothermal vapor flux and subtract from total water flux
-    if (!myNode[myIndex].isSurface && ! myNode[myLink->index].isSurface)
+    double fluxLiquid = 0.;         // m3 s-1
+    double fluxVapor = 0.;          // kg s-1
+    double isothVapFlux = 0.;
+    double thermLiqFlux = 0.;
+    double thermVapFlux = 0.;
+
+    double matrixValue = getMatrixValue(i, link);
+    if (matrixValue != INDEX_ERROR) fluxLiquid = matrixValue * (myNode[i].H - myNode[link->index].H);
+
+    if (!myNode[i].isSurface && ! myNode[link->index].isSurface)
     {
-        isothermalFlux = IsothermalVaporFlux(myIndex, myLink, timeStep, timeStep);
-        isothermalFlux /= WATER_DENSITY;
+        // compute isothermal vapor flux and subtract from total water flux
+        // (because fluxLiquid is computed from A matrix which include isothermal vapor flux component)
+        isothVapFlux = IsothermalVaporFlux(i, link, myParameters.current_delta_t, myParameters.current_delta_t);
+
+        // thermal liquid flux
+        thermLiqFlux = ThermalLiquidFlux(i, link, PROCESS_HEAT);
+
+        // thermal vapor flux
+        thermVapFlux = ThermalVaporFlux(i, link, PROCESS_HEAT);
     }
 
-    myLink->linkedExtra->heatFlux->waterFlux = float(getWaterFlux(myIndex, myLink) - isothermalFlux);
+    fluxLiquid += -isothVapFlux / WATER_DENSITY + thermLiqFlux;
+    fluxVapor = isothVapFlux + thermVapFlux;
+
+    link->linkedExtra->heatFlux->waterFlux = (float)fluxLiquid;
+    link->linkedExtra->heatFlux->vaporFlux = (float)fluxVapor;
+
+    return;
 }
 
-void saveWaterFluxes(double timeStep)
+void saveWaterFluxes()
 {
     for (long i = 0; i < myStructure.nrNodes; i++)
         {
             if (&myNode[i].up != NULL)
                 if (myNode[i].up.linkedExtra != NULL)
-                    saveNodeWaterFlux(i, &myNode[i].up, timeStep);
+                    saveNodeWaterFlux(i, &myNode[i].up);
 
             if (&myNode[i].down != NULL)
                 if (myNode[i].down.linkedExtra != NULL)
-                    saveNodeWaterFlux(i, &myNode[i].down, timeStep);
+                    saveNodeWaterFlux(i, &myNode[i].down);
 
             for (short j = 0; j < myStructure.nrLateralLinks; j++)
                 if (&myNode[i].lateral[j] != NULL)
                     if (myNode[i].lateral[j].linkedExtra != NULL)
-                        saveNodeWaterFlux(i, &myNode[i].lateral[j], timeStep);
+                        saveNodeWaterFlux(i, &myNode[i].lateral[j]);
 
         }
 }
@@ -704,7 +731,7 @@ void saveNodeHeatFlux(long myIndex, TlinkedNode *myLink)
             if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_ALL)
             {
                 double thermalLatentFlux = ThermalVaporFlux(myIndex, myLink, PROCESS_HEAT);
-                thermalLatentFlux *= WATER_DENSITY * LatentHeatVaporization(myNode[myIndex].extra->Heat->T - ZEROCELSIUS);
+                thermalLatentFlux *= LatentHeatVaporization(myNode[myIndex].extra->Heat->T - ZEROCELSIUS);
                 saveHeatFlux(myLink, HEATFLUX_LATENT_THERMAL, thermalLatentFlux);
                 saveHeatFlux(myLink, HEATFLUX_DIFFUSIVE, myDiffHeat - thermalLatentFlux);
             }

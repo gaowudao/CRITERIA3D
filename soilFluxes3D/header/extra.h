@@ -21,6 +21,7 @@
 
     struct THeatFlux{
         float waterFlux;                    // [m3 s-1]
+        float vaporFlux;                    // [kg s-1]
         float* fluxes;                      // [W]
         } ;
 
