@@ -4,6 +4,7 @@
 #include "water1D.h"
 #include "Criteria1D.h"
 #include "crop.h"
+#include "soil.h"
 
 
 /*!
@@ -252,39 +253,51 @@ bool infiltration(Criteria1D* myCase, std::string* myError, float prec, float su
  */
 bool capillaryRise(Criteria1D* myCase, float waterTableDepth)
 {
-    int boundaryLayer;          // [-] first layer over watertable
-    int myLayer;
-    float psi, previousPsi;     // [kPa] water potential
-    float dPsi;                 // [cm]  ??
-    float layerDepth, dz;       // [cm]
-    float k_psi;                // [cm/d] water conductivity
-    float he_cm;                // [cm] air entry point boundary layer
+    float psi, previousPsi;             // [kPa] water potential
+    float dPsi;                         // [cm]  ??
+    float layerDepth, dz;               // [cm]
+    float k_psi;                        // [cm/d] water conductivity
+    float he_cm;                        // [cm] air entry point boundary layer
+    double capillaryRiseSum = 0.0;      // [mm]
 
     // wrong watertable
     if (waterTableDepth == NODATA || waterTableDepth <= 0)
         return false;
 
     // watertable too depth: no effect
-    if (waterTableDepth > (myCase->mySoil.totalDepth * 3))
+    int lastLayer = myCase->nrLayers - 1;
+    if (waterTableDepth > (myCase->layer[lastLayer].depth * 3))
         return false;
 
-    // assign boundary layer
-    boundaryLayer = myCase->nrLayers - 1;
+    // search boundary layer: first layer over watertable
+    // depth is assigned at center of each layer
+    int i = lastLayer;
     if (waterTableDepth < myCase->mySoil.totalDepth)
-    {
-        myLayer = boundaryLayer;
-        // depth is at center of layer
-        while ((myLayer > 1) && (waterTableDepth <= myCase->layer[myLayer].depth))
-               myLayer--;
-        boundaryLayer = myLayer;
-    }
+        while ((i > 1) && (waterTableDepth <= myCase->layer[i].depth))
+               i--;
 
+    int boundaryLayer = i;
 
+    // air entry point of boundary layer [cm]
+    he_cm = soil::kPaToCm(myCase->layer[boundaryLayer].horizon->vanGenuchten.he);
 
+    // layers below watertable: saturated
+    if (boundaryLayer < lastLayer)
+        for (i = boundaryLayer + 1; i <= lastLayer; i++)
+        {
+            myCase->layer[i].critical = myCase->layer[i].SAT;
+
+            if (myCase->layer[i].waterContent < myCase->layer[i].SAT)
+            {
+                capillaryRiseSum += (myCase->layer[i].SAT - myCase->layer[i].waterContent);
+                myCase->layer[i].waterContent = myCase->layer[i].SAT;
+            }
+        }
 
 
     return true;
 }
+
 
 
 /*!

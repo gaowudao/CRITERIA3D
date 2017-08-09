@@ -312,15 +312,21 @@ namespace soil
     double getWiltingPoint(soil::units unit)
     {           
         if (unit == KPA)
-            return(-1600.0);
+            return(-1600);
         else if (unit == METER)
-            return(-1600.0 / 9.81);
+            return(-1600.0 / GRAVITY);
         else if (unit == CM)
-            return(-1600.0 / 9.81) * 100;
+            return kPaToCm(-1600);
         else
-            return(-1600.0);
-
+            return(-1600);
     }
+
+
+    double kPaToCm(double value)
+    {
+        return (value / GRAVITY) * 100;
+    }
+
 
     double getThetaFC(Crit3DHorizon* horizon)
     {
