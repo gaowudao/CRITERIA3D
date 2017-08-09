@@ -269,6 +269,8 @@ bool capillaryRise(Criteria1D* myCase, float waterTableDepth)
 
 
 
+
+
     return true;
 }
 
