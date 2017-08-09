@@ -61,24 +61,7 @@ double getWaterExchange(long i, TlinkedNode *link, double deltaT)
 }
 
 
-/*!
- * \brief [m3 s-1] water (liquid and vapor isothermal) flux between node index and link
- * \param i
- * \param link TlinkedNode pointer
- * \return result
- */
-double getWaterFlux(long i, TlinkedNode *link)
-{
-    if (link != NULL)
-        {
-		double matrixValue = getMatrixValue(i, link);
-        double flow = NODATA;
-        if (matrixValue != INDEX_ERROR) flow = matrixValue * (myNode[i].H - myNode[link->index].H);
-        return (flow);
-        }
-    else
-        return(0.);
-}
+
 
 
 /*!
@@ -226,7 +209,7 @@ bool computeFlux(long i, int matrixIndex, TlinkedNode *link, double deltaT, unsi
         ! myNode[i].isSurface && ! myNode[j].isSurface)
     {
         double vaporThermal;
-        vaporThermal = ThermalVaporFlux(i, link, PROCESS_WATER);
+        vaporThermal = ThermalVaporFlux(i, link, PROCESS_WATER) / WATER_DENSITY;
         C0[i] += vaporThermal;
 
         double liquidThermal;

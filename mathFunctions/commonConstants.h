@@ -108,7 +108,11 @@
     #define HEATFLUX_DIFFUSIVE 1
     #define HEATFLUX_LATENT_ISOTHERMAL 2
     #define HEATFLUX_LATENT_THERMAL 3
-    #define HEATFLUX_ADVECTIVE 4
+    #define HEATFLUX_ADVECTIVE 4    
+    #define WATERFLUX_LIQUID_ISOTHERMAL 5
+    #define WATERFLUX_LIQUID_THERMAL 6
+    #define WATERFLUX_VAPOR_ISOTHERMAL 7
+    #define WATERFLUX_VAPOR_THERMAL 8
 
     // maximum number of solutes
     #define MAX_SOLUTES   6

@@ -30,6 +30,7 @@
 #include <math.h>
 
 #include "../mathFunctions/physics.h"
+#include "../mathFunctions/commonConstants.h"
 #include "header/types.h"
 #include "header/solver.h"
 #include "header/soilPhysics.h"
@@ -145,7 +146,7 @@ double computeAtmosphericLatentFlux(long i)
 /*!
  * \brief atmospheric latent heat flux (evaporation/condensation)
  * \param i
- * \return latent flux (W m-2)
+ * \return latent flux (W)
  */
 double computeAtmosphericLatentHeatFlow(long i)
 {
@@ -157,7 +158,7 @@ double computeAtmosphericLatentHeatFlow(long i)
     // J kg-1
     double lambda = LatentHeatVaporization(myNode[i].extra->Heat->T - ZEROCELSIUS);
     // waterFlow = vapor sink source
-    latentHeatFlow = lambda * myNode[i].boundary->waterFlow * WATER_DENSITY;
+    latentHeatFlow = myNode[i].boundary->waterFlow * (lambda * WATER_DENSITY + HEAT_CAPACITY_WATER * myNode[i].extra->Heat->T);
 
     return latentHeatFlow;
 }
@@ -276,7 +277,7 @@ void updateBoundaryWater(double deltaT)
 
 void updateBoundaryHeat()
 {
-    double waterFlux, advTemperature, heatFlux;
+    double myWaterFlux, advTemperature, heatFlux;
 
     for (long i = 0; i < myStructure.nrNodes; i++)
     {
@@ -301,14 +302,15 @@ void updateBoundaryHeat()
                     if (myStructure.computeWater)
                         myNode[i].boundary->Heat->latentFlux += computeAtmosphericLatentHeatFlow(i) / myNode[i].up.area;
 
-                    // advective heat from rain or evaporation
+
                     if (myStructure.computeWater)
                     {
-                        waterFlux = myNode[i].up.linkedExtra->heatFlux->waterFlux;
-                        if (waterFlux != NODATA)
+                        // advective heat from rain
+                        myWaterFlux = myNode[i].up.linkedExtra->heatFlux->waterFlux;
+                        if (myWaterFlux > 0.)
                         {
                             advTemperature = myNode[i].boundary->Heat->temperature;
-                            heatFlux =  waterFlux * HEAT_CAPACITY_WATER * advTemperature / myNode[i].up.area;
+                            heatFlux =  myWaterFlux * HEAT_CAPACITY_WATER * advTemperature / myNode[i].up.area;
                             myNode[i].boundary->Heat->advectiveHeatFlux = heatFlux;
                         }
                     }
@@ -323,14 +325,14 @@ void updateBoundaryHeat()
                 {
                     if (myStructure.computeWater)
                     {
-                         waterFlux = myNode[i].boundary->waterFlow;
+                         myWaterFlux = myNode[i].boundary->waterFlow;
 
-                        if (waterFlux < 0)
+                        if (myWaterFlux < 0)
                             advTemperature = myNode[i].extra->Heat->T;
                         else
                             advTemperature = myNode[i].boundary->Heat->fixedTemperature;
 
-                        heatFlux =  waterFlux * HEAT_CAPACITY_WATER * advTemperature / myNode[i].up.area;
+                        heatFlux =  myWaterFlux * HEAT_CAPACITY_WATER * advTemperature / myNode[i].up.area;
                         myNode[i].boundary->Heat->advectiveHeatFlux = heatFlux;
 
                         myNode[i].extra->Heat->Qh += myNode[i].up.area * myNode[i].boundary->Heat->advectiveHeatFlux;

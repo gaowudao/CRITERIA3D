@@ -84,7 +84,11 @@ outputType getOutputType(outputGroup myOut)
         myOut == totalHeatFlux ||
         myOut == diffusiveHeatFlux ||
         myOut == latentHeatFluxIso ||
-        myOut == latentHeatFluxTherm)
+        myOut == latentHeatFluxTherm ||
+        myOut == waterIsothLiquidFlux ||
+        myOut == waterThermLiquidFlux ||
+        myOut == waterIsothVaporFlux ||
+        myOut == waterThermVaporFlux)
 
         return outputType::profile;
     else if (myOut == energyBalance ||
@@ -203,6 +207,22 @@ QVector<QPointF> getProfileSeries(Crit3DOut* myOut, outputGroup myVar, int layer
 
             case outputGroup::diffusiveHeatFlux :
                 myVal = myOut->profileOutput[i].diffusiveHeatFlux[layerIndex].y();
+                break;
+
+            case outputGroup::waterIsothLiquidFlux :
+                myVal = myOut->profileOutput[i].waterIsothermalLiquidFlux[layerIndex].y();
+                break;
+
+            case outputGroup::waterThermLiquidFlux :
+                myVal = myOut->profileOutput[i].waterThermalLiquidFlux[layerIndex].y();
+                break;
+
+            case outputGroup::waterIsothVaporFlux :
+                myVal = myOut->profileOutput[i].waterIsothermalVaporFlux[layerIndex].y();
+                break;
+
+            case outputGroup::waterThermVaporFlux :
+                myVal = myOut->profileOutput[i].waterThermalVaporFlux[layerIndex].y();
                 break;
         }
 

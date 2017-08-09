@@ -21,6 +21,7 @@
 
     struct THeatFlux{
         float waterFlux;                    // [m3 s-1]
+        float vaporFlux;                    // [kg s-1]
         float* fluxes;                      // [W]
         } ;
 
@@ -41,6 +42,6 @@
 
     void initializeExtra(TCrit3DnodeExtra *myNodeExtra, bool computeHeat, bool computeSolutes);
     void initializeLinkExtra(TCrit3DLinkedNodeExtra* myLinkedNodeExtra, bool computeHeat, bool computeSolutes);
-    void initializeNodeHeatFlux(TCrit3DLinkedNodeExtra* myLinkExtra);
+    void initializeNodeHeatFlux(TCrit3DLinkedNodeExtra* myLinkExtra, bool initHeat, bool initWater);
 
 #endif // TYPESEXTRA_H
