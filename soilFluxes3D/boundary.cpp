@@ -148,7 +148,7 @@ double computeAtmosphericLatentFlux(long i)
  * \param i
  * \return latent flux (W)
  */
-double computeAtmosphericLatentHeatFlow(long i)
+double computeAtmosphericLatentHeatFlux(long i)
 {
     if (myNode[i].boundary->Heat == NULL || ! myNode[myNode[i].up.index].isSurface)
         return 0;
@@ -157,7 +157,7 @@ double computeAtmosphericLatentHeatFlow(long i)
 
     // J kg-1
     double lambda = LatentHeatVaporization(myNode[i].extra->Heat->T - ZEROCELSIUS);
-    // waterFlow = vapor sink source
+    // waterFlow = vapor sink source (m3 s-1)
     latentHeatFlow = myNode[i].boundary->waterFlow * (lambda * WATER_DENSITY + HEAT_CAPACITY_WATER * myNode[i].extra->Heat->T);
 
     return latentHeatFlow;
@@ -300,7 +300,7 @@ void updateBoundaryHeat()
                     myNode[i].boundary->Heat->sensibleFlux += computeAtmosphericSensibleFlow(i);
 
                     if (myStructure.computeWater)
-                        myNode[i].boundary->Heat->latentFlux += computeAtmosphericLatentHeatFlow(i) / myNode[i].up.area;
+                        myNode[i].boundary->Heat->latentFlux += computeAtmosphericLatentHeatFlux(i) / myNode[i].up.area;
 
 
                     if (myStructure.computeWater)
