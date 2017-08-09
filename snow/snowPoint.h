@@ -13,11 +13,11 @@
     #define SOIL_EMISSIVITY 0.92f               /*!<  [-] soil (average) */
 
     //specific gas constant of water vapor
-    #define THERMO_WATER_VAPOR 0.4615f          //[kJ/(kg °K)]
+    #define THERMO_WATER_VAPOR 0.4615f          /*!< [kJ/(kg °K)] */
 
     // heat of fusion for ice at 0 °C
-    #define LATENT_HEAT_FUSION  335                     //[kJ/kg]
-    #define LATENT_HEAT_VAPORIZATION 2500               //[kJ/kg]
+    #define LATENT_HEAT_FUSION  335             /*!< [kJ/kg] */
+    #define LATENT_HEAT_VAPORIZATION 2500       /*!< [kJ/kg] */
 
     #define SOIL_SPECIFIC_HEAT 2.1f             /*!<  [KJ/kg/°C] */
     #define DEFAULT_BULK_DENSITY 1300           /*!<  [kg/m^3] */

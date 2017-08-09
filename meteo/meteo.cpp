@@ -198,7 +198,8 @@ double ET0_Penman_daily(int myDOY, float myElevation, float myLatitude,
         relative humidity is available (G. Van Halsema and G. Muñoz, Personal communication).
         */
 
-        mySatVapPress = 0.6108 * exp(17.27 * myTmed / (myTmed + 237.3));
+        /*! Monteith and Unsworth (2008) */
+        mySatVapPress = 0.61078 * exp(17.27 * myTmed / (myTmed + 237.3));
         myVapPress = mySatVapPress * myUmed / 100;
         delta = SaturationSlope(myTmed, mySatVapPress) / 1000;    /*!<  to kPa */
 
