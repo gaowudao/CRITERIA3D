@@ -252,6 +252,7 @@ bool infiltration(Criteria1D* myCase, std::string* myError, float prec, float su
 bool capillaryRise(Criteria1D* myCase)
 {
 
+    return true;
 }
 
 
