@@ -137,6 +137,7 @@
      double getThetaFC(Crit3DHorizon* horizon);
      double getThetaWP(Crit3DHorizon* horizon);
      double kPaToCm(double value);
+     double cmTokPa(double value);
 
      double SeFromTheta(double theta, Crit3DHorizon* horizon);
      double psiFromTheta(double theta, Crit3DHorizon* horizon);

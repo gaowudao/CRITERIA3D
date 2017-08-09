@@ -312,19 +312,24 @@ namespace soil
     double getWiltingPoint(soil::units unit)
     {           
         if (unit == KPA)
-            return(-1600);
+            return(-1600.f);
         else if (unit == METER)
-            return(-1600.0 / GRAVITY);
+            return(-1600.f / GRAVITY);
         else if (unit == CM)
-            return kPaToCm(-1600);
+            return kPaToCm(-1600.f);
         else
-            return(-1600);
+            return(-1600.f);
     }
 
 
     double kPaToCm(double value)
     {
-        return (value / GRAVITY) * 100;
+        return (value / GRAVITY) * 100.f;
+    }
+
+    double cmTokPa(double value)
+    {
+        return (value / 100.f) * GRAVITY;
     }
 
 
