@@ -252,7 +252,7 @@ bool infiltration(Criteria1D* myCase, std::string* myError, float prec, float su
 bool capillaryRise(Criteria1D* myCase, float waterTableDepth)
 {
     float psi, previousPsi;             // [kPa] water potential
-    float he;                           // [kPa] air entry point boundary layer
+    float he_boundary;                  // [kPa] air entry point boundary layer
     float dz;                           // [m]
 
     float dPsi;                         // [cm]  ??
@@ -274,7 +274,7 @@ bool capillaryRise(Criteria1D* myCase, float waterTableDepth)
     int i = lastLayer;
     if (waterTableDepth < myCase->mySoil.totalDepth)
         while ((i > 1) && (waterTableDepth <= myCase->layer[i].depth))
-               i--;
+            i--;
 
     int boundaryLayer = i;
 
@@ -292,13 +292,13 @@ bool capillaryRise(Criteria1D* myCase, float waterTableDepth)
         }
 
     // air entry point of boundary layer [kPa]
-    he = myCase->layer[boundaryLayer].horizon->vanGenuchten.he;
+    he_boundary = myCase->layer[boundaryLayer].horizon->vanGenuchten.he;
 
     // layer above watertabel: compute water content threshold for dreinage
     for (i = 1; i <= boundaryLayer; i++)
     {
-        dz = (waterTableDepth - myCase->layer[i].depth);    // [m]
-        psi = soil::metersTokPa(dz) + he;                   // [kPa]
+        dz = (waterTableDepth - myCase->layer[i].depth);                                // [m]
+        psi = soil::metersTokPa(dz) + he_boundary;                                      // [kPa]
         myCase->layer[i].critical = soil::getWaterContent(psi, &(myCase->layer[i]));    // [mm]
 
         if (myCase->layer[i].critical > myCase->layer[i].FC)

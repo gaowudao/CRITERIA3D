@@ -273,34 +273,33 @@ namespace soil
     /*!
      * \brief F.ZINONI: Field Capacity potential as clay function
      * \param horizon
-     * \param unit
+     * \param unit [KPA | METER | CM]
      * \return result
      */
     double getFieldCapacity(Crit3DHorizon* horizon, soil::units unit)
     {
-
         double fcMin = -10;                 /*!< [kPa] clay < 20% sandy soils */
         double fcMax = -33;                 /*!< [kPa] clay > 40% clay soils */
+        double fieldCapacity;
 
-        if (unit == METER)
-        {
-            fcMin = kPaToMeters(fcMin);
-            fcMax = kPaToMeters(fcMax);
-        }
-        else if (unit == CM)
-        {
-            fcMin = kPaToMeters(fcMin) * 100.f;
-            fcMax = kPaToMeters(fcMax) * 100.f;
-        }
-
-        if (horizon->texture.clay < 20) return(fcMin);
-        else if (horizon->texture.clay > 40) return(fcMax);
+        if (horizon->texture.clay < 20)
+            fieldCapacity = fcMin;
+        else if (horizon->texture.clay > 40)
+            fieldCapacity = fcMax;
         else
         {
             double clayFactor = (horizon->texture.clay - 20) / 20;
-            double fieldCapacityPotential = (fcMin + (fcMax - fcMin) * clayFactor);
-            return fieldCapacityPotential;
+            fieldCapacity = (fcMin + (fcMax - fcMin) * clayFactor);
         }
+
+        if (unit == KPA)
+            return fieldCapacity;
+        else if (unit == METER)
+            return kPaToMeters(fieldCapacity);
+        else if (unit == CM)
+            return kPaToCm(fieldCapacity);
+        else
+            return fieldCapacity;
     }
 
 
@@ -316,7 +315,7 @@ namespace soil
         else if (unit == METER)
             return kPaToMeters(-1600.f);
         else if (unit == CM)
-            return kPaToMeters(-1600.f) * 100.f;
+            return kPaToCm(-1600.f);
         else
             return(-1600.f);
     }
@@ -331,6 +330,17 @@ namespace soil
     {
         return (value * GRAVITY);
     }
+
+    double kPaToCm(double value)
+    {
+        return kPaToMeters(value) * 100.f;
+    }
+
+    double cmTokPa(double value)
+    {
+        return metersTokPa(value / 100.f);
+    }
+
 
 
     double getThetaFC(Crit3DHorizon* horizon)
@@ -380,9 +390,9 @@ namespace soil
 
     /*!
      * \brief Compute water content from signed water potential
-     * \param signPsi water potential [same unit of vanGenuchten.he]
-     * \param horizon pointer to Crit3DHorizon class
-     * \return volumetric water content [m^3 m-3]
+     * \param signPsi water potential       [kPa]
+     * \param horizon
+     * \return volumetric water content     [m^3 m-3]
      */
     double thetaFromSignPsi(double signPsi, Crit3DHorizon* horizon)
     {
@@ -402,13 +412,13 @@ namespace soil
 
     /*!
      * \brief getWaterContent
-     * \param signPsi [kPa]
+     * \param psi [kPa]
      * \param layer
      * \return water content [mm]
      */
-    double getWaterContent(double signPsi, Crit3DLayer* layer)
+    double getWaterContent(double psi, Crit3DLayer* layer)
     {
-        double theta = soil::thetaFromSignPsi(signPsi, layer->horizon);
+        double theta = soil::thetaFromSignPsi(-psi, layer->horizon);
         return theta * layer->thickness * layer->soilFraction * 1000.f;
     }
 

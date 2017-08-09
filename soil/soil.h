@@ -140,6 +140,9 @@
      double kPaToMeters(double value);
      double metersTokPa(double value);
 
+     double kPaToCm(double value);
+     double cmTokPa(double value);
+
      double SeFromTheta(double theta, Crit3DHorizon* horizon);
      double psiFromTheta(double theta, Crit3DHorizon* horizon);
      double thetaFromSignPsi(double signPsi, Crit3DHorizon* horizon);

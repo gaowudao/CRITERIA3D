@@ -460,11 +460,11 @@ bool cropTranspiration(Criteria1D* myCase)
     {
         surplusThreshold = myCase->layer[i].SAT - (WSS * (myCase->layer[i].SAT - myCase->layer[i].FC));
 
-        theta = soil::thetaFromSignPsi(-myCase->myCrop.psiLeaf * 101.0 / 1033.0, myCase->layer[i].horizon);
-        //[mm]
-        soilThickness = myCase->layer[i].thickness * myCase->layer[i].soilFraction * 1000.0;
-        //[mm]
-        cropWP = theta * soilThickness;
+        theta = soil::thetaFromSignPsi(-soil::cmTokPa(myCase->myCrop.psiLeaf), myCase->layer[i].horizon);
+
+        soilThickness = myCase->layer[i].thickness * myCase->layer[i].soilFraction * 1000.0;    // [mm]
+
+        cropWP = theta * soilThickness;  // [mm]
 
         waterScarcityThreshold = cropWP + myCase->myCrop.waterStressSensibility * (myCase->layer[i].FC - cropWP);
 
@@ -589,7 +589,7 @@ bool cropTranspiration_old(Criteria1D* myCase)
         sumPsi += log(psi + 0.01);
     }
 
-    avgPSI = exp(sumPsi / nrRootedLayers) * (1033. / 101.); //from kPa to cm
+    avgPSI = soil::kPaToCm(exp(sumPsi / nrRootedLayers));  // [cm]
     avgKpsi = exp(sumKpsi / nrRootedLayers);
 
     if (avgKpsi == 0.0)
@@ -610,7 +610,7 @@ bool cropTranspiration_old(Criteria1D* myCase)
     for (i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
     {
         criticalWC = myCase->layer[i].SAT - (WSS * (myCase->layer[i].SAT - myCase->layer[i].FC));
-        theta = soil::thetaFromSignPsi(-myCase->myCrop.psiLeaf * 101.0 / 1033.0, myCase->layer[i].horizon);
+        theta = soil::thetaFromSignPsi(-soil::cmTokPa(myCase->myCrop.psiLeaf), myCase->layer[i].horizon);
         soilThickness = myCase->layer[i].thickness * myCase->layer[i].soilFraction * 1000.0;
         wpCrop = theta * soilThickness;
 
