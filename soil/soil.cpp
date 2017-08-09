@@ -279,25 +279,25 @@ namespace soil
     double getFieldCapacity(Crit3DHorizon* horizon, soil::units unit)
     {
 
-        double fcMin = -10;                 /*!< [kPa] clay < 20% */
-        double fcMax = -33;                 /*!< [kPa] clay > 50% */
+        double fcMin = -10;                 /*!< [kPa] clay < 20% sandy soils */
+        double fcMax = -33;                 /*!< [kPa] clay > 40% clay soils */
 
-        if (unit == CM)
+        if (unit == METER)
         {
-            fcMin /= 9.81;
-            fcMax /= 9.81;
+            fcMin = kPaToMeters(fcMin);
+            fcMax = kPaToMeters(fcMax);
         }
-        else if (unit == METER)
+        else if (unit == CM)
         {
-            fcMin *= 100/9.81;
-            fcMax *= 100/9.81;
+            fcMin = kPaToMeters(fcMin) * 100.f;
+            fcMax = kPaToMeters(fcMax) * 100.f;
         }
 
         if (horizon->texture.clay < 20) return(fcMin);
-        else if (horizon->texture.clay > 50) return(fcMax);
+        else if (horizon->texture.clay > 40) return(fcMax);
         else
         {
-            double clayFactor = (horizon->texture.clay - 20) / 30;
+            double clayFactor = (horizon->texture.clay - 20) / 20;
             double fieldCapacityPotential = (fcMin + (fcMax - fcMin) * clayFactor);
             return fieldCapacityPotential;
         }
@@ -312,24 +312,24 @@ namespace soil
     double getWiltingPoint(soil::units unit)
     {           
         if (unit == KPA)
-            return(-1600.f);
+            return -1600.f;
         else if (unit == METER)
-            return(-1600.f / GRAVITY);
+            return kPaToMeters(-1600.f);
         else if (unit == CM)
-            return kPaToCm(-1600.f);
+            return kPaToMeters(-1600.f) * 100.f;
         else
             return(-1600.f);
     }
 
 
-    double kPaToCm(double value)
+    double kPaToMeters(double value)
     {
-        return (value / GRAVITY) * 100.f;
+        return (value / GRAVITY);
     }
 
-    double cmTokPa(double value)
+    double metersTokPa(double value)
     {
-        return (value / 100.f) * GRAVITY;
+        return (value * GRAVITY);
     }
 
 

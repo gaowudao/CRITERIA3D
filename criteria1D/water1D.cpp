@@ -254,10 +254,12 @@ bool infiltration(Criteria1D* myCase, std::string* myError, float prec, float su
 bool capillaryRise(Criteria1D* myCase, float waterTableDepth)
 {
     float psi, previousPsi;             // [kPa] water potential
+    float he;                           // [kPa] air entry point boundary layer
+    float dz;                           // [m]
+
     float dPsi;                         // [cm]  ??
-    float layerDepth, dz;               // [cm]
+
     float k_psi;                        // [cm/d] water conductivity
-    float he_cm;                        // [cm] air entry point boundary layer
     double capillaryRiseSum = 0.0;      // [mm]
 
     // wrong watertable
@@ -278,8 +280,8 @@ bool capillaryRise(Criteria1D* myCase, float waterTableDepth)
 
     int boundaryLayer = i;
 
-    // air entry point of boundary layer [cm]
-    he_cm = soil::kPaToCm(myCase->layer[boundaryLayer].horizon->vanGenuchten.he);
+    // air entry point of boundary layer [kPa]
+    he = soil::kPaToCm(myCase->layer[boundaryLayer].horizon->vanGenuchten.he);
 
     // layers below watertable: saturated
     if (boundaryLayer < lastLayer)
@@ -293,6 +295,22 @@ bool capillaryRise(Criteria1D* myCase, float waterTableDepth)
                 myCase->layer[i].waterContent = myCase->layer[i].SAT;
             }
         }
+
+    // layer above watertabel: compute water content threshold for dreinage
+    for (i = 1; i <= boundaryLayer; i++)
+    {
+        // [m]
+        dz = (waterTableDepth - myCase->layer[i].depth);
+        // [kPa]
+        psi = soil::cmTokPa(dz) + he;
+
+    }
+
+            suolo(L).UC = Soils.FUN_SOIL_WaterContent(L, Psi)               '[mm]
+            If suolo(L).UC < suolo(L).CC Then
+                suolo(L).UC = suolo(L).CC
+            End If
+        Next L
 
 
     return true;
