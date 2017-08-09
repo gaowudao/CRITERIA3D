@@ -225,14 +225,14 @@ double getTotalEasyWater(Criteria1D* myCase)
 
     for (i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
     {
-        threshold = myCase->layer[i].FC -
-                myCase->myCrop.waterStressSensibility * (myCase->layer[i].FC - myCase->layer[i].WP);
+        threshold = myCase->layer[i].FC - myCase->myCrop.waterStressSensibility * (myCase->layer[i].FC - myCase->layer[i].WP);
 
         deltaAW = (myCase->layer[i].waterContent - threshold) *(myCase->myCrop.roots.rootDensity[i] / densMax);
 
         myDepth = myCase->layer[i].depth + myCase->layer[i].thickness / 2.0;
+
         if (myCase->myCrop.roots.rootDepth < myDepth)
-            deltaAW *= (myCase->myCrop.roots.rootDepth - myDepth) / myCase->layer[i].thickness;
+                deltaAW *= (myCase->myCrop.roots.rootDepth - myDepth) / myCase->layer[i].thickness;
 
         myEasyWater += deltaAW;
 
@@ -338,11 +338,10 @@ bool irrigateCrop(Criteria1D* myCase, double irrigationDemand)
 {
     double myDeficit;
 
-    int i=0;
-
     myCase->output.dailyIrrigation = irrigationDemand;
 
-    while (i<myCase->nrLayers && irrigationDemand>0)
+    int i=0;
+    while (i < myCase->nrLayers && irrigationDemand > 0.0f)
     {
         if (myCase->layer[i].waterContent < myCase->layer[i].FC)
         {

@@ -253,6 +253,7 @@ bool infiltration(Criteria1D* myCase, std::string* myError, float prec, float su
 bool capillaryRise(Criteria1D* myCase, float waterTableDepth)
 {
     int boundaryLayer;          // [-] first layer over watertable
+    int myLayer;
     float psi, previousPsi;     // [kPa] water potential
     float dPsi;                 // [cm]  ??
     float layerDepth, dz;       // [cm]
@@ -266,6 +267,17 @@ bool capillaryRise(Criteria1D* myCase, float waterTableDepth)
     // watertable too depth: no effect
     if (waterTableDepth > (myCase->mySoil.totalDepth * 3))
         return false;
+
+    // assign boundary layer
+    boundaryLayer = myCase->nrLayers - 1;
+    if (waterTableDepth < myCase->mySoil.totalDepth)
+    {
+        myLayer = boundaryLayer;
+        // depth is at center of layer
+        while ((myLayer > 1) && (waterTableDepth <= myCase->layer[myLayer].depth))
+               myLayer--;
+        boundaryLayer = myLayer;
+    }
 
 
 
