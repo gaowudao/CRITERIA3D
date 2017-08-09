@@ -821,11 +821,9 @@ static void amass( struct posdata *pdat )
     }
     else
     {
-        pdat->amass =
-            1.0 / ( cos (raddeg * pdat->zenref) + 0.50572 *
-            pow ((96.07995 - pdat->zenref),-1.6364) );
+        pdat->amass = 1.0f / float(cos(raddeg * pdat->zenref) + 0.50572f * pow ((96.07995f - pdat->zenref),-1.6364f));
 
-        pdat->ampress   = pdat->amass * pdat->press / 1013.0;
+        pdat->ampress   = pdat->amass * pdat->press / 1013.0f;
     }
 }
 

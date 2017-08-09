@@ -11,14 +11,14 @@
     #define TEMPERATURE_DEFAULT 15
 
     /*! Eppley shadow band width (cm) */
-    #define SBWID 7.6
+    #define SBWID 7.6f
     /*! Eppley shadow band radius (cm) */
-    #define SBRAD 31.7
+    #define SBRAD 31.7f
     /*! Drummond factor for partly cloudy skies */
-    #define SBSKY 0.04
+    #define SBSKY 0.04f
 
-    #define TRANSMISSIVITY_SAMANI_COEFF_DEFAULT 0.17
-    #define CLEAR_SKY_TRANSMISSIVITY_DEFAULT 0.75
+    #define TRANSMISSIVITY_SAMANI_COEFF_DEFAULT  0.17f
+    #define CLEAR_SKY_TRANSMISSIVITY_DEFAULT     0.75f
 
     enum TlandUse{LAND_USE_MOUNTAIN = 0, LAND_USE_RURAL=1, LAND_USE_CITY=2, LAND_USE_INDUSTRIAL=3};
     enum TparameterMode {PARAM_MODE_FIXED = 0, PARAM_MODE_MAP = 1} ;

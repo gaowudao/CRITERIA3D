@@ -29,7 +29,6 @@
 */
 
 #include <algorithm>
-#include <cmath>
 
 #include "commonConstants.h"
 #include "snowPoint.h"
@@ -135,23 +134,9 @@ void Crit3DSnowPoint::computeSnowBrooksModel()
      if ( (surfaceWaterContent / 1000) > _parameters->snowMaxWaterContent )                         /*!<  [m]  */
         isWater = true;
 
-     //else
 
-//                    If MSoil.SoilMap.isLoaded Then
-//                        //corpi d'acqua - calcolo inutile
-//                        If MSoil.SoilMapType = Definitions.SOILMAP_TYPE_ER Then
-//                            soilIndex = GIS.GetValueFromXY(MSoil.SoilMap, x, y)
-//                            If soilIndex <> Definitions.NO_DATA Then
-//                                If UCase(MSoil.soilList(soilIndex).Name) = "CORPI D'ACQUA" Then
-//                                    IsWater = True
-//                                End If
-//                            End If
-//                        End If
-//                    End If
-
-
-      if ((!isWater) && (checkValidPoint()))
-      {
+     if ((!isWater) && (checkValidPoint()))
+     {
         float dewPoint = tDewFromRelHum(_airRH, _airT);     /*!< [°C] */
 
         if (_radpoint->transmissivity != NODATA)
@@ -528,6 +513,7 @@ float Crit3DSnowPoint::getTempMinWithRain()
 {
     return _parameters->tempMinWithRain;
 }
+
 
 /*!
  * \brief Computes aerodynamic Resistance

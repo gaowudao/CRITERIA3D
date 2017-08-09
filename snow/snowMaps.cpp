@@ -56,7 +56,6 @@ Crit3DSnowMaps::Crit3DSnowMaps(const gis::Crit3DRasterGrid& dtmGrid)
 
     _initSoilPackTemp = 3.4f;
     _initSnowSurfaceTemp = 5.0f;
-
 }
 
 
@@ -103,7 +102,7 @@ void Crit3DSnowMaps::resetSnowModel(gis::Crit3DRasterGrid* sweGrid, Crit3DSnowPo
             initSWE = sweGrid->value[row][col];
             if (initSWE != sweGrid->header->flag)
             {
-                // TODO usare dato reale bulk density
+                // TODO usare dato reale bulk density se disponibile
                 surfaceBulkDensity = DEFAULT_BULK_DENSITY;
 
                 _snowWaterEquivalentMap->value[row][col] = initSWE;
