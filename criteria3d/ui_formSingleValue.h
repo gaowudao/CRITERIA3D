@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'formSingleValue.ui'
 **
-** Created by: Qt User Interface Compiler version 5.7.0
+** Created by: Qt User Interface Compiler version 5.7.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -52,7 +52,7 @@ public:
 
     void retranslateUi(QDialog *formSingleValue)
     {
-        formSingleValue->setWindowTitle(QApplication::translate("formSingleValue", "Insert value", 0));
+        formSingleValue->setWindowTitle(QApplication::translate("formSingleValue", "Insert value", Q_NULLPTR));
     } // retranslateUi
 
 };

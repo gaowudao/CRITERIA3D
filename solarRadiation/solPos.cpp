@@ -715,8 +715,8 @@ static void srss( struct posdata *pdat )
         pdat->ssetr   =  2999.0;
     }
     else {
-        pdat->sretr   = 720.0 - 4.0 * pdat->ssha - pdat->tstfix;
-        pdat->ssetr   = 720.0 + 4.0 * pdat->ssha - pdat->tstfix;
+        pdat->sretr   = float(720.0 - 4.0 * pdat->ssha - pdat->tstfix);
+        pdat->ssetr   = float(720.0 + 4.0 * pdat->ssha - pdat->tstfix);
     }
 }
 
@@ -839,8 +839,8 @@ static void amass( struct posdata *pdat )
  */
 static void prime( struct posdata *pdat )
 {
-    pdat->unprime = 1.031 * exp ( -1.4 / ( 0.9 + 9.4 / pdat->amass ) ) + 0.1;
-    pdat->prime   = 1.0 / pdat->unprime;
+    pdat->unprime = float( 1.031 * exp ( -1.4 / ( 0.9 + 9.4 / pdat->amass )) + 0.1 );
+    pdat->prime   = float( 1.0 / pdat->unprime );
 }
 
 
@@ -879,15 +879,15 @@ static void localtrig( struct posdata *pdat, struct trigdata *tdat )
     {
       tdat->sd = 1.0;  /*!< reflag as having completed calculations */
       if ( pdat->function | CD_MASK )
-        tdat->cd = cos ( raddeg * pdat->declin );
+        tdat->cd = float(cos ( raddeg * pdat->declin ));
       if ( pdat->function | CH_MASK )
-        tdat->ch = cos ( raddeg * pdat->hrang );
+        tdat->ch = float(cos ( raddeg * pdat->hrang ));
       if ( pdat->function | CL_MASK )
-        tdat->cl = cos ( raddeg * pdat->latitude );
+        tdat->cl = float(cos ( raddeg * pdat->latitude ));
       if ( pdat->function | SD_MASK )
-        tdat->sd = sin ( raddeg * pdat->declin );
+        tdat->sd = float(sin ( raddeg * pdat->declin ));
       if ( pdat->function | SL_MASK )
-        tdat->sl = sin ( raddeg * pdat->latitude );
+        tdat->sl = float(sin ( raddeg * pdat->latitude ));
     }
 }
 
