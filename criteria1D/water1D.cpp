@@ -305,36 +305,33 @@ bool capillaryRise(Criteria1D* myCase, float waterTableDepth)
             myCase->layer[i].critical = myCase->layer[i].FC;
     }
 
-
     // above watertable: capillary rise
     for (i = boundaryLayer; i > 0; i--)
     {
         psi = soil::getWaterPotential(&(myCase->layer[i]));     // [kPa]
 
+        if (i < boundaryLayer)
+            if (psi < previousPsi)
+                break;
+
         /*
-            If (L < boundaryLayer) Then
-                If (Psi <= Psi_previous) Then
-                    Exit For
-                End If
-            End If
+        dPsi = kPaToCm(Psi)                                             '[cm]
 
-            dPsi = kPaToCm(Psi)                                             '[cm]
+        layerDepth = suolo(L).prof + suolo(L).spess / 2#                '[cm]
+        dz = waterTableDepth - layerDepth + he_cm                       '[cm]
 
-            layerDepth = suolo(L).prof + suolo(L).spess / 2#                '[cm]
-            dz = waterTableDepth - layerDepth + he_cm                       '[cm]
+        If (dPsi > dz) Then
+            k_psi = Soils.FUN_SOIL_hydrConductivity(L, Psi)             '[cm/day]
 
-            If (dPsi > dz) Then
-                k_psi = Soils.FUN_SOIL_hydrConductivity(L, Psi)             '[cm/day]
+            capillaryRise = k_psi * ((dPsi / dz) - 1#)                  '[cm]
+            capillaryRise = min(capillaryRise * 10, suolo(L).UC - U(L)) '[mm]
 
-                capillaryRise = k_psi * ((dPsi / dz) - 1#)                  '[cm]
-                capillaryRise = min(capillaryRise * 10, suolo(L).UC - U(L)) '[mm]
+            U(L) = U(L) + capillaryRise
+            RcTot = RcTot + capillaryRise
+        End If
+        */
 
-                U(L) = U(L) + capillaryRise
-                RcTot = RcTot + capillaryRise
-            End If
-            Psi_previous = Psi
-            */
-
+        previousPsi = psi;
     }
 
     return true;
