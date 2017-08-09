@@ -1,16 +1,19 @@
-# CRITERIA3D
-CRITERIA 3D provides a set of libraries and models for agro-meteorological and climate analysis.
-It includes meteorological data interpolation, daily weather generator, radiation budget, snow accumulation and melt, plant development, soil temperature, water and heat flows, plant water uptake.
+# CRITERIA3D distribution
+CRITERIA 3D distribution provides a set of libraries and executables for agro-meteorological and climate analysis.
+It includes a numerical solution for three-dimensional water and heat flow in the soil, meteorological data interpolation, daily weather generator, radiation budget, snow accumulation and melt, plant development and plant water uptake.
 
 # soilFluxex3D library
 SoilFluxex3D is a numerical solution for flow equations of water and heat in the soil, in a three-dimensional domain. Surface flow is described by the two-dimensional parabolic approximation of the St. Venant equation, using Manning’s equation of motion; subsurface flow is described by the three-dimensional Richards’ equation for the unsaturated zone and by three-dimensional Darcy’s law for the saturated zone, using an integrated finite difference formulation.
 http://www.sciencedirect.com/science/article/pii/S0309170809001754
 
 # PRAGA (PRogram for AGrometeorological Analysis)
-PRAGA is the Graphical User Interface to manage all the libraries in the CRITERIA3D distribution.
+PRAGA is a Graphical User Interface to manage the libraries in the CRITERIA3D distribution for agro-meteorological and climate analysis.
 
 It uses a modified version of MapGraphics library:
 https://github.com/raptorswing/MapGraphics
+
+# HEAT1D
+HEAT1D is a software for test the soilFluxex3D library in a mono-dimensional domain.
 
 # LICENSE
 CRITERIA 3D has been developed under contract issued by 
