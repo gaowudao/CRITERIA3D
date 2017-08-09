@@ -424,6 +424,18 @@ namespace soil
 
 
     /*!
+     * \brief getWaterPotential
+     * \param layer
+     * \return water potential [kPa]
+     */
+    double getWaterPotential(Crit3DLayer* layer)
+    {
+        double theta = layer->waterContent / (layer->thickness * layer->soilFraction * 1000.f);
+        return psiFromTheta(theta, layer->horizon);
+    }
+
+
+    /*!
      * \brief Compute hydraulic conductivity [m/sec] for modified Van Genuchten
      *        Mualem equation
      *        WARNING: very low values are possible (es: 10^12) units are the same of .kSat (usually cm d-1)

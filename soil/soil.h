@@ -154,6 +154,7 @@
      double estimateTotalPorosity(Crit3DHorizon* mySoil, double bulkDensity);
 
      double getWaterContent(double signPsi, Crit3DLayer* layer);
+     double getWaterPotential(Crit3DLayer* layer);
     }
 
 #endif // SOIL_H

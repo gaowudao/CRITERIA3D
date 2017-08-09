@@ -294,7 +294,7 @@ bool capillaryRise(Criteria1D* myCase, float waterTableDepth)
     // air entry point of boundary layer [kPa]
     he_boundary = myCase->layer[boundaryLayer].horizon->vanGenuchten.he;
 
-    // layer above watertabel: compute water content threshold for dreinage
+    // above watertable: compute water content threshold for dreinage
     for (i = 1; i <= boundaryLayer; i++)
     {
         dz = (waterTableDepth - myCase->layer[i].depth);                                // [m]
@@ -303,6 +303,38 @@ bool capillaryRise(Criteria1D* myCase, float waterTableDepth)
 
         if (myCase->layer[i].critical > myCase->layer[i].FC)
             myCase->layer[i].critical = myCase->layer[i].FC;
+    }
+
+
+    // above watertable: capillary rise
+    for (i = boundaryLayer; i > 0; i--)
+    {
+        psi = soil::getWaterPotential(&(myCase->layer[i]));     // [kPa]
+
+        /*
+            If (L < boundaryLayer) Then
+                If (Psi <= Psi_previous) Then
+                    Exit For
+                End If
+            End If
+
+            dPsi = kPaToCm(Psi)                                             '[cm]
+
+            layerDepth = suolo(L).prof + suolo(L).spess / 2#                '[cm]
+            dz = waterTableDepth - layerDepth + he_cm                       '[cm]
+
+            If (dPsi > dz) Then
+                k_psi = Soils.FUN_SOIL_hydrConductivity(L, Psi)             '[cm/day]
+
+                capillaryRise = k_psi * ((dPsi / dz) - 1#)                  '[cm]
+                capillaryRise = min(capillaryRise * 10, suolo(L).UC - U(L)) '[mm]
+
+                U(L) = U(L) + capillaryRise
+                RcTot = RcTot + capillaryRise
+            End If
+            Psi_previous = Psi
+            */
+
     }
 
     return true;
