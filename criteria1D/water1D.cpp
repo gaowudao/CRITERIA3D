@@ -247,10 +247,27 @@ bool infiltration(Criteria1D* myCase, std::string* myError, float prec, float su
 /*!
  * \brief compute capillary rise due to watertable
  * \param myCase
+ * \param waterTableDepth [m]
  * \return
  */
-bool capillaryRise(Criteria1D* myCase)
+bool capillaryRise(Criteria1D* myCase, float waterTableDepth)
 {
+    int boundaryLayer;          // [-] first layer over watertable
+    float psi, previousPsi;     // [kPa] water potential
+    float dPsi;                 // [cm]  ??
+    float layerDepth, dz;       // [cm]
+    float k_psi;                // [cm/d] water conductivity
+    float he_cm;                // [cm] air entry point boundary layer
+
+    // wrong watertable
+    if (waterTableDepth == NODATA || waterTableDepth <= 0)
+        return false;
+
+    // watertable too depth: no effect
+    if (waterTableDepth > (myCase->mySoil.totalDepth * 3))
+        return false;
+
+
 
     return true;
 }

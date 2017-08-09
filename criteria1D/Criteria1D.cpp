@@ -71,6 +71,7 @@ void Criteria1DOutput::initializeDaily()
     this->dailyTranspiration = 0.0;
     this->dailyCropAvailableWater = 0.0;
     this->dailySoilWaterDeficit = 0.0;
+    this->dailyCapillaryRise = 0.0;
 }
 
 

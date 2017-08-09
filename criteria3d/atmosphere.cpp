@@ -801,8 +801,8 @@ meteoVariable getMeteoVarFromAggregationType(meteoVariable myVar, aggregationTyp
         return dailyPrecipitation;
     else if (myVar == potentialEvapotranspiration)
         return potentialEvapotranspiration;
-    else if (myVar == realEvaporation)
-        return realEvaporation;
+    else if (myVar == actualEvaporation)
+        return actualEvaporation;
     else if (myVar == globalIrradiance)
         return dailyGlobalRadiation;
     else if (myVar == directIrradiance)

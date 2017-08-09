@@ -50,7 +50,7 @@ QString getVarNameFromMeteoVariable(meteoVariable myVar)
         return "leafWetness";
     else if (myVar == potentialEvapotranspiration)
         return "potentialET";
-    else if (myVar == realEvaporation)
+    else if (myVar == actualEvaporation)
         return "evaporation";
     else
         return "";
@@ -84,7 +84,7 @@ meteoVariable getMeteoVariableFromVarName(QString myVar)
     else if (myVar == "potentialET")
         return potentialEvapotranspiration;
     else if (myVar == "evaporation")
-        return realEvaporation;
+        return actualEvaporation;
     else
         return noMeteoVar;
 }

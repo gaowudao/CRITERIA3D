@@ -87,9 +87,9 @@ bool readMOSESDailyData(QSqlQuery *query, Crit3DMeteoPoint *meteoPoint, std::str
     float tmin = NODATA;
     float tmax = NODATA;
     float tmed = NODATA;
-    float prec = NODATA;
-    float et0 = NODATA;
-    float waterTable = NODATA;
+    float prec = NODATA;            // [mm]
+    float et0 = NODATA;             // [mm]
+    float waterTable = NODATA;      // [m]
     float previousTmin = NODATA;
     float previousTmax = NODATA;
     float previousWaterTable = NODATA;
@@ -137,7 +137,7 @@ bool readMOSESDailyData(QSqlQuery *query, Crit3DMeteoPoint *meteoPoint, std::str
                         meteoPoint->setMeteoPointValueD(date, dailyAirTemperatureAvg, tmed);
                         meteoPoint->setMeteoPointValueD(date, dailyPrecipitation, prec);
                         meteoPoint->setMeteoPointValueD(date, dailyPotentialEvapotranspiration, et0);
-                        meteoPoint->setMeteoPointValueD(date, waterTableDepth, waterTable);
+                        meteoPoint->setMeteoPointValueD(date, dailyWaterTableDepth, waterTable);
 
                         expectedDate = expectedDate.addDays(1);
                     }
@@ -173,6 +173,7 @@ bool readMOSESDailyData(QSqlQuery *query, Crit3DMeteoPoint *meteoPoint, std::str
             // not mandatory variables
             getValue(query->value("tavg"), &tmed);
             getValue(query->value("etp"), &et0);
+            // [m]
             getValue(query->value("watertable"), &waterTable);
 
             if (tmed == NODATA) tmed = (tmin + tmax) * 0.5;
@@ -185,7 +186,7 @@ bool readMOSESDailyData(QSqlQuery *query, Crit3DMeteoPoint *meteoPoint, std::str
                 meteoPoint->setMeteoPointValueD(date, dailyAirTemperatureAvg, (float)tmed);
                 meteoPoint->setMeteoPointValueD(date, dailyPrecipitation, (float)prec);
                 meteoPoint->setMeteoPointValueD(date, dailyPotentialEvapotranspiration, (float)et0);
-                meteoPoint->setMeteoPointValueD(date, waterTableDepth, waterTable);
+                meteoPoint->setMeteoPointValueD(date, dailyWaterTableDepth, waterTable);
             }
             else
             {

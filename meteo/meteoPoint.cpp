@@ -123,7 +123,7 @@ void Crit3DMeteoPoint::initializeObsDataD(int numberOfDays, const Crit3DDate& fi
         obsDataD[i].et0 = NODATA;
         obsDataD[i].windIntAvg = NODATA;
         obsDataD[i].windDirPrev = NODATA;
-        obsDataD[i].waterTableDepth = NODATA;
+        obsDataD[i].waterTable = NODATA;
     }
 }
 
@@ -393,8 +393,8 @@ bool Crit3DMeteoPoint::setMeteoPointValueD(const Crit3DDate& myDate, meteoVariab
         obsDataD[i].windIntAvg = myValue;
     else if (myVar == windDirectionPrevailing)
         obsDataD[i].windDirPrev = myValue;
-    else if (myVar == waterTableDepth)
-        obsDataD[i].waterTableDepth = myValue;
+    else if (myVar == dailyWaterTableDepth)
+        obsDataD[i].waterTable = myValue;
     else
         return false;
 
@@ -474,8 +474,8 @@ float Crit3DMeteoPoint::getMeteoPointValueD(const Crit3DDate& myDate, meteoVaria
         return (obsDataD[i].windIntAvg);
     else if (myVar == windDirectionPrevailing)
         return (obsDataD[i].windDirPrev);
-    else if (myVar == waterTableDepth)
-        return (obsDataD[i].waterTableDepth);
+    else if (myVar == dailyWaterTableDepth)
+        return (obsDataD[i].waterTable);
     else
         return (NODATA);
 

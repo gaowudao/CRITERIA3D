@@ -40,7 +40,7 @@
         float et0;
         float windIntAvg;
         float windDirPrev;
-        float waterTableDepth;
+        float waterTable;       // [m]
     };
 
     class Crit3DMeteoPoint {

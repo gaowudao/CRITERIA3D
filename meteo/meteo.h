@@ -53,8 +53,8 @@
                         dailyGlobalRadiation, dailyDirectRadiation, dailyDiffuseRadiation, dailyReflectedRadiation,
                         windIntensity, dailyWindIntensityAvg, windDirection, windDirectionPrevailing,
                         wetnessDuration, atmPressure, atmTransmissivity,
-                        potentialEvapotranspiration, dailyPotentialEvapotranspiration,
-                        realEvaporation, waterTableDepth, noMeteoVar};
+                        potentialEvapotranspiration, dailyPotentialEvapotranspiration, actualEvaporation,
+                        dailyWaterTableDepth, noMeteoVar};
 
     enum frequencyType {hourly, daily, monthly, noFrequency};
 

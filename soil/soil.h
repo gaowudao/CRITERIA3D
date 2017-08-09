@@ -98,7 +98,7 @@
         public:
             int id;
             int nrHorizons;
-            double totalDepth;                  /*!<   [m] */
+            double totalDepth;          /*!<   [m] */
             Crit3DHorizon* horizon;
 
             Crit3DSoil();

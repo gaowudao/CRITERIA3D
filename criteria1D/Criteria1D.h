@@ -22,6 +22,10 @@
         Criteria1DUnit();
     };
 
+    /*!
+     * \brief The Criteria1DOutput class
+     * \note all variables are in [mm]
+     */
     class Criteria1DOutput
     {
     public:
@@ -37,6 +41,7 @@
         double dailyTranspiration;
         double dailyCropAvailableWater;
         double dailySoilWaterDeficit;
+        double dailyCapillaryRise;
 
         Criteria1DOutput();
         void initializeDaily();

@@ -164,7 +164,7 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
 
         waterBalance(myProject);
 
-        saveMeteoHourlyOutput(myProject, realEvaporation, myOutputPath, myCurrentTime, myArea);
+        saveMeteoHourlyOutput(myProject, actualEvaporation, myOutputPath, myCurrentTime, myArea);
 
         if (isInitialState) isInitialState = false;
     }

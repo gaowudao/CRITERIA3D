@@ -42,7 +42,9 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
     Crit3DDate myDate;
     long myIndex;
     int doy;
-    double tmin, tmax, prec, et0, tomorrowPrec, irrigation;
+    float tmin, tmax;                               // [°C]
+    float prec, et0, tomorrowPrec, irrigation;      // [mm]
+    float waterTableDepth;                          // [m]
     bool isFirstDay = true;
 
     if (myCase->meteoPoint.latitude == NODATA)
@@ -85,6 +87,7 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
         prec = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyPrecipitation);
         tmin = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyAirTemperatureMin);
         tmax = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyAirTemperatureMax);
+        waterTableDepth = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyWaterTableDepth);
 
         if ((prec == NODATA) || (tmin == NODATA) || (tmax == NODATA))
         {
@@ -110,9 +113,8 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
             return false;
 
 
-        // WATERTABLE
-        if (! capillaryRise(myCase))
-            return false;
+        // WATERTABLE (not mandatory)
+        capillaryRise(myCase, waterTableDepth);
 
 
         // IRRIGATION
