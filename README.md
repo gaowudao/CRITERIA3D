@@ -13,7 +13,7 @@ It uses a modified version of MapGraphics library:
 https://github.com/raptorswing/MapGraphics
 
 # HEAT1D
-HEAT1D is a software for test the soilFluxex3D library in a mono-dimensional domain.
+HEAT1D is a graphical interface for testing the soilFluxex3D library in a 1D domain. Users can set fixed or variable atmospheric boundary conditions and soil parameters. Output graph results include soil temperature, soil water content, heat fluxes (diffusive and latent), liquid (isothermal and thermal) and vapor (isothermal and thermal) water fluxes. Graphs are produced using the Qwt plot library.
 
 # LICENSE
 CRITERIA 3D has been developed under contract issued by 
