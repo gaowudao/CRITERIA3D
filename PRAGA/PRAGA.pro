@@ -11,13 +11,13 @@ TEMPLATE = app
 
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../utilities ../gis ../MapGraphics ../meteo ../dbMeteoPoints
 
-LIBS += -L../mathFunctions/debug -lmathFunctions
-LIBS += -L../crit3dDate/debug -lcrit3dDate
-LIBS += -L../utilities/debug -lutilities
-LIBS += -L../dbMeteoPoints/debug -ldbMeteoPoints
-LIBS += -L../meteo/debug -lmeteo
-LIBS += -L../gis/debug -lgis
-LIBS += -L../MapGraphics/debug -lMapGraphics
+LIBS += -L../mathFunctions/release -lmathFunctions
+LIBS += -L../crit3dDate/release -lcrit3dDate
+LIBS += -L../utilities/release -lutilities
+LIBS += -L../dbMeteoPoints/release -ldbMeteoPoints
+LIBS += -L../meteo/release -lmeteo
+LIBS += -L../gis/release -lgis
+LIBS += -L../MapGraphics/release -lMapGraphics
 
 
 SOURCES += main.cpp\

@@ -75,22 +75,25 @@ QString getMOSESIdCrop(QSqlDatabase* dbCrop, QString idCropMOSES, std::string *m
  * \brief readMOSESMeteoData
  * \param query
  * \param myError
- * \return
+ * \return true if data are correctly loaded
  * \note meteoPoint have to be initialized BEFORE function
  */
 bool readMOSESDailyData(QSqlQuery *query, Crit3DMeteoPoint *meteoPoint, std::string *myError)
 {
     const int MAX_MISSING_DAYS = 3;
-    float tmed, prec, et0;
     QDate myDate, expectedDate, previousDate;
     Crit3DDate date;
 
     float tmin = NODATA;
     float tmax = NODATA;
-    float prevTmin = NODATA;
-    float prevTmax = NODATA;
-    int nrMissingTemp = 0;
-    int nrMissingPrec = 0;
+    float tmed = NODATA;
+    float prec = NODATA;
+    float et0 = NODATA;
+    float waterTable = NODATA;
+    float previousTmin = NODATA;
+    float previousTmax = NODATA;
+    float previousWaterTable = NODATA;
+    int nrMissingData = 0;
 
     query->first();
     myDate = query->value("date").toDate();
@@ -121,11 +124,12 @@ bool readMOSESDailyData(QSqlQuery *query, Crit3DMeteoPoint *meteoPoint, std::str
                     // fill missing data
                     while (myDate != expectedDate)
                     {
-                        tmin = prevTmin;
-                        tmax = prevTmax;
+                        tmin = previousTmin;
+                        tmax = previousTmax;
                         tmed = (tmin + tmax) * 0.5;
                         prec = 0;
                         et0 = NODATA;
+                        waterTable = previousWaterTable;
 
                         date = getCrit3DDate(expectedDate);
                         meteoPoint->setMeteoPointValueD(date, dailyAirTemperatureMin, tmin);
@@ -133,41 +137,30 @@ bool readMOSESDailyData(QSqlQuery *query, Crit3DMeteoPoint *meteoPoint, std::str
                         meteoPoint->setMeteoPointValueD(date, dailyAirTemperatureAvg, tmed);
                         meteoPoint->setMeteoPointValueD(date, dailyPrecipitation, prec);
                         meteoPoint->setMeteoPointValueD(date, dailyPotentialEvapotranspiration, et0);
+                        meteoPoint->setMeteoPointValueD(date, waterTableDepth, waterTable);
 
                         expectedDate = expectedDate.addDays(1);
                     }
                 }
             }
 
-            prevTmax = tmax;
-            prevTmin = tmin;
+            previousTmax = tmax;
+            previousTmin = tmin;
+            previousWaterTable = waterTable;
 
             // mandatory
             getValue(query->value("tmin"), &tmin);
             getValue(query->value("tmax"), &tmax);
-            if ((tmin == NODATA) || (tmax == NODATA))
-            {
-                if (nrMissingTemp < MAX_MISSING_DAYS)
-                {
-                    nrMissingTemp++;
-                    if (tmin == NODATA) tmin = prevTmin;
-                    if (tmax == NODATA) tmax = prevTmax;
-                }
-                else
-                {
-                    *myError = "Wrong METEO: too many missing data " + myDate.toString().toStdString();
-                    return false;
-                }
-            }
-            else nrMissingTemp = 0;
-
             getValue(query->value("prec"), &prec);
-            if (prec == NODATA)
+
+            if ((tmin == NODATA) || (tmax == NODATA) || (prec == NODATA))
             {
-                if (nrMissingPrec < MAX_MISSING_DAYS)
+                if (nrMissingData < MAX_MISSING_DAYS)
                 {
-                    nrMissingPrec++;
-                    prec = 0;
+                    if (tmin == NODATA) tmin = previousTmin;
+                    if (tmax == NODATA) tmax = previousTmax;
+                    if (prec == NODATA) prec = 0;
+                    nrMissingData++;
                 }
                 else
                 {
@@ -175,11 +168,14 @@ bool readMOSESDailyData(QSqlQuery *query, Crit3DMeteoPoint *meteoPoint, std::str
                     return false;
                 }
             }
-            else nrMissingPrec = 0;
+            else nrMissingData = 0;
+
 
             // not mandatory
             getValue(query->value("tavg"), &tmed);
             getValue(query->value("etp"), &et0);
+            getValue(query->value("watertable"), &waterTable);
+
             if (tmed == NODATA) tmed = (tmin + tmax) * 0.5;
 
             date = getCrit3DDate(myDate);
@@ -190,6 +186,7 @@ bool readMOSESDailyData(QSqlQuery *query, Crit3DMeteoPoint *meteoPoint, std::str
                 meteoPoint->setMeteoPointValueD(date, dailyAirTemperatureAvg, (float)tmed);
                 meteoPoint->setMeteoPointValueD(date, dailyPrecipitation, (float)prec);
                 meteoPoint->setMeteoPointValueD(date, dailyPotentialEvapotranspiration, (float)et0);
+                meteoPoint->setMeteoPointValueD(date, waterTableDepth, waterTable);
             }
             else
             {

@@ -110,7 +110,9 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
             return false;
 
 
-        // ***** Risalita da falda (TODO)
+        // WATERTABLE
+        if (! capillaryRise(myCase))
+            return false;
 
 
         // IRRIGATION

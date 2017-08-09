@@ -245,6 +245,17 @@ bool infiltration(Criteria1D* myCase, std::string* myError, float prec, float su
 
 
 /*!
+ * \brief compute capillary rise due to watertable
+ * \param myCase
+ * \return
+ */
+bool capillaryRise(Criteria1D* myCase)
+{
+
+}
+
+
+/*!
  * \brief computeRunoff
  * \param myCase
  */
@@ -265,7 +276,7 @@ bool computeRunoff(Criteria1D* myCase)
 
 
 /*!
- * \brief surfaceRunoff
+ * \brief compute surface runoff
  * \param myCase
  * \return
  */
@@ -275,7 +286,7 @@ bool surfaceRunoff(Criteria1D* myCase)
     double roughness;            // [mm]
 
     // height of clod
-    // riassume brutalmente l'algoritmo su operazioni colturali
+    // very rough solution for taking into account tillage and others operations
     if (isPluriannual(myCase->myCrop.type))
         clodHeight = 0.0;
     else

@@ -9,6 +9,7 @@
     bool computeRunoff(Criteria1D* myCase);
     bool surfaceRunoff(Criteria1D* myCase);
     bool subSurfaceRunoff(Criteria1D* myCase);
+    bool capillaryRise(Criteria1D* myCase);
 
 #endif // WATER
 
