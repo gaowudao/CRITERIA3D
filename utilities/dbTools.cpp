@@ -55,7 +55,10 @@ bool loadCropParameters(QString idCrop, Crit3DCrop* myCrop, QSqlDatabase* dbCrop
     // WATER NEEDS
     myCrop->kcMax = query.value("kc_max").toDouble();
     myCrop->degreeDaysMaxSensibility = query.value("degree_days_max_sensibility").toInt();
-    myCrop->psiLeaf = query.value("psi_leaf").toDouble();
+    // [cm]
+    if (! getValue(query.value("psi_leaf"), &(myCrop->psiLeaf)))
+        myCrop->psiLeaf = 16000;
+
     myCrop->stressTolerance = query.value("stress_tolerance").toDouble();
     myCrop->frac_read_avail_water_min = query.value("frac_read_avail_water_min").toDouble();
     myCrop->frac_read_avail_water_max = query.value("frac_read_avail_water_max").toDouble();

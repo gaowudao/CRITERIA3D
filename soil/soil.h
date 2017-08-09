@@ -136,16 +136,21 @@
      double getWiltingPoint(soil::units unit);
      double getThetaFC(Crit3DHorizon* horizon);
      double getThetaWP(Crit3DHorizon* horizon);
+
      double kPaToMeters(double value);
      double metersTokPa(double value);
 
      double SeFromTheta(double theta, Crit3DHorizon* horizon);
      double psiFromTheta(double theta, Crit3DHorizon* horizon);
      double thetaFromSignPsi(double signPsi, Crit3DHorizon* horizon);
+
      double waterConductivity(double Se, Crit3DHorizon* horizon);
+
      double estimateBulkDensity(Crit3DHorizon* mySoil, double totalPorosity);
      double estimateSaturatedConductivity(Crit3DHorizon* mySoil, double bulkDensity);
      double estimateTotalPorosity(Crit3DHorizon* mySoil, double bulkDensity);
+
+     double getWaterContent(double signPsi, Crit3DLayer* layer);
     }
 
 #endif // SOIL_H

@@ -401,6 +401,19 @@ namespace soil
 
 
     /*!
+     * \brief getWaterContent
+     * \param signPsi [kPa]
+     * \param layer
+     * \return water content [mm]
+     */
+    double getWaterContent(double signPsi, Crit3DLayer* layer)
+    {
+        double theta = soil::thetaFromSignPsi(signPsi, layer->horizon);
+        return theta * layer->thickness * layer->soilFraction * 1000.f;
+    }
+
+
+    /*!
      * \brief Compute hydraulic conductivity [m/sec] for modified Van Genuchten
      *        Mualem equation
      *        WARNING: very low values are possible (es: 10^12) units are the same of .kSat (usually cm d-1)
