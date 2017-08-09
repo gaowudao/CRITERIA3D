@@ -44,15 +44,19 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->layoutPlot->addWidget(outPlot);
 
     ui->listWidget->setSelectionMode(QAbstractItemView::SingleSelection);
-    ui->listWidget->addItem("soil temperature");
-    ui->listWidget->addItem("soil water content");
-    ui->listWidget->addItem("total heat flux");
-    ui->listWidget->addItem("diffusive heat flux");
-    ui->listWidget->addItem("isothermal latent heat flux");
-    ui->listWidget->addItem("thermal latent heat flux");
-    ui->listWidget->addItem("surface energy balance");
-    ui->listWidget->addItem("surface resistences");
-    ui->listWidget->addItem("error balance");
+    ui->listWidget->addItem("soil temperature (degC)");
+    ui->listWidget->addItem("soil water content (m3 m-3)");
+    ui->listWidget->addItem("total heat flux (W m-2)");
+    ui->listWidget->addItem("diffusive heat flux (W m-2)");
+    ui->listWidget->addItem("isothermal latent heat flux (W m-2)");
+    ui->listWidget->addItem("thermal latent heat flux (W m-2)");
+    ui->listWidget->addItem("isothermal water liquid flux (l s-1)");
+    ui->listWidget->addItem("thermal water liquid flux (l s-1)");
+    ui->listWidget->addItem("isothermal water vapor flux (l s-1)");
+    ui->listWidget->addItem("thermal water vapor flux (l s-1)");
+    ui->listWidget->addItem("surface energy balance (W m-2)");
+    ui->listWidget->addItem("surface resistences (s m-1)");
+    ui->listWidget->addItem("error balance ()");
 }
 
 MainWindow::~MainWindow()

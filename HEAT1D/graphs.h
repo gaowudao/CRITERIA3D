@@ -17,9 +17,13 @@ enum outputGroup
     diffusiveHeatFlux = 3,
     latentHeatFluxIso = 4,
     latentHeatFluxTherm = 5,
-    energyBalance = 6,
-    surfaceResistances = 7,
-    errorBalance = 8
+    waterIsothLiquidFlux = 6,
+    waterThermLiquidFlux = 7,
+    waterIsothVaporFlux = 8,
+    waterThermVaporFlux = 9,
+    energyBalance = 10,
+    surfaceResistances = 11,
+    errorBalance = 12
 };
 
 enum outputVar
@@ -60,6 +64,10 @@ struct profileStatus{
     QVector<QPointF> isothermalLatentHeatFlux;
     QVector<QPointF> thermalLatentHeatFlux;
     QVector<QPointF> advectiveheatFlux;
+    QVector<QPointF> waterIsothermalLiquidFlux;
+    QVector<QPointF> waterThermalLiquidFlux;
+    QVector<QPointF> waterIsothermalVaporFlux;
+    QVector<QPointF> waterThermalVaporFlux;
 };
 
 struct landSurfaceStatus{
