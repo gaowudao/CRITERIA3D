@@ -148,7 +148,7 @@ bool readMOSESDailyData(QSqlQuery *query, Crit3DMeteoPoint *meteoPoint, std::str
             previousTmin = tmin;
             previousWaterTable = waterTable;
 
-            // mandatory
+            // mandatory variables
             getValue(query->value("tmin"), &tmin);
             getValue(query->value("tmax"), &tmax);
             getValue(query->value("prec"), &prec);
@@ -170,8 +170,7 @@ bool readMOSESDailyData(QSqlQuery *query, Crit3DMeteoPoint *meteoPoint, std::str
             }
             else nrMissingData = 0;
 
-
-            // not mandatory
+            // not mandatory variables
             getValue(query->value("tavg"), &tmed);
             getValue(query->value("etp"), &et0);
             getValue(query->value("watertable"), &waterTable);
