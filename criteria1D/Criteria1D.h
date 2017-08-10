@@ -31,7 +31,7 @@
     public:
         double dailyPrec;
         double dailySurfaceRunoff;
-        double dailySubsurfaceRunoff;
+        double dailyLateralDrainage;
         double dailyDrainage;
         double dailyIrrigation;
         double dailyEt0;

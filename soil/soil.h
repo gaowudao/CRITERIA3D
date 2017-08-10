@@ -121,7 +121,6 @@
             double critical;            /*!<   [mm] water content at critical point for water movement (typical FC)  */
             double maxInfiltration;     /*!<   [mm]  */
             double flux;                /*!<   [mm]  */
-            double runoff;              /*!<   [mm]  */
 
             Crit3DHorizon *horizon;
 
@@ -154,7 +153,9 @@
      double estimateTotalPorosity(Crit3DHorizon* mySoil, double bulkDensity);
 
      double getVolumetricWaterContent(Crit3DLayer* layer);
-     double getWaterContent(double signPsi, Crit3DLayer* layer);
+     double getWaterContentFromPsi(double signPsi, Crit3DLayer* layer);
+     double getWaterContentFromAW(double availableWater, Crit3DLayer* layer);
+
      double getWaterPotential(Crit3DLayer* layer);
      double getWaterConductivity(Crit3DLayer* layer);
     }

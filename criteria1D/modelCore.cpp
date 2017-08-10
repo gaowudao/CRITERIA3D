@@ -114,7 +114,7 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
 
 
         // WATERTABLE (not mandatory)
-        capillaryRise(myCase, waterTableDepth);
+        computeCapillaryRise(myCase, waterTableDepth);
 
 
         // IRRIGATION
@@ -131,11 +131,15 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
         }
 
         // INFILTRATION
-        if (! infiltration(myCase, myError, prec, irrigation))
+        if (! computeInfiltration(myCase, myError, prec, irrigation))
             return false;
 
         // RUNOFF
-        if (! computeRunoff( myCase))
+        if (! computeSurfaceRunoff(myCase))
+            return false;
+
+        // LATERAL DRAINAGE
+        if (! computeLateralDrainage(myCase))
             return false;
 
         // Check irrigation lost

@@ -62,7 +62,7 @@ void Criteria1DOutput::initializeDaily()
     this->dailyPrec = 0.0;
     this->dailyDrainage = 0.0;
     this->dailySurfaceRunoff = 0.0;
-    this->dailySubsurfaceRunoff = 0.0;
+    this->dailyLateralDrainage = 0.0;
     this->dailyIrrigation = 0.0;
     this->dailyEt0 = 0.0;
     this->dailyEvaporation = 0.0;

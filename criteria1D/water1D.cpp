@@ -9,23 +9,6 @@
 
 /*!
  * \brief
- * \param myLayer
- * \param availableWater   fraction of water between wilting point and field capacity [-]
- * \return  water content in the layer [mm]
- */
-double getWaterContent(soil::Crit3DLayer *myLayer, double availableWater)
-{
-    if (availableWater < 0)
-        return (myLayer->WP);
-    else if (availableWater > 1)
-        return (myLayer->FC);
-    else
-        return (myLayer->WP + availableWater * (myLayer->FC - myLayer->WP));
-}
-
-
-/*!
- * \brief
  * Assign two different initial available water
  * in the ploughed soil layer
  * and in the deep soil
@@ -37,9 +20,9 @@ void initializeWater(Criteria1D* myCase)
     for (int i = 1; i < myCase->nrLayers; i++)
     {
         if (myCase->layer[i].depth <= myCase->depthPloughedSoil)
-            myCase->layer[i].waterContent = getWaterContent(&(myCase->layer[i]), myCase->initialAW[0]);
+            myCase->layer[i].waterContent = soil::getWaterContentFromAW(myCase->initialAW[0], &(myCase->layer[i]));
         else
-            myCase->layer[i].waterContent = getWaterContent(&(myCase->layer[i]), myCase->initialAW[1]);
+            myCase->layer[i].waterContent = soil::getWaterContentFromAW(myCase->initialAW[1], &(myCase->layer[i]));
     }
 }
 
@@ -54,7 +37,7 @@ void initializeWater(Criteria1D* myCase)
  * \author Margot van Soetendael
  * \note P.M.Driessen, 1986, "The water balance of soil"
  */
-bool infiltration(Criteria1D* myCase, std::string* myError, float prec, float surfaceIrrigation)
+bool computeInfiltration(Criteria1D* myCase, std::string* myError, float prec, float surfaceIrrigation)
 {
     int i, j, l, nrPloughLayers;
     int reached = NODATA;            // [-] index of reached layer for surpuls water
@@ -249,16 +232,15 @@ bool infiltration(Criteria1D* myCase, std::string* myError, float prec, float su
  * \param waterTableDepth [m]
  * \return
  */
-bool capillaryRise(Criteria1D* myCase, float waterTableDepth)
+bool computeCapillaryRise(Criteria1D* myCase, float waterTableDepth)
 {
-    float psi, previousPsi;             // [kPa] water potential
-    float he_boundary;                  // [kPa] air entry point boundary layer
-    float dz;                           // [m]
-
-    float dPsi;                         // [cm]  ??
-
-    float k_psi;                        // [cm/d] water conductivity
-    double capillaryRiseSum = 0.0;      // [mm]
+    double psi, previousPsi;             // [kPa] water potential
+    double he_boundary;                  // [kPa] air entry point boundary layer
+    double k_psi;                        // [cm/d] water conductivity
+    double dz, dPsi;                     // [m]
+    double layerCapillaryRise;           // [mm]
+    double maxCapillaryRise;             // [mm]
+    double capillaryRiseSum = 0;         // [mm]
 
     // wrong watertable
     if (waterTableDepth == NODATA || waterTableDepth <= 0)
@@ -300,7 +282,7 @@ bool capillaryRise(Criteria1D* myCase, float waterTableDepth)
         dz = (waterTableDepth - myCase->layer[i].depth);                    // [m]
         psi = soil::metersTokPa(dz) + he_boundary;                          // [kPa]
 
-        myCase->layer[i].critical = soil::getWaterContent(psi, &(myCase->layer[i]));
+        myCase->layer[i].critical = soil::getWaterContentFromPsi(psi, &(myCase->layer[i]));
 
         if (myCase->layer[i].critical > myCase->layer[i].FC)
             myCase->layer[i].critical = myCase->layer[i].FC;
@@ -311,63 +293,46 @@ bool capillaryRise(Criteria1D* myCase, float waterTableDepth)
     {
         psi = soil::getWaterPotential(&(myCase->layer[i]));                 // [kPa]
 
-        if (i < boundaryLayer)
-            if (psi < previousPsi)
-                break;
+        if (i < boundaryLayer && psi < previousPsi)
+            break;
 
         dPsi = soil::kPaToMeters(psi - he_boundary);                        // [m]
         dz = waterTableDepth - myCase->layer[i].depth;                      // [m]
 
         if (dPsi > dz)
         {
-            k_psi = soil::waterConductivity(L, Psi);                // cm/day]
+            k_psi = soil::getWaterConductivity(&(myCase->layer[i]));        // [cm day-1]
 
-            capillaryRise = k_psi * ((dPsi / dz) - 1#);                      // [cm]
-            capillaryRise = min(capillaryRise * 10, suolo(L).UC - U(L));     // [mm]
+            layerCapillaryRise = k_psi * ((dPsi / dz) - 1.f) * 10.f;        // [mm]
 
-            U(L) = U(L) + capillaryRise;
-            RcTot = RcTot + capillaryRise;
+            maxCapillaryRise = myCase->layer[i].critical - myCase->layer[i].waterContent;
+            layerCapillaryRise = minValue(layerCapillaryRise, maxCapillaryRise);
+
+            // update water contet
+            myCase->layer[i].waterContent += layerCapillaryRise;
+            capillaryRiseSum += layerCapillaryRise;
+
+            previousPsi = soil::getWaterPotential(&(myCase->layer[i]));     // [kPa]
         }
-
-        previousPsi = psi;
+        else
+            previousPsi = psi;
     }
 
-    return true;
-}
-
-
-
-/*!
- * \brief computeRunoff
- * \param myCase
- */
-bool computeRunoff(Criteria1D* myCase)
-{
-    // initialize runoff
-    for (int i = 0; i< myCase->nrLayers; i++)
-    {
-        myCase->layer[i].runoff = 0.0;
-    }
-
-    if (! surfaceRunoff(myCase)) return false;
-
-    if (! subSurfaceRunoff(myCase)) return false;
-
+    myCase->output.dailyCapillaryRise = capillaryRiseSum;
     return true;
 }
 
 
 /*!
- * \brief compute surface runoff
+ * \brief compute surface runoff [mm]
  * \param myCase
  * \return
  */
-bool surfaceRunoff(Criteria1D* myCase)
+bool computeSurfaceRunoff(Criteria1D* myCase)
 {
     double clodHeight;           // [mm] effective height of clod
     double roughness;            // [mm]
 
-    // height of clod
     // very rough solution for taking into account tillage and others operations
     if (isPluriannual(myCase->myCrop.type))
         clodHeight = 0.0;
@@ -378,54 +343,52 @@ bool surfaceRunoff(Criteria1D* myCase)
 
     if (myCase->layer[0].waterContent > roughness)
     {
-       myCase->layer[0].runoff = myCase->layer[0].waterContent - roughness;
+       myCase->output.dailySurfaceRunoff = myCase->layer[0].waterContent - roughness;
        myCase->layer[0].waterContent = roughness;
     }
     else
-       myCase->layer[0].runoff = 0.0;
-
-    // [mm] daily surface runoff
-    myCase->output.dailySurfaceRunoff = myCase->layer[0].runoff;
+       myCase->output.dailySurfaceRunoff = 0.0;
 
     return true;
 }
 
 
 /*!
- * \brief
- * Compute lateral drainage
+ * \brief Compute lateral drainage
+ * \param myCase
  * \note P.M.Driessen, 1986, eq.58
+ * \return
  */
-bool subSurfaceRunoff(Criteria1D* myCase)
+bool computeLateralDrainage(Criteria1D* myCase)
 {
-    double waterSurplus;                  // [mm]
-    double satFactor;                     // [-]
-    double maxRunoff;                     // [mm]
-    double hydrHead;                      // [m]
-    const double drainRadius = 0.25;      // [m]
-    const double drainDepth = 1.0;        // [m]
-    const double fieldWidth = 100.0;      // [m]
+    double satFactor;                       // [-]
+    double hydrHead;                        // [m]
+    double waterSurplus;                    // [mm]
+    double layerDrainage;                   // [mm]
+    double maxDrainage;                     // [mm]
+    const double drainRadius = 0.25;        // [m]
+    const double drainDepth = 1.0;          // [m]
+    const double fieldWidth = 100.0;        // [m]
 
     for (int l = 1; l < myCase->nrLayers; l++)
     {
-        if (myCase->layer[l].depth > drainDepth) break;
+        if (myCase->layer[l].depth > drainDepth)
+            break;
 
-        waterSurplus = myCase->layer[l].waterContent - myCase->layer[l].critical;
+        waterSurplus = myCase->layer[l].waterContent - myCase->layer[l].critical;               // [mm]
         if (waterSurplus > 0.0)
         {
-            satFactor = waterSurplus / (myCase->layer[l].SAT - myCase->layer[l].critical);
+            satFactor = waterSurplus / (myCase->layer[l].SAT - myCase->layer[l].critical);      // [-]
 
-            hydrHead = satFactor * (drainDepth - myCase->layer[l].depth);
+            hydrHead = satFactor * (drainDepth - myCase->layer[l].depth);                       // [m]
 
-            maxRunoff =  10 * myCase->layer[l].horizon->Driessen.k0 * hydrHead /
-                    (hydrHead + (fieldWidth / PI) * log(fieldWidth / (PI * drainRadius)));
+            maxDrainage =  10 * myCase->layer[l].horizon->Driessen.k0 * hydrHead /
+                    (hydrHead + (fieldWidth / PI) * log(fieldWidth / (PI * drainRadius)));      // [mm]
 
-            myCase->layer[l].runoff = minValue(waterSurplus, maxRunoff);
+            layerDrainage = minValue(waterSurplus, maxDrainage);                                // [mm]
 
-            myCase->layer[l].waterContent -= myCase->layer[l].runoff;
-
-            // daily sub-surface runoff [mm]
-            myCase->output.dailySubsurfaceRunoff += myCase->layer[l].runoff;
+            myCase->layer[l].waterContent -= layerDrainage;
+            myCase->output.dailyLateralDrainage += layerDrainage;
         }
     }
 

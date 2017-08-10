@@ -432,15 +432,34 @@ namespace soil
     }
 
     /*!
-     * \brief getWaterContent
+     * \brief getWaterContentFromPsi
      * \param psi [kPa]
      * \param layer pointer to Crit3DLayer class
      * \return water content at water potential psi [mm]
      */
-    double getWaterContent(double psi, Crit3DLayer* layer)
+    double getWaterContentFromPsi(double psi, Crit3DLayer* layer)
     {
         double theta = soil::thetaFromSignPsi(-psi, layer->horizon);
         return theta * layer->thickness * layer->soilFraction * 1000.f;
+    }
+
+
+    /*!
+     * \brief getWaterContentFromAW
+     * \param availableWater [-] (0: wilting point, 1: field capacity)
+     * \param layer pointer to Crit3DLayer class
+     * \return  water content at specific available water [mm]
+     */
+    double getWaterContentFromAW(double availableWater, Crit3DLayer* layer)
+    {
+        if (availableWater < 0)
+            return (layer->WP);
+
+        else if (availableWater > 1)
+            return (layer->FC);
+
+        else
+            return (layer->WP + availableWater * (layer->FC - layer->WP));
     }
 
 
