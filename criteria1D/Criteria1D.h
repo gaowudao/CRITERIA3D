@@ -1,7 +1,6 @@
 #ifndef CRITERIA1D_H
 #define CRITERIA1D_H
 
-    #include <string>
     #include "soil.h"
     #include "crop.h"
     #include "meteoPoint.h"

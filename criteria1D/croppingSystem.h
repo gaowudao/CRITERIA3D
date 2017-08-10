@@ -2,8 +2,10 @@
 #define CROPPINGSYSTEM_H
 
     #include <string>
+
     class Criteria1D;
     class Crit3DDate;
+    class Crit3DCrop;
 
     #define MIN_EMERGENCE_DAYS 7
     #define MAX_EVAPORATION_DEPTH 0.15

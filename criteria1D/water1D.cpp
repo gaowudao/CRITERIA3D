@@ -3,7 +3,6 @@
 #include "commonConstants.h"
 #include "water1D.h"
 #include "Criteria1D.h"
-#include "crop.h"
 #include "soil.h"
 
 
@@ -37,7 +36,7 @@ void initializeWater(Criteria1D* myCase)
  * \author Margot van Soetendael
  * \note P.M.Driessen, 1986, "The water balance of soil"
  */
-bool computeInfiltration(Criteria1D* myCase, std::string* myError, float prec, float surfaceIrrigation)
+bool computeInfiltration(Criteria1D* myCase, float prec, float surfaceIrrigation)
 {
     int i, j, l, nrPloughLayers;
     int reached = NODATA;            // [-] index of reached layer for surpuls water
@@ -50,8 +49,6 @@ bool computeInfiltration(Criteria1D* myCase, std::string* myError, float prec, f
     double localWater = NODATA;      // [mm]
     double distrH2O = NODATA;        // [mm] la quantità di acqua (=imax dello strato sotto) che potrebbe saturare il profilo sotto lo strato in surplus
     double maxInfiltration = NODATA; // [mm] maximum infiltration (Driessen)
-
-    *myError = "";
 
     // Assign precipitation (surface pond)
     myCase->layer[0].waterContent += prec + surfaceIrrigation;

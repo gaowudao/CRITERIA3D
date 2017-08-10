@@ -131,7 +131,7 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
         }
 
         // INFILTRATION
-        if (! computeInfiltration(myCase, myError, prec, irrigation))
+        if (! computeInfiltration(myCase, prec, irrigation))
             return false;
 
         // RUNOFF
