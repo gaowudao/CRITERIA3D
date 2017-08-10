@@ -291,15 +291,16 @@ bool capillaryRise(Criteria1D* myCase, float waterTableDepth)
             }
         }
 
-    // air entry point of boundary layer [kPa]
-    he_boundary = myCase->layer[boundaryLayer].horizon->vanGenuchten.he;
+    // air entry point of boundary layer
+    he_boundary = myCase->layer[boundaryLayer].horizon->vanGenuchten.he;    // [kPa]
 
-    // above watertable: compute water content threshold for dreinage
+    // above watertable: assign water content threshold for dreinage
     for (i = 1; i <= boundaryLayer; i++)
     {
-        dz = (waterTableDepth - myCase->layer[i].depth);                                // [m]
-        psi = soil::metersTokPa(dz) + he_boundary;                                      // [kPa]
-        myCase->layer[i].critical = soil::getWaterContent(psi, &(myCase->layer[i]));    // [mm]
+        dz = (waterTableDepth - myCase->layer[i].depth);                    // [m]
+        psi = soil::metersTokPa(dz) + he_boundary;                          // [kPa]
+
+        myCase->layer[i].critical = soil::getWaterContent(psi, &(myCase->layer[i]));
 
         if (myCase->layer[i].critical > myCase->layer[i].FC)
             myCase->layer[i].critical = myCase->layer[i].FC;
@@ -308,28 +309,25 @@ bool capillaryRise(Criteria1D* myCase, float waterTableDepth)
     // above watertable: capillary rise
     for (i = boundaryLayer; i > 0; i--)
     {
-        psi = soil::getWaterPotential(&(myCase->layer[i]));     // [kPa]
+        psi = soil::getWaterPotential(&(myCase->layer[i]));                 // [kPa]
 
         if (i < boundaryLayer)
             if (psi < previousPsi)
                 break;
 
-        /*
-        dPsi = kPaToCm(Psi)                                             '[cm]
+        dPsi = soil::kPaToMeters(psi - he_boundary);                        // [m]
+        dz = waterTableDepth - myCase->layer[i].depth;                      // [m]
 
-        layerDepth = suolo(L).prof + suolo(L).spess / 2#                '[cm]
-        dz = waterTableDepth - layerDepth + he_cm                       '[cm]
+        if (dPsi > dz)
+        {
+            k_psi = soil::waterConductivity(L, Psi);                // cm/day]
 
-        If (dPsi > dz) Then
-            k_psi = Soils.FUN_SOIL_hydrConductivity(L, Psi)             '[cm/day]
+            capillaryRise = k_psi * ((dPsi / dz) - 1#);                      // [cm]
+            capillaryRise = min(capillaryRise * 10, suolo(L).UC - U(L));     // [mm]
 
-            capillaryRise = k_psi * ((dPsi / dz) - 1#)                  '[cm]
-            capillaryRise = min(capillaryRise * 10, suolo(L).UC - U(L)) '[mm]
-
-            U(L) = U(L) + capillaryRise
-            RcTot = RcTot + capillaryRise
-        End If
-        */
+            U(L) = U(L) + capillaryRise;
+            RcTot = RcTot + capillaryRise;
+        }
 
         previousPsi = psi;
     }

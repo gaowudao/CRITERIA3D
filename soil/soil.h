@@ -153,8 +153,10 @@
      double estimateSaturatedConductivity(Crit3DHorizon* mySoil, double bulkDensity);
      double estimateTotalPorosity(Crit3DHorizon* mySoil, double bulkDensity);
 
+     double getVolumetricWaterContent(Crit3DLayer* layer);
      double getWaterContent(double signPsi, Crit3DLayer* layer);
      double getWaterPotential(Crit3DLayer* layer);
+     double getWaterConductivity(Crit3DLayer* layer);
     }
 
 #endif // SOIL_H

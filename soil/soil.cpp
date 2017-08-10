@@ -411,38 +411,13 @@ namespace soil
 
 
     /*!
-     * \brief getWaterContent
-     * \param psi [kPa]
-     * \param layer
-     * \return water content [mm]
-     */
-    double getWaterContent(double psi, Crit3DLayer* layer)
-    {
-        double theta = soil::thetaFromSignPsi(-psi, layer->horizon);
-        return theta * layer->thickness * layer->soilFraction * 1000.f;
-    }
-
-
-    /*!
-     * \brief getWaterPotential
-     * \param layer
-     * \return water potential [kPa]
-     */
-    double getWaterPotential(Crit3DLayer* layer)
-    {
-        double theta = layer->waterContent / (layer->thickness * layer->soilFraction * 1000.f);
-        return psiFromTheta(theta, layer->horizon);
-    }
-
-
-    /*!
-     * \brief Compute hydraulic conductivity [m/sec] for modified Van Genuchten
-     *        Mualem equation
-     *        WARNING: very low values are possible (es: 10^12) units are the same of .kSat (usually cm d-1)
-     *        K(Se) = Ksat * Se^(L) * {1-[1-Se^(1/m)]^m}^2
+     * \brief Compute hydraulic conductivity
      * \param Se [-] degree of saturation
      * \param horizon pointer to Crit3DHorizon class
-     * \return
+     * \note Mualem equation for modified Van Genuchten curve: K(Se) = Ksat * Se^(L) * {1-[1-Se^(1/m)]^m}^2
+     * \warning very low values are possible (es: 10^12)
+     * \return hydraulic conductivity
+     *  unit is the same of horizon->waterConductivity.kSat usually [cm day^-1]
      */
     double waterConductivity(double Se, Crit3DHorizon* horizon)
     {
@@ -454,6 +429,57 @@ namespace soil
         myTmp = myNumerator / (1. - pow(1. - pow(horizon->vanGenuchten.sc, 1.0 / horizon->vanGenuchten.m), horizon->vanGenuchten.m));
 
         return (horizon->waterConductivity.kSat * pow(Se, horizon->waterConductivity.l) * pow(myTmp , 2.0));
+    }
+
+    /*!
+     * \brief getWaterContent
+     * \param psi [kPa]
+     * \param layer pointer to Crit3DLayer class
+     * \return water content at water potential psi [mm]
+     */
+    double getWaterContent(double psi, Crit3DLayer* layer)
+    {
+        double theta = soil::thetaFromSignPsi(-psi, layer->horizon);
+        return theta * layer->thickness * layer->soilFraction * 1000.f;
+    }
+
+
+    /*!
+     * \brief getVolumetricWaterContent
+     * \param layer pointer to Crit3DLayer class
+     * \return current volumetric water content of layer [-]
+     */
+    double getVolumetricWaterContent(Crit3DLayer* layer)
+    {
+        // layer->thickness in [m]
+        double theta = layer->waterContent / (layer->thickness * layer->soilFraction * 1000.f);
+        return theta;
+    }
+
+
+    /*!
+     * \brief getWaterPotential
+     * \param layer pointer to Crit3DLayer class
+     * \return current water potential of layer [kPa]
+     */
+    double getWaterPotential(Crit3DLayer* layer)
+    {
+        double theta = getVolumetricWaterContent(layer);
+        return psiFromTheta(theta, layer->horizon);
+    }
+
+
+    /*!
+     * \brief getWaterConductivity
+     * \param layer pointer to Crit3DLayer class
+     * \return current hydraulic conductivity of layer
+     *  unit is the same of horizon->waterConductivity.kSat - usually [cm day^-1]
+     */
+    double getWaterConductivity(Crit3DLayer* layer)
+    {
+        double theta = getVolumetricWaterContent(layer);
+        double degreeOfSaturation = SeFromTheta(theta, layer->horizon);
+        return waterConductivity(degreeOfSaturation, layer->horizon);
     }
 
 }
