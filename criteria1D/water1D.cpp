@@ -12,9 +12,9 @@
  * in the ploughed soil layer
  * and in the deep soil
  */
-// TODO migliorare - variare in base al mese come in Vintage
 void initializeWater(Criteria1D* myCase)
 {
+    // TODO migliorare - variare in base al mese come in Vintage
     myCase->layer[0].waterContent = 0.0;
     for (int i = 1; i < myCase->nrLayers; i++)
     {

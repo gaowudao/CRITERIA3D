@@ -218,6 +218,7 @@ namespace soil
         return 1.0 / ((1.0 - organicMatter) / 2.65 + organicMatter / 1.43);
     }
 
+
     double estimateBulkDensity(Crit3DHorizon* mySoil, double totalPorosity)
     {
         if (totalPorosity == NODATA)
@@ -237,12 +238,14 @@ namespace soil
         */
     }
 
+
     double estimateTotalPorosity(Crit3DHorizon* mySoil, double bulkDensity)
     {
         if (bulkDensity == NODATA) return(NODATA);
         double specificDensity = getSpecificDensity(mySoil->organicMatter);
         return (1.0 - (bulkDensity /specificDensity));
     }
+
 
     double estimateSaturatedConductivity(Crit3DHorizon* mySoil, double bulkDensity)
     {
@@ -268,24 +271,29 @@ namespace soil
 
 
     /*!
-     * \brief F.ZINONI: Field Capacity potential as clay function
+     * \brief Field Capacity water potential as clay function
      * \param horizon
      * \param unit [KPA | METER | CM]
-     * \return result
+     * \note author: Franco Zinoni
+     * \return Water potential at field capacity [unit]
      */
     double getFieldCapacity(Crit3DHorizon* horizon, soil::units unit)
     {
         double fcMin = -10;                 /*!< [kPa] clay < 20% sandy soils */
-        double fcMax = -33;                 /*!< [kPa] clay > 40% clay soils */
+        double fcMax = -33;                 /*!< [kPa] clay > 50% clay soils */
+
+        const double CLAYMIN = 20.f;
+        const double CLAYMAX = 50.f;
+
         double fieldCapacity;
 
-        if (horizon->texture.clay < 20)
+        if (horizon->texture.clay <= CLAYMIN)
             fieldCapacity = fcMin;
-        else if (horizon->texture.clay > 40)
+        else if (horizon->texture.clay >= CLAYMAX)
             fieldCapacity = fcMax;
         else
         {
-            double clayFactor = (horizon->texture.clay - 20) / 20;
+            double clayFactor = (horizon->texture.clay - CLAYMIN) / (CLAYMAX - CLAYMIN);
             fieldCapacity = (fcMin + (fcMax - fcMin) * clayFactor);
         }
 

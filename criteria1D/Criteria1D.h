@@ -94,7 +94,7 @@
 
         Criteria1D();
 
-        bool loadMeteo(QString idMeteo, QString idForecast, std::string *myError);
+        bool loadMOSESMeteo(QString idMeteo, QString idForecast, std::string *myError);
         bool setSoil(QString idSoil, std::string *myError);
         bool createOutputTable(std::string* myError);
         void prepareOutput(Crit3DDate myDate, bool isFirst);

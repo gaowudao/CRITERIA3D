@@ -136,7 +136,7 @@ bool Criteria1D::setSoil(QString idSoil, std::string *myError)
 }
 
 
-bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, std::string *myError)
+bool Criteria1D::loadMOSESMeteo(QString idMeteo, QString idForecast, std::string *myError)
 {
     QString queryString = "SELECT * FROM meteo_locations";
     queryString += " WHERE id_meteo='" + idMeteo + "'";
@@ -186,16 +186,17 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, std::string *myE
 
     int nrDays = firstObsDate.daysTo(lastObsDate) + 1;
 
-    // FORECAST: increase nr of days
+    // Is Forecast: increase nr of days
     if (this->isShortTermForecast)
         nrDays += this->daysOfForecast;
 
+    // Initialize data
     this->meteoPoint.initializeObsDataD(nrDays, getCrit3DDate(firstObsDate));
 
-    // READ OBSERVED
+    // Read observed data
     if (! readMOSESDailyData(&query, &meteoPoint, myError)) return false;
 
-    // SHORT TERM FORECAST
+    // Add Short-Term forecast
     if (this->isShortTermForecast)
     {
         QString queryString = "SELECT * FROM meteo_locations";
@@ -227,7 +228,7 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, std::string *myE
             return false;
         }
 
-        //check date
+        // check date
         query.first();
         QDate myDate = query.value("date").toDate();
         if (myDate != lastObsDate.addDays(1))
@@ -236,8 +237,12 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, std::string *myE
             return false;
         }
 
-        // READ FORECAST
+        // Read forecast data
         if (! readMOSESDailyData(&query, &meteoPoint, myError)) return false;
+
+        // Watertable data
+        // check last watertable data (last 15 days)
+        // se presente: estendi il dato sino ultimo giorno
     }
 
     return true;

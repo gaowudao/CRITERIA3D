@@ -17,7 +17,7 @@ bool runModel(Criteria1D* myCase, std::string* myError, Criteria1DUnit *myUnit)
     if (! myCase->setSoil(myUnit->idSoil, myError))
         return false;
 
-    if (! myCase->loadMeteo(myUnit->idMeteo, myUnit->idForecast, myError))
+    if (! myCase->loadMOSESMeteo(myUnit->idMeteo, myUnit->idForecast, myError))
         return false;
 
     if (! loadCropParameters(myUnit->idCrop, &(myCase->myCrop), &(myCase->dbParameters), myError))
@@ -71,12 +71,12 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
 
     for (myDate = firstDate; myDate <= lastDate; ++myDate)
     {
-        // INITIALIZE
+        // Initialize
         myCase->output.initializeDaily();
         doy = getDoyFromDate(myDate);
         irrigation = 0.0;
 
-        // READ METEO
+        // daily meteo
         myIndex = myCase->meteoPoint.obsDataD[0].date.daysTo(myDate);
         if ((myIndex < 0) || (myIndex >= myCase->meteoPoint.nrObsDataDaysD))
         {
@@ -112,10 +112,8 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
         if (! updateCrop(myCase, myError, myDate, isFirstDay, tmin, tmax))
             return false;
 
-
         // WATERTABLE (not mandatory)
         computeCapillaryRise(myCase, waterTableDepth);
-
 
         // IRRIGATION
         if (myCase->myCrop.isLiving)
