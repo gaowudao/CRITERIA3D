@@ -9,5 +9,5 @@
     bool computeLateralDrainage(Criteria1D* myCase);
     bool computeCapillaryRise(Criteria1D* myCase, float waterTableDepth);
 
-#endif // WATER
+#endif // WATER1D
 

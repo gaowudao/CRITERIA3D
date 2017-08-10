@@ -28,8 +28,6 @@
     ftomei@arpae.it
 */
 
-#include <stdio.h>
-#include <malloc.h>
 #include <math.h>
 
 #include "soil.h"
@@ -50,8 +48,6 @@ namespace soil
         this->critical = NODATA;
         this->maxInfiltration = NODATA;
         this->flux = NODATA;
-
-        this->horizon = NULL;
     }
 
     Crit3DTexture::Crit3DTexture()
@@ -121,7 +117,6 @@ namespace soil
         this->id = NODATA;
         this->totalDepth = 0;
         this->nrHorizons = 0;
-        this->horizon = NULL;
     }
 
     Crit3DSoil::Crit3DSoil(int idSoil, int nrHorizons)
@@ -140,7 +135,9 @@ namespace soil
 
     void Crit3DSoil::cleanSoil()
     {
-        if (this->nrHorizons > 0) free (this->horizon);
+        if (this->nrHorizons > 0)
+            delete (this->horizon);
+
         this->id = NODATA;
         this->nrHorizons = 0;
         this->totalDepth = 0;
@@ -340,8 +337,6 @@ namespace soil
     {
         return metersTokPa(value / 100.f);
     }
-
-
 
     double getThetaFC(Crit3DHorizon* horizon)
     {
