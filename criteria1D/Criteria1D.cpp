@@ -72,6 +72,7 @@ void Criteria1DOutput::initializeDaily()
     this->dailyCropAvailableWater = 0.0;
     this->dailySoilWaterDeficit = 0.0;
     this->dailyCapillaryRise = 0.0;
+    this->dailyWaterTable = NODATA;
 }
 
 

@@ -12,7 +12,8 @@
 
     bool initializeCrop(Criteria1D* myCase);
     bool resetCrop(Criteria1D* myCase);
-    bool updateCrop(Criteria1D* myCase, std::string* myError, Crit3DDate myDate, bool isFirstSimulationDay, double tmin, double tmax);
+    bool updateCrop(Criteria1D* myCase, std::string* myError, Crit3DDate myDate,
+                    bool isFirstSimulationDay, double tmin, double tmax);
 
     float cropIrrigationDemand(Criteria1D* myCase, float myPrec, float nextPrec);
     bool cropWaterDemand(Criteria1D* myCase);

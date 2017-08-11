@@ -6,6 +6,7 @@
 #include "Criteria1D.h"
 #include "croppingSystem.h"
 #include "dbTools.h"
+#include "root.h"
 
 
 double LAI_StartSenescence;
@@ -184,7 +185,7 @@ bool updateLai(Criteria1D* myCase, int myDoy)
 
 bool updateRoots(Criteria1D* myCase)
 {
-    root::computeRootDepth(&(myCase->myCrop), myCase->mySoil.totalDepth, myCase->myCrop.degreeDays);
+    root::computeRootDepth(&(myCase->myCrop), myCase->mySoil.totalDepth, myCase->myCrop.degreeDays, myCase->output.dailyWaterTable);
 
     return root::computeRootDensity(&(myCase->myCrop), myCase->layer, myCase->nrLayers, myCase->mySoil.totalDepth);
 }
@@ -364,13 +365,18 @@ bool irrigateCrop(Criteria1D* myCase, double irrigationDemand)
 
 bool evaporation(Criteria1D* myCase)
 {
-    // open water
+    const double EVAP_THRESHOLD = 0.00001;      //[mm]
+
+    // evaporation on surface
     double evaporationOpenWater = minValue(myCase->output.dailyMaxEvaporation, myCase->layer[0].waterContent);
-    double residualEvaporation = maxValue(0.0, myCase->output.dailyMaxEvaporation - myCase->layer[0].waterContent);
     myCase->layer[0].waterContent -= evaporationOpenWater;
     myCase->output.dailyEvaporation = evaporationOpenWater;
 
-    // soil
+    double residualEvaporation = myCase->output.dailyMaxEvaporation - evaporationOpenWater;
+    if (residualEvaporation < EVAP_THRESHOLD)
+        return true;
+
+    // evaporation on soil
     int lastLayerEvap = floor(MAX_EVAPORATION_DEPTH / myCase->layerThickness) +1;
     double* coeffEvap = (double *) calloc(lastLayerEvap, sizeof(double));
     double sumCoeff = 0.0;
@@ -387,15 +393,15 @@ bool evaporation(Criteria1D* myCase)
 
     bool isWaterSupply = true;
     double sumEvap, evapLayerThreshold, evapLayer;
-    while (residualEvaporation > 0.00001 && isWaterSupply)
+    while ((residualEvaporation > EVAP_THRESHOLD) && (isWaterSupply == true))
     {
         isWaterSupply = false;
         sumEvap = 0.0;
 
         for (i=1; i<=lastLayerEvap; i++)
         {
-            evapLayerThreshold = myCase->layer[i].FC - coeffEvap[i] * (myCase->layer[i].FC - myCase->layer[i].HH);
-            evapLayer = (coeffEvap[i] / sumCoeff) * residualEvaporation;
+            evapLayerThreshold = myCase->layer[i].FC - coeffEvap[i-1] * (myCase->layer[i].FC - myCase->layer[i].HH);
+            evapLayer = (coeffEvap[i-1] / sumCoeff) * residualEvaporation;
 
             if (myCase->layer[i].waterContent > (evapLayerThreshold + evapLayer))
                 isWaterSupply = true;
@@ -426,7 +432,7 @@ bool cropTranspiration(Criteria1D* myCase)
     if (myCase->myCrop.roots.rootDepth <= myCase->myCrop.roots.rootDepthMin) return true;
     if (myCase->myCrop.roots.firstRootLayer == NODATA) return true;
 
-    double theta;                                   // [m3 m-3] volumetric water content
+    double thetaWP;                                 // [m3 m-3] volumetric water content at Wilting Point
     double soilThickness;                           // [mm] thickness of soil layer
     double surplusThreshold;                        // [mm] water surplus stress threshold
     double waterScarcityThreshold;                  // [mm] water scarcity stress threshold
@@ -460,11 +466,11 @@ bool cropTranspiration(Criteria1D* myCase)
     {
         surplusThreshold = myCase->layer[i].SAT - (WSS * (myCase->layer[i].SAT - myCase->layer[i].FC));
 
-        theta = soil::thetaFromSignPsi(-soil::cmTokPa(myCase->myCrop.psiLeaf), myCase->layer[i].horizon);
-
         soilThickness = myCase->layer[i].thickness * myCase->layer[i].soilFraction * 1000.0;    // [mm]
 
-        cropWP = theta * soilThickness;  // [mm]
+        thetaWP = soil::thetaFromSignPsi(-soil::cmTokPa(myCase->myCrop.psiLeaf), myCase->layer[i].horizon);
+
+        cropWP = thetaWP * soilThickness;                                                         // [mm]
 
         waterScarcityThreshold = cropWP + myCase->myCrop.waterStressSensibility * (myCase->layer[i].FC - cropWP);
 
@@ -688,7 +694,8 @@ bool cropTranspiration_old(Criteria1D* myCase)
 }
 
 
-bool updateCrop(Criteria1D* myCase, std::string* myError, Crit3DDate myDate, bool isFirstSimulationDay, double tmin, double tmax)
+bool updateCrop(Criteria1D* myCase, std::string* myError, Crit3DDate myDate,
+                bool isFirstSimulationDay, double tmin, double tmax)
 {
     *myError = "";
 
@@ -737,7 +744,7 @@ bool updateCrop(Criteria1D* myCase, std::string* myError, Crit3DDate myDate, boo
                         // alfalfa
                         if (myCase->myCrop.idCrop == "ALFALFA1Y")
                         {
-                            // risolvere meglio: una sola coltura e gestire primo anno da dentro?
+                            // TODO risolvere meglio il passaggio (coltura unica con controlli?)
                             nextCrop = "ALFALFA";
                             isCropToReset = true;
                         }

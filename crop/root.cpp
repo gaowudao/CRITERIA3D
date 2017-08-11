@@ -58,7 +58,7 @@ namespace root
              }
         }
 
-    double computeRootDepth(Crit3DCrop* myCrop, double soilDepth,double currentDD)
+    double computeRootDepth(Crit3DCrop* myCrop, double soilDepth, double currentDD, double waterTableDepth)
     {
         if (!(myCrop->isLiving))
         {
@@ -67,16 +67,19 @@ namespace root
         }
         else
         {
-            myCrop->roots.rootLength = computeRootLength(myCrop, soilDepth, currentDD);
+            myCrop->roots.rootLength = computeRootLength(myCrop, soilDepth, currentDD, waterTableDepth);
             myCrop->roots.rootDepth = myCrop->roots.rootDepthMin + myCrop->roots.rootLength;
         }
 
         return myCrop->roots.rootDepth;
     }
 
-    double computeRootLength(Crit3DCrop* myCrop, double soilDepth, double currentDD)
+
+    // TODO this function computes the root length based on thermal units, it could be changed for perennial crops
+    double computeRootLength(Crit3DCrop* myCrop, double soilDepth, double currentDD, double waterTableDepth)
     {
-        // this function computes the root length based on thermal units, it could be changed for perennial crops
+        double rootLength = NODATA;
+
         if (myCrop->roots.rootDepthMax > soilDepth)
         {
             myCrop->roots.rootDepthMax = soilDepth; // attenzione è diverso da criteria
@@ -84,22 +87,41 @@ namespace root
         }
 
         if (isPluriannual(myCrop->type))
-            return myCrop->roots.rootDepthMax - myCrop->roots.rootDepthMin;
+        {
+            rootLength = myCrop->roots.rootDepthMax - myCrop->roots.rootDepthMin;
+        }
         else
         {
-            if (currentDD <= 0) return myCrop->roots.rootLengthMin;
+            if (currentDD <= 0)
+                rootLength = myCrop->roots.rootLengthMin;
             else if (currentDD > myCrop->roots.degreeDaysRootGrowth)
-                return (myCrop->roots.rootDepthMax - myCrop->roots.rootDepthMin);
+                rootLength = myCrop->roots.rootDepthMax - myCrop->roots.rootDepthMin;
             else
             {
-                currentDD = maxValue(currentDD, 1.0); // in order to avoid numerical divergences when calculating density through cardioid and gamma function
-                return getRootLength(&(myCrop->roots), currentDD,myCrop->degreeDaysEmergence);
+                // in order to avoid numerical divergences when calculating density through cardioid and gamma function
+                currentDD = maxValue(currentDD, 1.0);
+                rootLength = getRootLengthDD(&(myCrop->roots), currentDD, myCrop->degreeDaysEmergence);
             }
         }
+
+        // TODO radici dentro falda - gestire meglio
+        if ((waterTableDepth != NODATA) && (waterTableDepth > 0) && (myCrop->roots.rootLength != NODATA))
+        {
+            double maxRootDepth = waterTableDepth - 0.1f;
+            double minRootLenght = maxValue(myCrop->roots.rootLength, 0.05f);
+
+            if ((rootLength > minRootLenght) && ((myCrop->roots.rootDepthMin + rootLength) > maxRootDepth))
+            {
+                rootLength = maxValue(minRootLenght, maxRootDepth - myCrop->roots.rootDepthMin);
+            }
+        }
+
+        return rootLength;
     }
 
+
     //[m]
-    double getRootLength( Crit3DRoot* myRoot, double currentDD, double emergenceDD)
+    double getRootLengthDD(Crit3DRoot* myRoot, double currentDD, double emergenceDD)
     {
         // this function computes the roots rate of development
         double rootLength = NODATA;

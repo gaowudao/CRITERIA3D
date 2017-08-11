@@ -40,6 +40,7 @@
         double dailyTranspiration;
         double dailyCropAvailableWater;
         double dailySoilWaterDeficit;
+        double dailyWaterTable;
         double dailyCapillaryRise;
 
         Criteria1DOutput();

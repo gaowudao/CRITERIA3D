@@ -238,19 +238,26 @@ bool computeCapillaryRise(Criteria1D* myCase, float waterTableDepth)
     double layerCapillaryRise;           // [mm]
     double maxCapillaryRise;             // [mm]
     double capillaryRiseSum = 0;         // [mm]
+    int i;
+
+    int lastLayer = myCase->nrLayers - 1;
 
     // wrong watertable
-    if (waterTableDepth == NODATA || waterTableDepth <= 0)
-        return false;
+    // or watertable too depth (> 5 meters below lastlayer): no effect
+    if ( (waterTableDepth == NODATA)
+      || (waterTableDepth <= 0)
+      || (waterTableDepth > (myCase->layer[lastLayer].depth + 5.0f)) )
+    {
+        //re-initialize threshold for vertical drainage
+        for (i = 1; i < myCase->nrLayers; i++)
+            myCase->layer[i].critical = myCase->layer[i].FC;
 
-    // watertable too depth: no effect
-    int lastLayer = myCase->nrLayers - 1;
-    if (waterTableDepth > (myCase->layer[lastLayer].depth * 3))
         return false;
+    }
 
     // search boundary layer: first layer over watertable
     // depth is assigned at center of each layer
-    int i = lastLayer;
+    i = lastLayer;
     if (waterTableDepth < myCase->mySoil.totalDepth)
         while ((i > 1) && (waterTableDepth <= myCase->layer[i].depth))
             i--;
@@ -273,7 +280,7 @@ bool computeCapillaryRise(Criteria1D* myCase, float waterTableDepth)
     // air entry point of boundary layer
     he_boundary = myCase->layer[boundaryLayer].horizon->vanGenuchten.he;    // [kPa]
 
-    // above watertable: assign water content threshold for dreinage
+    // above watertable: assign water content threshold for vertical drainage
     for (i = 1; i <= boundaryLayer; i++)
     {
         dz = (waterTableDepth - myCase->layer[i].depth);                    // [m]
@@ -281,7 +288,7 @@ bool computeCapillaryRise(Criteria1D* myCase, float waterTableDepth)
 
         myCase->layer[i].critical = soil::getWaterContentFromPsi(psi, &(myCase->layer[i]));
 
-        if (myCase->layer[i].critical > myCase->layer[i].FC)
+        if (myCase->layer[i].critical < myCase->layer[i].FC)
             myCase->layer[i].critical = myCase->layer[i].FC;
     }
 

@@ -89,6 +89,11 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
         tmax = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyAirTemperatureMax);
         waterTableDepth = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyWaterTableDepth);
 
+        // check for DA-RO
+        if (waterTableDepth >= 0.f && waterTableDepth < 0.1f)
+            waterTableDepth = 0.1f;
+        myCase->output.dailyWaterTable = waterTableDepth;
+
         if ((prec == NODATA) || (tmin == NODATA) || (tmax == NODATA))
         {
             *myError = "Missing weather data: " + myDate.toStdString();
@@ -103,10 +108,10 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
 
         // ET0
         et0 = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyPotentialEvapotranspiration);
-        if ((et0 != NODATA) && (et0 > 0))
-            myCase->output.dailyEt0 = et0;
-        else
-            myCase->output.dailyEt0 = ET0_Hargreaves(0.17, myCase->meteoPoint.latitude, doy, tmax, tmin);
+        if ((et0 == NODATA || et0 <= 0))
+            et0 = ET0_Hargreaves(0.17, myCase->meteoPoint.latitude, doy, tmax, tmin);
+
+        myCase->output.dailyEt0 = et0;
 
         // CROP
         if (! updateCrop(myCase, myError, myDate, isFirstDay, tmin, tmax))

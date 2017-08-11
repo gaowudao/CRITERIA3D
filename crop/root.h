@@ -49,11 +49,11 @@
     namespace root
     {
         int nrAtoms(soil::Crit3DLayer* layers, int nrLayers, double rootDepthMin, double* minThickness, int* atoms);
-        double getRootLength(Crit3DRoot* myRoot, double currentDD, double emergenceDD);
+        double getRootLengthDD(Crit3DRoot* myRoot, double currentDD, double emergenceDD);
         rootDistributionType getRootDistributionType(int rootShape);
 
-        double computeRootLength(Crit3DCrop* myCrop, double soilDepth, double currentDD);
-        double computeRootDepth(Crit3DCrop* myCrop, double soilDepth, double currentDD);
+        double computeRootLength(Crit3DCrop* myCrop, double soilDepth, double currentDD, double waterTableDepth);
+        double computeRootDepth(Crit3DCrop* myCrop, double soilDepth, double currentDD, double waterTableDepth);
         bool computeRootDensity(Crit3DCrop* myCrop, soil::Crit3DLayer* layers, int nrLayers, double soilDepth);
     }
 
