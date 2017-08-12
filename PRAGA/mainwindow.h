@@ -126,6 +126,8 @@
     bool chooseVariable();
     bool chooseFrequency();
     bool downloadMeteoData();
+    bool chooseRasterColorScale(Crit3DColorScale *myColorScale, QLabel *myLabel);
+    void setRasterColorScale(meteoVariable myVar, Crit3DColorScale *myColorScale, QLabel *myLabel);
 
 
 #endif // MAINWINDOW_H

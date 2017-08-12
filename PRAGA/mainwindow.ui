@@ -1035,7 +1035,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>10</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -1547,7 +1547,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>10</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -1565,7 +1565,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>10</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -1638,7 +1638,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>9</pointsize>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="text">
@@ -1671,7 +1671,7 @@
      <x>0</x>
      <y>0</y>
      <width>1368</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <property name="palette">
@@ -2107,8 +2107,8 @@
     </widget>
     <addaction name="actionLoadRaster"/>
     <addaction name="separator"/>
-    <addaction name="menu_New_meteo_points_DB"/>
     <addaction name="actionOpen_meteo_points_DB"/>
+    <addaction name="menu_New_meteo_points_DB"/>
     <addaction name="separator"/>
     <addaction name="actionDownload_meteo_data"/>
     <addaction name="separator"/>

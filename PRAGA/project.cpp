@@ -35,8 +35,6 @@ bool Project::loadRaster(QString myFileName)
     {
         this->DTM.isLoaded = true;
         gis::updateMinMaxRasterGrid(&(this->DTM));
-        // colorscale
-        setDefaultDTMScale(this->DTM.colorScale);
 
         gis::Crit3DGridHeader myLatLonHeader;
         gis::getGeoExtentsFromUTMHeader(this->gisSettings, this->DTM.header, &myLatLonHeader);

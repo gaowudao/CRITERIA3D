@@ -174,6 +174,9 @@ void MainWindow::on_actionLoadRaster_triggered()
     qDebug() << "loading raster";
     if (!myProject.loadRaster(fileName)) return;
 
+    // set default color scale
+    setRasterColorScale(noMeteoVar, myProject.DTM.colorScale, ui->labelRasterScale);
+
     this->ui->rasterOpacitySlider->setEnabled(true);
 
     // center map
@@ -749,7 +752,6 @@ void MainWindow::setMapSource(OSMTileSource::OSMTileType mySource)
 }
 
 
-
 void MainWindow::on_rasterScaleButton_clicked()
 {
     if (!myProject.DTM.isLoaded)
@@ -758,73 +760,7 @@ void MainWindow::on_rasterScaleButton_clicked()
         return;
     }
 
-    QDialog myDialog;
-    QVBoxLayout mainLayout;
-    QVBoxLayout layoutVariable;
-    QHBoxLayout layoutOk;
-
-    myDialog.setWindowTitle("Choose color scale");
-    myDialog.setFixedWidth(300);
-
-    QRadioButton DTM("Digital Terrain map m");
-    QRadioButton Temp("Temperature °C");
-    QRadioButton Prec("Precipitation mm");
-    QRadioButton RH("Relative humidity %");
-    QRadioButton Rad("Solar radiation MJ m-2");
-    QRadioButton Wind("Wind intensity m s-1");
-
-    layoutVariable.addWidget(&DTM);
-    layoutVariable.addWidget(&Temp);
-    layoutVariable.addWidget(&Prec);
-    layoutVariable.addWidget(&RH);
-    layoutVariable.addWidget(&Rad);
-    layoutVariable.addWidget(&Wind);
-
-    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-
-    connect(&buttonBox, SIGNAL(accepted()), &myDialog, SLOT(accept()));
-    connect(&buttonBox, SIGNAL(rejected()), &myDialog, SLOT(reject()));
-
-    layoutOk.addWidget(&buttonBox);
-
-    mainLayout.addLayout(&layoutVariable);
-    mainLayout.addLayout(&layoutOk);
-    myDialog.setLayout(&mainLayout);
-    myDialog.exec();
-
-    if (myDialog.result() == QDialog::Accepted)
-    {
-       if (DTM.isChecked())
-       {
-            setDefaultDTMScale(myProject.DTM.colorScale);
-            ui->labelRasterScale->setText("Digital Terrain Map  m");
-       }
-       else if (Temp.isChecked())
-       {
-           setTemperatureScale(myProject.DTM.colorScale);
-           ui->labelRasterScale->setText("Air temperature  °C");
-       }
-       else if (Prec.isChecked())
-       {
-           setPrecipitationScale(myProject.DTM.colorScale);
-           ui->labelRasterScale->setText("Precipitation  mm");
-       }
-       else if (RH.isChecked())
-       {
-           setRelativeHumidityScale(myProject.DTM.colorScale);
-           ui->labelRasterScale->setText("Relative humidity  %");
-       }
-       else if (Rad.isChecked())
-       {
-           setRadiationScale(myProject.DTM.colorScale);
-           ui->labelRasterScale->setText("Solar irradiance W m-2");
-       }
-       else if (Wind.isChecked())
-       {
-           setWindIntensityScale(myProject.DTM.colorScale);
-           ui->labelRasterScale->setText("Wind intensity  m s-1");
-       }
-    }
+    chooseRasterColorScale(myProject.DTM.colorScale, ui->labelRasterScale);
 }
 
 
@@ -1148,4 +1084,98 @@ bool downloadMeteoData()
         return true;
     }
 }
+
+
+bool chooseRasterColorScale(Crit3DColorScale *myColorScale, QLabel *myLabel)
+{
+    if (myColorScale == NULL)
+        return false;
+
+    QDialog myDialog;
+    QVBoxLayout mainLayout;
+    QVBoxLayout layoutVariable;
+    QHBoxLayout layoutOk;
+
+    myDialog.setWindowTitle("Choose color scale");
+    myDialog.setFixedWidth(400);
+
+    QRadioButton DTM("Digital Terrain map m");
+    QRadioButton Temp("Temperature °C");
+    QRadioButton Prec("Precipitation mm");
+    QRadioButton RH("Relative humidity %");
+    QRadioButton Rad("Solar radiation MJ m-2");
+    QRadioButton Wind("Wind intensity m s-1");
+
+    layoutVariable.addWidget(&DTM);
+    layoutVariable.addWidget(&Temp);
+    layoutVariable.addWidget(&Prec);
+    layoutVariable.addWidget(&RH);
+    layoutVariable.addWidget(&Rad);
+    layoutVariable.addWidget(&Wind);
+
+    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+
+    myDialog.connect(&buttonBox, SIGNAL(accepted()), &myDialog, SLOT(accept()));
+    myDialog.connect(&buttonBox, SIGNAL(rejected()), &myDialog, SLOT(reject()));
+
+    layoutOk.addWidget(&buttonBox);
+
+    mainLayout.addLayout(&layoutVariable);
+    mainLayout.addLayout(&layoutOk);
+    myDialog.setLayout(&mainLayout);
+    myDialog.exec();
+
+    if (myDialog.result() != QDialog::Accepted)
+        return false;
+
+    meteoVariable myVar = noMeteoVar;
+
+    if (DTM.isChecked()) myVar = noMeteoVar;
+    else if (Temp.isChecked()) myVar = airTemperature;
+    else if (Prec.isChecked()) myVar = precipitation;
+    else if (RH.isChecked()) myVar = airHumidity;
+    else if (Rad.isChecked()) myVar = globalIrradiance;
+    else if (Wind.isChecked()) myVar = windIntensity;
+
+    setRasterColorScale(myVar, myColorScale, myLabel);
+    return true;
+}
+
+
+void setRasterColorScale(meteoVariable myVar, Crit3DColorScale *myColorScale, QLabel *myLabel)
+{
+    switch(myVar)
+    {
+    case airTemperature:
+        setTemperatureScale(myColorScale);
+        myLabel->setText("Air temperature  °C");
+        break;
+
+    case precipitation:
+        setPrecipitationScale(myColorScale);
+        myLabel->setText("Precipitation  mm");
+        break;
+
+    case globalIrradiance:
+    case dailyGlobalRadiation:
+        setRadiationScale(myColorScale);
+        myLabel->setText("Solar irradiance W m-2");
+        break;
+
+    case (airHumidity):
+        setRelativeHumidityScale(myColorScale);
+        myLabel->setText("Relative humidity  %");
+        break;
+
+    case windIntensity:
+        setWindIntensityScale(myColorScale);
+        myLabel->setText("Wind intensity  m s-1");
+        break;
+
+    default:
+        setDefaultDTMScale(myColorScale);
+        myLabel->setText("Digital Terrain Map  m");
+    }
+}
+
 
