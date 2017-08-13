@@ -458,9 +458,9 @@
    <widget class="QWidget" name="widgetMap" native="true">
     <property name="geometry">
      <rect>
-      <x>260</x>
+      <x>270</x>
       <y>0</y>
-      <width>691</width>
+      <width>681</width>
       <height>561</height>
      </rect>
     </property>
@@ -477,8 +477,8 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>400</y>
-      <width>251</width>
+      <y>300</y>
+      <width>261</width>
       <height>151</height>
      </rect>
     </property>
@@ -899,11 +899,13 @@
     </property>
     <property name="font">
      <font>
-      <pointsize>11</pointsize>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
      </font>
     </property>
     <property name="autoFillBackground">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="title">
      <string notr="true">Raster</string>
@@ -919,7 +921,7 @@
       <rect>
        <x>20</x>
        <y>30</y>
-       <width>211</width>
+       <width>221</width>
        <height>22</height>
       </rect>
      </property>
@@ -956,13 +958,13 @@
       <rect>
        <x>-1</x>
        <y>100</y>
-       <width>251</width>
+       <width>261</width>
        <height>50</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>9</pointsize>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="toolTip">
@@ -992,7 +994,7 @@
       <rect>
        <x>90</x>
        <y>60</y>
-       <width>151</width>
+       <width>161</width>
        <height>21</height>
       </rect>
      </property>
@@ -1047,9 +1049,9 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>200</y>
-      <width>251</width>
-      <height>181</height>
+      <y>80</y>
+      <width>261</width>
+      <height>191</height>
      </rect>
     </property>
     <property name="palette">
@@ -1469,14 +1471,16 @@
     </property>
     <property name="font">
      <font>
-      <pointsize>11</pointsize>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
      </font>
     </property>
     <property name="autoFillBackground">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="title">
-     <string notr="true">Points</string>
+     <string notr="true">Meteo Points</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -1485,14 +1489,14 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>130</y>
-       <width>251</width>
+       <y>140</y>
+       <width>261</width>
        <height>51</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>9</pointsize>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <property name="toolTip">
@@ -1503,8 +1507,8 @@
      <property name="geometry">
       <rect>
        <x>90</x>
-       <y>30</y>
-       <width>151</width>
+       <y>100</y>
+       <width>161</width>
        <height>21</height>
       </rect>
      </property>
@@ -1557,9 +1561,9 @@
     <widget class="QLabel" name="labelFrequency">
      <property name="geometry">
       <rect>
-       <x>90</x>
-       <y>60</y>
-       <width>151</width>
+       <x>110</x>
+       <y>70</y>
+       <width>141</width>
        <height>21</height>
       </rect>
      </property>
@@ -1575,9 +1579,9 @@
     <widget class="QDateTimeEdit" name="dateTimeEdit">
      <property name="geometry">
       <rect>
-       <x>50</x>
-       <y>90</y>
-       <width>151</width>
+       <x>10</x>
+       <y>30</y>
+       <width>161</width>
        <height>31</height>
       </rect>
      </property>
@@ -1620,7 +1624,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>10</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="displayFormat">
@@ -1631,14 +1635,14 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>60</y>
-       <width>71</width>
+       <y>70</y>
+       <width>91</width>
        <height>23</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>8</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -1649,7 +1653,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>30</y>
+       <y>100</y>
        <width>71</width>
        <height>23</height>
       </rect>

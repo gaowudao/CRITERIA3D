@@ -107,7 +107,7 @@
 
         QString projectError;
 
-        quality::qualityMeteo qualityParameters;
+        Crit3DQuality qualityParameters;
 
         Crit3DMeteoMaps* meteoMaps;
         Crit3DStatePlantMaps* statePlantMaps;

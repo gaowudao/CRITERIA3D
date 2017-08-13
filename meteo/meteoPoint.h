@@ -1,18 +1,22 @@
 #ifndef METEOPOINT_H
 #define METEOPOINT_H
 
-    #ifndef _GLIBCXX_STRING
-        #include <string>
-    #endif
+    #include <string>
+
     #ifndef CRIT3DDATE_H
         #include "crit3dDate.h"
     #endif
-    #ifndef QUALITY_H
-        #include "quality.h"
+    #ifndef METEO_H
+        #include "meteo.h"
     #endif
     #ifndef GIS_H
         #include "gis.h"
     #endif
+
+    namespace quality
+    {
+        enum type {missing_data, wrong_syntactic, wrong_spatial, wrong_frequency, wrong_variable, accepted};
+    }
 
     struct TObsDataH {
         Crit3DDate date;
@@ -65,7 +69,7 @@
         long nrObsDataDaysD;
         TObsDataH *obsDataH;
         TObsDataD *obsDataD;
-        quality::qualityValue myQuality;
+        quality::type myQuality;
         float value;
         float residual;
 

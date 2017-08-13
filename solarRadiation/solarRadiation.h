@@ -46,14 +46,11 @@
         int estimateTransmissivityWindow(const gis::Crit3DRasterGrid& myDtm, const Crit3DRadiationMaps& myRadiationMaps,
                                  gis::Crit3DPoint* myPoint, Crit3DTime UTCTime, int timeStepSecond);
 
-        float computePointTransmissivity(const gis::Crit3DPoint& myPoint, Crit3DTime UTCTime,
-                                 float* measuredRad , int windowWidth,
-                                 int timeStepSecond, const gis::Crit3DRasterGrid& myDtm);
-
-        float computePointTransmissivitySamani(float tmin, float tmax, float samaniCoeff);
-
         bool computeRadiationGridPresentTime(const gis::Crit3DRasterGrid& myDtm,
                                  Crit3DRadiationMaps* radiationMaps, const Crit3DTime& myCrit3DTime);
+
+        float computePointTransmissivity(const gis::Crit3DPoint& myPoint, Crit3DTime UTCTime, float* measuredRad,
+                                         int windowWidth, int timeStepSecond, const gis::Crit3DRasterGrid& myDtm);
 
         gis::Crit3DRasterGrid* getBeamRadiationMap();
         gis::Crit3DRasterGrid* getDiffuseRadiationMap();

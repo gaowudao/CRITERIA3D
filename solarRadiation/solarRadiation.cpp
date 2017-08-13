@@ -953,18 +953,48 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
         return true;
     }
 
-    float computePointTransmissivitySamani(float tmin, float tmax, float samaniCoeff)
+
+    void getTime(double decimalTime, int* myHour, int* myMinute, int* mySecond)
     {
-        if (samaniCoeff != NODATA && tmin != NODATA && tmax != NODATA)
-            if (tmin <= tmax)
-                return samaniCoeff * sqrt(tmax - tmin);
-            else
-                return false;
-        else
-            return NODATA;
+       int mySign = 1;
+       if (decimalTime < 0.0)
+       {
+          mySign = -1;
+          decimalTime *= -1;
+       }
+
+       *myHour = mySign * (int)floor(decimalTime);
+       *myMinute = mySign * (int)floor((decimalTime - (*myHour)) * 60);
+       *mySecond =mySign * (int)floor((decimalTime - (*myHour) - (*myMinute) / 60) * 3600);
     }
 
-    float computePointTransmissivity(const gis::Crit3DPoint& myPoint, Crit3DTime UTCTime, float* measuredRad , int windowWidth, int timeStepSecond, const gis::Crit3DRasterGrid& myDtm)
+    bool preConditionsRadiationGrid(Crit3DRadiationMaps* radiationMaps)
+    {
+        if (! radiationMaps->latMap->isLoaded || ! radiationMaps->lonMap->isLoaded) return false;
+
+        if (! radiationMaps->slopeMap->isLoaded || ! radiationMaps->aspectMap->isLoaded) return false;
+
+        return true;
+    }
+
+    bool computeRadiationGridPresentTime(const gis::Crit3DRasterGrid& myDtm,
+                                         Crit3DRadiationMaps* radiationMaps,
+                                         const Crit3DTime& myCrit3DTime)
+    {
+        if (! preConditionsRadiationGrid(radiationMaps))
+            return false;        
+
+        if (radiationSettings.getAlgorithm() == RADIATION_ALGORITHM_RSUN)
+            return computeRadiationGridRsun(myDtm, radiationMaps, myCrit3DTime);
+        else if (radiationSettings.getAlgorithm() == RADIATION_ALGORITHM_BROOKS)
+            // to do
+            return false;
+        else
+            return false;
+    }
+
+    float computePointTransmissivity(const gis::Crit3DPoint& myPoint, Crit3DTime UTCTime, float* measuredRad,
+                                     int windowWidth, int timeStepSecond, const gis::Crit3DRasterGrid& myDtm)
     {
         if (windowWidth % 2 != 1) return PARAMETER_ERROR;
 
@@ -1040,45 +1070,6 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
         myTransmissivity = ratioTransmissivity * myClearSkyTransmissivity;
         /*! transmissivity can't be over 0.85 */
         return minValue(myTransmissivity, float(0.85));
-    }
-
-    void getTime(double decimalTime, int* myHour, int* myMinute, int* mySecond)
-    {
-       int mySign = 1;
-       if (decimalTime < 0.0)
-       {
-          mySign = -1;
-          decimalTime *= -1;
-       }
-
-       *myHour = mySign * (int)floor(decimalTime);
-       *myMinute = mySign * (int)floor((decimalTime - (*myHour)) * 60);
-       *mySecond =mySign * (int)floor((decimalTime - (*myHour) - (*myMinute) / 60) * 3600);
-    }
-
-    bool preConditionsRadiationGrid(Crit3DRadiationMaps* radiationMaps)
-    {
-        if (! radiationMaps->latMap->isLoaded || ! radiationMaps->lonMap->isLoaded) return false;
-
-        if (! radiationMaps->slopeMap->isLoaded || ! radiationMaps->aspectMap->isLoaded) return false;
-
-        return true;
-    }
-
-    bool computeRadiationGridPresentTime(const gis::Crit3DRasterGrid& myDtm,
-                                         Crit3DRadiationMaps* radiationMaps,
-                                         const Crit3DTime& myCrit3DTime)
-    {
-        if (! preConditionsRadiationGrid(radiationMaps))
-            return false;        
-
-        if (radiationSettings.getAlgorithm() == RADIATION_ALGORITHM_RSUN)
-            return computeRadiationGridRsun(myDtm, radiationMaps, myCrit3DTime);
-        else if (radiationSettings.getAlgorithm() == RADIATION_ALGORITHM_BROOKS)
-            // to do
-            return false;
-        else
-            return false;
     }
 }
 

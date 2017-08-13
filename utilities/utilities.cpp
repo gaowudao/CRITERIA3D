@@ -86,6 +86,19 @@ Crit3DTime getCrit3DTime(const QDateTime& t)
 }
 
 
+Crit3DTime getCrit3DTime(const QDate& t, int hour)
+{
+    Crit3DTime myTime;
+
+    myTime.date.day = t.day();
+    myTime.date.month = t.month();
+    myTime.date.year = t.year();
+    myTime.time = hour * 3600;
+
+    return myTime;
+}
+
+
 QDate getQDate(const Crit3DDate& d)
 {
     QDate myDate = QDate(d.year, d.month, d.day);

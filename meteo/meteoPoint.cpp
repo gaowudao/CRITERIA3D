@@ -28,7 +28,6 @@
 
 #include "commonConstants.h"
 #include "meteoPoint.h"
-#include "meteo.h"
 
 
 Crit3DMeteoPoint::Crit3DMeteoPoint()
@@ -47,7 +46,7 @@ Crit3DMeteoPoint::Crit3DMeteoPoint()
     this->nrObsDataDaysD = 0;
     this->hourlyFraction = 1;
 
-    this->myQuality = quality::missing;
+    this->myQuality = quality::missing_data;
     this->value = NODATA;
     this->residual = NODATA;
 
@@ -70,7 +69,7 @@ void Crit3DMeteoPoint::initializeObsDataH(int myHourlyFraction, int numberOfDays
     hourlyFraction = myHourlyFraction;
     int nrDayValues = hourlyFraction * 24 +1;
     obsDataH = (TObsDataH *) calloc(numberOfDays, sizeof(TObsDataH));
-    myQuality = quality::missing;
+    myQuality = quality::missing_data;
     residual = NODATA;
 
     for (int i = 0; i < numberOfDays; i++)
@@ -106,7 +105,7 @@ void Crit3DMeteoPoint::initializeObsDataD(int numberOfDays, const Crit3DDate& fi
 
     nrObsDataDaysD = numberOfDays;
     obsDataD = (TObsDataD *) calloc(numberOfDays, sizeof(TObsDataD));
-    myQuality = quality::missing;
+    myQuality = quality::missing_data;
     residual = NODATA;
 
     for (int i = 0; i < numberOfDays; i++)
@@ -308,7 +307,7 @@ float Crit3DMeteoPoint::obsDataConsistencyH(meteoVariable myVar, const Crit3DTim
 
 void Crit3DMeteoPoint::cleanObsDataH()
 {
-    myQuality = quality::missing;
+    myQuality = quality::missing_data;
 
     if (nrObsDataDaysH > 0)
     {
@@ -328,7 +327,7 @@ void Crit3DMeteoPoint::cleanObsDataH()
 
 void Crit3DMeteoPoint::cleanObsDataD()
 {
-    myQuality = quality::missing;
+    myQuality = quality::missing_data;
 
     if (nrObsDataDaysD > 0)
         free (obsDataD);

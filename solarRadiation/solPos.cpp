@@ -535,7 +535,7 @@ static void geometry ( struct posdata *pdat )
     top      =  cos ( raddeg * pdat->ecobli ) * sin ( raddeg * pdat->eclong );
     bottom   =  cos ( raddeg * pdat->eclong );
 
-    pdat->rascen =  degrad * atan2 ( top, bottom );
+    pdat->rascen =  float(degrad * atan2(top, bottom));
 
     /*! (make it a positive angle) */
     if ( pdat->rascen < 0.0 )
@@ -545,7 +545,7 @@ static void geometry ( struct posdata *pdat )
         /*!  Michalsky, J.  1988.  The Astronomical Almanac's algorithm for
             approximate solar position (1950-2050).  Solar Energy 40 (3),
             pp. 227-235. */
-    pdat->gmst  = 6.697375 + 0.0657098242 * pdat->ectime + pdat->utime;
+    pdat->gmst  = 6.697375f + 0.0657098242f * pdat->ectime + pdat->utime;
 
     /*! (dump the multiples of 24, so the answer is between 0 and 24) */
     pdat->gmst -= float(24.0 * (int) (pdat->gmst / 24.0));
@@ -556,7 +556,7 @@ static void geometry ( struct posdata *pdat )
         /*!  Michalsky, J.  1988.  The Astronomical Almanac's algorithm for
             approximate solar position (1950-2050).  Solar Energy 40 (3),
             pp. 227-235. */
-    pdat->lmst  = pdat->gmst * 15.0 + pdat->longitude;
+    pdat->lmst  = pdat->gmst * 15.f + pdat->longitude;
 
     /*! (dump the multiples of 360, so the answer is between 0 and 360) */
     pdat->lmst -= float(360.0 * (int) ( pdat->lmst / 360.0));
@@ -599,13 +599,13 @@ static void zen_no_ref ( struct posdata *pdat, struct trigdata *tdat )
             cz = -1.0;
     }
 
-    pdat->zenetr   = acos ( cz ) * degrad;
+    pdat->zenetr   = float(acos(cz) * degrad);
 
     /*! (limit the degrees below the horizon to 9 [+90 -> 99]) */
     if ( pdat->zenetr > 99.0 )
         pdat->zenetr = 99.0;
 
-    pdat->elevetr = 90.0 - pdat->zenetr;
+    pdat->elevetr = 90.f - pdat->zenetr;
 }
 
 
@@ -633,7 +633,7 @@ static void ssha( struct posdata *pdat, struct trigdata *tdat )
         else if ( cssha > 1.0 )
             pdat->ssha = 0.0;
         else
-            pdat->ssha = degrad * acos ( cssha );
+            pdat->ssha = float(degrad * acos(cssha));
     }
     else if ( ((pdat->declin >= 0.0) && (pdat->latitude > 0.0 )) ||
               ((pdat->declin <  0.0) && (pdat->latitude < 0.0 )) )
@@ -680,13 +680,13 @@ static void sbcf( struct posdata *pdat, struct trigdata *tdat )
  */
 static void tst( struct posdata *pdat )
 {
-    pdat->tst    = ( 180.0 + pdat->hrang ) * 4.0;
+    pdat->tst    = ( 180.f + pdat->hrang ) * 4.f;
     pdat->tstfix =
         pdat->tst -
-        (float)pdat->hour * 60.0 -
+        (float)pdat->hour * 60.f -
         pdat->minute -
-        (float)pdat->second / 60.0 +
-        (float)pdat->interval / 120.0; /*!<  add back half of the interval */
+        (float)pdat->second / 60.f +
+        (float)pdat->interval / 120.f;  /*!<  add back half of the interval */
 
     /*! bound tstfix to this day */
     while ( pdat->tstfix >  720.0 )
@@ -695,7 +695,7 @@ static void tst( struct posdata *pdat )
         pdat->tstfix += 1440.0;
 
     pdat->eqntim =
-        pdat->tstfix + 60.0 * pdat->timezone - 4.0 * pdat->longitude;
+        pdat->tstfix + 60.f * pdat->timezone - 4.f * pdat->longitude;
 
 }
 
@@ -736,8 +736,8 @@ static void sazm( struct posdata *pdat, struct trigdata *tdat )
   float se;          /*!<  sine of the solar elevation */
 
     localtrig( pdat, tdat );
-    ce         = cos ( raddeg * pdat->elevetr );
-    se         = sin ( raddeg * pdat->elevetr );
+    ce         = float( cos (raddeg * pdat->elevetr));
+    se         = float( sin (raddeg * pdat->elevetr));
 
     pdat->azim     = 180.0;
     cecl       = ce * tdat->cl;
@@ -748,9 +748,9 @@ static void sazm( struct posdata *pdat, struct trigdata *tdat )
         else if ( ca < -1.0 )
             ca = -1.0;
 
-        pdat->azim = 180.0 - acos ( ca ) * degrad;
+        pdat->azim = 180.f - float(acos (ca) * degrad);
         if ( pdat->hrang > 0 )
-            pdat->azim  = 360.0 - pdat->azim;
+            pdat->azim  = 360.f - pdat->azim;
     }
 }
 

@@ -26,14 +26,21 @@ void StationMarker::setToolTip(int i)
     float altitude = myProject.meteoPoints[i].point.z;
     QString municipality = QString::fromStdString(myProject.meteoPoints[i].municipality);
 
-    QString toolTipText = QString("<b> %1 </b> <br/> ID: %2 <br/> dataset: <b>%3</b> <br/> altitude: %4 m <br/> municipality: %5")
+    QString toolTipText = QString("<b> %1 </b> <br/> ID: %2 <br/> dataset: %3 <br/> altitude: %4 m <br/> municipality: %5")
                             .arg(name).arg(idpoint).arg(dataset).arg(altitude).arg(municipality);
 
     float myValue = myProject.meteoPoints[i].value;
     if (myValue != NODATA)
     {
         QString value = QString::number(myValue);
-        toolTipText = QString("value: <b> %1 </b> <br/> <br/>").arg(value) + toolTipText;
+
+        QString myQuality = "";
+        if (myProject.meteoPoints[i].myQuality == quality::wrong_syntactic)
+            myQuality = "WRONG DATA (syntax control)";
+        if (myProject.meteoPoints[i].myQuality == quality::wrong_spatial)
+            myQuality = "WRONG DATA (spatial control)";
+
+        toolTipText = QString("value: <b> %1 <br/> %2 <br/> </b>").arg(value).arg(myQuality) + toolTipText;
     }
 
     CircleObject::setToolTip(toolTipText);

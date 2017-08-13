@@ -6,6 +6,7 @@
 #include "forminfo.h"
 #include "utilities.h"
 #include "commonConstants.h"
+#include "quality.h"
 
 
 Project::Project()
@@ -291,6 +292,11 @@ QDate Project::getCurrentDate()
     return this->currentDate;
 }
 
+Crit3DTime Project::getCurrentTime()
+{
+    return getCrit3DTime(this->currentDate, this->currentHour);
+}
+
 short Project::getCurrentHour()
 {
     return this->currentHour;
@@ -299,6 +305,11 @@ short Project::getCurrentHour()
 frequencyType Project::getFrequency()
 {
     return this->currentFrequency;
+}
+
+meteoVariable Project::getCurrentVariable()
+{
+    return this->currentVariable;
 }
 
 
@@ -362,13 +373,10 @@ void Project::getMeteoPointsRange(float *minimum, float *maximum)
     if (currentFrequency == noFrequency || currentVariable == noMeteoVar)
         return;
 
-    float v = NODATA;
+    float v;
     for (int i = 0; i < meteoPoints.size(); i++)
     {
-        if (currentFrequency == daily)
-            v =  meteoPoints[i].getMeteoPointValueD(getCrit3DDate(currentDate), currentVariable);
-        else if (currentFrequency == hourly)
-            v =  meteoPoints[i].getMeteoPointValueH(getCrit3DDate(currentDate), currentHour, 0, currentVariable);
+        v = meteoPoints[i].value;
 
         if (v != NODATA)
         {

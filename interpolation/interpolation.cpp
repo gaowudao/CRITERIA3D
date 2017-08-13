@@ -578,9 +578,9 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
     }
 
     /*! check inversion significance */
-    statistics::linearRegression(myHeights1.data(), myData1.data(), myHeights1.size(), false, &q1, &m1, &r2_values);
+    statistics::linearRegression(myHeights1.data(), myData1.data(), long(myHeights1.size()), false, &q1, &m1, &r2_values);
     if (myIntervalsValues1.size() > 2)
-        statistics::linearRegression(myIntervalsHeight1.data(), myIntervalsValues1.data(), (long) myIntervalsHeight1.size(), false, &q, &m, &r2_intervals);
+        statistics::linearRegression(myIntervalsHeight1.data(), myIntervalsValues1.data(), long(myIntervalsHeight1.size()), false, &q, &m, &r2_intervals);
     else
         r2_intervals = 0.;
 
@@ -602,7 +602,7 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
 
         /*! case 1: analysis only above inversion, flat lapse rate below */
         inversionLapseRate = 0.;
-        statistics::linearRegression(myHeights2.data(), myData2.data(), myHeights2.size(), false, &q2, &m2, &actualR2);
+        statistics::linearRegression(myHeights2.data(), myData2.data(), long(myHeights2.size()), false, &q2, &m2, &actualR2);
 
         if (myData2.size() >= MIN_REGRESSION_POINTS)
         {
@@ -616,7 +616,8 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
             }
             else
             {
-                statistics::linearRegression(myIntervalsHeight2.data(), myIntervalsValues2.data(), myIntervalsHeight2.size(), false, &q2, &m2, &actualR2Levels);
+                statistics::linearRegression(myIntervalsHeight2.data(), myIntervalsValues2.data(),
+                                             int(myIntervalsHeight2.size()), false, &q2, &m2, &actualR2Levels);
                 if (actualR2Levels >= mySignificativeR2)
                 {
                     actualLapseRate = minValue(m2, float(0.0));
@@ -657,8 +658,8 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
     }
 
     /*! significance analysis */
-    statistics::linearRegression(myHeights1.data(), myData1.data(), myHeights1.size(), false, &q1, &m1, &r21);
-    statistics::linearRegression(myHeights2.data(), myData2.data(), myHeights2.size(), false, &q2, &m2, &r22);
+    statistics::linearRegression(myHeights1.data(), myData1.data(), int(myHeights1.size()), false, &q1, &m1, &r21);
+    statistics::linearRegression(myHeights2.data(), myData2.data(), int(myHeights2.size()), false, &q2, &m2, &r22);
 
     actualR2 = r22;
     actualR2Levels = NODATA;
@@ -690,7 +691,8 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
             q2 = lapseRateT1;
         }
 
-        statistics::linearRegression(myIntervalsHeight1.data(), myIntervalsValues1.data(), myIntervalsHeight1.size(), false, &q, &m, &r2);
+        statistics::linearRegression(myIntervalsHeight1.data(), myIntervalsValues1.data(),
+                                     long(myIntervalsHeight1.size()), false, &q, &m, &r2);
         actualLapseRate = m2;
         if (r2 >= mySignificativeR2Inv)
         {
@@ -721,7 +723,8 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
         lapseRateT0 = q1;
         inversionLapseRate = m1;
 
-        statistics::linearRegression(myIntervalsHeight2.data(), myIntervalsValues2.data(), myIntervalsHeight2.size(), false, &q, &m, &r2);
+        statistics::linearRegression(myIntervalsHeight2.data(), myIntervalsValues2.data(),
+                                     long(myIntervalsHeight2.size()), false, &q, &m, &r2);
         actualR2Levels = r2;
 
         if (r2 >= mySignificativeR2)
@@ -739,7 +742,8 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
 
     else if (r21 < mySignificativeR2Inv && r22 < mySignificativeR2)
     {
-        statistics::linearRegression(myIntervalsHeight1.data(), myIntervalsValues1.data(), myIntervalsHeight1.size(), false, &q, &m, &r2);
+        statistics::linearRegression(myIntervalsHeight1.data(), myIntervalsValues1.data(),
+                                     long(myIntervalsHeight1.size()), false, &q, &m, &r2);
 
         if (r2 >= mySignificativeR2Inv)
         {
@@ -754,7 +758,8 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
             lapseRateT1 = lapseRateT0;
         }
 
-        statistics::linearRegression(myIntervalsHeight2.data(), myIntervalsValues2.data(), myIntervalsHeight2.size(), false, &q, &m, &r2);
+        statistics::linearRegression(myIntervalsHeight2.data(), myIntervalsValues2.data(),
+                                     long(myIntervalsHeight2.size()), false, &q, &m, &r2);
         actualR2Levels = r2;
 
         if (r2 >= mySignificativeR2)
@@ -1173,9 +1178,9 @@ float interpolate(meteoVariable myVar, float myX, float myY, float myZ, float my
 
 }
 
-bool interpolateGridDtm(gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGrid& myDtmGrid, meteoVariable myVar)
+bool interpolateGridDtm(gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGrid& myDTM, meteoVariable myVar)
 {
-    if (! myGrid->initializeGrid(myDtmGrid))
+    if (! myGrid->initializeGrid(myDTM))
         return (false);
 
     float myX, myY;
@@ -1184,7 +1189,7 @@ bool interpolateGridDtm(gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGr
         for (long myCol = 0; myCol < myGrid->header->nrCols; myCol++)
         {
             gis::getUtmXYFromRowColSinglePrecision(*myGrid, myRow, myCol, &myX, &myY);
-            float myZ = myDtmGrid.value[myRow][myCol];
+            float myZ = myDTM.value[myRow][myCol];
             if (myZ != myGrid->header->flag)
                 myGrid->value[myRow][myCol] = interpolate(myVar, myX, myY, myZ, NODATA, NODATA, NODATA, NODATA);
         }

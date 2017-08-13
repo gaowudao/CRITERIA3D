@@ -11,24 +11,15 @@ TARGET = meteo
 TEMPLATE = lib
 CONFIG += staticlib
 
-INCLUDEPATH += ../crit3dDate
-INCLUDEPATH += ../mathFunctions
-INCLUDEPATH += ../gis
+INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis
 
 SOURCES += meteo.cpp \
-    quality.cpp \
     meteoPoint.cpp
 
 HEADERS += meteo.h \
-    meteoPoint.h \
-    quality.h
+    meteoPoint.h
 
-
-unix:!symbian {
-    maemo5 {
-        target.path = /opt/usr/lib
-    } else {
-        target.path = /usr/lib
-    }
+unix {
+    target.path = /usr/lib
     INSTALLS += target
 }

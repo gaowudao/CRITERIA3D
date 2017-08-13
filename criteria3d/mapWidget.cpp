@@ -183,6 +183,8 @@ void mapWidget::redrawMap(Crit3DRasterGrid* myGrid)
 
 void mapWidget::paintEvent(QPaintEvent *event)
 {
+    Q_UNUSED(event);
+
     if ((myProject.dtm.isLoaded)||(myProject.nrMeteoPoints > 0))
     {
         mapWidget::initializeWindow();

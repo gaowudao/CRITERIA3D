@@ -60,7 +60,8 @@
 
     enum surfaceType   {SurfaceTypeWater, SurfaceTypeSoil, SurfaceTypeCrop};
 
-    class Crit3DClimateParameters {
+    class Crit3DClimateParameters
+    {
     public:
         Crit3DClimateParameters();
         float tminLapseRate[12];
@@ -72,14 +73,14 @@
     };
 
     float relHumFromTdew(float dewT, float airT);
+
     float tDewFromRelHum(float rhAir, float airT);
 
     double ET0_Penman_hourly(double heigth, double normalizedTransmissivity, double globalSWRadiation,
                     double airTemp, double airHum, double windSpeed10);
 
-    double ET0_Penman_daily(int myDOY, float myLatitude, float myPressure,
-                    float myTmin, float myTmax, float myTminDayAfter,
-                    float myUmed, float myVmed10, float mySWGlobRad);
+    double ET0_Penman_daily(int myDOY, float myLatitude, float myPressure, float myTmin, float myTmax,
+                            float myTminDayAfter, float myUmed, float myVmed10, float mySWGlobRad);
 
     double ET0_Hargreaves(double KT, double myLat, int myDoy, double tmax, double tmin);
 

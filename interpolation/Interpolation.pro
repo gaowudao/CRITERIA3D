@@ -24,12 +24,3 @@ HEADERS += interpolation.h \
     interpolationConstants.h \
     kriging.h
 
-
-unix:!symbian {
-    maemo5 {
-        target.path = /opt/usr/lib
-    } else {
-        target.path = /usr/lib
-    }
-    INSTALLS += target
-}

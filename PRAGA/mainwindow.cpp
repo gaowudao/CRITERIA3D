@@ -15,17 +15,19 @@
 #include "ui_mainwindow.h"
 #include "formInfo.h"
 #include "Position.h"
-#include "formSingleValue.h"
 #include "dbMeteoPoints.h"
 #include "dbArkimet.h"
 #include "download.h"
 #include "project.h"
 #include "utilities.h"
 #include "commonConstants.h"
+#include "dialogWindows.h"
+#include "quality.h"
 
 
 extern Project myProject;
 #define MAPBORDER 8
+
 
 MainWindow::MainWindow(environment menu, QWidget *parent) :
     QMainWindow(parent),
@@ -128,25 +130,24 @@ void MainWindow::on_actionMapTerrain_triggered()
     this->setMapSource(OSMTileSource::Terrain);
 }
 
+
 void MainWindow::on_actionSetUTMzone_triggered()
 {
-    FormSingleValue myForm;
-    myForm.setValue(QString::number(myProject.gisSettings.utmZone));
-    myForm.setModal(true);
-    myForm.show();
-
-    int utmZone;
+    QString currentUTMZone = QString::number(myProject.gisSettings.utmZone);
+    int newUTMZone;
     bool isOk = false;
     while (! isOk)
     {
-        int myReturn = myForm.exec();
-        if (myReturn == QDialog::Rejected) return;
+        QString retValue = editValue("UTM Zone number", currentUTMZone);
+        if (retValue == "")
+            return;
 
-        utmZone = myForm.getValue().toInt(&isOk);
-        if (! isOk) qDebug("Wrong value!");
+        newUTMZone = retValue.toInt(&isOk);
+        if (! isOk)
+            QMessageBox::information(NULL, "Wrong value", "Insert a valid UTM zone number");
     }
 
-    myProject.gisSettings.utmZone = utmZone;
+    myProject.gisSettings.utmZone = newUTMZone;
 }
 
 
@@ -167,7 +168,6 @@ void MainWindow::on_actionRectangle_Selection_triggered()
 
 void MainWindow::on_actionLoadRaster_triggered()
 {
-
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open rasterObj"), "", tr("ESRI grid files (*.flt)"));
     if (fileName == "") return;
 
@@ -175,7 +175,7 @@ void MainWindow::on_actionLoadRaster_triggered()
     if (!myProject.loadRaster(fileName)) return;
 
     // set default color scale
-    setRasterColorScale(noMeteoVar, myProject.DTM.colorScale, ui->labelRasterScale);
+    setRasterColorScale(colorScale::terrain, myProject.DTM.colorScale, ui->labelRasterScale);
 
     this->ui->rasterOpacitySlider->setEnabled(true);
 
@@ -320,11 +320,9 @@ QString MainWindow::selectArkimetDataset(QDialog* datasetDialog) {
                 msgBox.exec();
                 return selectArkimetDataset(datasetDialog);
             }
-
         }
         else
             return "";
-
 }
 
 
@@ -493,16 +491,18 @@ void MainWindow::resizeEvent(QResizeEvent * event)
 {
     Q_UNUSED(event)
     const int INFOHEIGHT = 40;
-    const int TOOLSWIDTH = 250;
+    const int TOOLSWIDTH = 260;
 
-    ui->widgetMap->setGeometry(TOOLSWIDTH, 0, this->width()-TOOLSWIDTH, this->height() -INFOHEIGHT + MAPBORDER);
+    ui->widgetMap->setGeometry(TOOLSWIDTH, 0, this->width()-TOOLSWIDTH, this->height() - INFOHEIGHT);
     mapView->resize(ui->widgetMap->size());
 
-    ui->groupBoxRaster->move(MAPBORDER/2, this->height() - ui->groupBoxRaster->height() -INFOHEIGHT);
+    ui->groupBoxVariable->move(MAPBORDER/2, (this->height() - INFOHEIGHT) / 2 - ui->groupBoxVariable->height() - MAPBORDER);
+    ui->groupBoxVariable->resize(TOOLSWIDTH, ui->groupBoxVariable->height());
+
+    ui->groupBoxRaster->move(MAPBORDER/2, (this->height() - INFOHEIGHT) / 2 + MAPBORDER);
     ui->groupBoxRaster->resize(TOOLSWIDTH, ui->groupBoxRaster->height());
 
-    ui->groupBoxVariable->move(MAPBORDER/2, ui->groupBoxRaster->y() - ui->groupBoxVariable->height() - 20);
-    ui->groupBoxVariable->resize(TOOLSWIDTH, ui->groupBoxVariable->height());
+
 
     //TODO sembrano non funzionare
     ui->widgetColorLegendRaster->resize(TOOLSWIDTH, ui->widgetColorLegendPoints->height());
@@ -656,13 +656,38 @@ void MainWindow::on_dateTimeEdit_dateTimeChanged(const QDateTime &dateTime)
 }
 
 
+void MainWindow::redrawMeteoPointsPosition()
+{
+    for (int i = 0; i < myProject.meteoPoints.size(); i++)
+    {
+            myProject.meteoPoints[i].value = NODATA;
+
+            pointList[i]->setVisible(true);
+            pointList[i]->setFillColor(QColor(Qt::white));
+            pointList[i]->setRadius(5);
+            pointList[i]->setToolTip(i);
+    }
+}
+
+
 void MainWindow::redrawMeteoPoints()
 {
-    if (myProject.meteoPoints.size() == 0) return;
+    if (myProject.meteoPoints.size() == 0)
+        return;
 
-    float v, minimum, maximum;
-    Crit3DColor *myColor;
+    if (myProject.getFrequency() == noFrequency || myProject.getCurrentVariable() == noMeteoVar)
+    {
+        redrawMeteoPointsPosition();
+        return;
+    }
 
+    // check quality (and assign data in myProject.meteoPoints[i].value)
+    for (int i = 0; i < myProject.meteoPoints.size(); i++)
+    {
+        myProject.quality.syntacticQualityControl(myProject.getCurrentVariable(), myProject.getFrequency(), &(myProject.meteoPoints[i]), myProject.getCurrentTime());
+    }
+
+    float minimum, maximum;
     myProject.getMeteoPointsRange(&minimum, &maximum);
 
     myProject.colorScalePoints->setRange(minimum, maximum);
@@ -670,40 +695,33 @@ void MainWindow::redrawMeteoPoints()
 
     setColorScale(myProject.colorScalePoints, myProject.currentVariable);
 
+    Crit3DColor *myColor;
     for (int i = 0; i < myProject.meteoPoints.size(); i++)
-    {
-        if (myProject.getFrequency() == noFrequency || myProject.currentVariable == noMeteoVar)
+        if (myProject.meteoPoints[i].value == NODATA)
         {
-            pointList[i]->setVisible(true);
-            pointList[i]->setFillColor(QColor(Qt::white));
-            myProject.meteoPoints[i].value = NODATA;
-            pointList[i]->setToolTip(i);
+            pointList[i]->setVisible(false);
         }
         else
         {
-            if (myProject.getFrequency() == daily)
-                v =  myProject.meteoPoints[i].getMeteoPointValueD(getCrit3DDate(myProject.getCurrentDate()), myProject.currentVariable);
-            else if (myProject.getFrequency() == hourly)
-                v =  myProject.meteoPoints[i].getMeteoPointValueH(getCrit3DDate(myProject.getCurrentDate()), myProject.getCurrentHour(), 0, myProject.currentVariable);
+            pointList[i]->setVisible(true);
 
-            if (v == NODATA)
+            if (myProject.meteoPoints[i].myQuality != quality::accepted)
             {
-                pointList[i]->setVisible(false);
+                pointList[i]->setRadius(12);
+                pointList[i]->setFillColor(QColor(Qt::black));
             }
             else
             {
-                pointList[i]->setVisible(true);
-                myColor = myProject.colorScalePoints->getColor(v);
-                pointList[i]->setFillColor(QColor(myColor->red, myColor->green, myColor->blue));  
-                myProject.meteoPoints[i].value = v;
-                pointList[i]->setToolTip(i);
+                pointList[i]->setRadius(6);
+                myColor = myProject.colorScalePoints->getColor(myProject.meteoPoints[i].value);
+                pointList[i]->setFillColor(QColor(myColor->red, myColor->green, myColor->blue));
             }
+
+            pointList[i]->setToolTip(i);
         }
-    }
 
     pointsLegend->update();
 }
-
 
 
 bool MainWindow::loadMeteoPointsDB(QString dbName)
@@ -760,7 +778,9 @@ void MainWindow::on_rasterScaleButton_clicked()
         return;
     }
 
-    chooseRasterColorScale(myProject.DTM.colorScale, ui->labelRasterScale);
+    colorScale::type myScale = chooseColorScale();
+    if (myScale != colorScale::none)
+        setRasterColorScale(myScale, myProject.DTM.colorScale, ui->labelRasterScale);
 }
 
 
@@ -776,151 +796,15 @@ void MainWindow::on_variableButton_clicked()
 
 void MainWindow::on_frequencyButton_clicked()
 {
-   if (chooseFrequency())
+   frequencyType myFrequency = chooseFrequency();
+
+   if (myFrequency != noFrequency)
+   {
+       myProject.setFrequency(myFrequency);
        this->updateVariable();
-}
-
-
-bool chooseVariable()
-{
-    if (myProject.getFrequency() == noFrequency)
-    {
-        QMessageBox::information(NULL, "No frequency", "Choose frequency before");
-        return false;
-    }
-
-    QDialog myDialog;
-    QVBoxLayout mainLayout;
-    QVBoxLayout layoutVariable;
-    QHBoxLayout layoutOk;
-
-    myDialog.setWindowTitle("Choose variable");
-    myDialog.setFixedWidth(300);
-
-    QRadioButton Tavg("Average temperature °C");
-    QRadioButton Tmin("Minimum temperature °C");
-    QRadioButton Tmax("Maximum temperature °C");
-    QRadioButton Prec("Precipitation mm");
-    QRadioButton RHavg("Average relative humidity %");
-    QRadioButton RHmin("Minimum relative humidity %");
-    QRadioButton RHmax("Maximum relative humidity %");
-    QRadioButton Rad("Solar radiation MJ m-2");
-
-    if (myProject.getFrequency() == daily)
-    {
-        layoutVariable.addWidget(&Tmin);
-        layoutVariable.addWidget(&Tavg);
-        layoutVariable.addWidget(&Tmax);
-        layoutVariable.addWidget(&Prec);
-        layoutVariable.addWidget(&RHmin);
-        layoutVariable.addWidget(&RHavg);
-        layoutVariable.addWidget(&RHmax);
-        layoutVariable.addWidget(&Rad);
-    }
-    else if (myProject.getFrequency() == hourly)
-    {
-        Tavg.setText("Average temperature °C");
-        Prec.setText("Precipitation mm");
-        RHavg.setText("Average relative humidity %");
-        Rad.setText("Solar irradiance W m-2");
-
-        layoutVariable.addWidget(&Tavg);
-        layoutVariable.addWidget(&Prec);
-        layoutVariable.addWidget(&RHavg);
-        layoutVariable.addWidget(&Rad);
-    }
-    else return false;
-
-    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-
-    myDialog.connect(&buttonBox, SIGNAL(accepted()), &myDialog, SLOT(accept()));
-    myDialog.connect(&buttonBox, SIGNAL(rejected()), &myDialog, SLOT(reject()));
-
-    layoutOk.addWidget(&buttonBox);
-
-    mainLayout.addLayout(&layoutVariable);
-    mainLayout.addLayout(&layoutOk);
-    myDialog.setLayout(&mainLayout);
-    myDialog.exec();
-
-    if (myDialog.result() != QDialog::Accepted)
-        return false;
-
-   if (myProject.getFrequency() == daily)
-   {
-       if (Tmin.isChecked())
-           myProject.currentVariable = dailyAirTemperatureMin;
-       else if (Tmax.isChecked())
-           myProject.currentVariable = dailyAirTemperatureMax;
-       else if (Tavg.isChecked())
-           myProject.currentVariable = dailyAirTemperatureAvg;
-       else if (Prec.isChecked())
-           myProject.currentVariable = dailyPrecipitation;
-       else if (Rad.isChecked())
-           myProject.currentVariable = dailyGlobalRadiation;
-       else if (RHmin.isChecked())
-           myProject.currentVariable = dailyAirHumidityMin;
-       else if (RHmax.isChecked())
-           myProject.currentVariable = dailyAirHumidityMax;
-       else if (RHavg.isChecked())
-           myProject.currentVariable = dailyAirHumidityAvg;
    }
-   else if (myProject.getFrequency() == hourly)
-   {
-       if (Tavg.isChecked())
-           myProject.currentVariable = airTemperature;
-       else if (RHavg.isChecked())
-           myProject.currentVariable = airHumidity;
-       else if (Prec.isChecked())
-           myProject.currentVariable = precipitation;
-       else if (Rad.isChecked())
-           myProject.currentVariable = globalIrradiance;
-   }
-   else
-       return false;
-
-   return true;
 }
 
-
-bool chooseFrequency()
-{
-    QDialog myDialog;
-    QVBoxLayout mainLayout;
-    QVBoxLayout layoutFrequency;
-    QHBoxLayout layoutOk;
-
-    myDialog.setWindowTitle("Choose frequency");
-    myDialog.setFixedWidth(300);
-
-    QRadioButton Daily("Daily");
-    QRadioButton Hourly("Hourly");
-
-    layoutFrequency.addWidget(&Daily);
-    layoutFrequency.addWidget(&Hourly);
-
-    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-
-    myDialog.connect(&buttonBox, SIGNAL(accepted()), &myDialog, SLOT(accept()));
-    myDialog.connect(&buttonBox, SIGNAL(rejected()), &myDialog, SLOT(reject()));
-
-    layoutOk.addWidget(&buttonBox);
-
-    mainLayout.addLayout(&layoutFrequency);
-    mainLayout.addLayout(&layoutOk);
-    myDialog.setLayout(&mainLayout);
-    myDialog.exec();
-
-    if (myDialog.result() != QDialog::Accepted)
-        return false;
-
-   if (Daily.isChecked())
-       myProject.setFrequency(daily);
-   else if (Hourly.isChecked())
-       myProject.setFrequency(hourly);
-
-   return true;
-}
 
 
 bool downloadMeteoData()
@@ -1086,91 +970,38 @@ bool downloadMeteoData()
 }
 
 
-bool chooseRasterColorScale(Crit3DColorScale *myColorScale, QLabel *myLabel)
+void setRasterColorScale(colorScale::type myScale, Crit3DColorScale *myColorScale, QLabel *myLabel)
 {
-    if (myColorScale == NULL)
-        return false;
-
-    QDialog myDialog;
-    QVBoxLayout mainLayout;
-    QVBoxLayout layoutVariable;
-    QHBoxLayout layoutOk;
-
-    myDialog.setWindowTitle("Choose color scale");
-    myDialog.setFixedWidth(400);
-
-    QRadioButton DTM("Digital Terrain map m");
-    QRadioButton Temp("Temperature °C");
-    QRadioButton Prec("Precipitation mm");
-    QRadioButton RH("Relative humidity %");
-    QRadioButton Rad("Solar radiation MJ m-2");
-    QRadioButton Wind("Wind intensity m s-1");
-
-    layoutVariable.addWidget(&DTM);
-    layoutVariable.addWidget(&Temp);
-    layoutVariable.addWidget(&Prec);
-    layoutVariable.addWidget(&RH);
-    layoutVariable.addWidget(&Rad);
-    layoutVariable.addWidget(&Wind);
-
-    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-
-    myDialog.connect(&buttonBox, SIGNAL(accepted()), &myDialog, SLOT(accept()));
-    myDialog.connect(&buttonBox, SIGNAL(rejected()), &myDialog, SLOT(reject()));
-
-    layoutOk.addWidget(&buttonBox);
-
-    mainLayout.addLayout(&layoutVariable);
-    mainLayout.addLayout(&layoutOk);
-    myDialog.setLayout(&mainLayout);
-    myDialog.exec();
-
-    if (myDialog.result() != QDialog::Accepted)
-        return false;
-
-    meteoVariable myVar = noMeteoVar;
-
-    if (DTM.isChecked()) myVar = noMeteoVar;
-    else if (Temp.isChecked()) myVar = airTemperature;
-    else if (Prec.isChecked()) myVar = precipitation;
-    else if (RH.isChecked()) myVar = airHumidity;
-    else if (Rad.isChecked()) myVar = globalIrradiance;
-    else if (Wind.isChecked()) myVar = windIntensity;
-
-    setRasterColorScale(myVar, myColorScale, myLabel);
-    return true;
-}
-
-
-void setRasterColorScale(meteoVariable myVar, Crit3DColorScale *myColorScale, QLabel *myLabel)
-{
-    switch(myVar)
+    switch(myScale)
     {
-    case airTemperature:
+    case colorScale::temperature:
         setTemperatureScale(myColorScale);
         myLabel->setText("Air temperature  °C");
         break;
 
-    case precipitation:
+    case colorScale::precipitation:
         setPrecipitationScale(myColorScale);
         myLabel->setText("Precipitation  mm");
         break;
 
-    case globalIrradiance:
-    case dailyGlobalRadiation:
+    case colorScale::solarRadiation:
         setRadiationScale(myColorScale);
         myLabel->setText("Solar irradiance W m-2");
         break;
 
-    case (airHumidity):
+    case colorScale::relativeHumidity:
         setRelativeHumidityScale(myColorScale);
         myLabel->setText("Relative humidity  %");
         break;
 
-    case windIntensity:
+    case colorScale::windIntensity:
         setWindIntensityScale(myColorScale);
         myLabel->setText("Wind intensity  m s-1");
         break;
+
+    case colorScale::terrain:
+        setDefaultDTMScale(myColorScale);
+        myLabel->setText("Digital Terrain Map  m");
 
     default:
         setDefaultDTMScale(myColorScale);

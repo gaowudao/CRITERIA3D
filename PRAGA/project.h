@@ -5,8 +5,8 @@
         #include "gis.h"
     #endif
 
-    #ifndef METEOPOINT_H
-        #include "meteoPoint.h"
+    #ifndef QUALITY_H
+        #include "quality.h"
     #endif
 
     #ifndef QSTRING_H
@@ -32,6 +32,8 @@
         QList<gis::Crit3DGeoPoint> meteoPointsSelected;
         DbMeteoPoints* dbMeteoPoints;
 
+        Crit3DQuality quality;
+
         gis::Crit3DRasterGrid DTM;
         gis::Crit3DRasterGrid rowMatrix;
         gis::Crit3DRasterGrid colMatrix;
@@ -47,7 +49,9 @@
         void setFrequency(frequencyType myFrequency);
         QDate getCurrentDate();
         short getCurrentHour();
+        Crit3DTime Project::getCurrentTime();
         frequencyType getFrequency();
+        meteoVariable getCurrentVariable();
 
         bool loadRaster(QString myFileName);
         bool downloadDailyDataArkimet(QStringList variables, bool prec0024, QDate startDate, QDate endDate, bool showInfo);

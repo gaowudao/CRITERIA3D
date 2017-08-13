@@ -10,54 +10,13 @@
 #include "dataHandler.h"
 #include "atmosphere.h"
 #include "project.h"
-#include "meteo.h"
 #include "commonConstants.h"
 #include "utilities.h"
+#include "quality.h"
+#include "transmissivity.h"
 
 //cout
 #include <iostream>
-
-void qualityControlSimple(const quality::qualityMeteo myQualityMeteo, meteoVariable myVar, const Crit3DTime& myCrit3DTime,
-                            Crit3DMeteoPoint* myMeteoPoints, int nrMeteoPoints)
-{
-    float myValue;
-
-    quality::qualityRange* myQualityRange = quality::getQualityRange(myVar, myQualityMeteo);
-
-    for (int i = 0; i < nrMeteoPoints; i++)
-    {
-        myValue = myMeteoPoints[i].getMeteoPointValueH(myCrit3DTime.date, myCrit3DTime.getHour(), myCrit3DTime.getMinutes(), myVar);
-
-        if (myQualityRange == NULL && myValue != NODATA)
-            myMeteoPoints[i].myQuality = quality::accepted;
-        else if (myValue == NODATA)
-            myMeteoPoints[i].myQuality = quality::missing;
-        else if (myValue < myQualityRange->getMin() || myValue > myQualityRange->getMax())
-            myMeteoPoints[i].myQuality = quality::wrong;
-        else
-            myMeteoPoints[i].myQuality = quality::accepted;
-    }
-}
-
-void setSpatialQualityControlSettings(Crit3DInterpolationSettings* mySettings, meteoVariable myVar)
-{
-    mySettings->setUseOrogIndex(false);
-    mySettings->setUseAspect(false);
-    mySettings->setUseTAD(false);
-    mySettings->setUseOrogIndex(false);
-    mySettings->setUseDewPoint(false);
-    mySettings->setUseGenericProxy(false);
-    mySettings->setUseSeaDistance(false);
-    mySettings->setInterpolationMethod(geostatisticsMethods::idw);
-    mySettings->setIsCrossValidation(true);
-
-    if (myVar == airTemperature)
-    {
-        mySettings->setUseHeight(true);
-        mySettings->setUseThermalInversion(true);
-    }
-
-}
 
 
 bool isDataPresent(Crit3DProject* myProject, meteoVariable myVar, Crit3DTime myDateTime)
@@ -147,230 +106,6 @@ bool checkLackOfData(Crit3DProject* myProject, meteoVariable myVar, Crit3DTime m
 }
 
 
-bool passDataToInterpolation(Crit3DProject* myProject, meteoVariable myVar, Crit3DTime myCrit3DTime, bool doQualityControl)
-{
-    int myCounter = 0;
-    float myValue, myX, myY, myZ;
-    int pointCode;
-
-    if (doQualityControl) qualityControl(myProject, myVar, myCrit3DTime);
-
-    clearInterpolationPoints();
-
-    for (int i = 0; i < myProject->nrMeteoPoints; i++)
-    {
-        if (myProject->meteoPoints[i].myQuality == quality::accepted)
-        {
-            myValue = myProject->meteoPoints[i].getMeteoPointValueH(myCrit3DTime.date, myCrit3DTime.getHour(), myCrit3DTime.getMinutes(), myVar);
-            myX = myProject->meteoPoints[i].point.utm.x;
-            myY = myProject->meteoPoints[i].point.utm.y;
-            myZ = myProject->meteoPoints[i].point.z;
-            pointCode = i;
-            if (addInterpolationPoint(pointCode, myValue, myX, myY, myZ, NODATA, NODATA, NODATA, NODATA, NODATA))
-                myCounter++;
-        }
-    }
-
-    return (myCounter > 0);
-}
-
-
-bool computeResiduals(Crit3DProject* myProject, meteoVariable myVar, Crit3DTime myCrit3DTime, bool derivedVar)
-{
-
-    float myValue, interpolatedValue;
-    interpolatedValue = NODATA;
-    myValue = NODATA;
-
-    if (myVar == noMeteoVar) return false;
-
-    for (int i = 0; i < myProject->nrMeteoPoints; i++)
-    {
-        myProject->meteoPoints[i].residual = NODATA;
-        if (myProject->meteoPoints[i].myQuality == quality::accepted)
-        {
-            if (! derivedVar)
-            {
-                myValue = myProject->meteoPoints[i].getMeteoPointValueH(myCrit3DTime.date, myCrit3DTime.getHour(), myCrit3DTime.getMinutes(), myVar);
-                setindexPointJacknife(i);
-                interpolatedValue = interpolate(myVar, myProject->meteoPoints[i].point.utm.x,
-                                                myProject->meteoPoints[i].point.utm.y,
-                                                myProject->meteoPoints[i].point.z,
-                                                NODATA, NODATA, NODATA, NODATA);
-
-                setindexPointJacknife(NODATA);
-
-                if (myVar == precipitation)
-                {
-                    if (myValue != NODATA)
-                        if (myValue < PREC_THRESHOLD) myValue=0.;
-
-                    if (interpolatedValue != NODATA)
-                        if (interpolatedValue < PREC_THRESHOLD) interpolatedValue=0.;
-                }
-            }
-            else
-                if (myVar == airDewTemperature)
-                {
-                    float humid = myProject->meteoPoints[i].getMeteoPointValueH(myCrit3DTime.date, myCrit3DTime.getHour(), myCrit3DTime.getMinutes(), airHumidity);
-                    float temp = myProject->meteoPoints[i].getMeteoPointValueH(myCrit3DTime.date, myCrit3DTime.getHour(), myCrit3DTime.getMinutes(), airTemperature);
-                    float tdew = myProject->meteoPoints[i].getMeteoPointValueH(myCrit3DTime.date, myCrit3DTime.getHour(), myCrit3DTime.getMinutes(), airDewTemperature);
-                    if (humid != NODATA && temp != NODATA && tdew != NODATA)
-                        interpolatedValue = tDewFromRelHum(humid, temp);
-                }
-
-            if ((interpolatedValue != NODATA) && (myValue != NODATA))
-                myProject->meteoPoints[i].residual = interpolatedValue - myValue;
-
-        }
-    }
-
-    return true;
-}
-
-float findThreshold(float value, meteoVariable myVar, float dev, float nDev, float devZ, float dist, int myHour)
-{
-    float zWeight, distWeight, threshold;
-
-    if (myVar == precipitation)
-    {
-        distWeight = maxValue(1., dist / 2000);
-        if (value < PREC_THRESHOLD)
-            threshold = maxValue(5., distWeight + dev * (nDev + 1));
-        else
-            return 900.;
-    }
-    else if (myVar == airTemperature || myVar == airDewTemperature)
-    {
-        threshold = 1.;
-        if (myHour > 22 || myHour <= 10)
-        {
-            zWeight = devZ / 50.;
-            distWeight = dist / 2500.;
-        }
-        else
-        {
-            zWeight = devZ / 100.;
-            distWeight = dist / 5000.;
-        }
-        threshold = minValue(minValue(distWeight + threshold + zWeight, 12.) + dev * nDev, 15.);
-    }
-    else if (myVar == airHumidity)
-    {
-        threshold = 8.;
-        zWeight = devZ / 100.;
-        distWeight = dist / 1000.;
-        threshold += zWeight + distWeight + dev * nDev;
-    }
-    else if (myVar == windIntensity)
-    {
-        threshold = 1;
-        zWeight = devZ / 100.;
-        distWeight = dist / 5000.;
-        threshold += zWeight + distWeight + dev * nDev;
-    }
-    else if (myVar == globalIrradiance)
-        threshold = maxValue(dev * (nDev + 1), 5.);
-    else if (myVar == atmTransmissivity)
-        threshold = maxValue(dev * nDev, 0.5);
-    else
-        threshold = dev * nDev;
-
-    return threshold;
-}
-
-void qualityControlSpatial(Crit3DProject* myProject, meteoVariable myVar, const Crit3DTime& myCrit3DTime)
-{
-    int i;
-    float stdDev, stdDevZ, minDist, myValue, myResidual;
-    std::vector <int> listIndex;
-    std::vector <float> listResiduals;
-
-    int myHour = myCrit3DTime.getHour();
-
-    Crit3DInterpolationSettings myTmpSettings;
-    myTmpSettings = myProject->interpolationSettings;
-    setSpatialQualityControlSettings(&(myProject->interpolationSettings), myVar);
-    setInterpolationSettings(&(myProject->interpolationSettings));
-
-    if (passDataToInterpolation(myProject, myVar, myCrit3DTime, false))
-    {
-        if (! preInterpolation(myVar)) return;
-        if (! computeResiduals(myProject, myVar, myCrit3DTime, false)) return;
-        if (passDataToInterpolation(myProject, myVar, myCrit3DTime, false) == 0) return;
-
-        for (i = 0; i < myProject->nrMeteoPoints; i++)
-            if (myProject->meteoPoints[i].myQuality == quality::accepted)
-            {
-
-                if (neighbourhoodVariability(myProject->meteoPoints[i].point.utm.x,
-                         myProject->meteoPoints[i].point.utm.y,
-                         myProject->meteoPoints[i].point.z,
-                         10, &stdDev, &stdDevZ, &minDist))
-                {
-                    myValue = myProject->meteoPoints[i].getMeteoPointValueH(myCrit3DTime.date, myCrit3DTime.getHour(), myCrit3DTime.getMinutes(), myVar);
-                    myResidual = myProject->meteoPoints[i].residual;
-                    stdDev = maxValue(stdDev, myValue/100.);
-                    if (fabs(myResidual) > findThreshold(myValue, myVar, stdDev, 2, stdDevZ, minDist, myHour))
-                    {
-                        listIndex.push_back(i);
-                        myProject->meteoPoints[i].myQuality = quality::wrong;
-                    }
-                }
-            }
-
-        if (listIndex.size() > 0)
-            if (passDataToInterpolation(myProject, myVar, myCrit3DTime, false))
-            {
-                preInterpolation(myVar);
-
-                float interpolatedValue;
-                for (i=0; i < int(listIndex.size()); i++)
-                {
-                    interpolatedValue = interpolate(myVar,
-                                            myProject->meteoPoints[listIndex[i]].point.utm.x,
-                                            myProject->meteoPoints[listIndex[i]].point.utm.y,
-                                            myProject->meteoPoints[listIndex[i]].point.z,
-                                            NODATA, NODATA, NODATA, NODATA);
-                    myValue = myProject->meteoPoints[listIndex[i]].getMeteoPointValueH(myCrit3DTime.date, myCrit3DTime.getHour(), myCrit3DTime.getMinutes(), myVar);
-
-                    listResiduals.push_back(interpolatedValue-myValue);
-                }
-
-                passDataToInterpolation(myProject, myVar, myCrit3DTime, false);
-
-                for (i=0; i < int(listIndex.size()); i++)
-                {
-                    if (neighbourhoodVariability(myProject->meteoPoints[listIndex[i]].point.utm.x,
-                             myProject->meteoPoints[listIndex[i]].point.utm.y,
-                             myProject->meteoPoints[listIndex[i]].point.z,
-                             10, &stdDev, &stdDevZ, &minDist))
-                    {
-                        myResidual = listResiduals[i];
-                        myValue = myProject->meteoPoints[listIndex[i]].getMeteoPointValueH(myCrit3DTime.date, myCrit3DTime.getHour(), myCrit3DTime.getMinutes(), myVar);
-                        if (fabs(myResidual) > findThreshold(myValue, myVar, stdDev, 3, stdDevZ, minDist, myHour))
-                            myProject->meteoPoints[listIndex[i]].myQuality = quality::wrong;
-                        else
-                            myProject->meteoPoints[listIndex[i]].myQuality = quality::accepted;
-                    }
-                    else
-                        myProject->meteoPoints[listIndex[i]].myQuality = quality::accepted;
-                }
-            }
-    }
-
-    myProject->interpolationSettings = myTmpSettings;
-    setInterpolationSettings(&(myProject->interpolationSettings));
-}
-
-void qualityControl(Crit3DProject* myProject, meteoVariable myVar, const Crit3DTime& myCrit3DTime)
-{
-    if (myProject->nrMeteoPoints == 0) return;
-
-    qualityControlSimple(myProject->qualityParameters, myVar, myCrit3DTime, myProject->meteoPoints, myProject->nrMeteoPoints);
-    qualityControlSpatial(myProject, myVar, myCrit3DTime);
-}
-
 bool postInterpolation(meteoVariable myVar, gis::Crit3DRasterGrid* myGrid)
 {
     if (myVar == airTemperature || myVar == airDewTemperature)
@@ -387,107 +122,6 @@ bool postInterpolation(meteoVariable myVar, gis::Crit3DRasterGrid* myGrid)
         setLeafWetnessScale(myGrid->colorScale);
 
     return true;
-}
-
-int computeTransmissivity(Crit3DMeteoPoint* myMeteoPoints,
-                          int nrPoints, int intervalWidth, int myHourInterval,
-                          Crit3DTime myCentralTime,
-                          const gis::Crit3DRasterGrid& myDtm)
-{
-    int mySemiInterval = (intervalWidth-1)/2;
-    int myDeltaSeconds = 3600 / myHourInterval;
-    int mySemiIntervalSeconds = myDeltaSeconds * mySemiInterval;
-    float* myObsRad;
-    int myIndex;
-    Crit3DTime myTimeIni =  myCentralTime.addSeconds(-mySemiIntervalSeconds);
-    Crit3DTime myTimeFin =  myCentralTime.addSeconds(mySemiIntervalSeconds);
-    Crit3DTime myCurrentTime;
-    int myCounter = 0;
-    int indexDate;
-    int indexSubDaily;
-
-    gis::Crit3DPoint myPoint;
-
-    for (int i = 0; i < nrPoints; i++)
-        if (myMeteoPoints[i].getMeteoPointValueH(myCentralTime.date, myCentralTime.getHour(), myCentralTime.getMinutes(), globalIrradiance) != NODATA)
-        {
-            myIndex = 0;
-            myObsRad = (float *) calloc(intervalWidth, sizeof(float));
-            myCurrentTime = myTimeIni;
-            while (myCurrentTime <= myTimeFin)
-            {
-                myObsRad[myIndex] = myMeteoPoints[i].getMeteoPointValueH(myCurrentTime.date, myCurrentTime.getHour(), myCurrentTime.getMinutes(), globalIrradiance);
-                myCurrentTime = myCurrentTime.addSeconds(myDeltaSeconds);
-                myIndex++;
-            }
-
-            myPoint.utm.x = myMeteoPoints[i].point.utm.x;
-            myPoint.utm.y = myMeteoPoints[i].point.utm.y;
-            myPoint.z = myMeteoPoints[i].point.z;
-
-            indexDate = -myCentralTime.date.daysTo(myMeteoPoints[i].obsDataH->date);
-            indexSubDaily = (myHourInterval * myCentralTime.getHour()) + myCentralTime.getMinutes() % (60 / myHourInterval);
-
-            myMeteoPoints[i].obsDataH[indexDate].transmissivity[indexSubDaily] =
-                    radiation::computePointTransmissivity(
-                        myPoint, myCentralTime, myObsRad,
-                        intervalWidth, myDeltaSeconds, myDtm);
-
-            myCounter++;
-        }
-
-    return myCounter;
-}
-
-int computeTransmissivityFromTRange(Crit3DMeteoPoint* meteoPoints, int nrPoints,
-                                     int hourInterval, Crit3DTime currentTime)
-{
-    int deltaSeconds = 3600 / hourInterval;
-    int counter = 0;
-    int indexDate;
-    Crit3DTime timeTmp;
-    float temp, tmin, tmax;
-    float transmissivity;
-    int i;
-
-    for (i = 0; i < nrPoints; i++)
-    {
-        tmin = NODATA;
-        tmax = NODATA;
-        int mySeconds = deltaSeconds;
-        timeTmp = currentTime;
-        timeTmp.time = 0;
-        while (mySeconds < DAY_SECONDS)
-        {
-            timeTmp = timeTmp.addSeconds(deltaSeconds);
-            temp = meteoPoints[i].getMeteoPointValueH(timeTmp.date, timeTmp.getHour(), timeTmp.getMinutes(), airTemperature);
-            if (temp != NODATA)
-            {
-                if (tmin == NODATA || temp < tmin)
-                    tmin = temp;
-                if (tmax == NODATA || temp > tmax)
-                    tmax = temp;
-            }
-            mySeconds+=3600;
-        }
-
-        if (tmin != NODATA && tmax != NODATA)
-        {
-            transmissivity = radiation::computePointTransmissivitySamani(tmin, tmax, float(0.17));
-            if (transmissivity != NODATA)
-            {
-                indexDate = -currentTime.date.daysTo(meteoPoints[i].obsDataH->date);
-                int nrDayValues = hourInterval * 24 +1;
-                for (int j = 0; j < nrDayValues; j++)
-                    meteoPoints[i].obsDataH[indexDate].transmissivity[j] = transmissivity;
-                //midnight
-                meteoPoints[i].obsDataH[indexDate+1].transmissivity[0] = transmissivity;
-                counter++;
-            }
-        }
-    }
-
-    return counter;
 }
 
 
@@ -525,8 +159,6 @@ bool computeLeafWetnessMap(Crit3DProject* myProject)
 
     return gis::updateMinMaxRasterGrid(myMap);
 }
-
-
 
 
 bool computeET0Map(Crit3DProject* myProject)
@@ -621,7 +253,8 @@ bool interpolationProjectDtm(Crit3DProject* myProject, meteoVariable myVar,
     myMap = myProject->meteoMaps->getMapFromVar(myVar);    
 
     bool isSuccessful = false;
-    if (passDataToInterpolation(myProject, myVar, myCrit3DTime, true))
+    if (passDataToInterpolation(myVar, myProject->meteoPoints, myProject->nrMeteoPoints,
+                                &(myProject->qualityParameters), myCrit3DTime, true))
     {
         if (preInterpolation(myVar))
         {
@@ -676,7 +309,7 @@ bool computeRadiationProjectDtm(Crit3DProject* myProject, const Crit3DTime& myCr
     radAvailable = (myProject->meteoDataConsistency(globalIrradiance, myTimeIni, myTimeFin) > 0.5);
 
     if (radAvailable)
-        if(computeTransmissivity(myProject->meteoPoints, myProject->nrMeteoPoints, intervalWidth, myProject->hourlyIntervals, myCrit3DTime, myProject->dtm) > 0)
+        if(computeTransmissivity(myProject->meteoPoints, myProject->nrMeteoPoints, intervalWidth, myCrit3DTime, myProject->dtm) > 0)
             transComputed = true;
 
     if (! transComputed)
@@ -698,7 +331,7 @@ bool computeRadiationProjectDtm(Crit3DProject* myProject, const Crit3DTime& myCr
             if (! tempLoaded && isLoadData) tempLoaded = (myProject->loadObsDataAllPointsVar(airTemperature, transmissivityDate, transmissivityDate));
             if (tempLoaded && isLoadData) tempLoaded = (myProject->meteoDataConsistency(airTemperature, timeIniTemp, timeFinTemp) > 0.5);
             if (tempLoaded)
-                if (computeTransmissivityFromTRange(myProject->meteoPoints, myProject->nrMeteoPoints, myProject->hourlyIntervals, myCrit3DTime))
+                if (computeTransmissivityFromTRange(myProject->meteoPoints, myProject->nrMeteoPoints, myCrit3DTime))
                 {
                     transComputed= true;
                     myProject->lastDateTransmissivity = transmissivityDate;
@@ -712,7 +345,8 @@ bool computeRadiationProjectDtm(Crit3DProject* myProject, const Crit3DTime& myCr
         return false;
     }
 
-    if (! passDataToInterpolation(myProject, atmTransmissivity, myCrit3DTime, true))
+    if (! passDataToInterpolation(atmTransmissivity, myProject->meteoPoints, myProject->nrMeteoPoints,
+                                  &(myProject->qualityParameters), myCrit3DTime, true))
     {
         myProject->projectError = "Function computeRadiationProjectDtm: no transmissivity data available";
         return false;

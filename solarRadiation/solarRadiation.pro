@@ -11,26 +11,20 @@ TARGET = solarRadiation
 TEMPLATE = lib
 CONFIG += staticlib
 
-INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis
+INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../meteo
 
 SOURCES += \
     solPos.cpp \
     solarRadiation.cpp \
     sunPosition.cpp \
-    radiationSettings.cpp
+    radiationSettings.cpp \
+    transmissivity.cpp
 
 HEADERS += \
     solPos.h \
     sunPosition.h \
     radiationSettings.h \
     radiationDefinitions.h \
-    solarRadiation.h
+    solarRadiation.h \
+    transmissivity.h
 
-unix:!symbian {
-    maemo5 {
-        target.path = /opt/usr/lib
-    } else {
-        target.path = /usr/lib
-    }
-    INSTALLS += target
-}
