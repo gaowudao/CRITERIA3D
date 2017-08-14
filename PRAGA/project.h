@@ -28,11 +28,13 @@
         short currentHour;
 
     public:
-        QList<Crit3DMeteoPoint> meteoPoints;
+        Crit3DMeteoPoint* meteoPoints;
+        int nrMeteoPoints;
+
         QList<gis::Crit3DGeoPoint> meteoPointsSelected;
         DbMeteoPoints* dbMeteoPoints;
 
-        Crit3DQuality quality;
+        Crit3DQuality* quality;
 
         gis::Crit3DRasterGrid DTM;
         gis::Crit3DRasterGrid rowMatrix;

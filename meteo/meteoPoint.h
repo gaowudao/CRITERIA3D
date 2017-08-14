@@ -15,7 +15,7 @@
 
     namespace quality
     {
-        enum type {missing_data, wrong_syntactic, wrong_spatial, wrong_frequency, wrong_variable, accepted};
+        enum type {missing_data, wrong_syntactic, wrong_spatial, wrong_variable, accepted};
     }
 
     struct TObsDataH {
@@ -83,16 +83,20 @@
         bool isDateIntervalLoadedH(const Crit3DDate& date1, const Crit3DDate& date2);
         bool isDateIntervalLoadedH(const Crit3DTime& time1, const Crit3DTime& time2);
         float obsDataConsistencyH(meteoVariable myVar, const Crit3DTime& time1, const Crit3DTime& time2);
-        float getMeteoPointValueH(const Crit3DDate& myDate, int myHour, int myMinutes, meteoVariable myVar);
-        bool setMeteoPointValueH(const Crit3DDate& myDate, int myHour, int myMinutes, meteoVariable myVar, float myValue);
 
         void initializeObsDataD(int numberOfDays, const Crit3DDate& firstDate);
         void emptyVarObsDataD(meteoVariable myVar, const Crit3DDate& date1, const Crit3DDate& date2);
         void cleanObsDataD();
         bool isDateLoadedD(const Crit3DDate& myDate);
         bool isDateIntervalLoadedD(const Crit3DDate& date1, const Crit3DDate& date2);
+
+        float getMeteoPointValueH(const Crit3DDate& myDate, int myHour, int myMinutes, meteoVariable myVar);
+        bool setMeteoPointValueH(const Crit3DDate& myDate, int myHour, int myMinutes, meteoVariable myVar, float myValue);
         float getMeteoPointValueD(const Crit3DDate& myDate, meteoVariable myVar);
         bool setMeteoPointValueD(const Crit3DDate& myDate, meteoVariable myVar, float myValue);
+
+        float getMeteoPointValue(const Crit3DTime& myTime, meteoVariable myVar, frequencyType frequency);
+
     };
 
 

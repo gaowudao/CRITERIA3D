@@ -658,7 +658,7 @@ void MainWindow::on_dateTimeEdit_dateTimeChanged(const QDateTime &dateTime)
 
 void MainWindow::redrawMeteoPointsPosition()
 {
-    for (int i = 0; i < myProject.meteoPoints.size(); i++)
+    for (int i = 0; i < myProject.nrMeteoPoints; i++)
     {
             myProject.meteoPoints[i].value = NODATA;
 
@@ -667,25 +667,33 @@ void MainWindow::redrawMeteoPointsPosition()
             pointList[i]->setRadius(5);
             pointList[i]->setToolTip(i);
     }
+
+    myProject.colorScalePoints->setRange(NODATA, NODATA);
+    pointsLegend->update();
 }
 
 
 void MainWindow::redrawMeteoPoints()
 {
-    if (myProject.meteoPoints.size() == 0)
+    if (myProject.nrMeteoPoints == 0)
         return;
 
+    // show position
     if (myProject.getFrequency() == noFrequency || myProject.getCurrentVariable() == noMeteoVar)
     {
         redrawMeteoPointsPosition();
         return;
     }
 
-    // check quality (and assign data in myProject.meteoPoints[i].value)
-    for (int i = 0; i < myProject.meteoPoints.size(); i++)
+    // load data
+    for (int i = 0; i < myProject.nrMeteoPoints; i++)
     {
-        myProject.quality.syntacticQualityControl(myProject.getCurrentVariable(), myProject.getFrequency(), &(myProject.meteoPoints[i]), myProject.getCurrentTime());
+        myProject.meteoPoints[i].value = myProject.meteoPoints[i].getMeteoPointValue(myProject.getCurrentTime(),
+                                                  myProject.getCurrentVariable(), myProject.getFrequency());
     }
+
+    // Quality control
+    myProject.quality->qualityControl(myProject.getCurrentVariable(), myProject.meteoPoints, myProject.nrMeteoPoints);
 
     float minimum, maximum;
     myProject.getMeteoPointsRange(&minimum, &maximum);
@@ -696,7 +704,7 @@ void MainWindow::redrawMeteoPoints()
     setColorScale(myProject.colorScalePoints, myProject.currentVariable);
 
     Crit3DColor *myColor;
-    for (int i = 0; i < myProject.meteoPoints.size(); i++)
+    for (int i = 0; i < myProject.nrMeteoPoints; i++)
         if (myProject.meteoPoints[i].value == NODATA)
         {
             pointList[i]->setVisible(false);
@@ -707,7 +715,8 @@ void MainWindow::redrawMeteoPoints()
 
             if (myProject.meteoPoints[i].myQuality != quality::accepted)
             {
-                pointList[i]->setRadius(12);
+                // Wrong data
+                pointList[i]->setRadius(18);
                 pointList[i]->setFillColor(QColor(Qt::black));
             }
             else
@@ -744,7 +753,7 @@ bool MainWindow::loadMeteoPointsDB(QString dbName)
 void MainWindow::addMeteoPoints()
 {
     myProject.meteoPointsSelected.clear();
-    for (int i = 0; i < myProject.meteoPoints.size(); i++)
+    for (int i = 0; i < myProject.nrMeteoPoints; i++)
     {
         StationMarker* point = new StationMarker(5.0, true, QColor((Qt::white)), this->mapView);
 
@@ -809,7 +818,7 @@ void MainWindow::on_frequencyButton_clicked()
 
 bool downloadMeteoData()
 {
-    if(myProject.meteoPoints.isEmpty())
+    if(myProject.nrMeteoPoints == 0)
     {
          QMessageBox::information(NULL, "DB not existing", "Create or Open a meteo points database before download");
          return false;

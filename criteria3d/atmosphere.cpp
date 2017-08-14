@@ -254,7 +254,7 @@ bool interpolationProjectDtm(Crit3DProject* myProject, meteoVariable myVar,
 
     bool isSuccessful = false;
     if (passDataToInterpolation(myVar, myProject->meteoPoints, myProject->nrMeteoPoints,
-                                &(myProject->qualityParameters), myCrit3DTime, true))
+                                &(myProject->qualityParameters), true))
     {
         if (preInterpolation(myVar))
         {
@@ -346,7 +346,7 @@ bool computeRadiationProjectDtm(Crit3DProject* myProject, const Crit3DTime& myCr
     }
 
     if (! passDataToInterpolation(atmTransmissivity, myProject->meteoPoints, myProject->nrMeteoPoints,
-                                  &(myProject->qualityParameters), myCrit3DTime, true))
+                                  &(myProject->qualityParameters), true))
     {
         myProject->projectError = "Function computeRadiationProjectDtm: no transmissivity data available";
         return false;

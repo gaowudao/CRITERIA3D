@@ -36,7 +36,7 @@ Crit3DQuality::Crit3DQuality()
     qualityHourlyWDir = new quality::Range(0, 360);
     qualityHourlyGIrr = new quality::Range(-20, 1353);
 
-    qualityDailyT = new quality::Range(-60, 41.5);
+    qualityDailyT = new quality::Range(-60, 60);
     qualityDailyP = new quality::Range(0, 800);
     qualityDailyRH = new quality::Range(0, 102);
     qualityDailyWInt = new quality::Range(0, 150);
@@ -88,50 +88,16 @@ quality::Range* Crit3DQuality::getQualityRange(meteoVariable myVar)
 }
 
 
-bool Crit3DQuality::syntacticQualityControl(meteoVariable myVar, frequencyType frequency, Crit3DMeteoPoint *meteoPoints, const Crit3DTime& myTime)
+void Crit3DQuality::qualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints)
 {
-    float myValue;
-
-    if (frequency == hourly)
-        myValue = meteoPoints->getMeteoPointValueH(myTime.date, myTime.getHour(), myTime.getMinutes(), myVar);
-    else if (frequency == daily)
-        myValue = meteoPoints->getMeteoPointValueD(myTime.date, myVar);
-    else
-    {
-        meteoPoints->value = NODATA;
-        meteoPoints->myQuality = quality::wrong_frequency;
-        return false;
-    }
-
-    meteoPoints->value = myValue;
-
-    if (myValue == NODATA)
-        meteoPoints->myQuality = quality::missing_data;
-    else
-    {
-        quality::Range* myRange = this->getQualityRange(myVar);
-
-        if (myRange == NULL)
-        {
-            meteoPoints->myQuality = quality::wrong_variable;
-            return false;
-        }
-        else if (  myValue < myRange->getMin()
-                || myValue > myRange->getMax() )
-            meteoPoints->myQuality = quality::wrong_syntactic;
-        else
-            meteoPoints->myQuality = quality::accepted;
-    }
-
-
-    return true;
+    syntacticQualityControl(myVar, meteoPoints, nrMeteoPoints, this);
+    spatialQualityControl(myVar, meteoPoints, nrMeteoPoints, this);
 }
 
 
-void syntacticQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
-                             Crit3DQuality *myQuality, const Crit3DTime& myTime)
+void syntacticQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DQuality *myQuality)
 {
-    float myValue, qualityMin, qualityMax;
+    float qualityMin, qualityMax;
 
     quality::Range* myRange = myQuality->getQualityRange(myVar);
     if (myRange != NULL)
@@ -142,16 +108,16 @@ void syntacticQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints,
 
     for (int i = 0; i < nrMeteoPoints; i++)
     {
-        myValue = meteoPoints[i].getMeteoPointValueH(myTime.date, myTime.getHour(), myTime.getMinutes(), myVar);
-
-        if (myValue == NODATA)
+        if (meteoPoints[i].value == NODATA)
             meteoPoints[i].myQuality = quality::missing_data;
         else
         {
             if (myRange == NULL)
                 meteoPoints[i].myQuality = quality::wrong_variable;
-            else if (myValue < qualityMin || myValue > qualityMax)
+
+            else if (meteoPoints[i].value < qualityMin || meteoPoints[i].value > qualityMax)
                 meteoPoints[i].myQuality = quality::wrong_syntactic;
+
             else
                 meteoPoints[i].myQuality = quality::accepted;
         }
@@ -182,8 +148,7 @@ void setSpatialQualityControlSettings(Crit3DInterpolationSettings* mySettings, m
 }
 
 
-void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
-                           Crit3DQuality *myQuality, const Crit3DTime& myTime)
+void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DQuality *myQuality)
 {
     int i;
     float stdDev, stdDevZ, minDist, myValue, myResidual;
@@ -195,22 +160,25 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
     setSpatialQualityControlSettings(&mySettings, myVar);
     setInterpolationSettings(&mySettings);
 
-    if (passDataToInterpolation(myVar, meteoPoints, nrMeteoPoints, myQuality, myTime, false))
+    if (passDataToInterpolation(myVar, meteoPoints, nrMeteoPoints, myQuality, false))
     {
-        if (! preInterpolation(myVar)) return;
-        if (! computeResiduals(myVar, meteoPoints, nrMeteoPoints, myTime, false)) return;
-        if (!passDataToInterpolation(myVar, meteoPoints, nrMeteoPoints, myQuality, myTime, false))
+        if (! preInterpolation(myVar))
+            return;
+        if (! computeResiduals(myVar, meteoPoints, nrMeteoPoints))
+            return;
+        if (! passDataToInterpolation(myVar, meteoPoints, nrMeteoPoints, myQuality, false))
             return;
 
         for (i = 0; i < nrMeteoPoints; i++)
             if (meteoPoints[i].myQuality == quality::accepted)
             {
-
+                if (meteoPoints[i].name == "Albareto")
+                    meteoPoints[i].name = "Albareto1";
                 if (neighbourhoodVariability(float(meteoPoints[i].point.utm.x),
                          float(meteoPoints[i].point.utm.y),float(meteoPoints[i].point.z),
                          10, &stdDev, &stdDevZ, &minDist))
                 {
-                    myValue = meteoPoints[i].getMeteoPointValueH(myTime.date, myTime.getHour(), myTime.getMinutes(), myVar);
+                    myValue = meteoPoints[i].value;
                     myResidual = meteoPoints[i].residual;
                     stdDev = maxValue(stdDev, myValue/100.f);
                     if (fabs(myResidual) > findThreshold(myVar, myValue, stdDev, 2, stdDevZ, minDist))
@@ -222,7 +190,8 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
             }
 
         if (listIndex.size() > 0)
-            if (passDataToInterpolation(myVar, meteoPoints, nrMeteoPoints, myQuality, myTime, false))
+        {
+            if (passDataToInterpolation(myVar, meteoPoints, nrMeteoPoints, myQuality, false))
             {
                 preInterpolation(myVar);
 
@@ -234,12 +203,13 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
                                             float(meteoPoints[listIndex[i]].point.utm.y),
                                             float(meteoPoints[listIndex[i]].point.z),
                                             NODATA, NODATA, NODATA, NODATA);
-                    myValue = meteoPoints[listIndex[i]].getMeteoPointValueH(myTime.date, myTime.getHour(), myTime.getMinutes(), myVar);
 
-                    listResiduals.push_back(interpolatedValue-myValue);
+                    myValue = meteoPoints[listIndex[i]].value;
+
+                    listResiduals.push_back(interpolatedValue - myValue);
                 }
 
-                passDataToInterpolation(myVar, meteoPoints, nrMeteoPoints, myQuality, myTime, false);
+                passDataToInterpolation(myVar, meteoPoints, nrMeteoPoints, myQuality, false);
 
                 for (i=0; i < int(listIndex.size()); i++)
                 {
@@ -249,7 +219,9 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
                              10, &stdDev, &stdDevZ, &minDist))
                     {
                         myResidual = listResiduals[i];
-                        myValue = meteoPoints[listIndex[i]].getMeteoPointValueH(myTime.date, myTime.getHour(), myTime.getMinutes(), myVar);
+
+                        myValue = meteoPoints[listIndex[i]].value;
+
                         if (fabs(myResidual) > findThreshold(myVar, myValue, stdDev, 3, stdDevZ, minDist))
                             meteoPoints[listIndex[i]].myQuality = quality::wrong_spatial;
                         else
@@ -259,12 +231,12 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
                         meteoPoints[listIndex[i]].myQuality = quality::accepted;
                 }
             }
+        }
     }
 }
 
 
-bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
-                       Crit3DTime myTime, bool isDerivedVar)
+bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints)
 {
 
     if (myVar == noMeteoVar) return false;
@@ -276,39 +248,29 @@ bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nr
     for (int i = 0; i < nrMeteoPoints; i++)
     {
         meteoPoints[i].residual = NODATA;
+
         if (meteoPoints[i].myQuality == quality::accepted)
         {
-            if (! isDerivedVar)
+            myValue = meteoPoints[i].value;
+            setindexPointJacknife(i);
+            interpolatedValue = interpolate(myVar, float(meteoPoints[i].point.utm.x),
+                                            float(meteoPoints[i].point.utm.y),
+                                            float(meteoPoints[i].point.z),
+                                            NODATA, NODATA, NODATA, NODATA);
+
+            setindexPointJacknife(NODATA);
+
+            if (  myVar == precipitation
+               || myVar == dailyPrecipitation)
             {
-                myValue = meteoPoints[i].getMeteoPointValueH(myTime.date, myTime.getHour(), myTime.getMinutes(), myVar);
-                setindexPointJacknife(i);
-                interpolatedValue = interpolate(myVar, float(meteoPoints[i].point.utm.x),
-                                                float(meteoPoints[i].point.utm.y),
-                                                float(meteoPoints[i].point.z),
-                                                NODATA, NODATA, NODATA, NODATA);
+                if (myValue != NODATA)
+                    if (myValue < PREC_THRESHOLD) myValue=0.;
 
-                setindexPointJacknife(NODATA);
-
-                if (  myVar == precipitation
-                   || myVar == dailyPrecipitation)
-                {
-                    if (myValue != NODATA)
-                        if (myValue < PREC_THRESHOLD) myValue=0.;
-
-                    if (interpolatedValue != NODATA)
-                        if (interpolatedValue < PREC_THRESHOLD) interpolatedValue=0.;
-                }
+                if (interpolatedValue != NODATA)
+                    if (interpolatedValue < PREC_THRESHOLD) interpolatedValue=0.;
             }
-            else
-                // TODO ???
-                if (myVar == airDewTemperature)
-                {
-                    float humid = meteoPoints[i].getMeteoPointValueH(myTime.date, myTime.getHour(), myTime.getMinutes(), airHumidity);
-                    float temp = meteoPoints[i].getMeteoPointValueH(myTime.date, myTime.getHour(), myTime.getMinutes(), airTemperature);
-                    float tdew = meteoPoints[i].getMeteoPointValueH(myTime.date, myTime.getHour(), myTime.getMinutes(), airDewTemperature);
-                    if (humid != NODATA && temp != NODATA && tdew != NODATA)
-                        interpolatedValue = tDewFromRelHum(humid, temp);
-                }
+
+            // TODO derived var
 
             if ((interpolatedValue != NODATA) && (myValue != NODATA))
                 meteoPoints[i].residual = interpolatedValue - myValue;
@@ -339,8 +301,8 @@ float findThreshold(meteoVariable myVar, float value, float stdDev, float nrStdD
              || myVar == dailyAirTemperatureAvg )
     {
         threshold = 1.f;
-        zWeight = stdDevZ / 50.f;
-        distWeight = minDistance / 2500.f;
+        zWeight = stdDevZ / 100.f;
+        distWeight = minDistance / 5000.f;
 
         threshold = minValue(minValue(distWeight + threshold + zWeight, 12.f) + stdDev * nrStdDev, 15.f);
     }
@@ -376,16 +338,15 @@ float findThreshold(meteoVariable myVar, float value, float stdDev, float nrStdD
 
 
 bool passDataToInterpolation(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
-                             Crit3DQuality *myQuality, const Crit3DTime& myTime, bool doQualityControl)
+                             Crit3DQuality *myQuality, bool doQualityControl)
 {
     int myCounter = 0;
     float myValue, myX, myY, myZ;
-    int pointCode;
 
     if (doQualityControl)
     {
-        syntacticQualityControl(myVar, meteoPoints, nrMeteoPoints, myQuality, myTime);
-        spatialQualityControl (myVar, meteoPoints, nrMeteoPoints, myQuality, myTime);
+        syntacticQualityControl(myVar, meteoPoints, nrMeteoPoints, myQuality);
+        spatialQualityControl (myVar, meteoPoints, nrMeteoPoints, myQuality);
     }
 
     clearInterpolationPoints();
@@ -394,12 +355,12 @@ bool passDataToInterpolation(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints,
     {
         if (meteoPoints[i].myQuality == quality::accepted)
         {
-            myValue = meteoPoints[i].getMeteoPointValueH(myTime.date, myTime.getHour(), myTime.getMinutes(), myVar);
+            myValue = meteoPoints[i].value;
             myX = float(meteoPoints[i].point.utm.x);
             myY = float(meteoPoints[i].point.utm.y);
             myZ = float(meteoPoints[i].point.z);
-            pointCode = i;
-            if (addInterpolationPoint(pointCode, myValue, myX, myY, myZ, NODATA, NODATA, NODATA, NODATA, NODATA))
+
+            if (addInterpolationPoint(i, myValue, myX, myY, myZ, NODATA, NODATA, NODATA, NODATA, NODATA))
                 myCounter++;
         }
     }

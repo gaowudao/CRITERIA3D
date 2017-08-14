@@ -11,6 +11,9 @@
 
 Project::Project()
 {
+    meteoPoints = NULL;
+    nrMeteoPoints = 0;
+    quality = new Crit3DQuality();
     currentVariable = noMeteoVar;
     currentFrequency = noFrequency;
     currentDate.setDate(1800,1,1);
@@ -117,7 +120,7 @@ bool Project::downloadDailyDataArkimet(QStringList variables, bool prec0024, QDa
     Download* myDownload = new Download(dbMeteoPoints->getDbName());
 
     int index, nrPoints = 0;
-    for( int i=0; i < meteoPoints.size(); i++ )
+    for( int i=0; i < nrMeteoPoints; i++ )
     {
         if (getMeteoPointSelected(i))
         {
@@ -209,7 +212,7 @@ bool Project::downloadHourlyDataArkimet(QStringList variables, QDate startDate, 
     QStringList datasetList;
     QList<QStringList> idList;
 
-    for( int i=0; i < meteoPoints.size(); i++ )
+    for( int i=0; i < nrMeteoPoints; i++ )
     {
         if (getMeteoPointSelected(i))
         {
@@ -348,9 +351,9 @@ bool Project::loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo
         infoStr += " - " + lastDate.toString();
 
     if (showInfo)
-        step = myInfo.start(infoStr, meteoPoints.size());
+        step = myInfo.start(infoStr, nrMeteoPoints);
 
-    for (int i=0; i < meteoPoints.size(); i++)
+    for (int i=0; i < nrMeteoPoints; i++)
     {
         if (showInfo)
             if ((i % step) == 0) myInfo.setValue(i);
@@ -374,7 +377,7 @@ void Project::getMeteoPointsRange(float *minimum, float *maximum)
         return;
 
     float v;
-    for (int i = 0; i < meteoPoints.size(); i++)
+    for (int i = 0; i < nrMeteoPoints; i++)
     {
         v = meteoPoints[i].value;
 
@@ -395,9 +398,13 @@ void Project::getMeteoPointsRange(float *minimum, float *maximum)
 void Project::closeMeteoPointsDB()
 {
     if (dbMeteoPoints != NULL)
+    {
         dbMeteoPoints->closeDatabase();
-    meteoPoints.clear();
+        delete [] meteoPoints;
+    }
+
     meteoPointsSelected.clear();
+    nrMeteoPoints = 0;
 }
 
 
@@ -411,7 +418,14 @@ bool Project::loadMeteoPointsDB(QString dbName, bool showInfo)
     if (showInfo) myInfo.start("Load " + dbName, 0);
 
     dbMeteoPoints = new DbMeteoPoints(dbName);
-    meteoPoints =  dbMeteoPoints->getPropertiesFromDb();
+    QList<Crit3DMeteoPoint> listMeteoPoints = dbMeteoPoints->getPropertiesFromDb();
+
+    nrMeteoPoints = listMeteoPoints.size();
+    meteoPoints = new Crit3DMeteoPoint[nrMeteoPoints];
+    for (int i=0; i < nrMeteoPoints; i++)
+        meteoPoints[i] = listMeteoPoints[i];
+
+    listMeteoPoints.clear();
 
     if (showInfo) myInfo.close();
 

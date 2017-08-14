@@ -126,7 +126,6 @@ bool initializeOrography()
     lapseRateH0 = 0.;
     lapseRateH1 = NODATA;
 
-
     inversionLapseRate = NODATA;
     actualLapseRate = NODATA;
 
@@ -137,6 +136,7 @@ bool initializeOrography()
 
     return true;
 }
+
 
 float getMinHeight()
 {
@@ -232,14 +232,14 @@ int sortPointsByDistance(int maxIndex, vector <Crit3DInterpolationDataPoint> myP
     return outIndex+1;
 }
 
+
 bool neighbourhoodVariability(float x, float y, float z, int nMax,
                               float* devSt, float* devStDeltaZ, float* minDistance)
 {
-
-int i, max_points;
-float* dataNeighborhood;
-vector <float> deltaZ;
-vector <Crit3DInterpolationDataPoint> validPoints;
+    int i, max_points;
+    float* dataNeighborhood;
+    vector <float> deltaZ;
+    vector <Crit3DInterpolationDataPoint> validPoints;
 
     assignDistances(&interpolationPointList, x, y, z);
     max_points = sortPointsByDistance(nMax, interpolationPointList, &validPoints);
@@ -370,6 +370,7 @@ bool regressionGeneric(proxyVars::TProxyVar myProxy, bool isZeroIntercept)
 
 }
 
+
 bool regressionSimpleT(meteoVariable myVar)
 {
 
@@ -400,6 +401,7 @@ bool regressionSimpleT(meteoVariable myVar)
 
     return true;
 }
+
 
 float findHeightIntervalAvgValue(float heightInf, float heightSup, float maxPointsZ)
 {
@@ -790,19 +792,19 @@ bool regressionOrography(meteoVariable myVar)
 {
     initializeOrography();
 
-    if (currentSettings.getUseThermalInversion())
+    if (myVar == airDewTemperature || myVar == airTemperature
+            || myVar == dailyAirTemperatureMax
+            || myVar == dailyAirTemperatureMin
+            || myVar == dailyAirTemperatureAvg )
     {
-        if (myVar == airTemperature || myVar == airDewTemperature)
+        if (currentSettings.getUseThermalInversion())
             return regressionOrographyT(myVar, true);
         else
-            return regressionGeneric(proxyVars::height, false);
+            return regressionSimpleT(myVar);
     }
     else
     {
-        if (myVar == airTemperature)
-            return regressionSimpleT(myVar);
-        else
-            return (regressionGeneric(proxyVars::height, false));
+        return regressionGeneric(proxyVars::height, false);
     }
 
 }
@@ -1043,7 +1045,10 @@ float retrend(meteoVariable myVar, float myZ, float myOrogIndex, float mySeaDist
     float retrendUrban = 0.;
     float retrendAspect = 0.;
 
-    if (myVar == airTemperature || myVar == airDewTemperature)
+    if ( myVar == airDewTemperature || myVar == airTemperature
+         || myVar == dailyAirTemperatureMax
+         || myVar == dailyAirTemperatureMin
+         || myVar == dailyAirTemperatureAvg )
     {
         if (currentSettings.getUseHeight() && currentSettings.getDetrendOrographyActive() && myZ != NODATA)
         {
@@ -1079,7 +1084,8 @@ float retrend(meteoVariable myVar, float myZ, float myOrogIndex, float mySeaDist
 bool preInterpolation(meteoVariable myVar)
 {
 
-    if (myVar == precipitation || myVar == dailyPrecipitation)
+    if (  myVar == precipitation
+       || myVar == dailyPrecipitation)
     {
         int nrPrecNotNull;
         bool isFlatPrecipitation;
@@ -1089,7 +1095,11 @@ bool preInterpolation(meteoVariable myVar)
         if (currentSettings.getUseJRC()) prepareJRC();
     }
 
-    else if (myVar == airDewTemperature || myVar == airTemperature)
+    else if (  myVar == airDewTemperature
+            || myVar == airTemperature
+            || myVar == dailyAirTemperatureMax
+            || myVar == dailyAirTemperatureMin
+            || myVar == dailyAirTemperatureAvg )
     {
         for (int pos=0; pos<PROXY_VAR_NR; pos++)
         {
@@ -1133,6 +1143,7 @@ bool preInterpolation(meteoVariable myVar)
     return (true);
 }
 
+
 float interpolateSimple(meteoVariable myVar, float myZ, float myOrogIndex, float myDistSea, float myUrban, float myAspect)
 {
     float myResult = NODATA;
@@ -1151,21 +1162,22 @@ float interpolateSimple(meteoVariable myVar, float myZ, float myOrogIndex, float
         return NODATA;
 }
 
+
 float interpolate(meteoVariable myVar, float myX, float myY, float myZ, float myOrogIndex, float myUrban, float mySeaDist, float myAspect)
 {
-    if (myVar == precipitation && precipitationAllZero) return 0.;
+    if ((myVar == precipitation || myVar == dailyPrecipitation) && precipitationAllZero) return 0.;
 
     float myResult = NODATA;
 
     if (currentSettings.getInterpolationMethod() == geostatisticsMethods::idw)
     {
-        if (myVar == precipitation && currentSettings.getUseJRC())
+        if ((myVar == precipitation || myVar == dailyPrecipitation) && currentSettings.getUseJRC())
             assignDistances(&precBinaryPointList, myX, myY, myZ);
 
         assignDistances(&interpolationPointList, myX, myY, myZ);
     }
 
-    if (myVar == precipitation)
+    if (myVar == precipitation || myVar == dailyPrecipitation)
     {
         myResult = interpolatePrec();
         if (myResult != NODATA)

@@ -42,21 +42,18 @@
         Crit3DQuality();
 
         quality::Range* getQualityRange(meteoVariable myVar);
-        bool syntacticQualityControl(meteoVariable myVar, frequencyType frequency, Crit3DMeteoPoint *meteoPoints, const Crit3DTime& myTime);
+        void qualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints);
     };
 
     float findThreshold(meteoVariable myVar, float value, float stdDev, float nrStdDev, float stdDevZ, float minDistance);
 
-    bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
-                           Crit3DTime myTime, bool isDerivedVar);
+    bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints);
 
-    void syntacticQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
-                                 Crit3DQuality *myQuality, const Crit3DTime& myTime);
+    void syntacticQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DQuality *myQuality);
 
-    void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
-                               Crit3DQuality *myQuality, const Crit3DTime& myTime);
+    void spatialQualityControl(meteoVariable myVar,Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DQuality *myQuality);
 
     bool passDataToInterpolation(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
-                                 Crit3DQuality *myQuality, const Crit3DTime& myTime, bool doQualityControl);
+                                 Crit3DQuality *myQuality, bool doQualityControl);
 
 #endif // QUALITY_H
