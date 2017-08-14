@@ -320,8 +320,8 @@ float findThreshold(meteoVariable myVar, float value, float stdDev, float nrStdD
              || myVar == dailyWindIntensityAvg)
     {
         threshold = 1.f;
-        zWeight = stdDevZ / 100.f;
-        distWeight = minDistance / 5000.f;
+        zWeight = stdDevZ / 50.f;
+        distWeight = minDistance / 2000.f;
         threshold += zWeight + distWeight + stdDev * nrStdDev;
     }
     else if (   myVar == globalIrradiance
