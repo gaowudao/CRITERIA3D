@@ -708,14 +708,14 @@ void MainWindow::redrawMeteoPoints()
         {
             if (myProject.meteoPoints[i].myQuality == quality::accepted)
             {
-                pointList[i]->setRadius(6);
+                pointList[i]->setRadius(5);
                 myColor = myProject.colorScalePoints->getColor(myProject.meteoPoints[i].value);
                 pointList[i]->setFillColor(QColor(myColor->red, myColor->green, myColor->blue));
             }
             else
             {
                 // Wrong data
-                pointList[i]->setRadius(18);
+                pointList[i]->setRadius(15);
                 pointList[i]->setFillColor(QColor(Qt::black));
             }
 
@@ -1028,6 +1028,9 @@ void MainWindow::on_actionInterpolation_triggered()
     std::string myError;
     Crit3DInterpolationSettings interpolationSettings;
 
+    formInfo myInfo;
+    myInfo.start("Interpolation.. ", 0);
+
     if (interpolationRaster(myProject.getCurrentVariable(), &interpolationSettings,
                 &(myProject.dataRaster), myProject.DTM, myProject.getCurrentTime(), &myError))
     {
@@ -1037,4 +1040,6 @@ void MainWindow::on_actionInterpolation_triggered()
     }
     else
         QMessageBox::information(NULL, "Error!", QString::fromStdString(myError));
+
+    myInfo.close();
 }

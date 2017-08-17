@@ -401,7 +401,7 @@ bool regressionSimpleT(meteoVariable myVar)
     actualLapseRate = m;
     actualR2 = r2;
 
-    // check on inversion data
+    // only pre-inversion data
     if (m > 0)
     {
         inversionLapseRate = m;
@@ -409,11 +409,7 @@ bool regressionSimpleT(meteoVariable myVar)
         float maxZ = minValue(getMaxHeight(), currentSettings.getMaxHeightInversion());
         lapseRateH1 = maxZ;
 
-        float myLapseRate = currentSettings.getCurrentClimateLapseRate(myVar);
-        if (myLapseRate == NODATA)
-            myLapseRate = -0.01f;
-
-        actualLapseRate = myLapseRate;
+        actualLapseRate = currentSettings.getCurrentClimateLapseRate(myVar);
 
         inversionIsSignificative = true;
     }

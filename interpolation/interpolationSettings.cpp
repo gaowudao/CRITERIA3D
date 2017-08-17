@@ -64,7 +64,8 @@ float Crit3DInterpolationSettings::getCurrentClimateLapseRate(meteoVariable myVa
     if (currentClimateParametersLoaded && (currentDate != getNullDate()) && (currentHour != NODATA))
         return (currentClimateParameters.getClimateLapseRate(myVar, &currentDate, currentHour));
     else
-        return NODATA;
+        // TODO migliorare
+        return -0.005f;
 }
 
 void Crit3DInterpolationSettings::setClimateParameters(Crit3DClimateParameters* myParameters)

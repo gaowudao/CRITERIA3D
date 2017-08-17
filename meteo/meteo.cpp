@@ -55,24 +55,33 @@ float computeTminHourlyWeight(int myHour)
 
 float Crit3DClimateParameters::getClimateLapseRate(meteoVariable myVar, Crit3DDate* myDate, int myHour)
 {
-    float lapseTmin, lapseTmax;
     int indexMonth = myDate->month - 1;
 
-    if (myVar == airTemperature)
+    if (myVar == dailyAirTemperatureMin)
+        return tminLapseRate[indexMonth];
+    else if (myVar == dailyAirTemperatureMax)
+        return tmaxLapseRate[indexMonth];
+    else if (myVar == dailyAirTemperatureAvg)
+        return (tmaxLapseRate[indexMonth] + tminLapseRate[indexMonth]) / 2;
+    else
     {
+        float lapseTmin, lapseTmax;
+        if (myVar == airTemperature)
+        {
             lapseTmin = tminLapseRate[indexMonth];
             lapseTmax = tmaxLapseRate[indexMonth];
-    }
-    else if (myVar == airDewTemperature)
-    {
-        lapseTmin = tDewMinLapseRate[indexMonth];
-        lapseTmax = tDewMaxLapseRate[indexMonth];
-    }
-    else
-        return NODATA;
+        }
+        else if (myVar == airDewTemperature)
+        {
+            lapseTmin = tDewMinLapseRate[indexMonth];
+            lapseTmax = tDewMaxLapseRate[indexMonth];
+        }
+        else
+            return NODATA;
 
-    float tminWeight = computeTminHourlyWeight(myHour);
-    return (lapseTmin * tminWeight + lapseTmax * (1 - tminWeight));
+        float tminWeight = computeTminHourlyWeight(myHour);
+        return (lapseTmin * tminWeight + lapseTmax * (1 - tminWeight));
+    }
 }
 
 
