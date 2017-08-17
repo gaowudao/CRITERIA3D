@@ -41,6 +41,7 @@ Crit3DClimateParameters::Crit3DClimateParameters()
     }
 }
 
+
 float computeTminHourlyWeight(int myHour)
 {
     if (myHour >= 6 && myHour <= 14)
@@ -50,6 +51,7 @@ float computeTminHourlyWeight(int myHour)
     else
         return (1 - (6 - (float)myHour) / 12);
 }
+
 
 float Crit3DClimateParameters::getClimateLapseRate(meteoVariable myVar, Crit3DDate* myDate, int myHour)
 {
@@ -72,6 +74,7 @@ float Crit3DClimateParameters::getClimateLapseRate(meteoVariable myVar, Crit3DDa
     float tminWeight = computeTminHourlyWeight(myHour);
     return (lapseTmin * tminWeight + lapseTmax * (1 - tminWeight));
 }
+
 
 float tDewFromRelHum(float rhAir, float airT)
 {

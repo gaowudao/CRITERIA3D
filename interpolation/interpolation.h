@@ -26,11 +26,8 @@
 #ifndef INTERPOLATION_H
 #define INTERPOLATION_H
 
-    #ifndef GIS_H
-        #include "gis.h"
-    #endif
     #ifndef METEO_H
-        #include "meteo.h"
+        #include "meteoPoint.h"
     #endif
     #ifndef INTERPOLATIONSETTINGS_H
         #include "interpolationSettings.h"
@@ -66,5 +63,11 @@
 
     float interpolate(meteoVariable myVar, float myX, float myY, float myZ, float myOrogIndex, float myUrban, float mySeaDist, float myAspect);
     bool interpolateGridDtm(gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGrid &myGridDtm, meteoVariable myVar);
+
+    void printInterpolationData();
+
+    bool interpolationRaster(meteoVariable myVar, Crit3DInterpolationSettings *mySettings,
+                             gis::Crit3DRasterGrid *myRaster, const  gis::Crit3DRasterGrid& myDTM,
+                             const Crit3DTime& myTime, std::string *myError);
 
 #endif // INTERPOLATION_H

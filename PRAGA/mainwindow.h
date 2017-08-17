@@ -74,6 +74,10 @@
 
         void enableAllDataset(bool toggled);
 
+        void on_actionVariableQualitySpatial_triggered();
+
+        void on_actionInterpolation_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

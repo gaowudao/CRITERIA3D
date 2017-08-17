@@ -7,9 +7,6 @@
 #ifndef METEO_H
     #include "meteo.h"
 #endif
-#ifndef CRIT3DDATE_H
-    #include "crit3dDate.h"
-#endif
 
 class Crit3DInterpolationSettings
 {

@@ -23,6 +23,7 @@
 #include "commonConstants.h"
 #include "dialogWindows.h"
 #include "quality.h"
+#include "interpolation.h"
 
 
 extern Project myProject;
@@ -43,7 +44,6 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
 
     this->rasterLegend = new ColorLegend(this->ui->widgetColorLegendRaster);
     this->rasterLegend->resize(this->ui->widgetColorLegendRaster->size());
-    this->rasterLegend->colorScale = myProject.DTM.colorScale;
 
     this->pointsLegend = new ColorLegend(this->ui->widgetColorLegendPoints);
     this->pointsLegend->resize(this->ui->widgetColorLegendPoints->size());
@@ -165,7 +165,6 @@ void MainWindow::on_actionRectangle_Selection_triggered()
 }
 
 
-
 void MainWindow::on_actionLoadRaster_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open rasterObj"), "", tr("ESRI grid files (*.flt)"));
@@ -176,6 +175,7 @@ void MainWindow::on_actionLoadRaster_triggered()
 
     // set default color scale
     setRasterColorScale(colorScale::terrain, myProject.DTM.colorScale, ui->labelRasterScale);
+    this->rasterLegend->colorScale = myProject.currentRaster->colorScale;
 
     this->ui->rasterOpacitySlider->setEnabled(true);
 
@@ -347,7 +347,7 @@ void MainWindow::on_actionOpen_meteo_points_DB_triggered()
 
 void MainWindow::on_actionVariableNone_triggered()
 {
-    myProject.setFrequency(noFrequency);
+    //myProject.setFrequency(noFrequency);
     myProject.currentVariable = noMeteoVar;
     this->ui->actionVariableNone->setChecked(true);
 
@@ -659,13 +659,15 @@ void MainWindow::on_dateTimeEdit_dateTimeChanged(const QDateTime &dateTime)
 void MainWindow::redrawMeteoPointsPosition()
 {
     for (int i = 0; i < myProject.nrMeteoPoints; i++)
+        pointList[i]->setVisible(false);
+
+    for (int i = 0; i < myProject.nrMeteoPoints; i++)
     {
             myProject.meteoPoints[i].value = NODATA;
-
-            pointList[i]->setVisible(true);
             pointList[i]->setFillColor(QColor(Qt::white));
             pointList[i]->setRadius(5);
             pointList[i]->setToolTip(i);
+            pointList[i]->setVisible(true);
     }
 
     myProject.colorScalePoints->setRange(NODATA, NODATA);
@@ -685,15 +687,9 @@ void MainWindow::redrawMeteoPoints()
         return;
     }
 
-    // load data
-    for (int i = 0; i < myProject.nrMeteoPoints; i++)
-    {
-        myProject.meteoPoints[i].value = myProject.meteoPoints[i].getMeteoPointValue(myProject.getCurrentTime(),
-                                                  myProject.getCurrentVariable(), myProject.getFrequency());
-    }
-
-    // Quality control
-    myProject.quality->qualityControl(myProject.getCurrentVariable(), myProject.meteoPoints, myProject.nrMeteoPoints);
+    // quality control
+    myProject.quality->checkData(myProject.getCurrentVariable(), myProject.getFrequency(),
+                                 myProject.meteoPoints, myProject.nrMeteoPoints, myProject.getCurrentTime());
 
     float minimum, maximum;
     myProject.getMeteoPointsRange(&minimum, &maximum);
@@ -705,29 +701,28 @@ void MainWindow::redrawMeteoPoints()
 
     Crit3DColor *myColor;
     for (int i = 0; i < myProject.nrMeteoPoints; i++)
-        if (myProject.meteoPoints[i].value == NODATA)
-        {
-            pointList[i]->setVisible(false);
-        }
-        else
-        {
-            pointList[i]->setVisible(true);
+    {
+        pointList[i]->setVisible(false);
 
-            if (myProject.meteoPoints[i].myQuality != quality::accepted)
-            {
-                // Wrong data
-                pointList[i]->setRadius(18);
-                pointList[i]->setFillColor(QColor(Qt::black));
-            }
-            else
+        if (myProject.meteoPoints[i].value != NODATA)
+        {
+            if (myProject.meteoPoints[i].myQuality == quality::accepted)
             {
                 pointList[i]->setRadius(6);
                 myColor = myProject.colorScalePoints->getColor(myProject.meteoPoints[i].value);
                 pointList[i]->setFillColor(QColor(myColor->red, myColor->green, myColor->blue));
             }
+            else
+            {
+                // Wrong data
+                pointList[i]->setRadius(18);
+                pointList[i]->setFillColor(QColor(Qt::black));
+            }
 
             pointList[i]->setToolTip(i);
+            pointList[i]->setVisible(true);
         }
+    }
 
     pointsLegend->update();
 }
@@ -789,7 +784,7 @@ void MainWindow::on_rasterScaleButton_clicked()
 
     colorScale::type myScale = chooseColorScale();
     if (myScale != colorScale::none)
-        setRasterColorScale(myScale, myProject.DTM.colorScale, ui->labelRasterScale);
+        setRasterColorScale(myScale, myProject.currentRaster->colorScale, ui->labelRasterScale);
 }
 
 
@@ -1019,3 +1014,27 @@ void setRasterColorScale(colorScale::type myScale, Crit3DColorScale *myColorScal
 }
 
 
+void MainWindow::on_actionVariableQualitySpatial_triggered()
+{
+    myProject.quality->setSpatialControl(ui->actionVariableQualitySpatial->isChecked());
+
+    updateVariable();
+}
+
+
+void MainWindow::on_actionInterpolation_triggered()
+{
+
+    std::string myError;
+    Crit3DInterpolationSettings interpolationSettings;
+
+    if (interpolationRaster(myProject.getCurrentVariable(), &interpolationSettings,
+                &(myProject.dataRaster), myProject.DTM, myProject.getCurrentTime(), &myError))
+    {
+        myProject.currentRaster = &(myProject.dataRaster);
+        this->rasterLegend->colorScale = myProject.currentRaster->colorScale;
+        this->update();
+    }
+    else
+        QMessageBox::information(NULL, "Error!", QString::fromStdString(myError));
+}

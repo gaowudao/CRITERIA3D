@@ -52,8 +52,7 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 
     this->setMapResolution();
 
-    //TO DO scelta della mappa da visualizzare
-    drawRaster(&myProject, &(myProject.DTM), painter);
+    drawRaster(&myProject, myProject.currentRaster, painter);
 
     this->legend->update();
 }

@@ -25,6 +25,8 @@
 
 
 #include <stdlib.h>
+#include <QDebug>
+
 #include <math.h>
 #include <vector>
 
@@ -112,9 +114,19 @@ bool addInterpolationPoint(int myIndex, float myValue, float myX, float myY, flo
     return (true);
 }
 
+
+void printInterpolationData()
+{
+    for (long i = 0; i < interpolationPointList.size() ; i++)
+    {
+        qDebug() << i << interpolationPointList[i].value;
+    }
+}
+
+
 void assignDistances(vector <Crit3DInterpolationDataPoint> *myPoints, float x, float y, float z)
 {
-    for (int i = 0; i < (int)(myPoints->size()) ; i++)
+    for (long i = 0; i < myPoints->size() ; i++)
     {
         myPoints->at(i).distance = gis::computeDistance(x, y, float((myPoints->at(i)).point->utm.x) , float((myPoints->at(i)).point->utm.y));
         myPoints->at(i).deltaZ = float(fabs(myPoints->at(i).point->z - z));
@@ -238,6 +250,7 @@ bool neighbourhoodVariability(float x, float y, float z, int nMax,
 {
     int i, max_points;
     float* dataNeighborhood;
+    float myValue;
     vector <float> deltaZ;
     vector <Crit3DInterpolationDataPoint> validPoints;
 
@@ -249,7 +262,10 @@ bool neighbourhoodVariability(float x, float y, float z, int nMax,
         dataNeighborhood = (float *) calloc (max_points, sizeof(float));
 
         for (i=0; i<max_points; i++)
-            dataNeighborhood[i] = validPoints.at(i).value;
+        {
+            myValue = validPoints.at(i).value;
+            dataNeighborhood[i] = myValue;
+        }
 
         *devSt = statistics::standardDeviation(dataNeighborhood, max_points);
 
@@ -373,9 +389,7 @@ bool regressionGeneric(proxyVars::TProxyVar myProxy, bool isZeroIntercept)
 
 bool regressionSimpleT(meteoVariable myVar)
 {
-
     float q, m, r2;
-    float myClimateLapseRate, maxZ;
 
     initializeOrography();
 
@@ -387,15 +401,20 @@ bool regressionSimpleT(meteoVariable myVar)
     actualLapseRate = m;
     actualR2 = r2;
 
-    maxZ = getMaxHeight();
-
-    if (maxZ <= currentSettings.getMaxHeightInversion())
+    // check on inversion data
+    if (m > 0)
     {
-        myClimateLapseRate = currentSettings.getCurrentClimateLapseRate(myVar);
-
         inversionLapseRate = m;
+
+        float maxZ = minValue(getMaxHeight(), currentSettings.getMaxHeightInversion());
         lapseRateH1 = maxZ;
-        actualLapseRate = myClimateLapseRate;
+
+        float myLapseRate = currentSettings.getCurrentClimateLapseRate(myVar);
+        if (myLapseRate == NODATA)
+            myLapseRate = -0.01f;
+
+        actualLapseRate = myLapseRate;
+
         inversionIsSignificative = true;
     }
 
@@ -809,6 +828,7 @@ bool regressionOrography(meteoVariable myVar)
 
 }
 
+
 float inverseDistanceWeighted(vector <Crit3DInterpolationDataPoint> myPointList)
 {
     double sum, sumWeights, weight;
@@ -1083,9 +1103,7 @@ float retrend(meteoVariable myVar, float myZ, float myOrogIndex, float mySeaDist
 
 bool preInterpolation(meteoVariable myVar)
 {
-
-    if (  myVar == precipitation
-       || myVar == dailyPrecipitation)
+    if (myVar == precipitation || myVar == dailyPrecipitation)
     {
         int nrPrecNotNull;
         bool isFlatPrecipitation;
@@ -1108,9 +1126,13 @@ bool preInterpolation(meteoVariable myVar)
                 proxyVars::TProxyVar myProxy = getDetrendType(pos);
                 if (myProxy == proxyVars::height)
                 {
-                    currentSettings.setDetrendOrographyActive(regressionOrography(myVar));
-                    if (currentSettings.getDetrendOrographyActive())
-                        detrend(myVar, myProxy);
+                    if (regressionOrography(myVar))
+                    {
+                        currentSettings.setDetrendOrographyActive(true);
+                        detrend(myVar, proxyVars::height);
+                    }
+                    else
+                        currentSettings.setDetrendOrographyActive(false);
                 }
                 else if (myProxy == proxyVars::urbanFraction)
                 {
@@ -1210,5 +1232,49 @@ bool interpolateGridDtm(gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGr
         return (false);
 
     return (true);
-
 }
+
+
+// assume che i dati siano già stati caricati in interpolationPointList (checkData)
+bool interpolationRaster(meteoVariable myVar, Crit3DInterpolationSettings *mySettings,
+                         gis::Crit3DRasterGrid *myRaster, const  gis::Crit3DRasterGrid& myDTM,
+                         const Crit3DTime& myTime, std::string *myError)
+{
+    // Check data presence
+    if (interpolationPointList.size() == 0)
+    {
+        *myError = "No data to interpolate";
+        return false;
+    }
+
+    // check DTM
+    if (! myDTM.isLoaded)
+    {
+        *myError = "Load DTM before";
+        return false;
+    }
+
+    // Interpolation settings
+    mySettings->setCurrentDate(myTime.date);
+    mySettings->setCurrentHour(myTime.getHour());
+    setInterpolationSettings(mySettings);
+
+    // Proxy vars regression and detrend
+    if (! preInterpolation(myVar))
+    {
+        *myError = "Interpolation: error in function preInterpolation";
+        return false;
+    }
+
+    // Interpolate
+    if (! interpolateGridDtm(myRaster, myDTM, myVar))
+    {
+        *myError = "Interpolation: error in function interpolateGridDtm";
+        return false;
+    }
+
+    Crit3DTime t = myTime;
+    myRaster->timeString = t.toStdString();
+    return true;
+}
+

@@ -37,6 +37,9 @@
         Crit3DQuality* quality;
 
         gis::Crit3DRasterGrid DTM;
+        gis::Crit3DRasterGrid dataRaster;
+        gis::Crit3DRasterGrid *currentRaster;
+
         gis::Crit3DRasterGrid rowMatrix;
         gis::Crit3DRasterGrid colMatrix;
         gis::Crit3DGisSettings gisSettings;

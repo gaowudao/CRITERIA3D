@@ -5,7 +5,7 @@
 #
 #-------------------------------------------------
 
-QT   -= core gui
+QT   -= gui
 
 TARGET = Interpolation
 TEMPLATE = lib

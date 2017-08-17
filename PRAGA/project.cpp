@@ -21,6 +21,7 @@ Project::Project()
     currentHour = 12;
     colorScalePoints = new Crit3DColorScale();
     dbMeteoPoints = NULL;
+    currentRaster = &DTM;
 }
 
 
@@ -37,8 +38,11 @@ bool Project::loadRaster(QString myFileName)
 
     if (gis::readEsriGrid(fileName, &(this->DTM), myError))
     {
-        this->DTM.isLoaded = true;
         gis::updateMinMaxRasterGrid(&(this->DTM));
+        this->DTM.isLoaded = true;
+        this->currentRaster = &DTM;
+
+        this->dataRaster.initializeGrid(this->DTM);
 
         gis::Crit3DGridHeader myLatLonHeader;
         gis::getGeoExtentsFromUTMHeader(this->gisSettings, this->DTM.header, &myLatLonHeader);

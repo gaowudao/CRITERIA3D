@@ -2117,12 +2117,14 @@
     <addaction name="actionDownload_meteo_data"/>
     <addaction name="separator"/>
    </widget>
-   <widget class="QMenu" name="menuMap_server">
+   <widget class="QMenu" name="menuVariable">
     <property name="title">
      <string>Variable</string>
     </property>
     <addaction name="actionVariableNone"/>
     <addaction name="actionVariableChoose"/>
+    <addaction name="actionVariableQualitySpatial"/>
+    <addaction name="actionInterpolation"/>
    </widget>
    <widget class="QMenu" name="menuGIS_settings">
     <property name="title">
@@ -2154,7 +2156,7 @@
     <addaction name="actionRectangle_Selection"/>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuMap_server"/>
+   <addaction name="menuVariable"/>
    <addaction name="menuGIS_settings"/>
    <addaction name="menuTools"/>
   </widget>
@@ -2252,6 +2254,22 @@
    </property>
    <property name="text">
     <string>None</string>
+   </property>
+  </action>
+  <action name="actionVariableQualitySpatial">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Quality control spatial</string>
+   </property>
+  </action>
+  <action name="actionInterpolation">
+   <property name="text">
+    <string>Interpolation</string>
    </property>
   </action>
  </widget>

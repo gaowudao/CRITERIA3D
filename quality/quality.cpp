@@ -1,4 +1,6 @@
 
+#include "QDebug"
+
 #include <stdio.h>
 
 #include "commonConstants.h"
@@ -42,6 +44,14 @@ Crit3DQuality::Crit3DQuality()
     qualityDailyWInt = new quality::Range(0, 150);
     qualityDailyWDir = new quality::Range(0, 360);
     qualityDailyGRad = new quality::Range(-20, 120);
+
+    spatialControlActive = true;
+}
+
+
+void Crit3DQuality::setSpatialControl(bool isActive)
+{
+    spatialControlActive = isActive;
 }
 
 
@@ -88,18 +98,30 @@ quality::Range* Crit3DQuality::getQualityRange(meteoVariable myVar)
 }
 
 
-void Crit3DQuality::qualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints)
+bool Crit3DQuality::checkData(meteoVariable myVar, frequencyType myFrequency, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DTime myTime)
 {
-    syntacticQualityControl(myVar, meteoPoints, nrMeteoPoints, this);
-    spatialQualityControl(myVar, meteoPoints, nrMeteoPoints, this);
+    // assign data
+    for (int i = 0; i < nrMeteoPoints; i++)
+        meteoPoints[i].value = meteoPoints[i].getMeteoPointValue(myTime, myVar, myFrequency);
+
+    // quality control - synthctic
+    syntacticQualityControl(myVar, meteoPoints, nrMeteoPoints);
+
+    // quality control - spatial
+    if (this->spatialControlActive)
+        spatialQualityControl(myVar, meteoPoints, nrMeteoPoints);
+
+    // return true if at least one valid data
+    return passDataToInterpolation(meteoPoints, nrMeteoPoints);
 }
 
 
-void syntacticQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DQuality *myQuality)
+
+void Crit3DQuality::syntacticQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints)
 {
     float qualityMin, qualityMax;
 
-    quality::Range* myRange = myQuality->getQualityRange(myVar);
+    quality::Range* myRange = this->getQualityRange(myVar);
     if (myRange != NULL)
     {
         qualityMin = myRange->getMin();
@@ -125,30 +147,12 @@ void syntacticQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints,
 }
 
 
-void setSpatialQualityControlSettings(Crit3DInterpolationSettings* mySettings, meteoVariable myVar)
-{
-    mySettings->setUseOrogIndex(false);
-    mySettings->setUseAspect(false);
-    mySettings->setUseTAD(false);
-    mySettings->setUseOrogIndex(false);
-    mySettings->setUseDewPoint(false);
-    mySettings->setUseGenericProxy(false);
-    mySettings->setUseSeaDistance(false);
-    mySettings->setInterpolationMethod(geostatisticsMethods::idw);
-    mySettings->setIsCrossValidation(true);
-
-    if (   myVar == airTemperature
-        || myVar == dailyAirTemperatureMax
-        || myVar == dailyAirTemperatureMin
-        || myVar == dailyAirTemperatureAvg )
-    {
-        mySettings->setUseHeight(true);
-        mySettings->setUseThermalInversion(true);
-    }
-}
+float findThreshold(meteoVariable myVar, float value, float stdDev, float nrStdDev, float stdDevZ, float minDistance);
+bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints);
+void setSpatialQualityControlSettings(Crit3DInterpolationSettings* mySettings, meteoVariable myVar);
 
 
-void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DQuality *myQuality)
+void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints)
 {
     int i;
     float stdDev, stdDevZ, minDist, myValue, myResidual;
@@ -160,20 +164,22 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
     setSpatialQualityControlSettings(&mySettings, myVar);
     setInterpolationSettings(&mySettings);
 
-    if (passDataToInterpolation(myVar, meteoPoints, nrMeteoPoints, myQuality, false))
+    if (passDataToInterpolation(meteoPoints, nrMeteoPoints))
     {
+        // detrend
         if (! preInterpolation(myVar))
             return;
+
+        // compute residuals
         if (! computeResiduals(myVar, meteoPoints, nrMeteoPoints))
             return;
-        if (! passDataToInterpolation(myVar, meteoPoints, nrMeteoPoints, myQuality, false))
-            return;
+
+        // re-load data
+        passDataToInterpolation(meteoPoints, nrMeteoPoints);
 
         for (i = 0; i < nrMeteoPoints; i++)
             if (meteoPoints[i].myQuality == quality::accepted)
             {
-                if (meteoPoints[i].name == "Albareto")
-                    meteoPoints[i].name = "Albareto1";
                 if (neighbourhoodVariability(float(meteoPoints[i].point.utm.x),
                          float(meteoPoints[i].point.utm.y),float(meteoPoints[i].point.z),
                          10, &stdDev, &stdDevZ, &minDist))
@@ -191,7 +197,7 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
 
         if (listIndex.size() > 0)
         {
-            if (passDataToInterpolation(myVar, meteoPoints, nrMeteoPoints, myQuality, false))
+            if (passDataToInterpolation(meteoPoints, nrMeteoPoints))
             {
                 preInterpolation(myVar);
 
@@ -209,7 +215,7 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
                     listResiduals.push_back(interpolatedValue - myValue);
                 }
 
-                passDataToInterpolation(myVar, meteoPoints, nrMeteoPoints, myQuality, false);
+                passDataToInterpolation(meteoPoints, nrMeteoPoints);
 
                 for (i=0; i < int(listIndex.size()); i++)
                 {
@@ -232,6 +238,29 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
                 }
             }
         }
+    }
+}
+
+
+void setSpatialQualityControlSettings(Crit3DInterpolationSettings* mySettings, meteoVariable myVar)
+{
+    mySettings->setUseOrogIndex(false);
+    mySettings->setUseAspect(false);
+    mySettings->setUseTAD(false);
+    mySettings->setUseOrogIndex(false);
+    mySettings->setUseDewPoint(false);
+    mySettings->setUseGenericProxy(false);
+    mySettings->setUseSeaDistance(false);
+    mySettings->setInterpolationMethod(geostatisticsMethods::idw);
+    mySettings->setIsCrossValidation(true);
+
+    if (   myVar == airTemperature
+        || myVar == dailyAirTemperatureMax
+        || myVar == dailyAirTemperatureMin
+        || myVar == dailyAirTemperatureAvg )
+    {
+        mySettings->setUseHeight(true);
+        mySettings->setUseThermalInversion(true);
     }
 }
 
@@ -337,17 +366,10 @@ float findThreshold(meteoVariable myVar, float value, float stdDev, float nrStdD
 }
 
 
-bool passDataToInterpolation(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
-                             Crit3DQuality *myQuality, bool doQualityControl)
+bool passDataToInterpolation(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints)
 {
     int myCounter = 0;
     float myValue, myX, myY, myZ;
-
-    if (doQualityControl)
-    {
-        syntacticQualityControl(myVar, meteoPoints, nrMeteoPoints, myQuality);
-        spatialQualityControl (myVar, meteoPoints, nrMeteoPoints, myQuality);
-    }
 
     clearInterpolationPoints();
 
