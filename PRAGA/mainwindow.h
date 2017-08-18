@@ -78,6 +78,8 @@
 
         void on_actionInterpolation_triggered();
 
+        void on_actionPointsVisible_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
@@ -108,6 +110,7 @@
         ColorLegend *pointsLegend;
         QList<StationMarker*> pointList;
         RubberBand *myRubberBand;
+        bool showPoints;
 
         environment menu;
         QList<QCheckBox*> datasetCheckbox;
@@ -122,7 +125,6 @@
         void resetMeteoPoints();
         void addMeteoPoints();
         void redrawMeteoPoints();
-        void redrawMeteoPointsPosition();
 
         bool loadMeteoPointsDB(QString dbName);
 

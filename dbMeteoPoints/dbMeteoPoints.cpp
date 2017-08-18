@@ -163,6 +163,8 @@ QDateTime DbMeteoPoints::getLastDay(frequencyType frequency)
         }
     }
 
+    QDateTime date;
+    QString dateStr;
     foreach (QString table, tables)
     {
         QString statement = QString( "SELECT date_time FROM `%1` ORDER BY datetime(date_time) DESC Limit 1").arg(table);
@@ -174,8 +176,12 @@ QDateTime DbMeteoPoints::getLastDay(frequencyType frequency)
         {
             if (qry.next())
             {
-                QString dateStr = qry.value(0).toString();
-                QDateTime date = QDateTime::fromString(dateStr,"yyyy-MM-dd HH:mm:ss");
+                dateStr = qry.value(0).toString();
+                if (frequency == daily)
+                    date = QDateTime::fromString(dateStr,"yyyy-MM-dd");
+                else if (frequency == hourly)
+                    date = QDateTime::fromString(dateStr,"yyyy-MM-dd HH:mm:ss");
+
                 if (date > lastDay)
                 {
                     lastDay = date;

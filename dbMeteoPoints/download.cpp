@@ -189,14 +189,9 @@ void Download::downloadMetadata(QJsonObject obj)
 
 bool Download::downloadDailyData(QDate startDate, QDate endDate, QString dataset, QStringList stations, QList<int> variables, bool prec0024)
 {
-    QString area, product, refTime, myDateStr, idPoint, flag;
+    QString area, product, refTime;
     QDate myDate;
     QStringList fields;
-    double value;
-    int idArkimet, idVar;
-
-    // create station tables
-    _dbMeteo->initStationsDailyTables(startDate, endDate, stations);
 
     // attenzione: il reference time dei giornalieri è a fine giornata (ore 00 di day+1)
     refTime = QString("reftime:>%1,<=%2").arg(startDate.toString("yyyy-MM-dd")).arg(endDate.addDays(1).toString("yyyy-MM-dd"));
@@ -231,54 +226,64 @@ bool Download::downloadDailyData(QDate startDate, QDate endDate, QString dataset
     QNetworkReply* reply = manager->get(request);
     loop.exec();
 
+    bool downloadOk;
+
     if (reply->error() != QNetworkReply::NoError)
     {
-            qDebug( "Network Error" );
-            delete reply;
-            delete manager;
-            return false;
+        qDebug( "Network Error" );
+        downloadOk = false;
     }
     else
     {
+        _dbMeteo->createTmpTableDaily();
+        bool isFirstData = true;
+        QString dateStr, idPoint, flag;
+        int idArkimet, idVar;
+        double value;
+
         for (QString line = QString(reply->readLine()); !(line.isNull() || line.isEmpty());  line = QString(reply->readLine()))
         {
             fields = line.split(",");
 
             // warning: ref date arkimet: hour 00 of day+1
-            myDateStr = fields[0];
-            myDate = QDate::fromString(myDateStr.left(8), "yyyyMMdd");
+            dateStr = fields[0];
+            myDate = QDate::fromString(dateStr.left(8), "yyyyMMdd");
             myDate = myDate.addDays(-1);
-            myDateStr = myDate.toString("yyyy-MM-dd");
+            dateStr = myDate.toString("yyyy-MM-dd");
 
             idPoint = fields[1];
-            idArkimet = fields[2].toInt();
-
-            if (idArkimet == PREC_ID)
-                if ((prec0024 && fields[0].mid(8,2) == "08") || (!prec0024 && fields[0].mid(8,2) == "00"))
-                    continue;
-
-            value = fields[3].toDouble();
             flag = fields[6];
 
-            // conversion from average daily radiation to integral radiation
-            if (idArkimet == RAD_ID)
+            if (idPoint != "" && flag.left(1) != "1" && flag.left(3) != "054")
             {
-                value *= DAY_SECONDS / 1000000.0;
-            }
+                idArkimet = fields[2].toInt();
 
-            idVar = _dbMeteo->arkIdmap(idArkimet);
+                if (idArkimet == PREC_ID)
+                    if ((prec0024 && fields[0].mid(8,2) == "08") || (!prec0024 && fields[0].mid(8,2) == "00"))
+                        continue;
 
-            if (!(idPoint.isEmpty()))
-            {
-                _dbMeteo->insertDailyValue(idPoint, myDateStr, idVar, value, flag);
+                value = fields[3].toDouble();
+
+                // conversion from average daily radiation to integral radiation
+                if (idArkimet == RAD_ID)
+                {
+                    value *= DAY_SECONDS / 1000000.0;
+                }
+
+                idVar = _dbMeteo->arkIdmap(idArkimet);
+
+                _dbMeteo->appendQueryDaily(dateStr, idPoint, QString::number(idVar), QString::number(value), isFirstData);
+                isFirstData = false;
             }
         }
+
+        downloadOk = _dbMeteo->saveDailyData(startDate, endDate);
     }
 
     delete reply;
     delete manager;
 
-    return true;
+    return downloadOk;
 }
 
 
@@ -335,7 +340,7 @@ bool Download::downloadHourlyData(QDate startDate, QDate endDate, QString datase
     }
     else
     {
-        _dbMeteo->createTmpTable();
+        _dbMeteo->createTmpTableHourly();
 
         QString line, dateTime, idPoint, flag, varName;
         QString idVariable, value, frequency;
@@ -363,7 +368,7 @@ bool Download::downloadHourlyData(QDate startDate, QDate endDate, QString datase
                     flag = fields[6];
 
                     // invalid data
-                    if (flag.left(1) != "1" && flag.left(1) != "054")
+                    if (flag.left(1) != "1" && flag.left(3) != "054")
                     {
                         isVarOk = false;
                         for (i = 0; i < variableList.size(); i++)
@@ -388,7 +393,7 @@ bool Download::downloadHourlyData(QDate startDate, QDate endDate, QString datase
         }
         qDebug("Nr of data: %d", nrData);
         _dbMeteo->saveHourlyData();
-        _dbMeteo->deleteTmpTable();
+        _dbMeteo->deleteTmpTableHourly();
 
         delete reply;
         delete manager;

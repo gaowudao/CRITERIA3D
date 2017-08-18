@@ -937,8 +937,8 @@ float interpolatePrecStep1()
 float interpolatePrecStep2()
 {
     if (currentSettings.getInterpolationMethod() == geostatisticsMethods::idw)
-        //return inverseDistanceWeighted(interpolationPointList);
-        return gaussWeighted(interpolationPointList);
+        return inverseDistanceWeighted(interpolationPointList);
+        //return gaussWeighted(interpolationPointList);
     else if (currentSettings.getInterpolationMethod() == geostatisticsMethods::kriging)
         return NODATA;
     else

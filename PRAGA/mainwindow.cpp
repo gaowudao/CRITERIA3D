@@ -36,6 +36,8 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
 {
     ui->setupUi(this);
 
+    this->showPoints = true;
+
     this->myRubberBand = NULL;
 
     // Set the MapGraphics Scene and View
@@ -667,34 +669,33 @@ void MainWindow::on_dateTimeEdit_dateTimeChanged(const QDateTime &dateTime)
 }
 
 
-void MainWindow::redrawMeteoPointsPosition()
-{
-    for (int i = 0; i < myProject.nrMeteoPoints; i++)
-        pointList[i]->setVisible(false);
-
-    for (int i = 0; i < myProject.nrMeteoPoints; i++)
-    {
-            myProject.meteoPoints[i].value = NODATA;
-            pointList[i]->setFillColor(QColor(Qt::white));
-            pointList[i]->setRadius(5);
-            pointList[i]->setToolTip(i);
-            pointList[i]->setVisible(true);
-    }
-
-    myProject.colorScalePoints->setRange(NODATA, NODATA);
-    pointsLegend->update();
-}
-
 
 void MainWindow::redrawMeteoPoints()
 {
     if (myProject.nrMeteoPoints == 0)
         return;
 
-    // show position
-    if (myProject.getFrequency() == noFrequency || myProject.getCurrentVariable() == noMeteoVar)
+    // hide all meteo points
+    for (int i = 0; i < myProject.nrMeteoPoints; i++)
+        pointList[i]->setVisible(false);
+
+    if (! this->showPoints)
+        return;
+
+    // show location
+    if (myProject.getCurrentVariable() == noMeteoVar)
     {
-        redrawMeteoPointsPosition();
+        for (int i = 0; i < myProject.nrMeteoPoints; i++)
+        {
+                myProject.meteoPoints[i].value = NODATA;
+                pointList[i]->setFillColor(QColor(Qt::white));
+                pointList[i]->setRadius(5);
+                pointList[i]->setToolTip(i);
+                pointList[i]->setVisible(true);
+        }
+
+        myProject.colorScalePoints->setRange(NODATA, NODATA);
+        pointsLegend->update();
         return;
     }
 
@@ -713,8 +714,6 @@ void MainWindow::redrawMeteoPoints()
     Crit3DColor *myColor;
     for (int i = 0; i < myProject.nrMeteoPoints; i++)
     {
-        pointList[i]->setVisible(false);
-
         if (myProject.meteoPoints[i].value != NODATA)
         {
             if (myProject.meteoPoints[i].myQuality == quality::accepted)
@@ -973,9 +972,6 @@ bool downloadMeteoData()
 
         if (hourly.isChecked())
         {
-            // QApplication::setOverrideCursor(Qt::WaitCursor);
-            // QApplication::restoreOverrideCursor();
-
             if (! myProject.downloadHourlyDataArkimet(var, firstDate, lastDate, true))
             {
                 QMessageBox::information(NULL, "Error!", "Error in hourly download");
@@ -987,3 +983,10 @@ bool downloadMeteoData()
     }
 }
 
+
+
+void MainWindow::on_actionPointsVisible_triggered()
+{
+    this->showPoints = ui->actionPointsVisible->isChecked();
+    redrawMeteoPoints();
+}
