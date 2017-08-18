@@ -427,27 +427,6 @@ bool DbArkimet::saveHourlyData()
 }
 
 
-
-/* void DbArkimet::insertOrUpdate(QString date, QString id_point, int id_variable, QString variable_name, double value, int frequency, QString flag)
-{
-    if (flag.left(1) == "1" || flag.left(1) == "054") {
-        // invalid data
-        value = NODATA;
-    }
-
-    if (value !=NODATA)
-    {
-        double valueRound = static_cast<double>(static_cast<int>(value*10+0.5))/10.0;
-        QString statement = QString("REPLACE INTO TmpHourlyData SELECT '%1', %2, %3, '%4', %5, %6 WHERE %6 > (SELECT COALESCE((");
-        statement = statement % "SELECT frequency FROM TmpHourlyData WHERE date_time = '%1' AND id_point = %2 AND variable_name = '%4'), 0))";
-        statement = statement.arg(date).arg(id_point).arg(id_variable).arg(variable_name).arg(valueRound).arg(frequency);
-
-        QSqlQuery qry = QSqlQuery(statement, _db);
-        qry.exec();
-    }
-} */
-
-
 int DbArkimet::arkIdmap(int arkId)
 {
     switch(arkId)
@@ -501,4 +480,26 @@ int DbArkimet::arkIdmap(int arkId)
     }
     return NODATA;
 }
+
+
+
+
+/* void DbArkimet::insertOrUpdate(QString date, QString id_point, int id_variable, QString variable_name, double value, int frequency, QString flag)
+{
+    if (flag.left(1) == "1" || flag.left(1) == "054") {
+        // invalid data
+        value = NODATA;
+    }
+
+    if (value !=NODATA)
+    {
+        double valueRound = static_cast<double>(static_cast<int>(value*10+0.5))/10.0;
+        QString statement = QString("REPLACE INTO TmpHourlyData SELECT '%1', %2, %3, '%4', %5, %6 WHERE %6 > (SELECT COALESCE((");
+        statement = statement % "SELECT frequency FROM TmpHourlyData WHERE date_time = '%1' AND id_point = %2 AND variable_name = '%4'), 0))";
+        statement = statement.arg(date).arg(id_point).arg(id_variable).arg(variable_name).arg(valueRound).arg(frequency);
+
+        QSqlQuery qry = QSqlQuery(statement, _db);
+        qry.exec();
+    }
+} */
 
