@@ -177,24 +177,6 @@ double IsothermalVaporConductivity(long i, double h, double myT)
 }
 
 /*!
- * \brief [J m-3 K-1] volumetric specific heat
- * Soil specific heat according to Campbell "Soil physics with basic" pp 31-32
- * \param i
- * \return result
- */
-double SoilSpecificHeat(long i)
-{   /* Soil specific heat according to Campbell "Soil physics with basic" pp 31-32
-	INPUT:
-	bulk density [Mg m-3]
-	volumetric water content [m3 m-3]
-	OUTPUT:
-	volumetric specific heat [J m-3 K-1]
-	*/
-
-    return (estimateBulkDensity(i) / 2.65 * HEAT_CAPACITY_MINERAL + theta_from_Se(myNode[i].Se ,i) * HEAT_CAPACITY_WATER);
-}
-
-/*!
  * \brief [J m-3 K-1] volumetric heat capacity
  * \param i
  * \param h
@@ -585,7 +567,7 @@ double AdvectiveFlux(long i, TlinkedNode *myLink)
     else
         TvapAdv = myNode[myLink->index].extra->Heat->T;
 
-    double fluxCourantVap = HEAT_CAPACITY_WATER / WATER_DENSITY * vapWaterFlux;
+    double fluxCourantVap = HEAT_CAPACITY_WATER_VAPOR * vapWaterFlux;
     fluxCourant += fluxCourantVap;
     advection += fluxCourantVap * TvapAdv;
 
