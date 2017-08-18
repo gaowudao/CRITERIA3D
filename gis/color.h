@@ -31,11 +31,6 @@
         enum type{EqualInterval, Gaussian, Quantile, Categories, UserDefinition };
     }
 
-    namespace colorScale
-    {
-        enum type{temperature, precipitation, solarRadiation, relativeHumidity, windIntensity, terrain, none};
-    }
-
     class Crit3DColor {
     public:
         short red;

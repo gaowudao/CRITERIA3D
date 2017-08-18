@@ -173,8 +173,9 @@ void MainWindow::on_actionLoadRaster_triggered()
     qDebug() << "loading raster";
     if (!myProject.loadRaster(fileName)) return;
 
-    // set default color scale
-    setRasterColorScale(colorScale::terrain, myProject.DTM.colorScale, ui->labelRasterScale);
+    // set DTM color scale
+    setColorScale(noMeteoTerrain, myProject.DTM.colorScale);
+    ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
     this->rasterLegend->colorScale = myProject.currentRaster->colorScale;
 
     this->ui->rasterOpacitySlider->setEnabled(true);
@@ -547,6 +548,39 @@ void MainWindow::on_actionVariableChoose_triggered()
 }
 
 
+void MainWindow::on_actionVariableQualitySpatial_triggered()
+{
+    myProject.quality->setSpatialControl(ui->actionVariableQualitySpatial->isChecked());
+
+    updateVariable();
+}
+
+
+void MainWindow::on_actionInterpolation_triggered()
+{
+
+    std::string myError;
+    Crit3DInterpolationSettings interpolationSettings;
+
+    formInfo myInfo;
+    myInfo.start("Interpolation...", 0);
+
+    if (interpolationRaster(myProject.getCurrentVariable(), &interpolationSettings,
+                &(myProject.dataRaster), myProject.DTM, myProject.getCurrentTime(), &myError))
+    {
+        myProject.currentRaster = &(myProject.dataRaster);
+        setColorScale(myProject.getCurrentVariable(), myProject.currentRaster->colorScale);
+        QString myString = QString::fromStdString(getVariableString(myProject.getCurrentVariable()));
+        ui->labelRasterScale->setText(myString);
+        this->rasterLegend->colorScale = myProject.currentRaster->colorScale;
+    }
+    else
+        QMessageBox::information(NULL, "Error!", QString::fromStdString(myError));
+
+    myInfo.close();
+}
+
+
 void MainWindow::updateVariable()
 {
     // FREQUENCY
@@ -600,31 +634,8 @@ void MainWindow::updateVariable()
         }
     }
 
-    //VARIABLE
-    if ((myProject.currentVariable == airTemperature)
-            || (myProject.currentVariable == dailyAirTemperatureAvg))
-        this->ui->labelVariable->setText("Avg. air temperature °C");
-    else if ((myProject.currentVariable == airHumidity)
-            || (myProject.currentVariable == dailyAirHumidityAvg))
-        this->ui->labelVariable->setText("Avg. relative humidity %");
-    else if ((myProject.currentVariable == dailyPrecipitation)
-            ||  (myProject.currentVariable == precipitation))
-        this->ui->labelVariable->setText("Precipitation mm");
-    else if (myProject.currentVariable == dailyAirTemperatureMax)
-        this->ui->labelVariable->setText("Max. air temperature °C");
-    else if (myProject.currentVariable == dailyAirTemperatureMin)
-        this->ui->labelVariable->setText("Min. air temperature °C");
-    else if (myProject.currentVariable == dailyGlobalRadiation)
-        this->ui->labelVariable->setText("Solar radiation MJ m-2");
-    else if (myProject.currentVariable == dailyAirHumidityMax)
-        this->ui->labelVariable->setText("Max. relative humidity %");
-    else if (myProject.currentVariable == dailyAirHumidityMin)
-        this->ui->labelVariable->setText("Min. relative humidity %");
-    else if (myProject.currentVariable == globalIrradiance)
-        this->ui->labelVariable->setText("Solar irradiance W m-2");
-
-    else
-        this->ui->labelVariable->setText("None");
+    std::string myString = getVariableString(myProject.currentVariable);
+    ui->labelVariable->setText(QString::fromStdString(myString));
 
     redrawMeteoPoints();
 }
@@ -697,7 +708,7 @@ void MainWindow::redrawMeteoPoints()
     myProject.colorScalePoints->setRange(minimum, maximum);
     roundColorScale(myProject.colorScalePoints, 4, true);
 
-    setColorScale(myProject.colorScalePoints, myProject.currentVariable);
+    setColorScale(myProject.currentVariable, myProject.colorScalePoints);
 
     Crit3DColor *myColor;
     for (int i = 0; i < myProject.nrMeteoPoints; i++)
@@ -782,9 +793,12 @@ void MainWindow::on_rasterScaleButton_clicked()
         return;
     }
 
-    colorScale::type myScale = chooseColorScale();
-    if (myScale != colorScale::none)
-        setRasterColorScale(myScale, myProject.currentRaster->colorScale, ui->labelRasterScale);
+    meteoVariable myVar = chooseColorScale();
+    if (myVar != noMeteoVar)
+    {
+        setColorScale(myVar, myProject.currentRaster->colorScale);
+        ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myVar)));
+    }
 }
 
 
@@ -973,73 +987,3 @@ bool downloadMeteoData()
     }
 }
 
-
-void setRasterColorScale(colorScale::type myScale, Crit3DColorScale *myColorScale, QLabel *myLabel)
-{
-    switch(myScale)
-    {
-    case colorScale::temperature:
-        setTemperatureScale(myColorScale);
-        myLabel->setText("Air temperature  °C");
-        break;
-
-    case colorScale::precipitation:
-        setPrecipitationScale(myColorScale);
-        myLabel->setText("Precipitation  mm");
-        break;
-
-    case colorScale::solarRadiation:
-        setRadiationScale(myColorScale);
-        myLabel->setText("Solar irradiance W m-2");
-        break;
-
-    case colorScale::relativeHumidity:
-        setRelativeHumidityScale(myColorScale);
-        myLabel->setText("Relative humidity  %");
-        break;
-
-    case colorScale::windIntensity:
-        setWindIntensityScale(myColorScale);
-        myLabel->setText("Wind intensity  m s-1");
-        break;
-
-    case colorScale::terrain:
-        setDefaultDTMScale(myColorScale);
-        myLabel->setText("Digital Terrain Map  m");
-
-    default:
-        setDefaultDTMScale(myColorScale);
-        myLabel->setText("Digital Terrain Map  m");
-    }
-}
-
-
-void MainWindow::on_actionVariableQualitySpatial_triggered()
-{
-    myProject.quality->setSpatialControl(ui->actionVariableQualitySpatial->isChecked());
-
-    updateVariable();
-}
-
-
-void MainWindow::on_actionInterpolation_triggered()
-{
-
-    std::string myError;
-    Crit3DInterpolationSettings interpolationSettings;
-
-    formInfo myInfo;
-    myInfo.start("Interpolation.. ", 0);
-
-    if (interpolationRaster(myProject.getCurrentVariable(), &interpolationSettings,
-                &(myProject.dataRaster), myProject.DTM, myProject.getCurrentTime(), &myError))
-    {
-        myProject.currentRaster = &(myProject.dataRaster);
-        this->rasterLegend->colorScale = myProject.currentRaster->colorScale;
-        this->update();
-    }
-    else
-        QMessageBox::information(NULL, "Error!", QString::fromStdString(myError));
-
-    myInfo.close();
-}

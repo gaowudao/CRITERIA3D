@@ -129,7 +129,6 @@
     };
 
     bool downloadMeteoData();
-    void setRasterColorScale(colorScale::type myScale, Crit3DColorScale *myColorScale, QLabel *myLabel);
 
 
 #endif // MAINWINDOW_H

@@ -117,7 +117,7 @@ bool addInterpolationPoint(int myIndex, float myValue, float myX, float myY, flo
 
 void printInterpolationData()
 {
-    for (long i = 0; i < interpolationPointList.size() ; i++)
+    for (unsigned long i = 0; i < interpolationPointList.size() ; i++)
     {
         qDebug() << i << interpolationPointList[i].value;
     }
@@ -126,7 +126,7 @@ void printInterpolationData()
 
 void assignDistances(vector <Crit3DInterpolationDataPoint> *myPoints, float x, float y, float z)
 {
-    for (long i = 0; i < myPoints->size() ; i++)
+    for (unsigned long i = 0; i < myPoints->size() ; i++)
     {
         myPoints->at(i).distance = gis::computeDistance(x, y, float((myPoints->at(i)).point->utm.x) , float((myPoints->at(i)).point->utm.y));
         myPoints->at(i).deltaZ = float(fabs(myPoints->at(i).point->z - z));

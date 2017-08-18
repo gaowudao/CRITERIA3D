@@ -54,7 +54,7 @@
                         windIntensity, dailyWindIntensityAvg, windDirection, windDirectionPrevailing,
                         wetnessDuration, atmPressure, atmTransmissivity,
                         potentialEvapotranspiration, dailyPotentialEvapotranspiration, actualEvaporation,
-                        dailyWaterTableDepth, noMeteoVar};
+                        dailyWaterTableDepth, noMeteoTerrain, noMeteoVar};
 
     enum frequencyType {hourly, daily, monthly, noFrequency};
 
@@ -86,7 +86,9 @@
 
     meteoVariable getDefaultMeteoVariable(int myVar);
 
-    bool setColorScale(Crit3DColorScale *colorScale, meteoVariable variable);
+    bool setColorScale(meteoVariable variable, Crit3DColorScale *colorScale);
+
+    std::string getVariableString(meteoVariable myVar);
 
 
 #endif // METEO_H
