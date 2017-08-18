@@ -184,6 +184,9 @@
     #define HEAT_CAPACITY_SNOW 2100000
     #define HEAT_CAPACITY_MINERAL 2310000
 
+    // [J kg-1 K-1] specific heat
+    #define HEAT_CAPACITY_WATER_VAPOR 1996
+
     // [J mol-1 K-1] molar specific heat of air at constant pressure
     #define HEAT_CAPACITY_AIR_MOLAR 29.3
 
