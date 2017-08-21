@@ -22,7 +22,7 @@ LIBS += -L../interpolation/debug -linterpolation
 LIBS += -L../MapGraphics/debug -lMapGraphics
 
 INCLUDEPATH += C:/netcdf/include
-LIBS += -LC:/netcdf/bin -lnetcdf -lhdf5
+LIBS += -LC:/netcdf/lib -lnetcdf -lhdf5
 
 
 SOURCES += main.cpp\
