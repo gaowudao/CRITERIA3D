@@ -21,6 +21,9 @@ LIBS += -L../quality/debug -lquality
 LIBS += -L../interpolation/debug -linterpolation
 LIBS += -L../MapGraphics/debug -lMapGraphics
 
+INCLUDEPATH += C:/netcdf/include
+LIBS += -LC:/netcdf/bin -lnetcdf -lhdf5
+
 
 SOURCES += main.cpp\
     mainwindow.cpp \

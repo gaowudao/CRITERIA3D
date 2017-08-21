@@ -8,6 +8,8 @@
 #include "commonConstants.h"
 #include "quality.h"
 
+#include <netcdf.h>
+
 
 Project::Project()
 {
@@ -22,6 +24,25 @@ Project::Project()
     colorScalePoints = new Crit3DColorScale();
     dbMeteoPoints = NULL;
     currentRaster = &DTM;
+}
+
+
+
+int provaNetcdf()
+{
+    int ncid, retValue;
+    QString fileName = "simple_xy.nc";
+
+    /* Open the file. NC_NOWRITE tells netCDF we want read-only access
+    * to the file.*/
+   if ((retValue = nc_open(fileName.toStdString().data(), NC_NOWRITE, &ncid)))
+      qDebug() << nc_strerror(retValue);
+
+   /* Close the file, freeing all resources. */
+   if ((retValue = nc_close(ncid)))
+      qDebug() << nc_strerror(retValue);
+
+   return 0;
 }
 
 
