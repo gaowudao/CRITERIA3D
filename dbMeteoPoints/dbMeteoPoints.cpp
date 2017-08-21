@@ -38,6 +38,7 @@ void DbMeteoPoints::closeDatabase()
 {
     if ((_db.isValid()) && (_db.isOpen()))
     {
+        _db.removeDatabase(_db.connectionName());
         _db.close();
     }
 }
@@ -164,10 +165,11 @@ QDateTime DbMeteoPoints::getLastDay(frequencyType frequency)
     }
 
     QDateTime date;
-    QString dateStr;
+    QString dateStr, statement;
     foreach (QString table, tables)
     {
-        QString statement = QString( "SELECT date_time FROM `%1` ORDER BY datetime(date_time) DESC Limit 1").arg(table);
+        //statement = QString( "SELECT date_time FROM `%1` ORDER BY datetime(date_time) DESC Limit 1").arg(table);
+        statement = QString( "SELECT MAX(date_time) FROM `%1` AS dateTime").arg(table);
         if( !qry.exec(statement) )
         {
             qDebug() << qry.lastError();
@@ -223,9 +225,11 @@ QDateTime DbMeteoPoints::getFirstDay(frequencyType frequency)
         }
     }
 
+    QString statement;
     foreach (QString table, tables)
     {
-        QString statement = QString( "SELECT date_time FROM `%1` ORDER BY datetime(date_time) ASC Limit 1").arg(table);
+        //statement = QString( "SELECT date_time FROM `%1` ORDER BY datetime(date_time) ASC Limit 1").arg(table);
+        statement = QString( "SELECT MIN(date_time) FROM `%1` AS dateTime").arg(table);
         if( !qry.exec(statement) )
         {
             qDebug() << qry.lastError();
@@ -271,7 +275,7 @@ bool DbMeteoPoints::getDailyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3
 
     if( !myQuery.exec(statement) )
     {
-        qDebug() << myQuery.lastError();
+        //qDebug() << myQuery.lastError();
         return false;
     }
     else

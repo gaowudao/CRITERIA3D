@@ -2105,7 +2105,7 @@
       <string>&amp;New DB meteo points</string>
      </property>
      <addaction name="separator"/>
-     <addaction name="actionMeteoPointsArkimet"/>
+     <addaction name="actionNewMeteoPointsArkimet"/>
      <addaction name="actionMeteoPointsCSV"/>
      <addaction name="separator"/>
     </widget>
@@ -2207,7 +2207,7 @@
     <string>&amp;Download meteo data...</string>
    </property>
   </action>
-  <action name="actionMeteoPointsArkimet">
+  <action name="actionNewMeteoPointsArkimet">
    <property name="text">
     <string>from Arkimet...</string>
    </property>

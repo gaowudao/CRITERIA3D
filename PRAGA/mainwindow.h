@@ -40,7 +40,7 @@
 
         void on_actionLoadRaster_triggered();
 
-        void on_actionMeteoPointsArkimet_triggered();
+        void on_actionNewMeteoPointsArkimet_triggered();
 
         void on_actionOpen_meteo_points_DB_triggered();
 

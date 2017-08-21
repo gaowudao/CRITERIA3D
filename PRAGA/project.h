@@ -66,7 +66,7 @@
 
         bool loadlastMeteoData();
         void closeMeteoPointsDB();
-        bool loadMeteoPointsDB(QString dbName, bool showInfo);
+        bool loadMeteoPointsDB(QString dbName);
         bool getMeteoPointSelected(int i);
         bool updateMeteoPointsData();
     };

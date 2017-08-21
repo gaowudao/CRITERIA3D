@@ -45,7 +45,8 @@ bool Download::getPointProperties(QStringList datasetList)
     request.setUrl(QUrl("http://meteozen.metarpa/simcstations/api/v1/stations"));
     request.setRawHeader("Authorization", _authorization);
 
-    QNetworkReply* reply = manager->get(request);  // GET
+    // GET
+    QNetworkReply* reply = manager->get(request);
 
     loop.exec();
 
@@ -68,26 +69,22 @@ bool Download::getPointProperties(QStringList datasetList)
         {
             QJsonArray jsonArr = doc.array();
 
-            for(int index=0; index<jsonArr.size(); ++index)
+            for(int index = 0; index < jsonArr.size(); ++index)
             {
                 QJsonObject obj = jsonArr[index].toObject();
 
-                foreach(QString item, _datasetsList)
-                {
-                    QJsonValue jsonDataset = obj.value("network");
+                QJsonValue jsonDataset = obj.value("network");
 
-                    if (jsonDataset.isUndefined())
-                        qDebug() << "Key id does not exist";
-                    else if (!jsonDataset.isString())
-                        qDebug() << "Value not string";
-                    else
-                    {
+                if (jsonDataset.isUndefined())
+                    qDebug() << "jsonDataset: key id does not exist";
+                else if (!jsonDataset.isString())
+                    qDebug() << "jsonDataset: value is not string";
+                else
+                    foreach(QString item, _datasetsList)
                         if (jsonDataset == item)
                         {
                             this->downloadMetadata(obj);
                         }
-                    }
-                }
             }
         }
          else

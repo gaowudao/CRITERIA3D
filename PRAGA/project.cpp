@@ -412,14 +412,11 @@ void Project::closeMeteoPointsDB()
 }
 
 
-bool Project::loadMeteoPointsDB(QString dbName, bool showInfo)
+bool Project::loadMeteoPointsDB(QString dbName)
 {
     if (dbName == "") return false;
 
     closeMeteoPointsDB();
-
-    formInfo myInfo;
-    if (showInfo) myInfo.start("Load " + dbName, 0);
 
     dbMeteoPoints = new DbMeteoPoints(dbName);
     QList<Crit3DMeteoPoint> listMeteoPoints = dbMeteoPoints->getPropertiesFromDb();
@@ -430,8 +427,6 @@ bool Project::loadMeteoPointsDB(QString dbName, bool showInfo)
         meteoPoints[i] = listMeteoPoints[i];
 
     listMeteoPoints.clear();
-
-    if (showInfo) myInfo.close();
 
     return true;
 }

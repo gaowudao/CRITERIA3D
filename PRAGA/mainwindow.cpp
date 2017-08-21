@@ -77,15 +77,15 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
     {
         case praga :
             ui->actionDownload_meteo_data->setVisible(true);
-            ui->actionMeteoPointsArkimet->setVisible(true);
+            ui->actionNewMeteoPointsArkimet->setVisible(true);
             break;
         case criteria1D:
             ui->actionDownload_meteo_data->setVisible(false);
-            ui->actionMeteoPointsArkimet->setVisible(false);
+            ui->actionNewMeteoPointsArkimet->setVisible(false);
             break;
         case criteria3D :
             ui->actionDownload_meteo_data->setVisible(false);
-            ui->actionMeteoPointsArkimet->setVisible(false);
+            ui->actionNewMeteoPointsArkimet->setVisible(false);
             break;
     }
 }
@@ -198,7 +198,7 @@ void MainWindow::on_actionLoadRaster_triggered()
 }
 
 
-void MainWindow::on_actionMeteoPointsArkimet_triggered()
+void MainWindow::on_actionNewMeteoPointsArkimet_triggered()
 {
     resetMeteoPoints();
 
@@ -262,25 +262,19 @@ void MainWindow::on_actionMeteoPointsArkimet_triggered()
                 myDbArkimet->setDatasetsActive(datasetSelected);
                 QStringList datasets = datasetSelected.remove("'").split(",");
 
-                QApplication::setOverrideCursor(Qt::WaitCursor);
+                formInfo myInfo;
+                myInfo.start("download points properties...", 0);
+                    if (myDownload->getPointProperties(datasets))
+                    {
+                        myProject.loadMeteoPointsDB(dbName);
+                        this->addMeteoPoints();
+                    }
+                    else
+                    {
+                        QMessageBox::information(NULL, "Network Error!", "Error in function getPointProperties");
+                    }
 
-                if (myDownload->getPointProperties(datasets))
-                {
-                    QApplication::restoreOverrideCursor();
-
-                    myProject.loadMeteoPointsDB(dbName, true);
-
-                    this->addMeteoPoints();
-                }
-                else
-                {
-                    QApplication::restoreOverrideCursor();
-
-                    QMessageBox *msgBox = new QMessageBox(this);
-                    msgBox->setText("Network Error");
-                    msgBox->exec();
-                    delete msgBox;
-                }
+                myInfo.close();
             }
             else
             {
@@ -527,14 +521,12 @@ QPoint MainWindow::getMapPoint(QPoint* point) const
 
 void MainWindow::resetMeteoPoints()
 {
-    datasetCheckbox.clear();
-
     for (int i = 0; i < this->pointList.size(); i++)
-    {
         this->mapView->scene()->removeObject(this->pointList[i]);
-    }
-    qDeleteAll(this->pointList.begin(), this->pointList.end());
+
     this->pointList.clear();
+
+    datasetCheckbox.clear();
 
     this->myRubberBand = NULL;
 }
@@ -742,7 +734,7 @@ bool MainWindow::loadMeteoPointsDB(QString dbName)
 {
     this->resetMeteoPoints();
 
-    if (!myProject.loadMeteoPointsDB(dbName, true))
+    if (!myProject.loadMeteoPointsDB(dbName))
         return false;
 
     this->addMeteoPoints();
