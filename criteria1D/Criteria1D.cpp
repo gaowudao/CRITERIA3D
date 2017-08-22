@@ -241,7 +241,7 @@ bool Criteria1D::loadMOSESMeteo(QString idMeteo, QString idForecast, std::string
         // Read forecast data
         if (! readMOSESDailyData(&query, &meteoPoint, myError)) return false;
 
-        // Watertable data
+        // TODO Watertable data
         // check last watertable data (last 15 days)
         // se presente: estendi il dato sino ultimo giorno
     }
@@ -249,6 +249,20 @@ bool Criteria1D::loadMOSESMeteo(QString idMeteo, QString idForecast, std::string
     return true;
 }
 
+
+// alloc memory for annual values of irrigation
+void Criteria1D::initializeSeasonalForecast(const Crit3DDate& firstDate, const Crit3DDate& lastDate)
+{
+    if (isSeasonalForecast)
+    {
+        if (seasonalForecasts != NULL) free(seasonalForecasts);
+
+        nrSeasonalForecasts = lastDate.year - firstDate.year +1;
+        seasonalForecasts = (double*) calloc(nrSeasonalForecasts, sizeof(double));
+        for (int i = 0; i < nrSeasonalForecasts; i++)
+            seasonalForecasts[i] = 0.0;
+    }
+}
 
 
 bool Criteria1D::createOutputTable(std::string* myError)

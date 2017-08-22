@@ -8,7 +8,7 @@
         #include "root.h"
     #endif
 
-    enum speciesType {HERBACEOUS_ANNUAL, HERBACEOUS_PERENNIAL, HORTICULTURAL, GRASS, GRASS_FIRST_YEAR, FALLOW, FRUIT_TREE};
+    enum speciesType {HERBACEOUS_ANNUAL, HERBACEOUS_PERENNIAL, HORTICULTURAL, GRASS, FALLOW, FRUIT_TREE};
 
     class Crit3DCrop
     {
@@ -27,6 +27,7 @@
          * \brief crop cycle
          */
         int sowingDoy;
+        int currentSowingDoy;
         int doyStartSenescence;
         int plantCycle;
         double LAImin, LAImax, LAIgrass;
@@ -65,13 +66,17 @@
         double lastWaterStress;
 
         Crit3DCrop();
+
+        bool isWaterSurplusResistant();
+        int getDaysFromTypicalSowing(int myDoy);
+        int getDaysFromCurrentSowing(int myDoy);
+        bool isInsideTypicalCycle(int myDoy);
+        bool isPluriannual();
     };
 
 
     speciesType getCropType(std::string cropType);
-    bool isPluriannual(speciesType myType);
-    bool isGrass(speciesType myType);
-    bool isWaterSurplusResistant(Crit3DCrop* myCrop);
+
     double computeDegreeDays(double myTmin, double myTmax, double myLowerThreshold, double myUpperThreshold);
 
 

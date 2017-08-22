@@ -86,7 +86,7 @@ namespace root
             std::cout << "Warning: input root profile deeper than soil profile\n";
         }
 
-        if (isPluriannual(myCrop->type))
+        if (myCrop->isPluriannual())
         {
             rootLength = myCrop->roots.rootDepthMax - myCrop->roots.rootDepthMin;
         }

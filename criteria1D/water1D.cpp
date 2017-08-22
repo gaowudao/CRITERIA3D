@@ -338,7 +338,7 @@ bool computeSurfaceRunoff(Criteria1D* myCase)
     double roughness;            // [mm]
 
     // very rough solution for taking into account tillage and others operations
-    if (isPluriannual(myCase->myCrop.type))
+    if (myCase->myCrop.isPluriannual())
         clodHeight = 0.0;
     else
         clodHeight = 5.0;

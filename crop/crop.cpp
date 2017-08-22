@@ -45,6 +45,7 @@
         isLiving = false;
         isEmerged = false;
         sowingDoy = NODATA;
+        currentSowingDoy = NODATA;
         doyStartSenescence = NODATA;
         plantCycle = NODATA;
         LAImin = NODATA;
@@ -84,18 +85,43 @@
         lastWaterStress = NODATA;
     }
 
-    bool isPluriannual(speciesType myType)
+
+    // TODO check on kiwifruit
+    bool Crit3DCrop::isWaterSurplusResistant()
     {
-        return (myType == HERBACEOUS_PERENNIAL ||
-                myType == GRASS ||
-                myType == FALLOW ||
-                myType == FRUIT_TREE);
+        return (type == GRASS || type == FALLOW || idCrop == "KIWIFRUIT" || idCrop == "RICE");
     }
 
-    bool isGrass(speciesType myType)
+
+    int Crit3DCrop::getDaysFromTypicalSowing(int myDoy)
     {
-        return (myType == GRASS || myType == GRASS_FIRST_YEAR);
+        return (myDoy - sowingDoy) % 365;
     }
+
+
+    int Crit3DCrop::getDaysFromCurrentSowing(int myDoy)
+    {
+        if (currentSowingDoy != NODATA)
+            return (myDoy - currentSowingDoy) % 365;
+        else
+            return getDaysFromTypicalSowing(myDoy);
+    }
+
+
+    bool Crit3DCrop::isInsideTypicalCycle(int myDoy)
+    {
+        return ((myDoy >= sowingDoy) && (getDaysFromTypicalSowing(myDoy) < plantCycle));
+    }
+
+
+    bool Crit3DCrop::isPluriannual()
+    {
+        return (type == HERBACEOUS_PERENNIAL ||
+                type == GRASS ||
+                type == FALLOW ||
+                type == FRUIT_TREE);
+    }
+
 
     speciesType getCropType(std::string cropType)
     {
@@ -111,7 +137,7 @@
         else if (cropType == "grass")
             return GRASS;
         else if (cropType == "grass_first_year")
-            return GRASS_FIRST_YEAR;
+            return GRASS;
         else if (cropType == "fallow")
             return FALLOW;
         else if (cropType == "tree", "fruit_tree")
@@ -120,15 +146,12 @@
             return HERBACEOUS_ANNUAL;
     }
 
-    // TODO check on kiwifruit
-    bool isWaterSurplusResistant(Crit3DCrop* myCrop)
-    {
-        return (isGrass(myCrop->type) || myCrop->type == FALLOW || myCrop->idCrop == "KIWIFRUIT" || myCrop->idCrop == "RICE");
-    }
-
     double computeDegreeDays(double myTmin, double myTmax, double myLowerThreshold, double myUpperThreshold)
     {
         return maxValue((myTmin + minValue(myTmax, myUpperThreshold)) / 2 - myLowerThreshold, 0);
     }
+
+
+
 
 

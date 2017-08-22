@@ -10,10 +10,9 @@
     #define MIN_EMERGENCE_DAYS 7
     #define MAX_EVAPORATION_DEPTH 0.15
 
-    bool initializeCrop(Criteria1D* myCase);
-    bool resetCrop(Criteria1D* myCase);
-    bool updateCrop(Criteria1D* myCase, std::string* myError, Crit3DDate myDate,
-                    bool isFirstSimulationDay, double tmin, double tmax);
+    void initializeCrop(Criteria1D* myCase, int currentDoy);
+    void resetCrop(Crit3DCrop *myCrop, int nrLayers);
+    bool updateCrop(Criteria1D* myCase, std::string* myError, Crit3DDate myDate, double tmin, double tmax, float waterTableDepth);
 
     float cropIrrigationDemand(Criteria1D* myCase, float myPrec, float nextPrec);
     bool cropWaterDemand(Criteria1D* myCase);
@@ -22,11 +21,10 @@
     bool evaporation(Criteria1D* myCase);
     bool cropTranspiration(Criteria1D* myCase);
 
-    bool isInsideCycle(Crit3DCrop* myCrop, int myDoy);
-    bool isSowingDoy(Crit3DCrop* myCrop, int myDoy);
-
     double getTotalEasyWater(Criteria1D* myCase);
     double getReadilyAvailableWater(Criteria1D* myCase);
     double getSoilWaterDeficit(Criteria1D* myCase);
+
+    bool updateCropWaterStressSensibility(Crit3DCrop* myCrop);
 
 #endif // CROPPINGSYSTEM

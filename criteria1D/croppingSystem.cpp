@@ -14,7 +14,7 @@ int daysSinceIrrigation;
 
 
 // initialization of crop
-bool initializeCrop(Criteria1D* myCase)
+void initializeCrop(Criteria1D* myCase, int currentDoy)
 {    
     // initialize root density
     if (myCase->myCrop.roots.rootDensity != NULL) free(myCase->myCrop.roots.rootDensity);
@@ -40,56 +40,60 @@ bool initializeCrop(Criteria1D* myCase)
 
     LAI_StartSenescence = NODATA;
     daysSinceIrrigation = NODATA;
-    myCase->myCrop.lastWaterStress = NODATA;
 
-    return true;
+    myCase->myCrop.lastWaterStress = NODATA;
+    myCase->myCrop.currentSowingDoy = NODATA;
+
+    // is crop living?
+    if (myCase->myCrop.isPluriannual())
+        myCase->myCrop.isLiving = true;
+    else
+    {
+        myCase->myCrop.isLiving = myCase->myCrop.isInsideTypicalCycle(currentDoy);
+
+        if (myCase->myCrop.isLiving == true)
+            myCase->myCrop.currentSowingDoy = myCase->myCrop.sowingDoy;
+    }
+
+    // reset crop
+    resetCrop(&(myCase->myCrop), myCase->nrLayers);
 }
+
 
 // reset of (already initialized) crop
 // TODO: partenza intelligente (usando sowing doy e ciclo)
-bool resetCrop(Criteria1D* myCase)
+void resetCrop(Crit3DCrop* myCrop, int nrLayers)
 {
     // roots
-    if (! isPluriannual(myCase->myCrop.type))
+    if (! myCrop->isPluriannual())
     {
-        myCase->myCrop.roots.rootDensity[0] = 0.0;
-        for (int i = 1; i < myCase->nrLayers; i++)
-            myCase->myCrop.roots.rootDensity[i] = 0;
+        myCrop->roots.rootDensity[0] = 0.0;
+        for (int i = 1; i < nrLayers; i++)
+            myCrop->roots.rootDensity[i] = 0;
     }
 
-    myCase->myCrop.isEmerged = false;
+    myCrop->isEmerged = false;
 
-    if (myCase->myCrop.isLiving)
+    if (myCrop->isLiving)
     {
-        myCase->myCrop.degreeDays = 0;
-        myCase->myCrop.waterStressSensibility = 0;
+        myCrop->degreeDays = 0;
+        myCrop->waterStressSensibility = 0;
         // LAI
-        myCase->myCrop.LAI = myCase->myCrop.LAImin;
-        if (myCase->myCrop.type == FRUIT_TREE)
-            myCase->myCrop.LAI += myCase->myCrop.LAIgrass;
+        myCrop->LAI = myCrop->LAImin;
+        if (myCrop->type == FRUIT_TREE)
+            myCrop->LAI += myCrop->LAIgrass;
     }
     else
     {
-        myCase->myCrop.degreeDays = NODATA;
-        myCase->myCrop.LAI = NODATA;
-        myCase->myCrop.waterStressSensibility = NODATA;
+        myCrop->degreeDays = NODATA;
+        myCrop->LAI = NODATA;
+        myCrop->waterStressSensibility = NODATA;
+        myCrop->currentSowingDoy = NODATA;
     }
 
     LAI_StartSenescence = NODATA;
-    myCase->myCrop.lastWaterStress = 0;
+    myCrop->lastWaterStress = 0;
 
-    return true;
-}
-
-bool isInsideCycle(Crit3DCrop* myCrop, int myDoy)
-{
-    return (((myDoy >= myCrop->sowingDoy)
-             && ((myDoy - myCrop->sowingDoy) % 365) < myCrop->plantCycle));
-}
-
-bool isSowingDoy(Crit3DCrop* myCrop, int myDoy)
-{
-    return ((myDoy == myCrop->sowingDoy) || (myDoy == myCrop->sowingDoy + 365));
 }
 
 
@@ -122,7 +126,7 @@ bool updateLai(Criteria1D* myCase, int myDoy)
     double degreeDaysLai = 0;
     double myLai = 0;
 
-    if (! isPluriannual(myCase->myCrop.type))
+    if (! myCase->myCrop.isPluriannual())
     {
         if (! myCase->myCrop.isEmerged)
         {
@@ -138,8 +142,6 @@ bool updateLai(Criteria1D* myCase, int myDoy)
         }
         else
         {
-
-
             degreeDaysLai = myCase->myCrop.degreeDays - myCase->myCrop.degreeDaysEmergence;
         }
 
@@ -148,11 +150,10 @@ bool updateLai(Criteria1D* myCase, int myDoy)
     }
     else
     {
-        if (isGrass(myCase->myCrop.type))
+        if (myCase->myCrop.type == GRASS)
             // grass cut
             if (myCase->myCrop.degreeDays >= myCase->myCrop.degreeDaysIncrease)
-                if (! resetCrop(myCase))
-                    return false;
+                resetCrop(&(myCase->myCrop), myCase->nrLayers);
 
         if (myCase->myCrop.degreeDays > 0)
             myLai = leafDevelopment::getLAICriteria(&(myCase->myCrop), myCase->myCrop.degreeDays);
@@ -191,22 +192,21 @@ bool updateRoots(Criteria1D* myCase)
 }
 
 
-bool updateCropWaterStressSensibility(Crit3DCrop* myCrop, int myDoy)
+bool updateCropWaterStressSensibility(Crit3DCrop* myCrop)
 {
-    if (myCrop->idCrop == "") return false;
+    if ((myCrop->idCrop == "") || (! myCrop->isLiving))
+        return false;
 
-    if (isPluriannual(myCrop->type) || isInsideCycle(myCrop, myDoy))
-    {
-        double avgSensibility = (myCrop->frac_read_avail_water_max + myCrop->frac_read_avail_water_min) / 2.0;
-        double diffSensibility = myCrop->frac_read_avail_water_max - myCrop->frac_read_avail_water_min;
+    double avgSensibility = (myCrop->frac_read_avail_water_max + myCrop->frac_read_avail_water_min) / 2.0;
+    double diffSensibility = myCrop->frac_read_avail_water_max - myCrop->frac_read_avail_water_min;
 
-        double degreeDaysTot = myCrop->degreeDaysDecrease + myCrop->degreeDaysIncrease + myCrop->degreeDaysEmergence;
-        if (degreeDaysTot > 0)
-            myCrop->waterStressSensibility = avgSensibility - (diffSensibility / 2.0) * cos(6.28 * (myCrop->degreeDays - myCrop->degreeDaysMaxSensibility) / degreeDaysTot);
-    }
+    double degreeDaysTot = myCrop->degreeDaysDecrease + myCrop->degreeDaysIncrease + myCrop->degreeDaysEmergence;
+    if (degreeDaysTot > 0)
+        myCrop->waterStressSensibility = avgSensibility - (diffSensibility / 2.0) * cos(6.28 * (myCrop->degreeDays - myCrop->degreeDaysMaxSensibility) / degreeDaysTot);
 
     return true;
 }
+
 
 double getTotalEasyWater(Criteria1D* myCase)
 {
@@ -457,7 +457,7 @@ bool cropTranspiration(Criteria1D* myCase)
     bool* isStressed = (bool*) calloc(myCase->nrLayers, sizeof(bool));
     for (i=0; i < myCase->nrLayers; i++) isStressed[i] = false;
 
-    if (isWaterSurplusResistant(&(myCase->myCrop)))
+    if (myCase->myCrop.isWaterSurplusResistant())
         WSS = 0.0;
     else
         WSS = 0.5;
@@ -608,7 +608,7 @@ bool cropTranspiration_old(Criteria1D* myCase)
     // from cm to mm
     MUR = maxValue(10.0 * (myCase->myCrop.psiLeaf - avgPSI) / (rPlant + rRoot), 0.0);
 
-    if (isWaterSurplusResistant(&(myCase->myCrop)))
+    if (myCase->myCrop.isWaterSurplusResistant())
         WSS = 0.0;
     else
         WSS = 0.5;
@@ -694,18 +694,15 @@ bool cropTranspiration_old(Criteria1D* myCase)
 }
 
 
-bool updateCrop(Criteria1D* myCase, std::string* myError, Crit3DDate myDate,
+/*bool updateCrop(Criteria1D* myCase, std::string* myError, Crit3DDate myDate,
                 bool isFirstSimulationDay, double tmin, double tmax)
 {
     *myError = "";
 
-    if (myCase->myCrop.idCrop == "") return false;
-
-    bool isCropToReset = false;
+    if (myCase->myCrop.idCrop == "")
+        return false;
 
     int currentDoy = getDoyFromDate(myDate);
-
-    QString nextCrop = "";
 
     // reset pluriannual
     if (isPluriannual(myCase->myCrop.type))
@@ -713,13 +710,13 @@ bool updateCrop(Criteria1D* myCase, std::string* myError, Crit3DDate myDate,
         if (! myCase->myCrop.isLiving)
         {
             myCase->myCrop.isLiving = true;
-            isCropToReset = true;
+            resetCrop(myCase);
         }
 
         // check end of year for pluriannual
-        if(((myCase->meteoPoint.latitude >= 0) && (myDate.month == 1) && (myDate.day == 1))
-        || ((myCase->meteoPoint.latitude < 0) && (myDate.month == 7) && (myDate.day == 1)))
-            isCropToReset = true;
+        if((myCase->meteoPoint.latitude >= 0 && myDate.month == 1 && myDate.day == 1)
+        || (myCase->meteoPoint.latitude < 0 && myDate.month == 7 && myDate.day == 1))
+            resetCrop(myCase);
     }
     else
     {
@@ -727,28 +724,11 @@ bool updateCrop(Criteria1D* myCase, std::string* myError, Crit3DDate myDate,
         {
             if (myCase->myCrop.isLiving)
             {
-                // forced harvest (out of degree days)
-                if (myCase->myCrop.type != GRASS_FIRST_YEAR)
+                if (myCase->myCrop.degreeDays > (myCase->myCrop.degreeDaysIncrease
+                                        + myCase->myCrop.degreeDaysDecrease + myCase->myCrop.degreeDaysEmergence))
                 {
-                    if (myCase->myCrop.degreeDays > (myCase->myCrop.degreeDaysIncrease + myCase->myCrop.degreeDaysDecrease + myCase->myCrop.degreeDaysEmergence))
-                    {
-                        myCase->myCrop.isLiving = false;
-                        isCropToReset = true;
-                    }
-                }
-                else
-                {
-                    // first grass cut
-                    if (myCase->myCrop.degreeDays >= myCase->myCrop.degreeDaysIncrease)
-                    {
-                        // alfalfa
-                        if (myCase->myCrop.idCrop == "ALFALFA1Y")
-                        {
-                            // TODO risolvere meglio il passaggio (coltura unica con controlli?)
-                            nextCrop = "ALFALFA";
-                            isCropToReset = true;
-                        }
-                    }
+                    myCase->myCrop.isLiving = false;
+                    resetCrop(myCase);
                 }
             }
             else
@@ -757,7 +737,7 @@ bool updateCrop(Criteria1D* myCase, std::string* myError, Crit3DDate myDate,
                 {
                     // reset or sowing
                     myCase->myCrop.isLiving = true;
-                    isCropToReset = true;
+                    resetCrop(myCase);
                 }
                 else return true;
             }    
@@ -767,36 +747,101 @@ bool updateCrop(Criteria1D* myCase, std::string* myError, Crit3DDate myDate,
             if (myCase->myCrop.isLiving)
             {
                 myCase->myCrop.isLiving = false;
-                isCropToReset = true;
+                resetCrop(myCase);
             }
         }
     }
 
-    if (nextCrop != "")
-        if (! loadCropParameters(nextCrop, &(myCase->myCrop), &(myCase->dbParameters), myError))
-            return false;
-
-    if (isCropToReset)
-        if (! resetCrop(myCase))
-            *myError = "Error in resetting crop " + myCase->myCrop.idCrop;
-
-    // update degree days
     if (myCase->myCrop.isLiving)
+    {
+        // update degree days
         myCase->myCrop.degreeDays += computeDegreeDays(tmin, tmax, myCase->myCrop.thermalThreshold, myCase->myCrop.upperThermalThreshold);
 
-    // update LAI
-    if (myCase->myCrop.isLiving)
+        // update LAI
         if (! updateLai(myCase, currentDoy))
             *myError = "Error in updating LAI for crop " + myCase->myCrop.idCrop;
 
-    // update roots
-    if (! updateRoots(myCase))
-        *myError = "Error in updating roots for crop " + myCase->myCrop.idCrop;
+        // update roots
+        if (! updateRoots(myCase))
+            *myError = "Error in updating roots for crop " + myCase->myCrop.idCrop;
 
-    // update water stress sensibility
-    if (myCase->myCrop.isLiving)
+        // update water stress sensibility
         if (! updateCropWaterStressSensibility(&(myCase->myCrop), currentDoy))
             *myError = "Error in updating water stress sensibility for crop " + myCase->myCrop.idCrop;
+    }
+
+    return true;
+}*/
+
+
+bool updateCrop(Criteria1D* myCase, std::string* myError, Crit3DDate myDate,
+                double tmin, double tmax, float waterTableDepth)
+{
+    *myError = "";
+
+    if (myCase->myCrop.idCrop == "")
+        return false;
+
+    int currentDoy = getDoyFromDate(myDate);
+
+    if (myCase->myCrop.isPluriannual())
+    {
+        // pluriannual: reset at the end of year
+        if ((myCase->meteoPoint.latitude >= 0 && myDate.month == 1 && myDate.day == 1)
+            || (myCase->meteoPoint.latitude < 0 && myDate.month == 7 && myDate.day == 1))
+            resetCrop(&(myCase->myCrop), myCase->nrLayers);
+    }
+    else
+    {
+        if (myCase->myCrop.isLiving)
+        {
+            double cycleDD = myCase->myCrop.degreeDaysEmergence + myCase->myCrop.degreeDaysIncrease + myCase->myCrop.degreeDaysDecrease;
+
+             // annual: end of crop cycle
+            if ((myCase->myCrop.degreeDays > cycleDD)
+               || (myCase->myCrop.getDaysFromCurrentSowing(currentDoy) > myCase->myCrop.plantCycle))
+            {
+                myCase->myCrop.isLiving = false;
+                resetCrop(&(myCase->myCrop), myCase->nrLayers);
+            }
+        }
+        else
+        {
+            // Sowing
+            int sowingDoyPeriod = 30;
+            float waterTableThreshold = 0.1f;
+            int daysFromSowing = myCase->myCrop.getDaysFromTypicalSowing(currentDoy);
+
+            // is sowing possible (period and watertable depth)?
+            if (daysFromSowing >= 0 && daysFromSowing <= sowingDoyPeriod)
+                if (waterTableDepth == NODATA || waterTableDepth > waterTableThreshold)
+                {
+                    myCase->myCrop.isLiving = true;
+                    resetCrop(&(myCase->myCrop), myCase->nrLayers);
+
+                    // update sowing doy
+                    myCase->myCrop.currentSowingDoy = myCase->myCrop.sowingDoy + daysFromSowing;
+                }
+        }
+    }
+
+    if (myCase->myCrop.isLiving)
+    {
+        // update degree days
+        myCase->myCrop.degreeDays += computeDegreeDays(tmin, tmax, myCase->myCrop.thermalThreshold, myCase->myCrop.upperThermalThreshold);
+
+        // update LAI
+        if (! updateLai(myCase, currentDoy))
+            *myError = "Error in updating LAI for crop " + myCase->myCrop.idCrop;
+
+        // update roots
+        if (! updateRoots(myCase))
+            *myError = "Error in updating roots for crop " + myCase->myCrop.idCrop;
+
+        // update water stress sensibility
+        if (! updateCropWaterStressSensibility(&(myCase->myCrop)))
+            *myError = "Error in updating water stress sensibility for crop " + myCase->myCrop.idCrop;
+    }
 
     return true;
 }
