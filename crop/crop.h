@@ -8,6 +8,8 @@
         #include "root.h"
     #endif
 
+    class Crit3DDate;
+
     enum speciesType {HERBACEOUS_ANNUAL, HERBACEOUS_PERENNIAL, HORTICULTURAL, GRASS, FALLOW, FRUIT_TREE};
 
     class Crit3DCrop
@@ -62,6 +64,7 @@
         bool isLiving;
         bool isEmerged;
         double LAI;
+        double LAIstartSenescence;
         double waterStressSensibility;
         double lastWaterStress;
 
@@ -72,6 +75,8 @@
         int getDaysFromCurrentSowing(int myDoy);
         bool isInsideTypicalCycle(int myDoy);
         bool isPluriannual();
+        bool needReset(Crit3DDate myDate, float latitude, float waterTableDepth);
+        void resetCrop(int nrLayers);
     };
 
 

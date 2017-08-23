@@ -80,9 +80,14 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
         tmax = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyAirTemperatureMax);
         waterTableDepth = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyWaterTableDepth);
 
-        // check for DA-RO
-        if (waterTableDepth >= 0.f && waterTableDepth < 0.1f)
-            waterTableDepth = 0.1f;
+        // patch for DA-RO (TODO eliminare)
+        if (waterTableDepth >= 0.f)
+        {
+            if (waterTableDepth <= 0.3f)
+                waterTableDepth += 0.2f;
+            else if (waterTableDepth <= 0.9f)
+                waterTableDepth += 0.1f;
+        }
         myCase->output.dailyWaterTable = waterTableDepth;
 
         if ((prec == NODATA) || (tmin == NODATA) || (tmax == NODATA))

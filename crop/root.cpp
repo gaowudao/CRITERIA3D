@@ -104,15 +104,19 @@ namespace root
             }
         }
 
-        // TODO radici dentro falda - gestire meglio
-        if ((waterTableDepth != NODATA) && (waterTableDepth > 0) && (myCrop->roots.rootLength != NODATA))
+        // radici dentro falda - TODO gestire meglio
+        if ((myCrop->roots.rootLength != NODATA) && (! myCrop->isWaterSurplusResistant()))
         {
-            double maxRootDepth = waterTableDepth - 0.1f;
-            double minRootLenght = maxValue(myCrop->roots.rootLength, 0.05f);
-
-            if ((rootLength > minRootLenght) && ((myCrop->roots.rootDepthMin + rootLength) > maxRootDepth))
+            if (waterTableDepth != NODATA && waterTableDepth > 0)
             {
-                rootLength = maxValue(minRootLenght, maxRootDepth - myCrop->roots.rootDepthMin);
+                double maxRootDepth = waterTableDepth - 0.1f;
+                // previous rootlenght
+                double minRootLenght = maxValue(myCrop->roots.rootLength, 0.05f);
+
+                if ((rootLength > minRootLenght) && ((myCrop->roots.rootDepthMin + rootLength) > maxRootDepth))
+                {
+                    rootLength = maxValue(minRootLenght, maxRootDepth - myCrop->roots.rootDepthMin);
+                }
             }
         }
 

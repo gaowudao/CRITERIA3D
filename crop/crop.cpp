@@ -53,6 +53,7 @@
         LAIgrass = NODATA;
         LAIcurve_a = NODATA;
         LAIcurve_b = NODATA;
+        LAIstartSenescence = NODATA;
         thermalThreshold = NODATA;
         upperThermalThreshold = NODATA;
         degreeDaysIncrease = NODATA;
@@ -86,10 +87,9 @@
     }
 
 
-    // TODO check on kiwifruit
     bool Crit3DCrop::isWaterSurplusResistant()
     {
-        return (type == GRASS || type == FALLOW || idCrop == "KIWIFRUIT" || idCrop == "RICE");
+        return (idCrop == "RICE" || type == GRASS || type == FALLOW);
     }
 
 
@@ -120,6 +120,101 @@
                 type == GRASS ||
                 type == FALLOW ||
                 type == FRUIT_TREE);
+    }
+
+
+    bool Crit3DCrop::needReset(Crit3DDate myDate, float latitude, float waterTableDepth)
+    {
+        int currentDoy = getDoyFromDate(myDate);
+
+        if (isPluriannual())
+        {
+            // pluriannual crop: reset at the end of year (january at north / july at south)
+            if ((latitude >= 0 && myDate.month == 1 && myDate.day == 1)
+                || (latitude < 0 && myDate.month == 7 && myDate.day == 1))
+            {
+                isLiving = true;
+                return true;
+            }
+        }
+        else
+        {
+            // annual crop
+            if (isLiving)
+            {
+                // living crop: check end of crop cycle
+                double cycleDD = degreeDaysEmergence + degreeDaysIncrease + degreeDaysDecrease;
+
+                if ((degreeDays > cycleDD) || (getDaysFromCurrentSowing(currentDoy) > plantCycle))
+                {
+                    isLiving = false;
+                    return true;
+                }
+            }
+            else
+            {
+                // naked soil: check sowing
+                int sowingDoyPeriod = 30;
+                float waterTableThreshold = 0.1f;
+                int daysFromSowing = getDaysFromTypicalSowing(currentDoy);
+
+                // is sowing possible? (check period and watertable depth)
+                if (daysFromSowing >= 0 && daysFromSowing <= sowingDoyPeriod)
+                {
+                    if (isWaterSurplusResistant() || waterTableDepth == NODATA || waterTableDepth > waterTableThreshold)
+                    {
+                        isLiving = true;
+                        // update sowing doy
+                        currentSowingDoy = sowingDoy + daysFromSowing;
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+
+    // reset of (already initialized) crop
+    // TODO: partenza intelligente (usando sowing doy e ciclo)
+    void Crit3DCrop::resetCrop(int nrLayers)
+    {
+        // roots
+        if (! isPluriannual())
+        {
+            roots.rootDensity[0] = 0.0;
+            for (int i = 1; i < nrLayers; i++)
+                roots.rootDensity[i] = 0;
+        }
+
+        isEmerged = false;
+
+        if (isLiving)
+        {
+            degreeDays = 0;
+            waterStressSensibility = 0;
+
+            // LAI
+            LAI = LAImin;
+
+            if (type == FRUIT_TREE)
+                LAI += LAIgrass;
+        }
+        else
+        {
+            degreeDays = NODATA;
+            LAI = NODATA;
+            waterStressSensibility = NODATA;
+            currentSowingDoy = NODATA;
+
+            // roots
+            roots.rootLength = 0.0;
+            roots.rootDepth = NODATA;
+        }
+
+        LAIstartSenescence = NODATA;
+        lastWaterStress = 0;
     }
 
 
