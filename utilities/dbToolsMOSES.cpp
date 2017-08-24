@@ -170,13 +170,16 @@ bool readMOSESDailyData(QSqlQuery *query, Crit3DMeteoPoint *meteoPoint, std::str
             }
             else nrMissingData = 0;
 
-            // not mandatory variables
+            // NOT mandatory variables
+            // TAVG [°C]
             getValue(query->value("tavg"), &tmed);
-            getValue(query->value("etp"), &et0);
-            // [m]
-            getValue(query->value("watertable"), &waterTable);
-
             if (tmed == NODATA) tmed = (tmin + tmax) * 0.5;
+
+            // ET0 [mm]
+            getValue(query->value("etp"), &et0);
+
+            // Watertable depth [m]
+            getValue(query->value("watertable"), &waterTable);
 
             date = getCrit3DDate(myDate);
             if (meteoPoint->obsDataD[0].date.daysTo(date) < meteoPoint->nrObsDataDaysD)

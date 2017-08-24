@@ -28,21 +28,56 @@ Project::Project()
 
 
 
-int provaNetcdf()
+bool Project::provaNetCDF(QString fileName)
 {
-    int ncid, retValue;
-    QString fileName = "simple_xy.nc";
+    int ncId, retval;
 
-    /* Open the file. NC_NOWRITE tells netCDF we want read-only access
-    * to the file.*/
-   if ((retValue = nc_open(fileName.toStdString().data(), NC_NOWRITE, &ncid)))
-      qDebug() << nc_strerror(retValue);
+    /* Open the file. NC_NOWRITE tells netCDF we want read-only access */
+   if ((retval = nc_open(fileName.toStdString().data(), NC_NOWRITE, &ncId)))
+      qDebug() << nc_strerror(retval);
+
+   /* NC_INQ tells how many netCDF dimensions, variables and global attributes are in
+    the file, also the dimension id of the unlimited dimension, if there is one. */
+   int nrDimensions, nrVariables, nrGlobalAttributes, unlimDimensionId;
+   if ((retval = nc_inq(ncId, &nrDimensions, &nrVariables, &nrGlobalAttributes, &unlimDimensionId)))
+      qDebug() << nc_strerror(retval);
+
+   size_t lenght;
+   char name[NC_MAX_NAME+1];
+   char typeName[NC_MAX_NAME+1];
+   int varDimIds[NC_MAX_VAR_DIMS];
+   nc_type ncTypeId;
+   int nrVarDimensions, nrVarAttributes;
+
+   qDebug() << "\nDimensions: ";
+   for (int i = 0; i < nrDimensions; i++)
+   {
+       nc_inq_dim(ncId, i, name, &lenght);
+       qDebug() << i << name << "\tnr values:" << lenght;
+   }
+
+   qDebug() << "\nVariables: ";
+   for (int i = 0; i < nrVariables; i++)
+   {
+       nc_inq_var(ncId, i, name, &ncTypeId, &nrVarDimensions, varDimIds, &nrVarAttributes);
+       nc_inq_type(ncId, ncTypeId, typeName, &lenght);
+
+       QStringList dimList;
+       for (int j = 0; j < nrVarDimensions; j++)
+           dimList.append(QString::number(varDimIds[j]));
+
+       qDebug() << i << name << "\t type:" << typeName
+                << "\t nr dims:" << nrVarDimensions << dimList
+                << "\t nr attributes:" << nrVarAttributes;
+   }
+
+
 
    /* Close the file, freeing all resources. */
-   if ((retValue = nc_close(ncid)))
-      qDebug() << nc_strerror(retValue);
+   if ((retval = nc_close(ncId)))
+      qDebug() << nc_strerror(retval);
 
-   return 0;
+   return true;
 }
 
 

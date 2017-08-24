@@ -80,7 +80,8 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
         tmax = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyAirTemperatureMax);
         waterTableDepth = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyWaterTableDepth);
 
-        // patch for DA-RO (TODO eliminare)
+        // TODO eliminare quando falda rumena sarà migliorata
+        // patch for DA-RO - abbassa falda di 20cm (primi 50cm) o 10cm (primo metro)
         if (waterTableDepth >= 0.f)
         {
             if (waterTableDepth <= 0.3f)
@@ -113,7 +114,7 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
         if (! updateCrop(myCase, myError, myDate, tmin, tmax, waterTableDepth))
             return false;
 
-        // WATERTABLE (not mandatory)
+        // WATERTABLE (if available)
         computeCapillaryRise(myCase, waterTableDepth);
 
         // IRRIGATION

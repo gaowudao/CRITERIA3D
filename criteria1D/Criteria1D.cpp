@@ -111,26 +111,27 @@ bool Criteria1D::setSoil(QString idSoil, std::string *myError)
         soilFraction = (1.0 - layer[i].horizon->coarseFragments);
         layer[i].soilFraction = soilFraction;       // [-]
 
+        // TODO geometric layer
         layer[i].depth = depth;                     // [m]
         layer[i].thickness = this->layerThickness;  // [m]
 
         //[mm]
-        layer[i].SAT = mySoil.horizon[horizonIndex].vanGenuchten.thetaS * soilFraction * this->layerThickness * 1000.0;
+        layer[i].SAT = mySoil.horizon[horizonIndex].vanGenuchten.thetaS * soilFraction * layer[i].thickness * 1000.0;
 
         //[mm]
-        layer[i].FC = mySoil.horizon[horizonIndex].waterContentFC * soilFraction * this->layerThickness * 1000.0;
+        layer[i].FC = mySoil.horizon[horizonIndex].waterContentFC * soilFraction * layer[i].thickness * 1000.0;
         layer[i].critical = layer[i].FC;
 
         //[mm]
-        layer[i].WP = mySoil.horizon[horizonIndex].waterContentWP * soilFraction * this->layerThickness * 1000.0;
+        layer[i].WP = mySoil.horizon[horizonIndex].waterContentWP * soilFraction * layer[i].thickness * 1000.0;
 
         // hygroscopic humidity: -2000 kPa
         hygroscopicHumidity = soil::thetaFromSignPsi(-2000, &(mySoil.horizon[horizonIndex]));
 
         //[mm]
-        layer[i].HH = hygroscopicHumidity * soilFraction * this->layerThickness * 1000.0;
+        layer[i].HH = hygroscopicHumidity * soilFraction * layer[i].thickness * 1000.0;
 
-        depth += this->layerThickness;              //[m]
+        depth += layer[i].thickness;              //[m]
     }
 
     return(true);

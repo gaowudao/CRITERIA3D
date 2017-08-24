@@ -982,3 +982,12 @@ void MainWindow::on_actionPointsVisible_triggered()
     this->showPoints = ui->actionPointsVisible->isChecked();
     redrawMeteoPoints();
 }
+
+
+void MainWindow::on_actionOpen_NetCDF_data_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open NetCDF data"), "", tr("NetCDF files (*.nc)"));
+
+    if (fileName != "")
+        myProject.provaNetCDF(fileName);
+}

@@ -1,11 +1,10 @@
 #ifndef CRITERIA1D_H
 #define CRITERIA1D_H
 
+    #include <QSqlDatabase>
     #include "soil.h"
     #include "crop.h"
     #include "meteoPoint.h"
-
-    #include <QSqlDatabase>
 
     class Criteria1DUnit
     {
