@@ -24,6 +24,7 @@
 #include "dialogWindows.h"
 #include "quality.h"
 #include "interpolation.h"
+#include "netcdfManager.h"
 
 
 extern Project myProject;
@@ -989,5 +990,5 @@ void MainWindow::on_actionOpen_NetCDF_data_triggered()
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open NetCDF data"), "", tr("NetCDF files (*.nc)"));
 
     if (fileName != "")
-        myProject.provaNetCDF(fileName);
+        NetCDF::provaNetCDF(fileName);
 }

@@ -33,7 +33,8 @@ SOURCES += main.cpp\
     stationMarker.cpp \
     rubberBand.cpp \
     formInfo.cpp \
-    dialogWindows.cpp
+    dialogWindows.cpp \
+    netcdfManager.cpp
 
 HEADERS  += mainwindow.h \
     rasterObject.h \
@@ -43,7 +44,8 @@ HEADERS  += mainwindow.h \
     stationMarker.h \
     rubberBand.h \
     formInfo.h \
-    dialogWindows.h
+    dialogWindows.h \
+    netcdfManager.h
 
 FORMS    += mainwindow.ui \
     formInfo.ui

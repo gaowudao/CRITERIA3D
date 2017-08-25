@@ -69,8 +69,6 @@
         bool loadMeteoPointsDB(QString dbName);
         bool getMeteoPointSelected(int i);
         bool updateMeteoPointsData();
-
-        bool provaNetCDF(QString fileName);
     };
 
 
