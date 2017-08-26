@@ -2,7 +2,10 @@
 #include <QApplication>
 #include <QtNetwork/QNetworkProxy>
 #include <QDebug>
+#include <QMessageBox>
+
 #include "project.h"
+#include "forminfo.h"
 
 Project myProject;
 
@@ -10,18 +13,22 @@ bool setProxy(QString hostName, int port)
 {
     QNetworkProxy myProxy;
 
-    myProxy.setType(QNetworkProxy::HttpProxy);
-    myProxy.setHostName(hostName);
-    myProxy.setPort(port);
+    formInfo myInfo;
+    myInfo.start("Init Proxy...", 0);
 
-    qDebug("Init Proxy...");
-    try {
-       QNetworkProxy::setApplicationProxy(myProxy);
-    }
-    catch (...) {
-       qDebug("Error in proxy configuration!");
-       return false;
-    }
+        myProxy.setType(QNetworkProxy::HttpProxy);
+        myProxy.setHostName(hostName);
+        myProxy.setPort(port);
+
+        try {
+           QNetworkProxy::setApplicationProxy(myProxy);
+        }
+        catch (...) {
+            QMessageBox::information(NULL, "Error in proxy configuration!", "");
+            return false;
+        }
+
+    myInfo.close();
 
     return true;
 }

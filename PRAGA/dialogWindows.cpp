@@ -51,7 +51,7 @@ QString editValue(QString windowsTitle, QString defaultValue)
 }
 
 
-colorScale::type chooseColorScale()
+meteoVariable chooseColorScale()
 {
     QDialog myDialog;
     QVBoxLayout mainLayout;
@@ -88,22 +88,22 @@ colorScale::type chooseColorScale()
     myDialog.exec();
 
     if (myDialog.result() != QDialog::Accepted)
-        return colorScale::none;
+        return noMeteoVar;
 
     if (DTM.isChecked())
-        return colorScale::terrain;
+        return noMeteoTerrain;
     else if (Temp.isChecked())
-        return colorScale::temperature;
+        return airTemperature;
     else if (Prec.isChecked())
-        return colorScale::precipitation;
+        return precipitation;
     else if (RH.isChecked())
-        return colorScale::relativeHumidity;
+        return airHumidity;
     else if (Rad.isChecked())
-        return colorScale::solarRadiation;
+        return globalIrradiance;
     else if (Wind.isChecked())
-        return colorScale::windIntensity;
+        return windIntensity;
     else
-        return colorScale::terrain;
+        return noMeteoTerrain;
 }
 
 

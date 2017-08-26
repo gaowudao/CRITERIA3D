@@ -27,11 +27,13 @@ bool runModel(Criteria1D* myCase, std::string* myError, Criteria1DUnit *myUnit)
         if (! myCase->createOutputTable(myError))
             return false;
 
-    // set computation period (tutti i dati meteo)
+    // set computation period (all meteo data)
     Crit3DDate firstDate, lastDate;
     long lastIndex = myCase->meteoPoint.nrObsDataDaysD-1;
     firstDate = myCase->meteoPoint.obsDataD[0].date;
     lastDate = myCase->meteoPoint.obsDataD[lastIndex].date;
+
+    myCase->initializeSeasonalForecast(firstDate, lastDate);
 
     return computeModel(myCase, myError, firstDate, lastDate);
 }
@@ -46,6 +48,7 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
     float prec, et0, tomorrowPrec, irrigation;      // [mm]
     float waterTableDepth;                          // [m]
     bool isFirstDay = true;
+    int indexSeasonalForecast = NODATA;
 
     if (myCase->meteoPoint.latitude == NODATA)
     {
@@ -53,21 +56,9 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
         return false;
     }
 
-    int indexSeasonalForecast;
-    if (myCase->isSeasonalForecast)
-    {
-        if (myCase->seasonalForecasts != NULL) free(myCase->seasonalForecasts);
-
-        myCase->nrSeasonalForecasts = lastDate.year - firstDate.year +1;
-        myCase->seasonalForecasts = (double*) calloc(myCase->nrSeasonalForecasts, sizeof(double));
-        for (int i=0; i<myCase->nrSeasonalForecasts; i++)
-            myCase->seasonalForecasts[i] = 0.0;
-        indexSeasonalForecast = NODATA;
-    }
-
     initializeWater(myCase);
 
-    if (! initializeCrop(myCase)) return false;
+    initializeCrop(myCase, getDoyFromDate(firstDate));
 
     for (myDate = firstDate; myDate <= lastDate; ++myDate)
     {
@@ -89,9 +80,15 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
         tmax = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyAirTemperatureMax);
         waterTableDepth = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyWaterTableDepth);
 
-        // check for DA-RO
-        if (waterTableDepth >= 0.f && waterTableDepth < 0.1f)
-            waterTableDepth = 0.1f;
+        // TODO eliminare quando falda rumena sarà migliorata
+        // patch for DA-RO - abbassa falda di 20cm (primi 50cm) o 10cm (primo metro)
+        if (waterTableDepth >= 0.f)
+        {
+            if (waterTableDepth <= 0.3f)
+                waterTableDepth += 0.2f;
+            else if (waterTableDepth <= 0.9f)
+                waterTableDepth += 0.1f;
+        }
         myCase->output.dailyWaterTable = waterTableDepth;
 
         if ((prec == NODATA) || (tmin == NODATA) || (tmax == NODATA))
@@ -114,10 +111,10 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
         myCase->output.dailyEt0 = et0;
 
         // CROP
-        if (! updateCrop(myCase, myError, myDate, isFirstDay, tmin, tmax))
+        if (! updateCrop(myCase, myError, myDate, tmin, tmax, waterTableDepth))
             return false;
 
-        // WATERTABLE (not mandatory)
+        // WATERTABLE (if available)
         computeCapillaryRise(myCase, waterTableDepth);
 
         // IRRIGATION
@@ -147,11 +144,13 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
 
         // Check irrigation lost
         if (! myCase->optimizeIrrigation)
+        {
             if ((myCase->output.dailySurfaceRunoff > 5) && (myCase->output.dailyIrrigation > 0))
                 {
                     myCase->output.dailyIrrigation -= floor(myCase->output.dailySurfaceRunoff);
                     myCase->output.dailySurfaceRunoff -= floor(myCase->output.dailySurfaceRunoff);
                 }
+        }
 
         if (! cropWaterDemand(myCase))
             return false;
@@ -171,11 +170,13 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
             isFirstDay = false;
         }
 
+        // seasonal forecast: update values of annual irrigation
         if (myCase->isSeasonalForecast)
             if (myDate.month >= myCase->firstSeasonMonth && myDate.month <= myCase->firstSeasonMonth+2)
             {
                 if (indexSeasonalForecast == NODATA)
                     indexSeasonalForecast = 0;
+                // first date of season
                 else if (myDate.month == myCase->firstSeasonMonth && myDate.day == 1)
                     indexSeasonalForecast++;
 

@@ -351,7 +351,7 @@ meteoVariable getDefaultMeteoVariable(int id)
 }
 
 
-bool setColorScale(Crit3DColorScale *colorScale, meteoVariable variable)
+bool setColorScale(meteoVariable variable, Crit3DColorScale *colorScale)
 {
     if (colorScale == NULL) return false;
 
@@ -369,9 +369,46 @@ bool setColorScale(Crit3DColorScale *colorScale, meteoVariable variable)
         case globalIrradiance: case dailyGlobalRadiation:
             setRadiationScale(colorScale);
             break;
+        case windIntensity: case dailyWindIntensityAvg:
+            setWindIntensityScale(colorScale);
+            break;
+        case noMeteoTerrain:
+            setDefaultDTMScale(colorScale);
         default:
-            setTemperatureScale(colorScale);
+            setDefaultDTMScale(colorScale);
     }
 
     return true;
 }
+
+
+std::string getVariableString(meteoVariable myVar)
+{
+    if (myVar == airTemperature || myVar == dailyAirTemperatureAvg)
+        return "Air temperature °C";
+    else if (myVar == airHumidity || myVar == dailyAirHumidityAvg)
+        return "Relative humidity %";
+    else if ((myVar == dailyPrecipitation ||  myVar == precipitation))
+        return "Precipitation mm";
+    else if (myVar == dailyAirTemperatureMax)
+        return "Max. air temperature °C";
+    else if (myVar == dailyAirTemperatureMin)
+        return "Min. air temperature °C";
+    else if (myVar == dailyGlobalRadiation)
+        return "Solar radiation MJ m-2";
+    else if (myVar == dailyAirHumidityMax)
+        return "Max. relative humidity %";
+    else if (myVar == dailyAirHumidityMin)
+        return "Min. relative humidity %";
+    else if (myVar == globalIrradiance)
+        return "Solar irradiance W m-2";
+    else if (myVar == windIntensity)
+        return "Wind intensity m s-1";
+    else if (myVar == noMeteoTerrain)
+        return "Digital Terrain Model m";
+
+    else
+        return "None";
+}
+
+

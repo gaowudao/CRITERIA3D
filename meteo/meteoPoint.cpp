@@ -105,6 +105,7 @@ void Crit3DMeteoPoint::initializeObsDataD(int numberOfDays, const Crit3DDate& fi
 
     nrObsDataDaysD = numberOfDays;
     obsDataD = (TObsDataD *) calloc(numberOfDays, sizeof(TObsDataD));
+
     myQuality = quality::missing_data;
     residual = NODATA;
 
@@ -324,6 +325,7 @@ void Crit3DMeteoPoint::cleanObsDataH()
         free (obsDataH);
     }
 }
+
 
 void Crit3DMeteoPoint::cleanObsDataD()
 {

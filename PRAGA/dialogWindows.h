@@ -5,7 +5,7 @@
     #include "color.h"
     #include "meteo.h"
 
-    colorScale::type chooseColorScale();
+    meteoVariable chooseColorScale();
     frequencyType chooseFrequency();
     bool chooseVariable();
     QString editValue(QString windowsTitle, QString defaultValue);

@@ -21,6 +21,9 @@ LIBS += -L../quality/release -lquality
 LIBS += -L../interpolation/release -linterpolation
 LIBS += -L../MapGraphics/release -lMapGraphics
 
+INCLUDEPATH += C:/netcdf/include
+LIBS += -LC:/netcdf/lib -lnetcdf -lhdf5
+
 
 SOURCES += main.cpp\
     mainwindow.cpp \
@@ -30,7 +33,8 @@ SOURCES += main.cpp\
     stationMarker.cpp \
     rubberBand.cpp \
     formInfo.cpp \
-    dialogWindows.cpp
+    dialogWindows.cpp \
+    netcdfManager.cpp
 
 HEADERS  += mainwindow.h \
     rasterObject.h \
@@ -40,7 +44,8 @@ HEADERS  += mainwindow.h \
     stationMarker.h \
     rubberBand.h \
     formInfo.h \
-    dialogWindows.h
+    dialogWindows.h \
+    netcdfManager.h
 
 FORMS    += mainwindow.ui \
     formInfo.ui

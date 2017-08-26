@@ -111,26 +111,27 @@ bool Criteria1D::setSoil(QString idSoil, std::string *myError)
         soilFraction = (1.0 - layer[i].horizon->coarseFragments);
         layer[i].soilFraction = soilFraction;       // [-]
 
+        // TODO geometric layer
         layer[i].depth = depth;                     // [m]
         layer[i].thickness = this->layerThickness;  // [m]
 
         //[mm]
-        layer[i].SAT = mySoil.horizon[horizonIndex].vanGenuchten.thetaS * soilFraction * this->layerThickness * 1000.0;
+        layer[i].SAT = mySoil.horizon[horizonIndex].vanGenuchten.thetaS * soilFraction * layer[i].thickness * 1000.0;
 
         //[mm]
-        layer[i].FC = mySoil.horizon[horizonIndex].waterContentFC * soilFraction * this->layerThickness * 1000.0;
+        layer[i].FC = mySoil.horizon[horizonIndex].waterContentFC * soilFraction * layer[i].thickness * 1000.0;
         layer[i].critical = layer[i].FC;
 
         //[mm]
-        layer[i].WP = mySoil.horizon[horizonIndex].waterContentWP * soilFraction * this->layerThickness * 1000.0;
+        layer[i].WP = mySoil.horizon[horizonIndex].waterContentWP * soilFraction * layer[i].thickness * 1000.0;
 
         // hygroscopic humidity: -2000 kPa
         hygroscopicHumidity = soil::thetaFromSignPsi(-2000, &(mySoil.horizon[horizonIndex]));
 
         //[mm]
-        layer[i].HH = hygroscopicHumidity * soilFraction * this->layerThickness * 1000.0;
+        layer[i].HH = hygroscopicHumidity * soilFraction * layer[i].thickness * 1000.0;
 
-        depth += this->layerThickness;              //[m]
+        depth += layer[i].thickness;              //[m]
     }
 
     return(true);
@@ -241,7 +242,7 @@ bool Criteria1D::loadMOSESMeteo(QString idMeteo, QString idForecast, std::string
         // Read forecast data
         if (! readMOSESDailyData(&query, &meteoPoint, myError)) return false;
 
-        // Watertable data
+        // TODO Watertable data
         // check last watertable data (last 15 days)
         // se presente: estendi il dato sino ultimo giorno
     }
@@ -249,6 +250,20 @@ bool Criteria1D::loadMOSESMeteo(QString idMeteo, QString idForecast, std::string
     return true;
 }
 
+
+// alloc memory for annual values of irrigation
+void Criteria1D::initializeSeasonalForecast(const Crit3DDate& firstDate, const Crit3DDate& lastDate)
+{
+    if (isSeasonalForecast)
+    {
+        if (seasonalForecasts != NULL) free(seasonalForecasts);
+
+        nrSeasonalForecasts = lastDate.year - firstDate.year +1;
+        seasonalForecasts = (double*) calloc(nrSeasonalForecasts, sizeof(double));
+        for (int i = 0; i < nrSeasonalForecasts; i++)
+            seasonalForecasts[i] = 0.0;
+    }
+}
 
 
 bool Criteria1D::createOutputTable(std::string* myError)

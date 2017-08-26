@@ -61,6 +61,7 @@ void CircleObject::setFillColor(const QColor &color)
     this->redrawRequested();
 }
 
+
 //protected
 //virtual from MapGraphicsObject
 void CircleObject::keyReleaseEvent(QKeyEvent *event)

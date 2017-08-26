@@ -1,11 +1,10 @@
 #ifndef CRITERIA1D_H
 #define CRITERIA1D_H
 
+    #include <QSqlDatabase>
     #include "soil.h"
     #include "crop.h"
     #include "meteoPoint.h"
-
-    #include <QSqlDatabase>
 
     class Criteria1DUnit
     {
@@ -100,6 +99,7 @@
         bool createOutputTable(std::string* myError);
         void prepareOutput(Crit3DDate myDate, bool isFirst);
         bool saveOutput(std::string* myError);
+        void initializeSeasonalForecast(const Crit3DDate& firstDate, const Crit3DDate& lastDate);
     };
 
 

@@ -40,7 +40,7 @@
 
         void on_actionLoadRaster_triggered();
 
-        void on_actionMeteoPointsArkimet_triggered();
+        void on_actionNewMeteoPointsArkimet_triggered();
 
         void on_actionOpen_meteo_points_DB_triggered();
 
@@ -78,6 +78,10 @@
 
         void on_actionInterpolation_triggered();
 
+        void on_actionPointsVisible_triggered();
+
+        void on_actionOpen_NetCDF_data_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
@@ -108,6 +112,7 @@
         ColorLegend *pointsLegend;
         QList<StationMarker*> pointList;
         RubberBand *myRubberBand;
+        bool showPoints;
 
         environment menu;
         QList<QCheckBox*> datasetCheckbox;
@@ -122,14 +127,12 @@
         void resetMeteoPoints();
         void addMeteoPoints();
         void redrawMeteoPoints();
-        void redrawMeteoPointsPosition();
 
         bool loadMeteoPointsDB(QString dbName);
 
     };
 
     bool downloadMeteoData();
-    void setRasterColorScale(colorScale::type myScale, Crit3DColorScale *myColorScale, QLabel *myLabel);
 
 
 #endif // MAINWINDOW_H

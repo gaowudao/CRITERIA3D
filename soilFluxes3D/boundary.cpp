@@ -112,9 +112,9 @@ double computeAtmosphericSensibleFlow(long i)
 }
 
 /*!
- * \brief atmospheric latent flux (evaporation/condensation)
+ * \brief boundary vapor flux (evaporation/condensation)
  * \param i
- * \return latent flux (m3 m-2 s-1)
+ * \return vapor flux (kg m-2 s-1)
  */
 double computeAtmosphericLatentFlux(long i)
 {
@@ -136,10 +136,7 @@ double computeAtmosphericLatentFlux(long i)
     // kg m-2 s-1
     double myVaporFlow = myDeltaVapor * myTotalConductance;
 
-    // m3 m-2 s-1
-    double myLatentFlux = myVaporFlow / WATER_DENSITY;
-
-    return myLatentFlux;
+    return myVaporFlow;
 }
 
 
@@ -158,7 +155,7 @@ double computeAtmosphericLatentHeatFlux(long i)
     // J kg-1
     double lambda = LatentHeatVaporization(myNode[i].extra->Heat->T - ZEROCELSIUS);
     // waterFlow = vapor sink source (m3 s-1)
-    latentHeatFlow = myNode[i].boundary->waterFlow * (lambda * WATER_DENSITY + HEAT_CAPACITY_WATER * myNode[i].extra->Heat->T);
+    latentHeatFlow = myNode[i].boundary->waterFlow * WATER_DENSITY * (lambda + HEAT_CAPACITY_WATER_VAPOR * myNode[i].extra->Heat->T);
 
     return latentHeatFlow;
 }
@@ -266,7 +263,7 @@ void updateBoundaryWater(double deltaT)
             else if (myNode[i].boundary->type == BOUNDARY_HEAT_SURFACE)
             {
                 if (myStructure.computeHeat)
-                    myNode[i].boundary->waterFlow = computeAtmosphericLatentFlux(i) * myNode[i].up.area;
+                    myNode[i].boundary->waterFlow = computeAtmosphericLatentFlux(i) / WATER_DENSITY * myNode[i].up.area;
             }
 
             myNode[i].Qw += myNode[i].boundary->waterFlow;

@@ -461,7 +461,7 @@
       <x>270</x>
       <y>0</y>
       <width>681</width>
-      <height>561</height>
+      <height>451</height>
      </rect>
     </property>
     <property name="font">
@@ -1675,7 +1675,7 @@
      <x>0</x>
      <y>0</y>
      <width>1368</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="palette">
@@ -2105,7 +2105,7 @@
       <string>&amp;New DB meteo points</string>
      </property>
      <addaction name="separator"/>
-     <addaction name="actionMeteoPointsArkimet"/>
+     <addaction name="actionNewMeteoPointsArkimet"/>
      <addaction name="actionMeteoPointsCSV"/>
      <addaction name="separator"/>
     </widget>
@@ -2116,14 +2116,16 @@
     <addaction name="separator"/>
     <addaction name="actionDownload_meteo_data"/>
     <addaction name="separator"/>
+    <addaction name="actionOpen_NetCDF_data"/>
    </widget>
    <widget class="QMenu" name="menuVariable">
     <property name="title">
-     <string>Variable</string>
+     <string>Meteo Points</string>
     </property>
+    <addaction name="actionPointsVisible"/>
     <addaction name="actionVariableNone"/>
-    <addaction name="actionVariableChoose"/>
     <addaction name="actionVariableQualitySpatial"/>
+    <addaction name="actionVariableChoose"/>
     <addaction name="actionInterpolation"/>
    </widget>
    <widget class="QMenu" name="menuGIS_settings">
@@ -2206,7 +2208,7 @@
     <string>&amp;Download meteo data...</string>
    </property>
   </action>
-  <action name="actionMeteoPointsArkimet">
+  <action name="actionNewMeteoPointsArkimet">
    <property name="text">
     <string>from Arkimet...</string>
    </property>
@@ -2253,7 +2255,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>None</string>
+    <string>Location</string>
    </property>
   </action>
   <action name="actionVariableQualitySpatial">
@@ -2264,12 +2266,28 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Quality control spatial</string>
+    <string>Spatial quality control</string>
    </property>
   </action>
   <action name="actionInterpolation">
    <property name="text">
     <string>Interpolation</string>
+   </property>
+  </action>
+  <action name="actionPointsVisible">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Visible</string>
+   </property>
+  </action>
+  <action name="actionOpen_NetCDF_data">
+   <property name="text">
+    <string>Open NetCDF data</string>
    </property>
   </action>
  </widget>

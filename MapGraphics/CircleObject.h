@@ -8,7 +8,7 @@ class MAPGRAPHICSSHARED_EXPORT CircleObject : public MapGraphicsObject
 {
     Q_OBJECT
 public:
-    explicit CircleObject(qreal radius,bool sizeIsZoomInvariant=true, QColor fillColor = QColor(0,0,0,0),MapGraphicsObject *parent = 0);
+    explicit CircleObject(qreal radius,bool sizeIsZoomInvariant=true, QColor fillColor = QColor(0,0,0,0), MapGraphicsObject *parent = 0);
     virtual ~CircleObject();
 
     //pure-virtual from MapGraphicsObject

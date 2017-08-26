@@ -24,6 +24,7 @@
 #include "dialogWindows.h"
 #include "quality.h"
 #include "interpolation.h"
+#include "netcdfManager.h"
 
 
 extern Project myProject;
@@ -35,6 +36,8 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    this->showPoints = true;
 
     this->myRubberBand = NULL;
 
@@ -75,15 +78,15 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
     {
         case praga :
             ui->actionDownload_meteo_data->setVisible(true);
-            ui->actionMeteoPointsArkimet->setVisible(true);
+            ui->actionNewMeteoPointsArkimet->setVisible(true);
             break;
         case criteria1D:
             ui->actionDownload_meteo_data->setVisible(false);
-            ui->actionMeteoPointsArkimet->setVisible(false);
+            ui->actionNewMeteoPointsArkimet->setVisible(false);
             break;
         case criteria3D :
             ui->actionDownload_meteo_data->setVisible(false);
-            ui->actionMeteoPointsArkimet->setVisible(false);
+            ui->actionNewMeteoPointsArkimet->setVisible(false);
             break;
     }
 }
@@ -173,8 +176,9 @@ void MainWindow::on_actionLoadRaster_triggered()
     qDebug() << "loading raster";
     if (!myProject.loadRaster(fileName)) return;
 
-    // set default color scale
-    setRasterColorScale(colorScale::terrain, myProject.DTM.colorScale, ui->labelRasterScale);
+    // set DTM color scale
+    setColorScale(noMeteoTerrain, myProject.DTM.colorScale);
+    ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
     this->rasterLegend->colorScale = myProject.currentRaster->colorScale;
 
     this->ui->rasterOpacitySlider->setEnabled(true);
@@ -195,7 +199,7 @@ void MainWindow::on_actionLoadRaster_triggered()
 }
 
 
-void MainWindow::on_actionMeteoPointsArkimet_triggered()
+void MainWindow::on_actionNewMeteoPointsArkimet_triggered()
 {
     resetMeteoPoints();
 
@@ -259,25 +263,19 @@ void MainWindow::on_actionMeteoPointsArkimet_triggered()
                 myDbArkimet->setDatasetsActive(datasetSelected);
                 QStringList datasets = datasetSelected.remove("'").split(",");
 
-                QApplication::setOverrideCursor(Qt::WaitCursor);
+                formInfo myInfo;
+                myInfo.start("download points properties...", 0);
+                    if (myDownload->getPointProperties(datasets))
+                    {
+                        myProject.loadMeteoPointsDB(dbName);
+                        this->addMeteoPoints();
+                    }
+                    else
+                    {
+                        QMessageBox::information(NULL, "Network Error!", "Error in function getPointProperties");
+                    }
 
-                if (myDownload->getPointProperties(datasets))
-                {
-                    QApplication::restoreOverrideCursor();
-
-                    myProject.loadMeteoPointsDB(dbName, true);
-
-                    this->addMeteoPoints();
-                }
-                else
-                {
-                    QApplication::restoreOverrideCursor();
-
-                    QMessageBox *msgBox = new QMessageBox(this);
-                    msgBox->setText("Network Error");
-                    msgBox->exec();
-                    delete msgBox;
-                }
+                myInfo.close();
             }
             else
             {
@@ -524,14 +522,12 @@ QPoint MainWindow::getMapPoint(QPoint* point) const
 
 void MainWindow::resetMeteoPoints()
 {
-    datasetCheckbox.clear();
-
     for (int i = 0; i < this->pointList.size(); i++)
-    {
         this->mapView->scene()->removeObject(this->pointList[i]);
-    }
-    qDeleteAll(this->pointList.begin(), this->pointList.end());
+
     this->pointList.clear();
+
+    datasetCheckbox.clear();
 
     this->myRubberBand = NULL;
 }
@@ -544,6 +540,39 @@ void MainWindow::on_actionVariableChoose_triggered()
        this->ui->actionVariableNone->setChecked(false);
        this->updateVariable();
     } 
+}
+
+
+void MainWindow::on_actionVariableQualitySpatial_triggered()
+{
+    myProject.quality->setSpatialControl(ui->actionVariableQualitySpatial->isChecked());
+
+    updateVariable();
+}
+
+
+void MainWindow::on_actionInterpolation_triggered()
+{
+
+    std::string myError;
+    Crit3DInterpolationSettings interpolationSettings;
+
+    formInfo myInfo;
+    myInfo.start("Interpolation...", 0);
+
+    if (interpolationRaster(myProject.getCurrentVariable(), &interpolationSettings,
+                &(myProject.dataRaster), myProject.DTM, myProject.getCurrentTime(), &myError))
+    {
+        myProject.currentRaster = &(myProject.dataRaster);
+        setColorScale(myProject.getCurrentVariable(), myProject.currentRaster->colorScale);
+        QString myString = QString::fromStdString(getVariableString(myProject.getCurrentVariable()));
+        ui->labelRasterScale->setText(myString);
+        this->rasterLegend->colorScale = myProject.currentRaster->colorScale;
+    }
+    else
+        QMessageBox::information(NULL, "Error!", QString::fromStdString(myError));
+
+    myInfo.close();
 }
 
 
@@ -600,31 +629,8 @@ void MainWindow::updateVariable()
         }
     }
 
-    //VARIABLE
-    if ((myProject.currentVariable == airTemperature)
-            || (myProject.currentVariable == dailyAirTemperatureAvg))
-        this->ui->labelVariable->setText("Avg. air temperature °C");
-    else if ((myProject.currentVariable == airHumidity)
-            || (myProject.currentVariable == dailyAirHumidityAvg))
-        this->ui->labelVariable->setText("Avg. relative humidity %");
-    else if ((myProject.currentVariable == dailyPrecipitation)
-            ||  (myProject.currentVariable == precipitation))
-        this->ui->labelVariable->setText("Precipitation mm");
-    else if (myProject.currentVariable == dailyAirTemperatureMax)
-        this->ui->labelVariable->setText("Max. air temperature °C");
-    else if (myProject.currentVariable == dailyAirTemperatureMin)
-        this->ui->labelVariable->setText("Min. air temperature °C");
-    else if (myProject.currentVariable == dailyGlobalRadiation)
-        this->ui->labelVariable->setText("Solar radiation MJ m-2");
-    else if (myProject.currentVariable == dailyAirHumidityMax)
-        this->ui->labelVariable->setText("Max. relative humidity %");
-    else if (myProject.currentVariable == dailyAirHumidityMin)
-        this->ui->labelVariable->setText("Min. relative humidity %");
-    else if (myProject.currentVariable == globalIrradiance)
-        this->ui->labelVariable->setText("Solar irradiance W m-2");
-
-    else
-        this->ui->labelVariable->setText("None");
+    std::string myString = getVariableString(myProject.currentVariable);
+    ui->labelVariable->setText(QString::fromStdString(myString));
 
     redrawMeteoPoints();
 }
@@ -656,34 +662,33 @@ void MainWindow::on_dateTimeEdit_dateTimeChanged(const QDateTime &dateTime)
 }
 
 
-void MainWindow::redrawMeteoPointsPosition()
-{
-    for (int i = 0; i < myProject.nrMeteoPoints; i++)
-        pointList[i]->setVisible(false);
-
-    for (int i = 0; i < myProject.nrMeteoPoints; i++)
-    {
-            myProject.meteoPoints[i].value = NODATA;
-            pointList[i]->setFillColor(QColor(Qt::white));
-            pointList[i]->setRadius(5);
-            pointList[i]->setToolTip(i);
-            pointList[i]->setVisible(true);
-    }
-
-    myProject.colorScalePoints->setRange(NODATA, NODATA);
-    pointsLegend->update();
-}
-
 
 void MainWindow::redrawMeteoPoints()
 {
     if (myProject.nrMeteoPoints == 0)
         return;
 
-    // show position
-    if (myProject.getFrequency() == noFrequency || myProject.getCurrentVariable() == noMeteoVar)
+    // hide all meteo points
+    for (int i = 0; i < myProject.nrMeteoPoints; i++)
+        pointList[i]->setVisible(false);
+
+    if (! this->showPoints)
+        return;
+
+    // show location
+    if (myProject.getCurrentVariable() == noMeteoVar)
     {
-        redrawMeteoPointsPosition();
+        for (int i = 0; i < myProject.nrMeteoPoints; i++)
+        {
+                myProject.meteoPoints[i].value = NODATA;
+                pointList[i]->setFillColor(QColor(Qt::white));
+                pointList[i]->setRadius(5);
+                pointList[i]->setToolTip(i);
+                pointList[i]->setVisible(true);
+        }
+
+        myProject.colorScalePoints->setRange(NODATA, NODATA);
+        pointsLegend->update();
         return;
     }
 
@@ -697,13 +702,11 @@ void MainWindow::redrawMeteoPoints()
     myProject.colorScalePoints->setRange(minimum, maximum);
     roundColorScale(myProject.colorScalePoints, 4, true);
 
-    setColorScale(myProject.colorScalePoints, myProject.currentVariable);
+    setColorScale(myProject.currentVariable, myProject.colorScalePoints);
 
     Crit3DColor *myColor;
     for (int i = 0; i < myProject.nrMeteoPoints; i++)
     {
-        pointList[i]->setVisible(false);
-
         if (myProject.meteoPoints[i].value != NODATA)
         {
             if (myProject.meteoPoints[i].myQuality == quality::accepted)
@@ -732,7 +735,7 @@ bool MainWindow::loadMeteoPointsDB(QString dbName)
 {
     this->resetMeteoPoints();
 
-    if (!myProject.loadMeteoPointsDB(dbName, true))
+    if (!myProject.loadMeteoPointsDB(dbName))
         return false;
 
     this->addMeteoPoints();
@@ -782,9 +785,12 @@ void MainWindow::on_rasterScaleButton_clicked()
         return;
     }
 
-    colorScale::type myScale = chooseColorScale();
-    if (myScale != colorScale::none)
-        setRasterColorScale(myScale, myProject.currentRaster->colorScale, ui->labelRasterScale);
+    meteoVariable myVar = chooseColorScale();
+    if (myVar != noMeteoVar)
+    {
+        setColorScale(myVar, myProject.currentRaster->colorScale);
+        ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myVar)));
+    }
 }
 
 
@@ -959,9 +965,6 @@ bool downloadMeteoData()
 
         if (hourly.isChecked())
         {
-            // QApplication::setOverrideCursor(Qt::WaitCursor);
-            // QApplication::restoreOverrideCursor();
-
             if (! myProject.downloadHourlyDataArkimet(var, firstDate, lastDate, true))
             {
                 QMessageBox::information(NULL, "Error!", "Error in hourly download");
@@ -974,72 +977,18 @@ bool downloadMeteoData()
 }
 
 
-void setRasterColorScale(colorScale::type myScale, Crit3DColorScale *myColorScale, QLabel *myLabel)
+
+void MainWindow::on_actionPointsVisible_triggered()
 {
-    switch(myScale)
-    {
-    case colorScale::temperature:
-        setTemperatureScale(myColorScale);
-        myLabel->setText("Air temperature  °C");
-        break;
-
-    case colorScale::precipitation:
-        setPrecipitationScale(myColorScale);
-        myLabel->setText("Precipitation  mm");
-        break;
-
-    case colorScale::solarRadiation:
-        setRadiationScale(myColorScale);
-        myLabel->setText("Solar irradiance W m-2");
-        break;
-
-    case colorScale::relativeHumidity:
-        setRelativeHumidityScale(myColorScale);
-        myLabel->setText("Relative humidity  %");
-        break;
-
-    case colorScale::windIntensity:
-        setWindIntensityScale(myColorScale);
-        myLabel->setText("Wind intensity  m s-1");
-        break;
-
-    case colorScale::terrain:
-        setDefaultDTMScale(myColorScale);
-        myLabel->setText("Digital Terrain Map  m");
-
-    default:
-        setDefaultDTMScale(myColorScale);
-        myLabel->setText("Digital Terrain Map  m");
-    }
+    this->showPoints = ui->actionPointsVisible->isChecked();
+    redrawMeteoPoints();
 }
 
 
-void MainWindow::on_actionVariableQualitySpatial_triggered()
+void MainWindow::on_actionOpen_NetCDF_data_triggered()
 {
-    myProject.quality->setSpatialControl(ui->actionVariableQualitySpatial->isChecked());
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open NetCDF data"), "", tr("NetCDF files (*.nc)"));
 
-    updateVariable();
-}
-
-
-void MainWindow::on_actionInterpolation_triggered()
-{
-
-    std::string myError;
-    Crit3DInterpolationSettings interpolationSettings;
-
-    formInfo myInfo;
-    myInfo.start("Interpolation.. ", 0);
-
-    if (interpolationRaster(myProject.getCurrentVariable(), &interpolationSettings,
-                &(myProject.dataRaster), myProject.DTM, myProject.getCurrentTime(), &myError))
-    {
-        myProject.currentRaster = &(myProject.dataRaster);
-        this->rasterLegend->colorScale = myProject.currentRaster->colorScale;
-        this->update();
-    }
-    else
-        QMessageBox::information(NULL, "Error!", QString::fromStdString(myError));
-
-    myInfo.close();
+    if (fileName != "")
+        NetCDF::provaNetCDF(fileName);
 }

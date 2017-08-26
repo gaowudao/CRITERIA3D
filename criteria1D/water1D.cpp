@@ -72,7 +72,7 @@ bool computeInfiltration(Criteria1D* myCase, float prec, float surfaceIrrigation
     }
     avgPloughSat /= nrPloughLayers;
 
-    // max infiltration due to gravitational force and permeability (Driessen, 1986)
+    // Max infiltration - due to gravitational force and permeability (Driessen, 1986)
     double permFactor = 1.0 - avgPloughSat;
     for (i = 1; i< myCase->nrLayers; i++)
     {
@@ -154,7 +154,7 @@ bool computeInfiltration(Criteria1D* myCase, float prec, float surfaceIrrigation
                 }
                 else
                 {
-                    // si crea un surplus (localflux)
+                    // local surplus (localflux)
                     localFlux = fluxLayer - residualFlux;
                     fluxLayer = residualFlux;
                     myCase->layer[i].flux += fluxLayer;
@@ -338,7 +338,7 @@ bool computeSurfaceRunoff(Criteria1D* myCase)
     double roughness;            // [mm]
 
     // very rough solution for taking into account tillage and others operations
-    if (isPluriannual(myCase->myCrop.type))
+    if (myCase->myCrop.isPluriannual())
         clodHeight = 0.0;
     else
         clodHeight = 5.0;
