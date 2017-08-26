@@ -5,7 +5,6 @@
 
 namespace NetCDF
 {
-
     bool provaNetCDF(QString fileName)
     {
         int ncId, retval;
@@ -13,33 +12,29 @@ namespace NetCDF
         char varName[NC_MAX_NAME+1];
         char typeName[NC_MAX_NAME+1];
         char *valueStr;
-        float value;
+        int valueInt;
+        double value;
         size_t lenght;
         nc_type ncTypeId;
 
-        /* Open the file. NC_NOWRITE tells netCDF we want read-only access */
+        // Open the file. NC_NOWRITE tells netCDF we want read-only access
         if ((retval = nc_open(fileName.toStdString().data(), NC_NOWRITE, &ncId)))
           qDebug() << nc_strerror(retval);
 
-        /* NC_INQ tells how many netCDF dimensions, variables and global attributes are in
-        the file, also the dimension id of the unlimited dimension, if there is one. */
+        // NC_INQ tells how many netCDF dimensions, variables and global attributes are in
+        // the file, also the dimension id of the unlimited dimension, if there is one.
         int nrDimensions, nrVariables, nrGlobalAttributes, unlimDimensionId;
         if ((retval = nc_inq(ncId, &nrDimensions, &nrVariables, &nrGlobalAttributes, &unlimDimensionId)))
             qDebug() << nc_strerror(retval);
 
-        if (unlimDimensionId != -1)
-            nc_inq_dim(ncId, unlimDimensionId, name, &lenght);
-
-        qDebug() << "\nDims:" << nrDimensions << "\tVars:" << nrVariables
-                 << "\tAttributes:" << nrGlobalAttributes << "\tUnlimited:" << name;
-
+        qDebug() << "\n" ;
         for (int a = 0; a <nrGlobalAttributes; a++)
         {
            nc_inq_attname(ncId, NC_GLOBAL, a, name);
            nc_inq_attlen(ncId, NC_GLOBAL, name, &lenght);
            valueStr = (char *) calloc(lenght +1, sizeof(char));
            nc_get_att_text(ncId, NC_GLOBAL, name, valueStr);
-           qDebug() << name << "\t" << valueStr;
+           qDebug() << name << "=" << valueStr;
        }
 
        int varDimIds[NC_MAX_VAR_DIMS];
@@ -49,7 +44,7 @@ namespace NetCDF
        for (int i = 0; i < nrDimensions; i++)
        {
            nc_inq_dim(ncId, i, name, &lenght);
-           qDebug() << i << name << "\tnr values:" << lenght;
+           qDebug() << i << name << "\t values:" << lenght;
        }
 
        qDebug() << "\nVariables: ";
@@ -61,15 +56,15 @@ namespace NetCDF
            QStringList dimList;
            for (int d = 0; d < nrVarDimensions; d++)
            {
-               nc_inq_dim(ncId, d, name, &lenght);
+               nc_inq_dim(ncId, varDimIds[d], name, &lenght);
                dimList.append(name);
            }
 
-           qDebug() << "\n" << v << varName << "\t type:" << typeName
-                    << "\t nr dims:" << nrVarDimensions << dimList
-                    << "\t nr attributes:" << nrVarAttributes;
+           qDebug() << v << varName << "\t\t type:" << typeName
+                            << "\t dims:" << nrVarDimensions << dimList;
 
-           for (int a = 0; a <nrVarAttributes; a++)
+           /*
+           for (int a = 0; a < nrVarAttributes; a++)
            {
               nc_inq_attname(ncId, v, a, name);
               nc_inq_atttype(ncId, v, name, &ncTypeId);
@@ -78,17 +73,22 @@ namespace NetCDF
                   nc_inq_attlen(ncId, v, name, &lenght);
                   valueStr = (char *) calloc(lenght +1, sizeof(char));
                   nc_get_att_text(ncId, v, name, valueStr);
-                  qDebug() << name << "\t" << valueStr;
+                  qDebug() << name << "=" << valueStr;
               }
-              else
+              else if (ncTypeId == NC_INT)
+              {
+                  nc_get_att(ncId, v, name, &valueInt);
+                  qDebug() << name << "=" << valueInt;
+              }
+              else if (ncTypeId == NC_DOUBLE)
               {
                   nc_get_att(ncId, v, name, &value);
-                   qDebug() << name << "\t" << value;
+                  qDebug() << name << "=" << value;
               }
-          }
+          }*/
        }
 
-       /* Close the file, freeing all resources. */
+       // Close the file, freeing all resources
        if ((retval = nc_close(ncId)))
           qDebug() << nc_strerror(retval);
 

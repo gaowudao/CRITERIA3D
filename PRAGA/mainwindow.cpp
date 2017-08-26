@@ -977,7 +977,6 @@ bool downloadMeteoData()
 }
 
 
-
 void MainWindow::on_actionPointsVisible_triggered()
 {
     this->showPoints = ui->actionPointsVisible->isChecked();

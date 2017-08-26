@@ -6,7 +6,7 @@
     namespace NetCDF
     {
 
-    bool provaNetCDF(QString fileName);
+        bool provaNetCDF(QString fileName);
 
     }
 

@@ -21,8 +21,7 @@ MapGraphicsObject::MapGraphicsObject(bool sizeIsZoomInvariant, MapGraphicsObject
      * When we get back to the event loop, mark us as constructed.
      * This is a hack so that we can set properties of child objects in their constructors
     */
-    // dà problemi con molti oggetti (es: punti stazione)
-    // QTimer::singleShot(1, this, SLOT(setConstructed()));
+    QTimer::singleShot(1, this, SLOT(setConstructed()));
 }
 
 MapGraphicsObject::~MapGraphicsObject()

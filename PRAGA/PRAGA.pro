@@ -11,18 +11,18 @@ TEMPLATE = app
 
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../utilities ../gis ../MapGraphics ../meteo ../quality ../interpolation ../dbMeteoPoints
 
-LIBS += -L../mathFunctions/release -lmathFunctions
-LIBS += -L../crit3dDate/release -lcrit3dDate
-LIBS += -L../utilities/release -lutilities
-LIBS += -L../dbMeteoPoints/release -ldbMeteoPoints
-LIBS += -L../meteo/release -lmeteo
-LIBS += -L../gis/release -lgis
-LIBS += -L../quality/release -lquality
-LIBS += -L../interpolation/release -linterpolation
-LIBS += -L../MapGraphics/release -lMapGraphics
+LIBS += -L../mathFunctions/debug -lmathFunctions
+LIBS += -L../crit3dDate/debug -lcrit3dDate
+LIBS += -L../utilities/debug -lutilities
+LIBS += -L../dbMeteoPoints/debug -ldbMeteoPoints
+LIBS += -L../meteo/debug -lmeteo
+LIBS += -L../gis/debug -lgis
+LIBS += -L../quality/debug -lquality
+LIBS += -L../interpolation/debug -linterpolation
+LIBS += -L../MapGraphics/debug -lMapGraphics
 
-INCLUDEPATH += C:/netcdf/include
-LIBS += -LC:/netcdf/lib -lnetcdf -lhdf5
+INCLUDEPATH += $$(NC4_INSTALL_DIR)/include
+LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf -lhdf5
 
 
 SOURCES += main.cpp\
