@@ -25,13 +25,13 @@ namespace NetCDF
 
         //NC_NOWRITE tells netCDF we want read-only access
         if ((retval = nc_open(fileName.data(), NC_NOWRITE, &ncId)))
-            cout << nc_strerror(retval);
+            cout << nc_strerror(retval) << endl;
 
         // NC_INQ tells how many netCDF dimensions, variables and global attributes are in
         // the file, also the dimension id of the unlimited dimension, if there is one.
         int nrDimensions, nrVariables, nrGlobalAttributes, unlimDimensionId;
         if ((retval = nc_inq(ncId, &nrDimensions, &nrVariables, &nrGlobalAttributes, &unlimDimensionId)))
-            cout << nc_strerror(retval);
+            cout << nc_strerror(retval) << endl;
 
         cout << endl ;
 
@@ -115,18 +115,14 @@ namespace NetCDF
 
         float* x = (float*) calloc(nrX, sizeof(float));
         if (retval = nc_get_var_float(ncId, idDimX, x))
-            cout << nc_strerror(retval);
+            cout << nc_strerror(retval) << endl;
 
         float* y = (float*) calloc(nrY, sizeof(float));
         if (retval = nc_get_var_float(ncId, idDimY, y))
-            cout << nc_strerror(retval);
-
-        cout << nameDimX << endl;
+            cout << nc_strerror(retval) << endl;
 
         if (nameDimX == "x")
         {
-            cout << "HERE1" << endl;
-
             float* lat = (float*) calloc(nrY*nrX, sizeof(float));
             float* lon = (float*) calloc(nrY*nrX, sizeof(float));
 
@@ -142,13 +138,13 @@ namespace NetCDF
                 cout << lon[row*nrX+row] << "  ";
             }
 
-            cout << endl << "HERE2" << endl;
+            cout << endl;
         }
 
 
         // CLOSE file, freeing all resources
         if ((retval = nc_close(ncId)))
-            cout << nc_strerror(retval);
+            cout << nc_strerror(retval) << endl;
 
        return true;
     }
