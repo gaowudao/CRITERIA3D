@@ -134,9 +134,11 @@ namespace NetCDF
 
             for (int row = 0; row < nrY; row+=2)
             {
-                cout << lat[row*nrX+row] <<",";
-                cout << lon[row*nrX+row] <<"  ";
+                cout << lat[row*nrX+row] << ",";
+                cout << lon[row*nrX+row] << "  ";
             }
+
+            cout << "HERE";
         }
 
 
