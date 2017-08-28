@@ -18,7 +18,7 @@
     bool irrigateCrop(Criteria1D* myCase, double irrigationDemand);
 
     bool evaporation(Criteria1D* myCase);
-    bool cropTranspiration(Criteria1D* myCase);
+    double cropTranspiration(Criteria1D* myCase, bool getWaterStress);
 
     double getTotalEasyWater(Criteria1D* myCase);
     double getReadilyAvailableWater(Criteria1D* myCase);

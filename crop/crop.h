@@ -66,7 +66,6 @@
         double LAI;
         double LAIstartSenescence;
         double waterStressSensibility;
-        double lastWaterStress;
 
         Crit3DCrop();
 

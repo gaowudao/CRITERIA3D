@@ -83,7 +83,6 @@
         degreeDays = NODATA;
         LAI = NODATA;
         waterStressSensibility = NODATA;
-        lastWaterStress = NODATA;
     }
 
 
@@ -214,7 +213,6 @@
         }
 
         LAIstartSenescence = NODATA;
-        lastWaterStress = 0;
     }
 
 

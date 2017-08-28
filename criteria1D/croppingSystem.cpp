@@ -38,7 +38,6 @@ void initializeCrop(Criteria1D* myCase, int currentDoy)
         myCase->myCrop.doyStartSenescence = 120;
 
     myCase->myCrop.LAIstartSenescence = NODATA;
-    myCase->myCrop.lastWaterStress = NODATA;
     myCase->myCrop.currentSowingDoy = NODATA;
 
     daysSinceIrrigation = NODATA;
@@ -57,8 +56,6 @@ void initializeCrop(Criteria1D* myCase, int currentDoy)
     // reset crop
     myCase->myCrop.resetCrop(myCase->nrLayers);
 }
-
-
 
 
 
@@ -84,6 +81,7 @@ bool cropWaterDemand(Criteria1D* myCase)
 
     return true;
 }
+
 
 
 bool updateLai(Criteria1D* myCase, int myDoy)
@@ -282,9 +280,10 @@ float cropIrrigationDemand(Criteria1D* myCase, float currentPrec, float nextPrec
     if (myCase->myCrop.irrigationShift > 1)
         if ((currentPrec + nextPrec) >  myCase->myCrop.irrigationVolume * 0.5) return 0.;
 
-    // check stress tolerance
+    // check water stress
     double threshold = 1. - myCase->myCrop.stressTolerance;
-    if (myCase->myCrop.lastWaterStress < threshold)return 0.;
+    double waterStress = cropTranspiration(myCase, true);
+    if (waterStress <= threshold) return 0.;
 
     // check readily available water (depending on water sensitivity)
     if (getTotalEasyWater(myCase) > 5.) return 0.;
@@ -390,7 +389,9 @@ bool evaporation(Criteria1D* myCase)
 }
 
 
-bool cropTranspiration(Criteria1D* myCase)
+// return total daily transpiration
+// or percentage of water stress (if getWaterStress = true)
+double cropTranspiration(Criteria1D* myCase, bool getWaterStress)
 {
     //check
     if (myCase->myCrop.idCrop == "") return false;
@@ -413,15 +414,16 @@ bool cropTranspiration(Criteria1D* myCase)
     int i;
 
     // initialize layer transpiration
-    myCase->output.dailyTranspiration = 0.0;
     for (i=0; i < myCase->nrLayers; i++)
         myCase->myCrop.roots.transpiration[i] = 0.0;
 
-    if (myCase->output.dailyMaxTranspiration == 0) return true;
+    if (myCase->output.dailyMaxTranspiration == 0)
+        return 0.f;
 
     // initialize stressed layers
-    bool* isStressed = (bool*) calloc(myCase->nrLayers, sizeof(bool));
-    for (i=0; i < myCase->nrLayers; i++) isStressed[i] = false;
+    bool* isLayerStressed = (bool*) calloc(myCase->nrLayers, sizeof(bool));
+    for (i=0; i < myCase->nrLayers; i++)
+        isLayerStressed[i] = false;
 
     if (myCase->myCrop.isWaterSurplusResistant())
         WSS = 0.0;
@@ -448,7 +450,7 @@ bool cropTranspiration(Criteria1D* myCase)
 
             TRe += myCase->myCrop.roots.transpiration[i];
             TRs += myCase->output.dailyMaxTranspiration * myCase->myCrop.roots.rootDensity[i];
-            isStressed[i] = true;
+            isLayerStressed[i] = true;
         }
         else if (myCase->layer[i].waterContent < waterScarcityThreshold)
         {
@@ -458,7 +460,7 @@ bool cropTranspiration(Criteria1D* myCase)
 
             TRs += myCase->myCrop.roots.transpiration[i];
             TRe += myCase->output.dailyMaxTranspiration * myCase->myCrop.roots.rootDensity[i];
-            isStressed[i] = true;
+            isLayerStressed[i] = true;
         }
         else
         {
@@ -467,7 +469,7 @@ bool cropTranspiration(Criteria1D* myCase)
 
             TRs += myCase->myCrop.roots.transpiration[i];
             TRe += myCase->myCrop.roots.transpiration[i];
-            isStressed[i] = false;
+            isLayerStressed[i] = false;
             totRootDensityWithoutStress +=  myCase->myCrop.roots.rootDensity[i];
         }
     }
@@ -484,7 +486,7 @@ bool cropTranspiration(Criteria1D* myCase)
 
             for (int i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
             {
-                if (! isStressed[i])
+                if (! isLayerStressed[i])
                 {
                     value = balance * (myCase->myCrop.roots.rootDensity[i] / totRootDensityWithoutStress);
                     myCase->myCrop.roots.transpiration[i] += value;
@@ -495,21 +497,31 @@ bool cropTranspiration(Criteria1D* myCase)
         }
     }
 
-    for (i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
+    free(isLayerStressed);
+
+    if (getWaterStress)
     {
-        myCase->layer[i].waterContent -= myCase->myCrop.roots.transpiration[i];
-        myCase->output.dailyTranspiration += myCase->myCrop.roots.transpiration[i];
+        // return water stress
+        return 1.0 - (TRs / myCase->output.dailyMaxTranspiration);
+    }
+    else
+    {
+        // update water content
+        double dailyTranspiration = 0.0;
+        for (i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
+        {
+            myCase->layer[i].waterContent -= myCase->myCrop.roots.transpiration[i];
+            dailyTranspiration += myCase->myCrop.roots.transpiration[i];
+        }
+
+        return dailyTranspiration;
     }
 
-    myCase->myCrop.lastWaterStress = 1.0 - (TRs / myCase->output.dailyMaxTranspiration);
-
-    free(isStressed);
-
-    return true;
 }
 
 
 // OLD version - following Driessen (1992)Land-use systems analysis, p89-108
+/*
 bool cropTranspiration_old(Criteria1D* myCase)
 {
     //check
@@ -658,6 +670,7 @@ bool cropTranspiration_old(Criteria1D* myCase)
 
     return true;
 }
+*/
 
 
 bool updateCrop(Criteria1D* myCase, std::string* myError, Crit3DDate myDate,

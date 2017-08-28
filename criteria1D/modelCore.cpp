@@ -114,6 +114,10 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
         if (! updateCrop(myCase, myError, myDate, tmin, tmax, waterTableDepth))
             return false;
 
+        // ETcrop
+        if (! cropWaterDemand(myCase))
+            return false;
+
         // WATERTABLE (if available)
         computeCapillaryRise(myCase, waterTableDepth);
 
@@ -152,15 +156,14 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
                 }
         }
 
-        if (! cropWaterDemand(myCase))
-            return false;
-
+        // EVAPORATION
         if (! evaporation(myCase))
             return false;
 
-        if (! cropTranspiration(myCase))
-            return false;
+        // TRANSPIRATION
+        myCase->output.dailyTranspiration = cropTranspiration(myCase, false);
 
+        // RAW and Water Deficit
         myCase->output.dailyCropAvailableWater = getReadilyAvailableWater(myCase);
         myCase->output.dailySoilWaterDeficit = getSoilWaterDeficit(myCase);
 
