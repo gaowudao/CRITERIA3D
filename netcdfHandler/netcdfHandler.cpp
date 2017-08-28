@@ -121,8 +121,12 @@ namespace NetCDF
         if (retval = nc_get_var_float(ncId, idDimY, y))
             cout << nc_strerror(retval);
 
+        cout << nameDimX << endl;
+
         if (nameDimX == "x")
         {
+            cout << "HERE1" << endl;
+
             float* lat = (float*) calloc(nrY*nrX, sizeof(float));
             float* lon = (float*) calloc(nrY*nrX, sizeof(float));
 
@@ -138,7 +142,7 @@ namespace NetCDF
                 cout << lon[row*nrX+row] << "  ";
             }
 
-            cout << "HERE";
+            cout << endl << "HERE2" << endl;
         }
 
 
