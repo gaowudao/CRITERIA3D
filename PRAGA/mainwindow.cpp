@@ -57,8 +57,9 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
 
     // Set start size and position
     Position* startCenter = new Position (11.35, 44.5, 0.0);
-    this->mapView->setZoomLevel(10);
+    this->mapView->setZoomLevel(6);
     this->mapView->centerOn(startCenter->lonLat());
+    this->setMapSource(OSMTileSource::Terrain);
 
     // Set raster object
     this->rasterObj = new RasterObject(this->mapView);

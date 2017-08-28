@@ -9,26 +9,22 @@
 
 Project myProject;
 
+
 bool setProxy(QString hostName, int port)
 {
     QNetworkProxy myProxy;
 
-    formInfo myInfo;
-    myInfo.start("Init Proxy...", 0);
+    myProxy.setType(QNetworkProxy::HttpProxy);
+    myProxy.setHostName(hostName);
+    myProxy.setPort(port);
 
-        myProxy.setType(QNetworkProxy::HttpProxy);
-        myProxy.setHostName(hostName);
-        myProxy.setPort(port);
-
-        try {
-           QNetworkProxy::setApplicationProxy(myProxy);
-        }
-        catch (...) {
-            QMessageBox::information(NULL, "Error in proxy configuration!", "");
-            return false;
-        }
-
-    myInfo.close();
+    try {
+       QNetworkProxy::setApplicationProxy(myProxy);
+    }
+    catch (...) {
+        QMessageBox::information(NULL, "Error in proxy configuration!", "");
+        return false;
+    }
 
     return true;
 }
@@ -39,6 +35,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     //setProxy("172.16.1.21", 8080);
+    QNetworkProxyFactory::setUseSystemConfiguration(true);
 
     environment test = praga;
 
