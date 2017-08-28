@@ -3,6 +3,7 @@
 
 #include "netcdfManager.h"
 
+
 namespace NetCDF
 {
     bool provaNetCDF(QString fileName)
@@ -16,6 +17,7 @@ namespace NetCDF
         double value;
         size_t lenght;
         nc_type ncTypeId;
+        int idX, idY, nrX, nrY;
 
         // Open the file. NC_NOWRITE tells netCDF we want read-only access
         if ((retval = nc_open(fileName.toStdString().data(), NC_NOWRITE, &ncId)))
@@ -44,14 +46,23 @@ namespace NetCDF
        for (int i = 0; i < nrDimensions; i++)
        {
            nc_inq_dim(ncId, i, name, &lenght);
+
+           if (QString(name) == "x") nrX = int(lenght);
+           if (QString(name) == "y") nrY = int(lenght);
+
            qDebug() << i << name << "\t values:" << lenght;
        }
+
+       qDebug() <<"\n(x,y) ="<<nrX << nrY;
 
        qDebug() << "\nVariables: ";
        for (int v = 0; v < nrVariables; v++)
        {
            nc_inq_var(ncId, v, varName, &ncTypeId, &nrVarDimensions, varDimIds, &nrVarAttributes);
            nc_inq_type(ncId, ncTypeId, typeName, &lenght);
+
+           if (QString(varName) == "x") idX = v;
+           if (QString(varName) == "y") idY = v;
 
            QStringList dimList;
            for (int d = 0; d < nrVarDimensions; d++)
@@ -63,7 +74,7 @@ namespace NetCDF
            qDebug() << v << varName << "\t\t type:" << typeName
                             << "\t dims:" << nrVarDimensions << dimList;
 
-           /*
+
            for (int a = 0; a < nrVarAttributes; a++)
            {
               nc_inq_attname(ncId, v, a, name);
@@ -85,10 +96,35 @@ namespace NetCDF
                   nc_get_att(ncId, v, name, &value);
                   qDebug() << name << "=" << value;
               }
-          }*/
+          }
        }
 
-       // Close the file, freeing all resources
+       float* x = (float*) calloc(nrX, sizeof(float));
+       retval = nc_get_var_float(ncId, idX, x);
+       if (retval) qDebug() << nc_strerror(retval);
+
+       float* y = (float*) calloc(nrY, sizeof(float));
+       retval = nc_get_var_float(ncId, idY, y);
+       if (retval) qDebug() << nc_strerror(retval);
+
+       float* lat = (float*) calloc(nrY*nrX, sizeof(float));
+       float* lon = (float*) calloc(nrY*nrX, sizeof(float));
+       retval = nc_get_var_float(ncId, 4, lon);
+       if (retval) qDebug() << "error in reading longitude:" << nc_strerror(retval);
+       retval = nc_get_var_float(ncId, 5, lat);
+       if (retval) qDebug() << "error in reading latitude:" << nc_strerror(retval);
+
+       QStringList latLonList;
+       for (int row = 0; row < nrY; row+=2)
+       {
+           latLonList.append(QString::number(lat[row*nrX+row]));
+           latLonList.append(QString::number(lon[row*nrX+row]));
+           latLonList.append("--");
+       }
+       qDebug() << latLonList;
+
+
+       // CLOSE file, freeing all resources
        if ((retval = nc_close(ncId)))
           qDebug() << nc_strerror(retval);
 
