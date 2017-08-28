@@ -1,11 +1,11 @@
 #include <QFileDialog>
 #include <QtDebug>
-#include <QCheckBox>
 #include <QMessageBox>
 #include <QDialogButtonBox>
 #include <QPushButton>
 #include <QListWidget>
 #include <QRadioButton>
+#include <QTextBrowser>
 
 #include "tileSources/OSMTileSource.h"
 #include "tileSources/GridTileSource.h"
@@ -25,6 +25,8 @@
 #include "quality.h"
 #include "interpolation.h"
 #include "netcdfHandler.h"
+#include <sstream>
+#include <iostream>
 
 
 extern Project myProject;
@@ -989,6 +991,20 @@ void MainWindow::on_actionOpen_NetCDF_data_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open NetCDF data"), "", tr("NetCDF files (*.nc)"));
 
-    if (fileName != "")
-        NetCDF::provaNetCDF(fileName.toStdString());
+    if (fileName == "") return;
+
+    std::stringstream buffer;
+    NetCDF::provaNetCDF(fileName.toStdString(), &buffer);
+
+    QDialog myDialog;
+    QVBoxLayout mainLayout;
+
+    myDialog.setWindowTitle("NetCDF file info  ");
+
+    QTextBrowser textBrowser;
+    textBrowser.setText(QString::fromStdString(buffer.str()));
+    mainLayout.addWidget(&textBrowser);
+
+    myDialog.setLayout(&mainLayout);
+    myDialog.exec();
 }

@@ -1,6 +1,8 @@
-#include <netcdf.h>
 #include <iostream>
+#include <sstream>
 #include <vector>
+
+#include <netcdf.h>
 
 #include "netcdfHandler.h"
 
@@ -9,7 +11,7 @@ using namespace std;
 
 namespace NetCDF
 {
-    bool provaNetCDF(string fileName)
+    bool provaNetCDF(string fileName, stringstream *buffer)
     {
         int ncId, retval;
         char name[NC_MAX_NAME+1];
@@ -25,17 +27,22 @@ namespace NetCDF
 
         //NC_NOWRITE tells netCDF we want read-only access
         if ((retval = nc_open(fileName.data(), NC_NOWRITE, &ncId)))
-            cout << nc_strerror(retval) << endl;
+        {
+            *buffer << nc_strerror(retval) << endl;
+            return false;
+        }
 
         // NC_INQ tells how many netCDF dimensions, variables and global attributes are in
         // the file, also the dimension id of the unlimited dimension, if there is one.
         int nrDimensions, nrVariables, nrGlobalAttributes, unlimDimensionId;
         if ((retval = nc_inq(ncId, &nrDimensions, &nrVariables, &nrGlobalAttributes, &unlimDimensionId)))
-            cout << nc_strerror(retval) << endl;
+        {
+            *buffer << nc_strerror(retval) << endl;
+            return false;
+        }
 
-        cout << endl ;
-
-        // Global attributes
+        *buffer << fileName << endl << endl;
+        *buffer << "Global attributes:" << endl;
         for (int a = 0; a <nrGlobalAttributes; a++)
         {
            nc_inq_attname(ncId, NC_GLOBAL, a, name);
@@ -43,13 +50,13 @@ namespace NetCDF
            valueStr = (char *) calloc(lenght +1, sizeof(char));
            nc_get_att_text(ncId, NC_GLOBAL, name, valueStr);
 
-           cout << name << " = " << valueStr << endl;
+           *buffer << name << " = " << valueStr << endl;
        }
 
        int varDimIds[NC_MAX_VAR_DIMS];
        int nrVarDimensions, nrVarAttributes;
 
-       cout << "\nDimensions: " << endl;
+       *buffer << "\nDimensions: " << endl;
        for (int i = 0; i < nrDimensions; i++)
        {
            nc_inq_dim(ncId, i, name, &lenght);
@@ -65,12 +72,12 @@ namespace NetCDF
                nameDimY = string(name);
            }
 
-           cout << i << " - " << name << "\t values: " << lenght << endl;
+           *buffer << i << " - " << name << "\t values: " << lenght << endl;
        }
 
-       cout <<"\n(x,y) = "<<nrX << "," <<nrY << endl;
+       *buffer <<"\n(x,y) = "<<nrX << "," <<nrY << endl;
 
-       cout << "\nVariables: " << endl;
+       *buffer << "\nVariables: " << endl;
        for (int v = 0; v < nrVariables; v++)
        {
            nc_inq_var(ncId, v, varName, &ncTypeId, &nrVarDimensions, varDimIds, &nrVarAttributes);
@@ -81,13 +88,13 @@ namespace NetCDF
            if (string(varName) == nameDimY)
                idDimY = v;
 
-           cout << endl << v << " - " << varName << "\t type: " << typeName << "\t dims: ";
+           *buffer << endl << v << " - " << varName << "\t type: " << typeName << "\t dims: ";
            for (int d = 0; d < nrVarDimensions; d++)
            {
                nc_inq_dim(ncId, varDimIds[d], name, &lenght);
-               cout << name << " ";
+               *buffer << name << " ";
            }
-           cout << endl;
+           *buffer << endl;
 
            for (int a = 0; a < nrVarAttributes; a++)
            {
@@ -98,28 +105,36 @@ namespace NetCDF
                     nc_inq_attlen(ncId, v, name, &lenght);
                     valueStr = (char *) calloc(lenght +1, sizeof(char));
                     nc_get_att_text(ncId, v, name, valueStr);
-                    cout << name << " = " << valueStr << endl;
+                    *buffer << name << " = " << valueStr << endl;
                 }
                 else if (ncTypeId == NC_INT)
                 {
                     nc_get_att(ncId, v, name, &valueInt);
-                    cout << name << " = " << valueInt << endl;
+                    *buffer << name << " = " << valueInt << endl;
                 }
                 else if (ncTypeId == NC_DOUBLE)
                 {
                     nc_get_att(ncId, v, name, &value);
-                    cout << name << " = " << value << endl;
+                    *buffer << name << " = " << value << endl;
                 }
             }
         }
 
         float* x = (float*) calloc(nrX, sizeof(float));
         if (retval = nc_get_var_float(ncId, idDimX, x))
-            cout << nc_strerror(retval) << endl;
+        {
+            *buffer << "error in reading x:" << nc_strerror(retval);
+            nc_close(ncId);
+            return false;
+        }
 
         float* y = (float*) calloc(nrY, sizeof(float));
         if (retval = nc_get_var_float(ncId, idDimY, y))
-            cout << nc_strerror(retval) << endl;
+        {
+            *buffer << "error in reading x:" << nc_strerror(retval);
+            nc_close(ncId);
+            return false;
+        }
 
         if (nameDimX == "x")
         {
@@ -127,24 +142,23 @@ namespace NetCDF
             float* lon = (float*) calloc(nrY*nrX, sizeof(float));
 
             if (retval = nc_get_var_float(ncId, 4, lon))
-                cout << "error in reading longitude:" << nc_strerror(retval);
+                *buffer << "error in reading longitude:" << nc_strerror(retval);
 
             if (retval = nc_get_var_float(ncId, 5, lat))
-                cout << "error in reading latitude:" << nc_strerror(retval);
+                *buffer << "error in reading latitude:" << nc_strerror(retval);
 
+            *buffer << endl;
             for (int row = 0; row < nrY; row+=2)
             {
-                cout << lat[row*nrX+row] << ",";
-                cout << lon[row*nrX+row] << "  ";
+                *buffer << lat[row*nrX+row] << ",";
+                *buffer << lon[row*nrX+row] << "  ";
             }
-
-            cout << endl;
+            *buffer << endl;
         }
-
 
         // CLOSE file, freeing all resources
         if ((retval = nc_close(ncId)))
-            cout << nc_strerror(retval) << endl;
+            *buffer << nc_strerror(retval) << endl;
 
        return true;
     }

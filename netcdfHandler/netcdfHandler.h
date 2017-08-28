@@ -6,7 +6,7 @@
     namespace NetCDF
     {
 
-        bool provaNetCDF(std::string fileName);
+        bool provaNetCDF(std::string fileName, std::stringstream *buffer);
 
     }
 
