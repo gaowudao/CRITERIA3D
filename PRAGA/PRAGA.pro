@@ -9,7 +9,7 @@ QT       += core gui widgets network sql
 TARGET = PRAGA
 TEMPLATE = app
 
-INCLUDEPATH += ../crit3dDate ../mathFunctions ../utilities ../gis ../MapGraphics ../meteo ../quality ../interpolation ../dbMeteoPoints
+INCLUDEPATH += ../crit3dDate ../mathFunctions ../utilities ../gis ../MapGraphics ../meteo ../quality ../interpolation ../dbMeteoPoints ../netcdfHandler
 
 LIBS += -L../mathFunctions/release -lmathFunctions
 LIBS += -L../crit3dDate/release -lcrit3dDate
@@ -20,8 +20,8 @@ LIBS += -L../gis/release -lgis
 LIBS += -L../quality/release -lquality
 LIBS += -L../interpolation/release -linterpolation
 LIBS += -L../MapGraphics/release -lMapGraphics
+LIBS += -L../netcdfHandler/release -lnetcdfHandler
 
-INCLUDEPATH += $$(NC4_INSTALL_DIR)/include
 LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf -lhdf5
 
 
@@ -33,8 +33,7 @@ SOURCES += main.cpp\
     stationMarker.cpp \
     rubberBand.cpp \
     formInfo.cpp \
-    dialogWindows.cpp \
-    netcdfManager.cpp
+    dialogWindows.cpp
 
 HEADERS  += mainwindow.h \
     rasterObject.h \
@@ -44,8 +43,7 @@ HEADERS  += mainwindow.h \
     stationMarker.h \
     rubberBand.h \
     formInfo.h \
-    dialogWindows.h \
-    netcdfManager.h
+    dialogWindows.h
 
 FORMS    += mainwindow.ui \
     formInfo.ui

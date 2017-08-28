@@ -24,7 +24,7 @@
 #include "dialogWindows.h"
 #include "quality.h"
 #include "interpolation.h"
-#include "netcdfManager.h"
+#include "netcdfHandler.h"
 
 
 extern Project myProject;
@@ -57,7 +57,7 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
 
     // Set start size and position
     Position* startCenter = new Position (11.35, 44.5, 0.0);
-    this->mapView->setZoomLevel(6);
+    this->mapView->setZoomLevel(8);
     this->mapView->centerOn(startCenter->lonLat());
     this->setMapSource(OSMTileSource::Terrain);
 
@@ -990,5 +990,5 @@ void MainWindow::on_actionOpen_NetCDF_data_triggered()
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open NetCDF data"), "", tr("NetCDF files (*.nc)"));
 
     if (fileName != "")
-        NetCDF::provaNetCDF(fileName);
+        NetCDF::provaNetCDF(fileName.toStdString());
 }
