@@ -286,7 +286,7 @@ float cropIrrigationDemand(Criteria1D* myCase, float currentPrec, float nextPrec
     if (waterStress <= threshold) return 0.;
 
     // check readily available water (depending on water sensitivity)
-    if (getTotalEasyWater(myCase) > 5.) return 0.;
+    if (getTotalEasyWater(myCase) > 10.) return 0.;
 
     // all check passed --> IRRIGATION
 
