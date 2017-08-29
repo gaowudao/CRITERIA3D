@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <algorithm>
 
 #include <netcdf.h>
 
@@ -12,7 +13,34 @@ using namespace std;
 
 NetCDFHandler::NetCDFHandler()
 {
+    this->initialize();
 }
+
+
+void NetCDFHandler::initialize()
+{
+    nrX = NODATA;
+    nrY = NODATA;
+    nrLat = NODATA;
+    nrLon = NODATA;
+    nrTime = NODATA;
+
+    idX = NODATA;
+    idY = NODATA;
+    idLat = NODATA;
+    idLon = NODATA;
+    idTime = NODATA;
+
+    isUTM = false;
+}
+
+
+string lowerCase(string myStr)
+{
+    transform(myStr.begin(), myStr.end(), myStr.begin(), ::tolower);
+    return myStr;
+}
+
 
 bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
 {
@@ -25,12 +53,6 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
     double value;
     size_t lenght;
     nc_type ncTypeId;
-    int nrX, nrY;
-    int idDimX = NODATA;
-    int idDimY = NODATA;
-    int idLat = NODATA;
-    int idLon = NODATA;
-    string nameDimX, nameDimY;
 
     //NC_NOWRITE tells netCDF we want read-only access
     if ((retval = nc_open(fileName.data(), NC_NOWRITE, &ncId)))
@@ -67,16 +89,29 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
    for (int i = 0; i < nrDimensions; i++)
    {
        nc_inq_dim(ncId, i, name, &lenght);
-
-       if (string(name) == "x" || string(name) == "lon" || string(name) == "longitude")
+       if (lowerCase(string(name)) == "time")
+       {
+           nrTime = int(lenght);
+       }
+       else if (lowerCase(string(name)) == "x")
        {
            nrX = int(lenght);
-           nameDimX = string(name);
+           isUTM = true;
        }
-       if (string(name) == "y" || string(name) == "lat" || string(name) == "latitude")
+       else if (lowerCase(string(name)) == "y")
        {
            nrY = int(lenght);
-           nameDimY = string(name);
+           isUTM = true;
+       }
+       else if (lowerCase(string(name)) == "lat" || lowerCase(string(name)) == "latitude")
+       {
+           nrLat = int(lenght);
+           isUTM = false;
+       }
+       else if (lowerCase(string(name)) == "lon" || lowerCase(string(name)) == "longitude")
+       {
+           nrLon = int(lenght);
+           isUTM = false;
        }
 
        *buffer << i << " - " << name << "\t values: " << lenght << endl;
@@ -90,13 +125,15 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
        nc_inq_var(ncId, v, varName, &ncTypeId, &nrVarDimensions, varDimIds, &nrVarAttributes);
        nc_inq_type(ncId, ncTypeId, typeName, &lenght);
 
-       if (string(varName) == nameDimX)
-           idDimX = v;
-       else if (string(varName) == nameDimY)
-           idDimY = v;
-       else if (string(varName) == "lat" || string(varName) == "latitude")
+       if (lowerCase(string(varName)) == "time")
+           idTime = v;
+       else if (lowerCase(string(varName)) == "x")
+           idX = v;
+       else if (lowerCase(string(varName)) == "y")
+           idY = v;
+       else if (lowerCase(string(varName)) == "lat" || lowerCase(string(varName)) == "latitude")
            idLat = v;
-       else if (string(varName) == "lon" || string(varName) == "longitude")
+       else if (lowerCase(string(varName)) == "lon" || lowerCase(string(varName)) == "longitude")
            idLon = v;
 
        *buffer << endl << v << " - " << varName << "\t type: " << typeName << "\t dims: ";
@@ -131,29 +168,26 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
         }
     }
 
-    if (idDimX != NODATA)
+    if (isUTM)
     {
         float* x = (float*) calloc(nrX, sizeof(float));
-        if (retval = nc_get_var_float(ncId, idDimX, x))
+        if (retval = nc_get_var_float(ncId, idX, x))
         {
-            *buffer << "\nERROR in reading var: " << nameDimX << " - " << nc_strerror(retval);
+            *buffer << "\nERROR in reading x: " << nc_strerror(retval);
             nc_close(ncId);
             return false;
         }
-    }
 
-    if (idDimY != NODATA)
-    {
         float* y = (float*) calloc(nrY, sizeof(float));
-        if (retval = nc_get_var_float(ncId, idDimY, y))
+        if (retval = nc_get_var_float(ncId, idY, y))
         {
-            *buffer << "\nERROR in reading var: " << nameDimY << " - " << nc_strerror(retval);
+            *buffer << "\nERROR in reading y: " << nc_strerror(retval);
             nc_close(ncId);
             return false;
         }
     }
 
-    if (nameDimX == "x" && idLat != NODATA && idLon != NODATA)
+    if (isUTM && idLat != NODATA && idLon != NODATA)
     {
         float* lat = (float*) calloc(nrY*nrX, sizeof(float));
         float* lon = (float*) calloc(nrY*nrX, sizeof(float));

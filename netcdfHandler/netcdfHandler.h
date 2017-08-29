@@ -10,6 +10,13 @@
         NetCDFHandler();
 
         bool readProperties(std::string fileName, std::stringstream *buffer);
+    private:
+
+        int nrX, nrY, nrLat, nrLon, nrTime;
+        int idTime, idX, idY, idLat, idLon;
+        bool isUTM;
+
+        void initialize();
     };
 
 
