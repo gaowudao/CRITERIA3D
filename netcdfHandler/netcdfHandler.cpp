@@ -23,9 +23,11 @@ namespace NetCDF
         double value;
         size_t lenght;
         nc_type ncTypeId;
-        int idDimX, idDimY, nrX, nrY;
-        idDimX = NODATA;
-        idDimY = NODATA;
+        int nrX, nrY;
+        int idDimX = NODATA;
+        int idDimY = NODATA;
+        int idLat = NODATA;
+        int idLon = NODATA;
         string nameDimX, nameDimY;
 
         //NC_NOWRITE tells netCDF we want read-only access
@@ -88,8 +90,12 @@ namespace NetCDF
 
            if (string(varName) == nameDimX)
                idDimX = v;
-           if (string(varName) == nameDimY)
+           else if (string(varName) == nameDimY)
                idDimY = v;
+           else if (string(varName) == "lat" || string(varName) == "latitude")
+               idLat = v;
+           else if (string(varName) == "lon" || string(varName) == "longitude")
+               idLon = v;
 
            *buffer << endl << v << " - " << varName << "\t type: " << typeName << "\t dims: ";
            for (int d = 0; d < nrVarDimensions; d++)
@@ -145,18 +151,18 @@ namespace NetCDF
             }
         }
 
-        if (nameDimX == "x")
+        if (nameDimX == "x" && idLat != NODATA && idLon != NODATA)
         {
             float* lat = (float*) calloc(nrY*nrX, sizeof(float));
             float* lon = (float*) calloc(nrY*nrX, sizeof(float));
 
-            if (retval = nc_get_var_float(ncId, 4, lon))
+            if (retval = nc_get_var_float(ncId, idLon, lon))
                 *buffer << "\nERROR in reading longitude:" << nc_strerror(retval);
 
-            if (retval = nc_get_var_float(ncId, 5, lat))
+            if (retval = nc_get_var_float(ncId, idLat, lat))
                 *buffer << "\nERROR in reading latitude:" << nc_strerror(retval);
 
-            *buffer << endl;
+            *buffer << endl << "(lat,row):" << endl;
             for (int row = 0; row < nrY; row+=2)
             {
                 *buffer << lat[row*nrX+row] << ",";
