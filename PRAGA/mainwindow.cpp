@@ -994,7 +994,8 @@ void MainWindow::on_actionOpen_NetCDF_data_triggered()
     if (fileName == "") return;
 
     std::stringstream buffer;
-    NetCDF::provaNetCDF(fileName.toStdString(), &buffer);
+    NetCDFHandler nc;
+    nc.readProperties(fileName.toStdString(), &buffer);
 
     QDialog myDialog;
     QVBoxLayout mainLayout;

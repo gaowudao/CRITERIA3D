@@ -3,12 +3,14 @@
 
     #include <string>
 
-    namespace NetCDF
+    class NetCDFHandler
     {
+    public:
 
-        bool provaNetCDF(std::string fileName, std::stringstream *buffer);
+        NetCDFHandler();
 
-    }
+        bool readProperties(std::string fileName, std::stringstream *buffer);
+    };
 
 
 #endif // NETCDFHANDLER_H
