@@ -123,7 +123,7 @@ namespace NetCDF
         float* x = (float*) calloc(nrX, sizeof(float));
         if (retval = nc_get_var_float(ncId, idDimX, x))
         {
-            *buffer << "error in reading x:" << nc_strerror(retval);
+            *buffer << "\nERROR in reading var: " << nameDimX << " - " << nc_strerror(retval);
             nc_close(ncId);
             return false;
         }
@@ -131,7 +131,7 @@ namespace NetCDF
         float* y = (float*) calloc(nrY, sizeof(float));
         if (retval = nc_get_var_float(ncId, idDimY, y))
         {
-            *buffer << "error in reading x:" << nc_strerror(retval);
+            *buffer << "\nERROR in reading var: " << nameDimY << " - " << nc_strerror(retval);
             nc_close(ncId);
             return false;
         }
@@ -142,10 +142,10 @@ namespace NetCDF
             float* lon = (float*) calloc(nrY*nrX, sizeof(float));
 
             if (retval = nc_get_var_float(ncId, 4, lon))
-                *buffer << "error in reading longitude:" << nc_strerror(retval);
+                *buffer << "\nERROR in reading longitude:" << nc_strerror(retval);
 
             if (retval = nc_get_var_float(ncId, 5, lat))
-                *buffer << "error in reading latitude:" << nc_strerror(retval);
+                *buffer << "\nERROR in reading latitude:" << nc_strerror(retval);
 
             *buffer << endl;
             for (int row = 0; row < nrY; row+=2)

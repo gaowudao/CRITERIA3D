@@ -179,7 +179,7 @@ bool writeMeteoDataCsv (QString namefile, char separator, ToutputDailyMeteo* myd
 
     QTextStream stream( &file );
 
-    QString myDate, tMin, tMax, tAvg, prec;
+    QString myDate, tMin, tMax, prec;
     QString month, day;
 
     stream << "date" << separator << "tmin" << separator << "tmax" << separator << "tavg"
@@ -200,10 +200,9 @@ bool writeMeteoDataCsv (QString namefile, char separator, ToutputDailyMeteo* myd
         myDate = QString::number(mydailyData[i].date.year) + "-" + month + "-" + day;
         tMin = QString::number(mydailyData[i].minTemp, 'f', 1);
         tMax = QString::number(mydailyData[i].maxTemp, 'f', 1);
-        tAvg = QString::number((mydailyData[i].minTemp + mydailyData[i].maxTemp)*0.5, 'f', 1);
         prec = QString::number(mydailyData[i].prec, 'f', 1);
 
-        stream << myDate << separator << tMin << separator << tMax << separator << tAvg
+        stream << myDate << separator << tMin << separator << tMax << separator
                << separator << prec << separator << separator << "\n";
 
     }

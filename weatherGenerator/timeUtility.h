@@ -2,6 +2,7 @@
 #define TIMEUTILITY
 
     #define NRDAYSTOLERANCE  15
+    #define USEDATA false
 
     class Crit3DDate;
 
