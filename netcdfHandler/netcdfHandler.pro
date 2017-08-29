@@ -10,6 +10,7 @@ TARGET = netcdfHandler
 TEMPLATE = lib
 CONFIG += staticlib
 
+INCLUDEPATH += ../mathFunctions
 INCLUDEPATH += $$(NC4_INSTALL_DIR)/include
 
 SOURCES += \

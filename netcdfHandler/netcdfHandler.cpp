@@ -4,6 +4,7 @@
 
 #include <netcdf.h>
 
+#include "commonConstants.h"
 #include "netcdfHandler.h"
 
 using namespace std;
@@ -23,6 +24,8 @@ namespace NetCDF
         size_t lenght;
         nc_type ncTypeId;
         int idDimX, idDimY, nrX, nrY;
+        idDimX = NODATA;
+        idDimY = NODATA;
         string nameDimX, nameDimY;
 
         //NC_NOWRITE tells netCDF we want read-only access
@@ -120,20 +123,26 @@ namespace NetCDF
             }
         }
 
-        float* x = (float*) calloc(nrX, sizeof(float));
-        if (retval = nc_get_var_float(ncId, idDimX, x))
+        if (idDimX != NODATA)
         {
-            *buffer << "\nERROR in reading var: " << nameDimX << " - " << nc_strerror(retval);
-            nc_close(ncId);
-            return false;
+            float* x = (float*) calloc(nrX, sizeof(float));
+            if (retval = nc_get_var_float(ncId, idDimX, x))
+            {
+                *buffer << "\nERROR in reading var: " << nameDimX << " - " << nc_strerror(retval);
+                nc_close(ncId);
+                return false;
+            }
         }
 
-        float* y = (float*) calloc(nrY, sizeof(float));
-        if (retval = nc_get_var_float(ncId, idDimY, y))
+        if (idDimY != NODATA)
         {
-            *buffer << "\nERROR in reading var: " << nameDimY << " - " << nc_strerror(retval);
-            nc_close(ncId);
-            return false;
+            float* y = (float*) calloc(nrY, sizeof(float));
+            if (retval = nc_get_var_float(ncId, idDimY, y))
+            {
+                *buffer << "\nERROR in reading var: " << nameDimY << " - " << nc_strerror(retval);
+                nc_close(ncId);
+                return false;
+            }
         }
 
         if (nameDimX == "x")
