@@ -33,8 +33,8 @@ void NetCDFHandler::initialize()
 
     isUTM = false;
 
-    if (x != NULL) free(x);
-    if (y != NULL) free(y);
+    x = NULL;
+    y = NULL;
 }
 
 
