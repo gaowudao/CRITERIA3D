@@ -32,6 +32,9 @@ void NetCDFHandler::initialize()
     idTime = NODATA;
 
     isUTM = false;
+
+    if (x != NULL) free(x);
+    if (y != NULL) free(y);
 }
 
 
@@ -117,7 +120,10 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
        *buffer << i << " - " << name << "\t values: " << lenght << endl;
    }
 
-   *buffer <<"\n(x,y) = "<<nrX << "," <<nrY << endl;
+   if (isUTM)
+       *buffer <<"\n(x,y) = "<<nrX << "," <<nrY << endl;
+   else
+       *buffer <<"\n(lon,lat) = "<<nrLon << "," <<nrLat << endl;
 
    *buffer << "\nVariables: " << endl;
    for (int v = 0; v < nrVariables; v++)
@@ -170,20 +176,25 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
 
     if (isUTM)
     {
-        float* x = (float*) calloc(nrX, sizeof(float));
-        if (retval = nc_get_var_float(ncId, idX, x))
+        if (idX == NODATA || idY == NODATA)
+            *buffer << endl << "ERROR: missing x,y data" << endl;
+        else
         {
-            *buffer << "\nERROR in reading x: " << nc_strerror(retval);
-            nc_close(ncId);
-            return false;
-        }
+            x = (float*) calloc(nrX, sizeof(float));
+            if (retval = nc_get_var_float(ncId, idX, x))
+            {
+                *buffer << "\nERROR in reading x: " << nc_strerror(retval);
+                nc_close(ncId);
+                return false;
+            }
 
-        float* y = (float*) calloc(nrY, sizeof(float));
-        if (retval = nc_get_var_float(ncId, idY, y))
-        {
-            *buffer << "\nERROR in reading y: " << nc_strerror(retval);
-            nc_close(ncId);
-            return false;
+            y = (float*) calloc(nrY, sizeof(float));
+            if (retval = nc_get_var_float(ncId, idY, y))
+            {
+                *buffer << "\nERROR in reading y: " << nc_strerror(retval);
+                nc_close(ncId);
+                return false;
+            }
         }
     }
 

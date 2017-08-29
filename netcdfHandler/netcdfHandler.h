@@ -14,6 +14,7 @@
 
         int nrX, nrY, nrLat, nrLon, nrTime;
         int idTime, idX, idY, idLat, idLon;
+        float *x, *y;
         bool isUTM;
 
         void initialize();
