@@ -162,7 +162,7 @@ namespace NetCDF
             if (retval = nc_get_var_float(ncId, idLat, lat))
                 *buffer << "\nERROR in reading latitude:" << nc_strerror(retval);
 
-            *buffer << endl << "(lat,row):" << endl;
+            *buffer << endl << "(lat,lon):" << endl;
             for (int row = 0; row < nrY; row+=2)
             {
                 *buffer << lat[row*nrX+row] << ",";
