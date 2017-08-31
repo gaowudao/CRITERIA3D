@@ -81,14 +81,10 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
         waterTableDepth = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyWaterTableDepth);
 
         // TODO eliminare quando falda rumena sarà migliorata
-        // patch for DA-RO - abbassa falda di 20cm (primi 50cm) o 10cm (primo metro)
-        if (waterTableDepth >= 0.f)
-        {
-            if (waterTableDepth <= 0.3f)
-                waterTableDepth += 0.2f;
-            else if (waterTableDepth <= 0.9f)
+        // patch for DA-RO - abbassa falda di 10cm (primo metro)
+        if (waterTableDepth >= 0.f || waterTableDepth <= 0.9f)
                 waterTableDepth += 0.1f;
-        }
+
         myCase->output.dailyWaterTable = waterTableDepth;
 
         if ((prec == NODATA) || (tmin == NODATA) || (tmax == NODATA))
