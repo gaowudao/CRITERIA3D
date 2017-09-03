@@ -94,7 +94,7 @@ gis::Crit3DGeoPoint* RasterObject::getRasterCenter()
 
 void RasterObject::freeIndexesMatrix()
 {
-    for (unsigned short row = 0; row < latLonHeader.nrRows; row++)
+    for (int row = 0; row < latLonHeader.nrRows; row++)
         if (matrix[row] != NULL) ::free(matrix[row]);
 
     if (latLonHeader.nrRows != 0) ::free(matrix);
@@ -105,11 +105,11 @@ void RasterObject::initializeIndexesMatrix()
 {
     matrix = (RowCol **) calloc(latLonHeader.nrRows, sizeof(RowCol *));
 
-    for (unsigned short row = 0; row < latLonHeader.nrRows; row++)
+    for (int row = 0; row < latLonHeader.nrRows; row++)
         matrix[row] = (RowCol *) calloc(this->latLonHeader.nrCols, sizeof(RowCol));
 
-    for (unsigned short row = 0; row < latLonHeader.nrRows; row++)
-        for (unsigned short col = 0; col < latLonHeader.nrCols; col++)
+    for (int row = 0; row < latLonHeader.nrRows; row++)
+        for (int col = 0; col < latLonHeader.nrCols; col++)
         {
             matrix[row][col].row = NODATA_UNSIGNED_SHORT;
             matrix[row][col].col = NODATA_UNSIGNED_SHORT;

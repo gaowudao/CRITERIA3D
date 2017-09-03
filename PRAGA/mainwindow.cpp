@@ -174,6 +174,7 @@ void MainWindow::on_actionRectangle_Selection_triggered()
 void MainWindow::on_actionLoadRaster_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open rasterObj"), "", tr("ESRI grid files (*.flt)"));
+
     if (fileName == "") return;
 
     qDebug() << "loading raster";
