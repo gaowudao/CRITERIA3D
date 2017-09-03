@@ -41,6 +41,9 @@ public:
     void updateCenter();
     void setDrawing(bool value);
     void setColorLegend(ColorLegend* myLegend);
+    bool initialize(const gis::Crit3DRasterGrid& myRaster, const gis::Crit3DGisSettings& gisSettings, bool isLatLon);
+    float getRasterMaxSize();
+    gis::Crit3DGeoPoint* getRasterCenter();
 
 protected:
     //virtual from MapGraphicsObject
@@ -50,9 +53,13 @@ private:
     gis::Crit3DGeoMap* geoMap;
     ColorLegend* legend;
     bool isDrawing;
+    gis::Crit3DRasterGrid rowMatrix;
+    gis::Crit3DRasterGrid colMatrix;
+    gis::Crit3DGridHeader latLonHeader;
+    bool isLatLonRaster;
 
     bool setMapResolution();
-    bool drawRaster(Project* myProject, gis::Crit3DRasterGrid *myRaster, QPainter* myPainter);
+    bool drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPainter, int utmZone);
 };
 
 

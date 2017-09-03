@@ -25,56 +25,31 @@ Project::Project()
 }
 
 
-
 /*!
  * \brief loadRaster
  * \param fileName the name of the file
  * \param raster a Crit3DRasterGrid pointer
- * \return true if everything is ok, false otherwise
+ * \return true if file is ok, false otherwise
  */
 bool Project::loadRaster(QString myFileName)
 {
     std::string* myError = new std::string();
     std::string fileName = myFileName.left(myFileName.length()-4).toStdString();
 
-    if (gis::readEsriGrid(fileName, &(this->DTM), myError))
-    {
-        gis::updateMinMaxRasterGrid(&(this->DTM));
-        this->DTM.isLoaded = true;
-        this->currentRaster = &DTM;
-
-        this->dataRaster.initializeGrid(this->DTM);
-
-        gis::Crit3DGridHeader myLatLonHeader;
-        gis::getGeoExtentsFromUTMHeader(this->gisSettings, this->DTM.header, &myLatLonHeader);
-
-        this->colMatrix.initializeGrid(myLatLonHeader);
-        this->rowMatrix.initializeGrid(myLatLonHeader);
-
-        double lat, lon, x, y;
-        long utmRow, utmCol;
-        for (long row = 0; row < myLatLonHeader.nrRows; row++)
-            for (long col = 0; col < myLatLonHeader.nrCols; col++)
-            {
-                gis::getLatLonFromRowCol(myLatLonHeader, row, col, &lat, &lon);
-                gis::latLonToUtmForceZone(this->gisSettings.utmZone, lat, lon, &x, &y);
-                gis::getRowColFromXY(this->DTM, x, y, &utmRow, &utmCol);
-                if (this->DTM.getValueFromRowCol(utmRow, utmCol) != this->DTM.header->flag)
-                {
-                    this->rowMatrix.value[row][col] = utmRow;
-                    this->colMatrix.value[row][col] = utmCol;
-                }
-            }
-
-        qDebug("Raster Ok.");
-        return (true);
-    }
-    else
+    if (! gis::readEsriGrid(fileName, &(this->DTM), myError))
     {
         qDebug("Load raster failed!");
         return (false);
     }
+
+    gis::updateMinMaxRasterGrid(&(this->DTM));
+    this->DTM.isLoaded = true;
+    this->currentRaster = &DTM;
+    this->dataRaster.initializeGrid(this->DTM);
+
+    return (true);
 }
+
 
 bool Project::getMeteoPointSelected(int i)
 {

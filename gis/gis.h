@@ -175,6 +175,7 @@
         bool updateColorScale(Crit3DRasterGrid* myGrid, const Crit3DRasterWindow& myWindow);
         void getRowColFromXY(const Crit3DRasterGrid &myGrid, double myX, double myY, long* myRow, long* myCol);
         void getRowColFromXY(const Crit3DGridHeader& myHeader, const Crit3DUtmPoint& p, Crit3DRasterCell* v);
+        void getRowColFromLatLon(const Crit3DGridHeader& myHeader, const Crit3DGeoPoint& p, long* myRow, long* myCol);
         bool isOutOfGridRowCol(long myRow, long myCol, const Crit3DRasterGrid &myGrid);
         void getUtmXYFromRowColSinglePrecision(const Crit3DRasterGrid& myGrid, long myRow, long myCol,float* myX,float* myY);
         void getUtmXYFromRowCol(const Crit3DRasterGrid& myGrid, long myRow, long myCol ,double* myX, double* myY);
@@ -184,8 +185,6 @@
         float getValueFromXY(const Crit3DRasterGrid& myGrid, double x, double y);
 
         bool isOutOfGridXY(double x, double y, Crit3DGridHeader* header);
-        Crit3DGeoPoint* getRasterGeoCenter(Crit3DGridHeader* header);
-        double getRasterMaxSize(Crit3DGridHeader* header);
 
         bool isMinimum(const Crit3DRasterGrid& myGrid, long row, long col);
         bool isMinimumOrNearMinimum(const Crit3DRasterGrid& myGrid, long row, long col);
@@ -195,7 +194,7 @@
         bool getNorthernEmisphere();
         void getLatLonFromUtm(const Crit3DGisSettings& gisSettings, double utmX,double utmY, double *myLat, double *myLon);
         void getLatLonFromUtm(const Crit3DGisSettings& gisSettings, const Crit3DUtmPoint& utmPoint, Crit3DGeoPoint *geoPoint);
-        void getUtmFromLatLon(const Crit3DGisSettings& gisSettings, const Crit3DGeoPoint& geoPoint, Crit3DUtmPoint* utmPoint);
+        void getUtmFromLatLon(int zoneNumber, const Crit3DGeoPoint& geoPoint, Crit3DUtmPoint* utmPoint);
 
         void latLonToUtm(double lat, double lon,double *utmEasting,double *utmNorthing,int *zoneNumber);
         void latLonToUtmForceZone(int zoneNumber, double lat, double lon, double *utmEasting, double *utmNorthing);
@@ -220,8 +219,8 @@
         bool getGeoExtentsFromUTMHeader(const Crit3DGisSettings& mySettings,
                                         Crit3DGridHeader *utmHeader, Crit3DGridHeader *latLonHeader);
 
-        bool getUtmWindow(const Crit3DGisSettings& mySettings, Crit3DGridHeader* latLonHeader, Crit3DGridHeader* utmHeader,
-                          Crit3DRasterWindow* latLonWindow, Crit3DRasterWindow *UtmWindow);
+        bool getUtmWindow(const Crit3DGridHeader& latLonHeader, const Crit3DGridHeader &utmHeader,
+                          const Crit3DRasterWindow &latLonWindow, Crit3DRasterWindow *UtmWindow, int utmZone);
     }
 
 

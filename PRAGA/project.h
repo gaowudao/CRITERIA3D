@@ -40,8 +40,8 @@
         gis::Crit3DRasterGrid dataRaster;
         gis::Crit3DRasterGrid *currentRaster;
 
-        gis::Crit3DRasterGrid rowMatrix;
-        gis::Crit3DRasterGrid colMatrix;
+        //gis::Crit3DRasterGrid rowMatrix;
+        //gis::Crit3DRasterGrid colMatrix;
         gis::Crit3DGisSettings gisSettings;
         Crit3DColorScale *colorScalePoints;
 

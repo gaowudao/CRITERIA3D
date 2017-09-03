@@ -263,7 +263,7 @@ namespace gis
     {
         for (long myRow = 0; myRow < header->nrRows; myRow++)
             if (value[myRow] != NULL) ::free(value[myRow]);
-        if (header->nrRows != 0)::free(value);
+        if (header->nrRows != 0) ::free(value);
 
         timeString = "";
 
@@ -427,6 +427,12 @@ namespace gis
         v->col = (int)floor((p.x - myHeader.llCorner->x) / myHeader.cellSize);
     }
 
+    void getRowColFromLatLon(const Crit3DGridHeader& myHeader, const Crit3DGeoPoint& p, long* myRow, long* myCol)
+    {
+        *myRow = (myHeader.nrRows - 1) - (int)floor((p.latitude - myHeader.llCorner->y) / myHeader.cellSize);
+        *myCol = (int)floor((p.longitude - myHeader.llCorner->x) / myHeader.cellSize);
+    }
+
     bool isOutOfGridRowCol(long myRow, long myCol, const Crit3DRasterGrid& myGrid)
     {
 
@@ -490,21 +496,6 @@ namespace gis
             || (y >= (header->llCorner->y + (header->nrRows * header->cellSize))))
             return(true);
         else return(false);
-    }
-
-
-    Crit3DGeoPoint* getRasterGeoCenter(Crit3DGridHeader* header)
-    {
-        Crit3DGeoPoint* center = new(Crit3DGeoPoint);
-        center->latitude = header->llCorner->y + (header->nrRows * header->cellSize * 0.5);
-        center->longitude = header->llCorner->x + (header->nrCols * header->cellSize * 0.5);
-
-        return(center);
-    }
-
-    double getRasterMaxSize(Crit3DGridHeader* header)
-    {
-        return std::max(header->nrRows, header->nrCols) * header->cellSize;
     }
 
 
@@ -595,9 +586,9 @@ namespace gis
         if (lat < 0) (*utmNorthing) += 10000000.0;
     }
 
-    void getUtmFromLatLon(const Crit3DGisSettings& gisSettings, const Crit3DGeoPoint& geoPoint, Crit3DUtmPoint* utmPoint)
+    void getUtmFromLatLon(int zoneNumber, const Crit3DGeoPoint& geoPoint, Crit3DUtmPoint* utmPoint)
     {
-        latLonToUtmForceZone(gisSettings.utmZone, geoPoint.latitude, geoPoint.longitude, &(utmPoint->x), &(utmPoint->y));
+        latLonToUtmForceZone(zoneNumber, geoPoint.latitude, geoPoint.longitude, &(utmPoint->x), &(utmPoint->y));
     }
 
     void latLonToUtmForceZone(int zoneNumber, double lat, double lon, double *utmEasting, double *utmNorthing)
