@@ -9,6 +9,12 @@
 #include "project.h"
 
 
+struct RowCol
+{
+    unsigned short row;
+    unsigned short col;
+};
+
 /*!
  * \brief The RasterObject class
  */
@@ -53,10 +59,12 @@ private:
     gis::Crit3DGeoMap* geoMap;
     ColorLegend* legend;
     bool isDrawing;
-    gis::Crit3DRasterGrid rowMatrix;
-    gis::Crit3DRasterGrid colMatrix;
+    RowCol **matrix;
     gis::Crit3DGridHeader latLonHeader;
     bool isLatLonRaster;
+
+    void freeIndexesMatrix();
+    void initializeIndexesMatrix();
 
     bool setMapResolution();
     bool drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPainter, int utmZone);

@@ -77,7 +77,7 @@ namespace gis
     {
     }
 
-    Crit3DRasterWindow::Crit3DRasterWindow(long row1, long col1, long row2, long col2)
+    Crit3DRasterWindow::Crit3DRasterWindow(int row1, int col1, int row2, int col2)
     {
         this->v[0].row = row1;
         this->v[0].col = col1;
@@ -156,8 +156,8 @@ namespace gis
 
     void Crit3DRasterGrid::setConstantValue(float initValue)
     {
-        for (long row = 0; row < this->header->nrRows; row++)
-            for (long col = 0; col < header->nrCols; col++)
+        for (int row = 0; row < this->header->nrRows; row++)
+            for (int col = 0; col < header->nrCols; col++)
                 value[row][col] = initValue;
 
         this->minimum = initValue;
@@ -169,7 +169,7 @@ namespace gis
     {
         this->value = (float **) calloc(this->header->nrRows, sizeof(float *));
 
-        for (long row = 0; row < this->header->nrRows; row++)
+        for (int row = 0; row < this->header->nrRows; row++)
         {
             this->value[row] = (float *) calloc(this->header->nrCols, sizeof(float));
             if (this->value[row] == NULL)
@@ -236,8 +236,8 @@ namespace gis
         this->minimum = initValue;
         this->maximum = initValue;
 
-        for (long row = 0; row < this->header->nrRows; row++)
-            for (long col = 0; col < this->header->nrCols; col++)
+        for (int row = 0; row < this->header->nrRows; row++)
+            for (int col = 0; col < this->header->nrCols; col++)
                 if (initGrid.value[row][col] != initGrid.header->flag)
                     this->value[row][col] = initValue;
 
@@ -247,7 +247,7 @@ namespace gis
 
     Crit3DPoint Crit3DRasterGrid::mapCenter()
     {
-        long myRow, myCol;
+        int myRow, myCol;
         Crit3DPoint myPoint;
 
         myPoint.utm.x = (header->llCorner->x + (header->nrCols * header->cellSize)/2.);
@@ -261,7 +261,7 @@ namespace gis
 
     void Crit3DRasterGrid::freeGrid()
     {
-        for (long myRow = 0; myRow < header->nrRows; myRow++)
+        for (int myRow = 0; myRow < header->nrRows; myRow++)
             if (value[myRow] != NULL) ::free(value[myRow]);
         if (header->nrRows != 0) ::free(value);
 
@@ -276,8 +276,8 @@ namespace gis
 
     void Crit3DRasterGrid::emptyGrid()
     {
-        for (long myRow = 0; myRow < header->nrRows; myRow++)
-            for (long myCol = 0; myCol < header->nrCols; myCol++)
+        for (int myRow = 0; myRow < header->nrRows; myRow++)
+            for (int myCol = 0; myCol < header->nrCols; myCol++)
                 value[myRow][myCol] = header->flag;
     }
 
@@ -293,7 +293,7 @@ namespace gis
      * \param myCol
      * \return Crit3DUtmPoint pointer
      */
-    Crit3DUtmPoint* Crit3DRasterGrid::utmPoint(long myRow, long myCol)
+    Crit3DUtmPoint* Crit3DRasterGrid::utmPoint(int myRow, int myCol)
     {
         double x, y;
         Crit3DUtmPoint *myPoint;
@@ -348,7 +348,7 @@ namespace gis
         return updateColorScale(myGrid, myWindow.v[0].row, myWindow.v[0].col, myWindow.v[1].row, myWindow.v[1].col);
     }
 
-    bool updateColorScale(Crit3DRasterGrid* myGrid, long row0, long col0, long row1, long col1)
+    bool updateColorScale(Crit3DRasterGrid* myGrid, int row0, int col0, int row1, int col1)
     {
         float myValue;
         bool isFirstValue = true;
@@ -357,12 +357,12 @@ namespace gis
 
         if (row0 > row1)
         {
-            long tmp = row0;
+            int tmp = row0;
             row0 = row1;
             row1 = tmp;
         }
-        row0 = std::max(row0, long(0));
-        col0 = std::max(col0, long(0));
+        row0 = std::max(row0, int(0));
+        col0 = std::max(col0, int(0));
         row1 = std::min(row1, myGrid->header->nrRows-1);
         col1 = std::min(col1, myGrid->header->nrCols-1);
 
@@ -415,7 +415,7 @@ namespace gis
             return sqrt((dx * dx)+(dy * dy));
     }
 
-    void getRowColFromXY(const Crit3DRasterGrid& myGrid, double myX, double myY, long* myRow, long* myCol)
+    void getRowColFromXY(const Crit3DRasterGrid& myGrid, double myX, double myY, int *myRow, int *myCol)
     {
         *myRow = (myGrid.header->nrRows - 1) - (int)floor((myY - myGrid.header->llCorner->y) / myGrid.header->cellSize);
         *myCol = (int)floor((myX - myGrid.header->llCorner->x) / myGrid.header->cellSize);
@@ -427,13 +427,13 @@ namespace gis
         v->col = (int)floor((p.x - myHeader.llCorner->x) / myHeader.cellSize);
     }
 
-    void getRowColFromLatLon(const Crit3DGridHeader& myHeader, const Crit3DGeoPoint& p, long* myRow, long* myCol)
+    void getRowColFromLatLon(const Crit3DGridHeader& myHeader, const Crit3DGeoPoint& p, int* myRow, int* myCol)
     {
         *myRow = (myHeader.nrRows - 1) - (int)floor((p.latitude - myHeader.llCorner->y) / myHeader.cellSize);
         *myCol = (int)floor((p.longitude - myHeader.llCorner->x) / myHeader.cellSize);
     }
 
-    bool isOutOfGridRowCol(long myRow, long myCol, const Crit3DRasterGrid& myGrid)
+    bool isOutOfGridRowCol(int myRow, int myCol, const Crit3DRasterGrid& myGrid)
     {
 
         if ((myRow < 0) || (myRow >= myGrid.header->nrRows) || (myCol < 0) || (myCol >= myGrid.header->nrCols)) return true;
@@ -441,26 +441,26 @@ namespace gis
     }
 
     void getUtmXYFromRowColSinglePrecision(const Crit3DRasterGrid& myGrid,
-        long myRow, long myCol, float* myX, float* myY)
+        int myRow, int myCol, float* myX, float* myY)
     {
             *myX = (float)(myGrid.header->llCorner->x + myGrid.header->cellSize * (myCol + 0.5));
             *myY = (float)(myGrid.header->llCorner->y + myGrid.header->cellSize * (myGrid.header->nrRows - myRow - 0.5));
     }
 
     void getUtmXYFromRowCol(const Crit3DRasterGrid& myGrid,
-        long myRow, long myCol, double* myX, double* myY)
+        int myRow, int myCol, double* myX, double* myY)
     {
             *myX = myGrid.header->llCorner->x + myGrid.header->cellSize * (myCol + 0.5);
             *myY = myGrid.header->llCorner->y + myGrid.header->cellSize * (myGrid.header->nrRows - myRow - 0.5);
     }
 
-    void getUtmXYFromRowCol(const Crit3DGridHeader& myHeader, long myRow, long myCol, double* myX, double* myY)
+    void getUtmXYFromRowCol(const Crit3DGridHeader& myHeader, int myRow, int myCol, double* myX, double* myY)
     {
             *myX = myHeader.llCorner->x + myHeader.cellSize * (myCol + 0.5);
             *myY = myHeader.llCorner->y + myHeader.cellSize * (myHeader.nrRows - myRow - 0.5);
     }
 
-    void getLatLonFromRowCol(const Crit3DGridHeader& latLonHeader, long myRow, long myCol, double* lat, double* lon)
+    void getLatLonFromRowCol(const Crit3DGridHeader& latLonHeader, int myRow, int myCol, double* lat, double* lon)
     {
             *lon = latLonHeader.llCorner->x + latLonHeader.cellSize * (myCol + 0.5);
             *lat = latLonHeader.llCorner->y + latLonHeader.cellSize * (latLonHeader.nrRows - myRow - 0.5);
@@ -474,14 +474,14 @@ namespace gis
 
     float getValueFromXY(const Crit3DRasterGrid& myGrid, double x, double y)
     {
-        long myRow, myCol;
+        int myRow, myCol;
 
         if (gis::isOutOfGridXY(x, y, myGrid.header)) return myGrid.header->flag ;
         getRowColFromXY(myGrid, x, y, &myRow, &myCol);
         return myGrid.value[myRow][myCol];
     }
 
-    float Crit3DRasterGrid::getValueFromRowCol(long myRow, long myCol) const
+    float Crit3DRasterGrid::getValueFromRowCol(int myRow, int myCol) const
     {
         if (myRow < 0 || myRow > (this->header->nrRows - 1) || myCol < 0 || myCol > this->header->nrCols - 1)
             return this->header->flag;
@@ -512,7 +512,7 @@ namespace gis
 
 
     /*!
-     * \brief Converts lat/long to UTM coords.  Equations from USGS Bulletin 1532.
+     * \brief Converts lat/int to UTM coords.  Equations from USGS Bulletin 1532.
      * Source:
      *      Defense Mapping Agency. 1987b. DMA Technical Report:
      *      Supplement to Department of Defense World Geodetic System.
@@ -738,8 +738,8 @@ namespace gis
         latMap->initializeGrid(myGrid);
         lonMap->initializeGrid(myGrid);
 
-        for (long myRow = 0; myRow < myGrid.header->nrRows; myRow++)
-            for (long myCol = 0; myCol < myGrid.header->nrCols; myCol++)
+        for (int myRow = 0; myRow < myGrid.header->nrRows; myRow++)
+            for (int myCol = 0; myCol < myGrid.header->nrCols; myCol++)
                 if (myGrid.value[myRow][myCol] != myGrid.header->flag)
                 {
                     getUtmXYFromRowCol(myGrid, myRow, myCol, &utmX, &utmY);
@@ -776,8 +776,8 @@ namespace gis
 
         reciprocalCellSize = 1. / myDtm.header->cellSize;
 
-        for (long myRow = 0; myRow < myDtm.header->nrRows; myRow++)
-            for (long myCol = 0; myCol < myDtm.header->nrCols; myCol++)
+        for (int myRow = 0; myRow < myDtm.header->nrRows; myRow++)
+            for (int myCol = 0; myCol < myDtm.header->nrCols; myCol++)
             {
                 myZ = myDtm.value[myRow][myCol];
                 if (myZ != myDtm.header->flag)
@@ -846,8 +846,8 @@ namespace gis
         if (! (*(myMap1->header) == *(myMap2->header))) return false;
         if (! (*(myMapOut->header) == *(myMap1->header))) return false;
 
-        for (long myRow=0; myRow<myMapOut->header->nrRows; myRow++)
-            for (long myCol=0; myCol<myMapOut->header->nrCols; myCol++)
+        for (int myRow=0; myRow<myMapOut->header->nrRows; myRow++)
+            for (int myCol=0; myCol<myMapOut->header->nrCols; myCol++)
             {
                 if (myMap1->value[myRow][myCol] != myMap1->header->flag && myMap2->value[myRow][myCol] != myMap2->header->flag)
                 {
@@ -884,8 +884,8 @@ namespace gis
         if (myMapOut == NULL || myMap1 == NULL) return false;
         if (! (*(myMap1->header) == *(myMapOut->header))) return false;
 
-        for (long myRow=0; myRow<myMapOut->header->nrRows; myRow++)
-            for (long myCol=0; myCol<myMapOut->header->nrCols; myCol++)
+        for (int myRow=0; myRow<myMapOut->header->nrRows; myRow++)
+            for (int myCol=0; myCol<myMapOut->header->nrCols; myCol++)
             {
                 if (myMap1->value[myRow][myCol] != myMap1->header->flag)
                 {
@@ -919,7 +919,7 @@ namespace gis
      * \param col
      * \return true/false
      */
-    bool isStrictMaximum(const Crit3DRasterGrid& myGrid, long row, long col)
+    bool isStrictMaximum(const Crit3DRasterGrid& myGrid, int row, int col)
     {
         float z, adjZ;
         z = myGrid.getValueFromRowCol(row, col);
@@ -938,7 +938,7 @@ namespace gis
         return true;
     }
 
-    bool isUpper(const Crit3DRasterGrid& myGrid, float z, long row, long col)
+    bool isUpper(const Crit3DRasterGrid& myGrid, float z, int row, int col)
     {
         if (z == myGrid.header->flag) return false;
         float adjZ = myGrid.getValueFromRowCol(row, col);
@@ -954,7 +954,7 @@ namespace gis
      * \param col
      * \return true/false
      */
-    bool isMinimum(const Crit3DRasterGrid& myGrid, long row, long col)
+    bool isMinimum(const Crit3DRasterGrid& myGrid, int row, int col)
     {
         float z = myGrid.getValueFromRowCol(row, col);
         if (z == myGrid.header->flag) return false;
@@ -973,7 +973,7 @@ namespace gis
      * \param col
      * \return true/false
      */
-    bool isMinimumOrNearMinimum(const Crit3DRasterGrid& myGrid, long row, long col)
+    bool isMinimumOrNearMinimum(const Crit3DRasterGrid& myGrid, int row, int col)
     {
         float z = myGrid.getValueFromRowCol(row, col);
         if (z != myGrid.header->flag)
@@ -993,7 +993,7 @@ namespace gis
      * \param col
      * \return true/false
      */
-    bool isBoundary(const Crit3DRasterGrid& myGrid, long row, long col)
+    bool isBoundary(const Crit3DRasterGrid& myGrid, int row, int col)
     {
         float z = myGrid.getValueFromRowCol(row, col);
         if (z != myGrid.header->flag)
@@ -1055,14 +1055,14 @@ namespace gis
         int i, j;
         float value;
         double x, y;
-        long inputRow, inputCol;
+        int inputRow, inputCol;
         int dim = 3;
 
         std::vector <float> valuesList;
         double step = outputMap->header->cellSize / (2*dim+1);
 
-        for (long row = 0; row < outputMap->header->nrRows ; row++)
-            for (long col = 0; col < outputMap->header->nrCols; col++)
+        for (int row = 0; row < outputMap->header->nrRows ; row++)
+            for (int col = 0; col < outputMap->header->nrCols; col++)
             {
                 /*! center */
                 getUtmXYFromRowCol(*outputMap, row, col, &x, &y);

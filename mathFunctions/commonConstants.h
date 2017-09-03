@@ -47,6 +47,10 @@
         #define NODATA -9999
     #endif
 
+    #ifndef NODATA_UNSIGNED_SHORT
+        #define NODATA_UNSIGNED_SHORT 65535
+    #endif
+
     #ifndef HOUR_SECONDS
         #define HOUR_SECONDS 3600.0
     #endif

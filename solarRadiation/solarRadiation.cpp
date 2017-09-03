@@ -470,7 +470,7 @@ namespace radiation
         float sunMaskStepX, sunMaskStepY;
         float sunMaskStepZ, maxDeltaH;
         float x, y, z;
-        long row, col;
+        int row, col;
         bool shadowComputed;
         float cosElev, sinElev, tgElev;
         float step, stepCount, maxDistCount;
@@ -695,7 +695,7 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
         Crit3DTime forwardTime;
         Crit3DTime myTmpTime;
         int myWindowSteps;
-        long myRow, myCol;
+        int myRow, myCol;
 
         /*! assegna altezza e coordinate stazione */
         myRadPoint.x = myPoint->utm.x;

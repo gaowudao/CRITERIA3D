@@ -148,7 +148,7 @@ namespace gis
             return(false);
         }
 
-        for (long row = 0; row < myGrid->header->nrRows; row++)
+        for (int row = 0; row < myGrid->header->nrRows; row++)
             fread (myGrid->value[row], sizeof(float), myGrid->header->nrCols, filePointer);
 
         fclose (filePointer);
@@ -222,7 +222,7 @@ namespace gis
             return(false);
         }
 
-        for (long myRow = 0; myRow < myGrid->header->nrRows; myRow++)
+        for (int myRow = 0; myRow < myGrid->header->nrRows; myRow++)
             fwrite (myGrid->value[myRow], sizeof(float), myGrid->header->nrCols, filePointer);
 
         fclose (filePointer);
@@ -311,8 +311,8 @@ namespace gis
         latLonHeader->cellSize = (dx + dy) / 2;
 
         // nr of rows and cols
-        latLonHeader->nrRows = (long)floor((URcorner.latitude - LLcorner.latitude) / latLonHeader->cellSize) + 1;
-        latLonHeader->nrCols = (long)floor((URcorner.longitude - LLcorner.longitude) / latLonHeader->cellSize) + 1;
+        latLonHeader->nrRows = (int)floor((URcorner.latitude - LLcorner.latitude) / latLonHeader->cellSize) + 1;
+        latLonHeader->nrCols = (int)floor((URcorner.longitude - LLcorner.longitude) / latLonHeader->cellSize) + 1;
 
         // flag
         latLonHeader->flag = utmHeader->flag;

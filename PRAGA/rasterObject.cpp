@@ -13,6 +13,7 @@ RasterObject::RasterObject(MapGraphicsView* view, MapGraphicsObject *parent) :
     this->setFlag(MapGraphicsObject::ObjectIsFocusable);
     _view = view;
 
+    matrix = NULL;
     this->isLatLonRaster = false;
     this->geoMap = new gis::Crit3DGeoMap();
     this->isDrawing = false;
@@ -91,6 +92,31 @@ gis::Crit3DGeoPoint* RasterObject::getRasterCenter()
 }
 
 
+void RasterObject::freeIndexesMatrix()
+{
+    for (unsigned short row = 0; row < latLonHeader.nrRows; row++)
+        if (matrix[row] != NULL) ::free(matrix[row]);
+
+    if (latLonHeader.nrRows != 0) ::free(matrix);
+}
+
+
+void RasterObject::initializeIndexesMatrix()
+{
+    matrix = (RowCol **) calloc(latLonHeader.nrRows, sizeof(RowCol *));
+
+    for (unsigned short row = 0; row < latLonHeader.nrRows; row++)
+        matrix[row] = (RowCol *) calloc(this->latLonHeader.nrCols, sizeof(RowCol));
+
+    for (unsigned short row = 0; row < latLonHeader.nrRows; row++)
+        for (unsigned short col = 0; col < latLonHeader.nrCols; col++)
+        {
+            matrix[row][col].row = NODATA_UNSIGNED_SHORT;
+            matrix[row][col].col = NODATA_UNSIGNED_SHORT;
+        }
+}
+
+
 bool RasterObject::setMapResolution()
 {
     QPointF bottomLeft = this->_view->mapToScene(QPoint(0.0, this->_view->height()));
@@ -114,39 +140,37 @@ bool RasterObject::setMapResolution()
 
 bool RasterObject::initialize(const gis::Crit3DRasterGrid& myRaster, const gis::Crit3DGisSettings& gisSettings, bool isLatLon)
 {
-    if (! myRaster.isLoaded) return false;
-
+    freeIndexesMatrix();
     isLatLonRaster = isLatLon;
+
+    if (! myRaster.isLoaded) return false;
 
     if (isLatLonRaster)
     {
         latLonHeader = *(myRaster.header);
-        return true;
     }
-
-    // UTM raster
-    gis::getGeoExtentsFromUTMHeader(gisSettings, myRaster.header, &latLonHeader);
-
-    rowMatrix.initializeGrid(latLonHeader);
-    colMatrix.initializeGrid(latLonHeader);
-
-    double lat, lon, x, y;
-    long utmRow, utmCol;
-
-    for (long row = 0; row < latLonHeader.nrRows; row++)
+    else
     {
-        for (long col = 0; col < latLonHeader.nrCols; col++)
-        {
-            gis::getLatLonFromRowCol(latLonHeader, row, col, &lat, &lon);
-            gis::latLonToUtmForceZone(gisSettings.utmZone, lat, lon, &x, &y);
-            gis::getRowColFromXY(myRaster, x, y, &utmRow, &utmCol);
+        // UTM
+        double lat, lon, x, y;
+        int utmRow, utmCol;
 
-            if (myRaster.getValueFromRowCol(utmRow, utmCol) != myRaster.header->flag)
+        gis::getGeoExtentsFromUTMHeader(gisSettings, myRaster.header, &latLonHeader);
+        initializeIndexesMatrix();
+
+        for (int row = 0; row < latLonHeader.nrRows; row++)
+            for (int col = 0; col < latLonHeader.nrCols; col++)
             {
-                rowMatrix.value[row][col] = utmRow;
-                colMatrix.value[row][col] = utmCol;
+                gis::getLatLonFromRowCol(latLonHeader, row, col, &lat, &lon);
+                gis::latLonToUtmForceZone(gisSettings.utmZone, lat, lon, &x, &y);
+                gis::getRowColFromXY(myRaster, x, y, &utmRow, &utmCol);
+
+                if (myRaster.getValueFromRowCol(utmRow, utmCol) != myRaster.header->flag)
+                {
+                    matrix[row][col].row = utmRow;
+                    matrix[row][col].col = utmCol;
+                }
             }
-        }
     }
 
     return true;
@@ -159,7 +183,7 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
     if (! myRaster->isLoaded) return false;
 
     // current view extent
-    long rowBottom, rowTop, col0, col1;
+    int rowBottom, rowTop, col0, col1;
     gis::getRowColFromLatLon(latLonHeader, this->geoMap->bottomLeft, &rowBottom, &col0);
     gis::getRowColFromLatLon(latLonHeader, this->geoMap->topRight, &rowTop, &col1);
 
@@ -176,10 +200,10 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
 
     // fix extent
     rowTop--;
-    rowBottom = std::min(latLonHeader.nrRows-1, std::max(long(0), rowBottom));
-    rowTop = std::min(latLonHeader.nrRows-1, std::max(long(0), rowTop));
-    col0 = std::min(latLonHeader.nrCols-1, std::max(long(0), col0));
-    col1 = std::min(latLonHeader.nrCols-1, std::max(long(0), col1));
+    rowBottom = std::min(latLonHeader.nrRows-1, std::max(0, rowBottom));
+    rowTop = std::min(latLonHeader.nrRows-1, std::max(0, rowTop));
+    col0 = std::min(latLonHeader.nrCols-1, std::max(0, col0));
+    col1 = std::min(latLonHeader.nrCols-1, std::max(0, col1));
 
     // dynamic color scale
     gis::Crit3DRasterWindow* latLonWindow = new gis::Crit3DRasterWindow(rowTop, col0, rowBottom, col1);
@@ -211,25 +235,22 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
     int step = std::max(int(1. / (std::min(dx, dy))), 1);
 
     int x0, y0, x1, y1, lx, ly;
-    long utmRow, utmCol;
     Crit3DColor* myColor;
     QColor myQColor;
     float myValue;
 
     y0 = pixelLL.y;
-    for (long row = rowBottom; row >= rowTop; row -= step)
+    for (int row = rowBottom; row >= rowTop; row -= step)
     {
         y1 = pixelLL.y + (rowBottom-row + step) * dy;
         x0 = pixelLL.x;
-        for (long col = col0; col <= col1; col += step)
+        for (int col = col0; col <= col1; col += step)
         {
             x1 = pixelLL.x + (col-col0 + step) * dx;
 
-            utmRow = rowMatrix.value[row][col];
-            if (utmRow != rowMatrix.header->flag)
+            if (matrix[row][col].row != NODATA_UNSIGNED_SHORT)
             {
-                utmCol = colMatrix.value[row][col];
-                myValue = myRaster->getValueFromRowCol(utmRow, utmCol);
+                myValue = myRaster->getValueFromRowCol(matrix[row][col].row, matrix[row][col].col);
                 if (myValue != myRaster->header->flag)
                 {
                     myColor = myRaster->colorScale->getColor(myValue);
