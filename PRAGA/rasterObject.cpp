@@ -1,9 +1,6 @@
-#include <QtDebug>
 #include "commonConstants.h"
 #include "rasterObject.h"
 
-
-extern Project myProject;
 
 RasterObject::RasterObject(MapGraphicsView* view, MapGraphicsObject *parent) :
     MapGraphicsObject(true, parent)
@@ -14,6 +11,7 @@ RasterObject::RasterObject(MapGraphicsView* view, MapGraphicsObject *parent) :
     _view = view;
 
     matrix = NULL;
+    currentRaster = NULL;
     this->isLatLonRaster = false;
     this->geoMap = new gis::Crit3DGeoMap();
     this->isDrawing = false;
@@ -54,7 +52,7 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 
     this->setMapResolution();
 
-    drawRaster(myProject.currentRaster, painter, myProject.gisSettings.utmZone);
+    drawRaster(currentRaster, painter);
 
     this->legend->update();
 }
@@ -68,6 +66,11 @@ void RasterObject::updateCenter()
     this->setPos(newCenter);
 }
 
+
+void RasterObject::setCurrentRaster(gis::Crit3DRasterGrid* rasterPointer)
+{
+    currentRaster = rasterPointer;
+}
 
 /*!
  * \brief RasterObject::getRasterMaxSize
@@ -138,16 +141,18 @@ bool RasterObject::setMapResolution()
 }
 
 
-bool RasterObject::initialize(const gis::Crit3DRasterGrid& myRaster, const gis::Crit3DGisSettings& gisSettings, bool isLatLon)
+bool RasterObject::initialize(gis::Crit3DRasterGrid* myRaster, const gis::Crit3DGisSettings& gisSettings, bool isLatLon)
 {
     freeIndexesMatrix();
     isLatLonRaster = isLatLon;
+    utmZone = gisSettings.utmZone;
+    currentRaster = myRaster;
 
-    if (! myRaster.isLoaded) return false;
+    if (! myRaster->isLoaded) return false;
 
     if (isLatLonRaster)
     {
-        latLonHeader = *(myRaster.header);
+        latLonHeader = *(myRaster->header);
     }
     else
     {
@@ -155,7 +160,7 @@ bool RasterObject::initialize(const gis::Crit3DRasterGrid& myRaster, const gis::
         double lat, lon, x, y;
         int utmRow, utmCol;
 
-        gis::getGeoExtentsFromUTMHeader(gisSettings, myRaster.header, &latLonHeader);
+        gis::getGeoExtentsFromUTMHeader(gisSettings, myRaster->header, &latLonHeader);
         initializeIndexesMatrix();
 
         for (int row = 0; row < latLonHeader.nrRows; row++)
@@ -163,9 +168,9 @@ bool RasterObject::initialize(const gis::Crit3DRasterGrid& myRaster, const gis::
             {
                 gis::getLatLonFromRowCol(latLonHeader, row, col, &lat, &lon);
                 gis::latLonToUtmForceZone(gisSettings.utmZone, lat, lon, &x, &y);
-                gis::getRowColFromXY(myRaster, x, y, &utmRow, &utmCol);
+                gis::getRowColFromXY(*myRaster, x, y, &utmRow, &utmCol);
 
-                if (myRaster.getValueFromRowCol(utmRow, utmCol) != myRaster.header->flag)
+                if (myRaster->getValueFromRowCol(utmRow, utmCol) != myRaster->header->flag)
                 {
                     matrix[row][col].row = utmRow;
                     matrix[row][col].col = utmCol;
@@ -177,7 +182,7 @@ bool RasterObject::initialize(const gis::Crit3DRasterGrid& myRaster, const gis::
 }
 
 
-bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPainter, int utmZone)
+bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPainter)
 {
     if (! this->isDrawing) return false;
     if (! myRaster->isLoaded) return false;
@@ -215,7 +220,7 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
     {
         // UTM raster
         gis::Crit3DRasterWindow* utmWindow = new gis::Crit3DRasterWindow();
-        gis::getUtmWindow(latLonHeader, *(myRaster->header), *latLonWindow, utmWindow, utmZone);
+        gis::getUtmWindow(latLonHeader, *(myRaster->header), *latLonWindow, utmWindow, this->utmZone);
         gis::updateColorScale(myRaster, *utmWindow);
 
     }

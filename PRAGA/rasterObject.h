@@ -6,7 +6,6 @@
 #include "MapGraphicsView.h"
 #include "colorlegend.h"
 #include "map.h"
-#include "project.h"
 
 
 struct RowCol
@@ -47,9 +46,10 @@ public:
     void updateCenter();
     void setDrawing(bool value);
     void setColorLegend(ColorLegend* myLegend);
-    bool initialize(const gis::Crit3DRasterGrid& myRaster, const gis::Crit3DGisSettings& gisSettings, bool isLatLon);
+    bool initialize(gis::Crit3DRasterGrid* myRaster, const gis::Crit3DGisSettings& gisSettings, bool isLatLon);
     float getRasterMaxSize();
     gis::Crit3DGeoPoint* getRasterCenter();
+    void setCurrentRaster(gis::Crit3DRasterGrid* rasterPointer);
 
 protected:
     //virtual from MapGraphicsObject
@@ -62,12 +62,14 @@ private:
     RowCol **matrix;
     gis::Crit3DGridHeader latLonHeader;
     bool isLatLonRaster;
+    int utmZone;
+    gis::Crit3DRasterGrid *currentRaster;
 
     void freeIndexesMatrix();
     void initializeIndexesMatrix();
 
     bool setMapResolution();
-    bool drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPainter, int utmZone);
+    bool drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPainter);
 };
 
 

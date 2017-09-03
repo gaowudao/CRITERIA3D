@@ -188,7 +188,7 @@ void MainWindow::on_actionLoadRaster_triggered()
     this->ui->rasterOpacitySlider->setEnabled(true);
 
     // set raster object
-    this->rasterObj->initialize(myProject.DTM, myProject.gisSettings, false);
+    this->rasterObj->initialize(&(myProject.DTM), myProject.gisSettings, false);
 
     // center map
     gis::Crit3DGeoPoint* center = this->rasterObj->getRasterCenter();
@@ -571,6 +571,7 @@ void MainWindow::on_actionInterpolation_triggered()
                 &(myProject.dataRaster), myProject.DTM, myProject.getCurrentTime(), &myError))
     {
         myProject.currentRaster = &(myProject.dataRaster);
+        rasterObj->setCurrentRaster(&(myProject.dataRaster));
         setColorScale(myProject.getCurrentVariable(), myProject.currentRaster->colorScale);
         QString myString = QString::fromStdString(getVariableString(myProject.getCurrentVariable()));
         ui->labelRasterScale->setText(myString);
