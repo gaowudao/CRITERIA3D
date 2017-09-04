@@ -1019,8 +1019,13 @@ void MainWindow::on_actionOpen_NetCDF_data_triggered()
 
     QTextBrowser textBrowser;
     textBrowser.setText(QString::fromStdString(buffer.str()));
+    buffer.clear();
+
     mainLayout.addWidget(&textBrowser);
 
     myDialog.setLayout(&mainLayout);
+    myDialog.setFixedSize(800,600);
     myDialog.exec();
+
+
 }

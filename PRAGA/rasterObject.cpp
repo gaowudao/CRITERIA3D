@@ -104,10 +104,14 @@ gis::Crit3DGeoPoint* RasterObject::getRasterCenter()
 
 void RasterObject::freeIndexesMatrix()
 {
+    if (matrix == NULL) return;
+
     for (int row = 0; row < latLonHeader.nrRows; row++)
         if (matrix[row] != NULL) ::free(matrix[row]);
 
     if (latLonHeader.nrRows != 0) ::free(matrix);
+
+    matrix = NULL;
 }
 
 

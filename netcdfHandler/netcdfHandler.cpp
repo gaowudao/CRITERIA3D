@@ -57,6 +57,8 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
     size_t lenght;
     nc_type ncTypeId;
 
+    dataGrid.freeGrid();
+
     //NC_NOWRITE tells netCDF we want read-only access
     if ((retval = nc_open(fileName.data(), NC_NOWRITE, &ncId)))
     {
@@ -142,7 +144,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
        else if (lowerCase(string(varName)) == "lon" || lowerCase(string(varName)) == "longitude")
            idLon = v;
 
-       *buffer << endl << v << " - " << varName << "\t type: " << typeName << "\t dims: ";
+       *buffer << endl << v << " " << typeName << " " << varName << "\t dims: ";
        for (int d = 0; d < nrVarDimensions; d++)
        {
            nc_inq_dim(ncId, varDimIds[d], name, &lenght);

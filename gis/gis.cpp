@@ -281,9 +281,12 @@ namespace gis
 
     void Crit3DRasterGrid::freeGrid()
     {
-        for (int myRow = 0; myRow < header->nrRows; myRow++)
-            if (value[myRow] != NULL) ::free(value[myRow]);
-        if (header->nrRows != 0) ::free(value);
+        if (value != NULL)
+        {
+            for (int myRow = 0; myRow < header->nrRows; myRow++)
+                if (value[myRow] != NULL) ::free(value[myRow]);
+            if (header->nrRows != 0) ::free(value);
+        }
 
         timeString = "";
 
