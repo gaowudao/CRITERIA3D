@@ -100,6 +100,9 @@ quality::Range* Crit3DQuality::getQualityRange(meteoVariable myVar)
 
 bool Crit3DQuality::checkData(meteoVariable myVar, frequencyType myFrequency, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DTime myTime)
 {
+    if (nrMeteoPoints == 0)
+        return false;
+
     // assign data
     for (int i = 0; i < nrMeteoPoints; i++)
         meteoPoints[i].value = meteoPoints[i].getMeteoPointValue(myTime, myVar, myFrequency);

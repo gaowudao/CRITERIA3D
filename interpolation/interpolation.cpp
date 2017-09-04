@@ -1231,12 +1231,9 @@ bool interpolateGridDtm(gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGr
 }
 
 
-// assume che i dati siano già stati caricati in interpolationPointList (checkData)
-bool interpolationRaster(meteoVariable myVar, Crit3DInterpolationSettings *mySettings,
-                         gis::Crit3DRasterGrid *myRaster, const  gis::Crit3DRasterGrid& myDTM,
-                         const Crit3DTime& myTime, std::string *myError)
+bool checkInterpolationRaster(const  gis::Crit3DRasterGrid& myDTM, std::string *myError)
 {
-    // Check data presence
+    // check data presence
     if (interpolationPointList.size() == 0)
     {
         *myError = "No data to interpolate";
@@ -1249,6 +1246,18 @@ bool interpolationRaster(meteoVariable myVar, Crit3DInterpolationSettings *mySet
         *myError = "Load DTM before";
         return false;
     }
+
+    return true;
+}
+
+
+// assume che i dati siano già stati caricati in interpolationPointList (checkData)
+bool interpolationRaster(meteoVariable myVar, Crit3DInterpolationSettings *mySettings,
+                         gis::Crit3DRasterGrid *myRaster, const  gis::Crit3DRasterGrid& myDTM,
+                         const Crit3DTime& myTime, std::string *myError)
+{
+    if (! checkInterpolationRaster(myDTM, myError))
+        return false;
 
     // Interpolation settings
     mySettings->setCurrentDate(myTime.date);
