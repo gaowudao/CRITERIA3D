@@ -148,47 +148,59 @@ bool RasterObject::setMapResolution()
 }
 
 
-bool RasterObject::initialize(gis::Crit3DRasterGrid* myRaster, const gis::Crit3DGisSettings& gisSettings, bool isLatLon_, bool isGrid_)
+bool RasterObject::initializeUTM(gis::Crit3DRasterGrid* myRaster, const gis::Crit3DGisSettings& gisSettings, bool isGrid_)
 {
     if (myRaster == NULL) return false;
     if (! myRaster->isLoaded) return false;
 
-    isLatLon = isLatLon_;
+    double lat, lon, x, y;
+    int utmRow, utmCol;
+
+    isLatLon = false;
+
+    isGrid = isGrid_;
+    utmZone = gisSettings.utmZone;
+    currentRaster = myRaster;
+
+    freeIndexesMatrix();
+    gis::getGeoExtentsFromUTMHeader(gisSettings, myRaster->header, &latLonHeader);
+    initializeIndexesMatrix();
+
+    for (int row = 0; row < latLonHeader.nrRows; row++)
+        for (int col = 0; col < latLonHeader.nrCols; col++)
+        {
+            gis::getLatLonFromRowCol(latLonHeader, row, col, &lat, &lon);
+            gis::latLonToUtmForceZone(gisSettings.utmZone, lat, lon, &x, &y);
+            gis::getRowColFromXY(*myRaster, x, y, &utmRow, &utmCol);
+
+            if (myRaster->getValueFromRowCol(utmRow, utmCol) != myRaster->header->flag)
+            {
+                matrix[row][col].row = utmRow;
+                matrix[row][col].col = utmCol;
+            }
+        }
+
+    setDrawing(true);
+    return true;
+}
+
+
+bool RasterObject::initializeLatLon(gis::Crit3DRasterGrid* myRaster, const gis::Crit3DGisSettings& gisSettings, const gis::Crit3DLatLonHeader& latLonHeader_, bool isGrid_)
+{
+    if (myRaster == NULL) return false;
+    if (! myRaster->isLoaded) return false;
+
+    isLatLon = true;
+
     isGrid = isGrid_;
     utmZone = gisSettings.utmZone;
     currentRaster = myRaster;
 
     freeIndexesMatrix();
 
-    if (isLatLon)
-    {
-        // TODO transform
-        //latLonHeader = *(myRaster->header);
-    }
-    else
-    {
-        // UTM
-        double lat, lon, x, y;
-        int utmRow, utmCol;
+    latLonHeader = latLonHeader_;
 
-        gis::getGeoExtentsFromUTMHeader(gisSettings, myRaster->header, &latLonHeader);
-        initializeIndexesMatrix();
-
-        for (int row = 0; row < latLonHeader.nrRows; row++)
-            for (int col = 0; col < latLonHeader.nrCols; col++)
-            {
-                gis::getLatLonFromRowCol(latLonHeader, row, col, &lat, &lon);
-                gis::latLonToUtmForceZone(gisSettings.utmZone, lat, lon, &x, &y);
-                gis::getRowColFromXY(*myRaster, x, y, &utmRow, &utmCol);
-
-                if (myRaster->getValueFromRowCol(utmRow, utmCol) != myRaster->header->flag)
-                {
-                    matrix[row][col].row = utmRow;
-                    matrix[row][col].col = utmCol;
-                }
-            }
-    }
-
+    setDrawing(true);
     return true;
 }
 

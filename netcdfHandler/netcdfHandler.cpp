@@ -198,12 +198,15 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             if ((lon[1]-lon[0]) != (lat[0]-lat[1]))
                 *buffer << "\nWarning! dx != dy" << endl;
 
-            dataGrid.header->llCorner->x = lon[0];
-            dataGrid.header->llCorner->y = lat[nrLat-1];
-            dataGrid.header->cellSize = (lon[1]-lon[0]) / 2;
-            dataGrid.header->nrCols = nrLon;
-            dataGrid.header->nrRows = nrLat;
-            dataGrid.header->flag = NODATA;
+            latLonHeader.llCorner->latitude = lat[0];
+            latLonHeader.llCorner->longitude = lon[0];
+            latLonHeader.dx = (lon[1]-lon[0]);
+            latLonHeader.dy = (lat[1]-lat[0]);
+            latLonHeader.nrCols = nrLon;
+            latLonHeader.nrRows = nrLat;
+            latLonHeader.flag = NODATA;
+
+            dataGrid.header->convertFromLatLon(latLonHeader);
             dataGrid.initializeGrid(0);
         }
     }

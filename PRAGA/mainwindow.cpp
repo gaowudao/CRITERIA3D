@@ -194,7 +194,7 @@ void MainWindow::on_actionLoadRaster_triggered()
     this->ui->rasterOpacitySlider->setEnabled(true);
 
     // set raster object
-    this->rasterObj->initialize(&(myProject.DTM), myProject.gisSettings, false, false);
+    this->rasterObj->initializeUTM(&(myProject.DTM), myProject.gisSettings, false);
 
     // center map
     gis::Crit3DGeoPoint* center = this->rasterObj->getRasterCenter();
@@ -208,7 +208,6 @@ void MainWindow::on_actionLoadRaster_triggered()
 
     // active raster object
     this->rasterObj->updateCenter();
-    this->rasterObj->setDrawing(true);
 }
 
 
@@ -1005,9 +1004,12 @@ void MainWindow::on_actionOpen_NetCDF_data_triggered()
     std::stringstream buffer;
     myProject.netCDF.readProperties(fileName.toStdString(), &buffer);
 
-    gridObj->initialize(&(myProject.netCDF.dataGrid), myProject.gisSettings, myProject.netCDF.isLatLon, true);
+    if (myProject.netCDF.isLatLon)
+        gridObj->initializeLatLon(&(myProject.netCDF.dataGrid), myProject.gisSettings, myProject.netCDF.latLonHeader, true);
+    else
+        gridObj->initializeUTM(&(myProject.netCDF.dataGrid), myProject.gisSettings, true);
+
     myProject.netCDF.dataGrid.emptyGrid();
-    gridObj->setDrawing(true);
     gridObj->updateCenter();
 
     QDialog myDialog;

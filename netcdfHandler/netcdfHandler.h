@@ -8,6 +8,7 @@
     {
     public:
         gis::Crit3DRasterGrid dataGrid;
+        gis::Crit3DLatLonHeader latLonHeader;
 
         bool isLatLon;
 

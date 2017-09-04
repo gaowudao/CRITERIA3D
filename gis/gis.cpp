@@ -132,6 +132,16 @@ namespace gis
         llCorner = new Crit3DUtmPoint();
     }
 
+    void Crit3DGridHeader::convertFromLatLon(const Crit3DLatLonHeader& latLonHeader)
+    {
+        nrRows = latLonHeader.nrRows;
+        nrCols = latLonHeader.nrCols;
+        flag = latLonHeader.flag;
+        llCorner->y = latLonHeader.llCorner->latitude;
+        llCorner->x = latLonHeader.llCorner->longitude;
+        cellSize = (latLonHeader.dx + latLonHeader.dy) * 0.5;
+    }
+
     Crit3DLatLonHeader::Crit3DLatLonHeader()
     {
         nrRows = 0;

@@ -101,6 +101,17 @@
             Crit3DRasterWindow(int row1, int col1, int row2, int col2);
         };
 
+        class Crit3DLatLonHeader
+        {
+        public:
+            int nrRows;
+            int nrCols;
+            double dx, dy;
+            float flag;
+            Crit3DGeoPoint* llCorner;
+
+            Crit3DLatLonHeader();
+        };
 
         class Crit3DGridHeader
         {
@@ -113,19 +124,9 @@
 
             Crit3DGridHeader();
 
+            void convertFromLatLon(const Crit3DLatLonHeader& latLonHeader);
+
             friend bool operator == (const Crit3DGridHeader& myHeader1, const Crit3DGridHeader& myHeader2);
-        };
-
-        class Crit3DLatLonHeader
-        {
-        public:
-            int nrRows;
-            int nrCols;
-            double dx, dy;
-            float flag;
-            Crit3DGeoPoint* llCorner;
-
-            Crit3DLatLonHeader();
         };
 
 

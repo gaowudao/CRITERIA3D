@@ -11,16 +11,16 @@ TEMPLATE = app
 
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../utilities ../gis ../MapGraphics ../meteo ../quality ../interpolation ../dbMeteoPoints ../netcdfHandler
 
-LIBS += -L../mathFunctions/debug -lmathFunctions
-LIBS += -L../crit3dDate/debug -lcrit3dDate
-LIBS += -L../utilities/debug -lutilities
-LIBS += -L../dbMeteoPoints/debug -ldbMeteoPoints
-LIBS += -L../meteo/debug -lmeteo
-LIBS += -L../gis/debug -lgis
-LIBS += -L../quality/debug -lquality
-LIBS += -L../interpolation/debug -linterpolation
-LIBS += -L../MapGraphics/debug -lMapGraphics
-LIBS += -L../netcdfHandler/debug -lnetcdfHandler
+LIBS += -L../mathFunctions/release -lmathFunctions
+LIBS += -L../crit3dDate/release -lcrit3dDate
+LIBS += -L../utilities/release -lutilities
+LIBS += -L../dbMeteoPoints/release -ldbMeteoPoints
+LIBS += -L../meteo/release -lmeteo
+LIBS += -L../gis/release -lgis
+LIBS += -L../quality/release -lquality
+LIBS += -L../interpolation/release -linterpolation
+LIBS += -L../MapGraphics/release -lMapGraphics
+LIBS += -L../netcdfHandler/release -lnetcdfHandler
 
 LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf -lhdf5
 
