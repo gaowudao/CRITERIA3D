@@ -31,7 +31,7 @@ void NetCDFHandler::initialize()
     idLon = NODATA;
     idTime = NODATA;
 
-    isUTM = false;
+    isLatLon = false;
 
     x = NULL;
     y = NULL;
@@ -99,31 +99,31 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
        else if (lowerCase(string(name)) == "x")
        {
            nrX = int(lenght);
-           isUTM = true;
+           isLatLon = false;
        }
        else if (lowerCase(string(name)) == "y")
        {
            nrY = int(lenght);
-           isUTM = true;
+           isLatLon = false;
        }
        else if (lowerCase(string(name)) == "lat" || lowerCase(string(name)) == "latitude")
        {
            nrLat = int(lenght);
-           isUTM = false;
+           isLatLon = true;
        }
        else if (lowerCase(string(name)) == "lon" || lowerCase(string(name)) == "longitude")
        {
            nrLon = int(lenght);
-           isUTM = false;
+           isLatLon = true;
        }
 
        *buffer << i << " - " << name << "\t values: " << lenght << endl;
    }
 
-   if (isUTM)
-       *buffer <<"\n(x,y) = "<<nrX << "," <<nrY << endl;
-   else
+   if (isLatLon)
        *buffer <<"\n(lon,lat) = "<<nrLon << "," <<nrLat << endl;
+   else
+       *buffer <<"\n(x,y) = "<<nrX << "," <<nrY << endl; 
 
    *buffer << "\nVariables: " << endl;
    for (int v = 0; v < nrVariables; v++)
@@ -174,11 +174,42 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
         }
     }
 
-    if (isUTM)
+    if (isLatLon)
     {
-        if (idX == NODATA || idY == NODATA)
-            *buffer << endl << "ERROR: missing x,y data" << endl;
-        else
+        if (idLat != NODATA && idLon != NODATA)
+        {
+            float* lat = (float*) calloc(nrLat, sizeof(float));
+            float* lon = (float*) calloc(nrLon, sizeof(float));
+
+            if (retval = nc_get_var_float(ncId, idLon, lon))
+                *buffer << "\nERROR in reading longitude:" << nc_strerror(retval);
+
+            if (retval = nc_get_var_float(ncId, idLat, lat))
+                *buffer << "\nERROR in reading latitude:" << nc_strerror(retval);
+
+            *buffer << endl << "lat:" << endl;
+            for (int i = 0; i < nrLat; i++)
+                *buffer << lat[i] << ", ";
+            *buffer << endl << "lon:" << endl;
+            for (int i = 0; i < nrLon; i++)
+                *buffer << lon[i] << ", ";
+            *buffer << endl;
+
+            if ((lon[1]-lon[0]) != (lat[0]-lat[1]))
+                *buffer << "\nWarning! dx != dy" << endl;
+
+            dataGrid.header->llCorner->x = lon[0];
+            dataGrid.header->llCorner->y = lat[nrLat-1];
+            dataGrid.header->cellSize = (lon[1]-lon[0]) / 2;
+            dataGrid.header->nrCols = nrLon;
+            dataGrid.header->nrRows = nrLat;
+            dataGrid.header->flag = NODATA;
+            dataGrid.initializeGrid(0);
+        }
+    }
+    else
+    {
+        if (idX != NODATA && idY != NODATA)
         {
             x = (float*) calloc(nrX, sizeof(float));
             if (retval = nc_get_var_float(ncId, idX, x))
@@ -195,27 +226,20 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
                 nc_close(ncId);
                 return false;
             }
+
+            if ((x[1]-x[0]) != (y[1]-y[0]))
+                *buffer << "\nWarning! dx != dy" << endl;
+
+            dataGrid.header->llCorner->x = x[0];
+            dataGrid.header->llCorner->y = y[0];
+            dataGrid.header->cellSize = x[1]-x[0];
+            dataGrid.header->nrCols = nrX;
+            dataGrid.header->nrRows = nrY;
+            dataGrid.header->flag = NODATA;
+            dataGrid.initializeGrid(0);
         }
-    }
-
-    if (isUTM && idLat != NODATA && idLon != NODATA)
-    {
-        float* lat = (float*) calloc(nrY*nrX, sizeof(float));
-        float* lon = (float*) calloc(nrY*nrX, sizeof(float));
-
-        if (retval = nc_get_var_float(ncId, idLon, lon))
-            *buffer << "\nERROR in reading longitude:" << nc_strerror(retval);
-
-        if (retval = nc_get_var_float(ncId, idLat, lat))
-            *buffer << "\nERROR in reading latitude:" << nc_strerror(retval);
-
-        *buffer << endl << "(lat,lon):" << endl;
-        for (int row = 0; row < nrY; row+=2)
-        {
-            *buffer << lat[row*nrX+row] << ",";
-            *buffer << lon[row*nrX+row] << "  ";
-        }
-        *buffer << endl;
+        else
+            *buffer << endl << "ERROR: missing x,y data" << endl;
     }
 
     // CLOSE file, freeing all resources

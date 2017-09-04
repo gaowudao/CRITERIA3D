@@ -10,7 +10,7 @@ TARGET = netcdfHandler
 TEMPLATE = lib
 CONFIG += staticlib
 
-INCLUDEPATH += ../mathFunctions
+INCLUDEPATH += ../mathFunctions ../gis ../crit3dDate
 INCLUDEPATH += $$(NC4_INSTALL_DIR)/include
 
 SOURCES += \

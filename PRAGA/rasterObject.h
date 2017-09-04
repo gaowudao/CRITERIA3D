@@ -14,6 +14,7 @@ struct RowCol
     unsigned short col;
 };
 
+
 /*!
  * \brief The RasterObject class
  */
@@ -46,7 +47,7 @@ public:
     void updateCenter();
     void setDrawing(bool value);
     void setColorLegend(ColorLegend* myLegend);
-    bool initialize(gis::Crit3DRasterGrid* myRaster, const gis::Crit3DGisSettings& gisSettings, bool isLatLon);
+    bool initialize(gis::Crit3DRasterGrid* myRaster, const gis::Crit3DGisSettings& gisSettings, bool isLatLon_, bool isGrid_);
     float getRasterMaxSize();
     gis::Crit3DGeoPoint* getRasterCenter();
     void setCurrentRaster(gis::Crit3DRasterGrid* rasterPointer);
@@ -61,7 +62,8 @@ private:
     bool isDrawing;
     RowCol **matrix;
     gis::Crit3DGridHeader latLonHeader;
-    bool isLatLonRaster;
+    bool isLatLon;
+    bool isGrid;
     int utmZone;
     gis::Crit3DRasterGrid *currentRaster;
 

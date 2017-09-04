@@ -12,7 +12,9 @@ RasterObject::RasterObject(MapGraphicsView* view, MapGraphicsObject *parent) :
 
     matrix = NULL;
     currentRaster = NULL;
-    this->isLatLonRaster = false;
+    legend = NULL;
+    this->isLatLon = false;
+    this->isGrid = false;
     this->geoMap = new gis::Crit3DGeoMap();
     this->isDrawing = false;
     this->updateCenter();
@@ -21,7 +23,7 @@ RasterObject::RasterObject(MapGraphicsView* view, MapGraphicsObject *parent) :
 
 void RasterObject::setDrawing(bool value)
 {
- this->isDrawing = value;
+    this->isDrawing = value;
 }
 
 
@@ -50,11 +52,16 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     Q_UNUSED(option)
     Q_UNUSED(widget)
 
-    this->setMapResolution();
+    if (isDrawing)
+    {
+        setMapResolution();
 
-    drawRaster(currentRaster, painter);
+        if (currentRaster != NULL)
+            drawRaster(currentRaster, painter);
 
-    this->legend->update();
+        if (legend != NULL)
+            legend->update();
+    }
 }
 
 
@@ -141,16 +148,19 @@ bool RasterObject::setMapResolution()
 }
 
 
-bool RasterObject::initialize(gis::Crit3DRasterGrid* myRaster, const gis::Crit3DGisSettings& gisSettings, bool isLatLon)
+bool RasterObject::initialize(gis::Crit3DRasterGrid* myRaster, const gis::Crit3DGisSettings& gisSettings, bool isLatLon_, bool isGrid_)
 {
-    freeIndexesMatrix();
-    isLatLonRaster = isLatLon;
+    if (myRaster == NULL) return false;
+    if (! myRaster->isLoaded) return false;
+
+    isLatLon = isLatLon_;
+    isGrid = isGrid_;
     utmZone = gisSettings.utmZone;
     currentRaster = myRaster;
 
-    if (! myRaster->isLoaded) return false;
+    freeIndexesMatrix();
 
-    if (isLatLonRaster)
+    if (isLatLon)
     {
         latLonHeader = *(myRaster->header);
     }
@@ -184,6 +194,7 @@ bool RasterObject::initialize(gis::Crit3DRasterGrid* myRaster, const gis::Crit3D
 
 bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPainter)
 {
+    if (myRaster == NULL) return false;
     if (! this->isDrawing) return false;
     if (! myRaster->isLoaded) return false;
 
@@ -212,10 +223,8 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
 
     // dynamic color scale
     gis::Crit3DRasterWindow* latLonWindow = new gis::Crit3DRasterWindow(rowTop, col0, rowBottom, col1);
-    if (isLatLonRaster)
-    {
+    if (isLatLon)
         gis::updateColorScale(myRaster, *latLonWindow);
-    }
     else
     {
         // UTM raster
@@ -253,19 +262,32 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
         {
             x1 = pixelLL.x + (col-col0 + step) * dx;
 
-            if (matrix[row][col].row != NODATA_UNSIGNED_SHORT)
+            if (isLatLon)
+                myValue = myRaster->value[row][col];
+            else
             {
-                myValue = myRaster->getValueFromRowCol(matrix[row][col].row, matrix[row][col].col);
-                if (myValue != myRaster->header->flag)
-                {
-                    myColor = myRaster->colorScale->getColor(myValue);
-                    myQColor = QColor(myColor->red, myColor->green, myColor->blue);
-                    myPainter->setBrush(myQColor);
+                myValue = INDEX_ERROR;
+                if (matrix[row][col].row != NODATA_UNSIGNED_SHORT)
+                    myValue = myRaster->value[matrix[row][col].row][matrix[row][col].col];
+            }
 
-                    lx = (x1 - x0) +1;
-                    ly = (y1 - y0) +1;
-                    myPainter->fillRect(x0, y0, lx, ly, myPainter->brush());
-                }
+            if (myValue != myRaster->header->flag && myValue != INDEX_ERROR)
+            {
+                myColor = myRaster->colorScale->getColor(myValue);
+                myQColor = QColor(myColor->red, myColor->green, myColor->blue);
+                myPainter->setBrush(myQColor);
+
+                lx = (x1 - x0) +1;
+                ly = (y1 - y0) +1;
+                myPainter->fillRect(x0, y0, lx, ly, myPainter->brush());
+            }
+            else if (isGrid && myValue == myRaster->header->flag)
+            {
+                lx = (x1 - x0) +1;
+                ly = (y1 - y0) +1;
+                myPainter->setPen(QColor(64, 64, 64));
+                myPainter->setBrush(Qt::NoBrush);
+                myPainter->drawRect(x0, y0, lx, ly);
             }
             x0 = ++x1;
         }

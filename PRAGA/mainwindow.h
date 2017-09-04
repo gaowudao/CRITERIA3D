@@ -108,6 +108,7 @@
         MapGraphicsScene* mapScene;
         MapGraphicsView* mapView;
         RasterObject* rasterObj;
+        RasterObject* gridObj;
         ColorLegend *rasterLegend;
         ColorLegend *pointsLegend;
         QList<StationMarker*> pointList;

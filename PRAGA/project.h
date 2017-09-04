@@ -17,6 +17,10 @@
         #include <download.h>
     #endif
 
+    #ifndef NETCDFHANDLER_H
+        #include "netcdfHandler.h"
+    #endif
+
     #include <QList>
     #include <QDate>
 
@@ -39,6 +43,7 @@
         gis::Crit3DRasterGrid DTM;
         gis::Crit3DRasterGrid dataRaster;
         gis::Crit3DRasterGrid *currentRaster;
+        NetCDFHandler netCDF;
 
         //gis::Crit3DRasterGrid rowMatrix;
         //gis::Crit3DRasterGrid colMatrix;

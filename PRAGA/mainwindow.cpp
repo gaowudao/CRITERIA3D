@@ -24,7 +24,6 @@
 #include "dialogWindows.h"
 #include "quality.h"
 #include "interpolation.h"
-#include "netcdfHandler.h"
 #include <sstream>
 #include <iostream>
 
@@ -63,11 +62,18 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
     this->mapView->centerOn(startCenter->lonLat());
     this->setMapSource(OSMTileSource::Terrain);
 
-    // Set raster object
+    // Set raster objects
     this->rasterObj = new RasterObject(this->mapView);
+    this->gridObj = new RasterObject(this->mapView);
+
     this->rasterObj->setOpacity(this->ui->rasterOpacitySlider->value() / 100.0);
+    this->gridObj->setOpacity(this->ui->rasterOpacitySlider->value() / 100.0);
+
     this->rasterObj->setColorLegend(this->rasterLegend);
+    // gridobj colorLegend
+
     this->mapView->scene()->addObject(this->rasterObj);
+    this->mapView->scene()->addObject(this->gridObj);
 
     this->updateVariable();
     this->updateDateTime();
@@ -98,6 +104,7 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete rasterObj;
+    delete gridObj;
     delete rasterLegend;
     delete pointsLegend;
     delete mapView;
@@ -108,8 +115,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_rasterOpacitySlider_sliderMoved(int position)
 {
-    if (this->rasterObj != NULL)
-        this->rasterObj->setOpacity(position / 100.0);
+    this->rasterObj->setOpacity(position / 100.0);
 }
 
 
@@ -173,7 +179,7 @@ void MainWindow::on_actionRectangle_Selection_triggered()
 
 void MainWindow::on_actionLoadRaster_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open rasterObj"), "", tr("ESRI grid files (*.flt)"));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open raster Grid"), "", tr("ESRI grid files (*.flt)"));
 
     if (fileName == "") return;
 
@@ -188,7 +194,7 @@ void MainWindow::on_actionLoadRaster_triggered()
     this->ui->rasterOpacitySlider->setEnabled(true);
 
     // set raster object
-    this->rasterObj->initialize(&(myProject.DTM), myProject.gisSettings, false);
+    this->rasterObj->initialize(&(myProject.DTM), myProject.gisSettings, false, false);
 
     // center map
     gis::Crit3DGeoPoint* center = this->rasterObj->getRasterCenter();
@@ -370,8 +376,8 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
 void MainWindow::mouseReleaseEvent(QMouseEvent *event){
     Q_UNUSED(event)
 
-    if (this->rasterObj != NULL)
-        this->rasterObj->updateCenter();
+    this->rasterObj->updateCenter();
+    this->gridObj->updateCenter();
 
     gis::Crit3DGeoPoint pointSelected;
 
@@ -445,15 +451,15 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
     Position newCenter = this->mapView->mapToScene(mapPoint);
     this->ui->statusBar->showMessage(QString::number(newCenter.latitude()) + " " + QString::number(newCenter.longitude()));
 
-    this->rasterObj->setDrawing(false);
-        if (event->button() == Qt::LeftButton)
-            this->mapView->zoomIn();
-        else
-            this->mapView->zoomOut();
+    if (event->button() == Qt::LeftButton)
+        this->mapView->zoomIn();
+    else
+        this->mapView->zoomOut();
 
     this->mapView->centerOn(newCenter.lonLat());
+
     this->rasterObj->updateCenter();
-    this->rasterObj->setDrawing(true);
+    this->gridObj->updateCenter();
 }
 
 
@@ -506,8 +512,6 @@ void MainWindow::resizeEvent(QResizeEvent * event)
 
     ui->groupBoxRaster->move(MAPBORDER/2, (this->height() - INFOHEIGHT) / 2 + MAPBORDER);
     ui->groupBoxRaster->resize(TOOLSWIDTH, ui->groupBoxRaster->height());
-
-
 
     //TODO sembrano non funzionare
     ui->widgetColorLegendRaster->resize(TOOLSWIDTH, ui->widgetColorLegendPoints->height());
@@ -999,8 +1003,12 @@ void MainWindow::on_actionOpen_NetCDF_data_triggered()
     if (fileName == "") return;
 
     std::stringstream buffer;
-    NetCDFHandler nc;
-    nc.readProperties(fileName.toStdString(), &buffer);
+    myProject.netCDF.readProperties(fileName.toStdString(), &buffer);
+
+    gridObj->initialize(&(myProject.netCDF.dataGrid), myProject.gisSettings, myProject.netCDF.isLatLon, true);
+    myProject.netCDF.dataGrid.emptyGrid();
+    gridObj->setDrawing(true);
+    gridObj->updateCenter();
 
     QDialog myDialog;
     QVBoxLayout mainLayout;
