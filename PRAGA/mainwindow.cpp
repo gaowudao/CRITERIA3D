@@ -200,7 +200,7 @@ void MainWindow::on_actionLoadRaster_triggered()
     gis::Crit3DGeoPoint* center = this->rasterObj->getRasterCenter();
     this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
 
-    // resize map (decimal degree)
+    // resize map
     float size = this->rasterObj->getRasterMaxSize();
     size = log2(1000.0/size);
     this->mapView->setZoomLevel(quint8(size));
@@ -569,6 +569,8 @@ void MainWindow::on_actionInterpolation_triggered()
 
     formInfo myInfo;
     myInfo.start("Interpolation...", 0);
+
+    myProject.dataRaster.initializeGrid(myProject.DTM);
 
     if (interpolationRaster(myProject.getCurrentVariable(), &interpolationSettings,
                 &(myProject.dataRaster), myProject.DTM, myProject.getCurrentTime(), &myError))

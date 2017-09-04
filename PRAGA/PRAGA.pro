@@ -1,6 +1,7 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2016-10-10T15:35:21
+# CRITERIA3D distribution
+# PRAGA (PRogram for AGrometeorological Analysis)
 #
 #-------------------------------------------------
 
@@ -48,4 +49,3 @@ HEADERS  += mainwindow.h \
 FORMS    += mainwindow.ui \
     formInfo.ui
 
-DISTFILES +=

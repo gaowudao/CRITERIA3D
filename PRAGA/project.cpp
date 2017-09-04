@@ -45,7 +45,6 @@ bool Project::loadRaster(QString myFileName)
     gis::updateMinMaxRasterGrid(&(this->DTM));
     this->DTM.isLoaded = true;
     this->currentRaster = &DTM;
-    this->dataRaster.initializeGrid(this->DTM);
 
     return (true);
 }
