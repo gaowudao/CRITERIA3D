@@ -85,7 +85,7 @@ void RasterObject::setCurrentRaster(gis::Crit3DRasterGrid* rasterPointer)
  */
 float RasterObject::getRasterMaxSize()
 {
-    return maxValue(latLonHeader.nrRows, latLonHeader.nrCols) * latLonHeader.cellSize;
+    return maxValue(latLonHeader.nrRows * latLonHeader.dy, latLonHeader.nrCols * latLonHeader.dx);
 }
 
 
@@ -96,8 +96,8 @@ float RasterObject::getRasterMaxSize()
 gis::Crit3DGeoPoint* RasterObject::getRasterCenter()
 {
     gis::Crit3DGeoPoint* center = new(gis::Crit3DGeoPoint);
-    center->latitude = latLonHeader.llCorner->y + (latLonHeader.nrRows * latLonHeader.cellSize) * 0.5;
-    center->longitude = latLonHeader.llCorner->x + (latLonHeader.nrCols * latLonHeader.cellSize) * 0.5;
+    center->latitude = latLonHeader.llCorner->latitude + (latLonHeader.nrRows * latLonHeader.dy) * 0.5;
+    center->longitude = latLonHeader.llCorner->longitude + (latLonHeader.nrCols * latLonHeader.dx) * 0.5;
     return center;
 }
 
@@ -162,7 +162,8 @@ bool RasterObject::initialize(gis::Crit3DRasterGrid* myRaster, const gis::Crit3D
 
     if (isLatLon)
     {
-        latLonHeader = *(myRaster->header);
+        // TODO transform
+        //latLonHeader = *(myRaster->header);
     }
     else
     {
@@ -215,7 +216,6 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
     }
 
     // fix extent
-    rowTop--;
     rowBottom = std::min(latLonHeader.nrRows-1, std::max(0, rowBottom));
     rowTop = std::min(latLonHeader.nrRows-1, std::max(0, rowTop));
     col0 = std::min(latLonHeader.nrCols-1, std::max(0, col0));
@@ -231,7 +231,6 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
         gis::Crit3DRasterWindow* utmWindow = new gis::Crit3DRasterWindow();
         gis::getUtmWindow(latLonHeader, *(myRaster->header), *latLonWindow, utmWindow, this->utmZone);
         gis::updateColorScale(myRaster, *utmWindow);
-
     }
 
     roundColorScale(myRaster->colorScale, 4, true);
@@ -239,13 +238,13 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
     // lower left position
     gis::Crit3DGeoPoint llCorner;
     gis::Crit3DPixel pixelLL;
-    llCorner.longitude = latLonHeader.llCorner->x + col0 * latLonHeader.cellSize;
-    llCorner.latitude = latLonHeader.llCorner->y + (latLonHeader.nrRows-1 - rowBottom) * latLonHeader.cellSize;
+    llCorner.longitude = latLonHeader.llCorner->longitude + col0 * latLonHeader.dx;
+    llCorner.latitude = latLonHeader.llCorner->latitude + (latLonHeader.nrRows-1 - rowBottom) * latLonHeader.dy;
     pixelLL.x = (llCorner.longitude - this->geoMap->referencePoint.longitude) * this->geoMap->degreeToPixelX;
     pixelLL.y = (llCorner.latitude - this->geoMap->referencePoint.latitude) * this->geoMap->degreeToPixelY;
 
-    double dx = latLonHeader.cellSize * this->geoMap->degreeToPixelX;
-    double dy = latLonHeader.cellSize * this->geoMap->degreeToPixelY;
+    double dx = latLonHeader.dx * this->geoMap->degreeToPixelX;
+    double dy = latLonHeader.dy * this->geoMap->degreeToPixelY;
     int step = std::max(int(1. / (std::min(dx, dy))), 1);
 
     int x0, y0, x1, y1, lx, ly;

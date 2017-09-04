@@ -116,6 +116,19 @@
             friend bool operator == (const Crit3DGridHeader& myHeader1, const Crit3DGridHeader& myHeader2);
         };
 
+        class Crit3DLatLonHeader
+        {
+        public:
+            int nrRows;
+            int nrCols;
+            double dx, dy;
+            float flag;
+            Crit3DGeoPoint* llCorner;
+
+            Crit3DLatLonHeader();
+        };
+
+
         class Crit3DRasterGrid
         {
         public:
@@ -175,13 +188,13 @@
         bool updateColorScale(Crit3DRasterGrid* myGrid, const Crit3DRasterWindow& myWindow);
         void getRowColFromXY(const Crit3DRasterGrid &myGrid, double myX, double myY, int* myRow, int* myCol);
         void getRowColFromXY(const Crit3DGridHeader& myHeader, const Crit3DUtmPoint& p, Crit3DRasterCell* v);
-        void getRowColFromLatLon(const Crit3DGridHeader& myHeader, const Crit3DGeoPoint& p, int *myRow, int *myCol);
+        void getRowColFromLatLon(const Crit3DLatLonHeader &myHeader, const Crit3DGeoPoint& p, int *myRow, int *myCol);
         bool isOutOfGridRowCol(int myRow, int myCol, const Crit3DRasterGrid &myGrid);
         void getUtmXYFromRowColSinglePrecision(const Crit3DRasterGrid& myGrid, int myRow, int myCol,float* myX,float* myY);
         void getUtmXYFromRowCol(const Crit3DRasterGrid& myGrid, int myRow, int myCol ,double* myX, double* myY);
         void getUtmXYFromRowCol(const Crit3DGridHeader& myHeader,int myRow, int myCol, double* myX, double* myY);
-        void getLatLonFromRowCol(const Crit3DGridHeader& latLonHeader, int myRow, int myCol, double* lat, double* lon);
-        void getLatLonFromRowCol(const Crit3DGridHeader& latLonHeader, const Crit3DRasterCell& v, Crit3DGeoPoint* p);
+        void getLatLonFromRowCol(const Crit3DLatLonHeader &latLonHeader, int myRow, int myCol, double* lat, double* lon);
+        void getLatLonFromRowCol(const Crit3DLatLonHeader &latLonHeader, const Crit3DRasterCell& v, Crit3DGeoPoint* p);
         float getValueFromXY(const Crit3DRasterGrid& myGrid, double x, double y);
 
         bool isOutOfGridXY(double x, double y, Crit3DGridHeader* header);
@@ -217,9 +230,9 @@
                                gis::Crit3DRasterGrid* slopeMap, gis::Crit3DRasterGrid* aspectMap);
 
         bool getGeoExtentsFromUTMHeader(const Crit3DGisSettings& mySettings,
-                                        Crit3DGridHeader *utmHeader, Crit3DGridHeader *latLonHeader);
+                                        Crit3DGridHeader *utmHeader, Crit3DLatLonHeader *latLonHeader);
 
-        bool getUtmWindow(const Crit3DGridHeader& latLonHeader, const Crit3DGridHeader &utmHeader,
+        bool getUtmWindow(const Crit3DLatLonHeader &latLonHeader, const Crit3DGridHeader &utmHeader,
                           const Crit3DRasterWindow &latLonWindow, Crit3DRasterWindow *UtmWindow, int utmZone);
     }
 

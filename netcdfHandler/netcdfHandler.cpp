@@ -230,9 +230,11 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             if ((x[1]-x[0]) != (y[1]-y[0]))
                 *buffer << "\nWarning! dx != dy" << endl;
 
-            dataGrid.header->llCorner->x = x[0];
-            dataGrid.header->llCorner->y = y[0];
+            *buffer << y[0] << ", " << y[1] << endl;
             dataGrid.header->cellSize = x[1]-x[0];
+            dataGrid.header->llCorner->x = x[0] - dataGrid.header->cellSize*0.5;
+            dataGrid.header->llCorner->y = y[0] - dataGrid.header->cellSize*0.5;
+
             dataGrid.header->nrCols = nrX;
             dataGrid.header->nrRows = nrY;
             dataGrid.header->flag = NODATA;

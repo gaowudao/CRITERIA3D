@@ -262,7 +262,7 @@ namespace gis
     }
 
 
-    bool getGeoExtentsFromUTMHeader(const Crit3DGisSettings& mySettings, Crit3DGridHeader *utmHeader, Crit3DGridHeader *latLonHeader)
+    bool getGeoExtentsFromUTMHeader(const Crit3DGisSettings& mySettings, Crit3DGridHeader *utmHeader, Crit3DLatLonHeader *latLonHeader)
     {
         Crit3DGeoPoint v[4];
 
@@ -291,28 +291,23 @@ namespace gis
             URcorner.latitude = min(v[2].latitude, v[3].latitude);
         }
 
-        latLonHeader->llCorner->x = LLcorner.longitude;
-        latLonHeader->llCorner->y = LLcorner.latitude;
+        latLonHeader->nrRows = utmHeader->nrRows;
+        latLonHeader->nrCols = utmHeader->nrCols;
+
+        // dx, dy
+        latLonHeader->dx = (URcorner.longitude - LLcorner.longitude) / latLonHeader->nrCols;
+        latLonHeader->dy = (URcorner.latitude - LLcorner.latitude) / latLonHeader->nrRows;
 
         // center
-        Crit3DGeoPoint center, center_1;
-        Crit3DUtmPoint utmCenter = *(utmHeader->llCorner);
-        utmCenter.x += utmHeader->nrCols * utmHeader->cellSize *0.5;
-        utmCenter.y += utmHeader->nrRows * utmHeader->cellSize *0.5;
+        Crit3DUtmPoint utmCenter;
+        utmCenter.x = utmHeader->llCorner->x + utmHeader->nrCols * utmHeader->cellSize *0.5;
+        utmCenter.y = utmHeader->llCorner->y + utmHeader->nrRows * utmHeader->cellSize *0.5;
+        Crit3DGeoPoint center;
         gis::getLatLonFromUtm(mySettings, utmCenter, &(center));
-        utmCenter.x += utmHeader->cellSize;
-        utmCenter.y += utmHeader->cellSize;
-        gis::getLatLonFromUtm(mySettings, utmCenter, &(center_1));
 
-        // cellsize
-        double dx = center_1.longitude - center.longitude;
-        double dy = center_1.latitude - center.latitude;
-        // average
-        latLonHeader->cellSize = (dx + dy) / 2;
-
-        // nr of rows and cols
-        latLonHeader->nrRows = (int)floor((URcorner.latitude - LLcorner.latitude) / latLonHeader->cellSize) + 1;
-        latLonHeader->nrCols = (int)floor((URcorner.longitude - LLcorner.longitude) / latLonHeader->cellSize) + 1;
+        // llCorner
+        latLonHeader->llCorner->latitude = center.latitude - latLonHeader->nrRows * latLonHeader->dy *0.5;
+        latLonHeader->llCorner->longitude = center.longitude - latLonHeader->nrCols * latLonHeader->dx *0.5;
 
         // flag
         latLonHeader->flag = utmHeader->flag;
@@ -321,7 +316,7 @@ namespace gis
     }
 
 
-    bool getUtmWindow(const Crit3DGridHeader& latLonHeader, const Crit3DGridHeader& utmHeader,
+    bool getUtmWindow(const Crit3DLatLonHeader& latLonHeader, const Crit3DGridHeader& utmHeader,
                       const Crit3DRasterWindow& latLonWindow, Crit3DRasterWindow* UtmWindow, int utmZone)
     {
         Crit3DGeoPoint p[2];

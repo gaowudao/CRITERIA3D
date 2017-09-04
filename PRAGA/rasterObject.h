@@ -61,7 +61,7 @@ private:
     ColorLegend* legend;
     bool isDrawing;
     RowCol **matrix;
-    gis::Crit3DGridHeader latLonHeader;
+    gis::Crit3DLatLonHeader latLonHeader;
     bool isLatLon;
     bool isGrid;
     int utmZone;
