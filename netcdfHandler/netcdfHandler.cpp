@@ -144,7 +144,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
        else if (lowerCase(string(varName)) == "lon" || lowerCase(string(varName)) == "longitude")
            idLon = v;
 
-       *buffer << endl << v << " " << typeName << " " << varName << "\t dims: ";
+       *buffer << endl << v  << "\t" << varName << "\t" << typeName << "\t dims: ";
        for (int d = 0; d < nrVarDimensions; d++)
        {
            nc_inq_dim(ncId, varDimIds[d], name, &lenght);
@@ -200,12 +200,23 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             if ((lon[1]-lon[0]) != (lat[0]-lat[1]))
                 *buffer << "\nWarning! dx != dy" << endl;
 
-            latLonHeader.llCorner->latitude = lat[0];
+            latLonHeader.nrRows = nrLat;
+            latLonHeader.nrCols = nrLon;
+
             latLonHeader.llCorner->longitude = lon[0];
             latLonHeader.dx = (lon[1]-lon[0]);
-            latLonHeader.dy = (lat[1]-lat[0]);
-            latLonHeader.nrCols = nrLon;
-            latLonHeader.nrRows = nrLat;
+
+            if (lat[1] > lat[0])
+            {
+                latLonHeader.llCorner->latitude = lat[0];
+                latLonHeader.dy = (lat[1]-lat[0]);
+            }
+            else
+            {
+                latLonHeader.llCorner->latitude = lat[nrLat-1];
+                latLonHeader.dy = (lat[0]-lat[1]);
+            }
+
             latLonHeader.flag = NODATA;
 
             dataGrid.header->convertFromLatLon(latLonHeader);

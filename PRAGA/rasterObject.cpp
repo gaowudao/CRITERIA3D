@@ -219,6 +219,7 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
     int rowBottom, rowTop, col0, col1;
     gis::getRowColFromLatLon(latLonHeader, this->geoMap->bottomLeft, &rowBottom, &col0);
     gis::getRowColFromLatLon(latLonHeader, this->geoMap->topRight, &rowTop, &col1);
+    rowTop--;
 
     // check if current view is out of data
     if (((col0 < 0) && (col1 < 0))
