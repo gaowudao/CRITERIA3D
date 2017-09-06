@@ -28,6 +28,10 @@ private slots:
 
     bool initializeModel();
 
+    void on_chkUseInput_clicked();
+
+    void on_chkUseInputSoil_clicked();
+
 private:
     Ui::MainWindow *ui;
 

@@ -16,7 +16,7 @@
 
 long myHourIni, myHourFin, myCurrentHour;
 bool Initialized;
-bool useInputData;
+bool useInputMeteoData, useInputSoilData;
 
 double *myTempInput;
 double *myPrecInput;
@@ -67,7 +67,8 @@ MainWindow::~MainWindow()
 bool MainWindow::initializeModel()
 {
 
-    useInputData = ui->chkUseInput->isChecked() && (soilDataLoaded || meteoDataLoaded);
+    useInputMeteoData = ui->chkUseInputMeteo->isChecked() && meteoDataLoaded;
+    useInputSoilData = ui->chkUseInputSoil->isChecked() && soilDataLoaded;
 
     setThickness(ui->lineEditThickness->text().toDouble());
     setTotalDepth(ui->lineEditDepth->text().toDouble());
@@ -77,7 +78,7 @@ bool MainWindow::initializeModel()
     setInitialTemperature(ui->lineEditIniTTop->text().toDouble(), ui->lineEditIniTBottom->text().toDouble());
 
     // simulation
-    if (!useInputData)
+    if (!useInputMeteoData)
     {
         myHourIni = ui->lineEditSimStart->text().toInt();
         myHourFin = ui->lineEditSimStop->text().toInt();
@@ -107,7 +108,7 @@ bool MainWindow::initializeModel()
     if (! soilDataLoaded)
         setSoil(ui->lineEditThetaS->text().toDouble(), ui->lineEditThetaR->text().toDouble(), ui->lineEditClay->text().toDouble(), ui->lineEditOrganic->text().toDouble());
 
-    Initialized = initializeHeat1D(&myHourIni, &myHourFin, soilDataLoaded);
+    Initialized = initializeHeat1D(&myHourIni, &myHourFin, useInputSoilData);
 
     myCurrentHour = myHourIni;
 
@@ -115,24 +116,6 @@ bool MainWindow::initializeModel()
 }
 
 /*
-void MainWindow::on_pushInitialize_clicked()
-{
-    Initialized = initializeModel();
-
-    //getHourlyOutput(myHourIni, 0, getNodesNumber(), myOutput);
-
-    if (Initialized)
-    {
-        ui->labelInfo->setText("Model initialized.");
-        ui->prgBar->setMaximum(myHourFin);
-    }
-    else
-    {
-        ui->labelInfo->setText("Initialization failed.");
-    }
-
-}
-
 void MainWindow::on_pushRunNextHour_clicked()
 {
     if (Initialized)
@@ -175,7 +158,6 @@ void MainWindow::on_pushRunNextHour_clicked()
 }
 */
 
-
 void MainWindow::on_pushRunAllPeriod_clicked()
 {
     myHeatOutput.clean();
@@ -209,7 +191,7 @@ void MainWindow::on_pushRunAllPeriod_clicked()
 
         qApp->processEvents();
 
-        if (useInputData)
+        if (useInputMeteoData)
         {
             myT = myTempInput[myCurrentHour-1] + 273.16;
             myP = myPrecInput[myCurrentHour-1];
@@ -331,7 +313,7 @@ void MainWindow::on_pushLoadFileMeteo_clicked()
         myHourIni=0;
         myHourFin=0;
 
-        int myFieldNumber = 7;
+        int myFieldNumber = 6;
 
         for (myHourIndex = 1; myHourIndex < myInputNumber; myHourIndex++)
         {
@@ -339,7 +321,7 @@ void MainWindow::on_pushLoadFileMeteo_clicked()
             myPrecInput[myHourIndex-1] = myWords.at(myHourIndex*myFieldNumber+2).toDouble();
             myRHInput[myHourIndex-1] = myWords.at(myHourIndex*myFieldNumber+3).toDouble();
             myWSInput[myHourIndex-1] = myWords.at(myHourIndex*myFieldNumber+4).toDouble();
-            myNetRadInput[myHourIndex-1] = myWords.at(myHourIndex*myFieldNumber+6).toDouble();
+            myNetRadInput[myHourIndex-1] = myWords.at(myHourIndex*myFieldNumber+5).toDouble();
 
             myHourFin++;
         }
@@ -362,4 +344,17 @@ void MainWindow::on_listWidget_itemClicked(QListWidgetItem * selItem)
 {
     outputGroup myType = (outputGroup)ui->listWidget->row(selItem);
     outPlot->drawOutput(myType, &myHeatOutput);
+}
+
+
+void MainWindow::on_chkUseInput_clicked()
+{
+    ui->groupBox_atmFixedData->setEnabled(! ui->chkUseInputMeteo->isChecked());
+    ui->pushLoadFileMeteo->setEnabled(ui->chkUseInputMeteo->isChecked());
+}
+
+void MainWindow::on_chkUseInputSoil_clicked()
+{
+    ui->groupBox_soil->setEnabled(! ui->chkUseInputSoil->isCheckable());
+    ui->pushLoadFileSoil->setEnabled(ui->chkUseInputSoil->isCheckable());
 }

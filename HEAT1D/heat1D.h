@@ -9,18 +9,18 @@
 struct Qsoil{
     double profSup;
     double profInf;
-    double VG_alfa;			// [m^-1] alfa Van Genutchen
-    double VG_n;			// [-] n Van Genutchen
-    double VG_m;			// [-] n Van Genutchen ]0. , 1.[
-    double VG_he;			// [m] air-entry potential [0 , 1]
+    double VG_alfa;			// [m-1] alfa Van Genutchen
+    double VG_n;			// [-] n Van Genuchten
+    double VG_m;			// [-] n Van Genuchten ]0,1[
+    double VG_he;			// [m] air-entry potential [0,1]
     double VG_Sc;			// [-] reduction factor for modified VG formulation
-    double Theta_s;			// [m^3/m^3] theta saturo
-    double Theta_r;			// [m^3/m^3] theta residuo
-    double K_sat;			// [m/sec] conducibilit� idraulica satura
-    double Mualem_L;		// [-] parametro tortuosita' della formula conducibilit� di Mualem
+    double Theta_s;			// [m3 m-3] theta saturo
+    double Theta_r;			// [m3 m-3] theta residuo
+    double K_sat;			// [m s-1] conducibilita' idraulica satura
+    double Mualem_L;		// [-] parametro tortuosita' della formula conducibilita' di Mualem
     double Clay;			// [-] normalized Clay content [0,1]
     double OrganicMatter;	// [-] normalized Organic matter content [0,1)
-    double CEC;				// [meq hg^-1] Cation Excange Capacity [0,150]
+    double CEC;				// [meq hg-1] Cation Excange Capacity [0,150]
     double PH;				// [-] PH [3,10]
 
     double Roughness;		// [s/m^0.33] superficie: scabrezza superficiale (parametro alfa eq. di Manning)
