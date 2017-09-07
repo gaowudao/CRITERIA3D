@@ -45,7 +45,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -54,8 +54,8 @@
      <widget class="QLineEdit" name="lineEditWidth">
       <property name="geometry">
        <rect>
-        <x>100</x>
-        <y>30</y>
+        <x>130</x>
+        <y>80</y>
         <width>31</width>
         <height>20</height>
        </rect>
@@ -67,34 +67,40 @@
      <widget class="QLabel" name="label_3">
       <property name="geometry">
        <rect>
-        <x>20</x>
-        <y>60</y>
-        <width>71</width>
+        <x>30</x>
+        <y>20</y>
+        <width>91</width>
         <height>16</height>
        </rect>
       </property>
       <property name="text">
-       <string>thickness</string>
+       <string>node distance (m)</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
      <widget class="QLabel" name="label">
       <property name="geometry">
        <rect>
-        <x>20</x>
-        <y>30</y>
-        <width>61</width>
+        <x>30</x>
+        <y>80</y>
+        <width>91</width>
         <height>16</height>
        </rect>
       </property>
       <property name="text">
-       <string>profile width</string>
+       <string>surface area (m2)</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEditDepth">
       <property name="geometry">
        <rect>
-        <x>100</x>
-        <y>90</y>
+        <x>130</x>
+        <y>50</y>
         <width>31</width>
         <height>20</height>
        </rect>
@@ -106,21 +112,24 @@
      <widget class="QLabel" name="label_2">
       <property name="geometry">
        <rect>
-        <x>20</x>
-        <y>90</y>
-        <width>61</width>
+        <x>30</x>
+        <y>50</y>
+        <width>91</width>
         <height>16</height>
        </rect>
       </property>
       <property name="text">
-       <string>profile depth</string>
+       <string>total depth (m)</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEditThickness">
       <property name="geometry">
        <rect>
-        <x>100</x>
-        <y>60</y>
+        <x>130</x>
+        <y>20</y>
         <width>31</width>
         <height>20</height>
        </rect>
@@ -129,62 +138,23 @@
        <string>0.05</string>
       </property>
      </widget>
-     <widget class="QLabel" name="label_19">
-      <property name="geometry">
-       <rect>
-        <x>150</x>
-        <y>90</y>
-        <width>21</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>m</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_18">
-      <property name="geometry">
-       <rect>
-        <x>150</x>
-        <y>30</y>
-        <width>21</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>m2</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_14">
-      <property name="geometry">
-       <rect>
-        <x>150</x>
-        <y>60</y>
-        <width>21</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>m</string>
-      </property>
-     </widget>
      <widget class="QGroupBox" name="groupBox_5">
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>140</y>
-        <width>151</width>
-        <height>141</height>
+        <y>120</y>
+        <width>191</width>
+        <height>151</height>
        </rect>
       </property>
       <property name="title">
-       <string>Initialization</string>
+       <string>initial status</string>
       </property>
       <widget class="QLineEdit" name="lineEditIniWaterContent">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>30</y>
+         <y>40</y>
          <width>41</width>
          <height>20</height>
         </rect>
@@ -197,7 +167,7 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>70</y>
+         <y>80</y>
          <width>51</width>
          <height>20</height>
         </rect>
@@ -210,7 +180,7 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>50</y>
+         <y>60</y>
          <width>101</width>
          <height>16</height>
         </rect>
@@ -223,20 +193,20 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>10</y>
+         <y>20</y>
          <width>121</width>
          <height>16</height>
         </rect>
        </property>
        <property name="text">
-        <string>saturation ratio ()</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;saturation ratio (-)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_20">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>90</y>
+         <y>100</y>
          <width>131</width>
          <height>16</height>
         </rect>
@@ -249,7 +219,7 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>110</y>
+         <y>120</y>
          <width>51</width>
          <height>20</height>
         </rect>
@@ -539,6 +509,9 @@
        </widget>
       </widget>
       <widget class="QCheckBox" name="chkUseInputMeteo">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="geometry">
         <rect>
          <x>240</x>
@@ -553,7 +526,7 @@
       </widget>
       <widget class="QPushButton" name="pushLoadFileMeteo">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="geometry">
         <rect>
@@ -641,8 +614,8 @@
      <widget class="QLineEdit" name="lineEditRoughnessHeight">
       <property name="geometry">
        <rect>
-        <x>150</x>
-        <y>35</y>
+        <x>180</x>
+        <y>40</y>
         <width>41</width>
         <height>20</height>
        </rect>
@@ -654,8 +627,8 @@
      <widget class="QLineEdit" name="lineEditPlough">
       <property name="geometry">
        <rect>
-        <x>150</x>
-        <y>95</y>
+        <x>180</x>
+        <y>100</y>
         <width>41</width>
         <height>20</height>
        </rect>
@@ -667,7 +640,7 @@
      <widget class="QLineEdit" name="lineEditAlbedo">
       <property name="geometry">
        <rect>
-        <x>150</x>
+        <x>180</x>
         <y>15</y>
         <width>41</width>
         <height>20</height>
@@ -682,18 +655,21 @@
        <rect>
         <x>30</x>
         <y>15</y>
-        <width>51</width>
+        <width>141</width>
         <height>16</height>
        </rect>
       </property>
       <property name="text">
-       <string>albedo ()</string>
+       <string>albedo (-)</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEditManningRoughness">
       <property name="geometry">
        <rect>
-        <x>150</x>
+        <x>180</x>
         <y>75</y>
         <width>41</width>
         <height>20</height>
@@ -708,12 +684,15 @@
        <rect>
         <x>30</x>
         <y>35</y>
-        <width>111</width>
+        <width>141</width>
         <height>21</height>
        </rect>
       </property>
       <property name="text">
        <string>roughness height (m)</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -723,21 +702,24 @@
       <property name="geometry">
        <rect>
         <x>30</x>
-        <y>95</y>
-        <width>51</width>
+        <y>100</y>
+        <width>141</width>
         <height>16</height>
        </rect>
       </property>
       <property name="text">
        <string>plough (m)</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
      </widget>
      <widget class="QLabel" name="label_22">
       <property name="geometry">
        <rect>
         <x>30</x>
-        <y>60</y>
-        <width>101</width>
+        <y>70</y>
+        <width>141</width>
         <height>31</height>
        </rect>
       </property>
@@ -749,6 +731,9 @@
       </property>
       <property name="scaledContents">
        <bool>false</bool>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -765,7 +750,7 @@
         <x>20</x>
         <y>10</y>
         <width>231</width>
-        <height>121</height>
+        <height>111</height>
        </rect>
       </property>
       <property name="title">
@@ -886,10 +871,13 @@
       </widget>
      </widget>
      <widget class="QCheckBox" name="chkUseInputSoil">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>30</x>
-        <y>140</y>
+        <y>160</y>
         <width>91</width>
         <height>17</height>
        </rect>
@@ -900,12 +888,12 @@
      </widget>
      <widget class="QPushButton" name="pushLoadFileSoil">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="geometry">
        <rect>
         <x>30</x>
-        <y>160</y>
+        <y>180</y>
         <width>81</width>
         <height>23</height>
        </rect>
@@ -970,7 +958,7 @@
        </property>
       </widget>
      </widget>
-     <widget class="QGroupBox" name="groupBox_4">
+     <widget class="QGroupBox" name="groupBox_simTime">
       <property name="geometry">
        <rect>
         <x>20</x>

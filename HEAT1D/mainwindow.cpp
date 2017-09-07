@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "heat1D.h"
+
+#include <iostream>
 #include <QString>
 #include <QFileDialog>
 #include <QFile>
@@ -106,7 +108,10 @@ bool MainWindow::initializeModel()
 
     // set soil
     if (! soilDataLoaded)
-        setSoil(ui->lineEditThetaS->text().toDouble(), ui->lineEditThetaR->text().toDouble(), ui->lineEditClay->text().toDouble(), ui->lineEditOrganic->text().toDouble());
+        setSoil(ui->lineEditThetaS->text().toDouble(),
+                ui->lineEditThetaR->text().toDouble(),
+                ui->lineEditClay->text().toDouble(),
+                ui->lineEditOrganic->text().toDouble());
 
     Initialized = initializeHeat1D(&myHourIni, &myHourFin, useInputSoilData);
 
@@ -275,6 +280,7 @@ void MainWindow::on_pushLoadFileSoil_clicked()
         }
 
         soilDataLoaded = true;
+        ui->chkUseInputSoil->setEnabled(true);
     }
 
     myFile.close();
@@ -293,9 +299,10 @@ void MainWindow::on_pushLoadFileMeteo_clicked()
     QFile myFile(myFilename);
     QTextStream myStream(&myFile);
     QStringList myWords;
+    QString myWord;
 
     if (myFile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
+    {       
         while (!myStream.atEnd()) {
             QString myLine = myStream.readLine();
             myWords += myLine.split(",");
@@ -317,16 +324,56 @@ void MainWindow::on_pushLoadFileMeteo_clicked()
 
         for (myHourIndex = 1; myHourIndex < myInputNumber; myHourIndex++)
         {
-            myTempInput[myHourIndex-1] = myWords.at(myHourIndex*myFieldNumber+1).toDouble();
-            myPrecInput[myHourIndex-1] = myWords.at(myHourIndex*myFieldNumber+2).toDouble();
-            myRHInput[myHourIndex-1] = myWords.at(myHourIndex*myFieldNumber+3).toDouble();
-            myWSInput[myHourIndex-1] = myWords.at(myHourIndex*myFieldNumber+4).toDouble();
-            myNetRadInput[myHourIndex-1] = myWords.at(myHourIndex*myFieldNumber+5).toDouble();
+            myWord = myWords.at(myHourIndex*myFieldNumber+1);
+            if (myWord != "")
+                myTempInput[myHourIndex-1] = myWords.at(myHourIndex*myFieldNumber+1).toDouble();
+            else
+            {
+                std::cout << "missing data at line " << myHourIndex+1 << std::endl;
+                return;
+            }
+
+            myWord = myWords.at(myHourIndex*myFieldNumber+1);
+            if (myWord != "")
+                myPrecInput[myHourIndex-1] = myWords.at(myHourIndex*myFieldNumber+2).toDouble();
+            else
+            {
+                std::cout << "missing data at line " << myHourIndex+1 << std::endl;
+                return;
+            }
+
+            myWord = myWords.at(myHourIndex*myFieldNumber+1);
+            if (myWord != "")
+                myRHInput[myHourIndex-1] = myWords.at(myHourIndex*myFieldNumber+3).toDouble();
+            else
+            {
+                std::cout << "missing data at line " << myHourIndex+1 << std::endl;
+                return;
+            }
+
+            myWord = myWords.at(myHourIndex*myFieldNumber+1);
+            if (myWord != "")
+                myWSInput[myHourIndex-1] = myWords.at(myHourIndex*myFieldNumber+4).toDouble();
+            else
+            {
+                std::cout << "missing data at line " << myHourIndex+1 << std::endl;
+                return;
+            }
+
+            myWord = myWords.at(myHourIndex*myFieldNumber+1);
+            if (myWord != "")
+                myNetRadInput[myHourIndex-1] = myWords.at(myHourIndex*myFieldNumber+5).toDouble();
+            else
+            {
+                std::cout << "missing data at line " << myHourIndex+1 << std::endl;
+                return;
+            }
 
             myHourFin++;
         }
 
         meteoDataLoaded = true;
+        ui->chkUseInputMeteo->setEnabled(true);
     }
 
     myFile.close();
@@ -347,14 +394,17 @@ void MainWindow::on_listWidget_itemClicked(QListWidgetItem * selItem)
 }
 
 
-void MainWindow::on_chkUseInput_clicked()
+void MainWindow::on_chkUseInputMeteo_clicked()
 {
+    if (ui->chkUseInputMeteo->isChecked() && ! meteoDataLoaded) return;
+
     ui->groupBox_atmFixedData->setEnabled(! ui->chkUseInputMeteo->isChecked());
-    ui->pushLoadFileMeteo->setEnabled(ui->chkUseInputMeteo->isChecked());
+    ui->groupBox_simTime->setEnabled(! ui->chkUseInputMeteo->isChecked());
 }
 
 void MainWindow::on_chkUseInputSoil_clicked()
 {
+    if (ui->chkUseInputSoil->isChecked() && ! soilDataLoaded) return;
+
     ui->groupBox_soil->setEnabled(! ui->chkUseInputSoil->isCheckable());
-    ui->pushLoadFileSoil->setEnabled(ui->chkUseInputSoil->isCheckable());
 }

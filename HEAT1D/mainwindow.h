@@ -25,12 +25,10 @@ private slots:
     void on_pushLoadFileMeteo_clicked();
     void on_pushCopyOutput_clicked();
     void on_listWidget_itemClicked(QListWidgetItem *selItem);
+    void on_chkUseInputMeteo_clicked();
+    void on_chkUseInputSoil_clicked();
 
     bool initializeModel();
-
-    void on_chkUseInput_clicked();
-
-    void on_chkUseInputSoil_clicked();
 
 private:
     Ui::MainWindow *ui;

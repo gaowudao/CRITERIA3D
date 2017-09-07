@@ -164,8 +164,6 @@ bool initializeSoil(bool useInputSoils)
     double VG_he        = 0.023;    //m
     double VG_alpha     = 1.76;     //m-1
     double VG_n         = 1.21;
-    double thetaR       = 0.03;
-    double thetaS       = 0.42;
     double mualemTort   = 0.5;
     double KSat         = 1. / (3600. * 100.);
 
@@ -185,7 +183,7 @@ bool initializeSoil(bool useInputSoils)
                                           myInputSoils[mySoilIndex].Clay);
     }
     else
-        myResult = soilFluxes3D::setSoilProperties(0, 1, VG_alpha, VG_n, (1. - 1. / VG_n), VG_he, thetaR, thetaS, KSat, mualemTort, OrganicMatter/100., Clay/100.);
+        myResult = soilFluxes3D::setSoilProperties(0, 1, VG_alpha, VG_n, (1. - 1. / VG_n), VG_he, ThetaR, ThetaS, KSat, mualemTort, OrganicMatter/100., Clay/100.);
 
     if (myResult != CRIT3D_OK) {
         printf("\n error in SetSoilProperties");
