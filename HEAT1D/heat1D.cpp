@@ -492,76 +492,123 @@ void getHourlyOutputAllPeriod(long firstIndex, long lastIndex, Crit3DOut *output
     output->errorOutput[output->nrValues-1].waterMBR = myPoint;
 }
 
-QString Crit3DOut::getTextOutput()
+QString Crit3DOut::getTextOutput(bool getTemp, bool getWater, bool getHeatFlux, bool getSurfBalance, bool getErrors, bool getCond)
 {
     QString myString = "";
     float myValue;
 
+    if (getTemp)
+        for (int j=0; j<nrLayers; j++)
+        {
+            myString.append(QString("TempSoil_"));
+            myString.append(QString::number(j));
+            myString.append(QString(","));
+        }
+
+    if (getWater)
+        for (int j=0; j<nrLayers; j++)
+        {
+            myString.append(QString("WaterContent_"));
+            myString.append(QString::number(j));
+            myString.append(QString(","));
+        }
+
+    if (getHeatFlux)
+        for (int j=0; j<nrLayers; j++)
+        {
+            myString.append(QString("HeatFlux_"));
+            myString.append(QString::number(j));
+            myString.append(QString(","));
+        }
+
+    if (getSurfBalance)
+    {
+        myString.append(QString("srfNetIrrad,"));
+        myString.append(QString("srfSnsblHeat,"));
+        myString.append(QString("srfLtntHeat,"));
+    }
+
+    if (getCond)
+    {
+        myString.append(QString("aeroCond,"));
+        myString.append(QString("soilCond,"));
+    }
+
+    if (getErrors)
+    {
+        myString.append(QString("HeatMB,"));
+        myString.append(QString("HeatMBE,"));
+        myString.append(QString("WaterMBR"));
+    }
+
+    myString.append(QString("\n"));
+
     for (int i=0; i<nrValues; i++)
     {
-        for (int j=0; j<nrLayers; j++)
+        if (getTemp)
+            for (int j=0; j<nrLayers; j++)
+            {
+                myValue = profileOutput[i].temperature[j].y();
+                myString.append(QString::number(myValue,'f',4));
+                myString.append(QString(","));
+            }
+
+        if (getWater)
+            for (int j=0; j<nrLayers; j++)
+            {
+                myValue = profileOutput[i].waterContent[j].y();
+                myString.append(QString::number(myValue,'f',4));
+                myString.append(QString(","));
+            }
+
+        if (getHeatFlux)
+            for (int j=0; j<nrLayers; j++)
+            {
+                myValue = profileOutput[i].totalHeatFlux[j].y();
+                myString.append(QString::number(myValue,'f',4));
+                myString.append(QString(","));
+            }
+
+        if (getSurfBalance)
         {
-            myValue = profileOutput[i].temperature[j].y();
-            myString.append(QString::number(myValue,'f',4));
-            myString.append(QString(", "));
+            myValue = landSurfaceOutput[i].netRadiation.y();
+            myString.append(QString::number(myValue,'f',2));
+            myString.append(QString(","));
+
+            myValue = landSurfaceOutput[i].sensibleHeat.y();
+            myString.append(QString::number(myValue,'f',2));
+            myString.append(QString(","));
+
+            myValue = landSurfaceOutput[i].latentHeat.y();
+            myString.append(QString::number(myValue,'f',2));
+            myString.append(QString(","));
         }
 
-        for (int j=0; j<nrLayers; j++)
+        if (getCond)
         {
-            myValue = profileOutput[i].waterContent[j].y();
-            myString.append(QString::number(myValue,'f',4));
+            myValue = landSurfaceOutput[i].aeroConductance.y();
+            myString.append(QString::number(1./myValue,'f',6));
             myString.append(QString(", "));
+
+            myValue = landSurfaceOutput[i].soilConductance.y();
+            myString.append(QString::number(1./myValue,'f',6));
+            myString.append(QString(","));
         }
 
-        for (int j=0; j<nrLayers; j++)
+        if (getErrors)
         {
-            myValue = profileOutput[i].totalHeatFlux[j].y();
-            myString.append(QString::number(myValue,'f',4));
-            myString.append(QString(", "));
+            myValue = errorOutput[i].heatMBR.y();
+            myString.append(QString::number(myValue,'f',12));
+            myString.append(QString(","));
+
+            myValue = errorOutput[i].heatMBE.y();
+            myString.append(QString::number(myValue,'f',12));
+            myString.append(QString(","));
+
+            myValue = errorOutput[i].waterMBR.y();
+            myString.append(QString::number(myValue,'f',12));
         }
 
-        for (int j=0; j<nrLayers; j++)
-        {
-            myValue = profileOutput[i].isothermalLatentHeatFlux[j].y();
-            myString.append(QString::number(myValue,'f',4));
-            myString.append(QString(", "));
-        }
-
-        myValue = landSurfaceOutput[i].netRadiation.y();
-        myString.append(QString::number(myValue,'f',2));
-        myString.append(QString(", "));
-
-        myValue = landSurfaceOutput[i].sensibleHeat.y();
-        myString.append(QString::number(myValue,'f',2));
-        myString.append(QString(", "));
-
-        myValue = landSurfaceOutput[i].latentHeat.y();
-        myString.append(QString::number(myValue,'f',2));
-        myString.append(QString(", "));
-
-        //evaporation
-        myValue = -myValue * 1000 * 3600 * mySurface;
-        myString.append(QString::number(myValue,'f',6));
-        myString.append(QString(", "));
-
-        myValue = landSurfaceOutput[i].aeroConductance.y();
-        myString.append(QString::number(1./myValue,'f',6));
-        myString.append(QString(", "));
-
-        myValue = landSurfaceOutput[i].soilConductance.y();
-        myString.append(QString::number(1./myValue,'f',6));
-        myString.append(QString(", "));
-
-        myValue = errorOutput[i].heatMBR.y();
-        myString.append(QString::number(myValue,'f',12));
-        myString.append(QString(", "));
-
-        myValue = errorOutput[i].heatMBE.y();
-        myString.append(QString::number(myValue,'f',12));
-        myString.append(QString(", "));
-
-        myValue = errorOutput[i].waterMBR.y();
-        myString.append(QString::number(myValue,'f',12));
         myString.append(QString("\n"));
 
     }

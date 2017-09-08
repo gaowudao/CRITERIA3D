@@ -32,7 +32,6 @@ long myInputNumber;
 bool meteoDataLoaded = false;
 bool soilDataLoaded = false;
 
-QString myTextOutput("");
 Crit3DOut myHeatOutput;
 Qsoil *myInputSoils = NULL;
 
@@ -225,8 +224,6 @@ void MainWindow::on_pushRunAllPeriod_clicked()
 
     } while (myCurrentHour < myHourFin);
 
-    myTextOutput = myHeatOutput.getTextOutput();
-
     outPlot->drawOutput(outputGroup::soilTemperature, &myHeatOutput);
     ui->listWidget->item(outputGroup::soilTemperature)->setSelected(true);
 }
@@ -383,6 +380,14 @@ void MainWindow::on_pushLoadFileMeteo_clicked()
 
 void MainWindow::on_pushCopyOutput_clicked()
 {
+    QString myTextOutput("");
+    myTextOutput = myHeatOutput.getTextOutput(ui->chkCopyT->isChecked(),
+                                              ui->chkCopyWC->isChecked(),
+                                              ui->chkCopyHF->isChecked(),
+                                              ui->chkCopySurf->isChecked(),
+                                              ui->chkCopyErr->isChecked(),
+                                              ui->chkCopyCond->isChecked());
+
     QClipboard *myClip = QApplication::clipboard();
     myClip->setText(myTextOutput);
 }

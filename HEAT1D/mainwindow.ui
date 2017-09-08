@@ -45,7 +45,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>4</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -911,7 +911,7 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>20</y>
+        <y>10</y>
         <width>101</width>
         <height>81</height>
        </rect>
@@ -961,10 +961,10 @@
      <widget class="QGroupBox" name="groupBox_simTime">
       <property name="geometry">
        <rect>
-        <x>20</x>
-        <y>130</y>
+        <x>130</x>
+        <y>10</y>
         <width>111</width>
-        <height>71</height>
+        <height>81</height>
        </rect>
       </property>
       <property name="title">
@@ -1026,8 +1026,8 @@
      <widget class="QPushButton" name="pushRunAllPeriod">
       <property name="geometry">
        <rect>
-        <x>150</x>
-        <y>180</y>
+        <x>250</x>
+        <y>70</y>
         <width>81</width>
         <height>23</height>
        </rect>
@@ -1047,8 +1047,8 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>220</y>
-        <width>351</width>
+        <y>100</y>
+        <width>361</width>
         <height>23</height>
        </rect>
       </property>
@@ -1079,10 +1079,10 @@
      <widget class="QPushButton" name="pushCopyOutput">
       <property name="geometry">
        <rect>
-        <x>240</x>
-        <y>150</y>
+        <x>20</x>
+        <y>140</y>
         <width>91</width>
-        <height>51</height>
+        <height>41</height>
        </rect>
       </property>
       <property name="acceptDrops">
@@ -1097,6 +1097,84 @@ to clipboard</string>
       </property>
       <property name="autoDefault">
        <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="chkCopyT">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>140</y>
+        <width>101</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>soil temperature</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="chkCopyWC">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>160</y>
+        <width>111</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>soil water content</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="chkCopyHF">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>180</y>
+        <width>101</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>soil heat fluxes</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="chkCopySurf">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>140</y>
+        <width>111</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>surface fluxes</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="chkCopyCond">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>160</y>
+        <width>111</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>conductances</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="chkCopyErr">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>180</y>
+        <width>111</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>errors</string>
       </property>
      </widget>
     </widget>
