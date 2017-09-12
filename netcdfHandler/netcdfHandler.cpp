@@ -2,6 +2,8 @@
 #include <sstream>
 #include <vector>
 #include <algorithm>
+#include <ctime>
+#include <iomanip>
 
 #include <netcdf.h>
 
@@ -31,10 +33,17 @@ void NetCDFHandler::initialize()
     idLon = NODATA;
     idTime = NODATA;
 
+    isLoaded = false;
     isLatLon = false;
+    isStandardTime = false;
+    timeType = NODATA;
 
     x = NULL;
     y = NULL;
+    doubleT = NULL;
+    floatT = NULL;
+
+    dataGrid.freeGrid();
 }
 
 
@@ -42,6 +51,22 @@ string lowerCase(string myStr)
 {
     transform(myStr.begin(), myStr.end(), myStr.begin(), ::tolower);
     return myStr;
+}
+
+bool NetCDFHandler::isPointInside(gis::Crit3DGeoPoint geoPoint, int utmZone)
+{
+    if (! isLoaded) return false;
+
+    if (isLatLon)
+    {
+        return geoPoint.isInsideGrid(latLonHeader);
+    }
+    else
+    {
+        gis::Crit3DUtmPoint utmPoint;
+        gis::getUtmFromLatLon(utmZone, geoPoint, &utmPoint);
+        return utmPoint.isInsideGrid(*(dataGrid.header));
+    }
 }
 
 
@@ -57,7 +82,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
     size_t lenght;
     nc_type ncTypeId;
 
-    dataGrid.freeGrid();
+    initialize();
 
     //NC_NOWRITE tells netCDF we want read-only access
     if ((retval = nc_open(fileName.data(), NC_NOWRITE, &ncId)))
@@ -134,7 +159,10 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
        nc_inq_type(ncId, ncTypeId, typeName, &lenght);
 
        if (lowerCase(string(varName)) == "time")
+       {
            idTime = v;
+           nc_inq_vartype(ncId, v, &timeType);
+       }
        else if (lowerCase(string(varName)) == "x")
            idX = v;
        else if (lowerCase(string(varName)) == "y")
@@ -156,12 +184,20 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
        {
             nc_inq_attname(ncId, v, a, name);
             nc_inq_atttype(ncId, v, name, &ncTypeId);
+
             if (ncTypeId == NC_CHAR)
             {
                 nc_inq_attlen(ncId, v, name, &lenght);
                 valueStr = (char *) calloc(lenght +1, sizeof(char));
                 nc_get_att_text(ncId, v, name, valueStr);
                 *buffer << name << " = " << valueStr << endl;
+
+                if (v == idTime)
+                {
+                    if ((lowerCase(string(name)) == "units")
+                       && (lowerCase(string(valueStr).substr(0, 18)) == "seconds since 1970"))
+                           isStandardTime = true;
+                }
             }
             else if (ncTypeId == NC_INT)
             {
@@ -246,7 +282,6 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             if ((x[1]-x[0]) != (y[1]-y[0]))
                 *buffer << "\nWarning! dx != dy" << endl;
 
-            *buffer << y[0] << ", " << y[1] << endl;
             dataGrid.header->cellSize = x[1]-x[0];
             dataGrid.header->llCorner->x = x[0] - dataGrid.header->cellSize*0.5;
             dataGrid.header->llCorner->y = y[0] - dataGrid.header->cellSize*0.5;
@@ -260,9 +295,48 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             *buffer << endl << "ERROR: missing x,y data" << endl;
     }
 
+    if (isStandardTime)
+    {
+        if (timeType == NC_DOUBLE)
+        {
+            doubleT = (double*) calloc(nrTime, sizeof(double));
+            retval = nc_get_var_double(ncId, idTime, doubleT);
+        }
+        else if (timeType == NC_FLOAT)
+        {
+            floatT = (float*) calloc(nrTime, sizeof(double));
+            retval = nc_get_var_float(ncId, idTime, floatT);
+        }
+
+        if (retval)
+        {
+            *buffer << "\nERROR in reading time: " << nc_strerror(retval);
+            nc_close(ncId);
+            return false;
+        }
+
+        time_t firstDate, lastDate;
+        if (timeType == NC_DOUBLE)
+        {
+            firstDate = time_t(doubleT[0]);
+            lastDate = time_t(doubleT[nrTime-1]);
+        }
+        else if (timeType == NC_FLOAT)
+        {
+            firstDate = time_t(floatT[0]);
+            lastDate = time_t(floatT[nrTime-1]);
+        }
+
+        *buffer << "\nfirst date: " << std::put_time(std::gmtime(&firstDate), "%Y-%m-%d %H:%M:%S") << endl;
+        *buffer << "last date: " << std::put_time(std::gmtime(&lastDate), "%Y-%m-%d %H:%M:%S") << endl;
+    }
+    else
+        *buffer << endl << "ERROR: time is not standard (seconds since 1970)" << endl;
+
+    isLoaded = true;
+
     // CLOSE file, freeing all resources
-    if ((retval = nc_close(ncId)))
-        *buffer << nc_strerror(retval) << endl;
+    nc_close(ncId);
 
    return true;
 }

@@ -52,6 +52,7 @@
         };
 
         class Crit3DGridHeader;
+        class Crit3DLatLonHeader;
 
         class  Crit3DUtmPoint {
         public:
@@ -71,6 +72,8 @@
 
             Crit3DGeoPoint();
             Crit3DGeoPoint(double lat, double lon);
+
+            bool isInsideGrid(const Crit3DLatLonHeader& latLonHeader) const;
         };
 
 

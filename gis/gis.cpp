@@ -105,8 +105,18 @@ namespace gis
 
     bool Crit3DUtmPoint::isInsideGrid(const Crit3DGridHeader& myGridHeader) const
     {
-        return (x >= myGridHeader.llCorner->x && x <= myGridHeader.llCorner->x + (myGridHeader.nrCols*myGridHeader.cellSize)
-                && y >= myGridHeader.llCorner->y && y <= myGridHeader.llCorner->y + (myGridHeader.nrRows*myGridHeader.cellSize));
+        return (x >= myGridHeader.llCorner->x
+                && x <= myGridHeader.llCorner->x + (myGridHeader.nrCols * myGridHeader.cellSize)
+                && y >= myGridHeader.llCorner->y
+                && y <= myGridHeader.llCorner->y + (myGridHeader.nrRows * myGridHeader.cellSize));
+    }
+
+    bool Crit3DGeoPoint::isInsideGrid(const Crit3DLatLonHeader& latLonHeader) const
+    {
+        return (longitude >= latLonHeader.llCorner->longitude
+                && longitude <= latLonHeader.llCorner->longitude + (latLonHeader.nrCols * latLonHeader.dx)
+                && latitude >= latLonHeader.llCorner->latitude
+                && latitude <= latLonHeader.llCorner->latitude + (latLonHeader.nrRows * latLonHeader.dy));
     }
 
     Crit3DPoint::Crit3DPoint()

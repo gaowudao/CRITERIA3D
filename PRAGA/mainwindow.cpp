@@ -7,6 +7,9 @@
 #include <QRadioButton>
 #include <QTextBrowser>
 
+#include <sstream>
+#include <iostream>
+
 #include "tileSources/OSMTileSource.h"
 #include "tileSources/GridTileSource.h"
 #include "tileSources/CompositeTileSource.h"
@@ -24,8 +27,8 @@
 #include "dialogWindows.h"
 #include "quality.h"
 #include "interpolation.h"
-#include <sstream>
-#include <iostream>
+#include "gis.h"
+
 
 
 extern Project myProject;
@@ -492,6 +495,21 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
             myRubberBand->setOrigin(mapPoint);
             myRubberBand->setGeometry(QRect(mapPoint, QSize()));
             myRubberBand->show();
+        }
+
+        if ((myProject.netCDF.isLoaded) && (myProject.netCDF.isStandardTime))
+        {
+            QPoint pos = event->pos();
+            Position myPos = mapView->mapToScene(getMapPoint(&pos));
+            gis::Crit3DGeoPoint geoPoint = gis::Crit3DGeoPoint(myPos.latitude(), myPos.longitude());
+
+            QString title;
+            if (myProject.netCDF.isPointInside(geoPoint, myProject.gisSettings.utmZone))
+                title = "Inside!";
+            else
+                title = "Outside";
+
+            QMessageBox::information(NULL, title, QString::number(geoPoint.latitude) + " " + QString::number(geoPoint.longitude));
         }
     }
 

@@ -2149,7 +2149,6 @@
     </widget>
     <addaction name="menuGIS"/>
     <addaction name="menuMap"/>
-    <addaction name="actionProxy"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
