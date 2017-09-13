@@ -8,7 +8,9 @@
 #include <QMessageBox>
 #include <QLineEdit>
 #include <QLabel>
+#include <QDateEdit>
 
+#include "commonConstants.h"
 #include "dialogWindows.h"
 #include "project.h"
 
@@ -148,7 +150,7 @@ frequencyType chooseFrequency()
 }
 
 
-bool chooseVariable()
+bool chooseMeteoVariable()
 {
     if (myProject.getFrequency() == noFrequency)
     {
@@ -247,4 +249,263 @@ bool chooseVariable()
        return false;
 
    return true;
+}
+
+
+bool chooseNetCDFVariable(int* varId, QDateTime* firstDate, QDateTime* lastDate)
+{
+    // check
+    if (! myProject.netCDF.isLoaded)
+    {
+        QMessageBox::information(NULL, "No data", "Load NetCDF before");
+        return false;
+    }
+    if (! myProject.netCDF.isStandardTime)
+    {
+        QMessageBox::information(NULL, "Wrong time", "Praga reads only POSIX standard (seconds since 1970-01-01)");
+        return false;
+    }
+
+    QDialog myDialog;
+    QVBoxLayout mainLayout;
+    QVBoxLayout layoutVariable;
+    QHBoxLayout layoutDate;
+    QHBoxLayout layoutOk;
+
+    myDialog.setWindowTitle("Export NetCDF data series");
+
+    // Variables
+    QLabel *VariableLabel = new QLabel("<b>Variable:</b>");
+    layoutVariable.addWidget(VariableLabel);
+
+    int nrVariables = myProject.netCDF.getNrVariables();
+    std::vector<QRadioButton*> buttonVars;
+
+    for (int i = 0; i < nrVariables; i++)
+    {
+        QString varName = QString::fromStdString(myProject.netCDF.variables[i].getVarName());
+        buttonVars.push_back(new QRadioButton(varName));
+
+        layoutVariable.addWidget(buttonVars[i]);
+    }
+
+    //void space
+    layoutVariable.addWidget(new QLabel());
+
+    //Date widgets
+    QDateTimeEdit *firstDateEdit = new QDateTimeEdit;
+    *firstDate = QDateTime::fromTime_t(myProject.netCDF.getFirstTime(), Qt::UTC);
+    firstDateEdit->setDateTime(*firstDate);
+    QLabel *firstDateLabel = new QLabel("<b>First Date:</b>");
+    firstDateLabel->setBuddy(firstDateEdit);
+
+    QDateTimeEdit *lastDateEdit = new QDateTimeEdit;
+    *lastDate = QDateTime::fromTime_t(myProject.netCDF.getLastTime(), Qt::UTC);
+    lastDateEdit->setDateTime(*lastDate);
+    QLabel *lastDateLabel = new QLabel("<b>Last Date:</b>");
+    lastDateLabel->setBuddy(lastDateEdit);
+
+    layoutDate.addWidget(firstDateLabel);
+    layoutDate.addWidget(firstDateEdit);
+
+    layoutDate.addWidget(lastDateLabel);
+    layoutDate.addWidget(lastDateEdit);
+
+    //void space
+    layoutDate.addWidget(new QLabel());
+
+    //Ok button
+    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    myDialog.connect(&buttonBox, SIGNAL(accepted()), &myDialog, SLOT(accept()));
+    myDialog.connect(&buttonBox, SIGNAL(rejected()), &myDialog, SLOT(reject()));
+    layoutOk.addWidget(&buttonBox);
+
+    // Main layout
+    mainLayout.addLayout(&layoutVariable);
+    mainLayout.addLayout(&layoutDate);
+    mainLayout.addLayout(&layoutOk);
+
+    myDialog.setLayout(&mainLayout);
+    myDialog.exec();
+
+    if (myDialog.result() != QDialog::Accepted)
+        return false;
+
+    // assing values
+    *firstDate = firstDateEdit->dateTime();
+    *lastDate = lastDateEdit->dateTime();
+
+    bool isVarSelected = false;
+    int i = 0;
+    while (i < nrVariables && ! isVarSelected)
+    {
+        if (buttonVars[i]->isChecked())
+        {
+           *varId = myProject.netCDF.variables[i].id;
+            isVarSelected = true;
+        }
+        i++;
+    }
+
+    return isVarSelected;
+}
+
+
+bool downloadMeteoData()
+{
+    if(myProject.nrMeteoPoints == 0)
+    {
+         QMessageBox::information(NULL, "DB not existing", "Create or Open a meteo points database before download");
+         return false;
+    }
+
+    QDialog downloadDialog;
+    QVBoxLayout mainLayout;
+    QHBoxLayout timeVarLayout;
+    QHBoxLayout dateLayout;
+    QHBoxLayout buttonLayout;
+
+    downloadDialog.setWindowTitle("Download Data");
+
+    QCheckBox hourly("Hourly");
+    QCheckBox daily("Daily");
+
+    QListWidget variable;
+    variable.setSelectionMode(QAbstractItemView::MultiSelection);
+
+    QListWidgetItem item1("Air Temperature");
+    QListWidgetItem item2("Precipitation");
+    QListWidgetItem item3("Air Humidity");
+    QListWidgetItem item4("Radiation");
+    QListWidgetItem item5("Wind");
+    QListWidgetItem item6("All variables");
+    QFont font("Helvetica", 10, QFont::Bold);
+    item6.setFont(font);
+
+    variable.addItem(&item1);
+    variable.addItem(&item2);
+    variable.addItem(&item3);
+    variable.addItem(&item4);
+    variable.addItem(&item5);
+    variable.addItem(&item6);
+
+    timeVarLayout.addWidget(&daily);
+    timeVarLayout.addWidget(&hourly);
+    timeVarLayout.addWidget(&variable);
+
+    QDateEdit *FirstDateEdit = new QDateEdit;
+    FirstDateEdit->setDate(QDate::currentDate());
+    QLabel *FirstDateLabel = new QLabel("   Start Date:");
+    FirstDateLabel->setBuddy(FirstDateEdit);
+
+    QDateEdit *LastDateEdit = new QDateEdit;
+    LastDateEdit->setDate(QDate::currentDate());
+    QLabel *LastDateLabel = new QLabel("    End Date:");
+    LastDateLabel->setBuddy(LastDateEdit);
+
+    dateLayout.addWidget(FirstDateLabel);
+    dateLayout.addWidget(FirstDateEdit);
+
+    dateLayout.addWidget(LastDateLabel);
+    dateLayout.addWidget(LastDateEdit);
+
+    QDialogButtonBox buttonBox;
+    QPushButton downloadButton("Download");
+    downloadButton.setCheckable(true);
+    downloadButton.setAutoDefault(false);
+
+    QPushButton cancelButton("Cancel");
+    cancelButton.setCheckable(true);
+    cancelButton.setAutoDefault(false);
+
+    buttonBox.addButton(&downloadButton, QDialogButtonBox::AcceptRole);
+    buttonBox.addButton(&cancelButton, QDialogButtonBox::RejectRole);
+
+    downloadDialog.connect(&buttonBox, SIGNAL(accepted()), &downloadDialog, SLOT(accept()));
+    downloadDialog.connect(&buttonBox, SIGNAL(rejected()), &downloadDialog, SLOT(reject()));
+
+    buttonLayout.addWidget(&buttonBox);
+    mainLayout.addLayout(&timeVarLayout);
+    mainLayout.addLayout(&dateLayout);
+    mainLayout.addLayout(&buttonLayout);
+    downloadDialog.setLayout(&mainLayout);
+
+    downloadDialog.exec();
+
+    if (downloadDialog.result() != QDialog::Accepted)
+        return false;
+
+   QDate firstDate = FirstDateEdit->date();
+   QDate lastDate = LastDateEdit->date();
+
+   if (!daily.isChecked() && !hourly.isChecked())
+   {
+       QMessageBox::information(NULL, "Missing parameter", "Select hourly or daily");
+       return downloadMeteoData();
+   }
+   else if ((! firstDate.isValid()) || (! lastDate.isValid()))
+   {
+       QMessageBox::information(NULL, "Missing parameter", "Select download period");
+       return downloadMeteoData();
+   }
+   else if (!item1.isSelected() && !item2.isSelected() && !item3.isSelected() && !item4.isSelected() && !item5.isSelected() && !item6.isSelected())
+   {
+       QMessageBox::information(NULL, "Missing parameter", "Select variable");
+       return downloadMeteoData();
+   }
+   else
+   {
+        QListWidgetItem* item = 0;
+        QStringList var;
+        for (int i = 0; i < variable.count()-1; ++i)
+        {
+               item = variable.item(i);
+               if (item6.isSelected() || item->isSelected())
+                   var.append(item->text());
+
+        }
+        if (daily.isChecked())
+        {
+            bool prec0024 = true;
+            if ( item2.isSelected() || item6.isSelected() )
+            {
+                QDialog precDialog;
+                precDialog.setFixedWidth(350);
+                precDialog.setWindowTitle("Choose daily precipitation time");
+                QVBoxLayout precLayout;
+                QRadioButton first("0-24");
+                QRadioButton second("08-08");
+
+                QDialogButtonBox confirm(QDialogButtonBox::Ok);
+
+                precDialog.connect(&confirm, SIGNAL(accepted()), &precDialog, SLOT(accept()));
+
+                precLayout.addWidget(&first);
+                precLayout.addWidget(&second);
+                precLayout.addWidget(&confirm);
+                precDialog.setLayout(&precLayout);
+                precDialog.exec();
+
+                if (second.isChecked())
+                    prec0024 = false;
+            }
+
+            if (! myProject.downloadDailyDataArkimet(var, prec0024, firstDate, lastDate, true))
+            {
+                QMessageBox::information(NULL, "Error!", "Error in daily download");
+                return false;
+            }
+        }
+
+        if (hourly.isChecked())
+        {
+            if (! myProject.downloadHourlyDataArkimet(var, firstDate, lastDate, true))
+            {
+                QMessageBox::information(NULL, "Error!", "Error in hourly download");
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

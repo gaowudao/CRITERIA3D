@@ -1,3 +1,4 @@
+#include <QGridLayout>
 #include <QFileDialog>
 #include <QtDebug>
 #include <QMessageBox>
@@ -28,7 +29,6 @@
 #include "quality.h"
 #include "interpolation.h"
 #include "gis.h"
-
 
 
 extern Project myProject;
@@ -497,19 +497,13 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
             myRubberBand->show();
         }
 
-        if ((myProject.netCDF.isLoaded) && (myProject.netCDF.isStandardTime))
+        if (myProject.netCDF.isLoaded)
         {
             QPoint pos = event->pos();
             Position myPos = mapView->mapToScene(getMapPoint(&pos));
             gis::Crit3DGeoPoint geoPoint = gis::Crit3DGeoPoint(myPos.latitude(), myPos.longitude());
 
-            QString title;
-            if (myProject.netCDF.isPointInside(geoPoint, myProject.gisSettings.utmZone))
-                title = "Inside!";
-            else
-                title = "Outside";
-
-            QMessageBox::information(NULL, title, QString::number(geoPoint.latitude) + " " + QString::number(geoPoint.longitude));
+            exportNetCDFDataSeries(geoPoint);
         }
     }
 
@@ -540,8 +534,8 @@ QPoint MainWindow::getMapPoint(QPoint* point) const
 {
     QPoint mapPoint;
     int dx, dy;
-    dx = this->ui->widgetMap->x() + MAPBORDER;
-    dy = this->ui->widgetMap->y() + this->ui->menuBar->height() + MAPBORDER ;
+    dx = this->ui->widgetMap->x();
+    dy = this->ui->widgetMap->y() + this->ui->menuBar->height();
     mapPoint.setX(point->x() - dx);
     mapPoint.setY(point->y() - dy);
     return mapPoint;
@@ -563,7 +557,7 @@ void MainWindow::resetMeteoPoints()
 
 void MainWindow::on_actionVariableChoose_triggered()
 {
-    if (chooseVariable())
+    if (chooseMeteoVariable())
     {
        this->ui->actionVariableNone->setChecked(false);
        this->updateVariable();
@@ -834,7 +828,7 @@ void MainWindow::on_rasterScaleButton_clicked()
 
 void MainWindow::on_variableButton_clicked()
 {
-    if (chooseVariable())
+    if (chooseMeteoVariable())
     {
        this->ui->actionVariableNone->setChecked(false);
        this->updateVariable();
@@ -854,167 +848,6 @@ void MainWindow::on_frequencyButton_clicked()
 }
 
 
-
-bool downloadMeteoData()
-{
-    if(myProject.nrMeteoPoints == 0)
-    {
-         QMessageBox::information(NULL, "DB not existing", "Create or Open a meteo points database before download");
-         return false;
-    }
-
-    QDialog downloadDialog;
-    QVBoxLayout mainLayout;
-    QHBoxLayout timeVarLayout;
-    QHBoxLayout dateLayout;
-    QHBoxLayout buttonLayout;
-
-    downloadDialog.setWindowTitle("Download Data");
-
-    QCheckBox hourly("Hourly");
-    QCheckBox daily("Daily");
-
-    QListWidget variable;
-    variable.setSelectionMode(QAbstractItemView::MultiSelection);
-
-    QListWidgetItem item1("Air Temperature");
-    QListWidgetItem item2("Precipitation");
-    QListWidgetItem item3("Air Humidity");
-    QListWidgetItem item4("Radiation");
-    QListWidgetItem item5("Wind");
-    QListWidgetItem item6("All variables");
-    QFont font("Helvetica", 10, QFont::Bold);
-    item6.setFont(font);
-
-    variable.addItem(&item1);
-    variable.addItem(&item2);
-    variable.addItem(&item3);
-    variable.addItem(&item4);
-    variable.addItem(&item5);
-    variable.addItem(&item6);
-
-    timeVarLayout.addWidget(&daily);
-    timeVarLayout.addWidget(&hourly);
-    timeVarLayout.addWidget(&variable);
-
-    QDateEdit *FirstDateEdit = new QDateEdit;
-    FirstDateEdit->setDate(QDate::currentDate());
-    QLabel *FirstDateLabel = new QLabel("   Start Date:");
-    FirstDateLabel->setBuddy(FirstDateEdit);
-
-    QDateEdit *LastDateEdit = new QDateEdit;
-    LastDateEdit->setDate(QDate::currentDate());
-    QLabel *LastDateLabel = new QLabel("    End Date:");
-    LastDateLabel->setBuddy(LastDateEdit);
-
-    dateLayout.addWidget(FirstDateLabel);
-    dateLayout.addWidget(FirstDateEdit);
-
-    dateLayout.addWidget(LastDateLabel);
-    dateLayout.addWidget(LastDateEdit);
-
-    QDialogButtonBox buttonBox;
-    QPushButton downloadButton("Download");
-    downloadButton.setCheckable(true);
-    downloadButton.setAutoDefault(false);
-
-    QPushButton cancelButton("Cancel");
-    cancelButton.setCheckable(true);
-    cancelButton.setAutoDefault(false);
-
-    buttonBox.addButton(&downloadButton, QDialogButtonBox::AcceptRole);
-    buttonBox.addButton(&cancelButton, QDialogButtonBox::RejectRole);
-
-    downloadDialog.connect(&buttonBox, SIGNAL(accepted()), &downloadDialog, SLOT(accept()));
-    downloadDialog.connect(&buttonBox, SIGNAL(rejected()), &downloadDialog, SLOT(reject()));
-
-    buttonLayout.addWidget(&buttonBox);
-    mainLayout.addLayout(&timeVarLayout);
-    mainLayout.addLayout(&dateLayout);
-    mainLayout.addLayout(&buttonLayout);
-    downloadDialog.setLayout(&mainLayout);
-
-    downloadDialog.exec();
-
-    if (downloadDialog.result() != QDialog::Accepted)
-        return false;
-
-   QDate firstDate = FirstDateEdit->date();
-   QDate lastDate = LastDateEdit->date();
-
-   if (!daily.isChecked() && !hourly.isChecked())
-   {
-       QMessageBox::information(NULL, "Missing parameter", "Select hourly or daily");
-       return downloadMeteoData();
-   }
-   else if ((! firstDate.isValid()) || (! lastDate.isValid()))
-   {
-       QMessageBox::information(NULL, "Missing parameter", "Select download period");
-       return downloadMeteoData();
-   }
-   else if (!item1.isSelected() && !item2.isSelected() && !item3.isSelected() && !item4.isSelected() && !item5.isSelected() && !item6.isSelected())
-   {
-       QMessageBox::information(NULL, "Missing parameter", "Select variable");
-       return downloadMeteoData();
-   }
-   else
-   {
-        QListWidgetItem* item = 0;
-        QStringList var;
-        for (int i = 0; i < variable.count()-1; ++i)
-        {
-               item = variable.item(i);
-               if (item6.isSelected() || item->isSelected())
-                   var.append(item->text());
-
-        }
-        if (daily.isChecked())
-        {
-            bool prec0024 = true;
-            if ( item2.isSelected() || item6.isSelected() )
-            {
-                QDialog precDialog;
-                precDialog.setFixedWidth(350);
-                precDialog.setWindowTitle("Choose daily precipitation time");
-                QVBoxLayout precLayout;
-                QRadioButton first("0-24");
-                QRadioButton second("08-08");
-
-                QDialogButtonBox confirm(QDialogButtonBox::Ok);
-
-                precDialog.connect(&confirm, SIGNAL(accepted()), &precDialog, SLOT(accept()));
-
-                precLayout.addWidget(&first);
-                precLayout.addWidget(&second);
-                precLayout.addWidget(&confirm);
-                precDialog.setLayout(&precLayout);
-                precDialog.exec();
-
-                if (second.isChecked())
-                    prec0024 = false;
-            }
-
-            if (! myProject.downloadDailyDataArkimet(var, prec0024, firstDate, lastDate, true))
-            {
-                QMessageBox::information(NULL, "Error!", "Error in daily download");
-                return false;
-            }
-        }
-
-        if (hourly.isChecked())
-        {
-            if (! myProject.downloadHourlyDataArkimet(var, firstDate, lastDate, true))
-            {
-                QMessageBox::information(NULL, "Error!", "Error in hourly download");
-                return false;
-            }
-        }
-
-        return true;
-    }
-}
-
-
 void MainWindow::on_actionPointsVisible_triggered()
 {
     this->showPoints = ui->actionPointsVisible->isChecked();
@@ -1022,11 +855,13 @@ void MainWindow::on_actionPointsVisible_triggered()
 }
 
 
-void MainWindow::on_actionOpen_NetCDF_data_triggered()
+void MainWindow::on_action_Open_NetCDF_data_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open NetCDF data"), "", tr("NetCDF files (*.nc)"));
 
     if (fileName == "") return;
+
+    myProject.netCDF.initialize(myProject.gisSettings.utmZone);
 
     std::stringstream buffer;
     myProject.netCDF.readProperties(fileName.toStdString(), &buffer);
@@ -1039,7 +874,7 @@ void MainWindow::on_actionOpen_NetCDF_data_triggered()
     myProject.netCDF.dataGrid.emptyGrid();
     gridObj->updateCenter();
 
-    QDialog myDialog;
+    /*QDialog myDialog;
     QVBoxLayout mainLayout;
 
     myDialog.setWindowTitle("NetCDF file info  ");
@@ -1053,6 +888,45 @@ void MainWindow::on_actionOpen_NetCDF_data_triggered()
     myDialog.setLayout(&mainLayout);
     myDialog.setFixedSize(800,600);
     myDialog.exec();
+    */
+}
 
 
+void MainWindow::on_action_Extract_NetCDF_series_triggered()
+{
+    int idVar;
+    QDateTime firstDate, lastDate;
+
+    if (chooseNetCDFVariable(&idVar, &firstDate, &lastDate))
+    {
+        QMessageBox::information(NULL, "Variable",
+                                 "Variable: " + QString::number(idVar)
+                                 + "\nfirst date: " + firstDate.toString()
+                                 + "\nLast Date: " + lastDate.toString());
+    }
+}
+
+
+void exportNetCDFDataSeries(gis::Crit3DGeoPoint geoPoint)
+{
+    if (myProject.netCDF.isPointInside(geoPoint))
+    {
+        int idVar;
+        QDateTime firstTime, lastTime;
+
+        if (chooseNetCDFVariable(&idVar, &firstTime, &lastTime))
+        {
+            /*QMessageBox::information(NULL, "Variable",
+                                     "Variable: " + QString::number(idVar)
+                                     + "\nlatitude: " + QString::number(geoPoint.latitude)
+                                     + "\nlongitude: " + QString::number(geoPoint.longitude)
+                                     + "\nfirst date: " + firstDate.toString("yyyy-MM-dd hh:mm:ss")
+                                     + "\nlast Date: " + lastDate.toString("yyyy-MM-dd hh:mm:ss")
+                                     );*/
+
+            std::stringstream buffer;
+            if (! myProject.netCDF.exportDataSeries(idVar, geoPoint, firstTime.toTime_t(), lastTime.toTime_t(), &buffer))
+                QMessageBox::information(NULL, "ERROR", QString::fromStdString(buffer.str()));
+        }
+    }
 }

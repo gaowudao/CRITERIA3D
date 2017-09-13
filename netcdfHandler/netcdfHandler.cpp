@@ -2,7 +2,6 @@
 #include <sstream>
 #include <vector>
 #include <algorithm>
-#include <ctime>
 #include <iomanip>
 
 #include <netcdf.h>
@@ -13,14 +12,48 @@
 using namespace std;
 
 
-NetCDFHandler::NetCDFHandler()
+string lowerCase(string myStr)
 {
-    this->initialize();
+    transform(myStr.begin(), myStr.end(), myStr.begin(), ::tolower);
+    return myStr;
 }
 
 
-void NetCDFHandler::initialize()
+NetCDFVariable::NetCDFVariable()
 {
+    name = "";
+    longName = "";
+    id = NODATA;
+    type = NODATA;
+}
+
+
+NetCDFVariable::NetCDFVariable(char* myName, int myId, int myType)
+{
+    name = myName;
+    longName = myName;
+    id = myId;
+    type = myType;
+}
+
+std::string NetCDFVariable::getVarName()
+{
+    if (longName.size() < 30)
+        return longName;
+    else
+        return name;
+}
+
+
+NetCDFHandler::NetCDFHandler()
+{
+    this->initialize(NODATA);
+}
+
+
+void NetCDFHandler::initialize(int myUtmZone)
+{
+    utmZone = myUtmZone;
     nrX = NODATA;
     nrY = NODATA;
     nrLat = NODATA;
@@ -40,20 +73,42 @@ void NetCDFHandler::initialize()
 
     x = NULL;
     y = NULL;
-    doubleT = NULL;
-    floatT = NULL;
+    time = NULL;
 
     dataGrid.freeGrid();
+    dimensions.clear();
+    variables.clear();
 }
 
 
-string lowerCase(string myStr)
+int NetCDFHandler::getDimensionIndex(char* dimName)
 {
-    transform(myStr.begin(), myStr.end(), myStr.begin(), ::tolower);
-    return myStr;
+    for (unsigned int i = 0; i < dimensions.size(); i++)
+    {
+        if (dimensions[i].name == std::string(dimName))
+            return i;
+    }
+
+    return NODATA;
 }
 
-bool NetCDFHandler::isPointInside(gis::Crit3DGeoPoint geoPoint, int utmZone)
+
+bool NetCDFHandler::setVarLongName(char* varName, char* varLongName)
+{
+    for (unsigned int i = 0; i < variables.size(); i++)
+    {
+        if (variables[i].name == std::string(varName))
+        {
+            variables[i].longName = varLongName;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+bool NetCDFHandler::isPointInside(gis::Crit3DGeoPoint geoPoint)
 {
     if (! isLoaded) return false;
 
@@ -69,11 +124,34 @@ bool NetCDFHandler::isPointInside(gis::Crit3DGeoPoint geoPoint, int utmZone)
     }
 }
 
+std::string NetCDFHandler::getDateTimeStr(int timeIndex)
+{
+    // check
+    if (! isStandardTime)
+        return "ERROR: time is not standard (seconds since 1970)";
+
+    if (timeIndex < 0 || timeIndex >= nrTime)
+        return "ERROR: time index out of range";
+
+    time_t myTime = time_t(time[timeIndex]);
+    std::stringstream s;
+    s << std::put_time(std::gmtime(&myTime), "%Y-%m-%d %H:%M:%S");
+
+    return s.str();
+}
+
+
+time_t NetCDFHandler::getTime(int timeIndex)
+{
+    return time_t(time[timeIndex]);
+}
+
 
 bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
 {
     int ncId, retval;
     char name[NC_MAX_NAME+1];
+    char attrName[NC_MAX_NAME+1];
     char varName[NC_MAX_NAME+1];
     char typeName[NC_MAX_NAME+1];
     char *valueStr;
@@ -81,8 +159,6 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
     double value;
     size_t lenght;
     nc_type ncTypeId;
-
-    initialize();
 
     //NC_NOWRITE tells netCDF we want read-only access
     if ((retval = nc_open(fileName.data(), NC_NOWRITE, &ncId)))
@@ -100,18 +176,20 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
         return false;
     }
 
+    // GLOBAL ATTRIBUTES
     *buffer << fileName << endl << endl;
     *buffer << "Global attributes:" << endl;
     for (int a = 0; a <nrGlobalAttributes; a++)
     {
-       nc_inq_attname(ncId, NC_GLOBAL, a, name);
-       nc_inq_attlen(ncId, NC_GLOBAL, name, &lenght);
+       nc_inq_attname(ncId, NC_GLOBAL, a, attrName);
+       nc_inq_attlen(ncId, NC_GLOBAL, attrName, &lenght);
        valueStr = (char *) calloc(lenght +1, sizeof(char));
-       nc_get_att_text(ncId, NC_GLOBAL, name, valueStr);
+       nc_get_att_text(ncId, NC_GLOBAL, attrName, valueStr);
 
-       *buffer << name << " = " << valueStr << endl;
+       *buffer << attrName << " = " << valueStr << endl;
    }
 
+   // DIMENSIONS
    int varDimIds[NC_MAX_VAR_DIMS];
    int nrVarDimensions, nrVarAttributes;
 
@@ -119,6 +197,9 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
    for (int i = 0; i < nrDimensions; i++)
    {
        nc_inq_dim(ncId, i, name, &lenght);
+
+       dimensions.push_back(NetCDFVariable(name, i, NODATA));
+
        if (lowerCase(string(name)) == "time")
        {
            nrTime = int(lenght);
@@ -152,11 +233,26 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
    else
        *buffer <<"\n(x,y) = "<<nrX << "," <<nrY << endl; 
 
+   // VARIABLES
    *buffer << "\nVariables: " << endl;
    for (int v = 0; v < nrVariables; v++)
    {
        nc_inq_var(ncId, v, varName, &ncTypeId, &nrVarDimensions, varDimIds, &nrVarAttributes);
        nc_inq_type(ncId, ncTypeId, typeName, &lenght);
+
+       // is Variable?
+       if (nrVarDimensions > 1)
+       {
+            variables.push_back(NetCDFVariable(varName, v, ncTypeId));
+       }
+       else
+       {
+            int i = getDimensionIndex(varName);
+            if (i != NODATA)
+                dimensions[i].type = ncTypeId;
+            else
+                *buffer << endl << "ERRORE: dimensione non trovata: " << varName << endl;
+       }
 
        if (lowerCase(string(varName)) == "time")
        {
@@ -180,34 +276,38 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
        }
        *buffer << endl;
 
+       // ATTRIBUTES
        for (int a = 0; a < nrVarAttributes; a++)
        {
-            nc_inq_attname(ncId, v, a, name);
-            nc_inq_atttype(ncId, v, name, &ncTypeId);
+            nc_inq_attname(ncId, v, a, attrName);
+            nc_inq_atttype(ncId, v, attrName, &ncTypeId);
 
             if (ncTypeId == NC_CHAR)
             {
-                nc_inq_attlen(ncId, v, name, &lenght);
+                nc_inq_attlen(ncId, v, attrName, &lenght);
                 valueStr = (char *) calloc(lenght +1, sizeof(char));
-                nc_get_att_text(ncId, v, name, valueStr);
-                *buffer << name << " = " << valueStr << endl;
+                nc_get_att_text(ncId, v, attrName, valueStr);
+                *buffer << attrName << " = " << valueStr << endl;
 
                 if (v == idTime)
                 {
-                    if ((lowerCase(string(name)) == "units")
+                    if ((lowerCase(string(attrName)) == "units")
                        && (lowerCase(string(valueStr).substr(0, 18)) == "seconds since 1970"))
                            isStandardTime = true;
                 }
+                if (lowerCase(string(attrName)) == "long_name")
+                    setVarLongName(varName, valueStr);
+
             }
             else if (ncTypeId == NC_INT)
             {
-                nc_get_att(ncId, v, name, &valueInt);
-                *buffer << name << " = " << valueInt << endl;
+                nc_get_att(ncId, v, attrName, &valueInt);
+                *buffer << attrName << " = " << valueInt << endl;
             }
             else if (ncTypeId == NC_DOUBLE)
             {
-                nc_get_att(ncId, v, name, &value);
-                *buffer << name << " = " << value << endl;
+                nc_get_att(ncId, v, attrName, &value);
+                *buffer << attrName << " = " << value << endl;
             }
         }
     }
@@ -232,9 +332,6 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             for (int i = 0; i < nrLon; i++)
                 *buffer << lon[i] << ", ";
             *buffer << endl;
-
-            if ((lon[1]-lon[0]) != (lat[0]-lat[1]))
-                *buffer << "\nWarning! dx != dy" << endl;
 
             latLonHeader.nrRows = nrLat;
             latLonHeader.nrCols = nrLon;
@@ -295,45 +392,32 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             *buffer << endl << "ERROR: missing x,y data" << endl;
     }
 
+    // TIME
     if (isStandardTime)
     {
+        time = (double*) calloc(nrTime, sizeof(double));
+
         if (timeType == NC_DOUBLE)
-        {
-            doubleT = (double*) calloc(nrTime, sizeof(double));
-            retval = nc_get_var_double(ncId, idTime, doubleT);
-        }
+            retval = nc_get_var(ncId, idTime, time);
+
         else if (timeType == NC_FLOAT)
         {
-            floatT = (float*) calloc(nrTime, sizeof(double));
-            retval = nc_get_var_float(ncId, idTime, floatT);
+            float* floatTime = (float*) calloc(nrTime, sizeof(float));
+            retval = nc_get_var_float(ncId, idTime, floatTime);
+            for (int i = 0; i < nrTime; i++)
+                time[i] = floatTime[i];
         }
-
-        if (retval)
-        {
-            *buffer << "\nERROR in reading time: " << nc_strerror(retval);
-            nc_close(ncId);
-            return false;
-        }
-
-        time_t firstDate, lastDate;
-        if (timeType == NC_DOUBLE)
-        {
-            firstDate = time_t(doubleT[0]);
-            lastDate = time_t(doubleT[nrTime-1]);
-        }
-        else if (timeType == NC_FLOAT)
-        {
-            firstDate = time_t(floatT[0]);
-            lastDate = time_t(floatT[nrTime-1]);
-        }
-
-        *buffer << "\nfirst date: " << std::put_time(std::gmtime(&firstDate), "%Y-%m-%d %H:%M:%S") << endl;
-        *buffer << "last date: " << std::put_time(std::gmtime(&lastDate), "%Y-%m-%d %H:%M:%S") << endl;
     }
-    else
-        *buffer << endl << "ERROR: time is not standard (seconds since 1970)" << endl;
+
+    *buffer << endl << "first date: " << getDateTimeStr(0) << endl;
+    *buffer << "last date: " << getDateTimeStr(nrTime-1) << endl;
 
     isLoaded = true;
+
+    *buffer << endl << "VARIABLES list:" << endl;
+    for (unsigned int i = 0; i < variables.size(); i++)
+        *buffer << variables[i].getVarName() << endl;
+
 
     // CLOSE file, freeing all resources
     nc_close(ncId);
@@ -341,3 +425,29 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
    return true;
 }
 
+
+bool NetCDFHandler::exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, time_t firstTime, time_t lastTime, stringstream *buffer)
+{
+    //check
+    if (! isStandardTime)
+    {
+        *buffer << "Wrong time! Praga reads only POSIX standard (seconds since 1970-01-01)." << endl;
+        return false;
+    }
+    if (! isPointInside(geoPoint))
+    {
+        *buffer << "Wrong Position!" << endl;
+        return false;
+    }
+
+    if (firstTime < getFirstTime() || lastTime > getLastTime())
+    {
+        *buffer << "Time out of range!" << endl;
+        return false;
+    }
+
+
+    //find row, col of point
+
+    return true;
+}

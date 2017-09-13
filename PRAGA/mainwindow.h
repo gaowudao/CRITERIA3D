@@ -2,12 +2,9 @@
 #define MAINWINDOW_H
 
     #include <QMainWindow>
-    #include <QGridLayout>
     #include <QList>
     #include <QCheckBox>
-    #include <QCalendarWidget>
-    #include <QDateEdit>
-    #include <QLabel>
+
     #include "rubberBand.h"
     #include "MapGraphicsView.h"
     #include "MapGraphicsScene.h"
@@ -80,7 +77,9 @@
 
         void on_actionPointsVisible_triggered();
 
-        void on_actionOpen_NetCDF_data_triggered();
+        void on_action_Open_NetCDF_data_triggered();
+
+        void on_action_Extract_NetCDF_series_triggered();
 
     protected:
         /*!
@@ -133,7 +132,7 @@
 
     };
 
-    bool downloadMeteoData();
+    void exportNetCDFDataSeries(gis::Crit3DGeoPoint geoPoint);
 
 
 #endif // MAINWINDOW_H

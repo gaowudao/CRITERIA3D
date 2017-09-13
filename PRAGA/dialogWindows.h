@@ -5,9 +5,15 @@
     #include "color.h"
     #include "meteo.h"
 
+    QString editValue(QString windowsTitle, QString defaultValue);
+
     meteoVariable chooseColorScale();
     frequencyType chooseFrequency();
-    bool chooseVariable();
-    QString editValue(QString windowsTitle, QString defaultValue);
+
+    bool chooseMeteoVariable();
+
+    bool chooseNetCDFVariable(int *varId, QDateTime *firstDate, QDateTime *lastDate);
+
+    bool downloadMeteoData();
 
 #endif // DIALOGWINDOWS_H
