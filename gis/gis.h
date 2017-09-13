@@ -190,13 +190,18 @@
         bool updateMinMaxRasterGrid(Crit3DRasterGrid* myGrid);
         bool updateColorScale(Crit3DRasterGrid* myGrid, int row0, int col0, int row1, int col1);
         bool updateColorScale(Crit3DRasterGrid* myGrid, const Crit3DRasterWindow& myWindow);
-        void getRowColFromXY(const Crit3DRasterGrid &myGrid, double myX, double myY, int* myRow, int* myCol);
+
+        void getRowColFromXY(const Crit3DRasterGrid &myGrid, double myX, double myY, int* row, int* col);
+        void getRowColFromXY(const Crit3DGridHeader& myHeader, const Crit3DUtmPoint& p, int *row, int *col);
         void getRowColFromXY(const Crit3DGridHeader& myHeader, const Crit3DUtmPoint& p, Crit3DRasterCell* v);
-        void getRowColFromLatLon(const Crit3DLatLonHeader &myHeader, const Crit3DGeoPoint& p, int *myRow, int *myCol);
+
+        void getRowColFromLatLon(const Crit3DLatLonHeader &latLonHeader, const Crit3DGeoPoint& p, int *myRow, int *myCol);
         bool isOutOfGridRowCol(int myRow, int myCol, const Crit3DRasterGrid &myGrid);
+
         void getUtmXYFromRowColSinglePrecision(const Crit3DRasterGrid& myGrid, int myRow, int myCol,float* myX,float* myY);
         void getUtmXYFromRowCol(const Crit3DRasterGrid& myGrid, int myRow, int myCol ,double* myX, double* myY);
         void getUtmXYFromRowCol(const Crit3DGridHeader& myHeader,int myRow, int myCol, double* myX, double* myY);
+
         void getLatLonFromRowCol(const Crit3DLatLonHeader &latLonHeader, int myRow, int myCol, double* lat, double* lon);
         void getLatLonFromRowCol(const Crit3DLatLonHeader &latLonHeader, const Crit3DRasterCell& v, Crit3DGeoPoint* p);
         float getValueFromXY(const Crit3DRasterGrid& myGrid, double x, double y);

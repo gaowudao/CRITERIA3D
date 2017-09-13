@@ -44,7 +44,7 @@
         bool exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, time_t firstTime, time_t lastTime, std::stringstream *buffer);
 
         time_t NetCDFHandler::getTime(int timeIndex);
-        inline time_t getFirstTime() {return getTime(0);}
+        time_t getFirstTime();
         inline time_t getLastTime() {return getTime(nrTime-1);}
 
         inline int getNrVariables() {return variables.size();}

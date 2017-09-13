@@ -146,6 +146,12 @@ time_t NetCDFHandler::getTime(int timeIndex)
     return time_t(time[timeIndex]);
 }
 
+time_t NetCDFHandler::getFirstTime()
+{
+    time_t firstTime = getTime(0);
+    return firstTime;
+}
+
 
 bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
 {
@@ -428,7 +434,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
 
 bool NetCDFHandler::exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, time_t firstTime, time_t lastTime, stringstream *buffer)
 {
-    //check
+    // check
     if (! isStandardTime)
     {
         *buffer << "Wrong time! Praga reads only POSIX standard (seconds since 1970-01-01)." << endl;
@@ -446,8 +452,39 @@ bool NetCDFHandler::exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, ti
         return false;
     }
 
+    // find row, col
+    int row, col;
+    if (isLatLon)
+    {
+        gis::getRowColFromLatLon(latLonHeader, geoPoint, &row, &col);
+    }
+    else
+    {
+        gis::Crit3DUtmPoint utmPoint;
+        gis::getUtmFromLatLon(utmZone, geoPoint, &utmPoint);
+        gis::getRowColFromXY(*(dataGrid.header), utmPoint, &row, &col);
+    }
 
-    //find row, col of point
+    // find time indexes
+    int t1 = NODATA;
+    int t2 = NODATA;
+    int i = 0;
+    while ((i < nrTime) && (t1 == NODATA || t2 == NODATA))
+    {
+        if (time_t(time[i]) == firstTime)
+            t1 = i;
+        if (time_t(time[i]) == lastTime)
+            t2 = i;
+        i++;
+    }
+
+    if  (t1 == NODATA || t2 == NODATA)
+    {
+        *buffer << "Time out of range!" << endl;
+        return false;
+    }
+
+    *buffer << "row: " << row << "\tcol:" << col << "\ttime: " << t1 << "-" << t2 << endl;
 
     return true;
 }

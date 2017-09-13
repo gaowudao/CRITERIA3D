@@ -916,17 +916,11 @@ void exportNetCDFDataSeries(gis::Crit3DGeoPoint geoPoint)
 
         if (chooseNetCDFVariable(&idVar, &firstTime, &lastTime))
         {
-            /*QMessageBox::information(NULL, "Variable",
-                                     "Variable: " + QString::number(idVar)
-                                     + "\nlatitude: " + QString::number(geoPoint.latitude)
-                                     + "\nlongitude: " + QString::number(geoPoint.longitude)
-                                     + "\nfirst date: " + firstDate.toString("yyyy-MM-dd hh:mm:ss")
-                                     + "\nlast Date: " + lastDate.toString("yyyy-MM-dd hh:mm:ss")
-                                     );*/
-
             std::stringstream buffer;
             if (! myProject.netCDF.exportDataSeries(idVar, geoPoint, firstTime.toTime_t(), lastTime.toTime_t(), &buffer))
                 QMessageBox::information(NULL, "ERROR", QString::fromStdString(buffer.str()));
+            else
+                QMessageBox::information(NULL, "Result", QString::fromStdString(buffer.str()));
         }
     }
 }
