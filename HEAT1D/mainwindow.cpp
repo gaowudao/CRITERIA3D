@@ -96,7 +96,6 @@ bool MainWindow::initializeModel()
 
     // surface
     setSurface(ui->lineEditWidth->text().toDouble(),
-               ui->lineEditAlbedo->text().toDouble(),
                ui->lineEditManningRoughness->text().toDouble(),
                ui->lineEditPlough->text().toDouble(),
                ui->lineEditRoughnessHeight->text().toDouble());

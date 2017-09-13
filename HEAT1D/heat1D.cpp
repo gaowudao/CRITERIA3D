@@ -22,7 +22,7 @@ double Thickness;
 long SimulationStart, SimulationStop;
 
 //surface
-double mySurface, Roughness, Plough, Albedo, RoughnessHeat;
+double mySurface, Roughness, Plough, RoughnessHeat;
 
 //bottom boundary
 double bottomTemperature, bottomTemperatureDepth;
@@ -143,10 +143,9 @@ long getNodesNumber()
 void setSoilHorizonNumber(int myNumber)
 {   myHorizonNumber = myNumber;}
 
-void setSurface(double myArea, double myAlbedo, double myRoughness, double minWaterRunoff, double myRoughnessHeat)
+void setSurface(double myArea, double myRoughness, double minWaterRunoff, double myRoughnessHeat)
 {
     mySurface = myArea;
-    Albedo = myAlbedo;
     Roughness = myRoughness;
     Plough = minWaterRunoff;
     RoughnessHeat = myRoughnessHeat;
