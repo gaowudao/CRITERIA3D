@@ -10,6 +10,7 @@
 
 #include <sstream>
 #include <iostream>
+#include <fstream>
 
 #include "tileSources/OSMTileSource.h"
 #include "tileSources/GridTileSource.h"
@@ -874,7 +875,7 @@ void MainWindow::on_action_Open_NetCDF_data_triggered()
     myProject.netCDF.dataGrid.emptyGrid();
     gridObj->updateCenter();
 
-    /*QDialog myDialog;
+    QDialog myDialog;
     QVBoxLayout mainLayout;
 
     myDialog.setWindowTitle("NetCDF file info  ");
@@ -888,7 +889,6 @@ void MainWindow::on_action_Open_NetCDF_data_triggered()
     myDialog.setLayout(&mainLayout);
     myDialog.setFixedSize(800,600);
     myDialog.exec();
-    */
 }
 
 
@@ -920,7 +920,13 @@ void exportNetCDFDataSeries(gis::Crit3DGeoPoint geoPoint)
             if (! myProject.netCDF.exportDataSeries(idVar, geoPoint, firstTime.toTime_t(), lastTime.toTime_t(), &buffer))
                 QMessageBox::information(NULL, "ERROR", QString::fromStdString(buffer.str()));
             else
-                QMessageBox::information(NULL, "Result", QString::fromStdString(buffer.str()));
+            {
+                QString fileName = QFileDialog::getSaveFileName(NULL, "Save data series", "", "csv files (*.csv)");
+                std::ofstream myFile;
+                myFile.open(fileName.toStdString());
+                myFile << buffer.str();
+                myFile.close();
+            }
         }
     }
 }

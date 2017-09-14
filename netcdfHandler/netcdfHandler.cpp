@@ -47,13 +47,19 @@ std::string NetCDFVariable::getVarName()
 
 NetCDFHandler::NetCDFHandler()
 {
+    ncId = NODATA;
     this->initialize(NODATA);
 }
 
 
 void NetCDFHandler::initialize(int myUtmZone)
 {
-    utmZone = myUtmZone;
+     utmZone = myUtmZone;
+
+    // CLOSE file, freeing all resources
+    if (ncId != NODATA) nc_close(ncId);
+    ncId = NODATA;
+
     nrX = NODATA;
     nrY = NODATA;
     nrLat = NODATA;
@@ -68,6 +74,7 @@ void NetCDFHandler::initialize(int myUtmZone)
 
     isLoaded = false;
     isLatLon = false;
+    isLatDecreasing = false;
     isStandardTime = false;
     timeType = NODATA;
 
@@ -90,6 +97,16 @@ int NetCDFHandler::getDimensionIndex(char* dimName)
     }
 
     return NODATA;
+}
+
+
+std::string NetCDFHandler::getVarName(int idVar)
+{
+    for (unsigned int i = 0; i < variables.size(); i++)
+        if (variables[i].id == idVar)
+            return variables[i].longName;
+
+    return "";
 }
 
 
@@ -146,16 +163,10 @@ time_t NetCDFHandler::getTime(int timeIndex)
     return time_t(time[timeIndex]);
 }
 
-time_t NetCDFHandler::getFirstTime()
-{
-    time_t firstTime = getTime(0);
-    return firstTime;
-}
-
 
 bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
 {
-    int ncId, retval;
+    int retval;
     char name[NC_MAX_NAME+1];
     char attrName[NC_MAX_NAME+1];
     char varName[NC_MAX_NAME+1];
@@ -354,6 +365,7 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
             {
                 latLonHeader.llCorner->latitude = lat[nrLat-1];
                 latLonHeader.dy = (lat[0]-lat[1]);
+                isLatDecreasing = true;
             }
 
             latLonHeader.flag = NODATA;
@@ -424,10 +436,6 @@ bool NetCDFHandler::readProperties(string fileName, stringstream *buffer)
     for (unsigned int i = 0; i < variables.size(); i++)
         *buffer << variables[i].getVarName() << endl;
 
-
-    // CLOSE file, freeing all resources
-    nc_close(ncId);
-
    return true;
 }
 
@@ -457,12 +465,15 @@ bool NetCDFHandler::exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, ti
     if (isLatLon)
     {
         gis::getRowColFromLatLon(latLonHeader, geoPoint, &row, &col);
+        if (!isLatDecreasing)
+            row = (nrLat-1) - row;
     }
     else
     {
         gis::Crit3DUtmPoint utmPoint;
         gis::getUtmFromLatLon(utmZone, geoPoint, &utmPoint);
         gis::getRowColFromXY(*(dataGrid.header), utmPoint, &row, &col);
+        row = (nrY -1) - row;
     }
 
     // find time indexes
@@ -478,13 +489,36 @@ bool NetCDFHandler::exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, ti
         i++;
     }
 
+    // check time
     if  (t1 == NODATA || t2 == NODATA)
     {
         *buffer << "Time out of range!" << endl;
         return false;
     }
 
-    *buffer << "row: " << row << "\tcol:" << col << "\ttime: " << t1 << "-" << t2 << endl;
+    // write variable
+     *buffer << "variable: " << getVarName(idVar) <<endl;
+
+    // write position
+    if (isLatLon)
+        *buffer << "lat: " << y[row] << "\tlon: " << x[col] << endl;
+    else
+        *buffer << "utm x: " << x[col] << "\tutm y: " << y[row] << endl;
+
+    *buffer << endl;
+
+    // write data
+    size_t* index = (size_t*) calloc(3, sizeof(size_t));
+    index[1] = row;
+    index[2] = col;
+
+    float value;
+    for (int t = t1; t <= t2; t++)
+    {
+        index[0] = t;
+        nc_get_var1_float(ncId, idVar, index, &value);
+        *buffer << getDateTimeStr(t) << "," << value << endl;
+    }
 
     return true;
 }

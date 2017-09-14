@@ -22,6 +22,8 @@
     class NetCDFHandler
     {
     public:
+        int ncId;
+
         gis::Crit3DRasterGrid dataGrid;
         gis::Crit3DLatLonHeader latLonHeader;
 
@@ -35,25 +37,28 @@
 
         void initialize(int myUtmZone);
 
-        bool readProperties(std::string fileName, std::stringstream *buffer);
         bool isPointInside(gis::Crit3DGeoPoint geoPoint);
-        int getDimensionIndex(char* dimName);
+
         bool setVarLongName(char* varName, char* varLongName);
+
+        int getDimensionIndex(char* dimName);
         std::string getDateTimeStr(int timeIndex);
+        std::string getVarName(int idVar);
+        inline int getNrVariables() {return variables.size();}
 
-        bool exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, time_t firstTime, time_t lastTime, std::stringstream *buffer);
-
-        time_t NetCDFHandler::getTime(int timeIndex);
-        time_t getFirstTime();
+        time_t getTime(int timeIndex);
+        inline time_t getFirstTime() {return getTime(0);}
         inline time_t getLastTime() {return getTime(nrTime-1);}
 
-        inline int getNrVariables() {return variables.size();}
+        bool readProperties(std::string fileName, std::stringstream *buffer);
+        bool exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, time_t firstTime, time_t lastTime, std::stringstream *buffer);
 
     private:
 
         int utmZone;
         int nrX, nrY, nrLat, nrLon, nrTime;
         int idTime, idX, idY, idLat, idLon;
+        bool isLatDecreasing;
         float *x, *y;
         double *time;
         int timeType;

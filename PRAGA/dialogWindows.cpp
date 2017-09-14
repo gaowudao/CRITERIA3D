@@ -293,15 +293,22 @@ bool chooseNetCDFVariable(int* varId, QDateTime* firstDate, QDateTime* lastDate)
     layoutVariable.addWidget(new QLabel());
 
     //Date widgets
-    QDateTimeEdit *firstDateEdit = new QDateTimeEdit;
     *firstDate = QDateTime::fromTime_t(myProject.netCDF.getFirstTime(), Qt::UTC);
+    *lastDate = QDateTime::fromTime_t(myProject.netCDF.getLastTime(), Qt::UTC);
+
+    QDateTimeEdit *firstDateEdit = new QDateTimeEdit;
+    firstDateEdit->setDateTimeRange(*firstDate, *lastDate);
+    firstDateEdit->setTimeSpec(Qt::UTC);
     firstDateEdit->setDateTime(*firstDate);
+
     QLabel *firstDateLabel = new QLabel("<b>First Date:</b>");
     firstDateLabel->setBuddy(firstDateEdit);
 
     QDateTimeEdit *lastDateEdit = new QDateTimeEdit;
-    *lastDate = QDateTime::fromTime_t(myProject.netCDF.getLastTime(), Qt::UTC);
+    lastDateEdit->setDateTimeRange(*firstDate, *lastDate);
+    lastDateEdit->setTimeSpec(Qt::UTC);
     lastDateEdit->setDateTime(*lastDate);
+
     QLabel *lastDateLabel = new QLabel("<b>Last Date:</b>");
     lastDateLabel->setBuddy(lastDateEdit);
 
