@@ -141,11 +141,11 @@ QVector<QPointF> getSingleSeries(Crit3DOut* myOut, outputVar myVar, float* minVa
                 break;
 
             case outputVar::aerodynamicResistence :
-                myVal = 1. / myOut->landSurfaceOutput[i].aeroConductance.y();
+                myVal = myOut->landSurfaceOutput[i].aeroResistance.y();
                 break;
 
             case outputVar::soilSurfaceResistence :
-                myVal = 1. / myOut->landSurfaceOutput[i].soilConductance.y();
+                myVal = myOut->landSurfaceOutput[i].soilResistance.y();
                 break;
 
             case outputVar::MBR_heat :

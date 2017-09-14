@@ -74,8 +74,8 @@ struct landSurfaceStatus{
     QPointF sensibleHeat;
     QPointF latentHeat;
     QPointF netRadiation;
-    QPointF aeroConductance;
-    QPointF soilConductance;
+    QPointF aeroResistance;
+    QPointF soilResistance;
 };
 
 struct heatErrors{

@@ -469,13 +469,13 @@ void getHourlyOutputAllPeriod(long firstIndex, long lastIndex, Crit3DOut *output
 
     //aerodynamic resistance
     myValue = soilFluxes3D::getBoundaryAerodynamicConductance(1);
-    myPoint.setY(myValue);
-    output->landSurfaceOutput[output->nrValues-1].aeroConductance = myPoint;
+    myPoint.setY(1./myValue);
+    output->landSurfaceOutput[output->nrValues-1].aeroResistance = myPoint;
 
     //soil surface resistance
     myValue = soilFluxes3D::getBoundarySoilConductance(1);
-    myPoint.setY(myValue);
-    output->landSurfaceOutput[output->nrValues-1].soilConductance = myPoint;
+    myPoint.setY(1./myValue);
+    output->landSurfaceOutput[output->nrValues-1].soilResistance = myPoint;
 
     //errors
     myValue = soilFluxes3D::getHeatMBR();
@@ -529,8 +529,8 @@ QString Crit3DOut::getTextOutput(bool getTemp, bool getWater, bool getHeatFlux, 
 
     if (getCond)
     {
-        myString.append(QString("aeroCond,"));
-        myString.append(QString("soilCond,"));
+        myString.append(QString("aeroResistance,"));
+        myString.append(QString("soilResistance,"));
     }
 
     if (getErrors)
@@ -585,12 +585,12 @@ QString Crit3DOut::getTextOutput(bool getTemp, bool getWater, bool getHeatFlux, 
 
         if (getCond)
         {
-            myValue = landSurfaceOutput[i].aeroConductance.y();
-            myString.append(QString::number(1./myValue,'f',6));
+            myValue = landSurfaceOutput[i].aeroResistance.y();
+            myString.append(QString::number(myValue,'f',6));
             myString.append(QString(", "));
 
-            myValue = landSurfaceOutput[i].soilConductance.y();
-            myString.append(QString::number(1./myValue,'f',6));
+            myValue = landSurfaceOutput[i].soilResistance.y();
+            myString.append(QString::number(myValue,'f',6));
             myString.append(QString(","));
         }
 
