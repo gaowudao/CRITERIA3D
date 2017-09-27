@@ -26,11 +26,13 @@
 */
 
 #include <math.h>
+#include "../mathFunctions/commonConstants.h"
 #include "../mathFunctions/physics.h"
 #include "header/types.h"
 #include "header/soilPhysics.h"
 #include "header/solver.h"
 #include "header/heat.h"
+#include "header/extra.h"
 
      /*!
      * \brief Computes volumetric water content from current degree of saturation
@@ -199,7 +201,7 @@
         // vapor isothermal flow
         if (myStructure.computeHeat)
         {
-            double avgT = computeMean(myNode[myIndex].extra->Heat->T, myNode[myIndex].extra->Heat->oldT);
+            double avgT = getTMean(myIndex);
             double kv = IsothermalVaporConductivity(myIndex, myNode[myIndex].H - myNode[myIndex].z, avgT);
             // from kg s m-3 to m s-1
             kv *= (GRAVITY / WATER_DENSITY);
@@ -285,7 +287,6 @@
 	 return (dSe_dH * (myNode[myIndex].Soil->Theta_s - myNode[myIndex].Soil->Theta_r));
 	 }
 
-
     double getThetaMean(long i)
 	{
         double myHMean = getHMean(i);
@@ -308,9 +309,18 @@
         return (theta_from_sign_Psi(psi, i));
     }
 
+    double getTMean(long i)
+    {
+        if (myStructure.computeHeat && myNode[i].extra->Heat != NULL)
+            return arithmeticMean(myNode[i].extra->Heat->oldT, myNode[i].extra->Heat->T);
+        else
+            return NODATA;
+    }
+
     double getHMean(long i)
     {
-        return computeMean(myNode[i].oldH, myNode[i].H);
+        // is there any efficient way to compute a geometric mean of H?
+        return arithmeticMean(myNode[i].oldH, myNode[i].H);
     }
 
     double getPsiMean(long i)

@@ -20,5 +20,6 @@
     double getHMean(long i);
     double getPsiMean(long i);
     double estimateBulkDensity(long i);
+    double getTMean(long i);
 
 #endif  // SOILPHYSICS_H

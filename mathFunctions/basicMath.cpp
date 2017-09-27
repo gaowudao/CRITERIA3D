@@ -26,6 +26,16 @@
 #include "basicMath.h"
 #include <math.h>
 
+    bool sameSignNoZero(float a, float b)
+    {
+        return a*b > 0.0f;
+    }
+
+    bool sameSign(float a, float b)
+    {
+        return a*b >= 0.0f;
+    }
+
     bool greaterThan(float a, float b)
     {
         return (fabs(a - b) > fabs(b / 100.));

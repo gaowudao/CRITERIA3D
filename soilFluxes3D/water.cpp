@@ -255,7 +255,7 @@ bool waterFlowComputation(double deltaT)
                  // vapor capacity term
                  if (myStructure.computeHeat)
                  {
-                     avgTemperature = computeMean(myNode[i].extra->Heat->T, myNode[i].extra->Heat->oldT);
+                     avgTemperature = getTMean(i);
                      double dthetavdh = dThetav_dH(i, avgTemperature, dThetadH);
                      C[i] += myNode[i].volume_area  * dthetavdh;
                  }
