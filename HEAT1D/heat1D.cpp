@@ -5,7 +5,6 @@
 #include <QString>
 #include <qglobal.h>
 #include <qlist.h>
-#include <qdebug.h>
 
 #include "heat1D.h"
 #include "soilFluxes3D.h"
@@ -649,11 +648,7 @@ bool runHeat1D(double myHourlyTemperature,  double myHourlyRelativeHumidity,
         soilFluxes3D::setHeatBoundaryRoughness(1, RoughnessHeat);
     }
 
-    if (CurrentHour == 37)
-        double a=0;
-
     soilFluxes3D::computePeriod(HOUR_SECONDS);
-    qDebug() << "after running hour:" << CurrentHour << " T1: " << soilFluxes3D::getTemperature(1) - 273.16 << " WC0: " << soilFluxes3D::getWaterContent(0);
 
 	return (true);
 }
