@@ -322,7 +322,7 @@ void updateBoundaryHeat()
                 {
                     if (myStructure.computeWater)
                     {
-                         myWaterFlux = myNode[i].boundary->waterFlow;
+                        myWaterFlux = myNode[i].boundary->waterFlow;
 
                         if (myWaterFlux < 0)
                             advTemperature = myNode[i].extra->Heat->T;

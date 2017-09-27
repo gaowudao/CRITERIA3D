@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <malloc.h>
+#include <qdebug.h>
 
 #include "../mathFunctions/physics.h"
 #include "header/types.h"
@@ -797,10 +798,15 @@ namespace soilFluxes3D {
 
 		while (sumTime < myPeriod)
         {
+            if (sumTime == 871.875)
+                double a = 0;
 
 			ResidualTime = myPeriod - sumTime;
 			deltaT = computeStep(ResidualTime);
 			sumTime += deltaT;
+
+            if (myStructure.computeHeat)
+                qDebug() << "sumTime: " << sumTime << " T0: " << myNode[1].extra->Heat->T;
         }
 
         if (myStructure.computeWater) updateBalanceWaterWholePeriod();

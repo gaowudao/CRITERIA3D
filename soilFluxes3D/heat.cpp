@@ -241,13 +241,13 @@ double VaporFromPsiTemp(double h, double T)
  * \param Klh (m s-1) isotherma liquid conductivity
  * \return result
  */
-double ThermalLiquidConductivity(double temperature, double h, double Klh)
+double ThermalLiquidConductivity(double temp_celsius, double h, double Klh)
 {
     double Gwt = 4.;        // [] gain factor (temperature dependence of soil water retention curve)
     double dGammadT;        // [g s-2 K-1] derivative of surface tension with respect to temperature
 
-    dGammadT = -0.1425 - 0.000476 * temperature;
-    return (Klh * h * Gwt * dGammadT / GAMMA0);
+    dGammadT = -0.1425 - 0.000576 * temp_celsius;
+    return (max_value(0., Klh * h * Gwt * dGammadT / GAMMA0));
 }
 
 /*!
@@ -412,14 +412,14 @@ double ThermalLiquidFlux(long i, TlinkedNode *myLink, int myProcess)
         myTMean = myNode[i].extra->Heat->T;
         myTLinkMean = myNode[j].extra->Heat->T;
         myH = computeMean(myNode[i].H, myNode[i].oldH);
-        myHLink =computeMean(myNode[j].H, myNode[j].oldH);
+        myHLink = computeMean(myNode[j].H, myNode[j].oldH);
     }
     else
         return NODATA;
 
     // m2 K-1 s-1
-    double Klt = ThermalLiquidConductivity(myTMean, myH - myNode[i].z, myNode[i].k);
-    double KltLink = ThermalLiquidConductivity(myTLinkMean, myHLink - myNode[j].z, myNode[j].k);
+    double Klt = ThermalLiquidConductivity(myTMean - ZEROCELSIUS, myH - myNode[i].z, myNode[i].k);
+    double KltLink = ThermalLiquidConductivity(myTLinkMean - ZEROCELSIUS, myHLink - myNode[j].z, myNode[j].k);
     double meanKlt = computeMean(Klt, KltLink);
 
     // m s-1

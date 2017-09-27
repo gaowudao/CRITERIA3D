@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <malloc.h>
+#include <qdebug.h>
 
 #include "../mathFunctions/physics.h"
 #include "../mathFunctions/commonConstants.h"
@@ -320,6 +321,8 @@ bool waterFlowComputation(double deltaT)
             if (!myNode[i].isSurface)
                 myNode[i].Se = computeSe(i);
         }
+
+        qDebug() << "H0: " << myNode[0].H << " H1: " << myNode[1].H << " H2: " << myNode[2].H << " H3: " << myNode[3].H << " H4: " << myNode[4].H << " H5: " << myNode[5].H;
 
         /*! water balance */
         isValidStep = waterBalance(deltaT, approximationNr);

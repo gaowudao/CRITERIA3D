@@ -5,6 +5,7 @@
 #include <QString>
 #include <qglobal.h>
 #include <qlist.h>
+#include <qdebug.h>
 
 #include "heat1D.h"
 #include "soilFluxes3D.h"
@@ -620,9 +621,9 @@ bool runHeat1D(double myHourlyTemperature,  double myHourlyRelativeHumidity,
                  double myHourlyWindSpeed, double myHourlyNetIrradiance,
                  double myHourlyPrec)
 {
-    double currentRoughness;
-    double surfaceWaterHeight;
-    double roughnessWater = 0.005;
+    //double currentRoughness;
+    //double surfaceWaterHeight;
+    //double roughnessWater = 0.005;
 
     setSinkSources(myHourlyPrec);
 
@@ -635,6 +636,7 @@ bool runHeat1D(double myHourlyTemperature,  double myHourlyRelativeHumidity,
         soilFluxes3D::setHeatBoundaryWindSpeed(1, myHourlyWindSpeed);
         soilFluxes3D::setHeatBoundaryNetIrradiance(1, myHourlyNetIrradiance);
 
+        /*
         surfaceWaterHeight = soilFluxes3D::getWaterContent(0);
         if (surfaceWaterHeight > RoughnessHeat)
             currentRoughness = 0.005;
@@ -642,11 +644,16 @@ bool runHeat1D(double myHourlyTemperature,  double myHourlyRelativeHumidity,
             currentRoughness = (roughnessWater - RoughnessHeat) / RoughnessHeat * surfaceWaterHeight + RoughnessHeat;
         else
             currentRoughness = RoughnessHeat;
+        */
 
-        soilFluxes3D::setHeatBoundaryRoughness(1, currentRoughness);
+        soilFluxes3D::setHeatBoundaryRoughness(1, RoughnessHeat);
     }
 
+    if (CurrentHour == 37)
+        double a=0;
+
     soilFluxes3D::computePeriod(HOUR_SECONDS);
+    qDebug() << "after running hour:" << CurrentHour << " T1: " << soilFluxes3D::getTemperature(1) - 273.16 << " WC0: " << soilFluxes3D::getWaterContent(0);
 
 	return (true);
 }
