@@ -209,11 +209,11 @@ bool computeFlux(long i, int matrixIndex, TlinkedNode *link, double deltaT, unsi
         ! myNode[i].isSurface && ! myNode[j].isSurface)
     {
         double vaporThermal;
-        vaporThermal = ThermalVaporFlux(i, link, PROCESS_WATER) / WATER_DENSITY;
+        vaporThermal = ThermalVaporFlux(i, link, PROCESS_WATER, NODATA, NODATA) / WATER_DENSITY;
         C0[i] += vaporThermal;
 
         double liquidThermal;
-        liquidThermal = ThermalLiquidFlux(i, link, PROCESS_WATER);
+        liquidThermal = ThermalLiquidFlux(i, link, PROCESS_WATER, NODATA, NODATA);
         C0[i] += liquidThermal;
     }
 
