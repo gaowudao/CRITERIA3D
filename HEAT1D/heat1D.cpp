@@ -458,12 +458,12 @@ void getHourlyOutputAllPeriod(long firstIndex, long lastIndex, Crit3DOut *output
     output->landSurfaceOutput[output->nrValues-1].netRadiation = myPoint;
 
     // sensible heat (positive upward)
-    myValue = soilFluxes3D::getBoundarySensibleFlux(1);
+    myValue = -soilFluxes3D::getBoundarySensibleFlux(1);
     myPoint.setY(myValue);
     output->landSurfaceOutput[output->nrValues-1].sensibleHeat = myPoint;
 
     // latent heat (positive upward)
-    myValue = soilFluxes3D::getBoundaryLatentFlux(1);
+    myValue = -soilFluxes3D::getBoundaryLatentFlux(1);
     myPoint.setY(myValue);
     output->landSurfaceOutput[output->nrValues-1].latentHeat = myPoint;
 
