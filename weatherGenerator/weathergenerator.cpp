@@ -642,6 +642,7 @@ bool makeSeasonalForecast(QString outputFileName, char separator, TXMLSeasonalAn
     myDailyPredictions = (ToutputDailyMeteo*)malloc(myNumValues*sizeof(ToutputDailyMeteo));
 
     // copy the last 9 months before wgDoy1
+    float lastTmax, lastTmin;
     for (tmp = 0; tmp < nrDaysBeforeWgDoy1; tmp++)
     {
         myDailyPredictions[tmp].date = myFirstDatePrediction.addDays(tmp);
@@ -649,10 +650,32 @@ bool makeSeasonalForecast(QString outputFileName, char separator, TXMLSeasonalAn
         myDailyPredictions[tmp].minTemp = lastYearDailyObsData->inputTMin[obsIndex];
         myDailyPredictions[tmp].maxTemp = lastYearDailyObsData->inputTMax[obsIndex];
         myDailyPredictions[tmp].prec = lastYearDailyObsData->inputPrecip[obsIndex];
-        if ( (myDailyPredictions[tmp].maxTemp == NODATA) || (myDailyPredictions[tmp].minTemp == NODATA) || (myDailyPredictions[tmp].prec == NODATA))
+
+        if ((myDailyPredictions[tmp].maxTemp == NODATA) || (myDailyPredictions[tmp].minTemp == NODATA) || (myDailyPredictions[tmp].prec == NODATA))
         {
-            qDebug() << "Error NODATA presence - the last 9 months before wgDoy1 should be completed ";
-            return false;
+            if (tmp == 0)
+            {
+                qDebug() << "ERROR: Missing data:" << QString::fromStdString(myDailyPredictions[tmp].date.toStdString());
+                return false;
+            }
+            else
+            {
+                qDebug() << "WARNING: Missing data:" << QString::fromStdString(myDailyPredictions[tmp].date.toStdString());
+
+                if (myDailyPredictions[tmp].maxTemp == NODATA)
+                    myDailyPredictions[tmp].maxTemp = lastTmax;
+
+                if (myDailyPredictions[tmp].minTemp == NODATA)
+                    myDailyPredictions[tmp].minTemp = lastTmin;
+
+                if (myDailyPredictions[tmp].prec == NODATA)
+                    myDailyPredictions[tmp].prec = 0;
+            }
+        }
+        else
+        {
+            lastTmax = myDailyPredictions[tmp].maxTemp;
+            lastTmin = myDailyPredictions[tmp].minTemp;
         }
     }
 

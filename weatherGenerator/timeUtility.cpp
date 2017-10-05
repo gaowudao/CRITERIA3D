@@ -85,7 +85,7 @@ bool getDoyFromSeason(QString season, int myPredictionYear, int* wgDoy1, int* wg
     QString period[12] = {"JFM","FMA","MAM","AMJ","MJJ","JJA","JAS","ASO","SON","OND","NDJ","DJF"};
     unsigned int i = 0;
     int found = 0;
-    int myMonth1, myMonth2 = 0;
+    int month1, month2 = 0;
 
     for (i = 0; i<12; i++)
     {
@@ -101,26 +101,27 @@ bool getDoyFromSeason(QString season, int myPredictionYear, int* wgDoy1, int* wg
         return false;
     }
 
-    myMonth1 = i + 1;        //first month of my season
-    myMonth2 = (i + 3) % 12; //last month of my season
+    month1 = i + 1;        // first month of my season
+    month2 = (i + 3) % 12; // last month of my season
+    if (month2 == 0) month2 = 12;
 
     Crit3DDate predictionFirstDate;
-    Crit3DDate predictionLastDate;
-
     predictionFirstDate.year = myPredictionYear;
-    predictionFirstDate.month = myMonth1;
+    predictionFirstDate.month = month1;
     predictionFirstDate.day = 1;
 
     *wgDoy1 = getDoyFromDate(predictionFirstDate);
-    // if the season is between 2 years
+
+    // season between 2 years
     if (season.compare(period[10]) == 0 || season.compare(period[11]) == 0)
     {
         myPredictionYear = myPredictionYear + 1 ;
     }
 
+    Crit3DDate predictionLastDate;
     predictionLastDate.year = myPredictionYear;
-    predictionLastDate.month = myMonth2;
-    predictionLastDate.day = getDaysInMonth(myMonth2, myPredictionYear);
+    predictionLastDate.month = month2;
+    predictionLastDate.day = getDaysInMonth(month2, myPredictionYear);
 
     *wgDoy2 = getDoyFromDate(predictionLastDate);
 
