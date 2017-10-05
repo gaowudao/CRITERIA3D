@@ -1,6 +1,8 @@
 #ifndef BASICMATH_H
 #define BASICMATH_H
 
+    bool sameSignNoZero(float a, float b);
+    bool sameSign(float a, float b);
     float getSin(float);
     float getCos(float);
     int integralPart(double number);

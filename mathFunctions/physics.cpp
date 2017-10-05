@@ -171,11 +171,11 @@ double AirDensity(double myTemperature, double myRelativeHumidity)
 
 /*!
 * \brief computes aerodynamic conductance
-* \param heightTemperature: reference height for temperature and humidity measurement
-* \param heightWind: reference height for wind measurement
+* \param heightTemperature: reference height for temperature and humidity measurement (m)
+* \param heightWind: reference height for wind measurement (m)
 * \param mySoilSurfaceTemperature: soil temperature (K)
 * \param myRoughnessHeight: roughness height (m)
-* \param myAirTemperature: air temperature (m)
+* \param myAirTemperature: air temperature (K)
 * \param myWindSpeed: wind speed (m s-1)
 * \return aerodynamic conductance for heat and vapor [m s-1]
 * from Campbell Norman 1998
@@ -196,6 +196,8 @@ double AerodynamicConductance(double heightTemperature,
     double Sp;                          // () stability parameter
     double H;                           // (W m-2) sensible heat flux
     double Ch;                          // (J m-3 K-1) volumetric specific heat of air
+
+    windSpeed = max_value(windSpeed, 0.1);
 
     zeroPlane = 0.77 * roughnessHeight;
     roughnessMomentum = 0.13 * roughnessHeight;

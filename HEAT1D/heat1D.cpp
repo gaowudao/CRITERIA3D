@@ -458,12 +458,12 @@ void getHourlyOutputAllPeriod(long firstIndex, long lastIndex, Crit3DOut *output
     output->landSurfaceOutput[output->nrValues-1].netRadiation = myPoint;
 
     // sensible heat (positive upward)
-    myValue = soilFluxes3D::getBoundarySensibleFlux(1);
+    myValue = -soilFluxes3D::getBoundarySensibleFlux(1);
     myPoint.setY(myValue);
     output->landSurfaceOutput[output->nrValues-1].sensibleHeat = myPoint;
 
     // latent heat (positive upward)
-    myValue = soilFluxes3D::getBoundaryLatentFlux(1);
+    myValue = -soilFluxes3D::getBoundaryLatentFlux(1);
     myPoint.setY(myValue);
     output->landSurfaceOutput[output->nrValues-1].latentHeat = myPoint;
 
@@ -620,9 +620,9 @@ bool runHeat1D(double myHourlyTemperature,  double myHourlyRelativeHumidity,
                  double myHourlyWindSpeed, double myHourlyNetIrradiance,
                  double myHourlyPrec)
 {
-    double currentRoughness;
-    double surfaceWaterHeight;
-    double roughnessWater = 0.005;
+    //double currentRoughness;
+    //double surfaceWaterHeight;
+    //double roughnessWater = 0.005;
 
     setSinkSources(myHourlyPrec);
 
@@ -635,6 +635,7 @@ bool runHeat1D(double myHourlyTemperature,  double myHourlyRelativeHumidity,
         soilFluxes3D::setHeatBoundaryWindSpeed(1, myHourlyWindSpeed);
         soilFluxes3D::setHeatBoundaryNetIrradiance(1, myHourlyNetIrradiance);
 
+        /*
         surfaceWaterHeight = soilFluxes3D::getWaterContent(0);
         if (surfaceWaterHeight > RoughnessHeat)
             currentRoughness = 0.005;
@@ -642,8 +643,9 @@ bool runHeat1D(double myHourlyTemperature,  double myHourlyRelativeHumidity,
             currentRoughness = (roughnessWater - RoughnessHeat) / RoughnessHeat * surfaceWaterHeight + RoughnessHeat;
         else
             currentRoughness = RoughnessHeat;
+        */
 
-        soilFluxes3D::setHeatBoundaryRoughness(1, currentRoughness);
+        soilFluxes3D::setHeatBoundaryRoughness(1, RoughnessHeat);
     }
 
     soilFluxes3D::computePeriod(HOUR_SECONDS);

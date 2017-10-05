@@ -11,6 +11,8 @@
 
     double computeMean(double v1, double v2);
 
+    double arithmeticMean(double v1, double v2);
+
     bool GaussSeidelRelaxation (int myApproximation, double myResidualTolerance, int myProcess);
 
 #endif  // SOLVER_H

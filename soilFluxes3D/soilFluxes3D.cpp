@@ -797,7 +797,6 @@ namespace soilFluxes3D {
 
 		while (sumTime < myPeriod)
         {
-
 			ResidualTime = myPeriod - sumTime;
 			deltaT = computeStep(ResidualTime);
 			sumTime += deltaT;
@@ -830,7 +829,7 @@ double DLL_EXPORT __STDCALL computeStep(double maxTime)
 
     if (myStructure.computeHeat)
     {
-        saveWaterFluxes();
+        saveWaterFluxes(dtWater);
         updateBoundaryHeat();
 
         double dtHeatSum = 0;

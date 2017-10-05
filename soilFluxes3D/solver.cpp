@@ -29,9 +29,9 @@
 #include <math.h>
 #include <malloc.h>
 
+#include "../mathFunctions/basicMath.h"
 #include "header/types.h"
 #include "header/solver.h"
-
 
 double distance(unsigned long i, unsigned long j)
 {
@@ -46,6 +46,11 @@ double distance2D(unsigned long i, unsigned long j)
     return (sqrt(square(fabs(myNode[i].x - myNode[j].x)) + square(fabs(myNode[i].y - myNode[j].y))));
 }
 
+double arithmeticMean(double v1, double v2)
+{
+    return ((v1 + v2)/2.);
+}
+
 double logarithmicMean(double v1, double v2)
 {
     if (v1 == v2)
@@ -54,12 +59,17 @@ double logarithmicMean(double v1, double v2)
         return((v1 - v2) / log(v1/v2));
 }
 
+double geometricMean(double v1, double v2)
+{
+    return sign(v1)*sqrt(v1 * v2);
+}
+
 double computeMean(double v1, double v2)
 {
     if (myParameters.meanType == MEAN_LOGARITHMIC)
         return(logarithmicMean(v1, v2));
     else if (myParameters.meanType == MEAN_GEOMETRIC)
-        return(sign(v1)*sqrt(v1 * v2));
+        return(geometricMean(v1, v2));
     else
         //default: logarithmic
         return(logarithmicMean(v1, v2));

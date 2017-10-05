@@ -322,43 +322,43 @@ void MainWindow::on_pushLoadFileMeteo_clicked()
         {
             myWord = myWords.at(myHourIndex*myFieldNumber+1);
             if (myWord != "")
-                myTempInput[myHourIndex-1] = myWords.at(myHourIndex*myFieldNumber+1).toDouble();
+                myTempInput[myHourIndex-1] = myWord.toDouble();
             else
             {
                 std::cout << "missing data at line " << myHourIndex+1 << std::endl;
                 return;
             }
 
-            myWord = myWords.at(myHourIndex*myFieldNumber+1);
+            myWord = myWords.at(myHourIndex*myFieldNumber+2);
             if (myWord != "")
-                myPrecInput[myHourIndex-1] = myWords.at(myHourIndex*myFieldNumber+2).toDouble();
+                myPrecInput[myHourIndex-1] = myWord.toDouble();
             else
             {
                 std::cout << "missing data at line " << myHourIndex+1 << std::endl;
                 return;
             }
 
-            myWord = myWords.at(myHourIndex*myFieldNumber+1);
+            myWord = myWords.at(myHourIndex*myFieldNumber+3);
             if (myWord != "")
-                myRHInput[myHourIndex-1] = myWords.at(myHourIndex*myFieldNumber+3).toDouble();
+                myRHInput[myHourIndex-1] = myWord.toDouble();
             else
             {
                 std::cout << "missing data at line " << myHourIndex+1 << std::endl;
                 return;
             }
 
-            myWord = myWords.at(myHourIndex*myFieldNumber+1);
+            myWord = myWords.at(myHourIndex*myFieldNumber+4);
             if (myWord != "")
-                myWSInput[myHourIndex-1] = myWords.at(myHourIndex*myFieldNumber+4).toDouble();
+                myWSInput[myHourIndex-1] = myWord.toDouble();
             else
             {
                 std::cout << "missing data at line " << myHourIndex+1 << std::endl;
                 return;
             }
 
-            myWord = myWords.at(myHourIndex*myFieldNumber+1);
+            myWord = myWords.at(myHourIndex*myFieldNumber+5);
             if (myWord != "")
-                myNetRadInput[myHourIndex-1] = myWords.at(myHourIndex*myFieldNumber+5).toDouble();
+                myNetRadInput[myHourIndex-1] = myWord.toDouble();
             else
             {
                 std::cout << "missing data at line " << myHourIndex+1 << std::endl;
