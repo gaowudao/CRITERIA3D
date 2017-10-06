@@ -25,6 +25,7 @@
     gantolini@arpae.emr.it
 */
 
+#include <qdebug.h>
 
 #include <stdio.h>
 #include <math.h>
@@ -223,7 +224,7 @@ namespace soilFluxes3D {
 		initializeBoundary(myNode[myIndex].boundary, boundaryType, slope);
 	}
 
-    if (myStructure.computeHeat || myStructure.computeSolutes)
+    if ((myStructure.computeHeat || myStructure.computeSolutes) && ! isSurface)
     {
         myNode[myIndex].extra = new(TCrit3DnodeExtra);
         initializeExtra(myNode[myIndex].extra, myStructure.computeHeat, myStructure.computeSolutes);
@@ -815,7 +816,7 @@ namespace soilFluxes3D {
  */
 double DLL_EXPORT __STDCALL computeStep(double maxTime)
 {
-    double dtWater, dtHeat;
+    double dtWater, dtHeat, dtHeatCurrent;
 
     if (myStructure.computeHeat) initializeHeatFluxes(false, true);
     updateBoundary();
@@ -825,18 +826,27 @@ double DLL_EXPORT __STDCALL computeStep(double maxTime)
     else
         dtWater = min_value(maxTime, myParameters.delta_t_max);
 
+    //qDebug() << "H0=" << myNode[0].H << "H1=" << myNode[1].H << "watFluxBoundary1=" << myNode[1].boundary->waterFlow;
+
     dtHeat = dtWater;
 
     if (myStructure.computeHeat)
     {
-        saveWaterFluxes(dtWater);
-        updateBoundaryHeat();
-
         double dtHeatSum = 0;
         while (dtHeatSum < dtWater)
         {
-            if (HeatComputation(min_value(dtHeat, dtWater - dtHeatSum), dtWater))
+            dtHeatCurrent = min_value(dtHeat, dtWater - dtHeatSum);
+            saveWaterFluxes(dtHeatCurrent, dtWater);
+            updateBoundaryHeat();
+
+            qDebug() << "fluxW_0_1=" << myNode[0].down.linkedExtra->heatFlux->waterFlux << "fluxW_1_2" << myNode[1].down.linkedExtra->heatFlux->waterFlux;
+            qDebug() << "advFlux1=" << myNode[1].boundary->Heat->advectiveHeatFlux;
+            qDebug() << "L=" << myNode[1].boundary->Heat->latentFlux << "H=" << myNode[1].boundary->Heat->sensibleFlux;
+
+            if (HeatComputation(dtHeatCurrent, dtWater))
             {
+                qDebug() << "T1=" << myNode[1].extra->Heat->T << "T2=" << myNode[2].extra->Heat->T;
+
                 dtHeatSum += dtHeat;
             }
             else
@@ -870,7 +880,7 @@ int DLL_EXPORT __STDCALL setTemperature(long nodeIndex, double myT)
 
    if ((myT < 200) && (myT > 500)) return(PARAMETER_ERROR);
 
-   if (myNode->extra == NULL) return(MEMORY_ERROR);
+   if (! isHeatNode(nodeIndex)) return(MEMORY_ERROR);
 
    myNode[nodeIndex].extra->Heat->T = myT;
    myNode[nodeIndex].extra->Heat->oldT = myT;
@@ -1072,8 +1082,7 @@ double DLL_EXPORT __STDCALL getTemperature(long nodeIndex)
 {
     if (myNode == NULL) return(TOPOGRAPHY_ERROR);
     if ((nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
-    if (! myStructure.computeHeat) return (MISSING_DATA_ERROR);
-    if (myNode->extra == NULL) return (MEMORY_ERROR);
+    if (! isHeatNode(nodeIndex)) return (MEMORY_ERROR);
 
     return (myNode[nodeIndex].extra->Heat->T);
 }
@@ -1087,9 +1096,8 @@ double DLL_EXPORT __STDCALL getTemperature(long nodeIndex)
 float DLL_EXPORT __STDCALL getHeatFlux(long nodeIndex, short myDirection, int fluxType)
 {
     if (myNode == NULL) return(TOPOGRAPHY_ERROR);
-    if (myNode->extra == NULL) return (MEMORY_ERROR);
     if ((nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
-    if (! myStructure.computeHeat) return (MISSING_DATA_ERROR);
+    if (! isHeatNode(nodeIndex)) return (MEMORY_ERROR);
 
     float myMaxFlux = 0.;
     float myFlux;

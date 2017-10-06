@@ -179,7 +179,7 @@ void MainWindow::on_pushRunAllPeriod_clicked()
         return;
     }
 
-    getHourlyOutputAllPeriod(1, nodesNr, &myHeatOutput);
+    getHourlyOutputAllPeriod(0, nodesNr, &myHeatOutput);
 
     double myPIniHour, myPHours;
     double myT, myRH, myWS, myNR, myP;
@@ -215,9 +215,12 @@ void MainWindow::on_pushRunAllPeriod_clicked()
                 myP = 0.;
         }
 
+        if (myCurrentHour == 121)
+            double a=0.;
+
         runHeat1D(myT, myRH, myWS, myNR, myP);
 
-        getHourlyOutputAllPeriod(1, getNodesNumber(), &myHeatOutput);
+        getHourlyOutputAllPeriod(0, getNodesNumber(), &myHeatOutput);
 
         ui->prgBar->setValue(myCurrentHour);
 

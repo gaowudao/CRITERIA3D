@@ -361,9 +361,9 @@ void Plot::drawProfile(outputGroup graphType, Crit3DOut* myOut, Crit3DColorScale
     float minGraph, maxGraph, minSeries, maxSeries;
     minGraph = maxGraph = minSeries = maxSeries = NODATA;
 
-    for (int z=0; z<myOut->nrLayers; z++)
+    for (int z=0; z <= myOut->nrLayers; z++)
     {
-        myDepth = myOut->layerThickness * ((float)z + 0.5);
+        myDepth = - myOut->layerThickness * ((float)z - 0.5);
 
         myColor = myColorScale.getColor(z);
         myQColor = QColor(myColor->red, myColor->green, myColor->blue);

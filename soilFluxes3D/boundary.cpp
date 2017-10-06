@@ -25,7 +25,6 @@
     gantolini@arpae.emr.it
 */
 
-
 #include <stdio.h>
 #include <math.h>
 
@@ -97,7 +96,7 @@ double computeSoilSurfaceResistanceCG(double theta, double thetaSat)
  * \param i
  * \return latent heat (W m-2)
  */
-double computeAtmosphericSensibleFlow(long i)
+double computeAtmosphericSensibleFlux(long i)
 {
     if (myNode[i].boundary->Heat == NULL || ! myNode[myNode[i].up.index].isSurface)
         return 0;
@@ -139,6 +138,36 @@ double computeAtmosphericLatentFlux(long i)
     return myVaporFlow;
 }
 
+/*!
+ * \brief boundary vapor flux from surface water
+ * \param i
+ * \return vapor flux (kg m-2 s-1)
+ */
+double computeAtmosphericLatentFluxSurfaceWater(long i)
+{
+    if (! myNode[i].isSurface) return 0.;
+    if (&(myNode[i].down) == NULL) return 0.;
+
+    long downIndex = myNode[i].down.index;
+
+    if (myNode[downIndex].boundary->Heat == NULL || myNode[downIndex].boundary->type != BOUNDARY_HEAT_SURFACE) return 0.;
+
+    double PressSat, ConcVapSat, BoundaryVapor;
+
+    // atmospheric vapor content (kg m-3)
+    PressSat = SaturationVaporPressure(myNode[downIndex].boundary->Heat->temperature - ZEROCELSIUS);
+    ConcVapSat = VaporConcentrationFromPressure(PressSat, myNode[downIndex].boundary->Heat->temperature);
+    BoundaryVapor = ConcVapSat * (myNode[downIndex].boundary->Heat->relativeHumidity / 100.);
+
+    // surface water vapor content (kg m-3) (assuming water temperature is the same of atmosphere)
+    double myDeltaVapor = BoundaryVapor - ConcVapSat;
+
+    // kg m-2 s-1
+    // using aerodynamic conductance of index below (boundary for heat)
+    double myVaporFlow = myDeltaVapor * myNode[downIndex].boundary->Heat->aerodynamicConductance;
+
+    return myVaporFlow;
+}
 
 /*!
  * \brief atmospheric latent heat flux (evaporation/condensation)
@@ -154,8 +183,8 @@ double computeAtmosphericLatentHeatFlux(long i)
 
     // J kg-1
     double lambda = LatentHeatVaporization(myNode[i].extra->Heat->T - ZEROCELSIUS);
-    // waterFlow = vapor sink source (m3 s-1)
-    latentHeatFlow = myNode[i].boundary->waterFlow * WATER_DENSITY * (lambda + HEAT_CAPACITY_WATER_VAPOR * myNode[i].extra->Heat->T);
+    // waterFlow: vapor sink source (m3 s-1)
+    latentHeatFlow = myNode[i].boundary->waterFlow * WATER_DENSITY * lambda;
 
     return latentHeatFlow;
 }
@@ -263,8 +292,44 @@ void updateBoundaryWater(double deltaT)
             else if (myNode[i].boundary->type == BOUNDARY_HEAT_SURFACE)
             {
                 if (myStructure.computeHeat)
-                    myNode[i].boundary->waterFlow = computeAtmosphericLatentFlux(i) / WATER_DENSITY * myNode[i].up.area;
-            }
+                {
+                    long upIndex;
+/*
+                    double surfaceWaterFraction = 0.;
+                    if (&(myNode[i].up) != NULL)
+                    {
+                        upIndex = myNode[i].up.index;
+                        surfaceWaterFraction = getSurfaceWaterFraction(upIndex);
+                    }
+
+                    double evapFromSoil = computeAtmosphericLatentFlux(i) / WATER_DENSITY * myNode[i].up.area;
+
+                    // surface water
+                    if (surfaceWaterFraction > 0.)
+                    {
+                        double waterVolume = (myNode[upIndex].H - myNode[upIndex].z) * myNode[upIndex].volume_area;
+                        double evapFromSurface = computeAtmosphericLatentFluxSurfaceWater(upIndex) / WATER_DENSITY * myNode[i].up.area;
+
+                        evapFromSoil *= (1. - surfaceWaterFraction);
+                        evapFromSurface *= surfaceWaterFraction;
+
+                        evapFromSurface = max_value(evapFromSurface, -waterVolume / deltaT);
+
+                        if (myNode[upIndex].boundary != NULL)
+                            myNode[upIndex].boundary->waterFlow = evapFromSurface;
+                        else
+                            myNode[upIndex].Qw += evapFromSurface;
+
+                    }
+
+                    if (evapFromSoil < 0.)
+                        evapFromSoil = max_value(evapFromSoil, -(theta_from_Se(i) - myNode[i].Soil->Theta_r) * myNode[i].volume_area / deltaT);
+                    else
+                        evapFromSoil = min_value(evapFromSoil, (myNode[i].Soil->Theta_s - myNode[i].Soil->Theta_r) * myNode[i].volume_area / deltaT);
+
+                    myNode[i].boundary->waterFlow = evapFromSoil;
+*/                }
+            }            
 
             myNode[i].Qw += myNode[i].boundary->waterFlow;
         }
@@ -276,9 +341,9 @@ void updateBoundaryHeat()
 {
     double myWaterFlux, advTemperature, heatFlux;
 
-    for (long i = 0; i < myStructure.nrNodes; i++)
+    for (long i = 1; i < myStructure.nrNodes; i++)
     {
-        if (myNode[i].extra->Heat != NULL)
+        if (isHeatNode(i))
         {
             myNode[i].extra->Heat->Qh = myNode[i].extra->Heat->sinkSource;
 
@@ -294,11 +359,10 @@ void updateBoundaryHeat()
                     if (myNode[i].boundary->Heat->netIrradiance != NODATA)
                         myNode[i].boundary->Heat->radiativeFlux = myNode[i].boundary->Heat->netIrradiance;
 
-                    myNode[i].boundary->Heat->sensibleFlux += computeAtmosphericSensibleFlow(i);
+                    myNode[i].boundary->Heat->sensibleFlux += computeAtmosphericSensibleFlux(i);
 
                     if (myStructure.computeWater)
                         myNode[i].boundary->Heat->latentFlux += computeAtmosphericLatentHeatFlux(i) / myNode[i].up.area;
-
 
                     if (myStructure.computeWater)
                     {
@@ -308,8 +372,17 @@ void updateBoundaryHeat()
                         {
                             advTemperature = myNode[i].boundary->Heat->temperature;
                             heatFlux =  myWaterFlux * HEAT_CAPACITY_WATER * advTemperature / myNode[i].up.area;
-                            myNode[i].boundary->Heat->advectiveHeatFlux = heatFlux;
+                            myNode[i].boundary->Heat->advectiveHeatFlux += heatFlux;
                         }
+
+                        // advective heat from evaporation/condensation
+                        if (myNode[i].boundary->waterFlow < 0.)
+                            advTemperature = myNode[i].extra->Heat->T;
+                        else
+                            advTemperature = myNode[i].boundary->Heat->temperature;
+
+                        myNode[i].boundary->Heat->advectiveHeatFlux += myNode[i].boundary->waterFlow * WATER_DENSITY * HEAT_CAPACITY_WATER_VAPOR * advTemperature / myNode[i].up.area;
+
                     }
 
                     myNode[i].extra->Heat->Qh += myNode[i].up.area * (myNode[i].boundary->Heat->radiativeFlux +
@@ -342,7 +415,7 @@ void updateBoundaryHeat()
                         double deltaT = myNode[i].boundary->Heat->fixedTemperature - myNode[i].extra->Heat->T;
                         myNode[i].extra->Heat->Qh += boundaryHeatConductivity * deltaT / myNode[i].boundary->Heat->fixedTemperatureDepth * myNode[i].up.area;
                     }
-                }                
+                }
             }
         }
     }

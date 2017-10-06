@@ -1,6 +1,7 @@
 #ifndef HEAT_H
 #define HEAT_H
 
+bool isHeatNode(long i);
 double ThermalVaporFlux(long i, TlinkedNode *myLink, int myProcess, double timeStep, double timeStepWater);
 double ThermalLiquidFlux(long i, TlinkedNode *myLink, int myProcess, double timeStep, double timeStepWater);
 double IsothermalVaporConductivity(long i, double h, double myT);
@@ -14,7 +15,7 @@ void restoreHeat();
 void initializeBalanceHeat();
 void updateBalanceHeatWholePeriod();
 void initializeHeatFluxes(bool initHeat, bool initWater);
-void saveWaterFluxes(double timeStepWater);
+void saveWaterFluxes(double dtHeat, double timeStepWater);
 void saveHeatFlux(TlinkedNode* myLink, int fluxType, double myValue);
 float readHeatFlux(TlinkedNode* myLink, int fluxType);
 bool HeatComputation(double timeStep, double timeStepWater);

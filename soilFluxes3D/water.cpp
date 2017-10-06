@@ -212,9 +212,11 @@ bool computeFlux(long i, int matrixIndex, TlinkedNode *link, double deltaT, unsi
         vaporThermal = ThermalVaporFlux(i, link, PROCESS_WATER, NODATA, NODATA) / WATER_DENSITY;
         C0[i] += vaporThermal;
 
+        /*
         double liquidThermal;
         liquidThermal = ThermalLiquidFlux(i, link, PROCESS_WATER, NODATA, NODATA);
         C0[i] += liquidThermal;
+        */
     }
 
     return (true);

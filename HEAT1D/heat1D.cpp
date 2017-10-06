@@ -241,12 +241,6 @@ bool initializeHeat1D(long *myHourIni, long *myHourFin, bool useInputSoils)
                 myResult = soilFluxes3D::setWaterContent(indexNode, 0.);
                 if (myResult != CRIT3D_OK) printf("\n error in setWaterContent!");
             }
-
-            if (computeHeat)
-            {
-                myResult = soilFluxes3D::setTemperature(indexNode, 273.16 + initialTemperatureTop);
-                if (myResult != CRIT3D_OK) printf("\n error in setTemperature!");
-            }
         }
 
         // elementi sottosuperficiali
@@ -344,7 +338,7 @@ void setSinkSources(double myHourlyPrec)
 {
     for (long i=0; i<NodesNumber; i++)
     {
-        if (computeHeat) soilFluxes3D::setHeatSinkSource(i, 0);
+        if (computeHeat && i > 0) soilFluxes3D::setHeatSinkSource(i, 0);
 
         if (computeWater)
         {
@@ -373,6 +367,12 @@ Crit3DOut::Crit3DOut()
     nrLayers = 0;
     layerThickness = 0.;
 }
+
+bool isValid(double myValue)
+{
+    return (myValue != MEMORY_ERROR && myValue != MISSING_DATA_ERROR && myValue != INDEX_ERROR);
+}
+
 void getHourlyOutputAllPeriod(long firstIndex, long lastIndex, Crit3DOut *output)
 {
     long myIndex;
@@ -394,26 +394,38 @@ void getHourlyOutputAllPeriod(long firstIndex, long lastIndex, Crit3DOut *output
     {
         myPoint.setX(myIndex);
 
-        myValue = soilFluxes3D::getTemperature(myIndex) - 273.16;
+        myValue = soilFluxes3D::getTemperature(myIndex);
+        if (isValid(myValue)) myValue -= 273.16;
+        else myValue = NODATA;
         myPoint.setY(myValue);
         output->profileOutput[output->nrValues-1].temperature.push_back(myPoint);
 
         myValue = soilFluxes3D::getWaterContent(myIndex);
+        if (! isValid(myValue)) myValue = NODATA;
         myPoint.setY(myValue);
         output->profileOutput[output->nrValues-1].waterContent.push_back(myPoint);
 
         fluxTot = soilFluxes3D::getHeatFlux(myIndex, DOWN, HEATFLUX_TOTAL);
-        myPoint.setY(fluxTot == NODATA ? NODATA : fluxTot / mySurface);
+        if (isValid(fluxTot)) fluxTot /= mySurface;
+        else fluxTot = NODATA;
+        myPoint.setY(fluxTot);
         output->profileOutput[output->nrValues-1].totalHeatFlux.push_back(myPoint);
 
         fluxDiff = soilFluxes3D::getHeatFlux(myIndex, DOWN, HEATFLUX_DIFFUSIVE);
-        if (fluxDiff != NODATA) fluxDiff /= mySurface;
+        if (isValid(fluxDiff)) fluxDiff /= mySurface;
+        else fluxDiff = NODATA;
+
         fluxLtntIso = soilFluxes3D::getHeatFlux(myIndex, DOWN, HEATFLUX_LATENT_ISOTHERMAL);
-        if (fluxLtntIso != NODATA) fluxLtntIso /= mySurface;
+        if (isValid(fluxLtntIso)) fluxLtntIso /= mySurface;
+        else fluxLtntIso = NODATA;
+
         fluxLtntTh = soilFluxes3D::getHeatFlux(myIndex, DOWN, HEATFLUX_LATENT_THERMAL);
-        if (fluxLtntTh != NODATA) fluxLtntTh /= mySurface;
+        if (isValid(fluxLtntTh)) fluxLtntTh /= mySurface;
+        else fluxLtntTh = NODATA;
+
         fluxAdv = soilFluxes3D::getHeatFlux(myIndex, DOWN, HEATFLUX_ADVECTIVE);
-        if (fluxAdv != NODATA) fluxAdv /= mySurface;
+        if (isValid(fluxAdv)) fluxAdv /= mySurface;
+        else fluxAdv = NODATA;
 
         myPoint.setY(fluxDiff);
         output->profileOutput[output->nrValues-1].diffusiveHeatFlux.push_back(myPoint);
@@ -428,13 +440,20 @@ void getHourlyOutputAllPeriod(long firstIndex, long lastIndex, Crit3DOut *output
         output->profileOutput[output->nrValues-1].advectiveheatFlux.push_back(myPoint);
 
         watFluxIsoLiq = soilFluxes3D::getHeatFlux(myIndex, DOWN, WATERFLUX_LIQUID_ISOTHERMAL);
-        if (watFluxIsoLiq != NODATA) watFluxIsoLiq *= 1000.;
+        if (isValid(watFluxIsoLiq)) watFluxIsoLiq *= 1000.;
+        else watFluxIsoLiq = NODATA;
+
         watFluxThLiq  = soilFluxes3D::getHeatFlux(myIndex, DOWN, WATERFLUX_LIQUID_THERMAL);
-        if (watFluxThLiq != NODATA) watFluxThLiq *= 1000.;
+        if (isValid(watFluxThLiq)) watFluxThLiq *= 1000.;
+        else watFluxThLiq = NODATA;
+
         watFluxIsoVap = soilFluxes3D::getHeatFlux(myIndex, DOWN, WATERFLUX_VAPOR_ISOTHERMAL);
-        if (watFluxIsoVap != NODATA) watFluxIsoVap *= 1000. / WATER_DENSITY;
+        if (isValid(watFluxIsoVap)) watFluxIsoVap *= 1000. / WATER_DENSITY;
+        else watFluxIsoVap = NODATA;
+
         watFluxThVap = soilFluxes3D::getHeatFlux(myIndex, DOWN, WATERFLUX_VAPOR_THERMAL);
-        if (watFluxThVap != NODATA) watFluxThVap *= 1000. / WATER_DENSITY;
+        if (isValid(watFluxThVap)) watFluxThVap *= 1000. / WATER_DENSITY;
+        else watFluxThVap = NODATA;
 
         myPoint.setY(watFluxIsoLiq);
         output->profileOutput[output->nrValues-1].waterIsothermalLiquidFlux.push_back(myPoint);
@@ -447,7 +466,6 @@ void getHourlyOutputAllPeriod(long firstIndex, long lastIndex, Crit3DOut *output
 
         myPoint.setY(watFluxIsoLiq);
         output->profileOutput[output->nrValues-1].waterThermalVaporFlux.push_back(myPoint);
-
     }
 
     myPoint.setX(output->landSurfaceOutput.size() + 1);
@@ -497,7 +515,7 @@ QString Crit3DOut::getTextOutput(bool getTemp, bool getWater, bool getHeatFlux, 
     float myValue;
 
     if (getTemp)
-        for (int j=0; j<nrLayers; j++)
+        for (int j=1; j<=nrLayers; j++)
         {
             myString.append(QString("TempSoil_"));
             myString.append(QString::number(j));
@@ -505,7 +523,7 @@ QString Crit3DOut::getTextOutput(bool getTemp, bool getWater, bool getHeatFlux, 
         }
 
     if (getWater)
-        for (int j=0; j<nrLayers; j++)
+        for (int j=0; j<=nrLayers; j++)
         {
             myString.append(QString("WaterContent_"));
             myString.append(QString::number(j));
@@ -513,7 +531,7 @@ QString Crit3DOut::getTextOutput(bool getTemp, bool getWater, bool getHeatFlux, 
         }
 
     if (getHeatFlux)
-        for (int j=0; j<nrLayers; j++)
+        for (int j=1; j<=nrLayers; j++)
         {
             myString.append(QString("HeatFlux_"));
             myString.append(QString::number(j));
@@ -545,7 +563,7 @@ QString Crit3DOut::getTextOutput(bool getTemp, bool getWater, bool getHeatFlux, 
     for (int i=0; i<nrValues; i++)
     {
         if (getTemp)
-            for (int j=0; j<nrLayers; j++)
+            for (int j=1; j<=nrLayers; j++)
             {
                 myValue = profileOutput[i].temperature[j].y();
                 myString.append(QString::number(myValue,'f',4));
@@ -553,7 +571,7 @@ QString Crit3DOut::getTextOutput(bool getTemp, bool getWater, bool getHeatFlux, 
             }
 
         if (getWater)
-            for (int j=0; j<nrLayers; j++)
+            for (int j=0; j<=nrLayers; j++)
             {
                 myValue = profileOutput[i].waterContent[j].y();
                 myString.append(QString::number(myValue,'f',4));
@@ -561,7 +579,7 @@ QString Crit3DOut::getTextOutput(bool getTemp, bool getWater, bool getHeatFlux, 
             }
 
         if (getHeatFlux)
-            for (int j=0; j<nrLayers; j++)
+            for (int j=1; j<=nrLayers; j++)
             {
                 myValue = profileOutput[i].totalHeatFlux[j].y();
                 myString.append(QString::number(myValue,'f',4));

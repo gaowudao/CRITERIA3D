@@ -153,7 +153,7 @@ double GaussSeidelIterationHeat()
     double delta, new_x, norma_inf = 0.;
     short j;
 
-    for (long i = 0; i < myStructure.nrNodes; i++)
+    for (long i = 1; i < myStructure.nrNodes; i++)
         if (!myNode[i].isSurface)
         {
             if (A[i][0].val != 0.)
