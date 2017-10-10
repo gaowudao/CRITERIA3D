@@ -45,7 +45,7 @@ void cleanArrays()
     /*! free arrays */
     if (b != NULL){ free(b); b = NULL; }
     if (C != NULL){ free(C); C = NULL; }
-    if (C0 != NULL){ free(C0); C0 = NULL; }
+    if (invariantFlux != NULL){ free(invariantFlux); invariantFlux = NULL; }
     if (X != NULL) { free(X); X = NULL; }
     }
 
@@ -101,8 +101,8 @@ int initializeArrays()
     for (n = 0; n < myStructure.nrNodes; n++) C[n] = 0.;
 
     /*! mass diagonal matrix */
-    C0 = (double *) calloc(myStructure.nrNodes, sizeof(double));
-    for (n = 0; n < myStructure.nrNodes; n++) C0[n] = 0.;
+    invariantFlux = (double *) calloc(myStructure.nrNodes, sizeof(double));
+    for (n = 0; n < myStructure.nrNodes; n++) invariantFlux[n] = 0.;
 
     if (A == NULL) return(MEMORY_ERROR);
     else return(CRIT3D_OK);

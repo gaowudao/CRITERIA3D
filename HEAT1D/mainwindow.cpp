@@ -179,7 +179,7 @@ void MainWindow::on_pushRunAllPeriod_clicked()
         return;
     }
 
-    getHourlyOutputAllPeriod(0, nodesNr, &myHeatOutput);
+    //getHourlyOutputAllPeriod(0, nodesNr, &myHeatOutput);
 
     double myPIniHour, myPHours;
     double myT, myRH, myWS, myNR, myP;
@@ -214,9 +214,6 @@ void MainWindow::on_pushRunAllPeriod_clicked()
             else
                 myP = 0.;
         }
-
-        if (myCurrentHour == 121)
-            double a=0.;
 
         runHeat1D(myT, myRH, myWS, myNR, myP);
 
@@ -280,6 +277,7 @@ void MainWindow::on_pushLoadFileSoil_clicked()
 
         soilDataLoaded = true;
         ui->chkUseInputSoil->setEnabled(true);
+        ui->chkUseInputSoil->setChecked(true);
     }
 
     myFile.close();
@@ -373,6 +371,7 @@ void MainWindow::on_pushLoadFileMeteo_clicked()
 
         meteoDataLoaded = true;
         ui->chkUseInputMeteo->setEnabled(true);
+        ui->chkUseInputMeteo->setChecked(true);
     }
 
     myFile.close();

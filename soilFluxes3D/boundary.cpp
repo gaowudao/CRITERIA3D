@@ -291,10 +291,11 @@ void updateBoundaryWater(double deltaT)
 
             else if (myNode[i].boundary->type == BOUNDARY_HEAT_SURFACE)
             {
+
                 if (myStructure.computeHeat)
                 {
                     long upIndex;
-/*
+
                     double surfaceWaterFraction = 0.;
                     if (&(myNode[i].up) != NULL)
                     {
@@ -328,7 +329,7 @@ void updateBoundaryWater(double deltaT)
                         evapFromSoil = min_value(evapFromSoil, (myNode[i].Soil->Theta_s - myNode[i].Soil->Theta_r) * myNode[i].volume_area / deltaT);
 
                     myNode[i].boundary->waterFlow = evapFromSoil;
-*/                }
+                }
             }            
 
             myNode[i].Qw += myNode[i].boundary->waterFlow;

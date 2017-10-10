@@ -80,14 +80,25 @@ double computeHeatStorage(double timeStepHeat, double timeStepWater)
     return myHeatStorage;
 }
 
+/*!
+ * \brief computes sum of heat sink/source (J)
+ * \param deltaT
+ * \return result
+ */
+double sumHeatFlow(double deltaT)
+{
+    double sum = 0.0;
+    for (long n = 1; n < myStructure.nrNodes; n++)
+    {
+        if (myNode[n].extra->Heat->Qh != 0.)
+            sum += myNode[n].extra->Heat->Qh * deltaT;
+    }
+    return (sum);
+}
+
 void computeHeatBalance(double myTimeStep, double timeStepWater)
 {
-    // heat sink/source total
-    double myHeatSinkSourceSum = 0.;
-    for (long i = 1; i < myStructure.nrNodes; i++)
-        myHeatSinkSourceSum += myNode[i].extra->Heat->Qh * myTimeStep;
-
-    balanceCurrentTimeStep.sinkSourceHeat = myHeatSinkSourceSum;
+    balanceCurrentTimeStep.sinkSourceHeat = sumHeatFlow(myTimeStep);
 
     balanceCurrentTimeStep.storageHeat = computeHeatStorage(myTimeStep, timeStepWater);
 
@@ -648,7 +659,7 @@ bool computeHeatFlux(long i, int myMatrixIndex, TlinkedNode *myLink, double time
     A[i][myMatrixIndex].index = myLinkIndex;
     A[i][myMatrixIndex].val = myConduction;
 
-    C0[i] += myAdvectiveFlux + myLatentFlux;
+    invariantFlux[i] += myAdvectiveFlux + myLatentFlux;
 
     if (fluxCourant != 0)
     {
@@ -891,7 +902,7 @@ bool HeatComputation(double timeStep, double timeStepWater)
 
     for (i = 1; i < myStructure.nrNodes; i++)
     {
-        C0[i] = 0.;
+        invariantFlux[i] = 0.;
 
         myH = getH_timeStep(i, timeStep, timeStepWater);
 
@@ -936,7 +947,7 @@ bool HeatComputation(double timeStep, double timeStepWater)
         A[i][0].val = SoilHeatCapacity(i, avgh, myNode[i].extra->Heat->T) * myNode[i].volume_area / timeStep + sum;
 
         /*! b vector (constant terms) */
-        b[i] = C[i] * myNode[i].extra->Heat->oldT / timeStep - heatCapacityVar / timeStep + myNode[i].extra->Heat->Qh + C0[i] + sumFlow0;
+        b[i] = C[i] * myNode[i].extra->Heat->oldT / timeStep - heatCapacityVar / timeStep + myNode[i].extra->Heat->Qh + invariantFlux[i] + sumFlow0;
 
         // preconditioning
         if (A[i][0].val > 0)
@@ -983,7 +994,11 @@ bool HeatComputation(double timeStep, double timeStepWater)
 
 	// save old temperatures
     for (long n = 1; n < myStructure.nrNodes; n++)
+    {
+        if (isnan(myNode[n].extra->Heat->T))
+            myNode[n].extra->Heat->T = 275;
         myNode[n].extra->Heat->oldT = myNode[n].extra->Heat->T;
+    }
 
     return (true);
 }

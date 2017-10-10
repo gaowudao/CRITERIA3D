@@ -309,11 +309,11 @@ bool initializeHeat1D(long *myHourIni, long *myHourFin, bool useInputSoils)
 		if (indexNode < NodesNumber - 1)
 		{
 			myResult = soilFluxes3D::setNodeLink(indexNode, indexNode + 1 , DOWN, mySurface);
-			if (myResult != CRIT3D_OK) printf("\n error in SetNode int sotto!");
+            if (myResult != CRIT3D_OK) printf("\n error in SetNode sotto!");
 		}																 
     }
 
-    soilFluxes3D::setNumericalParameters(1, 600, 100, 10, 12, 5);
+    soilFluxes3D::setNumericalParameters(0.1, 600, 100, 10, 12, 8);
 
     soilFluxes3D::initializeBalance();
 
