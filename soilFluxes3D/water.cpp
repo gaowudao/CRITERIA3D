@@ -61,9 +61,6 @@ double getWaterExchange(long i, TlinkedNode *link, double deltaT)
 }
 
 
-
-
-
 /*!
  * \brief runoff
  * Manning formulation
@@ -378,10 +375,10 @@ bool waterFlowComputation(double deltaT)
 }
 
 
- void restoreWater()
- {
+void restoreWater()
+{
 
-	 for (long n = 0; n < myStructure.nrNodes; n++)
-			 myNode[n].H = myNode[n].oldH;
+    for (long n = 0; n < myStructure.nrNodes; n++)
+         myNode[n].H = myNode[n].oldH;
 
- }
+}
