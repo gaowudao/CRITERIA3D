@@ -107,7 +107,8 @@
 
         double storageHeat;
         double sinkSourceHeat;
-        double heatMBE, heatMBR;
+        double heatMBE = 0.0;
+        double heatMBR = 1.0;
         } ;
 
      extern TCrit3DStructure myStructure;
@@ -115,7 +116,7 @@
      extern TCrit3Dnode *myNode;
      extern TmatrixElement **A;
      extern double *b, *C, *X;
-     extern double *C0;         //array accessorio per flussi avvettivi e latenti
+     extern double *invariantFlux;         //array accessorio per flussi avvettivi e latenti
      extern double Courant;
 
      extern Tbalance balanceCurrentTimeStep, balancePreviousTimeStep, balanceCurrentPeriod, balanceWholePeriod;

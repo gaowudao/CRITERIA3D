@@ -201,17 +201,16 @@ bool computeFlux(long i, int matrixIndex, TlinkedNode *link, double deltaT, unsi
     A[i][matrixIndex].index = j;
     A[i][matrixIndex].val = val;
 
-    // thermal vapor flow
     if (myStructure.computeHeat &&
         ! myNode[i].isSurface && ! myNode[j].isSurface)
     {
         double vaporThermal;
         vaporThermal = ThermalVaporFlux(i, link, PROCESS_WATER, NODATA, NODATA) / WATER_DENSITY;
-        C0[i] += vaporThermal;
+        invariantFlux[i] += vaporThermal;
 
         double liquidThermal;
         liquidThermal = ThermalLiquidFlux(i, link, PROCESS_WATER, NODATA, NODATA);
-        C0[i] += liquidThermal;
+        invariantFlux[i] += liquidThermal;
     }
 
     return (true);
@@ -221,9 +220,9 @@ bool computeFlux(long i, int matrixIndex, TlinkedNode *link, double deltaT, unsi
 bool waterFlowComputation(double deltaT)
  {
      bool isValidStep;
-     long i;  short j;
-     double sum;
-     double dThetadH;
+     long i = 0;
+     short j = 0;
+     double dThetadH, dthetavdh;
      double avgTemperature;
 
      int approximationNr = 0;
@@ -241,7 +240,7 @@ bool waterFlowComputation(double deltaT)
         /*! hydraulic conductivity and theta derivative */
         for (i = 0; i < myStructure.nrNodes; i++)
         {
-            C0[i] = 0.;
+            invariantFlux[i] = 0.;
             if (!myNode[i].isSurface)
             {
                  myNode[i].k = computeK(i);
@@ -252,14 +251,14 @@ bool waterFlowComputation(double deltaT)
                  if (myStructure.computeHeat)
                  {
                      avgTemperature = getTMean(i);
-                     double dthetavdh = dThetav_dH(i, avgTemperature, dThetadH);
+                     dthetavdh = dThetav_dH(i, avgTemperature, dThetadH);
                      C[i] += myNode[i].volume_area  * dthetavdh;
                  }
             }
         }
 
         // update boundary conditions
-        //updateBoundaryWater(deltaT);
+        // updateBoundaryWater(deltaT);
 
         /*! computes the matrix elements */
         for (i = 0; i < myStructure.nrNodes; i++)
@@ -273,7 +272,8 @@ bool waterFlowComputation(double deltaT)
             /*! closure */
             while (j < myStructure.maxNrColumns) A[i][j++].index = NOLINK;
 
-            j = 1; sum = 0.;
+            j = 1;
+            double sum = 0.;
             while ((j < myStructure.maxNrColumns) && (A[i][j].index != NOLINK))
             {
                 sum += A[i][j].val;
@@ -285,7 +285,7 @@ bool waterFlowComputation(double deltaT)
             A[i][0].val = C[i]/deltaT + sum;
 
             /*! b vector(vector of constant terms) */
-            b[i] = ((C[i] / deltaT) * myNode[i].oldH) + myNode[i].Qw + C0[i];
+            b[i] = ((C[i] / deltaT) * myNode[i].oldH) + myNode[i].Qw + invariantFlux[i];
 
             /*! preconditioning */
             j = 1;

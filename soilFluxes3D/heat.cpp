@@ -42,24 +42,65 @@
 
 double CourantHeat, fluxCourant;
 
-double computeHeatStorage()
+bool isHeatNode(long i)
+{
+    return (myStructure.computeHeat &&
+            myNode != NULL &&
+            myNode[i].extra != NULL &&
+            myNode[i].extra->Heat != NULL &&
+            ! myNode[i].isSurface);
+}
+
+bool isHeatLinkedNode(TlinkedNode* myLink)
+{
+    return (myStructure.computeHeat &&
+            myLink != NULL &&
+            myLink->linkedExtra != NULL &&
+            myLink->linkedExtra->heatFlux != NULL);
+}
+
+double getH_timeStep(long i, double timeStep, double timeStepWater)
+{
+    return (myNode[i].H - myNode[i].oldH) / timeStepWater * timeStep + myNode[i].oldH;
+}
+
+double computeHeatStorage(double timeStepHeat, double timeStepWater)
 { // [J]
     double myHeatStorage = 0.;
+    double myH;
     for (long i = 1; i < myStructure.nrNodes; i++)
-        myHeatStorage += soilFluxes3D::getHeat(i, getHMean(i) - myNode[i].z);
+    {
+        if (timeStepHeat != NODATA && timeStepWater != NODATA)
+            myH = getH_timeStep(i, timeStepHeat, timeStepWater);
+        else
+            myH = myNode[i].H;
+
+        myHeatStorage += soilFluxes3D::getHeat(i, myH - myNode[i].z);
+    }
     return myHeatStorage;
 }
 
-void computeHeatBalance(double myTimeStep)
+/*!
+ * \brief computes sum of heat sink/source (J)
+ * \param deltaT
+ * \return result
+ */
+double sumHeatFlow(double deltaT)
 {
-    // heat sink/source total
-    double myHeatSinkSourceSum = 0.;
-    for (long i = 1; i < myStructure.nrNodes; i++)
-        myHeatSinkSourceSum += myNode[i].extra->Heat->Qh * myTimeStep;
+    double sum = 0.0;
+    for (long n = 1; n < myStructure.nrNodes; n++)
+    {
+        if (myNode[n].extra->Heat->Qh != 0.)
+            sum += myNode[n].extra->Heat->Qh * deltaT;
+    }
+    return (sum);
+}
 
-    balanceCurrentTimeStep.sinkSourceHeat = myHeatSinkSourceSum;
+void computeHeatBalance(double myTimeStep, double timeStepWater)
+{
+    balanceCurrentTimeStep.sinkSourceHeat = sumHeatFlow(myTimeStep);
 
-    balanceCurrentTimeStep.storageHeat = computeHeatStorage();
+    balanceCurrentTimeStep.storageHeat = computeHeatStorage(myTimeStep, timeStepWater);
 
     double deltaHeatStorage = balanceCurrentTimeStep.storageHeat - balancePreviousTimeStep.storageHeat;
     balanceCurrentTimeStep.heatMBE = deltaHeatStorage - balanceCurrentTimeStep.sinkSourceHeat;
@@ -70,10 +111,7 @@ void computeHeatBalance(double myTimeStep)
 
 float readHeatFlux(TlinkedNode* myLink, int fluxType)
 {
-    if (myLink == NULL) return NODATA;
-    if (myLink->linkedExtra == NULL) return NODATA;
-    if (myLink->linkedExtra->heatFlux == NULL) return NODATA;
-
+    if (! isHeatLinkedNode(myLink)) return NODATA;
 
     if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_TOTAL && fluxType == HEATFLUX_TOTAL)
         return myLink->linkedExtra->heatFlux->fluxes[HEATFLUX_TOTAL];
@@ -94,9 +132,7 @@ float readHeatFlux(TlinkedNode* myLink, int fluxType)
 
 void saveHeatFlux(TlinkedNode* myLink, int fluxType, double myValue)
 {
-    if (myLink == NULL) return;
-    if (myLink->linkedExtra == NULL) return;
-    if (myLink->linkedExtra->heatFlux == NULL) return;
+    if (! isHeatLinkedNode(myLink)) return;
 
     if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_NONE) return;
 
@@ -387,11 +423,6 @@ double SoilHeatConductivity(long i, double T, double h)
     return myConductivity;
 }
 
-double getH_timeStep(long i, double timeStep, double timeStepWater)
-{
-    return (myNode[i].H - myNode[i].oldH) / timeStepWater * timeStep + myNode[i].oldH;
-}
-
 /*!
  * \brief [m3 s-1] Thermal liquid flux
  * \param i
@@ -608,28 +639,27 @@ bool computeHeatFlux(long i, int myMatrixIndex, TlinkedNode *myLink, double time
     double myConduction, myAdvectiveFlux, myLatentFlux;
     double nodeDistance;
 
+    if (! isHeatNode(myLinkIndex)) return false;
+
     myConduction = 0.;
     myAdvectiveFlux = 0.;
     myLatentFlux = 0.;
     fluxCourant = 0.;
 
-    if (!myNode[myLinkIndex].isSurface)
+    myConduction = Conduction(i, myLink, timeStep, timeStepWater);
+    if (myStructure.computeWater)
     {
-        myConduction = Conduction(i, myLink, timeStep, timeStepWater);
-        if (myStructure.computeWater)
-        {
-            myLatentFlux = IsothermalLatentHeatFlux(i, myLink, timeStep, timeStepWater);
-            saveHeatFlux(myLink, HEATFLUX_LATENT_ISOTHERMAL, myLatentFlux);
+        myLatentFlux = IsothermalLatentHeatFlux(i, myLink, timeStep, timeStepWater);
+        saveHeatFlux(myLink, HEATFLUX_LATENT_ISOTHERMAL, myLatentFlux);
 
-            myAdvectiveFlux = AdvectiveFlux(i, myLink);
-            //saveHeatFlux(myLink, HEATFLUX_ADVECTIVE, myAdvection);
-        }
+        myAdvectiveFlux = AdvectiveFlux(i, myLink);
+        //saveHeatFlux(myLink, HEATFLUX_ADVECTIVE, myAdvection);
     }
 
     A[i][myMatrixIndex].index = myLinkIndex;
     A[i][myMatrixIndex].val = myConduction;
 
-    C0[i] += myAdvectiveFlux + myLatentFlux;
+    invariantFlux[i] += myAdvectiveFlux + myLatentFlux;
 
     if (fluxCourant != 0)
     {
@@ -641,7 +671,7 @@ bool computeHeatFlux(long i, int myMatrixIndex, TlinkedNode *myLink, double time
 }
 
 // should be called only BEFORE heat computation, since A matrix should contain water flux values
-void saveNodeWaterFlux(long i, TlinkedNode *link, double timeStepWater)
+void saveNodeWaterFlux(long i, TlinkedNode *link, double timeStepHeat, double timeStepWater)
 {
     if (link == NULL) return;
 
@@ -652,20 +682,24 @@ void saveNodeWaterFlux(long i, TlinkedNode *link, double timeStepWater)
     double thermLiqFlux = 0.;
     double thermVapFlux = 0.;
 
+    double avgH, avgHLink;
+    avgH = getH_timeStep(i, timeStepHeat, timeStepWater);
+    avgHLink = getH_timeStep(link->index, timeStepHeat, timeStepWater);
+
     double matrixValue = getMatrixValue(i, link);
-    if (matrixValue != INDEX_ERROR) isothLiqFlux = matrixValue * (myNode[i].H - myNode[link->index].H);
+    if (matrixValue != INDEX_ERROR) isothLiqFlux = matrixValue * (avgH - avgHLink);
 
     if (!myNode[i].isSurface && ! myNode[link->index].isSurface)
     {
         // compute isothermal vapor flux and subtract from total water flux
         // (because fluxLiquid is computed from A matrix which include isothermal vapor flux component)
-        isothVapFlux = IsothermalVaporFlux(i, link, timeStepWater, timeStepWater);
+        isothVapFlux = IsothermalVaporFlux(i, link, timeStepHeat, timeStepWater);
 
         // thermal liquid flux
-        thermLiqFlux = ThermalLiquidFlux(i, link, PROCESS_HEAT, timeStepWater, timeStepWater);
+        thermLiqFlux = ThermalLiquidFlux(i, link, PROCESS_HEAT, timeStepHeat, timeStepWater);
 
         // thermal vapor flux
-        thermVapFlux = ThermalVaporFlux(i, link, PROCESS_HEAT, timeStepWater, timeStepWater);
+        thermVapFlux = ThermalVaporFlux(i, link, PROCESS_HEAT, timeStepHeat, timeStepWater);
     }
 
     fluxLiquid = isothLiqFlux - isothVapFlux / WATER_DENSITY + thermLiqFlux;
@@ -685,22 +719,22 @@ void saveNodeWaterFlux(long i, TlinkedNode *link, double timeStepWater)
     return;
 }
 
-void saveWaterFluxes(double dtWater)
+void saveWaterFluxes(double dtHeat, double dtWater)
 {
     for (long i = 0; i < myStructure.nrNodes; i++)
         {
             if (&myNode[i].up != NULL)
                 if (myNode[i].up.linkedExtra != NULL)
-                    saveNodeWaterFlux(i, &myNode[i].up, dtWater);
+                    saveNodeWaterFlux(i, &myNode[i].up, dtHeat, dtWater);
 
             if (&myNode[i].down != NULL)
                 if (myNode[i].down.linkedExtra != NULL)
-                    saveNodeWaterFlux(i, &myNode[i].down, dtWater);
+                    saveNodeWaterFlux(i, &myNode[i].down, dtHeat, dtWater);
 
             for (short j = 0; j < myStructure.nrLateralLinks; j++)
                 if (&myNode[i].lateral[j] != NULL)
                     if (myNode[i].lateral[j].linkedExtra != NULL)
-                        saveNodeWaterFlux(i, &myNode[i].lateral[j], dtWater);
+                        saveNodeWaterFlux(i, &myNode[i].lateral[j], dtHeat, dtWater);
 
         }
 }
@@ -708,35 +742,34 @@ void saveWaterFluxes(double dtWater)
 void saveNodeHeatFlux(long myIndex, TlinkedNode *myLink, double timeStep, double timeStepWater)
 // [W] heat flow between node myNode[myIndex] and link node myLink
 {
-   if (myLink != NULL && ! myNode[myLink->index].isSurface)
-   {
-        long myLinkIndex = (*myLink).index;
-        double myDiffHeat, myA;
+   if (! isHeatLinkedNode(myLink)) return;
 
-        int j = 1;
-        while ((j < myStructure.maxNrColumns) && (A[myIndex][j].index != NOLINK) && (A[myIndex][j].index != myLinkIndex)) j++;
+    long myLinkIndex = (*myLink).index;
+    double myDiffHeat, myA;
 
-        if (A[myIndex][j].index == myLinkIndex)
+    int j = 1;
+    while ((j < myStructure.maxNrColumns) && (A[myIndex][j].index != NOLINK) && (A[myIndex][j].index != myLinkIndex)) j++;
+
+    if (A[myIndex][j].index == myLinkIndex)
+    {
+        myA = (A[myIndex][j].val * A[myIndex][0].val);
+        myDiffHeat = myA * (myNode[myIndex].extra->Heat->T - myNode[myLinkIndex].extra->Heat->T) * myParameters.heatWeightingFactor;
+        myDiffHeat += myA * (myNode[myIndex].extra->Heat->oldT - myNode[myLinkIndex].extra->Heat->oldT) * (1. - myParameters.heatWeightingFactor);
+
+        // when saving separate fluxes, thermal latent heat has to be subtracted from diffusive,
+        // where is incorporated (see AirHeatConductivity)
+        if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_ALL)
         {
-            myA = (A[myIndex][j].val * A[myIndex][0].val);
-            myDiffHeat = myA * (myNode[myIndex].extra->Heat->T - myNode[myLinkIndex].extra->Heat->T) * myParameters.heatWeightingFactor;
-            myDiffHeat += myA * (myNode[myIndex].extra->Heat->oldT - myNode[myLinkIndex].extra->Heat->oldT) * (1. - myParameters.heatWeightingFactor);
-
-            // when saving separate fluxes, thermal latent heat has to be subtracted from diffusive,
-            // where is incorporated (see AirHeatConductivity)
-            if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_ALL)
-            {
-                double thermalLatentFlux = ThermalVaporFlux(myIndex, myLink, PROCESS_HEAT, timeStep, timeStepWater);
-                thermalLatentFlux *= LatentHeatVaporization(myNode[myIndex].extra->Heat->T - ZEROCELSIUS);
-                saveHeatFlux(myLink, HEATFLUX_LATENT_THERMAL, thermalLatentFlux);
-                saveHeatFlux(myLink, HEATFLUX_DIFFUSIVE, myDiffHeat - thermalLatentFlux);
-            }
-            else
-            {
-                saveHeatFlux(myLink, HEATFLUX_TOTAL, myDiffHeat);
-            }
+            double thermalLatentFlux = ThermalVaporFlux(myIndex, myLink, PROCESS_HEAT, timeStep, timeStepWater);
+            thermalLatentFlux *= LatentHeatVaporization(myNode[myIndex].extra->Heat->T - ZEROCELSIUS);
+            saveHeatFlux(myLink, HEATFLUX_LATENT_THERMAL, thermalLatentFlux);
+            saveHeatFlux(myLink, HEATFLUX_DIFFUSIVE, myDiffHeat - thermalLatentFlux);
         }
-   }
+        else
+        {
+            saveHeatFlux(myLink, HEATFLUX_TOTAL, myDiffHeat);
+        }
+    }
 }
 
 void updateHeatFluxes(double timeStep, double timeStepWater)
@@ -767,9 +800,9 @@ void updateBalanceHeat()
     balanceCurrentPeriod.sinkSourceHeat += balanceCurrentTimeStep.sinkSourceHeat;
 }
 
-bool heatBalance(double timeStep)
+bool heatBalance(double timeStep, double timeStepWater)
 {
-    computeHeatBalance(timeStep);
+    computeHeatBalance(timeStep, timeStepWater);
     return ((fabs(1.-balanceCurrentTimeStep.heatMBR) < myParameters.MBRThreshold));
 }
 
@@ -788,7 +821,7 @@ void initializeBalanceHeat()
      balanceCurrentPeriod.heatMBR = 1.;
      balanceWholePeriod.heatMBR = 1.;
 
-     balanceWholePeriod.storageHeat = computeHeatStorage();
+     balanceWholePeriod.storageHeat = computeHeatStorage(NODATA, NODATA);
      balanceCurrentTimeStep.storageHeat = balanceWholePeriod.storageHeat;
      balancePreviousTimeStep.storageHeat = balanceWholePeriod.storageHeat;
      balanceCurrentPeriod.storageHeat = balanceWholePeriod.storageHeat;
@@ -817,7 +850,7 @@ void updateBalanceHeatWholePeriod()
 
 void restoreHeat()
 {
-    for (long i = 0; i < myStructure.nrNodes; i++)
+    for (long i = 1; i < myStructure.nrNodes; i++)
         myNode[i].extra->Heat->T = myNode[i].extra->Heat->oldT;
 }
 
@@ -827,7 +860,7 @@ void initializeHeatFluxes(bool initHeat, bool initWater)
     {
         initializeNodeHeatFlux(myNode[n].up.linkedExtra, initHeat, initWater);
         initializeNodeHeatFlux(myNode[n].down.linkedExtra, initHeat, initWater);
-        for (short i = 0; i < myStructure.nrLateralLinks; i++)
+        for (short i = 1; i < myStructure.nrLateralLinks; i++)
            initializeNodeHeatFlux(myNode[n].lateral[i].linkedExtra, initHeat, initWater);
     }
 }
@@ -869,7 +902,7 @@ bool HeatComputation(double timeStep, double timeStepWater)
 
     for (i = 1; i < myStructure.nrNodes; i++)
     {
-        C0[i] = 0.;
+        invariantFlux[i] = 0.;
 
         myH = getH_timeStep(i, timeStep, timeStepWater);
 
@@ -914,7 +947,7 @@ bool HeatComputation(double timeStep, double timeStepWater)
         A[i][0].val = SoilHeatCapacity(i, avgh, myNode[i].extra->Heat->T) * myNode[i].volume_area / timeStep + sum;
 
         /*! b vector (constant terms) */
-        b[i] = C[i] * myNode[i].extra->Heat->oldT / timeStep - heatCapacityVar / timeStep + myNode[i].extra->Heat->Qh + C0[i] + sumFlow0;
+        b[i] = C[i] * myNode[i].extra->Heat->oldT / timeStep - heatCapacityVar / timeStep + myNode[i].extra->Heat->Qh + invariantFlux[i] + sumFlow0;
 
         // preconditioning
         if (A[i][0].val > 0)
@@ -954,14 +987,18 @@ bool HeatComputation(double timeStep, double timeStepWater)
         if (myParameters.current_delta_t > myParameters.delta_t_min) return false;
     }*/
 
-    heatBalance(timeStep);
+    heatBalance(timeStep, timeStepWater);
     updateBalanceHeat();
 
     updateHeatFluxes(timeStep, timeStepWater);
 
 	// save old temperatures
     for (long n = 1; n < myStructure.nrNodes; n++)
+    {
+        if (isnan(myNode[n].extra->Heat->T))
+            myNode[n].extra->Heat->T = 275;
         myNode[n].extra->Heat->oldT = myNode[n].extra->Heat->T;
+    }
 
     return (true);
 }

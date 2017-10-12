@@ -45,7 +45,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -106,7 +106,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>0.5</string>
+       <string>1</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_2">
@@ -135,7 +135,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>0.05</string>
+       <string>0.02</string>
       </property>
      </widget>
      <widget class="QGroupBox" name="groupBox_5">
@@ -160,7 +160,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>0.75</string>
+        <string>0.5</string>
        </property>
       </widget>
       <widget class="QLineEdit" name="lineEditIniTTop">
@@ -173,7 +173,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>15</string>
+        <string>12</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_16">
@@ -225,7 +225,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>15</string>
+        <string>12</string>
        </property>
       </widget>
      </widget>
@@ -563,7 +563,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>15</string>
+        <string>12</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_25">

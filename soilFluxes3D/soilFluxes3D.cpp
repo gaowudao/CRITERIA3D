@@ -25,7 +25,6 @@
     gantolini@arpae.emr.it
 */
 
-
 #include <stdio.h>
 #include <math.h>
 #include <malloc.h>
@@ -50,7 +49,7 @@ TCrit3DStructure myStructure;
 TCrit3Dnode *myNode = NULL;
 TmatrixElement **A = NULL;
 
-double *C0 = NULL;
+double *invariantFlux = NULL;
 double *C = NULL;
 double *X = NULL;
 double *b = NULL;
@@ -223,7 +222,7 @@ namespace soilFluxes3D {
 		initializeBoundary(myNode[myIndex].boundary, boundaryType, slope);
 	}
 
-    if (myStructure.computeHeat || myStructure.computeSolutes)
+    if ((myStructure.computeHeat || myStructure.computeSolutes) && ! isSurface)
     {
         myNode[myIndex].extra = new(TCrit3DnodeExtra);
         initializeExtra(myNode[myIndex].extra, myStructure.computeHeat, myStructure.computeSolutes);
@@ -815,7 +814,7 @@ namespace soilFluxes3D {
  */
 double DLL_EXPORT __STDCALL computeStep(double maxTime)
 {
-    double dtWater, dtHeat;
+    double dtWater, dtHeat, dtHeatCurrent;
 
     if (myStructure.computeHeat) initializeHeatFluxes(false, true);
     updateBoundary();
@@ -829,13 +828,14 @@ double DLL_EXPORT __STDCALL computeStep(double maxTime)
 
     if (myStructure.computeHeat)
     {
-        saveWaterFluxes(dtWater);
-        updateBoundaryHeat();
-
         double dtHeatSum = 0;
         while (dtHeatSum < dtWater)
         {
-            if (HeatComputation(min_value(dtHeat, dtWater - dtHeatSum), dtWater))
+            dtHeatCurrent = min_value(dtHeat, dtWater - dtHeatSum);
+            saveWaterFluxes(dtHeatCurrent, dtWater);
+            updateBoundaryHeat();
+
+            if (HeatComputation(dtHeatCurrent, dtWater))
             {
                 dtHeatSum += dtHeat;
             }
@@ -870,7 +870,7 @@ int DLL_EXPORT __STDCALL setTemperature(long nodeIndex, double myT)
 
    if ((myT < 200) && (myT > 500)) return(PARAMETER_ERROR);
 
-   if (myNode->extra == NULL) return(MEMORY_ERROR);
+   if (! isHeatNode(nodeIndex)) return(MEMORY_ERROR);
 
    myNode[nodeIndex].extra->Heat->T = myT;
    myNode[nodeIndex].extra->Heat->oldT = myT;
@@ -1072,8 +1072,7 @@ double DLL_EXPORT __STDCALL getTemperature(long nodeIndex)
 {
     if (myNode == NULL) return(TOPOGRAPHY_ERROR);
     if ((nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
-    if (! myStructure.computeHeat) return (MISSING_DATA_ERROR);
-    if (myNode->extra == NULL) return (MEMORY_ERROR);
+    if (! isHeatNode(nodeIndex)) return (MEMORY_ERROR);
 
     return (myNode[nodeIndex].extra->Heat->T);
 }
@@ -1087,9 +1086,8 @@ double DLL_EXPORT __STDCALL getTemperature(long nodeIndex)
 float DLL_EXPORT __STDCALL getHeatFlux(long nodeIndex, short myDirection, int fluxType)
 {
     if (myNode == NULL) return(TOPOGRAPHY_ERROR);
-    if (myNode->extra == NULL) return (MEMORY_ERROR);
     if ((nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
-    if (! myStructure.computeHeat) return (MISSING_DATA_ERROR);
+    if (! isHeatNode(nodeIndex)) return (MEMORY_ERROR);
 
     float myMaxFlux = 0.;
     float myFlux;
