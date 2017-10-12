@@ -250,7 +250,7 @@ void DbArkimet::appendQueryHourly(QString dateTimeStr, QString idPoint, QString 
     {
         int hour = myTime.time().hour();
         myTime.setTime(QTime(hour, 0, 0));
-        myTime.addSecs(3600);
+        myTime = myTime.addSecs(3600);
     }
     QString key = varName + myTime.toString("yyyyMMddhh") + "_" + idPoint;
 

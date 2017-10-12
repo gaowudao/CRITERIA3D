@@ -389,6 +389,7 @@ bool Download::downloadHourlyData(QDate startDate, QDate endDate, QString datase
             }
         }
         qDebug("Nr of data: %d", nrData);
+
         _dbMeteo->saveHourlyData();
         _dbMeteo->deleteTmpTableHourly();
 
