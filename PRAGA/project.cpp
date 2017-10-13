@@ -163,7 +163,7 @@ bool Project::downloadHourlyDataArkimet(QStringList variables, QDate startDate, 
     QList<int> arkIdAirTemp;
     arkIdAirTemp << 78 << 158;
     QList<int> arkIdPrec;
-    arkIdPrec << 159 << 160;
+    arkIdPrec << 160;
     QList<int> arkIdRH;
     arkIdRH << 139 << 140;
     QList<int> arkIdRadiation;
