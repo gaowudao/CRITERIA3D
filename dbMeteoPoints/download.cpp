@@ -190,6 +190,9 @@ bool Download::downloadDailyData(QDate startDate, QDate endDate, QString dataset
     QDate myDate;
     QStringList fields;
 
+    // variable properties
+    QList<VariablesList> variableList = _dbMeteo->getVariableProperties(variables);
+
     // attenzione: il reference time dei giornalieri è a fine giornata (ore 00 di day+1)
     refTime = QString("reftime:>%1,<=%2").arg(startDate.toString("yyyy-MM-dd")).arg(endDate.addDays(1).toString("yyyy-MM-dd"));
 
@@ -267,10 +270,18 @@ bool Download::downloadDailyData(QDate startDate, QDate endDate, QString dataset
                     value *= DAY_SECONDS / 1000000.0;
                 }
 
-                idVar = _dbMeteo->arkIdmap(idArkimet);
+                // variable
+                int i = 0;
+                while (i < variableList.size()
+                       && variableList[i].arkId() != idArkimet) i++;
 
-                _dbMeteo->appendQueryDaily(dateStr, idPoint, QString::number(idVar), QString::number(value), isFirstData);
-                isFirstData = false;
+                if (i < variableList.size())
+                {
+                    idVar = variableList[i].id();
+                    _dbMeteo->appendQueryDaily(dateStr, idPoint, QString::number(idVar), QString::number(value), isFirstData);
+                    isFirstData = false;
+                }
+
             }
         }
 
@@ -296,7 +307,7 @@ bool Download::downloadHourlyData(QDate startDate, QDate endDate, QString datase
         area = area % QString(" or VM2,%1").arg(stations[i]);
     }
 
-    QList<VariablesList> variableList = _dbMeteo->getHourlyVarFields(variables);
+    QList<VariablesList> variableList = _dbMeteo->getVariableProperties(variables);
 
     QString product = QString(";product: VM2,%1").arg(variables[0]);
 
@@ -342,7 +353,7 @@ bool Download::downloadHourlyData(QDate startDate, QDate endDate, QString datase
         QString line, dateTime, idPoint, flag, varName;
         QString idVariable, value, frequency;
         QStringList fields;
-        int i, idVarArkimet, nrData = 0;
+        int i, idVarArkimet;
         bool isVarOk, isFirstData = true;
 
         for (line = QString(reply->readLine()); !(line.isNull() || line.isEmpty());  line = QString(reply->readLine()))
@@ -353,42 +364,41 @@ bool Download::downloadHourlyData(QDate startDate, QDate endDate, QString datase
                                                        .arg(fields[0].mid(6, 2))
                                                        .arg(fields[0].mid(8, 2))
                                                        .arg(fields[0].mid(10, 2));
+            // point
             if (fields[1] != "")
             {
                 idPoint = fields[1];
-                idVarArkimet = fields[2].toInt();
-                idVariable = QString::number(_dbMeteo->arkIdmap(idVarArkimet));
 
-                if (fields[3] != "")
+                // variable
+                isVarOk = false;
+                idVarArkimet = fields[2].toInt();
+
+                for (i = 0; i < variableList.size(); i++)
+                {
+                    if (variableList[i].arkId() == idVarArkimet)
+                    {
+                        idVariable = QString::number(variableList[i].id());
+                        frequency = QString::number(variableList[i].frequency());
+                        varName = variableList[i].varName();
+                        isVarOk = true;
+                    }
+                }
+
+                // value
+                if (isVarOk && fields[3] != "")
                 {
                     value = fields[3];
-                    flag = fields[6];
 
-                    // invalid data
+                    // flag
+                    flag = fields[6];
                     if (flag.left(1) != "1" && flag.left(3) != "054")
                     {
-                        isVarOk = false;
-                        for (i = 0; i < variableList.size(); i++)
-                        {
-                            if (variableList[i].arkId() == idVarArkimet)
-                            {
-                                frequency = QString::number(variableList[i].frequency());
-                                varName = variableList[i].varName();
-                                isVarOk = true;
-                            }
-                        }
-
-                        if (isVarOk)
-                        {
-                            _dbMeteo->appendQueryHourly(dateTime, idPoint, idVariable, varName, value, frequency, isFirstData);
-                            isFirstData = false;
-                            nrData++;
-                        }
+                        _dbMeteo->appendQueryHourly(dateTime, idPoint, idVariable, varName, value, frequency, isFirstData);
+                        isFirstData = false;
                     }
                 }
             }
         }
-        qDebug("Nr of data: %d", nrData);
 
         _dbMeteo->saveHourlyData();
         _dbMeteo->deleteTmpTableHourly();

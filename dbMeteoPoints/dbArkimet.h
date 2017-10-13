@@ -19,7 +19,7 @@ class DbArkimet : public DbMeteoPoints
         QList<int> getDailyVar();
         QList<int> getHourlyVar();
         int getId(QString VarName);
-        QList<VariablesList> getHourlyVarFields(QList<int> id);
+        QList<VariablesList> getVariableProperties(QList<int> id);
 
         void initStationsDailyTables(QDate startDate, QDate endDate, QStringList stations);
         void initStationsHourlyTables(QDate startDate, QDate endDate, QStringList stations);
@@ -33,8 +33,6 @@ class DbArkimet : public DbMeteoPoints
 
         bool saveHourlyData();
         bool saveDailyData(QDate startDate, QDate endDate);
-
-        int arkIdmap(int arkId);
 
         void appendQueryHourly(QString dateTime, QString idPoint, QString idVariable, QString varName, QString value, QString frequency, bool isFirstData);
         void appendQueryDaily(QString date, QString idPoint, QString idVar, QString value, bool isFirstData);

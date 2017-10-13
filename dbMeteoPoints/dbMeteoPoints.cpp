@@ -103,12 +103,11 @@ QStringList DbMeteoPoints::getDatasetsActive()
 
 void DbMeteoPoints::setDatasetsActive(QString active)
 {
-    QString statement = QString("UPDATE datasets SET active = 1 where dataset IN ( %1 )").arg(active);
+    QString statement = QString("UPDATE datasets SET active = 0");
+    _db.exec(statement);
 
-    QSqlQuery qry(statement, _db);
-
-    if( !qry.exec() )
-        qDebug() << qry.lastError();
+    statement = QString("UPDATE datasets SET active = 1 WHERE dataset IN ( %1 )").arg(active);
+    _db.exec(statement);
 }
 
 

@@ -13,7 +13,8 @@ DbArkimet::DbArkimet(QString dbName) : DbMeteoPoints(dbName)
     queryString = "";
 }
 
-QList<VariablesList> DbArkimet::getHourlyVarFields(QList<int> id)
+
+QList<VariablesList> DbArkimet::getVariableProperties(QList<int> id)
 {
     QList<VariablesList> variableList;
 
@@ -35,7 +36,7 @@ QList<VariablesList> DbArkimet::getHourlyVarFields(QList<int> id)
     {
         while (qry.next())
         {
-            variableList.append(VariablesList(qry.value(0).toInt(), qry.value(1).toInt(), qry.value(2).toString(), qry.value(5).toInt() ));
+            variableList.append(VariablesList(qry.value("id_variable").toInt(), qry.value("id_arkimet").toInt(), qry.value("variable").toString(), qry.value("frequency").toInt() ));
         }
     }
 
@@ -100,7 +101,7 @@ QList<int> DbArkimet::getDailyVar()
     QList<int> dailyVarList;
     QSqlQuery qry(_db);
 
-    qry.prepare( "SELECT id_arkimet FROM variable_properties WHERE aggregation_time = 86400" );
+    qry.prepare( "SELECT id_arkimet FROM variable_properties WHERE frequency = 86400" );
 
     if( !qry.exec() )
     {
@@ -126,7 +127,7 @@ QList<int> DbArkimet::getHourlyVar()
     QList<int> hourlyVarList;
     QSqlQuery qry(_db);
 
-    qry.prepare( "SELECT id_arkimet FROM variable_properties WHERE aggregation_time < 86400" );
+    qry.prepare( "SELECT id_arkimet FROM variable_properties WHERE frequency < 86400" );
 
     if( !qry.exec() )
     {
@@ -190,7 +191,7 @@ void DbArkimet::createTmpTableHourly()
     this->deleteTmpTableHourly();
 
     QSqlQuery qry(_db);
-    qry.prepare("CREATE TABLE TmpHourlyData (KEY TEXT, date_time TEXT, id_point TEXT, id_variable INTEGER, variable_name TEXT, value REAL, frequency INTEGER)");
+    qry.prepare("CREATE TABLE TmpHourlyData (KEY TEXT, date_time TEXT, date_time_adj TEXT, id_point TEXT, id_variable INTEGER, variable_name TEXT, value REAL, frequency INTEGER)");
     if( !qry.exec() )
     {
         qDebug() << qry.lastError();
@@ -245,6 +246,7 @@ void DbArkimet::appendQueryHourly(QString dateTimeStr, QString idPoint, QString 
         queryString += ",";
 
     // build an hourly key
+    // shift time to end hour
     QDateTime myTime = QDateTime::fromString(dateTimeStr, "yyyy-MM-dd hh:mm:ss");
     if (myTime.time().minute() > 0)
     {
@@ -254,8 +256,11 @@ void DbArkimet::appendQueryHourly(QString dateTimeStr, QString idPoint, QString 
     }
     QString key = varName + myTime.toString("yyyyMMddhh") + "_" + idPoint;
 
+    QString dateTimeAdj = myTime.toString("yyyy-MM-dd hh:mm:ss");
+
     queryString += "('" + key + "'"
             + ",'" + dateTimeStr + "'"
+            + ",'" + dateTimeAdj + "'"
             + ",'" + idPoint + "'"
             + "," + idVariable
             + ",'" + varName + "'"
@@ -316,7 +321,6 @@ bool DbArkimet::saveDailyData(QDate startDate, QDate endDate)
 }
 
 
-
 bool DbArkimet::saveHourlyData()
 {
     // insert data into tmpTable
@@ -327,15 +331,15 @@ bool DbArkimet::saveHourlyData()
     statement += "AND KEY IN (SELECT KEY FROM TmpHourlyData WHERE frequency = 3600)";
     _db.exec(statement);
 
+    QSqlQuery qry = QSqlQuery(_db);
+
     // query stations
     statement = QString("SELECT DISTINCT id_point FROM TmpHourlyData");
-    QSqlQuery qry = _db.exec(statement);
+    qry.exec(statement);
 
     QStringList stations;
     while (qry.next())
-    {
         stations.append(qry.value(0).toString());
-    }
 
     // INSERT data with frequency = 3600
     foreach (QString id_point, stations)
@@ -356,150 +360,52 @@ bool DbArkimet::saveHourlyData()
     statement = QString("SELECT DISTINCT id_point FROM TmpHourlyData");
     qry = _db.exec(statement);
     while (qry.next())
-    {
         stations.append(qry.value(0).toString());
-    }
 
     // no more data
-    if (stations.isEmpty())
-        return true;
+    if (stations.isEmpty()) return true;
 
     // WIND DIRECTION
     statement = QString("INSERT INTO `%1_H` ");
-    statement = statement % "SELECT date_time, id_variable, value FROM TmpHourlyData WHERE ";
-    statement = statement % "id_point = %1 AND variable_name = 'W_DIR' AND strftime('%M', date_time) = '00'";
+    statement += "SELECT date_time, id_variable, value FROM TmpHourlyData WHERE ";
+    statement += "id_point = %1 AND variable_name = 'W_DIR' AND strftime('%M', date_time) = '00'";
 
     foreach (QString station, stations) {
-        qry = QSqlQuery(statement.arg(station), _db);
-        qry.exec();
+        qry.exec(statement.arg(station));
     }
 
-    // RADIATION:TO DO prevailing HH:30 data
+    // RADIATION: prevailing HH:30 data
     statement = QString("INSERT INTO `%1_H` ");
-    statement = statement % "SELECT DATETIME(date_time, '+30 minutes'), id_variable, value FROM TmpHourlyData WHERE ";
-    statement = statement % "id_point = %1 AND variable_name = 'RAD' AND strftime('%M', date_time) = '30'";
+    statement += " SELECT DATETIME(date_time, '+30 minutes'), id_variable, value FROM TmpHourlyData WHERE ";
+    statement += " id_point = %1 AND variable_name = 'RAD' AND strftime('%M', date_time) = '30'";
 
     foreach (QString station, stations) {
-        qry = QSqlQuery(statement.arg(station), _db);
-        qry.exec();
+        qry.exec(statement.arg(station));
     }
 
     // DELETE radiation and wind direction
     statement = QString("DELETE FROM TmpHourlyData WHERE variable_name IN ('RAD', 'W_DIR')");
-    qry = QSqlQuery(statement, _db);
-    qry.exec();
+    qry.exec(statement);
 
+    // TODO SUM PREC
 
-    // la media funziona su tutte le var che hanno AVG nel nome (Temperature, RH, Wind intensity)
-    // i minuti del campo date_time vengono portati a 60 dalla funzione datetime quindi tutto si uniforma all'ora di riferimento
-    statement = QString("INSERT INTO `%1_H` ");
-    statement = statement % "SELECT aggregate_date, id_variable, aggregate_value FROM (";
-    statement = statement % "SELECT aggregate_date, id_variable, SUM(value) AS aggregate_value, SUM(frequency) AS aggregate_frequency FROM (";
-    statement = statement % "SELECT datetime(date_time, '+' || (SELECT CASE WHEN strftime('%M', date_time) = '00' THEN 0 ELSE 60 - strftime('%M', date_time) END) || ' minutes') AS aggregate_date, ";
-    statement = statement % "id_variable, value, frequency FROM TmpHourlyData WHERE id_point = %1 AND variable_name like '%PREC%'";
-    statement = statement % ") group by aggregate_date, id_variable) WHERE aggregate_frequency = 3600";
-    statement = statement % " UNION ALL ";
-    statement = statement % "SELECT aggregate_date, id_variable, aggregate_value FROM (";
-    statement = statement % "SELECT aggregate_date, id_variable, AVG(value) AS aggregate_value FROM (";
-    statement = statement % "SELECT datetime(date_time, '+' || (SELECT CASE WHEN strftime('%M', date_time) = '00' THEN 0 ELSE 60 - strftime('%M', date_time) END) || ' minutes') AS aggregate_date, ";
-    statement = statement % "id_variable, value FROM TmpHourlyData WHERE id_point = %1 AND variable_name like '%AVG%'";
-    statement = statement % ") group by aggregate_date, id_variable)";
+    // la media funziona su tutte le var che hanno AVG nel nome (Temp, RH, Wind intensity)
+    statement = QString("INSERT INTO `%1_H`");
+    statement += " SELECT date_time_adj, id_variable, avg_value FROM (";
+    statement += " SELECT KEY, date_time_adj, id_variable, AVG(value) AS avg_value";
+    statement += " FROM TmpHourlyData WHERE id_point = %1 AND variable_name like '%AVG%' GROUP BY KEY )";
 
-    QString delStationStatement = QString("DELETE FROM TmpHourlyData WHERE id_point = :id_point");
+    QString delStationStatement = QString("DELETE FROM TmpHourlyData WHERE id_point = %1");
 
     foreach (QString station, stations)
     {
-        qry = QSqlQuery(statement.arg(station), _db);
-        if( !qry.exec() )
-        {
+        if (! qry.exec(statement.arg(station)))
             qDebug() << "error in hourly insert " << station << qry.lastError();
-        }
 
-        qry = QSqlQuery(delStationStatement, _db);
-        qry.bindValue(":id_point", station);
-        if( !qry.exec() )
-        {
+        if (! qry.exec(delStationStatement.arg(station)))
             qDebug() << "error in delete " << station << qry.lastError();
-        }
     }
 
     return true;
 }
-
-
-int DbArkimet::arkIdmap(int arkId)
-{
-    switch(arkId)
-    {
-        case 158:
-            return 51;
-        case 159:
-            return 52;
-        case 139:
-            return 53;
-        case 164:
-            return 54;
-        case 166:
-            return 55;
-        case 165:
-            return 56;
-        case 78:
-            return 101;
-        case 160:
-            return 102;
-        case 140:
-            return 103;
-        case 409:
-            return 104;
-        case 69:
-            return 105;
-        case 431:
-            return 106;
-        case 232:
-            return 151;
-        case 233:
-            return 152;
-        case 231:
-            return 153;
-        case 250:
-            return 154;
-        case 241:
-            return 155;
-        case 242:
-            return 156;
-        case 240:
-            return 157;
-        case 706:
-            return 158;
-        case 227:
-            return 159;
-        case 230:
-            return 160;
-        default:
-            qDebug() << "value of arkId unknown";
-    }
-    return NODATA;
-}
-
-
-
-
-/* void DbArkimet::insertOrUpdate(QString date, QString id_point, int id_variable, QString variable_name, double value, int frequency, QString flag)
-{
-    if (flag.left(1) == "1" || flag.left(1) == "054") {
-        // invalid data
-        value = NODATA;
-    }
-
-    if (value !=NODATA)
-    {
-        double valueRound = static_cast<double>(static_cast<int>(value*10+0.5))/10.0;
-        QString statement = QString("REPLACE INTO TmpHourlyData SELECT '%1', %2, %3, '%4', %5, %6 WHERE %6 > (SELECT COALESCE((");
-        statement = statement % "SELECT frequency FROM TmpHourlyData WHERE date_time = '%1' AND id_point = %2 AND variable_name = '%4'), 0))";
-        statement = statement.arg(date).arg(id_point).arg(id_variable).arg(variable_name).arg(valueRound).arg(frequency);
-
-        QSqlQuery qry = QSqlQuery(statement, _db);
-        qry.exec();
-    }
-} */
 
