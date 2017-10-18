@@ -24,6 +24,7 @@
 
 #include <math.h>
 #include <malloc.h>
+#include <iostream>
 
 #include "commonConstants.h"
 #include "furtherMathFunctions.h"
@@ -369,24 +370,40 @@ namespace sorting
         }
     }
 
-    double percentile(double* list, int nList, double perc, bool sortValues)
+    double percentile(double* list, int* nList, double perc, bool sortValues)
     {
-        double rank;
-
-        if (nList == 0 || perc <= 0.0 || perc >= 100.0)
+        // check
+        if (*nList == 0 || perc <= 0.0 || perc >= 100.0)
             return (NODATA);
-
-        //TODO nodata clean
-
         perc /= 100.0;
-        rank = (perc * nList) - 1.0;
 
         if (sortValues)
-            quicksortAscendingDouble(list, 0, nList-1);
+        {
+            // clean nodata
+            double* cleanList = (double*) calloc(*nList, sizeof(double));
+            int n = 0;
+            for (int i = 0; i < *nList; i++)
+                if (list[i] != NODATA)
+                    cleanList[n++] = list[i];
 
-        if (((int)(rank) + 1) > nList - 1)
-            return list[nList - 1];
-        else if (rank < 0.0)
+            // switch
+            *nList = n;
+            *list = *cleanList;
+
+            // check on data presence
+            if (*nList == 0)
+                return (NODATA);
+
+            // sort
+            quicksortAscendingDouble(list, 0, *nList - 1);
+        }
+
+        double rank = (*nList * perc) - 1.;
+
+        // return percentile
+        if ((rank + 1.) > (*nList - 1))
+            return list[*nList - 1];
+        else if (rank < 0.)
             return list[0];
         else
             return ((rank - (int)(rank)) * (list[(int)(rank) + 1] - list[(int)(rank)])) + list[(int)(rank)];

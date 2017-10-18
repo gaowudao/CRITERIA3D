@@ -49,6 +49,7 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
     float waterTableDepth;                          // [m]
     bool isFirstDay = true;
     int indexSeasonalForecast = NODATA;
+    bool isInsideSeason;
 
     if (myCase->meteoPoint.latitude == NODATA)
     {
@@ -170,16 +171,43 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
         }
 
         // seasonal forecast: update values of annual irrigation
-        if (myCase->isSeasonalForecast)
-            if (myDate.month >= myCase->firstSeasonMonth && myDate.month <= myCase->firstSeasonMonth+2)
-            {
-                if (indexSeasonalForecast == NODATA)
-                    indexSeasonalForecast = 0;
-                // first date of season
-                else if (myDate.month == myCase->firstSeasonMonth && myDate.day == 1)
-                    indexSeasonalForecast++;
 
-                myCase->seasonalForecasts[indexSeasonalForecast] += myCase->output.dailyIrrigation;
+        if (myCase->isSeasonalForecast)
+
+            isInsideSeason = false;
+            // normal seasons
+            if (myCase->firstSeasonMonth < 11)
+            {
+                if (myDate.month >= myCase->firstSeasonMonth && myDate.month <= myCase->firstSeasonMonth+2)
+                    isInsideSeason = true;
+            }
+            // NDJ or DJF
+            else
+            {
+                int lastMonth = myCase->firstSeasonMonth+2 % 12;
+                if (myDate.month >= myCase->firstSeasonMonth || myDate.month <= lastMonth)
+                   isInsideSeason = true;
+            }
+
+            if (isInsideSeason)
+            {
+                // first date of season
+                if (myDate.day == 1 && myDate.month == myCase->firstSeasonMonth)
+                {
+                    if (indexSeasonalForecast == NODATA)
+                        indexSeasonalForecast = 0;
+                    else
+                        indexSeasonalForecast++;
+                }
+
+                // sum of irrigations
+                if (indexSeasonalForecast != NODATA)
+                {
+                    if (myCase->seasonalForecasts[indexSeasonalForecast] == NODATA)
+                        myCase->seasonalForecasts[indexSeasonalForecast] = myCase->output.dailyIrrigation;
+                    else
+                        myCase->seasonalForecasts[indexSeasonalForecast] += myCase->output.dailyIrrigation;
+                }
             }
     }
 

@@ -56,7 +56,7 @@
         void quicksortAscendingInteger(int *x,int first, int last);
         void quicksortDescendingInteger(int *x, int first,int last);
         void quicksortAscendingDouble(double *x, int first,int last);
-        double percentile(double* list, int nList, double perc, bool sortValues);
+        double percentile(double* list, int *nList, double perc, bool sortValues);
     }
 
     namespace matricial

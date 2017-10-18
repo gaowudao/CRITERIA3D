@@ -261,7 +261,7 @@ void Criteria1D::initializeSeasonalForecast(const Crit3DDate& firstDate, const C
         nrSeasonalForecasts = lastDate.year - firstDate.year +1;
         seasonalForecasts = (double*) calloc(nrSeasonalForecasts, sizeof(double));
         for (int i = 0; i < nrSeasonalForecasts; i++)
-            seasonalForecasts[i] = 0.0;
+            seasonalForecasts[i] = NODATA;
     }
 }
 
