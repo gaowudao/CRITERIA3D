@@ -83,7 +83,7 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
 
         // TODO eliminare quando falda rumena sarà migliorata
         // patch for DA-RO - abbassa falda di 10cm (primo metro)
-        if (waterTableDepth >= 0.f || waterTableDepth <= 0.9f)
+        if (waterTableDepth >= 0.f && waterTableDepth <= 0.9f)
                 waterTableDepth += 0.1f;
 
         myCase->output.dailyWaterTable = waterTableDepth;
@@ -171,7 +171,6 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
         }
 
         // seasonal forecast: update values of annual irrigation
-
         if (myCase->isSeasonalForecast)
 
             isInsideSeason = false;
@@ -184,7 +183,7 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
             // NDJ or DJF
             else
             {
-                int lastMonth = myCase->firstSeasonMonth+2 % 12;
+                int lastMonth = (myCase->firstSeasonMonth + 2) % 12;
                 if (myDate.month >= myCase->firstSeasonMonth || myDate.month <= lastMonth)
                    isInsideSeason = true;
             }
