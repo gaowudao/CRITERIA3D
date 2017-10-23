@@ -172,7 +172,7 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
 
         // seasonal forecast: update values of annual irrigation
         if (myCase->isSeasonalForecast)
-
+        {
             isInsideSeason = false;
             // normal seasons
             if (myCase->firstSeasonMonth < 11)
@@ -208,6 +208,7 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
                         myCase->seasonalForecasts[indexSeasonalForecast] += myCase->output.dailyIrrigation;
                 }
             }
+        }
     }
 
     if (myCase->isSeasonalForecast)
