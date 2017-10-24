@@ -79,6 +79,7 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
         prec = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyPrecipitation);
         tmin = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyAirTemperatureMin);
         tmax = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyAirTemperatureMax);
+
         waterTableDepth = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyWaterTableDepth);
 
         // TODO eliminare quando falda rumena sarà migliorata
@@ -93,6 +94,9 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
             *myError = "Missing weather data: " + myDate.toStdString();
             return false;
         }
+
+        // check on wrong data
+        if (prec < 0.0) prec = 0.0;
 
         myCase->output.dailyPrec = prec;
         if (myDate < lastDate)
