@@ -280,7 +280,7 @@ bool Criteria1D::createOutputTable(std::string* myError)
     queryString = "CREATE TABLE '" + this->idCase + "'"
             + " ( DATE TEXT,"
             + " PREC REAL, IRRIGATION REAL, RAW REAL, DEFICIT REAL, DRAINAGE REAL, RUNOFF REAL, ET0 REAL,"
-            + " EVAP_MAX REAL, TRANSP_MAX, EVAP REAL, TRANSP REAL, LAI REAL, ROOTDEPTH REAL )";
+            + " EVAP_MAX REAL, TRANSP_MAX, EVAP REAL, TRANSP REAL, LAI REAL, KC REAL, ROOTDEPTH REAL )";
     myQuery = this->dbOutput.exec(queryString);
 
     if (myQuery.lastError().number() > 0)
