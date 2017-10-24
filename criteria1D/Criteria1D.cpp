@@ -73,6 +73,7 @@ void Criteria1DOutput::initializeDaily()
     this->dailySoilWaterDeficit = 0.0;
     this->dailyCapillaryRise = 0.0;
     this->dailyWaterTable = NODATA;
+    this->dailyKc = 0.0;
 }
 
 
@@ -297,7 +298,7 @@ void Criteria1D::prepareOutput(Crit3DDate myDate, bool isFirst)
     if (isFirst)
         this->outputString = "INSERT INTO '" + this->idCase + "'"
             + " (DATE, PREC, IRRIGATION, RAW, DEFICIT, DRAINAGE, RUNOFF, ET0,"
-            + " EVAP_MAX, TRANSP_MAX, EVAP, TRANSP, LAI, ROOTDEPTH) "
+            + " EVAP_MAX, TRANSP_MAX, EVAP, TRANSP, LAI, KC, ROOTDEPTH) "
             + " VALUES ";
     else
         this->outputString += ",";
@@ -316,6 +317,7 @@ void Criteria1D::prepareOutput(Crit3DDate myDate, bool isFirst)
             + "," + QString::number(this->output.dailyEvaporation)
             + "," + QString::number(this->output.dailyTranspiration)
             + "," + QString::number(this->myCrop.LAI)
+            + "," + QString::number(this->output.dailyKc)
             + "," + QString::number(this->myCrop.roots.rootDepth)
             + ")";
 }

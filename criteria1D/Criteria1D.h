@@ -36,6 +36,7 @@
         double dailyMaxEvaporation;
         double dailyEvaporation;
         double dailyMaxTranspiration;
+        double dailyKc;
         double dailyTranspiration;
         double dailyCropAvailableWater;
         double dailySoilWaterDeficit;
