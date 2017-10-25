@@ -996,7 +996,7 @@ bool HeatComputation(double timeStep, double timeStepWater)
     for (long n = 1; n < myStructure.nrNodes; n++)
     {
         if (isnan(myNode[n].extra->Heat->T))
-            myNode[n].extra->Heat->T = 275;
+            double a = 0.;
         myNode[n].extra->Heat->oldT = myNode[n].extra->Heat->T;
     }
 

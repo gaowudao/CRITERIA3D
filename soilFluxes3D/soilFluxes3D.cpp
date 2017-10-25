@@ -29,6 +29,8 @@
 #include <math.h>
 #include <malloc.h>
 
+#include <qdebug.h>
+
 #include "../mathFunctions/physics.h"
 #include "header/types.h"
 #include "header/memory.h"
@@ -796,9 +798,15 @@ namespace soilFluxes3D {
 
 		while (sumTime < myPeriod)
         {
+            if (sumTime == 2850)
+                int a=0;
+
 			ResidualTime = myPeriod - sumTime;
 			deltaT = computeStep(ResidualTime);
 			sumTime += deltaT;
+
+            //qDebug() << "H0=" << myNode[0].H << "H1=" << myNode[1].H;
+            //qDebug() << "T1=" << myNode[1].extra->Heat->T << "T2=" << myNode[2].extra->Heat->T;
         }
 
         if (myStructure.computeWater) updateBalanceWaterWholePeriod();
@@ -814,7 +822,7 @@ namespace soilFluxes3D {
  */
 double DLL_EXPORT __STDCALL computeStep(double maxTime)
 {
-    double dtWater, dtHeat, dtHeatCurrent;
+    double dtWater, dtHeat;
 
     if (myStructure.computeHeat) initializeHeatFluxes(false, true);
     updateBoundary();
@@ -828,11 +836,15 @@ double DLL_EXPORT __STDCALL computeStep(double maxTime)
 
     if (myStructure.computeHeat)
     {
+        double dtHeatCurrent = dtHeat;
+
+        saveWaterFluxes(dtHeatCurrent, dtWater);
+
         double dtHeatSum = 0;
         while (dtHeatSum < dtWater)
         {
             dtHeatCurrent = min_value(dtHeat, dtWater - dtHeatSum);
-            saveWaterFluxes(dtHeatCurrent, dtWater);
+
             updateBoundaryHeat();
 
             if (HeatComputation(dtHeatCurrent, dtWater))
@@ -847,7 +859,7 @@ double DLL_EXPORT __STDCALL computeStep(double maxTime)
         }
     }
 
-    return dtWater;
+    return min_value(dtWater, dtHeat);
 }
 
 /*!

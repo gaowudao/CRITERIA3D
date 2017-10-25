@@ -222,6 +222,8 @@ bool initializeHeat1D(long *myHourIni, long *myHourFin, bool useInputSoils)
     if (computeHeat) soilFluxes3D::initializeHeat(SAVE_HEATFLUXES_ALL);
 
     soilFluxes3D::setHydraulicProperties(MODIFIEDVANGENUCHTEN, MEAN_LOGARITHMIC, 10.);
+    soilFluxes3D::setNumericalParameters(0.1, 600., 100, 10, 12, 6);
+    soilFluxes3D::initializeBalance();
 
     if (! initializeSoil(useInputSoils)) printf("\n error in setSoilProperties");
 
@@ -312,10 +314,6 @@ bool initializeHeat1D(long *myHourIni, long *myHourFin, bool useInputSoils)
             if (myResult != CRIT3D_OK) printf("\n error in SetNode sotto!");
 		}																 
     }
-
-    soilFluxes3D::setNumericalParameters(0.1, 600, 100, 10, 12, 8);
-
-    soilFluxes3D::initializeBalance();
 
     *myHourIni = SimulationStart;
     *myHourFin = SimulationStop;

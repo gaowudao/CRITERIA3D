@@ -23,6 +23,8 @@
         bool computeWater;
         bool computeHeat;
         bool computeSolutes;
+        bool computeHeatVapor;
+        bool computeHeatAdvection;
 
         int saveHeatFluxesType;
 

@@ -215,6 +215,9 @@ void MainWindow::on_pushRunAllPeriod_clicked()
                 myP = 0.;
         }
 
+        if (myCurrentHour == 129)
+            int a=0;
+
         runHeat1D(myT, myRH, myWS, myNR, myP);
 
         getHourlyOutputAllPeriod(0, getNodesNumber(), &myHeatOutput);
@@ -278,6 +281,7 @@ void MainWindow::on_pushLoadFileSoil_clicked()
         soilDataLoaded = true;
         ui->chkUseInputSoil->setEnabled(true);
         ui->chkUseInputSoil->setChecked(true);
+        ui->groupBox_soil->setEnabled(false);
     }
 
     myFile.close();
@@ -370,8 +374,11 @@ void MainWindow::on_pushLoadFileMeteo_clicked()
         }
 
         meteoDataLoaded = true;
+
         ui->chkUseInputMeteo->setEnabled(true);
         ui->chkUseInputMeteo->setChecked(true);
+        ui->groupBox_atmFixedData->setEnabled(false);
+        ui->groupBox_simTime->setEnabled(false);
     }
 
     myFile.close();
