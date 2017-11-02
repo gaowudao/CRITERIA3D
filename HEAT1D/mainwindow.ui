@@ -45,7 +45,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>4</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -881,9 +881,9 @@
      <widget class="QGroupBox" name="groupBox_6">
       <property name="geometry">
        <rect>
-        <x>20</x>
+        <x>10</x>
         <y>10</y>
-        <width>101</width>
+        <width>161</width>
         <height>81</height>
        </rect>
       </property>
@@ -928,13 +928,51 @@
         <bool>true</bool>
        </property>
       </widget>
+      <widget class="QCheckBox" name="chkBoxLatent">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>80</x>
+         <y>30</y>
+         <width>61</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>latent</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="chkBoxAdvective">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>80</x>
+         <y>50</y>
+         <width>71</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>advective</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
      </widget>
      <widget class="QGroupBox" name="groupBox_simTime">
       <property name="geometry">
        <rect>
-        <x>130</x>
+        <x>180</x>
         <y>10</y>
-        <width>111</width>
+        <width>101</width>
         <height>81</height>
        </rect>
       </property>
@@ -957,9 +995,9 @@
       <widget class="QLabel" name="label_12">
        <property name="geometry">
         <rect>
-         <x>10</x>
+         <x>20</x>
          <y>20</y>
-         <width>91</width>
+         <width>41</width>
          <height>16</height>
         </rect>
        </property>
@@ -970,9 +1008,9 @@
       <widget class="QLabel" name="label_13">
        <property name="geometry">
         <rect>
-         <x>10</x>
+         <x>20</x>
          <y>40</y>
-         <width>101</width>
+         <width>51</width>
          <height>16</height>
         </rect>
        </property>
@@ -997,10 +1035,10 @@
      <widget class="QPushButton" name="pushRunAllPeriod">
       <property name="geometry">
        <rect>
-        <x>250</x>
-        <y>70</y>
+        <x>290</x>
+        <y>30</y>
         <width>81</width>
-        <height>23</height>
+        <height>41</height>
        </rect>
       </property>
       <property name="font">

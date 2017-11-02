@@ -292,7 +292,7 @@ void updateBoundaryWater(double deltaT)
             else if (myNode[i].boundary->type == BOUNDARY_HEAT_SURFACE)
             {
 
-                if (myStructure.computeHeat)
+                if (myStructure.computeHeat && myStructure.computeHeatVapor)
                 {
                     long upIndex;
 
@@ -362,10 +362,10 @@ void updateBoundaryHeat()
 
                     myNode[i].boundary->Heat->sensibleFlux += computeAtmosphericSensibleFlux(i);
 
-                    if (myStructure.computeWater)
+                    if (myStructure.computeWater && myStructure.computeHeatVapor)
                         myNode[i].boundary->Heat->latentFlux += computeAtmosphericLatentHeatFlux(i) / myNode[i].up.area;
 
-                    if (myStructure.computeWater)
+                    if (myStructure.computeWater && myStructure.computeHeatAdvection)
                     {
                         // advective heat from rain
                         myWaterFlux = myNode[i].up.linkedExtra->heatFlux->waterFlux;
@@ -394,7 +394,7 @@ void updateBoundaryHeat()
                 else if (myNode[i].boundary->type == BOUNDARY_FREEDRAINAGE ||
                          myNode[i].boundary->type == BOUNDARY_PRESCRIBEDTOTALPOTENTIAL)
                 {
-                    if (myStructure.computeWater)
+                    if (myStructure.computeWater && myStructure.computeHeatAdvection)
                     {
                         myWaterFlux = myNode[i].boundary->waterFlow;
 

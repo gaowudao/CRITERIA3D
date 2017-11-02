@@ -75,9 +75,11 @@ namespace soilFluxes3D {
         //clean balance
 	}
 
-    void DLL_EXPORT __STDCALL initializeHeat(short myType)
+    void DLL_EXPORT __STDCALL initializeHeat(short myType, bool computeAdvectiveHeat, bool computeLatentHeat)
 {
     myStructure.saveHeatFluxesType = myType;
+    myStructure.computeHeatAdvection = computeAdvectiveHeat;
+    myStructure.computeHeatVapor = computeLatentHeat;
 }
 
     int DLL_EXPORT __STDCALL initialize(long nrNodes, int nrLayers, int nrLateralLinks,
@@ -91,6 +93,11 @@ namespace soilFluxes3D {
 
     myStructure.computeWater = computeWater_;
     myStructure.computeHeat = computeHeat_;
+    if (computeHeat_)
+    {
+        myStructure.computeHeatVapor = true;
+        myStructure.computeHeatAdvection = true;
+    }
     myStructure.computeSolutes = computeSolutes_;
 
     myStructure.nrNodes = nrNodes;
@@ -798,9 +805,6 @@ namespace soilFluxes3D {
 
 		while (sumTime < myPeriod)
         {
-            if (sumTime == 2850)
-                int a=0;
-
 			ResidualTime = myPeriod - sumTime;
 			deltaT = computeStep(ResidualTime);
 			sumTime += deltaT;
@@ -1155,7 +1159,7 @@ double DLL_EXPORT __STDCALL getBoundaryLatentFlux(long nodeIndex)
 {
     if (myNode == NULL) return (TOPOGRAPHY_ERROR);
     if (nodeIndex >= myStructure.nrNodes) return (INDEX_ERROR);
-    if (! myStructure.computeHeat || ! myStructure.computeWater) return (MISSING_DATA_ERROR);
+    if (! myStructure.computeHeat || ! myStructure.computeWater || ! myStructure.computeHeatVapor) return (MISSING_DATA_ERROR);
     if (myNode[nodeIndex].boundary == NULL) return (INDEX_ERROR);
     if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT_SURFACE) return (INDEX_ERROR);
 
@@ -1172,7 +1176,7 @@ double DLL_EXPORT __STDCALL getBoundaryAdvectiveFlux(long nodeIndex)
 {
     if (myNode == NULL) return (TOPOGRAPHY_ERROR);
     if (nodeIndex >= myStructure.nrNodes) return (INDEX_ERROR);
-    if (! myStructure.computeHeat || ! myStructure.computeWater) return (MISSING_DATA_ERROR);
+    if (! myStructure.computeHeat || ! myStructure.computeWater || ! myStructure.computeHeatAdvection) return (MISSING_DATA_ERROR);
     if (myNode[nodeIndex].boundary == NULL) return (BOUNDARY_ERROR);
     if (myNode[nodeIndex].boundary->Heat == NULL) return (BOUNDARY_ERROR);
     if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT_SURFACE) return (BOUNDARY_ERROR);
@@ -1262,7 +1266,7 @@ double DLL_EXPORT __STDCALL getNodeVapor(long i)
 {
     if (myNode == NULL) return(TOPOGRAPHY_ERROR);
     if (i >= myStructure.nrNodes) return(INDEX_ERROR);
-    if (! myStructure.computeHeat || ! myStructure.computeWater) return (MISSING_DATA_ERROR);
+    if (! myStructure.computeHeat || ! myStructure.computeWater || ! myStructure.computeHeatVapor) return (MISSING_DATA_ERROR);
 
     double h = myNode[i].H - myNode[i].z;
     double T = myNode[i].extra->Heat->T;
@@ -1285,7 +1289,7 @@ double DLL_EXPORT __STDCALL getHeat(long i, double h)
 
     double myHeat = SoilHeatCapacity(i, h, myNode[i].extra->Heat->T) * myNode[i].volume_area  * myNode[i].extra->Heat->T;
 
-    if (myStructure.computeWater)
+    if (myStructure.computeWater && myStructure.computeHeatVapor)
     {
         double thetaV = VaporThetaV(h, myNode[i].extra->Heat->T, i);
         myHeat += thetaV * LatentHeatVaporization(myNode[i].extra->Heat->T - ZEROCELSIUS) * WATER_DENSITY * myNode[i].volume_area;

@@ -221,12 +221,17 @@ double IsothermalVaporConductivity(long i, double h, double myT)
  */
 double SoilHeatCapacity(long i, double h, double T)
 {
+    double heatCapacity;
     double theta = theta_from_sign_Psi(h, i);
     double thetaV = VaporThetaV(h, T, i);
     double bulkDensity = estimateBulkDensity(i);
-    return bulkDensity / 2.65 * HEAT_CAPACITY_MINERAL +
-            theta * HEAT_CAPACITY_WATER +
-            thetaV * HEAT_CAPACITY_AIR;
+    heatCapacity = bulkDensity / 2.65 * HEAT_CAPACITY_MINERAL +
+            theta * HEAT_CAPACITY_WATER;
+
+    if (myStructure.computeHeatVapor)
+        heatCapacity *= thetaV * HEAT_CAPACITY_AIR;
+
+    return heatCapacity;
 }
 
 /*!
@@ -649,11 +654,17 @@ bool computeHeatFlux(long i, int myMatrixIndex, TlinkedNode *myLink, double time
     myConduction = Conduction(i, myLink, timeStep, timeStepWater);
     if (myStructure.computeWater)
     {
-        myLatentFlux = IsothermalLatentHeatFlux(i, myLink, timeStep, timeStepWater);
-        saveHeatFlux(myLink, HEATFLUX_LATENT_ISOTHERMAL, myLatentFlux);
+        if (myStructure.computeHeatVapor)
+        {
+            myLatentFlux = IsothermalLatentHeatFlux(i, myLink, timeStep, timeStepWater);
+            saveHeatFlux(myLink, HEATFLUX_LATENT_ISOTHERMAL, myLatentFlux);
+        }
 
-        myAdvectiveFlux = AdvectiveFlux(i, myLink);
-        //saveHeatFlux(myLink, HEATFLUX_ADVECTIVE, myAdvection);
+        if (myStructure.computeHeatAdvection)
+        {
+            myAdvectiveFlux = AdvectiveFlux(i, myLink);
+            saveHeatFlux(myLink, HEATFLUX_ADVECTIVE, myAdvectiveFlux);
+        }
     }
 
     A[i][myMatrixIndex].index = myLinkIndex;
@@ -760,10 +771,16 @@ void saveNodeHeatFlux(long myIndex, TlinkedNode *myLink, double timeStep, double
         // where is incorporated (see AirHeatConductivity)
         if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_ALL)
         {
-            double thermalLatentFlux = ThermalVaporFlux(myIndex, myLink, PROCESS_HEAT, timeStep, timeStepWater);
-            thermalLatentFlux *= LatentHeatVaporization(myNode[myIndex].extra->Heat->T - ZEROCELSIUS);
-            saveHeatFlux(myLink, HEATFLUX_LATENT_THERMAL, thermalLatentFlux);
-            saveHeatFlux(myLink, HEATFLUX_DIFFUSIVE, myDiffHeat - thermalLatentFlux);
+            if (myStructure.computeHeatVapor)
+            {
+                double thermalLatentFlux = ThermalVaporFlux(myIndex, myLink, PROCESS_HEAT, timeStep, timeStepWater);
+                thermalLatentFlux *= LatentHeatVaporization(myNode[myIndex].extra->Heat->T - ZEROCELSIUS);
+                saveHeatFlux(myLink, HEATFLUX_LATENT_THERMAL, thermalLatentFlux);
+                saveHeatFlux(myLink, HEATFLUX_DIFFUSIVE, myDiffHeat - thermalLatentFlux);
+            }
+            else
+                saveHeatFlux(myLink, HEATFLUX_DIFFUSIVE, myDiffHeat);
+
         }
         else
         {
@@ -911,12 +928,16 @@ bool HeatComputation(double timeStep, double timeStepWater)
         dtheta = theta_from_sign_Psi(myH - myNode[i].z, i) -
                 theta_from_sign_Psi(myNode[i].oldH - myNode[i].z, i);
 
-        dthetav = VaporThetaV(myH - myNode[i].z, myNode[i].extra->Heat->T, i) -
-                VaporThetaV(myNode[i].oldH - myNode[i].z, myNode[i].extra->Heat->oldT, i);
-
         heatCapacityVar = dtheta * HEAT_CAPACITY_WATER * myNode[i].extra->Heat->T;
-        heatCapacityVar += dthetav * HEAT_CAPACITY_AIR * myNode[i].extra->Heat->T;
-        heatCapacityVar += dthetav * LatentHeatVaporization(myNode[i].extra->Heat->T - ZEROCELSIUS) * WATER_DENSITY;
+
+        if (myStructure.computeHeatVapor)
+        {
+            dthetav = VaporThetaV(myH - myNode[i].z, myNode[i].extra->Heat->T, i) -
+                    VaporThetaV(myNode[i].oldH - myNode[i].z, myNode[i].extra->Heat->oldT, i);
+            heatCapacityVar += dthetav * HEAT_CAPACITY_AIR * myNode[i].extra->Heat->T;
+            heatCapacityVar += dthetav * LatentHeatVaporization(myNode[i].extra->Heat->T - ZEROCELSIUS) * WATER_DENSITY;
+        }
+
         heatCapacityVar *= myNode[i].volume_area;
 
         j = 1;
@@ -994,11 +1015,7 @@ bool HeatComputation(double timeStep, double timeStepWater)
 
 	// save old temperatures
     for (long n = 1; n < myStructure.nrNodes; n++)
-    {
-        if (isnan(myNode[n].extra->Heat->T))
-            double a = 0.;
         myNode[n].extra->Heat->oldT = myNode[n].extra->Heat->T;
-    }
 
     return (true);
 }

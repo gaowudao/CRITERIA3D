@@ -91,8 +91,11 @@ bool MainWindow::initializeModel()
     // processes
     bool computeHeat = ui->chkBoxHeat->isChecked();
     bool computeWater = ui->chkBoxWater->isChecked();
+    bool computeLatent = ui->chkBoxLatent->isChecked();
+    bool computeAdvective = ui->chkBoxAdvective->isChecked();
 
     setProcesses(computeWater, computeHeat, false);
+    setProcessesHeat(computeLatent, computeAdvective);
 
     // surface
     setSurface(ui->lineEditWidth->text().toDouble(),
@@ -214,9 +217,6 @@ void MainWindow::on_pushRunAllPeriod_clicked()
             else
                 myP = 0.;
         }
-
-        if (myCurrentHour == 129)
-            int a=0;
 
         runHeat1D(myT, myRH, myWS, myNR, myP);
 
@@ -420,4 +420,10 @@ void MainWindow::on_chkUseInputSoil_clicked()
     if (ui->chkUseInputSoil->isChecked() && ! soilDataLoaded) return;
 
     ui->groupBox_soil->setEnabled(! ui->chkUseInputSoil->isCheckable());
+}
+
+void MainWindow::on_chkBoxHeat_clicked()
+{
+    ui->chkBoxLatent->setEnabled(ui->chkBoxHeat->isEnabled());
+    ui->chkBoxAdvective->setEnabled(ui->chkBoxHeat->isEnabled());
 }

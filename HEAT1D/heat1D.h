@@ -41,6 +41,7 @@ void setInitialTemperature(double myValueTop, double myValueBottom);
 void setBottomTemperature(double myValue, double myDepth);
 void setHeatProcesses(bool computeHeatAdvection, bool computeHeatLatent, bool computeHeatSensible);
 void setProcesses(bool computeWaterProcess, bool computeHeatProcess, bool computeSolutesProcess);
+void setProcessesHeat(bool computeLatent_, bool computeAdvection_);
 void setHour(long myHour);
 double getCurrentPrec(long myHour);
 void getHourlyOutput(long myHour, long firstIndex, long lastIndex, QString& myString);

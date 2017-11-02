@@ -36,6 +36,8 @@
                 maxNrColumns = 0;
                 computeWater = true;
                 computeHeat = false;
+                computeHeatAdvection = false;
+                computeHeatVapor = false;
                 computeSolutes = false;
                 saveHeatFluxesType = SAVE_HEATFLUXES_NONE;
             }

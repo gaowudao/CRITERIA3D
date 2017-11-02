@@ -36,6 +36,7 @@ double initialSaturation, initialTemperatureTop, initialTemperatureBottom;
 
 //processes
 bool computeWater, computeSolutes, computeHeat;
+bool computeAdvection, computeLatent;
 
 long CurrentHour;
 
@@ -82,6 +83,13 @@ void setProcesses(bool computeWaterProcess, bool computeHeat_, bool computeSolut
     computeWater = computeWaterProcess;
     computeHeat = computeHeat_;
     computeSolutes = computeSolutesProcess;
+}
+
+void setProcessesHeat(bool computeLatent_, bool computeAdvection_)
+{
+    computeLatent = computeLatent_;
+    computeAdvection = computeAdvection_;
+
 }
 
 void getHourlyOutput(long myHour, long firstIndex, long lastIndex, QString& myString)
@@ -219,13 +227,11 @@ bool initializeHeat1D(long *myHourIni, long *myHourFin, bool useInputSoils)
     myResult = soilFluxes3D::initialize(NodesNumber, (short) NodesNumber, 0, computeWater, computeHeat, computeSolutes);
     if (myResult != CRIT3D_OK) printf("\n error in initialize");
 
-    if (computeHeat) soilFluxes3D::initializeHeat(SAVE_HEATFLUXES_ALL);
-
-    soilFluxes3D::setHydraulicProperties(MODIFIEDVANGENUCHTEN, MEAN_LOGARITHMIC, 10.);
-    soilFluxes3D::setNumericalParameters(0.1, 600., 100, 10, 12, 6);
-    soilFluxes3D::initializeBalance();
+    if (computeHeat) soilFluxes3D::initializeHeat(SAVE_HEATFLUXES_ALL, computeAdvection, computeLatent);
 
     if (! initializeSoil(useInputSoils)) printf("\n error in setSoilProperties");
+    soilFluxes3D::setHydraulicProperties(MODIFIEDVANGENUCHTEN, MEAN_LOGARITHMIC, 10.);
+    soilFluxes3D::setNumericalParameters((float)0.1, 600., 100, 10, 12, 6);
 
     for (indexNode = 0 ; indexNode<NodesNumber ; indexNode++ )
     {
@@ -314,6 +320,8 @@ bool initializeHeat1D(long *myHourIni, long *myHourFin, bool useInputSoils)
             if (myResult != CRIT3D_OK) printf("\n error in SetNode sotto!");
 		}																 
     }
+
+    soilFluxes3D::initializeBalance();
 
     *myHourIni = SimulationStart;
     *myHourFin = SimulationStop;
