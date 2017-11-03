@@ -231,7 +231,7 @@ bool initializeHeat1D(long *myHourIni, long *myHourFin, bool useInputSoils)
 
     if (! initializeSoil(useInputSoils)) printf("\n error in setSoilProperties");
     soilFluxes3D::setHydraulicProperties(MODIFIEDVANGENUCHTEN, MEAN_LOGARITHMIC, 10.);
-    soilFluxes3D::setNumericalParameters((float)0.1, 600., 100, 10, 12, 6);
+    soilFluxes3D::setNumericalParameters((float)1, 600., 100, 10, 12, 6);
 
     for (indexNode = 0 ; indexNode<NodesNumber ; indexNode++ )
     {

@@ -229,7 +229,7 @@ double SoilHeatCapacity(long i, double h, double T)
             theta * HEAT_CAPACITY_WATER;
 
     if (myStructure.computeHeatVapor)
-        heatCapacity *= thetaV * HEAT_CAPACITY_AIR;
+        heatCapacity += thetaV * HEAT_CAPACITY_AIR;
 
     return heatCapacity;
 }
