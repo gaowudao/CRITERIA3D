@@ -36,7 +36,7 @@ void setTotalDepth(double myValue);
 void setThickness(double myValue);
 void setSimulationStart(int myValue);
 void setSimulationStop(int myValue);
-void setInitialSaturation(double myValue);
+void setInitialSaturation(double myValueTop, double myValueBottom);
 void setInitialTemperature(double myValueTop, double myValueBottom);
 void setBottomTemperature(double myValue, double myDepth);
 void setHeatProcesses(bool computeHeatAdvection, bool computeHeatLatent, bool computeHeatSensible);

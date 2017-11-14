@@ -75,7 +75,7 @@ bool MainWindow::initializeModel()
     setTotalDepth(ui->lineEditDepth->text().toDouble());
 
     // initialization
-    setInitialSaturation(ui->lineEditIniWaterContent->text().toDouble());
+    setInitialSaturation(ui->lineEditIniWaterContentTop->text().toDouble(), ui->lineEditIniWaterContentBottom->text().toDouble());
     setInitialTemperature(ui->lineEditIniTTop->text().toDouble(), ui->lineEditIniTBottom->text().toDouble());
 
     // simulation
@@ -389,12 +389,7 @@ void MainWindow::on_pushLoadFileMeteo_clicked()
 void MainWindow::on_pushCopyOutput_clicked()
 {
     QString myTextOutput("");
-    myTextOutput = myHeatOutput.getTextOutput(ui->chkCopyT->isChecked(),
-                                              ui->chkCopyWC->isChecked(),
-                                              ui->chkCopyHF->isChecked(),
-                                              ui->chkCopySurf->isChecked(),
-                                              ui->chkCopyErr->isChecked(),
-                                              ui->chkCopyCond->isChecked());
+    myTextOutput = myHeatOutput.getTextOutput((outputGroup)ui->listWidget->row(ui->listWidget->selectedItems().first()));
 
     QClipboard *myClip = QApplication::clipboard();
     myClip->setText(myTextOutput);
@@ -427,3 +422,4 @@ void MainWindow::on_chkBoxHeat_clicked()
     ui->chkBoxLatent->setEnabled(ui->chkBoxHeat->isEnabled());
     ui->chkBoxAdvective->setEnabled(ui->chkBoxHeat->isEnabled());
 }
+

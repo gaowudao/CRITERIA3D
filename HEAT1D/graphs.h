@@ -102,7 +102,7 @@ public:
     QVector<profileStatus> profileOutput;
     QVector<heatErrors> errorOutput;
 
-    QString getTextOutput(bool getTemp, bool getWater, bool getHeatFlux, bool getSurfBalance, bool getErrors, bool getCond);
+    QString getTextOutput(outputGroup myOutGroup);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
