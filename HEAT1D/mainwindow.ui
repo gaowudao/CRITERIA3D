@@ -29,9 +29,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>350</y>
+      <y>340</y>
       <width>401</width>
-      <height>211</height>
+      <height>221</height>
      </rect>
     </property>
    </widget>
@@ -45,7 +45,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -143,14 +143,14 @@
        <rect>
         <x>20</x>
         <y>120</y>
-        <width>191</width>
-        <height>151</height>
+        <width>321</width>
+        <height>111</height>
        </rect>
       </property>
       <property name="title">
        <string>initial status</string>
       </property>
-      <widget class="QLineEdit" name="lineEditIniWaterContent">
+      <widget class="QLineEdit" name="lineEditIniWaterContentTop">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -166,8 +166,8 @@
       <widget class="QLineEdit" name="lineEditIniTTop">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>80</y>
+         <x>180</x>
+         <y>40</y>
          <width>51</width>
          <height>20</height>
         </rect>
@@ -179,8 +179,8 @@
       <widget class="QLabel" name="label_16">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>60</y>
+         <x>180</x>
+         <y>20</y>
          <width>101</width>
          <height>16</height>
         </rect>
@@ -199,14 +199,14 @@
         </rect>
        </property>
        <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;saturation ratio (-)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>saturation ratio top (-)</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_20">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>100</y>
+         <x>180</x>
+         <y>60</y>
          <width>131</width>
          <height>16</height>
         </rect>
@@ -218,14 +218,40 @@
       <widget class="QLineEdit" name="lineEditIniTBottom">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>120</y>
+         <x>180</x>
+         <y>80</y>
          <width>51</width>
          <height>20</height>
         </rect>
        </property>
        <property name="text">
         <string>12</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_18">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>60</y>
+         <width>141</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>saturation ratio bottom  (-)</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEditIniWaterContentBottom">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>80</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>0.5</string>
        </property>
       </widget>
      </widget>
@@ -881,9 +907,9 @@
      <widget class="QGroupBox" name="groupBox_6">
       <property name="geometry">
        <rect>
-        <x>20</x>
+        <x>10</x>
         <y>10</y>
-        <width>101</width>
+        <width>161</width>
         <height>81</height>
        </rect>
       </property>
@@ -928,13 +954,51 @@
         <bool>true</bool>
        </property>
       </widget>
+      <widget class="QCheckBox" name="chkBoxLatent">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>80</x>
+         <y>30</y>
+         <width>61</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>latent</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="chkBoxAdvective">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>80</x>
+         <y>50</y>
+         <width>71</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>advective</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
      </widget>
      <widget class="QGroupBox" name="groupBox_simTime">
       <property name="geometry">
        <rect>
-        <x>130</x>
+        <x>180</x>
         <y>10</y>
-        <width>111</width>
+        <width>101</width>
         <height>81</height>
        </rect>
       </property>
@@ -957,9 +1021,9 @@
       <widget class="QLabel" name="label_12">
        <property name="geometry">
         <rect>
-         <x>10</x>
+         <x>20</x>
          <y>20</y>
-         <width>91</width>
+         <width>41</width>
          <height>16</height>
         </rect>
        </property>
@@ -970,9 +1034,9 @@
       <widget class="QLabel" name="label_13">
        <property name="geometry">
         <rect>
-         <x>10</x>
+         <x>20</x>
          <y>40</y>
-         <width>101</width>
+         <width>51</width>
          <height>16</height>
         </rect>
        </property>
@@ -997,10 +1061,10 @@
      <widget class="QPushButton" name="pushRunAllPeriod">
       <property name="geometry">
        <rect>
-        <x>250</x>
-        <y>70</y>
+        <x>290</x>
+        <y>30</y>
         <width>81</width>
-        <height>23</height>
+        <height>41</height>
        </rect>
       </property>
       <property name="font">
@@ -1068,84 +1132,6 @@ to clipboard</string>
       </property>
       <property name="autoDefault">
        <bool>false</bool>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="chkCopyT">
-      <property name="geometry">
-       <rect>
-        <x>130</x>
-        <y>140</y>
-        <width>101</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>soil temperature</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="chkCopyWC">
-      <property name="geometry">
-       <rect>
-        <x>130</x>
-        <y>160</y>
-        <width>111</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>soil water content</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="chkCopyHF">
-      <property name="geometry">
-       <rect>
-        <x>130</x>
-        <y>180</y>
-        <width>101</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>soil heat fluxes</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="chkCopySurf">
-      <property name="geometry">
-       <rect>
-        <x>270</x>
-        <y>140</y>
-        <width>111</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>surface fluxes</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="chkCopyCond">
-      <property name="geometry">
-       <rect>
-        <x>270</x>
-        <y>160</y>
-        <width>111</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>resistances</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="chkCopyErr">
-      <property name="geometry">
-       <rect>
-        <x>270</x>
-        <y>180</y>
-        <width>111</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>errors</string>
       </property>
      </widget>
     </widget>

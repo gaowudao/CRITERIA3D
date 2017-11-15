@@ -32,10 +32,11 @@ double airRelativeHumidity, airTemperature, windSpeed, globalRad;
 double precHourlyAmount, precHours, precIniHour, precTemperature;
 
 //initialization
-double initialSaturation, initialTemperatureTop, initialTemperatureBottom;
+double initialSaturationTop, initialSaturationBottom, initialTemperatureTop, initialTemperatureBottom;
 
 //processes
 bool computeWater, computeSolutes, computeHeat;
+bool computeAdvection, computeLatent;
 
 long CurrentHour;
 
@@ -55,8 +56,10 @@ void setSimulationStart(int myValue)
 void setSimulationStop(int myValue)
 {   SimulationStop = myValue;}
 
-void setInitialSaturation(double myValue)
-{   initialSaturation = myValue;}
+void setInitialSaturation(double myValueTop, double myValueBottom)
+{   initialSaturationTop = myValueTop;
+    initialSaturationBottom = myValueBottom;
+}
 
 void setInitialTemperature(double myValueTop, double myValueBottom)
 {   initialTemperatureTop = myValueTop;
@@ -82,6 +85,13 @@ void setProcesses(bool computeWaterProcess, bool computeHeat_, bool computeSolut
     computeWater = computeWaterProcess;
     computeHeat = computeHeat_;
     computeSolutes = computeSolutesProcess;
+}
+
+void setProcessesHeat(bool computeLatent_, bool computeAdvection_)
+{
+    computeLatent = computeLatent_;
+    computeAdvection = computeAdvection_;
+
 }
 
 void getHourlyOutput(long myHour, long firstIndex, long lastIndex, QString& myString)
@@ -199,6 +209,7 @@ bool initializeHeat1D(long *myHourIni, long *myHourFin, bool useInputSoils)
     int boundaryType;
     float x = 0.;
     float y = 0.;
+    double myThetaS, myThetaR;
 
     NodesNumber = ceil(TotalDepth / Thickness) + 1;
     double *myDepth = (double *) calloc(NodesNumber, sizeof(double));
@@ -219,11 +230,11 @@ bool initializeHeat1D(long *myHourIni, long *myHourFin, bool useInputSoils)
     myResult = soilFluxes3D::initialize(NodesNumber, (short) NodesNumber, 0, computeWater, computeHeat, computeSolutes);
     if (myResult != CRIT3D_OK) printf("\n error in initialize");
 
-    if (computeHeat) soilFluxes3D::initializeHeat(SAVE_HEATFLUXES_ALL);
-
-    soilFluxes3D::setHydraulicProperties(MODIFIEDVANGENUCHTEN, MEAN_LOGARITHMIC, 10.);
+    if (computeHeat) soilFluxes3D::initializeHeat(SAVE_HEATFLUXES_ALL, computeAdvection, computeLatent);
 
     if (! initializeSoil(useInputSoils)) printf("\n error in setSoilProperties");
+    soilFluxes3D::setHydraulicProperties(MODIFIEDVANGENUCHTEN, MEAN_LOGARITHMIC, 10.);
+    soilFluxes3D::setNumericalParameters((float)0.1, 600., 100, 10, 12, 6);
 
     for (indexNode = 0 ; indexNode<NodesNumber ; indexNode++ )
     {
@@ -288,18 +299,24 @@ bool initializeHeat1D(long *myHourIni, long *myHourFin, bool useInputSoils)
 			myResult = soilFluxes3D::setNodeSoil(indexNode, 0, myNodeHorizon);
 			if (myResult != CRIT3D_OK) printf("\n error in setNodeSoil!");
 																																  
-			if (initialSaturation <= 1. && initialSaturation > 0.)
-				if (useInputSoils)
-					myResult = soilFluxes3D::setWaterContent(indexNode, initialSaturation * (myInputSoils[myNodeHorizon].Theta_s - myInputSoils[myNodeHorizon].Theta_r) + myInputSoils[myNodeHorizon].Theta_r);
-				else
-					myResult = soilFluxes3D::setWaterContent(indexNode, initialSaturation * (ThetaS - ThetaR) + ThetaR);
-			else
-				printf("\n error in setWaterContent!");
+            if (useInputSoils)
+            {
+                myThetaS = myInputSoils[myNodeHorizon].Theta_s;
+                myThetaR = myInputSoils[myNodeHorizon].Theta_r;
+            }
+            else
+            {
+                myThetaS = ThetaS;
+                myThetaR = ThetaR;
+            }
+
+            myResult = soilFluxes3D::setWaterContent(indexNode, ((indexNode-1)*(initialSaturationBottom - initialSaturationTop)/(NodesNumber-2)+initialSaturationTop) * (myThetaS - myThetaR) + myThetaR);
+            if (myResult != CRIT3D_OK) printf("\n error in SetWaterContent!");
 
 			if (computeHeat)
 			{
 				myResult = soilFluxes3D::setTemperature(indexNode,
-					273.16 + ((indexNode-1)*(initialTemperatureBottom-initialTemperatureTop)/(NodesNumber-2)+initialTemperatureTop));
+                    273.16 + ((indexNode-1)*(initialTemperatureBottom - initialTemperatureTop)/(NodesNumber-2)+initialTemperatureTop));
 
 				if (myResult != CRIT3D_OK) printf("\n error in SetTemperature!");
 			}
@@ -312,8 +329,6 @@ bool initializeHeat1D(long *myHourIni, long *myHourFin, bool useInputSoils)
             if (myResult != CRIT3D_OK) printf("\n error in SetNode sotto!");
 		}																 
     }
-
-    soilFluxes3D::setNumericalParameters(0.1, 600, 100, 10, 12, 8);
 
     soilFluxes3D::initializeBalance();
 
@@ -509,12 +524,12 @@ void getHourlyOutputAllPeriod(long firstIndex, long lastIndex, Crit3DOut *output
     output->errorOutput[output->nrValues-1].waterMBR = myPoint;
 }
 
-QString Crit3DOut::getTextOutput(bool getTemp, bool getWater, bool getHeatFlux, bool getSurfBalance, bool getErrors, bool getCond)
+QString Crit3DOut::getTextOutput(outputGroup outGroup)
 {
     QString myString = "";
-    float myValue;
+    float myValue;    
 
-    if (getTemp)
+    if (outGroup == outputGroup::soilTemperature)
         for (int j=1; j<=nrLayers; j++)
         {
             myString.append(QString("TempSoil_"));
@@ -522,7 +537,7 @@ QString Crit3DOut::getTextOutput(bool getTemp, bool getWater, bool getHeatFlux, 
             myString.append(QString(","));
         }
 
-    if (getWater)
+    if (outGroup == outputGroup::soilWater)
         for (int j=0; j<=nrLayers; j++)
         {
             myString.append(QString("WaterContent_"));
@@ -530,28 +545,84 @@ QString Crit3DOut::getTextOutput(bool getTemp, bool getWater, bool getHeatFlux, 
             myString.append(QString(","));
         }
 
-    if (getHeatFlux)
+    if (outGroup == outputGroup::totalHeatFlux)
         for (int j=1; j<=nrLayers; j++)
         {
-            myString.append(QString("HeatFlux_"));
+            myString.append(QString("HeatFlux_tot"));
             myString.append(QString::number(j));
             myString.append(QString(","));
         }
 
-    if (getSurfBalance)
+    if (outGroup == outputGroup::diffusiveHeatFlux)
+        for (int j=1; j<=nrLayers; j++)
+        {
+            myString.append(QString("HeatFlux_diff"));
+            myString.append(QString::number(j));
+            myString.append(QString(","));
+        }
+
+    if (outGroup == outputGroup::latentHeatFluxIso)
+        for (int j=1; j<=nrLayers; j++)
+        {
+            myString.append(QString("HeatFlux_latIso"));
+            myString.append(QString::number(j));
+            myString.append(QString(","));
+        }
+
+    if (outGroup == outputGroup::latentHeatFluxTherm)
+        for (int j=1; j<=nrLayers; j++)
+        {
+            myString.append(QString("HeatFlux_latThe"));
+            myString.append(QString::number(j));
+            myString.append(QString(","));
+        }
+
+    if (outGroup == outputGroup::waterIsothLiquidFlux)
+        for (int j=1; j<=nrLayers; j++)
+        {
+            myString.append(QString("WaterFlux_liqIso"));
+            myString.append(QString::number(j));
+            myString.append(QString(","));
+        }
+
+    if (outGroup == outputGroup::waterThermLiquidFlux)
+        for (int j=1; j<=nrLayers; j++)
+        {
+            myString.append(QString("WaterFlux_liqThe"));
+            myString.append(QString::number(j));
+            myString.append(QString(","));
+        }
+
+    if (outGroup == outputGroup::waterIsothVaporFlux)
+        for (int j=1; j<=nrLayers; j++)
+        {
+            myString.append(QString("WaterFlux_vapIso"));
+            myString.append(QString::number(j));
+            myString.append(QString(","));
+        }
+
+    if (outGroup == outputGroup::waterThermVaporFlux)
+        for (int j=1; j<=nrLayers; j++)
+        {
+            myString.append(QString("WaterFlux_vapThe"));
+            myString.append(QString::number(j));
+            myString.append(QString(","));
+        }
+
+    if (outGroup == outputGroup::energyBalance)
     {
         myString.append(QString("srfNetIrrad,"));
         myString.append(QString("srfSnsblHeat,"));
         myString.append(QString("srfLtntHeat,"));
     }
 
-    if (getCond)
+    if (outGroup == outputGroup::surfaceResistances)
     {
         myString.append(QString("aeroResistance,"));
         myString.append(QString("soilResistance,"));
     }
 
-    if (getErrors)
+    if (outGroup == outputGroup::errorBalance)
     {
         myString.append(QString("HeatMB,"));
         myString.append(QString("HeatMBE,"));
@@ -562,7 +633,7 @@ QString Crit3DOut::getTextOutput(bool getTemp, bool getWater, bool getHeatFlux, 
 
     for (int i=0; i<nrValues; i++)
     {
-        if (getTemp)
+        if (outGroup == outputGroup::soilTemperature)
             for (int j=1; j<=nrLayers; j++)
             {
                 myValue = profileOutput[i].temperature[j].y();
@@ -570,7 +641,7 @@ QString Crit3DOut::getTextOutput(bool getTemp, bool getWater, bool getHeatFlux, 
                 myString.append(QString(","));
             }
 
-        if (getWater)
+        if (outGroup == outputGroup::soilWater)
             for (int j=0; j<=nrLayers; j++)
             {
                 myValue = profileOutput[i].waterContent[j].y();
@@ -578,15 +649,7 @@ QString Crit3DOut::getTextOutput(bool getTemp, bool getWater, bool getHeatFlux, 
                 myString.append(QString(","));
             }
 
-        if (getHeatFlux)
-            for (int j=1; j<=nrLayers; j++)
-            {
-                myValue = profileOutput[i].totalHeatFlux[j].y();
-                myString.append(QString::number(myValue,'f',4));
-                myString.append(QString(","));
-            }
-
-        if (getSurfBalance)
+        if (outGroup == outputGroup::energyBalance)
         {
             myValue = landSurfaceOutput[i].netRadiation.y();
             myString.append(QString::number(myValue,'f',2));
@@ -601,7 +664,7 @@ QString Crit3DOut::getTextOutput(bool getTemp, bool getWater, bool getHeatFlux, 
             myString.append(QString(","));
         }
 
-        if (getCond)
+        if (outGroup == outputGroup::surfaceResistances)
         {
             myValue = landSurfaceOutput[i].aeroResistance.y();
             myString.append(QString::number(myValue,'f',6));
@@ -612,7 +675,7 @@ QString Crit3DOut::getTextOutput(bool getTemp, bool getWater, bool getHeatFlux, 
             myString.append(QString(","));
         }
 
-        if (getErrors)
+        if (outGroup == outputGroup::errorBalance)
         {
             myValue = errorOutput[i].heatMBR.y();
             myString.append(QString::number(myValue,'f',12));
@@ -625,6 +688,70 @@ QString Crit3DOut::getTextOutput(bool getTemp, bool getWater, bool getHeatFlux, 
             myValue = errorOutput[i].waterMBR.y();
             myString.append(QString::number(myValue,'f',12));
         }
+
+        if (outGroup == outputGroup::totalHeatFlux)
+            for (int j=0; j<=nrLayers; j++)
+            {
+                myValue = profileOutput[i].totalHeatFlux[j].y();
+                myString.append(QString::number(myValue,'f',4));
+                myString.append(QString(","));
+            }
+
+        if (outGroup == outputGroup::diffusiveHeatFlux)
+            for (int j=0; j<=nrLayers; j++)
+            {
+                myValue = profileOutput[i].diffusiveHeatFlux[j].y();
+                myString.append(QString::number(myValue,'f',4));
+                myString.append(QString(","));
+            }
+
+        if (outGroup == outputGroup::latentHeatFluxIso)
+            for (int j=0; j<=nrLayers; j++)
+            {
+                myValue = profileOutput[i].isothermalLatentHeatFlux[j].y();
+                myString.append(QString::number(myValue,'f',4));
+                myString.append(QString(","));
+            }
+
+        if (outGroup == outputGroup::latentHeatFluxTherm)
+            for (int j=0; j<=nrLayers; j++)
+            {
+                myValue = profileOutput[i].thermalLatentHeatFlux[j].y();
+                myString.append(QString::number(myValue,'f',4));
+                myString.append(QString(","));
+            }
+
+        if (outGroup == outputGroup::waterIsothLiquidFlux)
+            for (int j=0; j<=nrLayers; j++)
+            {
+                myValue = profileOutput[i].waterIsothermalLiquidFlux[j].y();
+                myString.append(QString::number(myValue,'f',4));
+                myString.append(QString(","));
+            }
+
+        if (outGroup == outputGroup::waterThermLiquidFlux)
+            for (int j=0; j<=nrLayers; j++)
+            {
+                myValue = profileOutput[i].waterThermalLiquidFlux[j].y();
+                myString.append(QString::number(myValue,'f',4));
+                myString.append(QString(","));
+            }
+
+        if (outGroup == outputGroup::waterIsothVaporFlux)
+            for (int j=0; j<=nrLayers; j++)
+            {
+                myValue = profileOutput[i].waterIsothermalVaporFlux[j].y();
+                myString.append(QString::number(myValue,'f',4));
+                myString.append(QString(","));
+            }
+
+        if (outGroup == outputGroup::waterThermVaporFlux)
+            for (int j=0; j<=nrLayers; j++)
+            {
+                myValue = profileOutput[i].waterThermalVaporFlux[j].y();
+                myString.append(QString::number(myValue,'f',4));
+                myString.append(QString(","));
+            }
 
         myString.append(QString("\n"));
 

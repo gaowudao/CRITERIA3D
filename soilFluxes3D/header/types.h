@@ -23,6 +23,8 @@
         bool computeWater;
         bool computeHeat;
         bool computeSolutes;
+        bool computeHeatVapor;
+        bool computeHeatAdvection;
 
         int saveHeatFluxesType;
 
@@ -34,6 +36,8 @@
                 maxNrColumns = 0;
                 computeWater = true;
                 computeHeat = false;
+                computeHeatAdvection = false;
+                computeHeatVapor = false;
                 computeSolutes = false;
                 saveHeatFluxesType = SAVE_HEATFLUXES_NONE;
             }

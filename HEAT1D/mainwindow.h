@@ -30,6 +30,8 @@ private slots:
 
     bool initializeModel();
 
+    void on_chkBoxHeat_clicked();
+
 private:
     Ui::MainWindow *ui;
 

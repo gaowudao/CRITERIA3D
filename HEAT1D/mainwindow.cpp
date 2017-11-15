@@ -75,7 +75,7 @@ bool MainWindow::initializeModel()
     setTotalDepth(ui->lineEditDepth->text().toDouble());
 
     // initialization
-    setInitialSaturation(ui->lineEditIniWaterContent->text().toDouble());
+    setInitialSaturation(ui->lineEditIniWaterContentTop->text().toDouble(), ui->lineEditIniWaterContentBottom->text().toDouble());
     setInitialTemperature(ui->lineEditIniTTop->text().toDouble(), ui->lineEditIniTBottom->text().toDouble());
 
     // simulation
@@ -91,8 +91,11 @@ bool MainWindow::initializeModel()
     // processes
     bool computeHeat = ui->chkBoxHeat->isChecked();
     bool computeWater = ui->chkBoxWater->isChecked();
+    bool computeLatent = ui->chkBoxLatent->isChecked();
+    bool computeAdvective = ui->chkBoxAdvective->isChecked();
 
     setProcesses(computeWater, computeHeat, false);
+    setProcessesHeat(computeLatent, computeAdvective);
 
     // surface
     setSurface(ui->lineEditWidth->text().toDouble(),
@@ -278,6 +281,7 @@ void MainWindow::on_pushLoadFileSoil_clicked()
         soilDataLoaded = true;
         ui->chkUseInputSoil->setEnabled(true);
         ui->chkUseInputSoil->setChecked(true);
+        ui->groupBox_soil->setEnabled(false);
     }
 
     myFile.close();
@@ -370,8 +374,11 @@ void MainWindow::on_pushLoadFileMeteo_clicked()
         }
 
         meteoDataLoaded = true;
+
         ui->chkUseInputMeteo->setEnabled(true);
         ui->chkUseInputMeteo->setChecked(true);
+        ui->groupBox_atmFixedData->setEnabled(false);
+        ui->groupBox_simTime->setEnabled(false);
     }
 
     myFile.close();
@@ -382,12 +389,7 @@ void MainWindow::on_pushLoadFileMeteo_clicked()
 void MainWindow::on_pushCopyOutput_clicked()
 {
     QString myTextOutput("");
-    myTextOutput = myHeatOutput.getTextOutput(ui->chkCopyT->isChecked(),
-                                              ui->chkCopyWC->isChecked(),
-                                              ui->chkCopyHF->isChecked(),
-                                              ui->chkCopySurf->isChecked(),
-                                              ui->chkCopyErr->isChecked(),
-                                              ui->chkCopyCond->isChecked());
+    myTextOutput = myHeatOutput.getTextOutput((outputGroup)ui->listWidget->row(ui->listWidget->selectedItems().first()));
 
     QClipboard *myClip = QApplication::clipboard();
     myClip->setText(myTextOutput);
@@ -414,3 +416,10 @@ void MainWindow::on_chkUseInputSoil_clicked()
 
     ui->groupBox_soil->setEnabled(! ui->chkUseInputSoil->isCheckable());
 }
+
+void MainWindow::on_chkBoxHeat_clicked()
+{
+    ui->chkBoxLatent->setEnabled(ui->chkBoxHeat->isEnabled());
+    ui->chkBoxAdvective->setEnabled(ui->chkBoxHeat->isEnabled());
+}
+
