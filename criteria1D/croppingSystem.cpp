@@ -174,39 +174,37 @@ bool updateCropWaterStressSensibility(Crit3DCrop* myCrop)
 }
 
 
-double getTotalEasyWater(Criteria1D* myCase)
+double getWeighredRAW(Criteria1D* myCase)
 {
-    double myEasyWater = 0.0;
+    if (! myCase->myCrop.isLiving) return 0.;
+    if (myCase->myCrop.roots.rootDepth <= myCase->myCrop.roots.rootDepthMin) return 0.;
+    if (myCase->myCrop.roots.firstRootLayer == NODATA) return 0.;
 
-    if (! myCase->myCrop.isLiving) return myEasyWater;
-    if (myCase->myCrop.roots.rootDepth <= myCase->myCrop.roots.rootDepthMin) return myEasyWater;
-    if (myCase->myCrop.roots.firstRootLayer == NODATA) return myEasyWater;
-
-    double myDepth;
     double densMax = 0.0;
-    double threshold, deltaAW;
-    int i;
+    for (int i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
+        densMax = maxValue(densMax, myCase->myCrop.roots.rootDensity[i]);
 
-    for (i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
-       densMax = maxValue(densMax, myCase->myCrop.roots.rootDensity[i]);
+    double depth, threshold, layerRAW;
+    double sumRAW = 0.0;
 
-    for (i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
+    for (int i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
     {
         threshold = myCase->layer[i].FC - myCase->myCrop.waterStressSensibility * (myCase->layer[i].FC - myCase->layer[i].WP);
 
-        deltaAW = (myCase->layer[i].waterContent - threshold) *(myCase->myCrop.roots.rootDensity[i] / densMax);
+        layerRAW = (myCase->layer[i].waterContent - threshold) *(myCase->myCrop.roots.rootDensity[i] / densMax);
 
-        myDepth = myCase->layer[i].depth + myCase->layer[i].thickness / 2.0;
+        depth = myCase->layer[i].depth + myCase->layer[i].thickness / 2.0;
 
-        if (myCase->myCrop.roots.rootDepth < myDepth)
-                deltaAW *= (myCase->myCrop.roots.rootDepth - myDepth) / myCase->layer[i].thickness;
+        if (myCase->myCrop.roots.rootDepth < depth)
+                layerRAW *= (myCase->myCrop.roots.rootDepth - depth) / myCase->layer[i].thickness;
 
-        myEasyWater += deltaAW;
+        sumRAW += layerRAW;
 
     }
 
-    return myEasyWater;
+    return sumRAW;
 }
+
 
 // soil water deficit [mm]
 double getSoilWaterDeficit(Criteria1D* myCase)
@@ -277,7 +275,7 @@ float cropIrrigationDemand(Criteria1D* myCase, float currentPrec, float nextPrec
     if (daysSinceIrrigation != NODATA &&
             ++daysSinceIrrigation < myCase->myCrop.irrigationShift) return 0;
 
-    // check rainfall forecast
+    // check rainfall (forecast)
     if (currentPrec > 5.) return 0.;
     if (myCase->myCrop.irrigationShift > 1)
         if ((currentPrec + nextPrec) >  myCase->myCrop.irrigationVolume * 0.5) return 0.;
@@ -287,8 +285,8 @@ float cropIrrigationDemand(Criteria1D* myCase, float currentPrec, float nextPrec
     double waterStress = cropTranspiration(myCase, true);
     if (waterStress <= threshold) return 0.;
 
-    // check readily available water (depending on water sensitivity)
-    if (getTotalEasyWater(myCase) > 5.) return 0.;
+    // check readily available water (weighted on root density)
+    if (getWeighredRAW(myCase) > 10.) return 0.;
 
     // all check passed --> IRRIGATION
 
