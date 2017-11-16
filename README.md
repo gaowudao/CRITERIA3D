@@ -1,5 +1,5 @@
-# CRITERIA3D distribution
-CRITERIA3D distribution provides a set of libraries and executables for agro-meteorological and climate analysis.
+# CRITERIA3D
+CRITERIA3D distribution provides a set of model libraries and executables for agro-meteorological analysis.
 It includes a numerical solution for three-dimensional water and heat flow in the soil, meteorological data interpolation, daily weather generator, radiation budget, snow accumulation and melt, plant development and plant water uptake.
 
 ## soilFluxes3D library
