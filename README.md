@@ -22,7 +22,7 @@ HEAT1D is a graphical interface for testing the soilFluxex3D library in a 1D dom
 
 # License
 CRITERIA3D has been developed under contract issued by 
-ARPAE Hydro Meteo Climate Service, Emilia-Romagna, Italy: http://www.arpae.it/sim/
+ARPAE Hydro-Meteo-Climate Service, Emilia-Romagna, Italy: http://www.arpae.it/sim/
 
 CRITERIA3D is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, 
