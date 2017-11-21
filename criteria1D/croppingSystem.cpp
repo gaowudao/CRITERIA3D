@@ -290,7 +290,6 @@ float cropIrrigationDemand(Criteria1D* myCase, float currentPrec, float nextPrec
 
     // all check passed --> IRRIGATION
 
-
     // reset irrigation shift
     daysSinceIrrigation = 0;
 
