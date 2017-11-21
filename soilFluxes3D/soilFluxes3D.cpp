@@ -1094,6 +1094,20 @@ double DLL_EXPORT __STDCALL getTemperature(long nodeIndex)
 }
 
 /*!
+ * \brief return heat conductivity
+ * \param nodeIndex
+ * \return conductivity [W m-1 s-1]
+ */
+double DLL_EXPORT __STDCALL getHeatConductivity(long nodeIndex)
+{
+    if (myNode == NULL) return(TOPOGRAPHY_ERROR);
+    if ((nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
+    if (! isHeatNode(nodeIndex)) return (MEMORY_ERROR);
+
+   return SoilHeatConductivity(nodeIndex, myNode[nodeIndex].extra->Heat->T, myNode[nodeIndex].H - myNode[nodeIndex].z);
+}
+
+/*!
  * \brief return instantaneous heat flux
  * \param nodeIndex
  * \param myDirection

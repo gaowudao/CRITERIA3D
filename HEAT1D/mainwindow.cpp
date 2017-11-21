@@ -56,7 +56,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->listWidget->addItem("isothermal water vapor flux (l s-1)");
     ui->listWidget->addItem("thermal water vapor flux (l s-1)");
     ui->listWidget->addItem("surface energy balance (W m-2)");
-    ui->listWidget->addItem("surface resistences (s m-1)");
+    ui->listWidget->addItem("surface resistances (s m-1)");
+    ui->listWidget->addItem("heat conductivity (W m-1 K-1");
     ui->listWidget->addItem("error balance ()");
 }
 
@@ -121,49 +122,6 @@ bool MainWindow::initializeModel()
     return true;
 }
 
-/*
-void MainWindow::on_pushRunNextHour_clicked()
-{
-    if (Initialized)
-    {
-        setHour(++myCurrentHour);
-
-        double myPIniHour, myPHours;
-        double myT, myRH, myWS, myNR, myP;
-
-        myPIniHour = ui->lineEditPrecStart->text().toInt();
-        myPHours = ui->lineEditPrecHours->text().toInt();
-
-        if (useInputData)
-        {
-            myT = myTempInput[myCurrentHour-1] + 273.16;
-            myP = myPrecInput[myCurrentHour-1];
-            myRH = myRHInput[myCurrentHour-1];
-            myWS = myWSInput[myCurrentHour-1];
-            myNR = myNetRadInput[myCurrentHour-1];
-        }
-        else
-        {
-            myT = ui->lineEditAtmT->text().toDouble() + 273.16;
-            myRH = ui->lineEditAtmRH->text().toDouble();
-            myWS = ui->lineEditAtmWS->text().toDouble();
-            myNR = 0.;
-
-            if ((myCurrentHour >= myPIniHour) && (myCurrentHour < myPIniHour + myPHours))
-                myP = ui->lineEditPrecHourlyAmount->text().toDouble();
-            else
-                myP = 0.;
-        }
-
-        runTestHeat(myT, myRH, myWS, myNR, myP);
-
-        //getHourlyOutput(myCurrentHour, 0, getNodesNumber(), myOutput);
-
-        ui->prgBar->setValue(myCurrentHour);
-    }
-}
-*/
-
 void MainWindow::on_pushRunAllPeriod_clicked()
 {
     myHeatOutput.clean();
@@ -181,8 +139,6 @@ void MainWindow::on_pushRunAllPeriod_clicked()
         ui->labelInfo->setText("Initialization failed");
         return;
     }
-
-    //getHourlyOutputAllPeriod(0, nodesNr, &myHeatOutput);
 
     double myPIniHour, myPHours;
     double myT, myRH, myWS, myNR, myP;
