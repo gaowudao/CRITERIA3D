@@ -11,7 +11,7 @@ bool searchRainfallEvent(unsigned long *firstIndex, float *sumPrec, float *maxIn
     *maxIntensity = 0.0;
     *sumPrec = 0.0;
 
-    while (nrHoursZero <= 2 && i < (*prec).size())
+    while (nrHoursZero < 3 && i < (*prec).size())
     {
         if (prec->at(i) > 0.2)
         {
@@ -27,7 +27,11 @@ bool searchRainfallEvent(unsigned long *firstIndex, float *sumPrec, float *maxIn
             nrHoursZero = 0;
         }
         else
-            if (isEvent) nrHoursZero++;
+            if (isEvent)
+            {
+                nrHoursZero++;
+                *sumPrec += prec->at(i);
+            }
 
         i++;
     }

@@ -1,6 +1,7 @@
 #include <QCoreApplication>
 #include <QDateTime>
 #include <iostream>
+#include <math.h>
 
 #include "creekProject.h"
 #include "csvReader.h"
@@ -61,35 +62,51 @@ int main(int argc, char *argv[])
         prec.push_back(values[i].value(1).toFloat());
     }
 
-    float maxIntensity, sumPrec, intensityRatio, runoffPrec;
+    float maxIntensity, sumPrec, adjSum, intensityRatio;
+    float peak, runoffPrec, currentWHC;
     unsigned long firstIndex = 0;
     int lenght, whcIndex;
     QDate myDate;
 
+    std::cout << "Date\t\tPrec\t\tWHC\tmax\thours\tRunoff\tPeak(m)\n";
     while (searchRainfallEvent(&firstIndex, &sumPrec, &maxIntensity, &lenght, &prec))
     {
         if (sumPrec > 2. && maxIntensity >= 1.)
         {
-            intensityRatio = sumPrec / maxIntensity;
-            if (intensityRatio > 7.)
-                sumPrec /= (intensityRatio / 7.);
-
             myDate = precDateTime[firstIndex].date();
             whcIndex = whcDate[0].daysTo(myDate);
-            runoffPrec = sumPrec - whc[whcIndex];
-
-            if (runoffPrec > 0.)
+            if (whcIndex >= 0)
             {
-                std::cout << precDateTime[firstIndex].toString("yyyy-MM-dd hh").toStdString();
-                std::cout << "\tsum:" << sumPrec << " \tmax:" << maxIntensity << " \th:" << lenght;
-                std::cout << "\trunoffPrec:" << runoffPrec << std::endl;
+                currentWHC = whc[whcIndex];
+
+                intensityRatio = sumPrec / maxIntensity;
+                if (intensityRatio > 7.)
+                    adjSum = sumPrec * (7. / intensityRatio);
+                else
+                    adjSum = sumPrec;
+
+                runoffPrec = adjSum - currentWHC;
+
+                if (runoffPrec > 0)
+                    peak = pow(runoffPrec, 1.5) * 0.0048;
+                else
+                    peak = 0.0;
+
+                // output
+                if (peak > 0.1)
+                {
+                    std::cout << myDate.toString("yyyy-MM-dd").toStdString();
+                    std::cout << "\t" << int(sumPrec) << "->" << int(adjSum);
+                    std::cout << "\t\t" << currentWHC;
+                    std::cout << "\t" << maxIntensity << "\t" << lenght;
+                    std::cout << "\t" << int(runoffPrec);
+                    std::cout << "\t" << peak << std::endl;
+                }
             }
         }
 
         firstIndex += lenght;
     }
-
-
 
     myProject.logInfo("END");
     return true;

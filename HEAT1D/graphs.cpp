@@ -88,8 +88,7 @@ outputType getOutputType(outputGroup myOut)
         myOut == waterIsothLiquidFlux ||
         myOut == waterThermLiquidFlux ||
         myOut == waterIsothVaporFlux ||
-        myOut == waterThermVaporFlux ||
-        myOut == soilHeatConductivity)
+        myOut == waterThermVaporFlux)
 
         return outputType::profile;
     else if (myOut == energyBalance ||
@@ -192,10 +191,6 @@ QVector<QPointF> getProfileSeries(Crit3DOut* myOut, outputGroup myVar, int layer
 
             case outputGroup::soilWater :
                 myVal = myOut->profileOutput[i].waterContent[layerIndex].y();
-                break;
-
-            case outputGroup::soilHeatConductivity :
-                myVal = myOut->profileOutput[i].heatConductivity[layerIndex].y();
                 break;
 
             case outputGroup::totalHeatFlux :
