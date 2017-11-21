@@ -94,59 +94,6 @@ void setProcessesHeat(bool computeLatent_, bool computeAdvection_)
 
 }
 
-void getHourlyOutput(long myHour, long firstIndex, long lastIndex, QString& myString)
-{
-    double myWaterContent, h, myTemperature;
-    double myDiffusiveHeat, myIsoLatHeat;
-	long myIndex;
-    double WaterSum = 0;
-
-    myString.append("wc(m3m-3),psi(m),T(degC),diffHeatFlux(Wm-2),isoLatHeat(Wm-2) HOUR: "); // WV (1000*kg m-3) HOUR: ");
-    myString.append(QString::number(myHour,'f',0));
-    myString.append(QString("\n"));
-
-    for (myIndex = firstIndex ; myIndex <= lastIndex ; myIndex++ )
-		{ 
-        myWaterContent = soilFluxes3D::getWaterContent(myIndex);
-        h = soilFluxes3D::getMatricPotential(myIndex);
-        myTemperature = soilFluxes3D::getTemperature(myIndex);
-        myDiffusiveHeat = soilFluxes3D::getHeatFlux(myIndex, DOWN, HEATFLUX_DIFFUSIVE);
-        myIsoLatHeat = soilFluxes3D::getHeatFlux(myIndex, DOWN, HEATFLUX_LATENT_ISOTHERMAL);
-
-        myString.append(QString::number(myWaterContent,'f',12));
-        myString.append(QString(", "));
-        myString.append(QString::number(h,'f',6));
-        myString.append(QString(", "));
-
-        if (myTemperature != INDEX_ERROR)
-            myString.append(QString::number(myTemperature - 273.16,'f',6));
-        else
-            myString.append(QString::number(myTemperature,'f',6));
-
-        myString.append(QString(", "));
-        myString.append(QString::number(myDiffusiveHeat,'f',6));
-        myString.append(QString(", "));
-        myString.append(QString::number(myIsoLatHeat,'f',6));
-        myString.append(QString(", "));
-
-        WaterSum += myWaterContent * myNode[myIndex].volume_area;
-
-        myString.append(QString("\n"));
-		}
-
-    myString.append(QString("WaterSum:"));
-    myString.append(QString::number(WaterSum,'f',9));
-    myString.append(QString(" m3 MBRWater:"));
-    myString.append(QString::number(soilFluxes3D::getWaterMBR(),'f',9));
-    myString.append(QString(" MBEHeat:"));
-    myString.append(QString::number(balanceCurrentTimeStep.heatMBE,'f',9));
-    myString.append(QString(" MJ MBRHeat:"));
-    myString.append(QString::number(balanceCurrentTimeStep.heatMBR,'f',9));
-    myString.append(QString("\n"));
-    myString.append(QString("\n"));
-}
-
-
 long getNodesNumber()
 {   return (NodesNumber - 1);}
 
@@ -419,6 +366,11 @@ void getHourlyOutputAllPeriod(long firstIndex, long lastIndex, Crit3DOut *output
         if (! isValid(myValue)) myValue = NODATA;
         myPoint.setY(myValue);
         output->profileOutput[output->nrValues-1].waterContent.push_back(myPoint);
+
+        myValue = soilFluxes3D::getHeatConductivity(myIndex);
+        if (! isValid(myValue)) myValue = NODATA;
+        myPoint.setY(myValue);
+        output->profileOutput[output->nrValues-1].heatConductivity.push_back(myPoint);
 
         fluxTot = soilFluxes3D::getHeatFlux(myIndex, DOWN, HEATFLUX_TOTAL);
         if (isValid(fluxTot)) fluxTot /= mySurface;

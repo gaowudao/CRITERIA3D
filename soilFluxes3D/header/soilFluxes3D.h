@@ -83,6 +83,7 @@
     __EXTERN int DLL_EXPORT __STDCALL setFixedTemperature(long nodeIndex, double myT, double myDepth);
 
     __EXTERN double DLL_EXPORT __STDCALL getTemperature(long nodeIndex);
+    __EXTERN double DLL_EXPORT __STDCALL getHeatConductivity(long nodeIndex);
     __EXTERN double DLL_EXPORT __STDCALL getHeat(long nodeIndex, double h);
     __EXTERN double DLL_EXPORT __STDCALL getNodeVapor(long nodeIndex);
     __EXTERN float DLL_EXPORT __STDCALL getHeatFlux(long nodeIndex, short myDirection, int fluxType);
