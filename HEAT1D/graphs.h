@@ -23,7 +23,8 @@ enum outputGroup
     waterThermVaporFlux = 9,
     energyBalance = 10,
     surfaceResistances = 11,
-    errorBalance = 12
+    soilHeatConductivity = 12,
+    errorBalance = 13
 };
 
 enum outputVar
@@ -59,6 +60,7 @@ enum outputType
 struct profileStatus{
     QVector<QPointF> temperature;
     QVector<QPointF> waterContent;
+    QVector<QPointF> heatConductivity;
     QVector<QPointF> totalHeatFlux;
     QVector<QPointF> diffusiveHeatFlux;
     QVector<QPointF> isothermalLatentHeatFlux;
