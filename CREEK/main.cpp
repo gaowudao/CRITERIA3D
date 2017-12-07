@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
         settingsFileName = argv[1];
     else
     {
-        settingsFileName = "../example/Ghironda.ini";
+        settingsFileName = "../example/Ravone.ini";
 
         // myProject.logError("USAGE: CREEK settings_filename.ini");
         // return false;
@@ -89,14 +89,14 @@ int main(int argc, char *argv[])
                     if (currentWHC < 0.) currentWHC = 0.;
                 }*/
 
-                adjSum = minValue(sumPrec, maxIntensity * 7.0);
+                adjSum = minValue(sumPrec, maxIntensity * 6.0);
 
                 runoffPrec = adjSum - currentWHC;
 
                 // output
                 if (runoffPrec > 10)
                 {
-                    peak = runoffPrec * 0.015 + 0.18;
+                    peak = runoffPrec * 0.036 -0.3;
 
                     outStr = myDate.toString("yyyy-MM-dd");
                     outStr += "," + QString::number(sumPrec,'f',1);
