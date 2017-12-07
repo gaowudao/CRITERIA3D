@@ -52,6 +52,7 @@ bool CreekProject::initializeProject(QString settingsFileName)
     if (!readSettings()) return(false);
 
     //this->setLogFile();
+    this->setOutputFile();
 
     if (this->WHCdata == "")
     {

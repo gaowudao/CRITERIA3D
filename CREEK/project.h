@@ -25,6 +25,7 @@ public:
     void initialize();
     void closeProject();
     bool setLogFile();
+    bool setOutputFile();
 
     virtual bool initializeProject(QString settingsFileName);
     virtual bool readSettings();
@@ -32,6 +33,7 @@ public:
     void logInfo(QString myLog);
     void logError();
     void logError(QString myErrorStr);
+    void writeOutput(QString myOut);
 };
 
 

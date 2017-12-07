@@ -1,8 +1,10 @@
 #include <QCoreApplication>
 #include <QDateTime>
 #include <iostream>
+#include <algorithm>
 #include <math.h>
 
+#include "commonConstants.h"
 #include "creekProject.h"
 #include "csvReader.h"
 #include "hydrology.h"
@@ -22,7 +24,7 @@ int main(int argc, char *argv[])
         settingsFileName = argv[1];
     else
     {
-        settingsFileName = "../example/RavoneUrbanSIS.ini";
+        settingsFileName = "../example/Ghironda.ini";
 
         // myProject.logError("USAGE: CREEK settings_filename.ini");
         // return false;
@@ -62,49 +64,55 @@ int main(int argc, char *argv[])
         prec.push_back(values[i].value(1).toFloat());
     }
 
-    float maxIntensity, sumPrec, adjSum, intensityRatio;
+    float maxIntensity, sumPrec, adjSum, lastSumPrec;
     float peak, runoffPrec, currentWHC;
     unsigned long firstIndex = 0;
     int lenght, whcIndex;
-    QDate myDate;
+    QDate myDate, lastDate;
+    QString outStr;
 
-    std::cout << "Date\t\tPrec\t\tWHC\tmax\thours\tRunoff\tPeak(m)\n";
+    myProject.writeOutput("Date,Prec,adjPrec,WHC,max,hours,Runoff,Peak(m)");
     while (searchRainfallEvent(&firstIndex, &sumPrec, &maxIntensity, &lenght, &prec))
     {
+        myDate = precDateTime[firstIndex].date();
+
         if (sumPrec > 2. && maxIntensity >= 1.)
         {
-            myDate = precDateTime[firstIndex].date();
             whcIndex = whcDate[0].daysTo(myDate);
+
             if (whcIndex >= 0)
             {
                 currentWHC = whc[whcIndex];
+                /*if (myDate == lastDate)
+                {
+                    currentWHC -= lastSumPrec * 0.33;
+                    if (currentWHC < 0.) currentWHC = 0.;
+                }*/
 
-                intensityRatio = sumPrec / maxIntensity;
-                if (intensityRatio > 7.)
-                    adjSum = sumPrec * (7. / intensityRatio);
-                else
-                    adjSum = sumPrec;
+                adjSum = minValue(sumPrec, maxIntensity * 7.0);
 
                 runoffPrec = adjSum - currentWHC;
 
-                if (runoffPrec > 0)
-                    peak = pow(runoffPrec, 1.5) * 0.0048;
-                else
-                    peak = 0.0;
-
                 // output
-                if (peak > 0.1)
+                if (runoffPrec > 10)
                 {
-                    std::cout << myDate.toString("yyyy-MM-dd").toStdString();
-                    std::cout << "\t" << int(sumPrec) << "->" << int(adjSum);
-                    std::cout << "\t\t" << currentWHC;
-                    std::cout << "\t" << maxIntensity << "\t" << lenght;
-                    std::cout << "\t" << int(runoffPrec);
-                    std::cout << "\t" << peak << std::endl;
+                    peak = runoffPrec * 0.015 + 0.18;
+
+                    outStr = myDate.toString("yyyy-MM-dd");
+                    outStr += "," + QString::number(sumPrec,'f',1);
+                    outStr += "," + QString::number(adjSum,'f',1);
+                    outStr += "," + QString::number(currentWHC,'f',1);
+                    outStr += "," + QString::number(maxIntensity,'f',1);
+                    outStr += "," + QString::number(lenght);
+                    outStr += "," + QString::number(runoffPrec,'f',1);
+                    outStr += "," + QString::number(peak,'f',2);
+                    myProject.writeOutput(outStr);
                 }
             }
         }
 
+        lastSumPrec = sumPrec;
+        lastDate = myDate;
         firstIndex += lenght;
     }
 

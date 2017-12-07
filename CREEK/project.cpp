@@ -65,6 +65,7 @@ bool Project::initializeProject(QString settingsFileName)
     if (!readSettings()) return false;
 
     this->setLogFile();
+    this->setOutputFile();
 
     return true;
 }
@@ -129,5 +130,33 @@ void Project::logError(QString myError)
 {
     errorString = myError;
     logError();
+}
+
+
+//---------------------
+//
+//   Output functions
+//
+//---------------------
+bool Project::setOutputFile()
+{
+    if (!QDir(this->path + "output").exists())
+         QDir().mkdir(this->path + "output");
+
+    QString fileName = this->path + "output/" + this->name + ".csv";
+    this->outputFile.open(fileName.toStdString().c_str());
+
+    logInfo("Create output file: " + fileName);
+
+    return (this->outputFile.is_open());
+}
+
+
+void Project::writeOutput(QString myOut)
+{
+    if (outputFile.is_open())
+        outputFile << myOut.toStdString() << endl;
+
+    cout << myOut.toStdString() << endl;
 }
 
