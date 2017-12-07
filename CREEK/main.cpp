@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
                     if (currentWHC < 0.) currentWHC = 0.;
                 }*/
 
-                adjSum = minValue(sumPrec, maxIntensity * 6.0);
+                adjSum = minValue(sumPrec, maxIntensity * 7.0);
 
                 runoffPrec = adjSum - currentWHC;
 
