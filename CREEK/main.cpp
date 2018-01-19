@@ -64,55 +64,58 @@ int main(int argc, char *argv[])
         prec.push_back(values[i].value(1).toFloat());
     }
 
-    float maxIntensity, sumPrec, adjSum, lastSumPrec;
+    float maxIntensity, sumPrec, adjSum;
     float peak, runoffPrec, currentWHC;
     unsigned long firstIndex = 0;
-    int lenght, whcIndex;
-    QDate myDate, lastDate;
+    int lenght, peakHour, whcIndex;
+    QDate dateStart, datePeak;
     QString outStr;
 
-    myProject.writeOutput("Date,Prec,adjPrec,WHC,max,hours,Runoff,Peak(m)");
-    while (searchRainfallEvent(&firstIndex, &sumPrec, &maxIntensity, &lenght, &prec))
+    myProject.writeOutput("Date,Prec,adjPrec,WHC,max,peak hour,Runoff,Peak(m)");
+
+    while (searchRainfallEvent(&firstIndex, &sumPrec, &maxIntensity, &lenght, &peakHour, &prec))
     {
-        myDate = precDateTime[firstIndex].date();
+        dateStart = precDateTime[firstIndex].date();
+        datePeak = precDateTime[firstIndex + peakHour].date();
 
         if (sumPrec > 2. && maxIntensity >= 1.)
         {
-            whcIndex = whcDate[0].daysTo(myDate);
+            whcIndex = whcDate[0].daysTo(dateStart);
 
             if (whcIndex >= 0)
             {
                 currentWHC = whc[whcIndex];
-                /*if (myDate == lastDate)
+
+                if ((sumPrec - currentWHC) > 0)
                 {
-                    currentWHC -= lastSumPrec * 0.33;
-                    if (currentWHC < 0.) currentWHC = 0.;
-                }*/
+                    refineRainfallEvent(firstIndex, lenght, currentWHC, &sumPrec, &maxIntensity, &peakHour, &prec);
 
-                adjSum = minValue(sumPrec, maxIntensity * 7.0);
+                    adjSum = minValue(sumPrec, maxIntensity * 7);
 
-                runoffPrec = adjSum - currentWHC;
+                    runoffPrec = adjSum;
 
-                // output
-                if (runoffPrec > 10)
-                {
-                    peak = runoffPrec * 0.036 -0.3;
+                    // output (ravone 10, ghironda 3)
+                    if (runoffPrec > 10)
+                    {
+                        //Ravone
+                        peak = 0.0054 * powl(runoffPrec, 1.5) - 0.09;
+                        // Ghironda
+                        //peak = 0.017 * powl(runoffPrec, 1) + 0.12;
 
-                    outStr = myDate.toString("yyyy-MM-dd");
-                    outStr += "," + QString::number(sumPrec,'f',1);
-                    outStr += "," + QString::number(adjSum,'f',1);
-                    outStr += "," + QString::number(currentWHC,'f',1);
-                    outStr += "," + QString::number(maxIntensity,'f',1);
-                    outStr += "," + QString::number(lenght);
-                    outStr += "," + QString::number(runoffPrec,'f',1);
-                    outStr += "," + QString::number(peak,'f',2);
-                    myProject.writeOutput(outStr);
+                        outStr = datePeak.toString("yyyy-MM-dd");
+                        outStr += "," + QString::number(sumPrec,'f',1);
+                        outStr += "," + QString::number(adjSum,'f',1);
+                        outStr += "," + QString::number(currentWHC,'f',1);
+                        outStr += "," + QString::number(maxIntensity,'f',1);
+                        outStr += "," + QString::number(peakHour);
+                        outStr += "," + QString::number(runoffPrec,'f',1);
+                        outStr += "," + QString::number(peak,'f',2);
+                        myProject.writeOutput(outStr);
+                    }
                 }
             }
         }
 
-        lastSumPrec = sumPrec;
-        lastDate = myDate;
         firstIndex += lenght;
     }
 

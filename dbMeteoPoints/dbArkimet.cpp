@@ -282,8 +282,8 @@ void DbArkimet::appendQueryDaily(QString date, QString idPoint, QString idVar, Q
             + "," + idVar
             + "," + value
             + ")";
-
 }
+
 
 bool DbArkimet::saveDailyData(QDate startDate, QDate endDate)
 {
