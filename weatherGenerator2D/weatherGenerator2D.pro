@@ -12,6 +12,8 @@ CONFIG += staticlib
 
 INCLUDEPATH += ../mathFunctions ../crit3dDate
 
+
+
 SOURCES += wg2D.cpp \
     wg2d.cpp
 
