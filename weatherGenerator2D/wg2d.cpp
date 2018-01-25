@@ -97,12 +97,13 @@ contributors:
 #include "wg2D.h"
 #include "commonConstants.h"
 
-precipitation prec;
-temperature temp;
+//precipitation prec;
+//temperature temp;
 
 bool weatherGenerator2D::initializeObservedData(int lengthDataSeries, int nrStations, int nrVariables,int nrDate,double*** weatherArray, int** dateArray)
 
 {
+    nrData = lengthDataSeries;
     weatherObservations = (double ***)calloc(nrStations, sizeof(double**));
     for (int i=0;i<nrStations;i++)
     {
@@ -202,13 +203,25 @@ void weatherGenerator2D::initializeParameters(double thresholdPrecipitation, int
     if (distributionType == NODATA) parametersModel.distributionPrecipitation = 2; //Select a distribution to generate daily precipitation amount,1: Multi-exponential or 2: Multi-gamma
     else parametersModel.distributionPrecipitation = distributionType;
 }
-
+/*
 void precipitation::compute()
 {
 
-}
+}*/
+/*void precipitation::computeWG2DParameters()
+{
+    //  calculate monthly p00 and p10 parameters for precip occurrence, and the
+    //    mean and stdev of the exponential and gamma distribution for precip amounts
 
+    for (int i=0;i<nrData;i++)
+    {
+
+    }
+
+}*/
+/*
 void temperature::compute()
 {
 
 }
+*/

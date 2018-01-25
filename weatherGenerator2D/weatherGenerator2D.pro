@@ -12,8 +12,11 @@ CONFIG += staticlib
 
 INCLUDEPATH += ../mathFunctions
 INCLUDEPATH += ../crit3dDate
-LIBS += -L../mathFunctions/debug -lmathFunctions
+INCLUDEPATH += ../meteo
 
+LIBS += -L../mathFunctions/debug -lmathFunctions
+#LIBS += -L../crit3dDate/debug -lcrit3dDate
+#LIBS += -L../meteo/debug -lmeteo
 
 SOURCES += wg2D.cpp \
     wg2d.cpp
