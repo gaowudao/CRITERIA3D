@@ -10,8 +10,9 @@ TARGET = weatherGenerator2D
 TEMPLATE = lib
 CONFIG += staticlib
 
-INCLUDEPATH += ../mathFunctions ../crit3dDate
-
+INCLUDEPATH += ../mathFunctions
+INCLUDEPATH += ../crit3dDate
+LIBS += -L../mathFunctions/debug -lmathFunctions
 
 
 SOURCES += wg2D.cpp \
