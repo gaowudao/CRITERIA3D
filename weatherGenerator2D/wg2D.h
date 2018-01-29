@@ -55,6 +55,7 @@ private:
     int nrData;
     TparametersModel parametersModel;
     int *month,*lengthMonth,*beginMonth;
+    TObsDataD** obsDataD;
 
     //functions
 

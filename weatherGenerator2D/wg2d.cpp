@@ -1,3 +1,8 @@
+
+
+//  The spatial weather generator model is translated from the MulGets model available online on:
+//  https://it.mathworks.com/matlabcentral/fileexchange/47537-multi-site-stochstic-weather-generator--mulgets-
+
 /*
  *************************************************************************
  Multisite weather generator of the Ecole de technologie superieure
