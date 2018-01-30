@@ -46,18 +46,16 @@ struct TparametersModel{
 class weatherGenerator2D
 {
 private:
-    // classes
-    //precipitation prec;
-    //temperature temp;
-    // variables
-    double*** weatherObservations;
-    int** dateObservations;
+
     int nrData;
+    int nrStations;
     TparametersModel parametersModel;
     int *month,*lengthMonth,*beginMonth;
     TObsDataD** obsDataD;
 
     //functions
+    void precipitationOccurrence();
+    void precipitationCompute();
 
 
 public:
@@ -65,15 +63,10 @@ public:
 
     //functions
     weatherGenerator2D() {}
-    bool initializeObservedData(int lengthDataSeries, int nrStations, int nrVariables, int nrDate, double*** weatherArray, int** dateArray);
+    bool initializeObservedData(int lengthDataSeries, int nrStations);
     void initializeParameters(double thresholdPrecipitation, int simulatedYears, int distributionType);
+    void setObservedData(float*** weatherArray, int** dateArray);
+    void computeWeatherGenerator2D();
 
 };
 
-
-
-
-//bool setData(Tobservations observations, int nStations, TparametersModel parametersModel);
-
-
-//void fillObservationArray(int nStations, int timeSeriesLength,double*** variables, int** date);

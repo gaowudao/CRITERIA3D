@@ -105,10 +105,20 @@ contributors:
 //precipitation prec;
 //temperature temp;
 
-bool weatherGenerator2D::initializeObservedData(int lengthDataSeries, int nrStations, int nrVariables,int nrDate,double*** weatherArray, int** dateArray)
+bool weatherGenerator2D::initializeObservedData(int lengthDataSeries, int stations)
 
 {
     nrData = lengthDataSeries;
+    nrStations = stations;
+
+    // use of PRAGA formats from meteoPoint.h
+    obsDataD = (TObsDataD **)calloc(nrStations, sizeof(TObsDataD*));
+    for (int i=0;i<nrStations;i++)
+    {
+        obsDataD[i] = (TObsDataD *)calloc(nrData, sizeof(TObsDataD));
+    }
+
+    /*
     weatherObservations = (double ***)calloc(nrStations, sizeof(double**));
     for (int i=0;i<nrStations;i++)
     {
@@ -139,6 +149,46 @@ bool weatherGenerator2D::initializeObservedData(int lengthDataSeries, int nrStat
         for (int k=0;k<nrDate;k++)
         {
            dateObservations[j][k]= dateArray[j][k];
+        }
+    }
+    */
+    return 0;
+}
+
+void weatherGenerator2D::initializeParameters(double thresholdPrecipitation, int simulatedYears, int distributionType)
+{
+    // default parameters
+    if (thresholdPrecipitation == NODATA) parametersModel.precipitationThreshold = 1.; //1mm default
+    else parametersModel.precipitationThreshold = thresholdPrecipitation;
+    if (simulatedYears == NODATA) parametersModel.yearOfSimulation = 30;
+    else parametersModel.yearOfSimulation = simulatedYears;
+    if (distributionType == NODATA) parametersModel.distributionPrecipitation = 2; //Select a distribution to generate daily precipitation amount,1: Multi-exponential or 2: Multi-gamma
+    else parametersModel.distributionPrecipitation = distributionType;
+}
+
+void weatherGenerator2D::setObservedData(float*** weatherArray, int** dateArray)
+{
+    for(int i=0;i<nrStations;i++)
+    {
+        for (int j=0;j<nrData;j++)
+        {
+
+            obsDataD[i][j].date.day = dateArray[j][0];
+            obsDataD[i][j].date.month = dateArray[j][1];
+            obsDataD[i][j].date.year = dateArray[j][2];
+            obsDataD[i][j].tMin = weatherArray[i][j][0];
+            obsDataD[i][j].tMax = weatherArray[i][j][1];
+            obsDataD[i][j].prec = weatherArray[i][j][2];
+        }
+
+    }
+    for(int i=0;i<nrStations;i++)
+    {
+        for (int j=0;j<nrData;j++)
+        {
+
+            //printf("%d,%d,%d,%f,%f,%f\n",obsDataD[i][j].date.day,obsDataD[i][j].date.month,obsDataD[i][j].date.year,obsDataD[i][j].tMin,obsDataD[i][j].tMax,obsDataD[i][j].prec);
+
         }
     }
 
@@ -195,38 +245,20 @@ bool weatherGenerator2D::initializeObservedData(int lengthDataSeries, int nrStat
     beginMonth[monthNumber] = beginMonth[monthNumber-1] +  lengthMonth[monthNumber - 1];
     lengthMonth[monthNumber] = 31;
 
-    return 0;
 }
 
-void weatherGenerator2D::initializeParameters(double thresholdPrecipitation, int simulatedYears, int distributionType)
-{
-    // default parameters
-    if (thresholdPrecipitation == NODATA) parametersModel.precipitationThreshold = 1.; //1mm default
-    else parametersModel.precipitationThreshold = thresholdPrecipitation;
-    if (simulatedYears == NODATA) parametersModel.yearOfSimulation = 30;
-    else parametersModel.yearOfSimulation = simulatedYears;
-    if (distributionType == NODATA) parametersModel.distributionPrecipitation = 2; //Select a distribution to generate daily precipitation amount,1: Multi-exponential or 2: Multi-gamma
-    else parametersModel.distributionPrecipitation = distributionType;
-}
-/*
-void precipitation::compute()
-{
 
-}*/
-/*void precipitation::computeWG2DParameters()
-{
-    //  calculate monthly p00 and p10 parameters for precip occurrence, and the
-    //    mean and stdev of the exponential and gamma distribution for precip amounts
-
-    for (int i=0;i<nrData;i++)
-    {
-
-    }
-
-}*/
-/*
-void temperature::compute()
+void weatherGenerator2D::computeWeatherGenerator2D()
 {
 
 }
-*/
+
+void weatherGenerator2D::precipitationCompute()
+{
+
+}
+
+void weatherGenerator2D::precipitationOccurrence()
+{
+
+}
