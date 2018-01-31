@@ -1,8 +1,10 @@
 #include <QCoreApplication>
 #include <QDateTime>
 #include <iostream>
+#include <algorithm>
 #include <math.h>
 
+#include "commonConstants.h"
 #include "creekProject.h"
 #include "csvReader.h"
 #include "hydrology.h"
@@ -22,7 +24,7 @@ int main(int argc, char *argv[])
         settingsFileName = argv[1];
     else
     {
-        settingsFileName = "../example/RavoneUrbanSIS.ini";
+        settingsFileName = "../example/Ravone.ini";
 
         // myProject.logError("USAGE: CREEK settings_filename.ini");
         // return false;
@@ -62,45 +64,54 @@ int main(int argc, char *argv[])
         prec.push_back(values[i].value(1).toFloat());
     }
 
-    float maxIntensity, sumPrec, adjSum, intensityRatio;
+    float maxIntensity, sumPrec, adjSum;
     float peak, runoffPrec, currentWHC;
     unsigned long firstIndex = 0;
-    int lenght, whcIndex;
-    QDate myDate;
+    int lenght, peakHour, whcIndex;
+    QDate dateStart, datePeak;
+    QString outStr;
 
-    std::cout << "Date\t\tPrec\t\tWHC\tmax\thours\tRunoff\tPeak(m)\n";
-    while (searchRainfallEvent(&firstIndex, &sumPrec, &maxIntensity, &lenght, &prec))
+    myProject.writeOutput("Date,Prec,adjPrec,WHC,max,peak hour,Runoff,Peak(m)");
+
+    while (searchRainfallEvent(&firstIndex, &sumPrec, &maxIntensity, &lenght, &peakHour, &prec))
     {
+        dateStart = precDateTime[firstIndex].date();
+        datePeak = precDateTime[firstIndex + peakHour].date();
+
         if (sumPrec > 2. && maxIntensity >= 1.)
         {
-            myDate = precDateTime[firstIndex].date();
-            whcIndex = whcDate[0].daysTo(myDate);
+            whcIndex = whcDate[0].daysTo(dateStart);
+
             if (whcIndex >= 0)
             {
                 currentWHC = whc[whcIndex];
 
-                intensityRatio = sumPrec / maxIntensity;
-                if (intensityRatio > 7.)
-                    adjSum = sumPrec * (7. / intensityRatio);
-                else
-                    adjSum = sumPrec;
-
-                runoffPrec = adjSum - currentWHC;
-
-                if (runoffPrec > 0)
-                    peak = pow(runoffPrec, 1.5) * 0.0048;
-                else
-                    peak = 0.0;
-
-                // output
-                if (peak > 0.1)
+                if ((sumPrec - currentWHC) > 0)
                 {
-                    std::cout << myDate.toString("yyyy-MM-dd").toStdString();
-                    std::cout << "\t" << int(sumPrec) << "->" << int(adjSum);
-                    std::cout << "\t\t" << currentWHC;
-                    std::cout << "\t" << maxIntensity << "\t" << lenght;
-                    std::cout << "\t" << int(runoffPrec);
-                    std::cout << "\t" << peak << std::endl;
+                    refineRainfallEvent(firstIndex, lenght, currentWHC, &sumPrec, &maxIntensity, &peakHour, &prec);
+
+                    adjSum = minValue(sumPrec, maxIntensity * 7);
+
+                    runoffPrec = adjSum;
+
+                    // output (ravone 10, ghironda 3)
+                    if (runoffPrec > 10)
+                    {
+                        //Ravone
+                        peak = 0.0054 * powl(runoffPrec, 1.5) - 0.09;
+                        // Ghironda
+                        //peak = 0.017 * powl(runoffPrec, 1) + 0.12;
+
+                        outStr = datePeak.toString("yyyy-MM-dd");
+                        outStr += "," + QString::number(sumPrec,'f',1);
+                        outStr += "," + QString::number(adjSum,'f',1);
+                        outStr += "," + QString::number(currentWHC,'f',1);
+                        outStr += "," + QString::number(maxIntensity,'f',1);
+                        outStr += "," + QString::number(peakHour);
+                        outStr += "," + QString::number(runoffPrec,'f',1);
+                        outStr += "," + QString::number(peak,'f',2);
+                        myProject.writeOutput(outStr);
+                    }
                 }
             }
         }
