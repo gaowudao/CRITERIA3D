@@ -28,18 +28,18 @@ EXPORTS
 	getMatricPotential
 	getTotalPotential
 	getSumLateralWaterFlow
-    getWaterConductivity    
-    getWaterFlow
-    getWaterMBR
-    setHeatSinkSource
-    setTemperature
-    setHeatBoundaryHeightWind
-    setHeatBoundaryHeightTemperature
-    setHeatBoundaryTemperature
-    setHeatBoundaryRelativeHumidity
-    setHeatBoundaryRoughness
-    setHeatBoundaryWindSpeed
-    setHeatBoundaryNetIrradiance
+	getWaterConductivity    
+	getWaterFlow
+	getWaterMBR
+	setHeatSinkSource
+	setTemperature
+	setHeatBoundaryHeightWind
+	setHeatBoundaryHeightTemperature
+	setHeatBoundaryTemperature
+	setHeatBoundaryRelativeHumidity
+	setHeatBoundaryRoughness
+	setHeatBoundaryWindSpeed
+	setHeatBoundaryNetIrradiance
     setFixedTemperature
     getHeatMBR    
     getHeatMBE
