@@ -137,6 +137,7 @@
       <ModuleDefinitionFile>criteria3D.def</ModuleDefinitionFile>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <TurnOffAssemblyGeneration>true</TurnOffAssemblyGeneration>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
