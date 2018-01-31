@@ -29,8 +29,6 @@
 #include <math.h>
 #include <malloc.h>
 
-#include <qdebug.h>
-
 #include "../mathFunctions/physics.h"
 #include "header/types.h"
 #include "header/memory.h"
