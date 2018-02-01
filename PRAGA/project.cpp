@@ -7,6 +7,10 @@
 #include "utilities.h"
 #include "commonConstants.h"
 #include "quality.h"
+#include "radiationSettings.h"
+#include "solarRadiation.h"
+#include "interpolation.h"
+#include "transmissivity.h"
 
 
 Project::Project()
@@ -22,6 +26,8 @@ Project::Project()
     colorScalePoints = new Crit3DColorScale();
     dbMeteoPoints = NULL;
     currentRaster = &DTM;
+
+    radiationMaps = new Crit3DRadiationMaps();
 }
 
 
@@ -36,15 +42,19 @@ bool Project::loadRaster(QString myFileName)
     std::string* myError = new std::string();
     std::string fileName = myFileName.left(myFileName.length()-4).toStdString();
 
-    if (! gis::readEsriGrid(fileName, &(this->DTM), myError))
+    if (! gis::readEsriGrid(fileName, &DTM, myError))
     {
         qDebug("Load raster failed!");
         return (false);
     }
 
-    gis::updateMinMaxRasterGrid(&(this->DTM));
+    gis::updateMinMaxRasterGrid(&DTM);
     this->DTM.isLoaded = true;
     this->currentRaster = &DTM;
+
+    // initialize slope, aspect, lat/lon
+    radiationMaps->clean();
+    radiationMaps = new Crit3DRadiationMaps(DTM, gisSettings);
 
     return (true);
 }
@@ -407,8 +417,131 @@ bool Project::loadMeteoPointsDB(QString dbName)
 }
 
 
+bool Project::interpolation(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, std::string *myError)
+{
+
+    if (!quality->checkData(myVar, myFrequency, this->meteoPoints, this->nrMeteoPoints, myTime))
+    {
+        *myError = "No data";
+        return false;
+    }
+
+    if (! checkInterpolationRaster(this->DTM, myError))
+        return false;
+
+    this->dataRaster.initializeGrid(this->DTM);
+
+    // TO DO - gestione dei settings
+    Crit3DInterpolationSettings interpolationSettings;
+
+    if (myVar == globalIrradiance)
+    {
+        if (! interpolateRadiation(myTime, myError))
+            return false;
+    }
+    else
+    {
+        if (! interpolationRaster(myVar, &interpolationSettings, &(this->dataRaster), this->DTM, myTime, myError))
+            return false;
+    }
+
+    return true;
+}
+
+
+bool Project::interpolateRadiation(const Crit3DTime& myTime, std::string *myError)
+{
+    Crit3DRadiationSettings radSettings;
+
+    radSettings.setGisSettings(&(gisSettings));
+
+    radiation::setRadiationSettings(&(radSettings));
+
+    int intervalWidth = radiation::estimateTransmissivityWindow(DTM, *radiationMaps, &(DTM.mapCenter()), myTime, int(HOUR_SECONDS));
+    float dt = (intervalWidth-1) * 0.5 * HOUR_SECONDS;
+
+    Crit3DTime timeIni = myTime.addSeconds(-dt);
+    Crit3DTime timeFin = myTime.addSeconds(dt);
+
+    // almost a meteo point with 50% of data
+    if (! (meteoDataConsistency(globalIrradiance, timeIni, timeFin) > 0.5))
+    {
+        *myError = "Radiation data not available.";
+        return false;
+    }
+
+    // almost a meteo point with transmissivity
+    if(! (computeTransmissivity(meteoPoints, nrMeteoPoints, intervalWidth, myTime, DTM) > 0))
+    {
+        *myError = "It is not possible to compute transmissivity.";
+        return false;
+    }
+
+    return true;
+}
+
+    /*
+        QDate transmissivityDate = getQDate(myCrit3DTime.date);
+        QDate yesterday = transmissivityDate.addDays(-1);
+        if ((transmissivityDate == myProject->lastDateTransmissivity)
+            || ((yesterday == myProject->lastDateTransmissivity) && (myCrit3DTime.getHour() == 0))) //midnight
+            transComputed = true;
+        else
+        {
+            Crit3DTime timeIniTemp = myCrit3DTime;
+            Crit3DTime timeFinTemp = myCrit3DTime;
+            timeIniTemp.time = myTimeStep;
+            timeFinTemp.time = DAY_SECONDS;
+            bool tempLoaded = false;
+
+            tempLoaded = (myProject->meteoDataConsistency(airTemperature, timeIniTemp, timeFinTemp) > 0.5);
+            if (! tempLoaded && isLoadData) tempLoaded = (myProject->loadObsDataAllPointsVar(airTemperature, transmissivityDate, transmissivityDate));
+            if (tempLoaded && isLoadData) tempLoaded = (myProject->meteoDataConsistency(airTemperature, timeIniTemp, timeFinTemp) > 0.5);
+            if (tempLoaded)
+                if (computeTransmissivityFromTRange(myProject->meteoPoints, myProject->nrMeteoPoints, myCrit3DTime))
+                {
+                    transComputed= true;
+                    myProject->lastDateTransmissivity = transmissivityDate;
+                }
+        }
+    }
+
+    if (! transComputed)
+    {
+        myProject->projectError = "Function computeRadiationProjectDtm: transmissivity data unavailable";
+        return false;
+    }
+
+    if (! myProject->qualityParameters.checkData(atmTransmissivity, hourly, myProject->meteoPoints, myProject->nrMeteoPoints, myCrit3DTime))
+    {
+        myProject->projectError = "Function computeRadiationProjectDtm: no transmissivity data available";
+        return false;
+    }
+
+    if (preInterpolation(atmTransmissivity))
+        if (! interpolateGridDtm(myProject->meteoMaps->radiationMaps->transmissivityMap, myProject->dtm, atmTransmissivity))
+        {
+            myProject->projectError = "Function computeRadiationProjectDtm: error interpolating transmissivity";
+            return false;
+        }
+
+    if (radiation::computeRadiationGridPresentTime(myProject->dtm, myProject->meteoMaps->radiationMaps, myCrit3DTime))
+        myResult = setRadiationScale(myProject->meteoMaps->radiationMaps->globalRadiationMap->colorScale);
+    else
+        myProject->projectError = "Function computeRadiationProjectDtm: error computing irradiance";
+
+    return myResult;
+}
+*/
 
 
 
+float Project::meteoDataConsistency(meteoVariable myVar, const Crit3DTime& timeIni, const Crit3DTime& timeFin)
+{
+    float dataConsistency = 0.0;
+    for (int i = 0; i < nrMeteoPoints; i++)
+        dataConsistency = maxValue(dataConsistency, meteoPoints[i].obsDataConsistencyH(myVar, timeIni, timeFin));
 
+    return dataConsistency;
+}
 

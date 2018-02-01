@@ -21,6 +21,10 @@
         #include "netcdfHandler.h"
     #endif
 
+    #ifndef SOLARRADIATION_H
+        #include "../solarRadiation/solarRadiation.h"
+    #endif
+
     #include <QList>
     #include <QDate>
 
@@ -43,11 +47,13 @@
         gis::Crit3DRasterGrid DTM;
         gis::Crit3DRasterGrid dataRaster;
         gis::Crit3DRasterGrid *currentRaster;
+
+        Crit3DRadiationMaps* radiationMaps;
+
         NetCDFHandler netCDF;
 
-        //gis::Crit3DRasterGrid rowMatrix;
-        //gis::Crit3DRasterGrid colMatrix;
         gis::Crit3DGisSettings gisSettings;
+
         Crit3DColorScale *colorScalePoints;
 
         meteoVariable currentVariable;
@@ -74,6 +80,11 @@
         bool loadMeteoPointsDB(QString dbName);
         bool getMeteoPointSelected(int i);
         bool updateMeteoPointsData();
+
+        float meteoDataConsistency(meteoVariable myVar, const Crit3DTime& timeIni, const Crit3DTime& timeFin);
+
+        bool interpolation(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, std::string *myError);
+        bool interpolateRadiation(const Crit3DTime& myTime, std::string *myError);
     };
 
 

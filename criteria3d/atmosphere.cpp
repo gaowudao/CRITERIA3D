@@ -373,7 +373,9 @@ bool interpolationProjectDtmMain(Crit3DProject* myProject, meteoVariable myVar, 
     bool myResult = false;
 
     if (myVar == globalIrradiance)
+    {
         myResult = (computeRadiationProjectDtm(myProject, myCrit3DTime, isLoadData));
+    }
     else if (myVar == airHumidity)
     {
         if (myProject->interpolationSettings.getUseDewPoint())

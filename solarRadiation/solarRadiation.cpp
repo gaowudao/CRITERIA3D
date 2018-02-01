@@ -30,20 +30,6 @@
 #include "solarRadiation.h"
 
 
-float getSinDecimalDegree(float angle)
-{
-    while (angle > 360) angle -= 360 ;
-    while (angle < -360) angle +=360 ;
-    return (float)sin(angle * DEG_TO_RAD);
-}
-
-float getCosDecimalDegree(float angle)
-{
-    while (angle > 360) angle -= 360 ;
-    while (angle < -360) angle +=360 ;
-    return (float)cos(angle * DEG_TO_RAD);
-}
-
 Crit3DRadiationMaps::Crit3DRadiationMaps()
 {
     latMap = new gis::Crit3DRasterGrid;
@@ -117,6 +103,12 @@ Crit3DRadiationMaps::Crit3DRadiationMaps(const gis::Crit3DRasterGrid& myDtm, con
 
 Crit3DRadiationMaps::~Crit3DRadiationMaps()
 {
+    this->clean();
+}
+
+
+void Crit3DRadiationMaps::clean()
+{
     latMap->freeGrid();
     lonMap->freeGrid();
     slopeMap->freeGrid();
@@ -154,7 +146,10 @@ Crit3DRadiationMaps::~Crit3DRadiationMaps()
     delete sunSetMap;
     delete sunShadowMap;
     delete transmissivityMap;
+
+    isLoaded = false;
 }
+
 
 Crit3DTransmissivityPoint::Crit3DTransmissivityPoint()
 {
@@ -163,6 +158,21 @@ Crit3DTransmissivityPoint::Crit3DTransmissivityPoint()
     point->utm.x = NODATA;
     point->utm.y = NODATA;
     point->z = NODATA;
+}
+
+
+float getSinDecimalDegree(float angle)
+{
+    while (angle > 360) angle -= 360 ;
+    while (angle < -360) angle +=360 ;
+    return (float)sin(angle * DEG_TO_RAD);
+}
+
+float getCosDecimalDegree(float angle)
+{
+    while (angle > 360) angle -= 360 ;
+    while (angle < -360) angle +=360 ;
+    return (float)cos(angle * DEG_TO_RAD);
 }
 
 

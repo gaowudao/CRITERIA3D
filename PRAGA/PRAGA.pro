@@ -10,7 +10,9 @@ QT       += core gui widgets network sql
 TARGET = PRAGA
 TEMPLATE = app
 
-INCLUDEPATH += ../crit3dDate ../mathFunctions ../utilities ../gis ../MapGraphics ../meteo ../quality ../interpolation ../dbMeteoPoints ../netcdfHandler
+INCLUDEPATH +=  ../crit3dDate ../mathFunctions ../utilities ../gis ../MapGraphics \
+                ../meteo ../quality ../interpolation ../solarRadiation \
+                ../dbMeteoPoints ../netcdfHandler
 
 LIBS += -L../mathFunctions/debug -lmathFunctions
 LIBS += -L../crit3dDate/debug -lcrit3dDate
@@ -20,6 +22,7 @@ LIBS += -L../meteo/debug -lmeteo
 LIBS += -L../gis/debug -lgis
 LIBS += -L../quality/debug -lquality
 LIBS += -L../interpolation/debug -linterpolation
+LIBS += -L../solarRadiation/debug -lsolarRadiation
 LIBS += -L../MapGraphics/debug -lMapGraphics
 LIBS += -L../netcdfHandler/debug -lnetcdfHandler
 

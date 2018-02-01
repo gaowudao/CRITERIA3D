@@ -1379,3 +1379,6 @@ void Crit3DProject::logError(QString myError)
     this->projectError = myError;
     logError();
 }
+
+
+

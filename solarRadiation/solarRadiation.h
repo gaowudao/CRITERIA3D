@@ -31,6 +31,8 @@
         Crit3DRadiationMaps(const gis::Crit3DRasterGrid& myDtm, const gis::Crit3DGisSettings& myGisSettings);
         ~Crit3DRadiationMaps();
 
+        void clean();
+
         bool isLoaded;
     };
 

@@ -27,8 +27,6 @@
 #include "utilities.h"
 #include "commonConstants.h"
 #include "dialogWindows.h"
-#include "quality.h"
-#include "interpolation.h"
 #include "gis.h"
 
 
@@ -579,34 +577,23 @@ void MainWindow::on_actionVariableQualitySpatial_triggered()
 
 void MainWindow::on_actionInterpolation_triggered()
 {
-    myProject.quality->checkData(myProject.getCurrentVariable(), myProject.getFrequency(),
-                                 myProject.meteoPoints, myProject.nrMeteoPoints, myProject.getCurrentTime());
-
-    std::string myError;
-    if (! checkInterpolationRaster(myProject.DTM, &myError))
-    {
-        QMessageBox::information(NULL, "Error!", QString::fromStdString(myError));
-        return;
-    }
-
-    Crit3DInterpolationSettings interpolationSettings;
     formInfo myInfo;
     myInfo.start("Interpolation...", 0);
 
-        myProject.dataRaster.initializeGrid(myProject.DTM);
-
-        if (interpolationRaster(myProject.getCurrentVariable(), &interpolationSettings,
-                    &(myProject.dataRaster), myProject.DTM, myProject.getCurrentTime(), &myError))
+        std::string myError;
+        if (!myProject.interpolation(myProject.getCurrentVariable(), myProject.getFrequency(),
+                                     myProject.getCurrentTime(), &myError))
         {
-            myProject.currentRaster = &(myProject.dataRaster);
+            QMessageBox::information(NULL, "Error!", QString::fromStdString(myError));
+        }
+        else
+        {
+            setColorScale(myProject.getCurrentVariable(), myProject.dataRaster.colorScale);
             rasterObj->setCurrentRaster(&(myProject.dataRaster));
-            setColorScale(myProject.getCurrentVariable(), myProject.currentRaster->colorScale);
             QString myString = QString::fromStdString(getVariableString(myProject.getCurrentVariable()));
             ui->labelRasterScale->setText(myString);
             this->rasterLegend->colorScale = myProject.currentRaster->colorScale;
         }
-        else
-            QMessageBox::information(NULL, "Error!", QString::fromStdString(myError));
 
     myInfo.close();
 }

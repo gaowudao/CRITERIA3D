@@ -1251,6 +1251,7 @@ bool checkInterpolationRaster(const  gis::Crit3DRasterGrid& myDTM, std::string *
 }
 
 
+
 // assume che i dati siano già stati caricati in interpolationPointList (checkData)
 bool interpolationRaster(meteoVariable myVar, Crit3DInterpolationSettings *mySettings,
                          gis::Crit3DRasterGrid *myRaster, const  gis::Crit3DRasterGrid& myDTM,

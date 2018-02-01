@@ -286,7 +286,7 @@ float Crit3DMeteoPoint::obsDataConsistencyH(meteoVariable myVar, const Crit3DTim
         return 0.0;
     else if (obsDataH == NULL)
         return 0.0;
-    else if (timeIni.date < obsDataH[0].date || timeFin.date > (obsDataH[0].date.addDays(nrObsDataDaysH - 1)))
+    else if (timeFin.date < obsDataH[0].date || timeIni.date > (obsDataH[0].date.addDays(nrObsDataDaysH - 1)))
         return 0.0;
     else
     {
