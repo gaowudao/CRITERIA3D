@@ -159,6 +159,8 @@
             bool initializeGrid(const Crit3DGridHeader& initHeader);
             bool initializeGrid(const Crit3DRasterGrid& initGrid, float initValue);
 
+            bool copyGrid(const Crit3DRasterGrid& initGrid);
+
             bool setConstantValueWithBase(float initValue, const Crit3DRasterGrid& initGrid);
             float getValueFromRowCol(int myRow, int myCol) const;
             Crit3DPoint mapCenter();

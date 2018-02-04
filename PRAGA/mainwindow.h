@@ -126,7 +126,7 @@
         void updateDateTime();
         void resetMeteoPoints();
         void addMeteoPoints();
-        void redrawMeteoPoints();
+        void redrawMeteoPoints(bool updateColorSCale);
 
         bool loadMeteoPointsDB(QString dbName);
 

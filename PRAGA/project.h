@@ -83,8 +83,9 @@
 
         float meteoDataConsistency(meteoVariable myVar, const Crit3DTime& timeIni, const Crit3DTime& timeFin);
 
-        bool interpolation(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, std::string *myError);
-        bool interpolateRadiation(const Crit3DTime& myTime, std::string *myError);
+        bool interpolateRaster(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime,
+                               gis::Crit3DRasterGrid *myRaster, std::string *myError);
+        bool interpolateRasterRadiation(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, std::string *myError);
     };
 
 

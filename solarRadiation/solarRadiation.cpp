@@ -582,12 +582,12 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
         float dhsOverGhs;           /*!<  ratio horizontal mypoint.diffuse over horizontal global */
         bool isPointIlluminated;
 
-        bool output = false ;
-
         Crit3DTime localTime;
         localTime = myTime;
         if (radiationSettings.gisSettings->isUTC)
-            localTime.addSeconds(float(radiationSettings.gisSettings->timeZone * 3600));
+        {
+            localTime = myTime.addSeconds(float(radiationSettings.gisSettings->timeZone * 3600));
+        }
 
         myYear = localTime.date.year;
         myMonth =  localTime.date.month;
@@ -599,7 +599,8 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
         /*! Sun position */
         if (! computeSunPosition(float(myPoint->lon), float(myPoint->lat), radiationSettings.gisSettings->timeZone,
             myYear, myMonth, myDay, myHour, myMinute, mySecond,
-            myTemperature, myPressure, float(myPoint->aspect), float(myPoint->slope), mySunPosition)) return output;
+            myTemperature, myPressure, float(myPoint->aspect), float(myPoint->slope), mySunPosition))
+            return false;
 
         /*! Shadowing */
         isPointIlluminated = isIlluminated(localTime.time, (*mySunPosition).rise, (*mySunPosition).set, (*mySunPosition).elevationRefr);
@@ -686,9 +687,10 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
             myPoint->reflected = 0;
             myPoint->global = 0;
         }
-        output = true;
-        return output;
+
+        return true;
     }
+
 
     int estimateTransmissivityWindow(const gis::Crit3DRasterGrid& myDtm,
                                      const Crit3DRadiationMaps& myRadiationMaps,
@@ -728,7 +730,7 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
 
         /*! threshold: noon potential radiation */
         myTmpTime = UTCTime;
-        myTmpTime.time = 43200;
+        myTmpTime.time = 12*3600;
         computeRadiationPointRsun(TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, myTmpTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
         sumPotentialRadThreshold = float(myRadPoint.global);
 
@@ -775,6 +777,7 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
         }
         return output;
     }
+
 
    bool computeRadiationGridRsun(const gis::Crit3DRasterGrid& myDtm,
                                  Crit3DRadiationMaps* radiationMaps,
@@ -830,6 +833,7 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
 
         return true;
     }
+
 
     bool computeSunPosition(float lon, float lat, int myTimezone,
                             int myYear,int myMonth, int myDay,
@@ -987,6 +991,7 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
         return true;
     }
 
+
     bool computeRadiationGridPresentTime(const gis::Crit3DRasterGrid& myDtm,
                                          Crit3DRadiationMaps* radiationMaps,
                                          const Crit3DTime& myCrit3DTime)
@@ -995,20 +1000,27 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
             return false;        
 
         if (radiationSettings.getAlgorithm() == RADIATION_ALGORITHM_RSUN)
+        {
             return computeRadiationGridRsun(myDtm, radiationMaps, myCrit3DTime);
+        }
         else if (radiationSettings.getAlgorithm() == RADIATION_ALGORITHM_BROOKS)
+        {
             // to do
             return false;
+        }
         else
             return false;
     }
 
+
     float computePointTransmissivity(const gis::Crit3DPoint& myPoint, Crit3DTime UTCTime, float* measuredRad,
                                      int windowWidth, int timeStepSecond, const gis::Crit3DRasterGrid& myDtm)
     {
-        if (windowWidth % 2 != 1) return PARAMETER_ERROR;
+        if (windowWidth % 2 != 1) return NODATA;
 
-        if (measuredRad[windowWidth/2] == NODATA) return PARAMETER_ERROR;
+        int intervalCenter = (windowWidth-1)/2;
+
+        if (measuredRad[intervalCenter] == NODATA) return NODATA;
 
         double latDegrees, lonDegrees;
         float ratioTransmissivity;
@@ -1044,19 +1056,14 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
         backwardTimeStep = forwardTimeStep = 0;
         backwardTime = forwardTime = UTCTime;
 
-        int myIntervalCenter = (windowWidth-1)/2;
+        float sumMeasuredRad = measuredRad[intervalCenter];
 
-        float sumMeasuredRad = 0.;
-        float sumPotentialRad = 0.;
+        computeRadiationPointRsun(TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, UTCTime, myLinke, myAlbedo,
+               myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
 
-        if (measuredRad[myIntervalCenter] != NODATA)
-        {
-            sumMeasuredRad += measuredRad[myIntervalCenter];
-            computeRadiationPointRsun(TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, UTCTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
-            sumPotentialRad += float(myRadPoint.global);
-        }
+        float sumPotentialRad = float(myRadPoint.global);
 
-        for (int windowIndex = (myIntervalCenter - 1); windowIndex >= 0; windowIndex--)
+        for (int windowIndex = (intervalCenter - 1); windowIndex >= 0; windowIndex--)
         {
             backwardTimeStep -= timeStepSecond;
             forwardTimeStep += timeStepSecond;
@@ -1076,8 +1083,10 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
                 sumPotentialRad+= float(myRadPoint.global);
             }
         }
+
         ratioTransmissivity = maxValue(sumMeasuredRad/sumPotentialRad, float(0.0));
         myTransmissivity = ratioTransmissivity * myClearSkyTransmissivity;
+
         /*! transmissivity can't be over 0.85 */
         return minValue(myTransmissivity, float(0.85));
     }

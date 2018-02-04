@@ -251,10 +251,29 @@ namespace gis
     {
         this->freeGrid();
 
-        *header = *(initGrid.header);
-        *colorScale = *(initGrid.colorScale);
+        *(this->header) = *(initGrid.header);
+        *(this->colorScale) = *(initGrid.colorScale);
 
         return this->initializeGrid(initValue);
+    }
+
+
+    bool Crit3DRasterGrid::copyGrid(const Crit3DRasterGrid& initGrid)
+    {
+        this->freeGrid();
+
+        *(this->header) = *(initGrid.header);
+        *(this->colorScale) = *(initGrid.colorScale);
+
+        this->initializeGrid();
+
+        for (int row = 0; row < this->header->nrRows; row++)
+            for (int col = 0; col < this->header->nrCols; col++)
+                    this->value[row][col] = initGrid.value[row][col];
+
+        gis::updateMinMaxRasterGrid(this);
+        this->isLoaded = true;
+        return true;
     }
 
 
@@ -306,6 +325,7 @@ namespace gis
         header->nrCols = 0;
         isLoaded = false;
     }
+
 
     void Crit3DRasterGrid::emptyGrid()
     {

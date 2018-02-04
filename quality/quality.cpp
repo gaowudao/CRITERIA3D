@@ -37,6 +37,7 @@ Crit3DQuality::Crit3DQuality()
     qualityHourlyWInt = new quality::Range(0, 150);
     qualityHourlyWDir = new quality::Range(0, 360);
     qualityHourlyGIrr = new quality::Range(-20, 1353);
+    qualityTransmissivity = new quality::Range(0, 1);
 
     qualityDailyT = new quality::Range(-60, 60);
     qualityDailyP = new quality::Range(0, 800);
@@ -60,18 +61,20 @@ quality::Range* Crit3DQuality::getQualityRange(meteoVariable myVar)
     // hourly
     if (myVar == airTemperature)
         return qualityHourlyT;
-    else if (myVar == airDewTemperature)
-        return qualityHourlyTd;
     else if (myVar == precipitation)
         return qualityHourlyP;
+    else if (myVar == globalIrradiance)
+        return qualityHourlyGIrr;
+    else if (myVar == atmTransmissivity)
+        return qualityTransmissivity;
     else if (myVar == airHumidity)
         return qualityHourlyRH;
     else if (myVar == windIntensity)
         return qualityHourlyWInt;
     else if (myVar == windDirection)
         return qualityHourlyWDir;
-    else if (myVar == globalIrradiance)
-        return qualityHourlyGIrr;
+    else if (myVar == airDewTemperature)
+        return qualityHourlyTd;
 
     // daily
     else if (myVar == dailyAirTemperatureMax
@@ -98,6 +101,7 @@ quality::Range* Crit3DQuality::getQualityRange(meteoVariable myVar)
 }
 
 
+// check quality and pass good data to interpolation
 bool Crit3DQuality::checkData(meteoVariable myVar, frequencyType myFrequency, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DTime myTime)
 {
     if (nrMeteoPoints == 0)
@@ -138,7 +142,7 @@ void Crit3DQuality::syntacticQualityControl(meteoVariable myVar, Crit3DMeteoPoin
         else
         {
             if (myRange == NULL)
-                meteoPoints[i].myQuality = quality::wrong_variable;
+                meteoPoints[i].myQuality = quality::accepted;
 
             else if (meteoPoints[i].value < qualityMin || meteoPoints[i].value > qualityMax)
                 meteoPoints[i].myQuality = quality::wrong_syntactic;

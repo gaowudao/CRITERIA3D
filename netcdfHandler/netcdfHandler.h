@@ -44,7 +44,7 @@
         int getDimensionIndex(char* dimName);
         std::string getDateTimeStr(int timeIndex);
         std::string getVarName(int idVar);
-        inline int getNrVariables() {return variables.size();}
+        inline int getNrVariables() {return int(variables.size());}
 
         time_t getTime(int timeIndex);
         inline time_t getFirstTime() {return getTime(0);}

@@ -581,8 +581,8 @@ void MainWindow::on_actionInterpolation_triggered()
     myInfo.start("Interpolation...", 0);
 
         std::string myError;
-        if (!myProject.interpolation(myProject.getCurrentVariable(), myProject.getFrequency(),
-                                     myProject.getCurrentTime(), &myError))
+        if (!myProject.interpolateRaster(myProject.getCurrentVariable(), myProject.getFrequency(),
+                                     myProject.getCurrentTime(), &(myProject.dataRaster), &myError))
         {
             QMessageBox::information(NULL, "Error!", QString::fromStdString(myError));
         }
@@ -590,9 +590,13 @@ void MainWindow::on_actionInterpolation_triggered()
         {
             setColorScale(myProject.getCurrentVariable(), myProject.dataRaster.colorScale);
             rasterObj->setCurrentRaster(&(myProject.dataRaster));
+            this->rasterLegend->colorScale = myProject.dataRaster.colorScale;
+
+            myProject.colorScalePoints->setRange(myProject.dataRaster.minimum, myProject.dataRaster.maximum);
+            redrawMeteoPoints(false);
+
             QString myString = QString::fromStdString(getVariableString(myProject.getCurrentVariable()));
             ui->labelRasterScale->setText(myString);
-            this->rasterLegend->colorScale = myProject.currentRaster->colorScale;
         }
 
     myInfo.close();
@@ -655,7 +659,7 @@ void MainWindow::updateVariable()
     std::string myString = getVariableString(myProject.currentVariable);
     ui->labelVariable->setText(QString::fromStdString(myString));
 
-    redrawMeteoPoints();
+    redrawMeteoPoints(true);
 }
 
 
@@ -681,12 +685,12 @@ void MainWindow::on_dateTimeEdit_dateTimeChanged(const QDateTime &dateTime)
         myProject.setCurrentHour(dateTime.time().hour());
     }
 
-    redrawMeteoPoints();
+    redrawMeteoPoints(true);
 }
 
 
 
-void MainWindow::redrawMeteoPoints()
+void MainWindow::redrawMeteoPoints(bool updateColorSCale)
 {
     if (myProject.nrMeteoPoints == 0)
         return;
@@ -719,12 +723,15 @@ void MainWindow::redrawMeteoPoints()
     myProject.quality->checkData(myProject.getCurrentVariable(), myProject.getFrequency(),
                                  myProject.meteoPoints, myProject.nrMeteoPoints, myProject.getCurrentTime());
 
-    float minimum, maximum;
-    myProject.getMeteoPointsRange(&minimum, &maximum);
+    if (updateColorSCale)
+    {
+        float minimum, maximum;
+        myProject.getMeteoPointsRange(&minimum, &maximum);
 
-    myProject.colorScalePoints->setRange(minimum, maximum);
+        myProject.colorScalePoints->setRange(minimum, maximum);
+    }
+
     roundColorScale(myProject.colorScalePoints, 4, true);
-
     setColorScale(myProject.currentVariable, myProject.colorScalePoints);
 
     Crit3DColor *myColor;
@@ -842,7 +849,7 @@ void MainWindow::on_frequencyButton_clicked()
 void MainWindow::on_actionPointsVisible_triggered()
 {
     this->showPoints = ui->actionPointsVisible->isChecked();
-    redrawMeteoPoints();
+    redrawMeteoPoints(false);
 }
 
 

@@ -16,10 +16,10 @@ float computePointTransmissivitySamani(float tmin, float tmax, float samaniCoeff
 }
 
 
-int computeTransmissivity(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, int intervalWidth,
-                          Crit3DTime myTime, const gis::Crit3DRasterGrid& myDtm)
+bool computeTransmissivity(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, int intervalWidth,
+                          Crit3DTime myTime, const gis::Crit3DRasterGrid& dtm)
 {
-    if (nrMeteoPoints <= 0) return 0;
+    if (nrMeteoPoints <= 0) return false;
 
     int hourlyFraction = meteoPoints[0].hourlyFraction;
     int deltaSeconds = 3600 / hourlyFraction;
@@ -32,20 +32,21 @@ int computeTransmissivity(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, int 
     Crit3DTime myTimeFin =  myTime.addSeconds(semiIntervalSeconds);
     Crit3DTime myCurrentTime;
     int myCounter = 0;
-    int indexDate;
-    int indexSubDaily;
+    float transmissivity;
 
     gis::Crit3DPoint myPoint;
 
     for (int i = 0; i < nrMeteoPoints; i++)
-        if (meteoPoints[i].getMeteoPointValueH(myTime.date, myTime.getHour(), myTime.getMinutes(), globalIrradiance) != NODATA)
+        if (meteoPoints[i].getMeteoPointValueH(myTime.date, myTime.getHour(),
+                                myTime.getMinutes(), globalIrradiance) != NODATA)
         {
             myIndex = 0;
             myObsRad = (float *) calloc(intervalWidth, sizeof(float));
             myCurrentTime = myTimeIni;
             while (myCurrentTime <= myTimeFin)
             {
-                myObsRad[myIndex] = meteoPoints[i].getMeteoPointValueH(myCurrentTime.date, myCurrentTime.getHour(), myCurrentTime.getMinutes(), globalIrradiance);
+                myObsRad[myIndex] = meteoPoints[i].getMeteoPointValueH(myCurrentTime.date, myCurrentTime.getHour(),
+                                                                       myCurrentTime.getMinutes(), globalIrradiance);
                 myCurrentTime = myCurrentTime.addSeconds(float(deltaSeconds));
                 myIndex++;
             }
@@ -54,22 +55,22 @@ int computeTransmissivity(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, int 
             myPoint.utm.y = meteoPoints[i].point.utm.y;
             myPoint.z = meteoPoints[i].point.z;
 
-            indexDate = -myTime.date.daysTo(meteoPoints[i].obsDataH->date);
-            indexSubDaily = (hourlyFraction * myTime.getHour()) + myTime.getMinutes() % (60 / hourlyFraction);
+            transmissivity = radiation::computePointTransmissivity(myPoint, myTime, myObsRad,
+                                                                   intervalWidth, deltaSeconds, dtm);
 
-            meteoPoints[i].obsDataH[indexDate].transmissivity[indexSubDaily] =
-                    radiation::computePointTransmissivity(myPoint, myTime, myObsRad, intervalWidth, deltaSeconds, myDtm);
+            meteoPoints[i].setMeteoPointValueH(myTime.date, myTime.getHour(), myTime.getMinutes(),
+                                               atmTransmissivity, transmissivity);
 
-            myCounter++;
+            if (transmissivity != NODATA) myCounter++;
         }
 
-    return myCounter;
+    return (myCounter > 0);
 }
 
 
-int computeTransmissivityFromTRange(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DTime currentTime)
+bool computeTransmissivityFromTRange(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DTime currentTime)
 {
-    if (nrMeteoPoints <= 0) return 0;
+    if (nrMeteoPoints <= 0) return false;
 
     int hourlyFraction = meteoPoints[0].hourlyFraction;
     int deltaSeconds = 3600 / hourlyFraction;
@@ -106,19 +107,23 @@ int computeTransmissivityFromTRange(Crit3DMeteoPoint* meteoPoints, int nrMeteoPo
 
         if (tmin != NODATA && tmax != NODATA)
         {
-            transmissivity = computePointTransmissivitySamani(tmin, tmax, float(0.17));
+            transmissivity = computePointTransmissivitySamani(tmin, tmax, float(TRANSMISSIVITY_SAMANI_COEFF_DEFAULT));
             if (transmissivity != NODATA)
             {
+                // save transmissivity data in memory (all daily values)
                 indexDate = -currentTime.date.daysTo(meteoPoints[i].obsDataH->date);
-                int nrDayValues = hourlyFraction * 24 +1;
-                for (int j = 0; j < nrDayValues; j++)
+                int nrDailyValues = hourlyFraction * 24 +1;
+
+                for (int j = 0; j < nrDailyValues; j++)
                     meteoPoints[i].obsDataH[indexDate].transmissivity[j] = transmissivity;
+
                 //midnight
-                meteoPoints[i].obsDataH[indexDate+1].transmissivity[0] = transmissivity;
+                meteoPoints[i].setMeteoPointValueH(currentTime.date.addDays(1),
+                                       0, 0, atmTransmissivity, transmissivity);
                 counter++;
             }
         }
     }
 
-    return counter;
+    return (counter > 0);
 }

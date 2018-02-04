@@ -30,6 +30,7 @@
         quality::Range* qualityHourlyWInt;
         quality::Range* qualityHourlyWDir;
         quality::Range* qualityHourlyGIrr;
+        quality::Range* qualityTransmissivity;
 
         quality::Range* qualityDailyT;
         quality::Range* qualityDailyP;

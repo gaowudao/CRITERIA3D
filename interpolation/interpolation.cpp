@@ -1097,6 +1097,7 @@ float retrend(meteoVariable myVar, float myZ, float myOrogIndex, float mySeaDist
     return (retrendZ + retrendIPL + retrendDistSea + retrendUrban + retrendAspect);
 }
 
+
 bool preInterpolation(meteoVariable myVar)
 {
     if (myVar == precipitation || myVar == dailyPrecipitation)
@@ -1251,11 +1252,10 @@ bool checkInterpolationRaster(const  gis::Crit3DRasterGrid& myDTM, std::string *
 }
 
 
-
-// assume che i dati siano già stati caricati in interpolationPointList (checkData)
+// require data loaded in interpolationPointList (use checkData function)
 bool interpolationRaster(meteoVariable myVar, Crit3DInterpolationSettings *mySettings,
-                         gis::Crit3DRasterGrid *myRaster, const  gis::Crit3DRasterGrid& myDTM,
-                         const Crit3DTime& myTime, std::string *myError)
+                         const Crit3DTime& myTime, const  gis::Crit3DRasterGrid& myDTM,
+                         gis::Crit3DRasterGrid *myRaster, std::string *myError)
 {
     if (! checkInterpolationRaster(myDTM, myError))
         return false;

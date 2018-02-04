@@ -69,7 +69,7 @@
     bool checkInterpolationRaster(const  gis::Crit3DRasterGrid& myDTM, std::string *myError);
 
     bool interpolationRaster(meteoVariable myVar, Crit3DInterpolationSettings *mySettings,
-                             gis::Crit3DRasterGrid *myRaster, const  gis::Crit3DRasterGrid& myDTM,
-                             const Crit3DTime& myTime, std::string *myError);
+                             const Crit3DTime& myTime, const gis::Crit3DRasterGrid& myDTM,
+                             gis::Crit3DRasterGrid *myRaster, std::string *myError);
 
 #endif // INTERPOLATION_H
