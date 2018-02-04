@@ -662,8 +662,9 @@ void MainWindow::updateVariable()
 
 void MainWindow::updateDateTime()
 {
+    int myHour = myProject.getCurrentHour();
     this->ui->dateTimeEdit->setDate(myProject.getCurrentDate());
-    this->ui->dateTimeEdit->setTime(QTime(myProject.getCurrentHour(),0,0,0));
+    this->ui->dateTimeEdit->setTime(QTime(myHour,0,0));
 }
 
 

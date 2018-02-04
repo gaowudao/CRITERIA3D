@@ -267,7 +267,7 @@ void Project::setCurrentDate(QDate myDate)
     }
 }
 
-void Project::setCurrentHour(short myHour)
+void Project::setCurrentHour(int myHour)
 {
     this->currentHour = myHour;
 }
@@ -287,7 +287,7 @@ Crit3DTime Project::getCurrentTime()
     return getCrit3DTime(this->currentDate, this->currentHour);
 }
 
-short Project::getCurrentHour()
+int Project::getCurrentHour()
 {
     return this->currentHour;
 }
@@ -310,10 +310,10 @@ bool Project::loadlastMeteoData()
 
     QDate lastDate = (lastDateD > lastDateH) ? lastDateD : lastDateH;
 
-    setCurrentDate(lastDate);
-    setCurrentHour(12);
+    this->setCurrentDate(lastDate);
+    this->setCurrentHour(12);
 
-    return loadMeteoPointsData (lastDate, lastDate, true);
+    return this->loadMeteoPointsData (lastDate, lastDate, true);
 }
 
 

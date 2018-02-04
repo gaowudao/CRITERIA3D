@@ -33,7 +33,7 @@
 
         frequencyType currentFrequency;
         QDate previousDate, currentDate;
-        short currentHour;
+        int currentHour;
 
     public:
         Crit3DMeteoPoint* meteoPoints;
@@ -60,10 +60,10 @@
         Project();
 
         void setCurrentDate(QDate myDate);
-        void setCurrentHour(short myHour);
+        void setCurrentHour(int myHour);
         void setFrequency(frequencyType myFrequency);
         QDate getCurrentDate();
-        short getCurrentHour();
+        int getCurrentHour();
         Crit3DTime Project::getCurrentTime();
         frequencyType getFrequency();
         meteoVariable getCurrentVariable();
