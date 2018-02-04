@@ -479,7 +479,7 @@
       <x>0</x>
       <y>300</y>
       <width>261</width>
-      <height>151</height>
+      <height>171</height>
      </rect>
     </property>
     <property name="palette">
@@ -957,7 +957,7 @@
      <property name="geometry">
       <rect>
        <x>-1</x>
-       <y>100</y>
+       <y>120</y>
        <width>261</width>
        <height>50</height>
       </rect>
@@ -975,8 +975,8 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>60</y>
-       <width>61</width>
+       <y>90</y>
+       <width>71</width>
        <height>23</height>
       </rect>
      </property>
@@ -992,8 +992,8 @@
     <widget class="QLabel" name="labelRasterScale">
      <property name="geometry">
       <rect>
-       <x>90</x>
-       <y>60</y>
+       <x>100</x>
+       <y>90</y>
        <width>161</width>
        <height>21</height>
       </rect>
@@ -1042,6 +1042,24 @@
      </property>
      <property name="text">
       <string>Digital Terrain Map [m]</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="rasterRestoreButton">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>60</y>
+       <width>71</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>9</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Restore</string>
      </property>
     </widget>
    </widget>
@@ -1506,9 +1524,9 @@
     <widget class="QLabel" name="labelVariable">
      <property name="geometry">
       <rect>
-       <x>90</x>
+       <x>100</x>
        <y>100</y>
-       <width>161</width>
+       <width>151</width>
        <height>21</height>
       </rect>
      </property>
@@ -1561,9 +1579,9 @@
     <widget class="QLabel" name="labelFrequency">
      <property name="geometry">
       <rect>
-       <x>110</x>
+       <x>120</x>
        <y>70</y>
-       <width>141</width>
+       <width>131</width>
        <height>21</height>
       </rect>
      </property>
@@ -1579,7 +1597,7 @@
     <widget class="QDateTimeEdit" name="dateTimeEdit">
      <property name="geometry">
       <rect>
-       <x>10</x>
+       <x>20</x>
        <y>30</y>
        <width>161</width>
        <height>31</height>
@@ -1634,7 +1652,7 @@
     <widget class="QPushButton" name="frequencyButton">
      <property name="geometry">
       <rect>
-       <x>10</x>
+       <x>20</x>
        <y>70</y>
        <width>91</width>
        <height>23</height>
@@ -1652,7 +1670,7 @@
     <widget class="QPushButton" name="variableButton">
      <property name="geometry">
       <rect>
-       <x>10</x>
+       <x>20</x>
        <y>100</y>
        <width>71</width>
        <height>23</height>
@@ -1675,7 +1693,7 @@
      <x>0</x>
      <y>0</y>
      <width>1368</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <property name="palette">

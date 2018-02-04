@@ -5,8 +5,6 @@
 #include <QDebug>
 #include <cmath>
 
-extern Project myProject;
-
 ColorLegend::ColorLegend(QWidget *parent) :
     QWidget(parent)
 {

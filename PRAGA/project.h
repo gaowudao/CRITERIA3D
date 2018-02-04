@@ -46,7 +46,6 @@
 
         gis::Crit3DRasterGrid DTM;
         gis::Crit3DRasterGrid dataRaster;
-        gis::Crit3DRasterGrid *currentRaster;
 
         Crit3DRadiationMaps* radiationMaps;
 

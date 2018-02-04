@@ -22,6 +22,8 @@ class RasterObject : public MapGraphicsObject
 {
     Q_OBJECT
 public:
+    gis::Crit3DRasterGrid *currentRaster;
+
     /*!
      * \brief RasterObject constructor
      * \param view a MapGraphicsView pointer
@@ -67,7 +69,6 @@ private:
     bool isLatLon;
     bool isGrid;
     int utmZone;
-    gis::Crit3DRasterGrid *currentRaster;
 
     void freeIndexesMatrix();
     void initializeIndexesMatrix();

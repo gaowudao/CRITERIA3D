@@ -79,6 +79,7 @@ void RasterObject::setCurrentRaster(gis::Crit3DRasterGrid* rasterPointer)
     currentRaster = rasterPointer;
 }
 
+
 /*!
  * \brief RasterObject::getRasterMaxSize
  * \return max of raster width and height (decimal degree)

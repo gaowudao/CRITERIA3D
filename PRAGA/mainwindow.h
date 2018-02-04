@@ -81,6 +81,8 @@
 
         void on_action_Extract_NetCDF_series_triggered();
 
+        void on_rasterRestoreButton_clicked();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
@@ -129,6 +131,7 @@
         void redrawMeteoPoints(bool updateColorSCale);
 
         bool loadMeteoPointsDB(QString dbName);
+        void setCurrentRaster(gis::Crit3DRasterGrid *myRaster);
 
     };
 

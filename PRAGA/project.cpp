@@ -25,7 +25,6 @@ Project::Project()
     currentHour = 12;
     colorScalePoints = new Crit3DColorScale();
     dbMeteoPoints = NULL;
-    currentRaster = &DTM;
 
     radiationMaps = new Crit3DRadiationMaps();
 }
@@ -50,7 +49,6 @@ bool Project::loadRaster(QString myFileName)
 
     gis::updateMinMaxRasterGrid(&DTM);
     this->DTM.isLoaded = true;
-    this->currentRaster = &DTM;
 
     // initialize slope, aspect, lat/lon
     radiationMaps->clean();

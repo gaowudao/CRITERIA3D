@@ -190,13 +190,10 @@ void MainWindow::on_actionLoadRaster_triggered()
 
     // set DTM color scale
     setColorScale(noMeteoTerrain, myProject.DTM.colorScale);
+    this->setCurrentRaster(&(myProject.DTM));
+
     ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
-    this->rasterLegend->colorScale = myProject.currentRaster->colorScale;
-
     this->ui->rasterOpacitySlider->setEnabled(true);
-
-    // set raster object
-    this->rasterObj->initializeUTM(&(myProject.DTM), myProject.gisSettings, false);
 
     // center map
     gis::Crit3DGeoPoint* center = this->rasterObj->getRasterCenter();
@@ -581,22 +578,22 @@ void MainWindow::on_actionInterpolation_triggered()
     myInfo.start("Interpolation...", 0);
 
         std::string myError;
-        if (!myProject.interpolateRaster(myProject.getCurrentVariable(), myProject.getFrequency(),
-                                     myProject.getCurrentTime(), &(myProject.dataRaster), &myError))
+        meteoVariable myVar = myProject.getCurrentVariable();
+
+        if (!myProject.interpolateRaster(myVar, myProject.getFrequency(), myProject.getCurrentTime(),
+                                         &(myProject.dataRaster), &myError))
         {
             QMessageBox::information(NULL, "Error!", QString::fromStdString(myError));
         }
         else
         {
-            setColorScale(myProject.getCurrentVariable(), myProject.dataRaster.colorScale);
-            rasterObj->setCurrentRaster(&(myProject.dataRaster));
-            this->rasterLegend->colorScale = myProject.dataRaster.colorScale;
+            setColorScale(myVar, myProject.dataRaster.colorScale);
+            this->setCurrentRaster(&(myProject.dataRaster));
 
             myProject.colorScalePoints->setRange(myProject.dataRaster.minimum, myProject.dataRaster.maximum);
             redrawMeteoPoints(false);
 
-            QString myString = QString::fromStdString(getVariableString(myProject.getCurrentVariable()));
-            ui->labelRasterScale->setText(myString);
+            ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myVar)));
         }
 
     myInfo.close();
@@ -809,7 +806,7 @@ void MainWindow::setMapSource(OSMTileSource::OSMTileType mySource)
 
 void MainWindow::on_rasterScaleButton_clicked()
 {
-    if (!myProject.DTM.isLoaded)
+    if (this->rasterObj->currentRaster == NULL)
     {
         QMessageBox::information(NULL, "No Raster", "Load raster before");
         return;
@@ -818,7 +815,7 @@ void MainWindow::on_rasterScaleButton_clicked()
     meteoVariable myVar = chooseColorScale();
     if (myVar != noMeteoVar)
     {
-        setColorScale(myVar, myProject.currentRaster->colorScale);
+        setColorScale(myVar, this->rasterObj->currentRaster->colorScale);
         ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myVar)));
     }
 }
@@ -926,4 +923,26 @@ void exportNetCDFDataSeries(gis::Crit3DGeoPoint geoPoint)
             }
         }
     }
+}
+
+
+void MainWindow::on_rasterRestoreButton_clicked()
+{
+    if (this->rasterObj->currentRaster == NULL)
+    {
+        QMessageBox::information(NULL, "No Raster", "Load raster before");
+        return;
+    }
+
+    setDefaultDTMScale(myProject.DTM.colorScale);
+    this->setCurrentRaster(&(myProject.DTM));
+    ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
+}
+
+
+void MainWindow::setCurrentRaster(gis::Crit3DRasterGrid *myRaster)
+{
+    this->rasterObj->initializeUTM(myRaster, myProject.gisSettings, false);
+    this->rasterLegend->colorScale = myRaster->colorScale;
+    this->rasterObj->redrawRequested();
 }
