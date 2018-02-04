@@ -454,31 +454,14 @@ bool Project::interpolateRasterRadiation(const Crit3DTime& myTime, gis::Crit3DRa
     radiation::setRadiationSettings(&(radSettings));
 
     int intervalWidth = radiation::estimateTransmissivityWindow(DTM, *radiationMaps, &(DTM.mapCenter()), myTime, int(HOUR_SECONDS));
-    float dt = (intervalWidth-1) * 0.5 * HOUR_SECONDS;
 
-    Crit3DTime timeIni = myTime.addSeconds(-dt);
-    Crit3DTime timeFin = myTime.addSeconds(dt);
-
-    bool transComputed = false;
-
-    // almost a meteoPoint with 50% of data
-    if (this->meteoDataConsistency(globalIrradiance, timeIni, timeFin) > 0.5)
-    {
-        // almost a meteoPoint with transmissivity data
-        transComputed = computeTransmissivity(this->meteoPoints, this->nrMeteoPoints, intervalWidth, myTime, this->DTM);
-    }
-
-    // compute transmissivity from temperature range
-    if (! transComputed)
-    {
-         transComputed = computeTransmissivityFromTRange(this->meteoPoints, this->nrMeteoPoints, myTime);
-    }
-
-    if (! transComputed)
-    {
-        *myError = "Function interpolateRasterRadiation: it is not possible to compute transmissivity.";
-        return false;
-    }
+    // almost a meteoPoint with transmissivity data
+    if (! computeTransmissivity(this->meteoPoints, this->nrMeteoPoints, intervalWidth, myTime, this->DTM))
+        if (! computeTransmissivityFromTRange(this->meteoPoints, this->nrMeteoPoints, myTime))
+        {
+            *myError = "Function interpolateRasterRadiation: it is not possible to compute transmissivity.";
+            return false;
+        }
 
     if (!quality->checkData(atmTransmissivity, hourly, this->meteoPoints, this->nrMeteoPoints, myTime))
     {
@@ -503,8 +486,6 @@ bool Project::interpolateRasterRadiation(const Crit3DTime& myTime, gis::Crit3DRa
 
     return true;
 }
-
-
 
 
 float Project::meteoDataConsistency(meteoVariable myVar, const Crit3DTime& timeIni, const Crit3DTime& timeFin)

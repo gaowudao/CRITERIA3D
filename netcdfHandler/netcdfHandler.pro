@@ -1,6 +1,7 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2017-08-28T15:59:15
+# CRITERIA3D distribution
+# netcdfHandler library
 #
 #-------------------------------------------------
 
@@ -10,7 +11,7 @@ TARGET = netcdfHandler
 TEMPLATE = lib
 CONFIG += staticlib
 
-INCLUDEPATH += ../mathFunctions ../gis ../crit3dDate
+INCLUDEPATH += ../mathFunctions ../crit3dDate ../gis
 INCLUDEPATH += $$(NC4_INSTALL_DIR)/include
 
 SOURCES += \

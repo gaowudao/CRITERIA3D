@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# CRITERIA3D
+# CRITERIA3D library
 # common constants and math functions
 #
 #-------------------------------------------------
