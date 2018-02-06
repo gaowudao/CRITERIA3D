@@ -34,11 +34,14 @@ bool computeTransmissivity(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, int
     int myCounter = 0;
     float transmissivity;
 
+
     gis::Crit3DPoint myPoint;
 
     for (int i = 0; i < nrMeteoPoints; i++)
-        if (meteoPoints[i].getMeteoPointValueH(myTime.date, myTime.getHour(),
-                                myTime.getMinutes(), globalIrradiance) != NODATA)
+    {
+        float myRad = meteoPoints[i].getMeteoPointValueH(myTime.date, myTime.getHour(),
+                                                         myTime.getMinutes(), globalIrradiance);
+        if (myRad != NODATA)
         {
             myIndex = 0;
             myObsRad = (float *) calloc(intervalWidth, sizeof(float));
@@ -63,6 +66,7 @@ bool computeTransmissivity(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, int
 
             if (transmissivity != NODATA) myCounter++;
         }
+    }
 
     return (myCounter > 0);
 }

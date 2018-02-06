@@ -694,7 +694,7 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
 
     int estimateTransmissivityWindow(const gis::Crit3DRasterGrid& myDtm,
                                      const Crit3DRadiationMaps& myRadiationMaps,
-                                     gis::Crit3DPoint* myPoint, Crit3DTime UTCTime, int timeStepSecond)
+                                     gis::Crit3DPoint* myPoint, Crit3DTime myTime, int timeStepSecond)
     {
         double latDegrees, lonDegrees;
         TradPoint myRadPoint;
@@ -705,7 +705,6 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
         float sumPotentialRad = 0.;
         Crit3DTime backwardTime;
         Crit3DTime forwardTime;
-        Crit3DTime myTmpTime;
         int myWindowSteps;
         int myRow, myCol;
 
@@ -728,19 +727,25 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
         myAlbedo = readAlbedo();
         myClearSkyTransmissivity = radiationSettings.getClearSky();
 
-        /*! threshold: noon potential radiation */
-        myTmpTime = UTCTime;
-        myTmpTime.time = 12*3600;
-        computeRadiationPointRsun(TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, myTmpTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
-        sumPotentialRadThreshold = float(myRadPoint.global);
+        // noon
+        Crit3DTime noonTime = myTime;
+        noonTime.time = 12*3600;
+        if (radiationSettings.gisSettings->isUTC)
+        {
+            noonTime = noonTime.addSeconds(-float(radiationSettings.gisSettings->timeZone * 3600));
+        }
 
-        computeRadiationPointRsun(TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, UTCTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
+        // Threshold: half potential radiation at noon
+        computeRadiationPointRsun(TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, noonTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
+        sumPotentialRadThreshold = float(myRadPoint.global * 0.5);
+
+        computeRadiationPointRsun(TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, myTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
         sumPotentialRad = float(myRadPoint.global);
 
         int backwardTimeStep,forwardTimeStep;
         backwardTimeStep = forwardTimeStep = 0;
         myWindowSteps = 1;
-        backwardTime = forwardTime = UTCTime;
+        backwardTime = forwardTime = myTime;
 
         while (sumPotentialRad < sumPotentialRadThreshold)
         {
@@ -748,8 +753,8 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
 
             backwardTimeStep -= timeStepSecond ;
             forwardTimeStep += timeStepSecond;
-            backwardTime = UTCTime.addSeconds(float(backwardTimeStep));
-            forwardTime = UTCTime.addSeconds(float(forwardTimeStep));
+            backwardTime = myTime.addSeconds(float(backwardTimeStep));
+            forwardTime = myTime.addSeconds(float(forwardTimeStep));
 
             computeRadiationPointRsun(TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, backwardTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
             sumPotentialRad+= float(myRadPoint.global);

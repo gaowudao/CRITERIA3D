@@ -25,6 +25,7 @@
 
 
 #include <malloc.h>
+#include <math.h>
 
 #include "commonConstants.h"
 #include "meteoPoint.h"
@@ -337,10 +338,13 @@ void Crit3DMeteoPoint::cleanObsDataD()
 
 bool Crit3DMeteoPoint::setMeteoPointValueH(const Crit3DDate& myDate, int myHour, int myMinutes, meteoVariable myVar, float myValue)
 {
-    int h = (hourlyFraction * myHour) + myMinutes % (60 / hourlyFraction);
-    long i = obsDataH[0].date.daysTo(myDate);
+    // check indexes (day, hour)
+    int i = obsDataH[0].date.daysTo(myDate);
+    if ((i < 0) || (i >= nrObsDataDaysH)) return false;
 
-    if ((i <0) || (i >= nrObsDataDaysH)) return false;
+    int subH = int(ceil(float(myMinutes) / float(60 / hourlyFraction)));
+    int h = hourlyFraction * myHour + subH;
+    if ((h < 0) || (h >= hourlyFraction * 24)) return false;
 
     if (myVar == airTemperature)
         obsDataH[i].tAir[h] = myValue;
@@ -411,9 +415,11 @@ float Crit3DMeteoPoint::getMeteoPointValueH(const Crit3DDate& myDate, int myHour
     if ((myHour < 0) || (myHour > 24)) return NODATA;
 
     //indexes
-    int h = (hourlyFraction * myHour) + myMinutes % (60 / hourlyFraction);
-    int i = obsDataH[0].date.daysTo(myDate);
+    int subH = int(ceil(float(myMinutes) / float(60 / hourlyFraction)));
+    int h = hourlyFraction * myHour + subH;
+    if ((h < 0) || (h >= hourlyFraction * 24)) return NODATA;
 
+    int i = obsDataH[0].date.daysTo(myDate);
     if ((i < 0) || (i >= nrObsDataDaysH)) return NODATA;
 
     if (myVar == airTemperature)
