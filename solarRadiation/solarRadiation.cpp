@@ -766,6 +766,7 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
         return myWindowSteps;
     }
 
+
     bool isGridPointComputable(int row, int col, const gis::Crit3DRasterGrid& myDtm, Crit3DRadiationMaps* radiationMaps)
     {
         float mySlope, myAspect;
