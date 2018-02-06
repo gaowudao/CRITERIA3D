@@ -434,7 +434,8 @@ bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, 
 
     if (myVar == globalIrradiance)
     {
-        return interpolateRasterRadiation(myTime, myRaster, myError);
+        Crit3DTime measureTime = myTime.addSeconds(-1800);
+        return interpolateRasterRadiation(measureTime, myRaster, myError);
     }
     else
     {
