@@ -361,7 +361,6 @@ namespace soilFluxes3D {
                         double VG_he, double ThetaR, double ThetaS, double Ksat, double L, double organicMatter, double clay)
  {
 
-
 	if ((nSoil < 0) || (nSoil >= MAX_SOILS)) return(INDEX_ERROR);
 
     if ((nHorizon < 0) || (nHorizon >= MAX_HORIZONS)) return(INDEX_ERROR);

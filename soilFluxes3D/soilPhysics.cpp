@@ -164,11 +164,12 @@
      * \param Ksat
      * \param Se
      * \param VG_Sc
+	 * \param VG_n
      * \param VG_m
      * \param Mualem_L
      * \return result
      */
-    double compute_K_Mualem(double Ksat, double Se, double VG_Sc, double, double VG_m, double Mualem_L)
+    double compute_K_Mualem(double Ksat, double Se, double VG_Sc, double VG_n, double VG_m, double Mualem_L)
 	{
 		if (Se >= 1.) return(Ksat);
 		double temp= NODATA;
