@@ -155,8 +155,10 @@ bool weatherGenerator2D::initializeObservedData(int lengthDataSeries, int statio
     return 0;
 }
 
-void weatherGenerator2D::initializeParameters(double thresholdPrecipitation, int simulatedYears, int distributionType)
+void weatherGenerator2D::initializeParameters(double thresholdPrecipitation, int simulatedYears, int distributionType, bool computePrecWG2D, bool computeTempWG2D)
 {
+    isPrecWG2D = computePrecWG2D;
+    isTempWG2D = computeTempWG2D;
     // default parameters
     if (thresholdPrecipitation == NODATA) parametersModel.precipitationThreshold = 1.; //1mm default
     else parametersModel.precipitationThreshold = thresholdPrecipitation;
@@ -250,15 +252,123 @@ void weatherGenerator2D::setObservedData(float*** weatherArray, int** dateArray)
 
 void weatherGenerator2D::computeWeatherGenerator2D()
 {
-
+    if (isPrecWG2D) weatherGenerator2D::precipitationCompute();
+    if (isTempWG2D) weatherGenerator2D::temperatureCompute();
 }
 
 void weatherGenerator2D::precipitationCompute()
 {
-
+   weatherGenerator2D::precipitationOccurrence();
 }
 
 void weatherGenerator2D::precipitationOccurrence()
+{
+    for (int j=0; j<nrStations;j++)
+    {
+       /*
+       double* precipitationAmountsD;
+       bool* precipitationOccurrencesD;
+       weatherGenerator2D::precipitation29February(j);
+       precipitationAmountsD = (double*)calloc(nrDataWithout29February, sizeof(double));
+       precipitationOccurrencesD = (bool*)calloc(nrDataWithout29February, sizeof(bool));
+       weatherGenerator2D::precipitationAmountsOccurences(j,precipitationAmountsD,precipitationOccurrencesD);
+
+
+       free(precipitationAmountsD);
+       free(precipitationOccurrencesD);
+       */
+        weatherGenerator2D::precipitationP00P10(j);
+    }
+}
+void weatherGenerator2D::precipitationP00P10(int idStation)
+{
+    int daysWithoutRain[12]={0,0,0,0,0,0,0,0,0,0,0,0};
+    int daysWithRain[12]={0,0,0,0,0,0,0,0,0,0,0,0};
+    int occurrence00[12]={0,0,0,0,0,0,0,0,0,0,0,0};
+    int occurrence10[12]={0,0,0,0,0,0,0,0,0,0,0,0};
+    double p00[12]={0,0,0,0,0,0,0,0,0,0,0,0};
+    double p10[12]={0,0,0,0,0,0,0,0,0,0,0,0};
+
+    for(int i=0;i<nrData-1;i++)
+    {
+        if ((obsDataD[idStation][i].prec != NODATA && obsDataD[idStation][i+1].prec != NODATA))
+        {
+            for (int month=1;month<13;month++)
+            {
+                if(obsDataD[idStation][i].date.month == month)
+                {
+                    if (obsDataD[idStation][i].prec > parametersModel.precipitationThreshold)
+                    {
+                        daysWithRain[month-1]++;
+                        if (obsDataD[idStation][i+1].prec < parametersModel.precipitationThreshold)
+                            occurrence10[month-1]++;
+                    }
+                    else
+                    {
+                        daysWithoutRain[month-1]++;
+                        if (obsDataD[idStation][i+1].prec < parametersModel.precipitationThreshold)
+                            occurrence00[month-1]++;
+                    }
+                }
+            }
+        }
+    }
+    for (int month=0;month<12;month++)
+    {
+        p00[month]=(1.0*occurrence00[month])/daysWithoutRain[month];
+        p10[month]=(1.0*occurrence10[month])/daysWithRain[month];
+        //printf("no pioggia %d,%d,%d\n",month+1,occurrence00[month],daysWithoutRain[month]);
+        //printf("pioggia %d,%d,%d\n",month+1,occurrence10[month],daysWithRain[month]);
+        //printf("%d,p10:%f,p00:%f\n",month+1,p10[month],p00[month]);
+    }
+
+}
+
+void weatherGenerator2D::precipitation29February(int idStation)
+{
+    nrDataWithout29February = nrData;
+
+    for (int i=0; i<nrData;i++)
+    {
+        if (isLeapYear(obsDataD[idStation][i].date.year))
+        {
+            if ((obsDataD[idStation][i].date.day == 29) && (obsDataD[idStation][i].date.month == 2))
+            {
+                if (i!= 0)obsDataD[idStation][i-1].prec += obsDataD[idStation][i-1].prec /2;
+                if (i != (nrData-1)) obsDataD[idStation][i+1].prec += obsDataD[idStation][i+1].prec /2;
+                nrDataWithout29February--;
+            }
+        }
+
+    }
+
+}
+
+void weatherGenerator2D::precipitationAmountsOccurences(int idStation, double* precipitationAmountsD,bool* precipitationOccurrencesD)
+{
+    int counter = 0;
+    for (int i=0; i<nrData;i++)
+    {
+            if (!((obsDataD[idStation][i].date.day == 29) && (obsDataD[idStation][i].date.month == 2)))
+            {
+
+                if (precipitationAmountsD[counter] < parametersModel.precipitationThreshold)
+                {
+                    precipitationOccurrencesD[counter]= false;
+                    precipitationAmountsD[counter]=0;
+                }
+                else
+                {
+                    precipitationOccurrencesD[counter] = true;
+                    precipitationAmountsD[counter]=obsDataD[idStation][i].prec;
+                }
+                counter++;
+            }
+    }
+}
+
+
+void weatherGenerator2D::temperatureCompute()
 {
 
 }
