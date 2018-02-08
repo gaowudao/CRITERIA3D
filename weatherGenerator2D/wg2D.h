@@ -36,6 +36,17 @@ public:
 };
 */
 
+struct TprecOccurrence{
+    double p00;
+    double p10;
+    int month;
+};
+
+struct TcorrelationMatrix{
+    double** amount;
+    int** occurrence;
+    int month;
+};
 
 struct TparametersModel{
     int yearOfSimulation;
@@ -54,6 +65,8 @@ private:
     TparametersModel parametersModel;
     int *month,*lengthMonth,*beginMonth;
     TObsDataD** obsDataD;
+    TprecOccurrence** precOccurence;
+    TcorrelationMatrix *correlationMatrix;
 
     //functions
 
@@ -62,8 +75,9 @@ private:
     void precipitation29February(int idStation);
     void precipitationAmountsOccurences(int idStation, double* precipitationAmountsD,bool* precipitationOccurencesD);
     void precipitationP00P10(int idStation);
-
+    void precipitationCorrelationMatrices();
     void temperatureCompute();
+
 
 
 public:
@@ -71,7 +85,7 @@ public:
 
     //functions
     weatherGenerator2D() {}
-    bool initializeObservedData(int lengthDataSeries, int nrStations);
+    bool initializeData(int lengthDataSeries, int nrStations);
     void initializeParameters(double thresholdPrecipitation, int simulatedYears, int distributionType, bool computePrecWG2D, bool computeTempWG2D);
     void setObservedData(float*** weatherArray, int** dateArray);
     void computeWeatherGenerator2D();

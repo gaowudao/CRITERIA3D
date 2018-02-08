@@ -105,7 +105,7 @@ contributors:
 //precipitation prec;
 //temperature temp;
 
-bool weatherGenerator2D::initializeObservedData(int lengthDataSeries, int stations)
+bool weatherGenerator2D::initializeData(int lengthDataSeries, int stations)
 
 {
     nrData = lengthDataSeries;
@@ -116,6 +116,24 @@ bool weatherGenerator2D::initializeObservedData(int lengthDataSeries, int statio
     for (int i=0;i<nrStations;i++)
     {
         obsDataD[i] = (TObsDataD *)calloc(nrData, sizeof(TObsDataD));
+    }
+    // occurrence structure
+    precOccurence = (TprecOccurrence **) calloc(nrStations, sizeof(TprecOccurrence*));
+    for (int i=0;i<nrStations;i++)
+    {
+        precOccurence[i] = (TprecOccurrence *)calloc(12, sizeof(TprecOccurrence));
+    }
+    // correlation matrix structure
+    correlationMatrix = (TcorrelationMatrix*)calloc(12, sizeof(TcorrelationMatrix));
+    for (int iMonth=0;iMonth<12;iMonth++)
+    {
+        correlationMatrix[iMonth].amount = (double**)calloc(nrStations, sizeof(double*));
+        correlationMatrix[iMonth].occurrence = (int**)calloc(nrStations, sizeof(int*));
+        for (int i=0;i<nrStations;i++)
+        {
+            correlationMatrix[iMonth].amount[i]= (double*)calloc(nrStations, sizeof(double));
+            correlationMatrix[iMonth].occurrence[i]= (int*)calloc(nrStations, sizeof(int));
+        }
     }
 
     /*
@@ -259,6 +277,7 @@ void weatherGenerator2D::computeWeatherGenerator2D()
 void weatherGenerator2D::precipitationCompute()
 {
    weatherGenerator2D::precipitationOccurrence();
+   weatherGenerator2D::precipitationCorrelationMatrices();
 }
 
 void weatherGenerator2D::precipitationOccurrence()
@@ -277,8 +296,8 @@ void weatherGenerator2D::precipitationOccurrence()
        free(precipitationAmountsD);
        free(precipitationOccurrencesD);
        */
-        weatherGenerator2D::precipitationP00P10(j);
-    }
+        weatherGenerator2D::precipitationP00P10(j); // computes the monthly probabilities p00 and p10
+    }    
 }
 void weatherGenerator2D::precipitationP00P10(int idStation)
 {
@@ -286,8 +305,8 @@ void weatherGenerator2D::precipitationP00P10(int idStation)
     int daysWithRain[12]={0,0,0,0,0,0,0,0,0,0,0,0};
     int occurrence00[12]={0,0,0,0,0,0,0,0,0,0,0,0};
     int occurrence10[12]={0,0,0,0,0,0,0,0,0,0,0,0};
-    double p00[12]={0,0,0,0,0,0,0,0,0,0,0,0};
-    double p10[12]={0,0,0,0,0,0,0,0,0,0,0,0};
+    //double p00[12]={0,0,0,0,0,0,0,0,0,0,0,0};
+    //double p10[12]={0,0,0,0,0,0,0,0,0,0,0,0};
 
     for(int i=0;i<nrData-1;i++)
     {
@@ -315,11 +334,12 @@ void weatherGenerator2D::precipitationP00P10(int idStation)
     }
     for (int month=0;month<12;month++)
     {
-        p00[month]=(1.0*occurrence00[month])/daysWithoutRain[month];
-        p10[month]=(1.0*occurrence10[month])/daysWithRain[month];
+        precOccurence[idStation][month].p00 =(1.0*occurrence00[month])/daysWithoutRain[month];
+        precOccurence[idStation][month].p10 =(1.0*occurrence10[month])/daysWithRain[month];
+        precOccurence[idStation][month].month = month +1;
         //printf("no pioggia %d,%d,%d\n",month+1,occurrence00[month],daysWithoutRain[month]);
         //printf("pioggia %d,%d,%d\n",month+1,occurrence10[month],daysWithRain[month]);
-        //printf("%d,p10:%f,p00:%f\n",month+1,p10[month],p00[month]);
+        //printf("%d,p10:%f,p00:%f\n",precOccurence[idStation][month].month,precOccurence[idStation][month].p10,precOccurence[idStation][month].p00);
     }
 
 }
@@ -366,6 +386,25 @@ void weatherGenerator2D::precipitationAmountsOccurences(int idStation, double* p
             }
     }
 }
+
+
+void weatherGenerator2D::precipitationCorrelationMatrices()
+{
+
+    int** missingData;
+    //int* nrMissingData;
+    //nrMissingData = (int*)calloc(nrStations, sizeof(int));
+    missingData = (int**)calloc(nrStations, sizeof(int*));
+    for (int j=0; j<nrStations;j++)
+    {
+        for (int i=0; i<nrData;i++)
+        {
+            //if (obsDataD[j][i].prec == NODATA);
+        }
+    }
+}
+
+
 
 
 void weatherGenerator2D::temperatureCompute()
