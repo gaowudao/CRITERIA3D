@@ -335,7 +335,3 @@ bool Criteria1D::saveOutput(std::string* myError)
 
     return true;
 }
-
-
-
-
