@@ -128,11 +128,11 @@ bool weatherGenerator2D::initializeData(int lengthDataSeries, int stations)
     for (int iMonth=0;iMonth<12;iMonth++)
     {
         correlationMatrix[iMonth].amount = (double**)calloc(nrStations, sizeof(double*));
-        correlationMatrix[iMonth].occurrence = (int**)calloc(nrStations, sizeof(int*));
+        correlationMatrix[iMonth].occurrence = (double**)calloc(nrStations, sizeof(double*));
         for (int i=0;i<nrStations;i++)
         {
             correlationMatrix[iMonth].amount[i]= (double*)calloc(nrStations, sizeof(double));
-            correlationMatrix[iMonth].occurrence[i]= (int*)calloc(nrStations, sizeof(int));
+            correlationMatrix[iMonth].occurrence[i]= (double*)calloc(nrStations, sizeof(double));
         }
     }
 
@@ -391,16 +391,106 @@ void weatherGenerator2D::precipitationAmountsOccurences(int idStation, double* p
 void weatherGenerator2D::precipitationCorrelationMatrices()
 {
 
-    int** missingData;
-    //int* nrMissingData;
-    //nrMissingData = (int*)calloc(nrStations, sizeof(int));
-    missingData = (int**)calloc(nrStations, sizeof(int*));
-    for (int j=0; j<nrStations;j++)
+
+    int counter =0;
+    struct TcorrelationVar{
+        double meanValueMonthlyPrec1;
+        double meanValueMonthlyPrec2;
+        double covariance;
+        double variance1, variance2;
+    };
+    TcorrelationVar amount,occurrence;
+
+
+    for (int iMonth=1;iMonth<13;iMonth++)
     {
-        for (int i=0; i<nrData;i++)
-        {
-            //if (obsDataD[j][i].prec == NODATA);
-        }
+
+            for (int j=0; j<nrStations-1;j++)
+            {
+                for (int i=j+1; i<nrStations;i++)
+                {
+                    counter = 0;
+                    amount.meanValueMonthlyPrec1=0.;
+                    amount.meanValueMonthlyPrec2=0.;
+                    amount.covariance = amount.variance1 = amount.variance2 = 0.;
+                    occurrence.meanValueMonthlyPrec1=0.;
+                    occurrence.meanValueMonthlyPrec2=0.;
+                    occurrence.covariance = occurrence.variance1 = occurrence.variance2 = 0.;
+                    for (int k=0; k<nrData;k++) // correlation matrix diagonal elements;
+                    {
+                        correlationMatrix[iMonth].amount[k][k] = 1.;
+                        correlationMatrix[iMonth].occurrence[k][k]= 1.;
+                    }
+                    for (int k=0; k<nrData;k++) // compute the monthly means
+                    {
+                        if (obsDataD[j][k].date.month == iMonth && obsDataD[i][k].date.month == iMonth)
+                        {
+                            if ((obsDataD[j][k].prec != NODATA) && (obsDataD[i][k].prec != NODATA))
+                            {
+                                counter++;
+                                if (obsDataD[j][k].prec > parametersModel.precipitationThreshold)
+                                {
+                                    amount.meanValueMonthlyPrec1 += obsDataD[j][k].prec;
+                                    occurrence.meanValueMonthlyPrec1 += 1.;
+                                }
+                                if (obsDataD[i][k].prec > parametersModel.precipitationThreshold)
+                                {
+                                    amount.meanValueMonthlyPrec2 += obsDataD[i][k].prec;
+                                    occurrence.meanValueMonthlyPrec1 += 1.;
+                                }
+                            }
+                        }
+
+                    }
+                    if (counter != 0)
+                    {
+                        amount.meanValueMonthlyPrec1 /= counter;
+                        occurrence.meanValueMonthlyPrec1 /= counter;
+                    }
+
+                    if (counter != 0)
+                    {
+                        amount.meanValueMonthlyPrec2 /= counter;
+                        occurrence.meanValueMonthlyPrec2 /= counter;
+                    }
+
+                    // compute the monthly rho off-diagonal elements
+                    for (int k=0; k<nrData;k++)
+                    {
+                        if (obsDataD[j][k].date.month == iMonth && obsDataD[i][k].date.month == iMonth)
+                        {
+                            if ((obsDataD[j][k].prec != NODATA) && (obsDataD[i][k].prec != NODATA))
+                            {
+                                double value1,value2;
+                                if (obsDataD[j][k].prec <= parametersModel.precipitationThreshold) value1 = 0.;
+                                else value1 = obsDataD[j][k].prec;
+                                if (obsDataD[i][k].prec <= parametersModel.precipitationThreshold) value2 = 0.;
+                                else value2 = obsDataD[j][k].prec;
+
+                                amount.covariance += (value1 - amount.meanValueMonthlyPrec1)*(value2 - amount.meanValueMonthlyPrec2);
+                                amount.variance1 += pow((value1 - amount.meanValueMonthlyPrec1),2);
+                                amount.variance2 += pow((value2 - amount.meanValueMonthlyPrec2),2);
+
+
+                                if (obsDataD[j][k].prec <= parametersModel.precipitationThreshold) value1 = 0.;
+                                else value1 = 1.;
+                                if (obsDataD[i][k].prec <= parametersModel.precipitationThreshold) value2 = 0.;
+                                else value2 = 1.;
+
+                                occurrence.covariance += (value1 - occurrence.meanValueMonthlyPrec1)*(value2 - occurrence.meanValueMonthlyPrec2);
+                                occurrence.variance1 += pow((value1 - occurrence.meanValueMonthlyPrec1),2);
+                                occurrence.variance2 += pow((value2 - occurrence.meanValueMonthlyPrec2),2);
+
+
+                            }
+                        }
+                    }
+                    correlationMatrix[iMonth].amount[j][i]= amount.covariance / pow((amount.variance1*amount.variance2),0.5);
+                    correlationMatrix[iMonth].amount[i][j] = correlationMatrix[iMonth].amount[j][i];
+                    correlationMatrix[iMonth].occurrence[j][i]= occurrence.covariance / pow((occurrence.variance1*occurrence.variance2),0.5);
+                    correlationMatrix[iMonth].occurrence[i][j] = correlationMatrix[iMonth].occurrence[j][i];
+                }
+            }
     }
 }
 
