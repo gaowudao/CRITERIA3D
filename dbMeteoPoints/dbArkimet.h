@@ -2,8 +2,10 @@
 #define DBARKIMET_H
 
 #include <QString>
+#include <QDate>
 #include "variableslist.h"
 #include "dbMeteoPoints.h"
+
 
 #define PREC_ID 250
 #define RAD_ID 706
