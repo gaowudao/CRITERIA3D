@@ -326,7 +326,7 @@ bool DbArkimet::saveHourlyData()
     // insert data into tmpTable
     _db.exec(queryString);
 
-    // clean duplicate data
+    // clean duplicate data (semi-hourly - hourly)
     QString statement = "DELETE FROM TmpHourlyData WHERE frequency < 3600 ";
     statement += "AND KEY IN (SELECT KEY FROM TmpHourlyData WHERE frequency = 3600)";
     _db.exec(statement);
@@ -341,7 +341,7 @@ bool DbArkimet::saveHourlyData()
     while (qry.next())
         stations.append(qry.value(0).toString());
 
-    // INSERT data with frequency = 3600
+    // First step: INSERT data with frequency = 3600
     foreach (QString id_point, stations)
     {
         statement = QString("INSERT INTO `%1_H` ").arg(id_point);
@@ -355,6 +355,7 @@ bool DbArkimet::saveHourlyData()
     statement = QString("DELETE FROM TmpHourlyData WHERE frequency = 3600");
     _db.exec(statement);
 
+    // second step: semi-hourly data
     // re-query stations
     stations.clear();
     statement = QString("SELECT DISTINCT id_point FROM TmpHourlyData");
@@ -388,7 +389,6 @@ bool DbArkimet::saveHourlyData()
     qry.exec(statement);
 
     // TODO SUM PREC
-
     // la media funziona su tutte le var che hanno AVG nel nome (Temp, RH, Wind intensity)
     statement = QString("INSERT INTO `%1_H`");
     statement += " SELECT date_time_adj, id_variable, avg_value FROM (";
