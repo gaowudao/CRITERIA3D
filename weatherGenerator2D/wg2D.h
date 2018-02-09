@@ -44,7 +44,7 @@ struct TprecOccurrence{
 
 struct TcorrelationMatrix{
     double** amount;
-    int** occurrence;
+    double** occurrence;
     int month;
 };
 
