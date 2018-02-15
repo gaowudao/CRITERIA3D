@@ -96,7 +96,7 @@ int calcola_iterazioni_max(int num_approssimazione)
 }
 
 
-double GaussSeidelIterationWater(int direction)
+double GaussSeidelIterationWater(short direction)
  {
     double psi = 0.0, newX = 0.0;
     double norm = 0.0, infinityNorm = 0.0;
