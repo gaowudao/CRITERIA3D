@@ -105,7 +105,7 @@ contributors:
 //precipitation prec;
 //temperature temp;
 
-bool weatherGenerator2D::initializeObservedData(int lengthDataSeries, int stations)
+bool weatherGenerator2D::initializeData(int lengthDataSeries, int stations)
 
 {
     nrData = lengthDataSeries;
@@ -116,6 +116,24 @@ bool weatherGenerator2D::initializeObservedData(int lengthDataSeries, int statio
     for (int i=0;i<nrStations;i++)
     {
         obsDataD[i] = (TObsDataD *)calloc(nrData, sizeof(TObsDataD));
+    }
+    // occurrence structure
+    precOccurence = (TprecOccurrence **) calloc(nrStations, sizeof(TprecOccurrence*));
+    for (int i=0;i<nrStations;i++)
+    {
+        precOccurence[i] = (TprecOccurrence *)calloc(12, sizeof(TprecOccurrence));
+    }
+    // correlation matrix structure
+    correlationMatrix = (TcorrelationMatrix*)calloc(12, sizeof(TcorrelationMatrix));
+    for (int iMonth=0;iMonth<12;iMonth++)
+    {
+        correlationMatrix[iMonth].amount = (double**)calloc(nrStations, sizeof(double*));
+        correlationMatrix[iMonth].occurrence = (double**)calloc(nrStations, sizeof(double*));
+        for (int i=0;i<nrStations;i++)
+        {
+            correlationMatrix[iMonth].amount[i]= (double*)calloc(nrStations, sizeof(double));
+            correlationMatrix[iMonth].occurrence[i]= (double*)calloc(nrStations, sizeof(double));
+        }
     }
 
     /*
@@ -155,8 +173,10 @@ bool weatherGenerator2D::initializeObservedData(int lengthDataSeries, int statio
     return 0;
 }
 
-void weatherGenerator2D::initializeParameters(double thresholdPrecipitation, int simulatedYears, int distributionType)
+void weatherGenerator2D::initializeParameters(double thresholdPrecipitation, int simulatedYears, int distributionType, bool computePrecWG2D, bool computeTempWG2D)
 {
+    isPrecWG2D = computePrecWG2D;
+    isTempWG2D = computeTempWG2D;
     // default parameters
     if (thresholdPrecipitation == NODATA) parametersModel.precipitationThreshold = 1.; //1mm default
     else parametersModel.precipitationThreshold = thresholdPrecipitation;
@@ -250,15 +270,234 @@ void weatherGenerator2D::setObservedData(float*** weatherArray, int** dateArray)
 
 void weatherGenerator2D::computeWeatherGenerator2D()
 {
-
+    if (isPrecWG2D) weatherGenerator2D::precipitationCompute();
+    if (isTempWG2D) weatherGenerator2D::temperatureCompute();
 }
 
 void weatherGenerator2D::precipitationCompute()
 {
-
+   weatherGenerator2D::precipitationOccurrence();
+   weatherGenerator2D::precipitationCorrelationMatrices();
 }
 
 void weatherGenerator2D::precipitationOccurrence()
+{
+    for (int j=0; j<nrStations;j++)
+    {
+       /*
+       double* precipitationAmountsD;
+       bool* precipitationOccurrencesD;
+       weatherGenerator2D::precipitation29February(j);
+       precipitationAmountsD = (double*)calloc(nrDataWithout29February, sizeof(double));
+       precipitationOccurrencesD = (bool*)calloc(nrDataWithout29February, sizeof(bool));
+       weatherGenerator2D::precipitationAmountsOccurences(j,precipitationAmountsD,precipitationOccurrencesD);
+
+
+       free(precipitationAmountsD);
+       free(precipitationOccurrencesD);
+       */
+        weatherGenerator2D::precipitationP00P10(j); // computes the monthly probabilities p00 and p10
+    }    
+}
+void weatherGenerator2D::precipitationP00P10(int idStation)
+{
+    int daysWithoutRain[12]={0,0,0,0,0,0,0,0,0,0,0,0};
+    int daysWithRain[12]={0,0,0,0,0,0,0,0,0,0,0,0};
+    int occurrence00[12]={0,0,0,0,0,0,0,0,0,0,0,0};
+    int occurrence10[12]={0,0,0,0,0,0,0,0,0,0,0,0};
+    //double p00[12]={0,0,0,0,0,0,0,0,0,0,0,0};
+    //double p10[12]={0,0,0,0,0,0,0,0,0,0,0,0};
+
+    for(int i=0;i<nrData-1;i++)
+    {
+        if ((obsDataD[idStation][i].prec != NODATA && obsDataD[idStation][i+1].prec != NODATA))
+        {
+            for (int month=1;month<13;month++)
+            {
+                if(obsDataD[idStation][i].date.month == month)
+                {
+                    if (obsDataD[idStation][i].prec > parametersModel.precipitationThreshold)
+                    {
+                        daysWithRain[month-1]++;
+                        if (obsDataD[idStation][i+1].prec < parametersModel.precipitationThreshold)
+                            occurrence10[month-1]++;
+                    }
+                    else
+                    {
+                        daysWithoutRain[month-1]++;
+                        if (obsDataD[idStation][i+1].prec < parametersModel.precipitationThreshold)
+                            occurrence00[month-1]++;
+                    }
+                }
+            }
+        }
+    }
+    for (int month=0;month<12;month++)
+    {
+        precOccurence[idStation][month].p00 =(1.0*occurrence00[month])/daysWithoutRain[month];
+        precOccurence[idStation][month].p10 =(1.0*occurrence10[month])/daysWithRain[month];
+        precOccurence[idStation][month].month = month +1;
+        //printf("no pioggia %d,%d,%d\n",month+1,occurrence00[month],daysWithoutRain[month]);
+        //printf("pioggia %d,%d,%d\n",month+1,occurrence10[month],daysWithRain[month]);
+        //printf("%d,p10:%f,p00:%f\n",precOccurence[idStation][month].month,precOccurence[idStation][month].p10,precOccurence[idStation][month].p00);
+    }
+
+}
+
+void weatherGenerator2D::precipitation29February(int idStation)
+{
+    nrDataWithout29February = nrData;
+
+    for (int i=0; i<nrData;i++)
+    {
+        if (isLeapYear(obsDataD[idStation][i].date.year))
+        {
+            if ((obsDataD[idStation][i].date.day == 29) && (obsDataD[idStation][i].date.month == 2))
+            {
+                if (i!= 0)obsDataD[idStation][i-1].prec += obsDataD[idStation][i-1].prec /2;
+                if (i != (nrData-1)) obsDataD[idStation][i+1].prec += obsDataD[idStation][i+1].prec /2;
+                nrDataWithout29February--;
+            }
+        }
+
+    }
+
+}
+
+void weatherGenerator2D::precipitationAmountsOccurences(int idStation, double* precipitationAmountsD,bool* precipitationOccurrencesD)
+{
+    int counter = 0;
+    for (int i=0; i<nrData;i++)
+    {
+            if (!((obsDataD[idStation][i].date.day == 29) && (obsDataD[idStation][i].date.month == 2)))
+            {
+
+                if (precipitationAmountsD[counter] < parametersModel.precipitationThreshold)
+                {
+                    precipitationOccurrencesD[counter]= false;
+                    precipitationAmountsD[counter]=0;
+                }
+                else
+                {
+                    precipitationOccurrencesD[counter] = true;
+                    precipitationAmountsD[counter]=obsDataD[idStation][i].prec;
+                }
+                counter++;
+            }
+    }
+}
+
+
+void weatherGenerator2D::precipitationCorrelationMatrices()
+{
+
+
+    int counter =0;
+    struct TcorrelationVar{
+        double meanValueMonthlyPrec1;
+        double meanValueMonthlyPrec2;
+        double covariance;
+        double variance1, variance2;
+    };
+    TcorrelationVar amount,occurrence;
+
+
+    for (int iMonth=1;iMonth<13;iMonth++)
+    {
+
+            for (int j=0; j<nrStations-1;j++)
+            {
+                for (int i=j+1; i<nrStations;i++)
+                {
+                    counter = 0;
+                    amount.meanValueMonthlyPrec1=0.;
+                    amount.meanValueMonthlyPrec2=0.;
+                    amount.covariance = amount.variance1 = amount.variance2 = 0.;
+                    occurrence.meanValueMonthlyPrec1=0.;
+                    occurrence.meanValueMonthlyPrec2=0.;
+                    occurrence.covariance = occurrence.variance1 = occurrence.variance2 = 0.;
+                    for (int k=0; k<nrData;k++) // correlation matrix diagonal elements;
+                    {
+                        correlationMatrix[iMonth].amount[k][k] = 1.;
+                        correlationMatrix[iMonth].occurrence[k][k]= 1.;
+                    }
+                    for (int k=0; k<nrData;k++) // compute the monthly means
+                    {
+                        if (obsDataD[j][k].date.month == iMonth && obsDataD[i][k].date.month == iMonth)
+                        {
+                            if ((obsDataD[j][k].prec != NODATA) && (obsDataD[i][k].prec != NODATA))
+                            {
+                                counter++;
+                                if (obsDataD[j][k].prec > parametersModel.precipitationThreshold)
+                                {
+                                    amount.meanValueMonthlyPrec1 += obsDataD[j][k].prec;
+                                    occurrence.meanValueMonthlyPrec1 += 1.;
+                                }
+                                if (obsDataD[i][k].prec > parametersModel.precipitationThreshold)
+                                {
+                                    amount.meanValueMonthlyPrec2 += obsDataD[i][k].prec;
+                                    occurrence.meanValueMonthlyPrec1 += 1.;
+                                }
+                            }
+                        }
+
+                    }
+                    if (counter != 0)
+                    {
+                        amount.meanValueMonthlyPrec1 /= counter;
+                        occurrence.meanValueMonthlyPrec1 /= counter;
+                    }
+
+                    if (counter != 0)
+                    {
+                        amount.meanValueMonthlyPrec2 /= counter;
+                        occurrence.meanValueMonthlyPrec2 /= counter;
+                    }
+
+                    // compute the monthly rho off-diagonal elements
+                    for (int k=0; k<nrData;k++)
+                    {
+                        if (obsDataD[j][k].date.month == iMonth && obsDataD[i][k].date.month == iMonth)
+                        {
+                            if ((obsDataD[j][k].prec != NODATA) && (obsDataD[i][k].prec != NODATA))
+                            {
+                                double value1,value2;
+                                if (obsDataD[j][k].prec <= parametersModel.precipitationThreshold) value1 = 0.;
+                                else value1 = obsDataD[j][k].prec;
+                                if (obsDataD[i][k].prec <= parametersModel.precipitationThreshold) value2 = 0.;
+                                else value2 = obsDataD[j][k].prec;
+
+                                amount.covariance += (value1 - amount.meanValueMonthlyPrec1)*(value2 - amount.meanValueMonthlyPrec2);
+                                amount.variance1 += pow((value1 - amount.meanValueMonthlyPrec1),2);
+                                amount.variance2 += pow((value2 - amount.meanValueMonthlyPrec2),2);
+
+
+                                if (obsDataD[j][k].prec <= parametersModel.precipitationThreshold) value1 = 0.;
+                                else value1 = 1.;
+                                if (obsDataD[i][k].prec <= parametersModel.precipitationThreshold) value2 = 0.;
+                                else value2 = 1.;
+
+                                occurrence.covariance += (value1 - occurrence.meanValueMonthlyPrec1)*(value2 - occurrence.meanValueMonthlyPrec2);
+                                occurrence.variance1 += pow((value1 - occurrence.meanValueMonthlyPrec1),2);
+                                occurrence.variance2 += pow((value2 - occurrence.meanValueMonthlyPrec2),2);
+
+
+                            }
+                        }
+                    }
+                    correlationMatrix[iMonth].amount[j][i]= amount.covariance / pow((amount.variance1*amount.variance2),0.5);
+                    correlationMatrix[iMonth].amount[i][j] = correlationMatrix[iMonth].amount[j][i];
+                    correlationMatrix[iMonth].occurrence[j][i]= occurrence.covariance / pow((occurrence.variance1*occurrence.variance2),0.5);
+                    correlationMatrix[iMonth].occurrence[i][j] = correlationMatrix[iMonth].occurrence[j][i];
+                }
+            }
+    }
+}
+
+
+
+
+void weatherGenerator2D::temperatureCompute()
 {
 
 }

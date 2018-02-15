@@ -11,6 +11,7 @@
     #include "meteoPoint.h"
 #endif
 
+
 class DbMeteoPoints : public QObject
 {
     Q_OBJECT
@@ -35,7 +36,6 @@ class DbMeteoPoints : public QObject
     signals:
 
     protected slots:
-
 };
 
 

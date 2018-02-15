@@ -147,7 +147,7 @@ bool Project::downloadDailyDataArkimet(QStringList variables, bool prec0024, QDa
         {
             if (showInfo)
             {
-                myInfo.setText("Load data from: " + date1.toString("yyyy-MM-dd") + " to: " + date2.toString("yyyy-MM-dd") + " dataset:" + datasetList[i]);
+                myInfo.setText("Download data from: " + date1.toString("yyyy-MM-dd") + " to: " + date2.toString("yyyy-MM-dd") + " dataset:" + datasetList[i]);
                 currentPoints += idList[i].size() * (date1.daysTo(date2) + 1);
                 myInfo.setValue(currentPoints);
             }
@@ -241,7 +241,7 @@ bool Project::downloadHourlyDataArkimet(QStringList variables, QDate startDate, 
         {
             if (showInfo)
             {
-                myInfo.setText("Load data from: " + date1.toString("yyyy-MM-dd") + " to:" + date2.toString("yyyy-MM-dd") + " dataset:" + datasetList[i]);
+                myInfo.setText("Download data from: " + date1.toString("yyyy-MM-dd") + " to:" + date2.toString("yyyy-MM-dd") + " dataset:" + datasetList[i]);
                 currentPoints += idList[i].size() * (date1.daysTo(date2) + 1);
                 myInfo.setValue(currentPoints);
             }
@@ -495,4 +495,6 @@ float Project::meteoDataConsistency(meteoVariable myVar, const Crit3DTime& timeI
 
     return dataConsistency;
 }
+
+
 
