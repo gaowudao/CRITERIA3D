@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
     }
 
     float maxIntensity, sumPrec, adjSum;
-    float peak, runoffPrec, currentWHC;
+    float peak, runoff, currentWHC;
     unsigned long firstIndex = 0;
     int lenght, peakHour, whcIndex;
     QDate dateStart, datePeak;
@@ -88,17 +88,18 @@ int main(int argc, char *argv[])
 
                 if ((sumPrec - currentWHC) > 0)
                 {
-                    refineRainfallEvent(firstIndex, lenght, currentWHC, &sumPrec, &maxIntensity, &peakHour, &prec);
+                    //refineRainfallEvent(firstIndex, lenght, currentWHC, &sumPrec, &maxIntensity, &peakHour, &prec);
 
                     adjSum = minValue(sumPrec, maxIntensity * 7);
 
-                    runoffPrec = adjSum;
+                    runoff = adjSum - currentWHC;
 
                     // output (ravone 10, ghironda 3)
-                    if (runoffPrec > 10)
+                    if (runoff > 7)
                     {
                         //Ravone
-                        peak = 0.0054 * powl(runoffPrec, 1.5) - 0.09;
+                        peak = 0.0054 * powl(runoff, 1.5) - 0.08;
+                        //peak = 0.0033 * powl(runoff, 1.62) - 0.05;
                         // Ghironda
                         //peak = 0.017 * powl(runoffPrec, 1) + 0.12;
 
@@ -108,7 +109,7 @@ int main(int argc, char *argv[])
                         outStr += "," + QString::number(currentWHC,'f',1);
                         outStr += "," + QString::number(maxIntensity,'f',1);
                         outStr += "," + QString::number(peakHour);
-                        outStr += "," + QString::number(runoffPrec,'f',1);
+                        outStr += "," + QString::number(runoff,'f',1);
                         outStr += "," + QString::number(peak,'f',2);
                         myProject.writeOutput(outStr);
                     }
