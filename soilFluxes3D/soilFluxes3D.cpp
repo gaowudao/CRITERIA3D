@@ -248,7 +248,7 @@ namespace soilFluxes3D {
  }
 
 
-	int DLL_EXPORT __STDCALL setNodeLink(long n, long linkIndex, int direction, float interfaceArea)
+	int DLL_EXPORT __STDCALL setNodeLink(long n, long linkIndex, short direction, float interfaceArea)
  {
     /*! error check */
     if (myNode == NULL) return(MEMORY_ERROR);

@@ -34,7 +34,7 @@
     __EXTERN int DLL_EXPORT __STDCALL setNode(long myIndex, float x, float y, float z, double volume_or_area,
                                         bool isSurface, bool isBoundary, int boundaryType, float slope);
 
-    __EXTERN int DLL_EXPORT __STDCALL setNodeLink(long nodeIndex, long linkIndex, int direction, float S0);
+    __EXTERN int DLL_EXPORT __STDCALL setNodeLink(long nodeIndex, long linkIndex, short direction, float S0);
 
     //SOIL
     __EXTERN int DLL_EXPORT __STDCALL setSoilProperties(int nrSoil, int nrHorizon, double VG_alpha,
