@@ -276,70 +276,55 @@ void weatherGenerator2D::computeWeatherGenerator2D()
 
 void weatherGenerator2D::precipitationCompute()
 {
-   weatherGenerator2D::precipitationOccurrence();
+   // step 1 of precipitation WG2D
+   weatherGenerator2D::precipitationP00P10(); // computes the monthly probabilities p00 and p10
+   // step 2 of precipitation WG2D
    weatherGenerator2D::precipitationCorrelationMatrices();
+   // step 3 of precipitation WG2D
+   // step 4 of precipitation WG2D
+   // step 5 of precipitation WG2D
 }
 
-void weatherGenerator2D::precipitationOccurrence()
+
+void weatherGenerator2D::precipitationP00P10()
 {
-    for (int j=0; j<nrStations;j++)
+    for (int idStation=0;idStation<nrStations;idStation++)
     {
-       /*
-       double* precipitationAmountsD;
-       bool* precipitationOccurrencesD;
-       weatherGenerator2D::precipitation29February(j);
-       precipitationAmountsD = (double*)calloc(nrDataWithout29February, sizeof(double));
-       precipitationOccurrencesD = (bool*)calloc(nrDataWithout29February, sizeof(bool));
-       weatherGenerator2D::precipitationAmountsOccurences(j,precipitationAmountsD,precipitationOccurrencesD);
+        int daysWithoutRain[12]={0,0,0,0,0,0,0,0,0,0,0,0};
+        int daysWithRain[12]={0,0,0,0,0,0,0,0,0,0,0,0};
+        int occurrence00[12]={0,0,0,0,0,0,0,0,0,0,0,0};
+        int occurrence10[12]={0,0,0,0,0,0,0,0,0,0,0,0};
 
-
-       free(precipitationAmountsD);
-       free(precipitationOccurrencesD);
-       */
-        weatherGenerator2D::precipitationP00P10(j); // computes the monthly probabilities p00 and p10
-    }    
-}
-void weatherGenerator2D::precipitationP00P10(int idStation)
-{
-    int daysWithoutRain[12]={0,0,0,0,0,0,0,0,0,0,0,0};
-    int daysWithRain[12]={0,0,0,0,0,0,0,0,0,0,0,0};
-    int occurrence00[12]={0,0,0,0,0,0,0,0,0,0,0,0};
-    int occurrence10[12]={0,0,0,0,0,0,0,0,0,0,0,0};
-    //double p00[12]={0,0,0,0,0,0,0,0,0,0,0,0};
-    //double p10[12]={0,0,0,0,0,0,0,0,0,0,0,0};
-
-    for(int i=0;i<nrData-1;i++)
-    {
-        if ((obsDataD[idStation][i].prec != NODATA && obsDataD[idStation][i+1].prec != NODATA))
+        for(int i=0;i<nrData-1;i++)
         {
-            for (int month=1;month<13;month++)
+            if ((obsDataD[idStation][i].prec != NODATA && obsDataD[idStation][i+1].prec != NODATA))
             {
-                if(obsDataD[idStation][i].date.month == month)
+                for (int month=1;month<13;month++)
                 {
-                    if (obsDataD[idStation][i].prec > parametersModel.precipitationThreshold)
+                    if(obsDataD[idStation][i].date.month == month)
                     {
-                        daysWithRain[month-1]++;
-                        if (obsDataD[idStation][i+1].prec < parametersModel.precipitationThreshold)
-                            occurrence10[month-1]++;
-                    }
-                    else
-                    {
-                        daysWithoutRain[month-1]++;
-                        if (obsDataD[idStation][i+1].prec < parametersModel.precipitationThreshold)
-                            occurrence00[month-1]++;
+                        if (obsDataD[idStation][i].prec > parametersModel.precipitationThreshold)
+                        {
+                            daysWithRain[month-1]++;
+                            if (obsDataD[idStation][i+1].prec < parametersModel.precipitationThreshold)
+                                occurrence10[month-1]++;
+                        }
+                        else
+                        {
+                            daysWithoutRain[month-1]++;
+                            if (obsDataD[idStation][i+1].prec < parametersModel.precipitationThreshold)
+                                occurrence00[month-1]++;
+                        }
                     }
                 }
             }
         }
-    }
-    for (int month=0;month<12;month++)
-    {
-        precOccurence[idStation][month].p00 =(1.0*occurrence00[month])/daysWithoutRain[month];
-        precOccurence[idStation][month].p10 =(1.0*occurrence10[month])/daysWithRain[month];
-        precOccurence[idStation][month].month = month +1;
-        //printf("no pioggia %d,%d,%d\n",month+1,occurrence00[month],daysWithoutRain[month]);
-        //printf("pioggia %d,%d,%d\n",month+1,occurrence10[month],daysWithRain[month]);
-        //printf("%d,p10:%f,p00:%f\n",precOccurence[idStation][month].month,precOccurence[idStation][month].p10,precOccurence[idStation][month].p00);
+        for (int month=0;month<12;month++)
+        {
+            precOccurence[idStation][month].p00 =(1.0*occurrence00[month])/daysWithoutRain[month];
+            precOccurence[idStation][month].p10 =(1.0*occurrence10[month])/daysWithRain[month];
+            precOccurence[idStation][month].month = month +1;
+        }
     }
 
 }
@@ -390,108 +375,111 @@ void weatherGenerator2D::precipitationAmountsOccurences(int idStation, double* p
 
 void weatherGenerator2D::precipitationCorrelationMatrices()
 {
-
-
     int counter =0;
-    struct TcorrelationVar{
-        double meanValueMonthlyPrec1;
-        double meanValueMonthlyPrec2;
-        double covariance;
-        double variance1, variance2;
-    };
     TcorrelationVar amount,occurrence;
-
-
-    for (int iMonth=1;iMonth<13;iMonth++)
+    for (int iMonth=0;iMonth<12;iMonth++)
     {
+        correlationMatrix[iMonth].month = iMonth + 1 ; // define the month of the correlation matrix;
+        for (int k=0; k<nrStations;k++) // correlation matrix diagonal elements;
+        {
+            correlationMatrix[iMonth].amount[k][k] = 1.;
+            correlationMatrix[iMonth].occurrence[k][k]= 1.;
+        }
 
-            for (int j=0; j<nrStations-1;j++)
+        for (int j=0; j<nrStations-1;j++)
+        {
+            for (int i=j+1; i<nrStations;i++)
             {
-                for (int i=j+1; i<nrStations;i++)
+                counter = 0;
+                amount.meanValueMonthlyPrec1=0.;
+                amount.meanValueMonthlyPrec2=0.;
+                amount.covariance = amount.variance1 = amount.variance2 = 0.;
+                occurrence.meanValueMonthlyPrec1=0.;
+                occurrence.meanValueMonthlyPrec2=0.;
+                occurrence.covariance = occurrence.variance1 = occurrence.variance2 = 0.;
+
+                for (int k=0; k<nrData;k++) // compute the monthly means
                 {
-                    counter = 0;
-                    amount.meanValueMonthlyPrec1=0.;
-                    amount.meanValueMonthlyPrec2=0.;
-                    amount.covariance = amount.variance1 = amount.variance2 = 0.;
-                    occurrence.meanValueMonthlyPrec1=0.;
-                    occurrence.meanValueMonthlyPrec2=0.;
-                    occurrence.covariance = occurrence.variance1 = occurrence.variance2 = 0.;
-                    for (int k=0; k<nrData;k++) // correlation matrix diagonal elements;
+                    if (obsDataD[j][k].date.month == (iMonth+1) && obsDataD[i][k].date.month == (iMonth+1))
                     {
-                        correlationMatrix[iMonth].amount[k][k] = 1.;
-                        correlationMatrix[iMonth].occurrence[k][k]= 1.;
-                    }
-                    for (int k=0; k<nrData;k++) // compute the monthly means
-                    {
-                        if (obsDataD[j][k].date.month == iMonth && obsDataD[i][k].date.month == iMonth)
+                        if ((obsDataD[j][k].prec != NODATA) && (obsDataD[i][k].prec != NODATA))
                         {
-                            if ((obsDataD[j][k].prec != NODATA) && (obsDataD[i][k].prec != NODATA))
+                            counter++;
+                            if (obsDataD[j][k].prec > parametersModel.precipitationThreshold)
                             {
-                                counter++;
-                                if (obsDataD[j][k].prec > parametersModel.precipitationThreshold)
-                                {
-                                    amount.meanValueMonthlyPrec1 += obsDataD[j][k].prec;
-                                    occurrence.meanValueMonthlyPrec1 += 1.;
-                                }
-                                if (obsDataD[i][k].prec > parametersModel.precipitationThreshold)
-                                {
-                                    amount.meanValueMonthlyPrec2 += obsDataD[i][k].prec;
-                                    occurrence.meanValueMonthlyPrec1 += 1.;
-                                }
+                                amount.meanValueMonthlyPrec1 += obsDataD[j][k].prec;
+                                occurrence.meanValueMonthlyPrec1 += 1.;
                             }
-                        }
-
-                    }
-                    if (counter != 0)
-                    {
-                        amount.meanValueMonthlyPrec1 /= counter;
-                        occurrence.meanValueMonthlyPrec1 /= counter;
-                    }
-
-                    if (counter != 0)
-                    {
-                        amount.meanValueMonthlyPrec2 /= counter;
-                        occurrence.meanValueMonthlyPrec2 /= counter;
-                    }
-
-                    // compute the monthly rho off-diagonal elements
-                    for (int k=0; k<nrData;k++)
-                    {
-                        if (obsDataD[j][k].date.month == iMonth && obsDataD[i][k].date.month == iMonth)
-                        {
-                            if ((obsDataD[j][k].prec != NODATA) && (obsDataD[i][k].prec != NODATA))
+                            if (obsDataD[i][k].prec > parametersModel.precipitationThreshold)
                             {
-                                double value1,value2;
-                                if (obsDataD[j][k].prec <= parametersModel.precipitationThreshold) value1 = 0.;
-                                else value1 = obsDataD[j][k].prec;
-                                if (obsDataD[i][k].prec <= parametersModel.precipitationThreshold) value2 = 0.;
-                                else value2 = obsDataD[j][k].prec;
-
-                                amount.covariance += (value1 - amount.meanValueMonthlyPrec1)*(value2 - amount.meanValueMonthlyPrec2);
-                                amount.variance1 += pow((value1 - amount.meanValueMonthlyPrec1),2);
-                                amount.variance2 += pow((value2 - amount.meanValueMonthlyPrec2),2);
-
-
-                                if (obsDataD[j][k].prec <= parametersModel.precipitationThreshold) value1 = 0.;
-                                else value1 = 1.;
-                                if (obsDataD[i][k].prec <= parametersModel.precipitationThreshold) value2 = 0.;
-                                else value2 = 1.;
-
-                                occurrence.covariance += (value1 - occurrence.meanValueMonthlyPrec1)*(value2 - occurrence.meanValueMonthlyPrec2);
-                                occurrence.variance1 += pow((value1 - occurrence.meanValueMonthlyPrec1),2);
-                                occurrence.variance2 += pow((value2 - occurrence.meanValueMonthlyPrec2),2);
-
-
+                                amount.meanValueMonthlyPrec2 += obsDataD[i][k].prec;
+                                occurrence.meanValueMonthlyPrec1 += 1.;
                             }
                         }
                     }
-                    correlationMatrix[iMonth].amount[j][i]= amount.covariance / pow((amount.variance1*amount.variance2),0.5);
-                    correlationMatrix[iMonth].amount[i][j] = correlationMatrix[iMonth].amount[j][i];
-                    correlationMatrix[iMonth].occurrence[j][i]= occurrence.covariance / pow((occurrence.variance1*occurrence.variance2),0.5);
-                    correlationMatrix[iMonth].occurrence[i][j] = correlationMatrix[iMonth].occurrence[j][i];
+
                 }
+                if (counter != 0)
+                {
+                    amount.meanValueMonthlyPrec1 /= counter;
+                    occurrence.meanValueMonthlyPrec1 /= counter;
+                }
+
+                if (counter != 0)
+                {
+                    amount.meanValueMonthlyPrec2 /= counter;
+                    occurrence.meanValueMonthlyPrec2 /= counter;
+                }
+
+                // compute the monthly rho off-diagonal elements
+                for (int k=0; k<nrData;k++)
+                {
+                    if (obsDataD[j][k].date.month == (iMonth+1) && obsDataD[i][k].date.month == (iMonth+1))
+                    {
+                        if ((obsDataD[j][k].prec != NODATA) && (obsDataD[i][k].prec != NODATA))
+                        {
+                            double value1,value2;
+                            if (obsDataD[j][k].prec <= parametersModel.precipitationThreshold) value1 = 0.;
+                            else value1 = obsDataD[j][k].prec;
+                            if (obsDataD[i][k].prec <= parametersModel.precipitationThreshold) value2 = 0.;
+                            else value2 = obsDataD[j][k].prec;
+
+                            amount.covariance += (value1 - amount.meanValueMonthlyPrec1)*(value2 - amount.meanValueMonthlyPrec2);
+                            amount.variance1 += pow((value1 - amount.meanValueMonthlyPrec1),2);
+                            amount.variance2 += pow((value2 - amount.meanValueMonthlyPrec2),2);
+
+
+                            if (obsDataD[j][k].prec <= parametersModel.precipitationThreshold) value1 = 0.;
+                            else value1 = 1.;
+                            if (obsDataD[i][k].prec <= parametersModel.precipitationThreshold) value2 = 0.;
+                            else value2 = 1.;
+
+                            occurrence.covariance += (value1 - occurrence.meanValueMonthlyPrec1)*(value2 - occurrence.meanValueMonthlyPrec2);
+                            occurrence.variance1 += pow((value1 - occurrence.meanValueMonthlyPrec1),2);
+                            occurrence.variance2 += pow((value2 - occurrence.meanValueMonthlyPrec2),2);
+
+
+                        }
+                    }
+                }
+                correlationMatrix[iMonth].amount[j][i]= amount.covariance / pow((amount.variance1*amount.variance2),0.5);
+                correlationMatrix[iMonth].amount[i][j] = correlationMatrix[iMonth].amount[j][i];
+                correlationMatrix[iMonth].occurrence[j][i]= occurrence.covariance / pow((occurrence.variance1*occurrence.variance2),0.5);
+                correlationMatrix[iMonth].occurrence[i][j] = correlationMatrix[iMonth].occurrence[j][i];
             }
+        }
     }
+
+    /*for (int i=0;i<nrStations;i++)
+    {
+        for (int j=0;j<nrStations;j++)
+        {
+
+            printf("%f ",correlationMatrix[0].amount[i][j] );
+        }
+        printf("\n");
+    }
+    */
 }
 
 
@@ -499,5 +487,9 @@ void weatherGenerator2D::precipitationCorrelationMatrices()
 
 void weatherGenerator2D::temperatureCompute()
 {
-
+    // step 1 of temperature WG2D
+    // step 2 of temperature WG2D
+    // step 3 of temperature WG2D
+    // step 4 of temperature WG2D
+    // step 5 of temperature WG2D
 }

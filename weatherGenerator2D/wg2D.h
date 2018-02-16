@@ -42,6 +42,13 @@ struct TprecOccurrence{
     int month;
 };
 
+struct TcorrelationVar{
+    double meanValueMonthlyPrec1;
+    double meanValueMonthlyPrec2;
+    double covariance;
+    double variance1, variance2;
+};
+
 struct TcorrelationMatrix{
     double** amount;
     double** occurrence;
@@ -70,11 +77,10 @@ private:
 
     //functions
 
-    void precipitationOccurrence();
     void precipitationCompute();
     void precipitation29February(int idStation);
     void precipitationAmountsOccurences(int idStation, double* precipitationAmountsD,bool* precipitationOccurencesD);
-    void precipitationP00P10(int idStation);
+    void precipitationP00P10();
     void precipitationCorrelationMatrices();
     void temperatureCompute();
 
