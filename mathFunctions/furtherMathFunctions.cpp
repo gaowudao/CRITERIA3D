@@ -37,6 +37,12 @@ float blackBodyShape(TfunctionInput fInput)
     y = b*(float)(pow(fInput.x, 3)*(1. / (exp(b*fInput.x)-0.99)));
     return (y);
 }
+float errorFunctionPrimitive(float x)
+{
+    float y;
+    y = exp(-pow(x,2.0));
+    return y;
+}
 
 /*float straightLine(TfunctionInput fInput)
 {

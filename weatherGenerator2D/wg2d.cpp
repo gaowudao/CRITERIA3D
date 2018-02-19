@@ -101,6 +101,7 @@ contributors:
 
 #include "wg2D.h"
 #include "commonConstants.h"
+#include "furtherMathFunctions.h"
 
 //precipitation prec;
 //temperature temp;
@@ -281,6 +282,9 @@ void weatherGenerator2D::precipitationCompute()
    // step 2 of precipitation WG2D
    weatherGenerator2D::precipitationCorrelationMatrices();
    // step 3 of precipitation WG2D
+
+   // 2*pow(PI,-0.5)*integration::qsimp(errorFunctionPrimitive,0.,25.,0.001);
+
    // step 4 of precipitation WG2D
    // step 5 of precipitation WG2D
 }

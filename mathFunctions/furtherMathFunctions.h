@@ -1,6 +1,7 @@
 #ifndef MATHEMATICALFUNCTIONS_H
 #define MATHEMATICALFUNCTIONS_H
 
+float errorFunctionPrimitive(float x);
     struct TfunctionInput{
         float x ;
         int nrPar ;
