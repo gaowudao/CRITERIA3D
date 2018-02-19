@@ -82,6 +82,7 @@ private:
     void precipitationAmountsOccurences(int idStation, double* precipitationAmountsD,bool* precipitationOccurencesD);
     void precipitationP00P10();
     void precipitationCorrelationMatrices();
+    void precipitationMultisiteOccurrenceGeneration();
     void temperatureCompute();
 
 
