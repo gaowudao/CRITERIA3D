@@ -197,6 +197,9 @@
     // [m2 s-1] vapor diffusivity at standard conditions
     #define	 VAPOR_DIFFUSIVITY0 0.0000212
 
+    // [Pa] default atmospheric pressure at sea level
+    #define SEA_LEVEL_PRESSURE 101325
+
 
     // -----------------MATHEMATICS---------------------
     #ifndef PI
@@ -206,9 +209,8 @@
     #define DEG_TO_RAD 0.0174532925
     #define RAD_TO_DEG 57.2957795
     #define FUNCTION_CODE_SPHERICAL 0
+    #define SQRT_2 1.41421356237
 
-    // [Pa] default atmospheric pressure at sea level
-    #define SEA_LEVEL_PRESSURE 101325
 
 
 #endif // COMMONCONSTANTS_H

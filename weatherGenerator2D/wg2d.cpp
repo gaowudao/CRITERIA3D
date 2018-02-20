@@ -102,6 +102,7 @@ contributors:
 #include "wg2D.h"
 #include "commonConstants.h"
 #include "furtherMathFunctions.h"
+#include "statistics.h"
 
 //precipitation prec;
 //temperature temp;
@@ -460,6 +461,50 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
     {
         nrDaysIterativeProcessMonthly[i] = lengthMonth[i]+parametersModel.yearOfSimulation;
     }
+    double** matrixOccurrence;
+    matrixOccurrence = (double **)calloc(nrStations, sizeof(double*));
+    double** normalizedTransitionProbability;
+    normalizedTransitionProbability = (double **)calloc(nrStations, sizeof(double*));
+
+    for (int i=0;i<nrStations;i++)
+    {
+        matrixOccurrence[i] = (double *)calloc(nrStations, sizeof(double));
+        normalizedTransitionProbability[i]= (double *)calloc(2, sizeof(double));
+        for (int j=0;j<nrStations;j++)
+        {
+           matrixOccurrence[i][j]= NODATA;
+        }
+        normalizedTransitionProbability[i][0]= NODATA;
+        normalizedTransitionProbability[i][1]= NODATA;
+    }
+
+
+    // arrays initialization
+    for (int iMonth=0; iMonth<12; iMonth++)
+    {
+        for (int i=0;i<nrStations;i++)
+        {
+            for (int j=0;j<nrStations;j++)
+            {
+                matrixOccurrence[i][j]= correlationMatrix[iMonth].occurrence[i][j];
+            }
+            /* since random numbers generated have a normal distribution, each p00 and
+               p10 has to be recalculated according to a normal number*/
+            normalizedTransitionProbability[i][0]= - SQRT_2*statistics::inverseERFC(2.*precOccurence[i][iMonth].p00,0.0001);// precOccurence[i][iMonth].p00;
+            normalizedTransitionProbability[i][1]= - SQRT_2*statistics::inverseERFC(2.*precOccurence[i][iMonth].p10,0.0001); ;//precOccurence[i][iMonth].p10;
+        }
+    }
+
+
+    // free memory
+    for (int i=0;i<nrStations;i++)
+    {
+        free(matrixOccurrence[i]);
+        free(normalizedTransitionProbability[i]);
+
+    }
+    free(matrixOccurrence);
+    free(normalizedTransitionProbability);
 
 }
 
