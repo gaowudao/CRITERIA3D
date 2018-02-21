@@ -71,5 +71,12 @@ float errorFunctionPrimitive(float x);
         float normalGauss(TfunctionInput fInput);
     }
 
+    namespace random
+    {
+        float ran1(long *idum);
+        float gasdev(long *idum);
+
+    }
+
 
 #endif
