@@ -83,6 +83,7 @@ private:
     void precipitationP00P10();
     void precipitationCorrelationMatrices();
     void precipitationMultisiteOccurrenceGeneration();
+    void spatialIterationOccurrence(double** correlationOccurrenceGeneration,double** occurrences, double** matrixOccurrence, double** normalizedMatrixRandom,double ** transitionNormal,int lengthSeries);
     void temperatureCompute();
 
 

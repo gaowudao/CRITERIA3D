@@ -24,6 +24,7 @@
 
 #include <math.h>
 #include <malloc.h>
+#include <stdlib.h>
 #include <iostream>
 
 #include "commonConstants.h"
@@ -535,6 +536,44 @@ namespace random {
             return gset;
         }
     }
+
+    //----------------------------------------------------------------------
+    // Generate a standard normally-distributed random variable
+    // (See Numerical Recipes in Pascal W. H. Press, et al. 1989 p. 225)
+    //----------------------------------------------------------------------
+    float normalRandom(int *gasDevIset,float *gasDevGset)
+    {
+        float fac = 0;
+        float r = 0;
+        float v1, v2, normalRandom;
+        float temp;
+
+        if (*gasDevIset == 0) //We don't have an extra deviate
+        {
+            do
+            {
+                temp = (float) rand() / (RAND_MAX);
+                v1 = 2*temp - 1;
+                temp = (float) rand() / (RAND_MAX);
+                v2 = 2*temp - 1;
+                r = v1 * v1 + v2 * v2;
+            } while ( (r>=1) | (r==0) ); // see if they are in the unit circle, and if they are not, try again.
+            // Box-Muller transformation to get two normal deviates. Return one and save the other for next time.
+            fac = sqrt(-2 * log(r) / r);
+            *gasDevGset = v1 * fac; //Gaussian random deviates
+            normalRandom = v2 * fac;
+            *gasDevIset = 1; //set the flag
+        }
+        // We have already an extra deviate
+        else
+        {
+            *gasDevIset = 0; //unset the flag
+            normalRandom = *gasDevGset;
+        }
+        return normalRandom;
+    }
+
+
 
 
 

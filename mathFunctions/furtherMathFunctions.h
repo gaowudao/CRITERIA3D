@@ -75,6 +75,7 @@ float errorFunctionPrimitive(float x);
     {
         float ran1(long *idum);
         float gasdev(long *idum);
+        float normalRandom(int *gasDevIset,float *gasDevGset);
 
     }
 
