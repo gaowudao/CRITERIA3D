@@ -10,6 +10,7 @@ EXPORTS
 	setNodeLink
 	setNodeSoil
 	setNodeSurface
+	setCulvert
 	setSoilProperties
     setSurfaceProperties
 	setHydraulicProperties

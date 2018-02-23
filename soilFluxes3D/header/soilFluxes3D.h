@@ -36,6 +36,8 @@
 
     __EXTERN int DLL_EXPORT __STDCALL setNodeLink(long nodeIndex, long linkIndex, short direction, float S0);
 
+	__EXTERN int DLL_EXPORT __STDCALL setCulvert(long myIndex, double roughness, double slope, double width, double height);
+
     //SOIL
     __EXTERN int DLL_EXPORT __STDCALL setSoilProperties(int nrSoil, int nrHorizon, double VG_alpha,
                                         double VG_n, double VG_m, double VG_he,

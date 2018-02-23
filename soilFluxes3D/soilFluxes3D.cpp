@@ -46,6 +46,8 @@
 TParameters myParameters;
 TCrit3DStructure myStructure;
 
+Tculvert myCulvert;
+
 TCrit3Dnode *myNode = NULL;
 TmatrixElement **A = NULL;
 
@@ -248,7 +250,7 @@ namespace soilFluxes3D {
  }
 
 
-	int DLL_EXPORT __STDCALL setNodeLink(long n, long linkIndex, short direction, float interfaceArea)
+ int DLL_EXPORT __STDCALL setNodeLink(long n, long linkIndex, short direction, float interfaceArea)
  {
     /*! error check */
     if (myNode == NULL) return(MEMORY_ERROR);
@@ -305,13 +307,31 @@ namespace soilFluxes3D {
  }
 
 
+ int DLL_EXPORT __STDCALL setCulvert(long nodeIndex, double roughness, double slope, double width, double height)
+ {
+	 if ((nodeIndex < 0) || (!myNode[nodeIndex].isSurface))
+	 {
+		 myCulvert.index = NOLINK;
+		 return(INDEX_ERROR);
+	 }
+
+	 myCulvert.index = nodeIndex;
+	 myCulvert.roughness = roughness;			// [s m^-1/3]
+	 myCulvert.slope = slope;					// [-]
+	 myCulvert.width = width;					// [m]
+	 myCulvert.height = height;					// [m]
+
+	 return(CRIT3D_OK);
+ }
+
+
     /*!
      * \brief Assign surface index to node
      * \param nodeIndex
      * \param surfaceIndex
      * \return
      */
-	int DLL_EXPORT __STDCALL setNodeSurface(long nodeIndex, int surfaceIndex)
+ int DLL_EXPORT __STDCALL setNodeSurface(long nodeIndex, int surfaceIndex)
  {
 	if (myNode == NULL) return(MEMORY_ERROR);
     if ((nodeIndex < 0) || (! myNode[nodeIndex].isSurface)) return(INDEX_ERROR);
@@ -330,7 +350,7 @@ namespace soilFluxes3D {
      * \param horizonIndex
      * \return
      */
-	int DLL_EXPORT __STDCALL setNodeSoil(long nodeIndex, int soilIndex, int horizonIndex)
+ int DLL_EXPORT __STDCALL setNodeSoil(long nodeIndex, int soilIndex, int horizonIndex)
  {
 	if (myNode == NULL) return(MEMORY_ERROR);
     if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
@@ -699,7 +719,7 @@ namespace soilFluxes3D {
             else return INDEX_ERROR;
             break;
 		case LATERAL:
-			
+			// return maximum lateral flow
             for (short i = 0; i < myStructure.nrLateralLinks; i++)
                 if (myNode[n].lateral[i].index != NOLINK)
                     if (fabs(myNode[n].lateral[i].sumFlow) > maxFlow)
