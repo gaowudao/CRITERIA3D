@@ -12,7 +12,7 @@
         double prescribedTotalPotential;	/*!< [m] imposed total soil-water potential (H) */
 
         TboundaryHeat *Heat;                /*!< extra variables for heat flux */
-    } ;
+		} ;
 
     struct TCrit3DStructure{
         long nrLayers;
@@ -98,13 +98,13 @@
         } ;
 
 
-     struct TmatrixElement{
+     struct TmatrixElement {
         long index;
         double val;
         } ;
 
 
-     struct Tbalance{
+     struct Tbalance {
         double storageWater;
         double sinkSourceWater;
         double waterMBE, waterMBR;
@@ -115,13 +115,24 @@
         double heatMBR = 1.0;
         } ;
 
+	struct Tculvert {
+		long index = NOLINK;
+		double width;				/*!< [m] */
+		double height;				/*!< [m] */
+		double roughness;			/*!< [s m-1/3] */
+		double slope;				/*!< [-] */
+		} ;
+
      extern TCrit3DStructure myStructure;
      extern TParameters myParameters;
      extern TCrit3Dnode *myNode;
      extern TmatrixElement **A;
+	 extern Tculvert myCulvert;
+	 extern double Courant;
      extern double *b, *C, *X;
      extern double *invariantFlux;         //array accessorio per flussi avvettivi e latenti
      extern double Courant;
+	 extern double Courant;
 
      extern Tbalance balanceCurrentTimeStep, balancePreviousTimeStep, balanceCurrentPeriod, balanceWholePeriod;
 
