@@ -286,6 +286,7 @@ void weatherGenerator2D::precipitationCompute()
    // step 2 of precipitation WG2D
    weatherGenerator2D::precipitationCorrelationMatrices();
    // step 3 of precipitation WG2D
+   weatherGenerator2D::precipitationMultisiteOccurrenceGeneration();
 
 
    // step 4 of precipitation WG2D
@@ -508,7 +509,10 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             for (int j=0;j<nrStations;j++)
             {
                 matrixOccurrence[i][j]= correlationMatrix[iMonth].occurrence[i][j];
+                //printf("%f,",matrixOccurrence[i][j]);
             }
+            //printf("month %d,\n",iMonth);
+
             /* since random numbers generated have a normal distribution, each p00 and
                p10 have to be recalculated according to a normal number*/
             normalizedTransitionProbability[i][0]= - SQRT_2*statistics::inverseERFC(2.*precOccurence[i][iMonth].p00,0.0001);
@@ -520,15 +524,52 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
 
 
         }
-        //weatherGenerator2D::spatialIterationOccurrence(normalizedRandomMatrix,matrixOccurrence,)
+
+        // initialization outputs of weatherGenerator2D::spatialIterationOccurrence
+        double** M;
+        double** K;
+        double** occurrences;
+        M = (double **)calloc(nrStations, sizeof(double*));
+        K = (double **)calloc(nrStations, sizeof(double*));
+        occurrences = (double **)calloc(nrDaysIterativeProcessMonthly[iMonth], sizeof(double*));
+
+        for (int i=0;i<nrStations;i++)
+        {
+            M[i] = (double *)calloc(nrStations, sizeof(double));
+            K[i] = (double *)calloc(nrStations, sizeof(double));
+            for (int j=0;j<nrStations;j++)
+            {
+                M[i][j]= NODATA;
+                K[i][j]= NODATA;
+
+            }
+
+        }
+        for (int i=0;i<nrDaysIterativeProcessMonthly[iMonth];i++)
+        {
+          occurrences[i] = (double *)calloc(nrStations, sizeof(double));
+          for (int j=0;j<nrStations;j++)
+          {
+              occurrences[i][j]= NODATA;
+          }
+        }
+
+        weatherGenerator2D::spatialIterationOccurrence(M,K,occurrences,matrixOccurrence,normalizedRandomMatrix,normalizedTransitionProbability,nrDaysIterativeProcessMonthly[iMonth]);
 
 
         // free memory
         for (int i=0;i<nrStations;i++)
         {
             free(normalizedRandomMatrix[i]);
+            free(M[i]);
+            free(K[i]);
         }
+        for (int i=0;i<nrDaysIterativeProcessMonthly[iMonth];i++) free(occurrences[i]);
         free(normalizedRandomMatrix);
+        free(M);
+        free(K);
+        free(occurrences);
+
     }
 
 
@@ -537,15 +578,16 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
     {
         free(matrixOccurrence[i]);
         free(normalizedTransitionProbability[i]);
-
     }
     free(matrixOccurrence);
     free(normalizedTransitionProbability);
 
+
 }
 
-void weatherGenerator2D::spatialIterationOccurrence(double** correlationOccurrenceGeneration,double** occurrences, double** matrixOccurrence, double** normalizedMatrixRandom,double ** transitionNormal,int lengthSeries)
+void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,double** occurrences, double** matrixOccurrence, double** normalizedMatrixRandom,double ** transitionNormal,int lengthSeries)
 {
+    // M and K matrices are used as ancillary dummy matrices
     float val=5;
     int ii=0;
     float kiter=0.1;   // iteration parameter in calculation of new estimate of matrix 'mat'
@@ -556,27 +598,66 @@ void weatherGenerator2D::spatialIterationOccurrence(double** correlationOccurren
     while ((val>TOLERANCE_MULGETS) && (ii<MAX_ITERATION_MULGETS))
     {
         ii++;
+        int nrEigenvaluesLessThan0 = 0;
         int counter = 0;
         for (int i=0;i<nrStations;i++)
         {
             for (int j=0;j<nrStations;j++) // avoid solutions with correlation coefficient greater than 1
             {
-                correlationOccurrenceGeneration[i][j] = min_value(correlationOccurrenceGeneration[i][j],1);
-                correlationArray[counter] = correlationOccurrenceGeneration[i][j];
+                matrixOccurrence[i][j] = min_value(matrixOccurrence[i][j],1);
+                correlationArray[counter] = matrixOccurrence[i][j];
                 counter++;
+                //printf("%f,",matrixOccurrence[i][j]);
             }
+            //printf("\n");
         }
         eigenproblem::rs(nrStations,correlationArray,eigenvalues,true,eigenvectors);
         for (int i=0;i<nrStations;i++)
         {
-            printf("%d,%f\n",i,eigenvalues[i]);
+            if (eigenvalues[i] <= 0)
+            {
+                nrEigenvaluesLessThan0++;
+                eigenvalues[i] = 0.000001;
+            }
+            //printf("%d,%f\n",i,eigenvalues[i]);
         }
+        if (nrEigenvaluesLessThan0 > 0)
+        {
+            counter=0;
+            for (int i=0;i<nrStations;i++)
+            {
+                for (int j=0;j<nrStations;j++)
+                {
+                    M[j][i]= eigenvectors[counter]; //transposed eigenvectors matrix!!!!
+                    if (i != j) matrixOccurrence[i][j]= 0.;
+                    else matrixOccurrence[i][i]= eigenvalues[i];
+                    counter++;
+                }
+            }
+            matricial::matrixProduct(matrixOccurrence,M,nrStations,nrStations,nrStations,nrStations,K);
+            counter=0;
+            for (int i=0;i<nrStations;i++)
+            {
+                for (int j=0;j<nrStations;j++)
+                {
+                    M[i][j]= eigenvectors[counter]; //eigenvectors matrix!!!!
+                    counter++;
+                }
+            }
+            matricial::matrixProduct(M,K,nrStations,nrStations,nrStations,nrStations,matrixOccurrence);
+        }
+
+
+        // the matrix called matriOccurrence is the final matrix exiting from the calculation
+
+
 
     }
 
 
     free(eigenvalues);
     free(eigenvectors);
+    free(correlationArray);
 
 }
 
