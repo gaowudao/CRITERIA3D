@@ -1,6 +1,7 @@
 #ifndef MATHEMATICALFUNCTIONS_H
 #define MATHEMATICALFUNCTIONS_H
 
+float errorFunctionPrimitive(float x);
     struct TfunctionInput{
         float x ;
         int nrPar ;
@@ -68,6 +69,14 @@
     namespace distribution
     {
         float normalGauss(TfunctionInput fInput);
+    }
+
+    namespace random
+    {
+        float ran1(long *idum);
+        float gasdev(long *idum);
+        float normalRandom(int *gasDevIset,float *gasDevGset);
+
     }
 
 

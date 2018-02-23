@@ -96,11 +96,16 @@ contributors:
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include <malloc.h>
+#include <time.h>
 
 #include "wg2D.h"
 #include "commonConstants.h"
+#include "furtherMathFunctions.h"
+#include "statistics.h"
+#include "eispack.h"
 
 //precipitation prec;
 //temperature temp;
@@ -281,6 +286,9 @@ void weatherGenerator2D::precipitationCompute()
    // step 2 of precipitation WG2D
    weatherGenerator2D::precipitationCorrelationMatrices();
    // step 3 of precipitation WG2D
+   weatherGenerator2D::precipitationMultisiteOccurrenceGeneration();
+
+
    // step 4 of precipitation WG2D
    // step 5 of precipitation WG2D
 }
@@ -329,6 +337,348 @@ void weatherGenerator2D::precipitationP00P10()
 
 }
 
+
+
+void weatherGenerator2D::precipitationCorrelationMatrices()
+{
+    int counter =0;
+    TcorrelationVar amount,occurrence;
+    for (int iMonth=0;iMonth<12;iMonth++)
+    {
+        correlationMatrix[iMonth].month = iMonth + 1 ; // define the month of the correlation matrix;
+        for (int k=0; k<nrStations;k++) // correlation matrix diagonal elements;
+        {
+            correlationMatrix[iMonth].amount[k][k] = 1.;
+            correlationMatrix[iMonth].occurrence[k][k]= 1.;
+        }
+
+        for (int j=0; j<nrStations-1;j++)
+        {
+            for (int i=j+1; i<nrStations;i++)
+            {
+                counter = 0;
+                amount.meanValueMonthlyPrec1=0.;
+                amount.meanValueMonthlyPrec2=0.;
+                amount.covariance = amount.variance1 = amount.variance2 = 0.;
+                occurrence.meanValueMonthlyPrec1=0.;
+                occurrence.meanValueMonthlyPrec2=0.;
+                occurrence.covariance = occurrence.variance1 = occurrence.variance2 = 0.;
+
+                for (int k=0; k<nrData;k++) // compute the monthly means
+                {
+                    if (obsDataD[j][k].date.month == (iMonth+1) && obsDataD[i][k].date.month == (iMonth+1))
+                    {
+                        if ((obsDataD[j][k].prec != NODATA) && (obsDataD[i][k].prec != NODATA))
+                        {
+                            counter++;
+                            if (obsDataD[j][k].prec > parametersModel.precipitationThreshold)
+                            {
+                                amount.meanValueMonthlyPrec1 += obsDataD[j][k].prec;
+                                occurrence.meanValueMonthlyPrec1++ ;
+                            }
+                            if (obsDataD[i][k].prec > parametersModel.precipitationThreshold)
+                            {
+                                amount.meanValueMonthlyPrec2 += obsDataD[i][k].prec;
+                                occurrence.meanValueMonthlyPrec2++ ;
+                            }
+
+                        }
+                    }
+
+                }
+                if (counter != 0)
+                {
+                    amount.meanValueMonthlyPrec1 /= counter;
+                    occurrence.meanValueMonthlyPrec1 /= counter;
+                }
+
+                if (counter != 0)
+                {
+                    amount.meanValueMonthlyPrec2 /= counter;
+                    occurrence.meanValueMonthlyPrec2 /= counter;
+                }
+                // compute the monthly rho off-diagonal elements
+                for (int k=0; k<nrData;k++)
+                {
+                    if (obsDataD[j][k].date.month == (iMonth+1) && obsDataD[i][k].date.month == (iMonth+1))
+                    {
+                        if ((obsDataD[j][k].prec != NODATA) && (obsDataD[i][k].prec != NODATA))
+                        {
+                            double value1,value2;
+                            if (obsDataD[j][k].prec <= parametersModel.precipitationThreshold) value1 = 0.;
+                            else value1 = obsDataD[j][k].prec;
+                            if (obsDataD[i][k].prec <= parametersModel.precipitationThreshold) value2 = 0.;
+                            else value2 = obsDataD[i][k].prec;
+
+                            amount.covariance += (value1 - amount.meanValueMonthlyPrec1)*(value2 - amount.meanValueMonthlyPrec2);
+                            amount.variance1 += pow((value1 - amount.meanValueMonthlyPrec1),2);
+                            amount.variance2 += pow((value2 - amount.meanValueMonthlyPrec2),2);
+
+
+                            if (obsDataD[j][k].prec <= parametersModel.precipitationThreshold) value1 = 0.;
+                            else value1 = 1.;
+                            if (obsDataD[i][k].prec <= parametersModel.precipitationThreshold) value2 = 0.;
+                            else value2 = 1.;
+
+                            occurrence.covariance += (value1 - occurrence.meanValueMonthlyPrec1)*(value2 - occurrence.meanValueMonthlyPrec2);
+                            occurrence.variance1 += pow((value1 - occurrence.meanValueMonthlyPrec1),2);
+                            occurrence.variance2 += pow((value2 - occurrence.meanValueMonthlyPrec2),2);
+
+
+                        }
+                    }
+                }
+                correlationMatrix[iMonth].amount[j][i]= amount.covariance / pow((amount.variance1*amount.variance2),0.5);
+                correlationMatrix[iMonth].amount[i][j] = correlationMatrix[iMonth].amount[j][i];
+                correlationMatrix[iMonth].occurrence[j][i]= occurrence.covariance / pow((occurrence.variance1*occurrence.variance2),0.5);
+                correlationMatrix[iMonth].occurrence[i][j] = correlationMatrix[iMonth].occurrence[j][i];
+            }
+        }
+
+    }
+    //printf("%d\n",nrStations);
+    /*
+     * for (int i=0;i<nrStations;i++)
+    {
+        for (int j=0;j<nrStations;j++)
+        {
+
+            printf("%f ",correlationMatrix[3].amount[i][j] );
+        }
+        printf("\n");
+    }
+    for (int i=0;i<nrStations;i++)
+    {
+        for (int j=0;j<nrStations;j++)
+        {
+
+            printf("%f ",correlationMatrix[3].occurrence[i][j] );
+        }
+        printf("\n");
+    }*/
+}
+
+void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
+{
+    int nrDaysIterativeProcessMonthly[12];
+    int gasDevIset = 0;
+    float gasDevGset = 0;
+    srand (time(NULL));
+
+
+    for (int i=0;i<12;i++)
+    {
+        nrDaysIterativeProcessMonthly[i] = lengthMonth[i]+parametersModel.yearOfSimulation;
+    }
+    double** matrixOccurrence;
+    matrixOccurrence = (double **)calloc(nrStations, sizeof(double*));
+    double** normalizedTransitionProbability;
+    normalizedTransitionProbability = (double **)calloc(nrStations, sizeof(double*));
+
+    for (int i=0;i<nrStations;i++)
+    {
+        matrixOccurrence[i] = (double *)calloc(nrStations, sizeof(double));
+        normalizedTransitionProbability[i]= (double *)calloc(2, sizeof(double));
+        for (int j=0;j<nrStations;j++)
+        {
+           matrixOccurrence[i][j]= NODATA;
+        }
+        normalizedTransitionProbability[i][0]= NODATA;
+        normalizedTransitionProbability[i][1]= NODATA;        
+    }
+
+
+
+    // arrays initialization
+    for (int iMonth=0; iMonth<12; iMonth++)
+    {
+        // initialization and definition of the random matrix
+        double** normalizedRandomMatrix;
+        normalizedRandomMatrix = (double **)calloc(nrStations, sizeof(double*));
+        for (int i=0;i<nrStations;i++)
+        {
+            normalizedRandomMatrix[i] = (double *)calloc(nrDaysIterativeProcessMonthly[iMonth], sizeof(double));
+            for (int j=0;j<nrDaysIterativeProcessMonthly[iMonth];j++)
+            {
+               normalizedRandomMatrix[i][j]= NODATA;
+            }
+        }
+
+        for (int i=0;i<nrStations;i++)
+        {
+            for (int j=0;j<nrStations;j++)
+            {
+                matrixOccurrence[i][j]= correlationMatrix[iMonth].occurrence[i][j];
+                //printf("%f,",matrixOccurrence[i][j]);
+            }
+            //printf("month %d,\n",iMonth);
+
+            /* since random numbers generated have a normal distribution, each p00 and
+               p10 have to be recalculated according to a normal number*/
+            normalizedTransitionProbability[i][0]= - SQRT_2*statistics::inverseERFC(2.*precOccurence[i][iMonth].p00,0.0001);
+            normalizedTransitionProbability[i][1]= - SQRT_2*statistics::inverseERFC(2.*precOccurence[i][iMonth].p10,0.0001);
+            for (int j=0;j<nrDaysIterativeProcessMonthly[iMonth];j++)
+            {
+               normalizedRandomMatrix[i][j]= random::normalRandom(&gasDevIset,&gasDevGset);
+            }
+
+
+        }
+
+        // initialization outputs of weatherGenerator2D::spatialIterationOccurrence
+        double** M;
+        double** K;
+        double** occurrences;
+        M = (double **)calloc(nrStations, sizeof(double*));
+        K = (double **)calloc(nrStations, sizeof(double*));
+        occurrences = (double **)calloc(nrDaysIterativeProcessMonthly[iMonth], sizeof(double*));
+
+        for (int i=0;i<nrStations;i++)
+        {
+            M[i] = (double *)calloc(nrStations, sizeof(double));
+            K[i] = (double *)calloc(nrStations, sizeof(double));
+            for (int j=0;j<nrStations;j++)
+            {
+                M[i][j]= NODATA;
+                K[i][j]= NODATA;
+
+            }
+
+        }
+        for (int i=0;i<nrDaysIterativeProcessMonthly[iMonth];i++)
+        {
+          occurrences[i] = (double *)calloc(nrStations, sizeof(double));
+          for (int j=0;j<nrStations;j++)
+          {
+              occurrences[i][j]= NODATA;
+          }
+        }
+
+        weatherGenerator2D::spatialIterationOccurrence(M,K,occurrences,matrixOccurrence,normalizedRandomMatrix,normalizedTransitionProbability,nrDaysIterativeProcessMonthly[iMonth]);
+
+
+        // free memory
+        for (int i=0;i<nrStations;i++)
+        {
+            free(normalizedRandomMatrix[i]);
+            free(M[i]);
+            free(K[i]);
+        }
+        for (int i=0;i<nrDaysIterativeProcessMonthly[iMonth];i++) free(occurrences[i]);
+        free(normalizedRandomMatrix);
+        free(M);
+        free(K);
+        free(occurrences);
+
+    }
+
+
+    // free memory
+    for (int i=0;i<nrStations;i++)
+    {
+        free(matrixOccurrence[i]);
+        free(normalizedTransitionProbability[i]);
+    }
+    free(matrixOccurrence);
+    free(normalizedTransitionProbability);
+
+
+}
+
+void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,double** occurrences, double** matrixOccurrence, double** normalizedMatrixRandom,double ** transitionNormal,int lengthSeries)
+{
+    // M and K matrices are used as ancillary dummy matrices
+    float val=5;
+    int ii=0;
+    float kiter=0.1;   // iteration parameter in calculation of new estimate of matrix 'mat'
+
+    double* eigenvalues =(double*)calloc(nrStations, sizeof(double));
+    double* eigenvectors =(double*)calloc(nrStations*nrStations, sizeof(double));
+    double* correlationArray =(double*)calloc(nrStations*nrStations, sizeof(double));
+    while ((val>TOLERANCE_MULGETS) && (ii<MAX_ITERATION_MULGETS))
+    {
+        ii++;
+        int nrEigenvaluesLessThan0 = 0;
+        int counter = 0;
+        for (int i=0;i<nrStations;i++)
+        {
+            for (int j=0;j<nrStations;j++) // avoid solutions with correlation coefficient greater than 1
+            {
+                matrixOccurrence[i][j] = min_value(matrixOccurrence[i][j],1);
+                correlationArray[counter] = matrixOccurrence[i][j];
+                counter++;
+                //printf("%f,",matrixOccurrence[i][j]);
+            }
+            //printf("\n");
+        }
+        eigenproblem::rs(nrStations,correlationArray,eigenvalues,true,eigenvectors);
+        for (int i=0;i<nrStations;i++)
+        {
+            if (eigenvalues[i] <= 0)
+            {
+                nrEigenvaluesLessThan0++;
+                eigenvalues[i] = 0.000001;
+            }
+            //printf("%d,%f\n",i,eigenvalues[i]);
+        }
+        if (nrEigenvaluesLessThan0 > 0)
+        {
+            counter=0;
+            for (int i=0;i<nrStations;i++)
+            {
+                for (int j=0;j<nrStations;j++)
+                {
+                    M[j][i]= eigenvectors[counter]; //transposed eigenvectors matrix!!!!
+                    if (i != j) matrixOccurrence[i][j]= 0.;
+                    else matrixOccurrence[i][i]= eigenvalues[i];
+                    counter++;
+                }
+            }
+            matricial::matrixProduct(matrixOccurrence,M,nrStations,nrStations,nrStations,nrStations,K);
+            counter=0;
+            for (int i=0;i<nrStations;i++)
+            {
+                for (int j=0;j<nrStations;j++)
+                {
+                    M[i][j]= eigenvectors[counter]; //eigenvectors matrix!!!!
+                    counter++;
+                }
+            }
+            matricial::matrixProduct(M,K,nrStations,nrStations,nrStations,nrStations,matrixOccurrence);
+        }
+
+
+        // the matrix called matriOccurrence is the final matrix exiting from the calculation
+
+
+
+    }
+
+
+    free(eigenvalues);
+    free(eigenvectors);
+    free(correlationArray);
+
+}
+
+
+void weatherGenerator2D::temperatureCompute()
+{
+    // step 1 of temperature WG2D
+    // step 2 of temperature WG2D
+    // step 3 of temperature WG2D
+    // step 4 of temperature WG2D
+    // step 5 of temperature WG2D
+}
+
+
+
+
+
+
+
+
+
 void weatherGenerator2D::precipitation29February(int idStation)
 {
     nrDataWithout29February = nrData;
@@ -370,126 +720,4 @@ void weatherGenerator2D::precipitationAmountsOccurences(int idStation, double* p
                 counter++;
             }
     }
-}
-
-
-void weatherGenerator2D::precipitationCorrelationMatrices()
-{
-    int counter =0;
-    TcorrelationVar amount,occurrence;
-    for (int iMonth=0;iMonth<12;iMonth++)
-    {
-        correlationMatrix[iMonth].month = iMonth + 1 ; // define the month of the correlation matrix;
-        for (int k=0; k<nrStations;k++) // correlation matrix diagonal elements;
-        {
-            correlationMatrix[iMonth].amount[k][k] = 1.;
-            correlationMatrix[iMonth].occurrence[k][k]= 1.;
-        }
-
-        for (int j=0; j<nrStations-1;j++)
-        {
-            for (int i=j+1; i<nrStations;i++)
-            {
-                counter = 0;
-                amount.meanValueMonthlyPrec1=0.;
-                amount.meanValueMonthlyPrec2=0.;
-                amount.covariance = amount.variance1 = amount.variance2 = 0.;
-                occurrence.meanValueMonthlyPrec1=0.;
-                occurrence.meanValueMonthlyPrec2=0.;
-                occurrence.covariance = occurrence.variance1 = occurrence.variance2 = 0.;
-
-                for (int k=0; k<nrData;k++) // compute the monthly means
-                {
-                    if (obsDataD[j][k].date.month == (iMonth+1) && obsDataD[i][k].date.month == (iMonth+1))
-                    {
-                        if ((obsDataD[j][k].prec != NODATA) && (obsDataD[i][k].prec != NODATA))
-                        {
-                            counter++;
-                            if (obsDataD[j][k].prec > parametersModel.precipitationThreshold)
-                            {
-                                amount.meanValueMonthlyPrec1 += obsDataD[j][k].prec;
-                                occurrence.meanValueMonthlyPrec1 += 1.;
-                            }
-                            if (obsDataD[i][k].prec > parametersModel.precipitationThreshold)
-                            {
-                                amount.meanValueMonthlyPrec2 += obsDataD[i][k].prec;
-                                occurrence.meanValueMonthlyPrec1 += 1.;
-                            }
-                        }
-                    }
-
-                }
-                if (counter != 0)
-                {
-                    amount.meanValueMonthlyPrec1 /= counter;
-                    occurrence.meanValueMonthlyPrec1 /= counter;
-                }
-
-                if (counter != 0)
-                {
-                    amount.meanValueMonthlyPrec2 /= counter;
-                    occurrence.meanValueMonthlyPrec2 /= counter;
-                }
-
-                // compute the monthly rho off-diagonal elements
-                for (int k=0; k<nrData;k++)
-                {
-                    if (obsDataD[j][k].date.month == (iMonth+1) && obsDataD[i][k].date.month == (iMonth+1))
-                    {
-                        if ((obsDataD[j][k].prec != NODATA) && (obsDataD[i][k].prec != NODATA))
-                        {
-                            double value1,value2;
-                            if (obsDataD[j][k].prec <= parametersModel.precipitationThreshold) value1 = 0.;
-                            else value1 = obsDataD[j][k].prec;
-                            if (obsDataD[i][k].prec <= parametersModel.precipitationThreshold) value2 = 0.;
-                            else value2 = obsDataD[j][k].prec;
-
-                            amount.covariance += (value1 - amount.meanValueMonthlyPrec1)*(value2 - amount.meanValueMonthlyPrec2);
-                            amount.variance1 += pow((value1 - amount.meanValueMonthlyPrec1),2);
-                            amount.variance2 += pow((value2 - amount.meanValueMonthlyPrec2),2);
-
-
-                            if (obsDataD[j][k].prec <= parametersModel.precipitationThreshold) value1 = 0.;
-                            else value1 = 1.;
-                            if (obsDataD[i][k].prec <= parametersModel.precipitationThreshold) value2 = 0.;
-                            else value2 = 1.;
-
-                            occurrence.covariance += (value1 - occurrence.meanValueMonthlyPrec1)*(value2 - occurrence.meanValueMonthlyPrec2);
-                            occurrence.variance1 += pow((value1 - occurrence.meanValueMonthlyPrec1),2);
-                            occurrence.variance2 += pow((value2 - occurrence.meanValueMonthlyPrec2),2);
-
-
-                        }
-                    }
-                }
-                correlationMatrix[iMonth].amount[j][i]= amount.covariance / pow((amount.variance1*amount.variance2),0.5);
-                correlationMatrix[iMonth].amount[i][j] = correlationMatrix[iMonth].amount[j][i];
-                correlationMatrix[iMonth].occurrence[j][i]= occurrence.covariance / pow((occurrence.variance1*occurrence.variance2),0.5);
-                correlationMatrix[iMonth].occurrence[i][j] = correlationMatrix[iMonth].occurrence[j][i];
-            }
-        }
-    }
-
-    /*for (int i=0;i<nrStations;i++)
-    {
-        for (int j=0;j<nrStations;j++)
-        {
-
-            printf("%f ",correlationMatrix[0].amount[i][j] );
-        }
-        printf("\n");
-    }
-    */
-}
-
-
-
-
-void weatherGenerator2D::temperatureCompute()
-{
-    // step 1 of temperature WG2D
-    // step 2 of temperature WG2D
-    // step 3 of temperature WG2D
-    // step 4 of temperature WG2D
-    // step 5 of temperature WG2D
 }

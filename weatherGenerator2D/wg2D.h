@@ -82,6 +82,8 @@ private:
     void precipitationAmountsOccurences(int idStation, double* precipitationAmountsD,bool* precipitationOccurencesD);
     void precipitationP00P10();
     void precipitationCorrelationMatrices();
+    void precipitationMultisiteOccurrenceGeneration();
+    void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K, double** occurrences, double** matrixOccurrence, double** normalizedMatrixRandom, double ** transitionNormal, int lengthSeries);
     void temperatureCompute();
 
 

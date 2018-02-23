@@ -26,6 +26,7 @@
 #include <math.h>
 #include <malloc.h>
 #include "commonConstants.h"
+#include "furtherMathFunctions.h"
 #include "basicMath.h"
 #include "statistics.h"
 
@@ -235,4 +236,148 @@ namespace statistics
         }
         return c;
     }
+
+    float ERF(float x, float accuracy) // error function
+    {
+        return (2*pow(PI,-0.5)*integration::qsimp(errorFunctionPrimitive,0.,x,accuracy));
+    }
+
+    float ERFC(float x,float accuracy) // error function
+    {
+        return (1. - ERF(x,accuracy));
+    }
+    float inverseERF(float value, float accuracy)
+    {
+
+        if (value >=1 || value <= -1)
+        {
+            return PARAMETER_ERROR;
+        }
+        float rootLeft,rootRight;
+        float root;
+        float absoluteValue;
+        absoluteValue = fabs(value);
+
+
+        if (value == 0)
+        {
+            return 0.;
+        }
+        else if (value  > 0)
+        {
+            float leftBound, rightBound;
+            leftBound = 0.;
+            rightBound = 100.;
+            rootLeft = 0.;
+            rootRight = ERF(rightBound,accuracy);
+            do
+            {
+                root = ERF((rightBound+leftBound)/2,accuracy);
+                if (root < value)
+                {
+                    leftBound = (rightBound+leftBound)/2;
+                }
+                else
+                {
+                    rightBound = (rightBound+leftBound)/2;
+                }
+            } while(fabs(leftBound - rightBound) > accuracy);
+
+            return (rightBound+leftBound)/2;
+        }
+        else
+        {
+            float leftBound, rightBound;
+            leftBound = -100.;
+            rightBound = 0.;
+            rootLeft = 0.;
+            rootRight = ERF(rightBound,accuracy);
+            do
+            {
+                root = ERF((rightBound+leftBound)/2,accuracy);
+                if (root < value)
+                {
+                    leftBound = (rightBound+leftBound)/2;
+                }
+                else
+                {
+                    rightBound = (rightBound+leftBound)/2;
+                }
+            } while(fabs(leftBound - rightBound) > accuracy);
+
+            return (rightBound+leftBound)/2;
+        }
+
+
+
+    }
+
+    float inverseERFC(float value, float accuracy)
+    {
+
+        if (value >=2 || value <= 0)
+        {
+            return PARAMETER_ERROR;
+        }
+
+
+        float rootLeft,rootRight;
+        float root;
+        float absoluteValue;
+        absoluteValue = fabs(value);
+
+        if (value == 1)
+        {
+            return 0. ;
+        }
+        else if (value  < 1)
+        {
+            float leftBound, rightBound;
+            leftBound = 0.;
+            rightBound = 100.;
+            rootLeft = 1.;
+            rootRight = ERFC(rightBound,accuracy);
+            do
+            {
+                root = ERFC((rightBound+leftBound)/2,accuracy);
+                if (root > value)
+                {
+                    leftBound = (rightBound+leftBound)/2;
+                }
+                else
+                {
+                    rightBound = (rightBound+leftBound)/2;
+                }
+            } while(fabs(leftBound - rightBound) > accuracy);
+            return (rightBound+leftBound)/2;
+        }
+        else
+        {
+            float leftBound, rightBound;
+            leftBound = -100.;
+            rightBound = 0.;
+            rootLeft = ERFC(rightBound,accuracy);
+            rootRight = 1.;
+            do
+            {
+                root = ERFC((rightBound+leftBound)/2,accuracy);
+                if (root > value)
+                {
+                    leftBound = (rightBound+leftBound)/2;
+                }
+                else
+                {
+                    rightBound = (rightBound+leftBound)/2;
+                }
+            } while(fabs(leftBound - rightBound) > accuracy);
+            return (rightBound+leftBound)/2;
+        }
+
+
+    }
+
+
+
+
+
 }
