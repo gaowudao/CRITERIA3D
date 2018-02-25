@@ -185,8 +185,8 @@ bool computeFlux(long i, int matrixIndex, TlinkedNode *link, double deltaT, unsi
 
     if (myNode[i].isSurface)
     {
-        if (myNode[j].isSurface)
-            val = runoff(i, j, link, deltaT, myApprox);
+		if (myNode[j].isSurface)
+			val = runoff(i, j, link, deltaT, myApprox);
         else
             val = infiltration(i, j, link, deltaT);
     }
