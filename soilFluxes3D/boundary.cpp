@@ -340,44 +340,51 @@ void updateBoundaryWater(double deltaT)
 	// Culvert
 	if (myCulvert.index != NOLINK)
 	{
-		double hydraulicRadius, wettedPerimeter;
 		long i = myCulvert.index;
 		double waterLevel = 0.5 * (myNode[i].H + myNode[i].oldH) - myNode[i].z;		// [m]
-		maxFlow = (waterLevel * myNode[i].volume_area) / deltaT;					// [m^3 s^-1] max available flow in the time step
+		//maxFlow = (waterLevel * myNode[i].volume_area) / deltaT;					// [m^3 s^-1] max available flow in the time step
 
-		/*if (waterLevel > myCulvert.height * 1.2)
+		flow = 0.0;
+
+		if (waterLevel >= myCulvert.height * 1.5)
 		{
-			// pressure flow
+			// pressure flow - Hazen-Williams equation
+			double equivalentDiameter = sqrt((4. * myCulvert.width * myCulvert.height) / PI);
+			// roughness = 70 (rough concrete)
+			flow = (70. * pow(myCulvert.slope, 0.54) * pow(equivalentDiameter, 2.63)) / 3.591;
 
-		}*/
-
-		if (waterLevel > myCulvert.height)
+		}
+		else if (waterLevel > myCulvert.height)
 		{
-			// mixed flow
-			area = myCulvert.width * myCulvert.height;					// [m^2]
-			wettedPerimeter = myCulvert.width + 2.* myCulvert.height;	// [m]
-			hydraulicRadius = area / wettedPerimeter;					// [m]
+			// mixed flow: open channel - pressure flow
+			area = myCulvert.width * myCulvert.height;							// [m^2]
+			double wettedPerimeter = myCulvert.width + 2.* myCulvert.height;	// [m]
+			double hydraulicRadius = area / wettedPerimeter;					// [m]
 
 			// maximum Manning flow [m^3 s^-1]
-			flow = (area / myCulvert.roughness) * sqrt(myCulvert.slope) * pow(hydraulicRadius, 2. / 3.);
+			double ManningFlow = (area / myCulvert.roughness) * sqrt(myCulvert.slope) * pow(hydraulicRadius, 2. / 3.);
+
+			// pressure flow - Hazen-Williams equation - roughness = 70
+			double equivalentDiameter = sqrt((4. * myCulvert.width * myCulvert.height) / PI);
+			double pressureFlow = (70. * pow(myCulvert.slope, 0.54) * pow(equivalentDiameter, 2.63)) / 3.591;
+
+			double weight = (waterLevel - myCulvert.height) / (myCulvert.height * 0.5);
+			flow = weight * pressureFlow + (1. - weight) * ManningFlow;
+
 		}
 		else if (waterLevel > myNode[i].Soil->Pond)
 		{
 			// open channel flow
-			area = myCulvert.width * waterLevel;					// [m^2]
-			wettedPerimeter = myCulvert.width + 2.0 * waterLevel;	// [m]
-			hydraulicRadius = area / wettedPerimeter;				// [m]
+			area = myCulvert.width * waterLevel;							// [m^2]
+			double wettedPerimeter = myCulvert.width + 2.0 * waterLevel;	// [m]
+			double hydraulicRadius = area / wettedPerimeter;				// [m]
 
 			// Manning equation [m^3 s^-1] 
 			flow = (area / myCulvert.roughness) * sqrt(myCulvert.slope) * pow(hydraulicRadius, 2./3.);
 		}
-		else
-		{
-			flow = 0.0;
-		}
 
 		// set boundary
-		myNode[i].boundary->waterFlow = -min_value(flow, maxFlow);
+		myNode[i].boundary->waterFlow = -flow;
 		myNode[i].Qw += myNode[i].boundary->waterFlow;
 	}
 }

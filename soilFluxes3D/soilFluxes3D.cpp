@@ -322,7 +322,7 @@ namespace soilFluxes3D {
 	 myCulvert.height = height;					// [m]
 
 	myNode[nodeIndex].boundary = new(Tboundary);
-	initializeBoundary(myNode[nodeIndex].boundary, BOUNDARY_CULVERT, slope);
+	initializeBoundary(myNode[nodeIndex].boundary, BOUNDARY_CULVERT, float(slope));
 
 	 return(CRIT3D_OK);
  }
