@@ -468,7 +468,7 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
 
     for (int i=0;i<12;i++)
     {
-        nrDaysIterativeProcessMonthly[i] = lengthMonth[i]+parametersModel.yearOfSimulation;
+        nrDaysIterativeProcessMonthly[i] = lengthMonth[i]*parametersModel.yearOfSimulation;
     }
     double** matrixOccurrence;
     matrixOccurrence = (double **)calloc(nrStations, sizeof(double*));
@@ -596,7 +596,6 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
     double* correlationArray =(double*)calloc(nrStations*nrStations, sizeof(double));
     double** dummyMatrix = (double**)calloc(nrStations, sizeof(double*));
     double** dummyMatrix2 = (double**)calloc(nrStations, sizeof(double*));
-
     double** dummyMatrix3 = (double**)calloc(nrStations, sizeof(double*));
     double** correlationRandom = (double**)calloc(lengthSeries, sizeof(double*));
 
@@ -654,7 +653,6 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
                 nrEigenvaluesLessThan0++;
                 eigenvalues[i] = 0.000001;
             }
-            //printf("%d,%f\n",i,eigenvalues[i]);
         }
         if (nrEigenvaluesLessThan0 > 0)
         {
@@ -670,15 +668,6 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
                 }
             }
             matricial::matrixProduct(M,dummyMatrix,nrStations,nrStations,nrStations,nrStations,dummyMatrix2);
-            /*counter=0;
-            for (int i=0;i<nrStations;i++)
-            {
-                for (int j=0;j<nrStations;j++)
-                {
-                    dummyMatrix[i][j]= eigenvectors[counter]; //eigenvectors matrix!!!!
-                    counter++;
-                }
-            }*/
             matricial::transposedSquareMatrix(dummyMatrix,nrStations);
             matricial::matrixProduct(dummyMatrix,dummyMatrix2,nrStations,nrStations,nrStations,nrStations,M);
         }
@@ -689,47 +678,48 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
         for (int j=0;j<nrStations;j++)
         {
             dummyMatrix[i][j] = M[i][j];
-            printf("%f ",dummyMatrix[i][j]);
+            //printf("%f ",dummyMatrix[i][j]);
         }
-        printf("\n");
-    }
-
-    int counter = 0;
-    for (int i=0;i<nrStations;i++)
-    {
-        for (int j=0;j<nrStations;j++) // avoid solutions with correlation coefficient greater than 1
-        {
-            dummyMatrix[i][j] = min_value(dummyMatrix[i][j],1);
-            correlationArray[counter] = dummyMatrix[i][j];
-            counter++;
-        }
-    }
-    eigenproblem::rs(nrStations,correlationArray,eigenvalues,false,eigenvectors);
-    for (int i=0;i<nrStations;i++)
-    {
-        //printf("%f\n",eigenvalues[i]);
+        //printf("\n");
     }
 
 
-
-    matricial::choleskyDecompositionLowerTriangular(dummyMatrix,nrStations);
-    for (int i=0;i<nrStations;i++)
-    {
-        for (int j=0;j<nrStations;j++)
-        {
-            printf("%f ",dummyMatrix[i][j]);
-        }
-        printf("\n");
-    }
+    enum triangularMatrixType {UPPER,LOWER};
+    triangularMatrixType matrixKind;
+    matrixKind = LOWER;
+    matricial::choleskyDecompositionTriangularMatrix(dummyMatrix,nrStations,matrixKind);
 
 
-    matricial::matrixProduct(dummyMatrix,normalizedMatrixRandom,nrStations,nrStations,nrStations,lengthSeries,dummyMatrix3);
+
+    matricial::matrixProduct(dummyMatrix,normalizedMatrixRandom,nrStations,nrStations,lengthSeries,nrStations,dummyMatrix3);
     matricial::transposedMatrix(dummyMatrix3,nrStations,lengthSeries,correlationRandom);
 
+    /*for (int i=0;i<nrStations;i++)
+    {
+        for (int j=0;j<lengthSeries;j++)
+        {
+
+            //printf("%f ",normalizedMatrixRandom[i][j]);
+            //printf("%f ",dummyMatrix3[i][j]);
+            //printf("%f ",correlationRandom[j][i]);
+        }
+        printf("\n");
+    }*/
 
 
 
 
+
+    // free memory
+
+    for (int i=0;i<nrStations;i++)
+    {
+        free(dummyMatrix[i]);
+        free(dummyMatrix2[i]);
+        free(dummyMatrix3[i]);
+
+    }
+    for (int i=0;i<lengthSeries;i++) free(correlationRandom[i]);
 
     free(dummyMatrix);
     free(dummyMatrix2);

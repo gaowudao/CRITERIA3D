@@ -453,27 +453,9 @@ namespace matricial
         return CRIT3D_OK;
     }
 
-    void choleskyDecompositionDoublePointer(double *a, int n, double* p) //adapted from Numerical Recipes in C page 97 chapter 2 section 2.9
+    void choleskyDecompositionSinglePointer(double *a, int n, double* p)
     {
-        /*
-         * Given a positive-definite symmetric matrix a[1..n][1..n], this routine constructs its Cholesky
-        decomposition, A = L · LT . On input, only the upper triangle of a need be given; it is not
-        modified. The Cholesky factor L is returned in the lower triangle of a, except for its diagonal
-        elements which are returned in p[1..n].
-
-
-        int i,j,k;
-        double sum=0;
-        for (i=1;i<=n;i++)
-        {
-            for (j=i;j<=n;j++)
-            {
-                for (sum=a[i][j],k=i-1;k>=1;k--) sum -= a[i][k]*a[j][k];
-                if (i == j) p[i]=sqrt(sum);
-                else a[j][i]=sum/p[i];
-            }
-        }*/
-
+        // adapted from http://www.math.hawaii.edu/~williamdemeo/C/stat243/reports/hw3/hw3/node6.html
         int i,j,k;
              for(j=0;j<n;j++)
                   p[j] = a[n*j+j];
@@ -492,28 +474,12 @@ namespace matricial
     }
 
 
-    void choleskyDecompositionSinglePointer(double *A, int n, double *L) // adapted from https://rosettacode.org/wiki/Cholesky_decomposition
+
+    void choleskyDecompositionTriangularMatrix(double **a, int n, bool isLowerMatrix)
     {
-
-        if (L == NULL)
-            exit(EXIT_FAILURE);
-
-        for (int i = 0; i < n; i++)
-        {
-            for (int j = 0; j < (i+1); j++)
-            {
-                double s = 0;
-                for (int k = 0; k < j; k++) s += L[i * n + k] * L[j * n + k];
-
-                L[i * n + j] = (i == j) ?
-                               sqrt(A[i * n + i] - s) :
-                               (1.0 / L[j * n + j] * (A[i * n + j] - s));
-            }
-        }
-    }
-
-    void choleskyDecompositionLowerTriangular(double **a, int n)
-    {
+        // input double pointer (square matrix: symmetric and positive definite)
+        // n: matrix dimension (n x n)
+        // isLowerMatrix: 1) if true: lower triangular matrix 2) if false: upper triangular matrix
         double* diagonalElementsCholesky =(double*)calloc(n, sizeof(double));
         double* aLinear =(double*)calloc(n*n, sizeof(double));
         int counter = 0;
@@ -522,19 +488,18 @@ namespace matricial
             for (int j=0;j<n;j++)
             {
                 aLinear[counter]= a[i][j];
-                //printf("%f ",aLinear[counter]);
                 counter++;
             }
         }
-        printf("\n");
-        matricial::choleskyDecompositionDoublePointer(aLinear,n,diagonalElementsCholesky);
+        matricial::choleskyDecompositionSinglePointer(aLinear,n,diagonalElementsCholesky);
         counter = 0;
         for (int i=0;i<n;i++)
         {
             for (int j=0;j<n;j++)
             {
-                //printf("%f ",aLinear[counter]);
-                a[j][i]= aLinear[counter];
+
+                if (isLowerMatrix) a[j][i]= aLinear[counter]; // for lower output matrix
+                else    a[i][j]= aLinear[counter]; // for upper output matrix
                 counter++;
             }
             a[i][i]= diagonalElementsCholesky[i];
@@ -542,11 +507,10 @@ namespace matricial
 
         for (int i=0;i<n;i++)
         {
-            for (int j=i+1;j<n;j++)
-            {
-                a[i][j]=0.;
-            }
-            a[i][i]= diagonalElementsCholesky[i];
+            if (isLowerMatrix)
+                for (int j=i+1;j<n;j++) a[i][j]=0.;
+            else
+                for (int j=0;j<i;j++) a[i][j]=0.;
         }
 
         free(diagonalElementsCholesky);
