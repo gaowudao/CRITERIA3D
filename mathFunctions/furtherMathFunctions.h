@@ -64,6 +64,10 @@ float errorFunctionPrimitive(float x);
     {
         int matrixSum(double**a , double**b, int rowA , int rowB, int colA, int colB,double **c);
         int matrixProduct(double **first,double**second,int colFirst, int rowFirst,int colSecond,int rowSecond,double ** multiply);
+        void choleskyDecompositionSinglePointer(double *a, int n, double *p);
+        void choleskyDecompositionTriangularMatrix(double **a, int n, bool isLowerMatrix);
+        void transposedSquareMatrix(double **a, int n);
+        void transposedMatrix(double** inputMatrix, int nrRows, int nrColumns,double** outputMatrix);
     }
 
     namespace distribution

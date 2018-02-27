@@ -452,6 +452,102 @@ namespace matricial
         }
         return CRIT3D_OK;
     }
+
+    void choleskyDecompositionSinglePointer(double *a, int n, double* p)
+    {
+        // adapted from http://www.math.hawaii.edu/~williamdemeo/C/stat243/reports/hw3/hw3/node6.html
+        int i,j,k;
+             for(j=0;j<n;j++)
+                  p[j] = a[n*j+j];
+             for(j=0;j<n;j++)
+             {
+                  for(k=0;k<j;k++)
+                       p[j] -= a[n*k+j]*a[n*k+j];
+                  p[j] = sqrt(p[j]);
+                  for(i=j+1;i<n;i++)
+                  {
+                       for(k=0;k<j;k++)
+                            a[n*j+i] -= a[n*k+i]*a[n*k+j];
+                       a[n*j+i]/=p[j];
+                  }
+             }
+    }
+
+
+
+    void choleskyDecompositionTriangularMatrix(double **a, int n, bool isLowerMatrix)
+    {
+        // input double pointer (square matrix: symmetric and positive definite)
+        // n: matrix dimension (n x n)
+        // isLowerMatrix: 1) if true: lower triangular matrix 2) if false: upper triangular matrix
+        double* diagonalElementsCholesky =(double*)calloc(n, sizeof(double));
+        double* aLinear =(double*)calloc(n*n, sizeof(double));
+        int counter = 0;
+        for (int i=0;i<n;i++)
+        {
+            for (int j=0;j<n;j++)
+            {
+                aLinear[counter]= a[i][j];
+                counter++;
+            }
+        }
+        matricial::choleskyDecompositionSinglePointer(aLinear,n,diagonalElementsCholesky);
+        counter = 0;
+        for (int i=0;i<n;i++)
+        {
+            for (int j=0;j<n;j++)
+            {
+
+                if (isLowerMatrix) a[j][i]= aLinear[counter]; // for lower output matrix
+                else    a[i][j]= aLinear[counter]; // for upper output matrix
+                counter++;
+            }
+            a[i][i]= diagonalElementsCholesky[i];
+        }
+
+        for (int i=0;i<n;i++)
+        {
+            if (isLowerMatrix)
+                for (int j=i+1;j<n;j++) a[i][j]=0.;
+            else
+                for (int j=0;j<i;j++) a[i][j]=0.;
+        }
+
+        free(diagonalElementsCholesky);
+        free(aLinear);
+    }
+
+    void transposedSquareMatrix(double** a, int n)
+    {
+        double dummy;
+        for (int i=0;i<n;i++)
+        {
+            for (int j=0;j<n;j++)
+            {
+                if (i != j)
+                {
+                    dummy = a[i][j];
+                    a[i][j] = a[j][i];
+                    a[j][i] = dummy;
+                }
+            }
+        }
+    }
+
+    void transposedMatrix(double **inputMatrix, int nrRows, int nrColumns, double **outputMatrix)
+    {
+
+        for (int i=0;i<nrRows;i++)
+        {
+            for (int j=0;j<nrColumns;j++)
+            {
+                outputMatrix[j][i] = inputMatrix[i][j];
+            }
+        }
+    }
+
+
+
 }
 
 
