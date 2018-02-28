@@ -24,6 +24,7 @@
 */
 
 #include <algorithm>
+#include <math.h>
 #include "commonConstants.h"
 #include "color.h"
 
