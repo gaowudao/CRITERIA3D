@@ -4,6 +4,7 @@
 #include "commonConstants.h"
 #include "variableslist.h"
 #include "qdatetime.h"
+#include "iostream"
 
 #include <QEventLoop>
 
@@ -335,6 +336,7 @@ bool Download::downloadHourlyData(QDate startDate, QDate endDate, QString datase
     QNetworkRequest request;
     request.setUrl(url);
     request.setRawHeader("Authorization", _authorization);
+    std::cout << url.toString().toStdString();
 
     QNetworkReply* reply = manager->get(request);  // GET
     loop.exec();
