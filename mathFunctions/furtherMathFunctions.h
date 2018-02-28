@@ -75,7 +75,7 @@ float errorFunctionPrimitive(float x);
         float normalGauss(TfunctionInput fInput);
     }
 
-    namespace random
+    namespace myrandom
     {
         float ran1(long *idum);
         float gasdev(long *idum);

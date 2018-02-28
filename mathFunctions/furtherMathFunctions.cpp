@@ -559,7 +559,7 @@ namespace distribution
     }
 }
 
-namespace random {
+namespace myrandom {
 
     #define IA 16807
     #define IM 2147483647
