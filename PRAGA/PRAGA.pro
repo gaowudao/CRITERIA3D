@@ -37,7 +37,8 @@ SOURCES += main.cpp\
     stationMarker.cpp \
     rubberBand.cpp \
     formInfo.cpp \
-    dialogWindows.cpp
+    dialogWindows.cpp \
+    formInfo.cpp
 
 HEADERS  += mainwindow.h \
     rasterObject.h \

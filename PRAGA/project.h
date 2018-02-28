@@ -64,7 +64,8 @@
         void setFrequency(frequencyType myFrequency);
         QDate getCurrentDate();
         int getCurrentHour();
-        Crit3DTime Project::getCurrentTime();
+        //Crit3DTime Project::getCurrentTime();
+        Crit3DTime getCurrentTime();
         frequencyType getFrequency();
         meteoVariable getCurrentVariable();
 
