@@ -594,8 +594,6 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
     double* eigenvalues =(double*)calloc(nrStations, sizeof(double));
     double* eigenvectors =(double*)calloc(nrStations*nrStations, sizeof(double));
     double* correlationArray =(double*)calloc(nrStations*nrStations, sizeof(double));
-    double* correlationRandomMean =(double*)calloc(nrStations, sizeof(double));
-    double* correlationRandomStandardDeviation =(double*)calloc(nrStations, sizeof(double));
     double* dummyArray =(double*)calloc(lengthSeries, sizeof(double));
     double** dummyMatrix = (double**)calloc(nrStations, sizeof(double*));
     double** dummyMatrix2 = (double**)calloc(nrStations, sizeof(double*));
@@ -684,12 +682,31 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
         matricial::choleskyDecompositionTriangularMatrix(dummyMatrix,nrStations,matrixKind);
         matricial::matrixProduct(dummyMatrix,normalizedMatrixRandom,nrStations,nrStations,lengthSeries,nrStations,dummyMatrix3);
         matricial::transposedMatrix(dummyMatrix3,nrStations,lengthSeries,correlationRandom);
+        /*
         for (int i=0;i<nrStations;i++)
         {
             for (int j=0;j<lengthSeries;j++) dummyArray[j]= correlationRandom[j][i];
             correlationRandomMean[i]= (double)(statistics::mean((float*)(dummyArray),lengthSeries));
             correlationRandomStandardDeviation[i] = (double)(statistics::standardDeviation((float*)(dummyArray),lengthSeries));
         }
+
+
+        for (int i=0;i<nrStations;i++)
+        {
+            for (int j=0;j<lengthSeries;j++)
+            {
+                normalizedMatrixRandom[i][j]= (correlationRandom[i][j]-correlationRandomMean[i])/correlationRandomStandardDeviation[i];
+            }
+        }*/
+        for (int i=0;i<nrStations;i++)
+        {
+            for (int j=0;j<lengthSeries;j++) dummyArray[j]= correlationRandom[j][i];
+            for (int j=0;j<lengthSeries;j++)
+            {
+                normalizedMatrixRandom[i][j]= (correlationRandom[i][j]-statistics::mean((float*)(dummyArray),lengthSeries))/statistics::standardDeviation((float*)(dummyArray),lengthSeries);
+            }
+        }
+
 
     } // end of the while cycle
 
@@ -707,8 +724,7 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
 
     }
     for (int i=0;i<lengthSeries;i++) free(correlationRandom[i]);
-    free(correlationRandomMean);
-    free(correlationRandomStandardDeviation);
+    free(dummyArray);
     free(dummyMatrix);
     free(dummyMatrix2);
     free(dummyMatrix3);
