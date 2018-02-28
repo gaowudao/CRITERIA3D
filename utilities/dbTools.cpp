@@ -2,6 +2,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
+#include <QtMath>
 
 #include "commonConstants.h"
 #include "dbTools.h"
