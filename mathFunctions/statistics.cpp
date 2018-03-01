@@ -237,6 +237,21 @@ namespace statistics
         return c;
     }
 
+    void correlationsMatrix(int nrRowCol, float**myLists,int nrLists, float** c)
+    {
+        // input: myLists matrix
+        // output: c matrix
+        for(int i = 0;i<nrRowCol;i++)
+        {
+            for(int j = 0;j<nrRowCol;j++)
+            {
+                c[i][j]= covariance(myLists[i],nrLists,myLists[j],nrLists);
+                if (c[i][j] != 0) c[i][j] /= sqrtf(variance(myLists[i],nrLists)*variance(myLists[j],nrLists));
+            }
+
+        }
+    }
+
     float ERF(float x, float accuracy) // error function
     {
         return (2*pow(PI,-0.5)*integration::qsimp(errorFunctionPrimitive,0.,x,accuracy));

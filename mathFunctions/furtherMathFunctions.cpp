@@ -536,7 +536,6 @@ namespace matricial
 
     void transposedMatrix(double **inputMatrix, int nrRows, int nrColumns, double **outputMatrix)
     {
-
         for (int i=0;i<nrRows;i++)
         {
             for (int j=0;j<nrColumns;j++)
@@ -545,7 +544,6 @@ namespace matricial
             }
         }
     }
-
 
 
 }

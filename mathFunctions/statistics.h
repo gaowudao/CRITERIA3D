@@ -14,6 +14,7 @@ namespace statistics
     float covariance(float *myList1, int nrList1,float *myList2, int nrList2);
     float coefficientPearson(float *myList1, int nrList1,float *myList2, int nrList2);
     float** covariancesMatrix(int nrRowCol, float**myLists,int nrLists);
+    void correlationsMatrix(int nrRowCol, float**myLists,int nrLists, float** c);
     float ERF(float x, float accuracy);
     float ERFC(float x, float accuracy);
     float inverseERFC(float value, float accuracy);

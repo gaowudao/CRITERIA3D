@@ -519,7 +519,7 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             normalizedTransitionProbability[i][1]= - SQRT_2*statistics::inverseERFC(2.*precOccurence[i][iMonth].p10,0.0001);
             for (int j=0;j<nrDaysIterativeProcessMonthly[iMonth];j++)
             {
-               normalizedRandomMatrix[i][j]= random::normalRandom(&gasDevIset,&gasDevGset);
+               normalizedRandomMatrix[i][j]= myrandom::normalRandom(&gasDevIset,&gasDevGset);
             }
 
 
@@ -531,7 +531,8 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
         double** occurrences;
         M = (double **)calloc(nrStations, sizeof(double*));
         K = (double **)calloc(nrStations, sizeof(double*));
-        occurrences = (double **)calloc(nrDaysIterativeProcessMonthly[iMonth], sizeof(double*));
+        //occurrences = (double **)calloc(nrDaysIterativeProcessMonthly[iMonth], sizeof(double*));
+        occurrences = (double **)calloc(nrStations, sizeof(double*));
 
         for (int i=0;i<nrStations;i++)
         {
@@ -545,10 +546,10 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             }
 
         }
-        for (int i=0;i<nrDaysIterativeProcessMonthly[iMonth];i++)
+        for (int i=0;i<nrStations;i++)
         {
-          occurrences[i] = (double *)calloc(nrStations, sizeof(double));
-          for (int j=0;j<nrStations;j++)
+          occurrences[i] = (double *)calloc(nrDaysIterativeProcessMonthly[iMonth], sizeof(double));
+          for (int j=0;j<nrDaysIterativeProcessMonthly[iMonth];j++)
           {
               occurrences[i][j]= NODATA;
           }
@@ -563,8 +564,10 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             free(normalizedRandomMatrix[i]);
             free(M[i]);
             free(K[i]);
+            occurrences[i];
+
         }
-        for (int i=0;i<nrDaysIterativeProcessMonthly[iMonth];i++) free(occurrences[i]);
+        //for (int i=0;i<nrDaysIterativeProcessMonthly[iMonth];i++) free(occurrences[i]);
         free(normalizedRandomMatrix);
         free(M);
         free(K);
@@ -681,7 +684,8 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
         matrixKind = LOWER;
         matricial::choleskyDecompositionTriangularMatrix(dummyMatrix,nrStations,matrixKind);
         matricial::matrixProduct(dummyMatrix,normalizedMatrixRandom,nrStations,nrStations,lengthSeries,nrStations,dummyMatrix3);
-        matricial::transposedMatrix(dummyMatrix3,nrStations,lengthSeries,correlationRandom);
+        //matricial::transposedMatrix(dummyMatrix3,nrStations,lengthSeries,correlationRandom);
+
         /*
         for (int i=0;i<nrStations;i++)
         {
@@ -698,19 +702,51 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
                 normalizedMatrixRandom[i][j]= (correlationRandom[i][j]-correlationRandomMean[i])/correlationRandomStandardDeviation[i];
             }
         }*/
+
+
         for (int i=0;i<nrStations;i++)
         {
-            for (int j=0;j<lengthSeries;j++) dummyArray[j]= correlationRandom[j][i];
+            for (int j=0;j<lengthSeries;j++) dummyArray[j]= dummyMatrix3[i][j];
             for (int j=0;j<lengthSeries;j++)
             {
-                normalizedMatrixRandom[i][j]= (correlationRandom[i][j]-statistics::mean((float*)(dummyArray),lengthSeries))/statistics::standardDeviation((float*)(dummyArray),lengthSeries);
+                normalizedMatrixRandom[i][j]= (dummyMatrix3[i][j]-statistics::mean((float*)(dummyArray),lengthSeries))/statistics::standardDeviation((float*)(dummyArray),lengthSeries);
             }
         }
+        // initialize occurrence to 0
+
+        for (int i=0;i<nrStations;i++)
+        {
+            for (int j=0;j<lengthSeries;j++)
+            {
+                occurrences[i][j]= 0.;
+            }
+        }
+
+        for (int i=0;i<nrStations;i++)
+        {
+            for (int j=1;j<lengthSeries;j++)
+            {
+                if(occurrences[i][j-1] == 0)
+                {
+                    if(normalizedMatrixRandom[i][j]> transitionNormal[i][0]) occurrences[i][j] = 1;
+                }
+                else
+                {
+                    if(normalizedMatrixRandom[i][j]> transitionNormal[i][1]) occurrences[i][j] = 1;
+                }
+            }
+        }
+
+        //matricial::transposedMatrix(occurrences,lengthSeries,nrStations,dummyMatrix3);
+        statistics::correlationsMatrix(nrStations,(float**)(occurrences),lengthSeries,(float**)(K));
+
+
+
 
 
     } // end of the while cycle
 
-
+    printf("%d\n",lengthSeries);
 
 
 
