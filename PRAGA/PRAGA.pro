@@ -14,19 +14,21 @@ INCLUDEPATH +=  ../crit3dDate ../mathFunctions ../utilities ../gis ../MapGraphic
                 ../meteo ../quality ../interpolation ../solarRadiation \
                 ../dbMeteoPoints ../netcdfHandler
 
-LIBS += -L../mathFunctions/debug -lmathFunctions
-LIBS += -L../crit3dDate/debug -lcrit3dDate
-LIBS += -L../utilities/debug -lutilities
 LIBS += -L../dbMeteoPoints/debug -ldbMeteoPoints
 LIBS += -L../meteo/debug -lmeteo
-LIBS += -L../gis/debug -lgis
-LIBS += -L../quality/debug -lquality
 LIBS += -L../interpolation/debug -linterpolation
 LIBS += -L../solarRadiation/debug -lsolarRadiation
 LIBS += -L../MapGraphics/debug -lMapGraphics
 LIBS += -L../netcdfHandler/debug -lnetcdfHandler
+LIBS += -L../mathFunctions/debug -lmathFunctions
+LIBS += -L../crit3dDate/debug -lcrit3dDate
+LIBS += -L../utilities/debug -lutilities
+LIBS += -L../gis/debug -lgis
+LIBS += -L../quality/debug -lquality
 
-LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf -lhdf5
+
+#LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf -lhdf5
+LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf
 
 
 
