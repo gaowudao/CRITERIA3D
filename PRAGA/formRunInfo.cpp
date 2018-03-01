@@ -1,19 +1,19 @@
-#include "formInfo.h"
+#include "formRunInfo.h"
 #include "ui_formInfo.h"
 
-formInfo::formInfo(QWidget *parent) :
+formRunInfo::formRunInfo(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::formInfo)
 {
     ui->setupUi(this);
 }
 
-formInfo::~formInfo()
+formRunInfo::~formRunInfo()
 {
     delete ui;
 }
 
-int formInfo::start(QString info, int nrValues)
+int formRunInfo::start(QString info, int nrValues)
 {
     this->ui->label->setText(info);
 
@@ -33,14 +33,14 @@ int formInfo::start(QString info, int nrValues)
 }
 
 
-void formInfo::setValue(int myValue)
+void formRunInfo::setValue(int myValue)
 {
     this->ui->progressBar->setValue(myValue);
     qApp->processEvents();
 }
 
 
-void formInfo::setText(QString myText)
+void formRunInfo::setText(QString myText)
 {
     this->ui->label->setText(myText);
     qApp->processEvents();

@@ -7,13 +7,13 @@ namespace Ui {
 class formInfo;
 }
 
-class formInfo : public QDialog
+class formRunInfo : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit formInfo(QWidget *parent = 0);
-    ~formInfo();
+    explicit formRunInfo(QWidget *parent = 0);
+    ~formRunInfo();
 
     int start(QString info, int nrValues);
     void setValue(int myValue);

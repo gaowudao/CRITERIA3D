@@ -29,6 +29,7 @@ LIBS += -L../netcdfHandler/debug -lnetcdfHandler
 LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf -lhdf5
 
 
+
 SOURCES += main.cpp\
     mainwindow.cpp \
     rasterObject.cpp \
@@ -36,9 +37,8 @@ SOURCES += main.cpp\
     project.cpp \
     stationMarker.cpp \
     rubberBand.cpp \
-    formInfo.cpp \
     dialogWindows.cpp \
-    formInfo.cpp
+    formRunInfo.cpp
 
 HEADERS  += mainwindow.h \
     rasterObject.h \
@@ -47,8 +47,8 @@ HEADERS  += mainwindow.h \
     guiConfiguration.h \
     stationMarker.h \
     rubberBand.h \
-    formInfo.h \
-    dialogWindows.h
+    dialogWindows.h \
+    formRunInfo.h
 
 FORMS    += mainwindow.ui \
     formInfo.ui

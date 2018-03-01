@@ -5,7 +5,7 @@
 #include <QMessageBox>
 
 #include "project.h"
-#include "formInfo.h"
+#include "formRunInfo.h"
 
 Project myProject;
 

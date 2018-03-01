@@ -18,7 +18,7 @@
 #include "guts/CompositeTileSourceConfigurationWidget.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "formInfo.h"
+#include "formRunInfo.h"
 #include "Position.h"
 #include "dbMeteoPoints.h"
 #include "dbArkimet.h"
@@ -277,7 +277,7 @@ void MainWindow::on_actionNewMeteoPointsArkimet_triggered()
                 myDbArkimet->setDatasetsActive(datasetSelected);
                 QStringList datasets = datasetSelected.remove("'").split(",");
 
-                formInfo myInfo;
+                formRunInfo myInfo;
                 myInfo.start("download points properties...", 0);
                     if (myDownload->getPointProperties(datasets))
                     {
@@ -574,7 +574,7 @@ void MainWindow::on_actionVariableQualitySpatial_triggered()
 
 void MainWindow::on_actionInterpolation_triggered()
 {
-    formInfo myInfo;
+    formRunInfo myInfo;
     myInfo.start("Interpolation...", 0);
 
         std::string myError;

@@ -3,7 +3,7 @@
 #include <QMessageBox>
 
 #include "project.h"
-#include "formInfo.h"
+#include "formRunInfo.h"
 #include "utilities.h"
 #include "commonConstants.h"
 #include "quality.h"
@@ -131,7 +131,7 @@ bool Project::downloadDailyDataArkimet(QStringList variables, bool prec0024, QDa
         }
     }
 
-    formInfo myInfo;
+    formRunInfo myInfo;
     QString infoStr;
 
     int nrDays = startDate.daysTo(endDate) + 1;
@@ -225,7 +225,7 @@ bool Project::downloadHourlyDataArkimet(QStringList variables, QDate startDate, 
 
     Download* myDownload = new Download(dbMeteoPoints->getDbName());
 
-    formInfo myInfo;
+    formRunInfo myInfo;
     QString infoStr;
 
     int nrDays = startDate.daysTo(endDate) + 1;
@@ -329,7 +329,7 @@ bool Project::loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo
     if (firstDate == QDate(1800,1,1) || lastDate == QDate(1800,1,1)) return false;
 
     bool isData = false;
-    formInfo myInfo;
+    formRunInfo myInfo;
     int step;
 
     QString infoStr = "Load data: " + firstDate.toString();
