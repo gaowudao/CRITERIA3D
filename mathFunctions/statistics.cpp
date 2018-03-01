@@ -254,12 +254,12 @@ namespace statistics
 
     float ERF(float x, float accuracy) // error function
     {
-        return (2*pow(PI,-0.5)*integration::qsimp(errorFunctionPrimitive,0.,x,accuracy));
+        return (float)(2*pow(PI,-0.5)*integration::qsimp(errorFunctionPrimitive,0.,x,accuracy));
     }
 
-    float ERFC(float x,float accuracy) // error function
+    float ERFC(float x, float accuracy) // error function
     {
-        return (1. - ERF(x,accuracy));
+        return (float)(1. - ERF(x,accuracy));
     }
     float inverseERF(float value, float accuracy)
     {

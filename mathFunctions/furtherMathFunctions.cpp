@@ -41,8 +41,8 @@ float blackBodyShape(TfunctionInput fInput)
 float errorFunctionPrimitive(float x)
 {
     float y;
-    y = exp(-pow(x,2.0));
-    return y;
+    y = (float)(exp(-pow(x,2.0)));
+    return (y);
 }
 
 /*float straightLine(TfunctionInput fInput)
@@ -558,7 +558,7 @@ namespace distribution
 }
 
 namespace myrandom {
-
+/*
     #define IA 16807
     #define IM 2147483647
     #define AM (1.0/IM)
@@ -569,11 +569,11 @@ namespace myrandom {
     #define EPS 1.2e-7
     #define RNMX (1.0-EPS)
     float ran1(long *idum)
-        /*“Minimal” random number generator of Park and Miller with Bays-Durham shuffle and added
-        safeguards. Returns a uniform random deviate between 0.0 and 1.0 (exclusive of the endpoint
-        values). Call with idum a negative integer to initialize; thereafter, do not alter idum between
-        successive deviates in a sequence. RNMX should approximate the largest floating value that is
-        less than 1.*/
+        //“Minimal” random number generator of Park and Miller with Bays-Durham shuffle and added
+        //safeguards. Returns a uniform random deviate between 0.0 and 1.0 (exclusive of the endpoint
+        //values). Call with idum a negative integer to initialize; thereafter, do not alter idum between
+        //successive deviates in a sequence. RNMX should approximate the largest floating value that is
+        //less than 1.
     {
         int j;
         long k;
@@ -629,7 +629,7 @@ namespace myrandom {
             iset=0;
             return gset;
         }
-    }
+    }*/
 
     //----------------------------------------------------------------------
     // Generate a standard normally-distributed random variable

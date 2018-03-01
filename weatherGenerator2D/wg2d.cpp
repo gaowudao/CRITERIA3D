@@ -679,29 +679,14 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
         for (int i=0;i<nrStations;i++)
             for (int j=0;j<nrStations;j++) dummyMatrix[i][j] = M[i][j];
 
-        enum triangularMatrixType {UPPER,LOWER};
-        triangularMatrixType matrixKind;
-        matrixKind = LOWER;
-        matricial::choleskyDecompositionTriangularMatrix(dummyMatrix,nrStations,matrixKind);
+        //enum triangularMatrixType {UPPER,LOWER};
+        //triangularMatrixType matrixKind;
+        //matrixKind = LOWER;
+        bool isLowerMatrix = true;
+        matricial::choleskyDecompositionTriangularMatrix(dummyMatrix,nrStations,isLowerMatrix);
         matricial::matrixProduct(dummyMatrix,normalizedMatrixRandom,nrStations,nrStations,lengthSeries,nrStations,dummyMatrix3);
         //matricial::transposedMatrix(dummyMatrix3,nrStations,lengthSeries,correlationRandom);
 
-        /*
-        for (int i=0;i<nrStations;i++)
-        {
-            for (int j=0;j<lengthSeries;j++) dummyArray[j]= correlationRandom[j][i];
-            correlationRandomMean[i]= (double)(statistics::mean((float*)(dummyArray),lengthSeries));
-            correlationRandomStandardDeviation[i] = (double)(statistics::standardDeviation((float*)(dummyArray),lengthSeries));
-        }
-
-
-        for (int i=0;i<nrStations;i++)
-        {
-            for (int j=0;j<lengthSeries;j++)
-            {
-                normalizedMatrixRandom[i][j]= (correlationRandom[i][j]-correlationRandomMean[i])/correlationRandomStandardDeviation[i];
-            }
-        }*/
 
 
         for (int i=0;i<nrStations;i++)
