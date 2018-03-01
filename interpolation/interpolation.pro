@@ -7,7 +7,7 @@
 
 QT   -= gui
 
-TARGET = Interpolation
+TARGET = interpolation
 TEMPLATE = lib
 CONFIG += staticlib
 

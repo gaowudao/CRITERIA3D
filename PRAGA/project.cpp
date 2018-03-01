@@ -452,7 +452,9 @@ bool Project::interpolateRasterRadiation(const Crit3DTime& myTime, gis::Crit3DRa
 
     radiation::setRadiationSettings(&(radSettings));
 
-    int intervalWidth = radiation::estimateTransmissivityWindow(DTM, *radiationMaps, &(DTM.mapCenter()), myTime, int(HOUR_SECONDS));
+    gis::Crit3DPoint mapCenter = DTM.mapCenter();
+
+    int intervalWidth = radiation::estimateTransmissivityWindow(DTM, *radiationMaps, &mapCenter, myTime, int(HOUR_SECONDS));
 
     // almost a meteoPoint with transmissivity data
     if (! computeTransmissivity(this->meteoPoints, this->nrMeteoPoints, intervalWidth, myTime, this->DTM))

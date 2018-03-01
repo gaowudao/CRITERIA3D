@@ -1,5 +1,5 @@
 #include "formInfo.h"
-#include "ui_forminfo.h"
+#include "ui_formInfo.h"
 
 formInfo::formInfo(QWidget *parent) :
     QDialog(parent),
