@@ -243,10 +243,12 @@ namespace statistics
         // output: c matrix
         for(int i = 0;i<nrRowCol;i++)
         {
-            for(int j = 0;j<nrRowCol;j++)
+            c[i][i]=1.;
+            for(int j = i+1;j<nrRowCol;j++)
             {
                 c[i][j]= covariance(myLists[i],nrLists,myLists[j],nrLists);
                 if (c[i][j] != 0) c[i][j] /= sqrtf(variance(myLists[i],nrLists)*variance(myLists[j],nrLists));
+                c[j][i] = c[i][j];
             }
 
         }

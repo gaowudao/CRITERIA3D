@@ -493,25 +493,53 @@ namespace matricial
         }
         matricial::choleskyDecompositionSinglePointer(aLinear,n,diagonalElementsCholesky);
         counter = 0;
-        for (int i=0;i<n;i++)
+        if (isLowerMatrix)
         {
-            for (int j=0;j<n;j++)
+            for (int i=0;i<n;i++)
             {
+                for (int j=0;j<n;j++)
+                {
 
-                if (isLowerMatrix) a[j][i]= aLinear[counter]; // for lower output matrix
-                else    a[i][j]= aLinear[counter]; // for upper output matrix
-                counter++;
+                    //if (isLowerMatrix)
+                        a[j][i]= aLinear[counter]; // for lower output matrix
+                    //else    a[i][j]= aLinear[counter]; // for upper output matrix
+                    counter++;
+                }
+                a[i][i]= diagonalElementsCholesky[i];
             }
-            a[i][i]= diagonalElementsCholesky[i];
+
+            for (int i=0;i<n;i++)
+            {
+                //if (isLowerMatrix)
+                    for (int j=i+1;j<n;j++) a[i][j]=0.;
+                //else
+                    //for (int j=0;j<i;j++) a[i][j]=0.;
+            }
+        }
+        else
+        {
+            for (int i=0;i<n;i++)
+            {
+                for (int j=0;j<n;j++)
+                {
+
+                    //if (isLowerMatrix) a[j][i]= aLinear[counter]; // for lower output matrix
+                    //else
+                    a[i][j]= aLinear[counter]; // for upper output matrix
+                    counter++;
+                }
+                a[i][i]= diagonalElementsCholesky[i];
+            }
+
+            for (int i=0;i<n;i++)
+            {
+                //if (isLowerMatrix)
+                    //for (int j=i+1;j<n;j++) a[i][j]=0.;
+                //else
+                    for (int j=0;j<i;j++) a[i][j]=0.;
+            }
         }
 
-        for (int i=0;i<n;i++)
-        {
-            if (isLowerMatrix)
-                for (int j=i+1;j<n;j++) a[i][j]=0.;
-            else
-                for (int j=0;j<i;j++) a[i][j]=0.;
-        }
 
         free(diagonalElementsCholesky);
         free(aLinear);
