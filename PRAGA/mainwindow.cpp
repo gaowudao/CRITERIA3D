@@ -662,12 +662,17 @@ void MainWindow::updateVariable()
 
 void MainWindow::updateDateTime()
 {
+    /* LC non è meglio mettere a display la data corrente invece di 1800? Così:
+    this->ui->dateEdit->setDate(QDate::currentDate());
+    this->ui->timeEdit->setTime(QTime::currentTime());
+    */
     int myHour = myProject.getCurrentHour();
-    this->ui->dateTimeEdit->setDate(myProject.getCurrentDate());
-    this->ui->dateTimeEdit->setTime(QTime(myHour,0,0));
+    this->ui->dateEdit->setDate(myProject.getCurrentDate());
+    this->ui->timeEdit->setTime(QTime(myHour,0,0));
+
 }
 
-
+/*
 void MainWindow::on_dateTimeEdit_dateTimeChanged(const QDateTime &dateTime)
 {
     //date
@@ -685,7 +690,32 @@ void MainWindow::on_dateTimeEdit_dateTimeChanged(const QDateTime &dateTime)
 
     redrawMeteoPoints(true);
 }
+*/
+void MainWindow::on_dateChanged(const QDate &date)
+{
+    //date
+    if (date != myProject.getCurrentDate())
+    {
+        qDebug("date changed");
+        myProject.setCurrentDate(date);
+        myProject.loadMeteoPointsData(date, date, true);
+    }
+    redrawMeteoPoints(true);
 
+}
+
+void MainWindow::on_timeChanged(const QTime &time)
+{
+
+    //hour
+    if (time.hour() != myProject.getCurrentHour())
+    {
+        qDebug("time changed");
+        myProject.setCurrentHour(time.hour());
+    }
+
+    redrawMeteoPoints(true);
+}
 
 
 void MainWindow::redrawMeteoPoints(bool updateColorSCale)
