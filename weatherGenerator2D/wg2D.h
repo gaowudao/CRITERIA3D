@@ -37,8 +37,8 @@ public:
 */
 
 struct TprecOccurrence{
-    double p00;
-    double p10;
+    float p00;
+    float p10;
     int month;
 };
 
@@ -83,7 +83,7 @@ private:
     void precipitationP00P10();
     void precipitationCorrelationMatrices();
     void precipitationMultisiteOccurrenceGeneration();
-    void weatherGenerator2D::spatialIterationOccurrence(double ** M, float **K, float** occurrences, double** matrixOccurrence, double** normalizedMatrixRandom, double ** transitionNormal, int lengthSeries);
+    void spatialIterationOccurrence(double ** M, float **K, float** occurrences, double** matrixOccurrence, double** normalizedMatrixRandom, float **transitionNormal, int lengthSeries);
     void temperatureCompute();
 
 

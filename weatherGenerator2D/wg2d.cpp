@@ -329,8 +329,8 @@ void weatherGenerator2D::precipitationP00P10()
         }
         for (int month=0;month<12;month++)
         {
-            precOccurence[idStation][month].p00 =(1.0*occurrence00[month])/daysWithoutRain[month];
-            precOccurence[idStation][month].p10 =(1.0*occurrence10[month])/daysWithRain[month];
+            precOccurence[idStation][month].p00 =(float)((1.0*occurrence00[month])/daysWithoutRain[month]);
+            precOccurence[idStation][month].p10 =(float)((1.0*occurrence10[month])/daysWithRain[month]);
             precOccurence[idStation][month].month = month +1;
         }
     }
@@ -472,13 +472,13 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
     }
     double** matrixOccurrence;
     matrixOccurrence = (double **)calloc(nrStations, sizeof(double*));
-    double** normalizedTransitionProbability;
-    normalizedTransitionProbability = (double **)calloc(nrStations, sizeof(double*));
+    float** normalizedTransitionProbability;
+    normalizedTransitionProbability = (float **)calloc(nrStations, sizeof(float*));
 
     for (int i=0;i<nrStations;i++)
     {
         matrixOccurrence[i] = (double *)calloc(nrStations, sizeof(double));
-        normalizedTransitionProbability[i]= (double *)calloc(2, sizeof(double));
+        normalizedTransitionProbability[i]= (float *)calloc(2, sizeof(float));
         for (int j=0;j<nrStations;j++)
         {
            matrixOccurrence[i][j]= NODATA;
@@ -515,8 +515,8 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
 
             /* since random numbers generated have a normal distribution, each p00 and
                p10 have to be recalculated according to a normal number*/
-            normalizedTransitionProbability[i][0]= - SQRT_2*statistics::inverseERFC(2.*precOccurence[i][iMonth].p00,0.0001);
-            normalizedTransitionProbability[i][1]= - SQRT_2*statistics::inverseERFC(2.*precOccurence[i][iMonth].p10,0.0001);
+            normalizedTransitionProbability[i][0]= - (float)(SQRT_2*(float)(statistics::inverseERFC(2*precOccurence[i][iMonth].p00,0.0001)));
+            normalizedTransitionProbability[i][1]= - (float)(SQRT_2*(float)(statistics::inverseERFC(2*precOccurence[i][iMonth].p10,0.0001)));
             for (int j=0;j<nrDaysIterativeProcessMonthly[iMonth];j++)
             {
                normalizedRandomMatrix[i][j]= myrandom::normalRandom(&gasDevIset,&gasDevGset);
@@ -588,7 +588,7 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
 
 }
 
-void weatherGenerator2D::spatialIterationOccurrence(double ** M, float** K,float** occurrences, double** matrixOccurrence, double** normalizedMatrixRandom,double ** transitionNormal,int lengthSeries)
+void weatherGenerator2D::spatialIterationOccurrence(double ** M, float** K,float** occurrences, double** matrixOccurrence, double** normalizedMatrixRandom,float ** transitionNormal,int lengthSeries)
 {
     // M and K matrices are used as ancillary dummy matrices
     double val=5;
