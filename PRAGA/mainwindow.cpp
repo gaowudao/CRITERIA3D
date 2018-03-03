@@ -670,29 +670,15 @@ void MainWindow::updateDateTime()
     this->ui->dateEdit->setDate(myProject.getCurrentDate());
     this->ui->timeEdit->setTime(QTime(myHour,0,0));
 
+    connect(this->ui->dateEdit, SIGNAL(editingFinished()), this, SLOT(on_dateChanged()));
+    connect(this->ui->timeEdit, SIGNAL(editingFinished()), this, SLOT(on_timeChanged()));
+
 }
 
-/*
-void MainWindow::on_dateTimeEdit_dateTimeChanged(const QDateTime &dateTime)
+void MainWindow::on_dateChanged()
 {
-    //date
-    if (dateTime.date() != myProject.getCurrentDate())
-    {
-        myProject.setCurrentDate(dateTime.date());
-        myProject.loadMeteoPointsData(dateTime.date(), dateTime.date(), true);
-    }
-
-    //hour
-    if (dateTime.time().hour() != myProject.getCurrentHour())
-    {
-        myProject.setCurrentHour(dateTime.time().hour());
-    }
-
-    redrawMeteoPoints(true);
-}
-*/
-void MainWindow::on_dateChanged(const QDate &date)
-{
+    qDebug("on_dateChanged");
+    QDate date = this->ui->dateEdit->date();
     //date
     if (date != myProject.getCurrentDate())
     {
@@ -704,9 +690,11 @@ void MainWindow::on_dateChanged(const QDate &date)
 
 }
 
-void MainWindow::on_timeChanged(const QTime &time)
+void MainWindow::on_timeChanged()
 {
 
+    qDebug("on_timeChanged");
+    QTime time = this->ui->timeEdit->time();
     //hour
     if (time.hour() != myProject.getCurrentHour())
     {

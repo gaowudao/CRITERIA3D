@@ -1647,9 +1647,9 @@
      </property>
      <property name="dateTime">
       <datetime>
-       <hour>23</hour>
-       <minute>59</minute>
-       <second>59</second>
+       <hour>0</hour>
+       <minute>0</minute>
+       <second>0</second>
        <year>2090</year>
        <month>1</month>
        <day>1</day>
@@ -2426,4 +2426,7 @@
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections/>
+ <slots>
+  <slot>on_timeChanged(QTime)</slot>
+ </slots>
 </ui>
