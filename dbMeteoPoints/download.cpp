@@ -197,13 +197,6 @@ bool Download::downloadDailyData(QDate startDate, QDate endDate, QString dataset
     // attenzione: il reference time dei giornalieri è a fine giornata (ore 00 di day+1)
     refTime = QString("reftime:>%1,<=%2").arg(startDate.toString("yyyy-MM-dd")).arg(endDate.addDays(1).toString("yyyy-MM-dd"));
 
-    area = QString(";area: VM2,%1").arg(stations[0]);
-
-    for (int i = 1; i < stations.size(); i++)
-    {
-        area = area % QString(" or VM2,%1").arg(stations[i]);
-    }
-
     product = QString(";product: VM2,%1").arg(variables[0]);
 
     for (int i = 1; i < variables.size(); i++)
@@ -213,85 +206,110 @@ bool Download::downloadDailyData(QDate startDate, QDate endDate, QString dataset
 
     QEventLoop loop;
 
-    QNetworkAccessManager* manager = new QNetworkAccessManager(this);
-    connect(manager, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
-
-    QUrl url = QUrl(QString("%1/query?query=%2%3%4&style=postprocess")
-               .arg(_dbMeteo->getDatasetURL(dataset)).arg(refTime).arg(area).arg(product));
-
+    int maxStationSize = 400;
+    int j = 0;
+    QUrl url;
     QNetworkRequest request;
-    request.setUrl(url);
-    request.setRawHeader("Authorization", _authorization);
-
-    // GET
-    QNetworkReply* reply = manager->get(request);
-    loop.exec();
-
     bool downloadOk;
+    int countStation = 0;
 
-    if (reply->error() != QNetworkReply::NoError)
+    while (countStation < stations.size())
     {
-        qDebug( "Network Error" );
-        downloadOk = false;
-    }
-    else
-    {
-        _dbMeteo->createTmpTableDaily();
-        bool isFirstData = true;
-        QString dateStr, idPoint, flag;
-        int idArkimet, idVar;
-        double value;
-
-        for (QString line = QString(reply->readLine()); !(line.isNull() || line.isEmpty());  line = QString(reply->readLine()))
+        if (j == 0)
         {
-            fields = line.split(",");
-
-            // warning: ref date arkimet: hour 00 of day+1
-            dateStr = fields[0];
-            myDate = QDate::fromString(dateStr.left(8), "yyyyMMdd");
-            myDate = myDate.addDays(-1);
-            dateStr = myDate.toString("yyyy-MM-dd");
-
-            idPoint = fields[1];
-            flag = fields[6];
-
-            if (idPoint != "" && flag.left(1) != "1" && flag.left(3) != "054")
-            {
-                idArkimet = fields[2].toInt();
-
-                if (idArkimet == PREC_ID)
-                    if ((prec0024 && fields[0].mid(8,2) == "08") || (!prec0024 && fields[0].mid(8,2) == "00"))
-                        continue;
-
-                value = fields[3].toDouble();
-
-                // conversion from average daily radiation to integral radiation
-                if (idArkimet == RAD_ID)
-                {
-                    value *= DAY_SECONDS / 1000000.0;
-                }
-
-                // variable
-                int i = 0;
-                while (i < variableList.size()
-                       && variableList[i].arkId() != idArkimet) i++;
-
-                if (i < variableList.size())
-                {
-                    idVar = variableList[i].id();
-                    _dbMeteo->appendQueryDaily(dateStr, idPoint, QString::number(idVar), QString::number(value), isFirstData);
-                    isFirstData = false;
-                }
-
-            }
+            area = QString(";area: VM2,%1").arg(stations[countStation]);
+            j = j+1;
+            countStation = countStation+1;
+        }
+        while (countStation < stations.size() && j < maxStationSize)
+        {
+            area = area % QString(" or VM2,%1").arg(stations[countStation]);
+            countStation = countStation+1;
+            j = j+1;
         }
 
-        downloadOk = _dbMeteo->saveDailyData(startDate, endDate);
-    }
+        QNetworkAccessManager* manager = new QNetworkAccessManager(this);
+        connect(manager, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
 
-    delete reply;
-    delete manager;
+        url = QUrl(QString("%1/query?query=%2%3%4&style=postprocess")
+                   .arg(_dbMeteo->getDatasetURL(dataset)).arg(refTime).arg(area).arg(product));
 
+        request.setUrl(url);
+        request.setRawHeader("Authorization", _authorization);
+
+        std::cout << url.toString().toStdString();
+
+        // GET
+        QNetworkReply* reply = manager->get(request);
+        downloadOk = true;
+        loop.exec();
+
+        if (reply->error() != QNetworkReply::NoError)
+        {
+            qDebug( "Network Error" );
+            downloadOk = false;
+        }
+        else
+        {
+            _dbMeteo->createTmpTableDaily();
+            bool isFirstData = true;
+            QString dateStr, idPoint, flag;
+            int idArkimet, idVar;
+            double value;
+
+            for (QString line = QString(reply->readLine()); !(line.isNull() || line.isEmpty());  line = QString(reply->readLine()))
+            {
+                fields = line.split(",");
+
+                // warning: ref date arkimet: hour 00 of day+1
+                dateStr = fields[0];
+                myDate = QDate::fromString(dateStr.left(8), "yyyyMMdd");
+                myDate = myDate.addDays(-1);
+                dateStr = myDate.toString("yyyy-MM-dd");
+
+                idPoint = fields[1];
+                flag = fields[6];
+
+                if (idPoint != "" && flag.left(1) != "1" && flag.left(3) != "054")
+                {
+                    idArkimet = fields[2].toInt();
+
+                    if (idArkimet == PREC_ID)
+                        if ((prec0024 && fields[0].mid(8,2) == "08") || (!prec0024 && fields[0].mid(8,2) == "00"))
+                            continue;
+
+                    value = fields[3].toDouble();
+
+                    // conversion from average daily radiation to integral radiation
+                    if (idArkimet == RAD_ID)
+                    {
+                        value *= DAY_SECONDS / 1000000.0;
+                    }
+
+                    // variable
+                    int i = 0;
+                    while (i < variableList.size()
+                           && variableList[i].arkId() != idArkimet) i++;
+
+                    if (i < variableList.size())
+                    {
+                        idVar = variableList[i].id();
+                        _dbMeteo->appendQueryDaily(dateStr, idPoint, QString::number(idVar), QString::number(value), isFirstData);
+                        isFirstData = false;
+                    }
+
+                }
+            }
+
+            downloadOk = _dbMeteo->saveDailyData(startDate, endDate);
+
+            delete reply;
+            delete manager;
+        }
+
+        j = 0; //reset block stations counter
+
+    } // end while
     return downloadOk;
 }
 
@@ -349,7 +367,7 @@ bool Download::downloadHourlyData(QDate startDate, QDate endDate, QString datase
         url = QUrl(QString("%1/query?query=%2%3%4&style=postprocess").arg(_dbMeteo->getDatasetURL(dataset)).arg(refTime).arg(area).arg(product));
         request.setUrl(url);
         request.setRawHeader("Authorization", _authorization);
-        //std::cout << url.toString().toStdString();
+        std::cout << url.toString().toStdString();
 
         QNetworkReply* reply = manager->get(request);  // GET
         loop.exec();
