@@ -228,9 +228,11 @@ namespace statistics
         }
         for(int i = 0;i<nrRowCol;i++)
         {
-            for(int j = 0;j<nrRowCol;j++)
+            c[i][i]= variance(myLists[i],nrLists);
+            for(int j = i+1;j<nrRowCol;j++)
             {
                 c[i][j]= covariance(myLists[i],nrLists,myLists[j],nrLists);
+                c[j][i]=c[i][j];
             }
 
         }
