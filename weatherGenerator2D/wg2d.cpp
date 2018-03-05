@@ -329,8 +329,8 @@ void weatherGenerator2D::precipitationP00P10()
         }
         for (int month=0;month<12;month++)
         {
-            precOccurence[idStation][month].p00 =(1.0*occurrence00[month])/daysWithoutRain[month];
-            precOccurence[idStation][month].p10 =(1.0*occurrence10[month])/daysWithRain[month];
+            precOccurence[idStation][month].p00 =(float)((1.0*occurrence00[month])/daysWithoutRain[month]);
+            precOccurence[idStation][month].p10 =(float)((1.0*occurrence10[month])/daysWithRain[month]);
             precOccurence[idStation][month].month = month +1;
         }
     }
@@ -472,13 +472,13 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
     }
     double** matrixOccurrence;
     matrixOccurrence = (double **)calloc(nrStations, sizeof(double*));
-    double** normalizedTransitionProbability;
-    normalizedTransitionProbability = (double **)calloc(nrStations, sizeof(double*));
+    float** normalizedTransitionProbability;
+    normalizedTransitionProbability = (float **)calloc(nrStations, sizeof(float*));
 
     for (int i=0;i<nrStations;i++)
     {
         matrixOccurrence[i] = (double *)calloc(nrStations, sizeof(double));
-        normalizedTransitionProbability[i]= (double *)calloc(2, sizeof(double));
+        normalizedTransitionProbability[i]= (float *)calloc(2, sizeof(float));
         for (int j=0;j<nrStations;j++)
         {
            matrixOccurrence[i][j]= NODATA;
@@ -515,8 +515,8 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
 
             /* since random numbers generated have a normal distribution, each p00 and
                p10 have to be recalculated according to a normal number*/
-            normalizedTransitionProbability[i][0]= - SQRT_2*statistics::inverseERFC(2.*precOccurence[i][iMonth].p00,0.0001);
-            normalizedTransitionProbability[i][1]= - SQRT_2*statistics::inverseERFC(2.*precOccurence[i][iMonth].p10,0.0001);
+            normalizedTransitionProbability[i][0]= - (float)(SQRT_2*(float)(statistics::inverseERFC(2*precOccurence[i][iMonth].p00,0.0001)));
+            normalizedTransitionProbability[i][1]= - (float)(SQRT_2*(float)(statistics::inverseERFC(2*precOccurence[i][iMonth].p10,0.0001)));
             for (int j=0;j<nrDaysIterativeProcessMonthly[iMonth];j++)
             {
                normalizedRandomMatrix[i][j]= myrandom::normalRandom(&gasDevIset,&gasDevGset);
@@ -527,17 +527,17 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
 
         // initialization outputs of weatherGenerator2D::spatialIterationOccurrence
         double** M;
-        double** K;
-        double** occurrences;
+        float** K;
+        float** occurrences;
         M = (double **)calloc(nrStations, sizeof(double*));
-        K = (double **)calloc(nrStations, sizeof(double*));
+        K = (float **)calloc(nrStations, sizeof(float*));
         //occurrences = (double **)calloc(nrDaysIterativeProcessMonthly[iMonth], sizeof(double*));
-        occurrences = (double **)calloc(nrStations, sizeof(double*));
+        occurrences = (float **)calloc(nrStations, sizeof(float*));
 
         for (int i=0;i<nrStations;i++)
         {
             M[i] = (double *)calloc(nrStations, sizeof(double));
-            K[i] = (double *)calloc(nrStations, sizeof(double));
+            K[i] = (float *)calloc(nrStations, sizeof(float));
             for (int j=0;j<nrStations;j++)
             {
                 M[i][j]= NODATA;
@@ -548,7 +548,7 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
         }
         for (int i=0;i<nrStations;i++)
         {
-          occurrences[i] = (double *)calloc(nrDaysIterativeProcessMonthly[iMonth], sizeof(double));
+          occurrences[i] = (float *)calloc(nrDaysIterativeProcessMonthly[iMonth], sizeof(float));
           for (int j=0;j<nrDaysIterativeProcessMonthly[iMonth];j++)
           {
               occurrences[i][j]= NODATA;
@@ -588,7 +588,7 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
 
 }
 
-void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,double** occurrences, double** matrixOccurrence, double** normalizedMatrixRandom,double ** transitionNormal,int lengthSeries)
+void weatherGenerator2D::spatialIterationOccurrence(double ** M, float** K,float** occurrences, double** matrixOccurrence, double** normalizedMatrixRandom,float ** transitionNormal,int lengthSeries)
 {
     // M and K matrices are used as ancillary dummy matrices
     double val=5;
@@ -597,32 +597,27 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
     double* eigenvalues =(double*)calloc(nrStations, sizeof(double));
     double* eigenvectors =(double*)calloc(nrStations*nrStations, sizeof(double));
     double* correlationArray =(double*)calloc(nrStations*nrStations, sizeof(double));
-    double* dummyArray =(double*)calloc(lengthSeries, sizeof(double));
+    float* dummyArray =(float*)calloc(lengthSeries, sizeof(float));
     double** dummyMatrix = (double**)calloc(nrStations, sizeof(double*));
     double** dummyMatrix2 = (double**)calloc(nrStations, sizeof(double*));
     double** dummyMatrix3 = (double**)calloc(nrStations, sizeof(double*));
-    double** correlationRandom = (double**)calloc(lengthSeries, sizeof(double*));
+    //double** correlationRandom = (double**)calloc(lengthSeries, sizeof(double*));
 
     // initialization internal arrays
     for (int i=0;i<nrStations;i++)
     {
         dummyMatrix[i]= (double*)calloc(nrStations, sizeof(double));
         dummyMatrix2[i]= (double*)calloc(nrStations, sizeof(double));
-        for (int j=0;j<nrStations;j++)
-        {
-            dummyMatrix[i][j] = 0;
-            dummyMatrix2[i][j] = 0;
-        }
 
     }
     for (int i=0;i<nrStations;i++)
     {
         dummyMatrix3[i]= (double*)calloc(lengthSeries, sizeof(double));
     }
-    for (int i=0;i<lengthSeries;i++)
+    /*for (int i=0;i<lengthSeries;i++)
     {
         correlationRandom[i]= (double*)calloc(nrStations, sizeof(double));
-    }
+    }*/
 
 
 
@@ -665,51 +660,30 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
             {
                 for (int j=0;j<nrStations;j++)
                 {
-                    dummyMatrix[j][i]= eigenvectors[counter]; //transposed eigenvectors matrix!!!!
-                    if (i != j) M[i][j]= 0.;
-                    else M[i][i]= eigenvalues[i];
+                    dummyMatrix[i][j]= eigenvectors[counter];
+                    dummyMatrix2[j][i] = dummyMatrix[i][j] * eigenvalues[j]; //product of diagonal matrix times transposed eigenvectors matrix!!!!
+                    //if (i != j) M[i][j]= 0.;
+                    //else M[i][i]= eigenvalues[i];
                     counter++;
                 }
             }
-            matricial::matrixProduct(M,dummyMatrix,nrStations,nrStations,nrStations,nrStations,dummyMatrix2);
-            matricial::transposedSquareMatrix(dummyMatrix,nrStations);
+            //matricial::matrixProduct(M,dummyMatrix,nrStations,nrStations,nrStations,nrStations,dummyMatrix2);
+            //matricial::transposedSquareMatrix(dummyMatrix,nrStations);
             matricial::matrixProduct(dummyMatrix,dummyMatrix2,nrStations,nrStations,nrStations,nrStations,M);
         }
         // the matrix called M is the final matrix exiting from the calculation
         for (int i=0;i<nrStations;i++)
             for (int j=0;j<nrStations;j++) dummyMatrix[i][j] = M[i][j];
 
-        enum triangularMatrixType {UPPER,LOWER};
-        triangularMatrixType matrixKind;
-        matrixKind = LOWER;
-        matricial::choleskyDecompositionTriangularMatrix(dummyMatrix,nrStations,matrixKind);
+        matricial::choleskyDecompositionTriangularMatrix(dummyMatrix,nrStations,true);
         matricial::matrixProduct(dummyMatrix,normalizedMatrixRandom,nrStations,nrStations,lengthSeries,nrStations,dummyMatrix3);
-        //matricial::transposedMatrix(dummyMatrix3,nrStations,lengthSeries,correlationRandom);
-
-        /*
-        for (int i=0;i<nrStations;i++)
-        {
-            for (int j=0;j<lengthSeries;j++) dummyArray[j]= correlationRandom[j][i];
-            correlationRandomMean[i]= (double)(statistics::mean((float*)(dummyArray),lengthSeries));
-            correlationRandomStandardDeviation[i] = (double)(statistics::standardDeviation((float*)(dummyArray),lengthSeries));
-        }
-
 
         for (int i=0;i<nrStations;i++)
         {
+            for (int j=0;j<lengthSeries;j++) dummyArray[j]= (float)(dummyMatrix3[i][j]);
             for (int j=0;j<lengthSeries;j++)
             {
-                normalizedMatrixRandom[i][j]= (correlationRandom[i][j]-correlationRandomMean[i])/correlationRandomStandardDeviation[i];
-            }
-        }*/
-
-
-        for (int i=0;i<nrStations;i++)
-        {
-            for (int j=0;j<lengthSeries;j++) dummyArray[j]= dummyMatrix3[i][j];
-            for (int j=0;j<lengthSeries;j++)
-            {
-                normalizedMatrixRandom[i][j]= (dummyMatrix3[i][j]-statistics::mean((float*)(dummyArray),lengthSeries))/statistics::standardDeviation((float*)(dummyArray),lengthSeries);
+                normalizedMatrixRandom[i][j]= (dummyMatrix3[i][j]-statistics::mean(dummyArray,lengthSeries))/statistics::standardDeviation(dummyArray,lengthSeries);
             }
         }
         // initialize occurrence to 0
@@ -736,9 +710,7 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
                 }
             }
         }
-
-        //matricial::transposedMatrix(occurrences,lengthSeries,nrStations,dummyMatrix3);
-        statistics::correlationsMatrix(nrStations,(float**)(occurrences),lengthSeries,(float**)(K));
+        statistics::correlationsMatrix(nrStations,occurrences,lengthSeries,K);
 
 
 
@@ -757,14 +729,13 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
         free(dummyMatrix[i]);
         free(dummyMatrix2[i]);
         free(dummyMatrix3[i]);
-
     }
-    for (int i=0;i<lengthSeries;i++) free(correlationRandom[i]);
+    //for (int i=0;i<lengthSeries;i++) free(correlationRandom[i]);
     free(dummyArray);
     free(dummyMatrix);
     free(dummyMatrix2);
     free(dummyMatrix3);
-    free(correlationRandom);
+    //free(correlationRandom);
     free(eigenvalues);
     free(eigenvectors);
     free(correlationArray);

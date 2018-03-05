@@ -59,7 +59,9 @@
 
         void on_actionVariableChoose_triggered();
 
-        void on_dateTimeEdit_dateTimeChanged(const QDateTime &dateTime);
+        void on_dateChanged();
+
+        void on_timeChanged();
 
         void on_actionVariableNone_triggered();
 

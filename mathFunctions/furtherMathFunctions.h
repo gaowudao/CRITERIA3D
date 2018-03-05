@@ -77,8 +77,8 @@ float errorFunctionPrimitive(float x);
 
     namespace myrandom
     {
-        float ran1(long *idum);
-        float gasdev(long *idum);
+        //float ran1(long *idum);
+        //float gasdev(long *idum);
         float normalRandom(int *gasDevIset,float *gasDevGset);
 
     }
