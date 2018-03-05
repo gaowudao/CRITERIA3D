@@ -80,6 +80,9 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
     this->updateVariable();
     this->updateDateTime();
 
+    connect(this->ui->dateEdit, SIGNAL(editingFinished()), this, SLOT(on_dateChanged()));
+    connect(this->ui->timeEdit, SIGNAL(editingFinished()), this, SLOT(on_timeChanged()));
+
     this->setMouseTracking(true);
 
     this->menu = menu;
@@ -662,16 +665,9 @@ void MainWindow::updateVariable()
 
 void MainWindow::updateDateTime()
 {
-    /* LC non è meglio mettere a display la data corrente invece di 1800? Così:
-    this->ui->dateEdit->setDate(QDate::currentDate());
-    this->ui->timeEdit->setTime(QTime::currentTime());
-    */
     int myHour = myProject.getCurrentHour();
     this->ui->dateEdit->setDate(myProject.getCurrentDate());
     this->ui->timeEdit->setTime(QTime(myHour,0,0));
-
-    connect(this->ui->dateEdit, SIGNAL(editingFinished()), this, SLOT(on_dateChanged()));
-    connect(this->ui->timeEdit, SIGNAL(editingFinished()), this, SLOT(on_timeChanged()));
 
 }
 
