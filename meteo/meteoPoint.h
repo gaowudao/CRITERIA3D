@@ -70,7 +70,7 @@
         TObsDataH *obsDataH;
         TObsDataD *obsDataD;
         quality::type myQuality;
-        float value;
+        float currentValue;
         float residual;
 
         Crit3DMeteoPoint();

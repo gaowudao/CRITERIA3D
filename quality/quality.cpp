@@ -109,7 +109,7 @@ bool Crit3DQuality::checkData(meteoVariable myVar, frequencyType myFrequency, Cr
 
     // assign data
     for (int i = 0; i < nrMeteoPoints; i++)
-        meteoPoints[i].value = meteoPoints[i].getMeteoPointValue(myTime, myVar, myFrequency);
+        meteoPoints[i].currentValue = meteoPoints[i].getMeteoPointValue(myTime, myVar, myFrequency);
 
     // quality control - synthctic
     syntacticQualityControl(myVar, meteoPoints, nrMeteoPoints);
@@ -137,14 +137,14 @@ void Crit3DQuality::syntacticQualityControl(meteoVariable myVar, Crit3DMeteoPoin
 
     for (int i = 0; i < nrMeteoPoints; i++)
     {
-        if (meteoPoints[i].value == NODATA)
+        if (meteoPoints[i].currentValue == NODATA)
             meteoPoints[i].myQuality = quality::missing_data;
         else
         {
             if (myRange == NULL)
                 meteoPoints[i].myQuality = quality::accepted;
 
-            else if (meteoPoints[i].value < qualityMin || meteoPoints[i].value > qualityMax)
+            else if (meteoPoints[i].currentValue < qualityMin || meteoPoints[i].currentValue > qualityMax)
                 meteoPoints[i].myQuality = quality::wrong_syntactic;
 
             else
@@ -191,7 +191,7 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
                          float(meteoPoints[i].point.utm.y),float(meteoPoints[i].point.z),
                          10, &stdDev, &stdDevZ, &minDist))
                 {
-                    myValue = meteoPoints[i].value;
+                    myValue = meteoPoints[i].currentValue;
                     myResidual = meteoPoints[i].residual;
                     stdDev = maxValue(stdDev, myValue/100.f);
                     if (fabs(myResidual) > findThreshold(myVar, myValue, stdDev, 2, stdDevZ, minDist))
@@ -217,7 +217,7 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
                                             float(meteoPoints[listIndex[i]].point.z),
                                             NODATA, NODATA, NODATA, NODATA);
 
-                    myValue = meteoPoints[listIndex[i]].value;
+                    myValue = meteoPoints[listIndex[i]].currentValue;
 
                     listResiduals.push_back(interpolatedValue - myValue);
                 }
@@ -233,7 +233,7 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
                     {
                         myResidual = listResiduals[i];
 
-                        myValue = meteoPoints[listIndex[i]].value;
+                        myValue = meteoPoints[listIndex[i]].currentValue;
 
                         if (fabs(myResidual) > findThreshold(myVar, myValue, stdDev, 3, stdDevZ, minDist))
                             meteoPoints[listIndex[i]].myQuality = quality::wrong_spatial;
@@ -287,7 +287,7 @@ bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nr
 
         if (meteoPoints[i].myQuality == quality::accepted)
         {
-            myValue = meteoPoints[i].value;
+            myValue = meteoPoints[i].currentValue;
             setindexPointJacknife(i);
             interpolatedValue = interpolate(myVar, float(meteoPoints[i].point.utm.x),
                                             float(meteoPoints[i].point.utm.y),
@@ -384,7 +384,7 @@ bool passDataToInterpolation(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints)
     {
         if (meteoPoints[i].myQuality == quality::accepted)
         {
-            myValue = meteoPoints[i].value;
+            myValue = meteoPoints[i].currentValue;
             myX = float(meteoPoints[i].point.utm.x);
             myY = float(meteoPoints[i].point.utm.y);
             myZ = float(meteoPoints[i].point.z);

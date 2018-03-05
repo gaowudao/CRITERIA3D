@@ -29,7 +29,7 @@ void StationMarker::setToolTip(int i)
     QString toolTipText = QString("<b> %1 </b> <br/> ID: %2 <br/> dataset: %3 <br/> altitude: %4 m <br/> municipality: %5")
                             .arg(name).arg(idpoint).arg(dataset).arg(altitude).arg(municipality);
 
-    float myValue = myProject.meteoPoints[i].value;
+    float myValue = myProject.meteoPoints[i].currentValue;
     if (myValue != NODATA)
     {
         QString value = QString::number(myValue);

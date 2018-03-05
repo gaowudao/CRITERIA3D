@@ -366,7 +366,7 @@ void Project::getMeteoPointsRange(float *minimum, float *maximum)
     float v;
     for (int i = 0; i < nrMeteoPoints; i++)
     {
-        v = meteoPoints[i].value;
+        v = meteoPoints[i].currentValue;
 
         if (v != NODATA && meteoPoints[i].myQuality == quality::accepted)
         {

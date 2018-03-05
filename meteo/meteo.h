@@ -51,7 +51,7 @@
                         airHumidity, dailyAirHumidityMin, dailyAirHumidityMax, dailyAirHumidityAvg, airDewTemperature,
                         globalIrradiance, directIrradiance, diffuseIrradiance, reflectedIrradiance,
                         dailyGlobalRadiation, dailyDirectRadiation, dailyDiffuseRadiation, dailyReflectedRadiation,
-                        windIntensity, dailyWindIntensityAvg, windDirection, windDirectionPrevailing,
+                        windIntensity, dailyWindIntensityAvg, windDirection, dailyWindDirectionPrevailing,
                         wetnessDuration, atmPressure, atmTransmissivity,
                         potentialEvapotranspiration, dailyPotentialEvapotranspiration, actualEvaporation,
                         dailyWaterTableDepth, noMeteoTerrain, noMeteoVar};

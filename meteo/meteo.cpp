@@ -345,6 +345,7 @@ meteoVariable getDefaultMeteoVariable(int id)
     else if (id == 157) return(dailyAirHumidityAvg);
     else if (id == 158) return(dailyGlobalRadiation);
     else if (id == 159) return(dailyWindIntensityAvg);
+    else if (id == 160) return(dailyWindDirectionPrevailing);
 
     else
         return(noMeteoVar);

@@ -723,7 +723,7 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
     {
         for (int i = 0; i < myProject.nrMeteoPoints; i++)
         {
-                myProject.meteoPoints[i].value = NODATA;
+                myProject.meteoPoints[i].currentValue = NODATA;
                 pointList[i]->setFillColor(QColor(Qt::white));
                 pointList[i]->setRadius(5);
                 pointList[i]->setToolTip(i);
@@ -753,12 +753,12 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
     Crit3DColor *myColor;
     for (int i = 0; i < myProject.nrMeteoPoints; i++)
     {
-        if (myProject.meteoPoints[i].value != NODATA)
+        if (myProject.meteoPoints[i].currentValue != NODATA)
         {
             if (myProject.meteoPoints[i].myQuality == quality::accepted)
             {
                 pointList[i]->setRadius(5);
-                myColor = myProject.colorScalePoints->getColor(myProject.meteoPoints[i].value);
+                myColor = myProject.colorScalePoints->getColor(myProject.meteoPoints[i].currentValue);
                 pointList[i]->setFillColor(QColor(myColor->red, myColor->green, myColor->blue));
             }
             else

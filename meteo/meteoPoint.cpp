@@ -33,32 +33,33 @@
 
 Crit3DMeteoPoint::Crit3DMeteoPoint()
 {
-    this->name = "";
-    this->id = "";
-    this->isUTC = true;
-
     this->dataset = "";
     this->municipality = "";
     this->state = "";
     this->region = "";
     this->province = "";
 
-    this->nrObsDataDaysH = 0;
-    this->nrObsDataDaysD = 0;
-    this->hourlyFraction = 1;
-
-    this->myQuality = quality::missing_data;
-    this->value = NODATA;
-    this->residual = NODATA;
+    // Tpoint
+    this->name = "";
+    this->id = "";
+    this->isUTC = true;
 
     this->latitude = NODATA;
     this->longitude = NODATA;
     this->latInt = NODATA;
     this->lonInt = NODATA;
 
+    this->nrObsDataDaysH = 0;
+    this->nrObsDataDaysD = 0;
+    this->hourlyFraction = 1;
+
     this->obsDataH = NULL;
     this->obsDataD = NULL;
 
+    this->currentValue = NODATA;
+    this->residual = NODATA;
+
+    this->myQuality = quality::missing_data;
 }
 
 
@@ -396,7 +397,7 @@ bool Crit3DMeteoPoint::setMeteoPointValueD(const Crit3DDate& myDate, meteoVariab
          obsDataD[i].et0 = myValue;
     else if (myVar == dailyWindIntensityAvg)
         obsDataD[i].windIntAvg = myValue;
-    else if (myVar == windDirectionPrevailing)
+    else if (myVar == dailyWindDirectionPrevailing)
         obsDataD[i].windDirPrev = myValue;
     else if (myVar == dailyWaterTableDepth)
         obsDataD[i].waterTable = myValue;
@@ -479,7 +480,7 @@ float Crit3DMeteoPoint::getMeteoPointValueD(const Crit3DDate& myDate, meteoVaria
         return (obsDataD[i].et0);
     else if (myVar == dailyWindIntensityAvg)
         return (obsDataD[i].windIntAvg);
-    else if (myVar == windDirectionPrevailing)
+    else if (myVar == dailyWindDirectionPrevailing)
         return (obsDataD[i].windDirPrev);
     else if (myVar == dailyWaterTableDepth)
         return (obsDataD[i].waterTable);
