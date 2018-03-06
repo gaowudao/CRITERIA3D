@@ -275,7 +275,7 @@ namespace statistics
         float rootLeft,rootRight;
         float root;
         float absoluteValue;
-        absoluteValue = fabs(value);
+        absoluteValue = fabsf(value);
 
 
         if (value == 0)
@@ -343,7 +343,7 @@ namespace statistics
         float rootLeft,rootRight;
         float root;
         float absoluteValue;
-        absoluteValue = fabs(value);
+        absoluteValue = fabsf(value);
 
         if (value == 1)
         {
