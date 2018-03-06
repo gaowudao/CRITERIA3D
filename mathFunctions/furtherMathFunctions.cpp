@@ -40,14 +40,7 @@ float blackBodyShape(TfunctionInput fInput)
 }
 float errorFunctionPrimitive(float x)
 {
-    float y;
-<<<<<<< HEAD
-    y = exp(-pow(x,2.));
-    return y;
-=======
-    y = (float)(exp(-pow(x,2.0)));
-    return (y);
->>>>>>> e28cbf85abf1ef9b6673b460120ab24c8371ae09
+    return expf(-powf(x,2.));
 }
 
 /*float straightLine(TfunctionInput fInput)
