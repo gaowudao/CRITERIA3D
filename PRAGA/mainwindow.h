@@ -85,8 +85,6 @@
 
         void on_rasterRestoreButton_clicked();
 
-        void on_dateEdit_2_dateTimeChanged(const QDateTime &dateTime);
-
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
