@@ -19,7 +19,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-    meteoGrid.cpp
+    meteoGrid.cpp \
 
 HEADERS += \
     meteoGrid.h
