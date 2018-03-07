@@ -12,7 +12,11 @@
 
 struct TXMLConnection
 {
-
+    QString provider;
+    QString server;
+    QString name;
+    QString user;
+    QString password;
 };
 
 
@@ -37,10 +41,38 @@ class DbMeteoGrid
     public:
 
         DbMeteoGrid();
+
+        QString FileName() const;
+
+        TXMLConnection connection() const;
+
+        MeteoGrid gridStructure() const;
+
+        TXMLCellsProperties cellsProperties() const;
+
+        TXMLTableDaily tableDaily() const;
+
+        TXMLTableHourly tableHourly() const;
+
+        bool existHourlyData() const;
+
+        QString tableDailyPrefix() const;
+
+        QString tableDailyPostfix() const;
+
+        QString tableHourlyPrefix() const;
+
+        QString tableHourlyPostfix() const;
+
+        QString tableDailyModel() const;
+
+        QString tableHourlyModel() const;
+
         bool parseXMLFile(QString xmlFileName, QDomDocument* xmlDoc);
+
         bool parseXMLGrid(QString xmlFileName);
 
-    private:
+private:
 
         QString _fileName;
         TXMLConnection _connection;

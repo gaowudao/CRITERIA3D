@@ -209,5 +209,85 @@ bool DbMeteoGrid::parseXMLGrid(QString xmlFileName)
     return true;
 }
 
+QString DbMeteoGrid::fileName() const
+{
+    return _fileName;
+}
+
+TXMLTableDaily DbMeteoGrid::tableDaily() const
+{
+    return _tableDaily;
+}
+
+QString DbMeteoGrid::fileName() const
+{
+    return _fileName;
+}
+
+TXMLConnection DbMeteoGrid::connection() const
+{
+    return _connection;
+}
+
+MeteoGrid DbMeteoGrid::gridStructure() const
+{
+    return _gridStructure;
+}
+
+TXMLCellsProperties DbMeteoGrid::cellsProperties() const
+{
+    return _cellsProperties;
+}
+
+TXMLTableDaily DbMeteoGrid::tableDaily() const
+{
+    return _tableDaily;
+}
+
+TXMLTableHourly DbMeteoGrid::tableHourly() const
+{
+    return _tableHourly;
+}
+
+bool DbMeteoGrid::existHourlyData() const
+{
+    return _existHourlyData;
+}
+
+QString DbMeteoGrid::tableDailyPrefix() const
+{
+    return _tableDailyPrefix;
+}
+
+QString DbMeteoGrid::tableDailyPostfix() const
+{
+    return _tableDailyPostfix;
+}
+
+QString DbMeteoGrid::tableHourlyPrefix() const
+{
+    return _tableHourlyPrefix;
+}
+
+QString DbMeteoGrid::tableHourlyPostfix() const
+{
+    return _tableHourlyPostfix;
+}
+
+QString DbMeteoGrid::tableDailyModel() const
+{
+    return _tableDailyModel;
+}
+
+QString DbMeteoGrid::tableHourlyModel() const
+{
+    return _tableHourlyModel;
+}
+
+void DbMeteoGrid::setFileName(const QString &fileName)
+{
+    _fileName = fileName;
+}
+
 
 
