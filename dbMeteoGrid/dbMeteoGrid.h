@@ -22,7 +22,13 @@ struct TXMLConnection
 struct TXMLfield
 {
     QString name;
-    QString praganame;
+    QString pragaName;
+};
+
+struct TXMLvar
+{
+    int varCode;
+    QString varPragaName;
 };
 
 struct TXMLCellsProperties
@@ -31,16 +37,16 @@ struct TXMLCellsProperties
     std::vector<TXMLfield> cellPropertiesField;
 };
 
-struct TXMLTableDaily
+struct TXMLTable
 {
-
+     QString indexTableName;
+     QString fieldTime;
+     QString fieldVarCode;
+     QString fieldValue;
+     QString postFix;
+     std::vector<TXMLvar> varcode;
 };
 
-
-struct TXMLTableHourly
-{
-
-};
 
 class DbMeteoGrid
 {
@@ -57,9 +63,9 @@ class DbMeteoGrid
 
         TXMLCellsProperties cellsProperties() const;
 
-        TXMLTableDaily tableDaily() const;
+        TXMLTable tableDaily() const;
 
-        TXMLTableHourly tableHourly() const;
+        TXMLTable tableHourly() const;
 
         bool existHourlyData() const;
 
@@ -86,8 +92,8 @@ private:
         MeteoGrid _gridStructure;
         TXMLCellsProperties _cellsProperties;
 
-        TXMLTableDaily _tableDaily;
-        TXMLTableHourly _tableHourly;
+        TXMLTable _tableDaily;
+        TXMLTable _tableHourly;
 
         bool _existHourlyData;
 
