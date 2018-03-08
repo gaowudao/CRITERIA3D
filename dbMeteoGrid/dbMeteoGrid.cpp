@@ -214,16 +214,6 @@ QString DbMeteoGrid::fileName() const
     return _fileName;
 }
 
-TXMLTableDaily DbMeteoGrid::tableDaily() const
-{
-    return _tableDaily;
-}
-
-QString DbMeteoGrid::fileName() const
-{
-    return _fileName;
-}
-
 TXMLConnection DbMeteoGrid::connection() const
 {
     return _connection;
@@ -284,10 +274,6 @@ QString DbMeteoGrid::tableHourlyModel() const
     return _tableHourlyModel;
 }
 
-void DbMeteoGrid::setFileName(const QString &fileName)
-{
-    _fileName = fileName;
-}
 
 
 

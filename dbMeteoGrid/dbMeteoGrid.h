@@ -19,16 +19,23 @@ struct TXMLConnection
     QString password;
 };
 
+struct TXMLfield
+{
+    QString name;
+    QString praganame;
+};
 
 struct TXMLCellsProperties
 {
-
+    QString table;
+    std::vector<TXMLfield> cellPropertiesField;
 };
 
 struct TXMLTableDaily
 {
 
 };
+
 
 struct TXMLTableHourly
 {
@@ -42,7 +49,7 @@ class DbMeteoGrid
 
         DbMeteoGrid();
 
-        QString FileName() const;
+        QString fileName() const;
 
         TXMLConnection connection() const;
 
