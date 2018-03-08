@@ -109,8 +109,39 @@ bool DbMeteoGrid::parseXMLGrid(QString xmlFileName)
         }
         else if (ancestor.toElement().tagName().toUpper() == "GRIDSTRUCTURE")
         {
-            //ancestor attributi
-            // TODO
+            if (ancestor.toElement().attribute("isregular").toUpper() == "TRUE")
+            {
+                _gridStructure.isRegular = true;
+            }
+            else if (ancestor.toElement().attribute("isregular").toUpper() == "FALSE")
+            {
+                _gridStructure.isRegular = false;
+            }
+            if (ancestor.toElement().attribute("isutm").toUpper() == "TRUE")
+            {
+                _gridStructure.isUTM = true;
+            }
+            else if (ancestor.toElement().attribute("isutm").toUpper() == "FALSE")
+            {
+                _gridStructure.isUTM = false;
+            }
+            if (ancestor.toElement().attribute("istin").toUpper() == "TRUE")
+            {
+                _gridStructure.isTIN = true;
+            }
+            else if (ancestor.toElement().attribute("istin").toUpper() == "FALSE")
+            {
+                _gridStructure.isTIN = false;
+            }
+            if (ancestor.toElement().attribute("isFixedFields").toUpper() == "TRUE")
+            {
+                _gridStructure.isFixedFields = true;
+            }
+            else if (ancestor.toElement().attribute("isFixedFields").toUpper() == "FALSE")
+            {
+                _gridStructure.isFixedFields = false;
+            }
+
             child = ancestor.firstChild();
             while( !child.isNull())
             {
@@ -138,13 +169,15 @@ bool DbMeteoGrid::parseXMLGrid(QString xmlFileName)
                 if (myTag == "XWIDTH")
                 {
                     // ??? la cell size perchè non ha due dimensioni?
-                    _gridStructure.gridStructure.header->cellSize= child.toElement().text().toFloat();
+                    //_gridStructure.gridStructure.header->cellSize=
+                    _gridStructure.xWidth = child.toElement().text().toFloat();
                     nrTokens++;
                 }
                 if (myTag == "YWIDTH")
                 {
                     // ??? la cell size perchè non ha due dimensioni?
-                    _gridStructure.gridStructure.header->cellSize= child.toElement().text().toFloat();
+                    //_gridStructure.gridStructure.header->cellSize
+                    _gridStructure.yWidth = child.toElement().text().toFloat();
                     nrTokens++;
                 }
                 child = child.nextSibling();

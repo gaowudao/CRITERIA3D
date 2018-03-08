@@ -24,6 +24,21 @@ class MeteoGrid
         gis::Crit3DRasterGrid gridStructure;
         Crit3DMeteoPoint* meteoPoints;
 
+        /* questi sarebbero in TGridStructure ma in gis::Crit3DRasterGrid non ci sono questi campi
+         * */
+        float xWidth;
+        float yWidth;
+        bool isRegular;
+        bool isTIN;
+        bool isUTM;
+        /**/
+        bool isFixedFields;
+        /*
+         * hourlyData As TFrequencyDBStructure
+        dailyData As TFrequencyDBStructure
+        monthlyData As TFrequencyDBStructure
+        servono ancora??
+         * */
         bool isAggregationDefined;
         bool isDateTypeSpecified;
         QDate firstDate;
