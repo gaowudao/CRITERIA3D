@@ -1,4 +1,5 @@
 #include "dbMeteoGrid.h"
+#include "utilities.h"
 
 
 Crit3DMeteoGridDbHandler::Crit3DMeteoGridDbHandler()
