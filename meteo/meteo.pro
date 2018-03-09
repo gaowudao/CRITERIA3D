@@ -14,10 +14,12 @@ CONFIG += staticlib
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis
 
 SOURCES += meteo.cpp \
-    meteoPoint.cpp
+    meteoPoint.cpp \
+    meteoGrid.cpp
 
 HEADERS += meteo.h \
-    meteoPoint.h
+    meteoPoint.h \
+    meteoGrid.h
 
 unix {
     target.path = /usr/lib

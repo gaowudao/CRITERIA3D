@@ -13,7 +13,7 @@
 #include <QStringBuilder>
 
 
-DbMeteoPoints::DbMeteoPoints(QString dbName)
+Crit3DMeteoPointsDbHandler::Crit3DMeteoPointsDbHandler(QString dbName)
 {
     _db = QSqlDatabase::addDatabase("QSQLITE");
     _db.setDatabaseName(dbName);
@@ -28,13 +28,13 @@ DbMeteoPoints::DbMeteoPoints(QString dbName)
     }
 }
 
-DbMeteoPoints::~DbMeteoPoints()
+Crit3DMeteoPointsDbHandler::~Crit3DMeteoPointsDbHandler()
 {
     closeDatabase();
 }
 
 
-void DbMeteoPoints::closeDatabase()
+void Crit3DMeteoPointsDbHandler::closeDatabase()
 {
     if ((_db.isValid()) && (_db.isOpen()))
     {
@@ -44,13 +44,13 @@ void DbMeteoPoints::closeDatabase()
 }
 
 
-QString DbMeteoPoints::getDbName()
+QString Crit3DMeteoPointsDbHandler::getDbName()
 {
     return _db.databaseName();
 }
 
 
-QString DbMeteoPoints::getDatasetURL(QString dataset)
+QString Crit3DMeteoPointsDbHandler::getDatasetURL(QString dataset)
 {
     QSqlQuery qry(_db);
     QString url = NULL;
@@ -75,7 +75,7 @@ QString DbMeteoPoints::getDatasetURL(QString dataset)
 }
 
 
-QStringList DbMeteoPoints::getDatasetsActive()
+QStringList Crit3DMeteoPointsDbHandler::getDatasetsActive()
 {
     QStringList activeList;
     QSqlQuery qry(_db);
@@ -101,7 +101,7 @@ QStringList DbMeteoPoints::getDatasetsActive()
 
 }
 
-void DbMeteoPoints::setDatasetsActive(QString active)
+void Crit3DMeteoPointsDbHandler::setDatasetsActive(QString active)
 {
     QString statement = QString("UPDATE datasets SET active = 0");
     _db.exec(statement);
@@ -111,7 +111,7 @@ void DbMeteoPoints::setDatasetsActive(QString active)
 }
 
 
-QStringList DbMeteoPoints::getDatasetsList()
+QStringList Crit3DMeteoPointsDbHandler::getDatasetsList()
 {
     QStringList datasetList;
     QSqlQuery qry(_db);
@@ -135,7 +135,7 @@ QStringList DbMeteoPoints::getDatasetsList()
 }
 
 
-QDateTime DbMeteoPoints::getLastDay(frequencyType frequency)
+QDateTime Crit3DMeteoPointsDbHandler::getLastDay(frequencyType frequency)
 {
     QSqlQuery qry(_db);
     QStringList tables;
@@ -195,7 +195,7 @@ QDateTime DbMeteoPoints::getLastDay(frequencyType frequency)
 }
 
 
-QDateTime DbMeteoPoints::getFirstDay(frequencyType frequency)
+QDateTime Crit3DMeteoPointsDbHandler::getFirstDay(frequencyType frequency)
 {
 
     QSqlQuery qry(_db);
@@ -251,7 +251,7 @@ QDateTime DbMeteoPoints::getFirstDay(frequencyType frequency)
 
 
 
-bool DbMeteoPoints::getDailyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3DMeteoPoint *meteoPoint)
+bool Crit3DMeteoPointsDbHandler::getDailyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3DMeteoPoint *meteoPoint)
 {
     QString dateStr;
     meteoVariable variable;
@@ -297,7 +297,7 @@ bool DbMeteoPoints::getDailyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3
 }
 
 
-bool DbMeteoPoints::getHourlyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3DMeteoPoint *meteoPoint)
+bool Crit3DMeteoPointsDbHandler::getHourlyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3DMeteoPoint *meteoPoint)
 {
     QString dateStr;
     meteoVariable variable;
@@ -343,7 +343,7 @@ bool DbMeteoPoints::getHourlyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit
 }
 
 
-QList<Crit3DMeteoPoint> DbMeteoPoints::getPropertiesFromDb()
+QList<Crit3DMeteoPoint> Crit3DMeteoPointsDbHandler::getPropertiesFromDb()
 {
     QList<Crit3DMeteoPoint> meteoPointsList;
     Crit3DMeteoPoint meteoPoint;
@@ -383,7 +383,7 @@ QList<Crit3DMeteoPoint> DbMeteoPoints::getPropertiesFromDb()
 }
 
 
-bool DbMeteoPoints::fillPointProperties(Crit3DMeteoPoint *myPoint)
+bool Crit3DMeteoPointsDbHandler::fillPointProperties(Crit3DMeteoPoint *myPoint)
 {
 
     QSqlQuery qry(_db);

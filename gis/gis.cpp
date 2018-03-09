@@ -103,7 +103,7 @@ namespace gis
         this->longitude = lon;
     }
 
-    bool Crit3DUtmPoint::isInsideGrid(const Crit3DGridHeader& myGridHeader) const
+    bool Crit3DUtmPoint::isInsideGrid(const Crit3DRasterHeader& myGridHeader) const
     {
         return (x >= myGridHeader.llCorner->x
                 && x <= myGridHeader.llCorner->x + (myGridHeader.nrCols * myGridHeader.cellSize)
@@ -111,7 +111,7 @@ namespace gis
                 && y <= myGridHeader.llCorner->y + (myGridHeader.nrRows * myGridHeader.cellSize));
     }
 
-    bool Crit3DGeoPoint::isInsideGrid(const Crit3DLatLonHeader& latLonHeader) const
+    bool Crit3DGeoPoint::isInsideGrid(const Crit3DGridHeader& latLonHeader) const
     {
         return (longitude >= latLonHeader.llCorner->longitude
                 && longitude <= latLonHeader.llCorner->longitude + (latLonHeader.nrCols * latLonHeader.dx)
@@ -133,7 +133,7 @@ namespace gis
         z = myZ;
     }
 
-    Crit3DGridHeader::Crit3DGridHeader()
+    Crit3DRasterHeader::Crit3DRasterHeader()
     {
         nrRows = 0;
         nrCols = 0;
@@ -142,7 +142,7 @@ namespace gis
         llCorner = new Crit3DUtmPoint();
     }
 
-    void Crit3DGridHeader::convertFromLatLon(const Crit3DLatLonHeader& latLonHeader)
+    void Crit3DRasterHeader::convertFromLatLon(const Crit3DGridHeader& latLonHeader)
     {
         nrRows = latLonHeader.nrRows;
         nrCols = latLonHeader.nrCols;
@@ -152,7 +152,7 @@ namespace gis
         cellSize = (latLonHeader.dx + latLonHeader.dy) * 0.5;
     }
 
-    Crit3DLatLonHeader::Crit3DLatLonHeader()
+    Crit3DGridHeader::Crit3DGridHeader()
     {
         nrRows = 0;
         nrCols = 0;
@@ -162,7 +162,7 @@ namespace gis
         llCorner = new Crit3DGeoPoint();
     }
 
-    bool operator == (const Crit3DGridHeader& myHeader1, const Crit3DGridHeader& myHeader2)
+    bool operator == (const Crit3DRasterHeader& myHeader1, const Crit3DRasterHeader& myHeader2)
     {
         return ((myHeader1.cellSize == myHeader2.cellSize) &&
                 (myHeader1.flag == myHeader2.flag) &&
@@ -176,7 +176,7 @@ namespace gis
     {
         isLoaded = false;
         timeString = "";
-        header = new Crit3DGridHeader();
+        header = new Crit3DRasterHeader();
         colorScale = new Crit3DColorScale();
         minimum = NODATA;
         maximum = NODATA;
@@ -225,7 +225,7 @@ namespace gis
     }
 
 
-    bool Crit3DRasterGrid::initializeGrid(const Crit3DGridHeader& initHeader)
+    bool Crit3DRasterGrid::initializeGrid(const Crit3DRasterHeader& initHeader)
     {
         this->freeGrid();
 
@@ -474,19 +474,19 @@ namespace gis
         *col = (int)floor((myX - myGrid.header->llCorner->x) / myGrid.header->cellSize);
     }
 
-    void getRowColFromXY(const Crit3DGridHeader& myHeader, const Crit3DUtmPoint& p, int *row, int *col)
+    void getRowColFromXY(const Crit3DRasterHeader& myHeader, const Crit3DUtmPoint& p, int *row, int *col)
     {
         *row = (myHeader.nrRows - 1) - (int)floor((p.y - myHeader.llCorner->y) / myHeader.cellSize);
         *col = (int)floor((p.x - myHeader.llCorner->x) / myHeader.cellSize);
     }
 
-    void getRowColFromXY(const Crit3DGridHeader& myHeader, const Crit3DUtmPoint& p, Crit3DRasterCell* v)
+    void getRowColFromXY(const Crit3DRasterHeader& myHeader, const Crit3DUtmPoint& p, Crit3DRasterCell* v)
     {
         v->row = (myHeader.nrRows - 1) - (int)floor((p.y - myHeader.llCorner->y) / myHeader.cellSize);
         v->col = (int)floor((p.x - myHeader.llCorner->x) / myHeader.cellSize);
     }
 
-    void getRowColFromLatLon(const Crit3DLatLonHeader& latLonHeader, const Crit3DGeoPoint& p, int* myRow, int* myCol)
+    void getRowColFromLatLon(const Crit3DGridHeader& latLonHeader, const Crit3DGeoPoint& p, int* myRow, int* myCol)
     {
         *myRow = (latLonHeader.nrRows - 1) - (int)floor((p.latitude - latLonHeader.llCorner->latitude) / latLonHeader.dy);
         *myCol = (int)floor((p.longitude - latLonHeader.llCorner->longitude) / latLonHeader.dx);
@@ -513,19 +513,19 @@ namespace gis
             *myY = myGrid.header->llCorner->y + myGrid.header->cellSize * (myGrid.header->nrRows - myRow - 0.5);
     }
 
-    void getUtmXYFromRowCol(const Crit3DGridHeader& myHeader, int myRow, int myCol, double* myX, double* myY)
+    void getUtmXYFromRowCol(const Crit3DRasterHeader& myHeader, int myRow, int myCol, double* myX, double* myY)
     {
             *myX = myHeader.llCorner->x + myHeader.cellSize * (myCol + 0.5);
             *myY = myHeader.llCorner->y + myHeader.cellSize * (myHeader.nrRows - myRow - 0.5);
     }
 
-    void getLatLonFromRowCol(const Crit3DLatLonHeader& latLonHeader, int myRow, int myCol, double* lat, double* lon)
+    void getLatLonFromRowCol(const Crit3DGridHeader& latLonHeader, int myRow, int myCol, double* lat, double* lon)
     {
             *lon = latLonHeader.llCorner->longitude + latLonHeader.dx * (myCol + 0.5);
             *lat = latLonHeader.llCorner->latitude + latLonHeader.dy * (latLonHeader.nrRows - myRow - 0.5);
     }
 
-    void getLatLonFromRowCol(const Crit3DLatLonHeader& latLonHeader, const Crit3DRasterCell& v, Crit3DGeoPoint* p)
+    void getLatLonFromRowCol(const Crit3DGridHeader& latLonHeader, const Crit3DRasterCell& v, Crit3DGeoPoint* p)
     {
             p->longitude = latLonHeader.llCorner->longitude + latLonHeader.dx * (v.col + 0.5);
             p->latitude = latLonHeader.llCorner->latitude + latLonHeader.dy * (latLonHeader.nrRows - v.row - 0.5);
@@ -548,7 +548,7 @@ namespace gis
             return this->value[myRow][myCol];
     }
 
-    bool isOutOfGridXY(double x, double y, Crit3DGridHeader* header)
+    bool isOutOfGridXY(double x, double y, Crit3DRasterHeader* header)
     {
         if ((x < header->llCorner->x) || (y < header->llCorner->y)
             || (x >= (header->llCorner->x + (header->nrCols * header->cellSize)))

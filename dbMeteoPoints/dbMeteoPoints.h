@@ -12,12 +12,12 @@
 #endif
 
 
-class DbMeteoPoints : public QObject
+class Crit3DMeteoPointsDbHandler : public QObject
 {
     Q_OBJECT
     public:
-        explicit DbMeteoPoints(QString dbName);
-        ~DbMeteoPoints();
+        explicit Crit3DMeteoPointsDbHandler(QString dbName);
+        ~Crit3DMeteoPointsDbHandler();
         void dbManager();
         QString getDatasetURL(QString dataset);
         QString getDbName();

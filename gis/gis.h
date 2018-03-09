@@ -37,8 +37,6 @@
         #include "color.h"
     #endif
 
-#include <cmath>
-
     enum operationType {operationMin, operationMax, operationSum, operationSubtract, operationProduct, operationDivide};
 
     namespace gis
@@ -51,8 +49,8 @@
             Crit3DPixel(int _x, int _y);
         };
 
+        class Crit3DRasterHeader;
         class Crit3DGridHeader;
-        class Crit3DLatLonHeader;
 
         class  Crit3DUtmPoint {
         public:
@@ -62,7 +60,7 @@
             Crit3DUtmPoint();
             Crit3DUtmPoint(double x, double y);
 
-            bool isInsideGrid(const Crit3DGridHeader& myGridHeader) const;
+            bool isInsideGrid(const Crit3DRasterHeader& myGridHeader) const;
         };
 
         class  Crit3DGeoPoint {
@@ -73,7 +71,7 @@
             Crit3DGeoPoint();
             Crit3DGeoPoint(double lat, double lon);
 
-            bool isInsideGrid(const Crit3DLatLonHeader& latLonHeader) const;
+            bool isInsideGrid(const Crit3DGridHeader& latLonHeader) const;
         };
 
 
@@ -104,7 +102,7 @@
             Crit3DRasterWindow(int row1, int col1, int row2, int col2);
         };
 
-        class Crit3DLatLonHeader
+        class Crit3DGridHeader
         {
         public:
             int nrRows;
@@ -113,10 +111,10 @@
             float flag;
             Crit3DGeoPoint* llCorner;
 
-            Crit3DLatLonHeader();
+            Crit3DGridHeader();
         };
 
-        class Crit3DGridHeader
+        class Crit3DRasterHeader
         {
         public:
             int nrRows;
@@ -125,18 +123,18 @@
             float flag;
             Crit3DUtmPoint* llCorner;
 
-            Crit3DGridHeader();
+            Crit3DRasterHeader();
 
-            void convertFromLatLon(const Crit3DLatLonHeader& latLonHeader);
+            void convertFromLatLon(const Crit3DGridHeader& latLonHeader);
 
-            friend bool operator == (const Crit3DGridHeader& myHeader1, const Crit3DGridHeader& myHeader2);
+            friend bool operator == (const Crit3DRasterHeader& myHeader1, const Crit3DRasterHeader& myHeader2);
         };
 
 
         class Crit3DRasterGrid
         {
         public:
-            Crit3DGridHeader* header;
+            Crit3DRasterHeader* header;
             Crit3DColorScale* colorScale;
             float** value;
             float minimum, maximum;
@@ -156,7 +154,7 @@
             bool initializeGrid();
             bool initializeGrid(float initValue);
             bool initializeGrid(const Crit3DRasterGrid& initGrid);
-            bool initializeGrid(const Crit3DGridHeader& initHeader);
+            bool initializeGrid(const Crit3DRasterHeader& initHeader);
             bool initializeGrid(const Crit3DRasterGrid& initGrid, float initValue);
 
             bool copyGrid(const Crit3DRasterGrid& initGrid);
@@ -194,21 +192,21 @@
         bool updateColorScale(Crit3DRasterGrid* myGrid, const Crit3DRasterWindow& myWindow);
 
         void getRowColFromXY(const Crit3DRasterGrid &myGrid, double myX, double myY, int* row, int* col);
-        void getRowColFromXY(const Crit3DGridHeader& myHeader, const Crit3DUtmPoint& p, int *row, int *col);
-        void getRowColFromXY(const Crit3DGridHeader& myHeader, const Crit3DUtmPoint& p, Crit3DRasterCell* v);
+        void getRowColFromXY(const Crit3DRasterHeader& myHeader, const Crit3DUtmPoint& p, int *row, int *col);
+        void getRowColFromXY(const Crit3DRasterHeader& myHeader, const Crit3DUtmPoint& p, Crit3DRasterCell* v);
 
-        void getRowColFromLatLon(const Crit3DLatLonHeader &latLonHeader, const Crit3DGeoPoint& p, int *myRow, int *myCol);
+        void getRowColFromLatLon(const Crit3DGridHeader &latLonHeader, const Crit3DGeoPoint& p, int *myRow, int *myCol);
         bool isOutOfGridRowCol(int myRow, int myCol, const Crit3DRasterGrid &myGrid);
 
         void getUtmXYFromRowColSinglePrecision(const Crit3DRasterGrid& myGrid, int myRow, int myCol,float* myX,float* myY);
         void getUtmXYFromRowCol(const Crit3DRasterGrid& myGrid, int myRow, int myCol ,double* myX, double* myY);
-        void getUtmXYFromRowCol(const Crit3DGridHeader& myHeader,int myRow, int myCol, double* myX, double* myY);
+        void getUtmXYFromRowCol(const Crit3DRasterHeader& myHeader,int myRow, int myCol, double* myX, double* myY);
 
-        void getLatLonFromRowCol(const Crit3DLatLonHeader &latLonHeader, int myRow, int myCol, double* lat, double* lon);
-        void getLatLonFromRowCol(const Crit3DLatLonHeader &latLonHeader, const Crit3DRasterCell& v, Crit3DGeoPoint* p);
+        void getLatLonFromRowCol(const Crit3DGridHeader &latLonHeader, int myRow, int myCol, double* lat, double* lon);
+        void getLatLonFromRowCol(const Crit3DGridHeader &latLonHeader, const Crit3DRasterCell& v, Crit3DGeoPoint* p);
         float getValueFromXY(const Crit3DRasterGrid& myGrid, double x, double y);
 
-        bool isOutOfGridXY(double x, double y, Crit3DGridHeader* header);
+        bool isOutOfGridXY(double x, double y, Crit3DRasterHeader* header);
 
         bool isMinimum(const Crit3DRasterGrid& myGrid, int row, int col);
         bool isMinimumOrNearMinimum(const Crit3DRasterGrid& myGrid, int row, int col);
@@ -241,9 +239,9 @@
                                gis::Crit3DRasterGrid* slopeMap, gis::Crit3DRasterGrid* aspectMap);
 
         bool getGeoExtentsFromUTMHeader(const Crit3DGisSettings& mySettings,
-                                        Crit3DGridHeader *utmHeader, Crit3DLatLonHeader *latLonHeader);
+                                        Crit3DRasterHeader *utmHeader, Crit3DGridHeader *latLonHeader);
 
-        bool getUtmWindow(const Crit3DLatLonHeader &latLonHeader, const Crit3DGridHeader &utmHeader,
+        bool getUtmWindow(const Crit3DGridHeader &latLonHeader, const Crit3DRasterHeader &utmHeader,
                           const Crit3DRasterWindow &latLonWindow, Crit3DRasterWindow *UtmWindow, int utmZone);
     }
 

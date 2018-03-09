@@ -24,7 +24,7 @@ Project::Project()
     previousDate = currentDate;
     currentHour = 12;
     colorScalePoints = new Crit3DColorScale();
-    dbMeteoPoints = NULL;
+    meteoPointsDbHandler = NULL;
 
     radiationMaps = new Crit3DRadiationMaps();
 }
@@ -104,7 +104,7 @@ bool Project::downloadDailyDataArkimet(QStringList variables, bool prec0024, QDa
             arkIdVar.append(arkIdWind);
     }
 
-    Download* myDownload = new Download(dbMeteoPoints->getDbName());
+    Download* myDownload = new Download(meteoPointsDbHandler->getDbName());
 
     int index, nrPoints = 0;
     for( int i=0; i < nrMeteoPoints; i++ )
@@ -223,7 +223,7 @@ bool Project::downloadHourlyDataArkimet(QStringList variables, QDate startDate, 
         }
     }
 
-    Download* myDownload = new Download(dbMeteoPoints->getDbName());
+    Download* myDownload = new Download(meteoPointsDbHandler->getDbName());
 
     formRunInfo myInfo;
     QString infoStr;
@@ -305,8 +305,8 @@ meteoVariable Project::getCurrentVariable()
 
 bool Project::loadlastMeteoData()
 {
-    QDate lastDateD = dbMeteoPoints->getLastDay(daily).date();
-    QDate lastDateH = dbMeteoPoints->getLastDay(hourly).date();
+    QDate lastDateD = meteoPointsDbHandler->getLastDay(daily).date();
+    QDate lastDateH = meteoPointsDbHandler->getLastDay(hourly).date();
 
     QDate lastDate = (lastDateD > lastDateH) ? lastDateD : lastDateH;
 
@@ -345,8 +345,8 @@ bool Project::loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo
         if (showInfo)
             if ((i % step) == 0) myInfo.setValue(i);
 
-        if (dbMeteoPoints->getDailyData(getCrit3DDate(firstDate), getCrit3DDate(lastDate), &(meteoPoints[i]))) isData = true;
-        if (dbMeteoPoints->getHourlyData(getCrit3DDate(firstDate), getCrit3DDate(lastDate), &(meteoPoints[i]))) isData = true;
+        if (meteoPointsDbHandler->getDailyData(getCrit3DDate(firstDate), getCrit3DDate(lastDate), &(meteoPoints[i]))) isData = true;
+        if (meteoPointsDbHandler->getHourlyData(getCrit3DDate(firstDate), getCrit3DDate(lastDate), &(meteoPoints[i]))) isData = true;
     }
 
     if (showInfo) myInfo.close();
@@ -384,9 +384,9 @@ void Project::getMeteoPointsRange(float *minimum, float *maximum)
 
 void Project::closeMeteoPointsDB()
 {
-    if (dbMeteoPoints != NULL)
+    if (meteoPointsDbHandler != NULL)
     {
-        dbMeteoPoints->closeDatabase();
+        meteoPointsDbHandler->closeDatabase();
         delete [] meteoPoints;
     }
 
@@ -401,8 +401,8 @@ bool Project::loadMeteoPointsDB(QString dbName)
 
     closeMeteoPointsDB();
 
-    dbMeteoPoints = new DbMeteoPoints(dbName);
-    QList<Crit3DMeteoPoint> listMeteoPoints = dbMeteoPoints->getPropertiesFromDb();
+    meteoPointsDbHandler = new Crit3DMeteoPointsDbHandler(dbName);
+    QList<Crit3DMeteoPoint> listMeteoPoints = meteoPointsDbHandler->getPropertiesFromDb();
 
     nrMeteoPoints = listMeteoPoints.size();
     meteoPoints = new Crit3DMeteoPoint[nrMeteoPoints];

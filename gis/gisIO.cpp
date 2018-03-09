@@ -61,11 +61,11 @@ namespace gis
     /*!
      * \brief Read a ESRI grid header file (.hdr)
      * \param myFileName    string
-     * \param myHeader      Crit3DGridHeader pointer
+     * \param myHeader      Crit3DRasterHeader pointer
      * \param myError       string pointer
      * \return true on success, false otherwise
      */
-    bool readEsriGridHeader(string myFileName, gis::Crit3DGridHeader *myHeader, string* myError)
+    bool readEsriGridHeader(string myFileName, gis::Crit3DRasterHeader *myHeader, string* myError)
     {
         string myLine, myKey, upKey, myValue;
         int nrKeys = 0;
@@ -160,11 +160,11 @@ namespace gis
     /*!
      * \brief Write a ESRI grid header file (.hdr)
      * \param myFileName string name file
-     * \param myHeader Crit3DGridHeader pointer
+     * \param myHeader Crit3DRasterHeader pointer
      * \param myError string pointer
      * \return true on success, false otherwise
      */
-    bool writeEsriGridHeader(string myFileName, gis::Crit3DGridHeader *myHeader, string* myError)
+    bool writeEsriGridHeader(string myFileName, gis::Crit3DRasterHeader *myHeader, string* myError)
     {
         myFileName += ".hdr";
         ofstream myFile (myFileName.c_str());
@@ -205,7 +205,7 @@ namespace gis
     /*!
      * \brief Write a ESRI grid data file (.flt)
      * \param myFileName string name file
-     * \param myHeader Crit3DGridHeader pointer
+     * \param myHeader Crit3DRasterHeader pointer
      * \param myError string pointer
      * \return true on success, false otherwise
      */
@@ -234,8 +234,8 @@ namespace gis
         if (myGrid == NULL) return(false);
         myGrid->isLoaded = false;
 
-        Crit3DGridHeader *myHeader;
-        myHeader = new Crit3DGridHeader;
+        Crit3DRasterHeader *myHeader;
+        myHeader = new Crit3DRasterHeader;
 
         if(gis::readEsriGridHeader(myFileName, myHeader, myError))
         {
@@ -262,7 +262,7 @@ namespace gis
     }
 
 
-    bool getGeoExtentsFromUTMHeader(const Crit3DGisSettings& mySettings, Crit3DGridHeader *utmHeader, Crit3DLatLonHeader *latLonHeader)
+    bool getGeoExtentsFromUTMHeader(const Crit3DGisSettings& mySettings, Crit3DRasterHeader *utmHeader, Crit3DGridHeader *latLonHeader)
     {
         Crit3DGeoPoint v[4];
 
@@ -316,7 +316,7 @@ namespace gis
     }
 
 
-    bool getUtmWindow(const Crit3DLatLonHeader& latLonHeader, const Crit3DGridHeader& utmHeader,
+    bool getUtmWindow(const Crit3DGridHeader& latLonHeader, const Crit3DRasterHeader& utmHeader,
                       const Crit3DRasterWindow& latLonWindow, Crit3DRasterWindow* UtmWindow, int utmZone)
     {
         Crit3DGeoPoint p[2];

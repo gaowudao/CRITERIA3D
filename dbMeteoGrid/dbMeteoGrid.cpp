@@ -1,12 +1,12 @@
 #include "dbMeteoGrid.h"
 
 
-DbMeteoGrid::DbMeteoGrid()
+Crit3DMeteoGridDbHandler::Crit3DMeteoGridDbHandler()
 {
 
 }
 
-bool DbMeteoGrid::parseXMLFile(QString xmlFileName, QDomDocument* xmlDoc)
+bool Crit3DMeteoGridDbHandler::parseXMLFile(QString xmlFileName, QDomDocument* xmlDoc)
 {
     if (xmlFileName == "")
     {
@@ -38,7 +38,7 @@ bool DbMeteoGrid::parseXMLFile(QString xmlFileName, QDomDocument* xmlDoc)
     return true;
 }
 
-bool DbMeteoGrid::parseXMLGrid(QString xmlFileName)
+bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
 {
 /*
     QDomDocument xmlDoc;
@@ -337,59 +337,57 @@ bool DbMeteoGrid::parseXMLGrid(QString xmlFileName)
     return true;
 }
 
-QString DbMeteoGrid::fileName() const
+QString Crit3DMeteoGridDbHandler::fileName() const
 {
     return _fileName;
 }
 
-TXMLConnection DbMeteoGrid::connection() const
+TXMLConnection Crit3DMeteoGridDbHandler::connection() const
 {
     return _connection;
 }
 
-MeteoGrid DbMeteoGrid::gridStructure() const
+Crit3DMeteoGridStructure Crit3DMeteoGridDbHandler::gridStructure() const
 {
     return _gridStructure;
 }
 
-
-TXMLTable DbMeteoGrid::tableDaily() const
+TXMLTable Crit3DMeteoGridDbHandler::tableDaily() const
 {
     return _tableDaily;
 }
 
-TXMLTable DbMeteoGrid::tableHourly() const
+TXMLTable Crit3DMeteoGridDbHandler::tableHourly() const
 {
     return _tableHourly;
 }
 
-
-QString DbMeteoGrid::tableDailyPrefix() const
+QString Crit3DMeteoGridDbHandler::tableDailyPrefix() const
 {
     return _tableDailyPrefix;
 }
 
-QString DbMeteoGrid::tableDailyPostfix() const
+QString Crit3DMeteoGridDbHandler::tableDailyPostfix() const
 {
     return _tableDailyPostfix;
 }
 
-QString DbMeteoGrid::tableHourlyPrefix() const
+QString Crit3DMeteoGridDbHandler::tableHourlyPrefix() const
 {
     return _tableHourlyPrefix;
 }
 
-QString DbMeteoGrid::tableHourlyPostfix() const
+QString Crit3DMeteoGridDbHandler::tableHourlyPostfix() const
 {
     return _tableHourlyPostfix;
 }
 
-QString DbMeteoGrid::tableDailyModel() const
+QString Crit3DMeteoGridDbHandler::tableDailyModel() const
 {
     return _tableDailyModel;
 }
 
-QString DbMeteoGrid::tableHourlyModel() const
+QString Crit3DMeteoGridDbHandler::tableHourlyModel() const
 {
     return _tableHourlyModel;
 }

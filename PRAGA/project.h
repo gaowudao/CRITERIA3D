@@ -37,10 +37,10 @@
 
     public:
         Crit3DMeteoPoint* meteoPoints;
+        Crit3DMeteoPointsDbHandler* meteoPointsDbHandler;
         int nrMeteoPoints;
 
         QList<gis::Crit3DGeoPoint> meteoPointsSelected;
-        DbMeteoPoints* dbMeteoPoints;
 
         Crit3DQuality* quality;
 

@@ -8,7 +8,7 @@
 #include <QString>
 
 
-DbArkimet::DbArkimet(QString dbName) : DbMeteoPoints(dbName)
+DbArkimet::DbArkimet(QString dbName) : Crit3DMeteoPointsDbHandler(dbName)
 {
     queryString = "";
 }

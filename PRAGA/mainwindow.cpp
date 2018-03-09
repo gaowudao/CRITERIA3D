@@ -373,7 +373,7 @@ void MainWindow::on_actionVariableNone_triggered()
 void MainWindow::on_actionDownload_meteo_data_triggered()
 {
     if (downloadMeteoData())
-        this->loadMeteoPointsDB(myProject.dbMeteoPoints->getDbName());
+        this->loadMeteoPointsDB(myProject.meteoPointsDbHandler->getDbName());
 }
 
 

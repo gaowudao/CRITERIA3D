@@ -10,7 +10,7 @@
 #define PREC_ID 250
 #define RAD_ID 706
 
-class DbArkimet : public DbMeteoPoints
+class DbArkimet : public Crit3DMeteoPointsDbHandler
 {
     public:
         explicit DbArkimet(QString dbName);

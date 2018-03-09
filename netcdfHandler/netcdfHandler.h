@@ -25,7 +25,7 @@
         int ncId;
 
         gis::Crit3DRasterGrid dataGrid;
-        gis::Crit3DLatLonHeader latLonHeader;
+        gis::Crit3DGridHeader latLonHeader;
 
         std::vector<NetCDFVariable> variables;
 

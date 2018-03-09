@@ -42,18 +42,18 @@ struct TXMLTable
 };
 
 
-class DbMeteoGrid
+class Crit3DMeteoGridDbHandler
 {
 
     public:
 
-        DbMeteoGrid();
+        Crit3DMeteoGridDbHandler();
 
         QString fileName() const;
 
         TXMLConnection connection() const;
 
-        MeteoGrid gridStructure() const;
+        Crit3DMeteoGridStructure gridStructure() const;
 
         TXMLTable tableDaily() const;
 
@@ -79,7 +79,7 @@ private:
 
         QString _fileName;
         TXMLConnection _connection;
-        MeteoGrid _gridStructure;
+        Crit3DMeteoGridStructure _gridStructure;
 
         TXMLTable _tableDaily;
         TXMLTable _tableHourly;

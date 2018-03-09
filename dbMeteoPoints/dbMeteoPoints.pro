@@ -19,13 +19,13 @@ INCLUDEPATH += ../mathFunctions ../gis ../meteo ../crit3dDate
 SOURCES += \
     download.cpp \
     variableslist.cpp \
-    dbMeteoPoints.cpp \
-    dbArkimet.cpp
+    dbArkimet.cpp \
+    dbMeteoPoints.cpp
 
 HEADERS += \
     download.h \
     variableslist.h \
-    dbMeteoPoints.h \
-    dbArkimet.h
+    dbArkimet.h \
+    dbMeteoPoints.h
 
 
