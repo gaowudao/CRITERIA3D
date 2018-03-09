@@ -40,7 +40,7 @@ bool DbMeteoGrid::parseXMLFile(QString xmlFileName, QDomDocument* xmlDoc)
 
 bool DbMeteoGrid::parseXMLGrid(QString xmlFileName)
 {
-
+/*
     QDomDocument xmlDoc;
 
      if (!parseXMLFile(xmlFileName, &xmlDoc))
@@ -168,15 +168,11 @@ bool DbMeteoGrid::parseXMLGrid(QString xmlFileName)
                 }
                 if (myTag == "XWIDTH")
                 {
-                    // ??? la cell size perchè non ha due dimensioni?
-                    //_gridStructure.gridStructure.header->cellSize=
                     _gridStructure.xWidth = child.toElement().text().toFloat();
                     nrTokens++;
                 }
                 if (myTag == "YWIDTH")
                 {
-                    // ??? la cell size perchè non ha due dimensioni?
-                    //_gridStructure.gridStructure.header->cellSize
                     _gridStructure.yWidth = child.toElement().text().toFloat();
                     nrTokens++;
                 }
@@ -185,51 +181,6 @@ bool DbMeteoGrid::parseXMLGrid(QString xmlFileName)
 
         }
 
-        else if (ancestor.toElement().tagName().toUpper() == "CELLSPROPERTIES")
-        {
-            child = ancestor.firstChild();
-            while( !child.isNull())
-            {
-                myTag = child.toElement().tagName().toUpper();
-                if (myTag == "TABLE")
-                {
-                    _cellsProperties.table = child.toElement().text();
-                    // remove white spaces
-                    _cellsProperties.table = _cellsProperties.table.simplified();
-                    nrTokens++;
-
-                }
-                else if (myTag == "FIELD")
-                {
-                    secondChild = child.firstChild();
-                    _cellsProperties.cellPropertiesField.push_back(fieldCP);
-                    while( !secondChild.isNull())
-                    {
-                        mySecondTag = secondChild.toElement().tagName().toUpper();
-                        if (mySecondTag == "NAME")
-                        {
-                            _cellsProperties.cellPropertiesField[_cellsProperties.cellPropertiesField.size()-1].name = secondChild.toElement().text();
-                            // remove white spaces
-                            _cellsProperties.cellPropertiesField[_cellsProperties.cellPropertiesField.size()-1].name = _cellsProperties.cellPropertiesField[_cellsProperties.cellPropertiesField.size()-1].name.simplified();
-                            nrTokens++;
-
-                        }
-
-                        if (mySecondTag == "PRAGANAME")
-                        {
-                            _cellsProperties.cellPropertiesField[_cellsProperties.cellPropertiesField.size()-1].pragaName = secondChild.toElement().text();
-                            // remove white spaces
-                            _cellsProperties.cellPropertiesField[_cellsProperties.cellPropertiesField.size()-1].pragaName = _cellsProperties.cellPropertiesField[_cellsProperties.cellPropertiesField.size()-1].pragaName.simplified();
-                            nrTokens++;
-                        }
-
-                        secondChild = secondChild.nextSibling();
-                    }
-                }
-
-            }
-
-        }
         else if (ancestor.toElement().tagName().toUpper() == "TABLEDAILY")
         {
             child = ancestor.firstChild();
@@ -382,7 +333,7 @@ bool DbMeteoGrid::parseXMLGrid(QString xmlFileName)
         qDebug() << "Missing " + QString::number(missingTokens) + " key informations.";
         return false;
     }
-
+*/
     return true;
 }
 
@@ -401,10 +352,6 @@ MeteoGrid DbMeteoGrid::gridStructure() const
     return _gridStructure;
 }
 
-TXMLCellsProperties DbMeteoGrid::cellsProperties() const
-{
-    return _cellsProperties;
-}
 
 TXMLTable DbMeteoGrid::tableDaily() const
 {
@@ -416,10 +363,6 @@ TXMLTable DbMeteoGrid::tableHourly() const
     return _tableHourly;
 }
 
-bool DbMeteoGrid::existHourlyData() const
-{
-    return _existHourlyData;
-}
 
 QString DbMeteoGrid::tableDailyPrefix() const
 {

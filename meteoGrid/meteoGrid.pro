@@ -11,7 +11,7 @@ TARGET = meteoGrid
 TEMPLATE = lib
 CONFIG += staticlib
 
-INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../meteo
+INCLUDEPATH += ../crit3dDate ../mathFunctions ../meteo ../gis
 
 DEFINES += METEOGRID_LIBRARY
 
@@ -20,7 +20,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     meteoGrid.cpp \
+    gridStructure.cpp
 
 HEADERS += \
-    meteoGrid.h
+    meteoGrid.h \
+    gridStructure.h
 
