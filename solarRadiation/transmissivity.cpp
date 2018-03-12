@@ -2,6 +2,7 @@
 #include "transmissivity.h"
 #include "radiationSettings.h"
 #include "solarRadiation.h"
+#include <cmath>
 
 
 float computePointTransmissivitySamani(float tmin, float tmax, float samaniCoeff)

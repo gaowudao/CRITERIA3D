@@ -28,6 +28,7 @@
 #include "commonConstants.h"
 #include "sunPosition.h"
 #include "solarRadiation.h"
+#include <cmath>
 
 
 Crit3DRadiationMaps::Crit3DRadiationMaps()

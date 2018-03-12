@@ -18,12 +18,13 @@ LIBS += -L../dbMeteoPoints/debug -ldbMeteoPoints
 LIBS += -L../meteo/debug -lmeteo
 LIBS += -L../interpolation/debug -linterpolation
 LIBS += -L../solarRadiation/debug -lsolarRadiation
-LIBS += -L../MapGraphics/debug -lMapGraphics
+LIBS += -L../MapGraphics/release -lMapGraphics
+LIBS += -L../gis/debug -lgis
 LIBS += -L../netcdfHandler/debug -lnetcdfHandler
 LIBS += -L../mathFunctions/debug -lmathFunctions
 LIBS += -L../crit3dDate/debug -lcrit3dDate
 LIBS += -L../utilities/debug -lutilities
-LIBS += -L../gis/debug -lgis
+
 LIBS += -L../quality/debug -lquality
 
 
