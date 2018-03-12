@@ -58,7 +58,7 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
     QString myTag;
     QString mySecondTag;
     int nrTokens = 0;
-    const int nrRequiredToken = 29;
+    const int nrRequiredToken = 27;
 
     while(!ancestor.isNull())
     {
@@ -330,15 +330,9 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
     }
     xmlDoc.clear();
 
-    if (_tableDaily.varcode.size() < 1)
+    if (_tableDaily.varcode.size() < 1 && _tableHourly.varcode.size() < 1)
     {
-        qDebug() << "Missing daily var code";
-        return false;
-    }
-
-    if (_tableHourly.varcode.size() < 1)
-    {
-        qDebug() << "Missing hourly var code";
+        qDebug() << "Missing daily and hourly var code";
         return false;
     }
 
