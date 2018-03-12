@@ -591,7 +591,7 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
 void weatherGenerator2D::spatialIterationOccurrence(double ** M, float** K,float** occurrences, double** matrixOccurrence, double** normalizedMatrixRandom,float ** transitionNormal,int lengthSeries)
 {
     // M and K matrices are used as ancillary dummy matrices
-    double val=5;
+    float val=5;
     int ii=0;
     double kiter=0.1;   // iteration parameter in calculation of new estimate of matrix 'mat'
     double* eigenvalues =(double*)calloc(nrStations, sizeof(double));
@@ -626,7 +626,7 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, float** K,float
     {
        for (int j=0;j<nrStations;j++)
         {
-            M[i][j] = matrixOccurrence[i][j];
+            M[i][j] = matrixOccurrence[i][j];  // M is the matrix named mat in the original code
         }
     }
 
@@ -711,14 +711,35 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, float** K,float
             }
         }
         statistics::correlationsMatrix(nrStations,occurrences,lengthSeries,K);
+        val = 0;
+        for (int i=0; i<nrStations;i++)
+        {
+            for (int j=i+1;j<nrStations;j++)
+            {
+                val = max_value(val,fabsf(K[i][j] - matrixOccurrence[i][j]));
+                //printf("%f",K[i][j]);
 
+            }
+            //printf("\n");
+        }
+        printf("%f \n",val);
 
-
-
+        if ((ii != MAX_ITERATION_MULGETS) && (val > TOLERANCE_MULGETS))
+        {
+            for (int i=0; i<nrStations;i++)
+            {
+                M[i][i]= 1.;
+                for (int j=i+1;j<nrStations;j++)
+                {
+                    M[i][j] += kiter*(matrixOccurrence[i][j]-K[i][j]);
+                    M[j][i] = M[i][j];
+                }
+            }
+        }
 
     } // end of the while cycle
-
-    printf("%d\n",lengthSeries);
+    //getchar();
+    //printf("%d\n",ii);
 
 
 
@@ -726,7 +747,7 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, float** K,float
 
     for (int i=0;i<nrStations;i++)
     {
-        free(dummyMatrix[i]);
+        free(dummyMatrix[i]);\
         free(dummyMatrix2[i]);
         free(dummyMatrix3[i]);
     }

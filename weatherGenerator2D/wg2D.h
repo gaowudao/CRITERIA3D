@@ -55,6 +55,13 @@ struct TcorrelationMatrix{
     int month;
 };
 
+struct TrandomMatrix{
+    float** matrixM;
+    float** matrixK;
+    float** matrixOccurrences;
+    int month;
+};
+
 struct TparametersModel{
     int yearOfSimulation;
     int distributionPrecipitation; //Select a distribution to generate daily precipitation amount,1: Multi-exponential or 2: Multi-gamma
