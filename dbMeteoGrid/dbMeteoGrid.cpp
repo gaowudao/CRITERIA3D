@@ -177,9 +177,9 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
                     header.dy = child.toElement().text().toFloat();
                     nrTokens++;
                 }
-                _gridStructure.setHeader(header);
                 child = child.nextSibling();
             }
+            _gridStructure.setHeader(header);
 
         }
 
