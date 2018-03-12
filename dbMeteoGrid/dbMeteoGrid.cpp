@@ -41,7 +41,7 @@ bool Crit3DMeteoGridDbHandler::parseXMLFile(QString xmlFileName, QDomDocument* x
 
 bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
 {
-/*
+
     QDomDocument xmlDoc;
 
      if (!parseXMLFile(xmlFileName, &xmlDoc))
@@ -52,14 +52,13 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
 
     QDomNode child;
     QDomNode secondChild;
-    TXMLfield fieldCP;
     TXMLvar varTable;
 
     QDomNode ancestor = xmlDoc.documentElement().firstChild();
     QString myTag;
     QString mySecondTag;
     int nrTokens = 0;
-    const int nrRequiredToken = 31;
+    const int nrRequiredToken = 29;
 
     while(!ancestor.isNull())
     {
@@ -112,69 +111,71 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
         {
             if (ancestor.toElement().attribute("isregular").toUpper() == "TRUE")
             {
-                _gridStructure.isRegular = true;
+                _gridStructure.setIsRegular(true);
             }
             else if (ancestor.toElement().attribute("isregular").toUpper() == "FALSE")
             {
-                _gridStructure.isRegular = false;
+                _gridStructure.setIsRegular(false);
             }
             if (ancestor.toElement().attribute("isutm").toUpper() == "TRUE")
             {
-                _gridStructure.isUTM = true;
+                _gridStructure.setIsUTM(true);
             }
             else if (ancestor.toElement().attribute("isutm").toUpper() == "FALSE")
             {
-                _gridStructure.isUTM = false;
+                _gridStructure.setIsUTM(false);
             }
             if (ancestor.toElement().attribute("istin").toUpper() == "TRUE")
             {
-                _gridStructure.isTIN = true;
+                _gridStructure.setIsTIN(true);
             }
             else if (ancestor.toElement().attribute("istin").toUpper() == "FALSE")
             {
-                _gridStructure.isTIN = false;
+                _gridStructure.setIsTIN(false);
             }
             if (ancestor.toElement().attribute("isFixedFields").toUpper() == "TRUE")
             {
-                _gridStructure.isFixedFields = true;
+                _gridStructure.setIsFixedFields(true);
             }
             else if (ancestor.toElement().attribute("isFixedFields").toUpper() == "FALSE")
             {
-                _gridStructure.isFixedFields = false;
+                _gridStructure.setIsFixedFields(false);
             }
 
             child = ancestor.firstChild();
+            gis::Crit3DGridHeader header = _gridStructure.header();
             while( !child.isNull())
             {
                 myTag = child.toElement().tagName().toUpper();
                 if (myTag == "XLL")
                 {
-                    _gridStructure.gridStructure.header->llCorner->x= child.toElement().text().toFloat();
+                    header.llCorner->longitude = child.toElement().text().toFloat();
                     nrTokens++;
                 }
                 if (myTag == "YLL")
                 {
-                    _gridStructure.gridStructure.header->llCorner->y= child.toElement().text().toFloat();
+                    header.llCorner->latitude = child.toElement().text().toFloat();
                     nrTokens++;
                 }
                 if (myTag == "NROWS")
                 {
-                    _gridStructure.gridStructure.header->nrRows= child.toElement().text().toInt();
+                    header.nrRows = child.toElement().text().toInt();
+                    qDebug() << "header.nrRows" << header.nrRows; //debug
                     nrTokens++;
                 }
                 if (myTag == "NCOLS")
                 {
-                    _gridStructure.gridStructure.header->nrCols= child.toElement().text().toInt();
+                    header.nrCols = child.toElement().text().toInt();
                     nrTokens++;
                 }
                 if (myTag == "XWIDTH")
                 {
-                    _gridStructure.xWidth = child.toElement().text().toFloat();
+                    header.dx = child.toElement().text().toFloat();
                     nrTokens++;
                 }
                 if (myTag == "YWIDTH")
                 {
-                    _gridStructure.yWidth = child.toElement().text().toFloat();
+                    header.dy = child.toElement().text().toFloat();
                     nrTokens++;
                 }
                 child = child.nextSibling();
@@ -247,7 +248,7 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
 
                         secondChild = secondChild.nextSibling();
                     }
-                 }
+                }
                 child = child.nextSibling();
             }
 
@@ -318,7 +319,8 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
 
                         secondChild = secondChild.nextSibling();
                     }
-                 }
+                }
+
                 child = child.nextSibling();
             }
 
@@ -328,13 +330,25 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
     }
     xmlDoc.clear();
 
+    if (_tableDaily.varcode.size() < 1)
+    {
+        qDebug() << "Missing daily var code";
+        return false;
+    }
+
+    if (_tableHourly.varcode.size() < 1)
+    {
+        qDebug() << "Missing hourly var code";
+        return false;
+    }
+
     if (nrTokens < nrRequiredToken)
     {
         int missingTokens = nrRequiredToken - nrTokens;
         qDebug() << "Missing " + QString::number(missingTokens) + " key informations.";
         return false;
     }
-*/
+
     return true;
 }
 

@@ -10,9 +10,39 @@
         public:
             Crit3DMeteoGridStructure();
 
+            std::string name() const;
+            void setName(const std::string &name);
+
+            gis::Crit3DGridHeader header() const;
+            void setHeader(const gis::Crit3DGridHeader &header);
+
+            int dataType() const;
+            void setDataType(int dataType);
+
+            bool isRegular() const;
+            void setIsRegular(bool isRegular);
+
+            bool isTIN() const;
+            void setIsTIN(bool isTIN);
+
+            bool isUTM() const;
+            void setIsUTM(bool isUTM);
+
+            bool isLoaded() const;
+            void setIsLoaded(bool isLoaded);
+
+            bool isFixedFields() const;
+            void setIsFixedFields(bool isFixedFields);
+
+            bool isHourlyDataAvailable() const;
+            void setIsHourlyDataAvailable(bool isHourlyDataAvailable);
+
+            bool isDailyDataAvailable() const;
+            void setIsDailyDataAvailable(bool isDailyDataAvailable);
+
         private:
             std::string _name;
-            gis::Crit3DGridHeader header;
+            gis::Crit3DGridHeader _header;
             int _dataType;
 
             bool _isRegular;
@@ -29,19 +59,41 @@
 
     class Crit3DMeteoGrid
     {
-    public:
-        Crit3DMeteoGrid();
 
-    private:
+        public:
+            Crit3DMeteoGrid();
 
-        Crit3DMeteoGridStructure gridStructure;
-        Crit3DMeteoPoint* _meteoPoints;
+            Crit3DMeteoGridStructure gridStructure() const;
+            void setGridStructure(const Crit3DMeteoGridStructure &gridStructure);
 
-        bool _isAggregationDefined;
-        bool _isDateTypeSpecified;
-        Crit3DDate _firstDate;
-        Crit3DDate _lastDate;
-        int _nrVarsArray;
+            Crit3DMeteoPoint *meteoPoints() const;
+            void setMeteoPoints(Crit3DMeteoPoint *meteoPoints);
+
+            bool isAggregationDefined() const;
+            void setIsAggregationDefined(bool isAggregationDefined);
+
+            bool isDateTypeSpecified() const;
+            void setIsDateTypeSpecified(bool isDateTypeSpecified);
+
+            Crit3DDate firstDate() const;
+            void setFirstDate(const Crit3DDate &firstDate);
+
+            Crit3DDate lastDate() const;
+            void setLastDate(const Crit3DDate &lastDate);
+
+            int nrVarsArray() const;
+            void setNrVarsArray(int nrVarsArray);
+
+        private:
+
+            Crit3DMeteoGridStructure _gridStructure;
+            Crit3DMeteoPoint* _meteoPoints;
+
+            bool _isAggregationDefined;
+            bool _isDateTypeSpecified;
+            Crit3DDate _firstDate;
+            Crit3DDate _lastDate;
+            int _nrVarsArray;
     };
 
 
