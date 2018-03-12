@@ -143,7 +143,7 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
             }
 
             child = ancestor.firstChild();
-            gis::Crit3DGridHeader header = _gridStructure.header();
+            gis::Crit3DGridHeader header;
             while( !child.isNull())
             {
                 myTag = child.toElement().tagName().toUpper();
@@ -160,7 +160,6 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
                 if (myTag == "NROWS")
                 {
                     header.nrRows = child.toElement().text().toInt();
-                    qDebug() << "header.nrRows" << header.nrRows; //debug
                     nrTokens++;
                 }
                 if (myTag == "NCOLS")
@@ -178,6 +177,7 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
                     header.dy = child.toElement().text().toFloat();
                     nrTokens++;
                 }
+                _gridStructure.setHeader(header);
                 child = child.nextSibling();
             }
 
