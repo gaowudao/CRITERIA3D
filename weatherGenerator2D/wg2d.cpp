@@ -141,6 +141,9 @@ bool weatherGenerator2D::initializeData(int lengthDataSeries, int stations)
         }
     }
 
+
+
+
     /*
     weatherObservations = (double ***)calloc(nrStations, sizeof(double**));
     for (int i=0;i<nrStations;i++)
@@ -486,6 +489,23 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
         normalizedTransitionProbability[i][0]= NODATA;
         normalizedTransitionProbability[i][1]= NODATA;        
     }
+    // random Occurrence structure. Used from step 3 on
+
+        randomMatrix = (TrandomMatrix*)calloc(12,sizeof(TrandomMatrix));
+        for (int iMonth=0;iMonth<12;iMonth++)
+        {
+            randomMatrix[iMonth].matrixK = (float**)calloc(nrStations, sizeof(float*));
+            randomMatrix[iMonth].matrixM = (float**)calloc(nrStations, sizeof(float*));
+            randomMatrix[iMonth].matrixOccurrences = (float**)calloc(nrStations, sizeof(float*));
+
+            for (int i=0;i<nrStations;i++)
+            {
+                randomMatrix[iMonth].matrixK[i]= (float*)calloc(nrStations, sizeof(float));
+                randomMatrix[iMonth].matrixM[i]= (float*)calloc(nrStations, sizeof(float));
+                randomMatrix[iMonth].matrixOccurrences[i]= (float*)calloc(nrDaysIterativeProcessMonthly[iMonth], sizeof(float));
+            }
+            randomMatrix[iMonth].month = iMonth + 1;
+        }
 
 
 
@@ -519,7 +539,7 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             normalizedTransitionProbability[i][1]= - (float)(SQRT_2*(float)(statistics::inverseERFC(2*precOccurence[i][iMonth].p10,0.0001)));
             for (int j=0;j<nrDaysIterativeProcessMonthly[iMonth];j++)
             {
-               normalizedRandomMatrix[i][j]= myrandom::normalRandom(&gasDevIset,&gasDevGset);
+               normalizedRandomMatrix[i][j]= myrandom::normalRandom(&gasDevIset,&gasDevGset);               
             }
 
 
@@ -556,6 +576,22 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
         }
 
         weatherGenerator2D::spatialIterationOccurrence(M,K,occurrences,matrixOccurrence,normalizedRandomMatrix,normalizedTransitionProbability,nrDaysIterativeProcessMonthly[iMonth]);
+
+        for (int i=0;i<nrStations;i++)
+        {
+            for (int j=0;j<nrStations;j++)
+            {
+                randomMatrix[iMonth].matrixK[i][j] = K[i][j];
+                randomMatrix[iMonth].matrixM[i][j] = M[i][j];
+            }
+            for (int j=0;j<nrDaysIterativeProcessMonthly[iMonth];j++)
+            {
+                randomMatrix[iMonth].matrixOccurrences[i][j]= occurrences[i][j];
+            }
+        }
+
+
+
 
 
         // free memory
@@ -601,7 +637,7 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, float** K,float
     double** dummyMatrix = (double**)calloc(nrStations, sizeof(double*));
     double** dummyMatrix2 = (double**)calloc(nrStations, sizeof(double*));
     double** dummyMatrix3 = (double**)calloc(nrStations, sizeof(double*));
-    //double** correlationRandom = (double**)calloc(lengthSeries, sizeof(double*));
+    float** normRandom = (float**)calloc(nrStations, sizeof(float*));
 
     // initialization internal arrays
     for (int i=0;i<nrStations;i++)
@@ -613,6 +649,7 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, float** K,float
     for (int i=0;i<nrStations;i++)
     {
         dummyMatrix3[i]= (double*)calloc(lengthSeries, sizeof(double));
+        normRandom[i]= (float*)calloc(lengthSeries, sizeof(float));
     }
     /*for (int i=0;i<lengthSeries;i++)
     {
@@ -644,7 +681,9 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, float** K,float
                 counter++;
             }
         }
+        //printf("inizio sub\n");
         eigenproblem::rs(nrStations,correlationArray,eigenvalues,true,eigenvectors);
+        //printf("autovalori\n");
         for (int i=0;i<nrStations;i++)
         {
             if (eigenvalues[i] <= 0)
@@ -671,20 +710,38 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, float** K,float
             //matricial::transposedSquareMatrix(dummyMatrix,nrStations);
             matricial::matrixProduct(dummyMatrix,dummyMatrix2,nrStations,nrStations,nrStations,nrStations,M);
         }
+        //printf("nuovaMatriceProdotti\n");
         // the matrix called M is the final matrix exiting from the calculation
         for (int i=0;i<nrStations;i++)
             for (int j=0;j<nrStations;j++) dummyMatrix[i][j] = M[i][j];
 
         matricial::choleskyDecompositionTriangularMatrix(dummyMatrix,nrStations,true);
+        //printf("Cholesky\n");
         matricial::matrixProduct(dummyMatrix,normalizedMatrixRandom,nrStations,nrStations,lengthSeries,nrStations,dummyMatrix3);
-
+        //printf("prodottoMatriciale\n");
         for (int i=0;i<nrStations;i++)
         {
-            for (int j=0;j<lengthSeries;j++) dummyArray[j]= (float)(dummyMatrix3[i][j]);
+            //for (int j=0;j<lengthSeries;j++) dummyArray[j]= (float)(dummyMatrix3[i][j]);
+            float meanValue,stdDevValue;
+            meanValue = stdDevValue = 0;
+            for (int j=0;j<lengthSeries;j++) meanValue += dummyMatrix3[i][j];
+            meanValue /= lengthSeries;
             for (int j=0;j<lengthSeries;j++)
             {
-                normalizedMatrixRandom[i][j]= (dummyMatrix3[i][j]-statistics::mean(dummyArray,lengthSeries))/statistics::standardDeviation(dummyArray,lengthSeries);
+                stdDevValue += (dummyMatrix3[i][j]- meanValue)*(dummyMatrix3[i][j]- meanValue);
             }
+            stdDevValue /= (lengthSeries-1);
+            stdDevValue = powf(stdDevValue,0.5);
+
+            /*for (int j=0;j<lengthSeries;j++)
+            {
+                normRandom[i][j]= (dummyMatrix3[i][j]-statistics::mean(dummyArray,lengthSeries))/statistics::standardDeviation(dummyArray,lengthSeries);
+            }*/
+            for (int j=0;j<lengthSeries;j++)
+            {
+                normRandom[i][j]= (dummyMatrix3[i][j]-meanValue)/stdDevValue;
+            }
+
         }
         // initialize occurrence to 0
 
@@ -702,11 +759,11 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, float** K,float
             {
                 if(occurrences[i][j-1] == 0)
                 {
-                    if(normalizedMatrixRandom[i][j]> transitionNormal[i][0]) occurrences[i][j] = 1;
+                    if(normRandom[i][j]> transitionNormal[i][0]) occurrences[i][j] = 1;
                 }
                 else
                 {
-                    if(normalizedMatrixRandom[i][j]> transitionNormal[i][1]) occurrences[i][j] = 1;
+                    if(normRandom[i][j]> transitionNormal[i][1]) occurrences[i][j] = 1;
                 }
             }
         }
@@ -714,16 +771,15 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, float** K,float
         val = 0;
         for (int i=0; i<nrStations;i++)
         {
-            for (int j=i+1;j<nrStations;j++)
+            for (int j=0;j<nrStations;j++)
             {
                 val = max_value(val,fabsf(K[i][j] - matrixOccurrence[i][j]));
-                //printf("%f",K[i][j]);
-
+                printf("%f ",K[i][j]);
             }
-            //printf("\n");
+            printf("\n");
         }
         printf("%f \n",val);
-
+        getchar();
         if ((ii != MAX_ITERATION_MULGETS) && (val > TOLERANCE_MULGETS))
         {
             for (int i=0; i<nrStations;i++)
@@ -736,9 +792,11 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, float** K,float
                 }
             }
         }
-
+        //printf("fine sub\n");
     } // end of the while cycle
-    //getchar();
+
+    //printf("fine sub\n");
+    getchar();
     //printf("%d\n",ii);
 
 
@@ -747,16 +805,16 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, float** K,float
 
     for (int i=0;i<nrStations;i++)
     {
-        free(dummyMatrix[i]);\
+        free(dummyMatrix[i]);
         free(dummyMatrix2[i]);
         free(dummyMatrix3[i]);
+        free(normRandom[i]);
     }
-    //for (int i=0;i<lengthSeries;i++) free(correlationRandom[i]);
+    free(normRandom);
     free(dummyArray);
     free(dummyMatrix);
     free(dummyMatrix2);
     free(dummyMatrix3);
-    //free(correlationRandom);
     free(eigenvalues);
     free(eigenvectors);
     free(correlationArray);

@@ -81,6 +81,7 @@ private:
     TObsDataD** obsDataD;
     TprecOccurrence** precOccurence;
     TcorrelationMatrix *correlationMatrix;
+    TrandomMatrix *randomMatrix;
 
     //functions
 
