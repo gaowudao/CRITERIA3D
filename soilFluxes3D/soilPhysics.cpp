@@ -25,7 +25,9 @@
     gantolini@arpae.emr.it
 */
 
+#include <stdio.h>
 #include <math.h>
+
 #include "../mathFunctions/commonConstants.h"
 #include "../mathFunctions/physics.h"
 #include "header/types.h"
@@ -169,7 +171,7 @@
      * \param Mualem_L
      * \return result
      */
-    double compute_K_Mualem(double Ksat, double Se, double VG_Sc, double VG_n, double VG_m, double Mualem_L)
+    double compute_K_Mualem(double Ksat, double Se, double VG_Sc, double VG_m, double Mualem_L)
 	{
 		if (Se >= 1.) return(Ksat);
 		double temp= NODATA;
@@ -196,8 +198,8 @@
     double computeK(unsigned long myIndex)
     {
         double k = compute_K_Mualem(myNode[myIndex].Soil->K_sat, myNode[myIndex].Se,
-                                myNode[myIndex].Soil->VG_Sc, myNode[myIndex].Soil->VG_n,
-                                myNode[myIndex].Soil->VG_m, myNode[myIndex].Soil->Mualem_L);
+                                myNode[myIndex].Soil->VG_Sc, myNode[myIndex].Soil->VG_m,
+                                myNode[myIndex].Soil->Mualem_L);
 
         // vapor isothermal flow
         if (myStructure.computeHeat && myStructure.computeHeatVapor)

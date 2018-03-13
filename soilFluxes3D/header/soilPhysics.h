@@ -14,7 +14,7 @@
     double dTheta_dH(unsigned long myIndex);
     double dThetav_dH(unsigned long myIndex, double temperature, double dTheta_dH);
     double computeK(unsigned long myIndex);
-    double compute_K_Mualem(double Ksat, double Se, double VG_Sc, double VG_n, double VG_m, double Mualem_L);
+    double compute_K_Mualem(double Ksat, double Se, double VG_Sc, double VG_m, double Mualem_L);
     double getThetaMean(long i);
     double getTheta(long i, double H);
     double getHMean(long i);
