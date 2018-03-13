@@ -31,7 +31,9 @@
 #ifndef CRIT3DDATE_H
 #define CRIT3DDATE_H
 
-    #include <string>
+    #ifndef _STRING_
+        #include <string>
+    #endif
 
     class Crit3DDate
     {
