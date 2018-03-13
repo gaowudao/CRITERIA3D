@@ -14,7 +14,11 @@
     #endif
 
     #ifndef DOWNLOAD_H
-        #include <download.h>
+        #include "download.h"
+    #endif
+
+    #ifndef DBMETEOGRID_H
+        #include "dbMeteoGrid.h"
     #endif
 
     #ifndef NETCDFHANDLER_H
@@ -38,6 +42,7 @@
     public:
         Crit3DMeteoPoint* meteoPoints;
         Crit3DMeteoPointsDbHandler* meteoPointsDbHandler;
+        Crit3DMeteoGridDbHandler meteoGridDbHandler;
         int nrMeteoPoints;
 
         QList<gis::Crit3DGeoPoint> meteoPointsSelected;
@@ -78,6 +83,7 @@
         bool loadlastMeteoData();
         void closeMeteoPointsDB();
         bool loadMeteoPointsDB(QString dbName);
+        bool loadMeteoGridDB(QString xmlName);
         bool getMeteoPointSelected(int i);
         bool updateMeteoPointsData();
 

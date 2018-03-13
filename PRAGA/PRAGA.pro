@@ -5,18 +5,19 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets network sql
+QT       += core gui widgets network sql xml
 
 TARGET = PRAGA
 TEMPLATE = app
 
 INCLUDEPATH +=  ../crit3dDate ../mathFunctions ../utilities ../gis ../MapGraphics \
                 ../meteo ../quality ../interpolation ../solarRadiation \
-                ../dbMeteoPoints ../netcdfHandler
+                ../dbMeteoPoints ../dbMeteoGrid ../netcdfHandler
 
 
 LIBS += -L../MapGraphics/release -lMapGraphics
 LIBS += -L../netcdfHandler/debug -lnetcdfHandler
+LIBS += -L../dbMeteoGrid/debug -ldbMeteoGrid
 LIBS += -L../dbMeteoPoints/debug -ldbMeteoPoints
 LIBS += -L../quality/debug -lquality
 LIBS += -L../utilities/debug -lutilities

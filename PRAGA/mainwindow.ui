@@ -1802,7 +1802,7 @@
      <x>0</x>
      <y>0</y>
      <width>1368</width>
-     <height>21</height>
+     <height>30</height>
     </rect>
    </property>
    <property name="palette">
@@ -2239,6 +2239,7 @@
     <addaction name="actionLoadRaster"/>
     <addaction name="separator"/>
     <addaction name="actionOpen_meteo_points_DB"/>
+    <addaction name="actionOpen_meteo_grid"/>
     <addaction name="menu_New_meteo_points_DB"/>
     <addaction name="separator"/>
     <addaction name="actionDownload_meteo_data"/>
@@ -2420,6 +2421,11 @@
   <action name="action_Extract_NetCDF_series">
    <property name="text">
     <string>Extract NetCDF series</string>
+   </property>
+  </action>
+  <action name="actionOpen_meteo_grid">
+   <property name="text">
+    <string>Open meteo grid...</string>
    </property>
   </action>
  </widget>

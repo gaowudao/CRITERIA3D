@@ -41,6 +41,8 @@
 
         void on_actionOpen_meteo_points_DB_triggered();
 
+        void on_actionOpen_meteo_grid_triggered();
+
         void on_actionDownload_meteo_data_triggered();
 
         void on_rasterOpacitySlider_sliderMoved(int position);

@@ -414,6 +414,16 @@ bool Project::loadMeteoPointsDB(QString dbName)
     return true;
 }
 
+bool Project::loadMeteoGridDB(QString xmlName)
+{
+
+    if (xmlName == "")
+        return false;
+
+    meteoGridDbHandler.parseXMLGrid(xmlName);
+
+    return true;
+}
 
 bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime,
                             gis::Crit3DRasterGrid *myRaster, std::string *myError)
