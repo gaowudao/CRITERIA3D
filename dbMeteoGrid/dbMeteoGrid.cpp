@@ -175,6 +175,11 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
                 if (myTag == "YWIDTH")
                 {
                     header.dy = child.toElement().text().toFloat();
+                    if (_gridStructure.isUTM() == true && header.dx != header.dy )
+                    {
+                        qDebug() << "UTM grid with dx != dy";
+                        return false;
+                    }
                     nrTokens++;
                 }
                 child = child.nextSibling();
@@ -345,6 +350,7 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
 
     return true;
 }
+
 
 QString Crit3DMeteoGridDbHandler::fileName() const
 {

@@ -71,7 +71,9 @@
         TObsDataD *obsDataD;
         quality::type myQuality;
         float currentValue;
-        float residual;
+        float residual;   
+        bool active;
+        bool selected;
 
         Crit3DMeteoPoint();
 

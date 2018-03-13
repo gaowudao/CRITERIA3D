@@ -75,6 +75,8 @@ class Crit3DMeteoGridDbHandler
 
         bool parseXMLGrid(QString xmlFileName);
 
+
+
 private:
 
         QString _fileName;

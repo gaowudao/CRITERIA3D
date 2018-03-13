@@ -122,12 +122,12 @@ void Crit3DMeteoGrid::setGridStructure(const Crit3DMeteoGridStructure &gridStruc
     _gridStructure = gridStructure;
 }
 
-Crit3DMeteoPoint *Crit3DMeteoGrid::meteoPoints() const
+std::vector<std::vector<Crit3DMeteoPoint> > Crit3DMeteoGrid::meteoPoints() const
 {
     return _meteoPoints;
 }
 
-void Crit3DMeteoGrid::setMeteoPoints(Crit3DMeteoPoint *meteoPoints)
+void Crit3DMeteoGrid::setMeteoPoints(const std::vector<std::vector<Crit3DMeteoPoint> > &meteoPoints)
 {
     _meteoPoints = meteoPoints;
 }
@@ -181,6 +181,8 @@ void Crit3DMeteoGrid::setNrVarsArray(int nrVarsArray)
 {
     _nrVarsArray = nrVarsArray;
 }
+
+
 
 
 

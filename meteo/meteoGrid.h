@@ -1,6 +1,8 @@
 #ifndef METEOGRID_H
 #define METEOGRID_H
 
+#include <vector>
+
     #ifndef METEOPOINT_H
         #include "meteoPoint.h"
     #endif
@@ -66,8 +68,8 @@
             Crit3DMeteoGridStructure gridStructure() const;
             void setGridStructure(const Crit3DMeteoGridStructure &gridStructure);
 
-            Crit3DMeteoPoint *meteoPoints() const;
-            void setMeteoPoints(Crit3DMeteoPoint *meteoPoints);
+            std::vector<std::vector<Crit3DMeteoPoint> > meteoPoints() const;
+            void setMeteoPoints(const std::vector<std::vector<Crit3DMeteoPoint> > &meteoPoints);
 
             bool isAggregationDefined() const;
             void setIsAggregationDefined(bool isAggregationDefined);
@@ -84,10 +86,12 @@
             int nrVarsArray() const;
             void setNrVarsArray(int nrVarsArray);
 
-        private:
+
+    private:
 
             Crit3DMeteoGridStructure _gridStructure;
-            Crit3DMeteoPoint* _meteoPoints;
+            std::vector<std::vector<Crit3DMeteoPoint> > _meteoPoints;
+            gis::Crit3DRasterGrid _dataMeteoGrid;
 
             bool _isAggregationDefined;
             bool _isDateTypeSpecified;
