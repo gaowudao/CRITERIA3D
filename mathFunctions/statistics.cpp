@@ -277,8 +277,9 @@ namespace statistics
 
     float ERFC(float x, float accuracy) // error function
     {
-        return (float)(1. - ERF(x,accuracy));
+        return (float)(1. - ERF(x, accuracy));
     }
+
     float inverseERF(float value, float accuracy)
     {
 
@@ -340,8 +341,6 @@ namespace statistics
 
             return (rightBound+leftBound)/2;
         }
-
-
 
     }
 
