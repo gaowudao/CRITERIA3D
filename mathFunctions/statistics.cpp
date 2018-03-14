@@ -56,19 +56,21 @@ namespace statistics
 
     float coefficientOfVariation(float *measured , float *simulated , int nrData)
     {
-        float sigma=0;
-        float measuredMean = 0;
-        float coefVar;
+        double sigma=0;
+        double measuredMean = 0;
+        double coefVar;
+        double diff;
         for (int i=0; i< nrData; i++)
         {
-            sigma += powf(measured[i]-simulated[i],2);
+            diff = measured[i]-simulated[i];
+            sigma += diff * diff;
             measuredMean += measured[i];
         }
         sigma /= nrData;
         measuredMean /= nrData;
-        sigma = sqrtf(sigma);
+        sigma = sqrt(sigma);
         coefVar = sigma / measuredMean ;
-        return coefVar;
+        return float(coefVar);
     }
 
     float weighedMean(float *data , float *weights, int nrData)
@@ -173,6 +175,32 @@ namespace statistics
             return NODATA;
     }
 
+    double variance(double *myList, int nrList)
+    {
+        double myMean, myDiff, squareDiff;
+        int i, nrValidValues;
+
+        if (nrList <= 1) return NODATA;
+
+        myMean = mean(myList,nrList);
+
+        squareDiff = 0;
+        nrValidValues = 0;
+        for (i = 0; i<nrList; i++)
+        {
+            if (myList[i]!= NODATA)
+            {
+                myDiff = (myList[i] - myMean);
+                squareDiff += (myDiff * myDiff);
+                nrValidValues++;
+            }
+        }
+
+        if (nrValidValues > 1)
+            return (squareDiff / (nrValidValues - 1));
+        else
+            return NODATA;
+    }
     float mean(float *myList, int nrList)
     {
         float sum=0.;
@@ -195,16 +223,68 @@ namespace statistics
         else
             return NODATA;
     }
+    double mean(double *myList, int nrList)
+    {
+        double sum=0.;
+        int i, nrValidValues;
+
+        if (nrList < 1) return NODATA;
+        nrValidValues = 0;
+
+        for (i = 0; i < nrList; i++)
+        {
+            if (myList[i]!= NODATA)
+            {
+                sum += myList[i];
+                nrValidValues++;
+            }
+        }
+
+        if (nrValidValues > 0)
+            return (sum/(nrValidValues));
+        else
+            return NODATA;
+    }
 
     float standardDeviation(float *myList, int nrList)
     {
         return sqrtf(variance(myList,nrList));
     }
 
+    double standardDeviation(double *myList, int nrList)
+    {
+        return sqrt(variance(myList,nrList));
+    }
+
     /*! covariance */
     float covariance(float *myList1, int nrList1,float *myList2, int nrList2)
     {
         float myMean1,myMean2,myDiff1,myDiff2,prodDiff;
+        int i, nrValidValues;
+
+        if (nrList1 <= 1) return NODATA;
+        if (nrList2 <= 1) return NODATA;
+        if (nrList2 != nrList1) return NODATA;
+
+        myMean1 = mean(myList1,nrList1);
+        myMean2 = mean(myList2,nrList2);
+        prodDiff = 0;
+        nrValidValues = 0;
+        for (i = 0;i<nrList1;i++)
+        {
+            if ((myList1[i]!= NODATA)&&myList2[i]!=NODATA)
+            {
+                myDiff1 = (myList1[i] - myMean1);
+                myDiff2 = (myList2[i] - myMean2);
+                prodDiff += myDiff1*myDiff2;
+                nrValidValues++;
+            }
+        }
+        return (prodDiff / (nrValidValues - 1));
+    }
+    double covariance(double *myList1, int nrList1,double *myList2, int nrList2)
+    {
+        double myMean1,myMean2,myDiff1,myDiff2,prodDiff;
         int i, nrValidValues;
 
         if (nrList1 <= 1) return NODATA;
@@ -253,7 +333,7 @@ namespace statistics
         return c;
     }
 
-    void correlationsMatrix(int nrRowCol, float**myLists,int nrLists, float** c)
+    void correlationsMatrix(int nrRowCol, double**myLists,int nrLists, double** c)
     {
         // input: myLists matrix
         // output: c matrix
@@ -263,34 +343,35 @@ namespace statistics
             for(int j = i+1;j<nrRowCol;j++)
             {
                 c[i][j]= covariance(myLists[i],nrLists,myLists[j],nrLists);
-                if (c[i][j] != 0) c[i][j] /= sqrtf(variance(myLists[i],nrLists)*variance(myLists[j],nrLists));
+                if (c[i][j] != 0) c[i][j] /= sqrt(variance(myLists[i],nrLists)*variance(myLists[j],nrLists));
                 c[j][i] = c[i][j];
             }
 
         }
     }
 
-    float ERF(float x, float accuracy) // error function
+    double ERF(double x, double accuracy) // error function
     {
-        return (float)(2*pow(PI,-0.5)*integration::qsimp(errorFunctionPrimitive,0.,x,accuracy));
+
+        return (1.12837916709551*double(integration::qsimp(errorFunctionPrimitive,0.,float(x),float(accuracy)))); // the constant in front of integration is equal to 2*pow(PI,-0.5)
     }
 
-    float ERFC(float x, float accuracy) // error function
+    double ERFC(double x, double accuracy) // error function
     {
-        return (float)(1. - ERF(x, accuracy));
+        return (1. - ERF(x, accuracy));
     }
 
-    float inverseERF(float value, float accuracy)
+    double inverseERF(double value, double accuracy)
     {
 
         if (value >=1 || value <= -1)
         {
             return PARAMETER_ERROR;
         }
-        float rootLeft,rootRight;
-        float root;
-        float absoluteValue;
-        absoluteValue = fabsf(value);
+        double rootLeft,rootRight;
+        double root;
+        double absoluteValue;
+        absoluteValue = fabs(value);
 
 
         if (value == 0)
@@ -299,7 +380,7 @@ namespace statistics
         }
         else if (value  > 0)
         {
-            float leftBound, rightBound;
+            double leftBound, rightBound;
             leftBound = 0.;
             rightBound = 100.;
             rootLeft = 0.;
@@ -321,7 +402,7 @@ namespace statistics
         }
         else
         {
-            float leftBound, rightBound;
+            double leftBound, rightBound;
             leftBound = -100.;
             rightBound = 0.;
             rootLeft = 0.;
@@ -344,7 +425,7 @@ namespace statistics
 
     }
 
-    float inverseERFC(float value, float accuracy)
+    double inverseERFC(double value, double accuracy)
     {
 
         if (value >=2 || value <= 0)
@@ -353,10 +434,10 @@ namespace statistics
         }
 
 
-        float rootLeft,rootRight;
-        float root;
-        float absoluteValue;
-        absoluteValue = fabsf(value);
+        double rootLeft,rootRight;
+        double root;
+        double absoluteValue;
+        absoluteValue = fabs(value);
 
         if (value == 1)
         {
@@ -364,7 +445,7 @@ namespace statistics
         }
         else if (value  < 1)
         {
-            float leftBound, rightBound;
+            double leftBound, rightBound;
             leftBound = 0.;
             rightBound = 100.;
             rootLeft = 1.;
@@ -385,7 +466,7 @@ namespace statistics
         }
         else
         {
-            float leftBound, rightBound;
+            double leftBound, rightBound;
             leftBound = -100.;
             rightBound = 0.;
             rootLeft = ERFC(rightBound,accuracy);

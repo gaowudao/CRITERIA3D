@@ -9,16 +9,20 @@ namespace statistics
     float weighedMean(float *data , float *weights, int nrData);
     void linearRegression(float* x, float* y, long nrItems, bool zeroIntercept, float* y_intercept, float* mySlope, float* r2);
     float standardDeviation(float *myList, int nrList);
+    double standardDeviation(double *myList, int nrList);
     float variance(float *myList, int nrList);
+    double variance(double *myList, int nrList);
     float mean(float *myList, int nrList);
+    double mean(double *myList, int nrList);
     float covariance(float *myList1, int nrList1,float *myList2, int nrList2);
+    double covariance(double *myList1, int nrList1,double *myList2, int nrList2);
     float coefficientPearson(float *myList1, int nrList1,float *myList2, int nrList2);
     float** covariancesMatrix(int nrRowCol, float**myLists,int nrLists);
-    void correlationsMatrix(int nrRowCol, float**myLists,int nrLists, float** c);
-    float ERF(float x, float accuracy);
-    float ERFC(float x, float accuracy);
-    float inverseERFC(float value, float accuracy);
-    float inverseERF(float value, float accuracy);
+    void correlationsMatrix(int nrRowCol, double**myLists,int nrLists, double** c);
+    double ERF(double x, double accuracy);
+    double ERFC(double x, double accuracy);
+    double inverseERFC(double value, double accuracy);
+    double inverseERF(double value, double accuracy);
 }
 
 
