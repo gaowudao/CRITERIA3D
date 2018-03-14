@@ -42,9 +42,10 @@
             bool isDailyDataAvailable() const;
             void setIsDailyDataAvailable(bool isDailyDataAvailable);
 
-        private:
+    private:
             std::string _name;
             gis::Crit3DGridHeader _header;
+
             int _dataType;
 
             bool _isRegular;
@@ -63,6 +64,9 @@
     {
 
         public:
+
+            gis::Crit3DRasterGrid dataMeteoGrid;
+
             Crit3DMeteoGrid();
 
             Crit3DMeteoGridStructure gridStructure() const;
@@ -86,12 +90,12 @@
             int nrVarsArray() const;
             void setNrVarsArray(int nrVarsArray);
 
+            bool loadRasterGrid();
 
     private:
 
             Crit3DMeteoGridStructure _gridStructure;
             std::vector<std::vector<Crit3DMeteoPoint> > _meteoPoints;
-            gis::Crit3DRasterGrid _dataMeteoGrid;
 
             bool _isAggregationDefined;
             bool _isDateTypeSpecified;

@@ -1,4 +1,6 @@
 #include "meteoGrid.h"
+#include "commonConstants.h"
+#include <iostream> //debug
 
 
 Crit3DMeteoGridStructure::Crit3DMeteoGridStructure()
@@ -106,7 +108,6 @@ void Crit3DMeteoGridStructure::setIsDailyDataAvailable(bool isDailyDataAvailable
     _isDailyDataAvailable = isDailyDataAvailable;
 }
 
-
 Crit3DMeteoGrid::Crit3DMeteoGrid()
 {
 
@@ -116,6 +117,26 @@ Crit3DMeteoGridStructure Crit3DMeteoGrid::gridStructure() const
 {
     return _gridStructure;
 }
+
+
+
+bool Crit3DMeteoGrid::loadRasterGrid()
+{
+
+    dataMeteoGrid.header->cellSize = NODATA;
+    dataMeteoGrid.header->llCorner->x = _gridStructure.header().llCorner->longitude;
+    dataMeteoGrid.header->llCorner->y = _gridStructure.header().llCorner->latitude;
+
+    dataMeteoGrid.header->nrCols = _gridStructure.header().nrCols;
+    dataMeteoGrid.header->nrRows = _gridStructure.header().nrRows;
+    dataMeteoGrid.header->flag = NODATA;
+
+    dataMeteoGrid.initializeGrid(NODATA);
+
+    return true;
+
+}
+
 
 void Crit3DMeteoGrid::setGridStructure(const Crit3DMeteoGridStructure &gridStructure)
 {
@@ -181,6 +202,8 @@ void Crit3DMeteoGrid::setNrVarsArray(int nrVarsArray)
 {
     _nrVarsArray = nrVarsArray;
 }
+
+
 
 
 
