@@ -1,6 +1,6 @@
 #include "meteoGrid.h"
 #include "commonConstants.h"
-#include <iostream> //debug
+//#include <iostream> //debug
 
 
 Crit3DMeteoGridStructure::Crit3DMeteoGridStructure()
@@ -131,7 +131,8 @@ bool Crit3DMeteoGrid::loadRasterGrid()
     dataMeteoGrid.header->nrRows = _gridStructure.header().nrRows;
     dataMeteoGrid.header->flag = NODATA;
 
-    dataMeteoGrid.initializeGrid(NODATA);
+    if (_meteoPoints.empty())
+        dataMeteoGrid.initializeGrid(NODATA);
 
     return true;
 
