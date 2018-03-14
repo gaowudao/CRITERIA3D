@@ -58,7 +58,7 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
     QString myTag;
     QString mySecondTag;
     int nrTokens = 0;
-    const int nrRequiredToken = 27;
+    const int nrRequiredToken = 25;
 
     while(!ancestor.isNull())
     {
@@ -175,6 +175,11 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
                 if (myTag == "YWIDTH")
                 {
                     header.dy = child.toElement().text().toFloat();
+                    if (_gridStructure.isUTM() == true && header.dx != header.dy )
+                    {
+                        qDebug() << "UTM grid with dx != dy";
+                        return false;
+                    }
                     nrTokens++;
                 }
                 child = child.nextSibling();
@@ -234,7 +239,6 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
                         if (mySecondTag == "VARCODE")
                         {
                             _tableDaily.varcode[_tableDaily.varcode.size()-1].varCode = secondChild.toElement().text().toInt();
-                            nrTokens++;
 
                         }
 
@@ -243,7 +247,6 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
                             _tableDaily.varcode[_tableDaily.varcode.size()-1].varPragaName = secondChild.toElement().text();
                             // remove white spaces
                             _tableDaily.varcode[_tableDaily.varcode.size()-1].varPragaName = _tableDaily.varcode[_tableDaily.varcode.size()-1].varPragaName.simplified();
-                            nrTokens++;
                         }
 
                         secondChild = secondChild.nextSibling();
@@ -305,7 +308,6 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
                         if (mySecondTag == "VARCODE")
                         {
                             _tableHourly.varcode[_tableHourly.varcode.size()-1].varCode = secondChild.toElement().text().toInt();
-                            nrTokens++;
 
                         }
 
@@ -314,7 +316,6 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
                             _tableHourly.varcode[_tableHourly.varcode.size()-1].varPragaName = secondChild.toElement().text();
                             // remove white spaces
                             _tableHourly.varcode[_tableHourly.varcode.size()-1].varPragaName = _tableHourly.varcode[_tableHourly.varcode.size()-1].varPragaName.simplified();
-                            nrTokens++;
                         }
 
                         secondChild = secondChild.nextSibling();
@@ -345,6 +346,7 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
 
     return true;
 }
+
 
 QString Crit3DMeteoGridDbHandler::fileName() const
 {

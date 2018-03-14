@@ -1,6 +1,8 @@
 #ifndef METEOGRID_H
 #define METEOGRID_H
 
+#include <vector>
+
     #ifndef METEOPOINT_H
         #include "meteoPoint.h"
     #endif
@@ -40,9 +42,10 @@
             bool isDailyDataAvailable() const;
             void setIsDailyDataAvailable(bool isDailyDataAvailable);
 
-        private:
+    private:
             std::string _name;
             gis::Crit3DGridHeader _header;
+
             int _dataType;
 
             bool _isRegular;
@@ -61,13 +64,16 @@
     {
 
         public:
+
+            gis::Crit3DRasterGrid dataMeteoGrid;
+
             Crit3DMeteoGrid();
 
             Crit3DMeteoGridStructure gridStructure() const;
             void setGridStructure(const Crit3DMeteoGridStructure &gridStructure);
 
-            Crit3DMeteoPoint *meteoPoints() const;
-            void setMeteoPoints(Crit3DMeteoPoint *meteoPoints);
+            std::vector<std::vector<Crit3DMeteoPoint> > meteoPoints() const;
+            void setMeteoPoints(const std::vector<std::vector<Crit3DMeteoPoint> > &meteoPoints);
 
             bool isAggregationDefined() const;
             void setIsAggregationDefined(bool isAggregationDefined);
@@ -84,10 +90,12 @@
             int nrVarsArray() const;
             void setNrVarsArray(int nrVarsArray);
 
-        private:
+            bool loadRasterGrid();
+
+    private:
 
             Crit3DMeteoGridStructure _gridStructure;
-            Crit3DMeteoPoint* _meteoPoints;
+            std::vector<std::vector<Crit3DMeteoPoint> > _meteoPoints;
 
             bool _isAggregationDefined;
             bool _isDateTypeSpecified;

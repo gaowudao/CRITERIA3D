@@ -422,6 +422,9 @@ bool Project::loadMeteoGridDB(QString xmlName)
 
     meteoGridDbHandler.parseXMLGrid(xmlName);
 
+    meteoGrid.setGridStructure(meteoGridDbHandler.gridStructure());
+    meteoGrid.loadRasterGrid();
+
     return true;
 }
 
