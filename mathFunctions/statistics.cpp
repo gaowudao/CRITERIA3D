@@ -139,7 +139,7 @@ namespace statistics
     /*! Variance */
     float variance(float *myList, int nrList)
     {
-        float myMean,myDiff,squareDiff;
+        float myMean, myDiff, squareDiff;
         int i, nrValidValues;
 
         if (nrList <= 1) return NODATA;
@@ -153,7 +153,7 @@ namespace statistics
             if (myList[i]!= NODATA)
             {
                 myDiff = (myList[i] - myMean);
-                squareDiff += myDiff * myDiff;
+                squareDiff += (myDiff * myDiff);
                 nrValidValues++;
             }
         }
