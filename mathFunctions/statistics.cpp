@@ -35,14 +35,23 @@ namespace statistics
 
     float rootMeanSquareError(float *measured , float *simulated , int nrData)
     {
-        float sigma=0;
+        double sigma=0.;
+        double diff;
+        long nrValidValues = 0;
+
         for (int i=0; i< nrData; i++)
         {
-            sigma += powf(measured[i]-simulated[i],2);
+            if ((measured[i] != NODATA) && (simulated[i] != NODATA))
+            {
+                diff = measured[i]-simulated[i];
+                sigma += (diff * diff);
+                nrValidValues++;
+            }
         }
-        sigma /= nrData;
-        sigma = sqrtf(sigma);
-        return sigma;
+
+        sigma /= nrValidValues;
+        sigma = sqrt(sigma);
+        return float(sigma);
     }
 
     float coefficientOfVariation(float *measured , float *simulated , int nrData)
