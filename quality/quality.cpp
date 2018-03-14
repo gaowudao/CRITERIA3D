@@ -2,6 +2,7 @@
 #include "QDebug"
 
 #include <stdio.h>
+#include <cmath>
 
 #include "commonConstants.h"
 #include "quality.h"
