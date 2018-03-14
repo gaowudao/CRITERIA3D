@@ -148,15 +148,16 @@ namespace statistics
 
         squareDiff = 0;
         nrValidValues = 0;
-        for (i = 0;i<nrList;i++)
+        for (i = 0; i<nrList; i++)
         {
             if (myList[i]!= NODATA)
             {
                 myDiff = (myList[i] - myMean);
-                squareDiff += powf(myDiff, 2);
+                squareDiff += myDiff * myDiff;
                 nrValidValues++;
             }
         }
+
         if (nrValidValues > 1)
             return (squareDiff / (nrValidValues - 1));
         else
@@ -165,11 +166,13 @@ namespace statistics
 
     float mean(float *myList, int nrList)
     {
-        float sum=0;
+        float sum=0.;
         int i, nrValidValues;
+
         if (nrList < 1) return NODATA;
         nrValidValues = 0;
-        for (i = 0;i<nrList;i++)
+
+        for (i = 0; i < nrList; i++)
         {
             if (myList[i]!= NODATA)
             {
@@ -177,6 +180,7 @@ namespace statistics
                 nrValidValues++;
             }
         }
+
         if (nrValidValues > 0)
             return (sum/(float)(nrValidValues));
         else
@@ -187,6 +191,7 @@ namespace statistics
     {
         return sqrtf(variance(myList,nrList));
     }
+
     /*! covariance */
     float covariance(float *myList1, int nrList1,float *myList2, int nrList2)
     {
