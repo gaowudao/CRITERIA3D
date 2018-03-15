@@ -414,8 +414,8 @@ void weatherGenerator2D::precipitationCorrelationMatrices()
                             else value2 = obsDataD[i][k].prec;
 
                             amount.covariance += (value1 - amount.meanValueMonthlyPrec1)*(value2 - amount.meanValueMonthlyPrec2);
-                            amount.variance1 += pow((value1 - amount.meanValueMonthlyPrec1),2);
-                            amount.variance2 += pow((value2 - amount.meanValueMonthlyPrec2),2);
+                            amount.variance1 += (value1 - amount.meanValueMonthlyPrec1)*(value1 - amount.meanValueMonthlyPrec1);
+                            amount.variance2 += (value2 - amount.meanValueMonthlyPrec2)*(value2 - amount.meanValueMonthlyPrec2);
 
 
                             if (obsDataD[j][k].prec <= parametersModel.precipitationThreshold) value1 = 0.;
@@ -424,16 +424,16 @@ void weatherGenerator2D::precipitationCorrelationMatrices()
                             else value2 = 1.;
 
                             occurrence.covariance += (value1 - occurrence.meanValueMonthlyPrec1)*(value2 - occurrence.meanValueMonthlyPrec2);
-                            occurrence.variance1 += pow((value1 - occurrence.meanValueMonthlyPrec1),2);
-                            occurrence.variance2 += pow((value2 - occurrence.meanValueMonthlyPrec2),2);
+                            occurrence.variance1 += (value1 - occurrence.meanValueMonthlyPrec1)*(value1 - occurrence.meanValueMonthlyPrec1);
+                            occurrence.variance2 += (value2 - occurrence.meanValueMonthlyPrec2)*(value2 - occurrence.meanValueMonthlyPrec2);
 
 
                         }
                     }
                 }
-                correlationMatrix[iMonth].amount[j][i]= amount.covariance / pow((amount.variance1*amount.variance2),0.5);
+                correlationMatrix[iMonth].amount[j][i]= amount.covariance / sqrt(amount.variance1*amount.variance2);
                 correlationMatrix[iMonth].amount[i][j] = correlationMatrix[iMonth].amount[j][i];
-                correlationMatrix[iMonth].occurrence[j][i]= occurrence.covariance / pow((occurrence.variance1*occurrence.variance2),0.5);
+                correlationMatrix[iMonth].occurrence[j][i]= occurrence.covariance / sqrt(occurrence.variance1*occurrence.variance2);
                 correlationMatrix[iMonth].occurrence[i][j] = correlationMatrix[iMonth].occurrence[j][i];
             }
         }
@@ -633,7 +633,6 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
     double* eigenvalues =(double*)calloc(nrStations, sizeof(double));
     double* eigenvectors =(double*)calloc(nrStations*nrStations, sizeof(double));
     double* correlationArray =(double*)calloc(nrStations*nrStations, sizeof(double));
-    //double* dummyArray =(double*)calloc(lengthSeries, sizeof(double));
     double** dummyMatrix = (double**)calloc(nrStations, sizeof(double*));
     double** dummyMatrix2 = (double**)calloc(nrStations, sizeof(double*));
     double** dummyMatrix3 = (double**)calloc(nrStations, sizeof(double*));
@@ -679,13 +678,12 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
                 M[i][j] = min_value(M[i][j],1);
                 correlationArray[counter] = M[i][j];
                 counter++;
-                printf("%f ",M[i][j]);
+                //printf("%f ",M[i][j]);
             }
-            printf("\n");
+            //printf("\n");
         }
         //printf("inizio sub\n");
         eigenproblem::rs(nrStations,correlationArray,eigenvalues,true,eigenvectors);
-        printf("eigenvalues %f %f %f\n",eigenvalues[0],eigenvalues[1],eigenvalues[2]);
         for (int i=0;i<nrStations;i++)
         {
             if (eigenvalues[i] <= 0)
@@ -701,26 +699,13 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
             {
                 for (int j=0;j<nrStations;j++)
                 {
-                    dummyMatrix[i][j]= eigenvectors[counter];
-                    dummyMatrix2[j][i] = dummyMatrix[i][j] * eigenvalues[j]; //product of diagonal matrix times transposed eigenvectors matrix!!!!
-                    //if (i != j) M[i][j]= 0.;
-                    //else M[i][i]= eigenvalues[i];
+                    dummyMatrix[j][i]= eigenvectors[counter];
+                    dummyMatrix2[i][j]= eigenvectors[counter]*eigenvalues[i];
                     counter++;
                 }
             }
-            //matricial::matrixProduct(M,dummyMatrix,nrStations,nrStations,nrStations,nrStations,dummyMatrix2);
-            //matricial::transposedSquareMatrix(dummyMatrix,nrStations);
             matricial::matrixProduct(dummyMatrix,dummyMatrix2,nrStations,nrStations,nrStations,nrStations,M);
         }
-        for (int i=0;i<nrStations;i++)
-        {
-            for (int j=0;j<nrStations;j++)
-            {
-                printf("%f ",M[i][j]);
-            }
-            printf("\n");
-        }
-        //printf("nuovaMatriceProdotti\n");
         // the matrix called M is the final matrix exiting from the calculation
         for (int i=0;i<nrStations;i++)
             for (int j=0;j<nrStations;j++) dummyMatrix[i][j] = M[i][j];
@@ -731,36 +716,28 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
         //printf("prodottoMatriciale\n");
         for (int i=0;i<nrStations;i++)
         {
-            //for (int j=0;j<lengthSeries;j++) dummyArray[j]= (float)(dummyMatrix3[i][j]);
+            // compute mean and standard deviation without NODATA check
             double meanValue,stdDevValue;
             meanValue = stdDevValue = 0;
-            for (int j=0;j<lengthSeries;j++) meanValue += dummyMatrix3[i][j];
+            for (int j=0;j<lengthSeries;j++)
+                meanValue += dummyMatrix3[i][j];
             meanValue /= lengthSeries;
             for (int j=0;j<lengthSeries;j++)
-            {
                 stdDevValue += (dummyMatrix3[i][j]- meanValue)*(dummyMatrix3[i][j]- meanValue);
-            }
             stdDevValue /= (lengthSeries-1);
-            stdDevValue = sqrt(stdDevValue);// powf(stdDevValue,0.5);
+            stdDevValue = sqrt(stdDevValue);
 
-            /*for (int j=0;j<lengthSeries;j++)
-            {
-                normRandom[i][j]= (dummyMatrix3[i][j]-statistics::mean(dummyArray,lengthSeries))/statistics::standardDeviation(dummyArray,lengthSeries);
-            }*/
             for (int j=0;j<lengthSeries;j++)
             {
                 normRandom[i][j]= (dummyMatrix3[i][j]-meanValue)/stdDevValue;
             }
-
         }
         // initialize occurrence to 0
 
         for (int i=0;i<nrStations;i++)
         {
             for (int j=0;j<lengthSeries;j++)
-            {
                 occurrences[i][j]= 0.;
-            }
         }
 
         for (int i=0;i<nrStations;i++)
@@ -784,12 +761,10 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
             for (int j=0;j<nrStations;j++)
             {
                 val = max_value(val,fabs(K[i][j] - matrixOccurrence[i][j]));
-                //printf("%f ",matrixOccurrence[i][j]);
             }
-            printf("\n");
         }
         printf("%f \n",val);
-        getchar();
+        //getchar();
         if ((ii != MAX_ITERATION_MULGETS) && (val > TOLERANCE_MULGETS))
         {
             for (int i=0; i<nrStations;i++)
@@ -802,11 +777,9 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
                 }
             }
         }
-        //printf("fine sub\n");
     } // end of the while cycle
-
-    //printf("fine sub\n");
-    getchar();
+    //printf("press return to continue");
+    //getchar();
     //printf("%d\n",ii);
 
 

@@ -545,19 +545,24 @@ namespace matricial
 
     void transposedSquareMatrix(double** a, int n)
     {
-        double dummy;
+        double** b = (double**)calloc(n, sizeof(double*));
+        for (int i=0;i<n;i++)
+            b[i]= (double*)calloc(n, sizeof(double));
+
         for (int i=0;i<n;i++)
         {
             for (int j=0;j<n;j++)
-            {
-                if (i != j)
-                {
-                    dummy = a[i][j];
-                    a[i][j] = a[j][i];
-                    a[j][i] = dummy;
-                }
-            }
+                b[i][j]=a[j][i];
         }
+        for (int i=0;i<n;i++)
+        {
+            for (int j=0;j<n;j++)
+                a[i][j] = b[i][j];
+        }
+
+        for (int i=0;i<n;i++)
+            free(b[i]);
+        free(b);
     }
 
     void transposedMatrix(double **inputMatrix, int nrRows, int nrColumns, double **outputMatrix)
