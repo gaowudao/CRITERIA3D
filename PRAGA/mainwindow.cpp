@@ -371,9 +371,13 @@ void MainWindow::on_actionOpen_meteo_grid_triggered()
     }
 
     if (myProject.meteoGridDbHandler.gridStructure().isUTM() == false)
+    {
         gridObj->initializeLatLon(&(myProject.meteoGrid.dataMeteoGrid), myProject.gisSettings, myProject.meteoGridDbHandler.gridStructure().header(), true);
+    }
     else
+    {
         gridObj->initializeUTM(&(myProject.meteoGrid.dataMeteoGrid), myProject.gisSettings, true);
+    }
 
     gridObj->updateCenter();
 

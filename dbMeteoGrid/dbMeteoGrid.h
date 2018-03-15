@@ -49,9 +49,17 @@ class Crit3DMeteoGridDbHandler
 
         Crit3DMeteoGridDbHandler();
 
+        QSqlDatabase db() const;
+
+        void setDb(const QSqlDatabase &db);
+
         QString fileName() const;
 
         TXMLConnection connection() const;
+
+        Crit3DMeteoGrid meteoGrid() const;
+
+        void setMeteoGrid(const Crit3DMeteoGrid &meteoGrid);
 
         Crit3DMeteoGridStructure gridStructure() const;
 
@@ -71,17 +79,25 @@ class Crit3DMeteoGridDbHandler
 
         QString tableHourlyModel() const;
 
+        void openDatabase(QString dbName);
+
+        void closeDatabase();
+
         bool parseXMLFile(QString xmlFileName, QDomDocument* xmlDoc);
 
         bool parseXMLGrid(QString xmlFileName);
+
+        bool loadDBGridStructure(QString dbName);
 
 
 
 private:
 
         QString _fileName;
+        QSqlDatabase _db;
         TXMLConnection _connection;
         Crit3DMeteoGridStructure _gridStructure;
+        Crit3DMeteoGrid _meteoGrid;
 
         TXMLTable _tableDaily;
         TXMLTable _tableHourly;

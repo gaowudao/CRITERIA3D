@@ -134,6 +134,26 @@ bool Crit3DMeteoGrid::loadRasterGrid()
     if (_meteoPoints.empty())
         dataMeteoGrid.initializeGrid(NODATA);
 
+    // TODO
+//    else
+//    {
+//        for (int i = 0; i < dataMeteoGrid.header->nrRows; i++)
+//        {
+//            for (int j = 0; j < dataMeteoGrid.header->nrCols; j++)
+//            {
+//                if (_meteoPoints[i][j].active == 0)
+//                {
+//                    dataMeteoGrid.value[i][j] = NODATA;
+//                }
+//                else
+//                {
+//                    //dataMeteoGrid.value[i][j] = _meteoPoints[i][j].currentValue;
+//                }
+//            }
+//        }
+//    }
+
+
     return true;
 
 }

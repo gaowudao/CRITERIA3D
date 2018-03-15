@@ -59,6 +59,8 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
     QString mySecondTag;
     int nrTokens = 0;
     const int nrRequiredToken = 25;
+    int nRow;
+    int nCol;
 
     while(!ancestor.isNull())
     {
@@ -160,11 +162,13 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
                 if (myTag == "NROWS")
                 {
                     header.nrRows = child.toElement().text().toInt();
+                    nRow = header.nrRows;
                     nrTokens++;
                 }
                 if (myTag == "NCOLS")
                 {
                     header.nrCols = child.toElement().text().toInt();
+                    nCol = header.nrCols;
                     nrTokens++;
                 }
                 if (myTag == "XWIDTH")
@@ -344,7 +348,99 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
         return false;
     }
 
+    _meteoGrid.setGridStructure(_gridStructure);
+    for (int i = 0; i < nRow; i++)
+    {
+        std::vector<Crit3DMeteoPoint> MeteoPointVector;
+        for (int j = 0; j < nCol; j++)
+        {
+            Crit3DMeteoPoint meteoPoint;
+            meteoPoint.active = 0;
+            meteoPoint.selected = 0;
+            MeteoPointVector.push_back(meteoPoint);
+        }
+        _meteoGrid.meteoPoints().push_back(MeteoPointVector);
+
+    }
+
+
     return true;
+}
+
+void Crit3DMeteoGridDbHandler::openDatabase(QString dbName)
+{
+    _db = QSqlDatabase::addDatabase("QSQLITE");
+    _db.setDatabaseName(dbName);
+
+    if (!_db.open())
+    {
+       qDebug() << "Error: connection with database fail";
+    }
+    else
+    {
+       qDebug() << "Database: connection ok";
+    }
+}
+
+void Crit3DMeteoGridDbHandler::closeDatabase()
+{
+    if ((_db.isValid()) && (_db.isOpen()))
+    {
+        _db.removeDatabase(_db.connectionName());
+        _db.close();
+    }
+}
+
+bool Crit3DMeteoGridDbHandler::loadDBGridStructure(QString dbName)
+{
+    openDatabase(dbName);
+
+    QSqlQuery qry(_db);
+
+    qry.prepare( "SELECT * FROM CellsProperties ORDER BY Code" );
+
+    if( !qry.exec() )
+    {
+        qDebug() << qry.lastError();
+    }
+    else
+    {
+        while (qry.next())
+        {
+            QString code = qry.value(0).toString();
+            QString name = qry.value(1).toString();
+            int row = qry.value(2).toInt();
+            int col = qry.value(3).toInt();
+            double x = qry.value(4).toDouble();
+            double y = qry.value(5).toDouble();
+            int height = qry.value(6).toInt();
+            int area = qry.value(7).toInt();
+            int active = qry.value(8).toInt();
+        }
+    }
+
+    //TODO
+
+}
+
+QSqlDatabase Crit3DMeteoGridDbHandler::db() const
+{
+    return _db;
+}
+
+void Crit3DMeteoGridDbHandler::setDb(const QSqlDatabase &db)
+{
+    _db = db;
+}
+
+Crit3DMeteoGrid Crit3DMeteoGridDbHandler::meteoGrid() const
+{
+    return _meteoGrid;
+}
+
+void Crit3DMeteoGridDbHandler::setMeteoGrid(const Crit3DMeteoGrid &meteoGrid)
+{
+    _meteoGrid = meteoGrid;
 }
 
 
