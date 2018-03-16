@@ -1,6 +1,6 @@
 #include "meteoGrid.h"
 #include "commonConstants.h"
-//#include <iostream> //debug
+#include <iostream> //debug
 
 
 Crit3DMeteoGridStructure::Crit3DMeteoGridStructure()
@@ -108,17 +108,31 @@ void Crit3DMeteoGridStructure::setIsDailyDataAvailable(bool isDailyDataAvailable
     _isDailyDataAvailable = isDailyDataAvailable;
 }
 
-Crit3DMeteoGrid::Crit3DMeteoGrid()
-{
-
-}
-
 Crit3DMeteoGridStructure Crit3DMeteoGrid::gridStructure() const
 {
     return _gridStructure;
 }
 
+Crit3DMeteoGrid::Crit3DMeteoGrid()
+{
 
+}
+
+Crit3DMeteoGrid::~Crit3DMeteoGrid()
+{
+
+    for (int i = 0; i < _meteoPoints.size(); i++)
+    {
+        std::vector<Crit3DMeteoPoint*> meteoPointVector = _meteoPoints[i];
+
+        for (int j = 0; j < meteoPointVector.size(); j++)
+        {
+            free(meteoPointVector[j]);
+        }
+
+    }
+
+}
 
 bool Crit3DMeteoGrid::loadRasterGrid()
 {
@@ -132,47 +146,71 @@ bool Crit3DMeteoGrid::loadRasterGrid()
     dataMeteoGrid.header->flag = NODATA;
 
     if (_meteoPoints.empty())
+    {
         dataMeteoGrid.initializeGrid(NODATA);
-
-    // TODO
-//    else
-//    {
-//        for (int i = 0; i < dataMeteoGrid.header->nrRows; i++)
-//        {
-//            for (int j = 0; j < dataMeteoGrid.header->nrCols; j++)
-//            {
-//                if (_meteoPoints[i][j].active == 0)
-//                {
-//                    dataMeteoGrid.value[i][j] = NODATA;
-//                }
-//                else
-//                {
-//                    //dataMeteoGrid.value[i][j] = _meteoPoints[i][j].currentValue;
-//                }
-//            }
-//        }
-//    }
+    }
+    else
+    {
+        for (int i = 0; i < dataMeteoGrid.header->nrRows; i++)
+        {
+            for (int j = 0; j < dataMeteoGrid.header->nrCols; j++)
+            {
+                if (_meteoPoints[i][j]->active == 0)
+                {
+                    dataMeteoGrid.value[i][j] = NODATA;
+                }
+                else
+                {
+                    dataMeteoGrid.value[i][j] = _meteoPoints[i][j]->currentValue;
+                }
+            }
+        }
+    }
 
 
     return true;
 
 }
 
+std::vector<std::vector<Crit3DMeteoPoint *> > Crit3DMeteoGrid::meteoPoints() const
+{
+    return _meteoPoints;
+}
+
+void Crit3DMeteoGrid::setMeteoPoints(const std::vector<std::vector<Crit3DMeteoPoint *> > &meteoPoints)
+{
+    _meteoPoints = meteoPoints;
+}
+
+void Crit3DMeteoGrid::initMeteoPoints(int nRow, int nCol)
+{
+
+    _meteoPoints.reserve(nRow);
+
+    for (int i = 0; i < nRow; i++)
+    {
+        std::vector<Crit3DMeteoPoint*> meteoPointVector;
+        meteoPointVector.reserve(nCol);
+
+        for (int j = 0; j < nCol; j++)
+        {
+            Crit3DMeteoPoint* meteoPoint = new Crit3DMeteoPoint;
+            meteoPoint->active = 0;
+            meteoPoint->selected = 0;
+            meteoPointVector.push_back(meteoPoint);
+        }
+
+        _meteoPoints.push_back(meteoPointVector);
+
+    }
+
+}
 
 void Crit3DMeteoGrid::setGridStructure(const Crit3DMeteoGridStructure &gridStructure)
 {
     _gridStructure = gridStructure;
 }
 
-std::vector<std::vector<Crit3DMeteoPoint> > Crit3DMeteoGrid::meteoPoints() const
-{
-    return _meteoPoints;
-}
-
-void Crit3DMeteoGrid::setMeteoPoints(const std::vector<std::vector<Crit3DMeteoPoint> > &meteoPoints)
-{
-    _meteoPoints = meteoPoints;
-}
 
 bool Crit3DMeteoGrid::isAggregationDefined() const
 {

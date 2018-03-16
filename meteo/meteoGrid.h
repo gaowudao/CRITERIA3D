@@ -68,12 +68,15 @@
             gis::Crit3DRasterGrid dataMeteoGrid;
 
             Crit3DMeteoGrid();
+            ~Crit3DMeteoGrid();
 
             Crit3DMeteoGridStructure gridStructure() const;
             void setGridStructure(const Crit3DMeteoGridStructure &gridStructure);
 
-            std::vector<std::vector<Crit3DMeteoPoint> > meteoPoints() const;
-            void setMeteoPoints(const std::vector<std::vector<Crit3DMeteoPoint> > &meteoPoints);
+            std::vector<std::vector<Crit3DMeteoPoint *> > meteoPoints() const;
+            void setMeteoPoints(const std::vector<std::vector<Crit3DMeteoPoint *> > &meteoPoints);
+
+            void initMeteoPoints(int nRow, int nCol);
 
             bool isAggregationDefined() const;
             void setIsAggregationDefined(bool isAggregationDefined);
@@ -92,10 +95,12 @@
 
             bool loadRasterGrid();
 
+
+
     private:
 
             Crit3DMeteoGridStructure _gridStructure;
-            std::vector<std::vector<Crit3DMeteoPoint> > _meteoPoints;
+            std::vector<std::vector<Crit3DMeteoPoint*> > _meteoPoints;
 
             bool _isAggregationDefined;
             bool _isDateTypeSpecified;

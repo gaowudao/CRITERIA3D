@@ -12,6 +12,8 @@
 #include "interpolation.h"
 #include "transmissivity.h"
 
+#include <iostream> //debug
+
 
 Project::Project()
 {
@@ -25,6 +27,7 @@ Project::Project()
     currentHour = 12;
     colorScalePoints = new Crit3DColorScale();
     meteoPointsDbHandler = NULL;
+    meteoGridDbHandler = NULL;
 
     radiationMaps = new Crit3DRadiationMaps();
 }
@@ -420,10 +423,11 @@ bool Project::loadMeteoGridDB(QString xmlName)
     if (xmlName == "")
         return false;
 
-    meteoGridDbHandler.parseXMLGrid(xmlName);
+    meteoGridDbHandler = new Crit3DMeteoGridDbHandler();
 
-    meteoGrid.setGridStructure(meteoGridDbHandler.gridStructure());
-    meteoGrid.loadRasterGrid();
+    meteoGridDbHandler->parseXMLGrid(xmlName);
+
+    meteoGridDbHandler->meteoGrid()->loadRasterGrid();
 
     return true;
 }

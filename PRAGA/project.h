@@ -42,8 +42,8 @@
     public:
         Crit3DMeteoPoint* meteoPoints;
         Crit3DMeteoPointsDbHandler* meteoPointsDbHandler;
-        Crit3DMeteoGridDbHandler meteoGridDbHandler;
-        Crit3DMeteoGrid meteoGrid;
+        Crit3DMeteoGridDbHandler* meteoGridDbHandler;
+
         int nrMeteoPoints;
 
         QList<gis::Crit3DGeoPoint> meteoPointsSelected;

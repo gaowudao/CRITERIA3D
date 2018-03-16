@@ -1,10 +1,17 @@
 #include "dbMeteoGrid.h"
 #include "utilities.h"
+#include <qdebug.h> //debug
+#include <iostream> //debug
 
 
 Crit3DMeteoGridDbHandler::Crit3DMeteoGridDbHandler()
 {
+    _meteoGrid = new Crit3DMeteoGrid();
+}
 
+Crit3DMeteoGridDbHandler::~Crit3DMeteoGridDbHandler()
+{
+    free(_meteoGrid);
 }
 
 bool Crit3DMeteoGridDbHandler::parseXMLFile(QString xmlFileName, QDomDocument* xmlDoc)
@@ -114,34 +121,42 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
             if (ancestor.toElement().attribute("isregular").toUpper() == "TRUE")
             {
                 _gridStructure.setIsRegular(true);
+                nrTokens++;
             }
             else if (ancestor.toElement().attribute("isregular").toUpper() == "FALSE")
             {
                 _gridStructure.setIsRegular(false);
+                nrTokens++;
             }
             if (ancestor.toElement().attribute("isutm").toUpper() == "TRUE")
             {
                 _gridStructure.setIsUTM(true);
+                nrTokens++;
             }
             else if (ancestor.toElement().attribute("isutm").toUpper() == "FALSE")
             {
                 _gridStructure.setIsUTM(false);
+                nrTokens++;
             }
             if (ancestor.toElement().attribute("istin").toUpper() == "TRUE")
             {
                 _gridStructure.setIsTIN(true);
+                nrTokens++;
             }
             else if (ancestor.toElement().attribute("istin").toUpper() == "FALSE")
             {
                 _gridStructure.setIsTIN(false);
+                nrTokens++;
             }
             if (ancestor.toElement().attribute("isFixedFields").toUpper() == "TRUE")
             {
                 _gridStructure.setIsFixedFields(true);
+                nrTokens++;
             }
             else if (ancestor.toElement().attribute("isFixedFields").toUpper() == "FALSE")
             {
                 _gridStructure.setIsFixedFields(false);
+                nrTokens++;
             }
 
             child = ancestor.firstChild();
@@ -341,6 +356,7 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
         return false;
     }
 
+
     if (nrTokens < nrRequiredToken)
     {
         int missingTokens = nrRequiredToken - nrTokens;
@@ -348,21 +364,9 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
         return false;
     }
 
-    _meteoGrid.setGridStructure(_gridStructure);
-    for (int i = 0; i < nRow; i++)
-    {
-        std::vector<Crit3DMeteoPoint> MeteoPointVector;
-        for (int j = 0; j < nCol; j++)
-        {
-            Crit3DMeteoPoint meteoPoint;
-            meteoPoint.active = 0;
-            meteoPoint.selected = 0;
-            MeteoPointVector.push_back(meteoPoint);
-        }
-        _meteoGrid.meteoPoints().push_back(MeteoPointVector);
+    _meteoGrid->setGridStructure(_gridStructure);
 
-    }
-
+    _meteoGrid->initMeteoPoints(nRow, nCol);
 
     return true;
 }
@@ -423,6 +427,16 @@ bool Crit3DMeteoGridDbHandler::loadDBGridStructure(QString dbName)
 
 }
 
+Crit3DMeteoGrid *Crit3DMeteoGridDbHandler::meteoGrid() const
+{
+    return _meteoGrid;
+}
+
+void Crit3DMeteoGridDbHandler::setMeteoGrid(Crit3DMeteoGrid *meteoGrid)
+{
+    _meteoGrid = meteoGrid;
+}
+
 QSqlDatabase Crit3DMeteoGridDbHandler::db() const
 {
     return _db;
@@ -432,17 +446,6 @@ void Crit3DMeteoGridDbHandler::setDb(const QSqlDatabase &db)
 {
     _db = db;
 }
-
-Crit3DMeteoGrid Crit3DMeteoGridDbHandler::meteoGrid() const
-{
-    return _meteoGrid;
-}
-
-void Crit3DMeteoGridDbHandler::setMeteoGrid(const Crit3DMeteoGrid &meteoGrid)
-{
-    _meteoGrid = meteoGrid;
-}
-
 
 QString Crit3DMeteoGridDbHandler::fileName() const
 {
