@@ -934,6 +934,31 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
     statistics::correlationsMatrix(nrStations,correlationMatrixSeasonJJA,lengthJJA,wJJA);
     statistics::correlationsMatrix(nrStations,correlationMatrixSeasonSON,lengthSON,wSON);
 
+
+    for (int i=0;i<nrStations;i++)
+    {
+        free(correlationMatrixSeasonJJA[i]);
+        free(correlationMatrixSeasonDJF[i]);
+        free(correlationMatrixSeasonMAM[i]);
+        free(correlationMatrixSeasonSON[i]);
+    }
+    free(correlationMatrixSeasonDJF);
+    free(correlationMatrixSeasonJJA);
+    free(correlationMatrixSeasonMAM);
+    free(correlationMatrixSeasonSON);
+
+    for (int i=0;i<nrStations;i++)
+    {
+        free(wDJF[i]);
+        free(wJJA[i]);
+        free(wMAM[i]);
+        free(wSON[i]);
+    }
+    free(wDJF);
+    free(wJJA);
+    free(wMAM);
+    free(wSON);
+
 }
 
 
