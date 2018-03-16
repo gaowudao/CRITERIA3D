@@ -54,13 +54,13 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
     myFirstTime = Crit3DTime(myDate, myTimeStep);
     myLastTime = Crit3DTime(myDate, nrHours * 3600);
 
-    /*
+
     int checkStressHour;
     if (!myProject->gisSettings.isUTC)
         checkStressHour = 12;
     else
         checkStressHour = 12 - myProject->gisSettings.timeZone;
-    */
+
 
     for (myCurrentTime = myFirstTime; myCurrentTime <= myLastTime; myCurrentTime = myCurrentTime.addSeconds(myTimeStep))
     {

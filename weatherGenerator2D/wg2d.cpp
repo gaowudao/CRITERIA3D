@@ -290,9 +290,8 @@ void weatherGenerator2D::precipitationCompute()
    weatherGenerator2D::precipitationCorrelationMatrices();
    // step 3 of precipitation WG2D
    weatherGenerator2D::precipitationMultisiteOccurrenceGeneration();
-
-
    // step 4 of precipitation WG2D
+   weatherGenerator2D::precipitationMultiDistributionAmounts();
    // step 5 of precipitation WG2D
 }
 
@@ -504,7 +503,6 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
                 randomMatrix[iMonth].matrixM[i]= (float*)calloc(nrStations, sizeof(float));
                 randomMatrix[iMonth].matrixOccurrences[i]= (float*)calloc(nrDaysIterativeProcessMonthly[iMonth], sizeof(float));
             }
-            randomMatrix[iMonth].month = iMonth + 1;
         }
 
 
@@ -589,11 +587,7 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
                 randomMatrix[iMonth].matrixOccurrences[i][j]= float(occurrences[i][j]);
             }
         }
-
-
-
-
-
+        randomMatrix[iMonth].month = iMonth + 1;
         // free memory
         for (int i=0;i<nrStations;i++)
         {
@@ -763,7 +757,7 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
                 val = max_value(val,fabs(K[i][j] - matrixOccurrence[i][j]));
             }
         }
-        printf("%f \n",val);
+        //printf("%f \n",val);
         //getchar();
         if ((ii != MAX_ITERATION_MULGETS) && (val > TOLERANCE_MULGETS))
         {
@@ -801,6 +795,169 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
     free(eigenvalues);
     free(eigenvectors);
     free(correlationArray);
+
+}
+
+void weatherGenerator2D::precipitationMultiDistributionAmounts()
+{
+    int beginYear,endYear;
+    beginYear = endYear = obsDataD[0][0].date.year;
+    for (int i=0;i<nrStations;i++)
+    {
+        for (int j=0;j<nrData;j++)
+        {
+            beginYear = min_value(beginYear,obsDataD[i][j].date.year);
+            endYear =  max_value(endYear,obsDataD[i][j].date.year);
+        }
+    }
+    // create the seasonal correlation matrices
+    double** correlationMatrixSeasonDJF = (double **)calloc(nrStations, sizeof(double*));
+    double** correlationMatrixSeasonMAM = (double **)calloc(nrStations, sizeof(double*));
+    double** correlationMatrixSeasonJJA = (double **)calloc(nrStations, sizeof(double*));
+    double** correlationMatrixSeasonSON = (double **)calloc(nrStations, sizeof(double*));
+
+    double** wDJF = (double **)calloc(nrStations, sizeof(double*));
+    double** wMAM = (double **)calloc(nrStations, sizeof(double*));
+    double** wJJA = (double **)calloc(nrStations, sizeof(double*));
+    double** wSON = (double **)calloc(nrStations, sizeof(double*));
+
+    int lengthDJF,lengthMAM,lengthJJA,lengthSON;
+    lengthDJF = lengthMonth[11]+lengthMonth[0]+lengthMonth[1];
+    lengthJJA = lengthMonth[5]+lengthMonth[6]+lengthMonth[7];
+    lengthMAM = lengthMonth[2]+lengthMonth[3]+lengthMonth[4];
+    lengthSON = lengthMonth[8]+lengthMonth[9]+lengthMonth[10];
+
+    for (int i=0;i<nrStations;i++)
+    {
+        correlationMatrixSeasonDJF[i] = (double *)calloc(lengthDJF, sizeof(double));
+        correlationMatrixSeasonMAM[i] = (double *)calloc(lengthMAM, sizeof(double));
+        correlationMatrixSeasonJJA[i] = (double *)calloc(lengthJJA, sizeof(double));
+        correlationMatrixSeasonSON[i] = (double *)calloc(lengthSON, sizeof(double));
+    }
+
+    for (int i=0;i<nrStations;i++)
+    {
+        int counterMonth = 11;
+        int nrDaysOfMonth = 0;
+        //printf("%d\n",lengthDJF);
+        for (int j=0;j<lengthDJF;j++)
+        {
+
+                correlationMatrixSeasonDJF[i][j] = randomMatrix[counterMonth].matrixOccurrences[i][0];
+                //printf("%d,%d,%d",j,counterMonth,nrDaysOfMonth);
+                //getchar();
+                nrDaysOfMonth++;
+                if (nrDaysOfMonth >= lengthMonth[counterMonth])
+                {
+                    counterMonth++;
+                    counterMonth = counterMonth%12;
+                    nrDaysOfMonth = 0;
+                }
+
+        }
+    }
+
+    for (int i=0;i<nrStations;i++)
+    {
+        int counterMonth = 2;
+        int nrDaysOfMonth = 0;
+        //printf("%d\n",lengthMAM);
+        for (int j=0;j<lengthMAM;j++)
+        {
+
+                correlationMatrixSeasonMAM[i][j] = randomMatrix[counterMonth].matrixOccurrences[i][0];
+                //printf("%d,%d,%d",j,counterMonth,nrDaysOfMonth);
+                //getchar();
+                nrDaysOfMonth++;
+                if (nrDaysOfMonth >= lengthMonth[counterMonth])
+                {
+                    counterMonth++;
+                    counterMonth = counterMonth%12;
+                    nrDaysOfMonth = 0;
+                }
+
+        }
+    }
+
+    for (int i=0;i<nrStations;i++)
+    {
+        int counterMonth = 5;
+        int nrDaysOfMonth = 0;
+        //printf("%d\n",lengthJJA);
+        for (int j=0;j<lengthJJA;j++)
+        {
+
+                correlationMatrixSeasonJJA[i][j] = randomMatrix[counterMonth].matrixOccurrences[i][0];
+                //printf("%d,%d,%d",j,counterMonth,nrDaysOfMonth);
+                //getchar();
+                nrDaysOfMonth++;
+                if (nrDaysOfMonth >= lengthMonth[counterMonth])
+                {
+                    counterMonth++;
+                    counterMonth = counterMonth%12;
+                    nrDaysOfMonth = 0;
+                }
+
+        }
+    }
+    for (int i=0;i<nrStations;i++)
+    {
+        int counterMonth = 8;
+        int nrDaysOfMonth = 0;
+        //printf("%d\n",lengthSON);
+        for (int j=0;j<lengthSON;j++)
+        {
+
+                correlationMatrixSeasonSON[i][j] = randomMatrix[counterMonth].matrixOccurrences[i][0];
+                //printf("%d,%d,%d",j,counterMonth,nrDaysOfMonth);
+                //getchar();
+                nrDaysOfMonth++;
+                if (nrDaysOfMonth >= lengthMonth[counterMonth])
+                {
+                    counterMonth++;
+                    counterMonth = counterMonth%12;
+                    nrDaysOfMonth = 0;
+                }
+        }
+    }
+
+
+    for (int i=0;i<nrStations;i++)
+    {
+        wDJF[i]= (double *)calloc(nrStations, sizeof(double));
+        wMAM[i]= (double *)calloc(nrStations, sizeof(double));
+        wJJA[i]= (double *)calloc(nrStations, sizeof(double));
+        wSON[i]= (double *)calloc(nrStations, sizeof(double));
+    }
+    statistics::correlationsMatrix(nrStations,correlationMatrixSeasonDJF,lengthDJF,wDJF);
+    statistics::correlationsMatrix(nrStations,correlationMatrixSeasonMAM,lengthMAM,wMAM);
+    statistics::correlationsMatrix(nrStations,correlationMatrixSeasonJJA,lengthJJA,wJJA);
+    statistics::correlationsMatrix(nrStations,correlationMatrixSeasonSON,lengthSON,wSON);
+
+
+    for (int i=0;i<nrStations;i++)
+    {
+        free(correlationMatrixSeasonJJA[i]);
+        free(correlationMatrixSeasonDJF[i]);
+        free(correlationMatrixSeasonMAM[i]);
+        free(correlationMatrixSeasonSON[i]);
+    }
+    free(correlationMatrixSeasonDJF);
+    free(correlationMatrixSeasonJJA);
+    free(correlationMatrixSeasonMAM);
+    free(correlationMatrixSeasonSON);
+
+    for (int i=0;i<nrStations;i++)
+    {
+        free(wDJF[i]);
+        free(wJJA[i]);
+        free(wMAM[i]);
+        free(wSON[i]);
+    }
+    free(wDJF);
+    free(wJJA);
+    free(wMAM);
+    free(wSON);
 
 }
 

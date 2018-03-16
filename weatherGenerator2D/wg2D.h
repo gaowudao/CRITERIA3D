@@ -12,30 +12,6 @@
 #include "meteoPoint.h"
 
 
-/*
-class precipitation
-{
-    void computeWG2DParameters(); // step 1
-
-
-public:
-
-    void compute();
-    precipitation() {}
-
-};
-
-
-class temperature
-{
-
-public:
-    void compute();
-    temperature() {}
-
-};
-*/
-
 struct TprecOccurrence{
     float p00;
     float p10;
@@ -92,6 +68,7 @@ private:
     void precipitationCorrelationMatrices();
     void precipitationMultisiteOccurrenceGeneration();
     void spatialIterationOccurrence(double ** M, double **K, double **occurrences, double** matrixOccurrence, double** normalizedMatrixRandom, double **transitionNormal, int lengthSeries);
+    void precipitationMultiDistributionAmounts();
     void temperatureCompute();
 
 
