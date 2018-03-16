@@ -57,7 +57,7 @@ int checkLastYearDate(Crit3DDate inputFirstDate, Crit3DDate inputLastDate, int d
     // use or not the observed data in the forecast period
     else if (USEDATA)
     {
-        if (inputLastDate > predictionFirstDate.addDays(84))
+        if (inputLastDate > predictionFirstDate.addDays(80))
         {
             qDebug() << "Check your XML: you have already all observed data" << endl;
             return(-1);
