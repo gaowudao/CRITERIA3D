@@ -144,6 +144,7 @@ bool Crit3DMeteoGrid::loadRasterGrid()
     dataMeteoGrid.header->nrCols = _gridStructure.header().nrCols;
     dataMeteoGrid.header->nrRows = _gridStructure.header().nrRows;
     dataMeteoGrid.header->flag = NODATA;
+    dataMeteoGrid.initializeGrid();
 
     if (_meteoPoints.empty())
     {
@@ -166,8 +167,7 @@ bool Crit3DMeteoGrid::loadRasterGrid()
             }
         }
     }
-
-
+    dataMeteoGrid.isLoaded = true;
     return true;
 
 }
