@@ -11,6 +11,14 @@ TARGET = solarRadiation
 TEMPLATE = lib
 CONFIG += staticlib
 
+CONFIG += debug_and_release
+
+CONFIG(debug, debug|release) {
+    TARGET = debug/solarRadiation
+} else {
+    TARGET = release/solarRadiation
+}
+
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../meteo
 
 SOURCES += \

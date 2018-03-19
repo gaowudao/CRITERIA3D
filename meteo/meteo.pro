@@ -11,6 +11,14 @@ TARGET = meteo
 TEMPLATE = lib
 CONFIG += staticlib
 
+CONFIG += debug_and_release
+
+CONFIG(debug, debug|release) {
+    TARGET = debug/meteo
+} else {
+    TARGET = release/meteo
+}
+
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis
 
 SOURCES += meteo.cpp \

@@ -11,6 +11,14 @@ TARGET = mathFunctions
 TEMPLATE = lib
 CONFIG += staticlib
 
+CONFIG += debug_and_release
+
+CONFIG(debug, debug|release) {
+    TARGET = debug/mathFunctions
+} else {
+    TARGET = release/mathFunctions
+}
+
 SOURCES += \
     basicMath.cpp \
     furtherMathFunctions.cpp \

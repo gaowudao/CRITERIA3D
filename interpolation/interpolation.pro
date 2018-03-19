@@ -11,6 +11,14 @@ TARGET = interpolation
 TEMPLATE = lib
 CONFIG += staticlib
 
+CONFIG += debug_and_release
+
+CONFIG(debug, debug|release) {
+    TARGET = debug/interpolation
+} else {
+    TARGET = release/interpolation
+}
+
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../meteo
 
 SOURCES += interpolation.cpp \
