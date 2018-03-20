@@ -24,7 +24,6 @@ win32:{
 }
 
 
-
 INCLUDEPATH += ../mathFunctions
 
 SOURCES += \

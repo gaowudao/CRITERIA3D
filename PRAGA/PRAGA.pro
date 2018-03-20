@@ -14,7 +14,6 @@ INCLUDEPATH +=  ../crit3dDate ../mathFunctions ../utilities ../gis ../MapGraphic
                 ../meteo ../quality ../interpolation ../solarRadiation \
                 ../dbMeteoPoints ../dbMeteoGrid ../netcdfHandler
 
-
 unix:{
     LIBS += -L../MapGraphics/release -lMapGraphics
 }
@@ -37,7 +36,6 @@ LIBS += -L../mathFunctions/debug -lmathFunctions
 
 #LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf -lhdf5
 LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf
-
 
 
 SOURCES += main.cpp\

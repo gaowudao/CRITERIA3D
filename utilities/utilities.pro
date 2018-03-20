@@ -1,7 +1,7 @@
 #-------------------------------------------------
 #
-# utilities
-# this library is part of CRITERIA3D
+# CRITERIA3D distribution
+# Utilities
 #
 #-------------------------------------------------
 
@@ -23,7 +23,6 @@ unix:{
 win32:{
     TARGET = utilities
 }
-
 
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../crop ../soil ../meteo ../gis
 

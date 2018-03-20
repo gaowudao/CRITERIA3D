@@ -215,9 +215,7 @@ void Crit3DMeteoGrid::fillMeteoPoint(int row, int col, std::string code, std::st
     _meteoPoints[row][col]->latitude = y;
     _meteoPoints[row][col]->point.z = height;
     _meteoPoints[row][col]->active = active;
-    // LC il campo area a quale corrisponde?
-    //_meteoPoints[Row][Col]-> = area;
-
+    _meteoPoints[row][col]->area = area;
 
 }
 

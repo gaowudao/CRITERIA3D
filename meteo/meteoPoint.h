@@ -60,6 +60,7 @@
         gis::Crit3DPoint point;
         double latitude;
         double longitude;
+        double area;
         int latInt;
         int lonInt;
 
