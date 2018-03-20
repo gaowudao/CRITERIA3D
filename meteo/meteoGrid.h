@@ -80,6 +80,8 @@
 
             void fillMeteoPoint(int row, int col, std::string code, std::string name, double x, double y, int height, bool active, int area);
 
+            bool findCellFromCode(int* row, int* col, std::string code);
+
             bool isAggregationDefined() const;
             void setIsAggregationDefined(bool isAggregationDefined);
 

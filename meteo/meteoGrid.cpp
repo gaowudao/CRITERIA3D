@@ -221,6 +221,24 @@ void Crit3DMeteoGrid::fillMeteoPoint(int row, int col, std::string code, std::st
 
 }
 
+bool Crit3DMeteoGrid::findCellFromCode(int* row, int* col, std::string code)
+{
+
+    for (int i = 0; i < dataMeteoGrid.header->nrRows; i++)
+    {
+        for (int j = 0; j < dataMeteoGrid.header->nrCols; j++)
+        {
+            if (_meteoPoints[i][j]->id == code)
+            {
+                *row = i;
+                *col = j;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 void Crit3DMeteoGrid::setGridStructure(const Crit3DMeteoGridStructure &gridStructure)
 {
     _gridStructure = gridStructure;
