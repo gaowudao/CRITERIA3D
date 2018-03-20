@@ -411,10 +411,10 @@ bool Crit3DMeteoGridDbHandler::loadCellProperties(QString dbName)
     {
         while (qry.next())
         {
-            QString code = qry.value(0).toString();
-            QString name = qry.value(1).toString();
-            int row = qry.value(2).toInt();
-            int col = qry.value(3).toInt();
+            QString code = qry.value("Code").toString();
+            QString name = qry.value("Name").toString();
+            int row = qry.value("Row").toInt();
+            int col = qry.value("Col").toInt();
             double x = qry.value(4).toDouble();
             double y = qry.value(5).toDouble();
             int height = qry.value(6).toInt();

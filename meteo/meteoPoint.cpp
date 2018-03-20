@@ -46,6 +46,7 @@ Crit3DMeteoPoint::Crit3DMeteoPoint()
 
     this->latitude = NODATA;
     this->longitude = NODATA;
+    this->area = NODATA;
     this->latInt = NODATA;
     this->lonInt = NODATA;
 

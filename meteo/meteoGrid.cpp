@@ -121,11 +121,11 @@ Crit3DMeteoGrid::Crit3DMeteoGrid()
 Crit3DMeteoGrid::~Crit3DMeteoGrid()
 {
 
-    for (int i = 0; i < _meteoPoints.size(); i++)
+    for (unsigned int i = 0; i < _meteoPoints.size(); i++)
     {
         std::vector<Crit3DMeteoPoint*> meteoPointVector = _meteoPoints[i];
 
-        for (int j = 0; j < meteoPointVector.size(); j++)
+        for (unsigned int j = 0; j < meteoPointVector.size(); j++)
         {
             free(meteoPointVector[j]);
         }
@@ -215,9 +215,7 @@ void Crit3DMeteoGrid::fillMeteoPoint(int row, int col, std::string code, std::st
     _meteoPoints[row][col]->latitude = y;
     _meteoPoints[row][col]->point.z = height;
     _meteoPoints[row][col]->active = active;
-    // LC il campo area a quale corrisponde?
-    //_meteoPoints[Row][Col]-> = area;
-
+    _meteoPoints[row][col]->area = area;
 
 }
 

@@ -1,6 +1,7 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2017-03-02T16:07:56
+# CRITERIA3D distribution
+# dbMeteoPoints library
 #
 #-------------------------------------------------
 
