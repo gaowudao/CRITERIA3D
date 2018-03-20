@@ -89,7 +89,7 @@ class Crit3DMeteoGridDbHandler
 
         bool parseXMLGrid(QString xmlFileName);
 
-        bool loadDBGridStructure(QString dbName);
+        bool loadCellProperties(QString dbName);
 
 
 private:

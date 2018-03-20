@@ -78,6 +78,8 @@
 
             void initMeteoPoints(int nRow, int nCol);
 
+            void fillMeteoPoint(int row, int col, std::string code, std::string name, double x, double y, int height, bool active, int area);
+
             bool isAggregationDefined() const;
             void setIsAggregationDefined(bool isAggregationDefined);
 

@@ -395,7 +395,7 @@ void Crit3DMeteoGridDbHandler::closeDatabase()
     }
 }
 
-bool Crit3DMeteoGridDbHandler::loadDBGridStructure(QString dbName)
+bool Crit3DMeteoGridDbHandler::loadCellProperties(QString dbName)
 {
     openDatabase(dbName);
 
@@ -420,10 +420,12 @@ bool Crit3DMeteoGridDbHandler::loadDBGridStructure(QString dbName)
             int height = qry.value(6).toInt();
             int area = qry.value(7).toInt();
             int active = qry.value(8).toInt();
+
+            _meteoGrid->fillMeteoPoint(row, col, code.toStdString(), name.toStdString(), x, y, height, active, area);
         }
     }
+    return true;
 
-    //TODO
 
 }
 
