@@ -8,18 +8,21 @@ QT       += network sql xml
 
 QT       -= gui
 
-TARGET = dbMeteoGrid
-
 TEMPLATE = lib
 CONFIG += staticlib
 
 CONFIG += debug_and_release
 
-#CONFIG(debug, debug|release) {
-#    TARGET = debug/dbMeteoGrid
-#} else {
-#    TARGET = release/dbMeteoGrid
-#}
+unix:{
+    CONFIG(debug, debug|release) {
+        TARGET = debug/dbMeteoGrid
+    } else {
+        TARGET = release/dbMeteoGrid
+    }
+}
+win32:{
+    TARGET = dbMeteoGrid
+}
 
 DEFINES += DBMETEOGRID_LIBRARY
 

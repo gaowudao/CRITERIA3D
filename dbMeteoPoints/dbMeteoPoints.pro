@@ -8,18 +8,21 @@ QT       += network sql
 
 QT       -= gui
 
-TARGET = dbMeteoPoints
-
 TEMPLATE = lib
 CONFIG += staticlib
 
 CONFIG += debug_and_release
 
-#CONFIG(debug, debug|release) {
-#    TARGET = debug/dbMeteoPoints
-#} else {
-#    TARGET = release/dbMeteoPoints
-#}
+unix:{
+    CONFIG(debug, debug|release) {
+        TARGET = debug/dbMeteoPoints
+    } else {
+        TARGET = release/dbMeteoPoints
+    }
+}
+win32:{
+    TARGET = dbMeteoPoints
+}
 
 DEFINES += DBMETEOPOINTS_LIBRARY
 

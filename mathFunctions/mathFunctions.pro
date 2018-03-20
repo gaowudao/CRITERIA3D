@@ -7,17 +7,21 @@
 
 QT       -= core gui
 
-TARGET = mathFunctions
 TEMPLATE = lib
 CONFIG += staticlib
 
 CONFIG += debug_and_release
 
-#CONFIG(debug, debug|release) {
-#    TARGET = debug/mathFunctions
-#} else {
-#    TARGET = release/mathFunctions
-#}
+unix:{
+    CONFIG(debug, debug|release) {
+        TARGET = debug/mathFunctions
+    } else {
+        TARGET = release/mathFunctions
+    }
+}
+win32:{
+    TARGET = mathFunctions
+}
 
 SOURCES += \
     basicMath.cpp \

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'CompositeTileSourceConfigurationWidget.ui'
 **
-** Created by: Qt User Interface Compiler version 5.7.0
+** Created by: Qt User Interface Compiler version 5.9.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -111,11 +111,11 @@ public:
 
     void retranslateUi(QWidget *CompositeTileSourceConfigurationWidget)
     {
-        CompositeTileSourceConfigurationWidget->setWindowTitle(QApplication::translate("CompositeTileSourceConfigurationWidget", "Form", 0));
-        addSourceButton->setText(QApplication::translate("CompositeTileSourceConfigurationWidget", "+", 0));
-        removeSourceButton->setText(QApplication::translate("CompositeTileSourceConfigurationWidget", "X", 0));
-        moveDownButton->setText(QApplication::translate("CompositeTileSourceConfigurationWidget", "D", 0));
-        moveUpButton->setText(QApplication::translate("CompositeTileSourceConfigurationWidget", "U", 0));
+        CompositeTileSourceConfigurationWidget->setWindowTitle(QApplication::translate("CompositeTileSourceConfigurationWidget", "Form", Q_NULLPTR));
+        addSourceButton->setText(QApplication::translate("CompositeTileSourceConfigurationWidget", "+", Q_NULLPTR));
+        removeSourceButton->setText(QApplication::translate("CompositeTileSourceConfigurationWidget", "X", Q_NULLPTR));
+        moveDownButton->setText(QApplication::translate("CompositeTileSourceConfigurationWidget", "D", Q_NULLPTR));
+        moveUpButton->setText(QApplication::translate("CompositeTileSourceConfigurationWidget", "U", Q_NULLPTR));
     } // retranslateUi
 
 };

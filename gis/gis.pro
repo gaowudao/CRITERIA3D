@@ -7,17 +7,21 @@
 
 QT  -= core gui
 
-TARGET = gis
 TEMPLATE = lib
 CONFIG += staticlib
 
 CONFIG += debug_and_release
 
-#CONFIG(debug, debug|release) {
-#    TARGET = debug/gis
-#} else {
-#    TARGET = release/gis
-#}
+unix:{
+    CONFIG(debug, debug|release) {
+        TARGET = debug/gis
+    } else {
+        TARGET = release/gis
+    }
+}
+win32:{
+    TARGET = gis
+}
 
 INCLUDEPATH += ../mathFunctions
 

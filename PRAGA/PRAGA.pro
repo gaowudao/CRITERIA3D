@@ -15,7 +15,13 @@ INCLUDEPATH +=  ../crit3dDate ../mathFunctions ../utilities ../gis ../MapGraphic
                 ../dbMeteoPoints ../dbMeteoGrid ../netcdfHandler
 
 
-LIBS += -L../MapGraphics/debug -lMapGraphics
+unix:{
+    LIBS += -L../MapGraphics/release -lMapGraphics
+}
+win32:{
+    LIBS += -L../MapGraphics/debug -lMapGraphics
+}
+
 LIBS += -L../netcdfHandler/debug -lnetcdfHandler
 LIBS += -L../dbMeteoGrid/debug -ldbMeteoGrid
 LIBS += -L../dbMeteoPoints/debug -ldbMeteoPoints

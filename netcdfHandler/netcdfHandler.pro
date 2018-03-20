@@ -7,17 +7,21 @@
 
 QT       -= core gui
 
-TARGET = netcdfHandler
 TEMPLATE = lib
 CONFIG += staticlib
 
 CONFIG += debug_and_release
 
-#CONFIG(debug, debug|release) {
-#    TARGET = debug/netcdfHandler
-#} else {
-#    TARGET = release/netcdfHandler
-#}
+unix:{
+    CONFIG(debug, debug|release) {
+        TARGET = debug/netcdfHandler
+    } else {
+        TARGET = release/netcdfHandler
+    }
+}
+win32:{
+    TARGET = netcdfHandler
+}
 
 
 INCLUDEPATH += ../mathFunctions ../crit3dDate ../gis

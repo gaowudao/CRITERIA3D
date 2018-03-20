@@ -7,17 +7,21 @@
 
 QT       -= gui
 
-TARGET = quality
 TEMPLATE = lib
 CONFIG += staticlib
 
 CONFIG += debug_and_release
 
-#CONFIG(debug, debug|release) {
-#    TARGET = debug/quality
-#} else {
-#    TARGET = release/quality
-#}
+unix:{
+    CONFIG(debug, debug|release) {
+        TARGET = debug/quality
+    } else {
+        TARGET = release/quality
+    }
+}
+win32:{
+    TARGET = quality
+}
 
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../meteo ../interpolation
 

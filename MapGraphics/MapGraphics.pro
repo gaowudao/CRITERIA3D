@@ -7,16 +7,18 @@
 QT       += network sql
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = MapGraphics
 TEMPLATE = lib
 
-CONFIG += debug
+unix:{
+    CONFIG += release
+    TARGET = release/MapGraphics
+}
+win32:{
+    CONFIG += debug
+    TARGET = MapGraphics
+}
 
-#CONFIG(debug, debug|release) {
-#    TARGET = debug/MapGraphics
-#} else {
-#    TARGET = release/MapGraphics
-#}
+
 
 DEFINES += MAPGRAPHICS_LIBRARY
 
