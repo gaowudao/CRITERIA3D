@@ -714,13 +714,24 @@ void MainWindow::on_dateChanged()
 
 void MainWindow::on_timeChanged()
 {
-
-    qDebug("on_timeChanged");
     QTime time = this->ui->timeEdit->time();
     //hour
     if (time.hour() != myProject.getCurrentHour())
     {
-        qDebug("time changed");
+        //qDebug("time changed");
+        myProject.setCurrentHour(time.hour());
+    }
+
+    redrawMeteoPoints(true);
+}
+
+
+void MainWindow::on_timeEdit_timeChanged(const QTime &time)
+{
+    //hour
+    if (time.hour() != myProject.getCurrentHour())
+    {
+        //qDebug("time changed");
         myProject.setCurrentHour(time.hour());
     }
 
@@ -987,3 +998,5 @@ void MainWindow::setCurrentRaster(gis::Crit3DRasterGrid *myRaster)
     this->rasterLegend->colorScale = myRaster->colorScale;
     this->rasterObj->redrawRequested();
 }
+
+
