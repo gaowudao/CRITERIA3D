@@ -13,11 +13,11 @@ CONFIG += staticlib
 
 CONFIG += debug_and_release
 
-CONFIG(debug, debug|release) {
-    TARGET = debug/crit3dDate
-} else {
-    TARGET = release/crit3dDate
-}
+#CONFIG(debug, debug|release) {
+#    TARGET = debug/crit3dDate
+#} else {
+#    TARGET = release/crit3dDate
+#}
 
 INCLUDEPATH += ../mathFunctions
 

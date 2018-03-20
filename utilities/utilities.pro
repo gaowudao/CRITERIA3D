@@ -14,11 +14,11 @@ CONFIG += staticlib
 
 CONFIG += debug_and_release
 
-CONFIG(debug, debug|release) {
-    TARGET = debug/utilities
-} else {
-    TARGET = release/utilities
-}
+#CONFIG(debug, debug|release) {
+#    TARGET = debug/utilities
+#} else {
+#    TARGET = release/utilities
+#}
 
 
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../crop ../soil ../meteo ../gis

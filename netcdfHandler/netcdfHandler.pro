@@ -13,11 +13,11 @@ CONFIG += staticlib
 
 CONFIG += debug_and_release
 
-CONFIG(debug, debug|release) {
-    TARGET = debug/netcdfHandler
-} else {
-    TARGET = release/netcdfHandler
-}
+#CONFIG(debug, debug|release) {
+#    TARGET = debug/netcdfHandler
+#} else {
+#    TARGET = release/netcdfHandler
+#}
 
 
 INCLUDEPATH += ../mathFunctions ../crit3dDate ../gis

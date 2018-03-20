@@ -13,11 +13,11 @@ CONFIG += staticlib
 
 CONFIG += debug_and_release
 
-CONFIG(debug, debug|release) {
-    TARGET = debug/quality
-} else {
-    TARGET = release/quality
-}
+#CONFIG(debug, debug|release) {
+#    TARGET = debug/quality
+#} else {
+#    TARGET = release/quality
+#}
 
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../meteo ../interpolation
 

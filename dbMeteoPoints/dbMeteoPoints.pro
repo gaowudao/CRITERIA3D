@@ -15,11 +15,11 @@ CONFIG += staticlib
 
 CONFIG += debug_and_release
 
-CONFIG(debug, debug|release) {
-    TARGET = debug/dbMeteoPoints
-} else {
-    TARGET = release/dbMeteoPoints
-}
+#CONFIG(debug, debug|release) {
+#    TARGET = debug/dbMeteoPoints
+#} else {
+#    TARGET = release/dbMeteoPoints
+#}
 
 DEFINES += DBMETEOPOINTS_LIBRARY
 

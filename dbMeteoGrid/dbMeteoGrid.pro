@@ -15,11 +15,11 @@ CONFIG += staticlib
 
 CONFIG += debug_and_release
 
-CONFIG(debug, debug|release) {
-    TARGET = debug/dbMeteoGrid
-} else {
-    TARGET = release/dbMeteoGrid
-}
+#CONFIG(debug, debug|release) {
+#    TARGET = debug/dbMeteoGrid
+#} else {
+#    TARGET = release/dbMeteoGrid
+#}
 
 DEFINES += DBMETEOGRID_LIBRARY
 

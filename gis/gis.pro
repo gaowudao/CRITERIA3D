@@ -13,12 +13,11 @@ CONFIG += staticlib
 
 CONFIG += debug_and_release
 
-CONFIG(debug, debug|release) {
-    TARGET = debug/gis
-} else {
-    TARGET = release/gis
-}
-
+#CONFIG(debug, debug|release) {
+#    TARGET = debug/gis
+#} else {
+#    TARGET = release/gis
+#}
 
 INCLUDEPATH += ../mathFunctions
 

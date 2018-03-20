@@ -10,13 +10,13 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = MapGraphics
 TEMPLATE = lib
 
-CONFIG += release
+CONFIG += debug
 
-CONFIG(debug, debug|release) {
-    TARGET = debug/MapGraphics
-} else {
-    TARGET = release/MapGraphics
-}
+#CONFIG(debug, debug|release) {
+#    TARGET = debug/MapGraphics
+#} else {
+#    TARGET = release/MapGraphics
+#}
 
 DEFINES += MAPGRAPHICS_LIBRARY
 
