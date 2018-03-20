@@ -1,7 +1,11 @@
 /********************************************************************************
 ** Form generated from reading UI file 'CompositeTileSourceConfigurationWidget.ui'
 **
+<<<<<<< HEAD
 ** Created by: Qt User Interface Compiler version 5.7.1
+=======
+** Created by: Qt User Interface Compiler version 5.9.1
+>>>>>>> c9ebc2981a0e00f16ce64d132a0aca8792822b09
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/

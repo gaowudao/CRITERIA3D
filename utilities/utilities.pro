@@ -8,17 +8,21 @@
 QT      += core sql
 QT      -= gui
 
-TARGET = utilities
 TEMPLATE = lib
 CONFIG += staticlib
 
 CONFIG += debug_and_release
 
-#CONFIG(debug, debug|release) {
-#    TARGET = debug/utilities
-#} else {
-#    TARGET = release/utilities
-#}
+unix:{
+    CONFIG(debug, debug|release) {
+        TARGET = debug/utilities
+    } else {
+        TARGET = release/utilities
+    }
+}
+win32:{
+    TARGET = utilities
+}
 
 
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../crop ../soil ../meteo ../gis
