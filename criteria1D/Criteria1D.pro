@@ -2,9 +2,9 @@
 #
 # Criteria1D
 # Soil Water Balance 1D
-# with heuristic algorithms for soil water infiltration, redistribution and capillary rise
+# heuristic algorithms for soil water infiltration, redistribution and capillary rise
 #
-# this library is part of CRITERIA3D
+# this library is part of CRITERIA3D distribution
 #
 #-----------------------------------------------------------------------------
 
@@ -14,6 +14,19 @@ QT      -= gui
 TARGET = Criteria1D
 TEMPLATE = lib
 CONFIG += staticlib
+
+CONFIG += debug_and_release
+
+unix:{
+    CONFIG(debug, debug|release) {
+        TARGET = debug/Criteria1D
+    } else {
+        TARGET = release/Criteria1D
+    }
+}
+win32:{
+    TARGET = Criteria1D
+}
 
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../utilities ../crop ../meteo ../soil ../gis
 
