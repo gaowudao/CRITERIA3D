@@ -1,7 +1,7 @@
 #-------------------------------------------------
 #
-# CRITERIA3D library
-# common constants and math functions
+# CRITERIA3D distribution
+# Common constants and math functions
 #
 #-------------------------------------------------
 

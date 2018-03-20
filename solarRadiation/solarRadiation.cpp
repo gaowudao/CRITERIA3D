@@ -42,8 +42,8 @@ Crit3DRadiationMaps::Crit3DRadiationMaps()
 
     clearSkyTransmissivityMap = new gis::Crit3DRasterGrid;
     transmissivityMap = new gis::Crit3DRasterGrid;
-
     beamRadiationMap = new gis::Crit3DRasterGrid;
+
     diffuseRadiationMap = new gis::Crit3DRasterGrid;
     reflectedRadiationMap = new gis::Crit3DRasterGrid;
     globalRadiationMap = new gis::Crit3DRasterGrid;

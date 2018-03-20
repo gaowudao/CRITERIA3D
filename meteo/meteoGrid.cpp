@@ -121,11 +121,11 @@ Crit3DMeteoGrid::Crit3DMeteoGrid()
 Crit3DMeteoGrid::~Crit3DMeteoGrid()
 {
 
-    for (int i = 0; i < _meteoPoints.size(); i++)
+    for (unsigned int i = 0; i < _meteoPoints.size(); i++)
     {
         std::vector<Crit3DMeteoPoint*> meteoPointVector = _meteoPoints[i];
 
-        for (int j = 0; j < meteoPointVector.size(); j++)
+        for (unsigned int j = 0; j < meteoPointVector.size(); j++)
         {
             free(meteoPointVector[j]);
         }
