@@ -5,7 +5,7 @@
 # of water and heat in the soil
 # in a three-dimensional domain
 #
-# this library is part of CRITERIA3D
+# this library is part of CRITERIA3D distribution
 #
 #-------------------------------------------------
 
