@@ -415,13 +415,12 @@ bool Crit3DMeteoGridDbHandler::loadCellProperties(QString dbName)
             QString name = qry.value("Name").toString();
             int row = qry.value("Row").toInt();
             int col = qry.value("Col").toInt();
-            double x = qry.value(4).toDouble();
-            double y = qry.value(5).toDouble();
+
             int height = qry.value(6).toInt();
             int area = qry.value(7).toInt();
             int active = qry.value(8).toInt();
 
-            _meteoGrid->fillMeteoPoint(row, col, code.toStdString(), name.toStdString(), x, y, height, active, area);
+            _meteoGrid->fillMeteoPoint(row, col, code.toStdString(), name.toStdString(), height, active, area);
         }
     }
     return true;
