@@ -78,7 +78,7 @@
 
             void initMeteoPoints(int nRow, int nCol);
 
-            void fillMeteoPoint(int row, int col, std::string code, std::string name, int height, bool active, int area);
+            void fillMeteoPoint(int row, int col, std::string code, std::string name, int height, bool active);
 
             bool findCellFromCode(int* row, int* col, std::string code);
 

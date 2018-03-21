@@ -81,7 +81,7 @@ class Crit3DMeteoGridDbHandler
 
         QString tableHourlyModel() const;
 
-        void openDatabase(QString dbName);
+        void openDatabase();
 
         void closeDatabase();
 
@@ -89,7 +89,7 @@ class Crit3DMeteoGridDbHandler
 
         bool parseXMLGrid(QString xmlFileName);
 
-        bool loadCellProperties(QString dbName);
+        bool loadCellProperties();
 
 
 private:

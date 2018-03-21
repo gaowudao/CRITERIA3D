@@ -371,10 +371,19 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
     return true;
 }
 
-void Crit3DMeteoGridDbHandler::openDatabase(QString dbName)
+void Crit3DMeteoGridDbHandler::openDatabase()
 {
-    _db = QSqlDatabase::addDatabase("QSQLITE");
-    _db.setDatabaseName(dbName);
+
+    if (_connection.provider == "mysql")
+    {
+        _db = QSqlDatabase::addDatabase("QMYSQL");
+    }
+
+    _db.setHostName(_connection.server);
+    _db.setDatabaseName(_connection.name);
+    _db.setUserName(_connection.user);
+    _db.setPassword(_connection.password);
+
 
     if (!_db.open())
     {
@@ -395,9 +404,9 @@ void Crit3DMeteoGridDbHandler::closeDatabase()
     }
 }
 
-bool Crit3DMeteoGridDbHandler::loadCellProperties(QString dbName)
+bool Crit3DMeteoGridDbHandler::loadCellProperties()
 {
-    openDatabase(dbName);
+    openDatabase();
 
     QSqlQuery qry(_db);
 
@@ -409,6 +418,7 @@ bool Crit3DMeteoGridDbHandler::loadCellProperties(QString dbName)
     }
     else
     {
+
         while (qry.next())
         {
             QString code = qry.value("Code").toString();
@@ -416,11 +426,18 @@ bool Crit3DMeteoGridDbHandler::loadCellProperties(QString dbName)
             int row = qry.value("Row").toInt();
             int col = qry.value("Col").toInt();
 
-            int height = qry.value(6).toInt();
-            int area = qry.value(7).toInt();
-            int active = qry.value(8).toInt();
+            int height = qry.value("Height").toInt();
+            int active = qry.value("Active").toInt();
+/*
+            qDebug() << "code " << code ;
+            qDebug() << "name" << name ;
+            qDebug() << "row " << row ;
+            qDebug() << "col " << col ;
+            qDebug() << "height " << height ;
+            qDebug() << "active " << active ;
 
-            _meteoGrid->fillMeteoPoint(row, col, code.toStdString(), name.toStdString(), height, active, area);
+*/
+            _meteoGrid->fillMeteoPoint(row, col, code.toStdString(), name.toStdString(), height, active);
         }
     }
     return true;
