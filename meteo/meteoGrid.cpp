@@ -206,13 +206,11 @@ void Crit3DMeteoGrid::initMeteoPoints(int nRow, int nCol)
 
 }
 
-void Crit3DMeteoGrid::fillMeteoPoint(int row, int col, std::string code, std::string name, double x, double y, int height, bool active, int area)
+void Crit3DMeteoGrid::fillMeteoPoint(int row, int col, std::string code, std::string name, int height, bool active, int area)
 {
 
     _meteoPoints[row][col]->id = code;
     _meteoPoints[row][col]->name = name;
-    _meteoPoints[row][col]->longitude = x;
-    _meteoPoints[row][col]->latitude = y;
     _meteoPoints[row][col]->point.z = height;
     _meteoPoints[row][col]->active = active;
     _meteoPoints[row][col]->area = area;
