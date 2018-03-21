@@ -141,6 +141,12 @@ bool weatherGenerator2D::initializeData(int lengthDataSeries, int stations)
         }
     }
 
+    obsPrecDataD = (TObsPrecDataD **)calloc(nrStations, sizeof(TObsPrecDataD*));
+    for (int i=0;i<nrStations;i++)
+    {
+        obsPrecDataD[i] = (TObsPrecDataD *)calloc(nrData, sizeof(TObsPrecDataD));
+    }
+
 
 
 
@@ -181,7 +187,7 @@ bool weatherGenerator2D::initializeData(int lengthDataSeries, int stations)
     return 0;
 }
 
-void weatherGenerator2D::initializeParameters(double thresholdPrecipitation, int simulatedYears, int distributionType, bool computePrecWG2D, bool computeTempWG2D)
+void weatherGenerator2D::initializeParameters(float thresholdPrecipitation, int simulatedYears, int distributionType, bool computePrecWG2D, bool computeTempWG2D)
 {
     isPrecWG2D = computePrecWG2D;
     isTempWG2D = computeTempWG2D;
@@ -933,6 +939,54 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
     statistics::correlationsMatrix(nrStations,correlationMatrixSeasonMAM,lengthMAM,wMAM);
     statistics::correlationsMatrix(nrStations,correlationMatrixSeasonJJA,lengthJJA,wJJA);
     statistics::correlationsMatrix(nrStations,correlationMatrixSeasonSON,lengthSON,wSON);
+
+    // initialize amounts and occurrences structures for precipitation
+
+    for (int i=0;i<nrStations;i++)
+    {
+        for (int j=0;j<nrData;j++)
+        {
+           obsPrecDataD[i][j].date.day = obsDataD[i][j].date.day;
+           obsPrecDataD[i][j].date.month = obsDataD[i][j].date.month;
+           obsPrecDataD[i][j].date.year = obsDataD[i][j].date.year;
+           obsPrecDataD[i][j].prec = obsDataD[i][j].prec;
+           if (obsPrecDataD[i][j].prec == NODATA)
+           {
+               obsPrecDataD[i][j].amounts = NODATA;
+               obsPrecDataD[i][j].occurrences = NODATA;
+               obsPrecDataD[i][j].amountsLessThreshold = NODATA;
+           }
+           else
+           {
+               if  (obsPrecDataD[i][j].prec < parametersModel.precipitationThreshold)
+               {
+                   obsPrecDataD[i][j].amounts = 0.;
+                   obsPrecDataD[i][j].occurrences = 0;
+                   obsPrecDataD[i][j].amountsLessThreshold = 0.;
+               }
+               else
+               {
+                   obsPrecDataD[i][j].amounts = obsDataD[i][j].prec;
+                   obsPrecDataD[i][j].occurrences = 1;
+                   obsPrecDataD[i][j].amountsLessThreshold = obsPrecDataD[i][j].amounts - parametersModel.precipitationThreshold;
+               }
+           }
+        }
+
+    }
+
+    for (int ijk=0;ijk<nrStations;ijk++)
+    {
+        int idStation = ijk;
+        for (int qq=0;qq<nrStations;qq++)
+        {
+
+        }
+
+    }
+
+
+
 
 
     for (int i=0;i<nrStations;i++)

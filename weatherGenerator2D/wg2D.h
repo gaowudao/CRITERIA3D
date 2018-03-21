@@ -25,6 +25,14 @@ struct TcorrelationVar{
     double variance1, variance2;
 };
 
+struct TObsPrecDataD{
+    Crit3DDate date;
+    float prec;
+    float amounts;
+    float amountsLessThreshold;
+    int occurrences;
+};
+
 struct TcorrelationMatrix{
     double** amount;
     double** occurrence;
@@ -41,7 +49,7 @@ struct TrandomMatrix{
 struct TparametersModel{
     int yearOfSimulation;
     int distributionPrecipitation; //Select a distribution to generate daily precipitation amount,1: Multi-exponential or 2: Multi-gamma
-    double precipitationThreshold;
+    float precipitationThreshold;
 };
 
 class weatherGenerator2D
@@ -55,6 +63,7 @@ private:
     TparametersModel parametersModel;
     int *month,*lengthMonth,*beginMonth;
     TObsDataD** obsDataD;
+    TObsPrecDataD** obsPrecDataD;
     TprecOccurrence** precOccurence;
     TcorrelationMatrix *correlationMatrix;
     TrandomMatrix *randomMatrix;
@@ -79,7 +88,7 @@ public:
     //functions
     weatherGenerator2D() {}
     bool initializeData(int lengthDataSeries, int nrStations);
-    void initializeParameters(double thresholdPrecipitation, int simulatedYears, int distributionType, bool computePrecWG2D, bool computeTempWG2D);
+    void initializeParameters(float thresholdPrecipitation, int simulatedYears, int distributionType, bool computePrecWG2D, bool computeTempWG2D);
     void setObservedData(float*** weatherArray, int** dateArray);
     void computeWeatherGenerator2D();
 
