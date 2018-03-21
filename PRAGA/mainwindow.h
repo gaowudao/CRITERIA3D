@@ -87,6 +87,8 @@
 
         void on_rasterRestoreButton_clicked();
 
+        void on_timeEdit_timeChanged(const QTime &time);
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
