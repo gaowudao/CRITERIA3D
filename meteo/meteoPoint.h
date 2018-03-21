@@ -47,6 +47,17 @@
         float waterTable;       // [m]
     };
 
+    struct TObsDataM {
+        short _month;
+        int _year;
+        float tMin;
+        float tMax;
+        float tAvg;
+        float prec;
+        float et0;
+        float globRad;
+    };
+
     class Crit3DMeteoPoint {
     public:
         std::string name;
@@ -70,6 +81,7 @@
         long nrObsDataDaysD;
         TObsDataH *obsDataH;
         TObsDataD *obsDataD;
+        TObsDataM *obsDataM;
         quality::type myQuality;
         float currentValue;
         float residual;   
