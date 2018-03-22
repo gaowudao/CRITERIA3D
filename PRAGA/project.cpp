@@ -427,7 +427,12 @@ bool Project::loadMeteoGridDB(QString xmlName)
 
     meteoGridDbHandler->parseXMLGrid(xmlName);
 
+    meteoGridDbHandler->loadCellProperties();
+
     meteoGridDbHandler->meteoGrid()->loadRasterGrid();
+
+    meteoGridDbHandler->meteoGrid()->setUtmZone(gisSettings.utmZone);
+    meteoGridDbHandler->meteoGrid()->setIsNorthernEmisphere(gisSettings.isNorthernEmisphere);
 
     return true;
 }

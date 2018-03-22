@@ -380,8 +380,8 @@ void MainWindow::on_actionOpen_meteo_grid_triggered()
         gridObj->initializeUTM(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid), myProject.gisSettings, true);
     }
 
-    myProject.meteoGridDbHandler->meteoGrid()->setUtmZone(myProject.gisSettings.utmZone);
-    myProject.meteoGridDbHandler->meteoGrid()->setIsNorthernEmisphere(myProject.gisSettings.isNorthernEmisphere);
+    //myProject.meteoGridDbHandler->meteoGrid()->setUtmZone(myProject.gisSettings.utmZone);
+    //myProject.meteoGridDbHandler->meteoGrid()->setIsNorthernEmisphere(myProject.gisSettings.isNorthernEmisphere);
 
     gridObj->updateCenter();
 
