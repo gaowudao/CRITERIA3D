@@ -76,6 +76,9 @@
             std::vector<std::vector<Crit3DMeteoPoint *> > meteoPoints() const;
             void setMeteoPoints(const std::vector<std::vector<Crit3DMeteoPoint *> > &meteoPoints);
 
+            int utmZone() const;
+            void setUtmZone(int utmZone);
+
             void initMeteoPoints(int nRow, int nCol);
 
             void fillMeteoPoint(int row, int col, std::string code, std::string name, int height, bool active);
@@ -99,12 +102,11 @@
 
             bool loadRasterGrid();
 
-
-
     private:
 
             Crit3DMeteoGridStructure _gridStructure;
             std::vector<std::vector<Crit3DMeteoPoint*> > _meteoPoints;
+            int _utmZone;
 
             bool _isAggregationDefined;
             bool _isDateTypeSpecified;

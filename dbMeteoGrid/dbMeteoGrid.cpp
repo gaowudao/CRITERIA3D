@@ -1,5 +1,6 @@
 #include "dbMeteoGrid.h"
 #include "utilities.h"
+#include "commonConstants.h"
 #include <qdebug.h> //debug
 #include <iostream> //debug
 
@@ -408,6 +409,7 @@ bool Crit3DMeteoGridDbHandler::loadCellProperties()
 {
     openDatabase();
 
+
     QSqlQuery qry(_db);
 
     qry.prepare( "SELECT * FROM CellsProperties ORDER BY Code" );
@@ -435,9 +437,10 @@ bool Crit3DMeteoGridDbHandler::loadCellProperties()
             qDebug() << "col " << col ;
             qDebug() << "height " << height ;
             qDebug() << "active " << active ;
-
 */
+
             _meteoGrid->fillMeteoPoint(row, col, code.toStdString(), name.toStdString(), height, active);
+
         }
     }
     return true;

@@ -172,6 +172,16 @@ bool Crit3DMeteoGrid::loadRasterGrid()
 
 }
 
+int Crit3DMeteoGrid::utmZone() const
+{
+    return _utmZone;
+}
+
+void Crit3DMeteoGrid::setUtmZone(int utmZone)
+{
+    _utmZone = utmZone;
+}
+
 std::vector<std::vector<Crit3DMeteoPoint *> > Crit3DMeteoGrid::meteoPoints() const
 {
     return _meteoPoints;
@@ -213,6 +223,34 @@ void Crit3DMeteoGrid::fillMeteoPoint(int row, int col, std::string code, std::st
     _meteoPoints[row][col]->name = name;
     _meteoPoints[row][col]->point.z = height;
     _meteoPoints[row][col]->active = active;
+
+    if (_gridStructure.isRegular())
+    {
+        if (_gridStructure.isUTM())
+        {
+            _meteoPoints[row][col]->point.utm.x = _gridStructure.header().llCorner->longitude + _gridStructure.header().dx * (col + 0.5);
+            // LC???
+            // chi è Environment.MeteoGrid_False_Northing? nella versione locale che ho di Praga lo trovo sempre a 0...
+            //_meteoPoints[row][col]->point.utm.y = _gridStructure.header().llCorner->latitude + _gridStructure.header().dy * (row + 0.5) - Environment.MeteoGrid_False_Northing ;
+            _meteoPoints[row][col]->point.utm.y = _gridStructure.header().llCorner->latitude + _gridStructure.header().dy * (row + 0.5);
+            // LC??? gisSettings.isNorthernEmisphere
+            gis::utmToLatLon(_utmZone, true, _meteoPoints[row][col]->point.utm.x, _meteoPoints[row][col]->point.utm.y, &(_meteoPoints[row][col]->latitude), &(_meteoPoints[row][col]->longitude));
+            //gis::utmToLatLon(_utmZone, gisSettings.isNorthernEmisphere, utmX, utmY, myLat, myLon);
+
+        }
+        else
+        {
+            _meteoPoints[row][col]->longitude = _gridStructure.header().llCorner->longitude + _gridStructure.header().dx * (col + 0.5);
+            _meteoPoints[row][col]->latitude = _gridStructure.header().llCorner->latitude + _gridStructure.header().dy * (row + 0.5);
+
+            gis::Crit3DUtmPoint utmPoint;
+            gis::Crit3DGeoPoint geoPoint(_meteoPoints[row][col]->latitude, _meteoPoints[row][col]->longitude);
+            gis::getUtmFromLatLon(_utmZone, geoPoint, &utmPoint);
+            _meteoPoints[row][col]->point.utm.x = utmPoint.x;
+            _meteoPoints[row][col]->point.utm.y = utmPoint.y;
+
+        }
+    }
 
 
 }

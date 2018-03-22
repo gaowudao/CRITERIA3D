@@ -370,16 +370,17 @@ void MainWindow::on_actionOpen_meteo_grid_triggered()
         myProject.loadMeteoGridDB(xmlName);
     }
 
+
     if (myProject.meteoGridDbHandler->gridStructure().isUTM() == false)
     {
-        //gridObj->initializeLatLon(&(myProject.meteoGrid.dataMeteoGrid), myProject.gisSettings, myProject.meteoGridDbHandler.gridStructure().header(), true);
         gridObj->initializeLatLon(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid), myProject.gisSettings, myProject.meteoGridDbHandler->gridStructure().header(), true);
     }
     else
     {
-        //gridObj->initializeUTM(&(myProject.meteoGrid.dataMeteoGrid), myProject.gisSettings, true);
         gridObj->initializeUTM(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid), myProject.gisSettings, true);
     }
+
+    myProject.meteoGridDbHandler->meteoGrid()->setUtmZone(myProject.gisSettings.utmZone);
 
     gridObj->updateCenter();
 
