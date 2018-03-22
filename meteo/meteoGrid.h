@@ -79,6 +79,9 @@
             int utmZone() const;
             void setUtmZone(int utmZone);
 
+            bool isNorthernEmisphere() const;
+            void setIsNorthernEmisphere(bool isNorthernEmisphere);
+
             void initMeteoPoints(int nRow, int nCol);
 
             void fillMeteoPoint(int row, int col, std::string code, std::string name, int height, bool active);
@@ -107,6 +110,7 @@
             Crit3DMeteoGridStructure _gridStructure;
             std::vector<std::vector<Crit3DMeteoPoint*> > _meteoPoints;
             int _utmZone;
+            bool _isNorthernEmisphere;
 
             bool _isAggregationDefined;
             bool _isDateTypeSpecified;

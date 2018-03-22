@@ -381,6 +381,7 @@ void MainWindow::on_actionOpen_meteo_grid_triggered()
     }
 
     myProject.meteoGridDbHandler->meteoGrid()->setUtmZone(myProject.gisSettings.utmZone);
+    myProject.meteoGridDbHandler->meteoGrid()->setIsNorthernEmisphere(myProject.gisSettings.isNorthernEmisphere);
 
     gridObj->updateCenter();
 

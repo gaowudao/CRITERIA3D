@@ -172,6 +172,16 @@ bool Crit3DMeteoGrid::loadRasterGrid()
 
 }
 
+bool Crit3DMeteoGrid::isNorthernEmisphere() const
+{
+    return _isNorthernEmisphere;
+}
+
+void Crit3DMeteoGrid::setIsNorthernEmisphere(bool isNorthernEmisphere)
+{
+    _isNorthernEmisphere = isNorthernEmisphere;
+}
+
 int Crit3DMeteoGrid::utmZone() const
 {
     return _utmZone;
@@ -229,13 +239,8 @@ void Crit3DMeteoGrid::fillMeteoPoint(int row, int col, std::string code, std::st
         if (_gridStructure.isUTM())
         {
             _meteoPoints[row][col]->point.utm.x = _gridStructure.header().llCorner->longitude + _gridStructure.header().dx * (col + 0.5);
-            // LC???
-            // chi è Environment.MeteoGrid_False_Northing? nella versione locale che ho di Praga lo trovo sempre a 0...
-            //_meteoPoints[row][col]->point.utm.y = _gridStructure.header().llCorner->latitude + _gridStructure.header().dy * (row + 0.5) - Environment.MeteoGrid_False_Northing ;
             _meteoPoints[row][col]->point.utm.y = _gridStructure.header().llCorner->latitude + _gridStructure.header().dy * (row + 0.5);
-            // LC??? gisSettings.isNorthernEmisphere
-            gis::utmToLatLon(_utmZone, true, _meteoPoints[row][col]->point.utm.x, _meteoPoints[row][col]->point.utm.y, &(_meteoPoints[row][col]->latitude), &(_meteoPoints[row][col]->longitude));
-            //gis::utmToLatLon(_utmZone, gisSettings.isNorthernEmisphere, utmX, utmY, myLat, myLon);
+            gis::utmToLatLon(_utmZone, _isNorthernEmisphere, _meteoPoints[row][col]->point.utm.x, _meteoPoints[row][col]->point.utm.y, &(_meteoPoints[row][col]->latitude), &(_meteoPoints[row][col]->longitude));
 
         }
         else
