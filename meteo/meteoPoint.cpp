@@ -29,6 +29,7 @@
 
 #include "commonConstants.h"
 #include "meteoPoint.h"
+#include <iostream> //debug
 
 
 Crit3DMeteoPoint::Crit3DMeteoPoint()
@@ -131,6 +132,49 @@ void Crit3DMeteoPoint::initializeObsDataD(int numberOfDays, const Crit3DDate& fi
         obsDataD[i].windDirPrev = NODATA;
         obsDataD[i].waterTable = NODATA;
     }
+}
+
+void Crit3DMeteoPoint::initializeObsDataM(int numberOfMonths, int month, int year)
+{
+    this->cleanObsDataM();
+
+    nrObsDataDaysM = numberOfMonths;
+    obsDataM = (TObsDataM *) calloc(numberOfMonths, sizeof(TObsDataM));
+
+    myQuality = quality::missing_data;
+    residual = NODATA;
+    int addYear = -1;
+
+
+    for (int i = month; i <= numberOfMonths; i++)
+    {
+        if (i < 12)
+        {
+            obsDataM[i]._month = i;
+            obsDataM[i]._year = year;
+        }
+        else if (i%12 == 0)
+        {
+            addYear = addYear+1;
+            obsDataM[i]._month = 12;
+            obsDataM[i]._year = year + addYear;
+        }
+        else
+        {
+            obsDataM[i]._month = i%12;
+            obsDataM[i]._year = year + addYear + 1;
+        }
+
+        obsDataM[i].tMax = NODATA;
+        obsDataM[i].tMin = NODATA;
+        obsDataM[i].tAvg = NODATA;
+        obsDataM[i].prec = NODATA;
+        obsDataM[i].et0 = NODATA;
+        obsDataM[i].globRad = NODATA;
+
+    }
+
+
 }
 
 void Crit3DMeteoPoint::emptyVarObsDataH(meteoVariable myVar, const Crit3DDate& myDate)
@@ -339,6 +383,14 @@ void Crit3DMeteoPoint::cleanObsDataD()
 
     if (nrObsDataDaysD > 0)
         free (obsDataD);
+}
+
+void Crit3DMeteoPoint::cleanObsDataM()
+{
+    myQuality = quality::missing_data;
+
+    if (nrObsDataDaysM > 0)
+        free (obsDataM);
 }
 
 bool Crit3DMeteoPoint::setMeteoPointValueH(const Crit3DDate& myDate, int myHour, int myMinutes, meteoVariable myVar, float myValue)

@@ -48,7 +48,7 @@
     };
 
     struct TObsDataM {
-        short _month;
+        int _month;
         int _year;
         float tMin;
         float tMax;
@@ -79,6 +79,7 @@
         int hourlyFraction;
         long nrObsDataDaysH;
         long nrObsDataDaysD;
+        long nrObsDataDaysM;
         TObsDataH *obsDataH;
         TObsDataD *obsDataD;
         TObsDataM *obsDataM;
@@ -104,6 +105,9 @@
         void cleanObsDataD();
         bool isDateLoadedD(const Crit3DDate& myDate);
         bool isDateIntervalLoadedD(const Crit3DDate& date1, const Crit3DDate& date2);
+
+        void initializeObsDataM(int numberOfMonths, int month, int year);
+        void cleanObsDataM();
 
         float getMeteoPointValueH(const Crit3DDate& myDate, int myHour, int myMinutes, meteoVariable myVar);
         bool setMeteoPointValueH(const Crit3DDate& myDate, int myHour, int myMinutes, meteoVariable myVar, float myValue);

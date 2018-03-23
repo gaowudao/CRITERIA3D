@@ -258,7 +258,6 @@ void Crit3DMeteoGrid::fillMeteoPoint(int row, int col, std::string code, std::st
         }
     }
 
-
 }
 
 bool Crit3DMeteoGrid::findCellFromCode(int* row, int* col, std::string code)
