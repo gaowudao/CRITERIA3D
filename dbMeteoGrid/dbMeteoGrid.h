@@ -65,6 +65,14 @@ class Crit3DMeteoGridDbHandler
 
         void setMeteoGrid(Crit3DMeteoGrid *meteoGrid);
 
+        QDate firstDate() const;
+
+        void setFirstDate(const QDate &firstDate);
+
+        QDate lastDate() const;
+
+        void setLastDate(const QDate &lastDate);
+
         TXMLTable tableDaily() const;
 
         TXMLTable tableHourly() const;
@@ -99,6 +107,9 @@ private:
         TXMLConnection _connection;
         Crit3DMeteoGridStructure _gridStructure;
         Crit3DMeteoGrid* _meteoGrid;
+
+        QDate _firstDate;
+        QDate _lastDate;
 
         TXMLTable _tableDaily;
         TXMLTable _tableHourly;

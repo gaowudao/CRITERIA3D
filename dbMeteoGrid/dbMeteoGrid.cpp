@@ -448,6 +448,26 @@ bool Crit3DMeteoGridDbHandler::loadCellProperties()
 
 }
 
+QDate Crit3DMeteoGridDbHandler::firstDate() const
+{
+    return _firstDate;
+}
+
+void Crit3DMeteoGridDbHandler::setFirstDate(const QDate &firstDate)
+{
+    _firstDate = firstDate;
+}
+
+QDate Crit3DMeteoGridDbHandler::lastDate() const
+{
+    return _lastDate;
+}
+
+void Crit3DMeteoGridDbHandler::setLastDate(const QDate &lastDate)
+{
+    _lastDate = lastDate;
+}
+
 Crit3DMeteoGrid *Crit3DMeteoGridDbHandler::meteoGrid() const
 {
     return _meteoGrid;
