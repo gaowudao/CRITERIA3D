@@ -278,6 +278,24 @@ bool Crit3DMeteoGrid::findCellFromCode(int* row, int* col, std::string code)
     return false;
 }
 
+bool Crit3DMeteoGrid::findFirstActiveCell(int* row, int* col)
+{
+
+    for (int i = 0; i < dataMeteoGrid.header->nrRows; i++)
+    {
+        for (int j = 0; j < dataMeteoGrid.header->nrCols; j++)
+        {
+            if (_meteoPoints[i][j]->active == 1)
+            {
+                *row = i;
+                *col = j;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 void Crit3DMeteoGrid::setGridStructure(const Crit3DMeteoGridStructure &gridStructure)
 {
     _gridStructure = gridStructure;

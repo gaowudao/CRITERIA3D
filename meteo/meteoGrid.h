@@ -88,6 +88,8 @@
 
             bool findCellFromCode(int* row, int* col, std::string code);
 
+            bool findFirstActiveCell(int* row, int* col);
+
             bool isAggregationDefined() const;
             void setIsAggregationDefined(bool isAggregationDefined);
 
