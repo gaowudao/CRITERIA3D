@@ -99,6 +99,8 @@ class Crit3DMeteoGridDbHandler
 
         bool loadCellProperties();
 
+        QString findFirstActiveCellTable();
+
 
 private:
 

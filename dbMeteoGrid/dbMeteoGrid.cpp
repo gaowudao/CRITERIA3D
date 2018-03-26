@@ -407,9 +407,6 @@ void Crit3DMeteoGridDbHandler::closeDatabase()
 
 bool Crit3DMeteoGridDbHandler::loadCellProperties()
 {
-    openDatabase();
-
-
     QSqlQuery qry(_db);
 
     qry.prepare( "SELECT * FROM CellsProperties ORDER BY Code" );
@@ -444,7 +441,34 @@ bool Crit3DMeteoGridDbHandler::loadCellProperties()
         }
     }
     return true;
+}
 
+QString Crit3DMeteoGridDbHandler::findFirstActiveCellTable()
+{
+
+    QString table = QString("");
+    if (_db.isOpen())
+    {
+
+        // Get a list of tables
+        QStringList list = _db.tables(QSql::Tables);
+        QStringList::Iterator it = list.begin();
+        while( it != list.end() )
+        {
+
+            table = *it;
+            table.chop(2);
+
+            if (_meteoGrid->isActiveCellFromCode(table.toStdString()))
+            {
+                qDebug() << "table " << table ;
+                return table;
+            }
+            it++;
+        }
+
+     }
+     return table;
 
 }
 

@@ -427,6 +427,8 @@ bool Project::loadMeteoGridDB(QString xmlName)
 
     meteoGridDbHandler->parseXMLGrid(xmlName);
 
+    meteoGridDbHandler->openDatabase();
+
     meteoGridDbHandler->loadCellProperties();
 
     meteoGridDbHandler->meteoGrid()->loadRasterGrid();
