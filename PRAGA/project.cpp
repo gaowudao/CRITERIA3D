@@ -409,13 +409,25 @@ bool Project::loadMeteoPointsDB(QString dbName)
 
     nrMeteoPoints = listMeteoPoints.size();
     meteoPoints = new Crit3DMeteoPoint[nrMeteoPoints];
+
     for (int i=0; i < nrMeteoPoints; i++)
+    {
         meteoPoints[i] = listMeteoPoints[i];
+
+        //check data
+        if ((meteoPoints[i].latitude == NODATA || meteoPoints[i].longitude == NODATA)
+            && (meteoPoints[i].point.utm.x != NODATA && meteoPoints[i].point.utm.y != NODATA))
+        {
+            gis::getLatLonFromUtm(this->gisSettings, meteoPoints[i].point.utm.x, meteoPoints[i].point.utm.y,
+                                    *meteoPoints[i].latitude, *meteoPoints[i].longitude);
+        }
+    }
 
     listMeteoPoints.clear();
 
     return true;
 }
+
 
 bool Project::loadMeteoGridDB(QString xmlName)
 {

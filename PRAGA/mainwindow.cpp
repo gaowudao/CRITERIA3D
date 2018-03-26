@@ -359,6 +359,7 @@ void MainWindow::on_actionOpen_meteo_points_DB_triggered()
     if (dbName != "") this->loadMeteoPointsDB(dbName);
 }
 
+
 void MainWindow::on_actionOpen_meteo_grid_triggered()
 {
 

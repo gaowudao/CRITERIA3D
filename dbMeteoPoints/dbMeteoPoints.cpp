@@ -349,7 +349,7 @@ QList<Crit3DMeteoPoint> Crit3DMeteoPointsDbHandler::getPropertiesFromDb()
     Crit3DMeteoPoint meteoPoint;
     QSqlQuery qry(_db);
 
-    qry.prepare( "SELECT id_point, name, dataset, latitude, longitude, latInt, lonInt, utm_x, utm_y, altitude, state, region, province, municipality, is_utc from point_properties" );
+    qry.prepare( "SELECT id_point, name, dataset, latitude, longitude, utm_x, utm_y, altitude, state, region, province, municipality, is_active, is_utc from point_properties" );
 
     if( !qry.exec() )
     {
@@ -359,24 +359,31 @@ QList<Crit3DMeteoPoint> Crit3DMeteoPointsDbHandler::getPropertiesFromDb()
     {
         while (qry.next())
         {
-            meteoPoint.id = qry.value(0).toString().toStdString();
-            meteoPoint.name = qry.value(1).toString().toStdString();
-            meteoPoint.dataset = qry.value(2).toString().toStdString();
-            meteoPoint.latitude = qry.value(3).toDouble();
-            meteoPoint.longitude = qry.value(4).toDouble();
-            meteoPoint.latInt = qry.value(5).toInt();
-            meteoPoint.lonInt = qry.value(6).toInt();
-            meteoPoint.point.utm.x = qry.value(7).toDouble();
-            meteoPoint.point.utm.y = qry.value(8).toDouble();
-            meteoPoint.point.z = qry.value(9).toDouble();
-            meteoPoint.state = qry.value(10).toString().toStdString();
-            meteoPoint.region = qry.value(11).toString().toStdString();
-            meteoPoint.province = qry.value(12).toString().toStdString();
-            meteoPoint.municipality = qry.value(13).toString().toStdString();
-            meteoPoint.isUTC = qry.value(14).toBool();
+            meteoPoint.id = qry.value("id_point").toString().toStdString();
+            meteoPoint.name = qry.value("name").toString().toStdString();
+            meteoPoint.dataset = qry.value("dataset").toString().toStdString();
+
+            if (qry.value("latitude") != "")
+                meteoPoint.latitude = qry.value("latitude").toDouble();
+            if (qry.value("longitude") != "")
+                meteoPoint.longitude = qry.value("longitude").toDouble();
+            if (qry.value("utm_x") != "")
+                meteoPoint.point.utm.x = qry.value("utm_x").toDouble();
+            if (qry.value("utm_y") != "")
+                meteoPoint.point.utm.y = qry.value("utm_y").toDouble();
+            if (qry.value("altitude") != "")
+                meteoPoint.point.z = qry.value("altitude").toDouble();
+
+            meteoPoint.state = qry.value("state").toString().toStdString();
+            meteoPoint.region = qry.value("region").toString().toStdString();
+            meteoPoint.province = qry.value("province").toString().toStdString();
+            meteoPoint.municipality = qry.value("municipality").toString().toStdString();
+            meteoPoint.isUTC = qry.value("is_active").toBool();
+            meteoPoint.isUTC = qry.value("is_utc").toBool();
 
             meteoPointsList << meteoPoint;
         }
+
     }
 
     return meteoPointsList;
