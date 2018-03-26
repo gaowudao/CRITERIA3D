@@ -419,7 +419,7 @@ bool Project::loadMeteoPointsDB(QString dbName)
             && (meteoPoints[i].point.utm.x != NODATA && meteoPoints[i].point.utm.y != NODATA))
         {
             gis::getLatLonFromUtm(this->gisSettings, meteoPoints[i].point.utm.x, meteoPoints[i].point.utm.y,
-                                    *meteoPoints[i].latitude, *meteoPoints[i].longitude);
+                                    &meteoPoints[i].latitude, &meteoPoints[i].longitude);
         }
     }
 
