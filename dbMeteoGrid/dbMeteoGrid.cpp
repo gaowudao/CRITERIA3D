@@ -457,9 +457,10 @@ QString Crit3DMeteoGridDbHandler::findFirstActiveCellTable()
         {
 
             table = *it;
-            table.chop(2);
+            QString id = table;
+            id.chop(2);
 
-            if (_meteoGrid->isActiveCellFromCode(table.toStdString()))
+            if (_meteoGrid->isActiveCellFromId(id.toStdString()))
             {
                 qDebug() << "table " << table ;
                 return table;
@@ -471,6 +472,39 @@ QString Crit3DMeteoGridDbHandler::findFirstActiveCellTable()
      return table;
 
 }
+
+bool Crit3DMeteoGridDbHandler::updateGridDate()
+{
+
+    // LC? quando cerca la prima tabella con cella attiva non fa distinzione tra _H e _D, corretto? I mensili vanno trattati diversamente?
+    QSqlQuery qry(_db);
+    QString table = findFirstActiveCellTable();
+
+    if (table != "")
+    {
+        QString statement = QString("SELECT MIN(PragaTime) as minDate, MAX(PragaTime) as maxDate FROM `%1`").arg(table);
+        if( !qry.exec(statement) )
+        {
+            qDebug() << qry.lastError();
+        }
+        else
+        {
+            if (qry.next())
+            {
+                _firstDate = qry.value("minDate").toDate();
+                _lastDate = qry.value("maxDate").toDate();
+
+                return true;
+            }
+            else
+                qDebug( "Error: dataset not found" );
+        }
+    }
+
+    return false;
+
+}
+
 
 QDate Crit3DMeteoGridDbHandler::firstDate() const
 {

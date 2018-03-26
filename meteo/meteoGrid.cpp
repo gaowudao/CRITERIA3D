@@ -260,14 +260,14 @@ void Crit3DMeteoGrid::fillMeteoPoint(int row, int col, std::string code, std::st
 
 }
 
-bool Crit3DMeteoGrid::findCellFromCode(int* row, int* col, std::string code)
+bool Crit3DMeteoGrid::findCellFromId(int* row, int* col, std::string id)
 {
 
     for (int i = 0; i < dataMeteoGrid.header->nrRows; i++)
     {
         for (int j = 0; j < dataMeteoGrid.header->nrCols; j++)
         {
-            if (_meteoPoints[i][j]->id == code)
+            if (_meteoPoints[i][j]->id == id)
             {
                 *row = i;
                 *col = j;
@@ -278,14 +278,14 @@ bool Crit3DMeteoGrid::findCellFromCode(int* row, int* col, std::string code)
     return false;
 }
 
-bool Crit3DMeteoGrid::isActiveCellFromCode(std::string code)
+bool Crit3DMeteoGrid::isActiveCellFromId(std::string id)
 {
 
     for (int i = 0; i < dataMeteoGrid.header->nrRows; i++)
     {
         for (int j = 0; j < dataMeteoGrid.header->nrCols; j++)
         {
-            if (_meteoPoints[i][j]->id == code)
+            if (_meteoPoints[i][j]->id == id)
             {
                 return true;
             }

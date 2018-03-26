@@ -86,11 +86,11 @@
 
             void fillMeteoPoint(int row, int col, std::string code, std::string name, int height, bool active);
 
-            bool findCellFromCode(int* row, int* col, std::string code);
+            bool findCellFromId(int* row, int* col, std::string code);
 
             bool findFirstActiveCell(int* row, int* col);
 
-            bool isActiveCellFromCode(std::string code);
+            bool isActiveCellFromId(std::string id);
 
             bool isAggregationDefined() const;
             void setIsAggregationDefined(bool isAggregationDefined);

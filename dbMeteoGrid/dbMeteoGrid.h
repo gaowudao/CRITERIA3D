@@ -101,6 +101,8 @@ class Crit3DMeteoGridDbHandler
 
         QString findFirstActiveCellTable();
 
+        bool updateGridDate();
+
 
 private:
 
