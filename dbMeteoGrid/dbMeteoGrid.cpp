@@ -444,6 +444,7 @@ bool Crit3DMeteoGridDbHandler::loadCellProperties()
     return true;
 }
 
+/*
 QString Crit3DMeteoGridDbHandler::findFirstActiveCellTable()
 {
 
@@ -473,6 +474,7 @@ QString Crit3DMeteoGridDbHandler::findFirstActiveCellTable()
      return table;
 
 }
+*/
 
 bool Crit3DMeteoGridDbHandler::updateGridDate()
 {

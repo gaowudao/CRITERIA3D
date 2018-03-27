@@ -700,10 +700,12 @@ void MainWindow::updateDateTime()
 
 }
 
+
 void MainWindow::on_dateChanged()
 {
     qDebug("on_dateChanged");
     QDate date = this->ui->dateEdit->date();
+
     //date
     if (date != myProject.getCurrentDate())
     {
@@ -712,8 +714,8 @@ void MainWindow::on_dateChanged()
         myProject.loadMeteoPointsData(date, date, true);
     }
     redrawMeteoPoints(true);
-
 }
+
 
 void MainWindow::on_timeChanged()
 {
@@ -1001,5 +1003,4 @@ void MainWindow::setCurrentRaster(gis::Crit3DRasterGrid *myRaster)
     this->rasterLegend->colorScale = myRaster->colorScale;
     this->rasterObj->redrawRequested();
 }
-
 
