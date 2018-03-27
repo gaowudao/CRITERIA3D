@@ -149,12 +149,12 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
                 _gridStructure.setIsTIN(false);
                 nrTokens++;
             }
-            if (ancestor.toElement().attribute("isFixedFields").toUpper() == "TRUE")
+            if (ancestor.toElement().attribute("isfixedfields").toUpper() == "TRUE")
             {
                 _gridStructure.setIsFixedFields(true);
                 nrTokens++;
             }
-            else if (ancestor.toElement().attribute("isFixedFields").toUpper() == "FALSE")
+            else if (ancestor.toElement().attribute("isfixedfields").toUpper() == "FALSE")
             {
                 _gridStructure.setIsFixedFields(false);
                 nrTokens++;
