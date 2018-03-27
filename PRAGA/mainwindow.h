@@ -89,8 +89,6 @@
 
         void on_timeEdit_timeChanged(const QTime &time);
 
-        void on_dateEdit_dateChanged(const QDate &date);
-
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

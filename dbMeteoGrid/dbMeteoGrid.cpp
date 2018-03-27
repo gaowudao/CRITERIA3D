@@ -423,35 +423,34 @@ bool Crit3DMeteoGridDbHandler::loadCellProperties()
     {
         while (qry.next())
         {
-            //todo: il codice è obbligatorio
+            //TODO obbligatorie, fare check con getValue come in Row
             QString code = qry.value("Code").toString();
 
-            QString name = qry.value("Name").toString();
-
-            //obbligatorie
-            getValue(qry.value("Row"), &row);
+            if (! getValue(qry.value("Row"), &row))
+            {
+                // projectError = "Missing data: Row";
+                return false;
+            }
             int col = qry.value("Col").toInt();
 
-            int height = qry.value("Height").toInt();
-
-            // obbligatorio
             int active = qry.value("Active").toInt();
 
-            _meteoGrid->fillMeteoPoint(row, col, code.toStdString(), name.toStdString(), height, active);
+            // facoltative
+            QString name = qry.value("Name").toString();
+            int height = qry.value("Height").toInt();
 
+            _meteoGrid->fillMeteoPoint(row, col, code.toStdString(), name.toStdString(), height, active);
         }
     }
     return true;
 }
 
-/*
 QString Crit3DMeteoGridDbHandler::findFirstActiveCellTable()
 {
-
     QString table = QString("");
     if (_db.isOpen())
     {
-
+        /* TODO modificare
         // Get a list of tables
         QStringList list = _db.tables(QSql::Tables);
         QStringList::Iterator it = list.begin();
@@ -469,12 +468,12 @@ QString Crit3DMeteoGridDbHandler::findFirstActiveCellTable()
             }
             it++;
         }
-
+        */
      }
      return table;
 
 }
-*/
+
 
 bool Crit3DMeteoGridDbHandler::updateGridDate()
 {
