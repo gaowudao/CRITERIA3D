@@ -439,7 +439,9 @@ bool Crit3DMeteoGridDbHandler::loadCellProperties()
             QString name = qry.value("Name").toString();
             int height = qry.value("Height").toInt();
 
-            _meteoGrid->fillMeteoPoint(row, col, code.toStdString(), name.toStdString(), height, active);
+            if (row < _meteoGrid->gridStructure().header().nrRows
+                && col < _meteoGrid->gridStructure().header().nrCols)
+                _meteoGrid->fillMeteoPoint(row, col, code.toStdString(), name.toStdString(), height, active);
         }
     }
     return true;
