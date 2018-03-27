@@ -375,7 +375,7 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
 bool Crit3DMeteoGridDbHandler::openDatabase()
 {
 
-    if (_connection.provider == "mysql")
+    if (_connection.provider.toUpper() == "MYSQL")
     {
         _db = QSqlDatabase::addDatabase("QMYSQL");
     }
