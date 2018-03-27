@@ -97,7 +97,7 @@ class Crit3DMeteoGridDbHandler
 
         bool parseXMLGrid(QString xmlFileName);
 
-        bool loadCellProperties();
+        bool loadCellProperties(std::string *myError);
 
         QString findFirstActiveCellTable();
 

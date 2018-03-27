@@ -367,7 +367,11 @@ void MainWindow::on_actionOpen_meteo_grid_triggered()
     if (xmlName != "")
     {
         qDebug() << "xmlName" << xmlName; //debug
-        myProject.loadMeteoGridDB(xmlName);
+        if (! myProject.loadMeteoGridDB(xmlName))
+        {
+            myProject.logError();
+            return;
+        }
     }
 
     if (myProject.meteoGridDbHandler->gridStructure().isUTM() == false)
@@ -603,15 +607,9 @@ void MainWindow::on_actionInterpolation_triggered()
     formRunInfo myInfo;
     myInfo.start("Interpolation...", 0);
 
-        std::string myError;
         meteoVariable myVar = myProject.getCurrentVariable();
 
-        if (!myProject.interpolateRaster(myVar, myProject.getFrequency(), myProject.getCurrentTime(),
-                                         &(myProject.dataRaster), &myError))
-        {
-            QMessageBox::information(NULL, "Error!", QString::fromStdString(myError));
-        }
-        else
+        if (myProject.interpolateRaster(myVar, myProject.getFrequency(), myProject.getCurrentTime(), &(myProject.dataRaster)))
         {
             setColorScale(myVar, myProject.dataRaster.colorScale);
             this->setCurrentRaster(&(myProject.dataRaster));
@@ -621,6 +619,8 @@ void MainWindow::on_actionInterpolation_triggered()
 
             ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myVar)));
         }
+        else
+            myProject.logError();
 
     myInfo.close();
 }

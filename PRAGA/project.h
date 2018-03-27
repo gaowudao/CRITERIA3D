@@ -31,6 +31,8 @@
 
     #include <QList>
     #include <QDate>
+    #include <String>
+    #include <fstream>
 
     class Project {
     private:
@@ -40,6 +42,11 @@
         int currentHour;
 
     public:
+        QString path;
+        QString logFileName;
+        std::ofstream logFile;
+        std::string errorString;
+
         Crit3DMeteoPoint* meteoPoints;
         Crit3DMeteoPointsDbHandler* meteoPointsDbHandler;
         Crit3DMeteoGridDbHandler* meteoGridDbHandler;
@@ -75,6 +82,10 @@
         frequencyType getFrequency();
         meteoVariable getCurrentVariable();
 
+        bool setLogFile();
+        void logError(QString myStr);
+        void logError();
+
         bool loadRaster(QString myFileName);
         bool downloadDailyDataArkimet(QStringList variables, bool prec0024, QDate startDate, QDate endDate, bool showInfo);
         bool downloadHourlyDataArkimet(QStringList variables, QDate startDate, QDate endDate, bool showInfo);
@@ -90,8 +101,7 @@
 
         float meteoDataConsistency(meteoVariable myVar, const Crit3DTime& timeIni, const Crit3DTime& timeFin);
 
-        bool interpolateRaster(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime,
-                               gis::Crit3DRasterGrid *myRaster, std::string *myError);
+        bool interpolateRaster(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster);
         bool interpolateRasterRadiation(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, std::string *myError);
     };
 

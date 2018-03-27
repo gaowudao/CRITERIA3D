@@ -32,7 +32,8 @@ bool setProxy(QString hostName, int port)
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+    QApplication myApp(argc, argv);
+    myProject.path = myApp.applicationDirPath();
 
     //setProxy("172.16.1.21", 8080);
     QNetworkProxyFactory::setUseSystemConfiguration(true);
@@ -43,5 +44,5 @@ int main(int argc, char *argv[])
     MainWindow w(test);
     w.show();
 
-    return a.exec();
+    return myApp.exec();
 }

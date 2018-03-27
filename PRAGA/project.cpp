@@ -17,6 +17,10 @@
 
 Project::Project()
 {
+    path = "";
+    logFileName = "";
+    errorString = "";
+
     meteoPoints = NULL;
     nrMeteoPoints = 0;
     quality = new Crit3DQuality();
@@ -445,7 +449,7 @@ bool Project::loadMeteoGridDB(QString xmlName)
     if (! this->meteoGridDbHandler->openDatabase())
         return false;
 
-    if (! this->meteoGridDbHandler->loadCellProperties())
+    if (! this->meteoGridDbHandler->loadCellProperties(&errorString))
         return false;
 
     this->meteoGridDbHandler->meteoGrid()->createRasterGrid();
@@ -455,15 +459,15 @@ bool Project::loadMeteoGridDB(QString xmlName)
 
 
 bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime,
-                            gis::Crit3DRasterGrid *myRaster, std::string *myError)
+                            gis::Crit3DRasterGrid *myRaster)
 {
     if (!quality->checkData(myVar, myFrequency, this->meteoPoints, this->nrMeteoPoints, myTime))
     {
-        *myError = "No data";
+        errorString = "No data";
         return false;
     }
 
-    if (! checkInterpolationRaster(this->DTM, myError))
+    if (! checkInterpolationRaster(this->DTM, &errorString))
         return false;
 
     myRaster->initializeGrid(this->DTM);
@@ -474,11 +478,11 @@ bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, 
     if (myVar == globalIrradiance)
     {
         Crit3DTime measureTime = myTime.addSeconds(-1800);
-        return interpolateRasterRadiation(measureTime, myRaster, myError);
+        return interpolateRasterRadiation(measureTime, myRaster, &errorString);
     }
     else
     {
-        return interpolationRaster(myVar, &interpolationSettings, myTime, this->DTM, myRaster, myError);
+        return interpolationRaster(myVar, &interpolationSettings, myTime, this->DTM, myRaster, &errorString);
     }
 }
 
@@ -538,4 +542,36 @@ float Project::meteoDataConsistency(meteoVariable myVar, const Crit3DTime& timeI
 }
 
 
+//-------------------
+//
+//   LOG functions
+//
+//-------------------
 
+bool Project::setLogFile()
+{
+    if (!QDir(this->path + "log").exists())
+         QDir().mkdir(this->path + "log");
+
+    QString myDate = QDateTime().currentDateTime().toString("yyyy-MM-dd hh.mm");
+    QString fileName = "Praga_" + myDate + ".txt";
+
+    this->logFileName = this->path + "log\\" + fileName;
+
+    this->logFile.open(this->logFileName.toStdString().c_str());
+    return (this->logFile.is_open());
+}
+
+void Project::logError(QString myStr)
+{
+    errorString = myStr.toStdString();
+    logError();
+}
+
+void Project::logError()
+{
+    if (logFile.is_open())
+        logFile << "----ERROR!----\n" << this->errorString << std::endl;
+    else
+        QMessageBox::critical(NULL, "Error!", QString::fromStdString(errorString));
+}

@@ -408,7 +408,7 @@ void Crit3DMeteoGridDbHandler::closeDatabase()
     }
 }
 
-bool Crit3DMeteoGridDbHandler::loadCellProperties()
+bool Crit3DMeteoGridDbHandler::loadCellProperties(std::string *myError)
 {
     QSqlQuery qry(_db);
     int row;
@@ -426,9 +426,9 @@ bool Crit3DMeteoGridDbHandler::loadCellProperties()
             //TODO obbligatorie, fare check con getValue come in Row
             QString code = qry.value("Code").toString();
 
-            if (! getValue(qry.value("Row"), &row))
+            if (! getValue(qry.value("Row1"), &row))
             {
-                // projectError = "Missing data: Row";
+                *myError = "Missing data: Row";
                 return false;
             }
             int col = qry.value("Col").toInt();
