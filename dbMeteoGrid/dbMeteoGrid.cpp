@@ -426,7 +426,7 @@ bool Crit3DMeteoGridDbHandler::loadCellProperties(std::string *myError)
             //TODO obbligatorie, fare check con getValue come in Row
             QString code = qry.value("Code").toString();
 
-            if (! getValue(qry.value("Row1"), &row))
+            if (! getValue(qry.value("Row"), &row))
             {
                 *myError = "Missing data: Row";
                 return false;
