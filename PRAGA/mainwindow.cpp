@@ -362,7 +362,6 @@ void MainWindow::on_actionOpen_meteo_points_DB_triggered()
 
 void MainWindow::on_actionOpen_meteo_grid_triggered()
 {
-
     QString xmlName = QFileDialog::getOpenFileName(this, tr("Open XML DB grid"), "", tr("xml files (*.xml)"));
 
     if (xmlName != "")
@@ -370,7 +369,6 @@ void MainWindow::on_actionOpen_meteo_grid_triggered()
         qDebug() << "xmlName" << xmlName; //debug
         myProject.loadMeteoGridDB(xmlName);
     }
-
 
     if (myProject.meteoGridDbHandler->gridStructure().isUTM() == false)
     {
@@ -381,13 +379,9 @@ void MainWindow::on_actionOpen_meteo_grid_triggered()
         gridObj->initializeUTM(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid), myProject.gisSettings, true);
     }
 
-    //myProject.meteoGridDbHandler->meteoGrid()->setUtmZone(myProject.gisSettings.utmZone);
-    //myProject.meteoGridDbHandler->meteoGrid()->setIsNorthernEmisphere(myProject.gisSettings.isNorthernEmisphere);
-
     gridObj->updateCenter();
-
-
 }
+
 
 void MainWindow::on_actionVariableNone_triggered()
 {

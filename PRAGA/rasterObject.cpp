@@ -176,10 +176,9 @@ bool RasterObject::initializeUTM(gis::Crit3DRasterGrid* myRaster, const gis::Cri
         {
             gis::getLatLonFromRowCol(latLonHeader, row, col, &lat, &lon);
             gis::latLonToUtmForceZone(gisSettings.utmZone, lat, lon, &x, &y);
-            gis::getRowColFromXY(*myRaster, x, y, &utmRow, &utmCol);
-
-            if (myRaster->getValueFromRowCol(utmRow, utmCol) != myRaster->header->flag)
+            if (! gis::isOutOfGridXY(x, y, myRaster->header))
             {
+                gis::getRowColFromXY(*(myRaster->header), x, y, &utmRow, &utmCol);
                 matrix[row][col].row = utmRow;
                 matrix[row][col].col = utmCol;
             }

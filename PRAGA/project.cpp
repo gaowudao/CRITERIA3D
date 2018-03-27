@@ -453,6 +453,7 @@ bool Project::loadMeteoGridDB(QString xmlName)
     return true;
 }
 
+
 bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime,
                             gis::Crit3DRasterGrid *myRaster, std::string *myError)
 {

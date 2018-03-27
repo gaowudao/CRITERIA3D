@@ -474,6 +474,12 @@ namespace gis
         *col = (int)floor((myX - myGrid.header->llCorner->x) / myGrid.header->cellSize);
     }
 
+    void getRowColFromXY(const Crit3DRasterHeader& myHeader, double myX, double myY, int *row, int *col)
+    {
+        *row = (myHeader.nrRows - 1) - (int)floor((myY - myHeader.llCorner->y) / myHeader.cellSize);
+        *col = (int)floor((myX - myHeader.llCorner->x) / myHeader.cellSize);
+    }
+
     void getRowColFromXY(const Crit3DRasterHeader& myHeader, const Crit3DUtmPoint& p, int *row, int *col)
     {
         *row = (myHeader.nrRows - 1) - (int)floor((p.y - myHeader.llCorner->y) / myHeader.cellSize);
