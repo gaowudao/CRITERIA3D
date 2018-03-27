@@ -372,7 +372,7 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
     return true;
 }
 
-void Crit3DMeteoGridDbHandler::openDatabase()
+bool Crit3DMeteoGridDbHandler::openDatabase()
 {
 
     if (_connection.provider == "mysql")
@@ -389,12 +389,15 @@ void Crit3DMeteoGridDbHandler::openDatabase()
     if (!_db.open())
     {
        qDebug() << "Error: connection with database fail";
+       return false;
     }
     else
     {
        qDebug() << "Database: connection ok";
+       return true;
     }
 }
+
 
 void Crit3DMeteoGridDbHandler::closeDatabase()
 {
@@ -408,6 +411,7 @@ void Crit3DMeteoGridDbHandler::closeDatabase()
 bool Crit3DMeteoGridDbHandler::loadCellProperties()
 {
     QSqlQuery qry(_db);
+    int row;
 
     qry.prepare( "SELECT * FROM CellsProperties ORDER BY Code" );
 
@@ -417,24 +421,21 @@ bool Crit3DMeteoGridDbHandler::loadCellProperties()
     }
     else
     {
-
         while (qry.next())
         {
+            //todo: il codice è obbligatorio
             QString code = qry.value("Code").toString();
+
             QString name = qry.value("Name").toString();
-            int row = qry.value("Row").toInt();
+
+            //obbligatorie
+            getValue(qry.value("Row"), &row);
             int col = qry.value("Col").toInt();
 
             int height = qry.value("Height").toInt();
+
+            // obbligatorio
             int active = qry.value("Active").toInt();
-/*
-            qDebug() << "code " << code ;
-            qDebug() << "name" << name ;
-            qDebug() << "row " << row ;
-            qDebug() << "col " << col ;
-            qDebug() << "height " << height ;
-            qDebug() << "active " << active ;
-*/
 
             _meteoGrid->fillMeteoPoint(row, col, code.toStdString(), name.toStdString(), height, active);
 

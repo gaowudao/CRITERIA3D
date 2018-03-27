@@ -135,16 +135,25 @@ Crit3DMeteoGrid::~Crit3DMeteoGrid()
 
 }
 
-bool Crit3DMeteoGrid::loadRasterGrid()
+bool Crit3DMeteoGrid::createRasterGrid()
 {
-
-    dataMeteoGrid.header->cellSize = NODATA;
-    dataMeteoGrid.header->llCorner->x = _gridStructure.header().llCorner->longitude;
-    dataMeteoGrid.header->llCorner->y = _gridStructure.header().llCorner->latitude;
+    if (_gridStructure.isUTM())
+    {
+        dataMeteoGrid.header->cellSize = _gridStructure.header().dx;
+        dataMeteoGrid.header->llCorner->x = _gridStructure.header().llCorner->longitude;
+        dataMeteoGrid.header->llCorner->y = _gridStructure.header().llCorner->latitude;
+    }
+    else
+    {
+        dataMeteoGrid.header->cellSize = NODATA;
+        dataMeteoGrid.header->llCorner->x = NODATA;
+        dataMeteoGrid.header->llCorner->y = NODATA;
+    }
 
     dataMeteoGrid.header->nrCols = _gridStructure.header().nrCols;
     dataMeteoGrid.header->nrRows = _gridStructure.header().nrRows;
     dataMeteoGrid.header->flag = NODATA;
+
     dataMeteoGrid.initializeGrid();
 
     if (_meteoPoints.empty())
@@ -170,8 +179,8 @@ bool Crit3DMeteoGrid::loadRasterGrid()
     }
     dataMeteoGrid.isLoaded = true;
     return true;
-
 }
+
 
 bool Crit3DMeteoGrid::isNorthernEmisphere() const
 {
@@ -222,10 +231,9 @@ void Crit3DMeteoGrid::initMeteoPoints(int nRow, int nCol)
         }
 
         _meteoPoints.push_back(meteoPointVector);
-
     }
-
 }
+
 
 void Crit3DMeteoGrid::fillMeteoPoint(int row, int col, std::string code, std::string name, int height, bool active)
 {
@@ -242,7 +250,6 @@ void Crit3DMeteoGrid::fillMeteoPoint(int row, int col, std::string code, std::st
             _meteoPoints[row][col]->point.utm.x = _gridStructure.header().llCorner->longitude + _gridStructure.header().dx * (col + 0.5);
             _meteoPoints[row][col]->point.utm.y = _gridStructure.header().llCorner->latitude + _gridStructure.header().dy * (row + 0.5);
             gis::utmToLatLon(_utmZone, _isNorthernEmisphere, _meteoPoints[row][col]->point.utm.x, _meteoPoints[row][col]->point.utm.y, &(_meteoPoints[row][col]->latitude), &(_meteoPoints[row][col]->longitude));
-
         }
         else
         {

@@ -89,7 +89,7 @@ class Crit3DMeteoGridDbHandler
 
         QString tableHourlyModel() const;
 
-        void openDatabase();
+        bool openDatabase();
 
         void closeDatabase();
 

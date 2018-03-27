@@ -64,7 +64,6 @@
     {
 
         public:
-
             gis::Crit3DRasterGrid dataMeteoGrid;
 
             Crit3DMeteoGrid();
@@ -107,7 +106,7 @@
             int nrVarsArray() const;
             void setNrVarsArray(int nrVarsArray);
 
-            bool loadRasterGrid();
+            bool createRasterGrid();
 
     private:
 

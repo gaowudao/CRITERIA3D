@@ -435,18 +435,20 @@ bool Project::loadMeteoGridDB(QString xmlName)
     if (xmlName == "")
         return false;
 
-    meteoGridDbHandler = new Crit3DMeteoGridDbHandler();
+    this->meteoGridDbHandler = new Crit3DMeteoGridDbHandler();
+    this->meteoGridDbHandler->meteoGrid()->setUtmZone(this->gisSettings.utmZone);
+    this->meteoGridDbHandler->meteoGrid()->setIsNorthernEmisphere(this->gisSettings.isNorthernEmisphere);
 
-    meteoGridDbHandler->parseXMLGrid(xmlName);
+    if (! this->meteoGridDbHandler->parseXMLGrid(xmlName))
+        return false;
 
-    meteoGridDbHandler->openDatabase();
+    if (! this->meteoGridDbHandler->openDatabase())
+        return false;
 
-    meteoGridDbHandler->loadCellProperties();
+    if (! this->meteoGridDbHandler->loadCellProperties())
+        return false;
 
-    meteoGridDbHandler->meteoGrid()->loadRasterGrid();
-
-    meteoGridDbHandler->meteoGrid()->setUtmZone(gisSettings.utmZone);
-    meteoGridDbHandler->meteoGrid()->setIsNorthernEmisphere(gisSettings.isNorthernEmisphere);
+    this->meteoGridDbHandler->meteoGrid()->createRasterGrid();
 
     return true;
 }
