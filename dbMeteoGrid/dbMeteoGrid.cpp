@@ -411,7 +411,8 @@ void Crit3DMeteoGridDbHandler::closeDatabase()
 bool Crit3DMeteoGridDbHandler::loadCellProperties(std::string *myError)
 {
     QSqlQuery qry(_db);
-    int row;
+    int row, col, active, height;
+    QString code, name;
 
     qry.prepare( "SELECT * FROM CellsProperties ORDER BY Code" );
 
@@ -423,25 +424,54 @@ bool Crit3DMeteoGridDbHandler::loadCellProperties(std::string *myError)
     {
         while (qry.next())
         {
-            //TODO obbligatorie, fare check con getValue come in Row
-            QString code = qry.value("Code").toString();
+
+            if (! getValue(qry.value("Code"), &code))
+            {
+                *myError = "Missing data: Code";
+                return false;
+            }
+
+            // facoltativa
+            if (! getValue(qry.value("Name"), &name))
+            {
+                name = code;
+            }
 
             if (! getValue(qry.value("Row"), &row))
             {
                 *myError = "Missing data: Row";
                 return false;
             }
-            int col = qry.value("Col").toInt();
 
-            int active = qry.value("Active").toInt();
+            if (! getValue(qry.value("Col"), &col))
+            {
+                *myError = "Missing data: Col";
+                return false;
+            }
 
-            // facoltative
-            QString name = qry.value("Name").toString();
-            int height = qry.value("Height").toInt();
+            // facoltativa
+            if (! getValue(qry.value("Height"), &height))
+            {
+                height = NODATA;
+            }
+
+            if (! getValue(qry.value("Active"), &active))
+            {
+                *myError = "Missing data: Active";
+                return false;
+            }
+
 
             if (row < _meteoGrid->gridStructure().header().nrRows
                 && col < _meteoGrid->gridStructure().header().nrCols)
+            {
                 _meteoGrid->fillMeteoPoint(row, col, code.toStdString(), name.toStdString(), height, active);
+            }
+            else
+            {
+                *myError = "Row or Col > nrRows or nrCols";
+                return false;
+            }
         }
     }
     return true;

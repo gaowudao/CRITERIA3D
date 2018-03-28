@@ -443,6 +443,7 @@ bool Project::loadMeteoGridDB(QString xmlName)
     this->meteoGridDbHandler->meteoGrid()->setUtmZone(this->gisSettings.utmZone);
     this->meteoGridDbHandler->meteoGrid()->setIsNorthernEmisphere(this->gisSettings.isNorthernEmisphere);
 
+
     if (! this->meteoGridDbHandler->parseXMLGrid(xmlName))
         return false;
 
