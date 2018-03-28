@@ -444,10 +444,10 @@ bool Project::loadMeteoGridDB(QString xmlName)
     this->meteoGridDbHandler->meteoGrid()->setIsNorthernEmisphere(this->gisSettings.isNorthernEmisphere);
 
 
-    if (! this->meteoGridDbHandler->parseXMLGrid(xmlName))
+    if (! this->meteoGridDbHandler->parseXMLGrid(xmlName, &errorString))
         return false;
 
-    if (! this->meteoGridDbHandler->openDatabase())
+    if (! this->meteoGridDbHandler->openDatabase(&errorString))
         return false;
 
     if (! this->meteoGridDbHandler->loadCellProperties(&errorString))

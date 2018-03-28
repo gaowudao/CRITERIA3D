@@ -47,14 +47,14 @@ bool Crit3DMeteoGridDbHandler::parseXMLFile(QString xmlFileName, QDomDocument* x
     return true;
 }
 
-bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
+bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *myError)
 {
 
     QDomDocument xmlDoc;
 
      if (!parseXMLFile(xmlFileName, &xmlDoc))
     {
-        qDebug() << "parseXMLFile error";
+        *myError = "parseXMLFile error";
         return false;
     }
 
@@ -197,7 +197,7 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
                     header.dy = child.toElement().text().toFloat();
                     if (_gridStructure.isUTM() == true && header.dx != header.dy )
                     {
-                        qDebug() << "UTM grid with dx != dy";
+                        *myError = "UTM grid with dx != dy";
                         return false;
                     }
                     nrTokens++;
@@ -353,7 +353,7 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
 
     if (_tableDaily.varcode.size() < 1 && _tableHourly.varcode.size() < 1)
     {
-        qDebug() << "Missing daily and hourly var code";
+        *myError = "Missing daily and hourly var code";
         return false;
     }
 
@@ -361,7 +361,8 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
     if (nrTokens < nrRequiredToken)
     {
         int missingTokens = nrRequiredToken - nrTokens;
-        qDebug() << "Missing " + QString::number(missingTokens) + " key informations.";
+        QString errMess = QString("Missing %1 key informations.").arg(QString::number(missingTokens));
+        *myError = errMess.toStdString();
         return false;
     }
 
@@ -372,7 +373,7 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName)
     return true;
 }
 
-bool Crit3DMeteoGridDbHandler::openDatabase()
+bool Crit3DMeteoGridDbHandler::openDatabase(std::string *myError)
 {
 
     if (_connection.provider.toUpper() == "MYSQL")
@@ -388,7 +389,7 @@ bool Crit3DMeteoGridDbHandler::openDatabase()
 
     if (!_db.open())
     {
-       qDebug() << "Error: connection with database fail";
+       *myError = "Error: connection with database fail";
        return false;
     }
     else
@@ -418,7 +419,8 @@ bool Crit3DMeteoGridDbHandler::loadCellProperties(std::string *myError)
 
     if( !qry.exec() )
     {
-        qDebug() << qry.lastError();
+        *myError = qry.lastError().text().toStdString();
+        return false;
     }
     else
     {

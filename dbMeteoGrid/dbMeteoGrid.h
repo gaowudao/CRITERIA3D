@@ -89,13 +89,13 @@ class Crit3DMeteoGridDbHandler
 
         QString tableHourlyModel() const;
 
-        bool openDatabase();
+        bool openDatabase(std::string *myError);
 
         void closeDatabase();
 
         bool parseXMLFile(QString xmlFileName, QDomDocument* xmlDoc);
 
-        bool parseXMLGrid(QString xmlFileName);
+        bool parseXMLGrid(QString xmlFileName, std::string *myError);
 
         bool loadCellProperties(std::string *myError);
 
