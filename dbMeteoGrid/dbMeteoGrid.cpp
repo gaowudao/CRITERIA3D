@@ -509,19 +509,52 @@ QString Crit3DMeteoGridDbHandler::findFirstActiveCellTable()
 }
 
 
-bool Crit3DMeteoGridDbHandler::updateGridDate()
+bool Crit3DMeteoGridDbHandler::updateGridDate(std::string *myError)
 {
 
-    // LC? quando cerca la prima tabella con cella attiva non fa distinzione tra _H e _D, corretto? I mensili vanno trattati diversamente?
     QSqlQuery qry(_db);
-    QString table = findFirstActiveCellTable();
 
-    if (table != "")
+    int row, col;
+    std::string id;
+
+    QDate maxDateD(QDate(1800, 1, 1));
+    QDate minDateD(QDate(7800, 12, 31));
+
+    QDate maxDateH(QDate(1800, 1, 1));
+    QDate minDateH(QDate(7800, 12, 31));
+
+    _meteoGrid->findFirstActiveCell(&id, &row, &col);
+
+    QString tableD = QString::fromStdString(id) + _tableDaily.postFix;
+    QString tableH = QString::fromStdString(id) + _tableHourly.postFix;
+/*
+    if (tableD != "")
     {
-        QString statement = QString("SELECT MIN(PragaTime) as minDate, MAX(PragaTime) as maxDate FROM `%1`").arg(table);
+        QString statement = QString("SELECT MIN(PragaTime) as minDate, MAX(PragaTime) as maxDate FROM `%1`").arg(tableD);
         if( !qry.exec(statement) )
         {
-            qDebug() << qry.lastError();
+            *myError = qry.lastError().text().toStdString();
+        }
+        else
+        {
+            if (qry.next())
+            {
+                minDateD = qry.value("minDate").toDate();
+                maxDateD = qry.value("maxDate").toDate();
+
+                return true;
+            }
+            else
+                *myError = "Error: PragaTime not found" ;
+        }
+    }
+
+    if (tableH != "")
+    {
+        QString statement = QString("SELECT MIN(PragaTime) as minDate, MAX(PragaTime) as maxDate FROM `%1`").arg(tableD);
+        if( !qry.exec(statement) )
+        {
+            *myError = qry.lastError().text().toStdString();
         }
         else
         {
@@ -533,10 +566,10 @@ bool Crit3DMeteoGridDbHandler::updateGridDate()
                 return true;
             }
             else
-                qDebug( "Error: dataset not found" );
+                *myError = "Error: dataset not found" ;
         }
     }
-
+*/
     return false;
 
 }

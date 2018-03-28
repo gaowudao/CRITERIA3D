@@ -301,7 +301,7 @@ bool Crit3DMeteoGrid::isActiveCellFromId(std::string id)
     return false;
 }
 
-bool Crit3DMeteoGrid::findFirstActiveCell(int* row, int* col)
+bool Crit3DMeteoGrid::findFirstActiveCell(std::string* id, int* row, int* col)
 {
 
     for (int i = 0; i < dataMeteoGrid.header->nrRows; i++)
@@ -312,6 +312,7 @@ bool Crit3DMeteoGrid::findFirstActiveCell(int* row, int* col)
             {
                 *row = i;
                 *col = j;
+                *id = _meteoPoints[i][j]->id;
                 return true;
             }
         }

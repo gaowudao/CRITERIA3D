@@ -87,7 +87,7 @@
 
             bool findCellFromId(int* row, int* col, std::string code);
 
-            bool findFirstActiveCell(int* row, int* col);
+            bool findFirstActiveCell(std::string* id, int* row, int* col);
 
             bool isActiveCellFromId(std::string id);
 

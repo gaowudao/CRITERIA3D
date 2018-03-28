@@ -101,7 +101,7 @@ class Crit3DMeteoGridDbHandler
 
         QString findFirstActiveCellTable();
 
-        bool updateGridDate();
+        bool updateGridDate(std::string *myError);
 
 
 private:
