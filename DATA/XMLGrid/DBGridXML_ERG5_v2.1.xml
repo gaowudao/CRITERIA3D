@@ -33,35 +33,35 @@
 		</varcode>
 		<varcode>
 			<varcode>3</varcode>
-			<varpraganame>Tmed</varpraganame>
+			<varpraganame>DAILY_TAVG</varpraganame>
 		</varcode>
 		<varcode>
 			<varcode>4</varcode>
-			<varpraganame>Prec</varpraganame>
+			<varpraganame>DAILY_PREC</varpraganame>
 		</varcode>
 		<varcode>
 			<varcode>5</varcode>
-			<varpraganame>Umin</varpraganame>
+			<varpraganame>DAILY_RHMIN</varpraganame>
 		</varcode>
 		<varcode>
 			<varcode>6</varcode>
-			<varpraganame>Umax</varpraganame>
+			<varpraganame>DAILY_RHMAX</varpraganame>
 		</varcode>
 		<varcode>
 			<varcode>7</varcode>
-			<varpraganame>Umed</varpraganame>
+			<varpraganame>DAILY_RHAVG</varpraganame>
 		</varcode>
 		<varcode>
 			<varcode>8</varcode>
-			<varpraganame>Rad</varpraganame>
+			<varpraganame>DAILY_RAD</varpraganame>
 		</varcode>
 		<varcode>
 			<varcode>9</varcode>
-			<varpraganame>VmedSpeed</varpraganame>
+			<varpraganame>DAILY_WAVG_INT</varpraganame>
 		</varcode>
 		<varcode>
 			<varcode>10</varcode>
-			<varpraganame>VmedDir</varpraganame>
+			<varpraganame>DAILY_WIND_DIR</varpraganame>
 		</varcode>
 		<varcode>
 			<varcode>11</varcode>
@@ -81,27 +81,27 @@
 		<postfix>_h</postfix>
 		<varcode>
 			<varcode>101</varcode>
-			<varpraganame>TmedH</varpraganame>
+			<varpraganame>TAVG</varpraganame>
 		</varcode>
 		<varcode>
 			<varcode>102</varcode>
-			<varpraganame>PrecH</varpraganame>
+			<varpraganame>PREC</varpraganame>
 		</varcode>
 		<varcode>
 			<varcode>103</varcode>
-			<varpraganame>UmedH</varpraganame>
+			<varpraganame>RHAVG</varpraganame>
 		</varcode>
 		<varcode>
 			<varcode>104</varcode>
-			<varpraganame>RadH</varpraganame>
+			<varpraganame>RAD</varpraganame>
 		</varcode>
 		<varcode>
 			<varcode>105</varcode>
-			<varpraganame>WindSpeedH</varpraganame>
+			<varpraganame>W_INT_AVG</varpraganame>
 		</varcode>
 		<varcode>
 			<varcode>106</varcode>
-			<varpraganame>WindDirH</varpraganame>
+			<varpraganame>W_DIR</varpraganame>
 		</varcode>
 		<varcode>
 			<varcode>107</varcode>
