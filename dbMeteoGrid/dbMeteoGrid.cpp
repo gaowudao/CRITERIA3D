@@ -539,7 +539,6 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(std::string *myError)
                     return false;
                 }
 
-                return true;
             }
             else
                 *myError = "Error: PragaTime not found" ;

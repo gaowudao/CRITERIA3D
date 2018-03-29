@@ -458,11 +458,6 @@ bool Project::loadMeteoGridDB(QString xmlName)
 
     this->meteoGridDbHandler->meteoGrid()->createRasterGrid();
 
-    std::cout << "firstDate: " << this->meteoGridDbHandler->firstDate().toString().toStdString();
-    std::cout << "lastDate: " << this->meteoGridDbHandler->lastDate().toString().toStdString();
-
-
-
     return true;
 }
 
