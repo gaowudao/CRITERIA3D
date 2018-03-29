@@ -366,12 +366,45 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *my
         return false;
     }
 
+
+    // create variable maps
+    for (int i=0; i < _tableDaily.varcode.size(); i++)
+    {
+        _gridDailyVar.insert(_tableDaily.varcode[i].varCode, _tableDaily.varcode[i].varPragaName);
+    }
+
+    for (int i=0; i < _tableHourly.varcode.size(); i++)
+    {
+        _gridHourlyVar.insert(_tableHourly.varcode[i].varCode, _tableHourly.varcode[i].varPragaName);
+    }
+
+
     _meteoGrid->setGridStructure(_gridStructure);
 
     _meteoGrid->initMeteoPoints(nRow, nCol);
 
     return true;
 }
+
+/*
+void Crit3DMeteoGridDbHandler::createGridDailyMapVariable()
+{
+
+    for (int i=0; i < _tableDaily.varcode.size(); i++)
+    {
+        _gridDailyVar.insert(_tableDaily.varcode[i].varCode, _tableDaily.varcode[i].varPragaName);
+    }
+
+    QMapIterator<int, QString> iter(_gridDailyVar);
+
+    while(iter.hasNext())
+    {
+        iter.next();
+        qDebug() << iter.key() << " : " << iter.value();
+    }
+
+}
+*/
 
 bool Crit3DMeteoGridDbHandler::openDatabase(std::string *myError)
 {

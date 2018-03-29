@@ -27,6 +27,8 @@
 #ifndef METEO_H
 #define METEO_H
 
+#include <map>
+
     #ifndef CRIT3DDATE_H
         #include "crit3dDate.h"
     #endif
@@ -55,6 +57,25 @@
                         wetnessDuration, atmPressure, atmTransmissivity,
                         potentialEvapotranspiration, dailyPotentialEvapotranspiration, actualEvaporation,
                         dailyWaterTableDepth, noMeteoTerrain, noMeteoVar};
+
+    const std::map<std::string, std::string> MapMeteoVar = {
+      { "DAILY_TMIN", "dailyAirTemperatureMin" },
+      { "DAILY_TMAX", "dailyAirTemperatureMax" },
+      { "DAILY_TAVG", "dailyAirTemperatureAvg" },
+      { "DAILY_PREC", "dailyPrecipitation" },
+      { "DAILY_RHMIN", "dailyAirHumidityMin" },
+      { "DAILY_RHMAX", "dailyAirHumidityMax" },
+      { "DAILY_RHAVG", "dailyAirHumidityAvg" },
+      { "DAILY_RAD", "dailyGlobalRadiation" },
+      { "DAILY_WAVG_INT", "dailyWindIntensityAvg" },
+      { "DAILY_WIND_DIR", "dailyWindDirectionPrevailing" },
+      { "TAVG", "dailyAirTemperatureMax" },
+      { "PREC", "precipitation" },
+      { "RHAVG", "airHumidity" },
+      { "RAD", "globalIrradiance" },
+      { "W_INT_AVG", "windIntensity" },
+      { "W_DIR", "windDirection" }
+    };
 
     enum frequencyType {hourly, daily, monthly, noFrequency};
 

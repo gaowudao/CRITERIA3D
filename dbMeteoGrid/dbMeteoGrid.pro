@@ -5,7 +5,7 @@
 #
 #-------------------------------------------------
 
-QT       += network sql xml
+QT       += network sql xml core
 
 QT       -= gui
 

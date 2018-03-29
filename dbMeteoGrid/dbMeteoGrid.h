@@ -4,6 +4,7 @@
 #include <QString>
 #include <QtSql>
 #include <QDomElement>
+#include <QMap>
 
 #ifndef METEOGRID_H
     #include "meteoGrid.h"
@@ -115,6 +116,9 @@ private:
 
         TXMLTable _tableDaily;
         TXMLTable _tableHourly;
+
+        QMap<int,QString> _gridDailyVar;
+        QMap<int,QString> _gridHourlyVar;
 
         QString _tableDailyPrefix;
         QString _tableDailyPostfix;
