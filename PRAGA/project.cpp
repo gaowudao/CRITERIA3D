@@ -453,7 +453,15 @@ bool Project::loadMeteoGridDB(QString xmlName)
     if (! this->meteoGridDbHandler->loadCellProperties(&errorString))
         return false;
 
+    if (! this->meteoGridDbHandler->updateGridDate(&errorString))
+        return false;
+
     this->meteoGridDbHandler->meteoGrid()->createRasterGrid();
+
+    std::cout << "firstDate: " << this->meteoGridDbHandler->firstDate().toString().toStdString();
+    std::cout << "lastDate: " << this->meteoGridDbHandler->lastDate().toString().toStdString();
+
+
 
     return true;
 }

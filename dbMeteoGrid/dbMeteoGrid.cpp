@@ -479,35 +479,6 @@ bool Crit3DMeteoGridDbHandler::loadCellProperties(std::string *myError)
     return true;
 }
 
-QString Crit3DMeteoGridDbHandler::findFirstActiveCellTable()
-{
-    QString table = QString("");
-    if (_db.isOpen())
-    {
-        /* TODO modificare
-        // Get a list of tables
-        QStringList list = _db.tables(QSql::Tables);
-        QStringList::Iterator it = list.begin();
-        while( it != list.end() )
-        {
-
-            table = *it;
-            QString id = table;
-            id.chop(2);
-
-            if (_meteoGrid->isActiveCellFromId(id.toStdString()))
-            {
-                qDebug() << "table " << table ;
-                return table;
-            }
-            it++;
-        }
-        */
-     }
-     return table;
-
-}
-
 
 bool Crit3DMeteoGridDbHandler::updateGridDate(std::string *myError)
 {
@@ -523,11 +494,18 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(std::string *myError)
     QDate maxDateH(QDate(1800, 1, 1));
     QDate minDateH(QDate(7800, 12, 31));
 
-    _meteoGrid->findFirstActiveCell(&id, &row, &col);
+    QDate temp;
+
+
+    if (!_meteoGrid->findFirstActiveCell(&id, &row, &col))
+    {
+        *myError = "active cell not found";
+        return false;
+    }
 
     QString tableD = QString::fromStdString(id) + _tableDaily.postFix;
     QString tableH = QString::fromStdString(id) + _tableHourly.postFix;
-/*
+
     if (tableD != "")
     {
         QString statement = QString("SELECT MIN(PragaTime) as minDate, MAX(PragaTime) as maxDate FROM `%1`").arg(tableD);
@@ -538,9 +516,28 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(std::string *myError)
         else
         {
             if (qry.next())
-            {
-                minDateD = qry.value("minDate").toDate();
-                maxDateD = qry.value("maxDate").toDate();
+            {          
+                if (getValue(qry.value("minDate"), &temp))
+                {
+                    if (temp < minDateD)
+                        minDateD = temp;
+                }
+                else
+                {
+                    *myError = "Missing daily PragaTime";
+                    return false;
+                }
+
+                if (getValue(qry.value("maxDate"), &temp))
+                {
+                    if (temp > maxDateD)
+                        maxDateD = temp;
+                }
+                else
+                {
+                    *myError = "Missing daily PragaTime";
+                    return false;
+                }
 
                 return true;
             }
@@ -551,7 +548,7 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(std::string *myError)
 
     if (tableH != "")
     {
-        QString statement = QString("SELECT MIN(PragaTime) as minDate, MAX(PragaTime) as maxDate FROM `%1`").arg(tableD);
+        QString statement = QString("SELECT MIN(PragaTime) as minDate, MAX(PragaTime) as maxDate FROM `%1`").arg(tableH);
         if( !qry.exec(statement) )
         {
             *myError = qry.lastError().text().toStdString();
@@ -560,17 +557,53 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(std::string *myError)
         {
             if (qry.next())
             {
-                _firstDate = qry.value("minDate").toDate();
-                _lastDate = qry.value("maxDate").toDate();
+                if (getValue(qry.value("minDate"), &temp))
+                {
+                    if (temp < minDateH)
+                        minDateH = temp;
+                }
+                else
+                {
+                    *myError = "Missing hourly PragaTime";
+                    return false;
+                }
 
-                return true;
+                if (getValue(qry.value("maxDate"), &temp))
+                {
+                    if (temp > maxDateH)
+                        maxDateH = temp;
+                }
+                else
+                {
+                    *myError = "Missing hourly PragaTime";
+                    return false;
+                }
+
             }
             else
                 *myError = "Error: dataset not found" ;
         }
     }
-*/
-    return false;
+
+    if (minDateD < minDateH)
+    {
+        _firstDate = minDateD;
+    }
+    else
+    {
+        _firstDate = minDateH;
+    }
+
+    if (maxDateD > maxDateH)
+    {
+        _lastDate = maxDateD;
+    }
+    else
+    {
+        _lastDate = maxDateH;
+    }
+
+    return true;
 
 }
 

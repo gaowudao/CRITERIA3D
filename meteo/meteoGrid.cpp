@@ -270,9 +270,9 @@ void Crit3DMeteoGrid::fillMeteoPoint(int row, int col, std::string code, std::st
 bool Crit3DMeteoGrid::findCellFromId(int* row, int* col, std::string id)
 {
 
-    for (int i = 0; i < dataMeteoGrid.header->nrRows; i++)
+    for (int i = 0; i < gridStructure().header().nrRows; i++)
     {
-        for (int j = 0; j < dataMeteoGrid.header->nrCols; j++)
+        for (int j = 0; j < gridStructure().header().nrCols; j++)
         {
             if (_meteoPoints[i][j]->id == id)
             {
@@ -288,9 +288,9 @@ bool Crit3DMeteoGrid::findCellFromId(int* row, int* col, std::string id)
 bool Crit3DMeteoGrid::isActiveCellFromId(std::string id)
 {
 
-    for (int i = 0; i < dataMeteoGrid.header->nrRows; i++)
+    for (int i = 0; i < gridStructure().header().nrRows; i++)
     {
-        for (int j = 0; j < dataMeteoGrid.header->nrCols; j++)
+        for (int j = 0; j < gridStructure().header().nrCols; j++)
         {
             if (_meteoPoints[i][j]->id == id)
             {
@@ -304,9 +304,9 @@ bool Crit3DMeteoGrid::isActiveCellFromId(std::string id)
 bool Crit3DMeteoGrid::findFirstActiveCell(std::string* id, int* row, int* col)
 {
 
-    for (int i = 0; i < dataMeteoGrid.header->nrRows; i++)
+    for (int i = 0; i < gridStructure().header().nrRows; i++)
     {
-        for (int j = 0; j < dataMeteoGrid.header->nrCols; j++)
+        for (int j = 0; j < gridStructure().header().nrCols; j++)
         {
             if (_meteoPoints[i][j]->active == 1)
             {

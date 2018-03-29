@@ -99,8 +99,6 @@ class Crit3DMeteoGridDbHandler
 
         bool loadCellProperties(std::string *myError);
 
-        QString findFirstActiveCellTable();
-
         bool updateGridDate(std::string *myError);
 
 
