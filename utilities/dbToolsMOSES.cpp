@@ -136,7 +136,7 @@ bool readMOSESDailyData(QSqlQuery *query, Crit3DMeteoPoint *meteoPoint, std::str
                         meteoPoint->setMeteoPointValueD(date, dailyAirTemperatureMax, tmax);
                         meteoPoint->setMeteoPointValueD(date, dailyAirTemperatureAvg, tmed);
                         meteoPoint->setMeteoPointValueD(date, dailyPrecipitation, prec);
-                        meteoPoint->setMeteoPointValueD(date, dailyPotentialEvapotranspiration, et0);
+                        meteoPoint->setMeteoPointValueD(date, dailyReferenceEvapotranspiration, et0);
                         meteoPoint->setMeteoPointValueD(date, dailyWaterTableDepth, waterTable);
 
                         expectedDate = expectedDate.addDays(1);
@@ -188,7 +188,7 @@ bool readMOSESDailyData(QSqlQuery *query, Crit3DMeteoPoint *meteoPoint, std::str
                 meteoPoint->setMeteoPointValueD(date, dailyAirTemperatureMax, (float)tmax);
                 meteoPoint->setMeteoPointValueD(date, dailyAirTemperatureAvg, (float)tmed);
                 meteoPoint->setMeteoPointValueD(date, dailyPrecipitation, (float)prec);
-                meteoPoint->setMeteoPointValueD(date, dailyPotentialEvapotranspiration, (float)et0);
+                meteoPoint->setMeteoPointValueD(date, dailyReferenceEvapotranspiration, (float)et0);
                 meteoPoint->setMeteoPointValueD(date, dailyWaterTableDepth, waterTable);
             }
             else

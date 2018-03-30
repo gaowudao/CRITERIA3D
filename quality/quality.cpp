@@ -94,7 +94,7 @@ quality::Range* Crit3DQuality::getQualityRange(meteoVariable myVar)
     else if (myVar == dailyGlobalRadiation)
         return qualityDailyGRad;
 
-    else if (myVar == dailyWindIntensityAvg)
+    else if (myVar == dailyWindIntensityAvg || myVar == dailyWindIntensityMax)
         return qualityDailyWInt;
 
     else
@@ -354,7 +354,8 @@ float findThreshold(meteoVariable myVar, float value, float stdDev, float nrStdD
         threshold += zWeight + distWeight + stdDev * nrStdDev;
     }
     else if (   myVar == windIntensity
-             || myVar == dailyWindIntensityAvg)
+             || myVar == dailyWindIntensityAvg
+			 || myVar == dailyWindIntensityMax)
     {
         threshold = 1.f;
         zWeight = stdDevZ / 50.f;
