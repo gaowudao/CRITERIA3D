@@ -380,8 +380,6 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *my
         {
             QString errMess = QString("%1 does not exist" ).arg(_tableDaily.varcode[i].varPragaName);
             *myError = errMess.toStdString();
-            // LC? cosa deve fare se un PragaName non è presente nell'enum?
-            //return false;
         }
 
     }
@@ -397,8 +395,6 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *my
         {
             QString errMess = QString("%1 does not exist" ).arg(_tableHourly.varcode[i].varPragaName);
             *myError = errMess.toStdString();
-            // LC? cosa deve fare se un PragaName non è presente nell'enum?
-            //return false;
         }
     }
 
@@ -410,7 +406,7 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *my
     return true;
 }
 
-int Crit3DMeteoGridDbHandler::getDaiyVarCode(meteoVariable meteoGridDailyVar)
+int Crit3DMeteoGridDbHandler::getDailyVarCode(meteoVariable meteoGridDailyVar)
 {
 
     int varcode = NODATA;

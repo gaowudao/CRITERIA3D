@@ -98,7 +98,7 @@ class Crit3DMeteoGridDbHandler
 
         bool parseXMLGrid(QString xmlFileName, std::string *myError);
 
-        int getDaiyVarCode(meteoVariable meteoGridDailyVar);
+        int getDailyVarCode(meteoVariable meteoGridDailyVar);
 
         int getHourlyVarCode(meteoVariable meteoGridHourlyVar);
 
