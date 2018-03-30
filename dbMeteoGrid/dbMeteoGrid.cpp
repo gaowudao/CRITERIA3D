@@ -1,6 +1,7 @@
 #include "dbMeteoGrid.h"
 #include "utilities.h"
 #include "commonConstants.h"
+#include <stdexcept>
 #include <qdebug.h> //debug
 #include <iostream> //debug
 
@@ -370,12 +371,35 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *my
     // create variable maps
     for (int i=0; i < _tableDaily.varcode.size(); i++)
     {
-        _gridDailyVar.insert(_tableDaily.varcode[i].varCode, _tableDaily.varcode[i].varPragaName);
+        try
+        {
+            meteoVariable gridMeteoKey = MapDailyMeteoVar.at(_tableDaily.varcode[i].varPragaName.toStdString());
+            _gridDailyVar.insert(gridMeteoKey, _tableDaily.varcode[i].varCode);
+        }
+        catch (const std::out_of_range& oor)
+        {
+            QString errMess = QString("%1 does not exist" ).arg(_tableDaily.varcode[i].varPragaName);
+            *myError = errMess.toStdString();
+            // LC? cosa deve fare se un PragaName non è presente nell'enum?
+            //return false;
+        }
+
     }
 
     for (int i=0; i < _tableHourly.varcode.size(); i++)
     {
-        _gridHourlyVar.insert(_tableHourly.varcode[i].varCode, _tableHourly.varcode[i].varPragaName);
+        try
+        {
+            meteoVariable gridMeteoKey = MapHourlyMeteoVar.at(_tableHourly.varcode[i].varPragaName.toStdString());
+            _gridHourlyVar.insert(gridMeteoKey, _tableHourly.varcode[i].varCode);
+        }
+        catch (const std::out_of_range& oor)
+        {
+            QString errMess = QString("%1 does not exist" ).arg(_tableHourly.varcode[i].varPragaName);
+            *myError = errMess.toStdString();
+            // LC? cosa deve fare se un PragaName non è presente nell'enum?
+            //return false;
+        }
     }
 
 
@@ -386,25 +410,59 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *my
     return true;
 }
 
-/*
-void Crit3DMeteoGridDbHandler::createGridDailyMapVariable()
+int Crit3DMeteoGridDbHandler::getDaiyVarCode(meteoVariable meteoGridDailyVar)
 {
 
-    for (int i=0; i < _tableDaily.varcode.size(); i++)
+    int varcode = NODATA;
+    //check
+    if (meteoGridDailyVar == noMeteoVar)
     {
-        _gridDailyVar.insert(_tableDaily.varcode[i].varCode, _tableDaily.varcode[i].varPragaName);
+        return varcode;
+    }
+    if (_gridDailyVar.empty())
+    {
+        return varcode;
+    }
+    try
+    {
+        varcode = _gridDailyVar[meteoGridDailyVar];
+    }
+    catch (const std::out_of_range& oor)
+    {
+        return varcode;
     }
 
-    QMapIterator<int, QString> iter(_gridDailyVar);
-
-    while(iter.hasNext())
-    {
-        iter.next();
-        qDebug() << iter.key() << " : " << iter.value();
-    }
+    return varcode;
 
 }
-*/
+
+int Crit3DMeteoGridDbHandler::getHourlyVarCode(meteoVariable meteoGridHourlyVar)
+{
+
+    int varcode = NODATA;
+    //check
+    if (meteoGridHourlyVar == noMeteoVar)
+    {
+        return varcode;
+    }
+    if (_gridHourlyVar.empty())
+    {
+        return varcode;
+    }
+    try
+    {
+        varcode = _gridHourlyVar[meteoGridHourlyVar];
+    }
+    catch (const std::out_of_range& oor)
+    {
+        return varcode;
+    }
+
+    return varcode;
+
+}
+
+
 
 bool Crit3DMeteoGridDbHandler::openDatabase(std::string *myError)
 {

@@ -98,6 +98,10 @@ class Crit3DMeteoGridDbHandler
 
         bool parseXMLGrid(QString xmlFileName, std::string *myError);
 
+        int getDaiyVarCode(meteoVariable meteoGridDailyVar);
+
+        int getHourlyVarCode(meteoVariable meteoGridHourlyVar);
+
         bool loadCellProperties(std::string *myError);
 
         bool updateGridDate(std::string *myError);
@@ -117,8 +121,8 @@ private:
         TXMLTable _tableDaily;
         TXMLTable _tableHourly;
 
-        QMap<int,QString> _gridDailyVar;
-        QMap<int,QString> _gridHourlyVar;
+        QMap<meteoVariable, int> _gridDailyVar;
+        QMap<meteoVariable, int> _gridHourlyVar;
 
         QString _tableDailyPrefix;
         QString _tableDailyPostfix;
