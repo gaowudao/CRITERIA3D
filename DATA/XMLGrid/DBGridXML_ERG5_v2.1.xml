@@ -57,19 +57,19 @@
 		</varcode>
 		<varcode>
 			<varcode>9</varcode>
-			<varpraganame>DAILY_WAVG_INT</varpraganame>
+			<varpraganame>DAILY_W_INT_AVG</varpraganame>
 		</varcode>
 		<varcode>
 			<varcode>10</varcode>
-			<varpraganame>DAILY_WIND_DIR</varpraganame>
+			<varpraganame>DAILY_W_DIR</varpraganame>
 		</varcode>
 		<varcode>
 			<varcode>11</varcode>
-			<varpraganame>VMax</varpraganame>
+			<varpraganame>DAILY_W_INT_MAX</varpraganame>
 		</varcode>
 		<varcode>
 			<varcode>12</varcode>
-			<varpraganame>ETP</varpraganame>
+			<varpraganame>DAILY_ET0</varpraganame>
 		</varcode>
 	</tabledaily>
 	
@@ -105,11 +105,11 @@
 		</varcode>
 		<varcode>
 			<varcode>107</varcode>
-			<varpraganame>LeafWetnessH</varpraganame>
+			<varpraganame>LEAFW</varpraganame>
 		</varcode>
 		<varcode>
 			<varcode>108</varcode>
-			<varpraganame>ETPH</varpraganame>
+			<varpraganame>ET0</varpraganame>
 		</varcode>
 	</tablehourly>
 	
