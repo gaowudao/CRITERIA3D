@@ -455,7 +455,13 @@ bool Project::loadMeteoGridDB(QString xmlName)
 
     if (! this->meteoGridDbHandler->updateGridDate(&errorString))
         return false;
-
+/*
+    //test
+    int res = this->meteoGridDbHandler->getDailyVarCode(referenceEvapotranspiration);
+    std::cout << "res daily" << res;
+    res = this->meteoGridDbHandler->getHourlyVarCode(globalIrradiance);
+    std::cout << "res hourly" << res;
+*/
     this->meteoGridDbHandler->meteoGrid()->createRasterGrid();
 
     return true;

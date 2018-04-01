@@ -419,13 +419,9 @@ int Crit3DMeteoGridDbHandler::getDailyVarCode(meteoVariable meteoGridDailyVar)
     {
         return varcode;
     }
-    try
+    if(_gridDailyVar.contains(meteoGridDailyVar))
     {
         varcode = _gridDailyVar[meteoGridDailyVar];
-    }
-    catch (const std::out_of_range& oor)
-    {
-        return varcode;
     }
 
     return varcode;
@@ -445,13 +441,9 @@ int Crit3DMeteoGridDbHandler::getHourlyVarCode(meteoVariable meteoGridHourlyVar)
     {
         return varcode;
     }
-    try
+    if(_gridHourlyVar.contains(meteoGridHourlyVar))
     {
         varcode = _gridHourlyVar[meteoGridHourlyVar];
-    }
-    catch (const std::out_of_range& oor)
-    {
-        return varcode;
     }
 
     return varcode;
