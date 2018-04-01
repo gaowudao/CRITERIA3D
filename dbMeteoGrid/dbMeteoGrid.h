@@ -100,7 +100,11 @@ class Crit3DMeteoGridDbHandler
 
         int getDailyVarCode(meteoVariable meteoGridDailyVar);
 
+        meteoVariable getDailyVarEnum(int varCode);
+
         int getHourlyVarCode(meteoVariable meteoGridHourlyVar);
+
+        meteoVariable getHourlyVarEnum(int varCode);
 
         bool loadCellProperties(std::string *myError);
 

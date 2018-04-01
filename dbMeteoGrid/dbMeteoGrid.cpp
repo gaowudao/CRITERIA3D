@@ -409,44 +409,68 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *my
 int Crit3DMeteoGridDbHandler::getDailyVarCode(meteoVariable meteoGridDailyVar)
 {
 
-    int varcode = NODATA;
+    int varCode = NODATA;
     //check
     if (meteoGridDailyVar == noMeteoVar)
     {
-        return varcode;
+        return varCode;
     }
     if (_gridDailyVar.empty())
     {
-        return varcode;
+        return varCode;
     }
     if(_gridDailyVar.contains(meteoGridDailyVar))
     {
-        varcode = _gridDailyVar[meteoGridDailyVar];
+        varCode = _gridDailyVar[meteoGridDailyVar];
     }
 
-    return varcode;
+    return varCode;
+
+}
+
+meteoVariable Crit3DMeteoGridDbHandler::getDailyVarEnum(int varCode)
+{
+
+    if (varCode == NODATA)
+    {
+        return noMeteoVar;
+    }
+    meteoVariable meteoGridDailyVar = _gridDailyVar.key(varCode);
+    return meteoGridDailyVar;
 
 }
 
 int Crit3DMeteoGridDbHandler::getHourlyVarCode(meteoVariable meteoGridHourlyVar)
 {
 
-    int varcode = NODATA;
+    int varCode = NODATA;
     //check
     if (meteoGridHourlyVar == noMeteoVar)
     {
-        return varcode;
+        return varCode;
     }
     if (_gridHourlyVar.empty())
     {
-        return varcode;
+        return varCode;
     }
     if(_gridHourlyVar.contains(meteoGridHourlyVar))
     {
-        varcode = _gridHourlyVar[meteoGridHourlyVar];
+        varCode = _gridHourlyVar[meteoGridHourlyVar];
     }
 
-    return varcode;
+    return varCode;
+
+}
+
+meteoVariable Crit3DMeteoGridDbHandler::getHourlyVarEnum(int varCode)
+{
+
+    if (varCode == NODATA)
+    {
+        return noMeteoVar;
+    }
+    meteoVariable meteoGridDailyVar = _gridHourlyVar.key(varCode);
+    return meteoGridDailyVar;
 
 }
 
