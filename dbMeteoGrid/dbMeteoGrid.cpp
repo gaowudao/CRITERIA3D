@@ -435,9 +435,17 @@ meteoVariable Crit3DMeteoGridDbHandler::getDailyVarEnum(int varCode)
     {
         return noMeteoVar;
     }
-    meteoVariable meteoGridDailyVar = _gridDailyVar.key(varCode);
-    return meteoGridDailyVar;
 
+    QMapIterator<meteoVariable, int> i(_gridDailyVar);
+    while (i.hasNext()) {
+        i.next();
+        if (i.value() == varCode)
+        {
+            return i.key();
+        }
+    }
+
+    return noMeteoVar;
 }
 
 int Crit3DMeteoGridDbHandler::getHourlyVarCode(meteoVariable meteoGridHourlyVar)
@@ -469,8 +477,17 @@ meteoVariable Crit3DMeteoGridDbHandler::getHourlyVarEnum(int varCode)
     {
         return noMeteoVar;
     }
-    meteoVariable meteoGridDailyVar = _gridHourlyVar.key(varCode);
-    return meteoGridDailyVar;
+
+    QMapIterator<meteoVariable, int> i(_gridHourlyVar);
+    while (i.hasNext()) {
+        i.next();
+        if (i.value() == varCode)
+        {
+            return i.key();
+        }
+    }
+
+    return noMeteoVar;
 
 }
 
