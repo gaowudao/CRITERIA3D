@@ -85,11 +85,13 @@
 
             void fillMeteoPoint(int row, int col, std::string code, std::string name, int height, bool active);
 
-            bool findCellFromId(int* row, int* col, std::string code);
+            bool fillMeteoPointValue(int row, int col, Crit3DDate date, meteoVariable variable, float value);
 
-            bool findFirstActiveCell(std::string* id, int* row, int* col);
+            bool findMeteoPointFromId(int* row, int* col, std::string code);
 
-            bool isActiveCellFromId(std::string id);
+            bool findFirstActiveMeteoPoint(std::string* id, int* row, int* col);
+
+            bool isActiveMeteoPointFromId(std::string id);
 
             bool isAggregationDefined() const;
             void setIsAggregationDefined(bool isAggregationDefined);

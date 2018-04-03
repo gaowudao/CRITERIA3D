@@ -267,7 +267,13 @@ void Crit3DMeteoGrid::fillMeteoPoint(int row, int col, std::string code, std::st
 
 }
 
-bool Crit3DMeteoGrid::findCellFromId(int* row, int* col, std::string id)
+bool Crit3DMeteoGrid::fillMeteoPointValue(int row, int col, Crit3DDate date, meteoVariable variable, float value)
+{
+    return _meteoPoints[row][col]->setMeteoPointValueD(date, variable, value);
+}
+
+
+bool Crit3DMeteoGrid::findMeteoPointFromId(int* row, int* col, std::string id)
 {
 
     for (int i = 0; i < gridStructure().header().nrRows; i++)
@@ -285,7 +291,7 @@ bool Crit3DMeteoGrid::findCellFromId(int* row, int* col, std::string id)
     return false;
 }
 
-bool Crit3DMeteoGrid::isActiveCellFromId(std::string id)
+bool Crit3DMeteoGrid::isActiveMeteoPointFromId(std::string id)
 {
 
     for (int i = 0; i < gridStructure().header().nrRows; i++)
@@ -301,7 +307,7 @@ bool Crit3DMeteoGrid::isActiveCellFromId(std::string id)
     return false;
 }
 
-bool Crit3DMeteoGrid::findFirstActiveCell(std::string* id, int* row, int* col)
+bool Crit3DMeteoGrid::findFirstActiveMeteoPoint(std::string* id, int* row, int* col)
 {
 
     for (int i = 0; i < gridStructure().header().nrRows; i++)

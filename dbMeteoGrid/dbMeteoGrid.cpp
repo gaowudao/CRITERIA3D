@@ -617,7 +617,7 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(std::string *myError)
     QDate temp;
 
 
-    if (!_meteoGrid->findFirstActiveCell(&id, &row, &col))
+    if (!_meteoGrid->findFirstActiveMeteoPoint(&id, &row, &col))
     {
         *myError = "active cell not found";
         return false;
@@ -724,6 +724,63 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(std::string *myError)
 
     return true;
 
+}
+
+
+bool Crit3DMeteoGridDbHandler::loadGridDailyData(std::string *myError, QString meteoPoint, QDate first, QDate last)
+{
+    QSqlQuery qry(_db);
+    QString tableD = meteoPoint + _tableDaily.postFix;
+    QDate date;
+    int varCode;
+    float value;
+
+    int row;
+    int col;
+
+    if (!_meteoGrid->findMeteoPointFromId(&row, &col, meteoPoint.toStdString()) )
+    {
+        *myError = "Missing MeteoPoint id";
+        return false;
+    }
+
+    QString statement = QString("SELECT * FROM `%1` WHERE PragaTime >= '%2' AND PragaTime <= '%3' ORDER BY PragaTime").arg(tableD).arg(first.toString()).arg(last.toString());
+    if( !qry.exec(statement) )
+    {
+        *myError = qry.lastError().text().toStdString();
+    }
+    else
+    {
+        while (qry.next())
+        {
+            if (!getValue(qry.value("PragaTime"), &date))
+            {
+                *myError = "Missing PragaTime";
+                return false;
+            }
+
+            if (!getValue(qry.value("VariableCode"), &varCode))
+            {
+                *myError = "Missing VariableCode";
+                return false;
+            }
+
+            if (!getValue(qry.value("Value"), &value))
+            {
+                *myError = "Missing Value";
+                return false;
+            }
+
+            meteoVariable variable = getDailyVarEnum(varCode);
+            // fare prima la initializeObsDataD
+            _meteoGrid->fillMeteoPointValue(row, col, Crit3DDate(date.day(), date.month(), date.year()), variable, value);
+
+        }
+
+    }
+
+
+    return true;
 }
 
 
