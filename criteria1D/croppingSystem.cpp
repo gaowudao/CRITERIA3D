@@ -271,12 +271,8 @@ float cropIrrigationDemand(Criteria1D* myCase, float currentPrec, float nextPrec
     if (myCase->myCrop.degreeDays < myCase->myCrop.degreeDaysStartIrrigation ||
             myCase->myCrop.degreeDays > myCase->myCrop.degreeDaysEndIrrigation) return 0.;
 
-    // check irrigation shift
-    if (daysSinceIrrigation != NODATA &&
-            ++daysSinceIrrigation < myCase->myCrop.irrigationShift) return 0;
-
     // check rainfall (forecast)
-    if (currentPrec > 5.) return 0.;
+    if (currentPrec >= 5.) return 0.;
     if (myCase->myCrop.irrigationShift > 1)
         if ((currentPrec + nextPrec) >  myCase->myCrop.irrigationVolume * 0.5) return 0.;
 
@@ -287,6 +283,22 @@ float cropIrrigationDemand(Criteria1D* myCase, float currentPrec, float nextPrec
 
     // check readily available water (weighted on root density)
     if (getWeighredRAW(myCase) > 10.) return 0.;
+
+    // check irrigation shift
+    if (daysSinceIrrigation != NODATA)
+    {
+        ++daysSinceIrrigation;
+        if (waterStress < (threshold + 0.2))
+        {
+            if (daysSinceIrrigation < myCase->myCrop.irrigationShift)
+                return 0;
+        }
+        else
+        {
+            if (daysSinceIrrigation < (myCase->myCrop.irrigationShift * 0.5))
+                return 0;
+        }
+    }
 
     // all check passed --> IRRIGATION
 

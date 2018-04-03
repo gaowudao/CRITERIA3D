@@ -3,6 +3,8 @@
 #include <iostream>
 
 #include <QString>
+#include <QPair>
+#include <QList>
 #include <QDebug>
 
 #include "project.h"
@@ -34,6 +36,13 @@ void queryArcgis::executeQuery()
 
     query.setReturnGeometry(false);
     query.setReturnDistinctValues(true);
+
+    QPair<QString, EsriRuntimeQt::OrderByFields> myPair;
+    myPair.first = "ID_CASE";
+    myPair.second = EsriRuntimeQt::OrderByFields::Ascending;
+    QList<QPair<QString, EsriRuntimeQt::OrderByFields>> myList;
+    myList << myPair;
+    query.setOrderByFields(myList);
 
     query.setWhere("1=1");
 

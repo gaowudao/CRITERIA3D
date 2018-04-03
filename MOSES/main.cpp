@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
     else
     {
         //settingsFileName = "//PRAGA-SMR/MOSES/SWB/DA_MO/seasonalPredictions/seasonalIrriForecast_MO.ini";
-        //settingsFileName = "//PRAGA-SMR/MOSES/SWB/DA_IT/shortTermForecast/ShortTermIrriForecast_IT.ini";
+        //settingsFileName = "//PRAGA-SMR/MOSES/SWB/DA_ITC4/ShortTermIrriForecast_C4.ini";
 
         myProject.logError("USAGE: MOSES_WB settings_filename.ini");
         return ERROR_SETTINGS_MISSING;
@@ -117,9 +117,6 @@ int main(int argc, char *argv[])
     {
         for (int i = 0; i < myProject.nrUnits; i++)
         {
-            /*if ((i >= 10) && (nrUnitsComputed == 0))
-                break;*/
-
             //CROP
             myProject.unit[i].idCrop = getMOSESIdCrop(&(myProject.criteria.dbParameters), myProject.unit[i].idCropMoses, &(myProject.projectError)).toUpper();
             if (myProject.unit[i].idCrop == "")
@@ -280,7 +277,7 @@ int main(int argc, char *argv[])
                                 myProject.outputFile << "," << myProject.unit[i].idMeteo.toStdString();
                                 myProject.outputFile << "," << QString::number(RAW,'f',1).toStdString();
                                 myProject.outputFile << "," << QString::number(deficit,'f',1).toStdString();
-                                myProject.outputFile << "," << QString::number(rootDepth,'f',1).toStdString();
+                                myProject.outputFile << "," << QString::number(rootDepth,'f',2).toStdString();
                                 myProject.outputFile << "," << QString::number(prec,'f',1).toStdString();
                                 myProject.outputFile << "," << QString::number(maxTranspiration,'f',1).toStdString();
                                 myProject.outputFile << "," << forecastIrrigation * irriRatio;

@@ -59,8 +59,6 @@
         #define DAY_SECONDS 86400.0
     #endif
 
-    #define NO_CONVERGENCE -9999
-
     //criteria3D
     #define NOLINK -1
 
@@ -205,6 +203,9 @@
     // -----------------MATHEMATICS---------------------
     #ifndef PI
         #define PI 3.141592653589793238462643383
+    #endif
+    #ifndef THRESHOLD
+        #define THRESHOLD 0.00001
     #endif
     #define EULER 2.718281828459
     #define DEG_TO_RAD 0.0174532925
