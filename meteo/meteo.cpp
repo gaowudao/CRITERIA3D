@@ -346,6 +346,7 @@ meteoVariable getDefaultMeteoVariable(int id)
     else if (id == 158) return(dailyGlobalRadiation);
     else if (id == 159) return(dailyWindIntensityAvg);
     else if (id == 160) return(dailyWindDirectionPrevailing);
+	else if (id == 161) return(dailyWindIntensityMax);
 
     else
         return(noMeteoVar);
@@ -361,16 +362,16 @@ bool setColorScale(meteoVariable variable, Crit3DColorScale *colorScale)
         case airTemperature: case dailyAirTemperatureAvg: case dailyAirTemperatureMax: case dailyAirTemperatureMin:
             setTemperatureScale(colorScale);
             break;
-        case airHumidity: case dailyAirHumidityAvg: case dailyAirHumidityMax: case dailyAirHumidityMin:
+        case airHumidity: case dailyAirHumidityAvg: case dailyAirHumidityMax: case dailyAirHumidityMin: case leafWetness: case dailyLeafWetness:
             setRelativeHumidityScale(colorScale);
             break;
-        case precipitation: case dailyPrecipitation:
+        case precipitation: case dailyPrecipitation: case referenceEvapotranspiration: case dailyReferenceEvapotranspiration:
             setPrecipitationScale(colorScale);
             break;
         case globalIrradiance: case dailyGlobalRadiation:
             setRadiationScale(colorScale);
             break;
-        case windIntensity: case dailyWindIntensityAvg:
+        case windIntensity: case dailyWindIntensityAvg: case dailyWindIntensityMax:
             setWindIntensityScale(colorScale);
             break;
         case noMeteoTerrain:
@@ -405,6 +406,16 @@ std::string getVariableString(meteoVariable myVar)
         return "Solar irradiance W m-2";
     else if (myVar == windIntensity)
         return "Wind intensity m s-1";
+	else if (myVar == dailyWindIntensityAvg)
+        return "Average wind intensity m s-1";
+    else if (myVar == dailyWindIntensityMax)
+        return "Maximum wind intensity m s-1";
+    else if (myVar == dailyWindDirectionPrevailing)
+        return "Prevailing wind direction °";
+    else if (myVar == referenceEvapotranspiration || myVar == dailyReferenceEvapotranspiration)
+        return "Reference evapotranspiration mm";
+    else if (myVar == leafWetness || myVar == dailyLeafWetness)
+        return "Leaf wetness h";								
     else if (myVar == noMeteoTerrain)
         return "Digital Terrain Model m";
 

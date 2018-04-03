@@ -27,7 +27,7 @@
         float* irradiance;
         float* et0;
         float* windInt;
-        int* wetDuration;
+        int* leafW;
         float* transmissivity;
     };
 
@@ -44,6 +44,8 @@
         float et0;
         float windIntAvg;
         float windDirPrev;
+        float windIntMax;
+        float leafW;
         float waterTable;       // [m]
     };
 

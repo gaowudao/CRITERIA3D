@@ -31,7 +31,6 @@
 
     #include <QList>
     #include <QDate>
-    #include <String>
     #include <fstream>
 
     class Project {

@@ -4,6 +4,7 @@
 #include <QString>
 #include <QtSql>
 #include <QDomElement>
+#include <QMap>
 
 #ifndef METEOGRID_H
     #include "meteoGrid.h"
@@ -89,19 +90,27 @@ class Crit3DMeteoGridDbHandler
 
         QString tableHourlyModel() const;
 
-        bool openDatabase();
+        bool openDatabase(std::string *myError);
 
         void closeDatabase();
 
         bool parseXMLFile(QString xmlFileName, QDomDocument* xmlDoc);
 
-        bool parseXMLGrid(QString xmlFileName);
+        bool parseXMLGrid(QString xmlFileName, std::string *myError);
+
+        int getDailyVarCode(meteoVariable meteoGridDailyVar);
+
+        meteoVariable getDailyVarEnum(int varCode);
+
+        int getHourlyVarCode(meteoVariable meteoGridHourlyVar);
+
+        meteoVariable getHourlyVarEnum(int varCode);
 
         bool loadCellProperties(std::string *myError);
 
-        QString findFirstActiveCellTable();
+        bool updateGridDate(std::string *myError);
 
-        bool updateGridDate();
+        bool loadGridDailyData(std::string *myError, QString meteoPoint, QDate first, QDate last);
 
 
 private:
@@ -117,6 +126,9 @@ private:
 
         TXMLTable _tableDaily;
         TXMLTable _tableHourly;
+
+        QMap<meteoVariable, int> _gridDailyVar;
+        QMap<meteoVariable, int> _gridHourlyVar;
 
         QString _tableDailyPrefix;
         QString _tableDailyPostfix;

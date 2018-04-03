@@ -443,13 +443,17 @@ bool Project::loadMeteoGridDB(QString xmlName)
     this->meteoGridDbHandler->meteoGrid()->setUtmZone(this->gisSettings.utmZone);
     this->meteoGridDbHandler->meteoGrid()->setIsNorthernEmisphere(this->gisSettings.isNorthernEmisphere);
 
-    if (! this->meteoGridDbHandler->parseXMLGrid(xmlName))
+
+    if (! this->meteoGridDbHandler->parseXMLGrid(xmlName, &errorString))
         return false;
 
-    if (! this->meteoGridDbHandler->openDatabase())
+    if (! this->meteoGridDbHandler->openDatabase(&errorString))
         return false;
 
     if (! this->meteoGridDbHandler->loadCellProperties(&errorString))
+        return false;
+
+    if (! this->meteoGridDbHandler->updateGridDate(&errorString))
         return false;
 
     this->meteoGridDbHandler->meteoGrid()->createRasterGrid();

@@ -54,6 +54,21 @@ bool getValue(QVariant myRs, double* myValue)
     return (*myValue != NODATA);
 }
 
+bool getValue(QVariant myRs, QDate* myValue)
+{
+    if (myRs.isNull())
+        return false;
+    else
+    {
+        if (myRs == "")
+             return false;
+        else
+            *myValue = myRs.toDate();
+    }
+
+    return true;
+}
+
 
 bool getValue(QVariant myRs, QString* myValue)
 {
