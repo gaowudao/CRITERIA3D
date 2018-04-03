@@ -106,7 +106,7 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
             tomorrowPrec = 0;
 
         // ET0
-        et0 = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyPotentialEvapotranspiration);
+        et0 = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyReferenceEvapotranspiration);
         if ((et0 == NODATA || et0 <= 0))
             et0 = ET0_Hargreaves(0.17, myCase->meteoPoint.latitude, doy, tmax, tmin);
 
