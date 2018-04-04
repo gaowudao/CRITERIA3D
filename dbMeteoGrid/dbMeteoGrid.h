@@ -112,7 +112,7 @@ class Crit3DMeteoGridDbHandler
 
         bool loadGridDailyData(std::string *myError, QString meteoPoint, QDate first, QDate last);
 
-        bool loadGridHourlyData(std::string *myError, QString meteoPoint, QDateTime first, QDateTime last);
+        bool loadGridHourlyData(std::string *myError, QString meteoPoint, QDate first, QDate last);
 
 
 private:

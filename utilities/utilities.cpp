@@ -69,6 +69,21 @@ bool getValue(QVariant myRs, QDate* myValue)
     return true;
 }
 
+bool getValue(QVariant myRs, QDateTime* myValue)
+{
+    if (myRs.isNull())
+        return false;
+    else
+    {
+        if (myRs == "")
+             return false;
+        else
+            *myValue = myRs.toDateTime();
+    }
+
+    return true;
+}
+
 
 bool getValue(QVariant myRs, QString* myValue)
 {

@@ -19,6 +19,7 @@
     bool getValue(QVariant myRs, float* myValue);
     bool getValue(QVariant myRs, double* myValue);
     bool getValue(QVariant myRs, QDate *myValue);
+    bool getValue(QVariant myRs, QDateTime* myValue);
     bool getValue(QVariant myRs, QString* myValue);
 
     QString getPath(QString filePath);

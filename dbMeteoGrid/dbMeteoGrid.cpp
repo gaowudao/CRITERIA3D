@@ -789,11 +789,11 @@ bool Crit3DMeteoGridDbHandler::loadGridDailyData(std::string *myError, QString m
     return true;
 }
 
-bool Crit3DMeteoGridDbHandler::loadGridHourlyData(std::string *myError, QString meteoPoint, QDateTime first, QDateTime last)
+bool Crit3DMeteoGridDbHandler::loadGridHourlyData(std::string *myError, QString meteoPoint, QDate first, QDate last)
 {
-    /*
+
     QSqlQuery qry(_db);
-    QString tableD = meteoPoint + _tableHourly.postFix;
+    QString tableH = meteoPoint + _tableHourly.postFix;
     QDateTime date;
     int varCode;
     float value;
@@ -810,7 +810,7 @@ bool Crit3DMeteoGridDbHandler::loadGridHourlyData(std::string *myError, QString 
         return false;
     }
 
-    QString statement = QString("SELECT * FROM `%1` WHERE PragaTime >= '%2' AND PragaTime <= '%3' ORDER BY PragaTime").arg(tableD).arg(first.toString("yyyy-MM-dd")).arg(last.toString("yyyy-MM-dd"));
+    QString statement = QString("SELECT * FROM `%1` WHERE PragaTime >= '%2' AND PragaTime <= '%3' ORDER BY PragaTime").arg(tableH).arg(first.toString("yyyy-MM-dd")).arg(last.toString("yyyy-MM-dd"));
     if( !qry.exec(statement) )
     {
         *myError = qry.lastError().text().toStdString();
@@ -839,7 +839,7 @@ bool Crit3DMeteoGridDbHandler::loadGridHourlyData(std::string *myError, QString 
 
             meteoVariable variable = getDailyVarEnum(varCode);
 
-            if (_meteoGrid->fillMeteoPointHourlyValue(row, col, numberOfDays, initialize, Crit3DDate(date.day(), date.month(), date.year()), variable, value))
+            if ( _meteoGrid->fillMeteoPointHourlyValue(row, col, numberOfDays, initialize, Crit3DDate(date.date().year(), date.date().month(), date.date().day()), date.time().hour(), date.time().minute(), variable, value) )
             {
                 initialize = 0;
             }
@@ -848,7 +848,7 @@ bool Crit3DMeteoGridDbHandler::loadGridHourlyData(std::string *myError, QString 
 
     }
 
-*/
+
     return true;
 }
 
