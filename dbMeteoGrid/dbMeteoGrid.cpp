@@ -369,7 +369,7 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *my
 
 
     // create variable maps
-    for (int i=0; i < _tableDaily.varcode.size(); i++)
+    for (unsigned int i=0; i < _tableDaily.varcode.size(); i++)
     {
         try
         {
@@ -384,7 +384,7 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *my
 
     }
 
-    for (int i=0; i < _tableHourly.varcode.size(); i++)
+    for (unsigned int i=0; i < _tableHourly.varcode.size(); i++)
     {
         try
         {
