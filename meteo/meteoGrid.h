@@ -85,7 +85,9 @@
 
             void fillMeteoPoint(int row, int col, std::string code, std::string name, int height, bool active);
 
-            bool fillMeteoPointValue(int row, int col, Crit3DDate date, meteoVariable variable, float value);
+            bool fillMeteoPointDailyValue(int row, int col, int numberOfDays, int initialize, Crit3DDate date, meteoVariable variable, float value);
+
+            bool fillMeteoPointHourlyValue(int row, int col, int numberOfDays, int initialize, Crit3DTime date, meteoVariable variable, float value);
 
             bool findMeteoPointFromId(int* row, int* col, std::string code);
 

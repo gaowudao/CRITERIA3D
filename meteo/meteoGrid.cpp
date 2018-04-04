@@ -173,6 +173,11 @@ bool Crit3DMeteoGrid::createRasterGrid()
                 else
                 {
                     dataMeteoGrid.value[i][j] = _meteoPoints[i][j]->currentValue;
+                    /*
+                    std::cout << "i" << i << std::endl;
+                    std::cout << "j" << j << std::endl;
+                    std::cout << "_meteoPoints[i][j]->currentValue" << _meteoPoints[i][j]->currentValue << std::endl;
+                    */
                 }
             }
         }
@@ -267,9 +272,24 @@ void Crit3DMeteoGrid::fillMeteoPoint(int row, int col, std::string code, std::st
 
 }
 
-bool Crit3DMeteoGrid::fillMeteoPointValue(int row, int col, Crit3DDate date, meteoVariable variable, float value)
+bool Crit3DMeteoGrid::fillMeteoPointDailyValue(int row, int col, int numberOfDays, int initialize, Crit3DDate date, meteoVariable variable, float value)
 {
+    if (initialize)
+    {
+        _meteoPoints[row][col]->initializeObsDataD(numberOfDays, date);
+    }
     return _meteoPoints[row][col]->setMeteoPointValueD(date, variable, value);
+}
+
+bool Crit3DMeteoGrid::fillMeteoPointHourlyValue(int row, int col, int numberOfDays, int initialize, Crit3DTime date, meteoVariable variable, float value)
+{
+    /*
+    if (initialize)
+    {
+        _meteoPoints[row][col]->initializeObsDataH(numberOfDays, date);
+    }
+    return _meteoPoints[row][col]->setMeteoPointValueH(date, variable, value);
+    */
 }
 
 

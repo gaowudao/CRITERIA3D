@@ -737,6 +737,9 @@ bool Crit3DMeteoGridDbHandler::loadGridDailyData(std::string *myError, QString m
 
     int row;
     int col;
+    int initialize = 1;
+
+    int numberOfDays = first.daysTo(last) + 1;
 
     if (!_meteoGrid->findMeteoPointFromId(&row, &col, meteoPoint.toStdString()) )
     {
@@ -744,7 +747,7 @@ bool Crit3DMeteoGridDbHandler::loadGridDailyData(std::string *myError, QString m
         return false;
     }
 
-    QString statement = QString("SELECT * FROM `%1` WHERE PragaTime >= '%2' AND PragaTime <= '%3' ORDER BY PragaTime").arg(tableD).arg(first.toString()).arg(last.toString());
+    QString statement = QString("SELECT * FROM `%1` WHERE PragaTime >= '%2' AND PragaTime <= '%3' ORDER BY PragaTime").arg(tableD).arg(first.toString("yyyy-MM-dd")).arg(last.toString("yyyy-MM-dd"));
     if( !qry.exec(statement) )
     {
         *myError = qry.lastError().text().toStdString();
@@ -772,14 +775,80 @@ bool Crit3DMeteoGridDbHandler::loadGridDailyData(std::string *myError, QString m
             }
 
             meteoVariable variable = getDailyVarEnum(varCode);
-            // fare prima la initializeObsDataD
-            _meteoGrid->fillMeteoPointValue(row, col, Crit3DDate(date.day(), date.month(), date.year()), variable, value);
+
+            if (_meteoGrid->fillMeteoPointDailyValue(row, col, numberOfDays, initialize, Crit3DDate(date.day(), date.month(), date.year()), variable, value))
+            {
+                initialize = 0;
+            }
 
         }
 
     }
 
 
+    return true;
+}
+
+bool Crit3DMeteoGridDbHandler::loadGridHourlyData(std::string *myError, QString meteoPoint, QDateTime first, QDateTime last)
+{
+    /*
+    QSqlQuery qry(_db);
+    QString tableD = meteoPoint + _tableHourly.postFix;
+    QDateTime date;
+    int varCode;
+    float value;
+
+    int row;
+    int col;
+    int initialize = 1;
+
+    int numberOfDays = first.daysTo(last) + 1;
+
+    if (!_meteoGrid->findMeteoPointFromId(&row, &col, meteoPoint.toStdString()) )
+    {
+        *myError = "Missing MeteoPoint id";
+        return false;
+    }
+
+    QString statement = QString("SELECT * FROM `%1` WHERE PragaTime >= '%2' AND PragaTime <= '%3' ORDER BY PragaTime").arg(tableD).arg(first.toString("yyyy-MM-dd")).arg(last.toString("yyyy-MM-dd"));
+    if( !qry.exec(statement) )
+    {
+        *myError = qry.lastError().text().toStdString();
+    }
+    else
+    {
+        while (qry.next())
+        {
+            if (!getValue(qry.value("PragaTime"), &date))
+            {
+                *myError = "Missing PragaTime";
+                return false;
+            }
+
+            if (!getValue(qry.value("VariableCode"), &varCode))
+            {
+                *myError = "Missing VariableCode";
+                return false;
+            }
+
+            if (!getValue(qry.value("Value"), &value))
+            {
+                *myError = "Missing Value";
+                return false;
+            }
+
+            meteoVariable variable = getDailyVarEnum(varCode);
+
+            if (_meteoGrid->fillMeteoPointHourlyValue(row, col, numberOfDays, initialize, Crit3DDate(date.day(), date.month(), date.year()), variable, value))
+            {
+                initialize = 0;
+            }
+
+        }
+
+    }
+
+*/
     return true;
 }
 
