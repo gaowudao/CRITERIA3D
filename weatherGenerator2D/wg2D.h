@@ -11,6 +11,7 @@
 #define MAX_ITERATION_MULGETS 200
 #include "meteoPoint.h"
 
+enum Tseason {DJF,MAM,JJA,SON};
 
 struct TprecOccurrence{
     float p00;
@@ -37,6 +38,14 @@ struct TcorrelationMatrix{
     double** amount;
     double** occurrence;
     int month;
+};
+
+struct TseasonalMatrix{
+    double** amount;
+    double** occurrence;
+    int beginDoySeason;
+    int lengthSeason;
+    Tseason season;
 };
 
 struct TrandomMatrix{
