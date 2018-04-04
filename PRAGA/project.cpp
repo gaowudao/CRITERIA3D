@@ -455,10 +455,15 @@ bool Project::loadMeteoGridDB(QString xmlName)
 
     if (! this->meteoGridDbHandler->updateGridDate(&errorString))
         return false;
-
+/*
+ * //test
     if (! this->meteoGridDbHandler->loadGridDailyData(&errorString, "01010", QDate(1991,01,01), QDate(1991,01,10)))
         return false;
 
+
+    if (! this->meteoGridDbHandler->loadGridHourlyData(&errorString, "01019", QDate(1991,01,01), QDate(1991,01,2)))
+        return false;
+  */
 
     this->meteoGridDbHandler->meteoGrid()->createRasterGrid();
 
