@@ -785,9 +785,9 @@ bool Crit3DMeteoGridDbHandler::loadGridDailyData(std::string *myError, QString m
 
     }
 
-
     return true;
 }
+
 
 bool Crit3DMeteoGridDbHandler::loadGridHourlyData(std::string *myError, QString meteoPoint, QDate first, QDate last)
 {
