@@ -852,6 +852,91 @@ bool Crit3DMeteoGridDbHandler::loadGridHourlyData(std::string *myError, QString 
     return true;
 }
 
+QList<float> Crit3DMeteoGridDbHandler::loadGridDailyVar(std::string *myError, QString meteoPoint, meteoVariable variable, QDate first, QDate last, QDate* firstDateDB)
+{
+    QSqlQuery qry(_db);
+    QString tableD = meteoPoint + _tableDaily.postFix;
+    QDate date, previousDate;
+
+    QList<float> varList;
+
+    float value;
+    int row;
+    int col;
+    int firstRow = 1;
+
+    int varCode = getDailyVarCode(variable);
+
+    if (varCode == NODATA)
+    {
+        *myError = "Variable not existing";
+        return varList;
+    }
+
+    if (!_meteoGrid->findMeteoPointFromId(&row, &col, meteoPoint.toStdString()) )
+    {
+        *myError = "Missing MeteoPoint id";
+        return varList;
+    }
+
+    QString statement = QString("SELECT * FROM `%1` WHERE VariableCode = '%2' AND PragaTime >= '%3' AND PragaTime <= '%4' ORDER BY PragaTime").arg(tableD).arg(varCode).arg(first.toString("yyyy-MM-dd")).arg(last.toString("yyyy-MM-dd"));
+    if( !qry.exec(statement) )
+    {
+        *myError = qry.lastError().text().toStdString();
+    }
+    else
+    {
+
+        while (qry.next())
+        {
+            if (firstRow)
+            {
+                if (!getValue(qry.value("PragaTime"), firstDateDB))
+                {
+                    *myError = "Missing PragaTime";
+                    return varList;
+                }
+
+                if (!getValue(qry.value("Value"), &value))
+                {
+                    *myError = "Missing Value";
+                    return varList;
+                }
+                varList << value;
+                previousDate = *firstDateDB;
+                firstRow = 0;
+            }
+            else
+            {
+                if (!getValue(qry.value("PragaTime"), &date))
+                {
+                    *myError = "Missing PragaTime";
+                    return varList;
+                }
+
+                int missingDate = previousDate.daysTo(date);
+                for (int i =1; i<missingDate; i++)
+                {
+                    varList << NODATA;
+                }
+
+                if (!getValue(qry.value("Value"), &value))
+                {
+                    *myError = "Missing Value";
+                    return varList;
+                }
+                varList << value;
+                previousDate = date;
+            }
+
+
+        }
+
+    }
+
+    return varList;
+}
+
 
 QDate Crit3DMeteoGridDbHandler::firstDate() const
 {

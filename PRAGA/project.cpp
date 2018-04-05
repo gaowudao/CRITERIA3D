@@ -458,6 +458,12 @@ bool Project::loadMeteoGridDB(QString xmlName)
 
     this->setCurrentDate(this->meteoGridDbHandler->lastDate());
 
+    QDate firstDateDB;
+    QList<float> varList = this->meteoGridDbHandler->loadGridDailyVar(&errorString, "01010", dailyPrecipitation, QDate(1991,01,01), QDate(1991,01,10), &firstDateDB);
+    if (varList.isEmpty())
+        return false;
+
+
 /*
  * //test
     if (! this->meteoGridDbHandler->loadGridDailyData(&errorString, "01010", QDate(1991,01,01), QDate(1991,01,10)))
