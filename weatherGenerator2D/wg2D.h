@@ -31,7 +31,7 @@ struct TObsPrecDataD{
     float prec;
     float amounts;
     float amountsLessThreshold;
-    int occurrences;
+    float occurrences;
 };
 
 struct TcorrelationMatrix{
