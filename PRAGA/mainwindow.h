@@ -136,6 +136,7 @@
         void redrawMeteoPoints(bool updateColorSCale);
 
         bool loadMeteoPointsDB(QString dbName);
+        bool loadMeteoGridDB(QString xmlName);
         void setCurrentRaster(gis::Crit3DRasterGrid *myRaster);
 
     };

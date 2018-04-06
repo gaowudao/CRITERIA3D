@@ -356,7 +356,10 @@ void MainWindow::on_actionOpen_meteo_points_DB_triggered()
 {
     QString dbName = QFileDialog::getOpenFileName(this, tr("Open DB meteo"), "", tr("DB files (*.db)"));
 
-    if (dbName != "") this->loadMeteoPointsDB(dbName);
+    if (dbName != "")
+    {
+        this->loadMeteoPointsDB(dbName);
+    }
 }
 
 
@@ -366,24 +369,9 @@ void MainWindow::on_actionOpen_meteo_grid_triggered()
 
     if (xmlName != "")
     {
-        qDebug() << "xmlName" << xmlName; //debug
-        if (! myProject.loadMeteoGridDB(xmlName))
-        {
-            myProject.logError();
-            return;
-        }
+        this->loadMeteoGridDB(xmlName);
     }
 
-    if (myProject.meteoGridDbHandler->gridStructure().isUTM() == false)
-    {
-        gridObj->initializeLatLon(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid), myProject.gisSettings, myProject.meteoGridDbHandler->gridStructure().header(), true);
-    }
-    else
-    {
-        gridObj->initializeUTM(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid), myProject.gisSettings, true);
-    }
-
-    gridObj->updateCenter();
 }
 
 
@@ -821,6 +809,35 @@ bool MainWindow::loadMeteoPointsDB(QString dbName)
     if (! myProject.loadlastMeteoData()) qDebug ("NO data");
 
     this->updateDateTime();
+
+    return true;
+}
+
+bool MainWindow::loadMeteoGridDB(QString xmlName)
+{
+    if (!myProject.loadMeteoGridDB(xmlName))
+    {
+        myProject.logError();
+        return false;
+    }
+
+    // update dateTime Edit if there are not MeteoPoints
+    if (this->pointList.isEmpty())
+    {
+        myProject.setCurrentDate(myProject.meteoGridDbHandler->lastDate());
+        this->updateDateTime();
+    }
+
+    if (myProject.meteoGridDbHandler->gridStructure().isUTM() == false)
+    {
+        gridObj->initializeLatLon(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid), myProject.gisSettings, myProject.meteoGridDbHandler->gridStructure().header(), true);
+    }
+    else
+    {
+        gridObj->initializeUTM(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid), myProject.gisSettings, true);
+    }
+
+    gridObj->updateCenter();
 
     return true;
 }
