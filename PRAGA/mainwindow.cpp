@@ -828,6 +828,8 @@ bool MainWindow::loadMeteoGridDB(QString xmlName)
         this->updateDateTime();
     }
 
+    myProject.meteoGridDbHandler->meteoGrid()->createRasterGrid();
+
     if (myProject.meteoGridDbHandler->gridStructure().isUTM() == false)
     {
         gridObj->initializeLatLon(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid), myProject.gisSettings, myProject.meteoGridDbHandler->gridStructure().header(), true);

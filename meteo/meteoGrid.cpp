@@ -314,6 +314,20 @@ bool Crit3DMeteoGrid::findMeteoPointFromId(int* row, int* col, std::string id)
     return false;
 }
 
+bool Crit3DMeteoGrid::getMeteoPointActiveId(int row, int col, std::string* id)
+{
+    if (row < gridStructure().header().nrRows && col < gridStructure().header().nrCols)
+    {
+        if (_meteoPoints[row][col]->active)
+        {
+            *id = _meteoPoints[row][col]->id;
+            return true;
+        }
+
+    }
+    return false;
+}
+
 bool Crit3DMeteoGrid::isActiveMeteoPointFromId(std::string id)
 {
 

@@ -751,6 +751,7 @@ bool Crit3DMeteoGridDbHandler::loadGridDailyData(std::string *myError, QString m
     if( !qry.exec(statement) )
     {
         *myError = qry.lastError().text().toStdString();
+        return false;
     }
     else
     {

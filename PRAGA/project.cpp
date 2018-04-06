@@ -456,6 +456,22 @@ bool Project::loadMeteoGridDB(QString xmlName)
     if (! this->meteoGridDbHandler->updateGridDate(&errorString))
         return false;
 
+    QDate lastDate = this->meteoGridDbHandler->lastDate();
+    std::string id;
+
+    for (int row = 0; row < this->meteoGridDbHandler->gridStructure().header().nrRows; row++)
+    {
+        for (int col = 0; col < this->meteoGridDbHandler->gridStructure().header().nrCols; col++)
+        {
+            this->meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id);
+            if (id != "")
+            {
+                if (! this->meteoGridDbHandler->loadGridDailyData(&errorString, QString::fromStdString(id), lastDate, lastDate))
+                    return false;
+            }
+        }
+    }
+
     /*
      * //test
     QDate firstDateDB;
@@ -463,17 +479,10 @@ bool Project::loadMeteoGridDB(QString xmlName)
     if (dailyVarList.isEmpty())
         return false;
 
-
-
-    if (! this->meteoGridDbHandler->loadGridDailyData(&errorString, "01010", QDate(1991,01,01), QDate(1991,01,10)))
-        return false;
-
-
     if (! this->meteoGridDbHandler->loadGridHourlyData(&errorString, "01019", QDate(1991,01,01), QDate(1991,01,2)))
         return false;
   */
 
-    this->meteoGridDbHandler->meteoGrid()->createRasterGrid();
 
     return true;
 }
