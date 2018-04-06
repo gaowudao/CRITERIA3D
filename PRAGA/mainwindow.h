@@ -134,6 +134,7 @@
         void resetMeteoPoints();
         void addMeteoPoints();
         void redrawMeteoPoints(bool updateColorSCale);
+        void redrawMeteoGrid();
 
         bool loadMeteoPointsDB(QString dbName);
         bool loadMeteoGridDB(QString xmlName);

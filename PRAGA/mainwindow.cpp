@@ -671,6 +671,7 @@ void MainWindow::updateVariable()
     ui->labelVariable->setText(QString::fromStdString(myString));
 
     redrawMeteoPoints(true);
+    redrawMeteoGrid();
 }
 
 
@@ -794,6 +795,11 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
     }
 
     pointsLegend->update();
+}
+
+void MainWindow::redrawMeteoGrid()
+{
+
 }
 
 

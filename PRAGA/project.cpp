@@ -456,21 +456,8 @@ bool Project::loadMeteoGridDB(QString xmlName)
     if (! this->meteoGridDbHandler->updateGridDate(&errorString))
         return false;
 
-    QDate lastDate = this->meteoGridDbHandler->lastDate();
-    std::string id;
-
-    for (int row = 0; row < this->meteoGridDbHandler->gridStructure().header().nrRows; row++)
-    {
-        for (int col = 0; col < this->meteoGridDbHandler->gridStructure().header().nrCols; col++)
-        {
-            this->meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id);
-            if (id != "")
-            {
-                if (! this->meteoGridDbHandler->loadGridDailyData(&errorString, QString::fromStdString(id), lastDate, lastDate))
-                    return false;
-            }
-        }
-    }
+    if (! this->loadMeteoGridData(&errorString) )
+        return false;
 
     /*
      * //test
@@ -487,6 +474,39 @@ bool Project::loadMeteoGridDB(QString xmlName)
     return true;
 }
 
+bool Project::loadMeteoGridData(std::string *myError)
+{
+    std::string id;
+    int count = 0;
+
+    QDate lastDate = this->meteoGridDbHandler->lastDate();
+
+    for (int row = 0; row < this->meteoGridDbHandler->gridStructure().header().nrRows; row++)
+    {
+        for (int col = 0; col < this->meteoGridDbHandler->gridStructure().header().nrCols; col++)
+        {
+            this->meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id);
+            if (id != "")
+            {
+                if (! this->meteoGridDbHandler->loadGridDailyData(&errorString, QString::fromStdString(id), lastDate, lastDate))
+                {
+                    return false;
+                }
+                else
+                {
+                    count = count + 1;
+                }
+            }
+        }
+    }
+    if (count == 0)
+    {
+        *myError = "No Data Available";
+        return false;
+    }
+    else
+        return true;
+}
 
 bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime,
                             gis::Crit3DRasterGrid *myRaster)
