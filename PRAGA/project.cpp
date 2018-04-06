@@ -456,7 +456,8 @@ bool Project::loadMeteoGridDB(QString xmlName)
     if (! this->meteoGridDbHandler->updateGridDate(&errorString))
         return false;
 
-    if (! this->loadMeteoGridData(&errorString) )
+    QDate lastDate = this->meteoGridDbHandler->lastDate();
+    if (! this->loadMeteoGridData(lastDate, lastDate, &errorString) )
         return false;
 
     /*
@@ -474,12 +475,10 @@ bool Project::loadMeteoGridDB(QString xmlName)
     return true;
 }
 
-bool Project::loadMeteoGridData(std::string *myError)
+bool Project::loadMeteoGridData(QDate firstDate, QDate lastDate, std::string *myError)
 {
     std::string id;
     int count = 0;
-
-    QDate lastDate = this->meteoGridDbHandler->lastDate();
 
     for (int row = 0; row < this->meteoGridDbHandler->gridStructure().header().nrRows; row++)
     {
@@ -488,7 +487,7 @@ bool Project::loadMeteoGridData(std::string *myError)
             this->meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id);
             if (id != "")
             {
-                if (! this->meteoGridDbHandler->loadGridDailyData(&errorString, QString::fromStdString(id), lastDate, lastDate))
+                if (! this->meteoGridDbHandler->loadGridDailyData(&errorString, QString::fromStdString(id), firstDate, lastDate))
                 {
                     return false;
                 }
