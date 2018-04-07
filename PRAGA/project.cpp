@@ -458,7 +458,7 @@ bool Project::loadMeteoGridDB(QString xmlName)
 
     /*
     QDate lastDate = this->meteoGridDbHandler->lastDate();
-    if (! this->loadMeteoGridData(lastDate, lastDate, &errorString) )
+    if (! this->loadMeteoGridDailyData(lastDate, lastDate) )
         return false;
 */
     /*
@@ -467,16 +467,16 @@ bool Project::loadMeteoGridDB(QString xmlName)
     QList<float> dailyVarList = this->meteoGridDbHandler->loadGridDailyVar(&errorString, "01010", dailyPrecipitation, QDate(1991,01,01), QDate(1991,01,10), &firstDateDB);
     if (dailyVarList.isEmpty())
         return false;
-  */
+
     if (! this->meteoGridDbHandler->loadGridHourlyData(&errorString, "01019", QDateTime(QDate(1991,01,01),QTime(9,0,0)), QDateTime(QDate(1991,01,2),QTime(9,0,0))))
         return false;
-
+*/
 
 
     return true;
 }
 
-bool Project::loadMeteoGridDailyData(QDate firstDate, QDate lastDate, std::string *myError)
+bool Project::loadMeteoGridDailyData(QDate firstDate, QDate lastDate)
 {
     std::string id;
     int count = 0;
@@ -501,14 +501,14 @@ bool Project::loadMeteoGridDailyData(QDate firstDate, QDate lastDate, std::strin
     }
     if (count == 0)
     {
-        *myError = "No Data Available";
+        errorString = "No Data Available";
         return false;
     }
     else
         return true;
 }
 
-bool Project::loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate, std::string *myError)
+bool Project::loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate)
 {
     std::string id;
     int count = 0;
@@ -533,7 +533,7 @@ bool Project::loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate, s
     }
     if (count == 0)
     {
-        *myError = "No Data Available";
+        errorString = "No Data Available";
         return false;
     }
     else

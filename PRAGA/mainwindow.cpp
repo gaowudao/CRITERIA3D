@@ -804,6 +804,20 @@ void MainWindow::redrawMeteoGrid()
 
     frequencyType frequency = myProject.getFrequency();
     meteoVariable variable = myProject.getCurrentVariable();
+    Crit3DTime time = myProject.getCurrentTime();
+
+    if (variable == daily)
+    {
+        QDate currentDate = getQDateTime(time).date();
+        myProject.loadMeteoGridDailyData(currentDate, currentDate);
+        myProject.meteoGridDbHandler->meteoGrid()->fillMeteoPointCurrentDailyValue(time.date, variable);
+    }
+    else if (variable == hourly)
+    {
+        QDateTime currentDateTime = getQDateTime(time);
+        myProject.loadMeteoGridHourlyData(currentDateTime, currentDateTime);
+        myProject.meteoGridDbHandler->meteoGrid()->fillMeteoPointCurrentHourlyValue(time.date, time.getHour(), time.getMinutes(), variable);
+    }
 
 
 }

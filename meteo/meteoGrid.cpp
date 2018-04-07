@@ -296,6 +296,31 @@ bool Crit3DMeteoGrid::fillMeteoPointHourlyValue(int row, int col, int numberOfDa
 }
 
 
+bool Crit3DMeteoGrid::fillMeteoPointCurrentDailyValue(Crit3DDate date, meteoVariable variable)
+{
+    for (int i = 0; i < gridStructure().header().nrRows; i++)
+    {
+        for (int j = 0; j < gridStructure().header().nrCols; j++)
+        {
+            _meteoPoints[i][j]->setMeteoPointCurrentValueD(date, variable);
+        }
+
+    }
+}
+
+bool Crit3DMeteoGrid::fillMeteoPointCurrentHourlyValue(Crit3DDate date, int hour, int minute, meteoVariable variable)
+{
+    for (int i = 0; i < gridStructure().header().nrRows; i++)
+    {
+        for (int j = 0; j < gridStructure().header().nrCols; j++)
+        {
+            _meteoPoints[i][j]->setMeteoPointCurrentValueH(date, hour, minute, variable);
+        }
+
+    }
+}
+
+
 bool Crit3DMeteoGrid::findMeteoPointFromId(int* row, int* col, std::string id)
 {
 
