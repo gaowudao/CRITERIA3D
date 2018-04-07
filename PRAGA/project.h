@@ -95,7 +95,8 @@
         void closeMeteoPointsDB();
         bool loadMeteoPointsDB(QString dbName);
         bool loadMeteoGridDB(QString xmlName);
-        bool loadMeteoGridData(QDate firstDate, QDate lastDate, std::string *myError);
+        bool loadMeteoGridDailyData(QDate firstDate, QDate lastDate, std::string *myError);
+        bool loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate, std::string *myError);
         bool getMeteoPointSelected(int i);
         bool updateMeteoPointsData();
 

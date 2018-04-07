@@ -456,26 +456,27 @@ bool Project::loadMeteoGridDB(QString xmlName)
     if (! this->meteoGridDbHandler->updateGridDate(&errorString))
         return false;
 
+    /*
     QDate lastDate = this->meteoGridDbHandler->lastDate();
     if (! this->loadMeteoGridData(lastDate, lastDate, &errorString) )
         return false;
-
+*/
     /*
      * //test
     QDate firstDateDB;
     QList<float> dailyVarList = this->meteoGridDbHandler->loadGridDailyVar(&errorString, "01010", dailyPrecipitation, QDate(1991,01,01), QDate(1991,01,10), &firstDateDB);
     if (dailyVarList.isEmpty())
         return false;
-
-    if (! this->meteoGridDbHandler->loadGridHourlyData(&errorString, "01019", QDate(1991,01,01), QDate(1991,01,2)))
-        return false;
   */
+    if (! this->meteoGridDbHandler->loadGridHourlyData(&errorString, "01019", QDateTime(QDate(1991,01,01),QTime(9,0,0)), QDateTime(QDate(1991,01,2),QTime(9,0,0))))
+        return false;
+
 
 
     return true;
 }
 
-bool Project::loadMeteoGridData(QDate firstDate, QDate lastDate, std::string *myError)
+bool Project::loadMeteoGridDailyData(QDate firstDate, QDate lastDate, std::string *myError)
 {
     std::string id;
     int count = 0;
@@ -488,6 +489,38 @@ bool Project::loadMeteoGridData(QDate firstDate, QDate lastDate, std::string *my
             if (id != "")
             {
                 if (! this->meteoGridDbHandler->loadGridDailyData(&errorString, QString::fromStdString(id), firstDate, lastDate))
+                {
+                    return false;
+                }
+                else
+                {
+                    count = count + 1;
+                }
+            }
+        }
+    }
+    if (count == 0)
+    {
+        *myError = "No Data Available";
+        return false;
+    }
+    else
+        return true;
+}
+
+bool Project::loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate, std::string *myError)
+{
+    std::string id;
+    int count = 0;
+
+    for (int row = 0; row < this->meteoGridDbHandler->gridStructure().header().nrRows; row++)
+    {
+        for (int col = 0; col < this->meteoGridDbHandler->gridStructure().header().nrCols; col++)
+        {
+            this->meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id);
+            if (id != "")
+            {
+                if (! this->meteoGridDbHandler->loadGridHourlyData(&errorString, QString::fromStdString(id), firstDate, lastDate))
                 {
                     return false;
                 }

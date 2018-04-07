@@ -799,6 +799,12 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
 
 void MainWindow::redrawMeteoGrid()
 {
+    if (myProject.meteoGridDbHandler == NULL)
+        return;
+
+    frequencyType frequency = myProject.getFrequency();
+    meteoVariable variable = myProject.getCurrentVariable();
+
 
 }
 
