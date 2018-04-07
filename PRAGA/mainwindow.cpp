@@ -799,6 +799,7 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
 
 void MainWindow::redrawMeteoGrid()
 {
+    /*
     if (myProject.meteoGridDbHandler == NULL)
         return;
 
@@ -806,19 +807,22 @@ void MainWindow::redrawMeteoGrid()
     meteoVariable variable = myProject.getCurrentVariable();
     Crit3DTime time = myProject.getCurrentTime();
 
-    if (variable == daily)
+    if (frequency == daily)
     {
         QDate currentDate = getQDateTime(time).date();
         myProject.loadMeteoGridDailyData(currentDate, currentDate);
         myProject.meteoGridDbHandler->meteoGrid()->fillMeteoPointCurrentDailyValue(time.date, variable);
     }
-    else if (variable == hourly)
+    else if (frequency == hourly)
     {
         QDateTime currentDateTime = getQDateTime(time);
         myProject.loadMeteoGridHourlyData(currentDateTime, currentDateTime);
         myProject.meteoGridDbHandler->meteoGrid()->fillMeteoPointCurrentHourlyValue(time.date, time.getHour(), time.getMinutes(), variable);
     }
 
+    myProject.meteoGridDbHandler->meteoGrid()->createRasterGrid();
+    gridObj->updateCenter();
+*/
 
 }
 
