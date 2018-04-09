@@ -697,6 +697,7 @@ void MainWindow::on_dateChanged()
         myProject.loadMeteoPointsData(date, date, true);
     }
     redrawMeteoPoints(true);
+    redrawMeteoGrid();
 }
 
 
@@ -711,6 +712,7 @@ void MainWindow::on_timeChanged()
     }
 
     redrawMeteoPoints(true);
+    redrawMeteoGrid();
 }
 
 
@@ -724,6 +726,7 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
     }
 
     redrawMeteoPoints(true);
+    redrawMeteoGrid();
 }
 
 
@@ -826,8 +829,6 @@ void MainWindow::redrawMeteoGrid()
     }
 
     myProject.meteoGridDbHandler->meteoGrid()->createRasterGrid();
-    gridObj->updateCenter();
-
 
 }
 
