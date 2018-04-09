@@ -302,7 +302,7 @@ bool Crit3DMeteoGrid::fillMeteoPointCurrentDailyValue(Crit3DDate date, meteoVari
     {
         for (int col = 0; col < gridStructure().header().nrCols; col++)
         {
-            if (_meteoPoints[row][col]->active)
+            if (_meteoPoints[row][col]->active && _meteoPoints[row][col]->nrObsDataDaysD != 0)
             {
                 if (!_meteoPoints[row][col]->setMeteoPointCurrentValueD(date, variable))
                 {
@@ -320,7 +320,7 @@ bool Crit3DMeteoGrid::fillMeteoPointCurrentHourlyValue(Crit3DDate date, int hour
     {
         for (int col = 0; col < gridStructure().header().nrCols; col++)
         {
-            if (_meteoPoints[row][col]->active)
+            if (_meteoPoints[row][col]->active && _meteoPoints[row][col]->nrObsDataDaysD != 0)
             {
                 if (!_meteoPoints[row][col]->setMeteoPointCurrentValueH(date, hour, minute, variable))
                 {
