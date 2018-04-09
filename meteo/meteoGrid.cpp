@@ -304,11 +304,14 @@ bool Crit3DMeteoGrid::fillMeteoPointCurrentDailyValue(Crit3DDate date, meteoVari
         {
             if (_meteoPoints[row][col]->active)
             {
-                _meteoPoints[row][col]->setMeteoPointCurrentValueD(date, variable);
+                if (!_meteoPoints[row][col]->setMeteoPointCurrentValueD(date, variable))
+                {
+                    return false;
+                }
             }
         }
-
     }
+    return true;
 }
 
 bool Crit3DMeteoGrid::fillMeteoPointCurrentHourlyValue(Crit3DDate date, int hour, int minute, meteoVariable variable)
@@ -319,11 +322,14 @@ bool Crit3DMeteoGrid::fillMeteoPointCurrentHourlyValue(Crit3DDate date, int hour
         {
             if (_meteoPoints[row][col]->active)
             {
-                _meteoPoints[row][col]->setMeteoPointCurrentValueH(date, hour, minute, variable);
+                if (!_meteoPoints[row][col]->setMeteoPointCurrentValueH(date, hour, minute, variable))
+                {
+                    return false;
+                }
             }
         }
-
     }
+    return true;
 }
 
 
