@@ -799,12 +799,17 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
 
 void MainWindow::redrawMeteoGrid()
 {
-    /*
+
     if (myProject.meteoGridDbHandler == NULL)
         return;
 
     frequencyType frequency = myProject.getFrequency();
     meteoVariable variable = myProject.getCurrentVariable();
+
+    if (myProject.getCurrentVariable() == noMeteoVar)
+    {
+        return;
+    }
     Crit3DTime time = myProject.getCurrentTime();
 
     if (frequency == daily)
@@ -822,7 +827,7 @@ void MainWindow::redrawMeteoGrid()
 
     myProject.meteoGridDbHandler->meteoGrid()->createRasterGrid();
     gridObj->updateCenter();
-*/
+
 
 }
 

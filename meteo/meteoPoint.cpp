@@ -436,6 +436,7 @@ bool Crit3DMeteoPoint::setMeteoPointValueH(const Crit3DDate& myDate, int myHour,
 
 bool Crit3DMeteoPoint::setMeteoPointValueD(const Crit3DDate& myDate, meteoVariable myVar, float myValue)
 {
+
     long i = obsDataD[0].date.daysTo(myDate);
     if ((i <0) || (i >= nrObsDataDaysD)) return false;
 

@@ -704,6 +704,9 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(std::string *myError)
         }
     }
 
+    // the last hourly day is always incomplete, there is just 00.00 value
+    maxDateH = maxDateH.addDays(-1);
+
     if (minDateD < minDateH)
     {
         _firstDate = minDateD;
