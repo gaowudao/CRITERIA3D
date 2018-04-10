@@ -72,11 +72,11 @@ enum meteoVariable {airTemperature, dailyAirTemperatureMin, dailyAirTemperatureM
       { "DAILY_W_DIR", dailyWindDirectionPrevailing },
       { "DAILY_W_INT_MAX", dailyWindIntensityMax },
       { "DAILY_ET0", dailyReferenceEvapotranspiration },
-      { "DAILY_LEAFW", dailyLeafWetness },
-      { "TAVG", dailyAirTemperatureMax }
+      { "DAILY_LEAFW", dailyLeafWetness }
     };
 
     const std::map<std::string, meteoVariable> MapHourlyMeteoVar = {
+      { "TAVG", airTemperature },
       { "PREC", precipitation },
       { "RHAVG", airHumidity },
       { "RAD", globalIrradiance },

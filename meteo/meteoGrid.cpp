@@ -166,7 +166,7 @@ bool Crit3DMeteoGrid::createRasterGrid()
         {
             for (int j = 0; j < dataMeteoGrid.header->nrCols; j++)
             {
-                if (_meteoPoints[i][j]->active == 0)
+                if (_meteoPoints[i][j]->active)
                 {
                     dataMeteoGrid.value[i][j] = NODATA;
                 }
@@ -230,8 +230,8 @@ void Crit3DMeteoGrid::initMeteoPoints(int nRow, int nCol)
         for (int j = 0; j < nCol; j++)
         {
             Crit3DMeteoPoint* meteoPoint = new Crit3DMeteoPoint;
-            meteoPoint->active = 0;
-            meteoPoint->selected = 0;
+            meteoPoint->active = false;
+            meteoPoint->selected = false;
             meteoPointVector.push_back(meteoPoint);
         }
 
@@ -388,7 +388,7 @@ bool Crit3DMeteoGrid::findFirstActiveMeteoPoint(std::string* id, int* row, int* 
     {
         for (int j = 0; j < gridStructure().header().nrCols; j++)
         {
-            if (_meteoPoints[i][j]->active == 1)
+            if (_meteoPoints[i][j]->active)
             {
                 *row = i;
                 *col = j;
