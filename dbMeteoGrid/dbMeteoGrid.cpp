@@ -946,7 +946,7 @@ QList<float> Crit3DMeteoGridDbHandler::loadGridHourlyVar(std::string *myError, Q
 
     QSqlQuery qry(_db);
     QString tableH = meteoPoint + _tableHourly.postFix;
-    QDateTime date, previousDate;
+    QDateTime dateTime, previousDateTime;
 
     QList<float> hourlyVarList;
 
@@ -968,7 +968,7 @@ QList<float> Crit3DMeteoGridDbHandler::loadGridHourlyVar(std::string *myError, Q
         *myError = "Missing MeteoPoint id";
         return hourlyVarList;
     }
-/*
+
     QString statement = QString("SELECT * FROM `%1` WHERE VariableCode = '%2' AND PragaTime >= '%3' AND PragaTime <= '%4' ORDER BY PragaTime").arg(tableH).arg(varCode).arg(first.toString("yyyy-MM-dd hh:mm")).arg(last.toString("yyyy-MM-dd hh:mm"));
     if( !qry.exec(statement) )
     {
@@ -992,20 +992,20 @@ QList<float> Crit3DMeteoGridDbHandler::loadGridHourlyVar(std::string *myError, Q
                     *myError = "Missing Value";
                     return hourlyVarList;
                 }
-                dailyVarList << value;
-                previousDate = *firstDateDB;
+                hourlyVarList << value;
+                previousDateTime = *firstDateDB;
                 firstRow = 0;
             }
             else
             {
-                if (!getValue(qry.value("PragaTime"), &date))
+                if (!getValue(qry.value("PragaTime"), &dateTime))
                 {
                     *myError = "Missing PragaTime";
                     return hourlyVarList;
                 }
 
-                int missingDate = previousDate.daysTo(date);
-                for (int i =1; i<missingDate; i++)
+                int missingDateTime = previousDateTime.msecsTo(dateTime)/(1000*3600);
+                for (int i = 1; i < missingDateTime; i++)
                 {
                     hourlyVarList << NODATA;
                 }
@@ -1016,14 +1016,14 @@ QList<float> Crit3DMeteoGridDbHandler::loadGridHourlyVar(std::string *myError, Q
                     return hourlyVarList;
                 }
                 hourlyVarList << value;
-                previousDate = date;
+                previousDateTime = dateTime;
             }
 
 
         }
 
     }
-    */
+
     return hourlyVarList;
 
 }
