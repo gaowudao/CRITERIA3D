@@ -1097,6 +1097,7 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
         int idStation = ijk;
         // determine how many observed points per season
         int numberObservedDJF,numberObservedMAM,numberObservedJJA,numberObservedSON;
+        int numberObservedMax;
         numberObservedDJF = numberObservedMAM = numberObservedJJA = numberObservedSON = 0;
         for (int j=0;j<nrData;j++)
         {
@@ -1109,19 +1110,28 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
             if (obsPrecDataD[ijk][j].date.month == 9 || obsPrecDataD[ijk][j].date.month == 10 || obsPrecDataD[ijk][j].date.month == 11)
                 numberObservedSON++;
         }
-
+        numberObservedMax = max_value(numberObservedDJF,max_value(numberObservedMAM,max_value(numberObservedJJA,numberObservedSON)));
+        double* moran;
+        moran = (double*)calloc(numberObservedMax, sizeof(double));
         for (int qq=0;qq<4;qq++)
         {
-            double* moran;
-            double* occCoeff;
+            //double* moranDJF;
+            //double* moranMAM;
+            //double* moranJJA;
+            //double* moranSON;
+            //double* occCoeff;
             int monthList[3];
+            for (int i=0;i<numberObservedMax;i++)
+            {
+                moran[i]=0;
+            }
             if (qq == 0)
             {
                 monthList[0]= 12;
                 monthList[1]= 1;
                 monthList[2]= 2;
-                moran = (double*)calloc(numberObservedDJF, sizeof(double));
-                occCoeff = (double*)calloc(numberObservedDJF, sizeof(double));
+                //moranDJF = (double*)calloc(numberObservedDJF, sizeof(double));
+                //occCoeff = (double*)calloc(numberObservedDJF, sizeof(double));
                 for (int j=0;j<nrStations;j++)
                 {
                     for (int i=0;i<nrStations;i++)
@@ -1134,8 +1144,8 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                 monthList[0]= 3;
                 monthList[1]= 4;
                 monthList[2]= 5;
-                moran = (double*)calloc(numberObservedMAM, sizeof(double));
-                occCoeff = (double*)calloc(numberObservedMAM, sizeof(double));
+                //moranMAM = (double*)calloc(numberObservedMAM, sizeof(double));
+                //occCoeff = (double*)calloc(numberObservedMAM, sizeof(double));
                 for (int j=0;j<nrStations;j++)
                 {
                     for (int i=0;i<nrStations;i++)
@@ -1147,8 +1157,8 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                 monthList[0]= 6;
                 monthList[1]= 7;
                 monthList[2]= 8;
-                moran = (double*)calloc(numberObservedJJA, sizeof(double));
-                occCoeff = (double*)calloc(numberObservedJJA, sizeof(double));
+                //moranJJA = (double*)calloc(numberObservedJJA, sizeof(double));
+                //occCoeff = (double*)calloc(numberObservedJJA, sizeof(double));
                 for (int j=0;j<nrStations;j++)
                 {
                     for (int i=0;i<nrStations;i++)
@@ -1160,8 +1170,8 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                 monthList[0]= 9;
                 monthList[1]= 10;
                 monthList[2]= 11;
-                moran = (double*)calloc(numberObservedSON, sizeof(double));
-                occCoeff = (double*)calloc(numberObservedSON, sizeof(double));
+                //moranSON = (double*)calloc(numberObservedSON, sizeof(double));
+                //occCoeff = (double*)calloc(numberObservedSON, sizeof(double));
                 for (int j=0;j<nrStations;j++)
                 {
                     for (int i=0;i<nrStations;i++)
@@ -1171,10 +1181,12 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
             int counterData = 0;
             double dummy1,dummy2;
             dummy1 = dummy2 = 0;
-            /*for (int i=0;i<nrData;i++)
+            printf("stagione %d\n",qq);
+            printf("%d %d %d %d\n",numberObservedDJF,numberObservedMAM,numberObservedJJA,numberObservedSON);
+
+            for (int i=0;i<nrData;i++)
             {
-                moran[counterData]=0;
-                if (obsPrecDataD[ijk][i].date.month == monthList[0] || obsPrecDataD[ijk][i].date.month == monthList[1] || obsPrecDataD[ijk][i].date.month == monthList[2])
+                if ((obsPrecDataD[ijk][i].date.month == monthList[0]) || (obsPrecDataD[ijk][i].date.month == monthList[1]) || (obsPrecDataD[ijk][i].date.month == monthList[2]))
                 {
                     if (obsPrecDataD[ijk][i].occurrences>0)
                     {
@@ -1192,17 +1204,20 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                         //moran[counterData] /= denominatorMoran;
 
                     }
+                    //printf(" counter data %d\n",counterData);
                     counterData++;
                 }
                 //printf(" counter data %d\n",counterData);
-                //getchar();
-            }*/
+
+            }
+            printf(" counter data %d",counterData);
+            //getchar();
             // free memory moran and occCoeff
-            free(moran);
-            free(occCoeff);
+            //free(moran);
+            //free(occCoeff);
             //printf("%d\n",qq);
         }
-
+        free(moran);
     }
 
 
