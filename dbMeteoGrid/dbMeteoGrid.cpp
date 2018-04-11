@@ -605,7 +605,9 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(std::string *myError)
 
     QSqlQuery qry(_db);
 
-    int row, col;
+    int row = 0;
+    int col = 0;
+    int tableNotFoundError = 1146;
     std::string id;
 
     QDate maxDateD(QDate(1800, 1, 1));
@@ -626,83 +628,125 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(std::string *myError)
     QString tableD = QString::fromStdString(id) + _tableDaily.postFix;
     QString tableH = QString::fromStdString(id) + _tableHourly.postFix;
 
-    if (tableD != "")
+    QString statement = QString("SELECT MIN(PragaTime) as minDate, MAX(PragaTime) as maxDate FROM `%1`").arg(tableD);
+    if( !qry.exec(statement) )
     {
-        QString statement = QString("SELECT MIN(PragaTime) as minDate, MAX(PragaTime) as maxDate FROM `%1`").arg(tableD);
-        if( !qry.exec(statement) )
+        while( qry.lastError().number() == tableNotFoundError)
         {
-            *myError = qry.lastError().text().toStdString();
-        }
-        else
-        {
-            if (qry.next())
-            {          
-                if (getValue(qry.value("minDate"), &temp))
-                {
-                    if (temp < minDateD)
-                        minDateD = temp;
-                }
-                else
-                {
-                    *myError = "Missing daily PragaTime";
-                    return false;
-                }
 
-                if (getValue(qry.value("maxDate"), &temp))
-                {
-                    if (temp > maxDateD)
-                        maxDateD = temp;
-                }
-                else
-                {
-                    *myError = "Missing daily PragaTime";
-                    return false;
-                }
-
-            }
-            else
-                *myError = "Error: PragaTime not found" ;
-        }
-    }
-
-    if (tableH != "")
-    {
-        QString statement = QString("SELECT MIN(PragaTime) as minDate, MAX(PragaTime) as maxDate FROM `%1`").arg(tableH);
-        if( !qry.exec(statement) )
-        {
-            *myError = qry.lastError().text().toStdString();
-        }
-        else
-        {
-            if (qry.next())
+            row = row + 1;
+            col = col + 1;
+            if (!_meteoGrid->findFirstActiveMeteoPoint(&id, &row, &col))
             {
-                if (getValue(qry.value("minDate"), &temp))
-                {
-                    if (temp < minDateH)
-                        minDateH = temp;
-                }
-                else
-                {
-                    *myError = "Missing hourly PragaTime";
-                    return false;
-                }
-
-                if (getValue(qry.value("maxDate"), &temp))
-                {
-                    if (temp > maxDateH)
-                        maxDateH = temp;
-                }
-                else
-                {
-                    *myError = "Missing hourly PragaTime";
-                    return false;
-                }
-
+                *myError = "active cell not found";
+                return false;
             }
-            else
-                *myError = "Error: dataset not found" ;
+            tableD = QString::fromStdString(id) + _tableDaily.postFix;
+            tableH = QString::fromStdString(id) + _tableHourly.postFix;
+
+            statement = QString("SELECT MIN(PragaTime) as minDate, MAX(PragaTime) as maxDate FROM `%1`").arg(tableD);
+            qry.exec(statement);
+        }
+        if (qry.lastError().number() != tableNotFoundError)
+        {
+            *myError = qry.lastError().text().toStdString();
+            return false;
         }
     }
+    else
+    {
+        if (qry.next())
+        {
+            if (getValue(qry.value("minDate"), &temp))
+            {
+                if (temp < minDateD)
+                    minDateD = temp;
+            }
+            else
+            {
+                *myError = "Missing daily PragaTime";
+                return false;
+            }
+
+            if (getValue(qry.value("maxDate"), &temp))
+            {
+                if (temp > maxDateD)
+                    maxDateD = temp;
+            }
+            else
+            {
+                *myError = "Missing daily PragaTime";
+                return false;
+            }
+
+        }
+        else
+        {
+            *myError = "Error: PragaTime not found" ;
+            return false;
+        }
+    }
+
+
+    statement = QString("SELECT MIN(PragaTime) as minDate, MAX(PragaTime) as maxDate FROM `%1`").arg(tableH);
+    if( !qry.exec(statement) )
+    {
+        while( qry.lastError().number() == tableNotFoundError)
+        {
+
+            row = row + 1;
+            col = col + 1;
+            if (!_meteoGrid->findFirstActiveMeteoPoint(&id, &row, &col))
+            {
+                *myError = "active cell not found";
+                return false;
+            }
+
+            tableH = QString::fromStdString(id) + _tableHourly.postFix;
+
+            statement = QString("SELECT MIN(PragaTime) as minDate, MAX(PragaTime) as maxDate FROM `%1`").arg(tableH);
+            qry.exec(statement);
+        }
+        if (qry.lastError().number() != tableNotFoundError)
+        {
+            *myError = qry.lastError().text().toStdString();
+            return false;
+        }
+    }
+    else
+    {
+        if (qry.next())
+        {
+            if (getValue(qry.value("minDate"), &temp))
+            {
+                if (temp < minDateH)
+                    minDateH = temp;
+            }
+            else
+            {
+                *myError = "Missing hourly PragaTime";
+                return false;
+            }
+
+            if (getValue(qry.value("maxDate"), &temp))
+            {
+                if (temp > maxDateH)
+                    maxDateH = temp;
+            }
+            else
+            {
+                *myError = "Missing hourly PragaTime";
+                return false;
+            }
+
+        }
+        else
+        {
+            *myError = "Error: PragaTime not found" ;
+            return false;
+        }
+    }
+
 
     // the last hourly day is always incomplete, there is just 00.00 value
     maxDateH = maxDateH.addDays(-1);

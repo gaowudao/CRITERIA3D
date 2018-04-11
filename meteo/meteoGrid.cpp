@@ -384,9 +384,9 @@ bool Crit3DMeteoGrid::isActiveMeteoPointFromId(std::string id)
 bool Crit3DMeteoGrid::findFirstActiveMeteoPoint(std::string* id, int* row, int* col)
 {
 
-    for (int i = 0; i < gridStructure().header().nrRows; i++)
+    for (int i = *row; i < gridStructure().header().nrRows; i++)
     {
-        for (int j = 0; j < gridStructure().header().nrCols; j++)
+        for (int j = *col; j < gridStructure().header().nrCols; j++)
         {
             if (_meteoPoints[i][j]->active)
             {
