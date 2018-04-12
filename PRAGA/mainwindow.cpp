@@ -700,6 +700,7 @@ void MainWindow::on_dateChanged()
         myProject.setCurrentDate(date);
         myProject.loadMeteoPointsData(date, date, true);
     }
+
     redrawMeteoPoints(true);
     redrawMeteoGrid();
 }
@@ -832,7 +833,9 @@ void MainWindow::redrawMeteoGrid()
     }
 
     myProject.meteoGridDbHandler->meteoGrid()->fillMeteoRaster();
+
     setColorScale(variable, myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale);
+
     meteoGridLegend->update();
 }
 
@@ -846,9 +849,15 @@ bool MainWindow::loadMeteoPointsDB(QString dbName)
 
     this->addMeteoPoints();
 
-    if (! myProject.loadlastMeteoData()) qDebug ("NO data");
-
-    this->updateDateTime();
+    if (myProject.meteoGridDbHandler == NULL)
+    {
+        myProject.loadlastMeteoData();
+        this->updateDateTime();
+    }
+    else
+    {
+        myProject.loadMeteoPointsData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
+    }
 
     return true;
 }
