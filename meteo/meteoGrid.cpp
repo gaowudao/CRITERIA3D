@@ -166,7 +166,7 @@ bool Crit3DMeteoGrid::createRasterGrid()
         {
             for (int j = 0; j < dataMeteoGrid.header->nrCols; j++)
             {
-                if (_meteoPoints[i][j]->active)
+                if (!_meteoPoints[i][j]->active)
                 {
                     dataMeteoGrid.value[i][j] = NODATA;
                 }
