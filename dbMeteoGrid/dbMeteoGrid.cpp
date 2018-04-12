@@ -655,7 +655,7 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(std::string *myError)
             statement = QString("SELECT MIN(PragaTime) as minDate, MAX(PragaTime) as maxDate FROM `%1`").arg(tableD);
             qry.exec(statement);
         }
-        if (qry.lastError().number() != tableNotFoundError)
+        if ( qry.lastError().number()!=0 && qry.lastError().number() != tableNotFoundError)
         {
             *myError = qry.lastError().text().toStdString();
             return false;
@@ -723,7 +723,7 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(std::string *myError)
             statement = QString("SELECT MIN(PragaTime) as minDate, MAX(PragaTime) as maxDate FROM `%1`").arg(tableH);
             qry.exec(statement);
         }
-        if (qry.lastError().number() != tableNotFoundError)
+        if ( qry.lastError().number()!=0 && qry.lastError().number() != tableNotFoundError)
         {
             *myError = qry.lastError().text().toStdString();
             return false;
