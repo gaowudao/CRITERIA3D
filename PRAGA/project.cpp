@@ -481,6 +481,33 @@ bool Project::loadMeteoGridDB(QString xmlName)
     return true;
 }
 
+
+bool Project::loadMeteoGridData(QDateTime firstDate, QDateTime lastDate, bool showInfo)
+{
+    if (myProject.meteoGridDbHandler != NULL)
+    {
+        formRunInfo myInfo;
+        QDateTime t1 = QDateTime(firstDate);
+        QDateTime t2 = QDateTime(lastDate);
+
+        QString infoStr = "Load grid data: " + firstDate.toString();
+
+        if (firstDate != lastDate)
+            infoStr += " - " + lastDate.toString();
+
+        if (showInfo)
+            myInfo.start(infoStr, 0);
+
+        myProject.loadMeteoGridDailyData(firstDate, lastDate);
+
+        myProject.loadMeteoGridHourlyData(t1, t2);
+
+        if (showInfo)
+            myInfo.close();
+    }
+}
+
+
 bool Project::loadMeteoGridDailyData(QDate firstDate, QDate lastDate)
 {
     std::string id;
@@ -504,6 +531,7 @@ bool Project::loadMeteoGridDailyData(QDate firstDate, QDate lastDate)
         return true;
 }
 
+
 bool Project::loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate)
 {
     std::string id;
@@ -526,6 +554,7 @@ bool Project::loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate)
     else
         return true;
 }
+
 
 bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime,
                             gis::Crit3DRasterGrid *myRaster)

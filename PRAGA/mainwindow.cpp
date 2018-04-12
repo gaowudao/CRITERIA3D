@@ -690,15 +690,15 @@ void MainWindow::updateDateTime()
 
 void MainWindow::on_dateChanged()
 {
-    qDebug("on_dateChanged");
     QDate date = this->ui->dateEdit->date();
 
-    //date
     if (date != myProject.getCurrentDate())
     {
         qDebug("date changed");
         myProject.setCurrentDate(date);
+
         myProject.loadMeteoPointsData(date, date, true);
+        loadMeteoGridData(date, date, true);
     }
 
     redrawMeteoPoints(true);
@@ -814,21 +814,16 @@ void MainWindow::redrawMeteoGrid()
     meteoVariable variable = myProject.getCurrentVariable();
 
     if (myProject.getCurrentVariable() == noMeteoVar)
-    {
         return;
-    }
+
     Crit3DTime time = myProject.getCurrentTime();
 
     if (frequency == daily)
     {
-        QDate currentDate = getQDateTime(time).date();
-        myProject.loadMeteoGridDailyData(currentDate, currentDate);
         myProject.meteoGridDbHandler->meteoGrid()->fillMeteoPointCurrentDailyValue(time.date, variable);
     }
     else if (frequency == hourly)
     {
-        QDateTime currentDateTime = getQDateTime(time);
-        myProject.loadMeteoGridHourlyData(currentDateTime, currentDateTime);
         myProject.meteoGridDbHandler->meteoGrid()->fillMeteoPointCurrentHourlyValue(time.date, time.getHour(), time.getMinutes(), variable);
     }
 
@@ -870,13 +865,6 @@ bool MainWindow::loadMeteoGridDB(QString xmlName)
         return false;
     }
 
-    // update dateTime Edit if there are not MeteoPoints
-    if (this->pointList.isEmpty())
-    {
-        myProject.setCurrentDate(myProject.meteoGridDbHandler->lastDate());
-        this->updateDateTime();
-    }
-
     myProject.meteoGridDbHandler->meteoGrid()->createRasterGrid();
 
     if (myProject.meteoGridDbHandler->gridStructure().isUTM() == false)
@@ -889,6 +877,16 @@ bool MainWindow::loadMeteoGridDB(QString xmlName)
     }
 
     meteoGridLegend->colorScale = myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale;
+
+    // update dateTime Edit if there are not MeteoPoints
+    if (this->pointList.isEmpty())
+    {
+        myProject.setCurrentDate(myProject.meteoGridDbHandler->lastDate());
+        this->updateDateTime();
+    }
+
+    loadMeteoGridData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
+
     meteoGridObj->redrawRequested();
 
     return true;
