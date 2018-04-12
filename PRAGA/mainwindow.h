@@ -114,9 +114,10 @@
         MapGraphicsScene* mapScene;
         MapGraphicsView* mapView;
         RasterObject* rasterObj;
-        RasterObject* gridObj;
+        RasterObject* meteoGridObj;
         ColorLegend *rasterLegend;
-        ColorLegend *pointsLegend;
+        ColorLegend *meteoPointsLegend;
+        ColorLegend *meteoGridLegend;
         QList<StationMarker*> pointList;
         RubberBand *myRubberBand;
         bool showPoints;

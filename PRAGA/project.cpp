@@ -29,7 +29,7 @@ Project::Project()
     currentDate.setDate(1800,1,1);
     previousDate = currentDate;
     currentHour = 12;
-    colorScalePoints = new Crit3DColorScale();
+    meteoPointsColorScale = new Crit3DColorScale();
     meteoPointsDbHandler = NULL;
     meteoGridDbHandler = NULL;
 

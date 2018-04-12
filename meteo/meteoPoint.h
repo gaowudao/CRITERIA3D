@@ -113,10 +113,8 @@
 
         float getMeteoPointValueH(const Crit3DDate& myDate, int myHour, int myMinutes, meteoVariable myVar);
         bool setMeteoPointValueH(const Crit3DDate& myDate, int myHour, int myMinutes, meteoVariable myVar, float myValue);
-        bool setMeteoPointCurrentValueH(const Crit3DDate& myDate, int myHour, int myMinutes, meteoVariable myVar);
         float getMeteoPointValueD(const Crit3DDate& myDate, meteoVariable myVar);
         bool setMeteoPointValueD(const Crit3DDate& myDate, meteoVariable myVar, float myValue);
-        bool setMeteoPointCurrentValueD(const Crit3DDate& myDate, meteoVariable myVar);
 
         float getMeteoPointValue(const Crit3DTime& myTime, meteoVariable myVar, frequencyType frequency);
 

@@ -117,6 +117,7 @@
             void setNrVarsArray(int nrVarsArray);
 
             bool createRasterGrid();
+            void fillMeteoRaster();
 
     private:
 

@@ -65,7 +65,7 @@
 
         gis::Crit3DGisSettings gisSettings;
 
-        Crit3DColorScale *colorScalePoints;
+        Crit3DColorScale *meteoPointsColorScale;
 
         meteoVariable currentVariable;
 

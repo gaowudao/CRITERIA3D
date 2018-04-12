@@ -51,9 +51,9 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
     this->rasterLegend = new ColorLegend(this->ui->widgetColorLegendRaster);
     this->rasterLegend->resize(this->ui->widgetColorLegendRaster->size());
 
-    this->pointsLegend = new ColorLegend(this->ui->widgetColorLegendPoints);
-    this->pointsLegend->resize(this->ui->widgetColorLegendPoints->size());
-    this->pointsLegend->colorScale = myProject.colorScalePoints;
+    this->meteoPointsLegend = new ColorLegend(this->ui->widgetColorLegendPoints);
+    this->meteoPointsLegend->resize(this->ui->widgetColorLegendPoints->size());
+    this->meteoPointsLegend->colorScale = myProject.meteoPointsColorScale;
 
     // Set tiles source
     this->setMapSource(OSMTileSource::OSMTiles);
@@ -66,16 +66,16 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
 
     // Set raster objects
     this->rasterObj = new RasterObject(this->mapView);
-    this->gridObj = new RasterObject(this->mapView);
+    this->meteoGridObj = new RasterObject(this->mapView);
 
     this->rasterObj->setOpacity(this->ui->rasterOpacitySlider->value() / 100.0);
-    this->gridObj->setOpacity(this->ui->rasterOpacitySlider->value() / 100.0);
+    this->meteoGridObj->setOpacity(this->ui->rasterOpacitySlider->value() / 100.0);
 
     this->rasterObj->setColorLegend(this->rasterLegend);
     // gridobj colorLegend
 
     this->mapView->scene()->addObject(this->rasterObj);
-    this->mapView->scene()->addObject(this->gridObj);
+    this->mapView->scene()->addObject(this->meteoGridObj);
 
     this->updateVariable();
     this->updateDateTime();
@@ -109,9 +109,9 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete rasterObj;
-    delete gridObj;
+    delete meteoGridObj;
     delete rasterLegend;
-    delete pointsLegend;
+    delete meteoPointsLegend;
     delete mapView;
     delete mapScene;
     delete ui;
@@ -396,7 +396,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event){
     Q_UNUSED(event)
 
     this->rasterObj->updateCenter();
-    this->gridObj->updateCenter();
+    this->meteoGridObj->updateCenter();
 
     gis::Crit3DGeoPoint pointSelected;
 
@@ -478,7 +478,7 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
     this->mapView->centerOn(newCenter.lonLat());
 
     this->rasterObj->updateCenter();
-    this->gridObj->updateCenter();
+    this->meteoGridObj->updateCenter();
 }
 
 
@@ -602,7 +602,7 @@ void MainWindow::on_actionInterpolation_triggered()
             setColorScale(myVar, myProject.dataRaster.colorScale);
             this->setCurrentRaster(&(myProject.dataRaster));
 
-            myProject.colorScalePoints->setRange(myProject.dataRaster.minimum, myProject.dataRaster.maximum);
+            myProject.meteoPointsColorScale->setRange(myProject.dataRaster.minimum, myProject.dataRaster.maximum);
             redrawMeteoPoints(false);
 
             ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myVar)));
@@ -754,8 +754,8 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
                 pointList[i]->setVisible(true);
         }
 
-        myProject.colorScalePoints->setRange(NODATA, NODATA);
-        pointsLegend->update();
+        myProject.meteoPointsColorScale->setRange(NODATA, NODATA);
+        meteoPointsLegend->update();
         return;
     }
 
@@ -768,11 +768,11 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
         float minimum, maximum;
         myProject.getMeteoPointsRange(&minimum, &maximum);
 
-        myProject.colorScalePoints->setRange(minimum, maximum);
+        myProject.meteoPointsColorScale->setRange(minimum, maximum);
     }
 
-    roundColorScale(myProject.colorScalePoints, 4, true);
-    setColorScale(myProject.currentVariable, myProject.colorScalePoints);
+    roundColorScale(myProject.meteoPointsColorScale, 4, true);
+    setColorScale(myProject.currentVariable, myProject.meteoPointsColorScale);
 
     Crit3DColor *myColor;
     for (int i = 0; i < myProject.nrMeteoPoints; i++)
@@ -782,7 +782,7 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
             if (myProject.meteoPoints[i].myQuality == quality::accepted)
             {
                 pointList[i]->setRadius(5);
-                myColor = myProject.colorScalePoints->getColor(myProject.meteoPoints[i].currentValue);
+                myColor = myProject.meteoPointsColorScale->getColor(myProject.meteoPoints[i].currentValue);
                 pointList[i]->setFillColor(QColor(myColor->red, myColor->green, myColor->blue));
             }
             else
@@ -797,12 +797,11 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
         }
     }
 
-    pointsLegend->update();
+    meteoPointsLegend->update();
 }
 
 void MainWindow::redrawMeteoGrid()
 {
-
     if (myProject.meteoGridDbHandler == NULL)
         return;
 
@@ -828,8 +827,9 @@ void MainWindow::redrawMeteoGrid()
         myProject.meteoGridDbHandler->meteoGrid()->fillMeteoPointCurrentHourlyValue(time.date, time.getHour(), time.getMinutes(), variable);
     }
 
-    myProject.meteoGridDbHandler->meteoGrid()->createRasterGrid();
-
+    myProject.meteoGridDbHandler->meteoGrid()->fillMeteoRaster();
+    setColorScale(variable, myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale);
+    meteoGridLegend->update();
 }
 
 
@@ -868,14 +868,14 @@ bool MainWindow::loadMeteoGridDB(QString xmlName)
 
     if (myProject.meteoGridDbHandler->gridStructure().isUTM() == false)
     {
-        gridObj->initializeLatLon(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid), myProject.gisSettings, myProject.meteoGridDbHandler->gridStructure().header(), true);
+        meteoGridObj->initializeLatLon(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid), myProject.gisSettings, myProject.meteoGridDbHandler->gridStructure().header(), true);
     }
     else
     {
-        gridObj->initializeUTM(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid), myProject.gisSettings, true);
+        meteoGridObj->initializeUTM(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid), myProject.gisSettings, true);
     }
 
-    gridObj->updateCenter();
+    meteoGridObj->updateCenter();
 
     return true;
 }
@@ -968,12 +968,12 @@ void MainWindow::on_action_Open_NetCDF_data_triggered()
     myProject.netCDF.readProperties(fileName.toStdString(), &buffer);
 
     if (myProject.netCDF.isLatLon)
-        gridObj->initializeLatLon(&(myProject.netCDF.dataGrid), myProject.gisSettings, myProject.netCDF.latLonHeader, true);
+        meteoGridObj->initializeLatLon(&(myProject.netCDF.dataGrid), myProject.gisSettings, myProject.netCDF.latLonHeader, true);
     else
-        gridObj->initializeUTM(&(myProject.netCDF.dataGrid), myProject.gisSettings, true);
+        meteoGridObj->initializeUTM(&(myProject.netCDF.dataGrid), myProject.gisSettings, true);
 
     myProject.netCDF.dataGrid.emptyGrid();
-    gridObj->updateCenter();
+    meteoGridObj->updateCenter();
 
     QDialog myDialog;
     QVBoxLayout mainLayout;

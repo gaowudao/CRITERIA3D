@@ -154,34 +154,8 @@ bool Crit3DMeteoGrid::createRasterGrid()
     dataMeteoGrid.header->nrRows = _gridStructure.header().nrRows;
     dataMeteoGrid.header->flag = NODATA;
 
-    dataMeteoGrid.initializeGrid();
+    dataMeteoGrid.initializeGrid(NODATA);
 
-    if (_meteoPoints.empty())
-    {
-        dataMeteoGrid.initializeGrid(NODATA);
-    }
-    else
-    {
-        for (int i = 0; i < dataMeteoGrid.header->nrRows; i++)
-        {
-            for (int j = 0; j < dataMeteoGrid.header->nrCols; j++)
-            {
-                if (!_meteoPoints[i][j]->active)
-                {
-                    dataMeteoGrid.value[i][j] = NODATA;
-                }
-                else
-                {
-                    dataMeteoGrid.value[i][j] = _meteoPoints[this->gridStructure().header().nrRows-1-i][j]->currentValue;
-                    /*
-                    std::cout << "i" << i << std::endl;
-                    std::cout << "j" << j << std::endl;
-                    std::cout << "_meteoPoints[i][j]->currentValue" << _meteoPoints[i][j]->currentValue << std::endl;
-                    */
-                }
-            }
-        }
-    }
     dataMeteoGrid.isLoaded = true;
     return true;
 }
@@ -304,15 +278,17 @@ bool Crit3DMeteoGrid::fillMeteoPointCurrentDailyValue(Crit3DDate date, meteoVari
         {
             if (_meteoPoints[row][col]->active && _meteoPoints[row][col]->nrObsDataDaysD != 0)
             {
-                if (!_meteoPoints[row][col]->setMeteoPointCurrentValueD(date, variable))
-                {
-                    return false;
-                }
+                _meteoPoints[row][col]->currentValue = _meteoPoints[row][col]->getMeteoPointValueD(date, variable);
+            }
+            else
+            {
+                _meteoPoints[row][col]->currentValue = NODATA;
             }
         }
     }
     return true;
 }
+
 
 bool Crit3DMeteoGrid::fillMeteoPointCurrentHourlyValue(Crit3DDate date, int hour, int minute, meteoVariable variable)
 {
@@ -322,14 +298,27 @@ bool Crit3DMeteoGrid::fillMeteoPointCurrentHourlyValue(Crit3DDate date, int hour
         {
             if (_meteoPoints[row][col]->active && _meteoPoints[row][col]->nrObsDataDaysD != 0)
             {
-                if (!_meteoPoints[row][col]->setMeteoPointCurrentValueH(date, hour, minute, variable))
-                {
-                    return false;
-                }
+                _meteoPoints[row][col]->currentValue = _meteoPoints[row][col]->getMeteoPointValueH(date, hour, minute, variable);
+            }
+            else
+            {
+                _meteoPoints[row][col]->currentValue = NODATA;
             }
         }
     }
     return true;
+}
+
+
+void Crit3DMeteoGrid::fillMeteoRaster()
+{
+    for (int i = 0; i < dataMeteoGrid.header->nrRows; i++)
+    {
+        for (int j = 0; j < dataMeteoGrid.header->nrCols; j++)
+        {
+             dataMeteoGrid.value[i][j] = _meteoPoints[this->gridStructure().header().nrRows-1-i][j]->currentValue;
+        }
+    }
 }
 
 
