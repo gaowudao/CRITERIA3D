@@ -698,7 +698,7 @@ void MainWindow::on_dateChanged()
         myProject.setCurrentDate(date);
 
         myProject.loadMeteoPointsData(date, date, true);
-        loadMeteoGridData(date, date, true);
+        myProject.loadMeteoGridData(date, date, true);
     }
 
     redrawMeteoPoints(true);
@@ -885,7 +885,7 @@ bool MainWindow::loadMeteoGridDB(QString xmlName)
         this->updateDateTime();
     }
 
-    loadMeteoGridData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
+    myProject.loadMeteoGridData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
 
     meteoGridObj->redrawRequested();
 

@@ -482,7 +482,7 @@ bool Project::loadMeteoGridDB(QString xmlName)
 }
 
 
-bool Project::loadMeteoGridData(QDate firstDate, QDate lastDate, bool showInfo)
+void Project::loadMeteoGridData(QDate firstDate, QDate lastDate, bool showInfo)
 {
     if (this->meteoGridDbHandler != NULL)
     {
