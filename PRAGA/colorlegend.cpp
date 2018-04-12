@@ -50,9 +50,9 @@ bool drawColorLegend(Crit3DColorScale* colorScale, QPainter* myPainter)
         if ((i % n) == 0)
         {
             if (int(value) == value)
-                myPainter->drawText(DELTA*0.5 + dx*i, 40, QString::number(value));
+                myPainter->drawText(DELTA*0.5 + dx*i, 36, QString::number(value));
             else
-                myPainter->drawText(DELTA*0.5 + dx*i, 40, QString::number(value,'f',1));
+                myPainter->drawText(DELTA*0.5 + dx*i, 36, QString::number(value,'f',1));
         }
         value += step;
     }
