@@ -97,7 +97,7 @@
         bool loadMeteoGridDB(QString xmlName);
         bool loadMeteoGridDailyData(QDate firstDate, QDate lastDate);
         bool loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate);
-        bool loadMeteoGridData(QDateTime firstDate, QDateTime lastDate, bool showInfo);
+        bool loadMeteoGridData(QDate firstDate, QDate lastDate, bool showInfo);
 
         bool getMeteoPointSelected(int i);
         bool updateMeteoPointsData();

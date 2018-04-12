@@ -482,9 +482,9 @@ bool Project::loadMeteoGridDB(QString xmlName)
 }
 
 
-bool Project::loadMeteoGridData(QDateTime firstDate, QDateTime lastDate, bool showInfo)
+bool Project::loadMeteoGridData(QDate firstDate, QDate lastDate, bool showInfo)
 {
-    if (myProject.meteoGridDbHandler != NULL)
+    if (this->meteoGridDbHandler != NULL)
     {
         formRunInfo myInfo;
         QDateTime t1 = QDateTime(firstDate);
@@ -498,9 +498,9 @@ bool Project::loadMeteoGridData(QDateTime firstDate, QDateTime lastDate, bool sh
         if (showInfo)
             myInfo.start(infoStr, 0);
 
-        myProject.loadMeteoGridDailyData(firstDate, lastDate);
+        this->loadMeteoGridDailyData(firstDate, lastDate);
 
-        myProject.loadMeteoGridHourlyData(t1, t2);
+        this->loadMeteoGridHourlyData(t1, t2);
 
         if (showInfo)
             myInfo.close();
