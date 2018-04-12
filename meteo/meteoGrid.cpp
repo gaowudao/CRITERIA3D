@@ -172,7 +172,7 @@ bool Crit3DMeteoGrid::createRasterGrid()
                 }
                 else
                 {
-                    dataMeteoGrid.value[i][j] = _meteoPoints[i][j]->currentValue;
+                    dataMeteoGrid.value[i][j] = _meteoPoints[this->gridStructure().header().nrRows-1-i][j]->currentValue;
                     /*
                     std::cout << "i" << i << std::endl;
                     std::cout << "j" << j << std::endl;

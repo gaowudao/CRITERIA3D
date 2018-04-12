@@ -490,18 +490,9 @@ bool Project::loadMeteoGridDailyData(QDate firstDate, QDate lastDate)
     {
         for (int col = 0; col < this->meteoGridDbHandler->gridStructure().header().nrCols; col++)
         {
-            this->meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id);
-            if (id != "")
-            {
-                if (! this->meteoGridDbHandler->loadGridDailyData(&errorString, QString::fromStdString(id), firstDate, lastDate))
-                {
-                    return false;
-                }
-                else
-                {
+            if (this->meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id))
+                if (this->meteoGridDbHandler->loadGridDailyData(&errorString, QString::fromStdString(id), firstDate, lastDate))
                     count = count + 1;
-                }
-            }
         }
     }
     if (count == 0)
@@ -522,18 +513,9 @@ bool Project::loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate)
     {
         for (int col = 0; col < this->meteoGridDbHandler->gridStructure().header().nrCols; col++)
         {
-            this->meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id);
-            if (id != "")
-            {
-                if (! this->meteoGridDbHandler->loadGridHourlyData(&errorString, QString::fromStdString(id), firstDate, lastDate))
-                {
-                    return false;
-                }
-                else
-                {
+            if (this->meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id))
+                if (this->meteoGridDbHandler->loadGridHourlyData(&errorString, QString::fromStdString(id), firstDate, lastDate))
                     count = count + 1;
-                }
-            }
         }
     }
     if (count == 0)
