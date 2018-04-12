@@ -51,6 +51,9 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
     this->rasterLegend = new ColorLegend(this->ui->widgetColorLegendRaster);
     this->rasterLegend->resize(this->ui->widgetColorLegendRaster->size());
 
+    this->meteoGridLegend = new ColorLegend(this->ui->widgetColorLegendGrid);
+    this->meteoGridLegend->resize(this->ui->widgetColorLegendGrid->size());
+
     this->meteoPointsLegend = new ColorLegend(this->ui->widgetColorLegendPoints);
     this->meteoPointsLegend->resize(this->ui->widgetColorLegendPoints->size());
     this->meteoPointsLegend->colorScale = myProject.meteoPointsColorScale;
@@ -72,7 +75,7 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
     this->meteoGridObj->setOpacity(this->ui->rasterOpacitySlider->value() / 100.0);
 
     this->rasterObj->setColorLegend(this->rasterLegend);
-    // gridobj colorLegend
+    this->meteoGridObj->setColorLegend(this->meteoGridLegend);
 
     this->mapView->scene()->addObject(this->rasterObj);
     this->mapView->scene()->addObject(this->meteoGridObj);
@@ -111,6 +114,7 @@ MainWindow::~MainWindow()
     delete rasterObj;
     delete meteoGridObj;
     delete rasterLegend;
+    delete meteoGridLegend;
     delete meteoPointsLegend;
     delete mapView;
     delete mapScene;
@@ -875,7 +879,8 @@ bool MainWindow::loadMeteoGridDB(QString xmlName)
         meteoGridObj->initializeUTM(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid), myProject.gisSettings, true);
     }
 
-    meteoGridObj->updateCenter();
+    meteoGridLegend->colorScale = myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale;
+    meteoGridObj->redrawRequested();
 
     return true;
 }
