@@ -634,8 +634,16 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(std::string *myError)
         while( qry.lastError().number() == tableNotFoundError)
         {
 
-            row = row + 1;
-            col = col + 1;
+            if ( col < _gridStructure.header().nrCols)
+            {
+                col = col + 1;
+            }
+            else if( row < _gridStructure.header().nrRows)
+            {
+                row = row + 1;
+                col = 0;
+            }
+
             if (!_meteoGrid->findFirstActiveMeteoPoint(&id, &row, &col))
             {
                 *myError = "active cell not found";
@@ -694,8 +702,16 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(std::string *myError)
         while( qry.lastError().number() == tableNotFoundError)
         {
 
-            row = row + 1;
-            col = col + 1;
+            if ( col < _gridStructure.header().nrCols)
+            {
+                col = col + 1;
+            }
+            else if( row < _gridStructure.header().nrRows)
+            {
+                row = row + 1;
+                col = 0;
+            }
+
             if (!_meteoGrid->findFirstActiveMeteoPoint(&id, &row, &col))
             {
                 *myError = "active cell not found";
