@@ -1050,3 +1050,7 @@ void MainWindow::setCurrentRaster(gis::Crit3DRasterGrid *myRaster)
     this->rasterObj->redrawRequested();
 }
 
+void MainWindow::on_dateEdit_dateChanged(const QDate &date)
+{
+    this->on_dateChanged();
+}
