@@ -1088,7 +1088,8 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
     }
     */
 
-
+    double*** moran; // coefficient for each station, each season, each nr of days of simulation in the season.
+    moran = (double***)calloc(nrStations, sizeof(double**));
 
 
 
@@ -1111,20 +1112,25 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                 numberObservedSON++;
         }
         numberObservedMax = max_value(numberObservedDJF,max_value(numberObservedMAM,max_value(numberObservedJJA,numberObservedSON)));
-        double* moran;
-        moran = (double*)calloc(numberObservedMax, sizeof(double));
+
+        moran[ijk] = (double**)calloc(4, sizeof(double*));
         for (int qq=0;qq<4;qq++)
         {
-            //double* moranDJF;
-            //double* moranMAM;
-            //double* moranJJA;
-            //double* moranSON;
+            moran[ijk][qq] = (double*)calloc(numberObservedMax, sizeof(double));
+        }
+        for (int qq=0;qq<4;qq++)
+        {
+            for (int i=0;i<numberObservedMax;i++)
+            moran[ijk][qq][i] = NODATA;
+        }
+        for (int qq=0;qq<4;qq++)
+        {
             //double* occCoeff;
             int monthList[3];
-            for (int i=0;i<numberObservedMax;i++)
+            /*for (int i=0;i<numberObservedMax;i++)
             {
-                moran[i]=0;
-            }
+                moran[ijk][i]=NODATA;
+            }*/
             if (qq == 0)
             {
                 monthList[0]= 12;
@@ -1179,45 +1185,64 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                 }
             }
             int counterData = 0;
-            double dummy1,dummy2;
-            dummy1 = dummy2 = 0;
+            //double dummy1,dummy2;
+            //dummy1 = dummy2 = 0;
             printf("stagione %d\n",qq);
             printf("%d %d %d %d\n",numberObservedDJF,numberObservedMAM,numberObservedJJA,numberObservedSON);
+            double rainCumulated, moranCumulated;
+            rainCumulated = moranCumulated = 0;
 
             for (int i=0;i<nrData;i++)
             {
+                //moran[qq][counterData]= 0;
                 if ((obsPrecDataD[ijk][i].date.month == monthList[0]) || (obsPrecDataD[ijk][i].date.month == monthList[1]) || (obsPrecDataD[ijk][i].date.month == monthList[2]))
                 {
                     if (obsPrecDataD[ijk][i].occurrences>0)
                     {
-                        double denominatorMoran = 0;
+                        double denominatorMoran = 0.;
+                        double numeratorMoran = 0.;
                         for (int iStations=0;iStations<nrStations;iStations++)
                         {
-                            if (iStations != ijk)
+                            if ((iStations != ijk) && (obsPrecDataD[iStations][i].occurrences != NODATA))
                             {
-                                  moran[counterData] += obsPrecDataD[iStations][i].occurrences*wSeason[ijk][iStations];
+                                  numeratorMoran += obsPrecDataD[iStations][i].occurrences*wSeason[ijk][iStations];
                                   denominatorMoran += wSeason[ijk][iStations];
                                   //printf("precipitazione sito %f prec atre %f\n",obsPrecDataD[ijk][i].amounts,obsPrecDataD[iStations][i].amounts);
                                   //printf(" %f   %f\n",obsPrecDataD[iStations][i].occurrences*wSeason[ijk][iStations],wSeason[ijk][iStations]);
                             }
                         }
-                        //moran[counterData] /= denominatorMoran;
-
+                        if (denominatorMoran != 0)
+                            moran[ijk][qq][counterData] = numeratorMoran / denominatorMoran;
+                        else
+                           moran[ijk][qq][counterData]= 1;
                     }
-                    //printf(" counter data %d\n",counterData);
+                    /*else
+                    {
+                        moran[ijk][qq][counterData] = NODATA;
+                    }*/
+                    printf("%f\n",moran[ijk][qq][counterData]);
+
                     counterData++;
                 }
-                //printf(" counter data %d\n",counterData);
+                int lengthBins = 11;
+                double bins[11],bincenter[10];
+                bins[10]= 1.0001;
+                for (int i=0;i<10;i++)
+                {
+                    bins[i] = i*0.1;
+                    bincenter[i] = bins[i] + 0.05;
+                }
 
             }
-            printf(" counter data %d",counterData);
+            //printf(" counter data %d",counterData);
             //getchar();
             // free memory moran and occCoeff
             //free(moran);
             //free(occCoeff);
             //printf("%d\n",qq);
         }
-        free(moran);
+
+
     }
 
 
@@ -1226,15 +1251,22 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
 
     for (int i=0;i<nrStations;i++)
     {
+
         free(occurrenceMatrixSeasonJJA[i]);
         free(occurrenceMatrixSeasonDJF[i]);
         free(occurrenceMatrixSeasonMAM[i]);
         free(occurrenceMatrixSeasonSON[i]);
+        for (int qq=0;qq<4;qq++)
+        {
+            free(moran[i][qq]);
+        }
+        free(moran[i]);
     }
     free(occurrenceMatrixSeasonDJF);
     free(occurrenceMatrixSeasonJJA);
     free(occurrenceMatrixSeasonMAM);
     free(occurrenceMatrixSeasonSON);
+    free(moran);
 
     for (int i=0;i<nrStations;i++)
     {
