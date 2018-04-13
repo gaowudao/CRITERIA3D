@@ -498,7 +498,7 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
         while (myAvg == NODATA)
         {
             heightSup = heightSup + deltaZ;
-            if (heightSup > maxPointsZ)
+            if (heightSup > maxPointsZ && !(maxPointsZ == 0 && heightInf == 0))
                 heightSup = maxPointsZ + (maxPointsZ - heightInf);
 
             myAvg = findHeightIntervalAvgValue(heightInf, heightSup, maxPointsZ);
