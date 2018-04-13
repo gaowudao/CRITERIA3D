@@ -263,7 +263,6 @@ bool Crit3DMeteoGrid::fillMeteoPointHourlyValue(int row, int col, int numberOfDa
     {
         _meteoPoints[row][col]->initializeObsDataH(myHourlyFraction, numberOfDays, date);
     }
-    _meteoPoints[row][col]->setMeteoPointValueH(date, hour, minute, variable, value);
 
     return _meteoPoints[row][col]->setMeteoPointValueH(date, hour, minute, variable, value);
 

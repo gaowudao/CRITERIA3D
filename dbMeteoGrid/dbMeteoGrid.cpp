@@ -904,7 +904,7 @@ bool Crit3DMeteoGridDbHandler::loadGridHourlyData(std::string *myError, QString 
 
             meteoVariable variable = getHourlyVarEnum(varCode);
 
-            if ( _meteoGrid->fillMeteoPointHourlyValue(row, col, numberOfDays, initialize, Crit3DDate(date.date().year(), date.date().month(), date.date().day()), date.time().hour(), date.time().minute(), variable, value) )
+            if ( _meteoGrid->fillMeteoPointHourlyValue(row, col, numberOfDays, initialize, Crit3DDate(date.date().day(), date.date().month(), date.date().year()), date.time().hour(), date.time().minute(), variable, value) )
             {
                 initialize = 0;
             }
