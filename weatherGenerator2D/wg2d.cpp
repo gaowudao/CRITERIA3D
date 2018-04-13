@@ -1090,7 +1090,8 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
 
     double*** moran; // coefficient for each station, each season, each nr of days of simulation in the season.
     moran = (double***)calloc(nrStations, sizeof(double**));
-
+    double*** rainfallLessThreshold; // coefficient for each station, each season, each nr of days of simulation in the season.
+    rainfallLessThreshold = (double***)calloc(nrStations, sizeof(double**));
 
 
     for (int ijk=0;ijk<nrStations;ijk++)
@@ -1114,23 +1115,24 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
         numberObservedMax = max_value(numberObservedDJF,max_value(numberObservedMAM,max_value(numberObservedJJA,numberObservedSON)));
 
         moran[ijk] = (double**)calloc(4, sizeof(double*));
+        rainfallLessThreshold[ijk] = (double**)calloc(4, sizeof(double*));
         for (int qq=0;qq<4;qq++)
         {
             moran[ijk][qq] = (double*)calloc(numberObservedMax, sizeof(double));
+            rainfallLessThreshold[ijk][qq] = (double*)calloc(numberObservedMax, sizeof(double));
         }
         for (int qq=0;qq<4;qq++)
         {
             for (int i=0;i<numberObservedMax;i++)
-            moran[ijk][qq][i] = NODATA;
+            {
+                moran[ijk][qq][i] = NODATA;
+                rainfallLessThreshold[ijk][qq][i] = NODATA;
+            }
         }
         for (int qq=0;qq<4;qq++)
         {
             //double* occCoeff;
             int monthList[3];
-            /*for (int i=0;i<numberObservedMax;i++)
-            {
-                moran[ijk][i]=NODATA;
-            }*/
             if (qq == 0)
             {
                 monthList[0]= 12;
@@ -1187,8 +1189,8 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
             int counterData = 0;
             //double dummy1,dummy2;
             //dummy1 = dummy2 = 0;
-            printf("stagione %d\n",qq);
-            printf("%d %d %d %d\n",numberObservedDJF,numberObservedMAM,numberObservedJJA,numberObservedSON);
+            //printf("stagione %d\n",qq);
+            //printf("%d %d %d %d\n",numberObservedDJF,numberObservedMAM,numberObservedJJA,numberObservedSON);
             double rainCumulated, moranCumulated;
             rainCumulated = moranCumulated = 0;
 
@@ -1212,34 +1214,100 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                             }
                         }
                         if (denominatorMoran != 0)
+                        {
                             moran[ijk][qq][counterData] = numeratorMoran / denominatorMoran;
+                            rainfallLessThreshold[ijk][qq][counterData] = obsPrecDataD[ijk][i].amountsLessThreshold ;
+                        }
+
                         else
+                        {
                            moran[ijk][qq][counterData]= 1;
+                           rainfallLessThreshold[ijk][qq][counterData] = obsPrecDataD[ijk][i].amountsLessThreshold;
+                        }
                     }
                     /*else
                     {
                         moran[ijk][qq][counterData] = NODATA;
                     }*/
-                    printf("%f\n",moran[ijk][qq][counterData]);
+                    //printf("%f\n",moran[ijk][qq][counterData]);
 
                     counterData++;
                 }
-                int lengthBins = 11;
-                double bins[11],bincenter[10];
-                bins[10]= 1.0001;
-                for (int i=0;i<10;i++)
-                {
-                    bins[i] = i*0.1;
-                    bincenter[i] = bins[i] + 0.05;
-                }
+
 
             }
-            //printf(" counter data %d",counterData);
+            int lengthBins = 11;
+            double bins[11],bincenter[10];
+            int nrBins[10];
+            bins[10]= 1.0001;
+            for (int i=0;i<10;i++)
+            {
+                bins[i] = i*0.1;
+                bincenter[i] = bins[i] + 0.05;
+                nrBins[i] = 0;
+            }
+
+            for (int i=0;i<10;i++)
+            {
+                for (int j=0;j<numberObservedMax;j++)
+                {
+                    if (moran[ijk][qq][j] >= bins[i] && moran[ijk][qq][j] < bins[i+1])
+                    {
+                        nrBins[i]++;
+                    }
+                }
+                //printf("prima %d %.1f %d\n",i,bins[i],nrBins[i]);
+            }
+            //for (int i=0;i<11;i++)
+                //printf("prima %d %.1f\n",i,bins[i]);
+            // ???not applicable in case of few years simulations or very dry climates
+            /*
+            double bins2[11];
+            int counter = 1;
+
+            for (int i=1;i<11;i++)
+                bins2[i] = NODATA;
+            bins2[0]= 0;
+            for (int i=0;i<9;i++)
+            {
+                if(nrBins[i] < 50)
+                {
+                    nrBins[i+1] += nrBins[i];
+                }
+                else
+                {
+                    bins2[counter] = bins[i+1];
+                    counter++;
+                }
+            }
+
+            if (nrBins[10] < 50)
+            {
+                --counter;
+            }
+            bins2[counter] = bins[10];
+
+            for (int i=0;i<11;i++)
+            {
+               printf("intermedio %d %.1f\n",i,bins2[i]);
+            }
+
+
+            for (int i=1;i<11;i++)
+            {
+                bins[i]=bins2[i];
+
+            }
+            for (int i=0;i<11;i++)
+            {
+               printf("dopo %d %.1f\n",i,bins2[i]);
+            }
+            */
+
             //getchar();
             // free memory moran and occCoeff
             //free(moran);
             //free(occCoeff);
-            //printf("%d\n",qq);
         }
 
 
@@ -1259,14 +1327,17 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
         for (int qq=0;qq<4;qq++)
         {
             free(moran[i][qq]);
+            free(rainfallLessThreshold[i][qq]);
         }
         free(moran[i]);
+        free(rainfallLessThreshold[i]);
     }
     free(occurrenceMatrixSeasonDJF);
     free(occurrenceMatrixSeasonJJA);
     free(occurrenceMatrixSeasonMAM);
     free(occurrenceMatrixSeasonSON);
     free(moran);
+    free(rainfallLessThreshold);
 
     for (int i=0;i<nrStations;i++)
     {
