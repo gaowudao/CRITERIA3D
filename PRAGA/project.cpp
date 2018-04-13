@@ -488,7 +488,7 @@ void Project::loadMeteoGridData(QDate firstDate, QDate lastDate, bool showInfo)
     {
         formRunInfo myInfo;
         QDateTime t1 = QDateTime(firstDate);
-        QDateTime t2 = QDateTime(lastDate);
+        QDateTime t2 = QDateTime(lastDate.addDays(1));
 
         QString infoStr = "Load grid data: " + firstDate.toString();
 
