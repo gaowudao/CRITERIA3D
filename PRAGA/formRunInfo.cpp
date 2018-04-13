@@ -29,7 +29,7 @@ int formRunInfo::start(QString info, int nrValues)
     this->show();
     qApp->processEvents();
 
-    return std::max(1, int(nrValues / 100));
+    return std::max(1, int(nrValues / 50));
 }
 
 

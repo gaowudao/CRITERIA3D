@@ -84,7 +84,6 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
     this->updateDateTime();
 
     connect(this->ui->dateEdit, SIGNAL(editingFinished()), this, SLOT(on_dateChanged()));
-    connect(this->ui->timeEdit, SIGNAL(editingFinished()), this, SLOT(on_timeChanged()));
 
     this->setMouseTracking(true);
 
@@ -706,27 +705,12 @@ void MainWindow::on_dateChanged()
 }
 
 
-void MainWindow::on_timeChanged()
-{
-    QTime time = this->ui->timeEdit->time();
-    //hour
-    if (time.hour() != myProject.getCurrentHour())
-    {
-        //qDebug("time changed");
-        myProject.setCurrentHour(time.hour());
-    }
-
-    redrawMeteoPoints(true);
-    redrawMeteoGrid();
-}
-
-
 void MainWindow::on_timeEdit_timeChanged(const QTime &time)
 {
     //hour
     if (time.hour() != myProject.getCurrentHour())
     {
-        //qDebug("time changed");
+        qDebug("time changed");
         myProject.setCurrentHour(time.hour());
     }
 
@@ -831,6 +815,7 @@ void MainWindow::redrawMeteoGrid()
 
     setColorScale(variable, myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale);
 
+    meteoGridObj->redrawRequested();
     meteoGridLegend->update();
 }
 

@@ -486,35 +486,36 @@ void Project::loadMeteoGridData(QDate firstDate, QDate lastDate, bool showInfo)
 {
     if (this->meteoGridDbHandler != NULL)
     {
-        formRunInfo myInfo;
         QDateTime t1 = QDateTime(firstDate);
         QDateTime t2 = QDateTime(lastDate.addDays(1));
 
-        QString infoStr = "Load grid data: " + firstDate.toString();
+        this->loadMeteoGridDailyData(firstDate, lastDate, showInfo);
 
-        if (firstDate != lastDate)
-            infoStr += " - " + lastDate.toString();
-
-        if (showInfo)
-            myInfo.start(infoStr, 0);
-
-        this->loadMeteoGridDailyData(firstDate, lastDate);
-
-        this->loadMeteoGridHourlyData(t1, t2);
-
-        if (showInfo)
-            myInfo.close();
+        this->loadMeteoGridHourlyData(t1, t2, showInfo);
     }
 }
 
 
-bool Project::loadMeteoGridDailyData(QDate firstDate, QDate lastDate)
+bool Project::loadMeteoGridDailyData(QDate firstDate, QDate lastDate, bool showInfo)
 {
     std::string id;
     int count = 0;
 
+    formRunInfo myInfo;
+    int infoStep;
+
+    if (showInfo)
+    {
+        QString infoStr = "Load grid daily data: " + firstDate.toString();
+        if (firstDate != lastDate) infoStr += " - " + lastDate.toString();
+        infoStep = myInfo.start(infoStr, this->meteoGridDbHandler->gridStructure().header().nrRows);
+    }
+
     for (int row = 0; row < this->meteoGridDbHandler->gridStructure().header().nrRows; row++)
     {
+        if (showInfo && (row % infoStep) == 0)
+            myInfo.setValue(row);
+
         for (int col = 0; col < this->meteoGridDbHandler->gridStructure().header().nrCols; col++)
         {
             if (this->meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id))
@@ -522,6 +523,9 @@ bool Project::loadMeteoGridDailyData(QDate firstDate, QDate lastDate)
                     count = count + 1;
         }
     }
+
+    if (showInfo) myInfo.close();
+
     if (count == 0)
     {
         errorString = "No Data Available";
@@ -532,13 +536,24 @@ bool Project::loadMeteoGridDailyData(QDate firstDate, QDate lastDate)
 }
 
 
-bool Project::loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate)
+bool Project::loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate, bool showInfo)
 {
     std::string id;
     int count = 0;
+    formRunInfo myInfo;
+    int infoStep;
+
+    if (showInfo)
+    {
+        QString infoStr = "Load grid hourly data: " + firstDate.toString() + " - " + lastDate.toString();
+        infoStep = myInfo.start(infoStr, this->meteoGridDbHandler->gridStructure().header().nrRows);
+    }
 
     for (int row = 0; row < this->meteoGridDbHandler->gridStructure().header().nrRows; row++)
     {
+        if (showInfo && (row % infoStep) == 0)
+            myInfo.setValue(row);
+
         for (int col = 0; col < this->meteoGridDbHandler->gridStructure().header().nrCols; col++)
         {
             if (this->meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id))
@@ -546,6 +561,9 @@ bool Project::loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate)
                     count = count + 1;
         }
     }
+
+    if (showInfo) myInfo.close();
+
     if (count == 0)
     {
         errorString = "No Data Available";

@@ -63,8 +63,6 @@
 
         void on_dateChanged();
 
-        void on_timeChanged();
-
         void on_actionVariableNone_triggered();
 
         void on_rasterScaleButton_clicked();

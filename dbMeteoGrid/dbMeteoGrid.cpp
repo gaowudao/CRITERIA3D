@@ -379,7 +379,7 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *my
         catch (const std::out_of_range& oor)
         {
             QString errMess = QString("%1 does not exist" ).arg(_tableDaily.varcode[i].varPragaName);
-            *myError = errMess.toStdString();
+            *myError = oor.what() + errMess.toStdString();
         }
 
     }
@@ -394,7 +394,7 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *my
         catch (const std::out_of_range& oor)
         {
             QString errMess = QString("%1 does not exist" ).arg(_tableHourly.varcode[i].varPragaName);
-            *myError = errMess.toStdString();
+            *myError = oor.what() + errMess.toStdString();
         }
     }
 
