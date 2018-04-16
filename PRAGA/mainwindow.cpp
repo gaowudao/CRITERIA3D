@@ -810,6 +810,8 @@ void MainWindow::redrawMeteoGrid()
     {
         myProject.meteoGridDbHandler->meteoGrid()->fillMeteoPointCurrentHourlyValue(time.date, time.getHour(), time.getMinutes(), variable);
     }
+    else
+        return;
 
     myProject.meteoGridDbHandler->meteoGrid()->fillMeteoRaster();
 
@@ -873,6 +875,8 @@ bool MainWindow::loadMeteoGridDB(QString xmlName)
     myProject.loadMeteoGridData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
 
     meteoGridObj->redrawRequested();
+
+    redrawMeteoGrid();
 
     return true;
 }
