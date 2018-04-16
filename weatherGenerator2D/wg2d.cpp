@@ -1239,12 +1239,16 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
             int lengthBins = 11;
             double bins[11],bincenter[10];
             int nrBins[10];
+            double Pmean[10];
+            double PstdDev[10];
             bins[10]= 1.0001;
             for (int i=0;i<10;i++)
             {
                 bins[i] = i*0.1;
                 bincenter[i] = bins[i] + 0.05;
                 nrBins[i] = 0;
+                Pmean[i] = 0;
+                PstdDev[i] = 0;
             }
 
             for (int i=0;i<10;i++)
@@ -1256,12 +1260,12 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                         nrBins[i]++;
                     }
                 }
-                //printf("prima %d %.1f %d\n",i,bins[i],nrBins[i]);
+                //printf("prima %d %.1f %d\n",i,bins[i],nrBins[i]);   // risultati strani da fare debug
             }
             //for (int i=0;i<11;i++)
                 //printf("prima %d %.1f\n",i,bins[i]);
             // ???not applicable in case of few years simulations or very dry climates
-            /*
+
             double bins2[11];
             int counter = 1;
 
@@ -1270,7 +1274,7 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
             bins2[0]= 0;
             for (int i=0;i<9;i++)
             {
-                if(nrBins[i] < 50)
+                if(nrBins[i] < 5)
                 {
                     nrBins[i+1] += nrBins[i];
                 }
@@ -1281,28 +1285,63 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                 }
             }
 
-            if (nrBins[10] < 50)
+            if (nrBins[10] < 5)
             {
                 --counter;
             }
             bins2[counter] = bins[10];
 
-            for (int i=0;i<11;i++)
-            {
-               printf("intermedio %d %.1f\n",i,bins2[i]);
-            }
-
-
+            int newCounter = 1;
             for (int i=1;i<11;i++)
             {
                 bins[i]=bins2[i];
+                nrBins[i-1] = 0;
+                if (bins2[i] != NODATA)
+                {
+                    bincenter[i-1]= (bins2[i-1] + bins[i])*0.5;
+                    newCounter++;
+                }
+                else
+                    bincenter[i-1]= NODATA;
 
             }
-            for (int i=0;i<11;i++)
+            /*for (int i=0;i<10;i++)
             {
-               printf("dopo %d %.1f\n",i,bins2[i]);
+               printf("dopo %d %f %f\n",i,bins[i],bincenter[i]);
+            }*/
+            for (int i=0;i<(newCounter-1);i++)
+            {
+                for (int j=0;j<numberObservedMax;j++)
+                {
+                    if (moran[ijk][qq][j] >= bins[i] && moran[ijk][qq][j] < bins[i+1])
+                    {
+                        nrBins[i]++;
+                        Pmean[i] += rainfallLessThreshold[ijk][qq][j];
+                    }
+                }
+                Pmean[i] /= nrBins[i];  // mean for each bin
+                if (parametersModel.distributionPrecipitation == 2)
+                {
+                    for (int j=0;j<numberObservedMax;j++)
+                    {
+                        if (moran[ijk][qq][j] >= bins[i] && moran[ijk][qq][j] < bins[i+1])
+                        {
+                            double product;
+                            product = rainfallLessThreshold[ijk][qq][j] - Pmean[i];
+                            PstdDev[i] += product*product;
+                        }
+                    }
+                    PstdDev[i] = sqrt(PstdDev[i]/(nrBins[i]-1));
+                }
+
             }
-            */
+            for (int i=0;i<newCounter;i++)
+            {
+               //printf("dopo %d %f %f\n",i,bins[i],bincenter[i]);
+               printf("dopo %d %f %f\n",i,Pmean[i],PstdDev[i]);
+            }
+
+
 
             //getchar();
             // free memory moran and occCoeff
