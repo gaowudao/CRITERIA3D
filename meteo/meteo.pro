@@ -5,12 +5,14 @@
 #
 #-------------------------------------------------
 
-QT       -= core gui
+#QT       -= core gui #da ripristinare
+QT       -= gui
 
 TEMPLATE = lib
 CONFIG += staticlib
 
 CONFIG += debug_and_release
+
 
 unix:{
     CONFIG(debug, debug|release) {

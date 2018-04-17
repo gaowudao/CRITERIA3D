@@ -29,7 +29,8 @@
 
 #include "commonConstants.h"
 #include "meteoPoint.h"
-#include <iostream> //debug
+//#include <iostream> //debug
+#include <QDebug> // cancellare
 
 
 Crit3DMeteoPoint::Crit3DMeteoPoint()
@@ -478,17 +479,47 @@ bool Crit3DMeteoPoint::setMeteoPointValueD(const Crit3DDate& myDate, meteoVariab
 float Crit3DMeteoPoint::getMeteoPointValueH(const Crit3DDate& myDate, int myHour, int myMinutes, meteoVariable myVar)
 {
     //check
-    if (myVar == noMeteoVar) return NODATA;
-    if (obsDataH == NULL) return NODATA;
-    if ((myHour < 0) || (myHour > 24)) return NODATA;
+    if (myVar == noMeteoVar)
+    {
+        qInfo() << "getMeteoPointValueH 1" ;
+        return NODATA;
+    }
+    if (obsDataH == NULL)
+    {
+        qInfo() << "getMeteoPointValueH 2" ;
+        return NODATA;
+    }
+    if ((myHour < 0) || (myHour > 24))
+    {
+        qInfo() << "getMeteoPointValueH 3" ;
+        return NODATA;
+    }
 
     //indexes
     int subH = int(ceil(float(myMinutes) / float(60 / hourlyFraction)));
     int h = hourlyFraction * myHour + subH;
-    if ((h < 0) || (h >= hourlyFraction * 24)) return NODATA;
+    if ((h < 0) || (h >= hourlyFraction * 24))
+    {
+        qInfo() << "getMeteoPointValueH 4" ;
+        return NODATA;
+    }
 
     int i = obsDataH[0].date.daysTo(myDate);
-    if ((i < 0) || (i >= nrObsDataDaysH)) return NODATA;
+    if ((i < 0) || (i >= nrObsDataDaysH))
+    {
+        qInfo() << "getMeteoPointValueH 5" ;
+        qInfo() << "myDate.day" << myDate.day ;
+        qInfo() << "myDate.month" << myDate.month ;
+        qInfo() << "myDate.year" << myDate.year ;
+
+        qInfo() << "obsDataH[0].date.day" << obsDataH[0].date.day ;
+        qInfo() << "obsDataH[0].date.month" << obsDataH[0].date.month ;
+        qInfo() << "obsDataH[0].date.year" << obsDataH[0].date.year ;
+
+        qInfo() << "i " << i ;
+        qInfo() << "nrObsDataDaysH " << nrObsDataDaysH ;
+        return NODATA;
+    }
 
     if (myVar == airTemperature)
         return (obsDataH[i].tAir[h]);
@@ -514,7 +545,10 @@ float Crit3DMeteoPoint::getMeteoPointValueH(const Crit3DDate& myDate, int myHour
     else if (myVar == atmTransmissivity)
         return (obsDataH[i].transmissivity[h]);
     else
+    {
+        qInfo() << "getMeteoPointValueH 6" ;
         return (NODATA);
+    }
 }
 
 
