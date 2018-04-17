@@ -255,7 +255,8 @@ QDateTime Crit3DMeteoPointsDbHandler::getFirstDay(frequencyType frequency)
     }
     if (firstDay.date() == QDate::currentDate().addDays(1))
     {
-        firstDay(QDate(1800,1,1), QTime(0, 0, 0));
+        firstDay.date() = QDate(1800,1,1);
+        firstDay.time() = QTime(0, 0, 0);
     }
 
     return firstDay;
