@@ -1272,9 +1272,10 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
             for (int i=1;i<11;i++)
                 bins2[i] = NODATA;
             bins2[0]= 0;
+            int nrMinimalPointsForBins = 5;
             for (int i=0;i<9;i++)
             {
-                if(nrBins[i] < 5)
+                if(nrBins[i] < nrMinimalPointsForBins)
                 {
                     nrBins[i+1] += nrBins[i];
                 }
@@ -1285,7 +1286,7 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                 }
             }
 
-            if (nrBins[10] < 5)
+            if (nrBins[10] < nrMinimalPointsForBins)
             {
                 --counter;
             }
@@ -1339,6 +1340,15 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
             {
                //printf("dopo %d %f %f\n",i,bins[i],bincenter[i]);
                printf("dopo %d %f %f\n",i,Pmean[i],PstdDev[i]);
+            }
+            int order[19];
+            double dif_tot[19];
+
+            for (int i=0;i<19;i++)
+            {
+                order[i]=i+2;
+                dif_tot[i]=0;
+
             }
 
 
@@ -1404,7 +1414,28 @@ void weatherGenerator2D::temperatureCompute()
     // step 5 of temperature WG2D
 }
 
+void weatherGenerator2D::nonLinearFit(double* a1, double* a2, double* x, double* y,int lengthArray, int order)
+{
+    double* fitFunction;
+    fitFunction = (double*)calloc(lengthArray, sizeof(double));
+    double step = 0.001;
+    double par1 = -20.;
+    double par2 = 0.;
+    double bestFit = 1000000;
+    for (int ii=0;ii<4000;ii++)
+    {
+        for (int jj=0;jj<2000;jj++)
+        {
 
+            for (int j=0;j<lengthArray;j++)
+            {
+                fitFunction[j]= par1 + par2*pow(x[j],order);                
+            }
+            statistics::rootMeanSquareError(y,fitFunction,lengthArray);
+        }
+    }
+
+}
 
 
 

@@ -4,6 +4,7 @@
 
 namespace statistics
 {
+    double rootMeanSquareError(double *measured , double *simulated , int nrData);
     float rootMeanSquareError(float *measured , float *simulated , int nrData);
     float coefficientOfVariation(float *measured , float *simulated , int nrData);
     float weighedMean(float *data , float *weights, int nrData);
