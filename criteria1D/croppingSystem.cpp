@@ -406,10 +406,10 @@ bool evaporation(Criteria1D* myCase)
 double cropTranspiration(Criteria1D* myCase, bool getWaterStress)
 {
     //check
-    if (myCase->myCrop.idCrop == "") return false;
-    if (! myCase->myCrop.isLiving) return true;
-    if (myCase->myCrop.roots.rootDepth <= myCase->myCrop.roots.rootDepthMin) return true;
-    if (myCase->myCrop.roots.firstRootLayer == NODATA) return true;
+    if (myCase->myCrop.idCrop == "") return 0.0;
+    if (! myCase->myCrop.isLiving) return 0.0;
+    if (myCase->myCrop.roots.rootDepth <= myCase->myCrop.roots.rootDepthMin) return 0.0;
+    if (myCase->myCrop.roots.firstRootLayer == NODATA) return 0.0;
 
     double thetaWP;                                 // [m3 m-3] volumetric water content at Wilting Point
     double soilThickness;                           // [mm] thickness of soil layer
