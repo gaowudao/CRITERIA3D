@@ -33,6 +33,27 @@
 namespace statistics
 {
 
+    double rootMeanSquareError(double *measured , double *simulated , int nrData)
+    {
+        double sigma=0.;
+        double diff;
+        long nrValidValues = 0;
+
+        for (int i=0; i< nrData; i++)
+        {
+            if ((measured[i] != NODATA) && (simulated[i] != NODATA))
+            {
+                diff = measured[i]-simulated[i];
+                sigma += (diff * diff);
+                nrValidValues++;
+            }
+        }
+
+        sigma /= nrValidValues;
+        sigma = sqrt(sigma);
+        return sigma;
+    }
+
     float rootMeanSquareError(float *measured , float *simulated , int nrData)
     {
         double sigma=0.;
