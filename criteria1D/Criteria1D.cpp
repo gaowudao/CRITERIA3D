@@ -139,20 +139,36 @@ bool Criteria1D::setSoil(QString idSoil, std::string *myError)
 }
 
 
+QString getId5Char(QString id)
+{
+    while (id.length() < 5)
+        id = "0" + id;
+
+    return id;
+}
+
+
 bool Criteria1D::loadMOSESMeteo(QString idMeteo, QString idForecast, std::string *myError)
 {
-    QString queryString = "SELECT * FROM meteo_locations";
-    queryString += " WHERE id_meteo='" + idMeteo + "'";
-
+    QString queryString = "SELECT * FROM meteo_locations WHERE id_meteo='" + idMeteo + "'";
     QSqlQuery query = dbMeteo.exec(queryString);
     query.last();
+
     if (! query.isValid())
     {
-        if (query.lastError().number() > 0)
-            *myError = "dbMeteo error: " + query.lastError().text().toStdString();
-        else
-            *myError = "Missing meteo location:" + idMeteo.toStdString();
-        return(false);
+        QString idMeteo5char = getId5Char(idMeteo);
+        queryString = "SELECT * FROM meteo_locations WHERE id_meteo='" + idMeteo5char + "'";
+        query = dbMeteo.exec(queryString);
+        query.last();
+
+        if (! query.isValid())
+        {
+            if (query.lastError().number() > 0)
+                *myError = "dbMeteo error: " + query.lastError().text().toStdString();
+            else
+                *myError = "Missing meteo location:" + idMeteo.toStdString();
+            return(false);
+        }
     }
 
     QString tableName = query.value("table_name").toString();
@@ -202,17 +218,25 @@ bool Criteria1D::loadMOSESMeteo(QString idMeteo, QString idForecast, std::string
     // Add Short-Term forecast
     if (this->isShortTermForecast)
     {
-        QString queryString = "SELECT * FROM meteo_locations";
-        queryString += " WHERE id_meteo='" + idForecast + "'";
-        QSqlQuery query = this->dbForecast.exec(queryString);
+        queryString = "SELECT * FROM meteo_locations WHERE id_meteo='" + idForecast + "'";
+        query = this->dbForecast.exec(queryString);
         query.last();
+
         if (! query.isValid())
         {
-            if (query.lastError().number() > 0)
-                *myError = "dbForecast error: " + query.lastError().text().toStdString();
-            else
-                *myError = "Missing forecast location:" + idForecast.toStdString();
-            return false;
+            QString idForecast5char = getId5Char(idForecast);
+            queryString = "SELECT * FROM meteo_locations WHERE id_meteo='" + idForecast5char + "'";
+            query = dbForecast.exec(queryString);
+            query.last();
+
+            if (! query.isValid())
+            {
+                if (query.lastError().number() > 0)
+                    *myError = "dbForecast error: " + query.lastError().text().toStdString();
+                else
+                    *myError = "Missing forecast location:" + idForecast.toStdString();
+                return false;
+            }
         }
         QString tableName = query.value("table_name").toString();
 
