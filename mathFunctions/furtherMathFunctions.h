@@ -1,6 +1,8 @@
 #ifndef MATHEMATICALFUNCTIONS_H
 #define MATHEMATICALFUNCTIONS_H
 
+
+enum estimateFunction {FUNCTION_CODE_SPHERICAL,LINEAR,PARABOLIC,EXPONENTIAL,LOGARITMIC,TWOPARAMETERSPOLYNOMIAL};
 float errorFunctionPrimitive(float x);
     struct TfunctionInput{
         float x ;

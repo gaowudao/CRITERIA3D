@@ -1341,22 +1341,57 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                //printf("dopo %d %f %f\n",i,bins[i],bincenter[i]);
                printf("dopo %d %f %f\n",i,Pmean[i],PstdDev[i]);
             }
-            int order[19];
-            double dif_tot[19];
 
-            for (int i=0;i<19;i++)
+            double *parMin;
+            double *parMax;
+            double *par;
+            double *parDelta;
+            int maxIterations;
+            double epsilon;
+            int functionCode;
+            int nrPar = 3;
+            parMin = (double *) calloc(nrPar, sizeof(double));
+            parMax = (double *) calloc(nrPar, sizeof(double));
+            par = (double *) calloc(nrPar, sizeof(double));
+            parDelta = (double *) calloc(nrPar, sizeof(double));
+            parMin[0]= -40.;
+            parMax[0]= 40.;
+            parDelta[0] = 0.01;
+            par[0] = parMin[0];
+            parMin[1]= 0;
+            parMax[1]= 40.;
+            parDelta[1] = 0.01;
+            par[1] = parMin[1];
+            parMin[2]= 2;
+            parMax[2]= 20.;
+            parDelta[2] = 1;
+            par[2] = parMin[2];
+
+            maxIterations = 10000;
+            epsilon = 0.1;
+            functionCode = TWOPARAMETERSPOLYNOMIAL;
+            int nrBincenter=0;
+            for (int i=0;i<(lengthBins-1);i++)
             {
-                order[i]=i+2;
-                dif_tot[i]=0;
-
+                if(bincenter[i] != NODATA)
+                    nrBincenter++;
             }
-
-
+            double* meanP = (double *) calloc(nrBincenter, sizeof(double));
+            double* stdDevP = (double *) calloc(nrBincenter, sizeof(double));
+            double* binCenter = (double *) calloc(nrBincenter, sizeof(double));
+            for (int i=0;i<nrBincenter;i++)
+            {
+               meanP[i]=Pmean[i];
+               stdDevP[i]=PstdDev[i];
+               binCenter[i]= bincenter[i];
+            }
+            interpolation::fittingMarquardt(parMin,parMax,par,nrPar,parDelta,maxIterations,epsilon,functionCode,binCenter,nrBincenter,Pmean);
 
             //getchar();
             // free memory moran and occCoeff
-            //free(moran);
-            //free(occCoeff);
+            free(meanP);
+            free(stdDevP);
+            free(binCenter);
         }
 
 
@@ -1414,7 +1449,7 @@ void weatherGenerator2D::temperatureCompute()
     // step 5 of temperature WG2D
 }
 
-void weatherGenerator2D::nonLinearFit(double* a1, double* a2, double* x, double* y,int lengthArray, int order)
+/*void weatherGenerator2D::nonLinearFit(double* a1, double* a2, double* x, double* y,int lengthArray, int order)
 {
     double* fitFunction;
     fitFunction = (double*)calloc(lengthArray, sizeof(double));
@@ -1436,7 +1471,7 @@ void weatherGenerator2D::nonLinearFit(double* a1, double* a2, double* x, double*
     }
 
 }
-
+*/
 
 
 

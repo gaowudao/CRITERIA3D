@@ -43,6 +43,11 @@ float errorFunctionPrimitive(float x)
     return expf(-x*x);
 }
 
+double twoParametersAndExponentialPolynomialFunctions(double x, double* par)
+{
+    return (double)(par[0]+par[1]*pow(x,par[2]));
+}
+
 /*float straightLine(TfunctionInput fInput)
 {
     float m,q,y;
@@ -248,6 +253,187 @@ namespace interpolation
     }
 
 
+    bool fittingMarquardt(double *myParMin, double *myParMax,
+        double *myPar, int nrMyPar, double *myParDelta, int myMaxIterations,double myEpsilon, int myFunctionCode,
+        double *myX,int nrMyX,double *myY)
+    {
+        //int i;
+        int myIterations = 1;
+        static double lambda= 0.01; //Damping parameter
+        double mySSE;           //Sum of Squared Erros
+        double myDiffSSE;
+        double myNewSSE;
+        double *myParChange=(double *) calloc(nrMyPar, sizeof(double));
+        double *myNewPar =(double *) calloc(nrMyPar, sizeof(double));
+        double *L=(double *) calloc(nrMyPar, sizeof(double));
+        static double VFACTOR = 10;
+
+        /*
+         myParMin               'parameters minimum values
+         myParMax               'parameters maximum values
+         myParFirst             'parameters first guess values
+         myX                    'X values
+         myY                    'Y values
+        */
+        bool output = false;
+
+        for(int i = 0 ; i< nrMyPar ; i++)
+        {
+            L[i] = lambda ;
+            myParChange[i] = 0 ;
+        }
+
+
+        mySSE = normGeneric(myPar, myX, nrMyX, myY, myFunctionCode);
+        myDiffSSE = myEpsilon * 1000 ;
+
+        do
+        {
+            leastSquares(myFunctionCode, myPar,nrMyPar, myX,nrMyX, myY, L, myParDelta, myParChange);
+
+            // change parameters
+            for (int i = 0 ; i < nrMyPar; i++ )
+            {
+                myNewPar[i] = myPar[i] + myParChange[i];
+                if ((myNewPar[i] > myParMax[i]) && (L[i] < 1000))
+                {
+                    L[i]  *= VFACTOR ;
+                    myNewPar[i] = myParMax[i];
+                }
+                if ((myNewPar[i] < myParMin[i]) && (L[i] < 1000))
+                {
+                    L[i] *= VFACTOR;
+                    myNewPar[i] = myParMin[i];
+                }
+            }
+
+            myNewSSE = normGeneric(myNewPar, myX, nrMyX, myY, myFunctionCode);
+
+            if (myNewSSE == NODATA) return output;
+
+            myDiffSSE = mySSE - myNewSSE ;
+
+            if (myDiffSSE > 0)
+            {
+                mySSE = myNewSSE;
+                for (int i = 0; i<nrMyPar ; i++)
+                {
+                    myPar[i] = myNewPar[i];
+                    L[i] /= 10.;
+                }
+            }
+            else
+            {
+                for(int i = 0; i< nrMyPar; i++) L[i]*= 10. ;
+            }
+
+            myIterations++ ;
+        } while ((myIterations <= myMaxIterations) && (fabs(myDiffSSE) > myEpsilon));
+
+        output = ((myIterations <= myMaxIterations) && (fabs(myDiffSSE) <= myEpsilon));
+
+        // free pointer memory
+        free(L);
+        free(myParChange);
+        free(myNewPar);
+
+        return output;
+    }
+
+
+
+    void leastSquares(int myFunctionCode,double *myParameters, int nrMyParameters,
+        double *myX,int nrMyX, double *myY,double *myLambda, double *myParametersDelta, double *myParametersChange)
+    {
+        int i,j,k;
+        int nrMyData;
+        nrMyData = nrMyX ;
+        double* g=(double *) calloc(nrMyParameters+1, sizeof(double));
+        double* z=(double *) calloc(nrMyParameters+1, sizeof(double));
+        double* myFirstEst=(double *) calloc(nrMyData+1, sizeof(double));
+        double myNewEst;
+
+        double** a = (double **) calloc(nrMyParameters+1, sizeof(double*));
+        double** P = (double **) calloc(nrMyParameters+1, sizeof(double*));
+        for (i = 0; i < nrMyParameters+1; i++)
+                a[i] = (double *) calloc(nrMyParameters+1, sizeof(double));
+                P[i] = (double *) calloc(nrMyData+1, sizeof(double));
+        double pivot,mult,top;
+        //get a first set of estimates
+        for (i = 0 ; i< nrMyData ; i++) myFirstEst[i] = estimateFunction(myFunctionCode, myParameters, &(myX[i]));
+
+
+        //change parameters and compute derivatives
+        for (i = 0 ; i< nrMyParameters ; i++)
+        {
+            myParameters[i] += myParametersDelta[i];
+            for (j = 0 ;j< nrMyData;j++)
+            {
+                myNewEst = estimateFunction(myFunctionCode, myParameters, &(myX[j]));
+                P[i][j] = (myNewEst - myFirstEst[j]) / myParametersDelta[i];
+            }
+            myParameters[i] -= myParametersDelta[i];
+        }
+        for (i = 0 ; i<nrMyParameters; i++)
+        {
+            for (j = i ; j< nrMyParameters;j++)
+            {
+                a[i][j] = 0.;
+                for (k = 0 ; k< nrMyData ; k++) a[i][j] += P[i][k]*P[i][k];
+            }
+            z[i] = sqrt(a[i][i]) + 0.000001; //?
+        }
+        for (i = 0 ; i<nrMyParameters;i++)
+        {
+            g[i] = 0.;
+            for (k = 0 ; k<nrMyData ; k++)
+            {
+                g[i] += P[i][k]* (myY[k] - myFirstEst[k]);
+            }
+            g[i] /= z[i];
+            for (j = i ; j <nrMyParameters ; j++) a[i][j] /= (z[i] * z[j]);
+       }
+
+        for (i = 0 ; i< (nrMyParameters+1); i++)
+        {
+            a[i][i] += myLambda[i];
+            for (j = i + 1 ; j< nrMyParameters ; j++) a[j][i] = a[i][j];
+        }
+
+        for (j = 0 ; j< (nrMyParameters - 1) ; j++)
+        {
+            pivot = a[j][j];
+            for (i = j + 1 ; i<(nrMyParameters); i++)
+            {
+                mult = a[i][j] / pivot;
+                for (k = j + 1; k<(nrMyParameters) ; k++) a[i][k] -= mult * a[j][k];
+                g[i] -= mult * g[j];
+            }
+        }
+        myParametersChange[nrMyParameters - 1] = g[nrMyParameters - 1] / a[nrMyParameters - 1][nrMyParameters - 1];
+
+        for (i = nrMyParameters - 2; i>=0 ; i--)
+        {
+            top = g[i];
+            for (k = i + 1 ; k<(nrMyParameters); k++) top -= a[i][k] * myParametersChange[k];
+            myParametersChange[i] = top / a[i][i];
+        }
+        for (i = 0 ; i<nrMyParameters ; i++) myParametersChange[i] /= z[i];
+
+        // free pointer memory
+        for (i = 0 ; i<nrMyParameters+1 ; i++)
+        {
+            free(a[i]);
+            free(P[i]);
+        }
+        free(a);
+        free(P);
+        free(g);
+        free(z);
+        free(myFirstEst);
+    }
+
+
     float estimateFunction(int myFunctionCode, double *myParameters, double *myX)
     {
         /*
@@ -257,10 +443,11 @@ namespace interpolation
             '' myParameters(2): sill
         */
         float output;
+        double myTmp;
         switch (myFunctionCode)
         {
             case FUNCTION_CODE_SPHERICAL :
-                double myTmp;
+
                 if (myParameters[0] == 0)
                 {
                     output = NODATA;
@@ -272,8 +459,15 @@ namespace interpolation
                 else
                     output = float(myParameters[2]);
                 break;
+            case TWOPARAMETERSPOLYNOMIAL :
+                myTmp = *myX;
+                output = (float)(twoParametersAndExponentialPolynomialFunctions(myTmp,myParameters));
+                break;
+
             default:
                 output = NODATA ;
+
+
         }
         return output;
     }
@@ -293,8 +487,8 @@ namespace interpolation
                 output = NODATA;
                 return output;
             }
-            myError = float(myY[i] - estimateFunction(myFunctionCode, myParameters,  &(myX[i])));
-            output  += pow(myError,2) ;
+            myError = float(myY[i] - myEstimate);
+            output  += myError*myError ;
         }
         return output;
     }
