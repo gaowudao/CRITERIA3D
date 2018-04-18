@@ -15,7 +15,7 @@
 
 Crit3DMeteoPointsDbHandler::Crit3DMeteoPointsDbHandler(QString dbName)
 {
-    _db = QSqlDatabase::addDatabase("QSQLITE");
+    _db = QSqlDatabase::addDatabase("QSQLITE", "point");
     _db.setDatabaseName(dbName);
 
     if (!_db.open())
@@ -335,7 +335,7 @@ bool Crit3DMeteoPointsDbHandler::getHourlyData(Crit3DDate dateStart, Crit3DDate 
                                  .arg(tableName).arg(startDate).arg(endDate);
     if( !qry.exec(statement) )
     {
-        //qDebug() << qry.lastError();
+        qDebug() << qry.lastError();
         return false;
     }
     else

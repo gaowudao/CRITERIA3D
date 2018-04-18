@@ -498,7 +498,7 @@ bool Crit3DMeteoGridDbHandler::openDatabase(std::string *myError)
 
     if (_connection.provider.toUpper() == "MYSQL")
     {
-        _db = QSqlDatabase::addDatabase("QMYSQL");
+        _db = QSqlDatabase::addDatabase("QMYSQL", "grid");
     }
 
     _db.setHostName(_connection.server);

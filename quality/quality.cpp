@@ -108,16 +108,9 @@ bool Crit3DQuality::checkData(meteoVariable myVar, frequencyType myFrequency, Cr
     if (nrMeteoPoints == 0)
         return false;
 
-    qInfo() << "checkData. meteoVariable" << myVar;
-    qInfo() << "checkData. myFrequency" << myFrequency;
-    qInfo() << "checkData. nrMeteoPoints" << nrMeteoPoints;
-    qInfo() << "checkData. myTime.getHour()." << myTime.getHour();
-    qInfo() << "7b.meteoPoints[0].currentValue" << meteoPoints[0].currentValue;
-
     // assign data
     for (int i = 0; i < nrMeteoPoints; i++)
         meteoPoints[i].currentValue = meteoPoints[i].getMeteoPointValue(myTime, myVar, myFrequency);
-qInfo() << "7c.meteoPoints[0].currentValue" << meteoPoints[0].currentValue;
 
     // quality control - synthctic
     syntacticQualityControl(myVar, meteoPoints, nrMeteoPoints);

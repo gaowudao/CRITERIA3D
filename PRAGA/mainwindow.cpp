@@ -687,52 +687,20 @@ void MainWindow::updateDateTime()
 
 void MainWindow::on_dateChanged()
 {
-    qInfo("on_dateChanged");
-    if (myProject.meteoPoints != NULL) {
-        qInfo() << "1.myProject.meteoPoints->nrObsDataDaysH" << myProject.meteoPoints->nrObsDataDaysH;
-        qInfo() << "1.myProject.meteoPoints[0].currentValue" << myProject.meteoPoints[0].currentValue;
-    }
 
     QDate date = this->ui->dateEdit->date();
 
     if (date != myProject.getCurrentDate())
     {
-        qDebug("date changed");
+
         myProject.setCurrentDate(date);
-
-        if (myProject.meteoPoints != NULL) {
-            qInfo() << "2.myProject.meteoPoints->nrObsDataDaysH" << myProject.meteoPoints->nrObsDataDaysH;
-            qInfo() << "2.myProject.meteoPoints[0].currentValue" << myProject.meteoPoints[0].currentValue;
-        }
-
         myProject.loadMeteoPointsData(date, date, true);
-
-        if (myProject.meteoPoints != NULL) {
-            qInfo() << "3.myProject.meteoPoints->nrObsDataDaysH" << myProject.meteoPoints->nrObsDataDaysH;
-            qInfo() << "3.myProject.meteoPoints[0].currentValue" << myProject.meteoPoints[0].currentValue;
-        }
-
         myProject.loadMeteoGridData(date, date, true);
 
-        if (myProject.meteoPoints != NULL) {
-            qInfo() << "4.myProject.meteoPoints->nrObsDataDaysH" << myProject.meteoPoints->nrObsDataDaysH;
-            qInfo() << "4.myProject.meteoPoints[0].currentValue" << myProject.meteoPoints[0].currentValue;
-        }
     }
 
     redrawMeteoPoints(true);
-
-    if (myProject.meteoPoints != NULL) {
-        qInfo() << "5.myProject.meteoPoints->nrObsDataDaysH" << myProject.meteoPoints->nrObsDataDaysH;
-        qInfo() << "5.myProject.meteoPoints[0].currentValue" << myProject.meteoPoints[0].currentValue;
-    }
-
     redrawMeteoGrid();
-
-if (myProject.meteoPoints != NULL) {
-    qInfo() << "6.myProject.meteoPoints->nrObsDataDaysH" << myProject.meteoPoints->nrObsDataDaysH;
-    qInfo() << "6.myProject.meteoPoints[0].currentValue" << myProject.meteoPoints[0].currentValue;
-}
 
 }
 
@@ -766,7 +734,7 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
     // show location
     if (myProject.getCurrentVariable() == noMeteoVar)
     {
-        qInfo("noMeteoVar");
+
         for (int i = 0; i < myProject.nrMeteoPoints; i++)
         {
                 myProject.meteoPoints[i].currentValue = NODATA;
@@ -780,11 +748,11 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
         meteoPointsLegend->update();
         return;
     }
-qInfo() << "7.myProject.meteoPoints[0].currentValue" << myProject.meteoPoints[0].currentValue;
+
     // quality control
     myProject.quality->checkData(myProject.getCurrentVariable(), myProject.getFrequency(),
                                  myProject.meteoPoints, myProject.nrMeteoPoints, myProject.getCurrentTime());
-qInfo() << "8.myProject.meteoPoints[0].currentValue" << myProject.meteoPoints[0].currentValue;
+
     if (updateColorSCale)
     {
         float minimum, maximum;

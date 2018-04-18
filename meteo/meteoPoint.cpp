@@ -105,6 +105,7 @@ void Crit3DMeteoPoint::initializeObsDataH(int myHourlyFraction, int numberOfDays
             obsDataH[i].transmissivity[j] = NODATA;
         }
     }
+
 }
 
 void Crit3DMeteoPoint::initializeObsDataD(int numberOfDays, const Crit3DDate& firstDate)
@@ -378,6 +379,7 @@ void Crit3DMeteoPoint::cleanObsDataH()
             free(obsDataH[i].irradiance);
             free(obsDataH[i].windInt);
             free(obsDataH[i].leafW);
+            free(obsDataH[i].transmissivity);
         }
         free (obsDataH);
     }
@@ -481,17 +483,14 @@ float Crit3DMeteoPoint::getMeteoPointValueH(const Crit3DDate& myDate, int myHour
     //check
     if (myVar == noMeteoVar)
     {
-        qInfo() << "getMeteoPointValueH 1" ;
         return NODATA;
     }
     if (obsDataH == NULL)
     {
-        qInfo() << "getMeteoPointValueH 2" ;
         return NODATA;
     }
     if ((myHour < 0) || (myHour > 24))
     {
-        qInfo() << "getMeteoPointValueH 3" ;
         return NODATA;
     }
 
@@ -500,24 +499,12 @@ float Crit3DMeteoPoint::getMeteoPointValueH(const Crit3DDate& myDate, int myHour
     int h = hourlyFraction * myHour + subH;
     if ((h < 0) || (h >= hourlyFraction * 24))
     {
-        qInfo() << "getMeteoPointValueH 4" ;
         return NODATA;
     }
 
     int i = obsDataH[0].date.daysTo(myDate);
     if ((i < 0) || (i >= nrObsDataDaysH))
     {
-        qInfo() << "getMeteoPointValueH 5" ;
-        qInfo() << "myDate.day" << myDate.day ;
-        qInfo() << "myDate.month" << myDate.month ;
-        qInfo() << "myDate.year" << myDate.year ;
-
-        qInfo() << "obsDataH[0].date.day" << obsDataH[0].date.day ;
-        qInfo() << "obsDataH[0].date.month" << obsDataH[0].date.month ;
-        qInfo() << "obsDataH[0].date.year" << obsDataH[0].date.year ;
-
-        qInfo() << "i " << i ;
-        qInfo() << "nrObsDataDaysH " << nrObsDataDaysH ;
         return NODATA;
     }
 
@@ -546,7 +533,6 @@ float Crit3DMeteoPoint::getMeteoPointValueH(const Crit3DDate& myDate, int myHour
         return (obsDataH[i].transmissivity[h]);
     else
     {
-        qInfo() << "getMeteoPointValueH 6" ;
         return (NODATA);
     }
 }
