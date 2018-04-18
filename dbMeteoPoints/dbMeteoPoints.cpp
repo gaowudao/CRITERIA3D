@@ -15,7 +15,7 @@
 
 Crit3DMeteoPointsDbHandler::Crit3DMeteoPointsDbHandler(QString dbName)
 {
-    _db = QSqlDatabase::addDatabase("QSQLITE");
+    _db = QSqlDatabase::addDatabase("QSQLITE", "point");
     _db.setDatabaseName(dbName);
 
     if (!_db.open())
@@ -178,14 +178,18 @@ QDateTime Crit3DMeteoPointsDbHandler::getLastDay(frequencyType frequency)
             if (qry.next())
             {
                 dateStr = qry.value(0).toString();
-                if (frequency == daily)
-                    date = QDateTime::fromString(dateStr,"yyyy-MM-dd");
-                else if (frequency == hourly)
-                    date = QDateTime::fromString(dateStr,"yyyy-MM-dd HH:mm:ss");
-
-                if (date > lastDay)
+                if (!dateStr.isEmpty())
                 {
-                    lastDay = date;
+
+                    if (frequency == daily)
+                        date = QDateTime::fromString(dateStr,"yyyy-MM-dd");
+                    else if (frequency == hourly)
+                        date = QDateTime::fromString(dateStr,"yyyy-MM-dd HH:mm:ss");
+
+                    if (date > lastDay)
+                    {
+                        lastDay = date;
+                    }
                 }
             }
         }
@@ -200,7 +204,7 @@ QDateTime Crit3DMeteoPointsDbHandler::getFirstDay(frequencyType frequency)
 
     QSqlQuery qry(_db);
     QStringList tables;
-    QDateTime firstDay(QDate::currentDate(), QTime(0, 0, 0));
+    QDateTime firstDay(QDate::currentDate().addDays(1), QTime(0, 0, 0));
 
     QString dayHour;
     if (frequency == daily)
@@ -238,15 +242,26 @@ QDateTime Crit3DMeteoPointsDbHandler::getFirstDay(frequencyType frequency)
             if (qry.next())
             {
                 QString dateStr = qry.value(0).toString();
-                QDateTime date = QDateTime::fromString(dateStr,"yyyy-MM-dd HH:mm:ss");
-                if (date < firstDay)
+                if (!dateStr.isEmpty())
                 {
-                    firstDay = date;
+                    QDateTime date = QDateTime::fromString(dateStr,"yyyy-MM-dd HH:mm:ss");
+                    if (date < firstDay)
+                    {
+                        firstDay = date;
+                    }
                 }
             }
         }
     }
+    if (firstDay.date() == QDate::currentDate().addDays(1))
+    {
+        firstDay.date() = QDate(1800,1,1);
+        firstDay.time() = QTime(0, 0, 0);
+    }
+
     return firstDay;
+
+
 }
 
 
@@ -320,7 +335,7 @@ bool Crit3DMeteoPointsDbHandler::getHourlyData(Crit3DDate dateStart, Crit3DDate 
                                  .arg(tableName).arg(startDate).arg(endDate);
     if( !qry.exec(statement) )
     {
-        //qDebug() << qry.lastError();
+        qDebug() << qry.lastError();
         return false;
     }
     else

@@ -29,7 +29,8 @@
 
 #include "commonConstants.h"
 #include "meteoPoint.h"
-#include <iostream> //debug
+//#include <iostream> //debug
+#include <QDebug> // cancellare
 
 
 Crit3DMeteoPoint::Crit3DMeteoPoint()
@@ -104,6 +105,7 @@ void Crit3DMeteoPoint::initializeObsDataH(int myHourlyFraction, int numberOfDays
             obsDataH[i].transmissivity[j] = NODATA;
         }
     }
+
 }
 
 void Crit3DMeteoPoint::initializeObsDataD(int numberOfDays, const Crit3DDate& firstDate)
@@ -377,6 +379,7 @@ void Crit3DMeteoPoint::cleanObsDataH()
             free(obsDataH[i].irradiance);
             free(obsDataH[i].windInt);
             free(obsDataH[i].leafW);
+            free(obsDataH[i].transmissivity);
         }
         free (obsDataH);
     }
@@ -478,17 +481,32 @@ bool Crit3DMeteoPoint::setMeteoPointValueD(const Crit3DDate& myDate, meteoVariab
 float Crit3DMeteoPoint::getMeteoPointValueH(const Crit3DDate& myDate, int myHour, int myMinutes, meteoVariable myVar)
 {
     //check
-    if (myVar == noMeteoVar) return NODATA;
-    if (obsDataH == NULL) return NODATA;
-    if ((myHour < 0) || (myHour > 24)) return NODATA;
+    if (myVar == noMeteoVar)
+    {
+        return NODATA;
+    }
+    if (obsDataH == NULL)
+    {
+        return NODATA;
+    }
+    if ((myHour < 0) || (myHour > 24))
+    {
+        return NODATA;
+    }
 
     //indexes
     int subH = int(ceil(float(myMinutes) / float(60 / hourlyFraction)));
     int h = hourlyFraction * myHour + subH;
-    if ((h < 0) || (h >= hourlyFraction * 24)) return NODATA;
+    if ((h < 0) || (h >= hourlyFraction * 24))
+    {
+        return NODATA;
+    }
 
     int i = obsDataH[0].date.daysTo(myDate);
-    if ((i < 0) || (i >= nrObsDataDaysH)) return NODATA;
+    if ((i < 0) || (i >= nrObsDataDaysH))
+    {
+        return NODATA;
+    }
 
     if (myVar == airTemperature)
         return (obsDataH[i].tAir[h]);
@@ -514,7 +532,9 @@ float Crit3DMeteoPoint::getMeteoPointValueH(const Crit3DDate& myDate, int myHour
     else if (myVar == atmTransmissivity)
         return (obsDataH[i].transmissivity[h]);
     else
+    {
         return (NODATA);
+    }
 }
 
 

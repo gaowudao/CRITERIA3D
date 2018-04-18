@@ -9,7 +9,6 @@
 
 Project myProject;
 
-
 bool setProxy(QString hostName, int port)
 {
     QNetworkProxy myProxy;
@@ -46,3 +45,8 @@ int main(int argc, char *argv[])
 
     return myApp.exec();
 }
+
+
+
+
+

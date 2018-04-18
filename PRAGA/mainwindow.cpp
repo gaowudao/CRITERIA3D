@@ -29,10 +29,8 @@
 #include "dialogWindows.h"
 #include "gis.h"
 
-
 extern Project myProject;
 #define MAPBORDER 8
-
 
 MainWindow::MainWindow(environment menu, QWidget *parent) :
     QMainWindow(parent),
@@ -689,19 +687,21 @@ void MainWindow::updateDateTime()
 
 void MainWindow::on_dateChanged()
 {
+
     QDate date = this->ui->dateEdit->date();
 
     if (date != myProject.getCurrentDate())
     {
-        qDebug("date changed");
-        myProject.setCurrentDate(date);
 
+        myProject.setCurrentDate(date);
         myProject.loadMeteoPointsData(date, date, true);
         myProject.loadMeteoGridData(date, date, true);
+
     }
 
     redrawMeteoPoints(true);
     redrawMeteoGrid();
+
 }
 
 
@@ -734,6 +734,7 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
     // show location
     if (myProject.getCurrentVariable() == noMeteoVar)
     {
+
         for (int i = 0; i < myProject.nrMeteoPoints; i++)
         {
                 myProject.meteoPoints[i].currentValue = NODATA;
@@ -791,6 +792,7 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
 
 void MainWindow::redrawMeteoGrid()
 {
+
     if (myProject.meteoGridDbHandler == NULL)
         return;
 
@@ -819,6 +821,7 @@ void MainWindow::redrawMeteoGrid()
 
     meteoGridObj->redrawRequested();
     meteoGridLegend->update();
+
 }
 
 

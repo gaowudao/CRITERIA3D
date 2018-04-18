@@ -315,6 +315,28 @@ bool Project::loadlastMeteoData()
     QDate lastDateD = meteoPointsDbHandler->getLastDay(daily).date();
     QDate lastDateH = meteoPointsDbHandler->getLastDay(hourly).date();
 
+    /*
+     *
+    */
+/*
+    QDate firstDateD = meteoPointsDbHandler->getFirstDay(daily).date();
+    QDate firstDateH = meteoPointsDbHandler->getFirstDay(hourly).date();
+
+
+    int numberOfDaysD = firstDateD.daysTo(lastDateD) + 1;
+    int numberOfDaysH = firstDateH.daysTo(lastDateH) + 1;
+    int myHourlyFraction = 1;
+
+    for (int i=0; i < nrMeteoPoints; i++)
+    {
+        meteoPoints[i].initializeObsDataD(numberOfDaysD, getCrit3DDate(firstDateD));
+        meteoPoints[i].initializeObsDataH(myHourlyFraction, numberOfDaysH, getCrit3DDate(firstDateH));
+    }
+*/
+    /*
+     *
+    */
+
     QDate lastDate = (lastDateD > lastDateH) ? lastDateD : lastDateH;
 
     this->setCurrentDate(lastDate);
@@ -352,8 +374,14 @@ bool Project::loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo
         if (showInfo)
             if ((i % step) == 0) myInfo.setValue(i);
 
-        if (meteoPointsDbHandler->getDailyData(getCrit3DDate(firstDate), getCrit3DDate(lastDate), &(meteoPoints[i]))) isData = true;
-        if (meteoPointsDbHandler->getHourlyData(getCrit3DDate(firstDate), getCrit3DDate(lastDate), &(meteoPoints[i]))) isData = true;
+        if (meteoPointsDbHandler->getDailyData(getCrit3DDate(firstDate), getCrit3DDate(lastDate), &(meteoPoints[i])))
+        {
+            isData = true;
+        }
+        if (meteoPointsDbHandler->getHourlyData(getCrit3DDate(firstDate), getCrit3DDate(lastDate), &(meteoPoints[i])))
+        {
+            isData = true;
+        }
     }
 
     if (showInfo) myInfo.close();
