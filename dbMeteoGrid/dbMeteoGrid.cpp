@@ -67,7 +67,10 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *my
     QString myTag;
     QString mySecondTag;
     int nrTokens = 0;
-    const int nrRequiredToken = 25;
+    const int nrConnectionToken = 5;
+    const int nrStructureToken = 10;
+    const int nrDailyToken = 5;
+    const int nrHourlyToken = 5;
     int nRow;
     int nCol;
 
@@ -116,6 +119,14 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *my
                 }
                 child = child.nextSibling();
             }
+            if (nrTokens < nrConnectionToken)
+            {
+                int missingTokens = nrConnectionToken - nrTokens;
+                QString errMess = QString("Missing %1 Connection key.").arg(QString::number(missingTokens));
+                *myError = errMess.toStdString();
+                return false;
+            }
+            nrTokens = 0;
 
         }
         else if (ancestor.toElement().tagName().toUpper() == "GRIDSTRUCTURE")
@@ -205,6 +216,14 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *my
                 }
                 child = child.nextSibling();
             }
+            if (nrTokens < nrStructureToken)
+            {
+                int missingTokens = nrStructureToken - nrTokens;
+                QString errMess = QString("Missing %1 Grid Structure key.").arg(QString::number(missingTokens));
+                *myError = errMess.toStdString();
+                return false;
+            }
+            nrTokens = 0;
             _gridStructure.setHeader(header);
 
         }
@@ -275,6 +294,14 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *my
                 }
                 child = child.nextSibling();
             }
+            if (nrTokens < nrDailyToken)
+            {
+                int missingTokens = nrDailyToken - nrTokens;
+                QString errMess = QString("Missing %1 Table Daily key.").arg(QString::number(missingTokens));
+                *myError = errMess.toStdString();
+                return false;
+            }
+            nrTokens = 0;
 
         }
 
@@ -346,6 +373,15 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *my
                 child = child.nextSibling();
             }
 
+            if (nrTokens < nrHourlyToken)
+            {
+                int missingTokens = nrHourlyToken - nrTokens;
+                QString errMess = QString("Missing %1 Table Hourly key.").arg(QString::number(missingTokens));
+                *myError = errMess.toStdString();
+                return false;
+            }
+            nrTokens = 0;
+
         }
 
         ancestor = ancestor.nextSibling();
@@ -357,16 +393,6 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *my
         *myError = "Missing daily and hourly var code";
         return false;
     }
-
-
-    if (nrTokens < nrRequiredToken)
-    {
-        int missingTokens = nrRequiredToken - nrTokens;
-        QString errMess = QString("Missing %1 key informations.").arg(QString::number(missingTokens));
-        *myError = errMess.toStdString();
-        return false;
-    }
-
 
     // create variable maps
     for (unsigned int i=0; i < _tableDaily.varcode.size(); i++)

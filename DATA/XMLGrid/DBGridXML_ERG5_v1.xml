@@ -22,7 +22,6 @@
 		<fieldtime>tempo</fieldtime>
 		<prefix>q</prefix>
 		<postfix>g</postfix>
-		<model>cella_giornalieri</model>
 		
 		<varcode>
 			<varfield>TEMP_MEDIA_SMR</varfield>
@@ -91,7 +90,6 @@
 		<fieldtime>tempo</fieldtime>
 		<prefix>q</prefix>
 		<postfix>h</postfix>
-		<model>cella_orari</model>
 		
 		<varcode>
 			<varfield>TEMP_C_SMR</varfield>
