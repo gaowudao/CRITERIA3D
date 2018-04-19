@@ -1385,7 +1385,7 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                stdDevP[i]=PstdDev[i];
                binCenter[i]= bincenter[i];
             }
-            interpolation::fittingMarquardt(parMin,parMax,par,nrPar,parDelta,maxIterations,epsilon,functionCode,binCenter,nrBincenter,Pmean);
+            //interpolation::fittingMarquardt(parMin,parMax,par,nrPar,parDelta,maxIterations,epsilon,functionCode,binCenter,nrBincenter,Pmean);
 
             //getchar();
             // free memory moran and occCoeff
