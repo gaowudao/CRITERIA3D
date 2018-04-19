@@ -20,8 +20,6 @@
 	<tabledaily>
 		<indextablename>PRIMARY</indextablename>
 		<fieldtime>PragaTime</fieldtime>
-		<fieldVarcode>VariableCode</fieldVarcode>
-		<fieldValue>Value</fieldValue>
 		<postfix>_d</postfix>
 		<varcode>
 			<varcode>1</varcode>
@@ -76,8 +74,6 @@
 	<tablehourly>
 		<indextablename>PRIMARY</indextablename>
 		<fieldtime>PragaTime</fieldtime>
-		<fieldVarcode>VariableCode</fieldVarcode>
-		<fieldValue>Value</fieldValue>
 		<postfix>_h</postfix>
 		<varcode>
 			<varcode>101</varcode>
