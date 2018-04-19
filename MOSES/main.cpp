@@ -37,10 +37,10 @@ int main(int argc, char *argv[])
         //settingsFileName = "//PRAGA-SMR/MOSES/SWB/DA_MO/seasonalPredictions/seasonalIrriForecast_MO.ini";
         //settingsFileName = "//PRAGA-SMR/MOSES/SWB/DA_ITC4/ShortTermIrriForecast_C4.ini";
         //settingsFileName = "D:/CRITERIA3D/DATA/MOSES/DA_ITC4/ShortTermIrriForecast_C4.ini";
-        //settingsFileName = "//PRAGA-SMR/MOSES/SWB/DA_IT/shortTermForecast/ShortTermIrriForecast.ini";
+        settingsFileName = "//PRAGA-SMR/MOSES/SWB/DA_MO/shortTermForecast/ShortTermIrriForecast.ini";
 
-        myProject.logError("USAGE: MOSES_WB settings_filename.ini");
-        return ERROR_SETTINGS_MISSING;
+        //myProject.logError("USAGE: MOSES_WB settings_filename.ini");
+        //return ERROR_SETTINGS_MISSING;
     }
 
     if (settingsFileName.left(1) == ".")
