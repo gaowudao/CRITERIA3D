@@ -1264,7 +1264,7 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
             }
             //for (int i=0;i<11;i++)
                 //printf("prima %d %.1f\n",i,bins[i]);
-            // ???not applicable in case of few years simulations or very dry climates
+
 
             double bins2[11];
             int counter = 1;
@@ -1339,7 +1339,7 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
             for (int i=0;i<newCounter;i++)
             {
                //printf("dopo %d %f %f\n",i,bins[i],bincenter[i]);
-               printf("dopo %d %f %f\n",i,Pmean[i],PstdDev[i]);
+               //printf("dopo %d %f %f\n",i,Pmean[i],PstdDev[i]);
             }
 
             double *parMin;
@@ -1354,21 +1354,21 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
             parMax = (double *) calloc(nrPar, sizeof(double));
             par = (double *) calloc(nrPar, sizeof(double));
             parDelta = (double *) calloc(nrPar, sizeof(double));
-            parMin[0]= -40.;
-            parMax[0]= 40.;
+            parMin[0]= -20.;
+            parMax[0]= 20;
             parDelta[0] = 0.01;
-            par[0] = parMin[0];
-            parMin[1]= 0;
-            parMax[1]= 40.;
-            parDelta[1] = 0.01;
-            par[1] = parMin[1];
+            par[0] = (parMin[0]+parMax[0])*0.5;
+            parMin[1]= -10;
+            parMax[1]= 30.;
+            parDelta[1] = 0.0001;
+            par[1] = (parMin[1]+parMax[1])*0.5;
             parMin[2]= 2;
             parMax[2]= 20.;
-            parDelta[2] = 1;
-            par[2] = parMin[2];
+            parDelta[2] = 0.01;
+            par[2] = (parMin[2]+parMax[2])*0.5;
 
-            maxIterations = 10000;
-            epsilon = 0.1;
+            maxIterations = 1000000;
+            epsilon = 0.0001;
             functionCode = TWOPARAMETERSPOLYNOMIAL;
             int nrBincenter=0;
             for (int i=0;i<(lengthBins-1);i++)
@@ -1385,15 +1385,32 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                stdDevP[i]=PstdDev[i];
                binCenter[i]= bincenter[i];
             }
-            //interpolation::fittingMarquardt(parMin,parMax,par,nrPar,parDelta,maxIterations,epsilon,functionCode,binCenter,nrBincenter,Pmean);
+            for (int i=0;i<nrBincenter;i++)
+            {
+                printf("prima %f %f\n",binCenter[i],meanP[i]);
+            }
+            for (int i=0;i<3;i++)
+                printf("prima %f\n",par[i]);
 
-            //getchar();
+            interpolation::fittingMarquardt(parMin,parMax,par,nrPar,parDelta,maxIterations,epsilon,functionCode,binCenter,nrBincenter,meanP);
+            for (int i=0;i<nrBincenter;i++)
+            {
+               printf("prima %f %f\n",binCenter[i],par[0]+par[1]*powf(binCenter[i],par[2]));
+            }
+            for (int i=0;i<3;i++)
+                printf("dopo %f\n",par[i]);
+
+            if (parametersModel.distributionPrecipitation == 2)
+            {
+                interpolation::fittingMarquardt(parMin,parMax,par,nrPar,parDelta,maxIterations,epsilon,functionCode,binCenter,nrBincenter,stdDevP);
+            }
+
+            getchar();
             // free memory moran and occCoeff
             free(meanP);
             free(stdDevP);
             free(binCenter);
         }
-
 
     }
 

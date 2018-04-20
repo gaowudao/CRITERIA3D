@@ -45,7 +45,7 @@ float errorFunctionPrimitive(float x)
 
 double twoParametersAndExponentialPolynomialFunctions(double x, double* par)
 {
-    return (double)(par[0]+par[1]*pow(x,par[2]));
+    return (double)(par[0]+par[1]*powf(x,par[2]));
 }
 
 /*float straightLine(TfunctionInput fInput)
@@ -319,12 +319,12 @@ namespace interpolation
                 for (int i = 0; i<nrMyPar ; i++)
                 {
                     myPar[i] = myNewPar[i];
-                    L[i] /= 10.;
+                    L[i] /= VFACTOR;
                 }
             }
             else
             {
-                for(int i = 0; i< nrMyPar; i++) L[i]*= 10. ;
+                for(int i = 0; i< nrMyPar; i++) L[i]*= VFACTOR ;
             }
 
             myIterations++ ;
@@ -356,8 +356,10 @@ namespace interpolation
         double** a = (double **) calloc(nrMyParameters+1, sizeof(double*));
         double** P = (double **) calloc(nrMyParameters+1, sizeof(double*));
         for (i = 0; i < nrMyParameters+1; i++)
+        {
                 a[i] = (double *) calloc(nrMyParameters+1, sizeof(double));
                 P[i] = (double *) calloc(nrMyData+1, sizeof(double));
+        }
         double pivot,mult,top;
         //get a first set of estimates
         for (i = 0 ; i< nrMyData ; i++) myFirstEst[i] = estimateFunction(myFunctionCode, myParameters, &(myX[i]));
