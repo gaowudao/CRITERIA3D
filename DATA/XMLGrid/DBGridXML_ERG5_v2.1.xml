@@ -18,7 +18,6 @@
 	</gridstructure>
 	
 	<tabledaily>
-		<indextablename>PRIMARY</indextablename>
 		<fieldtime>PragaTime</fieldtime>
 		<postfix>_d</postfix>
 		<varcode>
@@ -72,7 +71,6 @@
 	</tabledaily>
 	
 	<tablehourly>
-		<indextablename>PRIMARY</indextablename>
 		<fieldtime>PragaTime</fieldtime>
 		<postfix>_h</postfix>
 		<varcode>

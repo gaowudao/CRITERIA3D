@@ -66,11 +66,6 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *my
     QDomNode ancestor = xmlDoc.documentElement().firstChild();
     QString myTag;
     QString mySecondTag;
-    int nrTokens = 0;
-    const int nrConnectionToken = 5;
-    const int nrStructureToken = 10;
-    const int nrDailyToken = 5;
-    const int nrHourlyToken = 5;
     int nRow;
     int nCol;
 
@@ -87,143 +82,135 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *my
                     _connection.provider = child.toElement().text();
                     // remove white spaces
                     _connection.provider = _connection.provider.simplified();
-                    nrTokens++;
                 }
                 else if (myTag == "SERVER")
                 {
                     _connection.server = child.toElement().text();
                     // remove white spaces
                     _connection.server = _connection.server.simplified();
-                    nrTokens++;
                 }
                 else if (myTag == "NAME")
                 {
                     _connection.name = child.toElement().text();
                     // remove white spaces
                     _connection.server = _connection.server.simplified();
-                    nrTokens++;
                 }
                 else if (myTag == "USER")
                 {
                     _connection.user = child.toElement().text();
                     // remove white spaces
                     _connection.user = _connection.user.simplified();
-                    nrTokens++;
                 }
                 else if (myTag == "PASSWORD")
                 {
                     _connection.password = child.toElement().text();
                     // remove white spaces
                     _connection.password = _connection.password.simplified();
-                    nrTokens++;
                 }
+
                 child = child.nextSibling();
             }
-            if (nrTokens < nrConnectionToken)
-            {
-                int missingTokens = nrConnectionToken - nrTokens;
-                QString errMess = QString("Missing %1 Connection key.").arg(QString::number(missingTokens));
-                *myError = errMess.toStdString();
-                return false;
-            }
-            nrTokens = 0;
-
         }
         else if (ancestor.toElement().tagName().toUpper() == "GRIDSTRUCTURE")
         {
             if (ancestor.toElement().attribute("isregular").toUpper() == "TRUE")
             {
                 _gridStructure.setIsRegular(true);
-                nrTokens++;
             }
             else if (ancestor.toElement().attribute("isregular").toUpper() == "FALSE")
             {
                 _gridStructure.setIsRegular(false);
-                nrTokens++;
             }
+            else
+            {
+                *myError = "Invalid isRegular attribute";
+                return false;
+            }
+
             if (ancestor.toElement().attribute("isutm").toUpper() == "TRUE")
             {
                 _gridStructure.setIsUTM(true);
-                nrTokens++;
             }
             else if (ancestor.toElement().attribute("isutm").toUpper() == "FALSE")
             {
                 _gridStructure.setIsUTM(false);
-                nrTokens++;
             }
+            else
+            {
+                *myError = "Invalid isutm attribute";
+                return false;
+            }
+
             if (ancestor.toElement().attribute("istin").toUpper() == "TRUE")
             {
                 _gridStructure.setIsTIN(true);
-                nrTokens++;
             }
             else if (ancestor.toElement().attribute("istin").toUpper() == "FALSE")
             {
                 _gridStructure.setIsTIN(false);
-                nrTokens++;
             }
+            else
+            {
+                *myError = "Invalid istin attribute";
+                return false;
+            }
+
             if (ancestor.toElement().attribute("isfixedfields").toUpper() == "TRUE")
             {
                 _gridStructure.setIsFixedFields(true);
-                nrTokens++;
             }
             else if (ancestor.toElement().attribute("isfixedfields").toUpper() == "FALSE")
             {
                 _gridStructure.setIsFixedFields(false);
-                nrTokens++;
             }
+            else
+            {
+                *myError = "Invalid isfixedfields attribute";
+                return false;
+            }
+
 
             child = ancestor.firstChild();
             gis::Crit3DGridHeader header;
+            /* init */
+            header.llCorner->longitude = NODATA;
+            header.llCorner->latitude = NODATA;
+            header.nrRows = NODATA;
+            header.nrCols = NODATA;
+            header.dx = NODATA;
+            header.dy = NODATA;
+
             while( !child.isNull())
             {
                 myTag = child.toElement().tagName().toUpper();
                 if (myTag == "XLL")
                 {
                     header.llCorner->longitude = child.toElement().text().toFloat();
-                    nrTokens++;
                 }
                 if (myTag == "YLL")
                 {
                     header.llCorner->latitude = child.toElement().text().toFloat();
-                    nrTokens++;
                 }
                 if (myTag == "NROWS")
                 {
                     header.nrRows = child.toElement().text().toInt();
                     nRow = header.nrRows;
-                    nrTokens++;
                 }
                 if (myTag == "NCOLS")
                 {
                     header.nrCols = child.toElement().text().toInt();
                     nCol = header.nrCols;
-                    nrTokens++;
                 }
                 if (myTag == "XWIDTH")
                 {
                     header.dx = child.toElement().text().toFloat();
-                    nrTokens++;
                 }
                 if (myTag == "YWIDTH")
                 {
                     header.dy = child.toElement().text().toFloat();
-                    if (_gridStructure.isUTM() == true && header.dx != header.dy )
-                    {
-                        *myError = "UTM grid with dx != dy";
-                        return false;
-                    }
-                    nrTokens++;
                 }
                 child = child.nextSibling();
             }
-            if (nrTokens < nrStructureToken)
-            {
-                int missingTokens = nrStructureToken - nrTokens;
-                QString errMess = QString("Missing %1 Grid Structure key.").arg(QString::number(missingTokens));
-                *myError = errMess.toStdString();
-                return false;
-            }
-            nrTokens = 0;
             _gridStructure.setHeader(header);
 
         }
@@ -234,59 +221,55 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *my
             while( !child.isNull())
             {
                 myTag = child.toElement().tagName().toUpper();
-                if (myTag == "INDEXTABLENAME")
-                {
-                    _tableDaily.indexTableName = child.toElement().text();
-                    // remove white spaces
-                    _tableDaily.indexTableName = _tableDaily.indexTableName.simplified();
-                    nrTokens++;
-                }
                 if (myTag == "FIELDTIME")
                 {
                     _tableDaily.fieldTime = child.toElement().text();
                     // remove white spaces
                     _tableDaily.fieldTime = _tableDaily.fieldTime.simplified();
-                    nrTokens++;
                 }
-                if (myTag == "FIELDVARCODE")
+                if (myTag == "PREFIX")
                 {
-                    _tableDaily.fieldVarCode = child.toElement().text();
+                    _tableDaily.prefix = child.toElement().text();
                     // remove white spaces
-                    _tableDaily.fieldVarCode = _tableDaily.fieldVarCode.simplified();
-                    nrTokens++;
-                }
-                if (myTag == "FIELDVALUE")
-                {
-                    _tableDaily.fieldValue = child.toElement().text();
-                    // remove white spaces
-                    _tableDaily.fieldValue = _tableDaily.fieldValue.simplified();
-                    nrTokens++;
+                    _tableDaily.prefix = _tableDaily.prefix.simplified();
                 }
                 if (myTag == "POSTFIX")
                 {
                     _tableDaily.postFix = child.toElement().text();
                     // remove white spaces
                     _tableDaily.postFix = _tableDaily.postFix.simplified();
-                    nrTokens++;
                 }
                 if (myTag == "VARCODE")
                 {
                     secondChild = child.firstChild();
                     _tableDaily.varcode.push_back(varTable);
+
                     while( !secondChild.isNull())
                     {
                         mySecondTag = secondChild.toElement().tagName().toUpper();
-                        if (mySecondTag == "VARCODE")
+
+
+                        if (mySecondTag == "VARFIELD")
+                        {
+                            _tableDaily.varcode[_tableDaily.varcode.size()-1].varField = secondChild.toElement().text().toInt();
+
+                        }
+
+                        else if (mySecondTag == "VARCODE")
                         {
                             _tableDaily.varcode[_tableDaily.varcode.size()-1].varCode = secondChild.toElement().text().toInt();
 
                         }
 
-                        if (mySecondTag == "VARPRAGANAME")
+                        else if (mySecondTag == "VARPRAGANAME")
                         {
                             _tableDaily.varcode[_tableDaily.varcode.size()-1].varPragaName = secondChild.toElement().text();
                             // remove white spaces
                             _tableDaily.varcode[_tableDaily.varcode.size()-1].varPragaName = _tableDaily.varcode[_tableDaily.varcode.size()-1].varPragaName.simplified();
+                        }
+                        else
+                        {
+                            _tableDaily.varcode[_tableDaily.varcode.size()-1].varCode = NODATA;
                         }
 
                         secondChild = secondChild.nextSibling();
@@ -294,15 +277,6 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *my
                 }
                 child = child.nextSibling();
             }
-            if (nrTokens < nrDailyToken)
-            {
-                int missingTokens = nrDailyToken - nrTokens;
-                QString errMess = QString("Missing %1 Table Daily key.").arg(QString::number(missingTokens));
-                *myError = errMess.toStdString();
-                return false;
-            }
-            nrTokens = 0;
-
         }
 
         else if (ancestor.toElement().tagName().toUpper() == "TABLEHOURLY")
@@ -311,59 +285,55 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *my
             while( !child.isNull())
             {
                 myTag = child.toElement().tagName().toUpper();
-                if (myTag == "INDEXTABLENAME")
-                {
-                    _tableHourly.indexTableName = child.toElement().text();
-                    // remove white spaces
-                    _tableHourly.indexTableName = _tableHourly.indexTableName.simplified();
-                    nrTokens++;
-                }
                 if (myTag == "FIELDTIME")
                 {
                     _tableHourly.fieldTime = child.toElement().text();
                     // remove white spaces
                     _tableHourly.fieldTime = _tableHourly.fieldTime.simplified();
-                    nrTokens++;
                 }
-                if (myTag == "FIELDVARCODE")
+                if (myTag == "PREFIX")
                 {
-                    _tableHourly.fieldVarCode = child.toElement().text();
+                    _tableHourly.prefix = child.toElement().text();
                     // remove white spaces
-                    _tableHourly.fieldVarCode = _tableHourly.fieldVarCode.simplified();
-                    nrTokens++;
-                }
-                if (myTag == "FIELDVALUE")
-                {
-                    _tableHourly.fieldValue = child.toElement().text();
-                    // remove white spaces
-                    _tableHourly.fieldValue = _tableHourly.fieldValue.simplified();
-                    nrTokens++;
+                    _tableHourly.prefix = _tableHourly.prefix.simplified();
                 }
                 if (myTag == "POSTFIX")
                 {
                     _tableHourly.postFix = child.toElement().text();
                     // remove white spaces
                     _tableHourly.postFix = _tableHourly.postFix.simplified();
-                    nrTokens++;
                 }
                 if (myTag == "VARCODE")
                 {
                     secondChild = child.firstChild();
                     _tableHourly.varcode.push_back(varTable);
+
                     while( !secondChild.isNull())
                     {
                         mySecondTag = secondChild.toElement().tagName().toUpper();
-                        if (mySecondTag == "VARCODE")
+
+
+                        if (mySecondTag == "VARFIELD")
+                        {
+                            _tableHourly.varcode[_tableHourly.varcode.size()-1].varField = secondChild.toElement().text().toInt();
+
+                        }
+
+                        else if (mySecondTag == "VARCODE")
                         {
                             _tableHourly.varcode[_tableHourly.varcode.size()-1].varCode = secondChild.toElement().text().toInt();
 
                         }
 
-                        if (mySecondTag == "VARPRAGANAME")
+                        else if (mySecondTag == "VARPRAGANAME")
                         {
                             _tableHourly.varcode[_tableHourly.varcode.size()-1].varPragaName = secondChild.toElement().text();
                             // remove white spaces
                             _tableHourly.varcode[_tableHourly.varcode.size()-1].varPragaName = _tableHourly.varcode[_tableHourly.varcode.size()-1].varPragaName.simplified();
+                        }
+                        else
+                        {
+                            _tableHourly.varcode[_tableHourly.varcode.size()-1].varCode = NODATA;
                         }
 
                         secondChild = secondChild.nextSibling();
@@ -373,24 +343,14 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *my
                 child = child.nextSibling();
             }
 
-            if (nrTokens < nrHourlyToken)
-            {
-                int missingTokens = nrHourlyToken - nrTokens;
-                QString errMess = QString("Missing %1 Table Hourly key.").arg(QString::number(missingTokens));
-                *myError = errMess.toStdString();
-                return false;
-            }
-            nrTokens = 0;
-
         }
 
         ancestor = ancestor.nextSibling();
     }
     xmlDoc.clear();
 
-    if (_tableDaily.varcode.size() < 1 && _tableHourly.varcode.size() < 1)
+    if (!checkXML(myError))
     {
-        *myError = "Missing daily and hourly var code";
         return false;
     }
 
@@ -428,6 +388,137 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *my
     _meteoGrid->setGridStructure(_gridStructure);
 
     _meteoGrid->initMeteoPoints(nRow, nCol);
+
+    return true;
+}
+
+bool Crit3DMeteoGridDbHandler::checkXML(std::string *myError)
+{
+
+    /* connection */
+    if (_connection.provider.isNull() || _connection.provider.isEmpty())
+    {
+        *myError = "Missing connection provider";
+        return false;
+    }
+    if (_connection.server.isNull() || _connection.server.isEmpty())
+    {
+        *myError = "Missing connection server";
+        return false;
+    }
+    if (_connection.name.isNull() || _connection.name.isEmpty())
+    {
+        *myError = "Missing connection name";
+        return false;
+    }
+    if (_connection.user.isNull() || _connection.user.isEmpty())
+    {
+        *myError = "Missing connection user";
+        return false;
+    }
+    if (_connection.password.isNull() || _connection.password.isEmpty())
+    {
+        *myError = "Missing connection password";
+        return false;
+    }
+
+    /* grid structure */
+
+    if (_gridStructure.header().llCorner->longitude == NODATA)
+    {
+        *myError = "Error missing xll tag";
+        return false;
+    }
+    if (_gridStructure.header().llCorner->latitude == NODATA)
+    {
+        *myError = "Error missing yll tag";
+        return false;
+    }
+    if (_gridStructure.header().nrRows == NODATA)
+    {
+        *myError = "Error missing nrows tag";
+        return false;
+    }
+    if (_gridStructure.header().nrCols == NODATA)
+    {
+        *myError = "Error missing ncols tag";
+        return false;
+    }
+    if (_gridStructure.header().dx == NODATA)
+    {
+        *myError = "Error missing xwidth tag";
+        return false;
+    }
+    if (_gridStructure.header().dy == NODATA)
+    {
+        *myError = "Error missing ywidth tag";
+        return false;
+    }
+
+    if (_gridStructure.isUTM() == true && _gridStructure.header().dx != _gridStructure.header().dy )
+    {
+        *myError = "UTM grid with dx != dy";
+        return false;
+    }
+
+    /* table daily and hourly */
+
+    if (_tableDaily.fieldTime.isNull() || _tableDaily.fieldTime.isEmpty())
+    {
+        *myError = "Missing table Daily fieldTime";
+        return false;
+    }
+
+    if (_tableHourly.fieldTime.isNull() || _tableHourly.fieldTime.isEmpty())
+    {
+        *myError = "Missing table Hourly fieldTime";
+        return false;
+    }
+
+    if (_tableDaily.varcode.size() < 1 && _tableHourly.varcode.size() < 1)
+    {
+        *myError = "Missing daily and hourly var code";
+        return false;
+    }
+
+    for (unsigned int i=0; i < _tableDaily.varcode.size(); i++)
+    {
+        if (_tableDaily.varcode[i].varCode == NODATA)
+        {
+            *myError = "Missing daily var code";
+            return false;
+        }
+        if (_tableDaily.varcode[i].varPragaName.isNull() || _tableDaily.varcode[i].varPragaName.isEmpty())
+        {
+            *myError = "Missing daily varPragaName";
+            return false;
+        }
+        if (_gridStructure.isFixedFields() == true && (_tableDaily.varcode[i].varField.isNull() || _tableDaily.varcode[i].varField.isEmpty()) )
+        {
+            *myError = "Fixed Field: Missing daily varField";
+            return false;
+        }
+    }
+
+    for (unsigned int i=0; i < _tableHourly.varcode.size(); i++)
+    {
+        if (_tableHourly.varcode[i].varCode == NODATA)
+        {
+            *myError = "Missing daily var code";
+            return false;
+        }
+        if (_tableHourly.varcode[i].varPragaName.isNull() || _tableHourly.varcode[i].varPragaName.isEmpty())
+        {
+            *myError = "Missing daily varPragaName";
+            return false;
+        }
+        if (_gridStructure.isFixedFields() == true && (_tableHourly.varcode[i].varField.isNull() || _tableHourly.varcode[i].varField.isEmpty()) )
+        {
+            *myError = "Fixed Field: Missing daily varField";
+            return false;
+        }
+    }
+
 
     return true;
 }
@@ -1179,26 +1270,6 @@ TXMLTable Crit3DMeteoGridDbHandler::tableDaily() const
 TXMLTable Crit3DMeteoGridDbHandler::tableHourly() const
 {
     return _tableHourly;
-}
-
-QString Crit3DMeteoGridDbHandler::tableDailyPrefix() const
-{
-    return _tableDailyPrefix;
-}
-
-QString Crit3DMeteoGridDbHandler::tableDailyPostfix() const
-{
-    return _tableDailyPostfix;
-}
-
-QString Crit3DMeteoGridDbHandler::tableHourlyPrefix() const
-{
-    return _tableHourlyPrefix;
-}
-
-QString Crit3DMeteoGridDbHandler::tableHourlyPostfix() const
-{
-    return _tableHourlyPostfix;
 }
 
 QString Crit3DMeteoGridDbHandler::tableDailyModel() const

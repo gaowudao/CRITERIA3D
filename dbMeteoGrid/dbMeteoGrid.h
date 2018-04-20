@@ -20,24 +20,21 @@ struct TXMLConnection
     QString password;
 };
 
-struct TXMLfield
-{
-    QString name;
-    QString pragaName;
-};
 
 struct TXMLvar
 {
+    QString varField;
     int varCode;
     QString varPragaName;
 };
 
 struct TXMLTable
 {
-     QString indexTableName;
+
      QString fieldTime;
      QString fieldVarCode;
      QString fieldValue;
+     QString prefix;
      QString postFix;
      std::vector<TXMLvar> varcode;
 };
@@ -78,14 +75,6 @@ class Crit3DMeteoGridDbHandler
 
         TXMLTable tableHourly() const;
 
-        QString tableDailyPrefix() const;
-
-        QString tableDailyPostfix() const;
-
-        QString tableHourlyPrefix() const;
-
-        QString tableHourlyPostfix() const;
-
         QString tableDailyModel() const;
 
         QString tableHourlyModel() const;
@@ -95,6 +84,8 @@ class Crit3DMeteoGridDbHandler
         void closeDatabase();
 
         bool parseXMLFile(QString xmlFileName, QDomDocument* xmlDoc);
+
+        bool checkXML(std::string *myError);
 
         bool parseXMLGrid(QString xmlFileName, std::string *myError);
 
@@ -136,11 +127,6 @@ private:
 
         QMap<meteoVariable, int> _gridDailyVar;
         QMap<meteoVariable, int> _gridHourlyVar;
-
-        QString _tableDailyPrefix;
-        QString _tableDailyPostfix;
-        QString _tableHourlyPrefix;
-        QString _tableHourlyPostfix;
 
         QString _tableDailyModel;
         QString _tableHourlyModel;
