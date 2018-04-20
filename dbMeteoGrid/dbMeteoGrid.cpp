@@ -745,7 +745,7 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(std::string *myError)
     QString tableD = QString::fromStdString(id) + _tableDaily.postFix;
     QString tableH = QString::fromStdString(id) + _tableHourly.postFix;
 
-    QString statement = QString("SELECT MIN(PragaTime) as minDate, MAX(PragaTime) as maxDate FROM `%1`").arg(tableD);
+    QString statement = QString("SELECT MIN(%1) as minDate, MAX(%1) as maxDate FROM `%2`").arg(_tableDaily.fieldTime).arg(tableD);
     if( !qry.exec(statement) )
     {
         while( qry.lastError().number() == tableNotFoundError)
@@ -769,7 +769,7 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(std::string *myError)
             tableD = QString::fromStdString(id) + _tableDaily.postFix;
             tableH = QString::fromStdString(id) + _tableHourly.postFix;
 
-            statement = QString("SELECT MIN(PragaTime) as minDate, MAX(PragaTime) as maxDate FROM `%1`").arg(tableD);
+            statement = QString("SELECT MIN(%1) as minDate, MAX(%1) as maxDate FROM `%2`").arg(_tableDaily.fieldTime).arg(tableD);
             qry.exec(statement);
         }
 
@@ -790,7 +790,7 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(std::string *myError)
             }
             else
             {
-                *myError = "Missing daily PragaTime";
+                *myError = "Missing daily fieldTime";
                 return false;
             }
 
@@ -801,20 +801,20 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(std::string *myError)
             }
             else
             {
-                *myError = "Missing daily PragaTime";
+                *myError = "Missing daily fieldTime";
                 return false;
             }
 
         }
         else
         {
-            *myError = "Error: PragaTime not found" ;
+            *myError = "Error: fieldTime not found" ;
             return false;
         }
     }
 
 
-    statement = QString("SELECT MIN(PragaTime) as minDate, MAX(PragaTime) as maxDate FROM `%1`").arg(tableH);
+    statement = QString("SELECT MIN(%1) as minDate, MAX(%1) as maxDate FROM `%2`").arg(_tableHourly.fieldTime).arg(tableH);
     if( !qry.exec(statement) )
     {
         while( qry.lastError().number() == tableNotFoundError)
@@ -838,7 +838,7 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(std::string *myError)
 
             tableH = QString::fromStdString(id) + _tableHourly.postFix;
 
-            statement = QString("SELECT MIN(PragaTime) as minDate, MAX(PragaTime) as maxDate FROM `%1`").arg(tableH);
+            statement = QString("SELECT MIN(%1) as minDate, MAX(%1) as maxDate FROM `%2`").arg(_tableHourly.fieldTime).arg(tableH);
             qry.exec(statement);
         }
         if ( !qry.lastError().type() == QSqlError::NoError && qry.lastError().number() != tableNotFoundError)
@@ -858,7 +858,7 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(std::string *myError)
             }
             else
             {
-                *myError = "Missing hourly PragaTime";
+                *myError = "Missing hourly fieldTime";
                 return false;
             }
 
@@ -869,14 +869,14 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(std::string *myError)
             }
             else
             {
-                *myError = "Missing hourly PragaTime";
+                *myError = "Missing hourly fieldTime";
                 return false;
             }
 
         }
         else
         {
-            *myError = "Error: PragaTime not found" ;
+            *myError = "Error: fieldTime not found" ;
             return false;
         }
     }
@@ -928,7 +928,7 @@ bool Crit3DMeteoGridDbHandler::loadGridDailyData(std::string *myError, QString m
         return false;
     }
 
-    QString statement = QString("SELECT * FROM `%1` WHERE PragaTime >= '%2' AND PragaTime <= '%3' ORDER BY PragaTime").arg(tableD).arg(first.toString("yyyy-MM-dd")).arg(last.toString("yyyy-MM-dd"));
+    QString statement = QString("SELECT * FROM `%1` WHERE %2 >= '%3' AND %2 <= '%4' ORDER BY %2").arg(tableD).arg(_tableDaily.fieldTime).arg(first.toString("yyyy-MM-dd")).arg(last.toString("yyyy-MM-dd"));
     if( !qry.exec(statement) )
     {
         *myError = qry.lastError().text().toStdString();
@@ -938,9 +938,9 @@ bool Crit3DMeteoGridDbHandler::loadGridDailyData(std::string *myError, QString m
     {
         while (qry.next())
         {
-            if (!getValue(qry.value("PragaTime"), &date))
+            if (!getValue(qry.value(_tableDaily.fieldTime), &date))
             {
-                *myError = "Missing PragaTime";
+                *myError = "Missing fieldTime";
                 return false;
             }
 
@@ -992,7 +992,7 @@ bool Crit3DMeteoGridDbHandler::loadGridHourlyData(std::string *myError, QString 
         return false;
     }
 
-    QString statement = QString("SELECT * FROM `%1` WHERE PragaTime >= '%2' AND PragaTime <= '%3' ORDER BY PragaTime").arg(tableH).arg(first.toString("yyyy-MM-dd hh:mm")).arg(last.toString("yyyy-MM-dd hh:mm"));
+    QString statement = QString("SELECT * FROM `%1` WHERE %2 >= '%3' AND %2 <= '%4' ORDER BY %2").arg(tableH).arg(_tableHourly.fieldTime).arg(first.toString("yyyy-MM-dd hh:mm")).arg(last.toString("yyyy-MM-dd hh:mm"));
     if( !qry.exec(statement) )
     {
         *myError = qry.lastError().text().toStdString();
@@ -1001,9 +1001,9 @@ bool Crit3DMeteoGridDbHandler::loadGridHourlyData(std::string *myError, QString 
     {
         while (qry.next())
         {
-            if (!getValue(qry.value("PragaTime"), &date))
+            if (!getValue(qry.value(_tableHourly.fieldTime), &date))
             {
-                *myError = "Missing PragaTime";
+                *myError = "Missing fieldTime";
                 return false;
             }
 
@@ -1061,7 +1061,7 @@ QList<float> Crit3DMeteoGridDbHandler::loadGridDailyVar(std::string *myError, QS
         return dailyVarList;
     }
 
-    QString statement = QString("SELECT * FROM `%1` WHERE VariableCode = '%2' AND PragaTime >= '%3' AND PragaTime <= '%4' ORDER BY PragaTime").arg(tableD).arg(varCode).arg(first.toString("yyyy-MM-dd")).arg(last.toString("yyyy-MM-dd"));
+    QString statement = QString("SELECT * FROM `%1` WHERE VariableCode = '%2' AND %3 >= '%4' AND %3 <= '%5' ORDER BY %3").arg(tableD).arg(varCode).arg(_tableDaily.fieldTime).arg(first.toString("yyyy-MM-dd")).arg(last.toString("yyyy-MM-dd"));
     if( !qry.exec(statement) )
     {
         *myError = qry.lastError().text().toStdString();
@@ -1073,9 +1073,9 @@ QList<float> Crit3DMeteoGridDbHandler::loadGridDailyVar(std::string *myError, QS
         {
             if (firstRow)
             {
-                if (!getValue(qry.value("PragaTime"), firstDateDB))
+                if (!getValue(qry.value(_tableDaily.fieldTime), firstDateDB))
                 {
-                    *myError = "Missing PragaTime";
+                    *myError = "Missing fieldTime";
                     return dailyVarList;
                 }
 
@@ -1090,9 +1090,9 @@ QList<float> Crit3DMeteoGridDbHandler::loadGridDailyVar(std::string *myError, QS
             }
             else
             {
-                if (!getValue(qry.value("PragaTime"), &date))
+                if (!getValue(qry.value(_tableDaily.fieldTime), &date))
                 {
-                    *myError = "Missing PragaTime";
+                    *myError = "Missing fieldTime";
                     return dailyVarList;
                 }
 
@@ -1147,7 +1147,7 @@ QList<float> Crit3DMeteoGridDbHandler::loadGridHourlyVar(std::string *myError, Q
         return hourlyVarList;
     }
 
-    QString statement = QString("SELECT * FROM `%1` WHERE VariableCode = '%2' AND PragaTime >= '%3' AND PragaTime <= '%4' ORDER BY PragaTime").arg(tableH).arg(varCode).arg(first.toString("yyyy-MM-dd hh:mm")).arg(last.toString("yyyy-MM-dd hh:mm"));
+    QString statement = QString("SELECT * FROM `%1` WHERE VariableCode = '%2' AND %3 >= '%4' AND %3 <= '%5' ORDER BY %3").arg(tableH).arg(varCode).arg(_tableHourly.fieldTime).arg(first.toString("yyyy-MM-dd hh:mm")).arg(last.toString("yyyy-MM-dd hh:mm"));
     if( !qry.exec(statement) )
     {
         *myError = qry.lastError().text().toStdString();
@@ -1159,9 +1159,9 @@ QList<float> Crit3DMeteoGridDbHandler::loadGridHourlyVar(std::string *myError, Q
         {
             if (firstRow)
             {
-                if (!getValue(qry.value("PragaTime"), firstDateDB))
+                if (!getValue(qry.value(_tableHourly.fieldTime), firstDateDB))
                 {
-                    *myError = "Missing PragaTime";
+                    *myError = "Missing fieldTime";
                     return hourlyVarList;
                 }
 
@@ -1176,9 +1176,9 @@ QList<float> Crit3DMeteoGridDbHandler::loadGridHourlyVar(std::string *myError, Q
             }
             else
             {
-                if (!getValue(qry.value("PragaTime"), &dateTime))
+                if (!getValue(qry.value(_tableHourly.fieldTime), &dateTime))
                 {
-                    *myError = "Missing PragaTime";
+                    *myError = "Missing fieldTime";
                     return hourlyVarList;
                 }
 
