@@ -742,8 +742,8 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(std::string *myError)
         return false;
     }
 
-    QString tableD = QString::fromStdString(id) + _tableDaily.postFix;
-    QString tableH = QString::fromStdString(id) + _tableHourly.postFix;
+    QString tableD = _tableDaily.prefix + QString::fromStdString(id) + _tableDaily.postFix;
+    QString tableH = _tableHourly.prefix + QString::fromStdString(id) + _tableHourly.postFix;
 
     QString statement = QString("SELECT MIN(%1) as minDate, MAX(%1) as maxDate FROM `%2`").arg(_tableDaily.fieldTime).arg(tableD);
     if( !qry.exec(statement) )
@@ -766,8 +766,8 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(std::string *myError)
                 *myError = "active cell not found";
                 return false;
             }
-            tableD = QString::fromStdString(id) + _tableDaily.postFix;
-            tableH = QString::fromStdString(id) + _tableHourly.postFix;
+            tableD = _tableDaily.prefix + QString::fromStdString(id) + _tableDaily.postFix;
+            tableH = _tableHourly.prefix + QString::fromStdString(id) + _tableHourly.postFix;
 
             statement = QString("SELECT MIN(%1) as minDate, MAX(%1) as maxDate FROM `%2`").arg(_tableDaily.fieldTime).arg(tableD);
             qry.exec(statement);
@@ -836,7 +836,7 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(std::string *myError)
                 return false;
             }
 
-            tableH = QString::fromStdString(id) + _tableHourly.postFix;
+            tableH = _tableHourly.prefix + QString::fromStdString(id) + _tableHourly.postFix;
 
             statement = QString("SELECT MIN(%1) as minDate, MAX(%1) as maxDate FROM `%2`").arg(_tableHourly.fieldTime).arg(tableH);
             qry.exec(statement);
@@ -911,7 +911,7 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(std::string *myError)
 bool Crit3DMeteoGridDbHandler::loadGridDailyData(std::string *myError, QString meteoPoint, QDate first, QDate last)
 {
     QSqlQuery qry(_db);
-    QString tableD = meteoPoint + _tableDaily.postFix;
+    QString tableD = _tableDaily.prefix + meteoPoint + _tableDaily.postFix;
     QDate date;
     int varCode;
     float value;
@@ -975,7 +975,7 @@ bool Crit3DMeteoGridDbHandler::loadGridHourlyData(std::string *myError, QString 
 {
 
     QSqlQuery qry(_db);
-    QString tableH = meteoPoint + _tableHourly.postFix;
+    QString tableH = _tableHourly.prefix + meteoPoint + _tableHourly.postFix;
     QDateTime date;
     int varCode;
     float value;
@@ -1037,7 +1037,7 @@ bool Crit3DMeteoGridDbHandler::loadGridHourlyData(std::string *myError, QString 
 QList<float> Crit3DMeteoGridDbHandler::loadGridDailyVar(std::string *myError, QString meteoPoint, meteoVariable variable, QDate first, QDate last, QDate* firstDateDB)
 {
     QSqlQuery qry(_db);
-    QString tableD = meteoPoint + _tableDaily.postFix;
+    QString tableD = _tableDaily.prefix + meteoPoint + _tableDaily.postFix;
     QDate date, previousDate;
 
     QList<float> dailyVarList;
@@ -1123,7 +1123,7 @@ QList<float> Crit3DMeteoGridDbHandler::loadGridHourlyVar(std::string *myError, Q
 {
 
     QSqlQuery qry(_db);
-    QString tableH = meteoPoint + _tableHourly.postFix;
+    QString tableH = _tableHourly.prefix + meteoPoint + _tableHourly.postFix;
     QDateTime dateTime, previousDateTime;
 
     QList<float> hourlyVarList;
