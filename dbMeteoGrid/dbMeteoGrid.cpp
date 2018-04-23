@@ -251,7 +251,7 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *my
 
                         if (mySecondTag == "VARFIELD")
                         {
-                            _tableDaily.varcode[_tableDaily.varcode.size()-1].varField = secondChild.toElement().text().toInt();
+                            _tableDaily.varcode[_tableDaily.varcode.size()-1].varField = secondChild.toElement().text();
 
                         }
 
@@ -315,7 +315,7 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *my
 
                         if (mySecondTag == "VARFIELD")
                         {
-                            _tableHourly.varcode[_tableHourly.varcode.size()-1].varField = secondChild.toElement().text().toInt();
+                            _tableHourly.varcode[_tableHourly.varcode.size()-1].varField = secondChild.toElement().text();
 
                         }
 
@@ -974,6 +974,68 @@ bool Crit3DMeteoGridDbHandler::loadGridDailyData(std::string *myError, QString m
             if (_meteoGrid->fillMeteoPointDailyValue(row, col, numberOfDays, initialize, Crit3DDate(date.day(), date.month(), date.year()), variable, value))
             {
                 initialize = 0;
+            }
+
+        }
+
+    }
+
+    return true;
+}
+
+
+bool Crit3DMeteoGridDbHandler::loadGridDailyDataFixedFields(std::string *myError, QString meteoPoint, QDate first, QDate last)
+{
+    QSqlQuery qry(_db);
+    QString tableD = _tableDaily.prefix + meteoPoint + _tableDaily.postFix;
+    QDate date;
+    int varCode;
+    float value;
+
+    int row;
+    int col;
+    int initialize = 1;
+
+    int numberOfDays = first.daysTo(last) + 1;
+
+    if (!_meteoGrid->findMeteoPointFromId(&row, &col, meteoPoint.toStdString()) )
+    {
+        *myError = "Missing MeteoPoint id";
+        return false;
+    }
+
+    QString statement = QString("SELECT * FROM `%1` WHERE %2 >= '%3' AND %2 <= '%4' ORDER BY %2").arg(tableD).arg(_tableDaily.fieldTime).arg(first.toString("yyyy-MM-dd")).arg(last.toString("yyyy-MM-dd"));
+    if( !qry.exec(statement) )
+    {
+        *myError = qry.lastError().text().toStdString();
+        return false;
+    }
+    else
+    {
+        while (qry.next())
+        {
+            if (!getValue(qry.value(_tableDaily.fieldTime), &date))
+            {
+                *myError = "Missing fieldTime";
+                return false;
+            }
+
+            for (unsigned int i=0; i < _tableDaily.varcode.size(); i++)
+            {
+                varCode = _tableDaily.varcode[i].varCode;
+                if (!getValue(qry.value(_tableDaily.varcode[i].varField), &value))
+                {
+                    *myError = "Missing VarField";
+                    return false;
+                }
+
+                meteoVariable variable = getDailyVarEnum(varCode);
+
+                if (_meteoGrid->fillMeteoPointDailyValue(row, col, numberOfDays, initialize, Crit3DDate(date.day(), date.month(), date.year()), variable, value))
+                {
+                    initialize = 0;
+                }
+
             }
 
         }

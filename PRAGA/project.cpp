@@ -548,8 +548,22 @@ bool Project::loadMeteoGridDailyData(QDate firstDate, QDate lastDate, bool showI
         for (int col = 0; col < this->meteoGridDbHandler->gridStructure().header().nrCols; col++)
         {
             if (this->meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id))
-                if (this->meteoGridDbHandler->loadGridDailyData(&errorString, QString::fromStdString(id), firstDate, lastDate))
-                    count = count + 1;
+            {
+                if (!this->meteoGridDbHandler->gridStructure().isFixedFields())
+                {
+                    if (this->meteoGridDbHandler->loadGridDailyData(&errorString, QString::fromStdString(id), firstDate, lastDate))
+                    {
+                        count = count + 1;
+                    }
+                }
+                else
+                {
+                    if (this->meteoGridDbHandler->loadGridDailyDataFixedFields(&errorString, QString::fromStdString(id), firstDate, lastDate))
+                    {
+                        count = count + 1;
+                    }
+                }
+            }
         }
     }
 
