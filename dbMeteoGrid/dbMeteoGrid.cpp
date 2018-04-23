@@ -1109,6 +1109,69 @@ bool Crit3DMeteoGridDbHandler::loadGridHourlyData(std::string *myError, QString 
     return true;
 }
 
+
+bool Crit3DMeteoGridDbHandler::loadGridHourlyDataFixedFields(std::string *myError, QString meteoPoint, QDateTime first, QDateTime last)
+{
+
+    QSqlQuery qry(_db);
+    QString tableH = _tableHourly.prefix + meteoPoint + _tableHourly.postFix;
+    QDateTime date;
+    int varCode;
+    float value;
+
+    int row;
+    int col;
+    int initialize = 1;
+
+    int numberOfDays = first.date().daysTo(last.date()) + 1;
+
+    if (!_meteoGrid->findMeteoPointFromId(&row, &col, meteoPoint.toStdString()) )
+    {
+        *myError = "Missing MeteoPoint id";
+        return false;
+    }
+
+    QString statement = QString("SELECT * FROM `%1` WHERE %2 >= '%3' AND %2 <= '%4' ORDER BY %2").arg(tableH).arg(_tableHourly.fieldTime).arg(first.toString("yyyy-MM-dd hh:mm")).arg(last.toString("yyyy-MM-dd hh:mm"));
+    if( !qry.exec(statement) )
+    {
+        *myError = qry.lastError().text().toStdString();
+    }
+    else
+    {
+        while (qry.next())
+        {
+            if (!getValue(qry.value(_tableHourly.fieldTime), &date))
+            {
+                *myError = "Missing fieldTime";
+                return false;
+            }
+
+            for (unsigned int i=0; i < _tableHourly.varcode.size(); i++)
+            {
+                varCode = _tableHourly.varcode[i].varCode;
+                if (!getValue(qry.value(_tableHourly.varcode[i].varField), &value))
+                {
+                    *myError = "Missing VarField";
+                    return false;
+                }
+
+                meteoVariable variable = getHourlyVarEnum(varCode);
+
+                if ( _meteoGrid->fillMeteoPointHourlyValue(row, col, numberOfDays, initialize, Crit3DDate(date.date().day(), date.date().month(), date.date().year()), date.time().hour(), date.time().minute(), variable, value) )
+                {
+                    initialize = 0;
+                }
+
+            }
+
+        }
+
+    }
+
+
+    return true;
+}
+
 QList<float> Crit3DMeteoGridDbHandler::loadGridDailyVar(std::string *myError, QString meteoPoint, meteoVariable variable, QDate first, QDate last, QDate* firstDateDB)
 {
     QSqlQuery qry(_db);

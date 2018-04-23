@@ -600,8 +600,22 @@ bool Project::loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate, b
         for (int col = 0; col < this->meteoGridDbHandler->gridStructure().header().nrCols; col++)
         {
             if (this->meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id))
-                if (this->meteoGridDbHandler->loadGridHourlyData(&errorString, QString::fromStdString(id), firstDate, lastDate))
-                    count = count + 1;
+            {
+                if (!this->meteoGridDbHandler->gridStructure().isFixedFields())
+                {
+                    if (this->meteoGridDbHandler->loadGridHourlyData(&errorString, QString::fromStdString(id), firstDate, lastDate))
+                    {
+                        count = count + 1;
+                    }
+                }
+                else
+                {
+                    if (this->meteoGridDbHandler->loadGridHourlyDataFixedFields(&errorString, QString::fromStdString(id), firstDate, lastDate))
+                    {
+                        count = count + 1;
+                    }
+                }
+            }
         }
     }
 
