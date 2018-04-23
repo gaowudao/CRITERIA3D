@@ -1059,7 +1059,7 @@ bool Crit3DMeteoGridDbHandler::loadGridHourlyData(std::string *myError, QString 
     int col;
     int initialize = 1;
 
-    int numberOfDays = first.date().daysTo(last.date()) + 1;
+    int numberOfDays = first.date().daysTo(last.date());
 
     if (!_meteoGrid->findMeteoPointFromId(&row, &col, meteoPoint.toStdString()) )
     {
@@ -1123,7 +1123,7 @@ bool Crit3DMeteoGridDbHandler::loadGridHourlyDataFixedFields(std::string *myErro
     int col;
     int initialize = 1;
 
-    int numberOfDays = first.date().daysTo(last.date()) + 1;
+    int numberOfDays = first.date().daysTo(last.date());
 
     if (!_meteoGrid->findMeteoPointFromId(&row, &col, meteoPoint.toStdString()) )
     {
