@@ -650,11 +650,24 @@ bool Crit3DMeteoGridDbHandler::loadCellProperties(std::string *myError)
 {
     QSqlQuery qry(_db);
     int row, col, active, height;
-    QString code, name;
+    QString code, name, tableCellsProp;
 
-    qry.prepare( "SELECT * FROM CellsProperties ORDER BY Code" );
-
+    qry.prepare( "SHOW TABLES LIKE '%ells%roperties'" );
     if( !qry.exec() )
+    {
+        *myError = qry.lastError().text().toStdString();
+        return false;
+    }
+    else
+    {
+        qry.next();
+        tableCellsProp = qry.value(0).toString();
+    }
+
+    //qry.prepare( "SELECT * FROM CellsProperties ORDER BY Code" );
+    QString statement = QString("SELECT * FROM `%1` ORDER BY Code").arg(tableCellsProp);
+
+    if( !qry.exec(statement) )
     {
         *myError = qry.lastError().text().toStdString();
         return false;
