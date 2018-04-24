@@ -966,7 +966,6 @@ bool Crit3DMeteoGridDbHandler::loadGridDailyData(std::string *myError, QString m
             if (!getValue(qry.value("Value"), &value))
             {
                 *myError = "Missing Value";
-                return false;
             }
 
             meteoVariable variable = getDailyVarEnum(varCode);
@@ -1026,7 +1025,6 @@ bool Crit3DMeteoGridDbHandler::loadGridDailyDataFixedFields(std::string *myError
                 if (!getValue(qry.value(_tableDaily.varcode[i].varField), &value))
                 {
                     *myError = "Missing VarField";
-                    return false;
                 }
 
                 meteoVariable variable = getDailyVarEnum(varCode);
@@ -1091,7 +1089,6 @@ bool Crit3DMeteoGridDbHandler::loadGridHourlyData(std::string *myError, QString 
             if (!getValue(qry.value("Value"), &value))
             {
                 *myError = "Missing Value";
-                return false;
             }
 
             meteoVariable variable = getHourlyVarEnum(varCode);
@@ -1149,12 +1146,11 @@ bool Crit3DMeteoGridDbHandler::loadGridHourlyDataFixedFields(std::string *myErro
             for (unsigned int i=0; i < _tableHourly.varcode.size(); i++)
             {
                 varCode = _tableHourly.varcode[i].varCode;
+
                 if (!getValue(qry.value(_tableHourly.varcode[i].varField), &value))
                 {
-                    *myError = "Missing VarField";
-                    return false;
+                    *myError = "Missing fieldTime";
                 }
-
                 meteoVariable variable = getHourlyVarEnum(varCode);
 
                 if ( _meteoGrid->fillMeteoPointHourlyValue(row, col, numberOfDays, initialize, Crit3DDate(date.date().day(), date.date().month(), date.date().year()), date.time().hour(), date.time().minute(), variable, value) )
@@ -1220,7 +1216,6 @@ QList<float> Crit3DMeteoGridDbHandler::loadGridDailyVar(std::string *myError, QS
                 if (!getValue(qry.value("Value"), &value))
                 {
                     *myError = "Missing Value";
-                    return dailyVarList;
                 }
                 dailyVarList << value;
                 previousDate = *firstDateDB;
@@ -1243,7 +1238,6 @@ QList<float> Crit3DMeteoGridDbHandler::loadGridDailyVar(std::string *myError, QS
                 if (!getValue(qry.value("Value"), &value))
                 {
                     *myError = "Missing Value";
-                    return dailyVarList;
                 }
                 dailyVarList << value;
                 previousDate = date;
@@ -1306,7 +1300,6 @@ QList<float> Crit3DMeteoGridDbHandler::loadGridHourlyVar(std::string *myError, Q
                 if (!getValue(qry.value("Value"), &value))
                 {
                     *myError = "Missing Value";
-                    return hourlyVarList;
                 }
                 hourlyVarList << value;
                 previousDateTime = *firstDateDB;
@@ -1329,7 +1322,6 @@ QList<float> Crit3DMeteoGridDbHandler::loadGridHourlyVar(std::string *myError, Q
                 if (!getValue(qry.value("Value"), &value))
                 {
                     *myError = "Missing Value";
-                    return hourlyVarList;
                 }
                 hourlyVarList << value;
                 previousDateTime = dateTime;
