@@ -1,6 +1,7 @@
 #include "meteoGrid.h"
 #include "commonConstants.h"
 #include <iostream> //debug
+#include <QtDebug> //debug
 
 
 
@@ -277,11 +278,13 @@ bool Crit3DMeteoGrid::fillMeteoPointCurrentDailyValue(Crit3DDate date, meteoVari
             if (_meteoPoints[row][col]->active && _meteoPoints[row][col]->nrObsDataDaysD != 0)
             {
                 _meteoPoints[row][col]->currentValue = _meteoPoints[row][col]->getMeteoPointValueD(date, variable);
+                //std::cout << "_meteoPoints[row][col]->id" << _meteoPoints[row][col]->id << "row" << row << "col" << col << "_meteoPoints[row][col]->currentValue" << _meteoPoints[row][col]->currentValue << std::endl;
             }
             else
             {
                 _meteoPoints[row][col]->currentValue = NODATA;
             }
+
         }
     }
     return true;
@@ -297,6 +300,8 @@ bool Crit3DMeteoGrid::fillMeteoPointCurrentHourlyValue(Crit3DDate date, int hour
             if (_meteoPoints[row][col]->active && _meteoPoints[row][col]->nrObsDataDaysD != 0)
             {
                 _meteoPoints[row][col]->currentValue = _meteoPoints[row][col]->getMeteoPointValueH(date, hour, minute, variable);
+                //std::cout << "_meteoPoints[row][col]->id" << _meteoPoints[row][col]->id << "row" << row << "col" << col << "_meteoPoints[row][col]->currentValue" << _meteoPoints[row][col]->currentValue << std::endl;
+
             }
             else
             {
