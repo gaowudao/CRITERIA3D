@@ -237,7 +237,7 @@ bool Download::downloadDailyData(QDate startDate, QDate endDate, QString dataset
         request.setUrl(url);
         request.setRawHeader("Authorization", _authorization);
 
-        std::cout << url.toString().toStdString();
+        //std::cout << url.toString().toStdString();
 
         // GET
         QNetworkReply* reply = manager->get(request);
@@ -367,7 +367,7 @@ bool Download::downloadHourlyData(QDate startDate, QDate endDate, QString datase
         url = QUrl(QString("%1/query?query=%2%3%4&style=postprocess").arg(_dbMeteo->getDatasetURL(dataset)).arg(refTime).arg(area).arg(product));
         request.setUrl(url);
         request.setRawHeader("Authorization", _authorization);
-        std::cout << url.toString().toStdString();
+        //std::cout << url.toString().toStdString();
 
         QNetworkReply* reply = manager->get(request);  // GET
         loop.exec();
