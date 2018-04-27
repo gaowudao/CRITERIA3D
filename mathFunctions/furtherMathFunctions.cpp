@@ -45,7 +45,7 @@ float errorFunctionPrimitive(float x)
 
 double twoParametersAndExponentialPolynomialFunctions(double x, double* par)
 {
-    return (double)(par[0]+par[1]*powf(x,par[2]));
+    return (double)(par[0]+par[1]*pow(x,par[2]));
 }
 
 /*float straightLine(TfunctionInput fInput)
