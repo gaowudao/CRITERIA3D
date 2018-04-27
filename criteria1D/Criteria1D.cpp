@@ -2,7 +2,6 @@
 #include <QSqlError>
 #include <QDate>
 #include <QVariant>
-#include <QDebug>
 #include <iostream>
 
 #include "commonConstants.h"

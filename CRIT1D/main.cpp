@@ -1,9 +1,7 @@
-#include <iostream>
 #include <QCoreApplication>
-#include <QDebug>
+#include <QVariant>
 #include <QSqlError>
 #include <QSqlQuery>
-//#include <cerrno>
 #include <QDir>
 #include <QDate>
 
@@ -11,7 +9,6 @@
 #include "project.h"
 #include "modelcore.h"
 #include "dbTools.h"
-#include "dbToolsMOSES.h"
 #include "commonConstants.h"
 
 
