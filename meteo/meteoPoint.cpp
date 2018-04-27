@@ -29,8 +29,6 @@
 
 #include "commonConstants.h"
 #include "meteoPoint.h"
-//#include <iostream> //debug
-//#include <QDebug> // cancellare
 
 
 Crit3DMeteoPoint::Crit3DMeteoPoint()

@@ -5,8 +5,7 @@
 #
 #-------------------------------------------------
 
-#QT       -= core gui #da ripristinare
-QT       -= gui
+QT       -= core gui
 
 TEMPLATE = lib
 CONFIG += staticlib

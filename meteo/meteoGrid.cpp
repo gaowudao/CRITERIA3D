@@ -1,7 +1,6 @@
 #include "meteoGrid.h"
 #include "commonConstants.h"
 #include <iostream> //debug
-#include <QtDebug> //debug
 
 
 
