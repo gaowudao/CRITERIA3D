@@ -12,5 +12,7 @@
     bool loadDriessenParameters(soil::Crit3DSoilClass *soilTexture, QSqlDatabase* dbParameters, std::string *myError);
     QString getIdSoilString(QSqlDatabase* dbSoil, int idSoilNumber, std::string *myError);
     bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, soil::Crit3DSoilClass *soilTexture, std::string *myError);
+    QString getIdCrop(QSqlDatabase* dbCrop, QString idCropClass, std::string *myError);
+    float getIrriRatio(QSqlDatabase* dbCrop, QString idCrop, std::string *myError);
 
 #endif // DBTOOLS_H

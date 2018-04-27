@@ -355,4 +355,65 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, 
 }
 
 
+/*!
+ * \brief get criteria idCrop from crop class code
+ * \param dbCrop
+ * \param idCropClass
+ * \param myError
+ * \return idCrop (string)
+ */
+QString getIdCrop(QSqlDatabase* dbCrop, QString idCropClass, std::string *myError)
+{
+    *myError = "";
+    QString queryString = "SELECT * FROM crop_class WHERE id_class = '" + idCropClass + "'";
+
+    QSqlQuery query = dbCrop->exec(queryString);
+    query.last();
+
+    if (! query.isValid())
+    {
+        if (query.lastError().number() > 0)
+            *myError = query.lastError().text().toStdString();
+        return "";
+    }
+
+    QString idCrop;
+    getValue(query.value("id_crop"), &idCrop);
+
+    return idCrop;
+}
+
+
+/*!
+ * \brief A crop is irrigated if irriRatio > 0
+ * \param dbCrop
+ * \param idCrop
+ * \param myError
+ * \return irriRatio  [-]
+ */
+float getIrriRatio(QSqlDatabase* dbCrop, QString idCrop, std::string *myError)
+{
+    *myError = "";
+
+    QString queryString = "SELECT irri_ratio FROM crop_class WHERE id_class = '" + idCrop + "'";
+
+    QSqlQuery query = dbCrop->exec(queryString);
+    query.last();
+
+    if (! query.isValid())
+    {
+        if (query.lastError().number() > 0)
+            *myError = query.lastError().text().toStdString();
+        return(NODATA);
+    }
+
+    float myRatio = 0;
+
+    if (getValue(query.value("irri_ratio"), &(myRatio)))
+        return myRatio;
+    else
+        return NODATA;
+}
+
+
 
