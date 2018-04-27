@@ -10,7 +10,7 @@ namespace canopy
     double rainfallInterceptedByCanopy(double rainfall,double cover);
     double evaporationFromCanopy(double waterFreeEvaporation, double storage, double grossStorage);
     double drainageFromTree(double grossStorage, double storage);
-    double stemFlowRate(double maxStemFlowRate, double rainfall);
+    double stemFlowRate(double maxStemFlowRate);
     bool waterManagementCanopy(double* StoredWater, double* throughfallWater, double rainfall, double waterFreeEvaporation, double lai, double extinctionCoefficient, double leafStorage, double stemStorage, double maxStemFlowRate, double* freeRainfall, double* drainage, double *stemFlow, double laiMin);
 }
 

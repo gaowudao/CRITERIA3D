@@ -43,26 +43,22 @@ namespace canopy {
 
     double plantCover(double lai, double extinctionCoefficient,double laiMin)
     {
-        // printf("frazione copertura %f \n",(1-exp(-extinctionCoefficient*lai)));
         if (lai < laiMin) lai=laiMin;
         return (1-exp(-extinctionCoefficient*(lai))); //Van Dijk  A.I.J.M, Bruijnzeel L.A., 2001
     }
 
     double waterStorageCapacity(double lai,double leafStorage,double stemStorage)
     {
-        // printf("capacita' canopy %f \n",leafStorage*lai + stemStorage);
         return leafStorage*lai + stemStorage; //Van Dijk  A.I.J.M, Bruijnzeel L.A., 2001
     }
 
     double freeRainThroughfall(double rainfall,double cover)
     {
-        // printf("pioggia che cade a terra libera %f \n",(rainfall*(1 - cover)));
         return (rainfall*(1 - cover));
     }
 
     double rainfallInterceptedByCanopy(double rainfall,double cover)
     {
-        // printf("pioggia intercettata %f \n",(rainfall*cover));
         return (rainfall*cover);
     }
     double evaporationFromCanopy(double waterFreeEvaporation, double storage,double grossStorage)
@@ -82,43 +78,27 @@ namespace canopy {
         else return 0;
     }
 
-    double stemFlowRate(double maxStemFlowRate, double rainfall)
+    double stemFlowRate(double maxStemFlowRate)
     {
-        if (rainfall > 15)
-            return maxStemFlowRate;
-        else
-            return maxStemFlowRate;//*(exp(rainfall)/(exp(rainfall)+1));
+        return maxStemFlowRate;
     }
-
-
 
     bool waterManagementCanopy(double* storedWater, double* throughfallWater, double rainfall, double waterFreeEvaporation, double lai, double extinctionCoefficient, double leafStorage, double stemStorage,double maxStemFlowRate, double* freeRainfall, double *drainage, double* stemFlow, double laiMin)
     {
         double actualCover,actualStorage,grossStorage;
         double interception;
-        //double drainage;
         actualCover = plantCover(lai,extinctionCoefficient,laiMin);
         actualStorage = waterStorageCapacity(lai,leafStorage,stemStorage);
         *freeRainfall = freeRainThroughfall(rainfall,actualCover);
-        //printf(" %f \n",*freeRainfall);
         interception = rainfallInterceptedByCanopy(rainfall,actualCover);
-        //*stemFlow = interception*stemFlowRate(maxStemFlowRate,rainfall);
         grossStorage = *storedWater + interception;
-        //printf("potenziale %f \n",grossStorage);
-        //printf("potenziale - evaporazione %f \n",grossStorage);
         *drainage = drainageFromTree(grossStorage,actualStorage);
-        //printf("drenaggio %f \n",drainage);
-        *stemFlow = (*drainage)*stemFlowRate(maxStemFlowRate,rainfall);
+        *stemFlow = (*drainage)*stemFlowRate(maxStemFlowRate);
         *throughfallWater = *freeRainfall + (*drainage)-(*stemFlow);
-        //printf("pioggia che cade a terra %f \n",(*throughfallWater));
         grossStorage -= evaporationFromCanopy(waterFreeEvaporation,actualStorage,grossStorage);
         *storedWater = grossStorage - (*drainage);
-        //printf("che rimane sulla chioma %f \n",(*storedWater));
-
-        return 1;
+        return true;
     }
-
-
 }
 
 
