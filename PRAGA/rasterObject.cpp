@@ -308,6 +308,7 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
                 myPainter->setBrush(Qt::NoBrush);
                 myPainter->drawRect(x0, y0, lx, ly);
             }
+
             x0 = ++x1;
         }
         y0 = ++y1;
@@ -315,5 +316,4 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
 
     return true;
 }
-
 

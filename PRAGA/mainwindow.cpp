@@ -259,11 +259,16 @@ void MainWindow::on_actionNewMeteoPointsArkimet_triggered()
                 datasetCheckbox.append(dat);
             }
 
-            QCheckBox* all = new QCheckBox("ALL");
+            all = new QCheckBox("ALL");
             layout.addSpacing(30);
             layout.addWidget(all);
 
             connect(all, SIGNAL(toggled(bool)), this, SLOT(enableAllDataset(bool)));
+
+            for (int i = 0; i < dataset.size(); i++)
+            {
+                connect(datasetCheckbox[i], SIGNAL(toggled(bool)), this, SLOT(disableAllButton(bool)));
+            }
 
             QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
                                                  | QDialogButtonBox::Cancel);
@@ -345,9 +350,43 @@ QString MainWindow::selectArkimetDataset(QDialog* datasetDialog) {
 void MainWindow::enableAllDataset(bool toggled)
 {
 
+    bool AllChecked = 1;
+
     foreach (QCheckBox *checkBox, datasetCheckbox)
     {
-        checkBox->setChecked(toggled);
+        if (toggled)
+        {
+            checkBox->setChecked(toggled);
+        }
+        else
+        {
+            if (!checkBox->isChecked())
+            {
+                AllChecked = 0;
+            }
+        }
+    }
+
+    foreach (QCheckBox *checkBox, datasetCheckbox)
+    {
+        if(AllChecked)
+        {
+            checkBox->setChecked(toggled);
+        }
+    }
+
+}
+
+void MainWindow::disableAllButton(bool toggled)
+{
+
+    if (!toggled)
+    {
+        if (all->isChecked())
+        {
+            all->setChecked(false);
+        }
+
     }
 
 }

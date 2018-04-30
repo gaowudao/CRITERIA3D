@@ -73,6 +73,8 @@
 
         void enableAllDataset(bool toggled);
 
+        void disableAllButton(bool toggled);
+
         void on_actionVariableQualitySpatial_triggered();
 
         void on_actionInterpolation_triggered();
@@ -124,6 +126,7 @@
 
         environment menu;
         QList<QCheckBox*> datasetCheckbox;
+        QCheckBox* all;
 
         void setMapSource(OSMTileSource::OSMTileType mySource);
         QString selectArkimetDataset(QDialog* datasetDialog);
