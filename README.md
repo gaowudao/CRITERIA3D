@@ -53,16 +53,15 @@ Laura Costantini  <laura.costantini0@gmail.com>
 
 Antonio Volta		<antonio.volta@agromet.it>
 
-Alberto Pistocchi	 <alberto.pistocchi@jrc.ec.europa.eu>
+## Contributions
 
 Marco Bittelli   <marco.bittelli@unibo.it>
-
-Margot Van Soetendaal <margot@farnet.eu>
-
 Vittorio Marletto <vmarletto@arpae.it>
-
+Alberto Pistocchi	 <alberto.pistocchi@jrc.ec.europa.eu>
+Tomaso Tonelli <ttonelli@arpae.it>
+Margot Van Soetendaal <margot@farnet.eu>
 Franco Zinoni <fzinoni@arpae.it>
 
-Tomaso Tonelli <ttonelli@arpae.it>
+
 
 
