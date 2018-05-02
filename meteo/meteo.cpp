@@ -3,7 +3,7 @@
     Alberto Pistocchi, Marco Bittelli, Antonio Volta, Laura Costantini
 
     This file is part of CRITERIA3D.
-    CRITERIA3D has been developed under contract issued by A.R.P.A. Emilia-Romagna
+    CRITERIA3D has been developed under contract issued by ARPAE Emilia-Romagna
 
     CRITERIA3D is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
