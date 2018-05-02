@@ -18,7 +18,7 @@ Heuristic algorithms for 1D soil water infiltration, redistribution and capillar
 Heuristic algorithms for crop development, leaf area index, root growth and distribution, based on daily temperature.
 
 ## soil library
-Modified Van Genuchten-Mualem model for retention curve water conductivity, USDA soil texture classification.
+Modified Van Genuchten-Mualem model for soil water retention curve and water conductivity, USDA soil texture classification.
 
 ## solarRadiation library
 Algorithms for potential/actual solar radiation computation.
@@ -30,7 +30,7 @@ Algorithms for the spatialization of meteorological data.
 PRAGA is a Graphical User Interface to manage the libraries in the distribution for agro-meteorological and climate analysis.
 It uses a modified version of MapGraphics library: https://github.com/raptorswing/MapGraphics
 
-To compile it: first compile MapGraphics library, then Makeall_PRAGA.pro
+To compile it, firstly compile *MapGraphics* project then *Makeall_PRAGA* project.
 
 ## HEAT1D
 HEAT1D is a graphical interface for testing the soilFluxex3D library in a 1D domain. Users can set fixed or variable atmospheric boundary conditions and soil parameters. Output graph results include soil temperature, soil water content, heat fluxes (diffusive and latent), liquid (isothermal and thermal) and vapor (isothermal and thermal) water fluxes. 
@@ -40,7 +40,7 @@ Graphs are produced using the Qwt plot library (http://qwt.sourceforge.net/) whi
 ## CRIT1D
 CRIT1D is a test program for the libraries criteria1D, crop and soil. 
 
-To compile it use Makeall_CRITERIA1D.pro, example data are available in DATA/Criteria1d/
+To compile it, use the project *Makeall_CRITERIA1D*. Example data are available in *DATA/Criteria1d* directory.
 
 # License
 CRITERIA3D has been developed under contract issued by 
