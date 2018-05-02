@@ -1130,7 +1130,6 @@ namespace eigenproblem {
     {
       int i;
       int j;
-      int la;
       int mm;
       int mp;
       double t;
@@ -1141,8 +1140,6 @@ namespace eigenproblem {
       {
         return;
       }
-
-      la = igh - 1;
 
       if ( igh - 1 < low + 1 )
       {
@@ -3074,9 +3071,9 @@ namespace eigenproblem {
       int na;
       double norm;
       bool notlas;
-      double p;
-      double q;
-      double r;
+      double p = 0.0;
+      double q = 0.0;
+      double r = 0.0;
       double s;
       double t;
       double tst1;
@@ -5578,17 +5575,6 @@ namespace eigenproblem {
     /******************************************************************************/
 
 
-    /******************************************************************************/
-
-
-    /******************************************************************************/
-
-
-    /******************************************************************************/
-    /*
-
-    /******************************************************************************/
-
     double r8_epsilon ( )
 
     /******************************************************************************/
@@ -6811,7 +6797,7 @@ namespace eigenproblem {
       int k;
       int nn;
       double x;
-      double y;
+      double y = 0.0;
 
       ierr = 0;
       nn = abs ( n );
@@ -6974,7 +6960,7 @@ namespace eigenproblem {
       int k;
       int nn;
       double x;
-      double y;
+      double y = 0.0;
 
       ierr = 0;
       nn = abs ( n );
@@ -8891,13 +8877,12 @@ namespace eigenproblem {
 
       static char time_buffer[TIME_SIZE];
       const struct tm *tm;
-      size_t len;
       time_t now;
 
       now = time ( NULL );
       tm = localtime ( &now );
 
-      len = strftime ( time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", tm );
+      strftime (time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", tm );
 
       fprintf ( stdout, "%s\n", time_buffer );
 
@@ -8991,7 +8976,6 @@ namespace eigenproblem {
       int group;
       int i;
       int ierr;
-      int ip;
       int its;
       int j;
       int jj;
@@ -9108,7 +9092,6 @@ namespace eigenproblem {
             }
 
             norm = fabs ( d[p] );
-            ip = p + 1;
 
             for ( i = p + 1; i <= q; i++ )
             {
@@ -9392,7 +9375,7 @@ namespace eigenproblem {
     {
       double c;
       double c2;
-      double c3;
+      double c3 = 0.0;
       double dl1;
       double el1;
       double f;
@@ -9410,7 +9393,7 @@ namespace eigenproblem {
       double p;
       double r;
       double s;
-      double s2;
+      double s2 = 0.0;
       double tst1;
       double tst2;
 
@@ -9620,7 +9603,7 @@ namespace eigenproblem {
     {
       double c;
       double c2;
-      double c3;
+      double c3 = 0.0;
       double dl1;
       double el1;
       double f;
@@ -9639,7 +9622,7 @@ namespace eigenproblem {
       double p;
       double r;
       double s;
-      double s2;
+      double s2 = 0.0;
       double t;
       double tst1;
       double tst2;
@@ -9853,8 +9836,8 @@ namespace eigenproblem {
         J, if the J-th eigenvalue could not be determined after 30 iterations.
     */
     {
-      double b;
-      double c;
+      double b = 0.0;
+      double c = 0.0;
       double f;
       double g;
       double h;

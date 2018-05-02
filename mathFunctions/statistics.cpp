@@ -389,11 +389,7 @@ namespace statistics
         {
             return PARAMETER_ERROR;
         }
-        double rootLeft,rootRight;
         double root;
-        double absoluteValue;
-        absoluteValue = fabs(value);
-
 
         if (value == 0)
         {
@@ -404,8 +400,6 @@ namespace statistics
             double leftBound, rightBound;
             leftBound = 0.;
             rightBound = 100.;
-            rootLeft = 0.;
-            rootRight = ERF(rightBound,accuracy);
             do
             {
                 root = ERF((rightBound+leftBound)/2,accuracy);
@@ -426,8 +420,6 @@ namespace statistics
             double leftBound, rightBound;
             leftBound = -100.;
             rightBound = 0.;
-            rootLeft = 0.;
-            rootRight = ERF(rightBound,accuracy);
             do
             {
                 root = ERF((rightBound+leftBound)/2,accuracy);
@@ -454,11 +446,7 @@ namespace statistics
             return PARAMETER_ERROR;
         }
 
-
-        double rootLeft,rootRight;
         double root;
-        double absoluteValue;
-        absoluteValue = fabs(value);
 
         if (value == 1)
         {
@@ -469,8 +457,6 @@ namespace statistics
             double leftBound, rightBound;
             leftBound = 0.;
             rightBound = 100.;
-            rootLeft = 1.;
-            rootRight = ERFC(rightBound,accuracy);
             do
             {
                 root = ERFC((rightBound+leftBound)/2,accuracy);
@@ -490,8 +476,6 @@ namespace statistics
             double leftBound, rightBound;
             leftBound = -100.;
             rightBound = 0.;
-            rootLeft = ERFC(rightBound,accuracy);
-            rootRight = 1.;
             do
             {
                 root = ERFC((rightBound+leftBound)/2,accuracy);
@@ -506,9 +490,5 @@ namespace statistics
             } while(fabs(leftBound - rightBound) > accuracy);
             return (rightBound+leftBound)/2;
         }
-
-
     }
-
-
 }
