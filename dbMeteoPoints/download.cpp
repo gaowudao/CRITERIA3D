@@ -206,7 +206,7 @@ bool Download::downloadDailyData(QDate startDate, QDate endDate, QString dataset
 
     QEventLoop loop;
 
-    int maxStationSize = 400;
+    int maxStationSize = 100;
     int j = 0;
     QUrl url;
     QNetworkRequest request;
@@ -340,7 +340,7 @@ bool Download::downloadHourlyData(QDate startDate, QDate endDate, QString datase
 
     QEventLoop loop;
 
-    int maxStationSize = 400;
+    int maxStationSize = 100;
     int j = 0;
     QString area;
     QUrl url;

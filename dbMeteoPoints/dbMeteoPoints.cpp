@@ -26,6 +26,7 @@ Crit3DMeteoPointsDbHandler::Crit3DMeteoPointsDbHandler(QString dbName)
     {
        qDebug() << "Database: connection ok";
     }
+
 }
 
 Crit3DMeteoPointsDbHandler::~Crit3DMeteoPointsDbHandler()
@@ -36,6 +37,7 @@ Crit3DMeteoPointsDbHandler::~Crit3DMeteoPointsDbHandler()
 
 void Crit3DMeteoPointsDbHandler::closeDatabase()
 {
+
     if ((_db.isValid()) && (_db.isOpen()))
     {
         _db.removeDatabase(_db.connectionName());

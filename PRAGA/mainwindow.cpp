@@ -235,10 +235,14 @@ void MainWindow::on_actionNewMeteoPointsArkimet_triggered()
         else
         {
             if (! QFile::remove(dbName))
-                qDebug() << "Remove file failed:" << dbName;
+            {
+                qInfo() << "Remove file failed:" << dbName;
+            }
 
             if (! QFile::copy(templateName, dbName))
-                qDebug() << "Copy file failed:" << templateName;
+            {
+                qInfo() << "Copy file failed:" << templateName;
+            }
 
             Download * myDownload = new Download(dbName);
             DbArkimet* myDbArkimet = myDownload->getDbArkimet();
