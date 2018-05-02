@@ -20,13 +20,16 @@ https://github.com/raptorswing/MapGraphics
 HEAT1D is a graphical interface for testing the soilFluxex3D library in a 1D domain. Users can set fixed or variable atmospheric boundary conditions and soil parameters. Output graph results include soil temperature, soil water content, heat fluxes (diffusive and latent), liquid (isothermal and thermal) and vapor (isothermal and thermal) water fluxes. Graphs are produced using the Qwt plot library (http://qwt.sourceforge.net/) which should be compiled before usage.
 
 ## Criteria1D library
-Heuristic algorithms for 1D soil water infiltration, redistribution and capillary rise
+Heuristic algorithms for 1D soil water infiltration, redistribution and capillary rise.
 
 ## Crop library
-Heuristic algorithms for crop development and root growth (based on daily temperature)
+Heuristic algorithms for crop development, leaf area index, root growth and distribution, based on daily temperature.
 
 ## Soil library
-USDA soil texture class, modified Van Genuchten-Mualem model for retention curve water conductivity, heuristic functions for field capacity and wilting point
+Modified Van Genuchten-Mualem model for retention curve water conductivity, USDA soil texture classification.
+
+## CRIT1D
+CRIT1D is a test program for Criteria1D, crop and soil libraries. Example data are available in DATA/Criteria1d/
 
 # License
 CRITERIA3D has been developed under contract issued by 
