@@ -264,7 +264,7 @@ namespace soil
     {
        for (int index = 0; index < soil->nrHorizons; index++)
            if (depth >= soil->horizon[index].upperDepth &&
-               depth <= (soil->horizon[index].lowerDepth + THRESHOLD))
+               depth <= (soil->horizon[index].lowerDepth + EPSILON))
                return(index);
        return(NODATA);
     }

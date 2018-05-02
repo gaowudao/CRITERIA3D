@@ -828,8 +828,6 @@ namespace gis
     {
         if (! myDtm.isLoaded) return false;
 
-        const double EPSILON = 1E-5;
-
         double reciprocalCellSize;
         double dz_dx, dz_dy;
         double mySlope, myAspect;

@@ -256,7 +256,7 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, 
         if ((mySoil->horizon[i].upperDepth == NODATA) || (mySoil->horizon[i].lowerDepth == NODATA)
             || (mySoil->horizon[i].lowerDepth < mySoil->horizon[i].upperDepth)
             || ((idHorizon == 1) && (mySoil->horizon[i].upperDepth > 0))
-            || ((idHorizon > 1) && (mySoil->horizon[i].upperDepth > mySoil->horizon[i-1].lowerDepth)))
+            || ((idHorizon > 1) && (fabs(mySoil->horizon[i].upperDepth - mySoil->horizon[i-1].lowerDepth) > EPSILON)))
         {
             *myError = "Wrong depth in soil:" + idSoilStr + " horizon nr:" + QString::number(idHorizon).toStdString();
             return false;

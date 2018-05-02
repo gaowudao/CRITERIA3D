@@ -205,7 +205,7 @@
         #define PI 3.141592653589793238462643383
     #endif
     #ifndef THRESHOLD
-        #define THRESHOLD 0.00001
+        #define EPSILON 0.00001
     #endif
     #define EULER 2.718281828459
     #define DEG_TO_RAD 0.0174532925
