@@ -1,3 +1,29 @@
+/*!
+    \copyright 2018 Fausto Tomei, Gabriele Antolini,
+    Alberto Pistocchi, Marco Bittelli, Antonio Volta, Laura Costantini
+
+    This file is part of CRITERIA3D.
+    CRITERIA3D has been developed under contract issued by ARPAE Emilia-Romagna
+
+    CRITERIA3D is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    CRITERIA3D is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with CRITERIA3D.  If not, see <http://www.gnu.org/licenses/>.
+
+    contacts:
+    fausto.tomei@gmail.com
+    ftomei@arpae.it
+    gantolini@arpae.it
+*/
+
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QDate>
@@ -147,7 +173,7 @@ QString getId5Char(QString id)
 }
 
 
-bool Criteria1D::loadMOSESMeteo(QString idMeteo, QString idForecast, std::string *myError)
+bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, std::string *myError)
 {
     QString queryString = "SELECT * FROM meteo_locations WHERE id_meteo='" + idMeteo + "'";
     QSqlQuery query = dbMeteo.exec(queryString);

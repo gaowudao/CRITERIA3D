@@ -1,3 +1,29 @@
+/*!
+    \copyright 2018 Fausto Tomei, Gabriele Antolini,
+    Alberto Pistocchi, Marco Bittelli, Antonio Volta, Laura Costantini
+
+    This file is part of CRITERIA3D.
+    CRITERIA3D has been developed under contract issued by ARPAE Emilia-Romagna
+
+    CRITERIA3D is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    CRITERIA3D is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with CRITERIA3D.  If not, see <http://www.gnu.org/licenses/>.
+
+    contacts:
+    fausto.tomei@gmail.com
+    ftomei@arpae.it
+    gantolini@arpae.it
+*/
+
 #include <iostream>
 #include <QSqlQuery>
 #include <QSqlError>
@@ -17,7 +43,7 @@ bool runModel(Criteria1D* myCase, std::string* myError, Criteria1DUnit *myUnit)
     if (! myCase->setSoil(myUnit->idSoil, myError))
         return false;
 
-    if (! myCase->loadMOSESMeteo(myUnit->idMeteo, myUnit->idForecast, myError))
+    if (! myCase->loadMeteo(myUnit->idMeteo, myUnit->idForecast, myError))
         return false;
 
     if (! loadCropParameters(myUnit->idCrop, &(myCase->myCrop), &(myCase->dbParameters), myError))

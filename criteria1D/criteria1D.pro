@@ -1,6 +1,6 @@
 #-----------------------------------------------------------------------------
 #
-# Criteria1D
+# Criteria1D library
 # Soil Water Balance 1D
 # heuristic algorithms for soil water infiltration, redistribution and capillary rise
 #
