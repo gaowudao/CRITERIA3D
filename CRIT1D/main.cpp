@@ -193,6 +193,7 @@ int main(int argc, char *argv[])
                                 forecastIrrigation = NODATA;
                                 previousAllIrrigation = NODATA;
                                 RAW = NODATA;
+                                rootDepth = NODATA;
 
                                 mySQL = "SELECT SUM(PREC) AS prec,"
                                         " SUM(TRANSP_MAX) AS maxTransp, SUM(IRRIGATION) AS irr"
