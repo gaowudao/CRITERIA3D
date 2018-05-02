@@ -1,5 +1,5 @@
 # CRITERIA3D distribution
-CRITERIA3D distribution provides a set of model libraries and executables for agro-meteorological analysis.
+CRITERIA3D distribution provides a set of libraries and executables for agro-meteorological analysis.
 It includes a numerical solution for three-dimensional water and heat flow in the soil, meteorological data interpolation, daily weather generator, radiation budget, snow accumulation and melt, plant development and plant water uptake.
 
 ## soilFluxes3D library
@@ -10,6 +10,15 @@ Surface water flow is described by the two-dimensional parabolic approximation o
 Water fluxes equations may be coupled with the heat flux equations, which include diffusive, latent and advective terms. Atmospheric data (net irradiance, air temperature and relative humidity, wind speed) could be used as top boundary conditions.
 http://www.sciencedirect.com/science/article/pii/S0309170809001754
 
+## criteria1D library
+Heuristic algorithms for 1D soil water infiltration, redistribution and capillary rise.
+
+## crop library
+Heuristic algorithms for crop development, leaf area index, root growth and distribution, based on daily temperature.
+
+## soil library
+Modified Van Genuchten-Mualem model for retention curve water conductivity, USDA soil texture classification.
+
 ## PRAGA (PRogram for AGrometeorological Analysis)
 PRAGA is a Graphical User Interface to manage the libraries in the distribution for agro-meteorological and climate analysis.
 
@@ -18,15 +27,6 @@ https://github.com/raptorswing/MapGraphics
 
 ## HEAT1D
 HEAT1D is a graphical interface for testing the soilFluxex3D library in a 1D domain. Users can set fixed or variable atmospheric boundary conditions and soil parameters. Output graph results include soil temperature, soil water content, heat fluxes (diffusive and latent), liquid (isothermal and thermal) and vapor (isothermal and thermal) water fluxes. Graphs are produced using the Qwt plot library (http://qwt.sourceforge.net/) which should be compiled before usage.
-
-## Criteria1D library
-Heuristic algorithms for 1D soil water infiltration, redistribution and capillary rise.
-
-## Crop library
-Heuristic algorithms for crop development, leaf area index, root growth and distribution, based on daily temperature.
-
-## Soil library
-Modified Van Genuchten-Mualem model for retention curve water conductivity, USDA soil texture classification.
 
 ## CRIT1D
 CRIT1D is a test program for Criteria1D, crop and soil libraries. Example data are available in DATA/Criteria1d/
@@ -40,7 +40,7 @@ it under the terms of the GNU Lesser General Public License as published by the 
 either version 3 of the License, or (at your option) any later version.
 
 # Authors
-**Fausto Tomei** <ftomei@arpae.it> - <fausto.tomei@gmail.com>
+**Fausto Tomei** <ftomei@arpae.it>
 
 **Gabriele Antolini**	 <gantolini@arpae.it>
 
