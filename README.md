@@ -24,7 +24,7 @@ Modified Van Genuchten-Mualem model for retention curve water conductivity, USDA
 Algorithms for potential/actual solar radiation computation.
 
 ## interpolation library
-Algorithms dor meteorological data spatialization.
+Algorithms for the spatialization of meteorological data.
 
 ## PRAGA (PRogram for AGrometeorological Analysis)
 PRAGA is a Graphical User Interface to manage the libraries in the distribution for agro-meteorological and climate analysis.
@@ -38,7 +38,7 @@ HEAT1D is a graphical interface for testing the soilFluxex3D library in a 1D dom
 Graphs are produced using the Qwt plot library (http://qwt.sourceforge.net/) which should be compiled before usage.
 
 ## CRIT1D
-CRIT1D is a test program for Criteria1D, crop and soil libraries. 
+CRIT1D is a test program for the libraries criteria1D, crop and soil. 
 
 To compile it use Makeall_CRITERIA1D.pro, example data are available in DATA/Criteria1d/
 
@@ -72,7 +72,3 @@ Tomaso Tonelli <ttonelli@arpae.it>
 Margot Van Soetendaal <margot@farnet.eu>
 
 Franco Zinoni <fzinoni@arpae.it>
-
-
-
-
