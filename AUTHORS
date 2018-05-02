@@ -1,8 +1,10 @@
-CRITERIA 3D
+# CRITERIA3D
 
 Authors:
-Fausto Tomei, Alberto Pistocchi, Marco Bittelli
-Gabriele Antolini, Antonio Volta
+Fausto Tomei, Gabriele Antolini, Laura Costantini, Antonio Volta
+
+Contributions:
+Alberto Pistocchi, Marco Bittelli, Vittorio Marletto, Margot Van Soetendaal
 
 CRITERIA3D has been developed under contract issued by 
 ARPAE Hydro Meteo Climate Service, Emilia-Romagna, Italy    
@@ -10,10 +12,5 @@ http://www.arpae.it/sim/
 
 Contacts:
 Fausto Tomei 
-<fausto.tomei@gmail.com>
 <ftomei@arpae.it>
-
-Alberto Pistocchi	alberto.pistocchi@gecosistema.it
-Marco Bittelli    	marco.bittelli@unibo.it
-Gabriele Antolini	gantolini@arpae.it
-Antonio Volta		volta.antonio@gmail.com
+<fausto.tomei@gmail.com>
