@@ -234,9 +234,10 @@ void MainWindow::on_actionNewMeteoPointsArkimet_triggered()
         }
         else
         {
-            if (! QFile::remove(dbName))
+            QFile dbFile(dbName);
+            if (! dbFile.remove())
             {
-                qInfo() << "Remove file failed:" << dbName;
+                qInfo() << "Remove file failed:" << dbName << dbFile.errorString();
             }
 
             if (! QFile::copy(templateName, dbName))
