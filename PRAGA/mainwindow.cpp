@@ -237,6 +237,11 @@ void MainWindow::on_actionNewMeteoPointsArkimet_triggered()
             QFile dbFile(dbName);
             if (dbFile.exists())
             {
+
+                if (myProject.meteoGridDbHandler != NULL)
+                {
+                    myProject.meteoGridDbHandler->closeDatabase();
+                }
                 dbFile.close();
                 if (! dbFile.remove())
                 {
@@ -300,6 +305,8 @@ void MainWindow::on_actionNewMeteoPointsArkimet_triggered()
                 myInfo.start("download points properties...", 0);
                     if (myDownload->getPointProperties(datasets))
                     {
+                        delete myDbArkimet;
+                        delete myDownload;
                         myProject.loadMeteoPointsDB(dbName);
                         this->addMeteoPoints();
                     }
@@ -314,6 +321,7 @@ void MainWindow::on_actionNewMeteoPointsArkimet_triggered()
             {
                 QFile::remove(dbName);
                 delete myDbArkimet;
+                delete myDownload;
             }
 
             delete buttonBox;

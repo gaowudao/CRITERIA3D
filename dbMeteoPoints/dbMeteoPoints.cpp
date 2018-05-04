@@ -15,6 +15,12 @@
 
 Crit3DMeteoPointsDbHandler::Crit3DMeteoPointsDbHandler(QString dbName)
 {
+
+    if(_db.isOpen())
+    {
+        qDebug() << _db.connectionName() << "is already open";
+        _db.close();
+    }
     _db = QSqlDatabase::addDatabase("QSQLITE", "point");
     _db.setDatabaseName(dbName);
 
@@ -40,8 +46,8 @@ void Crit3DMeteoPointsDbHandler::closeDatabase()
 
     if ((_db.isValid()) && (_db.isOpen()))
     {
-        _db.removeDatabase(_db.connectionName());
         _db.close();
+        _db.removeDatabase(_db.connectionName());
     }
 }
 
