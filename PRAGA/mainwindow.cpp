@@ -305,8 +305,6 @@ void MainWindow::on_actionNewMeteoPointsArkimet_triggered()
                 myInfo.start("download points properties...", 0);
                     if (myDownload->getPointProperties(datasets))
                     {
-                        delete myDbArkimet;
-                        delete myDownload;
                         myProject.loadMeteoPointsDB(dbName);
                         this->addMeteoPoints();
                     }
