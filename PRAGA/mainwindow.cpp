@@ -238,11 +238,16 @@ void MainWindow::on_actionNewMeteoPointsArkimet_triggered()
             if (dbFile.exists())
             {
 
+                if (myProject.meteoPointsDbHandler != NULL)
+                {
+                    myProject.meteoPointsDbHandler->closeDatabase();
+                }
+
                 if (myProject.meteoGridDbHandler != NULL)
                 {
                     myProject.meteoGridDbHandler->closeDatabase();
                 }
-                dbFile.close();
+
                 if (! dbFile.remove())
                 {
                     qInfo() << "Remove file failed:" << dbName << dbFile.errorString();
