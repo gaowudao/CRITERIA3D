@@ -44,6 +44,8 @@ Crit3DMeteoPoint::Crit3DMeteoPoint()
     this->id = "";
     this->isUTC = true;
 
+    this->aggregationPointsMaxNr = 0;
+
     this->latitude = NODATA;
     this->longitude = NODATA;
     this->area = NODATA;

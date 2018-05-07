@@ -70,6 +70,9 @@
         std::string province;
         std::string municipality;
 
+        std::vector<gis::Crit3DUtmPoint> aggregationPoints;
+        long aggregationPointsMaxNr;
+
         gis::Crit3DPoint point;
         double latitude;
         double longitude;

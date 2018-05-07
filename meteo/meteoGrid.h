@@ -6,6 +6,9 @@
     #ifndef METEOPOINT_H
         #include "meteoPoint.h"
     #endif
+    #ifndef GIS_H
+        #include "gis.h"
+    #endif
 
     class Crit3DMeteoGridStructure
     {
