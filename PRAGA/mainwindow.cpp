@@ -1120,5 +1120,6 @@ void MainWindow::setCurrentRaster(gis::Crit3DRasterGrid *myRaster)
 
 void MainWindow::on_dateEdit_dateChanged(const QDate &date)
 {
+    Q_UNUSED(date);
     this->on_dateChanged();
 }

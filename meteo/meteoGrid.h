@@ -107,17 +107,11 @@
             bool isAggregationDefined() const;
             void setIsAggregationDefined(bool isAggregationDefined);
 
-            bool isDateTypeSpecified() const;
-            void setIsDateTypeSpecified(bool isDateTypeSpecified);
-
             Crit3DDate firstDate() const;
             void setFirstDate(const Crit3DDate &firstDate);
 
             Crit3DDate lastDate() const;
             void setLastDate(const Crit3DDate &lastDate);
-
-            int nrVarsArray() const;
-            void setNrVarsArray(int nrVarsArray);
 
             bool createRasterGrid();
             void fillMeteoRaster();
@@ -130,10 +124,8 @@
             bool _isNorthernEmisphere;
 
             bool _isAggregationDefined;
-            bool _isDateTypeSpecified;
             Crit3DDate _firstDate;
             Crit3DDate _lastDate;
-            int _nrVarsArray;
     };
 
 

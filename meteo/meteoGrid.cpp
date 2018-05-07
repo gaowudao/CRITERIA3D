@@ -31,8 +31,7 @@
 
 
 Crit3DMeteoGridStructure::Crit3DMeteoGridStructure()
-{
-
+{    
 }
 
 std::string Crit3DMeteoGridStructure::name() const
@@ -142,7 +141,11 @@ Crit3DMeteoGridStructure Crit3DMeteoGrid::gridStructure() const
 
 Crit3DMeteoGrid::Crit3DMeteoGrid()
 {
-
+    _isAggregationDefined = false;
+    _utmZone = 32;
+    _isNorthernEmisphere = true;
+    _firstDate = Crit3DDate(1,1,1800);
+    _lastDate = Crit3DDate(1,1,1800);
 }
 
 Crit3DMeteoGrid::~Crit3DMeteoGrid()
@@ -240,6 +243,7 @@ void Crit3DMeteoGrid::initMeteoPoints(int nRow, int nCol)
 }
 
 
+// for visualization raster
 void Crit3DMeteoGrid::fillMeteoPoint(int row, int col, std::string code, std::string name, int height, bool active)
 {
 
@@ -433,16 +437,6 @@ void Crit3DMeteoGrid::setIsAggregationDefined(bool isAggregationDefined)
     _isAggregationDefined = isAggregationDefined;
 }
 
-bool Crit3DMeteoGrid::isDateTypeSpecified() const
-{
-    return _isDateTypeSpecified;
-}
-
-void Crit3DMeteoGrid::setIsDateTypeSpecified(bool isDateTypeSpecified)
-{
-    _isDateTypeSpecified = isDateTypeSpecified;
-}
-
 Crit3DDate Crit3DMeteoGrid::firstDate() const
 {
     return _firstDate;
@@ -461,16 +455,6 @@ Crit3DDate Crit3DMeteoGrid::lastDate() const
 void Crit3DMeteoGrid::setLastDate(const Crit3DDate &lastDate)
 {
     _lastDate = lastDate;
-}
-
-int Crit3DMeteoGrid::nrVarsArray() const
-{
-    return _nrVarsArray;
-}
-
-void Crit3DMeteoGrid::setNrVarsArray(int nrVarsArray)
-{
-    _nrVarsArray = nrVarsArray;
 }
 
 

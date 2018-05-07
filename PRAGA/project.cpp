@@ -61,6 +61,14 @@ bool Project::loadRaster(QString myFileName)
     radiationMaps->clean();
     radiationMaps = new Crit3DRadiationMaps(DTM, gisSettings);
 
+    //reset aggregationPoints meteoGrid
+    if (meteoGridDbHandler != NULL)
+    {
+        meteoGridDbHandler->meteoGrid()->setIsAggregationDefined(false);
+        // TODO
+        // ciclo sulle celle della meteo grid -> clean vettore aggregation points
+    }
+
     return (true);
 }
 
