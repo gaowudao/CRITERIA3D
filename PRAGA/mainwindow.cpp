@@ -651,22 +651,28 @@ void MainWindow::on_actionInterpolation_triggered()
     formRunInfo myInfo;
     myInfo.start("Interpolation...", 0);
 
-        meteoVariable myVar = myProject.getCurrentVariable();
-
-        if (myProject.interpolateRaster(myVar, myProject.getFrequency(), myProject.getCurrentTime(), &(myProject.dataRaster)))
-        {
-            setColorScale(myVar, myProject.dataRaster.colorScale);
-            this->setCurrentRaster(&(myProject.dataRaster));
-
-            //myProject.meteoPointsColorScale->setRange(myProject.dataRaster.minimum, myProject.dataRaster.maximum);
-            //redrawMeteoPoints(false);
-
-            ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myVar)));
-        }
-        else
-            myProject.logError();
+    interpolateRasterGUI();
 
     myInfo.close();
+}
+
+
+void MainWindow::interpolateRasterGUI()
+{
+    meteoVariable myVar = myProject.getCurrentVariable();
+
+    if (myProject.interpolateRaster(myVar, myProject.getFrequency(), myProject.getCurrentTime(), &(myProject.dataRaster)))
+    {
+        setColorScale(myVar, myProject.dataRaster.colorScale);
+        this->setCurrentRaster(&(myProject.dataRaster));
+
+        //myProject.meteoPointsColorScale->setRange(myProject.dataRaster.minimum, myProject.dataRaster.maximum);
+        //redrawMeteoPoints(false);
+
+        ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myVar)));
+    }
+    else
+        myProject.logError();
 }
 
 
