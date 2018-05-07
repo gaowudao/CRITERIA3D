@@ -144,7 +144,7 @@
     // [kg m-3] air density, temperature 0 °C
     #define  AIR_DENSITY 1.29
 
-    // -----------------TERMODYNAMICS-------------------
+    // -----------------PHYSICS-------------------
     // [kg mol-1] molecular mass of water
     #define	MH2O	0.018
     // [kg mol-1] mass of molecular oxygen (O2)
@@ -199,6 +199,10 @@
     // [Pa] default atmospheric pressure at sea level
     #define SEA_LEVEL_PRESSURE 101325
 
+    #define ALBEDO_WATER 0.05
+    #define ALBEDO_SOIL 0.15
+    #define ALBEDO_CROP 0.25
+    #define ALBEDO_CROP_REFERENCE 0.23
 
     // -----------------MATHEMATICS---------------------
     #ifndef PI

@@ -10,17 +10,11 @@
         #include "color.h"
     #endif
 
-    #define ALBEDO_WATER 0.05
-    #define ALBEDO_SOIL 0.15
-    #define ALBEDO_CROP 0.25
-    #define ALBEDO_CROP_REFERENCE 0.23
-
     #define TABLE_METEO_POINTS "point_properties"
     #define FIELD_METEO_POINT "id_point"
     #define FIELD_METEO_DATETIME "date"
     #define FIELD_METEO_VARIABLE "id_variable"
     #define FIELD_METEO_VARIABLE_NAME "variable"
-
 
 enum meteoVariable {airTemperature, dailyAirTemperatureMin, dailyAirTemperatureMax, dailyAirTemperatureAvg,
                         precipitation, dailyPrecipitation,
