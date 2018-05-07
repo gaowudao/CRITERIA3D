@@ -658,8 +658,8 @@ void MainWindow::on_actionInterpolation_triggered()
             setColorScale(myVar, myProject.dataRaster.colorScale);
             this->setCurrentRaster(&(myProject.dataRaster));
 
-            myProject.meteoPointsColorScale->setRange(myProject.dataRaster.minimum, myProject.dataRaster.maximum);
-            redrawMeteoPoints(false);
+            //myProject.meteoPointsColorScale->setRange(myProject.dataRaster.minimum, myProject.dataRaster.maximum);
+            //redrawMeteoPoints(false);
 
             ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myVar)));
         }
