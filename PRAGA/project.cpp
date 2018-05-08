@@ -181,7 +181,7 @@ bool Project::downloadDailyDataArkimet(QStringList variables, bool prec0024, QDa
 
 bool Project::downloadHourlyDataArkimet(QStringList variables, QDate startDate, QDate endDate, bool showInfo)
 {
-    const int MAXDAYS = 1;
+    const int MAXDAYS = 7;
 
     QList<int> arkIdAirTemp;
     arkIdAirTemp << 78 << 158;
