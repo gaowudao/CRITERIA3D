@@ -368,7 +368,7 @@ bool Download::downloadHourlyData(QDate startDate, QDate endDate, QString datase
         request.setUrl(url);
         request.setRawHeader("Authorization", _authorization);
 
-        // std::cout << url.toString().toStdString();
+        // qDebug() << url.toString().toStdString();
 
         QNetworkReply* reply = manager->get(request);  // GET
         loop.exec();
