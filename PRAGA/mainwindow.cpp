@@ -246,7 +246,6 @@ void MainWindow::on_actionNewMeteoPointsArkimet_triggered()
                 if (! dbFile.remove())
                 {
                     qInfo() << "Remove file failed:" << dbName << dbFile.errorString();
-                    qInfo() << "permissions" << dbFile.permissions();
                 }
             }
 
@@ -318,9 +317,10 @@ void MainWindow::on_actionNewMeteoPointsArkimet_triggered()
             else
             {
                 QFile::remove(dbName);
-                delete myDbArkimet;
-                delete myDownload;
             }
+
+            delete myDbArkimet;
+            delete myDownload;
 
             delete buttonBox;
             delete all;
