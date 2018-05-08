@@ -323,6 +323,9 @@ bool DbArkimet::saveDailyData(QDate startDate, QDate endDate)
 
 bool DbArkimet::saveHourlyData()
 {
+    if (queryString == "")
+        return false;
+
     // insert data into tmpTable
     _db.exec(queryString);
 
@@ -388,7 +391,6 @@ bool DbArkimet::saveHourlyData()
     statement = QString("DELETE FROM TmpHourlyData WHERE variable_name IN ('RAD', 'W_DIR')");
     qry.exec(statement);
 
-    // TODO SUM PREC
     // la media funziona su tutte le var che hanno AVG nel nome (Temp, RH, Wind intensity)
     statement = QString("INSERT INTO `%1_H`");
     statement += " SELECT date_time_adj, id_variable, avg_value FROM (";

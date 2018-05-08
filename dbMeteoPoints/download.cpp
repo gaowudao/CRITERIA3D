@@ -320,7 +320,6 @@ bool Download::downloadHourlyData(QDate startDate, QDate endDate, QString datase
     // create station tables
     _dbMeteo->initStationsHourlyTables(startDate, endDate, stations);
 
-
     QList<VariablesList> variableList = _dbMeteo->getVariableProperties(variables);
 
     QString product = QString(";product: VM2,%1").arg(variables[0]);
@@ -368,7 +367,7 @@ bool Download::downloadHourlyData(QDate startDate, QDate endDate, QString datase
         url = QUrl(QString("%1/query?query=%2%3%4&style=postprocess").arg(_dbMeteo->getDatasetURL(dataset)).arg(refTime).arg(area).arg(product));
         request.setUrl(url);
         request.setRawHeader("Authorization", _authorization);
-        //std::cout << url.toString().toStdString();
+        // qDebug() << url.toString();
 
         QNetworkReply* reply = manager->get(request);  // GET
         loop.exec();
@@ -382,7 +381,7 @@ bool Download::downloadHourlyData(QDate startDate, QDate endDate, QString datase
         }
         else
         {
-            _dbMeteo->createTmpTableHourly();
+            _dbMeteo->queryString = "";
 
             QString line, dateTime, idPoint, flag, varName;
             QString idVariable, value, frequency;
@@ -434,12 +433,16 @@ bool Download::downloadHourlyData(QDate startDate, QDate endDate, QString datase
                 }
             }
 
-            _dbMeteo->saveHourlyData();
-            _dbMeteo->deleteTmpTableHourly();
-
-            delete reply;
-            delete manager;
+            if (_dbMeteo->queryString != "")
+            {
+               _dbMeteo->createTmpTableHourly();
+               _dbMeteo->saveHourlyData();
+               _dbMeteo->deleteTmpTableHourly();
+            }
         }
+
+        delete reply;
+        delete manager;
 
         j = 0; //reset block stations counter
     }

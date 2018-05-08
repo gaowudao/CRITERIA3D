@@ -771,7 +771,6 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
     //hour
     if (time.hour() != myProject.getCurrentHour())
     {
-        qDebug("time changed");
         myProject.setCurrentHour(time.hour());
     }
 
