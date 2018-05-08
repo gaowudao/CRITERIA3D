@@ -427,11 +427,19 @@ void Project::getMeteoPointsRange(float *minimum, float *maximum)
 
 void Project::closeMeteoPointsDB()
 {
+
     if (meteoPointsDbHandler != NULL)
     {
-        meteoPointsDbHandler->closeDatabase();
+        delete meteoPointsDbHandler;
+    }
+
+    if (meteoPoints != NULL)
+    {
         delete [] meteoPoints;
     }
+
+    meteoPointsDbHandler = NULL;
+    meteoPoints = NULL;
 
     meteoPointsSelected.clear();
     nrMeteoPoints = 0;

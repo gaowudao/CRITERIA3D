@@ -237,11 +237,7 @@ void MainWindow::on_actionNewMeteoPointsArkimet_triggered()
             QFile dbFile(dbName);
             if (dbFile.exists())
             {
-
-                if (myProject.meteoPointsDbHandler != NULL)
-                {
-                    myProject.meteoPointsDbHandler->closeDatabase();
-                }
+                myProject.closeMeteoPointsDB();
 
                 if (! dbFile.remove())
                 {
@@ -254,10 +250,9 @@ void MainWindow::on_actionNewMeteoPointsArkimet_triggered()
                 qInfo() << "Copy file failed:" << templateName;
             }
 
-            Download * myDownload = new Download(dbName);
-            DbArkimet* myDbArkimet = myDownload->getDbArkimet();
+            Download myDownload(dbName);
 
-            QStringList dataset = myDbArkimet->getDatasetsList();
+            QStringList dataset = myDownload.getDbArkimet()->getDatasetsList();
 
             QDialog datasetDialog;
 
@@ -297,12 +292,12 @@ void MainWindow::on_actionNewMeteoPointsArkimet_triggered()
 
             if (!datasetSelected.isEmpty())
             {
-                myDbArkimet->setDatasetsActive(datasetSelected);
+                myDownload.getDbArkimet()->setDatasetsActive(datasetSelected);
                 QStringList datasets = datasetSelected.remove("'").split(",");
 
                 formRunInfo myInfo;
                 myInfo.start("download points properties...", 0);
-                    if (myDownload->getPointProperties(datasets))
+                    if (myDownload.getPointProperties(datasets))
                     {
                         myProject.loadMeteoPointsDB(dbName);
                         this->addMeteoPoints();
@@ -318,9 +313,6 @@ void MainWindow::on_actionNewMeteoPointsArkimet_triggered()
             {
                 QFile::remove(dbName);
             }
-
-            delete myDbArkimet;
-            delete myDownload;
 
             delete buttonBox;
             delete all;

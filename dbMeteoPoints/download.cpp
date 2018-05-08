@@ -23,8 +23,7 @@ Download::Download(QString dbName, QObject* parent) : QObject(parent)
 Download::~Download()
 {
     qDebug() << "download obj destruction";
-    _dbMeteo->closeDatabase();
-    //delete _dbMeteo;
+    delete _dbMeteo;
 }
 
 DbArkimet* Download::getDbArkimet()

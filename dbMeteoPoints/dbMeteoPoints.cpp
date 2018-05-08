@@ -11,6 +11,7 @@
 
 #include <QString>
 #include <QStringBuilder>
+#include <QUuid>
 
 
 Crit3DMeteoPointsDbHandler::Crit3DMeteoPointsDbHandler(QString dbName)
@@ -21,7 +22,7 @@ Crit3DMeteoPointsDbHandler::Crit3DMeteoPointsDbHandler(QString dbName)
         qDebug() << _db.connectionName() << "is already open";
         _db.close();
     }
-    _db = QSqlDatabase::addDatabase("QSQLITE", "point");
+    _db = QSqlDatabase::addDatabase("QSQLITE", QUuid::createUuid().toString());
     _db.setDatabaseName(dbName);
 
     if (!_db.open())
@@ -37,13 +38,6 @@ Crit3DMeteoPointsDbHandler::Crit3DMeteoPointsDbHandler(QString dbName)
 
 Crit3DMeteoPointsDbHandler::~Crit3DMeteoPointsDbHandler()
 {
-    closeDatabase();
-}
-
-
-void Crit3DMeteoPointsDbHandler::closeDatabase()
-{
-
     if ((_db.isValid()) && (_db.isOpen()))
     {
         _db.close();
