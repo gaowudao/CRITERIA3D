@@ -445,6 +445,18 @@ void Project::closeMeteoPointsDB()
     nrMeteoPoints = 0;
 }
 
+void Project::closeMeteoGridDB()
+{
+
+    if (meteoGridDbHandler != NULL)
+    {
+        delete meteoGridDbHandler;
+    }
+
+    meteoGridDbHandler = NULL;
+
+}
+
 
 bool Project::loadMeteoPointsDB(QString dbName)
 {

@@ -93,6 +93,7 @@
 
         bool loadlastMeteoData();
         void closeMeteoPointsDB();
+        void closeMeteoGridDB();
         bool loadMeteoPointsDB(QString dbName);
         bool loadMeteoGridDB(QString xmlName);
         bool loadMeteoGridDailyData(QDate firstDate, QDate lastDate, bool showInfo);

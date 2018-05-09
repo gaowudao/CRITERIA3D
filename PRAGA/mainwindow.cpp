@@ -1124,4 +1124,11 @@ void MainWindow::on_actionClose_meteo_points_triggered()
 void MainWindow::on_actionClose_meteo_grid_triggered()
 {
 
+    if (myProject.meteoGridDbHandler != NULL)
+    {
+        myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.isLoaded = false;
+        meteoGridObj->redrawRequested();
+        myProject.closeMeteoGridDB();
+    }
+
 }
