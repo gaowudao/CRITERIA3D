@@ -91,6 +91,10 @@
 
         void on_dateEdit_dateChanged(const QDate &date);
 
+        void on_actionClose_meteo_points_triggered();
+
+        void on_actionClose_meteo_grid_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

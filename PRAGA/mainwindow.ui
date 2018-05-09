@@ -1859,7 +1859,7 @@
      <x>0</x>
      <y>0</y>
      <width>1368</width>
-     <height>21</height>
+     <height>30</height>
     </rect>
    </property>
    <property name="palette">
@@ -2296,10 +2296,14 @@
     <addaction name="actionLoadRaster"/>
     <addaction name="separator"/>
     <addaction name="actionOpen_meteo_points_DB"/>
-    <addaction name="actionOpen_meteo_grid"/>
     <addaction name="menu_New_meteo_points_DB"/>
-    <addaction name="separator"/>
     <addaction name="actionDownload_meteo_data"/>
+    <addaction name="actionClose_meteo_points"/>
+    <addaction name="separator"/>
+    <addaction name="actionOpen_meteo_grid"/>
+    <addaction name="actionClose_meteo_grid"/>
+    <addaction name="separator"/>
+    <addaction name="separator"/>
     <addaction name="separator"/>
     <addaction name="action_Open_NetCDF_data"/>
    </widget>
@@ -2483,6 +2487,16 @@
   <action name="actionOpen_meteo_grid">
    <property name="text">
     <string>Open meteo grid...</string>
+   </property>
+  </action>
+  <action name="actionClose_meteo_points">
+   <property name="text">
+    <string>Close meteo points...</string>
+   </property>
+  </action>
+  <action name="actionClose_meteo_grid">
+   <property name="text">
+    <string>Close meteo grid...</string>
    </property>
   </action>
  </widget>

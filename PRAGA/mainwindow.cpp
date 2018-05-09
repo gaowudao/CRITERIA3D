@@ -1114,3 +1114,14 @@ void MainWindow::on_dateEdit_dateChanged(const QDate &date)
     Q_UNUSED(date);
     this->on_dateChanged();
 }
+
+void MainWindow::on_actionClose_meteo_points_triggered()
+{
+    resetMeteoPoints();
+    myProject.closeMeteoPointsDB();
+}
+
+void MainWindow::on_actionClose_meteo_grid_triggered()
+{
+
+}
