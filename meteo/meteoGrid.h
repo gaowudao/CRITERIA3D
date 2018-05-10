@@ -104,6 +104,10 @@
 
             bool isActiveMeteoPointFromId(std::string id);
 
+            void findGridAggregationPoints(gis::Crit3DRasterGrid* myDTM);
+
+            void assignCellAggregationPoints(int row, int col, gis::Crit3DRasterGrid* myDTM, bool excludeNoData);
+
             bool isAggregationDefined() const;
             void setIsAggregationDefined(bool isAggregationDefined);
 
@@ -115,6 +119,7 @@
 
             bool createRasterGrid();
             void fillMeteoRaster();
+
 
     private:
 
