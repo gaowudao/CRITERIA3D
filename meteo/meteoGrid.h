@@ -78,11 +78,20 @@
             std::vector<std::vector<Crit3DMeteoPoint *> > meteoPoints() const;
             void setMeteoPoints(const std::vector<std::vector<Crit3DMeteoPoint *> > &meteoPoints);
 
-            int utmZone() const;
-            void setUtmZone(int utmZone);
+            bool isAggregationDefined() const;
+            void setIsAggregationDefined(bool isAggregationDefined);
 
-            bool isNorthernEmisphere() const;
-            void setIsNorthernEmisphere(bool isNorthernEmisphere);
+            Crit3DDate firstDate() const;
+            void setFirstDate(const Crit3DDate &firstDate);
+
+            Crit3DDate lastDate() const;
+            void setLastDate(const Crit3DDate &lastDate);
+
+            bool createRasterGrid();
+            void fillMeteoRaster();
+
+            gis::Crit3DGisSettings getGisSettings() const;
+            void setGisSettings(const gis::Crit3DGisSettings &gisSettings);
 
             void initMeteoPoints(int nRow, int nCol);
 
@@ -108,25 +117,11 @@
 
             void assignCellAggregationPoints(int row, int col, gis::Crit3DRasterGrid* myDTM, bool excludeNoData);
 
-            bool isAggregationDefined() const;
-            void setIsAggregationDefined(bool isAggregationDefined);
-
-            Crit3DDate firstDate() const;
-            void setFirstDate(const Crit3DDate &firstDate);
-
-            Crit3DDate lastDate() const;
-            void setLastDate(const Crit3DDate &lastDate);
-
-            bool createRasterGrid();
-            void fillMeteoRaster();
-
-
     private:
 
             Crit3DMeteoGridStructure _gridStructure;
             std::vector<std::vector<Crit3DMeteoPoint*> > _meteoPoints;
-            int _utmZone;
-            bool _isNorthernEmisphere;
+            gis::Crit3DGisSettings _gisSettings;
 
             bool _isAggregationDefined;
             Crit3DDate _firstDate;

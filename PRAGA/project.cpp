@@ -496,8 +496,7 @@ bool Project::loadMeteoGridDB(QString xmlName)
         return false;
 
     this->meteoGridDbHandler = new Crit3DMeteoGridDbHandler();
-    this->meteoGridDbHandler->meteoGrid()->setUtmZone(this->gisSettings.utmZone);
-    this->meteoGridDbHandler->meteoGrid()->setIsNorthernEmisphere(this->gisSettings.isNorthernEmisphere);
+    this->meteoGridDbHandler->meteoGrid()->setGisSettings(this->gisSettings);
 
 
     if (! this->meteoGridDbHandler->parseXMLGrid(xmlName, &errorString))

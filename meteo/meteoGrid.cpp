@@ -142,8 +142,8 @@ Crit3DMeteoGridStructure Crit3DMeteoGrid::gridStructure() const
 Crit3DMeteoGrid::Crit3DMeteoGrid()
 {
     _isAggregationDefined = false;
-    _utmZone = 32;
-    _isNorthernEmisphere = true;
+    _gisSettings.utmZone = 32;
+    _gisSettings.isNorthernEmisphere = true;
     _firstDate = Crit3DDate(1,1,1800);
     _lastDate = Crit3DDate(1,1,1800);
 }
@@ -189,26 +189,6 @@ bool Crit3DMeteoGrid::createRasterGrid()
     return true;
 }
 
-
-bool Crit3DMeteoGrid::isNorthernEmisphere() const
-{
-    return _isNorthernEmisphere;
-}
-
-void Crit3DMeteoGrid::setIsNorthernEmisphere(bool isNorthernEmisphere)
-{
-    _isNorthernEmisphere = isNorthernEmisphere;
-}
-
-int Crit3DMeteoGrid::utmZone() const
-{
-    return _utmZone;
-}
-
-void Crit3DMeteoGrid::setUtmZone(int utmZone)
-{
-    _utmZone = utmZone;
-}
 
 std::vector<std::vector<Crit3DMeteoPoint *> > Crit3DMeteoGrid::meteoPoints() const
 {
@@ -258,7 +238,7 @@ void Crit3DMeteoGrid::fillMeteoPoint(int row, int col, std::string code, std::st
         {
             _meteoPoints[row][col]->point.utm.x = _gridStructure.header().llCorner->longitude + _gridStructure.header().dx * (col + 0.5);
             _meteoPoints[row][col]->point.utm.y = _gridStructure.header().llCorner->latitude + _gridStructure.header().dy * (row + 0.5);
-            gis::utmToLatLon(_utmZone, _isNorthernEmisphere, _meteoPoints[row][col]->point.utm.x, _meteoPoints[row][col]->point.utm.y, &(_meteoPoints[row][col]->latitude), &(_meteoPoints[row][col]->longitude));
+            gis::utmToLatLon(_gisSettings.utmZone, _gisSettings.isNorthernEmisphere, _meteoPoints[row][col]->point.utm.x, _meteoPoints[row][col]->point.utm.y, &(_meteoPoints[row][col]->latitude), &(_meteoPoints[row][col]->longitude));
         }
         else
         {
@@ -267,7 +247,7 @@ void Crit3DMeteoGrid::fillMeteoPoint(int row, int col, std::string code, std::st
 
             gis::Crit3DUtmPoint utmPoint;
             gis::Crit3DGeoPoint geoPoint(_meteoPoints[row][col]->latitude, _meteoPoints[row][col]->longitude);
-            gis::getUtmFromLatLon(_utmZone, geoPoint, &utmPoint);
+            gis::getUtmFromLatLon(_gisSettings.utmZone, geoPoint, &utmPoint);
             _meteoPoints[row][col]->point.utm.x = utmPoint.x;
             _meteoPoints[row][col]->point.utm.y = utmPoint.y;
 
@@ -351,6 +331,16 @@ void Crit3DMeteoGrid::fillMeteoRaster()
              dataMeteoGrid.value[i][j] = _meteoPoints[_gridStructure.header().nrRows-1-i][j]->currentValue;
         }
     }
+}
+
+gis::Crit3DGisSettings Crit3DMeteoGrid::getGisSettings() const
+{
+    return _gisSettings;
+}
+
+void Crit3DMeteoGrid::setGisSettings(const gis::Crit3DGisSettings &gisSettings)
+{
+    _gisSettings = gisSettings;
 }
 
 
@@ -483,22 +473,22 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
             gis::Crit3DGeoPoint geoPoint;
             pointLatLon0.latitude = _gridStructure.header().llCorner->latitude + row * _gridStructure.header().dy;
             pointLatLon0.longitude = _gridStructure.header().llCorner->longitude + col * _gridStructure.header().dx;
-            gis::getUtmFromLatLon(_utmZone, pointLatLon0, &utmPoint);
+            gis::getUtmFromLatLon(_gisSettings.utmZone, pointLatLon0, &utmPoint);
             v[0] = utmPoint;
 
             geoPoint.latitude = pointLatLon0.latitude + _gridStructure.header().dy;
             geoPoint.longitude = pointLatLon0.longitude;
-            gis::getUtmFromLatLon(_utmZone, geoPoint, &utmPoint);
+            gis::getUtmFromLatLon(_gisSettings.utmZone, geoPoint, &utmPoint);
             v[1] = utmPoint;
 
             geoPoint.latitude = pointLatLon0.latitude + _gridStructure.header().dy;
             geoPoint.longitude = pointLatLon0.longitude + _gridStructure.header().dx;
-            gis::getUtmFromLatLon(_utmZone, geoPoint, &utmPoint);
+            gis::getUtmFromLatLon(_gisSettings.utmZone, geoPoint, &utmPoint);
             v[2] = utmPoint;
 
             geoPoint.latitude = pointLatLon0.latitude;
             geoPoint.longitude = pointLatLon0.longitude + _gridStructure.header().dx;
-            gis::getUtmFromLatLon(_utmZone, geoPoint, &utmPoint);
+            gis::getUtmFromLatLon(_gisSettings.utmZone, geoPoint, &utmPoint);
             v[3] = utmPoint;
 
             utmLL.x = std::min(v[0].x, v[1].x);
@@ -520,10 +510,31 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
                 {
                     for (int myDTMCol = demLL.col; myDTMRow < demUR.col; myDTMCol++)
                     {
-                        double x, y;
-                        gis::getUtmXYFromRowCol(*(myDTM->header), myDTMRow, myDTMCol, &x, &y);
-                        // TO DO
-                        //gis::getLatLonFromUtm();
+                        double utmX, utmY;
+                        gis::Crit3DGeoPoint geoPoint;
+                        gis::Crit3DGridHeader latLonHeader;
+
+                        gis::getUtmXYFromRowCol(*(myDTM->header), myDTMRow, myDTMCol, &utmX, &utmY);
+                        gis::getLatLonFromUtm(_gisSettings, utmX, utmY, &geoPoint.latitude, &geoPoint.longitude);
+
+                        latLonHeader.llCorner->latitude = _gridStructure.header().llCorner->latitude;
+                        latLonHeader.llCorner->longitude = _gridStructure.header().llCorner->longitude;
+                        latLonHeader.dx = _gridStructure.header().dx;
+                        latLonHeader.dy = _gridStructure.header().dy;
+                        latLonHeader.nrRows = row;
+                        latLonHeader.nrCols = col;
+
+                        if (geoPoint.isInsideGrid(latLonHeader))
+                        {
+                            _meteoPoints[row][col]->aggregationPointsMaxNr = _meteoPoints[row][col]->aggregationPointsMaxNr + 1;
+                            if (!excludeNoData || myDTM->getValueFromRowCol(myDTMRow, myDTMCol) != myDTM->header->flag )
+                            {
+                                 gis::getUtmXYFromRowCol(*(myDTM->header), myDTMRow, myDTMCol, &utmX, &utmY);
+                                 utmPoint.x = utmX;
+                                 utmPoint.y = utmY;
+                                _meteoPoints[row][col]->aggregationPoints.push_back(utmPoint);
+                            }
+                        }
                     }
                 }
             }
