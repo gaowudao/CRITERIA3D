@@ -491,10 +491,10 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
             gis::getUtmFromLatLon(_gisSettings.utmZone, geoPoint, &utmPoint);
             v[3] = utmPoint;
 
-            utmLL.x = std::min(v[0].x, v[1].x);
-            utmLL.y = std::min(v[0].y, v[3].y);
-            utmUR.x = std::max(v[2].x, v[3].x);
-            utmUR.y = std::max(v[1].y, v[2].y);
+            utmLL.x = minValue(v[0].x, v[1].x);
+            utmLL.y = minValue(v[0].y, v[3].y);
+            utmUR.x = maxValue(v[2].x, v[3].x);
+            utmUR.y = maxValue(v[1].y, v[2].y);
 
             gis::Crit3DRasterCell demLL, demUR;
 
