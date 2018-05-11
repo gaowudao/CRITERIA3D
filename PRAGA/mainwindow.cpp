@@ -211,6 +211,8 @@ void MainWindow::on_actionLoadRaster_triggered()
 
     // active raster object
     this->rasterObj->updateCenter();
+
+    myProject.isDTMInterpolated = false;
 }
 
 
@@ -651,6 +653,7 @@ void MainWindow::interpolateRasterGUI()
         //redrawMeteoPoints(false);
 
         ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myVar)));
+        myProject.isDTMInterpolated = true;
     }
     else
         myProject.logError();
@@ -1134,5 +1137,8 @@ void MainWindow::on_actionInterpolation_to_DTM_triggered()
 
 void MainWindow::on_actionInterpolation_to_Grid_triggered()
 {
-
+    if (!myProject.isDTMInterpolated)
+    {
+        on_actionInterpolation_to_DTM_triggered();
+    }
 }

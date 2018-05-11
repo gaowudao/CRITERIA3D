@@ -69,6 +69,8 @@
 
         meteoVariable currentVariable;
 
+        bool isDTMInterpolated;
+
         Project();
 
         void setCurrentDate(QDate myDate);

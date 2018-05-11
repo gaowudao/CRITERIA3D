@@ -32,6 +32,7 @@ Project::Project()
     meteoPointsColorScale = new Crit3DColorScale();
     meteoPointsDbHandler = NULL;
     meteoGridDbHandler = NULL;
+    isDTMInterpolated = false;
 
     radiationMaps = new Crit3DRadiationMaps();
 }
