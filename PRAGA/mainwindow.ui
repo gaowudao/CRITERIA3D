@@ -2315,7 +2315,6 @@
     <addaction name="actionVariableNone"/>
     <addaction name="actionVariableQualitySpatial"/>
     <addaction name="actionVariableChoose"/>
-    <addaction name="actionInterpolation"/>
    </widget>
    <widget class="QMenu" name="menuGIS_settings">
     <property name="title">
@@ -2346,8 +2345,16 @@
     <addaction name="actionRectangle_Selection"/>
     <addaction name="action_Extract_NetCDF_series"/>
    </widget>
+   <widget class="QMenu" name="menuInterpolation">
+    <property name="title">
+     <string>Interpolation</string>
+    </property>
+    <addaction name="actionInterpolation_to_DTM"/>
+    <addaction name="actionInterpolation_to_Grid"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuVariable"/>
+   <addaction name="menuInterpolation"/>
    <addaction name="menuGIS_settings"/>
    <addaction name="menuTools"/>
   </widget>
@@ -2497,6 +2504,16 @@
   <action name="actionClose_meteo_grid">
    <property name="text">
     <string>Close meteo grid...</string>
+   </property>
+  </action>
+  <action name="actionInterpolation_to_DTM">
+   <property name="text">
+    <string>Interpolation to DTM</string>
+   </property>
+  </action>
+  <action name="actionInterpolation_to_Grid">
+   <property name="text">
+    <string>Interpolation to Grid</string>
    </property>
   </action>
  </widget>

@@ -638,17 +638,6 @@ void MainWindow::on_actionVariableQualitySpatial_triggered()
 }
 
 
-void MainWindow::on_actionInterpolation_triggered()
-{
-    formRunInfo myInfo;
-    myInfo.start("Interpolation...", 0);
-
-    interpolateRasterGUI();
-
-    myInfo.close();
-}
-
-
 void MainWindow::interpolateRasterGUI()
 {
     meteoVariable myVar = myProject.getCurrentVariable();
@@ -1130,5 +1119,20 @@ void MainWindow::on_actionClose_meteo_grid_triggered()
         meteoGridObj->redrawRequested();
         myProject.closeMeteoGridDB();
     }
+
+}
+
+void MainWindow::on_actionInterpolation_to_DTM_triggered()
+{
+    formRunInfo myInfo;
+    myInfo.start("Interpolation...", 0);
+
+    interpolateRasterGUI();
+
+    myInfo.close();
+}
+
+void MainWindow::on_actionInterpolation_to_Grid_triggered()
+{
 
 }

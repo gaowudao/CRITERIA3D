@@ -77,8 +77,6 @@
 
         void on_actionVariableQualitySpatial_triggered();
 
-        void on_actionInterpolation_triggered();
-
         void on_actionPointsVisible_triggered();
 
         void on_action_Open_NetCDF_data_triggered();
@@ -94,6 +92,10 @@
         void on_actionClose_meteo_points_triggered();
 
         void on_actionClose_meteo_grid_triggered();
+
+        void on_actionInterpolation_to_DTM_triggered();
+
+        void on_actionInterpolation_to_Grid_triggered();
 
     protected:
         /*!
