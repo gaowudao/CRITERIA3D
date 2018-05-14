@@ -433,6 +433,7 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
 
     gis::Crit3DUtmPoint utmLL, utmUR;
     gis::Crit3DUtmPoint utmPoint;
+    gis::Crit3DPoint point;
     gis::Crit3DUtmPoint v[4];
 
     if (_gridStructure.isTIN())
@@ -462,7 +463,9 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
                     {
                          utmPoint.x = x;
                          utmPoint.y = y;
-                        _meteoPoints[row][col]->aggregationPoints.push_back(utmPoint);
+                         point.utm = utmPoint;
+                         point.z = NODATA;
+                        _meteoPoints[row][col]->aggregationPoints.push_back(point);
                     }
                 }
             }
@@ -532,7 +535,9 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
                                  gis::getUtmXYFromRowCol(*(myDTM->header), myDTMRow, myDTMCol, &utmX, &utmY);
                                  utmPoint.x = utmX;
                                  utmPoint.y = utmY;
-                                _meteoPoints[row][col]->aggregationPoints.push_back(utmPoint);
+                                 point.utm = utmPoint;
+                                 point.z = NODATA;
+                                _meteoPoints[row][col]->aggregationPoints.push_back(point);
                             }
                         }
                     }
