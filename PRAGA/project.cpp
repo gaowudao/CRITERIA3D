@@ -688,6 +688,11 @@ bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, 
     }
 }
 
+bool Project::interpolateGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, Crit3DMeteoGrid *myGrid)
+{
+
+}
+
 
 bool Project::interpolateRasterRadiation(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, std::string *myError)
 {

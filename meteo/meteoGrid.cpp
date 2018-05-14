@@ -593,7 +593,6 @@ void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq
                         double myValue = aggregateMeteoGridPoint(*(_meteoPoints[row][col]));
                         // TO DO std dev
                         //.stdDev = AggregateMeteoGridPoint(Definitions.ELAB_STDDEVIATION, MeteoGrid.Point(myRow, myCol))
-                        //passaggioDati.SetGenericData myVar, myValue, getCurrentHour, MeteoGrid.Point(myRow, myCol)
                         if (freq == hourly)
                         {
                             fillMeteoPointHourlyValue(row, col, numberOfDays, initialize, date, hour, minute, myVar, myValue);

@@ -1141,4 +1141,14 @@ void MainWindow::on_actionInterpolation_to_Grid_triggered()
     {
         on_actionInterpolation_to_DTM_triggered();
     }
+
+    if (myProject.isDTMInterpolated && myProject.meteoGridDbHandler != NULL)
+    {
+        myProject.interpolateGrid(myProject.getCurrentVariable(), myProject.getFrequency(), myProject.getCurrentTime(), myProject.meteoGridDbHandler->meteoGrid());
+    }
+    else
+    {
+         myProject.errorString = "No grid";
+         myProject.logError();
+    }
 }
