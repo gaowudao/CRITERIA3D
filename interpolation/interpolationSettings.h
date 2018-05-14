@@ -12,6 +12,8 @@ class Crit3DInterpolationSettings
 {
 private:
     int interpolationMethod;
+    int elaboration;
+    float gridMinCoverage;
 
     bool useHeight;
     bool useThermalInversion;
@@ -101,6 +103,10 @@ public:
     float getGenericPearsonThreshold();
 
     float getCurrentClimateLapseRate(meteoVariable myVar);
+    int getElaboration() const;
+    void setElaboration(int value);
+    float getGridMinCoverage() const;
+    void setGridMinCoverage(float value);
 };
 
 

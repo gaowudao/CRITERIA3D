@@ -33,7 +33,9 @@
 #include "commonConstants.h"
 #include "basicMath.h"
 #include "statistics.h"
+#include "furtherMathFunctions.h"
 #include "meteoPoint.h"
+#include "meteoGrid.h"
 #include "gis.h"
 #include "interpolation.h"
 
@@ -1284,3 +1286,48 @@ bool interpolationRaster(meteoVariable myVar, Crit3DInterpolationSettings *mySet
     return true;
 }
 
+
+double aggregateMeteoGridPoint(Crit3DMeteoPoint myPoint)
+{
+
+    vector <double> validValues;
+
+
+    for (unsigned int i = 0; i < myPoint.aggregationPoints.size(); i++)
+    {
+        if (myPoint.aggregationPoints[i].z != NODATA)
+        {
+            validValues.push_back(myPoint.aggregationPoints[i].z);
+        }
+    }
+
+    if (validValues.empty())
+    {
+        return NODATA;
+    }
+
+    if ( (validValues.size() / myPoint.aggregationPointsMaxNr) < (currentSettings.getGridMinCoverage() / 100.0) )
+    {
+        return NODATA;
+    }
+
+    if (currentSettings.getElaboration() == elaborationMethods::mean)
+    {
+        return statistics::mean(validValues.data(), validValues.size());
+    }
+    else if (currentSettings.getElaboration() == elaborationMethods::median)
+    {
+        int size = validValues.size();
+        return sorting::percentile(validValues.data(), &size, 50.0, true);
+    }
+    else if (currentSettings.getElaboration() == elaborationMethods::stdDeviation)
+    {
+        return statistics::standardDeviation(validValues.data(), validValues.size());
+    }
+    else
+    {
+        return NODATA;
+    }
+
+
+}

@@ -11,6 +11,11 @@
         enum TProxyVar { height, urbanFraction, orogIndex, seaDistance, aspect, generic, noProxy };
     }
 
+    namespace elaborationMethods
+    {
+        enum { mean, median, stdDeviation};
+    }
+
     #define PROXY_VAR_NR 6
     #define PEARSONSTANDARDTHRESHOLD 0.21
     #define PREC_BINARY_THRESHOLD 0.5
