@@ -26,6 +26,8 @@
 
 #include "meteoGrid.h"
 #include "commonConstants.h"
+#include "interpolationConstants.h"
+#include "interpolation.h"
 // #include <iostream>
 
 
@@ -546,6 +548,68 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
 
         }
     }
+    // TO DO compute std deviation
+}
+
+//bool aggregateMeteoGrid(ByVal myVar As String, myDemGrid As GIS.grid, ByVal isInfo As Boolean)
+void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDTM)
+{
+
+    int numberOfDays = 1;
+    int initialize = 0;
+
+    if (!_isAggregationDefined)
+    {
+        findGridAggregationPoints(myDTM);
+    }
+
+    // TO DO
+    //dbGridManagement.initializeStandardDeviation
+
+
+    for (int col = 0; col < _gridStructure.header().nrCols; col++)
+    {
+        for (int row = 0; row < _gridStructure.header().nrRows; row++)
+        {
+            if (_meteoPoints[row][col]->active)
+            {
+                int validValues = 0;
+                for (unsigned int i = 0; i < _meteoPoints[row][col]->aggregationPoints.size(); i++)
+                {
+                    double x = _meteoPoints[row][col]->aggregationPoints[i].utm.x;
+                    double y = _meteoPoints[row][col]->aggregationPoints[i].utm.y;
+                    double interpolatedValue = gis::getValueFromXY(*myDTM, x, y);
+                    if (interpolatedValue != myDTM->header->flag)
+                    {
+                        _meteoPoints[row][col]->aggregationPoints[i].z = interpolatedValue;
+                        validValues = validValues + 1;
+                    }
+                }
+
+                if (!_meteoPoints[row][col]->aggregationPoints.empty())
+                {
+                    if ( (validValues / _meteoPoints[row][col]->aggregationPointsMaxNr) > ( GRID_MIN_COVERAGE / 100 ) )
+                    {
+                        double myValue = aggregateMeteoGridPoint(*(_meteoPoints[row][col]));
+                        // TO DO std dev
+                        //.stdDev = AggregateMeteoGridPoint(Definitions.ELAB_STDDEVIATION, MeteoGrid.Point(myRow, myCol))
+                        //passaggioDati.SetGenericData myVar, myValue, getCurrentHour, MeteoGrid.Point(myRow, myCol)
+                        if (freq == hourly)
+                        {
+                            fillMeteoPointHourlyValue(row, col, numberOfDays, initialize, date, hour, minute, myVar, myValue);
+                        }
+                        else if (freq == daily)
+                        {
+                            fillMeteoPointDailyValue(row, col, numberOfDays, initialize, date, myVar, myValue);
+                        }
+
+                    }
+                }
+
+            }
+        }
+    }
+
 }
 
 void Crit3DMeteoGrid::setGridStructure(const Crit3DMeteoGridStructure &gridStructure)

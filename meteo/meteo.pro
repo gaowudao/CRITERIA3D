@@ -24,7 +24,7 @@ win32:{
     TARGET = meteo
 }
 
-INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis
+INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../interpolation
 
 SOURCES += meteo.cpp \
     meteoPoint.cpp \

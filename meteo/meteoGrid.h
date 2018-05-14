@@ -117,6 +117,8 @@
 
             void assignCellAggregationPoints(int row, int col, gis::Crit3DRasterGrid* myDTM, bool excludeNoData);
 
+            void aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDTM);
+
     private:
 
             Crit3DMeteoGridStructure _gridStructure;

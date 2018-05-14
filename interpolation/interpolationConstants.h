@@ -21,4 +21,6 @@
     #define PREC_BINARY_THRESHOLD 0.5
     #define PREC_THRESHOLD 0.2
 
+    #define GRID_MIN_COVERAGE 10 //LC settata una percentuale casuale, TBC
+
 #endif // INTERPOLATIONCONSTS_H

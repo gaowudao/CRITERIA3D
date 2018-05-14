@@ -40,21 +40,10 @@ void Crit3DInterpolationSettings::setElaboration(int value)
     elaboration = value;
 }
 
-float Crit3DInterpolationSettings::getGridMinCoverage() const
-{
-    return gridMinCoverage;
-}
-
-void Crit3DInterpolationSettings::setGridMinCoverage(float value)
-{
-    gridMinCoverage = value;
-}
-
 Crit3DInterpolationSettings::Crit3DInterpolationSettings()
 {
     interpolationMethod = geostatisticsMethods::idw;
     elaboration = elaborationMethods::mean;
-    gridMinCoverage = 10;  //LC settata una percentuale casuale, TBC
 
     useHeight = true;
     useThermalInversion = true;

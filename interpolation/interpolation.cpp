@@ -35,7 +35,6 @@
 #include "statistics.h"
 #include "furtherMathFunctions.h"
 #include "meteoPoint.h"
-#include "meteoGrid.h"
 #include "gis.h"
 #include "interpolation.h"
 
@@ -1286,7 +1285,6 @@ bool interpolationRaster(meteoVariable myVar, Crit3DInterpolationSettings *mySet
     return true;
 }
 
-
 double aggregateMeteoGridPoint(Crit3DMeteoPoint myPoint)
 {
 
@@ -1306,7 +1304,7 @@ double aggregateMeteoGridPoint(Crit3DMeteoPoint myPoint)
         return NODATA;
     }
 
-    if ( (validValues.size() / myPoint.aggregationPointsMaxNr) < (currentSettings.getGridMinCoverage() / 100.0) )
+    if ( (validValues.size() / myPoint.aggregationPointsMaxNr) < ( GRID_MIN_COVERAGE / 100.0) )
     {
         return NODATA;
     }
