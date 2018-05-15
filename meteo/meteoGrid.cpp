@@ -197,6 +197,11 @@ std::vector<std::vector<Crit3DMeteoPoint *> > Crit3DMeteoGrid::meteoPoints() con
     return _meteoPoints;
 }
 
+Crit3DMeteoPoint Crit3DMeteoGrid::meteoPoint(int row, int col)
+{
+    return *(_meteoPoints[row][col]);
+}
+
 void Crit3DMeteoGrid::setMeteoPoints(const std::vector<std::vector<Crit3DMeteoPoint *> > &meteoPoints)
 {
     _meteoPoints = meteoPoints;
@@ -222,6 +227,11 @@ void Crit3DMeteoGrid::initMeteoPoints(int nRow, int nCol)
 
         _meteoPoints.push_back(meteoPointVector);
     }
+}
+
+void Crit3DMeteoGrid::setActive(int row, int col, bool active)
+{
+    _meteoPoints[row][col]->active = active;
 }
 
 
@@ -511,6 +521,8 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
             if ( ((demUR.row >= 0) && (demUR.row < _gridStructure.header().nrRows)) || ((demLL.row >= 0) && (demLL.row < _gridStructure.header().nrRows))
                  || ((demUR.col >= 0) && (demUR.col < _gridStructure.header().nrCols)) || ((demLL.col >= 0) && (_gridStructure.header().nrCols)))
             {
+
+                //////////////////LC TBC blocca //////////////////////
                 for (int myDTMRow = demUR.row; myDTMRow < demLL.row; myDTMRow++)
                 {
                     for (int myDTMCol = demLL.col; myDTMRow < demUR.col; myDTMCol++)
@@ -544,6 +556,7 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
                         }
                     }
                 }
+                //////////////////LC TBC blocca //////////////////////
             }
 
         }
@@ -551,8 +564,7 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
     // TO DO compute std deviation
 }
 
-//bool aggregateMeteoGrid(ByVal myVar As String, myDemGrid As GIS.grid, ByVal isInfo As Boolean)
-void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDTM)
+void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDTM, Crit3DMeteoGrid *interpolatedGrid)
 {
 
     int numberOfDays = 1;
@@ -595,11 +607,11 @@ void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq
                         //.stdDev = AggregateMeteoGridPoint(Definitions.ELAB_STDDEVIATION, MeteoGrid.Point(myRow, myCol))
                         if (freq == hourly)
                         {
-                            fillMeteoPointHourlyValue(row, col, numberOfDays, initialize, date, hour, minute, myVar, myValue);
+                            interpolatedGrid->fillMeteoPointHourlyValue(row, col, numberOfDays, initialize, date, hour, minute, myVar, myValue);
                         }
                         else if (freq == daily)
                         {
-                            fillMeteoPointDailyValue(row, col, numberOfDays, initialize, date, myVar, myValue);
+                            interpolatedGrid->fillMeteoPointDailyValue(row, col, numberOfDays, initialize, date, myVar, myValue);
                         }
 
                     }

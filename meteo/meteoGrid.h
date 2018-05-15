@@ -78,6 +78,10 @@
             std::vector<std::vector<Crit3DMeteoPoint *> > meteoPoints() const;
             void setMeteoPoints(const std::vector<std::vector<Crit3DMeteoPoint *> > &meteoPoints);
 
+            Crit3DMeteoPoint meteoPoint(int row, int col);
+
+            void setActive(int row, int col, bool active);
+
             bool isAggregationDefined() const;
             void setIsAggregationDefined(bool isAggregationDefined);
 
@@ -117,7 +121,7 @@
 
             void assignCellAggregationPoints(int row, int col, gis::Crit3DRasterGrid* myDTM, bool excludeNoData);
 
-            void aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDTM);
+            void aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDTM, Crit3DMeteoGrid *interpolatedGrid);
 
     private:
 

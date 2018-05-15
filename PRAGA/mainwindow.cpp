@@ -1144,7 +1144,24 @@ void MainWindow::on_actionInterpolation_to_Grid_triggered()
 
     if (myProject.isDTMInterpolated && myProject.meteoGridDbHandler != NULL)
     {
-        myProject.interpolateGrid(myProject.getCurrentVariable(), myProject.getFrequency(), myProject.getCurrentTime(), myProject.meteoGridDbHandler->meteoGrid());
+        Crit3DMeteoGrid* interpolatedGrid = new Crit3DMeteoGrid;
+        interpolatedGrid->setGridStructure(myProject.meteoGridDbHandler->meteoGrid()->gridStructure());
+        interpolatedGrid->initMeteoPoints(interpolatedGrid->gridStructure().header().nrRows, interpolatedGrid->gridStructure().header().nrCols);
+
+        for (int i = 0; i < interpolatedGrid->gridStructure().header().nrRows; i++)
+        {
+            for (int j = 0; j < interpolatedGrid->gridStructure().header().nrCols; j++)
+            {
+                    interpolatedGrid->setActive(i,j,myProject.meteoGridDbHandler->meteoGrid()->meteoPoint(i,j).active);
+            }
+        }
+
+        interpolatedGrid->dataMeteoGrid.initializeGrid(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid);
+
+        myProject.interpolateGrid(myProject.getCurrentVariable(), myProject.getFrequency(), myProject.getCurrentTime(), interpolatedGrid);
+
+        this->setCurrentRaster(&(interpolatedGrid->dataMeteoGrid));
+        ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myProject.getCurrentVariable())));
     }
     else
     {

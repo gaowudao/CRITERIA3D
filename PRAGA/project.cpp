@@ -688,9 +688,9 @@ bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, 
     }
 }
 
-bool Project::interpolateGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, Crit3DMeteoGrid *myGrid)
+bool Project::interpolateGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, Crit3DMeteoGrid *interpolatedGrid)
 {
-
+    this->meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, myFrequency, myTime.date, myTime.getHour(), myTime.getMinutes(), &(this->DTM), interpolatedGrid);
 }
 
 
