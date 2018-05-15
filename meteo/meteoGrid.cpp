@@ -522,10 +522,10 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
                  || ((demUR.col >= 0) && (demUR.col < _gridStructure.header().nrCols)) || ((demLL.col >= 0) && (_gridStructure.header().nrCols)))
             {
 
-                //////////////////LC TBC blocca //////////////////////
+
                 for (int myDTMRow = demUR.row; myDTMRow < demLL.row; myDTMRow++)
                 {
-                    for (int myDTMCol = demLL.col; myDTMRow < demUR.col; myDTMCol++)
+                    for (int myDTMCol = demLL.col; myDTMCol < demUR.col; myDTMCol++)
                     {
                         double utmX, utmY;
                         gis::Crit3DGeoPoint geoPoint;
@@ -556,7 +556,6 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
                         }
                     }
                 }
-                //////////////////LC TBC blocca //////////////////////
             }
 
         }
