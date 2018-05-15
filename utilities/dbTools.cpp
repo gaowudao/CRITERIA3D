@@ -68,6 +68,8 @@ bool loadCropParameters(QString idCrop, Crit3DCrop* myCrop, QSqlDatabase* dbCrop
     getValue(query.value("irrigation_shift"), &(myCrop->irrigationShift));
     getValue(query.value("degree_days_start_irrigation"), &(myCrop->degreeDaysStartIrrigation));
     getValue(query.value("degree_days_end_irrigation"), &(myCrop->degreeDaysEndIrrigation));
+    getValue(query.value("doy_start_irrigation"), &(myCrop->doyStartIrrigation));
+    getValue(query.value("doy_end_irrigation"), &(myCrop->doyEndIrrigation));
 
     // key value for irrigation
     if (! getValue(query.value("irrigation_volume"), &(myCrop->irrigationVolume)))

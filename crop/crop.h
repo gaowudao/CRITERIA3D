@@ -54,8 +54,8 @@
         int irrigationShift;
         double irrigationVolume;
         int degreeDaysStartIrrigation, degreeDaysEndIrrigation;
+        int doyStartIrrigation, doyEndIrrigation;
         double maxSurfacePuddle;
-
 
         /*!
          * \brief variables

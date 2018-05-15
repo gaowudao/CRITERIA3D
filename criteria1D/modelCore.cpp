@@ -152,7 +152,7 @@ bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& fi
         // IRRIGATION
         if (myCase->myCrop.isLiving)
         {
-            irrigation = cropIrrigationDemand(myCase, prec, tomorrowPrec);
+            irrigation = cropIrrigationDemand(myCase, doy, prec, tomorrowPrec);
             if (irrigation > 0 && myCase->optimizeIrrigation)
             {
                 irrigateCrop(myCase, irrigation);

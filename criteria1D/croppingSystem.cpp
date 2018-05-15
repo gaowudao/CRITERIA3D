@@ -285,34 +285,45 @@ double getReadilyAvailableWater(Criteria1D* myCase)
 }
 
 
-float cropIrrigationDemand(Criteria1D* myCase, float currentPrec, float nextPrec)
+float cropIrrigationDemand(Criteria1D* myCase, int doy, float currentPrec, float nextPrec)
 {
+    // update daysSinceIrrigation
+    if (daysSinceIrrigation != NODATA)
+        daysSinceIrrigation++;
+
     // check crop
     if ((myCase->myCrop.idCrop == "")
         || (! myCase->myCrop.isLiving)
         || (myCase->myCrop.irrigationVolume == 0)) return 0;
 
     // check irrigation period
-    if (myCase->myCrop.degreeDays < myCase->myCrop.degreeDaysStartIrrigation ||
+    if (myCase->myCrop.doyStartIrrigation != NODATA && myCase->myCrop.doyEndIrrigation != NODATA)
+    {
+        if (doy < myCase->myCrop.doyStartIrrigation ||
+            doy > myCase->myCrop.doyEndIrrigation) return 0.;
+    }
+    if (myCase->myCrop.degreeDaysStartIrrigation != NODATA && myCase->myCrop.degreeDaysEndIrrigation != NODATA)
+    {
+        if (myCase->myCrop.degreeDays < myCase->myCrop.degreeDaysStartIrrigation ||
             myCase->myCrop.degreeDays > myCase->myCrop.degreeDaysEndIrrigation) return 0.;
+    }
 
-    // check rainfall (forecast)
+    // check rainfall (today + tomorrow forecast)
     if (currentPrec >= 5.) return 0.;
     if (myCase->myCrop.irrigationShift > 1)
         if ((currentPrec + nextPrec) >  myCase->myCrop.irrigationVolume * 0.5) return 0.;
+
+    // check readily available water (weighted on root density)
+    if (getWeighredRAW(myCase) > 0.) return 0.;
 
     // check water stress
     double threshold = 1. - myCase->myCrop.stressTolerance;
     double waterStress = cropTranspiration(myCase, true);
     if (waterStress <= threshold) return 0.;
 
-    // check readily available water (weighted on root density)
-    if (getWeighredRAW(myCase) > 10.) return 0.;
-
     // check irrigation shift
     if (daysSinceIrrigation != NODATA)
     {
-        ++daysSinceIrrigation;
         if (waterStress < (threshold + 0.2))
         {
             if (daysSinceIrrigation < myCase->myCrop.irrigationShift)
@@ -320,6 +331,7 @@ float cropIrrigationDemand(Criteria1D* myCase, float currentPrec, float nextPrec
         }
         else
         {
+            // too much stressed -> half irrigation shift
             if (daysSinceIrrigation < (myCase->myCrop.irrigationShift * 0.5))
                 return 0;
         }
@@ -720,7 +732,10 @@ bool updateCrop(Criteria1D* myCase, std::string* myError, Crit3DDate myDate,
 
     // check start/end crop cycle (update isLiving)
     if (myCase->myCrop.needReset(myDate, myCase->meteoPoint.latitude, waterTableDepth))
+    {
         myCase->myCrop.resetCrop(myCase->nrLayers);
+        daysSinceIrrigation = NODATA;
+    }
 
     if (myCase->myCrop.isLiving)
     {

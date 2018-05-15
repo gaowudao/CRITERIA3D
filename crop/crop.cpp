@@ -78,6 +78,8 @@
         irrigationVolume = NODATA;
         degreeDaysStartIrrigation = NODATA;
         degreeDaysEndIrrigation = NODATA;
+        doyStartIrrigation = NODATA;
+        doyEndIrrigation = NODATA;
         maxSurfacePuddle = NODATA;
 
         degreeDays = NODATA;

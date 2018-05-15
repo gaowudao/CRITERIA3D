@@ -9,11 +9,13 @@
 
 bool getValue(QVariant myRs, int* myValue)
 {
-    if (myRs.isNull())
+    if (! myRs.isValid() || myRs.isNull())
+    {
         *myValue = NODATA;
+    }
     else
     {
-        if (myRs == "")
+        if (myRs == "" || myRs == "NULL")
             *myValue = NODATA;
         else
             *myValue = myRs.toInt();
