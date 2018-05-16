@@ -81,6 +81,7 @@
         int lonInt;
 
         bool isUTC;
+        bool isForecast;
         int hourlyFraction;
         long nrObsDataDaysH;
         long nrObsDataDaysD;

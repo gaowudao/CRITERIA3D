@@ -43,6 +43,7 @@ Crit3DMeteoPoint::Crit3DMeteoPoint()
     this->name = "";
     this->id = "";
     this->isUTC = true;
+    this->isForecast = false;
 
     this->aggregationPointsMaxNr = 0;
 
