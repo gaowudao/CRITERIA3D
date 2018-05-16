@@ -25,9 +25,8 @@
 
 
 #include "meteoGrid.h"
-#include "commonConstants.h"
-#include "interpolationConstants.h"
-#include "interpolation.h"
+#include "statistics.h"
+#include "furtherMathFunctions.h"
 // #include <iostream>
 
 
@@ -563,7 +562,7 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
     // TO DO compute std deviation
 }
 
-void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDTM, Crit3DMeteoGrid *interpolatedGrid)
+void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDTM, Crit3DMeteoGrid *interpolatedGrid, elaborationMethods elab)
 {
 
     int numberOfDays = 1;
@@ -601,7 +600,7 @@ void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq
                 {
                     if ( (validValues / _meteoPoints[row][col]->aggregationPointsMaxNr) > ( GRID_MIN_COVERAGE / 100 ) )
                     {
-                        double myValue = aggregateMeteoGridPoint(*(_meteoPoints[row][col]));
+                        double myValue = aggregateMeteoGridPoint(*(_meteoPoints[row][col]), elab);
                         // TO DO std dev
                         //.stdDev = AggregateMeteoGridPoint(Definitions.ELAB_STDDEVIATION, MeteoGrid.Point(myRow, myCol))
                         if (freq == hourly)
@@ -619,6 +618,52 @@ void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq
             }
         }
     }
+
+}
+
+
+double Crit3DMeteoGrid::aggregateMeteoGridPoint(Crit3DMeteoPoint myPoint, elaborationMethods elab)
+{
+
+    std::vector <double> validValues;
+
+
+    for (unsigned int i = 0; i < myPoint.aggregationPoints.size(); i++)
+    {
+        if (myPoint.aggregationPoints[i].z != NODATA)
+        {
+            validValues.push_back(myPoint.aggregationPoints[i].z);
+        }
+    }
+
+    if (validValues.empty())
+    {
+        return NODATA;
+    }
+
+    if ( (validValues.size() / myPoint.aggregationPointsMaxNr) < ( GRID_MIN_COVERAGE / 100.0) )
+    {
+        return NODATA;
+    }
+
+    if (elab == elaborationMethods::mean)
+    {
+        return statistics::mean(validValues.data(), validValues.size());
+    }
+    else if (elab == elaborationMethods::median)
+    {
+        int size = validValues.size();
+        return sorting::percentile(validValues.data(), &size, 50.0, true);
+    }
+    else if (elab == elaborationMethods::stdDeviation)
+    {
+        return statistics::standardDeviation(validValues.data(), validValues.size());
+    }
+    else
+    {
+        return NODATA;
+    }
+
 
 }
 

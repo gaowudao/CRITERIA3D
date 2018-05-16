@@ -71,6 +71,8 @@
 
         bool isDTMInterpolated;
 
+        elaborationMethods gridAggregationMethod;
+
         Project();
 
         void setCurrentDate(QDate myDate);

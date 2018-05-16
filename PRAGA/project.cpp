@@ -33,6 +33,7 @@ Project::Project()
     meteoPointsDbHandler = NULL;
     meteoGridDbHandler = NULL;
     isDTMInterpolated = false;
+    gridAggregationMethod = mean;
 
     radiationMaps = new Crit3DRadiationMaps();
 }
@@ -690,7 +691,7 @@ bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, 
 
 bool Project::interpolateGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, Crit3DMeteoGrid *interpolatedGrid)
 {
-    this->meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, myFrequency, myTime.date, myTime.getHour(), myTime.getMinutes(), &(this->DTM), interpolatedGrid);
+    this->meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, myFrequency, myTime.date, myTime.getHour(), myTime.getMinutes(), &(this->DTM), interpolatedGrid, gridAggregationMethod);
     return false;
 }
 

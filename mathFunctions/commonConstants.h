@@ -26,6 +26,10 @@
 #ifndef COMMONCONSTANTS_H
 #define COMMONCONSTANTS_H
 
+
+    enum elaborationMethods { mean, median, stdDeviation};
+
+
     //general functions
     #ifndef minValue
         #define minValue(a, b) (((a) < (b))? (a) : (b))

@@ -30,21 +30,9 @@
 #include "commonConstants.h"
 
 
-int Crit3DInterpolationSettings::getElaboration() const
-{
-    return elaboration;
-}
-
-void Crit3DInterpolationSettings::setElaboration(int value)
-{
-    elaboration = value;
-}
-
 Crit3DInterpolationSettings::Crit3DInterpolationSettings()
 {
     interpolationMethod = geostatisticsMethods::idw;
-    elaboration = elaborationMethods::mean;
-
     useHeight = true;
     useThermalInversion = true;
     useOrogIndex = false;

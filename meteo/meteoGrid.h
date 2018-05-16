@@ -9,6 +9,11 @@
     #ifndef GIS_H
         #include "gis.h"
     #endif
+    #ifndef COMMONCONSTANTS_H
+        #include "commonConstants.h"
+    #endif
+
+#define GRID_MIN_COVERAGE 10
 
     class Crit3DMeteoGridStructure
     {
@@ -121,7 +126,9 @@
 
             void assignCellAggregationPoints(int row, int col, gis::Crit3DRasterGrid* myDTM, bool excludeNoData);
 
-            void aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDTM, Crit3DMeteoGrid *interpolatedGrid);
+            void aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDTM, Crit3DMeteoGrid *interpolatedGrid, elaborationMethods elab);
+
+            double aggregateMeteoGridPoint(Crit3DMeteoPoint myPoint, elaborationMethods elab);
 
     private:
 

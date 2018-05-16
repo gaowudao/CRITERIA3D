@@ -72,6 +72,5 @@
                              const Crit3DTime& myTime, const gis::Crit3DRasterGrid& myDTM,
                              gis::Crit3DRasterGrid *myRaster, std::string *myError);
 
-    double aggregateMeteoGridPoint(Crit3DMeteoPoint myPoint);
 
 #endif // INTERPOLATION_H
