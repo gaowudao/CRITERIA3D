@@ -76,11 +76,11 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
         interpolateAndSaveHourlyMeteo(myProject, globalIrradiance, myCurrentTime, myOutputPath, isSave, myArea);
         //ET0
         if (computeET0Map(myProject))
-            saveMeteoHourlyOutput(myProject, potentialEvapotranspiration, myOutputPath, myCurrentTime, myArea);
+            saveMeteoHourlyOutput(myProject, referenceEvapotranspiration, myOutputPath, myCurrentTime, myArea);
 
         //Leaf Wetness
         if (computeLeafWetnessMap(myProject))
-            saveMeteoHourlyOutput(myProject, wetnessDuration, myOutputPath, myCurrentTime, myArea);
+            saveMeteoHourlyOutput(myProject, leafWetness, myOutputPath, myCurrentTime, myArea);
 
         if (isInitialState)
             initializeSoilMoisture(myProject, myCurrentTime.date.month);

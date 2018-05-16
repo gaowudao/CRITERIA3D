@@ -904,10 +904,10 @@ bool Crit3DProject::loadObsDataHourly(int indexPoint, QDate d1, QDate d2, QStrin
                         if ((myValue >= 0)&&(myValue < 75))
                         myPoint->obsDataH[i].windInt[j] = myValue;
                     }
-                    else if (myVar == wetnessDuration)
+                    else if (myVar == leafWetness)
                     {
                         if ((myValue >= 0)&&(myValue <= 60))
-                        myPoint->obsDataH[i].wetDuration[j] = myValue;
+                        myPoint->obsDataH[i].leafW[j] = myValue;
                     }
                 }
             }
@@ -990,8 +990,8 @@ bool Crit3DProject::loadObsDataHourlyVar(int indexPoint, meteoVariable myVar, QD
                     myPoint->obsDataH[i].irradiance[j] = myValue;
                 else if (myVar == windIntensity)
                     myPoint->obsDataH[i].windInt[j] = myValue;
-                else if (myVar == wetnessDuration)
-                    myPoint->obsDataH[i].wetDuration[j] = myValue;
+                else if (myVar == leafWetness)
+                    myPoint->obsDataH[i].leafW[j] = myValue;
             }
         }
     }
@@ -1193,8 +1193,8 @@ bool Crit3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool isS
                 aggregateAndSaveDailyMap(this, airHumidity, aggregationMean, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
                 aggregateAndSaveDailyMap(this, windIntensity, aggregationMean, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
                 aggregateAndSaveDailyMap(this, globalIrradiance, aggregationIntegration, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
-                aggregateAndSaveDailyMap(this, wetnessDuration, aggregationSum, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
-                aggregateAndSaveDailyMap(this, potentialEvapotranspiration, aggregationSum, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
+                aggregateAndSaveDailyMap(this, leafWetness, aggregationSum, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
+                aggregateAndSaveDailyMap(this, referenceEvapotranspiration, aggregationSum, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
                 aggregateAndSaveDailyMap(this, actualEvaporation, aggregationSum, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
                 if (removeDirectory(myOutputPathHourly)) this->logInfo("Delete hourly files");
             }
@@ -1203,7 +1203,7 @@ bool Crit3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool isS
             if (! loadDailyMeteoMap(this, dailyAirTemperatureAvg, myDate, myArea)) return false;
             if (! loadDailyMeteoMap(this, dailyAirHumidityAvg, myDate, myArea)) return false;
             if (! loadDailyMeteoMap(this, precipitation, myDate, myArea))  return false;
-            if (! loadDailyMeteoMap(this, wetnessDuration, myDate, myArea)) return false;
+            if (! loadDailyMeteoMap(this, leafWetness, myDate, myArea)) return false;
             updateThermalSum(this, myDate);
 
             /*! state and output */

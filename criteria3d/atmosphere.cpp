@@ -118,7 +118,7 @@ bool postInterpolation(meteoVariable myVar, gis::Crit3DRasterGrid* myGrid)
         setRadiationScale(myGrid->colorScale);
     else if (myVar == windIntensity)
         setWindIntensityScale(myGrid->colorScale);
-    else if (myVar == wetnessDuration)
+    else if (myVar == leafWetness)
         setLeafWetnessScale(myGrid->colorScale);
 
     return true;
@@ -310,7 +310,7 @@ bool computeRadiationProjectDtm(Crit3DProject* myProject, const Crit3DTime& myCr
     radAvailable = (myProject->meteoDataConsistency(globalIrradiance, myTimeIni, myTimeFin) > 0.5);
 
     if (radAvailable)
-        if(computeTransmissivity(myProject->meteoPoints, myProject->nrMeteoPoints, intervalWidth, myCrit3DTime, myProject->dtm) > 0)
+        if(computeTransmissivity(myProject->meteoPoints, myProject->nrMeteoPoints, intervalWidth, myCrit3DTime, myProject->dtm))
             transComputed = true;
 
     if (! transComputed)
@@ -435,8 +435,8 @@ meteoVariable getMeteoVarFromAggregationType(meteoVariable myVar, aggregationTyp
         return dailyWindIntensityAvg;
     else if (myVar == precipitation)
         return dailyPrecipitation;
-    else if (myVar == potentialEvapotranspiration)
-        return potentialEvapotranspiration;
+    else if (myVar == referenceEvapotranspiration)
+        return referenceEvapotranspiration;
     else if (myVar == actualEvaporation)
         return actualEvaporation;
     else if (myVar == globalIrradiance)
@@ -447,8 +447,8 @@ meteoVariable getMeteoVarFromAggregationType(meteoVariable myVar, aggregationTyp
         return dailyDiffuseRadiation;
     else if (myVar == reflectedIrradiance)
         return dailyReflectedRadiation;
-    else if (myVar == wetnessDuration)
-        return wetnessDuration;
+    else if (myVar == leafWetness)
+        return leafWetness;
 
     return noMeteoVar;
 }

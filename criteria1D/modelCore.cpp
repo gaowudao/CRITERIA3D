@@ -36,7 +36,7 @@
 #include "dbTools.h"
 
 
-bool runModel(Criteria1D* myCase, std::string* myError, Criteria1DUnit *myUnit)
+bool runModel(Criteria1D* myCase, Criteria1DUnit *myUnit, std::string* myError)
 {
     myCase->idCase = myUnit->idCase;
 

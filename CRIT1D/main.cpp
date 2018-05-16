@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
                             }
                             else
                             {
-                                if (! runModel(&(myProject.criteria), &(myProject.projectError), &(myProject.unit[i])))
+                                if (! runModel(&(myProject.criteria), &(myProject.unit[i]), &(myProject.projectError)))
                                 {
                                     myProject.logError();
                                     // TODO Improve
@@ -166,7 +166,7 @@ int main(int argc, char *argv[])
                         }
                         else
                         {
-                            if (! runModel(&(myProject.criteria), &(myProject.projectError), &(myProject.unit[i])))
+                            if (! runModel(&(myProject.criteria), &(myProject.unit[i]), &(myProject.projectError)))
                             {
                                 myProject.logError();
                                 isErrorMeteo = true;

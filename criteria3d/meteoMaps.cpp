@@ -99,11 +99,11 @@ gis::Crit3DRasterGrid* Crit3DMeteoMaps::getMapFromVar(meteoVariable myVar)
         return this->radiationMaps->diffuseRadiationMap;
     else if (myVar == reflectedIrradiance)
         return this->radiationMaps->reflectedRadiationMap;
-    else if (myVar == potentialEvapotranspiration)
+    else if (myVar == referenceEvapotranspiration)
         return ET0Map;
     else if (myVar == actualEvaporation)
         return evaporationMap;
-    else if (myVar == wetnessDuration)
+    else if (myVar == leafWetness)
         return leafWetnessMap;
     else
         return NULL;

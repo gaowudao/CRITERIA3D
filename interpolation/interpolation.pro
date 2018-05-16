@@ -33,6 +33,6 @@ SOURCES += interpolation.cpp \
 HEADERS += interpolation.h \
     interpolationSettings.h \
     interpolationPoint.h \
-    interpolationConstants.h \
-    kriging.h
+    kriging.h \
+    interpolationConstants.h
 
