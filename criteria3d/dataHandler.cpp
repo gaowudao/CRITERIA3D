@@ -46,9 +46,9 @@ QString getVarNameFromMeteoVariable(meteoVariable myVar)
         return "wind";
     else if (myVar == dailyWindIntensityAvg)
         return "windavg";
-    else if (myVar == wetnessDuration)
+    else if (myVar == leafWetness)
         return "leafWetness";
-    else if (myVar == potentialEvapotranspiration)
+    else if (myVar == referenceEvapotranspiration)
         return "potentialET";
     else if (myVar == actualEvaporation)
         return "evaporation";
@@ -80,9 +80,9 @@ meteoVariable getMeteoVariableFromVarName(QString myVar)
     else if (myVar == "wint")
         return windIntensity;
     else if (myVar == "leafWetness")
-        return wetnessDuration;
+        return leafWetness;
     else if (myVar == "potentialET")
-        return potentialEvapotranspiration;
+        return referenceEvapotranspiration;
     else if (myVar == "evaporation")
         return actualEvaporation;
     else
@@ -202,7 +202,7 @@ meteoVariable getMeteoVariable(int myVar)
     else if (myVar == 103) return(windIntensity);
     else if (myVar == 104) return(windDirection);
     else if (myVar == 105) return(globalIrradiance);
-    else if (myVar == 106) return(wetnessDuration);
+    else if (myVar == 106) return(leafWetness);
     else if (myVar == 107) return(atmPressure);
 
     else
@@ -223,7 +223,7 @@ int getMeteoVarIndex(meteoVariable myVar)
         return 104;
     else if (myVar == globalIrradiance)
         return 105;
-    else if (myVar == wetnessDuration)
+    else if (myVar == leafWetness)
         return 106;
     else if (myVar == atmPressure)
         return 107;

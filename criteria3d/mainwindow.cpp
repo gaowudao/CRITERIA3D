@@ -138,7 +138,7 @@ void MainWindow::on_menuInterpolationWindIntensity_triggered()
 
 void MainWindow::on_menuInterpolationLeafWetness_triggered()
 {
-    if (interpolateMap(wetnessDuration))
+    if (interpolateMap(leafWetness))
     {
         this->myMapWidget.setCurrentView(leafWetMap);
         this->update();

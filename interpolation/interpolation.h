@@ -36,15 +36,7 @@
         #include "interpolationPoint.h"
     #endif
 
-    #define MIN_REGRESSION_POINTS 3
-
     class Crit3DMeteoPoint;
-
-    enum TkrigingMode {KRIGING_SPHERICAL = 1,
-                       KRIGING_EXPONENTIAL=2,
-                       KRIGING_GAUSSIAN=3,
-                       KRIGING_LINEAR=4
-                      };
 
     void setInterpolationSettings(Crit3DInterpolationSettings *mySettings);
     void setindexPointJacknife(int index);
