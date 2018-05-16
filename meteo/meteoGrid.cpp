@@ -605,11 +605,11 @@ void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq
                         //.stdDev = AggregateMeteoGridPoint(Definitions.ELAB_STDDEVIATION, MeteoGrid.Point(myRow, myCol))
                         if (freq == hourly)
                         {
-                            interpolatedGrid->fillMeteoPointHourlyValue(row, col, numberOfDays, initialize, date, hour, minute, myVar, myValue);
+                            interpolatedGrid->fillMeteoPointHourlyValue(row, col, numberOfDays, initialize, date, hour, minute, myVar, float(myValue));
                         }
                         else if (freq == daily)
                         {
-                            interpolatedGrid->fillMeteoPointDailyValue(row, col, numberOfDays, initialize, date, myVar, myValue);
+                            interpolatedGrid->fillMeteoPointDailyValue(row, col, numberOfDays, initialize, date, myVar, float(myValue));
                         }
 
                     }
