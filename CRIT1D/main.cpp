@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 {
     QCoreApplication myApp(argc, argv);
 
-    MOSESProject myProject;
+    Criteria1DProject myProject;
     QString settingsFileName;
     int indexOfForecast;
     Crit3DDate dateOfForecast, firstDateAllSeason;

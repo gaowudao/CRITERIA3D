@@ -13,12 +13,12 @@
 
 using namespace std;
 
-MOSESProject::MOSESProject()
+Criteria1DProject::Criteria1DProject()
 {
     this->initialize();
 }
 
-void MOSESProject::initialize()
+void Criteria1DProject::initialize()
 {
     this->isProjectLoaded = false;
 
@@ -40,14 +40,14 @@ void MOSESProject::initialize()
     this->nrUnits = 0;
 }
 
-void MOSESProject::initializeUnit(int nr)
+void Criteria1DProject::initializeUnit(int nr)
 {
     this->nrUnits = nr;
     this->unit = new Criteria1DUnit[nr];
 }
 
 
-void MOSESProject::closeProject()
+void Criteria1DProject::closeProject()
 {
     if (this->isProjectLoaded)
     {
@@ -60,7 +60,7 @@ void MOSESProject::closeProject()
 }
 
 
-int MOSESProject::initializeProject(QString settingsFileName)
+int Criteria1DProject::initializeProject(QString settingsFileName)
 {
     this->closeProject();
     this->initialize();
@@ -109,7 +109,7 @@ int MOSESProject::initializeProject(QString settingsFileName)
 }
 
 
-bool MOSESProject::readSettings()
+bool Criteria1DProject::readSettings()
 {
     QSettings* projectSettings;
     projectSettings = new QSettings(this->configFileName, QSettings::IniFormat);
@@ -178,7 +178,7 @@ bool MOSESProject::readSettings()
     return true;
 }
 
-void MOSESProject::closeAllDatabase()
+void Criteria1DProject::closeAllDatabase()
 {
     this->criteria.dbParameters.close();
     this->criteria.dbSoil.close();
@@ -187,7 +187,7 @@ void MOSESProject::closeAllDatabase()
     this->criteria.dbOutput.close();
 }
 
-int MOSESProject::openAllDatabase()
+int Criteria1DProject::openAllDatabase()
 {
     this->closeAllDatabase();
 
@@ -297,7 +297,7 @@ int MOSESProject::openAllDatabase()
 }
 
 
-bool MOSESProject::loadUnits()
+bool Criteria1DProject::loadUnits()
 {
     QString queryString = "SELECT DISTINCT ID_CASE, ID_CROP, ID_SOIL, ID_METEO FROM units";
     queryString += " ORDER BY ID_CROP, ID_SOIL, ID_METEO";
@@ -342,7 +342,7 @@ bool MOSESProject::loadUnits()
 //
 //-------------------
 
-bool MOSESProject::setLogFile()
+bool Criteria1DProject::setLogFile()
 {
     if (!QDir(this->path + "log").exists())
          QDir().mkdir(this->path + "log");
@@ -358,7 +358,7 @@ bool MOSESProject::setLogFile()
 }
 
 
-void MOSESProject::logInfo(QString logStr)
+void Criteria1DProject::logInfo(QString logStr)
 {
     if (logFile.is_open())
         logFile << logStr.toStdString() << std::endl;
@@ -367,7 +367,7 @@ void MOSESProject::logInfo(QString logStr)
 }
 
 
-void MOSESProject::logError()
+void Criteria1DProject::logError()
 {
     if (logFile.is_open())
         logFile << "----ERROR!----\n" << this->projectError << std::endl;
@@ -376,7 +376,7 @@ void MOSESProject::logError()
 }
 
 
-void MOSESProject::logError(QString errorStr)
+void Criteria1DProject::logError(QString errorStr)
 {
     this->projectError = errorStr.toStdString();
     logError();

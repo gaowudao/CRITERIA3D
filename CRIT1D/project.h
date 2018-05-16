@@ -33,7 +33,7 @@
 #define ERROR_UNKNOWN -99
 
 
-class MOSESProject
+class Criteria1DProject
 {
     public:
         QString path;
@@ -65,7 +65,7 @@ class MOSESProject
         int nrUnits;
         Criteria1DUnit *unit;
 
-        MOSESProject();
+        Criteria1DProject();
 
         void initialize();
         void initializeUnit(int nr);
