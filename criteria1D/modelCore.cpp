@@ -61,11 +61,11 @@ bool runModel(Criteria1D* myCase, Criteria1DUnit *myUnit, std::string* myError)
 
     myCase->initializeSeasonalForecast(firstDate, lastDate);
 
-    return computeModel(myCase, myError, firstDate, lastDate);
+    return computeModel(myCase, firstDate, lastDate, myError);
 }
 
 
-bool computeModel(Criteria1D* myCase, std::string* myError, const Crit3DDate& firstDate, const Crit3DDate& lastDate)
+bool computeModel(Criteria1D* myCase, const Crit3DDate& firstDate, const Crit3DDate& lastDate, std::string* myError)
 {
     Crit3DDate myDate;
     long myIndex;
