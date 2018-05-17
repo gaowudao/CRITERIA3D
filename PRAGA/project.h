@@ -69,8 +69,6 @@
 
         meteoVariable currentVariable;
 
-        bool isDTMInterpolated;
-
         elaborationMethods gridAggregationMethod;
 
         Project();
@@ -111,7 +109,7 @@
 
         bool interpolateRaster(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster);
         bool interpolateRasterRadiation(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, std::string *myError);
-        bool interpolateGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, Crit3DMeteoGrid *interpolatedGrid);
+        bool interpolateGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime);
     };
 
 

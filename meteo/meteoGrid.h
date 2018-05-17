@@ -126,7 +126,7 @@
 
             void assignCellAggregationPoints(int row, int col, gis::Crit3DRasterGrid* myDTM, bool excludeNoData);
 
-            void aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDTM, Crit3DMeteoGrid *interpolatedGrid, elaborationMethods elab);
+            void aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDTM, gis::Crit3DRasterGrid dataRaster, elaborationMethods elab);
 
             double aggregateMeteoGridPoint(Crit3DMeteoPoint myPoint, elaborationMethods elab);
 

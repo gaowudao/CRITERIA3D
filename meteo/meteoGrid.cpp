@@ -562,7 +562,7 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
     // TO DO compute std deviation
 }
 
-void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDTM, Crit3DMeteoGrid *interpolatedGrid, elaborationMethods elab)
+void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDTM, gis::Crit3DRasterGrid dataRaster, elaborationMethods elab)
 {
 
     int numberOfDays = 1;
@@ -588,8 +588,8 @@ void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq
                 {
                     double x = _meteoPoints[row][col]->aggregationPoints[i].utm.x;
                     double y = _meteoPoints[row][col]->aggregationPoints[i].utm.y;
-                    double interpolatedValue = gis::getValueFromXY(*myDTM, x, y);
-                    if (interpolatedValue != myDTM->header->flag)
+                    double interpolatedValue = gis::getValueFromXY(dataRaster, x, y);
+                    if (interpolatedValue != dataRaster.header->flag)
                     {
                         _meteoPoints[row][col]->aggregationPoints[i].z = interpolatedValue;
                         validValues = validValues + 1;
@@ -605,11 +605,11 @@ void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq
                         //.stdDev = AggregateMeteoGridPoint(Definitions.ELAB_STDDEVIATION, MeteoGrid.Point(myRow, myCol))
                         if (freq == hourly)
                         {
-                            interpolatedGrid->fillMeteoPointHourlyValue(row, col, numberOfDays, initialize, date, hour, minute, myVar, float(myValue));
+                            fillMeteoPointHourlyValue(row, col, numberOfDays, initialize, date, hour, minute, myVar, float(myValue));
                         }
                         else if (freq == daily)
                         {
-                            interpolatedGrid->fillMeteoPointDailyValue(row, col, numberOfDays, initialize, date, myVar, float(myValue));
+                            fillMeteoPointDailyValue(row, col, numberOfDays, initialize, date, myVar, float(myValue));
                         }
 
                     }

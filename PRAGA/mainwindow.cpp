@@ -212,7 +212,6 @@ void MainWindow::on_actionLoadRaster_triggered()
     // active raster object
     this->rasterObj->updateCenter();
 
-    myProject.isDTMInterpolated = false;
 }
 
 
@@ -653,7 +652,6 @@ void MainWindow::interpolateRasterGUI()
         //redrawMeteoPoints(false);
 
         ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myVar)));
-        myProject.isDTMInterpolated = true;
     }
     else
         myProject.logError();
@@ -1137,35 +1135,20 @@ void MainWindow::on_actionInterpolation_to_DTM_triggered()
 
 void MainWindow::on_actionInterpolation_to_Grid_triggered()
 {
-    if (!myProject.isDTMInterpolated)
+
+    formRunInfo myInfo;
+    myInfo.start("Interpolation Grid...", 0);
+
+    if (myProject.interpolateGrid(myProject.getCurrentVariable(), myProject.getFrequency(), myProject.getCurrentTime()))
     {
-        on_actionInterpolation_to_DTM_triggered();
-    }
-
-    if (myProject.isDTMInterpolated && myProject.meteoGridDbHandler != NULL)
-    {
-        Crit3DMeteoGrid* interpolatedGrid = new Crit3DMeteoGrid;
-        interpolatedGrid->setGridStructure(myProject.meteoGridDbHandler->meteoGrid()->gridStructure());
-        interpolatedGrid->initMeteoPoints(interpolatedGrid->gridStructure().header().nrRows, interpolatedGrid->gridStructure().header().nrCols);
-
-        for (int i = 0; i < interpolatedGrid->gridStructure().header().nrRows; i++)
-        {
-            for (int j = 0; j < interpolatedGrid->gridStructure().header().nrCols; j++)
-            {
-                    interpolatedGrid->setActive(i,j,myProject.meteoGridDbHandler->meteoGrid()->meteoPoint(i,j).active);
-            }
-        }
-
-        interpolatedGrid->dataMeteoGrid.initializeGrid(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid);
-
-        myProject.interpolateGrid(myProject.getCurrentVariable(), myProject.getFrequency(), myProject.getCurrentTime(), interpolatedGrid);
-
-        this->setCurrentRaster(&(interpolatedGrid->dataMeteoGrid));
+        this->setCurrentRaster(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid));
         ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myProject.getCurrentVariable())));
+
     }
     else
     {
-         myProject.errorString = "No grid";
          myProject.logError();
     }
+    myInfo.close();
+
 }
