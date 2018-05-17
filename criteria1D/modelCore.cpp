@@ -106,7 +106,14 @@ bool computeModel(Criteria1D* myCase, const Crit3DDate& firstDate, const Crit3DD
         tmin = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyAirTemperatureMin);
         tmax = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyAirTemperatureMax);
 
+        // WATERTABLE
         waterTableDepth = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyWaterTableDepth);
+
+        // for Romenian - TODO migliorare
+        if (waterTableDepth != NODATA)
+        {
+            waterTableDepth = maxValue(waterTableDepth, 0.5);
+        }
 
         myCase->output.dailyWaterTable = waterTableDepth;
 

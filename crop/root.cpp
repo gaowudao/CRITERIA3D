@@ -109,13 +109,10 @@ namespace root
         {
             if (waterTableDepth != NODATA && waterTableDepth > 0)
             {
-                double maxRootDepth = waterTableDepth - 0.1f;
-                // previous rootlenght
-                double minRootLenght = maxValue(myCrop->roots.rootLength, 0.05f);
-
-                if ((rootLength > minRootLenght) && ((myCrop->roots.rootDepthMin + rootLength) > maxRootDepth))
+                if (rootLength > (waterTableDepth - myCrop->roots.rootDepthMin))
                 {
-                    rootLength = maxValue(minRootLenght, maxRootDepth - myCrop->roots.rootDepthMin);
+                    // previous root lenght
+                    rootLength = maxValue(myCrop->roots.rootLength, waterTableDepth - myCrop->roots.rootDepthMin);
                 }
             }
         }
