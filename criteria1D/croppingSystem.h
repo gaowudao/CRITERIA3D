@@ -26,4 +26,4 @@
 
     bool updateCropWaterStressSensibility(Crit3DCrop* myCrop);
 
-#endif // CROPPINGSYSTEM
+#endif // CROPPINGSYSTEM_H

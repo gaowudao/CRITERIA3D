@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
     {
         settingsFileName = "C:/GitHub/CRITERIA3D/DATA/criteria1D/example/exampleCriteria1D.ini";
 
-        //myProject.logError("USAGE: MOSES_WB settings_filename.ini");
+        //myProject.logError("USAGE: CRITERIA1D settings_filename.ini");
         //return ERROR_SETTINGS_MISSING;
     }
 
@@ -100,18 +100,18 @@ int main(int argc, char *argv[])
         for (int i = 0; i < myProject.nrUnits; i++)
         {
             //CROP
-            myProject.unit[i].idCrop = getIdCrop(&(myProject.criteria.dbParameters), myProject.unit[i].idCropMoses, &(myProject.projectError)).toUpper();
+            myProject.unit[i].idCrop = getIdCrop(&(myProject.criteria.dbParameters), myProject.unit[i].idCropClass, &(myProject.projectError)).toUpper();
             if (myProject.unit[i].idCrop == "")
             {
-                myProject.logInfo("Unit " + myProject.unit[i].idCase + " " + myProject.unit[i].idCropMoses + " ***** missing CROP *****");
+                myProject.logInfo("Unit " + myProject.unit[i].idCase + " " + myProject.unit[i].idCropClass + " ***** missing CROP *****");
                 isErrorCrop = true;
             }
             else
             {
                 //IRRI_RATIO
-                irriRatio = getIrriRatio(&(myProject.criteria.dbParameters), myProject.unit[i].idCropMoses, &(myProject.projectError));
+                irriRatio = getIrriRatio(&(myProject.criteria.dbParameters), myProject.unit[i].idCropClass, &(myProject.projectError));
                 if (irriRatio == NODATA)
-                    myProject.logInfo("Unit " + myProject.unit[i].idCase + " " + myProject.unit[i].idCropMoses + " ***** missing IRRIGATION RATIO *****");
+                    myProject.logInfo("Unit " + myProject.unit[i].idCase + " " + myProject.unit[i].idCropClass + " ***** missing IRRIGATION RATIO *****");
                 else
                 {
                     //SOIL

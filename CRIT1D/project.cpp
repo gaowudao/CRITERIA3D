@@ -316,16 +316,13 @@ bool Criteria1DProject::loadUnits()
     int nr = query.at() + 1;     //SQLITE doesn't support SIZE
     this->initializeUnit(nr);
 
-    //std::cout << "\n" << this->nrUnits << " distinct units.\n";
-
     int i = 0;
     query.first();
     do
     {
         this->unit[i].idCase = query.value("ID_CASE").toString();
-        this->unit[i].idCropMoses = query.value("ID_CROP").toString();
+        this->unit[i].idCropClass = query.value("ID_CROP").toString();
         this->unit[i].idMeteo = query.value("ID_METEO").toString();
-        //TODO forecast field
         this->unit[i].idForecast = query.value("ID_METEO").toString();
         this->unit[i].idSoilNumber = query.value("ID_SOIL").toInt();
 

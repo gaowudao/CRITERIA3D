@@ -49,7 +49,7 @@ Criteria1DUnit::Criteria1DUnit()
 
     this->idForecast = "";
     this->idSoilNumber = NODATA;
-    this->idCropMoses = "";
+    this->idCropClass = "";
 }
 
 

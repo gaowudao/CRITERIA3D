@@ -108,12 +108,6 @@ bool computeModel(Criteria1D* myCase, const Crit3DDate& firstDate, const Crit3DD
 
         waterTableDepth = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyWaterTableDepth);
 
-        /*
-        // patch for MOSES DA-RO - abbassa falda di 10cm (solo primo metro)
-        if (waterTableDepth >= 0.f && waterTableDepth <= 0.9f)
-                waterTableDepth += 0.1f;
-        */
-
         myCase->output.dailyWaterTable = waterTableDepth;
 
         if ((prec == NODATA) || (tmin == NODATA) || (tmax == NODATA))
