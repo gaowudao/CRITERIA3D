@@ -519,7 +519,7 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
             _meteoPoints[row][col]->aggregationPointsMaxNr = 0;
 
             if ( ((demUR.row >= 0) && (demUR.row < _gridStructure.header().nrRows)) || ((demLL.row >= 0) && (demLL.row < _gridStructure.header().nrRows))
-                 || ((demUR.col >= 0) && (demUR.col < _gridStructure.header().nrCols)) || ((demLL.col >= 0) && (_gridStructure.header().nrCols)))
+                 || ((demUR.col >= 0) && (demUR.col < _gridStructure.header().nrCols)) || ((demLL.col >= 0) && ( demLL.col < _gridStructure.header().nrCols)))
             {
 
 
@@ -565,7 +565,7 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
 
 void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDTM, gis::Crit3DRasterGrid dataRaster, elaborationMethods elab)
 {
-
+std::cout << "aggregateMeteoGrid prima 5,56: " << _meteoPoints[5][56]->currentValue << std::endl;
     int numberOfDays = 1;
     int initialize = 0;
 
@@ -614,6 +614,7 @@ void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq
                         {
                             fillMeteoPointDailyValue(row, col, numberOfDays, initialize, date, myVar, float(myValue));
                             fillMeteoPointCurrentDailyValue(date, myVar);
+                            std::cout << "aggregateMeteoGrid dopo 5,56 " << _meteoPoints[5][56]->currentValue << std::endl;
                         }
 
                     }

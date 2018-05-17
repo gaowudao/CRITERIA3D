@@ -693,8 +693,8 @@ bool Project::interpolateGrid(meteoVariable myVar, frequencyType myFrequency, co
 
 //    ///////////////////test//////////////
 
-//    qInfo() << "prima id == 02315" << this->meteoGridDbHandler->meteoGrid()->meteoPoint(5,57).currentValue;
-//    qInfo() << "prima id == 02275" << this->meteoGridDbHandler->meteoGrid()->meteoPoint(5,56).currentValue;
+    qInfo() << "prima id == 02315" << this->meteoGridDbHandler->meteoGrid()->meteoPoint(5,57).currentValue;
+    qInfo() << "prima id == 02275" << this->meteoGridDbHandler->meteoGrid()->meteoPoint(5,56).currentValue;
 
 //    /////////////////////////////
 
@@ -710,8 +710,8 @@ bool Project::interpolateGrid(meteoVariable myVar, frequencyType myFrequency, co
 //    ///////////////////test//////////////
 
 
-//    qInfo() << "id == 02315" << this->meteoGridDbHandler->meteoGrid()->meteoPoint(5,57).currentValue;
-//    qInfo() << "id == 02275" << this->meteoGridDbHandler->meteoGrid()->meteoPoint(5,56).currentValue;
+    qInfo() << "id == 02315" << this->meteoGridDbHandler->meteoGrid()->meteoPoint(5,57).currentValue;
+    qInfo() << "id == 02275" << this->meteoGridDbHandler->meteoGrid()->meteoPoint(5,56).currentValue;
 
 
 //    /////////////////////////////
