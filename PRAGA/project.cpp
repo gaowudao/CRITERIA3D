@@ -32,7 +32,6 @@ Project::Project()
     meteoPointsColorScale = new Crit3DColorScale();
     meteoPointsDbHandler = NULL;
     meteoGridDbHandler = NULL;
-    isDTMInterpolated = false;
     gridAggregationMethod = mean;
 
     radiationMaps = new Crit3DRadiationMaps();
@@ -689,10 +688,35 @@ bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, 
     }
 }
 
-bool Project::interpolateGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, Crit3DMeteoGrid *interpolatedGrid)
+bool Project::interpolateGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime)
 {
-    this->meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, myFrequency, myTime.date, myTime.getHour(), myTime.getMinutes(), &(this->DTM), interpolatedGrid, gridAggregationMethod);
-    return false;
+
+//    ///////////////////test//////////////
+
+//    qInfo() << "prima id == 02315" << this->meteoGridDbHandler->meteoGrid()->meteoPoint(5,57).currentValue;
+//    qInfo() << "prima id == 02275" << this->meteoGridDbHandler->meteoGrid()->meteoPoint(5,56).currentValue;
+
+//    /////////////////////////////
+
+    if (this->meteoGridDbHandler != NULL)
+    {
+        if (!interpolateRaster(myVar, myFrequency, myTime, &(this->dataRaster)))
+        {
+            return false;
+        }
+        this->meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, myFrequency, myTime.date, myTime.getHour(), myTime.getMinutes(), &(this->DTM), this->dataRaster, gridAggregationMethod);
+    }
+
+//    ///////////////////test//////////////
+
+
+//    qInfo() << "id == 02315" << this->meteoGridDbHandler->meteoGrid()->meteoPoint(5,57).currentValue;
+//    qInfo() << "id == 02275" << this->meteoGridDbHandler->meteoGrid()->meteoPoint(5,56).currentValue;
+
+
+//    /////////////////////////////
+
+    return true;
 }
 
 
