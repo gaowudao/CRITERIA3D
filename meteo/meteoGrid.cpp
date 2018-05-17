@@ -27,7 +27,7 @@
 #include "meteoGrid.h"
 #include "statistics.h"
 #include "furtherMathFunctions.h"
-// #include <iostream>
+#include <iostream>
 
 
 
@@ -298,7 +298,8 @@ bool Crit3DMeteoGrid::fillMeteoPointCurrentDailyValue(Crit3DDate date, meteoVari
             if (_meteoPoints[row][col]->active && _meteoPoints[row][col]->nrObsDataDaysD != 0)
             {
                 _meteoPoints[row][col]->currentValue = _meteoPoints[row][col]->getMeteoPointValueD(date, variable);
-                //std::cout << "_meteoPoints[row][col]->id" << _meteoPoints[row][col]->id << "row" << row << "col" << col << "_meteoPoints[row][col]->currentValue" << _meteoPoints[row][col]->currentValue << std::endl;
+//                if ( (row ==5) && (col== 57))
+//                    std::cout << "_meteoPoints[row][col]->id" << _meteoPoints[row][col]->id << "row" << row << "col" << col << "_meteoPoints[row][col]->currentValue" << _meteoPoints[row][col]->currentValue << std::endl;
             }
             else
             {
@@ -606,10 +607,13 @@ void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq
                         if (freq == hourly)
                         {
                             fillMeteoPointHourlyValue(row, col, numberOfDays, initialize, date, hour, minute, myVar, float(myValue));
+                            fillMeteoPointCurrentHourlyValue(date, hour, minute, myVar);
+
                         }
                         else if (freq == daily)
                         {
                             fillMeteoPointDailyValue(row, col, numberOfDays, initialize, date, myVar, float(myValue));
+                            fillMeteoPointCurrentDailyValue(date, myVar);
                         }
 
                     }
