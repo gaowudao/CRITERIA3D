@@ -484,6 +484,7 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
         }
         else
         {
+
             gis::Crit3DGeoPoint pointLatLon0;
             gis::Crit3DGeoPoint geoPoint;
             pointLatLon0.latitude = _gridStructure.header().llCorner->latitude + row * _gridStructure.header().dy;
@@ -534,8 +535,8 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
                         gis::getUtmXYFromRowCol(*(myDTM->header), myDTMRow, myDTMCol, &utmX, &utmY);
                         gis::getLatLonFromUtm(_gisSettings, utmX, utmY, &geoP.latitude, &geoP.longitude);
 
-                        latLonHeader.llCorner->latitude = _gridStructure.header().llCorner->latitude;
-                        latLonHeader.llCorner->longitude = _gridStructure.header().llCorner->longitude;
+                        latLonHeader.llCorner->latitude = pointLatLon0.latitude;
+                        latLonHeader.llCorner->longitude = pointLatLon0.longitude;
                         latLonHeader.dx = _gridStructure.header().dx;
                         latLonHeader.dy = _gridStructure.header().dy;
                         latLonHeader.nrRows = row;
