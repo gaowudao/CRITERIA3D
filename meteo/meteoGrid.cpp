@@ -519,8 +519,8 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
             _meteoPoints[row][col]->aggregationPoints.clear();
             _meteoPoints[row][col]->aggregationPointsMaxNr = 0;
 
-            if ( ((demUR.row >= 0) && (demUR.row < _gridStructure.header().nrRows)) || ((demLL.row >= 0) && (demLL.row < _gridStructure.header().nrRows))
-                 || ((demUR.col >= 0) && (demUR.col < _gridStructure.header().nrCols)) || ((demLL.col >= 0) && ( demLL.col < _gridStructure.header().nrCols)))
+            if ( ((demUR.row >= 0) && (demUR.row < myDTM->header->nrRows)) || ((demLL.row >= 0) && (demLL.row < myDTM->header->nrRows))
+                 || ((demUR.col >= 0) && (demUR.col < myDTM->header->nrCols)) || ((demLL.col >= 0) && ( demLL.col < myDTM->header->nrCols)))
             {
 
 
