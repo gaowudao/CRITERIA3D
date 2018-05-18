@@ -13,7 +13,7 @@
         #include "commonConstants.h"
     #endif
 
-#define GRID_MIN_COVERAGE 10
+#define GRID_MIN_COVERAGE 0
 
     class Crit3DMeteoGridStructure
     {

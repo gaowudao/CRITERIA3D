@@ -27,7 +27,7 @@
 #include "meteoGrid.h"
 #include "statistics.h"
 #include "furtherMathFunctions.h"
-#include <iostream>
+#include <iostream> //debug
 
 
 
@@ -298,8 +298,6 @@ bool Crit3DMeteoGrid::fillMeteoPointCurrentDailyValue(Crit3DDate date, meteoVari
             if (_meteoPoints[row][col]->active && _meteoPoints[row][col]->nrObsDataDaysD != 0)
             {
                 _meteoPoints[row][col]->currentValue = _meteoPoints[row][col]->getMeteoPointValueD(date, variable);
-//                if ( (row ==5) && (col== 57))
-//                    std::cout << "_meteoPoints[row][col]->id" << _meteoPoints[row][col]->id << "row" << row << "col" << col << "_meteoPoints[row][col]->currentValue" << _meteoPoints[row][col]->currentValue << std::endl;
             }
             else
             {
@@ -321,8 +319,6 @@ bool Crit3DMeteoGrid::fillMeteoPointCurrentHourlyValue(Crit3DDate date, int hour
             if (_meteoPoints[row][col]->active && _meteoPoints[row][col]->nrObsDataDaysD != 0)
             {
                 _meteoPoints[row][col]->currentValue = _meteoPoints[row][col]->getMeteoPointValueH(date, hour, minute, variable);
-                //std::cout << "_meteoPoints[row][col]->id" << _meteoPoints[row][col]->id << "row" << row << "col" << col << "_meteoPoints[row][col]->currentValue" << _meteoPoints[row][col]->currentValue << std::endl;
-
             }
             else
             {
@@ -566,9 +562,9 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
 
 void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDTM, gis::Crit3DRasterGrid dataRaster, elaborationMethods elab)
 {
-std::cout << "aggregateMeteoGrid prima 5,56: " << _meteoPoints[5][56]->currentValue << std::endl;
     int numberOfDays = 1;
     int initialize = 0;
+
 
     if (!_isAggregationDefined)
     {
@@ -585,7 +581,7 @@ std::cout << "aggregateMeteoGrid prima 5,56: " << _meteoPoints[5][56]->currentVa
         {
             if (_meteoPoints[row][col]->active)
             {
-                int validValues = 0;
+                double validValues = 0;
                 for (unsigned int i = 0; i < _meteoPoints[row][col]->aggregationPoints.size(); i++)
                 {
                     double x = _meteoPoints[row][col]->aggregationPoints[i].utm.x;
@@ -600,22 +596,26 @@ std::cout << "aggregateMeteoGrid prima 5,56: " << _meteoPoints[5][56]->currentVa
 
                 if (!_meteoPoints[row][col]->aggregationPoints.empty())
                 {
+
                     if ( (validValues / _meteoPoints[row][col]->aggregationPointsMaxNr) > ( GRID_MIN_COVERAGE / 100 ) )
                     {
+
                         double myValue = aggregateMeteoGridPoint(*(_meteoPoints[row][col]), elab);
                         // TO DO std dev
                         //.stdDev = AggregateMeteoGridPoint(Definitions.ELAB_STDDEVIATION, MeteoGrid.Point(myRow, myCol))
                         if (freq == hourly)
                         {
+                            //std::cout << "row: " << row << "col: " << col <<"value: " << myValue <<std::endl;
                             fillMeteoPointHourlyValue(row, col, numberOfDays, initialize, date, hour, minute, myVar, float(myValue));
                             fillMeteoPointCurrentHourlyValue(date, hour, minute, myVar);
 
                         }
                         else if (freq == daily)
                         {
+                            //std::cout << "id: " << _meteoPoints[row][col]->id << " row: " << row << " col: " << col <<" value: " << myValue <<std::endl;
                             fillMeteoPointDailyValue(row, col, numberOfDays, initialize, date, myVar, float(myValue));
                             fillMeteoPointCurrentDailyValue(date, myVar);
-                            std::cout << "aggregateMeteoGrid dopo 5,56 " << _meteoPoints[5][56]->currentValue << std::endl;
+
                         }
 
                     }
@@ -647,7 +647,7 @@ double Crit3DMeteoGrid::aggregateMeteoGridPoint(Crit3DMeteoPoint myPoint, elabor
         return NODATA;
     }
 
-    if ( (validValues.size() / myPoint.aggregationPointsMaxNr) < ( GRID_MIN_COVERAGE / 100.0) )
+    if ( (static_cast<double>(validValues.size()) / myPoint.aggregationPointsMaxNr) < ( GRID_MIN_COVERAGE / 100.0) )
     {
         return NODATA;
     }
