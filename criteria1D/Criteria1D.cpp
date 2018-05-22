@@ -167,7 +167,7 @@ bool Criteria1D::setSoil(QString idSoil, std::string *myError)
 
 QString getId5Char(QString id)
 {
-    while (id.length() < 5)
+    if (id.length() < 5)
         id = "0" + id;
 
     return id;
