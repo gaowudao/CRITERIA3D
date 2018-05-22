@@ -359,13 +359,13 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, 
 
 
 /*!
- * \brief getCropFromClass get idCrop from crop class
+ * \brief getCropFromClass
  * \param dbCrop
  * \param cropClassTable
  * \param cropClassField
  * \param idCropClass
  * \param myError
- * \return idCrop (string)
+ * \return myCrop (string)
  */
 QString getCropFromClass(QSqlDatabase* dbCrop, QString cropClassTable, QString cropClassField, QString idCropClass, std::string *myError)
 {
@@ -382,10 +382,41 @@ QString getCropFromClass(QSqlDatabase* dbCrop, QString cropClassTable, QString c
         return "";
     }
 
-    QString idCrop;
-    getValue(query.value("id_crop"), &idCrop);
+    QString myCrop;
+    getValue(query.value("id_crop"), &myCrop);
 
-    return idCrop;
+    return myCrop;
+}
+
+
+/*!
+ * \brief getCropFromId
+ * \param dbCrop
+ * \param cropClassTable
+ * \param cropIdField
+ * \param cropId
+ * \param myError
+ * \return myCrop (string)
+ */
+QString getCropFromId(QSqlDatabase* dbCrop, QString cropClassTable, QString cropIdField, int cropId, std::string *myError)
+{
+    *myError = "";
+    QString queryString = "SELECT * FROM " + cropClassTable + " WHERE " + cropIdField + " = " + cropId;
+
+    QSqlQuery query = dbCrop->exec(queryString);
+    query.last();
+
+    if (! query.isValid())
+    {
+        if (query.lastError().number() > 0)
+            *myError = query.lastError().text().toStdString();
+        return "";
+    }
+
+    QString myCrop;
+    getValue(query.value("id_crop"), &myCrop);
+
+    return myCrop;
 }
 
 
