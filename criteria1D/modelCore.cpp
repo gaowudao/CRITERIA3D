@@ -59,7 +59,8 @@ bool runModel(Criteria1D* myCase, Criteria1DUnit *myUnit, std::string* myError)
     firstDate = myCase->meteoPoint.obsDataD[0].date;
     lastDate = myCase->meteoPoint.obsDataD[lastIndex].date;
 
-    myCase->initializeSeasonalForecast(firstDate, lastDate);
+    if (isSeasonalForecast)
+        myCase->initializeSeasonalForecast(firstDate, lastDate);
 
     return computeModel(myCase, firstDate, lastDate, myError);
 }
@@ -92,7 +93,6 @@ bool computeModel(Criteria1D* myCase, const Crit3DDate& firstDate, const Crit3DD
         // Initialize
         myCase->output.initializeDaily();
         doy = getDoyFromDate(myDate);
-        irrigation = 0.0;
 
         // daily meteo
         myIndex = myCase->meteoPoint.obsDataD[0].date.daysTo(myDate);
@@ -106,17 +106,6 @@ bool computeModel(Criteria1D* myCase, const Crit3DDate& firstDate, const Crit3DD
         tmin = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyAirTemperatureMin);
         tmax = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyAirTemperatureMax);
 
-        // WATERTABLE
-        waterTableDepth = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyWaterTableDepth);
-
-        // for Romanian - TODO migliorare
-        if (waterTableDepth != NODATA)
-        {
-            waterTableDepth = maxValue(waterTableDepth, 0.5);
-        }
-
-        myCase->output.dailyWaterTable = waterTableDepth;
-
         if ((prec == NODATA) || (tmin == NODATA) || (tmax == NODATA))
         {
             *myError = "Missing weather data: " + myDate.toStdString();
@@ -125,8 +114,12 @@ bool computeModel(Criteria1D* myCase, const Crit3DDate& firstDate, const Crit3DD
 
         // check on wrong data
         if (prec < 0.0) prec = 0.0;
-
         myCase->output.dailyPrec = prec;
+
+        // WATERTABLE
+        waterTableDepth = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyWaterTableDepth);
+
+        myCase->output.dailyWaterTable = waterTableDepth;
         if (myDate < lastDate)
             tomorrowPrec = myCase->meteoPoint.getMeteoPointValueD(myDate.addDays(1), dailyPrecipitation);
         else
@@ -157,10 +150,14 @@ bool computeModel(Criteria1D* myCase, const Crit3DDate& firstDate, const Crit3DD
             if (irrigation > 0 && myCase->optimizeIrrigation)
             {
                 irrigateCrop(myCase, irrigation);
-                irrigation = 0.0;
-            }
-            else
                 myCase->output.dailyIrrigation = irrigation;
+                irrigation = 0.0;
+            }   
+        }
+        else
+        {
+            irrigation = 0;
+            myCase->output.dailyIrrigation = irrigation;
         }
 
         // INFILTRATION
