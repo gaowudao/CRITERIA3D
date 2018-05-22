@@ -528,7 +528,7 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
         return (regressionGeneric(proxyVars::height, false));
 
     /*! create vectors below and above inversion */
-    for (i = 1; i < long(interpolationPointList.size()); i++)
+    for (i = 0; i < long(interpolationPointList.size()); i++)
         if ((interpolationPointList.at(i)).point->z != NODATA && (interpolationPointList.at(i)).isActive)
         {
             if ((interpolationPointList.at(i)).point->z <= lapseRateH1)
