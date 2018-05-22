@@ -512,7 +512,7 @@ bool Project::loadMeteoGridDB(QString xmlName)
     if (! this->meteoGridDbHandler->updateGridDate(&errorString))
         return false;
 
-    //    this->meteoGridDbHandler->saveGridDailyData(&errorString, "pluto", QDate(1985,01,01), 4, 30);
+//    this->meteoGridDbHandler->saveGridDailyData(&errorString, "pluto", QDate(1985,01,01), 4, 30);
 
 //    QDateTime firstDateDB;
 //    QList<float> hourlyVarList = this->meteoGridDbHandler->loadGridHourlyVar(&errorString, "01019", precipitation, QDateTime(QDate(1991,01,01),QTime(9,0,0)), QDateTime(QDate(1991,01,2),QTime(9,0,0)), &firstDateDB);
@@ -700,7 +700,11 @@ bool Project::interpolateGrid(meteoVariable myVar, frequencyType myFrequency, co
         }
         this->meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, myFrequency, myTime.date, myTime.getHour(), myTime.getMinutes(), &(this->DTM), this->dataRaster, gridAggregationMethod);
     }
-
+    else
+    {
+        errorString = "No grid";
+        return false;
+    }
     return true;
 }
 
