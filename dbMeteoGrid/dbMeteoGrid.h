@@ -113,6 +113,8 @@ class Crit3DMeteoGridDbHandler
 
         QList<float> loadGridHourlyVar(std::string *myError, QString meteoPoint, meteoVariable variable, QDateTime first, QDateTime last, QDateTime* firstDateDB);
 
+        bool saveGridDailyData(std::string *myError, QString meteoPointID, QDate date, int varCode, float value);
+
 
 
 private:
