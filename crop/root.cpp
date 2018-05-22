@@ -104,7 +104,9 @@ namespace root
             }
         }
 
-        // radici dentro falda - TODO gestire meglio
+        // WATERTABLE - TODO gestire meglio
+        // le radici in falda vanno in asfissia
+        // schema attuale: 5 cmm di soglia durante la crescita, ma se le radici sono già dentro restano immutate
         if ((myCrop->roots.rootLength != NODATA) && (! myCrop->isWaterSurplusResistant()))
         {
             if (waterTableDepth != NODATA && waterTableDepth > 0)
@@ -112,7 +114,7 @@ namespace root
                 if (rootLength > (waterTableDepth - myCrop->roots.rootDepthMin))
                 {
                     // previous root lenght
-                    rootLength = maxValue(myCrop->roots.rootLength, waterTableDepth - myCrop->roots.rootDepthMin);
+                    rootLength = maxValue(myCrop->roots.rootLength, waterTableDepth - myCrop->roots.rootDepthMin - 0.05);
                 }
             }
         }

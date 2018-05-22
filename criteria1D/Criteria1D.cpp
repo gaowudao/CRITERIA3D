@@ -47,9 +47,10 @@ Criteria1DUnit::Criteria1DUnit()
     this->idSoil = "";
     this->idMeteo = "";
 
+    this->idCropClass = "";
     this->idForecast = "";
     this->idSoilNumber = NODATA;
-    this->idCropClass = "";
+    this->idICM = NODATA;
 }
 
 

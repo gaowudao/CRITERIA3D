@@ -16,6 +16,7 @@
         QString idForecast;
         QString idCropClass;
         int idSoilNumber;
+        int idICM;
 
         Criteria1DUnit();
     };

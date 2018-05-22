@@ -477,7 +477,7 @@ double cropTranspiration(Criteria1D* myCase, bool getWaterStress)
     if (myCase->myCrop.isWaterSurplusResistant())
         WSS = 0.0;
     else
-        WSS = 0.33;
+        WSS = 0.5;
 
     for (i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
     {

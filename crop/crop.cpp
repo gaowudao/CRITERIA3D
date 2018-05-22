@@ -156,13 +156,13 @@
             {
                 // naked soil: check sowing
                 int sowingDoyPeriod = 30;
-                float waterTableThreshold = 0.1f;
+                float waterTableThreshold = 0.2f;
                 int daysFromSowing = getDaysFromTypicalSowing(currentDoy);
 
                 // is sowing possible? (check period and watertable depth)
                 if (daysFromSowing >= 0 && daysFromSowing <= sowingDoyPeriod)
                 {
-                    if (isWaterSurplusResistant() || waterTableDepth == NODATA || waterTableDepth > waterTableThreshold)
+                    if (isWaterSurplusResistant() || waterTableDepth == NODATA || waterTableDepth >= waterTableThreshold)
                     {
                         isLiving = true;
                         // update sowing doy
