@@ -11,67 +11,6 @@
 
 
 /*!
- * \brief A crop is irrigated if irriRatio > 0
- * \param dbCrop
- * \param idCrop
- * \param myError
- * \return irriRatio  [-]
- */
-float getMOSESIrriRatio(QSqlDatabase* dbCrop, QString idCrop, std::string *myError)
-{
-    *myError = "";
-
-    QString queryString = "SELECT irri_ratio FROM moses_crop WHERE id_moses = '" + idCrop + "'";
-
-    QSqlQuery query = dbCrop->exec(queryString);
-    query.last();
-
-    if (! query.isValid())
-    {
-        if (query.lastError().number() > 0)
-            *myError = query.lastError().text().toStdString();
-        return(NODATA);
-    }
-
-    float myRatio = 0;
-
-    if (getValue(query.value("irri_ratio"), &(myRatio)))
-        return myRatio;
-    else
-        return NODATA;
-}
-
-
-/*!
- * \brief get criteria idCrop from MOSES code
- * \param dbCrop
- * \param idCropMOSES
- * \param myError
- * \return idCrop (string)
- */
-QString getMOSESIdCrop(QSqlDatabase* dbCrop, QString idCropMOSES, std::string *myError)
-{
-    *myError = "";
-    QString queryString = "SELECT * FROM moses_crop WHERE id_moses = '" + idCropMOSES + "'";
-
-    QSqlQuery query = dbCrop->exec(queryString);
-    query.last();
-
-    if (! query.isValid())
-    {
-        if (query.lastError().number() > 0)
-            *myError = query.lastError().text().toStdString();
-        return "";
-    }
-
-    QString idCrop;
-    getValue(query.value("id_crop"), &idCrop);
-
-    return idCrop;
-}
-
-
-/*!
  * \brief readMOSESMeteoData
  * \param query
  * \param myError
