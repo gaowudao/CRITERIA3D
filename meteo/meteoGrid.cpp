@@ -27,7 +27,7 @@
 #include "meteoGrid.h"
 #include "statistics.h"
 #include "furtherMathFunctions.h"
-#include <iostream>
+#include <iostream> //debug
 
 
 
@@ -298,8 +298,6 @@ bool Crit3DMeteoGrid::fillMeteoPointCurrentDailyValue(Crit3DDate date, meteoVari
             if (_meteoPoints[row][col]->active && _meteoPoints[row][col]->nrObsDataDaysD != 0)
             {
                 _meteoPoints[row][col]->currentValue = _meteoPoints[row][col]->getMeteoPointValueD(date, variable);
-//                if ( (row ==5) && (col== 57))
-//                    std::cout << "_meteoPoints[row][col]->id" << _meteoPoints[row][col]->id << "row" << row << "col" << col << "_meteoPoints[row][col]->currentValue" << _meteoPoints[row][col]->currentValue << std::endl;
             }
             else
             {
@@ -321,8 +319,6 @@ bool Crit3DMeteoGrid::fillMeteoPointCurrentHourlyValue(Crit3DDate date, int hour
             if (_meteoPoints[row][col]->active && _meteoPoints[row][col]->nrObsDataDaysD != 0)
             {
                 _meteoPoints[row][col]->currentValue = _meteoPoints[row][col]->getMeteoPointValueH(date, hour, minute, variable);
-                //std::cout << "_meteoPoints[row][col]->id" << _meteoPoints[row][col]->id << "row" << row << "col" << col << "_meteoPoints[row][col]->currentValue" << _meteoPoints[row][col]->currentValue << std::endl;
-
             }
             else
             {
@@ -484,6 +480,7 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
         }
         else
         {
+
             gis::Crit3DGeoPoint pointLatLon0;
             gis::Crit3DGeoPoint geoPoint;
             pointLatLon0.latitude = _gridStructure.header().llCorner->latitude + row * _gridStructure.header().dy;
@@ -518,8 +515,8 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
             _meteoPoints[row][col]->aggregationPoints.clear();
             _meteoPoints[row][col]->aggregationPointsMaxNr = 0;
 
-            if ( ((demUR.row >= 0) && (demUR.row < _gridStructure.header().nrRows)) || ((demLL.row >= 0) && (demLL.row < _gridStructure.header().nrRows))
-                 || ((demUR.col >= 0) && (demUR.col < _gridStructure.header().nrCols)) || ((demLL.col >= 0) && (_gridStructure.header().nrCols)))
+            if ( ((demUR.row >= 0) && (demUR.row < myDTM->header->nrRows)) || ((demLL.row >= 0) && (demLL.row < myDTM->header->nrRows))
+                 || ((demUR.col >= 0) && (demUR.col < myDTM->header->nrCols)) || ((demLL.col >= 0) && ( demLL.col < myDTM->header->nrCols)))
             {
 
 
@@ -528,20 +525,20 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
                     for (int myDTMCol = demLL.col; myDTMCol < demUR.col; myDTMCol++)
                     {
                         double utmX, utmY;
-                        gis::Crit3DGeoPoint geoPoint;
+                        gis::Crit3DGeoPoint geoP;
                         gis::Crit3DGridHeader latLonHeader;
 
                         gis::getUtmXYFromRowCol(*(myDTM->header), myDTMRow, myDTMCol, &utmX, &utmY);
-                        gis::getLatLonFromUtm(_gisSettings, utmX, utmY, &geoPoint.latitude, &geoPoint.longitude);
+                        gis::getLatLonFromUtm(_gisSettings, utmX, utmY, &geoP.latitude, &geoP.longitude);
 
-                        latLonHeader.llCorner->latitude = _gridStructure.header().llCorner->latitude;
-                        latLonHeader.llCorner->longitude = _gridStructure.header().llCorner->longitude;
+                        latLonHeader.llCorner->latitude = pointLatLon0.latitude;
+                        latLonHeader.llCorner->longitude = pointLatLon0.longitude;
                         latLonHeader.dx = _gridStructure.header().dx;
                         latLonHeader.dy = _gridStructure.header().dy;
                         latLonHeader.nrRows = row;
                         latLonHeader.nrCols = col;
 
-                        if (geoPoint.isInsideGrid(latLonHeader))
+                        if (geoP.isInsideGrid(latLonHeader))
                         {
                             _meteoPoints[row][col]->aggregationPointsMaxNr = _meteoPoints[row][col]->aggregationPointsMaxNr + 1;
                             if (!excludeNoData || myDTM->getValueFromRowCol(myDTMRow, myDTMCol) != myDTM->header->flag )
@@ -565,9 +562,9 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
 
 void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDTM, gis::Crit3DRasterGrid dataRaster, elaborationMethods elab)
 {
-
     int numberOfDays = 1;
     int initialize = 0;
+
 
     if (!_isAggregationDefined)
     {
@@ -584,7 +581,8 @@ void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq
         {
             if (_meteoPoints[row][col]->active)
             {
-                int validValues = 0;
+
+                double validValues = 0;
                 for (unsigned int i = 0; i < _meteoPoints[row][col]->aggregationPoints.size(); i++)
                 {
                     double x = _meteoPoints[row][col]->aggregationPoints[i].utm.x;
@@ -599,21 +597,26 @@ void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq
 
                 if (!_meteoPoints[row][col]->aggregationPoints.empty())
                 {
+
                     if ( (validValues / _meteoPoints[row][col]->aggregationPointsMaxNr) > ( GRID_MIN_COVERAGE / 100 ) )
                     {
+
                         double myValue = aggregateMeteoGridPoint(*(_meteoPoints[row][col]), elab);
                         // TO DO std dev
                         //.stdDev = AggregateMeteoGridPoint(Definitions.ELAB_STDDEVIATION, MeteoGrid.Point(myRow, myCol))
                         if (freq == hourly)
                         {
+                            //std::cout << "id: " << _meteoPoints[row][col]->id << "row: " << row << "col: " << col <<"value: " << myValue <<std::endl;
                             fillMeteoPointHourlyValue(row, col, numberOfDays, initialize, date, hour, minute, myVar, float(myValue));
                             fillMeteoPointCurrentHourlyValue(date, hour, minute, myVar);
 
                         }
                         else if (freq == daily)
                         {
+                            //std::cout << "id: " << _meteoPoints[row][col]->id << " row: " << row << " col: " << col <<" value: " << myValue <<std::endl;
                             fillMeteoPointDailyValue(row, col, numberOfDays, initialize, date, myVar, float(myValue));
                             fillMeteoPointCurrentDailyValue(date, myVar);
+
                         }
 
                     }
@@ -645,7 +648,7 @@ double Crit3DMeteoGrid::aggregateMeteoGridPoint(Crit3DMeteoPoint myPoint, elabor
         return NODATA;
     }
 
-    if ( (validValues.size() / myPoint.aggregationPointsMaxNr) < ( GRID_MIN_COVERAGE / 100.0) )
+    if ( (static_cast<double>(validValues.size()) / myPoint.aggregationPointsMaxNr) < ( GRID_MIN_COVERAGE / 100.0) )
     {
         return NODATA;
     }

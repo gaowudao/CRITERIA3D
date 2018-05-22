@@ -512,6 +512,7 @@ bool Project::loadMeteoGridDB(QString xmlName)
     if (! this->meteoGridDbHandler->updateGridDate(&errorString))
         return false;
 
+//    this->meteoGridDbHandler->saveGridDailyData(&errorString, "pluto", QDate(1985,01,01), 4, 30);
 
 //    QDateTime firstDateDB;
 //    QList<float> hourlyVarList = this->meteoGridDbHandler->loadGridHourlyVar(&errorString, "01019", precipitation, QDateTime(QDate(1991,01,01),QTime(9,0,0)), QDateTime(QDate(1991,01,2),QTime(9,0,0)), &firstDateDB);
@@ -661,7 +662,7 @@ bool Project::loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate, b
 
 bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime,
                             gis::Crit3DRasterGrid *myRaster)
-{
+{    
     // check quality and pass data to interpolation
     if (!quality->checkData(myVar, myFrequency, this->meteoPoints, this->nrMeteoPoints, myTime))
     {
@@ -691,13 +692,6 @@ bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, 
 bool Project::interpolateGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime)
 {
 
-//    ///////////////////test//////////////
-
-//    qInfo() << "prima id == 02315" << this->meteoGridDbHandler->meteoGrid()->meteoPoint(5,57).currentValue;
-//    qInfo() << "prima id == 02275" << this->meteoGridDbHandler->meteoGrid()->meteoPoint(5,56).currentValue;
-
-//    /////////////////////////////
-
     if (this->meteoGridDbHandler != NULL)
     {
         if (!interpolateRaster(myVar, myFrequency, myTime, &(this->dataRaster)))
@@ -706,16 +700,11 @@ bool Project::interpolateGrid(meteoVariable myVar, frequencyType myFrequency, co
         }
         this->meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, myFrequency, myTime.date, myTime.getHour(), myTime.getMinutes(), &(this->DTM), this->dataRaster, gridAggregationMethod);
     }
-
-//    ///////////////////test//////////////
-
-
-//    qInfo() << "id == 02315" << this->meteoGridDbHandler->meteoGrid()->meteoPoint(5,57).currentValue;
-//    qInfo() << "id == 02275" << this->meteoGridDbHandler->meteoGrid()->meteoPoint(5,56).currentValue;
-
-
-//    /////////////////////////////
-
+    else
+    {
+        errorString = "No grid";
+        return false;
+    }
     return true;
 }
 

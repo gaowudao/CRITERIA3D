@@ -828,9 +828,6 @@ namespace soilFluxes3D {
 			ResidualTime = myPeriod - sumTime;
 			deltaT = computeStep(ResidualTime);
 			sumTime += deltaT;
-
-            //qDebug() << "H0=" << myNode[0].H << "H1=" << myNode[1].H;
-            //qDebug() << "T1=" << myNode[1].extra->Heat->T << "T2=" << myNode[2].extra->Heat->T;
         }
 
         if (myStructure.computeWater) updateBalanceWaterWholePeriod();
