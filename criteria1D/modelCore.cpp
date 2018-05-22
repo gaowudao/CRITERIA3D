@@ -72,7 +72,8 @@ bool computeModel(Criteria1D* myCase, const Crit3DDate& firstDate, const Crit3DD
     long myIndex;
     int doy;
     float tmin, tmax;                               // [°C]
-    float prec, et0, tomorrowPrec, irrigation;      // [mm]
+    float prec, et0, tomorrowPrec;                  // [mm]
+    float irrigation, irrigationPrec;               // [mm]
     float waterTableDepth;                          // [m]
     bool isFirstDay = true;
     int indexSeasonalForecast = NODATA;
@@ -144,24 +145,20 @@ bool computeModel(Criteria1D* myCase, const Crit3DDate& firstDate, const Crit3DD
         computeCapillaryRise(myCase, waterTableDepth);
 
         // IRRIGATION
-        if (myCase->myCrop.isLiving)
+        irrigation = cropIrrigationDemand(myCase, doy, prec, tomorrowPrec);
+        myCase->output.dailyIrrigation = irrigation;
+
+        irrigationPrec = 0.0;
+        if (irrigation > 0)
         {
-            irrigation = cropIrrigationDemand(myCase, doy, prec, tomorrowPrec);
-            if (irrigation > 0 && myCase->optimizeIrrigation)
-            {
+            if (myCase->optimizeIrrigation)
                 irrigateCrop(myCase, irrigation);
-                myCase->output.dailyIrrigation = irrigation;
-                irrigation = 0.0;
-            }   
-        }
-        else
-        {
-            irrigation = 0;
-            myCase->output.dailyIrrigation = irrigation;
+            else
+                irrigationPrec = irrigation;
         }
 
         // INFILTRATION
-        if (! computeInfiltration(myCase, prec, irrigation))
+        if (! computeInfiltration(myCase, prec, irrigationPrec))
             return false;
 
         // RUNOFF
