@@ -398,7 +398,7 @@ QString getCropFromClass(QSqlDatabase* dbCrop, QString cropClassTable, QString c
  * \param myError
  * \return myCrop (string)
  */
-QString getCropFromId(QSqlDatabase* dbCrop, QString cropClassTable, QString cropIdField, int cropId, std::string *myError)
+QString getCropFromId(QSqlDatabase* dbCrop, QString cropClassTable, QString cropIdField, QString cropId, std::string *myError)
 {
     *myError = "";
     QString queryString = "SELECT * FROM " + cropClassTable + " WHERE " + cropIdField + " = " + cropId;
