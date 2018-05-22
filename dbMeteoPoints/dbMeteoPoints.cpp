@@ -366,7 +366,7 @@ QList<Crit3DMeteoPoint> Crit3DMeteoPointsDbHandler::getPropertiesFromDb()
     Crit3DMeteoPoint meteoPoint;
     QSqlQuery qry(_db);
 
-    qry.prepare( "SELECT id_point, name, dataset, latitude, longitude, utm_x, utm_y, altitude, state, region, province, municipality, is_active, is_utc from point_properties" );
+    qry.prepare( "SELECT id_point, name, dataset, latitude, longitude, utm_x, utm_y, altitude, state, region, province, municipality, is_active, is_utc from point_properties ORDER BY id_point" );
 
     if( !qry.exec() )
     {
