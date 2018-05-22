@@ -59,7 +59,7 @@ bool runModel(Criteria1D* myCase, Criteria1DUnit *myUnit, std::string* myError)
     firstDate = myCase->meteoPoint.obsDataD[0].date;
     lastDate = myCase->meteoPoint.obsDataD[lastIndex].date;
 
-    if (isSeasonalForecast)
+    if (myCase->isSeasonalForecast)
         myCase->initializeSeasonalForecast(firstDate, lastDate);
 
     return computeModel(myCase, firstDate, lastDate, myError);
