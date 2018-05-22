@@ -165,11 +165,7 @@ bool computeModel(Criteria1D* myCase, const Crit3DDate& firstDate, const Crit3DD
         if (! computeSurfaceRunoff(myCase))
             return false;
 
-        // LATERAL DRAINAGE
-        if (! computeLateralDrainage(myCase))
-            return false;
-
-        // Check irrigation lost
+        // adjust irrigation losses
         if (! myCase->optimizeIrrigation)
         {
             if ((myCase->output.dailySurfaceRunoff > 5) && (myCase->output.dailyIrrigation > 0))
@@ -178,6 +174,10 @@ bool computeModel(Criteria1D* myCase, const Crit3DDate& firstDate, const Crit3DD
                     myCase->output.dailySurfaceRunoff -= floor(myCase->output.dailySurfaceRunoff);
                 }
         }
+
+        // LATERAL DRAINAGE
+        if (! computeLateralDrainage(myCase))
+            return false;
 
         // EVAPORATION
         if (! evaporation(myCase))

@@ -199,7 +199,7 @@ bool updateCropWaterStressSensibility(Crit3DCrop* myCrop)
 }
 
 
-double getWeighredRAW(Criteria1D* myCase)
+double getWeightedRAW(Criteria1D* myCase)
 {
     if (! myCase->myCrop.isLiving) return 0.;
     if (myCase->myCrop.roots.rootDepth <= myCase->myCrop.roots.rootDepthMin) return 0.;
@@ -314,7 +314,7 @@ float cropIrrigationDemand(Criteria1D* myCase, int doy, float currentPrec, float
         if ((currentPrec + nextPrec) >  myCase->myCrop.irrigationVolume * 0.5) return 0.;
 
     // check readily available water (weighted on root density)
-    if (getWeighredRAW(myCase) > 0.) return 0.;
+    if (getWeightedRAW(myCase) > 0.) return 0.;
 
     // check water stress
     double threshold = 1. - myCase->myCrop.stressTolerance;
@@ -332,6 +332,7 @@ float cropIrrigationDemand(Criteria1D* myCase, int doy, float currentPrec, float
         else
         {
             // too much stressed -> half irrigation shift
+            // irrigazione di soccorso
             if (daysSinceIrrigation < (myCase->myCrop.irrigationShift * 0.5))
                 return 0;
         }
