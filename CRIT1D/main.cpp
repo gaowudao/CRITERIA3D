@@ -100,7 +100,8 @@ int main(int argc, char *argv[])
         for (int i = 0; i < myProject.nrUnits; i++)
         {
             //CROP
-            myProject.unit[i].idCrop = getIdCrop(&(myProject.criteria.dbParameters), myProject.unit[i].idCropClass, &(myProject.projectError)).toUpper();
+            myProject.unit[i].idCrop = getCropFromClass(&(myProject.criteria.dbParameters), "crop_class", "id_class",
+                                                        myProject.unit[i].idCropClass, &(myProject.projectError)).toUpper();
             if (myProject.unit[i].idCrop == "")
             {
                 myProject.logInfo("Unit " + myProject.unit[i].idCase + " " + myProject.unit[i].idCropClass + " ***** missing CROP *****");
@@ -109,7 +110,8 @@ int main(int argc, char *argv[])
             else
             {
                 //IRRI_RATIO
-                irriRatio = getIrriRatio(&(myProject.criteria.dbParameters), myProject.unit[i].idCropClass, &(myProject.projectError));
+                irriRatio = getIrriRatioFromClass(&(myProject.criteria.dbParameters), "crop_class", "id_class",
+                                                  myProject.unit[i].idCropClass, &(myProject.projectError));
                 if (irriRatio == NODATA)
                     myProject.logInfo("Unit " + myProject.unit[i].idCase + " " + myProject.unit[i].idCropClass + " ***** missing IRRIGATION RATIO *****");
                 else
