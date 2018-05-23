@@ -8,12 +8,11 @@
     class QString;
 
     // CROP
-    QString getCropFromClass(QSqlDatabase* dbCrop, QString cropClassTable, QString cropClassField,
-                             QString idCropClass, std::string *myError);
-    QString getCropFromId(QSqlDatabase* dbCrop, QString cropClassTable,
-                          QString cropIdField, QString cropId, std::string *myError);
-    float getIrriRatioFromClass(QSqlDatabase* dbCrop, QString cropClassTable, QString cropClassField,
-                       QString idCrop, std::string *myError);
+    QString getCropFromClass(QSqlDatabase* dbCrop, QString cropClassTable, QString cropClassField, QString idCropClass, std::string *myError);
+    QString getCropFromId(QSqlDatabase* dbCrop, QString cropClassTable, QString cropIdField, int cropId, std::string *myError);
+    float getIrriRatioFromClass(QSqlDatabase* dbCrop, QString cropClassTable, QString cropClassField, QString idCrop, std::string *myError);
+    float getIrriRatioFromId(QSqlDatabase* dbCrop, QString cropClassTable, QString cropIdField, int cropId, std::string *myError);
+
     bool loadCropParameters(QString idCrop, Crit3DCrop* myCrop, QSqlDatabase* dbCrop, std::string *myError);
 
     // SOIL
