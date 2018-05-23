@@ -699,6 +699,7 @@ bool Project::interpolateGrid(meteoVariable myVar, frequencyType myFrequency, co
             return false;
         }
         this->meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, myFrequency, myTime.date, myTime.getHour(), myTime.getMinutes(), &(this->DTM), this->dataRaster, gridAggregationMethod);
+        this->meteoGridDbHandler->meteoGrid()->fillMeteoRaster();
     }
     else
     {

@@ -1149,6 +1149,7 @@ void MainWindow::on_actionInterpolation_to_Grid_triggered()
     {
          myProject.logError();
     }
+
     myInfo.close();
 
 }
