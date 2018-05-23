@@ -1363,6 +1363,33 @@ bool Crit3DMeteoGridDbHandler::saveGridDailyData(std::string *myError, QString m
     return true;
 }
 
+bool Crit3DMeteoGridDbHandler::saveGridHourlyData(std::string *myError, QString meteoPointID, QDateTime dateTime, int varCode, float value)
+{
+    QSqlQuery qry(_db);
+    QString tableH = _tableHourly.prefix + meteoPointID + _tableHourly.postFix;
+
+
+    QString statement = QString("CREATE TABLE IF NOT EXISTS `%1` "
+                                "(%2 datetime, VariableCode tinyint(3) UNSIGNED, Value float(6,1), PRIMARY KEY(%2,VariableCode))").arg(tableH).arg(_tableHourly.fieldTime);
+
+    if( !qry.exec(statement) )
+    {
+        *myError = qry.lastError().text().toStdString();
+        return false;
+    }
+    else
+    {
+        statement = QString("REPLACE INTO `%1` VALUES ('%2','%3','%4')").arg(tableH).arg(dateTime.toString("yyyy-MM-dd hh:mm")).arg(varCode).arg(value);
+        if( !qry.exec(statement) )
+        {
+            *myError = qry.lastError().text().toStdString();
+            return false;
+        }
+    }
+
+    return true;
+}
+
 
 QDate Crit3DMeteoGridDbHandler::firstDate() const
 {
