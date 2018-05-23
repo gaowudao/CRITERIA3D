@@ -563,8 +563,7 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
 void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDTM, gis::Crit3DRasterGrid dataRaster, elaborationMethods elab)
 {
     int numberOfDays = 1;
-    int initialize = 0;
-
+    int initialize;
 
     if (!_isAggregationDefined)
     {
@@ -606,6 +605,14 @@ void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq
                         //.stdDev = AggregateMeteoGridPoint(Definitions.ELAB_STDDEVIATION, MeteoGrid.Point(myRow, myCol))
                         if (freq == hourly)
                         {
+                            if (_meteoPoints[row][col]->nrObsDataDaysH == 0)
+                            {
+                                initialize = 1;
+                            }
+                            else
+                            {
+                                initialize = 0;
+                            }
                             //std::cout << "id: " << _meteoPoints[row][col]->id << "row: " << row << "col: " << col <<"value: " << myValue <<std::endl;
                             fillMeteoPointHourlyValue(row, col, numberOfDays, initialize, date, hour, minute, myVar, float(myValue));
                             fillMeteoPointCurrentHourlyValue(date, hour, minute, myVar);
@@ -613,6 +620,14 @@ void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq
                         }
                         else if (freq == daily)
                         {
+                            if (_meteoPoints[row][col]->nrObsDataDaysD == 0)
+                            {
+                                initialize = 1;
+                            }
+                            else
+                            {
+                                initialize = 0;
+                            }
                             //std::cout << "id: " << _meteoPoints[row][col]->id << " row: " << row << " col: " << col <<" value: " << myValue <<std::endl;
                             fillMeteoPointDailyValue(row, col, numberOfDays, initialize, date, myVar, float(myValue));
                             fillMeteoPointCurrentDailyValue(date, myVar);
