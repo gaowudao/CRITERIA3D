@@ -11,6 +11,33 @@
 #endif
 
 
+QMap<QString, QString> MapDailyMySqlVarType = {
+  { "DAILY_TMIN", "float(4,1)" },
+  { "DAILY_TMAX", "float(4,1)" },
+  { "DAILY_TAVG", "float(4,1)" },
+  { "DAILY_PREC", "float(4,1) UNSIGNED" },
+  { "DAILY_RHMIN", "tinyint(3) UNSIGNED" },
+  { "DAILY_RHMAX", "tinyint(3) UNSIGNED" },
+  { "DAILY_RHAVG", "tinyint(3) UNSIGNED" },
+  { "DAILY_RAD", "float(5,2) UNSIGNED" },
+  { "DAILY_W_INT_AVG", "float(3,1) UNSIGNED" },
+  { "DAILY_W_DIR", "smallint(3) UNSIGNED" },
+  { "DAILY_W_INT_MAX", "float(3,1) UNSIGNED" },
+  { "DAILY_ET0", "float(3,1) UNSIGNED" },
+  { "DAILY_LEAFW", "tinyint(3) UNSIGNED" }
+};
+
+QMap<QString, QString> MapHourlyMySqlVarType = {
+  { "TAVG", "float(4,1)" },
+  { "PREC", "float(4,1) UNSIGNED" },
+  { "RHAVG", "tinyint(3) UNSIGNED" },
+  { "RAD", "float(5,1) UNSIGNED" },
+  { "W_INT_AVG", "float(3,1) UNSIGNED" },
+  { "W_DIR", "smallint(3) UNSIGNED" },
+  { "ET0", "float(3,1) UNSIGNED" },
+  { "LEAFW", "tinyint(3) UNSIGNED" }
+};
+
 struct TXMLConnection
 {
     QString provider;
