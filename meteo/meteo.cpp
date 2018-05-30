@@ -324,6 +324,8 @@ double ET0_Hargreaves(double KT, double myLat, int myDoy, double tmax, double tm
     tavg = (tmax + tmin) * 0.5;
 
     return 0.0135 * (tavg + 17.78) * KT * (extraTerrRadiation / 2.456) * sqrt(deltaT);
+    
+    // 2.456 MJ kg-1 latent heat of vaporization
 }
 
 
