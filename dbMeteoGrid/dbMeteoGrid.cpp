@@ -1418,14 +1418,14 @@ bool Crit3DMeteoGridDbHandler::saveGridDailyDataFixedFields(std::string *myError
     }
     else
     {
-        /*
-        statement = QString("REPLACE INTO `%1` VALUES ('%2','%3','%4')").arg(tableD).arg(date.toString("yyyy-MM-dd")).arg(varField).arg(value);
+
+        statement = QString("INSERT INTO `%1`(`%2` , `%3`) VALUES ('%4','%5') ON DUPLICATE KEY UPDATE `%3` = '%5'").arg(tableD).arg(_tableDaily.fieldTime).arg(varField.toLower()).arg(date.toString("yyyy-MM-dd")).arg(value);
         if( !qry.exec(statement) )
         {
             *myError = qry.lastError().text().toStdString();
             return false;
         }
-        */
+
     }
 
     return true;

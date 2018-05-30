@@ -512,7 +512,10 @@ bool Project::loadMeteoGridDB(QString xmlName)
     if (! this->meteoGridDbHandler->updateGridDate(&errorString))
         return false;
 
-//    this->meteoGridDbHandler->saveGridDailyDataFixedFields(&errorString, "pippo", QDate(1985,01,01), "TEMP_C_SMR", 30);
+    // test
+//    this->meteoGridDbHandler->saveGridDailyDataFixedFields(&errorString, "pippo", QDate(1985,01,01), "temp_media_smr", 30);
+//    this->meteoGridDbHandler->saveGridDailyDataFixedFields(&errorString, "pippo", QDate(1985,01,01), "vento_smr", 10);
+//    this->meteoGridDbHandler->saveGridDailyDataFixedFields(&errorString, "pippo", QDate(1985,01,02), "temp_media_smr", 40);
 //    this->meteoGridDbHandler->saveGridDailyData(&errorString, "pluto", QDate(1985,01,01), 4, 30);
 
 //    QDateTime firstDateDB;
