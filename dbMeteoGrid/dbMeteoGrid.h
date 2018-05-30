@@ -85,6 +85,8 @@ class Crit3DMeteoGridDbHandler
 
         bool parseXMLFile(QString xmlFileName, QDomDocument* xmlDoc);
 
+        void initMapMySqlVarType();
+
         bool checkXML(std::string *myError);
 
         bool parseXMLGrid(QString xmlFileName, std::string *myError);
@@ -115,7 +117,12 @@ class Crit3DMeteoGridDbHandler
 
         bool saveGridDailyData(std::string *myError, QString meteoPointID, QDate date, int varCode, float value);
 
+        bool saveGridDailyDataFixedFields(std::string *myError, QString meteoPointID, QDate date, QString varField, float value);
+
         bool saveGridHourlyData(std::string *myError, QString meteoPointID, QDateTime dateTime, int varCode, float value);
+
+        bool saveGridHourlyDataFixedFields(std::string *myError, QString meteoPointID, QDateTime dateTime, QString varField, float value);
+
 
 
 
@@ -138,6 +145,9 @@ private:
 
         QString _tableDailyModel;
         QString _tableHourlyModel;
+
+        QMap<QString, QString> _mapDailyMySqlVarType;
+        QMap<QString, QString> _mapHourlyMySqlVarType;
 
 
 };

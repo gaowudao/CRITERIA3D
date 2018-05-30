@@ -611,6 +611,7 @@ void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq
                             }
                             else
                             {
+                                _meteoPoints[row][col]->obsDataH[0].date = date;
                                 initialize = 0;
                             }
                             //std::cout << "id: " << _meteoPoints[row][col]->id << "row: " << row << "col: " << col <<"value: " << myValue <<std::endl;
@@ -626,6 +627,7 @@ void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq
                             }
                             else
                             {
+                                _meteoPoints[row][col]->obsDataD[0].date = date;
                                 initialize = 0;
                             }
                             fillMeteoPointDailyValue(row, col, numberOfDays, initialize, date, myVar, float(myValue));

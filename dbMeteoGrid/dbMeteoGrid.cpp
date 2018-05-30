@@ -158,6 +158,7 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *my
             if (ancestor.toElement().attribute("isfixedfields").toUpper() == "TRUE")
             {
                 _gridStructure.setIsFixedFields(true);
+                initMapMySqlVarType();
             }
             else if (ancestor.toElement().attribute("isfixedfields").toUpper() == "FALSE")
             {
@@ -390,6 +391,35 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *my
     _meteoGrid->initMeteoPoints(nRow, nCol);
 
     return true;
+}
+
+void Crit3DMeteoGridDbHandler::initMapMySqlVarType()
+{
+    _mapDailyMySqlVarType["DAILY_TMIN"] = "float(4,1)";
+    _mapDailyMySqlVarType["DAILY_TMAX"] = "float(4,1)";
+    _mapDailyMySqlVarType["DAILY_TAVG"] = "float(4,1)";
+    _mapDailyMySqlVarType["DAILY_PREC"] = "float(4,1) UNSIGNED";
+    _mapDailyMySqlVarType["DAILY_RHMIN"] = "tinyint(3) UNSIGNED";
+    _mapDailyMySqlVarType["DAILY_RHMAX"] = "tinyint(3) UNSIGNED";
+    _mapDailyMySqlVarType["DAILY_RHAVG"] = "tinyint(3) UNSIGNED";
+    _mapDailyMySqlVarType["DAILY_RAD"] = "float(5,2) UNSIGNED";
+    _mapDailyMySqlVarType["DAILY_W_INT_AVG"] = "float(3,1) UNSIGNED";
+    _mapDailyMySqlVarType["DAILY_W_DIR"] = "smallint(3) UNSIGNED";
+    _mapDailyMySqlVarType["DAILY_W_INT_MAX"] = "float(3,1) UNSIGNED";
+    _mapDailyMySqlVarType["DAILY_ET0"] = "float(3,1) UNSIGNED";
+    _mapDailyMySqlVarType["DAILY_LEAFW"] = "tinyint(3) UNSIGNED";
+
+
+
+    _mapHourlyMySqlVarType["TAVG"] = "float(4,1)";
+    _mapHourlyMySqlVarType["PREC"] = "float(4,1) UNSIGNED";
+    _mapHourlyMySqlVarType["RHAVG"] = "tinyint(3) UNSIGNED";
+    _mapHourlyMySqlVarType["RAD"] = "float(5,1) UNSIGNED";
+    _mapHourlyMySqlVarType["W_INT_AVG"] = "float(3,1) UNSIGNED";
+    _mapHourlyMySqlVarType["W_DIR"] = "smallint(3) UNSIGNED";
+    _mapHourlyMySqlVarType["ET0"] = "float(3,1) UNSIGNED";
+    _mapHourlyMySqlVarType["LEAFW"] = "tinyint(3) UNSIGNED";
+
 }
 
 bool Crit3DMeteoGridDbHandler::checkXML(std::string *myError)
@@ -1362,15 +1392,25 @@ bool Crit3DMeteoGridDbHandler::saveGridDailyData(std::string *myError, QString m
 
     return true;
 }
-/*
+
+
 bool Crit3DMeteoGridDbHandler::saveGridDailyDataFixedFields(std::string *myError, QString meteoPointID, QDate date, QString varField, float value)
 {
     QSqlQuery qry(_db);
     QString tableD = _tableDaily.prefix + meteoPointID + _tableDaily.postFix;
+    QString tableFields;
+
+    for (unsigned int i=0; i < _tableDaily.varcode.size(); i++)
+    {
+        QString var = _tableDaily.varcode[i].varPragaName;
+        QString type = _mapDailyMySqlVarType[var];
+
+        QString varFieldItem = _tableDaily.varcode[i].varField;
+        tableFields = tableFields  + ", " + varFieldItem.toLower() + " " + type;
+    }
 
 
-    QString statement = QString("CREATE TABLE IF NOT EXISTS `%1` "
-                                "(%2 date, VariableCode tinyint(3) UNSIGNED, Value float(6,1), PRIMARY KEY(%2,VariableCode))").arg(tableD).arg(_tableDaily.fieldTime);
+    QString statement = QString("CREATE TABLE IF NOT EXISTS `%1` ").arg(tableD) + QString("(%1 date ").arg(_tableDaily.fieldTime) + tableFields + QString(", PRIMARY KEY(%1))").arg(_tableDaily.fieldTime);
 
     if( !qry.exec(statement) )
     {
@@ -1379,17 +1419,19 @@ bool Crit3DMeteoGridDbHandler::saveGridDailyDataFixedFields(std::string *myError
     }
     else
     {
-        statement = QString("REPLACE INTO `%1` VALUES ('%2','%3','%4')").arg(tableD).arg(date.toString("yyyy-MM-dd")).arg(varField).arg(value);
+
+        statement = QString("INSERT INTO `%1`(`%2` , `%3`) VALUES ('%4','%5') ON DUPLICATE KEY UPDATE `%3` = '%5'").arg(tableD).arg(_tableDaily.fieldTime).arg(varField.toLower()).arg(date.toString("yyyy-MM-dd")).arg(value);
         if( !qry.exec(statement) )
         {
             *myError = qry.lastError().text().toStdString();
             return false;
         }
+
     }
 
     return true;
 }
-*/
+
 
 bool Crit3DMeteoGridDbHandler::saveGridHourlyData(std::string *myError, QString meteoPointID, QDateTime dateTime, int varCode, float value)
 {
@@ -1408,6 +1450,41 @@ bool Crit3DMeteoGridDbHandler::saveGridHourlyData(std::string *myError, QString 
     else
     {
         statement = QString("REPLACE INTO `%1` VALUES ('%2','%3','%4')").arg(tableH).arg(dateTime.toString("yyyy-MM-dd hh:mm")).arg(varCode).arg(value);
+        if( !qry.exec(statement) )
+        {
+            *myError = qry.lastError().text().toStdString();
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool Crit3DMeteoGridDbHandler::saveGridHourlyDataFixedFields(std::string *myError, QString meteoPointID, QDateTime dateTime, QString varField, float value)
+{
+    QSqlQuery qry(_db);
+    QString tableH = _tableHourly.prefix + meteoPointID + _tableHourly.postFix;
+
+    QString tableFields;
+
+    for (unsigned int i=0; i < _tableHourly.varcode.size(); i++)
+    {
+        QString var = _tableHourly.varcode[i].varPragaName;
+        QString varFieldItem = _tableHourly.varcode[i].varField;
+        QString type = _mapHourlyMySqlVarType[var];
+        tableFields = tableFields  + ", " + varFieldItem.toLower() + " " + type;
+    }
+
+    QString statement = QString("CREATE TABLE IF NOT EXISTS `%1` ").arg(tableH) + QString("(%1 datetime ").arg(_tableHourly.fieldTime) + tableFields + QString(", PRIMARY KEY(%1))").arg(_tableHourly.fieldTime);
+
+    if( !qry.exec(statement) )
+    {
+        *myError = qry.lastError().text().toStdString();
+        return false;
+    }
+    else
+    {
+        statement = QString("INSERT INTO `%1`(`%2` , `%3`) VALUES ('%4','%5') ON DUPLICATE KEY UPDATE `%3` = '%5'").arg(tableH).arg(_tableHourly.fieldTime).arg(varField.toLower()).arg(dateTime.toString("yyyy-MM-dd hh:mm")).arg(value);
         if( !qry.exec(statement) )
         {
             *myError = qry.lastError().text().toStdString();

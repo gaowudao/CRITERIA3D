@@ -1299,7 +1299,7 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                 nrBins[i-1] = 0;
                 if (bins2[i] != NODATA)
                 {
-                    bincenter[i-1]= (bins2[i-1] + bins[i])*0.5;
+                    bincenter[i-1]= (bins2[i-1] + bins[i])*0.5; //?????
                     newCounter++;
                 }
                 else
@@ -1336,11 +1336,7 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                 }
 
             }
-            for (int i=0;i<newCounter;i++)
-            {
-               //printf("dopo %d %f %f\n",i,bins[i],bincenter[i]);
-               //printf("dopo %d %f %f\n",i,Pmean[i],PstdDev[i]);
-            }
+
 
             double *parMin;
             double *parMax;
@@ -1389,24 +1385,48 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
             {
                 printf("prima %f %f\n",binCenter[i],meanP[i]);
             }
-            for (int i=0;i<3;i++)
-                printf("prima %f\n",par[i]);
+            //for (int i=0;i<3;i++)
+                //printf("prima %f\n",par[i]);
 
             interpolation::fittingMarquardt(parMin,parMax,par,nrPar,parDelta,maxIterations,epsilon,functionCode,binCenter,nrBincenter,meanP);
+            // con marquardt stimo già tutti i parametri compreso l'esponente quindi il ciclo
+            // for da 2 a 20 (presente nel codice originale) risulta inutile nel codice tradotto
             for (int i=0;i<nrBincenter;i++)
             {
-               printf("prima %f %f\n",binCenter[i],par[0]+par[1]*powf(binCenter[i],par[2]));
+                meanP[i] = par[0]+par[1]* powf(binCenter[i],par[2]);
             }
-            for (int i=0;i<3;i++)
-                printf("dopo %f\n",par[i]);
+            //for (int i=0;i<nrBincenter;i++)
+            //{
+               //printf("prima %f %f\n",binCenter[i],par[0]+par[1]*powf(binCenter[i],par[2]));
+            //}
+            //for (int i=0;i<3;i++)
+                //printf("dopo %f\n",par[i]);
 
             if (parametersModel.distributionPrecipitation == 2)
             {
                 interpolation::fittingMarquardt(parMin,parMax,par,nrPar,parDelta,maxIterations,epsilon,functionCode,binCenter,nrBincenter,stdDevP);
+                for (int i=0;i<nrBincenter;i++)
+                {
+                    stdDevP[i] = par[0]+par[1]* powf(binCenter[i],par[2]);
+                }
             }
 
-            getchar();
+
+
+
+
+
+
+
+
+
+            //getchar();
             // free memory moran and occCoeff
+
+            free (par);
+            free(parDelta);
+            free(parMax);
+            free(parMin);
             free(meanP);
             free(stdDevP);
             free(binCenter);
