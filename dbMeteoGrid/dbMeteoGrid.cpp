@@ -638,6 +638,40 @@ meteoVariable Crit3DMeteoGridDbHandler::getHourlyVarEnum(int varCode)
 
 }
 
+std::string Crit3DMeteoGridDbHandler::getDailyPragaName(meteoVariable meteoVar)
+{
+
+    std::map<std::string, meteoVariable>::const_iterator it;
+    std::string key = "";
+
+    for (it = MapDailyMeteoVar.begin(); it != MapDailyMeteoVar.end(); ++it)
+    {
+        if (it->second == meteoVar)
+        {
+            key = it->first;
+            break;
+        }
+    }
+    return key;
+}
+
+std::string Crit3DMeteoGridDbHandler::getHourlyPragaName(meteoVariable meteoVar)
+{
+
+    std::map<std::string, meteoVariable>::const_iterator it;
+    std::string key = "";
+
+    for (it = MapHourlyMeteoVar.begin(); it != MapHourlyMeteoVar.end(); ++it)
+    {
+        if (it->second == meteoVar)
+        {
+            key = it->first;
+            break;
+        }
+    }
+    return key;
+}
+
 
 
 bool Crit3DMeteoGridDbHandler::openDatabase(std::string *myError)
@@ -1394,15 +1428,20 @@ bool Crit3DMeteoGridDbHandler::saveGridDailyData(std::string *myError, QString m
 }
 
 
-bool Crit3DMeteoGridDbHandler::saveGridDailyDataFixedFields(std::string *myError, QString meteoPointID, QDate date, QString varField, float value)
+bool Crit3DMeteoGridDbHandler::saveGridDailyDataFixedFields(std::string *myError, QString meteoPointID, QDate date, QString varPragaName, float value)
 {
     QSqlQuery qry(_db);
     QString tableD = _tableDaily.prefix + meteoPointID + _tableDaily.postFix;
     QString tableFields;
+    QString varField;
 
     for (unsigned int i=0; i < _tableDaily.varcode.size(); i++)
     {
         QString var = _tableDaily.varcode[i].varPragaName;
+        if (var == varPragaName)
+        {
+            varField = _tableDaily.varcode[i].varField;
+        }
         QString type = _mapDailyMySqlVarType[var];
 
         QString varFieldItem = _tableDaily.varcode[i].varField;
@@ -1460,16 +1499,21 @@ bool Crit3DMeteoGridDbHandler::saveGridHourlyData(std::string *myError, QString 
     return true;
 }
 
-bool Crit3DMeteoGridDbHandler::saveGridHourlyDataFixedFields(std::string *myError, QString meteoPointID, QDateTime dateTime, QString varField, float value)
+bool Crit3DMeteoGridDbHandler::saveGridHourlyDataFixedFields(std::string *myError, QString meteoPointID, QDateTime dateTime, QString varPragaName, float value)
 {
     QSqlQuery qry(_db);
     QString tableH = _tableHourly.prefix + meteoPointID + _tableHourly.postFix;
 
     QString tableFields;
+    QString varField;
 
     for (unsigned int i=0; i < _tableHourly.varcode.size(); i++)
     {
         QString var = _tableHourly.varcode[i].varPragaName;
+        if (var == varPragaName)
+        {
+            varField = _tableHourly.varcode[i].varField;
+        }
         QString varFieldItem = _tableHourly.varcode[i].varField;
         QString type = _mapHourlyMySqlVarType[var];
         tableFields = tableFields  + ", " + varFieldItem.toLower() + " " + type;

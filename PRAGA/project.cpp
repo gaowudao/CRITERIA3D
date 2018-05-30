@@ -514,10 +514,10 @@ bool Project::loadMeteoGridDB(QString xmlName)
 
 
 // test
-//    this->meteoGridDbHandler->saveGridDailyDataFixedFields(&errorString, "pippo", QDate(1985,01,01), "temp_media_smr", 30);
-//    this->meteoGridDbHandler->saveGridDailyDataFixedFields(&errorString, "pippo", QDate(1985,01,01), "vento_smr", 10);
-//    this->meteoGridDbHandler->saveGridDailyDataFixedFields(&errorString, "pippo", QDate(1985,01,02), "temp_media_smr", 40);
-//    this->meteoGridDbHandler->saveGridHourlyDataFixedFields(&errorString, "laura", QDateTime(QDate(1991,01,01),QTime(9,0,0)), "temp_c_smr", 30);
+//    this->meteoGridDbHandler->saveGridDailyDataFixedFields(&errorString, "lauraD", QDate(1985,01,01), "DAILY_TAVG", 30);
+//    this->meteoGridDbHandler->saveGridDailyDataFixedFields(&errorString, "lauraD", QDate(1985,01,01), "DAILY_W_INT_AVG", 10);
+//    this->meteoGridDbHandler->saveGridDailyDataFixedFields(&errorString, "lauraD", QDate(1985,01,02), "DAILY_TAVG", 40);
+//    this->meteoGridDbHandler->saveGridHourlyDataFixedFields(&errorString, "lauraH", QDateTime(QDate(1991,01,01),QTime(9,0,0)), "TAVG", 30);
 
 //    QDateTime firstDateDB;
 //    QList<float> hourlyVarList = this->meteoGridDbHandler->loadGridHourlyVar(&errorString, "01019", precipitation, QDateTime(QDate(1991,01,01),QTime(9,0,0)), QDateTime(QDate(1991,01,2),QTime(9,0,0)), &firstDateDB);
@@ -744,7 +744,7 @@ bool Project::saveGrid(meteoVariable myVar, frequencyType myFrequency, const Cri
                     }
                     else
                     {
-                        //this->meteoGridDbHandler->saveGridDailyDataFixedFields(&errorString, QString::fromStdString(id), QDate(myTime.date.year, myTime.date.month, myTime.date.day), "temp_media_smr", this->meteoGridDbHandler->meteoGrid()->dataMeteoGrid.value[row][col]);
+                        this->meteoGridDbHandler->saveGridDailyDataFixedFields(&errorString, QString::fromStdString(id), QDate(myTime.date.year, myTime.date.month, myTime.date.day), QString::fromStdString(this->meteoGridDbHandler->getDailyPragaName(myVar)), this->meteoGridDbHandler->meteoGrid()->dataMeteoGrid.value[row][col]);
 
                     }
                 }
@@ -773,7 +773,7 @@ bool Project::saveGrid(meteoVariable myVar, frequencyType myFrequency, const Cri
                     }
                     else
                     {
-                        //this->meteoGridDbHandler->saveGridHourlyDataFixedFields(&errorString, QString::fromStdString(id), QDateTime(QDate(myTime.date.year, myTime.date.month, myTime.date.day), QTime(myTime.getHour(), myTime.getMinutes(), myTime.getSeconds())), "temp_media_smr", this->meteoGridDbHandler->meteoGrid()->dataMeteoGrid.value[row][col]);
+                        this->meteoGridDbHandler->saveGridHourlyDataFixedFields(&errorString, QString::fromStdString(id), QDateTime(QDate(myTime.date.year, myTime.date.month, myTime.date.day), QTime(myTime.getHour(), myTime.getMinutes(), myTime.getSeconds())), QString::fromStdString(this->meteoGridDbHandler->getHourlyPragaName(myVar)), this->meteoGridDbHandler->meteoGrid()->dataMeteoGrid.value[row][col]);
                     }
 
                 }

@@ -99,6 +99,10 @@ class Crit3DMeteoGridDbHandler
 
         meteoVariable getHourlyVarEnum(int varCode);
 
+        std::string getDailyPragaName(meteoVariable meteoVar);
+
+        std::string getHourlyPragaName(meteoVariable meteoVar);
+
         bool loadCellProperties(std::string *myError);
 
         bool updateGridDate(std::string *myError);
@@ -117,11 +121,11 @@ class Crit3DMeteoGridDbHandler
 
         bool saveGridDailyData(std::string *myError, QString meteoPointID, QDate date, int varCode, float value);
 
-        bool saveGridDailyDataFixedFields(std::string *myError, QString meteoPointID, QDate date, QString varField, float value);
+        bool saveGridDailyDataFixedFields(std::string *myError, QString meteoPointID, QDate date, QString varPragaName, float value);
 
         bool saveGridHourlyData(std::string *myError, QString meteoPointID, QDateTime dateTime, int varCode, float value);
 
-        bool saveGridHourlyDataFixedFields(std::string *myError, QString meteoPointID, QDateTime dateTime, QString varField, float value);
+        bool saveGridHourlyDataFixedFields(std::string *myError, QString meteoPointID, QDateTime dateTime, QString varPragaName, float value);
 
 
 
