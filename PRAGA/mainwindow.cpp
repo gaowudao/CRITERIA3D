@@ -1153,3 +1153,11 @@ void MainWindow::on_actionInterpolation_to_Grid_triggered()
     myInfo.close();
 
 }
+
+void MainWindow::on_actionSave_meteo_grid_triggered()
+{
+    if (myProject.meteoGridDbHandler != NULL)
+    {
+        myProject.saveGrid(myProject.getCurrentVariable(), myProject.getFrequency(), myProject.getCurrentTime(), true);
+    }
+}

@@ -2302,6 +2302,7 @@
     <addaction name="separator"/>
     <addaction name="actionOpen_meteo_grid"/>
     <addaction name="actionClose_meteo_grid"/>
+    <addaction name="actionSave_meteo_grid"/>
     <addaction name="separator"/>
     <addaction name="separator"/>
     <addaction name="separator"/>
@@ -2514,6 +2515,11 @@
   <action name="actionInterpolation_to_Grid">
    <property name="text">
     <string>Interpolation to Grid</string>
+   </property>
+  </action>
+  <action name="actionSave_meteo_grid">
+   <property name="text">
+    <string>Save meteo grid...</string>
    </property>
   </action>
  </widget>

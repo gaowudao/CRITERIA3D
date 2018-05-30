@@ -1403,9 +1403,10 @@ bool Crit3DMeteoGridDbHandler::saveGridDailyDataFixedFields(std::string *myError
     for (unsigned int i=0; i < _tableDaily.varcode.size(); i++)
     {
         QString var = _tableDaily.varcode[i].varPragaName;
-        QString varField = _tableDaily.varcode[i].varField;
         QString type = _mapDailyMySqlVarType[var];
-        tableFields = tableFields  + ", " + varField.toLower() + " " + type;
+
+        QString varFieldItem = _tableDaily.varcode[i].varField;
+        tableFields = tableFields  + ", " + varFieldItem.toLower() + " " + type;
     }
 
 
@@ -1469,9 +1470,9 @@ bool Crit3DMeteoGridDbHandler::saveGridHourlyDataFixedFields(std::string *myErro
     for (unsigned int i=0; i < _tableHourly.varcode.size(); i++)
     {
         QString var = _tableHourly.varcode[i].varPragaName;
-        QString varField = _tableHourly.varcode[i].varField;
+        QString varFieldItem = _tableHourly.varcode[i].varField;
         QString type = _mapHourlyMySqlVarType[var];
-        tableFields = tableFields  + ", " + varField.toLower() + " " + type;
+        tableFields = tableFields  + ", " + varFieldItem.toLower() + " " + type;
     }
 
     QString statement = QString("CREATE TABLE IF NOT EXISTS `%1` ").arg(tableH) + QString("(%1 datetime ").arg(_tableHourly.fieldTime) + tableFields + QString(", PRIMARY KEY(%1))").arg(_tableHourly.fieldTime);

@@ -714,6 +714,79 @@ bool Project::interpolateGrid(meteoVariable myVar, frequencyType myFrequency, co
     return true;
 }
 
+bool Project::saveGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, bool showInfo)
+{
+    std::string id;
+    formRunInfo myInfo;
+    int infoStep;
+
+
+    if (myFrequency == daily)
+    {
+        if (showInfo)
+        {
+            QString infoStr = "Save grid daily data";
+            infoStep = myInfo.start(infoStr, this->meteoGridDbHandler->gridStructure().header().nrRows);
+        }
+
+
+        for (int row = 0; row < this->meteoGridDbHandler->gridStructure().header().nrRows; row++)
+        {
+            if (showInfo && (row % infoStep) == 0)
+                myInfo.setValue(row);
+            for (int col = 0; col < this->meteoGridDbHandler->gridStructure().header().nrCols; col++)
+            {
+                if (this->meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id))
+                {
+                    if (!this->meteoGridDbHandler->gridStructure().isFixedFields())
+                    {
+                        this->meteoGridDbHandler->saveGridDailyData(&errorString, QString::fromStdString(id), QDate(myTime.date.year, myTime.date.month, myTime.date.day), this->meteoGridDbHandler->getDailyVarCode(myVar), this->meteoGridDbHandler->meteoGrid()->dataMeteoGrid.value[row][col]);
+                    }
+                    else
+                    {
+                        //this->meteoGridDbHandler->saveGridDailyDataFixedFields(&errorString, QString::fromStdString(id), QDate(myTime.date.year, myTime.date.month, myTime.date.day), "temp_media_smr", this->meteoGridDbHandler->meteoGrid()->dataMeteoGrid.value[row][col]);
+
+                    }
+                }
+            }
+        }
+    }
+    else if (myFrequency == hourly)
+    {
+        if (showInfo)
+        {
+            QString infoStr = "Save grid hourly data";
+            infoStep = myInfo.start(infoStr, this->meteoGridDbHandler->gridStructure().header().nrRows);
+        }
+
+        for (int row = 0; row < this->meteoGridDbHandler->gridStructure().header().nrRows; row++)
+        {
+            if (showInfo && (row % infoStep) == 0)
+                myInfo.setValue(row);
+            for (int col = 0; col < this->meteoGridDbHandler->gridStructure().header().nrCols; col++)
+            {
+                if (this->meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id))
+                {
+                    if (!this->meteoGridDbHandler->gridStructure().isFixedFields())
+                    {
+                        this->meteoGridDbHandler->saveGridHourlyData(&errorString, QString::fromStdString(id), QDateTime(QDate(myTime.date.year, myTime.date.month, myTime.date.day), QTime(myTime.getHour(), myTime.getMinutes(), myTime.getSeconds())), this->meteoGridDbHandler->getHourlyVarCode(myVar), this->meteoGridDbHandler->meteoGrid()->dataMeteoGrid.value[row][col]);
+                    }
+                    else
+                    {
+                        //this->meteoGridDbHandler->saveGridHourlyDataFixedFields(&errorString, QString::fromStdString(id), QDateTime(QDate(myTime.date.year, myTime.date.month, myTime.date.day), QTime(myTime.getHour(), myTime.getMinutes(), myTime.getSeconds())), "temp_media_smr", this->meteoGridDbHandler->meteoGrid()->dataMeteoGrid.value[row][col]);
+                    }
+
+                }
+            }
+        }
+
+    }
+
+    if (showInfo) myInfo.close();
+
+    return true;
+}
+
 
 bool Project::interpolateRasterRadiation(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, std::string *myError)
 {

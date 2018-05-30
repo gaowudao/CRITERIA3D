@@ -97,6 +97,8 @@
 
         void on_actionInterpolation_to_Grid_triggered();
 
+        void on_actionSave_meteo_grid_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
