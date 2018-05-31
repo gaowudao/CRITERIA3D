@@ -1416,7 +1416,14 @@ bool Crit3DMeteoGridDbHandler::saveGridDailyData(std::string *myError, QString m
     }
     else
     {
-        statement = QString("REPLACE INTO `%1` VALUES ('%2','%3','%4')").arg(tableD).arg(date.toString("yyyy-MM-dd")).arg(varCode).arg(value);
+        if (value == NODATA)
+        {
+            statement = QString("REPLACE INTO `%1` VALUES ('%2','%3', NULL)").arg(tableD).arg(date.toString("yyyy-MM-dd")).arg(varCode);
+        }
+        else
+        {
+            statement = QString("REPLACE INTO `%1` VALUES ('%2','%3','%4')").arg(tableD).arg(date.toString("yyyy-MM-dd")).arg(varCode).arg(value);
+        }
         if( !qry.exec(statement) )
         {
             *myError = qry.lastError().text().toStdString();
@@ -1459,7 +1466,14 @@ bool Crit3DMeteoGridDbHandler::saveGridDailyDataFixedFields(std::string *myError
     else
     {
 
-        statement = QString("INSERT INTO `%1`(`%2` , `%3`) VALUES ('%4','%5') ON DUPLICATE KEY UPDATE `%3` = '%5'").arg(tableD).arg(_tableDaily.fieldTime).arg(varField.toLower()).arg(date.toString("yyyy-MM-dd")).arg(value);
+        if (value == NODATA)
+        {
+            statement = QString("INSERT INTO `%1`(`%2` , `%3`) VALUES ('%4', NULL) ON DUPLICATE KEY UPDATE `%3` = NULL").arg(tableD).arg(_tableDaily.fieldTime).arg(varField.toLower()).arg(date.toString("yyyy-MM-dd"));
+        }
+        else
+        {
+            statement = QString("INSERT INTO `%1`(`%2` , `%3`) VALUES ('%4','%5') ON DUPLICATE KEY UPDATE `%3` = '%5'").arg(tableD).arg(_tableDaily.fieldTime).arg(varField.toLower()).arg(date.toString("yyyy-MM-dd")).arg(value);
+        }
         if( !qry.exec(statement) )
         {
             *myError = qry.lastError().text().toStdString();
@@ -1488,7 +1502,14 @@ bool Crit3DMeteoGridDbHandler::saveGridHourlyData(std::string *myError, QString 
     }
     else
     {
-        statement = QString("REPLACE INTO `%1` VALUES ('%2','%3','%4')").arg(tableH).arg(dateTime.toString("yyyy-MM-dd hh:mm")).arg(varCode).arg(value);
+        if (value == NODATA)
+        {
+            statement = QString("REPLACE INTO `%1` VALUES ('%2','%3', NULL)").arg(tableH).arg(dateTime.toString("yyyy-MM-dd hh:mm")).arg(varCode);
+        }
+        else
+        {
+            statement = QString("REPLACE INTO `%1` VALUES ('%2','%3','%4')").arg(tableH).arg(dateTime.toString("yyyy-MM-dd hh:mm")).arg(varCode).arg(value);
+        }
         if( !qry.exec(statement) )
         {
             *myError = qry.lastError().text().toStdString();
@@ -1528,7 +1549,14 @@ bool Crit3DMeteoGridDbHandler::saveGridHourlyDataFixedFields(std::string *myErro
     }
     else
     {
-        statement = QString("INSERT INTO `%1`(`%2` , `%3`) VALUES ('%4','%5') ON DUPLICATE KEY UPDATE `%3` = '%5'").arg(tableH).arg(_tableHourly.fieldTime).arg(varField.toLower()).arg(dateTime.toString("yyyy-MM-dd hh:mm")).arg(value);
+        if (value == NODATA)
+        {
+            statement = QString("INSERT INTO `%1`(`%2` , `%3`) VALUES ('%4', NULL) ON DUPLICATE KEY UPDATE `%3` = NULL").arg(tableH).arg(_tableHourly.fieldTime).arg(varField.toLower()).arg(dateTime.toString("yyyy-MM-dd hh:mm"));
+        }
+        else
+        {
+            statement = QString("INSERT INTO `%1`(`%2` , `%3`) VALUES ('%4','%5') ON DUPLICATE KEY UPDATE `%3` = '%5'").arg(tableH).arg(_tableHourly.fieldTime).arg(varField.toLower()).arg(dateTime.toString("yyyy-MM-dd hh:mm")).arg(value);
+        }
         if( !qry.exec(statement) )
         {
             *myError = qry.lastError().text().toStdString();

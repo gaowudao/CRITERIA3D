@@ -745,7 +745,6 @@ bool Project::saveGrid(meteoVariable myVar, frequencyType myFrequency, const Cri
                     else
                     {
                         this->meteoGridDbHandler->saveGridDailyDataFixedFields(&errorString, QString::fromStdString(id), QDate(myTime.date.year, myTime.date.month, myTime.date.day), QString::fromStdString(this->meteoGridDbHandler->getDailyPragaName(myVar)), this->meteoGridDbHandler->meteoGrid()->meteoPoint(row,col).currentValue);
-
                     }
                 }
             }
