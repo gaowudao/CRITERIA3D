@@ -1108,6 +1108,7 @@ void MainWindow::on_dateEdit_dateChanged(const QDate &date)
 void MainWindow::on_actionClose_meteo_points_triggered()
 {
     resetMeteoPoints();
+    meteoPointsLegend->close();
     myProject.closeMeteoPointsDB();
 }
 
@@ -1117,6 +1118,7 @@ void MainWindow::on_actionClose_meteo_grid_triggered()
     if (myProject.meteoGridDbHandler != NULL)
     {
         myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.isLoaded = false;
+        meteoGridLegend->close();
         meteoGridObj->redrawRequested();
         myProject.closeMeteoGridDB();
     }
