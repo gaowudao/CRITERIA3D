@@ -338,12 +338,11 @@ void Crit3DMeteoGrid::fillMeteoRaster()
         {
              if (_meteoPoints[i][j]->active)
              {
-                //dataMeteoGrid.value[i][j] = _meteoPoints[_gridStructure.header().nrRows-1-i][j]->currentValue;
                  dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j] = _meteoPoints[i][j]->currentValue;
-                std::cout << "i: " << i << "j: " << j << "dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j]: " << dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j] << "_meteoPoints[i][j]->currentValue" << _meteoPoints[i][j]->currentValue << std::endl;
              }
         }
     }
+
 }
 
 gis::Crit3DGisSettings Crit3DMeteoGrid::getGisSettings() const
@@ -619,7 +618,6 @@ void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq
                                 _meteoPoints[row][col]->obsDataH[0].date = date;
                                 initialize = 0;
                             }
-                            //std::cout << "id: " << _meteoPoints[row][col]->id << "row: " << row << "col: " << col <<"value: " << myValue <<std::endl;
                             fillMeteoPointHourlyValue(row, col, numberOfDays, initialize, date, hour, minute, myVar, float(myValue));
                             fillMeteoPointCurrentHourlyValue(date, hour, minute, myVar);
                             //std::cout << "id: " << _meteoPoints[row][col]->id << "row: " << row << "col: " << col <<"dataMeteoGrid.value[i][j]: " << dataMeteoGrid.value[row][col] <<std::endl;
@@ -639,19 +637,13 @@ void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq
                             fillMeteoPointDailyValue(row, col, numberOfDays, initialize, date, myVar, float(myValue));
                             fillMeteoPointCurrentDailyValue(date, myVar);
                             //std::cout << "id: " << _meteoPoints[row][col]->id << " row: " << row << " col: " << col <<" value: " << myValue << " currentValue: " << _meteoPoints[row][col]->currentValue <<std::endl;
-                            //std::cout << "id: " << _meteoPoints[row][col]->id << "row: " << row << "col: " << col <<"dataMeteoGrid.value[i][j]: " << dataMeteoGrid.value[row][col] <<std::endl;
-
                         }
-                        fillMeteoRaster();
-                        //std::cout << "id 02313 dataMeteoGrid.value[7][57]: " << dataMeteoGrid.value[7][57] <<std::endl;
-
                     }
                 }
 
             }
         }
     }
-
 }
 
 
