@@ -340,7 +340,7 @@ void Crit3DMeteoGrid::fillMeteoRaster()
              {
                 //dataMeteoGrid.value[i][j] = _meteoPoints[_gridStructure.header().nrRows-1-i][j]->currentValue;
                  dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j] = _meteoPoints[i][j]->currentValue;
-                std::cout << "i: " << i << "j: " << j << "dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j]: " << dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j] << "_meteoPoints[i][j]" << _meteoPoints[i][j] << std::endl;
+                std::cout << "i: " << i << "j: " << j << "dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j]: " << dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j] << "_meteoPoints[i][j]->currentValue" << _meteoPoints[i][j]->currentValue << std::endl;
              }
         }
     }
