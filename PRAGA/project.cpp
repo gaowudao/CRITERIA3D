@@ -704,7 +704,6 @@ bool Project::interpolateGrid(meteoVariable myVar, frequencyType myFrequency, co
             return false;
         }
         this->meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, myFrequency, myTime.date, myTime.getHour(), myTime.getMinutes(), &(this->DTM), this->dataRaster, gridAggregationMethod);
-        this->meteoGridDbHandler->meteoGrid()->fillMeteoRaster();
     }
     else
     {
@@ -740,11 +739,11 @@ bool Project::saveGrid(meteoVariable myVar, frequencyType myFrequency, const Cri
                 {
                     if (!this->meteoGridDbHandler->gridStructure().isFixedFields())
                     {
-                        this->meteoGridDbHandler->saveGridDailyData(&errorString, QString::fromStdString(id), QDate(myTime.date.year, myTime.date.month, myTime.date.day), this->meteoGridDbHandler->getDailyVarCode(myVar), this->meteoGridDbHandler->meteoGrid()->dataMeteoGrid.value[row][col]);
+                        this->meteoGridDbHandler->saveGridDailyData(&errorString, QString::fromStdString(id), QDate(myTime.date.year, myTime.date.month, myTime.date.day), this->meteoGridDbHandler->getDailyVarCode(myVar), this->meteoGridDbHandler->meteoGrid()->meteoPoint(row,col).currentValue);
                     }
                     else
                     {
-                        this->meteoGridDbHandler->saveGridDailyDataFixedFields(&errorString, QString::fromStdString(id), QDate(myTime.date.year, myTime.date.month, myTime.date.day), QString::fromStdString(this->meteoGridDbHandler->getDailyPragaName(myVar)), this->meteoGridDbHandler->meteoGrid()->dataMeteoGrid.value[row][col]);
+                        this->meteoGridDbHandler->saveGridDailyDataFixedFields(&errorString, QString::fromStdString(id), QDate(myTime.date.year, myTime.date.month, myTime.date.day), QString::fromStdString(this->meteoGridDbHandler->getDailyPragaName(myVar)), this->meteoGridDbHandler->meteoGrid()->meteoPoint(row,col).currentValue);
 
                     }
                 }
