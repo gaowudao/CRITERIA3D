@@ -514,7 +514,7 @@ bool Project::loadMeteoGridDB(QString xmlName)
 
 
 // test
-//    this->meteoGridDbHandler->saveGridDailyDataFixedFields(&errorString, "lauraD", QDate(1985,01,01), "DAILY_TAVG", 30);
+//    this->meteoGridDbHandler->saveGridDailyDataFixedFields(&errorString, "FraMichiD", QDate(1985,01,01), "DAILY_TAVG", 30);
 //    this->meteoGridDbHandler->saveGridDailyDataFixedFields(&errorString, "lauraD", QDate(1985,01,01), "DAILY_W_INT_AVG", 10);
 //    this->meteoGridDbHandler->saveGridDailyDataFixedFields(&errorString, "lauraD", QDate(1985,01,02), "DAILY_TAVG", 40);
 //    this->meteoGridDbHandler->saveGridHourlyDataFixedFields(&errorString, "lauraH", QDateTime(QDate(1991,01,01),QTime(9,0,0)), "TAVG", 30);
