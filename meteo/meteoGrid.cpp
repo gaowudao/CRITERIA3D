@@ -620,7 +620,7 @@ void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq
                             }
                             fillMeteoPointHourlyValue(row, col, numberOfDays, initialize, date, hour, minute, myVar, float(myValue));
                             fillMeteoPointCurrentHourlyValue(date, hour, minute, myVar);
-                            //std::cout << "id: " << _meteoPoints[row][col]->id << "row: " << row << "col: " << col <<"dataMeteoGrid.value[i][j]: " << dataMeteoGrid.value[row][col] <<std::endl;
+                            //std::cout << "id: " << _meteoPoints[row][col]->id << "row: " << row << "col: " << col << " value: " << myValue << " currentValue: " << _meteoPoints[row][col]->currentValue <<std::endl;
 
                         }
                         else if (freq == daily)
@@ -636,7 +636,7 @@ void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq
                             }
                             fillMeteoPointDailyValue(row, col, numberOfDays, initialize, date, myVar, float(myValue));
                             fillMeteoPointCurrentDailyValue(date, myVar);
-                            //std::cout << "id: " << _meteoPoints[row][col]->id << " row: " << row << " col: " << col <<" value: " << myValue << " currentValue: " << _meteoPoints[row][col]->currentValue <<std::endl;
+                            //std::cout << "id: " << _meteoPoints[row][col]->id << " row: " << row << " col: " << col << " value: " << myValue << " currentValue: " << _meteoPoints[row][col]->currentValue <<std::endl;
                         }
                     }
                 }

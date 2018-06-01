@@ -409,6 +409,7 @@ void MainWindow::on_actionOpen_meteo_points_DB_triggered()
     {
         this->loadMeteoPointsDB(dbName);
     }
+    redrawMeteoPoints(true);
 }
 
 
@@ -773,6 +774,7 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
     if (! this->showPoints)
         return;
 
+    meteoPointsLegend->setVisible(true);
     // show location
     if (myProject.getCurrentVariable() == noMeteoVar)
     {
@@ -858,6 +860,7 @@ void MainWindow::redrawMeteoGrid()
         return;
 
     myProject.meteoGridDbHandler->meteoGrid()->fillMeteoRaster();
+    meteoGridLegend->setVisible(true);
 
     setColorScale(variable, myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale);
 
@@ -1108,7 +1111,7 @@ void MainWindow::on_dateEdit_dateChanged(const QDate &date)
 void MainWindow::on_actionClose_meteo_points_triggered()
 {
     resetMeteoPoints();
-    meteoPointsLegend->close();
+    meteoPointsLegend->setVisible(false);
     myProject.closeMeteoPointsDB();
 }
 
@@ -1118,8 +1121,8 @@ void MainWindow::on_actionClose_meteo_grid_triggered()
     if (myProject.meteoGridDbHandler != NULL)
     {
         myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.isLoaded = false;
-        meteoGridLegend->close();
         meteoGridObj->redrawRequested();
+        meteoGridLegend->setVisible(false);
         myProject.closeMeteoGridDB();
     }
 
