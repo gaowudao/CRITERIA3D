@@ -1,5 +1,4 @@
 
-#include "QDebug"
 
 #include <stdio.h>
 #include <cmath>

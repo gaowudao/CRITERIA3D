@@ -25,7 +25,6 @@
 
 
 #include <stdlib.h>
-#include <QDebug>
 
 #include <math.h>
 #include <vector>
@@ -113,15 +112,6 @@ bool addInterpolationPoint(int myIndex, float myValue, float myX, float myY, flo
     interpolationPointList.push_back(myPoint);
 
     return (true);
-}
-
-
-void printInterpolationData()
-{
-    for (unsigned long i = 0; i < interpolationPointList.size() ; i++)
-    {
-        qDebug() << i << interpolationPointList[i].value;
-    }
 }
 
 

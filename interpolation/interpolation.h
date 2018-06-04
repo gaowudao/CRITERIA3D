@@ -56,8 +56,6 @@
     float interpolate(meteoVariable myVar, float myX, float myY, float myZ, float myOrogIndex, float myUrban, float mySeaDist, float myAspect);
     bool interpolateGridDtm(gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGrid &myGridDtm, meteoVariable myVar);
 
-    void printInterpolationData();
-
     bool checkInterpolationRaster(const  gis::Crit3DRasterGrid& myDTM, std::string *myError);
 
     bool interpolationRaster(meteoVariable myVar, Crit3DInterpolationSettings *mySettings,
