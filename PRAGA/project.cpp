@@ -531,14 +531,19 @@ bool Project::loadMeteoGridDB(QString xmlName)
 */
 
     //test
-    QDate firstDateDB;
-    //QList<float> dailyVarList = this->meteoGridDbHandler->loadGridDailyVar(&errorString, "01010", dailyPrecipitation, QDate(1991,01,01), QDate(1991,01,10), &firstDateDB);
-    QList<float> dailyVarList = this->meteoGridDbHandler->loadGridDailyVarFixedFields(&errorString, "01011", dailyAirTemperatureMin, QDate(2018,04,15), QDate(2018,04,17), &firstDateDB);
-    if (dailyVarList.isEmpty())
-        return false;
+//    QDate firstDateDB;
+//    QList<float> dailyVarList = this->meteoGridDbHandler->loadGridDailyVar(&errorString, "01010", dailyPrecipitation, QDate(1991,01,01), QDate(1991,01,10), &firstDateDB);
+//    QList<float> dailyVarList = this->meteoGridDbHandler->loadGridDailyVarFixedFields(&errorString, "01011", dailyAirTemperatureMin, QDate(2018,04,15), QDate(2018,04,17), &firstDateDB);
+//    if (dailyVarList.isEmpty())
+//        return false;
 
 //    if (! this->meteoGridDbHandler->loadGridHourlyData(&errorString, "01019", QDateTime(QDate(1991,01,01),QTime(9,0,0)), QDateTime(QDate(1991,01,2),QTime(9,0,0))))
 //        return false;
+//    QDateTime firstDateDB;
+//    QList<float> hourlyVarList = this->meteoGridDbHandler->loadGridHourlyVarFixedFields(&errorString, "01019", airTemperature, QDateTime(QDate(2018,04,15),QTime(20,0,0)), QDateTime(QDate(2018,04,15),QTime(23,0,0)), &firstDateDB);
+//        if (hourlyVarList.isEmpty())
+//            return false;
+
 
 
 
