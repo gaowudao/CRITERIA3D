@@ -1573,7 +1573,7 @@ QList<float> Crit3DMeteoGridDbHandler::loadGridHourlyVarFixedFields(std::string 
 }
 
 
-bool Crit3DMeteoGridDbHandler::saveGridDailyData(std::string *myError, QString meteoPointID, QDate date, int varCode, float value)
+bool Crit3DMeteoGridDbHandler::saveCellCurrrentGridDaily(std::string *myError, QString meteoPointID, QDate date, int varCode, float value)
 {
     QSqlQuery qry(_db);
     QString tableD = _tableDaily.prefix + meteoPointID + _tableDaily.postFix;
@@ -1605,8 +1605,41 @@ bool Crit3DMeteoGridDbHandler::saveGridDailyData(std::string *myError, QString m
     return true;
 }
 
+/*
+bool Crit3DMeteoGridDbHandler::saveCellGridDailyData(std::string *myError, QString meteoPointID, QDate firstDate(), QDate lastDate(), QList<int> varCode)
+{
+    QSqlQuery qry(_db);
+    QString tableD = _tableDaily.prefix + meteoPointID + _tableDaily.postFix;
 
-bool Crit3DMeteoGridDbHandler::saveGridDailyDataFixedFields(std::string *myError, QString meteoPointID, QDate date, QString varPragaName, float value)
+
+    QString statement = QString("CREATE TABLE IF NOT EXISTS `%1` "
+                                "(%2 date, VariableCode tinyint(3) UNSIGNED, Value float(6,1), PRIMARY KEY(%2,VariableCode))").arg(tableD).arg(_tableDaily.fieldTime);
+
+    if( !qry.exec(statement) )
+    {
+        *myError = qry.lastError().text().toStdString();
+        return false;
+    }
+    else
+    {
+        QString valueS = QString("'%1'").arg(value);
+        if (value == NODATA)
+            valueS = "NULL";
+
+        statement = QString("REPLACE INTO `%1` VALUES ('%2','%3',%4)").arg(tableD).arg(date.toString("yyyy-MM-dd")).arg(varCode).arg(valueS);
+
+        if( !qry.exec(statement) )
+        {
+            *myError = qry.lastError().text().toStdString();
+            return false;
+        }
+    }
+
+    return true;
+}
+*/
+
+bool Crit3DMeteoGridDbHandler::saveCellCurrentGridDailyFF(std::string *myError, QString meteoPointID, QDate date, QString varPragaName, float value)
 {
     QSqlQuery qry(_db);
     QString tableD = _tableDaily.prefix + meteoPointID + _tableDaily.postFix;
@@ -1655,7 +1688,7 @@ bool Crit3DMeteoGridDbHandler::saveGridDailyDataFixedFields(std::string *myError
 }
 
 
-bool Crit3DMeteoGridDbHandler::saveGridHourlyData(std::string *myError, QString meteoPointID, QDateTime dateTime, int varCode, float value)
+bool Crit3DMeteoGridDbHandler::saveCellCurrentGridHourly(std::string *myError, QString meteoPointID, QDateTime dateTime, int varCode, float value)
 {
     QSqlQuery qry(_db);
     QString tableH = _tableHourly.prefix + meteoPointID + _tableHourly.postFix;
@@ -1689,7 +1722,7 @@ bool Crit3DMeteoGridDbHandler::saveGridHourlyData(std::string *myError, QString 
     return true;
 }
 
-bool Crit3DMeteoGridDbHandler::saveGridHourlyDataFixedFields(std::string *myError, QString meteoPointID, QDateTime dateTime, QString varPragaName, float value)
+bool Crit3DMeteoGridDbHandler::saveCellCurrentGridHourlyFF(std::string *myError, QString meteoPointID, QDateTime dateTime, QString varPragaName, float value)
 {
     QSqlQuery qry(_db);
     QString tableH = _tableHourly.prefix + meteoPointID + _tableHourly.postFix;

@@ -123,13 +123,13 @@ class Crit3DMeteoGridDbHandler
 
         QList<float> loadGridHourlyVarFixedFields(std::string *myError, QString meteoPoint, meteoVariable variable, QDateTime first, QDateTime last, QDateTime* firstDateDB);
 
-        bool saveGridDailyData(std::string *myError, QString meteoPointID, QDate date, int varCode, float value);
+        bool saveCellCurrrentGridDaily(std::string *myError, QString meteoPointID, QDate date, int varCode, float value);
 
-        bool saveGridDailyDataFixedFields(std::string *myError, QString meteoPointID, QDate date, QString varPragaName, float value);
+        bool saveCellCurrentGridDailyFF(std::string *myError, QString meteoPointID, QDate date, QString varPragaName, float value);
 
-        bool saveGridHourlyData(std::string *myError, QString meteoPointID, QDateTime dateTime, int varCode, float value);
+        bool saveCellCurrentGridHourly(std::string *myError, QString meteoPointID, QDateTime dateTime, int varCode, float value);
 
-        bool saveGridHourlyDataFixedFields(std::string *myError, QString meteoPointID, QDateTime dateTime, QString varPragaName, float value);
+        bool saveCellCurrentGridHourlyFF(std::string *myError, QString meteoPointID, QDateTime dateTime, QString varPragaName, float value);
 
 
 
