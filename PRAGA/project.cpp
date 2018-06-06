@@ -513,11 +513,25 @@ bool Project::loadMeteoGridDB(QString xmlName)
         return false;
 
 
+
+
+
 // test
-//    this->meteoGridDbHandler->saveGridDailyDataFixedFields(&errorString, "FraMichiD", QDate(1985,01,01), "DAILY_TAVG", 30);
+//    this->meteoGridDbHandler->saveGridDailyData(&errorString, "lauraD", QDate(1985,01,01), 231, 30);
+//    this->meteoGridDbHandler->saveGridDailyData(&errorString, "lauraD", QDate(1985,01,01), 231, NODATA);
+//    this->meteoGridDbHandler->saveGridDailyData(&errorString, "lauraD", QDate(1985,01,02), 231, 40);
+//    this->meteoGridDbHandler->saveGridDailyDataFixedFields(&errorString, "lauraD", QDate(1985,01,01), "DAILY_TAVG", 30);
 //    this->meteoGridDbHandler->saveGridDailyDataFixedFields(&errorString, "lauraD", QDate(1985,01,01), "DAILY_W_INT_AVG", 10);
-//    this->meteoGridDbHandler->saveGridDailyDataFixedFields(&errorString, "lauraD", QDate(1985,01,02), "DAILY_TAVG", 40);
+//    this->meteoGridDbHandler->saveGridDailyDataFixedFields(&errorString, "lauraD", QDate(1985,01,01), "DAILY_W_INT_AVG", 20);
+//    this->meteoGridDbHandler->saveGridDailyDataFixedFields(&errorString, "lauraD", QDate(1985,01,02), "DAILY_TAVG", NODATA);
+//    this->meteoGridDbHandler->saveGridDailyDataFixedFields(&errorString, "lauraD", QDate(1985,01,03), "DAILY_TAVG", 40);
 //    this->meteoGridDbHandler->saveGridHourlyDataFixedFields(&errorString, "lauraH", QDateTime(QDate(1991,01,01),QTime(9,0,0)), "TAVG", 30);
+//    this->meteoGridDbHandler->saveGridHourlyDataFixedFields(&errorString, "lauraH", QDateTime(QDate(1991,01,01),QTime(9,0,0)), "TAVG", NODATA);
+//    this->meteoGridDbHandler->saveGridHourlyDataFixedFields(&errorString, "lauraH", QDateTime(QDate(1991,01,01),QTime(10,0,0)), "TAVG", 20);
+
+//    this->meteoGridDbHandler->saveGridHourlyData(&errorString, "lauraH", QDateTime(QDate(1991,01,01),QTime(9,0,0)), 78, 30);
+//    this->meteoGridDbHandler->saveGridHourlyData(&errorString, "lauraH", QDateTime(QDate(1991,01,01),QTime(9,0,0)), 78, NODATA);
+//    this->meteoGridDbHandler->saveGridHourlyData(&errorString, "lauraH", QDateTime(QDate(1991,01,01),QTime(10,0,0)), 78, 20);
 
 //    QDateTime firstDateDB;
 //    QList<float> hourlyVarList = this->meteoGridDbHandler->loadGridHourlyVar(&errorString, "01019", precipitation, QDateTime(QDate(1991,01,01),QTime(9,0,0)), QDateTime(QDate(1991,01,2),QTime(9,0,0)), &firstDateDB);
