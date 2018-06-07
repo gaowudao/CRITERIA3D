@@ -563,11 +563,11 @@ bool Project::loadMeteoGridDB(QString xmlName)
 //    this->meteoGridDbHandler->saveCellGridDailyData(&errorString, "write00097", 23, 2, QDate(2018,04,29), QDate(2018,04,30), meteoVariableList);
 
 
-//      loadMeteoGridData(QDate(2018,04,29), QDate(2018,04,30), 1);
+//    loadMeteoGridData(QDate(2018,04,17), QDate(2018,04,30), 1);
 //    QList<meteoVariable> meteoVariableList = { airTemperature , precipitation , airHumidity , globalIrradiance };
 //    this->meteoGridDbHandler->saveCellGridHourlyData(&errorString, "Hwrite00097", 23, 2, QDateTime(QDate(2018,04,29),QTime(9,0,0)), QDateTime(QDate(2018,04,30),QTime(9,0,0)), meteoVariableList);
-//      this->meteoGridDbHandler->saveCellGridDailyDataFF(&errorString, "DW00097", 23, 2, QDate(2018,04,29), QDate(2018,04,30));
-
+//    this->meteoGridDbHandler->saveCellGridDailyDataFF(&errorString, "DW00097", 23, 2, QDate(2018,04,29), QDate(2018,04,30));
+//    this->meteoGridDbHandler->saveCellGridHourlyDataFF(&errorString, "HW00097", 23, 2, QDateTime(QDate(2018,04,17),QTime(20,0,0)), QDateTime(QDate(2018,04,18),QTime(9,0,0)));
     return true;
 }
 
