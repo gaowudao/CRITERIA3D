@@ -93,11 +93,19 @@ class Crit3DMeteoGridDbHandler
 
         int getDailyVarCode(meteoVariable meteoGridDailyVar);
 
+        QString getDailyVarField(meteoVariable meteoGridDailyVar);
+
         meteoVariable getDailyVarEnum(int varCode);
+
+        meteoVariable getDailyVarFieldEnum(QString varField);
 
         int getHourlyVarCode(meteoVariable meteoGridHourlyVar);
 
+        QString getHourlyVarField(meteoVariable meteoGridHourlyVar);
+
         meteoVariable getHourlyVarEnum(int varCode);
+
+        meteoVariable getHourlyVarFieldEnum(QString varField);
 
         std::string getDailyPragaName(meteoVariable meteoVar);
 
@@ -124,6 +132,8 @@ class Crit3DMeteoGridDbHandler
         QList<float> loadGridHourlyVarFixedFields(std::string *myError, QString meteoPoint, meteoVariable variable, QDateTime first, QDateTime last, QDateTime* firstDateDB);
 
         bool saveCellGridDailyData(std::string *myError, QString meteoPointID, int row, int col, QDate firstDate, QDate lastDate, QList<meteoVariable> meteoVariableList);
+
+        bool saveCellGridDailyDataFF(std::string *myError, QString meteoPointID, int row, int col, QDate firstDate, QDate lastDate);
 
         bool saveCellCurrrentGridDaily(std::string *myError, QString meteoPointID, QDate date, int varCode, float value);
 
@@ -155,6 +165,9 @@ private:
 
         QMap<meteoVariable, int> _gridDailyVar;
         QMap<meteoVariable, int> _gridHourlyVar;
+
+        QMap<meteoVariable, QString> _gridDailyVarField;
+        QMap<meteoVariable, QString> _gridHourlyVarField;
 
         QString _tableDailyModel;
         QString _tableHourlyModel;

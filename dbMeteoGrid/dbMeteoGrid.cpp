@@ -362,6 +362,7 @@ bool Crit3DMeteoGridDbHandler::parseXMLGrid(QString xmlFileName, std::string *my
         {
             meteoVariable gridMeteoKey = MapDailyMeteoVar.at(_tableDaily.varcode[i].varPragaName.toStdString());
             _gridDailyVar.insert(gridMeteoKey, _tableDaily.varcode[i].varCode);
+            _gridDailyVarField.insert(gridMeteoKey, _tableDaily.varcode[i].varField);
         }
         catch (const std::out_of_range& oor)
         {
@@ -575,6 +576,28 @@ int Crit3DMeteoGridDbHandler::getDailyVarCode(meteoVariable meteoGridDailyVar)
 
 }
 
+QString Crit3DMeteoGridDbHandler::getDailyVarField(meteoVariable meteoGridDailyVar)
+{
+
+    QString varField = "";
+    //check
+    if (meteoGridDailyVar == noMeteoVar)
+    {
+        return varField;
+    }
+    if (_gridDailyVarField.empty())
+    {
+        return varField;
+    }
+    if(_gridDailyVarField.contains(meteoGridDailyVar))
+    {
+        varField = _gridDailyVarField[meteoGridDailyVar];
+    }
+
+    return varField;
+
+}
+
 meteoVariable Crit3DMeteoGridDbHandler::getDailyVarEnum(int varCode)
 {
 
@@ -587,6 +610,26 @@ meteoVariable Crit3DMeteoGridDbHandler::getDailyVarEnum(int varCode)
     while (i.hasNext()) {
         i.next();
         if (i.value() == varCode)
+        {
+            return i.key();
+        }
+    }
+
+    return noMeteoVar;
+}
+
+meteoVariable Crit3DMeteoGridDbHandler::getDailyVarFieldEnum(QString varField)
+{
+
+    if (varField == "")
+    {
+        return noMeteoVar;
+    }
+
+    QMapIterator<meteoVariable, QString> i(_gridDailyVarField);
+    while (i.hasNext()) {
+        i.next();
+        if (i.value() == varField)
         {
             return i.key();
         }
@@ -617,6 +660,28 @@ int Crit3DMeteoGridDbHandler::getHourlyVarCode(meteoVariable meteoGridHourlyVar)
 
 }
 
+QString Crit3DMeteoGridDbHandler::getHourlyVarField(meteoVariable meteoGridHourlyVar)
+{
+
+    QString varField = "";
+    //check
+    if (meteoGridHourlyVar == noMeteoVar)
+    {
+        return varField;
+    }
+    if (_gridHourlyVarField.empty())
+    {
+        return varField;
+    }
+    if(_gridHourlyVarField.contains(meteoGridHourlyVar))
+    {
+        varField = _gridHourlyVarField[meteoGridHourlyVar];
+    }
+
+    return varField;
+
+}
+
 meteoVariable Crit3DMeteoGridDbHandler::getHourlyVarEnum(int varCode)
 {
 
@@ -629,6 +694,27 @@ meteoVariable Crit3DMeteoGridDbHandler::getHourlyVarEnum(int varCode)
     while (i.hasNext()) {
         i.next();
         if (i.value() == varCode)
+        {
+            return i.key();
+        }
+    }
+
+    return noMeteoVar;
+
+}
+
+meteoVariable Crit3DMeteoGridDbHandler::getHourlyVarFieldEnum(QString varField)
+{
+
+    if (varField == "")
+    {
+        return noMeteoVar;
+    }
+
+    QMapIterator<meteoVariable, QString> i(_gridHourlyVarField);
+    while (i.hasNext()) {
+        i.next();
+        if (i.value() == varField)
         {
             return i.key();
         }
@@ -1619,6 +1705,60 @@ bool Crit3DMeteoGridDbHandler::saveCellGridDailyData(std::string *myError, QStri
     return true;
 }
 
+bool Crit3DMeteoGridDbHandler::saveCellGridDailyDataFF(std::string *myError, QString meteoPointID, int row, int col, QDate firstDate, QDate lastDate)
+{
+    QSqlQuery qry(_db);
+    QString tableD = _tableDaily.prefix + meteoPointID + _tableDaily.postFix;
+    QString tableFields;
+
+
+    for (unsigned int i=0; i < _tableDaily.varcode.size(); i++)
+    {
+        QString var = _tableDaily.varcode[i].varPragaName;
+        QString type = _mapDailyMySqlVarType[var];
+        QString varFieldItem = _tableDaily.varcode[i].varField;
+        tableFields = tableFields  + ", " + varFieldItem.toLower() + " " + type;
+    }
+
+    QString statement = QString("CREATE TABLE IF NOT EXISTS `%1` ").arg(tableD) + QString("(%1 date ").arg(_tableDaily.fieldTime) + tableFields + QString(", PRIMARY KEY(%1))").arg(_tableDaily.fieldTime);
+
+    if( !qry.exec(statement) )
+    {
+        *myError = qry.lastError().text().toStdString();
+        return false;
+    }
+    else
+    {
+
+        statement =  QString(("REPLACE INTO `%1` VALUES")).arg(tableD);
+        int nrDays = firstDate.daysTo(lastDate) + 1;
+        for (int i = 0; i < nrDays; i++)
+        {
+            QDate date = firstDate.addDays(i);
+            statement += QString(" ('%1',").arg(date.toString("yyyy-MM-dd"));
+            for (unsigned int i=0; i < _tableDaily.varcode.size(); i++)
+            {
+                float value = meteoGrid()->meteoPoint(row,col).getMeteoPointValueD(getCrit3DDate(date), getDailyVarFieldEnum(_tableDaily.varcode[i].varField));
+                QString valueS = QString("'%1'").arg(value);
+                if (value == NODATA)
+                    valueS = "NULL";
+
+                statement += QString("%1,").arg(valueS);
+            }
+            statement = statement.left(statement.length() - 1);
+            statement += QString("),");
+        }
+        statement = statement.left(statement.length() - 1);
+
+        if( !qry.exec(statement) )
+        {
+            *myError = qry.lastError().text().toStdString();
+            return false;
+        }
+    }
+
+    return true;
+}
 
 bool Crit3DMeteoGridDbHandler::saveCellCurrrentGridDaily(std::string *myError, QString meteoPointID, QDate date, int varCode, float value)
 {
