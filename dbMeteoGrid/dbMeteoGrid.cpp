@@ -1605,8 +1605,8 @@ bool Crit3DMeteoGridDbHandler::saveCellCurrrentGridDaily(std::string *myError, Q
     return true;
 }
 
-/*
-bool Crit3DMeteoGridDbHandler::saveCellGridDailyData(std::string *myError, QString meteoPointID, QDate firstDate(), QDate lastDate(), QList<int> varCode)
+
+bool Crit3DMeteoGridDbHandler::saveCellGridDailyData(std::string *myError, QString meteoPointID, int row, int col, QDate firstDate, QDate lastDate, QList<meteoVariable> meteoVariableList)
 {
     QSqlQuery qry(_db);
     QString tableD = _tableDaily.prefix + meteoPointID + _tableDaily.postFix;
@@ -1622,11 +1622,26 @@ bool Crit3DMeteoGridDbHandler::saveCellGridDailyData(std::string *myError, QStri
     }
     else
     {
-        QString valueS = QString("'%1'").arg(value);
-        if (value == NODATA)
-            valueS = "NULL";
 
-        statement = QString("REPLACE INTO `%1` VALUES ('%2','%3',%4)").arg(tableD).arg(date.toString("yyyy-MM-dd")).arg(varCode).arg(valueS);
+        statement =  QString(("REPLACE INTO `%1` VALUES")).arg(tableD);
+        int nrDays = firstDate.daysTo(lastDate) + 1;
+        for (int i = 0; i < nrDays; i++)
+        {
+            QDate date = firstDate.addDays(i);
+            foreach (meteoVariable meteoVar, meteoVariableList)
+            {
+                float value = meteoGrid()->meteoPoint(row,col).getMeteoPointValueD(getCrit3DDate(date), meteoVar);
+                QString valueS = QString("'%1'").arg(value);
+                if (value == NODATA)
+                    valueS = "NULL";
+
+                int varCode = getDailyVarCode(meteoVar);
+
+                //        statement = QString("REPLACE INTO `%1` VALUES ('%2','%3',%4)").arg(tableD).arg(date.toString("yyyy-MM-dd")).arg(varCode).arg(valueS);
+                statement += QString(" ('%1','%2',%3),").arg(date.toString("yyyy-MM-dd")).arg(varCode).arg(valueS);
+            }
+        }
+        statement = statement.left(statement.length() - 1);
 
         if( !qry.exec(statement) )
         {
@@ -1637,7 +1652,7 @@ bool Crit3DMeteoGridDbHandler::saveCellGridDailyData(std::string *myError, QStri
 
     return true;
 }
-*/
+
 
 bool Crit3DMeteoGridDbHandler::saveCellCurrentGridDailyFF(std::string *myError, QString meteoPointID, QDate date, QString varPragaName, float value)
 {
