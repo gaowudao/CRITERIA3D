@@ -1572,40 +1572,6 @@ QList<float> Crit3DMeteoGridDbHandler::loadGridHourlyVarFixedFields(std::string 
     return hourlyVarList;
 }
 
-
-bool Crit3DMeteoGridDbHandler::saveCellCurrrentGridDaily(std::string *myError, QString meteoPointID, QDate date, int varCode, float value)
-{
-    QSqlQuery qry(_db);
-    QString tableD = _tableDaily.prefix + meteoPointID + _tableDaily.postFix;
-
-
-    QString statement = QString("CREATE TABLE IF NOT EXISTS `%1` "
-                                "(%2 date, VariableCode tinyint(3) UNSIGNED, Value float(6,1), PRIMARY KEY(%2,VariableCode))").arg(tableD).arg(_tableDaily.fieldTime);
-
-    if( !qry.exec(statement) )
-    {
-        *myError = qry.lastError().text().toStdString();
-        return false;
-    }
-    else
-    {
-        QString valueS = QString("'%1'").arg(value);
-        if (value == NODATA)
-            valueS = "NULL";
-
-        statement = QString("REPLACE INTO `%1` VALUES ('%2','%3',%4)").arg(tableD).arg(date.toString("yyyy-MM-dd")).arg(varCode).arg(valueS);
-
-        if( !qry.exec(statement) )
-        {
-            *myError = qry.lastError().text().toStdString();
-            return false;
-        }
-    }
-
-    return true;
-}
-
-
 bool Crit3DMeteoGridDbHandler::saveCellGridDailyData(std::string *myError, QString meteoPointID, int row, int col, QDate firstDate, QDate lastDate, QList<meteoVariable> meteoVariableList)
 {
     QSqlQuery qry(_db);
@@ -1642,6 +1608,39 @@ bool Crit3DMeteoGridDbHandler::saveCellGridDailyData(std::string *myError, QStri
             }
         }
         statement = statement.left(statement.length() - 1);
+
+        if( !qry.exec(statement) )
+        {
+            *myError = qry.lastError().text().toStdString();
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
+bool Crit3DMeteoGridDbHandler::saveCellCurrrentGridDaily(std::string *myError, QString meteoPointID, QDate date, int varCode, float value)
+{
+    QSqlQuery qry(_db);
+    QString tableD = _tableDaily.prefix + meteoPointID + _tableDaily.postFix;
+
+
+    QString statement = QString("CREATE TABLE IF NOT EXISTS `%1` "
+                                "(%2 date, VariableCode tinyint(3) UNSIGNED, Value float(6,1), PRIMARY KEY(%2,VariableCode))").arg(tableD).arg(_tableDaily.fieldTime);
+
+    if( !qry.exec(statement) )
+    {
+        *myError = qry.lastError().text().toStdString();
+        return false;
+    }
+    else
+    {
+        QString valueS = QString("'%1'").arg(value);
+        if (value == NODATA)
+            valueS = "NULL";
+
+        statement = QString("REPLACE INTO `%1` VALUES ('%2','%3',%4)").arg(tableD).arg(date.toString("yyyy-MM-dd")).arg(varCode).arg(valueS);
 
         if( !qry.exec(statement) )
         {
@@ -1697,6 +1696,51 @@ bool Crit3DMeteoGridDbHandler::saveCellCurrentGridDailyFF(std::string *myError, 
             return false;
         }
 
+    }
+
+    return true;
+}
+
+bool Crit3DMeteoGridDbHandler::saveCellGridHourlyData(std::string *myError, QString meteoPointID, int row, int col, QDateTime firstDate, QDateTime lastDate, QList<meteoVariable> meteoVariableList)
+{
+    QSqlQuery qry(_db);
+    QString tableH = _tableHourly.prefix + meteoPointID + _tableHourly.postFix;
+
+
+    QString statement = QString("CREATE TABLE IF NOT EXISTS `%1` "
+                                "(%2 datetime, VariableCode tinyint(3) UNSIGNED, Value float(6,1), PRIMARY KEY(%2,VariableCode))").arg(tableH).arg(_tableHourly.fieldTime);
+
+    if( !qry.exec(statement) )
+    {
+        *myError = qry.lastError().text().toStdString();
+        return false;
+    }
+    else
+    {
+
+        statement =  QString(("REPLACE INTO `%1` VALUES")).arg(tableH);
+        int nrDayTime = firstDate.msecsTo(lastDate.addDays(1)) /(1000*3600);
+        for (int i = 0; i < nrDayTime; i++)
+        {
+            QDateTime dateTime = firstDate.addSecs(i*3600);
+            foreach (meteoVariable meteoVar, meteoVariableList)
+            {
+                float value = meteoGrid()->meteoPoint(row,col).getMeteoPointValueH(getCrit3DDate(dateTime.date()), dateTime.time().hour(), dateTime.time().minute(), meteoVar);
+                QString valueS = QString("'%1'").arg(value);
+                if (value == NODATA)
+                    valueS = "NULL";
+
+                int varCode = getHourlyVarCode(meteoVar);
+                statement += QString(" ('%1','%2',%3),").arg(dateTime.toString("yyyy-MM-dd hh:mm")).arg(varCode).arg(valueS);
+            }
+        }
+        statement = statement.left(statement.length() - 1);
+
+        if( !qry.exec(statement) )
+        {
+            *myError = qry.lastError().text().toStdString();
+            return false;
+        }
     }
 
     return true;

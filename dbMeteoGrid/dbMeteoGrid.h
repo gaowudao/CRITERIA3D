@@ -129,6 +129,9 @@ class Crit3DMeteoGridDbHandler
 
         bool saveCellCurrentGridDailyFF(std::string *myError, QString meteoPointID, QDate date, QString varPragaName, float value);
 
+
+        bool saveCellGridHourlyData(std::string *myError, QString meteoPointID, int row, int col, QDateTime firstDate, QDateTime lastDate, QList<meteoVariable> meteoVariableList);
+
         bool saveCellCurrentGridHourly(std::string *myError, QString meteoPointID, QDateTime dateTime, int varCode, float value);
 
         bool saveCellCurrentGridHourlyFF(std::string *myError, QString meteoPointID, QDateTime dateTime, QString varPragaName, float value);
