@@ -9,20 +9,38 @@ QT  += core gui widgets xml sql
 TARGET = Criteria3D
 TEMPLATE = app
 
-INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../meteo ../quality ../interpolation ../solarRadiation ../soil ../crop ../utilities
-INCLUDEPATH += ../soilFluxes3D/header
 
-LIBS += -L../crit3dDate/debug -lcrit3dDate
-LIBS += -L../mathFunctions/debug -lmathFunctions
-LIBS += -L../soilFluxes3D/debug -lsoilFluxes3D
-LIBS += -L../gis/debug -lgis
-LIBS += -L../meteo/debug -lmeteo
-LIBS += -L../crop/debug -lcrop
-LIBS += -L../interpolation/debug -lInterpolation
-LIBS += -L../solarRadiation/debug -lsolarRadiation
-LIBS += -L../soil/debug -lsoil
-LIBS += -L../quality/debug -lquality
-LIBS += -L../utilities/debug -lutilities
+INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../meteo ../quality ../interpolation \
+                ../solarRadiation ../soil ../crop ../utilities ../soilFluxes3D/header
+
+CONFIG += debug_and_release
+
+
+CONFIG(debug, debug|release) {
+    LIBS += -L../quality/debug -lquality
+    LIBS += -L../utilities/debug -lutilities
+    LIBS += -L../solarRadiation/debug -lsolarRadiation
+    LIBS += -L../interpolation/debug -linterpolation
+    LIBS += -L../meteo/debug -lmeteo
+    LIBS += -L../gis/debug -lgis
+    LIBS += -L../soil/debug -lsoil
+    LIBS += -L../crop/debug -lcrop
+    LIBS += -L../crit3dDate/debug -lcrit3dDate
+    LIBS += -L../soilFluxes3D/debug -lsoilFluxes3D
+    LIBS += -L../mathFunctions/debug -lmathFunctions
+} else {
+    LIBS += -L../quality/release -lquality
+    LIBS += -L../utilities/release -lutilities
+    LIBS += -L../solarRadiation/release -lsolarRadiation
+    LIBS += -L../interpolation/release -linterpolation
+    LIBS += -L../meteo/release -lmeteo
+    LIBS += -L../gis/release -lgis
+    LIBS += -L../soil/release -lsoil
+    LIBS += -L../crop/release -lcrop
+    LIBS += -L../crit3dDate/release -lcrit3dDate
+    LIBS += -L../soilFluxes3D/release -lsoilFluxes3D
+    LIBS += -L../mathFunctions/release -lmathFunctions
+}
 
 
 SOURCES += main.cpp \

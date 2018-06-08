@@ -92,9 +92,3 @@ float Crit3DRadiationSettings::getAspect()
 
 float Crit3DRadiationSettings::getClearSky()
 { return transSettings.clearSky;}
-
-int Crit3DRadiationSettings::getTimeZone()
-{ return timeZone;}
-
-void Crit3DRadiationSettings::setTimeZone(int myZone)
-{ timeZone = myZone;}

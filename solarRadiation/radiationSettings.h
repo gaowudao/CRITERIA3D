@@ -26,7 +26,6 @@
         TparameterMode albedoMode;
         TtiltMode tiltMode;
 
-        int timeZone;
         bool computeRealData;
         bool usePotentialIfMissing;
         float timeStepIntegration;
@@ -53,8 +52,6 @@
         float getAlbedo();
         float getTilt();
         float getAspect();
-        int getTimeZone();
-        void setTimeZone(int myZone);
         TparameterMode getLinkeMode();
         TlandUse getLandUse();
         TparameterMode getAlbedoMode();
