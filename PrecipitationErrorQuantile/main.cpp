@@ -1,5 +1,7 @@
 #include <QCoreApplication>
-#include "percentileanalysis.h"
+#include "commonConstants.h"
+#include "statistics.h"
+
 
 int main(int argc, char *argv[])
 {
