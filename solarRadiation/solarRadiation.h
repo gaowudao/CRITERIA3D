@@ -4,6 +4,9 @@
     #ifndef RADIATIONDEFINITIONS_H
         #include "radiationSettings.h"
     #endif
+    #ifndef GIS_H
+        #include "gis.h"
+    #endif
 
     class Crit3DRadiationMaps
     {

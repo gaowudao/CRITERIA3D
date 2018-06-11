@@ -458,6 +458,7 @@ namespace gis
             return sqrt((dx * dx)+(dy * dy));
     }
 
+
     float computeDistance(float x1, float y1, float x2, float y2)
     {
             float dx, dy;
