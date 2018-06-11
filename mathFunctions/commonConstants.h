@@ -27,7 +27,7 @@
 #define COMMONCONSTANTS_H
 
 
-    enum elaborationMethods { mean, median, stdDeviation};
+    enum elaborationMethods {mean, median, stdDeviation};
 
 
     //general functions
