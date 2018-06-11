@@ -23,7 +23,7 @@
     ftomei@arpae.it
 */
 
-
+#include "commonConstants.h"
 #include "meteoGrid.h"
 #include "statistics.h"
 #include "furtherMathFunctions.h"

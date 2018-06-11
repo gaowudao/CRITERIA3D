@@ -22,8 +22,7 @@ enum meteoVariable {airTemperature, dailyAirTemperatureMin, dailyAirTemperatureM
                         globalIrradiance, directIrradiance, diffuseIrradiance, reflectedIrradiance, atmTransmissivity,
                         dailyGlobalRadiation, dailyDirectRadiation, dailyDiffuseRadiation, dailyReflectedRadiation,
                         windIntensity, dailyWindIntensityAvg, dailyWindIntensityMax, windDirection, dailyWindDirectionPrevailing,
-                        leafWetness, dailyLeafWetness,
-                        atmPressure,
+                        leafWetness, dailyLeafWetness, atmPressure,
                         referenceEvapotranspiration, dailyReferenceEvapotranspiration, actualEvaporation,
                         dailyWaterTableDepth, noMeteoTerrain, noMeteoVar};
 

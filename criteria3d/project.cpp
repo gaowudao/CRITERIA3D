@@ -449,7 +449,6 @@ bool Crit3DProject::loadDTM(QString myFileName)
 }
 
 
-
 bool Crit3DProject::openDB()
 {
     db.close();
