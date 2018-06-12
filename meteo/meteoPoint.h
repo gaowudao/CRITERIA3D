@@ -92,6 +92,7 @@
         quality::type myQuality;
         float currentValue;
         float residual;   
+        float elaboration;
         bool active;
         bool selected;
 
