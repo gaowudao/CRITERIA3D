@@ -146,7 +146,7 @@ QString getVarNameFromPlantVariable(plantVariable myVar)
 }
 
 
-QString getOutputNameDaily(QString producer, QString varName, QString strArea, QString notes, QDate myDate)
+QString getOutputNameDaily(QString producer, QString varName, QString strArea, QDate myDate)
 {
     if (notes != "")
         return producer + "_" + varName + "_" + strArea + "_" + notes + "_" + myDate.toString("yyyyMMdd");

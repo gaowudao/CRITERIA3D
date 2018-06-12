@@ -24,7 +24,8 @@ enum meteoVariable {airTemperature, dailyAirTemperatureMin, dailyAirTemperatureM
                         windIntensity, dailyWindIntensityAvg, dailyWindIntensityMax, windDirection, dailyWindDirectionPrevailing,
                         leafWetness, dailyLeafWetness, atmPressure,
                         referenceEvapotranspiration, dailyReferenceEvapotranspiration, actualEvaporation,
-                        dailyWaterTableDepth, noMeteoTerrain, noMeteoVar};
+                        dailyWaterTableDepth,
+                        noMeteoTerrain, noMeteoVar};
 
     const std::map<std::string, meteoVariable> MapDailyMeteoVar = {
       { "DAILY_TMIN", dailyAirTemperatureMin },
