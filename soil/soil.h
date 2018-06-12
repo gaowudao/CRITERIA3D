@@ -5,6 +5,11 @@
 
         enum units {METER, KPA, CM};
 
+        enum soilVariable {soilWaterContentSat, soilWaterContentFC,
+                           soilWaterContentWP, soilWaterContentUI,
+                           soilWaterPotentialFC, soilWaterPotentialWP
+                          };
+
         /*!
          * \brief The Crit3DTexture class
          */

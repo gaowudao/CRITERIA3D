@@ -554,13 +554,13 @@ bool setWaterSinkSource(Crit3DProject* myProject, double* totalPrecipitation,
 double getSoilVar(Crit3DProject* myProject, int soilIndex, int myLayerIndex, soilVariable myVar)
 {
     int horizonIndex = soil::getHorizonIndex(&(myProject->soilList[soilIndex]), myProject->layerDepth[myLayerIndex]);
-    if (myVar == soilWiltingPointPotential)
+    if (myVar == soilWaterPotentialWP)
         return myProject->soilList[soilIndex].horizon[horizonIndex].wiltingPoint;
-    else if (myVar == soilFieldCapacityPotential)
+    else if (myVar == soilWaterPotentialFC)
         return myProject->soilList[soilIndex].horizon[horizonIndex].fieldCapacity;
     else if (myVar == soilWaterContentFC)
         return myProject->soilList[soilIndex].horizon[horizonIndex].waterContentFC;
-    else if (myVar == soilSaturation)
+    else if (myVar == soilWaterContentSat)
         return myProject->soilList[soilIndex].horizon[horizonIndex].vanGenuchten.thetaS;
     else if (myVar == soilWaterContentWP)
     {
@@ -583,7 +583,7 @@ double* getSoilVarProfile(Crit3DProject* myProject, int row, int col, soilVariab
 
     if (surfaceIndex != myProject->indexGrid.header->flag)
         for (layerIndex = 0; layerIndex < myProject->nrSoilLayers; layerIndex++)
-            if ((myVar == soilWiltingPointPotential) || (myVar == soilFieldCapacityPotential)
+            if ((myVar == soilWaterPotentialWP) || (myVar == soilWaterPotentialFC)
                     || (myVar == soilWaterContentFC) || (myVar == soilWaterContentWP))
                     myProfile[layerIndex] = getSoilVar(myProject, soilIndex, layerIndex, myVar);
     return myProfile;
@@ -725,7 +725,7 @@ bool getSoilSurfaceMoisture(Crit3DProject* myProject, gis::Crit3DRasterGrid* out
                     sumWater += waterContent * myProject->layerThickness[layer];        //[m]
                     wiltingPoint = getSoilVar(myProject, 0, layer, soilWaterContentWP); //[m^3 m^-3]
                     minWater += wiltingPoint * myProject->layerThickness[layer];        //[m]
-                    saturation = getSoilVar(myProject, 0, layer, soilSaturation);       //[m^3 m^-3]
+                    saturation = getSoilVar(myProject, 0, layer, soilWaterContentSat);       //[m^3 m^-3]
                     maxWater += saturation * myProject->layerThickness[layer];          //[m]
                 }
                 soilSurfaceMoisture = 100 * ((sumWater-minWater) / (maxWater-minWater));

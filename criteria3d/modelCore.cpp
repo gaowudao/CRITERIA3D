@@ -18,8 +18,8 @@ extern Crit3DProject myProject;
 
 bool setSoilProfileCrop(Crit3DProject* myProject, int row, int col)
 {
-    double* soilWPProfile = getSoilVarProfile(myProject, row, col, soilWiltingPointPotential);
-    double* soilFCProfile = getSoilVarProfile(myProject, row, col, soilFieldCapacityPotential) ;
+    double* soilWPProfile = getSoilVarProfile(myProject, row, col, soilWaterPotentialWP);
+    double* soilFCProfile = getSoilVarProfile(myProject, row, col, soilWaterPotentialFC) ;
     double* matricPotentialProfile = getCriteria3DVarProfile(myProject, row, col, waterMatricPotential);
     double* waterContentProfile = getCriteria3DVarProfile(myProject, row, col, waterContent);
     double* waterContentProfileWP = getSoilVarProfile(myProject, row, col, soilWaterContentWP);

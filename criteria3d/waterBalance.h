@@ -20,8 +20,8 @@
                             availableWaterContent, waterDeficit, degreeOfSaturation, soilTemperature,
                             soilSurfaceMoisture};
 
-    enum soilVariable {soilWaterContentFC, soilWaterContentWP, soilWiltingPointPotential,
-                       soilFieldCapacityPotential, soilSaturation, soilWaterContentUI};
+    enum soilVariable {soilWaterContentFC, soilWaterContentWP, soilWaterPotentialWP,
+                       soilWaterPotentialFC, soilWaterContentSat, soilWaterContentUI};
 
     class Crit3DProject;
 
