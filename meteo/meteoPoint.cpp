@@ -64,6 +64,8 @@ Crit3DMeteoPoint::Crit3DMeteoPoint()
     this->residual = NODATA;
 
     this->elaboration = NODATA;
+    this->anomaly = NODATA;
+    this->anomalyPercentage = NODATA;
 
     this->active = false;
     this->selected = false;

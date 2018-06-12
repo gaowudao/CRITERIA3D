@@ -93,6 +93,9 @@
         float currentValue;
         float residual;   
         float elaboration;
+
+        float anomaly;
+        float anomalyPercentage;
         bool active;
         bool selected;
 
