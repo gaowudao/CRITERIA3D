@@ -63,6 +63,8 @@ Crit3DMeteoPoint::Crit3DMeteoPoint()
     this->currentValue = NODATA;
     this->residual = NODATA;
 
+    this->elaboration = NODATA;
+
     this->active = false;
     this->selected = false;
 
