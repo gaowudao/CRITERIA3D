@@ -1411,8 +1411,55 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                 }
             }
 
+            double** occurrenceMatrixSeason = (double **)calloc(nrStations, sizeof(double*));
+            double* moranArray = (double *)calloc(lengthSeason[qq]*parametersModel.yearOfSimulation, sizeof(double));
+            for(int i=0; i< nrStations;i++)
+            {
+                occurrenceMatrixSeason[i] = (double *)calloc(lengthSeason[qq]*parametersModel.yearOfSimulation, sizeof(double));
+            }
 
+            for(int i=0; i< nrStations;i++)
+            {
+                for(int j=0; j< parametersModel.yearOfSimulation*lengthSeason[qq];j++)
+                {
+                    if (qq == 0)
+                    {
+                        occurrenceMatrixSeason[i][j]= occurrenceMatrixSeasonDJF[i][j];
+                    }
+                    else if (qq == 1)
+                    {
+                        occurrenceMatrixSeason[i][j]= occurrenceMatrixSeasonMAM[i][j];
+                    }
+                    else if (qq == 2)
+                    {
+                        occurrenceMatrixSeason[i][j]= occurrenceMatrixSeasonJJA[i][j];
+                    }
+                    else if (qq == 3)
+                    {
+                        occurrenceMatrixSeason[i][j]= occurrenceMatrixSeasonSON[i][j];
+                    }
+                }
+            }
 
+            for(int i=0; i< parametersModel.yearOfSimulation*lengthSeason[qq];i++)
+            {
+                double weightSum = 0;
+                moranArray[i]= 0;
+
+                for(int j=0; j< nrStations;j++)
+                {
+                    weightSum += wSeason[ijk][j];
+                }
+
+                for(int j=0;j<nrStations;j++)
+                {
+
+                    moranArray[i] += occurrenceMatrixSeason[j][i]* wSeason[ijk][j];
+                }
+                if (weightSum == 0) moranArray[i] = 0;
+                else moranArray[i] /= weightSum;
+
+            }
 
 
 
@@ -1423,6 +1470,12 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
             //getchar();
             // free memory moran and occCoeff
 
+            for(int i=0; i< nrStations;i++)
+            {
+                free(occurrenceMatrixSeason[i]);
+            }
+            free (occurrenceMatrixSeason);
+            free (moranArray);
             free (par);
             free(parDelta);
             free(parMax);
