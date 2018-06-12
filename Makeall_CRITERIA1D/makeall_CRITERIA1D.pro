@@ -2,4 +2,5 @@ TEMPLATE = subdirs
 
 SUBDIRS = ../crit3dDate ../mathFunctions ../gis \
             ../soil ../crop ../meteo ../utilities \
-            ../criteria1D ../CRIT1D
+            ../criteria1D ../TestCriteria1D
+
