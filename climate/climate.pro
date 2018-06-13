@@ -6,7 +6,7 @@
 #-------------------------------------------------
 
 QT       -= gui
-QT       += core
+QT       += sql xml core
 
 TEMPLATE = lib
 CONFIG += staticlib
@@ -25,13 +25,15 @@ win32:{
     TARGET = climate
 }
 
-INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../meteo
+INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../meteo ../dbMeteoPoints ../dbMeteoGrid
 
 SOURCES += \
-        climate.cpp
+        climate.cpp \
+    dbClimate.cpp
 
 HEADERS += \
-        climate.h
+        climate.h \
+    dbClimate.h
 unix {
     target.path = /usr/lib
     INSTALLS += target
