@@ -135,7 +135,7 @@
 
      int getUSDATextureClass(float sand, float silt, float clay);
      int getNLTextureClass(float sand, float silt, float clay);
-     int getHorizonIndex(Crit3DSoil* soil, float depth);
+     int getHorizonIndex(Crit3DSoil* soil, double depth);
      double getFieldCapacity(Crit3DHorizon* horizon, soil::units unit);
      double getWiltingPoint(soil::units unit);
      double getThetaFC(Crit3DHorizon* horizon);

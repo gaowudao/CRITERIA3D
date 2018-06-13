@@ -2,10 +2,10 @@
 #define MODELCORE_H
 
     class Crit3DProject;
-    class Crit3DDate;
-    class QString;
+    class Crit3DTime;
 
-    bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours, Crit3DProject* myProject,
-                         const QString& myOutputPath, bool isSave, const QString& myArea);
+    bool computeET0Map(Crit3DProject* myProject);
+
+    bool runModel(bool isInitialState, Crit3DTime myCurrentTime, Crit3DProject* myProject);
 
 #endif // MODELCORE_H

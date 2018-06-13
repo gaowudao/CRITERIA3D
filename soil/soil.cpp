@@ -260,7 +260,7 @@ namespace soil
     }
 
 
-    int getHorizonIndex(Crit3DSoil* soil, float depth)
+    int getHorizonIndex(Crit3DSoil* soil, double depth)
     {
        for (int index = 0; index < soil->nrHorizons; index++)
            if (depth >= soil->horizon[index].upperDepth &&

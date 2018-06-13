@@ -36,13 +36,3 @@ HEADERS += crop.h \
     biomass.h \
     root.h \
     development.h
-
-
-unix:!symbian {
-    maemo5 {
-        target.path = /opt/usr/lib
-    } else {
-        target.path = /usr/lib
-    }
-    INSTALLS += target
-}
