@@ -1413,6 +1413,7 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
 
             double** occurrenceMatrixSeason = (double **)calloc(nrStations, sizeof(double*));
             double* moranArray = (double *)calloc(lengthSeason[qq]*parametersModel.yearOfSimulation, sizeof(double));
+            int counterMoranPrec = 0;
             for(int i=0; i< nrStations;i++)
             {
                 occurrenceMatrixSeason[i] = (double *)calloc(lengthSeason[qq]*parametersModel.yearOfSimulation, sizeof(double));
@@ -1459,15 +1460,51 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                 if (weightSum == 0) moranArray[i] = 0;
                 else moranArray[i] /= weightSum;
 
+                if (occurrenceMatrixSeason[ijk][i] > (1 - EPSILON)) counterMoranPrec++ ;
+
+            }
+            int indexMoranArrayPrec = 0;
+            double* moranArrayPrec = (double *)calloc(counterMoranPrec, sizeof(double));
+            for(int i=0; i< parametersModel.yearOfSimulation*lengthSeason[qq];i++)
+            {
+                if (occurrenceMatrixSeason[ijk][i] > (1 - EPSILON))
+                {
+                    moranArrayPrec[indexMoranArrayPrec] = moranArray[i];
+                    indexMoranArrayPrec++;
+                }
+            }
+            printf("moran %d moranSenzaNODATA %d \n",parametersModel.yearOfSimulation*lengthSeason[qq],indexMoranArrayPrec);
+            int counterBins = 0;
+            for(int i=0; i<11;i++)
+            {
+                if (bins[i] > NODATA + EPSILON) counterBins++;
+                nrBins[i]= 0;
             }
 
+            for(int i=0; i<counterBins-1;i++)
+            {
+                for (int j=0;j<indexMoranArrayPrec-1;j++)
+                {
+                    if (moranArrayPrec[j] >= bins[i] && moranArrayPrec[j] < bins[i+1]) nrBins[i]++;
+                }
+            }
+            int nrTotal = 0;
+            double frequencyBins[11];
+            for(int i=0; i<11;i++)
+            {
+                nrTotal += nrBins[i];
+                frequencyBins[i]=0;
+                printf("%d\t",nrBins[i]);
+            }
+            printf("\n totale %d \n",nrTotal);
+            for(int i=0; i<counterBins-1;i++)
+            {
+                frequencyBins[i]= (double)(nrBins[i])/(double)(nrTotal);
+            }
+            getchar();
+            // da verificare i numeri che siano numeri plausibili confrontare con i bins precedenti
 
 
-
-
-
-
-            //getchar();
             // free memory moran and occCoeff
 
             for(int i=0; i< nrStations;i++)
