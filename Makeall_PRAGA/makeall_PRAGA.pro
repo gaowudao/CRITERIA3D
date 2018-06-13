@@ -1,8 +1,10 @@
 TEMPLATE = subdirs
 
-SUBDIRS = ../crit3dDate ../mathFunctions ../utilities ../gis \
+SUBDIRS =       ../crit3dDate ../mathFunctions ../soilFluxes3D \
+                ../gis ../soil ../utilities \
                 ../meteo ../quality ../interpolation ../solarRadiation \
-                ../climate ../dbMeteoPoints ../dbMeteoGrid ../netcdfHandler ../PRAGA \
+                ../climate ../dbMeteoPoints ../dbMeteoGrid ../criteria3D \
+                ../netcdfHandler ../PRAGA \
 
 
 CONFIG += ordered

@@ -21,12 +21,12 @@
         #include "dbMeteoGrid.h"
     #endif
 
-    #ifndef NETCDFHANDLER_H
-        #include "netcdfHandler.h"
+    #ifndef CRIT3DPROJECT_H
+        #include "crit3dProject.h"
     #endif
 
-    #ifndef SOLARRADIATION_H
-        #include "../solarRadiation/solarRadiation.h"
+    #ifndef NETCDFHANDLER_H
+        #include "netcdfHandler.h"
     #endif
 
     #include <QList>
@@ -60,6 +60,8 @@
         gis::Crit3DRasterGrid dataRaster;
 
         Crit3DRadiationMaps* radiationMaps;
+
+        Crit3DProject Criteria3Dproject;
 
         NetCDFHandler netCDF;
 

@@ -1,19 +1,30 @@
-#-------------------------------------------------
+#-----------------------------------------------------
 #
 # soilFluxes3D
+#
 # numerical solution for flow equations
 # of water and heat in the soil
 # in a three-dimensional domain
 #
 # this library is part of CRITERIA3D distribution
 #
-#-------------------------------------------------
+#-----------------------------------------------------
 
-QT          -= gui
+QT   -= core gui
 
-TARGET = soilFluxes3D
 TEMPLATE = lib
 CONFIG += staticlib
+
+unix:{
+    CONFIG(debug, debug|release) {
+        TARGET = debug/soilFluxes3D
+    } else {
+        TARGET = release/soilFluxes3D
+    }
+}
+win32:{
+    TARGET = soilFluxes3D
+}
 
 SOURCES +=  \
     boundary.cpp \

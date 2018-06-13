@@ -1,17 +1,20 @@
-#-------------------------------------------------
+#-----------------------------------------------------
 #
-# PRAGA (PRogram for AGrometeorological Analysis)
+# PRAGA
+# PRogram for AGrometeorological Analysis
+#
 # this software is part of CRITERIA3D distribution
 #
-#-------------------------------------------------
+#-----------------------------------------------------
 
 QT       += core gui widgets network sql xml
 
 TARGET = PRAGA
 TEMPLATE = app
 
-INCLUDEPATH +=  ../crit3dDate ../mathFunctions ../utilities ../gis ../MapGraphics \
-                ../meteo ../quality ../interpolation ../solarRadiation \
+INCLUDEPATH +=  ../MapGraphics ../soilFluxes3D/header \
+                ../crit3dDate ../mathFunctions ../soil ../meteo ../gis ../utilities \
+                ../quality ../interpolation ../solarRadiation ../criteria3D \
                 ../dbMeteoPoints ../dbMeteoGrid ../netcdfHandler
 
 CONFIG += debug_and_release
@@ -33,10 +36,13 @@ CONFIG(debug, debug|release) {
     LIBS += -L../dbMeteoPoints/debug -ldbMeteoPoints
     LIBS += -L../quality/debug -lquality
     LIBS += -L../utilities/debug -lutilities
+    LIBS += -L../criteria3D/debug -lcriteria3D
     LIBS += -L../solarRadiation/debug -lsolarRadiation
     LIBS += -L../interpolation/debug -linterpolation
     LIBS += -L../meteo/debug -lmeteo
     LIBS += -L../gis/debug -lgis
+    LIBS += -L../soilFluxes3D/debug -lsoilFluxes3D
+    LIBS += -L../soil/debug -lsoil
     LIBS += -L../crit3dDate/debug -lcrit3dDate
     LIBS += -L../mathFunctions/debug -lmathFunctions
 } else {
@@ -45,10 +51,13 @@ CONFIG(debug, debug|release) {
     LIBS += -L../dbMeteoPoints/release -ldbMeteoPoints
     LIBS += -L../quality/release -lquality
     LIBS += -L../utilities/release -lutilities
+    LIBS += -L../criteria3D/release -lcriteria3D
     LIBS += -L../solarRadiation/release -lsolarRadiation
     LIBS += -L../interpolation/release -linterpolation
     LIBS += -L../meteo/release -lmeteo
     LIBS += -L../gis/release -lgis
+    LIBS += -L../soilFluxes3D/release -lsoilFluxes3D
+    LIBS += -L../soil/release -lsoil
     LIBS += -L../crit3dDate/release -lcrit3dDate
     LIBS += -L../mathFunctions/release -lmathFunctions
 }
