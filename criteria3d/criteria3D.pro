@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# crit3dProject library
+# criteria3D library
 # Soil Water Balance 3D
 #
 # this library is part of CRITERIA3D distribution
@@ -11,13 +11,13 @@ QT      -= core gui
 
 unix:{
     CONFIG(debug, debug|release) {
-        TARGET = debug/crit3dProject
+        TARGET = debug/criteria3D
     } else {
-        TARGET = release/crit3dProject
+        TARGET = release/criteria3D
     }
 }
 win32:{
-    TARGET = crit3dProject
+    TARGET = criteria3D
 }
 
 TEMPLATE = lib
