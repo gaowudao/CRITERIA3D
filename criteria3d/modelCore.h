@@ -4,8 +4,6 @@
     class Crit3DProject;
     class Crit3DTime;
 
-    bool computeET0Map(Crit3DProject* myProject);
-
-    bool runModel(bool isInitialState, Crit3DTime myCurrentTime, Crit3DProject* myProject);
+    bool runModel(Crit3DProject* myProject, Crit3DTime myCurrentTime, bool isInitialState);
 
 #endif // MODELCORE_H

@@ -44,6 +44,7 @@
         std::vector <double> layerDepth;                 //[m]
         std::vector <double> layerThickness;             //[m]
         soil::Crit3DSoil* soilList;
+        soil::Crit3DSoilClass soilClass[13];
 
         std::string projectError;
         std::string projectLog;
@@ -59,6 +60,7 @@
         bool setSoilProfileCrop(int row, int col);
 
         int getSoilIndex(long row, long col);
+        bool computeET0Map();
 
         void setError(std::string myError);
         void log(std::string myLog);

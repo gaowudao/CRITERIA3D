@@ -100,3 +100,5 @@ gis::Crit3DRasterGrid* Crit3DMeteoMaps::getMapFromVar(meteoVariable myVar)
     else
         return NULL;
 }
+
+

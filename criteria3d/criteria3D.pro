@@ -24,7 +24,7 @@ TEMPLATE = lib
 CONFIG += staticlib
 
 INCLUDEPATH +=  ../crit3dDate ../mathFunctions ../gis ../meteo \
-                ../solarRadiation ../soil ../crop \
+                ../solarRadiation ../soil \
                 ../soilFluxes3D/header
 
 

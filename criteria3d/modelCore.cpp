@@ -4,9 +4,8 @@
 #include "modelCore.h"
 
 
-bool runModel(bool isInitialState, Crit3DTime myCurrentTime, Crit3DProject* myProject)
+bool runModel(Crit3DProject* myProject, Crit3DTime myCurrentTime, bool isInitialState)
 {
-    myProject->log("Interpolate meteo data");
     myProject->meteoMaps->emptyMeteoMaps();
 
     /*
@@ -18,13 +17,13 @@ bool runModel(bool isInitialState, Crit3DTime myCurrentTime, Crit3DProject* myPr
     interpolate(myProject, globalIrradiance, myCurrentTime);
     */
 
-    computeET0Map(myProject);
+    myProject->computeET0Map();
 
     if (isInitialState)
         initializeSoilMoisture(myProject, myCurrentTime.date.month);
 
     // Crop
-    myProject->log("Compute grapevine");
+    myProject->log("Compute crop growth, evaporation, transpiration, irrigation");
     for (long row = 0; row < myProject->dtm->header->nrRows ; row++)
     {
         for (long col = 0; col < myProject->dtm->header->nrCols; col++)
@@ -109,45 +108,3 @@ bool runModel(bool isInitialState, Crit3DTime myCurrentTime, Crit3DProject* myPr
 
 
 
-bool computeET0Map(Crit3DProject* myProject)
-{
-    float myET0;
-    float myGlobalRadiation, myTransmissivity, myClearSkyTransmissivity;
-    float myTemperature, myRelHumidity, myWindSpeed;
-    float myHeight;
-
-    gis::Crit3DRasterGrid* myMap = myProject->meteoMaps->ET0Map;
-
-    for (long myRow = 0; myRow < myMap->header->nrRows; myRow++)
-        for (long myCol = 0; myCol < myMap->header->nrCols; myCol++)
-        {
-            myMap->value[myRow][myCol] = myMap->header->flag;
-
-            myHeight = myProject->dtm->value[myRow][myCol];
-
-            if (myHeight != myProject->dtm->header->flag)
-            {
-                myGlobalRadiation = myProject->radiationMaps->globalRadiationMap->value[myRow][myCol];
-                myTransmissivity = myProject->radiationMaps->transmissivityMap->value[myRow][myCol];
-                myClearSkyTransmissivity = myProject->radiationMaps->clearSkyTransmissivityMap->value[myRow][myCol];
-                myTemperature = myProject->meteoMaps->airTemperatureMap->value[myRow][myCol];
-                myRelHumidity = myProject->meteoMaps->airHumidityMap->value[myRow][myCol];
-                myWindSpeed = myProject->meteoMaps->windIntensityMap->value[myRow][myCol];
-
-                if (myGlobalRadiation != myProject->radiationMaps->globalRadiationMap->header->flag
-                        && myTransmissivity != myProject->radiationMaps->transmissivityMap->header->flag
-                        && myClearSkyTransmissivity != myProject->radiationMaps->clearSkyTransmissivityMap->header->flag
-                        && myTemperature != myProject->meteoMaps->airTemperatureMap->header->flag
-                        && myRelHumidity != myProject->meteoMaps->airHumidityMap->header->flag
-                        && myWindSpeed != myProject->meteoMaps->windIntensityMap->header->flag)
-                {
-                    myET0 = float(ET0_Penman_hourly(myHeight, myTransmissivity / myClearSkyTransmissivity,
-                                      myGlobalRadiation, myTemperature, myRelHumidity, myWindSpeed));
-
-                    myMap->value[myRow][myCol] = myET0;
-                }
-            }
-        }
-
-    return gis::updateMinMaxRasterGrid(myMap);
-}

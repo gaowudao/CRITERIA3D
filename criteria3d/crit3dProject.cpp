@@ -170,6 +170,49 @@ bool Crit3DProject::setSoilProfileCrop(int row, int col)
     return true;
 }
 
+
+bool Crit3DProject::computeET0Map()
+{
+    float globalRadiation, transmissivity, clearSkyTransmissivity;
+    float temperature, relHumidity, windSpeed, height;
+
+    gis::Crit3DRasterGrid* map = meteoMaps->ET0Map;
+
+    for (long row = 0; row < map->header->nrRows; row++)
+        for (long col = 0; col < map->header->nrCols; col++)
+        {
+            map->value[row][col] = map->header->flag;
+
+            height = dtm->value[row][col];
+
+            if (height != dtm->header->flag)
+            {
+                globalRadiation = radiationMaps->globalRadiationMap->value[row][col];
+                transmissivity = radiationMaps->transmissivityMap->value[row][col];
+                clearSkyTransmissivity = radiationMaps->clearSkyTransmissivityMap->value[row][col];
+                temperature = meteoMaps->airTemperatureMap->value[row][col];
+                relHumidity = meteoMaps->airHumidityMap->value[row][col];
+                windSpeed = meteoMaps->windIntensityMap->value[row][col];
+
+                if (globalRadiation != radiationMaps->globalRadiationMap->header->flag
+                        && transmissivity != radiationMaps->transmissivityMap->header->flag
+                        && clearSkyTransmissivity != radiationMaps->clearSkyTransmissivityMap->header->flag
+                        && temperature != meteoMaps->airTemperatureMap->header->flag
+                        && relHumidity != meteoMaps->airHumidityMap->header->flag
+                        && windSpeed != meteoMaps->windIntensityMap->header->flag)
+                {
+                    map->value[row][col] = float(ET0_Penman_hourly(height, transmissivity / clearSkyTransmissivity,
+                                      globalRadiation, temperature, relHumidity, windSpeed));
+                }
+            }
+        }
+
+    return gis::updateMinMaxRasterGrid(map);
+}
+
+
+//---------------- LOG ------------------------------------------------------------------------------
+
 void Crit3DProject::log(std::string myLog)
 {
     projectLog += myLog + "\n";
