@@ -8,7 +8,7 @@
         #include "gis.h"
     #endif
     #ifndef METEOMAPS_H
-        #include "crit3DMeteoMaps.h"
+        #include "crit3dMeteoMaps.h"
     #endif
     #ifndef SOLARRADIATION_H
         #include "solarRadiation.h"

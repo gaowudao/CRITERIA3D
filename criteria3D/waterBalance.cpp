@@ -29,7 +29,7 @@
 #include "commonConstants.h"
 #include "waterBalance.h"
 #include "soilFluxes3D.h"
-#include "Crit3DProject.h"
+#include "crit3dProject.h"
 
 
 std::vector <double> waterSinkSource;     //[m^3/sec]
