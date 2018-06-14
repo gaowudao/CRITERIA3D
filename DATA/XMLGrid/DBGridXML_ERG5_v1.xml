@@ -2,7 +2,7 @@
 
 	<connection>
 		<provider>mysql</provider>
-		<server>172.20.5.46</server>
+		<server>172.20.7.116</server>
 		<name>GIAS</name>
 		<user>root</user>
 		<password>Praga</password>

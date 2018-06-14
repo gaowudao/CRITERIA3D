@@ -1859,7 +1859,7 @@
      <x>0</x>
      <y>0</y>
      <width>1368</width>
-     <height>30</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="palette">
@@ -2304,9 +2304,13 @@
     <addaction name="actionClose_meteo_grid"/>
     <addaction name="actionSave_meteo_grid"/>
     <addaction name="separator"/>
-    <addaction name="separator"/>
+    <addaction name="actionOpen_model_parameters"/>
+    <addaction name="actionOpen_soil_data"/>
+    <addaction name="actionOpen_soil_map"/>
+    <addaction name="actionOpen_crop_map"/>
     <addaction name="separator"/>
     <addaction name="action_Open_NetCDF_data"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuVariable">
     <property name="title">
@@ -2484,7 +2488,7 @@
   </action>
   <action name="action_Open_NetCDF_data">
    <property name="text">
-    <string>Open NetCDF data</string>
+    <string>Open NetCDF data...</string>
    </property>
   </action>
   <action name="action_Extract_NetCDF_series">
@@ -2520,6 +2524,26 @@
   <action name="actionSave_meteo_grid">
    <property name="text">
     <string>Save meteo grid...</string>
+   </property>
+  </action>
+  <action name="actionOpen_model_parameters">
+   <property name="text">
+    <string>Open model parameters...</string>
+   </property>
+  </action>
+  <action name="actionOpen_soil_map">
+   <property name="text">
+    <string>Open soil map...</string>
+   </property>
+  </action>
+  <action name="actionOpen_soil_data">
+   <property name="text">
+    <string>Open soil data...</string>
+   </property>
+  </action>
+  <action name="actionOpen_crop_map">
+   <property name="text">
+    <string>Open crop map...</string>
    </property>
   </action>
  </widget>
