@@ -17,6 +17,7 @@
     float norm(float* x, int vectorLength);
     bool greaterThan(float a, float b);
     bool greaterThan(double a, double b);
+    bool compareValue(float a, float b, bool isPositive);
     bool findLinesIntersection(float q1, float m1, float q2, float m2, float* x, float* y);
     bool findLinesIntersectionAboveThreshold(float q1, float m1, float q2, float m2, float myThreshold, float* x, float* y);
 

@@ -31,12 +31,12 @@
 #include "basicMath.h"
 #include "statistics.h"
 
-bool detractThreshold = false; // LC dove va impostato?
+bool detractThreshold = true; //LC dove va impostato?
 
 namespace statistics
 {
 
-    float statisticalElab(int elab, float param, float* values, int nValues)
+    float statisticalElab(int elab, float param, std::vector<float> values, int nValues)
     {
 
         switch(elab)
@@ -48,19 +48,19 @@ namespace statistics
             case ELAB_MIN:
                 return statistics::minList(values, nValues);
             case ELAB_SUM:
-                return sumList(values, nValues);
+                return statistics::sumList(values, nValues);
             case ELAB_SUM_WITH_THRESHOLD:
-                return sumListThreshold(values, nValues, param);
+                return statistics::sumListThreshold(values, nValues, param);
             case ELAB_THRESHOLD_DIFFERENCE:
-                return diffListThreshold(values, nValues, param);
-//            case ELAB_DAYS_ABOVE_THRESHOLD:
-//                statistica = math.CountAbove(values, nValues, param, True);
-//            case ELAB_DAYS_UNDER_THRESHOLD:
-//                statistica = math.CountBelow(values, nValues, param, True);
-//            case ELAB_CONSECUTIVE_DAYS_ABOVE_THRESHOLD:
-//                statistica = math.CountConsecutive(values, nValues, param, True);
-//            case ELAB_CONSECUTIVE_DAYS_UNDER_THRESHOLD:
-//                statistica = math.CountConsecutive(values, nValues, param, False);
+                return statistics::diffListThreshold(values, nValues, param);
+            case ELAB_DAYS_ABOVE_THRESHOLD:
+                return statistics::countAbove(values, nValues, param);
+            case ELAB_DAYS_UNDER_THRESHOLD:
+                return statistics::countBelow(values, nValues, param);
+            case ELAB_CONSECUTIVE_DAYS_ABOVE_THRESHOLD:
+                return statistics::countConsecutive(values, nValues, param, true);
+            case ELAB_CONSECUTIVE_DAYS_UNDER_THRESHOLD:
+                return statistics::countConsecutive(values, nValues, param, false);
 //            case ELAB_PERCENTILE:
 //                statistica = math.percentile(values, nValues, param);
 //            case ELAB_FREQUENCY_POSITIVE:
@@ -275,6 +275,28 @@ namespace statistics
             return NODATA;
     }
     float mean(float *myList, int nrList)
+    {
+        float sum=0.;
+        int i, nrValidValues;
+
+        if (nrList < 1) return NODATA;
+        nrValidValues = 0;
+
+        for (i = 0; i < nrList; i++)
+        {
+            if (myList[i]!= NODATA)
+            {
+                sum += myList[i];
+                nrValidValues++;
+            }
+        }
+
+        if (nrValidValues > 0)
+            return (sum/(float)(nrValidValues));
+        else
+            return NODATA;
+    }
+    float mean(std::vector<float> myList, int nrList)
     {
         float sum=0.;
         int i, nrValidValues;
@@ -544,7 +566,7 @@ namespace statistics
         }
     }
 
-    float maxList(float* values, int nValue)
+    float maxList(std::vector<float> values, int nValue)
     {
 
         float max = -FLT_MAX;
@@ -564,7 +586,7 @@ namespace statistics
     }
 
 
-    float minList(float* values, int nValue)
+    float minList(std::vector<float> values, int nValue)
     {
 
         float min = FLT_MAX;
@@ -583,7 +605,7 @@ namespace statistics
         return min;
     }
 
-    float sumList(float* values, int nValue)
+    float sumList(std::vector<float> values, int nValue)
     {
 
         float sum = 0;
@@ -599,7 +621,7 @@ namespace statistics
         return sum;
     }
 
-    float sumListThreshold(float* values, int nValue, float threshold)
+    float sumListThreshold(std::vector<float> values, int nValue, float threshold)
     {
 
         float sum = 0;
@@ -621,7 +643,7 @@ namespace statistics
         return sum;
     }
 
-    float diffListThreshold(float* values, int nValue, float threshold)
+    float diffListThreshold(std::vector<float> values, int nValue, float threshold)
     {
 
         float diff = 0;
@@ -643,6 +665,139 @@ namespace statistics
         return diff;
     }
 
+
+    float countAbove(std::vector<float> values, int nValue, float threshold)
+    {
+
+        float countAbove = 0;
+
+        if (nValue == 0 || threshold == NODATA)
+            return NODATA;
+
+        for (int i = 0; i < nValue; i++)
+        {
+            if (values[i] > threshold)
+            {
+                countAbove = countAbove + 1;
+            }
+        }
+
+        return countAbove;
+    }
+
+    float countBelow(std::vector<float> values, int nValue, float threshold)
+    {
+
+        float countBelow = 0;
+
+        if (nValue == 0 || threshold == NODATA)
+            return NODATA;
+
+        for (int i = 0; i < nValue; i++)
+        {
+            if (values[i] < threshold)
+            {
+                countBelow = countBelow + 1;
+            }
+        }
+
+        return countBelow;
+    }
+
+    float countConsecutive(std::vector<float> values, int nValue, float threshold, bool isPositive)
+    {
+
+        float countConsecutive = 0;
+
+        if (nValue == 0 || threshold == NODATA)
+            return NODATA;
+
+        bool inPeriod = false;
+        int nPeriod = 0;
+
+        std::vector<float> myListNumDays;
+        myListNumDays.push_back(0);
+
+        for (int i = 0; i < nValue; i++)
+        {
+            if (values[i] != NODATA)
+            {
+                if (inPeriod == false)
+                {
+                    if (compareValue( values[i], threshold, isPositive))
+                    {
+                        inPeriod = true;
+                        myListNumDays[nPeriod] = myListNumDays[nPeriod] + 1;
+                    }
+                }
+                else
+                {
+                    if (compareValue( values[i], threshold, isPositive))
+                    {
+                        myListNumDays[nPeriod] = myListNumDays[nPeriod] + 1;
+                        if (i == (nValue - 1))
+                        {
+                            nPeriod = nPeriod + 1;
+                            myListNumDays.push_back(0);
+                        }
+                    }
+                    else
+                    {
+                        nPeriod = nPeriod + 1;
+                        myListNumDays.push_back(0);
+                        inPeriod = false;
+                    }
+                }
+            }
+            else if (inPeriod == true)
+            {
+                nPeriod = nPeriod + 1;
+                myListNumDays.push_back(0);
+                inPeriod = false;
+            }
+        }
+        if (nPeriod == 0)
+        {
+            countConsecutive = 0;
+        }
+        else
+        {
+            countConsecutive = statistics::maxList(myListNumDays, nPeriod);
+        }
+
+        return countConsecutive;
+
+    }
+
+/*
+    float percentile(float* values, int nValue, float myPercentile)
+    {
+
+        Dim num As Long
+        Dim rank As Single
+        Dim i As Long
+
+        if (nValue <= 3 || myPercentile <= 0 || myPercentile >= 100 || myPercentile == NODATA)
+            return NODATA;
+
+        myPercentile = myPercentile / 100;
+
+        On Error Resume Next
+            QuickSort list, 0, (nrValues - 1)
+        On Error GoTo 0
+
+        rank = MyPercentile * (nrValues - 1)
+
+        If (Int(rank) + 1) > (nrValues - 1) Then
+            percentile = list(nrValues - 1)
+        ElseIf rank < 0 Then
+            percentile = list(0)
+        Else
+            percentile = ((rank - Int(rank)) * (list(Int(rank) + 1) - list(Int(rank)))) + list(Int(rank))
+        End If
+
+    }
+*/
 
 
 }

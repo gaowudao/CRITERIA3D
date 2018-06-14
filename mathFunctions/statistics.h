@@ -1,6 +1,7 @@
 #ifndef STATISTICS_H
 #define STATISTICS_H
 
+#include <vector>
 
 enum statisticalElaborations {ELAB_MEAN, ELAB_STDDEVIATION, ELAB_SUM, ELAB_SUM_WITH_THRESHOLD, ELAB_MEAN_ABOVE_THRESHOLD,
                               ELAB_STDDEV_ABOVE_THRESHOLD, ELAB_MAX, ELAB_MIN, ELAB_PERCENTILE, ELAB_MEDIAN,
@@ -13,7 +14,7 @@ enum statisticalElaborations {ELAB_MEAN, ELAB_STDDEVIATION, ELAB_SUM, ELAB_SUM_W
 
 namespace statistics
 {
-    float statisticalElab(int elab, float param, float* values, int nValues);
+    float statisticalElab(int elab, float param, std::vector<float> values, int nValues);
     double rootMeanSquareError(double *measured , double *simulated , int nrData);
     float rootMeanSquareError(float *measured , float *simulated , int nrData);
     float coefficientOfVariation(float *measured , float *simulated , int nrData);
@@ -24,6 +25,7 @@ namespace statistics
     float variance(float *myList, int nrList);
     double variance(double *myList, int nrList);
     float mean(float *myList, int nrList);
+    float mean(std::vector<float> myList, int nrList);
     double mean(double *myList, int nrList);
     float covariance(float *myList1, int nrList1,float *myList2, int nrList2);
     double covariance(double *myList1, int nrList1,double *myList2, int nrList2);
@@ -34,11 +36,16 @@ namespace statistics
     double ERFC(double x, double accuracy);
     double inverseERFC(double value, double accuracy);
     double inverseERF(double value, double accuracy);
-    float maxList(float* values, int nValue);
-    float minList(float* values, int nValue);
-    float sumList(float* values, int nValue);
-    float sumListThreshold(float* values, int nValue, float threshold);
-    float diffListThreshold(float* values, int nValue, float threshold);
+    float maxList(std::vector<float> values, int nValue);
+    float minList(std::vector<float> values, int nValue);
+    float sumList(std::vector<float> values, int nValue);
+    float sumListThreshold(std::vector<float> values, int nValue, float threshold);
+    float diffListThreshold(std::vector<float> values, int nValue, float threshold);
+    float countAbove(std::vector<float> values, int nValue, float threshold);
+    float countBelow(std::vector<float> values, int nValue, float threshold);
+    float countConsecutive(std::vector<float> values, int nValue, float threshold, bool isPositive);
+
+
 }
 
 

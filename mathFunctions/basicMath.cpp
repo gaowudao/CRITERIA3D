@@ -46,6 +46,18 @@
         return (fabs(a - b) > fabs(b / 100.));
     }
 
+    bool compareValue(float a, float b, bool isPositive)
+    {
+        if (isPositive)
+        {
+            return (a > b);
+        }
+        else
+        {
+            return (a < b);
+        }
+    }
+
     int integralPart(double number)
     {
         double intPart;
