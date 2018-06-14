@@ -358,7 +358,6 @@ QString MainWindow::selectArkimetDataset(QDialog* datasetDialog) {
 
 void MainWindow::enableAllDataset(bool toggled)
 {
-
     bool AllChecked = 1;
 
     foreach (QCheckBox *checkBox, datasetCheckbox)
@@ -383,21 +382,18 @@ void MainWindow::enableAllDataset(bool toggled)
             checkBox->setChecked(toggled);
         }
     }
-
 }
+
 
 void MainWindow::disableAllButton(bool toggled)
 {
-
     if (!toggled)
     {
         if (all->isChecked())
         {
             all->setChecked(false);
         }
-
     }
-
 }
 
 

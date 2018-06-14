@@ -2530,20 +2530,32 @@
    <property name="text">
     <string>Open model parameters...</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionOpen_soil_map">
    <property name="text">
     <string>Open soil map...</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
   </action>
   <action name="actionOpen_soil_data">
    <property name="text">
     <string>Open soil data...</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionOpen_crop_map">
    <property name="text">
     <string>Open crop map...</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
   </action>
  </widget>
