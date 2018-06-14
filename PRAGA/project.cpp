@@ -14,7 +14,6 @@
 
 #include <iostream> //debug
 
-
 Project::Project()
 {
     path = "";
@@ -511,8 +510,6 @@ bool Project::loadMeteoGridDB(QString xmlName)
 
     if (! this->meteoGridDbHandler->updateGridDate(&errorString))
         return false;
-
-
 
 
 

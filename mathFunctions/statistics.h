@@ -2,8 +2,18 @@
 #define STATISTICS_H
 
 
+enum statisticalElaborations {ELAB_MEAN, ELAB_STDDEVIATION, ELAB_SUM, ELAB_SUM_WITH_THRESHOLD, ELAB_MEAN_ABOVE_THRESHOLD,
+                              ELAB_STDDEV_ABOVE_THRESHOLD, ELAB_MAX, ELAB_MIN, ELAB_PERCENTILE, ELAB_MEDIAN,
+                              ELAB_FREQUENCY_POSITIVE, ELAB_DAYS_ABOVE_THRESHOLD, ELAB_DAYS_UNDER_THRESHOLD,
+                              ELAB_CONSECUTIVE_DAYS_ABOVE_THRESHOLD, ELAB_CONSECUTIVE_DAYS_UNDER_THRESHOLD,
+                              ELAB_PREVAILING_DIR, ELAB_TREND, ELAB_MANNKENDALL, ELAB_THRESHOLD_DIFFERENCE,
+                              ELAB_WHEIGTHED_AVERAGE, ELAB_PREVAILING_X, ELAB_PREVAILING_Y, ELAB_PREVAILINGVALUE,
+                              ELAB_PREVAILINGVALUE_CONSERVATIVE, ELAB_CENTERVALUE, ELAB_RENAME, ELAB_EROSIVITY, ELAB_RAININTENSITY};
+
+
 namespace statistics
 {
+    float statisticalElab(int elab, float param, float* values, int nValues);
     double rootMeanSquareError(double *measured , double *simulated , int nrData);
     float rootMeanSquareError(float *measured , float *simulated , int nrData);
     float coefficientOfVariation(float *measured , float *simulated , int nrData);
@@ -24,6 +34,11 @@ namespace statistics
     double ERFC(double x, double accuracy);
     double inverseERFC(double value, double accuracy);
     double inverseERF(double value, double accuracy);
+    float maxList(float* values, int nValue);
+    float minList(float* values, int nValue);
+    float sumList(float* values, int nValue);
+    float sumListThreshold(float* values, int nValue, float threshold);
+    float diffListThreshold(float* values, int nValue, float threshold);
 }
 
 

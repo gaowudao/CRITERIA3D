@@ -25,13 +25,65 @@
 
 #include <math.h>
 #include <malloc.h>
+#include <float.h>
 #include "commonConstants.h"
 #include "furtherMathFunctions.h"
 #include "basicMath.h"
 #include "statistics.h"
 
+bool detractThreshold = false; // LC dove va impostato?
+
 namespace statistics
 {
+
+    float statisticalElab(int elab, float param, float* values, int nValues)
+    {
+
+        switch(elab)
+        {
+            case ELAB_MEAN:
+                return statistics::mean(values, nValues);
+            case ELAB_MAX:
+                return statistics::maxList(values, nValues);
+            case ELAB_MIN:
+                return statistics::minList(values, nValues);
+            case ELAB_SUM:
+                return sumList(values, nValues);
+            case ELAB_SUM_WITH_THRESHOLD:
+                return sumListThreshold(values, nValues, param);
+            case ELAB_THRESHOLD_DIFFERENCE:
+                return diffListThreshold(values, nValues, param);
+//            case ELAB_DAYS_ABOVE_THRESHOLD:
+//                statistica = math.CountAbove(values, nValues, param, True);
+//            case ELAB_DAYS_UNDER_THRESHOLD:
+//                statistica = math.CountBelow(values, nValues, param, True);
+//            case ELAB_CONSECUTIVE_DAYS_ABOVE_THRESHOLD:
+//                statistica = math.CountConsecutive(values, nValues, param, True);
+//            case ELAB_CONSECUTIVE_DAYS_UNDER_THRESHOLD:
+//                statistica = math.CountConsecutive(values, nValues, param, False);
+//            case ELAB_PERCENTILE:
+//                statistica = math.percentile(values, nValues, param);
+//            case ELAB_FREQUENCY_POSITIVE:
+//                statistica = math.frequencyPositive(values, nValues);
+//            case ELAB_PREVAILING_DIR:
+//                statistica = Wind.Wind_PrevailingDir(values, values, nValues, False);
+//            case ELAB_TREND:
+//                statistica = math.trend(values, param);
+//            case ELAB_MANNKENDALL:
+//                statistica = math.MannKendall(values, True);
+//            case ELAB_EROSIVITY:
+//                statistica = math.ErosivityFactor(values);
+//            case ELAB_RAININTENSITY:
+//                statistica = math.RainIntensity(values, nValues, True);
+//            case ELAB_STDDEVIATION:
+//                statistica = math.DevStd(values, nValues, True);
+
+            default:
+                return NODATA;
+
+        }
+
+    }
 
     double rootMeanSquareError(double *measured , double *simulated , int nrData)
     {
@@ -491,4 +543,106 @@ namespace statistics
             return (rightBound+leftBound)/2;
         }
     }
+
+    float maxList(float* values, int nValue)
+    {
+
+        float max = -FLT_MAX;
+
+        if (nValue == 0)
+            return NODATA;
+
+        for (int i = 0; i < nValue; i++)
+        {
+            if (values[i] > max)
+            {
+                max = values[i] ;
+            }
+        }
+
+        return max;
+    }
+
+
+    float minList(float* values, int nValue)
+    {
+
+        float min = FLT_MAX;
+
+        if (nValue == 0)
+            return NODATA;
+
+        for (int i = 0; i < nValue; i++)
+        {
+            if (values[i] < min)
+            {
+                min = values[i] ;
+            }
+        }
+
+        return min;
+    }
+
+    float sumList(float* values, int nValue)
+    {
+
+        float sum = 0;
+
+        if (nValue == 0)
+            return NODATA;
+
+        for (int i = 0; i < nValue; i++)
+        {
+            sum = sum  + values[i] ;
+        }
+
+        return sum;
+    }
+
+    float sumListThreshold(float* values, int nValue, float threshold)
+    {
+
+        float sum = 0;
+
+        if (nValue == 0 || threshold == NODATA)
+            return NODATA;
+
+        for (int i = 0; i < nValue; i++)
+        {
+            if (values[i] > threshold)
+            {
+                if (detractThreshold)
+                    sum = sum  + ( values[i] - threshold);
+                else
+                    sum = sum  + values[i] ;
+            }
+        }
+
+        return sum;
+    }
+
+    float diffListThreshold(float* values, int nValue, float threshold)
+    {
+
+        float diff = 0;
+
+        if (nValue == 0 || threshold == NODATA)
+            return NODATA;
+
+        for (int i = 0; i < nValue; i++)
+        {
+            if (values[i] < threshold)
+            {
+                if (detractThreshold)
+                    diff = diff  + (threshold - values[i]);
+                else
+                    diff = diff  - values[i] ;
+            }
+        }
+
+        return diff;
+    }
+
+
+
 }

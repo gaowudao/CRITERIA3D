@@ -154,9 +154,10 @@ bool elaborationOnPoint(Crit3DMeteoPoint* meteoPoint, bool pointOrGrid, QString 
     int nYearsMin, bool isAnomaly, bool loadData)
 {
 
-//    Dim result As Single
+
 //    Dim perc_data As Single
     bool dataLoaded;
+    float result;
 
     if (!isAnomaly || meteoPoint->anomaly != NODATA)
     {
@@ -187,8 +188,15 @@ bool elaborationOnPoint(Crit3DMeteoPoint* meteoPoint, bool pointOrGrid, QString 
                 }
                 else
                 {
-//                    meteoPoint->elaboration = result
-//                    ElaborationOnPoint = (.Elab <> Definitions.NO_DATA)
+                      meteoPoint->elaboration = result;
+                      if (meteoPoint->elaboration != NODATA)
+                      {
+                          return true;
+                      }
+                      else
+                      {
+                          return false;
+                      }
                 }
             }
             else if (isAnomaly)
@@ -198,12 +206,8 @@ bool elaborationOnPoint(Crit3DMeteoPoint* meteoPoint, bool pointOrGrid, QString 
             }
 
     }
-    else
-    {
-        return false;
-    }
 
-    return true;
+    return false;
 
 }
 
