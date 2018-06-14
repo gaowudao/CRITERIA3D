@@ -33,6 +33,16 @@ void RasterObject::setColorLegend(ColorLegend* myLegend)
 }
 
 
+void RasterObject::clean()
+{
+    setDrawing(false);
+    freeIndexesMatrix();
+    latLonHeader.nrCols = 0;
+    latLonHeader.nrRows = 0;
+    legend = NULL;
+}
+
+
 /*!
 \brief You need to implement this. If sizeIsZoomInvariant() is true, this should return the size of the
  rectangle you want in PIXELS. If false, this should return the size of the rectangle in METERS. The

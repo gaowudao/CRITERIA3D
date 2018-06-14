@@ -13,7 +13,7 @@ Crit3DMeteoGridDbHandler::Crit3DMeteoGridDbHandler()
 
 Crit3DMeteoGridDbHandler::~Crit3DMeteoGridDbHandler()
 {
-    free(_meteoGrid);
+    delete _meteoGrid;
 }
 
 bool Crit3DMeteoGridDbHandler::parseXMLFile(QString xmlFileName, QDomDocument* xmlDoc)

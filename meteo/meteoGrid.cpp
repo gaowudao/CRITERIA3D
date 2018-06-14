@@ -149,9 +149,9 @@ Crit3DMeteoGrid::Crit3DMeteoGrid()
     _lastDate = Crit3DDate(1,1,1800);
 }
 
+
 Crit3DMeteoGrid::~Crit3DMeteoGrid()
 {
-
     for (unsigned int i = 0; i < _meteoPoints.size(); i++)
     {
         std::vector<Crit3DMeteoPoint*> meteoPointVector = _meteoPoints[i];
@@ -160,10 +160,11 @@ Crit3DMeteoGrid::~Crit3DMeteoGrid()
         {
             free(meteoPointVector[j]);
         }
-
     }
 
+    dataMeteoGrid.freeGrid();
 }
+
 
 bool Crit3DMeteoGrid::createRasterGrid()
 {
