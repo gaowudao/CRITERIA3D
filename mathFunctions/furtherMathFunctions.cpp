@@ -555,6 +555,38 @@ namespace sorting
             quicksortAscendingDouble(x,first,j-1);
             quicksortAscendingDouble(x,j+1,last);
        }
+
+   }
+
+
+    void quicksortAscendingFloat(std::vector<float> &values, int first,int last)
+    {
+        int pivot,j,i;
+        float temp;
+
+        if(first<last){
+            pivot=first;
+            i=first;
+            j=last;
+
+            while(i<j){
+                while(values[i]<=values[pivot]&&i<last)
+                    i++;
+                while(values[j]>values[pivot])
+                    j--;
+                if(i<j){
+                    temp=values[i];
+                     values[i]=values[j];
+                     values[j]=temp;
+                }
+            }
+            temp=values[pivot];
+            values[pivot]=values[j];
+            values[j]=temp;
+            quicksortAscendingFloat(values,first,j-1);
+            quicksortAscendingFloat(values,j+1,last);
+       }
+
    }
 
     void quicksortDescendingInteger(int *x, int first,int last)
@@ -608,6 +640,50 @@ namespace sorting
             return list[0];
         else
             return ((rank - (int)(rank)) * (list[(int)(rank) + 1] - list[(int)(rank)])) + list[(int)(rank)];
+    }
+
+    float percentile(std::vector<float> list, int nList, float perc, bool sortValues)
+    {
+        // check
+        if (nList == 0 || perc <= 0.0 || perc >= 100.0)
+            return (NODATA);
+        perc /= 100.0;
+
+        std::vector<float> cleanList;
+
+        if (sortValues)
+        {
+            // clean nodata
+            int n = 0;
+            for (int i = 0; i < nList; i++)
+            {
+                if (list[i] != NODATA)
+                {
+                    cleanList[n++] = list[i];
+                }
+            }
+
+
+            // switch
+            nList = n;
+
+            // check on data presence
+            if (nList == 0)
+                return (NODATA);
+
+            // sort
+            quicksortAscendingFloat(cleanList, 0, nList - 1);
+        }
+
+        float rank = (nList * perc) - 1.;
+
+        // return percentile
+        if ((rank + 1.) > (nList - 1))
+            return cleanList[nList - 1];
+        else if (rank < 0.)
+            return cleanList[0];
+        else
+            return ((rank - (int)(rank)) * (cleanList[(int)(rank) + 1] - cleanList[(int)(rank)])) + cleanList[(int)(rank)];
     }
 }
 

@@ -44,6 +44,7 @@ namespace statistics
     float countAbove(std::vector<float> values, int nValue, float threshold);
     float countBelow(std::vector<float> values, int nValue, float threshold);
     float countConsecutive(std::vector<float> values, int nValue, float threshold, bool isPositive);
+    float frequencyPositive(std::vector<float> values, int nValue);
 
 
 }

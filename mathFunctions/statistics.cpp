@@ -61,10 +61,10 @@ namespace statistics
                 return statistics::countConsecutive(values, nValues, param, true);
             case ELAB_CONSECUTIVE_DAYS_UNDER_THRESHOLD:
                 return statistics::countConsecutive(values, nValues, param, false);
-//            case ELAB_PERCENTILE:
-//                statistica = math.percentile(values, nValues, param);
-//            case ELAB_FREQUENCY_POSITIVE:
-//                statistica = math.frequencyPositive(values, nValues);
+            case ELAB_PERCENTILE:
+                return sorting::percentile(values, nValues, param, true);
+            case ELAB_FREQUENCY_POSITIVE:
+                return statistics::frequencyPositive(values, nValues);
 //            case ELAB_PREVAILING_DIR:
 //                statistica = Wind.Wind_PrevailingDir(values, values, nValues, False);
 //            case ELAB_TREND:
@@ -769,35 +769,25 @@ namespace statistics
 
     }
 
-/*
-    float percentile(float* values, int nValue, float myPercentile)
+    float frequencyPositive(std::vector<float> values, int nValue)
     {
 
-        Dim num As Long
-        Dim rank As Single
-        Dim i As Long
-
-        if (nValue <= 3 || myPercentile <= 0 || myPercentile >= 100 || myPercentile == NODATA)
+        if (nValue <= 0)
             return NODATA;
 
-        myPercentile = myPercentile / 100;
+        float frequencyPositive = 0;
 
-        On Error Resume Next
-            QuickSort list, 0, (nrValues - 1)
-        On Error GoTo 0
+        for (int i = 0; i < nValue; i++)
+        {
+            if ( values[i] > 0)
+                frequencyPositive = frequencyPositive + 1;
 
-        rank = MyPercentile * (nrValues - 1)
+        }
+        frequencyPositive = frequencyPositive / nValue;
 
-        If (Int(rank) + 1) > (nrValues - 1) Then
-            percentile = list(nrValues - 1)
-        ElseIf rank < 0 Then
-            percentile = list(0)
-        Else
-            percentile = ((rank - Int(rank)) * (list(Int(rank) + 1) - list(Int(rank)))) + list(Int(rank))
-        End If
+        return frequencyPositive;
 
     }
-*/
 
 
 }

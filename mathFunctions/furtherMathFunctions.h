@@ -1,6 +1,7 @@
 #ifndef MATHEMATICALFUNCTIONS_H
 #define MATHEMATICALFUNCTIONS_H
 
+#include <vector>
 
 enum estimateFunction {FUNCTION_CODE_SPHERICAL, FUNCTION_CODE_LINEAR, FUNCTION_CODE_PARABOLIC,
                        FUNCTION_CODE_EXPONENTIAL, FUNCTION_CODE_LOGARITMIC, TWOPARAMETERSPOLYNOMIAL};
@@ -60,7 +61,10 @@ float errorFunctionPrimitive(float x);
         void quicksortAscendingInteger(int *x,int first, int last);
         void quicksortDescendingInteger(int *x, int first,int last);
         void quicksortAscendingDouble(double *x, int first,int last);
+        void quicksortAscendingFloat(float* values, int first,int last);
         double percentile(double* list, int *nList, double perc, bool sortValues);
+        float percentile(std::vector<float> list, int nList, float perc, bool sortValues);
+;
     }
 
     namespace matricial
