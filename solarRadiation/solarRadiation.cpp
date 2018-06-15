@@ -965,6 +965,7 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
             //Muneer 1997
             radReflected = extraTerrestrialRad * Tt * 0.2 * (1 - getCosDecimalDegree(float(myPoint->slope))) / 2.0;
         }
+
         radTotal = radDiffuse + radBeam + radReflected;
         myPoint->global = float(radTotal);
         myPoint->beam = float(radBeam);

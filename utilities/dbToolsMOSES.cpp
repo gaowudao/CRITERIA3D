@@ -34,6 +34,7 @@ bool readMOSESDailyData(QSqlQuery *query, Crit3DMeteoPoint *meteoPoint, std::str
     float previousWaterTable = NODATA;
     int nrMissingData = 0;
 
+    // first date
     query->first();
     myDate = query->value("date").toDate();
     expectedDate = myDate;

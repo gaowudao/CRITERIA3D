@@ -284,10 +284,19 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, std::string *myE
         // check date
         query.first();
         QDate myDate = query.value("date").toDate();
+        // caso normale
         if (myDate != lastObsDate.addDays(1))
         {
-            *myError = "The forecast date doesn't match with observed data.";
-            return false;
+            // previsioni indietro di un giorno: accettato ma tolgo un giorno
+            if (myDate == lastObsDate)
+            {
+                meteoPoint.nrObsDataDaysD--;
+            }
+            else
+            {
+                *myError = "The forecast date doesn't match with observed data.";
+                return false;
+            }
         }
 
         // Read forecast data
