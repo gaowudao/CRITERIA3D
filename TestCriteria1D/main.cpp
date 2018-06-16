@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
         settingsFileName = argv[1];
     else
     {
-        settingsFileName = "C:/GitHub/CRITERIA3D/DATA/criteria1D/example/exampleCriteria1D.ini";
+        settingsFileName = "./../../DATA/criteria1D/example/exampleCriteria1D.ini";
 
         //myProject.logError("USAGE: CRITERIA1D settings_filename.ini");
         //return ERROR_SETTINGS_MISSING;

@@ -101,6 +101,7 @@ int Crit3DProject::getSoilIndex(long row, long col)
     }
 
     int idSoil = int(this->soilMap.value[row][col]);
+    // search id soil
     for (int i = 0; i < soilList.size(); i++)
     {
         if (soilList[i].id == idSoil) return(i);

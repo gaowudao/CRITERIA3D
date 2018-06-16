@@ -301,7 +301,7 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, 
         // organic matter (%)
         getValue(query.value("organic_matter"), &organicMatter);
         if ((organicMatter == NODATA) || (organicMatter == 0.0))
-            organicMatter = 0.005;       //default: 0.5%
+            organicMatter = 0.005;      //default: 0.5%
         else
             organicMatter /= 100.0;     //[-]
         mySoil->horizon[i].organicMatter = organicMatter;
@@ -327,7 +327,7 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, 
         getValue(query.value("ksat"), &ksat);
         if ((ksat == NODATA) || (ksat <= 0))
             ksat = soil::estimateSaturatedConductivity(&(mySoil->horizon[i]), bulkDensity);
-        /*else
+        /* else
         {
             if ((ksat < (mySoil->horizon[i].waterConductivity.kSat / 10.)) || (ksat > (mySoil->horizon[i].waterConductivity.kSat * 10.)))
                 logInfo("WARNING: Ksat out of class limit, in soil " + idSoil + " horizon " + QString::number(i));

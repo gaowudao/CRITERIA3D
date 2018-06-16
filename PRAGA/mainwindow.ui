@@ -2539,15 +2539,15 @@
     <string>Open soil map...</string>
    </property>
    <property name="visible">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
   </action>
   <action name="actionOpen_soil_data">
    <property name="text">
-    <string>Open soil data...</string>
+    <string>Load soil data...</string>
    </property>
    <property name="visible">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
   </action>
   <action name="actionOpen_crop_map">

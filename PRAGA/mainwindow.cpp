@@ -1175,3 +1175,17 @@ void MainWindow::on_actionOpen_model_parameters_triggered()
 }
 
 
+
+void MainWindow::on_actionOpen_soil_map_triggered()
+{
+
+}
+
+void MainWindow::on_actionOpen_soil_data_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Load DB soil"), "", tr("SQLite files (*.db)"));
+    if (fileName == "") return;
+
+    if (myProject.loadSoilData(fileName))
+        QMessageBox::information(NULL, "", "Soil data loaded.");
+}

@@ -115,6 +115,7 @@
         bool saveGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, bool showInfo);
 
         bool loadModelParameters(QString dbName);
+        bool loadSoilData(QString dbName);
     };
 
 
