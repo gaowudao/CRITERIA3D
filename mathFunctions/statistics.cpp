@@ -67,16 +67,16 @@ namespace statistics
                 return statistics::frequencyPositive(values, nValues);
 //            case ELAB_PREVAILING_DIR:
 //                statistica = Wind.Wind_PrevailingDir(values, values, nValues, False);
-//            case ELAB_TREND:
-//                statistica = math.trend(values, param);
-//            case ELAB_MANNKENDALL:
-//                statistica = math.MannKendall(values, True);
+            case ELAB_TREND:
+                return statistics::trend(values, nValues, param);
+            case ELAB_MANNKENDALL:
+                return statistics::mannKendall(values, nValues);
 //            case ELAB_EROSIVITY:
 //                statistica = math.ErosivityFactor(values);
 //            case ELAB_RAININTENSITY:
 //                statistica = math.RainIntensity(values, nValues, True);
-//            case ELAB_STDDEVIATION:
-//                statistica = math.DevStd(values, nValues, True);
+            case ELAB_STDDEVIATION:
+                return statistics::standardDeviation(values, nValues);
 
             default:
                 return NODATA;
@@ -220,8 +220,99 @@ namespace statistics
         *r2 = float((SUMres - SUM_dy) / SUMres);
     }
 
+    void linearRegression( std::vector<float> x,  std::vector<float> y, long nrItems, bool zeroIntercept, float* y_intercept, float* mySlope, float* r2)
+    {
+       double SUMx = 0;         /*!< sum of x values */
+       double SUMy = 0;         /*!< sum of y values */
+       double SUMxy = 0;        /*!< sum of x * y */
+       double SUMxx = 0;        /*!< sum of x^2 */
+       double AVGy = 0;         /*!< mean of y */
+       double AVGx = 0;         /*!< mean of x */
+       double dy = 0;           /*!< squared of the discrepancies */
+       double SUM_dy = 0;       /*!< sum of squared of the discrepancies */
+       double SUMres = 0;       /*!< sum of squared residue */
+       double res = 0;          /*!< residue squared */
+
+       long nrValidItems = 0;
+
+       *mySlope = 0;             /*!< slope of regression line */
+       *y_intercept = 0;         /*!< y intercept of regression line */
+       *r2 = 0;                  /*!< coefficient of determination */
+
+       /*! calculate various sums */
+       for (int i = 0; i < nrItems; i++)
+           if ((x[i] != NODATA) && (y[i] != NODATA))
+           {
+                nrValidItems++;
+                SUMx += x[i];
+                SUMy += y[i];
+                SUMxy += x[i] * y[i];
+                SUMxx += x[i] * x[i];
+           }
+
+        /*! means of x and y */
+        AVGy = SUMy / nrValidItems;
+        AVGx = SUMx / nrValidItems;
+
+        if (!zeroIntercept)
+        {
+            *mySlope = float((SUMxy - SUMx * SUMy / nrValidItems) / (SUMxx - SUMx * SUMx / nrValidItems));
+            *y_intercept = float(AVGy - *mySlope * AVGx);
+        }
+        else
+        {
+            *mySlope = float(SUMxy / SUMxx);
+            *y_intercept = 0.;
+        }
+
+        /*! calculate squared residues and their sum */
+        for (int i = 0; i < nrItems; i++)
+           if ((x[i] != NODATA) && (y[i] != NODATA))
+           {
+              /*! sum of squared of the discrepancies */
+              dy = y[i] - (*y_intercept + *mySlope * x[i]);
+              dy *= dy;
+              SUM_dy += dy;
+
+              /*! sum of squared residues */
+              res = y[i] - AVGy;
+              res *= res;
+              SUMres += res;
+           }
+
+        /*! calculate r^2 (coefficient of determination) */
+        *r2 = float((SUMres - SUM_dy) / SUMres);
+    }
+
     /*! Variance */
     float variance(float *myList, int nrList)
+    {
+        float myMean, myDiff, squareDiff;
+        int i, nrValidValues;
+
+        if (nrList <= 1) return NODATA;
+
+        myMean = mean(myList,nrList);
+
+        squareDiff = 0;
+        nrValidValues = 0;
+        for (i = 0; i<nrList; i++)
+        {
+            if (myList[i]!= NODATA)
+            {
+                myDiff = (myList[i] - myMean);
+                squareDiff += (myDiff * myDiff);
+                nrValidValues++;
+            }
+        }
+
+        if (nrValidValues > 1)
+            return (squareDiff / (nrValidValues - 1));
+        else
+            return NODATA;
+    }
+
+    float variance(std::vector<float> myList, int nrList)
     {
         float myMean, myDiff, squareDiff;
         int i, nrValidValues;
@@ -342,6 +433,11 @@ namespace statistics
     }
 
     float standardDeviation(float *myList, int nrList)
+    {
+        return sqrtf(variance(myList,nrList));
+    }
+
+    float standardDeviation(std::vector<float> myList, int nrList)
     {
         return sqrtf(variance(myList,nrList));
     }
@@ -789,5 +885,88 @@ namespace statistics
 
     }
 
+    float trend(std::vector<float> values, int nValues, float myFirstYear)
+    {
+
+        float trend;
+        float r2, y_intercept;
+
+
+        if (nValues < 2 || myFirstYear == NODATA)
+            return NODATA;
+
+        std::vector<float> myYears(nValues);
+
+        for (int i = 0; i < nValues; i++)
+        {
+            myYears[i] = myFirstYear + i ;
+        }
+
+        statistics::linearRegression(myYears, values, nValues, false, &y_intercept, &trend, &r2);
+        return trend;
+
+    }
+
+    float mannKendall(std::vector<float> values, int nValues)
+    {
+
+        double myVar;
+        float zMK;
+
+        // minimum 3 values
+        if (nValues < 3)
+            return NODATA;
+
+        int myS = 0;
+        int myValidNR = 0;
+        for (int i = 0; i < nValues - 1; i++)
+        {
+             if ( values[i] != NODATA )
+             {
+                for (int j = i + 1; j < nValues ; j++)
+                {
+                    if (values[j] != NODATA)
+                    {
+                        myS = myS + sgn(values[j] - values[i]);
+                    }
+                }
+                myValidNR = myValidNR + 1;
+            }
+        }
+
+        myVar = static_cast<double>(myValidNR) * static_cast<double>(myValidNR - 1) * static_cast<double>(2 * myValidNR + 5) / 18;
+        if (myS > 0)
+        {
+            zMK = (myS - 1) / sqrt(myVar);
+        }
+        else if (myS < 0)
+        {
+            zMK = -(myS + 1) / sqrt(myVar);
+        }
+        else
+        {
+            return 0;
+        }
+
+        int stdDev = 1;
+        int mean = 0;
+
+        double sumGauss = 0;
+        double deltaXGauss = 1 / 1000;
+        double myX = 0;
+        std::vector<float> GaussIntegralTwoTailsFactor1000(1000);
+
+        for (int i = 0; i < GaussIntegralTwoTailsFactor1000.size(); i++)
+        {
+            myX = myX + deltaXGauss;
+            double rapporto = (myX - mean) / stdDev;
+            double gauss = (1 / (sqrt(2 * PI) * stdDev)) * exp(-0.5 * (rapporto * rapporto));
+            sumGauss = sumGauss + gauss * deltaXGauss;
+            GaussIntegralTwoTailsFactor1000[i] = sumGauss * 2;
+        }
+
+        return GaussIntegralTwoTailsFactor1000[zMK * 1000];
+
+    }
 
 }

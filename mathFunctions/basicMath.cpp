@@ -164,3 +164,11 @@
             return false;
         }
     }
+
+    int sgn(float v)
+    {
+      if (v < 0) return -1;
+      if (v > 0) return 1;
+      return 0;
+    }
+

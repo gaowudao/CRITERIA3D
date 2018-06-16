@@ -20,9 +20,12 @@ namespace statistics
     float coefficientOfVariation(float *measured , float *simulated , int nrData);
     float weighedMean(float *data , float *weights, int nrData);
     void linearRegression(float* x, float* y, long nrItems, bool zeroIntercept, float* y_intercept, float* mySlope, float* r2);
+    void linearRegression( std::vector<float> x,  std::vector<float> y, long nrItems, bool zeroIntercept, float* y_intercept, float* mySlope, float* r2);
     float standardDeviation(float *myList, int nrList);
+    float standardDeviation(std::vector<float> myList, int nrList);
     double standardDeviation(double *myList, int nrList);
     float variance(float *myList, int nrList);
+    float variance(std::vector<float> myList, int nrList);
     double variance(double *myList, int nrList);
     float mean(float *myList, int nrList);
     float mean(std::vector<float> myList, int nrList);
@@ -45,6 +48,9 @@ namespace statistics
     float countBelow(std::vector<float> values, int nValue, float threshold);
     float countConsecutive(std::vector<float> values, int nValue, float threshold, bool isPositive);
     float frequencyPositive(std::vector<float> values, int nValue);
+    float trend(std::vector<float> values, int nValues, float myFirstYear);
+    float mannKendall(std::vector<float> values, int nValues);
+
 
 
 }
