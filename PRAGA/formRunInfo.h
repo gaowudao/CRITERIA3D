@@ -18,6 +18,7 @@ public:
     int start(QString info, int nrValues);
     void setValue(int myValue);
     void setText(QString myText);
+    void showInfo(QString info);
 
 private:
     Ui::formInfo *ui;

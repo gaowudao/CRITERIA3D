@@ -1859,7 +1859,7 @@
      <x>0</x>
      <y>0</y>
      <width>1368</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <property name="palette">
@@ -2528,10 +2528,10 @@
   </action>
   <action name="actionOpen_model_parameters">
    <property name="text">
-    <string>Open model parameters...</string>
+    <string>Load model parameters...</string>
    </property>
    <property name="visible">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
   </action>
   <action name="actionOpen_soil_map">

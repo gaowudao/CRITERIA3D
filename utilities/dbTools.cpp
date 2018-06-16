@@ -87,7 +87,6 @@ bool loadCropParameters(QString idCrop, Crit3DCrop* myCrop, QSqlDatabase* dbCrop
 }
 
 
-
 bool loadVanGenuchtenParameters(soil::Crit3DSoilClass *soilTexture, QSqlDatabase* dbParameters, std::string *myError)
 {
     QString queryString = "SELECT id_texture, alpha, n, he, theta_r, theta_s, k_sat, l ";

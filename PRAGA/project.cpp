@@ -11,6 +11,7 @@
 #include "solarRadiation.h"
 #include "interpolation.h"
 #include "transmissivity.h"
+#include "dbTools.h"
 
 #include <iostream> //debug
 
@@ -863,6 +864,32 @@ float Project::meteoDataConsistency(meteoVariable myVar, const Crit3DTime& timeI
         dataConsistency = maxValue(dataConsistency, meteoPoints[i].obsDataConsistencyH(myVar, timeIni, timeFin));
 
     return dataConsistency;
+}
+
+
+bool Project::loadModelParameters(QString dbName)
+{
+    QSqlDatabase dbParameters;
+    std::string myError;
+
+    dbParameters = QSqlDatabase::addDatabase("QSQLITE", QUuid::createUuid().toString());
+    dbParameters.setDatabaseName(dbName);
+
+    if (!dbParameters.open())
+    {
+       logError("Connection with database fail");
+       return false;
+    }
+
+    if (! loadVanGenuchtenParameters(Criteria3Dproject.soilClass, &dbParameters, &myError))
+    {
+        logError(QString::fromStdString(myError));
+        return false;
+    }
+
+    // TODO Load crop parameters
+
+    return true;
 }
 
 

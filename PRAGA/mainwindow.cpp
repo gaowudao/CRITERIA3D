@@ -1163,3 +1163,15 @@ void MainWindow::on_actionSave_meteo_grid_triggered()
         myProject.saveGrid(myProject.getCurrentVariable(), myProject.getFrequency(), myProject.getCurrentTime(), true);
     }
 }
+
+
+void MainWindow::on_actionOpen_model_parameters_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open DB parameters"), "", tr("SQLite files (*.db)"));
+    if (fileName == "") return;
+
+    if (myProject.loadModelParameters(fileName))
+        QMessageBox::information(NULL, "", "Model parameters loaded");
+}
+
+

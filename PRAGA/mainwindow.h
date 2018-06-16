@@ -99,6 +99,8 @@
 
         void on_actionSave_meteo_grid_triggered();
 
+        void on_actionOpen_model_parameters_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

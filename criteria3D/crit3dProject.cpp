@@ -97,10 +97,16 @@ int Crit3DProject::getSoilIndex(long row, long col)
 {
     if (this->soilMap.value[row][col] == this->soilMap.header->flag)
     {
-        //DEFAULT
-        return 0;
+        return INDEX_ERROR;
     }
-    else return int(this->soilMap.value[row][col]);
+
+    int idSoil = int(this->soilMap.value[row][col]);
+    for (int i = 0; i < soilList.size(); i++)
+    {
+        if (soilList[i].id == idSoil) return(i);
+    }
+
+    return INDEX_ERROR;
 }
 
 
@@ -128,13 +134,13 @@ double Crit3DProject::getSoilVar(int soilIndex, int layerIndex, soil::soilVariab
 double* Crit3DProject::getSoilVarProfile(int row, int col, soil::soilVariable myVar)
 {
     double* myProfile = (double *) calloc(nrLayers, sizeof(double));
-    long firstLayerIndex = long(indexMap.value[row][col]);
-    int soilIndex = getSoilIndex(row, col);
-
     for (int layerIndex = 0; layerIndex < nrLayers; layerIndex++)
         myProfile[layerIndex] = NODATA;
 
-    if (firstLayerIndex != indexMap.header->flag)
+    long firstLayerIndex = long(indexMap.value[row][col]);
+    int soilIndex = getSoilIndex(row, col);
+
+    if (firstLayerIndex != indexMap.header->flag && soilIndex != INDEX_ERROR)
         for (int layerIndex = 0; layerIndex < nrLayers; layerIndex++)
             if ((myVar == soil::soilWaterPotentialWP) || (myVar == soil::soilWaterPotentialFC)
                     || (myVar == soil::soilWaterContentFC) || (myVar == soil::soilWaterContentWP))

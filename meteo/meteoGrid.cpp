@@ -674,16 +674,16 @@ double Crit3DMeteoGrid::aggregateMeteoGridPoint(Crit3DMeteoPoint myPoint, elabor
 
     if (elab == elaborationMethods::mean)
     {
-        return statistics::mean(validValues.data(), validValues.size());
+        return statistics::mean(validValues.data(), int(validValues.size()));
     }
     else if (elab == elaborationMethods::median)
     {
-        int size = validValues.size();
+        int size = int(validValues.size());
         return sorting::percentile(validValues.data(), &size, 50.0, true);
     }
     else if (elab == elaborationMethods::stdDeviation)
     {
-        return statistics::standardDeviation(validValues.data(), validValues.size());
+        return statistics::standardDeviation(validValues.data(), int(validValues.size()));
     }
     else
     {
