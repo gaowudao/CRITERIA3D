@@ -1,6 +1,8 @@
 #ifndef PHYSICS_H
 #define PHYSICS_H
 
+#include <vector>
+
     double PressureFromAltitude(double myHeight);
     double AirMolarDensity(double myPressure, double myT);
     double AirVolumetricSpecificHeat(double myPressure, double myT);
@@ -15,5 +17,8 @@
     double AerodynamicConductance(double heightTemperature, double heightWind, double soilSurfaceTemperature,
                                   double roughnessHeight, double airTemperature, double windSpeed);
     double AerodynamicConductanceOpenwater(double myHeight, double myWaterBodySurface, double myAirTemperature, double myWindSpeed10);
+    float erosivityFactor(std::vector<float> values, int nValues);
+    float rainIntensity(std::vector<float> values, int nValues);
+
 
 #endif // PHYSICS_H

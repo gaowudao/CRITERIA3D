@@ -258,3 +258,148 @@ double AerodynamicConductanceOpenwater(double myHeight, double myWaterBodySurfac
     return (1. / (myVolSpecHeat / (myPsycro * windFunction)));
 }
 
+
+float erosivityFactor(std::vector<float> values, int nValues)
+{
+
+    float erosivityFactor = NODATA;
+
+    for (int i = 0; i < nValues; i++)
+    {
+        if ( values[i] != NODATA)
+        {
+            if (erosivityFactor == NODATA)
+            {
+                erosivityFactor = 0;
+            }
+            if ( values[i] > 0 )
+            {
+                erosivityFactor = erosivityFactor + 0.11 * pow(values[i], 1.82);
+            }
+        }
+    }
+
+}
+
+
+float rainIntensity(std::vector<float> values, int nValues)
+{
+
+    float RainfallThreshold = 0.2; //LC dove va impostato?
+
+    if (nValues == 0)
+        return NODATA;
+
+    float rainySum = 0;
+    int rainyDays = 0;
+
+    for (int i = 0; i < nValues; i++)
+    {
+        if (values[i] != NODATA)
+        {
+            if (values[i] > RainfallThreshold)
+            {
+                rainyDays = rainyDays + 1;
+                rainySum = rainySum + values[i];
+            }
+        }
+    }
+
+    if (rainyDays == 0)
+        return 0;
+    else
+        return rainySum / rainyDays;
+
+}
+
+/*
+int windPrevailingDir(std::vector<float> intensity, std::vector<float> dir, int nValues, bool useIntensity)
+{
+
+float windInt;
+float windDir;
+Dim nClass As Integer
+Dim delta As Integer
+Dim quadr As Integer
+Dim intQuadr() As Single, dirQuadr() As Integer
+Dim windInt As Single, windDir As Single
+Dim i As Long
+Dim condizione As Boolean
+
+int nClass = 8;
+int delta = 45;
+
+
+//TROVO INTERVALLO isRegular
+//delta = Int(delta)
+//Do While 360 Mod delta <> 0
+//    delta = delta + 1
+//Loop
+//nClass = 360 / delta
+
+
+ReDim intQuadr(nClass)
+ReDim dirQuadr(nClass)
+For quadr = 0 To nClass
+    dirQuadr(quadr) = 0
+    intQuadr(quadr) = 0
+Next quadr
+
+for (int i = 0; i < nValues; i++)
+{
+    if (useIntensity)
+    {
+        windInt = intensity[i];
+    }
+    windDir = dir[i];
+    if (useIntensity)
+    {
+        if ( windDir != NODATA && windInt != NODATA && windDir >= 0 && windInt > 0 )
+        {
+            quadr = Round(windDir / delta)
+            if (quadr == 0)
+            {
+                quadr = nClass;
+            }
+            dirQuadr(quadr) = dirQuadr(quadr) + 1;
+            intQuadr(quadr) = intQuadr(quadr) + windInt;
+        }
+    }
+    else
+    {
+        if (windDir != NODATA && windDir >= 0)
+        {
+            quadr = round(windDir / delta);
+            if (quadr == 0)
+            {
+                quadr = nClass;
+            }
+            dirQuadr(quadr) = dirQuadr(quadr) + 1
+        }
+    }
+}
+
+Wind_PrevailingDir = 0
+for (quadr = 1 To nClass)
+{
+    If dirQuadr(quadr) > 0 Then
+        If useIntensity Then
+            condizione = (dirQuadr(quadr) > dirQuadr(Wind_PrevailingDir)) _
+                    Or ((dirQuadr(quadr) = dirQuadr(Wind_PrevailingDir)) _
+                    And (intQuadr(quadr) > intQuadr(Wind_PrevailingDir)))
+        Else
+            condizione = (dirQuadr(quadr) > dirQuadr(Wind_PrevailingDir))
+        End If
+        If Wind_PrevailingDir = 0 Then
+            Wind_PrevailingDir = quadr
+        ElseIf condizione Then
+            Wind_PrevailingDir = quadr
+        End If
+    End If
+}
+
+Wind_PrevailingDir = IIf(Wind_PrevailingDir = 0, Definitions.NO_DATA, Wind_PrevailingDir * delta)
+
+}
+
+*/
