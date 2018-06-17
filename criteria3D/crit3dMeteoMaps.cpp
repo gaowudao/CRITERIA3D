@@ -42,6 +42,13 @@ Crit3DMeteoMaps::Crit3DMeteoMaps()
 
 Crit3DMeteoMaps::Crit3DMeteoMaps(const gis::Crit3DRasterGrid& rasterGrid)
 {
+    airTemperatureMap = new gis::Crit3DRasterGrid;
+    precipitationMap = new gis::Crit3DRasterGrid;
+    airHumidityMap = new gis::Crit3DRasterGrid;
+    windIntensityMap = new gis::Crit3DRasterGrid;
+    ET0Map = new gis::Crit3DRasterGrid;
+    irrigationMap = new gis::Crit3DRasterGrid;
+
     airTemperatureMap->initializeGrid(rasterGrid);
     precipitationMap->initializeGrid(rasterGrid);
     airHumidityMap->initializeGrid(rasterGrid);

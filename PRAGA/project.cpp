@@ -55,11 +55,9 @@ bool Project::loadRaster(QString myFileName)
         return (false);
     }
 
-    gis::updateMinMaxRasterGrid(&DTM);
     setColorScale(noMeteoTerrain, DTM.colorScale);
-    this->DTM.isLoaded = true;
 
-    // initialize slope, aspect, lat/lon
+    // initialize radition maps: slope, aspect, lat/lon
     if (radiationMaps != NULL)
         radiationMaps->clean();
     radiationMaps = new Crit3DRadiationMaps(DTM, gisSettings);
@@ -982,11 +980,21 @@ bool Project::loadSoilMap(QString myFileName)
         return (false);
     }
 
-    gis::updateMinMaxRasterGrid(&(Criteria3Dproject.soilMap));
-    Criteria3Dproject.soilMap.isLoaded = true;
-
     return (true);
 }
+
+
+bool Project::initializeCriteria3D()
+{
+    if (!Criteria3Dproject.initializeProject(&DTM, radiationMaps))
+    {
+        logError(QString::fromStdString(Criteria3Dproject.error));
+        return false;
+    }
+
+    return true;
+}
+
 
 
 

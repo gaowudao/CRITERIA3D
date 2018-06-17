@@ -105,6 +105,8 @@
 
         void on_actionOpen_soil_data_triggered();
 
+        void on_actionInitializeCriteria3D_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

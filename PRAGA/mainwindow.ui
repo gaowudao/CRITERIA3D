@@ -2305,8 +2305,8 @@
     <addaction name="actionSave_meteo_grid"/>
     <addaction name="separator"/>
     <addaction name="actionOpen_model_parameters"/>
-    <addaction name="actionOpen_soil_data"/>
     <addaction name="actionOpen_soil_map"/>
+    <addaction name="actionOpen_soil_data"/>
     <addaction name="actionOpen_crop_map"/>
     <addaction name="separator"/>
     <addaction name="action_Open_NetCDF_data"/>
@@ -2357,9 +2357,17 @@
     <addaction name="actionInterpolation_to_DTM"/>
     <addaction name="actionInterpolation_to_Grid"/>
    </widget>
+   <widget class="QMenu" name="menuCriteria3D">
+    <property name="title">
+     <string>Criteria3D</string>
+    </property>
+    <addaction name="actionProperties"/>
+    <addaction name="actionInitializeCriteria3D"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuVariable"/>
    <addaction name="menuInterpolation"/>
+   <addaction name="menuCriteria3D"/>
    <addaction name="menuGIS_settings"/>
    <addaction name="menuTools"/>
   </widget>
@@ -2556,6 +2564,16 @@
    </property>
    <property name="visible">
     <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionProperties">
+   <property name="text">
+    <string>Settings..</string>
+   </property>
+  </action>
+  <action name="actionInitializeCriteria3D">
+   <property name="text">
+    <string>Initialize 3D</string>
    </property>
   </action>
  </widget>

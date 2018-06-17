@@ -279,6 +279,7 @@ float erosivityFactor(std::vector<float> values, int nValues)
         }
     }
 
+    return erosivityFactor;
 }
 
 

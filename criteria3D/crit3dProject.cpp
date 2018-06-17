@@ -47,7 +47,6 @@ Crit3DProject::Crit3DProject()
 
 void Crit3DProject::closeProject()
 {
-    soilMap.freeGrid();
     soilIndexMap.freeGrid();
     cropIndexMap.freeGrid();
     boundaryMap.freeGrid();
@@ -63,38 +62,20 @@ bool Crit3DProject::initializeProject(gis::Crit3DRasterGrid* myDTM, Crit3DRadiat
 {
     closeProject();
 
-    // check
-    if (dtm == NULL || myRadiationMaps == NULL ||
-            !soilMap.isLoaded || soilList.size() == 0)
-    {
-        if (dtm == NULL)
-            setError("Missing DTM.");
-        if (dtm == NULL)
-            setError("Missing DTM.");
-        else if (!soilMap.isLoaded)
-            setError("Missing soil map.");
-        else if (soilList.size() == 0)
-            setError("Missing soil properties.");
-        return false;
-    }
-
+    // DTM and soil properties
     dtm = myDTM;
+    if (!createSoilIndexMap())
+        return false;
+
+    // meteo maps
     radiationMaps = myRadiationMaps;
     meteoMaps = new Crit3DMeteoMaps(*dtm);
 
-
-    // passa soil settings
-    // loadSoils()
-    // soil map
     // loadCropProperties()
     // crop map
 
-    // maps computed here
-    // compute indexMap;
-    // compute boundaryMap;
-
-    if (! initializeWaterBalance(this))
-        return(false);
+    //if (! initializeWaterBalance(this))
+    //    return false;
 
     //initialize root density
     //TO DO: andrebbe rifatto per ogni tipo di suolo
@@ -141,9 +122,9 @@ int Crit3DProject::getSoilIndex(int dtmRow, int dtmCol)
 bool Crit3DProject::createSoilIndexMap()
 {
     // check
-    if (dtm == NULL || !soilMap.isLoaded || soilList.size() == 0)
+    if (dtm == NULL || !dtm->isLoaded || !soilMap.isLoaded || soilList.size() == 0)
     {
-        if (dtm == NULL)
+        if (dtm == NULL || !dtm->isLoaded)
             setError("Missing DTM.");
         else if (!soilMap.isLoaded)
             setError("Missing soil map.");
@@ -152,16 +133,18 @@ bool Crit3DProject::createSoilIndexMap()
         return false;
     }
 
+    int soilIndex;
     soilIndexMap.initializeGrid(*(dtm->header));
     for (int row = 0; row < dtm->header->nrRows; row++)
     {
         for (int col = 0; col < dtm->header->nrCols; col++)
         {
-            int soilIndex = getSoilIndex(row, col);
-            if (soilIndex == INDEX_ERROR)
-                soilIndexMap.value[row][col] = soilIndexMap.header->flag;
-            else
-                soilIndexMap.value[row][col] = float(soilIndex);
+            if (dtm->value[row][col] != dtm->header->flag)
+            {
+                soilIndex = getSoilIndex(row, col);
+                if (soilIndex != INDEX_ERROR)
+                    soilIndexMap.value[row][col] = float(soilIndex);
+            }
         }
     }
 
@@ -173,7 +156,7 @@ bool Crit3DProject::createSoilIndexMap()
 bool Crit3DProject::createIndexMap()
 {
     // check
-    if (dtm == NULL)
+    if (dtm == NULL || !dtm->isLoaded)
     {
         setError("Missing DTM.");
         return false;
@@ -203,7 +186,7 @@ bool Crit3DProject::createIndexMap()
 bool Crit3DProject::createBoundaryMap()
 {
     // check
-    if (dtm == NULL)
+    if (dtm == NULL || !dtm->isLoaded)
     {
         setError("Missing DTM.");
         return false;

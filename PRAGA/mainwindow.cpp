@@ -1187,6 +1187,13 @@ void MainWindow::on_actionOpen_soil_data_triggered()
     QString fileName = QFileDialog::getOpenFileName(this, tr("Load DB soil"), "", tr("SQLite files (*.db)"));
     if (fileName == "") return;
 
-    if (myProject.loadSoilData(fileName))
-        QMessageBox::information(NULL, "", "Soil data loaded.");
+    myProject.loadSoilData(fileName);
+        //QMessageBox::information(NULL, "", "Soil data loaded.");
+}
+
+
+void MainWindow::on_actionInitializeCriteria3D_triggered()
+{
+    if (myProject.initializeCriteria3D())
+        QMessageBox::information(NULL, "", "Criteria3D initialized.");
 }
