@@ -308,6 +308,7 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, 
         // bulk density and porosity
         getValue(query.value("bulk_density"), &bulkDensity);
         if (bulkDensity <= 0) bulkDensity = NODATA;
+
         getValue(query.value("theta_sat"), &theta_sat);
         if (theta_sat <= 0) theta_sat = NODATA;
 

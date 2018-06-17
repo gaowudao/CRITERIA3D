@@ -106,6 +106,7 @@ bool setCrit3DSurfaces(Crit3DProject* myProject)
     std::string myError;
     int myResult;
 
+    // TODO
     int nrSurfaces = 1;
     float ManningRoughness = (float)0.24;         //[s m^-1/3]
     float surfacePond = (float)0.002;             //[m]
@@ -1028,7 +1029,8 @@ bool initializeWaterBalance(Crit3DProject* myProject)
     myProject->createBoundaryMap();
 
     int nrLateralLink = 8;
-    int myResult = soilFluxes3D::initialize(myProject->nrVoxels, myProject->nrLayers, nrLateralLink, true, false, false);
+    int myResult = soilFluxes3D::initialize(myProject->nrVoxels, myProject->nrLayers,
+                                            nrLateralLink, true, false, false);
     if (isCrit3dError(myResult, &myError))
     {
         myProject->error = "initializeCriteria3D:" + myError;

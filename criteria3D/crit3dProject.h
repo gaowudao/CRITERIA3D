@@ -30,11 +30,10 @@
         // maps loaded by the caller
         gis::Crit3DRasterGrid soilMap;
 
+        // maps computed here
         // same header of DTM
         gis::Crit3DRasterGrid soilIndexMap;
         gis::Crit3DRasterGrid cropIndexMap;
-
-        // maps computed here
         gis::Crit3DRasterGrid indexMap;
         gis::Crit3DRasterGrid boundaryMap;
 
