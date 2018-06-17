@@ -2363,6 +2363,10 @@
     </property>
     <addaction name="actionProperties"/>
     <addaction name="actionInitializeCriteria3D"/>
+    <addaction name="separator"/>
+    <addaction name="actionShow_DTM"/>
+    <addaction name="actionShow_boundary"/>
+    <addaction name="actionShow_soil"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuVariable"/>
@@ -2574,6 +2578,21 @@
   <action name="actionInitializeCriteria3D">
    <property name="text">
     <string>Initialize 3D</string>
+   </property>
+  </action>
+  <action name="actionShow_boundary">
+   <property name="text">
+    <string>Show boundary</string>
+   </property>
+  </action>
+  <action name="actionShow_soil">
+   <property name="text">
+    <string>Show soil map</string>
+   </property>
+  </action>
+  <action name="actionShow_DTM">
+   <property name="text">
+    <string>Show DTM</string>
    </property>
   </action>
  </widget>

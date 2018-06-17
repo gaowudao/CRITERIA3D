@@ -206,6 +206,7 @@ bool Crit3DProject::createBoundaryMap()
         }
     }
 
+    boundaryMap.isLoaded = true;
     return true;
 }
 

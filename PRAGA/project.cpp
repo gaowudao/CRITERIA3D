@@ -726,6 +726,7 @@ bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, 
     }
 }
 
+
 bool Project::interpolateGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime)
 {
 

@@ -1197,3 +1197,30 @@ void MainWindow::on_actionInitializeCriteria3D_triggered()
     if (myProject.initializeCriteria3D())
         QMessageBox::information(NULL, "", "Criteria3D initialized.");
 }
+
+void MainWindow::on_actionShow_boundary_triggered()
+{
+    if (myProject.Criteria3Dproject.boundaryMap.isLoaded)
+    {
+        setColorScale(noMeteoTerrain, myProject.Criteria3Dproject.boundaryMap.colorScale);
+        this->setCurrentRaster(&(myProject.Criteria3Dproject.boundaryMap));
+    }
+}
+
+void MainWindow::on_actionShow_soil_triggered()
+{
+    if (myProject.Criteria3Dproject.soilMap.isLoaded)
+    {
+        setColorScale(noMeteoTerrain, myProject.Criteria3Dproject.soilMap.colorScale);
+        this->setCurrentRaster(&(myProject.Criteria3Dproject.soilMap));
+    }
+}
+
+void MainWindow::on_actionShow_DTM_triggered()
+{
+    if (myProject.DTM.isLoaded)
+    {
+        setColorScale(noMeteoTerrain, myProject.DTM.colorScale);
+        this->setCurrentRaster(&(myProject.DTM));
+    }
+}

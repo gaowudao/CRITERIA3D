@@ -107,6 +107,12 @@
 
         void on_actionInitializeCriteria3D_triggered();
 
+        void on_actionShow_boundary_triggered();
+
+        void on_actionShow_soil_triggered();
+
+        void on_actionShow_DTM_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
