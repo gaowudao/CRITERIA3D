@@ -29,7 +29,10 @@
 
         // maps loaded by the caller
         gis::Crit3DRasterGrid soilMap;
-        gis::Crit3DRasterGrid cropMap;
+
+        // same header of DTM
+        gis::Crit3DRasterGrid soilIndexMap;
+        gis::Crit3DRasterGrid cropIndexMap;
 
         // maps computed here
         gis::Crit3DRasterGrid indexMap;
@@ -47,8 +50,8 @@
         std::vector <soil::Crit3DSoil> soilList;
         soil::Crit3DSoilClass soilClass[13];
 
-        std::string projectError;
-        std::string projectLog;
+        std::string error;
+        std::string log;
 
         Crit3DProject();
 
@@ -56,15 +59,19 @@
 
         bool initializeProject(gis::Crit3DRasterGrid* myDTM, Crit3DRadiationMaps *myRadiationMaps);
 
+        bool createSoilIndexMap();
+        bool createIndexMap();
+        bool createBoundaryMap();
+
         double getSoilVar(int soilIndex, int layerIndex, soil::soilVariable myVar);
         double* getSoilVarProfile(int row, int col, soil::soilVariable myVar);
         bool setSoilProfileCrop(int row, int col);
 
-        int getSoilIndex(long row, long col);
+        int getSoilIndex(int dtmRow, int dtmCol);
         bool computeET0Map();
 
         void setError(std::string myError);
-        void log(std::string myLog);
+        void setLog(std::string myLog);
     };
 
 #endif // CRIT3DPROJECT_H

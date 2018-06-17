@@ -1002,17 +1002,9 @@ namespace gis
         return true;
     }
 
-    bool isUpper(const Crit3DRasterGrid& myGrid, float z, int row, int col)
-    {
-        if (z == myGrid.header->flag) return false;
-        float adjZ = myGrid.getValueFromRowCol(row, col);
-        if (adjZ == myGrid.header->flag) return false;
-        return (z > adjZ);
-    }
-
 
     /*!
-     * \brief return true if value(row, col) <= value of neighbours
+     * \brief return true if value(row, col) <= all values of neighbours
      * \param myGrid Crit3DRasterGrid
      * \param row
      * \param col
@@ -1020,15 +1012,24 @@ namespace gis
      */
     bool isMinimum(const Crit3DRasterGrid& myGrid, int row, int col)
     {
-        float z = myGrid.getValueFromRowCol(row, col);
+        float z, adjZ;
+        z = myGrid.getValueFromRowCol(row, col);
         if (z == myGrid.header->flag) return false;
+
         for (int r=-1; r<=1; r++)
+        {
             for (int c=-1; c<=1; c++)
-                if ((r != 0)&&(c != 0))
-                    if (isUpper(myGrid, z, row +r, col +c)) return (false);
+            {
+                if ((r != 0 && c != 0))
+                {
+                    adjZ = myGrid.getValueFromRowCol(row+r, col+c);
+                    if (adjZ != myGrid.header->flag)
+                        if (z <= adjZ) return (false);
+                }
+            }
+        }
         return true;
     }
-
 
     /*!
      * \brief return true if (row, col) is a minimum, or adjacent to a minimum
@@ -1063,7 +1064,7 @@ namespace gis
         if (z != myGrid.header->flag)
             for (int r=-1; r<=1; r++)
                 for (int c=-1; c<=1; c++)
-                    if ((r != 0)&&(c != 0))
+                    if ((r != 0 && c != 0))
                         if (myGrid.getValueFromRowCol(row + r, col + c) == myGrid.header->flag)
                             return true;
         return false;

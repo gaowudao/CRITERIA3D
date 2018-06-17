@@ -253,10 +253,11 @@ namespace soil
         double refTotalPorosity = mySoil->vanGenuchten.refThetaS;
         double specificDensity = getSpecificDensity(mySoil->organicMatter);
         double refBulkDensity = (1.0 - refTotalPorosity) * specificDensity;
-        double factor = 1 - bulkDensity / refBulkDensity;
+        double ratio = 1 - bulkDensity / refBulkDensity;
 
         double refKsat = mySoil->waterConductivity.kSat;
-        return (refKsat * pow(10.0, exp(1.0) * factor));
+        double factor = pow(10.0, 2.0 * ratio);
+        return refKsat * factor;
     }
 
 

@@ -56,6 +56,7 @@ bool Project::loadRaster(QString myFileName)
     }
 
     gis::updateMinMaxRasterGrid(&DTM);
+    setColorScale(noMeteoTerrain, DTM.colorScale);
     this->DTM.isLoaded = true;
 
     // initialize slope, aspect, lat/lon
@@ -912,11 +913,11 @@ bool Project::loadSoilData(QString dbName)
         return false;
     }
 
+    // query soil list
     QString queryString = "SELECT id_soil, soil_code FROM soils";
-
     QSqlQuery query = dbSoil.exec(queryString);
-    query.first();
 
+    query.first();
     if (! query.isValid())
     {
         if (query.lastError().number() > 0)
@@ -926,8 +927,9 @@ bool Project::loadSoilData(QString dbName)
         return false;
     }
 
+    // load soil properties
     QString soilCode;
-    int idSoil;
+    int idSoil, wrongSoilsNr = 0;
     do
     {
         getValue(query.value("id_soil"), &idSoil);
@@ -940,11 +942,45 @@ bool Project::loadSoilData(QString dbName)
                 mySoil->id = idSoil;
                 Criteria3Dproject.soilList.push_back(*mySoil);
             }
+            else
+            {
+                wrongSoilsNr++;
+            }
         }
     } while(query.next());
 
-    return (Criteria3Dproject.soilList.size() > 0);
+    if (Criteria3Dproject.soilList.size() == 0)
+    {
+       logError("Missing soil properties.");
+       return false;
+    }
+    else if (wrongSoilsNr > 0)
+    {
+        logError(QString::number(wrongSoilsNr) + " wrong soils.");
+    }
+
+    return true;
 }
+
+
+
+bool Project::loadSoilMap(QString myFileName)
+{
+    std::string myError;
+    std::string fileName = myFileName.left(myFileName.length()-4).toStdString();
+
+    if (! gis::readEsriGrid(fileName, &(Criteria3Dproject.soilMap), &myError))
+    {
+        logError("Load soil map failed!");
+        return (false);
+    }
+
+    gis::updateMinMaxRasterGrid(&(Criteria3Dproject.soilMap));
+    Criteria3Dproject.soilMap.isLoaded = true;
+
+    return (true);
+}
+
 
 
 //-------------------

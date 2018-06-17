@@ -23,7 +23,7 @@ bool runModel(Crit3DProject* myProject, Crit3DTime myCurrentTime, bool isInitial
         initializeSoilMoisture(myProject, myCurrentTime.date.month);
 
     // Crop
-    myProject->log("Compute crop growth, evaporation, transpiration, irrigation");
+    myProject->setLog("Compute crop growth, evaporation, transpiration, irrigation");
     for (long row = 0; row < myProject->dtm->header->nrRows ; row++)
     {
         for (long col = 0; col < myProject->dtm->header->nrCols; col++)

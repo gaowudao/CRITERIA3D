@@ -116,6 +116,7 @@
 
         bool loadModelParameters(QString dbName);
         bool loadSoilData(QString dbName);
+        bool loadSoilMap(QString fileName);
     };
 
 

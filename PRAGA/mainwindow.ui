@@ -2536,7 +2536,7 @@
   </action>
   <action name="actionOpen_soil_map">
    <property name="text">
-    <string>Open soil map...</string>
+    <string>Load soil map...</string>
    </property>
    <property name="visible">
     <bool>true</bool>

@@ -31,8 +31,11 @@
 
 Crit3DProject::Crit3DProject()
 {
-    projectError = "";
-    projectLog = "";
+    dtm = NULL;
+    radiationMaps = NULL;
+
+    error = "";
+    log = "";
     nrSoils = 0;
     nrLayers = 0;
     nrVoxelsPerLayer = 0;
@@ -45,7 +48,8 @@ Crit3DProject::Crit3DProject()
 void Crit3DProject::closeProject()
 {
     soilMap.freeGrid();
-    cropMap.freeGrid();
+    soilIndexMap.freeGrid();
+    cropIndexMap.freeGrid();
     boundaryMap.freeGrid();
     indexMap.freeGrid();
 
@@ -89,26 +93,120 @@ bool Crit3DProject::initializeProject(gis::Crit3DRasterGrid* myDTM, Crit3DRadiat
                          nrSoilLayersWithoutRoots, soilLayerWithRoot,
                          GAMMA_DISTRIBUTION, depthModeRootDensity, depthMeanRootDensity);*/
 
-    log("Criteria3D Project initialized");
+    setLog("Criteria3D Project initialized");
     return(true);
 }
 
 
-int Crit3DProject::getSoilIndex(long row, long col)
+int Crit3DProject::getSoilIndex(int dtmRow, int dtmCol)
 {
-    if (this->soilMap.value[row][col] == this->soilMap.header->flag)
+    double x, y;
+    int idSoil;
+
+    gis::getUtmXYFromRowCol(*(dtm->header), dtmRow, dtmCol, &x, &y);
+    idSoil = int(gis::getValueFromXY(soilMap, x, y));
+
+    if (idSoil == int(this->soilMap.header->flag))
     {
         return INDEX_ERROR;
     }
 
-    int idSoil = int(this->soilMap.value[row][col]);
     // search id soil
     for (int i = 0; i < soilList.size(); i++)
     {
         if (soilList[i].id == idSoil) return(i);
     }
 
+    // no soil data
     return INDEX_ERROR;
+}
+
+
+bool Crit3DProject::createSoilIndexMap()
+{
+    // check
+    if (dtm == NULL || !soilMap.isLoaded || soilList.size() == 0)
+    {
+        if (dtm == NULL)
+            setError("Missing DTM.");
+        else if (!soilMap.isLoaded)
+            setError("Missing soil map.");
+        else if (soilList.size() == 0)
+            setError("Missing soil properties.");
+        return false;
+    }
+
+    soilIndexMap.initializeGrid(*(dtm->header));
+    for (int row = 0; row < dtm->header->nrRows; row++)
+    {
+        for (int col = 0; col < dtm->header->nrCols; col++)
+        {
+            int soilIndex = getSoilIndex(row, col);
+            if (soilIndex == INDEX_ERROR)
+                soilIndexMap.value[row][col] = soilIndexMap.header->flag;
+            else
+                soilIndexMap.value[row][col] = float(soilIndex);
+        }
+    }
+
+    soilIndexMap.isLoaded = true;
+    return true;
+}
+
+
+bool Crit3DProject::createIndexMap()
+{
+    // check
+    if (dtm == NULL)
+    {
+        setError("Missing DTM.");
+        return false;
+    }
+
+    indexMap.initializeGrid(*(dtm->header));
+
+    long index = 0;
+    for (int row = 0; row < indexMap.header->nrRows; row++)
+    {
+        for (int col = 0; col < indexMap.header->nrCols; col++)
+        {
+            if (dtm->value[row][col] != dtm->header->flag)
+            {
+                indexMap.value[row][col] = float(index);
+                index++;
+            }
+        }
+    }
+
+    indexMap.isLoaded = true;
+    nrVoxelsPerLayer = index;
+    return(nrVoxelsPerLayer > 0);
+}
+
+
+bool Crit3DProject::createBoundaryMap()
+{
+    // check
+    if (dtm == NULL)
+    {
+        setError("Missing DTM.");
+        return false;
+    }
+    boundaryMap.initializeGrid(*(dtm->header));
+
+    for (int row = 0; row < boundaryMap.header->nrRows; row++)
+    {
+        for (int col = 0; col < boundaryMap.header->nrCols; col++)
+        {
+            if (gis::isBoundary(*(dtm), row, col))
+            {
+                if (gis::isMinimum(*(dtm), row, col))
+                    boundaryMap.value[row][col] = BOUNDARY_RUNOFF;
+            }
+        }
+    }
+
+    return true;
 }
 
 
@@ -140,9 +238,9 @@ double* Crit3DProject::getSoilVarProfile(int row, int col, soil::soilVariable my
         myProfile[layerIndex] = NODATA;
 
     long firstLayerIndex = long(indexMap.value[row][col]);
-    int soilIndex = getSoilIndex(row, col);
+    int soilIndex = int(soilIndexMap.value[row][col]);
 
-    if (firstLayerIndex != indexMap.header->flag && soilIndex != INDEX_ERROR)
+    if (firstLayerIndex != indexMap.header->flag && soilIndex != soilIndexMap.header->flag)
         for (int layerIndex = 0; layerIndex < nrLayers; layerIndex++)
             if ((myVar == soil::soilWaterPotentialWP) || (myVar == soil::soilWaterPotentialFC)
                     || (myVar == soil::soilWaterContentFC) || (myVar == soil::soilWaterContentWP))
@@ -221,13 +319,13 @@ bool Crit3DProject::computeET0Map()
 
 //---------------- LOG ------------------------------------------------------------------------------
 
-void Crit3DProject::log(std::string myLog)
+void Crit3DProject::setLog(std::string myLog)
 {
-    projectLog += myLog + "\n";
+    this->log += myLog + "\n";
 }
 
 void Crit3DProject::setError(std::string myError)
 {
-    this->projectError = myError;
+    this->error = myError;
 }
 

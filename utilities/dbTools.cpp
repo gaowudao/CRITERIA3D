@@ -215,7 +215,6 @@ QString getIdSoilString(QSqlDatabase* dbSoil, int idSoilNumber, std::string *myE
 }
 
 
-
 bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, soil::Crit3DSoilClass *soilTexture, std::string *myError)
 {
     std::string idSoilStr = soilCode.toStdString();
@@ -327,11 +326,6 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, 
         getValue(query.value("ksat"), &ksat);
         if ((ksat == NODATA) || (ksat <= 0))
             ksat = soil::estimateSaturatedConductivity(&(mySoil->horizon[i]), bulkDensity);
-        /* else
-        {
-            if ((ksat < (mySoil->horizon[i].waterConductivity.kSat / 10.)) || (ksat > (mySoil->horizon[i].waterConductivity.kSat * 10.)))
-                logInfo("WARNING: Ksat out of class limit, in soil " + idSoil + " horizon " + QString::number(i));
-        }*/
 
         mySoil->horizon[i].waterConductivity.kSat = ksat;
 

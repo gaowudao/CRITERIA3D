@@ -192,10 +192,7 @@ void MainWindow::on_actionLoadRaster_triggered()
     qDebug() << "loading raster";
     if (!myProject.loadRaster(fileName)) return;
 
-    // set DTM color scale
-    setColorScale(noMeteoTerrain, myProject.DTM.colorScale);
     this->setCurrentRaster(&(myProject.DTM));
-
     ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
     this->ui->rasterOpacitySlider->setEnabled(true);
 
@@ -1177,7 +1174,11 @@ void MainWindow::on_actionOpen_model_parameters_triggered()
 
 void MainWindow::on_actionOpen_soil_map_triggered()
 {
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open soil map"), "", tr("ESRI grid files (*.flt)"));
+    if (fileName == "") return;
 
+    if (myProject.loadSoilMap(fileName))
+        QMessageBox::information(NULL, "", "Soil map loaded.");
 }
 
 
