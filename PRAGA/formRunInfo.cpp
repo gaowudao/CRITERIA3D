@@ -45,3 +45,13 @@ void formRunInfo::setText(QString myText)
     this->ui->label->setText(myText);
     qApp->processEvents();
 }
+
+
+void formRunInfo::showInfo(QString info)
+{
+    this->ui->label->setText(info);
+    this->ui->progressBar->setVisible(false);
+
+    this->show();
+    qApp->processEvents();
+}

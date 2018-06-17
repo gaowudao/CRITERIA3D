@@ -938,11 +938,11 @@ namespace statistics
         myVar = static_cast<double>(myValidNR) * static_cast<double>(myValidNR - 1) * static_cast<double>(2 * myValidNR + 5) / 18;
         if (myS > 0)
         {
-            zMK = (myS - 1) / sqrt(myVar);
+            zMK = float((myS - 1) / sqrt(myVar));
         }
         else if (myS < 0)
         {
-            zMK = -(myS + 1) / sqrt(myVar);
+            zMK = -float((myS + 1) / sqrt(myVar));
         }
         else
         {
@@ -963,10 +963,10 @@ namespace statistics
             double rapporto = (myX - mean) / stdDev;
             double gauss = (1 / (sqrt(2 * PI) * stdDev)) * exp(-0.5 * (rapporto * rapporto));
             sumGauss = sumGauss + gauss * deltaXGauss;
-            GaussIntegralTwoTailsFactor1000[i] = sumGauss * 2;
+            GaussIntegralTwoTailsFactor1000[i] = float(sumGauss * 2.f);
         }
 
-        return GaussIntegralTwoTailsFactor1000[zMK * 1000];
+        return GaussIntegralTwoTailsFactor1000[int(zMK * 1000)];
 
     }
 

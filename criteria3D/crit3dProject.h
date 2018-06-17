@@ -39,11 +39,12 @@
         int nrLayers;
         long nrVoxels;
         long nrVoxelsPerLayer;
+        bool isParametersLoaded;
 
         float soilDepth;                                 //[m]
         std::vector <double> layerDepth;                 //[m]
         std::vector <double> layerThickness;             //[m]
-        soil::Crit3DSoil* soilList;
+        std::vector <soil::Crit3DSoil> soilList;
         soil::Crit3DSoilClass soilClass[13];
 
         std::string projectError;

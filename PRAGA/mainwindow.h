@@ -99,6 +99,12 @@
 
         void on_actionSave_meteo_grid_triggered();
 
+        void on_actionOpen_model_parameters_triggered();
+
+        void on_actionOpen_soil_map_triggered();
+
+        void on_actionOpen_soil_data_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

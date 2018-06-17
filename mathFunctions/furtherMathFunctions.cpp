@@ -675,7 +675,7 @@ namespace sorting
             quicksortAscendingFloat(cleanList, 0, nList - 1);
         }
 
-        float rank = (nList * perc) - 1.;
+        float rank = (nList * perc) - 1.f;
 
         // return percentile
         if ((rank + 1.) > (nList - 1))

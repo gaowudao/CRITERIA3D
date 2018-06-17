@@ -335,34 +335,37 @@ bool setCrit3DNodeSoil(Crit3DProject* myProject)
             if (surfaceIndex != long(myProject->indexMap.header->flag))
             {
                 soilIndex = myProject->getSoilIndex(row, col);
-                for (int layer = 0; layer < myProject->nrLayers; layer++)
+                if (soilIndex != INDEX_ERROR)
                 {
-                    index = layer * myProject->nrVoxelsPerLayer + surfaceIndex;
-                    //surface
-                    if (layer == 0)
+                    for (int layer = 0; layer < myProject->nrLayers; layer++)
                     {
-                        myResult = soilFluxes3D::setNodeSurface(index, 0);
-                    }
-                    //sub-surface
-                    else
-                    {
-                        horizonIndex = soil::getHorizonIndex(&(myProject->soilList[soilIndex]), myProject->layerDepth[layer]);
-                        if (horizonIndex == NODATA)
+                        index = layer * myProject->nrVoxelsPerLayer + surfaceIndex;
+                        //surface
+                        if (layer == 0)
                         {
-                            myProject->projectError = "function setCrit3DNodeSoil: \nno horizon definition in soil nr: "
-                                    + std::to_string(soilIndex) + " depth: " + std::to_string(myProject->layerDepth[layer])
-                                    +"\nCheck soil totalDepth in .xml file.";
-                            return(false);
+                            myResult = soilFluxes3D::setNodeSurface(index, 0);
                         }
-
-                        myResult = soilFluxes3D::setNodeSoil(index, soilIndex, horizonIndex);
-
-                        //check error
-                        if (isCrit3dError(myResult, &myError))
+                        //sub-surface
+                        else
                         {
-                            myProject->projectError = "setCrit3DNodeSoil:" + myError + " in soil nr: " + std::to_string(soilIndex)
-                                    + " horizon nr:" + std::to_string(horizonIndex);
-                            return(false);
+                            horizonIndex = soil::getHorizonIndex(&(myProject->soilList[soilIndex]), myProject->layerDepth[layer]);
+                            if (horizonIndex == NODATA)
+                            {
+                                myProject->projectError = "function setCrit3DNodeSoil: \nno horizon definition in soil nr: "
+                                        + std::to_string(soilIndex) + " depth: " + std::to_string(myProject->layerDepth[layer])
+                                        +"\nCheck soil totalDepth in .xml file.";
+                                return(false);
+                            }
+
+                            myResult = soilFluxes3D::setNodeSoil(index, soilIndex, horizonIndex);
+
+                            //check error
+                            if (isCrit3dError(myResult, &myError))
+                            {
+                                myProject->projectError = "setCrit3DNodeSoil:" + myError + " in soil nr: " + std::to_string(soilIndex)
+                                        + " horizon nr:" + std::to_string(horizonIndex);
+                                return(false);
+                            }
                         }
                     }
                 }
@@ -391,6 +394,7 @@ bool initializeSoilMoisture(Crit3DProject* myProject, int month)
     myProject->log("Initialize soil moisture");
 
     for (int row = 0; row < myProject->indexMap.header->nrRows; row++)
+    {
         for (int col = 0; col < myProject->indexMap.header->nrCols; col++)
         {
             surfaceIndex = long(myProject->indexMap.value[row][col]);
@@ -400,24 +404,28 @@ bool initializeSoilMoisture(Crit3DProject* myProject, int month)
                 soilFluxes3D::setWaterContent(surfaceIndex, 0.0);
 
                 soilIndex = myProject->getSoilIndex(row, col);
-                for (int layer = 1; layer < myProject->nrLayers; layer++)
+                if (soilIndex != INDEX_ERROR)
                 {
-                    index = layer * myProject->nrVoxelsPerLayer + surfaceIndex;
-                    horizonIndex = soil::getHorizonIndex(&(myProject->soilList[soilIndex]), myProject->layerDepth[layer]);
-
-                    fieldCapacity = myProject->soilList[soilIndex].horizon[horizonIndex].fieldCapacity;
-                    waterPotential = fieldCapacity - moistureIndex * (fieldCapacity-dry);
-
-                    myResult = soilFluxes3D::setMatricPotential(index, waterPotential);
-
-                    if (isCrit3dError(myResult, &myError))
+                    for (int layer = 1; layer < myProject->nrLayers; layer++)
                     {
-                        myProject->projectError = "initializeSoilMoisture:" + myError;
-                        return(false);
+                        index = layer * myProject->nrVoxelsPerLayer + surfaceIndex;
+                        horizonIndex = soil::getHorizonIndex(&(myProject->soilList[soilIndex]), myProject->layerDepth[layer]);
+
+                        fieldCapacity = myProject->soilList[soilIndex].horizon[horizonIndex].fieldCapacity;
+                        waterPotential = fieldCapacity - moistureIndex * (fieldCapacity-dry);
+
+                        myResult = soilFluxes3D::setMatricPotential(index, waterPotential);
+
+                        if (isCrit3dError(myResult, &myError))
+                        {
+                            myProject->projectError = "initializeSoilMoisture:" + myError;
+                            return(false);
+                        }
                     }
                 }
             }
         }
+    }
     return true;
 }
 
@@ -743,6 +751,7 @@ bool getRootZoneAWCmap(Crit3DProject* myProject, gis::Crit3DRasterGrid* outputMa
     int soilIndex, horizonIndex;
 
     for (int row = 0; row < myProject->indexMap.header->nrRows; row++)
+    {
         for (int col = 0; col < myProject->indexMap.header->nrCols; col++)
         {
             //initialize
@@ -753,29 +762,34 @@ bool getRootZoneAWCmap(Crit3DProject* myProject, gis::Crit3DRasterGrid* outputMa
             {
                 sumAWC = 0.0;
                 soilIndex = myProject->getSoilIndex(row, col);
-                for (int layer = 1; layer < myProject->nrLayers; layer++)
+                if (soilIndex != INDEX_ERROR)
                 {
-                    // if getRootDensity(layer) > 0
+                    for (int layer = 1; layer < myProject->nrLayers; layer++)
                     {
-                        nodeIndex = myProject->nrVoxelsPerLayer * layer + surfaceIndex;
-                        awc = soilFluxes3D::getAvailableWaterContent(nodeIndex);  //[m3 m-3]
-                        if (awc != NODATA)
+                        // if getRootDensity(layer) > 0
                         {
-                            thickness = myProject->layerThickness[layer] * 1000.0;  //[mm]
-                            horizonIndex = soil::getHorizonIndex(&(myProject->soilList[soilIndex]),
-                                                                 myProject->layerDepth[layer]);
-                            skeleton = myProject->soilList[soilIndex].horizon[horizonIndex].coarseFragments;
+                            nodeIndex = myProject->nrVoxelsPerLayer * layer + surfaceIndex;
+                            awc = soilFluxes3D::getAvailableWaterContent(nodeIndex);  //[m3 m-3]
+                            if (awc != NODATA)
+                            {
+                                thickness = myProject->layerThickness[layer] * 1000.0;  //[mm]
+                                horizonIndex = soil::getHorizonIndex(&(myProject->soilList[soilIndex]),
+                                                                     myProject->layerDepth[layer]);
+                                skeleton = myProject->soilList[soilIndex].horizon[horizonIndex].coarseFragments;
 
-                            sumAWC += (awc * thickness * (1.0 - skeleton));         //[mm]
+                                sumAWC += (awc * thickness * (1.0 - skeleton));         //[mm]
+                            }
                         }
                     }
+                    outputMap->value[row][col] = float(sumAWC);
                 }
-                outputMap->value[row][col] = float(sumAWC);
             }
         }
+    }
 
     return true;
 }
+
 
 bool getCriteria3DIntegrationMap(Crit3DProject* myProject, criteria3DVariable myVar,
                        double upperDepth, double lowerDepth, gis::Crit3DRasterGrid* criteria3DMap)
@@ -815,26 +829,29 @@ bool getCriteria3DIntegrationMap(Crit3DProject* myProject, criteria3DVariable my
             if (surfaceIndex != myProject->indexMap.header->flag)
             {
                 soilIndex = myProject->getSoilIndex(row, col);
-                for (int i = firstIndex; i <= lastIndex; i++)
+                if (soilIndex != INDEX_ERROR)
                 {
-                    nodeIndex = i * myProject->nrVoxelsPerLayer + surfaceIndex;
-                    myValue = getCriteria3DVar(myVar, nodeIndex);
-                    if (myValue != NODATA)
+                    for (int i = firstIndex; i <= lastIndex; i++)
                     {
-                        horizonIndex = soil::getHorizonIndex(&(myProject->soilList[soilIndex]), myProject->layerDepth[i]);
-                        skeleton = myProject->soilList[soilIndex].horizon[horizonIndex].coarseFragments;
-                        if (i == firstIndex)
-                            thickCoeff = firstThickness * (1.0 - skeleton);
-                        else if (i == lastIndex)
-                            thickCoeff = lastThickness * (1.0 - skeleton);
-                        else
-                            thickCoeff = myProject->layerThickness[i] * (1.0 - skeleton);
+                        nodeIndex = i * myProject->nrVoxelsPerLayer + surfaceIndex;
+                        myValue = getCriteria3DVar(myVar, nodeIndex);
+                        if (myValue != NODATA)
+                        {
+                            horizonIndex = soil::getHorizonIndex(&(myProject->soilList[soilIndex]), myProject->layerDepth[i]);
+                            skeleton = myProject->soilList[soilIndex].horizon[horizonIndex].coarseFragments;
+                            if (i == firstIndex)
+                                thickCoeff = firstThickness * (1.0 - skeleton);
+                            else if (i == lastIndex)
+                                thickCoeff = lastThickness * (1.0 - skeleton);
+                            else
+                                thickCoeff = myProject->layerThickness[i] * (1.0 - skeleton);
 
-                        sumValues += (myValue * thickCoeff);
-                        sumCoeff += thickCoeff;
+                            sumValues += (myValue * thickCoeff);
+                            sumCoeff += thickCoeff;
+                        }
                     }
+                    criteria3DMap->value[row][col] = float(sumValues / sumCoeff);
                 }
-                criteria3DMap->value[row][col] = float(sumValues / sumCoeff);
             }
         }
 

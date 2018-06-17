@@ -11,6 +11,7 @@
 #include "solarRadiation.h"
 #include "interpolation.h"
 #include "transmissivity.h"
+#include "dbTools.h"
 
 #include <iostream> //debug
 
@@ -863,6 +864,86 @@ float Project::meteoDataConsistency(meteoVariable myVar, const Crit3DTime& timeI
         dataConsistency = maxValue(dataConsistency, meteoPoints[i].obsDataConsistencyH(myVar, timeIni, timeFin));
 
     return dataConsistency;
+}
+
+
+bool Project::loadModelParameters(QString dbName)
+{
+    QSqlDatabase dbParameters;
+    std::string myError;
+
+    Criteria3Dproject.isParametersLoaded = false;
+
+    dbParameters = QSqlDatabase::addDatabase("QSQLITE", QUuid::createUuid().toString());
+    dbParameters.setDatabaseName(dbName);
+
+    if (!dbParameters.open())
+    {
+       logError("Connection with database fail");
+       return false;
+    }
+
+    // TODO Load crop parameters
+
+    Criteria3Dproject.isParametersLoaded = true;
+    return true;
+}
+
+
+bool Project::loadSoilData(QString dbName)
+{
+    Criteria3Dproject.soilList.clear();
+
+    std::string myError;
+    QSqlDatabase dbSoil;
+
+    dbSoil = QSqlDatabase::addDatabase("QSQLITE", QUuid::createUuid().toString());
+    dbSoil.setDatabaseName(dbName);
+
+    if (!dbSoil.open())
+    {
+       logError("Connection with database fail");
+       return false;
+    }
+
+    if (! loadVanGenuchtenParameters(Criteria3Dproject.soilClass, &dbSoil, &myError))
+    {
+        logError(QString::fromStdString(myError));
+        return false;
+    }
+
+    QString queryString = "SELECT id_soil, soil_code FROM soils";
+
+    QSqlQuery query = dbSoil.exec(queryString);
+    query.first();
+
+    if (! query.isValid())
+    {
+        if (query.lastError().number() > 0)
+            logError(query.lastError().text());
+        else
+            logError("Error in reading table soils");
+        return false;
+    }
+
+    QString soilCode;
+    int idSoil;
+    do
+    {
+        getValue(query.value("id_soil"), &idSoil);
+        getValue(query.value("soil_code"), &soilCode);
+        if (idSoil != NODATA && soilCode != "")
+        {
+            soil::Crit3DSoil *mySoil = new soil::Crit3DSoil;
+            if (loadSoil(&dbSoil, soilCode, mySoil, Criteria3Dproject.soilClass, &myError))
+            {
+                mySoil->id = idSoil;
+                Criteria3Dproject.soilList.push_back(*mySoil);
+            }
+        }
+    } while(query.next());
+
+    return (Criteria3Dproject.soilList.size() > 0);
 }
 
 
