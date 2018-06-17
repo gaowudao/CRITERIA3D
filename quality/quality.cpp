@@ -115,8 +115,12 @@ bool Crit3DQuality::checkData(meteoVariable myVar, frequencyType myFrequency, Cr
     syntacticQualityControl(myVar, meteoPoints, nrMeteoPoints);
 
     // quality control - spatial
-    if (this->spatialControlActive)
+    if (this->spatialControlActive
+        && myVar != precipitation && myVar != dailyPrecipitation
+        && myVar != globalIrradiance && myVar != dailyGlobalRadiation)
+    {
         spatialQualityControl(myVar, meteoPoints, nrMeteoPoints);
+    }
 
     // return true if at least one valid data
     return passDataToInterpolation(meteoPoints, nrMeteoPoints);

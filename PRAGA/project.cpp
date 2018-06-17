@@ -34,7 +34,7 @@ Project::Project()
     meteoGridDbHandler = NULL;
     gridAggregationMethod = mean;
 
-    radiationMaps = new Crit3DRadiationMaps();
+    radiationMaps = NULL;
 }
 
 
@@ -60,7 +60,8 @@ bool Project::loadRaster(QString myFileName)
     this->DTM.isLoaded = true;
 
     // initialize slope, aspect, lat/lon
-    radiationMaps->clean();
+    if (radiationMaps != NULL)
+        radiationMaps->clean();
     radiationMaps = new Crit3DRadiationMaps(DTM, gisSettings);
 
     //reset aggregationPoints meteoGrid
@@ -470,6 +471,13 @@ bool Project::loadMeteoPointsDB(QString dbName)
     QList<Crit3DMeteoPoint> listMeteoPoints = meteoPointsDbHandler->getPropertiesFromDb();
 
     nrMeteoPoints = listMeteoPoints.size();
+    if (nrMeteoPoints == 0)
+    {
+        logError("Missing meteo point properties.");
+        closeMeteoPointsDB();
+        return false;
+    }
+
     meteoPoints = new Crit3DMeteoPoint[nrMeteoPoints];
 
     for (int i=0; i < nrMeteoPoints; i++)
@@ -961,7 +969,6 @@ bool Project::loadSoilData(QString dbName)
 
     return true;
 }
-
 
 
 bool Project::loadSoilMap(QString myFileName)

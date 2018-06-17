@@ -59,7 +59,7 @@
         gis::Crit3DRasterGrid DTM;
         gis::Crit3DRasterGrid dataRaster;
 
-        Crit3DRadiationMaps* radiationMaps;
+        Crit3DRadiationMaps *radiationMaps;
 
         Crit3DProject Criteria3Dproject;
 

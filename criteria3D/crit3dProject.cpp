@@ -63,9 +63,25 @@ bool Crit3DProject::initializeProject(gis::Crit3DRasterGrid* myDTM, Crit3DRadiat
 {
     closeProject();
 
+    // check
+    if (dtm == NULL || myRadiationMaps == NULL ||
+            !soilMap.isLoaded || soilList.size() == 0)
+    {
+        if (dtm == NULL)
+            setError("Missing DTM.");
+        if (dtm == NULL)
+            setError("Missing DTM.");
+        else if (!soilMap.isLoaded)
+            setError("Missing soil map.");
+        else if (soilList.size() == 0)
+            setError("Missing soil properties.");
+        return false;
+    }
+
     dtm = myDTM;
     radiationMaps = myRadiationMaps;
     meteoMaps = new Crit3DMeteoMaps(*dtm);
+
 
     // passa soil settings
     // loadSoils()

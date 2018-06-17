@@ -278,6 +278,7 @@ bool neighbourhoodVariability(float x, float y, float z, int nMax,
         return false;
 }
 
+
 void regressionSimple(proxyVars::TProxyVar myProxy, bool isZeroIntercept, float* myCoeff, float* myIntercept, float* myR2)
 {
     long i;
