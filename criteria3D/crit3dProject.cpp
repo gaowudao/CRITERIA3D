@@ -74,8 +74,8 @@ bool Crit3DProject::initializeProject(gis::Crit3DRasterGrid* myDTM, Crit3DRadiat
     // loadCropProperties()
     // crop map
 
-    //if (! initializeWaterBalance(this))
-    //    return false;
+    if (! initializeWaterBalance(this))
+        return false;
 
     //initialize root density
     //TO DO: andrebbe rifatto per ogni tipo di suolo

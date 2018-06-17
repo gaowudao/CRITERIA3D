@@ -935,7 +935,8 @@ bool Project::loadSoilData(QString dbName)
 
     // load soil properties
     QString soilCode;
-    int idSoil, wrongSoilsNr = 0;
+    int idSoil;
+    QString wrongSoils = "";
     do
     {
         getValue(query.value("id_soil"), &idSoil);
@@ -950,7 +951,7 @@ bool Project::loadSoilData(QString dbName)
             }
             else
             {
-                wrongSoilsNr++;
+                wrongSoils += " " + soilCode;
             }
         }
     } while(query.next());
@@ -960,9 +961,9 @@ bool Project::loadSoilData(QString dbName)
        logError("Missing soil properties.");
        return false;
     }
-    else if (wrongSoilsNr > 0)
+    else if (wrongSoils != "")
     {
-        logError(QString::number(wrongSoilsNr) + " wrong soils.");
+        logError("Wrong soils:" + wrongSoils);
     }
 
     return true;
