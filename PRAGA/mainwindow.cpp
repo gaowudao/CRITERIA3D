@@ -1175,11 +1175,11 @@ void MainWindow::on_actionOpen_model_parameters_triggered()
 }
 
 
-
 void MainWindow::on_actionOpen_soil_map_triggered()
 {
 
 }
+
 
 void MainWindow::on_actionOpen_soil_data_triggered()
 {

@@ -872,6 +872,8 @@ bool Project::loadModelParameters(QString dbName)
     QSqlDatabase dbParameters;
     std::string myError;
 
+    Criteria3Dproject.isParametersLoaded = false;
+
     dbParameters = QSqlDatabase::addDatabase("QSQLITE", QUuid::createUuid().toString());
     dbParameters.setDatabaseName(dbName);
 
@@ -881,23 +883,19 @@ bool Project::loadModelParameters(QString dbName)
        return false;
     }
 
-    if (! loadVanGenuchtenParameters(Criteria3Dproject.soilClass, &dbParameters, &myError))
-    {
-        logError(QString::fromStdString(myError));
-        return false;
-    }
-
     // TODO Load crop parameters
 
+    Criteria3Dproject.isParametersLoaded = true;
     return true;
 }
 
 
 bool Project::loadSoilData(QString dbName)
 {
-    QSqlDatabase dbSoil;
-
     Criteria3Dproject.soilList.clear();
+
+    std::string myError;
+    QSqlDatabase dbSoil;
 
     dbSoil = QSqlDatabase::addDatabase("QSQLITE", QUuid::createUuid().toString());
     dbSoil.setDatabaseName(dbName);
@@ -906,6 +904,12 @@ bool Project::loadSoilData(QString dbName)
     {
        logError("Connection with database fail");
        return false;
+    }
+
+    if (! loadVanGenuchtenParameters(Criteria3Dproject.soilClass, &dbSoil, &myError))
+    {
+        logError(QString::fromStdString(myError));
+        return false;
     }
 
     QString queryString = "SELECT id_soil, soil_code FROM soils";
@@ -924,7 +928,6 @@ bool Project::loadSoilData(QString dbName)
 
     QString soilCode;
     int idSoil;
-    std::string myError;
     do
     {
         getValue(query.value("id_soil"), &idSoil);
