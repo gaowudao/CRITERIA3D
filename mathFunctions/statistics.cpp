@@ -30,6 +30,7 @@
 #include "furtherMathFunctions.h"
 #include "basicMath.h"
 #include "statistics.h"
+#include "physics.h"
 
 bool detractThreshold = true; //LC dove va impostato?
 
@@ -71,10 +72,10 @@ namespace statistics
                 return statistics::trend(values, nValues, param);
             case ELAB_MANNKENDALL:
                 return statistics::mannKendall(values, nValues);
-//            case ELAB_EROSIVITY:
-//                statistica = math.ErosivityFactor(values);
-//            case ELAB_RAININTENSITY:
-//                statistica = math.RainIntensity(values, nValues, True);
+            case ELAB_EROSIVITY:
+                return erosivityFactor(values, nValues);
+            case ELAB_RAININTENSITY:
+                return rainIntensity(values, nValues);
             case ELAB_STDDEVIATION:
                 return statistics::standardDeviation(values, nValues);
 
@@ -956,7 +957,7 @@ namespace statistics
         double myX = 0;
         std::vector<float> GaussIntegralTwoTailsFactor1000(1000);
 
-        for (int i = 0; i < GaussIntegralTwoTailsFactor1000.size(); i++)
+        for (unsigned int i = 0; i < GaussIntegralTwoTailsFactor1000.size(); i++)
         {
             myX = myX + deltaXGauss;
             double rapporto = (myX - mean) / stdDev;
