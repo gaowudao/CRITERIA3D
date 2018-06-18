@@ -70,13 +70,6 @@ Crit3DMeteoMaps::~Crit3DMeteoMaps()
         ET0Map->freeGrid();
         irrigationMap->freeGrid();
 
-        delete airTemperatureMap;
-        delete precipitationMap;
-        delete airHumidityMap;
-        delete windIntensityMap;
-        delete ET0Map;
-        delete irrigationMap;
-
         isInitialized = false;
     }
 }

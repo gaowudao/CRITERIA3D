@@ -68,6 +68,7 @@ bool Crit3DProject::initializeProject(gis::Crit3DRasterGrid* myDTM, Crit3DRadiat
     if (!createSoilIndexMap())
         return false;
 
+
     // meteo maps
     radiationMaps = myRadiationMaps;
     meteoMaps = new Crit3DMeteoMaps(*dtm);
@@ -76,7 +77,10 @@ bool Crit3DProject::initializeProject(gis::Crit3DRasterGrid* myDTM, Crit3DRadiat
     // crop map
 
     if (! initializeWaterBalance(this))
+    {
+        closeProject();
         return false;
+    }
 
     //initialize root density
     //TO DO: andrebbe rifatto per ogni tipo di suolo
@@ -110,7 +114,7 @@ int Crit3DProject::getSoilIndex(int dtmRow, int dtmCol)
     }
 
     // search id soil
-    for (int i = 0; i < soilList.size(); i++)
+    for (unsigned int i = 0; i < soilList.size(); i++)
     {
         if (soilList[i].id == idSoil) return(i);
     }

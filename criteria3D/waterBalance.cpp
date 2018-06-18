@@ -325,7 +325,7 @@ bool setCrit3DNodeSoil(Crit3DProject* myProject)
                             {
                                 myProject->error = "function setCrit3DNodeSoil: \nno horizon definition in soil nr: "
                                         + std::to_string(soilIndex) + " depth: " + std::to_string(myProject->layerDepth[layer])
-                                        +"\nCheck soil totalDepth in .xml file.";
+                                        +"\nCheck soil totalDepth.";
                                 return(false);
                             }
 
