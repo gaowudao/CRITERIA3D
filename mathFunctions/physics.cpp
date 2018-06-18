@@ -313,94 +313,90 @@ float rainIntensity(std::vector<float> values, int nValues)
 
 }
 
-/*
+
 int windPrevailingDir(std::vector<float> intensity, std::vector<float> dir, int nValues, bool useIntensity)
 {
 
-float windInt;
-float windDir;
-Dim nClass As Integer
-Dim delta As Integer
-Dim quadr As Integer
-Dim intQuadr() As Single, dirQuadr() As Integer
-Dim windInt As Single, windDir As Single
-Dim i As Long
-Dim condizione As Boolean
+    float windInt;
+    float windDir;
+    bool condition;
+    int quadr;
 
-int nClass = 8;
-int delta = 45;
+    int nClass = 8;
+    int delta = 45;
 
 
-//TROVO INTERVALLO isRegular
-//delta = Int(delta)
-//Do While 360 Mod delta <> 0
-//    delta = delta + 1
-//Loop
-//nClass = 360 / delta
+    std::vector<float> intQuadr(nClass);
+    std::vector<int> dirQuadr(nClass);
 
 
-ReDim intQuadr(nClass)
-ReDim dirQuadr(nClass)
-For quadr = 0 To nClass
-    dirQuadr(quadr) = 0
-    intQuadr(quadr) = 0
-Next quadr
-
-for (int i = 0; i < nValues; i++)
-{
-    if (useIntensity)
+    for (int i = 0; i < nValues; i++)
     {
-        windInt = intensity[i];
-    }
-    windDir = dir[i];
-    if (useIntensity)
-    {
-        if ( windDir != NODATA && windInt != NODATA && windDir >= 0 && windInt > 0 )
+        if (useIntensity)
         {
-            quadr = Round(windDir / delta)
-            if (quadr == 0)
-            {
-                quadr = nClass;
-            }
-            dirQuadr(quadr) = dirQuadr(quadr) + 1;
-            intQuadr(quadr) = intQuadr(quadr) + windInt;
+            windInt = intensity[i];
         }
+        windDir = dir[i];
+        if (useIntensity)
+        {
+            if ( windDir != NODATA && windInt != NODATA && windDir >= 0 && windInt > 0 )
+            {
+                quadr = round(windDir / delta);
+                if (quadr == 0)
+                {
+                    quadr = nClass;
+                }
+                dirQuadr[quadr] = dirQuadr[quadr] + 1;
+                intQuadr[quadr] = intQuadr[quadr] + windInt;
+            }
+        }
+        else
+        {
+            if (windDir != NODATA && windDir >= 0)
+            {
+                quadr = round(windDir / delta);
+                if (quadr == 0)
+                {
+                    quadr = nClass;
+                }
+                dirQuadr[quadr] = dirQuadr[quadr] + 1;
+            }
+        }
+    }
+
+    int windPrevailingDir = 0;
+    for (quadr = 1; quadr <= nClass; quadr++ )
+    {
+        if (dirQuadr[quadr] > 0)
+        {
+            if (useIntensity)
+            {
+                condition = (dirQuadr[quadr] > dirQuadr[windPrevailingDir]) || ((dirQuadr[quadr] = dirQuadr[windPrevailingDir]) && (intQuadr[quadr] > intQuadr[windPrevailingDir]));
+            }
+            else
+            {
+                condition = (dirQuadr[quadr] > dirQuadr[windPrevailingDir]);
+            }
+            if (windPrevailingDir == 0)
+            {
+                windPrevailingDir = quadr;
+            }
+            else if (condition)
+            {
+                windPrevailingDir = quadr;
+            }
+        }
+    }
+
+    if (windPrevailingDir == 0)
+    {
+        return NODATA;
     }
     else
     {
-        if (windDir != NODATA && windDir >= 0)
-        {
-            quadr = round(windDir / delta);
-            if (quadr == 0)
-            {
-                quadr = nClass;
-            }
-            dirQuadr(quadr) = dirQuadr(quadr) + 1
-        }
+        return windPrevailingDir * delta;
     }
-}
-
-Wind_PrevailingDir = 0
-for (quadr = 1 To nClass)
-{
-    If dirQuadr(quadr) > 0 Then
-        If useIntensity Then
-            condizione = (dirQuadr(quadr) > dirQuadr(Wind_PrevailingDir)) _
-                    Or ((dirQuadr(quadr) = dirQuadr(Wind_PrevailingDir)) _
-                    And (intQuadr(quadr) > intQuadr(Wind_PrevailingDir)))
-        Else
-            condizione = (dirQuadr(quadr) > dirQuadr(Wind_PrevailingDir))
-        End If
-        If Wind_PrevailingDir = 0 Then
-            Wind_PrevailingDir = quadr
-        ElseIf condizione Then
-            Wind_PrevailingDir = quadr
-        End If
-    End If
-}
-
-Wind_PrevailingDir = IIf(Wind_PrevailingDir = 0, Definitions.NO_DATA, Wind_PrevailingDir * delta)
 
 }
 
-*/
+

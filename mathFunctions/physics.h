@@ -19,6 +19,7 @@
     double AerodynamicConductanceOpenwater(double myHeight, double myWaterBodySurface, double myAirTemperature, double myWindSpeed10);
     float erosivityFactor(std::vector<float> values, int nValues);
     float rainIntensity(std::vector<float> values, int nValues);
+    int windPrevailingDir(std::vector<float> intensity, std::vector<float> dir, int nValues, bool useIntensity);
 
 
 #endif // PHYSICS_H

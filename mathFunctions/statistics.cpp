@@ -64,8 +64,8 @@ namespace statistics
                 return sorting::percentile(values, nValues, param, true);
             case ELAB_FREQUENCY_POSITIVE:
                 return statistics::frequencyPositive(values, nValues);
-//            case ELAB_PREVAILING_DIR:
-//                statistica = Wind.Wind_PrevailingDir(values, values, nValues, False);
+            case ELAB_PREVAILING_DIR:
+                return windPrevailingDir(values, values, nValues, false);
             case ELAB_TREND:
                 return statistics::trend(values, nValues, param);
             case ELAB_MANNKENDALL:
