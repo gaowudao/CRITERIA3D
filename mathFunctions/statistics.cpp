@@ -32,8 +32,6 @@
 #include "statistics.h"
 #include "physics.h"
 
-bool detractThreshold = true; //LC dove va impostato?
-
 namespace statistics
 {
 
@@ -730,10 +728,7 @@ namespace statistics
         {
             if (values[i] > threshold)
             {
-                if (detractThreshold)
-                    sum = sum  + ( values[i] - threshold);
-                else
-                    sum = sum  + values[i] ;
+                sum = sum  + ( values[i] - threshold);
             }
         }
 
@@ -752,10 +747,7 @@ namespace statistics
         {
             if (values[i] < threshold)
             {
-                if (detractThreshold)
-                    diff = diff  + (threshold - values[i]);
-                else
-                    diff = diff  - values[i] ;
+                diff = diff  + (threshold - values[i]);
             }
         }
 
