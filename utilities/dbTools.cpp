@@ -341,9 +341,9 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, 
 
     mySoil->totalDepth = mySoil->horizon[nrHorizons-1].lowerDepth;
 
-    if (mySoil->totalDepth < 0.5)
+    if (mySoil->totalDepth < 0.3)
     {
-        *myError = "Texture wrong! soil depth < 50cm:" + idSoilStr;
+        *myError = "Texture wrong! soil depth < 30cm:" + idSoilStr;
         return false;
     }
 
