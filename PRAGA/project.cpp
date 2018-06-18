@@ -14,6 +14,9 @@
 #include "dbTools.h"
 
 #include <iostream> //debug
+#include "statistics.h" // cancellare
+#include "furtherMathFunctions.h" // cancellare
+using namespace statistics;  // cancellare
 
 Project::Project()
 {
@@ -32,7 +35,7 @@ Project::Project()
     meteoPointsColorScale = new Crit3DColorScale();
     meteoPointsDbHandler = NULL;
     meteoGridDbHandler = NULL;
-    gridAggregationMethod = mean;
+    //gridAggregationMethod = mean; //de-commentare
 
     radiationMaps = NULL;
 }
@@ -518,6 +521,14 @@ bool Project::loadMeteoGridDB(QString xmlName)
 
     if (! this->meteoGridDbHandler->updateGridDate(&errorString))
         return false;
+
+
+//    std::vector<float> values = {1,5,7,13,14,15,18,18,22,23,25,24,27,28,29};
+
+//float result = statistics::statisticalElab(8, 68, values, 15);
+//float result = statistics::mannKendall(values, 15);
+//qInfo() << "result: " << result;
+
 
 
 

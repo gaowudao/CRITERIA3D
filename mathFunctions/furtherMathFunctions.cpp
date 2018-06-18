@@ -659,13 +659,13 @@ namespace sorting
             {
                 if (list[i] != NODATA)
                 {
-                    cleanList[n++] = list[i];
+                    cleanList.push_back(list[i]);
                 }
             }
 
 
             // switch
-            nList = n;
+            nList = cleanList.size();
 
             // check on data presence
             if (nList == 0)

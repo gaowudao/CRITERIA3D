@@ -892,7 +892,7 @@ namespace statistics
 
         for (int i = 0; i < nValues; i++)
         {
-            myYears[i] = myFirstYear + i ;
+            myYears.push_back(myFirstYear + i) ;
         }
 
         statistics::linearRegression(myYears, values, nValues, false, &y_intercept, &trend, &r2);
@@ -955,7 +955,7 @@ namespace statistics
             double rapporto = (myX - mean) / stdDev;
             double gauss = (1 / (sqrt(2 * PI) * stdDev)) * exp(-0.5 * (rapporto * rapporto));
             sumGauss = sumGauss + gauss * deltaXGauss;
-            GaussIntegralTwoTailsFactor1000[i] = float(sumGauss * 2.f);
+            GaussIntegralTwoTailsFactor1000[i] = (sumGauss * 2.f);
         }
 
         return GaussIntegralTwoTailsFactor1000[int(zMK * 1000)];
