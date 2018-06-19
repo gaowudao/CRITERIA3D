@@ -179,8 +179,7 @@ bool elaborationOnPoint(Crit3DMeteoPoint* meteoPoint, bool pointOrGrid, QString 
 
             if (dataLoaded)
             {
-//                result = Elaboration.ComputeStatistic(myVar, firstYear, lastYear, startDate, endDate, _
-//                nYears, elab1, param1, elab2, param2, .z)
+//                result = Elaboration.ComputeStatistic(myVar, firstYear, lastYear, startDate, endDate, nYears, elab1, param1, elab2, param2, .z)
 
                 if (isAnomaly)
                 {
@@ -210,4 +209,3 @@ bool elaborationOnPoint(Crit3DMeteoPoint* meteoPoint, bool pointOrGrid, QString 
     return false;
 
 }
-
