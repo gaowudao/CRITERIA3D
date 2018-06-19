@@ -892,7 +892,7 @@ namespace statistics
 
         for (int i = 0; i < nValues; i++)
         {
-            myYears.push_back(myFirstYear + i) ;
+            myYears[i] = (myFirstYear + i) ;
         }
 
         statistics::linearRegression(myYears, values, nValues, false, &y_intercept, &trend, &r2);
