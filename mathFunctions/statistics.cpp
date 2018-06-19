@@ -912,6 +912,8 @@ namespace statistics
 
         int myS = 0;
         int myValidNR = 0;
+
+        // LC funzione tradotta da vb6, in questo modo però myValidNR è, al massimo, nValues-1. Corretto?
         for (int i = 0; i < nValues - 1; i++)
         {
              if ( values[i] != NODATA )
@@ -926,15 +928,15 @@ namespace statistics
                 myValidNR = myValidNR + 1;
             }
         }
+        myVar = myValidNR * (myValidNR - 1) * (2.0 * myValidNR + 5.0) / 18.0;
 
-        myVar = static_cast<double>(myValidNR) * static_cast<double>(myValidNR - 1) * static_cast<double>(2 * myValidNR + 5) / 18;
         if (myS > 0)
         {
-            zMK = float((myS - 1) / sqrt(myVar));
+            zMK = static_cast<float>((myS - 1) / sqrt(myVar));
         }
         else if (myS < 0)
         {
-            zMK = -float((myS + 1) / sqrt(myVar));
+            zMK = -static_cast<float>((myS + 1) / sqrt(myVar));
         }
         else
         {
@@ -949,7 +951,7 @@ namespace statistics
         double myX = 0;
         std::vector<float> GaussIntegralTwoTailsFactor1000(1000);
 
-        for (unsigned int i = 0; i < GaussIntegralTwoTailsFactor1000.size(); i++)
+        for (unsigned int i = 0; i < 1000; i++)
         {
             myX = myX + deltaXGauss;
             double rapporto = (myX - mean) / stdDev;
