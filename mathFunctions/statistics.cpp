@@ -913,7 +913,6 @@ namespace statistics
         int myS = 0;
         int myValidNR = 0;
 
-        // LC funzione tradotta da vb6, in questo modo però myValidNR è, al massimo, nValues-1. Corretto?
         for (int i = 0; i < nValues - 1; i++)
         {
              if ( values[i] != NODATA )
