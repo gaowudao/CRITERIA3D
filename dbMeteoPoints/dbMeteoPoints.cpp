@@ -302,7 +302,7 @@ bool Crit3DMeteoPointsDbHandler::getDailyData(Crit3DDate dateStart, Crit3DDate d
             d = QDate::fromString(dateStr, "yyyy-MM-dd");
 
             idVar = myQuery.value(1).toInt();
-            variable = getDefaultMeteoVariable(idVar);
+            variable = MapIdMeteoVar.at(idVar);
 
             value = myQuery.value(2).toFloat();
 
@@ -348,7 +348,7 @@ bool Crit3DMeteoPointsDbHandler::getHourlyData(Crit3DDate dateStart, Crit3DDate 
             d = QDateTime::fromString(dateStr,"yyyy-MM-dd HH:mm:ss");
 
             idVar = qry.value(1).toInt();
-            variable = getDefaultMeteoVariable(idVar);
+            variable = MapIdMeteoVar.at(idVar);
 
             value = qry.value(2).toFloat();
 
@@ -359,6 +359,51 @@ bool Crit3DMeteoPointsDbHandler::getHourlyData(Crit3DDate dateStart, Crit3DDate 
     return true;
 }
 
+/*
+bool Crit3DMeteoPointsDbHandler::loadDailyVar(meteoVariable variable, Crit3DDate dateStart, Crit3DDate dateEnd, Crit3DMeteoPoint *meteoPoint)
+{
+    QString dateStr;
+    QDate d;
+    float value;
+
+    int numberOfDays = difference(dateStart, dateEnd) +1;
+    int idVar =
+    QString startDate = QString::fromStdString(dateStart.toStdString());
+    QString endDate = QString::fromStdString(dateEnd.toStdString());
+
+    QSqlQuery myQuery(_db);
+
+    meteoPoint->initializeObsDataD(numberOfDays, dateStart);
+
+    QString tableName = QString::fromStdString(meteoPoint->id) + "_D";
+
+    QString statement = QString( "SELECT * FROM `%1` WHERE date_time >= DATE('%2') AND date_time < DATE('%3', '+1 day')")
+                                .arg(tableName).arg(startDate).arg(endDate);
+
+    if( !myQuery.exec(statement) )
+    {
+        //qDebug() << myQuery.lastError();
+        return false;
+    }
+    else
+    {
+        while (myQuery.next())
+        {
+            dateStr = myQuery.value(0).toString();
+            d = QDate::fromString(dateStr, "yyyy-MM-dd");
+
+            idVar = myQuery.value(1).toInt();
+            variable = MapIdMeteoVar.at(idVar);
+
+            value = myQuery.value(2).toFloat();
+
+            meteoPoint->setMeteoPointValueD(Crit3DDate(d.day(), d.month(), d.year()), variable, value);
+        }
+    }
+
+    return true;
+}
+*/
 
 QList<Crit3DMeteoPoint> Crit3DMeteoPointsDbHandler::getPropertiesFromDb()
 {

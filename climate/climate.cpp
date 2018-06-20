@@ -233,7 +233,7 @@ std::vector<float> loadDailyVarSeries(std::string *myError, Crit3DMeteoPoint met
     // meteoPoint
     else
     {
-
+        // TO DO
     }
     return dailyValues;
 
@@ -258,7 +258,7 @@ std::vector<float> loadHourlyVarSeries(std::string *myError, Crit3DMeteoPoint me
     // meteoPoint
     else
     {
-
+        // TO DO
     }
     return hourlyValues;
 

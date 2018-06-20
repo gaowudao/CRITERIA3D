@@ -54,6 +54,27 @@ enum meteoVariable {airTemperature, dailyAirTemperatureMin, dailyAirTemperatureM
       { "LEAFW", leafWetness }
     };
 
+    const std::map<int, meteoVariable> MapIdMeteoVar = {
+      { 101, airTemperature },
+      { 102, precipitation },
+      { 103, airHumidity },
+      { 104, globalIrradiance },
+      { 105, windIntensity },
+      { 106, windDirection },
+      { 151, dailyAirTemperatureMin },
+      { 152, dailyAirTemperatureMax },
+      { 153, dailyAirTemperatureAvg },
+      { 154, dailyPrecipitation },
+      { 155, dailyAirHumidityMin },
+      { 156, dailyAirHumidityMax },
+      { 157, dailyAirHumidityAvg },
+      { 158, dailyGlobalRadiation },
+      { 159, dailyWindIntensityAvg },
+      { 160, dailyWindDirectionPrevailing },
+      { 161, dailyWindIntensityMax }
+    };
+
+
     enum frequencyType {hourly, daily, monthly, noFrequency};
 
     enum surfaceType   {SurfaceTypeWater, SurfaceTypeSoil, SurfaceTypeCrop};
@@ -81,8 +102,6 @@ enum meteoVariable {airTemperature, dailyAirTemperatureMin, dailyAirTemperatureM
                             float myTminDayAfter, float myUmed, float myVmed10, float mySWGlobRad);
 
     double ET0_Hargreaves(double KT, double myLat, int myDoy, double tmax, double tmin);
-
-    meteoVariable getDefaultMeteoVariable(int myVar);
 
     bool setColorScale(meteoVariable variable, Crit3DColorScale *colorScale);
 
