@@ -1501,6 +1501,28 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
             {
                 frequencyBins[i]= (double)(nrBins[i])/(double)(nrTotal);
             }
+            int numberOfDaysAbovePrecThreshold=0;
+            double precipitationMean=0.0;
+            for(int i=0; i<numberObservedMax ;i++)
+            {
+                if(rainfallLessThreshold[ijk][qq][i] > 0)
+                {
+                    precipitationMean += rainfallLessThreshold[ijk][qq][i];
+                    numberOfDaysAbovePrecThreshold++;
+                }
+            }
+            if (numberOfDaysAbovePrecThreshold > 0) precipitationMean /= numberOfDaysAbovePrecThreshold;
+
+            //printf("\n media precipitazione al netto soglia %f \n",precipitationMean);
+            //printf("\n numero bin center %d \n",nrBincenter);
+            double correctionFactor = 0.;
+            double cumulatedWeight=0;
+            for(int i=0; i<nrBincenter ;i++)
+            {
+                cumulatedWeight += frequencyBins[i]*meanP[i];
+            }
+            correctionFactor = precipitationMean / cumulatedWeight;
+            //printf("\n correction factor %f \n",correctionFactor);
             getchar();
             // da verificare i numeri che siano numeri plausibili confrontare con i bins precedenti
 
