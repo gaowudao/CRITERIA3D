@@ -1522,8 +1522,16 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                 cumulatedWeight += frequencyBins[i]*meanP[i];
             }
             correctionFactor = precipitationMean / cumulatedWeight;
+
+            double* meanFit = (double *) calloc(nrBincenter, sizeof(double));
+            for(int i=0; i<nrBincenter ;i++)
+            {
+                meanFit[i]= meanP[i];
+                meanP[i] *= correctionFactor;
+            }
+
             //printf("\n correction factor %f \n",correctionFactor);
-            getchar();
+            //getchar();
             // da verificare i numeri che siano numeri plausibili confrontare con i bins precedenti
 
 
@@ -1542,6 +1550,7 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
             free(meanP);
             free(stdDevP);
             free(binCenter);
+            free(meanFit);
         }
 
     }
