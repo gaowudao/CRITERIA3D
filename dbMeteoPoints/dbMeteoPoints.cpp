@@ -436,6 +436,7 @@ std::vector<float> Crit3DMeteoPointsDbHandler::getDailyVar(meteoVariable variabl
 
                 meteoPoint->setMeteoPointValueD(Crit3DDate(d.day(), d.month(), d.year()), variable, value);
                 dailyVarList.push_back(value);
+                previousDate = d;
 
             }
 
@@ -505,6 +506,7 @@ std::vector<float> Crit3DMeteoPointsDbHandler::getHourlyVar(meteoVariable variab
                 meteoPoint->setMeteoPointValueH(Crit3DDate(previousDate.date().day(), previousDate.date().month(), previousDate.date().year()),
                                                        previousDate.time().hour(), previousDate.time().minute(), variable, value);
                 hourlyVarList.push_back(value);
+                previousDate = d;
             }
         }
     }

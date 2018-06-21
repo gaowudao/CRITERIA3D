@@ -380,6 +380,7 @@ bool Project::loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo
 
     for (int i=0; i < nrMeteoPoints; i++)
     {
+
         if (showInfo)
             if ((i % step) == 0) myInfo.setValue(i);
 
@@ -391,6 +392,7 @@ bool Project::loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo
         {
             isData = true;
         }
+
     }
 
     if (showInfo) myInfo.close();
