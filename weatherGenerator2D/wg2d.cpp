@@ -1524,11 +1524,17 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
             correctionFactor = precipitationMean / cumulatedWeight;
 
             double* meanFit = (double *) calloc(nrBincenter, sizeof(double));
+            double* lambda = (double *) calloc(nrBincenter, sizeof(double));
+            //double* lambda2 = (double *) calloc(nrBincenter, sizeof(double));
             for(int i=0; i<nrBincenter ;i++)
             {
                 meanFit[i]= meanP[i];
                 meanP[i] *= correctionFactor;
+                lambda[i] = 1.0/meanP[i];
+                //lambda2[i] = 1.0/meanFit[i];
             }
+
+
 
             //printf("\n correction factor %f \n",correctionFactor);
             //getchar();
@@ -1551,6 +1557,7 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
             free(stdDevP);
             free(binCenter);
             free(meanFit);
+            free(lambda);
         }
 
     }
