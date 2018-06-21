@@ -104,13 +104,21 @@ namespace root
             }
         }
 
-        // WATERTABLE - TODO gestire meglio
+        // WATERTABLE - TODO migliorare
         // le radici nel terreno saturo vanno in asfissia
         // schema attuale: 20 cmm di soglia durante la crescita, ma se le radici sono già dentro restano immutate
+        // quando la falda si abbassa, non possono crescere più di 2 cm al giorno
         if ((myCrop->roots.rootLength != NODATA) && (! myCrop->isWaterSurplusResistant()))
         {
             if (waterTableDepth != NODATA && waterTableDepth > 0)
             {
+                // check on growth
+                if (currentDD > myCrop->roots.degreeDaysRootGrowth)
+                    rootLength = minValue(rootLength, myCrop->roots.rootLength);
+                else
+                    rootLength = minValue(rootLength, myCrop->roots.rootLength + 0.01);
+
+                // check on watertable
                 if (rootLength > (waterTableDepth - myCrop->roots.rootDepthMin))
                 {
                     // previous root lenght

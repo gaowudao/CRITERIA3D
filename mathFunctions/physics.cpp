@@ -274,7 +274,7 @@ float erosivityFactor(std::vector<float> values, int nValues)
             }
             if ( values[i] > 0 )
             {
-                erosivityFactor = erosivityFactor + 0.11 * pow(values[i], 1.82);
+                erosivityFactor = erosivityFactor + 0.11f * pow(values[i], 1.82);
             }
         }
     }
