@@ -1,4 +1,6 @@
 #include "climate.h"
+#include "crit3dDate.h"
+#include "utilities.h"
 
 
 bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, meteoVariable variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
@@ -154,7 +156,7 @@ bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* 
 
 
 
-bool elaborationOnPoint(std::string *myError, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool pointOrGrid, meteoVariable variable, QString elab1, float param1,
+bool elaborationOnPoint(std::string *myError, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoint, bool pointOrGrid, meteoVariable variable, QString elab1, float param1,
     QString elab2, float param2, QDate startDate, QDate endDate, int nYears, int firstYear, int lastYear,
     int nYearsMin, bool isAnomaly, bool loadData)
 {
@@ -214,13 +216,13 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoGridDbHandler* meteoGri
 }
 
 
-std::vector<float> loadDailyVarSeries(std::string *myError, Crit3DMeteoPoint meteoPoint, Crit3DMeteoGridDbHandler meteoGridDbHandler, bool pointOrGrid, meteoVariable variable, QDate first, QDate last)
+std::vector<float> loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler meteoGridDbHandler, Crit3DMeteoPoint meteoPoint, bool pointOrGrid, meteoVariable variable, QDate first, QDate last)
 {
     std::vector<float> dailyValues;
+    QDate firstDateDB;
     //grid
     if (pointOrGrid)
     {
-        QDate firstDateDB;
         if (meteoGridDbHandler.gridStructure().isFixedFields())
         {
             dailyValues = meteoGridDbHandler.loadGridDailyVarFixedFields(myError, QString::fromStdString(meteoPoint.id), variable, first, last, &firstDateDB);
@@ -233,19 +235,19 @@ std::vector<float> loadDailyVarSeries(std::string *myError, Crit3DMeteoPoint met
     // meteoPoint
     else
     {
-        // TO DO
+        dailyValues = meteoPointsDbHandler->getDailyVar(myError, variable, getCrit3DDate(first), getCrit3DDate(last), &firstDateDB, &meteoPoint );
     }
     return dailyValues;
 
 }
 
-std::vector<float> loadHourlyVarSeries(std::string *myError, Crit3DMeteoPoint meteoPoint, Crit3DMeteoGridDbHandler meteoGridDbHandler, bool pointOrGrid, meteoVariable variable, QDateTime first, QDateTime last)
+std::vector<float> loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler meteoGridDbHandler, Crit3DMeteoPoint meteoPoint, bool pointOrGrid, meteoVariable variable, QDateTime first, QDateTime last)
 {
     std::vector<float> hourlyValues;
+    QDateTime firstDateDB;
     //grid
     if (pointOrGrid)
     {
-        QDateTime firstDateDB;
         if (meteoGridDbHandler.gridStructure().isFixedFields())
         {
             hourlyValues = meteoGridDbHandler.loadGridHourlyVarFixedFields(myError, QString::fromStdString(meteoPoint.id), variable, first, last, &firstDateDB);
@@ -258,7 +260,7 @@ std::vector<float> loadHourlyVarSeries(std::string *myError, Crit3DMeteoPoint me
     // meteoPoint
     else
     {
-        // TO DO
+        hourlyValues = meteoPointsDbHandler->getHourlyVar(myError, variable, getCrit3DDate(first.date()), getCrit3DDate(last.date()), &firstDateDB, &meteoPoint );
     }
     return hourlyValues;
 
