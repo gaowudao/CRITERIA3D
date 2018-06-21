@@ -105,7 +105,7 @@ namespace root
         }
 
         // WATERTABLE - TODO gestire meglio
-        // le radici in falda vanno in asfissia
+        // le radici nel terreno saturo vanno in asfissia
         // schema attuale: 20 cmm di soglia durante la crescita, ma se le radici sono già dentro restano immutate
         if ((myCrop->roots.rootLength != NODATA) && (! myCrop->isWaterSurplusResistant()))
         {

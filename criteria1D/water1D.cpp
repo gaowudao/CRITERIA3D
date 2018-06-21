@@ -261,7 +261,7 @@ bool computeCapillaryRise(Criteria1D* myCase, float waterTableDepth)
     double he_boundary;                  // [kPa] air entry point boundary layer
     double k_psi;                        // [cm/d] water conductivity
     double dz, dPsi;                     // [m]
-    double layerCapillaryRise;           // [mm]
+    double capillaryRise;                // [mm]
     double maxCapillaryRise;             // [mm]
     double capillaryRiseSum = 0;         // [mm]
     int i;
@@ -333,14 +333,14 @@ bool computeCapillaryRise(Criteria1D* myCase, float waterTableDepth)
         {
             k_psi = soil::getWaterConductivity(&(myCase->layer[i]));        // [cm day-1]
 
-            layerCapillaryRise = k_psi * 0.5 * ((dPsi / dz) - 1.f) * 10.f;        // [mm]
+            capillaryRise = k_psi * 0.33 * ((dPsi / dz) - 1.f) * 10.f;        // [mm]
 
             maxCapillaryRise = myCase->layer[i].critical - myCase->layer[i].waterContent;
-            layerCapillaryRise = minValue(layerCapillaryRise, maxCapillaryRise);
+            capillaryRise = minValue(capillaryRise, maxCapillaryRise);
 
             // update water contet
-            myCase->layer[i].waterContent += layerCapillaryRise;
-            capillaryRiseSum += layerCapillaryRise;
+            myCase->layer[i].waterContent += capillaryRise;
+            capillaryRiseSum += capillaryRise;
 
             previousPsi = soil::getWaterPotential(&(myCase->layer[i]));     // [kPa]
         }

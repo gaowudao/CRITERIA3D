@@ -589,6 +589,7 @@ namespace sorting
 
    }
 
+
     void quicksortDescendingInteger(int *x, int first,int last)
     {
         int temp;
@@ -602,6 +603,7 @@ namespace sorting
             x[last-i] = temp;
         }
     }
+
 
     double percentile(double* list, int* nList, double perc, bool sortValues)
     {
@@ -642,19 +644,19 @@ namespace sorting
             return ((rank - (int)(rank)) * (list[(int)(rank) + 1] - list[(int)(rank)])) + list[(int)(rank)];
     }
 
+
     float percentile(std::vector<float> list, int nList, float perc, bool sortValues)
     {
         // check
         if (nList == 0 || perc <= 0.0 || perc >= 100.0)
             return (NODATA);
-        perc /= 100.0;
 
-        std::vector<float> cleanList;
+        perc /= 100.0;
 
         if (sortValues)
         {
             // clean nodata
-            int n = 0;
+            std::vector<float> cleanList;
             for (int i = 0; i < nList; i++)
             {
                 if (list[i] != NODATA)
@@ -662,7 +664,6 @@ namespace sorting
                     cleanList.push_back(list[i]);
                 }
             }
-
 
             // switch
             nList = cleanList.size();
@@ -673,17 +674,19 @@ namespace sorting
 
             // sort
             quicksortAscendingFloat(cleanList, 0, nList - 1);
+
+            list = cleanList;
         }
 
         float rank = (nList * perc) - 1.f;
 
         // return percentile
         if ((rank + 1.) > (nList - 1))
-            return cleanList[nList - 1];
+            return list[nList - 1];
         else if (rank < 0.)
-            return cleanList[0];
+            return list[0];
         else
-            return ((rank - (int)(rank)) * (cleanList[(int)(rank) + 1] - cleanList[(int)(rank)])) + cleanList[(int)(rank)];
+            return ((rank - (int)(rank)) * (list[(int)(rank) + 1] - list[(int)(rank)])) + list[(int)(rank)];
     }
 }
 

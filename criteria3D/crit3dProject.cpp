@@ -38,7 +38,7 @@ Crit3DProject::Crit3DProject()
     nrLayers = 0;
     nrVoxelsPerLayer = 0;
     nrVoxels = 0;
-    soilDepth = 0.3f;            //[m] default: 1 meter
+    soilDepth = 0.3f;            //[m] default: 30 cm
 
     error = "";
     log = "";
