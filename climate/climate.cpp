@@ -1,6 +1,7 @@
 #include "climate.h"
 #include "crit3dDate.h"
 #include "utilities.h"
+#include "quality.h"
 
 
 bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, meteoVariable variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
@@ -312,26 +313,25 @@ std::vector<float> loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDb
 
 }
 
-/*
+
 // calcola Thom giornaliero usando Tmax e RHmin per un punto
-float ThomDayTime(ByRef datiG As TdailyMeteoData, ByVal z As Single)
+float thomDayTime(float tempMax, float relHumAir)
 {
 
-Dim qualityT As Byte
-Dim qualityU As Byte
-Dim Tmax As Single, RHmin As Single
+    Crit3DQuality qualityCheck;
+    quality::type qualityT = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMax, tempMax);
+    quality::type qualityRelHumAir = qualityCheck.syntacticQualityControlSingleVal(dailyAirHumidityMin, relHumAir);
 
-    qualityT = Quality.checkFastValueDaily(Definitions.DAILY_TMAX, datiG, Tmax, z)
-    qualityU = Quality.checkFastValueDaily(Definitions.DAILY_RHmin, datiG, RHmin, z)
-    If (qualityT = Quality.qualityGoodData Or qualityT = Quality.qualitySuspectData) And _
-        (qualityU = Quality.qualityGoodData Or qualityU = Quality.qualitySuspectData) Then
-            ThomDayTime = Meteo.Thom(Tmax, RHmin)
-    Else
-        ThomDayTime = NO_DATA
-    End If
+    // LC WrongValueDaily non ho trovato corrispondente funzione in quality, obsoleto o ancora da implementare?
+    if ( qualityT == quality::accepted && qualityRelHumAir == quality::accepted )
+    {
+            return thom(tempMax, relHumAir);
+    }
+    else
+        return NODATA;
 
 }
-*/
+
 
 
 
