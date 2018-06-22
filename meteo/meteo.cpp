@@ -332,9 +332,7 @@ double ET0_Hargreaves(double KT, double myLat, int myDoy, double tmax, double tm
 // Thom Discomfort Index (physiological thermal stress indicator for people based on dry-bulb and wet-bulb temperature)
 float thom(float temp, float relHum)
 {
-
     float zT1, es1, delta;
-
 
     if (temp != NODATA && relHum != NODATA)
     {
@@ -355,7 +353,6 @@ float thom(float temp, float relHum)
     }
     else
         return NODATA;
-
 }
 
 
