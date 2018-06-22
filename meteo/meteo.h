@@ -103,6 +103,8 @@ enum meteoVariable {airTemperature, dailyAirTemperatureMin, dailyAirTemperatureM
 
     double ET0_Hargreaves(double KT, double myLat, int myDoy, double tmax, double tmin);
 
+    float thom(float temp, float relHum);
+
     bool setColorScale(meteoVariable variable, Crit3DColorScale *colorScale);
 
     std::string getVariableString(meteoVariable myVar);

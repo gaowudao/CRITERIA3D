@@ -312,6 +312,27 @@ std::vector<float> loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDb
 
 }
 
+/*
+// calcola Thom giornaliero usando Tmax e RHmin per un punto
+float ThomDayTime(ByRef datiG As TdailyMeteoData, ByVal z As Single)
+{
+
+Dim qualityT As Byte
+Dim qualityU As Byte
+Dim Tmax As Single, RHmin As Single
+
+    qualityT = Quality.checkFastValueDaily(Definitions.DAILY_TMAX, datiG, Tmax, z)
+    qualityU = Quality.checkFastValueDaily(Definitions.DAILY_RHmin, datiG, RHmin, z)
+    If (qualityT = Quality.qualityGoodData Or qualityT = Quality.qualitySuspectData) And _
+        (qualityU = Quality.qualityGoodData Or qualityU = Quality.qualitySuspectData) Then
+            ThomDayTime = Meteo.Thom(Tmax, RHmin)
+    Else
+        ThomDayTime = NO_DATA
+    End If
+
+}
+*/
+
 
 
 bool preElaboration(Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoint, bool pointOrGrid, meteoVariable variable, QString elab1,

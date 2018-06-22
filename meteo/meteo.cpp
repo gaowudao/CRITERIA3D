@@ -329,6 +329,36 @@ double ET0_Hargreaves(double KT, double myLat, int myDoy, double tmax, double tm
 }
 
 
+// Thom Discomfort Index (physiological thermal stress indicator for people based on dry-bulb and wet-bulb temperature)
+float thom(float temp, float relHum)
+{
+
+    float zT1, es1, delta;
+
+
+    if (temp != NODATA && relHum != NODATA)
+    {
+        float zT = temp;
+        float zUR = relHum;
+        float es = 0.611 * exp(17.27 * zT / (zT + ZEROCELSIUS - 36));
+        float zTwb = zT;
+        double zTwbPrec = -999;
+        while ( abs(zTwb - zTwbPrec) > 0.1)
+        {
+            zTwbPrec = zTwb;
+            zT1 = (zT + zTwb) / 2;
+            es1 = 0.611 * exp(17.27 * zT1 / (zT1 + ZEROCELSIUS - 36));
+            delta = es1 / (zT1 + ZEROCELSIUS) * log(207700000.0 / es1);
+            zTwb = zT - es * (1 - zUR / 100) / (delta + 0.06667);
+        }
+        return 0.4 * (zT + zTwb) + 4.8;
+    }
+    else
+        return NODATA;
+
+}
+
+
 bool setColorScale(meteoVariable variable, Crit3DColorScale *colorScale)
 {
     if (colorScale == NULL) return false;
