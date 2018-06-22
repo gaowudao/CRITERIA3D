@@ -92,7 +92,7 @@ bool cropWaterDemand(Criteria1D* myCase)
 
     if (myCase->myCrop.idCrop == "" || ! myCase->myCrop.isLiving || myCase->myCrop.LAI == 0)
     {
-        myCase->output.dailyMaxEvaporation = myCase->output.dailyEt0 * maxEvapRatio;
+        myCase->output.dailyMaxEvaporation = myCase->output.dailyEt0;
         myCase->output.dailyMaxTranspiration = 0.0;
         myCase->output.dailyKc = 0.0;
     }
