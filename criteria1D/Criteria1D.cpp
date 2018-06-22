@@ -302,9 +302,16 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, std::string *myE
         // Read forecast data
         if (! readMOSESDailyData(&query, &meteoPoint, myError)) return false;
 
-        // TODO Watertable data
-        // check last watertable data (last 15 days)
-        // se presente: estendi il dato sino ultimo giorno
+        // Fill watertable data
+        // estende il dato precedente se mancante
+        float previousData = NODATA;
+        for (long i = 0; i < meteoPoint.nrObsDataDaysD; i++)
+        {
+            if (meteoPoint.obsDataD[i].waterTable != NODATA)
+                previousData = meteoPoint.obsDataD[i].waterTable;
+            else if (previousData != NODATA)
+                meteoPoint.obsDataD[i].waterTable = previousData;
+        }
     }
 
     return true;

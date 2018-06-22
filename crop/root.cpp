@@ -112,8 +112,8 @@ namespace root
         // restano invariate se:
         // 1) non sono più in fase di crescita
         // 2) se sono già dentro la falda
-        const float MAX_DAILY_GROWTH = 0.02f;             // [m]
-        const float MIN_WATERTABLE_DISTANCE = 0.2f;       // [m]
+        const float MAX_DAILY_GROWTH = 0.02;             // [m]
+        const float MIN_WATERTABLE_DISTANCE = 0.1;       // [m]
 
         if (waterTableDepth != NODATA && waterTableDepth > 0 && myCrop->roots.rootLength != NODATA
                 && !myCrop->isWaterSurplusResistant() && rootLength > myCrop->roots.rootLength)
@@ -125,7 +125,7 @@ namespace root
                 rootLength = minValue(rootLength, myCrop->roots.rootLength + MAX_DAILY_GROWTH);
 
             // check on watertable
-            float maxLenght = waterTableDepth - myCrop->roots.rootDepthMin - MIN_WATERTABLE_DISTANCE;
+            double maxLenght = waterTableDepth - myCrop->roots.rootDepthMin - MIN_WATERTABLE_DISTANCE;
             if (rootLength > maxLenght)
             {
                 rootLength = maxValue(myCrop->roots.rootLength, maxLenght);
