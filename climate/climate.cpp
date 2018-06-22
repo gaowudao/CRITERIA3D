@@ -173,7 +173,7 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoGridDbHandler* meteoGri
 
             if (loadData)
             {
-//                dataLoaded = Elaboration.PreElaboration(pointOrGrid, variable, elab1, myPoint, _
+//                dataLoaded = Elaboration.preElaboration(pointOrGrid, variable, elab1, myPoint, _
 //                   startDate, endDate, perc_data)
             }
             else
@@ -216,7 +216,7 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoGridDbHandler* meteoGri
 }
 
 
-std::vector<float> loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler meteoGridDbHandler, Crit3DMeteoPoint meteoPoint, bool pointOrGrid, meteoVariable variable, QDate first, QDate last)
+std::vector<float> loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool pointOrGrid, meteoVariable variable, QDate first, QDate last, bool saveValue)
 {
     std::vector<float> dailyValues;
     QDate firstDateDB;
@@ -225,23 +225,46 @@ std::vector<float> loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbH
     {
         if (meteoGridDbHandler.gridStructure().isFixedFields())
         {
-            dailyValues = meteoGridDbHandler.loadGridDailyVarFixedFields(myError, QString::fromStdString(meteoPoint.id), variable, first, last, &firstDateDB);
+            dailyValues = meteoGridDbHandler.loadGridDailyVarFixedFields(myError, QString::fromStdString(meteoPoint->id), variable, first, last, &firstDateDB);
         }
         else
         {
-            dailyValues = meteoGridDbHandler.loadGridDailyVar(myError, QString::fromStdString(meteoPoint.id), variable, first, last, &firstDateDB);
+            dailyValues = meteoGridDbHandler.loadGridDailyVar(myError, QString::fromStdString(meteoPoint->id), variable, first, last, &firstDateDB);
+        }
+        if (saveValue)
+        {
+            // LC la serie deve iniziare con la prima data utile oppure con la data richeista e quindi NODATA se non c'è il valore corrispondente a tale dato=
+            //int numberOfDays = first.daysTo(last) + 1;
+            int numberOfDays = firstDateDB.daysTo(last) + 1;
+            int row, col;
+            int initialize = 1;
+            meteoGridDbHandler.meteoGrid()->findMeteoPointFromId(&row, &col, meteoPoint->id);
+            for (int i = 0; i < dailyValues.size(); i++)
+            {
+                meteoGridDbHandler.meteoGrid()->fillMeteoPointDailyValue(row, col, numberOfDays, initialize, Crit3DDate(firstDateDB.day(), firstDateDB.month(), firstDateDB.year()), variable, dailyValues[i]) ;
+                initialize = 0;
+                firstDateDB.addDays(1);
+            }
         }
     }
     // meteoPoint
     else
     {
-        dailyValues = meteoPointsDbHandler->getDailyVar(myError, variable, getCrit3DDate(first), getCrit3DDate(last), &firstDateDB, &meteoPoint );
+        dailyValues = meteoPointsDbHandler->getDailyVar(myError, variable, getCrit3DDate(first), getCrit3DDate(last), &firstDateDB, meteoPoint );
+        if (saveValue)
+        {
+            for (int i = 0; i < dailyValues.size(); i++)
+            {
+                meteoPoint->setMeteoPointValueD(Crit3DDate(firstDateDB.day(), firstDateDB.month(), firstDateDB.year()), variable, dailyValues[i]);
+                firstDateDB.addDays(1);
+            }
+        }
     }
     return dailyValues;
 
 }
 
-std::vector<float> loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler meteoGridDbHandler, Crit3DMeteoPoint meteoPoint, bool pointOrGrid, meteoVariable variable, QDateTime first, QDateTime last)
+std::vector<float> loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool pointOrGrid, meteoVariable variable, QDateTime first, QDateTime last, bool saveValue)
 {
     std::vector<float> hourlyValues;
     QDateTime firstDateDB;
@@ -250,30 +273,54 @@ std::vector<float> loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDb
     {
         if (meteoGridDbHandler.gridStructure().isFixedFields())
         {
-            hourlyValues = meteoGridDbHandler.loadGridHourlyVarFixedFields(myError, QString::fromStdString(meteoPoint.id), variable, first, last, &firstDateDB);
+            hourlyValues = meteoGridDbHandler.loadGridHourlyVarFixedFields(myError, QString::fromStdString(meteoPoint->id), variable, first, last, &firstDateDB);
         }
         else
         {
-            hourlyValues = meteoGridDbHandler.loadGridHourlyVar(myError, QString::fromStdString(meteoPoint.id), variable, first, last, &firstDateDB);
+            hourlyValues = meteoGridDbHandler.loadGridHourlyVar(myError, QString::fromStdString(meteoPoint->id), variable, first, last, &firstDateDB);
+        }
+        if (saveValue)
+        {
+            // LC la serie deve iniziare con la prima data utile oppure con la data richeista e quindi NODATA se non c'è il valore corrispondente a tale dato=
+            //int numberOfDays = first.date().daysTo(last.date());
+            int numberOfDays = firstDateDB.date().daysTo(last.date());
+            int row, col;
+            int initialize = 1;
+            meteoGridDbHandler.meteoGrid()->findMeteoPointFromId(&row, &col, meteoPoint->id);
+            for (int i = 0; i < hourlyValues.size(); i++)
+            {
+                meteoGridDbHandler.meteoGrid()->fillMeteoPointHourlyValue(row, col, numberOfDays, initialize,  Crit3DDate(firstDateDB.date().day(), firstDateDB.date().month(), firstDateDB.date().year()), firstDateDB.time().hour(), firstDateDB.time().minute(), variable, hourlyValues[i]) ;
+                initialize = 0;
+                firstDateDB.addSecs(3600);
+            }
         }
     }
     // meteoPoint
     else
     {
-        hourlyValues = meteoPointsDbHandler->getHourlyVar(myError, variable, getCrit3DDate(first.date()), getCrit3DDate(last.date()), &firstDateDB, &meteoPoint );
+        hourlyValues = meteoPointsDbHandler->getHourlyVar(myError, variable, getCrit3DDate(first.date()), getCrit3DDate(last.date()), &firstDateDB, meteoPoint );
+        if (saveValue)
+        {
+            for (int i = 0; i < hourlyValues.size(); i++)
+            {
+                meteoPoint->setMeteoPointValueH(Crit3DDate(firstDateDB.date().day(), firstDateDB.date().month(), firstDateDB.date().year()), firstDateDB.time().hour(), firstDateDB.time().minute(), variable, hourlyValues[i]);
+                firstDateDB.addSecs(3600);
+            }
+        }
     }
     return hourlyValues;
 
 }
 
 
-/*
-Public Function PreElaboration(ByVal pointOrGrid As Byte, ByVal Variabile As String, ByVal elab1 As String, _
-    ByRef myPoint As Tpoint, _
-    ByVal startDate As Date, ByVal finishDate As Date, ByRef perc_value As Single) As Boolean
 
+bool preElaboration(Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoint, bool pointOrGrid, meteoVariable variable, QString elab1,
+    QDate startDate, QDate endDate, float* percValue)
+{
+
+    /*
     //// era in statistica
-    'todo: spostare in preElaboration (quindi eliminare myVar)
+    todo: spostare in preElaboration (quindi eliminare myVar)
     If myElab <> Definitions.ELAB_GIORNI_CONSECUTIVI_SOPRA_SOGLIA And _
         myElab <> Definitions.ELAB_GIORNI_CONSECUTIVI_SOTTO_SOGLIA And _
         myElab <> Definitions.ELAB_TREND Then
@@ -285,193 +332,203 @@ Public Function PreElaboration(ByVal pointOrGrid As Byte, ByVal Variabile As Str
         End If
     End If
     //////////
+    */
+/*
+    preElaboration = false;
 
-    PreElaboration = False
+    switch (variable) {
+    case (variable = dailyLeafWetness) :
 
-    Select Case Variabile
+        break;
+    default:
+        break;
+    }
+
+    Case variable
+
 
         Case Definitions.DAILY_LEAFWETNESS
-            If passaggioDati.LoadGenericHourlySeries(pointOrGrid, Definitions.HOURLY_LEAFWETNESS, myPoint, startDate, finishDate) > 0 Then
-                passaggioDati.InizializzaMbutoOrario startDate, finishDate
+            If passaggioDati.LoadGenericHourlySeries(pointOrGrid, Definitions.HOURLY_LEAFWETNESS, myPoint, startDate, endDate) > 0 Then
+                passaggioDati.InizializzaMbutoOrario startDate, endDate
                 passaggioDati.MbutoInversoOrario Definitions.HOURLY_LEAFWETNESS
-                PreElaboration = Elaboration.ElaborateDailyAggregatedVar(Variabile, myPoint, perc_value)
+                preElaboration = Elaboration.ElaborateDailyAggregatedVar(variable, myPoint, percValue)
             End If
 
-            If passaggioDati.LoadGenericHourlySeries(pointOrGrid, Definitions.HOURLY_LEAFWETNESS, myPoint, startDate, finishDate) > 0 Then
+            If passaggioDati.LoadGenericHourlySeries(pointOrGrid, Definitions.HOURLY_LEAFWETNESS, myPoint, startDate, endDate) > 0 Then
                 passaggioDati.MbutoHourly Definitions.HOURLY_LEAFWETNESS, currentHourlySeries, myPoint.z
-                PreElaboration = Elaboration.ElaborateDailyAggregatedVar(Definitions.DAILY_LEAFWETNESS, myPoint, perc_value)
+                preElaboration = Elaboration.ElaborateDailyAggregatedVar(Definitions.DAILY_LEAFWETNESS, myPoint, percValue)
             End If
 
         Case Definitions.ELABORATION_THOM_DAYTIME
-            If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_RHmin, myPoint, startDate, finishDate) > 0 Then
-                    PreElaboration = True
+            If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_RHmin, myPoint, startDate, endDate) > 0 Then
+                    preElaboration = True
             End If
-            If PreElaboration Then
-                PreElaboration = False
-                passaggioDati.InizializzaMbuto startDate, finishDate
+            If preElaboration Then
+                preElaboration = False
+                passaggioDati.InizializzaMbuto startDate, endDate
                 passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_RHmin
-                If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMAX, myPoint, startDate, finishDate) > 0 Then
-                        PreElaboration = True
+                If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
+                        preElaboration = True
                 End If
-                If PreElaboration Then
+                If preElaboration Then
                     passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMAX
-                    PreElaboration = Elaboration.ElaborateDailyAggregatedVar(Definitions.ELABORATION_THOM_DAYTIME, myPoint, perc_value)
+                    preElaboration = Elaboration.ElaborateDailyAggregatedVar(Definitions.ELABORATION_THOM_DAYTIME, myPoint, percValue)
                 End If
             End If
 
         Case Definitions.ELABORATION_THOM_NIGHTTIME
-            If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_RHmax, myPoint, startDate, finishDate) > 0 Then
-                    PreElaboration = True
+            If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_RHmax, myPoint, startDate, endDate) > 0 Then
+                    preElaboration = True
             End If
-            If PreElaboration Then
-                PreElaboration = False
-                passaggioDati.InizializzaMbuto startDate, finishDate
+            If preElaboration Then
+                preElaboration = False
+                passaggioDati.InizializzaMbuto startDate, endDate
                 passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_RHmax
-                If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMIN, myPoint, startDate, finishDate) > 0 Then
-                        PreElaboration = True
+                If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
+                        preElaboration = True
                 End If
-                If PreElaboration Then
+                If preElaboration Then
                     passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMIN
-                    PreElaboration = Elaboration.ElaborateDailyAggregatedVar(Definitions.ELABORATION_THOM_NIGHTTIME, myPoint, perc_value)
+                    preElaboration = Elaboration.ElaborateDailyAggregatedVar(Definitions.ELABORATION_THOM_NIGHTTIME, myPoint, percValue)
                 End If
             End If
 
         Case Definitions.ELABORATION_THOM_DAILYMEAN, Definitions.ELABORATION_THOM_DAILYMAX, Definitions.ELABORATION_THOM_DAILYHOURSABOVE
-            If passaggioDati.LoadGenericHourlySeries(pointOrGrid, Definitions.HOURLY_TAVG, myPoint, startDate, finishDate) > 0 Then
-                passaggioDati.InizializzaMbutoOrario startDate, finishDate
+            If passaggioDati.LoadGenericHourlySeries(pointOrGrid, Definitions.HOURLY_TAVG, myPoint, startDate, endDate) > 0 Then
+                passaggioDati.InizializzaMbutoOrario startDate, endDate
                 passaggioDati.MbutoInversoOrario Definitions.HOURLY_TAVG
-                If passaggioDati.LoadGenericHourlySeries(pointOrGrid, Definitions.HOURLY_RHAVG, myPoint, startDate, finishDate) > 0 Then
+                If passaggioDati.LoadGenericHourlySeries(pointOrGrid, Definitions.HOURLY_RHAVG, myPoint, startDate, endDate) > 0 Then
                     passaggioDati.MbutoInversoOrario Definitions.HOURLY_RHAVG
-                    PreElaboration = Elaboration.ElaborateDailyAggregatedVar(Variabile, myPoint, perc_value)
+                    preElaboration = Elaboration.ElaborateDailyAggregatedVar(variable, myPoint, percValue)
                 End If
             End If
 
         Case Definitions.DAILY_BIC
-            If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_ETP, myPoint, startDate, finishDate) > 0 Then
-                    PreElaboration = True
+            If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_ETP, myPoint, startDate, endDate) > 0 Then
+                    preElaboration = True
             ElseIf Environment.AutomaticETP Then
-                If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMIN, myPoint, startDate, finishDate) > 0 Then
-                        PreElaboration = True
+                If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
+                        preElaboration = True
                 End If
-                If PreElaboration Then
-                    PreElaboration = False
-                    passaggioDati.InizializzaMbuto startDate, finishDate
+                If preElaboration Then
+                    preElaboration = False
+                    passaggioDati.InizializzaMbuto startDate, endDate
                     passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMIN
-                    If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMAX, myPoint, startDate, finishDate) > 0 Then
-                            PreElaboration = True
+                    If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
+                            preElaboration = True
                     End If
-                    If PreElaboration Then
+                    If preElaboration Then
                         passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMAX
-                        PreElaboration = Elaboration.ElaborateDailyAggregatedVar(Definitions.DAILY_ETP, myPoint, perc_value)
+                        preElaboration = Elaboration.ElaborateDailyAggregatedVar(Definitions.DAILY_ETP, myPoint, percValue)
                     End If
                 End If
             End If
-            If PreElaboration Then
-                PreElaboration = False
-                passaggioDati.InizializzaMbuto startDate, finishDate
+            If preElaboration Then
+                preElaboration = False
+                passaggioDati.InizializzaMbuto startDate, endDate
                 passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_ETP
-                If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_PREC, myPoint, startDate, finishDate) > 0 Then
-                        PreElaboration = True
+                If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_PREC, myPoint, startDate, endDate) > 0 Then
+                        preElaboration = True
                 End If
-                If PreElaboration Then
+                If preElaboration Then
                     passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_PREC
-                    PreElaboration = Elaboration.ElaborateDailyAggregatedVar(Definitions.DAILY_BIC, myPoint, perc_value)
+                    preElaboration = Elaboration.ElaborateDailyAggregatedVar(Definitions.DAILY_BIC, myPoint, percValue)
                 End If
             End If
 
         Case Definitions.DAILY_TEMPERATURE_RANGE
-            If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMIN, myPoint, startDate, finishDate) > 0 Then
-                    PreElaboration = True
+            If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
+                    preElaboration = True
             End If
-            If PreElaboration Then
-                PreElaboration = False
-                passaggioDati.InizializzaMbuto startDate, finishDate
+            If preElaboration Then
+                preElaboration = False
+                passaggioDati.InizializzaMbuto startDate, endDate
                 passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMIN
-                If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMAX, myPoint, startDate, finishDate) > 0 Then
-                        PreElaboration = True
+                If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
+                        preElaboration = True
                 End If
-                If PreElaboration Then
+                If preElaboration Then
                     passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMAX
-                    PreElaboration = Elaboration.ElaborateDailyAggregatedVar(Definitions.DAILY_TEMPERATURE_RANGE, myPoint, perc_value)
+                    preElaboration = Elaboration.ElaborateDailyAggregatedVar(Definitions.DAILY_TEMPERATURE_RANGE, myPoint, percValue)
                 End If
             End If
 
         Case Definitions.DAILY_TDMAX
-            If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMAX, myPoint, startDate, finishDate) > 0 Then
-                    PreElaboration = True
+            If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
+                    preElaboration = True
             End If
-            If PreElaboration Then
-                PreElaboration = False
-                passaggioDati.InizializzaMbuto startDate, finishDate
+            If preElaboration Then
+                preElaboration = False
+                passaggioDati.InizializzaMbuto startDate, endDate
                 passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMAX
-                If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_RHmin, myPoint, startDate, finishDate) > 0 Then
-                        PreElaboration = True
+                If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_RHmin, myPoint, startDate, endDate) > 0 Then
+                        preElaboration = True
                 End If
-                If PreElaboration Then
+                If preElaboration Then
                     passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_RHmin
-                    PreElaboration = Elaboration.ElaborateDailyAggregatedVar(Definitions.DAILY_TDMAX, myPoint, perc_value)
+                    preElaboration = Elaboration.ElaborateDailyAggregatedVar(Definitions.DAILY_TDMAX, myPoint, percValue)
                 End If
             End If
 
         Case Definitions.DAILY_TDMIN
-            If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMIN, myPoint, startDate, finishDate) > 0 Then
-                    PreElaboration = True
+            If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
+                    preElaboration = True
             End If
-            If PreElaboration Then
-                PreElaboration = False
-                passaggioDati.InizializzaMbuto startDate, finishDate
+            If preElaboration Then
+                preElaboration = False
+                passaggioDati.InizializzaMbuto startDate, endDate
                 passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMIN
-                If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_RHmax, myPoint, startDate, finishDate) > 0 Then
-                        PreElaboration = True
+                If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_RHmax, myPoint, startDate, endDate) > 0 Then
+                        preElaboration = True
                 End If
-                If PreElaboration Then
+                If preElaboration Then
                     passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_RHmax
-                    PreElaboration = Elaboration.ElaborateDailyAggregatedVar(Definitions.DAILY_TDMIN, myPoint, perc_value)
+                    preElaboration = Elaboration.ElaborateDailyAggregatedVar(Definitions.DAILY_TDMIN, myPoint, percValue)
                 End If
             End If
 
         Case Definitions.DAILY_TAVG
-            perc_value = passaggioDati.loadDailyVarSeries(pointOrGrid, DAILY_TAVG, myPoint, startDate, finishDate)
-            If perc_value > 0 Then
-                    PreElaboration = True
+            percValue = passaggioDati.loadDailyVarSeries(pointOrGrid, DAILY_TAVG, myPoint, startDate, endDate)
+            If percValue > 0 Then
+                    preElaboration = True
 
             ElseIf Environment.AutomaticTmed Then
-                If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMIN, myPoint, startDate, finishDate) > 0 Then
-                        PreElaboration = True
+                If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
+                        preElaboration = True
                 End If
-                If PreElaboration Then
-                    PreElaboration = False
-                    passaggioDati.InizializzaMbuto startDate, finishDate
+                If preElaboration Then
+                    preElaboration = False
+                    passaggioDati.InizializzaMbuto startDate, endDate
                     passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMIN
-                    If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMAX, myPoint, startDate, finishDate) > 0 Then
-                            PreElaboration = True
+                    If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
+                            preElaboration = True
                     End If
-                    If PreElaboration Then
+                    If preElaboration Then
                         passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMAX
-                        PreElaboration = Elaboration.ElaborateDailyAggregatedVar(Definitions.DAILY_TAVG, myPoint, perc_value)
+                        preElaboration = Elaboration.ElaborateDailyAggregatedVar(Definitions.DAILY_TAVG, myPoint, percValue)
                     End If
                 End If
             End If
 
         Case Definitions.DAILY_ETP
-            perc_value = passaggioDati.loadDailyVarSeries(pointOrGrid, DAILY_ETP, myPoint, startDate, finishDate)
-            If perc_value > 0 The
-                    PreElaboration = True
+            percValue = passaggioDati.loadDailyVarSeries(pointOrGrid, DAILY_ETP, myPoint, startDate, endDate)
+            If percValue > 0 The
+                    preElaboration = True
 
             ElseIf Environment.AutomaticETP Then
-                If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMIN, myPoint, startDate, finishDate) > 0 Then
-                        PreElaboration = True
+                If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
+                        preElaboration = True
                 End If
-                If PreElaboration Then
-                    PreElaboration = False
-                    passaggioDati.InizializzaMbuto startDate, finishDate
+                If preElaboration Then
+                    preElaboration = False
+                    passaggioDati.InizializzaMbuto startDate, endDate
                     passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMIN
-                    If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMAX, myPoint, startDate, finishDate) > 0 Then
-                            PreElaboration = True
+                    If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
+                            preElaboration = True
                     End If
-                    If PreElaboration Then
+                    If preElaboration Then
                         passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMAX
-                        PreElaboration = Elaboration.ElaborateDailyAggregatedVar(Definitions.DAILY_ETP, myPoint, perc_value)
+                        preElaboration = Elaboration.ElaborateDailyAggregatedVar(Definitions.DAILY_ETP, myPoint, percValue)
                     End If
                 End If
             End If
@@ -481,74 +538,74 @@ Public Function PreElaboration(ByVal pointOrGrid As Byte, ByVal Variabile As Str
             Select Case elab1
 
                 Case Definitions.ELABORATION_HUGLIN
-                    If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMIN, myPoint, startDate, finishDate) > 0 Then
-                            PreElaboration = True
+                    If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
+                            preElaboration = True
                     End If
-                    If PreElaboration Then
-                        PreElaboration = False
-                        passaggioDati.InizializzaMbuto startDate, finishDate
+                    If preElaboration Then
+                        preElaboration = False
+                        passaggioDati.InizializzaMbuto startDate, endDate
                         passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMIN
-                        If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMAX, myPoint, startDate, finishDate) > 0 Then
-                                PreElaboration = True
+                        If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
+                                preElaboration = True
                         End If
-                        If PreElaboration Then
-                            PreElaboration = False
+                        If preElaboration Then
+                            preElaboration = False
                             passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMAX
-                            If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TAVG, myPoint, startDate, finishDate) > 0 Then
-                                PreElaboration = True
+                            If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TAVG, myPoint, startDate, endDate) > 0 Then
+                                preElaboration = True
                             ElseIf Environment.AutomaticTmed Then
-                                PreElaboration = Elaboration.ElaborateDailyAggregatedVar(Definitions.DAILY_TAVG, myPoint, perc_value)
+                                preElaboration = Elaboration.ElaborateDailyAggregatedVar(Definitions.DAILY_TAVG, myPoint, percValue)
                             End If
                         End If
                     End If
 
                 Case Definitions.ELABORATION_WINKLER, Definitions.ELABORATION_CORRECTED_SUM, Definitions.ELABORATION_FREGONI
 
-                    If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMIN, myPoint, startDate, finishDate) > 0 Then
-                            PreElaboration = True
+                    If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
+                            preElaboration = True
                     End If
-                    If PreElaboration Then
-                        PreElaboration = False
-                        passaggioDati.InizializzaMbuto startDate, finishDate
+                    If preElaboration Then
+                        preElaboration = False
+                        passaggioDati.InizializzaMbuto startDate, endDate
                         passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMIN
-                        If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMAX, myPoint, startDate, finishDate) > 0 Then
-                                PreElaboration = True
+                        If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
+                                preElaboration = True
                         End If
-                        If PreElaboration Then passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMAX
+                        If preElaboration Then passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMAX
                     End If
 
                 Case Definitions.ELABORATION_PHENO
-                    If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMIN, myPoint, startDate, finishDate) > 0 Then
-                            PreElaboration = True
+                    If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
+                            preElaboration = True
                     End If
-                    If PreElaboration Then
-                        PreElaboration = False
-                        passaggioDati.InizializzaMbuto startDate, finishDate
+                    If preElaboration Then
+                        preElaboration = False
+                        passaggioDati.InizializzaMbuto startDate, endDate
                         passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMIN
-                        If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMAX, myPoint, startDate, finishDate) > 0 Then
-                                PreElaboration = True
+                        If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
+                                preElaboration = True
                         End If
-                        If PreElaboration Then
-                            PreElaboration = False
+                        If preElaboration Then
+                            preElaboration = False
                             passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMAX
-                            If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_PREC, myPoint, startDate, finishDate) > 0 Then
-                                    PreElaboration = True
+                            If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_PREC, myPoint, startDate, endDate) > 0 Then
+                                    preElaboration = True
                             End If
                         End If
                     End If
 
                 Case Else
 
-                    perc_value = passaggioDati.loadDailyVarSeries(pointOrGrid, Variabile, myPoint, startDate, finishDate)
+                    percValue = passaggioDati.loadDailyVarSeries(pointOrGrid, variable, myPoint, startDate, endDate)
 
-                    If perc_value > 0 Then
-                            PreElaboration = True
+                    If percValue > 0 Then
+                            preElaboration = True
                     End If
 
             End Select
 
     End Select
-
-End Function
-
 */
+}
+
+

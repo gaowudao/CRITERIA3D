@@ -25,8 +25,8 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoGridDbHandler* meteoGri
     QString elab2, float param2, QDate startDate, QDate endDate, int nYears, int firstYear, int lastYear,
     int nYearsMin, bool isAnomaly, bool loadData);
 
-std::vector<float> loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler, Crit3DMeteoGridDbHandler meteoGridDbHandler, Crit3DMeteoPoint meteoPoint, bool pointOrGrid, meteoVariable variable, QDate first, QDate last);
+std::vector<float> loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler, Crit3DMeteoGridDbHandler meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool pointOrGrid, meteoVariable variable, QDate first, QDate last, bool saveValue);
 
-std::vector<float> loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler, Crit3DMeteoGridDbHandler meteoGridDbHandler, Crit3DMeteoPoint meteoPoint, bool pointOrGrid, meteoVariable variable, QDate first, QDate last);
+std::vector<float> loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler, Crit3DMeteoGridDbHandler meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool pointOrGrid, meteoVariable variable, QDate first, QDate last, bool saveValue);
 
 #endif // CLIMATE_H
