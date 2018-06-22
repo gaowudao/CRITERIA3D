@@ -157,6 +157,33 @@ void Crit3DQuality::syntacticQualityControl(meteoVariable myVar, Crit3DMeteoPoin
     }
 }
 
+quality::type Crit3DQuality::syntacticQualityControlSingleVal(meteoVariable myVar, float myValue)
+{
+    float qualityMin, qualityMax;
+
+    quality::Range* myRange = this->getQualityRange(myVar);
+    if (myRange != NULL)
+    {
+        qualityMin = myRange->getMin();
+        qualityMax = myRange->getMax();
+    }
+
+    if (myValue == NODATA)
+        return quality::missing_data;
+    else
+    {
+        if (myRange == NULL)
+            return quality::accepted;
+
+        else if (myValue < qualityMin || myValue > qualityMax)
+            return quality::wrong_syntactic;
+
+        else
+            return quality::accepted;
+    }
+
+}
+
 
 float findThreshold(meteoVariable myVar, float value, float stdDev, float nrStdDev, float stdDevZ, float minDistance);
 bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints);

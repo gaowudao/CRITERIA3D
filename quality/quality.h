@@ -52,6 +52,8 @@
 
         void syntacticQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints);
 
+        quality::type syntacticQualityControlSingleVal(meteoVariable myVar, float myValue);
+
         bool checkData(meteoVariable myVar, frequencyType myFrequency,
                       Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DTime myTime);
     };
