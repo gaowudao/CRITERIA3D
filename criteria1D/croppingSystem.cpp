@@ -89,7 +89,6 @@ bool cropWaterDemand(Criteria1D* myCase)
     double Kc;                  // crop coefficient
     double TC;                  // momentary turbulence coefficient
     double ke = 0.6;            // evaporation extinction factor (equal to light extinction factor?)
-    double maxEvapRatio = 0.66;
 
     if (myCase->myCrop.idCrop == "" || ! myCase->myCrop.isLiving || myCase->myCrop.LAI == 0)
     {
@@ -101,7 +100,7 @@ bool cropWaterDemand(Criteria1D* myCase)
     {
         Kc = 1 - exp(-ke * myCase->myCrop.LAI);
         TC = 1 + (myCase->myCrop.kcMax - 1.0) * Kc;
-        myCase->output.dailyMaxEvaporation = myCase->output.dailyEt0 * maxEvapRatio * (1.0 - Kc);
+        myCase->output.dailyMaxEvaporation = myCase->output.dailyEt0 * (1.0 - Kc);
         myCase->output.dailyKc = TC * Kc;
         myCase->output.dailyMaxTranspiration = myCase->output.dailyEt0 * myCase->output.dailyKc;
     }
@@ -380,15 +379,13 @@ bool irrigateCrop(Criteria1D* myCase, double irrigationDemand)
 
 bool evaporation(Criteria1D* myCase)
 {
-    const double EVAP_THRESHOLD = 0.00001;      //[mm]
-
     // evaporation on surface
     double evaporationOpenWater = minValue(myCase->output.dailyMaxEvaporation, myCase->layer[0].waterContent);
     myCase->layer[0].waterContent -= evaporationOpenWater;
     myCase->output.dailyEvaporation = evaporationOpenWater;
 
     double residualEvaporation = myCase->output.dailyMaxEvaporation - evaporationOpenWater;
-    if (residualEvaporation < EVAP_THRESHOLD)
+    if (residualEvaporation < EPSILON)
         return true;
 
     // evaporation on soil
@@ -408,7 +405,7 @@ bool evaporation(Criteria1D* myCase)
 
     bool isWaterSupply = true;
     double sumEvap, evapLayerThreshold, evapLayer;
-    while ((residualEvaporation > EVAP_THRESHOLD) && (isWaterSupply == true))
+    while ((residualEvaporation > EPSILON) && (isWaterSupply == true))
     {
         isWaterSupply = false;
         sumEvap = 0.0;
