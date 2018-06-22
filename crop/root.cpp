@@ -104,26 +104,31 @@ namespace root
             }
         }
 
-        // WATERTABLE - TODO migliorare
+        // WATERTABLE
         // le radici nel terreno saturo vanno in asfissia
-        // schema attuale: 20 cmm di soglia durante la crescita, ma se le radici sono già dentro restano immutate
-        // quando la falda si abbassa, non possono crescere più di 2 cm al giorno
-        if ((myCrop->roots.rootLength != NODATA) && (! myCrop->isWaterSurplusResistant()))
-        {
-            if (waterTableDepth != NODATA && waterTableDepth > 0)
-            {
-                // check on growth
-                if (currentDD > myCrop->roots.degreeDaysRootGrowth)
-                    rootLength = minValue(rootLength, myCrop->roots.rootLength);
-                else
-                    rootLength = minValue(rootLength, myCrop->roots.rootLength + 0.01);
+        // per cui vanno mantenute a distanza nella fase di crescita
+        // le radici possono crescere se:
+        // la falda è più bassa o si abbassa (max 2 cm al giorno)
+        // restano invariate se:
+        // 1) non sono più in fase di crescita
+        // 2) se sono già dentro la falda
+        const float MAX_DAILY_GROWTH = 0.02f;             // [m]
+        const float MIN_WATERTABLE_DISTANCE = 0.2f;       // [m]
 
-                // check on watertable
-                if (rootLength > (waterTableDepth - myCrop->roots.rootDepthMin))
-                {
-                    // previous root lenght
-                    rootLength = maxValue(myCrop->roots.rootLength, waterTableDepth - myCrop->roots.rootDepthMin - 0.2);
-                }
+        if (waterTableDepth != NODATA && waterTableDepth > 0 && myCrop->roots.rootLength != NODATA
+                && !myCrop->isWaterSurplusResistant() && rootLength > myCrop->roots.rootLength)
+        {
+            // check on growth
+            if (currentDD > myCrop->roots.degreeDaysRootGrowth)
+                rootLength = myCrop->roots.rootLength;
+            else
+                rootLength = minValue(rootLength, myCrop->roots.rootLength + MAX_DAILY_GROWTH);
+
+            // check on watertable
+            float maxLenght = waterTableDepth - myCrop->roots.rootDepthMin - MIN_WATERTABLE_DISTANCE;
+            if (rootLength > maxLenght)
+            {
+                rootLength = maxValue(myCrop->roots.rootLength, maxLenght);
             }
         }
 

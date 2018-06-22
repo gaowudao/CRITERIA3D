@@ -333,7 +333,7 @@ bool computeCapillaryRise(Criteria1D* myCase, float waterTableDepth)
         {
             k_psi = soil::getWaterConductivity(&(myCase->layer[i]));        // [cm day-1]
 
-            capillaryRise = k_psi * 0.33 * ((dPsi / dz) - 1.f) * 10.f;        // [mm]
+            capillaryRise = k_psi * 0.5 * ((dPsi / dz) - 1.f) * 10.f;        // [mm]
 
             maxCapillaryRise = myCase->layer[i].critical - myCase->layer[i].waterContent;
             capillaryRise = minValue(capillaryRise, maxCapillaryRise);

@@ -340,18 +340,18 @@ float thom(float temp, float relHum)
     {
         float zT = temp;
         float zUR = relHum;
-        float es = 0.611 * exp(17.27 * zT / (zT + ZEROCELSIUS - 36));
+        float es = 0.611f * float(exp(17.27f * zT / (zT + ZEROCELSIUS - 36.f)));
         float zTwb = zT;
-        double zTwbPrec = -999;
+        float zTwbPrec = -999;
         while ( abs(zTwb - zTwbPrec) > 0.1)
         {
             zTwbPrec = zTwb;
-            zT1 = (zT + zTwb) / 2;
-            es1 = 0.611 * exp(17.27 * zT1 / (zT1 + ZEROCELSIUS - 36));
-            delta = es1 / (zT1 + ZEROCELSIUS) * log(207700000.0 / es1);
-            zTwb = zT - es * (1 - zUR / 100) / (delta + 0.06667);
+            zT1 = (zT + zTwb) / 2.f;
+            es1 = float(0.611f * exp(17.27f * zT1 / (zT1 + ZEROCELSIUS - 36.f)));
+            delta = float(es1 / (zT1 + ZEROCELSIUS) * log(207700000.f / es1));
+            zTwb = zT - es * (1.f - zUR / 100.f) / (delta + 0.06667f);
         }
-        return 0.4 * (zT + zTwb) + 4.8;
+        return 0.4f * (zT + zTwb) + 4.8f;
     }
     else
         return NODATA;
