@@ -113,7 +113,7 @@ namespace root
         // 1) non sono più in fase di crescita
         // 2) se sono già dentro la falda
         const float MAX_DAILY_GROWTH = 0.02f;             // [m]
-        const float MIN_WATERTABLE_DISTANCE = 0.2f;       // [m]
+        const float MIN_WATERTABLE_DISTANCE = 0.15f;       // [m]
 
         if (waterTableDepth != NODATA && waterTableDepth > 0 && myCrop->roots.rootLength != NODATA
                 && !myCrop->isWaterSurplusResistant() && rootLength > myCrop->roots.rootLength)
