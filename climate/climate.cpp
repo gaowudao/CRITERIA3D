@@ -410,19 +410,19 @@ bool elaborateDailyAggregatedVarFromDaily(QString elab, Crit3DMeteoPoint* meteoP
             break;
         case thomNightTimeElab:
                 //res = thomNightTime(currentDailySeries(index), myPoint.z);
-//        case DAILY_BIC:
+        case dailyBICElab:
 //                res = Elaboration.DailyBIC(currentDailySeries(index), myPoint.z);
-//        case DAILY_TEMPERATURE_RANGE:
+        case dailyTemperatureRangeElab:
 //                res = Elaboration.DailyThermalRange(currentDailySeries(index), myPoint.z);
-//        case DAILY_TAVG:
+        case dailyTemperatureavgElab:
 //                res = Elaboration.DailyAverageT(currentDailySeries(index), myPoint.z);
-//        case DAILY_ETP:
+        case dailyETPElab:
 //                res = Meteo.dailyEtpHargreaves(currentDailySeries(index), myPoint);
-//        case DAILY_TDMED:
+        case dailyTdAvgElab:
 //                res = Meteo.dewPoint(currentDailySeries(index).RHavg, currentDailySeries(index).Tavg);
-//        case DAILY_TDMIN:
+        case dailyTdminElab:
 //                res = Meteo.dewPoint(currentDailySeries(index).RHmax, currentDailySeries(index).Tmin);
-//        case DAILY_TDMAX:
+        case dailyTdmaxElab:
 //                res = Meteo.dewPoint(currentDailySeries(index).RHmin, currentDailySeries(index).Tmax);
         default:
                 res = NODATA;

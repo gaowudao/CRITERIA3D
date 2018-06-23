@@ -20,7 +20,7 @@
 // LC dove mettere queste define? Teasformate in enum per fare switch case
 enum elaboration { phenologyElab, winklerElab, huglinElab, fregoniElab, thomHourlyElab, thomDailyMaxElab, thomDailyMeanElab, thomDailyHoursAboveElab, thomDayTimeElab, thomNightTimeElab,
                    correctedDegreeDaysSumElab, lastDayBelowThresholdElab, erosivityFactorElab, rainIntensityElab, koppenElab, dailyLeafWetnessElab, dailyBICElab, dailyTemperatureRangeElab,
-                   dailyTemperatureavgElab, dailyETPElab, dailyTdminElab, dailyTdmaxElab, dailyTdmedElab
+                   dailyTemperatureavgElab, dailyETPElab, dailyTdminElab, dailyTdmaxElab, dailyTdAvgElab
 };
 
 /*
