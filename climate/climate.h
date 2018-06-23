@@ -17,7 +17,13 @@
     #include "dbMeteoGrid.h"
 #endif
 
-// LC dove mettere queste define?
+// LC dove mettere queste define? Teasformate in enum per fare switch case
+enum elaboration { phenologyElab, winklerElab, huglinElab, fregoniElab, thomHourlyElab, thomDailyMaxElab, thomDailyMeanElab, thomDailyHoursAboveElab, thomDayTimeElab, thomNightTimeElab,
+                   correctedDegreeDaysSumElab, lastDayBelowThresholdElab, erosivityFactorElab, rainIntensityElab, koppenElab, dailyLeafWetnessElab, dailyBICElab, dailyTemperatureRangeElab,
+                   dailyTemperatureavgElab, dailyETPElab, dailyTdminElab, dailyTdmaxElab, dailyTdmedElab
+};
+
+/*
 #define ELABORATION_PHENOLOGY  "Phenology"
 #define ELABORATION_WINKLER  "Winkler"
 #define ELABORATION_HUGLIN  "Huglin"
@@ -35,6 +41,14 @@
 #define ELABORATION_KOPPEN  "Koppen"
 #define ELABORATION_PHENO  "Phenology"
 #define DAILY_LEAFWETNESS "LeafWetness"
+#define DAILY_BIC "BIC"
+#define DAILY_TEMPERATURE_RANGE "TRange"
+#define DAILY_TAVG "Tmed"
+#define DAILY_ETP "ETP"
+#define DAILY_TDMIN "Tdmin"
+#define DAILY_TDMAX "Tdmax"
+#define DAILY_TDMED "Tdmed"
+*/
 
 
 bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler, QString variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
@@ -50,6 +64,10 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoGridDbHandler* meteoGri
     int nYearsMin, bool isAnomaly, bool loadData);
 
 frequencyType getAggregationFrequency(QString elab);
+
+bool elaborateDailyAggregatedVar(QString elab, Crit3DMeteoPoint* meteoPoint, std::vector<float>* dailyValues, float* percValue);
+
+bool elaborateDailyAggregatedVarFromDaily(QString elab, Crit3DMeteoPoint* meteoPoint, std::vector<float>* dailyValues, float* percValue) ;
 
 float thomDayTime(float tempMax, float relHumMinAir);
 
