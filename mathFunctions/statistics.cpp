@@ -61,7 +61,7 @@ namespace statistics
             case ELAB_CONSECUTIVE_DAYS_UNDER_THRESHOLD:
                 return statistics::countConsecutive(values, nValues, param, false);
             case ELAB_PERCENTILE:
-                return sorting::percentile(values, nValues, param, true);
+                return sorting::percentile(values, &nValues, param, true);
             case ELAB_FREQUENCY_POSITIVE:
                 return statistics::frequencyPositive(values, nValues);
             case ELAB_PREVAILING_DIR:

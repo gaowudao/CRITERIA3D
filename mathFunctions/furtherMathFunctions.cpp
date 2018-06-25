@@ -645,10 +645,10 @@ namespace sorting
     }
 
 
-    float percentile(std::vector<float> list, int nList, float perc, bool sortValues)
+    float percentile(std::vector<float> &list, int* nList, float perc, bool sortValues)
     {
         // check
-        if (nList == 0 || perc <= 0.0 || perc >= 100.0)
+        if (*nList == 0 || perc <= 0.0 || perc >= 100.0)
             return (NODATA);
 
         perc /= 100.0;
@@ -657,7 +657,7 @@ namespace sorting
         {
             // clean nodata
             std::vector<float> cleanList;
-            for (int i = 0; i < nList; i++)
+            for (int i = 0; i < *nList; i++)
             {
                 if (list[i] != NODATA)
                 {
@@ -666,23 +666,24 @@ namespace sorting
             }
 
             // switch
-            nList = cleanList.size();
+            *nList = cleanList.size();
 
             // check on data presence
-            if (nList == 0)
+            if (*nList == 0)
                 return (NODATA);
 
             // sort
-            quicksortAscendingFloat(cleanList, 0, nList - 1);
+            quicksortAscendingFloat(cleanList, 0, *nList - 1);
 
+            list.erase(list.begin(),list.end());
             list = cleanList;
         }
 
-        float rank = (nList * perc) - 1.f;
+        float rank = (*nList * perc) - 1.f;
 
         // return percentile
-        if ((rank + 1.) > (nList - 1))
-            return list[nList - 1];
+        if ((rank + 1.) > (*nList - 1))
+            return list[*nList - 1];
         else if (rank < 0.)
             return list[0];
         else
