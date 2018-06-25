@@ -24,6 +24,8 @@
     gantolini@arpae.it
 */
 
+#include <math.h>
+
 #include "commonConstants.h"
 #include "crit3dDate.h"
 #include "development.h"

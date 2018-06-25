@@ -27,6 +27,7 @@
 #include <iostream>
 #include <QSqlQuery>
 #include <QSqlError>
+#include <math.h>
 
 #include "commonConstants.h"
 #include "Criteria1D.h"

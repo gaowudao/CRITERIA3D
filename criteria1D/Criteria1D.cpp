@@ -29,6 +29,7 @@
 #include <QDate>
 #include <QVariant>
 #include <iostream>
+#include <math.h>
 
 #include "commonConstants.h"
 #include "crit3dDate.h"

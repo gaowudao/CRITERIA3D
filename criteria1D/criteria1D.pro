@@ -11,7 +11,6 @@
 QT      += core sql
 QT      -= gui
 
-TARGET = Criteria1D
 TEMPLATE = lib
 CONFIG += staticlib
 
@@ -19,13 +18,13 @@ CONFIG += debug_and_release
 
 unix:{
     CONFIG(debug, debug|release) {
-        TARGET = debug/Criteria1D
+        TARGET = debug/criteria1D
     } else {
-        TARGET = release/Criteria1D
+        TARGET = release/criteria1D
     }
 }
 win32:{
-    TARGET = Criteria1D
+    TARGET = criteria1D
 }
 
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../utilities ../crop ../meteo ../soil ../gis

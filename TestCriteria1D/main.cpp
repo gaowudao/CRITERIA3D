@@ -7,7 +7,7 @@
 
 #include "furtherMathFunctions.h"
 #include "project.h"
-#include "modelcore.h"
+#include "modelCore.h"
 #include "dbTools.h"
 #include "commonConstants.h"
 
