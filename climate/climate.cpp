@@ -4,6 +4,10 @@
 #include "quality.h"
 
 
+// LC questo coeffieciente è in radiation, spostarlo in una libreria comune tipo commonConstants?
+#define TRANSMISSIVITY_SAMANI_COEFF_DEFAULT  0.17f // temporaneo
+
+
 bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, meteoVariable variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
     QString elab1, bool param1IsClimate, QString param1ClimateField, float param1, QString elab2, float param2, bool isAnomaly,
     int nYearsMin, int firstYearClimate, int lastYearClimate)
@@ -314,7 +318,7 @@ std::vector<float> loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDb
 }
 
 
-// calcola Thom giornaliero usando Tmax e RHmin per un punto
+// compute daily Thom using Tmax e RHmin
 float thomDayTime(float tempMax, float relHumMinAir)
 {
 
@@ -323,6 +327,7 @@ float thomDayTime(float tempMax, float relHumMinAir)
     quality::type qualityRelHumMinAir = qualityCheck.syntacticQualityControlSingleVal(dailyAirHumidityMin, relHumMinAir);
 
     // LC WrongValueDaily non ho trovato corrispondente funzione in quality, obsoleto o ancora da implementare?
+    // sono cambiati anche i risultati del check, in vb ammessi qualityGoodData e qualitySuspectData, il secondo non esiste più?
     if ( qualityT == quality::accepted && qualityRelHumMinAir == quality::accepted )
     {
             return thom(tempMax, relHumMinAir);
@@ -332,7 +337,7 @@ float thomDayTime(float tempMax, float relHumMinAir)
 
 }
 
-// calcola Thom giornaliero usando Tmin e RHmax per un punto
+// compute daily Thom using Tmin e RHmax
 float thomNightTime(float tempMin, float relHumMaxAir)
 {
 
@@ -347,6 +352,90 @@ float thomNightTime(float tempMin, float relHumMaxAir)
     }
     else
         return NODATA;
+
+}
+
+float dailyBIC(float prec, float etp)
+{
+
+    Crit3DQuality qualityCheck;
+
+    // LC etp è dailyReferenceEvapotranspiration?
+    quality::type qualityPrec = qualityCheck.syntacticQualityControlSingleVal(dailyPrecipitation, prec);
+    quality::type qualityETP = qualityCheck.syntacticQualityControlSingleVal(dailyReferenceEvapotranspiration, etp);
+    if (qualityPrec == quality::accepted && qualityETP == quality::accepted)
+    {
+            return (prec - etp);
+    }
+    else
+        return NODATA;
+
+}
+
+float dailyThermalRange(float Tmin, float Tmax)
+{
+
+    Crit3DQuality qualityCheck;
+
+    quality::type qualityTmin = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMin, Tmin);
+    quality::type qualityTmax = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMax, Tmax);
+    if (qualityTmin  == quality::accepted && qualityTmax == quality::accepted)
+        return (Tmax - Tmin);
+    else
+        return NODATA;
+
+}
+
+float dailyAverageT(float Tmin, float Tmax)
+{
+
+//  LC spostare questo eventuale controllo prima di chiamare la dailyAverage, se presente la TAvg non chiamare questa funzione
+//    qualityTmed = Quality.checkFastValueDaily(Definitions.DAILY_TAVG, datiG, Tavg, z)
+//    If qualityTmed = Quality.qualityGoodData Or qualityTmed = Quality.qualitySuspectData Then
+//        DailyAverageT = Tavg
+        Crit3DQuality qualityCheck;
+
+        quality::type qualityTmin = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMin, Tmin);
+        quality::type qualityTmax = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMax, Tmax);
+        if (qualityTmin  == quality::accepted && qualityTmax == quality::accepted)
+            return ( (Tmin + Tmax) / 2) ;
+        else
+            return NODATA;
+
+}
+
+float dailyEtpHargreaves(float Tmin, float Tmax, Crit3DDate date, double latitude)
+{
+
+
+//  LC spostare questo eventuale controllo prima di chiamare la dailyEtpHargreaves, se presente non chiamare questa funzione
+//        qualityETP = Quality.checkFastValueDaily(Definitions.DAILY_ETP, myDailyData, myETPValue, .z)
+//        If qualityETP = Quality.qualityGoodData Or qualityETP = Quality.qualitySuspectData Then
+//            dailyEtpHargreaves = myETPValue
+    Crit3DQuality qualityCheck;
+
+    quality::type qualityTmin = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMin, Tmin);
+    quality::type qualityTmax = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMax, Tmax);
+    int dayOfYear = getDoyFromDate(date);
+    if (qualityTmin  == quality::accepted && qualityTmax == quality::accepted)
+        return ET0_Hargreaves(TRANSMISSIVITY_SAMANI_COEFF_DEFAULT, latitude, dayOfYear, Tmax, Tmin);
+    else
+        return NODATA;
+
+}
+
+float dewPoint(float relHumAir, float tempAir)
+{
+
+    if (relHumAir == NODATA || relHumAir == 0 || tempAir == NODATA)
+        return NODATA;
+
+    // possono passare anche umidità > 100 (secondo tolleranza) (LC questo commento non è in linea con quanto segue !?!?!)
+    relHumAir = minValue(100, relHumAir);
+
+    float saturatedVaporPres = exp((16.78 * tempAir - 116.9) / (tempAir + 237.3));
+    float actualVaporPres = relHumAir / 100 * saturatedVaporPres;
+    return (log(actualVaporPres) * 237.3 + 116.9) / (16.78 - log(actualVaporPres));
 
 }
 

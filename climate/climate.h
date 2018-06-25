@@ -73,6 +73,16 @@ float thomDayTime(float tempMax, float relHumMinAir);
 
 float thomNightTime(float tempMin, float relHumMaxAir);
 
+float dailyBIC(float prec, float etp);
+
+float dailyThermalRange(float Tmin, float Tmax);
+
+float dailyAverageT(float Tmin, float Tmax);
+
+float dailyEtpHargreaves(float Tmin, float Tmax, Crit3DDate date, double latitude);
+
+float dewPoint(float relHumAir, float tempAir);
+
 bool preElaboration(Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoint, bool pointOrGrid, meteoVariable variable, QString elab1,
     QDate startDate, QDate endDate, float* percValue);
 
