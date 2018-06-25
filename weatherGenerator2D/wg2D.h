@@ -13,6 +13,16 @@
 
 enum Tseason {DJF,MAM,JJA,SON};
 
+struct ToccurrenceIndexSeasonal{
+    double** meanP;
+    double** stdDevP;
+    double** meanFit;
+    double** stdDevFit;
+    double** parMultiexp;
+    double** binCenter;
+
+};
+
 struct TprecOccurrence{
     float p00;
     float p10;
@@ -76,6 +86,7 @@ private:
     TprecOccurrence** precOccurence;
     TcorrelationMatrix *correlationMatrix;
     TrandomMatrix *randomMatrix;
+    ToccurrenceIndexSeasonal *occurrenceIndexSeasonal;
 
     //functions
 

@@ -1530,7 +1530,7 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
             {
                 meanFit[i]= meanP[i];
                 meanP[i] *= correctionFactor;
-                lambda[i] = 1.0/meanP[i];
+                if (parametersModel.distributionPrecipitation == 1) lambda[i] = 1.0/meanP[i];
                 //lambda2[i] = 1.0/meanFit[i];
             }
 
