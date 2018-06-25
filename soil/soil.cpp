@@ -136,7 +136,7 @@ namespace soil
     void Crit3DSoil::cleanSoil()
     {
         if (this->nrHorizons > 0)
-            delete (this->horizon);
+            delete [] (this->horizon);
 
         this->id = NODATA;
         this->nrHorizons = 0;
