@@ -376,14 +376,14 @@ float thomH(float tempAvg, float relHumAvgAir)
 }
 
 // compute # hours thom >  threshold per day
-int thomDailyNHoursAbove(std::vector<float> hourlyValues, float relHumAvgAir)
+int thomDailyNHoursAbove(std::vector<float> hourlyValues, float* relHumAvgAir)
 {
 
     int nData = 0;
     int thomDailyNHoursAbove = NODATA;
     for (int hour = 0; hour < 24; hour++)
     {
-        float thom = thomH(hourlyValues.at(hour), relHumAvgAir);
+        float thom = thomH(hourlyValues.at(hour), relHumAvgAir[hour]);
         if (thom != NODATA)
         {
             nData = nData + 1;
@@ -402,13 +402,13 @@ int thomDailyNHoursAbove(std::vector<float> hourlyValues, float relHumAvgAir)
 }
 
 // compute daily max thom value
-float thomDailyMax(std::vector<float> hourlyValues, float relHumAvgAir)
+float thomDailyMax(std::vector<float> hourlyValues, float* relHumAvgAir)
 {
     int nData = 0;
     int thomDailyMax = NODATA;
     for (int hour = 0; hour < 24; hour++)
     {
-        float thom = thomH(hourlyValues.at(hour), relHumAvgAir);
+        float thom = thomH(hourlyValues.at(hour), relHumAvgAir[hour]);
         if (thom != NODATA)
         {
             nData = nData + 1;
@@ -423,7 +423,7 @@ float thomDailyMax(std::vector<float> hourlyValues, float relHumAvgAir)
 }
 
 // compute daily avg thom value
-float thomDailyMean(std::vector<float> hourlyValues, float relHumAvgAir)
+float thomDailyMean(std::vector<float> hourlyValues, float* relHumAvgAir)
 {
 
     int nData = 0;
@@ -432,7 +432,7 @@ float thomDailyMean(std::vector<float> hourlyValues, float relHumAvgAir)
 
     for (int hour = 0; hour < 24; hour++)
     {
-        float thom = thomH(hourlyValues.at(hour), relHumAvgAir);
+        float thom = thomH(hourlyValues.at(hour), relHumAvgAir[hour]);
         if (thom != NODATA)
         {
             thomValues.push_back(thom);
@@ -664,46 +664,45 @@ bool elaborateDailyAggregatedVarFromDaily(QString elab, Crit3DMeteoPoint meteoPo
 
 bool elaborateDailyAggregatedVarFromHourly(QString elab, Crit3DMeteoPoint meteoPoint, std::vector<float> hourlyValues, std::vector<float>* aggregatedValues)
 {
-/*
-Dim indice As Long
-Dim NrValidi As Long
+
 
     float res;
+    int nrValidi = 0;
 
-    ElaborateDailyAggregatedVarFromHourly = False
-
-    Erase dailyVar
-    ReDim dailyVar(UBound(currentHourlySeries))
-    firstDateDailyVar = currentHourlySeries(1).date
-    NrValidi = 0
-
-    For indice = 1 To UBound(currentHourlySeries)
-        Select Case Elab
-            Case Definitions.ELABORATION_THOM_DAILYHOURSABOVE
-                res = thomDailyNHoursAbove(currentHourlySeries(indice), myPoint.z)
-            Case Definitions.ELABORATION_THOM_DAILYMAX
-                res = thomDailyMax(currentHourlySeries(indice), myPoint.z)
-            Case Definitions.ELABORATION_THOM_DAILYMEAN
-                res = thomDailyMean(currentHourlySeries(indice), myPoint.z)
-            Case Definitions.DAILY_LEAFWETNESS
-                res = dailyLeafWetnessComputation(currentHourlySeries(indice), myPoint.z)
-        End Select
+    for (int index = 0; index < hourlyValues.size(); index++)
+    {
+        std::vector<float> oneDayHourlyValues (hourlyValues.begin()+index, hourlyValues.begin()+index+23);
+        switch(elab.toInt())
+        {
+            case thomDailyHoursAboveElab:
+                res = thomDailyNHoursAbove(oneDayHourlyValues, meteoPoint.obsDataH[index].rhAir);
+                break;
+            case thomDailyMaxElab:
+                res = thomDailyMax(oneDayHourlyValues, meteoPoint.obsDataH[index].rhAir);
+                break;
+            case thomDailyMeanElab:
+                res = thomDailyMean(oneDayHourlyValues, meteoPoint.obsDataH[index].rhAir);
+                break;
+            case dailyLeafWetnessElab:
+                res = dailyLeafWetnessComputation(oneDayHourlyValues);
+                break;
+            default:
+                res = NODATA;
+                break;
+        }
 
         if (res != NODATA)
         {
             nrValidi = nrValidi + 1;
         }
         aggregatedValues->push_back(res);
-        date = date.addDays(1);
-
-        If NrValidi > 0 Then ElaborateDailyAggregatedVarFromHourly = True
-    Next indice
+    }
     if (nrValidi > 0)
         return true;
     else
         return false;
 
-*/
+
 }
 
 

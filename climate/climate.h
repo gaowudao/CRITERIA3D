@@ -75,11 +75,11 @@ float thomNightTime(float tempMin, float relHumMaxAir);
 
 float thomH(float tempAvg, float relHumAvgAir);
 
-int thomDailyNHoursAbove(std::vector<float> hourlyValues, float relHumAvgAir);
+int thomDailyNHoursAbove(std::vector<float> hourlyValues, float *relHumAvgAir);
 
-float thomDailyMax(std::vector<float> hourlyValues, float relHumAvgAir);
+float thomDailyMax(std::vector<float> hourlyValues, float* relHumAvgAir);
 
-float thomDailyMean(std::vector<float> hourlyValues, float relHumAvgAir);
+float thomDailyMean(std::vector<float> hourlyValues, float* relHumAvgAir);
 
 float dailyLeafWetnessComputation(std::vector<float> hourlyValues);
 
