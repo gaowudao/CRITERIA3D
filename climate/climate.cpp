@@ -2,10 +2,13 @@
 #include "crit3dDate.h"
 #include "utilities.h"
 #include "quality.h"
+#include "statistics.h"
 
 
 // LC questo coeffieciente è in radiation, spostarlo in una libreria comune tipo commonConstants?
 #define TRANSMISSIVITY_SAMANI_COEFF_DEFAULT  0.17f // temporaneo
+#define THOMTHRESHOLD 24 // mettere nei settings Environment.ThomThreshold
+#define MINPERCENTAGE 80 // mettere nei settingsEnvironment.minPercentage
 
 
 bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, meteoVariable variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
@@ -355,6 +358,119 @@ float thomNightTime(float tempMin, float relHumMaxAir)
 
 }
 
+// compuote hourly thom
+float thomH(float tempAvg, float relHumAvgAir)
+{
+
+    Crit3DQuality qualityCheck;
+    quality::type qualityT = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureAvg, tempAvg);
+    quality::type qualityRelHumAvgAir = qualityCheck.syntacticQualityControlSingleVal(dailyAirHumidityAvg, relHumAvgAir);
+
+    // LC WrongValueHourly_SingleValue non ho trovato corrispondente funzione in quality, obsoleto o ancora da implementare?
+    if ( qualityT == quality::accepted && qualityRelHumAvgAir == quality::accepted )
+    {
+            return thom(tempAvg, relHumAvgAir);
+    }
+    else
+        return NODATA;
+}
+
+// compute # hours thom >  threshold per day
+int thomDailyNHoursAbove(std::vector<float> hourlyValues, float relHumAvgAir)
+{
+
+    int nData = 0;
+    int thomDailyNHoursAbove = NODATA;
+    for (int hour = 0; hour < 24; hour++)
+    {
+        float thom = thomH(hourlyValues.at(hour), relHumAvgAir);
+        if (thom != NODATA)
+        {
+            nData = nData + 1;
+            if (thomDailyNHoursAbove == NODATA)
+                thomDailyNHoursAbove = 0;
+            if (thom > THOMTHRESHOLD)
+                thomDailyNHoursAbove = thomDailyNHoursAbove + 1;
+        }
+    }
+    if ( (nData / 24 * 100) < MINPERCENTAGE)
+        thomDailyNHoursAbove = NODATA;
+
+    return thomDailyNHoursAbove;
+
+
+}
+
+// compute daily max thom value
+float thomDailyMax(std::vector<float> hourlyValues, float relHumAvgAir)
+{
+    int nData = 0;
+    int thomDailyMax = NODATA;
+    for (int hour = 0; hour < 24; hour++)
+    {
+        float thom = thomH(hourlyValues.at(hour), relHumAvgAir);
+        if (thom != NODATA)
+        {
+            nData = nData + 1;
+            if (thom > thomDailyMax)
+                thomDailyMax = thom;
+        }
+    }
+    if ( (nData / 24 * 100) < MINPERCENTAGE)
+        thomDailyMax = NODATA;
+
+    return thomDailyMax;
+}
+
+// compute daily avg thom value
+float thomDailyMean(std::vector<float> hourlyValues, float relHumAvgAir)
+{
+
+    int nData = 0;
+    std::vector<float> thomValues;
+    float thomDailyMean;
+
+    for (int hour = 0; hour < 24; hour++)
+    {
+        float thom = thomH(hourlyValues.at(hour), relHumAvgAir);
+        if (thom != NODATA)
+        {
+            thomValues.push_back(thom);
+            nData = nData + 1;
+        }
+    }
+    if ( (nData / 24 * 100) < MINPERCENTAGE)
+        thomDailyMean = NODATA;
+    else
+        thomDailyMean = statistics::mean(thomValues, nData);
+
+
+    return thomDailyMean;
+
+}
+
+float dailyLeafWetnessComputation(std::vector<float> hourlyValues)
+{
+
+    int nData = 0;
+    float dailyLeafWetnessRes = 0;
+
+    for (int hour = 0; hour < 24; hour++)
+    {
+    // LC se hourlyValues.at(hour) è = 0 oppure = 1 è x forza diverso da NODATA ... ?! If .leafW_h(h) <> NO_DATA And (.leafW_h(h) = 0 Or .leafW_h(h) = 1) Then
+        if ( hourlyValues.at(hour) != NODATA && (hourlyValues.at(hour) == 0 || hourlyValues.at(hour) == 1) )
+        {
+                dailyLeafWetnessRes = dailyLeafWetnessRes + hourlyValues.at(hour);
+                nData = nData + 1;
+        }
+    }
+    if ( (nData / 24 * 100) < MINPERCENTAGE)
+        dailyLeafWetnessRes = NODATA;
+
+    return dailyLeafWetnessRes;
+
+}
+
 float dailyBIC(float prec, float etp)
 {
 
@@ -544,6 +660,50 @@ bool elaborateDailyAggregatedVarFromDaily(QString elab, Crit3DMeteoPoint meteoPo
     else
         return false;
 
+}
+
+bool elaborateDailyAggregatedVarFromHourly(QString elab, Crit3DMeteoPoint meteoPoint, std::vector<float> hourlyValues, std::vector<float>* aggregatedValues)
+{
+/*
+Dim indice As Long
+Dim NrValidi As Long
+
+    float res;
+
+    ElaborateDailyAggregatedVarFromHourly = False
+
+    Erase dailyVar
+    ReDim dailyVar(UBound(currentHourlySeries))
+    firstDateDailyVar = currentHourlySeries(1).date
+    NrValidi = 0
+
+    For indice = 1 To UBound(currentHourlySeries)
+        Select Case Elab
+            Case Definitions.ELABORATION_THOM_DAILYHOURSABOVE
+                res = thomDailyNHoursAbove(currentHourlySeries(indice), myPoint.z)
+            Case Definitions.ELABORATION_THOM_DAILYMAX
+                res = thomDailyMax(currentHourlySeries(indice), myPoint.z)
+            Case Definitions.ELABORATION_THOM_DAILYMEAN
+                res = thomDailyMean(currentHourlySeries(indice), myPoint.z)
+            Case Definitions.DAILY_LEAFWETNESS
+                res = dailyLeafWetnessComputation(currentHourlySeries(indice), myPoint.z)
+        End Select
+
+        if (res != NODATA)
+        {
+            nrValidi = nrValidi + 1;
+        }
+        aggregatedValues->push_back(res);
+        date = date.addDays(1);
+
+        If NrValidi > 0 Then ElaborateDailyAggregatedVarFromHourly = True
+    Next indice
+    if (nrValidi > 0)
+        return true;
+    else
+        return false;
+
+*/
 }
 
 

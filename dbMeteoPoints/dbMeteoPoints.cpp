@@ -416,7 +416,6 @@ std::vector<float> Crit3DMeteoPointsDbHandler::getDailyVar(std::string *myError,
 
                 value = myQuery.value(2).toFloat();
 
-                meteoPoint->setMeteoPointValueD(Crit3DDate(previousDate.day(), previousDate.month(), previousDate.year()), variable, value);
                 dailyVarList.push_back(value);
 
                 firstRow = false;
@@ -485,8 +484,6 @@ std::vector<float> Crit3DMeteoPointsDbHandler::getHourlyVar(std::string *myError
 
                 value = qry.value(2).toFloat();
 
-                meteoPoint->setMeteoPointValueH(Crit3DDate(previousDate.date().day(), previousDate.date().month(), previousDate.date().year()),
-                                                       previousDate.time().hour(), previousDate.time().minute(), variable, value);
                 hourlyVarList.push_back(value);
                 firstRow = false;
             }
