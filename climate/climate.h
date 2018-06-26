@@ -65,9 +65,9 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoGridDbHandler* meteoGri
 
 frequencyType getAggregationFrequency(QString elab);
 
-bool elaborateDailyAggregatedVar(QString elab, Crit3DMeteoPoint* meteoPoint, std::vector<float>* dailyValues, float* percValue);
+bool elaborateDailyAggregatedVar(QString elab, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float> *aggregatedValues, float* percValue);
 
-bool elaborateDailyAggregatedVarFromDaily(QString elab, Crit3DMeteoPoint* meteoPoint, std::vector<float>* dailyValues, float* percValue) ;
+bool elaborateDailyAggregatedVarFromDaily(QString elab, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float> *aggregatedValues, float* percValue) ;
 
 float thomDayTime(float tempMax, float relHumMinAir);
 

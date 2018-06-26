@@ -389,10 +389,6 @@ float dailyThermalRange(float Tmin, float Tmax)
 float dailyAverageT(float Tmin, float Tmax)
 {
 
-//  LC spostare questo eventuale controllo prima di chiamare la dailyAverage, se presente la TAvg non chiamare questa funzione
-//    qualityTmed = Quality.checkFastValueDaily(Definitions.DAILY_TAVG, datiG, Tavg, z)
-//    If qualityTmed = Quality.qualityGoodData Or qualityTmed = Quality.qualitySuspectData Then
-//        DailyAverageT = Tavg
         Crit3DQuality qualityCheck;
 
         quality::type qualityTmin = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMin, Tmin);
@@ -407,7 +403,7 @@ float dailyAverageT(float Tmin, float Tmax)
 float dailyEtpHargreaves(float Tmin, float Tmax, Crit3DDate date, double latitude)
 {
 
-
+// LC la DAILY_ETP è la et0? non è sempre presente? utilizzata anche nella dailyBIC sopra
 //  LC spostare questo eventuale controllo prima di chiamare la dailyEtpHargreaves, se presente non chiamare questa funzione
 //        qualityETP = Quality.checkFastValueDaily(Definitions.DAILY_ETP, myDailyData, myETPValue, .z)
 //        If qualityETP = Quality.qualityGoodData Or qualityETP = Quality.qualitySuspectData Then
@@ -439,7 +435,7 @@ float dewPoint(float relHumAir, float tempAir)
 
 }
 
-bool elaborateDailyAggregatedVar(QString elab, Crit3DMeteoPoint* meteoPoint, std::vector<float>* dailyValues, float* percValue)
+bool elaborateDailyAggregatedVar(QString elab, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float>* aggregatedValues, float* percValue)
 {
 
     frequencyType aggregationFrequency = getAggregationFrequency(elab);
@@ -450,7 +446,7 @@ bool elaborateDailyAggregatedVar(QString elab, Crit3DMeteoPoint* meteoPoint, std
     }
     else if (aggregationFrequency == daily)
     {
-            return elaborateDailyAggregatedVarFromDaily(elab, meteoPoint, dailyValues, percValue);
+            return elaborateDailyAggregatedVarFromDaily(elab, meteoPoint, dailyValues, aggregatedValues, percValue);
     }
     else
         return false;
@@ -477,69 +473,76 @@ frequencyType getAggregationFrequency(QString elab)
 
 }
 
-bool elaborateDailyAggregatedVarFromDaily(QString elab, Crit3DMeteoPoint* meteoPoint, std::vector<float>* dailyValues, float* percValue)
+bool elaborateDailyAggregatedVarFromDaily(QString elab, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float>* aggregatedValues, float* percValue)
 {
 
-
-//    ElaborateDailyAggregatedVarFromDaily = False
-
-//    Erase dailyVar
-//    ReDim dailyVar(0)
-//    firstDateDailyVar = Definitions.NODATE
+    // LC serve salvare la prima data utile?
 
     float res;
     int nrValidi = 0;
+    Crit3DDate date = meteoPoint.obsDataD[0].date;
+    Crit3DQuality qualityCheck;
 
-    for (int index = 0; index < dailyValues->size(); index++)
+    for (int index = 0; index < dailyValues.size(); index++)
     {
         switch(elab.toInt())
         {
         case thomDayTimeElab:
-                //res = thomDayTime(currentDailySeries(index), myPoint.z);
+                res = thomDayTime(dailyValues.at(index), meteoPoint.obsDataD[index].rhMin);
             break;
         case thomNightTimeElab:
-                //res = thomNightTime(currentDailySeries(index), myPoint.z);
+                res = thomNightTime(dailyValues.at(index), meteoPoint.obsDataD[index].rhMax);
+                break;
         case dailyBICElab:
-//                res = Elaboration.DailyBIC(currentDailySeries(index), myPoint.z);
+                res = dailyBIC(dailyValues.at(index), meteoPoint.obsDataD[index].et0);
+                break;
         case dailyTemperatureRangeElab:
-//                res = Elaboration.DailyThermalRange(currentDailySeries(index), myPoint.z);
+                res = dailyThermalRange(dailyValues.at(index), meteoPoint.obsDataD[index].tMax);
+                break;
         case dailyTemperatureavgElab:
-//                res = Elaboration.DailyAverageT(currentDailySeries(index), myPoint.z);
+                {
+                    quality::type qualityTavg = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureAvg, meteoPoint.obsDataD[index].tAvg);
+                    if (qualityTavg == quality::accepted)
+                    {
+                        res = meteoPoint.obsDataD[index].tAvg;
+                    }
+                    else
+                    {
+                        res = dailyAverageT(dailyValues.at(index), meteoPoint.obsDataD[index].tMax);
+                    }
+                    break;
+                }
         case dailyETPElab:
-//                res = Meteo.dailyEtpHargreaves(currentDailySeries(index), myPoint);
+                res = dailyEtpHargreaves(dailyValues.at(index), meteoPoint.obsDataD[index].tMax, date, meteoPoint.latitude);
+                break;
         case dailyTdAvgElab:
-//                res = Meteo.dewPoint(currentDailySeries(index).RHavg, currentDailySeries(index).Tavg);
+                res = dewPoint(dailyValues.at(index), meteoPoint.obsDataD[index].tAvg); // RHavg, Tavg
+                break;
         case dailyTdminElab:
-//                res = Meteo.dewPoint(currentDailySeries(index).RHmax, currentDailySeries(index).Tmin);
+                res = dewPoint(dailyValues.at(index), meteoPoint.obsDataD[index].tMin); // RHmax, Tmin
+                break;
         case dailyTdmaxElab:
-//                res = Meteo.dewPoint(currentDailySeries(index).RHmin, currentDailySeries(index).Tmax);
+                res = dewPoint(dailyValues.at(index), meteoPoint.obsDataD[index].tMax); // RHmin, Tmax
+                break;
         default:
                 res = NODATA;
+                break;
         }
 
-//        //per avere una firstDateDailyVar corretta
-//        If UBound(dailyVar) = 0 And res <> Definitions.NO_DATA Then
-//            ReDim dailyVar(1)
-//            firstDateDailyVar = currentDailySeries(index).date
-//            dailyVar(1) = res
-//            nrValidi = nrValidi + 1
-//        ElseIf UBound(dailyVar) > 0 Then
-//            ReDim Preserve dailyVar(UBound(dailyVar) + 1)
-//            If res <> Definitions.NO_DATA Then
-//                nrValidi = nrValidi + 1
-//                dailyVar(UBound(dailyVar)) = res
-//            Else
-//                dailyVar(UBound(dailyVar)) = Definitions.NO_DATA
-//            End If
-//        End If
+        if (res != NODATA)
+        {
+            nrValidi = nrValidi + 1;
+        }
+        aggregatedValues->push_back(res);
+        date = date.addDays(1);
 
     }
 
-//    If nrValidi > 0 Then ElaborateDailyAggregatedVarFromDaily = True
-
-//    If UBound(currentDailySeries) >= 1 Then
-//        perc_value = nrValidi / UBound(currentDailySeries)
-//    End If
+    *percValue = nrValidi/aggregatedValues->size();
+    if (nrValidi > 0)
+        return true;
+    else
+        return false;
 
 }
 
