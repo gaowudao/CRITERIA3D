@@ -1088,6 +1088,8 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
     }
     */
 
+    weatherGenerator2D::initializeOccurrenceIndex();
+
     double*** moran; // coefficient for each station, each season, each nr of days of simulation in the season.
     moran = (double***)calloc(nrStations, sizeof(double**));
     double*** rainfallLessThreshold; // coefficient for each station, each season, each nr of days of simulation in the season.
@@ -1533,9 +1535,20 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                 if (parametersModel.distributionPrecipitation == 1) lambda[i] = 1.0/meanP[i];
                 //lambda2[i] = 1.0/meanFit[i];
             }
-
-
-
+            // start to fill the module output
+            if (parametersModel.distributionPrecipitation == 1)
+            {
+                for (int i=0;i<nrBincenter;i++)
+                    occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][0]= lambda[i];
+            }
+            else if (parametersModel.distributionPrecipitation == 2)
+            {
+                for (int i=0;i<nrBincenter;i++)
+                {
+                    occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][0]=meanP[i]*meanP[i]/(PstdDev[i]*PstdDev[i]);
+                    occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][1]=(PstdDev[i]*PstdDev[i])/meanP[i];
+                }
+            }
             //printf("\n correction factor %f \n",correctionFactor);
             //getchar();
             // da verificare i numeri che siano numeri plausibili confrontare con i bins precedenti
@@ -1604,6 +1617,58 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
 
 }
 
+void weatherGenerator2D::initializeOccurrenceIndex()
+{
+    occurrenceIndexSeasonal = (ToccurrenceIndexSeasonal *)calloc(nrStations, sizeof(ToccurrenceIndexSeasonal));
+    for (int i=0;i<nrStations;i++)
+    {
+        occurrenceIndexSeasonal[i].binCenter = (double **)calloc(4, sizeof(double*));
+        occurrenceIndexSeasonal[i].meanFit = (double **)calloc(4, sizeof(double*));
+        occurrenceIndexSeasonal[i].meanP = (double **)calloc(4, sizeof(double*));
+        occurrenceIndexSeasonal[i].stdDevFit = (double **)calloc(4, sizeof(double*));
+        occurrenceIndexSeasonal[i].stdDevP = (double **)calloc(4, sizeof(double*));
+        occurrenceIndexSeasonal[i].parMultiexp = (double ***)calloc(4, sizeof(double**));
+    }
+    for (int i=0;i<nrStations;i++)
+    {
+        for (int j=0;j<4;j++)
+        {
+            occurrenceIndexSeasonal[i].binCenter[j] = (double *)calloc(10, sizeof(double));
+            occurrenceIndexSeasonal[i].meanFit[j] = (double *)calloc(10, sizeof(double));
+            occurrenceIndexSeasonal[i].meanP[j] = (double *)calloc(10, sizeof(double));
+            occurrenceIndexSeasonal[i].stdDevFit[j] = (double *)calloc(10, sizeof(double));
+            occurrenceIndexSeasonal[i].stdDevP[j] = (double *)calloc(10, sizeof(double));
+
+            occurrenceIndexSeasonal[i].parMultiexp[j] = (double **)calloc(10, sizeof(double*));
+        }
+        for (int j=0;j<4;j++)
+        {
+            for (int k=0;k<10;k++)
+            {
+                occurrenceIndexSeasonal[i].parMultiexp[j][k] = (double *)calloc(2, sizeof(double));
+            }
+        }
+    }
+
+    for (int i=0;i<nrStations;i++)
+    {
+        for (int j=0;j<4;j++)
+        {
+            for (int k=0;k<10;k++)
+            {
+                occurrenceIndexSeasonal[i].binCenter[j][k] = NODATA;
+                occurrenceIndexSeasonal[i].meanFit[j][k] = NODATA;
+                occurrenceIndexSeasonal[i].meanP[j][k] = NODATA;
+                occurrenceIndexSeasonal[i].stdDevFit[j][k] = NODATA;
+                occurrenceIndexSeasonal[i].stdDevP[j][k] = NODATA;
+                occurrenceIndexSeasonal[i].parMultiexp[j][k][0] = NODATA;
+                occurrenceIndexSeasonal[i].parMultiexp[j][k][1] = NODATA;
+            }
+        }
+    }
+
+
+}
 
 void weatherGenerator2D::temperatureCompute()
 {

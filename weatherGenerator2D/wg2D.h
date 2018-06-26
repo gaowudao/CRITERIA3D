@@ -18,10 +18,11 @@ struct ToccurrenceIndexSeasonal{
     double** stdDevP;
     double** meanFit;
     double** stdDevFit;
-    double** parMultiexp;
+    double*** parMultiexp;
     double** binCenter;
 
 };
+
 
 struct TprecOccurrence{
     float p00;
@@ -86,7 +87,7 @@ private:
     TprecOccurrence** precOccurence;
     TcorrelationMatrix *correlationMatrix;
     TrandomMatrix *randomMatrix;
-    ToccurrenceIndexSeasonal *occurrenceIndexSeasonal;
+    ToccurrenceIndexSeasonal* occurrenceIndexSeasonal;
 
     //functions
 
@@ -98,6 +99,7 @@ private:
     void precipitationMultisiteOccurrenceGeneration();
     void spatialIterationOccurrence(double ** M, double **K, double **occurrences, double** matrixOccurrence, double** normalizedMatrixRandom, double **transitionNormal, int lengthSeries);
     void precipitationMultiDistributionAmounts();
+    void initializeOccurrenceIndex();
     //void nonLinearFit(double* a1, double* a2, double x[], double y[],int lengthArray, int order);
     void temperatureCompute();
 
