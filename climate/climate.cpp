@@ -6,9 +6,10 @@
 
 
 // LC questo coeffieciente è in radiation, spostarlo in una libreria comune tipo commonConstants?
+// FT Yes
 #define TRANSMISSIVITY_SAMANI_COEFF_DEFAULT  0.17f // temporaneo
 #define THOMTHRESHOLD 24 // mettere nei settings Environment.ThomThreshold
-#define MINPERCENTAGE 80 // mettere nei settingsEnvironment.minPercentage
+#define MINPERCENTAGE 80 // mettere nei settings Environment.minPercentage
 
 
 bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, meteoVariable variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
@@ -87,8 +88,6 @@ bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* 
     int nYearsMin, int firstYearClimate, int lastYearClimate)
 {
 
-
-
     bool pointOrGrid = 1; // grid
     float currentParameter1;
 
@@ -149,6 +148,7 @@ bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* 
 //                                nYearsMin, isAnomaly, true))
 //                            {
 //                                // LC se qualche problema su una cella, deve interrompere e ritornare false oppure no?
+                                  // FT credo di no, ma qui lascio decidere a Gabri
 //                                return false;
 //                            }
 
@@ -331,6 +331,7 @@ float thomDayTime(float tempMax, float relHumMinAir)
 
     // LC WrongValueDaily non ho trovato corrispondente funzione in quality, obsoleto o ancora da implementare?
     // sono cambiati anche i risultati del check, in vb ammessi qualityGoodData e qualitySuspectData, il secondo non esiste più?
+    // FT il modulo quality per ora è molto più semplice della versione vb
     if ( qualityT == quality::accepted && qualityRelHumMinAir == quality::accepted )
     {
             return thom(tempMax, relHumMinAir);
@@ -348,7 +349,6 @@ float thomNightTime(float tempMin, float relHumMaxAir)
     quality::type qualityT = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMin, tempMin);
     quality::type qualityRelHumMaxAir = qualityCheck.syntacticQualityControlSingleVal(dailyAirHumidityMax, relHumMaxAir);
 
-    // LC WrongValueDaily non ho trovato corrispondente funzione in quality, obsoleto o ancora da implementare?
     if ( qualityT == quality::accepted && qualityRelHumMaxAir == quality::accepted )
     {
             return thom(tempMin, relHumMaxAir);
@@ -366,7 +366,6 @@ float thomH(float tempAvg, float relHumAvgAir)
     quality::type qualityT = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureAvg, tempAvg);
     quality::type qualityRelHumAvgAir = qualityCheck.syntacticQualityControlSingleVal(dailyAirHumidityAvg, relHumAvgAir);
 
-    // LC WrongValueHourly_SingleValue non ho trovato corrispondente funzione in quality, obsoleto o ancora da implementare?
     if ( qualityT == quality::accepted && qualityRelHumAvgAir == quality::accepted )
     {
             return thom(tempAvg, relHumAvgAir);
@@ -458,7 +457,8 @@ float dailyLeafWetnessComputation(std::vector<float> hourlyValues)
     for (int hour = 0; hour < 24; hour++)
     {
     // LC se hourlyValues.at(hour) è = 0 oppure = 1 è x forza diverso da NODATA ... ?! If .leafW_h(h) <> NO_DATA And (.leafW_h(h) = 0 Or .leafW_h(h) = 1) Then
-        if ( hourlyValues.at(hour) != NODATA && (hourlyValues.at(hour) == 0 || hourlyValues.at(hour) == 1) )
+    // FT si, l'ho ripulito
+        if (hourlyValues.at(hour) == 0 || hourlyValues.at(hour) == 1)
         {
                 dailyLeafWetnessRes = dailyLeafWetnessRes + hourlyValues.at(hour);
                 nData = nData + 1;
@@ -477,6 +477,7 @@ float dailyBIC(float prec, float etp)
     Crit3DQuality qualityCheck;
 
     // LC etp è dailyReferenceEvapotranspiration?
+    // FT Si
     quality::type qualityPrec = qualityCheck.syntacticQualityControlSingleVal(dailyPrecipitation, prec);
     quality::type qualityETP = qualityCheck.syntacticQualityControlSingleVal(dailyReferenceEvapotranspiration, etp);
     if (qualityPrec == quality::accepted && qualityETP == quality::accepted)
@@ -520,7 +521,12 @@ float dailyEtpHargreaves(float Tmin, float Tmax, Crit3DDate date, double latitud
 {
 
 // LC la DAILY_ETP è la et0? non è sempre presente? utilizzata anche nella dailyBIC sopra
-//  LC spostare questo eventuale controllo prima di chiamare la dailyEtpHargreaves, se presente non chiamare questa funzione
+// FT Si, ETP ed ET0 sono la stessa cosa
+// no, non è detto che sia già presente, potresti volerla calcolare su una cella / punto che ha solo dati di temperatura
+
+// LC spostare questo eventuale controllo prima di chiamare la dailyEtpHargreaves, se presente non chiamare questa funzione
+// FT si, sono d'accordo
+
 //        qualityETP = Quality.checkFastValueDaily(Definitions.DAILY_ETP, myDailyData, myETPValue, .z)
 //        If qualityETP = Quality.qualityGoodData Or qualityETP = Quality.qualitySuspectData Then
 //            dailyEtpHargreaves = myETPValue
@@ -543,6 +549,7 @@ float dewPoint(float relHumAir, float tempAir)
         return NODATA;
 
     // possono passare anche umidità > 100 (secondo tolleranza) (LC questo commento non è in linea con quanto segue !?!?!)
+    // FT nel senso che nei dati stazione puoi avere sino a 104. In questo caso viene bloccato a 100 per i calcoli sotto
     relHumAir = minValue(100, relHumAir);
 
     float saturatedVaporPres = exp((16.78 * tempAir - 116.9) / (tempAir + 237.3));
@@ -622,6 +629,8 @@ bool elaborateDailyAggregatedVarFromDaily(QString elab, Crit3DMeteoPoint meteoPo
 {
 
     // LC serve salvare la prima data utile?
+    // FT si, si usa poi in molte funzioni, come la firstDateHourlyVar
+    // nei casi come questi fai una variabile globale, poi vediamo di sistemarla (ad esempio in Project)
 
     float res;
     int nrValidi = 0;
@@ -694,7 +703,6 @@ bool elaborateDailyAggregatedVarFromDaily(QString elab, Crit3DMeteoPoint meteoPo
 bool elaborateDailyAggregatedVarFromHourly(QString elab, Crit3DMeteoPoint meteoPoint, std::vector<float> hourlyValues, std::vector<float>* aggregatedValues)
 {
 
-
     float res;
     int nrValidi = 0;
 
@@ -731,7 +739,6 @@ bool elaborateDailyAggregatedVarFromHourly(QString elab, Crit3DMeteoPoint meteoP
     else
         return false;
 
-
 }
 
 
@@ -758,6 +765,7 @@ bool preElaboration(Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoi
 /*
 // LC c'è confusione tra elaboration e variable fa lo switch su variable ma ci sono elaboration e variabili. Ho messo tutto in un unico enum visto che comunque non sono davvero suddivisi
 // LC inoltre ci sono elaborazioni che non trovo nell'interfaccia grafica, sono state rimosse? (es. ELABORATION_HUGLIN come si seleziona? tutte le "elaboerazioni specifiche")
+// FT Si caricano con dei moduli appositi, ma qui sa meglio Gabri
     case variable
 
 
@@ -768,6 +776,7 @@ bool preElaboration(Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoi
                 preElaboration = Elaboration.elaborateDailyAggregatedVar(variable, myPoint, percValue)
             End If
 // LC? perchè viene fatta 2 volte l'aggregazione giornaliera della hourly leafwetness
+// FT Ah, questo proprio non lo so :-)
             If passaggioDati.LoadGenericHourlySeries(pointOrGrid, Definitions.HOURLY_LEAFWETNESS, myPoint, startDate, endDate) > 0 Then
                 passaggioDati.MbutoHourly Definitions.HOURLY_LEAFWETNESS, currentHourlySeries, myPoint.z
                 preElaboration = Elaboration.elaborateDailyAggregatedVar(Definitions.DAILY_LEAFWETNESS, myPoint, percValue)

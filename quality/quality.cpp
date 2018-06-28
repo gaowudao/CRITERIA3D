@@ -33,7 +33,7 @@ Crit3DQuality::Crit3DQuality()
     qualityHourlyT = new quality::Range(-60, 60);
     qualityHourlyTd = new quality::Range(-60, 50);
     qualityHourlyP = new quality::Range(0, 300);
-    qualityHourlyRH = new quality::Range(0, 102);
+    qualityHourlyRH = new quality::Range(0, 104);
     qualityHourlyWInt = new quality::Range(0, 150);
     qualityHourlyWDir = new quality::Range(0, 360);
     qualityHourlyGIrr = new quality::Range(-20, 1353);

@@ -286,7 +286,7 @@ float erosivityFactor(std::vector<float> values, int nValues)
 float rainIntensity(std::vector<float> values, int nValues)
 {
 
-    float RainfallThreshold = 0.2f; //LC dove va impostato?
+    float RainfallThreshold = 0.2f; // LC mettere nei settings Environment.RainfallThreshold
 
     if (nValues == 0)
         return NODATA;
