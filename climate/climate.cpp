@@ -551,14 +551,14 @@ float dewPoint(float relHumAir, float tempAir)
 
 }
 
-bool elaborateDailyAggregatedVar(QString elab, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float>* aggregatedValues, float* percValue)
+bool elaborateDailyAggregatedVar(QString elab, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float> hourlyValues, std::vector<float>* aggregatedValues, float* percValue)
 {
 
     frequencyType aggregationFrequency = getAggregationFrequency(elab);
 
     if (aggregationFrequency == hourly)
     {
-            //return elaborateDailyAggregatedVarFromHourly(elab, myPoint);
+            return elaborateDailyAggregatedVarFromHourly(elab, meteoPoint, hourlyValues, aggregatedValues);
     }
     else if (aggregationFrequency == daily)
     {
