@@ -34,10 +34,10 @@
 
 namespace elaborations {
 
-float statisticalElab(int elab, float param, std::vector<float> values, int nValues)
+float statisticalElab(std::string elab, float param, std::vector<float> values, int nValues)
 {
 
-    switch(elab)
+    switch(atoi(elab.c_str()))
     {
         case ELAB_MEAN:
             return statistics::mean(values, nValues);

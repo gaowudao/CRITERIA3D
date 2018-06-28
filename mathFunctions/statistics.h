@@ -2,6 +2,7 @@
 #define STATISTICS_H
 
 #include <vector>
+#include <string>
 
 enum statisticalElaborations {ELAB_MEAN, ELAB_STDDEVIATION, ELAB_SUM, ELAB_SUM_WITH_THRESHOLD, ELAB_MEAN_ABOVE_THRESHOLD,
                               ELAB_STDDEV_ABOVE_THRESHOLD, ELAB_MAX, ELAB_MIN, ELAB_PERCENTILE, ELAB_MEDIAN,
@@ -13,7 +14,7 @@ enum statisticalElaborations {ELAB_MEAN, ELAB_STDDEVIATION, ELAB_SUM, ELAB_SUM_W
 
 namespace elaborations
 {
-    float statisticalElab(int elab, float param, std::vector<float> values, int nValues);
+    float statisticalElab(std::string elab, float param, std::vector<float> values, int nValues);
 }
 namespace statistics
 {
