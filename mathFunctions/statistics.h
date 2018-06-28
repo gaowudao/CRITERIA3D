@@ -11,10 +11,12 @@ enum statisticalElaborations {ELAB_MEAN, ELAB_STDDEVIATION, ELAB_SUM, ELAB_SUM_W
                               ELAB_WHEIGTHED_AVERAGE, ELAB_PREVAILING_X, ELAB_PREVAILING_Y, ELAB_PREVAILINGVALUE,
                               ELAB_PREVAILINGVALUE_CONSERVATIVE, ELAB_CENTERVALUE, ELAB_RENAME, ELAB_EROSIVITY, ELAB_RAININTENSITY};
 
-
-namespace statistics
+namespace elaborations
 {
     float statisticalElab(int elab, float param, std::vector<float> values, int nValues);
+}
+namespace statistics
+{
     double rootMeanSquareError(double *measured , double *simulated , int nrData);
     float rootMeanSquareError(float *measured , float *simulated , int nrData);
     float coefficientOfVariation(float *measured , float *simulated , int nrData);

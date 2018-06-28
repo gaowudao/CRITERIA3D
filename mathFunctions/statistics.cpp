@@ -32,57 +32,60 @@
 #include "statistics.h"
 #include "physics.h"
 
-namespace statistics
+namespace elaborations {
+
+float statisticalElab(int elab, float param, std::vector<float> values, int nValues)
 {
 
-    float statisticalElab(int elab, float param, std::vector<float> values, int nValues)
+    switch(elab)
     {
+        case ELAB_MEAN:
+            return statistics::mean(values, nValues);
+        case ELAB_MAX:
+            return statistics::maxList(values, nValues);
+        case ELAB_MIN:
+            return statistics::minList(values, nValues);
+        case ELAB_SUM:
+            return statistics::sumList(values, nValues);
+        case ELAB_SUM_WITH_THRESHOLD:
+            return statistics::sumListThreshold(values, nValues, param);
+        case ELAB_THRESHOLD_DIFFERENCE:
+            return statistics::diffListThreshold(values, nValues, param);
+        case ELAB_DAYS_ABOVE_THRESHOLD:
+            return statistics::countAbove(values, nValues, param);
+        case ELAB_DAYS_UNDER_THRESHOLD:
+            return statistics::countBelow(values, nValues, param);
+        case ELAB_CONSECUTIVE_DAYS_ABOVE_THRESHOLD:
+            return statistics::countConsecutive(values, nValues, param, true);
+        case ELAB_CONSECUTIVE_DAYS_UNDER_THRESHOLD:
+            return statistics::countConsecutive(values, nValues, param, false);
+        case ELAB_PERCENTILE:
+            return sorting::percentile(values, &nValues, param, true);
+        case ELAB_FREQUENCY_POSITIVE:
+            return statistics::frequencyPositive(values, nValues);
+        case ELAB_PREVAILING_DIR:
+            return windPrevailingDir(values, values, nValues, false);
+        case ELAB_TREND:
+            return statistics::trend(values, nValues, param);
+        case ELAB_MANNKENDALL:
+            return statistics::mannKendall(values, nValues);
+        case ELAB_EROSIVITY:
+            return erosivityFactor(values, nValues);
+        case ELAB_RAININTENSITY:
+            return rainIntensity(values, nValues);
+        case ELAB_STDDEVIATION:
+            return statistics::standardDeviation(values, nValues);
 
-        switch(elab)
-        {
-            case ELAB_MEAN:
-                return statistics::mean(values, nValues);
-            case ELAB_MAX:
-                return statistics::maxList(values, nValues);
-            case ELAB_MIN:
-                return statistics::minList(values, nValues);
-            case ELAB_SUM:
-                return statistics::sumList(values, nValues);
-            case ELAB_SUM_WITH_THRESHOLD:
-                return statistics::sumListThreshold(values, nValues, param);
-            case ELAB_THRESHOLD_DIFFERENCE:
-                return statistics::diffListThreshold(values, nValues, param);
-            case ELAB_DAYS_ABOVE_THRESHOLD:
-                return statistics::countAbove(values, nValues, param);
-            case ELAB_DAYS_UNDER_THRESHOLD:
-                return statistics::countBelow(values, nValues, param);
-            case ELAB_CONSECUTIVE_DAYS_ABOVE_THRESHOLD:
-                return statistics::countConsecutive(values, nValues, param, true);
-            case ELAB_CONSECUTIVE_DAYS_UNDER_THRESHOLD:
-                return statistics::countConsecutive(values, nValues, param, false);
-            case ELAB_PERCENTILE:
-                return sorting::percentile(values, &nValues, param, true);
-            case ELAB_FREQUENCY_POSITIVE:
-                return statistics::frequencyPositive(values, nValues);
-            case ELAB_PREVAILING_DIR:
-                return windPrevailingDir(values, values, nValues, false);
-            case ELAB_TREND:
-                return statistics::trend(values, nValues, param);
-            case ELAB_MANNKENDALL:
-                return statistics::mannKendall(values, nValues);
-            case ELAB_EROSIVITY:
-                return erosivityFactor(values, nValues);
-            case ELAB_RAININTENSITY:
-                return rainIntensity(values, nValues);
-            case ELAB_STDDEVIATION:
-                return statistics::standardDeviation(values, nValues);
-
-            default:
-                return NODATA;
-
-        }
+        default:
+            return NODATA;
 
     }
+
+}
+
+}
+namespace statistics
+{
 
     double rootMeanSquareError(double *measured , double *simulated , int nrData)
     {
