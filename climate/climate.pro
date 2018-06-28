@@ -6,7 +6,7 @@
 #-------------------------------------------------
 
 QT       -= gui
-QT       += sql xml core
+QT       += sql xml
 
 TEMPLATE = lib
 CONFIG += staticlib

@@ -274,7 +274,7 @@ float erosivityFactor(std::vector<float> values, int nValues)
             }
             if ( values[i] > 0 )
             {
-                erosivityFactor = erosivityFactor + 0.11f * pow(values[i], 1.82);
+                erosivityFactor = erosivityFactor + 0.11f * pow(values[i], 1.82f);
             }
         }
     }
@@ -341,7 +341,7 @@ int windPrevailingDir(std::vector<float> intensity, std::vector<float> dir, int 
         {
             if ( windDir != NODATA && windInt != NODATA && windDir >= 0 && windInt > 0 )
             {
-                quadr = round(windDir / delta);
+                quadr = int(round(windDir / delta));
                 if (quadr == 0)
                 {
                     quadr = nClass;
@@ -354,7 +354,7 @@ int windPrevailingDir(std::vector<float> intensity, std::vector<float> dir, int 
         {
             if (windDir != NODATA && windDir >= 0)
             {
-                quadr = round(windDir / delta);
+                quadr = int(round(windDir / delta));
                 if (quadr == 0)
                 {
                     quadr = nClass;

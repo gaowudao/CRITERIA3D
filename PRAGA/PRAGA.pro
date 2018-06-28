@@ -16,7 +16,7 @@ INCLUDEPATH +=  ../MapGraphics ../soilFluxes3D/header \
                 ../crit3dDate ../mathFunctions ../soil ../crop \
                 ../meteo ../gis ../utilities \
                 ../quality ../interpolation ../solarRadiation ../criteria3D \
-                ../dbMeteoPoints ../dbMeteoGrid ../netcdfHandler
+                ../dbMeteoPoints ../dbMeteoGrid ../climate ../netcdfHandler
 
 CONFIG += debug_and_release
 
@@ -33,6 +33,7 @@ win32:{
 
 CONFIG(debug, debug|release) {
     LIBS += -L../netcdfHandler/debug -lnetcdfHandler
+    LIBS += -L../climate/debug -lclimate
     LIBS += -L../dbMeteoGrid/debug -ldbMeteoGrid
     LIBS += -L../dbMeteoPoints/debug -ldbMeteoPoints
     LIBS += -L../quality/debug -lquality
@@ -49,6 +50,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../mathFunctions/debug -lmathFunctions
 } else {
     LIBS += -L../netcdfHandler/release -lnetcdfHandler
+    LIBS += -L../climate/release -lclimate
     LIBS += -L../dbMeteoGrid/release -ldbMeteoGrid
     LIBS += -L../dbMeteoPoints/release -ldbMeteoPoints
     LIBS += -L../quality/release -lquality

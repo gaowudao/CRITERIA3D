@@ -6,7 +6,7 @@
 
 
 // LC questo coeffieciente è in radiation, spostarlo in una libreria comune tipo commonConstants?
-// FT Yes
+// FT Si
 #define TRANSMISSIVITY_SAMANI_COEFF_DEFAULT  0.17f // temporaneo
 #define THOMTHRESHOLD 24 // mettere nei settings Environment.ThomThreshold
 #define MINPERCENTAGE 80 // mettere nei settings Environment.minPercentage

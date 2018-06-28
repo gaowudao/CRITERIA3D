@@ -959,7 +959,7 @@ namespace statistics
             double rapporto = (myX - mean) / stdDev;
             double gauss = (1 / (sqrt(2 * PI) * stdDev)) * exp(-0.5 * (rapporto * rapporto));
             sumGauss = sumGauss + gauss * deltaXGauss;
-            GaussIntegralTwoTailsFactor1000[i] = (sumGauss * 2.f);
+            GaussIntegralTwoTailsFactor1000[i] = float(sumGauss * 2.f);
         }
 
         return GaussIntegralTwoTailsFactor1000[int(zMK * 1000)];

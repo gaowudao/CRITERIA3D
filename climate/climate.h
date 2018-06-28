@@ -18,11 +18,12 @@
 #endif
 
 // LC dove mettere queste define? Trasformate in enum per fare switch case
-// FT qui va bene direi
+// FT secondo me qui qui va bene
 enum elaboration { phenologyElab, winklerElab, huglinElab, fregoniElab, thomHourlyElab, thomDailyMaxElab, thomDailyMeanElab, thomDailyHoursAboveElab, thomDayTimeElab, thomNightTimeElab,
                    correctedDegreeDaysSumElab, lastDayBelowThresholdElab, erosivityFactorElab, rainIntensityElab, koppenElab, dailyLeafWetnessElab, dailyBICElab, dailyTemperatureRangeElab,
                    dailyTemperatureavgElab, dailyETPElab, dailyTdminElab, dailyTdmaxElab, dailyTdAvgElab
-};
+                 };
+
 
 /*
 #define ELABORATION_PHENOLOGY  "Phenology"
