@@ -19,7 +19,7 @@
 
 // LC dove mettere queste define? Trasformate in enum per fare switch case
 // FT secondo me qui qui va bene. l'ho rinominato
-enum derivedVariable { phenologyElab, winklerElab, huglinElab, fregoniElab, thomHourlyElab, thomDailyMaxElab, thomDailyMeanElab, thomDailyHoursAboveElab, thomDayTimeElab, thomNightTimeElab,
+enum derivedMeteoVariable { phenologyElab, winklerElab, huglinElab, fregoniElab, thomHourlyElab, thomDailyMaxElab, thomDailyMeanElab, thomDailyHoursAboveElab, thomDayTimeElab, thomNightTimeElab,
                    correctedDegreeDaysSumElab, lastDayBelowThresholdElab, erosivityFactorElab, rainIntensityElab, koppenElab, dailyLeafWetnessElab, dailyBICElab, dailyTemperatureRangeElab,
                    dailyTemperatureavgElab, dailyETPElab, dailyTdminElab, dailyTdmaxElab, dailyTdAvgElab
 };
@@ -68,13 +68,13 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoGridDbHandler* meteoGri
     QString elab2, float param2, QDate startDate, QDate endDate, int nYears, int firstYear, int lastYear,
     int nYearsMin, bool isAnomaly, bool loadData);
 
-frequencyType getAggregationFrequency(derivedVariable elab);
+frequencyType getAggregationFrequency(derivedMeteoVariable elab);
 
-bool elaborateDailyAggregatedVar(derivedVariable elab, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float> hourlyValues, std::vector<float> *aggregatedValues, float* percValue);
+bool elaborateDailyAggregatedVar(derivedMeteoVariable elab, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float> hourlyValues, std::vector<float> *aggregatedValues, float* percValue);
 
-bool elaborateDailyAggregatedVarFromDaily(derivedVariable elab, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float> *aggregatedValues, float* percValue);
+bool elaborateDailyAggregatedVarFromDaily(derivedMeteoVariable elab, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float> *aggregatedValues, float* percValue);
 
-bool elaborateDailyAggregatedVarFromHourly(derivedVariable elab, Crit3DMeteoPoint meteoPoint, std::vector<float> hourlyValues, std::vector<float>* aggregatedValues);
+bool elaborateDailyAggregatedVarFromHourly(derivedMeteoVariable elab, Crit3DMeteoPoint meteoPoint, std::vector<float> hourlyValues, std::vector<float>* aggregatedValues);
 
 float thomDayTime(float tempMax, float relHumMinAir);
 

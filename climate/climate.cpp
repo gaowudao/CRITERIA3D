@@ -592,7 +592,7 @@ void extractValidValuesCC(std::vector<float> myValues, std::vector<float>* myVal
 
 }
 
-bool elaborateDailyAggregatedVar(derivedVariable elab, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float> hourlyValues, std::vector<float>* aggregatedValues, float* percValue)
+bool elaborateDailyAggregatedVar(derivedMeteoVariable elab, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float> hourlyValues, std::vector<float>* aggregatedValues, float* percValue)
 {
 
     frequencyType aggregationFrequency = getAggregationFrequency(elab);
@@ -611,7 +611,7 @@ bool elaborateDailyAggregatedVar(derivedVariable elab, Crit3DMeteoPoint meteoPoi
 }
 
 
-frequencyType getAggregationFrequency(derivedVariable elab)
+frequencyType getAggregationFrequency(derivedMeteoVariable elab)
 {
 
     //if (elab == ELABORATION_THOM_DAILYHOURSABOVE || elab == ELABORATION_THOM_DAILYMEAN || elab == ELABORATION_THOM_DAILYMAX || elab == DAILY_LEAFWETNESS)
@@ -630,7 +630,7 @@ frequencyType getAggregationFrequency(derivedVariable elab)
 
 }
 
-bool elaborateDailyAggregatedVarFromDaily(derivedVariable elab, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float>* aggregatedValues, float* percValue)
+bool elaborateDailyAggregatedVarFromDaily(derivedMeteoVariable elab, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float>* aggregatedValues, float* percValue)
 {
 
     // LC serve salvare la prima data utile?
@@ -705,7 +705,7 @@ bool elaborateDailyAggregatedVarFromDaily(derivedVariable elab, Crit3DMeteoPoint
 
 }
 
-bool elaborateDailyAggregatedVarFromHourly(derivedVariable elab, Crit3DMeteoPoint meteoPoint, std::vector<float> hourlyValues, std::vector<float>* aggregatedValues)
+bool elaborateDailyAggregatedVarFromHourly(derivedMeteoVariable elab, Crit3DMeteoPoint meteoPoint, std::vector<float> hourlyValues, std::vector<float>* aggregatedValues)
 {
 
     float res;
