@@ -18,11 +18,11 @@
 #endif
 
 // LC dove mettere queste define? Trasformate in enum per fare switch case
-// FT secondo me qui qui va bene
-enum elaboration { phenologyElab, winklerElab, huglinElab, fregoniElab, thomHourlyElab, thomDailyMaxElab, thomDailyMeanElab, thomDailyHoursAboveElab, thomDayTimeElab, thomNightTimeElab,
+// FT secondo me qui qui va bene. l'ho rinominato (anche in vb avevamo iniziato a rinominarlo computation)
+enum computationType { phenologyElab, winklerElab, huglinElab, fregoniElab, thomHourlyElab, thomDailyMaxElab, thomDailyMeanElab, thomDailyHoursAboveElab, thomDayTimeElab, thomNightTimeElab,
                    correctedDegreeDaysSumElab, lastDayBelowThresholdElab, erosivityFactorElab, rainIntensityElab, koppenElab, dailyLeafWetnessElab, dailyBICElab, dailyTemperatureRangeElab,
                    dailyTemperatureavgElab, dailyETPElab, dailyTdminElab, dailyTdmaxElab, dailyTdAvgElab
-                 };
+};
 
 
 /*
@@ -53,25 +53,28 @@ enum elaboration { phenologyElab, winklerElab, huglinElab, fregoniElab, thomHour
 */
 
 
-bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler, QString variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
-    QString elab1, bool param1IsClimate, QString param1ClimateField, float param1, QString elab2, float param2, bool isAnomaly,
-    int nYearsMin, int firstYearClimate, int lastYearClimate);
+bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler,
+    QString variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
+    computationType elab1, bool param1IsClimate, QString param1ClimateField, float param1, computationType elab2,
+    float param2, bool isAnomaly, int nYearsMin, int firstYearClimate, int lastYearClimate);
 
-bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* meteoGridDbHandler, QString variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
-    QString elab1, bool param1IsClimate, QString param1ClimateField, float param1, QString elab2, float param2, bool isAnomaly,
-    int nYearsMin, int firstYearClimate, int lastYearClimate);
+bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* meteoGridDbHandler,
+    QString variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
+    computationType elab1, bool param1IsClimate, QString param1ClimateField, float param1, computationType elab2,
+    float param2, bool isAnomaly, int nYearsMin, int firstYearClimate, int lastYearClimate);
 
-bool elaborationOnPoint(std::string *myError, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler, Crit3DMeteoPoint *meteoPoint, bool pointOrGrid, meteoVariable variable, QString elab1, float param1,
-    QString elab2, float param2, QDate startDate, QDate endDate, int nYears, int firstYear, int lastYear,
+bool elaborationOnPoint(std::string *myError, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler, Crit3DMeteoPoint *meteoPoint,
+    bool pointOrGrid, meteoVariable variable, computationType elab1, float param1,
+    computationType elab2, float param2, QDate startDate, QDate endDate, int nYears, int firstYear, int lastYear,
     int nYearsMin, bool isAnomaly, bool loadData);
 
-frequencyType getAggregationFrequency(QString elab);
+frequencyType getAggregationFrequency(computationType elab);
 
-bool elaborateDailyAggregatedVar(QString elab, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float> hourlyValues, std::vector<float> *aggregatedValues, float* percValue);
+bool elaborateDailyAggregatedVar(computationType elab, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float> hourlyValues, std::vector<float> *aggregatedValues, float* percValue);
 
-bool elaborateDailyAggregatedVarFromDaily(QString elab, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float> *aggregatedValues, float* percValue);
+bool elaborateDailyAggregatedVarFromDaily(computationType elab, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float> *aggregatedValues, float* percValue);
 
-bool elaborateDailyAggregatedVarFromHourly(QString elab, Crit3DMeteoPoint meteoPoint, std::vector<float> hourlyValues, std::vector<float>* aggregatedValues);
+bool elaborateDailyAggregatedVarFromHourly(computationType elab, Crit3DMeteoPoint meteoPoint, std::vector<float> hourlyValues, std::vector<float>* aggregatedValues);
 
 float thomDayTime(float tempMax, float relHumMinAir);
 

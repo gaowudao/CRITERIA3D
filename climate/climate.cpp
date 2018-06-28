@@ -13,7 +13,7 @@
 
 
 bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, meteoVariable variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
-    QString elab1, bool param1IsClimate, QString param1ClimateField, float param1, QString elab2, float param2, bool isAnomaly,
+    computationType elab1, bool param1IsClimate, QString param1ClimateField, float param1, computationType elab2, float param2, bool isAnomaly,
     int nYearsMin, int firstYearClimate, int lastYearClimate)
 {
 
@@ -84,7 +84,7 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
 
 
 bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* meteoGridDbHandler, meteoVariable variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
-    QString elab1, bool param1IsClimate, QString param1ClimateField, float param1, QString elab2, float param2, bool isAnomaly,
+    computationType elab1, bool param1IsClimate, QString param1ClimateField, float param1, computationType elab2, float param2, bool isAnomaly,
     int nYearsMin, int firstYearClimate, int lastYearClimate)
 {
 
@@ -164,8 +164,9 @@ bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* 
 
 
 
-bool elaborationOnPoint(std::string *myError, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoint, bool pointOrGrid, meteoVariable variable, QString elab1, float param1,
-    QString elab2, float param2, QDate startDate, QDate endDate, int nYears, int firstYear, int lastYear,
+bool elaborationOnPoint(std::string *myError, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler,
+    Crit3DMeteoPoint* meteoPoint, bool pointOrGrid, meteoVariable variable, computationType elab1, float param1,
+    computationType elab2, float param2, QDate startDate, QDate endDate, int nYears, int firstYear, int lastYear,
     int nYearsMin, bool isAnomaly, bool loadData)
 {
 
@@ -224,7 +225,9 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoGridDbHandler* meteoGri
 }
 
 
-std::vector<float> loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool pointOrGrid, meteoVariable variable, QDate first, QDate last, bool saveValue)
+std::vector<float> loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler,
+   Crit3DMeteoGridDbHandler meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool pointOrGrid,
+   meteoVariable variable, QDate first, QDate last, bool saveValue)
 {
     std::vector<float> dailyValues;
     QDate firstDateDB;
@@ -272,7 +275,9 @@ std::vector<float> loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbH
 
 }
 
-std::vector<float> loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool pointOrGrid, meteoVariable variable, QDateTime first, QDateTime last, bool saveValue)
+std::vector<float> loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler,
+           Crit3DMeteoGridDbHandler meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool pointOrGrid,
+           meteoVariable variable, QDateTime first, QDateTime last, bool saveValue)
 {
     std::vector<float> hourlyValues;
     QDateTime firstDateDB;
@@ -587,7 +592,7 @@ void extractValidValuesCC(std::vector<float> myValues, std::vector<float>* myVal
 
 }
 
-bool elaborateDailyAggregatedVar(QString elab, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float> hourlyValues, std::vector<float>* aggregatedValues, float* percValue)
+bool elaborateDailyAggregatedVar(computationType elab, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float> hourlyValues, std::vector<float>* aggregatedValues, float* percValue)
 {
 
     frequencyType aggregationFrequency = getAggregationFrequency(elab);
@@ -606,7 +611,7 @@ bool elaborateDailyAggregatedVar(QString elab, Crit3DMeteoPoint meteoPoint, std:
 }
 
 
-frequencyType getAggregationFrequency(QString elab)
+frequencyType getAggregationFrequency(computationType elab)
 {
 
     //if (elab == ELABORATION_THOM_DAILYHOURSABOVE || elab == ELABORATION_THOM_DAILYMEAN || elab == ELABORATION_THOM_DAILYMAX || elab == DAILY_LEAFWETNESS)
@@ -614,7 +619,7 @@ frequencyType getAggregationFrequency(QString elab)
     {
         return hourly;
     }
-    else if (elab != "")
+    else if (elab != NODATA)
     {
         return daily;
     }
@@ -625,7 +630,7 @@ frequencyType getAggregationFrequency(QString elab)
 
 }
 
-bool elaborateDailyAggregatedVarFromDaily(QString elab, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float>* aggregatedValues, float* percValue)
+bool elaborateDailyAggregatedVarFromDaily(computationType elab, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float>* aggregatedValues, float* percValue)
 {
 
     // LC serve salvare la prima data utile?
@@ -639,7 +644,7 @@ bool elaborateDailyAggregatedVarFromDaily(QString elab, Crit3DMeteoPoint meteoPo
 
     for (int index = 0; index < dailyValues.size(); index++)
     {
-        switch(elab.toInt())
+        switch(elab)
         {
         case thomDayTimeElab:
                 res = thomDayTime(dailyValues.at(index), meteoPoint.obsDataD[index].rhMin);
@@ -700,7 +705,7 @@ bool elaborateDailyAggregatedVarFromDaily(QString elab, Crit3DMeteoPoint meteoPo
 
 }
 
-bool elaborateDailyAggregatedVarFromHourly(QString elab, Crit3DMeteoPoint meteoPoint, std::vector<float> hourlyValues, std::vector<float>* aggregatedValues)
+bool elaborateDailyAggregatedVarFromHourly(computationType elab, Crit3DMeteoPoint meteoPoint, std::vector<float> hourlyValues, std::vector<float>* aggregatedValues)
 {
 
     float res;
@@ -709,7 +714,7 @@ bool elaborateDailyAggregatedVarFromHourly(QString elab, Crit3DMeteoPoint meteoP
     for (int index = 0; index < hourlyValues.size(); index++)
     {
         std::vector<float> oneDayHourlyValues (hourlyValues.begin()+index, hourlyValues.begin()+index+23);
-        switch(elab.toInt())
+        switch(elab)
         {
             case thomDailyHoursAboveElab:
                 res = thomDailyNHoursAbove(oneDayHourlyValues, meteoPoint.obsDataH[index].rhAir);
@@ -1029,6 +1034,8 @@ bool preElaboration(Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoi
 
     End Select
 */
+
+    return true;
 }
 
 
