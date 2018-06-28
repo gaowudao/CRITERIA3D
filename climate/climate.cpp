@@ -551,6 +551,35 @@ float dewPoint(float relHumAir, float tempAir)
 
 }
 
+void extractValidValuesWithThreshold(std::vector<float> myValues, std::vector<float>* myValidValues, float myThreshold)
+{
+
+    for (int i = 0; i < myValues.size(); i++)
+    {
+        if (myValues[i] != NODATA)
+        {
+            if (myValues[i] > myThreshold)
+            {
+                myValidValues->push_back(myValues[i]);
+            }
+        }
+    }
+
+}
+
+void extractValidValuesCC(std::vector<float> myValues, std::vector<float>* myValidValues)
+{
+
+    for (int i = 0; i < myValues.size(); i++)
+    {
+        if (myValues[i] != NODATA)
+        {
+            myValidValues->push_back(myValues[i]);
+        }
+    }
+
+}
+
 bool elaborateDailyAggregatedVar(QString elab, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float> hourlyValues, std::vector<float>* aggregatedValues, float* percValue)
 {
 
@@ -727,16 +756,8 @@ bool preElaboration(Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoi
     //////////
     */
 /*
-    preElaboration = false;
-
-    switch (variable) {
-    case (variable = dailyLeafWetness) :
-
-        break;
-    default:
-        break;
-    }
-
+// LC c'è confusione tra elaboration e variable fa lo switch su variable ma ci sono elaboration e variabili. Ho messo tutto in un unico enum visto che comunque non sono davvero suddivisi
+// LC inoltre ci sono elaborazioni che non trovo nell'interfaccia grafica, sono state rimosse? (es. ELABORATION_HUGLIN come si seleziona? tutte le "elaboerazioni specifiche")
     case variable
 
 
@@ -746,7 +767,7 @@ bool preElaboration(Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoi
                 passaggioDati.MbutoInversoOrario Definitions.HOURLY_LEAFWETNESS
                 preElaboration = Elaboration.elaborateDailyAggregatedVar(variable, myPoint, percValue)
             End If
-
+// LC? perchè viene fatta 2 volte l'aggregazione giornaliera della hourly leafwetness
             If passaggioDati.LoadGenericHourlySeries(pointOrGrid, Definitions.HOURLY_LEAFWETNESS, myPoint, startDate, endDate) > 0 Then
                 passaggioDati.MbutoHourly Definitions.HOURLY_LEAFWETNESS, currentHourlySeries, myPoint.z
                 preElaboration = Elaboration.elaborateDailyAggregatedVar(Definitions.DAILY_LEAFWETNESS, myPoint, percValue)

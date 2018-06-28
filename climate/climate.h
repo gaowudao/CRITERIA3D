@@ -95,6 +95,10 @@ float dailyEtpHargreaves(float Tmin, float Tmax, Crit3DDate date, double latitud
 
 float dewPoint(float relHumAir, float tempAir);
 
+void extractValidValuesWithThreshold(std::vector<float> myValues, std::vector<float> *myValidValues, float myThreshold);
+
+void extractValidValuesCC(std::vector<float> myValues, std::vector<float>* myValidValues);
+
 bool preElaboration(Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoint, bool pointOrGrid, meteoVariable variable, QString elab1,
     QDate startDate, QDate endDate, float* percValue);
 
