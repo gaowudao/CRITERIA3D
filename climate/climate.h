@@ -17,8 +17,6 @@
     #include "dbMeteoGrid.h"
 #endif
 
-// LC dove mettere queste define? Trasformate in enum per fare switch case
-// FT secondo me qui qui va bene. l'ho rinominato
 enum derivedMeteoVariable { phenologyElab, winklerElab, huglinElab, fregoniElab, thomHourlyElab, thomDailyMaxElab, thomDailyMeanElab, thomDailyHoursAboveElab, thomDayTimeElab, thomNightTimeElab,
                    correctedDegreeDaysSumElab, lastDayBelowThresholdElab, erosivityFactorElab, rainIntensityElab, koppenElab, dailyLeafWetnessElab, dailyBICElab, dailyTemperatureRangeElab,
                    dailyTemperatureavgElab, dailyETPElab, dailyTdminElab, dailyTdmaxElab, dailyTdAvgElab

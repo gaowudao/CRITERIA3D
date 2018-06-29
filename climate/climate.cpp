@@ -4,10 +4,6 @@
 #include "quality.h"
 #include "statistics.h"
 
-
-// LC questo coeffieciente è in radiation, spostarlo in una libreria comune tipo commonConstants?
-// FT Si
-#define TRANSMISSIVITY_SAMANI_COEFF_DEFAULT  0.17f // temporaneo
 #define THOMTHRESHOLD 24 // mettere nei settings Environment.ThomThreshold
 #define MINPERCENTAGE 80 // mettere nei settings Environment.minPercentage
 
@@ -461,8 +457,6 @@ float dailyLeafWetnessComputation(std::vector<float> hourlyValues)
 
     for (int hour = 0; hour < 24; hour++)
     {
-    // LC se hourlyValues.at(hour) è = 0 oppure = 1 è x forza diverso da NODATA ... ?! If .leafW_h(h) <> NO_DATA And (.leafW_h(h) = 0 Or .leafW_h(h) = 1) Then
-    // FT si, l'ho ripulito
         if (hourlyValues.at(hour) == 0 || hourlyValues.at(hour) == 1)
         {
                 dailyLeafWetnessRes = dailyLeafWetnessRes + hourlyValues.at(hour);
@@ -481,8 +475,6 @@ float dailyBIC(float prec, float etp)
 
     Crit3DQuality qualityCheck;
 
-    // LC etp è dailyReferenceEvapotranspiration?
-    // FT Si
     quality::type qualityPrec = qualityCheck.syntacticQualityControlSingleVal(dailyPrecipitation, prec);
     quality::type qualityETP = qualityCheck.syntacticQualityControlSingleVal(dailyReferenceEvapotranspiration, etp);
     if (qualityPrec == quality::accepted && qualityETP == quality::accepted)
@@ -525,16 +517,6 @@ float dailyAverageT(float Tmin, float Tmax)
 float dailyEtpHargreaves(float Tmin, float Tmax, Crit3DDate date, double latitude)
 {
 
-// LC la DAILY_ETP è la et0? non è sempre presente? utilizzata anche nella dailyBIC sopra
-// FT Si, ETP ed ET0 sono la stessa cosa
-// no, non è detto che sia già presente, potresti volerla calcolare su una cella / punto che ha solo dati di temperatura
-
-// LC spostare questo eventuale controllo prima di chiamare la dailyEtpHargreaves, se presente non chiamare questa funzione
-// FT si, sono d'accordo
-
-//        qualityETP = Quality.checkFastValueDaily(Definitions.DAILY_ETP, myDailyData, myETPValue, .z)
-//        If qualityETP = Quality.qualityGoodData Or qualityETP = Quality.qualitySuspectData Then
-//            dailyEtpHargreaves = myETPValue
     Crit3DQuality qualityCheck;
 
     quality::type qualityTmin = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMin, Tmin);
@@ -553,8 +535,6 @@ float dewPoint(float relHumAir, float tempAir)
     if (relHumAir == NODATA || relHumAir == 0 || tempAir == NODATA)
         return NODATA;
 
-    // possono passare anche umidità > 100 (secondo tolleranza) (LC questo commento non è in linea con quanto segue !?!?!)
-    // FT nel senso che nei dati stazione puoi avere sino a 104. In questo caso viene bloccato a 100 per i calcoli sotto
     relHumAir = minValue(100, relHumAir);
 
     float saturatedVaporPres = exp((16.78 * tempAir - 116.9) / (tempAir + 237.3));
@@ -672,8 +652,18 @@ bool elaborateDailyAggregatedVarFromDaily(derivedMeteoVariable elab, Crit3DMeteo
                     break;
                 }
         case dailyETPElab:
+        {
+            quality::type qualityEtp = qualityCheck.syntacticQualityControlSingleVal(dailyReferenceEvapotranspiration, meteoPoint.obsDataD[index].et0);
+            if (qualityEtp == quality::accepted)
+            {
+                res = meteoPoint.obsDataD[index].et0;
+            }
+            else
+            {
                 res = dailyEtpHargreaves(dailyValues.at(index), meteoPoint.obsDataD[index].tMax, date, meteoPoint.latitude);
-                break;
+            }
+            break;
+        }
         case dailyTdAvgElab:
                 res = dewPoint(dailyValues.at(index), meteoPoint.obsDataD[index].tAvg); // RHavg, Tavg
                 break;

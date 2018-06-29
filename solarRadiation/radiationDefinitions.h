@@ -17,7 +17,6 @@
     /*! Drummond factor for partly cloudy skies */
     #define SBSKY 0.04f
 
-    #define TRANSMISSIVITY_SAMANI_COEFF_DEFAULT  0.17f
     #define CLEAR_SKY_TRANSMISSIVITY_DEFAULT     0.75f
 
     enum TlandUse{LAND_USE_MOUNTAIN = 0, LAND_USE_RURAL=1, LAND_USE_CITY=2, LAND_USE_INDUSTRIAL=3};

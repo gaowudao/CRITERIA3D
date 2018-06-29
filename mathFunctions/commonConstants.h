@@ -208,6 +208,8 @@
     #define ALBEDO_CROP 0.25
     #define ALBEDO_CROP_REFERENCE 0.23
 
+    #define TRANSMISSIVITY_SAMANI_COEFF_DEFAULT  0.17f
+
     // -----------------MATHEMATICS---------------------
     #ifndef PI
         #define PI 3.141592653589793238462643383
