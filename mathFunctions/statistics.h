@@ -18,7 +18,7 @@ enum statisticalElaborations {ELAB_MEAN, ELAB_STDDEVIATION, ELAB_SUM, ELAB_SUM_W
 namespace elaborations
 {
     float statisticalElab(std::string elab, float param, std::vector<float> values, int nValues);
-    float computeStatistic(std::string variable, int firstYear, int lastYear, Crit3DDate firstDate, Crit3DDate lastDate, int nYears, std::string elab1, float param1, std::string elab2, float param2, float myHeight);
+    float computeStatistic(std::vector<float> dailyValues, int firstYear, int lastYear, Crit3DDate firstDate, Crit3DDate lastDate, int nYears, Crit3DDate firstDateDailyVar, std::string elab1, float param1, std::string elab2, float param2, float myHeight);
 }
 namespace statistics
 {

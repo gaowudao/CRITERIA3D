@@ -32,82 +32,84 @@
 #include "statistics.h"
 #include "physics.h"
 
+#define MINPERCENTAGE 80 // LC mettere nei settings quando ci saranno Environment.minPercentage, al momento presente anche in climate.cpp
+
 namespace elaborations {
 
 
 //nYears   = 0         same year
 //nYears   = 1,2,3...   betweend years 1,2,3...
-float computeStatistic(std::string variable, int firstYear, int lastYear, Crit3DDate firstDate, Crit3DDate lastDate, int nYears, std::string elab1, float param1, std::string elab2, float param2, float myHeight)
+float computeStatistic(std::vector<float> dailyValues, int firstYear, int lastYear, Crit3DDate firstDate, Crit3DDate lastDate, int nYears, Crit3DDate firstDateDailyVar, std::string elab1, float param1, std::string elab2, float param2, float myHeight)
 {
-/*
-    Dim Value As Single
-    Dim valori() As Single
-    Dim valori2() As Single
-    Dim Index As Long
-    Dim nValidValues As Long, nTotValues As Long
-    Dim NValidYears As Integer, nTotYears As Integer, nDays As Integer
 
-    Dim startDate As Date, finishDate As Date, PresentDate As Date
-    Dim primary As Single
-    Dim specifica As Boolean
+    std::vector<float> values;
+    std::vector<float> valuesSecondElab;
+    Crit3DDate presentDate;
+    int numberOfDays;
+    int nValidValues = 0;
+    int nValues = 0;
+    int index;
 
-    ComputeStatistic = Definitions.NO_DATA
-
-    bool specific; //  = Elaboration.isSpecificElaboration(elab1)
+    bool specific; //  = Elaboration.isSpecificElaboration(elab1) TODO
+    float primary = NODATA;
 
 
     // no secondary elab
     if (elab2 == "")
     {
 
-        nTotValues = 0
-        nValidValues = 0
-        ReDim valori(nTotValues)
-
         if (specific)
         {
-            // ComputeStatistic = Elaboration.ElaborationSpecific(elab1, Parameter1, startDate, finishDate, myHeight)
+            // ComputeStatistic = Elaboration.ElaborationSpecific(elab1, param1, firstDate, lastDate, myHeight) TODO
         }
         else
         {
             for (int presentYear = firstYear; presentYear < lastYear; presentYear++)
             {
-                startDate = DateSerial(presentYear, month(firstDate), day(firstDate))
-                finishDate = DateSerial(presentYear, month(lastDate), day(lastDate))
+                firstDate.year = presentYear;
+                lastDate.year = presentYear;
+
                 if (nYears < 0)
                 {
-                    startDate = DateSerial(presentYear + nYears, month(firstDate), day(firstDate));
+                    firstDate.year = (presentYear + nYears);
                 }
                 else if (nYears > 0)
                 {
-                    finishDate = DateSerial(presentYear + nYears, month(lastDate), day(lastDate));
+                    lastDate.year = (presentYear + nYears);
                 }
 
-                    ReDim Preserve valori(nTotValues)
-                    for (PresentDate = startDate To finishDate)
+                numberOfDays = difference(firstDate, lastDate) +1;
+                presentDate = firstDate;
+                for (int i = 0; i < numberOfDays; i++)
+                {
+
+                    float value = NODATA;
+                    index = difference(firstDateDailyVar, presentDate) +1;
+                    if (index > 0 && index <= dailyValues.size())
                     {
-
-                        Value = Definitions.NO_DATA
-                        Index = PresentDate - firstDateDailyVar + 1
-                        If Index > 0 And Index <= UBound(dailyVar) Then Value = dailyVar(Index)
-                        If Value <> NO_DATA Then nValidValues = nValidValues + 1
-
-                        valori(nTotValues) = Value
-                        nTotValues = nTotValues + 1
-                        ReDim Preserve valori(nTotValues)
-
+                        value = dailyValues[index];
                     }
+                    if (value != NODATA)
+                    {
+                        nValidValues = nValidValues + 1;
+                    }
+
+                    values.push_back(value);
+                    nValues = nValues + 1;
+                    presentDate.addDays(1);
+
+                }
             }
 
-            if (nTotValues > 0)
+            if (nValues > 0)
             {
-                if (nValidValues / nTotValues) * 100 >= Environment.minPercentage
+                if ( (nValidValues / nValues) * 100 >= MINPERCENTAGE)
                 {
-                    ComputeStatistic = math.statistica(variable, elab1, Parameter1, valori, nTotValues)
+                    return statisticalElab(elab1, param1, values, nValues);
                 }
                 else
                 {
-                    PragaShell.setErrorMsg InfoMsg.Err_FewData
+                    return NODATA;
                 }
             }
         }
@@ -117,73 +119,91 @@ float computeStatistic(std::string variable, int firstYear, int lastYear, Crit3D
     else
     {
 
-        nTotYears = 0
-        NValidYears = 0
-        ReDim valori2(nTotYears)
+        int nTotYears = 0;
+        int nValidYears = 0;
 
         for (int presentYear = firstYear; presentYear < lastYear; presentYear++)
         {
-            startDate = DateSerial(presentYear, month(firstDate), day(firstDate))
-            finishDate = DateSerial(presentYear, month(lastDate), day(lastDate))
-            If nYears < 0 Then
-                startDate = DateSerial(presentYear + nYears, month(firstDate), day(firstDate))
-            ElseIf nYears > 0 Then
-                finishDate = DateSerial(presentYear + nYears, month(lastDate), day(lastDate))
-            End If
-            primary = Definitions.NO_DATA
+            firstDate.year = presentYear;
+            lastDate.year = presentYear;
 
-            nTotValues = 0
-            nValidValues = 0
-            ReDim valori(nTotValues)
+            if (nYears < 0)
+            {
+                firstDate.year = (presentYear + nYears);
+            }
+            else if (nYears > 0)
+            {
+                lastDate.year = (presentYear + nYears);
+            }
+            primary = NODATA;
 
-            If specifica Then
-                primary = Elaboration.ElaborationSpecific(elab1, Parameter1, startDate, finishDate, myHeight)
-            Else
-                For PresentDate = startDate To finishDate
+            nValues = 0;
+            nValidValues = 0;
 
-                    Value = Definitions.NO_DATA
-                    Index = PresentDate - firstDateDailyVar + 1
-                    If Index > 0 And Index <= UBound(dailyVar) Then Value = dailyVar(Index)
 
-                    If Value <> NO_DATA Then nValidValues = nValidValues + 1
+            if (specific)
+            {
+                //primary = Elaboration.ElaborationSpecific(elab1, Parameter1, firstDate, finishDate, myHeight)
+            }
+            else
+            {
+                numberOfDays = difference(firstDate, lastDate) +1;
+                presentDate = firstDate;
+                for (int i = 0; i < numberOfDays; i++)
+                {
+                    float value = NODATA;
+                    index = difference(firstDateDailyVar, presentDate) +1;
+                    if (index > 0 && index <= dailyValues.size())
+                    {
+                        value = dailyValues[index];
+                    }
+                    if (value != NODATA)
+                    {
+                        nValidValues = nValidValues + 1;
+                    }
 
-                    valori(nTotValues) = Value
-                    nTotValues = nTotValues + 1
-                    ReDim Preserve valori(nTotValues)
+                    values.push_back(value);
+                    nValues = nValues + 1;
+                    presentDate.addDays(1);
 
-                Next PresentDate
+                }
 
-                If nTotValues <> 0 Then
-                    If (nValidValues / nTotValues) * 100 >= Environment.minPercentage Then
-                        primary = statisticalElab(variable, elab1, Parameter1, valori, nTotValues)
-                    End If
-                End If
-            End If
+                if (nValues > 0)
+                {
+                    if ( (nValidValues / nValues) * 100 >= MINPERCENTAGE)
+                    {
+                        primary = statisticalElab(elab1, param1, values, nValues);
+                    }
+                }
 
-            If primary <> NO_DATA Then NValidYears = NValidYears + 1
+            }
 
-            valori2(nTotYears) = primary
-            nTotYears = nTotYears + 1
-            ReDim Preserve valori2(nTotYears)
+            if (primary != NODATA)
+            {
+                nValidYears = nValidYears + 1;
+            }
+
+            valuesSecondElab.push_back(primary);
+            nTotYears = nTotYears + 1;
 
         }
 
-        If nTotYears > 0 Then
-            If (NValidYears / nTotYears) * 100 >= Environment.minPercentage Then
-                Select Case elab2
-                    Case Definitions.ELAB_TREND
-                        return statisticalElab(variable, elab2, firstYear, valori2, nTotYears)
-                    Case Else
-                        return statisticalElab(variable, elab2, Parameter2, valori2, nTotYears)
-                End Select
-            End If
-        End If
+        if (nTotYears > 0)
+        {
+            if ( (nValidYears / nTotYears) * 100 >= MINPERCENTAGE)
+            {
+                switch(atoi(elab2.c_str()))
+                {
+                    case ELAB_TREND:
+                        return statisticalElab(elab2, firstYear, valuesSecondElab, nTotYears);
+                    default:
+                        return statisticalElab(elab2, param2, valuesSecondElab, nTotYears);
+                }
+            }
+        }
 
     }
 
-    Erase valori
-    Erase valori2
-*/
 }
 
 
