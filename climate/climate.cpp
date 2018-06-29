@@ -145,7 +145,7 @@ bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* 
 //                                nYearsMin, isAnomaly, true))
 //                            {
 //                                // LC se qualche problema su una cella, deve interrompere e ritornare false oppure no?
-                                  // FT credo di no, ma qui lascio decidere a Gabri
+                                  // FT credo di no, ma lascio decidere a Gabri
 //                                return false;
 //                            }
 
@@ -192,8 +192,10 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoGridDbHandler* meteoGri
             {
                 // check
                 // LC era in computeStatistic, spostato qui
+                // FT ok!
                 Crit3DDate startD(startDate.day(), startDate.month(), firstYear);
                 Crit3DDate endD(endDate.day(), endDate.month(), firstYear);
+
                 if (nYears < 0)
                 {
                     startD.year = firstYear + nYears;
@@ -204,6 +206,7 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoGridDbHandler* meteoGri
                 }
 
                 // LC era If (finishDate - startDate + 1) < 0 Then perchè +1?!?!
+                // FT credo fosse un bug, ho corretto anche in VB
                 if (difference (startD, endD) < 0)
                 {
                     *myError = "Wrong dates!";
@@ -265,8 +268,9 @@ std::vector<float> loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbH
         }
         if (saveValue)
         {
-            // LC la serie deve iniziare con la prima data utile oppure con la data richeista e quindi NODATA se non c'è il valore corrispondente a tale dato=
+            // LC la serie deve iniziare con la prima data utile oppure con la data richiesta e quindi NODATA se non c'è il valore corrispondente a tale dato=
             //int numberOfDays = first.daysTo(last) + 1;
+            // FT non mi è chiaro
             int numberOfDays = firstDateDB.daysTo(last) + 1;
             int row, col;
             int initialize = 1;
@@ -317,6 +321,7 @@ std::vector<float> loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDb
         {
             // LC la serie deve iniziare con la prima data utile oppure con la data richeista e quindi NODATA se non c'è il valore corrispondente a tale dato=
             //int numberOfDays = first.date().daysTo(last.date());
+            // FT non mi è chiaro
             int numberOfDays = firstDateDB.date().daysTo(last.date());
             int row, col;
             int initialize = 1;
@@ -359,6 +364,9 @@ float thomDayTime(float tempMax, float relHumMinAir)
     // sono cambiati anche i risultati del check, in vb ammessi qualityGoodData e qualitySuspectData, il secondo non esiste più?
     // FT il modulo quality per ora è molto più semplice della versione vb
     // LC cosa devo fare quindi? lascio commento, traduco quella di vb in quality?
+    // FT lascia solo questo commento:
+
+    // TODO nella versione vb ammessi anche i qualitySuspectData, questo tipo per ora non è stato implementato
     if ( qualityT == quality::accepted && qualityRelHumMinAir == quality::accepted )
     {
             return thom(tempMax, relHumMinAir);
@@ -752,6 +760,7 @@ bool elaborateDailyAggregatedVarFromHourly(derivedMeteoVariable elab, Crit3DMete
             nrValidi = nrValidi + 1;
             firstDateDailyVar = date; // LC perchè in vb nella elaborateDailyAggregatedVarFromHourly viene posto firstDateDailyVar = currentHourlySeries(1).date
                                       // senza alcun controllo sul NODATA come invece avviene nella elaborateDailyAggregatedVarFromDaily
+                                      // FT non mi è chiaro
         }
         aggregatedValues->push_back(res);
         date = date.addDays(1);
@@ -787,7 +796,7 @@ bool preElaboration(Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoi
 /*
 // LC c'è confusione tra elaboration e variable fa lo switch su variable ma ci sono elaboration e variabili. Ho messo tutto in un unico enum visto che comunque non sono davvero suddivisi
 // LC inoltre ci sono elaborazioni che non trovo nell'interfaccia grafica, sono state rimosse? (es. ELABORATION_HUGLIN come si seleziona? tutte le "elaboerazioni specifiche")
-// FT Si caricano con dei moduli appositi, ma qui sa meglio Gabri
+// FT Si caricano con dei moduli appositi, ma qui lo sa meglio Gabri
     case variable
 
 

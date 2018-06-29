@@ -26,11 +26,14 @@
 #include <math.h>
 #include <malloc.h>
 #include <float.h>
+
+#include "crit3dDate.h"
 #include "commonConstants.h"
 #include "furtherMathFunctions.h"
 #include "basicMath.h"
 #include "statistics.h"
 #include "physics.h"
+
 
 #define MINPERCENTAGE 80 // LC mettere nei settings quando ci saranno Environment.minPercentage, al momento presente anche in climate.cpp
 
@@ -48,7 +51,7 @@ float computeStatistic(std::vector<float> dailyValues, int firstYear, int lastYe
     int numberOfDays;
     int nValidValues = 0;
     int nValues = 0;
-    int index;
+    unsigned int index;
 
     bool specific; //  = Elaboration.isSpecificElaboration(elab1) TODO
     float primary = NODATA;
@@ -237,7 +240,7 @@ float statisticalElab(std::string elab, float param, std::vector<float> values, 
         case ELAB_FREQUENCY_POSITIVE:
             return statistics::frequencyPositive(values, nValues);
         case ELAB_PREVAILING_DIR:
-            return windPrevailingDir(values, values, nValues, false);
+            return float(windPrevailingDir(values, values, nValues, false));
         case ELAB_TREND:
             return statistics::trend(values, nValues, param);
         case ELAB_MANNKENDALL:

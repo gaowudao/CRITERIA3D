@@ -3,9 +3,8 @@
 
 #include <vector>
 #include <string>
-#ifndef CRIT3DDATE_H
-    #include "crit3dDate.h"
-#endif
+
+class Crit3DDate;
 
 enum statisticalElaborations {ELAB_MEAN, ELAB_STDDEVIATION, ELAB_SUM, ELAB_SUM_WITH_THRESHOLD, ELAB_MEAN_ABOVE_THRESHOLD,
                               ELAB_STDDEV_ABOVE_THRESHOLD, ELAB_MAX, ELAB_MIN, ELAB_PERCENTILE, ELAB_MEDIAN,
@@ -57,8 +56,6 @@ namespace statistics
     float frequencyPositive(std::vector<float> values, int nValue);
     float trend(std::vector<float> values, int nValues, float myFirstYear);
     float mannKendall(std::vector<float> values, int nValues);
-
-
 
 }
 
