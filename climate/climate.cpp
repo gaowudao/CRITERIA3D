@@ -4,9 +4,10 @@
 #include "quality.h"
 #include "statistics.h"
 
-#define THOMTHRESHOLD 24 // mettere nei settings Environment.ThomThreshold
-#define MINPERCENTAGE 80 // mettere nei settings Environment.minPercentage
+#define THOMTHRESHOLD 24 // mettere nei settings quando ci saranno Environment.ThomThreshold
+#define MINPERCENTAGE 80 // mettere nei settings quando ci saranno Environment.minPercentage
 
+Crit3DDate firstDateDailyVar; //temporaneo
 
 bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, meteoVariable variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
     QString elab1, bool param1IsClimate, QString param1ClimateField, float param1, QString elab2, float param2, bool isAnomaly,
@@ -260,7 +261,7 @@ std::vector<float> loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbH
         dailyValues = meteoPointsDbHandler->getDailyVar(myError, variable, getCrit3DDate(first), getCrit3DDate(last), &firstDateDB, meteoPoint );
         if (saveValue)
         {
-            for (int i = 0; i < dailyValues.size(); i++)
+            for (unsigned int i = 0; i < dailyValues.size(); i++)
             {
                 meteoPoint->setMeteoPointValueD(Crit3DDate(firstDateDB.day(), firstDateDB.month(), firstDateDB.year()), variable, dailyValues[i]);
                 firstDateDB.addDays(1);
@@ -296,7 +297,7 @@ std::vector<float> loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDb
             int row, col;
             int initialize = 1;
             meteoGridDbHandler.meteoGrid()->findMeteoPointFromId(&row, &col, meteoPoint->id);
-            for (int i = 0; i < hourlyValues.size(); i++)
+            for (unsigned int i = 0; i < hourlyValues.size(); i++)
             {
                 meteoGridDbHandler.meteoGrid()->fillMeteoPointHourlyValue(row, col, numberOfDays, initialize,  Crit3DDate(firstDateDB.date().day(), firstDateDB.date().month(), firstDateDB.date().year()), firstDateDB.time().hour(), firstDateDB.time().minute(), variable, hourlyValues[i]) ;
                 initialize = 0;
@@ -310,7 +311,7 @@ std::vector<float> loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDb
         hourlyValues = meteoPointsDbHandler->getHourlyVar(myError, variable, getCrit3DDate(first.date()), getCrit3DDate(last.date()), &firstDateDB, meteoPoint );
         if (saveValue)
         {
-            for (int i = 0; i < hourlyValues.size(); i++)
+            for (unsigned int i = 0; i < hourlyValues.size(); i++)
             {
                 meteoPoint->setMeteoPointValueH(Crit3DDate(firstDateDB.date().day(), firstDateDB.date().month(), firstDateDB.date().year()), firstDateDB.time().hour(), firstDateDB.time().minute(), variable, hourlyValues[i]);
                 firstDateDB.addSecs(3600);
@@ -333,6 +334,7 @@ float thomDayTime(float tempMax, float relHumMinAir)
     // LC WrongValueDaily non ho trovato corrispondente funzione in quality, obsoleto o ancora da implementare?
     // sono cambiati anche i risultati del check, in vb ammessi qualityGoodData e qualitySuspectData, il secondo non esiste più?
     // FT il modulo quality per ora è molto più semplice della versione vb
+    // LC cosa devo fare quindi? lascio commento, traduco quella di vb in quality?
     if ( qualityT == quality::accepted && qualityRelHumMinAir == quality::accepted )
     {
             return thom(tempMax, relHumMinAir);
@@ -546,7 +548,7 @@ float dewPoint(float relHumAir, float tempAir)
 void extractValidValuesWithThreshold(std::vector<float> myValues, std::vector<float>* myValidValues, float myThreshold)
 {
 
-    for (int i = 0; i < myValues.size(); i++)
+    for (unsigned int i = 0; i < myValues.size(); i++)
     {
         if (myValues[i] != NODATA)
         {
@@ -562,7 +564,7 @@ void extractValidValuesWithThreshold(std::vector<float> myValues, std::vector<fl
 void extractValidValuesCC(std::vector<float> myValues, std::vector<float>* myValidValues)
 {
 
-    for (int i = 0; i < myValues.size(); i++)
+    for (unsigned int i = 0; i < myValues.size(); i++)
     {
         if (myValues[i] != NODATA)
         {
@@ -613,16 +615,12 @@ frequencyType getAggregationFrequency(derivedMeteoVariable elab)
 bool elaborateDailyAggregatedVarFromDaily(derivedMeteoVariable elab, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float>* aggregatedValues, float* percValue)
 {
 
-    // LC serve salvare la prima data utile?
-    // FT si, si usa poi in molte funzioni, come la firstDateHourlyVar
-    // nei casi come questi fai una variabile globale, poi vediamo di sistemarla (ad esempio in Project)
-
     float res;
     int nrValidi = 0;
     Crit3DDate date = meteoPoint.obsDataD[0].date;
     Crit3DQuality qualityCheck;
 
-    for (int index = 0; index < dailyValues.size(); index++)
+    for (unsigned int index = 0; index < dailyValues.size(); index++)
     {
         switch(elab)
         {
@@ -681,6 +679,7 @@ bool elaborateDailyAggregatedVarFromDaily(derivedMeteoVariable elab, Crit3DMeteo
         if (res != NODATA)
         {
             nrValidi = nrValidi + 1;
+            firstDateDailyVar = date;
         }
         aggregatedValues->push_back(res);
         date = date.addDays(1);
@@ -700,8 +699,9 @@ bool elaborateDailyAggregatedVarFromHourly(derivedMeteoVariable elab, Crit3DMete
 
     float res;
     int nrValidi = 0;
+    Crit3DDate date = meteoPoint.obsDataH[0].date;
 
-    for (int index = 0; index < hourlyValues.size(); index++)
+    for (unsigned int index = 0; index < hourlyValues.size(); index++)
     {
         std::vector<float> oneDayHourlyValues (hourlyValues.begin()+index, hourlyValues.begin()+index+23);
         switch(elab)
@@ -726,8 +726,11 @@ bool elaborateDailyAggregatedVarFromHourly(derivedMeteoVariable elab, Crit3DMete
         if (res != NODATA)
         {
             nrValidi = nrValidi + 1;
+            firstDateDailyVar = date; // LC perchè in vb nella elaborateDailyAggregatedVarFromHourly viene posto firstDateDailyVar = currentHourlySeries(1).date
+                                      // senza alcun controllo sul NODATA come invece avviene nella elaborateDailyAggregatedVarFromDaily
         }
         aggregatedValues->push_back(res);
+        date = date.addDays(1);
     }
     if (nrValidi > 0)
         return true;
