@@ -190,7 +190,31 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoGridDbHandler* meteoGri
 
             if (dataLoaded)
             {
-//                result = Elaboration.ComputeStatistic(myVar, firstYear, lastYear, startDate, endDate, nYears, elab1, param1, elab2, param2, .z)
+                // check
+                // LC era in computeStatistic, spostato qui
+                Crit3DDate startD(startDate.day(), startDate.month(), firstYear);
+                Crit3DDate endD(endDate.day(), endDate.month(), firstYear);
+                if (nYears < 0)
+                {
+                    startD.year = firstYear + nYears;
+                }
+                else if (nYears > 0)
+                {
+                    endD.year = firstYear + nYears;
+                }
+
+                // LC era If (finishDate - startDate + 1) < 0 Then perchè +1?!?!
+                if (difference (startD, endD) < 0)
+                {
+                    *myError = "Wrong dates!";
+                    return false;
+                }
+                if (elab1 == "")
+                {
+                    *myError = "Missing elaboration";
+                    return false;
+                }
+//                result = computeStatistic(myVar, firstYear, lastYear, startD, endD, nYears, elab1, param1, elab2, param2, .z)
 
                 if (isAnomaly)
                 {

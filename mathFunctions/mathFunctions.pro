@@ -23,6 +23,8 @@ win32:{
     TARGET = mathFunctions
 }
 
+INCLUDEPATH += ../crit3dDate
+
 SOURCES += \
     basicMath.cpp \
     furtherMathFunctions.cpp \

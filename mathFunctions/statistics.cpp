@@ -34,6 +34,159 @@
 
 namespace elaborations {
 
+
+//nYears   = 0         same year
+//nYears   = 1,2,3...   betweend years 1,2,3...
+float computeStatistic(std::string variable, int firstYear, int lastYear, Crit3DDate firstDate, Crit3DDate lastDate, int nYears, std::string elab1, float param1, std::string elab2, float param2, float myHeight)
+{
+/*
+    Dim Value As Single
+    Dim valori() As Single
+    Dim valori2() As Single
+    Dim Index As Long
+    Dim nValidValues As Long, nTotValues As Long
+    Dim NValidYears As Integer, nTotYears As Integer, nDays As Integer
+
+    Dim startDate As Date, finishDate As Date, PresentDate As Date
+    Dim primary As Single
+    Dim specifica As Boolean
+
+    ComputeStatistic = Definitions.NO_DATA
+
+    bool specific; //  = Elaboration.isSpecificElaboration(elab1)
+
+
+    // no secondary elab
+    if (elab2 == "")
+    {
+
+        nTotValues = 0
+        nValidValues = 0
+        ReDim valori(nTotValues)
+
+        if (specific)
+        {
+            // ComputeStatistic = Elaboration.ElaborationSpecific(elab1, Parameter1, startDate, finishDate, myHeight)
+        }
+        else
+        {
+            for (int presentYear = firstYear; presentYear < lastYear; presentYear++)
+            {
+                startDate = DateSerial(presentYear, month(firstDate), day(firstDate))
+                finishDate = DateSerial(presentYear, month(lastDate), day(lastDate))
+                if (nYears < 0)
+                {
+                    startDate = DateSerial(presentYear + nYears, month(firstDate), day(firstDate));
+                }
+                else if (nYears > 0)
+                {
+                    finishDate = DateSerial(presentYear + nYears, month(lastDate), day(lastDate));
+                }
+
+                    ReDim Preserve valori(nTotValues)
+                    for (PresentDate = startDate To finishDate)
+                    {
+
+                        Value = Definitions.NO_DATA
+                        Index = PresentDate - firstDateDailyVar + 1
+                        If Index > 0 And Index <= UBound(dailyVar) Then Value = dailyVar(Index)
+                        If Value <> NO_DATA Then nValidValues = nValidValues + 1
+
+                        valori(nTotValues) = Value
+                        nTotValues = nTotValues + 1
+                        ReDim Preserve valori(nTotValues)
+
+                    }
+            }
+
+            if (nTotValues > 0)
+            {
+                if (nValidValues / nTotValues) * 100 >= Environment.minPercentage
+                {
+                    ComputeStatistic = math.statistica(variable, elab1, Parameter1, valori, nTotValues)
+                }
+                else
+                {
+                    PragaShell.setErrorMsg InfoMsg.Err_FewData
+                }
+            }
+        }
+
+    }
+    // secondary elab
+    else
+    {
+
+        nTotYears = 0
+        NValidYears = 0
+        ReDim valori2(nTotYears)
+
+        for (int presentYear = firstYear; presentYear < lastYear; presentYear++)
+        {
+            startDate = DateSerial(presentYear, month(firstDate), day(firstDate))
+            finishDate = DateSerial(presentYear, month(lastDate), day(lastDate))
+            If nYears < 0 Then
+                startDate = DateSerial(presentYear + nYears, month(firstDate), day(firstDate))
+            ElseIf nYears > 0 Then
+                finishDate = DateSerial(presentYear + nYears, month(lastDate), day(lastDate))
+            End If
+            primary = Definitions.NO_DATA
+
+            nTotValues = 0
+            nValidValues = 0
+            ReDim valori(nTotValues)
+
+            If specifica Then
+                primary = Elaboration.ElaborationSpecific(elab1, Parameter1, startDate, finishDate, myHeight)
+            Else
+                For PresentDate = startDate To finishDate
+
+                    Value = Definitions.NO_DATA
+                    Index = PresentDate - firstDateDailyVar + 1
+                    If Index > 0 And Index <= UBound(dailyVar) Then Value = dailyVar(Index)
+
+                    If Value <> NO_DATA Then nValidValues = nValidValues + 1
+
+                    valori(nTotValues) = Value
+                    nTotValues = nTotValues + 1
+                    ReDim Preserve valori(nTotValues)
+
+                Next PresentDate
+
+                If nTotValues <> 0 Then
+                    If (nValidValues / nTotValues) * 100 >= Environment.minPercentage Then
+                        primary = statisticalElab(variable, elab1, Parameter1, valori, nTotValues)
+                    End If
+                End If
+            End If
+
+            If primary <> NO_DATA Then NValidYears = NValidYears + 1
+
+            valori2(nTotYears) = primary
+            nTotYears = nTotYears + 1
+            ReDim Preserve valori2(nTotYears)
+
+        }
+
+        If nTotYears > 0 Then
+            If (NValidYears / nTotYears) * 100 >= Environment.minPercentage Then
+                Select Case elab2
+                    Case Definitions.ELAB_TREND
+                        return statisticalElab(variable, elab2, firstYear, valori2, nTotYears)
+                    Case Else
+                        return statisticalElab(variable, elab2, Parameter2, valori2, nTotYears)
+                End Select
+            End If
+        End If
+
+    }
+
+    Erase valori
+    Erase valori2
+*/
+}
+
+
 float statisticalElab(std::string elab, float param, std::vector<float> values, int nValues)
 {
 
@@ -906,7 +1059,7 @@ namespace statistics
     float mannKendall(std::vector<float> values, int nValues)
     {
 
-        double myVar;
+        double variable;
         float zMK;
 
         // minimum 3 values
@@ -930,15 +1083,15 @@ namespace statistics
                 myValidNR = myValidNR + 1;
             }
         }
-        myVar = myValidNR * (myValidNR - 1) * (2.0 * myValidNR + 5.0) / 18.0;
+        variable = myValidNR * (myValidNR - 1) * (2.0 * myValidNR + 5.0) / 18.0;
 
         if (myS > 0)
         {
-            zMK = static_cast<float>((myS - 1) / sqrt(myVar));
+            zMK = static_cast<float>((myS - 1) / sqrt(variable));
         }
         else if (myS < 0)
         {
-            zMK = -static_cast<float>((myS + 1) / sqrt(myVar));
+            zMK = -static_cast<float>((myS + 1) / sqrt(variable));
         }
         else
         {

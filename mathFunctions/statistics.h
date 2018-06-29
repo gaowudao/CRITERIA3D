@@ -3,6 +3,9 @@
 
 #include <vector>
 #include <string>
+#ifndef CRIT3DDATE_H
+    #include "crit3dDate.h"
+#endif
 
 enum statisticalElaborations {ELAB_MEAN, ELAB_STDDEVIATION, ELAB_SUM, ELAB_SUM_WITH_THRESHOLD, ELAB_MEAN_ABOVE_THRESHOLD,
                               ELAB_STDDEV_ABOVE_THRESHOLD, ELAB_MAX, ELAB_MIN, ELAB_PERCENTILE, ELAB_MEDIAN,
@@ -15,6 +18,7 @@ enum statisticalElaborations {ELAB_MEAN, ELAB_STDDEVIATION, ELAB_SUM, ELAB_SUM_W
 namespace elaborations
 {
     float statisticalElab(std::string elab, float param, std::vector<float> values, int nValues);
+    float computeStatistic(std::string variable, int firstYear, int lastYear, Crit3DDate firstDate, Crit3DDate lastDate, int nYears, std::string elab1, float param1, std::string elab2, float param2, float myHeight);
 }
 namespace statistics
 {
