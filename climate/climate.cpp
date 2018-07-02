@@ -191,8 +191,6 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoGridDbHandler* meteoGri
             if (dataLoaded)
             {
                 // check
-                // LC era in computeStatistic, spostato qui
-                // FT ok!
                 Crit3DDate startD(startDate.day(), startDate.month(), firstYear);
                 Crit3DDate endD(endDate.day(), endDate.month(), firstYear);
 
@@ -205,8 +203,6 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoGridDbHandler* meteoGri
                     endD.year = firstYear + nYears;
                 }
 
-                // LC era If (finishDate - startDate + 1) < 0 Then perchè +1?!?!
-                // FT credo fosse un bug, ho corretto anche in VB
                 if (difference (startD, endD) < 0)
                 {
                     *myError = "Wrong dates!";
@@ -360,11 +356,6 @@ float thomDayTime(float tempMax, float relHumMinAir)
     quality::type qualityT = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMax, tempMax);
     quality::type qualityRelHumMinAir = qualityCheck.syntacticQualityControlSingleVal(dailyAirHumidityMin, relHumMinAir);
 
-    // LC WrongValueDaily non ho trovato corrispondente funzione in quality, obsoleto o ancora da implementare?
-    // sono cambiati anche i risultati del check, in vb ammessi qualityGoodData e qualitySuspectData, il secondo non esiste più?
-    // FT il modulo quality per ora è molto più semplice della versione vb
-    // LC cosa devo fare quindi? lascio commento, traduco quella di vb in quality?
-    // FT lascia solo questo commento:
 
     // TODO nella versione vb ammessi anche i qualitySuspectData, questo tipo per ora non è stato implementato
     if ( qualityT == quality::accepted && qualityRelHumMinAir == quality::accepted )
@@ -384,6 +375,7 @@ float thomNightTime(float tempMin, float relHumMaxAir)
     quality::type qualityT = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMin, tempMin);
     quality::type qualityRelHumMaxAir = qualityCheck.syntacticQualityControlSingleVal(dailyAirHumidityMax, relHumMaxAir);
 
+    // TODO nella versione vb ammessi anche i qualitySuspectData, questo tipo per ora non è stato implementato
     if ( qualityT == quality::accepted && qualityRelHumMaxAir == quality::accepted )
     {
             return thom(tempMin, relHumMaxAir);
@@ -401,6 +393,7 @@ float thomH(float tempAvg, float relHumAvgAir)
     quality::type qualityT = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureAvg, tempAvg);
     quality::type qualityRelHumAvgAir = qualityCheck.syntacticQualityControlSingleVal(dailyAirHumidityAvg, relHumAvgAir);
 
+    // TODO nella versione vb ammessi anche i qualitySuspectData, questo tipo per ora non è stato implementato
     if ( qualityT == quality::accepted && qualityRelHumAvgAir == quality::accepted )
     {
             return thom(tempAvg, relHumAvgAir);
@@ -509,6 +502,7 @@ float dailyBIC(float prec, float etp)
 
     Crit3DQuality qualityCheck;
 
+    // TODO nella versione vb ammessi anche i qualitySuspectData, questo tipo per ora non è stato implementato
     quality::type qualityPrec = qualityCheck.syntacticQualityControlSingleVal(dailyPrecipitation, prec);
     quality::type qualityETP = qualityCheck.syntacticQualityControlSingleVal(dailyReferenceEvapotranspiration, etp);
     if (qualityPrec == quality::accepted && qualityETP == quality::accepted)
@@ -525,6 +519,7 @@ float dailyThermalRange(float Tmin, float Tmax)
 
     Crit3DQuality qualityCheck;
 
+    // TODO nella versione vb ammessi anche i qualitySuspectData, questo tipo per ora non è stato implementato
     quality::type qualityTmin = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMin, Tmin);
     quality::type qualityTmax = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMax, Tmax);
     if (qualityTmin  == quality::accepted && qualityTmax == quality::accepted)
@@ -539,6 +534,7 @@ float dailyAverageT(float Tmin, float Tmax)
 
         Crit3DQuality qualityCheck;
 
+        // TODO nella versione vb ammessi anche i qualitySuspectData, questo tipo per ora non è stato implementato
         quality::type qualityTmin = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMin, Tmin);
         quality::type qualityTmax = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMax, Tmax);
         if (qualityTmin  == quality::accepted && qualityTmax == quality::accepted)
@@ -553,6 +549,7 @@ float dailyEtpHargreaves(float Tmin, float Tmax, Crit3DDate date, double latitud
 
     Crit3DQuality qualityCheck;
 
+    // TODO nella versione vb ammessi anche i qualitySuspectData, questo tipo per ora non è stato implementato
     quality::type qualityTmin = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMin, Tmin);
     quality::type qualityTmax = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMax, Tmax);
     int dayOfYear = getDoyFromDate(date);
