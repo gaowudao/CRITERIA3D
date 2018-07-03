@@ -12,6 +12,8 @@
 
 #define GRID_MIN_COVERAGE 0
 
+enum gridAggregationMethod {aggrAvg, aggrMedian, aggrStdDeviation};
+
     class Crit3DMeteoGridStructure
     {
         public:
@@ -123,9 +125,9 @@
 
             void assignCellAggregationPoints(int row, int col, gis::Crit3DRasterGrid* myDTM, bool excludeNoData);
 
-            void aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDTM, gis::Crit3DRasterGrid dataRaster, elaborationMethods elab);
+            void aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDTM, gis::Crit3DRasterGrid dataRaster, gridAggregationMethod elab);
 
-            double aggregateMeteoGridPoint(Crit3DMeteoPoint myPoint, elaborationMethods elab);
+            double aggregateMeteoGridPoint(Crit3DMeteoPoint myPoint, gridAggregationMethod elab);
 
     private:
 

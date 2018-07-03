@@ -330,7 +330,7 @@ double ET0_Hargreaves(double KT, double myLat, int myDoy, double tmax, double tm
 
 
 // Thom Discomfort Index (physiological thermal stress indicator for people based on dry-bulb and wet-bulb temperature)
-float thom(float temp, float relHum)
+float computeThomIndex(float temp, float relHum)
 {
     float zT1, es1, delta;
 
@@ -365,7 +365,7 @@ bool setColorScale(meteoVariable variable, Crit3DColorScale *colorScale)
         case airTemperature: case dailyAirTemperatureAvg: case dailyAirTemperatureMax: case dailyAirTemperatureMin:
             setTemperatureScale(colorScale);
             break;
-        case airHumidity: case dailyAirHumidityAvg: case dailyAirHumidityMax: case dailyAirHumidityMin: case leafWetness: case dailyLeafWetness:
+        case airRelHumidity: case dailyAirRelHumidityAvg: case dailyAirRelHumidityMax: case dailyAirRelHumidityMin: case leafWetness: case dailyLeafWetness:
             setRelativeHumidityScale(colorScale);
             break;
         case precipitation: case dailyPrecipitation: case referenceEvapotranspiration: case dailyReferenceEvapotranspiration:
@@ -391,7 +391,7 @@ std::string getVariableString(meteoVariable myVar)
 {
     if (myVar == airTemperature || myVar == dailyAirTemperatureAvg)
         return "Air temperature °C";
-    else if (myVar == airHumidity || myVar == dailyAirHumidityAvg)
+    else if (myVar == airRelHumidity || myVar == dailyAirRelHumidityAvg)
         return "Relative humidity %";
     else if ((myVar == dailyPrecipitation ||  myVar == precipitation))
         return "Precipitation mm";
@@ -401,9 +401,9 @@ std::string getVariableString(meteoVariable myVar)
         return "Min. air temperature °C";
     else if (myVar == dailyGlobalRadiation)
         return "Solar radiation MJ m-2";
-    else if (myVar == dailyAirHumidityMax)
+    else if (myVar == dailyAirRelHumidityMax)
         return "Max. relative humidity %";
-    else if (myVar == dailyAirHumidityMin)
+    else if (myVar == dailyAirRelHumidityMin)
         return "Min. relative humidity %";
     else if (myVar == globalIrradiance)
         return "Solar irradiance W m-2";

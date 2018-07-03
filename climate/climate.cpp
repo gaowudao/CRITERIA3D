@@ -146,6 +146,7 @@ bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* 
 //                            {
 //                                // LC se qualche problema su una cella, deve interrompere e ritornare false oppure no?
                                   // FT credo di no, ma lascio decidere a Gabri
+                                  // GA deve tornare false solo se nemmeno una cella ha dato valido (v. VB)
 //                                return false;
 //                            }
 
@@ -267,6 +268,7 @@ std::vector<float> loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbH
             // LC la serie deve iniziare con la prima data utile oppure con la data richiesta e quindi NODATA se non c'è il valore corrispondente a tale dato=
             //int numberOfDays = first.daysTo(last) + 1;
             // FT non mi è chiaro
+            // GA in VB usiamo una variabile (firstDateDailyVar) che contiene la prima data della serie giornaliera, quindi senza riempire di NODATA il pezzo vuoto
             int numberOfDays = firstDateDB.daysTo(last) + 1;
             int row, col;
             int initialize = 1;
@@ -318,6 +320,7 @@ std::vector<float> loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDb
             // LC la serie deve iniziare con la prima data utile oppure con la data richeista e quindi NODATA se non c'è il valore corrispondente a tale dato=
             //int numberOfDays = first.date().daysTo(last.date());
             // FT non mi è chiaro
+            // GA vedi commento per serie giornaliera
             int numberOfDays = firstDateDB.date().daysTo(last.date());
             int row, col;
             int initialize = 1;
@@ -354,13 +357,13 @@ float thomDayTime(float tempMax, float relHumMinAir)
 
     Crit3DQuality qualityCheck;
     quality::type qualityT = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMax, tempMax);
-    quality::type qualityRelHumMinAir = qualityCheck.syntacticQualityControlSingleVal(dailyAirHumidityMin, relHumMinAir);
+    quality::type qualityRelHumMinAir = qualityCheck.syntacticQualityControlSingleVal(dailyAirRelHumidityMin, relHumMinAir);
 
 
     // TODO nella versione vb ammessi anche i qualitySuspectData, questo tipo per ora non è stato implementato
     if ( qualityT == quality::accepted && qualityRelHumMinAir == quality::accepted )
     {
-            return thom(tempMax, relHumMinAir);
+            return computeThomIndex(tempMax, relHumMinAir);
     }
     else
         return NODATA;
@@ -373,12 +376,12 @@ float thomNightTime(float tempMin, float relHumMaxAir)
 
     Crit3DQuality qualityCheck;
     quality::type qualityT = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMin, tempMin);
-    quality::type qualityRelHumMaxAir = qualityCheck.syntacticQualityControlSingleVal(dailyAirHumidityMax, relHumMaxAir);
+    quality::type qualityRelHumMaxAir = qualityCheck.syntacticQualityControlSingleVal(dailyAirRelHumidityMax, relHumMaxAir);
 
     // TODO nella versione vb ammessi anche i qualitySuspectData, questo tipo per ora non è stato implementato
     if ( qualityT == quality::accepted && qualityRelHumMaxAir == quality::accepted )
     {
-            return thom(tempMin, relHumMaxAir);
+            return computeThomIndex(tempMin, relHumMaxAir);
     }
     else
         return NODATA;
@@ -391,12 +394,12 @@ float thomH(float tempAvg, float relHumAvgAir)
 
     Crit3DQuality qualityCheck;
     quality::type qualityT = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureAvg, tempAvg);
-    quality::type qualityRelHumAvgAir = qualityCheck.syntacticQualityControlSingleVal(dailyAirHumidityAvg, relHumAvgAir);
+    quality::type qualityRelHumAvgAir = qualityCheck.syntacticQualityControlSingleVal(dailyAirRelHumidityAvg, relHumAvgAir);
 
     // TODO nella versione vb ammessi anche i qualitySuspectData, questo tipo per ora non è stato implementato
     if ( qualityT == quality::accepted && qualityRelHumAvgAir == quality::accepted )
     {
-            return thom(tempAvg, relHumAvgAir);
+            return computeThomIndex(tempAvg, relHumAvgAir);
     }
     else
         return NODATA;
@@ -497,7 +500,7 @@ float dailyLeafWetnessComputation(std::vector<float> hourlyValues)
 
 }
 
-float dailyBIC(float prec, float etp)
+float computeDailyBIC(float prec, float etp)
 {
 
     Crit3DQuality qualityCheck;
@@ -603,18 +606,18 @@ void extractValidValuesCC(std::vector<float> myValues, std::vector<float>* myVal
 
 }
 
-bool elaborateDailyAggregatedVar(derivedMeteoVariable elab, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float> hourlyValues, std::vector<float>* aggregatedValues, float* percValue)
+bool elaborateDailyAggregatedVar(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float> hourlyValues, std::vector<float>* aggregatedValues, float* percValue)
 {
 
-    frequencyType aggregationFrequency = getAggregationFrequency(elab);
+    frequencyType aggregationFrequency = getAggregationFrequency(myVar);
 
     if (aggregationFrequency == hourly)
     {
-            return elaborateDailyAggregatedVarFromHourly(elab, meteoPoint, hourlyValues, aggregatedValues);
+            return elaborateDailyAggregatedVarFromHourly(myVar, meteoPoint, hourlyValues, aggregatedValues);
     }
     else if (aggregationFrequency == daily)
     {
-            return elaborateDailyAggregatedVarFromDaily(elab, meteoPoint, dailyValues, aggregatedValues, percValue);
+            return elaborateDailyAggregatedVarFromDaily(myVar, meteoPoint, dailyValues, aggregatedValues, percValue);
     }
     else
         return false;
@@ -622,15 +625,15 @@ bool elaborateDailyAggregatedVar(derivedMeteoVariable elab, Crit3DMeteoPoint met
 }
 
 
-frequencyType getAggregationFrequency(derivedMeteoVariable elab)
+frequencyType getAggregationFrequency(meteoVariable myVar)
 {
 
     //if (elab == ELABORATION_THOM_DAILYHOURSABOVE || elab == ELABORATION_THOM_DAILYMEAN || elab == ELABORATION_THOM_DAILYMAX || elab == DAILY_LEAFWETNESS)
-    if (elab == thomDailyHoursAboveElab || elab == thomDailyMeanElab || elab == thomDailyMaxElab || elab == dailyLeafWetnessElab)
+    if (myVar == dailyThomHoursAbove || myVar == dailyThomAvg || myVar == dailyThomMax || myVar == dailyLeafWetness)
     {
         return hourly;
     }
-    else if (elab != NODATA)
+    else if (myVar != NODATA)
     {
         return daily;
     }
@@ -641,7 +644,7 @@ frequencyType getAggregationFrequency(derivedMeteoVariable elab)
 
 }
 
-bool elaborateDailyAggregatedVarFromDaily(derivedMeteoVariable elab, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float>* aggregatedValues, float* percValue)
+bool elaborateDailyAggregatedVarFromDaily(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float>* aggregatedValues, float* percValue)
 {
 
     float res;
@@ -651,21 +654,21 @@ bool elaborateDailyAggregatedVarFromDaily(derivedMeteoVariable elab, Crit3DMeteo
 
     for (unsigned int index = 0; index < dailyValues.size(); index++)
     {
-        switch(elab)
+        switch(myVar)
         {
-        case thomDayTimeElab:
+        case dailyThomDaytime:
                 res = thomDayTime(dailyValues.at(index), meteoPoint.obsDataD[index].rhMin);
             break;
-        case thomNightTimeElab:
+        case dailyThomNighttime:
                 res = thomNightTime(dailyValues.at(index), meteoPoint.obsDataD[index].rhMax);
                 break;
-        case dailyBICElab:
-                res = dailyBIC(dailyValues.at(index), meteoPoint.obsDataD[index].et0);
+        case dailyBIC:
+                res = computeDailyBIC(dailyValues.at(index), meteoPoint.obsDataD[index].et0);
                 break;
-        case dailyTemperatureRangeElab:
+        case dailyAirTemperatureRange:
                 res = dailyThermalRange(dailyValues.at(index), meteoPoint.obsDataD[index].tMax);
                 break;
-        case dailyTemperatureavgElab:
+        case dailyAirTemperatureAvg:
                 {
                     quality::type qualityTavg = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureAvg, meteoPoint.obsDataD[index].tAvg);
                     if (qualityTavg == quality::accepted)
@@ -678,7 +681,7 @@ bool elaborateDailyAggregatedVarFromDaily(derivedMeteoVariable elab, Crit3DMeteo
                     }
                     break;
                 }
-        case dailyETPElab:
+        case dailyReferenceEvapotranspiration:
         {
             quality::type qualityEtp = qualityCheck.syntacticQualityControlSingleVal(dailyReferenceEvapotranspiration, meteoPoint.obsDataD[index].et0);
             if (qualityEtp == quality::accepted)
@@ -691,13 +694,13 @@ bool elaborateDailyAggregatedVarFromDaily(derivedMeteoVariable elab, Crit3DMeteo
             }
             break;
         }
-        case dailyTdAvgElab:
+        case dailyAirDewTemperatureAvg:
                 res = dewPoint(dailyValues.at(index), meteoPoint.obsDataD[index].tAvg); // RHavg, Tavg
                 break;
-        case dailyTdminElab:
+        case dailyAirDewTemperatureMin:
                 res = dewPoint(dailyValues.at(index), meteoPoint.obsDataD[index].tMin); // RHmax, Tmin
                 break;
-        case dailyTdmaxElab:
+        case dailyAirDewTemperatureMax:
                 res = dewPoint(dailyValues.at(index), meteoPoint.obsDataD[index].tMax); // RHmin, Tmax
                 break;
         default:
@@ -723,7 +726,7 @@ bool elaborateDailyAggregatedVarFromDaily(derivedMeteoVariable elab, Crit3DMeteo
 
 }
 
-bool elaborateDailyAggregatedVarFromHourly(derivedMeteoVariable elab, Crit3DMeteoPoint meteoPoint, std::vector<float> hourlyValues, std::vector<float>* aggregatedValues)
+bool elaborateDailyAggregatedVarFromHourly(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> hourlyValues, std::vector<float>* aggregatedValues)
 {
 
     float res;
@@ -733,18 +736,18 @@ bool elaborateDailyAggregatedVarFromHourly(derivedMeteoVariable elab, Crit3DMete
     for (unsigned int index = 0; index < hourlyValues.size(); index++)
     {
         std::vector<float> oneDayHourlyValues (hourlyValues.begin()+index, hourlyValues.begin()+index+23);
-        switch(elab)
+        switch(myVar)
         {
-            case thomDailyHoursAboveElab:
+            case dailyThomHoursAbove:
                 res = thomDailyNHoursAbove(oneDayHourlyValues, meteoPoint.obsDataH[index].rhAir);
                 break;
-            case thomDailyMaxElab:
+            case dailyThomMax:
                 res = thomDailyMax(oneDayHourlyValues, meteoPoint.obsDataH[index].rhAir);
                 break;
-            case thomDailyMeanElab:
+            case dailyThomAvg:
                 res = thomDailyMean(oneDayHourlyValues, meteoPoint.obsDataH[index].rhAir);
                 break;
-            case dailyLeafWetnessElab:
+            case dailyLeafWetness:
                 res = dailyLeafWetnessComputation(oneDayHourlyValues);
                 break;
             default:
@@ -758,6 +761,7 @@ bool elaborateDailyAggregatedVarFromHourly(derivedMeteoVariable elab, Crit3DMete
             firstDateDailyVar = date; // LC perchè in vb nella elaborateDailyAggregatedVarFromHourly viene posto firstDateDailyVar = currentHourlySeries(1).date
                                       // senza alcun controllo sul NODATA come invece avviene nella elaborateDailyAggregatedVarFromDaily
                                       // FT non mi è chiaro
+                                      // GA si' il codice per l'orario è più vecchio e non c'era controllo. possiamo aggiungerlo.
         }
         aggregatedValues->push_back(res);
         date = date.addDays(1);
@@ -792,7 +796,9 @@ bool preElaboration(Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoi
     */
 /*
 // LC c'è confusione tra elaboration e variable fa lo switch su variable ma ci sono elaboration e variabili. Ho messo tutto in un unico enum visto che comunque non sono davvero suddivisi
+// GA sono considerate variabili ai fini del calcolo tutte quelle grandezze giornaliere che possono essere elaborate con le stesse procedure delle variabili primarie
 // LC inoltre ci sono elaborazioni che non trovo nell'interfaccia grafica, sono state rimosse? (es. ELABORATION_HUGLIN come si seleziona? tutte le "elaboerazioni specifiche")
+// GA queste sono vere elaborazioni, non riconducibili a variabili giornaliere. quelle che dici le trovi selezionando Tmin o Tmax nelle variabili, perché sono calcolate a partire da quelle
 // FT Si caricano con dei moduli appositi, ma qui lo sa meglio Gabri
     case variable
 

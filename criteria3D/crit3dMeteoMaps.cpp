@@ -91,7 +91,7 @@ gis::Crit3DRasterGrid* Crit3DMeteoMaps::getMapFromVar(meteoVariable myVar)
         return airTemperatureMap;
     else if (myVar == precipitation)
         return precipitationMap;
-    else if (myVar == airHumidity)
+    else if (myVar == airRelHumidity)
         return airHumidityMap;
     else if (myVar == windIntensity)
         return windIntensityMap;

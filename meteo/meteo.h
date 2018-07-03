@@ -16,25 +16,29 @@
     #define FIELD_METEO_VARIABLE "id_variable"
     #define FIELD_METEO_VARIABLE_NAME "variable"
 
-enum meteoVariable {airTemperature, dailyAirTemperatureMin, dailyAirTemperatureMax, dailyAirTemperatureAvg,
-                        precipitation, dailyPrecipitation,
-                        airHumidity, dailyAirHumidityMin, dailyAirHumidityMax, dailyAirHumidityAvg, airDewTemperature,
-                        globalIrradiance, directIrradiance, diffuseIrradiance, reflectedIrradiance, atmTransmissivity,
-                        dailyGlobalRadiation, dailyDirectRadiation, dailyDiffuseRadiation, dailyReflectedRadiation,
-                        windIntensity, dailyWindIntensityAvg, dailyWindIntensityMax, windDirection, dailyWindDirectionPrevailing,
-                        leafWetness, dailyLeafWetness, atmPressure,
-                        referenceEvapotranspiration, dailyReferenceEvapotranspiration, actualEvaporation,
-                        dailyWaterTableDepth,
-                        noMeteoTerrain, noMeteoVar};
+enum meteoVariable {airTemperature, dailyAirTemperatureMin, dailyAirTemperatureMax, dailyAirTemperatureAvg, dailyAirTemperatureRange,
+                    precipitation, dailyPrecipitation,
+                    airRelHumidity, dailyAirRelHumidityMin, dailyAirRelHumidityMax, dailyAirRelHumidityAvg,
+                    airDewTemperature, dailyAirDewTemperatureMin, dailyAirDewTemperatureMax, dailyAirDewTemperatureAvg,
+                    thom, dailyThomMax, dailyThomAvg, dailyThomHoursAbove, dailyThomDaytime, dailyThomNighttime,
+                    globalIrradiance, directIrradiance, diffuseIrradiance, reflectedIrradiance, atmTransmissivity,
+                    dailyGlobalRadiation, dailyDirectRadiation, dailyDiffuseRadiation, dailyReflectedRadiation,
+                    windIntensity, dailyWindIntensityAvg, dailyWindIntensityMax, windDirection, dailyWindDirectionPrevailing,
+                    leafWetness, dailyLeafWetness, atmPressure,
+                    referenceEvapotranspiration, dailyReferenceEvapotranspiration, actualEvaporation,
+                    dailyBIC,
+                    dailyWaterTableDepth,
+                    noMeteoTerrain, noMeteoVar};
+
 
     const std::map<std::string, meteoVariable> MapDailyMeteoVar = {
       { "DAILY_TMIN", dailyAirTemperatureMin },
       { "DAILY_TMAX", dailyAirTemperatureMax },
       { "DAILY_TAVG", dailyAirTemperatureAvg },
       { "DAILY_PREC", dailyPrecipitation },
-      { "DAILY_RHMIN", dailyAirHumidityMin },
-      { "DAILY_RHMAX", dailyAirHumidityMax },
-      { "DAILY_RHAVG", dailyAirHumidityAvg },
+      { "DAILY_RHMIN", dailyAirRelHumidityMin },
+      { "DAILY_RHMAX", dailyAirRelHumidityMax },
+      { "DAILY_RHAVG", dailyAirRelHumidityAvg },
       { "DAILY_RAD", dailyGlobalRadiation },
       { "DAILY_W_INT_AVG", dailyWindIntensityAvg },
       { "DAILY_W_DIR", dailyWindDirectionPrevailing },
@@ -46,7 +50,7 @@ enum meteoVariable {airTemperature, dailyAirTemperatureMin, dailyAirTemperatureM
     const std::map<std::string, meteoVariable> MapHourlyMeteoVar = {
       { "TAVG", airTemperature },
       { "PREC", precipitation },
-      { "RHAVG", airHumidity },
+      { "RHAVG", airRelHumidity },
       { "RAD", globalIrradiance },
       { "W_INT_AVG", windIntensity },
       { "W_DIR", windDirection },
@@ -57,7 +61,7 @@ enum meteoVariable {airTemperature, dailyAirTemperatureMin, dailyAirTemperatureM
     const std::map<int, meteoVariable> MapIdMeteoVar = {
       { 101, airTemperature },
       { 102, precipitation },
-      { 103, airHumidity },
+      { 103, airRelHumidity },
       { 104, globalIrradiance },
       { 105, windIntensity },
       { 106, windDirection },
@@ -65,9 +69,9 @@ enum meteoVariable {airTemperature, dailyAirTemperatureMin, dailyAirTemperatureM
       { 152, dailyAirTemperatureMax },
       { 153, dailyAirTemperatureAvg },
       { 154, dailyPrecipitation },
-      { 155, dailyAirHumidityMin },
-      { 156, dailyAirHumidityMax },
-      { 157, dailyAirHumidityAvg },
+      { 155, dailyAirRelHumidityMin },
+      { 156, dailyAirRelHumidityMax },
+      { 157, dailyAirRelHumidityAvg },
       { 158, dailyGlobalRadiation },
       { 159, dailyWindIntensityAvg },
       { 160, dailyWindDirectionPrevailing },
@@ -103,7 +107,7 @@ enum meteoVariable {airTemperature, dailyAirTemperatureMin, dailyAirTemperatureM
 
     double ET0_Hargreaves(double KT, double myLat, int myDoy, double tmax, double tmin);
 
-    float thom(float temp, float relHum);
+    float computeThomIndex(float temp, float relHum);
 
     bool setColorScale(meteoVariable variable, Crit3DColorScale *colorScale);
 

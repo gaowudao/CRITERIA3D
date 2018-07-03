@@ -32,7 +32,7 @@ Project::Project()
     meteoPointsColorScale = new Crit3DColorScale();
     meteoPointsDbHandler = NULL;
     meteoGridDbHandler = NULL;
-    gridAggregationMethod = mean;
+    gridAggregationMethod = gridAggregationMethod::aggrAvg;
 
     radiationMaps = NULL;
 }
@@ -567,7 +567,7 @@ bool Project::loadMeteoGridDB(QString xmlName)
 //            return false;
 
 //    loadMeteoGridData(QDate(2018,04,29), QDate(2018,04,30), 1);
-//    QList<meteoVariable> meteoVariableList = { dailyAirTemperatureMin , dailyAirTemperatureMax , dailyAirTemperatureAvg , dailyAirHumidityMax };
+//    QList<meteoVariable> meteoVariableList = { dailyAirTemperatureMin , dailyAirTemperatureMax , dailyAirTemperatureAvg , dailyAirRelHumidityMax };
 //    this->meteoGridDbHandler->saveCellGridDailyData(&errorString, "write00097", 23, 2, QDate(2018,04,29), QDate(2018,04,30), meteoVariableList);
 
 

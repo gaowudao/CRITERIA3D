@@ -99,7 +99,7 @@ meteoVariable chooseColorScale()
     else if (Prec.isChecked())
         return precipitation;
     else if (RH.isChecked())
-        return airHumidity;
+        return airRelHumidity;
     else if (Rad.isChecked())
         return globalIrradiance;
     else if (Wind.isChecked())
@@ -228,18 +228,18 @@ bool chooseMeteoVariable()
        else if (Rad.isChecked())
            myProject.currentVariable = dailyGlobalRadiation;
        else if (RHmin.isChecked())
-           myProject.currentVariable = dailyAirHumidityMin;
+           myProject.currentVariable = dailyAirRelHumidityMin;
        else if (RHmax.isChecked())
-           myProject.currentVariable = dailyAirHumidityMax;
+           myProject.currentVariable = dailyAirRelHumidityMax;
        else if (RHavg.isChecked())
-           myProject.currentVariable = dailyAirHumidityAvg;
+           myProject.currentVariable = dailyAirRelHumidityAvg;
    }
    else if (myProject.getFrequency() == hourly)
    {
        if (Tavg.isChecked())
            myProject.currentVariable = airTemperature;
        else if (RHavg.isChecked())
-           myProject.currentVariable = airHumidity;
+           myProject.currentVariable = airRelHumidity;
        else if (Prec.isChecked())
            myProject.currentVariable = precipitation;
        else if (Rad.isChecked())

@@ -565,7 +565,7 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
     // TO DO compute std deviation
 }
 
-void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDTM, gis::Crit3DRasterGrid dataRaster, elaborationMethods elab)
+void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDTM, gis::Crit3DRasterGrid dataRaster, gridAggregationMethod elab)
 {
     int numberOfDays = 1;
     int initialize;
@@ -648,7 +648,7 @@ void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq
 }
 
 
-double Crit3DMeteoGrid::aggregateMeteoGridPoint(Crit3DMeteoPoint myPoint, elaborationMethods elab)
+double Crit3DMeteoGrid::aggregateMeteoGridPoint(Crit3DMeteoPoint myPoint, gridAggregationMethod elab)
 {
 
     std::vector <double> validValues;
@@ -672,16 +672,16 @@ double Crit3DMeteoGrid::aggregateMeteoGridPoint(Crit3DMeteoPoint myPoint, elabor
         return NODATA;
     }
 
-    if (elab == elaborationMethods::mean)
+    if (elab == gridAggregationMethod::aggrAvg)
     {
         return statistics::mean(validValues.data(), int(validValues.size()));
     }
-    else if (elab == elaborationMethods::median)
+    else if (elab == gridAggregationMethod::aggrMedian)
     {
         int size = int(validValues.size());
         return sorting::percentile(validValues.data(), &size, 50.0, true);
     }
-    else if (elab == elaborationMethods::stdDeviation)
+    else if (elab == gridAggregationMethod::aggrStdDeviation)
     {
         return statistics::standardDeviation(validValues.data(), int(validValues.size()));
     }

@@ -67,7 +67,7 @@ quality::Range* Crit3DQuality::getQualityRange(meteoVariable myVar)
         return qualityHourlyGIrr;
     else if (myVar == atmTransmissivity)
         return qualityTransmissivity;
-    else if (myVar == airHumidity)
+    else if (myVar == airRelHumidity)
         return qualityHourlyRH;
     else if (myVar == windIntensity)
         return qualityHourlyWInt;
@@ -85,9 +85,9 @@ quality::Range* Crit3DQuality::getQualityRange(meteoVariable myVar)
     else if (myVar == dailyPrecipitation)
         return qualityDailyP;
 
-    else if (myVar == dailyAirHumidityMax
-          || myVar == dailyAirHumidityMin
-          || myVar == dailyAirHumidityAvg)
+    else if (myVar == dailyAirRelHumidityMax
+          || myVar == dailyAirRelHumidityMin
+          || myVar == dailyAirRelHumidityAvg)
         return qualityDailyRH;
 
     else if (myVar == dailyGlobalRadiation)
@@ -373,10 +373,10 @@ float findThreshold(meteoVariable myVar, float value, float stdDev, float nrStdD
 
         threshold = minValue(minValue(distWeight + threshold + zWeight, 12.f) + stdDev * nrStdDev, 15.f);
     }
-    else if (   myVar == airHumidity
-             || myVar == dailyAirHumidityMax
-             || myVar == dailyAirHumidityMin
-             || myVar == dailyAirHumidityAvg )
+    else if (   myVar == airRelHumidity
+             || myVar == dailyAirRelHumidityMax
+             || myVar == dailyAirRelHumidityMin
+             || myVar == dailyAirRelHumidityAvg )
     {
         threshold = 8.f;
         zWeight = stdDevZ / 100.f;

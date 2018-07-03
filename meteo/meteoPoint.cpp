@@ -200,7 +200,7 @@ void Crit3DMeteoPoint::emptyVarObsDataH(meteoVariable myVar, const Crit3DDate& m
                     obsDataH[i].tAir[j] = NODATA;
                 else if (myVar == precipitation)
                     obsDataH[i].prec[j] = NODATA;
-                else if (myVar == airHumidity)
+                else if (myVar == airRelHumidity)
                     obsDataH[i].rhAir[j] = NODATA;
                 else if (myVar == airDewTemperature)
                     obsDataH[i].tDew[j] = NODATA;
@@ -233,7 +233,7 @@ void Crit3DMeteoPoint::emptyVarObsDataH(meteoVariable myVar, const Crit3DDate& d
                 obsDataH[i].tAir[j] = NODATA;
             else if (myVar == precipitation)
                 obsDataH[i].prec[j] = NODATA;
-            else if (myVar == airHumidity)
+            else if (myVar == airRelHumidity)
                 obsDataH[i].rhAir[j] = NODATA;
             else if (myVar == airDewTemperature)
                 obsDataH[i].tDew[j] = NODATA;
@@ -267,11 +267,11 @@ void Crit3DMeteoPoint::emptyVarObsDataD(meteoVariable myVar, const Crit3DDate& d
             obsDataD[i].tAvg = NODATA;
         else if (myVar == dailyPrecipitation)
             obsDataD[i].prec = NODATA;
-        else if (myVar == dailyAirHumidityMax)
+        else if (myVar == dailyAirRelHumidityMax)
             obsDataD[i].rhMax = NODATA;
-        else if (myVar == dailyAirHumidityMin)
+        else if (myVar == dailyAirRelHumidityMin)
             obsDataD[i].rhMin = NODATA;
-        else if (myVar == dailyAirHumidityAvg)
+        else if (myVar == dailyAirRelHumidityAvg)
             obsDataD[i].rhAvg = NODATA;
         else if (myVar == dailyGlobalRadiation)
             obsDataD[i].globRad = NODATA;
@@ -421,7 +421,7 @@ bool Crit3DMeteoPoint::setMeteoPointValueH(const Crit3DDate& myDate, int myHour,
         obsDataH[i].tAir[h] = myValue;
     else if (myVar == precipitation)
         obsDataH[i].prec[h] = myValue;
-    else if (myVar == airHumidity)
+    else if (myVar == airRelHumidity)
         obsDataH[i].rhAir[h] = myValue;
     else if (myVar == airDewTemperature)
         obsDataH[i].tDew[h] = myValue;
@@ -456,11 +456,11 @@ bool Crit3DMeteoPoint::setMeteoPointValueD(const Crit3DDate& myDate, meteoVariab
         obsDataD[i].tAvg = myValue;
     else if (myVar == dailyPrecipitation)
         obsDataD[i].prec = myValue;
-    else if (myVar == dailyAirHumidityMax)
+    else if (myVar == dailyAirRelHumidityMax)
         obsDataD[i].rhMax = myValue;
-    else if (myVar == dailyAirHumidityMin)
+    else if (myVar == dailyAirRelHumidityMin)
         obsDataD[i].rhMin = myValue;
-    else if (myVar == dailyAirHumidityAvg)
+    else if (myVar == dailyAirRelHumidityAvg)
         obsDataD[i].rhAvg = myValue;
     else if (myVar == dailyGlobalRadiation)
         obsDataD[i].globRad = myValue;
@@ -517,7 +517,7 @@ float Crit3DMeteoPoint::getMeteoPointValueH(const Crit3DDate& myDate, int myHour
         return (obsDataH[i].tAir[h]);
     else if (myVar == precipitation)
         return (obsDataH[i].prec[h]);
-    else if (myVar == airHumidity)
+    else if (myVar == airRelHumidity)
         return (obsDataH[i].rhAir[h]);
     else if (myVar == airDewTemperature)
     {
@@ -560,11 +560,11 @@ float Crit3DMeteoPoint::getMeteoPointValueD(const Crit3DDate& myDate, meteoVaria
         return (obsDataD[i].tAvg);
     else if (myVar == dailyPrecipitation)
         return (obsDataD[i].prec);
-    else if (myVar == dailyAirHumidityMax)
+    else if (myVar == dailyAirRelHumidityMax)
         return (obsDataD[i].rhMax);
-    else if (myVar == dailyAirHumidityMin)
+    else if (myVar == dailyAirRelHumidityMin)
         return (float)(obsDataD[i].rhMin);
-    else if (myVar == dailyAirHumidityAvg)
+    else if (myVar == dailyAirRelHumidityAvg)
         return (obsDataD[i].rhAvg);
     else if (myVar == dailyGlobalRadiation)
         return (obsDataD[i].globRad);

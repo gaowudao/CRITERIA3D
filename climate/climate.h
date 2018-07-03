@@ -17,38 +17,16 @@
     #include "dbMeteoGrid.h"
 #endif
 
-enum derivedMeteoVariable { phenologyElab, winklerElab, huglinElab, fregoniElab, thomHourlyElab, thomDailyMaxElab, thomDailyMeanElab, thomDailyHoursAboveElab, thomDayTimeElab, thomNightTimeElab,
-                   correctedDegreeDaysSumElab, lastDayBelowThresholdElab, erosivityFactorElab, rainIntensityElab, koppenElab, dailyLeafWetnessElab, dailyBICElab, dailyTemperatureRangeElab,
-                   dailyTemperatureavgElab, dailyETPElab, dailyTdminElab, dailyTdmaxElab, dailyTdAvgElab
-};
-
-
-/*
-#define ELABORATION_PHENOLOGY  "Phenology"
-#define ELABORATION_WINKLER  "Winkler"
-#define ELABORATION_HUGLIN  "Huglin"
-#define ELABORATION_FREGONI  "Fregoni"
-#define ELABORATION_THOM_HOURLY  "ThomH"
-#define ELABORATION_THOM_DAILYMAX  "ThomMax"
-#define ELABORATION_THOM_DAILYMEAN  "ThomMean"
-#define ELABORATION_THOM_DAILYHOURSABOVE  "ThomHours"
-#define ELABORATION_THOM_DAYTIME  "ThomDayTime"               // calcolato da RHmax e tmin
-#define ELABORATION_THOM_NIGHTTIME  "ThomNightTime"           // calcolato da RHmax e tmin
-#define ELABORATION_CORRECTED_SUM  "CorrectedDegreeDaysSum"
-#define ELABORATION_LASTDAYBELOWTHRESHOLD  "LastDayBelowThreshold"
-#define ELABORATION_EROSIVITY "ErosivityFactor"
-#define ELABORATION_RAININTENSITY  "RainIntensity"
-#define ELABORATION_KOPPEN  "Koppen"
-#define ELABORATION_PHENO  "Phenology"
-#define DAILY_LEAFWETNESS "LeafWetness"
-#define DAILY_BIC "BIC"
-#define DAILY_TEMPERATURE_RANGE "TRange"
-#define DAILY_TAVG "Tmed"
-#define DAILY_ETP "ETP"
-#define DAILY_TDMIN "Tdmin"
-#define DAILY_TDMAX "Tdmax"
-#define DAILY_TDMED "Tdmed"
-*/
+enum meteoComputation { average, stdDev, sum, maxInList, minInList,
+                        differenceWithThreshold, lastDayBelowThreshold,
+                        sumAbove, avgAbove, stdDevAbove,
+                        percentile, median, freqPositive,
+                        daysAbove, daysBelow, consecutiveDaysAbove, consecutiveDaysBelow,
+                        prevailingWindDir,
+                        trend, mannKendall,
+                        phenology,
+                        winkler, huglin, fregoni,
+                        correctedDegreeDaysSum, erosivityFactorElab, rainIntensityElab};
 
 
 bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler,
@@ -66,13 +44,13 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoGridDbHandler* meteoGri
     QString elab2, float param2, QDate startDate, QDate endDate, int nYears, int firstYear, int lastYear,
     int nYearsMin, bool isAnomaly, bool loadData);
 
-frequencyType getAggregationFrequency(derivedMeteoVariable elab);
+frequencyType getAggregationFrequency(meteoVariable myVar);
 
-bool elaborateDailyAggregatedVar(derivedMeteoVariable elab, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float> hourlyValues, std::vector<float> *aggregatedValues, float* percValue);
+bool elaborateDailyAggregatedVar(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float> hourlyValues, std::vector<float> *aggregatedValues, float* percValue);
 
-bool elaborateDailyAggregatedVarFromDaily(derivedMeteoVariable elab, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float> *aggregatedValues, float* percValue);
+bool elaborateDailyAggregatedVarFromDaily(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> dailyValues, std::vector<float> *aggregatedValues, float* percValue);
 
-bool elaborateDailyAggregatedVarFromHourly(derivedMeteoVariable elab, Crit3DMeteoPoint meteoPoint, std::vector<float> hourlyValues, std::vector<float>* aggregatedValues);
+bool elaborateDailyAggregatedVarFromHourly(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> hourlyValues, std::vector<float>* aggregatedValues);
 
 float thomDayTime(float tempMax, float relHumMinAir);
 
@@ -88,7 +66,7 @@ float thomDailyMean(std::vector<float> hourlyValues, float* relHumAvgAir);
 
 float dailyLeafWetnessComputation(std::vector<float> hourlyValues);
 
-float dailyBIC(float prec, float etp);
+float comnputeDailyBIC(float prec, float etp);
 
 float dailyThermalRange(float Tmin, float Tmax);
 

@@ -678,8 +678,8 @@ void MainWindow::updateVariable()
             else if (myProject.currentVariable == globalIrradiance)
                 myProject.currentVariable = dailyGlobalRadiation;
 
-            else if (myProject.currentVariable == airHumidity)
-                myProject.currentVariable = dailyAirHumidityAvg;
+            else if (myProject.currentVariable == airRelHumidity)
+                myProject.currentVariable = dailyAirRelHumidityAvg;
         }
 
         else if (myProject.getFrequency() == hourly)
@@ -692,10 +692,10 @@ void MainWindow::updateVariable()
                     || (myProject.currentVariable == dailyAirTemperatureMin))
                 myProject.currentVariable = airTemperature;
 
-            else if ((myProject.currentVariable == dailyAirHumidityAvg)
-                     || (myProject.currentVariable == dailyAirHumidityMax)
-                     || (myProject.currentVariable == dailyAirHumidityMin))
-                 myProject.currentVariable = airHumidity;
+            else if ((myProject.currentVariable == dailyAirRelHumidityAvg)
+                     || (myProject.currentVariable == dailyAirRelHumidityMax)
+                     || (myProject.currentVariable == dailyAirRelHumidityMin))
+                 myProject.currentVariable = airRelHumidity;
 
             else if (myProject.currentVariable == dailyPrecipitation)
                     myProject.currentVariable = precipitation;
