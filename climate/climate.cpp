@@ -830,13 +830,6 @@ bool preElaboration(Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoi
 
         case Definitions.DAILY_LEAFWETNESS
             If passaggioDati.LoadGenericHourlySeries(pointOrGrid, Definitions.HOURLY_LEAFWETNESS, myPoint, startDate, endDate) > 0 Then
-                passaggioDati.InizializzaMbutoOrario startDate, endDate
-                passaggioDati.MbutoInversoOrario Definitions.HOURLY_LEAFWETNESS
-                preElaboration = Elaboration.elaborateDailyAggregatedVar(variable, myPoint, percValue)
-            End If
-// LC? perchè viene fatta 2 volte l'aggregazione giornaliera della hourly leafwetness
-// FT Ah, questo proprio non lo so :-)
-            If passaggioDati.LoadGenericHourlySeries(pointOrGrid, Definitions.HOURLY_LEAFWETNESS, myPoint, startDate, endDate) > 0 Then
                 passaggioDati.MbutoHourly Definitions.HOURLY_LEAFWETNESS, currentHourlySeries, myPoint.z
                 preElaboration = Elaboration.elaborateDailyAggregatedVar(Definitions.DAILY_LEAFWETNESS, myPoint, percValue)
             End If
