@@ -309,6 +309,7 @@ std::vector<float> loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbH
     // meteoPoint
     else
     {
+        // la getDailyVar fa anche l'inizializzazione
         dailyValues = meteoPointsDbHandler->getDailyVar(myError, variable, getCrit3DDate(first), getCrit3DDate(last), &firstDateDB, meteoPoint );
         if (saveValue)
         {
@@ -361,6 +362,7 @@ std::vector<float> loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDb
     // meteoPoint
     else
     {
+        // la getHourlyVar fa anche l'inizializzazione
         hourlyValues = meteoPointsDbHandler->getHourlyVar(myError, variable, getCrit3DDate(first.date()), getCrit3DDate(last.date()), &firstDateDB, meteoPoint );
         if (saveValue)
         {
