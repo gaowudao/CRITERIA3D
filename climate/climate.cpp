@@ -180,12 +180,11 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoGridDbHandler* meteoGri
 
             if (loadData)
             {
-//                dataLoaded = Elaboration.preElaboration(pointOrGrid, variable, elab1, myPoint, _
+//                dataLoaded = preElaboration(pointOrGrid, variable, elab1, myPoint, _
 //                   startDate, endDate, perc_data)
             }
             else
             {
-                // ricordarsi di usare imbuto se loadData è falso
                 dataLoaded = true;
             }
 
@@ -214,11 +213,11 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoGridDbHandler* meteoGri
                     *myError = "Missing elaboration";
                     return false;
                 }
-//                result = computeStatistic(myVar, firstYear, lastYear, startD, endD, nYears, elab1, param1, elab2, param2, .z)
+//                result = computeStatistic(dailyValues, firstYear, lastYear, startD, endD, nYears, firstDateDailyVar, elab1.toStdString(), param1, elab2.toStdString(), param2, myHeight);
 
                 if (isAnomaly)
                 {
-//                    ElaborationOnPoint = AnomalyOnPoint(myPoint, result)
+                    return anomalyOnPoint(meteoPoint, result);
                 }
                 else
                 {
@@ -242,6 +241,32 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoGridDbHandler* meteoGri
     }
 
     return false;
+
+}
+
+bool anomalyOnPoint(Crit3DMeteoPoint* meteoPoint, float refValue)
+{
+
+    bool anomalyOnPoint = (refValue != NODATA && meteoPoint->elaboration != NODATA);
+
+    if (anomalyOnPoint)
+    {
+        meteoPoint->anomaly = meteoPoint->elaboration - refValue;
+        if (refValue != 0)
+        {
+            meteoPoint->anomalyPercentage = (meteoPoint->elaboration - refValue) / abs(refValue) * 100;
+        }
+        else
+        {
+            meteoPoint->anomalyPercentage = NODATA;
+        }
+    }
+    else
+    {
+        meteoPoint->anomaly = NODATA;
+        meteoPoint->anomalyPercentage = NODATA;
+    }
+    return anomalyOnPoint;
 
 }
 

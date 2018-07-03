@@ -52,6 +52,8 @@ bool elaborateDailyAggregatedVarFromDaily(meteoVariable myVar, Crit3DMeteoPoint 
 
 bool elaborateDailyAggregatedVarFromHourly(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> hourlyValues, std::vector<float>* aggregatedValues);
 
+bool anomalyOnPoint(Crit3DMeteoPoint* meteoPoint, float refValue);
+
 float thomDayTime(float tempMax, float relHumMinAir);
 
 float thomNightTime(float tempMin, float relHumMaxAir);
