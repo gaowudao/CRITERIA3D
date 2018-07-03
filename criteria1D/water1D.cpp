@@ -54,7 +54,7 @@ void initializeWater(Criteria1D* myCase)
 
 // TODO extend to geometric layers
 /*!
- * \brief Heuristic algorithm for 1D soil water infiltration and redistribution
+ * \brief Algorithm for 1D soil water infiltration and redistribution
  * \param myCase
  * \param myError
  * \param prec      [mm]

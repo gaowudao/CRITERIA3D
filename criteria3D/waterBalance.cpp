@@ -72,6 +72,7 @@ bool setCrit3DSoils(Crit3DProject* myProject)
     {
         for (int horizIndex = 0; horizIndex < myProject->soilList[soilIndex].nrHorizons; horizIndex++)
         {
+            // TODO cec
             myHorizon = &(myProject->soilList[soilIndex].horizon[horizIndex]);
             if ((myHorizon->texture.classUSDA > 0) && (myHorizon->texture.classUSDA <= 12))
             {

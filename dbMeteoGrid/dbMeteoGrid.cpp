@@ -1481,13 +1481,13 @@ std::vector<float> Crit3DMeteoGridDbHandler::loadGridDailyVarFixedFields(std::st
                 previousDate = date;
             }
 
-
         }
 
     }
 
     return dailyVarList;
 }
+
 
 std::vector<float> Crit3DMeteoGridDbHandler::loadGridHourlyVar(std::string *myError, QString meteoPoint, meteoVariable variable, QDateTime first, QDateTime last, QDateTime* firstDateDB)
 {
@@ -1565,7 +1565,6 @@ std::vector<float> Crit3DMeteoGridDbHandler::loadGridHourlyVar(std::string *myEr
                 previousDateTime = dateTime;
             }
 
-
         }
 
     }
@@ -1573,6 +1572,7 @@ std::vector<float> Crit3DMeteoGridDbHandler::loadGridHourlyVar(std::string *myEr
     return hourlyVarList;
 
 }
+
 
 std::vector<float> Crit3DMeteoGridDbHandler::loadGridHourlyVarFixedFields(std::string *myError, QString meteoPoint, meteoVariable variable, QDateTime first, QDateTime last, QDateTime* firstDateDB)
 {

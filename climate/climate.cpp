@@ -272,13 +272,14 @@ bool anomalyOnPoint(Crit3DMeteoPoint* meteoPoint, float refValue)
 
 
 std::vector<float> loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler,
-   Crit3DMeteoGridDbHandler meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool pointOrGrid,
-   meteoVariable variable, QDate first, QDate last, bool saveValue)
+        Crit3DMeteoGridDbHandler meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid,
+        meteoVariable variable, QDate first, QDate last, bool saveValue)
 {
     std::vector<float> dailyValues;
     QDate firstDateDB;
-    //grid
-    if (pointOrGrid)
+
+    // meteoGrid
+    if (isMeteoGrid)
     {
         if (meteoGridDbHandler.gridStructure().isFixedFields())
         {
@@ -325,13 +326,14 @@ std::vector<float> loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbH
 }
 
 std::vector<float> loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler,
-           Crit3DMeteoGridDbHandler meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool pointOrGrid,
+           Crit3DMeteoGridDbHandler meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid,
            meteoVariable variable, QDateTime first, QDateTime last, bool saveValue)
 {
     std::vector<float> hourlyValues;
     QDateTime firstDateDB;
-    //grid
-    if (pointOrGrid)
+
+    // meteoGrid
+    if (isMeteoGrid)
     {
         if (meteoGridDbHandler.gridStructure().isFixedFields())
         {
@@ -351,6 +353,7 @@ std::vector<float> loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDb
             int row, col;
             int initialize = 1;
             meteoGridDbHandler.meteoGrid()->findMeteoPointFromId(&row, &col, meteoPoint->id);
+
             for (unsigned int i = 0; i < hourlyValues.size(); i++)
             {
                 meteoGridDbHandler.meteoGrid()->fillMeteoPointHourlyValue(row, col, numberOfDays, initialize,  Crit3DDate(firstDateDB.date().day(), firstDateDB.date().month(), firstDateDB.date().year()), firstDateDB.time().hour(), firstDateDB.time().minute(), variable, hourlyValues[i]) ;
@@ -431,6 +434,7 @@ float thomH(float tempAvg, float relHumAvgAir)
     else
         return NODATA;
 }
+
 
 // compute # hours thom >  threshold per day
 int thomDailyNHoursAbove(std::vector<float> hourlyValues, float* relHumAvgAir)

@@ -180,9 +180,8 @@ void Crit3DMeteoPoint::initializeObsDataM(int numberOfMonths, int month, int yea
         obsDataM[i].globRad = NODATA;
 
     }
-
-
 }
+
 
 void Crit3DMeteoPoint::emptyVarObsDataH(meteoVariable myVar, const Crit3DDate& myDate)
 {
