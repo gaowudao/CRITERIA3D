@@ -32,7 +32,7 @@ Project::Project()
     meteoPointsColorScale = new Crit3DColorScale();
     meteoPointsDbHandler = NULL;
     meteoGridDbHandler = NULL;
-    gridAggregationMethod = gridAggregationMethod::aggrAvg;
+    grdAggrMethod = gridAggregationMethod::aggrAvg;
 
     radiationMaps = NULL;
 }
@@ -739,7 +739,7 @@ bool Project::interpolateGrid(meteoVariable myVar, frequencyType myFrequency, co
         {
             return false;
         }
-        this->meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, myFrequency, myTime.date, myTime.getHour(), myTime.getMinutes(), &(this->DTM), this->dataRaster, gridAggregationMethod);
+        this->meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, myFrequency, myTime.date, myTime.getHour(), myTime.getMinutes(), &(this->DTM), this->dataRaster, this->grdAggrMethod);
         this->meteoGridDbHandler->meteoGrid()->fillMeteoRaster();
     }
     else

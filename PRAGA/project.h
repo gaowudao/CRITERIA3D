@@ -71,7 +71,7 @@
 
         meteoVariable currentVariable;
 
-        gridAggregationMethod gridAggregationMethod;
+        gridAggregationMethod grdAggrMethod;
 
         Project();
 
