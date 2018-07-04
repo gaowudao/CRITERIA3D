@@ -814,7 +814,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
     */
 
     std::vector<float> aggregatedValues;
-    bool preElaboration;
+    bool preElaboration = false;
 
      /*
     switch(variable)
@@ -830,110 +830,119 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
 
         case dailyThomDaytime:
         {
-            if ( loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_RHmin, myPoint, startDate, endDate))
+            if ( loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirRelHumidityMin, startDate, endDate))
             {
                     preElaboration = true;
             }
             if (preElaboration)
             {
                 preElaboration = false;
-                passaggioDati.InizializzaMbuto startDate, endDate
-                passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_RHmin
-                If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
-                        preElaboration = True
-                End If
-                If preElaboration Then
-                    passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMAX
-                    preElaboration = Elaboration.elaborateDailyAggregatedVar(Definitions.ELABORATION_THOM_DAYTIME, myPoint, percValue)
-                End If
+                if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirTemperatureMax, startDate, endDate))
+                {
+                        preElaboration = true;
+                }
+                if (preElaboration)
+                {
+                    preElaboration = elaborateDailyAggregatedVar(dailyThomDaytime, *meteoPoint, &aggregatedValues, percValue);
+                }
             }
         }
 
         case dailyThomNighttime:
-            If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_RHmax, myPoint, startDate, endDate) > 0 Then
-                    preElaboration = True
-            End If
-            If preElaboration Then
-                preElaboration = False
-                passaggioDati.InizializzaMbuto startDate, endDate
-                passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_RHmax
-                If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
-                        preElaboration = True
-                End If
-                If preElaboration Then
-                    passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMIN
-                    preElaboration = Elaboration.elaborateDailyAggregatedVar(Definitions.ELABORATION_THOM_NIGHTTIME, myPoint, percValue)
-                End If
-            End If
-
+        {
+            if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirRelHumidityMax, startDate, endDate) )
+            {
+                preElaboration = true;
+            }
+            if (preElaboration)
+            {
+                preElaboration = false;
+                if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirTemperatureMin, startDate, endDate))
+                {
+                    preElaboration = true;
+                }
+                if (preElaboration)
+                {
+                    preElaboration = elaborateDailyAggregatedVar(dailyThomNighttime, *meteoPoint, &aggregatedValues, percValue);
+                }
+            }
+        }
         case dailyThomAvg: case dailyThomMax: case dailyThomHoursAbove:
-            If loadHourlyVarSeries(isMeteoGrid, Definitions.HOURLY_TAVG, myPoint, startDate, endDate) > 0 Then
-                passaggioDati.InizializzaMbutoOrario startDate, endDate
-                passaggioDati.MbutoInversoOrario Definitions.HOURLY_TAVG
-                If loadHourlyVarSeries(isMeteoGrid, Definitions.HOURLY_RHAVG, myPoint, startDate, endDate) > 0 Then
-                    passaggioDati.MbutoInversoOrario Definitions.HOURLY_RHAVG
-                    preElaboration = Elaboration.elaborateDailyAggregatedVar(variable, myPoint, percValue)
-                End If
-            End If
+        {
 
+            if (loadHourlyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, airTemperature, QDateTime(startDate,QTime(0,0,0)), QDateTime(endDate,QTime(0,0,0))) )
+            {
+                if (loadHourlyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, airRelHumidity, QDateTime(startDate,QTime(0,0,0)), QDateTime(endDate,QTime(0,0,0))) )
+                {
+                    preElaboration = elaborateDailyAggregatedVar(variable, *meteoPoint, &aggregatedValues, percValue);
+                }
+            }
+        }
         case dailyBIC:
-            If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_ETP, myPoint, startDate, endDate) > 0 Then
-                    preElaboration = True
-            ElseIf Environment.AutomaticETP Then
-                If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
-                        preElaboration = True
-                End If
-                If preElaboration Then
-                    preElaboration = False
-                    passaggioDati.InizializzaMbuto startDate, endDate
-                    passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMIN
-                    If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
-                            preElaboration = True
-                    End If
-                    If preElaboration Then
-                        passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMAX
-                        preElaboration = Elaboration.elaborateDailyAggregatedVar(Definitions.DAILY_ETP, myPoint, percValue)
-                    End If
-                End If
-            End If
-            If preElaboration Then
-                preElaboration = False
-                passaggioDati.InizializzaMbuto startDate, endDate
-                passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_ETP
-                If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_PREC, myPoint, startDate, endDate) > 0 Then
-                        preElaboration = True
-                End If
-                If preElaboration Then
-                    passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_PREC
-                    preElaboration = Elaboration.elaborateDailyAggregatedVar(Definitions.DAILY_BIC, myPoint, percValue)
-                End If
-            End If
+        {
+            if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyReferenceEvapotranspiration, startDate, endDate))
+            {
+                preElaboration = true;
+            }
+            else if (Environment.AutomaticETP)
+            {
+                if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirTemperatureMin, startDate, endDate))
+                {
+                    preElaboration = true;
+                }
+                if (preElaboration)
+                {
+                    preElaboration = false;
+                    if ( loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirTemperatureMax, startDate, endDate))
+                    {
+                        preElaboration = true;
+                    }
+                    if (preElaboration)
+                    {
+                        preElaboration = elaborateDailyAggregatedVar(dailyReferenceEvapotranspiration, *meteoPoint, &aggregatedValues, percValue);
+                    }
+                }
+            }
+            if (preElaboration)
+            {
+                preElaboration = false;
+                if ( loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyPrecipitation, startDate, endDate) )
+                {
+                    preElaboration = true;
+                }
+                if (preElaboration)
+                {
+                    preElaboration = elaborateDailyAggregatedVar(dailyBIC, *meteoPoint, &aggregatedValues, percValue);
+                }
+            }
+        }
 
         case dailyAirTemperatureRange:
-            If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
+        {
+            if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirTemperatureMin, myPoint, startDate, endDate))
                     preElaboration = True
             End If
             If preElaboration Then
                 preElaboration = False
                 passaggioDati.InizializzaMbuto startDate, endDate
-                passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMIN
-                If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
+                passaggioDati.MbutoInversoGiornaliero dailyAirTemperatureMin
+                If loadDailyVarSeries(isMeteoGrid, dailyAirTemperatureMax, myPoint, startDate, endDate) > 0 Then
                         preElaboration = True
                 End If
                 If preElaboration Then
-                    passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMAX
-                    preElaboration = Elaboration.elaborateDailyAggregatedVar(Definitions.DAILY_TEMPERATURE_RANGE, myPoint, percValue)
+                    passaggioDati.MbutoInversoGiornaliero dailyAirTemperatureMax
+                    preElaboration = Elaboration.elaborateDailyAggregatedVar(dailyAirTemperatureRange, myPoint, percValue)
                 End If
             End If
-
+        }
         case dailyAirDewTemperatureMax
-            If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
+            If loadDailyVarSeries(isMeteoGrid, dailyAirTemperatureMax, myPoint, startDate, endDate) > 0 Then
                     preElaboration = True
             End If
             If preElaboration Then
                 preElaboration = False
                 passaggioDati.InizializzaMbuto startDate, endDate
-                passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMAX
+                passaggioDati.MbutoInversoGiornaliero dailyAirTemperatureMax
                 If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_RHmin, myPoint, startDate, endDate) > 0 Then
                         preElaboration = True
                 End If
@@ -944,13 +953,13 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
             End If
 
         case dailyAirDewTemperatureMin
-            If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
+            If loadDailyVarSeries(isMeteoGrid, dailyAirTemperatureMin, myPoint, startDate, endDate) > 0 Then
                     preElaboration = True
             End If
             If preElaboration Then
                 preElaboration = False
                 passaggioDati.InizializzaMbuto startDate, endDate
-                passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMIN
+                passaggioDati.MbutoInversoGiornaliero dailyAirTemperatureMin
                 If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_RHmax, myPoint, startDate, endDate) > 0 Then
                         preElaboration = True
                 End If
@@ -966,18 +975,18 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     preElaboration = True
 
             ElseIf Environment.AutomaticTmed Then
-                If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
+                If loadDailyVarSeries(isMeteoGrid, dailyAirTemperatureMin, myPoint, startDate, endDate) > 0 Then
                         preElaboration = True
                 End If
                 If preElaboration Then
                     preElaboration = False
                     passaggioDati.InizializzaMbuto startDate, endDate
-                    passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMIN
-                    If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
+                    passaggioDati.MbutoInversoGiornaliero dailyAirTemperatureMin
+                    If loadDailyVarSeries(isMeteoGrid, dailyAirTemperatureMax, myPoint, startDate, endDate) > 0 Then
                             preElaboration = True
                     End If
                     If preElaboration Then
-                        passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMAX
+                        passaggioDati.MbutoInversoGiornaliero dailyAirTemperatureMax
                         preElaboration = Elaboration.elaborateDailyAggregatedVar(Definitions.DAILY_TAVG, myPoint, percValue)
                     End If
                 End If
@@ -989,18 +998,18 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     preElaboration = True
 
             ElseIf Environment.AutomaticETP Then
-                If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
+                If loadDailyVarSeries(isMeteoGrid, dailyAirTemperatureMin, myPoint, startDate, endDate) > 0 Then
                         preElaboration = True
                 End If
                 If preElaboration Then
                     preElaboration = False
                     passaggioDati.InizializzaMbuto startDate, endDate
-                    passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMIN
-                    If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
+                    passaggioDati.MbutoInversoGiornaliero dailyAirTemperatureMin
+                    If loadDailyVarSeries(isMeteoGrid, dailyAirTemperatureMax, myPoint, startDate, endDate) > 0 Then
                             preElaboration = True
                     End If
                     If preElaboration Then
-                        passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMAX
+                        passaggioDati.MbutoInversoGiornaliero dailyAirTemperatureMax
                         preElaboration = Elaboration.elaborateDailyAggregatedVar(Definitions.DAILY_ETP, myPoint, percValue)
                     End If
                 End If
@@ -1014,19 +1023,19 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
             {
 
                 case huglin:
-                    If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
+                    If loadDailyVarSeries(isMeteoGrid, dailyAirTemperatureMin, myPoint, startDate, endDate) > 0 Then
                             preElaboration = True
                     End If
                     If preElaboration Then
                         preElaboration = False
                         passaggioDati.InizializzaMbuto startDate, endDate
-                        passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMIN
-                        If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
+                        passaggioDati.MbutoInversoGiornaliero dailyAirTemperatureMin
+                        If loadDailyVarSeries(isMeteoGrid, dailyAirTemperatureMax, myPoint, startDate, endDate) > 0 Then
                                 preElaboration = True
                         End If
                         If preElaboration Then
                             preElaboration = False
-                            passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMAX
+                            passaggioDati.MbutoInversoGiornaliero dailyAirTemperatureMax
                             If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TAVG, myPoint, startDate, endDate) > 0 Then
                                 preElaboration = True
                             ElseIf Environment.AutomaticTmed Then
@@ -1037,33 +1046,33 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
 
                 case winkler: case correctedDegreeDaysSum: case fregoni
 
-                    If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
+                    If loadDailyVarSeries(isMeteoGrid, dailyAirTemperatureMin, myPoint, startDate, endDate) > 0 Then
                             preElaboration = True
                     End If
                     If preElaboration Then
                         preElaboration = False
                         passaggioDati.InizializzaMbuto startDate, endDate
-                        passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMIN
-                        If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
+                        passaggioDati.MbutoInversoGiornaliero dailyAirTemperatureMin
+                        If loadDailyVarSeries(isMeteoGrid, dailyAirTemperatureMax, myPoint, startDate, endDate) > 0 Then
                                 preElaboration = True
                         End If
-                        If preElaboration Then passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMAX
+                        If preElaboration Then passaggioDati.MbutoInversoGiornaliero dailyAirTemperatureMax
                     End If
 
                 case phenology:
-                    If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
+                    If loadDailyVarSeries(isMeteoGrid, dailyAirTemperatureMin, myPoint, startDate, endDate) > 0 Then
                             preElaboration = True
                     End If
                     If preElaboration Then
                         preElaboration = False
                         passaggioDati.InizializzaMbuto startDate, endDate
-                        passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMIN
-                        If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
+                        passaggioDati.MbutoInversoGiornaliero dailyAirTemperatureMin
+                        If loadDailyVarSeries(isMeteoGrid, dailyAirTemperatureMax, myPoint, startDate, endDate) > 0 Then
                                 preElaboration = True
                         End If
                         If preElaboration Then
                             preElaboration = False
-                            passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMAX
+                            passaggioDati.MbutoInversoGiornaliero dailyAirTemperatureMax
                             If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_PREC, myPoint, startDate, endDate) > 0 Then
                                     preElaboration = True
                             End If
