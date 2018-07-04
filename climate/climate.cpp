@@ -302,12 +302,13 @@ bool loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
         dailyValues = meteoPointsDbHandler->getDailyVar(myError, variable, getCrit3DDate(first), getCrit3DDate(last), &firstDateDB, meteoPoint );
     }
 
+    firstDateDailyVar = getCrit3DDate(firstDateDB);
+
     for (unsigned int i = 0; i < dailyValues.size(); i++)
     {
         meteoPoint->setMeteoPointValueD(Crit3DDate(firstDateDB.day(), firstDateDB.month(), firstDateDB.year()), variable, dailyValues[i]);
-        firstDateDB.addDays(1);
+        firstDateDB = firstDateDB.addDays(1);
     }
-    firstDateDailyVar = getCrit3DDate(firstDateDB);
 
     if ( dailyValues.empty() )
     {
@@ -351,12 +352,14 @@ bool loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* meteo
         hourlyValues = meteoPointsDbHandler->getHourlyVar(myError, variable, getCrit3DDate(first.date()), getCrit3DDate(last.date()), &firstDateDB, meteoPoint );
     }
 
+    firstDateDailyVar = getCrit3DDate(firstDateDB.date());
+
     for (unsigned int i = 0; i < hourlyValues.size(); i++)
     {
         meteoPoint->setMeteoPointValueH(Crit3DDate(firstDateDB.date().day(), firstDateDB.date().month(), firstDateDB.date().year()), firstDateDB.time().hour(), firstDateDB.time().minute(), variable, hourlyValues[i]);
-        firstDateDB.addSecs(3600);
+        firstDateDB = firstDateDB.addSecs(3600);
     }
-    firstDateDailyVar = getCrit3DDate(firstDateDB.date());
+
 
     if ( hourlyValues.empty() )
     {
