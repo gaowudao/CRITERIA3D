@@ -829,11 +829,14 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
         }
 
         case dailyThomDaytime:
-            If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_RHmin, myPoint, startDate, endDate) > 0 Then
-                    preElaboration = True
-            End If
-            If preElaboration Then
-                preElaboration = False
+        {
+            if ( loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_RHmin, myPoint, startDate, endDate))
+            {
+                    preElaboration = true;
+            }
+            if (preElaboration)
+            {
+                preElaboration = false;
                 passaggioDati.InizializzaMbuto startDate, endDate
                 passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_RHmin
                 If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
@@ -843,7 +846,8 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMAX
                     preElaboration = Elaboration.elaborateDailyAggregatedVar(Definitions.ELABORATION_THOM_DAYTIME, myPoint, percValue)
                 End If
-            End If
+            }
+        }
 
         case dailyThomNighttime:
             If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_RHmax, myPoint, startDate, endDate) > 0 Then
