@@ -146,7 +146,7 @@ bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* 
 //                            {
 //                                // LC se qualche problema su una cella, deve interrompere e ritornare false oppure no?
                                   // FT credo di no, ma lascio decidere a Gabri
-                                  // GA deve tornare false solo se nemmeno una cella ha dato valido (v. VB)
+                                  // GA  deve tornare false solo se nemmeno una cella ha dato valido (v. VB)
 //                                return false;
 //                            }
 
