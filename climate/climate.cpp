@@ -15,7 +15,7 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
 {
 
 
-    bool pointOrGrid = 0; // meteoPoint
+    bool isMeteoGrid = 0; // meteoPoint
 
 //    Dim row As Long, col As Long, i As Long
 //    Dim result As Single
@@ -65,7 +65,7 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
 
 //                        If elab1 = Definitions.ELABORATION_PHENO Then currentPheno.setPhenoPoint i
 
-//                        If ElaborationOnPoint(meteoPoint(i).Point, pointOrGrid, variable, _
+//                        If ElaborationOnPoint(meteoPoint(i).Point, isMeteoGrid, variable, _
 //                            elab1, currentParameter1, elab2, Parameter2, _
 //                            startDate, endDate, nYears, firstYear, lastYear, _
 //                            nYearsMin, _
@@ -85,7 +85,7 @@ bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* 
     int nYearsMin, int firstYearClimate, int lastYearClimate)
 {
 
-    bool pointOrGrid = 1; // grid
+    bool isMeteoGrid = 1; // grid
     float currentParameter1;
 
     std::string id;
@@ -140,7 +140,7 @@ bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* 
                     currentParameter1 = param1;
                 }
 
-//                            if  ( !elaborationOnPoint(&(meteoGridDbHandler->meteoGrid()->meteoPoint(row,col)), pointOrGrid, variable,
+//                            if  ( !elaborationOnPoint(&(meteoGridDbHandler->meteoGrid()->meteoPoint(row,col)), isMeteoGrid, variable,
 //                                elab1, currentParameter1, elab2, param2, startDate, endDate, nYears, firstYear, lastYear,
 //                                nYearsMin, isAnomaly, true))
 //                            {
@@ -163,15 +163,18 @@ bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* 
 
 
 bool elaborationOnPoint(std::string *myError, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler,
-    Crit3DMeteoPoint* meteoPoint, bool pointOrGrid, meteoVariable variable, QString elab1, float param1,
+    Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, QString elab1, float param1,
     QString elab2, float param2, QDate startDate, QDate endDate, int nYears, int firstYear, int lastYear,
     int nYearsMin, bool isAnomaly, bool loadData)
 {
 
 
-//    Dim perc_data As Single
+    float percValue;
     bool dataLoaded;
     float result;
+
+    Crit3DMeteoPoint* meteoPointTemp = new Crit3DMeteoPoint;
+    meteoPointTemp->id = meteoPoint->id;
 
     if (!isAnomaly || meteoPoint->anomaly != NODATA)
     {
@@ -180,8 +183,7 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoGridDbHandler* meteoGri
 
             if (loadData)
             {
-//                dataLoaded = preElaboration(pointOrGrid, variable, elab1, myPoint, _
-//                   startDate, endDate, perc_data)
+                dataLoaded = preElaboration(meteoGridDbHandler, meteoPointsDbHandler, meteoPointTemp, isMeteoGrid, variable, elab1, startDate, endDate, &percValue);
             }
             else
             {
@@ -271,9 +273,9 @@ bool anomalyOnPoint(Crit3DMeteoPoint* meteoPoint, float refValue)
 }
 
 
-std::vector<float> loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler,
+bool loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler,
         Crit3DMeteoGridDbHandler meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid,
-        meteoVariable variable, QDate first, QDate last, bool saveValue)
+        meteoVariable variable, QDate first, QDate last)
 {
     std::vector<float> dailyValues;
     QDate firstDateDB;
@@ -289,45 +291,38 @@ std::vector<float> loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbH
         {
             dailyValues = meteoGridDbHandler.loadGridDailyVar(myError, QString::fromStdString(meteoPoint->id), variable, first, last, &firstDateDB);
         }
-        if (saveValue)
-        {
-            // LC la serie deve iniziare con la prima data utile oppure con la data richiesta e quindi NODATA se non c'è il valore corrispondente a tale dato=
-            //int numberOfDays = first.daysTo(last) + 1;
-            // FT non mi è chiaro
-            // GA in VB usiamo una variabile (firstDateDailyVar) che contiene la prima data della serie giornaliera, quindi senza riempire di NODATA il pezzo vuoto
-            int numberOfDays = firstDateDB.daysTo(last) + 1;
-            int row, col;
-            int initialize = 1;
-            meteoGridDbHandler.meteoGrid()->findMeteoPointFromId(&row, &col, meteoPoint->id);
-            for (int i = 0; i < dailyValues.size(); i++)
-            {
-                meteoGridDbHandler.meteoGrid()->fillMeteoPointDailyValue(row, col, numberOfDays, initialize, Crit3DDate(firstDateDB.day(), firstDateDB.month(), firstDateDB.year()), variable, dailyValues[i]) ;
-                initialize = 0;
-                firstDateDB.addDays(1);
-            }
-        }
+
+        int numberOfDays = firstDateDB.daysTo(last) + 1;
+        meteoPoint->initializeObsDataD(numberOfDays, getCrit3DDate(firstDateDB));
     }
     // meteoPoint
     else
     {
         // la getDailyVar fa anche l'inizializzazione
         dailyValues = meteoPointsDbHandler->getDailyVar(myError, variable, getCrit3DDate(first), getCrit3DDate(last), &firstDateDB, meteoPoint );
-        if (saveValue)
-        {
-            for (unsigned int i = 0; i < dailyValues.size(); i++)
-            {
-                meteoPoint->setMeteoPointValueD(Crit3DDate(firstDateDB.day(), firstDateDB.month(), firstDateDB.year()), variable, dailyValues[i]);
-                firstDateDB.addDays(1);
-            }
-        }
     }
-    return dailyValues;
+
+    for (unsigned int i = 0; i < dailyValues.size(); i++)
+    {
+        meteoPoint->setMeteoPointValueD(Crit3DDate(firstDateDB.day(), firstDateDB.month(), firstDateDB.year()), variable, dailyValues[i]);
+        firstDateDB.addDays(1);
+    }
+    firstDateDailyVar = getCrit3DDate(firstDateDB);
+
+    if ( dailyValues.empty() )
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
 
 }
 
-std::vector<float> loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler,
+bool loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler,
            Crit3DMeteoGridDbHandler meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid,
-           meteoVariable variable, QDateTime first, QDateTime last, bool saveValue)
+           meteoVariable variable, QDateTime first, QDateTime last)
 {
     std::vector<float> hourlyValues;
     QDateTime firstDateDB;
@@ -343,40 +338,34 @@ std::vector<float> loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDb
         {
             hourlyValues = meteoGridDbHandler.loadGridHourlyVar(myError, QString::fromStdString(meteoPoint->id), variable, first, last, &firstDateDB);
         }
-        if (saveValue)
-        {
-            // LC la serie deve iniziare con la prima data utile oppure con la data richeista e quindi NODATA se non c'è il valore corrispondente a tale dato=
-            //int numberOfDays = first.date().daysTo(last.date());
-            // FT non mi è chiaro
-            // GA vedi commento per serie giornaliera
-            int numberOfDays = firstDateDB.date().daysTo(last.date());
-            int row, col;
-            int initialize = 1;
-            meteoGridDbHandler.meteoGrid()->findMeteoPointFromId(&row, &col, meteoPoint->id);
 
-            for (unsigned int i = 0; i < hourlyValues.size(); i++)
-            {
-                meteoGridDbHandler.meteoGrid()->fillMeteoPointHourlyValue(row, col, numberOfDays, initialize,  Crit3DDate(firstDateDB.date().day(), firstDateDB.date().month(), firstDateDB.date().year()), firstDateDB.time().hour(), firstDateDB.time().minute(), variable, hourlyValues[i]) ;
-                initialize = 0;
-                firstDateDB.addSecs(3600);
-            }
-        }
+        int myHourlyFraction = 1;
+        int numberOfDays = firstDateDB.date().daysTo(last.date());
+        meteoPoint->initializeObsDataH(myHourlyFraction, numberOfDays, getCrit3DDate(firstDateDB.date()));
+
     }
     // meteoPoint
     else
     {
         // la getHourlyVar fa anche l'inizializzazione
         hourlyValues = meteoPointsDbHandler->getHourlyVar(myError, variable, getCrit3DDate(first.date()), getCrit3DDate(last.date()), &firstDateDB, meteoPoint );
-        if (saveValue)
-        {
-            for (unsigned int i = 0; i < hourlyValues.size(); i++)
-            {
-                meteoPoint->setMeteoPointValueH(Crit3DDate(firstDateDB.date().day(), firstDateDB.date().month(), firstDateDB.date().year()), firstDateDB.time().hour(), firstDateDB.time().minute(), variable, hourlyValues[i]);
-                firstDateDB.addSecs(3600);
-            }
-        }
     }
-    return hourlyValues;
+
+    for (unsigned int i = 0; i < hourlyValues.size(); i++)
+    {
+        meteoPoint->setMeteoPointValueH(Crit3DDate(firstDateDB.date().day(), firstDateDB.date().month(), firstDateDB.date().year()), firstDateDB.time().hour(), firstDateDB.time().minute(), variable, hourlyValues[i]);
+        firstDateDB.addSecs(3600);
+    }
+    firstDateDailyVar = getCrit3DDate(firstDateDB.date());
+
+    if ( hourlyValues.empty() )
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
 
 }
 
@@ -806,7 +795,7 @@ bool elaborateDailyAggregatedVarFromHourly(meteoVariable myVar, Crit3DMeteoPoint
 
 
 
-bool preElaboration(Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoint, bool pointOrGrid, meteoVariable variable, QString elab1,
+bool preElaboration(Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, QString elab1,
     QDate startDate, QDate endDate, float* percValue)
 {
 
@@ -825,30 +814,28 @@ bool preElaboration(Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoi
     End If
     //////////
     */
-/*
-// LC c'è confusione tra elaboration e variable fa lo switch su variable ma ci sono elaboration e variabili. Ho messo tutto in un unico enum visto che comunque non sono davvero suddivisi
-// GA sono considerate variabili ai fini del calcolo tutte quelle grandezze giornaliere che possono essere elaborate con le stesse procedure delle variabili primarie
-// LC inoltre ci sono elaborazioni che non trovo nell'interfaccia grafica, sono state rimosse? (es. ELABORATION_HUGLIN come si seleziona? tutte le "elaboerazioni specifiche")
-// GA queste sono vere elaborazioni, non riconducibili a variabili giornaliere. quelle che dici le trovi selezionando Tmin o Tmax nelle variabili, perché sono calcolate a partire da quelle
-// FT Si caricano con dei moduli appositi, ma qui lo sa meglio Gabri
-    case variable
 
+    switch(variable)
+    {
+    /*
 
-        case Definitions.DAILY_LEAFWETNESS
-            If passaggioDati.LoadGenericHourlySeries(pointOrGrid, Definitions.HOURLY_LEAFWETNESS, myPoint, startDate, endDate) > 0 Then
+        case dailyLeafWetness:
+        {
+            if loadHourlyVarSeries(isMeteoGrid, leafWetness, meteoPoint, startDate, endDate) > 0
+            {
                 passaggioDati.MbutoHourly Definitions.HOURLY_LEAFWETNESS, currentHourlySeries, myPoint.z
                 preElaboration = Elaboration.elaborateDailyAggregatedVar(Definitions.DAILY_LEAFWETNESS, myPoint, percValue)
-            End If
+            }
 
-        case Definitions.ELABORATION_THOM_DAYTIME
-            If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_RHmin, myPoint, startDate, endDate) > 0 Then
+        case dailyThomDaytime:
+            If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_RHmin, myPoint, startDate, endDate) > 0 Then
                     preElaboration = True
             End If
             If preElaboration Then
                 preElaboration = False
                 passaggioDati.InizializzaMbuto startDate, endDate
                 passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_RHmin
-                If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
+                If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
                         preElaboration = True
                 End If
                 If preElaboration Then
@@ -857,15 +844,15 @@ bool preElaboration(Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoi
                 End If
             End If
 
-        case Definitions.ELABORATION_THOM_NIGHTTIME
-            If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_RHmax, myPoint, startDate, endDate) > 0 Then
+        case dailyThomNighttime:
+            If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_RHmax, myPoint, startDate, endDate) > 0 Then
                     preElaboration = True
             End If
             If preElaboration Then
                 preElaboration = False
                 passaggioDati.InizializzaMbuto startDate, endDate
                 passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_RHmax
-                If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
+                If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
                         preElaboration = True
                 End If
                 If preElaboration Then
@@ -874,28 +861,28 @@ bool preElaboration(Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoi
                 End If
             End If
 
-        case Definitions.ELABORATION_THOM_DAILYMEAN, Definitions.ELABORATION_THOM_DAILYMAX, Definitions.ELABORATION_THOM_DAILYHOURSABOVE
-            If passaggioDati.LoadGenericHourlySeries(pointOrGrid, Definitions.HOURLY_TAVG, myPoint, startDate, endDate) > 0 Then
+        case dailyThomAvg: case dailyThomMax: case dailyThomHoursAbove:
+            If loadHourlyVarSeries(isMeteoGrid, Definitions.HOURLY_TAVG, myPoint, startDate, endDate) > 0 Then
                 passaggioDati.InizializzaMbutoOrario startDate, endDate
                 passaggioDati.MbutoInversoOrario Definitions.HOURLY_TAVG
-                If passaggioDati.LoadGenericHourlySeries(pointOrGrid, Definitions.HOURLY_RHAVG, myPoint, startDate, endDate) > 0 Then
+                If loadHourlyVarSeries(isMeteoGrid, Definitions.HOURLY_RHAVG, myPoint, startDate, endDate) > 0 Then
                     passaggioDati.MbutoInversoOrario Definitions.HOURLY_RHAVG
                     preElaboration = Elaboration.elaborateDailyAggregatedVar(variable, myPoint, percValue)
                 End If
             End If
 
-        case Definitions.DAILY_BIC
-            If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_ETP, myPoint, startDate, endDate) > 0 Then
+        case dailyBIC:
+            If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_ETP, myPoint, startDate, endDate) > 0 Then
                     preElaboration = True
             ElseIf Environment.AutomaticETP Then
-                If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
+                If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
                         preElaboration = True
                 End If
                 If preElaboration Then
                     preElaboration = False
                     passaggioDati.InizializzaMbuto startDate, endDate
                     passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMIN
-                    If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
+                    If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
                             preElaboration = True
                     End If
                     If preElaboration Then
@@ -908,7 +895,7 @@ bool preElaboration(Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoi
                 preElaboration = False
                 passaggioDati.InizializzaMbuto startDate, endDate
                 passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_ETP
-                If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_PREC, myPoint, startDate, endDate) > 0 Then
+                If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_PREC, myPoint, startDate, endDate) > 0 Then
                         preElaboration = True
                 End If
                 If preElaboration Then
@@ -917,15 +904,15 @@ bool preElaboration(Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoi
                 End If
             End If
 
-        case Definitions.DAILY_TEMPERATURE_RANGE
-            If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
+        case dailyAirTemperatureRange:
+            If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
                     preElaboration = True
             End If
             If preElaboration Then
                 preElaboration = False
                 passaggioDati.InizializzaMbuto startDate, endDate
                 passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMIN
-                If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
+                If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
                         preElaboration = True
                 End If
                 If preElaboration Then
@@ -934,15 +921,15 @@ bool preElaboration(Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoi
                 End If
             End If
 
-        case Definitions.DAILY_TDMAX
-            If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
+        case dailyAirDewTemperatureMax
+            If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
                     preElaboration = True
             End If
             If preElaboration Then
                 preElaboration = False
                 passaggioDati.InizializzaMbuto startDate, endDate
                 passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMAX
-                If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_RHmin, myPoint, startDate, endDate) > 0 Then
+                If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_RHmin, myPoint, startDate, endDate) > 0 Then
                         preElaboration = True
                 End If
                 If preElaboration Then
@@ -951,15 +938,15 @@ bool preElaboration(Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoi
                 End If
             End If
 
-        case Definitions.DAILY_TDMIN
-            If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
+        case dailyAirDewTemperatureMin
+            If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
                     preElaboration = True
             End If
             If preElaboration Then
                 preElaboration = False
                 passaggioDati.InizializzaMbuto startDate, endDate
                 passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMIN
-                If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_RHmax, myPoint, startDate, endDate) > 0 Then
+                If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_RHmax, myPoint, startDate, endDate) > 0 Then
                         preElaboration = True
                 End If
                 If preElaboration Then
@@ -968,20 +955,20 @@ bool preElaboration(Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoi
                 End If
             End If
 
-        case Definitions.DAILY_TAVG
-            percValue = passaggioDati.loadDailyVarSeries(pointOrGrid, DAILY_TAVG, myPoint, startDate, endDate)
+        case dailyAirTemperatureAvg:
+            percValue = loadDailyVarSeries(isMeteoGrid, DAILY_TAVG, myPoint, startDate, endDate)
             If percValue > 0 Then
                     preElaboration = True
 
             ElseIf Environment.AutomaticTmed Then
-                If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
+                If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
                         preElaboration = True
                 End If
                 If preElaboration Then
                     preElaboration = False
                     passaggioDati.InizializzaMbuto startDate, endDate
                     passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMIN
-                    If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
+                    If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
                             preElaboration = True
                     End If
                     If preElaboration Then
@@ -991,20 +978,20 @@ bool preElaboration(Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoi
                 End If
             End If
 
-        case Definitions.DAILY_ETP
-            percValue = passaggioDati.loadDailyVarSeries(pointOrGrid, DAILY_ETP, myPoint, startDate, endDate)
+        case dailyReferenceEvapotranspiration:
+            percValue = loadDailyVarSeries(isMeteoGrid, DAILY_ETP, myPoint, startDate, endDate)
             If percValue > 0 The
                     preElaboration = True
 
             ElseIf Environment.AutomaticETP Then
-                If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
+                If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
                         preElaboration = True
                 End If
                 If preElaboration Then
                     preElaboration = False
                     passaggioDati.InizializzaMbuto startDate, endDate
                     passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMIN
-                    If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
+                    If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
                             preElaboration = True
                     End If
                     If preElaboration Then
@@ -1013,26 +1000,28 @@ bool preElaboration(Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoi
                     End If
                 End If
             End If
+*/
+        default:
+        {
 
-        case Else
-
-            Select case elab1
-
-                case Definitions.ELABORATION_HUGLIN
-                    If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
+            switch(elab1.toInt())
+            {
+                /*
+                case huglin:
+                    If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
                             preElaboration = True
                     End If
                     If preElaboration Then
                         preElaboration = False
                         passaggioDati.InizializzaMbuto startDate, endDate
                         passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMIN
-                        If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
+                        If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
                                 preElaboration = True
                         End If
                         If preElaboration Then
                             preElaboration = False
                             passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMAX
-                            If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TAVG, myPoint, startDate, endDate) > 0 Then
+                            If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TAVG, myPoint, startDate, endDate) > 0 Then
                                 preElaboration = True
                             ElseIf Environment.AutomaticTmed Then
                                 preElaboration = Elaboration.elaborateDailyAggregatedVar(Definitions.DAILY_TAVG, myPoint, percValue)
@@ -1040,53 +1029,57 @@ bool preElaboration(Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoi
                         End If
                     End If
 
-                case Definitions.ELABORATION_WINKLER, Definitions.ELABORATION_CORRECTED_SUM, Definitions.ELABORATION_FREGONI
+                case winkler: case correctedDegreeDaysSum: case fregoni
 
-                    If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
+                    If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
                             preElaboration = True
                     End If
                     If preElaboration Then
                         preElaboration = False
                         passaggioDati.InizializzaMbuto startDate, endDate
                         passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMIN
-                        If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
+                        If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
                                 preElaboration = True
                         End If
                         If preElaboration Then passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMAX
                     End If
 
-                case Definitions.ELABORATION_PHENO
-                    If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
+                case phenology:
+                    If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMIN, myPoint, startDate, endDate) > 0 Then
                             preElaboration = True
                     End If
                     If preElaboration Then
                         preElaboration = False
                         passaggioDati.InizializzaMbuto startDate, endDate
                         passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMIN
-                        If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
+                        If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_TMAX, myPoint, startDate, endDate) > 0 Then
                                 preElaboration = True
                         End If
                         If preElaboration Then
                             preElaboration = False
                             passaggioDati.MbutoInversoGiornaliero Definitions.DAILY_TMAX
-                            If passaggioDati.loadDailyVarSeries(pointOrGrid, Definitions.DAILY_PREC, myPoint, startDate, endDate) > 0 Then
+                            If loadDailyVarSeries(isMeteoGrid, Definitions.DAILY_PREC, myPoint, startDate, endDate) > 0 Then
                                     preElaboration = True
                             End If
                         End If
                     End If
 
-                case Else
+                default:
+                {
 
-                    percValue = passaggioDati.loadDailyVarSeries(pointOrGrid, variable, myPoint, startDate, endDate)
+                    percValue = loadDailyVarSeries(isMeteoGrid, variable, myPoint, startDate, endDate)
 
                     If percValue > 0 Then
                             preElaboration = True
                     End If
+                }
+                        */
 
-            End Select
+            }
+        }
 
-    End Select
-*/
+    }
+
 
     return true;
 }
