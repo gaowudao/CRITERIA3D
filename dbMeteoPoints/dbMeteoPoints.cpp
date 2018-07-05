@@ -385,14 +385,11 @@ std::vector<float> Crit3DMeteoPointsDbHandler::getDailyVar(std::string *myError,
     std::vector<float> dailyVarList;
     bool firstRow = true;
 
-    int numberOfDays = difference(dateStart, dateEnd) +1;
     int idVar = getIdfromMeteoVar(variable);
     QString startDate = QString::fromStdString(dateStart.toStdString());
     QString endDate = QString::fromStdString(dateEnd.toStdString());
 
     QSqlQuery myQuery(_db);
-
-    meteoPoint->initializeObsDataD(numberOfDays, dateStart);
 
     QString tableName = QString::fromStdString(meteoPoint->id) + "_D";
 
@@ -453,15 +450,11 @@ std::vector<float> Crit3DMeteoPointsDbHandler::getHourlyVar(std::string *myError
     std::vector<float> hourlyVarList;
     bool firstRow = true;
 
-    int numberOfDays = difference(dateStart, dateEnd)+1;
-    int myHourlyFraction = 1;
     int idVar = getIdfromMeteoVar(variable);
     QString startDate = QString::fromStdString(dateStart.toStdString());
     QString endDate = QString::fromStdString(dateEnd.toStdString());
 
     QSqlQuery qry(_db);
-
-    meteoPoint->initializeObsDataH(myHourlyFraction, numberOfDays, dateStart);
 
     QString tableName = QString::fromStdString(meteoPoint->id) + "_H";
 
