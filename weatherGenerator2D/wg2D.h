@@ -20,6 +20,7 @@ struct ToccurrenceIndexSeasonal{
     double** stdDevFit;
     double*** parMultiexp;
     double** binCenter;
+    double** bin;
 
 };
 

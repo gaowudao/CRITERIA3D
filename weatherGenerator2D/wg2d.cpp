@@ -1239,7 +1239,7 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
 
             }
             int lengthBins = 11;
-            double bins[11],bincenter[10];
+            double bins[11], bins2[11],bincenter[10];
             int nrBins[10];
             double Pmean[10];
             double PstdDev[10];
@@ -1268,7 +1268,7 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                 //printf("prima %d %.1f\n",i,bins[i]);
 
 
-            double bins2[11];
+
             int counter = 1;
 
             for (int i=1;i<11;i++)
@@ -1375,12 +1375,12 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                     nrBincenter++;
             }
             double* meanP = (double *) calloc(nrBincenter, sizeof(double));
-            double* stdDevP = (double *) calloc(nrBincenter, sizeof(double));
+            double* stdDevFit = (double *) calloc(nrBincenter, sizeof(double));
             double* binCenter = (double *) calloc(nrBincenter, sizeof(double));
             for (int i=0;i<nrBincenter;i++)
             {
                meanP[i]=Pmean[i];
-               stdDevP[i]=PstdDev[i];
+               stdDevFit[i]=PstdDev[i];
                binCenter[i]= bincenter[i];
             }
             for (int i=0;i<nrBincenter;i++)
@@ -1406,10 +1406,10 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
 
             if (parametersModel.distributionPrecipitation == 2)
             {
-                interpolation::fittingMarquardt(parMin,parMax,par,nrPar,parDelta,maxIterations,epsilon,functionCode,binCenter,nrBincenter,stdDevP);
+                interpolation::fittingMarquardt(parMin,parMax,par,nrPar,parDelta,maxIterations,epsilon,functionCode,binCenter,nrBincenter,stdDevFit);
                 for (int i=0;i<nrBincenter;i++)
                 {
-                    stdDevP[i] = par[0]+par[1]* powf(binCenter[i],par[2]);
+                    stdDevFit[i] = par[0]+par[1]* powf(binCenter[i],par[2]);
                 }
             }
 
@@ -1549,6 +1549,22 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                     occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][1]=(PstdDev[i]*PstdDev[i])/meanP[i];
                 }
             }
+            for (int i=0;i<nrBincenter;i++)
+            {
+                occurrenceIndexSeasonal[ijk].meanP[qq][i] = Pmean[i];
+                occurrenceIndexSeasonal[ijk].meanFit[qq][i] = meanFit[i];
+                occurrenceIndexSeasonal[ijk].binCenter[qq][i] = binCenter[i];
+                if (parametersModel.distributionPrecipitation == 2)
+                {
+                    occurrenceIndexSeasonal[ijk].stdDevP[qq][i] = PstdDev[i];
+                    occurrenceIndexSeasonal[ijk].stdDevFit[qq][i] = stdDevFit[i];
+                }
+            }
+            for (int i=0;i<= nrBincenter;i++)
+            {
+                occurrenceIndexSeasonal[ijk].bin[qq][i] = bins2[i];
+            }
+
             //printf("\n correction factor %f \n",correctionFactor);
             //getchar();
             // da verificare i numeri che siano numeri plausibili confrontare con i bins precedenti
@@ -1567,7 +1583,7 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
             free(parMax);
             free(parMin);
             free(meanP);
-            free(stdDevP);
+            free(stdDevFit);
             free(binCenter);
             free(meanFit);
             free(lambda);
@@ -1623,6 +1639,7 @@ void weatherGenerator2D::initializeOccurrenceIndex()
     for (int i=0;i<nrStations;i++)
     {
         occurrenceIndexSeasonal[i].binCenter = (double **)calloc(4, sizeof(double*));
+        occurrenceIndexSeasonal[i].bin = (double **)calloc(4, sizeof(double*));
         occurrenceIndexSeasonal[i].meanFit = (double **)calloc(4, sizeof(double*));
         occurrenceIndexSeasonal[i].meanP = (double **)calloc(4, sizeof(double*));
         occurrenceIndexSeasonal[i].stdDevFit = (double **)calloc(4, sizeof(double*));
@@ -1633,6 +1650,7 @@ void weatherGenerator2D::initializeOccurrenceIndex()
     {
         for (int j=0;j<4;j++)
         {
+            occurrenceIndexSeasonal[i].bin[j] = (double *)calloc(11, sizeof(double));
             occurrenceIndexSeasonal[i].binCenter[j] = (double *)calloc(10, sizeof(double));
             occurrenceIndexSeasonal[i].meanFit[j] = (double *)calloc(10, sizeof(double));
             occurrenceIndexSeasonal[i].meanP[j] = (double *)calloc(10, sizeof(double));
@@ -1656,6 +1674,7 @@ void weatherGenerator2D::initializeOccurrenceIndex()
         {
             for (int k=0;k<10;k++)
             {
+                occurrenceIndexSeasonal[i].bin[j][k] = NODATA;
                 occurrenceIndexSeasonal[i].binCenter[j][k] = NODATA;
                 occurrenceIndexSeasonal[i].meanFit[j][k] = NODATA;
                 occurrenceIndexSeasonal[i].meanP[j][k] = NODATA;
@@ -1664,6 +1683,7 @@ void weatherGenerator2D::initializeOccurrenceIndex()
                 occurrenceIndexSeasonal[i].parMultiexp[j][k][0] = NODATA;
                 occurrenceIndexSeasonal[i].parMultiexp[j][k][1] = NODATA;
             }
+            occurrenceIndexSeasonal[i].bin[j][10] = NODATA;
         }
     }
 
