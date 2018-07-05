@@ -90,6 +90,7 @@ bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* 
 
     bool isMeteoGrid = 1; // grid
     float currentParameter1;
+    int validCell = 0;
 
     std::string id;
 
@@ -143,22 +144,26 @@ bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* 
                     currentParameter1 = param1;
                 }
 
-//                            if  ( !elaborationOnPoint(&(meteoGridDbHandler->meteoGrid()->meteoPoint(row,col)), isMeteoGrid, variable,
-//                                elab1, currentParameter1, elab2, param2, startDate, endDate, nYears, firstYear, lastYear,
-//                                nYearsMin, isAnomaly, true))
-//                            {
-//                                // LC se qualche problema su una cella, deve interrompere e ritornare false oppure no?
-                                  // FT credo di no, ma lascio decidere a Gabri
-                                  // GA  deve tornare false solo se nemmeno una cella ha dato valido (v. VB)
-//                                return false;
-//                            }
+                Crit3DMeteoPoint meteoPoint = meteoGridDbHandler->meteoGrid()->meteoPoint(row,col);
+                if  ( elaborationOnPoint(myError, NULL, meteoGridDbHandler, &meteoPoint, isMeteoGrid, variable,
+                    elab1, param1, elab2, param2, startDate, endDate, nYears, firstYear, lastYear, nYearsMin, isAnomaly, true))
+                {
+                    validCell = validCell + 1;
+                }
 
             }
 
         }
     }
 
-    return true;
+    if (validCell == 0)
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
 
 }
 
