@@ -273,12 +273,15 @@ bool anomalyOnPoint(Crit3DMeteoPoint* meteoPoint, float refValue)
 }
 
 
-bool loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler,
+float loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler,
         Crit3DMeteoGridDbHandler *meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid,
         meteoVariable variable, QDate first, QDate last)
 {
     std::vector<float> dailyValues;
     QDate firstDateDB;
+    Crit3DQuality qualityCheck;
+    int nrValidValues = 0;
+    float percValue = -1;
 
     // meteoGrid
     if (isMeteoGrid)
@@ -305,7 +308,7 @@ bool loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteoP
 
     if ( dailyValues.empty() )
     {
-        return false;
+        return percValue;
     }
     else
     {
@@ -316,21 +319,30 @@ bool loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteoP
 
         for (unsigned int i = 0; i < dailyValues.size(); i++)
         {
+            quality::type qualityT = qualityCheck.syntacticQualityControlSingleVal(variable, dailyValues[i]);
+            if (qualityT == quality::accepted)
+            {
+                nrValidValues = nrValidValues + 1;
+            }
             meteoPoint->setMeteoPointValueD(Crit3DDate(firstDateDB.day(), firstDateDB.month(), firstDateDB.year()), variable, dailyValues[i]);
             firstDateDB = firstDateDB.addDays(1);
         }
-        return true;
+        percValue = nrValidValues / dailyValues.size();
+        return percValue;
     }
 
 
 }
 
-bool loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler,
+float loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler,
            Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid,
            meteoVariable variable, QDateTime first, QDateTime last)
 {
     std::vector<float> hourlyValues;
     QDateTime firstDateDB;
+    Crit3DQuality qualityCheck;
+    int nrValidValues = 0;
+    float percValue = -1;
 
     // meteoGrid
     if (isMeteoGrid)
@@ -358,7 +370,7 @@ bool loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* meteo
 
     if ( hourlyValues.empty() )
     {
-        return false;
+        return percValue;
     }
     else
     {
@@ -369,10 +381,16 @@ bool loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* meteo
 
         for (unsigned int i = 0; i < hourlyValues.size(); i++)
         {
+            quality::type qualityT = qualityCheck.syntacticQualityControlSingleVal(variable, hourlyValues[i]);
+            if (qualityT == quality::accepted)
+            {
+                nrValidValues = nrValidValues + 1;
+            }
             meteoPoint->setMeteoPointValueH(Crit3DDate(firstDateDB.date().day(), firstDateDB.date().month(), firstDateDB.date().year()), firstDateDB.time().hour(), firstDateDB.time().minute(), variable, hourlyValues[i]);
             firstDateDB = firstDateDB.addSecs(3600);
         }
-        return true;
+        percValue = nrValidValues / hourlyValues.size();
+        return percValue;
     }
 
 }
@@ -828,7 +846,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
 
         case dailyLeafWetness:
         {
-            if ( loadHourlyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, leafWetness, QDateTime(startDate,QTime(0,0,0)), QDateTime(endDate,QTime(0,0,0))) )
+            if ( loadHourlyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, leafWetness, QDateTime(startDate,QTime(0,0,0)), QDateTime(endDate,QTime(0,0,0))) > 0)
             {
                 preElaboration = elaborateDailyAggregatedVar(dailyLeafWetness, *meteoPoint, &aggregatedValues, percValue);
             }
@@ -836,14 +854,14 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
 
         case dailyThomDaytime:
         {
-            if ( loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirRelHumidityMin, startDate, endDate))
+            if ( loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirRelHumidityMin, startDate, endDate) > 0)
             {
                     preElaboration = true;
             }
             if (preElaboration)
             {
                 preElaboration = false;
-                if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirTemperatureMax, startDate, endDate))
+                if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirTemperatureMax, startDate, endDate) > 0)
                 {
                         preElaboration = true;
                 }
@@ -856,14 +874,14 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
 
         case dailyThomNighttime:
         {
-            if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirRelHumidityMax, startDate, endDate) )
+            if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirRelHumidityMax, startDate, endDate) > 0)
             {
                 preElaboration = true;
             }
             if (preElaboration)
             {
                 preElaboration = false;
-                if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirTemperatureMin, startDate, endDate))
+                if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirTemperatureMin, startDate, endDate) > 0)
                 {
                     preElaboration = true;
                 }
@@ -876,9 +894,9 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
         case dailyThomAvg: case dailyThomMax: case dailyThomHoursAbove:
         {
 
-            if (loadHourlyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, airTemperature, QDateTime(startDate,QTime(0,0,0)), QDateTime(endDate,QTime(0,0,0))) )
+            if (loadHourlyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, airTemperature, QDateTime(startDate,QTime(0,0,0)), QDateTime(endDate,QTime(0,0,0)))  > 0)
             {
-                if (loadHourlyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, airRelHumidity, QDateTime(startDate,QTime(0,0,0)), QDateTime(endDate,QTime(0,0,0))) )
+                if (loadHourlyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, airRelHumidity, QDateTime(startDate,QTime(0,0,0)), QDateTime(endDate,QTime(0,0,0)))  > 0)
                 {
                     preElaboration = elaborateDailyAggregatedVar(variable, *meteoPoint, &aggregatedValues, percValue);
                 }
@@ -886,20 +904,20 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
         }
         case dailyBIC:
         {
-            if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyReferenceEvapotranspiration, startDate, endDate))
+            if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyReferenceEvapotranspiration, startDate, endDate) > 0)
             {
                 preElaboration = true;
             }
             else if (Environment.AutomaticETP)
             {
-                if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirTemperatureMin, startDate, endDate))
+                if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirTemperatureMin, startDate, endDate) > 0)
                 {
                     preElaboration = true;
                 }
                 if (preElaboration)
                 {
                     preElaboration = false;
-                    if ( loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirTemperatureMax, startDate, endDate))
+                    if ( loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirTemperatureMax, startDate, endDate) > 0)
                     {
                         preElaboration = true;
                     }
@@ -912,7 +930,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
             if (preElaboration)
             {
                 preElaboration = false;
-                if ( loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyPrecipitation, startDate, endDate) )
+                if ( loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyPrecipitation, startDate, endDate) > 0)
                 {
                     preElaboration = true;
                 }
@@ -925,14 +943,14 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
 
         case dailyAirTemperatureRange:
         {
-            if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirTemperatureMin, startDate, endDate))
+            if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirTemperatureMin, startDate, endDate) > 0)
             {
                 preElaboration = true;
             }
             if (preElaboration)
             {
                 preElaboration = false;
-                if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirTemperatureMax, startDate, endDate) )
+                if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirTemperatureMax, startDate, endDate) > 0)
                 {
                     preElaboration = true;
                 }
@@ -944,14 +962,14 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
         }
         case dailyAirDewTemperatureMax:
         {
-            if ( loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirTemperatureMax, startDate, endDate) )
+            if ( loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirTemperatureMax, startDate, endDate) > 0)
             {
                 preElaboration = true;
             }
             if (preElaboration)
             {
                 preElaboration = false;
-                if ( loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirRelHumidityMin, startDate, endDate) )
+                if ( loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirRelHumidityMin, startDate, endDate) > 0)
                 {
                     preElaboration = true;
                 }
@@ -964,14 +982,14 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
 
         case dailyAirDewTemperatureMin:
         {
-            if ( loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirTemperatureMin, startDate, endDate) )
+            if ( loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirTemperatureMin, startDate, endDate) > 0)
             {
                 preElaboration = true;
             }
             if (preElaboration)
             {
                 preElaboration = false;
-                if ( loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirRelHumidityMax, startDate, endDate) )
+                if ( loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirRelHumidityMax, startDate, endDate) > 0)
                 {
                     preElaboration = true;
                 }
@@ -984,7 +1002,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
 
         case dailyAirTemperatureAvg:
         {
-            percValue = loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirTemperatureAvg, startDate, endDate)
+            percValue = loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirTemperatureAvg, startDate, endDate > 0)
             If percValue > 0 Then
                     preElaboration = True
 
