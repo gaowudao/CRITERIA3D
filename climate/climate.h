@@ -83,7 +83,7 @@ void extractValidValuesWithThreshold(std::vector<float> myValues, std::vector<fl
 void extractValidValuesCC(std::vector<float> myValues, std::vector<float>* myValidValues);
 
 bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, QString elab1,
-    QDate startDate, QDate endDate, float* percValue);
+    QDate startDate, QDate endDate, std::vector<float> *aggregatedValues, float* percValue);
 
 float loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler, Crit3DMeteoGridDbHandler *meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, QDate first, QDate last);
 

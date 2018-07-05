@@ -42,7 +42,7 @@ namespace elaborations {
 
 //nYears   = 0         same year
 //nYears   = 1,2,3...   betweend years 1,2,3...
-float computeStatistic(std::vector<float> dailyValues, int firstYear, int lastYear, Crit3DDate firstDate, Crit3DDate lastDate, int nYears, Crit3DDate firstDateDailyVar, std::string elab1, float param1, std::string elab2, float param2, float myHeight)
+float computeStatistic(std::vector<float>* inputValues, int firstYear, int lastYear, Crit3DDate firstDate, Crit3DDate lastDate, int nYears, Crit3DDate firstDateDailyVar, std::string elab1, float param1, std::string elab2, float param2, float myHeight)
 {
 
     std::vector<float> values;
@@ -88,9 +88,9 @@ float computeStatistic(std::vector<float> dailyValues, int firstYear, int lastYe
 
                     float value = NODATA;
                     index = difference(firstDateDailyVar, presentDate) +1;
-                    if (index > 0 && index <= dailyValues.size())
+                    if (index > 0 && index <= inputValues->size())
                     {
-                        value = dailyValues[index];
+                        value = inputValues->at(index);
                     }
                     if (value != NODATA)
                     {
@@ -156,9 +156,9 @@ float computeStatistic(std::vector<float> dailyValues, int firstYear, int lastYe
                 {
                     float value = NODATA;
                     index = difference(firstDateDailyVar, presentDate) +1;
-                    if (index > 0 && index <= dailyValues.size())
+                    if (index > 0 && index <= inputValues->size())
                     {
-                        value = dailyValues[index];
+                        value = inputValues->at(index);
                     }
                     if (value != NODATA)
                     {
