@@ -12,17 +12,15 @@
 
 Crit3DDate firstDateDailyVar; //temporaneo
 
-bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, meteoVariable variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
+bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, meteoVariable variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
     QString elab1, bool param1IsClimate, QString param1ClimateField, float param1, QString elab2, float param2, bool isAnomaly,
     int nYearsMin, int firstYearClimate, int lastYearClimate)
 {
 
 
     bool isMeteoGrid = 0; // meteoPoint
-
-//    Dim row As Long, col As Long, i As Long
-//    Dim result As Single
-//    Dim currentParameter1 As Single
+    float currentParameter1;
+    int validCell = 0;
 
 
     QDate startDate(firstYear, firstDate.month(), firstDate.day());
@@ -47,36 +45,47 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
      }
 
 
-//                For i = 0 To UBound(meteoPoint)
+    for ( unsigned int i = 0; i < nrMeteoPoints; i++)
+    {
 
-//                    If meteoPoint(i).Point.active And meteoPoint(i).Point.selected Then
+        if (param1IsClimate)
+        {
+//            if ( ClimateReadPoint(PragaClimate.Point(i).TableName, param1ClimateField, myPeriodType, myClimateIndex, PragaClimate.Point(i)))
+//            {
 
-//                        If param1IsClimate Then
-//                            If Climate.ClimateReadPoint(PragaClimate.Point(i).TableName, _
-//                                                        param1ClimateField, _
-//                                                        myPeriodType, _
-//                                                        myClimateIndex, _
-//                                                        PragaClimate.Point(i)) Then
+//                currentParameter1 = passaggioDati.GetClimateData(myPeriodType, PragaClimate.Point(i), myClimateIndex);
+//            }
+//            else
+//            {
+//                currentParameter1 = NODATA;
+//            }
+        }
+        else
+        {
+            currentParameter1 = param1;
+        }
 
-//                                currentParameter1 = passaggioDati.GetClimateData(myPeriodType, PragaClimate.Point(i), myClimateIndex)
-//                            Else
-//                                currentParameter1 = Definitions.NO_DATA
-//                            End If
-//                        Else
-//                            currentParameter1 = param1
-//                        End If
+        if (elab1 == phenology)
+        {
+            //Then currentPheno.setPhenoPoint i;
+        }
 
-//                        If elab1 = Definitions.ELABORATION_PHENO Then currentPheno.setPhenoPoint i
+        if ( elaborationOnPoint(myError, meteoPointsDbHandler, NULL, &meteoPoints[i], isMeteoGrid, variable, elab1, currentParameter1, elab2, param2,
+            startDate, endDate, nYears, firstYear, lastYear, nYearsMin, isAnomaly, true))
+        {
+            validCell = validCell + 1;
+        }
 
-//                        If ElaborationOnPoint(meteoPoint(i).Point, isMeteoGrid, variable, _
-//                            elab1, currentParameter1, elab2, Parameter2, _
-//                            startDate, endDate, nYears, firstYear, lastYear, _
-//                            nYearsMin, _
-//                            isAnomaly, True) Then ElaborationPointsCycle = True
 
-//                    End If
-//                Next i
-    return true;
+    }
+    if (validCell == 0)
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
 
 }
 
@@ -146,7 +155,7 @@ bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* 
 
                 Crit3DMeteoPoint meteoPoint = meteoGridDbHandler->meteoGrid()->meteoPoint(row,col);
                 if  ( elaborationOnPoint(myError, NULL, meteoGridDbHandler, &meteoPoint, isMeteoGrid, variable,
-                    elab1, param1, elab2, param2, startDate, endDate, nYears, firstYear, lastYear, nYearsMin, isAnomaly, true))
+                    elab1, currentParameter1, elab2, param2, startDate, endDate, nYears, firstYear, lastYear, nYearsMin, isAnomaly, true))
                 {
                     validCell = validCell + 1;
                 }

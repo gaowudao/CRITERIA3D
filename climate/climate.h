@@ -29,8 +29,8 @@ enum meteoComputation { average, stdDev, sum, maxInList, minInList,
                         correctedDegreeDaysSum, erosivityFactorElab, rainIntensityElab};
 
 
-bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler,
-    QString variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
+bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoints,
+    int nrMeteoPoints, QString variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
     QString elab1, bool param1IsClimate, QString param1ClimateField, float param1, QString elab2,
     float param2, bool isAnomaly, int nYearsMin, int firstYearClimate, int lastYearClimate);
 
