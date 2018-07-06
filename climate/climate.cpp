@@ -13,7 +13,7 @@
 Crit3DDate firstDateDailyVar; //temporaneo
 
 bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, meteoVariable variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
-    QString elab1, bool param1IsClimate, QString param1ClimateField, float param1, QString elab2, float param2, bool isAnomaly,
+    QString elab1, bool param1IsClimate, QString climateElab, float param1, QString elab2, float param2, bool isAnomaly,
     int nYearsMin, int firstYearClimate, int lastYearClimate)
 {
 
@@ -40,7 +40,7 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
 //        Dim myPeriodType As Byte
 //        Dim myClimateIndex As Integer
 
-//        myPeriodType = Climate.parserElaborationOnlyPeriodType(parameter1ClimateElab)
+//        myPeriodType = Climate.parserElaborationOnlyPeriodType(climateElab)
 //        myClimateIndex = Climate.getClimateIndexFromDate(currentDay, myPeriodType)
      }
 
@@ -50,7 +50,7 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
 
         if (param1IsClimate)
         {
-//            if ( ClimateReadPoint(PragaClimate.Point(i).TableName, param1ClimateField, myPeriodType, myClimateIndex, PragaClimate.Point(i)))
+//            if ( ClimateReadPoint(PragaClimate.Point(i).TableName, climateElab, myPeriodType, myClimateIndex, PragaClimate.Point(i)))
 //            {
 
 //                currentParameter1 = passaggioDati.GetClimateData(myPeriodType, PragaClimate.Point(i), myClimateIndex);
@@ -93,7 +93,7 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
 
 
 bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* meteoGridDbHandler, meteoVariable variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
-    QString elab1, bool param1IsClimate, QString param1ClimateField, float param1, QString elab2, float param2, bool isAnomaly,
+    QString elab1, bool param1IsClimate, QString climateElab, float param1, QString elab2, float param2, bool isAnomaly,
     int nYearsMin, int firstYearClimate, int lastYearClimate)
 {
 
@@ -122,7 +122,7 @@ bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* 
 //        Dim myPeriodType As Byte
 //        Dim myClimateIndex As Integer
 
-//        myPeriodType = Climate.parserElaborationOnlyPeriodType(parameter1ClimateElab)
+//        myPeriodType = Climate.parserElaborationOnlyPeriodType(climateElab)
 //        myClimateIndex = Climate.getClimateIndexFromDate(currentDay, myPeriodType)
      }
 
@@ -138,7 +138,7 @@ bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* 
                 if (param1IsClimate)
                 {
 //                    if (Climate.ClimateReadPoint(PragaClimate.Point(row, col).TableName, _
-//                        param1ClimateField, myPeriodType, myClimateIndex,PragaClimate.Point(row, col)) )
+//                        climateElab, myPeriodType, myClimateIndex,PragaClimate.Point(row, col)) )
 //                    {
 
 //                      currentParameter1 = passaggioDati.GetClimateData(myPeriodType, PragaClimate.Point(row, col), myClimateIndex)
@@ -1173,3 +1173,176 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
 }
 
 
+bool parserElaboration(Climate clima)
+{
+    /*
+    int pos = 0;
+
+    QString climateElab = clima.climateElab();
+    QStringList words = climateElab.split('_');
+
+    if (words.isEmpty())
+    {
+        return false;
+    }
+
+    QStringList myYearWords = words[pos].split('÷');
+
+    foreach(QChar c, myYearWords[0])
+    {
+        if (!c.isDigit())
+            return false;
+    }
+    foreach(QChar c, myYearWords[1])
+    {
+        if (!c.isDigit())
+            return false;
+    }
+    clima.setYearStart(myYearWords[0].toInt());
+    clima.setYearEnd(myYearWords[1].toInt());
+
+    pos = pos + 1;
+
+    if (words.size() == pos)
+    {
+        return false;
+    }
+
+    clima.setVariable(words[pos]);
+
+    pos = pos + 1;
+
+    if (words.size() == pos)
+    {
+        return false;
+    }
+
+    QString periodTypeStr = words[pos];
+    clima.setPeriodType(getPeriodTypeFromString(periodTypeStr));
+
+    pos = pos + 1; // pos = 3
+
+    if (words.size() == pos)
+    {
+        return false;
+    }
+
+    if ( (clima.periodType() == genericPeriod) && ( (words[pos].at(0)).isDigit) )
+    {
+        clima.setGenericPeriod(words[pos]);
+        parserGenericPeriodString(clima);
+    }
+
+    pos = pos + 1; // pos = 4
+
+    if (words.size() == pos)
+    {
+        return false;
+    }
+
+    Elab = words(pos)
+
+    param = NODATA
+    nrParam = math.NrParameters(Elab)
+    If nrParam > 0 Then
+        pos = pos + 1
+        If Left(words(pos), 1) = "|" Then
+            param1IsClimate = True
+            param1ClimateField = Right(words(pos), Len(words(pos)) - 1)
+            pos = pos + 1
+            If Right(words(pos), 2) <> "||" Then
+                Do While Right(words(pos), 2) <> "||"
+                    param1ClimateField = param1ClimateField & "_" & words(pos)
+                    pos = pos + 1
+                Loop
+                param1ClimateField = param1ClimateField & "_" & Left(words(pos), Len(words(pos)) - 2)
+            End If
+            param =  NODATA
+        Else
+            param1IsClimate = False
+            param1ClimateField = Definitions.NODATASTRING
+            param = CSng(StringTools.SubstituteChar(words(pos), Chr(44), getDecimalSeparator))
+        End If
+    End If
+
+    If UBound(words) > pos Then
+        elab2 = Elab
+        param2 = param
+        pos = pos + 1
+        elab1 = words(pos)
+        nrParam = math.NrParameters(elab1)
+        If nrParam > 0 Then
+            pos = pos + 1
+            If Left(words(pos), 1) = "|" Then
+                param1IsClimate = True
+                param1ClimateField = Right(words(pos), Len(words(pos)) - 1)
+                If Right(words(pos), 2) <> "||" Then
+                    Do While Right(words(pos + 1), 2) <> "||"
+                        pos = pos + 1
+                        param1ClimateField = param1ClimateField & SEP_STRING & words(pos)
+                    Loop
+                    pos = pos + 1
+                    param1ClimateField = param1ClimateField & SEP_STRING & Left(words(pos), Len(words(pos)) - 2)
+                End If
+                param1 =  NODATA
+            Else
+                param1IsClimate = False
+                param1ClimateField = Definitions.NODATASTRING
+                param1 = CSng(StringTools.SubstituteChar(words(pos), Chr(44), getDecimalSeparator))
+            End If
+        End If
+    Else
+        elab1 = Elab
+        param1 = param
+    End If
+*/
+    return true;
+
+}
+
+
+period getPeriodTypeFromString(QString periodStr)
+{
+
+    if (periodStr == "daily")
+        return dailyPeriod;
+    if (periodStr == "decadal")
+        return decadalPeriod;
+    if (periodStr == "monthly")
+        return monthlyPeriod;
+    if (periodStr == "seasonal")
+        return seasonalPeriod;
+    if (periodStr == "annual")
+        return annualPeriod;
+    if (periodStr == "generic_period")
+        return genericPeriod;
+
+    return noPeriodType;
+
+}
+
+bool parserGenericPeriodString(Climate clima)
+{
+
+    if ( clima.genericPeriod().isEmpty())
+    {
+        return false;
+    }
+
+    QString day = clima.genericPeriod().mid(0,2);
+    QString month = clima.genericPeriod().mid(3,2);
+    int year = 2000;
+    clima.setGenericPeriodDateStart( QDate(year,  month.toInt(),  day.toInt()) );
+
+    day = clima.genericPeriod().mid(6,2);
+    month = clima.genericPeriod().mid(9,2);
+
+    clima.setGenericPeriodDateEnd( QDate(year,  month.toInt(),  day.toInt()) );
+
+    if ( clima.genericPeriod().size() > 11 )
+    {
+        clima.setNYears( (clima.genericPeriod().mid(13,2)).toInt() ); // LC controllare, nella posizione 12 cosa c'è?
+    }
+    return true;
+
+}

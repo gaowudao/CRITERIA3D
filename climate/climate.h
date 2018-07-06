@@ -17,6 +17,10 @@
     #include "dbMeteoGrid.h"
 #endif
 
+#ifndef DBCLIMATE_H
+    #include "dbClimate.h"
+#endif
+
 enum meteoComputation { average, stdDev, sum, maxInList, minInList,
                         differenceWithThreshold, lastDayBelowThreshold,
                         sumAbove, avgAbove, stdDevAbove,
@@ -88,5 +92,9 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
 float loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler, Crit3DMeteoGridDbHandler *meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, QDate first, QDate last, std::vector<float>* outputValues);
 
 float loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler, Crit3DMeteoGridDbHandler *meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, QDateTime first, QDateTime last, std::vector<float>* outputValues);
+
+period getPeriodTypeFromString(QString periodStr);
+
+bool parserGenericPeriodString(Climate clima);
 
 #endif // CLIMATE_H
