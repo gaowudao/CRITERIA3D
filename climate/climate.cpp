@@ -871,6 +871,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
             {
                 preElaboration = elaborateDailyAggregatedVar(dailyLeafWetness, *meteoPoint, outputValues, percValue);
             }
+            break;
         }
 
         case dailyThomDaytime:
@@ -891,6 +892,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     preElaboration = elaborateDailyAggregatedVar(dailyThomDaytime, *meteoPoint, outputValues, percValue);
                 }
             }
+            break;
         }
 
         case dailyThomNighttime:
@@ -911,6 +913,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     preElaboration = elaborateDailyAggregatedVar(dailyThomNighttime, *meteoPoint, outputValues, percValue);
                 }
             }
+            break;
         }
         case dailyThomAvg: case dailyThomMax: case dailyThomHoursAbove:
         {
@@ -922,6 +925,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     preElaboration = elaborateDailyAggregatedVar(variable, *meteoPoint, outputValues, percValue);
                 }
             }
+            break;
         }
         case dailyBIC:
         {
@@ -960,6 +964,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     preElaboration = elaborateDailyAggregatedVar(dailyBIC, *meteoPoint, outputValues, percValue);
                 }
             }
+            break;
         }
 
         case dailyAirTemperatureRange:
@@ -980,6 +985,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     preElaboration = elaborateDailyAggregatedVar(dailyAirTemperatureRange, *meteoPoint, outputValues, percValue);
                 }
             }
+            break;
         }
         case dailyAirDewTemperatureMax:
         {
@@ -999,6 +1005,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     preElaboration = elaborateDailyAggregatedVar(dailyAirDewTemperatureMax, *meteoPoint, outputValues, percValue);
                 }
             }
+            break;
         }
 
         case dailyAirDewTemperatureMin:
@@ -1019,6 +1026,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     preElaboration = elaborateDailyAggregatedVar(dailyAirDewTemperatureMin, *meteoPoint, outputValues, percValue);
                 }
             }
+            break;
         }
 
         case dailyAirTemperatureAvg:
@@ -1046,6 +1054,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     }
                 }
             }
+            break;
         }
 
         case dailyReferenceEvapotranspiration:
@@ -1072,8 +1081,10 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     {
                         preElaboration = elaborateDailyAggregatedVar(dailyReferenceEvapotranspiration, *meteoPoint, outputValues, percValue);
                     }
+
                 }
             }
+            break;
         }
 
         default:
@@ -1108,6 +1119,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                             }
                         }
                     }
+                    break;
                 }
 
             case winkler: case correctedDegreeDaysSum: case fregoni:
@@ -1125,6 +1137,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                         preElaboration = true;
                     }
                 }
+                break;
             }
 
             case phenology:
@@ -1149,6 +1162,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                         }
                     }
                 }
+                break;
              }
 
             default:
@@ -1160,10 +1174,12 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                 {
                     preElaboration = true;
                 }
+                break;
             }
 
 
             }
+            break;
         }
 
     }
@@ -1175,7 +1191,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
 
 bool parserElaboration(Climate clima)
 {
-    /*
+
     int pos = 0;
 
     QString climateElab = clima.climateElab();
@@ -1208,7 +1224,15 @@ bool parserElaboration(Climate clima)
         return false;
     }
 
-    clima.setVariable(words[pos]);
+    // LC TBC la stringa da parsare se coincide con quanto inserito nelle Map
+    meteoVariable var;
+    try {
+      var = MapDailyMeteoVar.at(words[pos].toStdString());
+    }
+    catch (const std::out_of_range& oor) {
+      var = MapHourlyMeteoVar.at(words[pos].toStdString());
+    }
+    clima.setVariable(var);
 
     pos = pos + 1;
 
@@ -1218,6 +1242,7 @@ bool parserElaboration(Climate clima)
     }
 
     QString periodTypeStr = words[pos];
+
     clima.setPeriodType(getPeriodTypeFromString(periodTypeStr));
 
     pos = pos + 1; // pos = 3
@@ -1227,7 +1252,7 @@ bool parserElaboration(Climate clima)
         return false;
     }
 
-    if ( (clima.periodType() == genericPeriod) && ( (words[pos].at(0)).isDigit) )
+    if ( (clima.periodType() == genericPeriod) && ( (words[pos].at(0)).isDigit() ) )
     {
         clima.setGenericPeriod(words[pos]);
         parserGenericPeriodString(clima);
@@ -1240,30 +1265,36 @@ bool parserElaboration(Climate clima)
         return false;
     }
 
-    Elab = words(pos)
+    QString elab = words[pos];
 
-    param = NODATA
-    nrParam = math.NrParameters(Elab)
-    If nrParam > 0 Then
-        pos = pos + 1
-        If Left(words(pos), 1) = "|" Then
-            param1IsClimate = True
+    float param = NODATA;
+ //   int nrParam = nParameters(elab);
+/*
+    if (nrParam > 0)
+    {
+        pos = pos + 1;
+        if (Left(words(pos), 1) = "|" )
+        {
+            clima.setParam1IsClimate(true);
             param1ClimateField = Right(words(pos), Len(words(pos)) - 1)
             pos = pos + 1
-            If Right(words(pos), 2) <> "||" Then
+            if ( Right(words(pos), 2) <> "||" )
+            {
                 Do While Right(words(pos), 2) <> "||"
                     param1ClimateField = param1ClimateField & "_" & words(pos)
                     pos = pos + 1
                 Loop
                 param1ClimateField = param1ClimateField & "_" & Left(words(pos), Len(words(pos)) - 2)
-            End If
+            }
             param =  NODATA
-        Else
-            param1IsClimate = False
+        }
+        else
+        {
+            param1IsClimate = false;
             param1ClimateField = Definitions.NODATASTRING
             param = CSng(StringTools.SubstituteChar(words(pos), Chr(44), getDecimalSeparator))
-        End If
-    End If
+        }
+    }
 
     If UBound(words) > pos Then
         elab2 = Elab
@@ -1341,8 +1372,53 @@ bool parserGenericPeriodString(Climate clima)
 
     if ( clima.genericPeriod().size() > 11 )
     {
-        clima.setNYears( (clima.genericPeriod().mid(13,2)).toInt() ); // LC controllare, nella posizione 12 cosa c'è?
+        clima.setNYears( (clima.genericPeriod().mid(13,2)).toInt() );
     }
     return true;
 
 }
+
+int nParameters(meteoComputation elab)
+{
+    switch(elab)
+    {
+    case average:
+        return 0;
+    case maxInList:
+        return 0;
+    case minInList:
+        return 0;
+    case sum:
+        return 0;
+    case avgAbove:
+        return 1;
+    case stdDevAbove:
+        return 1;
+//    case Definitions.ELAB_SUM_CON_SOGLIA // LC esiste ancora? non trovo corrispondenza
+//        return 1;
+    case daysAbove:
+        return 1;
+    case daysBelow:
+        return 1;
+    case consecutiveDaysAbove:
+        return 1;
+    case consecutiveDaysBelow:
+        return 1;
+    case percentile:
+        return 1;
+    case prevailingWindDir:
+        return 0;
+    case correctedDegreeDaysSum: // LC giusta? era Definitions.ELABORATION_CORRECTED_SUM
+        return 1;
+    case trend:
+        return 0;
+    case mannKendall:
+        return 0;
+    case differenceWithThreshold:
+        return 1;
+    case lastDayBelowThreshold:
+        return 1;
+    }
+
+}
+

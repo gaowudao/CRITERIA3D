@@ -4,6 +4,7 @@
 
 #include <QString>
 #include <QDate>
+#include <QMetaEnum>
 
 #ifndef METEO_H
     #include "meteo.h"
@@ -96,5 +97,7 @@ float loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *mete
 period getPeriodTypeFromString(QString periodStr);
 
 bool parserGenericPeriodString(Climate clima);
+
+int nParameters(meteoComputation elab);
 
 #endif // CLIMATE_H
