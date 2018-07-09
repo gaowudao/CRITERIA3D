@@ -1312,36 +1312,42 @@ bool parserElaboration(Climate clima)
         QString elab1 = words[pos];
         elabMeteoComputation = MapMeteoComputation.at(elab1.toStdString());
         nrParam = nParameters(elabMeteoComputation);
-/*
+
         if (nrParam > 0)
         {
             pos = pos + 1;
-            If Left(words(pos), 1) = "|" Then
-                param1IsClimate = True
-                param1ClimateField = Right(words(pos), Len(words(pos)) - 1)
-                If Right(words(pos), 2) <> "||" Then
-                    Do While Right(words(pos + 1), 2) <> "||"
-                        pos = pos + 1
-                        param1ClimateField = param1ClimateField & SEP_STRING & words(pos)
-                    Loop
-                    pos = pos + 1
-                    param1ClimateField = param1ClimateField & SEP_STRING & Left(words(pos), Len(words(pos)) - 2)
-                End If
-                param1 =  NODATA
-            Else
-                param1IsClimate = False
-                param1ClimateField = Definitions.NODATASTRING
-                param1 = CSng(StringTools.SubstituteChar(words(pos), Chr(44), getDecimalSeparator))
-            End If
+            if ( words[pos].at(0) == "|" )
+            {
+                clima.setParam1IsClimate(true);
+                QString param1ClimateField = words[pos];
+                param1ClimateField.remove(0,1);
+
+                if ( words[pos].right(2) != "||" )
+                {
+                    while ( words[pos + 1].right(2) != "||" ) // LC corretto pos+1 a differenza di sopra?
+                    {
+                        pos = pos + 1;
+                        param1ClimateField = param1ClimateField + "_" + words[pos];
+                    }
+                    pos = pos + 1;
+                    param1ClimateField = param1ClimateField + "_" + words[pos].left(words[pos].size() - 2);
+                }
+                clima.setParam1(NODATA);
+            }
+            else
+            {
+                clima.setParam1IsClimate(false);
+                clima.setParam1ClimateField("");
+                clima.setParam1( words[pos].toFloat() ); // LC corretta l'interpretazione di quanto sotto?
+                //param1 = CSng(StringTools.SubstituteChar(words(pos), Chr(44), getDecimalSeparator))
+            }
         }
-        */
+
     }
     else
     {
-        /*
-        elab1 = Elab
-        param1 = param
-        */
+        clima.setElab1(elab);
+        clima.setParam1(param);
     }
 
     return true;
