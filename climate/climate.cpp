@@ -12,8 +12,11 @@ float RainfallThreshold = 0.2f; // LC mettere nei settings Environment.RainfallT
 
 
 Crit3DDate firstDateDailyVar; //temporaneo
+QDate currentDay;             // LC dove viene settato questo?
 
-bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, meteoVariable variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
+
+
+bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Climate* clima, meteoVariable variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
     QString elab1, bool param1IsClimate, QString climateElab, float param1, QString elab2, float param2, bool isAnomaly,
     int nYearsMin, int firstYearClimate, int lastYearClimate)
 {
@@ -22,6 +25,7 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
     bool isMeteoGrid = 0; // meteoPoint
     float currentParameter1;
     int validCell = 0;
+    int myClimateIndex;
 
 
     QDate startDate(firstYear, firstDate.month(), firstDate.day());
@@ -38,11 +42,11 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
 
     if (param1IsClimate)
     {
-//        Dim myPeriodType As Byte
-//        Dim myClimateIndex As Integer
 
-//        myPeriodType = Climate.parserElaborationOnlyPeriodType(climateElab)
-//        myClimateIndex = Climate.getClimateIndexFromDate(currentDay, myPeriodType)
+//        byte myPeriodType = Climate.parserElaborationOnlyPeriodType(climateElab)   // LC perchè ci sono tutti questi parser che richiamano poi il parserElaboration?
+//        int myClimateIndex = Climate.getClimateIndexFromDate(currentDay, myPeriodType)
+        parserElaboration(clima);
+        myClimateIndex = getClimateIndexFromDate(currentDay, clima->periodType());
      }
 
 
@@ -93,7 +97,7 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
 
 
 
-bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* meteoGridDbHandler, meteoVariable variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
+bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Climate* clima, meteoVariable variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
     QString elab1, bool param1IsClimate, QString climateElab, float param1, QString elab2, float param2, bool isAnomaly,
     int nYearsMin, int firstYearClimate, int lastYearClimate)
 {
@@ -101,6 +105,7 @@ bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* 
     bool isMeteoGrid = 1; // grid
     float currentParameter1;
     int validCell = 0;
+    int myClimateIndex;
 
     std::string id;
 
@@ -120,11 +125,12 @@ bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* 
 
     if (param1IsClimate)
     {
-//        Dim myPeriodType As Byte
-//        Dim myClimateIndex As Integer
 
 //        myPeriodType = Climate.parserElaborationOnlyPeriodType(climateElab)
 //        myClimateIndex = Climate.getClimateIndexFromDate(currentDay, myPeriodType)
+        parserElaboration(clima);
+        myClimateIndex = getClimateIndexFromDate(currentDay, clima->periodType());
+
      }
 
 
@@ -1159,12 +1165,12 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
 }
 
 
-bool parserElaboration(Climate clima)
+bool parserElaboration(Climate* clima)
 {
 
     int pos = 0;
 
-    QString climateElab = clima.climateElab();
+    QString climateElab = clima->climateElab();
     QStringList words = climateElab.split('_');
 
     if (words.isEmpty())
@@ -1184,8 +1190,8 @@ bool parserElaboration(Climate clima)
         if (!c.isDigit())
             return false;
     }
-    clima.setYearStart(myYearWords[0].toInt());
-    clima.setYearEnd(myYearWords[1].toInt());
+    clima->setYearStart(myYearWords[0].toInt());
+    clima->setYearEnd(myYearWords[1].toInt());
 
     pos = pos + 1;
 
@@ -1201,7 +1207,7 @@ bool parserElaboration(Climate clima)
     catch (const std::out_of_range& oor) {
       var = MapHourlyMeteoVar.at(words[pos].toStdString());
     }
-    clima.setVariable(var);
+    clima->setVariable(var);
 
     pos = pos + 1;
 
@@ -1212,7 +1218,7 @@ bool parserElaboration(Climate clima)
 
     QString periodTypeStr = words[pos];
 
-    clima.setPeriodType(getPeriodTypeFromString(periodTypeStr));
+    clima->setPeriodType(getPeriodTypeFromString(periodTypeStr));
 
     pos = pos + 1; // pos = 3
 
@@ -1221,9 +1227,9 @@ bool parserElaboration(Climate clima)
         return false;
     }
 
-    if ( (clima.periodType() == genericPeriod) && ( (words[pos].at(0)).isDigit() ) )
+    if ( (clima->periodType() == genericPeriod) && ( (words[pos].at(0)).isDigit() ) )
     {
-        clima.setGenericPeriod(words[pos]);
+        clima->setGenericPeriod(words[pos]);
         parserGenericPeriodString(clima);
     }
 
@@ -1246,7 +1252,7 @@ bool parserElaboration(Climate clima)
         pos = pos + 1;
         if ( words[pos].at(0) == "|" )
         {
-            clima.setParam1IsClimate(true);
+            clima->setParam1IsClimate(true);
             QString param1ClimateField = words[pos];
             param1ClimateField.remove(0,1);
 
@@ -1260,21 +1266,21 @@ bool parserElaboration(Climate clima)
             }
             param1ClimateField = param1ClimateField + "_" + words[pos].left(words[pos].size() - 2);
 
-            clima.setParam1ClimateField(param1ClimateField);
+            clima->setParam1ClimateField(param1ClimateField);
             param =  NODATA;
         }
         else
         {
-            clima.setParam1IsClimate(false);
-            clima.setParam1ClimateField("");
+            clima->setParam1IsClimate(false);
+            clima->setParam1ClimateField("");
             param = words[pos].toFloat(); // GA controllare se funziona bene gestione separatore decimale
         }
     }
 
     if (words.size() > pos)
     {
-        clima.setElab2(elab);
-        clima.setParam2(param);
+        clima->setElab2(elab);
+        clima->setParam2(param);
         pos = pos + 1;
 
         QString elab1 = words[pos];
@@ -1286,7 +1292,7 @@ bool parserElaboration(Climate clima)
             pos = pos + 1;
             if ( words[pos].at(0) == "|" )
             {
-                clima.setParam1IsClimate(true);
+                clima->setParam1IsClimate(true);
                 QString param1ClimateField = words[pos];
                 param1ClimateField.remove(0,1);
 
@@ -1301,21 +1307,21 @@ bool parserElaboration(Climate clima)
                 pos = pos + 1;
                 param1ClimateField = param1ClimateField + "_" + words[pos].left(words[pos].size() - 2);
 
-                clima.setParam1(NODATA);
+                clima->setParam1(NODATA);
             }
             else
             {
-                clima.setParam1IsClimate(false);
-                clima.setParam1ClimateField("");
-                clima.setParam1( words[pos].toFloat() );// GA controllare se funziona bene gestione separatore decimale
+                clima->setParam1IsClimate(false);
+                clima->setParam1ClimateField("");
+                clima->setParam1( words[pos].toFloat() );// GA controllare se funziona bene gestione separatore decimale
             }
         }
 
     }
     else
     {
-        clima.setElab1(elab);
-        clima.setParam1(param);
+        clima->setElab1(elab);
+        clima->setParam1(param);
     }
 
     return true;
@@ -1343,27 +1349,27 @@ period getPeriodTypeFromString(QString periodStr)
 
 }
 
-bool parserGenericPeriodString(Climate clima)
+bool parserGenericPeriodString(Climate *clima)
 {
 
-    if ( clima.genericPeriod().isEmpty())
+    if ( clima->genericPeriod().isEmpty())
     {
         return false;
     }
 
-    QString day = clima.genericPeriod().mid(0,2);
-    QString month = clima.genericPeriod().mid(3,2);
+    QString day = clima->genericPeriod().mid(0,2);
+    QString month = clima->genericPeriod().mid(3,2);
     int year = 2000;
-    clima.setGenericPeriodDateStart( QDate(year,  month.toInt(),  day.toInt()) );
+    clima->setGenericPeriodDateStart( QDate(year,  month.toInt(),  day.toInt()) );
 
-    day = clima.genericPeriod().mid(6,2);
-    month = clima.genericPeriod().mid(9,2);
+    day = clima->genericPeriod().mid(6,2);
+    month = clima->genericPeriod().mid(9,2);
 
-    clima.setGenericPeriodDateEnd( QDate(year,  month.toInt(),  day.toInt()) );
+    clima->setGenericPeriodDateEnd( QDate(year,  month.toInt(),  day.toInt()) );
 
-    if ( clima.genericPeriod().size() > 11 )
+    if ( clima->genericPeriod().size() > 11 )
     {
-        clima.setNYears( (clima.genericPeriod().mid(13,2)).toInt() );
+        clima->setNYears( (clima->genericPeriod().mid(13,2)).toInt() );
     }
     return true;
 
@@ -1439,6 +1445,28 @@ void extractValidValuesWithThreshold(std::vector<float>* outputValues, float myT
         {
             outputValues->erase(outputValues->begin()+i);
         }
+    }
+
+}
+
+
+int getClimateIndexFromDate(QDate myDate, period periodType)
+{
+
+    switch(periodType)
+    {
+    case annualPeriod: genericPeriod:
+            return 1;
+    case decadalPeriod:
+            return decadeFromDate(myDate);
+    case monthlyPeriod:
+            return myDate.month();
+    case seasonalPeriod:
+            return getSeasonFromDate(myDate);
+    case dailyPeriod:
+            return myDate.daysInYear();
+    default:
+            return NODATA;
     }
 
 }

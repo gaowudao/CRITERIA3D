@@ -64,11 +64,11 @@ const std::map<std::string, meteoComputation> MapMeteoComputation = {
 
 
 bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoints,
-    int nrMeteoPoints, QString variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
+    int nrMeteoPoints, Climate* clima, QString variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
     QString elab1, bool param1IsClimate, QString param1ClimateField, float param1, QString elab2,
     float param2, bool isAnomaly, int nYearsMin, int firstYearClimate, int lastYearClimate);
 
-bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* meteoGridDbHandler,
+bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Climate* clima,
     QString variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
     QString elab1, bool param1IsClimate, QString param1ClimateField, float param1, QString elab2,
     float param2, bool isAnomaly, int nYearsMin, int firstYearClimate, int lastYearClimate);
@@ -121,12 +121,16 @@ float loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *mete
 
 period getPeriodTypeFromString(QString periodStr);
 
-bool parserGenericPeriodString(Climate clima);
+bool parserGenericPeriodString(Climate* clima);
+
+bool parserElaboration(Climate* clima);
 
 int nParameters(meteoComputation elab);
 
 void extractValidValuesCC(std::vector<float>* outputValues);
 
 void extractValidValuesWithThreshold(std::vector<float>* outputValues, float myThreshold);
+
+int getClimateIndexFromDate(QDate myDate, period periodType);
 
 #endif // CLIMATE_H

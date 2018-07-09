@@ -173,6 +173,44 @@ QString getPath(QString filePath)
     return filePath.left(filePath.length() - fileName.length());
 }
 
+int decadeFromDate(QDate date)
+{
 
+    int day = date.day();
+    int decade;
+    if ( day <= 10)
+    {
+        decade = 1;
+    }
+    else if ( day <= 20)
+    {
+        decade = 2;
+    }
+    else
+    {
+        decade = 3;
+    }
+    decade = decade + (3 * (date.month() - 1));
+    return decade;
+
+}
+
+int getSeasonFromDate(QDate date)
+{
+
+    int month = date.month();
+    switch (month) {
+    case 3: case 4: case 5:
+        return 1;
+    case 6: case 7: case 8:
+        return 2;
+    case 9: case 10: case 11:
+        return 3;
+    case 12: case 1: case 2:
+        return 4;
+    default:
+        return NODATA;
+    }
+}
 
 
