@@ -8,6 +8,7 @@
 #define MINPERCENTAGE 80 // mettere nei settings quando ci saranno Environment.minPercentage
 #define AutomaticETP 1 // LC setting?
 #define AutomaticTmed 1 // LC setting?
+float RainfallThreshold = 0.2f; // LC mettere nei settings Environment.RainfallThreshold
 
 
 Crit3DDate firstDateDailyVar; //temporaneo
@@ -645,34 +646,6 @@ float dewPoint(float relHumAir, float tempAir)
 
 }
 
-void extractValidValuesWithThreshold(std::vector<float> myValues, std::vector<float>* myValidValues, float myThreshold)
-{
-
-    for (unsigned int i = 0; i < myValues.size(); i++)
-    {
-        if (myValues[i] != NODATA)
-        {
-            if (myValues[i] > myThreshold)
-            {
-                myValidValues->push_back(myValues[i]);
-            }
-        }
-    }
-
-}
-
-void extractValidValuesCC(std::vector<float> myValues, std::vector<float>* myValidValues)
-{
-
-    for (unsigned int i = 0; i < myValues.size(); i++)
-    {
-        if (myValues[i] != NODATA)
-        {
-            myValidValues->push_back(myValues[i]);
-        }
-    }
-
-}
 
 bool elaborateDailyAggregatedVar(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float>* outputValues, float* percValue)
 {
@@ -842,22 +815,6 @@ bool elaborateDailyAggregatedVarFromHourly(meteoVariable myVar, Crit3DMeteoPoint
 bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, QString elab1,
     QDate startDate, QDate endDate, std::vector<float>* outputValues, float* percValue)
 {
-
-    /*
-    //// era in statistica
-    todo: spostare in preElaboration (quindi eliminare myVar)
-    If myElab <> Definitions.ELAB_GIORNI_CONSECUTIVI_SOPRA_SOGLIA And _
-        myElab <> Definitions.ELAB_GIORNI_CONSECUTIVI_SOTTO_SOGLIA And _
-        myElab <> Definitions.ELAB_TREND Then
-
-        If myVar = Definitions.DAILY_PREC And myElab = Definitions.ELAB_PERCENTILE And Not isCumulated Then
-            Elaboration.ExtractValidValuesWithThreshold myValues, myValidValues, Environment.RainfallThreshold
-        Else
-            Elaboration.ExtractValidValuesCC myValues, myValidValues
-        End If
-    End If
-    //////////
-    */
 
     bool preElaboration = false;
 
@@ -1184,6 +1141,19 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
 
     }
 
+    if (elab1 != "consecutiveDaysAbove" && elab1 != "consecutiveDaysBelow" && elab1 != "trend")
+    {
+        // LC rimossa condizione And Not isCumulated
+        if ( variable == dailyPrecipitation && elab1 == "percentile")
+        {
+            extractValidValuesWithThreshold(outputValues, RainfallThreshold);
+        }
+        else
+        {
+            extractValidValuesCC(outputValues);
+        }
+    }
+
     delete meteoPoint;
     return preElaboration;
 }
@@ -1439,7 +1409,36 @@ int nParameters(meteoComputation elab)
         return 1;
     case lastDayBelowThreshold:
         return 1;
+    default:
+        return NODATA;
+    }
+
+
+}
+
+void extractValidValuesCC(std::vector<float>* outputValues)
+{
+
+    for ( unsigned int i = 0;  i < outputValues->size(); i++)
+    {
+        if (outputValues->at(i) == NODATA)
+        {
+            outputValues->erase(outputValues->begin()+i);
+        }
     }
 
 }
 
+
+void extractValidValuesWithThreshold(std::vector<float>* outputValues, float myThreshold)
+{
+
+    for ( unsigned int i = 0;  i < outputValues->size(); i++)
+    {
+        if (outputValues->at(i) == NODATA || outputValues->at(i) < myThreshold)
+        {
+            outputValues->erase(outputValues->begin()+i);
+        }
+    }
+
+}
