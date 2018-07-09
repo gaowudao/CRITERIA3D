@@ -65,7 +65,7 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
             currentParameter1 = param1;
         }
 
-        if (elab1 == phenology)
+        if (elab1 == "phenology")
         {
             //Then currentPheno.setPhenoPoint i;
         }
