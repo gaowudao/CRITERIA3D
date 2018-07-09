@@ -1224,7 +1224,6 @@ bool parserElaboration(Climate clima)
         return false;
     }
 
-    // LC TBC la stringa da parsare se coincide con quanto inserito nelle Map
     meteoVariable var;
     try {
       var = MapDailyMeteoVar.at(words[pos].toStdString());
@@ -1282,15 +1281,15 @@ bool parserElaboration(Climate clima)
             param1ClimateField.remove(0,1);
 
             pos = pos + 1;
-            if ( words[pos].right(2) != "||" )
+            if ( words[pos].right(2) == "||" ) return false;
+
+            while ( words[pos].right(2) != "||" )
             {
-                while ( words[pos].right(2) != "||" )
-                {
-                    param1ClimateField = param1ClimateField + "_" + words[pos];
-                    pos = pos + 1;
-                }
-                param1ClimateField = param1ClimateField + "_" + words[pos].left(words[pos].size() - 2);
+                param1ClimateField = param1ClimateField + "_" + words[pos];
+                pos = pos + 1;
             }
+            param1ClimateField = param1ClimateField + "_" + words[pos].left(words[pos].size() - 2);
+
             clima.setParam1ClimateField(param1ClimateField);
             param =  NODATA;
         }
@@ -1298,8 +1297,7 @@ bool parserElaboration(Climate clima)
         {
             clima.setParam1IsClimate(false);
             clima.setParam1ClimateField("");
-            param = words[pos].toFloat(); // LC corretta l'interpretazione di quanto sotto?
-            // param = CSng(StringTools.SubstituteChar(words(pos), Chr(44), getDecimalSeparator));
+            param = words[pos].toFloat(); // GA controllare se funziona bene gestione separatore decimale
         }
     }
 
@@ -1322,24 +1320,24 @@ bool parserElaboration(Climate clima)
                 QString param1ClimateField = words[pos];
                 param1ClimateField.remove(0,1);
 
-                if ( words[pos].right(2) != "||" )
+                pos = pos + 1;
+                if ( words[pos].right(2) == "||" ) return false;
+
+                while ( words[pos].right(2) != "||" )
                 {
-                    while ( words[pos + 1].right(2) != "||" ) // LC corretto pos+1 a differenza di sopra?
-                    {
-                        pos = pos + 1;
-                        param1ClimateField = param1ClimateField + "_" + words[pos];
-                    }
                     pos = pos + 1;
-                    param1ClimateField = param1ClimateField + "_" + words[pos].left(words[pos].size() - 2);
+                    param1ClimateField = param1ClimateField + "_" + words[pos];
                 }
+                pos = pos + 1;
+                param1ClimateField = param1ClimateField + "_" + words[pos].left(words[pos].size() - 2);
+
                 clima.setParam1(NODATA);
             }
             else
             {
                 clima.setParam1IsClimate(false);
                 clima.setParam1ClimateField("");
-                clima.setParam1( words[pos].toFloat() ); // LC corretta l'interpretazione di quanto sotto?
-                //param1 = CSng(StringTools.SubstituteChar(words(pos), Chr(44), getDecimalSeparator))
+                clima.setParam1( words[pos].toFloat() );// GA controllare se funziona bene gestione separatore decimale
             }
         }
 
@@ -1417,8 +1415,8 @@ int nParameters(meteoComputation elab)
         return 1;
     case stdDevAbove:
         return 1;
-//    case Definitions.ELAB_SUM_CON_SOGLIA // LC esiste ancora? non trovo corrispondenza
-//        return 1;
+    case sumAbove:
+        return 1;
     case daysAbove:
         return 1;
     case daysBelow:
@@ -1431,7 +1429,7 @@ int nParameters(meteoComputation elab)
         return 1;
     case prevailingWindDir:
         return 0;
-    case correctedDegreeDaysSum: // LC giusta? era Definitions.ELABORATION_CORRECTED_SUM
+    case correctedDegreeDaysSum:
         return 1;
     case trend:
         return 0;
