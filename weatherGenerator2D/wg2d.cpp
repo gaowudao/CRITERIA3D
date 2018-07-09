@@ -1570,6 +1570,65 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
 
     }
 
+    statistics::correlationsMatrix(nrStations,amountMatrixSeasonDJF,--counterDJF,amountCorrelationMatrixDJF);
+    statistics::correlationsMatrix(nrStations,amountMatrixSeasonMAM,--counterMAM,amountCorrelationMatrixMAM);
+    statistics::correlationsMatrix(nrStations,amountMatrixSeasonJJA,--counterJJA,amountCorrelationMatrixJJA);
+    statistics::correlationsMatrix(nrStations,amountMatrixSeasonSON,--counterSON,amountCorrelationMatrixSON);
+
+    for (int ijk=0;ijk<4;ijk++)
+    {
+       if (ijk == 0)
+       {
+           for (int i=0;i<nrStations;i++)
+           {
+               for (int j=0;j<nrStations;j++)
+               {
+                   wSeason[i][j] = wDJF[i][j];
+                   amountCorrelationMatrixSeason[i][j]= amountCorrelationMatrixDJF[i][j];
+               }
+
+           }
+       }
+       if (ijk == 1)
+       {
+           for (int i=0;i<nrStations;i++)
+           {
+               for (int j=0;j<nrStations;j++)
+               {
+                   wSeason[i][j] = wMAM[i][j];
+                   amountCorrelationMatrixSeason[i][j]= amountCorrelationMatrixMAM[i][j];
+               }
+
+           }
+       }
+       if (ijk == 2)
+       {
+           for (int i=0;i<nrStations;i++)
+           {
+               for (int j=0;j<nrStations;j++)
+               {
+                   wSeason[i][j] = wJJA[i][j];
+                   amountCorrelationMatrixSeason[i][j]= amountCorrelationMatrixJJA[i][j];
+               }
+
+           }
+       }
+       if (ijk == 3)
+       {
+           for (int i=0;i<nrStations;i++)
+           {
+               for (int j=0;j<nrStations;j++)
+               {
+                   wSeason[i][j] = wSON[i][j];
+                   amountCorrelationMatrixSeason[i][j]= amountCorrelationMatrixSON[i][j];
+               }
+
+           }
+       }
+
+
+    }
+
 
 
     // free the memory step 4
