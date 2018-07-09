@@ -13,7 +13,7 @@
 Crit3DDate firstDateDailyVar; //temporaneo
 
 bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, meteoVariable variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
-    QString elab1, bool param1IsClimate, QString param1ClimateField, float param1, QString elab2, float param2, bool isAnomaly,
+    QString elab1, bool param1IsClimate, QString climateElab, float param1, QString elab2, float param2, bool isAnomaly,
     int nYearsMin, int firstYearClimate, int lastYearClimate)
 {
 
@@ -40,7 +40,7 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
 //        Dim myPeriodType As Byte
 //        Dim myClimateIndex As Integer
 
-//        myPeriodType = Climate.parserElaborationOnlyPeriodType(parameter1ClimateElab)
+//        myPeriodType = Climate.parserElaborationOnlyPeriodType(climateElab)
 //        myClimateIndex = Climate.getClimateIndexFromDate(currentDay, myPeriodType)
      }
 
@@ -50,7 +50,7 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
 
         if (param1IsClimate)
         {
-//            if ( ClimateReadPoint(PragaClimate.Point(i).TableName, param1ClimateField, myPeriodType, myClimateIndex, PragaClimate.Point(i)))
+//            if ( ClimateReadPoint(PragaClimate.Point(i).TableName, climateElab, myPeriodType, myClimateIndex, PragaClimate.Point(i)))
 //            {
 
 //                currentParameter1 = passaggioDati.GetClimateData(myPeriodType, PragaClimate.Point(i), myClimateIndex);
@@ -93,7 +93,7 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
 
 
 bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* meteoGridDbHandler, meteoVariable variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
-    QString elab1, bool param1IsClimate, QString param1ClimateField, float param1, QString elab2, float param2, bool isAnomaly,
+    QString elab1, bool param1IsClimate, QString climateElab, float param1, QString elab2, float param2, bool isAnomaly,
     int nYearsMin, int firstYearClimate, int lastYearClimate)
 {
 
@@ -122,7 +122,7 @@ bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* 
 //        Dim myPeriodType As Byte
 //        Dim myClimateIndex As Integer
 
-//        myPeriodType = Climate.parserElaborationOnlyPeriodType(parameter1ClimateElab)
+//        myPeriodType = Climate.parserElaborationOnlyPeriodType(climateElab)
 //        myClimateIndex = Climate.getClimateIndexFromDate(currentDay, myPeriodType)
      }
 
@@ -138,7 +138,7 @@ bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* 
                 if (param1IsClimate)
                 {
 //                    if (Climate.ClimateReadPoint(PragaClimate.Point(row, col).TableName, _
-//                        param1ClimateField, myPeriodType, myClimateIndex,PragaClimate.Point(row, col)) )
+//                        climateElab, myPeriodType, myClimateIndex,PragaClimate.Point(row, col)) )
 //                    {
 
 //                      currentParameter1 = passaggioDati.GetClimateData(myPeriodType, PragaClimate.Point(row, col), myClimateIndex)
@@ -871,6 +871,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
             {
                 preElaboration = elaborateDailyAggregatedVar(dailyLeafWetness, *meteoPoint, outputValues, percValue);
             }
+            break;
         }
 
         case dailyThomDaytime:
@@ -891,6 +892,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     preElaboration = elaborateDailyAggregatedVar(dailyThomDaytime, *meteoPoint, outputValues, percValue);
                 }
             }
+            break;
         }
 
         case dailyThomNighttime:
@@ -911,6 +913,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     preElaboration = elaborateDailyAggregatedVar(dailyThomNighttime, *meteoPoint, outputValues, percValue);
                 }
             }
+            break;
         }
         case dailyThomAvg: case dailyThomMax: case dailyThomHoursAbove:
         {
@@ -922,6 +925,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     preElaboration = elaborateDailyAggregatedVar(variable, *meteoPoint, outputValues, percValue);
                 }
             }
+            break;
         }
         case dailyBIC:
         {
@@ -960,6 +964,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     preElaboration = elaborateDailyAggregatedVar(dailyBIC, *meteoPoint, outputValues, percValue);
                 }
             }
+            break;
         }
 
         case dailyAirTemperatureRange:
@@ -980,6 +985,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     preElaboration = elaborateDailyAggregatedVar(dailyAirTemperatureRange, *meteoPoint, outputValues, percValue);
                 }
             }
+            break;
         }
         case dailyAirDewTemperatureMax:
         {
@@ -999,6 +1005,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     preElaboration = elaborateDailyAggregatedVar(dailyAirDewTemperatureMax, *meteoPoint, outputValues, percValue);
                 }
             }
+            break;
         }
 
         case dailyAirDewTemperatureMin:
@@ -1019,6 +1026,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     preElaboration = elaborateDailyAggregatedVar(dailyAirDewTemperatureMin, *meteoPoint, outputValues, percValue);
                 }
             }
+            break;
         }
 
         case dailyAirTemperatureAvg:
@@ -1046,6 +1054,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     }
                 }
             }
+            break;
         }
 
         case dailyReferenceEvapotranspiration:
@@ -1072,8 +1081,10 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     {
                         preElaboration = elaborateDailyAggregatedVar(dailyReferenceEvapotranspiration, *meteoPoint, outputValues, percValue);
                     }
+
                 }
             }
+            break;
         }
 
         default:
@@ -1108,6 +1119,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                             }
                         }
                     }
+                    break;
                 }
 
             case winkler: case correctedDegreeDaysSum: case fregoni:
@@ -1125,6 +1137,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                         preElaboration = true;
                     }
                 }
+                break;
             }
 
             case phenology:
@@ -1149,6 +1162,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                         }
                     }
                 }
+                break;
              }
 
             default:
@@ -1160,10 +1174,12 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                 {
                     preElaboration = true;
                 }
+                break;
             }
 
 
             }
+            break;
         }
 
     }
@@ -1172,4 +1188,237 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
     return preElaboration;
 }
 
+
+bool parserElaboration(Climate clima)
+{
+
+    int pos = 0;
+
+    QString climateElab = clima.climateElab();
+    QStringList words = climateElab.split('_');
+
+    if (words.isEmpty())
+    {
+        return false;
+    }
+
+    QStringList myYearWords = words[pos].split('÷');
+
+    foreach(QChar c, myYearWords[0])
+    {
+        if (!c.isDigit())
+            return false;
+    }
+    foreach(QChar c, myYearWords[1])
+    {
+        if (!c.isDigit())
+            return false;
+    }
+    clima.setYearStart(myYearWords[0].toInt());
+    clima.setYearEnd(myYearWords[1].toInt());
+
+    pos = pos + 1;
+
+    if (words.size() == pos)
+    {
+        return false;
+    }
+
+    // LC TBC la stringa da parsare se coincide con quanto inserito nelle Map
+    meteoVariable var;
+    try {
+      var = MapDailyMeteoVar.at(words[pos].toStdString());
+    }
+    catch (const std::out_of_range& oor) {
+      var = MapHourlyMeteoVar.at(words[pos].toStdString());
+    }
+    clima.setVariable(var);
+
+    pos = pos + 1;
+
+    if (words.size() == pos)
+    {
+        return false;
+    }
+
+    QString periodTypeStr = words[pos];
+
+    clima.setPeriodType(getPeriodTypeFromString(periodTypeStr));
+
+    pos = pos + 1; // pos = 3
+
+    if (words.size() == pos)
+    {
+        return false;
+    }
+
+    if ( (clima.periodType() == genericPeriod) && ( (words[pos].at(0)).isDigit() ) )
+    {
+        clima.setGenericPeriod(words[pos]);
+        parserGenericPeriodString(clima);
+    }
+
+    pos = pos + 1; // pos = 4
+
+    if (words.size() == pos)
+    {
+        return false;
+    }
+
+    QString elab = words[pos];
+
+    float param = NODATA;
+ //   int nrParam = nParameters(elab);
+/*
+    if (nrParam > 0)
+    {
+        pos = pos + 1;
+        if (Left(words(pos), 1) = "|" )
+        {
+            clima.setParam1IsClimate(true);
+            param1ClimateField = Right(words(pos), Len(words(pos)) - 1)
+            pos = pos + 1
+            if ( Right(words(pos), 2) <> "||" )
+            {
+                Do While Right(words(pos), 2) <> "||"
+                    param1ClimateField = param1ClimateField & "_" & words(pos)
+                    pos = pos + 1
+                Loop
+                param1ClimateField = param1ClimateField & "_" & Left(words(pos), Len(words(pos)) - 2)
+            }
+            param =  NODATA
+        }
+        else
+        {
+            param1IsClimate = false;
+            param1ClimateField = Definitions.NODATASTRING
+            param = CSng(StringTools.SubstituteChar(words(pos), Chr(44), getDecimalSeparator))
+        }
+    }
+
+    If UBound(words) > pos Then
+        elab2 = Elab
+        param2 = param
+        pos = pos + 1
+        elab1 = words(pos)
+        nrParam = math.NrParameters(elab1)
+        If nrParam > 0 Then
+            pos = pos + 1
+            If Left(words(pos), 1) = "|" Then
+                param1IsClimate = True
+                param1ClimateField = Right(words(pos), Len(words(pos)) - 1)
+                If Right(words(pos), 2) <> "||" Then
+                    Do While Right(words(pos + 1), 2) <> "||"
+                        pos = pos + 1
+                        param1ClimateField = param1ClimateField & SEP_STRING & words(pos)
+                    Loop
+                    pos = pos + 1
+                    param1ClimateField = param1ClimateField & SEP_STRING & Left(words(pos), Len(words(pos)) - 2)
+                End If
+                param1 =  NODATA
+            Else
+                param1IsClimate = False
+                param1ClimateField = Definitions.NODATASTRING
+                param1 = CSng(StringTools.SubstituteChar(words(pos), Chr(44), getDecimalSeparator))
+            End If
+        End If
+    Else
+        elab1 = Elab
+        param1 = param
+    End If
+*/
+    return true;
+
+}
+
+
+period getPeriodTypeFromString(QString periodStr)
+{
+
+    if (periodStr == "daily")
+        return dailyPeriod;
+    if (periodStr == "decadal")
+        return decadalPeriod;
+    if (periodStr == "monthly")
+        return monthlyPeriod;
+    if (periodStr == "seasonal")
+        return seasonalPeriod;
+    if (periodStr == "annual")
+        return annualPeriod;
+    if (periodStr == "generic_period")
+        return genericPeriod;
+
+    return noPeriodType;
+
+}
+
+bool parserGenericPeriodString(Climate clima)
+{
+
+    if ( clima.genericPeriod().isEmpty())
+    {
+        return false;
+    }
+
+    QString day = clima.genericPeriod().mid(0,2);
+    QString month = clima.genericPeriod().mid(3,2);
+    int year = 2000;
+    clima.setGenericPeriodDateStart( QDate(year,  month.toInt(),  day.toInt()) );
+
+    day = clima.genericPeriod().mid(6,2);
+    month = clima.genericPeriod().mid(9,2);
+
+    clima.setGenericPeriodDateEnd( QDate(year,  month.toInt(),  day.toInt()) );
+
+    if ( clima.genericPeriod().size() > 11 )
+    {
+        clima.setNYears( (clima.genericPeriod().mid(13,2)).toInt() );
+    }
+    return true;
+
+}
+
+int nParameters(meteoComputation elab)
+{
+    switch(elab)
+    {
+    case average:
+        return 0;
+    case maxInList:
+        return 0;
+    case minInList:
+        return 0;
+    case sum:
+        return 0;
+    case avgAbove:
+        return 1;
+    case stdDevAbove:
+        return 1;
+//    case Definitions.ELAB_SUM_CON_SOGLIA // LC esiste ancora? non trovo corrispondenza
+//        return 1;
+    case daysAbove:
+        return 1;
+    case daysBelow:
+        return 1;
+    case consecutiveDaysAbove:
+        return 1;
+    case consecutiveDaysBelow:
+        return 1;
+    case percentile:
+        return 1;
+    case prevailingWindDir:
+        return 0;
+    case correctedDegreeDaysSum: // LC giusta? era Definitions.ELABORATION_CORRECTED_SUM
+        return 1;
+    case trend:
+        return 0;
+    case mannKendall:
+        return 0;
+    case differenceWithThreshold:
+        return 1;
+    case lastDayBelowThreshold:
+        return 1;
+    }
+
+}
 

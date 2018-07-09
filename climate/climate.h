@@ -4,6 +4,7 @@
 
 #include <QString>
 #include <QDate>
+#include <QMetaEnum>
 
 #ifndef METEO_H
     #include "meteo.h"
@@ -15,6 +16,10 @@
 
 #ifndef DBMETEOGRID_H
     #include "dbMeteoGrid.h"
+#endif
+
+#ifndef DBCLIMATE_H
+    #include "dbClimate.h"
 #endif
 
 enum meteoComputation { average, stdDev, sum, maxInList, minInList,
@@ -88,5 +93,11 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
 float loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler, Crit3DMeteoGridDbHandler *meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, QDate first, QDate last, std::vector<float>* outputValues);
 
 float loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler, Crit3DMeteoGridDbHandler *meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, QDateTime first, QDateTime last, std::vector<float>* outputValues);
+
+period getPeriodTypeFromString(QString periodStr);
+
+bool parserGenericPeriodString(Climate clima);
+
+int nParameters(meteoComputation elab);
 
 #endif // CLIMATE_H
