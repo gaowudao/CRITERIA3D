@@ -17,6 +17,10 @@
     #include "dbMeteoGrid.h"
 #endif
 
+#ifndef DBCLIMATE_H
+    #include "dbClimate.h"
+#endif
+
 enum meteoComputation { average, stdDev, sum, maxInList, minInList,
                         differenceWithThreshold, lastDayBelowThreshold,
                         sumAbove, avgAbove, stdDevAbove,
@@ -27,6 +31,36 @@ enum meteoComputation { average, stdDev, sum, maxInList, minInList,
                         phenology,
                         winkler, huglin, fregoni,
                         correctedDegreeDaysSum, erosivityFactorElab, rainIntensityElab};
+
+const std::map<std::string, meteoComputation> MapMeteoComputation = {
+  { "average", average },
+  { "stdDev", stdDev },
+  { "sum", sum },
+  { "maxInList", maxInList },
+  { "minInList", minInList },
+  { "differenceWithThreshold", differenceWithThreshold },
+  { "lastDayBelowThreshold", lastDayBelowThreshold },
+  { "sumAbove", sumAbove },
+  { "avgAbove", avgAbove },
+  { "stdDevAbove", stdDevAbove },
+  { "percentile", percentile },
+  { "median", median },
+  { "freqPositive", freqPositive },
+  { "daysAbove", daysAbove },
+  { "daysBelow", daysBelow },
+  { "consecutiveDaysAbove", consecutiveDaysAbove },
+  { "consecutiveDaysBelow", consecutiveDaysBelow },
+  { "prevailingWindDir", prevailingWindDir },
+  { "trend", trend },
+  { "mannKendall", mannKendall },
+  { "phenology", phenology },
+  { "winkler", winkler },
+  { "huglin", huglin },
+  { "fregoni", fregoni },
+  { "correctedDegreeDaysSum", correctedDegreeDaysSum },
+  { "erosivityFactorElab", erosivityFactorElab },
+  { "rainIntensityElab", rainIntensityElab }
+};
 
 
 bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoints,
@@ -78,15 +112,21 @@ float dailyEtpHargreaves(float Tmin, float Tmax, Crit3DDate date, double latitud
 
 float dewPoint(float relHumAir, float tempAir);
 
-void extractValidValuesWithThreshold(std::vector<float> myValues, std::vector<float> *myValidValues, float myThreshold);
-
-void extractValidValuesCC(std::vector<float> myValues, std::vector<float>* myValidValues);
-
 bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, QString elab1,
     QDate startDate, QDate endDate, std::vector<float> *outputValues, float* percValue);
 
 float loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler, Crit3DMeteoGridDbHandler *meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, QDate first, QDate last, std::vector<float>* outputValues);
 
 float loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler, Crit3DMeteoGridDbHandler *meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, QDateTime first, QDateTime last, std::vector<float>* outputValues);
+
+period getPeriodTypeFromString(QString periodStr);
+
+bool parserGenericPeriodString(Climate clima);
+
+int nParameters(meteoComputation elab);
+
+void extractValidValuesCC(std::vector<float>* outputValues);
+
+void extractValidValuesWithThreshold(std::vector<float>* outputValues, float myThreshold);
 
 #endif // CLIMATE_H

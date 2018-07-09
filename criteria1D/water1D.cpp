@@ -40,7 +40,7 @@
  */
 void initializeWater(Criteria1D* myCase)
 {
-    // TODO migliorare - variare in base al mese come in Vintage
+    // TODO migliorare - variare in base al mese
     myCase->layer[0].waterContent = 0.0;
     for (int i = 1; i < myCase->nrLayers; i++)
     {

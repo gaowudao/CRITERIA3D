@@ -8,12 +8,13 @@
 #define MINPERCENTAGE 80 // mettere nei settings quando ci saranno Environment.minPercentage
 #define AutomaticETP 1 // LC setting?
 #define AutomaticTmed 1 // LC setting?
+float RainfallThreshold = 0.2f; // LC mettere nei settings Environment.RainfallThreshold
 
 
 Crit3DDate firstDateDailyVar; //temporaneo
 
 bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, meteoVariable variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
-    QString elab1, bool param1IsClimate, QString param1ClimateField, float param1, QString elab2, float param2, bool isAnomaly,
+    QString elab1, bool param1IsClimate, QString climateElab, float param1, QString elab2, float param2, bool isAnomaly,
     int nYearsMin, int firstYearClimate, int lastYearClimate)
 {
 
@@ -40,7 +41,7 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
 //        Dim myPeriodType As Byte
 //        Dim myClimateIndex As Integer
 
-//        myPeriodType = Climate.parserElaborationOnlyPeriodType(parameter1ClimateElab)
+//        myPeriodType = Climate.parserElaborationOnlyPeriodType(climateElab)
 //        myClimateIndex = Climate.getClimateIndexFromDate(currentDay, myPeriodType)
      }
 
@@ -50,7 +51,7 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
 
         if (param1IsClimate)
         {
-//            if ( ClimateReadPoint(PragaClimate.Point(i).TableName, param1ClimateField, myPeriodType, myClimateIndex, PragaClimate.Point(i)))
+//            if ( ClimateReadPoint(PragaClimate.Point(i).TableName, climateElab, myPeriodType, myClimateIndex, PragaClimate.Point(i)))
 //            {
 
 //                currentParameter1 = passaggioDati.GetClimateData(myPeriodType, PragaClimate.Point(i), myClimateIndex);
@@ -65,7 +66,7 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
             currentParameter1 = param1;
         }
 
-        if (elab1 == phenology)
+        if (elab1 == "phenology")
         {
             //Then currentPheno.setPhenoPoint i;
         }
@@ -93,7 +94,7 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
 
 
 bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* meteoGridDbHandler, meteoVariable variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
-    QString elab1, bool param1IsClimate, QString param1ClimateField, float param1, QString elab2, float param2, bool isAnomaly,
+    QString elab1, bool param1IsClimate, QString climateElab, float param1, QString elab2, float param2, bool isAnomaly,
     int nYearsMin, int firstYearClimate, int lastYearClimate)
 {
 
@@ -122,7 +123,7 @@ bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* 
 //        Dim myPeriodType As Byte
 //        Dim myClimateIndex As Integer
 
-//        myPeriodType = Climate.parserElaborationOnlyPeriodType(parameter1ClimateElab)
+//        myPeriodType = Climate.parserElaborationOnlyPeriodType(climateElab)
 //        myClimateIndex = Climate.getClimateIndexFromDate(currentDay, myPeriodType)
      }
 
@@ -138,7 +139,7 @@ bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* 
                 if (param1IsClimate)
                 {
 //                    if (Climate.ClimateReadPoint(PragaClimate.Point(row, col).TableName, _
-//                        param1ClimateField, myPeriodType, myClimateIndex,PragaClimate.Point(row, col)) )
+//                        climateElab, myPeriodType, myClimateIndex,PragaClimate.Point(row, col)) )
 //                    {
 
 //                      currentParameter1 = passaggioDati.GetClimateData(myPeriodType, PragaClimate.Point(row, col), myClimateIndex)
@@ -645,34 +646,6 @@ float dewPoint(float relHumAir, float tempAir)
 
 }
 
-void extractValidValuesWithThreshold(std::vector<float> myValues, std::vector<float>* myValidValues, float myThreshold)
-{
-
-    for (unsigned int i = 0; i < myValues.size(); i++)
-    {
-        if (myValues[i] != NODATA)
-        {
-            if (myValues[i] > myThreshold)
-            {
-                myValidValues->push_back(myValues[i]);
-            }
-        }
-    }
-
-}
-
-void extractValidValuesCC(std::vector<float> myValues, std::vector<float>* myValidValues)
-{
-
-    for (unsigned int i = 0; i < myValues.size(); i++)
-    {
-        if (myValues[i] != NODATA)
-        {
-            myValidValues->push_back(myValues[i]);
-        }
-    }
-
-}
 
 bool elaborateDailyAggregatedVar(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float>* outputValues, float* percValue)
 {
@@ -843,22 +816,6 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
     QDate startDate, QDate endDate, std::vector<float>* outputValues, float* percValue)
 {
 
-    /*
-    //// era in statistica
-    todo: spostare in preElaboration (quindi eliminare myVar)
-    If myElab <> Definitions.ELAB_GIORNI_CONSECUTIVI_SOPRA_SOGLIA And _
-        myElab <> Definitions.ELAB_GIORNI_CONSECUTIVI_SOTTO_SOGLIA And _
-        myElab <> Definitions.ELAB_TREND Then
-
-        If myVar = Definitions.DAILY_PREC And myElab = Definitions.ELAB_PERCENTILE And Not isCumulated Then
-            Elaboration.ExtractValidValuesWithThreshold myValues, myValidValues, Environment.RainfallThreshold
-        Else
-            Elaboration.ExtractValidValuesCC myValues, myValidValues
-        End If
-    End If
-    //////////
-    */
-
     bool preElaboration = false;
 
 
@@ -871,6 +828,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
             {
                 preElaboration = elaborateDailyAggregatedVar(dailyLeafWetness, *meteoPoint, outputValues, percValue);
             }
+            break;
         }
 
         case dailyThomDaytime:
@@ -891,6 +849,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     preElaboration = elaborateDailyAggregatedVar(dailyThomDaytime, *meteoPoint, outputValues, percValue);
                 }
             }
+            break;
         }
 
         case dailyThomNighttime:
@@ -911,6 +870,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     preElaboration = elaborateDailyAggregatedVar(dailyThomNighttime, *meteoPoint, outputValues, percValue);
                 }
             }
+            break;
         }
         case dailyThomAvg: case dailyThomMax: case dailyThomHoursAbove:
         {
@@ -922,6 +882,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     preElaboration = elaborateDailyAggregatedVar(variable, *meteoPoint, outputValues, percValue);
                 }
             }
+            break;
         }
         case dailyBIC:
         {
@@ -960,6 +921,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     preElaboration = elaborateDailyAggregatedVar(dailyBIC, *meteoPoint, outputValues, percValue);
                 }
             }
+            break;
         }
 
         case dailyAirTemperatureRange:
@@ -980,6 +942,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     preElaboration = elaborateDailyAggregatedVar(dailyAirTemperatureRange, *meteoPoint, outputValues, percValue);
                 }
             }
+            break;
         }
         case dailyAirDewTemperatureMax:
         {
@@ -999,6 +962,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     preElaboration = elaborateDailyAggregatedVar(dailyAirDewTemperatureMax, *meteoPoint, outputValues, percValue);
                 }
             }
+            break;
         }
 
         case dailyAirDewTemperatureMin:
@@ -1019,6 +983,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     preElaboration = elaborateDailyAggregatedVar(dailyAirDewTemperatureMin, *meteoPoint, outputValues, percValue);
                 }
             }
+            break;
         }
 
         case dailyAirTemperatureAvg:
@@ -1046,6 +1011,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     }
                 }
             }
+            break;
         }
 
         case dailyReferenceEvapotranspiration:
@@ -1072,8 +1038,10 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     {
                         preElaboration = elaborateDailyAggregatedVar(dailyReferenceEvapotranspiration, *meteoPoint, outputValues, percValue);
                     }
+
                 }
             }
+            break;
         }
 
         default:
@@ -1108,6 +1076,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                             }
                         }
                     }
+                    break;
                 }
 
             case winkler: case correctedDegreeDaysSum: case fregoni:
@@ -1125,6 +1094,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                         preElaboration = true;
                     }
                 }
+                break;
             }
 
             case phenology:
@@ -1149,6 +1119,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                         }
                     }
                 }
+                break;
              }
 
             default:
@@ -1160,12 +1131,27 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                 {
                     preElaboration = true;
                 }
+                break;
             }
 
 
             }
+            break;
         }
 
+    }
+
+    if (elab1 != "consecutiveDaysAbove" && elab1 != "consecutiveDaysBelow" && elab1 != "trend")
+    {
+        // LC rimossa condizione And Not isCumulated
+        if ( variable == dailyPrecipitation && elab1 == "percentile")
+        {
+            extractValidValuesWithThreshold(outputValues, RainfallThreshold);
+        }
+        else
+        {
+            extractValidValuesCC(outputValues);
+        }
     }
 
     delete meteoPoint;
@@ -1173,3 +1159,286 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
 }
 
 
+bool parserElaboration(Climate clima)
+{
+
+    int pos = 0;
+
+    QString climateElab = clima.climateElab();
+    QStringList words = climateElab.split('_');
+
+    if (words.isEmpty())
+    {
+        return false;
+    }
+
+    QStringList myYearWords = words[pos].split('÷');
+
+    foreach(QChar c, myYearWords[0])
+    {
+        if (!c.isDigit())
+            return false;
+    }
+    foreach(QChar c, myYearWords[1])
+    {
+        if (!c.isDigit())
+            return false;
+    }
+    clima.setYearStart(myYearWords[0].toInt());
+    clima.setYearEnd(myYearWords[1].toInt());
+
+    pos = pos + 1;
+
+    if (words.size() == pos)
+    {
+        return false;
+    }
+
+    meteoVariable var;
+    try {
+      var = MapDailyMeteoVar.at(words[pos].toStdString());
+    }
+    catch (const std::out_of_range& oor) {
+      var = MapHourlyMeteoVar.at(words[pos].toStdString());
+    }
+    clima.setVariable(var);
+
+    pos = pos + 1;
+
+    if (words.size() == pos)
+    {
+        return false;
+    }
+
+    QString periodTypeStr = words[pos];
+
+    clima.setPeriodType(getPeriodTypeFromString(periodTypeStr));
+
+    pos = pos + 1; // pos = 3
+
+    if (words.size() == pos)
+    {
+        return false;
+    }
+
+    if ( (clima.periodType() == genericPeriod) && ( (words[pos].at(0)).isDigit() ) )
+    {
+        clima.setGenericPeriod(words[pos]);
+        parserGenericPeriodString(clima);
+    }
+
+    pos = pos + 1; // pos = 4
+
+    if (words.size() == pos)
+    {
+        return false;
+    }
+
+    QString elab = words[pos];
+
+    meteoComputation elabMeteoComputation = MapMeteoComputation.at(elab.toStdString());
+
+    float param = NODATA;
+    int nrParam = nParameters(elabMeteoComputation);
+
+    if (nrParam > 0)
+    {
+        pos = pos + 1;
+        if ( words[pos].at(0) == "|" )
+        {
+            clima.setParam1IsClimate(true);
+            QString param1ClimateField = words[pos];
+            param1ClimateField.remove(0,1);
+
+            pos = pos + 1;
+            if ( words[pos].right(2) == "||" ) return false;
+
+            while ( words[pos].right(2) != "||" )
+            {
+                param1ClimateField = param1ClimateField + "_" + words[pos];
+                pos = pos + 1;
+            }
+            param1ClimateField = param1ClimateField + "_" + words[pos].left(words[pos].size() - 2);
+
+            clima.setParam1ClimateField(param1ClimateField);
+            param =  NODATA;
+        }
+        else
+        {
+            clima.setParam1IsClimate(false);
+            clima.setParam1ClimateField("");
+            param = words[pos].toFloat(); // GA controllare se funziona bene gestione separatore decimale
+        }
+    }
+
+    if (words.size() > pos)
+    {
+        clima.setElab2(elab);
+        clima.setParam2(param);
+        pos = pos + 1;
+
+        QString elab1 = words[pos];
+        elabMeteoComputation = MapMeteoComputation.at(elab1.toStdString());
+        nrParam = nParameters(elabMeteoComputation);
+
+        if (nrParam > 0)
+        {
+            pos = pos + 1;
+            if ( words[pos].at(0) == "|" )
+            {
+                clima.setParam1IsClimate(true);
+                QString param1ClimateField = words[pos];
+                param1ClimateField.remove(0,1);
+
+                pos = pos + 1;
+                if ( words[pos].right(2) == "||" ) return false;
+
+                while ( words[pos].right(2) != "||" )
+                {
+                    pos = pos + 1;
+                    param1ClimateField = param1ClimateField + "_" + words[pos];
+                }
+                pos = pos + 1;
+                param1ClimateField = param1ClimateField + "_" + words[pos].left(words[pos].size() - 2);
+
+                clima.setParam1(NODATA);
+            }
+            else
+            {
+                clima.setParam1IsClimate(false);
+                clima.setParam1ClimateField("");
+                clima.setParam1( words[pos].toFloat() );// GA controllare se funziona bene gestione separatore decimale
+            }
+        }
+
+    }
+    else
+    {
+        clima.setElab1(elab);
+        clima.setParam1(param);
+    }
+
+    return true;
+
+}
+
+
+period getPeriodTypeFromString(QString periodStr)
+{
+
+    if (periodStr == "daily")
+        return dailyPeriod;
+    if (periodStr == "decadal")
+        return decadalPeriod;
+    if (periodStr == "monthly")
+        return monthlyPeriod;
+    if (periodStr == "seasonal")
+        return seasonalPeriod;
+    if (periodStr == "annual")
+        return annualPeriod;
+    if (periodStr == "generic_period")
+        return genericPeriod;
+
+    return noPeriodType;
+
+}
+
+bool parserGenericPeriodString(Climate clima)
+{
+
+    if ( clima.genericPeriod().isEmpty())
+    {
+        return false;
+    }
+
+    QString day = clima.genericPeriod().mid(0,2);
+    QString month = clima.genericPeriod().mid(3,2);
+    int year = 2000;
+    clima.setGenericPeriodDateStart( QDate(year,  month.toInt(),  day.toInt()) );
+
+    day = clima.genericPeriod().mid(6,2);
+    month = clima.genericPeriod().mid(9,2);
+
+    clima.setGenericPeriodDateEnd( QDate(year,  month.toInt(),  day.toInt()) );
+
+    if ( clima.genericPeriod().size() > 11 )
+    {
+        clima.setNYears( (clima.genericPeriod().mid(13,2)).toInt() );
+    }
+    return true;
+
+}
+
+int nParameters(meteoComputation elab)
+{
+    switch(elab)
+    {
+    case average:
+        return 0;
+    case maxInList:
+        return 0;
+    case minInList:
+        return 0;
+    case sum:
+        return 0;
+    case avgAbove:
+        return 1;
+    case stdDevAbove:
+        return 1;
+    case sumAbove:
+        return 1;
+    case daysAbove:
+        return 1;
+    case daysBelow:
+        return 1;
+    case consecutiveDaysAbove:
+        return 1;
+    case consecutiveDaysBelow:
+        return 1;
+    case percentile:
+        return 1;
+    case prevailingWindDir:
+        return 0;
+    case correctedDegreeDaysSum:
+        return 1;
+    case trend:
+        return 0;
+    case mannKendall:
+        return 0;
+    case differenceWithThreshold:
+        return 1;
+    case lastDayBelowThreshold:
+        return 1;
+    default:
+        return NODATA;
+    }
+
+
+}
+
+void extractValidValuesCC(std::vector<float>* outputValues)
+{
+
+    for ( unsigned int i = 0;  i < outputValues->size(); i++)
+    {
+        if (outputValues->at(i) == NODATA)
+        {
+            outputValues->erase(outputValues->begin()+i);
+        }
+    }
+
+}
+
+
+void extractValidValuesWithThreshold(std::vector<float>* outputValues, float myThreshold)
+{
+
+    for ( unsigned int i = 0;  i < outputValues->size(); i++)
+    {
+        if (outputValues->at(i) == NODATA || outputValues->at(i) < myThreshold)
+        {
+            outputValues->erase(outputValues->begin()+i);
+        }
+    }
+
+}
