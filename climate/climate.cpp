@@ -1267,43 +1267,55 @@ bool parserElaboration(Climate clima)
 
     QString elab = words[pos];
 
+    meteoComputation elabMeteoComputation = MapMeteoComputation.at(elab.toStdString());
+
     float param = NODATA;
- //   int nrParam = nParameters(elab);
-/*
+    int nrParam = nParameters(elabMeteoComputation);
+
     if (nrParam > 0)
     {
         pos = pos + 1;
-        if (Left(words(pos), 1) = "|" )
+        if ( words[pos].at(0) == "|" )
         {
             clima.setParam1IsClimate(true);
-            param1ClimateField = Right(words(pos), Len(words(pos)) - 1)
-            pos = pos + 1
-            if ( Right(words(pos), 2) <> "||" )
+            QString param1ClimateField = words[pos];
+            param1ClimateField.remove(0,1);
+
+            pos = pos + 1;
+            if ( words[pos].right(2) != "||" )
             {
-                Do While Right(words(pos), 2) <> "||"
-                    param1ClimateField = param1ClimateField & "_" & words(pos)
-                    pos = pos + 1
-                Loop
-                param1ClimateField = param1ClimateField & "_" & Left(words(pos), Len(words(pos)) - 2)
+                while ( words[pos].right(2) != "||" )
+                {
+                    param1ClimateField = param1ClimateField + "_" + words[pos];
+                    pos = pos + 1;
+                }
+                param1ClimateField = param1ClimateField + "_" + words[pos].left(words[pos].size() - 2);
             }
-            param =  NODATA
+            clima.setParam1ClimateField(param1ClimateField);
+            param =  NODATA;
         }
         else
         {
-            param1IsClimate = false;
-            param1ClimateField = Definitions.NODATASTRING
-            param = CSng(StringTools.SubstituteChar(words(pos), Chr(44), getDecimalSeparator))
+            clima.setParam1IsClimate(false);
+            clima.setParam1ClimateField("");
+            param = words[pos].toFloat(); // LC corretta l'interpretazione di quanto sotto?
+            // param = CSng(StringTools.SubstituteChar(words(pos), Chr(44), getDecimalSeparator));
         }
     }
 
-    If UBound(words) > pos Then
-        elab2 = Elab
-        param2 = param
-        pos = pos + 1
-        elab1 = words(pos)
-        nrParam = math.NrParameters(elab1)
-        If nrParam > 0 Then
-            pos = pos + 1
+    if (words.size() > pos)
+    {
+        clima.setElab2(elab);
+        clima.setParam2(param);
+        pos = pos + 1;
+
+        QString elab1 = words[pos];
+        elabMeteoComputation = MapMeteoComputation.at(elab1.toStdString());
+        nrParam = nParameters(elabMeteoComputation);
+/*
+        if (nrParam > 0)
+        {
+            pos = pos + 1;
             If Left(words(pos), 1) = "|" Then
                 param1IsClimate = True
                 param1ClimateField = Right(words(pos), Len(words(pos)) - 1)
@@ -1321,12 +1333,17 @@ bool parserElaboration(Climate clima)
                 param1ClimateField = Definitions.NODATASTRING
                 param1 = CSng(StringTools.SubstituteChar(words(pos), Chr(44), getDecimalSeparator))
             End If
-        End If
-    Else
+        }
+        */
+    }
+    else
+    {
+        /*
         elab1 = Elab
         param1 = param
-    End If
-*/
+        */
+    }
+
     return true;
 
 }

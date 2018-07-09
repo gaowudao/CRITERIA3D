@@ -9,6 +9,8 @@
 
 Project myProject;
 
+
+
 bool setProxy(QString hostName, int port)
 {
     QNetworkProxy myProxy;
@@ -31,6 +33,7 @@ bool setProxy(QString hostName, int port)
 
 int main(int argc, char *argv[])
 {
+
     QApplication myApp(argc, argv);
     myProject.path = myApp.applicationDirPath();
 
@@ -44,6 +47,7 @@ int main(int argc, char *argv[])
     w.show();
 
     return myApp.exec();
+
 }
 
 

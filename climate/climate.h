@@ -4,7 +4,6 @@
 
 #include <QString>
 #include <QDate>
-#include <QMetaEnum>
 
 #ifndef METEO_H
     #include "meteo.h"
@@ -32,6 +31,36 @@ enum meteoComputation { average, stdDev, sum, maxInList, minInList,
                         phenology,
                         winkler, huglin, fregoni,
                         correctedDegreeDaysSum, erosivityFactorElab, rainIntensityElab};
+
+const std::map<std::string, meteoComputation> MapMeteoComputation = {
+  { "average", average },
+  { "stdDev", stdDev },
+  { "sum", sum },
+  { "maxInList", maxInList },
+  { "minInList", minInList },
+  { "differenceWithThreshold", differenceWithThreshold },
+  { "lastDayBelowThreshold", lastDayBelowThreshold },
+  { "sumAbove", sumAbove },
+  { "avgAbove", avgAbove },
+  { "stdDevAbove", stdDevAbove },
+  { "percentile", percentile },
+  { "median", median },
+  { "freqPositive", freqPositive },
+  { "daysAbove", daysAbove },
+  { "daysBelow", daysBelow },
+  { "consecutiveDaysAbove", consecutiveDaysAbove },
+  { "consecutiveDaysBelow", consecutiveDaysBelow },
+  { "prevailingWindDir", prevailingWindDir },
+  { "trend", trend },
+  { "mannKendall", mannKendall },
+  { "phenology", phenology },
+  { "winkler", winkler },
+  { "huglin", huglin },
+  { "fregoni", fregoni },
+  { "correctedDegreeDaysSum", correctedDegreeDaysSum },
+  { "erosivityFactorElab", erosivityFactorElab },
+  { "rainIntensityElab", rainIntensityElab }
+};
 
 
 bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoints,
