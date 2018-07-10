@@ -12,7 +12,7 @@ float RainfallThreshold = 0.2f; // LC mettere nei settings Environment.RainfallT
 
 
 Crit3DDate firstDateDailyVar; //temporaneo
-QDate currentDay;             // LC dove viene settato questo?
+QDate currentDay;
 
 
 
@@ -42,9 +42,6 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
 
     if (param1IsClimate)
     {
-
-//        byte myPeriodType = Climate.parserElaborationOnlyPeriodType(climateElab)   // LC perchè ci sono tutti questi parser che richiamano poi il parserElaboration?
-//        int myClimateIndex = Climate.getClimateIndexFromDate(currentDay, myPeriodType)
         parserElaboration(clima);
         myClimateIndex = getClimateIndexFromDate(currentDay, clima->periodType());
      }
@@ -72,7 +69,7 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
 
         if (elab1 == "phenology")
         {
-            //Then currentPheno.setPhenoPoint i;
+            //Then currentPheno.setPhenoPoint i;  // TODO
         }
 
         if ( elaborationOnPoint(myError, meteoPointsDbHandler, NULL, &meteoPoints[i], isMeteoGrid, variable, elab1, currentParameter1, elab2, param2,
@@ -126,8 +123,6 @@ bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* 
     if (param1IsClimate)
     {
 
-//        myPeriodType = Climate.parserElaborationOnlyPeriodType(climateElab)
-//        myClimateIndex = Climate.getClimateIndexFromDate(currentDay, myPeriodType)
         parserElaboration(clima);
         myClimateIndex = getClimateIndexFromDate(currentDay, clima->periodType());
 
@@ -675,7 +670,6 @@ bool elaborateDailyAggregatedVar(meteoVariable myVar, Crit3DMeteoPoint meteoPoin
 frequencyType getAggregationFrequency(meteoVariable myVar)
 {
 
-    //if (elab == ELABORATION_THOM_DAILYHOURSABOVE || elab == ELABORATION_THOM_DAILYMEAN || elab == ELABORATION_THOM_DAILYMAX || elab == DAILY_LEAFWETNESS)
     if (myVar == dailyThomHoursAbove || myVar == dailyThomAvg || myVar == dailyThomMax || myVar == dailyLeafWetness)
     {
         return hourly;
