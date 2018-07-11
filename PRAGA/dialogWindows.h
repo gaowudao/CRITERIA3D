@@ -16,4 +16,6 @@
 
     bool downloadMeteoData();
 
+    bool computation(QString title);
+
 #endif // DIALOGWINDOWS_H

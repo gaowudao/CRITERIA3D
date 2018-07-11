@@ -44,7 +44,21 @@ enum meteoVariable {airTemperature, dailyAirTemperatureMin, dailyAirTemperatureM
       { "DAILY_W_DIR", dailyWindDirectionPrevailing },
       { "DAILY_W_INT_MAX", dailyWindIntensityMax },
       { "DAILY_ET0", dailyReferenceEvapotranspiration },
-      { "DAILY_LEAFW", dailyLeafWetness }
+      { "DAILY_LEAFW", dailyLeafWetness },
+      { "DAILY_TEMPRANGE", dailyAirTemperatureRange },
+      { "DAILY_AIRDEW_TMIN", dailyAirDewTemperatureMin },
+      { "DAILY_AIRDEW_TMAX", dailyAirDewTemperatureMax },
+      { "DAILY_AIRDEW_TAVG", dailyAirDewTemperatureAvg },
+      { "DAILY_THOMMAX", dailyThomMax },
+      { "DAILY_THOMAVG", dailyThomAvg },
+      { "DAILY_THOM_HABOVE", dailyThomHoursAbove },
+      { "DAILY_THOM_DAYTIME", dailyThomDaytime },
+      { "DAILY_THOM_NIGHTTIME", dailyThomNighttime },
+      { "DAILY_DIRECT_RAD", dailyDirectRadiation },
+      { "DAILY_DIFFUSE_RAD", dailyDiffuseRadiation },
+      { "DAILY_REFLEC_RAD", dailyReflectedRadiation },
+      { "DAILY_BIC", dailyBIC },
+      { "DAILY_WATER_TABLE_DEPTH", dailyWaterTableDepth }
     };
 
     const std::map<std::string, meteoVariable> MapHourlyMeteoVar = {
@@ -55,7 +69,15 @@ enum meteoVariable {airTemperature, dailyAirTemperatureMin, dailyAirTemperatureM
       { "W_INT_AVG", windIntensity },
       { "W_DIR", windDirection },
       { "ET0", referenceEvapotranspiration },
-      { "LEAFW", leafWetness }
+      { "LEAFW", leafWetness },
+      { "AIRDEW_T", airDewTemperature },
+      { "THOM", thom },
+      { "DIRECT_RAD", directIrradiance },
+      { "DIFFUSE_RAD", diffuseIrradiance },
+      { "REFLEC_RAD", reflectedIrradiance },
+      { "ATM_TRANSMIT", atmTransmissivity },
+      { "ATM_PRESSURE", atmPressure },
+      { "ACTUAL_EVAPO", actualEvaporation }
     };
 
     const std::map<int, meteoVariable> MapIdMeteoVar = {

@@ -516,3 +516,17 @@ bool downloadMeteoData()
         return true;
     }
 }
+
+bool computation(QString title)
+{
+    QDialog downloadDialog;
+
+    QVBoxLayout mainLayout;
+    QHBoxLayout varLayout;
+    QHBoxLayout dateLayout;
+    QHBoxLayout elaborationLayout;
+
+    downloadDialog.setWindowTitle(title);
+    QComboBox variableList;
+
+}
