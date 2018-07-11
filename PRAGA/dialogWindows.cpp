@@ -536,15 +536,16 @@ bool computation(QString title)
         variableList.addItem( QString::fromStdString(it->first));
     }
 
+    varLayout.addWidget(new QLabel("Variable: "));
     varLayout.addWidget(&variableList);
     QDateEdit *FirstDateEdit = new QDateEdit;
     FirstDateEdit->setDate(myProject.getCurrentDate());
-    QLabel *FirstDateLabel = new QLabel("   Start Date:");
+    QLabel *FirstDateLabel = new QLabel("Start Date:");
     FirstDateLabel->setBuddy(FirstDateEdit);
 
     QDateEdit *LastDateEdit = new QDateEdit;
     LastDateEdit->setDate(myProject.getCurrentDate());
-    QLabel *LastDateLabel = new QLabel("    End Date:");
+    QLabel *LastDateLabel = new QLabel("End Date:");
     LastDateLabel->setBuddy(LastDateEdit);
 
     dateLayout.addWidget(FirstDateLabel);
@@ -552,6 +553,18 @@ bool computation(QString title)
 
     dateLayout.addWidget(LastDateLabel);
     dateLayout.addWidget(LastDateEdit);
+
+    QComboBox periodTypeSelection;
+    periodTypeSelection.addItem("daily");
+    periodTypeSelection.addItem("decadal");
+    periodTypeSelection.addItem("monthly");
+    periodTypeSelection.addItem("seasonal");
+    periodTypeSelection.addItem("annual");
+    periodTypeSelection.addItem("generic Period");
+
+
+    elaborationLayout.addWidget(new QLabel("Period Type: "));
+    elaborationLayout.addWidget(&periodTypeSelection);
 
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
@@ -567,6 +580,7 @@ bool computation(QString title)
 
     mainLayout.addLayout(&varLayout);
     mainLayout.addLayout(&dateLayout);
+    mainLayout.addLayout(&elaborationLayout);
     mainLayout.addLayout(&layoutOk);
 
     computationDialog.setLayout(&mainLayout);

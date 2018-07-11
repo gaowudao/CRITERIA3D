@@ -133,4 +133,5 @@ void extractValidValuesWithThreshold(std::vector<float>* outputValues, float myT
 
 int getClimateIndexFromDate(QDate myDate, period periodType);
 
+
 #endif // CLIMATE_H

@@ -160,3 +160,5 @@ void Crit3DClimate::setDb(const QSqlDatabase &db)
 {
     _db = db;
 }
+
+
