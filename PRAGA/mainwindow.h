@@ -113,6 +113,18 @@
 
         void on_actionShow_DTM_triggered();
 
+        void on_actionElaboration_meteo_grid_triggered();
+
+        void on_actionElaboration_meteo_points_triggered();
+
+        void on_actionAnomaly_meteo_points_triggered();
+
+        void on_actionAnomaly_meteo_grid_triggered();
+
+        void on_actionClimate_meteo_points_triggered();
+
+        void on_actionClimate_meteo_grid_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

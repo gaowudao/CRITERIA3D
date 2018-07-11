@@ -29,6 +29,10 @@
         #include "netcdfHandler.h"
     #endif
 
+    #ifndef DBCLIMATE_H
+        #include "dbClimate.h"
+    #endif
+
     #include <QList>
     #include <QDate>
     #include <fstream>
@@ -49,6 +53,7 @@
         Crit3DMeteoPoint* meteoPoints;
         Crit3DMeteoPointsDbHandler* meteoPointsDbHandler;
         Crit3DMeteoGridDbHandler* meteoGridDbHandler;
+        Crit3DClimate* clima;
 
         int nrMeteoPoints;
 
@@ -113,6 +118,8 @@
         bool interpolateRasterRadiation(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, std::string *myError);
         bool interpolateGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime);
         bool saveGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, bool showInfo);
+
+        bool elaboration(bool isMeteoGrid, bool isAnomaly, meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime);
 
         bool loadModelParameters(QString dbName);
         bool loadSoilData(QString dbName);

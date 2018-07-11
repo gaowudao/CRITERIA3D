@@ -10,12 +10,12 @@
 
 enum period{ dailyPeriod, decadalPeriod, monthlyPeriod, seasonalPeriod, annualPeriod, genericPeriod, noPeriodType};
 
-class Climate
+class Crit3DClimate
 {
 
 public:
-    Climate();
-    ~Climate();
+    Crit3DClimate();
+    ~Crit3DClimate();
 
     QSqlDatabase db() const;
     void setDb(const QSqlDatabase &db);

@@ -32,6 +32,7 @@ Project::Project()
     meteoPointsColorScale = new Crit3DColorScale();
     meteoPointsDbHandler = NULL;
     meteoGridDbHandler = NULL;
+    clima = NULL;
     grdAggrMethod = gridAggregationMethod::aggrAvg;
 
     radiationMaps = NULL;
@@ -995,6 +996,67 @@ bool Project::initializeCriteria3D()
     {
         logError(QString::fromStdString(Criteria3Dproject.error));
         return false;
+    }
+
+    return true;
+}
+
+bool Project::elaboration(bool isMeteoGrid, bool isAnomaly, meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime)
+{
+
+    if (isMeteoGrid)
+    {
+        if (this->meteoGridDbHandler == NULL)
+        {
+            errorString = "Load grid";
+            return false;
+        }
+        else
+        {
+            if (isAnomaly)
+            {
+                if (this->clima == NULL)
+                {
+                    errorString = "Load grid";
+                    return false;
+                }
+            }
+        }
+        if (myFrequency == noFrequency)
+        {
+            errorString = "Select frequency";
+            return false;
+        }
+        if (myVar == noMeteoVar)
+        {
+            errorString = "Select a variable";
+            return false;
+        }
+    }
+    else
+    {
+        if (this->meteoPointsDbHandler == NULL)
+        {
+            errorString = "Load meteo Points";
+            return false;
+        }
+        else
+        {
+            if (isAnomaly)
+            {
+                if (this->clima == NULL)
+                {
+                    errorString = "Load grid";
+                    return false;
+                }
+            }
+        }
+        // check quality and pass data to interpolation
+        if (!quality->checkData(myVar, myFrequency, this->meteoPoints, this->nrMeteoPoints, myTime))
+        {
+            errorString = "No valid data";
+            return false;
+        }
     }
 
     return true;

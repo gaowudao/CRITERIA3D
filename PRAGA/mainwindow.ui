@@ -1859,7 +1859,7 @@
      <x>0</x>
      <y>0</y>
      <width>1368</width>
-     <height>26</height>
+     <height>30</height>
     </rect>
    </property>
    <property name="palette">
@@ -2368,9 +2368,40 @@
     <addaction name="actionShow_boundary"/>
     <addaction name="actionShow_soil"/>
    </widget>
+   <widget class="QMenu" name="menuComputation">
+    <property name="title">
+     <string>Computation</string>
+    </property>
+    <widget class="QMenu" name="menuElaboration">
+     <property name="title">
+      <string>Elaboration</string>
+     </property>
+     <addaction name="separator"/>
+     <addaction name="actionElaboration_meteo_points"/>
+     <addaction name="actionElaboration_meteo_grid"/>
+    </widget>
+    <widget class="QMenu" name="menuAnomaly">
+     <property name="title">
+      <string>Anomaly</string>
+     </property>
+     <addaction name="actionAnomaly_meteo_points"/>
+     <addaction name="actionAnomaly_meteo_grid"/>
+    </widget>
+    <widget class="QMenu" name="menuClimate">
+     <property name="title">
+      <string>Climate</string>
+     </property>
+     <addaction name="actionClimate_meteo_points"/>
+     <addaction name="actionClimate_meteo_grid"/>
+    </widget>
+    <addaction name="menuElaboration"/>
+    <addaction name="menuAnomaly"/>
+    <addaction name="menuClimate"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuVariable"/>
    <addaction name="menuInterpolation"/>
+   <addaction name="menuComputation"/>
    <addaction name="menuCriteria3D"/>
    <addaction name="menuGIS_settings"/>
    <addaction name="menuTools"/>
@@ -2593,6 +2624,36 @@
   <action name="actionShow_DTM">
    <property name="text">
     <string>Show DTM</string>
+   </property>
+  </action>
+  <action name="actionElaboration_meteo_grid">
+   <property name="text">
+    <string>meteo grid</string>
+   </property>
+  </action>
+  <action name="actionElaboration_meteo_points">
+   <property name="text">
+    <string>meteo points</string>
+   </property>
+  </action>
+  <action name="actionAnomaly_meteo_points">
+   <property name="text">
+    <string>meteo points</string>
+   </property>
+  </action>
+  <action name="actionAnomaly_meteo_grid">
+   <property name="text">
+    <string>meteo grid</string>
+   </property>
+  </action>
+  <action name="actionClimate_meteo_points">
+   <property name="text">
+    <string>meteo points</string>
+   </property>
+  </action>
+  <action name="actionClimate_meteo_grid">
+   <property name="text">
+    <string>meteo grid</string>
    </property>
   </action>
  </widget>

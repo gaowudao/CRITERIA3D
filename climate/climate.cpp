@@ -16,7 +16,7 @@ QDate currentDay;
 
 
 
-bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Climate* clima, meteoVariable variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
+bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DClimate* clima, meteoVariable variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
     QString elab1, bool param1IsClimate, QString climateElab, float param1, QString elab2, float param2, bool isAnomaly,
     int nYearsMin, int firstYearClimate, int lastYearClimate)
 {
@@ -94,7 +94,7 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
 
 
 
-bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Climate* clima, meteoVariable variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
+bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DClimate* clima, meteoVariable variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
     QString elab1, bool param1IsClimate, QString climateElab, float param1, QString elab2, float param2, bool isAnomaly,
     int nYearsMin, int firstYearClimate, int lastYearClimate)
 {
@@ -1159,7 +1159,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
 }
 
 
-bool parserElaboration(Climate* clima)
+bool parserElaboration(Crit3DClimate* clima)
 {
 
     int pos = 0;
@@ -1343,7 +1343,7 @@ period getPeriodTypeFromString(QString periodStr)
 
 }
 
-bool parserGenericPeriodString(Climate *clima)
+bool parserGenericPeriodString(Crit3DClimate *clima)
 {
 
     if ( clima->genericPeriod().isEmpty())
