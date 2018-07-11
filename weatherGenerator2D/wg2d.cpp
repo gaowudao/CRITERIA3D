@@ -1626,6 +1626,14 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
            }
        }
 
+       for (int i=0;i<nrStations;i++)
+       {
+           for (int j=0;j<lengthSeason[ijk]*parametersModel.yearOfSimulation;j++)
+           {
+
+           }
+       }
+
 
     }
 
