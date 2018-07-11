@@ -1001,7 +1001,7 @@ bool Project::initializeCriteria3D()
     return true;
 }
 
-bool Project::elaboration(bool isMeteoGrid, bool isAnomaly, meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime)
+bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
 {
 
     if (isMeteoGrid)
@@ -1022,16 +1022,6 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly, meteoVariable myVar,
                 }
             }
         }
-        if (myFrequency == noFrequency)
-        {
-            errorString = "Select frequency";
-            return false;
-        }
-        if (myVar == noMeteoVar)
-        {
-            errorString = "Select a variable";
-            return false;
-        }
     }
     else
     {
@@ -1050,12 +1040,6 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly, meteoVariable myVar,
                     return false;
                 }
             }
-        }
-        // check quality and pass data to interpolation
-        if (!quality->checkData(myVar, myFrequency, this->meteoPoints, this->nrMeteoPoints, myTime))
-        {
-            errorString = "No valid data";
-            return false;
         }
     }
 

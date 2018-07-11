@@ -1229,9 +1229,9 @@ void MainWindow::on_actionElaboration_meteo_points_triggered()
 {
     bool isMeteoGrid = false;
     bool isAnomaly = false;
-    if (myProject.elaboration(isMeteoGrid, isAnomaly, myProject.getCurrentVariable(), myProject.getFrequency(), myProject.getCurrentTime()))
+    if (myProject.elaboration(isMeteoGrid, isAnomaly))
     {
-        computation("elaboration");
+        computation("Elaboration");
     }
     else
     {
@@ -1244,9 +1244,9 @@ void MainWindow::on_actionElaboration_meteo_grid_triggered()
 {
     bool isMeteoGrid = true;
     bool isAnomaly = false;
-    if (myProject.elaboration(isMeteoGrid, isAnomaly, myProject.getCurrentVariable(), myProject.getFrequency(), myProject.getCurrentTime()))
+    if (myProject.elaboration(isMeteoGrid, isAnomaly))
     {
-        computation("elaboration");
+        computation("Elaboration");
     }
     else
     {
@@ -1258,9 +1258,9 @@ void MainWindow::on_actionAnomaly_meteo_points_triggered()
 {
     bool isMeteoGrid = false;
     bool isAnomaly = true;
-    if (myProject.elaboration(isMeteoGrid, isAnomaly, myProject.getCurrentVariable(), myProject.getFrequency(), myProject.getCurrentTime()))
+    if (myProject.elaboration(isMeteoGrid, isAnomaly))
     {
-        computation("anomaly");
+        computation("Anomaly");
     }
     else
     {
@@ -1272,9 +1272,9 @@ void MainWindow::on_actionAnomaly_meteo_grid_triggered()
 {
     bool isMeteoGrid = true;
     bool isAnomaly = true;
-    if (myProject.elaboration(isMeteoGrid, isAnomaly, myProject.getCurrentVariable(), myProject.getFrequency(), myProject.getCurrentTime()))
+    if (myProject.elaboration(isMeteoGrid, isAnomaly))
     {
-        computation("anomaly");
+        computation("Anomaly");
     }
     else
     {

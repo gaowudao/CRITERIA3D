@@ -13,6 +13,7 @@
 #include "commonConstants.h"
 #include "dialogWindows.h"
 #include "project.h"
+#include "utilities.h"
 
 extern Project myProject;
 
@@ -535,13 +536,14 @@ bool computation(QString title)
         variableList.addItem( QString::fromStdString(it->first));
     }
 
+    varLayout.addWidget(&variableList);
     QDateEdit *FirstDateEdit = new QDateEdit;
-    FirstDateEdit->setDate(QDate::currentDate());
+    FirstDateEdit->setDate(myProject.getCurrentDate());
     QLabel *FirstDateLabel = new QLabel("   Start Date:");
     FirstDateLabel->setBuddy(FirstDateEdit);
 
     QDateEdit *LastDateEdit = new QDateEdit;
-    LastDateEdit->setDate(QDate::currentDate());
+    LastDateEdit->setDate(myProject.getCurrentDate());
     QLabel *LastDateLabel = new QLabel("    End Date:");
     LastDateLabel->setBuddy(LastDateEdit);
 
@@ -563,9 +565,9 @@ bool computation(QString title)
 
     layoutOk.addWidget(&buttonBox);
 
-    mainLayout.addLayout(&layoutOk);
     mainLayout.addLayout(&varLayout);
     mainLayout.addLayout(&dateLayout);
+    mainLayout.addLayout(&layoutOk);
 
     computationDialog.setLayout(&mainLayout);
 

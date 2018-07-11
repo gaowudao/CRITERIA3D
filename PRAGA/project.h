@@ -119,7 +119,7 @@
         bool interpolateGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime);
         bool saveGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, bool showInfo);
 
-        bool elaboration(bool isMeteoGrid, bool isAnomaly, meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime);
+        bool elaboration(bool isMeteoGrid, bool isAnomaly);
 
         bool loadModelParameters(QString dbName);
         bool loadSoilData(QString dbName);
