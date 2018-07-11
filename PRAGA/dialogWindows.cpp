@@ -555,12 +555,12 @@ bool computation(QString title)
     dateLayout.addWidget(LastDateEdit);
 
     QComboBox periodTypeSelection;
-    periodTypeSelection.addItem("daily");
-    periodTypeSelection.addItem("decadal");
-    periodTypeSelection.addItem("monthly");
-    periodTypeSelection.addItem("seasonal");
-    periodTypeSelection.addItem("annual");
-    periodTypeSelection.addItem("generic Period");
+    periodTypeSelection.addItem("Daily");
+    periodTypeSelection.addItem("Decadal");
+    periodTypeSelection.addItem("Monthly");
+    periodTypeSelection.addItem("Seasonal");
+    periodTypeSelection.addItem("Annual");
+    periodTypeSelection.addItem("Generic");
 
 
     elaborationLayout.addWidget(new QLabel("Period Type: "));
