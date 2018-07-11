@@ -519,14 +519,57 @@ bool downloadMeteoData()
 
 bool computation(QString title)
 {
-    QDialog downloadDialog;
+    QDialog computationDialog;
 
     QVBoxLayout mainLayout;
     QHBoxLayout varLayout;
     QHBoxLayout dateLayout;
     QHBoxLayout elaborationLayout;
+    QHBoxLayout layoutOk;
 
-    downloadDialog.setWindowTitle(title);
+    computationDialog.setWindowTitle(title);
     QComboBox variableList;
+    std::map<std::string, meteoVariable>::const_iterator it;
+    for (it = MapDailyMeteoVar.begin(); it != MapDailyMeteoVar.end(); ++it)
+    {
+        variableList.addItem( QString::fromStdString(it->first));
+    }
+
+    QDateEdit *FirstDateEdit = new QDateEdit;
+    FirstDateEdit->setDate(QDate::currentDate());
+    QLabel *FirstDateLabel = new QLabel("   Start Date:");
+    FirstDateLabel->setBuddy(FirstDateEdit);
+
+    QDateEdit *LastDateEdit = new QDateEdit;
+    LastDateEdit->setDate(QDate::currentDate());
+    QLabel *LastDateLabel = new QLabel("    End Date:");
+    LastDateLabel->setBuddy(LastDateEdit);
+
+    dateLayout.addWidget(FirstDateLabel);
+    dateLayout.addWidget(FirstDateEdit);
+
+    dateLayout.addWidget(LastDateLabel);
+    dateLayout.addWidget(LastDateEdit);
+
+    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+
+    computationDialog.connect(&buttonBox, SIGNAL(accepted()), &computationDialog, SLOT(accept()));
+    computationDialog.connect(&buttonBox, SIGNAL(rejected()), &computationDialog, SLOT(reject()));
+
+
+
+    computationDialog.connect(&buttonBox, SIGNAL(accepted()), &computationDialog, SLOT(accept()));
+    computationDialog.connect(&buttonBox, SIGNAL(rejected()), &computationDialog, SLOT(reject()));
+
+    layoutOk.addWidget(&buttonBox);
+
+    mainLayout.addLayout(&layoutOk);
+    mainLayout.addLayout(&varLayout);
+    mainLayout.addLayout(&dateLayout);
+
+    computationDialog.setLayout(&mainLayout);
+
+    computationDialog.exec();
+
 
 }

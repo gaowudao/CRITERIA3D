@@ -1199,7 +1199,7 @@ bool parserElaboration(Crit3DClimate* clima)
       var = MapDailyMeteoVar.at(words[pos].toStdString());
     }
     catch (const std::out_of_range& oor) {
-      var = MapHourlyMeteoVar.at(words[pos].toStdString());
+      var = noMeteoVar;
     }
     clima->setVariable(var);
 
