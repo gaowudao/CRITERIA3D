@@ -571,8 +571,6 @@ bool computation(QString title)
     computationDialog.connect(&buttonBox, SIGNAL(accepted()), &computationDialog, SLOT(accept()));
     computationDialog.connect(&buttonBox, SIGNAL(rejected()), &computationDialog, SLOT(reject()));
 
-
-
     computationDialog.connect(&buttonBox, SIGNAL(accepted()), &computationDialog, SLOT(accept()));
     computationDialog.connect(&buttonBox, SIGNAL(rejected()), &computationDialog, SLOT(reject()));
 
@@ -587,5 +585,5 @@ bool computation(QString title)
 
     computationDialog.exec();
 
-
+    return true;
 }

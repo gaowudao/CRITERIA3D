@@ -1859,7 +1859,7 @@
      <x>0</x>
      <y>0</y>
      <width>1368</width>
-     <height>30</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="palette">
@@ -2368,11 +2368,11 @@
     <addaction name="actionShow_boundary"/>
     <addaction name="actionShow_soil"/>
    </widget>
-   <widget class="QMenu" name="menuComputation">
+   <widget class="QMenu" name="menuClimate">
     <property name="title">
-     <string>Computation</string>
+     <string>Climate</string>
     </property>
-    <widget class="QMenu" name="menuElaboration">
+    <widget class="QMenu" name="menuClimateElaboration">
      <property name="title">
       <string>Elaboration</string>
      </property>
@@ -2380,31 +2380,31 @@
      <addaction name="actionElaboration_meteo_points"/>
      <addaction name="actionElaboration_meteo_grid"/>
     </widget>
-    <widget class="QMenu" name="menuAnomaly">
+    <widget class="QMenu" name="menuClimateAnomaly">
      <property name="title">
       <string>Anomaly</string>
      </property>
      <addaction name="actionAnomaly_meteo_points"/>
      <addaction name="actionAnomaly_meteo_grid"/>
     </widget>
-    <widget class="QMenu" name="menuClimate">
+    <widget class="QMenu" name="menuClimateSave">
      <property name="title">
-      <string>Climate</string>
+      <string>Save climate</string>
      </property>
      <addaction name="actionClimate_meteo_points"/>
      <addaction name="actionClimate_meteo_grid"/>
     </widget>
-    <addaction name="menuElaboration"/>
-    <addaction name="menuAnomaly"/>
-    <addaction name="menuClimate"/>
+    <addaction name="menuClimateElaboration"/>
+    <addaction name="menuClimateAnomaly"/>
+    <addaction name="menuClimateSave"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuVariable"/>
    <addaction name="menuInterpolation"/>
-   <addaction name="menuComputation"/>
-   <addaction name="menuCriteria3D"/>
+   <addaction name="menuClimate"/>
    <addaction name="menuGIS_settings"/>
    <addaction name="menuTools"/>
+   <addaction name="menuCriteria3D"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionLoadRaster">
