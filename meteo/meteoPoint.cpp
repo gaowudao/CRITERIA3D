@@ -134,7 +134,8 @@ void Crit3DMeteoPoint::initializeObsDataD(int numberOfDays, const Crit3DDate& fi
         obsDataD[i].rhMin = NODATA;
         obsDataD[i].rhAvg = NODATA;
         obsDataD[i].globRad = NODATA;
-        obsDataD[i].et0 = NODATA;
+        obsDataD[i].et0_hs = NODATA;
+        obsDataD[i].et0_pm = NODATA;
         obsDataD[i].windIntAvg = NODATA;
         obsDataD[i].windDirPrev = NODATA;
         obsDataD[i].waterTable = NODATA;
@@ -276,8 +277,10 @@ void Crit3DMeteoPoint::emptyVarObsDataD(meteoVariable myVar, const Crit3DDate& d
             obsDataD[i].globRad = NODATA;
         else if (myVar == dailyWindIntensityAvg)
             obsDataD[i].windIntAvg = NODATA;
-        else if (myVar == dailyReferenceEvapotranspiration)
-            obsDataD[i].et0 = NODATA;
+        else if (myVar == dailyReferenceEvapotranspirationHS)
+            obsDataD[i].et0_hs = NODATA;
+        else if (myVar == dailyReferenceEvapotranspirationPM)
+            obsDataD[i].et0_pm = NODATA;
         else if (myVar == dailyLeafWetness)
             obsDataD[i].leafW = NODATA;
 }
@@ -463,8 +466,10 @@ bool Crit3DMeteoPoint::setMeteoPointValueD(const Crit3DDate& myDate, meteoVariab
         obsDataD[i].rhAvg = myValue;
     else if (myVar == dailyGlobalRadiation)
         obsDataD[i].globRad = myValue;
-    else if (myVar == dailyReferenceEvapotranspiration)
-         obsDataD[i].et0 = myValue;
+    else if (myVar == dailyReferenceEvapotranspirationHS)
+         obsDataD[i].et0_hs = myValue;
+    else if (myVar == dailyReferenceEvapotranspirationPM)
+         obsDataD[i].et0_pm = myValue;
     else if (myVar == dailyWindIntensityAvg)
         obsDataD[i].windIntAvg = myValue;
     else if (myVar == dailyWindDirectionPrevailing)
@@ -567,8 +572,10 @@ float Crit3DMeteoPoint::getMeteoPointValueD(const Crit3DDate& myDate, meteoVaria
         return (obsDataD[i].rhAvg);
     else if (myVar == dailyGlobalRadiation)
         return (obsDataD[i].globRad);
-    else if (myVar == dailyReferenceEvapotranspiration)
-        return (obsDataD[i].et0);
+    else if (myVar == dailyReferenceEvapotranspirationHS)
+        return (obsDataD[i].et0_hs);
+    else if (myVar == dailyReferenceEvapotranspirationPM)
+        return (obsDataD[i].et0_pm);
     else if (myVar == dailyWindIntensityAvg)
         return (obsDataD[i].windIntAvg);
     else if (myVar == dailyWindDirectionPrevailing)

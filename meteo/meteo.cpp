@@ -368,7 +368,7 @@ bool setColorScale(meteoVariable variable, Crit3DColorScale *colorScale)
         case airRelHumidity: case dailyAirRelHumidityAvg: case dailyAirRelHumidityMax: case dailyAirRelHumidityMin: case leafWetness: case dailyLeafWetness:
             setRelativeHumidityScale(colorScale);
             break;
-        case precipitation: case dailyPrecipitation: case referenceEvapotranspiration: case dailyReferenceEvapotranspiration:
+        case precipitation: case dailyPrecipitation: case referenceEvapotranspiration: case dailyReferenceEvapotranspirationHS:
             setPrecipitationScale(colorScale);
             break;
         case globalIrradiance: case dailyGlobalRadiation:
@@ -415,7 +415,7 @@ std::string getVariableString(meteoVariable myVar)
         return "Maximum wind intensity m s-1";
     else if (myVar == dailyWindDirectionPrevailing)
         return "Prevailing wind direction °";
-    else if (myVar == referenceEvapotranspiration || myVar == dailyReferenceEvapotranspiration)
+    else if (myVar == referenceEvapotranspiration || myVar == dailyReferenceEvapotranspirationHS)
         return "Reference evapotranspiration mm";
     else if (myVar == leafWetness || myVar == dailyLeafWetness)
         return "Leaf wetness h";								

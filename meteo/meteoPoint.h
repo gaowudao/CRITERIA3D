@@ -41,7 +41,8 @@
         float rhMax;
         float rhAvg;
         float globRad;
-        float et0;
+        float et0_hs;
+        float et0_pm;
         float windIntAvg;
         float windDirPrev;
         float windIntMax;

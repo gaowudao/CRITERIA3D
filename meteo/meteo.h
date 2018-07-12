@@ -25,7 +25,7 @@ enum meteoVariable {airTemperature, dailyAirTemperatureMin, dailyAirTemperatureM
                     dailyGlobalRadiation, dailyDirectRadiation, dailyDiffuseRadiation, dailyReflectedRadiation,
                     windIntensity, dailyWindIntensityAvg, dailyWindIntensityMax, windDirection, dailyWindDirectionPrevailing,
                     leafWetness, dailyLeafWetness, atmPressure,
-                    referenceEvapotranspiration, dailyReferenceEvapotranspiration, actualEvaporation,
+                    referenceEvapotranspiration, dailyReferenceEvapotranspirationHS, dailyReferenceEvapotranspirationPM, actualEvaporation,
                     dailyBIC,
                     dailyWaterTableDepth,
                     noMeteoTerrain, noMeteoVar};
@@ -43,7 +43,8 @@ enum meteoVariable {airTemperature, dailyAirTemperatureMin, dailyAirTemperatureM
       { "DAILY_W_INT_AVG", dailyWindIntensityAvg },
       { "DAILY_W_DIR", dailyWindDirectionPrevailing },
       { "DAILY_W_INT_MAX", dailyWindIntensityMax },
-      { "DAILY_ET0", dailyReferenceEvapotranspiration },
+      { "DAILY_ET0_HS", dailyReferenceEvapotranspirationHS },
+      { "DAILY_ET0_PM", dailyReferenceEvapotranspirationPM },
       { "DAILY_LEAFW", dailyLeafWetness },
       { "DAILY_TEMPRANGE", dailyAirTemperatureRange },
       { "DAILY_AIRDEW_TMIN", dailyAirDewTemperatureMin },

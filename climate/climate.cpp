@@ -577,7 +577,7 @@ float computeDailyBIC(float prec, float etp)
 
     // TODO nella versione vb ammessi anche i qualitySuspectData, questo tipo per ora non è stato implementato
     quality::type qualityPrec = qualityCheck.syntacticQualityControlSingleVal(dailyPrecipitation, prec);
-    quality::type qualityETP = qualityCheck.syntacticQualityControlSingleVal(dailyReferenceEvapotranspiration, etp);
+    quality::type qualityETP = qualityCheck.syntacticQualityControlSingleVal(dailyReferenceEvapotranspirationHS, etp);
     if (qualityPrec == quality::accepted && qualityETP == quality::accepted)
     {
             return (prec - etp);
@@ -704,7 +704,7 @@ bool elaborateDailyAggregatedVarFromDaily(meteoVariable myVar, Crit3DMeteoPoint 
                 res = thomNightTime(meteoPoint.obsDataD[index].tMin, meteoPoint.obsDataD[index].rhMax);
                 break;
         case dailyBIC:
-                res = computeDailyBIC(meteoPoint.obsDataD[index].prec, meteoPoint.obsDataD[index].et0);
+                res = computeDailyBIC(meteoPoint.obsDataD[index].prec, meteoPoint.obsDataD[index].et0_hs);
                 break;
         case dailyAirTemperatureRange:
                 res = dailyThermalRange(meteoPoint.obsDataD[index].tMin, meteoPoint.obsDataD[index].tMax);
@@ -722,12 +722,12 @@ bool elaborateDailyAggregatedVarFromDaily(meteoVariable myVar, Crit3DMeteoPoint 
                     }
                     break;
                 }
-        case dailyReferenceEvapotranspiration:
+        case dailyReferenceEvapotranspirationHS:
         {
-            quality::type qualityEtp = qualityCheck.syntacticQualityControlSingleVal(dailyReferenceEvapotranspiration, meteoPoint.obsDataD[index].et0);
+            quality::type qualityEtp = qualityCheck.syntacticQualityControlSingleVal(dailyReferenceEvapotranspirationHS, meteoPoint.obsDataD[index].et0_hs);
             if (qualityEtp == quality::accepted)
             {
-                res = meteoPoint.obsDataD[index].et0;
+                res = meteoPoint.obsDataD[index].et0_hs;
             }
             else
             {
@@ -886,7 +886,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
         }
         case dailyBIC:
         {
-            if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyReferenceEvapotranspiration, startDate, endDate, outputValues) > 0)
+            if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyReferenceEvapotranspirationHS, startDate, endDate, outputValues) > 0)
             {
                 preElaboration = true;
             }
@@ -905,7 +905,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     }
                     if (preElaboration)
                     {
-                        preElaboration = elaborateDailyAggregatedVar(dailyReferenceEvapotranspiration, *meteoPoint, outputValues, percValue);
+                        preElaboration = elaborateDailyAggregatedVar(dailyReferenceEvapotranspirationHS, *meteoPoint, outputValues, percValue);
                     }
                 }
             }
@@ -1014,9 +1014,9 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
             break;
         }
 
-        case dailyReferenceEvapotranspiration:
+        case dailyReferenceEvapotranspirationHS:
         {
-            if ( loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyReferenceEvapotranspiration, startDate, endDate, outputValues) > 0)
+            if ( loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyReferenceEvapotranspirationHS, startDate, endDate, outputValues) > 0)
             {
                 preElaboration = true;
             }
@@ -1036,7 +1036,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                     }
                     if (preElaboration)
                     {
-                        preElaboration = elaborateDailyAggregatedVar(dailyReferenceEvapotranspiration, *meteoPoint, outputValues, percValue);
+                        preElaboration = elaborateDailyAggregatedVar(dailyReferenceEvapotranspirationHS, *meteoPoint, outputValues, percValue);
                     }
 
                 }

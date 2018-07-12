@@ -408,7 +408,7 @@ void Crit3DMeteoGridDbHandler::initMapMySqlVarType()
     _mapDailyMySqlVarType["DAILY_W_INT_AVG"] = "float(3,1) UNSIGNED";
     _mapDailyMySqlVarType["DAILY_W_DIR"] = "smallint(3) UNSIGNED";
     _mapDailyMySqlVarType["DAILY_W_INT_MAX"] = "float(3,1) UNSIGNED";
-    _mapDailyMySqlVarType["DAILY_ET0"] = "float(3,1) UNSIGNED";
+    _mapDailyMySqlVarType["DAILY_ET0_HS"] = "float(3,1) UNSIGNED";
     _mapDailyMySqlVarType["DAILY_LEAFW"] = "tinyint(3) UNSIGNED";
 
 
@@ -419,7 +419,8 @@ void Crit3DMeteoGridDbHandler::initMapMySqlVarType()
     _mapHourlyMySqlVarType["RAD"] = "float(5,1) UNSIGNED";
     _mapHourlyMySqlVarType["W_INT_AVG"] = "float(3,1) UNSIGNED";
     _mapHourlyMySqlVarType["W_DIR"] = "smallint(3) UNSIGNED";
-    _mapHourlyMySqlVarType["ET0"] = "float(3,1) UNSIGNED";
+    _mapHourlyMySqlVarType["ET0_HS"] = "float(3,1) UNSIGNED";
+    _mapHourlyMySqlVarType["ET0_PM"] = "float(3,1) UNSIGNED";
     _mapHourlyMySqlVarType["LEAFW"] = "tinyint(3) UNSIGNED";
 
 }
