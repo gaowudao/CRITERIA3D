@@ -580,15 +580,18 @@ bool computation(QString title, QSettings *settings)
     elaborationLayout.addWidget(&periodTypeSelection);
 
     QComboBox elaborationList;
-//    QString variable = variableList.currentText();
-//    variable = variable+"_VarToElab1";
-//    int size = settings->beginReadArray(variable);
-//    for (int i = 0; i < size; ++i) {
-//        settings->setArrayIndex(i);
-//        QString elab = settings->value("elab").toString();
-//        elaborationList.addItem( elab );
-//    }
-//    elaborationLayout.addWidget(&elaborationList);
+    QString value = variableList.currentText(); // TO DO connect
+    meteoVariable key = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, value.toStdString());
+    std::string keyString = getKeyStringMeteoMap(MapDailyMeteoVar, key);
+    QString group = QString::fromStdString(keyString)+"_VarToElab1";
+    settings->beginGroup(group);
+    int size = settings->beginReadArray(QString::fromStdString(keyString));
+    for (int i = 0; i < size; ++i) {
+        settings->setArrayIndex(i);
+        QString elab = settings->value("elab").toString();
+        elaborationList.addItem( elab );
+    }
+    elaborationLayout.addWidget(&elaborationList);
 
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 

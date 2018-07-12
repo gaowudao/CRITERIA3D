@@ -167,5 +167,9 @@ enum meteoVariable {airTemperature, dailyAirTemperatureMin, dailyAirTemperatureM
 
     std::string getVariableString(meteoVariable myVar);
 
+    std::string getKeyStringMeteoMap(std::map<std::string, meteoVariable> map, meteoVariable value);
+
+    meteoVariable getKeyMeteoVarMeteoMap(std::map<meteoVariable,std::string> map, std::string value);
+
 
 #endif // METEO_H
