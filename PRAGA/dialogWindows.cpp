@@ -518,7 +518,7 @@ bool downloadMeteoData()
     }
 }
 
-bool computation(QString title)
+bool computation(QString title, QSettings *settings)
 {
     QDialog computationDialog;
 
@@ -530,14 +530,27 @@ bool computation(QString title)
 
     computationDialog.setWindowTitle(title);
     QComboBox variableList;
-    std::map<std::string, meteoVariable>::const_iterator it;
-    for (it = MapDailyMeteoVar.begin(); it != MapDailyMeteoVar.end(); ++it)
+
+
+    Q_FOREACH (QString group, settings->childGroups())
     {
-        variableList.addItem( QString::fromStdString(it->first));
+        if (!group.endsWith("_VarToElab1"))
+            continue;
+        std::string item;
+        std::string variable = group.left(group.size()-11).toStdString(); // remove "_VarToElab1"
+        try {
+          meteoVariable var = MapDailyMeteoVar.at(variable);
+          item = MapDailyMeteoVarToString.at(var);
+        }
+        catch (const std::out_of_range& oor) {
+          return false;
+        }
+        variableList.addItem(QString::fromStdString(item));
     }
 
     varLayout.addWidget(new QLabel("Variable: "));
     varLayout.addWidget(&variableList);
+
     QDateEdit *FirstDateEdit = new QDateEdit;
     FirstDateEdit->setDate(myProject.getCurrentDate());
     QLabel *FirstDateLabel = new QLabel("Start Date:");
@@ -565,6 +578,17 @@ bool computation(QString title)
 
     elaborationLayout.addWidget(new QLabel("Period Type: "));
     elaborationLayout.addWidget(&periodTypeSelection);
+
+    QComboBox elaborationList;
+    QString variable = variableList.currentText();
+    variable = variable+"_Elab1";
+    int size = settings->beginReadArray(variable);
+    for (int i = 0; i < size; ++i) {
+        settings->setArrayIndex(i);
+        QString elab = settings->value("elab").toString();
+        elaborationList.addItem( elab );
+    }
+    elaborationLayout.addWidget(&elaborationList);
 
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 

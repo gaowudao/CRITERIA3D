@@ -2,6 +2,7 @@
 #define DIALOGWINDOWS_H
 
     #include <QString>
+    #include <QSettings>
     #include "color.h"
     #include "meteo.h"
 
@@ -16,6 +17,6 @@
 
     bool downloadMeteoData();
 
-    bool computation(QString title);
+    bool computation(QString title, QSettings* settings);
 
 #endif // DIALOGWINDOWS_H

@@ -45,6 +45,7 @@
         int currentHour;
 
     public:
+        QSettings* settings;
         QString path;
         QString logFileName;
         std::ofstream logFile;

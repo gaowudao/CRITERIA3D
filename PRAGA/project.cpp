@@ -36,7 +36,9 @@ Project::Project()
     grdAggrMethod = gridAggregationMethod::aggrAvg;
 
     radiationMaps = NULL;
+    settings = new QSettings("/home/laura/CRITERIA3D/DATA/settings/parameters.ini", QSettings::IniFormat); //LC temporaneo x i test, da sistemare il path
 }
+
 
 
 /*!

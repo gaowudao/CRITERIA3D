@@ -62,6 +62,37 @@ enum meteoVariable {airTemperature, dailyAirTemperatureMin, dailyAirTemperatureM
       { "DAILY_WATER_TABLE_DEPTH", dailyWaterTableDepth }
     };
 
+    const std::map<meteoVariable, std::string> MapDailyMeteoVarToString = {
+      { dailyAirTemperatureMin , "dailyAirTemperatureMin" },
+      { dailyAirTemperatureMax, "dailyAirTemperatureMax"  },
+      { dailyAirTemperatureAvg, "dailyAirTemperatureAvg"  },
+      { dailyPrecipitation, "dailyPrecipitation" },
+      { dailyAirRelHumidityMin, "dailyAirRelHumidityMin" },
+      { dailyAirRelHumidityMax, "dailyAirRelHumidityMax" },
+      { dailyAirRelHumidityAvg, "dailyAirRelHumidityAvg" },
+      { dailyGlobalRadiation, "dailyGlobalRadiation" },
+      { dailyWindIntensityAvg, "dailyWindIntensityAvg" },
+      { dailyWindDirectionPrevailing, "dailyWindDirectionPrevailing" },
+      { dailyWindIntensityMax, "dailyWindIntensityMax" },
+      { dailyReferenceEvapotranspirationHS, "dailyReferenceEvapotranspirationHS" },
+      { dailyReferenceEvapotranspirationPM, "dailyReferenceEvapotranspirationPM" },
+      { dailyLeafWetness, "dailyLeafWetness" },
+      { dailyAirTemperatureRange, "dailyAirTemperatureRange" },
+      { dailyAirDewTemperatureMin, "dailyAirDewTemperatureMin" },
+      { dailyAirDewTemperatureMax, "dailyAirDewTemperatureMax" },
+      { dailyAirDewTemperatureAvg, "dailyAirDewTemperatureAvg" },
+      { dailyThomMax, "dailyThomMax" },
+      { dailyThomAvg, "dailyThomAvg" },
+      { dailyThomHoursAbove, "dailyThomHoursAbove" },
+      { dailyThomDaytime, "dailyThomDaytime" },
+      { dailyThomNighttime, "dailyThomNighttime" },
+      { dailyDirectRadiation, "dailyDirectRadiation" },
+      { dailyDiffuseRadiation, "dailyDiffuseRadiation" },
+      { dailyReflectedRadiation, "dailyReflectedRadiation" },
+      { dailyBIC, "dailyBIC" },
+      { dailyWaterTableDepth, "dailyWaterTableDepth" }
+    };
+
     const std::map<std::string, meteoVariable> MapHourlyMeteoVar = {
       { "TAVG", airTemperature },
       { "PREC", precipitation },

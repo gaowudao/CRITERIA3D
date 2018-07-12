@@ -1231,7 +1231,7 @@ void MainWindow::on_actionElaboration_meteo_points_triggered()
     bool isAnomaly = false;
     if (myProject.elaboration(isMeteoGrid, isAnomaly))
     {
-        computation("Elaboration");
+        computation("Elaboration", myProject.settings);
     }
     else
     {
@@ -1246,7 +1246,7 @@ void MainWindow::on_actionElaboration_meteo_grid_triggered()
     bool isAnomaly = false;
     if (myProject.elaboration(isMeteoGrid, isAnomaly))
     {
-        computation("Elaboration");
+        computation("Elaboration", myProject.settings);
     }
     else
     {
@@ -1260,7 +1260,7 @@ void MainWindow::on_actionAnomaly_meteo_points_triggered()
     bool isAnomaly = true;
     if (myProject.elaboration(isMeteoGrid, isAnomaly))
     {
-        computation("Anomaly");
+        computation("Anomaly", myProject.settings);
     }
     else
     {
@@ -1274,7 +1274,7 @@ void MainWindow::on_actionAnomaly_meteo_grid_triggered()
     bool isAnomaly = true;
     if (myProject.elaboration(isMeteoGrid, isAnomaly))
     {
-        computation("Anomaly");
+        computation("Anomaly", myProject.settings);
     }
     else
     {
