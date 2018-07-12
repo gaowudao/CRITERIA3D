@@ -1109,10 +1109,6 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                 }
             }
             int counterData = 0;
-            //double dummy1,dummy2;
-            //dummy1 = dummy2 = 0;
-            //printf("stagione %d\n",qq);
-            //printf("%d %d %d %d\n",numberObservedDJF,numberObservedMAM,numberObservedJJA,numberObservedSON);
             double rainCumulated, moranCumulated;
             rainCumulated = moranCumulated = 0;
 
@@ -1538,6 +1534,10 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
         amountCorrelationMatrixSON[i] = (double *)calloc(nrStations, sizeof(double));
         amountCorrelationMatrixSeason[i] = (double *)calloc(nrStations, sizeof(double));
     }
+
+
+
+
     int counterDJF, counterMAM, counterJJA, counterSON;
 
     for (int i=0;i<nrStations;i++)
@@ -1575,9 +1575,9 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
     statistics::correlationsMatrix(nrStations,amountMatrixSeasonJJA,--counterJJA,amountCorrelationMatrixJJA);
     statistics::correlationsMatrix(nrStations,amountMatrixSeasonSON,--counterSON,amountCorrelationMatrixSON);
 
-    for (int ijk=0;ijk<4;ijk++)
+    for (int iSeason=0;iSeason<4;iSeason++)
     {
-       if (ijk == 0)
+       if (iSeason == 0)
        {
            for (int i=0;i<nrStations;i++)
            {
@@ -1589,7 +1589,7 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
 
            }
        }
-       if (ijk == 1)
+       if (iSeason == 1)
        {
            for (int i=0;i<nrStations;i++)
            {
@@ -1601,7 +1601,7 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
 
            }
        }
-       if (ijk == 2)
+       if (iSeason == 2)
        {
            for (int i=0;i<nrStations;i++)
            {
@@ -1613,7 +1613,7 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
 
            }
        }
-       if (ijk == 3)
+       if (iSeason == 3)
        {
            for (int i=0;i<nrStations;i++)
            {
@@ -1625,17 +1625,38 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
 
            }
        }
+       double** phatAlpha = (double **)calloc(nrStations, sizeof(double*));
+       double** phatBeta = (double **)calloc(nrStations, sizeof(double*));
 
        for (int i=0;i<nrStations;i++)
        {
-           for (int j=0;j<lengthSeason[ijk]*parametersModel.yearOfSimulation;j++)
+            phatAlpha[i] = (double *)calloc(lengthSeason[iSeason]*parametersModel.yearOfSimulation, sizeof(double));
+            phatBeta[i] = (double *)calloc(lengthSeason[iSeason]*parametersModel.yearOfSimulation, sizeof(double));
+       }
+       for (int j=0;j<lengthSeason[iSeason]*parametersModel.yearOfSimulation;j++)
+       {
+           for (int i=0;i<nrStations;i++)
            {
+                /*
+                 for (int k=0;k<;k++)
+                {
 
+                }
+                */
            }
+
        }
 
-
+       // free memory
+       for (int i=0;i<nrStations;i++)
+       {
+           free(phatAlpha[i]);
+           free(phatBeta[i]);
+       }
+       free(phatAlpha);
+       free(phatBeta);
     }
+
 
 
 
