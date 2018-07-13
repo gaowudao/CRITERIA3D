@@ -582,7 +582,7 @@ bool ComputationDialog::computation()
     elaborationLayout.addWidget(new QLabel("Period Type: "));
     elaborationLayout.addWidget(&periodTypeSelection);
 
-    QString value = variableList.currentText(); // TO DO connect
+    QString value = variableList.currentText();
     meteoVariable key = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, value.toStdString());
     std::string keyString = getKeyStringMeteoMap(MapDailyMeteoVar, key);
     QString group = QString::fromStdString(keyString)+"_VarToElab1";
@@ -594,15 +594,12 @@ bool ComputationDialog::computation()
         elaborationList.addItem( elab );
     }
     settings->endArray();
+    settings->endGroup();
     elaborationLayout.addWidget(&elaborationList);
 
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
-    //connect(&variableList, SIGNAL(currentTextChanged(QString)), this, SLOT(listElaboration(QString)));
     connect(&variableList, &QComboBox::currentTextChanged, [=](const QString &newValue){ this->listElaboration(newValue); });
-
-    connect(&buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(&buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 
     connect(&buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
     connect(&buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
@@ -625,7 +622,6 @@ bool ComputationDialog::computation()
 void ComputationDialog::listElaboration(const QString value)
 {
 
-    //qInfo() << "aaaaaaaaa"; // debug
     meteoVariable key = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, value.toStdString());
     std::string keyString = getKeyStringMeteoMap(MapDailyMeteoVar, key);
     QString group = QString::fromStdString(keyString)+"_VarToElab1";
@@ -638,6 +634,7 @@ void ComputationDialog::listElaboration(const QString value)
         elaborationList.addItem( elab );
     }
     settings->endArray();
+    settings->endGroup();
 }
 
 QSettings *ComputationDialog::getSettings() const
