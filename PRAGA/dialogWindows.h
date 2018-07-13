@@ -3,6 +3,11 @@
 
     #include <QString>
     #include <QSettings>
+    #include <QGridLayout>
+    #include <QComboBox>
+
+    #include <QtWidgets>
+
     #include "color.h"
     #include "meteo.h"
 
@@ -17,6 +22,30 @@
 
     bool downloadMeteoData();
 
-    bool computation(QString title, QSettings* settings);
+    class ComputationDialog : public QDialog
+    {
+
+        Q_OBJECT
+
+        private:
+            QString title;
+            QSettings* settings;
+            QHBoxLayout elaborationLayout;
+            QComboBox elaborationList;
+
+        public:
+            ComputationDialog(QWidget *parent = 0);
+            bool computation();
+
+            QString getTitle() const;
+            void setTitle(const QString &value);
+
+            QSettings *getSettings() const;
+            void setSettings(QSettings *value);
+
+            void listElaboration(const QString value);
+
+    };
+
 
 #endif // DIALOGWINDOWS_H

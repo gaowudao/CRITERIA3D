@@ -1231,7 +1231,11 @@ void MainWindow::on_actionElaboration_meteo_points_triggered()
     bool isAnomaly = false;
     if (myProject.elaboration(isMeteoGrid, isAnomaly))
     {
-        computation("Elaboration", myProject.settings);
+        ComputationDialog compDialog;
+        compDialog.setTitle("Elaboration");
+        compDialog.setSettings(myProject.settings);
+        compDialog.computation();
+
     }
     else
     {
@@ -1246,7 +1250,10 @@ void MainWindow::on_actionElaboration_meteo_grid_triggered()
     bool isAnomaly = false;
     if (myProject.elaboration(isMeteoGrid, isAnomaly))
     {
-        computation("Elaboration", myProject.settings);
+        ComputationDialog compDialog;
+        compDialog.setTitle("Elaboration");
+        compDialog.setSettings(myProject.settings);
+        compDialog.computation();
     }
     else
     {
@@ -1260,7 +1267,10 @@ void MainWindow::on_actionAnomaly_meteo_points_triggered()
     bool isAnomaly = true;
     if (myProject.elaboration(isMeteoGrid, isAnomaly))
     {
-        computation("Anomaly", myProject.settings);
+        ComputationDialog compDialog;
+        compDialog.setTitle("Anomaly");
+        compDialog.setSettings(myProject.settings);
+        compDialog.computation();
     }
     else
     {
@@ -1274,7 +1284,10 @@ void MainWindow::on_actionAnomaly_meteo_grid_triggered()
     bool isAnomaly = true;
     if (myProject.elaboration(isMeteoGrid, isAnomaly))
     {
-        computation("Anomaly", myProject.settings);
+        ComputationDialog compDialog;
+        compDialog.setTitle("Anomaly");
+        compDialog.setSettings(myProject.settings);
+        compDialog.computation();
     }
     else
     {
