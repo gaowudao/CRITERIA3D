@@ -597,6 +597,10 @@ bool ComputationDialog::computation()
     settings->endGroup();
     elaborationLayout.addWidget(&elaborationList);
 
+    secondElabLayout.addWidget(new QLabel("Secondary Elaboration: "));
+    value = elaborationList.currentText();
+    // TO DO
+
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
     connect(&variableList, &QComboBox::currentTextChanged, [=](const QString &newValue){ this->listElaboration(newValue); });
@@ -609,6 +613,7 @@ bool ComputationDialog::computation()
     mainLayout.addLayout(&varLayout);
     mainLayout.addLayout(&dateLayout);
     mainLayout.addLayout(&elaborationLayout);
+    mainLayout.addLayout(&secondElabLayout);
     mainLayout.addLayout(&layoutOk);
 
     setLayout(&mainLayout);

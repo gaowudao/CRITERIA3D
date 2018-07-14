@@ -31,7 +31,9 @@
             QString title;
             QSettings* settings;
             QHBoxLayout elaborationLayout;
+            QHBoxLayout secondElabLayout;
             QComboBox elaborationList;
+            QComboBox secondElabList;
 
         public:
             ComputationDialog(QWidget *parent = 0);
