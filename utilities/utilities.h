@@ -28,4 +28,5 @@
     QString getFileName(QString filePath);
 
 
+
 #endif // UTILITIES_H

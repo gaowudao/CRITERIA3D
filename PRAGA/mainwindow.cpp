@@ -1234,7 +1234,10 @@ void MainWindow::on_actionElaboration_meteo_points_triggered()
         ComputationDialog compDialog;
         compDialog.setTitle("Elaboration");
         compDialog.setSettings(myProject.settings);
-        compDialog.computation();
+        if (compDialog.computation())
+        {
+            return; // TO DO
+        }
 
     }
     else
@@ -1253,7 +1256,10 @@ void MainWindow::on_actionElaboration_meteo_grid_triggered()
         ComputationDialog compDialog;
         compDialog.setTitle("Elaboration");
         compDialog.setSettings(myProject.settings);
-        compDialog.computation();
+        if (compDialog.computation())
+        {
+            return; // TO DO
+        }
     }
     else
     {

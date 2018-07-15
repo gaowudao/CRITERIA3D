@@ -214,3 +214,4 @@ int getSeasonFromDate(QDate date)
 }
 
 
+

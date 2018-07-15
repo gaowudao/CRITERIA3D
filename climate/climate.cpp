@@ -1223,7 +1223,7 @@ bool parserElaboration(Crit3DClimate* clima)
 
     if ( (clima->periodType() == genericPeriod) && ( (words[pos].at(0)).isDigit() ) )
     {
-        clima->setGenericPeriod(words[pos]);
+        clima->setPeriodStr(words[pos]);
         parserGenericPeriodString(clima);
     }
 
@@ -1326,17 +1326,17 @@ bool parserElaboration(Crit3DClimate* clima)
 period getPeriodTypeFromString(QString periodStr)
 {
 
-    if (periodStr == "daily")
+    if (periodStr == "Daily")
         return dailyPeriod;
-    if (periodStr == "decadal")
+    if (periodStr == "Decadal")
         return decadalPeriod;
-    if (periodStr == "monthly")
+    if (periodStr == "Monthly")
         return monthlyPeriod;
-    if (periodStr == "seasonal")
+    if (periodStr == "Seasonal")
         return seasonalPeriod;
-    if (periodStr == "annual")
+    if (periodStr == "Annual")
         return annualPeriod;
-    if (periodStr == "generic_period")
+    if (periodStr == "Generic") // era generic_period
         return genericPeriod;
 
     return noPeriodType;
@@ -1346,24 +1346,24 @@ period getPeriodTypeFromString(QString periodStr)
 bool parserGenericPeriodString(Crit3DClimate *clima)
 {
 
-    if ( clima->genericPeriod().isEmpty())
+    if ( clima->periodStr().isEmpty())
     {
         return false;
     }
 
-    QString day = clima->genericPeriod().mid(0,2);
-    QString month = clima->genericPeriod().mid(3,2);
+    QString day = clima->periodStr().mid(0,2);
+    QString month = clima->periodStr().mid(3,2);
     int year = 2000;
     clima->setGenericPeriodDateStart( QDate(year,  month.toInt(),  day.toInt()) );
 
-    day = clima->genericPeriod().mid(6,2);
-    month = clima->genericPeriod().mid(9,2);
+    day = clima->periodStr().mid(6,2);
+    month = clima->periodStr().mid(9,2);
 
     clima->setGenericPeriodDateEnd( QDate(year,  month.toInt(),  day.toInt()) );
 
-    if ( clima->genericPeriod().size() > 11 )
+    if ( clima->periodStr().size() > 11 )
     {
-        clima->setNYears( (clima->genericPeriod().mid(13,2)).toInt() );
+        clima->setNYears( (clima->periodStr().mid(13,2)).toInt() );
     }
     return true;
 

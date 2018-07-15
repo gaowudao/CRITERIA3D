@@ -41,16 +41,6 @@ void Crit3DClimate::setVariable(const meteoVariable &variable)
     _variable = variable;
 }
 
-QString Crit3DClimate::genericPeriod() const
-{
-    return _genericPeriod;
-}
-
-void Crit3DClimate::setGenericPeriod(const QString &genericPeriod)
-{
-    _genericPeriod = genericPeriod;
-}
-
 QDate Crit3DClimate::genericPeriodDateStart() const
 {
     return _genericPeriodDateStart;
@@ -149,6 +139,16 @@ period Crit3DClimate::periodType() const
 void Crit3DClimate::setPeriodType(const period &periodType)
 {
     _periodType = periodType;
+}
+
+QString Crit3DClimate::periodStr() const
+{
+    return _periodStr;
+}
+
+void Crit3DClimate::setPeriodStr(const QString &periodStr)
+{
+    _periodStr = periodStr;
 }
 
 QSqlDatabase Crit3DClimate::db() const

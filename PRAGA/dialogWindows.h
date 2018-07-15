@@ -46,6 +46,7 @@
             void setSettings(QSettings *value);
 
             void listElaboration(const QString value);
+            void listSecondElab(const QString value);
 
     };
 

@@ -533,6 +533,7 @@ bool ComputationDialog::computation()
 
     setWindowTitle(title);
     QComboBox variableList;
+    meteoVariable var;
 
 
     Q_FOREACH (QString group, settings->childGroups())
@@ -542,7 +543,7 @@ bool ComputationDialog::computation()
         std::string item;
         std::string variable = group.left(group.size()-11).toStdString(); // remove "_VarToElab1"
         try {
-          meteoVariable var = MapDailyMeteoVar.at(variable);
+          var = MapDailyMeteoVar.at(variable);
           item = MapDailyMeteoVarToString.at(var);
         }
         catch (const std::out_of_range& oor) {
@@ -578,6 +579,8 @@ bool ComputationDialog::computation()
     periodTypeSelection.addItem("Annual");
     periodTypeSelection.addItem("Generic");
 
+    QString periodSelected = periodTypeSelection.currentText();
+
 
     elaborationLayout.addWidget(new QLabel("Period Type: "));
     elaborationLayout.addWidget(&periodTypeSelection);
@@ -598,13 +601,24 @@ bool ComputationDialog::computation()
     elaborationLayout.addWidget(&elaborationList);
 
     secondElabLayout.addWidget(new QLabel("Secondary Elaboration: "));
-    value = elaborationList.currentText();
-    // TO DO
+    QString elab1 = elaborationList.currentText();
+    group = elab1 +"_Elab1Elab2";
+    settings->beginGroup(group);
+    secondElabList.addItem("None");
+    size = settings->beginReadArray(elab1);
+    for (int i = 0; i < size; ++i) {
+        settings->setArrayIndex(i);
+        QString elab2 = settings->value("elab2").toString();
+        secondElabList.addItem( elab2 );
+    }
+    settings->endArray();
+    settings->endGroup();
+    secondElabLayout.addWidget(&secondElabList);
+
+    connect(&variableList, &QComboBox::currentTextChanged, [=](const QString &newVar){ this->listElaboration(newVar); });
+    connect(&elaborationList, &QComboBox::currentTextChanged, [=](const QString &newElab){ this->listSecondElab(newElab); });
 
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-
-    connect(&variableList, &QComboBox::currentTextChanged, [=](const QString &newValue){ this->listElaboration(newValue); });
-
     connect(&buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
     connect(&buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 
@@ -620,7 +634,33 @@ bool ComputationDialog::computation()
 
     exec();
 
-    return true;
+    if (this->result() != QDialog::Accepted)
+        return false;
+    else
+    {
+        myProject.clima->setVariable(var);
+        myProject.clima->setPeriodStr(periodSelected);
+        if (periodSelected == "Generic")
+        {
+            myProject.clima->setGenericPeriodDateStart(FirstDateEdit->date());
+            myProject.clima->setGenericPeriodDateEnd(LastDateEdit->date());
+        }
+        else
+        {
+            myProject.clima->setYearStart(FirstDateEdit->date().year());
+            myProject.clima->setYearEnd(LastDateEdit->date().year());
+        }
+        myProject.clima->setElab1(elab1);
+        if (secondElabList.currentText() == "None" || secondElabList.currentText() == "No elaboration available")
+        {
+            myProject.clima->setElab2("");
+        }
+        else
+        {
+            myProject.clima->setElab2(secondElabList.currentText());
+        }
+        return true;
+    }
 }
 
 
@@ -637,6 +677,29 @@ void ComputationDialog::listElaboration(const QString value)
         settings->setArrayIndex(i);
         QString elab = settings->value("elab").toString();
         elaborationList.addItem( elab );
+    }
+    settings->endArray();
+    settings->endGroup();
+}
+
+void ComputationDialog::listSecondElab(const QString value)
+{
+
+    QString group = value + "_Elab1Elab2";
+    settings->beginGroup(group);
+    int size = settings->beginReadArray(value);
+    secondElabList.clear();
+    if (size == 0)
+    {
+        secondElabList.addItem("No elaboration available");
+        settings->endArray();
+        settings->endGroup();
+        return;
+    }
+    for (int i = 0; i < size; ++i) {
+        settings->setArrayIndex(i);
+        QString elab2 = settings->value("elab2").toString();
+        secondElabList.addItem( elab2 );
     }
     settings->endArray();
     settings->endGroup();

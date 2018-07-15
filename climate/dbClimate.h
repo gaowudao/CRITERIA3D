@@ -32,9 +32,6 @@ public:
     meteoVariable variable() const;
     void setVariable(const meteoVariable &variable);
 
-    QString genericPeriod() const;
-    void setGenericPeriod(const QString &genericPeriod);
-
     QDate genericPeriodDateStart() const;
     void setGenericPeriodDateStart(const QDate &genericPeriodDateStart);
 
@@ -65,6 +62,9 @@ public:
     period periodType() const;
     void setPeriodType(const period &periodType);
 
+    QString periodStr() const;
+    void setPeriodStr(const QString &periodStr);
+
 private:
     QSqlDatabase _db;
     QString _climateElab;
@@ -72,7 +72,7 @@ private:
     int _yearEnd;
     period _periodType;
     meteoVariable _variable;
-    QString _genericPeriod;
+    QString _periodStr;
     QDate _genericPeriodDateStart;
     QDate _genericPeriodDateEnd;
     int _nYears;
