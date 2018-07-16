@@ -30,8 +30,8 @@
         private:
             QString title;
             QSettings* settings;
-            QHBoxLayout elaborationLayout;
-            QHBoxLayout secondElabLayout;
+//            QHBoxLayout elaborationLayout;
+//            QHBoxLayout secondElabLayout;
             QComboBox elaborationList;
             QComboBox secondElabList;
 

@@ -525,16 +525,17 @@ ComputationDialog::ComputationDialog(QWidget *parent)
 
 bool ComputationDialog::computation()
 {
-
     QVBoxLayout mainLayout;
     QHBoxLayout varLayout;
     QHBoxLayout dateLayout;
     QHBoxLayout layoutOk;
 
+    QHBoxLayout elaborationLayout;
+    QHBoxLayout secondElabLayout;
+
     setWindowTitle(title);
     QComboBox variableList;
     meteoVariable var;
-
 
     Q_FOREACH (QString group, settings->childGroups())
     {
@@ -552,24 +553,25 @@ bool ComputationDialog::computation()
         variableList.addItem(QString::fromStdString(item));
     }
 
-    varLayout.addWidget(new QLabel("Variable: "));
+    QLabel variableLabel("Variable: ");
+    varLayout.addWidget(&variableLabel);
     varLayout.addWidget(&variableList);
 
-    QDateEdit *FirstDateEdit = new QDateEdit;
-    FirstDateEdit->setDate(myProject.getCurrentDate());
-    QLabel *FirstDateLabel = new QLabel("Start Date:");
-    FirstDateLabel->setBuddy(FirstDateEdit);
+    QDateEdit firstDateEdit;
+    firstDateEdit.setDate(myProject.getCurrentDate());
+    QLabel firstDateLabel("Start Date:");
+    firstDateLabel.setBuddy(&firstDateEdit);
 
-    QDateEdit *LastDateEdit = new QDateEdit;
-    LastDateEdit->setDate(myProject.getCurrentDate());
-    QLabel *LastDateLabel = new QLabel("End Date:");
-    LastDateLabel->setBuddy(LastDateEdit);
+    QDateEdit lastDateEdit;
+    lastDateEdit.setDate(myProject.getCurrentDate());
+    QLabel lastDateLabel("End Date:");
+    lastDateLabel.setBuddy(&lastDateEdit);
 
-    dateLayout.addWidget(FirstDateLabel);
-    dateLayout.addWidget(FirstDateEdit);
+    dateLayout.addWidget(&firstDateLabel);
+    dateLayout.addWidget(&firstDateEdit);
 
-    dateLayout.addWidget(LastDateLabel);
-    dateLayout.addWidget(LastDateEdit);
+    dateLayout.addWidget(&lastDateLabel);
+    dateLayout.addWidget(&lastDateEdit);
 
     QComboBox periodTypeSelection;
     periodTypeSelection.addItem("Daily");
@@ -581,8 +583,8 @@ bool ComputationDialog::computation()
 
     QString periodSelected = periodTypeSelection.currentText();
 
-
-    elaborationLayout.addWidget(new QLabel("Period Type: "));
+    QLabel periodTypeLabel("Period Type: ");
+    elaborationLayout.addWidget(&periodTypeLabel);
     elaborationLayout.addWidget(&periodTypeSelection);
 
     QString value = variableList.currentText();
@@ -634,21 +636,30 @@ bool ComputationDialog::computation()
 
     exec();
 
-    if (this->result() != QDialog::Accepted)
+    if (myProject.clima == NULL)
+    {
+        QMessageBox::information(NULL, "Error!", "clima is null...");
         return false;
+    }
+
+    if (this->result() != QDialog::Accepted)
+    {
+        qInfo() << "return false";
+        return false;
+    }
     else
     {
         myProject.clima->setVariable(var);
         myProject.clima->setPeriodStr(periodSelected);
         if (periodSelected == "Generic")
         {
-            myProject.clima->setGenericPeriodDateStart(FirstDateEdit->date());
-            myProject.clima->setGenericPeriodDateEnd(LastDateEdit->date());
+            myProject.clima->setGenericPeriodDateStart(firstDateEdit.date());
+            myProject.clima->setGenericPeriodDateEnd(lastDateEdit.date());
         }
         else
         {
-            myProject.clima->setYearStart(FirstDateEdit->date().year());
-            myProject.clima->setYearEnd(LastDateEdit->date().year());
+            myProject.clima->setYearStart(firstDateEdit.date().year());
+            myProject.clima->setYearEnd(lastDateEdit.date().year());
         }
         myProject.clima->setElab1(elab1);
         if (secondElabList.currentText() == "None" || secondElabList.currentText() == "No elaboration available")
@@ -659,6 +670,7 @@ bool ComputationDialog::computation()
         {
             myProject.clima->setElab2(secondElabList.currentText());
         }
+
         return true;
     }
 }

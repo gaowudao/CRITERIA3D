@@ -1023,6 +1023,10 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
                     return false;
                 }
             }
+            else
+            {
+                this->clima = new Crit3DClimate();
+            }
         }
     }
     else
@@ -1041,6 +1045,10 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
                     errorString = "Load grid";
                     return false;
                 }
+            }
+            else
+            {
+                this->clima = new Crit3DClimate();
             }
         }
     }

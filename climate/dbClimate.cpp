@@ -1,6 +1,14 @@
 #include "dbClimate.h"
 
 
+Crit3DClimate::Crit3DClimate()
+{
+}
+
+Crit3DClimate::~Crit3DClimate()
+{
+}
+
 QString Crit3DClimate::climateElab() const
 {
     return _climateElab;
