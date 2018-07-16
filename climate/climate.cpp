@@ -1369,6 +1369,7 @@ bool parserGenericPeriodString(Crit3DClimate *clima)
 
 }
 
+// LC fatta lista delle elab con parametri usata nell'interfaccia, probabilmente da rimuovere questa funzione
 int nParameters(meteoComputation elab)
 {
     switch(elab)
@@ -1410,7 +1411,7 @@ int nParameters(meteoComputation elab)
     case lastDayBelowThreshold:
         return 1;
     default:
-        return NODATA;
+        return 0;
     }
 
 

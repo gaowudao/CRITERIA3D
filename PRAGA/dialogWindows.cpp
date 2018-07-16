@@ -8,11 +8,13 @@
 #include <QLineEdit>
 #include <QLabel>
 #include <QDateEdit>
+#include <map>
 
 #include "commonConstants.h"
 #include "dialogWindows.h"
 #include "project.h"
 #include "utilities.h"
+#include "climate.h"
 
 extern Project myProject;
 
@@ -528,6 +530,7 @@ bool ComputationDialog::computation()
     QVBoxLayout mainLayout;
     QHBoxLayout varLayout;
     QHBoxLayout dateLayout;
+    QHBoxLayout periodLayout;
     QHBoxLayout layoutOk;
 
     QHBoxLayout elaborationLayout;
@@ -584,9 +587,10 @@ bool ComputationDialog::computation()
     QString periodSelected = periodTypeSelection.currentText();
 
     QLabel periodTypeLabel("Period Type: ");
-    elaborationLayout.addWidget(&periodTypeLabel);
-    elaborationLayout.addWidget(&periodTypeSelection);
+    periodLayout.addWidget(&periodTypeLabel);
+    periodLayout.addWidget(&periodTypeSelection);
 
+    elaborationLayout.addWidget(new QLabel("Elaboration: "));
     QString value = variableList.currentText();
     meteoVariable key = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, value.toStdString());
     std::string keyString = getKeyStringMeteoMap(MapDailyMeteoVar, key);
@@ -602,12 +606,27 @@ bool ComputationDialog::computation()
     settings->endGroup();
     elaborationLayout.addWidget(&elaborationList);
 
+    elab1Threshold.setPlaceholderText("Threshold");
+
+
+    QString elab1Field = elaborationList.currentText();
+    if ( MapElabWithParam.find(elab1Field.toStdString()) == MapElabWithParam.end())
+    {
+        elab1Threshold.clear();
+        elab1Threshold.setReadOnly(true);
+    }
+    else
+    {
+        elab1Threshold.setReadOnly(false);
+    }
+
+    elaborationLayout.addWidget(&elab1Threshold);
     secondElabLayout.addWidget(new QLabel("Secondary Elaboration: "));
-    QString elab1 = elaborationList.currentText();
-    group = elab1 +"_Elab1Elab2";
+
+    group = elab1Field +"_Elab1Elab2";
     settings->beginGroup(group);
     secondElabList.addItem("None");
-    size = settings->beginReadArray(elab1);
+    size = settings->beginReadArray(elab1Field);
     for (int i = 0; i < size; ++i) {
         settings->setArrayIndex(i);
         QString elab2 = settings->value("elab2").toString();
@@ -617,8 +636,24 @@ bool ComputationDialog::computation()
     settings->endGroup();
     secondElabLayout.addWidget(&secondElabList);
 
+    elab2Threshold.setPlaceholderText("Threshold");
+
+    QString elab2Field = secondElabList.currentText();
+    if ( MapElabWithParam.find(elab2Field.toStdString()) == MapElabWithParam.end())
+    {
+        elab2Threshold.clear();
+        elab2Threshold.setReadOnly(true);
+    }
+    else
+    {
+        elab2Threshold.setReadOnly(false);
+    }
+
+    secondElabLayout.addWidget(&elab2Threshold);
+
     connect(&variableList, &QComboBox::currentTextChanged, [=](const QString &newVar){ this->listElaboration(newVar); });
     connect(&elaborationList, &QComboBox::currentTextChanged, [=](const QString &newElab){ this->listSecondElab(newElab); });
+    connect(&secondElabList, &QComboBox::currentTextChanged, [=](const QString &newElab){ this->activeSecondThreshold(newElab); });
 
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     connect(&buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
@@ -628,6 +663,7 @@ bool ComputationDialog::computation()
 
     mainLayout.addLayout(&varLayout);
     mainLayout.addLayout(&dateLayout);
+    mainLayout.addLayout(&periodLayout);
     mainLayout.addLayout(&elaborationLayout);
     mainLayout.addLayout(&secondElabLayout);
     mainLayout.addLayout(&layoutOk);
@@ -661,14 +697,32 @@ bool ComputationDialog::computation()
             myProject.clima->setYearStart(firstDateEdit.date().year());
             myProject.clima->setYearEnd(lastDateEdit.date().year());
         }
-        myProject.clima->setElab1(elab1);
+        myProject.clima->setElab1(elab1Field);
+
+        if (elab1Threshold.text() != "")
+        {
+            myProject.clima->setParam1(elab1Threshold.text().toFloat());
+        }
+        else
+        {
+            myProject.clima->setParam1(NODATA);
+        }
         if (secondElabList.currentText() == "None" || secondElabList.currentText() == "No elaboration available")
         {
             myProject.clima->setElab2("");
+            myProject.clima->setParam2(NODATA);
         }
         else
         {
             myProject.clima->setElab2(secondElabList.currentText());
+            if (elab2Threshold.text() != "")
+            {
+                myProject.clima->setParam2(elab2Threshold.text().toFloat());
+            }
+            else
+            {
+                myProject.clima->setParam2(NODATA);
+            }
         }
 
         return true;
@@ -715,7 +769,34 @@ void ComputationDialog::listSecondElab(const QString value)
     }
     settings->endArray();
     settings->endGroup();
+
+    if ( MapElabWithParam.find(value.toStdString()) == MapElabWithParam.end())
+    {
+        elab1Threshold.clear();
+        elab1Threshold.setReadOnly(true);
+    }
+    else
+    {
+        elab1Threshold.setReadOnly(false);
+    }
+
 }
+
+void ComputationDialog::activeSecondThreshold(const QString value)
+{
+
+        if ( MapElabWithParam.find(value.toStdString()) == MapElabWithParam.end())
+        {
+            elab2Threshold.clear();
+            elab2Threshold.setReadOnly(true);
+        }
+        else
+        {
+            elab2Threshold.setReadOnly(false);
+        }
+}
+
+
 
 QSettings *ComputationDialog::getSettings() const
 {

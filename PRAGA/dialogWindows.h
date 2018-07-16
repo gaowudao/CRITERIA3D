@@ -30,10 +30,10 @@
         private:
             QString title;
             QSettings* settings;
-//            QHBoxLayout elaborationLayout;
-//            QHBoxLayout secondElabLayout;
             QComboBox elaborationList;
             QComboBox secondElabList;
+            QLineEdit elab1Threshold;
+            QLineEdit elab2Threshold;
 
         public:
             ComputationDialog(QWidget *parent = 0);
@@ -47,6 +47,7 @@
 
             void listElaboration(const QString value);
             void listSecondElab(const QString value);
+            void activeSecondThreshold(const QString value);
 
     };
 

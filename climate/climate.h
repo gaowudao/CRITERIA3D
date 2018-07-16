@@ -32,6 +32,20 @@ enum meteoComputation { average, stdDev, sum, maxInList, minInList,
                         winkler, huglin, fregoni,
                         correctedDegreeDaysSum, erosivityFactorElab, rainIntensityElab};
 
+const std::map<std::string, int> MapElabWithParam = {
+  { "differenceWithThreshold", 1 },
+  { "lastDayBelowThreshold", 1 },
+  { "sumAbove", 1 },
+  { "avgAbove", 1 },
+  { "stdDevAbove", 1 },
+  { "percentile", 1 },
+  { "daysAbove", 1 },
+  { "daysBelow", 1 },
+  { "consecutiveDaysAbove", 1 },
+  { "consecutiveDaysBelow", 1 },
+  { "correctedDegreeDaysSum", 1 }
+};
+
 const std::map<std::string, meteoComputation> MapMeteoComputation = {
   { "average", average },
   { "stdDev", stdDev },
