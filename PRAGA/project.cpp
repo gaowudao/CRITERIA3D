@@ -64,7 +64,7 @@ bool Project::initializeSettings(QString currentPath)
     }
     else
     {
-        this->settings = new QSettings(path, QSettings::IniFormat);
+        this->settings = new QSettings(settingsFileName, QSettings::IniFormat);
         return true;
     }
 }
