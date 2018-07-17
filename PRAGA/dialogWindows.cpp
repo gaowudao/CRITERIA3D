@@ -555,7 +555,6 @@ bool ComputationDialog::computation()
         }
         variableList.addItem(QString::fromStdString(item));
     }
-    settings->endGroup();
 
     QLabel variableLabel("Variable: ");
     varLayout.addWidget(&variableLabel);

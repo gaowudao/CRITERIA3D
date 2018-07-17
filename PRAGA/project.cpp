@@ -42,20 +42,21 @@ Project::Project()
 bool Project::initializeSettings(QString currentPath)
 {
     this->path = currentPath;
-    QString pathFileName = currentPath + "/path.ini";
+    QString pathFileName = currentPath + "/praga.ini";
 
     if (QFile(pathFileName).exists())
     {
         QSettings pathSetting(pathFileName, QSettings::IniFormat);
         pathSetting.beginGroup("path");
         QString pragaPath = pathSetting.value("PragaPath").toString();
+        pathSetting.endGroup();
         if (! pragaPath.isEmpty())
         {
             this->path = pragaPath;
         }
     }
 
-    QString settingsFileName = this->path + "/DATA/settings/parameters.ini";
+    QString settingsFileName = this->path + "DATA/settings/parameters.ini";
     if (! QFile(settingsFileName).exists())
     {
         logError("Missing file: " + settingsFileName);
