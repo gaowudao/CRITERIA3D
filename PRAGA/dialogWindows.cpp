@@ -555,6 +555,7 @@ bool ComputationDialog::computation()
         }
         variableList.addItem(QString::fromStdString(item));
     }
+    settings->endGroup();
 
     QLabel variableLabel("Variable: ");
     varLayout.addWidget(&variableLabel);
@@ -653,7 +654,7 @@ bool ComputationDialog::computation()
 
     connect(&variableList, &QComboBox::currentTextChanged, [=](const QString &newVar){ this->listElaboration(newVar); });
     connect(&elaborationList, &QComboBox::currentTextChanged, [=](const QString &newElab){ this->listSecondElab(newElab); });
-    connect(&secondElabList, &QComboBox::currentTextChanged, [=](const QString &newElab){ this->activeSecondThreshold(newElab); });
+    connect(&secondElabList, &QComboBox::currentTextChanged, [=](const QString &newSecElab){ this->activeSecondThreshold(newSecElab); });
 
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     connect(&buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
@@ -739,29 +740,37 @@ void ComputationDialog::listElaboration(const QString value)
     settings->beginGroup(group);
     int size = settings->beginReadArray(QString::fromStdString(keyString));
     elaborationList.clear();
-    for (int i = 0; i < size; ++i) {
+
+    for (int i = 0; i < size; ++i)
+    {
         settings->setArrayIndex(i);
         QString elab = settings->value("elab").toString();
         elaborationList.addItem( elab );
+
     }
     settings->endArray();
     settings->endGroup();
+    listSecondElab(elaborationList.currentText());
 }
 
 void ComputationDialog::listSecondElab(const QString value)
 {
 
+
     QString group = value + "_Elab1Elab2";
     settings->beginGroup(group);
     int size = settings->beginReadArray(value);
-    secondElabList.clear();
+
     if (size == 0)
     {
+        secondElabList.clear();
         secondElabList.addItem("No elaboration available");
         settings->endArray();
         settings->endGroup();
         return;
     }
+    secondElabList.clear();
+    secondElabList.addItem("None");
     for (int i = 0; i < size; ++i) {
         settings->setArrayIndex(i);
         QString elab2 = settings->value("elab2").toString();
