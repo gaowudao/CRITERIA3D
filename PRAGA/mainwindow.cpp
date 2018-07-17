@@ -423,7 +423,7 @@ void MainWindow::on_actionVariableNone_triggered()
     //myProject.setFrequency(noFrequency);
     myProject.currentVariable = noMeteoVar;
     this->ui->actionVariableNone->setChecked(true);
-
+    if (this->meteoGridObj != NULL) this->meteoGridObj->setDrawBorders(true);
     this->updateVariable();
 }
 
@@ -620,6 +620,7 @@ void MainWindow::on_actionVariableChoose_triggered()
     if (chooseMeteoVariable())
     {
        this->ui->actionVariableNone->setChecked(false);
+       if (this->meteoGridObj != NULL) this->meteoGridObj->setDrawBorders(false);
        this->updateVariable();
     } 
 }
@@ -662,7 +663,10 @@ void MainWindow::updateVariable()
     else
     {
         if (myProject.currentVariable != noMeteoVar)
+        {
             this->ui->actionVariableNone->setChecked(false);
+            if (this->meteoGridObj != NULL) this->meteoGridObj->setDrawBorders(false);
+        }
 
         if (myProject.getFrequency() == daily)
         {
@@ -975,6 +979,7 @@ void MainWindow::on_variableButton_clicked()
     {
        this->ui->actionVariableNone->setChecked(false);
        this->updateVariable();
+       if (this->meteoGridObj != NULL) this->meteoGridObj->setDrawBorders(false);
     }
 }
 

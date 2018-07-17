@@ -49,6 +49,7 @@ public:
     void clean();
     void updateCenter();
     void setDrawing(bool value);
+    void setDrawBorders(bool value);
     void setColorLegend(ColorLegend* myLegend);
     bool initializeUTM(gis::Crit3DRasterGrid* myRaster, const gis::Crit3DGisSettings& gisSettings, bool isGrid_);
     bool initializeLatLon(gis::Crit3DRasterGrid* myRaster, const gis::Crit3DGisSettings& gisSettings,
@@ -65,6 +66,7 @@ private:
     gis::Crit3DGeoMap* geoMap;
     ColorLegend* legend;
     bool isDrawing;
+    bool drawBorder;
     RowCol **matrix;
     gis::Crit3DGridHeader latLonHeader;
     bool isLatLon;
@@ -75,7 +77,7 @@ private:
     void initializeIndexesMatrix();
 
     bool setMapResolution();
-    bool drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPainter);
+    bool drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPainter, bool drawBorder);
 };
 
 

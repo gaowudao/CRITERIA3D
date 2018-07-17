@@ -17,6 +17,7 @@ RasterObject::RasterObject(MapGraphicsView* view, MapGraphicsObject *parent) :
     this->isGrid = false;
     this->geoMap = new gis::Crit3DGeoMap();
     this->isDrawing = false;
+    this->drawBorder = false;
     this->updateCenter();
 }
 
@@ -26,6 +27,10 @@ void RasterObject::setDrawing(bool value)
     this->isDrawing = value;
 }
 
+void RasterObject::setDrawBorders(bool value)
+{
+    this->drawBorder = value;
+}
 
 void RasterObject::setColorLegend(ColorLegend* myLegend)
 {
@@ -36,6 +41,7 @@ void RasterObject::setColorLegend(ColorLegend* myLegend)
 void RasterObject::clean()
 {
     setDrawing(false);
+    setDrawBorders(false);
     freeIndexesMatrix();
     latLonHeader.nrCols = 0;
     latLonHeader.nrRows = 0;
@@ -67,7 +73,7 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
         setMapResolution();
 
         if (currentRaster != NULL)
-            drawRaster(currentRaster, painter);
+            drawRaster(currentRaster, painter, drawBorder);
 
         if (legend != NULL)
             legend->update();
@@ -198,6 +204,7 @@ bool RasterObject::initializeUTM(gis::Crit3DRasterGrid* myRaster, const gis::Cri
         }
 
     setDrawing(true);
+    setDrawBorders(isGrid);
     return true;
 }
 
@@ -218,11 +225,12 @@ bool RasterObject::initializeLatLon(gis::Crit3DRasterGrid* myRaster, const gis::
     latLonHeader = latLonHeader_;
 
     setDrawing(true);
+    setDrawBorders(isGrid_);
     return true;
 }
 
 
-bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPainter)
+bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPainter, bool drawBorder)
 {
     if (myRaster == NULL) return false;
     if (! this->isDrawing) return false;
@@ -310,7 +318,7 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
                 ly = (y1 - y0) +1;
                 myPainter->fillRect(x0, y0, lx, ly, myPainter->brush());
             }
-            else if (isGrid && myValue == myRaster->header->flag)
+            else if (isGrid && myValue == myRaster->header->flag && drawBorder)
             {
                 lx = (x1 - x0) +1;
                 ly = (y1 - y0) +1;
