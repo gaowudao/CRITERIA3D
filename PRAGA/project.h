@@ -81,6 +81,8 @@
 
         Project();
 
+        bool initializeSettings(QString currentPath);
+
         void setCurrentDate(QDate myDate);
         void setCurrentHour(int myHour);
         void setFrequency(frequencyType myFrequency);
@@ -126,6 +128,7 @@
         bool loadSoilData(QString dbName);
         bool loadSoilMap(QString fileName);
         bool initializeCriteria3D();
+
     };
 
 

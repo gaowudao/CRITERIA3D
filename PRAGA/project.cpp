@@ -36,18 +36,35 @@ Project::Project()
     grdAggrMethod = gridAggregationMethod::aggrAvg;
 
     radiationMaps = NULL;
-    QString pathIni = QDir::currentPath()+"/path.ini";
-    QSettings pathSetting(pathIni, QSettings::IniFormat);
-    pathSetting.beginGroup("path");
-    QString path = pathSetting.value("settingsPath").toString();
-    if (path.isEmpty())
+}
+
+
+bool Project::initializeSettings(QString currentPath)
+{
+    this->path = currentPath;
+    QString pathFileName = currentPath + "/path.ini";
+
+    if (QFile(pathFileName).exists())
     {
-        settings = new QSettings("QDir::currentPath()", QSettings::IniFormat);
+        QSettings pathSetting(pathFileName, QSettings::IniFormat);
+        pathSetting.beginGroup("path");
+        QString pragaPath = pathSetting.value("PragaPath").toString();
+        if (! pragaPath.isEmpty())
+        {
+            this->path = pragaPath;
+        }
+    }
+
+    QString settingsFileName = this->path + "/DATA/settings/parameters.ini";
+    if (! QFile(settingsFileName).exists())
+    {
+        logError("Missing file: " + settingsFileName);
+        return false;
     }
     else
     {
-        path = path + "DATA/settings/parameters.ini";
-        settings = new QSettings(path, QSettings::IniFormat);
+        this->settings = new QSettings(path, QSettings::IniFormat);
+        return true;
     }
 }
 
