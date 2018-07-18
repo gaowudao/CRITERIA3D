@@ -16,6 +16,7 @@
     QDateTime getQDateTime(const Crit3DTime &myCrit3DTime);
     int decadeFromDate(QDate date);
     int getSeasonFromDate(QDate date);
+    QString getStringSeasonFromDate(QDate date);
 
     bool getValue(QVariant myRs, int* myValue);
     bool getValue(QVariant myRs, float* myValue);

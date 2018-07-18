@@ -532,6 +532,7 @@ bool ComputationDialog::computation()
     QHBoxLayout varLayout;
     QHBoxLayout dateLayout;
     QHBoxLayout periodLayout;
+    QHBoxLayout displayLayout;
     QHBoxLayout layoutOk;
 
     QHBoxLayout elaborationLayout;
@@ -562,7 +563,6 @@ bool ComputationDialog::computation()
     varLayout.addWidget(&variableList);
 
     QLabel currentDayLabel("Day/Month:");
-    QDateEdit currentDay;
     currentDay.setDate(myProject.getCurrentDate());
     currentDayLabel.setBuddy(&currentDay);
 
@@ -589,19 +589,44 @@ bool ComputationDialog::computation()
     dateLayout.addWidget(&lastDateLabel);
     dateLayout.addWidget(&lastYearEdit);
 
-    QComboBox periodTypeSelection;
-    periodTypeSelection.addItem("Daily");
-    periodTypeSelection.addItem("Decadal");
-    periodTypeSelection.addItem("Monthly");
-    periodTypeSelection.addItem("Seasonal");
-    periodTypeSelection.addItem("Annual");
-    periodTypeSelection.addItem("Generic");
-
-    QString periodSelected = periodTypeSelection.currentText();
+    periodTypeList.addItem("Daily");
+    periodTypeList.addItem("Decadal");
+    periodTypeList.addItem("Monthly");
+    periodTypeList.addItem("Seasonal");
+    periodTypeList.addItem("Annual");
+    periodTypeList.addItem("Generic");
 
     QLabel periodTypeLabel("Period Type: ");
     periodLayout.addWidget(&periodTypeLabel);
-    periodLayout.addWidget(&periodTypeSelection);
+    periodLayout.addWidget(&periodTypeList);
+
+    QString periodSelected = periodTypeList.currentText();
+
+    if (periodSelected == "Daily")
+    {
+        int dayOfYear = currentDay.date().dayOfYear();
+        periodDisplay.setText("Day Of Year: " + QString::number(dayOfYear));
+    }
+    else if (periodSelected == "Decadal")
+    {
+        int decade = decadeFromDate(currentDay.date());
+        periodDisplay.setText("Decade: " + QString::number(decade));
+    }
+    else if (periodSelected == "Monthly")
+    {
+        periodDisplay.setText("Month: " + QString::number(currentDay.date().month()));
+    }
+    else if (periodSelected == "Seasonal")
+    {
+        QString season = getStringSeasonFromDate(currentDay.date());
+        periodDisplay.setText("Season: " + season);
+    }
+    else if (periodSelected == "Annual")
+    {
+        periodDisplay.setText("Year: " + QString::number(currentDay.date().year()));
+    }
+
+    displayLayout.addWidget(&periodDisplay);
 
     elaborationLayout.addWidget(new QLabel("Elaboration: "));
     QString value = variableList.currentText();
@@ -674,6 +699,8 @@ bool ComputationDialog::computation()
     secondElabLayout.addWidget(&elab2Parameter);
 
     connect(&variableList, &QComboBox::currentTextChanged, [=](const QString &newVar){ this->listElaboration(newVar); });
+    connect(&currentDay, &QDateTimeEdit::dateChanged, [=](const QDate &newDate){ this->changeDate(newDate); });
+    connect(&periodTypeList, &QComboBox::currentTextChanged, [=](const QString &newVar){ this->displayPeriod(newVar); });
     connect(&elaborationList, &QComboBox::currentTextChanged, [=](const QString &newElab){ this->listSecondElab(newElab); });
     connect(&secondElabList, &QComboBox::currentTextChanged, [=](const QString &newSecElab){ this->activeSecondParameter(newSecElab); });
     connect(&readParam, &QCheckBox::stateChanged, [=](int state){ this->readParameter(state); });
@@ -687,6 +714,7 @@ bool ComputationDialog::computation()
     mainLayout.addLayout(&varLayout);
     mainLayout.addLayout(&dateLayout);
     mainLayout.addLayout(&periodLayout);
+    mainLayout.addLayout(&displayLayout);
     mainLayout.addLayout(&elaborationLayout);
     mainLayout.addLayout(&secondElabLayout);
     mainLayout.addLayout(&layoutOk);
@@ -752,6 +780,39 @@ bool ComputationDialog::computation()
     }
 }
 
+void ComputationDialog::changeDate(const QDate newDate)
+{
+    displayPeriod(periodTypeList.currentText());
+}
+
+void ComputationDialog::displayPeriod(const QString value)
+{
+
+    if (value == "Daily")
+    {
+        int dayOfYear = currentDay.date().dayOfYear();
+        periodDisplay.setText("Day Of Year: " + QString::number(dayOfYear));
+    }
+    else if (value == "Decadal")
+    {
+        int decade = decadeFromDate(currentDay.date());
+        periodDisplay.setText("Decade: " + QString::number(decade));
+    }
+    else if (value == "Monthly")
+    {
+        periodDisplay.setText("Month: " + QString::number(currentDay.date().month()));
+    }
+    else if (value == "Seasonal")
+    {
+        QString season = getStringSeasonFromDate(currentDay.date());
+        periodDisplay.setText("Season: " + season);
+    }
+    else if (value == "Annual")
+    {
+        periodDisplay.setText("Year: " + QString::number(currentDay.date().year()));
+    }
+
+}
 
 void ComputationDialog::listElaboration(const QString value)
 {

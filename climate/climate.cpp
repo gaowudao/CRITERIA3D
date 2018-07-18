@@ -1459,7 +1459,7 @@ int getClimateIndexFromDate(QDate myDate, period periodType)
     case seasonalPeriod:
             return getSeasonFromDate(myDate);
     case dailyPeriod:
-            return myDate.daysInYear();
+            return myDate.dayOfYear();
     default:
             return NODATA;
     }
