@@ -56,6 +56,8 @@
         Crit3DMeteoGridDbHandler* meteoGridDbHandler;
         Crit3DClimate* clima;
 
+        gis::Crit3DGeoPoint startLocation;
+
         int nrMeteoPoints;
 
         QList<gis::Crit3DGeoPoint> meteoPointsSelected;

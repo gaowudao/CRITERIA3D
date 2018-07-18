@@ -35,7 +35,8 @@ int main(int argc, char *argv[])
 {
     QApplication myApp(argc, argv);
 
-    if (! myProject.initializeSettings(myApp.applicationDirPath()))
+    QString currentPath = myApp.applicationDirPath() + "/";
+    if (! myProject.initializeSettings(currentPath))
         return false;
 
     QNetworkProxyFactory::setUseSystemConfiguration(true);

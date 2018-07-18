@@ -36,23 +36,39 @@ Project::Project()
     grdAggrMethod = gridAggregationMethod::aggrAvg;
 
     radiationMaps = NULL;
+
+    // default: Bologna
+    startLocation.latitude = 44.5;
+    startLocation.longitude = 11.35;
 }
 
 
 bool Project::initializeSettings(QString currentPath)
 {
     this->path = currentPath;
-    QString pathFileName = currentPath + "/praga.ini";
+    QString pathFileName = currentPath + "praga.ini";
 
     if (QFile(pathFileName).exists())
     {
         QSettings pathSetting(pathFileName, QSettings::IniFormat);
+
         pathSetting.beginGroup("path");
         QString pragaPath = pathSetting.value("PragaPath").toString();
         pathSetting.endGroup();
         if (! pragaPath.isEmpty())
         {
             this->path = pragaPath;
+        }
+
+        pathSetting.beginGroup("location");
+        float latitude = pathSetting.value("lat").toFloat();
+        float longitude = pathSetting.value("lon").toFloat();
+        pathSetting.endGroup();
+
+        if (latitude != 0 && longitude != 0)
+        {
+            this->startLocation.latitude = latitude;
+            this->startLocation.longitude = longitude;
         }
     }
 
