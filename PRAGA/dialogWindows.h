@@ -32,8 +32,8 @@
             QSettings* settings;
             QComboBox elaborationList;
             QComboBox secondElabList;
-            QLineEdit elab1Threshold;
-            QLineEdit elab2Threshold;
+            QLineEdit elab1Parameter;
+            QLineEdit elab2Parameter;
 
         public:
             ComputationDialog(QWidget *parent = 0);
@@ -47,7 +47,7 @@
 
             void listElaboration(const QString value);
             void listSecondElab(const QString value);
-            void activeSecondThreshold(const QString value);
+            void activeSecondParameter(const QString value);
 
     };
 

@@ -606,21 +606,21 @@ bool ComputationDialog::computation()
     settings->endGroup();
     elaborationLayout.addWidget(&elaborationList);
 
-    elab1Threshold.setPlaceholderText("Threshold");
+    elab1Parameter.setPlaceholderText("Parameter");
 
 
     QString elab1Field = elaborationList.currentText();
     if ( MapElabWithParam.find(elab1Field.toStdString()) == MapElabWithParam.end())
     {
-        elab1Threshold.clear();
-        elab1Threshold.setReadOnly(true);
+        elab1Parameter.clear();
+        elab1Parameter.setReadOnly(true);
     }
     else
     {
-        elab1Threshold.setReadOnly(false);
+        elab1Parameter.setReadOnly(false);
     }
 
-    elaborationLayout.addWidget(&elab1Threshold);
+    elaborationLayout.addWidget(&elab1Parameter);
     secondElabLayout.addWidget(new QLabel("Secondary Elaboration: "));
 
     group = elab1Field +"_Elab1Elab2";
@@ -636,24 +636,24 @@ bool ComputationDialog::computation()
     settings->endGroup();
     secondElabLayout.addWidget(&secondElabList);
 
-    elab2Threshold.setPlaceholderText("Threshold");
+    elab2Parameter.setPlaceholderText("Parameter");
 
     QString elab2Field = secondElabList.currentText();
     if ( MapElabWithParam.find(elab2Field.toStdString()) == MapElabWithParam.end())
     {
-        elab2Threshold.clear();
-        elab2Threshold.setReadOnly(true);
+        elab2Parameter.clear();
+        elab2Parameter.setReadOnly(true);
     }
     else
     {
-        elab2Threshold.setReadOnly(false);
+        elab2Parameter.setReadOnly(false);
     }
 
-    secondElabLayout.addWidget(&elab2Threshold);
+    secondElabLayout.addWidget(&elab2Parameter);
 
     connect(&variableList, &QComboBox::currentTextChanged, [=](const QString &newVar){ this->listElaboration(newVar); });
     connect(&elaborationList, &QComboBox::currentTextChanged, [=](const QString &newElab){ this->listSecondElab(newElab); });
-    connect(&secondElabList, &QComboBox::currentTextChanged, [=](const QString &newSecElab){ this->activeSecondThreshold(newSecElab); });
+    connect(&secondElabList, &QComboBox::currentTextChanged, [=](const QString &newSecElab){ this->activeSecondParameter(newSecElab); });
 
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     connect(&buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
@@ -699,9 +699,9 @@ bool ComputationDialog::computation()
         }
         myProject.clima->setElab1(elab1Field);
 
-        if (elab1Threshold.text() != "")
+        if (elab1Parameter.text() != "")
         {
-            myProject.clima->setParam1(elab1Threshold.text().toFloat());
+            myProject.clima->setParam1(elab1Parameter.text().toFloat());
         }
         else
         {
@@ -715,9 +715,9 @@ bool ComputationDialog::computation()
         else
         {
             myProject.clima->setElab2(secondElabList.currentText());
-            if (elab2Threshold.text() != "")
+            if (elab2Parameter.text() != "")
             {
-                myProject.clima->setParam2(elab2Threshold.text().toFloat());
+                myProject.clima->setParam2(elab2Parameter.text().toFloat());
             }
             else
             {
@@ -780,27 +780,27 @@ void ComputationDialog::listSecondElab(const QString value)
 
     if ( MapElabWithParam.find(value.toStdString()) == MapElabWithParam.end())
     {
-        elab1Threshold.clear();
-        elab1Threshold.setReadOnly(true);
+        elab1Parameter.clear();
+        elab1Parameter.setReadOnly(true);
     }
     else
     {
-        elab1Threshold.setReadOnly(false);
+        elab1Parameter.setReadOnly(false);
     }
 
 }
 
-void ComputationDialog::activeSecondThreshold(const QString value)
+void ComputationDialog::activeSecondParameter(const QString value)
 {
 
         if ( MapElabWithParam.find(value.toStdString()) == MapElabWithParam.end())
         {
-            elab2Threshold.clear();
-            elab2Threshold.setReadOnly(true);
+            elab2Parameter.clear();
+            elab2Parameter.setReadOnly(true);
         }
         else
         {
-            elab2Threshold.setReadOnly(false);
+            elab2Parameter.setReadOnly(false);
         }
 }
 
