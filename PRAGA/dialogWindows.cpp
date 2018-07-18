@@ -299,27 +299,27 @@ bool chooseNetCDFVariable(int* varId, QDateTime* firstDate, QDateTime* lastDate)
     *firstDate = QDateTime::fromTime_t(myProject.netCDF.getFirstTime(), Qt::UTC);
     *lastDate = QDateTime::fromTime_t(myProject.netCDF.getLastTime(), Qt::UTC);
 
-    QDateTimeEdit *firstDateEdit = new QDateTimeEdit;
-    firstDateEdit->setDateTimeRange(*firstDate, *lastDate);
-    firstDateEdit->setTimeSpec(Qt::UTC);
-    firstDateEdit->setDateTime(*firstDate);
+    QDateTimeEdit *firstYearEdit = new QDateTimeEdit;
+    firstYearEdit->setDateTimeRange(*firstDate, *lastDate);
+    firstYearEdit->setTimeSpec(Qt::UTC);
+    firstYearEdit->setDateTime(*firstDate);
 
     QLabel *firstDateLabel = new QLabel("<b>First Date:</b>");
-    firstDateLabel->setBuddy(firstDateEdit);
+    firstDateLabel->setBuddy(firstYearEdit);
 
-    QDateTimeEdit *lastDateEdit = new QDateTimeEdit;
-    lastDateEdit->setDateTimeRange(*firstDate, *lastDate);
-    lastDateEdit->setTimeSpec(Qt::UTC);
-    lastDateEdit->setDateTime(*lastDate);
+    QDateTimeEdit *lastYearEdit = new QDateTimeEdit;
+    lastYearEdit->setDateTimeRange(*firstDate, *lastDate);
+    lastYearEdit->setTimeSpec(Qt::UTC);
+    lastYearEdit->setDateTime(*lastDate);
 
     QLabel *lastDateLabel = new QLabel("<b>Last Date:</b>");
-    lastDateLabel->setBuddy(lastDateEdit);
+    lastDateLabel->setBuddy(lastYearEdit);
 
     layoutDate.addWidget(firstDateLabel);
-    layoutDate.addWidget(firstDateEdit);
+    layoutDate.addWidget(firstYearEdit);
 
     layoutDate.addWidget(lastDateLabel);
-    layoutDate.addWidget(lastDateEdit);
+    layoutDate.addWidget(lastYearEdit);
 
     //void space
     layoutDate.addWidget(new QLabel());
@@ -342,8 +342,8 @@ bool chooseNetCDFVariable(int* varId, QDateTime* firstDate, QDateTime* lastDate)
         return false;
 
     // assing values
-    *firstDate = firstDateEdit->dateTime();
-    *lastDate = lastDateEdit->dateTime();
+    *firstDate = firstYearEdit->dateTime();
+    *lastDate = lastYearEdit->dateTime();
 
     bool isVarSelected = false;
     int i = 0;
@@ -403,21 +403,21 @@ bool downloadMeteoData()
     timeVarLayout.addWidget(&hourly);
     timeVarLayout.addWidget(&variable);
 
-    QDateEdit *FirstDateEdit = new QDateEdit;
-    FirstDateEdit->setDate(QDate::currentDate());
+    QDateEdit *firstYearEdit = new QDateEdit;
+    firstYearEdit->setDate(QDate::currentDate());
     QLabel *FirstDateLabel = new QLabel("   Start Date:");
-    FirstDateLabel->setBuddy(FirstDateEdit);
+    FirstDateLabel->setBuddy(firstYearEdit);
 
-    QDateEdit *LastDateEdit = new QDateEdit;
-    LastDateEdit->setDate(QDate::currentDate());
+    QDateEdit *lastYearEdit = new QDateEdit;
+    lastYearEdit->setDate(QDate::currentDate());
     QLabel *LastDateLabel = new QLabel("    End Date:");
-    LastDateLabel->setBuddy(LastDateEdit);
+    LastDateLabel->setBuddy(lastYearEdit);
 
     dateLayout.addWidget(FirstDateLabel);
-    dateLayout.addWidget(FirstDateEdit);
+    dateLayout.addWidget(firstYearEdit);
 
     dateLayout.addWidget(LastDateLabel);
-    dateLayout.addWidget(LastDateEdit);
+    dateLayout.addWidget(lastYearEdit);
 
     QDialogButtonBox buttonBox;
     QPushButton downloadButton("Download");
@@ -445,8 +445,8 @@ bool downloadMeteoData()
     if (downloadDialog.result() != QDialog::Accepted)
         return false;
 
-   QDate firstDate = FirstDateEdit->date();
-   QDate lastDate = LastDateEdit->date();
+   QDate firstDate = firstYearEdit->date();
+   QDate lastDate = lastYearEdit->date();
 
    if (!daily.isChecked() && !hourly.isChecked())
    {
@@ -561,21 +561,33 @@ bool ComputationDialog::computation()
     varLayout.addWidget(&variableLabel);
     varLayout.addWidget(&variableList);
 
-    QDateEdit firstDateEdit;
-    firstDateEdit.setDate(myProject.getCurrentDate());
-    QLabel firstDateLabel("Start Date:");
-    firstDateLabel.setBuddy(&firstDateEdit);
+    QLabel currentDayLabel("Day/Month:");
+    QDateEdit currentDay;
+    currentDay.setDate(myProject.getCurrentDate());
+    currentDayLabel.setBuddy(&currentDay);
 
-    QDateEdit lastDateEdit;
-    lastDateEdit.setDate(myProject.getCurrentDate());
-    QLabel lastDateLabel("End Date:");
-    lastDateLabel.setBuddy(&lastDateEdit);
+    QLabel firstDateLabel("Start Year:");
+    QLineEdit firstYearEdit;
+    firstYearEdit.setPlaceholderText("yyyy");
+    firstYearEdit.setFixedWidth(110);
+    firstYearEdit.setValidator(new QIntValidator(1800, 3000));
+    firstDateLabel.setBuddy(&firstYearEdit);
+
+    QLabel lastDateLabel("End Year:");
+    QLineEdit lastYearEdit;
+    lastYearEdit.setPlaceholderText("yyyy");
+    lastYearEdit.setFixedWidth(110);
+    lastYearEdit.setValidator(new QIntValidator(1800, 3000));
+    lastDateLabel.setBuddy(&lastYearEdit);
+
+    dateLayout.addWidget(&currentDayLabel);
+    dateLayout.addWidget(&currentDay);
 
     dateLayout.addWidget(&firstDateLabel);
-    dateLayout.addWidget(&firstDateEdit);
+    dateLayout.addWidget(&firstYearEdit);
 
     dateLayout.addWidget(&lastDateLabel);
-    dateLayout.addWidget(&lastDateEdit);
+    dateLayout.addWidget(&lastYearEdit);
 
     QComboBox periodTypeSelection;
     periodTypeSelection.addItem("Daily");
@@ -700,13 +712,13 @@ bool ComputationDialog::computation()
         myProject.clima->setPeriodStr(periodSelected);
         if (periodSelected == "Generic")
         {
-            myProject.clima->setGenericPeriodDateStart(firstDateEdit.date());
-            myProject.clima->setGenericPeriodDateEnd(lastDateEdit.date());
+//            myProject.clima->setGenericPeriodDateStart(firstYearEdit.date());
+//            myProject.clima->setGenericPeriodDateEnd(lastYearEdit.date());
         }
         else
         {
-            myProject.clima->setYearStart(firstDateEdit.date().year());
-            myProject.clima->setYearEnd(lastDateEdit.date().year());
+//            myProject.clima->setYearStart(firstYearEdit.date().year());
+//            myProject.clima->setYearEnd(lastYearEdit.date().year());
         }
         myProject.clima->setElab1(elab1Field);
 
