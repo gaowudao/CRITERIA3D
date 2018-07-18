@@ -8,6 +8,7 @@
 #include <QLineEdit>
 #include <QLabel>
 #include <QDateEdit>
+#include <QDoubleValidator>
 #include <map>
 
 #include "commonConstants.h"
@@ -607,6 +608,9 @@ bool ComputationDialog::computation()
     elaborationLayout.addWidget(&elaborationList);
 
     elab1Parameter.setPlaceholderText("Parameter");
+    elab1Parameter.setFixedWidth(90);
+    elab1Parameter.setValidator(new QDoubleValidator(-9999.0, 9999.0, 2)); //LC accetta double con 2 cifre decimali da -9999 a 9999
+    QCheckBox readParam("Read param from db Climate");
 
 
     QString elab1Field = elaborationList.currentText();
@@ -617,10 +621,14 @@ bool ComputationDialog::computation()
     }
     else
     {
-        elab1Parameter.setReadOnly(false);
+        if (!readParam.isChecked())
+        {
+            elab1Parameter.setReadOnly(false);
+        }
     }
 
     elaborationLayout.addWidget(&elab1Parameter);
+    elaborationLayout.addWidget(&readParam);
     secondElabLayout.addWidget(new QLabel("Secondary Elaboration: "));
 
     group = elab1Field +"_Elab1Elab2";
@@ -637,6 +645,8 @@ bool ComputationDialog::computation()
     secondElabLayout.addWidget(&secondElabList);
 
     elab2Parameter.setPlaceholderText("Parameter");
+    elab2Parameter.setFixedWidth(90);
+    elab2Parameter.setValidator(new QDoubleValidator(-9999.0, 9999.0, 2)); //LC accetta double con 2 cifre decimali da -9999 a 9999
 
     QString elab2Field = secondElabList.currentText();
     if ( MapElabWithParam.find(elab2Field.toStdString()) == MapElabWithParam.end())
@@ -654,6 +664,7 @@ bool ComputationDialog::computation()
     connect(&variableList, &QComboBox::currentTextChanged, [=](const QString &newVar){ this->listElaboration(newVar); });
     connect(&elaborationList, &QComboBox::currentTextChanged, [=](const QString &newElab){ this->listSecondElab(newElab); });
     connect(&secondElabList, &QComboBox::currentTextChanged, [=](const QString &newSecElab){ this->activeSecondParameter(newSecElab); });
+    connect(&readParam, &QCheckBox::stateChanged, [=](int state){ this->readParameter(state); });
 
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     connect(&buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
@@ -804,6 +815,18 @@ void ComputationDialog::activeSecondParameter(const QString value)
         }
 }
 
+void ComputationDialog::readParameter(int state)
+{
+    if (state)
+    {
+        elab1Parameter.clear();
+        elab1Parameter.setReadOnly(true);
+    }
+    else
+    {
+        elab1Parameter.setReadOnly(false);
+    }
+}
 
 
 QSettings *ComputationDialog::getSettings() const

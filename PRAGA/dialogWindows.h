@@ -48,6 +48,7 @@
             void listElaboration(const QString value);
             void listSecondElab(const QString value);
             void activeSecondParameter(const QString value);
+            void readParameter(int state);
 
     };
 
