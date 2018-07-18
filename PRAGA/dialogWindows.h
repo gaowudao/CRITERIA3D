@@ -31,10 +31,17 @@
             QString title;
             QSettings* settings;
             QDateEdit currentDay;
+            QLabel genericStartLabel;
+            QLabel genericEndLabel;
+            QDateEdit genericPeriodStart;
+            QDateEdit genericPeriodEnd;
+            QLineEdit nrYear;
+
             QComboBox periodTypeList;
             QComboBox elaborationList;
             QComboBox secondElabList;
             QLineEdit periodDisplay;
+
             QLineEdit elab1Parameter;
             QLineEdit elab2Parameter;
 

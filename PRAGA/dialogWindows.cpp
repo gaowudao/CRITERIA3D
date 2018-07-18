@@ -533,6 +533,7 @@ bool ComputationDialog::computation()
     QHBoxLayout dateLayout;
     QHBoxLayout periodLayout;
     QHBoxLayout displayLayout;
+    QHBoxLayout genericPeriodLayout;
     QHBoxLayout layoutOk;
 
     QHBoxLayout elaborationLayout;
@@ -604,31 +605,26 @@ bool ComputationDialog::computation()
     int dayOfYear = currentDay.date().dayOfYear();
     periodDisplay.setText("Day Of Year: " + QString::number(dayOfYear));
 
-//    if (periodSelected == "Daily")
-//    {
-//        int dayOfYear = currentDay.date().dayOfYear();
-//        periodDisplay.setText("Day Of Year: " + QString::number(dayOfYear));
-//    }
-//    else if (periodSelected == "Decadal")
-//    {
-//        int decade = decadeFromDate(currentDay.date());
-//        periodDisplay.setText("Decade: " + QString::number(decade));
-//    }
-//    else if (periodSelected == "Monthly")
-//    {
-//        periodDisplay.setText("Month: " + QString::number(currentDay.date().month()));
-//    }
-//    else if (periodSelected == "Seasonal")
-//    {
-//        QString season = getStringSeasonFromDate(currentDay.date());
-//        periodDisplay.setText("Season: " + season);
-//    }
-//    else if (periodSelected == "Annual")
-//    {
-//        periodDisplay.setText("Year: " + QString::number(currentDay.date().year()));
-//    }
-
     displayLayout.addWidget(&periodDisplay);
+
+    genericStartLabel.setText("Start Date:");
+    genericStartLabel.setBuddy(&genericPeriodStart);
+    genericEndLabel.setText("End Date:");
+    genericEndLabel.setBuddy(&genericPeriodEnd);
+    genericStartLabel.setVisible(false);
+    genericEndLabel.setVisible(false);
+    genericPeriodStart.setVisible(false);
+    genericPeriodEnd.setVisible(false);
+
+    nrYear.setValidator(new QIntValidator(-500, 500));
+    nrYear.setPlaceholderText("Nr Years");
+    nrYear.setVisible(false);
+
+    genericPeriodLayout.addWidget(&genericStartLabel);
+    genericPeriodLayout.addWidget(&genericPeriodStart);
+    genericPeriodLayout.addWidget(&genericEndLabel);
+    genericPeriodLayout.addWidget(&genericPeriodEnd);
+    genericPeriodLayout.addWidget(&nrYear);
 
     elaborationLayout.addWidget(new QLabel("Elaboration: "));
     QString value = variableList.currentText();
@@ -717,6 +713,7 @@ bool ComputationDialog::computation()
     mainLayout.addLayout(&dateLayout);
     mainLayout.addLayout(&periodLayout);
     mainLayout.addLayout(&displayLayout);
+    mainLayout.addLayout(&genericPeriodLayout);
     mainLayout.addLayout(&elaborationLayout);
     mainLayout.addLayout(&secondElabLayout);
     mainLayout.addLayout(&layoutOk);
@@ -742,13 +739,13 @@ bool ComputationDialog::computation()
         myProject.clima->setPeriodStr(periodSelected);
         if (periodSelected == "Generic")
         {
-//            myProject.clima->setGenericPeriodDateStart(firstYearEdit.date());
-//            myProject.clima->setGenericPeriodDateEnd(lastYearEdit.date());
+            myProject.clima->setGenericPeriodDateStart(genericPeriodStart.date());
+            myProject.clima->setGenericPeriodDateEnd(genericPeriodEnd.date());
         }
         else
         {
-//            myProject.clima->setYearStart(firstYearEdit.date().year());
-//            myProject.clima->setYearEnd(lastYearEdit.date().year());
+            myProject.clima->setYearStart(firstYearEdit.text().toInt());
+            myProject.clima->setYearEnd(lastYearEdit.text().toInt());
         }
         myProject.clima->setElab1(elab1Field);
 
@@ -793,29 +790,63 @@ void ComputationDialog::displayPeriod(const QString value)
     if (value == "Daily")
     {
         periodDisplay.setVisible(true);
+        genericStartLabel.setVisible(false);
+        genericEndLabel.setVisible(false);
+        genericPeriodStart.setVisible(false);
+        genericPeriodEnd.setVisible(false);
+        nrYear.setVisible(false);
         int dayOfYear = currentDay.date().dayOfYear();
         periodDisplay.setText("Day Of Year: " + QString::number(dayOfYear));
     }
     else if (value == "Decadal")
     {
         periodDisplay.setVisible(true);
+        genericStartLabel.setVisible(false);
+        genericEndLabel.setVisible(false);
+        genericPeriodStart.setVisible(false);
+        genericPeriodEnd.setVisible(false);
+        nrYear.setVisible(false);
         int decade = decadeFromDate(currentDay.date());
         periodDisplay.setText("Decade: " + QString::number(decade));
     }
     else if (value == "Monthly")
     {
         periodDisplay.setVisible(true);
+        genericStartLabel.setVisible(false);
+        genericEndLabel.setVisible(false);
+        genericPeriodStart.setVisible(false);
+        genericPeriodEnd.setVisible(false);
+        nrYear.setVisible(false);
         periodDisplay.setText("Month: " + QString::number(currentDay.date().month()));
     }
     else if (value == "Seasonal")
     {
         periodDisplay.setVisible(true);
+        genericStartLabel.setVisible(false);
+        genericEndLabel.setVisible(false);
+        genericPeriodStart.setVisible(false);
+        genericPeriodEnd.setVisible(false);
+        nrYear.setVisible(false);
         QString season = getStringSeasonFromDate(currentDay.date());
         periodDisplay.setText("Season: " + season);
     }
     else if (value == "Annual")
     {
         periodDisplay.setVisible(false);
+        genericStartLabel.setVisible(false);
+        genericEndLabel.setVisible(false);
+        genericPeriodStart.setVisible(false);
+        genericPeriodEnd.setVisible(false);
+        nrYear.setVisible(false);
+    }
+    else if (value == "Generic")
+    {
+        periodDisplay.setVisible(false);
+        genericStartLabel.setVisible(true);
+        genericEndLabel.setVisible(true);
+        genericPeriodStart.setVisible(true);
+        genericPeriodEnd.setVisible(true);
+        nrYear.setVisible(true);
     }
 
 }
