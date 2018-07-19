@@ -1655,8 +1655,6 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
            }
        }
 
-        // build moranRandom
-
        for (int i=0;i<lengthSeason[iSeason]*parametersModel.yearOfSimulation;i++)
        {
                    double denominatorMoran = 0.;
@@ -1665,15 +1663,11 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                    {
                        if (occurrenceSeason[iStations][i] != NODATA)
                        {
-                             //numeratorMoran += occurrenceSeason[iStations][i]*wSeason[i][iStations];
-                             //denominatorMoran += wSeason[i][iStations];
-
-                             //printf(" %f   %f\n",obsPrecDataD[iStations][i].occurrences*wSeason[ijk][iStations],wSeason[ijk][iStations]);
+                             numeratorMoran += occurrenceSeason[iStations][i]*wSeason[nrStations-1][iStations];
+                             denominatorMoran += wSeason[nrStations-1][iStations];
                        }
-                       //printf("progressivo dato simulazione %d stazione %d occurrence Season %f \n",i,iStations,occurrenceSeason[iStations][i]);
-                       //getchar();
                    }
-                   /*for (int iStations=0;iStations<nrStations;iStations++)
+                   for (int iStations=0;iStations<nrStations;iStations++)
                    {
                        if (denominatorMoran != 0)
                        {
@@ -1684,10 +1678,9 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                        {
                           moranRandom[iStations][i]= 1;
                        }
-                   }*/
+                   }
 
           }
-        // end of build moranRandom
 
 
        double** phatAlpha = (double **)calloc(nrStations, sizeof(double*));
@@ -1698,20 +1691,23 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
             phatAlpha[i] = (double *)calloc(lengthSeason[iSeason]*parametersModel.yearOfSimulation, sizeof(double));
             phatBeta[i] = (double *)calloc(lengthSeason[iSeason]*parametersModel.yearOfSimulation, sizeof(double));
        }
+
        for (int j=0;j<lengthSeason[iSeason]*parametersModel.yearOfSimulation;j++)
        {
            for (int i=0;i<nrStations;i++)
            {
-               //occurrenceIndexSeasonal[i].bin[iSeason];
-
-
-                 for (int k=0;k<10;k++)
+                for (int k=0;k<10;k++) //to improve
                 {
-                    //if (moran[i][iSeason][j])
+                    if ((moranRandom[i][j] > occurrenceIndexSeasonal[i].bin[iSeason][k]) && (moranRandom[i][j] <= occurrenceIndexSeasonal[i].bin[iSeason][k]))
+                    {
+                        phatAlpha[i][j] = occurrenceIndexSeasonal[i].parMultiexp[iSeason][k][0];
+                        if (parametersModel.distributionPrecipitation == 2)
+                        {
+                            phatBeta[i][j] = occurrenceIndexSeasonal[i].parMultiexp[iSeason][k][1];
+                        }
+                    }
                 }
-
            }
-
        }
 
        // free memory
