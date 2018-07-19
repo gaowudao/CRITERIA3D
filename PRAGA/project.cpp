@@ -11,6 +11,7 @@
 #include "solarRadiation.h"
 #include "interpolation.h"
 #include "transmissivity.h"
+#include "climate.h"
 #include "dbTools.h"
 
 #include <iostream> //debug
@@ -33,6 +34,7 @@ Project::Project()
     meteoPointsDbHandler = NULL;
     meteoGridDbHandler = NULL;
     clima = NULL;
+    referenceClima = NULL;
     grdAggrMethod = gridAggregationMethod::aggrAvg;
 
     radiationMaps = NULL;
@@ -1049,7 +1051,7 @@ bool Project::initializeCriteria3D()
     return true;
 }
 
-bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
+bool Project::elaborationCheck(bool isMeteoGrid, bool isAnomaly)
 {
 
     if (isMeteoGrid)
@@ -1063,9 +1065,9 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
         {
             if (isAnomaly)
             {
-                if (this->clima == NULL)
+                if (this->referenceClima == NULL)
                 {
-                    errorString = "Load grid";
+                    errorString = "Load clima";
                     return false;
                 }
             }
@@ -1086,9 +1088,9 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
         {
             if (isAnomaly)
             {
-                if (this->clima == NULL)
+                if (this->referenceClima == NULL)
                 {
-                    errorString = "Load grid";
+                    errorString = "Load clima";
                     return false;
                 }
             }
@@ -1100,6 +1102,21 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
     }
 
     return true;
+}
+
+
+void Project::elaboration(bool isMeteoGrid, bool isAnomaly)
+{
+    std::string myError;
+    int nYearsMin; // LC chi deve settare questo?
+    if (isMeteoGrid)
+    {
+        elaborationPointsCycleGrid(&myError, this->meteoGridDbHandler, this->referenceClima, this->clima, this->currentDate, isAnomaly, nYearsMin);
+    }
+    else
+    {
+        elaborationPointsCycle(&myError, this->meteoPointsDbHandler, this->meteoPoints, this->nrMeteoPoints, this->referenceClima, this->clima, this->currentDate, isAnomaly, nYearsMin);
+    }
 }
 
 

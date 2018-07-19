@@ -736,26 +736,43 @@ bool ComputationDialog::computation()
     else
     {
         myProject.clima->setVariable(var);
+        myProject.clima->setYearStart(firstYearEdit.text().toInt());
+        myProject.clima->setYearEnd(lastYearEdit.text().toInt());
         myProject.clima->setPeriodStr(periodSelected);
         if (periodSelected == "Generic")
         {
             myProject.clima->setGenericPeriodDateStart(genericPeriodStart.date());
             myProject.clima->setGenericPeriodDateEnd(genericPeriodEnd.date());
+            myProject.clima->setNYears(nrYear.text().toInt());
         }
         else
         {
-            myProject.clima->setYearStart(firstYearEdit.text().toInt());
-            myProject.clima->setYearEnd(lastYearEdit.text().toInt());
+            // LC corretto?
+            myProject.clima->setGenericPeriodDateStart(currentDay.date());
+            myProject.clima->setGenericPeriodDateEnd(currentDay.date());
+            myProject.clima->setNYears(0);
         }
+
         myProject.clima->setElab1(elab1Field);
 
-        if (elab1Parameter.text() != "")
+        if (!readParam.isChecked())
         {
-            myProject.clima->setParam1(elab1Parameter.text().toFloat());
+            myProject.clima->setParam1IsClimate(false);
+            if (elab1Parameter.text() != "")
+            {
+                myProject.clima->setParam1(elab1Parameter.text().toFloat());
+            }
+            else
+            {
+                myProject.clima->setParam1(NODATA);
+            }
         }
         else
         {
-            myProject.clima->setParam1(NODATA);
+            myProject.clima->setParam1IsClimate(true);
+            // TO DO LC? non mi è chiaro cosa setta quando legge dal clima perchè non sono riuscita a fare un test su vb.
+            // chiedere input x entrare in questa casistica: lo spunto Climate non mi apre nessuna voce nella tendina sotto
+
         }
         if (secondElabList.currentText() == "None" || secondElabList.currentText() == "No elaboration available")
         {

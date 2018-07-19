@@ -12,13 +12,13 @@ float RainfallThreshold = 0.2f; // LC mettere nei settings Environment.RainfallT
 
 
 Crit3DDate firstDateDailyVar; //temporaneo
-QDate currentDay;
 
 
 
-bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DClimate* clima, meteoVariable variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
-    QString elab1, bool param1IsClimate, QString climateElab, float param1, QString elab2, float param2, bool isAnomaly,
-    int nYearsMin, int firstYearClimate, int lastYearClimate)
+//bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DClimate* clima, meteoVariable variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
+//    QString elab1, bool param1IsClimate, QString climateElab, float param1, QString elab2, float param2, bool isAnomaly,
+//    int nYearsMin)
+bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DClimate* referenceClima, Crit3DClimate* clima, QDate currentDay, bool isAnomaly, int nYearsMin)
 {
 
 
@@ -28,19 +28,20 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
     int myClimateIndex;
 
 
-    QDate startDate(firstYear, firstDate.month(), firstDate.day());
-    QDate endDate(lastYear, lastDate.month(), lastDate.day());
+    // LC nel caso NON generico, nYears = 0, yearStart e yearStop ok, mese e giorno? sono il primo e l'ultimo (currentDay) disponibili da db?
+    QDate startDate(clima->yearStart(), clima->genericPeriodDateStart().month(), clima->genericPeriodDateStart().day());
+    QDate endDate(clima->yearEnd(), clima->genericPeriodDateEnd().month(), clima->genericPeriodDateEnd().day());
 
-    if (nYears > 0)
+    if (clima->nYears() > 0)
     {
-        endDate.setDate(lastYear + nYears, endDate.month(), endDate.day());
+        endDate.setDate(clima->yearEnd() + clima->nYears(), clima->genericPeriodDateEnd().month(), clima->genericPeriodDateEnd().day());
     }
-    else if (nYears < 0)
+    else if (clima->nYears() < 0)
     {
-        startDate.setDate(firstYear + nYears, startDate.month(), startDate.day());
+        startDate.setDate(clima->yearStart() + clima->nYears(), clima->genericPeriodDateStart().month(), clima->genericPeriodDateStart().day());
     }
 
-    if (param1IsClimate)
+    if (clima->param1IsClimate())
     {
         parserElaboration(clima);
         myClimateIndex = getClimateIndexFromDate(currentDay, clima->periodType());
@@ -50,7 +51,7 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
     for ( unsigned int i = 0; i < nrMeteoPoints; i++)
     {
 
-        if (param1IsClimate)
+        if (clima->param1IsClimate())
         {
 //            if ( ClimateReadPoint(PragaClimate.Point(i).TableName, climateElab, myPeriodType, myClimateIndex, PragaClimate.Point(i)))
 //            {
@@ -61,19 +62,18 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
 //            {
 //                currentParameter1 = NODATA;
 //            }
-        }
-        else
-        {
-            currentParameter1 = param1;
+             clima->setParam1(currentParameter1);
         }
 
-        if (elab1 == "phenology")
+
+        if (clima->elab1() == "phenology")
         {
             //Then currentPheno.setPhenoPoint i;  // TODO
         }
 
-        if ( elaborationOnPoint(myError, meteoPointsDbHandler, NULL, &meteoPoints[i], isMeteoGrid, variable, elab1, currentParameter1, elab2, param2,
-            startDate, endDate, nYears, firstYear, lastYear, nYearsMin, isAnomaly, true))
+//        if ( elaborationOnPoint(myError, meteoPointsDbHandler, NULL, &meteoPoints[i], isMeteoGrid, variable, elab1, currentParameter1, elab2, param2,
+//            startDate, endDate, nYears, firstYear, lastYear, nYearsMin, isAnomaly, true))
+        if ( elaborationOnPoint(myError, meteoPointsDbHandler, NULL, &meteoPoints[i], clima, isMeteoGrid, startDate, endDate, nYearsMin, isAnomaly, true))
         {
             validCell = validCell + 1;
         }
@@ -94,9 +94,10 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
 
 
 
-bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DClimate* clima, meteoVariable variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
-    QString elab1, bool param1IsClimate, QString climateElab, float param1, QString elab2, float param2, bool isAnomaly,
-    int nYearsMin, int firstYearClimate, int lastYearClimate)
+//bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DClimate* clima, meteoVariable variable, int firstYear, int lastYear, QDate firstDate, QDate lastDate, int nYears,
+//    QString elab1, bool param1IsClimate, QString climateElab, float param1, QString elab2, float param2, bool isAnomaly,
+//    int nYearsMin)
+bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DClimate* referenceClima, Crit3DClimate* clima, QDate currentDay, bool isAnomaly, int nYearsMin)
 {
 
     bool isMeteoGrid = 1; // grid
@@ -107,20 +108,20 @@ bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* 
     std::string id;
 
 
-    QDate startDate(firstYear, firstDate.month(), firstDate.day());
-    QDate endDate(lastYear, lastDate.month(), lastDate.day());
+    QDate startDate(clima->yearStart(), clima->genericPeriodDateStart().month(), clima->genericPeriodDateStart().day());
+    QDate endDate(clima->yearEnd(), clima->genericPeriodDateEnd().month(), clima->genericPeriodDateEnd().day());
 
-    if (nYears > 0)
+    if (clima->nYears() > 0)
     {
-        endDate.setDate(lastYear + nYears, endDate.month(), endDate.day());
+        endDate.setDate(clima->yearEnd() + clima->nYears(), clima->genericPeriodDateEnd().month(), clima->genericPeriodDateEnd().day());
     }
-    else if (nYears < 0)
+    else if (clima->nYears() < 0)
     {
-        startDate.setDate(firstYear + nYears, startDate.month(), startDate.day());
+        startDate.setDate(clima->yearStart() + clima->nYears(), clima->genericPeriodDateStart().month(), clima->genericPeriodDateStart().day());
     }
 
 
-    if (param1IsClimate)
+    if (clima->param1IsClimate())
     {
 
         parserElaboration(clima);
@@ -137,7 +138,7 @@ bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* 
             if (meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id))
             {
 
-                if (param1IsClimate)
+                if (clima->param1IsClimate())
                 {
 //                    if (Climate.ClimateReadPoint(PragaClimate.Point(row, col).TableName, _
 //                        climateElab, myPeriodType, myClimateIndex,PragaClimate.Point(row, col)) )
@@ -149,15 +150,12 @@ bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* 
 //                    {
 //                        currentParameter1 = NODATA;
 //                    }
-                }
-                else
-                {
-                    currentParameter1 = param1;
+                    clima->setParam1(currentParameter1);
                 }
 
+
                 Crit3DMeteoPoint meteoPoint = meteoGridDbHandler->meteoGrid()->meteoPoint(row,col);
-                if  ( elaborationOnPoint(myError, NULL, meteoGridDbHandler, &meteoPoint, isMeteoGrid, variable,
-                    elab1, currentParameter1, elab2, param2, startDate, endDate, nYears, firstYear, lastYear, nYearsMin, isAnomaly, true))
+                if  ( elaborationOnPoint(myError, NULL, meteoGridDbHandler, &meteoPoint, clima, isMeteoGrid, startDate, endDate, nYearsMin, isAnomaly, true))
                 {
                     validCell = validCell + 1;
                 }
@@ -181,10 +179,12 @@ bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* 
 
 
 
+//bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler,
+//    Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, QString elab1, float param1,
+//    QString elab2, float param2, QDate startDate, QDate endDate, int nYears, int firstYear, int lastYear,
+//    int nYearsMin, bool isAnomaly, bool loadData)
 bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler,
-    Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, QString elab1, float param1,
-    QString elab2, float param2, QDate startDate, QDate endDate, int nYears, int firstYear, int lastYear,
-    int nYearsMin, bool isAnomaly, bool loadData)
+    Crit3DMeteoPoint* meteoPoint, Crit3DClimate* clima, bool isMeteoGrid, QDate startDate, QDate endDate, int nYearsMin, bool isAnomaly, bool loadData)
 {
 
 
@@ -205,7 +205,7 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
 
             if (loadData)
             {
-                dataLoaded = preElaboration(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPointTemp, isMeteoGrid, variable, elab1, startDate, endDate, outputValues, &percValue);
+                dataLoaded = preElaboration(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPointTemp, isMeteoGrid, clima->variable(), clima->elab1(), startDate, endDate, outputValues, &percValue);
             }
             else
             {
@@ -215,16 +215,16 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
             if (dataLoaded)
             {
                 // check
-                Crit3DDate startD(startDate.day(), startDate.month(), firstYear);
-                Crit3DDate endD(endDate.day(), endDate.month(), firstYear);
+                Crit3DDate startD(startDate.day(), startDate.month(), clima->yearStart());
+                Crit3DDate endD(endDate.day(), endDate.month(), clima->yearStart());
 
-                if (nYears < 0)
+                if ( clima->nYears() < 0)
                 {
-                    startD.year = firstYear + nYears;
+                    startD.year = clima->yearStart() + clima->nYears();
                 }
-                else if (nYears > 0)
+                else if ( clima->nYears() > 0)
                 {
-                    endD.year = firstYear + nYears;
+                    endD.year = clima->yearStart() + clima->nYears();
                 }
 
                 if (difference (startD, endD) < 0)
@@ -232,12 +232,12 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
                     *myError = "Wrong dates!";
                     return false;
                 }
-                if (elab1 == "")
+                if (clima->elab1() == "")
                 {
                     *myError = "Missing elaboration";
                     return false;
                 }
-                result = elaborations::computeStatistic(outputValues, firstYear, lastYear, startD, endD, nYears, firstDateDailyVar, elab1.toStdString(), param1, elab2.toStdString(), param2, meteoPointTemp->point.z);
+                result = elaborations::computeStatistic(outputValues, clima->yearStart(), clima->yearEnd(), startD, endD, clima->nYears(), firstDateDailyVar, clima->elab1().toStdString(), clima->param1(), clima->elab2().toStdString(), clima->param2(), meteoPointTemp->point.z);
 
                 if (isAnomaly)
                 {

@@ -1234,14 +1234,18 @@ void MainWindow::on_actionElaboration_meteo_points_triggered()
 {
     bool isMeteoGrid = false;
     bool isAnomaly = false;
-    if (myProject.elaboration(isMeteoGrid, isAnomaly))
+    if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
         ComputationDialog compDialog;
         compDialog.setTitle("Elaboration");
         compDialog.setSettings(myProject.settings);
         if (compDialog.computation())
         {
-            return; // TO DO
+            myProject.elaboration(isMeteoGrid, isAnomaly);
+        }
+        else
+        {
+            return;
         }
 
     }
@@ -1256,14 +1260,18 @@ void MainWindow::on_actionElaboration_meteo_grid_triggered()
 {
     bool isMeteoGrid = true;
     bool isAnomaly = false;
-    if (myProject.elaboration(isMeteoGrid, isAnomaly))
+    if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
         ComputationDialog compDialog;
         compDialog.setTitle("Elaboration");
         compDialog.setSettings(myProject.settings);
         if (compDialog.computation())
         {
-            return; // TO DO
+            myProject.elaboration(isMeteoGrid, isAnomaly);
+        }
+        else
+        {
+            return;
         }
     }
     else
@@ -1276,12 +1284,19 @@ void MainWindow::on_actionAnomaly_meteo_points_triggered()
 {
     bool isMeteoGrid = false;
     bool isAnomaly = true;
-    if (myProject.elaboration(isMeteoGrid, isAnomaly))
+    if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
         ComputationDialog compDialog;
         compDialog.setTitle("Anomaly");
         compDialog.setSettings(myProject.settings);
-        compDialog.computation();
+        if (compDialog.computation())
+        {
+            myProject.elaboration(isMeteoGrid, isAnomaly);
+        }
+        else
+        {
+            return;
+        }
     }
     else
     {
@@ -1293,12 +1308,19 @@ void MainWindow::on_actionAnomaly_meteo_grid_triggered()
 {
     bool isMeteoGrid = true;
     bool isAnomaly = true;
-    if (myProject.elaboration(isMeteoGrid, isAnomaly))
+    if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
         ComputationDialog compDialog;
         compDialog.setTitle("Anomaly");
         compDialog.setSettings(myProject.settings);
-        compDialog.computation();
+        if (compDialog.computation())
+        {
+            myProject.elaboration(isMeteoGrid, isAnomaly);
+        }
+        else
+        {
+            return;
+        }
     }
     else
     {

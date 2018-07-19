@@ -55,6 +55,7 @@
         Crit3DMeteoPointsDbHandler* meteoPointsDbHandler;
         Crit3DMeteoGridDbHandler* meteoGridDbHandler;
         Crit3DClimate* clima;
+        Crit3DClimate* referenceClima;
 
         gis::Crit3DGeoPoint startLocation;
 
@@ -124,7 +125,8 @@
         bool interpolateGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime);
         bool saveGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, bool showInfo);
 
-        bool elaboration(bool isMeteoGrid, bool isAnomaly);
+        bool elaborationCheck(bool isMeteoGrid, bool isAnomaly);
+        void elaboration(bool isMeteoGrid, bool isAnomaly);
 
         bool loadModelParameters(QString dbName);
         bool loadSoilData(QString dbName);
