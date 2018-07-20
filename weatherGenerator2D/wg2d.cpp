@@ -100,6 +100,7 @@ contributors:
 #include <math.h>
 #include <malloc.h>
 #include <time.h>
+#include <iostream>
 
 #include "wg2D.h"
 #include "commonConstants.h"
@@ -773,7 +774,7 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
     lengthSeason[1] = lengthMonth[2]+lengthMonth[3]+lengthMonth[4];
     lengthSeason[2] = lengthMonth[5]+lengthMonth[6]+lengthMonth[7];
     lengthSeason[3] = lengthMonth[8]+lengthMonth[9]+lengthMonth[10];
-
+    weatherGenerator2D::initializePrecipitationOutputs(lengthSeason);
     for (int i=0;i<nrStations;i++)
     {
         occurrenceMatrixSeasonDJF[i] = (double *)calloc(lengthSeason[0]*parametersModel.yearOfSimulation, sizeof(double));
@@ -1685,11 +1686,12 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
 
        double** phatAlpha = (double **)calloc(nrStations, sizeof(double*));
        double** phatBeta = (double **)calloc(nrStations, sizeof(double*));
-
+       double** randomMatrixNormalDistribution = (double **)calloc(nrStations, sizeof(double*));
        for (int i=0;i<nrStations;i++)
        {
             phatAlpha[i] = (double *)calloc(lengthSeason[iSeason]*parametersModel.yearOfSimulation, sizeof(double));
             phatBeta[i] = (double *)calloc(lengthSeason[iSeason]*parametersModel.yearOfSimulation, sizeof(double));
+            randomMatrixNormalDistribution[i] = (double *)calloc(lengthSeason[iSeason]*parametersModel.yearOfSimulation, sizeof(double));
        }
 
        for (int j=0;j<lengthSeason[iSeason]*parametersModel.yearOfSimulation;j++)
@@ -1710,16 +1712,32 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
            }
        }
 
+       int gasDevIset = 0;
+       float gasDevGset = 0;
+       srand (time(NULL));
+       for (int j=0;j<lengthSeason[iSeason]*parametersModel.yearOfSimulation;j++)
+       {
+           for (int i=0;i<nrStations;i++)
+           {
+                randomMatrixNormalDistribution[i][j] = myrandom::normalRandom(&gasDevIset,&gasDevGset);
+           }
+       }
+
+
+
+
        // free memory
        for (int i=0;i<nrStations;i++)
        {
            free(phatAlpha[i]);
            free(phatBeta[i]);
+           free(randomMatrixNormalDistribution[i]);
            free(occurrenceSeason[i]);
            free(moranRandom[i]);
        }
        free(phatAlpha);
        free(phatBeta);
+       free(randomMatrixNormalDistribution);
        free(occurrenceSeason);
        free(moranRandom);
     }
@@ -1855,9 +1873,44 @@ void weatherGenerator2D::initializeOccurrenceIndex()
 
 }
 
-void weatherGenerator2D::multisiteOccurrenceIndex()
+void weatherGenerator2D::initializePrecipitationOutputs(int lengthSeason[])
 {
+    simulatedPrecipitationAmounts = (TsimulatedPrecipitationAmounts *)calloc(4, sizeof(TsimulatedPrecipitationAmounts));
+    for (int iSeason=0;iSeason<4;iSeason++)
+    {
+         if (iSeason == 0)
+            simulatedPrecipitationAmounts[iSeason].season = DJF;
+        else if (iSeason == 1)
+            simulatedPrecipitationAmounts[iSeason].season = MAM;
+        else if (iSeason == 2)
+            simulatedPrecipitationAmounts[iSeason].season = JJA;
+        else if (iSeason == 3)
+            simulatedPrecipitationAmounts[iSeason].season = SON;
 
+        simulatedPrecipitationAmounts[iSeason].matrixAmounts = (double **)calloc(nrStations, sizeof(double*));
+        simulatedPrecipitationAmounts[iSeason].matrixK = (double **)calloc(nrStations, sizeof(double*));
+        simulatedPrecipitationAmounts[iSeason].matrixM = (double **)calloc(nrStations, sizeof(double*));
+
+        for (int i=0;i<nrStations;i++)
+        {
+            simulatedPrecipitationAmounts[iSeason].matrixAmounts[i] = (double *)calloc(lengthSeason[iSeason]*parametersModel.yearOfSimulation, sizeof(double));
+            simulatedPrecipitationAmounts[iSeason].matrixK[i] = (double *)calloc(nrStations, sizeof(double));
+            simulatedPrecipitationAmounts[iSeason].matrixM[i] = (double *)calloc(nrStations, sizeof(double));
+        }
+
+        for (int i=0;i<nrStations;i++)
+        {
+            for (int j=0;j<nrStations;j++)
+            {
+                simulatedPrecipitationAmounts[iSeason].matrixK[i][j] = NODATA;
+                simulatedPrecipitationAmounts[iSeason].matrixM[i][j] = NODATA;
+            }
+            for (int j=0;j<lengthSeason[iSeason]*parametersModel.yearOfSimulation;j++)
+            {
+                simulatedPrecipitationAmounts[iSeason].matrixAmounts[i][j] = NODATA;
+            }
+        }
+    }
 }
 
 void weatherGenerator2D::temperatureCompute()

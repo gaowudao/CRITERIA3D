@@ -66,6 +66,13 @@ struct TrandomMatrix{
     int month;
 };
 
+struct TsimulatedPrecipitationAmounts{
+    double** matrixM;
+    double** matrixK;
+    double** matrixAmounts;
+    Tseason season;
+};
+
 struct TparametersModel{
     int yearOfSimulation;
     int distributionPrecipitation; //Select a distribution to generate daily precipitation amount,1: Multi-exponential or 2: Multi-gamma
@@ -88,6 +95,7 @@ private:
     TcorrelationMatrix *correlationMatrix;
     TrandomMatrix *randomMatrix;
     ToccurrenceIndexSeasonal* occurrenceIndexSeasonal;
+    TsimulatedPrecipitationAmounts *simulatedPrecipitationAmounts;
 
     //functions
 
@@ -100,11 +108,8 @@ private:
     void spatialIterationOccurrence(double ** M, double **K, double **occurrences, double** matrixOccurrence, double** normalizedMatrixRandom, double **transitionNormal, int lengthSeries);
     void precipitationMultiDistributionAmounts();
     void initializeOccurrenceIndex();
-    void multisiteOccurrenceIndex();
-    //void nonLinearFit(double* a1, double* a2, double x[], double y[],int lengthArray, int order);
+    void initializePrecipitationOutputs(int lengthSeason[]);
     void temperatureCompute();
-
-
 
 
 public:
