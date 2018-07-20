@@ -565,6 +565,7 @@ bool ComputationDialog::computation()
 
     QLabel currentDayLabel("Day/Month:");
     currentDay.setDate(myProject.getCurrentDate());
+    currentDay.setDisplayFormat("dd/MM");
     currentDayLabel.setBuddy(&currentDay);
 
     QLabel firstDateLabel("Start Year:");
@@ -604,12 +605,15 @@ bool ComputationDialog::computation()
     QString periodSelected = periodTypeList.currentText();
     int dayOfYear = currentDay.date().dayOfYear();
     periodDisplay.setText("Day Of Year: " + QString::number(dayOfYear));
+    periodDisplay.setReadOnly(true);
 
     displayLayout.addWidget(&periodDisplay);
 
     genericStartLabel.setText("Start Date:");
+    genericPeriodStart.setDisplayFormat("dd/MM");
     genericStartLabel.setBuddy(&genericPeriodStart);
     genericEndLabel.setText("End Date:");
+    genericPeriodEnd.setDisplayFormat("dd/MM");
     genericEndLabel.setBuddy(&genericPeriodEnd);
     genericStartLabel.setVisible(false);
     genericEndLabel.setVisible(false);
@@ -735,6 +739,7 @@ bool ComputationDialog::computation()
     }
     else
     {
+
         myProject.clima->setVariable(var);
         myProject.clima->setYearStart(firstYearEdit.text().toInt());
         myProject.clima->setYearEnd(lastYearEdit.text().toInt());
@@ -800,6 +805,7 @@ void ComputationDialog::changeDate(const QDate newDate)
 {
     displayPeriod(periodTypeList.currentText());
 }
+
 
 void ComputationDialog::displayPeriod(const QString value)
 {
