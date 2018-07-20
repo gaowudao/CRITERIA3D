@@ -750,9 +750,6 @@ bool ComputationDialog::computation()
         }
         else
         {
-            // LC corretto?
-            myProject.clima->setGenericPeriodDateStart(currentDay.date());
-            myProject.clima->setGenericPeriodDateEnd(currentDay.date());
             myProject.clima->setNYears(0);
         }
 

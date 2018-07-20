@@ -28,7 +28,6 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
     int myClimateIndex;
 
 
-    // LC nel caso NON generico, nYears = 0, yearStart e yearStop ok, mese e giorno? sono il primo e l'ultimo (currentDay) disponibili da db?
     QDate startDate(clima->yearStart(), clima->genericPeriodDateStart().month(), clima->genericPeriodDateStart().day());
     QDate endDate(clima->yearEnd(), clima->genericPeriodDateEnd().month(), clima->genericPeriodDateEnd().day());
 

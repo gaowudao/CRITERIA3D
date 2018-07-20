@@ -196,6 +196,39 @@ int decadeFromDate(QDate date)
 
 }
 
+void intervalDecade(int decade, int year, int* dayStart, int* dayEnd, int* month)
+{
+    int decMonth;
+
+    *month = ((decade - 1) / 3) + 1;
+    if ( (decade % 3) == 0)
+    {
+        decMonth = 3;
+    }
+    else
+    {
+        decMonth = decade % 3;
+    }
+
+    if (decMonth == 1)
+    {
+        *dayStart = 1;
+        *dayEnd = 10;
+    }
+    else if (decMonth == 2)
+    {
+        *dayStart = 11;
+        *dayEnd = 20;
+    }
+    else
+    {
+        *dayStart = 21;
+        QDate temp(year, *month, 1);
+        *dayEnd = temp.daysInMonth();
+    }
+
+}
+
 int getSeasonFromDate(QDate date)
 {
 
@@ -233,5 +266,60 @@ QString getStringSeasonFromDate(QDate date)
     }
 }
 
+
+bool getPeriodDates(QString periodSelected, QDate myDate, QDate* startDate, QDate* endDate)
+{
+
+   startDate->setDate(myDate.year(), myDate.month(), myDate.day());
+   endDate->setDate(myDate.year(), myDate.month(), myDate.day());
+
+   if (periodSelected == "Daily")
+   {
+        return true;
+   }
+   if (periodSelected == "Decadal")
+   {
+       int decade = decadeFromDate(myDate);
+       int dayStart;
+       int dayEnd;
+       int month;
+       intervalDecade(decade, myDate.year(), &dayStart, &dayEnd, &month);
+       startDate->setDate(startDate->year(), startDate->month(), dayStart);
+       endDate->setDate(endDate->year(), endDate->month(), dayEnd);
+   }
+   else if (periodSelected == "Monthly")
+   {
+       startDate->setDate(startDate->year(), startDate->month(), 1);
+       endDate->setDate(endDate->year(), endDate->month(), endDate->daysInMonth());
+   }
+   else if (periodSelected == "Seasonal")
+   {
+       int mySeason = getSeasonFromDate(myDate);
+       if ( (myDate.month() == 12) || (myDate.month() == 1) || (myDate.month() == 2))
+       {
+           startDate->setDate(startDate->year() - 1, 12, 1);
+           QDate temp(endDate->year(), 2, 1);
+           endDate->setDate(endDate->year(), 2, temp.daysInMonth());
+       }
+       else
+       {
+           startDate->setDate(startDate->year(), mySeason*3, 1);
+           QDate temp(endDate->year(), mySeason*3+2, 1);
+           endDate->setDate(endDate->year(), mySeason*3+2, temp.daysInMonth());
+       }
+
+   }
+   else if (periodSelected == "Annual")
+   {
+       startDate->setDate(startDate->year(), 1, 1);
+       endDate->setDate(endDate->year(), 12, 31);
+   }
+   else
+   {
+       return false;
+   }
+   return true;
+
+}
 
 

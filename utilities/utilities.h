@@ -15,8 +15,10 @@
     QDate getQDate(const Crit3DDate &myDate);
     QDateTime getQDateTime(const Crit3DTime &myCrit3DTime);
     int decadeFromDate(QDate date);
+    void intervalDecade(int decade, int year, int* dayStart, int* dayEnd, int* month);
     int getSeasonFromDate(QDate date);
     QString getStringSeasonFromDate(QDate date);
+    bool getPeriodDates(QString periodSelected, QDate myDate, QDate* startDate, QDate* endDate);
 
     bool getValue(QVariant myRs, int* myValue);
     bool getValue(QVariant myRs, float* myValue);
