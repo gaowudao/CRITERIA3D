@@ -569,14 +569,12 @@ bool ComputationDialog::computation()
     currentDayLabel.setBuddy(&currentDay);
 
     QLabel firstDateLabel("Start Year:");
-    QLineEdit firstYearEdit;
     firstYearEdit.setPlaceholderText("yyyy");
     firstYearEdit.setFixedWidth(110);
     firstYearEdit.setValidator(new QIntValidator(1800, 3000));
     firstDateLabel.setBuddy(&firstYearEdit);
 
     QLabel lastDateLabel("End Year:");
-    QLineEdit lastYearEdit;
     lastYearEdit.setPlaceholderText("yyyy");
     lastYearEdit.setFixedWidth(110);
     lastYearEdit.setValidator(new QIntValidator(1800, 3000));
@@ -800,6 +798,59 @@ bool ComputationDialog::computation()
         return true;
     }
 }
+
+
+void ComputationDialog::done(int r)
+{
+
+    if(QDialog::Accepted == r)  // ok was pressed
+    {
+        if(firstYearEdit.text().size() == 4 && lastYearEdit.text().size() == 4)   // validate the data
+        {
+            if (firstYearEdit.text().toInt() > lastYearEdit.text().toInt())
+            {
+                QMessageBox::information(NULL, "Invalid year", "first year greater than last year");
+                return;
+            }
+            if ( MapElabWithParam.find(elaborationList.currentText().toStdString()) != MapElabWithParam.end())
+            {
+                if (elab1Parameter.text().isEmpty())
+                {
+                    QMessageBox::information(NULL, "Missing Parameter", "insert parameter");
+                    return;
+                }
+            }
+            if ( MapElabWithParam.find(secondElabList.currentText().toStdString()) != MapElabWithParam.end())
+            {
+                if (elab2Parameter.text().isEmpty())
+                {
+                    QMessageBox::information(NULL, "Missing Parameter", "insert second elaboration parameter");
+                    return;
+                }
+            }
+            QDialog::done(r);
+            return;
+        }
+        else if (firstYearEdit.text().size() != 4)
+        {
+            QMessageBox::information(NULL, "Missing year", "Insert first year");
+            return;
+        }
+        else
+        {
+            QMessageBox::information(NULL, "Missing year", "Insert last year");
+            return;
+        }
+
+    }
+    else    // cancel, close or exc was pressed
+    {
+        QDialog::done(r);
+        return;
+    }
+
+}
+
 
 void ComputationDialog::changeDate(const QDate newDate)
 {

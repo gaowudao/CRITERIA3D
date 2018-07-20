@@ -31,6 +31,8 @@
             QString title;
             QSettings* settings;
             QDateEdit currentDay;
+            QLineEdit firstYearEdit;
+            QLineEdit lastYearEdit;
             QLabel genericStartLabel;
             QLabel genericEndLabel;
             QDateEdit genericPeriodStart;
@@ -55,12 +57,14 @@
             QSettings *getSettings() const;
             void setSettings(QSettings *value);
 
+            void done(int r);
             void displayPeriod(const QString value);
             void changeDate(const QDate newDate);
             void listElaboration(const QString value);
             void listSecondElab(const QString value);
             void activeSecondParameter(const QString value);
             void readParameter(int state);
+
 
     };
 
