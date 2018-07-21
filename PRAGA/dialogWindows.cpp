@@ -751,6 +751,11 @@ bool ComputationDialog::computation()
         else
         {
             myProject.clima->setNYears(0);
+            QDate start;
+            QDate end;
+            getPeriodDates(periodSelected, currentDay.date(), &start, &end);
+            myProject.clima->setGenericPeriodDateStart(start);
+            myProject.clima->setGenericPeriodDateEnd(end);
         }
 
         myProject.clima->setElab1(elab1Field);
