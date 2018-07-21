@@ -738,6 +738,7 @@ bool ComputationDialog::computation()
     else
     {
 
+        periodSelected = periodTypeList.currentText();
         myProject.clima->setVariable(var);
         myProject.clima->setYearStart(firstYearEdit.text().toInt());
         myProject.clima->setYearEnd(lastYearEdit.text().toInt());

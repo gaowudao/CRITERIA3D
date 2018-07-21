@@ -1126,9 +1126,13 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
 
                 *percValue = loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, variable, startDate, endDate, outputValues);
 
-                if ( percValue > 0)
+                if ( (*percValue) > 0)
                 {
                     preElaboration = true;
+                }
+                else
+                {
+                    preElaboration = false;
                 }
                 break;
             }
