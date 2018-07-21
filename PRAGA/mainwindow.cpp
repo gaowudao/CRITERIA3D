@@ -1241,7 +1241,10 @@ void MainWindow::on_actionElaboration_meteo_points_triggered()
         compDialog.setSettings(myProject.settings);
         if (compDialog.computation())
         {
-            myProject.elaboration(isMeteoGrid, isAnomaly);
+            if (!myProject.elaboration(isMeteoGrid, isAnomaly))
+            {
+                myProject.logError();
+            }
         }
         else
         {
@@ -1266,7 +1269,10 @@ void MainWindow::on_actionElaboration_meteo_grid_triggered()
         compDialog.setSettings(myProject.settings);
         if (compDialog.computation())
         {
-            myProject.elaboration(isMeteoGrid, isAnomaly);
+            if (!myProject.elaboration(isMeteoGrid, isAnomaly))
+            {
+                myProject.logError();
+            }
         }
         else
         {

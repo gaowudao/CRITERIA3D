@@ -1105,18 +1105,24 @@ bool Project::elaborationCheck(bool isMeteoGrid, bool isAnomaly)
 }
 
 
-void Project::elaboration(bool isMeteoGrid, bool isAnomaly)
+bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
 {
-    std::string myError;
     int nYearsMin; // LC chi deve settare questo?
     if (isMeteoGrid)
     {
-        elaborationPointsCycleGrid(&myError, this->meteoGridDbHandler, this->referenceClima, this->clima, this->currentDate, isAnomaly, nYearsMin);
+        if (!elaborationPointsCycleGrid(&errorString, this->meteoGridDbHandler, this->referenceClima, this->clima, this->currentDate, isAnomaly, nYearsMin))
+        {
+            return false;
+        }
     }
     else
     {
-        elaborationPointsCycle(&myError, this->meteoPointsDbHandler, this->meteoPoints, this->nrMeteoPoints, this->referenceClima, this->clima, this->currentDate, isAnomaly, nYearsMin);
+        if (!elaborationPointsCycle(&errorString, this->meteoPointsDbHandler, this->meteoPoints, this->nrMeteoPoints, this->referenceClima, this->clima, this->currentDate, isAnomaly, nYearsMin))
+        {
+            return false;
+        }
     }
+    return true;
 }
 
 

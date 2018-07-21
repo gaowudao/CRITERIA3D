@@ -126,7 +126,7 @@
         bool saveGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, bool showInfo);
 
         bool elaborationCheck(bool isMeteoGrid, bool isAnomaly);
-        void elaboration(bool isMeteoGrid, bool isAnomaly);
+        bool elaboration(bool isMeteoGrid, bool isAnomaly);
 
         bool loadModelParameters(QString dbName);
         bool loadSoilData(QString dbName);

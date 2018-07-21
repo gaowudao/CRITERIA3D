@@ -81,6 +81,7 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
     }
     if (validCell == 0)
     {
+        *myError = "no valid cells available";
         return false;
     }
     else
@@ -166,6 +167,7 @@ bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* 
 
     if (validCell == 0)
     {
+        *myError = "no valid cells available";
         return false;
     }
     else
