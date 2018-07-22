@@ -194,7 +194,7 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
     float result;
 
     Crit3DMeteoPoint* meteoPointTemp = new Crit3DMeteoPoint;
-    std::vector<float> *outputValues;
+    std::vector<float> outputValues;
 
     meteoPointTemp->id = meteoPoint->id;
     meteoPointTemp->point.z = meteoPoint->point.z;
@@ -298,7 +298,7 @@ bool anomalyOnPoint(Crit3DMeteoPoint* meteoPoint, float refValue)
 
 float loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler,
         Crit3DMeteoGridDbHandler *meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid,
-        meteoVariable variable, QDate first, QDate last, std::vector<float>* outputValues)
+        meteoVariable variable, QDate first, QDate last, std::vector<float> &outputValues)
 {
     std::vector<float> dailyValues;
     QDate firstDateDB;
@@ -348,8 +348,10 @@ float loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteo
                 nrValidValues = nrValidValues + 1;
             }
             meteoPoint->setMeteoPointValueD(Crit3DDate(firstDateDB.day(), firstDateDB.month(), firstDateDB.year()), variable, dailyValues[i]);
-            outputValues->push_back(dailyValues[i]);
+
+            outputValues.push_back(dailyValues[i]);
             firstDateDB = firstDateDB.addDays(1);
+
         }
         percValue = nrValidValues / dailyValues.size();
         return percValue;
@@ -360,7 +362,7 @@ float loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteo
 
 float loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler,
            Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid,
-           meteoVariable variable, QDateTime first, QDateTime last, std::vector<float> *outputValues)
+           meteoVariable variable, QDateTime first, QDateTime last, std::vector<float> &outputValues)
 {
     std::vector<float> hourlyValues;
     QDateTime firstDateDB;
@@ -411,7 +413,7 @@ float loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* mete
                 nrValidValues = nrValidValues + 1;
             }
             meteoPoint->setMeteoPointValueH(Crit3DDate(firstDateDB.date().day(), firstDateDB.date().month(), firstDateDB.date().year()), firstDateDB.time().hour(), firstDateDB.time().minute(), variable, hourlyValues[i]);
-            outputValues->push_back(hourlyValues[i]);
+            outputValues.push_back(hourlyValues[i]);
             firstDateDB = firstDateDB.addSecs(3600);
         }
         percValue = nrValidValues / hourlyValues.size();
@@ -649,7 +651,7 @@ float dewPoint(float relHumAir, float tempAir)
 }
 
 
-bool elaborateDailyAggregatedVar(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float>* outputValues, float* percValue)
+bool elaborateDailyAggregatedVar(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> &outputValues, float* percValue)
 {
 
     frequencyType aggregationFrequency = getAggregationFrequency(myVar);
@@ -686,7 +688,7 @@ frequencyType getAggregationFrequency(meteoVariable myVar)
 
 }
 
-bool elaborateDailyAggregatedVarFromDaily(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float>* outputValues, float* percValue)
+bool elaborateDailyAggregatedVarFromDaily(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> &outputValues, float* percValue)
 {
 
     float res;
@@ -755,12 +757,12 @@ bool elaborateDailyAggregatedVarFromDaily(meteoVariable myVar, Crit3DMeteoPoint 
             nrValidi = nrValidi + 1;
             firstDateDailyVar = date;
         }
-        outputValues->push_back(res);
+        outputValues.push_back(res);
         date = date.addDays(1);
 
     }
 
-    *percValue = nrValidi/outputValues->size();
+    *percValue = nrValidi/outputValues.size();
     if (nrValidi > 0)
         return true;
     else
@@ -768,7 +770,7 @@ bool elaborateDailyAggregatedVarFromDaily(meteoVariable myVar, Crit3DMeteoPoint 
 
 }
 
-bool elaborateDailyAggregatedVarFromHourly(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float>* outputValues)
+bool elaborateDailyAggregatedVarFromHourly(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> &outputValues)
 {
 
     float res;
@@ -803,7 +805,7 @@ bool elaborateDailyAggregatedVarFromHourly(meteoVariable myVar, Crit3DMeteoPoint
             firstDateDailyVar = date;
 
         }
-        outputValues->push_back(res);
+        outputValues.push_back(res);
         date = date.addDays(1);
     }
     if (nrValidi > 0)
@@ -814,7 +816,7 @@ bool elaborateDailyAggregatedVarFromHourly(meteoVariable myVar, Crit3DMeteoPoint
 }
 
 bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, QString elab1,
-    QDate startDate, QDate endDate, std::vector<float>* outputValues, float* percValue)
+    QDate startDate, QDate endDate, std::vector<float> &outputValues, float* percValue)
 {
 
     bool preElaboration = false;
@@ -1422,28 +1424,28 @@ int nParameters(meteoComputation elab)
 
 }
 
-void extractValidValuesCC(std::vector<float>* outputValues)
+void extractValidValuesCC(std::vector<float> &outputValues)
 {
 
-    for ( unsigned int i = 0;  i < outputValues->size(); i++)
+    for ( unsigned int i = 0;  i < outputValues.size(); i++)
     {
-        if (outputValues->at(i) == NODATA)
+        if (outputValues.at(i) == NODATA)
         {
-            outputValues->erase(outputValues->begin()+i);
+            outputValues.erase(outputValues.begin()+i);
         }
     }
 
 }
 
 
-void extractValidValuesWithThreshold(std::vector<float>* outputValues, float myThreshold)
+void extractValidValuesWithThreshold(std::vector<float> &outputValues, float myThreshold)
 {
 
-    for ( unsigned int i = 0;  i < outputValues->size(); i++)
+    for ( unsigned int i = 0;  i < outputValues.size(); i++)
     {
-        if (outputValues->at(i) == NODATA || outputValues->at(i) < myThreshold)
+        if (outputValues.at(i) == NODATA || outputValues.at(i) < myThreshold)
         {
-            outputValues->erase(outputValues->begin()+i);
+            outputValues.erase(outputValues.begin()+i);
         }
     }
 

@@ -739,6 +739,10 @@ bool ComputationDialog::computation()
     {
 
         periodSelected = periodTypeList.currentText();
+        value = variableList.currentText();
+        var = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, value.toStdString());
+
+
         myProject.clima->setVariable(var);
         myProject.clima->setYearStart(firstYearEdit.text().toInt());
         myProject.clima->setYearEnd(lastYearEdit.text().toInt());
@@ -759,7 +763,7 @@ bool ComputationDialog::computation()
             myProject.clima->setGenericPeriodDateEnd(end);
         }
 
-        myProject.clima->setElab1(elab1Field);
+        myProject.clima->setElab1(elaborationList.currentText());
 
         if (!readParam.isChecked())
         {
