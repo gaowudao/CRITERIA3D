@@ -178,6 +178,7 @@
         bool loadMeteoGridDB(QString xmlName);
         void setCurrentRaster(gis::Crit3DRasterGrid *myRaster);
         void interpolateRasterGUI();
+        void showElabResult(bool updateColorSCale);
 
     };
 

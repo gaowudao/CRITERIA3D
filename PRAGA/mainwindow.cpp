@@ -643,9 +643,6 @@ void MainWindow::interpolateRasterGUI()
         setColorScale(myVar, myProject.dataRaster.colorScale);
         this->setCurrentRaster(&(myProject.dataRaster));
 
-        //myProject.meteoPointsColorScale->setRange(myProject.dataRaster.minimum, myProject.dataRaster.maximum);
-        //redrawMeteoPoints(false);
-
         ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myVar)));
     }
     else
@@ -1247,31 +1244,7 @@ void MainWindow::on_actionElaboration_meteo_points_triggered()
             }
             else
             {
-                Crit3DColor *myColor;
-                for (int i = 0; i < myProject.nrMeteoPoints; i++)
-                {
-                    myProject.meteoPoints[i].currentValue = myProject.meteoPoints[i].elaboration;
-                    if (myProject.meteoPoints[i].currentValue != NODATA)
-                    {
-                        if (myProject.meteoPoints[i].myQuality == quality::accepted)
-                        {
-                            pointList[i]->setRadius(5);
-                            myColor = myProject.meteoPointsColorScale->getColor(myProject.meteoPoints[i].currentValue);
-                            pointList[i]->setFillColor(QColor(myColor->red, myColor->green, myColor->blue));
-                        }
-                        else
-                        {
-                            // Wrong data
-                            pointList[i]->setRadius(15);
-                            pointList[i]->setFillColor(QColor(Qt::black));
-                        }
-
-                        pointList[i]->setToolTip(i);
-                        pointList[i]->setVisible(true);
-                    }
-                }
-
-                meteoPointsLegend->update();
+                showElabResult(true);
             }
         }
     }
@@ -1368,4 +1341,65 @@ void MainWindow::on_actionClimate_meteo_grid_triggered()
 {
     bool isMeteoGrid = true;
    //TODO
+}
+
+void MainWindow::showElabResult(bool updateColorSCale)
+{
+
+    if (! this->showPoints)
+        return;
+
+    meteoPointsLegend->setVisible(true);
+
+    if (updateColorSCale)
+    {
+        float minimum, maximum;
+        for (int i = 0; i < myProject.nrMeteoPoints; i++)
+        {
+            myProject.meteoPoints[i].currentValue = myProject.meteoPoints[i].elaboration;
+            // hide all meteo points
+            pointList[i]->setVisible(false);
+
+            float v = myProject.meteoPoints[i].currentValue;
+
+            if (v != NODATA)
+            {
+                if (minimum == NODATA)
+                {
+                    minimum = v;
+                    maximum = v;
+                }
+                else if (v < minimum) minimum = v;
+                else if (v > maximum) maximum = v;
+            }
+
+        }
+        myProject.meteoPointsColorScale->setRange(minimum, maximum);
+        roundColorScale(myProject.meteoPointsColorScale, 4, true);
+        setColorScale(myProject.currentVariable, myProject.meteoPointsColorScale);
+    }
+
+
+    Crit3DColor *myColor;
+    for (int i = 0; i < myProject.nrMeteoPoints; i++)
+    {
+
+        if (!updateColorSCale)
+        {
+            myProject.meteoPoints[i].currentValue = myProject.meteoPoints[i].elaboration;
+            // hide all meteo points
+            pointList[i]->setVisible(false);
+        }
+        if (myProject.meteoPoints[i].currentValue != NODATA)
+        {
+
+            pointList[i]->setRadius(5);
+            myColor = myProject.meteoPointsColorScale->getColor(myProject.meteoPoints[i].currentValue);
+            pointList[i]->setFillColor(QColor(myColor->red, myColor->green, myColor->blue));
+            pointList[i]->setToolTip(i);
+            pointList[i]->setVisible(true);
+        }
+    }
+
+    meteoPointsLegend->update();
 }
