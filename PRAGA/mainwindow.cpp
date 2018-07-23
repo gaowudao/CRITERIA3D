@@ -1245,34 +1245,34 @@ void MainWindow::on_actionElaboration_meteo_points_triggered()
             {
                 myProject.logError();
             }
-        }
-        else
-        {
-            Crit3DColor *myColor;
-            for (int i = 0; i < myProject.nrMeteoPoints; i++)
+            else
             {
-                myProject.meteoPoints[i].currentValue = myProject.meteoPoints[i].elaboration;
-                if (myProject.meteoPoints[i].currentValue != NODATA)
+                Crit3DColor *myColor;
+                for (int i = 0; i < myProject.nrMeteoPoints; i++)
                 {
-                    if (myProject.meteoPoints[i].myQuality == quality::accepted)
+                    myProject.meteoPoints[i].currentValue = myProject.meteoPoints[i].elaboration;
+                    if (myProject.meteoPoints[i].currentValue != NODATA)
                     {
-                        pointList[i]->setRadius(5);
-                        myColor = myProject.meteoPointsColorScale->getColor(myProject.meteoPoints[i].currentValue);
-                        pointList[i]->setFillColor(QColor(myColor->red, myColor->green, myColor->blue));
-                    }
-                    else
-                    {
-                        // Wrong data
-                        pointList[i]->setRadius(15);
-                        pointList[i]->setFillColor(QColor(Qt::black));
-                    }
+                        if (myProject.meteoPoints[i].myQuality == quality::accepted)
+                        {
+                            pointList[i]->setRadius(5);
+                            myColor = myProject.meteoPointsColorScale->getColor(myProject.meteoPoints[i].currentValue);
+                            pointList[i]->setFillColor(QColor(myColor->red, myColor->green, myColor->blue));
+                        }
+                        else
+                        {
+                            // Wrong data
+                            pointList[i]->setRadius(15);
+                            pointList[i]->setFillColor(QColor(Qt::black));
+                        }
 
-                    pointList[i]->setToolTip(i);
-                    pointList[i]->setVisible(true);
+                        pointList[i]->setToolTip(i);
+                        pointList[i]->setVisible(true);
+                    }
                 }
-            }
 
-            meteoPointsLegend->update();
+                meteoPointsLegend->update();
+            }
         }
     }
     else
