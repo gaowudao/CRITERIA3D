@@ -6,18 +6,22 @@
 
 class Crit3DDate;
 
-enum statisticalElaborations {ELAB_MEAN, ELAB_STDDEVIATION, ELAB_SUM, ELAB_SUM_WITH_THRESHOLD, ELAB_MEAN_ABOVE_THRESHOLD,
-                              ELAB_STDDEV_ABOVE_THRESHOLD, ELAB_MAX, ELAB_MIN, ELAB_PERCENTILE, ELAB_MEDIAN,
-                              ELAB_FREQUENCY_POSITIVE, ELAB_DAYS_ABOVE_THRESHOLD, ELAB_DAYS_UNDER_THRESHOLD,
-                              ELAB_CONSECUTIVE_DAYS_ABOVE_THRESHOLD, ELAB_CONSECUTIVE_DAYS_UNDER_THRESHOLD,
-                              ELAB_PREVAILING_DIR, ELAB_TREND, ELAB_MANNKENDALL, ELAB_THRESHOLD_DIFFERENCE,
-                              ELAB_WHEIGTHED_AVERAGE, ELAB_PREVAILING_X, ELAB_PREVAILING_Y, ELAB_PREVAILINGVALUE,
-                              ELAB_PREVAILINGVALUE_CONSERVATIVE, ELAB_CENTERVALUE, ELAB_RENAME, ELAB_EROSIVITY, ELAB_RAININTENSITY};
+
+enum meteoComputation { average, stdDev, sum, maxInList, minInList,
+                        differenceWithThreshold, lastDayBelowThreshold,
+                        sumAbove, avgAbove, stdDevAbove,
+                        percentile, median, freqPositive,
+                        daysAbove, daysBelow, consecutiveDaysAbove, consecutiveDaysBelow,
+                        prevailingWindDir,
+                        trend, mannKendall,
+                        phenology,
+                        winkler, huglin, fregoni,
+                        correctedDegreeDaysSum, erosivityFactorElab, rainIntensityElab, noMeteoComp};
 
 namespace elaborations
 {
-    float statisticalElab(std::string elab, float param, std::vector<float> values, int nValues);
-    float computeStatistic(std::vector<float> &inputValues, int firstYear, int lastYear, Crit3DDate firstDate, Crit3DDate lastDate, int nYears, Crit3DDate firstDateDailyVar, std::string elab1, float param1, std::string elab2, float param2, float myHeight);
+    float statisticalElab(meteoComputation elab, float param, std::vector<float> values, int nValues);
+    float computeStatistic(std::vector<float> &inputValues, int firstYear, int lastYear, Crit3DDate firstDate, Crit3DDate lastDate, int nYears, Crit3DDate firstDateDailyVar, meteoComputation elab1, float param1, meteoComputation elab2, float param2, float myHeight);
 }
 namespace statistics
 {

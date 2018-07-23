@@ -42,7 +42,7 @@ namespace elaborations {
 
 //nYears   = 0         same year
 //nYears   = 1,2,3...   betweend years 1,2,3...
-float computeStatistic(std::vector<float> &inputValues, int firstYear, int lastYear, Crit3DDate firstDate, Crit3DDate lastDate, int nYears, Crit3DDate firstDateDailyVar, std::string elab1, float param1, std::string elab2, float param2, float myHeight)
+float computeStatistic(std::vector<float> &inputValues, int firstYear, int lastYear, Crit3DDate firstDate, Crit3DDate lastDate, int nYears, Crit3DDate firstDateDailyVar, meteoComputation elab1, float param1, meteoComputation elab2, float param2, float myHeight)
 {
 
     std::vector<float> values;
@@ -58,7 +58,7 @@ float computeStatistic(std::vector<float> &inputValues, int firstYear, int lastY
 
 
     // no secondary elab
-    if (elab2 == "")
+    if (elab2 == noMeteoComp)
     {
 
         if (specific)
@@ -195,9 +195,9 @@ float computeStatistic(std::vector<float> &inputValues, int firstYear, int lastY
         {
             if ( (nValidYears / nTotYears) * 100 >= MINPERCENTAGE)
             {
-                switch(atoi(elab2.c_str()))
+                switch(elab2)
                 {
-                    case ELAB_TREND:
+                    case trend:
                         return statisticalElab(elab2, firstYear, valuesSecondElab, nTotYears);
                     default:
                         return statisticalElab(elab2, param2, valuesSecondElab, nTotYears);
@@ -210,46 +210,46 @@ float computeStatistic(std::vector<float> &inputValues, int firstYear, int lastY
 }
 
 
-float statisticalElab(std::string elab, float param, std::vector<float> values, int nValues)
+float statisticalElab(meteoComputation elab, float param, std::vector<float> values, int nValues)
 {
 
-    switch(atoi(elab.c_str()))
+    switch(elab)
     {
-        case ELAB_MEAN:
+        case average:
             return statistics::mean(values, nValues);
-        case ELAB_MAX:
+        case maxInList:
             return statistics::maxList(values, nValues);
-        case ELAB_MIN:
+        case minInList:
             return statistics::minList(values, nValues);
-        case ELAB_SUM:
+        case sum:
             return statistics::sumList(values, nValues);
-        case ELAB_SUM_WITH_THRESHOLD:
+        case sumAbove:
             return statistics::sumListThreshold(values, nValues, param);
-        case ELAB_THRESHOLD_DIFFERENCE:
+        case differenceWithThreshold:
             return statistics::diffListThreshold(values, nValues, param);
-        case ELAB_DAYS_ABOVE_THRESHOLD:
+        case daysAbove:
             return statistics::countAbove(values, nValues, param);
-        case ELAB_DAYS_UNDER_THRESHOLD:
+        case daysBelow:
             return statistics::countBelow(values, nValues, param);
-        case ELAB_CONSECUTIVE_DAYS_ABOVE_THRESHOLD:
+        case consecutiveDaysAbove:
             return statistics::countConsecutive(values, nValues, param, true);
-        case ELAB_CONSECUTIVE_DAYS_UNDER_THRESHOLD:
+        case consecutiveDaysBelow:
             return statistics::countConsecutive(values, nValues, param, false);
-        case ELAB_PERCENTILE:
+        case percentile:
             return sorting::percentile(values, &nValues, param, true);
-        case ELAB_FREQUENCY_POSITIVE:
+        case freqPositive:
             return statistics::frequencyPositive(values, nValues);
-        case ELAB_PREVAILING_DIR:
+        case prevailingWindDir:
             return float(windPrevailingDir(values, values, nValues, false));
-        case ELAB_TREND:
+        case trend:
             return statistics::trend(values, nValues, param);
-        case ELAB_MANNKENDALL:
+        case mannKendall:
             return statistics::mannKendall(values, nValues);
-        case ELAB_EROSIVITY:
+        case erosivityFactorElab:
             return erosivityFactor(values, nValues);
-        case ELAB_RAININTENSITY:
+        case rainIntensityElab:
             return rainIntensity(values, nValues);
-        case ELAB_STDDEVIATION:
+        case stdDev:
             return statistics::standardDeviation(values, nValues);
 
         default:
