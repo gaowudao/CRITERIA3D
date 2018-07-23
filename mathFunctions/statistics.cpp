@@ -53,7 +53,7 @@ float computeStatistic(std::vector<float> &inputValues, int firstYear, int lastY
     int nValues = 0;
     unsigned int index;
 
-    bool specific; //  = Elaboration.isSpecificElaboration(elab1) TODO
+    bool specific = false; //  = Elaboration.isSpecificElaboration(elab1) TODO
     float primary = NODATA;
 
 
@@ -67,7 +67,7 @@ float computeStatistic(std::vector<float> &inputValues, int firstYear, int lastY
         }
         else
         {
-            for (int presentYear = firstYear; presentYear < lastYear; presentYear++)
+            for (int presentYear = firstYear; presentYear <= lastYear; presentYear++)
             {
                 firstDate.year = presentYear;
                 lastDate.year = presentYear;
@@ -87,8 +87,8 @@ float computeStatistic(std::vector<float> &inputValues, int firstYear, int lastY
                 {
 
                     float value = NODATA;
-                    index = difference(firstDateDailyVar, presentDate) +1;
-                    if (index > 0 && index <= inputValues.size())
+                    index = difference(firstDateDailyVar, presentDate);
+                    if (index >= 0 && index < inputValues.size())
                     {
                         value = inputValues.at(index);
                     }
@@ -99,7 +99,7 @@ float computeStatistic(std::vector<float> &inputValues, int firstYear, int lastY
 
                     values.push_back(value);
                     nValues = nValues + 1;
-                    presentDate.addDays(1);
+                    presentDate = presentDate.addDays(1);
 
                 }
             }
