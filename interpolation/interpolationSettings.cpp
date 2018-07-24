@@ -31,7 +31,7 @@
 
 Crit3DInterpolationSettings::Crit3DInterpolationSettings()
 {
-    interpolationMethod = geostatisticsMethods::idw;
+    interpolationMethod = interpolationMethod::idw;
     useHeight = true;
     useThermalInversion = true;
     useOrogIndex = false;

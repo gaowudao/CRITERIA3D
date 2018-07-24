@@ -7,7 +7,7 @@
 #define PREC_BINARY_THRESHOLD 0.5
 #define PREC_THRESHOLD 0.2
 
-namespace geostatisticsMethods
+namespace interpolationMethod
 {
     enum { idw, kriging, shepard };
 }

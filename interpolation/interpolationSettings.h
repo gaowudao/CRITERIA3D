@@ -7,6 +7,21 @@
 #ifndef METEO_H
     #include "meteo.h"
 #endif
+#ifndef GIS_H
+    #include "gis.h"
+#endif
+
+class Crit3DProxy
+{
+private:
+    proxyVars::TProxyVar name;
+    bool isActive;
+    gis::Crit3DRasterGrid grid;
+
+public:
+    bool initialize(proxyVars::TProxyVar name);
+
+};
 
 class Crit3DInterpolationSettings
 {

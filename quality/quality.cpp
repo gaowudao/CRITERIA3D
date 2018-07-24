@@ -289,7 +289,7 @@ void setSpatialQualityControlSettings(Crit3DInterpolationSettings* mySettings, m
     mySettings->setUseDewPoint(false);
     mySettings->setUseGenericProxy(false);
     mySettings->setUseSeaDistance(false);
-    mySettings->setInterpolationMethod(geostatisticsMethods::idw);
+    mySettings->setInterpolationMethod(interpolationMethod::idw);
     mySettings->setIsCrossValidation(true);
 
     if (   myVar == airTemperature

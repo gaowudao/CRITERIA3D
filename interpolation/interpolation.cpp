@@ -549,7 +549,7 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
         }
 
 
-    /*! only positive lapse ratec*/
+    /*! only positive lapse rate*/
     if (inversionIsSignificative && myIntervalsValues1.size() == myIntervalsValues.size())
     {
         regressionSimple(proxyVars::height, false, &m, &q, &r2);
@@ -794,29 +794,6 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
 
 }
 
-
-bool regressionOrography(meteoVariable myVar)
-{
-    initializeOrography();
-
-    if (myVar == airDewTemperature || myVar == airTemperature
-            || myVar == dailyAirTemperatureMax
-            || myVar == dailyAirTemperatureMin
-            || myVar == dailyAirTemperatureAvg )
-    {
-        if (currentSettings.getUseThermalInversion())
-            return regressionOrographyT(myVar, true);
-        else
-            return regressionSimpleT(myVar);
-    }
-    else
-    {
-        return regressionGeneric(proxyVars::height, false);
-    }
-
-}
-
-
 float inverseDistanceWeighted(vector <Crit3DInterpolationDataPoint> myPointList)
 {
     double sum, sumWeights, weight;
@@ -928,10 +905,10 @@ float interpolatePrecStep1()
 
 float interpolatePrecStep2()
 {
-    if (currentSettings.getInterpolationMethod() == geostatisticsMethods::idw)
+    if (currentSettings.getInterpolationMethod() == interpolationMethod::idw)
         return inverseDistanceWeighted(interpolationPointList);
         //return gaussWeighted(interpolationPointList);
-    else if (currentSettings.getInterpolationMethod() == geostatisticsMethods::kriging)
+    else if (currentSettings.getInterpolationMethod() == interpolationMethod::kriging)
         return NODATA;
     else
         return NODATA;
@@ -1089,6 +1066,96 @@ float retrend(meteoVariable myVar, float myZ, float myOrogIndex, float mySeaDist
     return (retrendZ + retrendIPL + retrendDistSea + retrendUrban + retrendAspect);
 }
 
+void deactiveAllDetrendingVar()
+{
+    currentSettings.setDetrendOrographyActive(false);
+    currentSettings.setDetrendOrogIndexActive(false);
+    currentSettings.setDetrendUrbanActive(false);
+    currentSettings.setDetrendSeaDistanceActive(false);
+    currentSettings.setDetrendAspectActive(false);
+    currentSettings.setDetrendGenericProxyActive(false);
+}
+
+bool getUseDetrendingVar(meteoVariable myVar)
+{
+    if (myVar == airTemperature ||
+            myVar == airDewTemperature ||
+            myVar == dailyAirTemperatureAvg ||
+            myVar == dailyAirTemperatureMax ||
+            myVar == dailyAirTemperatureMin ||
+            myVar == dailyAirDewTemperatureAvg ||
+            myVar == dailyAirDewTemperatureMax ||
+            myVar == dailyAirDewTemperatureMin)
+
+        return true;
+    else
+        return false;
+}
+
+bool regressionOrography(meteoVariable myVar)
+{
+    initializeOrography();
+
+    if (getUseDetrendingVar(myVar))
+    {
+        if (currentSettings.getUseThermalInversion())
+            return regressionOrographyT(myVar, true);
+        else
+            return regressionSimpleT(myVar);
+    }
+    else
+    {
+        return regressionGeneric(proxyVars::height, false);
+    }
+
+}
+
+void detrending(meteoVariable myVar)
+{
+    if (! getUseDetrendingVar(myVar)) return;
+
+    for (int pos=0; pos<PROXY_VAR_NR; pos++)
+    {
+        if (getDetrendActive(pos))
+        {
+            proxyVars::TProxyVar myProxy = getDetrendType(pos);
+            if (myProxy == proxyVars::height)
+            {
+                if (regressionOrography(myVar))
+                {
+                    currentSettings.setDetrendOrographyActive(true);
+                    detrend(myVar, proxyVars::height);
+                }
+                else
+                    currentSettings.setDetrendOrographyActive(false);
+            }
+            else if (myProxy == proxyVars::urbanFraction)
+            {
+                currentSettings.setDetrendUrbanActive(regressionGeneric(myProxy, false));
+                if (currentSettings.getDetrendUrbanActive())
+                    detrend(myVar, myProxy);
+            }
+            else if (myProxy == proxyVars::orogIndex)
+            {
+                currentSettings.setDetrendOrogIndexActive(regressionGeneric(myProxy, false));
+                if (currentSettings.getDetrendOrogIndexActive())
+                    detrend(myVar, myProxy);
+            }
+            else if (myProxy == proxyVars::seaDistance)
+            {
+                currentSettings.setDetrendSeaDistanceActive(regressionGeneric(myProxy, false));
+                if (currentSettings.getDetrendSeaDistanceActive())
+                    detrend(myVar, myProxy);
+            }
+            else if (myProxy == proxyVars::aspect)
+            {
+                currentSettings.setDetrendAspectActive(regressionGeneric(myProxy, false));
+                if (currentSettings.getDetrendAspectActive())
+                    detrend(myVar, myProxy);
+            }
+        }
+    }
+}
 
 bool preInterpolation(meteoVariable myVar)
 {
@@ -1102,54 +1169,7 @@ bool preInterpolation(meteoVariable myVar)
         if (currentSettings.getUseJRC()) prepareJRC();
     }
 
-    else if (  myVar == airDewTemperature
-            || myVar == airTemperature
-            || myVar == dailyAirTemperatureMax
-            || myVar == dailyAirTemperatureMin
-            || myVar == dailyAirTemperatureAvg )
-    {
-        for (int pos=0; pos<PROXY_VAR_NR; pos++)
-        {
-            if (getDetrendActive(pos))
-            {
-                proxyVars::TProxyVar myProxy = getDetrendType(pos);
-                if (myProxy == proxyVars::height)
-                {
-                    if (regressionOrography(myVar))
-                    {
-                        currentSettings.setDetrendOrographyActive(true);
-                        detrend(myVar, proxyVars::height);
-                    }
-                    else
-                        currentSettings.setDetrendOrographyActive(false);
-                }
-                else if (myProxy == proxyVars::urbanFraction)
-                {
-                    currentSettings.setDetrendUrbanActive(regressionGeneric(myProxy, false));
-                    if (currentSettings.getDetrendUrbanActive())
-                        detrend(myVar, myProxy);
-                }
-                else if (myProxy == proxyVars::orogIndex)
-                {
-                    currentSettings.setDetrendOrogIndexActive(regressionGeneric(myProxy, false));
-                    if (currentSettings.getDetrendOrogIndexActive())
-                        detrend(myVar, myProxy);
-                }
-                else if (myProxy == proxyVars::seaDistance)
-                {
-                    currentSettings.setDetrendSeaDistanceActive(regressionGeneric(myProxy, false));
-                    if (currentSettings.getDetrendSeaDistanceActive())
-                        detrend(myVar, myProxy);
-                }
-                else if (myProxy == proxyVars::aspect)
-                {
-                    currentSettings.setDetrendAspectActive(regressionGeneric(myProxy, false));
-                    if (currentSettings.getDetrendAspectActive())
-                        detrend(myVar, myProxy);
-                }
-            }
-        }
-    }
+    detrending(myVar);
 
     return (true);
 }
@@ -1160,11 +1180,11 @@ float interpolateSimple(meteoVariable myVar, float myZ, float myOrogIndex, float
     float myResult = NODATA;
 
     /*! interpolate residuals */
-    if (currentSettings.getInterpolationMethod() == geostatisticsMethods::idw)
+    if (currentSettings.getInterpolationMethod() == interpolationMethod::idw)
     {
         myResult = inverseDistanceWeighted(interpolationPointList);
     }
-    else if (currentSettings.getInterpolationMethod() == geostatisticsMethods::kriging)
+    else if (currentSettings.getInterpolationMethod() == interpolationMethod::kriging)
         myResult = NODATA;
 
     if (myResult != NODATA)
@@ -1180,7 +1200,7 @@ float interpolate(meteoVariable myVar, float myX, float myY, float myZ, float my
 
     float myResult = NODATA;
 
-    if (currentSettings.getInterpolationMethod() == geostatisticsMethods::idw)
+    if (currentSettings.getInterpolationMethod() == interpolationMethod::idw)
     {
         if ((myVar == precipitation || myVar == dailyPrecipitation) && currentSettings.getUseJRC())
             assignDistances(&precBinaryPointList, myX, myY, myZ);
