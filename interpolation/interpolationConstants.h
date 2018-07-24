@@ -2,9 +2,8 @@
 #define INTERPOLATIONCONSTS_H
 
 #define MIN_REGRESSION_POINTS 3
-#define PROXY_VAR_NR 6
 #define PEARSONSTANDARDTHRESHOLD 0.2
-#define PREC_BINARY_THRESHOLD 0.5
+#define PREC_JRC_THRESHOLD 0.5
 #define PREC_THRESHOLD 0.2
 
 namespace interpolationMethod

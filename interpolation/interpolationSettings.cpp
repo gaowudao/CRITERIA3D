@@ -41,17 +41,19 @@ Crit3DInterpolationSettings::Crit3DInterpolationSettings()
     useTAD = false;
     useJRC = false;
     useDewPoint = true;
-    isCrossValidation = false;
     isKrigingReady = false;
     isRetrendActive = true;
     genericPearsonThreshold = float(PEARSONSTANDARDTHRESHOLD);
     maxHeightInversion = 1000.;
+
+    /*
     detrendList[0] = proxyVars::height;
     detrendList[1] = proxyVars::urbanFraction;
     detrendList[2] = proxyVars::orogIndex;
     detrendList[3] = proxyVars::seaDistance;
     detrendList[4] = proxyVars::aspect;
     detrendList[5] = proxyVars::generic;
+    */
 
     currentClimateParametersLoaded = false;
     currentDate = getNullDate();
@@ -128,9 +130,6 @@ void Crit3DInterpolationSettings::setUseJRC(bool myValue)
 void Crit3DInterpolationSettings::setUseDewPoint(bool myValue)
 { useDewPoint = myValue;}
 
-void Crit3DInterpolationSettings::setIsCrossValidation(bool myValue)
-{ isCrossValidation = myValue;}
-
 bool Crit3DInterpolationSettings::getUseHeight()
 { return (useHeight);}
 
@@ -157,9 +156,6 @@ bool Crit3DInterpolationSettings::getUseJRC()
 
 bool Crit3DInterpolationSettings::getUseDewPoint()
 { return (useDewPoint);}
-
-bool Crit3DInterpolationSettings::getIsCrossValidation()
-{ return (isCrossValidation);}
 
 void Crit3DInterpolationSettings::setDetrendOrographyActive(bool myValue)
 { detrendOrographyActive = myValue;}
@@ -197,7 +193,69 @@ bool Crit3DInterpolationSettings::getDetrendAspectActive()
 bool Crit3DInterpolationSettings::getDetrendGenericProxyActive()
 { return detrendGenericProxyActive;}
 
-proxyVars::TProxyVar Crit3DInterpolationSettings::getDetrendList(int myPosition)
+int Crit3DInterpolationSettings::getProxyNr()
+{ return (int)currentProxy.size();}
+
+Crit3DProxy Crit3DInterpolationSettings::getProxy(int pos)
+{ return currentProxy.at(pos);}
+
+proxyVars::TProxyVar Crit3DProxy::getName()
+{ return name;}
+
+void Crit3DProxy::setActive(bool isActive_)
+{ isActive = isActive_;}
+
+void Crit3DProxy::initialize(proxyVars::TProxyVar name_)
 {
-    return detrendList[myPosition];
+    name = name_;
+    isActive = false;
+    this->grid = NULL;
 }
+
+void Crit3DInterpolationSettings::addProxy(proxyVars::TProxyVar myProxyName)
+{
+    Crit3DProxy myProxy;
+    myProxy.initialize(myProxyName);
+    currentProxy.push_back(myProxy);
+}
+
+proxyVars::TProxyVar Crit3DInterpolationSettings::getProxyName(int pos)
+{ return currentProxy.at(pos).getName();}
+
+void Crit3DInterpolationSettings::setProxyActive(int pos, bool isActive_)
+{ currentProxy.at(pos).setActive(isActive_);}
+
+bool Crit3DInterpolationSettings::getProxyActive(proxyVars::TProxyVar myProxyName)
+{
+    switch (myProxyName)
+    {
+        case (proxyVars::height):
+            return getUseHeight();
+            break;
+
+        case (proxyVars::orogIndex):
+            return getUseOrogIndex();
+            break;
+
+        case (proxyVars::urbanFraction):
+            return getUseUrbanFraction();
+            break;
+
+        case (proxyVars::seaDistance):
+            return getUseSeaDistance();
+            break;
+
+        case (proxyVars::aspect):
+            return getUseAspect();
+            break;
+
+        case (proxyVars::generic):
+            return getUseGenericProxy();
+            break;
+
+        default:
+            return false;
+            break;
+    }
+}
+

@@ -16,11 +16,12 @@ class Crit3DProxy
 private:
     proxyVars::TProxyVar name;
     bool isActive;
-    gis::Crit3DRasterGrid grid;
+    gis::Crit3DRasterGrid* grid;
 
 public:
-    bool initialize(proxyVars::TProxyVar name);
-
+    void initialize(proxyVars::TProxyVar name_);
+    proxyVars::TProxyVar getName();
+    void setActive(bool isActive_);
 };
 
 class Crit3DInterpolationSettings
@@ -51,7 +52,7 @@ private:
     float genericPearsonThreshold;
     float maxHeightInversion;
 
-    proxyVars::TProxyVar detrendList[PROXY_VAR_NR];
+    std::vector <Crit3DProxy> currentProxy;
 
     bool currentClimateParametersLoaded;
     Crit3DClimateParameters currentClimateParameters;
@@ -62,9 +63,13 @@ private:
 
 public:
     Crit3DInterpolationSettings();
-    bool isCrossValidation;
 
-    proxyVars::TProxyVar getDetrendList(int myPosition);
+    Crit3DProxy getProxy(int pos);
+    proxyVars::TProxyVar getProxyName(int pos);
+    bool getProxyActive(proxyVars::TProxyVar myProxyName);
+    int getProxyNr();
+    void setProxyActive(int pos, bool isActive_);
+    void addProxy(proxyVars::TProxyVar myProxyName);
 
     void setClimateParameters(Crit3DClimateParameters* myParameters);
     void setCurrentDate(Crit3DDate myDate);
@@ -82,7 +87,6 @@ public:
     void setUseTAD(bool myValue);
     void setUseJRC(bool myValue);
     void setUseDewPoint(bool myValue);
-    void setIsCrossValidation(bool myValue);
 
     bool getUseTad();
     int getInterpolationMethod();
@@ -97,7 +101,6 @@ public:
     bool getUseTAD();
     bool getUseJRC();
     bool getUseDewPoint();
-    bool getIsCrossValidation();
 
     void setDetrendOrographyActive(bool myValue);
     void setDetrendUrbanActive(bool myValue);

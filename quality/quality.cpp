@@ -285,12 +285,11 @@ void setSpatialQualityControlSettings(Crit3DInterpolationSettings* mySettings, m
     mySettings->setUseOrogIndex(false);
     mySettings->setUseAspect(false);
     mySettings->setUseTAD(false);
-    mySettings->setUseOrogIndex(false);
     mySettings->setUseDewPoint(false);
     mySettings->setUseGenericProxy(false);
     mySettings->setUseSeaDistance(false);
+
     mySettings->setInterpolationMethod(interpolationMethod::idw);
-    mySettings->setIsCrossValidation(true);
 
     if (   myVar == airTemperature
         || myVar == dailyAirTemperatureMax
@@ -319,13 +318,11 @@ bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nr
         if (meteoPoints[i].myQuality == quality::accepted)
         {
             myValue = meteoPoints[i].currentValue;
-            setindexPointJacknife(i);
+
             interpolatedValue = interpolate(myVar, float(meteoPoints[i].point.utm.x),
                                             float(meteoPoints[i].point.utm.y),
                                             float(meteoPoints[i].point.z),
                                             NODATA, NODATA, NODATA, NODATA);
-
-            setindexPointJacknife(NODATA);
 
             if (  myVar == precipitation
                || myVar == dailyPrecipitation)

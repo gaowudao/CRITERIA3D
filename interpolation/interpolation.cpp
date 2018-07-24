@@ -74,18 +74,12 @@ float genericIntercept;
 float genericR2;
 
 bool precipitationAllZero = false;
-int indexPointJacknife = NODATA;
 
 Crit3DInterpolationSettings currentSettings;
 
 void setInterpolationSettings(Crit3DInterpolationSettings* mySettings)
 {
     currentSettings = *(mySettings);
-}
-
-void setindexPointJacknife(int index)
-{
-    indexPointJacknife = index;
 }
 
 void clearInterpolationPoints()
@@ -189,7 +183,7 @@ int sortPointsByDistance(int maxIndex, vector <Crit3DInterpolationDataPoint> myP
         if (first == 0)
         {
             i = 0;
-            while ((! myPoints.at(i).isActive || (myPoints.at(i).distance == 0 && currentSettings.isCrossValidation)) && (i < int(myPoints.size())-1))
+            while ((! myPoints.at(i).isActive || (myPoints.at(i).distance == 0)) && (i < int(myPoints.size())-1))
                 i++;
 
             if (i == int(myPoints.size())-1 && ! myPoints.at(i).isActive)
@@ -209,7 +203,7 @@ int sortPointsByDistance(int maxIndex, vector <Crit3DInterpolationDataPoint> myP
             for (i = indice_minimo[first-1] + 1; i < int(myPoints.size()); i++)
                 if (myPoints.at(i).distance < min_value)
                     if (myPoints.at(i).isActive)
-                        if (myPoints.at(i).distance > 0 || ! currentSettings.isCrossValidation)
+                        if (myPoints.at(i).distance > 0)
                         {
                             first++;
                             min_value = myPoints.at(i).distance;
@@ -810,8 +804,6 @@ float inverseDistanceWeighted(vector <Crit3DInterpolationDataPoint> myPointList)
             sumWeights += weight;
             sum += myPoint->value * weight;
         }
-        else if (myPoint->index != indexPointJacknife)
-            return myPoint->value;
     }
 
     if (sumWeights > 0.0)
@@ -841,8 +833,6 @@ float gaussWeighted(vector <Crit3DInterpolationDataPoint> myPointList)
             sumWeights += weight;
             sum += myPoint->value * weight;
         }
-        else if (myPoint->index != indexPointJacknife)
-            return myPoint->value;
     }
 
     if (sumWeights > 0.0)
@@ -921,7 +911,7 @@ float interpolatePrec()
     if (! currentSettings.getUseJRC())
         myResult = interpolatePrecStep2();
     else
-        if (interpolatePrecStep1() >= PREC_BINARY_THRESHOLD)
+        if (interpolatePrecStep1() >= PREC_JRC_THRESHOLD)
             myResult = interpolatePrecStep2();
         else
             myResult = 0.;
@@ -929,39 +919,7 @@ float interpolatePrec()
     return ((myResult < 0 && myResult != NODATA) ? 0 : myResult);
 }
 
-bool getDetrendActive(int myPosition)
-{
-    if (myPosition >= 0 && myPosition <= PROXY_VAR_NR)
-    {
-        if (currentSettings.getDetrendList(myPosition) == proxyVars::height)
-            return currentSettings.getUseHeight();
-        else if (currentSettings.getDetrendList(myPosition) == proxyVars::orogIndex)
-            return currentSettings.getUseOrogIndex();
-        else if (currentSettings.getDetrendList(myPosition) == proxyVars::urbanFraction)
-            return currentSettings.getUseUrbanFraction();
-        else if (currentSettings.getDetrendList(myPosition) == proxyVars::seaDistance)
-            return currentSettings.getUseSeaDistance();
-        else if (currentSettings.getDetrendList(myPosition) == proxyVars::aspect)
-            return currentSettings.getUseAspect();
-        else if (currentSettings.getDetrendList(myPosition) == proxyVars::generic)
-            return currentSettings.getUseGenericProxy();
-        else
-            return (false);
-    }
-    else
-        return false;
-
-}
-
-proxyVars::TProxyVar getDetrendType(int myPosition)
-{
-    if (myPosition >= 0 && myPosition <= PROXY_VAR_NR)
-        return (currentSettings.getDetrendList(myPosition));
-    else
-        return (proxyVars::noProxy);
-}
-
-void detrend(meteoVariable myVar, proxyVars::TProxyVar myProxy)
+void detrendPoints(meteoVariable myVar, proxyVars::TProxyVar myProxy)
 {
     float detrendValue;
     long myIndex;
@@ -1114,44 +1072,35 @@ void detrending(meteoVariable myVar)
 {
     if (! getUseDetrendingVar(myVar)) return;
 
-    for (int pos=0; pos<PROXY_VAR_NR; pos++)
+    int nrProxy = currentSettings.getProxyNr();
+    proxyVars::TProxyVar myProxyName;
+
+    for (int pos=0; pos<nrProxy; pos++)
     {
-        if (getDetrendActive(pos))
+        myProxyName = currentSettings.getProxyName(pos);
+
+        if (currentSettings.getProxyActive(myProxyName))
         {
-            proxyVars::TProxyVar myProxy = getDetrendType(pos);
-            if (myProxy == proxyVars::height)
+            if (myProxyName == proxyVars::height)
             {
                 if (regressionOrography(myVar))
                 {
-                    currentSettings.setDetrendOrographyActive(true);
-                    detrend(myVar, proxyVars::height);
+                    currentSettings.setProxyActive(pos, true);
+                    detrendPoints(myVar, proxyVars::height);
                 }
                 else
-                    currentSettings.setDetrendOrographyActive(false);
+                    currentSettings.setProxyActive(pos, false);
             }
-            else if (myProxy == proxyVars::urbanFraction)
+            else
             {
-                currentSettings.setDetrendUrbanActive(regressionGeneric(myProxy, false));
-                if (currentSettings.getDetrendUrbanActive())
-                    detrend(myVar, myProxy);
-            }
-            else if (myProxy == proxyVars::orogIndex)
-            {
-                currentSettings.setDetrendOrogIndexActive(regressionGeneric(myProxy, false));
-                if (currentSettings.getDetrendOrogIndexActive())
-                    detrend(myVar, myProxy);
-            }
-            else if (myProxy == proxyVars::seaDistance)
-            {
-                currentSettings.setDetrendSeaDistanceActive(regressionGeneric(myProxy, false));
-                if (currentSettings.getDetrendSeaDistanceActive())
-                    detrend(myVar, myProxy);
-            }
-            else if (myProxy == proxyVars::aspect)
-            {
-                currentSettings.setDetrendAspectActive(regressionGeneric(myProxy, false));
-                if (currentSettings.getDetrendAspectActive())
-                    detrend(myVar, myProxy);
+                if (regressionGeneric(myProxyName, false))
+                {
+                    currentSettings.setProxyActive(pos, true);
+                    detrendPoints(myVar, myProxyName);
+                }
+                else
+                    currentSettings.setProxyActive(pos, false);
+
             }
         }
     }

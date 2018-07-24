@@ -39,7 +39,6 @@
     class Crit3DMeteoPoint;
 
     void setInterpolationSettings(Crit3DInterpolationSettings *mySettings);
-    void setindexPointJacknife(int index);
 
     bool preInterpolation(meteoVariable myVar);
 
