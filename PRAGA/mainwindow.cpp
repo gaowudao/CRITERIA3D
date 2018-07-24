@@ -103,6 +103,32 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
             ui->actionNewMeteoPointsArkimet->setVisible(false);
             break;
     }
+
+    elaborationBox = new QGroupBox(this);
+    elabType = new QLineEdit;
+    elabVariable = new QLineEdit;
+    elabPeriod = new QLineEdit;
+
+    elaborationBox->move(this->width()/70,this->height()/1.3);
+    elaborationBox->setFixedSize(220,150);
+    QVBoxLayout *vbox = new QVBoxLayout(elaborationBox);
+    QLabel *title = new QLabel();
+    title->setText("<font color='red'>elaboration:</font>");
+    title->setBuddy(elabType);
+    QLabel *variable = new QLabel();
+    variable->setText("<font color='red'>variable:</font>");
+    variable->setBuddy(elabVariable);
+    QLabel *period  = new QLabel();
+    period->setText("<font color='red'>period:</font>");
+    period->setBuddy(elabPeriod);
+    vbox->addWidget(title);
+    vbox->addWidget(elabType);
+    vbox->addWidget(variable);
+    vbox->addWidget(elabVariable);
+    vbox->addWidget(period);
+    vbox->addWidget(elabPeriod);
+    elaborationBox->setLayout(vbox);
+    elaborationBox->hide();
 }
 
 
@@ -583,6 +609,8 @@ void MainWindow::resizeEvent(QResizeEvent * event)
 
     ui->groupBoxRaster->move(MAPBORDER/2, (this->height() - INFOHEIGHT) / 2 + MAPBORDER);
     ui->groupBoxRaster->resize(TOOLSWIDTH, ui->groupBoxRaster->height());
+
+    elaborationBox->move(this->width()/70,this->height()/1.3);
 
     //TODO sembrano non funzionare
     ui->widgetColorLegendRaster->resize(TOOLSWIDTH, ui->widgetColorLegendPoints->height());
@@ -1108,6 +1136,7 @@ void MainWindow::on_actionClose_meteo_points_triggered()
     resetMeteoPoints();
     meteoPointsLegend->setVisible(false);
     myProject.closeMeteoPointsDB();
+    elaborationBox->hide();
 }
 
 void MainWindow::on_actionClose_meteo_grid_triggered()
@@ -1120,6 +1149,7 @@ void MainWindow::on_actionClose_meteo_grid_triggered()
         meteoGridObj->redrawRequested();
         meteoGridLegend->setVisible(false);
         myProject.closeMeteoGridDB();
+        elaborationBox->hide();
     }
 
 }
@@ -1231,6 +1261,7 @@ void MainWindow::on_actionElaboration_meteo_points_triggered()
 {
     bool isMeteoGrid = false;
     bool isAnomaly = false;
+
     if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
         ComputationDialog compDialog;
@@ -1402,4 +1433,13 @@ void MainWindow::showElabResult(bool updateColorSCale)
     }
 
     meteoPointsLegend->update();
+    elabType->setText(myProject.clima->elab1() + myProject.clima->elab2());
+    std::string var = MapDailyMeteoVarToString.at(myProject.clima->variable());
+    elabVariable->setText(QString::fromStdString(var));
+    elabPeriod->setText(myProject.clima->genericPeriodDateStart().toString() + "-" + myProject.clima->genericPeriodDateEnd().toString());
+
+    elabType->setReadOnly(true);
+    elabVariable->setReadOnly(true);
+    elabPeriod->setReadOnly(true);
+    elaborationBox->show();
 }

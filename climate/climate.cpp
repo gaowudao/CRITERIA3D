@@ -241,6 +241,7 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
                 catch (const std::out_of_range& oor) {
                     elab2MeteoComp = noMeteoComp;
                   }
+
                 result = elaborations::computeStatistic(outputValues, clima->yearStart(), clima->yearEnd(), startD, endD, clima->nYears(), firstDateDailyVar, elab1MeteoComp, clima->param1(), elab2MeteoComp, clima->param2(), meteoPointTemp->point.z);
 
                 if (isAnomaly)
@@ -249,6 +250,7 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
                 }
                 else
                 {
+
                       meteoPoint->elaboration = result;
                       if (meteoPoint->elaboration != NODATA)
                       {

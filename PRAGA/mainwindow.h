@@ -4,6 +4,7 @@
     #include <QMainWindow>
     #include <QList>
     #include <QCheckBox>
+    #include <QGroupBox>
 
     #include "rubberBand.h"
     #include "MapGraphicsView.h"
@@ -161,6 +162,11 @@
         environment menu;
         QList<QCheckBox*> datasetCheckbox;
         QCheckBox* all;
+
+        QGroupBox* elaborationBox;
+        QLineEdit* elabType;
+        QLineEdit* elabVariable;
+        QLineEdit* elabPeriod;
 
         void setMapSource(OSMTileSource::OSMTileType mySource);
         QString selectArkimetDataset(QDialog* datasetDialog);
