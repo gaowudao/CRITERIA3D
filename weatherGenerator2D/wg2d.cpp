@@ -1993,3 +1993,8 @@ void weatherGenerator2D::precipitationAmountsOccurences(int idStation, double* p
             }
     }
 }
+
+void weatherGenerator2D::spatialIterationAmounts(double ** amountsCorrelationMatrix , double** randomMatrix, int length, double** occurrences, double** phatAlpha, double** phatBeta)
+{
+
+}
