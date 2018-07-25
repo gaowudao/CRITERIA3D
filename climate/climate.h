@@ -111,7 +111,7 @@ float dailyEtpHargreaves(float Tmin, float Tmax, Crit3DDate date, double latitud
 
 float dewPoint(float relHumAir, float tempAir);
 
-float computeWinkler(std::vector<float> &inputValues, Crit3DDate firstDate, Crit3DDate finishDate, Crit3DDate firstDateDailyVar, float height);
+//float computeWinkler(std::vector<float> &inputValues, Crit3DDate firstDate, Crit3DDate finishDate, Crit3DDate firstDateDailyVar, float height);
 
 bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, QString elab1,
     QDate startDate, QDate endDate, std::vector<float> &outputValues, float* percValue);
