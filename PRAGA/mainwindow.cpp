@@ -1433,7 +1433,15 @@ void MainWindow::showElabResult(bool updateColorSCale)
     }
 
     meteoPointsLegend->update();
-    elabType->setText(myProject.clima->elab1() + myProject.clima->elab2());
+    if (myProject.clima->param1()!= NODATA)
+    {
+        elabType->setText(myProject.clima->elab1() + " " + QString::number(myProject.clima->param1()) + " " + myProject.clima->elab2());
+    }
+    else
+    {
+        elabType->setText(myProject.clima->elab1() + myProject.clima->elab2());
+    }
+
     std::string var = MapDailyMeteoVarToString.at(myProject.clima->variable());
     elabVariable->setText(QString::fromStdString(var));
     elabPeriod->setText(myProject.clima->genericPeriodDateStart().toString() + "-" + myProject.clima->genericPeriodDateEnd().toString());
