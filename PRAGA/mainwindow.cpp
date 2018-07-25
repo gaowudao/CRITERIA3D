@@ -822,7 +822,7 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
 
     // quality control
     myProject.quality->checkData(myProject.getCurrentVariable(), myProject.getFrequency(),
-                                 myProject.meteoPoints, myProject.nrMeteoPoints, myProject.getCurrentTime());
+                                 myProject.meteoPoints, myProject.nrMeteoPoints, myProject.getCurrentTime(), &myProject.qualityInterpolationSettings);
 
     if (updateColorSCale)
     {

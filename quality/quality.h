@@ -5,6 +5,10 @@
         #include "meteoPoint.h"
     #endif
 
+    #ifndef INTERPOLATIONSETTINGS_H
+        #include "interpolationSettings.h"
+    #endif
+
     namespace quality
     {
         class Range {
@@ -54,13 +58,13 @@
 
         quality::type syntacticQualityControlSingleVal(meteoVariable myVar, float myValue);
 
-        bool checkData(meteoVariable myVar, frequencyType myFrequency,
-                      Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DTime myTime);
+        bool checkData(meteoVariable myVar, frequencyType myFrequency, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DTime myTime, Crit3DInterpolationSettings* settings);
+        bool checkAndPassDataToInterpolation(meteoVariable myVar, frequencyType myFrequency, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DTime myTime, Crit3DInterpolationSettings* settings);
     };
 
     bool passDataToInterpolation(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints);
 
-    void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints);
+    void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DInterpolationSettings* settings);
 
 
 #endif // QUALITY_H

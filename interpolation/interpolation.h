@@ -39,6 +39,7 @@
     class Crit3DMeteoPoint;
 
     void setInterpolationSettings(Crit3DInterpolationSettings *mySettings);
+    Crit3DInterpolationSettings* getInterpolationSettings();
 
     bool preInterpolation(meteoVariable myVar);
 

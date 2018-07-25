@@ -755,7 +755,7 @@ bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, 
                             gis::Crit3DRasterGrid *myRaster)
 {    
     // check quality and pass data to interpolation
-    if (!quality->checkData(myVar, myFrequency, this->meteoPoints, this->nrMeteoPoints, myTime))
+    if (!quality->checkAndPassDataToInterpolation(myVar, myFrequency, this->meteoPoints, this->nrMeteoPoints, myTime, &this->myInterpolationSettings))
     {
         errorString = "No data";
         return false;
@@ -766,9 +766,6 @@ bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, 
 
     myRaster->initializeGrid(this->DTM);
 
-    // TO DO - gestione dei settings
-    Crit3DInterpolationSettings interpolationSettings;
-
     if (myVar == globalIrradiance)
     {
         Crit3DTime measureTime = myTime.addSeconds(-1800);
@@ -776,7 +773,7 @@ bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, 
     }
     else
     {
-        return interpolationRaster(myVar, &interpolationSettings, myTime, this->DTM, myRaster, &errorString);
+        return interpolationRaster(myVar, &myInterpolationSettings, myTime, this->DTM, myRaster, &errorString);
     }
 }
 
@@ -894,7 +891,7 @@ bool Project::interpolateRasterRadiation(const Crit3DTime& myTime, gis::Crit3DRa
             return false;
         }
 
-    if (!quality->checkData(atmTransmissivity, hourly, this->meteoPoints, this->nrMeteoPoints, myTime))
+    if (!quality->checkAndPassDataToInterpolation(atmTransmissivity, hourly, this->meteoPoints, this->nrMeteoPoints, myTime, &this->myInterpolationSettings))
     {
         *myError = "Function interpolateRasterRadiation: not enough transmissivity data.";
         return false;

@@ -100,9 +100,7 @@ quality::Range* Crit3DQuality::getQualityRange(meteoVariable myVar)
         return NULL;
 }
 
-
-// check quality and pass good data to interpolation
-bool Crit3DQuality::checkData(meteoVariable myVar, frequencyType myFrequency, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DTime myTime)
+bool Crit3DQuality::checkData(meteoVariable myVar, frequencyType myFrequency, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DTime myTime, Crit3DInterpolationSettings* settings)
 {
     if (nrMeteoPoints == 0)
         return false;
@@ -119,8 +117,16 @@ bool Crit3DQuality::checkData(meteoVariable myVar, frequencyType myFrequency, Cr
         && myVar != precipitation && myVar != dailyPrecipitation
         && myVar != globalIrradiance && myVar != dailyGlobalRadiation)
     {
-        spatialQualityControl(myVar, meteoPoints, nrMeteoPoints);
+        spatialQualityControl(myVar, meteoPoints, nrMeteoPoints, settings);
     }
+
+    return true;
+}
+
+// check quality and pass good data to interpolation
+bool Crit3DQuality::checkAndPassDataToInterpolation(meteoVariable myVar, frequencyType myFrequency, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DTime myTime, Crit3DInterpolationSettings* settings)
+{
+    if (! checkData(myVar, myFrequency, meteoPoints, nrMeteoPoints, myTime, settings)) return false;
 
     // return true if at least one valid data
     return passDataToInterpolation(meteoPoints, nrMeteoPoints);
@@ -190,27 +196,31 @@ bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nr
 void setSpatialQualityControlSettings(Crit3DInterpolationSettings* mySettings, meteoVariable myVar);
 
 
-void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints)
+void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DInterpolationSettings *settings)
 {
     int i;
     float stdDev, stdDevZ, minDist, myValue, myResidual;
     std::vector <int> listIndex;
     std::vector <float> listResiduals;
 
-    Crit3DInterpolationSettings mySettings;
-
-    setSpatialQualityControlSettings(&mySettings, myVar);
-    setInterpolationSettings(&mySettings);
-
     if (passDataToInterpolation(meteoPoints, nrMeteoPoints))
     {
+        Crit3DInterpolationSettings* previousSettings = getInterpolationSettings();
+        setInterpolationSettings(settings);
+
         // detrend
         if (! preInterpolation(myVar))
+        {
+            setInterpolationSettings(previousSettings);
             return;
+        }
 
         // compute residuals
         if (! computeResiduals(myVar, meteoPoints, nrMeteoPoints))
+        {
+            setInterpolationSettings(previousSettings);
             return;
+        }
 
         // re-load data
         passDataToInterpolation(meteoPoints, nrMeteoPoints);
@@ -276,12 +286,15 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
                 }
             }
         }
+
+        setInterpolationSettings(previousSettings);
     }
 }
 
 
 void setSpatialQualityControlSettings(Crit3DInterpolationSettings* mySettings, meteoVariable myVar)
 {
+    /*
     mySettings->setUseOrogIndex(false);
     mySettings->setUseAspect(false);
     mySettings->setUseTAD(false);
@@ -298,7 +311,7 @@ void setSpatialQualityControlSettings(Crit3DInterpolationSettings* mySettings, m
     {
         mySettings->setUseHeight(true);
         mySettings->setUseThermalInversion(true);
-    }
+    }*/
 }
 
 

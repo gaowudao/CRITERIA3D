@@ -78,16 +78,17 @@ bool precipitationAllZero = false;
 Crit3DInterpolationSettings currentSettings;
 
 void setInterpolationSettings(Crit3DInterpolationSettings* mySettings)
-{
-    currentSettings = *(mySettings);
-}
+{ currentSettings = *(mySettings);}
+
+Crit3DInterpolationSettings* getInterpolationSettings()
+{ return &currentSettings;}
 
 void clearInterpolationPoints()
 {
     interpolationPointList.clear();
 }
 
-bool addInterpolationPoint(int myIndex, float myValue, float myX, float myY, float myHeight, float myOrogIndex, float myUrban, float mySeaDist, float myAspect, float myGenericProxy)
+bool addInterpolationPoint(int myIndex, float myValue, float myX, float myY, float myZ, float myOrogIndex, float myUrban, float mySeaDist, float myAspect, float myGenericProxy)
 {
     Crit3DInterpolationDataPoint myPoint;
 
@@ -96,7 +97,8 @@ bool addInterpolationPoint(int myIndex, float myValue, float myX, float myY, flo
     myPoint.point->utm.x = myX;
     myPoint.point->utm.y = myY;
     myPoint.isActive = true;
-    myPoint.point->z = myHeight;
+    myPoint.point->z = myZ;
+
     myPoint.setOrogIndex(myOrogIndex);
     myPoint.setUrbanFraction(myUrban);
     myPoint.setSeaDistance(mySeaDist);
@@ -919,121 +921,6 @@ float interpolatePrec()
     return ((myResult < 0 && myResult != NODATA) ? 0 : myResult);
 }
 
-void detrendPoints(meteoVariable myVar, proxyVars::TProxyVar myProxy)
-{
-    float detrendValue;
-    long myIndex;
-    Crit3DInterpolationDataPoint* myPoint;
-
-    if (myVar != precipitation && myVar != dailyPrecipitation
-            && myVar != globalIrradiance && myVar != dailyGlobalRadiation)
-    {
-        for (myIndex = 0; myIndex < long(interpolationPointList.size()); myIndex++)
-        {
-            detrendValue = 0;
-            myPoint = &(interpolationPointList.at(myIndex));
-            if (myProxy == proxyVars::height)
-            {
-                if (currentSettings.getUseHeight() && myPoint->point->z != NODATA)
-                {
-                    if (inversionIsSignificative)
-                        if (myPoint->point->z <= lapseRateH1)
-                            detrendValue = maxValue(float(myPoint->point->z) - lapseRateH0, 0) * inversionLapseRate;
-                        else
-                            detrendValue = ((lapseRateH1 - lapseRateH0) * inversionLapseRate) + (float(myPoint->point->z) - lapseRateH1) * actualLapseRate;
-                    else
-                        detrendValue = maxValue(float(myPoint->point->z), 0) * actualLapseRate;
-                }
-            }
-
-            else if (myProxy == proxyVars::urbanFraction)
-            {
-                if (currentSettings.getUseUrbanFraction() && urbanR2 >= currentSettings.getGenericPearsonThreshold())
-                    if (myPoint->getUrbanFraction() != NODATA)
-                        detrendValue = myPoint->getUrbanFraction() * urbanCoefficient;
-            }
-
-            else if (myProxy == proxyVars::orogIndex)
-            {
-                if (currentSettings.getUseOrogIndex() && orogIndexR2 >= currentSettings.getGenericPearsonThreshold())
-                    if (myPoint->getOrogIndex() != NODATA)
-                        detrendValue = myPoint->getOrogIndex() * orogIndexCoefficient;
-            }
-
-            else if (myProxy == proxyVars::seaDistance)
-            {
-                if (currentSettings.getUseSeaDistance() && seaDistR2 >= currentSettings.getGenericPearsonThreshold())
-                    if (myPoint->getSeaDistance() != NODATA)
-                        detrendValue = myPoint->getSeaDistance() * seaDistCoefficient;
-            }
-
-            else if (myProxy == proxyVars::aspect)
-            {
-                if (currentSettings.getUseAspect() && aspectR2 >= currentSettings.getGenericPearsonThreshold())
-                    if (myPoint->getAspect() != NODATA)
-                        detrendValue = myPoint->getAspect() * aspectCoefficient;
-            }
-
-            myPoint->value -= detrendValue;
-        }
-    }
-}
-
-float retrend(meteoVariable myVar, float myZ, float myOrogIndex, float mySeaDist, float myUrban, float myAspect)
-{
-
-    float retrendZ = 0.;
-    float retrendIPL = 0.;
-    float retrendDistSea = 0.;
-    float retrendUrban = 0.;
-    float retrendAspect = 0.;
-
-    if ( myVar == airDewTemperature || myVar == airTemperature
-         || myVar == dailyAirTemperatureMax
-         || myVar == dailyAirTemperatureMin
-         || myVar == dailyAirTemperatureAvg )
-    {
-        if (currentSettings.getUseHeight() && currentSettings.getDetrendOrographyActive() && myZ != NODATA)
-        {
-            if (currentSettings.getUseThermalInversion() && inversionIsSignificative)
-            {
-                if (myZ <= lapseRateH1)
-                    retrendZ = (maxValue(myZ - lapseRateH0, 0) * inversionLapseRate);
-                else
-                    retrendZ = ((lapseRateH1 - lapseRateH0) * inversionLapseRate) + (myZ - lapseRateH1) * actualLapseRate;
-            }
-            else
-                retrendZ = maxValue(myZ, 0) * actualLapseRate;
-        }
-
-        if (currentSettings.getUseOrogIndex() && currentSettings.getDetrendOrogIndexActive() && myOrogIndex != NODATA)
-            retrendIPL = myOrogIndex * orogIndexCoefficient;
-
-        if (currentSettings.getUseUrbanFraction() && currentSettings.getDetrendUrbanActive() && myUrban != NODATA)
-            retrendUrban = myUrban * urbanCoefficient;
-
-        if (currentSettings.getUseSeaDistance() && currentSettings.getDetrendSeaDistanceActive() && mySeaDist != NODATA)
-            retrendDistSea = mySeaDist * seaDistCoefficient;
-
-        if (currentSettings.getUseAspect() && currentSettings.getDetrendAspectActive() && myAspect != NODATA)
-            retrendAspect = myAspect * aspectCoefficient;
-    }
-    else
-        return 0.;
-
-    return (retrendZ + retrendIPL + retrendDistSea + retrendUrban + retrendAspect);
-}
-
-void deactiveAllDetrendingVar()
-{
-    currentSettings.setDetrendOrographyActive(false);
-    currentSettings.setDetrendOrogIndexActive(false);
-    currentSettings.setDetrendUrbanActive(false);
-    currentSettings.setDetrendSeaDistanceActive(false);
-    currentSettings.setDetrendAspectActive(false);
-    currentSettings.setDetrendGenericProxyActive(false);
-}
-
 bool getUseDetrendingVar(meteoVariable myVar)
 {
     if (myVar == airTemperature ||
@@ -1048,6 +935,116 @@ bool getUseDetrendingVar(meteoVariable myVar)
         return true;
     else
         return false;
+}
+
+void detrendPoints(meteoVariable myVar, proxyVars::TProxyVar myProxy)
+{
+    float detrendValue;
+    long myIndex;
+    Crit3DInterpolationDataPoint* myPoint;
+
+    if (! getUseDetrendingVar(myVar)) return;
+
+    for (myIndex = 0; myIndex < long(interpolationPointList.size()); myIndex++)
+    {
+        detrendValue = 0;
+        myPoint = &(interpolationPointList.at(myIndex));
+        if (myProxy == proxyVars::height)
+        {
+            if (myPoint->point->z != NODATA)
+            {
+                if (inversionIsSignificative)
+                    if (myPoint->point->z <= lapseRateH1)
+                        detrendValue = maxValue(float(myPoint->point->z) - lapseRateH0, 0) * inversionLapseRate;
+                    else
+                        detrendValue = ((lapseRateH1 - lapseRateH0) * inversionLapseRate) + (float(myPoint->point->z) - lapseRateH1) * actualLapseRate;
+                else
+                    detrendValue = maxValue(float(myPoint->point->z), 0) * actualLapseRate;
+            }
+        }
+
+        else if (myProxy == proxyVars::urbanFraction)
+        {
+            if (urbanR2 >= currentSettings.getGenericPearsonThreshold())
+                if (myPoint->getUrbanFraction() != NODATA)
+                    detrendValue = myPoint->getUrbanFraction() * urbanCoefficient;
+        }
+
+        else if (myProxy == proxyVars::orogIndex)
+        {
+            if (orogIndexR2 >= currentSettings.getGenericPearsonThreshold())
+                if (myPoint->getOrogIndex() != NODATA)
+                    detrendValue = myPoint->getOrogIndex() * orogIndexCoefficient;
+        }
+
+        else if (myProxy == proxyVars::seaDistance)
+        {
+            if (seaDistR2 >= currentSettings.getGenericPearsonThreshold())
+                if (myPoint->getSeaDistance() != NODATA)
+                    detrendValue = myPoint->getSeaDistance() * seaDistCoefficient;
+        }
+
+        else if (myProxy == proxyVars::aspect)
+        {
+            if (aspectR2 >= currentSettings.getGenericPearsonThreshold())
+                if (myPoint->getAspect() != NODATA)
+                    detrendValue = myPoint->getAspect() * aspectCoefficient;
+        }
+
+        myPoint->value -= detrendValue;
+    }
+}
+
+float retrend(meteoVariable myVar, float myZ, float myOrogIndex, float mySeaDist, float myUrban, float myAspect)
+{
+
+    if (! getUseDetrendingVar(myVar)) return 0.;
+
+    float retrendZ = 0.;
+    float retrendIPL = 0.;
+    float retrendDistSea = 0.;
+    float retrendUrban = 0.;
+    float retrendAspect = 0.;
+
+    /*
+    if (currentSettings.getUseHeight() && currentSettings.getDetrendOrographyActive() && myZ != NODATA)
+    {
+        if (currentSettings.getUseThermalInversion() && inversionIsSignificative)
+        {
+            if (myZ <= lapseRateH1)
+                retrendZ = (maxValue(myZ - lapseRateH0, 0) * inversionLapseRate);
+            else
+                retrendZ = ((lapseRateH1 - lapseRateH0) * inversionLapseRate) + (myZ - lapseRateH1) * actualLapseRate;
+        }
+        else
+            retrendZ = maxValue(myZ, 0) * actualLapseRate;
+    }
+
+    if (currentSettings.getUseOrogIndex() && currentSettings.getDetrendOrogIndexActive() && myOrogIndex != NODATA)
+        retrendIPL = myOrogIndex * orogIndexCoefficient;
+
+    if (currentSettings.getUseUrbanFraction() && currentSettings.getDetrendUrbanActive() && myUrban != NODATA)
+        retrendUrban = myUrban * urbanCoefficient;
+
+    if (currentSettings.getUseSeaDistance() && currentSettings.getDetrendSeaDistanceActive() && mySeaDist != NODATA)
+        retrendDistSea = mySeaDist * seaDistCoefficient;
+
+    if (currentSettings.getUseAspect() && currentSettings.getDetrendAspectActive() && myAspect != NODATA)
+        retrendAspect = myAspect * aspectCoefficient;
+
+    return (retrendZ + retrendIPL + retrendDistSea + retrendUrban + retrendAspect);*/
+}
+
+void deactiveAllDetrendingVar()
+{
+    /*
+    currentSettings.setDetrendOrographyActive(false);
+    currentSettings.setDetrendOrogIndexActive(false);
+    currentSettings.setDetrendUrbanActive(false);
+    currentSettings.setDetrendSeaDistanceActive(false);
+    currentSettings.setDetrendAspectActive(false);
+    currentSettings.setDetrendGenericProxyActive(false);
+    */
 }
 
 bool regressionOrography(meteoVariable myVar)
@@ -1077,10 +1074,10 @@ void detrending(meteoVariable myVar)
 
     for (int pos=0; pos<nrProxy; pos++)
     {
-        myProxyName = currentSettings.getProxyName(pos);
-
-        if (currentSettings.getProxyActive(myProxyName))
+        if (currentSettings.getProxyActive(pos))
         {
+            myProxyName = currentSettings.getProxyName(pos);
+
             if (myProxyName == proxyVars::height)
             {
                 if (regressionOrography(myVar))
@@ -1213,7 +1210,7 @@ bool checkInterpolationRaster(const  gis::Crit3DRasterGrid& myDTM, std::string *
 }
 
 
-// require data loaded in interpolationPointList (use checkData function)
+// require data loaded in interpolationPointList (use checkAndPassDataToInterpolation function)
 bool interpolationRaster(meteoVariable myVar, Crit3DInterpolationSettings *mySettings,
                          const Crit3DTime& myTime, const  gis::Crit3DRasterGrid& myDTM,
                          gis::Crit3DRasterGrid *myRaster, std::string *myError)

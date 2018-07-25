@@ -25,7 +25,7 @@ win32:{
     TARGET = climate
 }
 
-INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../utilities ../quality ../meteo ../dbMeteoPoints ../dbMeteoGrid
+INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../utilities ../interpolation ../quality ../meteo ../dbMeteoPoints ../dbMeteoGrid
 
 SOURCES += \
         climate.cpp \

@@ -32,17 +32,11 @@
 Crit3DInterpolationSettings::Crit3DInterpolationSettings()
 {
     interpolationMethod = interpolationMethod::idw;
-    useHeight = true;
     useThermalInversion = true;
-    useOrogIndex = false;
-    useSeaDistance = false;
-    useUrbanFraction = false;
-    useGenericProxy = false;
     useTAD = false;
     useJRC = false;
     useDewPoint = true;
     isKrigingReady = false;
-    isRetrendActive = true;
     genericPearsonThreshold = float(PEARSONSTANDARDTHRESHOLD);
     maxHeightInversion = 1000.;
 
@@ -100,26 +94,8 @@ float Crit3DInterpolationSettings::getMaxHeightInversion()
 void Crit3DInterpolationSettings::setInterpolationMethod(bool myValue)
 { interpolationMethod = myValue;}
 
-void Crit3DInterpolationSettings::setUseHeight(bool myValue)
-{ useHeight = myValue;}
-
 void Crit3DInterpolationSettings::setUseThermalInversion(bool myValue)
 { useThermalInversion = myValue;}
-
-void Crit3DInterpolationSettings::setUseAspect(bool myValue)
-{ useAspect = myValue;}
-
-void Crit3DInterpolationSettings::setUseOrogIndex(bool myValue)
-{ useOrogIndex = myValue;}
-
-void Crit3DInterpolationSettings::setUseSeaDistance(bool myValue)
-{ useSeaDistance = myValue;}
-
-void Crit3DInterpolationSettings::setUrbanFraction(bool myValue)
-{ useUrbanFraction = myValue;}
-
-void Crit3DInterpolationSettings::setUseGenericProxy(bool myValue)
-{ useGenericProxy = myValue;}
 
 void Crit3DInterpolationSettings::setUseTAD(bool myValue)
 { useTAD = myValue;}
@@ -130,68 +106,14 @@ void Crit3DInterpolationSettings::setUseJRC(bool myValue)
 void Crit3DInterpolationSettings::setUseDewPoint(bool myValue)
 { useDewPoint = myValue;}
 
-bool Crit3DInterpolationSettings::getUseHeight()
-{ return (useHeight);}
-
 bool Crit3DInterpolationSettings::getUseThermalInversion()
 { return (useThermalInversion);}
-
-bool Crit3DInterpolationSettings::getUseOrogIndex()
-{ return (useOrogIndex);}
-
-bool Crit3DInterpolationSettings::getUseSeaDistance()
-{ return (useSeaDistance);}
-
-bool Crit3DInterpolationSettings::getUseUrbanFraction()
-{ return (useUrbanFraction);}
-
-bool Crit3DInterpolationSettings::getUseAspect()
-{ return (useAspect);}
-
-bool Crit3DInterpolationSettings::getUseGenericProxy()
-{ return (useGenericProxy);}
 
 bool Crit3DInterpolationSettings::getUseJRC()
 { return (useJRC);}
 
 bool Crit3DInterpolationSettings::getUseDewPoint()
 { return (useDewPoint);}
-
-void Crit3DInterpolationSettings::setDetrendOrographyActive(bool myValue)
-{ detrendOrographyActive = myValue;}
-
-void Crit3DInterpolationSettings::setDetrendUrbanActive(bool myValue)
-{ detrendUrbanActive = myValue;}
-
-void Crit3DInterpolationSettings::setDetrendOrogIndexActive(bool myValue)
-{ detrendOrogIndexActive = myValue;}
-
-void Crit3DInterpolationSettings::setDetrendSeaDistanceActive(bool myValue)
-{ detrendSeaDistanceActive = myValue;}
-
-void Crit3DInterpolationSettings::setDetrendAspectActive(bool myValue)
-{ detrendAspectActive = myValue;}
-
-void Crit3DInterpolationSettings::setDetrendGenericProxyActive(bool myValue)
-{ detrendGenericProxyActive = myValue;}
-
-bool Crit3DInterpolationSettings::getDetrendOrographyActive()
-{ return detrendOrographyActive;}
-
-bool Crit3DInterpolationSettings::getDetrendUrbanActive()
-{ return detrendUrbanActive;}
-
-bool Crit3DInterpolationSettings::getDetrendOrogIndexActive()
-{ return detrendOrogIndexActive;}
-
-bool Crit3DInterpolationSettings::getDetrendSeaDistanceActive()
-{ return detrendSeaDistanceActive;}
-
-bool Crit3DInterpolationSettings::getDetrendAspectActive()
-{ return detrendAspectActive;}
-
-bool Crit3DInterpolationSettings::getDetrendGenericProxyActive()
-{ return detrendGenericProxyActive;}
 
 int Crit3DInterpolationSettings::getProxyNr()
 { return (int)currentProxy.size();}
@@ -204,6 +126,9 @@ proxyVars::TProxyVar Crit3DProxy::getName()
 
 void Crit3DProxy::setActive(bool isActive_)
 { isActive = isActive_;}
+
+bool Crit3DProxy::getActive()
+{ return isActive;}
 
 void Crit3DProxy::initialize(proxyVars::TProxyVar name_)
 {
@@ -225,37 +150,7 @@ proxyVars::TProxyVar Crit3DInterpolationSettings::getProxyName(int pos)
 void Crit3DInterpolationSettings::setProxyActive(int pos, bool isActive_)
 { currentProxy.at(pos).setActive(isActive_);}
 
-bool Crit3DInterpolationSettings::getProxyActive(proxyVars::TProxyVar myProxyName)
-{
-    switch (myProxyName)
-    {
-        case (proxyVars::height):
-            return getUseHeight();
-            break;
+bool Crit3DInterpolationSettings::getProxyActive(int pos)
+{ return currentProxy.at(pos).getActive();}
 
-        case (proxyVars::orogIndex):
-            return getUseOrogIndex();
-            break;
-
-        case (proxyVars::urbanFraction):
-            return getUseUrbanFraction();
-            break;
-
-        case (proxyVars::seaDistance):
-            return getUseSeaDistance();
-            break;
-
-        case (proxyVars::aspect):
-            return getUseAspect();
-            break;
-
-        case (proxyVars::generic):
-            return getUseGenericProxy();
-            break;
-
-        default:
-            return false;
-            break;
-    }
-}
 

@@ -33,6 +33,10 @@
         #include "dbClimate.h"
     #endif
 
+    #ifndef INTERPOLATIONSETTINGS_H
+        #include "interpolationSettings.h"
+    #endif
+
     #include <QList>
     #include <QDate>
     #include <fstream>
@@ -120,6 +124,8 @@
 
         float meteoDataConsistency(meteoVariable myVar, const Crit3DTime& timeIni, const Crit3DTime& timeFin);
 
+        Crit3DInterpolationSettings myInterpolationSettings;
+        Crit3DInterpolationSettings qualityInterpolationSettings;
         bool interpolateRaster(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster);
         bool interpolateRasterRadiation(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, std::string *myError);
         bool interpolateGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime);
