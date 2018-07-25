@@ -164,7 +164,8 @@
         QCheckBox* all;
 
         QGroupBox* elaborationBox;
-        QLineEdit* elabType;
+        QLineEdit* elabType1;
+        QLineEdit* elabType2;
         QLineEdit* elabVariable;
         QLineEdit* elabPeriod;
 

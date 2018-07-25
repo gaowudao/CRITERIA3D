@@ -105,16 +105,20 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
     }
 
     elaborationBox = new QGroupBox(this);
-    elabType = new QLineEdit;
+    elabType1 = new QLineEdit;
+    elabType2 = new QLineEdit;
     elabVariable = new QLineEdit;
     elabPeriod = new QLineEdit;
 
     elaborationBox->move(this->width()/70,this->height()/1.3);
-    elaborationBox->setFixedSize(220,150);
+    elaborationBox->setFixedSize(220,160);
     QVBoxLayout *vbox = new QVBoxLayout(elaborationBox);
     QLabel *title = new QLabel();
     title->setText("<font color='red'>elaboration:</font>");
-    title->setBuddy(elabType);
+    title->setBuddy(elabType1);
+    QLabel *secondElab = new QLabel();
+    secondElab->setText("<font color='red'>second Elab:</font>");
+    secondElab->setBuddy(elabType2);
     QLabel *variable = new QLabel();
     variable->setText("<font color='red'>variable:</font>");
     variable->setBuddy(elabVariable);
@@ -122,7 +126,8 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
     period->setText("<font color='red'>period:</font>");
     period->setBuddy(elabPeriod);
     vbox->addWidget(title);
-    vbox->addWidget(elabType);
+    vbox->addWidget(elabType1);
+    vbox->addWidget(elabType2);
     vbox->addWidget(variable);
     vbox->addWidget(elabVariable);
     vbox->addWidget(period);
@@ -1435,18 +1440,27 @@ void MainWindow::showElabResult(bool updateColorSCale)
     meteoPointsLegend->update();
     if (myProject.clima->param1()!= NODATA)
     {
-        elabType->setText(myProject.clima->elab1() + " " + QString::number(myProject.clima->param1()) + " " + myProject.clima->elab2());
+        elabType1->setText(myProject.clima->elab1() + " " + QString::number(myProject.clima->param1()));
     }
     else
     {
-        elabType->setText(myProject.clima->elab1() + myProject.clima->elab2());
+        elabType1->setText(myProject.clima->elab1());
     }
-
+    if (myProject.clima->elab2().isEmpty())
+    {
+        elabType2->setVisible(false);
+    }
+    else
+    {
+        elabType2->setVisible(true);
+        elabType2->setText(myProject.clima->elab2());
+    }
     std::string var = MapDailyMeteoVarToString.at(myProject.clima->variable());
     elabVariable->setText(QString::fromStdString(var));
     elabPeriod->setText(myProject.clima->genericPeriodDateStart().toString() + "-" + myProject.clima->genericPeriodDateEnd().toString());
 
-    elabType->setReadOnly(true);
+    elabType1->setReadOnly(true);
+    elabType2->setReadOnly(true);
     elabVariable->setReadOnly(true);
     elabPeriod->setReadOnly(true);
     elaborationBox->show();
