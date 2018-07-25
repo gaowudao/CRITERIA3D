@@ -11,8 +11,6 @@
 float RainfallThreshold = 0.2f; // LC mettere nei settings Environment.RainfallThreshold
 
 
-Crit3DDate firstDateDailyVar; //temporaneo
-
 
 bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DClimate* referenceClima, Crit3DClimate* clima, QDate currentDay, bool isAnomaly)
 {
@@ -183,6 +181,7 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
 
     meteoPointTemp->id = meteoPoint->id;
     meteoPointTemp->point.z = meteoPoint->point.z;
+    meteoPointTemp->firstDateDailyVar = meteoPoint->firstDateDailyVar;
 
     if (!isAnomaly || meteoPoint->anomaly != NODATA)
     {
@@ -242,7 +241,7 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
                     elab2MeteoComp = noMeteoComp;
                   }
 
-                result = elaborations::computeStatistic(outputValues, clima->yearStart(), clima->yearEnd(), startD, endD, clima->nYears(), firstDateDailyVar, elab1MeteoComp, clima->param1(), elab2MeteoComp, clima->param2(), meteoPointTemp->point.z);
+                result = elaborations::computeStatistic(outputValues, clima->yearStart(), clima->yearEnd(), startD, endD, clima->nYears(), meteoPointTemp->firstDateDailyVar, elab1MeteoComp, clima->param1(), elab2MeteoComp, clima->param2(), meteoPointTemp->point.z);
 
                 if (isAnomaly)
                 {
@@ -332,7 +331,7 @@ float loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteo
         dailyValues = meteoPointsDbHandler->getDailyVar(myError, variable, getCrit3DDate(first), getCrit3DDate(last), &firstDateDB, meteoPoint );
     }
 
-    firstDateDailyVar = getCrit3DDate(firstDateDB);
+    meteoPoint->firstDateDailyVar = getCrit3DDate(firstDateDB);
 
     if ( dailyValues.empty() )
     {
@@ -342,7 +341,7 @@ float loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteo
     {
         if (meteoPoint->nrObsDataDaysD == 0)
         {
-            meteoPoint->initializeObsDataD(dailyValues.size(), firstDateDailyVar);
+            meteoPoint->initializeObsDataD(dailyValues.size(), meteoPoint->firstDateDailyVar);
         }
 
         for (unsigned int i = 0; i < dailyValues.size(); i++)
@@ -397,7 +396,7 @@ float loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* mete
         hourlyValues = meteoPointsDbHandler->getHourlyVar(myError, variable, getCrit3DDate(first.date()), getCrit3DDate(last.date()), &firstDateDB, meteoPoint );
     }
 
-    firstDateDailyVar = getCrit3DDate(firstDateDB.date());
+    meteoPoint->firstDateDailyVar = getCrit3DDate(firstDateDB.date());
 
     if ( hourlyValues.empty() )
     {
@@ -407,7 +406,7 @@ float loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* mete
     {
         if (meteoPoint->nrObsDataDaysH == 0)
         {
-            meteoPoint->initializeObsDataH(meteoPoint->hourlyFraction, hourlyValues.size(), firstDateDailyVar);
+            meteoPoint->initializeObsDataH(meteoPoint->hourlyFraction, hourlyValues.size(), meteoPoint->firstDateDailyVar);
         }
 
         for (unsigned int i = 0; i < hourlyValues.size(); i++)
@@ -760,7 +759,7 @@ bool elaborateDailyAggregatedVarFromDaily(meteoVariable myVar, Crit3DMeteoPoint 
         if (res != NODATA)
         {
             nrValidi = nrValidi + 1;
-            firstDateDailyVar = date;
+            meteoPoint.firstDateDailyVar = date;
         }
         outputValues.push_back(res);
         date = date.addDays(1);
@@ -807,7 +806,7 @@ bool elaborateDailyAggregatedVarFromHourly(meteoVariable myVar, Crit3DMeteoPoint
         if (res != NODATA)
         {
             nrValidi = nrValidi + 1;
-            firstDateDailyVar = date;
+            meteoPoint.firstDateDailyVar = date;
 
         }
         outputValues.push_back(res);
