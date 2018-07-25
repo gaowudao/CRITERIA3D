@@ -44,6 +44,26 @@ Project::Project()
     startLocation.longitude = 11.35;
 }
 
+bool Project::readParameters()
+{
+    /*Q_FOREACH (QString group, settings->childGroups())
+    {
+        //proxy variables (for interpolation)
+        if (group.startsWith("Proxy"))
+        {
+            std::string name;
+        std::string variable = group.left(group.size()-11).toStdString(); // remove "_VarToElab1"
+        try {
+          var = MapDailyMeteoVar.at(variable);
+          item = MapDailyMeteoVarToString.at(var);
+        }
+        catch (const std::out_of_range& oor) {
+          return false;
+        }
+        variableList.addItem(QString::fromStdString(item));
+    }*/
+    return true;
+}
 
 bool Project::initializeSettings(QString currentPath)
 {
@@ -85,6 +105,8 @@ bool Project::initializeSettings(QString currentPath)
         this->settings = new QSettings(settingsFileName, QSettings::IniFormat);
         return true;
     }
+
+
 }
 
 
