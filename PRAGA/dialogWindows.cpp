@@ -698,6 +698,9 @@ bool ComputationDialog::computation()
 
     secondElabLayout.addWidget(&elab2Parameter);
 
+    connect(&firstYearEdit, &QLineEdit::editingFinished, [=](){ this->checkYears(); });
+    connect(&lastYearEdit, &QLineEdit::editingFinished, [=](){ this->checkYears(); });
+
     connect(&variableList, &QComboBox::currentTextChanged, [=](const QString &newVar){ this->listElaboration(newVar); });
     connect(&currentDay, &QDateTimeEdit::dateChanged, [=](const QDate &newDate){ this->changeDate(newDate); });
     connect(&periodTypeList, &QComboBox::currentTextChanged, [=](const QString &newVar){ this->displayPeriod(newVar); });
@@ -858,6 +861,18 @@ void ComputationDialog::done(int r)
 
 }
 
+void ComputationDialog::checkYears()
+{
+    if (firstYearEdit.text().toInt() == lastYearEdit.text().toInt())
+    {
+        secondElabList.clear();
+        secondElabList.addItem("No elaboration available");
+    }
+    else
+    {
+        listSecondElab(elaborationList.currentText());
+    }
+}
 
 void ComputationDialog::changeDate(const QDate newDate)
 {

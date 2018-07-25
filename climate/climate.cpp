@@ -652,6 +652,51 @@ float dewPoint(float relHumAir, float tempAir)
 
 }
 
+float computeWinkler(std::vector<float> &inputValues, Crit3DDate firstDate, Crit3DDate finishDate, Crit3DDate firstDateDailyVar, float height)
+{
+
+
+//    Crit3DQuality qualityCheck;
+//    unsigned int index;
+//    Dim indice As Long
+//    Dim Tavg As Single, Tmin As Single, Tmax As Single
+//    Dim cont As Long
+//    bool checkData;
+
+    float computeWinkler = 0;
+    /*
+    int numberOfDays = difference(firstDate, finishDate) +1;
+
+    //For d = firstDate To finishDate
+    Crit3DDate presentDate = firstDate;
+    for (int i = 0; i < numberOfDays; i++)
+    {
+        index = difference(firstDateDailyVar, presentDate);
+        checkData = false;
+        if ( index >= 0 && index < inputValues.size())
+        {
+            If Quality.checkFastValueDaily(Definitions.DAILY_TAVG, currentDailySeries(index), Tavg, height) = Quality.qualityGoodData Then
+                checkData = True
+            ElseIf Quality.checkFastValueDaily(Definitions.DAILY_TMIN, currentDailySeries(index), Tmin, height) = Quality.qualityGoodData And _
+                    Quality.checkFastValueDaily(Definitions.DAILY_TMAX, currentDailySeries(index), Tmax, height) = Quality.qualityGoodData Then
+                        Tavg = (Tmax + Tmin) / 2
+                        checkData = True
+            End If
+        }
+        If checkData Then
+            computeWinkler = computeWinkler + IIf(Tavg > WINKLER_THRESHOLD, Tavg - WINKLER_THRESHOLD, 0)
+            cont = cont + 1
+        End If
+        presentDate = presentDate.addDays(1);
+    }
+    If numberOfDays <> 0 Then
+        If (cont / numberOfDays * 100) < Environment.minPercentage Then computeWinkler = NODATA
+    End If
+*/
+    return computeWinkler;
+
+}
+
 
 bool elaborateDailyAggregatedVar(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> &outputValues, float* percValue)
 {

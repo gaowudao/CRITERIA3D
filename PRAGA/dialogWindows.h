@@ -59,6 +59,7 @@
 
             void done(int r);
             void displayPeriod(const QString value);
+            void checkYears();
             void changeDate(const QDate newDate);
             void listElaboration(const QString value);
             void listSecondElab(const QString value);
