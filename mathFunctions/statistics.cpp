@@ -125,7 +125,7 @@ float computeStatistic(std::vector<float> &inputValues, int firstYear, int lastY
         int nTotYears = 0;
         int nValidYears = 0;
 
-        for (int presentYear = firstYear; presentYear < lastYear; presentYear++)
+        for (int presentYear = firstYear; presentYear <= lastYear; presentYear++)
         {
             firstDate.year = presentYear;
             lastDate.year = presentYear;
@@ -155,8 +155,8 @@ float computeStatistic(std::vector<float> &inputValues, int firstYear, int lastY
                 for (int i = 0; i < numberOfDays; i++)
                 {
                     float value = NODATA;
-                    index = difference(firstDateDailyVar, presentDate) +1;
-                    if (index > 0 && index <= inputValues.size())
+                    index = difference(firstDateDailyVar, presentDate);
+                    if (index >= 0 && index < inputValues.size())
                     {
                         value = inputValues.at(index);
                     }
@@ -167,7 +167,7 @@ float computeStatistic(std::vector<float> &inputValues, int firstYear, int lastY
 
                     values.push_back(value);
                     nValues = nValues + 1;
-                    presentDate.addDays(1);
+                    presentDate = presentDate.addDays(1);
 
                 }
 

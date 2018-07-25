@@ -64,8 +64,6 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
             //Then currentPheno.setPhenoPoint i;  // TODO
         }
 
-//        if ( elaborationOnPoint(myError, meteoPointsDbHandler, NULL, &meteoPoints[i], isMeteoGrid, variable, elab1, currentParameter1, elab2, param2,
-//            startDate, endDate, nYears, firstYear, lastYear, nYearsMin, isAnomaly, true))
         if ( elaborationOnPoint(myError, meteoPointsDbHandler, NULL, &meteoPoints[i], clima, isMeteoGrid, startDate, endDate, isAnomaly, true))
         {
             validCell = validCell + 1;
