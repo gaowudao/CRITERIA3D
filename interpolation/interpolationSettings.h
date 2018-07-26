@@ -14,17 +14,25 @@
 class Crit3DProxy
 {
 private:
+
+public:
+    Crit3DProxy();
+    Crit3DProxy(std::string name_);
+
     std::string name;
     bool isActive;
     gis::Crit3DRasterGrid* grid;
+};
+
+class Crit3DProxyInterpolation : public Crit3DProxy
+{
+private:
     float regressionR2;
     float regressionSlope;
 
 public:
-    void initialize(std::string name_);
-    std::string getName();
-    void setActive(bool isActive_);
-    bool getActive();
+    Crit3DProxyInterpolation();
+    Crit3DProxyInterpolation(std::string name_);
     void setRegressionR2(float myValue);
     float getRegressionR2();
     void setRegressionSlope(float myValue);
@@ -48,7 +56,7 @@ private:
     float genericPearsonThreshold;
     float maxHeightInversion;
 
-    std::vector <Crit3DProxy> currentProxy;
+    std::vector <Crit3DProxyInterpolation> currentProxy;
 
     bool currentClimateParametersLoaded;
     Crit3DClimateParameters currentClimateParameters;
@@ -60,7 +68,7 @@ private:
 public:
     Crit3DInterpolationSettings();
 
-    Crit3DProxy getProxy(int pos);
+    Crit3DProxyInterpolation getProxy(int pos);
     std::string getProxyName(int pos);
     int getProxyNr();
     bool getProxyActive(int pos);

@@ -39,16 +39,6 @@ Crit3DInterpolationSettings::Crit3DInterpolationSettings()
     isKrigingReady = false;
     genericPearsonThreshold = float(PEARSONSTANDARDTHRESHOLD);
     maxHeightInversion = 1000.;
-
-    /*
-    detrendList[0] = proxyVars::height;
-    detrendList[1] = proxyVars::urbanFraction;
-    detrendList[2] = proxyVars::orogIndex;
-    detrendList[3] = proxyVars::seaDistance;
-    detrendList[4] = proxyVars::aspect;
-    detrendList[5] = proxyVars::generic;
-    */
-
     currentClimateParametersLoaded = false;
     currentDate = getNullDate();
     currentHour = NODATA;
@@ -118,38 +108,35 @@ bool Crit3DInterpolationSettings::getUseDewPoint()
 int Crit3DInterpolationSettings::getProxyNr()
 { return (int)currentProxy.size();}
 
-Crit3DProxy Crit3DInterpolationSettings::getProxy(int pos)
+Crit3DProxyInterpolation Crit3DInterpolationSettings::getProxy(int pos)
 { return currentProxy.at(pos);}
 
-std::string Crit3DProxy::getName()
-{ return name;}
-
-void Crit3DProxy::setActive(bool isActive_)
-{ isActive = isActive_;}
-
-bool Crit3DProxy::getActive()
-{ return isActive;}
-
-void Crit3DProxy::initialize(std::string name_)
+Crit3DProxy::Crit3DProxy(std::string name_)
 {
     name = name_;
     isActive = false;
     this->grid = NULL;
 }
 
-void Crit3DProxy::setRegressionR2(float myValue)
+Crit3DProxyInterpolation::Crit3DProxyInterpolation(std::string name_) : Crit3DProxy( name_)
+{
+    regressionR2 = NODATA;
+    regressionSlope = NODATA;
+}
+
+void Crit3DProxyInterpolation::setRegressionR2(float myValue)
 { regressionR2 = myValue;}
 
-float Crit3DProxy::getRegressionR2()
+float Crit3DProxyInterpolation::getRegressionR2()
 { return regressionR2;}
 
-void Crit3DProxy::setRegressionSlope(float myValue)
+void Crit3DProxyInterpolation::setRegressionSlope(float myValue)
 { regressionSlope = myValue;}
 
-float Crit3DProxy::getRegressionSlope()
+float Crit3DProxyInterpolation::getRegressionSlope()
 { return regressionSlope;}
 
-float Crit3DProxy::getValue(int pos, std::vector <float> proxyValues)
+float Crit3DProxyInterpolation::getValue(int pos, std::vector <float> proxyValues)
 {
     if (pos < proxyValues.size())
         return proxyValues.at(pos);
@@ -159,19 +146,18 @@ float Crit3DProxy::getValue(int pos, std::vector <float> proxyValues)
 
 void Crit3DInterpolationSettings::addProxy(std::string myProxyName)
 {
-    Crit3DProxy myProxy;
-    myProxy.initialize(myProxyName);
+    Crit3DProxyInterpolation myProxy = Crit3DProxyInterpolation(myProxyName);
     currentProxy.push_back(myProxy);
 }
 
 std::string Crit3DInterpolationSettings::getProxyName(int pos)
-{ return currentProxy.at(pos).getName();}
+{ return currentProxy.at(pos).name;}
 
 void Crit3DInterpolationSettings::setProxyActive(int pos, bool isActive_)
-{ currentProxy.at(pos).setActive(isActive_);}
+{ currentProxy.at(pos).isActive = isActive_;}
 
 bool Crit3DInterpolationSettings::getProxyActive(int pos)
-{ return currentProxy.at(pos).getActive();}
+{ return currentProxy.at(pos).isActive;}
 
 float Crit3DInterpolationSettings::getProxyValue(int pos, std::vector <float> proxyValues)
 {
