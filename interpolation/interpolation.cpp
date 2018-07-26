@@ -1023,7 +1023,7 @@ void detrending(meteoVariable myVar)
                 if (regressionGeneric(myProxyName, false))
                 {
                     currentSettings.setProxyActive(pos, true);
-                    detrendPoints(myVar, myProxyName);
+                    detrendPoints(myVar, pos);
                 }
                 else
                     currentSettings.setProxyActive(pos, false);

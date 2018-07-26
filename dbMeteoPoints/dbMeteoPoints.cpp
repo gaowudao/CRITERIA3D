@@ -548,6 +548,17 @@ QList<Crit3DMeteoPoint> Crit3DMeteoPointsDbHandler::getPropertiesFromDb()
     return meteoPointsList;
 }
 
+Crit3DProxyMeteoPoint::Crit3DProxyMeteoPoint(std::string proxyField_, std::string proxyName_, gis::Crit3DRasterGrid* proxyGrid_) : Crit3DProxy(proxyName_, proxyGrid_)
+{
+    proxyField = proxyField_;
+}
+
+bool addProxyMeteoPoint(Crit3DProxy myProxy, std::string proxyField_)
+{
+    //Crit3DProxyMeteoPoint myProxyMeteoPoint = Crit3DProxyMeteoPoint(proxyField_);
+
+    return true;
+}
 
 bool Crit3DMeteoPointsDbHandler::fillPointProperties(Crit3DMeteoPoint *myPoint)
 {

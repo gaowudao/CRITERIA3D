@@ -49,10 +49,23 @@ bool Project::readParameters()
     Q_FOREACH (QString group, settings->childGroups())
     {
         //proxy variables (for interpolation)
+        std::string proxyName;
+        gis::Crit3DRasterGrid proxyGrid;
+        std::string proxyField;
         if (group.startsWith("Proxy"))
         {
-            std::string name = group.right(group.size()-6).toStdString(); // remove "_VarToElab1"
-            this->myInterpolationSettings.addProxy(name);
+            proxyName = group.right(group.size()-6).toStdString();
+            settings->beginGroup(group);
+            /*int size = settings->beginReadArray()
+            for (int i = 0; i < size; ++i) {
+                settings->setArrayIndex(i);
+                proxyGrid = settings->value("raster").toString().toStdString();
+                proxyField = settings->value("field").toString().toStdString();
+            }
+            settings->endArray();
+            settings->endGroup();
+
+            this->myInterpolationSettings.addProxy(proxyName, proxyGrid);*/
         }
     }
     return true;

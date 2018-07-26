@@ -17,7 +17,7 @@ private:
 
 public:
     Crit3DProxy();
-    Crit3DProxy(std::string name_);
+    Crit3DProxy(std::string name_, gis::Crit3DRasterGrid *proxyGrid);
 
     std::string name;
     bool isActive;
@@ -32,7 +32,7 @@ private:
 
 public:
     Crit3DProxyInterpolation();
-    Crit3DProxyInterpolation(std::string name_);
+    Crit3DProxyInterpolation(std::string name_, gis::Crit3DRasterGrid *proxyGrid);
     void setRegressionR2(float myValue);
     float getRegressionR2();
     void setRegressionSlope(float myValue);
@@ -73,7 +73,7 @@ public:
     int getProxyNr();
     bool getProxyActive(int pos);
     void setProxyActive(int pos, bool isActive_);
-    void addProxy(std::string myProxyName);
+    void addProxy(std::string myProxyName, gis::Crit3DRasterGrid *myGrid);
     float getProxyValue(int pos, std::vector <float> proxyValues);
 
     void setClimateParameters(Crit3DClimateParameters* myParameters);
