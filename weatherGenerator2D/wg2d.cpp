@@ -1996,5 +1996,64 @@ void weatherGenerator2D::precipitationAmountsOccurences(int idStation, double* p
 
 void weatherGenerator2D::spatialIterationAmounts(double ** amountsCorrelationMatrix , double** randomMatrix, int length, double** occurrences, double** phatAlpha, double** phatBeta)
 {
+    int val=5;
+    int ii=0;
+    double kiter=0.1;
+    int count = 0;
+    double** dummyMatrix = (double**)calloc(nrStations, sizeof(double*));
+    double** dummyMatrix2 = (double**)calloc(nrStations, sizeof(double*));
+    double* correlationArray =(double*)calloc(nrStations*nrStations, sizeof(double));
+    double* eigenvalues =(double*)calloc(nrStations, sizeof(double));
+    double* eigenvectors =(double*)calloc(nrStations*nrStations, sizeof(double));
+
+    // initialization internal arrays
+    for (int i=0;i<nrStations;i++)
+    {
+        dummyMatrix[i]= (double*)calloc(nrStations, sizeof(double));
+        dummyMatrix2[i]= (double*)calloc(nrStations, sizeof(double));
+
+    }
+    while ((val>TOLERANCE_MULGETS) && (ii<MAX_ITERATION_MULGETS))
+    {
+        ii++;
+        int nrEigenvaluesLessThan0 = 0;
+        int counter = 0;
+        for (int i=0;i<nrStations;i++)
+        {
+            for (int j=0;j<nrStations;j++) // avoid solutions with correlation coefficient greater than 1
+            {
+                amountsCorrelationMatrix[i][j] = min_value(amountsCorrelationMatrix[i][j],1);
+                correlationArray[counter] = amountsCorrelationMatrix[i][j];
+                counter++;
+                //printf("%f ",M[i][j]);
+            }
+            //printf("\n");
+        }
+        //printf("inizio sub\n");
+        eigenproblem::rs(nrStations,correlationArray,eigenvalues,true,eigenvectors);
+        // vedi riga 580 per continuare
+
+    }
+
+
+
+
+
+
+
+
+
+    // free memory
+        for (int i=0;i<nrStations;i++)
+    {
+        free(dummyMatrix[i]);
+        free(dummyMatrix2[i]);
+
+    }
+        free(dummyMatrix);
+        free(dummyMatrix2);
+        free(correlationArray);
+        free(eigenvalues);
+        free(eigenvectors);
 
 }
