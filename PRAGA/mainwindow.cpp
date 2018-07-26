@@ -1465,3 +1465,21 @@ void MainWindow::showElabResult(bool updateColorSCale)
     elabPeriod->setReadOnly(true);
     elaborationBox->show();
 }
+
+void MainWindow::on_actionOpen_climate_triggered()
+{
+    if (myProject.meteoPointsDbHandler == NULL && myProject.meteoGridDbHandler == NULL)
+    {
+        QMessageBox::information(NULL, "No DB open", "Open DB Points or Grid");
+        return;
+    }
+}
+
+void MainWindow::on_actionNew_climate_triggered()
+{
+    if (myProject.meteoPointsDbHandler == NULL && myProject.meteoGridDbHandler == NULL)
+    {
+        QMessageBox::information(NULL, "No DB open", "Open DB Points or Grid");
+        return;
+    }
+}
