@@ -25,6 +25,7 @@
     #include "dbClimate.h"
 #endif
 
+
 const std::map<std::string, int> MapElabWithParam = {
   { "differenceWithThreshold", 1 },
   { "lastDayBelowThreshold", 1 },
@@ -111,7 +112,15 @@ float dailyEtpHargreaves(float Tmin, float Tmax, Crit3DDate date, double latitud
 
 float dewPoint(float relHumAir, float tempAir);
 
-//float computeWinkler(std::vector<float> &inputValues, Crit3DDate firstDate, Crit3DDate finishDate, Crit3DDate firstDateDailyVar, float height);
+float computeLastDayBelowThreshold(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate, float param1);
+
+float computeWinkler(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate);
+
+float computeHuglin(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate);
+
+float computeFregoni(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate);
+
+float computeCorrectedSum(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate);
 
 bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, QString elab1,
     QDate startDate, QDate endDate, std::vector<float> &outputValues, float* percValue);
@@ -134,5 +143,6 @@ void extractValidValuesWithThreshold(std::vector<float> &outputValues, float myT
 
 int getClimateIndexFromDate(QDate myDate, period periodType);
 
+float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoPoint, int firstYear, int lastYear, Crit3DDate firstDate, Crit3DDate lastDate, int nYears, meteoComputation elab1, float param1, meteoComputation elab2, float param2);
 
 #endif // CLIMATE_H
