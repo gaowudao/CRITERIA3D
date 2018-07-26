@@ -35,41 +35,14 @@ Crit3DInterpolationDataPoint::Crit3DInterpolationDataPoint()
     distance = NODATA;
     deltaZ = NODATA;
     value = NODATA;
-    orogIndex = NODATA;
-    urbanFraction = NODATA;
-    seaDistance = NODATA;
-    aspect = NODATA;
-    genericProxyValue = NODATA;
 
     point = new gis::Crit3DPoint();
 }
 
-void Crit3DInterpolationDataPoint::setOrogIndex(float myValue)
-{ orogIndex = myValue;}
-
-void Crit3DInterpolationDataPoint::setUrbanFraction(float myValue)
-{ urbanFraction = myValue;}
-
-void Crit3DInterpolationDataPoint::setSeaDistance(float myValue)
-{ seaDistance = myValue;}
-
-void Crit3DInterpolationDataPoint::setAspect(float myValue)
-{ aspect = myValue;}
-
-void Crit3DInterpolationDataPoint::setGenericProxy(float myValue)
-{ genericProxyValue = myValue;}
-
-float Crit3DInterpolationDataPoint::getOrogIndex()
-{ return orogIndex;}
-
-float Crit3DInterpolationDataPoint::getUrbanFraction()
-{ return urbanFraction;}
-
-float Crit3DInterpolationDataPoint::getSeaDistance()
-{ return seaDistance;}
-
-float Crit3DInterpolationDataPoint::getAspect()
-{ return aspect;}
-
-float Crit3DInterpolationDataPoint::getGenericProxy()
-{ return genericProxyValue;}
+float Crit3DInterpolationDataPoint::getProxy(int pos)
+{
+    if (pos < proxyValues.size())
+        return proxyValues.at(pos);
+    else
+        return NODATA;
+}

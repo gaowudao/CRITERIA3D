@@ -14,15 +14,22 @@
 class Crit3DProxy
 {
 private:
-    proxyVars::TProxyVar name;
+    std::string name;
     bool isActive;
     gis::Crit3DRasterGrid* grid;
+    float regressionR2;
+    float regressionSlope;
 
 public:
-    void initialize(proxyVars::TProxyVar name_);
-    proxyVars::TProxyVar getName();
+    void initialize(std::string name_);
+    std::string getName();
     void setActive(bool isActive_);
     bool getActive();
+    void setRegressionR2(float myValue);
+    float getRegressionR2();
+    void setRegressionSlope(float myValue);
+    float getRegressionSlope();
+    float getValue(int pos, std::vector <float> proxyValues);
 };
 
 class Crit3DInterpolationSettings
@@ -54,11 +61,12 @@ public:
     Crit3DInterpolationSettings();
 
     Crit3DProxy getProxy(int pos);
-    proxyVars::TProxyVar getProxyName(int pos);
+    std::string getProxyName(int pos);
     int getProxyNr();
     bool getProxyActive(int pos);
     void setProxyActive(int pos, bool isActive_);
-    void addProxy(proxyVars::TProxyVar myProxyName);
+    void addProxy(std::string myProxyName);
+    float getProxyValue(int pos, std::vector <float> proxyValues);
 
     void setClimateParameters(Crit3DClimateParameters* myParameters);
     void setCurrentDate(Crit3DDate myDate);

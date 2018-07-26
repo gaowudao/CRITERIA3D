@@ -7,11 +7,7 @@
 
     class Crit3DInterpolationDataPoint {
     private:
-        float orogIndex;
-        float urbanFraction;
-        float seaDistance;
-        float aspect;
-        float genericProxyValue;
+
 
     public:
         gis::Crit3DPoint* point;
@@ -20,18 +16,9 @@
         float distance;
         float deltaZ;
         float value;
+        std::vector <float> proxyValues;
 
-        void setOrogIndex(float myValue);
-        void setUrbanFraction(float myValue);
-        void setSeaDistance(float myValue);
-        void setAspect(float myValue);
-        void setGenericProxy(float myValue);
-
-        float getOrogIndex();
-        float getUrbanFraction();
-        float getSeaDistance();
-        float getAspect();
-        float getGenericProxy();
+        float getProxy(int pos);
 
         Crit3DInterpolationDataPoint();
     };
