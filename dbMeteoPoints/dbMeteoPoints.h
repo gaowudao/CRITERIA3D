@@ -20,8 +20,8 @@ private:
     std::string proxyField;
 
 public:
-    Crit3DProxyMeteoPoint::Crit3DProxyMeteoPoint();
-    Crit3DProxyMeteoPoint::Crit3DProxyMeteoPoint(Crit3DProxy* myProxy);
+    Crit3DProxyMeteoPoint();
+    Crit3DProxyMeteoPoint(Crit3DProxy* myProxy);
     std::string getProxyField() const;
     void setProxyField(const std::string &value);
 };

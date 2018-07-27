@@ -674,20 +674,38 @@ float computeWinkler(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DD
     unsigned int index;
     int count;
     bool checkData;
+    float Tavg;
 
 
-    float Tmin, Tmax, Tavg;
     int numberOfDays = difference(firstDate, finishDate) +1;
 
     //For d = firstDate To finishDate
     Crit3DDate presentDate = firstDate;
     for (int i = 0; i < numberOfDays; i++)
     {
-        index = difference(firstDateDailyVar, presentDate);
+        index = difference(meteoPoint->firstDateDailyVar, presentDate);
         checkData = false;
         if ( index >= 0 && index < inputValues.size())
         {
 
+            // TO DO nella versione vb il check prevede anche l'immissione del parametro height
+            quality::type qualityTavg = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureAvg, meteoPoint->obsDataD[index].tAvg);
+            if (qualityTavg == quality::accepted)
+            {
+                Tavg = meteoPoint->obsDataD[index].tAvg;
+                checkData = true;
+            }
+            else
+            {
+                quality::type qualityTmin = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMin, meteoPoint->obsDataD[index].tMin);
+                quality::type qualityTmax = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMax, meteoPoint->obsDataD[index].tMax);
+                if (qualityTmin  == quality::accepted && qualityTmax == quality::accepted)
+                {
+                    Tavg = (meteoPoint->obsDataD[index].tMin + meteoPoint->obsDataD[index].tMax)/2;
+                    checkData = true;
+                }
+
+            }
 //            If Quality.checkFastValueDaily(Definitions.DAILY_TAVG, currentDailySeries(index), Tavg, height) = Quality.qualityGoodData Then
 //                checkData = True
 //            ElseIf Quality.checkFastValueDaily(Definitions.DAILY_TMIN, currentDailySeries(index), Tmin, height) = Quality.qualityGoodData And _

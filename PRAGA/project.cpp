@@ -62,7 +62,8 @@ bool Project::readSettings()
             settings->endGroup();
 
             this->myInterpolationSettings.addProxy(proxyName.toStdString(), proxyGridName);
-            this->meteoPointsDbHandler->addProxy(&(myInterpolationSettings.getProxy(proxyPos)), proxyField);
+            Crit3DProxyInterpolation proxyToAdd = myInterpolationSettings.getProxy(proxyPos);
+            this->meteoPointsDbHandler->addProxy(&proxyToAdd, proxyField);
             proxyPos++;
         }
     }
