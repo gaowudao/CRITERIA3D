@@ -283,8 +283,6 @@ QDateTime Crit3DMeteoPointsDbHandler::getFirstDay(frequencyType frequency)
 
 }
 
-
-
 bool Crit3DMeteoPointsDbHandler::getDailyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3DMeteoPoint *meteoPoint)
 {
     QString dateStr;
@@ -435,7 +433,6 @@ std::vector<float> Crit3DMeteoPointsDbHandler::getDailyVar(std::string *myError,
 
             }
 
-
         }
     }
 
@@ -548,18 +545,6 @@ QList<Crit3DMeteoPoint> Crit3DMeteoPointsDbHandler::getPropertiesFromDb()
     return meteoPointsList;
 }
 
-Crit3DProxyMeteoPoint::Crit3DProxyMeteoPoint(std::string proxyField_, std::string proxyName_, gis::Crit3DRasterGrid* proxyGrid_) : Crit3DProxy(proxyName_, proxyGrid_)
-{
-    proxyField = proxyField_;
-}
-
-bool addProxyMeteoPoint(Crit3DProxy myProxy, std::string proxyField_)
-{
-    //Crit3DProxyMeteoPoint myProxyMeteoPoint = Crit3DProxyMeteoPoint(proxyField_);
-
-    return true;
-}
-
 bool Crit3DMeteoPointsDbHandler::fillPointProperties(Crit3DMeteoPoint *myPoint)
 {
 
@@ -593,8 +578,18 @@ bool Crit3DMeteoPointsDbHandler::fillPointProperties(Crit3DMeteoPoint *myPoint)
 
 }
 
+std::string Crit3DProxyMeteoPoint::getProxyField() const
+{
+    return proxyField;
+}
 
+void Crit3DProxyMeteoPoint::setProxyField(const std::string &value)
+{
+    proxyField = value;
+}
 
-
-
-
+void Crit3DMeteoPointsDbHandler::addProxy(Crit3DProxyMeteoPoint myProxy, std::string fieldName_)
+{
+    (myProxy).setProxyField(fieldName_);
+    this->ProxyMeteoPoint.push_back(myProxy);
+}

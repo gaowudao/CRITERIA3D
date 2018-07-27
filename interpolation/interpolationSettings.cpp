@@ -118,17 +118,18 @@ Crit3DProxy::Crit3DProxy()
     grid = NULL;
 }
 
-Crit3DProxy::Crit3DProxy(std::string name_, gis::Crit3DRasterGrid* proxyGrid)
+Crit3DProxy::Crit3DProxy(std::string name_, std::string gridName_)
 {
     name = name_;
     isActive = true;
-    grid = proxyGrid;
+    gridName = gridName_;
+    grid = NULL;
 }
 
 Crit3DProxyInterpolation::Crit3DProxyInterpolation() : Crit3DProxy::Crit3DProxy()
 {}
 
-Crit3DProxyInterpolation::Crit3DProxyInterpolation(std::string name_, gis::Crit3DRasterGrid* proxyGrid) : Crit3DProxy( name_, proxyGrid)
+Crit3DProxyInterpolation::Crit3DProxyInterpolation(std::string name_, std::string gridName_) : Crit3DProxy( name_, gridName_)
 {
     regressionR2 = NODATA;
     regressionSlope = NODATA;
@@ -154,9 +155,9 @@ float Crit3DProxyInterpolation::getValue(int pos, std::vector <float> proxyValue
         return NODATA;
 }
 
-void Crit3DInterpolationSettings::addProxy(std::string myProxyName, gis::Crit3DRasterGrid* myGrid)
+void Crit3DInterpolationSettings::addProxy(std::string myProxyName, std::string myGridName)
 {
-    Crit3DProxyInterpolation myProxy(myProxyName, myGrid);
+    Crit3DProxyInterpolation myProxy(myProxyName, myGridName);
     currentProxy.push_back(myProxy);
 }
 

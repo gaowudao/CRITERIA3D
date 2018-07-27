@@ -44,28 +44,29 @@ Project::Project()
     startLocation.longitude = 11.35;
 }
 
-bool Project::readParameters()
+bool Project::readSettings()
 {
     Q_FOREACH (QString group, settings->childGroups())
     {
         //proxy variables (for interpolation)
-        std::string proxyName;
-        gis::Crit3DRasterGrid proxyGrid;
+        QString proxyName;
+        std::string proxyGridName;
         std::string proxyField;
         if (group.startsWith("Proxy"))
         {
-            proxyName = group.right(group.size()-6).toStdString();
+            proxyName = group.right(group.size()-6);
             settings->beginGroup(group);
-            /*int size = settings->beginReadArray()
+            int size = settings->beginReadArray(proxyName);
             for (int i = 0; i < size; ++i) {
                 settings->setArrayIndex(i);
-                proxyGrid = settings->value("raster").toString().toStdString();
+                proxyGridName = settings->value("raster").toString().toStdString();
                 proxyField = settings->value("field").toString().toStdString();
             }
             settings->endArray();
             settings->endGroup();
 
-            this->myInterpolationSettings.addProxy(proxyName, proxyGrid);*/
+            this->myInterpolationSettings.addProxy(proxyName.toStdString(), proxyGridName);
+            //this->meteoPointsDbHandler->ad
         }
     }
     return true;

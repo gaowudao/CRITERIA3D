@@ -89,7 +89,7 @@
         Project();
 
         bool initializeSettings(QString currentPath);
-        bool readParameters();
+        bool readSettings();
 
         void setCurrentDate(QDate myDate);
         void setCurrentHour(int myHour);
