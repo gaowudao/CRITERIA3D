@@ -669,7 +669,7 @@ float computeWinkler(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DD
 {
 
     float computeWinkler = 0;
-/*
+
     Crit3DQuality qualityCheck;
     unsigned int index;
     int count;
@@ -685,7 +685,7 @@ float computeWinkler(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DD
     {
         index = difference(meteoPoint->firstDateDailyVar, presentDate);
         checkData = false;
-        if ( index >= 0 && index < inputValues.size())
+        if ( index >= 0 && index < meteoPoint->nrObsDataDaysD)
         {
 
             // TO DO nella versione vb il check prevede anche l'immissione del parametro height
@@ -706,20 +706,6 @@ float computeWinkler(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DD
                 }
 
             }
-//            If Quality.checkFastValueDaily(Definitions.DAILY_TAVG, currentDailySeries(index), Tavg, height) = Quality.qualityGoodData Then
-//                checkData = True
-//            ElseIf Quality.checkFastValueDaily(Definitions.DAILY_TMIN, currentDailySeries(index), Tmin, height) = Quality.qualityGoodData And _
-//                    Quality.checkFastValueDaily(Definitions.DAILY_TMAX, currentDailySeries(index), Tmax, height) = Quality.qualityGoodData Then
-//                        Tavg = (Tmax + Tmin) / 2
-//                        checkData = True
-//            End If
-
-//            quality::type qualityTavg = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureAvg, Tavg);
-//            if (qualityTavg  == quality::accepted)
-//            {
-//                checkData = true;
-//            }
-//            else if ()
 
         }
         if (checkData)
@@ -744,7 +730,7 @@ float computeWinkler(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DD
             computeWinkler = NODATA;
         }
     }
-*/
+
     return computeWinkler;
 
 }
