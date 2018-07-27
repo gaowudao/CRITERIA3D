@@ -1722,7 +1722,7 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                 randomMatrixNormalDistribution[i][j] = myrandom::normalRandom(&gasDevIset,&gasDevGset);
            }
        }
-
+       weatherGenerator2D::spatialIterationAmounts(amountCorrelationMatrixSeason,randomMatrixNormalDistribution,lengthSeason[iSeason]*parametersModel.yearOfSimulation,occurrenceSeason,phatAlpha,phatBeta);
 
 
 
@@ -1994,7 +1994,7 @@ void weatherGenerator2D::precipitationAmountsOccurences(int idStation, double* p
     }
 }
 
-void weatherGenerator2D::spatialIterationAmounts(double ** amountsCorrelationMatrix , double** randomMatrix, int length, double** occurrences, double** phatAlpha, double** phatBeta)
+void weatherGenerator2D::spatialIterationAmounts(double ** amountsCorrelationMatrix , double** randomMatrix, int lengthSeries, double** occurrences, double** phatAlpha, double** phatBeta)
 {
     int val=5;
     int ii=0;
@@ -2005,6 +2005,8 @@ void weatherGenerator2D::spatialIterationAmounts(double ** amountsCorrelationMat
     double* correlationArray =(double*)calloc(nrStations*nrStations, sizeof(double));
     double* eigenvalues =(double*)calloc(nrStations, sizeof(double));
     double* eigenvectors =(double*)calloc(nrStations*nrStations, sizeof(double));
+    double** dummyMatrix3 = (double**)calloc(nrStations, sizeof(double*));
+    double** normRandom = (double**)calloc(nrStations, sizeof(double*));
 
     // initialization internal arrays
     for (int i=0;i<nrStations;i++)
@@ -2013,6 +2015,13 @@ void weatherGenerator2D::spatialIterationAmounts(double ** amountsCorrelationMat
         dummyMatrix2[i]= (double*)calloc(nrStations, sizeof(double));
 
     }
+
+    for (int i=0;i<nrStations;i++)
+    {
+        dummyMatrix3[i]= (double*)calloc(lengthSeries, sizeof(double));
+        normRandom[i]= (double*)calloc(lengthSeries, sizeof(double));
+    }
+
     while ((val>TOLERANCE_MULGETS) && (ii<MAX_ITERATION_MULGETS))
     {
         ii++;
@@ -2031,27 +2040,87 @@ void weatherGenerator2D::spatialIterationAmounts(double ** amountsCorrelationMat
         }
         //printf("inizio sub\n");
         eigenproblem::rs(nrStations,correlationArray,eigenvalues,true,eigenvectors);
-        // vedi riga 580 per continuare
+
+
+        for (int i=0;i<nrStations;i++)
+        {
+            if (eigenvalues[i] <= 0)
+            {
+                nrEigenvaluesLessThan0++;
+                eigenvalues[i] = 0.000001;
+            }
+        }
+        if (nrEigenvaluesLessThan0 > 0)
+        {
+            counter=0;
+            for (int i=0;i<nrStations;i++)
+            {
+                for (int j=0;j<nrStations;j++)
+                {
+                    dummyMatrix[j][i]= eigenvectors[counter];
+                    dummyMatrix2[i][j]= eigenvectors[counter]*eigenvalues[i];
+                    counter++;
+                }
+            }
+            matricial::matrixProduct(dummyMatrix,dummyMatrix2,nrStations,nrStations,nrStations,nrStations,amountsCorrelationMatrix);
+        }
+
+        for (int i=0;i<nrStations;i++)
+            for (int j=0;j<nrStations;j++) dummyMatrix[i][j] = amountsCorrelationMatrix[i][j];
+
+        matricial::choleskyDecompositionTriangularMatrix(dummyMatrix,nrStations,true);
+        //printf("Cholesky\n");
+
+        matricial::matrixProduct(dummyMatrix,randomMatrix,nrStations,nrStations,lengthSeries,nrStations,dummyMatrix3);
+        //printf("prodottoMatriciale\n");
+
+        for (int i=0;i<nrStations;i++)
+        {
+            // compute mean and standard deviation without NODATA check
+            double meanValue,stdDevValue;
+            meanValue = stdDevValue = 0;
+            for (int j=0;j<lengthSeries;j++)
+                meanValue += dummyMatrix3[i][j];
+            meanValue /= lengthSeries;
+            for (int j=0;j<lengthSeries;j++)
+                stdDevValue += (dummyMatrix3[i][j]- meanValue)*(dummyMatrix3[i][j]- meanValue);
+            stdDevValue /= (lengthSeries-1);
+            stdDevValue = sqrt(stdDevValue);
+
+            for (int j=0;j<lengthSeries;j++)
+            {
+                normRandom[i][j]= (dummyMatrix3[i][j]-meanValue)/stdDevValue;
+            }
+        }
+
+        for (int i=0;i<nrStations;i++)
+        {
+            for (int j=0;j<lengthSeries;j++)
+            {
+               normRandom[i][j] =statistics::ERFC(normRandom[i][j],0.0001);
+            }
+        }
+
+
 
     }
-
-
-
-
-
-
 
 
 
     // free memory
-        for (int i=0;i<nrStations;i++)
+    for (int i=0;i<nrStations;i++)
     {
         free(dummyMatrix[i]);
         free(dummyMatrix2[i]);
-
+        free(dummyMatrix3[i]);
+        free(normRandom[i]);
     }
+
+
         free(dummyMatrix);
         free(dummyMatrix2);
+        free(dummyMatrix3);
+        free(normRandom);
         free(correlationArray);
         free(eigenvalues);
         free(eigenvectors);
