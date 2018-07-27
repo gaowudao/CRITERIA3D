@@ -760,8 +760,66 @@ float computeLastDayBelowThreshold(std::vector<float> &inputValues, Crit3DDate f
 
 float computeHuglin(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate)
 {
-    // TO DO
-    return NODATA;
+    float computeHuglin = 0;
+
+    const int threshold = 10;                   // LC vanno lasciate qui queste costanti?
+    const float K = 1.04;                       //coeff. K di Huglin lunghezza giorno (=1.04 per ER)
+
+    Crit3DQuality qualityCheck;
+    unsigned int index;
+    int count;
+    bool checkData;
+    float Tavg;
+    float Tmax;
+
+
+    int numberOfDays = difference(firstDate, finishDate) +1;
+
+    Crit3DDate presentDate = firstDate;
+    for (int i = 0; i < numberOfDays; i++)
+    {
+        index = difference(meteoPoint->firstDateDailyVar, presentDate);
+        checkData = false;
+        if ( index >= 0 && index < meteoPoint->nrObsDataDaysD)
+        {
+
+            // TO DO nella versione vb il check prevede anche l'immissione del parametro height
+            quality::type qualityTavg = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureAvg, meteoPoint->obsDataD[index].tAvg);
+            quality::type qualityTmax = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMax, meteoPoint->obsDataD[index].tMax);
+            if (qualityTavg == quality::accepted && qualityTmax == quality::accepted)
+            {
+                Tavg = meteoPoint->obsDataD[index].tAvg;
+                checkData = true;
+            }
+            else
+            {
+                quality::type qualityTmin = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMin, meteoPoint->obsDataD[index].tMin);
+                if (qualityTmin  == quality::accepted && qualityTmax == quality::accepted)
+                {
+                    Tmax = meteoPoint->obsDataD[index].tMax;
+                    Tavg = (meteoPoint->obsDataD[index].tMin + Tmax)/2;
+                    checkData = true;
+                }
+
+            }
+
+        }
+        if (checkData)
+        {
+            computeHuglin = computeHuglin + K * ((Tavg - threshold) + (Tmax - threshold)) / 2;
+            count = count + 1;
+        }
+        presentDate = presentDate.addDays(1);
+    }
+    if (numberOfDays != 0)
+    {
+        if ( (count / numberOfDays * 100) < MINPERCENTAGE )
+        {
+            computeHuglin = NODATA;
+        }
+    }
+
+    return computeHuglin;
 }
 
 float computeFregoni(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate)
