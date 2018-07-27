@@ -824,8 +824,63 @@ float computeHuglin(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDa
 
 float computeFregoni(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate)
 {
-    // TO DO
-    return NODATA;
+    const int threshold = 10;
+    float computeFregoni = 0;
+
+    Crit3DQuality qualityCheck;
+    unsigned int index;
+    int count, myDaysBelow;
+    bool checkData;
+    float tMin, tMax;
+    float tRange, sumTRange;
+
+
+    int numberOfDays = difference(firstDate, finishDate) +1;
+
+    Crit3DDate presentDate = firstDate;
+    for (int i = 0; i < numberOfDays; i++)
+    {
+        index = difference(meteoPoint->firstDateDailyVar, presentDate);
+        checkData = false;
+        if ( index >= 0 && index < meteoPoint->nrObsDataDaysD)
+        {
+
+            // TO DO nella versione vb il check prevede anche l'immissione del parametro height
+            quality::type qualityTmin = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMin, meteoPoint->obsDataD[index].tMin);
+            quality::type qualityTmax = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMax, meteoPoint->obsDataD[index].tMax);
+            if (qualityTmin == quality::accepted && qualityTmax == quality::accepted)
+            {
+                tMin = meteoPoint->obsDataD[index].tMin;
+                tMax = meteoPoint->obsDataD[index].tMax;
+                tRange = tMax - tMin;
+                checkData = true;
+            }
+
+        }
+        if (checkData)
+        {
+            sumTRange = sumTRange + tRange;
+            if (tMin < threshold)
+            {
+                myDaysBelow = myDaysBelow + 1;
+            }
+            count = count + 1;
+        }
+        presentDate = presentDate.addDays(1);
+    }
+    if (numberOfDays != 0)
+    {
+        if ( (count / numberOfDays * 100) < MINPERCENTAGE )
+        {
+            computeFregoni = NODATA;
+        }
+        else
+        {
+            computeFregoni = sumTRange * myDaysBelow;
+        }
+    }
+
+    return computeFregoni;
 }
 
 float computeCorrectedSum(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate)
