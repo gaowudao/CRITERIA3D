@@ -44,15 +44,15 @@ Project::Project()
     startLocation.longitude = 11.35;
 }
 
-bool Project::readSettings()
+bool Project::readProxies()
 {
+    QString proxyName;
+    std::string proxyGridName;
+    std::string proxyField;
+    int proxyPos = 0;
     Q_FOREACH (QString group, settings->childGroups())
     {
         //proxy variables (for interpolation)
-        QString proxyName;
-        std::string proxyGridName;
-        std::string proxyField;
-        int proxyPos = 0;
         if (group.startsWith("proxy"))
         {
             proxyName = group.right(group.size()-6);
@@ -61,12 +61,19 @@ bool Project::readSettings()
             proxyField = settings->value("field").toString().toStdString();
             settings->endGroup();
 
-            this->myInterpolationSettings.addProxy(proxyName.toStdString(), proxyGridName);
+            myInterpolationSettings.addProxy(proxyName.toStdString(), proxyGridName);
             Crit3DProxyInterpolation proxyToAdd = myInterpolationSettings.getProxy(proxyPos);
-            this->meteoPointsDbHandler->addProxy(&proxyToAdd, proxyField);
+            if (meteoPointsDbHandler != NULL) meteoPointsDbHandler->addProxy(&proxyToAdd, proxyField);
             proxyPos++;
         }
     }
+
+    return true;
+}
+
+bool Project::readSettings()
+{
+    //todo
     return true;
 }
 
@@ -546,6 +553,9 @@ bool Project::loadMeteoPointsDB(QString dbName)
     closeMeteoPointsDB();
 
     meteoPointsDbHandler = new Crit3DMeteoPointsDbHandler(dbName);
+
+    readProxies();
+
     QList<Crit3DMeteoPoint> listMeteoPoints = meteoPointsDbHandler->getPropertiesFromDb();
 
     nrMeteoPoints = listMeteoPoints.size();

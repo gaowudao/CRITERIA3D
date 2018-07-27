@@ -588,12 +588,15 @@ void Crit3DProxyMeteoPoint::setProxyField(const std::string &value)
     proxyField = value;
 }
 
+Crit3DProxyMeteoPoint::Crit3DProxyMeteoPoint()
+{}
+
 Crit3DProxyMeteoPoint::Crit3DProxyMeteoPoint(Crit3DProxy* myProxy)
 {
-    this->name = myProxy->name;
-    this->isActive = myProxy->isActive;
-    this->gridName = myProxy->gridName;
-    this->grid = myProxy->grid;
+    name = myProxy->name;
+    isActive = myProxy->isActive;
+    gridName = myProxy->gridName;
+    grid = myProxy->grid;
     setProxyField("");
 }
 
@@ -601,5 +604,5 @@ void Crit3DMeteoPointsDbHandler::addProxy(Crit3DProxy* myProxy, std::string fiel
 {
     Crit3DProxyMeteoPoint* myProxyMeteoPoint = new Crit3DProxyMeteoPoint(myProxy);
     (*myProxyMeteoPoint).setProxyField(fieldName_);
-    //this->ProxyMeteoPoint.push_back(myProxyMeteoPoint);
+    ProxyMeteoPoint.push_back(myProxyMeteoPoint);
 }

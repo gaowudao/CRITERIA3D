@@ -90,6 +90,7 @@
 
         bool initializeSettings(QString currentPath);
         bool readSettings();
+        bool readProxies();
 
         void setCurrentDate(QDate myDate);
         void setCurrentHour(int myHour);
