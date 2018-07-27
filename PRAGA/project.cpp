@@ -52,21 +52,18 @@ bool Project::readSettings()
         QString proxyName;
         std::string proxyGridName;
         std::string proxyField;
-        if (group.startsWith("Proxy"))
+        int proxyPos = 0;
+        if (group.startsWith("proxy"))
         {
             proxyName = group.right(group.size()-6);
             settings->beginGroup(group);
-            int size = settings->beginReadArray(proxyName);
-            for (int i = 0; i < size; ++i) {
-                settings->setArrayIndex(i);
-                proxyGridName = settings->value("raster").toString().toStdString();
-                proxyField = settings->value("field").toString().toStdString();
-            }
-            settings->endArray();
+            proxyGridName = settings->value("raster").toString().toStdString();
+            proxyField = settings->value("field").toString().toStdString();
             settings->endGroup();
 
             this->myInterpolationSettings.addProxy(proxyName.toStdString(), proxyGridName);
-            //this->meteoPointsDbHandler->ad
+            this->meteoPointsDbHandler->addProxy(&(myInterpolationSettings.getProxy(proxyPos)), proxyField);
+            proxyPos++;
         }
     }
     return true;
@@ -110,7 +107,7 @@ bool Project::initializeSettings(QString currentPath)
     else
     {
         this->settings = new QSettings(settingsFileName, QSettings::IniFormat);
-        return true;
+        return readSettings();
     }
 
 
