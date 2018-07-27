@@ -883,10 +883,73 @@ float computeFregoni(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DD
     return computeFregoni;
 }
 
-float computeCorrectedSum(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate)
+float computeCorrectedSum(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate, float param)
 {
-    // TO DO
-    return NODATA;
+    float computeCorrectedSum;
+
+    Crit3DQuality qualityCheck;
+    unsigned int index;
+    int count;
+    bool checkData;
+    float tMin, tMax, tAvg;
+    float numTmp, numerator, denominator;
+
+
+    int numberOfDays = difference(firstDate, finishDate) +1;
+
+    Crit3DDate presentDate = firstDate;
+    for (int i = 0; i < numberOfDays; i++)
+    {
+        index = difference(meteoPoint->firstDateDailyVar, presentDate);
+        checkData = false;
+        if ( index >= 0 && index < meteoPoint->nrObsDataDaysD)
+        {
+
+            // TO DO nella versione vb il check prevede anche l'immissione del parametro height
+            quality::type qualityTmin = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMin, meteoPoint->obsDataD[index].tMin);
+            quality::type qualityTmax = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMax, meteoPoint->obsDataD[index].tMax);
+            if (qualityTmin == quality::accepted && qualityTmax == quality::accepted)
+            {
+                tMax = meteoPoint->obsDataD[index].tMax;
+                tMin = meteoPoint->obsDataD[index].tMin;
+                checkData = true;
+            }
+
+        }
+        if (checkData)
+        {
+            if (param < tMax)
+            {
+                if (param <= tMin)
+                {
+                    tAvg = (tMax + tMin) / 2;
+                    computeCorrectedSum = computeCorrectedSum + (tAvg - param);
+                }
+                else
+                {
+                    numTmp = tMax - param;
+                    numerator = numTmp * numTmp;
+                    denominator = 2 * (tMax - tMin);
+                    if (denominator != 0)
+                    {
+                        computeCorrectedSum = computeCorrectedSum + numerator/denominator;
+                    }
+                }
+            }
+            count = count + 1;
+        }
+        presentDate = presentDate.addDays(1);
+    }
+    if (numberOfDays != 0)
+    {
+        if ( (count / numberOfDays * 100) < MINPERCENTAGE )
+        {
+            computeCorrectedSum = NODATA;
+        }
+    }
+
+
+    return computeCorrectedSum;
 }
 
 
@@ -1752,7 +1815,7 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
             }
             case correctedDegreeDaysSum:
             {
-                return computeCorrectedSum(meteoPoint, firstDate, lastDate);
+                return computeCorrectedSum(meteoPoint, firstDate, lastDate, param1);
             }
             default:
             {
@@ -1858,7 +1921,7 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                 }
                 case correctedDegreeDaysSum:
                 {
-                    primary = computeCorrectedSum(meteoPoint, firstDate, lastDate);
+                    primary = computeCorrectedSum(meteoPoint, firstDate, lastDate, param1);
                     break;
                 }
                 default:
