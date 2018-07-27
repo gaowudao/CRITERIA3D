@@ -679,7 +679,6 @@ float computeWinkler(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DD
 
     int numberOfDays = difference(firstDate, finishDate) +1;
 
-    //For d = firstDate To finishDate
     Crit3DDate presentDate = firstDate;
     for (int i = 0; i < numberOfDays; i++)
     {
@@ -735,10 +734,28 @@ float computeWinkler(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DD
 
 }
 
-float computeLastDayBelowThreshold(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate, float param1)
+float computeLastDayBelowThreshold(std::vector<float> &inputValues, Crit3DDate firstDateDailyVar, Crit3DDate firstDate, Crit3DDate finishDate, float param1)
 {
-    // TO DO
-    return NODATA;
+    unsigned int index;
+    float lastDay = NODATA;
+
+    int numberOfDays = difference(firstDate, finishDate) +1;
+    Crit3DDate presentDate = finishDate;
+    for (int i = 0; i < numberOfDays; i++)
+    {
+        index = difference(firstDateDailyVar, presentDate);
+        if ( index >= 0 && index < inputValues.size())
+        {
+            if (inputValues.at(index) != NODATA && inputValues.at(index) < param1)
+            {
+                lastDay = getDoyFromDate(presentDate);
+            }
+        }
+        presentDate = presentDate.addDays(-1);
+    }
+
+
+    return lastDay;
 }
 
 float computeHuglin(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate)
@@ -1606,7 +1623,7 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
         {
             case lastDayBelowThreshold:
             {
-                return computeLastDayBelowThreshold(meteoPoint, firstDate, lastDate, param1);
+                return computeLastDayBelowThreshold(inputValues, meteoPoint->firstDateDailyVar ,firstDate, lastDate, param1);
             }
             case winkler:
             {
@@ -1708,7 +1725,7 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
             {
                 case lastDayBelowThreshold:
                 {
-                    primary = computeLastDayBelowThreshold(meteoPoint, firstDate, lastDate, param1);
+                    primary = computeLastDayBelowThreshold(inputValues, meteoPoint->firstDateDailyVar ,firstDate, lastDate, param1);
                     break;
                 }
                 case winkler:

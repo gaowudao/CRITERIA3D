@@ -112,7 +112,7 @@ float dailyEtpHargreaves(float Tmin, float Tmax, Crit3DDate date, double latitud
 
 float dewPoint(float relHumAir, float tempAir);
 
-float computeLastDayBelowThreshold(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate, float param1);
+float computeLastDayBelowThreshold(std::vector<float> &inputValues, Crit3DDate firstDateDailyVar, Crit3DDate firstDate, Crit3DDate finishDate, float param1);
 
 float computeWinkler(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate);
 
