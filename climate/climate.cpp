@@ -1878,6 +1878,7 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
 
         int nTotYears = 0;
         int nValidYears = 0;
+        valuesSecondElab.clear();
 
         for (int presentYear = firstYear; presentYear <= lastYear; presentYear++)
         {
@@ -1896,6 +1897,7 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
 
             nValues = 0;
             nValidValues = 0;
+            values.clear();
 
             switch(elab1)
             {
