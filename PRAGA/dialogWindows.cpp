@@ -977,7 +977,7 @@ void ComputationDialog::listSecondElab(const QString value)
     settings->beginGroup(group);
     int size = settings->beginReadArray(value);
 
-    if (size == 0)
+    if (size == 0 || firstYearEdit.text().toInt() == lastYearEdit.text().toInt())
     {
         secondElabList.clear();
         secondElabList.addItem("No elaboration available");
