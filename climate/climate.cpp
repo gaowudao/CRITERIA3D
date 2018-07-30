@@ -182,6 +182,24 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
     meteoPointTemp->point.z = meteoPoint->point.z;
     meteoPointTemp->firstDateDailyVar = meteoPoint->firstDateDailyVar;
 
+    meteoComputation elab1MeteoComp;
+    meteoComputation elab2MeteoComp;
+    try
+    {
+        elab1MeteoComp = MapMeteoComputation.at(clima->elab1().toStdString());
+    }
+    catch (const std::out_of_range& oor) {
+        elab1MeteoComp = noMeteoComp;
+      }
+
+    try
+    {
+        elab2MeteoComp = MapMeteoComputation.at(clima->elab2().toStdString());
+    }
+    catch (const std::out_of_range& oor) {
+        elab2MeteoComp = noMeteoComp;
+      }
+
     if (!isAnomaly || meteoPoint->anomaly != NODATA)
     {
 
@@ -189,7 +207,7 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
 
             if (loadData)
             {
-                dataLoaded = preElaboration(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPointTemp, isMeteoGrid, clima->variable(), clima->elab1(), startDate, endDate, outputValues, &percValue);
+                dataLoaded = preElaboration(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPointTemp, isMeteoGrid, clima->variable(), elab1MeteoComp, startDate, endDate, outputValues, &percValue);
             }
             else
             {
@@ -221,24 +239,6 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
                     *myError = "Missing elaboration";
                     return false;
                 }
-
-                meteoComputation elab1MeteoComp;
-                meteoComputation elab2MeteoComp;
-                try
-                {
-                    elab1MeteoComp = MapMeteoComputation.at(clima->elab1().toStdString());
-                }
-                catch (const std::out_of_range& oor) {
-                    elab1MeteoComp = noMeteoComp;
-                  }
-
-                try
-                {
-                    elab2MeteoComp = MapMeteoComputation.at(clima->elab2().toStdString());
-                }
-                catch (const std::out_of_range& oor) {
-                    elab2MeteoComp = noMeteoComp;
-                  }
 
                 result = computeStatistic(outputValues, meteoPointTemp, clima->yearStart(), clima->yearEnd(), startD, endD, clima->nYears(), elab1MeteoComp, clima->param1(), elab2MeteoComp, clima->param2());
 
@@ -1117,7 +1117,7 @@ bool elaborateDailyAggregatedVarFromHourly(meteoVariable myVar, Crit3DMeteoPoint
 
 }
 
-bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, QString elab1,
+bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, meteoComputation elab1,
     QDate startDate, QDate endDate, std::vector<float> &outputValues, float* percValue)
 {
 
@@ -1352,7 +1352,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
         default:
         {
 
-            switch(elab1.toInt())
+            switch(elab1)
             {
 
                 case huglin:
@@ -1450,10 +1450,10 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
 
     }
 
-    if (elab1 != "consecutiveDaysAbove" && elab1 != "consecutiveDaysBelow" && elab1 != "trend")
+    if (elab1 != consecutiveDaysAbove && elab1 != consecutiveDaysBelow && elab1 != trend)
     {
         // LC rimossa condizione And Not isCumulated
-        if ( variable == dailyPrecipitation && elab1 == "percentile")
+        if ( variable == dailyPrecipitation && elab1 == percentile)
         {
             extractValidValuesWithThreshold(outputValues, RainfallThreshold);
         }
