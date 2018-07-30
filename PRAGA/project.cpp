@@ -68,7 +68,7 @@ bool Project::readProxies()
         }
     }
 
-    return true;
+    return (proxyPos > 0);
 }
 
 bool Project::readSettings()
@@ -564,8 +564,6 @@ bool Project::loadMeteoPointsDB(QString dbName)
         return false;
     }
 
-    readProxies();
-
     meteoPoints = new Crit3DMeteoPoint[nrMeteoPoints];
 
     for (int i=0; i < nrMeteoPoints; i++)
@@ -579,8 +577,6 @@ bool Project::loadMeteoPointsDB(QString dbName)
             gis::getLatLonFromUtm(gisSettings, meteoPoints[i].point.utm.x, meteoPoints[i].point.utm.y,
                                     &meteoPoints[i].latitude, &meteoPoints[i].longitude);
         }
-
-        meteoPointsDbHandler->readPointProxyValues(&meteoPoints[i]);
     }
 
     listMeteoPoints.clear();
@@ -789,12 +785,25 @@ bool Project::loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate, b
         return true;
 }
 
+bool Project::readProxyValues()
+{
+    if (nrMeteoPoints == 0)
+        return false;
+
+    for (int i = 0; i < nrMeteoPoints; i++)
+        meteoPointsDbHandler->readPointProxyValues(&meteoPoints[i]);
+
+    return true;
+}
 
 bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime,
                             gis::Crit3DRasterGrid *myRaster)
 {    
+    if (readProxies())
+        if (! readProxyValues()) return false;
+
     // check quality and pass data to interpolation
-    if (!quality->checkAndPassDataToInterpolation(myVar, myFrequency, this->meteoPoints, this->nrMeteoPoints, myTime, &this->myInterpolationSettings))
+    if (!quality->checkAndPassDataToInterpolation(myVar, myFrequency, meteoPoints, nrMeteoPoints, myTime, &myInterpolationSettings))
     {
         errorString = "No data";
         return false;
@@ -817,17 +826,18 @@ bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, 
 }
 
 
-bool Project::interpolateGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime)
+bool Project::interpolateGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime,
+                              gis::Crit3DRasterGrid *myRaster)
 {
 
-    if (this->meteoGridDbHandler != NULL)
+    if (meteoGridDbHandler != NULL)
     {
-        if (!interpolateRaster(myVar, myFrequency, myTime, &(this->dataRaster)))
+        if (!interpolateRaster(myVar, myFrequency, myTime, myRaster))
         {
             return false;
         }
-        this->meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, myFrequency, myTime.date, myTime.getHour(), myTime.getMinutes(), &(this->DTM), this->dataRaster, this->grdAggrMethod);
-        this->meteoGridDbHandler->meteoGrid()->fillMeteoRaster();
+        meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, myFrequency, myTime.date, myTime.getHour(), myTime.getMinutes(), &(this->DTM), this->dataRaster, this->grdAggrMethod);
+        meteoGridDbHandler->meteoGrid()->fillMeteoRaster();
     }
     else
     {

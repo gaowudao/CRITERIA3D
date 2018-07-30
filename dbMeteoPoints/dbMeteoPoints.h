@@ -44,7 +44,7 @@ public:
 
         std::vector <Crit3DProxyMeteoPoint*> ProxyMeteoPoint;
         void addProxy(Crit3DProxy *myProxy, std::string fieldName_);
-        bool readPointProxyValues(Crit3DMeteoPoint* pointProp);
+        bool readPointProxyValues(Crit3DMeteoPoint* myPoint);
 
         bool writePointProperties(Crit3DMeteoPoint* pointProp);
         QList<Crit3DMeteoPoint> getPropertiesFromDb();

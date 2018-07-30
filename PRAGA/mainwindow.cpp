@@ -674,7 +674,7 @@ void MainWindow::interpolateRasterGUI()
     if (myProject.interpolateRaster(myVar, myProject.getFrequency(), myProject.getCurrentTime(), &(myProject.dataRaster)))
     {
         setColorScale(myVar, myProject.dataRaster.colorScale);
-        this->setCurrentRaster(&(myProject.dataRaster));
+        setCurrentRaster(&(myProject.dataRaster));
 
         ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myVar)));
     }
@@ -682,6 +682,17 @@ void MainWindow::interpolateRasterGUI()
         myProject.logError();
 }
 
+void MainWindow::interpolateGridGUI()
+{
+    if (myProject.interpolateGrid(myProject.getCurrentVariable(), myProject.getFrequency(), myProject.getCurrentTime(), &(myProject.dataRaster)))
+    {
+        setCurrentRaster(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid));
+        ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myProject.getCurrentVariable())));
+
+    }
+    else
+         myProject.logError();
+}
 
 void MainWindow::updateVariable()
 {
@@ -1171,23 +1182,12 @@ void MainWindow::on_actionInterpolation_to_DTM_triggered()
 
 void MainWindow::on_actionInterpolation_to_Grid_triggered()
 {
-
     formRunInfo myInfo;
     myInfo.start("Interpolation Grid...", 0);
 
-    if (myProject.interpolateGrid(myProject.getCurrentVariable(), myProject.getFrequency(), myProject.getCurrentTime()))
-    {
-        this->setCurrentRaster(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid));
-        ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myProject.getCurrentVariable())));
-
-    }
-    else
-    {
-         myProject.logError();
-    }
+    interpolateGridGUI();
 
     myInfo.close();
-
 }
 
 void MainWindow::on_actionSave_meteo_grid_triggered()
