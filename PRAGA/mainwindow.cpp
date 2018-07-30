@@ -1457,7 +1457,14 @@ void MainWindow::showElabResult(bool updateColorSCale)
     }
     std::string var = MapDailyMeteoVarToString.at(myProject.clima->variable());
     elabVariable->setText(QString::fromStdString(var));
-    elabPeriod->setText(myProject.clima->genericPeriodDateStart().toString() + "-" + myProject.clima->genericPeriodDateEnd().toString());
+    QString startDay = QString::number(myProject.clima->genericPeriodDateStart().day());
+    QString startMonth = QString::number(myProject.clima->genericPeriodDateStart().month());
+    QString endDay = QString::number(myProject.clima->genericPeriodDateEnd().day());
+    QString endMonth = QString::number(myProject.clima->genericPeriodDateEnd().month());
+
+    QString startYear = QString::number(myProject.clima->yearStart());
+    QString endYear = QString::number(myProject.clima->yearEnd());
+    elabPeriod->setText(startDay + "/" + startMonth + "-" + endDay + "/" + endMonth + " " + startYear + "÷" + endYear);
 
     elabType1->setReadOnly(true);
     elabType2->setReadOnly(true);
