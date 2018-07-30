@@ -1687,11 +1687,13 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
        double** phatAlpha = (double **)calloc(nrStations, sizeof(double*));
        double** phatBeta = (double **)calloc(nrStations, sizeof(double*));
        double** randomMatrixNormalDistribution = (double **)calloc(nrStations, sizeof(double*));
+       double** simulatedPrecipitationAmounts = (double **)calloc(nrStations, sizeof(double*));
        for (int i=0;i<nrStations;i++)
        {
             phatAlpha[i] = (double *)calloc(lengthSeason[iSeason]*parametersModel.yearOfSimulation, sizeof(double));
             phatBeta[i] = (double *)calloc(lengthSeason[iSeason]*parametersModel.yearOfSimulation, sizeof(double));
             randomMatrixNormalDistribution[i] = (double *)calloc(lengthSeason[iSeason]*parametersModel.yearOfSimulation, sizeof(double));
+            simulatedPrecipitationAmounts[i] = (double *)calloc(lengthSeason[iSeason]*parametersModel.yearOfSimulation, sizeof(double));
        }
 
        for (int j=0;j<lengthSeason[iSeason]*parametersModel.yearOfSimulation;j++)
@@ -1722,7 +1724,7 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                 randomMatrixNormalDistribution[i][j] = myrandom::normalRandom(&gasDevIset,&gasDevGset);
            }
        }
-       weatherGenerator2D::spatialIterationAmounts(amountCorrelationMatrixSeason,randomMatrixNormalDistribution,lengthSeason[iSeason]*parametersModel.yearOfSimulation,occurrenceSeason,phatAlpha,phatBeta);
+       weatherGenerator2D::spatialIterationAmounts(amountCorrelationMatrixSeason,randomMatrixNormalDistribution,lengthSeason[iSeason]*parametersModel.yearOfSimulation,occurrenceSeason,phatAlpha,phatBeta,simulatedPrecipitationAmounts);
 
 
 
@@ -1734,12 +1736,14 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
            free(randomMatrixNormalDistribution[i]);
            free(occurrenceSeason[i]);
            free(moranRandom[i]);
+           free(simulatedPrecipitationAmounts[i]);
        }
        free(phatAlpha);
        free(phatBeta);
        free(randomMatrixNormalDistribution);
        free(occurrenceSeason);
        free(moranRandom);
+       free(simulatedPrecipitationAmounts);
     }
 
 
@@ -1994,7 +1998,7 @@ void weatherGenerator2D::precipitationAmountsOccurences(int idStation, double* p
     }
 }
 
-void weatherGenerator2D::spatialIterationAmounts(double ** amountsCorrelationMatrix , double** randomMatrix, int lengthSeries, double** occurrences, double** phatAlpha, double** phatBeta)
+void weatherGenerator2D::spatialIterationAmounts(double ** amountsCorrelationMatrix , double** randomMatrix, int lengthSeries, double** occurrences, double** phatAlpha, double** phatBeta, double** simulatedPrecipitationAmounts)
 {
     int val=5;
     int ii=0;
@@ -2007,6 +2011,7 @@ void weatherGenerator2D::spatialIterationAmounts(double ** amountsCorrelationMat
     double* eigenvectors =(double*)calloc(nrStations*nrStations, sizeof(double));
     double** dummyMatrix3 = (double**)calloc(nrStations, sizeof(double*));
     double** normRandom = (double**)calloc(nrStations, sizeof(double*));
+    double** uniformRandom = (double**)calloc(nrStations, sizeof(double*));
 
     // initialization internal arrays
     for (int i=0;i<nrStations;i++)
@@ -2020,6 +2025,7 @@ void weatherGenerator2D::spatialIterationAmounts(double ** amountsCorrelationMat
     {
         dummyMatrix3[i]= (double*)calloc(lengthSeries, sizeof(double));
         normRandom[i]= (double*)calloc(lengthSeries, sizeof(double));
+        uniformRandom[i]= (double*)calloc(lengthSeries, sizeof(double));
     }
 
     while ((val>TOLERANCE_MULGETS) && (ii<MAX_ITERATION_MULGETS))
@@ -2097,10 +2103,36 @@ void weatherGenerator2D::spatialIterationAmounts(double ** amountsCorrelationMat
         {
             for (int j=0;j<lengthSeries;j++)
             {
-               normRandom[i][j] =statistics::ERFC(normRandom[i][j],0.0001);
+               uniformRandom[i][j] =statistics::ERFC(normRandom[i][j],0.0001);
             }
         }
 
+        for (int i=0;i<nrStations;i++)
+        {
+            for (int j=0;j<lengthSeries;j++)
+            {
+                simulatedPrecipitationAmounts[i][j]=0.;
+            }
+        }
+
+        for (int i=0;i<nrStations;i++)
+        {
+            for (int j=0;j<lengthSeries;j++)
+            {
+                if (fabs(occurrences[i][j]-1) <= 0.00001)
+                {
+                    if (parametersModel.distributionPrecipitation == 1)
+                    {
+                        simulatedPrecipitationAmounts[i][j] =-log(1-uniformRandom[i][j])/phatAlpha[i][j]+ parametersModel.precipitationThreshold;
+                    }
+                    else
+                    {
+                        simulatedPrecipitationAmounts[i][j] =parametersModel.precipitationThreshold;
+                    }
+                }
+
+            }
+        }
 
 
     }
@@ -2114,6 +2146,7 @@ void weatherGenerator2D::spatialIterationAmounts(double ** amountsCorrelationMat
         free(dummyMatrix2[i]);
         free(dummyMatrix3[i]);
         free(normRandom[i]);
+        free(uniformRandom[i]);
     }
 
 
@@ -2121,6 +2154,7 @@ void weatherGenerator2D::spatialIterationAmounts(double ** amountsCorrelationMat
         free(dummyMatrix2);
         free(dummyMatrix3);
         free(normRandom);
+        free(uniformRandom);
         free(correlationArray);
         free(eigenvalues);
         free(eigenvectors);

@@ -109,7 +109,7 @@ private:
     void precipitationMultiDistributionAmounts();
     void initializeOccurrenceIndex();
     void initializePrecipitationOutputs(int lengthSeason[]);
-    void spatialIterationAmounts(double ** amountsCorrelationMatrix , double** randomMatrix, int length, double** occurrences, double** phatAlpha, double** phatBeta);
+    void spatialIterationAmounts(double ** amountsCorrelationMatrix , double** randomMatrix, int length, double** occurrences, double** phatAlpha, double** phatBeta,double** simulatedPrecipitationAmounts);
     void temperatureCompute();
 
 
