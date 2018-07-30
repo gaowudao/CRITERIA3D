@@ -545,7 +545,7 @@ QList<Crit3DMeteoPoint> Crit3DMeteoPointsDbHandler::getPropertiesFromDb()
     return meteoPointsList;
 }
 
-bool Crit3DMeteoPointsDbHandler::fillPointProperties(Crit3DMeteoPoint *myPoint)
+bool Crit3DMeteoPointsDbHandler::writePointProperties(Crit3DMeteoPoint *myPoint)
 {
 
     QSqlQuery qry(_db);
@@ -576,6 +576,41 @@ bool Crit3DMeteoPointsDbHandler::fillPointProperties(Crit3DMeteoPoint *myPoint)
     else
         return true;
 
+}
+
+bool Crit3DMeteoPointsDbHandler::readPointProxyValues(Crit3DMeteoPoint* myPoint)
+{
+    if (myPoint == NULL) return false;
+
+    QSqlQuery qry(_db);
+    QString proxyField;
+    std::string proxyGridName;
+
+    myPoint->proxyValues.resize(ProxyMeteoPoint.size());
+
+    for (int i=0; i<ProxyMeteoPoint.size(); i++)
+    {
+        proxyField = QString::fromStdString((*(ProxyMeteoPoint.at(i))).getProxyField());
+        proxyGridName = (*ProxyMeteoPoint.at(i)).gridName;
+
+        if (proxyField != "")
+        {
+            qry.prepare("SELECT " + proxyField + " WHERE id_point=" + QString::fromStdString((*myPoint).id));
+            if( !qry.exec() )
+                qDebug() << qry.lastError();
+            else if (qry.value(proxyField) != "")
+                myPoint->proxyValues.at(i) = qry.value(proxyField).toFloat();
+        }
+        else
+        {
+            if (proxyGridName == "")
+                return false;
+            else
+                myPoint->proxyValues.at(i) = NODATA; //getValueFromGrid();
+        }
+    }
+
+    return true;
 }
 
 std::string Crit3DProxyMeteoPoint::getProxyField() const

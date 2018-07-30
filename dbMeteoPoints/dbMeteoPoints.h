@@ -44,8 +44,9 @@ public:
 
         std::vector <Crit3DProxyMeteoPoint*> ProxyMeteoPoint;
         void addProxy(Crit3DProxy *myProxy, std::string fieldName_);
+        bool readPointProxyValues(Crit3DMeteoPoint* pointProp);
 
-        bool fillPointProperties(Crit3DMeteoPoint* pointProp);
+        bool writePointProperties(Crit3DMeteoPoint* pointProp);
         QList<Crit3DMeteoPoint> getPropertiesFromDb();
         bool getDailyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3DMeteoPoint *meteoPoint);
         std::vector<float> getDailyVar(std::string *myError, meteoVariable variable, Crit3DDate dateStart, Crit3DDate dateEnd, QDate* firstDateDB, Crit3DMeteoPoint *meteoPoint);

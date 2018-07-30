@@ -554,8 +554,6 @@ bool Project::loadMeteoPointsDB(QString dbName)
 
     meteoPointsDbHandler = new Crit3DMeteoPointsDbHandler(dbName);
 
-    readProxies();
-
     QList<Crit3DMeteoPoint> listMeteoPoints = meteoPointsDbHandler->getPropertiesFromDb();
 
     nrMeteoPoints = listMeteoPoints.size();
@@ -565,6 +563,8 @@ bool Project::loadMeteoPointsDB(QString dbName)
         closeMeteoPointsDB();
         return false;
     }
+
+    readProxies();
 
     meteoPoints = new Crit3DMeteoPoint[nrMeteoPoints];
 
@@ -576,9 +576,11 @@ bool Project::loadMeteoPointsDB(QString dbName)
         if ((meteoPoints[i].latitude == NODATA || meteoPoints[i].longitude == NODATA)
             && (meteoPoints[i].point.utm.x != NODATA && meteoPoints[i].point.utm.y != NODATA))
         {
-            gis::getLatLonFromUtm(this->gisSettings, meteoPoints[i].point.utm.x, meteoPoints[i].point.utm.y,
+            gis::getLatLonFromUtm(gisSettings, meteoPoints[i].point.utm.x, meteoPoints[i].point.utm.y,
                                     &meteoPoints[i].latitude, &meteoPoints[i].longitude);
         }
+
+        meteoPointsDbHandler->readPointProxyValues(&meteoPoints[i]);
     }
 
     listMeteoPoints.clear();
