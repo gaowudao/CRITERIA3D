@@ -672,7 +672,7 @@ float computeWinkler(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DD
 
     Crit3DQuality qualityCheck;
     unsigned int index;
-    int count;
+    int count = 0;
     bool checkData;
     float Tavg;
 
@@ -767,7 +767,7 @@ float computeHuglin(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDa
 
     Crit3DQuality qualityCheck;
     unsigned int index;
-    int count;
+    int count = 0;
     bool checkData;
     float Tavg;
     float Tmax;
@@ -829,7 +829,8 @@ float computeFregoni(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DD
 
     Crit3DQuality qualityCheck;
     unsigned int index;
-    int count, myDaysBelow;
+    int count = 0;
+    int myDaysBelow = 0;
     bool checkData;
     float tMin, tMax;
     float tRange, sumTRange;
@@ -889,7 +890,7 @@ float computeCorrectedSum(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Cr
 
     Crit3DQuality qualityCheck;
     unsigned int index;
-    int count;
+    int count = 0;
     bool checkData;
     float tMin, tMax, tAvg;
     float numTmp, numerator, denominator;
