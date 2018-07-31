@@ -90,6 +90,7 @@
 
         bool initializeSettings(QString currentPath);
         bool readSettings();
+        bool checkProxySetting(QString group, std::string* name, std::string* grdName, std::string* table, std::string* field);
         bool readProxies();
 
         void setCurrentDate(QDate myDate);

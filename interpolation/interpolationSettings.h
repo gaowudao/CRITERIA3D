@@ -21,8 +21,8 @@ private:
 
 public:
     Crit3DProxy();
-    Crit3DProxy(std::string name_, std::string gridName_);
 
+    void initialize();
     std::string getName() const;
     void setName(const std::string &value);
     bool getIsActive() const;
@@ -41,7 +41,6 @@ private:
 
 public:
     Crit3DProxyInterpolation();
-    Crit3DProxyInterpolation(std::string name_, std::string gridName_);
     void setRegressionR2(float myValue);
     float getRegressionR2();
     void setRegressionSlope(float myValue);

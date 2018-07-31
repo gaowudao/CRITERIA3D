@@ -139,44 +139,67 @@ bool loadProxyGrid(Crit3DProxy* myProxy)
     return (gis::readEsriGrid(gridName, myGrid, myError));
 }
 
+bool Project::checkProxySetting(QString group, std::string* name, std::string* grdName, std::string* table, std::string* field)
+{
+    std::string grid;
+
+    *name = group.right(group.size()-6).toStdString();
+    settings->beginGroup(group);
+    grid = settings->value("raster").toString().toStdString();
+    *grdName = path.toStdString() + grid;
+    *table = settings->value("table").toString().toStdString();
+    *field = settings->value("field").toString().toStdString();
+    settings->endGroup();
+
+    return (*name != "" && grid != "");
+}
+
 bool Project::readProxies()
 {
     std::string proxyName, proxyGridName, proxyTable, proxyField;
     int proxyNr = 0;
-    Crit3DProxy myProxy;
+    Crit3DProxy* myProxy;
+    bool isGridLoaded;
 
     myInterpolationSettings.initialize();
+    meteoPointsDbHandler->initializeProxy();
 
     Q_FOREACH (QString group, settings->childGroups())
     {
         //proxy variables (for interpolation)
         if (group.startsWith("proxy"))
         {
-            proxyName = group.right(group.size()-6).toStdString();
-            settings->beginGroup(group);
-            proxyGridName = this->path.toStdString() + settings->value("raster").toString().toStdString();
-            proxyTable = settings->value("table").toString().toStdString();
-            proxyField = settings->value("field").toString().toStdString();
-            settings->endGroup();
+            myProxy = new Crit3DProxy();
+            isGridLoaded = false;
 
-            myProxy.setName(proxyName);
-            myProxy.setGridName(proxyGridName);
-            myInterpolationSettings.addProxy(&myProxy);
+            if (! checkProxySetting(group, &proxyName, &proxyGridName, &proxyTable, &proxyField))
+            {
+                errorString = "error parsing proxy " + proxyName;
+                return false;
+            }
+
+            myProxy->setName(proxyName);
+            myProxy->setGridName(proxyGridName);
 
             if (ProxyVarNames.find(proxyName) != ProxyVarNames.end() && ProxyVarNames.at(proxyName) == height)
             {
                 if (DTM.isLoaded)
                 {
-                    myProxy.setGrid(&DTM);
-                    proxyNr++;
+                    isGridLoaded = true;
+                    myProxy->setGrid(&DTM);
                 }
             }
-            else if (loadProxyGrid(&myProxy))
-                if (meteoPointsDbHandler != NULL)
-                {
-                    meteoPointsDbHandler->addProxy(&myProxy, proxyTable, proxyField);
-                    proxyNr++;
-                }
+            else
+                isGridLoaded = loadProxyGrid(myProxy);
+
+            myInterpolationSettings.addProxy(myProxy);
+            if (isGridLoaded && meteoPointsDbHandler != NULL)
+            {
+                meteoPointsDbHandler->addProxy(myProxy, proxyTable, proxyField);
+                proxyNr++;
+            }
+            else
+                return false;
         }
     }
 
@@ -823,21 +846,36 @@ bool Project::readProxyValues()
 bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime,
                             gis::Crit3DRasterGrid *myRaster)
 {    
-    if (readProxies())
+    if (! DTM.isLoaded)
     {
+        errorString = "Load DTM before";
+        return false;
+    }
 
-        if (! readProxyValues()) return false;
+    if (nrMeteoPoints == 0)
+    {
+        errorString = "No points available";
+        return false;
+    }
+
+    if (! readProxies())
+    {
+        errorString = "Error loading interpolation proxies";
+        return false;
+    }
+
+    if (! readProxyValues())
+    {
+        errorString = "Error loading point proxy values";
+        return false;
     }
 
     // check quality and pass data to interpolation
     if (!quality->checkAndPassDataToInterpolation(myVar, myFrequency, meteoPoints, nrMeteoPoints, myTime, &myInterpolationSettings))
     {
-        errorString = "No data";
+        errorString = "No data available";
         return false;
     }
-
-    if (! checkInterpolationRaster(this->DTM, &errorString))
-        return false;
 
     myRaster->initializeGrid(this->DTM);
 
