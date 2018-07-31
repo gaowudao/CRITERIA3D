@@ -892,7 +892,6 @@ void ComputationDialog::changeDate(const QDate newDate)
 void ComputationDialog::displayPeriod(const QString value)
 {
 
-    qInfo() << "displayPeriod" ;
     if (value == "Daily")
     {
         periodDisplay.setVisible(true);
@@ -954,7 +953,6 @@ void ComputationDialog::displayPeriod(const QString value)
         genericPeriodEnd.setVisible(true);
         if (elaborationList.currentText().toStdString() == "huglin" || elaborationList.currentText().toStdString() == "winkler" || elaborationList.currentText().toStdString() == "fregoni")
         {
-            qInfo() << "displayPeriod huglin" ;
             nrYear.setText("0");
             nrYear.setEnabled(false);
         }
