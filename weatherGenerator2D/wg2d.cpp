@@ -107,6 +107,7 @@ contributors:
 #include "furtherMathFunctions.h"
 #include "statistics.h"
 #include "eispack.h"
+#include "gammaFunction.h"
 
 
 bool weatherGenerator2D::initializeData(int lengthDataSeries, int stations)
@@ -2012,12 +2013,17 @@ void weatherGenerator2D::spatialIterationAmounts(double ** amountsCorrelationMat
     double** dummyMatrix3 = (double**)calloc(nrStations, sizeof(double*));
     double** normRandom = (double**)calloc(nrStations, sizeof(double*));
     double** uniformRandom = (double**)calloc(nrStations, sizeof(double*));
+    double** correlationMatrixSimulatedData = (double**)calloc(nrStations, sizeof(double*));
+    double** initialAmountsCorrelationMatrix = (double**)calloc(nrStations, sizeof(double*));
+
 
     // initialization internal arrays
     for (int i=0;i<nrStations;i++)
     {
         dummyMatrix[i]= (double*)calloc(nrStations, sizeof(double));
         dummyMatrix2[i]= (double*)calloc(nrStations, sizeof(double));
+        correlationMatrixSimulatedData[i]= (double*)calloc(nrStations, sizeof(double));
+        initialAmountsCorrelationMatrix[i]= (double*)calloc(nrStations, sizeof(double));
 
     }
 
@@ -2027,6 +2033,14 @@ void weatherGenerator2D::spatialIterationAmounts(double ** amountsCorrelationMat
         normRandom[i]= (double*)calloc(lengthSeries, sizeof(double));
         uniformRandom[i]= (double*)calloc(lengthSeries, sizeof(double));
     }
+    for (int i=0;i<nrStations;i++)
+    {
+        for (int j=0;j<nrStations;j++)
+        {
+            initialAmountsCorrelationMatrix[i][j] = amountsCorrelationMatrix[i][j];
+        }
+    }
+
 
     while ((val>TOLERANCE_MULGETS) && (ii<MAX_ITERATION_MULGETS))
     {
@@ -2127,16 +2141,65 @@ void weatherGenerator2D::spatialIterationAmounts(double ** amountsCorrelationMat
                     }
                     else
                     {
-                        simulatedPrecipitationAmounts[i][j] =parametersModel.precipitationThreshold;
+                        if (uniformRandom[i][j] <= 0) uniformRandom[i][j] = 0.00001;
+                        simulatedPrecipitationAmounts[i][j] = weatherGenerator2D::inverseGammaFunction(uniformRandom[i][j],phatAlpha[i][j],phatBeta[i][j]) + parametersModel.precipitationThreshold;
+                        // check uniformRandom phatAlpha e phatBeta i dati non vanno bene
                     }
                 }
 
             }
         }
 
+        for (int i=0;i<nrStations;i++)
+        {
+            for (int j=0;j<nrStations;j++)
+            {
+                statistics::correlationsMatrix(nrStations,simulatedPrecipitationAmounts,lengthSeries,correlationMatrixSimulatedData);
+                // da verificare dovrebbe esserci correlazione solo per i dati diversi da zero
+            }
+        }
+
+        double maxValueCorrelation = NODATA;
+        for (int i=0;i<nrStations;i++)
+        {
+            for (int j=0;j<nrStations;j++)
+            {
+                maxValueCorrelation = maxValue(maxValueCorrelation,fabs(correlationMatrixSimulatedData[i][j]- amountsCorrelationMatrix[i][j]));
+            }
+        }
+        /*
+        if ii~=maxiter & val>Tolerance    % change value of random number matrix, only if computations are to continue
+                for i=1:nstations
+                    for j=1:nstations
+                       if i==j
+                           mat(i,j)=1;
+                       else
+                           mat(i,j)=mat(i,j)+kiter*(C(i,j)-K(i,j));
+                       end
+                    end
+                end
+            end
+
+        */
+        if (ii != MAX_ITERATION_MULGETS && maxValueCorrelation> TOLERANCE_MULGETS)
+        {
+            for (int i=0;i<nrStations;i++)
+            {
+                for (int j=0;j<nrStations;j++)
+                {
+                    if (i == j)
+                    {
+                        amountsCorrelationMatrix[i][j]=1.;
+                    }
+                    else
+                    {
+                        amountsCorrelationMatrix[i][j] += kiter*(initialAmountsCorrelationMatrix[i][j]-correlationMatrixSimulatedData[i][j]);
+                    }
+                }
+            }
+        }
 
     }
-
 
 
     // free memory
@@ -2147,6 +2210,8 @@ void weatherGenerator2D::spatialIterationAmounts(double ** amountsCorrelationMat
         free(dummyMatrix3[i]);
         free(normRandom[i]);
         free(uniformRandom[i]);
+        free(correlationMatrixSimulatedData[i]);
+        free(initialAmountsCorrelationMatrix[i]);
     }
 
 
@@ -2158,5 +2223,38 @@ void weatherGenerator2D::spatialIterationAmounts(double ** amountsCorrelationMat
         free(correlationArray);
         free(eigenvalues);
         free(eigenvectors);
+        free(correlationMatrixSimulatedData);
+        free(initialAmountsCorrelationMatrix);
 
+}
+
+
+double weatherGenerator2D::inverseGammaFunction(double valueProbability, double alpha, double beta)
+{
+    double x;
+    double y;
+    double gammaComplete;
+    double rightBound = 5000.0;
+    double leftBound = 0.0;
+    int counter = 0;
+    x = (rightBound + leftBound)*0.5;
+    y = gammaDistributions::incompleteGamma(alpha,beta*x,&gammaComplete);
+    while (fabs(valueProbability - y) > 0.00001 && counter < 100)
+    {
+
+        if (y > valueProbability)
+        {
+            rightBound = x;
+        }
+        else
+        {
+            leftBound = x;
+        }
+        x = (rightBound + leftBound)*0.5;
+        y = gammaDistributions::incompleteGamma(alpha,beta*x,&gammaComplete);
+        counter++;
+        //printf("valore %f valore Input %f prec %f contatore %d\n",y,valueProbability,x,counter);
+    }
+    x = (rightBound + leftBound)*0.5;
+    return x;
 }

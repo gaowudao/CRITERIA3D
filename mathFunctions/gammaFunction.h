@@ -1,6 +1,11 @@
 #ifndef GAMMAFUNCTION
 #define GAMMAFUNCTION
 
+
+#define ITERATIONSMAX 100
+#define EPSTHRESHOLD 3.0e-7
+#define FPMINIMUM 1.0e-30
+
     double Entire_Incomplete_Gamma_Function(double x, double nu);
     long double xEntire_Incomplete_Gamma_Function(long double x, long double nu);
 
@@ -18,6 +23,14 @@
 
     double Ln_Gamma_Function(double x);
     long double xLn_Gamma_Function(long double x);
+
+    namespace gammaDistributions
+    {
+        double gammaNaturalLogarithm(double value);
+        void gammaIncompleteP(double *gammaDevelopmentSeries, double alpha, double x, double *gammaLn);
+        void gammaIncompleteComplementaryFunction(double *gammaComplementaryFunction, double alpha, double x, double *gammaLn);
+        double incompleteGamma(double alpha, double x, double *gammaValue);
+    }
 
 
 #endif // GAMMAFUNCTION

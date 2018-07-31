@@ -110,6 +110,7 @@ private:
     void initializeOccurrenceIndex();
     void initializePrecipitationOutputs(int lengthSeason[]);
     void spatialIterationAmounts(double ** amountsCorrelationMatrix , double** randomMatrix, int length, double** occurrences, double** phatAlpha, double** phatBeta,double** simulatedPrecipitationAmounts);
+
     void temperatureCompute();
 
 
@@ -122,6 +123,7 @@ public:
     void initializeParameters(float thresholdPrecipitation, int simulatedYears, int distributionType, bool computePrecWG2D, bool computeTempWG2D);
     void setObservedData(float*** weatherArray, int** dateArray);
     void computeWeatherGenerator2D();
+    double inverseGammaFunction(double valueProbability, double alpha, double beta);
 
 };
 
