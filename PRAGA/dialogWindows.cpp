@@ -822,6 +822,15 @@ void ComputationDialog::done(int r)
                 QMessageBox::information(NULL, "Invalid year", "first year greater than last year");
                 return;
             }
+            if (elaborationList.currentText().toStdString() == "huglin" || elaborationList.currentText().toStdString() == "winkler" || elaborationList.currentText().toStdString() == "fregoni")
+            {
+                if (secondElabList.currentText().toStdString() == "None")
+                {
+                    QMessageBox::information(NULL, "Second Elaboration missing", elaborationList.currentText() + " requires second elaboration");
+                    return;
+                }
+
+            }
             if ( MapElabWithParam.find(elaborationList.currentText().toStdString()) != MapElabWithParam.end())
             {
                 if (elab1Parameter.text().isEmpty())
