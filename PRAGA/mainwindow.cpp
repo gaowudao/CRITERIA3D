@@ -214,14 +214,14 @@ void MainWindow::on_actionRectangle_Selection_triggered()
 }
 
 
-void MainWindow::on_actionLoadRaster_triggered()
+void MainWindow::on_actionLoadDEM_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open raster Grid"), "", tr("ESRI grid files (*.flt)"));
 
     if (fileName == "") return;
 
     qDebug() << "loading raster";
-    if (!myProject.loadRaster(fileName)) return;
+    if (!myProject.loadDEM(fileName)) return;
 
     this->setCurrentRaster(&(myProject.DTM));
     ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));

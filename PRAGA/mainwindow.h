@@ -36,7 +36,7 @@
 
     private slots:
 
-        void on_actionLoadRaster_triggered();
+        void on_actionLoadDEM_triggered();
 
         void on_actionNewMeteoPointsArkimet_triggered();
 

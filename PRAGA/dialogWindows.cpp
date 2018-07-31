@@ -66,7 +66,7 @@ meteoVariable chooseColorScale()
     myDialog.setWindowTitle("Choose color scale");
     myDialog.setFixedWidth(400);
 
-    QRadioButton DTM("Digital Terrain map m");
+    QRadioButton DTM("Elevation m");
     QRadioButton Temp("Temperature °C");
     QRadioButton Prec("Precipitation mm");
     QRadioButton RH("Relative humidity %");

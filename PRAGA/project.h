@@ -106,7 +106,7 @@
         void logError(QString myStr);
         void logError();
 
-        bool loadRaster(QString myFileName);
+        bool loadDEM(QString myFileName);
         bool downloadDailyDataArkimet(QStringList variables, bool prec0024, QDate startDate, QDate endDate, bool showInfo);
         bool downloadHourlyDataArkimet(QStringList variables, QDate startDate, QDate endDate, bool showInfo);
         bool loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo);

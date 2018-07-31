@@ -69,12 +69,14 @@ private:
 public:
     Crit3DInterpolationSettings();
 
+    void initialize();
+
     Crit3DProxyInterpolation getProxy(int pos);
     std::string getProxyName(int pos);
     int getProxyNr();
     bool getProxyActive(int pos);
     void setProxyActive(int pos, bool isActive_);
-    void addProxy(std::string myProxyName, std::string myGridName);
+    void addProxy(std::string myProxyName, std::string gridName_);
     float getProxyValue(int pos, std::vector <float> proxyValues);
 
     void setClimateParameters(Crit3DClimateParameters* myParameters);

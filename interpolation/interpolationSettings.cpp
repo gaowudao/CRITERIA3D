@@ -31,6 +31,11 @@
 
 Crit3DInterpolationSettings::Crit3DInterpolationSettings()
 {
+    initialize();
+}
+
+void Crit3DInterpolationSettings::initialize()
+{
     interpolationMethod = interpolationMethod::idw;
     useThermalInversion = true;
     useTAD = false;
@@ -43,6 +48,7 @@ Crit3DInterpolationSettings::Crit3DInterpolationSettings()
     currentDate = getNullDate();
     currentHour = NODATA;
     currentHourFraction = NODATA;
+    currentProxy.clear();
 }
 
 float Crit3DInterpolationSettings::getCurrentClimateLapseRate(meteoVariable myVar)
@@ -115,7 +121,7 @@ Crit3DProxy::Crit3DProxy()
 {
     name = "";
     isActive = true;
-    grid = NULL;
+    grid = new gis::Crit3DRasterGrid();
 }
 
 Crit3DProxy::Crit3DProxy(std::string name_, std::string gridName_)
@@ -123,7 +129,7 @@ Crit3DProxy::Crit3DProxy(std::string name_, std::string gridName_)
     name = name_;
     isActive = true;
     gridName = gridName_;
-    grid = NULL;
+    grid = new gis::Crit3DRasterGrid();
 }
 
 Crit3DProxyInterpolation::Crit3DProxyInterpolation() : Crit3DProxy::Crit3DProxy()
@@ -155,9 +161,9 @@ float Crit3DProxyInterpolation::getValue(int pos, std::vector <float> proxyValue
         return NODATA;
 }
 
-void Crit3DInterpolationSettings::addProxy(std::string myProxyName, std::string myGridName)
+void Crit3DInterpolationSettings::addProxy(std::string myProxyName, std::string gridName_)
 {
-    Crit3DProxyInterpolation myProxy(myProxyName, myGridName);
+    Crit3DProxyInterpolation myProxy(myProxyName, gridName_);
     currentProxy.push_back(myProxy);
 }
 
