@@ -151,7 +151,7 @@ bool Project::checkProxySetting(QString group, std::string* name, std::string* g
     *field = settings->value("field").toString().toStdString();
     settings->endGroup();
 
-    return (*name != "" && grid != "");
+    return (*name != "" && (grid != "" || (*table != "" && *field != "")));
 }
 
 bool Project::readProxies()
@@ -198,7 +198,8 @@ bool Project::readProxies()
                 meteoPointsDbHandler->addProxy(myProxy, proxyTable, proxyField);
                 proxyNr++;
             }
-            else
+
+            if ( !isGridLoaded && (proxyTable == "" || proxyField == ""))
                 return false;
         }
     }
