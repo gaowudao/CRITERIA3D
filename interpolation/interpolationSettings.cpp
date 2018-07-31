@@ -114,8 +114,8 @@ bool Crit3DInterpolationSettings::getUseDewPoint()
 int Crit3DInterpolationSettings::getProxyNr()
 { return (int)currentProxy.size();}
 
-Crit3DProxyInterpolation Crit3DInterpolationSettings::getProxy(int pos)
-{ return currentProxy.at(pos);}
+Crit3DProxyInterpolation* Crit3DInterpolationSettings::getProxy(int pos)
+{ return &(currentProxy.at(pos));}
 
 std::string Crit3DProxy::getName() const
 {

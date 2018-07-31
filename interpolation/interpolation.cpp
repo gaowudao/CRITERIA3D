@@ -304,9 +304,9 @@ bool regressionGeneric(int proxyPos, bool isZeroIntercept)
     float q, m, r2;
 
     regressionSimple(proxyPos, isZeroIntercept, &m, &q, &r2);
-    Crit3DProxyInterpolation myProxy = currentSettings.getProxy(proxyPos);
+    Crit3DProxyInterpolation* myProxy = currentSettings.getProxy(proxyPos);
 
-    if (myProxy.getProxyPragaName() == height)
+    if (myProxy->getProxyPragaName() == height)
     {
         inversionIsSignificative = false;
         lapseRateH1 = NODATA;
@@ -317,8 +317,8 @@ bool regressionGeneric(int proxyPos, bool isZeroIntercept)
     }
     else
     {
-        myProxy.setRegressionSlope(m);
-        myProxy.setRegressionR2(r2);
+        myProxy->setRegressionSlope(m);
+        myProxy->setRegressionR2(r2);
     }
 
     if (r2 >= currentSettings.getGenericPearsonThreshold())
@@ -896,7 +896,7 @@ void detrendPoints(meteoVariable myVar, int pos)
     float detrendValue, proxyValue;
     long myIndex;
     Crit3DInterpolationDataPoint* myPoint;
-    Crit3DProxyInterpolation myProxy;
+    Crit3DProxyInterpolation* myProxy;
 
     if (! getUseDetrendingVar(myVar)) return;
 
@@ -909,7 +909,7 @@ void detrendPoints(meteoVariable myVar, int pos)
 
         proxyValue = myPoint->getProxy(pos);
 
-        if (ProxyVarNames.at(myProxy.getName()) == height)
+        if (ProxyVarNames.at(myProxy->getName()) == height)
         {
             if (proxyValue != NODATA)
             {
@@ -926,8 +926,8 @@ void detrendPoints(meteoVariable myVar, int pos)
         else
         {
             if (proxyValue != NODATA)
-                if (myProxy.getRegressionR2() >= currentSettings.getGenericPearsonThreshold())
-                    detrendValue = proxyValue * myProxy.getRegressionSlope();
+                if (myProxy->getRegressionR2() >= currentSettings.getGenericPearsonThreshold())
+                    detrendValue = proxyValue * myProxy->getRegressionSlope();
         }
 
         myPoint->value -= detrendValue;
@@ -941,15 +941,15 @@ float retrend(meteoVariable myVar, float myZ, vector <float> myProxyValues)
 
     float retrendValue = 0.;
     float myProxyValue;
-    Crit3DProxyInterpolation myProxy;
+    Crit3DProxyInterpolation* myProxy;
 
     for (int pos=0; pos<currentSettings.getProxyNr(); pos++)
     {
         myProxy = currentSettings.getProxy(pos);
 
-        if (myProxy.getIsActive())
+        if (myProxy->getIsActive())
         {
-            if (myProxy.getProxyPragaName() == height)
+            if (myProxy->getProxyPragaName() == height)
             {
                 if (myZ != NODATA)
                     if (currentSettings.getUseThermalInversion() && inversionIsSignificative)
@@ -966,7 +966,7 @@ float retrend(meteoVariable myVar, float myZ, vector <float> myProxyValues)
             {
                 myProxyValue = currentSettings.getProxyValue(pos, myProxyValues);
                 if (myProxyValue != NODATA)
-                    retrendValue += myProxyValue * (currentSettings.getProxy(pos)).getRegressionSlope();
+                    retrendValue += myProxyValue * (currentSettings.getProxy(pos))->getRegressionSlope();
             }
         }
     }
@@ -997,31 +997,31 @@ void detrending(meteoVariable myVar)
     if (! getUseDetrendingVar(myVar)) return;
 
     int nrProxy = currentSettings.getProxyNr();
-    Crit3DProxyInterpolation myProxy;
+    Crit3DProxyInterpolation* myProxy;
 
     for (int pos=0; pos<nrProxy; pos++)
     {
         myProxy = currentSettings.getProxy(pos);
 
-        if (myProxy.getProxyPragaName() == height)
+        if (myProxy->getProxyPragaName() == height)
         {
             if (regressionOrography(myVar, pos))
             {
-                myProxy.setIsActive(true);
+                myProxy->setIsActive(true);
                 detrendPoints(myVar, pos);
             }
             else
-                myProxy.setIsActive(false);
+                myProxy->setIsActive(false);
         }
         else
         {
             if (regressionGeneric(pos, false))
             {
-                myProxy.setIsActive(true);
+                myProxy->setIsActive(true);
                 detrendPoints(myVar, pos);
             }
             else
-                myProxy.setIsActive(false);
+                myProxy->setIsActive(false);
 
         }
     }
@@ -1103,7 +1103,7 @@ std::vector <float> getProxyValuesXY(gis::Crit3DUtmPoint myPoint)
     {
         myValues.at(i) = NODATA;
 
-        proxyGrid = currentSettings.getProxy(i).getGrid();
+        proxyGrid = currentSettings.getProxy(i)->getGrid();
         if (proxyGrid != NULL && proxyGrid->isLoaded)
         {
             myValue = gis::getValueFromXY(*proxyGrid, myPoint.x, myPoint.y);

@@ -80,7 +80,7 @@ public:
 
     void initialize();
 
-    Crit3DProxyInterpolation getProxy(int pos);
+    Crit3DProxyInterpolation* getProxy(int pos);
     std::string getProxyName(int pos);
     int getProxyNr();
     bool getProxyActive(int pos);
