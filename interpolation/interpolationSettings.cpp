@@ -201,10 +201,10 @@ float Crit3DProxyInterpolation::getValue(int pos, std::vector <float> proxyValue
         return NODATA;
 }
 
-void Crit3DInterpolationSettings::addProxy(std::string myProxyName, std::string gridName_)
+void Crit3DInterpolationSettings::addProxy(Crit3DProxy* myProxy)
 {
-    Crit3DProxyInterpolation myProxy(myProxyName, gridName_);
-    currentProxy.push_back(myProxy);
+    Crit3DProxyInterpolation myInterpolationProxy(myProxy->getName(), myProxy->getGridName());
+    currentProxy.push_back(myInterpolationProxy);
 }
 
 std::string Crit3DInterpolationSettings::getProxyName(int pos)

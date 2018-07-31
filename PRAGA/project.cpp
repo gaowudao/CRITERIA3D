@@ -141,10 +141,9 @@ bool loadProxyGrid(Crit3DProxy* myProxy)
 
 bool Project::readProxies()
 {
-    QString proxyName;
-    std::string proxyGridName;
-    std::string proxyTable, proxyField;
-    int proxyPos = 0;
+    std::string proxyName, proxyGridName, proxyTable, proxyField;
+    int proxyNr = 0;
+    Crit3DProxy myProxy;
 
     myInterpolationSettings.initialize();
 
@@ -153,31 +152,35 @@ bool Project::readProxies()
         //proxy variables (for interpolation)
         if (group.startsWith("proxy"))
         {
-            proxyName = group.right(group.size()-6);
+            proxyName = group.right(group.size()-6).toStdString();
             settings->beginGroup(group);
             proxyGridName = this->path.toStdString() + settings->value("raster").toString().toStdString();
             proxyTable = settings->value("table").toString().toStdString();
             proxyField = settings->value("field").toString().toStdString();
             settings->endGroup();
 
-            myInterpolationSettings.addProxy(proxyName.toStdString(), proxyGridName);
-            Crit3DProxyInterpolation proxyToAdd = myInterpolationSettings.getProxy(proxyPos);
+            myProxy.setName(proxyName);
+            myProxy.setGridName(proxyGridName);
+            myInterpolationSettings.addProxy(&myProxy);
 
-            if (ProxyVarNames.at(proxyToAdd.getName()) == height)
+            if (ProxyVarNames.find(proxyName) != ProxyVarNames.end() && ProxyVarNames.at(proxyName) == height)
             {
                 if (DTM.isLoaded)
-                    proxyToAdd.setGrid(&DTM);
+                {
+                    myProxy.setGrid(&DTM);
+                    proxyNr++;
+                }
             }
-            else if (loadProxyGrid(&proxyToAdd))
+            else if (loadProxyGrid(&myProxy))
                 if (meteoPointsDbHandler != NULL)
                 {
-                    meteoPointsDbHandler->addProxy(&proxyToAdd, proxyTable, proxyField);
-                    proxyPos++;
+                    meteoPointsDbHandler->addProxy(&myProxy, proxyTable, proxyField);
+                    proxyNr++;
                 }
         }
     }
 
-    return (proxyPos > 0);
+    return (proxyNr > 0);
 }
 
 bool Project::getMeteoPointSelected(int i)
