@@ -134,7 +134,9 @@ bool Project::loadDEM(QString myFileName)
 bool loadProxyGrid(Crit3DProxy* myProxy)
 {
     std::string* myError = new std::string();
-    return (gis::readEsriGrid(myProxy->gridName, myProxy->grid, myError));
+    std::string gridName = myProxy->getGridName();
+    gis::Crit3DRasterGrid* myGrid = myProxy->getGrid();
+    return (gis::readEsriGrid(gridName, myGrid, myError));
 }
 
 bool Project::readProxies()
@@ -143,7 +145,6 @@ bool Project::readProxies()
     std::string proxyGridName;
     std::string proxyTable, proxyField;
     int proxyPos = 0;
-    Crit3DProxy myProxy;
 
     myInterpolationSettings.initialize();
 
@@ -162,13 +163,12 @@ bool Project::readProxies()
             myInterpolationSettings.addProxy(proxyName.toStdString(), proxyGridName);
             Crit3DProxyInterpolation proxyToAdd = myInterpolationSettings.getProxy(proxyPos);
 
-//            if (ProxyVarNames.at(myProxy.name) == height)
-//            {
-//                if (DTM.isLoaded)
-//                    proxyToAdd
-//            }
-
-            if (loadProxyGrid(&proxyToAdd))
+            if (ProxyVarNames.at(proxyToAdd.getName()) == height)
+            {
+                if (DTM.isLoaded)
+                    proxyToAdd.setGrid(&DTM);
+            }
+            else if (loadProxyGrid(&proxyToAdd))
                 if (meteoPointsDbHandler != NULL)
                 {
                     meteoPointsDbHandler->addProxy(&proxyToAdd, proxyTable, proxyField);

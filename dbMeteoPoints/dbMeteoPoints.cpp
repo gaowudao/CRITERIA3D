@@ -514,7 +514,7 @@ bool Crit3DMeteoPointsDbHandler::readPointProxyValues(Crit3DMeteoPoint* myPoint)
         myPoint->proxyValues.at(i) = NODATA;
         proxyField = QString::fromStdString((*(ProxyMeteoPoint.at(i))).getProxyField());
         proxyTable = QString::fromStdString((*(ProxyMeteoPoint.at(i))).getProxyTable());
-        proxyGridName = (*ProxyMeteoPoint.at(i)).gridName;
+        proxyGridName = (*ProxyMeteoPoint.at(i)).getGridName();
 
         if (proxyField != "")
         {
@@ -645,10 +645,10 @@ Crit3DProxyMeteoPoint::Crit3DProxyMeteoPoint()
 
 Crit3DProxyMeteoPoint::Crit3DProxyMeteoPoint(Crit3DProxy* myProxy)
 {
-    name = myProxy->name;
-    isActive = myProxy->isActive;
-    gridName = myProxy->gridName;
-    grid = myProxy->grid;
+    setName(myProxy->getName());
+    setIsActive(myProxy->getIsActive());
+    setGridName(myProxy->getGridName());
+    setGrid(myProxy->getGrid());
     setProxyField("");
     setProxyTable("");
 }

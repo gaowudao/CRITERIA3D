@@ -14,15 +14,23 @@
 class Crit3DProxy
 {
 private:
+    std::string name;
+    bool isActive;
+    std::string gridName;
+    gis::Crit3DRasterGrid* grid;
 
 public:
     Crit3DProxy();
     Crit3DProxy(std::string name_, std::string gridName_);
 
-    std::string name;
-    bool isActive;
-    std::string gridName;
-    gis::Crit3DRasterGrid* grid;
+    std::string getName() const;
+    void setName(const std::string &value);
+    bool getIsActive() const;
+    void setIsActive(bool value);
+    gis::Crit3DRasterGrid *getGrid() const;
+    void setGrid(gis::Crit3DRasterGrid *value);
+    std::string getGridName() const;
+    void setGridName(const std::string &value);
 };
 
 class Crit3DProxyInterpolation : public Crit3DProxy

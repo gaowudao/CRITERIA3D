@@ -306,7 +306,7 @@ bool regressionGeneric(int proxyPos, bool isZeroIntercept)
     regressionSimple(proxyPos, isZeroIntercept, &m, &q, &r2);
 
     Crit3DProxyInterpolation myProxy = currentSettings.getProxy(proxyPos);
-    if (ProxyVarNames.at(myProxy.name) == height)
+    if (ProxyVarNames.at(myProxy.getName()) == height)
     {
         inversionIsSignificative = false;
         lapseRateH1 = NODATA;
@@ -909,7 +909,7 @@ void detrendPoints(meteoVariable myVar, int pos)
 
         proxyValue = myPoint->getProxy(pos);
 
-        if (ProxyVarNames.at(myProxy.name) == height)
+        if (ProxyVarNames.at(myProxy.getName()) == height)
         {
             if (proxyValue != NODATA)
             {
