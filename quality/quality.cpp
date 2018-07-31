@@ -421,8 +421,6 @@ bool passDataToInterpolation(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints)
 {
     int myCounter = 0;
     float myValue, myX, myY, myZ;
-    std::vector <float> myProxyValues;
-
     clearInterpolationPoints();
 
     for (int i = 0; i < nrMeteoPoints; i++)
@@ -434,7 +432,7 @@ bool passDataToInterpolation(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints)
             myY = float(meteoPoints[i].point.utm.y);
             myZ = float(meteoPoints[i].point.z);
 
-            if (addInterpolationPoint(i, myValue, myX, myY, myZ, myProxyValues))
+            if (addInterpolationPoint(i, myValue, myX, myY, myZ, meteoPoints[i].proxyValues))
                 myCounter++;
         }
     }
