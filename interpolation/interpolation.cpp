@@ -304,9 +304,9 @@ bool regressionGeneric(int proxyPos, bool isZeroIntercept)
     float q, m, r2;
 
     regressionSimple(proxyPos, isZeroIntercept, &m, &q, &r2);
-
     Crit3DProxyInterpolation myProxy = currentSettings.getProxy(proxyPos);
-    if (ProxyVarNames.at(myProxy.getName()) == height)
+
+    if (myProxy.getProxyPragaName() == height)
     {
         inversionIsSignificative = false;
         lapseRateH1 = NODATA;
@@ -941,12 +941,15 @@ float retrend(meteoVariable myVar, float myZ, vector <float> myProxyValues)
 
     float retrendValue = 0.;
     float myProxyValue;
+    Crit3DProxyInterpolation myProxy;
 
     for (int pos=0; pos<currentSettings.getProxyNr(); pos++)
     {
-        if (currentSettings.getProxyActive(pos))
+        myProxy = currentSettings.getProxy(pos);
+
+        if (myProxy.getIsActive())
         {
-            if (ProxyVarNames.at(currentSettings.getProxyName(pos)) == height)
+            if (myProxy.getProxyPragaName() == height)
             {
                 if (myZ != NODATA)
                     if (currentSettings.getUseThermalInversion() && inversionIsSignificative)
@@ -969,12 +972,6 @@ float retrend(meteoVariable myVar, float myZ, vector <float> myProxyValues)
     }
 
     return retrendValue;
-}
-
-void deactiveAllDetrendingVar()
-{
-    for (int pos=0; pos<currentSettings.getProxyNr(); pos++)
-        currentSettings.setProxyActive(pos, false);
 }
 
 bool regressionOrography(meteoVariable myVar, int pos)
@@ -1000,35 +997,32 @@ void detrending(meteoVariable myVar)
     if (! getUseDetrendingVar(myVar)) return;
 
     int nrProxy = currentSettings.getProxyNr();
-    TProxyVar myProxyName;
+    Crit3DProxyInterpolation myProxy;
 
     for (int pos=0; pos<nrProxy; pos++)
     {
-        if (currentSettings.getProxyActive(pos))
-        {
-            myProxyName = ProxyVarNames.at(currentSettings.getProxyName(pos));
+        myProxy = currentSettings.getProxy(pos);
 
-            if (myProxyName == height)
+        if (myProxy.getProxyPragaName() == height)
+        {
+            if (regressionOrography(myVar, pos))
             {
-                if (regressionOrography(myVar, pos))
-                {
-                    currentSettings.setProxyActive(pos, true);
-                    detrendPoints(myVar, pos);
-                }
-                else
-                    currentSettings.setProxyActive(pos, false);
+                myProxy.setIsActive(true);
+                detrendPoints(myVar, pos);
             }
             else
+                myProxy.setIsActive(false);
+        }
+        else
+        {
+            if (regressionGeneric(pos, false))
             {
-                if (regressionGeneric(myProxyName, false))
-                {
-                    currentSettings.setProxyActive(pos, true);
-                    detrendPoints(myVar, pos);
-                }
-                else
-                    currentSettings.setProxyActive(pos, false);
-
+                myProxy.setIsActive(true);
+                detrendPoints(myVar, pos);
             }
+            else
+                myProxy.setIsActive(false);
+
         }
     }
 }
@@ -1099,17 +1093,28 @@ float interpolate(meteoVariable myVar, float myX, float myY, float myZ, std::vec
 
 std::vector <float> getProxyValuesXY(gis::Crit3DUtmPoint myPoint)
 {
-    //todo
     std::vector <float> myValues;
+    float myValue;
+    gis::Crit3DRasterGrid* proxyGrid;
+
+    myValues.resize(currentSettings.getProxyNr());
+
+    for (int i=0; i<myValues.size(); i++)
+    {
+        myValues.at(i) = NODATA;
+
+        proxyGrid = currentSettings.getProxy(i).getGrid();
+        if (proxyGrid != NULL && proxyGrid->isLoaded)
+        {
+            myValue = gis::getValueFromXY(*proxyGrid, myPoint.x, myPoint.y);
+            if (myValue != proxyGrid->header->flag)
+                myValues.at(i) = myValue;
+        }
+    }
+
     return myValues;
 }
 
-std::vector <float> getProxyValuesMeteoPoint()
-{
-    //todo
-    std::vector <float> myValues;
-    return myValues;
-}
 
 bool interpolateGridDtm(gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGrid& myDTM, meteoVariable myVar)
 {

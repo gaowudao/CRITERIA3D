@@ -181,7 +181,7 @@ bool Project::readProxies()
             myProxy->setName(proxyName);
             myProxy->setGridName(proxyGridName);
 
-            if (ProxyVarNames.find(proxyName) != ProxyVarNames.end() && ProxyVarNames.at(proxyName) == height)
+            if (myProxy->getProxyPragaName() == height)
             {
                 if (DTM.isLoaded)
                 {
@@ -846,9 +846,15 @@ bool Project::readProxyValues()
 bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime,
                             gis::Crit3DRasterGrid *myRaster)
 {    
+    if (myVar == noMeteoVar)
+    {
+        errorString = "No variable selected";
+        return false;
+    }
+
     if (! DTM.isLoaded)
     {
-        errorString = "Load DTM before";
+        errorString = "No DEM loaded";
         return false;
     }
 
@@ -871,7 +877,7 @@ bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, 
     }
 
     // check quality and pass data to interpolation
-    if (!quality->checkAndPassDataToInterpolation(myVar, myFrequency, meteoPoints, nrMeteoPoints, myTime, &myInterpolationSettings))
+    if (!quality->checkAndPassDataToInterpolation(myVar, myFrequency, meteoPoints, nrMeteoPoints, myTime, &qualityInterpolationSettings))
     {
         errorString = "No data available";
         return false;

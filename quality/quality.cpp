@@ -193,7 +193,6 @@ quality::type Crit3DQuality::syntacticQualityControlSingleVal(meteoVariable myVa
 
 float findThreshold(meteoVariable myVar, float value, float stdDev, float nrStdDev, float stdDevZ, float minDistance);
 bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints);
-void setSpatialQualityControlSettings(Crit3DInterpolationSettings* mySettings, meteoVariable myVar);
 
 
 void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DInterpolationSettings *settings)
@@ -291,30 +290,6 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
         setInterpolationSettings(previousSettings);
     }
 }
-
-
-void setSpatialQualityControlSettings(Crit3DInterpolationSettings* mySettings, meteoVariable myVar)
-{
-    /*
-    mySettings->setUseOrogIndex(false);
-    mySettings->setUseAspect(false);
-    mySettings->setUseTAD(false);
-    mySettings->setUseDewPoint(false);
-    mySettings->setUseGenericProxy(false);
-    mySettings->setUseSeaDistance(false);
-
-    mySettings->setInterpolationMethod(interpolationMethod::idw);
-
-    if (   myVar == airTemperature
-        || myVar == dailyAirTemperatureMax
-        || myVar == dailyAirTemperatureMin
-        || myVar == dailyAirTemperatureAvg )
-    {
-        mySettings->setUseHeight(true);
-        mySettings->setUseThermalInversion(true);
-    }*/
-}
-
 
 bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints)
 {

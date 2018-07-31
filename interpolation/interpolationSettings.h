@@ -31,6 +31,8 @@ public:
     void setGrid(gis::Crit3DRasterGrid *value);
     std::string getGridName() const;
     void setGridName(const std::string &value);
+
+    TProxyVar getProxyPragaName();
 };
 
 class Crit3DProxyInterpolation : public Crit3DProxy

@@ -152,6 +152,14 @@ std::string Crit3DProxy::getGridName() const
     return gridName;
 }
 
+TProxyVar Crit3DProxy::getProxyPragaName()
+{
+    if (ProxyVarNames.find(name) == ProxyVarNames.end())
+        return TProxyVar::noProxy;
+    else
+        return ProxyVarNames.at(name);
+}
+
 void Crit3DProxy::setGridName(const std::string &value)
 {
     gridName = value;
@@ -209,12 +217,6 @@ void Crit3DInterpolationSettings::addProxy(Crit3DProxy* myProxy)
 
 std::string Crit3DInterpolationSettings::getProxyName(int pos)
 { return currentProxy.at(pos).getName();}
-
-void Crit3DInterpolationSettings::setProxyActive(int pos, bool isActive_)
-{ currentProxy.at(pos).setIsActive(isActive_);}
-
-bool Crit3DInterpolationSettings::getProxyActive(int pos)
-{ return currentProxy.at(pos).getIsActive();}
 
 float Crit3DInterpolationSettings::getProxyValue(int pos, std::vector <float> proxyValues)
 {
