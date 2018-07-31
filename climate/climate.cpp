@@ -788,6 +788,7 @@ float computeHuglin(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDa
             quality::type qualityTmax = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMax, meteoPoint->obsDataD[index].tMax);
             if (qualityTavg == quality::accepted && qualityTmax == quality::accepted)
             {
+                Tmax = meteoPoint->obsDataD[index].tMax;
                 Tavg = meteoPoint->obsDataD[index].tAvg;
                 checkData = true;
             }

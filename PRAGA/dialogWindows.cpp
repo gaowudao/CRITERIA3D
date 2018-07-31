@@ -892,6 +892,7 @@ void ComputationDialog::changeDate(const QDate newDate)
 void ComputationDialog::displayPeriod(const QString value)
 {
 
+    qInfo() << "displayPeriod" ;
     if (value == "Daily")
     {
         periodDisplay.setVisible(true);
@@ -951,6 +952,17 @@ void ComputationDialog::displayPeriod(const QString value)
         genericEndLabel.setVisible(true);
         genericPeriodStart.setVisible(true);
         genericPeriodEnd.setVisible(true);
+        if (elaborationList.currentText().toStdString() == "huglin" || elaborationList.currentText().toStdString() == "winkler" || elaborationList.currentText().toStdString() == "fregoni")
+        {
+            qInfo() << "displayPeriod huglin" ;
+            nrYear.setText("0");
+            nrYear.setEnabled(false);
+        }
+        else
+        {
+            nrYear.clear();
+            nrYear.setEnabled(true);
+        }
         nrYear.setVisible(true);
     }
 
@@ -975,7 +987,10 @@ void ComputationDialog::listElaboration(const QString value)
     }
     settings->endArray();
     settings->endGroup();
+
+    displayPeriod(periodTypeList.currentText());
     listSecondElab(elaborationList.currentText());
+
 }
 
 void ComputationDialog::listSecondElab(const QString value)
@@ -1013,6 +1028,7 @@ void ComputationDialog::listSecondElab(const QString value)
     {
         elab1Parameter.setReadOnly(false);
     }
+    displayPeriod(periodTypeList.currentText());
 
 }
 
