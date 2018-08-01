@@ -66,7 +66,7 @@ meteoVariable chooseColorScale()
     myDialog.setWindowTitle("Choose color scale");
     myDialog.setFixedWidth(400);
 
-    QRadioButton DTM("Digital Terrain map m");
+    QRadioButton DTM("Elevation m");
     QRadioButton Temp("Temperature °C");
     QRadioButton Prec("Precipitation mm");
     QRadioButton RH("Relative humidity %");
@@ -822,6 +822,15 @@ void ComputationDialog::done(int r)
                 QMessageBox::information(NULL, "Invalid year", "first year greater than last year");
                 return;
             }
+            if (elaborationList.currentText().toStdString() == "huglin" || elaborationList.currentText().toStdString() == "winkler" || elaborationList.currentText().toStdString() == "fregoni")
+            {
+                if (secondElabList.currentText().toStdString() == "None")
+                {
+                    QMessageBox::information(NULL, "Second Elaboration missing", elaborationList.currentText() + " requires second elaboration");
+                    return;
+                }
+
+            }
             if ( MapElabWithParam.find(elaborationList.currentText().toStdString()) != MapElabWithParam.end())
             {
                 if (elab1Parameter.text().isEmpty())
@@ -942,6 +951,39 @@ void ComputationDialog::displayPeriod(const QString value)
         genericEndLabel.setVisible(true);
         genericPeriodStart.setVisible(true);
         genericPeriodEnd.setVisible(true);
+        if (elaborationList.currentText().toStdString() == "huglin" || elaborationList.currentText().toStdString() == "fregoni")
+        {
+            QDate fixStart(firstYearEdit.text().toInt(),4,1);
+            QDate fixEnd(lastYearEdit.text().toInt(),9,30);
+            genericPeriodStart.setDate(fixStart);
+            genericPeriodStart.setDisplayFormat("dd/MM");
+            genericPeriodEnd.setDisplayFormat("dd/MM");
+            genericPeriodEnd.setDate(fixEnd);
+            nrYear.setText("0");
+            nrYear.setEnabled(false);
+        }
+        else if (elaborationList.currentText().toStdString() == "winkler")
+        {
+            QDate fixStart(firstYearEdit.text().toInt(),4,1);
+            QDate fixEnd(lastYearEdit.text().toInt(),10,31);
+            genericPeriodStart.setDate(fixStart);
+            genericPeriodStart.setDisplayFormat("dd/MM");
+            genericPeriodEnd.setDisplayFormat("dd/MM");
+            genericPeriodEnd.setDate(fixEnd);
+            nrYear.setText("0");
+            nrYear.setEnabled(false);
+        }
+        else
+        {
+            QDate defaultStart(firstYearEdit.text().toInt(),1,1);
+            QDate defaultEnd(lastYearEdit.text().toInt(),1,1);
+            genericPeriodStart.setDate(defaultStart);
+            genericPeriodStart.setDisplayFormat("dd/MM");
+            genericPeriodEnd.setDisplayFormat("dd/MM");
+            genericPeriodEnd.setDate(defaultEnd);
+            nrYear.clear();
+            nrYear.setEnabled(true);
+        }
         nrYear.setVisible(true);
     }
 
@@ -967,6 +1009,7 @@ void ComputationDialog::listElaboration(const QString value)
     settings->endArray();
     settings->endGroup();
     listSecondElab(elaborationList.currentText());
+
 }
 
 void ComputationDialog::listSecondElab(const QString value)
@@ -977,7 +1020,7 @@ void ComputationDialog::listSecondElab(const QString value)
     settings->beginGroup(group);
     int size = settings->beginReadArray(value);
 
-    if (size == 0)
+    if (size == 0 || firstYearEdit.text().toInt() == lastYearEdit.text().toInt())
     {
         secondElabList.clear();
         secondElabList.addItem("No elaboration available");
@@ -1004,6 +1047,16 @@ void ComputationDialog::listSecondElab(const QString value)
     {
         elab1Parameter.setReadOnly(false);
     }
+    if (elaborationList.currentText().toStdString() == "huglin" || elaborationList.currentText().toStdString() == "winkler" || elaborationList.currentText().toStdString() == "fregoni")
+    {
+        periodTypeList.setCurrentText("Generic");
+        periodTypeList.setEnabled(false);
+    }
+    else
+    {
+        periodTypeList.setEnabled(true);
+    }
+    displayPeriod(periodTypeList.currentText());
 
 }
 

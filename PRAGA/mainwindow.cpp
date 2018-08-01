@@ -214,14 +214,14 @@ void MainWindow::on_actionRectangle_Selection_triggered()
 }
 
 
-void MainWindow::on_actionLoadRaster_triggered()
+void MainWindow::on_actionLoadDEM_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open raster Grid"), "", tr("ESRI grid files (*.flt)"));
 
     if (fileName == "") return;
 
     qDebug() << "loading raster";
-    if (!myProject.loadRaster(fileName)) return;
+    if (!myProject.loadDEM(fileName)) return;
 
     this->setCurrentRaster(&(myProject.DTM));
     ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
@@ -674,7 +674,7 @@ void MainWindow::interpolateRasterGUI()
     if (myProject.interpolateRaster(myVar, myProject.getFrequency(), myProject.getCurrentTime(), &(myProject.dataRaster)))
     {
         setColorScale(myVar, myProject.dataRaster.colorScale);
-        this->setCurrentRaster(&(myProject.dataRaster));
+        setCurrentRaster(&(myProject.dataRaster));
 
         ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myVar)));
     }
@@ -682,6 +682,17 @@ void MainWindow::interpolateRasterGUI()
         myProject.logError();
 }
 
+void MainWindow::interpolateGridGUI()
+{
+    if (myProject.interpolateGrid(myProject.getCurrentVariable(), myProject.getFrequency(), myProject.getCurrentTime(), &(myProject.dataRaster)))
+    {
+        setCurrentRaster(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid));
+        ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myProject.getCurrentVariable())));
+
+    }
+    else
+         myProject.logError();
+}
 
 void MainWindow::updateVariable()
 {
@@ -1171,23 +1182,12 @@ void MainWindow::on_actionInterpolation_to_DTM_triggered()
 
 void MainWindow::on_actionInterpolation_to_Grid_triggered()
 {
-
     formRunInfo myInfo;
     myInfo.start("Interpolation Grid...", 0);
 
-    if (myProject.interpolateGrid(myProject.getCurrentVariable(), myProject.getFrequency(), myProject.getCurrentTime()))
-    {
-        this->setCurrentRaster(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid));
-        ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myProject.getCurrentVariable())));
-
-    }
-    else
-    {
-         myProject.logError();
-    }
+    interpolateGridGUI();
 
     myInfo.close();
-
 }
 
 void MainWindow::on_actionSave_meteo_grid_triggered()
@@ -1457,7 +1457,14 @@ void MainWindow::showElabResult(bool updateColorSCale)
     }
     std::string var = MapDailyMeteoVarToString.at(myProject.clima->variable());
     elabVariable->setText(QString::fromStdString(var));
-    elabPeriod->setText(myProject.clima->genericPeriodDateStart().toString() + "-" + myProject.clima->genericPeriodDateEnd().toString());
+    QString startDay = QString::number(myProject.clima->genericPeriodDateStart().day());
+    QString startMonth = QString::number(myProject.clima->genericPeriodDateStart().month());
+    QString endDay = QString::number(myProject.clima->genericPeriodDateEnd().day());
+    QString endMonth = QString::number(myProject.clima->genericPeriodDateEnd().month());
+
+    QString startYear = QString::number(myProject.clima->yearStart());
+    QString endYear = QString::number(myProject.clima->yearEnd());
+    elabPeriod->setText(startDay + "/" + startMonth + "-" + endDay + "/" + endMonth + " " + startYear + "÷" + endYear);
 
     elabType1->setReadOnly(true);
     elabType2->setReadOnly(true);

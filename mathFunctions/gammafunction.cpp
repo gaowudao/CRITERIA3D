@@ -1015,4 +1015,111 @@
        for (i = m - 1; i >= 0; i--) sum += term[i];
        return lngamma + sum;
     }
+    namespace gammaDistributions
+    {
 
+
+
+        double gammaNaturalLogarithm(double value)
+        //Returns the value ln[Γ(xx)] for xx > 0.
+        {
+        //Internal arithmetic will be done in double precision, a nicety that you can omit if five-figure
+        //accuracy is good enough.
+            double x,y,tmp,series;
+            static double coefficients[6]={76.18009172947146,-86.50532032941677,
+            24.01409824083091,-1.231739572450155,
+            0.1208650973866179e-2,-0.5395239384953e-5};
+            int j;
+            y=x=value;
+            tmp=x+5.5;
+            tmp -= (x+0.5)*log(tmp);
+            series=1.000000000190015;
+            for (j=0;j<=5;j++) series += coefficients[j]/++y;
+            return -tmp+log(2.5066282746310005*series/x);
+        }
+
+
+
+
+        void gammaIncompleteP(double *gammaDevelopmentSeries, double alpha, double x, double *gammaLn)
+        //Returns the incomplete gamma function P(a, x) evaluated by its series representation as gamser.
+        //Also returns ln Γ(a) as gln.
+        {
+            double gammaNaturalLogarithm(double value);
+
+
+            //void nrerror(char error_text[]);
+            int n;
+            double sum,del,ap;
+            *gammaLn=gammaNaturalLogarithm(alpha);
+            if (x <= 0.0)
+            {
+                //if (x < 0.0) printf("x less than 0 in routine gammaIncompleteP");
+                *gammaDevelopmentSeries=0.0;
+                return;
+            }
+            else
+            {
+                ap=alpha;
+                del=sum=1.0/alpha;
+                for (n=1;n<=ITERATIONSMAX;n++)
+                {
+                    ++ap;
+                    del *= x/ap;
+                    sum += del;
+                    if (fabs(del) < fabs(sum)*EPSTHRESHOLD)
+                    {
+                        *gammaDevelopmentSeries=sum*exp(-x+alpha*log(x)-(*gammaLn));
+                        return;
+                    }
+                }
+                //printf("a too large, ITERATIONSMAX too small in routine gammaIncompleteP");
+                return;
+            }
+        }
+
+        void gammaIncompleteComplementaryFunction(double *gammaComplementaryFunction, double alpha, double x, double *gammaLn)
+        //Returns the incomplete gamma function Q(a, x) evaluated by its continued fraction representation
+        //as gammcf. Also returns lnΓ(a) as gln.
+        {
+            double gammaNaturalLogarithm(double value);
+            //void nrerror(char error_text[]);
+            int i;
+            double an,b,c,d,del,h;
+            *gammaLn=gammaNaturalLogarithm(alpha);
+            b=x+1.0-alpha; //Set up for evaluating continued fractionby modified Lentz’s method (§5.2)with b0 = 0.
+            c=1.0/FPMINIMUM;
+            d=1.0/b;
+            h=d;
+            for (i=1;i<=ITERATIONSMAX;i++)
+            { //Iterate to convergence.
+                an = -i*(i-alpha);
+                b += 2.0;
+                d=an*d+b;
+                if (fabs(d) < FPMINIMUM) d=FPMINIMUM;
+                c=b+an/c;
+                if (fabs(c) < FPMINIMUM) c=FPMINIMUM;
+                d=1.0/d;
+                del=d*c;
+                h *= del;
+                if (fabs(del-1.0) < EPSTHRESHOLD) break;
+            }
+            //if (i > ITERATIONSMAX) printf("a too large, ITERATIONSMAX too small in gammaIncompleteComplementaryFunction");
+            *gammaComplementaryFunction=exp(-x+alpha*log(x)-(*gammaLn))*h; //Put factors in front.
+        }
+
+        double incompleteGamma(double alpha, double x, double *gammaValue)
+        {
+            double gammaIncompleteCF;
+            double gammaIncomplete;
+            if (x >( 1))
+            {
+                gammaIncompleteComplementaryFunction(&gammaIncompleteCF,alpha,x,gammaValue);
+                gammaIncomplete = 1 - gammaIncompleteCF;
+            }
+            else
+                gammaIncompleteP(&gammaIncomplete,alpha,x,gammaValue);
+
+            return gammaIncomplete;
+        }
+    }

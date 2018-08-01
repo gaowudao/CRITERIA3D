@@ -23,7 +23,7 @@ namespace interpolationMethod
     enum { idw, kriging, shepard };
 }
 
-enum TProxyVar { height, urbanFraction, orogIndex, seaDistance, aspect, slope };
+enum TProxyVar { height, urbanFraction, orogIndex, seaDistance, aspect, slope, noProxy };
 
 const std::map<std::string, TProxyVar> ProxyVarNames = {
   { "elevation", height },

@@ -36,7 +36,7 @@
 
     private slots:
 
-        void on_actionLoadRaster_triggered();
+        void on_actionLoadDEM_triggered();
 
         void on_actionNewMeteoPointsArkimet_triggered();
 
@@ -189,6 +189,7 @@
         bool loadMeteoGridDB(QString xmlName);
         void setCurrentRaster(gis::Crit3DRasterGrid *myRaster);
         void interpolateRasterGUI();
+        void interpolateGridGUI();
         void showElabResult(bool updateColorSCale);
 
     };

@@ -17,6 +17,7 @@
 class Crit3DProxyMeteoPoint : public Crit3DProxy
 {
 private:
+    std::string proxyTable;
     std::string proxyField;
 
 public:
@@ -24,11 +25,17 @@ public:
     Crit3DProxyMeteoPoint(Crit3DProxy* myProxy);
     std::string getProxyField() const;
     void setProxyField(const std::string &value);
+    std::string getProxyTable() const;
+    void setProxyTable(const std::string &value);
 };
 
 class Crit3DMeteoPointsDbHandler : public QObject
 {
     Q_OBJECT
+
+private:
+    std::vector <Crit3DProxyMeteoPoint*> ProxyMeteoPoint;
+
 public:
     explicit Crit3DMeteoPointsDbHandler(QString dbName);
         ~Crit3DMeteoPointsDbHandler();
@@ -42,10 +49,11 @@ public:
         QDateTime getLastDay(frequencyType frequency);
         QDateTime getFirstDay(frequencyType frequency);
 
-        std::vector <Crit3DProxyMeteoPoint*> ProxyMeteoPoint;
-        void addProxy(Crit3DProxy *myProxy, std::string fieldName_);
+        void initializeProxy();
+        void addProxy(Crit3DProxy *myProxy, std::string tableName_, std::string fieldName_);
+        bool readPointProxyValues(Crit3DMeteoPoint* myPoint);
 
-        bool fillPointProperties(Crit3DMeteoPoint* pointProp);
+        bool writePointProperties(Crit3DMeteoPoint* pointProp);
         QList<Crit3DMeteoPoint> getPropertiesFromDb();
         bool getDailyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3DMeteoPoint *meteoPoint);
         std::vector<float> getDailyVar(std::string *myError, meteoVariable variable, Crit3DDate dateStart, Crit3DDate dateEnd, QDate* firstDateDB, Crit3DMeteoPoint *meteoPoint);

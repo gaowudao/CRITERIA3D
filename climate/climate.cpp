@@ -179,8 +179,30 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
     std::vector<float> outputValues;
 
     meteoPointTemp->id = meteoPoint->id;
+    if (meteoPointTemp->id == "2297")
+    {
+        qInfo() << "2297"; // debug
+    }
     meteoPointTemp->point.z = meteoPoint->point.z;
     meteoPointTemp->firstDateDailyVar = meteoPoint->firstDateDailyVar;
+
+    meteoComputation elab1MeteoComp;
+    meteoComputation elab2MeteoComp;
+    try
+    {
+        elab1MeteoComp = MapMeteoComputation.at(clima->elab1().toStdString());
+    }
+    catch (const std::out_of_range& oor) {
+        elab1MeteoComp = noMeteoComp;
+      }
+
+    try
+    {
+        elab2MeteoComp = MapMeteoComputation.at(clima->elab2().toStdString());
+    }
+    catch (const std::out_of_range& oor) {
+        elab2MeteoComp = noMeteoComp;
+      }
 
     if (!isAnomaly || meteoPoint->anomaly != NODATA)
     {
@@ -189,7 +211,7 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
 
             if (loadData)
             {
-                dataLoaded = preElaboration(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPointTemp, isMeteoGrid, clima->variable(), clima->elab1(), startDate, endDate, outputValues, &percValue);
+                dataLoaded = preElaboration(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPointTemp, isMeteoGrid, clima->variable(), elab1MeteoComp, startDate, endDate, outputValues, &percValue);
             }
             else
             {
@@ -221,24 +243,6 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
                     *myError = "Missing elaboration";
                     return false;
                 }
-
-                meteoComputation elab1MeteoComp;
-                meteoComputation elab2MeteoComp;
-                try
-                {
-                    elab1MeteoComp = MapMeteoComputation.at(clima->elab1().toStdString());
-                }
-                catch (const std::out_of_range& oor) {
-                    elab1MeteoComp = noMeteoComp;
-                  }
-
-                try
-                {
-                    elab2MeteoComp = MapMeteoComputation.at(clima->elab2().toStdString());
-                }
-                catch (const std::out_of_range& oor) {
-                    elab2MeteoComp = noMeteoComp;
-                  }
 
                 result = computeStatistic(outputValues, meteoPointTemp, clima->yearStart(), clima->yearEnd(), startD, endD, clima->nYears(), elab1MeteoComp, clima->param1(), elab2MeteoComp, clima->param2());
 
@@ -672,14 +676,13 @@ float computeWinkler(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DD
 
     Crit3DQuality qualityCheck;
     unsigned int index;
-    int count;
+    int count = 0;
     bool checkData;
     float Tavg;
 
 
     int numberOfDays = difference(firstDate, finishDate) +1;
 
-    //For d = firstDate To finishDate
     Crit3DDate presentDate = firstDate;
     for (int i = 0; i < numberOfDays; i++)
     {
@@ -735,28 +738,224 @@ float computeWinkler(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DD
 
 }
 
-float computeLastDayBelowThreshold(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate, float param1)
+float computeLastDayBelowThreshold(std::vector<float> &inputValues, Crit3DDate firstDateDailyVar, Crit3DDate firstDate, Crit3DDate finishDate, float param1)
 {
-    // TO DO
-    return NODATA;
+    unsigned int index;
+    float lastDay = NODATA;
+
+    int numberOfDays = difference(firstDate, finishDate) +1;
+    Crit3DDate presentDate = finishDate;
+    for (int i = 0; i < numberOfDays; i++)
+    {
+        index = difference(firstDateDailyVar, presentDate);
+        if ( index >= 0 && index < inputValues.size())
+        {
+            if (inputValues.at(index) != NODATA && inputValues.at(index) < param1)
+            {
+                lastDay = getDoyFromDate(presentDate);
+            }
+        }
+        presentDate = presentDate.addDays(-1);
+    }
+
+
+    return lastDay;
 }
 
 float computeHuglin(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate)
 {
-    // TO DO
-    return NODATA;
+    float computeHuglin = 0;
+
+    const int threshold = 10;                   // LC vanno lasciate qui queste costanti?
+    const float K = 1.04;                       //coeff. K di Huglin lunghezza giorno (=1.04 per ER)
+
+    Crit3DQuality qualityCheck;
+    unsigned int index;
+    int count = 0;
+    bool checkData;
+    float Tavg;
+    float Tmax;
+
+
+    int numberOfDays = difference(firstDate, finishDate) +1;
+
+    Crit3DDate presentDate = firstDate;
+    for (int i = 0; i < numberOfDays; i++)
+    {
+        index = difference(meteoPoint->firstDateDailyVar, presentDate);
+        checkData = false;
+        if ( index >= 0 && index < meteoPoint->nrObsDataDaysD)
+        {
+
+            // TO DO nella versione vb il check prevede anche l'immissione del parametro height
+            quality::type qualityTavg = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureAvg, meteoPoint->obsDataD[index].tAvg);
+            quality::type qualityTmax = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMax, meteoPoint->obsDataD[index].tMax);
+            if (qualityTavg == quality::accepted && qualityTmax == quality::accepted)
+            {
+                Tmax = meteoPoint->obsDataD[index].tMax;
+                Tavg = meteoPoint->obsDataD[index].tAvg;
+                checkData = true;
+            }
+            else
+            {
+                quality::type qualityTmin = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMin, meteoPoint->obsDataD[index].tMin);
+                if (qualityTmin  == quality::accepted && qualityTmax == quality::accepted)
+                {
+                    Tmax = meteoPoint->obsDataD[index].tMax;
+                    Tavg = (meteoPoint->obsDataD[index].tMin + Tmax)/2;
+                    checkData = true;
+                }
+
+            }
+
+        }
+        if (checkData)
+        {
+            computeHuglin = computeHuglin + K * ((Tavg - threshold) + (Tmax - threshold)) / 2;
+            count = count + 1;
+        }
+        presentDate = presentDate.addDays(1);
+    }
+    if (numberOfDays != 0)
+    {
+        if ( (count / numberOfDays * 100) < MINPERCENTAGE )
+        {
+            computeHuglin = NODATA;
+        }
+    }
+
+    return computeHuglin;
 }
 
 float computeFregoni(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate)
 {
-    // TO DO
-    return NODATA;
+    const int threshold = 10;
+    float computeFregoni = 0;
+
+    Crit3DQuality qualityCheck;
+    unsigned int index;
+    int count = 0;
+    int myDaysBelow = 0;
+    bool checkData;
+    float tMin, tMax;
+    float tRange, sumTRange;
+
+
+    int numberOfDays = difference(firstDate, finishDate) +1;
+
+    Crit3DDate presentDate = firstDate;
+    for (int i = 0; i < numberOfDays; i++)
+    {
+        index = difference(meteoPoint->firstDateDailyVar, presentDate);
+        checkData = false;
+        if ( index >= 0 && index < meteoPoint->nrObsDataDaysD)
+        {
+
+            // TO DO nella versione vb il check prevede anche l'immissione del parametro height
+            quality::type qualityTmin = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMin, meteoPoint->obsDataD[index].tMin);
+            quality::type qualityTmax = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMax, meteoPoint->obsDataD[index].tMax);
+            if (qualityTmin == quality::accepted && qualityTmax == quality::accepted)
+            {
+                tMin = meteoPoint->obsDataD[index].tMin;
+                tMax = meteoPoint->obsDataD[index].tMax;
+                tRange = tMax - tMin;
+                checkData = true;
+            }
+
+        }
+        if (checkData)
+        {
+            sumTRange = sumTRange + tRange;
+            if (tMin < threshold)
+            {
+                myDaysBelow = myDaysBelow + 1;
+            }
+            count = count + 1;
+        }
+        presentDate = presentDate.addDays(1);
+    }
+    if (numberOfDays != 0)
+    {
+        if ( (count / numberOfDays * 100) < MINPERCENTAGE )
+        {
+            computeFregoni = NODATA;
+        }
+        else
+        {
+            computeFregoni = sumTRange * myDaysBelow;
+        }
+    }
+
+    return computeFregoni;
 }
 
-float computeCorrectedSum(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate)
+float computeCorrectedSum(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate, float param)
 {
-    // TO DO
-    return NODATA;
+    float computeCorrectedSum;
+
+    Crit3DQuality qualityCheck;
+    unsigned int index;
+    int count = 0;
+    bool checkData;
+    float tMin, tMax, tAvg;
+    float numTmp, numerator, denominator;
+
+
+    int numberOfDays = difference(firstDate, finishDate) +1;
+
+    Crit3DDate presentDate = firstDate;
+    for (int i = 0; i < numberOfDays; i++)
+    {
+        index = difference(meteoPoint->firstDateDailyVar, presentDate);
+        checkData = false;
+        if ( index >= 0 && index < meteoPoint->nrObsDataDaysD)
+        {
+
+            // TO DO nella versione vb il check prevede anche l'immissione del parametro height
+            quality::type qualityTmin = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMin, meteoPoint->obsDataD[index].tMin);
+            quality::type qualityTmax = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMax, meteoPoint->obsDataD[index].tMax);
+            if (qualityTmin == quality::accepted && qualityTmax == quality::accepted)
+            {
+                tMax = meteoPoint->obsDataD[index].tMax;
+                tMin = meteoPoint->obsDataD[index].tMin;
+                checkData = true;
+            }
+
+        }
+        if (checkData)
+        {
+            if (param < tMax)
+            {
+                if (param <= tMin)
+                {
+                    tAvg = (tMax + tMin) / 2;
+                    computeCorrectedSum = computeCorrectedSum + (tAvg - param);
+                }
+                else
+                {
+                    numTmp = tMax - param;
+                    numerator = numTmp * numTmp;
+                    denominator = 2 * (tMax - tMin);
+                    if (denominator != 0)
+                    {
+                        computeCorrectedSum = computeCorrectedSum + numerator/denominator;
+                    }
+                }
+            }
+            count = count + 1;
+        }
+        presentDate = presentDate.addDays(1);
+    }
+    if (numberOfDays != 0)
+    {
+        if ( (count / numberOfDays * 100) < MINPERCENTAGE )
+        {
+            computeCorrectedSum = NODATA;
+        }
+    }
+
+
+    return computeCorrectedSum;
 }
 
 
@@ -924,7 +1123,7 @@ bool elaborateDailyAggregatedVarFromHourly(meteoVariable myVar, Crit3DMeteoPoint
 
 }
 
-bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, QString elab1,
+bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, meteoComputation elab1,
     QDate startDate, QDate endDate, std::vector<float> &outputValues, float* percValue)
 {
 
@@ -1159,7 +1358,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
         default:
         {
 
-            switch(elab1.toInt())
+            switch(elab1)
             {
 
                 case huglin:
@@ -1257,10 +1456,10 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
 
     }
 
-    if (elab1 != "consecutiveDaysAbove" && elab1 != "consecutiveDaysBelow" && elab1 != "trend")
+    if (elab1 != consecutiveDaysAbove && elab1 != consecutiveDaysBelow && elab1 != trend)
     {
         // LC rimossa condizione And Not isCumulated
-        if ( variable == dailyPrecipitation && elab1 == "percentile")
+        if ( variable == dailyPrecipitation && elab1 == percentile)
         {
             extractValidValuesWithThreshold(outputValues, RainfallThreshold);
         }
@@ -1606,7 +1805,7 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
         {
             case lastDayBelowThreshold:
             {
-                return computeLastDayBelowThreshold(meteoPoint, firstDate, lastDate, param1);
+                return computeLastDayBelowThreshold(inputValues, meteoPoint->firstDateDailyVar ,firstDate, lastDate, param1);
             }
             case winkler:
             {
@@ -1622,7 +1821,7 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
             }
             case correctedDegreeDaysSum:
             {
-                return computeCorrectedSum(meteoPoint, firstDate, lastDate);
+                return computeCorrectedSum(meteoPoint, firstDate, lastDate, param1);
             }
             default:
             {
@@ -1685,6 +1884,7 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
 
         int nTotYears = 0;
         int nValidYears = 0;
+        valuesSecondElab.clear();
 
         for (int presentYear = firstYear; presentYear <= lastYear; presentYear++)
         {
@@ -1703,12 +1903,13 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
 
             nValues = 0;
             nValidValues = 0;
+            values.clear();
 
             switch(elab1)
             {
                 case lastDayBelowThreshold:
                 {
-                    primary = computeLastDayBelowThreshold(meteoPoint, firstDate, lastDate, param1);
+                    primary = computeLastDayBelowThreshold(inputValues, meteoPoint->firstDateDailyVar ,firstDate, lastDate, param1);
                     break;
                 }
                 case winkler:
@@ -1728,7 +1929,7 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                 }
                 case correctedDegreeDaysSum:
                 {
-                    primary = computeCorrectedSum(meteoPoint, firstDate, lastDate);
+                    primary = computeCorrectedSum(meteoPoint, firstDate, lastDate, param1);
                     break;
                 }
                 default:

@@ -1859,7 +1859,7 @@
      <x>0</x>
      <y>0</y>
      <width>1368</width>
-     <height>30</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="palette">
@@ -2293,7 +2293,7 @@
      <addaction name="actionMeteoPointsCSV"/>
      <addaction name="separator"/>
     </widget>
-    <addaction name="actionLoadRaster"/>
+    <addaction name="actionLoadDEM"/>
     <addaction name="separator"/>
     <addaction name="actionOpen_meteo_points_DB"/>
     <addaction name="menu_New_meteo_points_DB"/>
@@ -2411,9 +2411,9 @@
    <addaction name="menuCriteria3D"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionLoadRaster">
+  <action name="actionLoadDEM">
    <property name="text">
-    <string>&amp;Load raster...</string>
+    <string>&amp;Load DEM...</string>
    </property>
   </action>
   <action name="actionSetUTMzone">

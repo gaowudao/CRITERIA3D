@@ -90,6 +90,8 @@
 
         bool initializeSettings(QString currentPath);
         bool readSettings();
+        bool checkProxySetting(QString group, std::string* name, std::string* grdName, std::string* table, std::string* field);
+        bool readProxies();
 
         void setCurrentDate(QDate myDate);
         void setCurrentHour(int myHour);
@@ -105,7 +107,7 @@
         void logError(QString myStr);
         void logError();
 
-        bool loadRaster(QString myFileName);
+        bool loadDEM(QString myFileName);
         bool downloadDailyDataArkimet(QStringList variables, bool prec0024, QDate startDate, QDate endDate, bool showInfo);
         bool downloadHourlyDataArkimet(QStringList variables, QDate startDate, QDate endDate, bool showInfo);
         bool loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo);
@@ -127,9 +129,11 @@
 
         Crit3DInterpolationSettings myInterpolationSettings;
         Crit3DInterpolationSettings qualityInterpolationSettings;
+
+        bool readProxyValues();
         bool interpolateRaster(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster);
         bool interpolateRasterRadiation(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, std::string *myError);
-        bool interpolateGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime);
+        bool interpolateGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster);
         bool saveGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, bool showInfo);
 
         bool elaborationCheck(bool isMeteoGrid, bool isAnomaly);

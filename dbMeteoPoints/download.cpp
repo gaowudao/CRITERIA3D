@@ -181,7 +181,7 @@ void Download::downloadMetadata(QJsonObject obj)
     pointProp->point.utm.x = utmx;
     pointProp->point.utm.y = utmy;
 
-    _dbMeteo->fillPointProperties(pointProp);
+    _dbMeteo->writePointProperties(pointProp);
 }
 
 

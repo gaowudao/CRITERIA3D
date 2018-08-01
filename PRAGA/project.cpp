@@ -46,27 +46,7 @@ Project::Project()
 
 bool Project::readSettings()
 {
-    Q_FOREACH (QString group, settings->childGroups())
-    {
-        //proxy variables (for interpolation)
-        QString proxyName;
-        std::string proxyGridName;
-        std::string proxyField;
-        int proxyPos = 0;
-        if (group.startsWith("proxy"))
-        {
-            proxyName = group.right(group.size()-6);
-            settings->beginGroup(group);
-            proxyGridName = settings->value("raster").toString().toStdString();
-            proxyField = settings->value("field").toString().toStdString();
-            settings->endGroup();
-
-            this->myInterpolationSettings.addProxy(proxyName.toStdString(), proxyGridName);
-            Crit3DProxyInterpolation proxyToAdd = myInterpolationSettings.getProxy(proxyPos);
-            this->meteoPointsDbHandler->addProxy(&proxyToAdd, proxyField);
-            proxyPos++;
-        }
-    }
+    //todo
     return true;
 }
 
@@ -117,12 +97,12 @@ bool Project::initializeSettings(QString currentPath)
 
 
 /*!
- * \brief loadRaster
+ * \brief loadDEM
  * \param fileName the name of the file
  * \param raster a Crit3DRasterGrid pointer
  * \return true if file is ok, false otherwise
  */
-bool Project::loadRaster(QString myFileName)
+bool Project::loadDEM(QString myFileName)
 {
     std::string* myError = new std::string();
     std::string fileName = myFileName.left(myFileName.length()-4).toStdString();
@@ -151,6 +131,81 @@ bool Project::loadRaster(QString myFileName)
     return (true);
 }
 
+bool loadProxyGrid(Crit3DProxy* myProxy)
+{
+    std::string* myError = new std::string();
+    std::string gridName = myProxy->getGridName();
+    gis::Crit3DRasterGrid* myGrid = myProxy->getGrid();
+    return (gis::readEsriGrid(gridName, myGrid, myError));
+}
+
+bool Project::checkProxySetting(QString group, std::string* name, std::string* grdName, std::string* table, std::string* field)
+{
+    std::string grid;
+
+    *name = group.right(group.size()-6).toStdString();
+    settings->beginGroup(group);
+    grid = settings->value("raster").toString().toStdString();
+    *grdName = path.toStdString() + grid;
+    *table = settings->value("table").toString().toStdString();
+    *field = settings->value("field").toString().toStdString();
+    settings->endGroup();
+
+    return (*name != "" && (grid != "" || (*table != "" && *field != "")));
+}
+
+bool Project::readProxies()
+{
+    std::string proxyName, proxyGridName, proxyTable, proxyField;
+    int proxyNr = 0;
+    Crit3DProxy* myProxy;
+    bool isGridLoaded;
+
+    myInterpolationSettings.initialize();
+    meteoPointsDbHandler->initializeProxy();
+
+    Q_FOREACH (QString group, settings->childGroups())
+    {
+        //proxy variables (for interpolation)
+        if (group.startsWith("proxy"))
+        {
+            myProxy = new Crit3DProxy();
+            isGridLoaded = false;
+
+            if (! checkProxySetting(group, &proxyName, &proxyGridName, &proxyTable, &proxyField))
+            {
+                errorString = "error parsing proxy " + proxyName;
+                return false;
+            }
+
+            myProxy->setName(proxyName);
+            myProxy->setGridName(proxyGridName);
+
+            if (myProxy->getProxyPragaName() == height)
+            {
+                if (DTM.isLoaded)
+                {
+                    isGridLoaded = true;
+                    myProxy->setGrid(&DTM);
+                }
+            }
+            else
+                isGridLoaded = loadProxyGrid(myProxy);
+
+            myInterpolationSettings.addProxy(myProxy);
+            if (isGridLoaded && meteoPointsDbHandler != NULL)
+            {
+                meteoPointsDbHandler->addProxy(myProxy, proxyTable, proxyField);
+                proxyNr++;
+            }
+
+            if ( !isGridLoaded && (proxyTable == "" || proxyField == ""))
+                return false;
+        }
+    }
+
+    return (proxyNr > 0);
+}
 
 bool Project::getMeteoPointSelected(int i)
 {
@@ -546,6 +601,7 @@ bool Project::loadMeteoPointsDB(QString dbName)
     closeMeteoPointsDB();
 
     meteoPointsDbHandler = new Crit3DMeteoPointsDbHandler(dbName);
+
     QList<Crit3DMeteoPoint> listMeteoPoints = meteoPointsDbHandler->getPropertiesFromDb();
 
     nrMeteoPoints = listMeteoPoints.size();
@@ -566,7 +622,7 @@ bool Project::loadMeteoPointsDB(QString dbName)
         if ((meteoPoints[i].latitude == NODATA || meteoPoints[i].longitude == NODATA)
             && (meteoPoints[i].point.utm.x != NODATA && meteoPoints[i].point.utm.y != NODATA))
         {
-            gis::getLatLonFromUtm(this->gisSettings, meteoPoints[i].point.utm.x, meteoPoints[i].point.utm.y,
+            gis::getLatLonFromUtm(gisSettings, meteoPoints[i].point.utm.x, meteoPoints[i].point.utm.y,
                                     &meteoPoints[i].latitude, &meteoPoints[i].longitude);
         }
     }
@@ -777,19 +833,56 @@ bool Project::loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate, b
         return true;
 }
 
+bool Project::readProxyValues()
+{
+    if (nrMeteoPoints == 0)
+        return false;
+
+    for (int i = 0; i < nrMeteoPoints; i++)
+        meteoPointsDbHandler->readPointProxyValues(&meteoPoints[i]);
+
+    return true;
+}
 
 bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime,
                             gis::Crit3DRasterGrid *myRaster)
 {    
-    // check quality and pass data to interpolation
-    if (!quality->checkAndPassDataToInterpolation(myVar, myFrequency, this->meteoPoints, this->nrMeteoPoints, myTime, &this->myInterpolationSettings))
+    if (myVar == noMeteoVar)
     {
-        errorString = "No data";
+        errorString = "No variable selected";
         return false;
     }
 
-    if (! checkInterpolationRaster(this->DTM, &errorString))
+    if (! DTM.isLoaded)
+    {
+        errorString = "No DEM loaded";
         return false;
+    }
+
+    if (nrMeteoPoints == 0)
+    {
+        errorString = "No points available";
+        return false;
+    }
+
+    if (! readProxies())
+    {
+        errorString = "Error loading interpolation proxies";
+        return false;
+    }
+
+    if (! readProxyValues())
+    {
+        errorString = "Error loading point proxy values";
+        return false;
+    }
+
+    // check quality and pass data to interpolation
+    if (!quality->checkAndPassDataToInterpolation(myVar, myFrequency, meteoPoints, nrMeteoPoints, myTime, &qualityInterpolationSettings))
+    {
+        errorString = "No data available";
+        return false;
+    }
 
     myRaster->initializeGrid(this->DTM);
 
@@ -805,17 +898,18 @@ bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, 
 }
 
 
-bool Project::interpolateGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime)
+bool Project::interpolateGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime,
+                              gis::Crit3DRasterGrid *myRaster)
 {
 
-    if (this->meteoGridDbHandler != NULL)
+    if (meteoGridDbHandler != NULL)
     {
-        if (!interpolateRaster(myVar, myFrequency, myTime, &(this->dataRaster)))
+        if (!interpolateRaster(myVar, myFrequency, myTime, myRaster))
         {
             return false;
         }
-        this->meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, myFrequency, myTime.date, myTime.getHour(), myTime.getMinutes(), &(this->DTM), this->dataRaster, this->grdAggrMethod);
-        this->meteoGridDbHandler->meteoGrid()->fillMeteoRaster();
+        meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, myFrequency, myTime.date, myTime.getHour(), myTime.getMinutes(), &(this->DTM), this->dataRaster, this->grdAggrMethod);
+        meteoGridDbHandler->meteoGrid()->fillMeteoRaster();
     }
     else
     {

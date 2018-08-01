@@ -31,6 +31,11 @@
 
 Crit3DInterpolationSettings::Crit3DInterpolationSettings()
 {
+    initialize();
+}
+
+void Crit3DInterpolationSettings::initialize()
+{
     interpolationMethod = interpolationMethod::idw;
     useThermalInversion = true;
     useTAD = false;
@@ -43,6 +48,7 @@ Crit3DInterpolationSettings::Crit3DInterpolationSettings()
     currentDate = getNullDate();
     currentHour = NODATA;
     currentHourFraction = NODATA;
+    currentProxy.clear();
 }
 
 float Crit3DInterpolationSettings::getCurrentClimateLapseRate(meteoVariable myVar)
@@ -108,28 +114,72 @@ bool Crit3DInterpolationSettings::getUseDewPoint()
 int Crit3DInterpolationSettings::getProxyNr()
 { return (int)currentProxy.size();}
 
-Crit3DProxyInterpolation Crit3DInterpolationSettings::getProxy(int pos)
-{ return currentProxy.at(pos);}
+Crit3DProxyInterpolation* Crit3DInterpolationSettings::getProxy(int pos)
+{ return &(currentProxy.at(pos));}
+
+std::string Crit3DProxy::getName() const
+{
+    return name;
+}
+
+void Crit3DProxy::setName(const std::string &value)
+{
+    name = value;
+}
+
+bool Crit3DProxy::getIsActive() const
+{
+    return isActive;
+}
+
+void Crit3DProxy::setIsActive(bool value)
+{
+    isActive = value;
+}
+
+gis::Crit3DRasterGrid *Crit3DProxy::getGrid() const
+{
+    return grid;
+}
+
+void Crit3DProxy::setGrid(gis::Crit3DRasterGrid *value)
+{
+    grid = value;
+}
+
+std::string Crit3DProxy::getGridName() const
+{
+    return gridName;
+}
+
+TProxyVar Crit3DProxy::getProxyPragaName()
+{
+    if (ProxyVarNames.find(name) == ProxyVarNames.end())
+        return TProxyVar::noProxy;
+    else
+        return ProxyVarNames.at(name);
+}
+
+void Crit3DProxy::setGridName(const std::string &value)
+{
+    gridName = value;
+}
 
 Crit3DProxy::Crit3DProxy()
 {
     name = "";
-    isActive = true;
-    grid = NULL;
+    isActive = false;
+    grid = new gis::Crit3DRasterGrid();
 }
 
-Crit3DProxy::Crit3DProxy(std::string name_, std::string gridName_)
+void Crit3DProxy::initialize()
 {
-    name = name_;
-    isActive = true;
-    gridName = gridName_;
-    grid = NULL;
+    name = "";
+    isActive = false;
+    grid->emptyGrid();
 }
 
 Crit3DProxyInterpolation::Crit3DProxyInterpolation() : Crit3DProxy::Crit3DProxy()
-{}
-
-Crit3DProxyInterpolation::Crit3DProxyInterpolation(std::string name_, std::string gridName_) : Crit3DProxy( name_, gridName_)
 {
     regressionR2 = NODATA;
     regressionSlope = NODATA;
@@ -155,20 +205,18 @@ float Crit3DProxyInterpolation::getValue(int pos, std::vector <float> proxyValue
         return NODATA;
 }
 
-void Crit3DInterpolationSettings::addProxy(std::string myProxyName, std::string myGridName)
+void Crit3DInterpolationSettings::addProxy(Crit3DProxy* myProxy)
 {
-    Crit3DProxyInterpolation myProxy(myProxyName, myGridName);
-    currentProxy.push_back(myProxy);
+    Crit3DProxyInterpolation myInterpolationProxy;
+    myInterpolationProxy.setName(myProxy->getName());
+    myInterpolationProxy.setGridName(myProxy->getGridName());
+    myInterpolationProxy.setGrid(myProxy->getGrid());
+    myInterpolationProxy.setIsActive(true);
+    currentProxy.push_back(myInterpolationProxy);
 }
 
 std::string Crit3DInterpolationSettings::getProxyName(int pos)
-{ return currentProxy.at(pos).name;}
-
-void Crit3DInterpolationSettings::setProxyActive(int pos, bool isActive_)
-{ currentProxy.at(pos).isActive = isActive_;}
-
-bool Crit3DInterpolationSettings::getProxyActive(int pos)
-{ return currentProxy.at(pos).isActive;}
+{ return currentProxy.at(pos).getName();}
 
 float Crit3DInterpolationSettings::getProxyValue(int pos, std::vector <float> proxyValues)
 {
