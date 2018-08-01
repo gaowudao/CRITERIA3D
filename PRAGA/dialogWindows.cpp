@@ -953,11 +953,23 @@ void ComputationDialog::displayPeriod(const QString value)
         genericPeriodEnd.setVisible(true);
         if (elaborationList.currentText().toStdString() == "huglin" || elaborationList.currentText().toStdString() == "winkler" || elaborationList.currentText().toStdString() == "fregoni")
         {
+            QDate fixStart(firstYearEdit.text().toInt(),4,1);
+            QDate fixEnd(lastYearEdit.text().toInt(),9,30);
+            genericPeriodStart.setDate(fixStart);
+            genericPeriodStart.setDisplayFormat("dd/MM");
+            genericPeriodEnd.setDisplayFormat("dd/MM");
+            genericPeriodEnd.setDate(fixEnd);
             nrYear.setText("0");
             nrYear.setEnabled(false);
         }
         else
         {
+            QDate defaultStart(firstYearEdit.text().toInt(),1,1);
+            QDate defaultEnd(lastYearEdit.text().toInt(),1,1);
+            genericPeriodStart.setDate(defaultStart);
+            genericPeriodStart.setDisplayFormat("dd/MM");
+            genericPeriodEnd.setDisplayFormat("dd/MM");
+            genericPeriodEnd.setDate(defaultEnd);
             nrYear.clear();
             nrYear.setEnabled(true);
         }
@@ -985,8 +997,6 @@ void ComputationDialog::listElaboration(const QString value)
     }
     settings->endArray();
     settings->endGroup();
-
-    displayPeriod(periodTypeList.currentText());
     listSecondElab(elaborationList.currentText());
 
 }
@@ -1025,6 +1035,15 @@ void ComputationDialog::listSecondElab(const QString value)
     else
     {
         elab1Parameter.setReadOnly(false);
+    }
+    if (elaborationList.currentText().toStdString() == "huglin" || elaborationList.currentText().toStdString() == "winkler" || elaborationList.currentText().toStdString() == "fregoni")
+    {
+        periodTypeList.setCurrentText("Generic");
+        periodTypeList.setEnabled(false);
+    }
+    else
+    {
+        periodTypeList.setEnabled(true);
     }
     displayPeriod(periodTypeList.currentText());
 

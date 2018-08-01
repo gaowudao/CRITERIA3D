@@ -179,6 +179,10 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
     std::vector<float> outputValues;
 
     meteoPointTemp->id = meteoPoint->id;
+    if (meteoPointTemp->id == "2297")
+    {
+        qInfo() << "2297";
+    }
     meteoPointTemp->point.z = meteoPoint->point.z;
     meteoPointTemp->firstDateDailyVar = meteoPoint->firstDateDailyVar;
 
