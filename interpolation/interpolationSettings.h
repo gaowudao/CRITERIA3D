@@ -62,7 +62,6 @@ private:
     bool useDewPoint;
 
     bool isKrigingReady;
-    bool isRetrendActive;
     float genericPearsonThreshold;
     float maxHeightInversion;
 

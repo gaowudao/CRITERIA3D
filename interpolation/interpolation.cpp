@@ -48,25 +48,9 @@ float lapseRateH1;
 float lapseRateH0;
 float inversionLapseRate;
 bool inversionIsSignificative;
-
-gis::Crit3DRasterGrid orogIndexMap;
-gis::Crit3DRasterGrid distSeaMap;
-gis::Crit3DRasterGrid genericProxyMap;
-gis::Crit3DRasterGrid urbanFractionMap;
-
 float actualLapseRate;
 float actualR2;
 float actualR2Levels;
-float urbanCoefficient;
-float urbanR2;
-float orogIndexCoefficient;
-float orogIndexR2;
-float seaDistCoefficient;
-float seaDistR2;
-float aspectCoefficient;
-float aspectR2;
-float genericCoefficient;
-float genericR2;
 
 bool precipitationAllZero = false;
 
