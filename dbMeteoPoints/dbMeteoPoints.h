@@ -10,13 +10,27 @@
 #ifndef METEOPOINT_H
     #include "meteoPoint.h"
 #endif
+#ifndef INTERPOLATIONSETTINGS_H
+    #include "interpolationSettings.h"
+#endif
 
+class Crit3DProxyMeteoPoint : public Crit3DProxy
+{
+private:
+    std::string proxyField;
+
+public:
+    Crit3DProxyMeteoPoint();
+    Crit3DProxyMeteoPoint(Crit3DProxy* myProxy);
+    std::string getProxyField() const;
+    void setProxyField(const std::string &value);
+};
 
 class Crit3DMeteoPointsDbHandler : public QObject
 {
     Q_OBJECT
-    public:
-        explicit Crit3DMeteoPointsDbHandler(QString dbName);
+public:
+    explicit Crit3DMeteoPointsDbHandler(QString dbName);
         ~Crit3DMeteoPointsDbHandler();
         void dbManager();
         int getIdfromMeteoVar(meteoVariable meteoVar);
@@ -27,6 +41,10 @@ class Crit3DMeteoPointsDbHandler : public QObject
         void setDatasetsActive(QString active);
         QDateTime getLastDay(frequencyType frequency);
         QDateTime getFirstDay(frequencyType frequency);
+
+        std::vector <Crit3DProxyMeteoPoint*> ProxyMeteoPoint;
+        void addProxy(Crit3DProxy *myProxy, std::string fieldName_);
+
         bool fillPointProperties(Crit3DMeteoPoint* pointProp);
         QList<Crit3DMeteoPoint> getPropertiesFromDb();
         bool getDailyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3DMeteoPoint *meteoPoint);

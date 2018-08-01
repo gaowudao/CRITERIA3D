@@ -240,7 +240,7 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
                     elab2MeteoComp = noMeteoComp;
                   }
 
-                result = elaborations::computeStatistic(outputValues, clima->yearStart(), clima->yearEnd(), startD, endD, clima->nYears(), meteoPointTemp->firstDateDailyVar, elab1MeteoComp, clima->param1(), elab2MeteoComp, clima->param2(), meteoPointTemp->point.z);
+                result = computeStatistic(outputValues, meteoPointTemp, clima->yearStart(), clima->yearEnd(), startD, endD, clima->nYears(), elab1MeteoComp, clima->param1(), elab2MeteoComp, clima->param2());
 
                 if (isAnomaly)
                 {
@@ -252,10 +252,12 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
                       meteoPoint->elaboration = result;
                       if (meteoPoint->elaboration != NODATA)
                       {
+                          delete meteoPointTemp;
                           return true;
                       }
                       else
                       {
+                          delete meteoPointTemp;
                           return false;
                       }
                 }
@@ -268,6 +270,7 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
 
     }
 
+    delete meteoPointTemp;
     return false;
 
 }
@@ -322,7 +325,11 @@ float loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteo
         }
 
         int numberOfDays = firstDateDB.daysTo(last) + 1;
-        meteoPoint->initializeObsDataD(numberOfDays, getCrit3DDate(firstDateDB));
+        if (meteoPoint->nrObsDataDaysD == 0)
+        {
+            meteoPoint->initializeObsDataD(numberOfDays, getCrit3DDate(firstDateDB));
+        }
+
     }
     // meteoPoint
     else
@@ -386,7 +393,11 @@ float loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* mete
         }
 
         int numberOfDays = firstDateDB.date().daysTo(last.date());
-        meteoPoint->initializeObsDataH(meteoPoint->hourlyFraction, numberOfDays, getCrit3DDate(firstDateDB.date()));
+        if (meteoPoint->nrObsDataDaysH == 0)
+        {
+            meteoPoint->initializeObsDataH(meteoPoint->hourlyFraction, numberOfDays, getCrit3DDate(firstDateDB.date()));
+        }
+
 
     }
     // meteoPoint
@@ -653,43 +664,48 @@ float dewPoint(float relHumAir, float tempAir)
 
 }
 
-/*
-float computeWinkler(std::vector<float> &inputValues, Crit3DDate firstDate, Crit3DDate finishDate, Crit3DDate firstDateDailyVar, float height)
+
+float computeWinkler(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate)
 {
 
+    float computeWinkler = 0;
 
     Crit3DQuality qualityCheck;
     unsigned int index;
     int count;
     bool checkData;
+    float Tavg;
 
-    float computeWinkler = 0;
-    float Tmin, Tmax, Tavg;
+
     int numberOfDays = difference(firstDate, finishDate) +1;
 
     //For d = firstDate To finishDate
     Crit3DDate presentDate = firstDate;
     for (int i = 0; i < numberOfDays; i++)
     {
-        index = difference(firstDateDailyVar, presentDate);
+        index = difference(meteoPoint->firstDateDailyVar, presentDate);
         checkData = false;
-        if ( index >= 0 && index < inputValues.size())
+        if ( index >= 0 && index < meteoPoint->nrObsDataDaysD)
         {
 
-//            If Quality.checkFastValueDaily(Definitions.DAILY_TAVG, currentDailySeries(index), Tavg, height) = Quality.qualityGoodData Then
-//                checkData = True
-//            ElseIf Quality.checkFastValueDaily(Definitions.DAILY_TMIN, currentDailySeries(index), Tmin, height) = Quality.qualityGoodData And _
-//                    Quality.checkFastValueDaily(Definitions.DAILY_TMAX, currentDailySeries(index), Tmax, height) = Quality.qualityGoodData Then
-//                        Tavg = (Tmax + Tmin) / 2
-//                        checkData = True
-//            End If
+            // TO DO nella versione vb il check prevede anche l'immissione del parametro height
+            quality::type qualityTavg = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureAvg, meteoPoint->obsDataD[index].tAvg);
+            if (qualityTavg == quality::accepted)
+            {
+                Tavg = meteoPoint->obsDataD[index].tAvg;
+                checkData = true;
+            }
+            else
+            {
+                quality::type qualityTmin = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMin, meteoPoint->obsDataD[index].tMin);
+                quality::type qualityTmax = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMax, meteoPoint->obsDataD[index].tMax);
+                if (qualityTmin  == quality::accepted && qualityTmax == quality::accepted)
+                {
+                    Tavg = (meteoPoint->obsDataD[index].tMin + meteoPoint->obsDataD[index].tMax)/2;
+                    checkData = true;
+                }
 
-//            quality::type qualityTavg = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureAvg, Tavg);
-//            if (qualityTavg  == quality::accepted)
-//            {
-//                checkData = true;
-//            }
-//            else if ()
+            }
 
         }
         if (checkData)
@@ -718,7 +734,31 @@ float computeWinkler(std::vector<float> &inputValues, Crit3DDate firstDate, Crit
     return computeWinkler;
 
 }
-*/
+
+float computeLastDayBelowThreshold(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate, float param1)
+{
+    // TO DO
+    return NODATA;
+}
+
+float computeHuglin(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate)
+{
+    // TO DO
+    return NODATA;
+}
+
+float computeFregoni(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate)
+{
+    // TO DO
+    return NODATA;
+}
+
+float computeCorrectedSum(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate)
+{
+    // TO DO
+    return NODATA;
+}
+
 
 bool elaborateDailyAggregatedVar(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> &outputValues, float* percValue)
 {
@@ -1230,7 +1270,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
         }
     }
 
-    delete meteoPoint;
+
     return preElaboration;
 }
 
@@ -1538,6 +1578,220 @@ int getClimateIndexFromDate(QDate myDate, period periodType)
             return myDate.dayOfYear();
     default:
             return NODATA;
+    }
+
+}
+
+
+//nYears   = 0         same year
+//nYears   = 1,2,3...   betweend years 1,2,3...
+float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoPoint, int firstYear, int lastYear, Crit3DDate firstDate, Crit3DDate lastDate, int nYears, meteoComputation elab1, float param1, meteoComputation elab2, float param2)
+{
+
+    std::vector<float> values;
+    std::vector<float> valuesSecondElab;
+    Crit3DDate presentDate;
+    int numberOfDays;
+    int nValidValues = 0;
+    int nValues = 0;
+    unsigned int index;
+
+    float primary = NODATA;
+
+
+    // no secondary elab
+    if (elab2 == noMeteoComp)
+    {
+        switch(elab1)
+        {
+            case lastDayBelowThreshold:
+            {
+                return computeLastDayBelowThreshold(meteoPoint, firstDate, lastDate, param1);
+            }
+            case winkler:
+            {
+                return computeWinkler(meteoPoint, firstDate, lastDate);
+            }
+            case huglin:
+            {
+                return computeHuglin(meteoPoint, firstDate, lastDate);
+            }
+            case fregoni:
+            {
+                return computeFregoni(meteoPoint, firstDate, lastDate);
+            }
+            case correctedDegreeDaysSum:
+            {
+                return computeCorrectedSum(meteoPoint, firstDate, lastDate);
+            }
+            default:
+            {
+                for (int presentYear = firstYear; presentYear <= lastYear; presentYear++)
+                {
+                    firstDate.year = presentYear;
+                    lastDate.year = presentYear;
+
+                    if (nYears < 0)
+                    {
+                        firstDate.year = (presentYear + nYears);
+                    }
+                    else if (nYears > 0)
+                    {
+                        lastDate.year = (presentYear + nYears);
+                    }
+
+                    numberOfDays = difference(firstDate, lastDate) +1;
+                    presentDate = firstDate;
+                    for (int i = 0; i < numberOfDays; i++)
+                    {
+
+                        float value = NODATA;
+                        index = difference(meteoPoint->firstDateDailyVar, presentDate);
+                        if (index >= 0 && index < inputValues.size())
+                        {
+                            value = inputValues.at(index);
+                        }
+                        if (value != NODATA)
+                        {
+                            nValidValues = nValidValues + 1;
+                        }
+
+                        values.push_back(value);
+                        nValues = nValues + 1;
+                        presentDate = presentDate.addDays(1);
+
+                    }
+                }
+
+                if (nValues > 0)
+                {
+                    if ( (nValidValues / nValues) * 100 >= MINPERCENTAGE)
+                    {
+                        return elaborations::statisticalElab(elab1, param1, values, nValues);
+                    }
+                    else
+                    {
+                        return NODATA;
+                    }
+                }
+
+                break;
+            }
+        }
+    }
+    // secondary elab
+    else
+    {
+
+        int nTotYears = 0;
+        int nValidYears = 0;
+
+        for (int presentYear = firstYear; presentYear <= lastYear; presentYear++)
+        {
+            firstDate.year = presentYear;
+            lastDate.year = presentYear;
+
+            if (nYears < 0)
+            {
+                firstDate.year = (presentYear + nYears);
+            }
+            else if (nYears > 0)
+            {
+                lastDate.year = (presentYear + nYears);
+            }
+            primary = NODATA;
+
+            nValues = 0;
+            nValidValues = 0;
+
+            switch(elab1)
+            {
+                case lastDayBelowThreshold:
+                {
+                    primary = computeLastDayBelowThreshold(meteoPoint, firstDate, lastDate, param1);
+                    break;
+                }
+                case winkler:
+                {
+                    primary = computeWinkler(meteoPoint, firstDate, lastDate);
+                    break;
+                }
+                case huglin:
+                {
+                    primary = computeHuglin(meteoPoint, firstDate, lastDate);
+                    break;
+                }
+                case fregoni:
+                {
+                    primary = computeFregoni(meteoPoint, firstDate, lastDate);
+                    break;
+                }
+                case correctedDegreeDaysSum:
+                {
+                    primary = computeCorrectedSum(meteoPoint, firstDate, lastDate);
+                    break;
+                }
+                default:
+                {
+
+                    numberOfDays = difference(firstDate, lastDate) +1;
+                    presentDate = firstDate;
+                    for (int i = 0; i < numberOfDays; i++)
+                    {
+                        float value = NODATA;
+                        index = difference(meteoPoint->firstDateDailyVar, presentDate);
+                        if (index >= 0 && index < inputValues.size())
+                        {
+                            value = inputValues.at(index);
+                        }
+                        if (value != NODATA)
+                        {
+                            nValidValues = nValidValues + 1;
+                        }
+
+                        values.push_back(value);
+                        nValues = nValues + 1;
+                        presentDate = presentDate.addDays(1);
+
+                    }
+
+                    if (nValues > 0)
+                    {
+                        if ( (nValidValues / nValues) * 100 >= MINPERCENTAGE)
+                        {
+                            primary = elaborations::statisticalElab(elab1, param1, values, nValues);
+                        }
+                    }
+
+                    break;
+
+                }
+            }
+
+            if (primary != NODATA)
+            {
+                nValidYears = nValidYears + 1;
+            }
+
+            valuesSecondElab.push_back(primary);
+            nTotYears = nTotYears + 1;
+
+        } // end for
+
+        if (nTotYears > 0)
+        {
+            if ( (nValidYears / nTotYears) * 100 >= MINPERCENTAGE)
+            {
+                switch(elab2)
+                {
+                    case trend:
+                        return elaborations::statisticalElab(elab2, firstYear, valuesSecondElab, nTotYears);
+                    default:
+                        return elaborations::statisticalElab(elab2, param2, valuesSecondElab, nTotYears);
+                }
+            }
+        }
+
     }
 
 }

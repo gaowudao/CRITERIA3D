@@ -46,14 +46,14 @@
     bool krigingEstimateVariogram(float *myDist, float *mySemiVar,int sizeMyVar, int nrMyPoints,float myMaxDistance, double *mySill, double *myNugget, double *myRange, double *mySlope, TkrigingMode *myMode, int nrPointData);
     bool krigLinearPrep(double *mySlope, double *myNugget, int nrPointData);
 
-    bool addInterpolationPoint(int index, float myValue, float myX, float myY, float myHeight, float myOrogIndex, float myUrban, float mySeaDist, float myAspect, float myGenericProxy);
+    bool addInterpolationPoint(int index, float myValue, float myX, float myY, float myHeight, std::vector<float> myProxyValues);
 
     void clearInterpolationPoints();
 
     bool neighbourhoodVariability(float x, float y, float z, int nMax,
                                   float* devSt, float* devStDeltaZ, float* minDistance);
 
-    float interpolate(meteoVariable myVar, float myX, float myY, float myZ, float myOrogIndex, float myUrban, float mySeaDist, float myAspect);
+    float interpolate(meteoVariable myVar, float myX, float myY, float myZ, std::vector<float> myProxyValues);
     bool interpolateGridDtm(gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGrid &myGridDtm, meteoVariable myVar);
 
     bool checkInterpolationRaster(const  gis::Crit3DRasterGrid& myDTM, std::string *myError);

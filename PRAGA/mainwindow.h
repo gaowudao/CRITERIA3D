@@ -126,6 +126,10 @@
 
         void on_actionClimate_meteo_grid_triggered();
 
+        void on_actionOpen_climate_triggered();
+
+        void on_actionNew_climate_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

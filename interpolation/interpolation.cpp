@@ -58,19 +58,14 @@ float actualLapseRate;
 float actualR2;
 float actualR2Levels;
 float urbanCoefficient;
-float urbanIntercept;
 float urbanR2;
 float orogIndexCoefficient;
-float orogIndexIntercept;
 float orogIndexR2;
 float seaDistCoefficient;
-float seaDistIntercept;
 float seaDistR2;
 float aspectCoefficient;
-float aspectIntercept;
 float aspectR2;
 float genericCoefficient;
-float genericIntercept;
 float genericR2;
 
 bool precipitationAllZero = false;
@@ -88,7 +83,7 @@ void clearInterpolationPoints()
     interpolationPointList.clear();
 }
 
-bool addInterpolationPoint(int myIndex, float myValue, float myX, float myY, float myZ, float myOrogIndex, float myUrban, float mySeaDist, float myAspect, float myGenericProxy)
+bool addInterpolationPoint(int myIndex, float myValue, float myX, float myY, float myZ, vector <float> myProxyValues)
 {
     Crit3DInterpolationDataPoint myPoint;
 
@@ -98,12 +93,7 @@ bool addInterpolationPoint(int myIndex, float myValue, float myX, float myY, flo
     myPoint.point->utm.y = myY;
     myPoint.isActive = true;
     myPoint.point->z = myZ;
-
-    myPoint.setOrogIndex(myOrogIndex);
-    myPoint.setUrbanFraction(myUrban);
-    myPoint.setSeaDistance(mySeaDist);
-    myPoint.setAspect(myAspect);
-    myPoint.setGenericProxy(myGenericProxy);
+    myPoint.proxyValues = myProxyValues;
 
     interpolationPointList.push_back(myPoint);
 
@@ -275,7 +265,7 @@ bool neighbourhoodVariability(float x, float y, float z, int nMax,
 }
 
 
-void regressionSimple(proxyVars::TProxyVar myProxy, bool isZeroIntercept, float* myCoeff, float* myIntercept, float* myR2)
+void regressionSimple(int proxyPosition, bool isZeroIntercept, float* myCoeff, float* myIntercept, float* myR2)
 {
     long i;
     float myProxyValue;
@@ -295,19 +285,7 @@ void regressionSimple(proxyVars::TProxyVar myProxy, bool isZeroIntercept, float*
         myProxyValue = NODATA;
         if (myPoint->isActive)
         {
-            if (myProxy == proxyVars::height)
-                myProxyValue = float(myPoint->point->z);
-            else if (myProxy == proxyVars::urbanFraction)
-                myProxyValue = myPoint->getUrbanFraction();
-            else if (myProxy == proxyVars::orogIndex)
-                myProxyValue = myPoint->getOrogIndex();
-            else if (myProxy == proxyVars::seaDistance)
-                myProxyValue = myPoint->getSeaDistance();
-            else if (myProxy == proxyVars::aspect)
-                myProxyValue = myPoint->getAspect();
-            else if (myProxy == proxyVars::generic)
-                myProxyValue = myPoint->getGenericProxy();
-
+            myProxyValue = myPoint->getProxy(proxyPosition);
             if (myProxyValue != NODATA)
             {
                 myValues.push_back(myPoint->value);
@@ -321,13 +299,14 @@ void regressionSimple(proxyVars::TProxyVar myProxy, bool isZeroIntercept, float*
                                      myIntercept, myCoeff, myR2);
 }
 
-bool regressionGeneric(proxyVars::TProxyVar myProxy, bool isZeroIntercept)
+bool regressionGeneric(int proxyPos, bool isZeroIntercept)
 {
     float q, m, r2;
 
-    regressionSimple(myProxy, isZeroIntercept, &m, &q, &r2);
+    regressionSimple(proxyPos, isZeroIntercept, &m, &q, &r2);
 
-    if (myProxy == proxyVars::height)
+    Crit3DProxyInterpolation myProxy = currentSettings.getProxy(proxyPos);
+    if (ProxyVarNames.at(myProxy.name) == height)
     {
         inversionIsSignificative = false;
         lapseRateH1 = NODATA;
@@ -336,35 +315,10 @@ bool regressionGeneric(proxyVars::TProxyVar myProxy, bool isZeroIntercept)
         actualR2 = r2;
         actualR2Levels = NODATA;
     }
-    else if (myProxy == proxyVars::urbanFraction)
+    else
     {
-        urbanCoefficient = m;
-        urbanIntercept = q;
-        urbanR2 = r2;
-    }
-    else if (myProxy == proxyVars::orogIndex)
-    {
-        orogIndexCoefficient = m;
-        orogIndexIntercept = q;
-        orogIndexR2 = r2;
-    }
-    else if (myProxy == proxyVars::seaDistance)
-    {
-        seaDistCoefficient = m;
-        seaDistIntercept = q;
-        seaDistR2 = r2;
-    }
-    else if (myProxy == proxyVars::aspect)
-    {
-        aspectCoefficient = m;
-        aspectIntercept = q;
-        aspectR2 = r2;
-    }
-    else if (myProxy == proxyVars::generic)
-    {
-        genericCoefficient = m;
-        genericIntercept = q;
-        genericR2 = r2;
+        myProxy.setRegressionSlope(m);
+        myProxy.setRegressionR2(r2);
     }
 
     if (r2 >= currentSettings.getGenericPearsonThreshold())
@@ -375,13 +329,13 @@ bool regressionGeneric(proxyVars::TProxyVar myProxy, bool isZeroIntercept)
 }
 
 
-bool regressionSimpleT(meteoVariable myVar)
+bool regressionSimpleT(meteoVariable myVar, int pos)
 {
     float q, m, r2;
 
     initializeOrography();
 
-    regressionSimple(proxyVars::height, false, &m, &q, &r2);
+    regressionSimple(pos, false, &m, &q, &r2);
 
     if (r2 < currentSettings.getGenericPearsonThreshold())
         return false;
@@ -432,7 +386,7 @@ float findHeightIntervalAvgValue(float heightInf, float heightSup, float maxPoin
         return NODATA;
 }
 
-bool regressionOrographyT(meteoVariable myVar, bool climateExists)
+bool regressionOrographyT(meteoVariable myVar, int orogProxyPosition, bool climateExists)
 {
     long i;
     float heightInf, heightSup;
@@ -512,7 +466,7 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
 
     /*! no inversion: try regression with all data */
     if (! inversionIsSignificative)
-        return (regressionGeneric(proxyVars::height, false));
+        return (regressionGeneric(orogProxyPosition, false));
 
     /*! create vectors below and above inversion */
     for (i = 0; i < long(interpolationPointList.size()); i++)
@@ -548,7 +502,7 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
     /*! only positive lapse rate*/
     if (inversionIsSignificative && myIntervalsValues1.size() == myIntervalsValues.size())
     {
-        regressionSimple(proxyVars::height, false, &m, &q, &r2);
+        regressionSimple(orogProxyPosition, false, &m, &q, &r2);
 
         if (r2 >= mySignificativeR2)
         {
@@ -592,7 +546,7 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
     /*! inversion is not significant with data neither with intervals */
     if (r2_values < mySignificativeR2Inv && r2_intervals < mySignificativeR2Inv)
     {
-        regressionSimple(proxyVars::height, false, &m, &q, &actualR2);
+        regressionSimple(orogProxyPosition, false, &m, &q, &actualR2);
 
         /*! case 0: regression with all data much significant */
         if (actualR2 >= 0.5)
@@ -640,7 +594,7 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
         lapseRateT1 = NODATA;
 
         /*! case 2: regression with data */
-        regressionSimple(proxyVars::height, false, &m, &q, &actualR2);
+        regressionSimple(orogProxyPosition, false, &m, &q, &actualR2);
         actualR2Levels = NODATA;
 
         if (actualR2 >= mySignificativeR2)
@@ -786,7 +740,7 @@ bool regressionOrographyT(meteoVariable myVar, bool climateExists)
         actualLapseRate = (float)-0.02;
 
     initializeOrography();
-    return (regressionGeneric(proxyVars::height, false));
+    return (regressionGeneric(orogProxyPosition, false));
 
 }
 
@@ -937,130 +891,106 @@ bool getUseDetrendingVar(meteoVariable myVar)
         return false;
 }
 
-void detrendPoints(meteoVariable myVar, proxyVars::TProxyVar myProxy)
+void detrendPoints(meteoVariable myVar, int pos)
 {
-    float detrendValue;
+    float detrendValue, proxyValue;
     long myIndex;
     Crit3DInterpolationDataPoint* myPoint;
+    Crit3DProxyInterpolation myProxy;
 
     if (! getUseDetrendingVar(myVar)) return;
+
+    myProxy = currentSettings.getProxy(pos);
 
     for (myIndex = 0; myIndex < long(interpolationPointList.size()); myIndex++)
     {
         detrendValue = 0;
         myPoint = &(interpolationPointList.at(myIndex));
-        if (myProxy == proxyVars::height)
+
+        proxyValue = myPoint->getProxy(pos);
+
+        if (ProxyVarNames.at(myProxy.name) == height)
         {
-            if (myPoint->point->z != NODATA)
+            if (proxyValue != NODATA)
             {
                 if (inversionIsSignificative)
-                    if (myPoint->point->z <= lapseRateH1)
-                        detrendValue = maxValue(float(myPoint->point->z) - lapseRateH0, 0) * inversionLapseRate;
+                    if (proxyValue <= lapseRateH1)
+                        detrendValue = maxValue(proxyValue - lapseRateH0, 0) * inversionLapseRate;
                     else
-                        detrendValue = ((lapseRateH1 - lapseRateH0) * inversionLapseRate) + (float(myPoint->point->z) - lapseRateH1) * actualLapseRate;
+                        detrendValue = ((lapseRateH1 - lapseRateH0) * inversionLapseRate) + (proxyValue - lapseRateH1) * actualLapseRate;
                 else
-                    detrendValue = maxValue(float(myPoint->point->z), 0) * actualLapseRate;
+                    detrendValue = maxValue(proxyValue, 0) * actualLapseRate;
             }
         }
 
-        else if (myProxy == proxyVars::urbanFraction)
+        else
         {
-            if (urbanR2 >= currentSettings.getGenericPearsonThreshold())
-                if (myPoint->getUrbanFraction() != NODATA)
-                    detrendValue = myPoint->getUrbanFraction() * urbanCoefficient;
-        }
-
-        else if (myProxy == proxyVars::orogIndex)
-        {
-            if (orogIndexR2 >= currentSettings.getGenericPearsonThreshold())
-                if (myPoint->getOrogIndex() != NODATA)
-                    detrendValue = myPoint->getOrogIndex() * orogIndexCoefficient;
-        }
-
-        else if (myProxy == proxyVars::seaDistance)
-        {
-            if (seaDistR2 >= currentSettings.getGenericPearsonThreshold())
-                if (myPoint->getSeaDistance() != NODATA)
-                    detrendValue = myPoint->getSeaDistance() * seaDistCoefficient;
-        }
-
-        else if (myProxy == proxyVars::aspect)
-        {
-            if (aspectR2 >= currentSettings.getGenericPearsonThreshold())
-                if (myPoint->getAspect() != NODATA)
-                    detrendValue = myPoint->getAspect() * aspectCoefficient;
+            if (proxyValue != NODATA)
+                if (myProxy.getRegressionR2() >= currentSettings.getGenericPearsonThreshold())
+                    detrendValue = proxyValue * myProxy.getRegressionSlope();
         }
 
         myPoint->value -= detrendValue;
     }
 }
 
-float retrend(meteoVariable myVar, float myZ, float myOrogIndex, float mySeaDist, float myUrban, float myAspect)
+float retrend(meteoVariable myVar, float myZ, vector <float> myProxyValues)
 {
 
     if (! getUseDetrendingVar(myVar)) return 0.;
 
-    float retrendZ = 0.;
-    float retrendIPL = 0.;
-    float retrendDistSea = 0.;
-    float retrendUrban = 0.;
-    float retrendAspect = 0.;
+    float retrendValue = 0.;
+    float myProxyValue;
 
-    /*
-    if (currentSettings.getUseHeight() && currentSettings.getDetrendOrographyActive() && myZ != NODATA)
+    for (int pos=0; pos<currentSettings.getProxyNr(); pos++)
     {
-        if (currentSettings.getUseThermalInversion() && inversionIsSignificative)
+        if (currentSettings.getProxyActive(pos))
         {
-            if (myZ <= lapseRateH1)
-                retrendZ = (maxValue(myZ - lapseRateH0, 0) * inversionLapseRate);
+            if (ProxyVarNames.at(currentSettings.getProxyName(pos)) == height)
+            {
+                if (myZ != NODATA)
+                    if (currentSettings.getUseThermalInversion() && inversionIsSignificative)
+                    {
+                        if (myZ <= lapseRateH1)
+                            retrendValue += (maxValue(myZ - lapseRateH0, 0) * inversionLapseRate);
+                        else
+                            retrendValue += ((lapseRateH1 - lapseRateH0) * inversionLapseRate) + (myZ - lapseRateH1) * actualLapseRate;
+                    }
+                    else
+                        retrendValue += maxValue(myZ, 0) * actualLapseRate;
+            }
             else
-                retrendZ = ((lapseRateH1 - lapseRateH0) * inversionLapseRate) + (myZ - lapseRateH1) * actualLapseRate;
+            {
+                myProxyValue = currentSettings.getProxyValue(pos, myProxyValues);
+                if (myProxyValue != NODATA)
+                    retrendValue += myProxyValue * (currentSettings.getProxy(pos)).getRegressionSlope();
+            }
         }
-        else
-            retrendZ = maxValue(myZ, 0) * actualLapseRate;
     }
 
-    if (currentSettings.getUseOrogIndex() && currentSettings.getDetrendOrogIndexActive() && myOrogIndex != NODATA)
-        retrendIPL = myOrogIndex * orogIndexCoefficient;
-
-    if (currentSettings.getUseUrbanFraction() && currentSettings.getDetrendUrbanActive() && myUrban != NODATA)
-        retrendUrban = myUrban * urbanCoefficient;
-
-    if (currentSettings.getUseSeaDistance() && currentSettings.getDetrendSeaDistanceActive() && mySeaDist != NODATA)
-        retrendDistSea = mySeaDist * seaDistCoefficient;
-
-    if (currentSettings.getUseAspect() && currentSettings.getDetrendAspectActive() && myAspect != NODATA)
-        retrendAspect = myAspect * aspectCoefficient;
-
-    return (retrendZ + retrendIPL + retrendDistSea + retrendUrban + retrendAspect);*/
+    return retrendValue;
 }
 
 void deactiveAllDetrendingVar()
 {
-    /*
-    currentSettings.setDetrendOrographyActive(false);
-    currentSettings.setDetrendOrogIndexActive(false);
-    currentSettings.setDetrendUrbanActive(false);
-    currentSettings.setDetrendSeaDistanceActive(false);
-    currentSettings.setDetrendAspectActive(false);
-    currentSettings.setDetrendGenericProxyActive(false);
-    */
+    for (int pos=0; pos<currentSettings.getProxyNr(); pos++)
+        currentSettings.setProxyActive(pos, false);
 }
 
-bool regressionOrography(meteoVariable myVar)
+bool regressionOrography(meteoVariable myVar, int pos)
 {
     initializeOrography();
 
     if (getUseDetrendingVar(myVar))
     {
         if (currentSettings.getUseThermalInversion())
-            return regressionOrographyT(myVar, true);
+            return regressionOrographyT(myVar, pos, true);
         else
-            return regressionSimpleT(myVar);
+            return regressionSimpleT(myVar, pos);
     }
     else
     {
-        return regressionGeneric(proxyVars::height, false);
+        return regressionGeneric(pos, false);
     }
 
 }
@@ -1070,20 +1000,20 @@ void detrending(meteoVariable myVar)
     if (! getUseDetrendingVar(myVar)) return;
 
     int nrProxy = currentSettings.getProxyNr();
-    proxyVars::TProxyVar myProxyName;
+    TProxyVar myProxyName;
 
     for (int pos=0; pos<nrProxy; pos++)
     {
         if (currentSettings.getProxyActive(pos))
         {
-            myProxyName = currentSettings.getProxyName(pos);
+            myProxyName = ProxyVarNames.at(currentSettings.getProxyName(pos));
 
-            if (myProxyName == proxyVars::height)
+            if (myProxyName == height)
             {
-                if (regressionOrography(myVar))
+                if (regressionOrography(myVar, pos))
                 {
                     currentSettings.setProxyActive(pos, true);
-                    detrendPoints(myVar, proxyVars::height);
+                    detrendPoints(myVar, pos);
                 }
                 else
                     currentSettings.setProxyActive(pos, false);
@@ -1093,7 +1023,7 @@ void detrending(meteoVariable myVar)
                 if (regressionGeneric(myProxyName, false))
                 {
                     currentSettings.setProxyActive(pos, true);
-                    detrendPoints(myVar, myProxyName);
+                    detrendPoints(myVar, pos);
                 }
                 else
                     currentSettings.setProxyActive(pos, false);
@@ -1121,7 +1051,7 @@ bool preInterpolation(meteoVariable myVar)
 }
 
 
-float interpolateSimple(meteoVariable myVar, float myZ, float myOrogIndex, float myDistSea, float myUrban, float myAspect)
+float interpolateSimple(meteoVariable myVar, float myZ, std::vector <float> myProxyValues)
 {
     float myResult = NODATA;
 
@@ -1134,13 +1064,13 @@ float interpolateSimple(meteoVariable myVar, float myZ, float myOrogIndex, float
         myResult = NODATA;
 
     if (myResult != NODATA)
-        return (myResult + retrend(myVar, myZ, myOrogIndex, myDistSea, myUrban, myAspect));
+        return (myResult + retrend(myVar, myZ, myProxyValues));
     else
         return NODATA;
 }
 
 
-float interpolate(meteoVariable myVar, float myX, float myY, float myZ, float myOrogIndex, float myUrban, float mySeaDist, float myAspect)
+float interpolate(meteoVariable myVar, float myX, float myY, float myZ, std::vector <float> myProxyValues)
 {
     if ((myVar == precipitation || myVar == dailyPrecipitation) && precipitationAllZero) return 0.;
 
@@ -1161,10 +1091,24 @@ float interpolate(meteoVariable myVar, float myX, float myY, float myZ, float my
             if (!currentSettings.getUseJRC() && myResult <= PREC_THRESHOLD) myResult = 0.;
     }
     else
-        myResult = interpolateSimple(myVar, myZ, myOrogIndex, mySeaDist, myUrban, myAspect);
+        myResult = interpolateSimple(myVar, myZ, myProxyValues);
 
     return myResult;
 
+}
+
+std::vector <float> getProxyValuesXY(gis::Crit3DUtmPoint myPoint)
+{
+    //todo
+    std::vector <float> myValues;
+    return myValues;
+}
+
+std::vector <float> getProxyValuesMeteoPoint()
+{
+    //todo
+    std::vector <float> myValues;
+    return myValues;
 }
 
 bool interpolateGridDtm(gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGrid& myDTM, meteoVariable myVar)
@@ -1180,7 +1124,7 @@ bool interpolateGridDtm(gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGr
             gis::getUtmXYFromRowColSinglePrecision(*myGrid, myRow, myCol, &myX, &myY);
             float myZ = myDTM.value[myRow][myCol];
             if (myZ != myGrid->header->flag)
-                myGrid->value[myRow][myCol] = interpolate(myVar, myX, myY, myZ, NODATA, NODATA, NODATA, NODATA);
+                myGrid->value[myRow][myCol] = interpolate(myVar, myX, myY, myZ, getProxyValuesXY(gis::Crit3DUtmPoint(myX, myY)));
         }
 
     if (! gis::updateMinMaxRasterGrid(myGrid))

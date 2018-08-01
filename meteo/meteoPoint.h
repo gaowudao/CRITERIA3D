@@ -101,6 +101,8 @@
         bool active;
         bool selected;
 
+        std::vector <float> proxyValues;
+
         Crit3DMeteoPoint();
 
         void initializeObsDataH(int hourlyFraction, int numberOfDays, const Crit3DDate& firstDate);

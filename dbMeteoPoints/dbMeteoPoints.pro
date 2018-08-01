@@ -27,7 +27,7 @@ win32:{
 
 DEFINES += DBMETEOPOINTS_LIBRARY
 
-INCLUDEPATH += ../mathFunctions ../gis ../meteo ../crit3dDate
+INCLUDEPATH += ../mathFunctions ../gis ../meteo ../crit3dDate ../interpolation
 
 SOURCES += \
     download.cpp \

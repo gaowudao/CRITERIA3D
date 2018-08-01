@@ -202,6 +202,7 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
     float stdDev, stdDevZ, minDist, myValue, myResidual;
     std::vector <int> listIndex;
     std::vector <float> listResiduals;
+    std::vector <float> myProxyValues;
 
     if (passDataToInterpolation(meteoPoints, nrMeteoPoints))
     {
@@ -256,7 +257,7 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
                                             float(meteoPoints[listIndex[i]].point.utm.x),
                                             float(meteoPoints[listIndex[i]].point.utm.y),
                                             float(meteoPoints[listIndex[i]].point.z),
-                                            NODATA, NODATA, NODATA, NODATA);
+                                            myProxyValues);
 
                     myValue = meteoPoints[listIndex[i]].currentValue;
 
@@ -323,6 +324,7 @@ bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nr
     float myValue, interpolatedValue;
     interpolatedValue = NODATA;
     myValue = NODATA;
+    std::vector <float> myProxyValues;
 
     for (int i = 0; i < nrMeteoPoints; i++)
     {
@@ -335,7 +337,7 @@ bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nr
             interpolatedValue = interpolate(myVar, float(meteoPoints[i].point.utm.x),
                                             float(meteoPoints[i].point.utm.y),
                                             float(meteoPoints[i].point.z),
-                                            NODATA, NODATA, NODATA, NODATA);
+                                            myProxyValues);
 
             if (  myVar == precipitation
                || myVar == dailyPrecipitation)
@@ -419,6 +421,7 @@ bool passDataToInterpolation(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints)
 {
     int myCounter = 0;
     float myValue, myX, myY, myZ;
+    std::vector <float> myProxyValues;
 
     clearInterpolationPoints();
 
@@ -431,7 +434,7 @@ bool passDataToInterpolation(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints)
             myY = float(meteoPoints[i].point.utm.y);
             myZ = float(meteoPoints[i].point.z);
 
-            if (addInterpolationPoint(i, myValue, myX, myY, myZ, NODATA, NODATA, NODATA, NODATA, NODATA))
+            if (addInterpolationPoint(i, myValue, myX, myY, myZ, myProxyValues))
                 myCounter++;
         }
     }

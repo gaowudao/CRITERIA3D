@@ -44,24 +44,29 @@ Project::Project()
     startLocation.longitude = 11.35;
 }
 
-bool Project::readParameters()
+bool Project::readSettings()
 {
-    /*Q_FOREACH (QString group, settings->childGroups())
+    Q_FOREACH (QString group, settings->childGroups())
     {
         //proxy variables (for interpolation)
-        if (group.startsWith("Proxy"))
+        QString proxyName;
+        std::string proxyGridName;
+        std::string proxyField;
+        int proxyPos = 0;
+        if (group.startsWith("proxy"))
         {
-            std::string name;
-        std::string variable = group.left(group.size()-11).toStdString(); // remove "_VarToElab1"
-        try {
-          var = MapDailyMeteoVar.at(variable);
-          item = MapDailyMeteoVarToString.at(var);
+            proxyName = group.right(group.size()-6);
+            settings->beginGroup(group);
+            proxyGridName = settings->value("raster").toString().toStdString();
+            proxyField = settings->value("field").toString().toStdString();
+            settings->endGroup();
+
+            this->myInterpolationSettings.addProxy(proxyName.toStdString(), proxyGridName);
+            Crit3DProxyInterpolation proxyToAdd = myInterpolationSettings.getProxy(proxyPos);
+            this->meteoPointsDbHandler->addProxy(&proxyToAdd, proxyField);
+            proxyPos++;
         }
-        catch (const std::out_of_range& oor) {
-          return false;
-        }
-        variableList.addItem(QString::fromStdString(item));
-    }*/
+    }
     return true;
 }
 
@@ -103,7 +108,7 @@ bool Project::initializeSettings(QString currentPath)
     else
     {
         this->settings = new QSettings(settingsFileName, QSettings::IniFormat);
-        return true;
+        return readSettings();
     }
 
 

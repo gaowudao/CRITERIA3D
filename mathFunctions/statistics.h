@@ -21,7 +21,6 @@ enum meteoComputation { average, stdDev, sum, maxInList, minInList,
 namespace elaborations
 {
     float statisticalElab(meteoComputation elab, float param, std::vector<float> values, int nValues);
-    float computeStatistic(std::vector<float> &inputValues, int firstYear, int lastYear, Crit3DDate firstDate, Crit3DDate lastDate, int nYears, Crit3DDate firstDateDailyVar, meteoComputation elab1, float param1, meteoComputation elab2, float param2, float myHeight);
 }
 namespace statistics
 {
