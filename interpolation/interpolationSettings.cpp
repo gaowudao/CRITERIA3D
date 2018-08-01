@@ -48,6 +48,8 @@ void Crit3DInterpolationSettings::initialize()
     currentDate = getNullDate();
     currentHour = NODATA;
     currentHourFraction = NODATA;
+    for (int i=0; i<currentProxy.size(); i++)
+        delete currentProxy.at(i).getGrid();
     currentProxy.clear();
 }
 
