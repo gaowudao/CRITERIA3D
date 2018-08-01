@@ -951,10 +951,21 @@ void ComputationDialog::displayPeriod(const QString value)
         genericEndLabel.setVisible(true);
         genericPeriodStart.setVisible(true);
         genericPeriodEnd.setVisible(true);
-        if (elaborationList.currentText().toStdString() == "huglin" || elaborationList.currentText().toStdString() == "winkler" || elaborationList.currentText().toStdString() == "fregoni")
+        if (elaborationList.currentText().toStdString() == "huglin" || elaborationList.currentText().toStdString() == "fregoni")
         {
             QDate fixStart(firstYearEdit.text().toInt(),4,1);
             QDate fixEnd(lastYearEdit.text().toInt(),9,30);
+            genericPeriodStart.setDate(fixStart);
+            genericPeriodStart.setDisplayFormat("dd/MM");
+            genericPeriodEnd.setDisplayFormat("dd/MM");
+            genericPeriodEnd.setDate(fixEnd);
+            nrYear.setText("0");
+            nrYear.setEnabled(false);
+        }
+        else if (elaborationList.currentText().toStdString() == "winkler")
+        {
+            QDate fixStart(firstYearEdit.text().toInt(),4,1);
+            QDate fixEnd(lastYearEdit.text().toInt(),10,31);
             genericPeriodStart.setDate(fixStart);
             genericPeriodStart.setDisplayFormat("dd/MM");
             genericPeriodEnd.setDisplayFormat("dd/MM");
