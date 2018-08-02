@@ -761,7 +761,8 @@ bool ComputationDialog::computation()
             myProject.clima->setNYears(0);
             QDate start;
             QDate end;
-            getPeriodDates(periodSelected, currentDay.date(), &start, &end);
+            getPeriodDates(periodSelected, firstYearEdit.text().toInt(), currentDay.date(), &start, &end);
+            myProject.clima->setNYears(start.year() - firstYearEdit.text().toInt());
             myProject.clima->setGenericPeriodDateStart(start);
             myProject.clima->setGenericPeriodDateEnd(end);
         }

@@ -267,11 +267,11 @@ QString getStringSeasonFromDate(QDate date)
 }
 
 
-bool getPeriodDates(QString periodSelected, QDate myDate, QDate* startDate, QDate* endDate)
+bool getPeriodDates(QString periodSelected, int year, QDate myDate, QDate* startDate, QDate* endDate)
 {
 
-   startDate->setDate(myDate.year(), myDate.month(), myDate.day());
-   endDate->setDate(myDate.year(), myDate.month(), myDate.day());
+   startDate->setDate(year, myDate.month(), myDate.day());
+   endDate->setDate(year, myDate.month(), myDate.day());
 
    if (periodSelected == "Daily")
    {
@@ -297,7 +297,7 @@ bool getPeriodDates(QString periodSelected, QDate myDate, QDate* startDate, QDat
        int mySeason = getSeasonFromDate(myDate);
        if ( (myDate.month() == 12) || (myDate.month() == 1) || (myDate.month() == 2))
        {
-           startDate->setDate(startDate->year() - 1, 12, 1);
+           startDate->setDate( (startDate->year() - 1), 12, 1);
            QDate temp(endDate->year(), 2, 1);
            endDate->setDate(endDate->year(), 2, temp.daysInMonth());
        }
