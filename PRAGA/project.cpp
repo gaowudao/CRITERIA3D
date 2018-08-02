@@ -1018,8 +1018,8 @@ bool Project::interpolateRasterRadiation(const Crit3DTime& myTime, gis::Crit3DRa
         return false;
     }
 
-    if (preInterpolation(atmTransmissivity))
-        if (! interpolateGridDtm(this->radiationMaps->transmissivityMap, this->DTM, atmTransmissivity))
+    if (preInterpolation(atmTransmissivity, &myInterpolationSettings))
+        if (! interpolateGridDtm(&myInterpolationSettings, this->radiationMaps->transmissivityMap, this->DTM, atmTransmissivity), &myInterpolationSettings)
         {
             *myError = "Function interpolateRasterRadiation: error interpolating transmissivity.";
             return false;

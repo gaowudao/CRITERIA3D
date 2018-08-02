@@ -39,20 +39,10 @@
 
 
 using namespace std;
-using namespace statistics;
 
 vector <Crit3DInterpolationDataPoint> interpolationPointList;
 vector <Crit3DInterpolationDataPoint> precBinaryPointList;
 
-bool precipitationAllZero = false;
-
-Crit3DInterpolationSettings currentSettings;
-
-void setInterpolationSettings(Crit3DInterpolationSettings* mySettings)
-{ currentSettings = *(mySettings);}
-
-Crit3DInterpolationSettings* getInterpolationSettings()
-{ return &currentSettings;}
 
 void clearInterpolationPoints()
 {
@@ -258,30 +248,30 @@ void regressionSimple(int proxyPosition, bool isZeroIntercept, float* myCoeff, f
                                      myIntercept, myCoeff, myR2);
 }
 
-bool regressionGeneric(int proxyPos, bool isZeroIntercept)
+bool regressionGeneric(int proxyPos, bool isZeroIntercept, Crit3DInterpolationSettings* mySettings)
 {
     float q, m, r2;
 
     regressionSimple(proxyPos, isZeroIntercept, &m, &q, &r2);
-    Crit3DProxyInterpolation* myProxy = currentSettings.getProxy(proxyPos);
+    Crit3DProxyInterpolation* myProxy = mySettings->getProxy(proxyPos);
 
     myProxy->setRegressionSlope(m);
     myProxy->setRegressionR2(r2);
 
-    return (r2 >= currentSettings.getGenericPearsonThreshold());
+    return (r2 >= mySettings->getGenericPearsonThreshold());
 }
 
 
-bool regressionSimpleT(meteoVariable myVar, int orogProxyPos)
+bool regressionSimpleT(meteoVariable myVar, int orogProxyPos, Crit3DInterpolationSettings* mySettings)
 {
     float q, m, r2;
 
-    Crit3DProxyInterpolation* myProxyOrog = currentSettings.getProxy(orogProxyPos);
+    Crit3DProxyInterpolation* myProxyOrog = mySettings->getProxy(orogProxyPos);
     myProxyOrog->initializeOrography();
 
     regressionSimple(orogProxyPos, false, &m, &q, &r2);
 
-    if (r2 < currentSettings.getGenericPearsonThreshold())
+    if (r2 < mySettings->getGenericPearsonThreshold())
         return false;
 
     myProxyOrog->setRegressionSlope(m);
@@ -292,9 +282,9 @@ bool regressionSimpleT(meteoVariable myVar, int orogProxyPos)
     {
         myProxyOrog->setInversionLapseRate(m);
 
-        float maxZ = minValue(getMaxHeight(), currentSettings.getMaxHeightInversion());
+        float maxZ = minValue(getMaxHeight(), mySettings->getMaxHeightInversion());
         myProxyOrog->setLapseRateH1(maxZ);
-        myProxyOrog->setRegressionSlope(currentSettings.getCurrentClimateLapseRate(myVar));
+        myProxyOrog->setRegressionSlope(mySettings->getCurrentClimateLapseRate(myVar));
         myProxyOrog->setInversionIsSignificative(true);
     }
 
@@ -328,7 +318,7 @@ float findHeightIntervalAvgValue(float heightInf, float heightSup, float maxPoin
         return NODATA;
 }
 
-bool regressionOrographyT(meteoVariable myVar, int orogProxyPos, bool climateExists)
+bool regressionOrographyT(meteoVariable myVar, int orogProxyPos, bool climateExists, Crit3DInterpolationSettings* mySettings)
 {
     long i;
     float heightInf, heightSup;
@@ -344,17 +334,18 @@ bool regressionOrographyT(meteoVariable myVar, int orogProxyPos, bool climateExi
     float maxPointsZ, deltaZ;
     float climateLapseRate, lapseRateT0, lapseRateT1, lapseRateH1_;
     float DELTAZ_INI = 80.;
+    float maxHeightInv = mySettings->getMaxHeightInversion();
 
-    Crit3DProxyInterpolation* myProxyOrog = currentSettings.getProxy(orogProxyPos);
+    Crit3DProxyInterpolation* myProxyOrog = mySettings->getProxy(orogProxyPos);
 
-    mySignificativeR2 = maxValue(currentSettings.getGenericPearsonThreshold(), float(0.2));
-    mySignificativeR2Inv = maxValue(currentSettings.getGenericPearsonThreshold(), float(0.1));
+    mySignificativeR2 = maxValue(mySettings->getGenericPearsonThreshold(), float(0.2));
+    mySignificativeR2Inv = maxValue(mySettings->getGenericPearsonThreshold(), float(0.1));
 
     /*! initialize */
     myProxyOrog->initializeOrography();
 
     if (climateExists)
-        climateLapseRate = currentSettings.getCurrentClimateLapseRate(myVar);
+        climateLapseRate = mySettings->getCurrentClimateLapseRate(myVar);
     else
         climateLapseRate = 0.;
 
@@ -384,7 +375,7 @@ bool regressionOrographyT(meteoVariable myVar, int orogProxyPos, bool climateExi
         myIntervalsHeight.push_back((heightSup + heightInf) / float(2.));
         myIntervalsValues.push_back(myAvg);
 
-        deltaZ = DELTAZ_INI * exp(heightInf / currentSettings.getMaxHeightInversion());
+        deltaZ = DELTAZ_INI * exp(heightInf / maxHeightInv);
         heightInf = heightSup;
     }
 
@@ -392,7 +383,7 @@ bool regressionOrographyT(meteoVariable myVar, int orogProxyPos, bool climateExi
     lapseRateT1 = myIntervalsValues.at(0);
     myProxyOrog->setLapseRateH1(myIntervalsHeight.at(0));
     for (i = 1; i < long(myIntervalsValues.size()); i++)
-        if (myIntervalsHeight.at(i) <= currentSettings.getMaxHeightInversion() && (myIntervalsValues.at(i) >= lapseRateT1) && (myIntervalsValues.at(i) > (myIntervalsValues.at(0) + 0.001 * (myIntervalsHeight.at(i) - myIntervalsHeight.at(0)))))
+        if (myIntervalsHeight.at(i) <= maxHeightInv && (myIntervalsValues.at(i) >= lapseRateT1) && (myIntervalsValues.at(i) > (myIntervalsValues.at(0) + 0.001 * (myIntervalsHeight.at(i) - myIntervalsHeight.at(0)))))
         {
             myProxyOrog->setLapseRateH1(myIntervalsHeight.at(i));
             lapseRateT1 = myIntervalsValues.at(i);
@@ -401,7 +392,7 @@ bool regressionOrographyT(meteoVariable myVar, int orogProxyPos, bool climateExi
 
     /*! no inversion: try regression with all data */
     if (! myProxyOrog->getInversionIsSignificative())
-        return (regressionGeneric(orogProxyPos, false));
+        return (regressionGeneric(orogProxyPos, false, mySettings));
 
     /*! create vectors below and above inversion */
     for (i = 0; i < long(interpolationPointList.size()); i++)
@@ -567,10 +558,10 @@ bool regressionOrographyT(meteoVariable myVar, int orogProxyPos, bool climateExi
         myProxyOrog->setInversionLapseRate(m1);
         myProxyOrog->setRegressionSlope(m2);
         myProxyOrog->setLapseRateH1(lapseRateH1_);
-        if (myProxyOrog->getLapseRateH1() > currentSettings.getMaxHeightInversion())
+        if (myProxyOrog->getLapseRateH1() > maxHeightInv)
         {
-            lapseRateT1 = lapseRateT1 - (myProxyOrog->getLapseRateH1() - currentSettings.getMaxHeightInversion()) * myProxyOrog->getRegressionSlope();
-            myProxyOrog->setLapseRateH1(currentSettings.getMaxHeightInversion());
+            lapseRateT1 = lapseRateT1 - (myProxyOrog->getLapseRateH1() - maxHeightInv) * myProxyOrog->getRegressionSlope();
+            myProxyOrog->setLapseRateH1(maxHeightInv);
             myProxyOrog->setInversionLapseRate((lapseRateT1 - lapseRateT0) / (myProxyOrog->getLapseRateH1() - myProxyOrog->getLapseRateH0()));
         }
         return true;
@@ -594,10 +585,10 @@ bool regressionOrographyT(meteoVariable myVar, int orogProxyPos, bool climateExi
                 myProxyOrog->setLapseRateH1(lapseRateH1_);
                 lapseRateT0 = q;
                 myProxyOrog->setInversionLapseRate(m);
-                if (myProxyOrog->getLapseRateH1() > currentSettings.getMaxHeightInversion())
+                if (myProxyOrog->getLapseRateH1() > maxHeightInv)
                 {
-                    lapseRateT1 = lapseRateT1 - (myProxyOrog->getLapseRateH1() - currentSettings.getMaxHeightInversion()) * myProxyOrog->getRegressionSlope();
-                    myProxyOrog->setLapseRateH1(currentSettings.getMaxHeightInversion());
+                    lapseRateT1 = lapseRateT1 - (myProxyOrog->getLapseRateH1() - maxHeightInv) * myProxyOrog->getRegressionSlope();
+                    myProxyOrog->setLapseRateH1(maxHeightInv);
                     myProxyOrog->setInversionLapseRate((lapseRateT1 - lapseRateT0) / (myProxyOrog->getLapseRateH1() - myProxyOrog->getLapseRateH0()));
                 }
                 return true;
@@ -677,7 +668,7 @@ bool regressionOrographyT(meteoVariable myVar, int orogProxyPos, bool climateExi
         myProxyOrog->setRegressionSlope((float)-0.02);
 
     myProxyOrog->initializeOrography();
-    return (regressionGeneric(orogProxyPos, false));
+    return (regressionGeneric(orogProxyPos, false, mySettings));
 
 }
 
@@ -786,26 +777,26 @@ float interpolatePrecStep1()
     return inverseDistanceWeighted(precBinaryPointList);
 }
 
-float interpolatePrecStep2()
+float interpolatePrecStep2(Crit3DInterpolationSettings* mySettings)
 {
-    if (currentSettings.getInterpolationMethod() == interpolationMethod::idw)
+    if (mySettings->getInterpolationMethod() == interpolationMethod::idw)
         return inverseDistanceWeighted(interpolationPointList);
         //return gaussWeighted(interpolationPointList);
-    else if (currentSettings.getInterpolationMethod() == interpolationMethod::kriging)
+    else if (mySettings->getInterpolationMethod() == interpolationMethod::kriging)
         return NODATA;
     else
         return NODATA;
 }
 
-float interpolatePrec()
+float interpolatePrec(Crit3DInterpolationSettings* mySettings)
 {
     float myResult;
 
-    if (! currentSettings.getUseJRC())
-        myResult = interpolatePrecStep2();
+    if (! mySettings->getUseJRC())
+        myResult = interpolatePrecStep2(mySettings);
     else
         if (interpolatePrecStep1() >= PREC_JRC_THRESHOLD)
-            myResult = interpolatePrecStep2();
+            myResult = interpolatePrecStep2(mySettings);
         else
             myResult = 0.;
 
@@ -828,7 +819,7 @@ bool getUseDetrendingVar(meteoVariable myVar)
         return false;
 }
 
-void detrendPoints(meteoVariable myVar, int pos)
+void detrendPoints(meteoVariable myVar, int pos, Crit3DInterpolationSettings* mySettings)
 {
     float detrendValue, proxyValue;
     long myIndex;
@@ -837,7 +828,7 @@ void detrendPoints(meteoVariable myVar, int pos)
 
     if (! getUseDetrendingVar(myVar)) return;
 
-    myProxy = currentSettings.getProxy(pos);
+    myProxy = mySettings->getProxy(pos);
 
     for (myIndex = 0; myIndex < long(interpolationPointList.size()); myIndex++)
     {
@@ -870,7 +861,7 @@ void detrendPoints(meteoVariable myVar, int pos)
         else
         {
             if (proxyValue != NODATA)
-                if (myProxy->getRegressionR2() >= currentSettings.getGenericPearsonThreshold())
+                if (myProxy->getRegressionR2() >= mySettings->getGenericPearsonThreshold())
                     detrendValue = proxyValue * myProxy->getRegressionSlope();
         }
 
@@ -878,7 +869,7 @@ void detrendPoints(meteoVariable myVar, int pos)
     }
 }
 
-float retrend(meteoVariable myVar, vector <float> myProxyValues)
+float retrend(meteoVariable myVar, vector <float> myProxyValues, Crit3DInterpolationSettings* mySettings)
 {
 
     if (! getUseDetrendingVar(myVar)) return 0.;
@@ -887,20 +878,21 @@ float retrend(meteoVariable myVar, vector <float> myProxyValues)
     float myProxyValue;
     Crit3DProxyInterpolation* myProxy;
 
-    for (int pos=0; pos<currentSettings.getProxyNr(); pos++)
+    for (int pos=0; pos<mySettings->getProxyNr(); pos++)
     {
-        myProxy = currentSettings.getProxy(pos);
+        myProxy = mySettings->getProxy(pos);
 
         if (myProxy->getIsActive())
         {
-            myProxyValue = currentSettings.getProxyValue(pos, myProxyValues);
+            myProxyValue = mySettings->getProxyValue(pos, myProxyValues);
 
             if (myProxyValue != NODATA)
             {
+                float proxySlope = myProxy->getRegressionSlope();
+
                 if (myProxy->getProxyPragaName() == height)
                 {
-                    float LR_Above = myProxy->getRegressionSlope();
-                    if (currentSettings.getUseThermalInversion() && myProxy->getInversionIsSignificative())
+                    if (mySettings->getUseThermalInversion() && myProxy->getInversionIsSignificative())
                     {
                         float LR_H0 = myProxy->getLapseRateH0();
                         float LR_H1 = myProxy->getLapseRateH1();
@@ -908,13 +900,13 @@ float retrend(meteoVariable myVar, vector <float> myProxyValues)
                         if (myProxyValue <= LR_H1)
                             retrendValue += (maxValue(myProxyValue - LR_H0, 0) * LR_Below);
                         else
-                            retrendValue += ((LR_H1 - LR_H0) * LR_Below) + (myProxyValue - LR_H1) * LR_Above;
+                            retrendValue += ((LR_H1 - LR_H0) * LR_Below) + (myProxyValue - LR_H1) * proxySlope;
                     }
                     else
-                        retrendValue += maxValue(myProxyValue, 0) * LR_Above;
+                        retrendValue += maxValue(myProxyValue, 0) * proxySlope;
                 }
                 else
-                    retrendValue += myProxyValue * (currentSettings.getProxy(pos))->getRegressionSlope();
+                    retrendValue += myProxyValue * proxySlope;
             }
         }
     }
@@ -922,49 +914,49 @@ float retrend(meteoVariable myVar, vector <float> myProxyValues)
     return retrendValue;
 }
 
-bool regressionOrography(meteoVariable myVar, int orogProxyPos)
+bool regressionOrography(meteoVariable myVar, int orogProxyPos, Crit3DInterpolationSettings* mySettings)
 {
     if (getUseDetrendingVar(myVar))
     {
-        if (currentSettings.getUseThermalInversion())
-            return regressionOrographyT(myVar, orogProxyPos, true);
+        if (mySettings->getUseThermalInversion())
+            return regressionOrographyT(myVar, orogProxyPos, true, mySettings);
         else
-            return regressionSimpleT(myVar, orogProxyPos);
+            return regressionSimpleT(myVar, orogProxyPos, mySettings);
     }
     else
     {
-        return regressionGeneric(orogProxyPos, false);
+        return regressionGeneric(orogProxyPos, false, mySettings);
     }
 
 }
 
-void detrending(meteoVariable myVar)
+void detrending(meteoVariable myVar, Crit3DInterpolationSettings* mySettings)
 {
     if (! getUseDetrendingVar(myVar)) return;
 
-    int nrProxy = currentSettings.getProxyNr();
+    int nrProxy = mySettings->getProxyNr();
     Crit3DProxyInterpolation* myProxy;
 
     for (int pos=0; pos<nrProxy; pos++)
     {
-        myProxy = currentSettings.getProxy(pos);
+        myProxy = mySettings->getProxy(pos);
 
         if (myProxy->getProxyPragaName() == height)
         {
-            if (regressionOrography(myVar, pos))
+            if (regressionOrography(myVar, pos, mySettings))
             {
                 myProxy->setIsActive(true);
-                detrendPoints(myVar, pos);
+                detrendPoints(myVar, pos, mySettings);
             }
             else
                 myProxy->setIsActive(false);
         }
         else
         {
-            if (regressionGeneric(pos, false))
+            if (regressionGeneric(pos, false, mySettings))
             {
                 myProxy->setIsActive(true);
-                detrendPoints(myVar, pos);
+                detrendPoints(myVar, pos, mySettings);
             }
             else
                 myProxy->setIsActive(false);
@@ -973,52 +965,57 @@ void detrending(meteoVariable myVar)
     }
 }
 
-bool preInterpolation(meteoVariable myVar)
+bool preInterpolation(meteoVariable myVar, Crit3DInterpolationSettings* mySettings)
 {
     if (myVar == precipitation || myVar == dailyPrecipitation)
     {
         int nrPrecNotNull;
         bool isFlatPrecipitation;
-        precipitationAllZero = checkPrecipitationZero(&nrPrecNotNull, &isFlatPrecipitation);
-        if (precipitationAllZero) return true;
+        if (checkPrecipitationZero(&nrPrecNotNull, &isFlatPrecipitation))
+        {
+            mySettings->setPrecipitationAllZero(true);
+            return true;
+        }
+        else
+            mySettings->setPrecipitationAllZero(false);
 
-        if (currentSettings.getUseJRC()) prepareJRC();
+        if (mySettings->getUseJRC()) prepareJRC();
     }
 
-    detrending(myVar);
+    detrending(myVar, mySettings);
 
     return (true);
 }
 
 
-float interpolateSimple(meteoVariable myVar, std::vector <float> myProxyValues)
+float interpolateSimple(meteoVariable myVar, std::vector <float> myProxyValues, Crit3DInterpolationSettings* mySettings)
 {
     float myResult = NODATA;
 
     /*! interpolate residuals */
-    if (currentSettings.getInterpolationMethod() == interpolationMethod::idw)
+    if (mySettings->getInterpolationMethod() == interpolationMethod::idw)
     {
         myResult = inverseDistanceWeighted(interpolationPointList);
     }
-    else if (currentSettings.getInterpolationMethod() == interpolationMethod::kriging)
+    else if (mySettings->getInterpolationMethod() == interpolationMethod::kriging)
         myResult = NODATA;
 
     if (myResult != NODATA)
-        return (myResult + retrend(myVar, myProxyValues));
+        return (myResult + retrend(myVar, myProxyValues, mySettings));
     else
         return NODATA;
 }
 
 
-float interpolate(meteoVariable myVar, float myX, float myY, float myZ, std::vector <float> myProxyValues)
+float interpolate(meteoVariable myVar, float myX, float myY, float myZ, std::vector <float> myProxyValues, Crit3DInterpolationSettings* mySettings)
 {
-    if ((myVar == precipitation || myVar == dailyPrecipitation) && precipitationAllZero) return 0.;
+    if ((myVar == precipitation || myVar == dailyPrecipitation) && mySettings->getPrecipitationAllZero()) return 0.;
 
     float myResult = NODATA;
 
-    if (currentSettings.getInterpolationMethod() == interpolationMethod::idw)
+    if (mySettings->getInterpolationMethod() == interpolationMethod::idw)
     {
-        if ((myVar == precipitation || myVar == dailyPrecipitation) && currentSettings.getUseJRC())
+        if ((myVar == precipitation || myVar == dailyPrecipitation) && mySettings->getUseJRC())
             assignDistances(&precBinaryPointList, myX, myY, myZ);
 
         assignDistances(&interpolationPointList, myX, myY, myZ);
@@ -1026,30 +1023,30 @@ float interpolate(meteoVariable myVar, float myX, float myY, float myZ, std::vec
 
     if (myVar == precipitation || myVar == dailyPrecipitation)
     {
-        myResult = interpolatePrec();
+        myResult = interpolatePrec(mySettings);
         if (myResult != NODATA)
-            if (!currentSettings.getUseJRC() && myResult <= PREC_THRESHOLD) myResult = 0.;
+            if (!mySettings->getUseJRC() && myResult <= PREC_THRESHOLD) myResult = 0.;
     }
     else
-        myResult = interpolateSimple(myVar, myProxyValues);
+        myResult = interpolateSimple(myVar, myProxyValues, mySettings);
 
     return myResult;
 
 }
 
-std::vector <float> getProxyValuesXY(gis::Crit3DUtmPoint myPoint)
+std::vector <float> getProxyValuesXY(gis::Crit3DUtmPoint myPoint, Crit3DInterpolationSettings* mySettings)
 {
     std::vector <float> myValues;
     float myValue;
     gis::Crit3DRasterGrid* proxyGrid;
 
-    myValues.resize(currentSettings.getProxyNr());
+    myValues.resize(mySettings->getProxyNr());
 
     for (int i=0; i<myValues.size(); i++)
     {
         myValues.at(i) = NODATA;
 
-        proxyGrid = currentSettings.getProxy(i)->getGrid();
+        proxyGrid = mySettings->getProxy(i)->getGrid();
         if (proxyGrid != NULL && proxyGrid->isLoaded)
         {
             myValue = gis::getValueFromXY(*proxyGrid, myPoint.x, myPoint.y);
@@ -1062,7 +1059,7 @@ std::vector <float> getProxyValuesXY(gis::Crit3DUtmPoint myPoint)
 }
 
 
-bool interpolateGridDtm(gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGrid& myDTM, meteoVariable myVar)
+bool interpolateGridDtm(Crit3DInterpolationSettings* mySettings, gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGrid& myDTM, meteoVariable myVar)
 {
     if (! myGrid->initializeGrid(myDTM))
         return (false);
@@ -1075,7 +1072,7 @@ bool interpolateGridDtm(gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGr
             gis::getUtmXYFromRowColSinglePrecision(*myGrid, myRow, myCol, &myX, &myY);
             float myZ = myDTM.value[myRow][myCol];
             if (myZ != myGrid->header->flag)
-                myGrid->value[myRow][myCol] = interpolate(myVar, myX, myY, myZ, getProxyValuesXY(gis::Crit3DUtmPoint(myX, myY)));
+                myGrid->value[myRow][myCol] = interpolate(myVar, myX, myY, myZ, getProxyValuesXY(gis::Crit3DUtmPoint(myX, myY), mySettings), mySettings);
         }
 
     if (! gis::updateMinMaxRasterGrid(myGrid))
@@ -1107,17 +1104,16 @@ bool interpolationRaster(meteoVariable myVar, Crit3DInterpolationSettings *mySet
     // Interpolation settings
     mySettings->setCurrentDate(myTime.date);
     mySettings->setCurrentHour(myTime.getHour());
-    setInterpolationSettings(mySettings);
 
     // Proxy vars regression and detrend
-    if (! preInterpolation(myVar))
+    if (! preInterpolation(myVar, mySettings))
     {
         *myError = "Interpolation: error in function preInterpolation";
         return false;
     }
 
     // Interpolate
-    if (! interpolateGridDtm(myRaster, myDTM, myVar))
+    if (! interpolateGridDtm(mySettings, myRaster, myDTM, myVar))
     {
         *myError = "Interpolation: error in function interpolateGridDtm";
         return false;

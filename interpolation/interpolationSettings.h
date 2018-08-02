@@ -79,6 +79,7 @@ private:
     bool useDewPoint;
 
     bool isKrigingReady;
+    bool precipitationAllZero;
     float genericPearsonThreshold;
     float maxHeightInversion;
 
@@ -131,6 +132,8 @@ public:
 
     float getCurrentClimateLapseRate(meteoVariable myVar);
 
+    bool getPrecipitationAllZero() const;
+    void setPrecipitationAllZero(bool value);
 };
 
 

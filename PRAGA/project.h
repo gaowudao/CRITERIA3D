@@ -86,6 +86,9 @@
 
         gridAggregationMethod grdAggrMethod;
 
+        Crit3DInterpolationSettings myInterpolationSettings;
+        Crit3DInterpolationSettings qualityInterpolationSettings;
+
         Project();
 
         bool initializeSettings(QString currentPath);
@@ -126,9 +129,6 @@
         bool updateMeteoPointsData();
 
         float meteoDataConsistency(meteoVariable myVar, const Crit3DTime& timeIni, const Crit3DTime& timeFin);
-
-        Crit3DInterpolationSettings myInterpolationSettings;
-        Crit3DInterpolationSettings qualityInterpolationSettings;
 
         bool readProxyValues();
         bool interpolateRaster(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster);

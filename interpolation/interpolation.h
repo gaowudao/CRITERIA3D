@@ -38,10 +38,7 @@
 
     class Crit3DMeteoPoint;
 
-    void setInterpolationSettings(Crit3DInterpolationSettings *mySettings);
-    Crit3DInterpolationSettings* getInterpolationSettings();
-
-    bool preInterpolation(meteoVariable myVar);
+    bool preInterpolation(meteoVariable myVar, Crit3DInterpolationSettings *mySettings);
 
     bool krigingEstimateVariogram(float *myDist, float *mySemiVar,int sizeMyVar, int nrMyPoints,float myMaxDistance, double *mySill, double *myNugget, double *myRange, double *mySlope, TkrigingMode *myMode, int nrPointData);
     bool krigLinearPrep(double *mySlope, double *myNugget, int nrPointData);
@@ -53,8 +50,8 @@
     bool neighbourhoodVariability(float x, float y, float z, int nMax,
                                   float* devSt, float* devStDeltaZ, float* minDistance);
 
-    float interpolate(meteoVariable myVar, float myX, float myY, float myZ, std::vector<float> myProxyValues);
-    bool interpolateGridDtm(gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGrid &myGridDtm, meteoVariable myVar);
+    float interpolate(meteoVariable myVar, float myX, float myY, float myZ, std::vector<float> myProxyValues, Crit3DInterpolationSettings *mySettings);
+    bool interpolateGridDtm(Crit3DInterpolationSettings* mySettings, gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGrid &myGridDtm, meteoVariable myVar);
 
     bool interpolationRaster(meteoVariable myVar, Crit3DInterpolationSettings *mySettings,
                              const Crit3DTime& myTime, const gis::Crit3DRasterGrid& myDTM,

@@ -29,6 +29,16 @@
 #include "commonConstants.h"
 
 
+bool Crit3DInterpolationSettings::getPrecipitationAllZero() const
+{
+    return precipitationAllZero;
+}
+
+void Crit3DInterpolationSettings::setPrecipitationAllZero(bool value)
+{
+    precipitationAllZero = value;
+}
+
 Crit3DInterpolationSettings::Crit3DInterpolationSettings()
 {
     initialize();
@@ -42,6 +52,7 @@ void Crit3DInterpolationSettings::initialize()
     useJRC = false;
     useDewPoint = true;
     isKrigingReady = false;
+    precipitationAllZero = false;
     genericPearsonThreshold = float(PEARSONSTANDARDTHRESHOLD);
     maxHeightInversion = 1000.;
     currentClimateParametersLoaded = false;
