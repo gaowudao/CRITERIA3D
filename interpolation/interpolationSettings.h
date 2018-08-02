@@ -41,13 +41,30 @@ private:
     float regressionR2;
     float regressionSlope;
 
+    //orography
+    float lapseRateH1;
+    float lapseRateH0;
+    float inversionLapseRate;
+    bool inversionIsSignificative;
+
 public:
     Crit3DProxyInterpolation();
+
     void setRegressionR2(float myValue);
     float getRegressionR2();
     void setRegressionSlope(float myValue);
     float getRegressionSlope();
     float getValue(int pos, std::vector <float> proxyValues);
+    float getLapseRateH1() const;
+    void setLapseRateH1(float value);
+    float getLapseRateH0() const;
+    void setLapseRateH0(float value);
+    float getInversionLapseRate() const;
+    void setInversionLapseRate(float value);
+    bool getInversionIsSignificative() const;
+    void setInversionIsSignificative(bool value);
+
+    void initializeOrography();
 };
 
 class Crit3DInterpolationSettings

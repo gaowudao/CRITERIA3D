@@ -44,14 +44,6 @@ using namespace statistics;
 vector <Crit3DInterpolationDataPoint> interpolationPointList;
 vector <Crit3DInterpolationDataPoint> precBinaryPointList;
 
-float lapseRateH1;
-float lapseRateH0;
-float inversionLapseRate;
-bool inversionIsSignificative;
-float actualLapseRate;
-float actualR2;
-float actualR2Levels;
-
 bool precipitationAllZero = false;
 
 Crit3DInterpolationSettings currentSettings;
@@ -93,23 +85,6 @@ void assignDistances(vector <Crit3DInterpolationDataPoint> *myPoints, float x, f
         myPoints->at(i).deltaZ = float(fabs(myPoints->at(i).point->z - z));
     }
 }
-
-bool initializeOrography()
-{
-    lapseRateH0 = 0.;
-    lapseRateH1 = NODATA;
-
-    inversionLapseRate = NODATA;
-    actualLapseRate = NODATA;
-
-    actualR2 = NODATA;
-    actualR2Levels = NODATA;
-
-    inversionIsSignificative = false;
-
-    return true;
-}
-
 
 float getMinHeight()
 {
@@ -290,54 +265,37 @@ bool regressionGeneric(int proxyPos, bool isZeroIntercept)
     regressionSimple(proxyPos, isZeroIntercept, &m, &q, &r2);
     Crit3DProxyInterpolation* myProxy = currentSettings.getProxy(proxyPos);
 
-    if (myProxy->getProxyPragaName() == height)
-    {
-        inversionIsSignificative = false;
-        lapseRateH1 = NODATA;
-        inversionLapseRate = NODATA;
-        actualLapseRate = m;
-        actualR2 = r2;
-        actualR2Levels = NODATA;
-    }
-    else
-    {
-        myProxy->setRegressionSlope(m);
-        myProxy->setRegressionR2(r2);
-    }
+    myProxy->setRegressionSlope(m);
+    myProxy->setRegressionR2(r2);
 
-    if (r2 >= currentSettings.getGenericPearsonThreshold())
-        return true;
-    else
-        return false;
-
+    return (r2 >= currentSettings.getGenericPearsonThreshold());
 }
 
 
-bool regressionSimpleT(meteoVariable myVar, int pos)
+bool regressionSimpleT(meteoVariable myVar, int orogProxyPos)
 {
     float q, m, r2;
 
-    initializeOrography();
+    Crit3DProxyInterpolation* myProxyOrog = currentSettings.getProxy(orogProxyPos);
+    myProxyOrog->initializeOrography();
 
-    regressionSimple(pos, false, &m, &q, &r2);
+    regressionSimple(orogProxyPos, false, &m, &q, &r2);
 
     if (r2 < currentSettings.getGenericPearsonThreshold())
         return false;
 
-    actualLapseRate = m;
-    actualR2 = r2;
+    myProxyOrog->setRegressionSlope(m);
+    myProxyOrog->setRegressionR2(r2);
 
     // only pre-inversion data
     if (m > 0)
     {
-        inversionLapseRate = m;
+        myProxyOrog->setInversionLapseRate(m);
 
         float maxZ = minValue(getMaxHeight(), currentSettings.getMaxHeightInversion());
-        lapseRateH1 = maxZ;
-
-        actualLapseRate = currentSettings.getCurrentClimateLapseRate(myVar);
-
-        inversionIsSignificative = true;
+        myProxyOrog->setLapseRateH1(maxZ);
+        myProxyOrog->setRegressionSlope(currentSettings.getCurrentClimateLapseRate(myVar));
+        myProxyOrog->setInversionIsSignificative(true);
     }
 
     return true;
@@ -370,7 +328,7 @@ float findHeightIntervalAvgValue(float heightInf, float heightSup, float maxPoin
         return NODATA;
 }
 
-bool regressionOrographyT(meteoVariable myVar, int orogProxyPosition, bool climateExists)
+bool regressionOrographyT(meteoVariable myVar, int orogProxyPos, bool climateExists)
 {
     long i;
     float heightInf, heightSup;
@@ -384,35 +342,29 @@ bool regressionOrographyT(meteoVariable myVar, int orogProxyPosition, bool clima
     float q1, m1, r21, q2, m2, r22;
     float mySignificativeR2, mySignificativeR2Inv;
     float maxPointsZ, deltaZ;
-    float climateLapseRate, lapseRateT0, lapseRateT1;
-
+    float climateLapseRate, lapseRateT0, lapseRateT1, lapseRateH1_;
     float DELTAZ_INI = 80.;
+
+    Crit3DProxyInterpolation* myProxyOrog = currentSettings.getProxy(orogProxyPos);
 
     mySignificativeR2 = maxValue(currentSettings.getGenericPearsonThreshold(), float(0.2));
     mySignificativeR2Inv = maxValue(currentSettings.getGenericPearsonThreshold(), float(0.1));
 
     /*! initialize */
-    initializeOrography();
+    myProxyOrog->initializeOrography();
 
     if (climateExists)
         climateLapseRate = currentSettings.getCurrentClimateLapseRate(myVar);
     else
         climateLapseRate = 0.;
 
-    actualLapseRate = climateLapseRate;
+    myProxyOrog->setRegressionSlope(climateLapseRate);
 
     maxPointsZ = getMaxHeight();
 
     /*! not enough data to define a curve (use climate) */
     if (interpolationPointList.size() < MIN_REGRESSION_POINTS)
-    {
-        inversionIsSignificative = false;
-        lapseRateH1 = NODATA;
-        inversionLapseRate = NODATA;
-        actualLapseRate = climateLapseRate;
-        actualR2Levels = NODATA;
         return true;
-    }
 
     /*! find intervals averages */
     heightInf = getMinHeight();
@@ -437,26 +389,25 @@ bool regressionOrographyT(meteoVariable myVar, int orogProxyPosition, bool clima
     }
 
     /*! find inversion height */
-    inversionIsSignificative = false;
     lapseRateT1 = myIntervalsValues.at(0);
-    lapseRateH1 = myIntervalsHeight.at(0);
+    myProxyOrog->setLapseRateH1(myIntervalsHeight.at(0));
     for (i = 1; i < long(myIntervalsValues.size()); i++)
         if (myIntervalsHeight.at(i) <= currentSettings.getMaxHeightInversion() && (myIntervalsValues.at(i) >= lapseRateT1) && (myIntervalsValues.at(i) > (myIntervalsValues.at(0) + 0.001 * (myIntervalsHeight.at(i) - myIntervalsHeight.at(0)))))
         {
-            lapseRateH1 = myIntervalsHeight.at(i);
+            myProxyOrog->setLapseRateH1(myIntervalsHeight.at(i));
             lapseRateT1 = myIntervalsValues.at(i);
-            inversionIsSignificative = true;
+            myProxyOrog->setInversionIsSignificative(true);
         }
 
     /*! no inversion: try regression with all data */
-    if (! inversionIsSignificative)
-        return (regressionGeneric(orogProxyPosition, false));
+    if (! myProxyOrog->getInversionIsSignificative())
+        return (regressionGeneric(orogProxyPos, false));
 
     /*! create vectors below and above inversion */
     for (i = 0; i < long(interpolationPointList.size()); i++)
         if ((interpolationPointList.at(i)).point->z != NODATA && (interpolationPointList.at(i)).isActive)
         {
-            if ((interpolationPointList.at(i)).point->z <= lapseRateH1)
+            if ((interpolationPointList.at(i)).point->z <= myProxyOrog->getLapseRateH1())
             {
                 myData1.push_back((interpolationPointList.at(i)).value);
                 myHeights1.push_back(float((interpolationPointList.at(i)).point->z));
@@ -471,7 +422,7 @@ bool regressionOrographyT(meteoVariable myVar, int orogProxyPosition, bool clima
 
     /*! create vectors of height intervals below and above inversion */
     for (i = 0; i < long(myIntervalsValues.size()); i++)
-        if (myIntervalsHeight.at(i) <= lapseRateH1)
+        if (myIntervalsHeight.at(i) <= myProxyOrog->getLapseRateH1())
         {
             myIntervalsValues1.push_back(myIntervalsValues.at(i));
             myIntervalsHeight1.push_back(myIntervalsHeight.at(i));
@@ -484,34 +435,32 @@ bool regressionOrographyT(meteoVariable myVar, int orogProxyPosition, bool clima
 
 
     /*! only positive lapse rate*/
-    if (inversionIsSignificative && myIntervalsValues1.size() == myIntervalsValues.size())
+    if (myProxyOrog->getInversionIsSignificative() && myIntervalsValues1.size() == myIntervalsValues.size())
     {
-        regressionSimple(orogProxyPosition, false, &m, &q, &r2);
+        regressionSimple(orogProxyPos, false, &m, &q, &r2);
 
         if (r2 >= mySignificativeR2)
         {
-            inversionLapseRate = m;
-            actualR2 = r2;
-            actualR2Levels = NODATA;
+            myProxyOrog->setInversionLapseRate(m);
+            myProxyOrog->setRegressionR2(r2);
             lapseRateT0 = q;
-            lapseRateT1 = q + m * lapseRateH1;
+            lapseRateT1 = q + m * myProxyOrog->getLapseRateH1();
         }
         else
         {
             statistics::linearRegression(myIntervalsHeight1.data(), myIntervalsValues1.data(), (long)myIntervalsHeight1.size(), false, &q, &m, &r2);
 
-            actualR2 = NODATA;
-            actualR2Levels = r2;
+            myProxyOrog->setRegressionR2(NODATA);
 
             if (r2 >= mySignificativeR2)
             {
                 lapseRateT0 = q;
-                inversionLapseRate = m;
-                lapseRateT1 = q + m * lapseRateH1;
+                myProxyOrog->setInversionLapseRate(m);
+                lapseRateT1 = q + m * myProxyOrog->getLapseRateH1();
             }
             else
             {
-                inversionLapseRate = 0.;
+                myProxyOrog->setInversionLapseRate(0.);
                 lapseRateT0 = myIntervalsValues.at(0);
                 lapseRateT1 = lapseRateT0;
             }
@@ -530,70 +479,70 @@ bool regressionOrographyT(meteoVariable myVar, int orogProxyPosition, bool clima
     /*! inversion is not significant with data neither with intervals */
     if (r2_values < mySignificativeR2Inv && r2_intervals < mySignificativeR2Inv)
     {
-        regressionSimple(orogProxyPosition, false, &m, &q, &actualR2);
+        regressionSimple(orogProxyPos, false, &m, &q, &r2);
 
         /*! case 0: regression with all data much significant */
-        if (actualR2 >= 0.5)
+        if (r2 >= 0.5)
         {
-            inversionIsSignificative = false;
-            lapseRateH1 = NODATA;
-            inversionLapseRate = NODATA;
-            actualLapseRate = minValue(m, float(0.0));
-            actualR2Levels = NODATA;
+            myProxyOrog->setInversionIsSignificative(false);
+            myProxyOrog->setLapseRateH1(NODATA);
+            myProxyOrog->setInversionLapseRate(NODATA);
+            myProxyOrog->setRegressionSlope(minValue(m, float(0.0)));
+            myProxyOrog->setRegressionR2(r2);
             return true;
         }
 
         /*! case 1: analysis only above inversion, flat lapse rate below */
-        inversionLapseRate = 0.;
-        statistics::linearRegression(myHeights2.data(), myData2.data(), long(myHeights2.size()), false, &q2, &m2, &actualR2);
+        myProxyOrog->setInversionLapseRate(0.);
+        statistics::linearRegression(myHeights2.data(), myData2.data(), long(myHeights2.size()), false, &q2, &m2, &r2);
 
         if (myData2.size() >= MIN_REGRESSION_POINTS)
         {
-            if (actualR2 >= mySignificativeR2)
+            if (r2 >= mySignificativeR2)
             {
-                actualLapseRate = minValue(m2, float(0.0));
-                actualR2Levels = NODATA;
-                lapseRateT1 = q2 + lapseRateH1 * actualLapseRate;
+                myProxyOrog->setRegressionSlope(minValue(m2, float(0.0)));
+                lapseRateT1 = q2 + myProxyOrog->getLapseRateH1() * myProxyOrog->getRegressionSlope();
                 lapseRateT0 = lapseRateT1;
+                myProxyOrog->setRegressionR2(r2);
                 return true;
             }
             else
             {
                 statistics::linearRegression(myIntervalsHeight2.data(), myIntervalsValues2.data(),
-                                             int(myIntervalsHeight2.size()), false, &q2, &m2, &actualR2Levels);
-                if (actualR2Levels >= mySignificativeR2)
+                                             int(myIntervalsHeight2.size()), false, &q2, &m2, &r2);
+                if (r2 >= mySignificativeR2)
                 {
-                    actualLapseRate = minValue(m2, float(0.0));
-                    lapseRateT1 = q2 + lapseRateH1 * actualLapseRate;
+                    myProxyOrog->setRegressionSlope(minValue(m2, float(0.0)));
+                    lapseRateT1 = q2 + myProxyOrog->getLapseRateH1() * myProxyOrog->getRegressionSlope();
                     lapseRateT0 = lapseRateT1;
                     return true;
                 }
             }
         }
 
-        inversionIsSignificative = false;
-        lapseRateH1 = NODATA;
-        inversionLapseRate = NODATA;
+        myProxyOrog->setInversionIsSignificative(false);
+        myProxyOrog->setLapseRateH1(NODATA);
+        myProxyOrog->setInversionLapseRate(NODATA);
         lapseRateT0 = q;
         lapseRateT1 = NODATA;
 
         /*! case 2: regression with data */
-        regressionSimple(orogProxyPosition, false, &m, &q, &actualR2);
-        actualR2Levels = NODATA;
+        regressionSimple(orogProxyPos, false, &m, &q, &r2);
 
-        if (actualR2 >= mySignificativeR2)
+        if (r2 >= mySignificativeR2)
         {
-            actualLapseRate = minValue(m, 0);
+            myProxyOrog->setRegressionSlope(minValue(m, 0));
             lapseRateT0 = q;
+            myProxyOrog->setRegressionR2(r2);
             return true;
         }
         else
         {
             lapseRateT0 = myIntervalsValues.at(0);
             if (m > 0.)
-                actualLapseRate = 0.;
+                myProxyOrog->setRegressionSlope(0.);
             else
-                actualLapseRate = climateLapseRate;
+                myProxyOrog->setRegressionSlope(climateLapseRate);
 
             return true;
         }
@@ -604,8 +553,7 @@ bool regressionOrographyT(meteoVariable myVar, int orogProxyPosition, bool clima
     statistics::linearRegression(myHeights1.data(), myData1.data(), int(myHeights1.size()), false, &q1, &m1, &r21);
     statistics::linearRegression(myHeights2.data(), myData2.data(), int(myHeights2.size()), false, &q2, &m2, &r22);
 
-    actualR2 = r22;
-    actualR2Levels = NODATA;
+    myProxyOrog->setRegressionR2(r22);
 
     if (r21 >= mySignificativeR2Inv && r22 >= mySignificativeR2)
     {
@@ -614,15 +562,16 @@ bool regressionOrographyT(meteoVariable myVar, int orogProxyPosition, bool clima
             m2 = 0.;
             q2 = lapseRateT1;
         }
-        findLinesIntersection(q1, m1, q2, m2, &lapseRateH1, &lapseRateT1);
+        findLinesIntersection(q1, m1, q2, m2, &lapseRateH1_, &lapseRateT1);
         lapseRateT0 = q1;
-        inversionLapseRate = m1;
-        actualLapseRate = m2;
-        if (lapseRateH1 > currentSettings.getMaxHeightInversion())
+        myProxyOrog->setInversionLapseRate(m1);
+        myProxyOrog->setRegressionSlope(m2);
+        myProxyOrog->setLapseRateH1(lapseRateH1_);
+        if (myProxyOrog->getLapseRateH1() > currentSettings.getMaxHeightInversion())
         {
-            lapseRateT1 = lapseRateT1 - (lapseRateH1 - currentSettings.getMaxHeightInversion()) * actualLapseRate;
-            lapseRateH1 = currentSettings.getMaxHeightInversion();
-            inversionLapseRate = (lapseRateT1 - lapseRateT0) / (lapseRateH1 - lapseRateH0);
+            lapseRateT1 = lapseRateT1 - (myProxyOrog->getLapseRateH1() - currentSettings.getMaxHeightInversion()) * myProxyOrog->getRegressionSlope();
+            myProxyOrog->setLapseRateH1(currentSettings.getMaxHeightInversion());
+            myProxyOrog->setInversionLapseRate((lapseRateT1 - lapseRateT0) / (myProxyOrog->getLapseRateH1() - myProxyOrog->getLapseRateH0()));
         }
         return true;
     }
@@ -636,26 +585,28 @@ bool regressionOrographyT(meteoVariable myVar, int orogProxyPosition, bool clima
 
         statistics::linearRegression(myIntervalsHeight1.data(), myIntervalsValues1.data(),
                                      long(myIntervalsHeight1.size()), false, &q, &m, &r2);
-        actualLapseRate = m2;
+
+        myProxyOrog->setRegressionSlope(m2);
         if (r2 >= mySignificativeR2Inv)
         {
-            if (findLinesIntersectionAboveThreshold(q, m, q2, m2, 40, &lapseRateH1, &lapseRateT1))
+            if (findLinesIntersectionAboveThreshold(q, m, q2, m2, 40, &lapseRateH1_, &lapseRateT1))
             {
+                myProxyOrog->setLapseRateH1(lapseRateH1_);
                 lapseRateT0 = q;
-                inversionLapseRate = m;
-                if (lapseRateH1 > currentSettings.getMaxHeightInversion())
+                myProxyOrog->setInversionLapseRate(m);
+                if (myProxyOrog->getLapseRateH1() > currentSettings.getMaxHeightInversion())
                 {
-                    lapseRateT1 = lapseRateT1 - (lapseRateH1 - currentSettings.getMaxHeightInversion()) * actualLapseRate;
-                    lapseRateH1 = currentSettings.getMaxHeightInversion();
-                    inversionLapseRate = (lapseRateT1 - lapseRateT0) / (lapseRateH1 - lapseRateH0);
+                    lapseRateT1 = lapseRateT1 - (myProxyOrog->getLapseRateH1() - currentSettings.getMaxHeightInversion()) * myProxyOrog->getRegressionSlope();
+                    myProxyOrog->setLapseRateH1(currentSettings.getMaxHeightInversion());
+                    myProxyOrog->setInversionLapseRate((lapseRateT1 - lapseRateT0) / (myProxyOrog->getLapseRateH1() - myProxyOrog->getLapseRateH0()));
                 }
                 return true;
             }
         }
         else
         {
-            inversionLapseRate = 0.;
-            lapseRateT1 = q2 + m2 * lapseRateH1;
+            myProxyOrog->setInversionLapseRate(0.);
+            lapseRateT1 = q2 + m2 * myProxyOrog->getLapseRateH1();
             lapseRateT0 = lapseRateT1;
             return true;
         }
@@ -664,21 +615,21 @@ bool regressionOrographyT(meteoVariable myVar, int orogProxyPosition, bool clima
     else if (r21 >= mySignificativeR2Inv && r22 < mySignificativeR2)
     {
         lapseRateT0 = q1;
-        inversionLapseRate = m1;
+        myProxyOrog->setInversionLapseRate(m1);
 
         statistics::linearRegression(myIntervalsHeight2.data(), myIntervalsValues2.data(),
                                      long(myIntervalsHeight2.size()), false, &q, &m, &r2);
-        actualR2Levels = r2;
-
         if (r2 >= mySignificativeR2)
         {
-            actualLapseRate = minValue(m, float(0.));
-            findLinesIntersection(lapseRateT0, inversionLapseRate, q, actualLapseRate, &lapseRateH1, &lapseRateT1);
+            myProxyOrog->setRegressionSlope(minValue(m, float(0.)));
+            findLinesIntersection(lapseRateT0, myProxyOrog->getInversionLapseRate(), q, myProxyOrog->getRegressionSlope(), &lapseRateH1_, &lapseRateT1);
+            myProxyOrog->setLapseRateH1(lapseRateH1_);
         }
         else
         {
-            actualLapseRate = climateLapseRate;
-            findLinesIntersection(lapseRateT0, inversionLapseRate, lapseRateT1 - actualLapseRate * lapseRateH1, actualLapseRate, &lapseRateH1, &lapseRateT1);
+            myProxyOrog->setRegressionSlope(climateLapseRate);
+            findLinesIntersection(lapseRateT0, myProxyOrog->getInversionLapseRate(), lapseRateT1 - myProxyOrog->getRegressionSlope()* myProxyOrog->getLapseRateH1(), myProxyOrog->getRegressionSlope(), &lapseRateH1_, &lapseRateT1);
+            myProxyOrog->setLapseRateH1(lapseRateH1_);
         }
         return true;
     }
@@ -691,40 +642,42 @@ bool regressionOrographyT(meteoVariable myVar, int orogProxyPosition, bool clima
         if (r2 >= mySignificativeR2Inv)
         {
             lapseRateT0 = q;
-            inversionLapseRate = m;
-            lapseRateT1 = q + m * lapseRateH1;
+            myProxyOrog->setInversionLapseRate(m);
+            lapseRateT1 = q + m * myProxyOrog->getLapseRateH1();
         }
         else
         {
-            inversionLapseRate = 0.;
+            myProxyOrog->setInversionLapseRate(0.);
             lapseRateT0 = myIntervalsValues.at(0);
             lapseRateT1 = lapseRateT0;
         }
 
         statistics::linearRegression(myIntervalsHeight2.data(), myIntervalsValues2.data(),
                                      long(myIntervalsHeight2.size()), false, &q, &m, &r2);
-        actualR2Levels = r2;
 
         if (r2 >= mySignificativeR2)
         {
-            actualLapseRate = minValue(m, 0);
-            if (findLinesIntersectionAboveThreshold(lapseRateT0, inversionLapseRate, q, actualLapseRate, 40, &lapseRateH1, &lapseRateT1))
+            myProxyOrog->setRegressionSlope(minValue(m, 0));
+            if (findLinesIntersectionAboveThreshold(lapseRateT0, myProxyOrog->getInversionLapseRate(), q, myProxyOrog->getRegressionSlope(), 40, &lapseRateH1_, &lapseRateT1))
+            {
+                myProxyOrog->setLapseRateH1(lapseRateH1_);
                 return true;
+            }
         }
         else
         {
-            actualLapseRate = climateLapseRate;
+            myProxyOrog->setRegressionSlope(climateLapseRate);
             return true;
         }
 
     }
 
     /*! check max lapse rate (20 C / 1000 m) */
-    if (actualLapseRate < -0.02)
-        actualLapseRate = (float)-0.02;
+    if (myProxyOrog->getRegressionSlope() < -0.02)
+        myProxyOrog->setRegressionSlope((float)-0.02);
 
-    initializeOrography();
-    return (regressionGeneric(orogProxyPosition, false));
+    myProxyOrog->initializeOrography();
+    return (regressionGeneric(orogProxyPos, false));
 
 }
 
@@ -897,13 +850,20 @@ void detrendPoints(meteoVariable myVar, int pos)
         {
             if (proxyValue != NODATA)
             {
-                if (inversionIsSignificative)
-                    if (proxyValue <= lapseRateH1)
-                        detrendValue = maxValue(proxyValue - lapseRateH0, 0) * inversionLapseRate;
+                float LR_above = myProxy->getRegressionSlope();
+                if (myProxy->getInversionIsSignificative())
+                {
+                    float LR_H1 = myProxy->getLapseRateH1();
+                    float LR_H0 = myProxy->getLapseRateH0();
+                    float LR_below = myProxy->getInversionLapseRate();
+
+                    if (proxyValue <= LR_H1)
+                        detrendValue = maxValue(proxyValue - LR_H0, 0) * LR_below;
                     else
-                        detrendValue = ((lapseRateH1 - lapseRateH0) * inversionLapseRate) + (proxyValue - lapseRateH1) * actualLapseRate;
+                        detrendValue = ((LR_H1 - LR_H0) * LR_below) + (proxyValue - LR_H1) * LR_above;
+                }
                 else
-                    detrendValue = maxValue(proxyValue, 0) * actualLapseRate;
+                    detrendValue = maxValue(proxyValue, 0) * LR_above;
             }
         }
 
@@ -918,7 +878,7 @@ void detrendPoints(meteoVariable myVar, int pos)
     }
 }
 
-float retrend(meteoVariable myVar, float myZ, vector <float> myProxyValues)
+float retrend(meteoVariable myVar, vector <float> myProxyValues)
 {
 
     if (! getUseDetrendingVar(myVar)) return 0.;
@@ -933,23 +893,27 @@ float retrend(meteoVariable myVar, float myZ, vector <float> myProxyValues)
 
         if (myProxy->getIsActive())
         {
-            if (myProxy->getProxyPragaName() == height)
+            myProxyValue = currentSettings.getProxyValue(pos, myProxyValues);
+
+            if (myProxyValue != NODATA)
             {
-                if (myZ != NODATA)
-                    if (currentSettings.getUseThermalInversion() && inversionIsSignificative)
+                if (myProxy->getProxyPragaName() == height)
+                {
+                    float LR_Above = myProxy->getRegressionSlope();
+                    if (currentSettings.getUseThermalInversion() && myProxy->getInversionIsSignificative())
                     {
-                        if (myZ <= lapseRateH1)
-                            retrendValue += (maxValue(myZ - lapseRateH0, 0) * inversionLapseRate);
+                        float LR_H0 = myProxy->getLapseRateH0();
+                        float LR_H1 = myProxy->getLapseRateH1();
+                        float LR_Below = myProxy->getInversionLapseRate();
+                        if (myProxyValue <= LR_H1)
+                            retrendValue += (maxValue(myProxyValue - LR_H0, 0) * LR_Below);
                         else
-                            retrendValue += ((lapseRateH1 - lapseRateH0) * inversionLapseRate) + (myZ - lapseRateH1) * actualLapseRate;
+                            retrendValue += ((LR_H1 - LR_H0) * LR_Below) + (myProxyValue - LR_H1) * LR_Above;
                     }
                     else
-                        retrendValue += maxValue(myZ, 0) * actualLapseRate;
-            }
-            else
-            {
-                myProxyValue = currentSettings.getProxyValue(pos, myProxyValues);
-                if (myProxyValue != NODATA)
+                        retrendValue += maxValue(myProxyValue, 0) * LR_Above;
+                }
+                else
                     retrendValue += myProxyValue * (currentSettings.getProxy(pos))->getRegressionSlope();
             }
         }
@@ -958,20 +922,18 @@ float retrend(meteoVariable myVar, float myZ, vector <float> myProxyValues)
     return retrendValue;
 }
 
-bool regressionOrography(meteoVariable myVar, int pos)
+bool regressionOrography(meteoVariable myVar, int orogProxyPos)
 {
-    initializeOrography();
-
     if (getUseDetrendingVar(myVar))
     {
         if (currentSettings.getUseThermalInversion())
-            return regressionOrographyT(myVar, pos, true);
+            return regressionOrographyT(myVar, orogProxyPos, true);
         else
-            return regressionSimpleT(myVar, pos);
+            return regressionSimpleT(myVar, orogProxyPos);
     }
     else
     {
-        return regressionGeneric(pos, false);
+        return regressionGeneric(orogProxyPos, false);
     }
 
 }
@@ -1029,7 +991,7 @@ bool preInterpolation(meteoVariable myVar)
 }
 
 
-float interpolateSimple(meteoVariable myVar, float myZ, std::vector <float> myProxyValues)
+float interpolateSimple(meteoVariable myVar, std::vector <float> myProxyValues)
 {
     float myResult = NODATA;
 
@@ -1042,7 +1004,7 @@ float interpolateSimple(meteoVariable myVar, float myZ, std::vector <float> myPr
         myResult = NODATA;
 
     if (myResult != NODATA)
-        return (myResult + retrend(myVar, myZ, myProxyValues));
+        return (myResult + retrend(myVar, myProxyValues));
     else
         return NODATA;
 }
@@ -1069,7 +1031,7 @@ float interpolate(meteoVariable myVar, float myX, float myY, float myZ, std::vec
             if (!currentSettings.getUseJRC() && myResult <= PREC_THRESHOLD) myResult = 0.;
     }
     else
-        myResult = interpolateSimple(myVar, myZ, myProxyValues);
+        myResult = interpolateSimple(myVar, myProxyValues);
 
     return myResult;
 

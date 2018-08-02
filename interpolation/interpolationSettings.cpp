@@ -181,6 +181,46 @@ void Crit3DProxy::initialize()
     grid->emptyGrid();
 }
 
+float Crit3DProxyInterpolation::getLapseRateH1() const
+{
+    return lapseRateH1;
+}
+
+void Crit3DProxyInterpolation::setLapseRateH1(float value)
+{
+    lapseRateH1 = value;
+}
+
+float Crit3DProxyInterpolation::getLapseRateH0() const
+{
+    return lapseRateH0;
+}
+
+void Crit3DProxyInterpolation::setLapseRateH0(float value)
+{
+    lapseRateH0 = value;
+}
+
+float Crit3DProxyInterpolation::getInversionLapseRate() const
+{
+    return inversionLapseRate;
+}
+
+void Crit3DProxyInterpolation::setInversionLapseRate(float value)
+{
+    inversionLapseRate = value;
+}
+
+bool Crit3DProxyInterpolation::getInversionIsSignificative() const
+{
+    return inversionIsSignificative;
+}
+
+void Crit3DProxyInterpolation::setInversionIsSignificative(bool value)
+{
+    inversionIsSignificative = value;
+}
+
 Crit3DProxyInterpolation::Crit3DProxyInterpolation() : Crit3DProxy::Crit3DProxy()
 {
     regressionR2 = NODATA;
@@ -205,6 +245,18 @@ float Crit3DProxyInterpolation::getValue(int pos, std::vector <float> proxyValue
         return proxyValues.at(pos);
     else
         return NODATA;
+}
+
+void Crit3DProxyInterpolation::initializeOrography()
+{
+    setLapseRateH0(0.);
+    setLapseRateH1(NODATA);
+    setInversionLapseRate(NODATA);
+    setRegressionSlope(NODATA);
+    setRegressionR2(NODATA);
+    setInversionIsSignificative(false);
+
+    return;
 }
 
 void Crit3DInterpolationSettings::addProxy(Crit3DProxy* myProxy)
