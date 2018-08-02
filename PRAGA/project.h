@@ -37,6 +37,10 @@
         #include "interpolationSettings.h"
     #endif
 
+    #ifndef INTERPOLATIONPOINT_H
+        #include "interpolationPoint.h"
+    #endif
+
     #include <QList>
     #include <QDate>
     #include <fstream>
@@ -86,6 +90,7 @@
 
         gridAggregationMethod grdAggrMethod;
 
+        std::vector <Crit3DInterpolationDataPoint*> interpolationPointList;
         Crit3DInterpolationSettings myInterpolationSettings;
         Crit3DInterpolationSettings qualityInterpolationSettings;
 

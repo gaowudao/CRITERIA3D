@@ -49,7 +49,6 @@ void Crit3DInterpolationSettings::initialize()
     interpolationMethod = interpolationMethod::idw;
     useThermalInversion = true;
     useTAD = false;
-    useJRC = false;
     useDewPoint = true;
     isKrigingReady = false;
     precipitationAllZero = false;
@@ -109,17 +108,11 @@ void Crit3DInterpolationSettings::setUseThermalInversion(bool myValue)
 void Crit3DInterpolationSettings::setUseTAD(bool myValue)
 { useTAD = myValue;}
 
-void Crit3DInterpolationSettings::setUseJRC(bool myValue)
-{ useJRC = myValue;}
-
 void Crit3DInterpolationSettings::setUseDewPoint(bool myValue)
 { useDewPoint = myValue;}
 
 bool Crit3DInterpolationSettings::getUseThermalInversion()
 { return (useThermalInversion);}
-
-bool Crit3DInterpolationSettings::getUseJRC()
-{ return (useJRC);}
 
 bool Crit3DInterpolationSettings::getUseDewPoint()
 { return (useDewPoint);}

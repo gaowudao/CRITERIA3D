@@ -75,7 +75,6 @@ private:
     bool useThermalInversion;
 
     bool useTAD;
-    bool useJRC;
     bool useDewPoint;
 
     bool isKrigingReady;

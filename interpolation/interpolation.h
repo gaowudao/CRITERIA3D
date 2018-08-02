@@ -38,22 +38,20 @@
 
     class Crit3DMeteoPoint;
 
-    bool preInterpolation(meteoVariable myVar, Crit3DInterpolationSettings *mySettings);
+    bool preInterpolation(std::vector<Crit3DInterpolationDataPoint *> *myPoints, Crit3DInterpolationSettings *mySettings, meteoVariable myVar);
 
     bool krigingEstimateVariogram(float *myDist, float *mySemiVar,int sizeMyVar, int nrMyPoints,float myMaxDistance, double *mySill, double *myNugget, double *myRange, double *mySlope, TkrigingMode *myMode, int nrPointData);
     bool krigLinearPrep(double *mySlope, double *myNugget, int nrPointData);
 
-    bool addInterpolationPoint(int index, float myValue, float myX, float myY, float myHeight, std::vector<float> myProxyValues);
-
     void clearInterpolationPoints();
 
-    bool neighbourhoodVariability(float x, float y, float z, int nMax,
+    bool neighbourhoodVariability(std::vector<Crit3DInterpolationDataPoint *> myInterpolationPoints, float x, float y, float z, int nMax,
                                   float* devSt, float* devStDeltaZ, float* minDistance);
 
-    float interpolate(meteoVariable myVar, float myX, float myY, float myZ, std::vector<float> myProxyValues, Crit3DInterpolationSettings *mySettings);
-    bool interpolateGridDtm(Crit3DInterpolationSettings* mySettings, gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGrid &myGridDtm, meteoVariable myVar);
+    float interpolate(std::vector<Crit3DInterpolationDataPoint *> myPoints, Crit3DInterpolationSettings *mySettings, meteoVariable myVar, float myX, float myY, float myZ, std::vector<float> myProxyValues);
+    bool interpolateGridDtm(std::vector<Crit3DInterpolationDataPoint *> myPoints, Crit3DInterpolationSettings* mySettings, gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGrid &myGridDtm, meteoVariable myVar);
 
-    bool interpolationRaster(meteoVariable myVar, Crit3DInterpolationSettings *mySettings,
+    bool interpolationRaster(std::vector<Crit3DInterpolationDataPoint *> *myPoints, Crit3DInterpolationSettings *mySettings, meteoVariable myVar,
                              const Crit3DTime& myTime, const gis::Crit3DRasterGrid& myDTM,
                              gis::Crit3DRasterGrid *myRaster, std::string *myError);
 

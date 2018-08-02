@@ -46,3 +46,4 @@ float Crit3DInterpolationDataPoint::getProxy(int pos)
     else
         return NODATA;
 }
+
