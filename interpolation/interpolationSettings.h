@@ -70,7 +70,7 @@ public:
 class Crit3DInterpolationSettings
 {
 private:
-    int interpolationMethod;
+    TInterpolationMethod interpolationMethod;
 
     bool useThermalInversion;
 
@@ -110,7 +110,7 @@ public:
     void setCurrentHour(int myHour);
     void setCurrentHourFraction(int myHourFraction);
 
-    void setInterpolationMethod(bool myValue);
+    void setInterpolationMethod(TInterpolationMethod myValue);
 
     void setUseThermalInversion(bool myValue);
 
@@ -119,7 +119,7 @@ public:
     void setUseDewPoint(bool myValue);
 
     bool getUseTad();
-    int getInterpolationMethod();
+    TInterpolationMethod getInterpolationMethod();
     float getMaxHeightInversion();
 
     bool getUseThermalInversion();

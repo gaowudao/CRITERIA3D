@@ -17,10 +17,13 @@
     #include <vector>
 #endif
 
-namespace interpolationMethod
-{
-    enum { idw, kriging, shepard };
-}
+enum TInterpolationMethod { idw, kriging, shepard };
+
+const std::map<std::string, TInterpolationMethod> interpolationMethodNames = {
+  { "idw", idw },
+  { "shepard", shepard },
+  { "kriging", kriging }
+};
 
 enum TProxyVar { height, urbanFraction, orogIndex, seaDistance, aspect, slope, noProxy };
 

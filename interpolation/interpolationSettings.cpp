@@ -51,7 +51,7 @@ void Crit3DInterpolationSettings::initializeProxy()
 
 void Crit3DInterpolationSettings::initialize()
 {
-    interpolationMethod = interpolationMethod::idw;
+    interpolationMethod = idw;
     useThermalInversion = true;
     useTAD = false;
     useDewPoint = true;
@@ -93,7 +93,7 @@ void Crit3DInterpolationSettings::setCurrentHourFraction(int myHourFraction)
 float Crit3DInterpolationSettings::getGenericPearsonThreshold()
 { return genericPearsonThreshold;}
 
-int Crit3DInterpolationSettings::getInterpolationMethod()
+TInterpolationMethod Crit3DInterpolationSettings::getInterpolationMethod()
 { return interpolationMethod;}
 
 bool Crit3DInterpolationSettings::getUseTad()
@@ -102,7 +102,7 @@ bool Crit3DInterpolationSettings::getUseTad()
 float Crit3DInterpolationSettings::getMaxHeightInversion()
 { return maxHeightInversion;}
 
-void Crit3DInterpolationSettings::setInterpolationMethod(bool myValue)
+void Crit3DInterpolationSettings::setInterpolationMethod(TInterpolationMethod myValue)
 { interpolationMethod = myValue;}
 
 void Crit3DInterpolationSettings::setUseThermalInversion(bool myValue)

@@ -54,9 +54,22 @@ bool Project::readSettings()
         //interpolation
         if (group == "interpolation")
         {
+            bool useDewPoint;
+            std::string algorithm;
+
             settings->beginGroup(group);
-            myInterpolationSettings.setUseDewPoint(settings->value("useDewPoint").toBool());
-            myInterpolationSettings.setInterpolationMethod(settings->value("algorithm").toString());            settings->endGroup();
+            useDewPoint = settings->value("useDewPoint").toBool();
+            algorithm = settings->value("algorithm").toString().toStdString();
+            settings->endGroup();
+
+            myInterpolationSettings.setUseDewPoint(useDewPoint);
+            if (interpolationMethodNames.find(algorithm) == interpolationMethodNames.end())
+            {
+                errorString = "Unknown interpolation method";
+                return false;
+            }
+            else
+                myInterpolationSettings.setInterpolationMethod(interpolationMethodNames.at(algorithm));
         }
     }
 
@@ -217,7 +230,7 @@ bool Project::readProxies()
         }
     }
 
-    return (proxyNr > 0);
+    return true;
 }
 
 bool Project::getMeteoPointSelected(int i)
@@ -642,18 +655,13 @@ bool Project::loadMeteoPointsDB(QString dbName)
 
     listMeteoPoints.clear();
 
-    //load interpolation proxy values
+    //interpolation proxies
     if (! readProxies())
     {
         logError("Error loading interpolation proxies");
         return false;
     }
-
-    if (! readProxyValues())
-    {
-        logError("Error loading point proxy values");
-        return false;
-    }
+    readProxyValues();
 
     return true;
 }
@@ -872,7 +880,7 @@ bool Project::readProxyValues()
 
 bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime,
                             gis::Crit3DRasterGrid *myRaster)
-{    
+{
     if (myVar == noMeteoVar)
     {
         errorString = "No variable selected";
@@ -1248,7 +1256,6 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
         {
             return false;
         }
-        this->meteoGridDbHandler->meteoGrid()->fillMeteoRasterElabValue();
     }
     else
     {

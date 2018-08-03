@@ -921,9 +921,9 @@ float interpolate(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DIn
 
     assignDistances(myPoints, myX, myY, myZ);
 
-    if (mySettings->getInterpolationMethod() == interpolationMethod::idw)
+    if (mySettings->getInterpolationMethod() == idw)
         myResult = inverseDistanceWeighted(myPoints);
-    else if (mySettings->getInterpolationMethod() == interpolationMethod::kriging)
+    else if (mySettings->getInterpolationMethod() == kriging)
         myResult = NODATA;
 
     if (myResult != NODATA)
