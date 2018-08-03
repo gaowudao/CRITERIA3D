@@ -353,7 +353,7 @@ void Crit3DMeteoGrid::fillMeteoRaster()
 
 void Crit3DMeteoGrid::fillMeteoRasterElabValue()
 {
-    //float debug = 0;
+    float debug = 0;
     for (int i = 0; i < dataMeteoGrid.header->nrRows; i++)
     {
         for (int j = 0; j < dataMeteoGrid.header->nrCols; j++)
@@ -361,7 +361,7 @@ void Crit3DMeteoGrid::fillMeteoRasterElabValue()
              if (_meteoPoints[i][j]->active)
              {
                  dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j] = _meteoPoints[i][j]->elaboration;
-                 //debug = dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j];
+                 debug = dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j];
              }
         }
     }

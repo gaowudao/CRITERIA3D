@@ -956,18 +956,18 @@ namespace statistics
         double sumGauss = 0;
         double deltaXGauss = 1 / 1000;
         double myX = 0;
-        std::vector<float> GaussIntegralTwoTailsFactor1000(1000);
+        std::vector<float> GaussIntegralTwoTailsFactor1000(10000);
 
-        for (unsigned int i = 0; i < 1000; i++)
+        for (unsigned int i = 0; i < 10000; i++)
         {
             myX = myX + deltaXGauss;
-            double rapporto = (myX - mean) / stdDev;
-            double gauss = (1 / (sqrt(2 * PI) * stdDev)) * exp(-0.5 * (rapporto * rapporto));
+            double ratio = (myX - mean) / stdDev;
+            double gauss = (1 / (sqrt(2 * PI) * stdDev)) * exp(-0.5 * (ratio * ratio));
             sumGauss = sumGauss + gauss * deltaXGauss;
-            GaussIntegralTwoTailsFactor1000[i] = float(sumGauss * 2.f);
+            GaussIntegralTwoTailsFactor1000.push_back(float(sumGauss * 2.f));
         }
-
-        return GaussIntegralTwoTailsFactor1000[int(zMK * 1000)];
+        float result = GaussIntegralTwoTailsFactor1000[int(zMK * 1000)];
+        return result;
 
     }
 
