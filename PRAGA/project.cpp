@@ -47,9 +47,6 @@ bool Project::readSettings()
 {
     //interpolation settings
     myInterpolationSettings.initialize();
-/*
-    QVariant notFound = "notFound";
-    QVariant myValue;
 
     Q_FOREACH (QString group, settings->childGroups())
     {
@@ -58,8 +55,9 @@ bool Project::readSettings()
         {
             settings->beginGroup(group);
 
-            value = std:.string algorithm = settings->value("algorithm", notFound)
-                    .toString().toStdString();
+            if (settings->contains("algorithm"))
+            {
+                std::string algorithm = settings->value("algorithm").toString().toStdString();
                 if (interpolationMethodNames.find(algorithm) == interpolationMethodNames.end())
                 {
                     errorString = "Unknown interpolation method";
@@ -69,40 +67,40 @@ bool Project::readSettings()
                     myInterpolationSettings.setInterpolationMethod(interpolationMethodNames.at(algorithm));
             }
 
-            if (settings->findChild("gridAggregationMethod"))
+            if (settings->contains("gridAggregationMethod"))
             {
-                std:.string algorithm = settings->value("gridAggregationMethod").toString().toStdString();
-                if (aggregationMethodNames.find(algorithm) == aggregationMethodNames.end())
+                std::string aggrMethod = settings->value("gridAggregationMethod").toString().toStdString();
+                if (aggregationMethodNames.find(aggrMethod) == aggregationMethodNames.end())
                 {
                     errorString = "Unknown aggregation method";
                     return false;
                 }
                 else
-                    myInterpolationSettings.setMeteoGridAggrMethod(aggregationMethodNames.at(algorithm));
+                    myInterpolationSettings.setMeteoGridAggrMethod(aggregationMethodNames.at(aggrMethod));
             }
 
-            if (settings->findChild("thermalInversion"))
+            if (settings->contains("thermalInversion"))
                 myInterpolationSettings.setUseThermalInversion(settings->value("thermalInversion").toBool());
 
-            if (settings->findChild("topographicDistance"))
+            if (settings->contains("topographicDistance"))
                 myInterpolationSettings.setUseTAD(settings->value("topographicDistance").toBool());
 
-            if (settings->findChild("lapseRateCode"))
+            if (settings->contains("lapseRateCode"))
                 myInterpolationSettings.setUseLapseRateCode(settings->value("lapseRateCode").toBool());
 
-            if (settings->findChild("optimalDetrending"))
+            if (settings->contains("optimalDetrending"))
                 myInterpolationSettings.setUseBestDetrending(settings->value("optimalDetrending").toBool());
 
-            if (settings->findChild("minRegressionR2"))
+            if (settings->contains("minRegressionR2"))
                 myInterpolationSettings.setMinRegressionR2(settings->value("minRegressionR2").toFloat());
 
-            if (settings->findChild("useDewPoint"))
+            if (settings->contains("useDewPoint"))
                 myInterpolationSettings.setUseDewPoint(settings->value("useDewPoint").toFloat());
 
             settings->endGroup();
         }
     }
-*/
+
     return true;
 }
 
@@ -1286,7 +1284,6 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
         {
             return false;
         }
-        this->meteoGridDbHandler->meteoGrid()->fillMeteoRasterElabValue();
     }
     else
     {
