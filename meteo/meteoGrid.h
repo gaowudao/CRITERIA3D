@@ -89,6 +89,7 @@ const std::map<std::string, gridAggregationMethod> aggregationMethodNames = {
             void setMeteoPoints(const std::vector<std::vector<Crit3DMeteoPoint *> > &meteoPoints);
 
             Crit3DMeteoPoint meteoPoint(int row, int col);
+            Crit3DMeteoPoint* meteoPointPointer(int row, int col);
 
             void setActive(int row, int col, bool active);
 

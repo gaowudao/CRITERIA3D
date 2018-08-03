@@ -1286,6 +1286,7 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
         {
             return false;
         }
+        this->meteoGridDbHandler->meteoGrid()->fillMeteoRasterElabValue();
     }
     else
     {
