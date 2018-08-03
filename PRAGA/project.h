@@ -90,7 +90,7 @@
 
         gridAggregationMethod grdAggrMethod;
 
-        std::vector <Crit3DInterpolationDataPoint*> interpolationPointList;
+        std::vector <Crit3DInterpolationDataPoint> interpolationPointList;
         Crit3DInterpolationSettings myInterpolationSettings;
         Crit3DInterpolationSettings qualityInterpolationSettings;
 

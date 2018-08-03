@@ -878,7 +878,8 @@ bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, 
     }
 
     // check quality and pass data to interpolation
-    if (!quality->checkAndPassDataToInterpolation(myVar, myFrequency, meteoPoints, nrMeteoPoints, myTime, &qualityInterpolationSettings, &interpolationPointList))
+    if (!quality->checkAndPassDataToInterpolation(myVar, myFrequency, meteoPoints, nrMeteoPoints, myTime,
+                                                  &qualityInterpolationSettings, interpolationPointList))
     {
         errorString = "No data available";
         return false;
@@ -893,7 +894,7 @@ bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, 
     }
     else
     {
-        return interpolationRaster(&interpolationPointList, &myInterpolationSettings, myVar, myTime, this->DTM, myRaster, &errorString);
+        return interpolationRaster(interpolationPointList, &myInterpolationSettings, myVar, myTime, this->DTM, myRaster, &errorString);
     }
 }
 
@@ -1012,13 +1013,14 @@ bool Project::interpolateRasterRadiation(const Crit3DTime& myTime, gis::Crit3DRa
             return false;
         }
 
-    if (!quality->checkAndPassDataToInterpolation(atmTransmissivity, hourly, this->meteoPoints, this->nrMeteoPoints, myTime, &this->myInterpolationSettings, &interpolationPointList))
+    if (!quality->checkAndPassDataToInterpolation(atmTransmissivity, hourly, meteoPoints, nrMeteoPoints, myTime,
+                                                  &myInterpolationSettings, interpolationPointList))
     {
         *myError = "Function interpolateRasterRadiation: not enough transmissivity data.";
         return false;
     }
 
-    if (preInterpolation(&interpolationPointList, &myInterpolationSettings, atmTransmissivity))
+    if (preInterpolation(interpolationPointList, &myInterpolationSettings, atmTransmissivity))
         if (! interpolateGridDtm(interpolationPointList, &myInterpolationSettings, this->radiationMaps->transmissivityMap, this->DTM, atmTransmissivity), &myInterpolationSettings)
         {
             *myError = "Function interpolateRasterRadiation: error interpolating transmissivity.";
