@@ -158,7 +158,6 @@ bool Project::readProxies()
 {
     std::string proxyName, proxyGridName, proxyTable, proxyField;
     int proxyNr = 0;
-    Crit3DProxy* myProxy;
     bool isGridLoaded;
 
     myInterpolationSettings.initialize();
@@ -169,7 +168,6 @@ bool Project::readProxies()
         //proxy variables (for interpolation)
         if (group.startsWith("proxy"))
         {
-            myProxy = new Crit3DProxy();
             isGridLoaded = false;
 
             if (! checkProxySetting(group, &proxyName, &proxyGridName, &proxyTable, &proxyField))
@@ -178,19 +176,21 @@ bool Project::readProxies()
                 return false;
             }
 
-            myProxy->setName(proxyName);
-            myProxy->setGridName(proxyGridName);
+            Crit3DProxy myProxy;
 
-            if (myProxy->getProxyPragaName() == height)
+            myProxy.setName(proxyName);
+            myProxy.setGridName(proxyGridName);
+
+            if (myProxy.getProxyPragaName() == height)
             {
                 if (DTM.isLoaded)
                 {
                     isGridLoaded = true;
-                    myProxy->setGrid(&DTM);
+                    myProxy.setGrid(&DTM);
                 }
             }
             else
-                isGridLoaded = loadProxyGrid(myProxy);
+                isGridLoaded = loadProxyGrid(&myProxy);
 
             myInterpolationSettings.addProxy(myProxy);
             if (isGridLoaded && meteoPointsDbHandler != NULL)
@@ -629,6 +629,19 @@ bool Project::loadMeteoPointsDB(QString dbName)
 
     listMeteoPoints.clear();
 
+    //load interpolation proxy values
+    if (! readProxies())
+    {
+        logError("Error loading interpolation proxies");
+        return false;
+    }
+
+    if (! readProxyValues())
+    {
+        logError("Error loading point proxy values");
+        return false;
+    }
+
     return true;
 }
 
@@ -862,18 +875,6 @@ bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, 
     if (nrMeteoPoints == 0)
     {
         errorString = "No points available";
-        return false;
-    }
-
-    if (! readProxies())
-    {
-        errorString = "Error loading interpolation proxies";
-        return false;
-    }
-
-    if (! readProxyValues())
-    {
-        errorString = "Error loading point proxy values";
         return false;
     }
 

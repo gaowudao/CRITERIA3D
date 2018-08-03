@@ -256,17 +256,29 @@ bool roundColorScale(Crit3DColorScale* myScale, int nrIntervals, bool lessRounde
     float level = (myScale->maximum - myScale->minimum) / nrIntervals;
 
     float logLevel = log10(level);
-    float logAvg = log10(avg);
 
     float myExp;
-    if (lessRounded)
-        myExp = std::min(floor(logLevel)-1, floor(logAvg)-1);
+    float roundAvg;
+
+    if (avg == 0)
+    {
+        myExp = floor(logLevel)-1;
+        roundAvg = avg;
+    }
     else
-        myExp = std::max(floor(logLevel)-1, floor(logAvg)-1);
+    {
+        float logAvg = log10(avg);
+        if (lessRounded)
+            myExp = std::min(floor(logLevel)-1, floor(logAvg)-1);
+        else
+            myExp = std::max(floor(logLevel)-1, floor(logAvg)-1);
+    }
 
     float pow10 = powf(10.0, myExp);
     float roundLevel = ceil(level / pow10) * pow10;
-    float roundAvg = round(avg / pow10) * pow10;
+
+    if (avg != 0)
+        roundAvg = round(avg / pow10) * pow10;
 
     if (myScale->minimum == 0)
     {

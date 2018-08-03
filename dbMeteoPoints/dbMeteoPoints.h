@@ -22,7 +22,7 @@ private:
 
 public:
     Crit3DProxyMeteoPoint();
-    Crit3DProxyMeteoPoint(Crit3DProxy* myProxy);
+    Crit3DProxyMeteoPoint(Crit3DProxy myProxy);
     std::string getProxyField() const;
     void setProxyField(const std::string &value);
     std::string getProxyTable() const;
@@ -34,7 +34,7 @@ class Crit3DMeteoPointsDbHandler : public QObject
     Q_OBJECT
 
 private:
-    std::vector <Crit3DProxyMeteoPoint*> ProxyMeteoPoint;
+    std::vector <Crit3DProxyMeteoPoint> ProxyMeteoPoint;
 
 public:
     explicit Crit3DMeteoPointsDbHandler(QString dbName);
@@ -50,7 +50,7 @@ public:
         QDateTime getFirstDay(frequencyType frequency);
 
         void initializeProxy();
-        void addProxy(Crit3DProxy *myProxy, std::string tableName_, std::string fieldName_);
+        void addProxy(Crit3DProxy myProxy, std::string tableName_, std::string fieldName_);
         bool readPointProxyValues(Crit3DMeteoPoint* myPoint);
 
         bool writePointProperties(Crit3DMeteoPoint* pointProp);

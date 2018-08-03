@@ -263,12 +263,12 @@ void Crit3DProxyInterpolation::initializeOrography()
     return;
 }
 
-void Crit3DInterpolationSettings::addProxy(Crit3DProxy* myProxy)
+void Crit3DInterpolationSettings::addProxy(Crit3DProxy myProxy)
 {
     Crit3DProxyInterpolation myInterpolationProxy;
-    myInterpolationProxy.setName(myProxy->getName());
-    myInterpolationProxy.setGridName(myProxy->getGridName());
-    myInterpolationProxy.setGrid(myProxy->getGrid());
+    myInterpolationProxy.setName(myProxy.getName());
+    myInterpolationProxy.setGridName(myProxy.getGridName());
+    myInterpolationProxy.setGrid(myProxy.getGrid());
     myInterpolationProxy.setIsActive(true);
     currentProxy.push_back(myInterpolationProxy);
 }

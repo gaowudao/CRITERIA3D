@@ -101,7 +101,7 @@ public:
     int getProxyNr();
     bool getProxyActive(int pos);
     void setProxyActive(int pos, bool isActive_);
-    void addProxy(Crit3DProxy *myProxy);
+    void addProxy(Crit3DProxy myProxy);
     float getProxyValue(int pos, std::vector <float> proxyValues);
 
     void setClimateParameters(Crit3DClimateParameters* myParameters);
