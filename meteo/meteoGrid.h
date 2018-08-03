@@ -97,6 +97,7 @@ enum gridAggregationMethod {aggrAvg, aggrMedian, aggrStdDeviation};
 
             bool createRasterGrid();
             void fillMeteoRaster();
+            void fillMeteoRasterElabValue();
 
             gis::Crit3DGisSettings getGisSettings() const;
             void setGisSettings(const gis::Crit3DGisSettings &gisSettings);
