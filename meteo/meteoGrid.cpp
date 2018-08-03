@@ -202,6 +202,11 @@ Crit3DMeteoPoint Crit3DMeteoGrid::meteoPoint(int row, int col)
     return *(_meteoPoints[row][col]);
 }
 
+Crit3DMeteoPoint* Crit3DMeteoGrid::meteoPointPointer(int row, int col)
+{
+    return _meteoPoints[row][col];
+}
+
 void Crit3DMeteoGrid::setMeteoPoints(const std::vector<std::vector<Crit3DMeteoPoint *> > &meteoPoints)
 {
     _meteoPoints = meteoPoints;
@@ -348,6 +353,7 @@ void Crit3DMeteoGrid::fillMeteoRaster()
 
 void Crit3DMeteoGrid::fillMeteoRasterElabValue()
 {
+    //float debug = 0;
     for (int i = 0; i < dataMeteoGrid.header->nrRows; i++)
     {
         for (int j = 0; j < dataMeteoGrid.header->nrCols; j++)
@@ -355,6 +361,7 @@ void Crit3DMeteoGrid::fillMeteoRasterElabValue()
              if (_meteoPoints[i][j]->active)
              {
                  dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j] = _meteoPoints[i][j]->elaboration;
+                 //debug = dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j];
              }
         }
     }

@@ -142,8 +142,9 @@ bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* 
                 }
 
 
-                Crit3DMeteoPoint meteoPoint = meteoGridDbHandler->meteoGrid()->meteoPoint(row,col);
-                if  ( elaborationOnPoint(myError, NULL, meteoGridDbHandler, &meteoPoint, clima, isMeteoGrid, startDate, endDate, isAnomaly, true))
+                //Crit3DMeteoPoint meteoPoint = meteoGridDbHandler->meteoGrid()->meteoPoint(row,col);
+                Crit3DMeteoPoint* meteoPoint = meteoGridDbHandler->meteoGrid()->meteoPointPointer(row,col);
+                if  ( elaborationOnPoint(myError, NULL, meteoGridDbHandler, meteoPoint, clima, isMeteoGrid, startDate, endDate, isAnomaly, true))
                 {
                     validCell = validCell + 1;
                 }
@@ -179,10 +180,10 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
     std::vector<float> outputValues;
 
     meteoPointTemp->id = meteoPoint->id;
-    if (meteoPointTemp->id == "2297")
-    {
-        qInfo() << "2297"; // debug
-    }
+//    if (meteoPointTemp->id == "01878")
+//    {
+//        qInfo() << "01878"; // debug
+//    }
     meteoPointTemp->point.z = meteoPoint->point.z;
     meteoPointTemp->firstDateDailyVar = meteoPoint->firstDateDailyVar;
 
