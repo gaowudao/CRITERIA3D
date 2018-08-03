@@ -95,6 +95,7 @@ public:
     Crit3DInterpolationSettings();
 
     void initialize();
+    void initializeProxy();
 
     Crit3DProxyInterpolation* getProxy(int pos);
     std::string getProxyName(int pos);

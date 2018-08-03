@@ -46,7 +46,20 @@ Project::Project()
 
 bool Project::readSettings()
 {
-    //todo
+    //interpolation settings
+    myInterpolationSettings.initialize();
+
+    Q_FOREACH (QString group, settings->childGroups())
+    {
+        //interpolation
+        if (group == "interpolation")
+        {
+            settings->beginGroup(group);
+            myInterpolationSettings.setUseDewPoint(settings->value("useDewPoint").toBool());
+            myInterpolationSettings.setInterpolationMethod(settings->value("algorithm").toString());            settings->endGroup();
+        }
+    }
+
     return true;
 }
 
@@ -160,7 +173,7 @@ bool Project::readProxies()
     int proxyNr = 0;
     bool isGridLoaded;
 
-    myInterpolationSettings.initialize();
+    myInterpolationSettings.initializeProxy();
     meteoPointsDbHandler->initializeProxy();
 
     Q_FOREACH (QString group, settings->childGroups())
