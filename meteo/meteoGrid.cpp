@@ -346,6 +346,21 @@ void Crit3DMeteoGrid::fillMeteoRaster()
 
 }
 
+void Crit3DMeteoGrid::fillMeteoRasterElabValue()
+{
+    for (int i = 0; i < dataMeteoGrid.header->nrRows; i++)
+    {
+        for (int j = 0; j < dataMeteoGrid.header->nrCols; j++)
+        {
+             if (_meteoPoints[i][j]->active)
+             {
+                 dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j] = _meteoPoints[i][j]->elaboration;
+             }
+        }
+    }
+
+}
+
 gis::Crit3DGisSettings Crit3DMeteoGrid::getGisSettings() const
 {
     return _gisSettings;
