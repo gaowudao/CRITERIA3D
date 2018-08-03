@@ -7,6 +7,9 @@
 #ifndef METEO_H
     #include "meteo.h"
 #endif
+#ifndef METEOGRID_H
+    #include "meteoGrid.h"
+#endif
 #ifndef GIS_H
     #include "gis.h"
 #endif
@@ -72,14 +75,16 @@ class Crit3DInterpolationSettings
 private:
     TInterpolationMethod interpolationMethod;
 
+    float minRegressionR2;
     bool useThermalInversion;
-
     bool useTAD;
+    bool useLapseRateCode;
+    bool useBestDetrending;
     bool useDewPoint;
+    gridAggregationMethod meteoGridAggrMethod;
 
     bool isKrigingReady;
     bool precipitationAllZero;
-    float genericPearsonThreshold;
     float maxHeightInversion;
 
     std::vector <Crit3DProxyInterpolation> currentProxy;
@@ -111,29 +116,35 @@ public:
     void setCurrentHourFraction(int myHourFraction);
 
     void setInterpolationMethod(TInterpolationMethod myValue);
+    TInterpolationMethod getInterpolationMethod();
 
     void setUseThermalInversion(bool myValue);
-
-    void setUseTAD(bool myValue);
-    void setUseJRC(bool myValue);
-    void setUseDewPoint(bool myValue);
-
-    bool getUseTad();
-    TInterpolationMethod getInterpolationMethod();
-    float getMaxHeightInversion();
-
     bool getUseThermalInversion();
 
+    void setUseTAD(bool myValue);
     bool getUseTAD();
-    bool getUseJRC();
+
+    void setUseDewPoint(bool myValue);
     bool getUseDewPoint();
 
-    float getGenericPearsonThreshold();
+    float getMaxHeightInversion();
 
     float getCurrentClimateLapseRate(meteoVariable myVar);
 
     bool getPrecipitationAllZero() const;
     void setPrecipitationAllZero(bool value);
+
+    float getMinRegressionR2() const;
+    void setMinRegressionR2(float value);
+
+    bool getUseLapseRateCode() const;
+    void setUseLapseRateCode(bool value);
+
+    bool getUseBestDetrending() const;
+    void setUseBestDetrending(bool value);
+
+    gridAggregationMethod getMeteoGridAggrMethod() const;
+    void setMeteoGridAggrMethod(const gridAggregationMethod &value);
 };
 
 

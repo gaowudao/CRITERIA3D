@@ -234,7 +234,7 @@ bool regressionGeneric(std::vector <Crit3DInterpolationDataPoint> &myPoints, Cri
     myProxy->setRegressionSlope(m);
     myProxy->setRegressionR2(r2);
 
-    return (r2 >= mySettings->getGenericPearsonThreshold());
+    return (r2 >= mySettings->getMinRegressionR2());
 }
 
 
@@ -248,7 +248,7 @@ bool regressionSimpleT(std::vector <Crit3DInterpolationDataPoint> &myPoints, Cri
 
     regressionSimple(myPoints, orogProxyPos, false, &m, &q, &r2);
 
-    if (r2 < mySettings->getGenericPearsonThreshold())
+    if (r2 < mySettings->getMinRegressionR2())
         return false;
 
     myProxyOrog->setRegressionSlope(m);
@@ -317,8 +317,8 @@ bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, 
 
     Crit3DProxyInterpolation* myProxyOrog = mySettings->getProxy(orogProxyPos);
 
-    mySignificativeR2 = maxValue(mySettings->getGenericPearsonThreshold(), float(0.2));
-    mySignificativeR2Inv = maxValue(mySettings->getGenericPearsonThreshold(), float(0.1));
+    mySignificativeR2 = maxValue(mySettings->getMinRegressionR2(), float(0.2));
+    mySignificativeR2Inv = maxValue(mySettings->getMinRegressionR2(), float(0.1));
 
     /*! initialize */
     myProxyOrog->initializeOrography();
@@ -784,7 +784,7 @@ void detrendPoints(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DI
         else
         {
             if (proxyValue != NODATA)
-                if (myProxy->getRegressionR2() >= mySettings->getGenericPearsonThreshold())
+                if (myProxy->getRegressionR2() >= mySettings->getMinRegressionR2())
                     detrendValue = proxyValue * myProxy->getRegressionSlope();
         }
 

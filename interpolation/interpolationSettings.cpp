@@ -39,6 +39,46 @@ void Crit3DInterpolationSettings::setPrecipitationAllZero(bool value)
     precipitationAllZero = value;
 }
 
+float Crit3DInterpolationSettings::getMinRegressionR2() const
+{
+    return minRegressionR2;
+}
+
+void Crit3DInterpolationSettings::setMinRegressionR2(float value)
+{
+    minRegressionR2 = value;
+}
+
+bool Crit3DInterpolationSettings::getUseLapseRateCode() const
+{
+    return useLapseRateCode;
+}
+
+void Crit3DInterpolationSettings::setUseLapseRateCode(bool value)
+{
+    useLapseRateCode = value;
+}
+
+bool Crit3DInterpolationSettings::getUseBestDetrending() const
+{
+    return useBestDetrending;
+}
+
+void Crit3DInterpolationSettings::setUseBestDetrending(bool value)
+{
+    useBestDetrending = value;
+}
+
+gridAggregationMethod Crit3DInterpolationSettings::getMeteoGridAggrMethod() const
+{
+    return meteoGridAggrMethod;
+}
+
+void Crit3DInterpolationSettings::setMeteoGridAggrMethod(const gridAggregationMethod &value)
+{
+    meteoGridAggrMethod = value;
+}
+
 Crit3DInterpolationSettings::Crit3DInterpolationSettings()
 {
     initialize();
@@ -55,15 +95,20 @@ void Crit3DInterpolationSettings::initialize()
     useThermalInversion = true;
     useTAD = false;
     useDewPoint = true;
+    useBestDetrending = false;
+    useLapseRateCode = false;
+    minRegressionR2 = float(PEARSONSTANDARDTHRESHOLD);
+    meteoGridAggrMethod = aggrAvg;
+    initializeProxy();
+
     isKrigingReady = false;
     precipitationAllZero = false;
-    genericPearsonThreshold = float(PEARSONSTANDARDTHRESHOLD);
     maxHeightInversion = 1000.;
+
     currentClimateParametersLoaded = false;
     currentDate = getNullDate();
     currentHour = NODATA;
     currentHourFraction = NODATA;
-    initializeProxy();
 }
 
 float Crit3DInterpolationSettings::getCurrentClimateLapseRate(meteoVariable myVar)
@@ -90,13 +135,10 @@ void Crit3DInterpolationSettings::setCurrentHour(int myHour)
 void Crit3DInterpolationSettings::setCurrentHourFraction(int myHourFraction)
 { currentHourFraction = myHourFraction;}
 
-float Crit3DInterpolationSettings::getGenericPearsonThreshold()
-{ return genericPearsonThreshold;}
-
 TInterpolationMethod Crit3DInterpolationSettings::getInterpolationMethod()
 { return interpolationMethod;}
 
-bool Crit3DInterpolationSettings::getUseTad()
+bool Crit3DInterpolationSettings::getUseTAD()
 { return useTAD;}
 
 float Crit3DInterpolationSettings::getMaxHeightInversion()

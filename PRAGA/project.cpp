@@ -35,7 +35,6 @@ Project::Project()
     meteoGridDbHandler = NULL;
     clima = NULL;
     referenceClima = NULL;
-    grdAggrMethod = gridAggregationMethod::aggrAvg;
 
     radiationMaps = NULL;
 
@@ -48,31 +47,62 @@ bool Project::readSettings()
 {
     //interpolation settings
     myInterpolationSettings.initialize();
+/*
+    QVariant notFound = "notFound";
+    QVariant myValue;
 
     Q_FOREACH (QString group, settings->childGroups())
     {
         //interpolation
         if (group == "interpolation")
         {
-            bool useDewPoint;
-            std::string algorithm;
-
             settings->beginGroup(group);
-            useDewPoint = settings->value("useDewPoint").toBool();
-            algorithm = settings->value("algorithm").toString().toStdString();
-            settings->endGroup();
 
-            myInterpolationSettings.setUseDewPoint(useDewPoint);
-            if (interpolationMethodNames.find(algorithm) == interpolationMethodNames.end())
-            {
-                errorString = "Unknown interpolation method";
-                return false;
+            value = std:.string algorithm = settings->value("algorithm", notFound)
+                    .toString().toStdString();
+                if (interpolationMethodNames.find(algorithm) == interpolationMethodNames.end())
+                {
+                    errorString = "Unknown interpolation method";
+                    return false;
+                }
+                else
+                    myInterpolationSettings.setInterpolationMethod(interpolationMethodNames.at(algorithm));
             }
-            else
-                myInterpolationSettings.setInterpolationMethod(interpolationMethodNames.at(algorithm));
+
+            if (settings->findChild("gridAggregationMethod"))
+            {
+                std:.string algorithm = settings->value("gridAggregationMethod").toString().toStdString();
+                if (aggregationMethodNames.find(algorithm) == aggregationMethodNames.end())
+                {
+                    errorString = "Unknown aggregation method";
+                    return false;
+                }
+                else
+                    myInterpolationSettings.setMeteoGridAggrMethod(aggregationMethodNames.at(algorithm));
+            }
+
+            if (settings->findChild("thermalInversion"))
+                myInterpolationSettings.setUseThermalInversion(settings->value("thermalInversion").toBool());
+
+            if (settings->findChild("topographicDistance"))
+                myInterpolationSettings.setUseTAD(settings->value("topographicDistance").toBool());
+
+            if (settings->findChild("lapseRateCode"))
+                myInterpolationSettings.setUseLapseRateCode(settings->value("lapseRateCode").toBool());
+
+            if (settings->findChild("optimalDetrending"))
+                myInterpolationSettings.setUseBestDetrending(settings->value("optimalDetrending").toBool());
+
+            if (settings->findChild("minRegressionR2"))
+                myInterpolationSettings.setMinRegressionR2(settings->value("minRegressionR2").toFloat());
+
+            if (settings->findChild("useDewPoint"))
+                myInterpolationSettings.setUseDewPoint(settings->value("useDewPoint").toFloat());
+
+            settings->endGroup();
         }
     }
-
+*/
     return true;
 }
 
