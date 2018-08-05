@@ -953,9 +953,9 @@ namespace statistics
         int stdDev = 1;
         int mean = 0;
 
-        double sumGauss = 0;
-        double deltaXGauss = 1 / 1000;
-        double myX = 0;
+        double sumGauss = 0.0;
+        double deltaXGauss = 1.0 / 1000.0;
+        double myX = 0.0;
         std::vector<float> GaussIntegralTwoTailsFactor1000(10000);
 
         for (unsigned int i = 0; i < 10000; i++)
@@ -964,7 +964,7 @@ namespace statistics
             double ratio = (myX - mean) / stdDev;
             double gauss = (1 / (sqrt(2 * PI) * stdDev)) * exp(-0.5 * (ratio * ratio));
             sumGauss = sumGauss + gauss * deltaXGauss;
-            GaussIntegralTwoTailsFactor1000.push_back(float(sumGauss * 2.f));
+            GaussIntegralTwoTailsFactor1000[i] = float(sumGauss * 2.f);
         }
         float result = GaussIntegralTwoTailsFactor1000[int(zMK * 1000)];
         return result;
