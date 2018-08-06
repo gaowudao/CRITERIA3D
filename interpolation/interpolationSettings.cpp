@@ -292,7 +292,7 @@ void Crit3DProxyInterpolation::setInversionIsSignificative(bool value)
     inversionIsSignificative = value;
 }
 
-Crit3DProxyInterpolation::Crit3DProxyInterpolation() : Crit3DProxy::Crit3DProxy()
+Crit3DProxyInterpolation::Crit3DProxyInterpolation()
 {
     regressionR2 = NODATA;
     regressionSlope = NODATA;
