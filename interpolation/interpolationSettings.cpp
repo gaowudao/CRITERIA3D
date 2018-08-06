@@ -79,6 +79,26 @@ void Crit3DInterpolationSettings::setMeteoGridAggrMethod(const gridAggregationMe
     meteoGridAggrMethod = value;
 }
 
+float Crit3DInterpolationSettings::getShepardInitialRadius() const
+{
+    return shepardInitialRadius;
+}
+
+void Crit3DInterpolationSettings::setShepardInitialRadius(float value)
+{
+    shepardInitialRadius = value;
+}
+
+int Crit3DInterpolationSettings::getIndexPointCV() const
+{
+    return indexPointCV;
+}
+
+void Crit3DInterpolationSettings::setIndexPointCV(int value)
+{
+    indexPointCV = value;
+}
+
 Crit3DInterpolationSettings::Crit3DInterpolationSettings()
 {
     initialize();
@@ -104,6 +124,8 @@ void Crit3DInterpolationSettings::initialize()
     isKrigingReady = false;
     precipitationAllZero = false;
     maxHeightInversion = 1000.;
+    shepardInitialRadius = NODATA;
+    indexPointCV = NODATA;
 
     currentClimateParametersLoaded = false;
     currentDate = getNullDate();
@@ -327,4 +349,9 @@ float Crit3DInterpolationSettings::getProxyValue(int pos, std::vector <float> pr
         return currentProxy.at(pos).getValue(pos, proxyValues);
     else
         return NODATA;
+}
+
+void Crit3DInterpolationSettings::computeShepardInitialRadius(float area, int nrPoints)
+{
+    setShepardInitialRadius(sqrt((SHEPARD_AVG_NRPOINTS * area) / ((float)PI * nrPoints)));
 }

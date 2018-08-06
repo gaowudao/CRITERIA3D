@@ -69,7 +69,7 @@
 };
 
     bool passDataToInterpolation(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
-                             std::vector<Crit3DInterpolationDataPoint> &myInterpolationPoints);
+                             std::vector<Crit3DInterpolationDataPoint> &myInterpolationPoints, Crit3DInterpolationSettings* mySettings);
 
     void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DInterpolationSettings* settings);
 

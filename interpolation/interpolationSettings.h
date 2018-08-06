@@ -86,6 +86,8 @@ private:
     bool isKrigingReady;
     bool precipitationAllZero;
     float maxHeightInversion;
+    float shepardInitialRadius;
+    int indexPointCV;
 
     std::vector <Crit3DProxyInterpolation> currentProxy;
 
@@ -101,6 +103,8 @@ public:
 
     void initialize();
     void initializeProxy();
+
+    void computeShepardInitialRadius(float area, int nrPoints);
 
     Crit3DProxyInterpolation* getProxy(int pos);
     std::string getProxyName(int pos);
@@ -145,6 +149,11 @@ public:
 
     gridAggregationMethod getMeteoGridAggrMethod() const;
     void setMeteoGridAggrMethod(const gridAggregationMethod &value);
+
+    float getShepardInitialRadius() const;
+    void setShepardInitialRadius(float value);
+    int getIndexPointCV() const;
+    void setIndexPointCV(int value);
 };
 
 

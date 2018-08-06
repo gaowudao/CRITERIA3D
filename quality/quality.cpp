@@ -133,7 +133,7 @@ bool Crit3DQuality::checkAndPassDataToInterpolation(meteoVariable myVar, frequen
     if (! checkData(myVar, myFrequency, meteoPoints, nrMeteoPoints, myTime, settings)) return false;
 
     // return true if at least one valid data
-    return passDataToInterpolation(meteoPoints, nrMeteoPoints, myInterpolationPoints);
+    return passDataToInterpolation(meteoPoints, nrMeteoPoints, myInterpolationPoints, settings);
 }
 
 
@@ -305,7 +305,7 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
     std::vector <float> myProxyValues;
     std::vector <Crit3DInterpolationDataPoint> myInterpolationPoints;
 
-    if (passDataToInterpolation(meteoPoints, nrMeteoPoints, myInterpolationPoints))
+    if (passDataToInterpolation(meteoPoints, nrMeteoPoints, myInterpolationPoints, settings))
     {
         // detrend
         if (! preInterpolation(myInterpolationPoints, settings, myVar))
@@ -316,7 +316,7 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
             return;
 
         // re-load data
-        passDataToInterpolation(meteoPoints, nrMeteoPoints, myInterpolationPoints);
+        passDataToInterpolation(meteoPoints, nrMeteoPoints, myInterpolationPoints, settings);
 
         for (i = 0; i < nrMeteoPoints; i++)
             if (meteoPoints[i].myQuality == quality::accepted)
@@ -338,7 +338,7 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
 
         if (listIndex.size() > 0)
         {
-            if (passDataToInterpolation(meteoPoints, nrMeteoPoints, myInterpolationPoints))
+            if (passDataToInterpolation(meteoPoints, nrMeteoPoints, myInterpolationPoints, settings))
             {
                 preInterpolation(myInterpolationPoints, settings, myVar);
 
@@ -356,7 +356,7 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
                     listResiduals.push_back(interpolatedValue - myValue);
                 }
 
-                passDataToInterpolation(meteoPoints, nrMeteoPoints, myInterpolationPoints);
+                passDataToInterpolation(meteoPoints, nrMeteoPoints, myInterpolationPoints, settings);
 
                 for (i=0; i < int(listIndex.size()); i++)
                 {
@@ -383,9 +383,11 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
 }
 
 bool passDataToInterpolation(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
-                         std::vector <Crit3DInterpolationDataPoint> &myInterpolationPoints)
+                            std::vector <Crit3DInterpolationDataPoint> &myInterpolationPoints,
+                            Crit3DInterpolationSettings* mySettings)
 {
     int myCounter = 0;
+    float xMin=NODATA, xMax, yMin, yMax;
 
     myInterpolationPoints.clear();
 
@@ -403,11 +405,32 @@ bool passDataToInterpolation(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
             myPoint.proxyValues = meteoPoints[i].proxyValues;
             myPoint.isActive = true;
 
+            if (xMin = NODATA)
+            {
+                xMin = (float)myPoint.point->utm.x;
+                xMax = (float)myPoint.point->utm.x;
+                yMin = (float)myPoint.point->utm.y;
+                yMax = (float)myPoint.point->utm.y;
+            }
+            else
+            {
+                xMin = minValue(xMin, (float)myPoint.point->utm.x);
+                xMax = maxValue(xMax, (float)myPoint.point->utm.x);
+                yMin = minValue(yMin, (float)myPoint.point->utm.y);
+                yMax = maxValue(yMax, (float)myPoint.point->utm.y);
+            }
+
             myInterpolationPoints.push_back(myPoint);
             myCounter++;
         }
     }
 
-    return (myCounter > 0);
+    if (myCounter > 0)
+    {
+        mySettings->computeShepardInitialRadius((xMax - xMin)*(yMax-yMin), myCounter);
+        return true;
+    }
+    else
+        return false;
 }
 

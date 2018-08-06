@@ -666,7 +666,7 @@ namespace sorting
             }
 
             // switch
-            *nList = cleanList.size();
+            *nList = (int)cleanList.size();
 
             // check on data presence
             if (*nList == 0)
