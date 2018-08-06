@@ -85,7 +85,7 @@ int sortPointsByDistance(int maxIndex, vector <Crit3DInterpolationDataPoint> &my
 
     if (myPoints.size() == 0) return 0;
 
-    indici_ordinati = (int *) calloc(maxIndex + 1, sizeof(int));
+    indici_ordinati = (int *) calloc(maxIndex, sizeof(int));
     indice_minimo = (int *) calloc(myPoints.size(), sizeof(int));
 
     first = 0;
@@ -93,7 +93,7 @@ int sortPointsByDistance(int maxIndex, vector <Crit3DInterpolationDataPoint> &my
 
     bool exit = false;
 
-    while (index <= maxIndex && !exit)
+    while (index < maxIndex && !exit)
     {
         if (first == 0)
         {
@@ -132,16 +132,16 @@ int sortPointsByDistance(int maxIndex, vector <Crit3DInterpolationDataPoint> &my
         }
     }
 
-    outIndex = minValue(index - 1, maxIndex);
-    myValidPoints.resize(outIndex+1);
+    outIndex = minValue(index, maxIndex);
+    myValidPoints.resize(outIndex);
 
-    for (i=0; i<outIndex+1; i++)
+    for (i=0; i<outIndex; i++)
     {
         myPoints.at(indici_ordinati[i]).isActive = true;
         myValidPoints.at(i) = myPoints.at(indici_ordinati[i]);
     }
 
-    return outIndex+1;
+    return outIndex;
 }
 
 float shepardFindRadius(Crit3DInterpolationSettings* mySettings,
@@ -163,16 +163,16 @@ float shepardFindRadius(Crit3DInterpolationSettings* mySettings,
         if (myOutPoints.size() > SHEPARD_MIN_NRPOINTS)
         {
             myOutPoints.pop_back();
-            return myOutPoints.at(SHEPARD_MIN_NRPOINTS + 1).distance;
+            return myOutPoints.at(SHEPARD_MIN_NRPOINTS).distance;
         }
         else
-            return myOutPoints.at(myOutPoints.size()).distance + 1;
+            return myOutPoints.at(myOutPoints.size()-1).distance + 1;
     }
     else if (neighbourPoints.size() > SHEPARD_MAX_NRPOINTS)
     {
         sortPointsByDistance(SHEPARD_MAX_NRPOINTS + 1, neighbourPoints, myOutPoints);
         myOutPoints.pop_back();
-        return myOutPoints.at(SHEPARD_MAX_NRPOINTS + 1).distance;
+        return myOutPoints.at(SHEPARD_MAX_NRPOINTS).distance;
     }
     else
     {
