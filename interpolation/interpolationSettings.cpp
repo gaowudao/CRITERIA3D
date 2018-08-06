@@ -27,6 +27,7 @@
 #include "interpolationSettings.h"
 #include "interpolation.h"
 #include "commonConstants.h"
+#include "cmath"
 
 
 bool Crit3DInterpolationSettings::getPrecipitationAllZero() const
