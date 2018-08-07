@@ -1267,7 +1267,7 @@ void MainWindow::on_actionElaboration_meteo_points_triggered()
     bool isMeteoGrid = false;
     bool isAnomaly = false;
 
-    if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
+    if (myProject.elaborationCheck(isMeteoGrid))
     {
         ComputationDialog compDialog;
         compDialog.setTitle("Elaboration");
@@ -1296,7 +1296,7 @@ void MainWindow::on_actionElaboration_meteo_grid_triggered()
 {
     bool isMeteoGrid = true;
     bool isAnomaly = false;
-    if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
+    if (myProject.elaborationCheck(isMeteoGrid))
     {
         ComputationDialog compDialog;
         compDialog.setTitle("Elaboration");
@@ -1323,7 +1323,7 @@ void MainWindow::on_actionAnomaly_meteo_points_triggered()
 {
     bool isMeteoGrid = false;
     bool isAnomaly = true;
-    if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
+    if (myProject.elaborationCheck(isMeteoGrid))
     {
         ComputationDialog compDialog;
         compDialog.setTitle("Anomaly");
@@ -1347,7 +1347,7 @@ void MainWindow::on_actionAnomaly_meteo_grid_triggered()
 {
     bool isMeteoGrid = true;
     bool isAnomaly = true;
-    if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
+    if (myProject.elaborationCheck(isMeteoGrid))
     {
         ComputationDialog compDialog;
         compDialog.setTitle("Anomaly");
@@ -1400,7 +1400,8 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid)
 
         if (updateColorSCale)
         {
-            float minimum, maximum;
+            float minimum = NODATA;
+            float maximum = NODATA;
             for (int i = 0; i < myProject.nrMeteoPoints; i++)
             {
                 myProject.meteoPoints[i].currentValue = myProject.meteoPoints[i].elaboration;

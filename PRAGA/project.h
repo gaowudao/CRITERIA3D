@@ -68,6 +68,7 @@
         gis::Crit3DGeoPoint startLocation;
 
         int nrMeteoPoints;
+        bool elabMeteoPointsValue;
 
         QList<gis::Crit3DGeoPoint> meteoPointsSelected;
 
@@ -141,7 +142,7 @@
         bool interpolateGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster);
         bool saveGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, bool showInfo);
 
-        bool elaborationCheck(bool isMeteoGrid, bool isAnomaly);
+        bool elaborationCheck(bool isMeteoGrid);
         bool elaboration(bool isMeteoGrid, bool isAnomaly);
 
         bool loadModelParameters(QString dbName);
@@ -149,6 +150,8 @@
         bool loadSoilMap(QString fileName);
         bool initializeCriteria3D();
 
+        bool getElabMeteoPointsValue() const;
+        void setElabMeteoPointsValue(bool value);
     };
 
 

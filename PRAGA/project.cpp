@@ -16,6 +16,16 @@
 
 #include <iostream> //debug
 
+bool Project::getElabMeteoPointsValue() const
+{
+    return elabMeteoPointsValue;
+}
+
+void Project::setElabMeteoPointsValue(bool value)
+{
+    elabMeteoPointsValue = value;
+}
+
 Project::Project()
 {
     path = "";
@@ -1227,7 +1237,7 @@ bool Project::initializeCriteria3D()
     return true;
 }
 
-bool Project::elaborationCheck(bool isMeteoGrid, bool isAnomaly)
+bool Project::elaborationCheck(bool isMeteoGrid)
 {
 
     if (isMeteoGrid)
@@ -1239,15 +1249,7 @@ bool Project::elaborationCheck(bool isMeteoGrid, bool isAnomaly)
         }
         else
         {
-            if (isAnomaly)
-            {
-                if (this->referenceClima == NULL)
-                {
-                    errorString = "Load clima";
-                    return false;
-                }
-            }
-            else
+            if (this->referenceClima == NULL)
             {
                 this->clima = new Crit3DClimate();
             }
@@ -1262,15 +1264,7 @@ bool Project::elaborationCheck(bool isMeteoGrid, bool isAnomaly)
         }
         else
         {
-            if (isAnomaly)
-            {
-                if (this->referenceClima == NULL)
-                {
-                    errorString = "Load clima";
-                    return false;
-                }
-            }
-            else
+            if (this->referenceClima == NULL)
             {
                 this->clima = new Crit3DClimate();
             }
@@ -1286,18 +1280,20 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
 
     if (isMeteoGrid)
     {
-        if (!elaborationPointsCycleGrid(&errorString, this->meteoGridDbHandler, this->referenceClima, this->clima, this->currentDate, isAnomaly))
+        if (!elaborationPointsCycleGrid(&errorString, meteoGridDbHandler, referenceClima, clima, currentDate, isAnomaly))
         {
             return false;
         }
-        this->meteoGridDbHandler->meteoGrid()->fillMeteoRasterElabValue();
+        meteoGridDbHandler->meteoGrid()->fillMeteoRasterElabValue();
+        meteoGridDbHandler->meteoGrid()->setElabValue(true);
     }
     else
     {
-        if (!elaborationPointsCycle(&errorString, this->meteoPointsDbHandler, this->meteoPoints, this->nrMeteoPoints, this->referenceClima, this->clima, this->currentDate, isAnomaly))
+        if (!elaborationPointsCycle(&errorString, meteoPointsDbHandler, meteoPoints, nrMeteoPoints, referenceClima, clima, currentDate, isAnomaly))
         {
             return false;
         }
+        setElabMeteoPointsValue(true);
     }
     return true;
 }

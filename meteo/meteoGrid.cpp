@@ -715,6 +715,16 @@ double Crit3DMeteoGrid::aggregateMeteoGridPoint(Crit3DMeteoPoint myPoint, gridAg
 
 }
 
+bool Crit3DMeteoGrid::getElabValue() const
+{
+    return _elabValue;
+}
+
+void Crit3DMeteoGrid::setElabValue(bool elabValue)
+{
+    _elabValue = elabValue;
+}
+
 void Crit3DMeteoGrid::setGridStructure(const Crit3DMeteoGridStructure &gridStructure)
 {
     _gridStructure = gridStructure;

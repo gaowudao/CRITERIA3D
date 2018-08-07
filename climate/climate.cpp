@@ -180,10 +180,10 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
     std::vector<float> outputValues;
 
     meteoPointTemp->id = meteoPoint->id;
-    if (meteoPointTemp->id == "01878")
-    {
-        qInfo() << "01878"; // debug
-    }
+//    if (meteoPointTemp->id == "01878")
+//    {
+//        qInfo() << "01878"; // debug
+//    }
     meteoPointTemp->point.z = meteoPoint->point.z;
     meteoPointTemp->firstDateDailyVar = meteoPoint->firstDateDailyVar;
 
@@ -205,75 +205,71 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
         elab2MeteoComp = noMeteoComp;
       }
 
-    if (!isAnomaly || meteoPoint->anomaly != NODATA)
+    dataLoaded = false;
+
+    if (loadData)
     {
-
-            dataLoaded = false;
-
-            if (loadData)
-            {
-                dataLoaded = preElaboration(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPointTemp, isMeteoGrid, clima->variable(), elab1MeteoComp, startDate, endDate, outputValues, &percValue);
-            }
-            else
-            {
-                dataLoaded = true;
-            }
-
-            if (dataLoaded)
-            {
-                // check
-                Crit3DDate startD(startDate.day(), startDate.month(), clima->yearStart());
-                Crit3DDate endD(endDate.day(), endDate.month(), clima->yearStart());
-
-                if ( clima->nYears() < 0)
-                {
-                    startD.year = clima->yearStart() + clima->nYears();
-                }
-                else if ( clima->nYears() > 0)
-                {
-                    endD.year = clima->yearStart() + clima->nYears();
-                }
-
-                if (difference (startD, endD) < 0)
-                {
-                    *myError = "Wrong dates!";
-                    return false;
-                }
-                if (clima->elab1() == "")
-                {
-                    *myError = "Missing elaboration";
-                    return false;
-                }
-
-                result = computeStatistic(outputValues, meteoPointTemp, clima->yearStart(), clima->yearEnd(), startD, endD, clima->nYears(), elab1MeteoComp, clima->param1(), elab2MeteoComp, clima->param2());
-
-                if (isAnomaly)
-                {
-                    return anomalyOnPoint(meteoPoint, result);
-                }
-                else
-                {
-
-                      meteoPoint->elaboration = result;
-                      if (meteoPoint->elaboration != NODATA)
-                      {
-                          delete meteoPointTemp;
-                          return true;
-                      }
-                      else
-                      {
-                          delete meteoPointTemp;
-                          return false;
-                      }
-                }
-            }
-            else if (isAnomaly)
-            {
-                meteoPoint->anomaly = NODATA;
-                meteoPoint->anomalyPercentage = NODATA;
-            }
-
+        dataLoaded = preElaboration(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPointTemp, isMeteoGrid, clima->variable(), elab1MeteoComp, startDate, endDate, outputValues, &percValue);
     }
+    else
+    {
+        dataLoaded = true;
+    }
+
+    if (dataLoaded)
+    {
+        // check
+        Crit3DDate startD(startDate.day(), startDate.month(), clima->yearStart());
+        Crit3DDate endD(endDate.day(), endDate.month(), clima->yearStart());
+
+        if ( clima->nYears() < 0)
+        {
+            startD.year = clima->yearStart() + clima->nYears();
+        }
+        else if ( clima->nYears() > 0)
+        {
+            endD.year = clima->yearStart() + clima->nYears();
+        }
+
+        if (difference (startD, endD) < 0)
+        {
+            *myError = "Wrong dates!";
+            return false;
+        }
+        if (clima->elab1() == "")
+        {
+            *myError = "Missing elaboration";
+            return false;
+        }
+
+        result = computeStatistic(outputValues, meteoPointTemp, clima->yearStart(), clima->yearEnd(), startD, endD, clima->nYears(), elab1MeteoComp, clima->param1(), elab2MeteoComp, clima->param2());
+
+        if (isAnomaly)
+        {
+            return anomalyOnPoint(meteoPoint, result);
+        }
+        else
+        {
+
+              meteoPoint->elaboration = result;
+              if (meteoPoint->elaboration != NODATA)
+              {
+                  delete meteoPointTemp;
+                  return true;
+              }
+              else
+              {
+                  delete meteoPointTemp;
+                  return false;
+              }
+        }
+    }
+    else if (isAnomaly)
+    {
+        meteoPoint->anomaly = NODATA;
+        meteoPoint->anomalyPercentage = NODATA;
+    }
+
 
     delete meteoPointTemp;
     return false;
