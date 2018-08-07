@@ -375,7 +375,7 @@ void Crit3DInterpolationSettings::addProxy(Crit3DProxy myProxy)
 std::string Crit3DInterpolationSettings::getProxyName(int pos)
 { return currentProxy.at(pos).getName();}
 
-float Crit3DInterpolationSettings::getProxyValue(int pos, std::vector <float> proxyValues)
+float Crit3DInterpolationSettings::getProxyValue(unsigned int pos, std::vector <float> proxyValues)
 {
     if (pos < currentProxy.size())
         return currentProxy.at(pos).getValue(pos, proxyValues);

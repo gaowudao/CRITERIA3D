@@ -508,7 +508,7 @@ bool Crit3DMeteoPointsDbHandler::readPointProxyValues(Crit3DMeteoPoint* myPoint)
 
     myPoint->proxyValues.resize(ProxyMeteoPoint.size());
 
-    for (int i=0; i<ProxyMeteoPoint.size(); i++)
+    for (unsigned int i=0; i < ProxyMeteoPoint.size(); i++)
     {
         myPoint->proxyValues.at(i) = NODATA;
 

@@ -834,7 +834,8 @@ float computeFregoni(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DD
     int myDaysBelow = 0;
     bool checkData;
     float tMin, tMax;
-    float tRange, sumTRange;
+    float tRange;
+    float sumTRange = 0;
 
 
     int numberOfDays = difference(firstDate, finishDate) +1;

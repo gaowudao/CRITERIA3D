@@ -155,7 +155,7 @@ float computeErrorCrossValidation(meteoVariable myVar, std::vector <Crit3DMeteoP
 
     frequencyType myFreq = getFrequency(myVar);
 
-    for (int i=0; i<myPoints.size(); i++)
+    for (unsigned int i=0; i < myPoints.size(); i++)
     {
         if (myPoints.at(i).active)
         {

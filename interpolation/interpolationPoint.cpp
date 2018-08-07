@@ -39,7 +39,7 @@ Crit3DInterpolationDataPoint::Crit3DInterpolationDataPoint()
     point = new gis::Crit3DPoint();
 }
 
-float Crit3DInterpolationDataPoint::getProxy(int pos)
+float Crit3DInterpolationDataPoint::getProxy(unsigned int pos)
 {
     if (pos < proxyValues.size())
         return proxyValues.at(pos);
