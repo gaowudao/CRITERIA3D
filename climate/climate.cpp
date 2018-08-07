@@ -42,9 +42,8 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
      }
 
 
-    for ( unsigned int i = 0; i < nrMeteoPoints; i++)
+    for (int i = 0; i < nrMeteoPoints; i++)
     {
-
         if (clima->param1IsClimate())
         {
 //            if ( ClimateReadPoint(PragaClimate.Point(i).TableName, climateElab, myPeriodType, myClimateIndex, PragaClimate.Point(i)))
@@ -685,7 +684,7 @@ float computeWinkler(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DD
     {
         index = difference(meteoPoint->firstDateDailyVar, presentDate);
         checkData = false;
-        if ( index >= 0 && index < meteoPoint->nrObsDataDaysD)
+        if (index >= 0 && index < meteoPoint->nrObsDataDaysD)
         {
 
             // TO DO nella versione vb il check prevede anche l'immissione del parametro height
