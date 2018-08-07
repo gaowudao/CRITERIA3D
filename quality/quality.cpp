@@ -297,6 +297,81 @@ bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nr
     return true;
 }
 
+float computeErrorCrossValidation(meteoVariable myVar, std::vector <Crit3DMeteoPoint> myPoints)
+{
+    return 0;
+//    std::vector <float> obsValues, estValues;
+//    float myValue, myEstimate, myResidual;
+
+//    for (int i=0; i<myPoints.size(); i++)
+//    {
+//        if (myPoints.at(i).isActive)
+//        {
+//            myValue = myPoints.at(i).residual
+//            myResidual = myPoints.at(i).residual;
+
+//                If myValue <> Definitions.NO_DATA And myResidual <> Definitions.NO_DATA Then
+//                    myEstimate = myValue + myResidual
+//                    ReDim Preserve myObs(UBound(myObs) + 1)
+//                    ReDim Preserve myPre(UBound(myPre) + 1)
+//                    myObs(UBound(myObs)) = myValue
+//                    myPre(UBound(myPre)) = myEstimate
+//                End If
+//            End If
+//        End With
+//    Next i
+
+//    If UBound(myObs) > 0 Then computeMAECrossValidation = math.computeMAE(myObs, myPre)
+}
+
+void topographicDistanceOptimize(meteoVariable myVar,
+                                 std::vector <Crit3DMeteoPoint> &myPoints,
+                                 std::vector <Crit3DInterpolationDataPoint> interpolationPoints,
+                                 Crit3DInterpolationSettings* mySettings)
+{
+    float avgError, bestError, bestK;
+    float kh, kz;
+
+    kh = kz = 0;
+
+    bestError = NODATA;
+
+    return;
+
+//    do while (kz <= 256)
+//    {
+//        computeResiduals(myVar, myPoints, nrMeteoPoints, interpolationPoints, mySettings);
+
+//        avgError = InterpolationCmd.computeMAECrossValidation(myVar)
+//        If bestMAE = Definitions.NO_DATA Or avgError < bestMAE Then
+//            bestMAE = avgError
+//            bestK = kzTAD
+//        End If
+//        kzTAD = IIf(kzTAD = 0, 1, kzTAD * 2#)
+//    Wend
+//    kzTAD = bestK
+
+//    khTAD = 0
+//    bestMAE = Definitions.NO_DATA
+//    While (khTAD <= 1000000)
+//        InterpolationCmd.InterpolationCV myVar, False, True, True
+//        avgError = InterpolationCmd.computeMAECrossValidation(myVar)
+//        If bestMAE = Definitions.NO_DATA Or avgError < bestMAE Then
+//            bestMAE = avgError
+//            bestK = khTAD
+//        End If
+//        khTAD = IIf(khTAD = 0, 1, khTAD * 2#)
+//    Wend
+
+//    khTAD = bestK
+
+}
+
+void bestDetrending()
+{
+
+}
+
 void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
                            Crit3DInterpolationSettings *settings)
 {

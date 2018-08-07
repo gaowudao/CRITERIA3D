@@ -15,7 +15,7 @@ TEMPLATE = app
 INCLUDEPATH +=  ../MapGraphics ../soilFluxes3D/header \
                 ../crit3dDate ../mathFunctions ../soil ../crop \
                 ../meteo ../gis ../utilities \
-                ../quality ../interpolation ../solarRadiation ../criteria3D \
+                ../interpolation ../quality ../solarRadiation ../criteria3D \
                 ../dbMeteoPoints ../dbMeteoGrid ../climate ../netcdfHandler
 
 CONFIG += debug_and_release

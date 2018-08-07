@@ -900,6 +900,7 @@ bool Project::loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate, b
         return true;
 }
 
+
 bool Project::readProxyValues()
 {
     if (nrMeteoPoints == 0)

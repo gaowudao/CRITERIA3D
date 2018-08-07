@@ -26,6 +26,7 @@ namespace statistics
 {
     double rootMeanSquareError(double *measured , double *simulated , int nrData);
     float rootMeanSquareError(float *measured , float *simulated , int nrData);
+    float meanError(std::vector<float> measured , std::vector<float> simulated );
     float coefficientOfVariation(float *measured , float *simulated , int nrData);
     float weighedMean(float *data , float *weights, int nrData);
     void linearRegression(float* x, float* y, long nrItems, bool zeroIntercept, float* y_intercept, float* mySlope, float* r2);

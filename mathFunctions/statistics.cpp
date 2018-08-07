@@ -108,6 +108,8 @@ namespace statistics
             }
         }
 
+        if (nrValidValues == 0) return NODATA;
+
         sigma /= nrValidValues;
         sigma = sqrt(sigma);
         return sigma;
@@ -129,9 +131,32 @@ namespace statistics
             }
         }
 
+        if (nrValidValues == 0) return NODATA;
+
         sigma /= nrValidValues;
         sigma = sqrt(sigma);
         return float(sigma);
+    }
+
+    float meanError(std::vector <float> measured, std::vector <float> simulated)
+    {
+        float sum=0.;
+        long nrValidValues = 0;
+
+        if (measured.size() != simulated.size()) return NODATA;
+
+        for (int i=0; i<measured.size(); i++)
+        {
+            if ((measured.at(i) != NODATA) && (simulated.at(i) != NODATA))
+            {
+                sum += measured.at(i)-simulated.at(i);
+                nrValidValues++;
+            }
+        }
+
+        if (nrValidValues == 0) return NODATA;
+
+        return sum / nrValidValues;
     }
 
     float coefficientOfVariation(float *measured , float *simulated , int nrData)
