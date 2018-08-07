@@ -6,7 +6,7 @@
 #include "commonConstants.h"
 #include "quality.h"
 #include "interpolation.h"
-
+#include "statistics.h"
 
 namespace quality
 {
@@ -297,31 +297,32 @@ bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nr
     return true;
 }
 
-float computeErrorCrossValidation(meteoVariable myVar, std::vector <Crit3DMeteoPoint> myPoints)
+float computeErrorCrossValidation(meteoVariable myVar, std::vector <Crit3DMeteoPoint> myPoints, const Crit3DTime& myTime)
 {
     return 0;
     std::vector <float> obsValues, estValues;
     float myValue, myEstimate, myResidual;
 
+    frequencyType myFreq = getFrequency(myVar);
+
     for (int i=0; i<myPoints.size(); i++)
     {
         if (myPoints.at(i).active)
         {
-            myValue = myPoints.at(i).residual;
+            myValue = myPoints.at(i).getMeteoPointValue(myTime, myVar, myFreq);
             myResidual = myPoints.at(i).residual;
 
-                If myValue <> Definitions.NO_DATA And myResidual <> Definitions.NO_DATA Then
-                    myEstimate = myValue + myResidual
-                    ReDim Preserve myObs(UBound(myObs) + 1)
-                    ReDim Preserve myPre(UBound(myPre) + 1)
-                    myObs(UBound(myObs)) = myValue
-                    myPre(UBound(myPre)) = myEstimate
-                End If
-            End If
-        End With
-    Next i
+            if (myValue != NODATA && myResidual != NODATA)
+            {
+                myEstimate = myValue + myResidual;
+                obsValues.push_back(myValue);
+                estValues.push_back(myEstimate);
+            }
+        }
+    }
 
-    If UBound(myObs) > 0 Then computeMAECrossValidation = math.computeMAE(myObs, myPre)
+    if (obsValues.size() > 0)
+        return statistics::meanError(obsValues, estValues);
 }
 
 void topographicDistanceOptimize(meteoVariable myVar,
