@@ -342,7 +342,7 @@ void Crit3DProxyInterpolation::setRegressionSlope(float myValue)
 float Crit3DProxyInterpolation::getRegressionSlope()
 { return regressionSlope;}
 
-float Crit3DProxyInterpolation::getValue(int pos, std::vector <float> proxyValues)
+float Crit3DProxyInterpolation::getValue(unsigned int pos, std::vector <float> proxyValues)
 {
     if (pos < proxyValues.size())
         return proxyValues.at(pos);

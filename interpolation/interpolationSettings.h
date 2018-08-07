@@ -57,7 +57,7 @@ public:
     float getRegressionR2();
     void setRegressionSlope(float myValue);
     float getRegressionSlope();
-    float getValue(int pos, std::vector <float> proxyValues);
+    float getValue(unsigned int pos, std::vector <float> proxyValues);
     float getLapseRateH1() const;
     void setLapseRateH1(float value);
     float getLapseRateH0() const;
