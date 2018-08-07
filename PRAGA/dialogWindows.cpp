@@ -526,7 +526,7 @@ ComputationDialog::ComputationDialog(QWidget *parent)
 
 }
 
-bool ComputationDialog::computation()
+bool ComputationDialog::computation(bool isAnomaly)
 {
     QVBoxLayout mainLayout;
     QHBoxLayout varLayout;
@@ -543,19 +543,28 @@ bool ComputationDialog::computation()
     QComboBox variableList;
     meteoVariable var;
 
-    Q_FOREACH (QString group, settings->childGroups())
+    if (!isAnomaly)
     {
-        if (!group.endsWith("_VarToElab1"))
-            continue;
-        std::string item;
-        std::string variable = group.left(group.size()-11).toStdString(); // remove "_VarToElab1"
-        try {
-          var = MapDailyMeteoVar.at(variable);
-          item = MapDailyMeteoVarToString.at(var);
+        Q_FOREACH (QString group, settings->childGroups())
+        {
+            if (!group.endsWith("_VarToElab1"))
+                continue;
+            std::string item;
+            std::string variable = group.left(group.size()-11).toStdString(); // remove "_VarToElab1"
+            try {
+              var = MapDailyMeteoVar.at(variable);
+              item = MapDailyMeteoVarToString.at(var);
+            }
+            catch (const std::out_of_range& oor) {
+              return false;
+            }
+            variableList.addItem(QString::fromStdString(item));
         }
-        catch (const std::out_of_range& oor) {
-          return false;
-        }
+    }
+    else
+    {
+        var = myProject.clima->variable();
+        std::string item = MapDailyMeteoVarToString.at(var);
         variableList.addItem(QString::fromStdString(item));
     }
 
