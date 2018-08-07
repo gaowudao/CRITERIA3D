@@ -857,12 +857,14 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
                 pointList[i]->setRadius(5);
                 myColor = myProject.meteoPointsColorScale->getColor(myProject.meteoPoints[i].currentValue);
                 pointList[i]->setFillColor(QColor(myColor->red, myColor->green, myColor->blue));
+                pointList[i]->setOpacity(1.0);
             }
             else
             {
                 // Wrong data
-                pointList[i]->setRadius(15);
+                pointList[i]->setRadius(10);
                 pointList[i]->setFillColor(QColor(Qt::black));
+                pointList[i]->setOpacity(0.5);
             }
 
             pointList[i]->setToolTip(i);
