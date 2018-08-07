@@ -35,9 +35,9 @@ void StationMarker::setToolTip(int i)
         QString value = QString::number(myValue);
 
         QString myQuality = "";
-        if (myProject.meteoPoints[i].myQuality == quality::wrong_syntactic)
+        if (myProject.meteoPoints[i].quality == quality::wrong_syntactic)
             myQuality = "WRONG DATA (syntax control)";
-        if (myProject.meteoPoints[i].myQuality == quality::wrong_spatial)
+        if (myProject.meteoPoints[i].quality == quality::wrong_spatial)
             myQuality = "WRONG DATA (spatial control)";
 
         toolTipText = QString("value: <b> %1 <br/> %2 <br/> </b>").arg(value).arg(myQuality) + toolTipText;

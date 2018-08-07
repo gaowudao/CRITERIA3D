@@ -90,7 +90,7 @@
         TObsDataH *obsDataH;
         TObsDataD *obsDataD;
         TObsDataM *obsDataM;
-        quality::type myQuality;
+        quality::type quality;
         float currentValue;
         float residual;   
         float elaboration;

@@ -68,6 +68,8 @@ public:
     void setInversionIsSignificative(bool value);
 
     void initializeOrography();
+    bool getProva() const;
+    void setProva(bool value);
 };
 
 class Crit3DInterpolationSettings

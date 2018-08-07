@@ -851,7 +851,7 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
     {
         if (myProject.meteoPoints[i].currentValue != NODATA)
         {
-            if (myProject.meteoPoints[i].myQuality == quality::accepted)
+            if (myProject.meteoPoints[i].quality == quality::accepted)
             {
                 pointList[i]->setRadius(5);
                 myColor = myProject.meteoPointsColorScale->getColor(myProject.meteoPoints[i].currentValue);
