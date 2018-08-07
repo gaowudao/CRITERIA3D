@@ -28,11 +28,13 @@ INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../meteo
 SOURCES += interpolation.cpp \
     interpolationSettings.cpp \
     interpolationPoint.cpp \
-    kriging.cpp
+    kriging.cpp \
+    spatialControl.cpp
 
 HEADERS += interpolation.h \
     interpolationSettings.h \
     interpolationPoint.h \
     kriging.h \
-    interpolationConstants.h
+    interpolationConstants.h \
+    spatialControl.h
 

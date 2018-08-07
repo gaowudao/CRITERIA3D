@@ -15,7 +15,7 @@ TEMPLATE = app
 INCLUDEPATH +=  ../MapGraphics ../soilFluxes3D/header \
                 ../crit3dDate ../mathFunctions ../soil ../crop \
                 ../meteo ../gis ../utilities \
-                ../interpolation ../quality ../solarRadiation ../criteria3D \
+                ../interpolation ../solarRadiation ../criteria3D \
                 ../dbMeteoPoints ../dbMeteoGrid ../climate ../netcdfHandler
 
 CONFIG += debug_and_release
@@ -36,7 +36,6 @@ CONFIG(debug, debug|release) {
     LIBS += -L../climate/debug -lclimate
     LIBS += -L../dbMeteoGrid/debug -ldbMeteoGrid
     LIBS += -L../dbMeteoPoints/debug -ldbMeteoPoints
-    LIBS += -L../quality/debug -lquality
     LIBS += -L../utilities/debug -lutilities
     LIBS += -L../criteria3D/debug -lcriteria3D
     LIBS += -L../solarRadiation/debug -lsolarRadiation
@@ -53,7 +52,6 @@ CONFIG(debug, debug|release) {
     LIBS += -L../climate/release -lclimate
     LIBS += -L../dbMeteoGrid/release -ldbMeteoGrid
     LIBS += -L../dbMeteoPoints/release -ldbMeteoPoints
-    LIBS += -L../quality/release -lquality
     LIBS += -L../utilities/release -lutilities
     LIBS += -L../criteria3D/release -lcriteria3D
     LIBS += -L../solarRadiation/release -lsolarRadiation

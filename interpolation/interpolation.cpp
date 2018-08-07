@@ -139,12 +139,12 @@ float shepardFindRadius(Crit3DInterpolationSettings* mySettings,
                         std::vector <Crit3DInterpolationDataPoint> myPoints,
                         std::vector <Crit3DInterpolationDataPoint> myOutPoints)
 {
-    int i;
+    unsigned int i;
     std::vector <Crit3DInterpolationDataPoint> neighbourPoints;
     neighbourPoints.clear();
 
     // define a first neighborhood inside initial radius
-    for (i=1; i<myPoints.size(); i++)
+    for (i=1; i < myPoints.size(); i++)
         if (myPoints.at(i).distance <= mySettings->getShepardInitialRadius() && myPoints.at(i).distance > 0 && myPoints.at(i).index != mySettings->getIndexPointCV())
             neighbourPoints.push_back(myPoints.at(i));
 
@@ -786,13 +786,13 @@ float computeShepard(vector <Crit3DInterpolationDataPoint> myPoints, Crit3DInter
 {
     std::vector <Crit3DInterpolationDataPoint> validPoints;
     std::vector <Crit3DInterpolationDataPoint> neighbourPoints;
-    int i;
+    unsigned int i;
     float radius;
 
     neighbourPoints.clear();
 
     // define a first neighborhood inside initial radius
-    for (i=1; i<myPoints.size(); i++)
+    for (i=1; i < myPoints.size(); i++)
         if (myPoints.at(i).distance <= settings->getShepardInitialRadius() && myPoints.at(i).distance > 0 && myPoints.at(i).index != settings->getIndexPointCV())
             neighbourPoints.push_back(myPoints.at(i));
 
@@ -819,7 +819,7 @@ float computeShepard(vector <Crit3DInterpolationDataPoint> myPoints, Crit3DInter
         radius = settings->getShepardInitialRadius();
     }
 
-    int j;
+    unsigned int j;
     float weightSum, radius_27_4, radius_3, tmp, cosine, result;
     vector <float> weight, t, S;
 
@@ -830,7 +830,7 @@ float computeShepard(vector <Crit3DInterpolationDataPoint> myPoints, Crit3DInter
     weightSum = 0;
     radius_3 = radius / 3;
     radius_27_4 = (27 / 4) / radius;
-    for (i=0; i<validPoints.size(); i++)
+    for (i=0; i < validPoints.size(); i++)
         if (validPoints.at(i).distance > 0)
         {
             if (validPoints.at(i).distance <= radius_3)
@@ -853,7 +853,7 @@ float computeShepard(vector <Crit3DInterpolationDataPoint> myPoints, Crit3DInter
     for (i=0; i<validPoints.size(); i++)
     {
         t.at(i) = 0;
-        for (j=0; j<validPoints.size(); j++)
+        for (j=0; j < validPoints.size(); j++)
             if (i != j)
             {
                 cosine = ((X - (float)validPoints.at(i).point->utm.x) * (X - (float)validPoints.at(j).point->utm.x) + (Y - (float)validPoints.at(i).point->utm.y) * (Y - (float)validPoints.at(j).point->utm.y)) / (validPoints.at(i).distance * validPoints.at(j).distance);
@@ -1191,7 +1191,7 @@ std::vector <float> getProxyValuesXY(gis::Crit3DUtmPoint myPoint, Crit3DInterpol
 
     myValues.resize(mySettings->getProxyNr());
 
-    for (int i=0; i<myValues.size(); i++)
+    for (unsigned int i=0; i < myValues.size(); i++)
     {
         myValues.at(i) = NODATA;
 

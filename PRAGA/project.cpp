@@ -7,6 +7,7 @@
 #include "utilities.h"
 #include "commonConstants.h"
 #include "quality.h"
+#include "spatialControl.h"
 #include "radiationSettings.h"
 #include "solarRadiation.h"
 #include "interpolation.h"
@@ -35,6 +36,7 @@ Project::Project()
     meteoPoints = NULL;
     nrMeteoPoints = 0;
     quality = new Crit3DQuality();
+    checkSpatialQuality = true;
     currentVariable = noMeteoVar;
     currentFrequency = noFrequency;
     currentDate.setDate(1800,1,1);
@@ -945,8 +947,9 @@ bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, 
     }
 
     // check quality and pass data to interpolation
-    if (!quality->checkAndPassDataToInterpolation(myVar, myFrequency, meteoPoints, nrMeteoPoints, myTime,
-                                                  &qualityInterpolationSettings, &interpolationSettings, interpolationPointList))
+    if (!checkAndPassDataToInterpolation(quality, myVar, myFrequency, meteoPoints, nrMeteoPoints, myTime,
+                                         &qualityInterpolationSettings, &interpolationSettings, interpolationPointList,
+                                         checkSpatialQuality))
     {
         errorString = "No data available";
         return false;
@@ -1080,8 +1083,9 @@ bool Project::interpolateRasterRadiation(const Crit3DTime& myTime, gis::Crit3DRa
             return false;
         }
 
-    if (!quality->checkAndPassDataToInterpolation(atmTransmissivity, hourly, meteoPoints, nrMeteoPoints, myTime, &qualityInterpolationSettings,
-                                                  &interpolationSettings, interpolationPointList))
+    if (checkAndPassDataToInterpolation(quality, atmTransmissivity, hourly, meteoPoints, nrMeteoPoints,
+                                        myTime, &qualityInterpolationSettings,
+                                        &interpolationSettings, interpolationPointList, checkSpatialQuality))
     {
         *myError = "Function interpolateRasterRadiation: not enough transmissivity data.";
         return false;

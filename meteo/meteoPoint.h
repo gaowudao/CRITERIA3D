@@ -12,11 +12,9 @@
     #ifndef GIS_H
         #include "gis.h"
     #endif
-
-    namespace quality
-    {
-        enum type {missing_data, wrong_syntactic, wrong_spatial, wrong_variable, accepted};
-    }
+    #ifndef QUALITY_H
+        #include "quality.h"
+    #endif
 
     struct TObsDataH {
         Crit3DDate date;
@@ -90,7 +88,7 @@
         TObsDataH *obsDataH;
         TObsDataD *obsDataD;
         TObsDataM *obsDataM;
-        quality::type quality;
+        quality::qualityType quality;
         float currentValue;
         float residual;   
         float elaboration;

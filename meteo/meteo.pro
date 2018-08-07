@@ -28,11 +28,13 @@ INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis
 
 SOURCES += meteo.cpp \
     meteoPoint.cpp \
-    meteoGrid.cpp
+    meteoGrid.cpp \
+    quality.cpp
 
 HEADERS += meteo.h \
     meteoPoint.h \
-    meteoGrid.h
+    meteoGrid.h \
+    quality.h
 
 unix {
     target.path = /usr/lib

@@ -1,8 +1,9 @@
 #include "climate.h"
 #include "crit3dDate.h"
 #include "utilities.h"
-#include "quality.h"
+//#include "spatialQuality.h"
 #include "statistics.h"
+#include "quality.h"
 
 #define THOMTHRESHOLD 24 // mettere nei settings quando ci saranno Environment.ThomThreshold
 #define WINKLERTHRESHOLD 10 // LC setting?
@@ -353,7 +354,7 @@ float loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteo
 
         for (unsigned int i = 0; i < dailyValues.size(); i++)
         {
-            quality::type qualityT = qualityCheck.syntacticQualityControlSingleVal(variable, dailyValues[i]);
+            quality::qualityType qualityT = qualityCheck.syntacticQualitySingleValue(variable, dailyValues[i]);
             if (qualityT == quality::accepted)
             {
                 nrValidValues = nrValidValues + 1;
@@ -422,7 +423,7 @@ float loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* mete
 
         for (unsigned int i = 0; i < hourlyValues.size(); i++)
         {
-            quality::type qualityT = qualityCheck.syntacticQualityControlSingleVal(variable, hourlyValues[i]);
+            quality::qualityType qualityT = qualityCheck.syntacticQualitySingleValue(variable, hourlyValues[i]);
             if (qualityT == quality::accepted)
             {
                 nrValidValues = nrValidValues + 1;
@@ -443,8 +444,8 @@ float thomDayTime(float tempMax, float relHumMinAir)
 {
 
     Crit3DQuality qualityCheck;
-    quality::type qualityT = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMax, tempMax);
-    quality::type qualityRelHumMinAir = qualityCheck.syntacticQualityControlSingleVal(dailyAirRelHumidityMin, relHumMinAir);
+    quality::qualityType qualityT = qualityCheck.syntacticQualitySingleValue(dailyAirTemperatureMax, tempMax);
+    quality::qualityType qualityRelHumMinAir = qualityCheck.syntacticQualitySingleValue(dailyAirRelHumidityMin, relHumMinAir);
 
 
     // TODO nella versione vb ammessi anche i qualitySuspectData, questo tipo per ora non è stato implementato
@@ -462,8 +463,8 @@ float thomNightTime(float tempMin, float relHumMaxAir)
 {
 
     Crit3DQuality qualityCheck;
-    quality::type qualityT = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMin, tempMin);
-    quality::type qualityRelHumMaxAir = qualityCheck.syntacticQualityControlSingleVal(dailyAirRelHumidityMax, relHumMaxAir);
+    quality::qualityType qualityT = qualityCheck.syntacticQualitySingleValue(dailyAirTemperatureMin, tempMin);
+    quality::qualityType qualityRelHumMaxAir = qualityCheck.syntacticQualitySingleValue(dailyAirRelHumidityMax, relHumMaxAir);
 
     // TODO nella versione vb ammessi anche i qualitySuspectData, questo tipo per ora non è stato implementato
     if ( qualityT == quality::accepted && qualityRelHumMaxAir == quality::accepted )
@@ -480,8 +481,8 @@ float thomH(float tempAvg, float relHumAvgAir)
 {
 
     Crit3DQuality qualityCheck;
-    quality::type qualityT = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureAvg, tempAvg);
-    quality::type qualityRelHumAvgAir = qualityCheck.syntacticQualityControlSingleVal(dailyAirRelHumidityAvg, relHumAvgAir);
+    quality::qualityType qualityT = qualityCheck.syntacticQualitySingleValue(dailyAirTemperatureAvg, tempAvg);
+    quality::qualityType qualityRelHumAvgAir = qualityCheck.syntacticQualitySingleValue(dailyAirRelHumidityAvg, relHumAvgAir);
 
     // TODO nella versione vb ammessi anche i qualitySuspectData, questo tipo per ora non è stato implementato
     if ( qualityT == quality::accepted && qualityRelHumAvgAir == quality::accepted )
@@ -594,8 +595,8 @@ float computeDailyBIC(float prec, float etp)
     Crit3DQuality qualityCheck;
 
     // TODO nella versione vb ammessi anche i qualitySuspectData, questo tipo per ora non è stato implementato
-    quality::type qualityPrec = qualityCheck.syntacticQualityControlSingleVal(dailyPrecipitation, prec);
-    quality::type qualityETP = qualityCheck.syntacticQualityControlSingleVal(dailyReferenceEvapotranspirationHS, etp);
+    quality::qualityType qualityPrec = qualityCheck.syntacticQualitySingleValue(dailyPrecipitation, prec);
+    quality::qualityType qualityETP = qualityCheck.syntacticQualitySingleValue(dailyReferenceEvapotranspirationHS, etp);
     if (qualityPrec == quality::accepted && qualityETP == quality::accepted)
     {
             return (prec - etp);
@@ -611,8 +612,8 @@ float dailyThermalRange(float Tmin, float Tmax)
     Crit3DQuality qualityCheck;
 
     // TODO nella versione vb ammessi anche i qualitySuspectData, questo tipo per ora non è stato implementato
-    quality::type qualityTmin = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMin, Tmin);
-    quality::type qualityTmax = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMax, Tmax);
+    quality::qualityType qualityTmin = qualityCheck.syntacticQualitySingleValue(dailyAirTemperatureMin, Tmin);
+    quality::qualityType qualityTmax = qualityCheck.syntacticQualitySingleValue(dailyAirTemperatureMax, Tmax);
     if (qualityTmin  == quality::accepted && qualityTmax == quality::accepted)
         return (Tmax - Tmin);
     else
@@ -626,8 +627,8 @@ float dailyAverageT(float Tmin, float Tmax)
         Crit3DQuality qualityCheck;
 
         // TODO nella versione vb ammessi anche i qualitySuspectData, questo tipo per ora non è stato implementato
-        quality::type qualityTmin = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMin, Tmin);
-        quality::type qualityTmax = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMax, Tmax);
+        quality::qualityType qualityTmin = qualityCheck.syntacticQualitySingleValue(dailyAirTemperatureMin, Tmin);
+        quality::qualityType qualityTmax = qualityCheck.syntacticQualitySingleValue(dailyAirTemperatureMax, Tmax);
         if (qualityTmin  == quality::accepted && qualityTmax == quality::accepted)
             return ( (Tmin + Tmax) / 2) ;
         else
@@ -641,8 +642,8 @@ float dailyEtpHargreaves(float Tmin, float Tmax, Crit3DDate date, double latitud
     Crit3DQuality qualityCheck;
 
     // TODO nella versione vb ammessi anche i qualitySuspectData, questo tipo per ora non è stato implementato
-    quality::type qualityTmin = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMin, Tmin);
-    quality::type qualityTmax = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMax, Tmax);
+    quality::qualityType qualityTmin = qualityCheck.syntacticQualitySingleValue(dailyAirTemperatureMin, Tmin);
+    quality::qualityType qualityTmax = qualityCheck.syntacticQualitySingleValue(dailyAirTemperatureMax, Tmax);
     int dayOfYear = getDoyFromDate(date);
     if (qualityTmin  == quality::accepted && qualityTmax == quality::accepted)
         return ET0_Hargreaves(TRANSMISSIVITY_SAMANI_COEFF_DEFAULT, latitude, dayOfYear, Tmax, Tmin);
@@ -689,7 +690,7 @@ float computeWinkler(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DD
         {
 
             // TO DO nella versione vb il check prevede anche l'immissione del parametro height
-            quality::type qualityTavg = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureAvg, meteoPoint->obsDataD[index].tAvg);
+            quality::qualityType qualityTavg = qualityCheck.syntacticQualitySingleValue(dailyAirTemperatureAvg, meteoPoint->obsDataD[index].tAvg);
             if (qualityTavg == quality::accepted)
             {
                 Tavg = meteoPoint->obsDataD[index].tAvg;
@@ -697,8 +698,8 @@ float computeWinkler(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DD
             }
             else
             {
-                quality::type qualityTmin = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMin, meteoPoint->obsDataD[index].tMin);
-                quality::type qualityTmax = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMax, meteoPoint->obsDataD[index].tMax);
+                quality::qualityType qualityTmin = qualityCheck.syntacticQualitySingleValue(dailyAirTemperatureMin, meteoPoint->obsDataD[index].tMin);
+                quality::qualityType qualityTmax = qualityCheck.syntacticQualitySingleValue(dailyAirTemperatureMax, meteoPoint->obsDataD[index].tMax);
                 if (qualityTmin  == quality::accepted && qualityTmax == quality::accepted)
                 {
                     Tavg = (meteoPoint->obsDataD[index].tMin + meteoPoint->obsDataD[index].tMax)/2;
@@ -785,8 +786,8 @@ float computeHuglin(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDa
         {
 
             // TO DO nella versione vb il check prevede anche l'immissione del parametro height
-            quality::type qualityTavg = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureAvg, meteoPoint->obsDataD[index].tAvg);
-            quality::type qualityTmax = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMax, meteoPoint->obsDataD[index].tMax);
+            quality::qualityType qualityTavg = qualityCheck.syntacticQualitySingleValue(dailyAirTemperatureAvg, meteoPoint->obsDataD[index].tAvg);
+            quality::qualityType qualityTmax = qualityCheck.syntacticQualitySingleValue(dailyAirTemperatureMax, meteoPoint->obsDataD[index].tMax);
             if (qualityTavg == quality::accepted && qualityTmax == quality::accepted)
             {
                 Tmax = meteoPoint->obsDataD[index].tMax;
@@ -795,7 +796,7 @@ float computeHuglin(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDa
             }
             else
             {
-                quality::type qualityTmin = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMin, meteoPoint->obsDataD[index].tMin);
+                quality::qualityType qualityTmin = qualityCheck.syntacticQualitySingleValue(dailyAirTemperatureMin, meteoPoint->obsDataD[index].tMin);
                 if (qualityTmin  == quality::accepted && qualityTmax == quality::accepted)
                 {
                     Tmax = meteoPoint->obsDataD[index].tMax;
@@ -849,8 +850,8 @@ float computeFregoni(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DD
         {
 
             // TO DO nella versione vb il check prevede anche l'immissione del parametro height
-            quality::type qualityTmin = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMin, meteoPoint->obsDataD[index].tMin);
-            quality::type qualityTmax = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMax, meteoPoint->obsDataD[index].tMax);
+            quality::qualityType qualityTmin = qualityCheck.syntacticQualitySingleValue(dailyAirTemperatureMin, meteoPoint->obsDataD[index].tMin);
+            quality::qualityType qualityTmax = qualityCheck.syntacticQualitySingleValue(dailyAirTemperatureMax, meteoPoint->obsDataD[index].tMax);
             if (qualityTmin == quality::accepted && qualityTmax == quality::accepted)
             {
                 tMin = meteoPoint->obsDataD[index].tMin;
@@ -909,8 +910,8 @@ float computeCorrectedSum(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Cr
         {
 
             // TO DO nella versione vb il check prevede anche l'immissione del parametro height
-            quality::type qualityTmin = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMin, meteoPoint->obsDataD[index].tMin);
-            quality::type qualityTmax = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureMax, meteoPoint->obsDataD[index].tMax);
+            quality::qualityType qualityTmin = qualityCheck.syntacticQualitySingleValue(dailyAirTemperatureMin, meteoPoint->obsDataD[index].tMin);
+            quality::qualityType qualityTmax = qualityCheck.syntacticQualitySingleValue(dailyAirTemperatureMax, meteoPoint->obsDataD[index].tMax);
             if (qualityTmin == quality::accepted && qualityTmax == quality::accepted)
             {
                 tMax = meteoPoint->obsDataD[index].tMax;
@@ -1019,7 +1020,7 @@ bool elaborateDailyAggregatedVarFromDaily(meteoVariable myVar, Crit3DMeteoPoint 
                 break;
         case dailyAirTemperatureAvg:
                 {
-                    quality::type qualityTavg = qualityCheck.syntacticQualityControlSingleVal(dailyAirTemperatureAvg, meteoPoint.obsDataD[index].tAvg);
+                    quality::qualityType qualityTavg = qualityCheck.syntacticQualitySingleValue(dailyAirTemperatureAvg, meteoPoint.obsDataD[index].tAvg);
                     if (qualityTavg == quality::accepted)
                     {
                         res = meteoPoint.obsDataD[index].tAvg;
@@ -1032,7 +1033,7 @@ bool elaborateDailyAggregatedVarFromDaily(meteoVariable myVar, Crit3DMeteoPoint 
                 }
         case dailyReferenceEvapotranspirationHS:
         {
-            quality::type qualityEtp = qualityCheck.syntacticQualityControlSingleVal(dailyReferenceEvapotranspirationHS, meteoPoint.obsDataD[index].et0_hs);
+            quality::qualityType qualityEtp = qualityCheck.syntacticQualitySingleValue(dailyReferenceEvapotranspirationHS, meteoPoint.obsDataD[index].et0_hs);
             if (qualityEtp == quality::accepted)
             {
                 res = meteoPoint.obsDataD[index].et0_hs;

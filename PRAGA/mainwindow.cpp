@@ -28,6 +28,7 @@
 #include "commonConstants.h"
 #include "dialogWindows.h"
 #include "gis.h"
+#include "spatialControl.h"
 
 extern Project myProject;
 #define MAPBORDER 8
@@ -661,8 +662,7 @@ void MainWindow::on_actionVariableChoose_triggered()
 
 void MainWindow::on_actionVariableQualitySpatial_triggered()
 {
-    myProject.quality->setSpatialControl(ui->actionVariableQualitySpatial->isChecked());
-
+    myProject.checkSpatialQuality = ui->actionVariableQualitySpatial->isChecked();
     updateVariable();
 }
 
@@ -832,8 +832,9 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
     }
 
     // quality control
-    myProject.quality->checkData(myProject.getCurrentVariable(), myProject.getFrequency(),
-                                 myProject.meteoPoints, myProject.nrMeteoPoints, myProject.getCurrentTime(), &myProject.qualityInterpolationSettings);
+    checkData(myProject.quality, myProject.getCurrentVariable(), myProject.getFrequency(),
+              myProject.meteoPoints, myProject.nrMeteoPoints, myProject.getCurrentTime(),
+              &myProject.qualityInterpolationSettings, myProject.checkSpatialQuality);
 
     if (updateColorSCale)
     {

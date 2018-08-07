@@ -73,6 +73,7 @@
         QList<gis::Crit3DGeoPoint> meteoPointsSelected;
 
         Crit3DQuality* quality;
+        bool checkSpatialQuality;
 
         gis::Crit3DRasterGrid DTM;
         gis::Crit3DRasterGrid dataRaster;
