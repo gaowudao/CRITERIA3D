@@ -1272,7 +1272,7 @@ void MainWindow::on_actionElaboration_meteo_points_triggered()
         ComputationDialog compDialog;
         compDialog.setTitle("Elaboration");
         compDialog.setSettings(myProject.settings);
-        if (compDialog.computation())
+        if (compDialog.computation(isAnomaly))
         {
             if (!myProject.elaboration(isMeteoGrid, isAnomaly))
             {
@@ -1301,7 +1301,7 @@ void MainWindow::on_actionElaboration_meteo_grid_triggered()
         ComputationDialog compDialog;
         compDialog.setTitle("Elaboration");
         compDialog.setSettings(myProject.settings);
-        if (compDialog.computation())
+        if (compDialog.computation(isAnomaly))
         {
             if (!myProject.elaboration(isMeteoGrid, isAnomaly))
             {
@@ -1326,16 +1326,33 @@ void MainWindow::on_actionAnomaly_meteo_points_triggered()
     if (myProject.elaborationCheck(isMeteoGrid))
     {
         ComputationDialog compDialog;
-        compDialog.setTitle("Anomaly");
-        compDialog.setSettings(myProject.settings);
-        if (compDialog.computation())
+        if (myProject.getElabMeteoPointsValue())
         {
-            myProject.elaboration(isMeteoGrid, isAnomaly);
+            //elaboration is done, choose reference period
+
         }
         else
         {
-            return;
+            on_actionElaboration_meteo_points_triggered();
+
+            if (!myProject.getElabMeteoPointsValue())
+            {
+                return; //something has been wrong with elaboration
+            }
+            myProject.fillAnomaly(isMeteoGrid);
+
+            compDialog.setTitle("Reference Period");
+            compDialog.setSettings(myProject.settings);
+            if (compDialog.computation(isAnomaly))
+            {
+                myProject.elaboration(isMeteoGrid, isAnomaly);
+            }
+            else
+            {
+                return;
+            }
         }
+
     }
     else
     {
@@ -1352,7 +1369,7 @@ void MainWindow::on_actionAnomaly_meteo_grid_triggered()
         ComputationDialog compDialog;
         compDialog.setTitle("Anomaly");
         compDialog.setSettings(myProject.settings);
-        if (compDialog.computation())
+        if (compDialog.computation(isAnomaly))
         {
             myProject.elaboration(isMeteoGrid, isAnomaly);
         }

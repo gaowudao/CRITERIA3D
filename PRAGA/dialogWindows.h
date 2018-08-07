@@ -49,7 +49,7 @@
 
         public:
             ComputationDialog(QWidget *parent = 0);
-            bool computation();
+            bool computation(bool isAnomaly);
 
             QString getTitle() const;
             void setTitle(const QString &value);
