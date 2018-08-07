@@ -6,7 +6,6 @@
 #include "formRunInfo.h"
 #include "utilities.h"
 #include "commonConstants.h"
-#include "quality.h"
 #include "spatialControl.h"
 #include "radiationSettings.h"
 #include "solarRadiation.h"
