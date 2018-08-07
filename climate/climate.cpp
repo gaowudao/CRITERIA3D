@@ -17,7 +17,6 @@ float RainfallThreshold = 0.2f; // LC mettere nei settings Environment.RainfallT
 bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DClimate* referenceClima, Crit3DClimate* clima, QDate currentDay, bool isAnomaly)
 {
 
-
     bool isMeteoGrid = 0; // meteoPoint
     float currentParameter1;
     int validCell = 0;
