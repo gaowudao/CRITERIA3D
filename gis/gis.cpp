@@ -547,6 +547,15 @@ namespace gis
         return myGrid.value[myRow][myCol];
     }
 
+    float Crit3DRasterGrid::getFastValueXY(double x, double y)
+    {
+        int myRow, myCol;
+
+        myRow = (header->nrRows-1) - int((y - header->llCorner->y) / header->cellSize);
+        myCol = int((x - header->llCorner->x) / header->cellSize);
+        return getValueFromRowCol(myRow, myCol);
+    }
+
     float Crit3DRasterGrid::getValueFromRowCol(int myRow, int myCol) const
     {
         if (myRow < 0 || myRow > (this->header->nrRows - 1) || myCol < 0 || myCol > this->header->nrCols - 1)

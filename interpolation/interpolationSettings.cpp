@@ -100,6 +100,36 @@ void Crit3DInterpolationSettings::setIndexPointCV(int value)
     indexPointCV = value;
 }
 
+gis::Crit3DRasterGrid *Crit3DInterpolationSettings::getCurrentDEM() const
+{
+    return currentDEM;
+}
+
+void Crit3DInterpolationSettings::setCurrentDEM(gis::Crit3DRasterGrid *value)
+{
+    currentDEM = value;
+}
+
+float Crit3DInterpolationSettings::getTopoDist_Kh() const
+{
+    return topoDist_Kh;
+}
+
+void Crit3DInterpolationSettings::setTopoDist_Kh(float value)
+{
+    topoDist_Kh = value;
+}
+
+float Crit3DInterpolationSettings::getTopoDist_Kz() const
+{
+    return topoDist_Kz;
+}
+
+void Crit3DInterpolationSettings::setTopoDist_Kz(float value)
+{
+    topoDist_Kz = value;
+}
+
 Crit3DInterpolationSettings::Crit3DInterpolationSettings()
 {
     initialize();
@@ -112,6 +142,7 @@ void Crit3DInterpolationSettings::initializeProxy()
 
 void Crit3DInterpolationSettings::initialize()
 {
+    delete currentDEM;
     interpolationMethod = idw;
     useThermalInversion = true;
     useTAD = false;

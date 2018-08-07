@@ -127,13 +127,14 @@ bool Crit3DQuality::checkData(meteoVariable myVar, frequencyType myFrequency, Cr
 // check quality and pass good data to interpolation
 bool Crit3DQuality::checkAndPassDataToInterpolation(meteoVariable myVar, frequencyType myFrequency,
                                                     Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
-                                                    Crit3DTime myTime, Crit3DInterpolationSettings* settings,
+                                                    Crit3DTime myTime, Crit3DInterpolationSettings* SQinterpolationSettings,
+                                                    Crit3DInterpolationSettings* interpolationSettings,
                                                     std::vector <Crit3DInterpolationDataPoint> &myInterpolationPoints)
 {
-    if (! checkData(myVar, myFrequency, meteoPoints, nrMeteoPoints, myTime, settings)) return false;
+    if (! checkData(myVar, myFrequency, meteoPoints, nrMeteoPoints, myTime, SQinterpolationSettings)) return false;
 
     // return true if at least one valid data
-    return passDataToInterpolation(meteoPoints, nrMeteoPoints, myInterpolationPoints, settings);
+    return passDataToInterpolation(meteoPoints, nrMeteoPoints, myInterpolationPoints, interpolationSettings);
 }
 
 
@@ -273,7 +274,8 @@ bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nr
             interpolatedValue = interpolate(interpolationPoints, settings, myVar, float(meteoPoints[i].point.utm.x),
                                             float(meteoPoints[i].point.utm.y),
                                             float(meteoPoints[i].point.z),
-                                            myProxyValues);
+                                            myProxyValues,
+                                            false);
 
             if (  myVar == precipitation
                || myVar == dailyPrecipitation)
@@ -321,7 +323,7 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
         for (i = 0; i < nrMeteoPoints; i++)
             if (meteoPoints[i].myQuality == quality::accepted)
             {
-                if (neighbourhoodVariability(myInterpolationPoints, float(meteoPoints[i].point.utm.x),
+                if (neighbourhoodVariability(myInterpolationPoints, settings, float(meteoPoints[i].point.utm.x),
                          float(meteoPoints[i].point.utm.y),float(meteoPoints[i].point.z),
                          10, &stdDev, &stdDevZ, &minDist))
                 {
@@ -349,7 +351,7 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
                                             float(meteoPoints[listIndex[i]].point.utm.x),
                                             float(meteoPoints[listIndex[i]].point.utm.y),
                                             float(meteoPoints[listIndex[i]].point.z),
-                                            myProxyValues);
+                                            myProxyValues, false);
 
                     myValue = meteoPoints[listIndex[i]].currentValue;
 
@@ -360,7 +362,7 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
 
                 for (i=0; i < int(listIndex.size()); i++)
                 {
-                    if (neighbourhoodVariability(myInterpolationPoints, float(meteoPoints[listIndex[i]].point.utm.x),
+                    if (neighbourhoodVariability(myInterpolationPoints, settings, float(meteoPoints[listIndex[i]].point.utm.x),
                              float(meteoPoints[listIndex[i]].point.utm.y),
                              float(meteoPoints[listIndex[i]].point.z),
                              10, &stdDev, &stdDevZ, &minDist))

@@ -46,7 +46,8 @@ Project::Project()
 bool Project::readSettings()
 {
     //interpolation settings
-    myInterpolationSettings.initialize();
+    interpolationSettings.initialize();
+    qualityInterpolationSettings.initialize();
 
     Q_FOREACH (QString group, settings->childGroups())
     {
@@ -64,7 +65,7 @@ bool Project::readSettings()
                     return false;
                 }
                 else
-                    myInterpolationSettings.setInterpolationMethod(interpolationMethodNames.at(algorithm));
+                    interpolationSettings.setInterpolationMethod(interpolationMethodNames.at(algorithm));
             }
 
             if (settings->contains("gridAggregationMethod"))
@@ -76,26 +77,26 @@ bool Project::readSettings()
                     return false;
                 }
                 else
-                    myInterpolationSettings.setMeteoGridAggrMethod(aggregationMethodNames.at(aggrMethod));
+                    interpolationSettings.setMeteoGridAggrMethod(aggregationMethodNames.at(aggrMethod));
             }
 
             if (settings->contains("thermalInversion"))
-                myInterpolationSettings.setUseThermalInversion(settings->value("thermalInversion").toBool());
+                interpolationSettings.setUseThermalInversion(settings->value("thermalInversion").toBool());
 
             if (settings->contains("topographicDistance"))
-                myInterpolationSettings.setUseTAD(settings->value("topographicDistance").toBool());
+                interpolationSettings.setUseTAD(settings->value("topographicDistance").toBool());
 
             if (settings->contains("lapseRateCode"))
-                myInterpolationSettings.setUseLapseRateCode(settings->value("lapseRateCode").toBool());
+                interpolationSettings.setUseLapseRateCode(settings->value("lapseRateCode").toBool());
 
             if (settings->contains("optimalDetrending"))
-                myInterpolationSettings.setUseBestDetrending(settings->value("optimalDetrending").toBool());
+                interpolationSettings.setUseBestDetrending(settings->value("optimalDetrending").toBool());
 
             if (settings->contains("minRegressionR2"))
-                myInterpolationSettings.setMinRegressionR2(settings->value("minRegressionR2").toFloat());
+                interpolationSettings.setMinRegressionR2(settings->value("minRegressionR2").toFloat());
 
             if (settings->contains("useDewPoint"))
-                myInterpolationSettings.setUseDewPoint(settings->value("useDewPoint").toFloat());
+                interpolationSettings.setUseDewPoint(settings->value("useDewPoint").toFloat());
 
             settings->endGroup();
         }
@@ -182,6 +183,10 @@ bool Project::loadDEM(QString myFileName)
         // ciclo sulle celle della meteo grid -> clean vettore aggregation points
     }
 
+    //set interpolation settings DEM
+    interpolationSettings.setCurrentDEM(&DTM);
+    qualityInterpolationSettings.setCurrentDEM(&DTM);
+
     return (true);
 }
 
@@ -214,7 +219,7 @@ bool Project::readProxies()
     int proxyNr = 0;
     bool isGridLoaded;
 
-    myInterpolationSettings.initializeProxy();
+    interpolationSettings.initializeProxy();
     meteoPointsDbHandler->initializeProxy();
 
     Q_FOREACH (QString group, settings->childGroups())
@@ -246,7 +251,7 @@ bool Project::readProxies()
             else
                 isGridLoaded = loadProxyGrid(&myProxy);
 
-            myInterpolationSettings.addProxy(myProxy);
+            interpolationSettings.addProxy(myProxy);
             if (isGridLoaded && meteoPointsDbHandler != NULL)
             {
                 meteoPointsDbHandler->addProxy(myProxy, proxyTable, proxyField);
@@ -929,7 +934,7 @@ bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, 
 
     // check quality and pass data to interpolation
     if (!quality->checkAndPassDataToInterpolation(myVar, myFrequency, meteoPoints, nrMeteoPoints, myTime,
-                                                  &qualityInterpolationSettings, interpolationPointList))
+                                                  &qualityInterpolationSettings, &interpolationSettings, interpolationPointList))
     {
         errorString = "No data available";
         return false;
@@ -944,7 +949,7 @@ bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, 
     }
     else
     {
-        return interpolationRaster(interpolationPointList, &myInterpolationSettings, myVar, myTime, this->DTM, myRaster, &errorString);
+        return interpolationRaster(interpolationPointList, &interpolationSettings, myVar, myTime, this->DTM, myRaster, &errorString);
     }
 }
 
@@ -1063,15 +1068,15 @@ bool Project::interpolateRasterRadiation(const Crit3DTime& myTime, gis::Crit3DRa
             return false;
         }
 
-    if (!quality->checkAndPassDataToInterpolation(atmTransmissivity, hourly, meteoPoints, nrMeteoPoints, myTime,
-                                                  &myInterpolationSettings, interpolationPointList))
+    if (!quality->checkAndPassDataToInterpolation(atmTransmissivity, hourly, meteoPoints, nrMeteoPoints, myTime, &qualityInterpolationSettings,
+                                                  &interpolationSettings, interpolationPointList))
     {
         *myError = "Function interpolateRasterRadiation: not enough transmissivity data.";
         return false;
     }
 
-    if (preInterpolation(interpolationPointList, &myInterpolationSettings, atmTransmissivity))
-        if (! interpolateGridDtm(interpolationPointList, &myInterpolationSettings, this->radiationMaps->transmissivityMap, this->DTM, atmTransmissivity), &myInterpolationSettings)
+    if (preInterpolation(interpolationPointList, &interpolationSettings, atmTransmissivity))
+        if (! interpolateGridDtm(interpolationPointList, &interpolationSettings, this->radiationMaps->transmissivityMap, this->DTM, atmTransmissivity), &interpolationSettings)
         {
             *myError = "Function interpolateRasterRadiation: error interpolating transmissivity.";
             return false;

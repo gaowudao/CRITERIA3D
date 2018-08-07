@@ -73,6 +73,8 @@ public:
 class Crit3DInterpolationSettings
 {
 private:
+    gis::Crit3DRasterGrid* currentDEM; //for TAD
+
     TInterpolationMethod interpolationMethod;
 
     float minRegressionR2;
@@ -81,6 +83,7 @@ private:
     bool useLapseRateCode;
     bool useBestDetrending;
     bool useDewPoint;
+
     gridAggregationMethod meteoGridAggrMethod;
 
     bool isKrigingReady;
@@ -88,6 +91,7 @@ private:
     float maxHeightInversion;
     float shepardInitialRadius;
     int indexPointCV;
+    float topoDist_Kh, topoDist_Kz;
 
     std::vector <Crit3DProxyInterpolation> currentProxy;
 
@@ -154,6 +158,12 @@ public:
     void setShepardInitialRadius(float value);
     int getIndexPointCV() const;
     void setIndexPointCV(int value);
+    gis::Crit3DRasterGrid *getCurrentDEM() const;
+    void setCurrentDEM(gis::Crit3DRasterGrid *value);
+    float getTopoDist_Kh() const;
+    void setTopoDist_Kh(float value);
+    float getTopoDist_Kz() const;
+    void setTopoDist_Kz(float value);
 };
 
 

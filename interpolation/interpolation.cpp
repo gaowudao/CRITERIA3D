@@ -41,15 +41,6 @@
 using namespace std;
 
 
-void assignDistances(vector <Crit3DInterpolationDataPoint> &myPoints, float x, float y, float z)
-{
-    for (unsigned long i = 0; i < myPoints.size() ; i++)
-    {
-        myPoints.at(i).distance = gis::computeDistance(x, y, float((myPoints.at(i)).point->utm.x) , float((myPoints.at(i)).point->utm.y));
-        myPoints.at(i).deltaZ = float(fabs(myPoints.at(i).point->z - z));
-    }
-}
-
 float getMinHeight(std::vector <Crit3DInterpolationDataPoint> &myInterpolationPoints)
 {
     float myZmin = NODATA;
@@ -181,7 +172,111 @@ float shepardFindRadius(Crit3DInterpolationSettings* mySettings,
     }
 }
 
-bool neighbourhoodVariability(std::vector <Crit3DInterpolationDataPoint> &myInterpolationPoints, float x, float y, float z, int nMax,
+bool checkLapseRateCode()
+{ return true;}
+
+float topographicDistance(float X1, float Y1, float Z1, float X2, float Y2, float Z2, float distance,
+                          Crit3DInterpolationSettings* mySettings)
+{
+    float x, y;
+    float Xi, Yi, Zi, Xf, Yf;
+    float Dx, Dy;
+    float demValue;
+    int i, nrStep;
+    float maxDeltaZ;
+
+    gis::Crit3DRasterGrid* myDEM = mySettings->getCurrentDEM();
+    float stepMeter = (float)myDEM->header->cellSize;
+
+    if (distance < stepMeter)
+        return 0;
+
+    nrStep = int(distance / stepMeter);
+
+    if (Z1 < Z2)
+    {
+        Xi = X1;
+        Yi = Y1;
+        Zi = Z1;
+        Xf = X2;
+        Yf = Y2;
+    }
+    else
+    {
+        Xi = X2;
+        Yi = Y2;
+        Zi = Z2;
+        Xf = X1;
+        Yf = Y1;
+    }
+
+    Dx = (Xf - Xi) / nrStep;
+    Dy = (Yf - Yi) / nrStep;
+
+    x = Xi;
+    y = Yi;
+    maxDeltaZ = 0;
+
+    for (i=1; i<=nrStep; i++)
+    {
+        x = x + Dx;
+        y = y + Dy;
+        demValue = myDEM->getFastValueXY(x, y);
+        if (demValue != myDEM->header->flag)
+            if (demValue > Zi)
+                maxDeltaZ = maxValue(maxDeltaZ, demValue - Zi);
+    }
+
+    delete myDEM;
+
+    return maxDeltaZ;
+}
+
+void computeDistances(vector <Crit3DInterpolationDataPoint> &myPoints,  Crit3DInterpolationSettings* mySettings,
+                      float x, float y, float z, bool excludeSupplemental)
+{
+    for (unsigned long i = 0; i < myPoints.size() ; i++)
+    {
+        if (excludeSupplemental && ! checkLapseRateCode())
+            myPoints.at(i).distance = 0;
+        else
+        {
+            myPoints.at(i).distance = gis::computeDistance(x, y, float((myPoints.at(i)).point->utm.x) , float((myPoints.at(i)).point->utm.y));
+            myPoints.at(i).deltaZ = float(fabs(myPoints.at(i).point->z - z));
+
+            if (mySettings->getUseTAD())
+            {
+                float kh = mySettings->getTopoDist_Kh();
+                if (kh != 0)
+                {
+                    float topoDistance = NODATA;
+                    if (myPoints.at(i).indexTopoDistMap != NODATA)
+                    {
+                        /*if (GIS.isOutOfGridXY(x, y, TadMaps(pts(i).indexTadMap)) Then
+                            GIS.GetRowColFromXY TadMaps(pts(i).indexTadMap), x, y, myRow, myCol
+                            topoDistance = TadMaps(pts(i).indexTadMap).Value(myRow, myCol)
+                        */
+                    }
+
+                    if (topoDistance = NODATA)
+                        topoDistance = topographicDistance(x, y, z, (float)myPoints.at(i).point->utm.x,
+                                                           (float)myPoints.at(i).point->utm.y,
+                                                           (float)myPoints.at(i).point->z, myPoints.at(i).distance,
+                                                           mySettings);
+
+                    myPoints.at(i).distance += (kh * topoDistance) + (mySettings->getTopoDist_Kz() * myPoints.at(i).deltaZ);
+                }
+            }
+        }
+    }
+
+    return;
+}
+
+
+bool neighbourhoodVariability(std::vector <Crit3DInterpolationDataPoint> &myInterpolationPoints,
+                              Crit3DInterpolationSettings* mySettings,
+                              float x, float y, float z, int nMax,
                               float* devSt, float* devStDeltaZ, float* minDistance)
 {
     int i, max_points;
@@ -190,7 +285,7 @@ bool neighbourhoodVariability(std::vector <Crit3DInterpolationDataPoint> &myInte
     vector <float> deltaZ;
     vector <Crit3DInterpolationDataPoint> validPoints;
 
-    assignDistances(myInterpolationPoints, x, y, z);
+    computeDistances(myInterpolationPoints, mySettings, x, y, z, true);
     max_points = sortPointsByDistance(nMax, myInterpolationPoints, validPoints);
 
     if (max_points > 1)
@@ -1046,15 +1141,17 @@ bool preInterpolation(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit
     return (true);
 }
 
-float interpolate(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings,
-                  meteoVariable myVar, float myX, float myY, float myZ, std::vector <float> myProxyValues)
+
+float interpolate(vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings,
+                  meteoVariable myVar, float myX, float myY, float myZ, std::vector <float> myProxyValues,
+                  bool excludeSupplemental)
 
 {
     if ((myVar == precipitation || myVar == dailyPrecipitation) && mySettings->getPrecipitationAllZero()) return 0.;
 
     float myResult = NODATA;
 
-    assignDistances(myPoints, myX, myY, myZ);
+    computeDistances(myPoints, mySettings, myX, myY, myZ, excludeSupplemental);
 
     if (mySettings->getInterpolationMethod() == idw)
         myResult = inverseDistanceWeighted(myPoints);
@@ -1125,7 +1222,7 @@ bool interpolateGridDtm(std::vector <Crit3DInterpolationDataPoint> &myPoints, Cr
             gis::getUtmXYFromRowColSinglePrecision(*myGrid, myRow, myCol, &myX, &myY);
             float myZ = myDTM.value[myRow][myCol];
             if (myZ != myGrid->header->flag)
-                myGrid->value[myRow][myCol] = interpolate(myPoints, mySettings, myVar, myX, myY, myZ, getProxyValuesXY(gis::Crit3DUtmPoint(myX, myY), mySettings));
+                myGrid->value[myRow][myCol] = interpolate(myPoints, mySettings, myVar, myX, myY, myZ, getProxyValuesXY(gis::Crit3DUtmPoint(myX, myY), mySettings), true);
         }
 
     if (! gis::updateMinMaxRasterGrid(myGrid))

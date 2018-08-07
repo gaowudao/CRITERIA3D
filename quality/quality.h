@@ -64,8 +64,8 @@
 
         bool checkData(meteoVariable myVar, frequencyType myFrequency, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DTime myTime, Crit3DInterpolationSettings* spatialQualityInterpolationSettings);
         bool checkAndPassDataToInterpolation(meteoVariable myVar, frequencyType myFrequency, Crit3DMeteoPoint* meteoPoints,
-                                             int nrMeteoPoints, Crit3DTime myTime,
-                                             Crit3DInterpolationSettings* settings, std::vector<Crit3DInterpolationDataPoint> &myInterpolationPoints);
+                                             int nrMeteoPoints, Crit3DTime myTime, Crit3DInterpolationSettings *SQinterpolationSettings,
+                                             Crit3DInterpolationSettings* interpolationSettings, std::vector<Crit3DInterpolationDataPoint> &myInterpolationPoints);
 };
 
     bool passDataToInterpolation(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,

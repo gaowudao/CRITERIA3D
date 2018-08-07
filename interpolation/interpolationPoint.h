@@ -16,6 +16,7 @@
         float distance;
         float deltaZ;
         float value;
+        int indexTopoDistMap;
         std::vector <float> proxyValues;
 
         float getProxy(int pos);
