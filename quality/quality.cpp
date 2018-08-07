@@ -328,7 +328,8 @@ float computeErrorCrossValidation(meteoVariable myVar, std::vector <Crit3DMeteoP
 void topographicDistanceOptimize(meteoVariable myVar,
                                  std::vector <Crit3DMeteoPoint> &myPoints,
                                  std::vector <Crit3DInterpolationDataPoint> interpolationPoints,
-                                 Crit3DInterpolationSettings* mySettings)
+                                 Crit3DInterpolationSettings* mySettings,
+                                 const Crit3DTime &myTime)
 {
     float avgError, bestError, bestK;
     float kh, kz;
@@ -343,14 +344,16 @@ void topographicDistanceOptimize(meteoVariable myVar,
 //    {
 //        computeResiduals(myVar, myPoints, nrMeteoPoints, interpolationPoints, mySettings);
 
-//        avgError = InterpolationCmd.computeMAECrossValidation(myVar)
-//        If bestMAE = Definitions.NO_DATA Or avgError < bestMAE Then
-//            bestMAE = avgError
-//            bestK = kzTAD
-//        End If
-//        kzTAD = IIf(kzTAD = 0, 1, kzTAD * 2#)
-//    Wend
-//    kzTAD = bestK
+//        avgError = computeErrorCrossValidation(myVar, myPoints, const Crit3DTime &myTime)
+//        if (bestError = NODATA || avgError < bestError)
+//        {
+//            bestError = avgError;
+//            bestK = kz;
+//        }
+//        kz = (kz == 0 ? 1 : kz*2);
+//    }
+
+//    kz = bestK;
 
 //    khTAD = 0
 //    bestMAE = Definitions.NO_DATA
