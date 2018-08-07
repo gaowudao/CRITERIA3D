@@ -165,6 +165,8 @@ enum meteoVariable {airTemperature, dailyAirTemperatureMin, dailyAirTemperatureM
 
     bool setColorScale(meteoVariable variable, Crit3DColorScale *colorScale);
 
+    frequencyType getFrequency(meteoVariable myVar);
+
     std::string getVariableString(meteoVariable myVar);
 
     std::string getKeyStringMeteoMap(std::map<std::string, meteoVariable> map, meteoVariable value);

@@ -300,28 +300,28 @@ bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nr
 float computeErrorCrossValidation(meteoVariable myVar, std::vector <Crit3DMeteoPoint> myPoints)
 {
     return 0;
-//    std::vector <float> obsValues, estValues;
-//    float myValue, myEstimate, myResidual;
+    std::vector <float> obsValues, estValues;
+    float myValue, myEstimate, myResidual;
 
-//    for (int i=0; i<myPoints.size(); i++)
-//    {
-//        if (myPoints.at(i).isActive)
-//        {
-//            myValue = myPoints.at(i).residual
-//            myResidual = myPoints.at(i).residual;
+    for (int i=0; i<myPoints.size(); i++)
+    {
+        if (myPoints.at(i).active)
+        {
+            myValue = myPoints.at(i).residual;
+            myResidual = myPoints.at(i).residual;
 
-//                If myValue <> Definitions.NO_DATA And myResidual <> Definitions.NO_DATA Then
-//                    myEstimate = myValue + myResidual
-//                    ReDim Preserve myObs(UBound(myObs) + 1)
-//                    ReDim Preserve myPre(UBound(myPre) + 1)
-//                    myObs(UBound(myObs)) = myValue
-//                    myPre(UBound(myPre)) = myEstimate
-//                End If
-//            End If
-//        End With
-//    Next i
+                If myValue <> Definitions.NO_DATA And myResidual <> Definitions.NO_DATA Then
+                    myEstimate = myValue + myResidual
+                    ReDim Preserve myObs(UBound(myObs) + 1)
+                    ReDim Preserve myPre(UBound(myPre) + 1)
+                    myObs(UBound(myObs)) = myValue
+                    myPre(UBound(myPre)) = myEstimate
+                End If
+            End If
+        End With
+    Next i
 
-//    If UBound(myObs) > 0 Then computeMAECrossValidation = math.computeMAE(myObs, myPre)
+    If UBound(myObs) > 0 Then computeMAECrossValidation = math.computeMAE(myObs, myPre)
 }
 
 void topographicDistanceOptimize(meteoVariable myVar,
