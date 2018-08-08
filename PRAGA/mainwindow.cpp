@@ -1341,6 +1341,7 @@ void MainWindow::on_actionAnomaly_meteo_points_triggered()
             {
                 isAnomaly = true;
                 elaborationGUI(isAnomaly, isMeteoGrid);
+
             }
             else
             {
