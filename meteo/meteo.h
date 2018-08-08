@@ -146,7 +146,7 @@
         float tDewMinLapseRate[12];
         float tDewMaxLapseRate[12];
 
-        float getClimateLapseRate(meteoVariable myVar, Crit3DDate* myDate, int myHour);
+        float getClimateLapseRate(meteoVariable myVar, Crit3DDate myDate, int myHour);
     };
 
     float relHumFromTdew(float dewT, float airT);

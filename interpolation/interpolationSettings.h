@@ -100,10 +100,6 @@ private:
     bool currentClimateParametersLoaded;
     Crit3DClimateParameters currentClimateParameters;
 
-    Crit3DDate currentDate;
-    int currentHour;
-    int currentHourFraction;
-
 public:
     Crit3DInterpolationSettings();
 
@@ -121,9 +117,6 @@ public:
     float getProxyValue(unsigned int pos, std::vector <float> proxyValues);
 
     void setClimateParameters(Crit3DClimateParameters* myParameters);
-    void setCurrentDate(Crit3DDate myDate);
-    void setCurrentHour(int myHour);
-    void setCurrentHourFraction(int myHourFraction);
 
     void setInterpolationMethod(TInterpolationMethod myValue);
     TInterpolationMethod getInterpolationMethod();
@@ -139,7 +132,7 @@ public:
 
     float getMaxHeightInversion();
 
-    float getCurrentClimateLapseRate(meteoVariable myVar);
+    float getCurrentClimateLapseRate(meteoVariable myVar, Crit3DTime myTime);
 
     bool getPrecipitationAllZero() const;
     void setPrecipitationAllZero(bool value);

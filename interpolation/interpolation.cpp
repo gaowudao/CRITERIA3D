@@ -371,7 +371,7 @@ bool regressionGeneric(std::vector <Crit3DInterpolationDataPoint> &myPoints, Cri
 
 
 bool regressionSimpleT(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings,
-                       meteoVariable myVar, int orogProxyPos)
+                       Crit3DTime myTime, meteoVariable myVar, int orogProxyPos)
 {
     float q, m, r2;
 
@@ -393,7 +393,7 @@ bool regressionSimpleT(std::vector <Crit3DInterpolationDataPoint> &myPoints, Cri
 
         float maxZ = minValue(getMaxHeight(myPoints), mySettings->getMaxHeightInversion());
         myProxyOrog->setLapseRateH1(maxZ);
-        myProxyOrog->setRegressionSlope(mySettings->getCurrentClimateLapseRate(myVar));
+        myProxyOrog->setRegressionSlope(mySettings->getCurrentClimateLapseRate(myVar, myTime));
         myProxyOrog->setInversionIsSignificative(true);
     }
 
@@ -429,7 +429,7 @@ float findHeightIntervalAvgValue(std::vector <Crit3DInterpolationDataPoint> &myP
 }
 
 bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings,
-                          meteoVariable myVar, int orogProxyPos, bool climateExists)
+                          Crit3DTime myTime, meteoVariable myVar, int orogProxyPos, bool climateExists)
 {
     long i;
     float heightInf, heightSup;
@@ -456,7 +456,7 @@ bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, 
     myProxyOrog->initializeOrography();
 
     if (climateExists)
-        climateLapseRate = mySettings->getCurrentClimateLapseRate(myVar);
+        climateLapseRate = mySettings->getCurrentClimateLapseRate(myVar, myTime);
     else
         climateLapseRate = 0.;
 
@@ -1069,14 +1069,14 @@ float retrend(meteoVariable myVar, vector <float> myProxyValues, Crit3DInterpola
 }
 
 bool regressionOrography(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings,
-                         meteoVariable myVar, int orogProxyPos)
+                         Crit3DTime myTime, meteoVariable myVar, int orogProxyPos)
 {
     if (getUseDetrendingVar(myVar))
     {
         if (mySettings->getUseThermalInversion())
-            return regressionOrographyT(myPoints, mySettings, myVar, orogProxyPos, true);
+            return regressionOrographyT(myPoints, mySettings, myTime, myVar, orogProxyPos, true);
         else
-            return regressionSimpleT(myPoints, mySettings, myVar, orogProxyPos);
+            return regressionSimpleT(myPoints, mySettings, myTime, myVar, orogProxyPos);
     }
     else
     {
@@ -1086,7 +1086,7 @@ bool regressionOrography(std::vector <Crit3DInterpolationDataPoint> &myPoints, C
 }
 
 void detrending(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings,
-                meteoVariable myVar)
+                meteoVariable myVar, Crit3DTime myTime)
 {
     if (! getUseDetrendingVar(myVar)) return;
 
@@ -1099,7 +1099,7 @@ void detrending(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInte
 
         if (myProxy->getProxyPragaName() == height)
         {
-            if (regressionOrography(myPoints, mySettings, myVar, pos))
+            if (regressionOrography(myPoints, mySettings, myTime, myVar, pos))
             {
                 myProxy->setIsActive(true);
                 detrendPoints(myPoints, mySettings, myVar, pos);
@@ -1234,7 +1234,7 @@ bool preInterpolation(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit
             mySettings->setPrecipitationAllZero(false);
     }
 
-    detrending(myPoints, mySettings, myVar);
+    detrending(myPoints, mySettings, myVar, myTime);
 
     if (mySettings->getUseBestDetrending())
         bestDetrending(myVar, myMeteoPoints, nrMeteoPoints, myPoints, mySettings, myTime);
@@ -1354,10 +1354,6 @@ bool interpolationRaster(std::vector <Crit3DInterpolationDataPoint> &myPoints, C
         *myError = "Load DTM before";
         return false;
     }
-
-    // Interpolation settings
-    mySettings->setCurrentDate(myTime.date);
-    mySettings->setCurrentHour(myTime.getHour());
 
     // Proxy vars regression and detrend
     if (! preInterpolation(myPoints, mySettings, myMeteoPoints, nrMeteoPoints, myVar, myTime))

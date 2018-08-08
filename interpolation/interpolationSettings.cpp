@@ -160,15 +160,14 @@ void Crit3DInterpolationSettings::initialize()
     indexPointCV = NODATA;
 
     currentClimateParametersLoaded = false;
-    currentDate = getNullDate();
-    currentHour = NODATA;
-    currentHourFraction = NODATA;
 }
 
-float Crit3DInterpolationSettings::getCurrentClimateLapseRate(meteoVariable myVar)
+float Crit3DInterpolationSettings::getCurrentClimateLapseRate(meteoVariable myVar, Crit3DTime myTime)
 {
-    if (currentClimateParametersLoaded && (currentDate != getNullDate()) && (currentHour != NODATA))
-        return (currentClimateParameters.getClimateLapseRate(myVar, &currentDate, currentHour));
+    Crit3DDate myDate = myTime.date;
+    int myHour = myTime.getHour();
+    if (currentClimateParametersLoaded && (myDate != getNullDate()) && (myHour != NODATA))
+        return (currentClimateParameters.getClimateLapseRate(myVar, myDate, myHour));
     else
         // TODO migliorare
         return -0.006f;
@@ -179,15 +178,6 @@ void Crit3DInterpolationSettings::setClimateParameters(Crit3DClimateParameters* 
     currentClimateParametersLoaded = true;
     currentClimateParameters = *(myParameters);
 }
-
-void Crit3DInterpolationSettings::setCurrentDate(Crit3DDate myDate)
-{ currentDate = myDate;}
-
-void Crit3DInterpolationSettings::setCurrentHour(int myHour)
-{ currentHour = myHour;}
-
-void Crit3DInterpolationSettings::setCurrentHourFraction(int myHourFraction)
-{ currentHourFraction = myHourFraction;}
 
 TInterpolationMethod Crit3DInterpolationSettings::getInterpolationMethod()
 { return interpolationMethod;}
