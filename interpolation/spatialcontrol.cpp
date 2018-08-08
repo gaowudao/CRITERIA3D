@@ -147,7 +147,7 @@ bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nr
     return true;
 }
 
-float computeErrorCrossValidation(meteoVariable myVar, std::vector <Crit3DMeteoPoint> myPoints, const Crit3DTime& myTime)
+float computeErrorCrossValidation(meteoVariable myVar, Crit3DMeteoPoint* myPoints, int nrMeteoPoints, const Crit3DTime& myTime)
 {
     return 0;
     std::vector <float> obsValues, estValues;
@@ -155,12 +155,12 @@ float computeErrorCrossValidation(meteoVariable myVar, std::vector <Crit3DMeteoP
 
     frequencyType myFreq = getFrequency(myVar);
 
-    for (unsigned int i=0; i < myPoints.size(); i++)
+    for (unsigned int i=0; i < nrMeteoPoints; i++)
     {
-        if (myPoints.at(i).active)
+        if (myPoints[i].active)
         {
-            myValue = myPoints.at(i).getMeteoPointValue(myTime, myVar, myFreq);
-            myResidual = myPoints.at(i).residual;
+            myValue = myPoints[i].getMeteoPointValue(myTime, myVar, myFreq);
+            myResidual = myPoints[i].residual;
 
             if (myValue != NODATA && myResidual != NODATA)
             {
@@ -175,59 +175,8 @@ float computeErrorCrossValidation(meteoVariable myVar, std::vector <Crit3DMeteoP
         return statistics::meanError(obsValues, estValues);
 }
 
-void topographicDistanceOptimize(meteoVariable myVar,
-                                 std::vector <Crit3DMeteoPoint> &myPoints,
-                                 std::vector <Crit3DInterpolationDataPoint> interpolationPoints,
-                                 Crit3DInterpolationSettings* mySettings,
-                                 const Crit3DTime &myTime)
-{
-    float avgError, bestError, bestK;
-    float kh, kz;
-
-    kh = kz = 0;
-
-    bestError = NODATA;
-
-    return;
-
-//    do while (kz <= 256)
-//    {
-//        computeResiduals(myVar, myPoints, nrMeteoPoints, interpolationPoints, mySettings);
-
-//        avgError = computeErrorCrossValidation(myVar, myPoints, const Crit3DTime &myTime)
-//        if (bestError = NODATA || avgError < bestError)
-//        {
-//            bestError = avgError;
-//            bestK = kz;
-//        }
-//        kz = (kz == 0 ? 1 : kz*2);
-//    }
-
-//    kz = bestK;
-
-//    khTAD = 0
-//    bestMAE = Definitions.NO_DATA
-//    While (khTAD <= 1000000)
-//        InterpolationCmd.InterpolationCV myVar, False, True, True
-//        avgError = InterpolationCmd.computeMAECrossValidation(myVar)
-//        If bestMAE = Definitions.NO_DATA Or avgError < bestMAE Then
-//            bestMAE = avgError
-//            bestK = khTAD
-//        End If
-//        khTAD = IIf(khTAD = 0, 1, khTAD * 2#)
-//    Wend
-
-//    khTAD = bestK
-
-}
-
-void bestDetrending()
-{
-
-}
-
 void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
-                           Crit3DInterpolationSettings *settings)
+                           Crit3DInterpolationSettings *settings, Crit3DTime myTime)
 {
     int i;
     float stdDev, stdDevZ, minDist, myValue, myResidual;
@@ -239,7 +188,7 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
     if (passDataToInterpolation(meteoPoints, nrMeteoPoints, myInterpolationPoints, settings))
     {
         // detrend
-        if (! preInterpolation(myInterpolationPoints, settings, myVar))
+        if (! preInterpolation(myInterpolationPoints, settings, meteoPoints, nrMeteoPoints, myVar, myTime))
             return;
 
         // compute residuals
@@ -271,7 +220,7 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
         {
             if (passDataToInterpolation(meteoPoints, nrMeteoPoints, myInterpolationPoints, settings))
             {
-                preInterpolation(myInterpolationPoints, settings, myVar);
+                preInterpolation(myInterpolationPoints, settings, meteoPoints, nrMeteoPoints, myVar, myTime);
 
                 float interpolatedValue;
                 for (i=0; i < int(listIndex.size()); i++)

@@ -35,6 +35,7 @@
 #include "furtherMathFunctions.h"
 #include "meteoPoint.h"
 #include "gis.h"
+#include "spatialControl.h"
 #include "interpolation.h"
 
 
@@ -1120,8 +1121,105 @@ void detrending(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInte
     }
 }
 
+void topographicDistanceOptimize(meteoVariable myVar,
+                                 Crit3DMeteoPoint* &myMeteoPoints,
+                                 int nrMeteoPoints,
+                                 std::vector <Crit3DInterpolationDataPoint> &interpolationPoints,
+                                 Crit3DInterpolationSettings* mySettings,
+                                 const Crit3DTime &myTime)
+{
+    float avgError, bestError, bestK;
+    float kh, kz;
+
+    kh = kz = 0;
+
+    bestError = NODATA;
+
+    return;
+
+    while (kz <= 256)
+    {
+        if (computeResiduals(myVar, myMeteoPoints, nrMeteoPoints, interpolationPoints, mySettings))
+        {
+            avgError = computeErrorCrossValidation(myVar, myMeteoPoints, nrMeteoPoints, myTime);
+            if (bestError = NODATA || avgError < bestError)
+            {
+                bestError = avgError;
+                bestK = kz;
+            }
+            kz = (kz == 0 ? 1 : kz*2);
+        }
+    }
+
+    kz = bestK;
+
+    kh = 0;
+    bestError = NODATA;
+    while (kh <= 1000000)
+    {
+        if (computeResiduals(myVar, myMeteoPoints, nrMeteoPoints, interpolationPoints, mySettings))
+        {
+            avgError = computeErrorCrossValidation(myVar, myMeteoPoints, nrMeteoPoints, myTime);
+            if (bestError = NODATA || avgError < bestError)
+            {
+                bestError = avgError;
+                bestK = kh;
+            }
+            kh = (kh == 0 ? 1 : kh*2);
+        }
+    }
+
+    kh = bestK;
+
+}
+
+void bestDetrending(meteoVariable myVar,
+                    Crit3DMeteoPoint* &myMeteoPoints,
+                    int nrMeteoPoints,
+                    std::vector <Crit3DInterpolationDataPoint> &interpolationPoints,
+                    Crit3DInterpolationSettings* mySettings,
+                    const Crit3DTime &myTime)
+{
+//    short i, nrCombination, bestCombination;
+//    std::vector <TProxyVar> myProxy;
+//    short proxyHeightIndex;
+//    float myError, minError;
+
+//    getActiveProxy myProxy, myProxyHeightIndex
+
+//    nrCombination = 2 ^ mySettings->getProxyNr();
+
+//    minError = NODATA;
+
+//    for (i=0; i < nrCombination; i++)
+//        if (setDetrendingProxy(i, myProxy, myProxyHeightIndex) Then
+//            passaggioDati.PassingDataOrClimaToInterpolation myVar, False
+//            Interpolation.PrepareInterpolation myVar
+//            If Interpolation.GetUseTAD() Then topoDistanceOptimizeParameters myVar
+//            InterpolationCmd.InterpolationCV myVar, False, True, True
+
+//            MAE = InterpolationCmd.computeMAECrossValidation(myVar)
+//            If myMinMAE = Definitions.NO_DATA And MAE <> Definitions.NO_DATA Then
+//                myMinMAE = MAE
+//                myBestCombination = i
+//            ElseIf MAE < myMinMAE And MAE <> Definitions.NO_DATA Then
+//                myMinMAE = MAE
+//                myBestCombination = i
+//            End If
+//        End If
+
+//    Next i
+
+//    ' set best detrending solution
+//    setCurrentOptimalDetrendingCombination myBestCombination
+//    setDetrendingProxy myBestCombination, myProxy, myProxyHeightIndex
+
+    return;
+}
+
 bool preInterpolation(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings,
-                      meteoVariable myVar)
+                      Crit3DMeteoPoint* myMeteoPoints, int nrMeteoPoints,
+                      meteoVariable myVar, Crit3DTime myTime)
 {
     if (myVar == precipitation || myVar == dailyPrecipitation)
     {
@@ -1137,6 +1235,11 @@ bool preInterpolation(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit
     }
 
     detrending(myPoints, mySettings, myVar);
+
+    if (mySettings->getUseBestDetrending())
+        bestDetrending(myVar, myMeteoPoints, nrMeteoPoints, myPoints, mySettings, myTime);
+    else if (mySettings->getUseTAD())
+        topographicDistanceOptimize(myVar, myMeteoPoints, nrMeteoPoints, myPoints, mySettings, myTime);
 
     return (true);
 }
@@ -1234,6 +1337,7 @@ bool interpolateGridDtm(std::vector <Crit3DInterpolationDataPoint> &myPoints, Cr
 
 // require data loaded in interpolationPointList (use checkAndPassDataToInterpolation function)
 bool interpolationRaster(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings *mySettings,
+                         Crit3DMeteoPoint* myMeteoPoints, int nrMeteoPoints,
                          meteoVariable myVar, const Crit3DTime& myTime, const  gis::Crit3DRasterGrid& myDTM,
                          gis::Crit3DRasterGrid *myRaster, std::string *myError)
 {
@@ -1256,7 +1360,7 @@ bool interpolationRaster(std::vector <Crit3DInterpolationDataPoint> &myPoints, C
     mySettings->setCurrentHour(myTime.getHour());
 
     // Proxy vars regression and detrend
-    if (! preInterpolation(myPoints, mySettings, myVar))
+    if (! preInterpolation(myPoints, mySettings, myMeteoPoints, nrMeteoPoints, myVar, myTime))
     {
         *myError = "Interpolation: error in function preInterpolation";
         return false;
