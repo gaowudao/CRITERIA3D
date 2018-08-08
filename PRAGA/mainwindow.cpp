@@ -1335,6 +1335,18 @@ void MainWindow::on_actionAnomaly_meteo_points_triggered()
         if (myProject.getIsElabMeteoPointsValue())
         {
             //elaboration is done, choose reference period
+            QMessageBox::StandardButton reply;
+            reply = QMessageBox::question(this, "Keep current elaboration", "Edit only reference period?", QMessageBox::Yes|QMessageBox::No);
+            if (reply == QMessageBox::Yes)
+            {
+                isAnomaly = true;
+                elaborationGUI(isAnomaly, isMeteoGrid);
+            }
+            else
+            {
+                myProject.setIsElabMeteoPointsValue(false);
+                on_actionAnomaly_meteo_points_triggered();
+            }
 
         }
         else
