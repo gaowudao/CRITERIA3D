@@ -260,18 +260,22 @@ void Crit3DProxy::setGridName(const std::string &value)
     gridName = value;
 }
 
+bool Crit3DProxy::getIsSignificant() const
+{
+    return isSignificant;
+}
+
+void Crit3DProxy::setIsSignificant(bool value)
+{
+    isSignificant = value;
+}
+
 Crit3DProxy::Crit3DProxy()
 {
     name = "";
-    isActive = false;
+    isActive = true;
+    isSignificant = false;
     grid = new gis::Crit3DRasterGrid();
-}
-
-void Crit3DProxy::initialize()
-{
-    name = "";
-    isActive = false;
-    grid->emptyGrid();
 }
 
 float Crit3DProxyInterpolation::getLapseRateH1() const
@@ -350,6 +354,26 @@ void Crit3DProxyInterpolation::initializeOrography()
     setInversionIsSignificative(false);
 
     return;
+}
+
+std::vector <std::string> Crit3DInterpolationSettings::getProxyCombinations(int *indexHeight)
+{
+    std::vector <std::string> myCombination;
+//    std::string myProxy;
+
+//    *indexHeight = NODATA;
+//    for (int i=0; i < getProxyNr(); i++)
+//    {
+//        myProxy = getProxyName(i);
+//        myCombination.push_back(myProxy);
+//        if (myProxy == height) *indexHeight = i;
+//    }
+
+//    if (*indexHeight != NODATA && getUseThermalInversion())
+//        myCombination.push_back(heightInversion);
+
+//    return myCombination;
+    return myCombination;
 }
 
 void Crit3DInterpolationSettings::addProxy(Crit3DProxy myProxy)

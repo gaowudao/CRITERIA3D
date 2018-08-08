@@ -19,13 +19,13 @@ class Crit3DProxy
 private:
     std::string name;
     bool isActive;
+    bool isSignificant;
     std::string gridName;
     gis::Crit3DRasterGrid* grid;
 
 public:
     Crit3DProxy();
 
-    void initialize();
     std::string getName() const;
     void setName(const std::string &value);
     bool getIsActive() const;
@@ -34,6 +34,8 @@ public:
     void setGrid(gis::Crit3DRasterGrid *value);
     std::string getGridName() const;
     void setGridName(const std::string &value);
+    bool getIsSignificant() const;
+    void setIsSignificant(bool value);
 
     TProxyVar getProxyPragaName();
 };
@@ -115,6 +117,7 @@ public:
     void setProxyActive(int pos, bool isActive_);
     void addProxy(Crit3DProxy myProxy);
     float getProxyValue(unsigned int pos, std::vector <float> proxyValues);
+    std::vector<std::string> getProxyCombinations(int* indexHeight);
 
     void setClimateParameters(Crit3DClimateParameters* myParameters);
 
@@ -136,19 +139,14 @@ public:
 
     bool getPrecipitationAllZero() const;
     void setPrecipitationAllZero(bool value);
-
     float getMinRegressionR2() const;
     void setMinRegressionR2(float value);
-
     bool getUseLapseRateCode() const;
     void setUseLapseRateCode(bool value);
-
     bool getUseBestDetrending() const;
     void setUseBestDetrending(bool value);
-
     gridAggregationMethod getMeteoGridAggrMethod() const;
     void setMeteoGridAggrMethod(const gridAggregationMethod &value);
-
     float getShepardInitialRadius() const;
     void setShepardInitialRadius(float value);
     int getIndexPointCV() const;
