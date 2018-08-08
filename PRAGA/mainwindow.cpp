@@ -1286,7 +1286,7 @@ void MainWindow::elaborationGUI(bool isAnomaly, bool isMeteoGrid)
         }
         else
         {
-            showElabResult(true, isMeteoGrid);
+            showElabResult(true, isMeteoGrid, isAnomaly);
         }
     }
 
@@ -1421,7 +1421,7 @@ void MainWindow::on_actionClimate_meteo_grid_triggered()
    //TODO
 }
 
-void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid)
+void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool isAnomaly)
 {
 
     if (isMeteoGrid)
@@ -1446,7 +1446,15 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid)
             float maximum = NODATA;
             for (int i = 0; i < myProject.nrMeteoPoints; i++)
             {
-                myProject.meteoPoints[i].currentValue = myProject.meteoPoints[i].elaboration;
+                if (!isAnomaly)
+                {
+                    myProject.meteoPoints[i].currentValue = myProject.meteoPoints[i].elaboration;
+                }
+                else
+                {
+                    myProject.meteoPoints[i].currentValue = myProject.meteoPoints[i].anomaly;
+                }
+
                 // hide all meteo points
                 pointList[i]->setVisible(false);
 
@@ -1476,7 +1484,14 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid)
 
             if (!updateColorSCale)
             {
-                myProject.meteoPoints[i].currentValue = myProject.meteoPoints[i].elaboration;
+                if (!isAnomaly)
+                {
+                    myProject.meteoPoints[i].currentValue = myProject.meteoPoints[i].elaboration;
+                }
+                else
+                {
+                    myProject.meteoPoints[i].currentValue = myProject.meteoPoints[i].anomaly;
+                }
                 // hide all meteo points
                 pointList[i]->setVisible(false);
             }
@@ -1498,11 +1513,25 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid)
 
     if (myProject.clima->param1()!= NODATA)
     {
-        elabType1->setText(myProject.clima->elab1() + " " + QString::number(myProject.clima->param1()));
+        if (!isAnomaly)
+        {
+            elabType1->setText(myProject.clima->elab1() + " " + QString::number(myProject.clima->param1()));
+        }
+        else
+        {
+            elabType1->setText(myProject.clima->elab1() + " Anomaly of: " + QString::number(myProject.clima->param1()));
+        }
     }
     else
     {
-        elabType1->setText(myProject.clima->elab1());
+        if (!isAnomaly)
+        {
+            elabType1->setText(myProject.clima->elab1());
+        }
+        else
+        {
+            elabType1->setText("Anomaly respect to " + myProject.clima->elab1());
+        }
     }
     if (myProject.clima->elab2().isEmpty())
     {

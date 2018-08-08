@@ -191,7 +191,7 @@
         void interpolateRasterGUI();
         void interpolateGridGUI();
         void elaborationGUI(bool isAnomaly, bool isMeteoGrid);
-        void showElabResult(bool updateColorSCale, bool isMeteoGrid);
+        void showElabResult(bool updateColorSCale, bool isMeteoGrid, bool isAnomaly);
 
     };
 
