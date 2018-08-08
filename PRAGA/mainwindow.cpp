@@ -1354,7 +1354,6 @@ void MainWindow::on_actionAnomaly_meteo_points_triggered()
             {
                 return; //something has been wrong with elaboration
             }
-            myProject.fillAnomaly(isMeteoGrid);
             isAnomaly = true;
 
             elaborationGUI(isAnomaly, isMeteoGrid);
@@ -1397,7 +1396,6 @@ void MainWindow::on_actionAnomaly_meteo_grid_triggered()
             {
                 return; //something has been wrong with elaboration
             }
-            myProject.fillAnomaly(isMeteoGrid);
             isAnomaly = true;
 
             elaborationGUI(isAnomaly, isMeteoGrid);

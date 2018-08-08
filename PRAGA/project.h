@@ -145,7 +145,6 @@
 
         bool elaborationCheck(bool isMeteoGrid);
         bool elaboration(bool isMeteoGrid, bool isAnomaly);
-        void fillAnomaly(bool isMeteoGrid);
 
         bool loadModelParameters(QString dbName);
         bool loadSoilData(QString dbName);

@@ -649,7 +649,7 @@ void Project::closeMeteoPointsDB()
 
     meteoPointsSelected.clear();
     nrMeteoPoints = 0;
-    setElabMeteoPointsValue(false);
+    setIsElabMeteoPointsValue(false);
 }
 
 void Project::closeMeteoGridDB()
@@ -1298,37 +1298,10 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
         {
             return false;
         }
-        setElabMeteoPointsValue(true);
+        setIsElabMeteoPointsValue(true);
     }
     return true;
 }
-
-void Project::fillAnomaly(bool isMeteoGrid)
-{
-
-    if (isMeteoGrid)
-    {
-        for (int row = 0; row < meteoGridDbHandler->gridStructure().header().nrRows; row++)
-        {
-            for (int col = 0; col < meteoGridDbHandler->gridStructure().header().nrCols; col++)
-            {
-                Crit3DMeteoPoint* meteoPoint = meteoGridDbHandler->meteoGrid()->meteoPointPointer(row,col);
-                meteoPoint->anomaly = meteoPoint->elaboration;
-            }
-        }
-    }
-    else
-    {
-        for (int i = 0; i < nrMeteoPoints; i++)
-        {
-            meteoPoints[i].anomaly =  meteoPoints[i].elaboration;
-        }
-    }
-
-}
-
-
-
 
 //-------------------
 //
