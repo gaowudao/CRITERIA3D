@@ -61,40 +61,40 @@
 
         Crit3DMeteoPoint* meteoPoints;
         Crit3DMeteoPointsDbHandler* meteoPointsDbHandler;
+        QList<gis::Crit3DGeoPoint> meteoPointsSelected;
         Crit3DMeteoGridDbHandler* meteoGridDbHandler;
+        gridAggregationMethod grdAggrMethod;
+
         Crit3DClimate* clima;
         Crit3DClimate* referenceClima;
+
+        Crit3DColorScale *meteoPointsColorScale;
 
         gis::Crit3DGeoPoint startLocation;
 
         int nrMeteoPoints;
         bool isElabMeteoPointsValue;
 
-        QList<gis::Crit3DGeoPoint> meteoPointsSelected;
-
         Crit3DQuality* quality;
         bool checkSpatialQuality;
+
+        meteoVariable currentVariable;
+
+        gis::Crit3DGisSettings gisSettings;
 
         gis::Crit3DRasterGrid DTM;
         gis::Crit3DRasterGrid dataRaster;
 
         Crit3DRadiationMaps *radiationMaps;
-
-        Crit3DProject Criteria3Dproject;
-
-        NetCDFHandler netCDF;
-
-        gis::Crit3DGisSettings gisSettings;
-
-        Crit3DColorScale *meteoPointsColorScale;
-
-        meteoVariable currentVariable;
-
-        gridAggregationMethod grdAggrMethod;
+        Crit3DRadiationSettings radSettings;
 
         std::vector <Crit3DInterpolationDataPoint> interpolationPointList;
         Crit3DInterpolationSettings interpolationSettings;
         Crit3DInterpolationSettings qualityInterpolationSettings;
+
+        Crit3DProject Criteria3Dproject;
+
+        NetCDFHandler netCDF;
 
         Project();
 

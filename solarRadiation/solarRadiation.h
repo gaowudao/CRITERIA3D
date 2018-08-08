@@ -48,13 +48,14 @@
                                 int myHour, int myMinute, int mySecond,
                                 float temp, float pressure, float aspect, float slope, TsunPosition *mySunPosition);
 
-        int estimateTransmissivityWindow(const gis::Crit3DRasterGrid& myDtm, const Crit3DRadiationMaps& myRadiationMaps,
-                                 gis::Crit3DPoint* myPoint, Crit3DTime myTime, int timeStepSecond);
+        int estimateTransmissivityWindow(Crit3DRadiationSettings* mySettings, const gis::Crit3DRasterGrid& myDtm,
+                                         const Crit3DRadiationMaps& myRadiationMaps,
+                                         gis::Crit3DPoint* myPoint, Crit3DTime myTime, int timeStepSecond);
 
-        bool computeRadiationGridPresentTime(const gis::Crit3DRasterGrid& myDtm,
+        bool computeRadiationGridPresentTime(Crit3DRadiationSettings *mySettings, const gis::Crit3DRasterGrid& myDtm,
                                  Crit3DRadiationMaps* radiationMaps, const Crit3DTime& myCrit3DTime);
 
-        float computePointTransmissivity(const gis::Crit3DPoint& myPoint, Crit3DTime UTCTime, float* measuredRad,
+        float computePointTransmissivity(Crit3DRadiationSettings *mySettings, const gis::Crit3DPoint& myPoint, Crit3DTime UTCTime, float* measuredRad,
                                          int windowWidth, int timeStepSecond, const gis::Crit3DRasterGrid& myDtm);
 
         gis::Crit3DRasterGrid* getBeamRadiationMap();
@@ -62,7 +63,7 @@
         gis::Crit3DRasterGrid* getReflectedRadiationMap();
         gis::Crit3DRasterGrid* getGlobalRadiationMap();
 
-        bool isGridPointComputable(int row, int col, const gis::Crit3DRasterGrid& myDtm, Crit3DRadiationMaps* radiationMaps);
+        bool isGridPointComputable(Crit3DRadiationSettings* mySettings, int row, int col, const gis::Crit3DRasterGrid& myDtm, Crit3DRadiationMaps* radiationMaps);
     }
 
 

@@ -968,6 +968,47 @@ bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, 
     }
 }
 
+bool Project::interpolateRasterRadiation(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, std::string *myError)
+{
+    radSettings.setGisSettings(&gisSettings);
+
+    gis::Crit3DPoint mapCenter = DTM.mapCenter();
+
+    int intervalWidth = radiation::estimateTransmissivityWindow(&radSettings, DTM, *radiationMaps, &mapCenter, myTime, int(HOUR_SECONDS));
+
+    // almost a meteoPoint with transmissivity data
+    if (! computeTransmissivity(&radSettings, meteoPoints, nrMeteoPoints, intervalWidth, myTime, DTM))
+        if (! computeTransmissivityFromTRange(meteoPoints, nrMeteoPoints, myTime))
+        {
+            *myError = "Function interpolateRasterRadiation: it is not possible to compute transmissivity.";
+            return false;
+        }
+
+    if (checkAndPassDataToInterpolation(quality, atmTransmissivity, hourly, meteoPoints, nrMeteoPoints,
+                                        myTime, &qualityInterpolationSettings,
+                                        &interpolationSettings, interpolationPointList, checkSpatialQuality))
+    {
+        *myError = "Function interpolateRasterRadiation: not enough transmissivity data.";
+        return false;
+    }
+
+    if (preInterpolation(interpolationPointList, &interpolationSettings, meteoPoints, nrMeteoPoints, atmTransmissivity, myTime))
+        if (! interpolateGridDtm(interpolationPointList, &interpolationSettings, this->radiationMaps->transmissivityMap, this->DTM, atmTransmissivity), &interpolationSettings)
+        {
+            *myError = "Function interpolateRasterRadiation: error interpolating transmissivity.";
+            return false;
+        }
+
+    if (! radiation::computeRadiationGridPresentTime(&radSettings, this->DTM, this->radiationMaps, myTime))
+    {
+        *myError = "Function interpolateRasterRadiation: error computing solar radiation";
+        return false;
+    }
+
+    myRaster->copyGrid(*(this->radiationMaps->globalRadiationMap));
+
+    return true;
+}
 
 bool Project::interpolateGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime,
                               gis::Crit3DRasterGrid *myRaster)
@@ -1063,51 +1104,7 @@ bool Project::saveGrid(meteoVariable myVar, frequencyType myFrequency, const Cri
 }
 
 
-bool Project::interpolateRasterRadiation(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, std::string *myError)
-{
-    Crit3DRadiationSettings radSettings;
 
-    radSettings.setGisSettings(&(gisSettings));
-
-    radiation::setRadiationSettings(&(radSettings));
-
-    gis::Crit3DPoint mapCenter = DTM.mapCenter();
-
-    int intervalWidth = radiation::estimateTransmissivityWindow(DTM, *radiationMaps, &mapCenter, myTime, int(HOUR_SECONDS));
-
-    // almost a meteoPoint with transmissivity data
-    if (! computeTransmissivity(this->meteoPoints, this->nrMeteoPoints, intervalWidth, myTime, this->DTM))
-        if (! computeTransmissivityFromTRange(this->meteoPoints, this->nrMeteoPoints, myTime))
-        {
-            *myError = "Function interpolateRasterRadiation: it is not possible to compute transmissivity.";
-            return false;
-        }
-
-    if (checkAndPassDataToInterpolation(quality, atmTransmissivity, hourly, meteoPoints, nrMeteoPoints,
-                                        myTime, &qualityInterpolationSettings,
-                                        &interpolationSettings, interpolationPointList, checkSpatialQuality))
-    {
-        *myError = "Function interpolateRasterRadiation: not enough transmissivity data.";
-        return false;
-    }
-
-    if (preInterpolation(interpolationPointList, &interpolationSettings, meteoPoints, nrMeteoPoints, atmTransmissivity, myTime))
-        if (! interpolateGridDtm(interpolationPointList, &interpolationSettings, this->radiationMaps->transmissivityMap, this->DTM, atmTransmissivity), &interpolationSettings)
-        {
-            *myError = "Function interpolateRasterRadiation: error interpolating transmissivity.";
-            return false;
-        }
-
-    if (! radiation::computeRadiationGridPresentTime(this->DTM, this->radiationMaps, myTime))
-    {
-        *myError = "Function interpolateRasterRadiation: error computing solar radiation";
-        return false;
-    }
-
-    myRaster->copyGrid(*(this->radiationMaps->globalRadiationMap));
-
-    return true;
-}
 
 
 float Project::meteoDataConsistency(meteoVariable myVar, const Crit3DTime& timeIni, const Crit3DTime& timeFin)
@@ -1118,7 +1115,6 @@ float Project::meteoDataConsistency(meteoVariable myVar, const Crit3DTime& timeI
 
     return dataConsistency;
 }
-
 
 bool Project::loadModelParameters(QString dbName)
 {
@@ -1141,7 +1137,6 @@ bool Project::loadModelParameters(QString dbName)
     Criteria3Dproject.isParametersLoaded = true;
     return true;
 }
-
 
 bool Project::loadSoilData(QString dbName)
 {

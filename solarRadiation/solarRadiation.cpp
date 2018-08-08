@@ -179,9 +179,6 @@ float getCosDecimalDegree(float angle)
 
 namespace radiation
 {
-    Crit3DRadiationSettings radiationSettings;
-    std::vector <Crit3DTransmissivityPoint> transmissivityPointList;
-
     double linkeMountain[13] = {1.5, 1.6, 1.8, 1.9, 2.0, 2.3, 2.3, 2.3, 2.1, 1.8, 1.6, 1.5, 1.9};
     double linkeRural[13] = {2.1, 2.2, 2.5, 2.9, 3.2, 3.4, 3.5, 3.3, 2.9, 2.6, 2.3, 2.2, 2.75};
     double linkeCity[13] = {3.1, 3.2, 3.5, 4.0, 4.2, 4.3, 4.4, 4.3, 4.0, 3.6, 3.3, 3.1, 3.75};
@@ -190,11 +187,6 @@ namespace radiation
     float linkeSinusoidal(float amplitude , float phase , float average , int doy)
     {
         return float(amplitude * (1.0 - cos(doy / 365.0 * 2.0 * PI - phase)) + average);
-    }
-
-    void setRadiationSettings(Crit3DRadiationSettings* mySettings)
-    {
-        radiationSettings = *(mySettings);
     }
 
     /*!
@@ -224,13 +216,13 @@ namespace radiation
     }
 
 
-    float readAlbedo(int myRow, int myCol, const gis::Crit3DRasterGrid& albedoMap)
+    float readAlbedo(Crit3DRadiationSettings* mySettings, int myRow, int myCol, const gis::Crit3DRasterGrid& albedoMap)
     {
         float myAlbedo = NODATA;
-        switch (radiationSettings.getAlbedoMode())
+        switch (mySettings->getAlbedoMode())
         {
             case PARAM_MODE_FIXED:
-                myAlbedo = radiationSettings.getAlbedo();
+                myAlbedo = mySettings->getAlbedo();
                 break;
             case PARAM_MODE_MAP:
                 myAlbedo = albedoMap.value[myRow][myCol];
@@ -240,18 +232,18 @@ namespace radiation
     }
 
 
-    float readAlbedo()
+    float readAlbedo(Crit3DRadiationSettings* mySettings)
     {
-        return radiationSettings.getAlbedo();
+        return mySettings->getAlbedo();
     }
 
-    float readLinke(int myRow, int myCol, const gis::Crit3DRasterGrid& linkeMap)
+    float readLinke(Crit3DRadiationSettings* mySettings, int myRow, int myCol, const gis::Crit3DRasterGrid& linkeMap)
     {
         float output = NODATA;
-        switch(radiationSettings.getLinkeMode())
+        switch(mySettings->getLinkeMode())
         {
             case PARAM_MODE_FIXED:
-                output = radiationSettings.getLinke();
+                output = mySettings->getLinke();
                 break;
 
             case PARAM_MODE_MAP:
@@ -261,32 +253,32 @@ namespace radiation
         return output;
     }
 
-    float readLinke()
+    float readLinke(Crit3DRadiationSettings* mySettings)
     {
         float output = NODATA;
-        switch(radiationSettings.getLinkeMode())
+        switch(mySettings->getLinkeMode())
         {
             case PARAM_MODE_FIXED:
-                output = radiationSettings.getLinke();
+                output = mySettings->getLinke();
                 break;
 
             case PARAM_MODE_MAP:
-                 output = radiationSettings.getLinke();
+                 output = mySettings->getLinke();
                  break;
         }
         return output;
     }
 
-    float readSlope()
+    float readSlope(Crit3DRadiationSettings* mySettings)
     {
         float output = NODATA;
-        switch (radiationSettings.getTiltMode())
+        switch (mySettings->getTiltMode())
         {
             case TILT_TYPE_HORIZONTAL:
-                output = radiationSettings.getTilt();
+                output = mySettings->getTilt();
                 break;
             case TILT_TYPE_INCLINED:
-                output = radiationSettings.getTilt();
+                output = mySettings->getTilt();
                 break;
             case TILT_TYPE_DEM:
                 output = NODATA;
@@ -295,17 +287,17 @@ namespace radiation
         return output;
     }
 
-    float readAspect(gis::Crit3DRasterGrid* aspectMap, int myRow,int myCol)
+    float readAspect(Crit3DRadiationSettings* mySettings, gis::Crit3DRasterGrid* aspectMap, int myRow,int myCol)
     {
         float output = NODATA;
 
-        switch (radiationSettings.getTiltMode())
+        switch (mySettings->getTiltMode())
         {
             case TILT_TYPE_HORIZONTAL:
-                output = radiationSettings.getAspect();
+                output = mySettings->getAspect();
                 break;
             case TILT_TYPE_INCLINED:
-                output = radiationSettings.getAspect();
+                output = mySettings->getAspect();
                 break;
             case TILT_TYPE_DEM:
                 output = aspectMap->value[myRow][myCol];
@@ -314,17 +306,17 @@ namespace radiation
         return output;
     }
 
-    float readSlope(gis::Crit3DRasterGrid* slopeMap,int myRow,int myCol)
+    float readSlope(Crit3DRadiationSettings* mySettings, gis::Crit3DRasterGrid* slopeMap,int myRow,int myCol)
     {
         float output = NODATA;
 
-        switch (radiationSettings.getTiltMode())
+        switch (mySettings->getTiltMode())
         {
             case TILT_TYPE_HORIZONTAL:
-                output = radiationSettings.getTilt();
+                output = mySettings->getTilt();
                 break;
             case TILT_TYPE_INCLINED:
-                output = radiationSettings.getTilt();
+                output = mySettings->getTilt();
                 break;
             case TILT_TYPE_DEM:
                 output = slopeMap->value[myRow][myCol];
@@ -476,7 +468,8 @@ namespace radiation
     }
 
 
-    bool computeShadow(TradPoint* myPoint, TsunPosition* mySunPosition, const gis::Crit3DRasterGrid& myDtm)
+    bool computeShadow(Crit3DRadiationSettings* mySettings, TradPoint* myPoint, TsunPosition* mySunPosition,
+                       const gis::Crit3DRasterGrid& myDtm)
     {
         float sunMaskStepX, sunMaskStepY;
         float sunMaskStepZ, maxDeltaH;
@@ -492,20 +485,19 @@ namespace radiation
         supponiamo di avere gia' controllato se siamo dopo l'alba e prima del tramonto
         inizializzazione a sole visibile*/
 
+        float shadowFactor = mySettings->getShadowDistanceFactor();
+
         shadowComputed = false;
         x = float(myPoint->x);
         y = float(myPoint->y);
         z = float(myPoint->height);
-        sunMaskStepX = float(radiationSettings.getShadowDistanceFactor() *
-                             getSinDecimalDegree(mySunPosition->azimuth) * myDtm.header->cellSize);
-        sunMaskStepY = float(radiationSettings.getShadowDistanceFactor() *
-                             getCosDecimalDegree(mySunPosition->azimuth) * myDtm.header->cellSize);
-
+        sunMaskStepX = float(shadowFactor * getSinDecimalDegree(mySunPosition->azimuth) * myDtm.header->cellSize);
+        sunMaskStepY = float(shadowFactor * getCosDecimalDegree(mySunPosition->azimuth) * myDtm.header->cellSize);
         cosElev = getCosDecimalDegree(mySunPosition->elevation);
         sinElev = getSinDecimalDegree(mySunPosition->elevation);
         tgElev = sinElev / cosElev;
-        sunMaskStepZ = float(myDtm.header->cellSize * radiationSettings.getShadowDistanceFactor() * tgElev);
-        maxDeltaH = float(myDtm.header->cellSize * radiationSettings.getShadowDistanceFactor() * 2.0);
+        sunMaskStepZ = float(myDtm.header->cellSize * shadowFactor * tgElev);
+        maxDeltaH = float(myDtm.header->cellSize * shadowFactor * 2.0);
 
         if (sunMaskStepZ == 0)
             maxDistCount = myDtm.maximum - z;
@@ -566,7 +558,7 @@ namespace radiation
     }
 
 
-bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime myTime,
+bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemperature, float myPressure, Crit3DTime myTime,
             float myLinke,float myAlbedo, float myClearSkyTransmissivity, float myTransmissivity ,
             TsunPosition* mySunPosition, TradPoint* myPoint, const gis::Crit3DRasterGrid& myDtm)
     {
@@ -585,10 +577,8 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
 
         Crit3DTime localTime;
         localTime = myTime;
-        if (radiationSettings.gisSettings->isUTC)
-        {
-            localTime = myTime.addSeconds(float(radiationSettings.gisSettings->timeZone * 3600));
-        }
+        if (mySettings->gisSettings->isUTC)
+            localTime = myTime.addSeconds(float(mySettings->gisSettings->timeZone * 3600));
 
         myYear = localTime.date.year;
         myMonth =  localTime.date.month;
@@ -598,21 +588,21 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
         mySecond = int(localTime.getSeconds());
 
         /*! Sun position */
-        if (! computeSunPosition(float(myPoint->lon), float(myPoint->lat), radiationSettings.gisSettings->timeZone,
+        if (! computeSunPosition(float(myPoint->lon), float(myPoint->lat), mySettings->gisSettings->timeZone,
             myYear, myMonth, myDay, myHour, myMinute, mySecond,
             myTemperature, myPressure, float(myPoint->aspect), float(myPoint->slope), mySunPosition))
             return false;
 
         /*! Shadowing */
         isPointIlluminated = isIlluminated(localTime.time, (*mySunPosition).rise, (*mySunPosition).set, (*mySunPosition).elevationRefr);
-        if (radiationSettings.getComputeShadowing())
+        if (mySettings->getComputeShadowing())
         {
             if (gis::isOutOfGridXY(myPoint->x, myPoint->y, myDtm.header))
                 (*mySunPosition).shadow = ! isPointIlluminated;
             else
             {
                 if (isPointIlluminated)
-                    (*mySunPosition).shadow = computeShadow(myPoint, mySunPosition, myDtm);
+                    (*mySunPosition).shadow = computeShadow(mySettings, myPoint, mySunPosition, myDtm);
                 else
                     (*mySunPosition).shadow = true;
             }
@@ -624,11 +614,11 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
             Bhc = clearSkyBeamHorizontal(myLinke, mySunPosition);
             Dhc = clearSkyDiffuseHorizontal(myLinke, mySunPosition);
             Ghc = Dhc + Bhc;
-            if (radiationSettings.getComputeRealData())
+            if (mySettings->getComputeRealData())
             {
                 if (myTransmissivity != NODATA)
                 {
-                    if (radiationSettings.getTransmissivityUseTotal())
+                    if (mySettings->getTransmissivityUseTotal())
                     {
                         Gh = mySunPosition->extraIrradianceHorizontal * myTransmissivity;
                         separateTransmissivity (myClearSkyTransmissivity, myTransmissivity, &diffuseTransmittance, &globalTransmittance);
@@ -662,7 +652,7 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
                 Bh = 0;
                 Gh = dH;
             }
-            if (radiationSettings.getTiltMode() == TILT_TYPE_HORIZONTAL)
+            if (mySettings->getTiltMode() == TILT_TYPE_HORIZONTAL)
             {
                 (*myPoint).beam = Bh;
                 (*myPoint).diffuse = dH;
@@ -693,7 +683,7 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
     }
 
 
-    int estimateTransmissivityWindow(const gis::Crit3DRasterGrid& myDtm,
+    int estimateTransmissivityWindow(Crit3DRadiationSettings* mySettings, const gis::Crit3DRasterGrid& myDtm,
                                      const Crit3DRadiationMaps& myRadiationMaps,
                                      gis::Crit3DPoint* myPoint, Crit3DTime myTime, int timeStepSecond)
     {
@@ -717,30 +707,30 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
         if (myPoint->z == NODATA) myRadPoint.height = gis::getValueFromXY(myDtm, myRadPoint.x, myRadPoint.y);
 
         gis::getRowColFromXY(myDtm, myRadPoint.x, myRadPoint.y, &myRow, &myCol);
-        myRadPoint.aspect = readAspect(myRadiationMaps.aspectMap, myRow, myCol);
-        myRadPoint.slope = readSlope(myRadiationMaps.slopeMap, myRow, myCol);
+        myRadPoint.aspect = readAspect(mySettings, myRadiationMaps.aspectMap, myRow, myCol);
+        myRadPoint.slope = readSlope(mySettings, myRadiationMaps.slopeMap, myRow, myCol);
 
-        gis::getLatLonFromUtm(*(radiationSettings.gisSettings), myPoint->utm.x, myPoint->utm.y, &latDegrees, &lonDegrees);
+        gis::getLatLonFromUtm(*(mySettings->gisSettings), myPoint->utm.x, myPoint->utm.y, &latDegrees, &lonDegrees);
         myRadPoint.lat = (float)(latDegrees);
         myRadPoint.lon = (float)(lonDegrees);
 
-        myLinke = readLinke();
-        myAlbedo = readAlbedo();
-        myClearSkyTransmissivity = radiationSettings.getClearSky();
+        myLinke = readLinke(mySettings);
+        myAlbedo = readAlbedo(mySettings);
+        myClearSkyTransmissivity = mySettings->getClearSky();
 
         // noon
         Crit3DTime noonTime = myTime;
         noonTime.time = 12*3600;
-        if (radiationSettings.gisSettings->isUTC)
+        if (mySettings->gisSettings->isUTC)
         {
-            noonTime = noonTime.addSeconds(-float(radiationSettings.gisSettings->timeZone * 3600));
+            noonTime = noonTime.addSeconds(-float(mySettings->gisSettings->timeZone * 3600));
         }
 
         // Threshold: half potential radiation at noon
-        computeRadiationPointRsun(TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, noonTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
+        computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, noonTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
         sumPotentialRadThreshold = float(myRadPoint.global * 0.5);
 
-        computeRadiationPointRsun(TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, myTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
+        computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, myTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
         sumPotentialRad = float(myRadPoint.global);
 
         int backwardTimeStep,forwardTimeStep;
@@ -757,10 +747,10 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
             backwardTime = myTime.addSeconds(float(backwardTimeStep));
             forwardTime = myTime.addSeconds(float(forwardTimeStep));
 
-            computeRadiationPointRsun(TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, backwardTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
+            computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, backwardTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
             sumPotentialRad+= float(myRadPoint.global);
 
-            computeRadiationPointRsun(TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, forwardTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
+            computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, forwardTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
             sumPotentialRad+= float(myRadPoint.global);
         }
 
@@ -768,7 +758,7 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
     }
 
 
-    bool isGridPointComputable(int row, int col, const gis::Crit3DRasterGrid& myDtm, Crit3DRadiationMaps* radiationMaps)
+    bool isGridPointComputable(Crit3DRadiationSettings* mySettings, int row, int col, const gis::Crit3DRasterGrid& myDtm, Crit3DRadiationMaps* radiationMaps)
     {
         float mySlope, myAspect;
         bool output = false;
@@ -777,8 +767,8 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
             if ((radiationMaps->latMap->value[row][col] != radiationMaps->latMap->header->flag)
                     && (radiationMaps->lonMap->value[row][col] != radiationMaps->lonMap->header->flag))
             {
-                mySlope = readSlope(radiationMaps->slopeMap, row, col);
-                myAspect = readAspect(radiationMaps->aspectMap, row, col);
+                mySlope = readSlope(mySettings, radiationMaps->slopeMap, row, col);
+                myAspect = readAspect(mySettings, radiationMaps->aspectMap, row, col);
                 if ((mySlope != NODATA) && (myAspect != NODATA))  output = true;
             }
         }
@@ -786,9 +776,8 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
     }
 
 
-   bool computeRadiationGridRsun(const gis::Crit3DRasterGrid& myDtm,
-                                 Crit3DRadiationMaps* radiationMaps,
-                                 const Crit3DTime& UTCTime)
+   bool computeRadiationGridRsun(Crit3DRadiationSettings* mySettings, const gis::Crit3DRasterGrid& myDtm,
+                                 Crit3DRadiationMaps* radiationMaps, const Crit3DTime& UTCTime)
 
     {
         int myRow, myCol;
@@ -799,17 +788,18 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
         {
             for (myCol=0;myCol < myDtm.header->nrCols; myCol++)
             {
-                if(isGridPointComputable(myRow, myCol, myDtm, radiationMaps))
+                if(isGridPointComputable(mySettings, myRow, myCol, myDtm, radiationMaps))
                 {
                     gis::getUtmXYFromRowCol(myDtm, myRow, myCol, &(myRadPoint.x), &(myRadPoint.y));
                     myRadPoint.height = myDtm.value[myRow][myCol];
                     myRadPoint.lat = radiationMaps->latMap->value[myRow][myCol];
                     myRadPoint.lon = radiationMaps->lonMap->value[myRow][myCol];
-                    myRadPoint.slope = readSlope(radiationMaps->slopeMap, myRow, myCol);
-                    myRadPoint.aspect = readAspect(radiationMaps->aspectMap, myRow, myCol);
+                    myRadPoint.slope = readSlope(mySettings, radiationMaps->slopeMap, myRow, myCol);
+                    myRadPoint.aspect = readAspect(mySettings, radiationMaps->aspectMap, myRow, myCol);
                     //CHIAMATA A SINGLE POINT
-                    if (!computeRadiationPointRsun(TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, UTCTime,
-                                    readLinke(myRow, myCol, *(radiationMaps->linkeMap)), readAlbedo(myRow, myCol, *(radiationMaps->albedoMap)), radiationSettings.getClearSky(), radiationMaps->transmissivityMap->value[myRow][myCol], &mySunPosition, &myRadPoint, myDtm))
+                    if (!computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, UTCTime,
+                                                    readLinke(mySettings, myRow, myCol, *(radiationMaps->linkeMap)),
+                                                    readAlbedo(mySettings, myRow, myCol, *(radiationMaps->albedoMap)), mySettings->getClearSky(), radiationMaps->transmissivityMap->value[myRow][myCol], &mySunPosition, &myRadPoint, myDtm))
                         return false;
 
                     radiationMaps->sunAzimuthMap->value[myRow][myCol] = mySunPosition.azimuth;
@@ -873,7 +863,7 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
         return true;
     }
 
-    bool computeRadiationPointBrooks(TradPoint* myPoint, Crit3DDate* myDate, float currentSolarTime,
+    bool computeRadiationPointBrooks(Crit3DRadiationSettings* mySettings, TradPoint* myPoint, Crit3DDate* myDate, float currentSolarTime,
         float myClearSkyTransmissivity, float myTransmissivity)
     {
         int myDoy;
@@ -912,7 +902,7 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
         solarDeclination = 0.4102 * sin(2.0 * PI / 365.0 * (myDoy - 80));
 
         //controllare i segni:
-        correctionLong = ((radiationSettings.gisSettings->timeZone * 15) - myPoint->lon) / 15.0;
+        correctionLong = ((mySettings->gisSettings->timeZone * 15) - myPoint->lon) / 15.0;
 
         solarTime = currentSolarTime - correctionLong + timeEq;
         if (solarTime > 24)
@@ -941,7 +931,7 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
 
         float Tt = myClearSkyTransmissivity;
         float td = float(0.1);
-        if (radiationSettings.getComputeRealData())
+        if (mySettings->getComputeRealData())
         {
             if (myTransmissivity != NODATA)
             {
@@ -953,7 +943,7 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
 
         radDiffuse = extraTerrestrialRad * td;
 
-        if (radiationSettings.getTiltMode() == TILT_TYPE_HORIZONTAL)
+        if (mySettings->getTiltMode() == TILT_TYPE_HORIZONTAL)
         {
             radBeam = extraTerrestrialRad * coeffBH;
             radReflected = 0;
@@ -1000,18 +990,17 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
     }
 
 
-    bool computeRadiationGridPresentTime(const gis::Crit3DRasterGrid& myDtm,
-                                         Crit3DRadiationMaps* radiationMaps,
-                                         const Crit3DTime& myCrit3DTime)
+    bool computeRadiationGridPresentTime(Crit3DRadiationSettings* mySettings, const gis::Crit3DRasterGrid& myDtm,
+                                         Crit3DRadiationMaps* radiationMaps, const Crit3DTime& myCrit3DTime)
     {
         if (! preConditionsRadiationGrid(radiationMaps))
             return false;        
 
-        if (radiationSettings.getAlgorithm() == RADIATION_ALGORITHM_RSUN)
+        if (mySettings->getAlgorithm() == RADIATION_ALGORITHM_RSUN)
         {
-            return computeRadiationGridRsun(myDtm, radiationMaps, myCrit3DTime);
+            return computeRadiationGridRsun(mySettings, myDtm, radiationMaps, myCrit3DTime);
         }
-        else if (radiationSettings.getAlgorithm() == RADIATION_ALGORITHM_BROOKS)
+        else if (mySettings->getAlgorithm() == RADIATION_ALGORITHM_BROOKS)
         {
             // to do
             return false;
@@ -1021,7 +1010,7 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
     }
 
 
-    float computePointTransmissivity(const gis::Crit3DPoint& myPoint, Crit3DTime UTCTime, float* measuredRad,
+    float computePointTransmissivity(Crit3DRadiationSettings* mySettings, const gis::Crit3DPoint& myPoint, Crit3DTime UTCTime, float* measuredRad,
                                      int windowWidth, int timeStepSecond, const gis::Crit3DRasterGrid& myDtm)
     {
         if (windowWidth % 2 != 1) return NODATA;
@@ -1052,13 +1041,13 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
         myRadPoint.aspect = 0.;
         myRadPoint.slope = 0.;
 
-        gis::getLatLonFromUtm(*(radiationSettings.gisSettings), myPoint.utm.x, myPoint.utm.y, &latDegrees, &lonDegrees);
+        gis::getLatLonFromUtm(*(mySettings->gisSettings), myPoint.utm.x, myPoint.utm.y, &latDegrees, &lonDegrees);
         myRadPoint.lat = (float)(latDegrees);
         myRadPoint.lon = (float)(lonDegrees);
 
-        myLinke = readLinke();
-        myAlbedo = readAlbedo();
-        myClearSkyTransmissivity = radiationSettings.getClearSky();
+        myLinke = readLinke(mySettings);
+        myAlbedo = readAlbedo(mySettings);
+        myClearSkyTransmissivity = mySettings->getClearSky();
 
         int backwardTimeStep,forwardTimeStep;
         backwardTimeStep = forwardTimeStep = 0;
@@ -1066,7 +1055,7 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
 
         float sumMeasuredRad = measuredRad[intervalCenter];
 
-        computeRadiationPointRsun(TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, UTCTime, myLinke, myAlbedo,
+        computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, UTCTime, myLinke, myAlbedo,
                myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
 
         float sumPotentialRad = float(myRadPoint.global);
@@ -1081,13 +1070,13 @@ bool computeRadiationPointRsun(float myTemperature, float myPressure, Crit3DTime
             if (measuredRad[windowIndex] != NODATA)
             {
                 sumMeasuredRad += measuredRad[windowIndex];
-                computeRadiationPointRsun(TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, backwardTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
+                computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, backwardTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
                 sumPotentialRad += float(myRadPoint.global);
             }
             if (measuredRad[windowWidth-windowIndex-1] != NODATA)
             {
                 sumMeasuredRad+= measuredRad[windowWidth-windowIndex-1];
-                computeRadiationPointRsun(TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, forwardTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
+                computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, forwardTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
                 sumPotentialRad+= float(myRadPoint.global);
             }
         }
