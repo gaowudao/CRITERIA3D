@@ -17,9 +17,9 @@
         #include "interpolationPoint.h"
     #endif
 
-    bool checkData(Crit3DQuality* myQuality, meteoVariable myVar, frequencyType myFrequency, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DTime myTime,
+    bool checkData(Crit3DQuality* myQuality, meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DTime myTime,
                    Crit3DInterpolationSettings* spatialQualityInterpolationSettings, bool checkSpatial);
-    bool checkAndPassDataToInterpolation(Crit3DQuality* myQuality, meteoVariable myVar, frequencyType myFrequency, Crit3DMeteoPoint* meteoPoints,
+    bool checkAndPassDataToInterpolation(Crit3DQuality* myQuality, meteoVariable myVar, Crit3DMeteoPoint* meteoPoints,
                                          int nrMeteoPoints, Crit3DTime myTime, Crit3DInterpolationSettings *SQinterpolationSettings,
                                          Crit3DInterpolationSettings* interpolationSettings,
                                          std::vector<Crit3DInterpolationDataPoint> &myInterpolationPoints,

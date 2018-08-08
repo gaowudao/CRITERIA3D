@@ -1311,7 +1311,7 @@ std::vector <float> getProxyValuesXY(gis::Crit3DUtmPoint myPoint, Crit3DInterpol
 }
 
 
-bool interpolateGridDtm(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings,
+bool interpolationDem(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings,
                         gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGrid& myDTM, meteoVariable myVar)
 {
     if (! myGrid->initializeGrid(myDTM))
@@ -1333,45 +1333,3 @@ bool interpolateGridDtm(std::vector <Crit3DInterpolationDataPoint> &myPoints, Cr
 
     return (true);
 }
-
-
-// require data loaded in interpolationPointList (use checkAndPassDataToInterpolation function)
-bool interpolationRaster(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings *mySettings,
-                         Crit3DMeteoPoint* myMeteoPoints, int nrMeteoPoints,
-                         meteoVariable myVar, const Crit3DTime& myTime, const  gis::Crit3DRasterGrid& myDTM,
-                         gis::Crit3DRasterGrid *myRaster, std::string *myError)
-{
-    // check data presence
-    if (myPoints.size() == 0)
-    {
-        *myError = "No data to interpolate";
-        return false;
-    }
-
-    // check DTM
-    if (! myDTM.isLoaded)
-    {
-        *myError = "Load DTM before";
-        return false;
-    }
-
-    // Proxy vars regression and detrend
-    if (! preInterpolation(myPoints, mySettings, myMeteoPoints, nrMeteoPoints, myVar, myTime))
-    {
-        *myError = "Interpolation: error in function preInterpolation";
-        return false;
-    }
-
-    // Interpolate
-    if (! interpolateGridDtm(myPoints, mySettings, myRaster, myDTM, myVar))
-    {
-        *myError = "Interpolation: error in function interpolateGridDtm";
-        return false;
-    }
-
-    Crit3DTime t = myTime;
-    myRaster->timeString = t.toStdString();
-    return true;
-}
-
-

@@ -671,7 +671,7 @@ void MainWindow::interpolateRasterGUI()
 {
     meteoVariable myVar = myProject.getCurrentVariable();
 
-    if (myProject.interpolateRaster(myVar, myProject.getFrequency(), myProject.getCurrentTime(), &(myProject.dataRaster)))
+    if (myProject.interpolationRasterMain(myVar,myProject.getCurrentTime(), &(myProject.dataRaster)))
     {
         setColorScale(myVar, myProject.dataRaster.colorScale);
         setCurrentRaster(&(myProject.dataRaster));
@@ -684,7 +684,7 @@ void MainWindow::interpolateRasterGUI()
 
 void MainWindow::interpolateGridGUI()
 {
-    if (myProject.interpolateGrid(myProject.getCurrentVariable(), myProject.getFrequency(), myProject.getCurrentTime(), &(myProject.dataRaster)))
+    if (myProject.interpolationMeteoGrid(myProject.getCurrentVariable(), myProject.getFrequency(), myProject.getCurrentTime(), &(myProject.dataRaster)))
     {
         setCurrentRaster(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid));
         ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myProject.getCurrentVariable())));
@@ -832,7 +832,7 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
     }
 
     // quality control
-    checkData(myProject.quality, myProject.getCurrentVariable(), myProject.getFrequency(),
+    checkData(myProject.quality, myProject.getCurrentVariable(),
               myProject.meteoPoints, myProject.nrMeteoPoints, myProject.getCurrentTime(),
               &myProject.qualityInterpolationSettings, myProject.checkSpatialQuality);
 
