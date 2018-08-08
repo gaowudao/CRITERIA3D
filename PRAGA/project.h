@@ -68,7 +68,7 @@
         gis::Crit3DGeoPoint startLocation;
 
         int nrMeteoPoints;
-        bool elabMeteoPointsValue;
+        bool isElabMeteoPointsValue;
 
         QList<gis::Crit3DGeoPoint> meteoPointsSelected;
 
@@ -152,8 +152,8 @@
         bool loadSoilMap(QString fileName);
         bool initializeCriteria3D();
 
-        bool getElabMeteoPointsValue() const;
-        void setElabMeteoPointsValue(bool value);
+        bool getIsElabMeteoPointsValue() const;
+        void setIsElabMeteoPointsValue(bool value);
     };
 
 

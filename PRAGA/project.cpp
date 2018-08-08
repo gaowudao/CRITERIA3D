@@ -16,14 +16,14 @@
 
 #include <iostream> //debug
 
-bool Project::getElabMeteoPointsValue() const
+bool Project::getIsElabMeteoPointsValue() const
 {
-    return elabMeteoPointsValue;
+    return isElabMeteoPointsValue;
 }
 
-void Project::setElabMeteoPointsValue(bool value)
+void Project::setIsElabMeteoPointsValue(bool value)
 {
-    elabMeteoPointsValue = value;
+    isElabMeteoPointsValue = value;
 }
 
 Project::Project()

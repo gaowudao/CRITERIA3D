@@ -1332,7 +1332,7 @@ void MainWindow::on_actionAnomaly_meteo_points_triggered()
 
     if (myProject.elaborationCheck(isMeteoGrid))
     {
-        if (myProject.getElabMeteoPointsValue())
+        if (myProject.getIsElabMeteoPointsValue())
         {
             //elaboration is done, choose reference period
 
@@ -1350,7 +1350,7 @@ void MainWindow::on_actionAnomaly_meteo_points_triggered()
                  return;
             }
 
-            if (!myProject.getElabMeteoPointsValue())
+            if (!myProject.getIsElabMeteoPointsValue())
             {
                 return; //something has been wrong with elaboration
             }
@@ -1375,7 +1375,7 @@ void MainWindow::on_actionAnomaly_meteo_grid_triggered()
 
     if (myProject.elaborationCheck(isMeteoGrid))
     {
-        if (myProject.getElabMeteoPointsValue())
+        if (myProject.getIsElabMeteoPointsValue())
         {
             //elaboration is done, choose reference period
 
@@ -1393,7 +1393,7 @@ void MainWindow::on_actionAnomaly_meteo_grid_triggered()
                  return;
             }
 
-            if (!myProject.getElabMeteoPointsValue())
+            if (!myProject.getIsElabMeteoPointsValue())
             {
                 return; //something has been wrong with elaboration
             }
