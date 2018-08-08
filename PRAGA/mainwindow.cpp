@@ -1265,6 +1265,34 @@ void MainWindow::on_actionShow_DTM_triggered()
     }
 }
 
+void MainWindow::elaborationGUI(bool isAnomaly, bool isMeteoGrid)
+{
+    ComputationDialog compDialog;
+    if (!isAnomaly)
+    {
+        compDialog.setTitle("Elaboration");
+    }
+    else
+    {
+        compDialog.setTitle("Reference Period");
+    }
+
+    compDialog.setSettings(myProject.settings);
+    if (compDialog.computation(isAnomaly))
+    {
+        if (!myProject.elaboration(isMeteoGrid, isAnomaly))
+        {
+            myProject.logError();
+        }
+        else
+        {
+            showElabResult(true, isMeteoGrid);
+        }
+    }
+
+    return;
+}
+
 void MainWindow::on_actionElaboration_meteo_points_triggered()
 {
     bool isMeteoGrid = false;
@@ -1272,20 +1300,7 @@ void MainWindow::on_actionElaboration_meteo_points_triggered()
 
     if (myProject.elaborationCheck(isMeteoGrid))
     {
-        ComputationDialog compDialog;
-        compDialog.setTitle("Elaboration");
-        compDialog.setSettings(myProject.settings);
-        if (compDialog.computation(isAnomaly))
-        {
-            if (!myProject.elaboration(isMeteoGrid, isAnomaly))
-            {
-                myProject.logError();
-            }
-            else
-            {
-                showElabResult(true, isMeteoGrid);
-            }
-        }
+        elaborationGUI(isAnomaly, isMeteoGrid);
     }
     else
     {
@@ -1301,34 +1316,22 @@ void MainWindow::on_actionElaboration_meteo_grid_triggered()
     bool isAnomaly = false;
     if (myProject.elaborationCheck(isMeteoGrid))
     {
-        ComputationDialog compDialog;
-        compDialog.setTitle("Elaboration");
-        compDialog.setSettings(myProject.settings);
-        if (compDialog.computation(isAnomaly))
-        {
-            if (!myProject.elaboration(isMeteoGrid, isAnomaly))
-            {
-                myProject.logError();
-            }
-            else
-            {
-                showElabResult(true, isMeteoGrid);
-            }
-        }
+        elaborationGUI(isAnomaly, isMeteoGrid);
     }
     else
     {
          myProject.logError();
     }
+    return;
 }
 
 void MainWindow::on_actionAnomaly_meteo_points_triggered()
 {
     bool isMeteoGrid = false;
-    bool isAnomaly = true;
+    bool isAnomaly;
+
     if (myProject.elaborationCheck(isMeteoGrid))
     {
-        ComputationDialog compDialog;
         if (myProject.getElabMeteoPointsValue())
         {
             //elaboration is done, choose reference period
@@ -1336,24 +1339,25 @@ void MainWindow::on_actionAnomaly_meteo_points_triggered()
         }
         else
         {
-            on_actionElaboration_meteo_points_triggered();
+            isAnomaly = false;
+            if (myProject.elaborationCheck(isMeteoGrid))
+            {
+                elaborationGUI(isAnomaly, isMeteoGrid);
+            }
+            else
+            {
+                 myProject.logError();
+                 return;
+            }
 
             if (!myProject.getElabMeteoPointsValue())
             {
                 return; //something has been wrong with elaboration
             }
             myProject.fillAnomaly(isMeteoGrid);
+            isAnomaly = true;
 
-            compDialog.setTitle("Reference Period");
-            compDialog.setSettings(myProject.settings);
-            if (compDialog.computation(isAnomaly))
-            {
-                myProject.elaboration(isMeteoGrid, isAnomaly);
-            }
-            else
-            {
-                return;
-            }
+            elaborationGUI(isAnomaly, isMeteoGrid);
         }
 
     }
@@ -1361,30 +1365,50 @@ void MainWindow::on_actionAnomaly_meteo_points_triggered()
     {
          myProject.logError();
     }
+    return;
 }
 
 void MainWindow::on_actionAnomaly_meteo_grid_triggered()
 {
     bool isMeteoGrid = true;
-    bool isAnomaly = true;
+    bool isAnomaly;
+
     if (myProject.elaborationCheck(isMeteoGrid))
     {
-        ComputationDialog compDialog;
-        compDialog.setTitle("Anomaly");
-        compDialog.setSettings(myProject.settings);
-        if (compDialog.computation(isAnomaly))
+        if (myProject.getElabMeteoPointsValue())
         {
-            myProject.elaboration(isMeteoGrid, isAnomaly);
+            //elaboration is done, choose reference period
+
         }
         else
         {
-            return;
+            isAnomaly = false;
+            if (myProject.elaborationCheck(isMeteoGrid))
+            {
+                elaborationGUI(isAnomaly, isMeteoGrid);
+            }
+            else
+            {
+                 myProject.logError();
+                 return;
+            }
+
+            if (!myProject.getElabMeteoPointsValue())
+            {
+                return; //something has been wrong with elaboration
+            }
+            myProject.fillAnomaly(isMeteoGrid);
+            isAnomaly = true;
+
+            elaborationGUI(isAnomaly, isMeteoGrid);
         }
+
     }
     else
     {
          myProject.logError();
     }
+    return;
 }
 
 void MainWindow::on_actionClimate_meteo_points_triggered()
