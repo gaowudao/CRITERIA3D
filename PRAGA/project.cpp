@@ -963,7 +963,8 @@ bool Project::interpolateRaster(meteoVariable myVar, frequencyType myFrequency, 
     }
     else
     {
-        return interpolationRaster(interpolationPointList, &interpolationSettings, myVar, myTime, this->DTM, myRaster, &errorString);
+        return interpolationRaster(interpolationPointList, &interpolationSettings, meteoPoints, nrMeteoPoints, myVar, myTime,
+                                   this->DTM, myRaster, &errorString);
     }
 }
 
@@ -1090,7 +1091,7 @@ bool Project::interpolateRasterRadiation(const Crit3DTime& myTime, gis::Crit3DRa
         return false;
     }
 
-    if (preInterpolation(interpolationPointList, &interpolationSettings, atmTransmissivity))
+    if (preInterpolation(interpolationPointList, &interpolationSettings, meteoPoints, nrMeteoPoints, atmTransmissivity, myTime))
         if (! interpolateGridDtm(interpolationPointList, &interpolationSettings, this->radiationMaps->transmissivityMap, this->DTM, atmTransmissivity), &interpolationSettings)
         {
             *myError = "Function interpolateRasterRadiation: error interpolating transmissivity.";

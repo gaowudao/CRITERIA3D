@@ -6,45 +6,6 @@
 #include "interpolation.h"
 #include "statistics.h"
 
-
-bool checkData(Crit3DQuality* myQuality, meteoVariable myVar, frequencyType myFrequency, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
-                              Crit3DTime myTime, Crit3DInterpolationSettings* spatialQualityInterpolationSettings, bool checkSpatial)
-{
-    if (nrMeteoPoints == 0)
-        return false;
-
-    // assign data
-    for (int i = 0; i < nrMeteoPoints; i++)
-        meteoPoints[i].currentValue = meteoPoints[i].getMeteoPointValue(myTime, myVar, myFrequency);
-
-    // quality control - synthctic
-    myQuality->syntacticQualityControl(myVar, meteoPoints, nrMeteoPoints);
-
-    // quality control - spatial
-    if (checkSpatial && myVar != precipitation && myVar != dailyPrecipitation
-                     && myVar != globalIrradiance && myVar != dailyGlobalRadiation)
-    {
-        spatialQualityControl(myVar, meteoPoints, nrMeteoPoints, spatialQualityInterpolationSettings);
-    }
-
-    return true;
-}
-
-// check quality and pass good data to interpolation
-bool checkAndPassDataToInterpolation(Crit3DQuality* myQuality, meteoVariable myVar, frequencyType myFrequency,
-                                      Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
-                                      Crit3DTime myTime, Crit3DInterpolationSettings* SQinterpolationSettings,
-                                      Crit3DInterpolationSettings* interpolationSettings,
-                                      std::vector <Crit3DInterpolationDataPoint> &myInterpolationPoints,
-                                      bool checkSpatial)
-{
-    if (! checkData(myQuality, myVar, myFrequency, meteoPoints, nrMeteoPoints, myTime, SQinterpolationSettings, checkSpatial)) return false;
-
-    // return true if at least one valid data
-    return passDataToInterpolation(meteoPoints, nrMeteoPoints, myInterpolationPoints, interpolationSettings);
-}
-
-
 float findThreshold(meteoVariable myVar, float value, float stdDev, float nrStdDev, float stdDevZ, float minDistance)
 {
     float zWeight, distWeight, threshold;
@@ -260,6 +221,43 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
             }
         }
     }
+}
+
+bool checkData(Crit3DQuality* myQuality, meteoVariable myVar, frequencyType myFrequency, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
+                              Crit3DTime myTime, Crit3DInterpolationSettings* spatialQualityInterpolationSettings, bool checkSpatial)
+{
+    if (nrMeteoPoints == 0)
+        return false;
+
+    // assign data
+    for (int i = 0; i < nrMeteoPoints; i++)
+        meteoPoints[i].currentValue = meteoPoints[i].getMeteoPointValue(myTime, myVar, myFrequency);
+
+    // quality control - synthctic
+    myQuality->syntacticQualityControl(myVar, meteoPoints, nrMeteoPoints);
+
+    // quality control - spatial
+    if (checkSpatial && myVar != precipitation && myVar != dailyPrecipitation
+                     && myVar != globalIrradiance && myVar != dailyGlobalRadiation)
+    {
+        spatialQualityControl(myVar, meteoPoints, nrMeteoPoints, spatialQualityInterpolationSettings, myTime);
+    }
+
+    return true;
+}
+
+// check quality and pass good data to interpolation
+bool checkAndPassDataToInterpolation(Crit3DQuality* myQuality, meteoVariable myVar, frequencyType myFrequency,
+                                      Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
+                                      Crit3DTime myTime, Crit3DInterpolationSettings* SQinterpolationSettings,
+                                      Crit3DInterpolationSettings* interpolationSettings,
+                                      std::vector <Crit3DInterpolationDataPoint> &myInterpolationPoints,
+                                      bool checkSpatial)
+{
+    if (! checkData(myQuality, myVar, myFrequency, meteoPoints, nrMeteoPoints, myTime, SQinterpolationSettings, checkSpatial)) return false;
+
+    // return true if at least one valid data
+    return passDataToInterpolation(meteoPoints, nrMeteoPoints, myInterpolationPoints, interpolationSettings);
 }
 
 bool passDataToInterpolation(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
