@@ -673,7 +673,7 @@ bool Project::loadMeteoPointsDB(QString dbName)
 
     meteoPointsDbHandler = new Crit3DMeteoPointsDbHandler(dbName);
 
-    QList<Crit3DMeteoPoint> listMeteoPoints = meteoPointsDbHandler->getPropertiesFromDb();
+    QList<Crit3DMeteoPoint> listMeteoPoints = meteoPointsDbHandler->getPropertiesFromDb(this->gisSettings);
 
     nrMeteoPoints = listMeteoPoints.size();
     if (nrMeteoPoints == 0)
@@ -688,14 +688,6 @@ bool Project::loadMeteoPointsDB(QString dbName)
     for (int i=0; i < nrMeteoPoints; i++)
     {
         meteoPoints[i] = listMeteoPoints[i];
-
-        //check data
-        if ((meteoPoints[i].latitude == NODATA || meteoPoints[i].longitude == NODATA)
-            && (meteoPoints[i].point.utm.x != NODATA && meteoPoints[i].point.utm.y != NODATA))
-        {
-            gis::getLatLonFromUtm(gisSettings, meteoPoints[i].point.utm.x, meteoPoints[i].point.utm.y,
-                                    &meteoPoints[i].latitude, &meteoPoints[i].longitude);
-        }
     }
 
     listMeteoPoints.clear();

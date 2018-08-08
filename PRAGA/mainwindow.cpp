@@ -1423,14 +1423,14 @@ void MainWindow::on_actionAnomaly_meteo_grid_triggered()
 
 void MainWindow::on_actionClimate_meteo_points_triggered()
 {
-    bool isMeteoGrid = false;
+    //bool isMeteoGrid = false;
     // TODO
 }
 
 void MainWindow::on_actionClimate_meteo_grid_triggered()
 {
-    bool isMeteoGrid = true;
-   //TODO
+    //bool isMeteoGrid = true;
+    //TODO
 }
 
 void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool isAnomaly)
