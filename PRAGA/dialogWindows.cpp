@@ -572,6 +572,13 @@ bool ComputationDialog::computation(bool isAnomaly)
     varLayout.addWidget(&variableLabel);
     varLayout.addWidget(&variableList);
 
+    QCheckBox readReference("Read reference climate from db");
+    varLayout.addWidget(&readReference);
+    if (!isAnomaly)
+    {
+        readReference.setVisible(false);
+    }
+
     QLabel currentDayLabel("Day/Month:");
     currentDay.setDate(myProject.getCurrentDate());
     currentDay.setDisplayFormat("dd/MM");
