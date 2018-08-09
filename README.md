@@ -32,8 +32,8 @@ It uses a modified version of MapGraphics library: https://github.com/raptorswin
 
 To compile it, firstly compile the project *MapGraphics*, then use the project *Makeall_PRAGA*.
 
-## CRIT1D
-CRIT1D is a test program for the 1D water balance, using criteria1D, crop and soil libraries.
+## TestCriteria1D
+Test program for the 1D water balance using criteria1D, crop and soil libraries.
 
 To compile it, use the project *Makeall_CRITERIA1D*. Example data are available in *DATA/Criteria1d* directory.
 
