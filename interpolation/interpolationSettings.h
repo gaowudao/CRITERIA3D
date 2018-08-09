@@ -10,9 +10,6 @@
 #ifndef METEOGRID_H
     #include "meteoGrid.h"
 #endif
-#ifndef GIS_H
-    #include "gis.h"
-#endif
 
 class Crit3DProxy
 {
