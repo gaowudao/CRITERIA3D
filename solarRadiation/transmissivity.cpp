@@ -17,7 +17,7 @@ float computePointTransmissivitySamani(float tmin, float tmax, float samaniCoeff
 }
 
 
-bool computeTransmissivity(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, int intervalWidth,
+bool computeTransmissivity(Crit3DRadiationSettings* mySettings, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, int intervalWidth,
                           Crit3DTime myTime, const gis::Crit3DRasterGrid& dtm)
 {
     if (nrMeteoPoints <= 0) return false;
@@ -59,7 +59,7 @@ bool computeTransmissivity(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, int
             myPoint.utm.y = meteoPoints[i].point.utm.y;
             myPoint.z = meteoPoints[i].point.z;
 
-            transmissivity = radiation::computePointTransmissivity(myPoint, myTime, myObsRad,
+            transmissivity = radiation::computePointTransmissivity(mySettings, myPoint, myTime, myObsRad,
                                                                    intervalWidth, deltaSeconds, dtm);
 
             meteoPoints[i].setMeteoPointValueH(myTime.date, myTime.getHour(), myTime.getMinutes(),

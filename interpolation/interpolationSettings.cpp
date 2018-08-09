@@ -23,6 +23,8 @@
     ftomei@arpae.it
 */
 
+#include <bitset>
+
 #include "crit3dDate.h"
 #include "interpolationSettings.h"
 #include "interpolation.h"
@@ -138,6 +140,8 @@ Crit3DInterpolationSettings::Crit3DInterpolationSettings()
 void Crit3DInterpolationSettings::initializeProxy()
 {
     currentProxy.clear();
+    selectedCombination.getIndexProxy().clear();
+    optimalCombination.getIndexProxy().clear();
 }
 
 void Crit3DInterpolationSettings::initialize()
@@ -160,15 +164,14 @@ void Crit3DInterpolationSettings::initialize()
     indexPointCV = NODATA;
 
     currentClimateParametersLoaded = false;
-    currentDate = getNullDate();
-    currentHour = NODATA;
-    currentHourFraction = NODATA;
 }
 
-float Crit3DInterpolationSettings::getCurrentClimateLapseRate(meteoVariable myVar)
+float Crit3DInterpolationSettings::getCurrentClimateLapseRate(meteoVariable myVar, Crit3DTime myTime)
 {
-    if (currentClimateParametersLoaded && (currentDate != getNullDate()) && (currentHour != NODATA))
-        return (currentClimateParameters.getClimateLapseRate(myVar, &currentDate, currentHour));
+    Crit3DDate myDate = myTime.date;
+    int myHour = myTime.getHour();
+    if (currentClimateParametersLoaded && (myDate != getNullDate()) && (myHour != NODATA))
+        return (currentClimateParameters.getClimateLapseRate(myVar, myDate, myHour));
     else
         // TODO migliorare
         return -0.006f;
@@ -179,15 +182,6 @@ void Crit3DInterpolationSettings::setClimateParameters(Crit3DClimateParameters* 
     currentClimateParametersLoaded = true;
     currentClimateParameters = *(myParameters);
 }
-
-void Crit3DInterpolationSettings::setCurrentDate(Crit3DDate myDate)
-{ currentDate = myDate;}
-
-void Crit3DInterpolationSettings::setCurrentHour(int myHour)
-{ currentHour = myHour;}
-
-void Crit3DInterpolationSettings::setCurrentHourFraction(int myHourFraction)
-{ currentHourFraction = myHourFraction;}
 
 TInterpolationMethod Crit3DInterpolationSettings::getInterpolationMethod()
 { return interpolationMethod;}
@@ -232,16 +226,6 @@ void Crit3DProxy::setName(const std::string &value)
     name = value;
 }
 
-bool Crit3DProxy::getIsActive() const
-{
-    return isActive;
-}
-
-void Crit3DProxy::setIsActive(bool value)
-{
-    isActive = value;
-}
-
 gis::Crit3DRasterGrid *Crit3DProxy::getGrid() const
 {
     return grid;
@@ -270,18 +254,21 @@ void Crit3DProxy::setGridName(const std::string &value)
     gridName = value;
 }
 
+bool Crit3DProxy::getIsSignificant() const
+{
+    return isSignificant;
+}
+
+void Crit3DProxy::setIsSignificant(bool value)
+{
+    isSignificant = value;
+}
+
 Crit3DProxy::Crit3DProxy()
 {
     name = "";
-    isActive = false;
+    isSignificant = false;
     grid = new gis::Crit3DRasterGrid();
-}
-
-void Crit3DProxy::initialize()
-{
-    name = "";
-    isActive = false;
-    grid->emptyGrid();
 }
 
 float Crit3DProxyInterpolation::getLapseRateH1() const
@@ -342,7 +329,7 @@ void Crit3DProxyInterpolation::setRegressionSlope(float myValue)
 float Crit3DProxyInterpolation::getRegressionSlope()
 { return regressionSlope;}
 
-float Crit3DProxyInterpolation::getValue(int pos, std::vector <float> proxyValues)
+float Crit3DProxyInterpolation::getValue(unsigned int pos, std::vector <float> proxyValues)
 {
     if (pos < proxyValues.size())
         return proxyValues.at(pos);
@@ -368,14 +355,15 @@ void Crit3DInterpolationSettings::addProxy(Crit3DProxy myProxy)
     myInterpolationProxy.setName(myProxy.getName());
     myInterpolationProxy.setGridName(myProxy.getGridName());
     myInterpolationProxy.setGrid(myProxy.getGrid());
-    myInterpolationProxy.setIsActive(true);
     currentProxy.push_back(myInterpolationProxy);
+
+    selectedCombination.getIndexProxy().push_back((int)currentProxy.size()-1);
 }
 
 std::string Crit3DInterpolationSettings::getProxyName(int pos)
 { return currentProxy.at(pos).getName();}
 
-float Crit3DInterpolationSettings::getProxyValue(int pos, std::vector <float> proxyValues)
+float Crit3DInterpolationSettings::getProxyValue(unsigned int pos, std::vector <float> proxyValues)
 {
     if (pos < currentProxy.size())
         return currentProxy.at(pos).getValue(pos, proxyValues);
@@ -383,7 +371,35 @@ float Crit3DInterpolationSettings::getProxyValue(int pos, std::vector <float> pr
         return NODATA;
 }
 
+Crit3DProxyCombination Crit3DInterpolationSettings::getCombination()
+{
+    if (getUseBestDetrending())
+        return selectedCombination;
+    else
+        return optimalCombination;
+}
+
 void Crit3DInterpolationSettings::computeShepardInitialRadius(float area, int nrPoints)
 {
     setShepardInitialRadius(sqrt((SHEPARD_AVG_NRPOINTS * area) / ((float)PI * nrPoints)));
+}
+
+std::vector<int> Crit3DProxyCombination::getIndexProxy() const
+{
+    return indexProxy;
+}
+
+void Crit3DProxyCombination::setIndexProxy(const std::vector<int> &value)
+{
+    indexProxy = value;
+}
+
+bool Crit3DProxyCombination::getUseThermalInversion() const
+{
+    return useThermalInversion;
+}
+
+void Crit3DProxyCombination::setUseThermalInversion(bool value)
+{
+    useThermalInversion = value;
 }

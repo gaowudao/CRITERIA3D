@@ -61,40 +61,40 @@
 
         Crit3DMeteoPoint* meteoPoints;
         Crit3DMeteoPointsDbHandler* meteoPointsDbHandler;
+        QList<gis::Crit3DGeoPoint> meteoPointsSelected;
         Crit3DMeteoGridDbHandler* meteoGridDbHandler;
+        gridAggregationMethod grdAggrMethod;
+
         Crit3DClimate* clima;
         Crit3DClimate* referenceClima;
+
+        Crit3DColorScale *meteoPointsColorScale;
 
         gis::Crit3DGeoPoint startLocation;
 
         int nrMeteoPoints;
-        bool elabMeteoPointsValue;
-
-        QList<gis::Crit3DGeoPoint> meteoPointsSelected;
+        bool isElabMeteoPointsValue;
 
         Crit3DQuality* quality;
         bool checkSpatialQuality;
+
+        meteoVariable currentVariable;
+
+        gis::Crit3DGisSettings gisSettings;
 
         gis::Crit3DRasterGrid DTM;
         gis::Crit3DRasterGrid dataRaster;
 
         Crit3DRadiationMaps *radiationMaps;
-
-        Crit3DProject Criteria3Dproject;
-
-        NetCDFHandler netCDF;
-
-        gis::Crit3DGisSettings gisSettings;
-
-        Crit3DColorScale *meteoPointsColorScale;
-
-        meteoVariable currentVariable;
-
-        gridAggregationMethod grdAggrMethod;
+        Crit3DRadiationSettings radSettings;
 
         std::vector <Crit3DInterpolationDataPoint> interpolationPointList;
         Crit3DInterpolationSettings interpolationSettings;
         Crit3DInterpolationSettings qualityInterpolationSettings;
+
+        Crit3DProject Criteria3Dproject;
+
+        NetCDFHandler netCDF;
 
         Project();
 
@@ -138,22 +138,22 @@
         float meteoDataConsistency(meteoVariable myVar, const Crit3DTime& timeIni, const Crit3DTime& timeFin);
 
         bool readProxyValues();
-        bool interpolateRaster(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster);
-        bool interpolateRasterRadiation(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, std::string *myError);
-        bool interpolateGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster);
+        bool interpolationRasterMain(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster);
+        bool interpolationRaster(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster);
+        bool interpolateRasterRadiation(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster);
+        bool interpolationMeteoGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster);
         bool saveGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, bool showInfo);
 
         bool elaborationCheck(bool isMeteoGrid);
         bool elaboration(bool isMeteoGrid, bool isAnomaly);
-        void fillAnomaly(bool isMeteoGrid);
 
         bool loadModelParameters(QString dbName);
         bool loadSoilData(QString dbName);
         bool loadSoilMap(QString fileName);
         bool initializeCriteria3D();
 
-        bool getElabMeteoPointsValue() const;
-        void setElabMeteoPointsValue(bool value);
+        bool getIsElabMeteoPointsValue() const;
+        void setIsElabMeteoPointsValue(bool value);
     };
 
 

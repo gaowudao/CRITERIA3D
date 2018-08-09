@@ -5,12 +5,14 @@
         #include "meteoPoint.h"
     #endif
 
+    class Crit3DRadiationSettings;
+
     float computePointTransmissivitySamani(float tmin, float tmax, float samaniCoeff);
 
     float computePointTransmissivity(const gis::Crit3DPoint& myPoint, Crit3DTime UTCTime, float* measuredRad,
                                  int windowWidth, int timeStepSecond, const gis::Crit3DRasterGrid& myDtm);
 
-    bool computeTransmissivity(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, int intervalWidth,
+    bool computeTransmissivity(Crit3DRadiationSettings *mySettings, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, int intervalWidth,
                                 Crit3DTime myTime, const gis::Crit3DRasterGrid& dtm);
 
     bool computeTransmissivityFromTRange(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DTime currentTime);

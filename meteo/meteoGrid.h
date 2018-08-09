@@ -105,6 +105,7 @@ const std::map<std::string, gridAggregationMethod> aggregationMethodNames = {
             bool createRasterGrid();
             void fillMeteoRaster();
             void fillMeteoRasterElabValue();
+            void fillMeteoRasterAnomalyValue();
 
             gis::Crit3DGisSettings getGisSettings() const;
             void setGisSettings(const gis::Crit3DGisSettings &gisSettings);

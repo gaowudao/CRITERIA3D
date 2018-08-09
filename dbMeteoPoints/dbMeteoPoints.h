@@ -54,7 +54,7 @@ public:
         bool readPointProxyValues(Crit3DMeteoPoint* myPoint);
 
         bool writePointProperties(Crit3DMeteoPoint* pointProp);
-        QList<Crit3DMeteoPoint> getPropertiesFromDb();
+        QList<Crit3DMeteoPoint> getPropertiesFromDb(const gis::Crit3DGisSettings& gisSettings);
         bool getDailyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3DMeteoPoint *meteoPoint);
         std::vector<float> getDailyVar(std::string *myError, meteoVariable variable, Crit3DDate dateStart, Crit3DDate dateEnd, QDate* firstDateDB, Crit3DMeteoPoint *meteoPoint);
         bool getHourlyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3DMeteoPoint *meteoPoint);

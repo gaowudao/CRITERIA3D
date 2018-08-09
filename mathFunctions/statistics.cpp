@@ -145,7 +145,7 @@ namespace statistics
 
         if (measured.size() != simulated.size()) return NODATA;
 
-        for (int i=0; i<measured.size(); i++)
+        for (unsigned int i=0; i < measured.size(); i++)
         {
             if ((measured.at(i) != NODATA) && (simulated.at(i) != NODATA))
             {

@@ -53,9 +53,9 @@ float computeTminHourlyWeight(int myHour)
 }
 
 
-float Crit3DClimateParameters::getClimateLapseRate(meteoVariable myVar, Crit3DDate* myDate, int myHour)
+float Crit3DClimateParameters::getClimateLapseRate(meteoVariable myVar, Crit3DDate myDate, int myHour)
 {
-    int indexMonth = myDate->month - 1;
+    int indexMonth = myDate.month - 1;
 
     if (myVar == dailyAirTemperatureMin)
         return tminLapseRate[indexMonth];

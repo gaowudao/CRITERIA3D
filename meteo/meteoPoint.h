@@ -126,7 +126,7 @@
         float getMeteoPointValueD(const Crit3DDate& myDate, meteoVariable myVar);
         bool setMeteoPointValueD(const Crit3DDate& myDate, meteoVariable myVar, float myValue);
 
-        float getMeteoPointValue(const Crit3DTime& myTime, meteoVariable myVar, frequencyType frequency);
+        float getMeteoPointValue(const Crit3DTime& myTime, meteoVariable myVar);
 
     };
 

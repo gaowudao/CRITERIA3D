@@ -592,8 +592,9 @@ float Crit3DMeteoPoint::getMeteoPointValueD(const Crit3DDate& myDate, meteoVaria
 }
 
 
-float Crit3DMeteoPoint::getMeteoPointValue(const Crit3DTime& myTime, meteoVariable myVar, frequencyType frequency)
+float Crit3DMeteoPoint::getMeteoPointValue(const Crit3DTime& myTime, meteoVariable myVar)
 {
+    frequencyType frequency = getFrequency(myVar);
     if (frequency == hourly)
         return getMeteoPointValueH(myTime.date, myTime.getHour(), myTime.getMinutes(), myVar);
     else if (frequency == daily)

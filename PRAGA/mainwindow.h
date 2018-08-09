@@ -190,7 +190,8 @@
         void setCurrentRaster(gis::Crit3DRasterGrid *myRaster);
         void interpolateRasterGUI();
         void interpolateGridGUI();
-        void showElabResult(bool updateColorSCale, bool isMeteoGrid);
+        void elaborationGUI(bool isAnomaly, bool isMeteoGrid);
+        void showElabResult(bool updateColorSCale, bool isMeteoGrid, bool isAnomaly);
 
     };
 

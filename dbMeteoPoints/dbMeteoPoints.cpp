@@ -508,7 +508,7 @@ bool Crit3DMeteoPointsDbHandler::readPointProxyValues(Crit3DMeteoPoint* myPoint)
 
     myPoint->proxyValues.resize(ProxyMeteoPoint.size());
 
-    for (int i=0; i<ProxyMeteoPoint.size(); i++)
+    for (unsigned int i=0; i < ProxyMeteoPoint.size(); i++)
     {
         myPoint->proxyValues.at(i) = NODATA;
 
@@ -542,11 +542,12 @@ bool Crit3DMeteoPointsDbHandler::readPointProxyValues(Crit3DMeteoPoint* myPoint)
     return true;
 }
 
-QList<Crit3DMeteoPoint> Crit3DMeteoPointsDbHandler::getPropertiesFromDb()
+QList<Crit3DMeteoPoint> Crit3DMeteoPointsDbHandler::getPropertiesFromDb(const gis::Crit3DGisSettings& gisSettings)
 {
     QList<Crit3DMeteoPoint> meteoPointsList;
     Crit3DMeteoPoint meteoPoint;
     QSqlQuery qry(_db);
+    bool isPositionOk;
 
     qry.prepare( "SELECT id_point, name, dataset, latitude, longitude, utm_x, utm_y, altitude, state, region, province, municipality, is_active, is_utc from point_properties ORDER BY id_point" );
 
@@ -558,6 +559,9 @@ QList<Crit3DMeteoPoint> Crit3DMeteoPointsDbHandler::getPropertiesFromDb()
     {
         while (qry.next())
         {
+            //initialize
+            meteoPoint = *(new Crit3DMeteoPoint());
+
             meteoPoint.id = qry.value("id_point").toString().toStdString();
             meteoPoint.name = qry.value("name").toString().toStdString();
             meteoPoint.dataset = qry.value("dataset").toString().toStdString();
@@ -573,14 +577,39 @@ QList<Crit3DMeteoPoint> Crit3DMeteoPointsDbHandler::getPropertiesFromDb()
             if (qry.value("altitude") != "")
                 meteoPoint.point.z = qry.value("altitude").toDouble();
 
-            meteoPoint.state = qry.value("state").toString().toStdString();
-            meteoPoint.region = qry.value("region").toString().toStdString();
-            meteoPoint.province = qry.value("province").toString().toStdString();
-            meteoPoint.municipality = qry.value("municipality").toString().toStdString();
-            meteoPoint.isUTC = qry.value("is_active").toBool();
-            meteoPoint.isUTC = qry.value("is_utc").toBool();
+            // check position
+            isPositionOk = false;
+            if ((meteoPoint.latitude != NODATA || meteoPoint.longitude != NODATA)
+                && (meteoPoint.point.utm.x != NODATA && meteoPoint.point.utm.y != NODATA))
+            {
+                isPositionOk = true;
+            }
+            else if ((meteoPoint.latitude == NODATA || meteoPoint.longitude == NODATA)
+                && (meteoPoint.point.utm.x != NODATA && meteoPoint.point.utm.y != NODATA))
+            {
+                gis::getLatLonFromUtm(gisSettings, meteoPoint.point.utm.x, meteoPoint.point.utm.y,
+                                        &(meteoPoint.latitude), &(meteoPoint.longitude));
+                isPositionOk = true;
+            }
+            else if ((meteoPoint.latitude != NODATA || meteoPoint.longitude != NODATA)
+                && (meteoPoint.point.utm.x == NODATA && meteoPoint.point.utm.y == NODATA))
+            {
+                gis::latLonToUtmForceZone(gisSettings.utmZone, meteoPoint.latitude, meteoPoint.longitude,
+                                          &(meteoPoint.point.utm.x), &(meteoPoint.point.utm.y));
+                isPositionOk = true;
+            }
 
-            meteoPointsList << meteoPoint;
+            if (isPositionOk)
+            {
+                meteoPoint.state = qry.value("state").toString().toStdString();
+                meteoPoint.region = qry.value("region").toString().toStdString();
+                meteoPoint.province = qry.value("province").toString().toStdString();
+                meteoPoint.municipality = qry.value("municipality").toString().toStdString();
+                meteoPoint.isUTC = qry.value("is_active").toBool();
+                meteoPoint.isUTC = qry.value("is_utc").toBool();
+
+                meteoPointsList << meteoPoint;
+            }
         }
 
     }
@@ -649,7 +678,7 @@ Crit3DProxyMeteoPoint::Crit3DProxyMeteoPoint()
 Crit3DProxyMeteoPoint::Crit3DProxyMeteoPoint(Crit3DProxy myProxy)
 {
     setName(myProxy.getName());
-    setIsActive(myProxy.getIsActive());
+    setIsSignificant(myProxy.getIsSignificant());
     setGridName(myProxy.getGridName());
     setGrid(myProxy.getGrid());
     setProxyField("");
@@ -666,6 +695,6 @@ void Crit3DMeteoPointsDbHandler::addProxy(Crit3DProxy myProxy, std::string table
     Crit3DProxyMeteoPoint myProxyMeteoPoint = Crit3DProxyMeteoPoint(myProxy);
     myProxyMeteoPoint.setProxyField(fieldName_);
     myProxyMeteoPoint.setProxyTable(tableName_);
-    myProxyMeteoPoint.setIsActive(true);
+    myProxyMeteoPoint.setIsSignificant(false);
     ProxyMeteoPoint.push_back(myProxyMeteoPoint);
 }

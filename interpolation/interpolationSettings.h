@@ -1,172 +1,169 @@
 #ifndef INTERPOLATIONSETTINGS_H
 #define INTERPOLATIONSETTINGS_H
 
-#ifndef INTERPOLATIONCONSTS_H
-    #include "interpolationConstants.h"
-#endif
-#ifndef METEO_H
-    #include "meteo.h"
-#endif
-#ifndef METEOGRID_H
-    #include "meteoGrid.h"
-#endif
-#ifndef GIS_H
-    #include "gis.h"
-#endif
+    #ifndef INTERPOLATIONCONSTS_H
+        #include "interpolationConstants.h"
+    #endif
+    #ifndef METEO_H
+        #include "meteo.h"
+    #endif
+    #ifndef METEOGRID_H
+        #include "meteoGrid.h"
+    #endif
 
-class Crit3DProxy
-{
-private:
-    std::string name;
-    bool isActive;
-    std::string gridName;
-    gis::Crit3DRasterGrid* grid;
+    class Crit3DProxy
+    {
+    private:
+        std::string name;
+        bool isSignificant;
+        std::string gridName;
+        gis::Crit3DRasterGrid* grid;
 
-public:
-    Crit3DProxy();
+    public:
+        Crit3DProxy();
 
-    void initialize();
-    std::string getName() const;
-    void setName(const std::string &value);
-    bool getIsActive() const;
-    void setIsActive(bool value);
-    gis::Crit3DRasterGrid *getGrid() const;
-    void setGrid(gis::Crit3DRasterGrid *value);
-    std::string getGridName() const;
-    void setGridName(const std::string &value);
+        std::string getName() const;
+        void setName(const std::string &value);
+        gis::Crit3DRasterGrid *getGrid() const;
+        void setGrid(gis::Crit3DRasterGrid *value);
+        std::string getGridName() const;
+        void setGridName(const std::string &value);
+        bool getIsSignificant() const;
+        void setIsSignificant(bool value);
 
-    TProxyVar getProxyPragaName();
-};
+        TProxyVar getProxyPragaName();
+    };
 
-class Crit3DProxyInterpolation : public Crit3DProxy
-{
-private:
-    float regressionR2;
-    float regressionSlope;
+    class Crit3DProxyInterpolation : public Crit3DProxy
+    {
+    private:
+        float regressionR2;
+        float regressionSlope;
 
-    //orography
-    float lapseRateH1;
-    float lapseRateH0;
-    float inversionLapseRate;
-    bool inversionIsSignificative;
+        //orography
+        float lapseRateH1;
+        float lapseRateH0;
+        float inversionLapseRate;
+        bool inversionIsSignificative;
 
-public:
-    Crit3DProxyInterpolation();
+    public:
+        Crit3DProxyInterpolation();
 
-    void setRegressionR2(float myValue);
-    float getRegressionR2();
-    void setRegressionSlope(float myValue);
-    float getRegressionSlope();
-    float getValue(int pos, std::vector <float> proxyValues);
-    float getLapseRateH1() const;
-    void setLapseRateH1(float value);
-    float getLapseRateH0() const;
-    void setLapseRateH0(float value);
-    float getInversionLapseRate() const;
-    void setInversionLapseRate(float value);
-    bool getInversionIsSignificative() const;
-    void setInversionIsSignificative(bool value);
+        void setRegressionR2(float myValue);
+        float getRegressionR2();
+        void setRegressionSlope(float myValue);
+        float getRegressionSlope();
+        float getValue(unsigned int pos, std::vector <float> proxyValues);
+        float getLapseRateH1() const;
+        void setLapseRateH1(float value);
+        float getLapseRateH0() const;
+        void setLapseRateH0(float value);
+        float getInversionLapseRate() const;
+        void setInversionLapseRate(float value);
+        bool getInversionIsSignificative() const;
+        void setInversionIsSignificative(bool value);
 
-    void initializeOrography();
-    bool getProva() const;
-    void setProva(bool value);
-};
+        void initializeOrography();
+        bool getProva() const;
+        void setProva(bool value);
+    };
 
-class Crit3DInterpolationSettings
-{
-private:
-    gis::Crit3DRasterGrid* currentDEM; //for TAD
+    class Crit3DProxyCombination
+    {
+    private:
+        std::vector <int> indexProxy;
+        bool useThermalInversion;
 
-    TInterpolationMethod interpolationMethod;
+    public:
+        bool getUseThermalInversion() const;
+        void setUseThermalInversion(bool value);
+        std::vector<int> getIndexProxy() const;
+        void setIndexProxy(const std::vector<int> &value);
+    };
 
-    float minRegressionR2;
-    bool useThermalInversion;
-    bool useTAD;
-    bool useLapseRateCode;
-    bool useBestDetrending;
-    bool useDewPoint;
+    class Crit3DInterpolationSettings
+    {
+    private:
+        gis::Crit3DRasterGrid* currentDEM; //for TAD
 
-    gridAggregationMethod meteoGridAggrMethod;
+        TInterpolationMethod interpolationMethod;
 
-    bool isKrigingReady;
-    bool precipitationAllZero;
-    float maxHeightInversion;
-    float shepardInitialRadius;
-    int indexPointCV;
-    float topoDist_Kh, topoDist_Kz;
+        float minRegressionR2;
+        bool useThermalInversion;
+        bool useTAD;
+        bool useLapseRateCode;
+        bool useBestDetrending;
+        bool useDewPoint;
 
-    std::vector <Crit3DProxyInterpolation> currentProxy;
+        gridAggregationMethod meteoGridAggrMethod;
 
-    bool currentClimateParametersLoaded;
-    Crit3DClimateParameters currentClimateParameters;
+        bool isKrigingReady;
+        bool precipitationAllZero;
+        float maxHeightInversion;
+        float shepardInitialRadius;
+        int indexPointCV;
+        float topoDist_Kh, topoDist_Kz;
 
-    Crit3DDate currentDate;
-    int currentHour;
-    int currentHourFraction;
+        std::vector <Crit3DProxyInterpolation> currentProxy;
+        Crit3DProxyCombination optimalCombination;
+        Crit3DProxyCombination selectedCombination;
 
-public:
-    Crit3DInterpolationSettings();
+        bool currentClimateParametersLoaded;
+        Crit3DClimateParameters currentClimateParameters;
 
-    void initialize();
-    void initializeProxy();
+    public:
+        Crit3DInterpolationSettings();
 
-    void computeShepardInitialRadius(float area, int nrPoints);
+        void initialize();
+        void initializeProxy();
 
-    Crit3DProxyInterpolation* getProxy(int pos);
-    std::string getProxyName(int pos);
-    int getProxyNr();
-    bool getProxyActive(int pos);
-    void setProxyActive(int pos, bool isActive_);
-    void addProxy(Crit3DProxy myProxy);
-    float getProxyValue(int pos, std::vector <float> proxyValues);
+        void computeShepardInitialRadius(float area, int nrPoints);
 
-    void setClimateParameters(Crit3DClimateParameters* myParameters);
-    void setCurrentDate(Crit3DDate myDate);
-    void setCurrentHour(int myHour);
-    void setCurrentHourFraction(int myHourFraction);
+        Crit3DProxyInterpolation* getProxy(int pos);
+        std::string getProxyName(int pos);
+        int getProxyNr();
+        void addProxy(Crit3DProxy myProxy);
+        float getProxyValue(unsigned int pos, std::vector <float> proxyValues);
+        Crit3DProxyCombination getCombination();
 
-    void setInterpolationMethod(TInterpolationMethod myValue);
-    TInterpolationMethod getInterpolationMethod();
+        void setClimateParameters(Crit3DClimateParameters* myParameters);
 
-    void setUseThermalInversion(bool myValue);
-    bool getUseThermalInversion();
+        void setInterpolationMethod(TInterpolationMethod myValue);
+        TInterpolationMethod getInterpolationMethod();
 
-    void setUseTAD(bool myValue);
-    bool getUseTAD();
+        void setUseThermalInversion(bool myValue);
+        bool getUseThermalInversion();
 
-    void setUseDewPoint(bool myValue);
-    bool getUseDewPoint();
+        void setUseTAD(bool myValue);
+        bool getUseTAD();
 
-    float getMaxHeightInversion();
+        void setUseDewPoint(bool myValue);
+        bool getUseDewPoint();
 
-    float getCurrentClimateLapseRate(meteoVariable myVar);
+        float getMaxHeightInversion();
 
-    bool getPrecipitationAllZero() const;
-    void setPrecipitationAllZero(bool value);
+        float getCurrentClimateLapseRate(meteoVariable myVar, Crit3DTime myTime);
 
-    float getMinRegressionR2() const;
-    void setMinRegressionR2(float value);
-
-    bool getUseLapseRateCode() const;
-    void setUseLapseRateCode(bool value);
-
-    bool getUseBestDetrending() const;
-    void setUseBestDetrending(bool value);
-
-    gridAggregationMethod getMeteoGridAggrMethod() const;
-    void setMeteoGridAggrMethod(const gridAggregationMethod &value);
-
-    float getShepardInitialRadius() const;
-    void setShepardInitialRadius(float value);
-    int getIndexPointCV() const;
-    void setIndexPointCV(int value);
-    gis::Crit3DRasterGrid *getCurrentDEM() const;
-    void setCurrentDEM(gis::Crit3DRasterGrid *value);
-    float getTopoDist_Kh() const;
-    void setTopoDist_Kh(float value);
-    float getTopoDist_Kz() const;
-    void setTopoDist_Kz(float value);
-};
-
+        bool getPrecipitationAllZero() const;
+        void setPrecipitationAllZero(bool value);
+        float getMinRegressionR2() const;
+        void setMinRegressionR2(float value);
+        bool getUseLapseRateCode() const;
+        void setUseLapseRateCode(bool value);
+        bool getUseBestDetrending() const;
+        void setUseBestDetrending(bool value);
+        gridAggregationMethod getMeteoGridAggrMethod() const;
+        void setMeteoGridAggrMethod(const gridAggregationMethod &value);
+        float getShepardInitialRadius() const;
+        void setShepardInitialRadius(float value);
+        int getIndexPointCV() const;
+        void setIndexPointCV(int value);
+        gis::Crit3DRasterGrid *getCurrentDEM() const;
+        void setCurrentDEM(gis::Crit3DRasterGrid *value);
+        float getTopoDist_Kh() const;
+        void setTopoDist_Kh(float value);
+        float getTopoDist_Kz() const;
+        void setTopoDist_Kz(float value);
+    };
 
 #endif // INTERPOLATIONSETTINGS_H

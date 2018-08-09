@@ -17,7 +17,6 @@ float RainfallThreshold = 0.2f; // LC mettere nei settings Environment.RainfallT
 bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DClimate* referenceClima, Crit3DClimate* clima, QDate currentDay, bool isAnomaly)
 {
 
-
     bool isMeteoGrid = 0; // meteoPoint
     float currentParameter1;
     int validCell = 0;
@@ -43,9 +42,8 @@ bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* me
      }
 
 
-    for ( unsigned int i = 0; i < nrMeteoPoints; i++)
+    for (int i = 0; i < nrMeteoPoints; i++)
     {
-
         if (clima->param1IsClimate())
         {
 //            if ( ClimateReadPoint(PragaClimate.Point(i).TableName, climateElab, myPeriodType, myClimateIndex, PragaClimate.Point(i)))
@@ -686,7 +684,7 @@ float computeWinkler(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DD
     {
         index = difference(meteoPoint->firstDateDailyVar, presentDate);
         checkData = false;
-        if ( index >= 0 && index < meteoPoint->nrObsDataDaysD)
+        if (index >= 0 && index < meteoPoint->nrObsDataDaysD)
         {
 
             // TO DO nella versione vb il check prevede anche l'immissione del parametro height
@@ -836,7 +834,8 @@ float computeFregoni(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DD
     int myDaysBelow = 0;
     bool checkData;
     float tMin, tMax;
-    float tRange, sumTRange;
+    float tRange;
+    float sumTRange = 0;
 
 
     int numberOfDays = difference(firstDate, finishDate) +1;
