@@ -23,6 +23,8 @@
     ftomei@arpae.it
 */
 
+#include <bitset>
+
 #include "crit3dDate.h"
 #include "interpolationSettings.h"
 #include "interpolation.h"
@@ -138,6 +140,8 @@ Crit3DInterpolationSettings::Crit3DInterpolationSettings()
 void Crit3DInterpolationSettings::initializeProxy()
 {
     currentProxy.clear();
+    selectedCombination.getIndexProxy().clear();
+    optimalCombination.getIndexProxy().clear();
 }
 
 void Crit3DInterpolationSettings::initialize()
@@ -222,16 +226,6 @@ void Crit3DProxy::setName(const std::string &value)
     name = value;
 }
 
-bool Crit3DProxy::getIsActive() const
-{
-    return isActive;
-}
-
-void Crit3DProxy::setIsActive(bool value)
-{
-    isActive = value;
-}
-
 gis::Crit3DRasterGrid *Crit3DProxy::getGrid() const
 {
     return grid;
@@ -273,7 +267,6 @@ void Crit3DProxy::setIsSignificant(bool value)
 Crit3DProxy::Crit3DProxy()
 {
     name = "";
-    isActive = true;
     isSignificant = false;
     grid = new gis::Crit3DRasterGrid();
 }
@@ -356,34 +349,15 @@ void Crit3DProxyInterpolation::initializeOrography()
     return;
 }
 
-std::vector <std::string> Crit3DInterpolationSettings::getProxyCombinations(int *indexHeight)
-{
-    std::vector <std::string> myCombination;
-//    std::string myProxy;
-
-//    *indexHeight = NODATA;
-//    for (int i=0; i < getProxyNr(); i++)
-//    {
-//        myProxy = getProxyName(i);
-//        myCombination.push_back(myProxy);
-//        if (myProxy == height) *indexHeight = i;
-//    }
-
-//    if (*indexHeight != NODATA && getUseThermalInversion())
-//        myCombination.push_back(heightInversion);
-
-//    return myCombination;
-    return myCombination;
-}
-
 void Crit3DInterpolationSettings::addProxy(Crit3DProxy myProxy)
 {
     Crit3DProxyInterpolation myInterpolationProxy;
     myInterpolationProxy.setName(myProxy.getName());
     myInterpolationProxy.setGridName(myProxy.getGridName());
     myInterpolationProxy.setGrid(myProxy.getGrid());
-    myInterpolationProxy.setIsActive(true);
     currentProxy.push_back(myInterpolationProxy);
+
+    selectedCombination.getIndexProxy().push_back((int)currentProxy.size()-1);
 }
 
 std::string Crit3DInterpolationSettings::getProxyName(int pos)
@@ -397,7 +371,35 @@ float Crit3DInterpolationSettings::getProxyValue(unsigned int pos, std::vector <
         return NODATA;
 }
 
+Crit3DProxyCombination Crit3DInterpolationSettings::getCombination()
+{
+    if (getUseBestDetrending())
+        return selectedCombination;
+    else
+        return optimalCombination;
+}
+
 void Crit3DInterpolationSettings::computeShepardInitialRadius(float area, int nrPoints)
 {
     setShepardInitialRadius(sqrt((SHEPARD_AVG_NRPOINTS * area) / ((float)PI * nrPoints)));
+}
+
+std::vector<int> Crit3DProxyCombination::getIndexProxy() const
+{
+    return indexProxy;
+}
+
+void Crit3DProxyCombination::setIndexProxy(const std::vector<int> &value)
+{
+    indexProxy = value;
+}
+
+bool Crit3DProxyCombination::getUseThermalInversion() const
+{
+    return useThermalInversion;
+}
+
+void Crit3DProxyCombination::setUseThermalInversion(bool value)
+{
+    useThermalInversion = value;
 }

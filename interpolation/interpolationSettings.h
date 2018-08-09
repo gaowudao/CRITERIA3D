@@ -14,11 +14,12 @@
     #include "gis.h"
 #endif
 
+class bitset;
+
 class Crit3DProxy
 {
 private:
     std::string name;
-    bool isActive;
     bool isSignificant;
     std::string gridName;
     gis::Crit3DRasterGrid* grid;
@@ -28,8 +29,6 @@ public:
 
     std::string getName() const;
     void setName(const std::string &value);
-    bool getIsActive() const;
-    void setIsActive(bool value);
     gis::Crit3DRasterGrid *getGrid() const;
     void setGrid(gis::Crit3DRasterGrid *value);
     std::string getGridName() const;
@@ -74,6 +73,19 @@ public:
     void setProva(bool value);
 };
 
+class Crit3DProxyCombination
+{
+private:
+    std::vector <int> indexProxy;
+    bool useThermalInversion;
+
+public:
+    bool getUseThermalInversion() const;
+    void setUseThermalInversion(bool value);
+    std::vector<int> getIndexProxy() const;
+    void setIndexProxy(const std::vector<int> &value);;
+};
+
 class Crit3DInterpolationSettings
 {
 private:
@@ -98,6 +110,8 @@ private:
     float topoDist_Kh, topoDist_Kz;
 
     std::vector <Crit3DProxyInterpolation> currentProxy;
+    Crit3DProxyCombination optimalCombination;
+    Crit3DProxyCombination selectedCombination;
 
     bool currentClimateParametersLoaded;
     Crit3DClimateParameters currentClimateParameters;
@@ -113,11 +127,9 @@ public:
     Crit3DProxyInterpolation* getProxy(int pos);
     std::string getProxyName(int pos);
     int getProxyNr();
-    bool getProxyActive(int pos);
-    void setProxyActive(int pos, bool isActive_);
     void addProxy(Crit3DProxy myProxy);
     float getProxyValue(unsigned int pos, std::vector <float> proxyValues);
-    std::vector<std::string> getProxyCombinations(int* indexHeight);
+    Crit3DProxyCombination getCombination();
 
     void setClimateParameters(Crit3DClimateParameters* myParameters);
 

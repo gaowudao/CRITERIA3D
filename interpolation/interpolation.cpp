@@ -1031,12 +1031,16 @@ float retrend(meteoVariable myVar, vector <float> myProxyValues, Crit3DInterpola
     float retrendValue = 0.;
     float myProxyValue;
     Crit3DProxyInterpolation* myProxy;
+    Crit3DProxyCombination myCombination = mySettings->getCombination();
+    int nrProxy = myCombination.getIndexProxy().size();
+    int proxyIndex;
 
-    for (int pos=0; pos<mySettings->getProxyNr(); pos++)
+    for (int pos=0; pos < nrProxy; pos++)
     {
-        myProxy = mySettings->getProxy(pos);
+        proxyIndex = myCombination.getIndexProxy().at(pos);
+        myProxy = mySettings->getProxy(proxyIndex);
 
-        if (myProxy->getIsActive() && myProxy->getIsSignificant())
+        if (myProxy->getIsSignificant())
         {
             myProxyValue = mySettings->getProxyValue(pos, myProxyValues);
 
@@ -1090,30 +1094,33 @@ void detrending(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInte
 {
     if (! getUseDetrendingVar(myVar)) return;
 
-    int nrProxy = mySettings->getProxyNr();
+    Crit3DProxyCombination myCombination = mySettings->getCombination();
+    int nrProxy = myCombination.getIndexProxy().size();
+
+    int indexProxy;
+
     Crit3DProxyInterpolation* myProxy;
 
     for (int pos=0; pos<nrProxy; pos++)
     {
-        myProxy = mySettings->getProxy(pos);
-        if (myProxy->getIsActive())
+        indexProxy = myCombination.getIndexProxy().at(pos);
+        myProxy = mySettings->getProxy(indexProxy);
+        myProxy->setIsSignificant(false);
+
+        if (myProxy->getProxyPragaName() == height)
         {
-            myProxy->setIsSignificant(false);
-            if (myProxy->getProxyPragaName() == height)
+            if (regressionOrography(myPoints, mySettings, myTime, myVar, pos))
             {
-                if (regressionOrography(myPoints, mySettings, myTime, myVar, pos))
-                {
-                    myProxy->setIsSignificant(true);
-                    detrendPoints(myPoints, mySettings, myVar, pos);
-                }
+                myProxy->setIsSignificant(true);
+                detrendPoints(myPoints, mySettings, myVar, pos);
             }
-            else
+        }
+        else
+        {
+            if (regressionGeneric(myPoints, mySettings, pos, false))
             {
-                if (regressionGeneric(myPoints, mySettings, pos, false))
-                {
-                    myProxy->setIsActive(true);
-                    detrendPoints(myPoints, mySettings, myVar, pos);
-                }
+                myProxy->setIsSignificant(true);
+                detrendPoints(myPoints, mySettings, myVar, pos);
             }
         }
     }
@@ -1171,6 +1178,50 @@ void topographicDistanceOptimize(meteoVariable myVar,
 
 }
 
+/*
+bool* Crit3DInterpolationSettings::getProxyCombinations(int *indexHeight)
+{
+    int nrProxy = getProxyNr();
+    int nrProxyActive = 0;
+    Crit3DProxy myProxy;
+
+    indexHeight = NODATA;
+
+    for (i = 0; i < nrProxy; i++)
+    {
+        myProxy = getProxy(i);
+        if (myProxy->isActive)
+        {
+            nrProxyActive++;
+            if (myProxy.getProxyPragaName() == height && getUseThermalInversion())
+                indexHeight = i;
+        }
+    }
+
+    if (indexHeight != NODATA)
+        nrProxyActive++;    // account for thermal inversion combination
+
+    bitset<nrProxyActive> myCombination;
+
+    for (int i = 0; i < (1 << myCombination.size()); i++)
+    {
+        const int n=3;
+        bool b[n];
+        int nn = pow(2, n);
+        for ( int i = 0 ; i < nn ; i++ )
+        {
+           for ( int j = 0 ; j < n ; j++ )
+           {
+              b[j] = i & (1 << j);
+           }
+           qDebug() << b[0] << b[1] << b[2] << b[3];
+        }
+        qDebug() << i;}
+
+    return myCombination;
+}
+*/
+
 void bestDetrending(meteoVariable myVar,
                     Crit3DMeteoPoint* &myMeteoPoints,
                     int nrMeteoPoints,
@@ -1178,12 +1229,12 @@ void bestDetrending(meteoVariable myVar,
                     Crit3DInterpolationSettings* mySettings,
                     const Crit3DTime &myTime)
 {
-//    short i, nrCombination, bestCombination;
-//    std::vector <TProxyVar> myProxy;
-//    short proxyHeightIndex;
-//    float myError, minError;
+    short i, nrCombination, bestCombination;
+    std::vector <TProxyVar> myProxy;
+    short proxyHeightIndex;
+    float myError, minError;
 
-//    std::vector <TProxyVar> myCombination = mySettings->getc myProxy, myProxyHeightIndex
+
 
 //    nrCombination = 2 ^ mySettings->getProxyNr();
 
@@ -1210,7 +1261,7 @@ void bestDetrending(meteoVariable myVar,
 
 //    ' set best detrending solution
 //    setCurrentOptimalDetrendingCombination myBestCombination
-//    setDetrendingP*/roxy myBestCombination, myProxy, myProxyHeightIndex
+//    setDetrendingProxy myBestCombination, myProxy, myProxyHeightIndex
 
     return;
 }
