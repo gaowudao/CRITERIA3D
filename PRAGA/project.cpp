@@ -1306,7 +1306,7 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
         {
             meteoGridDbHandler->meteoGrid()->fillMeteoRasterAnomalyValue();
         }
-        meteoGridDbHandler->meteoGrid()->setElabValue(true);
+        meteoGridDbHandler->meteoGrid()->setIsElabValue(true);
     }
     else
     {

@@ -139,8 +139,8 @@ const std::map<std::string, gridAggregationMethod> aggregationMethodNames = {
             double aggregateMeteoGridPoint(Crit3DMeteoPoint myPoint, gridAggregationMethod elab);
 
 
-            bool getElabValue() const;
-            void setElabValue(bool elabValue);
+            bool getIsElabValue() const;
+            void setIsElabValue(bool isElabValue);
 
     private:
 
@@ -151,7 +151,7 @@ const std::map<std::string, gridAggregationMethod> aggregationMethodNames = {
             bool _isAggregationDefined;
             Crit3DDate _firstDate;
             Crit3DDate _lastDate;
-            bool _elabValue;
+            bool _isElabValue;
     };
 
 

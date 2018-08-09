@@ -1387,9 +1387,22 @@ void MainWindow::on_actionAnomaly_meteo_grid_triggered()
 
     if (myProject.elaborationCheck(isMeteoGrid))
     {
-        if (myProject.getIsElabMeteoPointsValue())
+        if (myProject.meteoGridDbHandler->meteoGrid()->getIsElabValue())
         {
             //elaboration is done, choose reference period
+            QMessageBox::StandardButton reply;
+            reply = QMessageBox::question(this, "Keep current elaboration", "Edit only reference period?", QMessageBox::Yes|QMessageBox::No);
+            if (reply == QMessageBox::Yes)
+            {
+                isAnomaly = true;
+                elaborationGUI(isAnomaly, isMeteoGrid);
+
+            }
+            else
+            {
+                myProject.meteoGridDbHandler->meteoGrid()->setIsElabValue(false);
+                on_actionAnomaly_meteo_points_triggered();
+            }
 
         }
         else
@@ -1405,7 +1418,7 @@ void MainWindow::on_actionAnomaly_meteo_grid_triggered()
                  return;
             }
 
-            if (!myProject.getIsElabMeteoPointsValue())
+            if (!myProject.meteoGridDbHandler->meteoGrid()->getIsElabValue())
             {
                 return; //something has been wrong with elaboration
             }

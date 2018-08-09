@@ -145,6 +145,7 @@ Crit3DMeteoGrid::Crit3DMeteoGrid()
     _isAggregationDefined = false;
     _gisSettings.utmZone = 32;
     _gisSettings.isNorthernEmisphere = true;
+    _isElabValue = false;
     _firstDate = Crit3DDate(1,1,1800);
     _lastDate = Crit3DDate(1,1,1800);
 }
@@ -732,15 +733,16 @@ double Crit3DMeteoGrid::aggregateMeteoGridPoint(Crit3DMeteoPoint myPoint, gridAg
 
 }
 
-bool Crit3DMeteoGrid::getElabValue() const
+bool Crit3DMeteoGrid::getIsElabValue() const
 {
-    return _elabValue;
+    return _isElabValue;
 }
 
-void Crit3DMeteoGrid::setElabValue(bool elabValue)
+void Crit3DMeteoGrid::setIsElabValue(bool isElabValue)
 {
-    _elabValue = elabValue;
+    _isElabValue = isElabValue;
 }
+
 
 void Crit3DMeteoGrid::setGridStructure(const Crit3DMeteoGridStructure &gridStructure)
 {
