@@ -2,7 +2,7 @@
 CRITERIA3D distribution provides a set of libraries and executables for agro-meteorological analysis.
 It includes a numerical solution for three-dimensional water and heat flow in the soil, water balance, meteorological data interpolation, daily weather generator, radiation budget, snow accumulation and melt, crop development and crop water uptake.
 
-Executable files are named with upper case, libraries with lower case. QT libraries (5.9 or following) are needed.
+Executable files are named with upper case, libraries with lower case. QT libraries (5.7 or following) are needed.
 
 ## soilFluxes3D library
 SoilFluxes3D is a numerical solution for flow equations of water and heat in the soil, in a three-dimensional domain.
@@ -30,17 +30,17 @@ Algorithms for the spatialization of meteorological data.
 PRAGA is a Graphical User Interface to manage the libraries in the distribution for agro-meteorological and climate analysis.
 It uses a modified version of MapGraphics library: https://github.com/raptorswing/MapGraphics
 
-To compile it, firstly compile *MapGraphics* project then *Makeall_PRAGA* project.
+To compile it, firstly compile the project *MapGraphics*, then use the project *Makeall_PRAGA*.
+
+## CRIT1D
+CRIT1D is a test program for the 1D water balance, using criteria1D, crop and soil libraries.
+
+To compile it, use the project *Makeall_CRITERIA1D*. Example data are available in *DATA/Criteria1d* directory.
 
 ## HEAT1D
 HEAT1D is a graphical interface for testing the soilFluxex3D library in a 1D domain. Users can set fixed or variable atmospheric boundary conditions and soil parameters. Output graph results include soil temperature, soil water content, heat fluxes (diffusive and latent), liquid (isothermal and thermal) and vapor (isothermal and thermal) water fluxes. 
 
 Graphs are produced using the Qwt plot library (http://qwt.sourceforge.net/) which should be compiled before usage.
-
-## CRIT1D
-CRIT1D is a test program for the libraries criteria1D, crop and soil. 
-
-To compile it, use the project *Makeall_CRITERIA1D*. Example data are available in *DATA/Criteria1d* directory.
 
 # License
 CRITERIA3D has been developed under contract issued by 
