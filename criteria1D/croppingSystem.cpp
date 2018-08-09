@@ -489,7 +489,7 @@ double cropTranspiration(Criteria1D* myCase, bool getWaterStress)
 
         cropWP = thetaWP * soilThickness;                                                         // [mm]
 
-        waterScarcityThreshold = cropWP + myCase->myCrop.waterStressSensibility * (myCase->layer[i].FC - cropWP);
+        waterScarcityThreshold = myCase->layer[i].FC - myCase->myCrop.waterStressSensibility * (myCase->layer[i].FC - cropWP);
 
         if (myCase->layer[i].waterContent > surplusThreshold)
         {
