@@ -1042,7 +1042,7 @@ float retrend(meteoVariable myVar, vector <float> myProxyValues, Crit3DInterpola
 
         if (myProxy->getIsSignificant())
         {
-            myProxyValue = mySettings->getProxyValue(pos, myProxyValues);
+            myProxyValue = mySettings->getProxyValue(proxyIndex, myProxyValues);
 
             if (myProxyValue != NODATA)
             {
@@ -1109,18 +1109,18 @@ void detrending(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInte
 
         if (myProxy->getProxyPragaName() == height)
         {
-            if (regressionOrography(myPoints, mySettings, myTime, myVar, pos))
+            if (regressionOrography(myPoints, mySettings, myTime, myVar, indexProxy))
             {
                 myProxy->setIsSignificant(true);
-                detrendPoints(myPoints, mySettings, myVar, pos);
+                detrendPoints(myPoints, mySettings, myVar, indexProxy);
             }
         }
         else
         {
-            if (regressionGeneric(myPoints, mySettings, pos, false))
+            if (regressionGeneric(myPoints, mySettings, indexProxy, false))
             {
                 myProxy->setIsSignificant(true);
-                detrendPoints(myPoints, mySettings, myVar, pos);
+                detrendPoints(myPoints, mySettings, myVar, indexProxy);
             }
         }
     }

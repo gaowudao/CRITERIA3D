@@ -114,7 +114,7 @@ float computeErrorCrossValidation(meteoVariable myVar, Crit3DMeteoPoint* myPoint
     std::vector <float> obsValues, estValues;
     float myValue, myEstimate, myResidual;
 
-    for (unsigned int i=0; i < nrMeteoPoints; i++)
+    for (int i=0; i < nrMeteoPoints; i++)
     {
         if (myPoints[i].active)
         {

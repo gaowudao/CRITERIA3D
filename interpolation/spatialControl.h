@@ -30,4 +30,5 @@
                           std::vector <Crit3DInterpolationDataPoint> &interpolationPoints, Crit3DInterpolationSettings* settings);
     float computeErrorCrossValidation(meteoVariable myVar, Crit3DMeteoPoint *myPoints, unsigned int nrMeteoPoints, const Crit3DTime& myTime);
 
+
 #endif // SPATIALCONTROL_H
