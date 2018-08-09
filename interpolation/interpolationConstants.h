@@ -28,7 +28,7 @@ const std::map<std::string, TInterpolationMethod> interpolationMethodNames = {
   { "kriging", kriging }
 };
 
-enum TProxyVar { height, urbanFraction, orogIndex, seaDistance, aspect, slope, noProxy };
+enum TProxyVar { height, heightInversion, urbanFraction, orogIndex, seaDistance, aspect, slope, noProxy };
 
 const std::map<std::string, TProxyVar> ProxyVarNames = {
   { "elevation", height },

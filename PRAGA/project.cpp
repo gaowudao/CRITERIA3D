@@ -1263,7 +1263,7 @@ bool Project::elaborationCheck(bool isMeteoGrid)
         }
         else
         {
-            if (this->referenceClima == NULL)
+            if (this->clima == NULL)
             {
                 this->clima = new Crit3DClimate();
             }
@@ -1278,7 +1278,7 @@ bool Project::elaborationCheck(bool isMeteoGrid)
         }
         else
         {
-            if (this->referenceClima == NULL)
+            if (this->clima == NULL)
             {
                 this->clima = new Crit3DClimate();
             }

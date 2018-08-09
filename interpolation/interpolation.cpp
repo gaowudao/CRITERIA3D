@@ -1036,7 +1036,7 @@ float retrend(meteoVariable myVar, vector <float> myProxyValues, Crit3DInterpola
     {
         myProxy = mySettings->getProxy(pos);
 
-        if (myProxy->getIsActive())
+        if (myProxy->getIsActive() && myProxy->getIsSignificant())
         {
             myProxyValue = mySettings->getProxyValue(pos, myProxyValues);
 
@@ -1096,27 +1096,25 @@ void detrending(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInte
     for (int pos=0; pos<nrProxy; pos++)
     {
         myProxy = mySettings->getProxy(pos);
-
-        if (myProxy->getProxyPragaName() == height)
+        if (myProxy->getIsActive())
         {
-            if (regressionOrography(myPoints, mySettings, myTime, myVar, pos))
+            myProxy->setIsSignificant(false);
+            if (myProxy->getProxyPragaName() == height)
             {
-                myProxy->setIsActive(true);
-                detrendPoints(myPoints, mySettings, myVar, pos);
+                if (regressionOrography(myPoints, mySettings, myTime, myVar, pos))
+                {
+                    myProxy->setIsSignificant(true);
+                    detrendPoints(myPoints, mySettings, myVar, pos);
+                }
             }
             else
-                myProxy->setIsActive(false);
-        }
-        else
-        {
-            if (regressionGeneric(myPoints, mySettings, pos, false))
             {
-                myProxy->setIsActive(true);
-                detrendPoints(myPoints, mySettings, myVar, pos);
+                if (regressionGeneric(myPoints, mySettings, pos, false))
+                {
+                    myProxy->setIsActive(true);
+                    detrendPoints(myPoints, mySettings, myVar, pos);
+                }
             }
-            else
-                myProxy->setIsActive(false);
-
         }
     }
 }
@@ -1185,7 +1183,7 @@ void bestDetrending(meteoVariable myVar,
 //    short proxyHeightIndex;
 //    float myError, minError;
 
-//    getActiveProxy myProxy, myProxyHeightIndex
+//    std::vector <TProxyVar> myCombination = mySettings->getc myProxy, myProxyHeightIndex
 
 //    nrCombination = 2 ^ mySettings->getProxyNr();
 
@@ -1212,7 +1210,7 @@ void bestDetrending(meteoVariable myVar,
 
 //    ' set best detrending solution
 //    setCurrentOptimalDetrendingCombination myBestCombination
-//    setDetrendingProxy myBestCombination, myProxy, myProxyHeightIndex
+//    setDetrendingP*/roxy myBestCombination, myProxy, myProxyHeightIndex
 
     return;
 }
