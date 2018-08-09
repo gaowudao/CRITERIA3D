@@ -1,6 +1,6 @@
 # CRITERIA3D distribution
 CRITERIA3D distribution provides a set of libraries and executables for agro-meteorological analysis.
-It includes a numerical solution for three-dimensional water and heat flow in the soil, meteorological data interpolation, daily weather generator, radiation budget, snow accumulation and melt, plant development and plant water uptake.
+It includes a numerical solution for three-dimensional water and heat flow in the soil, water balance, meteorological data interpolation, daily weather generator, radiation budget, snow accumulation and melt, crop development and crop water uptake.
 
 Executable files are named with upper case, libraries with lower case. QT libraries (5.9 or following) are needed.
 
@@ -12,10 +12,10 @@ Water fluxes equations may be coupled with the heat flux equations, which includ
 http://www.sciencedirect.com/science/article/pii/S0309170809001754
 
 ## criteria1D library
-Heuristic algorithms for 1D soil water infiltration, redistribution and capillary rise.
+Algorithms for 1D water balance: soil water infiltration, dreinage and capillary rise, crop water demand, evaporation and crop transpiration. 
 
 ## crop library
-Heuristic algorithms for crop development, leaf area index, root growth and distribution, based on daily temperature.
+Algorithms for crop development, leaf area index, root growth and distribution, based on daily temperature.
 
 ## soil library
 Modified Van Genuchten-Mualem model for soil water retention curve and water conductivity, USDA soil texture classification.
