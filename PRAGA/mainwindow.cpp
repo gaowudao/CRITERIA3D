@@ -27,6 +27,7 @@
 #include "utilities.h"
 #include "commonConstants.h"
 #include "dialogWindows.h"
+#include "computationDialog.h"
 #include "gis.h"
 #include "spatialControl.h"
 
