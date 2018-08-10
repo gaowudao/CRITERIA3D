@@ -118,7 +118,7 @@ bool ComputationDialog::computation(bool isAnomaly)
     genericEndLabel.setText("End Date:");
     genericPeriodEnd.setDisplayFormat("dd/MM");
     genericEndLabel.setBuddy(&genericPeriodEnd);
-    nrYearLabel.setText("Nr Years");
+    nrYearLabel.setText("Delta Years:");
     nrYear.setValidator(new QIntValidator(-500, 500));
     nrYear.setText("0");
     nrYearLabel.setBuddy(&nrYear);
