@@ -17,6 +17,7 @@
     frequencyType chooseFrequency();
 
     bool chooseMeteoVariable();
+    bool setInterpolationSettings();
 
     bool chooseNetCDFVariable(int *varId, QDateTime *firstDate, QDateTime *lastDate);
 

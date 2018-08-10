@@ -1603,3 +1603,18 @@ void MainWindow::on_actionNew_climate_triggered()
         return;
     }
 }
+
+void MainWindow::on_actionInterpolationSettings_triggered()
+{
+    if (myProject.meteoPointsDbHandler == NULL)
+    {
+        QMessageBox::information(NULL, "No DB open", "Open DB Points");
+        return;
+    }
+
+    if (! setInterpolationSettings())
+    {
+        QMessageBox::information(NULL, "Interpolation settings", "Error setting interpolation settings");
+        return;
+    }
+}
