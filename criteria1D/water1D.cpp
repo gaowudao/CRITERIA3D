@@ -54,7 +54,7 @@ void initializeWater(Criteria1D* myCase)
 
 // TODO extend to geometric layers
 /*!
- * \brief Algorithm for 1D soil water infiltration and redistribution
+ * \brief Water infiltration and redistribution 1D
  * \param myCase
  * \param myError
  * \param prec      [mm]
@@ -267,12 +267,13 @@ bool computeCapillaryRise(Criteria1D* myCase, float waterTableDepth)
     int i;
 
     int lastLayer = myCase->nrLayers - 1;
+    const float REDUCTION_FACTOR = 0.5;
 
-    // wrong watertable
-    // or watertable too depth (> 5 meters below lastlayer): no effect
+    // NO WaterTable:
+    // Nodata, wrong data or watertable too depth (> 8 meters below lastlayer)
     if ( (waterTableDepth == NODATA)
       || (waterTableDepth <= 0)
-      || (waterTableDepth > (myCase->layer[lastLayer].depth + 5.0f)) )
+      || (waterTableDepth > (myCase->layer[lastLayer].depth + 8.0f)) )
     {
         //re-initialize threshold for vertical drainage
         for (i = 1; i < myCase->nrLayers; i++)
@@ -333,7 +334,9 @@ bool computeCapillaryRise(Criteria1D* myCase, float waterTableDepth)
         {
             k_psi = soil::getWaterConductivity(&(myCase->layer[i]));        // [cm day-1]
 
-            capillaryRise = k_psi * 0.5 * ((dPsi / dz) - 1.f) * 10.f;        // [mm]
+            k_psi *= REDUCTION_FACTOR * 10.f;                               // [mm day-1]
+
+            capillaryRise = k_psi * ((dPsi / dz) - 1.f);                    // [mm day-1]
 
             maxCapillaryRise = myCase->layer[i].critical - myCase->layer[i].waterContent;
             capillaryRise = minValue(capillaryRise, maxCapillaryRise);
