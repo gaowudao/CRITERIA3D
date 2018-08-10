@@ -130,6 +130,8 @@
 
         void on_actionNew_climate_triggered();
 
+        void on_actionInterpolationSettings_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

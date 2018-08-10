@@ -27,6 +27,7 @@
 #include "utilities.h"
 #include "commonConstants.h"
 #include "dialogWindows.h"
+#include "computationDialog.h"
 #include "gis.h"
 #include "spatialControl.h"
 
@@ -1600,6 +1601,21 @@ void MainWindow::on_actionNew_climate_triggered()
     if (myProject.meteoPointsDbHandler == NULL && myProject.meteoGridDbHandler == NULL)
     {
         QMessageBox::information(NULL, "No DB open", "Open DB Points or Grid");
+        return;
+    }
+}
+
+void MainWindow::on_actionInterpolationSettings_triggered()
+{
+    if (myProject.meteoPointsDbHandler == NULL)
+    {
+        QMessageBox::information(NULL, "No DB open", "Open DB Points");
+        return;
+    }
+
+    if (! setInterpolationSettings())
+    {
+        QMessageBox::information(NULL, "Interpolation settings", "Error setting interpolation settings");
         return;
     }
 }

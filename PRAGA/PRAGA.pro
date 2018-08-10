@@ -78,7 +78,8 @@ SOURCES += main.cpp\
     stationMarker.cpp \
     rubberBand.cpp \
     dialogWindows.cpp \
-    formRunInfo.cpp
+    formRunInfo.cpp \
+    computationDialog.cpp
 
 HEADERS  += mainwindow.h \
     rasterObject.h \
@@ -88,7 +89,8 @@ HEADERS  += mainwindow.h \
     stationMarker.h \
     rubberBand.h \
     dialogWindows.h \
-    formRunInfo.h
+    formRunInfo.h \
+    computationDialog.h
 
 FORMS    += mainwindow.ui \
     formInfo.ui

@@ -2360,6 +2360,7 @@
     </property>
     <addaction name="actionInterpolation_to_DTM"/>
     <addaction name="actionInterpolation_to_Grid"/>
+    <addaction name="actionInterpolationSettings"/>
    </widget>
    <widget class="QMenu" name="menuCriteria3D">
     <property name="title">
@@ -2668,6 +2669,17 @@
   <action name="actionNew_climate">
    <property name="text">
     <string>New climate...</string>
+   </property>
+  </action>
+  <action name="actionInterpolationSettings">
+   <property name="text">
+    <string>Settings</string>
+   </property>
+   <property name="iconText">
+    <string>Interpolation settings</string>
+   </property>
+   <property name="toolTip">
+    <string>Interpolation settings</string>
    </property>
   </action>
  </widget>

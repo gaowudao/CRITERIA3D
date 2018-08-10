@@ -132,6 +132,26 @@ void Crit3DInterpolationSettings::setTopoDist_Kz(float value)
     topoDist_Kz = value;
 }
 
+Crit3DProxyCombination Crit3DInterpolationSettings::getOptimalCombination() const
+{
+    return optimalCombination;
+}
+
+void Crit3DInterpolationSettings::setOptimalCombination(const Crit3DProxyCombination &value)
+{
+    optimalCombination = value;
+}
+
+Crit3DProxyCombination Crit3DInterpolationSettings::getSelectedCombination() const
+{
+    return selectedCombination;
+}
+
+void Crit3DInterpolationSettings::setSelectedCombination(const Crit3DProxyCombination &value)
+{
+    selectedCombination = value;
+}
+
 Crit3DInterpolationSettings::Crit3DInterpolationSettings()
 {
     initialize();

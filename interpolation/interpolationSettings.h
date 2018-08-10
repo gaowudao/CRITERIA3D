@@ -164,6 +164,10 @@
         void setTopoDist_Kh(float value);
         float getTopoDist_Kz() const;
         void setTopoDist_Kz(float value);
+        Crit3DProxyCombination getOptimalCombination() const;
+        void setOptimalCombination(const Crit3DProxyCombination &value);
+        Crit3DProxyCombination getSelectedCombination() const;
+        void setSelectedCombination(const Crit3DProxyCombination &value);
     };
 
 #endif // INTERPOLATIONSETTINGS_H
