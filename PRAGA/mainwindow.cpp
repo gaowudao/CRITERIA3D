@@ -1279,17 +1279,20 @@ void MainWindow::elaborationGUI(bool isAnomaly, bool isMeteoGrid)
     }
 
     compDialog.setSettings(myProject.settings);
-    if (compDialog.computation(isAnomaly))
-    {
-        if (!myProject.elaboration(isMeteoGrid, isAnomaly))
-        {
-            myProject.logError();
-        }
-        else
-        {
-            showElabResult(true, isMeteoGrid, isAnomaly);
-        }
-    }
+
+    compDialog.computation(isAnomaly, isMeteoGrid, this);
+
+//    if (compDialog.computation(isAnomaly))
+//    {
+//        if (!myProject.elaboration(isMeteoGrid, isAnomaly))
+//        {
+//            myProject.logError();
+//        }
+//        else
+//        {
+//            showElabResult(true, isMeteoGrid, isAnomaly);
+//        }
+//    }
 
     return;
 }
