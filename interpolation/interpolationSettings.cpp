@@ -28,6 +28,7 @@
 #include "crit3dDate.h"
 #include "interpolationSettings.h"
 #include "interpolation.h"
+#include "furtherMathFunctions.h"
 #include "commonConstants.h"
 #include "cmath"
 
@@ -414,6 +415,22 @@ void Crit3DProxyCombination::setIndexProxy(const std::vector<int> &value)
     indexProxy = value;
 }
 
+int Crit3DProxyCombination::getIndexHeight() const
+{
+    return indexHeight;
+}
+
+void Crit3DProxyCombination::setIndexHeight(int value)
+{
+    indexHeight = value;
+}
+
+Crit3DProxyCombination::Crit3DProxyCombination()
+{
+    setUseThermalInversion(false);
+    setIndexHeight(NODATA);
+}
+
 bool Crit3DProxyCombination::getUseThermalInversion() const
 {
     return useThermalInversion;
@@ -423,3 +440,34 @@ void Crit3DProxyCombination::setUseThermalInversion(bool value)
 {
     useThermalInversion = value;
 }
+
+/*
+Crit3DProxyCombination getCombinationFromBinaryString(Crit3DProxyCombination* inCombination, std::string combinationString)
+{
+    Crit3DProxyCombination outCombination;
+
+    for (int i=0; i<combinationString.length(); i++)
+    {
+        if (combinationString.at(i) == "1")
+        {
+            outCombination.getIndexProxy().push_back(inCombination->getIndexProxy().at(i));
+        }
+       }
+}
+
+bool Crit3DInterpolationSettings::setDetrendingProxy(int combinationInteger)
+{
+    std::string binaryString = binary(combinationInteger);
+
+    int indexHeight = selectedCombination.getIndexHeight();
+
+    // avoid combinations with inversion (last index) and without orography
+    if (combinationInteger % 2)
+        if (indexHeight == NODATA || binaryString.at(indexHeight) == "0")
+            return;
+
+    getDetrendingProxyFromCombination myBinaryString, myProxyVar, proxyHeight, proxyHeightInversion, proxyOrogIndex, proxyUrbanFraction, proxySeaDistance, proxyAspect
+
+    return true;
+}
+*/

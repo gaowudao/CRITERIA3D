@@ -73,12 +73,17 @@
     private:
         std::vector <int> indexProxy;
         bool useThermalInversion;
+        int indexHeight;
 
     public:
+        Crit3DProxyCombination();
+
         bool getUseThermalInversion() const;
         void setUseThermalInversion(bool value);
         std::vector<int> getIndexProxy() const;
         void setIndexProxy(const std::vector<int> &value);
+        int getIndexHeight() const;
+        void setIndexHeight(int value);
     };
 
     class Crit3DInterpolationSettings

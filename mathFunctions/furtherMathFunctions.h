@@ -2,10 +2,14 @@
 #define MATHEMATICALFUNCTIONS_H
 
 #include <vector>
+#include <string>
 
 enum estimateFunction {FUNCTION_CODE_SPHERICAL, FUNCTION_CODE_LINEAR, FUNCTION_CODE_PARABOLIC,
                        FUNCTION_CODE_EXPONENTIAL, FUNCTION_CODE_LOGARITMIC, TWOPARAMETERSPOLYNOMIAL};
+
 float errorFunctionPrimitive(float x);
+std::string binary(unsigned x);
+
     struct TfunctionInput{
         float x ;
         int nrPar ;

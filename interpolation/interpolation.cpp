@@ -1178,50 +1178,6 @@ void topographicDistanceOptimize(meteoVariable myVar,
 
 }
 
-/*
-bool* Crit3DInterpolationSettings::getProxyCombinations(int *indexHeight)
-{
-    int nrProxy = getProxyNr();
-    int nrProxyActive = 0;
-    Crit3DProxy myProxy;
-
-    indexHeight = NODATA;
-
-    for (i = 0; i < nrProxy; i++)
-    {
-        myProxy = getProxy(i);
-        if (myProxy->isActive)
-        {
-            nrProxyActive++;
-            if (myProxy.getProxyPragaName() == height && getUseThermalInversion())
-                indexHeight = i;
-        }
-    }
-
-    if (indexHeight != NODATA)
-        nrProxyActive++;    // account for thermal inversion combination
-
-    bitset<nrProxyActive> myCombination;
-
-    for (int i = 0; i < (1 << myCombination.size()); i++)
-    {
-        const int n=3;
-        bool b[n];
-        int nn = pow(2, n);
-        for ( int i = 0 ; i < nn ; i++ )
-        {
-           for ( int j = 0 ; j < n ; j++ )
-           {
-              b[j] = i & (1 << j);
-           }
-           qDebug() << b[0] << b[1] << b[2] << b[3];
-        }
-        qDebug() << i;}
-
-    return myCombination;
-}
-*/
-
 void bestDetrending(meteoVariable myVar,
                     Crit3DMeteoPoint* &myMeteoPoints,
                     int nrMeteoPoints,
@@ -1229,42 +1185,46 @@ void bestDetrending(meteoVariable myVar,
                     Crit3DInterpolationSettings* mySettings,
                     const Crit3DTime &myTime)
 {
+    /*
     short i, nrCombination, bestCombination;
     std::vector <TProxyVar> myProxy;
     short proxyHeightIndex;
     float myError, minError;
 
+    nrCombination = 2 ^ (mySettings->selectedCombination.getIndexProxy().size() + 1);
 
+    minError = NODATA;
 
-//    nrCombination = 2 ^ mySettings->getProxyNr();
+    for (i=0; i < nrCombination; i++)
+    {
+        if set
+    }
+        if (setDetrendingProxy(i, myProxy, myProxyHeightIndex) Then
+            passaggioDati.PassingDataOrClimaToInterpolation myVar, False
+            Interpolation.PrepareInterpolation myVar
+            If Interpolation.GetUseTAD() Then topoDistanceOptimizeParameters myVar
+            InterpolationCmd.InterpolationCV myVar, False, True, True
 
-//    minError = NODATA;
+            MAE = InterpolationCmd.computeMAECrossValidation(myVar)
+            If myMinMAE = Definitions.NO_DATA And MAE <> Definitions.NO_DATA Then
+                myMinMAE = MAE
+                myBestCombination = i
+            ElseIf MAE < myMinMAE And MAE <> Definitions.NO_DATA Then
+                myMinMAE = MAE
+                myBestCombination = i
+            End If
+        End If
 
-//    for (i=0; i < nrCombination; i++)
-//        if (setDetrendingProxy(i, myProxy, myProxyHeightIndex) Then
-//            passaggioDati.PassingDataOrClimaToInterpolation myVar, False
-//            Interpolation.PrepareInterpolation myVar
-//            If Interpolation.GetUseTAD() Then topoDistanceOptimizeParameters myVar
-//            InterpolationCmd.InterpolationCV myVar, False, True, True
+    Next i
 
-//            MAE = InterpolationCmd.computeMAECrossValidation(myVar)
-//            If myMinMAE = Definitions.NO_DATA And MAE <> Definitions.NO_DATA Then
-//                myMinMAE = MAE
-//                myBestCombination = i
-//            ElseIf MAE < myMinMAE And MAE <> Definitions.NO_DATA Then
-//                myMinMAE = MAE
-//                myBestCombination = i
-//            End If
-//        End If
-
-//    Next i
-
-//    ' set best detrending solution
-//    setCurrentOptimalDetrendingCombination myBestCombination
-//    setDetrendingProxy myBestCombination, myProxy, myProxyHeightIndex
+    ' set best detrending solution
+    setCurrentOptimalDetrendingCombination myBestCombination
+    setDetrendingProxy myBestCombination, myProxy, myProxyHeightIndex
+*/
 
     return;
 }
+
 
 bool preInterpolation(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings,
                       Crit3DMeteoPoint* myMeteoPoints, int nrMeteoPoints,

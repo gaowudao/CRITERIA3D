@@ -30,6 +30,17 @@
 #include "commonConstants.h"
 #include "furtherMathFunctions.h"
 
+std::string binary(unsigned x)
+{
+    // Warning: this breaks for numbers with more than 64 bits
+    char buffer[64];
+    char* p = buffer + 64;
+    do
+    {
+        *--p = '0' + (x & 1);
+    } while (x >>= 1);
+    return std::string(p, buffer + 64);
+}
 
 float blackBodyShape(TfunctionInput fInput)
 {
