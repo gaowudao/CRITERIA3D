@@ -23,6 +23,7 @@ class ComputationDialog : public QDialog
         QSettings* settings;
         QDateEdit currentDay;
         QLabel currentDayLabel;
+        QComboBox variableList;
         QLineEdit firstYearEdit;
         QLineEdit lastYearEdit;
         QLabel genericStartLabel;
@@ -31,6 +32,7 @@ class ComputationDialog : public QDialog
         QDateEdit genericPeriodStart;
         QDateEdit genericPeriodEnd;
         QLineEdit nrYear;
+        QCheckBox readParam;
 
         QComboBox periodTypeList;
         QComboBox elaborationList;
@@ -41,17 +43,17 @@ class ComputationDialog : public QDialog
         QLineEdit elab2Parameter;
 
     public:
-        ComputationDialog(QWidget *parent = 0);
+        ComputationDialog(QSettings *settings, bool isAnomaly, bool isMeteoGrid, MainWindow *w);
         //bool computation(bool isAnomaly);
-        bool computation(bool isAnomaly, bool isMeteoGrid, MainWindow* w);
+        //bool computation(bool isAnomaly, bool isMeteoGrid, MainWindow* w);
 
-        QString getTitle() const;
-        void setTitle(const QString &value);
+//        QString getTitle() const;
+//        void setTitle(const QString &value);
 
-        QSettings *getSettings() const;
-        void setSettings(QSettings *value);
+//        QSettings *getSettings() const;
+//        void setSettings(QSettings *value);
 
-        void done(int r);
+        void done(bool res);
         void displayPeriod(const QString value);
         void checkYears();
         void changeDate(const QDate newDate);
@@ -61,12 +63,12 @@ class ComputationDialog : public QDialog
         void readParameter(int state);
 
 
-        bool getIsAnomaly() const;
-        void setIsAnomaly(bool value);
-        bool getIsMeteoGrid() const;
-        void setIsMeteoGrid(bool value);
-        MainWindow *getW() const;
-        void setW(MainWindow *value);
+//        bool getIsAnomaly() const;
+//        void setIsAnomaly(bool value);
+//        bool getIsMeteoGrid() const;
+//        void setIsMeteoGrid(bool value);
+//        MainWindow *getW() const;
+//        void setW(MainWindow *value);
 };
 
 

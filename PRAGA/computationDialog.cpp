@@ -4,44 +4,20 @@
 
 extern Project myProject;
 
-bool ComputationDialog::getIsAnomaly() const
-{
-    return isAnomaly;
-}
 
-void ComputationDialog::setIsAnomaly(bool value)
-{
-    isAnomaly = value;
-}
-
-bool ComputationDialog::getIsMeteoGrid() const
-{
-    return isMeteoGrid;
-}
-
-void ComputationDialog::setIsMeteoGrid(bool value)
-{
-    isMeteoGrid = value;
-}
-
-MainWindow *ComputationDialog::getW() const
-{
-    return w;
-}
-
-void ComputationDialog::setW(MainWindow *value)
-{
-    w = value;
-}
-
-ComputationDialog::ComputationDialog(QWidget *parent)
-    : QDialog(parent)
+ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool isMeteoGrid, MainWindow *w)
+    : settings(settings), isAnomaly(isAnomaly), isMeteoGrid(isMeteoGrid), QDialog(w)
 {
 
-}
+    if (!isAnomaly)
+    {
+        setWindowTitle("Elaboration");
+    }
+    else
+    {
+        setWindowTitle("Reference Period");
+    }
 
-bool ComputationDialog::computation(bool isAnomaly, bool isMeteoGrid, MainWindow *w)
-{
     QVBoxLayout mainLayout;
     QHBoxLayout varLayout;
     QHBoxLayout dateLayout;
@@ -53,12 +29,12 @@ bool ComputationDialog::computation(bool isAnomaly, bool isMeteoGrid, MainWindow
     QHBoxLayout elaborationLayout;
     QHBoxLayout secondElabLayout;
 
-    setIsAnomaly(isAnomaly);
-    setIsMeteoGrid(isMeteoGrid);
-    setW(w);
+//    setIsAnomaly(isAnomaly);
+//    setIsMeteoGrid(isMeteoGrid);
+//    setW(w);
+    //setWindowTitle(title);
 
-    setWindowTitle(title);
-    QComboBox variableList;
+
     meteoVariable var;
 
     if (!isAnomaly)
@@ -74,7 +50,7 @@ bool ComputationDialog::computation(bool isAnomaly, bool isMeteoGrid, MainWindow
               item = MapDailyMeteoVarToString.at(var);
             }
             catch (const std::out_of_range& oor) {
-              return false;
+              //TODO return false;
             }
             variableList.addItem(QString::fromStdString(item));
         }
@@ -190,7 +166,7 @@ bool ComputationDialog::computation(bool isAnomaly, bool isMeteoGrid, MainWindow
     elab1Parameter.setPlaceholderText("Parameter");
     elab1Parameter.setFixedWidth(90);
     elab1Parameter.setValidator(new QDoubleValidator(-9999.0, 9999.0, 2)); //LC accetta double con 2 cifre decimali da -9999 a 9999
-    QCheckBox readParam("Read param from db Climate");
+    readParam.setText("Read param from db Climate");
 
 
     QString elab1Field = elaborationList.currentText();
@@ -252,8 +228,9 @@ bool ComputationDialog::computation(bool isAnomaly, bool isMeteoGrid, MainWindow
     connect(&readParam, &QCheckBox::stateChanged, [=](int state){ this->readParameter(state); });
 
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-    connect(&buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(&buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    //connect(&buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(&buttonBox, &QDialogButtonBox::accepted, [=](){ this->done(true); });
+    connect(&buttonBox, &QDialogButtonBox::rejected, [=](){ this->done(false); });
 
     layoutOk.addWidget(&buttonBox);
 
@@ -268,97 +245,108 @@ bool ComputationDialog::computation(bool isAnomaly, bool isMeteoGrid, MainWindow
 
     setLayout(&mainLayout);
 
+    show();
     exec();
 
-    if (myProject.clima == NULL)
-    {
-        QMessageBox::information(NULL, "Error!", "clima is null...");
-        return false;
-    }
+//    if (myProject.clima == NULL)
+//    {
+//        QMessageBox::information(NULL, "Error!", "clima is null...");
+//        return false;
+//    }
 
-    if (this->result() != QDialog::Accepted)
-    {
-        qInfo() << "return false";
-        return false;
-    }
-    else
-    {
+//    if (this->result() != QDialog::Accepted)
+//    {
+//        qInfo() << "return false";
+//        return false;
+//    }
+//    else
+//    {
 
-        periodSelected = periodTypeList.currentText();
-        value = variableList.currentText();
-        var = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, value.toStdString());
+//        periodSelected = periodTypeList.currentText();
+//        value = variableList.currentText();
+//        var = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, value.toStdString());
 
 
-        myProject.clima->setVariable(var);
-        myProject.clima->setYearStart(firstYearEdit.text().toInt());
-        myProject.clima->setYearEnd(lastYearEdit.text().toInt());
-        myProject.clima->setPeriodStr(periodSelected);
-        if (periodSelected == "Generic")
-        {
-            myProject.clima->setGenericPeriodDateStart(genericPeriodStart.date());
-            myProject.clima->setGenericPeriodDateEnd(genericPeriodEnd.date());
-            myProject.clima->setNYears(nrYear.text().toInt());
-        }
-        else
-        {
-            myProject.clima->setNYears(0);
-            QDate start;
-            QDate end;
-            getPeriodDates(periodSelected, firstYearEdit.text().toInt(), currentDay.date(), &start, &end);
-            myProject.clima->setNYears(start.year() - firstYearEdit.text().toInt());
-            myProject.clima->setGenericPeriodDateStart(start);
-            myProject.clima->setGenericPeriodDateEnd(end);
-        }
+//        myProject.clima->setVariable(var);
+//        myProject.clima->setYearStart(firstYearEdit.text().toInt());
+//        myProject.clima->setYearEnd(lastYearEdit.text().toInt());
+//        myProject.clima->setPeriodStr(periodSelected);
+//        if (periodSelected == "Generic")
+//        {
+//            myProject.clima->setGenericPeriodDateStart(genericPeriodStart.date());
+//            myProject.clima->setGenericPeriodDateEnd(genericPeriodEnd.date());
+//            myProject.clima->setNYears(nrYear.text().toInt());
+//        }
+//        else
+//        {
+//            myProject.clima->setNYears(0);
+//            QDate start;
+//            QDate end;
+//            getPeriodDates(periodSelected, firstYearEdit.text().toInt(), currentDay.date(), &start, &end);
+//            myProject.clima->setNYears(start.year() - firstYearEdit.text().toInt());
+//            myProject.clima->setGenericPeriodDateStart(start);
+//            myProject.clima->setGenericPeriodDateEnd(end);
+//        }
 
-        myProject.clima->setElab1(elaborationList.currentText());
+//        myProject.clima->setElab1(elaborationList.currentText());
 
-        if (!readParam.isChecked())
-        {
-            myProject.clima->setParam1IsClimate(false);
-            if (elab1Parameter.text() != "")
-            {
-                myProject.clima->setParam1(elab1Parameter.text().toFloat());
-            }
-            else
-            {
-                myProject.clima->setParam1(NODATA);
-            }
-        }
-        else
-        {
-            myProject.clima->setParam1IsClimate(true);
-            // TO DO LC
+//        if (!readParam.isChecked())
+//        {
+//            myProject.clima->setParam1IsClimate(false);
+//            if (elab1Parameter.text() != "")
+//            {
+//                myProject.clima->setParam1(elab1Parameter.text().toFloat());
+//            }
+//            else
+//            {
+//                myProject.clima->setParam1(NODATA);
+//            }
+//        }
+//        else
+//        {
+//            myProject.clima->setParam1IsClimate(true);
+//            // TO DO LC
 
-        }
-        if (secondElabList.currentText() == "None" || secondElabList.currentText() == "No elaboration available")
-        {
-            myProject.clima->setElab2("");
-            myProject.clima->setParam2(NODATA);
-        }
-        else
-        {
-            myProject.clima->setElab2(secondElabList.currentText());
-            if (elab2Parameter.text() != "")
-            {
-                myProject.clima->setParam2(elab2Parameter.text().toFloat());
-            }
-            else
-            {
-                myProject.clima->setParam2(NODATA);
-            }
-        }
+//        }
+//        if (secondElabList.currentText() == "None" || secondElabList.currentText() == "No elaboration available")
+//        {
+//            myProject.clima->setElab2("");
+//            myProject.clima->setParam2(NODATA);
+//        }
+//        else
+//        {
+//            myProject.clima->setElab2(secondElabList.currentText());
+//            if (elab2Parameter.text() != "")
+//            {
+//                myProject.clima->setParam2(elab2Parameter.text().toFloat());
+//            }
+//            else
+//            {
+//                myProject.clima->setParam2(NODATA);
+//            }
+//        }
 
-        return true;
-    }
+//        return true;
+//    }
 }
 
 
-void ComputationDialog::done(int r)
+void ComputationDialog::done(bool res)
 {
-
-    if(QDialog::Accepted == r)  // ok was pressed
+qInfo() << "computation: " << res << endl;
+    if(res)  // ok was pressed
     {
-        if(firstYearEdit.text().size() == 4 && lastYearEdit.text().size() == 4)   // validate the data
+        if (firstYearEdit.text().size() != 4)
+        {
+            QMessageBox::information(NULL, "Missing year", "Insert first year");
+            return;
+        }
+        else if (lastYearEdit.text().size() != 4)
+        {
+            QMessageBox::information(NULL, "Missing year", "Insert last year");
+            return;
+        }
+        else  // validate the data
         {
             if (firstYearEdit.text().toInt() > lastYearEdit.text().toInt())
             {
@@ -399,31 +387,98 @@ void ComputationDialog::done(int r)
                 }
             }
             //QDialog::done(r);
+
+            if (myProject.clima == NULL)
+            {
+                QMessageBox::information(NULL, "Error!", "clima is null...");
+                return;
+            }
+qInfo() << "save in clima: " << endl;
+
+            QString periodSelected = periodTypeList.currentText();
+            QString value = variableList.currentText();
+            meteoVariable var = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, value.toStdString());
+
+
+            myProject.clima->setVariable(var);
+            myProject.clima->setYearStart(firstYearEdit.text().toInt());
+            myProject.clima->setYearEnd(lastYearEdit.text().toInt());
+            myProject.clima->setPeriodStr(periodSelected);
+            if (periodSelected == "Generic")
+            {
+                myProject.clima->setGenericPeriodDateStart(genericPeriodStart.date());
+                myProject.clima->setGenericPeriodDateEnd(genericPeriodEnd.date());
+                myProject.clima->setNYears(nrYear.text().toInt());
+            }
+            else
+            {
+                myProject.clima->setNYears(0);
+                QDate start;
+                QDate end;
+                getPeriodDates(periodSelected, firstYearEdit.text().toInt(), currentDay.date(), &start, &end);
+                myProject.clima->setNYears(start.year() - firstYearEdit.text().toInt());
+                myProject.clima->setGenericPeriodDateStart(start);
+                myProject.clima->setGenericPeriodDateEnd(end);
+            }
+
+            myProject.clima->setElab1(elaborationList.currentText());
+
+            if (!readParam.isChecked())
+            {
+                myProject.clima->setParam1IsClimate(false);
+                if (elab1Parameter.text() != "")
+                {
+                    myProject.clima->setParam1(elab1Parameter.text().toFloat());
+                }
+                else
+                {
+                    myProject.clima->setParam1(NODATA);
+                }
+            }
+            else
+            {
+                myProject.clima->setParam1IsClimate(true);
+                // TO DO LC
+
+            }
+            if (secondElabList.currentText() == "None" || secondElabList.currentText() == "No elaboration available")
+            {
+                myProject.clima->setElab2("");
+                myProject.clima->setParam2(NODATA);
+            }
+            else
+            {
+                myProject.clima->setElab2(secondElabList.currentText());
+                if (elab2Parameter.text() != "")
+                {
+                    myProject.clima->setParam2(elab2Parameter.text().toFloat());
+                }
+                else
+                {
+                    myProject.clima->setParam2(NODATA);
+                }
+            }
+
+
+qInfo() << "elaboration: " << endl;
             if (!myProject.elaboration(isMeteoGrid, isAnomaly))
             {
+                qInfo() << "elaboration error " << endl;
                 myProject.logError();
             }
             else
             {
+                qInfo() << "showElabResult start " << endl;
                 w->showElabResult(true, isMeteoGrid, isAnomaly);
+                qInfo() << "showElabResult end " << endl;
             }
-            return;
-        }
-        else if (firstYearEdit.text().size() != 4)
-        {
-            QMessageBox::information(NULL, "Missing year", "Insert first year");
-            return;
-        }
-        else
-        {
-            QMessageBox::information(NULL, "Missing year", "Insert last year");
             return;
         }
 
     }
     else    // cancel, close or exc was pressed
     {
-        QDialog::done(r);
+        QDialog::done(QDialog::Rejected);
         return;
     }
 
@@ -1052,22 +1107,52 @@ void ComputationDialog::readParameter(int state)
 }
 
 
-QSettings *ComputationDialog::getSettings() const
-{
-    return settings;
-}
+//QSettings *ComputationDialog::getSettings() const
+//{
+//    return settings;
+//}
 
-void ComputationDialog::setSettings(QSettings *value)
-{
-    settings = value;
-}
+//void ComputationDialog::setSettings(QSettings *value)
+//{
+//    settings = value;
+//}
 
-QString ComputationDialog::getTitle() const
-{
-    return title;
-}
+//QString ComputationDialog::getTitle() const
+//{
+//    return title;
+//}
 
-void ComputationDialog::setTitle(const QString &value)
-{
-    title = value;
-}
+//void ComputationDialog::setTitle(const QString &value)
+//{
+//    title = value;
+//}
+
+//bool ComputationDialog::getIsAnomaly() const
+//{
+//    return isAnomaly;
+//}
+
+//void ComputationDialog::setIsAnomaly(bool value)
+//{
+//    isAnomaly = value;
+//}
+
+//bool ComputationDialog::getIsMeteoGrid() const
+//{
+//    return isMeteoGrid;
+//}
+
+//void ComputationDialog::setIsMeteoGrid(bool value)
+//{
+//    isMeteoGrid = value;
+//}
+
+//MainWindow *ComputationDialog::getW() const
+//{
+//    return w;
+//}
+
+//void ComputationDialog::setW(MainWindow *value)
+//{
+//    w = value;
+//}
