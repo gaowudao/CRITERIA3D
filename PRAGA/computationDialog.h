@@ -18,7 +18,6 @@ class ComputationDialog : public QDialog
     private:
         bool isAnomaly;
         bool isMeteoGrid;
-        MainWindow *w;
         QString title;
         QSettings* settings;
         QDateEdit currentDay;
@@ -43,16 +42,7 @@ class ComputationDialog : public QDialog
         QLineEdit elab2Parameter;
 
     public:
-        ComputationDialog(QSettings *settings, bool isAnomaly, bool isMeteoGrid, MainWindow *w);
-        //bool computation(bool isAnomaly);
-        //bool computation(bool isAnomaly, bool isMeteoGrid, MainWindow* w);
-
-//        QString getTitle() const;
-//        void setTitle(const QString &value);
-
-//        QSettings *getSettings() const;
-//        void setSettings(QSettings *value);
-
+        ComputationDialog(QSettings *settings, bool isAnomaly, bool isMeteoGrid);
         void done(bool res);
         void displayPeriod(const QString value);
         void checkYears();
@@ -61,16 +51,6 @@ class ComputationDialog : public QDialog
         void listSecondElab(const QString value);
         void activeSecondParameter(const QString value);
         void readParameter(int state);
-
-
-//        bool getIsAnomaly() const;
-//        void setIsAnomaly(bool value);
-//        bool getIsMeteoGrid() const;
-//        void setIsMeteoGrid(bool value);
-//        MainWindow *getW() const;
-//        void setW(MainWindow *value);
-    signals:
-        void finished();
 };
 
 

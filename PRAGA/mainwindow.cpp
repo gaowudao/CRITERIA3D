@@ -1266,18 +1266,6 @@ void MainWindow::on_actionShow_DTM_triggered()
     }
 }
 
-void MainWindow::elaborationGUI(bool isAnomaly, bool isMeteoGrid)
-{
-    ComputationDialog compDialog(myProject.settings, isAnomaly, isMeteoGrid, this);
-    if ( (isMeteoGrid && myProject.meteoGridDbHandler->meteoGrid()->getIsElabValue()) || (!isMeteoGrid && myProject.getIsElabMeteoPointsValue()))
-    {
-        showElabResult(true, isMeteoGrid, isAnomaly);
-        if (compDialog.result() == QDialog::Accepted)
-            on_actionElaboration_meteo_points_triggered();
-    }
-    return;
-}
-
 void MainWindow::on_actionElaboration_meteo_points_triggered()
 {
     bool isMeteoGrid = false;
@@ -1285,7 +1273,13 @@ void MainWindow::on_actionElaboration_meteo_points_triggered()
 
     if (myProject.elaborationCheck(isMeteoGrid))
     {
-        elaborationGUI(isAnomaly, isMeteoGrid);
+        ComputationDialog compDialog(myProject.settings, isAnomaly, isMeteoGrid);
+        if (!isMeteoGrid && myProject.getIsElabMeteoPointsValue())
+        {
+            showElabResult(true, isMeteoGrid, isAnomaly);
+        }
+        if (compDialog.result() == QDialog::Accepted)
+            on_actionElaboration_meteo_points_triggered();
     }
     else
     {
@@ -1301,7 +1295,13 @@ void MainWindow::on_actionElaboration_meteo_grid_triggered()
     bool isAnomaly = false;
     if (myProject.elaborationCheck(isMeteoGrid))
     {
-        elaborationGUI(isAnomaly, isMeteoGrid);
+        ComputationDialog compDialog(myProject.settings, isAnomaly, isMeteoGrid);
+        if ( isMeteoGrid && myProject.meteoGridDbHandler->meteoGrid()->getIsElabValue())
+        {
+            showElabResult(true, isMeteoGrid, isAnomaly);
+        }
+        if (compDialog.result() == QDialog::Accepted)
+            on_actionElaboration_meteo_grid_triggered();
     }
     else
     {
@@ -1314,7 +1314,7 @@ void MainWindow::on_actionAnomaly_meteo_points_triggered()
 {
     bool isMeteoGrid = false;
     bool isAnomaly;
-
+/*
     if (myProject.elaborationCheck(isMeteoGrid))
     {
         if (myProject.getIsElabMeteoPointsValue())
@@ -1362,6 +1362,7 @@ void MainWindow::on_actionAnomaly_meteo_points_triggered()
     {
          myProject.logError();
     }
+    */
     return;
 }
 
@@ -1369,7 +1370,7 @@ void MainWindow::on_actionAnomaly_meteo_grid_triggered()
 {
     bool isMeteoGrid = true;
     bool isAnomaly;
-
+/*
     if (myProject.elaborationCheck(isMeteoGrid))
     {
         if (myProject.meteoGridDbHandler->meteoGrid()->getIsElabValue())
@@ -1417,6 +1418,7 @@ void MainWindow::on_actionAnomaly_meteo_grid_triggered()
     {
          myProject.logError();
     }
+    */
     return;
 }
 
