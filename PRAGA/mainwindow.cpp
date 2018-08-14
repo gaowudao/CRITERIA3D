@@ -1274,7 +1274,12 @@ void MainWindow::on_actionElaboration_meteo_points_triggered()
     if (myProject.elaborationCheck(isMeteoGrid))
     {
         ComputationDialog compDialog(myProject.settings, isAnomaly, isMeteoGrid);
-        if (!isMeteoGrid && myProject.getIsElabMeteoPointsValue())
+        if (!myProject.elaboration(isMeteoGrid, isAnomaly))
+        {
+            qInfo() << "elaboration error " << endl;
+            myProject.logError();
+        }
+        else
         {
             showElabResult(true, isMeteoGrid, isAnomaly);
         }
@@ -1296,7 +1301,12 @@ void MainWindow::on_actionElaboration_meteo_grid_triggered()
     if (myProject.elaborationCheck(isMeteoGrid))
     {
         ComputationDialog compDialog(myProject.settings, isAnomaly, isMeteoGrid);
-        if ( isMeteoGrid && myProject.meteoGridDbHandler->meteoGrid()->getIsElabValue())
+        if (!myProject.elaboration(isMeteoGrid, isAnomaly))
+        {
+            qInfo() << "elaboration error " << endl;
+            myProject.logError();
+        }
+        else
         {
             showElabResult(true, isMeteoGrid, isAnomaly);
         }

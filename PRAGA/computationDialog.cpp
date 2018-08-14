@@ -44,7 +44,8 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool i
               item = MapDailyMeteoVarToString.at(var);
             }
             catch (const std::out_of_range& oor) {
-              //TODO return false;
+               myProject.logError("variable " + QString::fromStdString(variable) + " missing in MapDailyMeteoVar");
+               continue;
             }
             variableList.addItem(QString::fromStdString(item));
         }
@@ -68,21 +69,47 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool i
     }
 
     currentDayLabel.setText("Day/Month:");
-    currentDay.setDate(myProject.getCurrentDate());
+
+    if (myProject.clima->genericPeriodDateStart() == QDate(1800,1,1))
+    {
+        currentDay.setDate(myProject.getCurrentDate());
+    }
+    else
+    {
+        currentDay.setDate(myProject.clima->genericPeriodDateStart());
+    }
+
     currentDay.setDisplayFormat("dd/MM");
     currentDayLabel.setBuddy(&currentDay);
     currentDayLabel.setVisible(true);
     currentDay.setVisible(true);
 
     int currentYear = myProject.getCurrentDate().year();
+
     QLabel firstDateLabel("Start Year:");
-    firstYearEdit.setText(QString::number(currentYear));
+    if (myProject.clima->yearStart() == NODATA)
+    {
+        firstYearEdit.setText(QString::number(currentYear));
+    }
+    else
+    {
+        firstYearEdit.setText(QString::number(myProject.clima->yearStart()));
+    }
+
     firstYearEdit.setFixedWidth(110);
     firstYearEdit.setValidator(new QIntValidator(1800, 3000));
     firstDateLabel.setBuddy(&firstYearEdit);
 
     QLabel lastDateLabel("End Year:");
-    lastYearEdit.setText(QString::number(currentYear));
+    if (myProject.clima->yearEnd() == NODATA)
+    {
+        lastYearEdit.setText(QString::number(currentYear));
+    }
+    else
+    {
+        lastYearEdit.setText(QString::number(myProject.clima->yearEnd()));
+    }
+
     lastYearEdit.setFixedWidth(110);
     lastYearEdit.setValidator(new QIntValidator(1800, 3000));
     lastDateLabel.setBuddy(&lastYearEdit);
@@ -159,6 +186,7 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool i
     elab1Parameter.setFixedWidth(90);
     elab1Parameter.setValidator(new QDoubleValidator(-9999.0, 9999.0, 2)); //LC accetta double con 2 cifre decimali da -9999 a 9999
     readParam.setText("Read param from db Climate");
+    readParam.setChecked(myProject.clima->param1IsClimate());
 
 
     QString elab1Field = elaborationList.currentText();
@@ -236,6 +264,56 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool i
     mainLayout.addLayout(&layoutOk);
 
     setLayout(&mainLayout);
+
+    // show stored values
+    if (myProject.clima->variable() != noMeteoVar)
+    {
+        std::string storedVar = MapDailyMeteoVarToString.at(myProject.clima->variable());
+        variableList.setCurrentText(QString::fromStdString(storedVar));
+    }
+    if (myProject.clima->elab1() != "")
+    {
+        elaborationList.setCurrentText(myProject.clima->elab1());
+        if (myProject.clima->param1() != NODATA)
+        {
+            elab1Parameter.setText(QString::number(myProject.clima->param1()));
+        }
+    }
+    if (myProject.clima->elab2() != "")
+    {
+        secondElabList.setCurrentText(myProject.clima->elab2());
+        if (myProject.clima->param2() != NODATA)
+        {
+            elab2Parameter.setText(QString::number(myProject.clima->param2()));
+        }
+    }
+    if (myProject.clima->periodType() != noPeriodType)
+    {
+        switch (myProject.clima->periodType()) {
+        case dailyPeriod:
+            periodTypeList.setCurrentText("Daily");
+            break;
+        case decadalPeriod:
+            periodTypeList.setCurrentText("Decadal");
+            break;
+        case monthlyPeriod:
+            periodTypeList.setCurrentText("Monthly");
+            break;
+        case seasonalPeriod:
+            periodTypeList.setCurrentText("Seasonal");
+            break;
+        case annualPeriod:
+            periodTypeList.setCurrentText("Annual");
+            break;
+        default:
+            periodTypeList.setCurrentText("Generic");
+            genericPeriodStart.setDate(myProject.clima->genericPeriodDateStart());
+            genericPeriodEnd.setDate(myProject.clima->genericPeriodDateEnd());
+            nrYear.setText(QString::number(myProject.clima->nYears()));
+            break;
+        }
+
+    }
 
     show();
     exec();
@@ -369,12 +447,6 @@ void ComputationDialog::done(bool res)
                 }
             }
 
-
-            if (!myProject.elaboration(isMeteoGrid, isAnomaly))
-            {
-                qInfo() << "elaboration error " << endl;
-                myProject.logError();
-            }
             QDialog::done(QDialog::Accepted);
             return;
         }

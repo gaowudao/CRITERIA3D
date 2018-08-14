@@ -1,8 +1,24 @@
 #include "dbClimate.h"
+#include "commonConstants.h"
 
 
 Crit3DClimate::Crit3DClimate()
 {
+    _climateElab = "";
+    _yearStart = NODATA;
+    _yearEnd = NODATA;
+    _periodType = noPeriodType;
+    _variable = noMeteoVar;
+    _periodStr = "";
+    _genericPeriodDateStart.setDate(1800,1,1);
+    _genericPeriodDateEnd.setDate(1800,1,1);
+    _nYears = NODATA;
+    _elab1 = "";
+    _param1 = NODATA;
+    _param1IsClimate = false;
+    _param1ClimateField = "";
+    _elab2 = "";
+    _param2 = NODATA;
 }
 
 Crit3DClimate::~Crit3DClimate()
