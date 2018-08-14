@@ -287,32 +287,15 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool i
             elab2Parameter.setText(QString::number(myProject.clima->param2()));
         }
     }
-    if (myProject.clima->periodType() != noPeriodType)
+    if (myProject.clima->periodStr() != "")
     {
-        switch (myProject.clima->periodType()) {
-        case dailyPeriod:
-            periodTypeList.setCurrentText("Daily");
-            break;
-        case decadalPeriod:
-            periodTypeList.setCurrentText("Decadal");
-            break;
-        case monthlyPeriod:
-            periodTypeList.setCurrentText("Monthly");
-            break;
-        case seasonalPeriod:
-            periodTypeList.setCurrentText("Seasonal");
-            break;
-        case annualPeriod:
-            periodTypeList.setCurrentText("Annual");
-            break;
-        default:
-            periodTypeList.setCurrentText("Generic");
-            genericPeriodStart.setDate(myProject.clima->genericPeriodDateStart());
-            genericPeriodEnd.setDate(myProject.clima->genericPeriodDateEnd());
-            nrYear.setText(QString::number(myProject.clima->nYears()));
-            break;
-        }
-
+            periodTypeList.setCurrentText(myProject.clima->periodStr());
+            if (myProject.clima->periodStr() == "Generic")
+            {
+                genericPeriodStart.setDate(myProject.clima->genericPeriodDateStart());
+                genericPeriodEnd.setDate(myProject.clima->genericPeriodDateEnd());
+                nrYear.setText(QString::number(myProject.clima->nYears()));
+            }
     }
 
     show();
