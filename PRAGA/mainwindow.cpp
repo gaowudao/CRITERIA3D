@@ -1043,7 +1043,6 @@ void MainWindow::on_frequencyButton_clicked()
 
 void MainWindow::on_actionPointsVisible_triggered()
 {
-    qInfo() << "debug on_actionPointsVisible_triggered" << endl;
     this->showPoints = ui->actionPointsVisible->isChecked();
     redrawMeteoPoints(false);
 }
@@ -1270,33 +1269,12 @@ void MainWindow::on_actionShow_DTM_triggered()
 void MainWindow::elaborationGUI(bool isAnomaly, bool isMeteoGrid)
 {
     ComputationDialog compDialog(myProject.settings, isAnomaly, isMeteoGrid, this);
-
-//    if (!isAnomaly)
-//    {
-//        compDialog.setTitle("Elaboration");
-//    }
-//    else
-//    {
-//        compDialog.setTitle("Reference Period");
-//    }
-
-    //compDialog.setSettings(myProject.settings);
-
-
-    //compDialog.computation(isAnomaly, isMeteoGrid, this);
-
-//    if (compDialog.computation(isAnomaly))
-//    {
-//        if (!myProject.elaboration(isMeteoGrid, isAnomaly))
-//        {
-//            myProject.logError();
-//        }
-//        else
-//        {
-//            showElabResult(true, isMeteoGrid, isAnomaly);
-//        }
-//    }
-
+    if ( (isMeteoGrid && myProject.meteoGridDbHandler->meteoGrid()->getIsElabValue()) || (!isMeteoGrid && myProject.getIsElabMeteoPointsValue()))
+    {
+        showElabResult(true, isMeteoGrid, isAnomaly);
+        if (compDialog.result() == QDialog::Accepted)
+            on_actionElaboration_meteo_points_triggered();
+    }
     return;
 }
 
@@ -1469,9 +1447,9 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool is
     else
     {
 
-        if (!(this->showPoints))
+        if (!this->showPoints)
         {
-            qInfo() << "debug this->showPoints" << this->showPoints << endl;
+            qInfo() << "debug showPointsTemp" << this->showPoints << endl;
             return;
         }
 

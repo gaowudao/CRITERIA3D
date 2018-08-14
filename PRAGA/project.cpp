@@ -1294,6 +1294,7 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
 
     if (isMeteoGrid)
     {
+        meteoGridDbHandler->meteoGrid()->setIsElabValue(false);
         if (!elaborationPointsCycleGrid(&errorString, meteoGridDbHandler, referenceClima, clima, currentDate, isAnomaly))
         {
             return false;
@@ -1310,12 +1311,14 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
     }
     else
     {
+        setIsElabMeteoPointsValue(false);
         if (!elaborationPointsCycle(&errorString, meteoPointsDbHandler, meteoPoints, nrMeteoPoints, referenceClima, clima, currentDate, isAnomaly))
         {
             return false;
         }
         setIsElabMeteoPointsValue(true);
     }
+
     return true;
 }
 

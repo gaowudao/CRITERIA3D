@@ -69,6 +69,8 @@ class ComputationDialog : public QDialog
 //        void setIsMeteoGrid(bool value);
 //        MainWindow *getW() const;
 //        void setW(MainWindow *value);
+    signals:
+        void finished();
 };
 
 

@@ -466,12 +466,14 @@ qInfo() << "elaboration: " << endl;
                 qInfo() << "elaboration error " << endl;
                 myProject.logError();
             }
-            else
-            {
-                qInfo() << "showElabResult start " << endl;
-                w->showElabResult(true, isMeteoGrid, isAnomaly);
-                qInfo() << "showElabResult end " << endl;
-            }
+//            else
+//            {
+//                qInfo() << "showElabResult start " << endl;
+//                //emit finished();
+//                w->showElabResult(true, isMeteoGrid, isAnomaly);
+//                qInfo() << "showElabResult end " << endl;
+//            }
+            QDialog::done(QDialog::Accepted);
             return;
         }
 
