@@ -33,7 +33,7 @@
 
         explicit MainWindow(environment menu, QWidget *parent = 0);
         ~MainWindow();
-        void showElabResult(bool updateColorSCale, bool isMeteoGrid, bool isAnomaly);
+
 
     private slots:
 
@@ -193,7 +193,7 @@
         void setCurrentRaster(gis::Crit3DRasterGrid *myRaster);
         void interpolateRasterGUI();
         void interpolateGridGUI();
-        void elaborationGUI(bool isAnomaly, bool isMeteoGrid);
+        void showElabResult(bool updateColorSCale, bool isMeteoGrid, bool isAnomaly);
 
 
     };

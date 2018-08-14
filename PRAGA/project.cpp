@@ -1316,6 +1316,7 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
         }
         setIsElabMeteoPointsValue(true);
     }
+
     return true;
 }
 
