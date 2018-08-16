@@ -66,6 +66,7 @@
         gridAggregationMethod grdAggrMethod;
 
         Crit3DClimate* clima;
+        Crit3DClimate* climaFromDb;
         Crit3DClimate* referenceClima;
 
         Crit3DColorScale *meteoPointsColorScale;
@@ -144,7 +145,7 @@
         bool interpolationMeteoGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster);
         bool saveGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, bool showInfo);
 
-        bool elaborationCheck(bool isMeteoGrid);
+        bool elaborationCheck(bool isMeteoGrid, bool isAnomaly);
         bool elaboration(bool isMeteoGrid, bool isAnomaly);
 
         bool loadModelParameters(QString dbName);

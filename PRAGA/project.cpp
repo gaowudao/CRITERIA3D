@@ -45,6 +45,7 @@ Project::Project()
     meteoPointsDbHandler = NULL;
     meteoGridDbHandler = NULL;
     clima = NULL;
+    climaFromDb = NULL;
     referenceClima = NULL;
 
     radiationMaps = NULL;
@@ -1251,7 +1252,7 @@ bool Project::initializeCriteria3D()
     return true;
 }
 
-bool Project::elaborationCheck(bool isMeteoGrid)
+bool Project::elaborationCheck(bool isMeteoGrid, bool isAnomaly)
 {
 
     if (isMeteoGrid)
@@ -1282,6 +1283,13 @@ bool Project::elaborationCheck(bool isMeteoGrid)
             {
                 this->clima = new Crit3DClimate();
             }
+        }
+    }
+    if (isAnomaly)
+    {
+        if (this->referenceClima == NULL)
+        {
+            this->referenceClima = new Crit3DClimate();
         }
     }
 

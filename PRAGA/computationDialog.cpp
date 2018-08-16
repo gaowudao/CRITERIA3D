@@ -15,7 +15,7 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
     }
     else
     {
-        setWindowTitle("Reference Period");
+        setWindowTitle("Anomaly");
     }
 
     QVBoxLayout mainLayout;
@@ -31,29 +31,46 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
 
     meteoVariable var;
 
-    if (!isAnomaly)
+//    if (!isAnomaly)
+//    {
+//        Q_FOREACH (QString group, settings->childGroups())
+//        {
+//            if (!group.endsWith("_VarToElab1"))
+//                continue;
+//            std::string item;
+//            std::string variable = group.left(group.size()-11).toStdString(); // remove "_VarToElab1"
+//            try {
+//              var = MapDailyMeteoVar.at(variable);
+//              item = MapDailyMeteoVarToString.at(var);
+//            }
+//            catch (const std::out_of_range& oor) {
+//               myProject.logError("variable " + QString::fromStdString(variable) + " missing in MapDailyMeteoVar");
+//               continue;
+//            }
+//            variableList.addItem(QString::fromStdString(item));
+//        }
+//    }
+//    else
+//    {
+//        var = myProject.clima->variable();
+//        std::string item = MapDailyMeteoVarToString.at(var);
+//        variableList.addItem(QString::fromStdString(item));
+//    }
+
+    Q_FOREACH (QString group, settings->childGroups())
     {
-        Q_FOREACH (QString group, settings->childGroups())
-        {
-            if (!group.endsWith("_VarToElab1"))
-                continue;
-            std::string item;
-            std::string variable = group.left(group.size()-11).toStdString(); // remove "_VarToElab1"
-            try {
-              var = MapDailyMeteoVar.at(variable);
-              item = MapDailyMeteoVarToString.at(var);
-            }
-            catch (const std::out_of_range& oor) {
-               myProject.logError("variable " + QString::fromStdString(variable) + " missing in MapDailyMeteoVar");
-               continue;
-            }
-            variableList.addItem(QString::fromStdString(item));
+        if (!group.endsWith("_VarToElab1"))
+            continue;
+        std::string item;
+        std::string variable = group.left(group.size()-11).toStdString(); // remove "_VarToElab1"
+        try {
+          var = MapDailyMeteoVar.at(variable);
+          item = MapDailyMeteoVarToString.at(var);
         }
-    }
-    else
-    {
-        var = myProject.clima->variable();
-        std::string item = MapDailyMeteoVarToString.at(var);
+        catch (const std::out_of_range& oor) {
+           myProject.logError("variable " + QString::fromStdString(variable) + " missing in MapDailyMeteoVar");
+           continue;
+        }
         variableList.addItem(QString::fromStdString(item));
     }
 
@@ -237,6 +254,12 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
 
     secondElabLayout.addWidget(&elab2Parameter);
 
+    if (isAnomaly)
+    {
+        anomaly = new AnomalyLayout(settings);
+        anomaly->AnomalySetVariableElab(variableList.currentText());
+    }
+
     connect(&firstYearEdit, &QLineEdit::editingFinished, [=](){ this->checkYears(); });
     connect(&lastYearEdit, &QLineEdit::editingFinished, [=](){ this->checkYears(); });
 
@@ -246,6 +269,7 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
     connect(&elaborationList, &QComboBox::currentTextChanged, [=](const QString &newElab){ this->listSecondElab(newElab); });
     connect(&secondElabList, &QComboBox::currentTextChanged, [=](const QString &newSecElab){ this->activeSecondParameter(newSecElab); });
     connect(&readParam, &QCheckBox::stateChanged, [=](int state){ this->readParameter(state); });
+
 
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     //connect(&buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
@@ -261,6 +285,10 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
     mainLayout.addLayout(&genericPeriodLayout);
     mainLayout.addLayout(&elaborationLayout);
     mainLayout.addLayout(&secondElabLayout);
+    if (isAnomaly)
+    {
+        mainLayout.addLayout(anomaly);
+    }
     mainLayout.addLayout(&layoutOk);
 
     setLayout(&mainLayout);
@@ -608,6 +636,10 @@ void ComputationDialog::listElaboration(const QString value)
     settings->endGroup();
 
     listSecondElab(elaborationList.currentText());
+    if(isAnomaly)
+    {
+        anomaly->AnomalySetVariableElab(variableList.currentText());
+    }
 
 }
 
