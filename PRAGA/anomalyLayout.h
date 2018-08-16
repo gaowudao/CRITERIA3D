@@ -1,5 +1,5 @@
-#ifndef COMPUTATIONDIALOG_H
-#define COMPUTATIONDIALOG_H
+#ifndef ANOMALYLAYOUT_H
+#define ANOMALYLAYOUT_H
 
 #include <QString>
 #include <QSettings>
@@ -9,21 +9,18 @@
 #include <QtWidgets>
 #include "project.h"
 #include "mainwindow.h"
-#include "anomalyLayout.h"
 
-
-class ComputationDialog : public QDialog
+class AnomalyLayout : public QVBoxLayout
 {
 
     Q_OBJECT
 
-private:
-    bool isAnomaly;
-        QString title;
-        QSettings* settings;
+    private:
+        QSettings* AnomalySettings;
+        QString variableElab;
+
         QDateEdit currentDay;
         QLabel currentDayLabel;
-        QComboBox variableList;
         QLineEdit firstYearEdit;
         QLineEdit lastYearEdit;
         QLabel genericStartLabel;
@@ -42,19 +39,18 @@ private:
         QLineEdit elab1Parameter;
         QLineEdit elab2Parameter;
 
-        AnomalyLayout* anomaly;
-
     public:
-        ComputationDialog(QSettings *settings, bool isAnomaly);
-        void done(bool res);
-        void displayPeriod(const QString value);
-        void checkYears();
-        void changeDate(const QDate newDate);
-        void listElaboration(const QString value);
-        void listSecondElab(const QString value);
-        void activeSecondParameter(const QString value);
-        void readParameter(int state);
+        AnomalyLayout(QSettings *settings);
+        void AnomalyDisplayPeriod(const QString value);
+        void AnomalyCheckYears();
+        void AnomalyChangeDate(const QDate newDate);
+        void AnomalyListSecondElab(const QString value);
+        void AnomalyActiveSecondParameter(const QString value);
+        void AnomalyReadParameter(int state);
+        QString AnomalyGetVariableElab() const;
+        void AnomalySetVariableElab(const QString &value);
+
 };
 
 
-#endif // COMPUTATIONDIALOG_H
+#endif // ANOMALYLAYOUT_H

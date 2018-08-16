@@ -1268,12 +1268,13 @@ void MainWindow::on_actionShow_DTM_triggered()
 
 void MainWindow::on_actionElaboration_meteo_points_triggered()
 {
+
     bool isMeteoGrid = false;
     bool isAnomaly = false;
 
-    if (myProject.elaborationCheck(isMeteoGrid))
+    if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
-        ComputationDialog compDialog(myProject.settings, isAnomaly, isMeteoGrid);
+        ComputationDialog compDialog(myProject.settings, isAnomaly);
         if (!myProject.elaboration(isMeteoGrid, isAnomaly))
         {
             qInfo() << "elaboration error " << endl;
@@ -1298,9 +1299,9 @@ void MainWindow::on_actionElaboration_meteo_grid_triggered()
 {
     bool isMeteoGrid = true;
     bool isAnomaly = false;
-    if (myProject.elaborationCheck(isMeteoGrid))
+    if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
-        ComputationDialog compDialog(myProject.settings, isAnomaly, isMeteoGrid);
+        ComputationDialog compDialog(myProject.settings, isAnomaly);
         if (!myProject.elaboration(isMeteoGrid, isAnomaly))
         {
             qInfo() << "elaboration error " << endl;
@@ -1322,8 +1323,34 @@ void MainWindow::on_actionElaboration_meteo_grid_triggered()
 
 void MainWindow::on_actionAnomaly_meteo_points_triggered()
 {
+//    bool isMeteoGrid = false;
+//    bool isAnomaly;
+
     bool isMeteoGrid = false;
-    bool isAnomaly;
+    bool isAnomaly = true;
+
+    if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
+    {
+        ComputationDialog compDialog(myProject.settings, isAnomaly);
+        bool res = myProject.elaboration(isMeteoGrid, isAnomaly);
+        //if (!myProject.elaboration(isMeteoGrid, isAnomaly))
+        if (!res)
+        {
+            qInfo() << "elaboration error " << endl;
+            myProject.logError();
+        }
+        else
+        {
+            showElabResult(true, isMeteoGrid, isAnomaly);
+        }
+        if (compDialog.result() == QDialog::Accepted)
+            on_actionElaboration_meteo_points_triggered();
+    }
+    else
+    {
+         myProject.logError();
+    }
+    return;
 /*
     if (myProject.elaborationCheck(isMeteoGrid))
     {
