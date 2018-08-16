@@ -17,7 +17,6 @@ class ComputationDialog : public QDialog
 
     private:
         bool isAnomaly;
-        bool isMeteoGrid;
         QString title;
         QSettings* settings;
         QDateEdit currentDay;
@@ -42,7 +41,7 @@ class ComputationDialog : public QDialog
         QLineEdit elab2Parameter;
 
     public:
-        ComputationDialog(QSettings *settings, bool isAnomaly, bool isMeteoGrid);
+        ComputationDialog(QSettings *settings, bool isAnomaly);
         void done(bool res);
         void displayPeriod(const QString value);
         void checkYears();

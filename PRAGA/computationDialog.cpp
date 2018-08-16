@@ -5,8 +5,8 @@
 extern Project myProject;
 
 
-ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool isMeteoGrid)
-        : settings(settings), isAnomaly(isAnomaly), isMeteoGrid(isMeteoGrid)
+ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
+        : settings(settings), isAnomaly(isAnomaly)
 {
 
     if (!isAnomaly)
