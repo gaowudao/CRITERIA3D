@@ -79,7 +79,8 @@ SOURCES += main.cpp\
     rubberBand.cpp \
     dialogWindows.cpp \
     formRunInfo.cpp \
-    computationDialog.cpp
+    computationDialog.cpp \
+    anomalyLayout.cpp
 
 HEADERS  += mainwindow.h \
     rasterObject.h \
@@ -90,7 +91,8 @@ HEADERS  += mainwindow.h \
     rubberBand.h \
     dialogWindows.h \
     formRunInfo.h \
-    computationDialog.h
+    computationDialog.h \
+    anomalyLayout.h
 
 FORMS    += mainwindow.ui \
     formInfo.ui
