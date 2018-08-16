@@ -289,11 +289,11 @@ double getReadilyAvailableWater(Criteria1D* myCase)
 
 float cropIrrigationDemand(Criteria1D* myCase, int doy, float currentPrec, float nextPrec)
 {
-    // update daysSinceIrrigation
+    // update days since last irrigation
     if (daysSinceIrrigation != NODATA)
         daysSinceIrrigation++;
 
-    // check crop
+    // check irrigated crop
     if ((myCase->myCrop.idCrop == "")
         || (! myCase->myCrop.isLiving)
         || (myCase->myCrop.irrigationVolume == 0)) return 0;
@@ -310,13 +310,16 @@ float cropIrrigationDemand(Criteria1D* myCase, int doy, float currentPrec, float
             myCase->myCrop.degreeDays > myCase->myCrop.degreeDaysEndIrrigation) return 0.;
     }
 
-    // check rainfall (today + tomorrow forecast)
+    // check today rainfall
     if (currentPrec > 5.) return 0.;
+
+    // check rainfall forecast (at least half of irrigation volume)
     if (myCase->myCrop.irrigationShift > 1)
         if ((currentPrec + nextPrec) >  myCase->myCrop.irrigationVolume * 0.5) return 0.;
 
     // check readily available water (weighted on root density)
-    //if (getWeightedRAW(myCase) > 0.) return 0.;
+    // disattivato perchè sostituito dal  water stress check
+    // if (getWeightedRAW(myCase) > 5.) return 0.;
 
     // check water stress
     double threshold = 1. - myCase->myCrop.stressTolerance;
@@ -333,15 +336,13 @@ float cropIrrigationDemand(Criteria1D* myCase, int doy, float currentPrec, float
         }
         else
         {
-            // too much stressed -> half irrigation shift
-            // irrigazione di soccorso
+            // too much water stress -> half irrigation shift (irrigazione di soccorso)
             if (daysSinceIrrigation < (myCase->myCrop.irrigationShift * 0.5))
                 return 0;
         }
     }
 
     // all check passed --> IRRIGATION
-
     // reset irrigation shift
     daysSinceIrrigation = 0;
 
@@ -525,6 +526,7 @@ double cropTranspiration(Criteria1D* myCase, bool getWaterStress)
     }
 
     // water compensation (only not stressed layers)
+    // TODO missing process: hydraulic redistribution of water in tree roots
     double value;
     if (myCase->output.dailyMaxTranspiration > 0)
     {
