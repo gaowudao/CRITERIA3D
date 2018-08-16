@@ -354,7 +354,7 @@ void Crit3DMeteoGrid::fillMeteoRaster()
 
 void Crit3DMeteoGrid::fillMeteoRasterElabValue()
 {
-    float debug = 0;
+    //float debug = 0;
     for (int i = 0; i < dataMeteoGrid.header->nrRows; i++)
     {
         for (int j = 0; j < dataMeteoGrid.header->nrCols; j++)
@@ -371,7 +371,7 @@ void Crit3DMeteoGrid::fillMeteoRasterElabValue()
 
 void Crit3DMeteoGrid::fillMeteoRasterAnomalyValue()
 {
-    float debug = 0;
+    //float debug = 0;
     for (int i = 0; i < dataMeteoGrid.header->nrRows; i++)
     {
         for (int j = 0; j < dataMeteoGrid.header->nrCols; j++)

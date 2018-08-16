@@ -89,12 +89,13 @@ void initializeCrop(Criteria1D* myCase, int currentDoy)
 bool cropWaterDemand(Criteria1D* myCase)
 {
     double Kc;                  // crop coefficient
-    double TC;                  // momentary turbulence coefficient
-    double ke = 0.6;            // evaporation extinction factor (equal to light extinction factor?)
+    double TC;                  // turbulence coefficient
+    double ke = 0.6;            // light extinction factor
+    const double maxEvapRatio = 0.66;
 
     if (myCase->myCrop.idCrop == "" || ! myCase->myCrop.isLiving || myCase->myCrop.LAI == 0)
     {
-        myCase->output.dailyMaxEvaporation = myCase->output.dailyEt0;
+        myCase->output.dailyMaxEvaporation = myCase->output.dailyEt0 * maxEvapRatio;
         myCase->output.dailyMaxTranspiration = 0.0;
         myCase->output.dailyKc = 0.0;
     }
@@ -102,8 +103,8 @@ bool cropWaterDemand(Criteria1D* myCase)
     {
         Kc = 1 - exp(-ke * myCase->myCrop.LAI);
         TC = 1 + (myCase->myCrop.kcMax - 1.0) * Kc;
-        myCase->output.dailyMaxEvaporation = myCase->output.dailyEt0 * (1.0 - Kc);
         myCase->output.dailyKc = TC * Kc;
+        myCase->output.dailyMaxEvaporation = myCase->output.dailyEt0 * maxEvapRatio * (1.0 - Kc);
         myCase->output.dailyMaxTranspiration = myCase->output.dailyEt0 * myCase->output.dailyKc;
     }
 
