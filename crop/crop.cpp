@@ -90,7 +90,7 @@
 
     bool Crit3DCrop::isWaterSurplusResistant()
     {
-        return (idCrop == "RICE" || idCrop = "KIWIFRUIT" || type == GRASS || type == FALLOW);
+        return (idCrop == "RICE" || idCrop == "KIWIFRUIT" || type == GRASS || type == FALLOW);
     }
 
 
