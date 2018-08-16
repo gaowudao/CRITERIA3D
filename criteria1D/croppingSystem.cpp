@@ -311,12 +311,12 @@ float cropIrrigationDemand(Criteria1D* myCase, int doy, float currentPrec, float
     }
 
     // check rainfall (today + tomorrow forecast)
-    if (currentPrec >= 5.) return 0.;
+    if (currentPrec > 5.) return 0.;
     if (myCase->myCrop.irrigationShift > 1)
         if ((currentPrec + nextPrec) >  myCase->myCrop.irrigationVolume * 0.5) return 0.;
 
     // check readily available water (weighted on root density)
-    if (getWeightedRAW(myCase) > 0.) return 0.;
+    //if (getWeightedRAW(myCase) > 0.) return 0.;
 
     // check water stress
     double threshold = 1. - myCase->myCrop.stressTolerance;
