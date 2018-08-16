@@ -9,6 +9,7 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
         : settings(settings), isAnomaly(isAnomaly)
 {
 
+
     if (!isAnomaly)
     {
         setWindowTitle("Elaboration");
@@ -272,7 +273,7 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
 
 
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-    //connect(&buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+
     connect(&buttonBox, &QDialogButtonBox::accepted, [=](){ this->done(true); });
     connect(&buttonBox, &QDialogButtonBox::rejected, [=](){ this->done(false); });
 
@@ -285,6 +286,7 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
     mainLayout.addLayout(&genericPeriodLayout);
     mainLayout.addLayout(&elaborationLayout);
     mainLayout.addLayout(&secondElabLayout);
+
     if (isAnomaly)
     {
         mainLayout.addLayout(anomaly);

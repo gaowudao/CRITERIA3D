@@ -1332,7 +1332,9 @@ void MainWindow::on_actionAnomaly_meteo_points_triggered()
     if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
         ComputationDialog compDialog(myProject.settings, isAnomaly);
-        if (!myProject.elaboration(isMeteoGrid, isAnomaly))
+        bool res = myProject.elaboration(isMeteoGrid, isAnomaly);
+        //if (!myProject.elaboration(isMeteoGrid, isAnomaly))
+        if (!res)
         {
             qInfo() << "elaboration error " << endl;
             myProject.logError();

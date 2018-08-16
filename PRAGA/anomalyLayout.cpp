@@ -4,8 +4,9 @@
 
 extern Project myProject;
 
-AnomalyLayout::AnomalyLayout(QSettings *Asettings)
-    : Asettings(Asettings)
+
+AnomalyLayout::AnomalyLayout(QSettings *AnomalySettings)
+    : AnomalySettings(AnomalySettings)
 {
 
     QHBoxLayout varLayout;
@@ -124,15 +125,15 @@ AnomalyLayout::AnomalyLayout(QSettings *Asettings)
     meteoVariable key = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, variableElab.toStdString());
     std::string keyString = getKeyStringMeteoMap(MapDailyMeteoVar, key);
     QString group = QString::fromStdString(keyString)+"_VarToElab1";
-    Asettings->beginGroup(group);
-    int size = Asettings->beginReadArray(QString::fromStdString(keyString));
+    AnomalySettings->beginGroup(group);
+    int size = AnomalySettings->beginReadArray(QString::fromStdString(keyString));
     for (int i = 0; i < size; ++i) {
-        Asettings->setArrayIndex(i);
-        QString elab = Asettings->value("elab").toString();
+        AnomalySettings->setArrayIndex(i);
+        QString elab = AnomalySettings->value("elab").toString();
         elaborationList.addItem( elab );
     }
-    Asettings->endArray();
-    Asettings->endGroup();
+    AnomalySettings->endArray();
+    AnomalySettings->endGroup();
     elaborationLayout.addWidget(&elaborationList);
 
     elab1Parameter.setPlaceholderText("Parameter");
@@ -161,16 +162,16 @@ AnomalyLayout::AnomalyLayout(QSettings *Asettings)
     secondElabLayout.addWidget(new QLabel("Secondary Elaboration: "));
 
     group = elab1Field +"_Elab1Elab2";
-    Asettings->beginGroup(group);
+    AnomalySettings->beginGroup(group);
     secondElabList.addItem("None");
-    size = Asettings->beginReadArray(elab1Field);
+    size = AnomalySettings->beginReadArray(elab1Field);
     for (int i = 0; i < size; ++i) {
-        Asettings->setArrayIndex(i);
-        QString elab2 = Asettings->value("elab2").toString();
+        AnomalySettings->setArrayIndex(i);
+        QString elab2 = AnomalySettings->value("elab2").toString();
         secondElabList.addItem( elab2 );
     }
-    Asettings->endArray();
-    Asettings->endGroup();
+    AnomalySettings->endArray();
+    AnomalySettings->endGroup();
     secondElabLayout.addWidget(&secondElabList);
 
     elab2Parameter.setPlaceholderText("Parameter");
@@ -418,26 +419,26 @@ void AnomalyLayout::AnomalyListSecondElab(const QString value)
     AnomalyDisplayPeriod(periodTypeList.currentText());
 
     QString group = value + "_Elab1Elab2";
-    Asettings->beginGroup(group);
-    int size = Asettings->beginReadArray(value);
+    AnomalySettings->beginGroup(group);
+    int size = AnomalySettings->beginReadArray(value);
 
     if (size == 0 || firstYearEdit.text().toInt() == lastYearEdit.text().toInt())
     {
         secondElabList.clear();
         secondElabList.addItem("No elaboration available");
-        Asettings->endArray();
-        Asettings->endGroup();
+        AnomalySettings->endArray();
+        AnomalySettings->endGroup();
         return;
     }
     secondElabList.clear();
     secondElabList.addItem("None");
     for (int i = 0; i < size; ++i) {
-        Asettings->setArrayIndex(i);
-        QString elab2 = Asettings->value("elab2").toString();
+        AnomalySettings->setArrayIndex(i);
+        QString elab2 = AnomalySettings->value("elab2").toString();
         secondElabList.addItem( elab2 );
     }
-    Asettings->endArray();
-    Asettings->endGroup();
+    AnomalySettings->endArray();
+    AnomalySettings->endGroup();
 
 }
 
@@ -467,6 +468,5 @@ void AnomalyLayout::AnomalyReadParameter(int state)
         elab1Parameter.setReadOnly(false);
     }
 }
-
 
 
