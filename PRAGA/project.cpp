@@ -1119,9 +1119,6 @@ bool Project::saveGrid(meteoVariable myVar, frequencyType myFrequency, const Cri
 }
 
 
-
-
-
 float Project::meteoDataConsistency(meteoVariable myVar, const Crit3DTime& timeIni, const Crit3DTime& timeFin)
 {
     float dataConsistency = 0.0;
@@ -1328,11 +1325,12 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
     return true;
 }
 
-//-------------------
-//
-//   LOG functions
-//
-//-------------------
+
+/*-------------------
+
+   LOG functions
+
+ -------------------*/
 
 bool Project::setLogFile()
 {

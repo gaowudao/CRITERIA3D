@@ -2318,10 +2318,9 @@
     <addaction name="actionPointsVisible"/>
     <addaction name="actionVariableNone"/>
     <addaction name="actionVariableQualitySpatial"/>
+    <addaction name="actionRectangle_Selection"/>
     <addaction name="separator"/>
     <addaction name="actionVariableChoose"/>
-    <addaction name="separator"/>
-    <addaction name="actionRectangle_Selection"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuGIS_settings">
@@ -2464,6 +2463,9 @@
    </property>
   </action>
   <action name="actionRectangle_Selection">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Rectangle Selection</string>
    </property>

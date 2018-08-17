@@ -196,9 +196,8 @@
         void interpolateRasterGUI();
         void interpolateGridGUI();
         void showElabResult(bool updateColorSCale, bool isMeteoGrid, bool isAnomaly);
-
-
     };
+
 
     void exportNetCDFDataSeries(gis::Crit3DGeoPoint geoPoint);
 

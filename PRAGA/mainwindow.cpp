@@ -205,14 +205,20 @@ void MainWindow::on_actionSetUTMzone_triggered()
 void MainWindow::on_actionRectangle_Selection_triggered()
 {
     if (myRubberBand != NULL)
+    {
         delete myRubberBand;
+        myRubberBand = NULL;
+    }
 
-    myRubberBand = new RubberBand(QRubberBand::Rectangle, this->mapView);
-    QPoint origin(this->mapView->width()*0.5 , this->mapView->height()*0.5);
-    QPoint mapPoint = getMapPoint(&origin);
-    myRubberBand->setOrigin(mapPoint);
-    myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), QSize()));
-    //myRubberBand->show();
+    if (ui->actionRectangle_Selection->isChecked())
+    {
+        myRubberBand = new RubberBand(QRubberBand::Rectangle, this->mapView);
+        QPoint origin(this->mapView->width()*0.5 , this->mapView->height()*0.5);
+        QPoint mapPoint = getMapPoint(&origin);
+        myRubberBand->setOrigin(mapPoint);
+        myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), QSize()));
+        myRubberBand->show();
+     }
 }
 
 
@@ -241,7 +247,6 @@ void MainWindow::on_actionLoadDEM_triggered()
 
     // active raster object
     this->rasterObj->updateCenter();
-
 }
 
 
@@ -1017,7 +1022,6 @@ void MainWindow::on_rasterScaleButton_clicked()
     }
 }
 
-
 void MainWindow::on_variableButton_clicked()
 {
     if (chooseMeteoVariable())
@@ -1027,7 +1031,6 @@ void MainWindow::on_variableButton_clicked()
        if (this->meteoGridObj != NULL) this->meteoGridObj->setDrawBorders(false);
     }
 }
-
 
 void MainWindow::on_frequencyButton_clicked()
 {
@@ -1040,89 +1043,11 @@ void MainWindow::on_frequencyButton_clicked()
    }
 }
 
-
 void MainWindow::on_actionPointsVisible_triggered()
 {
     this->showPoints = ui->actionPointsVisible->isChecked();
     redrawMeteoPoints(false);
 }
-
-
-void MainWindow::on_actionOpen_NetCDF_data_triggered()
-{
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open NetCDF data"), "", tr("NetCDF files (*.nc)"));
-
-    if (fileName == "") return;
-
-    myProject.netCDF.initialize(myProject.gisSettings.utmZone);
-
-    std::stringstream buffer;
-    myProject.netCDF.readProperties(fileName.toStdString(), &buffer);
-
-    if (myProject.netCDF.isLatLon)
-        meteoGridObj->initializeLatLon(&(myProject.netCDF.dataGrid), myProject.gisSettings, myProject.netCDF.latLonHeader, true);
-    else
-        meteoGridObj->initializeUTM(&(myProject.netCDF.dataGrid), myProject.gisSettings, true);
-
-    myProject.netCDF.dataGrid.emptyGrid();
-    meteoGridObj->updateCenter();
-
-    QDialog myDialog;
-    QVBoxLayout mainLayout;
-
-    myDialog.setWindowTitle("NetCDF file info  ");
-
-    QTextBrowser textBrowser;
-    textBrowser.setText(QString::fromStdString(buffer.str()));
-    buffer.clear();
-
-    mainLayout.addWidget(&textBrowser);
-
-    myDialog.setLayout(&mainLayout);
-    myDialog.setFixedSize(800,600);
-    myDialog.exec();
-}
-
-
-void MainWindow::on_actionExtract_NetCDF_series_triggered()
-{
-    int idVar;
-    QDateTime firstDate, lastDate;
-
-    if (chooseNetCDFVariable(&idVar, &firstDate, &lastDate))
-    {
-        QMessageBox::information(NULL, "Variable",
-                                 "Variable: " + QString::number(idVar)
-                                 + "\nfirst date: " + firstDate.toString()
-                                 + "\nLast Date: " + lastDate.toString());
-    }
-}
-
-
-void exportNetCDFDataSeries(gis::Crit3DGeoPoint geoPoint)
-{
-    if (myProject.netCDF.isPointInside(geoPoint))
-    {
-        int idVar;
-        QDateTime firstTime, lastTime;
-
-        if (chooseNetCDFVariable(&idVar, &firstTime, &lastTime))
-        {
-            std::stringstream buffer;
-            if (! myProject.netCDF.exportDataSeries(idVar, geoPoint, firstTime.toTime_t(), lastTime.toTime_t(), &buffer))
-                QMessageBox::information(NULL, "ERROR", QString::fromStdString(buffer.str()));
-            else
-            {
-                QString fileName = QFileDialog::getSaveFileName(NULL, "Save data series", "", "csv files (*.csv)");
-                std::ofstream myFile;
-                myFile.open(fileName.toStdString());
-                myFile << buffer.str();
-                myFile.close();
-            }
-        }
-    }
-}
-
 
 void MainWindow::on_rasterRestoreButton_clicked()
 {
@@ -1136,7 +1061,6 @@ void MainWindow::on_rasterRestoreButton_clicked()
     this->setCurrentRaster(&(myProject.DTM));
     ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
 }
-
 
 void MainWindow::setCurrentRaster(gis::Crit3DRasterGrid *myRaster)
 {
@@ -1203,63 +1127,6 @@ void MainWindow::on_actionSave_meteo_grid_triggered()
 }
 
 
-void MainWindow::on_actionOpen_model_parameters_triggered()
-{
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open DB parameters"), "", tr("SQLite files (*.db)"));
-    if (fileName == "") return;
-
-    if (myProject.loadModelParameters(fileName))
-        QMessageBox::information(NULL, "", "Model parameters loaded");
-}
-
-
-void MainWindow::on_actionOpen_soil_map_triggered()
-{
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open soil map"), "", tr("ESRI grid files (*.flt)"));
-    if (fileName == "") return;
-
-    if (myProject.loadSoilMap(fileName))
-        QMessageBox::information(NULL, "", "Soil map loaded.");
-}
-
-
-void MainWindow::on_actionOpen_soil_data_triggered()
-{
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Load DB soil"), "", tr("SQLite files (*.db)"));
-    if (fileName == "") return;
-
-    myProject.loadSoilData(fileName);
-        //QMessageBox::information(NULL, "", "Soil data loaded.");
-}
-
-
-void MainWindow::on_actionShow_boundary_triggered()
-{
-    if (myProject.Criteria3Dproject.boundaryMap.isLoaded)
-    {
-        setColorScale(noMeteoTerrain, myProject.Criteria3Dproject.boundaryMap.colorScale);
-        this->setCurrentRaster(&(myProject.Criteria3Dproject.boundaryMap));
-    }
-}
-
-void MainWindow::on_actionShow_soil_triggered()
-{
-    if (myProject.Criteria3Dproject.soilMap.isLoaded)
-    {
-        setColorScale(noMeteoTerrain, myProject.Criteria3Dproject.soilMap.colorScale);
-        this->setCurrentRaster(&(myProject.Criteria3Dproject.soilMap));
-    }
-}
-
-void MainWindow::on_actionShow_DTM_triggered()
-{
-    if (myProject.DTM.isLoaded)
-    {
-        setColorScale(noMeteoTerrain, myProject.DTM.colorScale);
-        this->setCurrentRaster(&(myProject.DTM));
-    }
-}
-
 void MainWindow::on_actionElaboration_meteo_points_triggered()
 {
 
@@ -1314,6 +1181,7 @@ void MainWindow::on_actionElaboration_meteo_grid_triggered()
     }
     return;
 }
+
 
 void MainWindow::on_actionAnomaly_meteo_points_triggered()
 {
@@ -1464,6 +1332,7 @@ void MainWindow::on_actionClimate_meteo_grid_triggered()
     //bool isMeteoGrid = true;
     //TODO
 }
+
 
 void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool isAnomaly)
 {
@@ -1641,6 +1510,64 @@ void MainWindow::on_actionInterpolationSettings_triggered()
     }
 }
 
+
+
+
+// --------------------- CRITERIA3D functions ------------------------
+
+void MainWindow::on_actionOpen_model_parameters_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open DB parameters"), "", tr("SQLite files (*.db)"));
+    if (fileName == "") return;
+
+    if (myProject.loadModelParameters(fileName))
+        QMessageBox::information(NULL, "", "Model parameters loaded");
+}
+
+void MainWindow::on_actionOpen_soil_map_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open soil map"), "", tr("ESRI grid files (*.flt)"));
+    if (fileName == "") return;
+
+    if (myProject.loadSoilMap(fileName))
+        QMessageBox::information(NULL, "", "Soil map loaded.");
+}
+
+void MainWindow::on_actionOpen_soil_data_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Load DB soil"), "", tr("SQLite files (*.db)"));
+    if (fileName == "") return;
+
+    myProject.loadSoilData(fileName);
+}
+
+void MainWindow::on_actionShow_DTM_triggered()
+{
+    if (myProject.DTM.isLoaded)
+    {
+        setColorScale(noMeteoTerrain, myProject.DTM.colorScale);
+        this->setCurrentRaster(&(myProject.DTM));
+    }
+}
+
+void MainWindow::on_actionShow_boundary_triggered()
+{
+    if (myProject.Criteria3Dproject.boundaryMap.isLoaded)
+    {
+        setColorScale(noMeteoTerrain, myProject.Criteria3Dproject.boundaryMap.colorScale);
+        this->setCurrentRaster(&(myProject.Criteria3Dproject.boundaryMap));
+    }
+}
+
+void MainWindow::on_actionShow_soil_triggered()
+{
+    if (myProject.Criteria3Dproject.soilMap.isLoaded)
+    {
+        setColorScale(noMeteoTerrain, myProject.Criteria3Dproject.soilMap.colorScale);
+        this->setCurrentRaster(&(myProject.Criteria3Dproject.soilMap));
+    }
+}
+
 void MainWindow::on_actionCriteria3D_settings_triggered()
 {
 
@@ -1651,5 +1578,82 @@ void MainWindow::on_actionCriteria3D_Initialize_triggered()
     if (myProject.initializeCriteria3D())
         QMessageBox::information(NULL, "", "Criteria3D initialized.");
 }
+// ----------- end CRITERIA3D functions ------------------------------------
 
 
+// ----------- NETCDF functions --------------------------------------------
+
+void MainWindow::on_actionOpen_NetCDF_data_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open NetCDF data"), "", tr("NetCDF files (*.nc)"));
+
+    if (fileName == "") return;
+
+    myProject.netCDF.initialize(myProject.gisSettings.utmZone);
+
+    std::stringstream buffer;
+    myProject.netCDF.readProperties(fileName.toStdString(), &buffer);
+
+    if (myProject.netCDF.isLatLon)
+        meteoGridObj->initializeLatLon(&(myProject.netCDF.dataGrid), myProject.gisSettings, myProject.netCDF.latLonHeader, true);
+    else
+        meteoGridObj->initializeUTM(&(myProject.netCDF.dataGrid), myProject.gisSettings, true);
+
+    myProject.netCDF.dataGrid.emptyGrid();
+    meteoGridObj->updateCenter();
+
+    QDialog myDialog;
+    QVBoxLayout mainLayout;
+
+    myDialog.setWindowTitle("NetCDF file info  ");
+
+    QTextBrowser textBrowser;
+    textBrowser.setText(QString::fromStdString(buffer.str()));
+    buffer.clear();
+
+    mainLayout.addWidget(&textBrowser);
+
+    myDialog.setLayout(&mainLayout);
+    myDialog.setFixedSize(800,600);
+    myDialog.exec();
+}
+
+// deactivated
+void MainWindow::on_actionExtract_NetCDF_series_triggered()
+{
+    int idVar;
+    QDateTime firstDate, lastDate;
+
+    if (chooseNetCDFVariable(&idVar, &firstDate, &lastDate))
+    {
+        QMessageBox::information(NULL, "Variable",
+                                 "Variable: " + QString::number(idVar)
+                                 + "\nfirst date: " + firstDate.toString()
+                                 + "\nLast Date: " + lastDate.toString());
+    }
+}
+
+void exportNetCDFDataSeries(gis::Crit3DGeoPoint geoPoint)
+{
+    if (myProject.netCDF.isPointInside(geoPoint))
+    {
+        int idVar;
+        QDateTime firstTime, lastTime;
+
+        if (chooseNetCDFVariable(&idVar, &firstTime, &lastTime))
+        {
+            std::stringstream buffer;
+            if (! myProject.netCDF.exportDataSeries(idVar, geoPoint, firstTime.toTime_t(), lastTime.toTime_t(), &buffer))
+                QMessageBox::information(NULL, "ERROR", QString::fromStdString(buffer.str()));
+            else
+            {
+                QString fileName = QFileDialog::getSaveFileName(NULL, "Save data series", "", "csv files (*.csv)");
+                std::ofstream myFile;
+                myFile.open(fileName.toStdString());
+                myFile << buffer.str();
+                myFile.close();
+            }
+        }
+    }
+}
+// -------------- end NETCDF functions ------------------------------------
