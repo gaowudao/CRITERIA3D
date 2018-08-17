@@ -1323,8 +1323,6 @@ void MainWindow::on_actionElaboration_meteo_grid_triggered()
 
 void MainWindow::on_actionAnomaly_meteo_points_triggered()
 {
-//    bool isMeteoGrid = false;
-//    bool isAnomaly;
 
     bool isMeteoGrid = false;
     bool isAnomaly = true;
@@ -1332,8 +1330,9 @@ void MainWindow::on_actionAnomaly_meteo_points_triggered()
     if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
         ComputationDialog compDialog(myProject.settings, isAnomaly);
+        isAnomaly = false;
+
         bool res = myProject.elaboration(isMeteoGrid, isAnomaly);
-        //if (!myProject.elaboration(isMeteoGrid, isAnomaly))
         if (!res)
         {
             qInfo() << "elaboration error " << endl;
@@ -1341,65 +1340,17 @@ void MainWindow::on_actionAnomaly_meteo_points_triggered()
         }
         else
         {
+            isAnomaly = true;
+            myProject.elaboration(isMeteoGrid, isAnomaly);
             showElabResult(true, isMeteoGrid, isAnomaly);
         }
         if (compDialog.result() == QDialog::Accepted)
-            on_actionElaboration_meteo_points_triggered();
+            on_actionAnomaly_meteo_points_triggered();
     }
     else
     {
          myProject.logError();
     }
-    return;
-/*
-    if (myProject.elaborationCheck(isMeteoGrid))
-    {
-        if (myProject.getIsElabMeteoPointsValue())
-        {
-            //elaboration is done, choose reference period
-            QMessageBox::StandardButton reply;
-            reply = QMessageBox::question(this, "Keep current elaboration", "Edit only reference period?", QMessageBox::Yes|QMessageBox::No);
-            if (reply == QMessageBox::Yes)
-            {
-                isAnomaly = true;
-                elaborationGUI(isAnomaly, isMeteoGrid);
-
-            }
-            else
-            {
-                myProject.setIsElabMeteoPointsValue(false);
-                on_actionAnomaly_meteo_points_triggered();
-            }
-
-        }
-        else
-        {
-            isAnomaly = false;
-            if (myProject.elaborationCheck(isMeteoGrid))
-            {
-                elaborationGUI(isAnomaly, isMeteoGrid);
-            }
-            else
-            {
-                 myProject.logError();
-                 return;
-            }
-
-            if (!myProject.getIsElabMeteoPointsValue())
-            {
-                return; //something has been wrong with elaboration
-            }
-            isAnomaly = true;
-
-            elaborationGUI(isAnomaly, isMeteoGrid);
-        }
-
-    }
-    else
-    {
-         myProject.logError();
-    }
-    */
     return;
 }
 
