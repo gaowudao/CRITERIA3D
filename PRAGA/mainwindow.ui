@@ -2286,7 +2286,7 @@
     </property>
     <widget class="QMenu" name="menu_New_meteo_points_DB">
      <property name="title">
-      <string>&amp;New DB meteo points</string>
+      <string>&amp;New meteo points DB</string>
      </property>
      <addaction name="separator"/>
      <addaction name="actionNewMeteoPointsArkimet"/>
@@ -2307,13 +2307,8 @@
     <addaction name="actionOpen_climate"/>
     <addaction name="actionNew_climate"/>
     <addaction name="separator"/>
-    <addaction name="actionOpen_model_parameters"/>
-    <addaction name="actionOpen_soil_map"/>
-    <addaction name="actionOpen_soil_data"/>
     <addaction name="actionOpen_crop_map"/>
-    <addaction name="separator"/>
-    <addaction name="action_Open_NetCDF_data"/>
-    <addaction name="separator"/>
+    <addaction name="actionOpen_NetCDF_data"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuVariable">
@@ -2323,7 +2318,11 @@
     <addaction name="actionPointsVisible"/>
     <addaction name="actionVariableNone"/>
     <addaction name="actionVariableQualitySpatial"/>
+    <addaction name="separator"/>
     <addaction name="actionVariableChoose"/>
+    <addaction name="separator"/>
+    <addaction name="actionRectangle_Selection"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuGIS_settings">
     <property name="title">
@@ -2347,13 +2346,6 @@
     <addaction name="menuGIS"/>
     <addaction name="menuMap"/>
    </widget>
-   <widget class="QMenu" name="menuTools">
-    <property name="title">
-     <string>Tools</string>
-    </property>
-    <addaction name="actionRectangle_Selection"/>
-    <addaction name="action_Extract_NetCDF_series"/>
-   </widget>
    <widget class="QMenu" name="menuInterpolation">
     <property name="title">
      <string>Interpolation</string>
@@ -2366,12 +2358,17 @@
     <property name="title">
      <string>Criteria3D</string>
     </property>
-    <addaction name="actionProperties"/>
-    <addaction name="actionInitializeCriteria3D"/>
+    <addaction name="actionOpen_soil_map"/>
+    <addaction name="actionOpen_soil_data"/>
+    <addaction name="actionOpen_model_parameters"/>
+    <addaction name="separator"/>
+    <addaction name="actionCriteria3D_Initialize"/>
+    <addaction name="actionCriteria3D_settings"/>
     <addaction name="separator"/>
     <addaction name="actionShow_DTM"/>
     <addaction name="actionShow_boundary"/>
     <addaction name="actionShow_soil"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuClimate">
     <property name="title">
@@ -2407,9 +2404,8 @@
    <addaction name="menuVariable"/>
    <addaction name="menuInterpolation"/>
    <addaction name="menuClimate"/>
-   <addaction name="menuGIS_settings"/>
-   <addaction name="menuTools"/>
    <addaction name="menuCriteria3D"/>
+   <addaction name="menuGIS_settings"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionLoadDEM">
@@ -2449,7 +2445,7 @@
   </action>
   <action name="actionOpen_meteo_points_DB">
    <property name="text">
-    <string>&amp;Open meteo points...</string>
+    <string>&amp;Open meteo points DB...</string>
    </property>
   </action>
   <action name="actionDownload_meteo_data">
@@ -2534,12 +2530,12 @@
     <string>Visible</string>
    </property>
   </action>
-  <action name="action_Open_NetCDF_data">
+  <action name="actionOpen_NetCDF_data">
    <property name="text">
     <string>Open NetCDF data...</string>
    </property>
   </action>
-  <action name="action_Extract_NetCDF_series">
+  <action name="actionExtract_NetCDF_series">
    <property name="text">
     <string>Extract NetCDF series</string>
    </property>
@@ -2606,12 +2602,12 @@
     <bool>false</bool>
    </property>
   </action>
-  <action name="actionProperties">
+  <action name="actionCriteria3D_settings">
    <property name="text">
-    <string>Settings..</string>
+    <string>Settings...</string>
    </property>
   </action>
-  <action name="actionInitializeCriteria3D">
+  <action name="actionCriteria3D_Initialize">
    <property name="text">
     <string>Initialize 3D</string>
    </property>
@@ -2628,7 +2624,7 @@
   </action>
   <action name="actionShow_DTM">
    <property name="text">
-    <string>Show DTM</string>
+    <string>Show DEM</string>
    </property>
   </action>
   <action name="actionElaboration_meteo_grid">
@@ -2673,7 +2669,7 @@
   </action>
   <action name="actionInterpolationSettings">
    <property name="text">
-    <string>Settings</string>
+    <string>Settings...</string>
    </property>
    <property name="iconText">
     <string>Interpolation settings</string>

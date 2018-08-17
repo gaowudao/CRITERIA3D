@@ -1048,7 +1048,7 @@ void MainWindow::on_actionPointsVisible_triggered()
 }
 
 
-void MainWindow::on_action_Open_NetCDF_data_triggered()
+void MainWindow::on_actionOpen_NetCDF_data_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open NetCDF data"), "", tr("NetCDF files (*.nc)"));
 
@@ -1084,7 +1084,7 @@ void MainWindow::on_action_Open_NetCDF_data_triggered()
 }
 
 
-void MainWindow::on_action_Extract_NetCDF_series_triggered()
+void MainWindow::on_actionExtract_NetCDF_series_triggered()
 {
     int idVar;
     QDateTime firstDate, lastDate;
@@ -1232,12 +1232,6 @@ void MainWindow::on_actionOpen_soil_data_triggered()
         //QMessageBox::information(NULL, "", "Soil data loaded.");
 }
 
-
-void MainWindow::on_actionInitializeCriteria3D_triggered()
-{
-    if (myProject.initializeCriteria3D())
-        QMessageBox::information(NULL, "", "Criteria3D initialized.");
-}
 
 void MainWindow::on_actionShow_boundary_triggered()
 {
@@ -1646,3 +1640,16 @@ void MainWindow::on_actionInterpolationSettings_triggered()
         return;
     }
 }
+
+void MainWindow::on_actionCriteria3D_settings_triggered()
+{
+
+}
+
+void MainWindow::on_actionCriteria3D_Initialize_triggered()
+{
+    if (myProject.initializeCriteria3D())
+        QMessageBox::information(NULL, "", "Criteria3D initialized.");
+}
+
+

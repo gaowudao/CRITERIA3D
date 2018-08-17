@@ -81,9 +81,9 @@
 
         void on_actionPointsVisible_triggered();
 
-        void on_action_Open_NetCDF_data_triggered();
+        void on_actionOpen_NetCDF_data_triggered();
 
-        void on_action_Extract_NetCDF_series_triggered();
+        void on_actionExtract_NetCDF_series_triggered();
 
         void on_rasterRestoreButton_clicked();
 
@@ -106,8 +106,6 @@
         void on_actionOpen_soil_map_triggered();
 
         void on_actionOpen_soil_data_triggered();
-
-        void on_actionInitializeCriteria3D_triggered();
 
         void on_actionShow_boundary_triggered();
 
@@ -132,6 +130,10 @@
         void on_actionNew_climate_triggered();
 
         void on_actionInterpolationSettings_triggered();
+
+        void on_actionCriteria3D_settings_triggered();
+
+        void on_actionCriteria3D_Initialize_triggered();
 
     protected:
         /*!
