@@ -17,11 +17,15 @@ class AnomalyLayout : public QDialog
 
     private:
         QSettings* AnomalySettings;
-        QString variableElab;
+        QLineEdit variableElab;
 
         QDateEdit currentDay;
         QLabel currentDayLabel;
+
+        QLabel firstDateLabel;
         QLineEdit firstYearEdit;
+
+        QLabel lastDateLabel;
         QLineEdit lastYearEdit;
         QLabel genericStartLabel;
         QLabel genericEndLabel;
@@ -55,12 +59,12 @@ class AnomalyLayout : public QDialog
         void AnomalyDisplayPeriod(const QString value);
         void AnomalyCheckYears();
         void AnomalyChangeDate(const QDate newDate);
+        void AnomalyListElaboration(const QString value);
         void AnomalyListSecondElab(const QString value);
         void AnomalyActiveSecondParameter(const QString value);
         void AnomalyReadParameter(int state);
-        QString AnomalyGetVariableElab() const;
-        void AnomalySetVariableElab(const QString &value);
 
+        void AnomalySetVariableElab(const QString &value);
 };
 
 

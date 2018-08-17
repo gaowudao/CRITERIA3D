@@ -31,8 +31,36 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
     QHBoxLayout secondElabLayout;
 
     QVBoxLayout anomalyMainLayout;
+    QLabel anomalyLabel("<font color='red'>Reference Data:</font>");
 
     meteoVariable var;
+
+
+//    if (!isAnomaly)
+//    {
+//        Q_FOREACH (QString group, settings->childGroups())
+//        {
+//            if (!group.endsWith("_VarToElab1"))
+//                continue;
+//            std::string item;
+//            std::string variable = group.left(group.size()-11).toStdString(); // remove "_VarToElab1"
+//            try {
+//              var = MapDailyMeteoVar.at(variable);
+//              item = MapDailyMeteoVarToString.at(var);
+//            }
+//            catch (const std::out_of_range& oor) {
+//               myProject.logError("variable " + QString::fromStdString(variable) + " missing in MapDailyMeteoVar");
+//               continue;
+//            }
+//            variableList.addItem(QString::fromStdString(item));
+//        }
+//    }
+//    else
+//    {
+//        var = myProject.clima->variable();
+//        std::string item = MapDailyMeteoVarToString.at(var);
+//        variableList.addItem(QString::fromStdString(item));
+//    }
 
     Q_FOREACH (QString group, settings->childGroups())
     {
@@ -236,8 +264,12 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
     {
         anomaly.AnomalySetVariableElab(variableList.currentText());
         anomaly.build(settings);
+
+        anomalyLabel.setAlignment(Qt::AlignCenter);
+        anomalyMainLayout.addWidget(&anomalyLabel);
         anomalyMainLayout.addWidget(&anomaly);
     }
+
 
     connect(&firstYearEdit, &QLineEdit::editingFinished, [=](){ this->checkYears(); });
     connect(&lastYearEdit, &QLineEdit::editingFinished, [=](){ this->checkYears(); });
