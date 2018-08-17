@@ -917,6 +917,84 @@ void MainWindow::redrawMeteoGrid()
 }
 
 
+// ----------- NETCDF functions --------------------------------------------
+
+void MainWindow::on_actionOpen_NetCDF_data_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open NetCDF data"), "", tr("NetCDF files (*.nc)"));
+
+    if (fileName == "") return;
+
+    myProject.netCDF.initialize(myProject.gisSettings.utmZone);
+
+    std::stringstream buffer;
+    myProject.netCDF.readProperties(fileName.toStdString(), &buffer);
+
+    if (myProject.netCDF.isLatLon)
+        meteoGridObj->initializeLatLon(&(myProject.netCDF.dataGrid), myProject.gisSettings, myProject.netCDF.latLonHeader, true);
+    else
+        meteoGridObj->initializeUTM(&(myProject.netCDF.dataGrid), myProject.gisSettings, true);
+
+    myProject.netCDF.dataGrid.emptyGrid();
+    meteoGridObj->updateCenter();
+
+    QDialog myDialog;
+    QVBoxLayout mainLayout;
+
+    myDialog.setWindowTitle("NetCDF file info  ");
+
+    QTextBrowser textBrowser;
+    textBrowser.setText(QString::fromStdString(buffer.str()));
+    buffer.clear();
+
+    mainLayout.addWidget(&textBrowser);
+
+    myDialog.setLayout(&mainLayout);
+    myDialog.setFixedSize(800,600);
+    myDialog.exec();
+}
+
+// deactivated
+void MainWindow::on_actionExtract_NetCDF_series_triggered()
+{
+    int idVar;
+    QDateTime firstDate, lastDate;
+
+    if (chooseNetCDFVariable(&idVar, &firstDate, &lastDate))
+    {
+        QMessageBox::information(NULL, "Variable",
+                                 "Variable: " + QString::number(idVar)
+                                 + "\nfirst date: " + firstDate.toString()
+                                 + "\nLast Date: " + lastDate.toString());
+    }
+}
+
+void exportNetCDFDataSeries(gis::Crit3DGeoPoint geoPoint)
+{
+    if (myProject.netCDF.isPointInside(geoPoint))
+    {
+        int idVar;
+        QDateTime firstTime, lastTime;
+
+        if (chooseNetCDFVariable(&idVar, &firstTime, &lastTime))
+        {
+            std::stringstream buffer;
+            if (! myProject.netCDF.exportDataSeries(idVar, geoPoint, firstTime.toTime_t(), lastTime.toTime_t(), &buffer))
+                QMessageBox::information(NULL, "ERROR", QString::fromStdString(buffer.str()));
+            else
+            {
+                QString fileName = QFileDialog::getSaveFileName(NULL, "Save data series", "", "csv files (*.csv)");
+                std::ofstream myFile;
+                myFile.open(fileName.toStdString());
+                myFile << buffer.str();
+                myFile.close();
+            }
+        }
+    }
+}
+// -------------- end NETCDF functions ------------------------------------
+
+
 bool MainWindow::loadMeteoPointsDB(QString dbName)
 {
     this->resetMeteoPoints();
@@ -938,6 +1016,7 @@ bool MainWindow::loadMeteoPointsDB(QString dbName)
 
     return true;
 }
+
 
 bool MainWindow::loadMeteoGridDB(QString xmlName)
 {
@@ -1530,81 +1609,3 @@ void MainWindow::on_actionCriteria3D_Initialize_triggered()
         QMessageBox::information(NULL, "", "Criteria3D initialized.");
 }
 // ----------- end CRITERIA3D functions ------------------------------------
-
-
-// ----------- NETCDF functions --------------------------------------------
-
-void MainWindow::on_actionOpen_NetCDF_data_triggered()
-{
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open NetCDF data"), "", tr("NetCDF files (*.nc)"));
-
-    if (fileName == "") return;
-
-    myProject.netCDF.initialize(myProject.gisSettings.utmZone);
-
-    std::stringstream buffer;
-    myProject.netCDF.readProperties(fileName.toStdString(), &buffer);
-
-    if (myProject.netCDF.isLatLon)
-        meteoGridObj->initializeLatLon(&(myProject.netCDF.dataGrid), myProject.gisSettings, myProject.netCDF.latLonHeader, true);
-    else
-        meteoGridObj->initializeUTM(&(myProject.netCDF.dataGrid), myProject.gisSettings, true);
-
-    myProject.netCDF.dataGrid.emptyGrid();
-    meteoGridObj->updateCenter();
-
-    QDialog myDialog;
-    QVBoxLayout mainLayout;
-
-    myDialog.setWindowTitle("NetCDF file info  ");
-
-    QTextBrowser textBrowser;
-    textBrowser.setText(QString::fromStdString(buffer.str()));
-    buffer.clear();
-
-    mainLayout.addWidget(&textBrowser);
-
-    myDialog.setLayout(&mainLayout);
-    myDialog.setFixedSize(800,600);
-    myDialog.exec();
-}
-
-// deactivated
-void MainWindow::on_actionExtract_NetCDF_series_triggered()
-{
-    int idVar;
-    QDateTime firstDate, lastDate;
-
-    if (chooseNetCDFVariable(&idVar, &firstDate, &lastDate))
-    {
-        QMessageBox::information(NULL, "Variable",
-                                 "Variable: " + QString::number(idVar)
-                                 + "\nfirst date: " + firstDate.toString()
-                                 + "\nLast Date: " + lastDate.toString());
-    }
-}
-
-void exportNetCDFDataSeries(gis::Crit3DGeoPoint geoPoint)
-{
-    if (myProject.netCDF.isPointInside(geoPoint))
-    {
-        int idVar;
-        QDateTime firstTime, lastTime;
-
-        if (chooseNetCDFVariable(&idVar, &firstTime, &lastTime))
-        {
-            std::stringstream buffer;
-            if (! myProject.netCDF.exportDataSeries(idVar, geoPoint, firstTime.toTime_t(), lastTime.toTime_t(), &buffer))
-                QMessageBox::information(NULL, "ERROR", QString::fromStdString(buffer.str()));
-            else
-            {
-                QString fileName = QFileDialog::getSaveFileName(NULL, "Save data series", "", "csv files (*.csv)");
-                std::ofstream myFile;
-                myFile.open(fileName.toStdString());
-                myFile << buffer.str();
-                myFile.close();
-            }
-        }
-    }
-}
-// -------------- end NETCDF functions ------------------------------------
