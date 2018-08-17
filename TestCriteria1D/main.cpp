@@ -31,7 +31,8 @@ int main(int argc, char *argv[])
         settingsFileName = argv[1];
     else
     {
-        settingsFileName = "./../../DATA/criteria1D/example/exampleCriteria1D.ini";
+        //settingsFileName = "./../../DATA/criteria1D/example/exampleCriteria1D.ini";
+        settingsFileName = "./../../DATA/criteria1D/example/kiwifruit.ini";
 
         //myProject.logError("USAGE: CRITERIA1D settings_filename.ini");
         //return ERROR_SETTINGS_MISSING;
@@ -274,7 +275,7 @@ int main(int argc, char *argv[])
         return ERROR_UNKNOWN;
     }
 
-    myProject.logInfo("END");
+    myProject.logInfo("\nEND");
 
     // error check
     if (nrUnitsComputed == 0)
