@@ -4,6 +4,7 @@
 
 extern Project myProject;
 
+
 AnomalyLayout::AnomalyLayout()
 { }
 
@@ -34,7 +35,7 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
 
     int currentYear = myProject.getCurrentDate().year();
 
-    QLabel firstDateLabel("Start Year:");
+    firstDateLabel.setText("Start Year:");
     if (myProject.referenceClima->yearStart() == NODATA)
     {
         firstYearEdit.setText(QString::number(currentYear));
@@ -48,7 +49,7 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
     firstYearEdit.setValidator(new QIntValidator(1800, 3000));
     firstDateLabel.setBuddy(&firstYearEdit);
 
-    QLabel lastDateLabel("End Year:");
+    lastDateLabel.setText("End Year:");
     if (myProject.referenceClima->yearEnd() == NODATA)
     {
         lastYearEdit.setText(QString::number(currentYear));
@@ -116,7 +117,7 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
 
     elaborationLayout.addWidget(new QLabel("Elaboration: "));
 
-    meteoVariable key = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, variableElab.toStdString());
+    meteoVariable key = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, variableElab.text().toStdString());
     std::string keyString = getKeyStringMeteoMap(MapDailyMeteoVar, key);
     QString group = QString::fromStdString(keyString)+"_VarToElab1";
     AnomalySettings->beginGroup(group);
@@ -188,6 +189,7 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
 
     connect(&firstYearEdit, &QLineEdit::editingFinished, [=](){ this->AnomalyCheckYears(); });
     connect(&lastYearEdit, &QLineEdit::editingFinished, [=](){ this->AnomalyCheckYears(); });
+    connect(&variableElab, &QLineEdit::textChanged, [=](const QString &newVar){ this->AnomalyListElaboration(newVar); });
 
     connect(&currentDay, &QDateTimeEdit::dateChanged, [=](const QDate &newDate){ this->AnomalyChangeDate(newDate); });
     connect(&periodTypeList, &QComboBox::currentTextChanged, [=](const QString &newVar){ this->AnomalyDisplayPeriod(newVar); });
@@ -237,15 +239,34 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
 
 }
 
-QString AnomalyLayout::AnomalyGetVariableElab() const
-{
-    return variableElab;
-}
-
 void AnomalyLayout::AnomalySetVariableElab(const QString &value)
 {
-    variableElab = value;
+    variableElab.setText(value);
 }
+
+void AnomalyLayout::AnomalyListElaboration(const QString value)
+{
+
+    meteoVariable key = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, value.toStdString());
+    std::string keyString = getKeyStringMeteoMap(MapDailyMeteoVar, key);
+    QString group = QString::fromStdString(keyString)+"_VarToElab1";
+    AnomalySettings->beginGroup(group);
+    int size = AnomalySettings->beginReadArray(QString::fromStdString(keyString));
+    elaborationList.clear();
+
+    for (int i = 0; i < size; ++i)
+    {
+        AnomalySettings->setArrayIndex(i);
+        QString elab = AnomalySettings->value("elab").toString();
+        elaborationList.addItem( elab );
+
+    }
+    AnomalySettings->endArray();
+    AnomalySettings->endGroup();
+
+    AnomalyListSecondElab(elaborationList.currentText());
+}
+
 
 void AnomalyLayout::AnomalyCheckYears()
 {
