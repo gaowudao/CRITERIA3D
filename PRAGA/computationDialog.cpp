@@ -32,6 +32,8 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
 
     meteoVariable var;
 
+    qInfo() << "computationDialog 0" << endl;
+
 //    if (!isAnomaly)
 //    {
 //        Q_FOREACH (QString group, settings->childGroups())
@@ -255,11 +257,20 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
 
     secondElabLayout.addWidget(&elab2Parameter);
 
-    if (isAnomaly)
-    {
-        anomaly = new AnomalyLayout(settings);
-        anomaly->AnomalySetVariableElab(variableList.currentText());
-    }
+    qInfo() << "computationDialog 1" << endl;
+
+//    if (isAnomaly)
+//    {
+        anomaly.build(settings);
+        qInfo() << "computationDialog 1a" << endl;
+        anomaly.AnomalySetVariableElab(variableList.currentText());
+        qInfo() << "computationDialog 1b" << endl;
+        QVBoxLayout anomalyMainLayout;
+        qInfo() << "computationDialog 1c" << endl;
+        anomalyMainLayout.addWidget(&anomaly);
+//    }
+
+    qInfo() << "computationDialog 2" << endl;
 
     connect(&firstYearEdit, &QLineEdit::editingFinished, [=](){ this->checkYears(); });
     connect(&lastYearEdit, &QLineEdit::editingFinished, [=](){ this->checkYears(); });
@@ -287,10 +298,10 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
     mainLayout.addLayout(&elaborationLayout);
     mainLayout.addLayout(&secondElabLayout);
 
-    if (isAnomaly)
-    {
-        mainLayout.addLayout(anomaly);
-    }
+//    if (isAnomaly)
+//    {
+        mainLayout.addLayout(&anomalyMainLayout);
+//    }
     mainLayout.addLayout(&layoutOk);
 
     setLayout(&mainLayout);
@@ -640,7 +651,7 @@ void ComputationDialog::listElaboration(const QString value)
     listSecondElab(elaborationList.currentText());
     if(isAnomaly)
     {
-        anomaly->AnomalySetVariableElab(variableList.currentText());
+        anomaly.AnomalySetVariableElab(variableList.currentText());
     }
 
 }

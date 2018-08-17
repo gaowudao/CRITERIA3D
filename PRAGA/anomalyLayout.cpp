@@ -4,25 +4,21 @@
 
 extern Project myProject;
 
+AnomalyLayout::AnomalyLayout()
+{ }
 
-AnomalyLayout::AnomalyLayout(QSettings *AnomalySettings)
-    : AnomalySettings(AnomalySettings)
+void AnomalyLayout::build(QSettings *AnomalySettings)
 {
+    qInfo() << "AnomalyLayout 0" << endl;
 
-    QHBoxLayout varLayout;
-    QHBoxLayout dateLayout;
-    QHBoxLayout periodLayout;
-    QHBoxLayout displayLayout;
-    QHBoxLayout genericPeriodLayout;
-
-    QHBoxLayout elaborationLayout;
-    QHBoxLayout secondElabLayout;
-
+    this->AnomalySettings = AnomalySettings;
 
     QCheckBox readReference("Read reference climate from db");
     varLayout.addWidget(&readReference);
 
     currentDayLabel.setText("Day/Month:");
+
+    qInfo() << "AnomalyLayout 1" << endl;
 
     if (myProject.referenceClima->genericPeriodDateStart() == QDate(1800,1,1))
     {
@@ -49,6 +45,8 @@ AnomalyLayout::AnomalyLayout(QSettings *AnomalySettings)
     {
         firstYearEdit.setText(QString::number(myProject.referenceClima->yearStart()));
     }
+
+    qInfo() << "AnomalyLayout 2" << endl;
 
     firstYearEdit.setFixedWidth(110);
     firstYearEdit.setValidator(new QIntValidator(1800, 3000));
@@ -157,6 +155,8 @@ AnomalyLayout::AnomalyLayout(QSettings *AnomalySettings)
         }
     }
 
+    qInfo() << "AnomalyLayout 3" << endl;
+
     elaborationLayout.addWidget(&elab1Parameter);
     elaborationLayout.addWidget(&readParam);
     secondElabLayout.addWidget(new QLabel("Secondary Elaboration: "));
@@ -191,22 +191,26 @@ AnomalyLayout::AnomalyLayout(QSettings *AnomalySettings)
 
     secondElabLayout.addWidget(&elab2Parameter);
 
-    connect(&firstYearEdit, &QLineEdit::editingFinished, [=](){ this->AnomalyCheckYears(); });
-    connect(&lastYearEdit, &QLineEdit::editingFinished, [=](){ this->AnomalyCheckYears(); });
+//    connect(&firstYearEdit, &QLineEdit::editingFinished, [=](){ this->AnomalyCheckYears(); });
+//    connect(&lastYearEdit, &QLineEdit::editingFinished, [=](){ this->AnomalyCheckYears(); });
 
-    connect(&currentDay, &QDateTimeEdit::dateChanged, [=](const QDate &newDate){ this->AnomalyChangeDate(newDate); });
-    connect(&periodTypeList, &QComboBox::currentTextChanged, [=](const QString &newVar){ this->AnomalyDisplayPeriod(newVar); });
-    connect(&elaborationList, &QComboBox::currentTextChanged, [=](const QString &newElab){ this->AnomalyListSecondElab(newElab); });
-    connect(&secondElabList, &QComboBox::currentTextChanged, [=](const QString &newSecElab){ this->AnomalyActiveSecondParameter(newSecElab); });
-    connect(&readParam, &QCheckBox::stateChanged, [=](int state){ this->AnomalyReadParameter(state); });
+//    connect(&currentDay, &QDateTimeEdit::dateChanged, [=](const QDate &newDate){ this->AnomalyChangeDate(newDate); });
+//    connect(&periodTypeList, &QComboBox::currentTextChanged, [=](const QString &newVar){ this->AnomalyDisplayPeriod(newVar); });
+//    connect(&elaborationList, &QComboBox::currentTextChanged, [=](const QString &newElab){ this->AnomalyListSecondElab(newElab); });
+//    connect(&secondElabList, &QComboBox::currentTextChanged, [=](const QString &newSecElab){ this->AnomalyActiveSecondParameter(newSecElab); });
+//    connect(&readParam, &QCheckBox::stateChanged, [=](int state){ this->AnomalyReadParameter(state); });
 
-    addLayout(&varLayout);
-    addLayout(&dateLayout);
-    addLayout(&periodLayout);
-    addLayout(&displayLayout);
-    addLayout(&genericPeriodLayout);
-    addLayout(&elaborationLayout);
-    addLayout(&secondElabLayout);
+    qInfo() << "AnomalyLayout 4" << endl;
+
+    mainLayout.addLayout(&varLayout);
+    mainLayout.addLayout(&dateLayout);
+    mainLayout.addLayout(&periodLayout);
+    mainLayout.addLayout(&displayLayout);
+    mainLayout.addLayout(&genericPeriodLayout);
+    mainLayout.addLayout(&elaborationLayout);
+    mainLayout.addLayout(&secondElabLayout);
+
+    setLayout(&mainLayout);
 
     // show stored values
 
@@ -237,6 +241,7 @@ AnomalyLayout::AnomalyLayout(QSettings *AnomalySettings)
             }
     }
 
+    qInfo() << "AnomalyLayout 5" << endl;
 }
 
 QString AnomalyLayout::AnomalyGetVariableElab() const

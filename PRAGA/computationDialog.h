@@ -17,10 +17,10 @@ class ComputationDialog : public QDialog
 
     Q_OBJECT
 
-private:
-    bool isAnomaly;
-        QString title;
+    private:
         QSettings* settings;
+        bool isAnomaly;
+        QString title;
         QDateEdit currentDay;
         QLabel currentDayLabel;
         QComboBox variableList;
@@ -42,7 +42,7 @@ private:
         QLineEdit elab1Parameter;
         QLineEdit elab2Parameter;
 
-        AnomalyLayout* anomaly;
+        AnomalyLayout anomaly;
 
     public:
         ComputationDialog(QSettings *settings, bool isAnomaly);
