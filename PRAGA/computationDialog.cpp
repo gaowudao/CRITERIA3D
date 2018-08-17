@@ -234,8 +234,8 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
 
     if (isAnomaly)
     {
-        anomaly.build(settings);
         anomaly.AnomalySetVariableElab(variableList.currentText());
+        anomaly.build(settings);
         anomalyMainLayout.addWidget(&anomaly);
     }
 
