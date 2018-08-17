@@ -4,7 +4,6 @@
 
 extern Project myProject;
 
-
 AnomalyLayout::AnomalyLayout()
 { }
 
@@ -13,7 +12,7 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
 
     this->AnomalySettings = AnomalySettings;
 
-    QCheckBox readReference("Read reference climate from db");
+    readReference.setText("Read reference climate from db");
     varLayout.addWidget(&readReference);
 
     currentDayLabel.setText("Day/Month:");
@@ -79,7 +78,7 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
     periodTypeList.addItem("Annual");
     periodTypeList.addItem("Generic");
 
-    QLabel periodTypeLabel("Period Type: ");
+    periodTypeLabel.setText("Period Type: ");
     periodLayout.addWidget(&periodTypeLabel);
     periodLayout.addWidget(&periodTypeList);
 
@@ -488,4 +487,64 @@ void AnomalyLayout::AnomalyReadParameter(int state)
     }
 }
 
+
+QString AnomalyLayout::AnomalyGetPeriodTypeList() const
+{
+    return periodTypeList.currentText();
+}
+
+int AnomalyLayout::AnomalyGetYearStart() const
+{
+    return firstYearEdit.text().toInt();
+}
+
+int AnomalyLayout::AnomalyGetYearLast() const
+{
+    return lastYearEdit.text().toInt();
+}
+
+QDate AnomalyLayout::AnomalyGetGenericPeriodStart() const
+{
+    return genericPeriodStart.date();
+}
+
+QDate AnomalyLayout::AnomalyGetGenericPeriodEnd() const
+{
+    return genericPeriodEnd.date();
+}
+
+QDate AnomalyLayout::AnomalyGetCurrentDay() const
+{
+    return currentDay.date();
+}
+
+int AnomalyLayout::AnomalyGetNyears() const
+{
+    return nrYear.text().toInt();
+}
+
+QString AnomalyLayout::AnomalyGetElaboration() const
+{
+    return elaborationList.currentText();
+}
+
+QString AnomalyLayout::AnomalyGetSecondElaboration() const
+{
+    return secondElabList.currentText();
+}
+
+QString AnomalyLayout::AnomalyGetParam1() const
+{
+    return elab1Parameter.text();
+}
+
+QString AnomalyLayout::AnomalyGetParam2() const
+{
+    return elab2Parameter.text();
+}
+
+bool AnomalyLayout::AnomalyReadParamIsChecked() const
+{
+    return readParam.isChecked();
+}
 

@@ -25,8 +25,12 @@ class AnomalyLayout : public QDialog
         QLabel firstDateLabel;
         QLineEdit firstYearEdit;
 
+        QCheckBox readReference;
+
         QLabel lastDateLabel;
         QLineEdit lastYearEdit;
+
+        QLabel periodTypeLabel;
         QLabel genericStartLabel;
         QLabel genericEndLabel;
         QLabel nrYearLabel;
@@ -65,6 +69,18 @@ class AnomalyLayout : public QDialog
         void AnomalyReadParameter(int state);
 
         void AnomalySetVariableElab(const QString &value);
+        QString AnomalyGetPeriodTypeList() const;
+        int AnomalyGetYearStart() const;
+        int AnomalyGetYearLast() const;
+        QDate AnomalyGetGenericPeriodStart() const;
+        QDate AnomalyGetGenericPeriodEnd() const;
+        int AnomalyGetNyears() const;
+        QDate AnomalyGetCurrentDay() const;
+        QString AnomalyGetElaboration() const;
+        QString AnomalyGetSecondElaboration() const;
+        QString AnomalyGetParam1() const;
+        QString AnomalyGetParam2() const;
+        bool AnomalyReadParamIsChecked() const;
 };
 
 

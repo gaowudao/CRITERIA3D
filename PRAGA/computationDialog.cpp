@@ -35,33 +35,6 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
 
     meteoVariable var;
 
-
-//    if (!isAnomaly)
-//    {
-//        Q_FOREACH (QString group, settings->childGroups())
-//        {
-//            if (!group.endsWith("_VarToElab1"))
-//                continue;
-//            std::string item;
-//            std::string variable = group.left(group.size()-11).toStdString(); // remove "_VarToElab1"
-//            try {
-//              var = MapDailyMeteoVar.at(variable);
-//              item = MapDailyMeteoVarToString.at(var);
-//            }
-//            catch (const std::out_of_range& oor) {
-//               myProject.logError("variable " + QString::fromStdString(variable) + " missing in MapDailyMeteoVar");
-//               continue;
-//            }
-//            variableList.addItem(QString::fromStdString(item));
-//        }
-//    }
-//    else
-//    {
-//        var = myProject.clima->variable();
-//        std::string item = MapDailyMeteoVarToString.at(var);
-//        variableList.addItem(QString::fromStdString(item));
-//    }
-
     Q_FOREACH (QString group, settings->childGroups())
     {
         if (!group.endsWith("_VarToElab1"))
@@ -400,10 +373,20 @@ void ComputationDialog::done(bool res)
                 }
             }
 
+            // store elaboration values
+
             if (myProject.clima == NULL)
             {
                 QMessageBox::information(NULL, "Error!", "clima is null...");
                 return;
+            }
+            else
+            {
+                if (isAnomaly && myProject.referenceClima == NULL)
+                {
+                    QMessageBox::information(NULL, "Error!", "reference clima is null...");
+                    return;
+                }
             }
 
             QString periodSelected = periodTypeList.currentText();
@@ -467,6 +450,70 @@ void ComputationDialog::done(bool res)
                 else
                 {
                     myProject.clima->setParam2(NODATA);
+                }
+            }
+
+            // store reference data
+            if (isAnomaly)
+            {
+                QString AnomalyPeriodSelected = anomaly.AnomalyGetPeriodTypeList();
+
+                myProject.referenceClima->setYearStart(anomaly.AnomalyGetYearStart());
+                myProject.referenceClima->setYearEnd(anomaly.AnomalyGetYearLast());
+                myProject.referenceClima->setPeriodStr(AnomalyPeriodSelected);
+
+                if (AnomalyPeriodSelected == "Generic")
+                {
+                    myProject.referenceClima->setGenericPeriodDateStart(anomaly.AnomalyGetGenericPeriodStart());
+                    myProject.referenceClima->setGenericPeriodDateEnd(anomaly.AnomalyGetGenericPeriodEnd());
+                    myProject.referenceClima->setNYears(anomaly.AnomalyGetNyears());
+                }
+                else
+                {
+                    myProject.referenceClima->setNYears(0);
+                    QDate start;
+                    QDate end;
+                    getPeriodDates(AnomalyPeriodSelected, anomaly.AnomalyGetYearStart(), anomaly.AnomalyGetCurrentDay(), &start, &end);
+                    myProject.referenceClima->setNYears(start.year() - anomaly.AnomalyGetYearStart());
+                    myProject.referenceClima->setGenericPeriodDateStart(start);
+                    myProject.referenceClima->setGenericPeriodDateEnd(end);
+                }
+                myProject.referenceClima->setElab1(anomaly.AnomalyGetElaboration());
+
+                if (!anomaly.AnomalyReadParamIsChecked())
+                {
+                    myProject.referenceClima->setParam1IsClimate(false);
+                    if (anomaly.AnomalyGetParam1() != "")
+                    {
+                        myProject.referenceClima->setParam1(anomaly.AnomalyGetParam1().toFloat());
+                    }
+                    else
+                    {
+                        myProject.referenceClima->setParam1(NODATA);
+                    }
+                }
+                else
+                {
+                    myProject.referenceClima->setParam1IsClimate(true);
+                    // TO DO LC
+
+                }
+                if (anomaly.AnomalyGetSecondElaboration() == "None" || anomaly.AnomalyGetSecondElaboration() == "No elaboration available")
+                {
+                    myProject.referenceClima->setElab2("");
+                    myProject.referenceClima->setParam2(NODATA);
+                }
+                else
+                {
+                    myProject.referenceClima->setElab2(anomaly.AnomalyGetSecondElaboration());
+                    if (anomaly.AnomalyGetParam2() != "")
+                    {
+                        myProject.referenceClima->setParam2(anomaly.AnomalyGetParam2().toFloat());
+                    }
+                    else
+                    {
+                        myProject.referenceClima->setParam2(NODATA);
+                    }
                 }
             }
 
