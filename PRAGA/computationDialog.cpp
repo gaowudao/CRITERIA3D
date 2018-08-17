@@ -456,6 +456,7 @@ void ComputationDialog::done(bool res)
             // store reference data
             if (isAnomaly)
             {
+                myProject.referenceClima->setVariable(myProject.clima->variable());
                 QString AnomalyPeriodSelected = anomaly.AnomalyGetPeriodTypeList();
 
                 myProject.referenceClima->setYearStart(anomaly.AnomalyGetYearStart());

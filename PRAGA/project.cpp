@@ -1299,26 +1299,42 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
 
     if (isMeteoGrid)
     {
-        if (!elaborationPointsCycleGrid(&errorString, meteoGridDbHandler, referenceClima, clima, currentDate, isAnomaly))
-        {
-            return false;
-        }
         if (!isAnomaly)
         {
+            if (!elaborationPointsCycleGrid(&errorString, meteoGridDbHandler, climaFromDb, clima, currentDate, isAnomaly))
+            {
+                return false;
+            }
             meteoGridDbHandler->meteoGrid()->fillMeteoRasterElabValue();
         }
+
         else
         {
+            if (!elaborationPointsCycleGrid(&errorString, meteoGridDbHandler, climaFromDb, referenceClima, currentDate, isAnomaly))
+            {
+                return false;
+            }
             meteoGridDbHandler->meteoGrid()->fillMeteoRasterAnomalyValue();
         }
         meteoGridDbHandler->meteoGrid()->setIsElabValue(true);
     }
     else
     {
-        if (!elaborationPointsCycle(&errorString, meteoPointsDbHandler, meteoPoints, nrMeteoPoints, referenceClima, clima, currentDate, isAnomaly))
+        if (!isAnomaly)
         {
-            return false;
+            if (!elaborationPointsCycle(&errorString, meteoPointsDbHandler, meteoPoints, nrMeteoPoints, climaFromDb, clima, currentDate, isAnomaly))
+            {
+                return false;
+            }
         }
+        else
+        {
+            if (!elaborationPointsCycle(&errorString, meteoPointsDbHandler, meteoPoints, nrMeteoPoints, climaFromDb, referenceClima, currentDate, isAnomaly))
+            {
+                return false;
+            }
+        }
+
         setIsElabMeteoPointsValue(true);
     }
 

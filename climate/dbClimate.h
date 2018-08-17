@@ -15,6 +15,7 @@ class Crit3DClimate
 
 public:
     Crit3DClimate();
+    Crit3DClimate(const Crit3DClimate* reference);
     ~Crit3DClimate();
 
     QSqlDatabase db() const;
