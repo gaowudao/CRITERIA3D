@@ -9,7 +9,6 @@ AnomalyLayout::AnomalyLayout()
 
 void AnomalyLayout::build(QSettings *AnomalySettings)
 {
-    qInfo() << "AnomalyLayout 0" << endl;
 
     this->AnomalySettings = AnomalySettings;
 
@@ -18,7 +17,6 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
 
     currentDayLabel.setText("Day/Month:");
 
-    qInfo() << "AnomalyLayout 1" << endl;
 
     if (myProject.referenceClima->genericPeriodDateStart() == QDate(1800,1,1))
     {
@@ -45,8 +43,6 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
     {
         firstYearEdit.setText(QString::number(myProject.referenceClima->yearStart()));
     }
-
-    qInfo() << "AnomalyLayout 2" << endl;
 
     firstYearEdit.setFixedWidth(110);
     firstYearEdit.setValidator(new QIntValidator(1800, 3000));
@@ -155,7 +151,6 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
         }
     }
 
-    qInfo() << "AnomalyLayout 3" << endl;
 
     elaborationLayout.addWidget(&elab1Parameter);
     elaborationLayout.addWidget(&readParam);
@@ -191,16 +186,15 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
 
     secondElabLayout.addWidget(&elab2Parameter);
 
-//    connect(&firstYearEdit, &QLineEdit::editingFinished, [=](){ this->AnomalyCheckYears(); });
-//    connect(&lastYearEdit, &QLineEdit::editingFinished, [=](){ this->AnomalyCheckYears(); });
+    connect(&firstYearEdit, &QLineEdit::editingFinished, [=](){ this->AnomalyCheckYears(); });
+    connect(&lastYearEdit, &QLineEdit::editingFinished, [=](){ this->AnomalyCheckYears(); });
 
-//    connect(&currentDay, &QDateTimeEdit::dateChanged, [=](const QDate &newDate){ this->AnomalyChangeDate(newDate); });
-//    connect(&periodTypeList, &QComboBox::currentTextChanged, [=](const QString &newVar){ this->AnomalyDisplayPeriod(newVar); });
-//    connect(&elaborationList, &QComboBox::currentTextChanged, [=](const QString &newElab){ this->AnomalyListSecondElab(newElab); });
-//    connect(&secondElabList, &QComboBox::currentTextChanged, [=](const QString &newSecElab){ this->AnomalyActiveSecondParameter(newSecElab); });
-//    connect(&readParam, &QCheckBox::stateChanged, [=](int state){ this->AnomalyReadParameter(state); });
+    connect(&currentDay, &QDateTimeEdit::dateChanged, [=](const QDate &newDate){ this->AnomalyChangeDate(newDate); });
+    connect(&periodTypeList, &QComboBox::currentTextChanged, [=](const QString &newVar){ this->AnomalyDisplayPeriod(newVar); });
+    connect(&elaborationList, &QComboBox::currentTextChanged, [=](const QString &newElab){ this->AnomalyListSecondElab(newElab); });
+    connect(&secondElabList, &QComboBox::currentTextChanged, [=](const QString &newSecElab){ this->AnomalyActiveSecondParameter(newSecElab); });
+    connect(&readParam, &QCheckBox::stateChanged, [=](int state){ this->AnomalyReadParameter(state); });
 
-    qInfo() << "AnomalyLayout 4" << endl;
 
     mainLayout.addLayout(&varLayout);
     mainLayout.addLayout(&dateLayout);
@@ -241,7 +235,6 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
             }
     }
 
-    qInfo() << "AnomalyLayout 5" << endl;
 }
 
 QString AnomalyLayout::AnomalyGetVariableElab() const

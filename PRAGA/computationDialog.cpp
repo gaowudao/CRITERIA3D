@@ -30,35 +30,9 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
     QHBoxLayout elaborationLayout;
     QHBoxLayout secondElabLayout;
 
+    QVBoxLayout anomalyMainLayout;
+
     meteoVariable var;
-
-    qInfo() << "computationDialog 0" << endl;
-
-//    if (!isAnomaly)
-//    {
-//        Q_FOREACH (QString group, settings->childGroups())
-//        {
-//            if (!group.endsWith("_VarToElab1"))
-//                continue;
-//            std::string item;
-//            std::string variable = group.left(group.size()-11).toStdString(); // remove "_VarToElab1"
-//            try {
-//              var = MapDailyMeteoVar.at(variable);
-//              item = MapDailyMeteoVarToString.at(var);
-//            }
-//            catch (const std::out_of_range& oor) {
-//               myProject.logError("variable " + QString::fromStdString(variable) + " missing in MapDailyMeteoVar");
-//               continue;
-//            }
-//            variableList.addItem(QString::fromStdString(item));
-//        }
-//    }
-//    else
-//    {
-//        var = myProject.clima->variable();
-//        std::string item = MapDailyMeteoVarToString.at(var);
-//        variableList.addItem(QString::fromStdString(item));
-//    }
 
     Q_FOREACH (QString group, settings->childGroups())
     {
@@ -257,20 +231,13 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
 
     secondElabLayout.addWidget(&elab2Parameter);
 
-    qInfo() << "computationDialog 1" << endl;
 
-//    if (isAnomaly)
-//    {
+    if (isAnomaly)
+    {
         anomaly.build(settings);
-        qInfo() << "computationDialog 1a" << endl;
         anomaly.AnomalySetVariableElab(variableList.currentText());
-        qInfo() << "computationDialog 1b" << endl;
-        QVBoxLayout anomalyMainLayout;
-        qInfo() << "computationDialog 1c" << endl;
         anomalyMainLayout.addWidget(&anomaly);
-//    }
-
-    qInfo() << "computationDialog 2" << endl;
+    }
 
     connect(&firstYearEdit, &QLineEdit::editingFinished, [=](){ this->checkYears(); });
     connect(&lastYearEdit, &QLineEdit::editingFinished, [=](){ this->checkYears(); });
@@ -298,10 +265,10 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
     mainLayout.addLayout(&elaborationLayout);
     mainLayout.addLayout(&secondElabLayout);
 
-//    if (isAnomaly)
-//    {
+    if (isAnomaly)
+    {
         mainLayout.addLayout(&anomalyMainLayout);
-//    }
+    }
     mainLayout.addLayout(&layoutOk);
 
     setLayout(&mainLayout);
