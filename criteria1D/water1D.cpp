@@ -98,7 +98,7 @@ bool computeInfiltration(Criteria1D* myCase, float prec, float surfaceIrrigation
     }
     avgPloughSat /= nrPloughLayers;
 
-    // Max infiltration - due to gravitational force and permeability (Driessen, 1986)
+    // Maximum infiltration - due to gravitational force and permeability (Driessen, 1986)
     double permFactor = 1.0 - avgPloughSat;
     for (i = 1; i< myCase->nrLayers; i++)
     {
