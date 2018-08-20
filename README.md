@@ -12,7 +12,7 @@ Water fluxes equations may be coupled with the heat flux equations, which includ
 http://www.sciencedirect.com/science/article/pii/S0309170809001754
 
 ## criteria1D library
-Algorithms for 1D water balance: soil water infiltration, dreinage and capillary rise, crop water demand, evaporation and crop transpiration. 
+Algorithms for 1D water balance: soil water infiltration, drainage and capillary rise, crop water demand, evaporation and crop transpiration. 
 
 ## crop library
 Algorithms for crop development, leaf area index, root growth and distribution, based on daily temperature.
