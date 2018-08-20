@@ -263,6 +263,15 @@ void AnomalyLayout::AnomalyListElaboration(const QString value)
     AnomalySettings->endArray();
     AnomalySettings->endGroup();
 
+    if (myProject.referenceClima->variable() == key && myProject.referenceClima->elab1() != "")
+    {
+        elaborationList.setCurrentText(myProject.referenceClima->elab1());
+        if (myProject.referenceClima->param1() != NODATA)
+        {
+            elab1Parameter.setText(QString::number(myProject.referenceClima->param1()));
+        }
+    }
+
     AnomalyListSecondElab(elaborationList.currentText());
 }
 
@@ -457,6 +466,15 @@ void AnomalyLayout::AnomalyListSecondElab(const QString value)
     }
     AnomalySettings->endArray();
     AnomalySettings->endGroup();
+
+    if (myProject.referenceClima->elab1() == value && myProject.referenceClima->elab2() != "")
+    {
+        secondElabList.setCurrentText(myProject.referenceClima->elab2());
+        if (myProject.referenceClima->param2() != NODATA)
+        {
+            elab2Parameter.setText(QString::number(myProject.referenceClima->param2()));
+        }
+    }
 
 }
 
