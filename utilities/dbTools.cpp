@@ -55,14 +55,22 @@ bool loadCropParameters(QString idCrop, Crit3DCrop* myCrop, QSqlDatabase* dbCrop
 
     // WATER NEEDS
     myCrop->kcMax = query.value("kc_max").toDouble();
-    myCrop->degreeDaysMaxSensibility = query.value("degree_days_max_sensibility").toInt();
     // [cm]
     if (! getValue(query.value("psi_leaf"), &(myCrop->psiLeaf)))
         myCrop->psiLeaf = 16000;
 
     myCrop->stressTolerance = query.value("stress_tolerance").toDouble();
-    myCrop->frac_read_avail_water_min = query.value("frac_read_avail_water_min").toDouble();
-    myCrop->frac_read_avail_water_max = query.value("frac_read_avail_water_max").toDouble();
+
+    // fraction of Readily Available Water
+    if (! getValue(query.value("raw_fraction"), &(myCrop->fRAW)))
+    {
+        // old version
+        if (! getValue(query.value("frac_read_avail_water_max"), &(myCrop->fRAW)))
+        {
+            *myError = "Missing RAW_fraction for crop: " + idCropString;
+            return(false);
+        }
+    }
 
     // IRRIGATION
     getValue(query.value("irrigation_shift"), &(myCrop->irrigationShift));
@@ -183,9 +191,9 @@ bool loadDriessenParameters(soil::Crit3DSoilClass *soilTexture, QSqlDatabase* db
                 return(false);
             }
 
-        soilTexture[id].Driessen.k0 = query.value(1).toFloat();
-        soilTexture[id].Driessen.gravConductivity = query.value(2).toFloat();
-        soilTexture[id].Driessen.maxSorptivity = query.value(3).toFloat();
+        soilTexture[id].Driessen.k0 = query.value("k_sat").toFloat();
+        soilTexture[id].Driessen.gravConductivity = query.value("grav_conductivity").toFloat();
+        soilTexture[id].Driessen.maxSorptivity = query.value("max_sorptivity").toFloat();
 
     } while(query.next());
 

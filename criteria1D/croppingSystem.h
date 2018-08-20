@@ -24,6 +24,5 @@
     double getReadilyAvailableWater(Criteria1D* myCase);
     double getSoilWaterDeficit(Criteria1D* myCase);
 
-    bool updateCropWaterStressSensibility(Crit3DCrop* myCrop);
 
 #endif // CROPPINGSYSTEM_H

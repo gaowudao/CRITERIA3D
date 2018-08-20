@@ -60,16 +60,13 @@
         degreeDaysDecrease = NODATA;
         degreeDaysEmergence = NODATA;
 
-
         /*!
          * \brief water need
          */
         kcMax  = NODATA;
-        degreeDaysMaxSensibility = NODATA;
         psiLeaf = NODATA;
-        stressTolerance = NODATA;              /*!<  [0-1] */
-        frac_read_avail_water_min = NODATA;
-        frac_read_avail_water_max = NODATA;
+        stressTolerance = NODATA;
+        fRAW = NODATA;
 
         /*!
          * \brief irrigation
@@ -84,7 +81,6 @@
 
         degreeDays = NODATA;
         LAI = NODATA;
-        waterStressSensibility = NODATA;
     }
 
 
@@ -194,7 +190,6 @@
         if (isLiving)
         {
             degreeDays = 0;
-            waterStressSensibility = 0;
 
             // LAI
             LAI = LAImin;
@@ -206,7 +201,6 @@
         {
             degreeDays = NODATA;
             LAI = NODATA;
-            waterStressSensibility = NODATA;
             currentSowingDoy = NODATA;
 
             // roots

@@ -169,94 +169,97 @@ int main(int argc, char *argv[])
                         }
                         else
                         {
-                            if (! runModel(&(myProject.criteria), &(myProject.unit[i]), &(myProject.projectError)))
+                            if (runModel(&(myProject.criteria), &(myProject.unit[i]), &(myProject.projectError)))
+                            {
+                                nrUnitsComputed++;
+
+                                // SHORT TERM FORECAST
+                                if(myProject.criteria.isShortTermForecast)
+                                {
+                                    indexOfForecast = myProject.criteria.meteoPoint.nrObsDataDaysD - myProject.criteria.daysOfForecast - 1;
+                                    dateOfForecast = myProject.criteria.meteoPoint.obsDataD[indexOfForecast].date;
+                                    dateOfForecastStr = QString::fromStdString(dateOfForecast.toStdString());
+                                    IrrPreviousDateStr = QString::fromStdString(dateOfForecast.addDays(-13).toStdString());
+
+                                    // first date for annual irrigation
+                                    if (myProject.criteria.firstSeasonMonth <= dateOfForecast.month)
+                                        firstDateAllSeason = Crit3DDate(1, myProject.criteria.firstSeasonMonth, dateOfForecast.year);
+                                    else
+                                        firstDateAllSeason = Crit3DDate(1, myProject.criteria.firstSeasonMonth, dateOfForecast.year - 1);
+
+                                    firstDateAllSeasonStr = QString::fromStdString(firstDateAllSeason.toStdString());
+
+                                    prec = NODATA;
+                                    maxTranspiration = NODATA;
+                                    forecastIrrigation = NODATA;
+                                    previousAllIrrigation = NODATA;
+                                    RAW = NODATA;
+                                    rootDepth = NODATA;
+
+                                    mySQL = "SELECT SUM(PREC) AS prec,"
+                                            " SUM(TRANSP_MAX) AS maxTransp, SUM(IRRIGATION) AS irr"
+                                            " FROM '" + myProject.unit[i].idCase + "'"
+                                            " WHERE DATE > '" + dateOfForecastStr + "'";
+
+                                    myQuery = myProject.criteria.dbOutput.exec(mySQL);
+
+                                    if (myQuery.lastError().type() != QSqlError::NoError)
+                                        myProject.logError("SELECT SUM(PREC)\n" + myQuery.lastError().text());
+                                    else
+                                    {
+                                        myQuery.last();
+                                        prec = myQuery.value("prec").toFloat();
+                                        maxTranspiration = myQuery.value("maxTransp").toFloat();
+                                        forecastIrrigation = myQuery.value("irr").toFloat();
+                                    }
+
+                                    mySQL = "SELECT RAW, DEFICIT, ROOTDEPTH FROM '" + myProject.unit[i].idCase + "'"
+                                            " WHERE DATE = '" + dateOfForecastStr + "'";
+                                    myQuery = myProject.criteria.dbOutput.exec(mySQL);
+
+                                    if (myQuery.lastError().type() != QSqlError::NoError)
+                                        myProject.logError("SELECT RAW, DEFICIT, ROOTDEPTH\n" + myQuery.lastError().text());
+                                    else
+                                    {
+                                        myQuery.last();
+                                        RAW = myQuery.value("RAW").toFloat();
+                                        rootDepth = myQuery.value("ROOTDEPTH").toFloat();
+                                    }
+
+
+                                    mySQL = "SELECT SUM(IRRIGATION) AS prevAllIrr FROM '" + myProject.unit[i].idCase + "'"
+                                            " WHERE DATE <= '" + dateOfForecastStr + "'"
+                                            " AND DATE >= '" + firstDateAllSeasonStr + "'";
+                                    myQuery = myProject.criteria.dbOutput.exec(mySQL);
+
+                                    if (myQuery.lastError().type() != QSqlError::NoError)
+                                        myProject.logError("SELECT SUM(IRRIGATION) (all season) \n" + myQuery.lastError().text());
+                                    else
+                                    {
+                                        myQuery.last();
+                                        previousAllIrrigation = myQuery.value("prevAllIrr").toFloat();
+                                    }
+
+                                    myProject.outputFile << dateOfForecast.toStdString();
+                                    myProject.outputFile << "," << myProject.unit[i].idCase.toStdString();
+                                    myProject.outputFile << "," << myProject.unit[i].idCrop.toStdString();
+                                    myProject.outputFile << "," << myProject.unit[i].idSoil.toStdString();
+                                    myProject.outputFile << "," << myProject.unit[i].idMeteo.toStdString();
+                                    myProject.outputFile << "," << QString::number(RAW,'f',1).toStdString();
+                                    myProject.outputFile << "," << QString::number(rootDepth,'f',2).toStdString();
+                                    myProject.outputFile << "," << QString::number(prec,'f',1).toStdString();
+                                    myProject.outputFile << "," << QString::number(maxTranspiration,'f',1).toStdString();
+                                    myProject.outputFile << "," << forecastIrrigation * irriRatio;
+                                    myProject.outputFile << "," << previousAllIrrigation * irriRatio << "\n";
+                                    myProject.outputFile.flush();
+                                }
+                            }
+                            else
                             {
                                 myProject.logError();
+                                // TODO Improve
                                 isErrorMeteo = true;
-                            }
-
-                            // SHORT TERM FORECAST
-                            else if(myProject.criteria.isShortTermForecast)
-                            {
-                                indexOfForecast = myProject.criteria.meteoPoint.nrObsDataDaysD - myProject.criteria.daysOfForecast - 1;
-                                dateOfForecast = myProject.criteria.meteoPoint.obsDataD[indexOfForecast].date;
-                                dateOfForecastStr = QString::fromStdString(dateOfForecast.toStdString());
-                                IrrPreviousDateStr = QString::fromStdString(dateOfForecast.addDays(-13).toStdString());
-
-                                // first date for annual irrigation
-                                if (myProject.criteria.firstSeasonMonth <= dateOfForecast.month)
-                                    firstDateAllSeason = Crit3DDate(1, myProject.criteria.firstSeasonMonth, dateOfForecast.year);
-                                else
-                                    firstDateAllSeason = Crit3DDate(1, myProject.criteria.firstSeasonMonth, dateOfForecast.year - 1);
-
-                                firstDateAllSeasonStr = QString::fromStdString(firstDateAllSeason.toStdString());
-
-                                prec = NODATA;
-                                maxTranspiration = NODATA;
-                                forecastIrrigation = NODATA;
-                                previousAllIrrigation = NODATA;
-                                RAW = NODATA;
-                                rootDepth = NODATA;
-
-                                mySQL = "SELECT SUM(PREC) AS prec,"
-                                        " SUM(TRANSP_MAX) AS maxTransp, SUM(IRRIGATION) AS irr"
-                                        " FROM '" + myProject.unit[i].idCase + "'"
-                                        " WHERE DATE > '" + dateOfForecastStr + "'";
-
-                                myQuery = myProject.criteria.dbOutput.exec(mySQL);
-
-                                if (myQuery.lastError().type() != QSqlError::NoError)
-                                    myProject.logError("SELECT SUM(PREC)\n" + myQuery.lastError().text());
-                                else
-                                {
-                                    myQuery.last();
-                                    prec = myQuery.value("prec").toFloat();
-                                    maxTranspiration = myQuery.value("maxTransp").toFloat();
-                                    forecastIrrigation = myQuery.value("irr").toFloat();
-                                }
-
-                                mySQL = "SELECT RAW, DEFICIT, ROOTDEPTH FROM '" + myProject.unit[i].idCase + "'"
-                                        " WHERE DATE = '" + dateOfForecastStr + "'";
-                                myQuery = myProject.criteria.dbOutput.exec(mySQL);
-
-                                if (myQuery.lastError().type() != QSqlError::NoError)
-                                    myProject.logError("SELECT RAW, DEFICIT, ROOTDEPTH\n" + myQuery.lastError().text());
-                                else
-                                {
-                                    myQuery.last();
-                                    RAW = myQuery.value("RAW").toFloat();
-                                    rootDepth = myQuery.value("ROOTDEPTH").toFloat();
-                                }
-
-
-                                mySQL = "SELECT SUM(IRRIGATION) AS prevAllIrr FROM '" + myProject.unit[i].idCase + "'"
-                                        " WHERE DATE <= '" + dateOfForecastStr + "'"
-                                        " AND DATE >= '" + firstDateAllSeasonStr + "'";
-                                myQuery = myProject.criteria.dbOutput.exec(mySQL);
-
-                                if (myQuery.lastError().type() != QSqlError::NoError)
-                                    myProject.logError("SELECT SUM(IRRIGATION) (all season) \n" + myQuery.lastError().text());
-                                else
-                                {
-                                    myQuery.last();
-                                    previousAllIrrigation = myQuery.value("prevAllIrr").toFloat();
-                                }
-
-                                myProject.outputFile << dateOfForecast.toStdString();
-                                myProject.outputFile << "," << myProject.unit[i].idCase.toStdString();
-                                myProject.outputFile << "," << myProject.unit[i].idCrop.toStdString();
-                                myProject.outputFile << "," << myProject.unit[i].idSoil.toStdString();
-                                myProject.outputFile << "," << myProject.unit[i].idMeteo.toStdString();
-                                myProject.outputFile << "," << QString::number(RAW,'f',1).toStdString();
-                                myProject.outputFile << "," << QString::number(rootDepth,'f',2).toStdString();
-                                myProject.outputFile << "," << QString::number(prec,'f',1).toStdString();
-                                myProject.outputFile << "," << QString::number(maxTranspiration,'f',1).toStdString();
-                                myProject.outputFile << "," << forecastIrrigation * irriRatio;
-                                myProject.outputFile << "," << previousAllIrrigation * irriRatio << "\n";
-                                myProject.outputFile.flush();
-
-                                nrUnitsComputed++;
-                            }
+                            }   
                         }
                     }
                 }

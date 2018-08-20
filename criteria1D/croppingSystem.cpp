@@ -185,22 +185,6 @@ bool updateRoots(Criteria1D* myCase)
 }
 
 
-bool updateCropWaterStressSensibility(Crit3DCrop* myCrop)
-{
-    if ((myCrop->idCrop == "") || (! myCrop->isLiving))
-        return false;
-
-    double avgSensibility = (myCrop->frac_read_avail_water_max + myCrop->frac_read_avail_water_min) / 2.0;
-    double diffSensibility = myCrop->frac_read_avail_water_max - myCrop->frac_read_avail_water_min;
-
-    double degreeDaysTot = myCrop->degreeDaysDecrease + myCrop->degreeDaysIncrease + myCrop->degreeDaysEmergence;
-    if (degreeDaysTot > 0)
-        myCrop->waterStressSensibility = avgSensibility - (diffSensibility / 2.0) * cos(6.28 * (myCrop->degreeDays - myCrop->degreeDaysMaxSensibility) / degreeDaysTot);
-
-    return true;
-}
-
-
 double getWeightedRAW(Criteria1D* myCase)
 {
     if (! myCase->myCrop.isLiving) return 0.;
@@ -216,7 +200,7 @@ double getWeightedRAW(Criteria1D* myCase)
 
     for (int i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
     {
-        threshold = myCase->layer[i].FC - myCase->myCrop.waterStressSensibility * (myCase->layer[i].FC - myCase->layer[i].WP);
+        threshold = myCase->layer[i].FC - myCase->myCrop.fRAW * (myCase->layer[i].FC - myCase->layer[i].WP);
 
         layerRAW = (myCase->layer[i].waterContent - threshold) *(myCase->myCrop.roots.rootDensity[i] / densMax);
 
@@ -277,7 +261,7 @@ double getReadilyAvailableWater(Criteria1D* myCase)
             threshold = myCase->layer[i].FC;
         else
             // rooting zone
-            threshold = myCase->layer[i].FC - myCase->myCrop.waterStressSensibility * (myCase->layer[i].FC - myCase->layer[i].WP);
+            threshold = myCase->layer[i].FC - myCase->myCrop.fRAW * (myCase->layer[i].FC - myCase->layer[i].WP);
 
         if(myCase->layer[i].waterContent > threshold)
             RAW += (myCase->layer[i].waterContent - threshold);
@@ -491,7 +475,7 @@ double cropTranspiration(Criteria1D* myCase, bool getWaterStress)
 
         cropWP = thetaWP * soilThickness;                                                         // [mm]
 
-        waterScarcityThreshold = myCase->layer[i].FC - myCase->myCrop.waterStressSensibility * (myCase->layer[i].FC - cropWP);
+        waterScarcityThreshold = myCase->layer[i].FC - myCase->myCrop.fRAW * (myCase->layer[i].FC - cropWP);
 
         if (myCase->layer[i].waterContent > surplusThreshold)
         {
@@ -572,159 +556,6 @@ double cropTranspiration(Criteria1D* myCase, bool getWaterStress)
 }
 
 
-/*
-// OLD CriteriaBdP version - following Driessen (1992)Land-use systems analysis, p89-108
-bool cropTranspiration_old(Criteria1D* myCase)
-{
-    //check
-    if (myCase->myCrop.idCrop == "") return false;
-    if (! myCase->myCrop.isLiving) return true;
-    if (myCase->myCrop.roots.rootDepth <= myCase->myCrop.roots.rootDepthMin) return true;
-    if (myCase->myCrop.roots.firstRootLayer == NODATA) return true;
-
-    double psi;                                     // [kPa] water potential
-    double avgPSI;                                  // [cm] average water potential of rooted soil
-    double kPsi;                                    // [cm d-1] water conductivity
-    double avgKpsi;                                 // [cm d-1] average water conductivity of rooted soil
-    double theta;                                   // [m3 m-3] volumetric water content
-    double soilThickness;                           // [mm] thickness of soil layer
-    double criticalWC;                              // [mm] critical water content
-    double wpCrop;                                  // [m3 m-3] crop wilting point
-    double WSS;                                     // [] water surplus stress
-    double MUR;                                     // [mm d-1] maximum uptake ratio
-    double rRoot;                                   // [d] resistance
-    double rPlant;                                  // plant resistance
-
-    double sumPsi = 0.0;
-    double sumKpsi = 0.0;
-    double TRs=0.0, TRe=0.0;
-    double totRootDensityWithoutStress = 0.0;
-    double stress, stressThreshold;
-    int i;
-
-    for (i=0; i < myCase->nrLayers; i++)
-        myCase->myCrop.roots.transpiration[i] = 0.0;
-
-    if (myCase->output.dailyMaxTranspiration == 0)
-        return true;
-
-    bool* isStressed = (bool*) calloc(myCase->nrLayers, sizeof(bool));
-    for (i=0; i < myCase->nrLayers; i++) isStressed[i] = false;
-
-    int nrRootedLayers=0;
-
-    for (i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
-    {
-        nrRootedLayers++;
-        soilThickness = myCase->layer[i].thickness * myCase->layer[i].soilFraction * 1000.0;
-        theta = myCase->layer[i].waterContent / soilThickness;
-        psi = soil::psiFromTheta(theta, myCase->layer[i].horizon);
-        kPsi = soil::waterConductivity(soil::SeFromTheta(theta, myCase->layer[i].horizon), myCase->layer[i].horizon);
-
-        sumKpsi += log(kPsi);
-        sumPsi += log(psi + 0.01);
-    }
-
-    avgPSI = soil::kPaToCm(exp(sumPsi / nrRootedLayers));  // [cm]
-    avgKpsi = exp(sumKpsi / nrRootedLayers);
-
-    if (avgKpsi == 0.0)
-        rRoot = 0.0;
-    else
-        rRoot = 13.0 / (myCase->myCrop.roots.rootDepth * 100.0 * avgKpsi);
-
-    rPlant = 680.0 + 0.53 * myCase->myCrop.psiLeaf;
-
-    // from cm to mm
-    MUR = maxValue(10.0 * (myCase->myCrop.psiLeaf - avgPSI) / (rPlant + rRoot), 0.0);
-
-    if (myCase->myCrop.isWaterSurplusResistant())
-        WSS = 0.0;
-    else
-        WSS = 0.5;
-
-    for (i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
-    {
-        criticalWC = myCase->layer[i].SAT - (WSS * (myCase->layer[i].SAT - myCase->layer[i].FC));
-        theta = soil::thetaFromSignPsi(-soil::cmTokPa(myCase->myCrop.psiLeaf), myCase->layer[i].horizon);
-        soilThickness = myCase->layer[i].thickness * myCase->layer[i].soilFraction * 1000.0;
-        wpCrop = theta * soilThickness;
-
-        if (myCase->layer[i].waterContent > criticalWC)
-        {
-            // water content beyond critical value, transpiration is reduced linearly
-            myCase->myCrop.roots.transpiration[i] = myCase->output.dailyMaxTranspiration * myCase->myCrop.roots.rootDensity[i] *
-                    (myCase->layer[i].SAT - myCase->layer[i].waterContent) / (myCase->layer[i].SAT - criticalWC);
-
-            TRe += myCase->myCrop.roots.transpiration[i];
-            TRs += myCase->output.dailyMaxTranspiration * myCase->myCrop.roots.rootDensity[i];
-            isStressed[i] = true;
-        }
-        else
-        {
-            if (MUR >= myCase->output.dailyMaxTranspiration)
-                myCase->myCrop.roots.transpiration[i] = myCase->output.dailyMaxTranspiration * myCase->myCrop.roots.rootDensity[i];
-            else
-                myCase->myCrop.roots.transpiration[i] = MUR * myCase->myCrop.roots.rootDensity[i];
-
-            // near wilting point
-            if (myCase->myCrop.roots.transpiration[i] > myCase->layer[i].waterContent - wpCrop)
-            {
-                myCase->myCrop.roots.transpiration[i] = maxValue(myCase->layer[i].waterContent - wpCrop, 0.0);
-            }
-
-            // stress
-            stressThreshold = myCase->layer[i].FC - myCase->myCrop.waterStressSensibility * (myCase->layer[i].FC - myCase->layer[i].WP);
-            if (myCase->layer[i].waterContent > stressThreshold)
-            {
-                isStressed[i] = false;
-                totRootDensityWithoutStress +=  myCase->myCrop.roots.rootDensity[i];
-            }
-            else  isStressed[i] = true;
-
-            TRs += myCase->myCrop.roots.transpiration[i];
-            TRe += myCase->output.dailyMaxTranspiration * myCase->myCrop.roots.rootDensity[i];
-        }
-    }
-
-    // compensation for water deficit stress
-    double compensation, compensationFraction, compensationFactor, value;
-    compensationFactor = 0.25;
-    if (myCase->output.dailyMaxTranspiration > 0)
-    {
-        stress = maxValue(1.0 - (TRs / myCase->output.dailyMaxTranspiration), 0.0);
-
-        if (stress > 0.01 && totRootDensityWithoutStress > 0.01)
-        {
-            compensationFraction = minValue(stress, compensationFactor * totRootDensityWithoutStress);
-            compensation = compensationFraction * myCase->output.dailyMaxTranspiration;
-
-            for (int i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
-                if (! isStressed[i])
-                {
-                    value = compensation * (myCase->myCrop.roots.rootDensity[i] / totRootDensityWithoutStress);
-                    myCase->myCrop.roots.transpiration[i] += value;
-                    TRs += value;
-                    TRe += value;
-                }
-        }
-    }
-
-    for (i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
-    {
-        myCase->layer[i].waterContent -= myCase->myCrop.roots.transpiration[i];
-        myCase->output.dailyTranspiration += myCase->myCrop.roots.transpiration[i];
-    }
-
-    myCase->myCrop.lastWaterStress = 1.0 - (TRs / myCase->output.dailyMaxTranspiration);
-
-    free(isStressed);
-
-    return true;
-}
-*/
-
-
 bool updateCrop(Criteria1D* myCase, std::string* myError, Crit3DDate myDate,
                 double tmin, double tmax, float waterTableDepth)
 {
@@ -758,13 +589,6 @@ bool updateCrop(Criteria1D* myCase, std::string* myError, Crit3DDate myDate,
         if (! updateRoots(myCase))
         {
             *myError = "Error in updating roots for crop " + myCase->myCrop.idCrop;
-            return false;
-        }
-
-        // update water stress sensibility
-        if (! updateCropWaterStressSensibility(&(myCase->myCrop)))
-        {
-            *myError = "Error in updating water stress sensibility for crop " + myCase->myCrop.idCrop;
             return false;
         }
     }

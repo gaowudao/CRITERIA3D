@@ -41,12 +41,10 @@
         /*!
          * \brief water need
          */
-        double kcMax;
-        int degreeDaysMaxSensibility;
-        double psiLeaf;                         /*!< [cm] */
-        double stressTolerance;                 /*!< [] */
-        double frac_read_avail_water_min;
-        double frac_read_avail_water_max;
+        double kcMax;                               /*!< [-] */
+        double psiLeaf;                             /*!< [cm] */
+        double stressTolerance;                     /*!< [-] */
+        double fRAW;                                /*!< [-] fraction of Readily Available Water */
 
         /*!
          * \brief irrigation
@@ -65,7 +63,6 @@
         bool isEmerged;
         double LAI;
         double LAIstartSenescence;
-        double waterStressSensibility;
 
         Crit3DCrop();
 
