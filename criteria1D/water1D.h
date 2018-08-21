@@ -9,5 +9,7 @@
     bool computeLateralDrainage(Criteria1D* myCase);
     bool computeCapillaryRise(Criteria1D* myCase, float waterTableDepth);
 
+    double getSoilWaterContent(Criteria1D* myCase);
+
 #endif // WATER1D_H
 

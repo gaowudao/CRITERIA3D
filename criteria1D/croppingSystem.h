@@ -23,7 +23,7 @@
 
     double getWeightedRAW(Criteria1D* myCase);
     double getReadilyAvailableWater(Criteria1D* myCase);
-    double getSoilWaterDeficit(Criteria1D* myCase);
+    double getCropWaterDeficit(Criteria1D* myCase);
 
 
 #endif // CROPPINGSYSTEM_H

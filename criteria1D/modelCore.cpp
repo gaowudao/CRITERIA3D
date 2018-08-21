@@ -187,9 +187,11 @@ bool computeModel(Criteria1D* myCase, const Crit3DDate& firstDate, const Crit3DD
         // TRANSPIRATION
         myCase->output.dailyTranspiration = cropTranspiration(myCase, false);
 
-        // RAW and Water Deficit
+        // Output variables
+        myCase->output.dailySurfaceWaterContent = myCase->layer[0].waterContent;
+        myCase->output.dailySoilWaterContent = getSoilWaterContent(myCase);
         myCase->output.dailyCropAvailableWater = getReadilyAvailableWater(myCase);
-        myCase->output.dailySoilWaterDeficit = getSoilWaterDeficit(myCase);
+        myCase->output.dailyCropWaterDeficit = getCropWaterDeficit(myCase);
 
         if (! myCase->isSeasonalForecast)
         {

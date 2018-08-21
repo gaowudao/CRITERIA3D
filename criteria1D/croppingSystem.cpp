@@ -218,26 +218,6 @@ double getWeightedRAW(Criteria1D* myCase)
 
 
 /*!
- * \brief getSoilWaterDeficit
- * \param myCase
- * \return sum of water deficit (mm) in the rooting zone
- */
-double getSoilWaterDeficit(Criteria1D* myCase)
-{
-    //check
-    if (! myCase->myCrop.isLiving) return NODATA;
-    if (myCase->myCrop.roots.rootDepth <= myCase->myCrop.roots.rootDepthMin) return NODATA;
-    if (myCase->myCrop.roots.firstRootLayer == NODATA) return NODATA;
-
-    double myDeficit = 0.0;
-    for (int i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
-        myDeficit += myCase->layer[i].FC - myCase->layer[i].waterContent;
-
-    return maxValue(myDeficit, 0.0);
-}
-
-
-/*!
  * \brief getReadilyAvailableWater
  * \param myCase
  * \return sum of readily available water (mm) in the rooting zone (minimum first meter of soil)
@@ -331,7 +311,7 @@ float cropIrrigationDemand(Criteria1D* myCase, int doy, float currentPrec, float
     daysSinceIrrigation = 0;
 
     if (myCase->optimizeIrrigation)
-        return minValue(getSoilWaterDeficit(myCase), myCase->myCrop.irrigationVolume);
+        return minValue(getCropWaterDeficit(myCase), myCase->myCrop.irrigationVolume);
     else
         return myCase->myCrop.irrigationVolume;
 }
@@ -592,4 +572,24 @@ bool updateCrop(Criteria1D* myCase, std::string* myError, Crit3DDate myDate,
     }
 
     return true;
+}
+
+
+/*!
+ * \brief getCropWaterDeficit
+ * \param myCase
+ * \return sum of water deficit (mm) in the rooting zone
+ */
+double getCropWaterDeficit(Criteria1D* myCase)
+{
+    //check
+    if (! myCase->myCrop.isLiving) return NODATA;
+    if (myCase->myCrop.roots.rootDepth <= myCase->myCrop.roots.rootDepthMin) return NODATA;
+    if (myCase->myCrop.roots.firstRootLayer == NODATA) return NODATA;
+
+    double waterDeficit = 0.0;
+    for (int i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
+        waterDeficit += myCase->layer[i].FC - myCase->layer[i].waterContent;
+
+    return maxValue(waterDeficit, 0.0);
 }

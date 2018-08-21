@@ -30,6 +30,8 @@
     public:
         double dailyPrec;
         double dailySurfaceRunoff;
+        double dailySoilWaterContent;
+        double dailySurfaceWaterContent;
         double dailyLateralDrainage;
         double dailyDrainage;
         double dailyIrrigation;
@@ -40,7 +42,7 @@
         double dailyKc;
         double dailyTranspiration;
         double dailyCropAvailableWater;
-        double dailySoilWaterDeficit;
+        double dailyCropWaterDeficit;
         double dailyWaterTable;
         double dailyCapillaryRise;
 

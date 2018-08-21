@@ -91,13 +91,15 @@ void Criteria1DOutput::initializeDaily()
     this->dailySurfaceRunoff = 0.0;
     this->dailyLateralDrainage = 0.0;
     this->dailyIrrigation = 0.0;
+    this->dailySoilWaterContent = 0.0;
+    this->dailySurfaceWaterContent = 0.0;
     this->dailyEt0 = 0.0;
     this->dailyEvaporation = 0.0;
     this->dailyMaxTranspiration = 0.0;
     this->dailyMaxEvaporation = 0.0;
     this->dailyTranspiration = 0.0;
     this->dailyCropAvailableWater = 0.0;
-    this->dailySoilWaterDeficit = 0.0;
+    this->dailyCropWaterDeficit = 0.0;
     this->dailyCapillaryRise = 0.0;
     this->dailyWaterTable = NODATA;
     this->dailyKc = 0.0;
@@ -126,22 +128,24 @@ bool Criteria1D::setSoil(QString idSoil, std::string *myError)
 
     double soilFraction, hygroscopicHumidity;
     int horizonIndex;
-    double depth = this->layerThickness / 2.0;
+    double currentDepth;
 
     // initialize layers
     layer[0].depth = 0.0;
     layer[0].thickness = 0.0;
+
+    currentDepth = this->layerThickness / 2.0;
     for (int i = 1; i < this->nrLayers; i++)
     {
-        horizonIndex = soil::getHorizonIndex(&(mySoil), depth);
+        horizonIndex = soil::getHorizonIndex(&(mySoil), currentDepth);
         layer[i].horizon = &(mySoil.horizon[horizonIndex]);
 
         soilFraction = (1.0 - layer[i].horizon->coarseFragments);
-        layer[i].soilFraction = soilFraction;       // [-]
+        layer[i].soilFraction = soilFraction;                       // [-]
 
         // TODO geometric layer
-        layer[i].depth = depth;                     // [m]
-        layer[i].thickness = this->layerThickness;  // [m]
+        layer[i].depth = currentDepth;                              // [m]
+        layer[i].thickness = this->layerThickness;                  // [m]
 
         //[mm]
         layer[i].SAT = mySoil.horizon[horizonIndex].vanGenuchten.thetaS * soilFraction * layer[i].thickness * 1000.0;
@@ -159,7 +163,7 @@ bool Criteria1D::setSoil(QString idSoil, std::string *myError)
         //[mm]
         layer[i].HH = hygroscopicHumidity * soilFraction * layer[i].thickness * 1000.0;
 
-        depth += layer[i].thickness;              //[m]
+        currentDepth += layer[i].thickness;              //[m]
     }
 
     return(true);
@@ -364,7 +368,7 @@ void Criteria1D::prepareOutput(Crit3DDate myDate, bool isFirst)
 {
     if (isFirst)
         this->outputString = "INSERT INTO '" + this->idCase + "'"
-            + " (DATE, PREC, IRRIGATION, RAW, DEFICIT, DRAINAGE, RUNOFF, ET0,"
+            + " (DATE, PREC, IRRIGATION, WATER_CONTENT, SURFACE_WC, RAW, DEFICIT, DRAINAGE, RUNOFF, ET0,"
             + " EVAP_MAX, TRANSP_MAX, EVAP, TRANSP, LAI, KC, ROOTDEPTH) "
             + " VALUES ";
     else
@@ -374,8 +378,10 @@ void Criteria1D::prepareOutput(Crit3DDate myDate, bool isFirst)
             += "('" + QString::fromStdString(myDate.toStdString()) + "'"
             + "," + QString::number(this->output.dailyPrec)
             + "," + QString::number(this->output.dailyIrrigation)
+            + "," + QString::number(this->output.dailySoilWaterContent)
+            + "," + QString::number(this->output.dailySurfaceWaterContent)
             + "," + QString::number(this->output.dailyCropAvailableWater)
-            + "," + QString::number(this->output.dailySoilWaterDeficit)
+            + "," + QString::number(this->output.dailyCropWaterDeficit)
             + "," + QString::number(this->output.dailyDrainage)
             + "," + QString::number(this->output.dailySurfaceRunoff)
             + "," + QString::number(this->output.dailyEt0)

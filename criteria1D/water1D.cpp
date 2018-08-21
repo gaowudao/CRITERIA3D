@@ -436,3 +436,33 @@ bool computeLateralDrainage(Criteria1D* myCase)
     return true;
 }
 
+
+/*!
+ * \brief getSoilWaterContent
+ * \param myCase
+ * \return sum of water content (mm) in the first meter of soil
+ */
+double getSoilWaterContent(Criteria1D* myCase)
+{
+    const double maxDepth = 1.0;            // [m]
+    double lowerDepth, upperDepth;          // [m]
+    double depthRatio;                      // [-]
+    double waterContent = 0.0;              // [mm]
+
+    for (int i = 1; i < myCase->nrLayers; i++)
+    {
+        lowerDepth = myCase->layer[i].depth + myCase->layer[i].thickness * 0.5;
+        if (lowerDepth < maxDepth)
+            waterContent += myCase->layer[i].waterContent;
+        else
+        {
+            upperDepth = myCase->layer[i].depth - myCase->layer[i].thickness * 0.5;
+            depthRatio = (maxDepth - upperDepth) / myCase->layer[i].thickness;
+            waterContent += myCase->layer[i].waterContent * depthRatio;
+            break;
+        }
+    }
+
+    return waterContent;
+}
+
