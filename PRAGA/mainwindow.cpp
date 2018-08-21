@@ -1239,6 +1239,7 @@ void MainWindow::on_actionElaboration_meteo_grid_triggered()
 {
     bool isMeteoGrid = true;
     bool isAnomaly = false;
+
     if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
         ComputationDialog compDialog(myProject.settings, isAnomaly);
@@ -1298,56 +1299,32 @@ void MainWindow::on_actionAnomaly_meteo_points_triggered()
 void MainWindow::on_actionAnomaly_meteo_grid_triggered()
 {
     bool isMeteoGrid = true;
-    bool isAnomaly;
-/*
-    if (myProject.elaborationCheck(isMeteoGrid))
+    bool isAnomaly = true;
+
+    if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
-        if (myProject.meteoGridDbHandler->meteoGrid()->getIsElabValue())
+        ComputationDialog compDialog(myProject.settings, isAnomaly);
+        isAnomaly = false;
+
+        bool res = myProject.elaboration(isMeteoGrid, isAnomaly);
+        if (!res)
         {
-            //elaboration is done, choose reference period
-            QMessageBox::StandardButton reply;
-            reply = QMessageBox::question(this, "Keep current elaboration", "Edit only reference period?", QMessageBox::Yes|QMessageBox::No);
-            if (reply == QMessageBox::Yes)
-            {
-                isAnomaly = true;
-                elaborationGUI(isAnomaly, isMeteoGrid);
-
-            }
-            else
-            {
-                myProject.meteoGridDbHandler->meteoGrid()->setIsElabValue(false);
-                on_actionAnomaly_meteo_points_triggered();
-            }
-
+            qInfo() << "elaboration error " << endl;
+            myProject.logError();
         }
         else
         {
-            isAnomaly = false;
-            if (myProject.elaborationCheck(isMeteoGrid))
-            {
-                elaborationGUI(isAnomaly, isMeteoGrid);
-            }
-            else
-            {
-                 myProject.logError();
-                 return;
-            }
-
-            if (!myProject.meteoGridDbHandler->meteoGrid()->getIsElabValue())
-            {
-                return; //something has been wrong with elaboration
-            }
             isAnomaly = true;
-
-            elaborationGUI(isAnomaly, isMeteoGrid);
+            myProject.elaboration(isMeteoGrid, isAnomaly);
+            showElabResult(true, isMeteoGrid, isAnomaly);
         }
-
+        if (compDialog.result() == QDialog::Accepted)
+            on_actionAnomaly_meteo_grid_triggered();
     }
     else
     {
          myProject.logError();
     }
-    */
     return;
 }
 
@@ -1374,7 +1351,6 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool is
         ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myProject.clima->variable())));
         setColorScale(myProject.clima->variable(), myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale);
         meteoGridLegend->update();
-
     }
     else
     {
