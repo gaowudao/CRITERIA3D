@@ -166,7 +166,7 @@ bool computeModel(Criteria1D* myCase, const Crit3DDate& firstDate, const Crit3DD
         if (! computeSurfaceRunoff(myCase))
             return false;
 
-        // adjust irrigation losses
+        // Adjust irrigation losses
         if (! myCase->optimizeIrrigation)
         {
             if ((myCase->output.dailySurfaceRunoff > 5) && (myCase->output.dailyIrrigation > 0))

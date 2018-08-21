@@ -12,6 +12,7 @@
 
     void initializeCrop(Criteria1D* myCase, int currentDoy);
     bool updateCrop(Criteria1D* myCase, std::string* myError, Crit3DDate myDate, double tmin, double tmax, float waterTableDepth);
+    bool updateLAI(Criteria1D* myCase, int myDoy);
 
     float cropIrrigationDemand(Criteria1D* myCase, int doy, float myPrec, float nextPrec);
     bool cropWaterDemand(Criteria1D* myCase);

@@ -113,7 +113,7 @@ bool cropWaterDemand(Criteria1D* myCase)
 
 
 
-bool updateLai(Criteria1D* myCase, int myDoy)
+bool updateLAI(Criteria1D* myCase, int myDoy)
 {
     double degreeDaysLai = 0;
     double myLai = 0;
@@ -217,7 +217,11 @@ double getWeightedRAW(Criteria1D* myCase)
 }
 
 
-// soil water deficit [mm]
+/*!
+ * \brief getSoilWaterDeficit
+ * \param myCase
+ * \return sum of water deficit (mm) in the rooting zone
+ */
 double getSoilWaterDeficit(Criteria1D* myCase)
 {
     //check
@@ -294,18 +298,18 @@ float cropIrrigationDemand(Criteria1D* myCase, int doy, float currentPrec, float
             myCase->myCrop.degreeDays > myCase->myCrop.degreeDaysEndIrrigation) return 0.;
     }
 
-    // check today rainfall
-    if (currentPrec > 5.) return 0.;
+    // check today rainfall and surface water content
+    if ((myCase->layer[0].waterContent + currentPrec) > 4.) return 0.;
 
     // check rainfall forecast (at least half of irrigation volume)
     if (myCase->myCrop.irrigationShift > 1)
         if ((currentPrec + nextPrec) >  myCase->myCrop.irrigationVolume * 0.5) return 0.;
 
     // check readily available water (weighted on root density)
-    // disattivato perchè sostituito dal  water stress check
+    // disattivato perchè sostituito con water stress
     // if (getWeightedRAW(myCase) > 5.) return 0.;
 
-    // check water stress
+    // check water stress (before infiltration)
     double threshold = 1. - myCase->myCrop.stressTolerance;
     double waterStress = cropTranspiration(myCase, true);
     if (waterStress <= threshold) return 0.;
@@ -313,20 +317,16 @@ float cropIrrigationDemand(Criteria1D* myCase, int doy, float currentPrec, float
     // check irrigation shift
     if (daysSinceIrrigation != NODATA)
     {
+        // too much water stress -> supplementary irrigation
         if (waterStress < (threshold + 0.2))
         {
             if (daysSinceIrrigation < myCase->myCrop.irrigationShift)
                 return 0;
         }
-        else
-        {
-            // too much water stress -> half irrigation shift (irrigazione di soccorso)
-            if (daysSinceIrrigation < (myCase->myCrop.irrigationShift * 0.5))
-                return 0;
-        }
     }
 
     // all check passed --> IRRIGATION
+
     // reset irrigation shift
     daysSinceIrrigation = 0;
 
@@ -509,8 +509,8 @@ double cropTranspiration(Criteria1D* myCase, bool getWaterStress)
         }
     }
 
-    // water compensation (only not stressed layers)
-    // TODO missing process: hydraulic redistribution of water in tree roots
+    // water compensation (not stressed layers vs stressed layers)
+    // TODO add hydraulic redistribution of water in tree roots
     double value;
     if (myCase->output.dailyMaxTranspiration > 0)
     {
@@ -540,18 +540,16 @@ double cropTranspiration(Criteria1D* myCase, bool getWaterStress)
         // return water stress
         return 1.0 - (TRs / myCase->output.dailyMaxTranspiration);
     }
-    else
-    {
-        // update water content
-        double dailyTranspiration = 0.0;
-        for (i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
-        {
-            myCase->layer[i].waterContent -= myCase->myCrop.roots.transpiration[i];
-            dailyTranspiration += myCase->myCrop.roots.transpiration[i];
-        }
 
-        return dailyTranspiration;
+    // update water content
+    double dailyTranspiration = 0.0;
+    for (i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
+    {
+        myCase->layer[i].waterContent -= myCase->myCrop.roots.transpiration[i];
+        dailyTranspiration += myCase->myCrop.roots.transpiration[i];
     }
+
+    return dailyTranspiration;
 
 }
 
@@ -579,7 +577,7 @@ bool updateCrop(Criteria1D* myCase, std::string* myError, Crit3DDate myDate,
         myCase->myCrop.degreeDays += computeDegreeDays(tmin, tmax, myCase->myCrop.thermalThreshold, myCase->myCrop.upperThermalThreshold);
 
         // update LAI
-        if (! updateLai(myCase, currentDoy))
+        if (! updateLAI(myCase, currentDoy))
         {
             *myError = "Error in updating LAI for crop " + myCase->myCrop.idCrop;
             return false;

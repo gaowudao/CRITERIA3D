@@ -40,7 +40,7 @@
  */
 void initializeWater(Criteria1D* myCase)
 {
-    // TODO migliorare - variare in base al mese
+    // TODO water content as function of month
     myCase->layer[0].waterContent = 0.0;
     for (int i = 1; i < myCase->nrLayers; i++)
     {
@@ -52,7 +52,7 @@ void initializeWater(Criteria1D* myCase)
 }
 
 
-// TODO extend to geometric layers
+
 /*!
  * \brief Water infiltration and redistribution 1D
  * \param myCase
@@ -64,6 +64,7 @@ void initializeWater(Criteria1D* myCase)
  */
 bool computeInfiltration(Criteria1D* myCase, float prec, float surfaceIrrigation)
 {
+    // TODO extend to geometric layers
     int i, j, l, nrPloughLayers;
     int reached = NODATA;            // [-] index of reached layer for surpuls water
     double avgPloughSat = NODATA;    // [-] average degree of saturation ploughed soil
@@ -120,7 +121,7 @@ bool computeInfiltration(Criteria1D* myCase, float prec, float surfaceIrrigation
             myCase->layer[l].flux += fluxLayer;
             myCase->layer[l].waterContent -= fluxLayer;
 
-            // TODO translate
+            // TODO translate comment
             // cerca il punto di arrivo del fronte
             // saturando virtualmente il profilo sottostante con la quantità Imax
             // tiene conto degli Imax  e dei flussi già passati dagli strati sottostanti prendendo il minimo
@@ -150,7 +151,7 @@ bool computeInfiltration(Criteria1D* myCase, float prec, float surfaceIrrigation
             // move water and compute fluxes
             for (i = l+1; i <= reached; i++)
             {
-                // TODO translate
+                // TODO translate comment
                 // ridefinisce fluxLayer in base allo stato idrico dello strato sottostante
                 // sotto Field Capacity tolgo il deficit al fluxLayer,
                 // in water surplus, aggiungo il surplus al fluxLayer
@@ -269,8 +270,7 @@ bool computeCapillaryRise(Criteria1D* myCase, float waterTableDepth)
     int lastLayer = myCase->nrLayers - 1;
     const float REDUCTION_FACTOR = 0.5;
 
-    // NO WaterTable:
-    // Nodata, wrong data or watertable too depth (> 8 meters below lastlayer)
+    // NO WaterTable, wrong data or watertable too depth
     if ( (waterTableDepth == NODATA)
       || (waterTableDepth <= 0)
       || (waterTableDepth > (myCase->layer[lastLayer].depth + 8.0f)) )
@@ -283,16 +283,19 @@ bool computeCapillaryRise(Criteria1D* myCase, float waterTableDepth)
     }
 
     // search boundary layer: first layer over watertable
-    // depth is assigned at center of each layer
+    // depth is assigned at center layer
     i = lastLayer;
     if (waterTableDepth < myCase->mySoil.totalDepth)
+    {
         while ((i > 1) && (waterTableDepth <= myCase->layer[i].depth))
             i--;
+    }
 
     int boundaryLayer = i;
 
     // layers below watertable: saturated
     if (boundaryLayer < lastLayer)
+    {
         for (i = boundaryLayer + 1; i <= lastLayer; i++)
         {
             myCase->layer[i].critical = myCase->layer[i].SAT;
@@ -303,6 +306,7 @@ bool computeCapillaryRise(Criteria1D* myCase, float waterTableDepth)
                 myCase->layer[i].waterContent = myCase->layer[i].SAT;
             }
         }
+    }
 
     // air entry point of boundary layer
     he_boundary = myCase->layer[boundaryLayer].horizon->vanGenuchten.he;    // [kPa]
@@ -316,7 +320,9 @@ bool computeCapillaryRise(Criteria1D* myCase, float waterTableDepth)
         myCase->layer[i].critical = soil::getWaterContentFromPsi(psi, &(myCase->layer[i]));
 
         if (myCase->layer[i].critical < myCase->layer[i].FC)
+        {
             myCase->layer[i].critical = myCase->layer[i].FC;
+        }
     }
 
     // above watertable: capillary rise
@@ -348,7 +354,9 @@ bool computeCapillaryRise(Criteria1D* myCase, float waterTableDepth)
             previousPsi = soil::getWaterPotential(&(myCase->layer[i]));     // [kPa]
         }
         else
+        {
             previousPsi = psi;
+        }
     }
 
     myCase->output.dailyCapillaryRise = capillaryRiseSum;
@@ -366,7 +374,7 @@ bool computeSurfaceRunoff(Criteria1D* myCase)
     double clodHeight;           // [mm] effective height of clod
     double roughness;            // [mm]
 
-    // very rough solution for taking into account tillage and others operations
+    // TODO taking into account tillage and others operations
     if (myCase->myCrop.isPluriannual())
         clodHeight = 0.0;
     else
