@@ -162,7 +162,18 @@ bool computeModel(Criteria1D* myCase, const Crit3DDate& firstDate, const Crit3DD
         if (! computeInfiltration(myCase, prec, irrigationPrec))
             return false;
 
-        // RUNOFF
+        // LATERAL DRAINAGE
+        if (! computeLateralDrainage(myCase))
+            return false;
+
+        // EVAPORATION
+        if (! evaporation(myCase))
+            return false;
+
+        // TRANSPIRATION
+        myCase->output.dailyTranspiration = cropTranspiration(myCase, false);
+
+        // RUNOFF (after evaporation)
         if (! computeSurfaceRunoff(myCase))
             return false;
 
@@ -175,17 +186,6 @@ bool computeModel(Criteria1D* myCase, const Crit3DDate& firstDate, const Crit3DD
                     myCase->output.dailySurfaceRunoff -= floor(myCase->output.dailySurfaceRunoff);
                 }
         }
-
-        // LATERAL DRAINAGE
-        if (! computeLateralDrainage(myCase))
-            return false;
-
-        // EVAPORATION
-        if (! evaporation(myCase))
-            return false;
-
-        // TRANSPIRATION
-        myCase->output.dailyTranspiration = cropTranspiration(myCase, false);
 
         // Output variables
         myCase->output.dailySurfaceWaterContent = myCase->layer[0].waterContent;
