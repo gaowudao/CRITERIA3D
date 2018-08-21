@@ -1307,7 +1307,6 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
             }
             meteoGridDbHandler->meteoGrid()->fillMeteoRasterElabValue();
         }
-
         else
         {
             if (!elaborationPointsCycleGrid(&errorString, meteoGridDbHandler, climaFromDb, referenceClima, currentDate, isAnomaly))
