@@ -2,12 +2,8 @@
 
 
 namespace photosynthesis
-{
-
-}
+{ }
 
 
 namespace biomass
-{
-
-}
+{ }

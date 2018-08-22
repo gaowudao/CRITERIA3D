@@ -1,7 +1,7 @@
 #ifndef CROP_H
 #define CROP_H
 
-    #ifndef _GLIBCXX_STRING
+    #ifndef _STRING_
         #include <string>
     #endif
     #ifndef ROOT_H
@@ -12,6 +12,9 @@
 
     enum speciesType {HERBACEOUS_ANNUAL, HERBACEOUS_PERENNIAL, HORTICULTURAL, GRASS, FALLOW, FRUIT_TREE};
 
+    /*!
+     * \brief The Crit3DCrop class
+     */
     class Crit3DCrop
     {
         public:
@@ -19,14 +22,12 @@
         std::string idCrop;
         speciesType type;
 
-        /*!
-         * \brief roots
-         */
+
         Crit3DRoot roots;
 
 
         /*!
-         * \brief crop cycle
+         * crop cycle
          */
         int sowingDoy;
         int currentSowingDoy;
@@ -39,7 +40,7 @@
         double degreeDaysIncrease, degreeDaysDecrease, degreeDaysEmergence;
 
         /*!
-         * \brief water need
+         * water need
          */
         double kcMax;                               /*!< [-] */
         double psiLeaf;                             /*!< [cm] */
@@ -47,7 +48,7 @@
         double fRAW;                                /*!< [-] fraction of Readily Available Water */
 
         /*!
-         * \brief irrigation
+         * irrigation
          */
         int irrigationShift;
         double irrigationVolume;
@@ -56,7 +57,7 @@
         double maxSurfacePuddle;
 
         /*!
-         * \brief variables
+         * variables
          */
         double degreeDays;
         bool isLiving;

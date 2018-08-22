@@ -10,35 +10,29 @@
 
     class Crit3DCrop;
 
+    /*!
+     * \brief The Crit3DRoot class
+     */
     class Crit3DRoot
     {
     public:
         rootDistributionType rootShape;
         rootGrowthType growth;
 
-        /*!
-         * \brief parameters
-         */
-        double degreeDaysRootGrowth;        /*!< [°D] */
-        double rootDepthMin, rootDepthMax;  /*!< [m] */
-        double shapeDeformation;            /*!< [-] */
+        /*! parameters */
+        double degreeDaysRootGrowth;        /*!< [°D]  */
+        double rootDepthMin;                /*!< [m]   */
+        double rootDepthMax;                /*!< [m]   */
+        double shapeDeformation;            /*!< [-]   */
 
-        //todo:togliere se possibile
-        double rootLengthMin;               // [m] non serve per criteria standard in cui è posto uguale a zero
-        double rootLength;
+        /*! variables */
+        double rootLength;                  /*!< [m]  */
+        int firstRootLayer;                 /*!< [-]  */
+        int lastRootLayer;                  /*!< [-]  */
+        double* rootDensity;                /*!< [-]  */
+        double* transpiration;              /*!< [mm] */
 
-
-        /*!
-         * \brief variables
-         */
-        int firstRootLayer;                 /*!<  [-] */
-        int lastRootLayer;                  /*!<  [-] */
-        double* rootDensity;                /*!<  [] */
-        double* transpiration;              /*!<  [mm] */
-
-        /*!
-         * \brief state variables
-         */
+        /*! state variables */
         double rootDepth;                   /*!<  [m]  current root depth */
 
         Crit3DRoot();

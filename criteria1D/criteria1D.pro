@@ -45,4 +45,6 @@ unix {
     INSTALLS += target
 }
 
+DISTFILES +=
+
 

@@ -14,13 +14,13 @@
         this->rootShape = CYLINDRICAL_DISTRIBUTION;
         this->growth = LOGISTIC;
         this->shapeDeformation = NODATA;
-        this->degreeDaysRootGrowth = 0;
+        this->degreeDaysRootGrowth = NODATA;
         this->rootDepthMin = NODATA;
         this->rootDepthMax = NODATA;
         this->firstRootLayer = NODATA;
         this->lastRootLayer = NODATA;
-        this->rootDepth = 0;
-        this->rootLengthMin = 0; // lo possiamo cambiare se volessimo supporre delle arboree giovani tipo
+        this->rootLength = NODATA;
+        this->rootDepth = NODATA;
         this->rootDensity = NULL;
         this->transpiration = NULL;
     }
@@ -34,7 +34,6 @@
         firstRootLayer = NODATA;
         lastRootLayer = NODATA;
         rootDepth = 0;
-        rootLengthMin = 0; // lo possiamo cambiare se volessimo supporre delle arboree giovani tipo
         rootDensity = NULL;
         transpiration = NULL;
     }
@@ -78,7 +77,7 @@ namespace root
     // TODO this function computes the root length based on thermal units, it could be changed for perennial crops
     double computeRootLength(Crit3DCrop* myCrop, double soilDepth, double currentDD, double waterTableDepth)
     {
-        double rootLength = NODATA;
+        double myRootLength = NODATA;
 
         if (myCrop->roots.rootDepthMax > soilDepth)
         {
@@ -88,19 +87,19 @@ namespace root
 
         if (myCrop->isPluriannual())
         {
-            rootLength = myCrop->roots.rootDepthMax - myCrop->roots.rootDepthMin;
+            myRootLength = myCrop->roots.rootDepthMax - myCrop->roots.rootDepthMin;
         }
         else
         {
             if (currentDD <= 0)
-                rootLength = myCrop->roots.rootLengthMin;
+                myRootLength = 0.0;
             else if (currentDD > myCrop->roots.degreeDaysRootGrowth)
-                rootLength = myCrop->roots.rootDepthMax - myCrop->roots.rootDepthMin;
+                myRootLength = myCrop->roots.rootDepthMax - myCrop->roots.rootDepthMin;
             else
             {
                 // in order to avoid numerical divergences when calculating density through cardioid and gamma function
                 currentDD = maxValue(currentDD, 1.0);
-                rootLength = getRootLengthDD(&(myCrop->roots), currentDD, myCrop->degreeDaysEmergence);
+                myRootLength = getRootLengthDD(&(myCrop->roots), currentDD, myCrop->degreeDaysEmergence);
             }
         }
 
@@ -116,23 +115,23 @@ namespace root
         const double MIN_WATERTABLE_DISTANCE = 0.2;       // [m]
 
         if (waterTableDepth != NODATA && waterTableDepth > 0 && myCrop->roots.rootLength != NODATA
-                && !myCrop->isWaterSurplusResistant() && rootLength > myCrop->roots.rootLength)
+                && !myCrop->isWaterSurplusResistant() && myRootLength > myCrop->roots.rootLength)
         {
             // check on growth
             if (currentDD > myCrop->roots.degreeDaysRootGrowth)
-                rootLength = myCrop->roots.rootLength;
+                myRootLength = myCrop->roots.rootLength;
             else
-                rootLength = minValue(rootLength, myCrop->roots.rootLength + MAX_DAILY_GROWTH);
+                myRootLength = minValue(myRootLength, myCrop->roots.rootLength + MAX_DAILY_GROWTH);
 
             // check on watertable
             double maxLenght = waterTableDepth - myCrop->roots.rootDepthMin - MIN_WATERTABLE_DISTANCE;
-            if (rootLength > maxLenght)
+            if (myRootLength > maxLenght)
             {
-                rootLength = maxValue(myCrop->roots.rootLength, maxLenght);
+                myRootLength = maxValue(myCrop->roots.rootLength, maxLenght);
             }
         }
 
-        return rootLength;
+        return myRootLength;
     }
 
 
@@ -140,7 +139,7 @@ namespace root
     double getRootLengthDD(Crit3DRoot* myRoot, double currentDD, double emergenceDD)
     {
         // this function computes the roots rate of development
-        double rootLength = NODATA;
+        double myRootLength = NODATA;
         double maxRootLength = myRoot->rootDepthMax - myRoot->rootDepthMin;
 
         if (currentDD <= 0) return 0.;
@@ -150,7 +149,7 @@ namespace root
 
         if (myRoot->growth == LINEAR)
         {
-            rootLength = maxRootLength * (currentDD / myRoot->degreeDaysRootGrowth);
+            myRootLength = maxRootLength * (currentDD / myRoot->degreeDaysRootGrowth);
         }
         else if (myRoot->growth == LOGISTIC)
         {
@@ -164,15 +163,15 @@ namespace root
             logMax = (myRoot->rootDepthMax) / (1 + exp(-b - k * myRoot->degreeDaysRootGrowth));
             logMin = myRoot->rootDepthMax / (1 + exp(-b));
             deformationFactor = (logMax - logMin) / maxRootLength ;
-            rootLength = 1.0 / deformationFactor * (myRoot->rootDepthMax / (1.0 + exp(-b - k * currentDD)) - logMin);
+            myRootLength = 1.0 / deformationFactor * (myRoot->rootDepthMax / (1.0 + exp(-b - k * currentDD)) - logMin);
         }
         else if (myRoot->growth == EXPONENTIAL)
         {
             // not used in Criteria Bdp
-            rootLength = maxRootLength * (1.- exp(-2.*(currentDD/halfDevelopmentPoint)));
+            myRootLength = maxRootLength * (1.- exp(-2.*(currentDD/halfDevelopmentPoint)));
         }
 
-        return rootLength;
+        return myRootLength;
     }
 
 
