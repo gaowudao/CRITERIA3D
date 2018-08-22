@@ -593,3 +593,4 @@ double getCropWaterDeficit(Criteria1D* myCase)
 
     return maxValue(waterDeficit, 0.0);
 }
+

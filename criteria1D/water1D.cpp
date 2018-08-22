@@ -33,10 +33,9 @@
 
 
 /*!
- * \brief
- * Assign two different initial available water
- * in the ploughed soil layer
- * and in the deep soil
+ * \brief Initialize water content
+ * assign two different initial available water
+ * in the ploughed soil and in the deep soil
  */
 void initializeWater(Criteria1D* myCase)
 {

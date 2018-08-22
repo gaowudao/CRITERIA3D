@@ -246,8 +246,3 @@ bool computeModel(Criteria1D* myCase, const Crit3DDate& firstDate, const Crit3DD
         return myCase->saveOutput(myError);
 }
 
-
-
-
-
-

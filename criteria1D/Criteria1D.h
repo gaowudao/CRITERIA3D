@@ -1,25 +1,22 @@
 #ifndef CRITERIA1D_H
 #define CRITERIA1D_H
 
-    #include <QSqlDatabase>
-    #include "soil.h"
-    #include "crop.h"
-    #include "meteoPoint.h"
+    #ifndef SOIL_H
+        #include "soil.h"
+    #endif
+    #ifndef CROP_H
+        #include "crop.h"
+    #endif
+    #ifndef METEOPOINT_H
+        #include "meteoPoint.h"
+    #endif
 
-    class Criteria1DUnit
-    {
-        public:
-        QString idCase;
-        QString idCrop;
-        QString idSoil;
-        QString idMeteo;
-        QString idForecast;
-        QString idCropClass;
-        int idSoilNumber;
-        int idICM;
-
-        Criteria1DUnit();
-    };
+    #ifndef QSTRING_H
+        #include <QString>
+    #endif
+    #ifndef QSQLDATABASE_H
+        #include <QSqlDatabase>
+    #endif
 
     /*!
      * \brief The Criteria1DOutput class
@@ -50,6 +47,23 @@
         void initializeDaily();
     };
 
+
+    class Criteria1DUnit
+    {
+        public:
+        QString idCase;
+        QString idCrop;
+        QString idSoil;
+        QString idMeteo;
+        QString idForecast;
+        QString idCropClass;
+        int idSoilNumber;
+        int idICM;
+
+        Criteria1DUnit();
+    };
+
+
     class Criteria1D
     {
     public:
@@ -77,8 +91,8 @@
         soil::Crit3DSoilClass soilTexture[13];
         soil::Crit3DLayer* layer;
         int nrLayers;
-        double layerThickness;                  // [m]
-        double maxSimulationDepth;              // [m]
+        double layerThickness;                  /*!<  [m]  */
+        double maxSimulationDepth;              /*!<  [m]  */
         bool isGeometricLayer;
 
         // CROP
@@ -89,8 +103,8 @@
         Crit3DMeteoPoint meteoPoint;
 
         // FIELD
-        double depthPloughedSoil;               // [m] depth of ploughed soil (working layer)
-        double initialAW[2];                    // [-] fraction of available water (between wilting point and field capacity)
+        double depthPloughedSoil;               /*!< [m] depth of ploughed soil (working layer) */
+        double initialAW[2];                    /*!< [-] fraction of available water (between wilting point and field capacity) */
 
         // OUTPUT
         Criteria1DOutput output;

@@ -1,10 +1,11 @@
 #-----------------------------------------------------------------------------
 #
 # Criteria1D library
-# Soil Water Balance 1D
-# heuristic algorithms for soil water infiltration, redistribution and capillary rise
+# Mono-dimensional water balance model
+# Algorithms for soil water infiltration, redistribution, capillary rise,
+# crop water demand and irrigation.
 #
-# this library is part of CRITERIA3D distribution
+# This library is part of CRITERIA3D distribution
 #
 #-----------------------------------------------------------------------------
 

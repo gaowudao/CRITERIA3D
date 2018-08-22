@@ -1,7 +1,9 @@
 #ifndef CROPPINGSYSTEM_H
 #define CROPPINGSYSTEM_H
 
-    #include <string>
+    #ifndef _STRING_
+        #include <string>
+    #endif
 
     class Criteria1D;
     class Crit3DDate;

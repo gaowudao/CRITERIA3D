@@ -1,7 +1,10 @@
 #ifndef MODELCORE_H
 #define MODELCORE_H
 
-    #include <string>
+    #ifndef _STRING_
+        #include <string>
+    #endif
+
     class Crit3DDate;
     class Criteria1D;
     class Criteria1DUnit;
