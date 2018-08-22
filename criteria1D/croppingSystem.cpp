@@ -279,7 +279,7 @@ float cropIrrigationDemand(Criteria1D* myCase, int doy, float currentPrec, float
     }
 
     // check today rainfall and surface water content
-    if ((myCase->layer[0].waterContent + currentPrec) >= 5.) return 0.;
+    if ((myCase->layer[0].waterContent + currentPrec) > 4.0) return 0.;
 
     // check rainfall forecast (at least half of irrigation volume)
     if (myCase->myCrop.irrigationShift > 1)
