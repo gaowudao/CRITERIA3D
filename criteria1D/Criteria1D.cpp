@@ -364,6 +364,15 @@ bool Criteria1D::createOutputTable(std::string* myError)
 }
 
 
+QString getOutputString(double value)
+{
+    if (value != NODATA)
+        return QString::number(value);
+    else
+        return QString::number(0);
+}
+
+
 void Criteria1D::prepareOutput(Crit3DDate myDate, bool isFirst)
 {
     if (isFirst)
@@ -389,9 +398,9 @@ void Criteria1D::prepareOutput(Crit3DDate myDate, bool isFirst)
             + "," + QString::number(this->output.dailyMaxTranspiration)
             + "," + QString::number(this->output.dailyEvaporation)
             + "," + QString::number(this->output.dailyTranspiration)
-            + "," + QString::number(this->myCrop.LAI)
-            + "," + QString::number(this->output.dailyKc)
-            + "," + QString::number(this->myCrop.roots.rootDepth)
+            + "," + getOutputString(this->myCrop.LAI)
+            + "," + getOutputString(this->output.dailyKc)
+            + "," + getOutputString(this->myCrop.roots.rootDepth)
             + ")";
 }
 

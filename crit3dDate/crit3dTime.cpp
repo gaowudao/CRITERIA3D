@@ -29,9 +29,9 @@
 */
 
 #include <math.h>
+
 #include "crit3dDate.h"
 #include "commonConstants.h"
-#include <string>
 
 
 Crit3DTime::Crit3DTime()
