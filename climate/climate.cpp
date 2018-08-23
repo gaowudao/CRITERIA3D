@@ -179,6 +179,7 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
 
     meteoPointTemp->id = meteoPoint->id;
     meteoPointTemp->point.z = meteoPoint->point.z;
+    meteoPointTemp->latitude = meteoPoint->latitude;
     meteoPointTemp->firstDateDailyVar = meteoPoint->firstDateDailyVar;
 
     meteoComputation elab1MeteoComp;
