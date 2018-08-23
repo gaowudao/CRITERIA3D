@@ -135,6 +135,8 @@
 
         void on_actionCriteria3D_Initialize_triggered();
 
+        void on_meteoGridOpacitySlider_sliderMoved(int position);
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

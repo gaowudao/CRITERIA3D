@@ -72,7 +72,7 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
     this->meteoGridObj = new RasterObject(this->mapView);
 
     this->rasterObj->setOpacity(this->ui->rasterOpacitySlider->value() / 100.0);
-    this->meteoGridObj->setOpacity(this->ui->rasterOpacitySlider->value() / 100.0);
+    this->meteoGridObj->setOpacity(this->ui->meteoGridOpacitySlider->value() / 100.0);
 
     this->rasterObj->setColorLegend(this->rasterLegend);
     this->meteoGridObj->setColorLegend(this->meteoGridLegend);
@@ -152,9 +152,182 @@ MainWindow::~MainWindow()
 }
 
 
+void MainWindow::resizeEvent(QResizeEvent * event)
+{
+    Q_UNUSED(event)
+    const int INFOHEIGHT = 40;
+    const int TOOLSWIDTH = 260;
+
+    ui->widgetMap->setGeometry(TOOLSWIDTH, 0, this->width()-TOOLSWIDTH, this->height() - INFOHEIGHT);
+    mapView->resize(ui->widgetMap->size());
+
+    ui->groupBoxVariable->move(MAPBORDER/2, (this->height() - INFOHEIGHT) / 2
+                               - ui->groupBoxVariable->height() - ui->groupBoxMeteoPoints->height() - MAPBORDER*2);
+    ui->groupBoxVariable->resize(TOOLSWIDTH, ui->groupBoxVariable->height());
+
+    ui->groupBoxMeteoPoints->move(MAPBORDER/2, (this->height() - INFOHEIGHT) / 2
+                                - ui->groupBoxMeteoPoints->height() - MAPBORDER);
+    ui->groupBoxMeteoPoints->resize(TOOLSWIDTH, ui->groupBoxMeteoPoints->height());
+
+    ui->groupBoxMeteoGrid->move(MAPBORDER/2, (this->height() - INFOHEIGHT) / 2);
+    ui->groupBoxMeteoGrid->resize(TOOLSWIDTH, ui->groupBoxMeteoGrid->height());
+
+    ui->groupBoxRaster->move(MAPBORDER/2, (this->height() - INFOHEIGHT) / 2
+                             + ui->groupBoxMeteoGrid->height() + MAPBORDER);
+    ui->groupBoxRaster->resize(TOOLSWIDTH, ui->groupBoxRaster->height());
+
+    elaborationBox->move(this->width()/70, this->height()/1.3);
+
+    // TODO sembrano non funzionare
+    ui->widgetColorLegendRaster->resize(TOOLSWIDTH, ui->widgetColorLegendPoints->height());
+    ui->widgetColorLegendPoints->resize(TOOLSWIDTH, ui->widgetColorLegendPoints->height());
+}
+
+
+void MainWindow::mouseReleaseEvent(QMouseEvent *event){
+    Q_UNUSED(event)
+
+    this->rasterObj->updateCenter();
+    this->meteoGridObj->updateCenter();
+
+    gis::Crit3DGeoPoint pointSelected;
+
+    if (myRubberBand != NULL && myRubberBand->isVisible())
+    {
+        QPointF lastCornerOffset = event->localPos();
+        QPointF firstCornerOffset = myRubberBand->getFirstCorner();
+        QPoint pixelTopLeft;
+        QPoint pixelBottomRight;
+
+        if (firstCornerOffset.y() > lastCornerOffset.y())
+        {
+            if (firstCornerOffset.x() > lastCornerOffset.x())
+            {
+                qDebug() << "bottom to left";
+                pixelTopLeft = lastCornerOffset.toPoint();
+                pixelBottomRight = firstCornerOffset.toPoint();
+            }
+            else
+            {
+                qDebug() << "bottom to right";
+
+                pixelTopLeft = QPoint(firstCornerOffset.toPoint().x(), lastCornerOffset.toPoint().y());
+                pixelBottomRight = QPoint(lastCornerOffset.toPoint().x(), firstCornerOffset.toPoint().y());
+            }
+        }
+        else
+        {
+            if (firstCornerOffset.x() > lastCornerOffset.x())
+            {
+                qDebug() << "top to left";
+                pixelTopLeft = QPoint(lastCornerOffset.toPoint().x(), firstCornerOffset.toPoint().y());
+                pixelBottomRight = QPoint(firstCornerOffset.toPoint().x(), lastCornerOffset.toPoint().y());
+            }
+            else
+            {
+                qDebug() << "top to right";
+                pixelTopLeft = firstCornerOffset.toPoint();
+                pixelBottomRight = lastCornerOffset.toPoint();
+            }
+        }
+
+        QPointF topLeft = this->mapView->mapToScene(getMapPoint(&pixelTopLeft));
+        QPointF bottomRight = this->mapView->mapToScene(getMapPoint(&pixelBottomRight));
+        QRectF rectF(topLeft, bottomRight);
+
+        foreach (StationMarker* marker, pointList)
+        {
+            if (rectF.contains(marker->longitude(), marker->latitude()))
+            {
+                if ( marker->color() ==  Qt::white )
+                {
+                    marker->setFillColor(QColor((Qt::red)));
+                    pointSelected.latitude = marker->latitude();
+                    pointSelected.longitude = marker->longitude();
+                    myProject.meteoPointsSelected << pointSelected;
+                }
+            }
+        }
+        myRubberBand->hide();
+    }
+}
+
+
+void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
+{
+    QPoint pos = event->pos();
+    QPoint mapPoint = getMapPoint(&pos);
+    if ((mapPoint.x() <= 0) || (mapPoint.y() <= 0)) return;
+
+    Position newCenter = this->mapView->mapToScene(mapPoint);
+    this->ui->statusBar->showMessage(QString::number(newCenter.latitude()) + " " + QString::number(newCenter.longitude()));
+
+    if (event->button() == Qt::LeftButton)
+        this->mapView->zoomIn();
+    else
+        this->mapView->zoomOut();
+
+    this->mapView->centerOn(newCenter.lonLat());
+
+    this->rasterObj->updateCenter();
+    this->meteoGridObj->updateCenter();
+}
+
+
+void MainWindow::mouseMoveEvent(QMouseEvent * event)
+{
+    QPoint pos = event->pos();
+    QPoint mapPoint = getMapPoint(&pos);
+    if ((mapPoint.x() <= 0) || (mapPoint.y() <= 0)) return;
+
+    Position geoPoint = this->mapView->mapToScene(mapPoint);
+    this->ui->statusBar->showMessage(QString::number(geoPoint.latitude()) + " " + QString::number(geoPoint.longitude()));
+
+    if (myRubberBand != NULL)
+    {
+        myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), mapPoint).normalized());
+    }
+}
+
+
+void MainWindow::mousePressEvent(QMouseEvent *event)
+{
+
+    if (event->button() == Qt::RightButton)
+    {
+        if (myRubberBand != NULL)
+        {
+            QPoint pos = event->pos();
+            QPointF firstCorner = event->localPos();
+            myRubberBand->setFirstCorner(firstCorner);
+            QPoint mapPoint = getMapPoint(&pos);
+            myRubberBand->setOrigin(mapPoint);
+            myRubberBand->setGeometry(QRect(mapPoint, QSize()));
+            myRubberBand->show();
+        }
+
+        if (myProject.netCDF.isLoaded)
+        {
+            QPoint pos = event->pos();
+            Position myPos = mapView->mapToScene(getMapPoint(&pos));
+            gis::Crit3DGeoPoint geoPoint = gis::Crit3DGeoPoint(myPos.latitude(), myPos.longitude());
+
+            exportNetCDFDataSeries(geoPoint);
+        }
+    }
+
+}
+
+
 void MainWindow::on_rasterOpacitySlider_sliderMoved(int position)
 {
     this->rasterObj->setOpacity(position / 100.0);
+}
+
+
+void MainWindow::on_meteoGridOpacitySlider_sliderMoved(int position)
+{
+    this->meteoGridObj->setOpacity(position / 100.0);
 }
 
 
@@ -473,161 +646,7 @@ void MainWindow::on_actionDownload_meteo_data_triggered()
 }
 
 
-void MainWindow::mouseReleaseEvent(QMouseEvent *event){
-    Q_UNUSED(event)
 
-    this->rasterObj->updateCenter();
-    this->meteoGridObj->updateCenter();
-
-    gis::Crit3DGeoPoint pointSelected;
-
-    if (myRubberBand != NULL && myRubberBand->isVisible())
-    {
-        QPointF lastCornerOffset = event->localPos();
-        QPointF firstCornerOffset = myRubberBand->getFirstCorner();
-        QPoint pixelTopLeft;
-        QPoint pixelBottomRight;
-
-        if (firstCornerOffset.y() > lastCornerOffset.y())
-        {
-            if (firstCornerOffset.x() > lastCornerOffset.x())
-            {
-                qDebug() << "bottom to left";
-                pixelTopLeft = lastCornerOffset.toPoint();
-                pixelBottomRight = firstCornerOffset.toPoint();
-            }
-            else
-            {
-                qDebug() << "bottom to right";
-
-                pixelTopLeft = QPoint(firstCornerOffset.toPoint().x(), lastCornerOffset.toPoint().y());
-                pixelBottomRight = QPoint(lastCornerOffset.toPoint().x(), firstCornerOffset.toPoint().y());
-            }
-        }
-        else
-        {
-            if (firstCornerOffset.x() > lastCornerOffset.x())
-            {
-                qDebug() << "top to left";
-                pixelTopLeft = QPoint(lastCornerOffset.toPoint().x(), firstCornerOffset.toPoint().y());
-                pixelBottomRight = QPoint(firstCornerOffset.toPoint().x(), lastCornerOffset.toPoint().y());
-            }
-            else
-            {
-                qDebug() << "top to right";
-                pixelTopLeft = firstCornerOffset.toPoint();
-                pixelBottomRight = lastCornerOffset.toPoint();
-            }
-        }
-
-        QPointF topLeft = this->mapView->mapToScene(getMapPoint(&pixelTopLeft));
-        QPointF bottomRight = this->mapView->mapToScene(getMapPoint(&pixelBottomRight));
-        QRectF rectF(topLeft, bottomRight);
-
-        foreach (StationMarker* marker, pointList)
-        {
-            if (rectF.contains(marker->longitude(), marker->latitude()))
-            {
-                if ( marker->color() ==  Qt::white )
-                {
-                    marker->setFillColor(QColor((Qt::red)));
-                    pointSelected.latitude = marker->latitude();
-                    pointSelected.longitude = marker->longitude();
-                    myProject.meteoPointsSelected << pointSelected;
-                }
-            }
-        }
-        myRubberBand->hide();
-    }
-}
-
-
-void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
-{
-    QPoint pos = event->pos();
-    QPoint mapPoint = getMapPoint(&pos);
-    if ((mapPoint.x() <= 0) || (mapPoint.y() <= 0)) return;
-
-    Position newCenter = this->mapView->mapToScene(mapPoint);
-    this->ui->statusBar->showMessage(QString::number(newCenter.latitude()) + " " + QString::number(newCenter.longitude()));
-
-    if (event->button() == Qt::LeftButton)
-        this->mapView->zoomIn();
-    else
-        this->mapView->zoomOut();
-
-    this->mapView->centerOn(newCenter.lonLat());
-
-    this->rasterObj->updateCenter();
-    this->meteoGridObj->updateCenter();
-}
-
-
-void MainWindow::mouseMoveEvent(QMouseEvent * event)
-{
-    QPoint pos = event->pos();
-    QPoint mapPoint = getMapPoint(&pos);
-    if ((mapPoint.x() <= 0) || (mapPoint.y() <= 0)) return;
-
-    Position geoPoint = this->mapView->mapToScene(mapPoint);
-    this->ui->statusBar->showMessage(QString::number(geoPoint.latitude()) + " " + QString::number(geoPoint.longitude()));
-
-    if (myRubberBand != NULL)
-    {
-        myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), mapPoint).normalized());
-    }
-}
-
-
-void MainWindow::mousePressEvent(QMouseEvent *event)
-{
-
-    if (event->button() == Qt::RightButton)
-    {
-        if (myRubberBand != NULL)
-        {
-            QPoint pos = event->pos();
-            QPointF firstCorner = event->localPos();
-            myRubberBand->setFirstCorner(firstCorner);
-            QPoint mapPoint = getMapPoint(&pos);
-            myRubberBand->setOrigin(mapPoint);
-            myRubberBand->setGeometry(QRect(mapPoint, QSize()));
-            myRubberBand->show();
-        }
-
-        if (myProject.netCDF.isLoaded)
-        {
-            QPoint pos = event->pos();
-            Position myPos = mapView->mapToScene(getMapPoint(&pos));
-            gis::Crit3DGeoPoint geoPoint = gis::Crit3DGeoPoint(myPos.latitude(), myPos.longitude());
-
-            exportNetCDFDataSeries(geoPoint);
-        }
-    }
-
-}
-
-void MainWindow::resizeEvent(QResizeEvent * event)
-{
-    Q_UNUSED(event)
-    const int INFOHEIGHT = 40;
-    const int TOOLSWIDTH = 260;
-
-    ui->widgetMap->setGeometry(TOOLSWIDTH, 0, this->width()-TOOLSWIDTH, this->height() - INFOHEIGHT);
-    mapView->resize(ui->widgetMap->size());
-
-    ui->groupBoxVariable->move(MAPBORDER/2, (this->height() - INFOHEIGHT) / 2 - ui->groupBoxVariable->height() - MAPBORDER);
-    ui->groupBoxVariable->resize(TOOLSWIDTH, ui->groupBoxVariable->height());
-
-    ui->groupBoxRaster->move(MAPBORDER/2, (this->height() - INFOHEIGHT) / 2 + MAPBORDER);
-    ui->groupBoxRaster->resize(TOOLSWIDTH, ui->groupBoxRaster->height());
-
-    elaborationBox->move(this->width()/70,this->height()/1.3);
-
-    //TODO sembrano non funzionare
-    ui->widgetColorLegendRaster->resize(TOOLSWIDTH, ui->widgetColorLegendPoints->height());
-    ui->widgetColorLegendPoints->resize(TOOLSWIDTH, ui->widgetColorLegendPoints->height());
-}
 
 
 QPoint MainWindow::getMapPoint(QPoint* point) const
@@ -1038,6 +1057,7 @@ bool MainWindow::loadMeteoGridDB(QString xmlName)
     }
 
     meteoGridLegend->colorScale = myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale;
+    ui->meteoGridOpacitySlider->setEnabled(true);
 
     // update dateTime Edit if there are not MeteoPoints
     if (this->pointList.isEmpty())
@@ -1173,6 +1193,7 @@ void MainWindow::on_actionClose_meteo_grid_triggered()
         meteoGridLegend->setVisible(false);
         myProject.closeMeteoGridDB();
         elaborationBox->hide();
+        ui->meteoGridOpacitySlider->setEnabled(false);
     }
 
 }
@@ -1585,3 +1606,4 @@ void MainWindow::on_actionCriteria3D_Initialize_triggered()
         QMessageBox::information(NULL, "", "Criteria3D initialized.");
 }
 // ----------- end CRITERIA3D functions ------------------------------------
+
