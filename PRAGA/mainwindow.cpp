@@ -904,7 +904,12 @@ void MainWindow::redrawMeteoGrid()
     meteoVariable variable = myProject.getCurrentVariable();
 
     if (myProject.getCurrentVariable() == noMeteoVar)
+    {
+        meteoGridLegend->setVisible(false);
+        ui->labelMeteoGridScale->setText("");
+        meteoGridObj->redrawRequested();
         return;
+    }
 
     Crit3DTime time = myProject.getCurrentTime();
 
@@ -923,7 +928,6 @@ void MainWindow::redrawMeteoGrid()
     meteoGridLegend->setVisible(true);
 
     setColorScale(variable, myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale);
-
     ui->labelMeteoGridScale->setText(QString::fromStdString(getVariableString(myProject.currentVariable)));
 
     meteoGridObj->redrawRequested();
