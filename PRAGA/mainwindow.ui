@@ -477,7 +477,7 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>360</y>
+      <y>380</y>
       <width>261</width>
       <height>161</height>
      </rect>
@@ -957,7 +957,7 @@
      <property name="geometry">
       <rect>
        <x>-1</x>
-       <y>120</y>
+       <y>110</y>
        <width>261</width>
        <height>41</height>
       </rect>
@@ -1784,9 +1784,9 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>250</y>
+      <y>260</y>
       <width>261</width>
-      <height>101</height>
+      <height>111</height>
      </rect>
     </property>
     <property name="autoFillBackground">
@@ -1853,6 +1853,61 @@
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
+    <widget class="QLabel" name="labelMeteoGridScale">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>40</y>
+       <width>221</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="palette">
+      <palette>
+       <active>
+        <colorrole role="WindowText">
+         <brush brushstyle="SolidPattern">
+          <color alpha="255">
+           <red>0</red>
+           <green>0</green>
+           <blue>0</blue>
+          </color>
+         </brush>
+        </colorrole>
+       </active>
+       <inactive>
+        <colorrole role="WindowText">
+         <brush brushstyle="SolidPattern">
+          <color alpha="255">
+           <red>0</red>
+           <green>0</green>
+           <blue>0</blue>
+          </color>
+         </brush>
+        </colorrole>
+       </inactive>
+       <disabled>
+        <colorrole role="WindowText">
+         <brush brushstyle="SolidPattern">
+          <color alpha="255">
+           <red>127</red>
+           <green>127</green>
+           <blue>127</blue>
+          </color>
+         </brush>
+        </colorrole>
+       </disabled>
+      </palette>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>9</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
    </widget>
    <widget class="QGroupBox" name="groupBoxMeteoPoints">
     <property name="geometry">
@@ -1860,7 +1915,7 @@
       <x>0</x>
       <y>170</y>
       <width>261</width>
-      <height>71</height>
+      <height>81</height>
      </rect>
     </property>
     <property name="autoFillBackground">

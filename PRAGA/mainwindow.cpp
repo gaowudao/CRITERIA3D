@@ -33,6 +33,7 @@
 
 extern Project myProject;
 #define MAPBORDER 8
+#define TOOLSWIDTH 260
 
 MainWindow::MainWindow(environment menu, QWidget *parent) :
     QMainWindow(parent),
@@ -107,27 +108,22 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
     }
 
     elaborationBox = new QGroupBox(this);
+    elaborationBox->setTitle("Elaboration");
     elabType1 = new QLineEdit;
     elabType2 = new QLineEdit;
     elabVariable = new QLineEdit;
     elabPeriod = new QLineEdit;
 
-    elaborationBox->move(this->width()/70,this->height()/1.3);
-    elaborationBox->setFixedSize(220,160);
     QVBoxLayout *vbox = new QVBoxLayout(elaborationBox);
-    QLabel *title = new QLabel();
-    title->setText("<font color='red'>elaboration:</font>");
-    title->setBuddy(elabType1);
     QLabel *secondElab = new QLabel();
-    secondElab->setText("<font color='red'>second Elab:</font>");
+    secondElab->setText("<font color='black'>second Elab:</font>");
     secondElab->setBuddy(elabType2);
     QLabel *variable = new QLabel();
-    variable->setText("<font color='red'>variable:</font>");
+    variable->setText("<font color='black'>variable:</font>");
     variable->setBuddy(elabVariable);
     QLabel *period  = new QLabel();
-    period->setText("<font color='red'>period:</font>");
+    period->setText("<font color='black'>period:</font>");
     period->setBuddy(elabPeriod);
-    vbox->addWidget(title);
     vbox->addWidget(elabType1);
     vbox->addWidget(elabType2);
     vbox->addWidget(variable);
@@ -135,6 +131,7 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
     vbox->addWidget(period);
     vbox->addWidget(elabPeriod);
     elaborationBox->setLayout(vbox);
+
     elaborationBox->hide();
 }
 
@@ -156,27 +153,24 @@ void MainWindow::resizeEvent(QResizeEvent * event)
 {
     Q_UNUSED(event)
     const int INFOHEIGHT = 40;
-    const int TOOLSWIDTH = 260;
 
     ui->widgetMap->setGeometry(TOOLSWIDTH, 0, this->width()-TOOLSWIDTH, this->height() - INFOHEIGHT);
     mapView->resize(ui->widgetMap->size());
 
-    ui->groupBoxVariable->move(MAPBORDER/2, (this->height() - INFOHEIGHT) / 2
-                               - ui->groupBoxVariable->height() - ui->groupBoxMeteoPoints->height() - MAPBORDER*2);
+    ui->groupBoxVariable->move(MAPBORDER/2, MAPBORDER);
     ui->groupBoxVariable->resize(TOOLSWIDTH, ui->groupBoxVariable->height());
 
-    ui->groupBoxMeteoPoints->move(MAPBORDER/2, (this->height() - INFOHEIGHT) / 2
-                                - ui->groupBoxMeteoPoints->height() - MAPBORDER);
+    ui->groupBoxMeteoPoints->move(MAPBORDER/2, ui->groupBoxVariable->y() + ui->groupBoxVariable->height() + MAPBORDER);
     ui->groupBoxMeteoPoints->resize(TOOLSWIDTH, ui->groupBoxMeteoPoints->height());
 
-    ui->groupBoxMeteoGrid->move(MAPBORDER/2, (this->height() - INFOHEIGHT) / 2);
+    ui->groupBoxMeteoGrid->move(MAPBORDER/2, ui->groupBoxMeteoPoints->y() + ui->groupBoxMeteoPoints->height() + MAPBORDER);
     ui->groupBoxMeteoGrid->resize(TOOLSWIDTH, ui->groupBoxMeteoGrid->height());
 
-    ui->groupBoxRaster->move(MAPBORDER/2, (this->height() - INFOHEIGHT) / 2
-                             + ui->groupBoxMeteoGrid->height() + MAPBORDER);
+    ui->groupBoxRaster->move(MAPBORDER/2, ui->groupBoxMeteoGrid->y() + ui->groupBoxMeteoGrid->height() + MAPBORDER);
     ui->groupBoxRaster->resize(TOOLSWIDTH, ui->groupBoxRaster->height());
 
-    elaborationBox->move(this->width()/70, this->height()/1.3);
+    elaborationBox->move(MAPBORDER/2, ui->groupBoxRaster->y() + ui->groupBoxRaster->height() + MAPBORDER*4);
+    elaborationBox->resize(TOOLSWIDTH, 180);
 
     // TODO sembrano non funzionare
     ui->widgetColorLegendRaster->resize(TOOLSWIDTH, ui->widgetColorLegendPoints->height());
@@ -930,6 +924,8 @@ void MainWindow::redrawMeteoGrid()
 
     setColorScale(variable, myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale);
 
+    ui->labelMeteoGridScale->setText(QString::fromStdString(getVariableString(myProject.currentVariable)));
+
     meteoGridObj->redrawRequested();
     meteoGridLegend->update();
 
@@ -1368,10 +1364,8 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool is
     if (isMeteoGrid)
     {
         meteoGridLegend->setVisible(true);
-        setCurrentRaster(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid));
-        ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myProject.clima->variable())));
-        setColorScale(myProject.clima->variable(), myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale);
         meteoGridLegend->update();
+        ui->labelMeteoGridScale->setText(QString::fromStdString(getVariableString(myProject.clima->variable())));
     }
     else
     {
