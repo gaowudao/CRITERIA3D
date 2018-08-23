@@ -328,12 +328,6 @@ float loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteo
             dailyValues = meteoGridDbHandler->loadGridDailyVar(myError, QString::fromStdString(meteoPoint->id), variable, first, last, &firstDateDB);
         }
 
-        /*int numberOfDays = firstDateDB.daysTo(last) + 1;
-        if (meteoPoint->nrObsDataDaysD == 0)
-        {
-            meteoPoint->initializeObsDataD(numberOfDays, getCrit3DDate(firstDateDB));
-        }*/
-
     }
     // meteoPoint
     else
