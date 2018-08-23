@@ -35,7 +35,7 @@ bool drawColorLegend(Crit3DColorScale* colorScale, QPainter* myPainter)
     int nrStep = colorScale->nrColors;
     float step = float(maximum - minimum) / float(nrStep);
     float dx = float(legendWidth) / float(nrStep+1);
-    int n = nrStep/4;
+    int n = maxValue(nrStep/4, 1);
 
     Crit3DColor* myColor;
     QColor myQColor;

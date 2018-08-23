@@ -1367,9 +1367,10 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool is
 
     if (isMeteoGrid)
     {
+        setColorScale(myProject.clima->variable(), myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale);
+        ui->labelMeteoGridScale->setText(QString::fromStdString(getVariableString(myProject.clima->variable())));
         meteoGridLegend->setVisible(true);
         meteoGridLegend->update();
-        ui->labelMeteoGridScale->setText(QString::fromStdString(getVariableString(myProject.clima->variable())));
     }
     else
     {

@@ -391,6 +391,8 @@ std::string getVariableString(meteoVariable myVar)
 {
     if (myVar == airTemperature || myVar == dailyAirTemperatureAvg)
         return "Air temperature °C";
+    else if (myVar == dailyAirTemperatureRange)
+        return "Air temerature range °C";
     else if (myVar == airRelHumidity || myVar == dailyAirRelHumidityAvg)
         return "Relative humidity %";
     else if ((myVar == dailyPrecipitation ||  myVar == precipitation))
