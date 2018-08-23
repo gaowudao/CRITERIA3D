@@ -362,7 +362,7 @@ bool setColorScale(meteoVariable variable, Crit3DColorScale *colorScale)
 
     switch(variable)
     {
-        case airTemperature: case dailyAirTemperatureAvg: case dailyAirTemperatureMax: case dailyAirTemperatureMin:
+        case airTemperature: case dailyAirTemperatureAvg: case dailyAirTemperatureMax: case dailyAirTemperatureMin: case dailyAirTemperatureRange:
             setTemperatureScale(colorScale);
             break;
         case airRelHumidity: case dailyAirRelHumidityAvg: case dailyAirRelHumidityMax: case dailyAirRelHumidityMin: case leafWetness: case dailyLeafWetness:
