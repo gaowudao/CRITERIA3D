@@ -94,7 +94,6 @@ bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* 
 
     std::string id;
 
-
     QDate startDate(clima->yearStart(), clima->genericPeriodDateStart().month(), clima->genericPeriodDateStart().day());
     QDate endDate(clima->yearEnd(), clima->genericPeriodDateEnd().month(), clima->genericPeriodDateEnd().day());
 
@@ -179,10 +178,6 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
     std::vector<float> outputValues;
 
     meteoPointTemp->id = meteoPoint->id;
-//    if (meteoPointTemp->id == "02148")
-//    {
-//        qInfo() << "02148"; // debug
-//    }
     meteoPointTemp->point.z = meteoPoint->point.z;
     meteoPointTemp->firstDateDailyVar = meteoPoint->firstDateDailyVar;
 
@@ -192,17 +187,26 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
     {
         elab1MeteoComp = MapMeteoComputation.at(clima->elab1().toStdString());
     }
-    catch (const std::out_of_range& oor) {
-        elab1MeteoComp = noMeteoComp;
-      }
-
-    try
+    catch (const std::out_of_range& oor)
     {
-        elab2MeteoComp = MapMeteoComputation.at(clima->elab2().toStdString());
+        elab1MeteoComp = noMeteoComp;
     }
-    catch (const std::out_of_range& oor) {
+
+    if (clima->elab2() == "")
+    {
         elab2MeteoComp = noMeteoComp;
-      }
+    }
+    else
+    {
+        try
+        {
+            elab2MeteoComp = MapMeteoComputation.at(clima->elab2().toStdString());
+        }
+        catch (const std::out_of_range& oor)
+        {
+            elab2MeteoComp = noMeteoComp;
+        }
+    }
 
     dataLoaded = false;
 
