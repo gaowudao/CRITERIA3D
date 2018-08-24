@@ -15,7 +15,7 @@
 #include "dialogWindows.h"
 #include "project.h"
 #include "utilities.h"
-#include "climate1.h"
+#include "climate.h"
 #include "interpolationSettings.h"
 
 
