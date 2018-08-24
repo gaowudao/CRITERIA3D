@@ -361,7 +361,6 @@ float loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteo
             }
             meteoPoint->setMeteoPointValueD(currentDate, variable, dailyValues[i]);
             currentDate = currentDate.addDays(1);
-
         }
 
         float percValue = float(nrValidValues) / float(nrRequestedValues);
@@ -1399,7 +1398,6 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                 break;
             }
 
-
             }
             break;
         }
@@ -1417,7 +1415,6 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
             extractValidValuesCC(outputValues);
         }
     }
-
 
     return preElaboration;
 }
