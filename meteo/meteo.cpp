@@ -368,9 +368,11 @@ bool setColorScale(meteoVariable variable, Crit3DColorScale *colorScale)
         case airRelHumidity: case dailyAirRelHumidityAvg: case dailyAirRelHumidityMax: case dailyAirRelHumidityMin: case leafWetness: case dailyLeafWetness:
             setRelativeHumidityScale(colorScale);
             break;
-        case precipitation: case dailyPrecipitation: case referenceEvapotranspiration:
-        case dailyReferenceEvapotranspirationHS: case dailyBIC:
+        case precipitation: case dailyPrecipitation: case referenceEvapotranspiration: case dailyReferenceEvapotranspirationHS:
             setPrecipitationScale(colorScale);
+            break;
+        case dailyBIC:
+            setZeroCenteredScale(colorScale);
             break;
         case globalIrradiance: case dailyGlobalRadiation:
             setRadiationScale(colorScale);

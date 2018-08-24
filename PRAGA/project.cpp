@@ -863,7 +863,7 @@ bool Project::loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate, b
 
     if (showInfo)
     {
-        QString infoStr = "Load grid hourly data: " + firstDate.toString() + " - " + lastDate.toString();
+        QString infoStr = "Load grid hourly data: " + firstDate.toString("yyyy-MM-dd:hh") + " - " + lastDate.toString("yyyy-MM-dd:hh");
         infoStep = myInfo.start(infoStr, this->meteoGridDbHandler->gridStructure().header().nrRows);
     }
 

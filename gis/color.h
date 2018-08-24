@@ -63,6 +63,7 @@
     bool setRadiationScale(Crit3DColorScale* myScale);
     bool setWindIntensityScale(Crit3DColorScale* myScale);
     bool setLeafWetnessScale(Crit3DColorScale* myScale);
+    bool setZeroCenteredScale(Crit3DColorScale* myScale);
     bool roundColorScale(Crit3DColorScale* myScale, int nrIntervals, bool lessRounded);
 
 
