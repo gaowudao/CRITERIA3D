@@ -442,7 +442,8 @@ float loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* mete
     QDateTime firstDateDB;
     Crit3DQuality qualityCheck;
     int nrValidValues = 0;
-    int nrRequestedValues = (first.daysTo(last)+1) * meteoPoint->hourlyFraction;
+    int nrRequestedDays = first.daysTo(last) +1;
+    int nrRequestedValues = nrRequestedDays * 24 * meteoPoint->hourlyFraction;
 
     // meteoGrid
     if (isMeteoGrid)
