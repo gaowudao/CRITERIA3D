@@ -80,7 +80,7 @@ void Crit3DMeteoPoint::initializeObsDataH(int myHourlyFraction, int numberOfDays
 
     nrObsDataDaysH = numberOfDays;
     hourlyFraction = myHourlyFraction;
-    int nrDayValues = hourlyFraction * 24 +1;
+    int nrDayValues = hourlyFraction * 24 + 1;
     obsDataH = (TObsDataH *) calloc(numberOfDays, sizeof(TObsDataH));
     quality = quality::missing_data;
     residual = NODATA;

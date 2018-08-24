@@ -1,6 +1,8 @@
 #include <QString>
 #include <QDate>
 
+#include <math.h>       /* ceil */
+
 #include "commonConstants.h"
 #include "climate.h"
 #include "crit3dDate.h"
@@ -317,7 +319,7 @@ float loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteo
     QDate firstDateDB;
     Crit3DQuality qualityCheck;
     int nrValidValues = 0;
-    float percValue = -1;
+    int nrRequestedValues = first.daysTo(last) +1;
 
     // meteoGrid
     if (isMeteoGrid)
@@ -341,7 +343,7 @@ float loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteo
 
     if ( dailyValues.empty() )
     {
-        return percValue;
+        return 0;
     }
     else
     {
@@ -362,10 +364,10 @@ float loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteo
             currentDate = currentDate.addDays(1);
 
         }
-        percValue = nrValidValues / dailyValues.size();
+
+        float percValue = nrValidValues / nrRequestedValues;
         return percValue;
     }
-
 }
 
 
@@ -377,7 +379,7 @@ float loadDailyVarSeries_SaveOutput(std::string *myError, Crit3DMeteoPointsDbHan
     QDate firstDateDB;
     Crit3DQuality qualityCheck;
     int nrValidValues = 0;
-    float percValue = -1;
+    int nrRequestedValues = first.daysTo(last) +1;
 
     // meteoGrid
     if (isMeteoGrid)
@@ -402,7 +404,7 @@ float loadDailyVarSeries_SaveOutput(std::string *myError, Crit3DMeteoPointsDbHan
 
     if ( dailyValues.empty() )
     {
-        return percValue;
+        return 0;
     }
     else
     {
@@ -426,7 +428,8 @@ float loadDailyVarSeries_SaveOutput(std::string *myError, Crit3DMeteoPointsDbHan
             currentDate = currentDate.addDays(1);
 
         }
-        percValue = nrValidValues / dailyValues.size();
+
+        float percValue = nrValidValues / nrRequestedValues;
         return percValue;
     }
 }
@@ -440,7 +443,7 @@ float loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* mete
     QDateTime firstDateDB;
     Crit3DQuality qualityCheck;
     int nrValidValues = 0;
-    float percValue = -1;
+    int nrRequestedValues = (first.daysTo(last)+1) * meteoPoint->hourlyFraction;
 
     // meteoGrid
     if (isMeteoGrid)
@@ -464,13 +467,14 @@ float loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* mete
 
     if ( hourlyValues.empty() )
     {
-        return percValue;
+        return 0;
     }
     else
     {
         if (meteoPoint->nrObsDataDaysH == 0)
         {
-            meteoPoint->initializeObsDataH(meteoPoint->hourlyFraction, hourlyValues.size(), meteoPoint->firstDateDailyVar);
+            int nrOfDays = ceil(hourlyValues.size() / (24 * meteoPoint->hourlyFraction));
+            meteoPoint->initializeObsDataH(meteoPoint->hourlyFraction, nrOfDays, meteoPoint->firstDateDailyVar);
         }
 
         for (unsigned int i = 0; i < hourlyValues.size(); i++)
@@ -486,7 +490,7 @@ float loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* mete
             firstDateDB = firstDateDB.addSecs(3600);
         }
 
-        percValue = nrValidValues / hourlyValues.size();
+        float percValue = nrValidValues / nrRequestedValues;
         return percValue;
     }
 
@@ -1880,7 +1884,6 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                 }
                 default:
                 {
-
                     numberOfDays = difference(firstDate, lastDate) +1;
                     presentDate = firstDate;
                     for (int i = 0; i < numberOfDays; i++)
@@ -1925,26 +1928,24 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
 
         } // end for
 
-        if (nTotYears > 0)
-        {
-            if ( (nValidYears / nTotYears) * 100 >= MINPERCENTAGE)
-            {
-                switch(elab2)
-                {
-                    case trend:
-                        return elaborations::statisticalElab(elab2, firstYear, valuesSecondElab, nTotYears);
-                    default:
-                        return elaborations::statisticalElab(elab2, param2, valuesSecondElab, nTotYears);
-                }
-            }
-            else
-            {
-                return NODATA;
-            }
-        }
-        else
+        if (nTotYears == 0)
         {
             return NODATA;
         }
+        else if ((nValidYears / nTotYears) * 100 < MINPERCENTAGE)
+        {
+            return NODATA;
+        }
+        else
+        {
+            switch(elab2)
+            {
+                case trend:
+                    return elaborations::statisticalElab(elab2, firstYear, valuesSecondElab, nTotYears);
+                default:
+                    return elaborations::statisticalElab(elab2, param2, valuesSecondElab, nTotYears);
+            }
+        }
+
     }
 }
