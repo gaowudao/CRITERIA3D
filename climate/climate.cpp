@@ -1819,7 +1819,7 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
 
                 if (nValues == 0)return NODATA;
 
-                if ((nValidValues / nValues) * 100 < MINPERCENTAGE) return NODATA;
+                if ((float(nValidValues) / float(nValues)) * 100 < MINPERCENTAGE) return NODATA;
 
                 return elaborations::statisticalElab(elab1, param1, values, nValues);
 
@@ -1905,7 +1905,7 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
 
                     if (nValues > 0)
                     {
-                        if ( (nValidValues / nValues) * 100 >= MINPERCENTAGE)
+                        if (((float(nValidValues) / float(nValues)) * 100) >= MINPERCENTAGE)
                         {
                             primary = elaborations::statisticalElab(elab1, param1, values, nValues);
                         }
