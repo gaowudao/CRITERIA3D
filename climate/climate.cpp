@@ -1019,6 +1019,7 @@ float computeCorrectedSum(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Cr
 
 bool elaborateDailyAggregatedVar(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> &outputValues, float* percValue)
 {
+    outputValues.clear();
 
     frequencyType aggregationFrequency = getAggregationFrequency(myVar);
 
