@@ -472,7 +472,7 @@ float loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* mete
     {
         if (meteoPoint->nrObsDataDaysH == 0)
         {
-            int nrOfDays = ceil(hourlyValues.size() / (24 * meteoPoint->hourlyFraction));
+            int nrOfDays = ceil(float(hourlyValues.size()) / float(24 * meteoPoint->hourlyFraction));
             meteoPoint->initializeObsDataH(meteoPoint->hourlyFraction, nrOfDays, meteoPoint->firstDateDailyVar);
         }
 
@@ -1197,7 +1197,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
 
         case dailyLeafWetness:
         {
-            if ( loadHourlyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, leafWetness, QDateTime(startDate,QTime(0,0,0)), QDateTime(endDate,QTime(0,0,0))) > 0)
+            if ( loadHourlyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, leafWetness, QDateTime(startDate,QTime(0,0,0)), QDateTime(endDate,QTime(23,0,0))) > 0)
             {
                 preElaboration = elaborateDailyAggregatedVar(dailyLeafWetness, *meteoPoint, outputValues, percValue);
             }
@@ -1230,9 +1230,9 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
         case dailyThomAvg: case dailyThomMax: case dailyThomHoursAbove:
         {
 
-            if (loadHourlyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, airTemperature, QDateTime(startDate,QTime(0,0,0)), QDateTime(endDate,QTime(0,0,0)))  > 0)
+            if (loadHourlyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, airTemperature, QDateTime(startDate,QTime(0,0,0)), QDateTime(endDate,QTime(23,0,0)))  > 0)
             {
-                if (loadHourlyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, airRelHumidity, QDateTime(startDate,QTime(0,0,0)), QDateTime(endDate,QTime(0,0,0)))  > 0)
+                if (loadHourlyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, airRelHumidity, QDateTime(startDate,QTime(0,0,0)), QDateTime(endDate,QTime(23,0,0)))  > 0)
                 {
                     preElaboration = elaborateDailyAggregatedVar(variable, *meteoPoint, outputValues, percValue);
                 }
