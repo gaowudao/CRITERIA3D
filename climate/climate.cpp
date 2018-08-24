@@ -257,18 +257,17 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
         }
         else
         {
-
-              meteoPoint->elaboration = result;
-              if (meteoPoint->elaboration != NODATA)
-              {
-                  delete meteoPointTemp;
-                  return true;
-              }
-              else
-              {
-                  delete meteoPointTemp;
-                  return false;
-              }
+            meteoPoint->elaboration = result;
+            if (meteoPoint->elaboration != NODATA)
+            {
+                delete meteoPointTemp;
+                return true;
+            }
+            else
+            {
+                delete meteoPointTemp;
+                return false;
+            }
         }
     }
     else if (isAnomaly)
