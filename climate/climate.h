@@ -1,148 +1,147 @@
 #ifndef CLIMATE_H
 #define CLIMATE_H
 
+    class QString;
+    class QDate;
 
-#include <QString>
-#include <QDate>
+    #ifndef METEO_H
+        #include "meteo.h"
+    #endif
 
-#ifndef METEO_H
-    #include "meteo.h"
-#endif
+    #ifndef STATISTICS_H
+        #include "statistics.h"
+    #endif
 
-#ifndef STATISTICS_H
-    #include "statistics.h"
-#endif
+    #ifndef DBMETEOGRID_H
+        #include "dbMeteoPoints.h"
+    #endif
 
-#ifndef DBMETEOGRID_H
-    #include "dbMeteoPoints.h"
-#endif
+    #ifndef DBMETEOGRID_H
+        #include "dbMeteoGrid.h"
+    #endif
 
-#ifndef DBMETEOGRID_H
-    #include "dbMeteoGrid.h"
-#endif
-
-#ifndef DBCLIMATE_H
-    #include "dbClimate.h"
-#endif
-
-
-const std::map<std::string, int> MapElabWithParam = {
-  { "differenceWithThreshold", 1 },
-  { "lastDayBelowThreshold", 1 },
-  { "sumAbove", 1 },
-  { "avgAbove", 1 },
-  { "stdDevAbove", 1 },
-  { "percentile", 1 },
-  { "daysAbove", 1 },
-  { "daysBelow", 1 },
-  { "consecutiveDaysAbove", 1 },
-  { "consecutiveDaysBelow", 1 },
-  { "correctedDegreeDaysSum", 1 }
-};
-
-const std::map<std::string, meteoComputation> MapMeteoComputation = {
-  { "average", average },
-  { "stdDev", stdDev },
-  { "sum", sum },
-  { "maxInList", maxInList },
-  { "minInList", minInList },
-  { "differenceWithThreshold", differenceWithThreshold },
-  { "lastDayBelowThreshold", lastDayBelowThreshold },
-  { "sumAbove", sumAbove },
-  { "avgAbove", avgAbove },
-  { "stdDevAbove", stdDevAbove },
-  { "percentile", percentile },
-  { "median", median },
-  { "freqPositive", freqPositive },
-  { "daysAbove", daysAbove },
-  { "daysBelow", daysBelow },
-  { "consecutiveDaysAbove", consecutiveDaysAbove },
-  { "consecutiveDaysBelow", consecutiveDaysBelow },
-  { "prevailingWindDir", prevailingWindDir },
-  { "trend", trend },
-  { "mannKendall", mannKendall },
-  { "phenology", phenology },
-  { "winkler", winkler },
-  { "huglin", huglin },
-  { "fregoni", fregoni },
-  { "correctedDegreeDaysSum", correctedDegreeDaysSum },
-  { "erosivityFactorElab", erosivityFactorElab },
-  { "rainIntensityElab", rainIntensityElab }
-};
+    #ifndef DBCLIMATE_H
+        #include "dbClimate.h"
+    #endif
 
 
-bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DClimate *referenceClima, Crit3DClimate* clima, QDate currentDay, bool isAnomaly);
+    const std::map<std::string, int> MapElabWithParam = {
+      { "differenceWithThreshold", 1 },
+      { "lastDayBelowThreshold", 1 },
+      { "sumAbove", 1 },
+      { "avgAbove", 1 },
+      { "stdDevAbove", 1 },
+      { "percentile", 1 },
+      { "daysAbove", 1 },
+      { "daysBelow", 1 },
+      { "consecutiveDaysAbove", 1 },
+      { "consecutiveDaysBelow", 1 },
+      { "correctedDegreeDaysSum", 1 }
+    };
 
-bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DClimate* referenceClima, Crit3DClimate* clima, QDate currentDay, bool isAnomaly);
+    const std::map<std::string, meteoComputation> MapMeteoComputation = {
+      { "average", average },
+      { "stdDev", stdDev },
+      { "sum", sum },
+      { "maxInList", maxInList },
+      { "minInList", minInList },
+      { "differenceWithThreshold", differenceWithThreshold },
+      { "lastDayBelowThreshold", lastDayBelowThreshold },
+      { "sumAbove", sumAbove },
+      { "avgAbove", avgAbove },
+      { "stdDevAbove", stdDevAbove },
+      { "percentile", percentile },
+      { "median", median },
+      { "freqPositive", freqPositive },
+      { "daysAbove", daysAbove },
+      { "daysBelow", daysBelow },
+      { "consecutiveDaysAbove", consecutiveDaysAbove },
+      { "consecutiveDaysBelow", consecutiveDaysBelow },
+      { "prevailingWindDir", prevailingWindDir },
+      { "trend", trend },
+      { "mannKendall", mannKendall },
+      { "phenology", phenology },
+      { "winkler", winkler },
+      { "huglin", huglin },
+      { "fregoni", fregoni },
+      { "correctedDegreeDaysSum", correctedDegreeDaysSum },
+      { "erosivityFactorElab", erosivityFactorElab },
+      { "rainIntensityElab", rainIntensityElab }
+    };
 
-bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler,
-    Crit3DMeteoPoint* meteoPoint, Crit3DClimate* clima, bool isMeteoGrid, QDate startDate, QDate endDate, bool isAnomaly, bool loadData);
 
-frequencyType getAggregationFrequency(meteoVariable myVar);
+    bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DClimate *referenceClima, Crit3DClimate* clima, QDate currentDay, bool isAnomaly);
 
-bool elaborateDailyAggregatedVar(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> &outputValues, float* percValue);
+    bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DClimate* referenceClima, Crit3DClimate* clima, QDate currentDay, bool isAnomaly);
 
-bool elaborateDailyAggregatedVarFromDaily(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> &outputValues, float* percValue);
+    bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler,
+        Crit3DMeteoPoint* meteoPoint, Crit3DClimate* clima, bool isMeteoGrid, QDate startDate, QDate endDate, bool isAnomaly, bool loadData);
 
-bool elaborateDailyAggregatedVarFromHourly(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> &outputValues);
+    frequencyType getAggregationFrequency(meteoVariable myVar);
 
-bool anomalyOnPoint(Crit3DMeteoPoint* meteoPoint, float refValue);
+    bool elaborateDailyAggregatedVar(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> &outputValues, float* percValue);
 
-float thomDayTime(float tempMax, float relHumMinAir);
+    bool elaborateDailyAggregatedVarFromDaily(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> &outputValues, float* percValue);
 
-float thomNightTime(float tempMin, float relHumMaxAir);
+    bool elaborateDailyAggregatedVarFromHourly(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> &outputValues);
 
-float thomH(float tempAvg, float relHumAvgAir);
+    bool anomalyOnPoint(Crit3DMeteoPoint* meteoPoint, float refValue);
 
-int thomDailyNHoursAbove(float *tempAvg, float *relHumAvgAir);
+    float thomDayTime(float tempMax, float relHumMinAir);
 
-float thomDailyMax(float *tempAvg, float* relHumAvgAir);
+    float thomNightTime(float tempMin, float relHumMaxAir);
 
-float thomDailyMean(float *tempAvg, float* relHumAvgAir);
+    float thomH(float tempAvg, float relHumAvgAir);
 
-float dailyLeafWetnessComputation(int *leafW);
+    int thomDailyNHoursAbove(float *tempAvg, float *relHumAvgAir);
 
-float computeDailyBIC(float prec, float etp);
+    float thomDailyMax(float *tempAvg, float* relHumAvgAir);
 
-float dailyThermalRange(float Tmin, float Tmax);
+    float thomDailyMean(float *tempAvg, float* relHumAvgAir);
 
-float dailyAverageT(float Tmin, float Tmax);
+    float dailyLeafWetnessComputation(int *leafW);
 
-float dailyEtpHargreaves(float Tmin, float Tmax, Crit3DDate date, double latitude);
+    float computeDailyBIC(float prec, float etp);
 
-float dewPoint(float relHumAir, float tempAir);
+    float dailyThermalRange(float Tmin, float Tmax);
 
-float computeLastDayBelowThreshold(std::vector<float> &inputValues, Crit3DDate firstDateDailyVar, Crit3DDate firstDate, Crit3DDate finishDate, float param1);
+    float dailyAverageT(float Tmin, float Tmax);
 
-float computeWinkler(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate);
+    float dailyEtpHargreaves(float Tmin, float Tmax, Crit3DDate date, double latitude);
 
-float computeHuglin(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate);
+    float dewPoint(float relHumAir, float tempAir);
 
-float computeFregoni(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate);
+    float computeLastDayBelowThreshold(std::vector<float> &inputValues, Crit3DDate firstDateDailyVar, Crit3DDate firstDate, Crit3DDate finishDate, float param1);
 
-float computeCorrectedSum(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate, float param);
+    float computeWinkler(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate);
 
-bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, meteoComputation elab1,
-    QDate startDate, QDate endDate, std::vector<float> &outputValues, float* percValue);
+    float computeHuglin(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate);
 
-float loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler, Crit3DMeteoGridDbHandler *meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, QDate first, QDate last, std::vector<float> &outputValues);
+    float computeFregoni(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate);
 
-float loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler, Crit3DMeteoGridDbHandler *meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, QDateTime first, QDateTime last, std::vector<float> &outputValues);
+    float computeCorrectedSum(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate, float param);
 
-period getPeriodTypeFromString(QString periodStr);
+    bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, meteoComputation elab1,
+        QDate startDate, QDate endDate, std::vector<float> &outputValues, float* percValue);
 
-bool parserGenericPeriodString(Crit3DClimate* clima);
+    float loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler, Crit3DMeteoGridDbHandler *meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, QDate first, QDate last, std::vector<float> &outputValues);
 
-bool parserElaboration(Crit3DClimate* clima);
+    float loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler, Crit3DMeteoGridDbHandler *meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, QDateTime first, QDateTime last, std::vector<float> &outputValues);
 
-int nParameters(meteoComputation elab);
+    period getPeriodTypeFromString(QString periodStr);
 
-void extractValidValuesCC(std::vector<float> &outputValues);
+    bool parserGenericPeriodString(Crit3DClimate* clima);
 
-void extractValidValuesWithThreshold(std::vector<float> &outputValues, float myThreshold);
+    bool parserElaboration(Crit3DClimate* clima);
 
-int getClimateIndexFromDate(QDate myDate, period periodType);
+    int nParameters(meteoComputation elab);
 
-float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoPoint, int firstYear, int lastYear, Crit3DDate firstDate, Crit3DDate lastDate, int nYears, meteoComputation elab1, float param1, meteoComputation elab2, float param2);
+    void extractValidValuesCC(std::vector<float> &outputValues);
+
+    void extractValidValuesWithThreshold(std::vector<float> &outputValues, float myThreshold);
+
+    int getClimateIndexFromDate(QDate myDate, period periodType);
+
+    float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoPoint, int firstYear, int lastYear, Crit3DDate firstDate, Crit3DDate lastDate, int nYears, meteoComputation elab1, float param1, meteoComputation elab2, float param2);
 
 #endif // CLIMATE_H

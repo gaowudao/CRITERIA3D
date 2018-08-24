@@ -1,5 +1,9 @@
-#include "dbClimate.h"
+#include <QString>
+#include <QDate>
+#include <QtSql>
+
 #include "commonConstants.h"
+#include "dbClimate.h"
 
 
 Crit3DClimate::Crit3DClimate()

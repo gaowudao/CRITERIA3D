@@ -1,89 +1,90 @@
 #ifndef DBCLIMATE_H
 #define DBCLIMATE_H
 
-#include <QString>
-#include <QDate>
-#include <QtSql>
-#ifndef METEO_H
-    #include "meteo.h"
-#endif
+    class QString;
+    class QDate;
+    class QSqlDatabase;
 
-enum period{ dailyPeriod, decadalPeriod, monthlyPeriod, seasonalPeriod, annualPeriod, genericPeriod, noPeriodType};
+    #ifndef METEO_H
+        #include "meteo.h"
+    #endif
 
-class Crit3DClimate
-{
+    enum period{ dailyPeriod, decadalPeriod, monthlyPeriod, seasonalPeriod, annualPeriod, genericPeriod, noPeriodType};
 
-public:
-    Crit3DClimate();
-    Crit3DClimate(const Crit3DClimate* reference);
-    ~Crit3DClimate();
+    class Crit3DClimate
+    {
 
-    QSqlDatabase db() const;
-    void setDb(const QSqlDatabase &db);
+    public:
+        Crit3DClimate();
+        Crit3DClimate(const Crit3DClimate* reference);
+        ~Crit3DClimate();
 
-    QString climateElab() const;
-    void setClimateElab(const QString &climateElab);
+        QSqlDatabase db() const;
+        void setDb(const QSqlDatabase &db);
 
-    int yearStart() const;
-    void setYearStart(int yearStart);
+        QString climateElab() const;
+        void setClimateElab(const QString &climateElab);
 
-    int yearEnd() const;
-    void setYearEnd(int yearEnd);
+        int yearStart() const;
+        void setYearStart(int yearStart);
 
-    meteoVariable variable() const;
-    void setVariable(const meteoVariable &variable);
+        int yearEnd() const;
+        void setYearEnd(int yearEnd);
 
-    QDate genericPeriodDateStart() const;
-    void setGenericPeriodDateStart(const QDate &genericPeriodDateStart);
+        meteoVariable variable() const;
+        void setVariable(const meteoVariable &variable);
 
-    QDate genericPeriodDateEnd() const;
-    void setGenericPeriodDateEnd(const QDate &genericPeriodDateEnd);
+        QDate genericPeriodDateStart() const;
+        void setGenericPeriodDateStart(const QDate &genericPeriodDateStart);
 
-    int nYears() const;
-    void setNYears(int nYears);
+        QDate genericPeriodDateEnd() const;
+        void setGenericPeriodDateEnd(const QDate &genericPeriodDateEnd);
 
-    QString elab1() const;
-    void setElab1(const QString &elab1);
+        int nYears() const;
+        void setNYears(int nYears);
 
-    float param1() const;
-    void setParam1(float param1);
+        QString elab1() const;
+        void setElab1(const QString &elab1);
 
-    bool param1IsClimate() const;
-    void setParam1IsClimate(bool param1IsClimate);
+        float param1() const;
+        void setParam1(float param1);
 
-    QString param1ClimateField() const;
-    void setParam1ClimateField(const QString &param1ClimateField);
+        bool param1IsClimate() const;
+        void setParam1IsClimate(bool param1IsClimate);
 
-    QString elab2() const;
-    void setElab2(const QString &elab2);
+        QString param1ClimateField() const;
+        void setParam1ClimateField(const QString &param1ClimateField);
 
-    float param2() const;
-    void setParam2(float param2);
+        QString elab2() const;
+        void setElab2(const QString &elab2);
 
-    period periodType() const;
-    void setPeriodType(const period &periodType);
+        float param2() const;
+        void setParam2(float param2);
 
-    QString periodStr() const;
-    void setPeriodStr(const QString &periodStr);
+        period periodType() const;
+        void setPeriodType(const period &periodType);
 
-private:
-    QSqlDatabase _db;
-    QString _climateElab;
-    int _yearStart;
-    int _yearEnd;
-    period _periodType;
-    meteoVariable _variable;
-    QString _periodStr;
-    QDate _genericPeriodDateStart;
-    QDate _genericPeriodDateEnd;
-    int _nYears;
-    QString _elab1;
-    float _param1;
-    bool _param1IsClimate;
-    QString _param1ClimateField;
-    QString _elab2;
-    float _param2;
+        QString periodStr() const;
+        void setPeriodStr(const QString &periodStr);
 
-};
+    private:
+        QSqlDatabase _db;
+        QString _climateElab;
+        int _yearStart;
+        int _yearEnd;
+        period _periodType;
+        meteoVariable _variable;
+        QString _periodStr;
+        QDate _genericPeriodDateStart;
+        QDate _genericPeriodDateEnd;
+        int _nYears;
+        QString _elab1;
+        float _param1;
+        bool _param1IsClimate;
+        QString _param1ClimateField;
+        QString _elab2;
+        float _param2;
+    };
+
 
 #endif // DBCLIMATE_H

@@ -45,7 +45,7 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
           var = MapDailyMeteoVar.at(variable);
           item = MapDailyMeteoVarToString.at(var);
         }
-        catch (const std::out_of_range& oor) {
+        catch (const std::out_of_range& ) {
            myProject.logError("variable " + QString::fromStdString(variable) + " missing in MapDailyMeteoVar");
            continue;
         }

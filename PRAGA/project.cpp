@@ -11,7 +11,7 @@
 #include "solarRadiation.h"
 #include "interpolation.h"
 #include "transmissivity.h"
-#include "climate.h"
+#include "climate1.h"
 #include "dbTools.h"
 
 #include <iostream> //debug

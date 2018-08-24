@@ -25,15 +25,16 @@ win32:{
     TARGET = climate
 }
 
+
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../utilities ../interpolation ../meteo ../dbMeteoPoints ../dbMeteoGrid
 
 SOURCES += \
-        climate.cpp \
-    dbClimate.cpp
+    dbClimate.cpp \
+    climate.cpp
 
 HEADERS += \
-        climate.h \
-    dbClimate.h
+    dbClimate.h \
+    climate.h
 unix {
     target.path = /usr/lib
     INSTALLS += target
