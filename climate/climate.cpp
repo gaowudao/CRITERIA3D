@@ -364,7 +364,7 @@ float loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteo
 
         }
 
-        float percValue = nrValidValues / nrRequestedValues;
+        float percValue = float(nrValidValues) / float(nrRequestedValues);
         return percValue;
     }
 }
@@ -428,7 +428,7 @@ float loadDailyVarSeries_SaveOutput(std::string *myError, Crit3DMeteoPointsDbHan
 
         }
 
-        float percValue = nrValidValues / nrRequestedValues;
+        float percValue = float(nrValidValues) / float(nrRequestedValues);
         return percValue;
     }
 }
@@ -490,7 +490,7 @@ float loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* mete
             firstDateDB = firstDateDB.addSecs(3600);
         }
 
-        float percValue = nrValidValues / nrRequestedValues;
+        float percValue = float(nrValidValues) / float(nrRequestedValues);
         return percValue;
     }
 
