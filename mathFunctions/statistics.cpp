@@ -397,6 +397,7 @@ namespace statistics
         else
             return NODATA;
     }
+
     float mean(float *myList, int nrList)
     {
         float sum=0.;
@@ -419,6 +420,7 @@ namespace statistics
         else
             return NODATA;
     }
+
     float mean(std::vector<float> myList, int nrList)
     {
         float sum=0.;
@@ -441,6 +443,7 @@ namespace statistics
         else
             return NODATA;
     }
+
     double mean(double *myList, int nrList)
     {
         double sum=0.;

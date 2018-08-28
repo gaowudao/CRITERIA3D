@@ -1403,19 +1403,6 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
         }
     }
 
-    if (elab1 != consecutiveDaysAbove && elab1 != consecutiveDaysBelow && elab1 != trend)
-    {
-        // LC rimossa condizione And Not isCumulated
-        if ( variable == dailyPrecipitation && elab1 == percentile)
-        {
-            extractValidValuesWithThreshold(outputValues, RainfallThreshold);
-        }
-        else
-        {
-            extractValidValuesCC(outputValues);
-        }
-    }
-
     return preElaboration;
 }
 
@@ -1808,20 +1795,20 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                         }
                         if (value != NODATA)
                         {
+                            values.push_back(value);
                             nValidValues = nValidValues + 1;
                         }
 
-                        values.push_back(value);
                         nValues = nValues + 1;
                         presentDate = presentDate.addDays(1);
                     }
                 }
 
-                if (nValues == 0)return NODATA;
+                if (nValidValues == 0)return NODATA;
 
-                if ((float(nValidValues) / float(nValues)) * 100 < MINPERCENTAGE) return NODATA;
+                if (float(nValidValues) / float(nValues) * 100.f < MINPERCENTAGE) return NODATA;
 
-                return elaborations::statisticalElab(elab1, param1, values, nValues);
+                return elaborations::statisticalElab(elab1, param1, values, nValidValues);
 
                 break;
             }
@@ -1894,20 +1881,20 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                         }
                         if (value != NODATA)
                         {
+                            values.push_back(value);
                             nValidValues = nValidValues + 1;
                         }
 
-                        values.push_back(value);
                         nValues = nValues + 1;
                         presentDate = presentDate.addDays(1);
 
                     }
 
-                    if (nValues > 0)
+                    if (nValidValues > 0)
                     {
-                        if (((float(nValidValues) / float(nValues)) * 100) >= MINPERCENTAGE)
+                        if (float(nValidValues) / float(nValues) * 100.f >= MINPERCENTAGE)
                         {
-                            primary = elaborations::statisticalElab(elab1, param1, values, nValues);
+                            primary = elaborations::statisticalElab(elab1, param1, values, nValidValues);
                         }
                     }
 
@@ -1918,10 +1905,10 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
 
             if (primary != NODATA)
             {
+                valuesSecondElab.push_back(primary);
                 nValidYears = nValidYears + 1;
             }
 
-            valuesSecondElab.push_back(primary);
             nTotYears = nTotYears + 1;
 
         } // end for
@@ -1930,7 +1917,7 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
         {
             return NODATA;
         }
-        else if ((nValidYears / nTotYears) * 100 < MINPERCENTAGE)
+        else if (float(nValidYears) / float(nTotYears) * 100.f < MINPERCENTAGE)
         {
             return NODATA;
         }
@@ -1939,11 +1926,10 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
             switch(elab2)
             {
                 case trend:
-                    return elaborations::statisticalElab(elab2, firstYear, valuesSecondElab, nTotYears);
+                    return elaborations::statisticalElab(elab2, firstYear, valuesSecondElab, nValidYears);
                 default:
-                    return elaborations::statisticalElab(elab2, param2, valuesSecondElab, nTotYears);
+                    return elaborations::statisticalElab(elab2, param2, valuesSecondElab, nValidYears);
             }
         }
-
     }
 }
