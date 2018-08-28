@@ -30,7 +30,7 @@ Algorithms for the spatialization of meteorological data.
 PRAGA is a Graphical User Interface to manage the libraries in the distribution for agro-meteorological and climate analysis.
 It uses a modified version of MapGraphics library: https://github.com/raptorswing/MapGraphics
 
-To compile it, firstly compile the project *MapGraphics*, then use the project *Makeall_PRAGA*.
+To compile it, firstly compile the project *MapGraphics*, then compile the project *Makeall_PRAGA*.
 
 ## TestCriteria1D
 Test program for the 1D water balance using criteria1D, crop and soil libraries.
