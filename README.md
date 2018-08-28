@@ -11,21 +11,6 @@ Surface water flow is described by the two-dimensional parabolic approximation o
 Water fluxes equations may be coupled with the heat flux equations, which include diffusive, latent and advective terms. Atmospheric data (net irradiance, air temperature and relative humidity, wind speed) could be used as top boundary conditions.
 http://www.sciencedirect.com/science/article/pii/S0309170809001754
 
-## criteria1D library
-Algorithms for 1D water balance: soil water infiltration, drainage and capillary rise, crop water demand, evaporation and crop transpiration. 
-
-## crop library
-Algorithms for crop development, leaf area index, root growth and distribution, based on daily temperature.
-
-## soil library
-Modified Van Genuchten-Mualem model for soil water retention curve and water conductivity, USDA soil texture classification.
-
-## solarRadiation library
-Algorithms for potential/actual solar radiation computation.
-
-## interpolation library
-Algorithms for the spatialization of meteorological data.
-
 ## PRAGA (PRogram for AGrometeorological Analysis)
 PRAGA is a geographical application for agrometeorological and climate analysis.
 
@@ -41,6 +26,22 @@ To compile it, use the project *Makeall_CRITERIA1D*. Example data are available 
 HEAT1D is a graphical interface for testing the soilFluxex3D library in a 1D domain. Users can set fixed or variable atmospheric boundary conditions and soil parameters. Output graph results include soil temperature, soil water content, heat fluxes (diffusive and latent), liquid (isothermal and thermal) and vapor (isothermal and thermal) water fluxes. 
 
 Graphs are produced using the Qwt plot library (http://qwt.sourceforge.net/) which should be compiled before usage.
+
+## criteria1D library
+Algorithms for 1D water balance: soil water infiltration, drainage and capillary rise, crop water demand, evaporation and crop transpiration. 
+
+## crop library
+Algorithms for crop development, leaf area index, root growth and distribution, based on daily temperature.
+
+## soil library
+Modified Van Genuchten-Mualem model for soil water retention curve and water conductivity, USDA soil texture classification.
+
+## solarRadiation library
+Algorithms for potential/actual solar radiation computation.
+
+## interpolation library
+Algorithms for the spatialization of meteorological data.
+
 
 # License
 CRITERIA3D has been developed under contract issued by 
