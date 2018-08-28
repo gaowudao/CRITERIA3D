@@ -28,8 +28,8 @@ Algorithms for the spatialization of meteorological data.
 
 ## PRAGA (PRogram for AGrometeorological Analysis)
 PRAGA is a geographical application for agrometeorological and climate analysis.
-It uses a modified version of MapGraphics library: https://github.com/raptorswing/MapGraphics
 
+It uses a modified version of MapGraphics library: https://github.com/raptorswing/MapGraphics
 To compile it, firstly compile the project *MapGraphics*, then compile the project *Makeall_PRAGA*.
 
 ## TestCriteria1D
