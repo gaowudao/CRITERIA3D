@@ -15,6 +15,8 @@ http://www.sciencedirect.com/science/article/pii/S0309170809001754
 ![PRAGA/CRITERIA3D screenshot](https://github.com/ARPA-SIMC/CRITERIA3D/blob/master/doc/PRAGA_screenshot.png)
 PRAGA is a geographical application for agrometeorological and climate analysis.
 
+Currently it imports only data from ARPAE-SIMC sources: Arkimet queries for meteo points, ERG5 (Emilia-Romagna Grid 5x5km) as meteo grid.
+
 It uses a modified version of MapGraphics library: https://github.com/raptorswing/MapGraphics
 To compile it, firstly compile the project *MapGraphics*, then compile the project *Makeall_PRAGA*.
 
