@@ -1,10 +1,14 @@
 #ifndef GAMMAFUNCTION
 #define GAMMAFUNCTION
 
+    /*!
+     * code from http://www.mymathlib.com/
+     * Copyright © 2004 RLH. All rights reserved.
+     * /
 
-#define ITERATIONSMAX 100
-#define EPSTHRESHOLD 3.0e-7
-#define FPMINIMUM 1.0e-30
+    #define ITERATIONSMAX 100
+    #define EPSTHRESHOLD 3.0e-7
+    #define FPMINIMUM 1.0e-30
 
     double Entire_Incomplete_Gamma_Function(double x, double nu);
     long double xEntire_Incomplete_Gamma_Function(long double x, long double nu);
