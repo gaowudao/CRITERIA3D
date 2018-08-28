@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# criteria3D library
+# waterBalance3D library
 # Soil Water Balance 3D
 #
 # this library is part of CRITERIA3D distribution
@@ -11,13 +11,13 @@ QT      -= core gui
 
 unix:{
     CONFIG(debug, debug|release) {
-        TARGET = debug/criteria3D
+        TARGET = debug/waterBalance3D
     } else {
-        TARGET = release/criteria3D
+        TARGET = release/waterBalance3D
     }
 }
 win32:{
-    TARGET = criteria3D
+    TARGET = waterBalance3D
 }
 
 TEMPLATE = lib
@@ -29,13 +29,13 @@ INCLUDEPATH +=  ../crit3dDate ../mathFunctions ../gis ../meteo \
 
 
 SOURCES += \
-    waterBalance.cpp \
-    crit3dProject.cpp \
     crit3dMeteoMaps.cpp \
-    modelCore.cpp
+    crit3dProject.cpp \
+    waterBalance3D.cpp \
+    modelCore3D.cpp
 
 HEADERS += \
-    waterBalance.h \
     crit3dMeteoMaps.h \
     crit3dProject.h \
-    modelCore.h
+    waterBalance3D.h \
+    modelCore3D.h

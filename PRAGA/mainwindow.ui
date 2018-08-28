@@ -2630,6 +2630,9 @@
    <property name="text">
     <string>Open NetCDF data...</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionExtract_NetCDF_series">
    <property name="text">

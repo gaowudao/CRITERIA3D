@@ -1,17 +1,12 @@
-#ifndef WATERBALANCE_H
-#define WATERBALANCE_H
+#ifndef WATERBALANCE3D_H
+#define WATERBALANCE3D_H
 
     #ifndef GIS_H
         #include "gis.h"
     #endif
-    #ifndef SOIL_H
-        #include "soil.h"
-    #endif
-    #ifndef CRIT3DDATE_H
-        #include "crit3dDate.h"
-    #endif
 
     class Crit3DProject;
+    class Crit3DDate;
 
     enum criteria3DVariable {waterContent, waterTotalPotential, waterMatricPotential,
                             availableWaterContent, waterDeficit, degreeOfSaturation, soilTemperature,
@@ -52,4 +47,4 @@
     bool waterBalance(Crit3DProject* myProject);
 
 
-#endif //WATERBALANCE_H
+#endif //WATERBALANCE3D_H

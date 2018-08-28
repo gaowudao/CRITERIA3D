@@ -108,7 +108,7 @@ bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nr
     return true;
 }
 
-float computeErrorCrossValidation(meteoVariable myVar, Crit3DMeteoPoint* myPoints, unsigned int nrMeteoPoints, const Crit3DTime& myTime)
+float computeErrorCrossValidation(meteoVariable myVar, Crit3DMeteoPoint* myPoints, int nrMeteoPoints, const Crit3DTime& myTime)
 {
     return 0;
     std::vector <float> obsValues, estValues;

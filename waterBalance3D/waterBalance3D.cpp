@@ -27,9 +27,10 @@
 #include <math.h>
 
 #include "commonConstants.h"
-#include "waterBalance.h"
+#include "waterBalance3D.h"
 #include "soilFluxes3D.h"
 #include "crit3dProject.h"
+#include "crit3dDate.h"
 
 
 std::vector <double> waterSinkSource;     //[m^3/sec]
@@ -477,7 +478,7 @@ bool setWaterSinkSource(Crit3DProject* myProject, double* totalPrecipitation,
                         double* totalEvaporation, double *totalTranspiration)
 {
     long surfaceIndex, layerIndex;
-    double prec, irr, totalWater;
+    double prec, totalWater;
     double transp, flow, realEvap;
     int myResult;
     std::string myError;
@@ -500,8 +501,8 @@ bool setWaterSinkSource(Crit3DProject* myProject, double* totalPrecipitation,
                 prec = myProject->meteoMaps->precipitationMap->value[row][col];
                 if (prec != myProject->meteoMaps->precipitationMap->header->flag) totalWater += prec;
 
-                irr = myProject->meteoMaps->irrigationMap->value[row][col];
-                if (irr != myProject->meteoMaps->irrigationMap->header->flag) totalWater += irr;
+                //float irr = myProject->meteoMaps->irrigationMap->value[row][col];
+                //if (irr != myProject->meteoMaps->irrigationMap->header->flag) totalWater += irr;
 
                 if (totalWater > 0.0)
                 {

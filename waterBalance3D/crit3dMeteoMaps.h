@@ -16,7 +16,6 @@
         gis::Crit3DRasterGrid* airHumidityMap;              //[%]
         gis::Crit3DRasterGrid* windIntensityMap;            //[m s-1]
         gis::Crit3DRasterGrid* ET0Map;                      //[mm]
-        gis::Crit3DRasterGrid* irrigationMap;               //[mm]
 
         bool isInitialized;
 

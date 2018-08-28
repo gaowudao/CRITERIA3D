@@ -1,7 +1,7 @@
 
-#include "waterBalance.h"
+#include "waterBalance3D.h"
 #include "crit3dProject.h"
-#include "modelCore.h"
+#include "modelCore3D.h"
 
 
 bool runModel(Crit3DProject* myProject, Crit3DTime myCurrentTime, bool isInitialState)

@@ -34,7 +34,6 @@ Crit3DMeteoMaps::Crit3DMeteoMaps()
     airHumidityMap = new gis::Crit3DRasterGrid;
     windIntensityMap = new gis::Crit3DRasterGrid;
     ET0Map = new gis::Crit3DRasterGrid;
-    irrigationMap = new gis::Crit3DRasterGrid;
 
     isInitialized = false;
 }
@@ -47,14 +46,12 @@ Crit3DMeteoMaps::Crit3DMeteoMaps(const gis::Crit3DRasterGrid& rasterGrid)
     airHumidityMap = new gis::Crit3DRasterGrid;
     windIntensityMap = new gis::Crit3DRasterGrid;
     ET0Map = new gis::Crit3DRasterGrid;
-    irrigationMap = new gis::Crit3DRasterGrid;
 
     airTemperatureMap->initializeGrid(rasterGrid);
     precipitationMap->initializeGrid(rasterGrid);
     airHumidityMap->initializeGrid(rasterGrid);
     windIntensityMap->initializeGrid(rasterGrid);
     ET0Map->initializeGrid(rasterGrid);
-    irrigationMap->initializeGrid(rasterGrid);
 
     isInitialized = true;
 }
@@ -68,7 +65,6 @@ Crit3DMeteoMaps::~Crit3DMeteoMaps()
         airHumidityMap->freeGrid();
         windIntensityMap->freeGrid();
         ET0Map->freeGrid();
-        irrigationMap->freeGrid();
 
         isInitialized = false;
     }
@@ -82,7 +78,6 @@ void Crit3DMeteoMaps::emptyMeteoMaps()
     airHumidityMap->emptyGrid();
     windIntensityMap->emptyGrid();
     ET0Map->emptyGrid();
-    irrigationMap->emptyGrid();
 }
 
 gis::Crit3DRasterGrid* Crit3DMeteoMaps::getMapFromVar(meteoVariable myVar)
