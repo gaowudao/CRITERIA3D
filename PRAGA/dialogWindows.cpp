@@ -304,110 +304,112 @@ bool setInterpolationSettings()
         return false;
 }
 
-bool chooseNetCDFVariable(int* varId, QDateTime* firstDate, QDateTime* lastDate)
-{
-    // check
-    if (! myProject.netCDF.isLoaded)
+#ifdef NETCDF
+    bool chooseNetCDFVariable(int* varId, QDateTime* firstDate, QDateTime* lastDate)
     {
-        QMessageBox::information(NULL, "No data", "Load NetCDF before");
-        return false;
-    }
-    if (! myProject.netCDF.isStandardTime)
-    {
-        QMessageBox::information(NULL, "Wrong time", "Praga reads only POSIX standard (seconds since 1970-01-01)");
-        return false;
-    }
-
-    QDialog myDialog;
-    QVBoxLayout mainLayout;
-    QVBoxLayout layoutVariable;
-    QHBoxLayout layoutDate;
-    QHBoxLayout layoutOk;
-
-    myDialog.setWindowTitle("Export NetCDF data series");
-
-    // Variables
-    QLabel *VariableLabel = new QLabel("<b>Variable:</b>");
-    layoutVariable.addWidget(VariableLabel);
-
-    int nrVariables = myProject.netCDF.getNrVariables();
-    std::vector<QRadioButton*> buttonVars;
-
-    for (int i = 0; i < nrVariables; i++)
-    {
-        QString varName = QString::fromStdString(myProject.netCDF.variables[i].getVarName());
-        buttonVars.push_back(new QRadioButton(varName));
-
-        layoutVariable.addWidget(buttonVars[i]);
-    }
-
-    //void space
-    layoutVariable.addWidget(new QLabel());
-
-    //Date widgets
-    *firstDate = QDateTime::fromTime_t(myProject.netCDF.getFirstTime(), Qt::UTC);
-    *lastDate = QDateTime::fromTime_t(myProject.netCDF.getLastTime(), Qt::UTC);
-
-    QDateTimeEdit *firstYearEdit = new QDateTimeEdit;
-    firstYearEdit->setDateTimeRange(*firstDate, *lastDate);
-    firstYearEdit->setTimeSpec(Qt::UTC);
-    firstYearEdit->setDateTime(*firstDate);
-
-    QLabel *firstDateLabel = new QLabel("<b>First Date:</b>");
-    firstDateLabel->setBuddy(firstYearEdit);
-
-    QDateTimeEdit *lastYearEdit = new QDateTimeEdit;
-    lastYearEdit->setDateTimeRange(*firstDate, *lastDate);
-    lastYearEdit->setTimeSpec(Qt::UTC);
-    lastYearEdit->setDateTime(*lastDate);
-
-    QLabel *lastDateLabel = new QLabel("<b>Last Date:</b>");
-    lastDateLabel->setBuddy(lastYearEdit);
-
-    layoutDate.addWidget(firstDateLabel);
-    layoutDate.addWidget(firstYearEdit);
-
-    layoutDate.addWidget(lastDateLabel);
-    layoutDate.addWidget(lastYearEdit);
-
-    //void space
-    layoutDate.addWidget(new QLabel());
-
-    //Ok button
-    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-    myDialog.connect(&buttonBox, SIGNAL(accepted()), &myDialog, SLOT(accept()));
-    myDialog.connect(&buttonBox, SIGNAL(rejected()), &myDialog, SLOT(reject()));
-    layoutOk.addWidget(&buttonBox);
-
-    // Main layout
-    mainLayout.addLayout(&layoutVariable);
-    mainLayout.addLayout(&layoutDate);
-    mainLayout.addLayout(&layoutOk);
-
-    myDialog.setLayout(&mainLayout);
-    myDialog.exec();
-
-    if (myDialog.result() != QDialog::Accepted)
-        return false;
-
-    // assing values
-    *firstDate = firstYearEdit->dateTime();
-    *lastDate = lastYearEdit->dateTime();
-
-    bool isVarSelected = false;
-    int i = 0;
-    while (i < nrVariables && ! isVarSelected)
-    {
-        if (buttonVars[i]->isChecked())
+        // check
+        if (! myProject.netCDF.isLoaded)
         {
-           *varId = myProject.netCDF.variables[i].id;
-            isVarSelected = true;
+            QMessageBox::information(NULL, "No data", "Load NetCDF before");
+            return false;
         }
-        i++;
-    }
+        if (! myProject.netCDF.isStandardTime)
+        {
+            QMessageBox::information(NULL, "Wrong time", "Praga reads only POSIX standard (seconds since 1970-01-01)");
+            return false;
+        }
 
-    return isVarSelected;
-}
+        QDialog myDialog;
+        QVBoxLayout mainLayout;
+        QVBoxLayout layoutVariable;
+        QHBoxLayout layoutDate;
+        QHBoxLayout layoutOk;
+
+        myDialog.setWindowTitle("Export NetCDF data series");
+
+        // Variables
+        QLabel *VariableLabel = new QLabel("<b>Variable:</b>");
+        layoutVariable.addWidget(VariableLabel);
+
+        int nrVariables = myProject.netCDF.getNrVariables();
+        std::vector<QRadioButton*> buttonVars;
+
+        for (int i = 0; i < nrVariables; i++)
+        {
+            QString varName = QString::fromStdString(myProject.netCDF.variables[i].getVarName());
+            buttonVars.push_back(new QRadioButton(varName));
+
+            layoutVariable.addWidget(buttonVars[i]);
+        }
+
+        //void space
+        layoutVariable.addWidget(new QLabel());
+
+        //Date widgets
+        *firstDate = QDateTime::fromTime_t(myProject.netCDF.getFirstTime(), Qt::UTC);
+        *lastDate = QDateTime::fromTime_t(myProject.netCDF.getLastTime(), Qt::UTC);
+
+        QDateTimeEdit *firstYearEdit = new QDateTimeEdit;
+        firstYearEdit->setDateTimeRange(*firstDate, *lastDate);
+        firstYearEdit->setTimeSpec(Qt::UTC);
+        firstYearEdit->setDateTime(*firstDate);
+
+        QLabel *firstDateLabel = new QLabel("<b>First Date:</b>");
+        firstDateLabel->setBuddy(firstYearEdit);
+
+        QDateTimeEdit *lastYearEdit = new QDateTimeEdit;
+        lastYearEdit->setDateTimeRange(*firstDate, *lastDate);
+        lastYearEdit->setTimeSpec(Qt::UTC);
+        lastYearEdit->setDateTime(*lastDate);
+
+        QLabel *lastDateLabel = new QLabel("<b>Last Date:</b>");
+        lastDateLabel->setBuddy(lastYearEdit);
+
+        layoutDate.addWidget(firstDateLabel);
+        layoutDate.addWidget(firstYearEdit);
+
+        layoutDate.addWidget(lastDateLabel);
+        layoutDate.addWidget(lastYearEdit);
+
+        //void space
+        layoutDate.addWidget(new QLabel());
+
+        //Ok button
+        QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+        myDialog.connect(&buttonBox, SIGNAL(accepted()), &myDialog, SLOT(accept()));
+        myDialog.connect(&buttonBox, SIGNAL(rejected()), &myDialog, SLOT(reject()));
+        layoutOk.addWidget(&buttonBox);
+
+        // Main layout
+        mainLayout.addLayout(&layoutVariable);
+        mainLayout.addLayout(&layoutDate);
+        mainLayout.addLayout(&layoutOk);
+
+        myDialog.setLayout(&mainLayout);
+        myDialog.exec();
+
+        if (myDialog.result() != QDialog::Accepted)
+            return false;
+
+        // assing values
+        *firstDate = firstYearEdit->dateTime();
+        *lastDate = lastYearEdit->dateTime();
+
+        bool isVarSelected = false;
+        int i = 0;
+        while (i < nrVariables && ! isVarSelected)
+        {
+            if (buttonVars[i]->isChecked())
+            {
+               *varId = myProject.netCDF.variables[i].id;
+                isVarSelected = true;
+            }
+            i++;
+        }
+
+        return isVarSelected;
+    }
+#endif
 
 
 bool downloadMeteoData()

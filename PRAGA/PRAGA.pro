@@ -16,7 +16,7 @@ INCLUDEPATH +=  ../MapGraphics ../soilFluxes3D/header \
                 ../crit3dDate ../mathFunctions ../soil ../crop \
                 ../meteo ../gis ../utilities \
                 ../interpolation ../solarRadiation ../criteria3D \
-                ../dbMeteoPoints ../dbMeteoGrid ../climate ../netcdfHandler
+                ../dbMeteoPoints ../dbMeteoGrid ../climate
 
 CONFIG += debug_and_release
 
@@ -32,7 +32,6 @@ win32:{
 }
 
 CONFIG(debug, debug|release) {
-    LIBS += -L../netcdfHandler/debug -lnetcdfHandler
     LIBS += -L../climate/debug -lclimate
     LIBS += -L../dbMeteoGrid/debug -ldbMeteoGrid
     LIBS += -L../dbMeteoPoints/debug -ldbMeteoPoints
@@ -48,7 +47,6 @@ CONFIG(debug, debug|release) {
     LIBS += -L../crit3dDate/debug -lcrit3dDate
     LIBS += -L../mathFunctions/debug -lmathFunctions
 } else {
-    LIBS += -L../netcdfHandler/release -lnetcdfHandler
     LIBS += -L../climate/release -lclimate
     LIBS += -L../dbMeteoGrid/release -ldbMeteoGrid
     LIBS += -L../dbMeteoPoints/release -ldbMeteoPoints
@@ -66,8 +64,8 @@ CONFIG(debug, debug|release) {
 }
 
 
-#LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf -lhdf5
-LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf
+#ifdef NETCDF
+#LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf
 
 
 SOURCES += main.cpp\

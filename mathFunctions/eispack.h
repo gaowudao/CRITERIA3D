@@ -1,4 +1,6 @@
 // downloaded from https://people.sc.fsu.edu/~jburkardt/c_src/eispack/eispack.html
+// LICENSING: the above web site states "The computer code and data files described and made available on this web page are distributed under the GNU LGPL license"
+
 
 #ifndef EISPACK_H
 #define EISPACK_H

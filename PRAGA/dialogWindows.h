@@ -19,9 +19,10 @@
     bool chooseMeteoVariable();
     bool setInterpolationSettings();
 
-    bool chooseNetCDFVariable(int *varId, QDateTime *firstDate, QDateTime *lastDate);
-
     bool downloadMeteoData();
 
+    #ifdef NETCDF
+        bool chooseNetCDFVariable(int *varId, QDateTime *firstDate, QDateTime *lastDate);
+    #endif
 
 #endif // DIALOGWINDOWS_H

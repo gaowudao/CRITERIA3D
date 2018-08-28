@@ -2624,6 +2624,9 @@
    </property>
   </action>
   <action name="actionOpen_NetCDF_data">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Open NetCDF data...</string>
    </property>

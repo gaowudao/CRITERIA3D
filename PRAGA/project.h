@@ -25,16 +25,12 @@
         #include "crit3dProject.h"
     #endif
 
-    #ifndef NETCDFHANDLER_H
+    #ifdef NETCDF
         #include "netcdfHandler.h"
     #endif
 
     #ifndef DBCLIMATE_H
         #include "dbClimate.h"
-    #endif
-
-    #ifndef INTERPOLATIONSETTINGS_H
-        #include "interpolationSettings.h"
     #endif
 
     #ifndef INTERPOLATIONPOINT_H
@@ -95,7 +91,9 @@
 
         Crit3DProject Criteria3Dproject;
 
-        NetCDFHandler netCDF;
+        #ifdef NETCDF
+            NetCDFHandler netCDF;
+        #endif
 
         Project();
 

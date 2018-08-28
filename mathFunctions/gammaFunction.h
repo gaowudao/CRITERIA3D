@@ -4,7 +4,7 @@
     /*!
      * code from http://www.mymathlib.com/
      * Copyright © 2004 RLH. All rights reserved.
-     * /
+     */
 
     #define ITERATIONSMAX 100
     #define EPSTHRESHOLD 3.0e-7

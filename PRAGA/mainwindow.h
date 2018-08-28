@@ -81,10 +81,6 @@
 
         void on_actionPointsVisible_triggered();
 
-        void on_actionOpen_NetCDF_data_triggered();
-
-        void on_actionExtract_NetCDF_series_triggered();
-
         void on_rasterRestoreButton_clicked();
 
         void on_timeEdit_timeChanged(const QTime &time);
@@ -136,6 +132,11 @@
         void on_actionCriteria3D_Initialize_triggered();
 
         void on_meteoGridOpacitySlider_sliderMoved(int position);
+
+    #ifdef NETCDF
+        void on_actionOpen_NetCDF_data_triggered();
+        void on_actionExtract_NetCDF_series_triggered();
+    #endif
 
     protected:
         /*!
@@ -201,7 +202,9 @@
     };
 
 
-    void exportNetCDFDataSeries(gis::Crit3DGeoPoint geoPoint);
+    #ifdef NETCDF
+        void exportNetCDFDataSeries(gis::Crit3DGeoPoint geoPoint);
+    #endif
 
 
 #endif // MAINWINDOW_H
