@@ -9,7 +9,6 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
         : settings(settings), isAnomaly(isAnomaly)
 {
 
-
     if (!isAnomaly)
     {
         setWindowTitle("Elaboration");
@@ -545,7 +544,7 @@ void ComputationDialog::checkYears()
     }
 }
 
-void ComputationDialog::changeDate(const QDate newDate)
+void ComputationDialog::changeDate(const QDate)
 {
     displayPeriod(periodTypeList.currentText());
 }

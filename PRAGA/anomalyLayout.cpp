@@ -289,7 +289,7 @@ void AnomalyLayout::AnomalyCheckYears()
     }
 }
 
-void AnomalyLayout::AnomalyChangeDate(const QDate newDate)
+void AnomalyLayout::AnomalyChangeDate(const QDate)
 {
     AnomalyDisplayPeriod(periodTypeList.currentText());
 }

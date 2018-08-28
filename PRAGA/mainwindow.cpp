@@ -24,7 +24,6 @@
 #include "dbArkimet.h"
 #include "download.h"
 #include "project.h"
-#include "utilities.h"
 #include "commonConstants.h"
 #include "dialogWindows.h"
 #include "computationDialog.h"
@@ -1549,70 +1548,5 @@ void MainWindow::on_actionInterpolationSettings_triggered()
 
 
 
-// --------------------- CRITERIA3D functions ------------------------
 
-void MainWindow::on_actionOpen_model_parameters_triggered()
-{
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open DB parameters"), "", tr("SQLite files (*.db)"));
-    if (fileName == "") return;
-
-    if (myProject.loadModelParameters(fileName))
-        QMessageBox::information(NULL, "", "Model parameters loaded");
-}
-
-void MainWindow::on_actionOpen_soil_map_triggered()
-{
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open soil map"), "", tr("ESRI grid files (*.flt)"));
-    if (fileName == "") return;
-
-    if (myProject.loadSoilMap(fileName))
-        QMessageBox::information(NULL, "", "Soil map loaded.");
-}
-
-void MainWindow::on_actionOpen_soil_data_triggered()
-{
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Load DB soil"), "", tr("SQLite files (*.db)"));
-    if (fileName == "") return;
-
-    myProject.loadSoilData(fileName);
-}
-
-void MainWindow::on_actionShow_DTM_triggered()
-{
-    if (myProject.DTM.isLoaded)
-    {
-        setColorScale(noMeteoTerrain, myProject.DTM.colorScale);
-        this->setCurrentRaster(&(myProject.DTM));
-    }
-}
-
-void MainWindow::on_actionShow_boundary_triggered()
-{
-    if (myProject.Criteria3Dproject.boundaryMap.isLoaded)
-    {
-        setColorScale(noMeteoTerrain, myProject.Criteria3Dproject.boundaryMap.colorScale);
-        this->setCurrentRaster(&(myProject.Criteria3Dproject.boundaryMap));
-    }
-}
-
-void MainWindow::on_actionShow_soil_triggered()
-{
-    if (myProject.Criteria3Dproject.soilMap.isLoaded)
-    {
-        setColorScale(noMeteoTerrain, myProject.Criteria3Dproject.soilMap.colorScale);
-        this->setCurrentRaster(&(myProject.Criteria3Dproject.soilMap));
-    }
-}
-
-void MainWindow::on_actionCriteria3D_settings_triggered()
-{
-
-}
-
-void MainWindow::on_actionCriteria3D_Initialize_triggered()
-{
-    if (myProject.initializeCriteria3D())
-        QMessageBox::information(NULL, "", "Criteria3D initialized.");
-}
-// ----------- end CRITERIA3D functions ------------------------------------
 

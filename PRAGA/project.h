@@ -21,20 +21,20 @@
         #include "dbMeteoGrid.h"
     #endif
 
-    #ifndef CRIT3DPROJECT_H
-        #include "crit3dProject.h"
-    #endif
-
-    #ifdef NETCDF
-        #include "netcdfHandler.h"
-    #endif
-
     #ifndef DBCLIMATE_H
         #include "dbClimate.h"
     #endif
 
     #ifndef INTERPOLATIONPOINT_H
         #include "interpolationPoint.h"
+    #endif
+
+    #ifndef SOLARRADIATION_H
+        #include "solarRadiation.h"
+    #endif
+
+    #ifdef NETCDF
+        #include "netcdfHandler.h"
     #endif
 
     #include <QList>
@@ -78,18 +78,15 @@
         meteoVariable currentVariable;
 
         gis::Crit3DGisSettings gisSettings;
+        Crit3DRadiationSettings radSettings;
+        Crit3DRadiationMaps *radiationMaps;
 
         gis::Crit3DRasterGrid DTM;
         gis::Crit3DRasterGrid dataRaster;
 
-        Crit3DRadiationMaps *radiationMaps;
-        Crit3DRadiationSettings radSettings;
-
         std::vector <Crit3DInterpolationDataPoint> interpolationPointList;
         Crit3DInterpolationSettings interpolationSettings;
         Crit3DInterpolationSettings qualityInterpolationSettings;
-
-        Crit3DProject Criteria3Dproject;
 
         #ifdef NETCDF
             NetCDFHandler netCDF;
@@ -145,11 +142,6 @@
 
         bool elaborationCheck(bool isMeteoGrid, bool isAnomaly);
         bool elaboration(bool isMeteoGrid, bool isAnomaly);
-
-        bool loadModelParameters(QString dbName);
-        bool loadSoilData(QString dbName);
-        bool loadSoilMap(QString fileName);
-        bool initializeCriteria3D();
 
         bool getIsElabMeteoPointsValue() const;
         void setIsElabMeteoPointsValue(bool value);

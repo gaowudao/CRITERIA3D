@@ -2,7 +2,7 @@
 #define DBTOOLS_H
 
     #include <string>
-    #include "soil.h"
+    #include "..\soil\soil.h"
     class Crit3DCrop;
     class QSqlDatabase;
     class QString;

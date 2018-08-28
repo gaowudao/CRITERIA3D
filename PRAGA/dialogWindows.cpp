@@ -14,7 +14,6 @@
 #include "commonConstants.h"
 #include "dialogWindows.h"
 #include "project.h"
-#include "utilities.h"
 #include "climate.h"
 #include "interpolationSettings.h"
 

@@ -2443,21 +2443,6 @@
     <addaction name="actionInterpolation_to_DTM"/>
     <addaction name="actionInterpolation_to_Grid"/>
     <addaction name="actionInterpolationSettings"/>
-   </widget>
-   <widget class="QMenu" name="menuCriteria3D">
-    <property name="title">
-     <string>Criteria3D</string>
-    </property>
-    <addaction name="actionOpen_soil_map"/>
-    <addaction name="actionOpen_soil_data"/>
-    <addaction name="actionOpen_model_parameters"/>
-    <addaction name="separator"/>
-    <addaction name="actionCriteria3D_Initialize"/>
-    <addaction name="actionCriteria3D_settings"/>
-    <addaction name="separator"/>
-    <addaction name="actionShow_DTM"/>
-    <addaction name="actionShow_boundary"/>
-    <addaction name="actionShow_soil"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuClimate">
@@ -2494,7 +2479,6 @@
    <addaction name="menuVariable"/>
    <addaction name="menuInterpolation"/>
    <addaction name="menuClimate"/>
-   <addaction name="menuCriteria3D"/>
    <addaction name="menuGIS_settings"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
