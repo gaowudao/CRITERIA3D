@@ -13,6 +13,7 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
     this->AnomalySettings = AnomalySettings;
 
     readReference.setText("Read reference climate from db");
+    readReference.setTristate(false);
     varLayout.addWidget(&readReference);
 
     currentDayLabel.setText("Day/Month:");
@@ -135,6 +136,7 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
     elab1Parameter.setValidator(new QDoubleValidator(-9999.0, 9999.0, 2)); //LC accetta double con 2 cifre decimali da -9999 a 9999
     readParam.setText("Read param from db Climate");
     readParam.setChecked(myProject.referenceClima->param1IsClimate());
+    readParam.setTristate(false);
 
 
     QString elab1Field = elaborationList.currentText();
@@ -156,17 +158,24 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
     elaborationLayout.addWidget(&readParam);
     secondElabLayout.addWidget(new QLabel("Secondary Elaboration: "));
 
-    group = elab1Field +"_Elab1Elab2";
-    AnomalySettings->beginGroup(group);
-    secondElabList.addItem("None");
-    size = AnomalySettings->beginReadArray(elab1Field);
-    for (int i = 0; i < size; ++i) {
-        AnomalySettings->setArrayIndex(i);
-        QString elab2 = AnomalySettings->value("elab2").toString();
-        secondElabList.addItem( elab2 );
+    if (firstYearEdit.text().toInt() == lastYearEdit.text().toInt())
+    {
+        secondElabList.addItem("No elaboration available");
     }
-    AnomalySettings->endArray();
-    AnomalySettings->endGroup();
+    else
+    {
+        group = elab1Field +"_Elab1Elab2";
+        AnomalySettings->beginGroup(group);
+        secondElabList.addItem("None");
+        size = AnomalySettings->beginReadArray(elab1Field);
+        for (int i = 0; i < size; ++i) {
+            AnomalySettings->setArrayIndex(i);
+            QString elab2 = AnomalySettings->value("elab2").toString();
+            secondElabList.addItem( elab2 );
+        }
+        AnomalySettings->endArray();
+        AnomalySettings->endGroup();
+    }
     secondElabLayout.addWidget(&secondElabList);
 
     elab2Parameter.setPlaceholderText("Parameter");

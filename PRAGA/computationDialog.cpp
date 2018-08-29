@@ -34,7 +34,8 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
     anomalyLine.setFrameShape(QFrame::HLine);
     anomalyLine.setFrameShadow(QFrame::Sunken);
     QLabel anomalyLabel("<font color='red'>Reference Data:</font>");
-    copyData.setText("Repeat data above");
+    copyData.setText("Copy data above");
+    copyData.setMaximumWidth(this->width()/3);
 
     meteoVariable var;
 
@@ -60,6 +61,7 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
     varLayout.addWidget(&variableList);
 
     readReference.setText("Read reference climate from db");
+    readReference.setTristate(false);
     varLayout.addWidget(&readReference);
     if (!isAnomaly)
     {
@@ -266,7 +268,7 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
     connect(&elaborationList, &QComboBox::currentTextChanged, [=](const QString &newElab){ this->listSecondElab(newElab); });
     connect(&secondElabList, &QComboBox::currentTextChanged, [=](const QString &newSecElab){ this->activeSecondParameter(newSecElab); });
     connect(&readParam, &QCheckBox::stateChanged, [=](int state){ this->readParameter(state); });
-    connect(&copyData, &QCheckBox::stateChanged, [=](int state){ this->copyDataToAnomaly(state); });
+    connect(&copyData, &QPushButton::clicked, [=](){ this->copyDataToAnomaly(); });
 
 
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
@@ -557,10 +559,6 @@ void ComputationDialog::checkYears()
     {
         listSecondElab(elaborationList.currentText());
     }
-    if (copyData.isChecked() == true)
-    {
-        copyDataToAnomaly(true);
-    }
 }
 
 
@@ -763,10 +761,6 @@ void ComputationDialog::listSecondElab(const QString value)
     settings->endArray();
     settings->endGroup();
 
-    if (copyData.isChecked() == true)
-    {
-        copyDataToAnomaly(true);
-    }
 
 }
 
@@ -783,15 +777,11 @@ void ComputationDialog::activeSecondParameter(const QString value)
             elab2Parameter.setReadOnly(false);
         }
 
-        if (copyData.isChecked() == true)
-        {
-            copyDataToAnomaly(true);
-        }
 }
 
 void ComputationDialog::readParameter(int state)
 {
-    if (state)
+    if (state!= 0)
     {
         elab1Parameter.clear();
         elab1Parameter.setReadOnly(true);
@@ -801,41 +791,38 @@ void ComputationDialog::readParameter(int state)
         elab1Parameter.setReadOnly(false);
     }
 
-    if (copyData.isChecked() == true)
-    {
-        copyDataToAnomaly(true);
-    }
 }
 
-void ComputationDialog::copyDataToAnomaly(int state)
+void ComputationDialog::copyDataToAnomaly()
 {
-    if (state)
+
+    anomaly.AnomalySetReadReference(readReference.isChecked());
+    if (firstYearEdit.text().size() == 4 && lastYearEdit.text().size() == 4 && firstYearEdit.text().toInt() < lastYearEdit.text().toInt())
     {
-        anomaly.AnomalySetReadReference(readReference.isChecked());
         anomaly.AnomalySetYearStart(firstYearEdit.text());
         anomaly.AnomalySetYearLast(lastYearEdit.text());
-        anomaly.AnomalySetPeriodTypeList(periodTypeList.currentText());
-        if (periodTypeList.currentText() == "Generic")
-        {
-            anomaly.AnomalySetGenericPeriodStart(genericPeriodStart.date());
-            anomaly.AnomalySetGenericPeriodEnd(genericPeriodEnd.date());
-            anomaly.AnomalySetNyears(nrYear.text());
-        }
-        else
-        {
-            anomaly.AnomalySetCurrentDay(currentDay.date());
-        }
-        anomaly.AnomalySetElaboration(elaborationList.currentText());
-        anomaly.AnomalySetReadParamIsChecked(readParam.isChecked());
-        if (readParam.isChecked() == false)
-        {
-            anomaly.AnomalySetParam1(elab1Parameter.text());
-        }
-
-        anomaly.AnomalySetSecondElaboration(secondElabList.currentText());
-        anomaly.AnomalySetParam2(elab2Parameter.text());
-
     }
+
+    anomaly.AnomalySetPeriodTypeList(periodTypeList.currentText());
+    if (periodTypeList.currentText() == "Generic")
+    {
+        anomaly.AnomalySetGenericPeriodStart(genericPeriodStart.date());
+        anomaly.AnomalySetGenericPeriodEnd(genericPeriodEnd.date());
+        anomaly.AnomalySetNyears(nrYear.text());
+    }
+    else
+    {
+        anomaly.AnomalySetCurrentDay(currentDay.date());
+    }
+    anomaly.AnomalySetElaboration(elaborationList.currentText());
+    anomaly.AnomalySetReadParamIsChecked(readParam.isChecked());
+    if (readParam.isChecked() == false)
+    {
+        anomaly.AnomalySetParam1(elab1Parameter.text());
+    }
+
+    anomaly.AnomalySetSecondElaboration(secondElabList.currentText());
+    anomaly.AnomalySetParam2(elab2Parameter.text());
 
 }
 

@@ -44,7 +44,7 @@ class ComputationDialog : public QDialog
         QLineEdit elab2Parameter;
 
         AnomalyLayout anomaly;
-        QCheckBox copyData;
+        QPushButton copyData;
 
     public:
         ComputationDialog(QSettings *settings, bool isAnomaly);
@@ -55,7 +55,7 @@ class ComputationDialog : public QDialog
         void listSecondElab(const QString value);
         void activeSecondParameter(const QString value);
         void readParameter(int state);
-        void copyDataToAnomaly(int state);
+        void copyDataToAnomaly();
 };
 
 
