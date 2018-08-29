@@ -21,16 +21,16 @@
         #include "dbMeteoGrid.h"
     #endif
 
-    #ifndef DBCLIMATE_H
-        #include "dbClimate.h"
-    #endif
-
     #ifndef INTERPOLATIONPOINT_H
         #include "interpolationPoint.h"
     #endif
 
     #ifndef SOLARRADIATION_H
         #include "solarRadiation.h"
+    #endif
+
+    #ifndef DBCLIMATE_H
+        #include "dbClimate.h"
     #endif
 
     #ifdef NETCDF
