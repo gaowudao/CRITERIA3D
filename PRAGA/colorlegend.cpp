@@ -1,6 +1,5 @@
 #include "commonConstants.h"
 #include "colorlegend.h"
-#include "project.h"
 #include <QPainter>
 #include <QDebug>
 #include <cmath>
