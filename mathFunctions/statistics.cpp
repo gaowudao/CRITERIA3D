@@ -707,7 +707,7 @@ namespace statistics
 
         for (int i = 0; i < nValue; i++)
         {
-            if (values[i] > max)
+            if ((values[i] > max) && (values[i] != NODATA))
             {
                 max = values[i] ;
             }
@@ -727,7 +727,7 @@ namespace statistics
 
         for (int i = 0; i < nValue; i++)
         {
-            if (values[i] < min)
+            if (values[i] < min && (values[i] != NODATA))
             {
                 min = values[i] ;
             }
@@ -746,7 +746,8 @@ namespace statistics
 
         for (int i = 0; i < nValue; i++)
         {
-            sum = sum  + values[i] ;
+            if (values[i] != NODATA)
+                sum += values[i] ;
         }
 
         return sum;
@@ -762,9 +763,9 @@ namespace statistics
 
         for (int i = 0; i < nValue; i++)
         {
-            if (values[i] > threshold)
+            if ((values[i] > threshold) && (values[i] != NODATA))
             {
-                sum = sum  + ( values[i] - threshold);
+                sum += ( values[i] - threshold);
             }
         }
 
@@ -781,9 +782,9 @@ namespace statistics
 
         for (int i = 0; i < nValue; i++)
         {
-            if (values[i] < threshold)
+            if ((values[i] < threshold)&& (values[i] != NODATA))
             {
-                diff = diff  + (threshold - values[i]);
+                diff += (threshold - values[i]);
             }
         }
 
@@ -801,9 +802,9 @@ namespace statistics
 
         for (int i = 0; i < nValue; i++)
         {
-            if (values[i] > threshold)
+            if ((values[i] > threshold)&& (values[i] != NODATA))
             {
-                countAbove = countAbove + 1;
+                countAbove++;
             }
         }
 
@@ -820,9 +821,9 @@ namespace statistics
 
         for (int i = 0; i < nValue; i++)
         {
-            if (values[i] < threshold)
+            if ((values[i] < threshold) && (values[i] != NODATA))
             {
-                countBelow = countBelow + 1;
+                countBelow++;
             }
         }
 
@@ -852,23 +853,23 @@ namespace statistics
                     if (compareValue( values[i], threshold, isPositive))
                     {
                         inPeriod = true;
-                        myListNumDays[nPeriod] = myListNumDays[nPeriod] + 1;
+                        myListNumDays[nPeriod]++;
                     }
                 }
                 else
                 {
                     if (compareValue( values[i], threshold, isPositive))
                     {
-                        myListNumDays[nPeriod] = myListNumDays[nPeriod] + 1;
+                        myListNumDays[nPeriod]++;
                         if (i == (nValue - 1))
                         {
-                            nPeriod = nPeriod + 1;
+                            nPeriod++;
                             myListNumDays.push_back(0);
                         }
                     }
                     else
                     {
-                        nPeriod = nPeriod + 1;
+                        nPeriod++;
                         myListNumDays.push_back(0);
                         inPeriod = false;
                     }
@@ -876,7 +877,7 @@ namespace statistics
             }
             else if (inPeriod == true)
             {
-                nPeriod = nPeriod + 1;
+                nPeriod++;
                 myListNumDays.push_back(0);
                 inPeriod = false;
             }
@@ -905,10 +906,10 @@ namespace statistics
         for (int i = 0; i < nValue; i++)
         {
             if ( values[i] > 0)
-                frequencyPositive = frequencyPositive + 1;
+                frequencyPositive++;
 
         }
-        frequencyPositive = frequencyPositive / nValue;
+        frequencyPositive /= nValue;
 
         return frequencyPositive;
 
@@ -957,10 +958,10 @@ namespace statistics
                 {
                     if (values[j] != NODATA)
                     {
-                        myS = myS + sgn(values[j] - values[i]);
+                        myS += sgn(values[j] - values[i]);
                     }
                 }
-                myValidNR = myValidNR + 1;
+                myValidNR++;
             }
         }
         variable = myValidNR * (myValidNR - 1) * (2.0 * myValidNR + 5.0) / 18.0;
@@ -982,16 +983,16 @@ namespace statistics
         int mean = 0;
 
         double sumGauss = 0.0;
-        double deltaXGauss = 1.0 / 1000.0;
+        double deltaXGauss = 0.001;
         double myX = 0.0;
         std::vector<float> GaussIntegralTwoTailsFactor1000(10000);
 
         for (unsigned int i = 0; i < 10000; i++)
         {
-            myX = myX + deltaXGauss;
+            myX += deltaXGauss;
             double ratio = (myX - mean) / stdDev;
             double gauss = (1 / (sqrt(2 * PI) * stdDev)) * exp(-0.5 * (ratio * ratio));
-            sumGauss = sumGauss + gauss * deltaXGauss;
+            sumGauss += gauss * deltaXGauss;
             GaussIntegralTwoTailsFactor1000[i] = float(sumGauss * 2.f);
         }
         float result = GaussIntegralTwoTailsFactor1000[int(zMK * 1000)];
