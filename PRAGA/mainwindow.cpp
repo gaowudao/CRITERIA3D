@@ -34,7 +34,7 @@ extern Project myProject;
 #define MAPBORDER 8
 #define TOOLSWIDTH 260
 
-MainWindow::MainWindow(environment menu, QWidget *parent) :
+MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
@@ -86,25 +86,6 @@ MainWindow::MainWindow(environment menu, QWidget *parent) :
     connect(this->ui->dateEdit, SIGNAL(editingFinished()), this, SLOT(on_dateChanged()));
 
     this->setMouseTracking(true);
-
-    this->menu = menu;
-
-    //set menu
-    switch(this->menu)
-    {
-        case praga :
-            ui->actionDownload_meteo_data->setVisible(true);
-            ui->actionNewMeteoPointsArkimet->setVisible(true);
-            break;
-        case criteria1D:
-            ui->actionDownload_meteo_data->setVisible(false);
-            ui->actionNewMeteoPointsArkimet->setVisible(false);
-            break;
-        case criteria3D :
-            ui->actionDownload_meteo_data->setVisible(false);
-            ui->actionNewMeteoPointsArkimet->setVisible(false);
-            break;
-    }
 
     elaborationBox = new QGroupBox(this);
     elaborationBox->setTitle("Elaboration");

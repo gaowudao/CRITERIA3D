@@ -13,7 +13,6 @@
     #include "rasterObject.h"
     #include "stationMarker.h"
     #include "colorlegend.h"
-    #include "guiConfiguration.h"
     #include "dbArkimet.h"
 
 
@@ -31,7 +30,7 @@
 
     public:
 
-        explicit MainWindow(environment menu, QWidget *parent = 0);
+        explicit MainWindow( QWidget *parent = 0);
         ~MainWindow();
 
 
@@ -116,7 +115,6 @@
         RubberBand *myRubberBand;
         bool showPoints;
 
-        environment menu;
         QList<QCheckBox*> datasetCheckbox;
         QCheckBox* all;
 

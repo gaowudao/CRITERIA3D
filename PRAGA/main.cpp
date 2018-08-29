@@ -41,10 +41,8 @@ int main(int argc, char *argv[])
 
     QNetworkProxyFactory::setUseSystemConfiguration(true);
 
-    environment test = praga;
-
     QApplication::setOverrideCursor(Qt::ArrowCursor);
-    MainWindow w(test);
+    MainWindow w;
     w.show();
 
     return myApp.exec();
