@@ -14,6 +14,7 @@
     #include "interpolationSettings.h"
 #endif
 
+
 class Crit3DProxyMeteoPoint : public Crit3DProxy
 {
 private:
