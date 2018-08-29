@@ -30,6 +30,9 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
     QHBoxLayout secondElabLayout;
 
     QVBoxLayout anomalyMainLayout;
+    QFrame anomalyLine;
+    anomalyLine.setFrameShape(QFrame::HLine);
+    anomalyLine.setFrameShadow(QFrame::Sunken);
     QLabel anomalyLabel("<font color='red'>Reference Data:</font>");
 
     meteoVariable var;
@@ -238,6 +241,8 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
         anomaly.build(settings);
 
         anomalyLabel.setAlignment(Qt::AlignCenter);
+        anomalyMainLayout.addWidget(&anomalyLine);
+        anomalyMainLayout.setSpacing(5);
         anomalyMainLayout.addWidget(&anomalyLabel);
         anomalyMainLayout.addWidget(&anomaly);
     }
