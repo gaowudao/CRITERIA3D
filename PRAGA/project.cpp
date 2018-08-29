@@ -672,6 +672,12 @@ bool Project::loadMeteoPointsDB(QString dbName)
     closeMeteoPointsDB();
 
     meteoPointsDbHandler = new Crit3DMeteoPointsDbHandler(dbName);
+    if (meteoPointsDbHandler->error != "")
+    {
+        logError(meteoPointsDbHandler->error);
+        closeMeteoPointsDB();
+        return false;
+    }
 
     QList<Crit3DMeteoPoint> listMeteoPoints = meteoPointsDbHandler->getPropertiesFromDb(this->gisSettings);
 

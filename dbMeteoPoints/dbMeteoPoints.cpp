@@ -16,25 +16,23 @@
 
 Crit3DMeteoPointsDbHandler::Crit3DMeteoPointsDbHandler(QString dbName)
 {
+    error = "";
 
     if(_db.isOpen())
     {
         qDebug() << _db.connectionName() << "is already open";
         _db.close();
     }
+
     _db = QSqlDatabase::addDatabase("QSQLITE", QUuid::createUuid().toString());
     _db.setDatabaseName(dbName);
 
     if (!_db.open())
     {
-       qDebug() << "Error: connection with database fail";
+       error = _db.lastError().text();
     }
-    else
-    {
-       qDebug() << "Database: connection ok";
-    }
-
 }
+
 
 Crit3DMeteoPointsDbHandler::~Crit3DMeteoPointsDbHandler()
 {

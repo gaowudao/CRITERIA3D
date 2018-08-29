@@ -761,7 +761,6 @@ std::string Crit3DMeteoGridDbHandler::getHourlyPragaName(meteoVariable meteoVar)
 }
 
 
-
 bool Crit3DMeteoGridDbHandler::openDatabase(std::string *myError)
 {
 
@@ -770,16 +769,14 @@ bool Crit3DMeteoGridDbHandler::openDatabase(std::string *myError)
         _db = QSqlDatabase::addDatabase("QMYSQL", "grid");
     }
 
-
     _db.setHostName(_connection.server);
     _db.setDatabaseName(_connection.name);
     _db.setUserName(_connection.user);
     _db.setPassword(_connection.password);
 
-
     if (!_db.open())
     {
-       *myError = "Error: connection with database fail";
+       *myError = "Error: connection with database fail!\n" + _db.lastError().text().toStdString();
        return false;
     }
     else

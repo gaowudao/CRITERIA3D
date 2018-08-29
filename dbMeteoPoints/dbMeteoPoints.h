@@ -37,6 +37,8 @@ private:
     std::vector <Crit3DProxyMeteoPoint> ProxyMeteoPoint;
 
 public:
+    QString error;
+
     explicit Crit3DMeteoPointsDbHandler(QString dbName);
         ~Crit3DMeteoPointsDbHandler();
         void dbManager();
