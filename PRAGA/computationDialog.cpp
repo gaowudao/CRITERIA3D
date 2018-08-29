@@ -205,17 +205,24 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
     elaborationLayout.addWidget(&readParam);
     secondElabLayout.addWidget(new QLabel("Secondary Elaboration: "));
 
-    group = elab1Field +"_Elab1Elab2";
-    settings->beginGroup(group);
-    secondElabList.addItem("None");
-    size = settings->beginReadArray(elab1Field);
-    for (int i = 0; i < size; ++i) {
-        settings->setArrayIndex(i);
-        QString elab2 = settings->value("elab2").toString();
-        secondElabList.addItem( elab2 );
+    if (firstYearEdit.text().toInt() == lastYearEdit.text().toInt())
+    {
+        secondElabList.addItem("No elaboration available");
     }
-    settings->endArray();
-    settings->endGroup();
+    else
+    {
+        group = elab1Field +"_Elab1Elab2";
+        settings->beginGroup(group);
+        secondElabList.addItem("None");
+        size = settings->beginReadArray(elab1Field);
+        for (int i = 0; i < size; ++i) {
+            settings->setArrayIndex(i);
+            QString elab2 = settings->value("elab2").toString();
+            secondElabList.addItem( elab2 );
+        }
+        settings->endArray();
+        settings->endGroup();
+    }
     secondElabLayout.addWidget(&secondElabList);
 
     elab2Parameter.setPlaceholderText("Parameter");
@@ -785,10 +792,30 @@ void ComputationDialog::copyDataToAnomaly(int state)
 {
     if (state)
     {
-//        anomaly.readReference.setChecked(readReference.isChecked());
-//        anomaly.readReference.isCheckable(false);
+        anomaly.AnomalySetReadReference(readReference.isChecked());
         anomaly.AnomalySetYearStart(firstYearEdit.text());
         anomaly.AnomalySetYearLast(lastYearEdit.text());
+        anomaly.AnomalySetPeriodTypeList(periodTypeList.currentText());
+        if (periodTypeList.currentText() == "Generic")
+        {
+            anomaly.AnomalySetGenericPeriodStart(genericPeriodStart.date());
+            anomaly.AnomalySetGenericPeriodEnd(genericPeriodEnd.date());
+            anomaly.AnomalySetNyears(nrYear.text());
+        }
+        else
+        {
+            anomaly.AnomalySetCurrentDay(currentDay.date());
+        }
+        anomaly.AnomalySetElaboration(elaborationList.currentText());
+        anomaly.AnomalySetReadParamIsChecked(readParam.isChecked());
+        if (readParam.isChecked() == false)
+        {
+            anomaly.AnomalySetParam1(elab1Parameter.text());
+        }
+
+        anomaly.AnomalySetSecondElaboration(secondElabList.currentText());
+        anomaly.AnomalySetParam2(elab2Parameter.text());
+
 
     }
     else

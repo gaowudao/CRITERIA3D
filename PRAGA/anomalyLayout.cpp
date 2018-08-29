@@ -498,10 +498,19 @@ void AnomalyLayout::AnomalyReadParameter(int state)
     }
 }
 
+void AnomalyLayout::AnomalySetReadReference(bool set)
+{
+    readReference.setChecked(set);
+}
 
 QString AnomalyLayout::AnomalyGetPeriodTypeList() const
 {
     return periodTypeList.currentText();
+}
+
+void AnomalyLayout::AnomalySetPeriodTypeList(QString period)
+{
+    periodTypeList.setCurrentText(period);
 }
 
 int AnomalyLayout::AnomalyGetYearStart() const
@@ -529,9 +538,19 @@ QDate AnomalyLayout::AnomalyGetGenericPeriodStart() const
     return genericPeriodStart.date();
 }
 
+void AnomalyLayout::AnomalySetGenericPeriodStart(QDate genericStart)
+{
+    genericPeriodStart.setDate(genericStart);
+}
+
 QDate AnomalyLayout::AnomalyGetGenericPeriodEnd() const
 {
     return genericPeriodEnd.date();
+}
+
+void AnomalyLayout::AnomalySetGenericPeriodEnd(QDate genericEnd)
+{
+    genericPeriodEnd.setDate(genericEnd);
 }
 
 QDate AnomalyLayout::AnomalyGetCurrentDay() const
@@ -539,9 +558,19 @@ QDate AnomalyLayout::AnomalyGetCurrentDay() const
     return currentDay.date();
 }
 
+void AnomalyLayout::AnomalySetCurrentDay(QDate date)
+{
+    currentDay.setDate(date);
+}
+
 int AnomalyLayout::AnomalyGetNyears() const
 {
     return nrYear.text().toInt();
+}
+
+void AnomalyLayout::AnomalySetNyears(QString nYears)
+{
+    nrYear.setText(nYears);
 }
 
 QString AnomalyLayout::AnomalyGetElaboration() const
@@ -549,9 +578,19 @@ QString AnomalyLayout::AnomalyGetElaboration() const
     return elaborationList.currentText();
 }
 
+void AnomalyLayout::AnomalySetElaboration(QString elab)
+{
+    elaborationList.setCurrentText(elab);
+}
+
 QString AnomalyLayout::AnomalyGetSecondElaboration() const
 {
     return secondElabList.currentText();
+}
+
+void AnomalyLayout::AnomalySetSecondElaboration(QString elab)
+{
+    secondElabList.setCurrentText(elab);
 }
 
 QString AnomalyLayout::AnomalyGetParam1() const
@@ -559,13 +598,28 @@ QString AnomalyLayout::AnomalyGetParam1() const
     return elab1Parameter.text();
 }
 
+void AnomalyLayout::AnomalySetParam1(QString param)
+{
+    elab1Parameter.setText(param);
+}
+
 QString AnomalyLayout::AnomalyGetParam2() const
 {
     return elab2Parameter.text();
 }
 
+void AnomalyLayout::AnomalySetParam2(QString param)
+{
+    elab2Parameter.setText(param);
+}
+
 bool AnomalyLayout::AnomalyReadParamIsChecked() const
 {
     return readParam.isChecked();
+}
+
+void AnomalyLayout::AnomalySetReadParamIsChecked(bool set)
+{
+    readParam.setChecked(set);
 }
 
