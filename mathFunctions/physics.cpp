@@ -272,7 +272,7 @@ float erosivityFactor(std::vector<float> values, int nValues)
             {
                 erosivityFactor = 0;
             }
-            if ( values[i] > 0 )
+            if ( (values[i] > 0) && (values[i] != NODATA))
             {
                 erosivityFactor = erosivityFactor + 0.11f * pow(values[i], 1.82f);
             }

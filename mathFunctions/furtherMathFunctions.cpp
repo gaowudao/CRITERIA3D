@@ -199,7 +199,6 @@ namespace integration
         }
         float old_s [10] = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
         float trapzd(float (*func)(float) , float a , float b , int n) ;
-        //void nerror(char error_text[]);
         int j;
         float s , st , ost=0.0 , os = 0.0 ;
         float s1 = 0.;
@@ -222,12 +221,11 @@ namespace integration
         for ( short k=0 ; k < 10 ; k++)
         {
             average_s  += old_s[k];
-            average_s2 += powf(old_s[k],2) ;
+            average_s2 += old_s[k]*old_s[k] ;
         }
         average_s  /= 10.0 ;
         average_s2 /= 10.0 ;
-        variance = average_s2 - powf(average_s,2) ;
-        //nerror("Too many steps in routine qsimp");
+        variance = average_s2 - average_s * average_s ;
         if (variance < 0.01*fabs(s1)) return s ; // s is converging slowly
         else return average_s ; // s ondulates
 

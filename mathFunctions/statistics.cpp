@@ -182,9 +182,16 @@ namespace statistics
     {
         float mean=0 ;
         float weightsSum=0 ;
-        for (int i = 0 ; i<nrData;i++) weightsSum += weights[i];
-        if ((weightsSum< 0.99) || (weightsSum > 1.01)) return -8888 ;
-        for (int i = 0 ; i<nrData;i++) mean += weights[i]*data[i];
+
+        for (int i = 0 ; i<nrData;i++)
+            weightsSum += weights[i];
+
+        if ((weightsSum< 0.99) || (weightsSum > 1.01))
+            return NODATA;
+
+        for (int i = 0 ; i<nrData;i++)
+            mean += weights[i]*data[i];
+
         return mean ;
     }
 
@@ -727,7 +734,7 @@ namespace statistics
 
         for (int i = 0; i < nValue; i++)
         {
-            if (values[i] < min && (values[i] != NODATA))
+            if ((values[i] < min) && (values[i] != NODATA))
             {
                 min = values[i] ;
             }
@@ -905,7 +912,7 @@ namespace statistics
 
         for (int i = 0; i < nValue; i++)
         {
-            if ( values[i] > 0)
+            if ( (values[i] > 0) && (values[i] != NODATA))
                 frequencyPositive++;
 
         }
