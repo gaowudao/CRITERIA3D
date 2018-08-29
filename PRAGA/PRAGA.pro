@@ -74,7 +74,6 @@ HEADERS  += mainwindow.h \
     rasterObject.h \
     colorlegend.h \
     project.h \
-    guiConfiguration.h \
     stationMarker.h \
     rubberBand.h \
     dialogWindows.h \
