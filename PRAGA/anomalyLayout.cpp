@@ -509,9 +509,19 @@ int AnomalyLayout::AnomalyGetYearStart() const
     return firstYearEdit.text().toInt();
 }
 
+void AnomalyLayout::AnomalySetYearStart(QString year)
+{
+    firstYearEdit.setText(year);
+}
+
 int AnomalyLayout::AnomalyGetYearLast() const
 {
     return lastYearEdit.text().toInt();
+}
+
+void AnomalyLayout::AnomalySetYearLast(QString year)
+{
+    lastYearEdit.setText(year);
 }
 
 QDate AnomalyLayout::AnomalyGetGenericPeriodStart() const

@@ -34,6 +34,7 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
     anomalyLine.setFrameShape(QFrame::HLine);
     anomalyLine.setFrameShadow(QFrame::Sunken);
     QLabel anomalyLabel("<font color='red'>Reference Data:</font>");
+    QCheckBox copyData("Repeat data above");
 
     meteoVariable var;
 
@@ -58,7 +59,7 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
     varLayout.addWidget(&variableLabel);
     varLayout.addWidget(&variableList);
 
-    QCheckBox readReference("Read reference climate from db");
+    readReference.setText("Read reference climate from db");
     varLayout.addWidget(&readReference);
     if (!isAnomaly)
     {
@@ -244,6 +245,8 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
         anomalyMainLayout.addWidget(&anomalyLine);
         anomalyMainLayout.setSpacing(5);
         anomalyMainLayout.addWidget(&anomalyLabel);
+        anomalyMainLayout.addWidget(&copyData);
+        anomalyMainLayout.setSpacing(15);
         anomalyMainLayout.addWidget(&anomaly);
     }
 
@@ -256,6 +259,7 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
     connect(&elaborationList, &QComboBox::currentTextChanged, [=](const QString &newElab){ this->listSecondElab(newElab); });
     connect(&secondElabList, &QComboBox::currentTextChanged, [=](const QString &newSecElab){ this->activeSecondParameter(newSecElab); });
     connect(&readParam, &QCheckBox::stateChanged, [=](int state){ this->readParameter(state); });
+    connect(&copyData, &QCheckBox::stateChanged, [=](int state){ this->copyDataToAnomaly(state); });
 
 
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
@@ -774,6 +778,22 @@ void ComputationDialog::readParameter(int state)
     else
     {
         elab1Parameter.setReadOnly(false);
+    }
+}
+
+void ComputationDialog::copyDataToAnomaly(int state)
+{
+    if (state)
+    {
+//        anomaly.readReference.setChecked(readReference.isChecked());
+//        anomaly.readReference.isCheckable(false);
+        anomaly.AnomalySetYearStart(firstYearEdit.text());
+        anomaly.AnomalySetYearLast(lastYearEdit.text());
+
+    }
+    else
+    {
+
     }
 }
 

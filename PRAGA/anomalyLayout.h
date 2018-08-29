@@ -71,6 +71,8 @@ class AnomalyLayout : public QDialog
         QString AnomalyGetPeriodTypeList() const;
         int AnomalyGetYearStart() const;
         int AnomalyGetYearLast() const;
+        void AnomalySetYearStart(QString year);
+        void AnomalySetYearLast(QString year);
         QDate AnomalyGetGenericPeriodStart() const;
         QDate AnomalyGetGenericPeriodEnd() const;
         int AnomalyGetNyears() const;

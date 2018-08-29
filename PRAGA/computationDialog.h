@@ -24,6 +24,7 @@ class ComputationDialog : public QDialog
         QDateEdit currentDay;
         QLabel currentDayLabel;
         QComboBox variableList;
+        QCheckBox readReference;
         QLineEdit firstYearEdit;
         QLineEdit lastYearEdit;
         QLabel genericStartLabel;
@@ -53,6 +54,7 @@ class ComputationDialog : public QDialog
         void listSecondElab(const QString value);
         void activeSecondParameter(const QString value);
         void readParameter(int state);
+        void copyDataToAnomaly(int state);
 };
 
 
