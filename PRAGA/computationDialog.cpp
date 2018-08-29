@@ -34,7 +34,7 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
     anomalyLine.setFrameShape(QFrame::HLine);
     anomalyLine.setFrameShadow(QFrame::Sunken);
     QLabel anomalyLabel("<font color='red'>Reference Data:</font>");
-    QCheckBox copyData("Repeat data above");
+    copyData.setText("Repeat data above");
 
     meteoVariable var;
 
@@ -557,6 +557,10 @@ void ComputationDialog::checkYears()
     {
         listSecondElab(elaborationList.currentText());
     }
+    if (copyData.isChecked() == true)
+    {
+        copyDataToAnomaly(true);
+    }
 }
 
 
@@ -759,6 +763,11 @@ void ComputationDialog::listSecondElab(const QString value)
     settings->endArray();
     settings->endGroup();
 
+    if (copyData.isChecked() == true)
+    {
+        copyDataToAnomaly(true);
+    }
+
 }
 
 void ComputationDialog::activeSecondParameter(const QString value)
@@ -773,6 +782,11 @@ void ComputationDialog::activeSecondParameter(const QString value)
         {
             elab2Parameter.setReadOnly(false);
         }
+
+        if (copyData.isChecked() == true)
+        {
+            copyDataToAnomaly(true);
+        }
 }
 
 void ComputationDialog::readParameter(int state)
@@ -785,6 +799,11 @@ void ComputationDialog::readParameter(int state)
     else
     {
         elab1Parameter.setReadOnly(false);
+    }
+
+    if (copyData.isChecked() == true)
+    {
+        copyDataToAnomaly(true);
     }
 }
 
@@ -816,11 +835,7 @@ void ComputationDialog::copyDataToAnomaly(int state)
         anomaly.AnomalySetSecondElaboration(secondElabList.currentText());
         anomaly.AnomalySetParam2(elab2Parameter.text());
 
-
     }
-    else
-    {
 
-    }
 }
 
