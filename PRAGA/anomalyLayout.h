@@ -62,7 +62,6 @@ class AnomalyLayout : public QDialog
         void build(QSettings *settings);
         void AnomalyDisplayPeriod(const QString value);
         void AnomalyCheckYears();
-        void AnomalyChangeDate(const QDate newDate);
         void AnomalyListElaboration(const QString value);
         void AnomalyListSecondElab(const QString value);
         void AnomalyActiveSecondParameter(const QString value);

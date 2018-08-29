@@ -190,7 +190,6 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
     connect(&lastYearEdit, &QLineEdit::editingFinished, [=](){ this->AnomalyCheckYears(); });
     connect(&variableElab, &QLineEdit::textChanged, [=](const QString &newVar){ this->AnomalyListElaboration(newVar); });
 
-    connect(&currentDay, &QDateTimeEdit::dateChanged, [=](const QDate &newDate){ this->AnomalyChangeDate(newDate); });
     connect(&periodTypeList, &QComboBox::currentTextChanged, [=](const QString &newVar){ this->AnomalyDisplayPeriod(newVar); });
     connect(&elaborationList, &QComboBox::currentTextChanged, [=](const QString &newElab){ this->AnomalyListSecondElab(newElab); });
     connect(&secondElabList, &QComboBox::currentTextChanged, [=](const QString &newSecElab){ this->AnomalyActiveSecondParameter(newSecElab); });
@@ -287,11 +286,6 @@ void AnomalyLayout::AnomalyCheckYears()
     {
         AnomalyListSecondElab(elaborationList.currentText());
     }
-}
-
-void AnomalyLayout::AnomalyChangeDate(const QDate)
-{
-    AnomalyDisplayPeriod(periodTypeList.currentText());
 }
 
 
@@ -436,14 +430,13 @@ void AnomalyLayout::AnomalyListSecondElab(const QString value)
     {
         periodTypeList.setCurrentText("Generic");
         periodTypeList.setEnabled(false);
+        AnomalyDisplayPeriod(periodTypeList.currentText());
     }
     else
     {
         periodTypeList.setEnabled(true);
         nrYear.setEnabled(true);
     }
-
-    AnomalyDisplayPeriod(periodTypeList.currentText());
 
     QString group = value + "_Elab1Elab2";
     AnomalySettings->beginGroup(group);

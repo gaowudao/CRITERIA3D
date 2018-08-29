@@ -49,7 +49,6 @@ class ComputationDialog : public QDialog
         void done(bool res);
         void displayPeriod(const QString value);
         void checkYears();
-        void changeDate(const QDate newDate);
         void listElaboration(const QString value);
         void listSecondElab(const QString value);
         void activeSecondParameter(const QString value);

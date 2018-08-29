@@ -252,7 +252,6 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
     connect(&lastYearEdit, &QLineEdit::editingFinished, [=](){ this->checkYears(); });
 
     connect(&variableList, &QComboBox::currentTextChanged, [=](const QString &newVar){ this->listElaboration(newVar); });
-    connect(&currentDay, &QDateTimeEdit::dateChanged, [=](const QDate &newDate){ this->changeDate(newDate); });
     connect(&periodTypeList, &QComboBox::currentTextChanged, [=](const QString &newVar){ this->displayPeriod(newVar); });
     connect(&elaborationList, &QComboBox::currentTextChanged, [=](const QString &newElab){ this->listSecondElab(newElab); });
     connect(&secondElabList, &QComboBox::currentTextChanged, [=](const QString &newSecElab){ this->activeSecondParameter(newSecElab); });
@@ -549,11 +548,6 @@ void ComputationDialog::checkYears()
     }
 }
 
-void ComputationDialog::changeDate(const QDate)
-{
-    displayPeriod(periodTypeList.currentText());
-}
-
 
 void ComputationDialog::displayPeriod(const QString value)
 {
@@ -724,14 +718,13 @@ void ComputationDialog::listSecondElab(const QString value)
     {
         periodTypeList.setCurrentText("Generic");
         periodTypeList.setEnabled(false);
+        displayPeriod(periodTypeList.currentText());
     }
     else
     {
         periodTypeList.setEnabled(true);
         nrYear.setEnabled(true);
     }
-
-    displayPeriod(periodTypeList.currentText());
 
     QString group = value + "_Elab1Elab2";
     settings->beginGroup(group);
