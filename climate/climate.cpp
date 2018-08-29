@@ -1789,7 +1789,7 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
 
                         float value = NODATA;
                         index = difference(meteoPoint->firstDateDailyVar, presentDate);
-                        if (index >= 0 && index < inputValues.size())
+                        if (index < inputValues.size())
                         {
                             value = inputValues.at(index);
                         }
@@ -1875,7 +1875,7 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                     {
                         float value = NODATA;
                         index = difference(meteoPoint->firstDateDailyVar, presentDate);
-                        if (index >= 0 && index < inputValues.size())
+                        if (index < inputValues.size())
                         {
                             value = inputValues.at(index);
                         }
