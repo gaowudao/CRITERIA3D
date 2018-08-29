@@ -2,6 +2,7 @@
 #include "iostream"
 #include "commonConstants.h"
 #include "gis.h"
+#include "radiationSettings.h"
 #include "solarRadiation.h"
 
 
@@ -40,7 +41,6 @@ int main(int argc, char *argv[])
     // SET RADIATION SETTINGS
     Crit3DRadiationSettings* radSettings = new Crit3DRadiationSettings();
     radSettings->setGisSettings(gisSettings);
-    radiation::setRadiationSettings(radSettings);
 
     // INITIALIZE RADIATION MAPS (deafult trasmissivity = 0.75)
     Crit3DRadiationMaps* radMaps = new Crit3DRadiationMaps(*dtm, *gisSettings);
@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
     std::cout << "\nComputing..." << std::endl;
 
     // COMPUTE POTENTIAL GLOBAL RADIATION MAPS
-    if (radiation::computeRadiationGridPresentTime(*dtm, radMaps, *myTime))
+    if (radiation::computeRadiationGridPresentTime(radSettings, *dtm, radMaps, *myTime))
         std::cout << "\nGlobal solar irradiance (clear sky) computed." << std::endl;
     else
         std::cout << "Error in compute radiation." << std::endl << std::endl;

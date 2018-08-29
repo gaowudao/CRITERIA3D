@@ -41,8 +41,6 @@
 
     namespace radiation
     {
-        void setRadiationSettings(Crit3DRadiationSettings* mySettings);
-
         bool computeSunPosition(float lon, float lat, int myTimezone,
                                 int myYear,int myMonth, int myDay,
                                 int myHour, int myMinute, int mySecond,
