@@ -1186,7 +1186,7 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
     {
         if (!isAnomaly)
         {
-            if (!elaborationPointsCycleGrid(&errorString, meteoGridDbHandler, climaFromDb, clima, currentDate, isAnomaly))
+            if (!elaborationPointsCycleGrid(&errorString, meteoGridDbHandler, climaFromDb, clima, currentDate, isAnomaly, true))
             {
                 return false;
             }
@@ -1194,7 +1194,7 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
         }
         else
         {
-            if (!elaborationPointsCycleGrid(&errorString, meteoGridDbHandler, climaFromDb, referenceClima, currentDate, isAnomaly))
+            if (!elaborationPointsCycleGrid(&errorString, meteoGridDbHandler, climaFromDb, referenceClima, currentDate, isAnomaly, true))
             {
                 return false;
             }
@@ -1206,14 +1206,14 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
     {
         if (!isAnomaly)
         {
-            if (!elaborationPointsCycle(&errorString, meteoPointsDbHandler, meteoPoints, nrMeteoPoints, climaFromDb, clima, currentDate, isAnomaly))
+            if (!elaborationPointsCycle(&errorString, meteoPointsDbHandler, meteoPoints, nrMeteoPoints, climaFromDb, clima, currentDate, isAnomaly, true))
             {
                 return false;
             }
         }
         else
         {
-            if (!elaborationPointsCycle(&errorString, meteoPointsDbHandler, meteoPoints, nrMeteoPoints, climaFromDb, referenceClima, currentDate, isAnomaly))
+            if (!elaborationPointsCycle(&errorString, meteoPointsDbHandler, meteoPoints, nrMeteoPoints, climaFromDb, referenceClima, currentDate, isAnomaly, true))
             {
                 return false;
             }
@@ -1225,6 +1225,202 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
     return true;
 }
 
+
+bool Project::elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DClimate* referenceClima, Crit3DClimate* clima, QDate currentDay, bool isAnomaly, bool showInfo)
+{
+
+    bool isMeteoGrid = 0; // meteoPoint
+    float currentParameter1;
+    int validCell = 0;
+    int myClimateIndex;
+
+    formRunInfo myInfo;
+    int infoStep;
+    QString infoStr;
+
+    if (showInfo)
+    {
+        if (isAnomaly)
+        {
+            infoStr = "Anomaly - Meteo Points";
+        }
+        else
+        {
+            infoStr = "Elaboration - Meteo Points";
+        }
+
+        infoStep = myInfo.start(infoStr, nrMeteoPoints);
+    }
+
+
+    QDate startDate(clima->yearStart(), clima->genericPeriodDateStart().month(), clima->genericPeriodDateStart().day());
+    QDate endDate(clima->yearEnd(), clima->genericPeriodDateEnd().month(), clima->genericPeriodDateEnd().day());
+
+    if (clima->nYears() > 0)
+    {
+        endDate.setDate(clima->yearEnd() + clima->nYears(), clima->genericPeriodDateEnd().month(), clima->genericPeriodDateEnd().day());
+    }
+    else if (clima->nYears() < 0)
+    {
+        startDate.setDate(clima->yearStart() + clima->nYears(), clima->genericPeriodDateStart().month(), clima->genericPeriodDateStart().day());
+    }
+
+    if (clima->param1IsClimate())
+    {
+        parserElaboration(clima);
+        myClimateIndex = getClimateIndexFromDate(currentDay, clima->periodType());
+     }
+
+
+    for (int i = 0; i < nrMeteoPoints; i++)
+    {
+        if (showInfo && (i % infoStep) == 0)
+                    myInfo.setValue(i);
+
+        if (clima->param1IsClimate())
+        {
+//            if ( ClimateReadPoint(PragaClimate.Point(i).TableName, climateElab, myPeriodType, myClimateIndex, PragaClimate.Point(i)))
+//            {
+
+//                currentParameter1 = passaggioDati.GetClimateData(myPeriodType, PragaClimate.Point(i), myClimateIndex);
+//            }
+//            else
+//            {
+//                currentParameter1 = NODATA;
+//            }
+             clima->setParam1(currentParameter1);
+        }
+
+
+        if (clima->elab1() == "phenology")
+        {
+            //Then currentPheno.setPhenoPoint i;  // TODO
+        }
+
+        if ( elaborationOnPoint(myError, meteoPointsDbHandler, NULL, &meteoPoints[i], clima, isMeteoGrid, startDate, endDate, isAnomaly, true))
+        {
+            validCell = validCell + 1;
+        }
+
+
+    }
+    if (showInfo) myInfo.close();
+
+    if (validCell == 0)
+    {
+        *myError = "no valid cells available";
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+
+}
+
+
+bool Project::elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DClimate* referenceClima, Crit3DClimate* clima, QDate currentDay, bool isAnomaly, bool showInfo)
+{
+
+    bool isMeteoGrid = 1; // grid
+    float currentParameter1;
+    int validCell = 0;
+    int myClimateIndex;
+
+    std::string id;
+
+    formRunInfo myInfo;
+    int infoStep;
+    QString infoStr;
+
+    if (showInfo)
+    {
+        if (isAnomaly)
+        {
+            infoStr = "Anomaly - Meteo Grid";
+        }
+        else
+        {
+            infoStr = "Elaboration - Meteo Grid";
+        }
+
+        infoStep = myInfo.start(infoStr, this->meteoGridDbHandler->gridStructure().header().nrRows);
+    }
+
+    QDate startDate(clima->yearStart(), clima->genericPeriodDateStart().month(), clima->genericPeriodDateStart().day());
+    QDate endDate(clima->yearEnd(), clima->genericPeriodDateEnd().month(), clima->genericPeriodDateEnd().day());
+
+    if (clima->nYears() > 0)
+    {
+        endDate.setDate(clima->yearEnd() + clima->nYears(), clima->genericPeriodDateEnd().month(), clima->genericPeriodDateEnd().day());
+    }
+    else if (clima->nYears() < 0)
+    {
+        startDate.setDate(clima->yearStart() + clima->nYears(), clima->genericPeriodDateStart().month(), clima->genericPeriodDateStart().day());
+    }
+
+
+    if (clima->param1IsClimate())
+    {
+
+        parserElaboration(clima);
+        myClimateIndex = getClimateIndexFromDate(currentDay, clima->periodType());
+
+     }
+
+
+     for (int row = 0; row < meteoGridDbHandler->gridStructure().header().nrRows; row++)
+     {
+         if (showInfo && (row % infoStep) == 0)
+             myInfo.setValue(row);
+
+         for (int col = 0; col < meteoGridDbHandler->gridStructure().header().nrCols; col++)
+         {
+
+            if (meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id))
+            {
+
+                if (clima->param1IsClimate())
+                {
+//                    if (Climate.ClimateReadPoint(PragaClimate.Point(row, col).TableName, _
+//                        climateElab, myPeriodType, myClimateIndex,PragaClimate.Point(row, col)) )
+//                    {
+
+//                      currentParameter1 = passaggioDati.GetClimateData(myPeriodType, PragaClimate.Point(row, col), myClimateIndex)
+//                    }
+//                    else
+//                    {
+//                        currentParameter1 = NODATA;
+//                    }
+                    clima->setParam1(currentParameter1);
+                }
+
+
+                //Crit3DMeteoPoint meteoPoint = meteoGridDbHandler->meteoGrid()->meteoPoint(row,col);
+                Crit3DMeteoPoint* meteoPoint = meteoGridDbHandler->meteoGrid()->meteoPointPointer(row,col);
+                if  ( elaborationOnPoint(myError, NULL, meteoGridDbHandler, meteoPoint, clima, isMeteoGrid, startDate, endDate, isAnomaly, true))
+                {
+                    validCell = validCell + 1;
+                }
+
+            }
+
+        }
+    }
+
+    if (showInfo) myInfo.close();
+
+    if (validCell == 0)
+    {
+        *myError = "no valid cells available";
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+
+}
 
 /*-------------------
 

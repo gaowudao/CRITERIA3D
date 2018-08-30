@@ -82,6 +82,8 @@
         void on_actionExtract_NetCDF_series_triggered();
     #endif
 
+        void on_actionSettings_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

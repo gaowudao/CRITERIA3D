@@ -1950,7 +1950,7 @@
      <x>0</x>
      <y>0</y>
      <width>1368</width>
-     <height>21</height>
+     <height>30</height>
     </rect>
    </property>
    <property name="palette">
@@ -2474,6 +2474,7 @@
     <addaction name="menuClimateElaboration"/>
     <addaction name="menuClimateAnomaly"/>
     <addaction name="menuClimateSave"/>
+    <addaction name="actionSettings"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuVariable"/>
@@ -2759,6 +2760,11 @@
    </property>
    <property name="toolTip">
     <string>Interpolation settings</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="text">
+    <string>Settings</string>
    </property>
   </action>
  </widget>
