@@ -1,7 +1,15 @@
+/*!
+   \name testSunPosition
+   \brief show current sun rise and sun set at Bologna and Madrid
+   \brief using solarRadiation library (sunPostion module)
+ */
+
+
 #include <QCoreApplication>
 #include <QDate>
 #include <QTime>
 #include <iostream>
+
 #include "commonConstants.h"
 #include "sunPosition.h"
 #include "radiationDefinitions.h"
@@ -17,15 +25,15 @@ void printSunRiseSet(int timeMinutes, QString rise_set)
 bool testSunPosition(float lat, float lon, int timeZone, QDate myDate, QTime myTime)
 {
     int chk;
-    float etrTilt;      //Extraterrestrial (top-of-atmosphere) global irradiance on a tilted surface (W m-2)
-    float cosZen;       //Cosine of refraction corrected solar zenith angle
-    float sbcf;         //Shadow-band correction factor
-    float prime;        //Factor that normalizes Kt, Kn, etc.
-    float unPrime;      //Factor that denormalizes Kt', Kn', etc.
-    float  zenRef;      //Solar zenith angle, deg. from zenith, refracted
-    float sunCosIncidenceCompl;     //cosine of (90 - incidence)
-    float sunRiseMinutes;           //sunrise time [minutes from midnight]
-    float sunSetMinutes;            //sunset time [minutes from midnight]
+    float etrTilt;          // Extraterrestrial (top-of-atmosphere) global irradiance on a tilted surface (W m-2)
+    float cosZen;                   // Cosine of refraction corrected solar zenith angle
+    float sbcf;                     // Shadow-band correction factor
+    float prime;                    // Factor that normalizes Kt, Kn, etc.
+    float unPrime;                  // Factor that denormalizes Kt', Kn', etc.
+    float zenRef;                   // Solar zenith angle, deg. from zenith, refracted
+    float sunCosIncidenceCompl;     // cosine of (90 - incidence)
+    float sunRiseMinutes;           // sun rise time [minutes from midnight]
+    float sunSetMinutes;            // sun set time [minutes from midnight]
 
     TsunPosition *mySunPosition;
     mySunPosition = new TsunPosition();
