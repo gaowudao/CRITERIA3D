@@ -69,8 +69,8 @@ SOURCES += main.cpp\
     mainwindow.cpp \
     dialogWindows.cpp \
     project.cpp \
-	stationMarker.cpp \
-	../PRAGA/formRunInfo.cpp \
+    stationMarker.cpp \
+    ../PRAGA/formRunInfo.cpp \
     ../PRAGA/rasterObject.cpp \
     ../PRAGA/rubberBand.cpp \
     ../PRAGA/colorlegend.cpp
@@ -78,10 +78,9 @@ SOURCES += main.cpp\
 HEADERS += mainwindow.h \
     dialogWindows.h \
     project.h \
-	stationMarker.h \
-	../PRAGA/formRunInfo.h \
+    stationMarker.h \
+    ../PRAGA/formRunInfo.h \
     ../PRAGA/rasterObject.h \
-
     ../PRAGA/rubberBand.h \
     ../PRAGA/colorlegend.h
 
