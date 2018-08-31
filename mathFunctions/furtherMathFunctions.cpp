@@ -167,7 +167,7 @@ namespace integration
         return s;
     }
 
-    float trapzd(float (*func)(float) , float a , float b , int n)
+    float trapezoidalRule(float (*func)(float) , float a , float b , int n)
     {
         float x , tnm , sum , del ;
         static float s ;
@@ -198,13 +198,13 @@ namespace integration
             return (-qsimp(func,b, a , EPS)); //recursive formula
         }
         float old_s [10] = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
-        float trapzd(float (*func)(float) , float a , float b , int n) ;
+        float trapezoidalRule(float (*func)(float) , float a , float b , int n) ;
         int j;
         float s , st , ost=0.0 , os = 0.0 ;
         float s1 = 0.;
         for ( j=1 ; j <= 20 ; j++)
         {
-            st = trapzd(func,a,b,j) ;
+            st = trapezoidalRule(func,a,b,j) ;
             s = (float)((4.0*st-ost)/3.0) ;
             for ( short k=1 ; k < 10 ; k++)
             {
@@ -782,10 +782,7 @@ namespace matricial
             {
                 for (int j=0;j<n;j++)
                 {
-
-                    //if (isLowerMatrix)
-                        a[j][i]= aLinear[counter]; // for lower output matrix
-                    //else    a[i][j]= aLinear[counter]; // for upper output matrix
+                    a[j][i]= aLinear[counter]; // for lower output matrix
                     counter++;
                 }
                 a[i][i]= diagonalElementsCholesky[i];
@@ -793,10 +790,7 @@ namespace matricial
 
             for (int i=0;i<n;i++)
             {
-                //if (isLowerMatrix)
                     for (int j=i+1;j<n;j++) a[i][j]=0.;
-                //else
-                    //for (int j=0;j<i;j++) a[i][j]=0.;
             }
         }
         else
@@ -805,9 +799,6 @@ namespace matricial
             {
                 for (int j=0;j<n;j++)
                 {
-
-                    //if (isLowerMatrix) a[j][i]= aLinear[counter]; // for lower output matrix
-                    //else
                     a[i][j]= aLinear[counter]; // for upper output matrix
                     counter++;
                 }
@@ -816,14 +807,9 @@ namespace matricial
 
             for (int i=0;i<n;i++)
             {
-                //if (isLowerMatrix)
-                    //for (int j=i+1;j<n;j++) a[i][j]=0.;
-                //else
                     for (int j=0;j<i;j++) a[i][j]=0.;
             }
         }
-
-
         free(diagonalElementsCholesky);
         free(aLinear);
     }
@@ -869,85 +855,13 @@ namespace distribution
 {
     float normalGauss(TfunctionInput fInput)
     {
-        return float(pow((2*PI*pow(fInput.par[1],2)),-0.5)*exp(-0.5*pow((fInput.x-fInput.par[0])/fInput.par[1],2)));
+        return float(pow((2*PI*fInput.par[1]*fInput.par[1]),-0.5)*exp(-0.5*pow((fInput.x-fInput.par[0])/fInput.par[1],2)));
     }
 }
 
 namespace myrandom {
-/*
-    #define IA 16807
-    #define IM 2147483647
-    #define AM (1.0/IM)
-    #define IQ 127773
-    #define IR 2836
-    #define NTAB 32
-    #define NDIV (1+(IM-1)/NTAB)
-    #define EPS 1.2e-7
-    #define RNMX (1.0-EPS)
-    float ran1(long *idum)
-        //“Minimal” random number generator of Park and Miller with Bays-Durham shuffle and added
-        //safeguards. Returns a uniform random deviate between 0.0 and 1.0 (exclusive of the endpoint
-        //values). Call with idum a negative integer to initialize; thereafter, do not alter idum between
-        //successive deviates in a sequence. RNMX should approximate the largest floating value that is
-        //less than 1.
-    {
-        int j;
-        long k;
-        static long iy=0;
-        static long iv[NTAB];
-        float temp;
-        if (*idum <= 0 || !iy)
-        { //Initialize.
-            if (-(*idum) < 1) *idum=1; //Be sure to prevent idum = 0.
-            else *idum = -(*idum);
-            for (j=NTAB+7;j>=0;j--)
-            {                        //Load the shuffle table (after 8 warm-ups).
-                k=(*idum)/IQ;
-                *idum=IA*(*idum-k*IQ)-IR*k;
-                if (*idum < 0) *idum += IM;
-                if (j < NTAB) iv[j] = *idum;
-            }
-            iy=iv[0];
-        }
-        k=(*idum)/IQ; // Start here when not initializing.
-        *idum=IA*(*idum-k*IQ)-IR*k; // Compute idum=(IA*idum) % IM without over
-        if (*idum < 0) *idum += IM; // flows by Schrage’s method.
-        j=iy/NDIV; // Will be in the range 0..NTAB-1.
-        iy=iv[j]; // Output previously stored value and refill the
-        iv[j] = *idum; // shuffle table.
-        if ((temp=AM*iy) > RNMX) return RNMX; // Because users don’t expect endpoint values.
-        else return temp;
-    }
 
-
-
-    float gasdev(long *idum)
-    {
-        //float ran1(long *idum);
-        static int iset=0;
-        static float gset;
-        float fac,rsq,v1,v2;
-        if (*idum < 0) iset=0;
-        if (iset == 0)
-        {
-            do {
-                v1=2.0*ran1(idum)-1.0;
-                v2=2.0*ran1(idum)-1.0;
-                rsq=v1*v1+v2*v2;
-                } while (rsq >= 1.0 || rsq == 0.0);
-            fac=sqrt(-2.0*log(rsq)/rsq);
-            gset=v1*fac;
-            iset=1;
-            return v2*fac;
-        }
-        else
-        {
-            iset=0;
-            return gset;
-        }
-    }*/
-
-    //----------------------------------------------------------------------
+//----------------------------------------------------------------------
     // Generate a standard normally-distributed random variable
     // (See Numerical Recipes in Pascal W. H. Press, et al. 1989 p. 225)
     //----------------------------------------------------------------------
