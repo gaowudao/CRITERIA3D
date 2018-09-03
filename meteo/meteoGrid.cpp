@@ -364,11 +364,11 @@ void Crit3DMeteoGrid::fillMeteoRasterElabValue()
              {
                  dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j] = _meteoPoints[i][j]->elaboration;
                  // debug
-//                 if (_meteoPoints[i][j]->id == "02148")
-//                 {
-//                    float debug = dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j];
-//                    std::cout << " 02148 elab: " << debug;
-//                 }
+                 if (_meteoPoints[i][j]->id == "02148")
+                 {
+                    float debug = dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j];
+                    std::cout << " 02148 elab: " << debug;
+                 }
              }
         }
     }

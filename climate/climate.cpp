@@ -33,6 +33,11 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
     meteoPointTemp->latitude = meteoPoint->latitude;
     meteoPointTemp->firstDateDailyVar = meteoPoint->firstDateDailyVar;
 
+    if (meteoPoint->id == "02148")
+    {
+        int debug = 1;
+    }
+
     meteoComputation elab1MeteoComp;
     meteoComputation elab2MeteoComp;
     try
@@ -417,7 +422,7 @@ int thomDailyNHoursAbove(float* tempAvg, float* relHumAvgAir)
                 thomDailyNHoursAbove = thomDailyNHoursAbove + 1;
         }
     }
-    if ( (nData / 24 * 100) < MINPERCENTAGE)
+    if ( (float(nData) / 24.f * 100.f) < MINPERCENTAGE)
         thomDailyNHoursAbove = NODATA;
 
     return thomDailyNHoursAbove;
@@ -440,7 +445,7 @@ float thomDailyMax(float *tempAvg, float* relHumAvgAir)
                 thomDailyMax = thom;
         }
     }
-    if ( (nData / 24 * 100) < MINPERCENTAGE)
+    if ( (float(nData) / 24.f * 100.f) < MINPERCENTAGE)
         thomDailyMax = NODATA;
 
     return thomDailyMax;
@@ -463,7 +468,7 @@ float thomDailyMean(float *tempAvg, float* relHumAvgAir)
             nData = nData + 1;
         }
     }
-    if ( (nData / 24 * 100) < MINPERCENTAGE)
+    if ( (float(nData) / 24.f * 100.f) < MINPERCENTAGE)
         thomDailyMean = NODATA;
     else
         thomDailyMean = statistics::mean(thomValues, nData);
@@ -487,7 +492,7 @@ float dailyLeafWetnessComputation(int *leafW)
                 nData = nData + 1;
         }
     }
-    if ( (nData / 24 * 100) < MINPERCENTAGE)
+    if ( (float(nData) / 24.f * 100.f) < MINPERCENTAGE)
         dailyLeafWetnessRes = NODATA;
 
     return dailyLeafWetnessRes;
@@ -631,7 +636,7 @@ float computeWinkler(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DD
     }
     if (numberOfDays != 0)
     {
-        if ( (count / numberOfDays * 100) < MINPERCENTAGE )
+        if ( (float(count) / float(numberOfDays) * 100.f) < MINPERCENTAGE )
         {
             computeWinkler = NODATA;
         }
@@ -721,7 +726,7 @@ float computeHuglin(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDa
     }
     if (numberOfDays != 0)
     {
-        if ( (count / numberOfDays * 100) < MINPERCENTAGE )
+        if ( (float(count) / float(numberOfDays) * 100.f) < MINPERCENTAGE )
         {
             computeHuglin = NODATA;
         }
@@ -781,7 +786,7 @@ float computeFregoni(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DD
     }
     if (numberOfDays != 0)
     {
-        if ( (count / numberOfDays * 100) < MINPERCENTAGE )
+        if ( (float(count) / float(numberOfDays) * 100.f) < MINPERCENTAGE )
         {
             computeFregoni = NODATA;
         }
@@ -854,7 +859,7 @@ float computeCorrectedSum(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Cr
     }
     if (numberOfDays != 0)
     {
-        if ( (count / numberOfDays * 100) < MINPERCENTAGE )
+        if ( (float(count) / float(numberOfDays) * 100.f) < MINPERCENTAGE )
         {
             computeCorrectedSum = NODATA;
         }
