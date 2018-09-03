@@ -586,7 +586,7 @@ namespace statistics
     double ERF(double x, double accuracy) // error function
     {
 
-        return (1.12837916709551*double(integration::qsimp(errorFunctionPrimitive,0.,float(x),float(accuracy)))); // the constant in front of integration is equal to 2*pow(PI,-0.5)
+        return (1.12837916709551*double(integration::simpsonRule(errorFunctionPrimitive,0.,float(x),float(accuracy)))); // the constant in front of integration is equal to 2*pow(PI,-0.5)
     }
 
     double ERFC(double x, double accuracy) // error function

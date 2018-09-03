@@ -170,12 +170,12 @@ namespace integration
     float trapezoidalRule(float (*func)(float) , float a , float b , int n)
     {
         float x , tnm , sum , del ;
-        static float s ;
+        static float sumInfinitesimal ;
         int it , j ;
 
         if (n == 1)
         {
-            return (s=(float)(0.5*(b-a)* ((*func) (a) +(*func)(b)))) ;
+            return (sumInfinitesimal=(float)(0.5*(b-a)* ((*func) (a) +(*func)(b)))) ;
         }
         else
         {
@@ -185,37 +185,37 @@ namespace integration
             x = (float)(a + 0.5 * del) ;
             for(sum = 0.0 , j=1 ; j <= it ; j++ , x += del) sum += (*func)(x) ;
             //s = (float)(0.5 * (s + (b-a)*sum/tnm)) ;
-            return (s= (float)(0.5 * (s + (b-a)*sum/tnm))) ;
+            return (sumInfinitesimal= (float)(0.5 * (sumInfinitesimal + (b-a)*sum/tnm))) ;
         }
     }
 
 
-    float qsimp(float (*func)(float),float a , float b , float EPS)
+    float simpsonRule(float (*func)(float),float a , float b , float EPS)
     {
         /*! this function calculates definte integrals using the Simpson rule */
         if (a > b)
         {
-            return (-qsimp(func,b, a , EPS)); //recursive formula
+            return (-simpsonRule(func,b, a , EPS)); //recursive formula
         }
         float old_s [10] = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
         float trapezoidalRule(float (*func)(float) , float a , float b , int n) ;
         int j;
-        float s , st , ost=0.0 , os = 0.0 ;
+        float sumInfenitesimal , sumTrapezoidal , old_sumTrapezoidal=0.0 , old_sumInfinitesimal = 0.0 ;
         float s1 = 0.;
         for ( j=1 ; j <= 20 ; j++)
         {
-            st = trapezoidalRule(func,a,b,j) ;
-            s = (float)((4.0*st-ost)/3.0) ;
+            sumTrapezoidal = trapezoidalRule(func,a,b,j) ;
+            sumInfenitesimal = (float)((4.0*sumTrapezoidal-old_sumTrapezoidal)/3.0) ;
             for ( short k=1 ; k < 10 ; k++)
             {
                 old_s[k-1]=old_s[k];
             }
-            old_s[9] = s ;
-            if (j == 5) s1 = s ;
+            old_s[9] = sumInfenitesimal ;
+            if (j == 5) s1 = sumInfenitesimal ;
             if (j > 5 )
-                if (fabs(s-os) < EPS*fabs(os) || (s == 0.0 && os == 0.0) ) return s ;
-                os = s ;
-                ost = st ;
+                if (fabs(sumInfenitesimal-old_sumInfinitesimal) < EPS*fabs(old_sumInfinitesimal) || (sumInfenitesimal == 0.0 && old_sumInfinitesimal == 0.0) ) return sumInfenitesimal ;
+                old_sumInfinitesimal = sumInfenitesimal ;
+                old_sumTrapezoidal = sumTrapezoidal ;
         }
         float average_s=0.0 , average_s2 = 0.0 , variance ;
         for ( short k=0 ; k < 10 ; k++)
@@ -226,7 +226,7 @@ namespace integration
         average_s  /= 10.0 ;
         average_s2 /= 10.0 ;
         variance = average_s2 - average_s * average_s ;
-        if (variance < 0.01*fabs(s1)) return s ; // s is converging slowly
+        if (variance < 0.01*fabs(s1)) return sumInfenitesimal ; // s is converging slowly
         else return average_s ; // s ondulates
 
     }

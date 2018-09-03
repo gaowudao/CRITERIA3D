@@ -41,7 +41,7 @@ std::string binary(unsigned x);
         float trapzdParametric(float (*func)(TfunctionInput), int nrPar, float *par , float a , float b , int n);
         float qsimpParametric(float (*func)(TfunctionInput), int nrPar, float *par,float a , float b , float EPS);
         float trapzd(float (*func)(float) , float a , float b , int n);
-        float qsimp(float (*func)(float),float a , float b , float EPS);
+        float simpsonRule(float (*func)(float),float a , float b , float EPS);
         float monteCarlo3D(bool (*func)(TfunctionInputMonteCarlo3D),float den,float xLower, float xUpper, float yLower , float yUpper , float zLower , float zUpper,int nrPar, float *par, float requiredPercentageError ,  float *reachedPercentageErrorW);
         float monteCarlo2D(bool (*func)(TfunctionInputMonteCarlo2D),float den,float xLower, float xUpper, float yLower , float yUpper,int nrPar, float *par, float requiredPercentageError ,  float *reachedPercentageErrorW);
     }
