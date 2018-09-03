@@ -140,8 +140,8 @@
         bool interpolationMeteoGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster);
         bool saveGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, bool showInfo);
 
-        bool elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DClimate *referenceClima, Crit3DClimate* clima, QDate currentDay, bool isAnomaly, bool showInfo);
-        bool elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DClimate* referenceClima, Crit3DClimate* clima, QDate currentDay, bool isAnomaly, bool showInfo);
+        bool elaborationPointsCycle(bool isAnomaly, bool showInfo);
+        bool elaborationPointsCycleGrid(bool isAnomaly, bool showInfo);
         bool elaborationCheck(bool isMeteoGrid, bool isAnomaly);
         bool elaboration(bool isMeteoGrid, bool isAnomaly);
 

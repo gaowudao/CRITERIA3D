@@ -1186,7 +1186,7 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
     {
         if (!isAnomaly)
         {
-            if (!elaborationPointsCycleGrid(&errorString, meteoGridDbHandler, climaFromDb, clima, currentDate, isAnomaly, true))
+            if (!elaborationPointsCycleGrid(isAnomaly, true))
             {
                 return false;
             }
@@ -1194,7 +1194,7 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
         }
         else
         {
-            if (!elaborationPointsCycleGrid(&errorString, meteoGridDbHandler, climaFromDb, referenceClima, currentDate, isAnomaly, true))
+            if (!elaborationPointsCycleGrid(isAnomaly, true))
             {
                 return false;
             }
@@ -1206,14 +1206,14 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
     {
         if (!isAnomaly)
         {
-            if (!elaborationPointsCycle(&errorString, meteoPointsDbHandler, meteoPoints, nrMeteoPoints, climaFromDb, clima, currentDate, isAnomaly, true))
+            if (!elaborationPointsCycle(isAnomaly, true))
             {
                 return false;
             }
         }
         else
         {
-            if (!elaborationPointsCycle(&errorString, meteoPointsDbHandler, meteoPoints, nrMeteoPoints, climaFromDb, referenceClima, currentDate, isAnomaly, true))
+            if (!elaborationPointsCycle(isAnomaly, true))
             {
                 return false;
             }
@@ -1226,7 +1226,7 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
 }
 
 
-bool Project::elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DClimate* referenceClima, Crit3DClimate* clima, QDate currentDay, bool isAnomaly, bool showInfo)
+bool Project::elaborationPointsCycle(bool isAnomaly, bool showInfo)
 {
 
     bool isMeteoGrid = 0; // meteoPoint
@@ -1268,7 +1268,7 @@ bool Project::elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHa
     if (clima->param1IsClimate())
     {
         parserElaboration(clima);
-        myClimateIndex = getClimateIndexFromDate(currentDay, clima->periodType());
+        myClimateIndex = getClimateIndexFromDate(currentDate, clima->periodType());
      }
 
 
@@ -1297,7 +1297,7 @@ bool Project::elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHa
             //Then currentPheno.setPhenoPoint i;  // TODO
         }
 
-        if ( elaborationOnPoint(myError, meteoPointsDbHandler, NULL, &meteoPoints[i], clima, isMeteoGrid, startDate, endDate, isAnomaly, true))
+        if ( elaborationOnPoint(&errorString, meteoPointsDbHandler, NULL, &meteoPoints[i], clima, isMeteoGrid, startDate, endDate, isAnomaly, true))
         {
             validCell = validCell + 1;
         }
@@ -1308,7 +1308,7 @@ bool Project::elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHa
 
     if (validCell == 0)
     {
-        *myError = "no valid cells available";
+        errorString = "no valid cells available";
         return false;
     }
     else
@@ -1319,7 +1319,7 @@ bool Project::elaborationPointsCycle(std::string *myError, Crit3DMeteoPointsDbHa
 }
 
 
-bool Project::elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DClimate* referenceClima, Crit3DClimate* clima, QDate currentDay, bool isAnomaly, bool showInfo)
+bool Project::elaborationPointsCycleGrid(bool isAnomaly, bool showInfo)
 {
 
     bool isMeteoGrid = 1; // grid
@@ -1364,7 +1364,7 @@ bool Project::elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDb
     {
 
         parserElaboration(clima);
-        myClimateIndex = getClimateIndexFromDate(currentDay, clima->periodType());
+        myClimateIndex = getClimateIndexFromDate(currentDate, clima->periodType());
 
      }
 
@@ -1398,7 +1398,7 @@ bool Project::elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDb
 
                 //Crit3DMeteoPoint meteoPoint = meteoGridDbHandler->meteoGrid()->meteoPoint(row,col);
                 Crit3DMeteoPoint* meteoPoint = meteoGridDbHandler->meteoGrid()->meteoPointPointer(row,col);
-                if  ( elaborationOnPoint(myError, NULL, meteoGridDbHandler, meteoPoint, clima, isMeteoGrid, startDate, endDate, isAnomaly, true))
+                if  ( elaborationOnPoint(&errorString, NULL, meteoGridDbHandler, meteoPoint, clima, isMeteoGrid, startDate, endDate, isAnomaly, true))
                 {
                     validCell = validCell + 1;
                 }
@@ -1412,7 +1412,7 @@ bool Project::elaborationPointsCycleGrid(std::string *myError, Crit3DMeteoGridDb
 
     if (validCell == 0)
     {
-        *myError = "no valid cells available";
+        errorString = "no valid cells available";
         return false;
     }
     else
