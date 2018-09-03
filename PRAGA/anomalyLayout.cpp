@@ -197,6 +197,7 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
 
     connect(&firstYearEdit, &QLineEdit::editingFinished, [=](){ this->AnomalyCheckYears(); });
     connect(&lastYearEdit, &QLineEdit::editingFinished, [=](){ this->AnomalyCheckYears(); });
+    connect(&currentDay, &QDateEdit::dateChanged, [=](){ this->AnomalyDisplayPeriod(periodTypeList.currentText()); });
     connect(&variableElab, &QLineEdit::textChanged, [=](const QString &newVar){ this->AnomalyListElaboration(newVar); });
 
     connect(&periodTypeList, &QComboBox::currentTextChanged, [=](const QString &newVar){ this->AnomalyDisplayPeriod(newVar); });
