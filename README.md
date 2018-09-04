@@ -12,7 +12,7 @@ Water fluxes equations may be coupled with the heat flux equations, which includ
 http://www.sciencedirect.com/science/article/pii/S0309170809001754
 
 ## PRAGA (PRogram for AGrometeorological Analysis)
-![PRAGA/CRITERIA3D screenshot](https://github.com/ARPA-SIMC/CRITERIA3D/blob/master/doc/PRAGA_screenshot.png)
+![](https://github.com/ARPA-SIMC/CRITERIA3D/blob/master/doc/img/PRAGA_screenshot.png)
 PRAGA is a geographical application for agrometeorological and climate analysis.
 
 Currently PRAGA imports only data from ARPAE-SIMC sources: [Arkimet](https://github.com/ARPA-SIMC/arkimet) for meteo points, ERG-5 (Emilia-Romagna Grid at 5x5km) as meteo grid.
