@@ -52,11 +52,11 @@
     #endif
 
     #ifndef HOUR_SECONDS
-        #define HOUR_SECONDS 3600.0
+        #define HOUR_SECONDS 3600.f
     #endif
 
     #ifndef DAY_SECONDS
-        #define DAY_SECONDS 86400.0
+        #define DAY_SECONDS 86400.f
     #endif
 
     //criteria3D

@@ -96,7 +96,7 @@ Crit3DTime getNullTime()
 
 bool Crit3DTime::isEqual(const Crit3DTime& myTime) const
 {
-    return ((this->date == myTime.date) && (this->time == myTime.time));
+    return ((this->date == myTime.date) && (int(this->time) == int(myTime.time)));
 }
 
 Crit3DTime Crit3DTime::addSeconds(float mySeconds) const
@@ -104,9 +104,9 @@ Crit3DTime Crit3DTime::addSeconds(float mySeconds) const
     Crit3DTime myTime = *this;
     myTime.time += mySeconds;
 
-    while (!((myTime.time >= 0) && (myTime.time < DAY_SECONDS)))
+    while (!((myTime.time >= 0.f) && (myTime.time < float(DAY_SECONDS))))
     {
-        if (myTime.time >= DAY_SECONDS)
+        if (myTime.time >= float(DAY_SECONDS))
         {
             ++(myTime.date);
             myTime.time -= DAY_SECONDS;

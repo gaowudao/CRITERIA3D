@@ -62,7 +62,7 @@
     {
         double intPart;
         modf(number,&intPart);
-        return (int)(intPart);
+        return int(intPart);
     }
 
     double fractionalPart(double number)
