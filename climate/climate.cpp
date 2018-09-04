@@ -1646,7 +1646,7 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                         {
                             value = inputValues.at(index);
                         }
-                        if (value != NODATA)
+                        if (int(value) != NODATA)
                         {
                             values.push_back(value);
                             nValidValues = nValidValues + 1;
@@ -1732,7 +1732,7 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                         {
                             value = inputValues.at(index);
                         }
-                        if (value != NODATA)
+                        if (int(value) != NODATA)
                         {
                             values.push_back(value);
                             nValidValues = nValidValues + 1;
