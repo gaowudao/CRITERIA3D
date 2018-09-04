@@ -188,7 +188,7 @@ float loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteo
     // meteoPoint
     else
     {
-        dailyValues = meteoPointsDbHandler->getDailyVar(myError, variable, getCrit3DDate(first), getCrit3DDate(last), &firstDateDB, meteoPoint );
+        dailyValues = meteoPointsDbHandler->loadDailyVar(myError, variable, getCrit3DDate(first), getCrit3DDate(last), &firstDateDB, meteoPoint );
     }
 
     meteoPoint->firstDateDailyVar = getCrit3DDate(firstDateDB);
@@ -248,7 +248,7 @@ float loadDailyVarSeries_SaveOutput(std::string *myError, Crit3DMeteoPointsDbHan
     // meteoPoint
     else
     {
-        dailyValues = meteoPointsDbHandler->getDailyVar(myError, variable, getCrit3DDate(first), getCrit3DDate(last), &firstDateDB, meteoPoint );
+        dailyValues = meteoPointsDbHandler->loadDailyVar(myError, variable, getCrit3DDate(first), getCrit3DDate(last), &firstDateDB, meteoPoint );
     }
 
     meteoPoint->firstDateDailyVar = getCrit3DDate(firstDateDB);
@@ -312,7 +312,7 @@ float loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* mete
     // meteoPoint
     else
     {
-        hourlyValues = meteoPointsDbHandler->getHourlyVar(myError, variable, getCrit3DDate(first.date()), getCrit3DDate(last.date()), &firstDateDB, meteoPoint );
+        hourlyValues = meteoPointsDbHandler->loadHourlyVar(myError, variable, getCrit3DDate(first.date()), getCrit3DDate(last.date()), &firstDateDB, meteoPoint );
     }
 
     meteoPoint->firstDateDailyVar = getCrit3DDate(firstDateDB.date());

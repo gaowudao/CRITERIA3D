@@ -587,11 +587,11 @@ bool Project::loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo
         if (showInfo)
             if ((i % step) == 0) myInfo.setValue(i);
 
-        if (meteoPointsDbHandler->getDailyData(getCrit3DDate(firstDate), getCrit3DDate(lastDate), &(meteoPoints[i])))
+        if (meteoPointsDbHandler->loadDailyData(getCrit3DDate(firstDate), getCrit3DDate(lastDate), &(meteoPoints[i])))
         {
             isData = true;
         }
-        if (meteoPointsDbHandler->getHourlyData(getCrit3DDate(firstDate), getCrit3DDate(lastDate), &(meteoPoints[i])))
+        if (meteoPointsDbHandler->loadHourlyData(getCrit3DDate(firstDate), getCrit3DDate(lastDate), &(meteoPoints[i])))
         {
             isData = true;
         }

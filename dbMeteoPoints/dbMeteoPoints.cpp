@@ -281,7 +281,7 @@ QDateTime Crit3DMeteoPointsDbHandler::getFirstDay(frequencyType frequency)
 
 }
 
-bool Crit3DMeteoPointsDbHandler::getDailyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3DMeteoPoint *meteoPoint)
+bool Crit3DMeteoPointsDbHandler::loadDailyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3DMeteoPoint *meteoPoint)
 {
     QString dateStr;
     meteoVariable variable;
@@ -327,7 +327,7 @@ bool Crit3DMeteoPointsDbHandler::getDailyData(Crit3DDate dateStart, Crit3DDate d
 }
 
 
-bool Crit3DMeteoPointsDbHandler::getHourlyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3DMeteoPoint *meteoPoint)
+bool Crit3DMeteoPointsDbHandler::loadHourlyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3DMeteoPoint *meteoPoint)
 {
     QString dateStr;
     meteoVariable variable;
@@ -373,7 +373,7 @@ bool Crit3DMeteoPointsDbHandler::getHourlyData(Crit3DDate dateStart, Crit3DDate 
 }
 
 
-std::vector<float> Crit3DMeteoPointsDbHandler::getDailyVar(std::string *myError, meteoVariable variable, Crit3DDate dateStart, Crit3DDate dateEnd, QDate* firstDateDB, Crit3DMeteoPoint *meteoPoint)
+std::vector<float> Crit3DMeteoPointsDbHandler::loadDailyVar(std::string *myError, meteoVariable variable, Crit3DDate dateStart, Crit3DDate dateEnd, QDate* firstDateDB, Crit3DMeteoPoint *meteoPoint)
 {
     QString dateStr;
     QDate d, previousDate;
@@ -437,7 +437,7 @@ std::vector<float> Crit3DMeteoPointsDbHandler::getDailyVar(std::string *myError,
     return dailyVarList;
 }
 
-std::vector<float> Crit3DMeteoPointsDbHandler::getHourlyVar(std::string *myError, meteoVariable variable, Crit3DDate dateStart, Crit3DDate dateEnd, QDateTime* firstDateDB, Crit3DMeteoPoint *meteoPoint)
+std::vector<float> Crit3DMeteoPointsDbHandler::loadHourlyVar(std::string *myError, meteoVariable variable, Crit3DDate dateStart, Crit3DDate dateEnd, QDateTime* firstDateDB, Crit3DMeteoPoint *meteoPoint)
 {
     QString dateStr;
     QDateTime d, previousDate;
