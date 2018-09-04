@@ -1515,6 +1515,9 @@ std::vector<float> Crit3DMeteoGridDbHandler::loadGridHourlyVar(std::string *myEr
         return hourlyVarList;
     }
 
+    // take also 00:00 day after
+    last = last.addSecs(3600);
+
     QString statement = QString("SELECT * FROM `%1` WHERE VariableCode = '%2' AND %3 >= '%4' AND %3 <= '%5' ORDER BY %3").arg(tableH).arg(varCode).arg(_tableHourly.fieldTime).arg(first.toString("yyyy-MM-dd hh:mm")).arg(last.toString("yyyy-MM-dd hh:mm"));
     if( !qry.exec(statement) )
     {
@@ -1600,6 +1603,8 @@ std::vector<float> Crit3DMeteoGridDbHandler::loadGridHourlyVarFixedFields(std::s
             break;
         }
     }
+    // take also 00:00 day after
+    last = last.addSecs(3600);
 
     QString statement = QString("SELECT %1, %2 FROM `%3` WHERE %1 >= '%4' AND %1 <= '%5' ORDER BY %1").arg(_tableHourly.fieldTime).arg(varField).arg(tableH).arg(first.toString("yyyy-MM-dd hh:mm")).arg(last.toString("yyyy-MM-dd hh:mm"));
     if( !qry.exec(statement) )
