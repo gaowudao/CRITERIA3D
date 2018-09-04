@@ -14,7 +14,6 @@ unix:{
     TARGET = release/MapGraphics
 }
 win32:{
-    CONFIG += release
     TARGET = MapGraphics
 }
 
