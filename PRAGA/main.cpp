@@ -11,7 +11,7 @@ Project myProject;
 
 
 
-bool setProxy(QString hostName, int port)
+bool setProxy(QString hostName, unsigned short port)
 {
     QNetworkProxy myProxy;
 
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 
     QString currentPath = myApp.applicationDirPath() + "/";
     if (! myProject.initializeSettings(currentPath))
-        return false;
+        return -1;
 
     QNetworkProxyFactory::setUseSystemConfiguration(true);
 

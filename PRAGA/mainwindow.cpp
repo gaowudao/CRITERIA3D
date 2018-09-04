@@ -332,7 +332,7 @@ void MainWindow::on_actionMapTerrain_triggered()
 void MainWindow::on_actionSetUTMzone_triggered()
 {
     QString currentUTMZone = QString::number(myProject.gisSettings.utmZone);
-    int newUTMZone;
+    int newUTMZone = 32;
     bool isOk = false;
     while (! isOk)
     {
@@ -360,7 +360,7 @@ void MainWindow::on_actionRectangle_Selection_triggered()
     if (ui->actionRectangle_Selection->isChecked())
     {
         myRubberBand = new RubberBand(QRubberBand::Rectangle, this->mapView);
-        QPoint origin(this->mapView->width()*0.5 , this->mapView->height()*0.5);
+        QPoint origin(int(this->mapView->width() * 0.5f) , int(this->mapView->height() * 0.5f));
         QPoint mapPoint = getMapPoint(&origin);
         myRubberBand->setOrigin(mapPoint);
         myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), QSize()));
@@ -842,7 +842,7 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
     Crit3DColor *myColor;
     for (int i = 0; i < myProject.nrMeteoPoints; i++)
     {
-        if (myProject.meteoPoints[i].currentValue != NODATA)
+        if (int(myProject.meteoPoints[i].currentValue) != NODATA)
         {
             if (myProject.meteoPoints[i].quality == quality::accepted)
             {
@@ -1388,9 +1388,9 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool is
 
                 float v = myProject.meteoPoints[i].currentValue;
 
-                if (v != NODATA)
+                if (int(v) != NODATA)
                 {
-                    if (minimum == NODATA)
+                    if (int(minimum) == NODATA)
                     {
                         minimum = v;
                         maximum = v;
@@ -1423,7 +1423,7 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool is
                 // hide all meteo points
                 pointList[i]->setVisible(false);
             }
-            if (myProject.meteoPoints[i].currentValue != NODATA)
+            if (int(myProject.meteoPoints[i].currentValue) != NODATA)
             {
 
                 pointList[i]->setRadius(5);
@@ -1439,7 +1439,7 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool is
     }
 
 
-    if (myProject.clima->param1()!= NODATA)
+    if (int(myProject.clima->param1()) != NODATA)
     {
         if (!isAnomaly)
         {
