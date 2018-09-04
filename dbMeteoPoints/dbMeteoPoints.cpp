@@ -453,7 +453,7 @@ std::vector<float> Crit3DMeteoPointsDbHandler::getHourlyVar(std::string *myError
 
     QString tableName = QString::fromStdString(meteoPoint->id) + "_H";
 
-    QString statement = QString( "SELECT * FROM `%1` WHERE `%2` = %3 AND date_time >= DATE('%4') AND date_time < DATE('%5', '+1 day')")
+    QString statement = QString( "SELECT * FROM `%1` WHERE `%2` = %3 AND date_time >= DATE('%4') AND date_time <= DATETIME('%5 00:00:00', '+1 day')")
                                  .arg(tableName).arg(FIELD_METEO_VARIABLE).arg(idVar).arg(startDate).arg(endDate);
     if( !qry.exec(statement) )
     {
