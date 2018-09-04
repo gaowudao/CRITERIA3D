@@ -332,7 +332,7 @@ bool Download::downloadHourlyData(QDate startDate, QDate endDate, QString datase
     startTime = startTime.addSecs(-1800);
 
     QDateTime endTime = QDateTime(endDate);
-    endTime = endTime.addSecs(3600 * 23);
+    endTime = endTime.addSecs(3600 * 24);
 
     // reftime
     QString refTime = QString("reftime:>=%1,<=%2").arg(startTime.toString("yyyy-MM-dd hh:mm")).arg(endTime.toString("yyyy-MM-dd hh:mm"));

@@ -417,7 +417,7 @@ bool Crit3DMeteoPoint::setMeteoPointValueH(const Crit3DDate& myDate, int myHour,
 
     int subH = int(ceil(float(myMinutes) / float(60 / hourlyFraction)));
     int h = hourlyFraction * myHour + subH;
-    if ((h < 0) || (h >= hourlyFraction * 24)) return false;
+    if ((h < 0) || (h > hourlyFraction * 24)) return false;
 
     if (myVar == airTemperature)
         obsDataH[i].tAir[h] = myValue;

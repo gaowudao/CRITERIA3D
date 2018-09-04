@@ -33,7 +33,7 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
     meteoPointTemp->latitude = meteoPoint->latitude;
     meteoPointTemp->firstDateDailyVar = meteoPoint->firstDateDailyVar;
 
-    if (meteoPoint->id == "02148")
+    if (meteoPoint->id == "2289")
     {
         int debug = 1;
     }
@@ -459,7 +459,7 @@ float thomDailyMean(float *tempAvg, float* relHumAvgAir)
     std::vector<float> thomValues;
     float thomDailyMean;
 
-    for (int hour = 0; hour < 24; hour++)
+    for (int hour = 1; hour <= 24; hour++)
     {
         float thom = thomH(tempAvg[hour], relHumAvgAir[hour]);
         if (thom != NODATA)
