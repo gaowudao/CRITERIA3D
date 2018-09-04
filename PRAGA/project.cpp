@@ -130,6 +130,8 @@ bool Project::initializeSettings(QString currentPath)
         pathSetting.endGroup();
         if (! pragaPath.isEmpty())
         {
+            if (pragaPath.right(1) != "/" || pragaPath.right(1) != "\\" ) { pragaPath += "/"; }
+
             this->path = pragaPath;
         }
 

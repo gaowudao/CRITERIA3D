@@ -425,7 +425,7 @@ void MainWindow::on_actionNewMeteoPointsArkimet_triggered()
 {
     resetMeteoPoints();
 
-    QString templateFileName = myProject.path + "\\DATA\\template\\template_meteo.db";
+    QString templateFileName = myProject.path + "DATA/template/template_meteo.db";
 
     QString dbName = QFileDialog::getSaveFileName(this, tr("Save as"), "", tr("DB files (*.db)"));
     if (dbName == "")
@@ -908,6 +908,7 @@ void MainWindow::redrawMeteoGrid()
 
 }
 
+
 #ifdef NETCDF
     void MainWindow::on_actionOpen_NetCDF_data_triggered()
     {
@@ -983,6 +984,7 @@ void MainWindow::redrawMeteoGrid()
         }
     }
 #endif
+
 
 bool MainWindow::loadMeteoPointsDB(QString dbName)
 {
