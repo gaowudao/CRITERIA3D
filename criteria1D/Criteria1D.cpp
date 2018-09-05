@@ -288,12 +288,11 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, std::string *myE
 
         // check date
         query.first();
-        QDate myDate = query.value("date").toDate();
-        // caso normale
-        if (myDate != lastObsDate.addDays(1))
+        QDate firstForecastDate = query.value("date").toDate();
+        if (firstForecastDate != lastObsDate.addDays(1))
         {
             // previsioni indietro di un giorno: accettato ma tolgo un giorno
-            if (myDate == lastObsDate)
+            if (firstForecastDate == lastObsDate)
             {
                 meteoPoint.nrObsDataDaysD--;
             }
@@ -307,15 +306,36 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, std::string *myE
         // Read forecast data
         if (! readMOSESDailyData(&query, &meteoPoint, myError)) return false;
 
-        // Fill watertable data
+        // fill temperature (only forecast)
         // estende il dato precedente se mancante
-        float previousData = NODATA;
+        float previousTmin = NODATA;
+        float previousTmax = NODATA;
+        long lastObservedIndex = firstObsDate.daysTo(lastObsDate);
+        for (long i = lastObservedIndex; i < meteoPoint.nrObsDataDaysD; i++)
+        {
+            // tmin
+            if (meteoPoint.obsDataD[i].tMin != NODATA)
+                previousTmin = meteoPoint.obsDataD[i].tMin;
+            else if (previousTmin != NODATA)
+                meteoPoint.obsDataD[i].tMin = previousTmin;
+
+            // tmax
+            if (meteoPoint.obsDataD[i].tMax != NODATA)
+                previousTmax = meteoPoint.obsDataD[i].tMax;
+            else if (previousTmax != NODATA)
+                meteoPoint.obsDataD[i].tMax = previousTmax;
+        }
+
+        // Fill watertable (all data)
+        // estende il dato precedente se mancante
+        float previousWatertable = NODATA;
         for (long i = 0; i < meteoPoint.nrObsDataDaysD; i++)
         {
+            // watertable
             if (meteoPoint.obsDataD[i].waterTable != NODATA)
-                previousData = meteoPoint.obsDataD[i].waterTable;
-            else if (previousData != NODATA)
-                meteoPoint.obsDataD[i].waterTable = previousData;
+                previousWatertable = meteoPoint.obsDataD[i].waterTable;
+            else if (previousWatertable != NODATA)
+                meteoPoint.obsDataD[i].waterTable = previousWatertable;
         }
     }
 
