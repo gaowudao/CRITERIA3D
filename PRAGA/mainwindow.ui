@@ -2474,7 +2474,6 @@
     <addaction name="menuClimateElaboration"/>
     <addaction name="menuClimateAnomaly"/>
     <addaction name="menuClimateSave"/>
-    <addaction name="actionSettings"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuVariable"/>
