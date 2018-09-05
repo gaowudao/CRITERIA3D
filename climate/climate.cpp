@@ -31,12 +31,6 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
     meteoPointTemp->id = meteoPoint->id;
     meteoPointTemp->point.z = meteoPoint->point.z;
     meteoPointTemp->latitude = meteoPoint->latitude;
-    meteoPointTemp->firstDateDailyVar = meteoPoint->firstDateDailyVar;
-
-    if (meteoPoint->id == "2289")
-    {
-        int debug = 1;
-    }
 
     meteoComputation elab1MeteoComp;
     meteoComputation elab2MeteoComp;
@@ -191,7 +185,6 @@ float loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteo
         dailyValues = meteoPointsDbHandler->loadDailyVar(myError, variable, getCrit3DDate(first), getCrit3DDate(last), &firstDateDB, meteoPoint );
     }
 
-    meteoPoint->firstDateDailyVar = getCrit3DDate(firstDateDB);
 
     if ( dailyValues.empty() )
     {
@@ -201,7 +194,7 @@ float loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteo
     {
         if (meteoPoint->nrObsDataDaysD == 0)
         {
-            meteoPoint->initializeObsDataD(dailyValues.size(), meteoPoint->firstDateDailyVar);
+            meteoPoint->initializeObsDataD(dailyValues.size(), getCrit3DDate(firstDateDB));
         }
 
         Crit3DDate currentDate = getCrit3DDate(firstDateDB);
@@ -251,7 +244,6 @@ float loadDailyVarSeries_SaveOutput(std::string *myError, Crit3DMeteoPointsDbHan
         dailyValues = meteoPointsDbHandler->loadDailyVar(myError, variable, getCrit3DDate(first), getCrit3DDate(last), &firstDateDB, meteoPoint );
     }
 
-    meteoPoint->firstDateDailyVar = getCrit3DDate(firstDateDB);
 
     if ( dailyValues.empty() )
     {
@@ -261,7 +253,7 @@ float loadDailyVarSeries_SaveOutput(std::string *myError, Crit3DMeteoPointsDbHan
     {
         if (meteoPoint->nrObsDataDaysD == 0)
         {
-            meteoPoint->initializeObsDataD(dailyValues.size(), meteoPoint->firstDateDailyVar);
+            meteoPoint->initializeObsDataD(dailyValues.size(), getCrit3DDate(firstDateDB));
         }
 
         Crit3DDate currentDate = getCrit3DDate(firstDateDB);
@@ -315,7 +307,6 @@ float loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* mete
         hourlyValues = meteoPointsDbHandler->loadHourlyVar(myError, variable, getCrit3DDate(first.date()), getCrit3DDate(last.date()), &firstDateDB, meteoPoint );
     }
 
-    meteoPoint->firstDateDailyVar = getCrit3DDate(firstDateDB.date());
 
     if ( hourlyValues.empty() )
     {
@@ -326,7 +317,7 @@ float loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* mete
         if (meteoPoint->nrObsDataDaysH == 0)
         {
             int nrOfDays = ceil(float(hourlyValues.size()) / float(24 * meteoPoint->hourlyFraction));
-            meteoPoint->initializeObsDataH(meteoPoint->hourlyFraction, nrOfDays, meteoPoint->firstDateDailyVar);
+            meteoPoint->initializeObsDataH(meteoPoint->hourlyFraction, nrOfDays,getCrit3DDate(firstDateDB.date()));
         }
 
         for (unsigned int i = 0; i < hourlyValues.size(); i++)
@@ -594,7 +585,7 @@ float computeWinkler(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DD
     Crit3DDate presentDate = firstDate;
     for (int i = 0; i < numberOfDays; i++)
     {
-        index = difference(meteoPoint->firstDateDailyVar, presentDate);
+        index = difference(meteoPoint->obsDataD[0].date, presentDate);
         checkData = false;
         if (index >= 0 && index < meteoPoint->nrObsDataDaysD)
         {
@@ -690,7 +681,7 @@ float computeHuglin(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDa
     Crit3DDate presentDate = firstDate;
     for (int i = 0; i < numberOfDays; i++)
     {
-        index = difference(meteoPoint->firstDateDailyVar, presentDate);
+        index = difference(meteoPoint->obsDataD[0].date, presentDate);
         checkData = false;
         if ( index >= 0 && index < meteoPoint->nrObsDataDaysD)
         {
@@ -756,7 +747,7 @@ float computeFregoni(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DD
     Crit3DDate presentDate = firstDate;
     for (int i = 0; i < numberOfDays; i++)
     {
-        index = difference(meteoPoint->firstDateDailyVar, presentDate);
+        index = difference(meteoPoint->obsDataD[0].date, presentDate);
         checkData = false;
         if ( index >= 0 && index < meteoPoint->nrObsDataDaysD)
         {
@@ -817,7 +808,7 @@ float computeCorrectedSum(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Cr
     Crit3DDate presentDate = firstDate;
     for (int i = 0; i < numberOfDays; i++)
     {
-        index = difference(meteoPoint->firstDateDailyVar, presentDate);
+        index = difference(meteoPoint->obsDataD[0].date, presentDate);
         checkData = false;
         if ( index >= 0 && index < meteoPoint->nrObsDataDaysD)
         {
@@ -977,7 +968,6 @@ bool elaborateDailyAggregatedVarFromDaily(meteoVariable myVar, Crit3DMeteoPoint 
         if (res != NODATA)
         {
             nrValidValues += 1;
-            meteoPoint.firstDateDailyVar = date;    //FT ?
         }
 
         outputValues.push_back(res);
@@ -1025,7 +1015,6 @@ bool elaborateDailyAggregatedVarFromHourly(meteoVariable myVar, Crit3DMeteoPoint
         if (res != NODATA)
         {
             nrValidValues += 1;
-            meteoPoint.firstDateDailyVar = date;    //FT ?
         }
 
         outputValues.push_back(res);
@@ -1601,7 +1590,7 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
         {
             case lastDayBelowThreshold:
             {
-                return computeLastDayBelowThreshold(inputValues, meteoPoint->firstDateDailyVar ,firstDate, lastDate, param1);
+                return computeLastDayBelowThreshold(inputValues, meteoPoint->obsDataD[0].date ,firstDate, lastDate, param1);
             }
             case winkler:
             {
@@ -1641,7 +1630,7 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                     {
 
                         float value = NODATA;
-                        index = difference(meteoPoint->firstDateDailyVar, presentDate);
+                        index = difference(meteoPoint->obsDataD[0].date, presentDate);
                         if (index < inputValues.size())
                         {
                             value = inputValues.at(index);
@@ -1697,7 +1686,7 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
             {
                 case lastDayBelowThreshold:
                 {
-                    primary = computeLastDayBelowThreshold(inputValues, meteoPoint->firstDateDailyVar ,firstDate, lastDate, param1);
+                    primary = computeLastDayBelowThreshold(inputValues, meteoPoint->obsDataD[0].date ,firstDate, lastDate, param1);
                     break;
                 }
                 case winkler:
@@ -1727,7 +1716,7 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                     for (int i = 0; i < numberOfDays; i++)
                     {
                         float value = NODATA;
-                        index = difference(meteoPoint->firstDateDailyVar, presentDate);
+                        index = difference(meteoPoint->obsDataD[0].date, presentDate);
                         if (index < inputValues.size())
                         {
                             value = inputValues.at(index);
