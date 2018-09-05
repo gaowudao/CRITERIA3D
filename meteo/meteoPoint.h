@@ -92,7 +92,6 @@
         float currentValue;
         float residual;   
         float elaboration;
-        Crit3DDate firstDateDailyVar;
 
         float anomaly;
         float anomalyPercentage;
