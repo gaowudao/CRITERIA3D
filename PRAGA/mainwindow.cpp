@@ -27,6 +27,7 @@
 #include "commonConstants.h"
 #include "dialogWindows.h"
 #include "computationDialog.h"
+#include "settingsDialog.h"
 #include "gis.h"
 #include "spatialControl.h"
 
@@ -1524,5 +1525,6 @@ void MainWindow::on_actionInterpolationSettings_triggered()
 
 void MainWindow::on_actionParameters_triggered()
 {
-
+    SettingsDialog settingsDialog();
+    //settingsDialog.show();
 }
