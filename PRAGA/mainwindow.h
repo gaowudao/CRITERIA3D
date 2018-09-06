@@ -83,6 +83,8 @@
     #endif
 
 
+        void on_actionParameters_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

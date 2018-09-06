@@ -2435,6 +2435,7 @@
     </widget>
     <addaction name="menuGIS"/>
     <addaction name="menuMap"/>
+    <addaction name="actionParameters"/>
    </widget>
    <widget class="QMenu" name="menuInterpolation">
     <property name="title">
@@ -2764,6 +2765,11 @@
   <action name="actionSettings">
    <property name="text">
     <string>Settings</string>
+   </property>
+  </action>
+  <action name="actionParameters">
+   <property name="text">
+    <string>Parameters</string>
    </property>
   </action>
  </widget>

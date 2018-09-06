@@ -1521,3 +1521,8 @@ void MainWindow::on_actionInterpolationSettings_triggered()
     }
 }
 
+
+void MainWindow::on_actionParameters_triggered()
+{
+
+}

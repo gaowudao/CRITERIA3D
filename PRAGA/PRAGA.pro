@@ -68,7 +68,8 @@ SOURCES += main.cpp\
     dialogWindows.cpp \
     formRunInfo.cpp \
     computationDialog.cpp \
-    anomalyLayout.cpp
+    anomalyLayout.cpp \
+    settingsDialog.cpp
 
 HEADERS  += mainwindow.h \
     rasterObject.h \
@@ -79,7 +80,8 @@ HEADERS  += mainwindow.h \
     dialogWindows.h \
     formRunInfo.h \
     computationDialog.h \
-    anomalyLayout.h
+    anomalyLayout.h \
+    settingsDialog.h
 
 FORMS    += mainwindow.ui \
     formInfo.ui
