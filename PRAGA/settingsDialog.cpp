@@ -16,7 +16,7 @@ GeoTab::GeoTab()
     QLabel *northernHemisphere = new QLabel(tr("true (false): Northern (Southern) emisphere:"));
     QLineEdit *northernHemisphereEdit = new QLineEdit();
 
-    QLabel *dataTimeType = new QLabel(tr("true (false): Northern (Southern) emisphere:"));
+    QLabel *dataTimeType = new QLabel(tr("true (false): UTC (local time):"));
     QLineEdit *dataTimeTypeEdit = new QLineEdit();
 
 
