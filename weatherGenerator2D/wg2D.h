@@ -121,9 +121,8 @@ public:
     weatherGenerator2D() {}
     bool initializeData(int lengthDataSeries, int nrStations);
     void initializeParameters(float thresholdPrecipitation, int simulatedYears, int distributionType, bool computePrecWG2D, bool computeTempWG2D);
-    void setObservedData(float*** weatherArray, int** dateArray);
+    void setObservedData(TObsDataD** observations);
     void computeWeatherGenerator2D();
     double inverseGammaFunction(double valueProbability, double alpha, double beta);
-
 };
 

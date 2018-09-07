@@ -162,30 +162,22 @@ void weatherGenerator2D::initializeParameters(float thresholdPrecipitation, int 
     else parametersModel.distributionPrecipitation = distributionType;
 }
 
-void weatherGenerator2D::setObservedData(float*** weatherArray, int** dateArray)
+void weatherGenerator2D::setObservedData(TObsDataD** observations)
 {
     for(int i=0;i<nrStations;i++)
     {
         for (int j=0;j<nrData;j++)
         {
-            obsDataD[i][j].date.day = dateArray[j][0];
-            obsDataD[i][j].date.month = dateArray[j][1];
-            obsDataD[i][j].date.year = dateArray[j][2];
-            obsDataD[i][j].tMin = weatherArray[i][j][0];
-            obsDataD[i][j].tMax = weatherArray[i][j][1];
-            obsDataD[i][j].prec = weatherArray[i][j][2];
+            obsDataD[i][j].date.day = observations[i][j].date.day ;
+            obsDataD[i][j].date.month = observations[i][j].date.month;
+            obsDataD[i][j].date.year = observations[i][j].date.year;
+            obsDataD[i][j].tMin = observations[i][j].tMin;
+            obsDataD[i][j].tMax = observations[i][j].tMax;
+            obsDataD[i][j].prec = observations[i][j].prec;
         }
 
     }
-    for(int i=0;i<nrStations;i++)
-    {
-        for (int j=0;j<nrData;j++)
-        {
 
-            //printf("%d,%d,%d,%f,%f,%f\n",obsDataD[i][j].date.day,obsDataD[i][j].date.month,obsDataD[i][j].date.year,obsDataD[i][j].tMin,obsDataD[i][j].tMax,obsDataD[i][j].prec);
-
-        }
-    }
 
     month = (int *)calloc(12, sizeof(int));
     lengthMonth = (int *)calloc(12, sizeof(int));
