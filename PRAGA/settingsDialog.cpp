@@ -4,21 +4,34 @@
 
 GeoTab::GeoTab()
 {
-    QLabel *startLocationLat = new QLabel(tr("start location latitude [decimal degrees]:"));
+    QLabel *startLocationLat = new QLabel(tr("<b>start location latitude </b> (negative for Southern Emisphere) [decimal degrees]:"));
     QLineEdit *startLocationLatEdit = new QLineEdit();
+    QDoubleValidator *doubleValLat = new QDoubleValidator( -90.0, 90.0, 5, this );
+    doubleValLat->setNotation(QDoubleValidator::StandardNotation);
+    startLocationLatEdit->setFixedWidth(130);
+    startLocationLatEdit->setValidator(doubleValLat);
 
-    QLabel *startLocationLon = new QLabel(tr("start location longitude [decimal degrees]:"));
+
+    QLabel *startLocationLon = new QLabel(tr("<b>start location longitude </b> [decimal degrees]:"));
     QLineEdit *startLocationLonEdit = new QLineEdit();
+    QDoubleValidator *doubleValLon = new QDoubleValidator( -180.0, 180.0, 5, this );
+    doubleValLon->setNotation(QDoubleValidator::StandardNotation);
+    startLocationLonEdit->setFixedWidth(130);
+    startLocationLonEdit->setValidator(doubleValLon);
 
     QLabel *utmZone = new QLabel(tr("UTM zone:"));
     QLineEdit *utmZoneEdit = new QLineEdit();
+    utmZoneEdit->setFixedWidth(130);
+    utmZoneEdit->setValidator(new QIntValidator(0, 60));
 
-    QLabel *northernHemisphere = new QLabel(tr("true (false): Northern (Southern) emisphere:"));
-    QLineEdit *northernHemisphereEdit = new QLineEdit();
-
-    QLabel *dataTimeType = new QLabel(tr("true (false): UTC (local time):"));
-    QLineEdit *dataTimeTypeEdit = new QLineEdit();
-
+    QLabel *timeConvention = new QLabel(tr("Time Convention:"));
+    QButtonGroup *group = new QButtonGroup();
+    group->setExclusive(true);
+    QCheckBox *utc = new QCheckBox("UTC", this);
+    QCheckBox *localTime = new QCheckBox("Local Time", this);
+    group->addButton(utc);
+    group->addButton(localTime);
+    QHBoxLayout *buttonLayout = new QHBoxLayout;
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(startLocationLat);
@@ -30,11 +43,11 @@ GeoTab::GeoTab()
     mainLayout->addWidget(utmZone);
     mainLayout->addWidget(utmZoneEdit);
 
-    mainLayout->addWidget(northernHemisphere);
-    mainLayout->addWidget(northernHemisphereEdit);
+    buttonLayout->addWidget(timeConvention);
+    buttonLayout->addWidget(utc);
+    buttonLayout->addWidget(localTime);
 
-    mainLayout->addWidget(dataTimeType);
-    mainLayout->addWidget(dataTimeTypeEdit);
+    mainLayout->addLayout(buttonLayout);
 
     mainLayout->addStretch(1);
     setLayout(mainLayout);
@@ -43,20 +56,36 @@ GeoTab::GeoTab()
 QualityTab::QualityTab()
 {
     QLabel *referenceClimateHeight = new QLabel(tr("reference height for quality control [m]:"));
-    QLineEdit *sreferenceClimateHeightEdit = new QLineEdit();
+    QLineEdit *referenceClimateHeightEdit = new QLineEdit();
+    QDoubleValidator *doubleValHeight = new QDoubleValidator( -100.0, 100.0, 5, this );
+    doubleValHeight->setNotation(QDoubleValidator::StandardNotation);
+    referenceClimateHeightEdit->setFixedWidth(130);
+    referenceClimateHeightEdit->setValidator(doubleValHeight);
+
 
     QLabel *deltaTSuspect = new QLabel(tr("difference in temperature in climatological control (suspect value) [degC]:"));
     QLineEdit *deltaTSuspectEdit = new QLineEdit();
+    QDoubleValidator *doubleValT = new QDoubleValidator( -100.0, 100.0, 5, this );
+    doubleValT->setNotation(QDoubleValidator::StandardNotation);
+    deltaTSuspectEdit->setFixedWidth(130);
+    deltaTSuspectEdit->setValidator(doubleValT);
 
     QLabel *deltaTWrong = new QLabel(tr("difference in temperature in climatological control (wrong value) [degC]:"));
     QLineEdit *deltaTWrongEdit = new QLineEdit();
+    deltaTWrongEdit->setFixedWidth(130);
+    deltaTWrongEdit->setValidator(doubleValT);
 
     QLabel *humidityTolerance = new QLabel(tr("instrumental maximum allowed relative humidity [%]:"));
     QLineEdit *humidityToleranceEdit = new QLineEdit();
+    humidityToleranceEdit->setFixedWidth(130);
+    QDoubleValidator *doubleValPerc = new QDoubleValidator( 0.0, 100.0, 5, this );
+    doubleValPerc->setNotation(QDoubleValidator::StandardNotation);
+    humidityToleranceEdit->setFixedWidth(130);
+    humidityToleranceEdit->setValidator(doubleValPerc);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(referenceClimateHeight);
-    mainLayout->addWidget(sreferenceClimateHeightEdit);
+    mainLayout->addWidget(referenceClimateHeightEdit);
 
     mainLayout->addWidget(deltaTSuspect);
     mainLayout->addWidget(deltaTSuspectEdit);
@@ -75,33 +104,69 @@ ElaborationTab::ElaborationTab()
 {
     QLabel *minimumPercentage = new QLabel(tr("minimum percentage of valid data [%]:"));
     QLineEdit *minimumPercentageEdit = new QLineEdit();
+    minimumPercentageEdit->setFixedWidth(130);
+    QDoubleValidator *doubleValPerc = new QDoubleValidator( 0.0, 100.0, 5, this );
+    doubleValPerc->setNotation(QDoubleValidator::StandardNotation);
+    minimumPercentageEdit->setFixedWidth(130);
+    minimumPercentageEdit->setValidator(doubleValPerc);
 
     QLabel *rainfallThreshold = new QLabel(tr("minimum value for valid precipitation [mm]:"));
     QLineEdit *rainfallThresholdEdit = new QLineEdit();
+    QDoubleValidator *doubleValThreshold = new QDoubleValidator( 0.0, 20.0, 5, this );
+    doubleValThreshold->setNotation(QDoubleValidator::StandardNotation);
+    rainfallThresholdEdit->setFixedWidth(130);
+    rainfallThresholdEdit->setValidator(doubleValThreshold);
 
     QLabel *anomalyPtsMaxDis = new QLabel(tr("maximum distance between points for anomaly [m]:"));
     QLineEdit *anomalyPtsMaxDisEdit = new QLineEdit();
+    QDoubleValidator *doubleValAnomalyDis = new QDoubleValidator( -100.0, 100.0, 5, this );
+    doubleValAnomalyDis->setNotation(QDoubleValidator::StandardNotation);
+    anomalyPtsMaxDisEdit->setFixedWidth(130);
+    anomalyPtsMaxDisEdit->setValidator(doubleValAnomalyDis);
 
     QLabel *anomalyPtsMaxDeltaZ = new QLabel(tr("maximum height difference between points for anomaly [m]:"));
     QLineEdit *anomalyPtsMaxDeltaZEdit = new QLineEdit();
+    QDoubleValidator *doubleValAnomalyDelta = new QDoubleValidator( -100.0, 100.0, 5, this );
+    doubleValAnomalyDelta->setNotation(QDoubleValidator::StandardNotation);
+    anomalyPtsMaxDeltaZEdit->setFixedWidth(130);
+    anomalyPtsMaxDeltaZEdit->setValidator(doubleValAnomalyDelta);
 
     QLabel *thomThreshold = new QLabel(tr("threshold for thom index [degC]:"));
     QLineEdit *thomThresholdEdit = new QLineEdit();
+    QDoubleValidator *doubleValThom = new QDoubleValidator( -100.0, 100.0, 5, this );
+    doubleValThom->setNotation(QDoubleValidator::StandardNotation);
+    thomThresholdEdit->setFixedWidth(130);
+    thomThresholdEdit->setValidator(doubleValThom);
 
+    QHBoxLayout *TmedLayout = new QHBoxLayout;
     QLabel *automaticTmed = new QLabel(tr("compute daily tmed from tmin and tmax when missing:"));
-    QLineEdit *automaticTmedEdit = new QLineEdit();
+    QCheckBox *automaticTmedEdit = new QCheckBox();
+    TmedLayout->addWidget(automaticTmed);
+    TmedLayout->addWidget(automaticTmedEdit);
 
+    QHBoxLayout *ETPLayout = new QHBoxLayout;
     QLabel *automaticETP = new QLabel(tr("compute Hargreaves-Samani ET0 when missing:"));
-    QLineEdit *automaticETPEdit = new QLineEdit();
+    QCheckBox *automaticETPEdit = new QCheckBox();
+    ETPLayout->addWidget(automaticETP);
+    ETPLayout->addWidget(automaticETPEdit);
 
     QLabel *gridMinCoverage = new QLabel(tr("minimum coverage for grid computation [%]:"));
     QLineEdit *gridMinCoverageEdit = new QLineEdit();
+    gridMinCoverageEdit->setFixedWidth(130);
+    gridMinCoverageEdit->setValidator(doubleValPerc);
 
     QLabel *transSamaniCoefficient = new QLabel(tr("Samani coefficient for ET0 computation []:"));
     QLineEdit *transSamaniCoefficientEdit = new QLineEdit();
+    QDoubleValidator *doubleValSamani = new QDoubleValidator( -5.0, 5.0, 5, this );
+    doubleValSamani->setNotation(QDoubleValidator::StandardNotation);
+    transSamaniCoefficientEdit->setFixedWidth(130);
+    transSamaniCoefficientEdit->setValidator(doubleValSamani);
 
+    QHBoxLayout *StationsLayout = new QHBoxLayout;
     QLabel *mergeJointStations = new QLabel(tr("automatically merge joint stations:"));
-    QLineEdit *mergeJointStationsEdit = new QLineEdit();
+    QCheckBox *mergeJointStationsEdit = new QCheckBox();
+    StationsLayout->addWidget(mergeJointStations);
+    StationsLayout->addWidget(mergeJointStationsEdit);
 
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
@@ -120,11 +185,15 @@ ElaborationTab::ElaborationTab()
     mainLayout->addWidget(thomThreshold);
     mainLayout->addWidget(thomThresholdEdit);
 
-    mainLayout->addWidget(automaticTmed);
-    mainLayout->addWidget(automaticTmedEdit);
+    mainLayout->addStretch(1);
 
-    mainLayout->addWidget(automaticETP);
-    mainLayout->addWidget(automaticETPEdit);
+    mainLayout->addLayout(TmedLayout);
+
+    mainLayout->addStretch(1);
+
+    mainLayout->addLayout(ETPLayout);
+
+    mainLayout->addStretch(1);
 
     mainLayout->addWidget(gridMinCoverage);
     mainLayout->addWidget(gridMinCoverageEdit);
@@ -132,8 +201,8 @@ ElaborationTab::ElaborationTab()
     mainLayout->addWidget(transSamaniCoefficient);
     mainLayout->addWidget(transSamaniCoefficientEdit);
 
-    mainLayout->addWidget(mergeJointStations);
-    mainLayout->addWidget(mergeJointStationsEdit);
+    mainLayout->addLayout(StationsLayout);
+
 
     mainLayout->addStretch(1);
     setLayout(mainLayout);
