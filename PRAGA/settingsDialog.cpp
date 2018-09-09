@@ -4,47 +4,44 @@
 GeoTab::GeoTab()
 {
     QLabel *startLocationLat = new QLabel(tr("<b>start location latitude </b> (negative for Southern Emisphere) [decimal degrees]:"));
-    QLineEdit *startLocationLatEdit = new QLineEdit();
     QDoubleValidator *doubleValLat = new QDoubleValidator( -90.0, 90.0, 5, this );
     doubleValLat->setNotation(QDoubleValidator::StandardNotation);
-    startLocationLatEdit->setFixedWidth(130);
-    startLocationLatEdit->setValidator(doubleValLat);
+    startLocationLatEdit.setFixedWidth(130);
+    startLocationLatEdit.setValidator(doubleValLat);
 
 
     QLabel *startLocationLon = new QLabel(tr("<b>start location longitude </b> [decimal degrees]:"));
-    QLineEdit *startLocationLonEdit = new QLineEdit();
     QDoubleValidator *doubleValLon = new QDoubleValidator( -180.0, 180.0, 5, this );
     doubleValLon->setNotation(QDoubleValidator::StandardNotation);
-    startLocationLonEdit->setFixedWidth(130);
-    startLocationLonEdit->setValidator(doubleValLon);
+    startLocationLonEdit.setFixedWidth(130);
+    startLocationLonEdit.setValidator(doubleValLon);
 
     QLabel *utmZone = new QLabel(tr("UTM zone:"));
-    QLineEdit *utmZoneEdit = new QLineEdit();
-    utmZoneEdit->setFixedWidth(130);
-    utmZoneEdit->setValidator(new QIntValidator(0, 60));
+    utmZoneEdit.setFixedWidth(130);
+    utmZoneEdit.setValidator(new QIntValidator(0, 60));
 
     QLabel *timeConvention = new QLabel(tr("Time Convention:"));
     QButtonGroup *group = new QButtonGroup();
     group->setExclusive(true);
-    QCheckBox *utc = new QCheckBox("UTC", this);
-    QCheckBox *localTime = new QCheckBox("Local Time", this);
-    group->addButton(utc);
-    group->addButton(localTime);
+    utc.setText("UTC");
+    localTime.setText("Local Time");
+    group->addButton(&utc);
+    group->addButton(&localTime);
     QHBoxLayout *buttonLayout = new QHBoxLayout;
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(startLocationLat);
-    mainLayout->addWidget(startLocationLatEdit);
+    mainLayout->addWidget(&startLocationLatEdit);
 
     mainLayout->addWidget(startLocationLon);
-    mainLayout->addWidget(startLocationLonEdit);
+    mainLayout->addWidget(&startLocationLonEdit);
 
     mainLayout->addWidget(utmZone);
-    mainLayout->addWidget(utmZoneEdit);
+    mainLayout->addWidget(&utmZoneEdit);
 
     buttonLayout->addWidget(timeConvention);
-    buttonLayout->addWidget(utc);
-    buttonLayout->addWidget(localTime);
+    buttonLayout->addWidget(&utc);
+    buttonLayout->addWidget(&localTime);
 
     mainLayout->addLayout(buttonLayout);
 
@@ -55,45 +52,41 @@ GeoTab::GeoTab()
 QualityTab::QualityTab()
 {
     QLabel *referenceClimateHeight = new QLabel(tr("reference height for quality control [m]:"));
-    QLineEdit *referenceClimateHeightEdit = new QLineEdit();
     QDoubleValidator *doubleValHeight = new QDoubleValidator( -100.0, 100.0, 5, this );
     doubleValHeight->setNotation(QDoubleValidator::StandardNotation);
-    referenceClimateHeightEdit->setFixedWidth(130);
-    referenceClimateHeightEdit->setValidator(doubleValHeight);
+    referenceClimateHeightEdit.setFixedWidth(130);
+    referenceClimateHeightEdit.setValidator(doubleValHeight);
 
 
     QLabel *deltaTSuspect = new QLabel(tr("difference in temperature in climatological control (suspect value) [degC]:"));
-    QLineEdit *deltaTSuspectEdit = new QLineEdit();
     QDoubleValidator *doubleValT = new QDoubleValidator( -100.0, 100.0, 5, this );
     doubleValT->setNotation(QDoubleValidator::StandardNotation);
-    deltaTSuspectEdit->setFixedWidth(130);
-    deltaTSuspectEdit->setValidator(doubleValT);
+    deltaTSuspectEdit.setFixedWidth(130);
+    deltaTSuspectEdit.setValidator(doubleValT);
 
     QLabel *deltaTWrong = new QLabel(tr("difference in temperature in climatological control (wrong value) [degC]:"));
-    QLineEdit *deltaTWrongEdit = new QLineEdit();
-    deltaTWrongEdit->setFixedWidth(130);
-    deltaTWrongEdit->setValidator(doubleValT);
+    deltaTWrongEdit.setFixedWidth(130);
+    deltaTWrongEdit.setValidator(doubleValT);
 
     QLabel *humidityTolerance = new QLabel(tr("instrumental maximum allowed relative humidity [%]:"));
-    QLineEdit *humidityToleranceEdit = new QLineEdit();
-    humidityToleranceEdit->setFixedWidth(130);
+    humidityToleranceEdit.setFixedWidth(130);
     QDoubleValidator *doubleValPerc = new QDoubleValidator( 0.0, 100.0, 5, this );
     doubleValPerc->setNotation(QDoubleValidator::StandardNotation);
-    humidityToleranceEdit->setFixedWidth(130);
-    humidityToleranceEdit->setValidator(doubleValPerc);
+    humidityToleranceEdit.setFixedWidth(130);
+    humidityToleranceEdit.setValidator(doubleValPerc);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(referenceClimateHeight);
-    mainLayout->addWidget(referenceClimateHeightEdit);
+    mainLayout->addWidget(&referenceClimateHeightEdit);
 
     mainLayout->addWidget(deltaTSuspect);
-    mainLayout->addWidget(deltaTSuspectEdit);
+    mainLayout->addWidget(&deltaTSuspectEdit);
 
     mainLayout->addWidget(deltaTWrong);
-    mainLayout->addWidget(deltaTWrongEdit);
+    mainLayout->addWidget(&deltaTWrongEdit);
 
     mainLayout->addWidget(humidityTolerance);
-    mainLayout->addWidget(humidityToleranceEdit);
+    mainLayout->addWidget(&humidityToleranceEdit);
 
     mainLayout->addStretch(1);
     setLayout(mainLayout);

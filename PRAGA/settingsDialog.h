@@ -16,6 +16,14 @@ class GeoTab : public QWidget
 
 public:
     explicit GeoTab();
+
+private:
+    QLineEdit startLocationLatEdit;
+    QLineEdit startLocationLonEdit;
+    QLineEdit utmZoneEdit;
+    QCheckBox utc;
+    QCheckBox localTime ;
+
 };
 
 class QualityTab : public QWidget
@@ -24,6 +32,12 @@ class QualityTab : public QWidget
 
 public:
     explicit QualityTab();
+
+private:
+    QLineEdit referenceClimateHeightEdit;
+    QLineEdit deltaTSuspectEdit;
+    QLineEdit deltaTWrongEdit;
+    QLineEdit humidityToleranceEdit;
 };
 
 class ElaborationTab : public QWidget
