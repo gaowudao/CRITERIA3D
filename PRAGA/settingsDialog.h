@@ -2,6 +2,8 @@
 #define SETTINGSDIALOG_H
 
 #include <QDialog>
+#include <QSettings>
+#include <QtWidgets>
 
 class QDialogButtonBox;
 class QFileInfo;
@@ -30,6 +32,18 @@ class ElaborationTab : public QWidget
 
 public:
     explicit ElaborationTab();
+
+private:
+    QLineEdit minimumPercentageEdit;
+    QLineEdit rainfallThresholdEdit;
+    QLineEdit anomalyPtsMaxDisEdit;
+    QLineEdit anomalyPtsMaxDeltaZEdit;
+    QLineEdit thomThresholdEdit;
+    QCheckBox automaticTmedEdit;
+    QCheckBox automaticETPEdit;
+    QLineEdit gridMinCoverageEdit;
+    QLineEdit transSamaniCoefficientEdit;
+    QCheckBox mergeJointStationsEdit;
 };
 
 class SettingsDialog : public QDialog
@@ -37,7 +51,7 @@ class SettingsDialog : public QDialog
     Q_OBJECT
 
     public:
-        explicit SettingsDialog();
+        explicit SettingsDialog(QSettings *settings);
 
     private:
         QTabWidget *tabWidget;
