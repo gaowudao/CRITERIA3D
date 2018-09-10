@@ -114,19 +114,20 @@ bool Project::readSettings()
         if (group == "quality")
         {
             settings->beginGroup(group);
-            if (settings->contains("reference_height"))
+            if (settings->contains("reference_height") && !settings->value("reference_height").toString().isEmpty())
             {
+                qInfo() << "value: " << settings->value("reference_height");
                 quality->setReferenceHeight(settings->value("reference_height").toFloat());
             }
-            if (settings->contains("delta_temperature_suspect"))
+            if (settings->contains("delta_temperature_suspect") && !settings->value("delta_temperature_suspect").toString().isEmpty())
             {
                 quality->setDeltaTSuspect(settings->value("delta_temperature_suspect").toFloat());
             }
-            if (settings->contains("delta_temperature_wrong"))
+            if (settings->contains("delta_temperature_wrong") && !settings->value("delta_temperature_wrong").toString().isEmpty())
             {
                 quality->setDeltaTWrong(settings->value("delta_temperature_wrong").toFloat());
             }
-            if (settings->contains("relhum_tolerance"))
+            if (settings->contains("relhum_tolerance") && !settings->value("relhum_tolerance").toString().isEmpty())
             {
                 quality->setRelHumTolerance(settings->value("relhum_tolerance").toFloat());
             }

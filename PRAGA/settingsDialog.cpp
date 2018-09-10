@@ -57,10 +57,8 @@ QualityTab::QualityTab(Crit3DQuality *quality)
     doubleValHeight->setNotation(QDoubleValidator::StandardNotation);
     referenceClimateHeightEdit.setFixedWidth(130);
     referenceClimateHeightEdit.setValidator(doubleValHeight);
-    if (quality->getReferenceHeight() != NODATA)
-    {
-        referenceClimateHeightEdit.setText(QString::number(quality->getReferenceHeight()));
-    }
+    referenceClimateHeightEdit.setText(QString::number(quality->getReferenceHeight()));
+
 
 
     QLabel *deltaTSuspect = new QLabel(tr("difference in temperature in climatological control (suspect value) [degC]:"));
@@ -68,18 +66,13 @@ QualityTab::QualityTab(Crit3DQuality *quality)
     doubleValT->setNotation(QDoubleValidator::StandardNotation);
     deltaTSuspectEdit.setFixedWidth(130);
     deltaTSuspectEdit.setValidator(doubleValT);
-    if (quality->getDeltaTSuspect() != NODATA)
-    {
-        deltaTSuspectEdit.setText(QString::number(quality->getDeltaTSuspect()));
-    }
+    deltaTSuspectEdit.setText(QString::number(quality->getDeltaTSuspect()));
+
 
     QLabel *deltaTWrong = new QLabel(tr("difference in temperature in climatological control (wrong value) [degC]:"));
     deltaTWrongEdit.setFixedWidth(130);
     deltaTWrongEdit.setValidator(doubleValT);
-    if (quality->getDeltaTWrong() != NODATA)
-    {
-        deltaTWrongEdit.setText(QString::number(quality->getDeltaTWrong()));
-    }
+    deltaTWrongEdit.setText(QString::number(quality->getDeltaTWrong()));
 
     QLabel *humidityTolerance = new QLabel(tr("instrumental maximum allowed relative humidity [%]:"));
     humidityToleranceEdit.setFixedWidth(130);
@@ -87,10 +80,7 @@ QualityTab::QualityTab(Crit3DQuality *quality)
     doubleValPerc->setNotation(QDoubleValidator::StandardNotation);
     humidityToleranceEdit.setFixedWidth(130);
     humidityToleranceEdit.setValidator(doubleValPerc);
-    if (quality->getRelHumTolerance() != NODATA)
-    {
-        humidityToleranceEdit.setText(QString::number(quality->getRelHumTolerance()));
-    }
+    humidityToleranceEdit.setText(QString::number(quality->getRelHumTolerance()));
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(referenceClimateHeight);

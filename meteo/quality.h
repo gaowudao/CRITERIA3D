@@ -5,6 +5,12 @@
         #include "meteo.h"
     #endif
 
+#define DEF_VALUE_REF_HEIGHT 300
+#define DEF_VALUE_DELTA_T_SUSP 26
+#define DEF_VALUE_DELTA_T_WRONG 13
+#define DEF_VALUE_REL_HUM_TOLERANCE 102
+
+
     class Crit3DMeteoPoint;
 
     namespace quality

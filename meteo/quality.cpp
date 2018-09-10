@@ -80,10 +80,10 @@ Crit3DQuality::Crit3DQuality()
     qualityDailyWDir = new quality::Range(0, 360);
     qualityDailyGRad = new quality::Range(-20, 120);
 
-    referenceHeight = NODATA;
-    deltaTSuspect = NODATA;
-    deltaTWrong = NODATA;
-    relHumTolerance = NODATA;
+    referenceHeight = DEF_VALUE_REF_HEIGHT;
+    deltaTSuspect = DEF_VALUE_DELTA_T_SUSP;
+    deltaTWrong = DEF_VALUE_DELTA_T_WRONG;
+    relHumTolerance = DEF_VALUE_REL_HUM_TOLERANCE;
 
 }
 
