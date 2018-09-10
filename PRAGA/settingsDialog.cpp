@@ -184,8 +184,6 @@ ElaborationTab::ElaborationTab()
     mainLayout->addWidget(thomThreshold);
     mainLayout->addWidget(&thomThresholdEdit);
 
-    mainLayout->addStretch(1);
-
     mainLayout->addWidget(gridMinCoverage);
     mainLayout->addWidget(&gridMinCoverageEdit);
 
