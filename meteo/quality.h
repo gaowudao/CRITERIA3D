@@ -44,6 +44,12 @@
         quality::Range* qualityDailyWDir;
         quality::Range* qualityDailyGRad;
         quality::Range* qualityDailyWaterTable;
+        float referenceHeight;
+        float deltaTSuspect;
+        float deltaTWrong;
+        float relHumTolerance;
+
+
 
     public:
 
@@ -54,7 +60,23 @@
         void syntacticQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints);
 
         quality::qualityType syntacticQualitySingleValue(meteoVariable myVar, float myValue);
-};
+
+        float getReferenceHeight() const;
+
+        void setReferenceHeight(float value);
+
+        float getDeltaTSuspect() const;
+
+        void setDeltaTSuspect(float value);
+
+        float getDeltaTWrong() const;
+
+        void setDeltaTWrong(float value);
+
+        float getRelHumTolerance() const;
+
+        void setRelHumTolerance(float value);
+    };
 
 
 #endif // QUALITY_H

@@ -22,6 +22,46 @@ namespace quality
 }
 
 
+float Crit3DQuality::getReferenceHeight() const
+{
+    return referenceHeight;
+}
+
+void Crit3DQuality::setReferenceHeight(float value)
+{
+    referenceHeight = value;
+}
+
+float Crit3DQuality::getDeltaTSuspect() const
+{
+    return deltaTSuspect;
+}
+
+void Crit3DQuality::setDeltaTSuspect(float value)
+{
+    deltaTSuspect = value;
+}
+
+float Crit3DQuality::getDeltaTWrong() const
+{
+    return deltaTWrong;
+}
+
+void Crit3DQuality::setDeltaTWrong(float value)
+{
+    deltaTWrong = value;
+}
+
+float Crit3DQuality::getRelHumTolerance() const
+{
+    return relHumTolerance;
+}
+
+void Crit3DQuality::setRelHumTolerance(float value)
+{
+    relHumTolerance = value;
+}
+
 Crit3DQuality::Crit3DQuality()
 {
     qualityHourlyT = new quality::Range(-60, 60);
@@ -39,6 +79,11 @@ Crit3DQuality::Crit3DQuality()
     qualityDailyWInt = new quality::Range(0, 150);
     qualityDailyWDir = new quality::Range(0, 360);
     qualityDailyGRad = new quality::Range(-20, 120);
+
+    referenceHeight = NODATA;
+    deltaTSuspect = NODATA;
+    deltaTWrong = NODATA;
+    relHumTolerance = NODATA;
 
 }
 
