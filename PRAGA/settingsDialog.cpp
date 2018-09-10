@@ -196,6 +196,8 @@ ElaborationTab::ElaborationTab()
 
     mainLayout->addLayout(StationsLayout);
 
+
+    mainLayout->addStretch(1);
     setLayout(mainLayout);
 }
 
