@@ -1525,5 +1525,5 @@ void MainWindow::on_actionInterpolationSettings_triggered()
 
 void MainWindow::on_actionParameters_triggered()
 {
-    SettingsDialog* settingsDialog = new SettingsDialog(myProject.settings);
+    SettingsDialog* settingsDialog = new SettingsDialog(myProject.settings, myProject.quality);
 }

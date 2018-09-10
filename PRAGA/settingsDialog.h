@@ -5,6 +5,8 @@
 #include <QSettings>
 #include <QtWidgets>
 
+#include "quality.h"
+
 class QDialogButtonBox;
 class QFileInfo;
 class QTabWidget;
@@ -31,7 +33,7 @@ class QualityTab : public QWidget
     Q_OBJECT
 
 public:
-    explicit QualityTab();
+    explicit QualityTab(Crit3DQuality *quality);
 
 private:
     QLineEdit referenceClimateHeightEdit;
@@ -65,7 +67,7 @@ class SettingsDialog : public QDialog
     Q_OBJECT
 
     public:
-        explicit SettingsDialog(QSettings *settings);
+        explicit SettingsDialog(QSettings *settings, Crit3DQuality *quality);
 
     private:
         QTabWidget *tabWidget;

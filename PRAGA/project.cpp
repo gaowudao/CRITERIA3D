@@ -111,6 +111,29 @@ bool Project::readSettings()
 
             settings->endGroup();
         }
+        if (group == "quality")
+        {
+            settings->beginGroup(group);
+            if (settings->contains("reference_height"))
+            {
+                quality->setReferenceHeight(settings->value("reference_height").toFloat());
+            }
+            if (settings->contains("delta_temperature_suspect"))
+            {
+                quality->setDeltaTSuspect(settings->value("delta_temperature_suspect").toFloat());
+            }
+            if (settings->contains("delta_temperature_wrong"))
+            {
+                quality->setDeltaTWrong(settings->value("delta_temperature_wrong").toFloat());
+            }
+            if (settings->contains("relhum_tolerance"))
+            {
+                quality->setRelHumTolerance(settings->value("relhum_tolerance").toFloat());
+            }
+
+            settings->endGroup();
+
+        }
     }
 
     return true;

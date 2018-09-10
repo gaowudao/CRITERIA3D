@@ -1,4 +1,5 @@
 #include "settingsDialog.h"
+#include "commonConstants.h"
 
 
 GeoTab::GeoTab()
@@ -49,13 +50,17 @@ GeoTab::GeoTab()
     setLayout(mainLayout);
 }
 
-QualityTab::QualityTab()
+QualityTab::QualityTab(Crit3DQuality *quality)
 {
     QLabel *referenceClimateHeight = new QLabel(tr("reference height for quality control [m]:"));
     QDoubleValidator *doubleValHeight = new QDoubleValidator( -100.0, 100.0, 5, this );
     doubleValHeight->setNotation(QDoubleValidator::StandardNotation);
     referenceClimateHeightEdit.setFixedWidth(130);
     referenceClimateHeightEdit.setValidator(doubleValHeight);
+    if (quality->getReferenceHeight() != NODATA)
+    {
+        referenceClimateHeightEdit.setText(QString::number(quality->getReferenceHeight()));
+    }
 
 
     QLabel *deltaTSuspect = new QLabel(tr("difference in temperature in climatological control (suspect value) [degC]:"));
@@ -63,10 +68,18 @@ QualityTab::QualityTab()
     doubleValT->setNotation(QDoubleValidator::StandardNotation);
     deltaTSuspectEdit.setFixedWidth(130);
     deltaTSuspectEdit.setValidator(doubleValT);
+    if (quality->getDeltaTSuspect() != NODATA)
+    {
+        deltaTSuspectEdit.setText(QString::number(quality->getDeltaTSuspect()));
+    }
 
     QLabel *deltaTWrong = new QLabel(tr("difference in temperature in climatological control (wrong value) [degC]:"));
     deltaTWrongEdit.setFixedWidth(130);
     deltaTWrongEdit.setValidator(doubleValT);
+    if (quality->getDeltaTWrong() != NODATA)
+    {
+        deltaTWrongEdit.setText(QString::number(quality->getDeltaTWrong()));
+    }
 
     QLabel *humidityTolerance = new QLabel(tr("instrumental maximum allowed relative humidity [%]:"));
     humidityToleranceEdit.setFixedWidth(130);
@@ -74,6 +87,10 @@ QualityTab::QualityTab()
     doubleValPerc->setNotation(QDoubleValidator::StandardNotation);
     humidityToleranceEdit.setFixedWidth(130);
     humidityToleranceEdit.setValidator(doubleValPerc);
+    if (quality->getRelHumTolerance() != NODATA)
+    {
+        humidityToleranceEdit.setText(QString::number(quality->getRelHumTolerance()));
+    }
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(referenceClimateHeight);
@@ -125,16 +142,6 @@ ElaborationTab::ElaborationTab()
     thomThresholdEdit.setFixedWidth(130);
     thomThresholdEdit.setValidator(doubleValThom);
 
-    QHBoxLayout *TmedLayout = new QHBoxLayout;
-    QLabel *automaticTmed = new QLabel(tr("compute daily tmed from tmin and tmax when missing:"));
-    TmedLayout->addWidget(automaticTmed);
-    TmedLayout->addWidget(&automaticTmedEdit);
-
-    QHBoxLayout *ETPLayout = new QHBoxLayout;
-    QLabel *automaticETP = new QLabel(tr("compute Hargreaves-Samani ET0 when missing:"));
-    ETPLayout->addWidget(automaticETP);
-    ETPLayout->addWidget(&automaticETPEdit);
-
     QLabel *gridMinCoverage = new QLabel(tr("minimum coverage for grid computation [%]:"));
     gridMinCoverageEdit.setFixedWidth(130);
     gridMinCoverageEdit.setValidator(doubleValPerc);
@@ -144,6 +151,16 @@ ElaborationTab::ElaborationTab()
     doubleValSamani->setNotation(QDoubleValidator::StandardNotation);
     transSamaniCoefficientEdit.setFixedWidth(130);
     transSamaniCoefficientEdit.setValidator(doubleValSamani);
+
+    QHBoxLayout *TmedLayout = new QHBoxLayout;
+    QLabel *automaticTmed = new QLabel(tr("compute daily tmed from tmin and tmax when missing:"));
+    TmedLayout->addWidget(automaticTmed);
+    TmedLayout->addWidget(&automaticTmedEdit);
+
+    QHBoxLayout *ETPLayout = new QHBoxLayout;
+    QLabel *automaticETP = new QLabel(tr("compute Hargreaves-Samani ET0 when missing:"));
+    ETPLayout->addWidget(automaticETP);
+    ETPLayout->addWidget(&automaticETPEdit);
 
     QHBoxLayout *StationsLayout = new QHBoxLayout;
     QLabel *mergeJointStations = new QLabel(tr("automatically merge joint stations:"));
@@ -169,19 +186,15 @@ ElaborationTab::ElaborationTab()
 
     mainLayout->addStretch(1);
 
-    mainLayout->addLayout(TmedLayout);
-
-    mainLayout->addStretch(1);
-
-    mainLayout->addLayout(ETPLayout);
-
-    mainLayout->addStretch(1);
-
     mainLayout->addWidget(gridMinCoverage);
     mainLayout->addWidget(&gridMinCoverageEdit);
 
     mainLayout->addWidget(transSamaniCoefficient);
     mainLayout->addWidget(&transSamaniCoefficientEdit);
+
+    mainLayout->addLayout(TmedLayout);
+
+    mainLayout->addLayout(ETPLayout);
 
     mainLayout->addLayout(StationsLayout);
 
@@ -190,13 +203,13 @@ ElaborationTab::ElaborationTab()
     setLayout(mainLayout);
 }
 
-SettingsDialog::SettingsDialog(QSettings *settings)
+SettingsDialog::SettingsDialog(QSettings *settings, Crit3DQuality *quality)
 {
 
     setWindowTitle(tr("Parameters"));
     setFixedSize(650,700);
     geoTab = new GeoTab();
-    qualityTab = new QualityTab();
+    qualityTab = new QualityTab(quality);
     elabTab = new ElaborationTab();
 
     tabWidget = new QTabWidget;
