@@ -5,6 +5,7 @@
 #include <QSettings>
 #include <QtWidgets>
 
+#include "gis.h"
 #include "quality.h"
 #include "elaborationSettings.h"
 
@@ -74,13 +75,14 @@ class SettingsDialog : public QDialog
     Q_OBJECT
 
     public:
-        explicit SettingsDialog(QSettings *settings, Crit3DQuality *quality, Crit3DElaborationSettings *elabSettings);
+        explicit SettingsDialog(QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DElaborationSettings *elabSettings);
         void accept();
         void saveSettings();
 
     private:
         QSettings *_settings;
-        Crit3DQuality *_quality;
+        gis::Crit3DGisSettings *_geoSettings;
+        Crit3DQuality *_qualitySettings;
         Crit3DElaborationSettings *_elabSettings;
 
         QTabWidget *tabWidget;

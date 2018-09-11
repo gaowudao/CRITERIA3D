@@ -201,11 +201,12 @@ ElaborationTab::ElaborationTab(Crit3DElaborationSettings *elabSettings)
     setLayout(mainLayout);
 }
 
-SettingsDialog::SettingsDialog(QSettings *settings, Crit3DQuality *quality, Crit3DElaborationSettings *elabSettings)
+SettingsDialog::SettingsDialog(QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DElaborationSettings *elabSettings)
 {
 
     _settings = settings;
-    _quality = quality;
+    _geoSettings = gisSettings;
+    _qualitySettings = quality;
     _elabSettings = elabSettings;
 
     setWindowTitle(tr("Parameters"));
@@ -333,10 +334,15 @@ void SettingsDialog::accept()
 
         // store elaboration values
 
-        _quality->setReferenceHeight(qualityTab->referenceClimateHeightEdit.text().toFloat());
-        _quality->setDeltaTSuspect(qualityTab->deltaTSuspectEdit.text().toFloat());
-        _quality->setDeltaTWrong(qualityTab->deltaTWrongEdit.text().toFloat());
-        _quality->setRelHumTolerance(qualityTab->humidityToleranceEdit.text().toFloat());
+        _geoSettings->startLocation.latitude = geoTab->startLocationLatEdit.text().toDouble();
+        _geoSettings->startLocation.longitude = geoTab->startLocationLonEdit.text().toDouble();
+        _geoSettings->utmZone = geoTab->utmZoneEdit.text().toInt();
+        _geoSettings->isUTC = geoTab->utc.isChecked();
+
+        _qualitySettings->setReferenceHeight(qualityTab->referenceClimateHeightEdit.text().toFloat());
+        _qualitySettings->setDeltaTSuspect(qualityTab->deltaTSuspectEdit.text().toFloat());
+        _qualitySettings->setDeltaTWrong(qualityTab->deltaTWrongEdit.text().toFloat());
+        _qualitySettings->setRelHumTolerance(qualityTab->humidityToleranceEdit.text().toFloat());
 
         _elabSettings->setMinimumPercentage(elabTab->minimumPercentageEdit.text().toFloat());
         _elabSettings->setRainfallThreshold(elabTab->rainfallThresholdEdit.text().toFloat());
