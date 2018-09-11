@@ -2418,12 +2418,6 @@
     <property name="title">
      <string>Settin&amp;gs</string>
     </property>
-    <widget class="QMenu" name="menuGIS">
-     <property name="title">
-      <string>&amp;GIS</string>
-     </property>
-     <addaction name="actionSetUTMzone"/>
-    </widget>
     <widget class="QMenu" name="menuMap">
      <property name="title">
       <string>&amp;Map</string>
@@ -2433,7 +2427,6 @@
      <addaction name="actionMapTerrain"/>
      <addaction name="actionMapToner"/>
     </widget>
-    <addaction name="menuGIS"/>
     <addaction name="menuMap"/>
     <addaction name="actionParameters"/>
    </widget>

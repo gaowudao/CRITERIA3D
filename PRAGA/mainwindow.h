@@ -47,7 +47,6 @@
         void on_actionMapOpenStreetMap_triggered();
         void on_actionMapESRISatellite_triggered();
         void on_actionMapTerrain_triggered();
-        void on_actionSetUTMzone_triggered();
         void on_actionRectangle_Selection_triggered();
         void on_actionVariableChoose_triggered();
         void on_dateChanged();

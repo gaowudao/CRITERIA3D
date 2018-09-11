@@ -330,26 +330,6 @@ void MainWindow::on_actionMapTerrain_triggered()
 }
 
 
-void MainWindow::on_actionSetUTMzone_triggered()
-{
-    QString currentUTMZone = QString::number(myProject.gisSettings.utmZone);
-    int newUTMZone = 32;
-    bool isOk = false;
-    while (! isOk)
-    {
-        QString retValue = editValue("UTM Zone number", currentUTMZone);
-        if (retValue == "")
-            return;
-
-        newUTMZone = retValue.toInt(&isOk);
-        if (! isOk)
-            QMessageBox::information(NULL, "Wrong value", "Insert a valid UTM zone number");
-    }
-
-    myProject.gisSettings.utmZone = newUTMZone;
-}
-
-
 void MainWindow::on_actionRectangle_Selection_triggered()
 {
     if (myRubberBand != NULL)
