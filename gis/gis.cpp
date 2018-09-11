@@ -43,6 +43,8 @@ namespace gis
 
     Crit3DGisSettings::Crit3DGisSettings()
     {
+        this->startLocation.latitude = 44.5;
+        this->startLocation.longitude = 11.35;
         this->isNorthernEmisphere = true;
         this->utmZone = 32;
         this->timeZone = 1;

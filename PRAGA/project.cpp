@@ -49,9 +49,6 @@ Project::Project()
 
     radiationMaps = NULL;
 
-    // default: Bologna
-    startLocation.latitude = 44.5;
-    startLocation.longitude = 11.35;
 }
 
 bool Project::readSettings()
@@ -215,8 +212,8 @@ bool Project::initializeSettings(QString currentPath)
 
         if (latitude != 0 && longitude != 0)
         {
-            this->startLocation.latitude = latitude;
-            this->startLocation.longitude = longitude;
+            gisSettings.startLocation.latitude = latitude;
+            gisSettings.startLocation.longitude = longitude;
         }
     }
 

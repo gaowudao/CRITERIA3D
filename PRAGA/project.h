@@ -67,8 +67,6 @@
 
         Crit3DColorScale *meteoPointsColorScale;
 
-        gis::Crit3DGeoPoint startLocation;
-
         int nrMeteoPoints;
         bool isElabMeteoPointsValue;
 

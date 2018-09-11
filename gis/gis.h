@@ -170,6 +170,7 @@
         class Crit3DGisSettings
         {
         public:
+            Crit3DGeoPoint startLocation;
             bool isNorthernEmisphere;
             int utmZone;
             bool isUTC;
