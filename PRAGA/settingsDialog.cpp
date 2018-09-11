@@ -204,6 +204,10 @@ ElaborationTab::ElaborationTab(Crit3DElaborationSettings *elabSettings)
 SettingsDialog::SettingsDialog(QSettings *settings, Crit3DQuality *quality, Crit3DElaborationSettings *elabSettings)
 {
 
+    _settings = settings;
+    _quality = quality;
+    _elabSettings = elabSettings;
+
     setWindowTitle(tr("Parameters"));
     setFixedSize(650,700);
     geoTab = new GeoTab();
@@ -329,7 +333,30 @@ void SettingsDialog::accept()
 
         // store elaboration values
 
+        _quality->setReferenceHeight(qualityTab->referenceClimateHeightEdit.text().toFloat());
+        _quality->setDeltaTSuspect(qualityTab->deltaTSuspectEdit.text().toFloat());
+        _quality->setDeltaTWrong(qualityTab->deltaTWrongEdit.text().toFloat());
+        _quality->setRelHumTolerance(qualityTab->humidityToleranceEdit.text().toFloat());
+
+        _elabSettings->setMinimumPercentage(elabTab->minimumPercentageEdit.text().toFloat());
+        _elabSettings->setRainfallThreshold(elabTab->rainfallThresholdEdit.text().toFloat());
+        _elabSettings->setAnomalyPtsMaxDistance(elabTab->anomalyPtsMaxDisEdit.text().toFloat());
+        _elabSettings->setAnomalyPtsMaxDeltaZ(elabTab->anomalyPtsMaxDeltaZEdit.text().toFloat());
+        _elabSettings->setThomThreshold(elabTab->thomThresholdEdit.text().toFloat());
+        _elabSettings->setGridMinCoverage(elabTab->gridMinCoverageEdit.text().toFloat());
+        _elabSettings->setTransSamaniCoefficient(elabTab->transSamaniCoefficientEdit.text().toFloat());
+
+        _elabSettings->setAutomaticTmed(elabTab->automaticTmedEdit.isChecked());
+        _elabSettings->setAutomaticETP(elabTab->automaticETPEdit.isChecked());
+        _elabSettings->setMergeJointStations(elabTab->mergeJointStationsEdit.isChecked());
+
+
         QDialog::done(QDialog::Accepted);
         return;
+
+}
+
+void SettingsDialog::saveSettings()
+{
 
 }

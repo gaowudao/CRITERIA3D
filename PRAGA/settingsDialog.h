@@ -76,8 +76,13 @@ class SettingsDialog : public QDialog
     public:
         explicit SettingsDialog(QSettings *settings, Crit3DQuality *quality, Crit3DElaborationSettings *elabSettings);
         void accept();
+        void saveSettings();
 
     private:
+        QSettings *_settings;
+        Crit3DQuality *_quality;
+        Crit3DElaborationSettings *_elabSettings;
+
         QTabWidget *tabWidget;
         QDialogButtonBox *buttonBox;
         GeoTab* geoTab;
