@@ -23,6 +23,8 @@ Crit3DClimate::Crit3DClimate()
     _param1ClimateField = "";
     _elab2 = "";
     _param2 = NODATA;
+
+    elabSettings = new Crit3DElaborationSettings();
 }
 
 Crit3DClimate::Crit3DClimate(const Crit3DClimate *reference)
@@ -196,6 +198,16 @@ QString Crit3DClimate::periodStr() const
 void Crit3DClimate::setPeriodStr(const QString &periodStr)
 {
     _periodStr = periodStr;
+}
+
+Crit3DElaborationSettings *Crit3DClimate::getElabSettings() const
+{
+    return elabSettings;
+}
+
+void Crit3DClimate::setElabSettings(Crit3DElaborationSettings *value)
+{
+    elabSettings = value;
 }
 
 QSqlDatabase Crit3DClimate::db() const

@@ -20,7 +20,7 @@ enum meteoComputation { average, stdDev, sum, maxInList, minInList,
 
 namespace elaborations
 {
-    float statisticalElab(meteoComputation elab, float param, std::vector<float> values, int nValues);
+    float statisticalElab(meteoComputation elab, float param, std::vector<float> values, int nValues, float rainfallThreshold);
 }
 namespace statistics
 {

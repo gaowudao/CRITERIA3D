@@ -34,12 +34,9 @@
 #include "statistics.h"
 #include "physics.h"
 
-
-#define MINPERCENTAGE 80 // LC mettere nei settings quando ci saranno Environment.minPercentage, al momento presente anche in climate.cpp
-
 namespace elaborations {
 
-float statisticalElab(meteoComputation elab, float param, std::vector<float> values, int nValues)
+float statisticalElab(meteoComputation elab, float param, std::vector<float> values, int nValues, float rainfallThreshold)
 {
 
     switch(elab)
@@ -77,7 +74,7 @@ float statisticalElab(meteoComputation elab, float param, std::vector<float> val
         case erosivityFactorElab:
             return erosivityFactor(values, nValues);
         case rainIntensityElab:
-            return rainIntensity(values, nValues);
+            return rainIntensity(values, nValues, rainfallThreshold);
         case stdDev:
             return statistics::standardDeviation(values, nValues);
 

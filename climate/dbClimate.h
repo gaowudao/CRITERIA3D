@@ -8,6 +8,7 @@
     #ifndef METEO_H
         #include "meteo.h"
     #endif
+    #include "elaborationSettings.h"
 
     enum period{ dailyPeriod, decadalPeriod, monthlyPeriod, seasonalPeriod, annualPeriod, genericPeriod, noPeriodType};
 
@@ -67,6 +68,9 @@
         QString periodStr() const;
         void setPeriodStr(const QString &periodStr);
 
+        Crit3DElaborationSettings *getElabSettings() const;
+        void setElabSettings(Crit3DElaborationSettings *value);
+
     private:
         QSqlDatabase _db;
         QString _climateElab;
@@ -84,6 +88,7 @@
         QString _param1ClimateField;
         QString _elab2;
         float _param2;
+        Crit3DElaborationSettings *elabSettings;
     };
 
 

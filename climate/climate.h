@@ -75,11 +75,11 @@
 
     frequencyType getAggregationFrequency(meteoVariable myVar);
 
-    bool elaborateDailyAggregatedVar(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> &outputValues, float* percValue);
+    bool elaborateDailyAggregatedVar(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> &outputValues, float* percValue, Crit3DElaborationSettings *elabSettings);
 
-    bool elaborateDailyAggregatedVarFromDaily(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> &outputValues, float* percValue);
+    bool elaborateDailyAggregatedVarFromDaily(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> &outputValues, float* percValue, Crit3DElaborationSettings* elabSettings);
 
-    bool elaborateDailyAggregatedVarFromHourly(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> &outputValues);
+    bool elaborateDailyAggregatedVarFromHourly(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> &outputValues, Crit3DElaborationSettings* elabSettings);
 
     bool anomalyOnPoint(Crit3DMeteoPoint* meteoPoint, float refValue);
 
@@ -89,13 +89,13 @@
 
     float thomH(float tempAvg, float relHumAvgAir);
 
-    int thomDailyNHoursAbove(float *tempAvg, float *relHumAvgAir);
+    int thomDailyNHoursAbove(float *tempAvg, float *relHumAvgAir, float thomthreshold, float minimumPercentage);
 
-    float thomDailyMax(float *tempAvg, float* relHumAvgAir);
+    float thomDailyMax(float *tempAvg, float* relHumAvgAir, float minimumPercentage);
 
-    float thomDailyMean(float *tempAvg, float* relHumAvgAir);
+    float thomDailyMean(float *tempAvg, float* relHumAvgAir, float minimumPercentage);
 
-    float dailyLeafWetnessComputation(int *leafW);
+    float dailyLeafWetnessComputation(int *leafW, float minimumPercentage);
 
     float computeDailyBIC(float prec, float etp);
 
@@ -109,16 +109,16 @@
 
     float computeLastDayBelowThreshold(std::vector<float> &inputValues, Crit3DDate firstDateDailyVar, Crit3DDate firstDate, Crit3DDate finishDate, float param1);
 
-    float computeWinkler(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate);
+    float computeWinkler(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate, float minimumPercentage);
 
-    float computeHuglin(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate);
+    float computeHuglin(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate, float minimumPercentage);
 
-    float computeFregoni(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate);
+    float computeFregoni(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate, float minimumPercentage);
 
-    float computeCorrectedSum(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate, float param);
+    float computeCorrectedSum(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate finishDate, float param, float minimumPercentage);
 
     bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, meteoComputation elab1,
-        QDate startDate, QDate endDate, std::vector<float> &outputValues, float* percValue);
+        QDate startDate, QDate endDate, std::vector<float> &outputValues, float* percValue, Crit3DElaborationSettings *elabSettings);
 
     float loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler,
                              Crit3DMeteoGridDbHandler *meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint,
@@ -144,6 +144,6 @@
 
     int getClimateIndexFromDate(QDate myDate, period periodType);
 
-    float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoPoint, int firstYear, int lastYear, Crit3DDate firstDate, Crit3DDate lastDate, int nYears, meteoComputation elab1, float param1, meteoComputation elab2, float param2);
+    float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoPoint, int firstYear, int lastYear, Crit3DDate firstDate, Crit3DDate lastDate, int nYears, meteoComputation elab1, float param1, meteoComputation elab2, float param2, Crit3DElaborationSettings *elabSettings);
 
 #endif // CLIMATE_H
