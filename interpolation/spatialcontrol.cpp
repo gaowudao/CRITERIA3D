@@ -154,9 +154,6 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
         if (! computeResiduals(myVar, meteoPoints, nrMeteoPoints, myInterpolationPoints, settings))
             return;
 
-        // re-load data
-        passDataToInterpolation(meteoPoints, nrMeteoPoints, myInterpolationPoints, settings);
-
         for (i = 0; i < nrMeteoPoints; i++)
             if (meteoPoints[i].quality == quality::accepted)
             {
@@ -194,8 +191,6 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
 
                     listResiduals.push_back(interpolatedValue - myValue);
                 }
-
-                passDataToInterpolation(meteoPoints, nrMeteoPoints, myInterpolationPoints, settings);
 
                 for (i=0; i < int(listIndex.size()); i++)
                 {

@@ -129,7 +129,8 @@
         int getProxyNr();
         void addProxy(Crit3DProxy myProxy);
         float getProxyValue(unsigned int pos, std::vector <float> proxyValues);
-        Crit3DProxyCombination getCombination();
+        Crit3DProxyCombination getCurrentCombination();
+        bool getCombination(int combinationInteger, Crit3DProxyCombination* outCombination);
 
         void setClimateParameters(Crit3DClimateParameters* myParameters);
 

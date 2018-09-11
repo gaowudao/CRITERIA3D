@@ -23,7 +23,7 @@
     ftomei@arpae.it
 */
 
-#include <bitset>
+#include <string>
 
 #include "crit3dDate.h"
 #include "interpolationSettings.h"
@@ -392,7 +392,7 @@ float Crit3DInterpolationSettings::getProxyValue(unsigned int pos, std::vector <
         return NODATA;
 }
 
-Crit3DProxyCombination Crit3DInterpolationSettings::getCombination()
+Crit3DProxyCombination Crit3DInterpolationSettings::getCurrentCombination()
 {
     if (getUseBestDetrending())
         return selectedCombination;
@@ -441,33 +441,25 @@ void Crit3DProxyCombination::setUseThermalInversion(bool value)
     useThermalInversion = value;
 }
 
-/*
-Crit3DProxyCombination getCombinationFromBinaryString(Crit3DProxyCombination* inCombination, std::string combinationString)
-{
-    Crit3DProxyCombination outCombination;
-
-    for (int i=0; i<combinationString.length(); i++)
-    {
-        if (combinationString.at(i) == "1")
-        {
-            outCombination.getIndexProxy().push_back(inCombination->getIndexProxy().at(i));
-        }
-       }
-}
-
-bool Crit3DInterpolationSettings::setDetrendingProxy(int combinationInteger)
+bool Crit3DInterpolationSettings::getCombination(int combinationInteger, Crit3DProxyCombination* outCombination)
 {
     std::string binaryString = binary(combinationInteger);
 
     int indexHeight = selectedCombination.getIndexHeight();
 
     // avoid combinations with inversion (last index) and without orography
-    if (combinationInteger % 2)
-        if (indexHeight == NODATA || binaryString.at(indexHeight) == "0")
-            return;
+//    if (combinationInteger % 2)
+//        if (indexHeight == NODATA || binaryString[indexHeight] == "0")
+//            return false;
 
-    getDetrendingProxyFromCombination myBinaryString, myProxyVar, proxyHeight, proxyHeightInversion, proxyOrogIndex, proxyUrbanFraction, proxySeaDistance, proxyAspect
+//    outCombination = new Crit3DProxyCombination();
+
+//    for (int i=0; i<binaryString.length(); i++)
+//        if (binaryString[i] == "1")
+//        {
+//            outCombination->getIndexProxy().push_back(selectedCombination.getIndexProxy().at(i));
+//        }
 
     return true;
 }
-*/
+
