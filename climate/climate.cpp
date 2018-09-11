@@ -10,8 +10,6 @@
 #include "statistics.h"
 #include "quality.h"
 
-#define WINKLERTHRESHOLD 10 // LC setting?
-
 bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler,
     Crit3DMeteoPoint* meteoPoint, Crit3DClimate* clima, bool isMeteoGrid, QDate startDate, QDate endDate, bool isAnomaly, bool loadData)
 {

@@ -43,7 +43,7 @@ Project::Project()
     meteoPointsColorScale = new Crit3DColorScale();
     meteoPointsDbHandler = NULL;
     meteoGridDbHandler = NULL;
-    clima = NULL;
+    clima = new Crit3DClimate();
     climaFromDb = NULL;
     referenceClima = NULL;
 
@@ -130,6 +130,55 @@ bool Project::readSettings()
             if (settings->contains("relhum_tolerance") && !settings->value("relhum_tolerance").toString().isEmpty())
             {
                 quality->setRelHumTolerance(settings->value("relhum_tolerance").toFloat());
+            }
+
+            settings->endGroup();
+
+        }
+        if (group == "elaboration")
+        {
+            settings->beginGroup(group);
+            Crit3DElaborationSettings* elabSettings = clima->getElabSettings();
+            if (settings->contains("min_percentage") && !settings->value("min_percentage").toString().isEmpty())
+            {
+                qInfo() << "value: " << settings->value("min_percentage");
+                elabSettings->setMinimumPercentage(settings->value("min_percentage").toFloat());
+            }
+            if (settings->contains("prec_threshold") && !settings->value("prec_threshold").toString().isEmpty())
+            {
+                elabSettings->setRainfallThreshold(settings->value("prec_threshold").toFloat());
+            }
+            if (settings->contains("anomaly_pts_max_distance") && !settings->value("anomaly_pts_max_distance").toString().isEmpty())
+            {
+                elabSettings->setAnomalyPtsMaxDistance(settings->value("anomaly_pts_max_distance").toFloat());
+            }
+            if (settings->contains("anomaly_pts_max_delta_z") && !settings->value("anomaly_pts_max_delta_z").toString().isEmpty())
+            {
+                elabSettings->setAnomalyPtsMaxDeltaZ(settings->value("anomaly_pts_max_delta_z").toFloat());
+            }
+            if (settings->contains("thom_threshold") && !settings->value("thom_threshold").toString().isEmpty())
+            {
+                elabSettings->setThomThreshold(settings->value("thom_threshold").toFloat());
+            }
+            if (settings->contains("grid_min_coverage") && !settings->value("grid_min_coverage").toString().isEmpty())
+            {
+                elabSettings->setGridMinCoverage(settings->value("grid_min_coverage").toFloat());
+            }
+            if (settings->contains("samani_coefficient") && !settings->value("samani_coefficient").toString().isEmpty())
+            {
+                elabSettings->setTransSamaniCoefficient(settings->value("samani_coefficient").toFloat());
+            }
+            if (settings->contains("compute_tmed") && !settings->value("compute_tmed").toString().isEmpty())
+            {
+                elabSettings->setAutomaticTmed(settings->value("compute_tmed").toBool());
+            }
+            if (settings->contains("compute_et0hs") && !settings->value("compute_et0hs").toString().isEmpty())
+            {
+                elabSettings->setAutomaticETP(settings->value("compute_et0hs").toBool());
+            }
+            if (settings->contains("merge_joint_stations") && !settings->value("merge_joint_stations").toString().isEmpty())
+            {
+                elabSettings->setMergeJointStations(settings->value("merge_joint_stations").toBool());
             }
 
             settings->endGroup();

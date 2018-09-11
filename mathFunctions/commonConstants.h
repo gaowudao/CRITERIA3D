@@ -205,6 +205,7 @@
     #define ALBEDO_CROP_REFERENCE 0.23
 
     #define TRANSMISSIVITY_SAMANI_COEFF_DEFAULT  0.17f
+    #define WINKLERTHRESHOLD 10
 
     // -----------------MATHEMATICS---------------------
     #ifndef PI

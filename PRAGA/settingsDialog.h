@@ -6,6 +6,7 @@
 #include <QtWidgets>
 
 #include "quality.h"
+#include "elaborationSettings.h"
 
 class QDialogButtonBox;
 class QFileInfo;
@@ -47,7 +48,7 @@ class ElaborationTab : public QWidget
     Q_OBJECT
 
 public:
-    explicit ElaborationTab();
+    explicit ElaborationTab(Crit3DElaborationSettings *elabSettings);
 
 private:
     QLineEdit minimumPercentageEdit;
@@ -67,7 +68,7 @@ class SettingsDialog : public QDialog
     Q_OBJECT
 
     public:
-        explicit SettingsDialog(QSettings *settings, Crit3DQuality *quality);
+        explicit SettingsDialog(QSettings *settings, Crit3DQuality *quality, Crit3DElaborationSettings *elabSettings);
 
     private:
         QTabWidget *tabWidget;
