@@ -20,12 +20,14 @@ class GeoTab : public QWidget
 public:
     explicit GeoTab();
 
-private:
     QLineEdit startLocationLatEdit;
     QLineEdit startLocationLonEdit;
     QLineEdit utmZoneEdit;
     QCheckBox utc;
     QCheckBox localTime ;
+
+
+private:
 
 };
 
@@ -36,11 +38,13 @@ class QualityTab : public QWidget
 public:
     explicit QualityTab(Crit3DQuality *quality);
 
-private:
     QLineEdit referenceClimateHeightEdit;
     QLineEdit deltaTSuspectEdit;
     QLineEdit deltaTWrongEdit;
     QLineEdit humidityToleranceEdit;
+
+private:
+
 };
 
 class ElaborationTab : public QWidget
@@ -50,17 +54,19 @@ class ElaborationTab : public QWidget
 public:
     explicit ElaborationTab(Crit3DElaborationSettings *elabSettings);
 
-private:
     QLineEdit minimumPercentageEdit;
     QLineEdit rainfallThresholdEdit;
     QLineEdit anomalyPtsMaxDisEdit;
     QLineEdit anomalyPtsMaxDeltaZEdit;
     QLineEdit thomThresholdEdit;
-    QCheckBox automaticTmedEdit;
-    QCheckBox automaticETPEdit;
     QLineEdit gridMinCoverageEdit;
     QLineEdit transSamaniCoefficientEdit;
+    QCheckBox automaticTmedEdit;
+    QCheckBox automaticETPEdit;
     QCheckBox mergeJointStationsEdit;
+
+private:
+
 };
 
 class SettingsDialog : public QDialog
@@ -69,6 +75,7 @@ class SettingsDialog : public QDialog
 
     public:
         explicit SettingsDialog(QSettings *settings, Crit3DQuality *quality, Crit3DElaborationSettings *elabSettings);
+        void accept();
 
     private:
         QTabWidget *tabWidget;

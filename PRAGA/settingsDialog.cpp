@@ -225,7 +225,111 @@ SettingsDialog::SettingsDialog(QSettings *settings, Crit3DQuality *quality, Crit
     mainLayout->addWidget(buttonBox);
     setLayout(mainLayout);
 
+    exec();
 
-    show();
+}
+
+
+void SettingsDialog::accept()
+{
+
+        if (geoTab->startLocationLatEdit.text().isEmpty())
+        {
+            QMessageBox::information(NULL, "Missing Parameter", "insert start location latitude");
+            return;
+        }
+
+        if (geoTab->startLocationLonEdit.text().isEmpty())
+        {
+            QMessageBox::information(NULL, "Missing Parameter", "insert start location longitude");
+            return;
+        }
+
+        if (geoTab->utmZoneEdit.text().isEmpty())
+        {
+            QMessageBox::information(NULL, "Missing Parameter", "insert UTM zone");
+            return;
+        }
+
+        if (!geoTab->utc.isChecked() && !geoTab->localTime.isChecked())
+        {
+            QMessageBox::information(NULL, "Missing time convention", "choose UTC or local time");
+            return;
+        }
+
+        ////////////////
+
+        if (qualityTab->referenceClimateHeightEdit.text().isEmpty())
+        {
+            QMessageBox::information(NULL, "Missing Parameter", "insert reference height for quality control");
+            return;
+        }
+
+        if (qualityTab->deltaTSuspectEdit.text().isEmpty())
+        {
+            QMessageBox::information(NULL, "Missing Parameter", "insert difference in temperature suspect value");
+            return;
+        }
+
+        if (qualityTab->deltaTWrongEdit.text().isEmpty())
+        {
+            QMessageBox::information(NULL, "Missing Parameter", "insert difference in temperature wrong value");
+            return;
+        }
+
+        if (qualityTab->humidityToleranceEdit.text().isEmpty())
+        {
+            QMessageBox::information(NULL, "Missing Parameter", "instrumental maximum allowed relative humidity");
+            return;
+        }
+
+        ////////////////////
+
+        if (elabTab->minimumPercentageEdit.text().isEmpty())
+        {
+            QMessageBox::information(NULL, "Missing Parameter", "insert minimum percentage of valid data");
+            return;
+        }
+
+        if (elabTab->rainfallThresholdEdit.text().isEmpty())
+        {
+            QMessageBox::information(NULL, "Missing Parameter", "insert minimum value for precipitation");
+            return;
+        }
+
+        if (elabTab->anomalyPtsMaxDisEdit.text().isEmpty())
+        {
+            QMessageBox::information(NULL, "Missing Parameter", "insert maximum distance between points");
+            return;
+        }
+
+        if (elabTab->anomalyPtsMaxDeltaZEdit.text().isEmpty())
+        {
+            QMessageBox::information(NULL, "Missing Parameter", "insert maximum height difference between points");
+            return;
+        }
+
+        if (elabTab->thomThresholdEdit.text().isEmpty())
+        {
+            QMessageBox::information(NULL, "Missing Parameter", "insert threshold for thom index");
+            return;
+        }
+
+        if (elabTab->gridMinCoverageEdit.text().isEmpty())
+        {
+            QMessageBox::information(NULL, "Missing Parameter", "insert minimum coverage for grid computation");
+            return;
+        }
+
+        if (elabTab->transSamaniCoefficientEdit.text().isEmpty())
+        {
+            QMessageBox::information(NULL, "Missing Parameter", "insert Samani coefficient for ET0 computation");
+            return;
+        }
+
+        // store elaboration values
+
+        QDialog::done(QDialog::Accepted);
+        return;
 
 }
