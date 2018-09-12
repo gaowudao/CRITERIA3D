@@ -73,8 +73,6 @@
         void on_actionAnomaly_meteo_grid_triggered();
         void on_actionClimate_meteo_points_triggered();
         void on_actionClimate_meteo_grid_triggered();
-        void on_actionOpen_climate_triggered();
-        void on_actionNew_climate_triggered();
         void on_actionInterpolationSettings_triggered();
 
     #ifdef NETCDF

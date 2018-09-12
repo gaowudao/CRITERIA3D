@@ -2395,8 +2395,6 @@
     <addaction name="actionClose_meteo_grid"/>
     <addaction name="actionSave_meteo_grid"/>
     <addaction name="separator"/>
-    <addaction name="actionOpen_climate"/>
-    <addaction name="actionNew_climate"/>
     <addaction name="separator"/>
     <addaction name="actionOpen_crop_map"/>
     <addaction name="actionOpen_NetCDF_data"/>

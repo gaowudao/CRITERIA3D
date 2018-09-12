@@ -1468,24 +1468,6 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool is
     elaborationBox->show();
 }
 
-void MainWindow::on_actionOpen_climate_triggered()
-{
-    if (myProject.meteoPointsDbHandler == NULL && myProject.meteoGridDbHandler == NULL)
-    {
-        QMessageBox::information(NULL, "No DB open", "Open DB Points or Grid");
-        return;
-    }
-}
-
-void MainWindow::on_actionNew_climate_triggered()
-{
-    if (myProject.meteoPointsDbHandler == NULL && myProject.meteoGridDbHandler == NULL)
-    {
-        QMessageBox::information(NULL, "No DB open", "Open DB Points or Grid");
-        return;
-    }
-}
-
 void MainWindow::on_actionInterpolationSettings_triggered()
 {
     if (myProject.meteoPointsDbHandler == NULL)
