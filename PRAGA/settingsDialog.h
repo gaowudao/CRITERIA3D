@@ -75,12 +75,13 @@ class SettingsDialog : public QDialog
     Q_OBJECT
 
     public:
-        explicit SettingsDialog(QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DElaborationSettings *elabSettings);
+        explicit SettingsDialog(QSettings *pathSetting, QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DElaborationSettings *elabSettings);
         void accept();
         void saveSettings();
 
     private:
-        QSettings *_settings;
+        QSettings *_pathSettings;
+        QSettings *_paramSettings;
         gis::Crit3DGisSettings *_geoSettings;
         Crit3DQuality *_qualitySettings;
         Crit3DElaborationSettings *_elabSettings;

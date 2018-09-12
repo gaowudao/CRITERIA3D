@@ -50,6 +50,7 @@
 
     public:
         QSettings* settings;
+        QSettings* pathSetting;
         QString path;
         QString logFileName;
         std::ofstream logFile;

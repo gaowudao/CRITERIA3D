@@ -1505,5 +1505,5 @@ void MainWindow::on_actionInterpolationSettings_triggered()
 
 void MainWindow::on_actionParameters_triggered()
 {
-    SettingsDialog* settingsDialog = new SettingsDialog(myProject.settings, &myProject.gisSettings, myProject.quality, myProject.clima->getElabSettings());
+    SettingsDialog* settingsDialog = new SettingsDialog(myProject.pathSetting, myProject.settings, &myProject.gisSettings, myProject.quality, myProject.clima->getElabSettings());
 }

@@ -193,11 +193,11 @@ bool Project::initializeSettings(QString currentPath)
 
     if (QFile(pathFileName).exists())
     {
-        QSettings pathSetting(pathFileName, QSettings::IniFormat);
+        QSettings *pathSetting = new QSettings(pathFileName, QSettings::IniFormat);
 
-        pathSetting.beginGroup("path");
-        QString pragaPath = pathSetting.value("PragaPath").toString();
-        pathSetting.endGroup();
+        pathSetting->beginGroup("path");
+        QString pragaPath = pathSetting->value("PragaPath").toString();
+        pathSetting->endGroup();
         if (! pragaPath.isEmpty())
         {
             if (pragaPath.right(1) != "/" || pragaPath.right(1) != "\\" ) { pragaPath += "/"; }
@@ -205,10 +205,10 @@ bool Project::initializeSettings(QString currentPath)
             this->path = pragaPath;
         }
 
-        pathSetting.beginGroup("location");
-        float latitude = pathSetting.value("lat").toFloat();
-        float longitude = pathSetting.value("lon").toFloat();
-        pathSetting.endGroup();
+        pathSetting->beginGroup("location");
+        float latitude = pathSetting->value("lat").toFloat();
+        float longitude = pathSetting->value("lon").toFloat();
+        pathSetting->endGroup();
 
         if (latitude != 0 && longitude != 0)
         {

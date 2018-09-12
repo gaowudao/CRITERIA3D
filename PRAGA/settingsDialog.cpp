@@ -214,10 +214,12 @@ ElaborationTab::ElaborationTab(Crit3DElaborationSettings *elabSettings)
     setLayout(mainLayout);
 }
 
-SettingsDialog::SettingsDialog(QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DElaborationSettings *elabSettings)
+SettingsDialog::SettingsDialog(QSettings *pathSetting, QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DElaborationSettings *elabSettings)
 {
 
-    _settings = settings;
+    _pathSettings = pathSetting;
+    _paramSettings = settings;
+
     _geoSettings = gisSettings;
     _qualitySettings = quality;
     _elabSettings = elabSettings;
@@ -377,7 +379,7 @@ void SettingsDialog::accept()
         _elabSettings->setAutomaticETP(elabTab->automaticETPEdit.isChecked());
         _elabSettings->setMergeJointStations(elabTab->mergeJointStationsEdit.isChecked());
 
-        saveSettings();
+        //saveSettings();
 
         QDialog::done(QDialog::Accepted);
         return;
@@ -386,24 +388,32 @@ void SettingsDialog::accept()
 
 void SettingsDialog::saveSettings()
 {
-    _settings->beginGroup("quality");
-    _settings->setValue("reference_height", qualityTab->referenceClimateHeightEdit.text());
-    _settings->setValue("delta_temperature_suspect", qualityTab->deltaTSuspectEdit.text());
-    _settings->setValue("delta_temperature_wrong", qualityTab->deltaTWrongEdit.text());
-    _settings->setValue("relhum_tolerance", qualityTab->humidityToleranceEdit.text());
-    _settings->endGroup();
 
-    _settings->beginGroup("elaboration");
-    _settings->setValue("min_percentage", elabTab->minimumPercentageEdit.text());
-    _settings->setValue("prec_threshold", elabTab->rainfallThresholdEdit.text());
-    _settings->setValue("anomaly_pts_max_distance", elabTab->anomalyPtsMaxDisEdit.text());
-    _settings->setValue("anomaly_pts_max_delta_z", elabTab->anomalyPtsMaxDeltaZEdit.text());
-    _settings->setValue("thom_threshold", elabTab->thomThresholdEdit.text());
-    _settings->setValue("grid_min_coverage", elabTab->gridMinCoverageEdit.text());
-    _settings->setValue("samani_coefficient", elabTab->transSamaniCoefficientEdit.text());
-    _settings->setValue("compute_tmed", elabTab->automaticTmedEdit.isChecked());
-    _settings->setValue("compute_et0hs", elabTab->automaticETPEdit.isChecked());
-    _settings->setValue("merge_joint_stations", elabTab->mergeJointStationsEdit.isChecked());
-    _settings->endGroup();
+    _pathSettings->beginGroup("location");
+    _pathSettings->setValue("lat", geoTab->startLocationLatEdit.text());
+    _pathSettings->setValue("lon", geoTab->startLocationLonEdit.text());
+    _pathSettings->setValue("utm_zone", geoTab->utmZoneEdit.text());
+    _pathSettings->setValue("is_utc", geoTab->utc.isChecked());
+    _pathSettings->endGroup();
+
+    _paramSettings->beginGroup("quality");
+    _paramSettings->setValue("reference_height", qualityTab->referenceClimateHeightEdit.text());
+    _paramSettings->setValue("delta_temperature_suspect", qualityTab->deltaTSuspectEdit.text());
+    _paramSettings->setValue("delta_temperature_wrong", qualityTab->deltaTWrongEdit.text());
+    _paramSettings->setValue("relhum_tolerance", qualityTab->humidityToleranceEdit.text());
+    _paramSettings->endGroup();
+
+    _paramSettings->beginGroup("elaboration");
+    _paramSettings->setValue("min_percentage", elabTab->minimumPercentageEdit.text());
+    _paramSettings->setValue("prec_threshold", elabTab->rainfallThresholdEdit.text());
+    _paramSettings->setValue("anomaly_pts_max_distance", elabTab->anomalyPtsMaxDisEdit.text());
+    _paramSettings->setValue("anomaly_pts_max_delta_z", elabTab->anomalyPtsMaxDeltaZEdit.text());
+    _paramSettings->setValue("thom_threshold", elabTab->thomThresholdEdit.text());
+    _paramSettings->setValue("grid_min_coverage", elabTab->gridMinCoverageEdit.text());
+    _paramSettings->setValue("samani_coefficient", elabTab->transSamaniCoefficientEdit.text());
+    _paramSettings->setValue("compute_tmed", elabTab->automaticTmedEdit.isChecked());
+    _paramSettings->setValue("compute_et0hs", elabTab->automaticETPEdit.isChecked());
+    _paramSettings->setValue("merge_joint_stations", elabTab->mergeJointStationsEdit.isChecked());
+    _paramSettings->endGroup();
 
 }
