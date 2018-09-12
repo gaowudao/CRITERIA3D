@@ -145,7 +145,6 @@ Crit3DMeteoGrid::Crit3DMeteoGrid()
 {
     _isAggregationDefined = false;
     _gisSettings.utmZone = 32;
-    _gisSettings.isNorthernEmisphere = true;
     _isElabValue = false;
     _firstDate = Crit3DDate(1,1,1800);
     _lastDate = Crit3DDate(1,1,1800);
@@ -257,7 +256,7 @@ void Crit3DMeteoGrid::fillMeteoPoint(int row, int col, std::string code, std::st
         {
             _meteoPoints[row][col]->point.utm.x = _gridStructure.header().llCorner->longitude + _gridStructure.header().dx * (col + 0.5);
             _meteoPoints[row][col]->point.utm.y = _gridStructure.header().llCorner->latitude + _gridStructure.header().dy * (row + 0.5);
-            gis::utmToLatLon(_gisSettings.utmZone, _gisSettings.isNorthernEmisphere, _meteoPoints[row][col]->point.utm.x, _meteoPoints[row][col]->point.utm.y, &(_meteoPoints[row][col]->latitude), &(_meteoPoints[row][col]->longitude));
+            gis::utmToLatLon(_gisSettings.utmZone, _gisSettings.startLocation.latitude, _meteoPoints[row][col]->point.utm.x, _meteoPoints[row][col]->point.utm.y, &(_meteoPoints[row][col]->latitude), &(_meteoPoints[row][col]->longitude));
         }
         else
         {

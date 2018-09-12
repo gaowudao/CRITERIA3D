@@ -171,7 +171,6 @@
         {
         public:
             Crit3DGeoPoint startLocation;
-            bool isNorthernEmisphere;
             int utmZone;
             bool isUTC;
             int timeZone;
@@ -223,7 +222,7 @@
 
         void latLonToUtm(double lat, double lon,double *utmEasting,double *utmNorthing,int *zoneNumber);
         void latLonToUtmForceZone(int zoneNumber, double lat, double lon, double *utmEasting, double *utmNorthing);
-        void utmToLatLon(int zoneNumber, bool north, double utmEasting, double utmNorthing, double *lat, double *lon);
+        void utmToLatLon(int zoneNumber, double startLat, double utmEasting, double utmNorthing, double *lat, double *lon);
         bool isValidUtmTimeZone(int utmZone, int timeZone);
 
         bool readEsriGrid(std::string myFileName, Crit3DRasterGrid* myGrid, std::string* myError);

@@ -30,7 +30,6 @@ void Crit3DRadiationSettings::setGisSettings(const gis::Crit3DGisSettings* mySet
 {
     gisSettings = new gis::Crit3DGisSettings();
     gisSettings->utmZone = mySettings->utmZone;
-    gisSettings->isNorthernEmisphere = mySettings->isNorthernEmisphere;
     gisSettings->timeZone = mySettings->timeZone;
     gisSettings->isUTC = mySettings->isUTC;
 }

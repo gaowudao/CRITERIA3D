@@ -45,7 +45,6 @@ namespace gis
     {
         this->startLocation.latitude = 44.5;
         this->startLocation.longitude = 11.35;
-        this->isNorthernEmisphere = true;
         this->utmZone = 32;
         this->timeZone = 1;
         this->isUTC = true;
@@ -578,13 +577,13 @@ namespace gis
 
     void getLatLonFromUtm(const Crit3DGisSettings& gisSettings, double utmX, double utmY, double *myLat, double *myLon)
     {
-        gis::utmToLatLon(gisSettings.utmZone, gisSettings.isNorthernEmisphere, utmX, utmY, myLat, myLon);
+        gis::utmToLatLon(gisSettings.utmZone, gisSettings.startLocation.latitude, utmX, utmY, myLat, myLon);
     }
 
 
     void getLatLonFromUtm(const Crit3DGisSettings& gisSettings, const Crit3DUtmPoint& utmPoint, Crit3DGeoPoint *geoPoint)
     {
-        gis::utmToLatLon(gisSettings.utmZone, gisSettings.isNorthernEmisphere, utmPoint.x, utmPoint.y, &(geoPoint->latitude), &(geoPoint->longitude));
+        gis::utmToLatLon(gisSettings.utmZone, gisSettings.startLocation.latitude, utmPoint.x, utmPoint.y, &(geoPoint->latitude), &(geoPoint->longitude));
     }
 
 
@@ -724,13 +723,13 @@ namespace gis
     /*!
      * \brief Converts UTM coords to Lat/Lng.  Equations from USGS Bulletin 1532.
      * \param zoneNumber
-     * \param north
+     * \param startLat
      * \param utmEasting: East Longitudes are positive, West longitudes are negative.
      * \param utmNorthing: North latitudes are positive, South latitudes are negative.
      * \param lat in decimal degrees.
      * \param lon in decimal degrees.
      */
-    void utmToLatLon(int zoneNumber, bool north, double utmEasting, double utmNorthing, double *lat, double *lon)
+    void utmToLatLon(int zoneNumber, double startLat, double utmEasting, double utmNorthing, double *lat, double *lon)
     {
 
 
@@ -749,7 +748,7 @@ namespace gis
         y = utmNorthing;
 
         /*! offset used for southern hemisphere */
-        if (north == false)    y -= 10000000.0;
+        if (startLat < 0)    y -= 10000000.0;
 
         eccPrimeSquared = (eccSquared) / (1.0 - eccSquared);
 

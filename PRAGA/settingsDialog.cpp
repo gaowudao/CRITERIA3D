@@ -353,14 +353,6 @@ void SettingsDialog::accept()
         _geoSettings->startLocation.longitude = geoTab->startLocationLonEdit.text().toDouble();
         _geoSettings->utmZone = geoTab->utmZoneEdit.text().toInt();
         _geoSettings->isUTC = geoTab->utc.isChecked();
-        if (_geoSettings->startLocation.latitude >= 0)
-        {
-            _geoSettings->isNorthernEmisphere = true;
-        }
-        else
-        {
-            _geoSettings->isNorthernEmisphere = false;
-        }
 
         _qualitySettings->setReferenceHeight(qualityTab->referenceClimateHeightEdit.text().toFloat());
         _qualitySettings->setDeltaTSuspect(qualityTab->deltaTSuspectEdit.text().toFloat());

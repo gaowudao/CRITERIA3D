@@ -280,7 +280,7 @@ namespace gis
         Crit3DGeoPoint LLcorner, URcorner;
         LLcorner.longitude = min(v[0].longitude, v[3].longitude);
         URcorner.longitude = max(v[1].longitude, v[2].longitude);
-        if (mySettings.isNorthernEmisphere)
+        if (mySettings.startLocation.latitude >= 0)
         {
             LLcorner.latitude = min(v[0].latitude, v[1].latitude);
             URcorner.latitude = max(v[2].latitude, v[3].latitude);
