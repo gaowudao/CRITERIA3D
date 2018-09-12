@@ -6,6 +6,7 @@
     #include <QCheckBox>
     #include <QGroupBox>
 
+    #include "Position.h"
     #include "rubberBand.h"
     #include "MapGraphicsView.h"
     #include "MapGraphicsScene.h"
@@ -106,6 +107,7 @@
     private:
         Ui::MainWindow* ui;
 
+        Position* startCenter;
         MapGraphicsScene* mapScene;
         MapGraphicsView* mapView;
         RasterObject* rasterObj;

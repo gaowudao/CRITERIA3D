@@ -19,7 +19,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "formRunInfo.h"
-#include "Position.h"
 #include "dbMeteoPoints.h"
 #include "dbArkimet.h"
 #include "download.h"
@@ -63,7 +62,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setMapSource(OSMTileSource::OSMTiles);
 
     // Set start size and position
-    Position* startCenter = new Position (myProject.gisSettings.startLocation.longitude, myProject.gisSettings.startLocation.latitude, 0.0);
+    this->startCenter = new Position (myProject.gisSettings.startLocation.longitude, myProject.gisSettings.startLocation.latitude, 0.0);
     this->mapView->setZoomLevel(8);
     this->mapView->centerOn(startCenter->lonLat());
     this->setMapSource(OSMTileSource::Terrain);
@@ -1506,4 +1505,11 @@ void MainWindow::on_actionInterpolationSettings_triggered()
 void MainWindow::on_actionParameters_triggered()
 {
     SettingsDialog* settingsDialog = new SettingsDialog(myProject.pathSetting, myProject.settings, &myProject.gisSettings, myProject.quality, myProject.clima->getElabSettings());
+    if (startCenter->latitude() != myProject.gisSettings.startLocation.latitude || startCenter->longitude() != myProject.gisSettings.startLocation.longitude)
+    {
+        startCenter->setLatitude(myProject.gisSettings.startLocation.latitude);
+        startCenter->setLongitude(myProject.gisSettings.startLocation.longitude);
+        this->mapView->centerOn(startCenter->lonLat());
+    }
+
 }
