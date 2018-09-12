@@ -19,7 +19,7 @@ class GeoTab : public QWidget
     Q_OBJECT
 
 public:
-    explicit GeoTab();
+    explicit GeoTab(gis::Crit3DGisSettings *gisSettings);
 
     QLineEdit startLocationLatEdit;
     QLineEdit startLocationLonEdit;

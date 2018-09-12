@@ -2,13 +2,14 @@
 #include "commonConstants.h"
 
 
-GeoTab::GeoTab()
+GeoTab::GeoTab(gis::Crit3DGisSettings *gisSettings)
 {
     QLabel *startLocationLat = new QLabel(tr("<b>start location latitude </b> (negative for Southern Emisphere) [decimal degrees]:"));
     QDoubleValidator *doubleValLat = new QDoubleValidator( -90.0, 90.0, 5, this );
     doubleValLat->setNotation(QDoubleValidator::StandardNotation);
     startLocationLatEdit.setFixedWidth(130);
     startLocationLatEdit.setValidator(doubleValLat);
+    startLocationLatEdit.setText(QString::number(gisSettings->startLocation.latitude));
 
 
     QLabel *startLocationLon = new QLabel(tr("<b>start location longitude </b> [decimal degrees]:"));
@@ -16,16 +17,28 @@ GeoTab::GeoTab()
     doubleValLon->setNotation(QDoubleValidator::StandardNotation);
     startLocationLonEdit.setFixedWidth(130);
     startLocationLonEdit.setValidator(doubleValLon);
+    startLocationLonEdit.setText(QString::number(gisSettings->startLocation.longitude));
 
     QLabel *utmZone = new QLabel(tr("UTM zone:"));
     utmZoneEdit.setFixedWidth(130);
     utmZoneEdit.setValidator(new QIntValidator(0, 60));
+    utmZoneEdit.setText(QString::number(gisSettings->utmZone));
 
     QLabel *timeConvention = new QLabel(tr("Time Convention:"));
     QButtonGroup *group = new QButtonGroup();
     group->setExclusive(true);
     utc.setText("UTC");
     localTime.setText("Local Time");
+    if (gisSettings->isUTC)
+    {
+        utc.setChecked(true);
+        localTime.setChecked(false);
+    }
+    else
+    {
+        utc.setChecked(false);
+        localTime.setChecked(true);
+    }
     group->addButton(&utc);
     group->addButton(&localTime);
     QHBoxLayout *buttonLayout = new QHBoxLayout;
@@ -211,7 +224,7 @@ SettingsDialog::SettingsDialog(QSettings *settings, gis::Crit3DGisSettings *gisS
 
     setWindowTitle(tr("Parameters"));
     setFixedSize(650,700);
-    geoTab = new GeoTab();
+    geoTab = new GeoTab(gisSettings);
     qualityTab = new QualityTab(quality);
     elabTab = new ElaborationTab(elabSettings);
 
@@ -364,6 +377,7 @@ void SettingsDialog::accept()
         _elabSettings->setAutomaticETP(elabTab->automaticETPEdit.isChecked());
         _elabSettings->setMergeJointStations(elabTab->mergeJointStationsEdit.isChecked());
 
+        saveSettings();
 
         QDialog::done(QDialog::Accepted);
         return;
@@ -372,5 +386,24 @@ void SettingsDialog::accept()
 
 void SettingsDialog::saveSettings()
 {
+    _settings->beginGroup("quality");
+    _settings->setValue("reference_height", qualityTab->referenceClimateHeightEdit.text());
+    _settings->setValue("delta_temperature_suspect", qualityTab->deltaTSuspectEdit.text());
+    _settings->setValue("delta_temperature_wrong", qualityTab->deltaTWrongEdit.text());
+    _settings->setValue("relhum_tolerance", qualityTab->humidityToleranceEdit.text());
+    _settings->endGroup();
+
+    _settings->beginGroup("elaboration");
+    _settings->setValue("min_percentage", elabTab->minimumPercentageEdit.text());
+    _settings->setValue("prec_threshold", elabTab->rainfallThresholdEdit.text());
+    _settings->setValue("anomaly_pts_max_distance", elabTab->anomalyPtsMaxDisEdit.text());
+    _settings->setValue("anomaly_pts_max_delta_z", elabTab->anomalyPtsMaxDeltaZEdit.text());
+    _settings->setValue("thom_threshold", elabTab->thomThresholdEdit.text());
+    _settings->setValue("grid_min_coverage", elabTab->gridMinCoverageEdit.text());
+    _settings->setValue("samani_coefficient", elabTab->transSamaniCoefficientEdit.text());
+    _settings->setValue("compute_tmed", elabTab->automaticTmedEdit.isChecked());
+    _settings->setValue("compute_et0hs", elabTab->automaticETPEdit.isChecked());
+    _settings->setValue("merge_joint_stations", elabTab->mergeJointStationsEdit.isChecked());
+    _settings->endGroup();
 
 }
