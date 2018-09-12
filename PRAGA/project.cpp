@@ -193,7 +193,7 @@ bool Project::initializeSettings(QString currentPath)
 
     if (QFile(pathFileName).exists())
     {
-        QSettings *pathSetting = new QSettings(pathFileName, QSettings::IniFormat);
+        pathSetting = new QSettings(pathFileName, QSettings::IniFormat);
 
         pathSetting->beginGroup("path");
         QString pragaPath = pathSetting->value("PragaPath").toString();

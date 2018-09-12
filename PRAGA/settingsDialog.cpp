@@ -379,7 +379,7 @@ void SettingsDialog::accept()
         _elabSettings->setAutomaticETP(elabTab->automaticETPEdit.isChecked());
         _elabSettings->setMergeJointStations(elabTab->mergeJointStationsEdit.isChecked());
 
-        //saveSettings();
+        saveSettings();
 
         QDialog::done(QDialog::Accepted);
         return;
