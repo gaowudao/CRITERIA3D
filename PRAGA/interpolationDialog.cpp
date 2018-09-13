@@ -34,7 +34,8 @@ InterpolationDialog::InterpolationDialog(QSettings *settings, Crit3DInterpolatio
     if (indexAlgorithm != -1)
        algorithmEdit.setCurrentIndex(indexAlgorithm);
 
-    mainLayout->addWidget(algorithmLabel);
+    algorithmLayout->addWidget(algorithmLabel);
+    algorithmLayout->addWidget(&algorithmEdit);
     mainLayout->addLayout(algorithmLayout);
 
     // proxies
@@ -45,9 +46,10 @@ InterpolationDialog::InterpolationDialog(QSettings *settings, Crit3DInterpolatio
          proxyLayout->addWidget(chkProxy);
          proxy.append(chkProxy);
     }
+    mainLayout->addLayout(proxyLayout);
 
+    //buttons
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-
     connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
     connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 

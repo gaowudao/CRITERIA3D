@@ -26,6 +26,7 @@
 #include "commonConstants.h"
 #include "dialogWindows.h"
 #include "computationDialog.h"
+#include "interpolationDialog.h"
 #include "settingsDialog.h"
 #include "gis.h"
 #include "spatialControl.h"
@@ -1532,11 +1533,7 @@ void MainWindow::on_actionInterpolationSettings_triggered()
         return;
     }
 
-    if (! setInterpolationSettings())
-    {
-        QMessageBox::information(NULL, "Interpolation settings", "Error setting interpolation settings");
-        return;
-    }
+    InterpolationDialog* myInterpolationDialog = new InterpolationDialog(myProject.settings, &myProject.interpolationSettings);
 }
 
 
