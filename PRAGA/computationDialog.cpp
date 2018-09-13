@@ -265,6 +265,20 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
     }
     else if(saveClima)
     {
+        saveClimaLayout.setFirstYear(firstYearEdit.text());
+        saveClimaLayout.setLastYear(lastYearEdit.text());
+        saveClimaLayout.setVariable(variableList.currentText());
+        saveClimaLayout.setPeriod(periodTypeList.currentText());
+        if (periodTypeList.currentText() == "Generic")
+        {
+            saveClimaLayout.setGenericPeriodStart(genericPeriodStart.text());
+            saveClimaLayout.setGenericPeriodEnd(genericPeriodEnd.text());
+            saveClimaLayout.setGenericNYear(nrYear.text());
+        }
+        saveClimaLayout.setSecondElab(secondElabList.currentText());
+        saveClimaLayout.setElab2Param(elab2Parameter.text());
+        saveClimaLayout.setElab(elaborationList.currentText());
+        saveClimaLayout.setElab1Param(elab1Parameter.text());
         saveClimaMainLayout.addWidget(&saveClimaLayout);
     }
 
@@ -574,6 +588,11 @@ void ComputationDialog::checkYears()
     {
         listSecondElab(elaborationList.currentText());
     }
+    if (saveClima)
+    {
+        saveClimaLayout.setFirstYear(firstYearEdit.text());
+        saveClimaLayout.setLastYear(lastYearEdit.text());
+    }
 }
 
 
@@ -776,6 +795,13 @@ void ComputationDialog::listSecondElab(const QString value)
     settings->endArray();
     settings->endGroup();
 
+    if (saveClima)
+    {
+        saveClimaLayout.setSecondElab(secondElabList.currentText());
+        saveClimaLayout.setElab2Param(elab2Parameter.text());
+        saveClimaLayout.setElab(elaborationList.currentText());
+        saveClimaLayout.setElab1Param(elab1Parameter.text());
+    }
 
 }
 
