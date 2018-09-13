@@ -20,6 +20,7 @@ class ComputationDialog : public QDialog
     private:
         QSettings* settings;
         bool isAnomaly;
+        bool saveClima;
         QString title;
         QDateEdit currentDay;
         QLabel currentDayLabel;
@@ -47,7 +48,7 @@ class ComputationDialog : public QDialog
         QPushButton copyData;
 
     public:
-        ComputationDialog(QSettings *settings, bool isAnomaly);
+        ComputationDialog(QSettings *settings, bool isAnomaly, bool saveClima);
         void done(bool res);
         void displayPeriod(const QString value);
         void checkYears();

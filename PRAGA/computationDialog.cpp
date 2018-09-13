@@ -5,11 +5,15 @@
 extern Project myProject;
 
 
-ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly)
-        : settings(settings), isAnomaly(isAnomaly)
+ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool saveClima)
+        : settings(settings), isAnomaly(isAnomaly), saveClima(saveClima)
 {
 
-    if (!isAnomaly)
+    if (saveClima)
+    {
+        setWindowTitle("Climate Elaboration");
+    }
+    else if (!isAnomaly)
     {
         setWindowTitle("Elaboration");
     }

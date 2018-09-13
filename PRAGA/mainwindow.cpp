@@ -1184,10 +1184,11 @@ void MainWindow::on_actionElaboration_meteo_points_triggered()
 
     bool isMeteoGrid = false;
     bool isAnomaly = false;
+    bool saveClima = false;
 
     if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
-        ComputationDialog compDialog(myProject.settings, isAnomaly);
+        ComputationDialog compDialog(myProject.settings, isAnomaly, saveClima);
         if (compDialog.result() != QDialog::Accepted)
             return;
 
@@ -1215,10 +1216,11 @@ void MainWindow::on_actionElaboration_meteo_grid_triggered()
 {
     bool isMeteoGrid = true;
     bool isAnomaly = false;
+    bool saveClima = false;
 
     if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
-        ComputationDialog compDialog(myProject.settings, isAnomaly);
+        ComputationDialog compDialog(myProject.settings, isAnomaly, saveClima);
         if (compDialog.result() != QDialog::Accepted)
             return;
 
@@ -1248,10 +1250,11 @@ void MainWindow::on_actionAnomaly_meteo_points_triggered()
 
     bool isMeteoGrid = false;
     bool isAnomaly = true;
+    bool saveClima = false;
 
     if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
-        ComputationDialog compDialog(myProject.settings, isAnomaly);
+        ComputationDialog compDialog(myProject.settings, isAnomaly, saveClima);
         if (compDialog.result() != QDialog::Accepted)
             return;
 
@@ -1283,10 +1286,11 @@ void MainWindow::on_actionAnomaly_meteo_grid_triggered()
 {
     bool isMeteoGrid = true;
     bool isAnomaly = true;
+    bool saveClima = false;
 
     if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
-        ComputationDialog compDialog(myProject.settings, isAnomaly);
+        ComputationDialog compDialog(myProject.settings, isAnomaly, saveClima);
         if (compDialog.result() != QDialog::Accepted)
             return;
 
@@ -1316,14 +1320,66 @@ void MainWindow::on_actionAnomaly_meteo_grid_triggered()
 
 void MainWindow::on_actionClimate_meteo_points_triggered()
 {
-    //bool isMeteoGrid = false;
-    // TODO
+    bool isMeteoGrid = false;
+    bool isAnomaly = false;
+    bool saveClima = true;
+
+    if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
+    {
+        ComputationDialog compDialog(myProject.settings, isAnomaly, saveClima);
+        if (compDialog.result() != QDialog::Accepted)
+            return;
+
+//        if (!myProject.elaboration(isMeteoGrid, isAnomaly))
+//        {
+//            qInfo() << "elaboration error " << endl;
+//            myProject.logError();
+//        }
+//        else
+//        {
+//            showElabResult(true, isMeteoGrid, isAnomaly);
+//        }
+
+//        if (compDialog.result() == QDialog::Accepted)
+//            on_actionElaboration_meteo_grid_triggered();
+    }
+    else
+    {
+         myProject.logError();
+    }
+    return;
 }
 
 void MainWindow::on_actionClimate_meteo_grid_triggered()
 {
-    //bool isMeteoGrid = true;
-    //TODO
+    bool isMeteoGrid = true;
+    bool isAnomaly = false;
+    bool saveClima = true;
+
+    if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
+    {
+        ComputationDialog compDialog(myProject.settings, isAnomaly, saveClima);
+        if (compDialog.result() != QDialog::Accepted)
+            return;
+
+//        if (!myProject.elaboration(isMeteoGrid, isAnomaly))
+//        {
+//            qInfo() << "elaboration error " << endl;
+//            myProject.logError();
+//        }
+//        else
+//        {
+//            showElabResult(true, isMeteoGrid, isAnomaly);
+//        }
+
+//        if (compDialog.result() == QDialog::Accepted)
+//            on_actionElaboration_meteo_grid_triggered();
+    }
+    else
+    {
+         myProject.logError();
+    }
+    return;
 }
 
 
