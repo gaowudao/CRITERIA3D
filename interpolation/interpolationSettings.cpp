@@ -187,6 +187,22 @@ void Crit3DInterpolationSettings::initialize()
     currentClimateParametersLoaded = false;
 }
 
+std::string getKeyStringInterpolationMethod(TInterpolationMethod value)
+{
+    std::map<std::string, TInterpolationMethod>::const_iterator it;
+    std::string key = "";
+
+    for (it = interpolationMethodNames.begin(); it != interpolationMethodNames.end(); ++it)
+    {
+        if (it->second == value)
+        {
+            key = it->first;
+            break;
+        }
+    }
+    return key;
+}
+
 float Crit3DInterpolationSettings::getCurrentClimateLapseRate(meteoVariable myVar, Crit3DTime myTime)
 {
     Crit3DDate myDate = myTime.date;

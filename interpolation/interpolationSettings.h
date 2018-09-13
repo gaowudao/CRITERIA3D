@@ -11,6 +11,8 @@
         #include "meteoGrid.h"
     #endif
 
+    std::string getKeyStringInterpolationMethod(TInterpolationMethod value);
+
     class Crit3DProxy
     {
     private:
