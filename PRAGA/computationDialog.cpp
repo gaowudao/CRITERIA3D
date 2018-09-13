@@ -34,6 +34,7 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
     QHBoxLayout secondElabLayout;
 
     QVBoxLayout anomalyMainLayout;
+    QVBoxLayout saveClimaMainLayout;
     QFrame anomalyLine;
     anomalyLine.setFrameShape(QFrame::HLine);
     anomalyLine.setFrameShadow(QFrame::Sunken);
@@ -262,6 +263,10 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
         anomalyMainLayout.setSpacing(15);
         anomalyMainLayout.addWidget(&anomaly);
     }
+    else if(saveClima)
+    {
+        saveClimaMainLayout.addWidget(&saveClimaLayout);
+    }
 
 
     connect(&firstYearEdit, &QLineEdit::editingFinished, [=](){ this->checkYears(); });
@@ -295,6 +300,11 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
     {
         mainLayout.addLayout(&anomalyMainLayout);
     }
+    else if(saveClima)
+    {
+        mainLayout.addLayout(&saveClimaMainLayout);
+    }
+
     mainLayout.addLayout(&layoutOk);
 
     setLayout(&mainLayout);

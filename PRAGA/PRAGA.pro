@@ -69,7 +69,8 @@ SOURCES += main.cpp\
     formRunInfo.cpp \
     computationDialog.cpp \
     anomalyLayout.cpp \
-    settingsDialog.cpp
+    settingsDialog.cpp \
+    saveClimaLayout.cpp
 
 HEADERS  += mainwindow.h \
     rasterObject.h \
@@ -81,7 +82,8 @@ HEADERS  += mainwindow.h \
     formRunInfo.h \
     computationDialog.h \
     anomalyLayout.h \
-    settingsDialog.h
+    settingsDialog.h \
+    saveClimaLayout.h
 
 FORMS    += mainwindow.ui \
     formInfo.ui

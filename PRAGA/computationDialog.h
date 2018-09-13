@@ -10,6 +10,7 @@
 #include "project.h"
 #include "mainwindow.h"
 #include "anomalyLayout.h"
+#include "saveClimaLayout.h"
 
 
 class ComputationDialog : public QDialog
@@ -46,6 +47,10 @@ class ComputationDialog : public QDialog
 
         AnomalyLayout anomaly;
         QPushButton copyData;
+
+        SaveClimaLayout saveClimaLayout;
+
+
 
     public:
         ComputationDialog(QSettings *settings, bool isAnomaly, bool saveClima);
