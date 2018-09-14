@@ -40,24 +40,44 @@ void SaveClimaLayout::setPeriod(const QString &value)
     period = value;
 }
 
-QString SaveClimaLayout::getGenericPeriodStart() const
+QString SaveClimaLayout::getGenericPeriodStartDay() const
 {
-    return genericPeriodStart;
+    return genericPeriodStartDay;
 }
 
-void SaveClimaLayout::setGenericPeriodStart(const QString &value)
+void SaveClimaLayout::setGenericPeriodStartDay(const QString &value)
 {
-    genericPeriodStart = value;
+    genericPeriodStartDay = value;
 }
 
-QString SaveClimaLayout::getGenericPeriodEnd() const
+QString SaveClimaLayout::getGenericPeriodStartMonth() const
 {
-    return genericPeriodEnd;
+    return genericPeriodStartMonth;
 }
 
-void SaveClimaLayout::setGenericPeriodEnd(const QString &value)
+void SaveClimaLayout::setGenericPeriodStartMonth(const QString &value)
 {
-    genericPeriodEnd = value;
+    genericPeriodStartMonth = value;
+}
+
+QString SaveClimaLayout::getGenericPeriodEndDay() const
+{
+    return genericPeriodEndDay;
+}
+
+void SaveClimaLayout::setGenericPeriodEndDay(const QString &value)
+{
+    genericPeriodEndDay = value;
+}
+
+QString SaveClimaLayout::getGenericPeriodEndMonth() const
+{
+    return genericPeriodEndMonth;
+}
+
+void SaveClimaLayout::setGenericPeriodEndMonth(const QString &value)
+{
+    genericPeriodEndMonth = value;
 }
 
 QString SaveClimaLayout::getGenericNYear() const
@@ -132,18 +152,47 @@ SaveClimaLayout::SaveClimaLayout()
 void SaveClimaLayout::addElab()
 {
 
-    qInfo() << "firstYear " << firstYear;
-    qInfo() << "lastYear " << lastYear;
+//    qInfo() << "firstYear " << firstYear;
+//    qInfo() << "lastYear " << lastYear;
 
-    qInfo() << "variable " << variable;
+//    qInfo() << "variable " << variable;
 
-    qInfo() << "period " << period;
-    qInfo() << "genericPeriodStart " << genericPeriodStart;
-    qInfo() << "genericPeriodEnd " << genericPeriodEnd;
-    qInfo() << "genericPeriodNYear " << genericNYear;
-    qInfo() << "secondElab " << secondElab;
-    qInfo() << "elab2Param " << elab2Param;
-    qInfo() << "elab " << elab;
-    qInfo() << "elab1Param " << elab1Param;
+//    qInfo() << "period " << period;
+//    qInfo() << "genericPeriodStartDay " << genericPeriodStartDay;
+//    qInfo() << "genericPeriodStartMonth " << genericPeriodStartMonth;
+//    qInfo() << "genericPeriodEndDay " << genericPeriodEndDay;
+//    qInfo() << "genericPeriodEndMonth " << genericPeriodEndMonth;
+//    qInfo() << "genericPeriodNYear " << genericNYear;
+//    qInfo() << "secondElab " << secondElab;
+//    qInfo() << "elab2Param " << elab2Param;
+//    qInfo() << "elab " << elab;
+//    qInfo() << "elab1Param " << elab1Param;
+
+    QString elabAdded = firstYear + "÷" + lastYear + "_" + variable + "_" + period;
+    if (period == "Generic")
+    {
+        elabAdded = elabAdded + "_" + genericPeriodStartDay + ":" + genericPeriodStartMonth + "-" + genericPeriodEndDay + ":" + genericPeriodEndMonth;
+        if (genericNYear != "0")
+        {
+            elabAdded = elabAdded + "-+" + genericNYear + "y";
+        }
+    }
+    if (!secondElab.isEmpty() && secondElab != "None" && secondElab != "No elaboration available")
+    {
+        elabAdded = elabAdded + "_" + secondElab;
+
+        if (!elab2Param.isEmpty())
+        {
+            elabAdded = elabAdded + "_" + elab2Param;
+        }
+    }
+    elabAdded = elabAdded + "_" + elab;
+    if (!elab1Param.isEmpty())
+    {
+        elabAdded = elabAdded + "_" + elab1Param;
+    }
+
+    qInfo() << "elabAdded " << elabAdded;
+
 }
 

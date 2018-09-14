@@ -822,8 +822,11 @@ void ComputationDialog::copyDataToSaveLayout()
     saveClimaLayout.setPeriod(periodTypeList.currentText());
     if (periodTypeList.currentText() == "Generic")
     {
-        saveClimaLayout.setGenericPeriodStart(genericPeriodStart.text());
-        saveClimaLayout.setGenericPeriodEnd(genericPeriodEnd.text());
+        saveClimaLayout.setGenericPeriodStartDay(QString::number(genericPeriodStart.date().day()));
+        saveClimaLayout.setGenericPeriodStartMonth(QString::number(genericPeriodStart.date().month()));
+
+        saveClimaLayout.setGenericPeriodEndDay(QString::number(genericPeriodEnd.date().day()));
+        saveClimaLayout.setGenericPeriodEndMonth(QString::number(genericPeriodEnd.date().month()));
         saveClimaLayout.setGenericNYear(nrYear.text());
     }
     saveClimaLayout.setSecondElab(secondElabList.currentText());

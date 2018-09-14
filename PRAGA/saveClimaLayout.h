@@ -23,8 +23,6 @@ class SaveClimaLayout : public QDialog
         void setVariable(const QString &value);
         QString getPeriod() const;
         void setPeriod(const QString &value);
-        QString getGenericPeriodStart() const;
-        void setGenericPeriodStart(const QString &value);
         QString getGenericPeriodEnd() const;
         void setGenericPeriodEnd(const QString &value);
         QString getGenericNYear() const;
@@ -37,10 +35,18 @@ class SaveClimaLayout : public QDialog
         void setElab(const QString &value);
         QString getElab1Param() const;
         void setElab1Param(const QString &value);
+        QString getGenericPeriodStartDay() const;
+        void setGenericPeriodStartDay(const QString &value);
+        QString getGenericPeriodStartMonth() const;
+        void setGenericPeriodStartMonth(const QString &value);
+        QString getGenericPeriodEndDay() const;
+        void setGenericPeriodEndDay(const QString &value);
+        QString getGenericPeriodEndMonth() const;
+        void setGenericPeriodEndMonth(const QString &value);
 
         void addElab();
 
-    private:
+private:
 
         QVBoxLayout mainLayout;
         QVBoxLayout listLayout;
@@ -58,8 +64,10 @@ class SaveClimaLayout : public QDialog
         QString variable;
         QString period;
 
-        QString genericPeriodStart;
-        QString genericPeriodEnd;
+        QString genericPeriodStartDay;
+        QString genericPeriodStartMonth;
+        QString genericPeriodEndDay;
+        QString genericPeriodEndMonth;
         QString genericNYear;
 
         QString secondElab;
