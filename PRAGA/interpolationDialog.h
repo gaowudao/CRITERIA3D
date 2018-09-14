@@ -18,11 +18,11 @@ class InterpolationDialog : public QDialog
 
         QComboBox algorithmEdit;
         QLineEdit minRegressionR2Edit;
-        QCheckBox lapseRateCodeEdit;
-        QCheckBox thermalInversionEdit;
-        QCheckBox optimalDetrendingEdit;
-        QCheckBox topographicDistance;
-        QCheckBox useDewPointEdit;
+        QCheckBox* lapseRateCodeEdit;
+        QCheckBox* thermalInversionEdit;
+        QCheckBox* optimalDetrendingEdit;
+        QCheckBox* topographicDistance;
+        QCheckBox* useDewPointEdit;
         QComboBox gridAggregationMethodEdit;
         QVector <QCheckBox*> proxy;
 

@@ -8,22 +8,69 @@ InterpolationDialog::InterpolationDialog(QSettings *settings, Crit3DInterpolatio
     _interpolationSettings = myInterpolationSetting;
 
     setWindowTitle(tr("Interpolation settings"));
-    setFixedSize(650,700);
-    QVBoxLayout *mainLayout = new QVBoxLayout;
+    QVBoxLayout *layoutMain = new QVBoxLayout;
+    QVBoxLayout *layoutDetrending = new QVBoxLayout();
 
-//    QComboBox algorithmEdit;
-//    QLineEdit minRegressionR2Edit;
-//    QCheckBox lapseRateCodeEdit;
-//    QCheckBox thermalInversionEdit;
-//    QCheckBox optimalDetrendingEdit;
-//    QCheckBox topographicDistance;
-//    QCheckBox useDewPointEdit;
-//    QComboBox gridAggregationMethodEdit;
+    // grid aggregation
+//    QHBoxLayout *layoutAggregation = new QHBoxLayout;
+//    QLabel *labelAggregation = new QLabel(tr("aggregation method"));
+//    layoutAlgorithm->addWidget(labelAggregation);
+
+//    std::map<std::string, TInterpolationMethod>::const_iterator it;
+//    for (it = interpolationMethodNames.begin(); it != interpolationMethodNames.end(); ++it)
+//        algorithmEdit.addItem(QString::fromStdString(it->first), QString::fromStdString(it->first));
+
+//    QString algorithmString = QString::fromStdString(getKeyStringInterpolationMethod(_interpolationSettings->getInterpolationMethod()));
+//    int indexAlgorithm = algorithmEdit.findData(algorithmString);
+//    if (indexAlgorithm != -1)
+//       algorithmEdit.setCurrentIndex(indexAlgorithm);
+
+//    layoutAlgorithm->addWidget(&algorithmEdit);
+
+    // topographic distances
+    topographicDistance = new QCheckBox(tr("use topographic distance"));
+    topographicDistance->setChecked(_interpolationSettings->getUseTAD());
+    layoutMain->addWidget(topographicDistance);
+
+    // dew point
+    useDewPointEdit = new QCheckBox(tr("interpolate relative humdity using dew point"));
+    useDewPointEdit->setChecked(_interpolationSettings->getUseDewPoint());
+    layoutMain->addWidget(useDewPointEdit);
+
+    //    QCheckBox topographicDistance;
+    //    QCheckBox useDewPointEdit;
+    //    QComboBox gridAggregationMethodEdit;
+
+
+    // R2
+    QLabel *labelMinR2 = new QLabel(tr("minimum regression R2"));
+    QDoubleValidator *doubleValR2 = new QDoubleValidator(0.0, 1.0, 2, this);
+    doubleValR2->setNotation(QDoubleValidator::StandardNotation);
+    minRegressionR2Edit.setFixedWidth(30);
+    minRegressionR2Edit.setValidator(doubleValR2);
+    minRegressionR2Edit.setText(QString::number(_interpolationSettings->getMinRegressionR2()));
+    layoutDetrending->addWidget(labelMinR2);
+    layoutDetrending->addWidget(&minRegressionR2Edit);
+
+    // lapse rate code
+    lapseRateCodeEdit = new QCheckBox(tr("use lapse rate code"));
+    lapseRateCodeEdit->setChecked(_interpolationSettings->getUseLapseRateCode());
+    layoutDetrending->addWidget(lapseRateCodeEdit);
+
+    // thermal inversion
+    thermalInversionEdit = new QCheckBox(tr("thermal inversion"));
+    thermalInversionEdit->setChecked(_interpolationSettings->getUseThermalInversion());
+    layoutDetrending->addWidget(thermalInversionEdit);
+
+    // thermal inversion
+    optimalDetrendingEdit = new QCheckBox(tr("optimal detrending"));
+    optimalDetrendingEdit->setChecked(_interpolationSettings->getUseBestDetrending());
+    layoutDetrending->addWidget(optimalDetrendingEdit);
 
     //algorithm
-    QLabel *algorithmLabel = new QLabel(tr("algorithm"));
-    QHBoxLayout *algorithmLayout = new QHBoxLayout;
-    QHBoxLayout *proxyLayout = new QHBoxLayout;
+    QHBoxLayout *layoutAlgorithm = new QHBoxLayout;
+    QLabel *labelAlgorithm = new QLabel(tr("algorithm"));
+    layoutAlgorithm->addWidget(labelAlgorithm);
 
     std::map<std::string, TInterpolationMethod>::const_iterator it;
     for (it = interpolationMethodNames.begin(); it != interpolationMethodNames.end(); ++it)
@@ -34,27 +81,34 @@ InterpolationDialog::InterpolationDialog(QSettings *settings, Crit3DInterpolatio
     if (indexAlgorithm != -1)
        algorithmEdit.setCurrentIndex(indexAlgorithm);
 
-    algorithmLayout->addWidget(algorithmLabel);
-    algorithmLayout->addWidget(&algorithmEdit);
-    mainLayout->addLayout(algorithmLayout);
+    layoutAlgorithm->addWidget(&algorithmEdit);
+    layoutMain->addLayout(layoutAlgorithm);
 
     // proxies
+    QHBoxLayout *layoutProxy = new QHBoxLayout;
+    QLabel *labelProxy = new QLabel(tr("temperature detrending proxies"));
+    layoutProxy->addWidget(labelProxy);
+
     for (int i = 0; i < _interpolationSettings->getProxyNr(); i++)
     {
          Crit3DProxyInterpolation* myProxy = _interpolationSettings->getProxy(i);
          QCheckBox *chkProxy = new QCheckBox(QString::fromStdString(myProxy->getName()));
-         proxyLayout->addWidget(chkProxy);
+         chkProxy->setChecked(true);
+         layoutProxy->addWidget(chkProxy);
          proxy.append(chkProxy);
     }
-    mainLayout->addLayout(proxyLayout);
+    layoutDetrending->addLayout(layoutProxy);
+
+    layoutMain->addLayout(layoutDetrending);
 
     //buttons
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
     connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
+    layoutMain->addWidget(buttonBox);
 
-    mainLayout->addWidget(buttonBox);
-    setLayout(mainLayout);
+    layoutMain->addStretch(1);
+    setLayout(layoutMain);
 
     exec();
 }
