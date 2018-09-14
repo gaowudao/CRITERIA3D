@@ -52,7 +52,7 @@ private:
         QVBoxLayout listLayout;
         QHBoxLayout saveButtonLayout;
 
-        QListView listview;
+        QListView listView;
         QStringListModel model;
         QStringList list;
 

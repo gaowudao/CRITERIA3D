@@ -134,7 +134,7 @@ void SaveClimaLayout::setElab1Param(const QString &value)
 SaveClimaLayout::SaveClimaLayout()
 {
 
-    listLayout.addWidget(&listview);
+    listLayout.addWidget(&listView);
 
     saveList.setText("Save list");
     loadList.setText("Load list");
@@ -145,6 +145,8 @@ SaveClimaLayout::SaveClimaLayout()
     mainLayout.addLayout(&listLayout);
     mainLayout.addLayout(&saveButtonLayout);
 
+    listView.setModel(&model);
+    listView.setEditTriggers(QAbstractItemView::NoEditTriggers);
     setLayout(&mainLayout);
 
 }
@@ -192,7 +194,24 @@ void SaveClimaLayout::addElab()
         elabAdded = elabAdded + "_" + elab1Param;
     }
 
-    qInfo() << "elabAdded " << elabAdded;
+//    qInfo() << "elabAdded " << elabAdded;
+
+    list << elabAdded;
+
+    model.setStringList(list);
+
+    // Get the position
+    int row = model.rowCount();
+
+    // Enable add one or more rows
+    model.insertRows(row,1);
+
+    // Get the row for Edit mode
+    QModelIndex index = model.index(row);
+
+    // Enable item selection and put it edit mode
+     listView.setCurrentIndex(index);
+     listView.edit(index);
 
 }
 
