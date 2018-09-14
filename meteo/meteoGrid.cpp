@@ -791,7 +791,21 @@ void Crit3DMeteoGrid::setLastDate(const Crit3DDate &lastDate)
     _lastDate = lastDate;
 }
 
+std::string getKeyStringAggregationMethod(gridAggregationMethod value)
+{
+    std::map<std::string, gridAggregationMethod>::const_iterator it;
+    std::string key = "";
 
+    for (it = gridAggregationMethodNames.begin(); it != gridAggregationMethodNames.end(); ++it)
+    {
+        if (it->second == value)
+        {
+            key = it->first;
+            break;
+        }
+    }
+    return key;
+}
 
 
 

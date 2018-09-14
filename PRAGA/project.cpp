@@ -79,13 +79,13 @@ bool Project::readSettings()
             if (settings->contains("gridAggregationMethod"))
             {
                 std::string aggrMethod = settings->value("gridAggregationMethod").toString().toStdString();
-                if (aggregationMethodNames.find(aggrMethod) == aggregationMethodNames.end())
+                if (gridAggregationMethodNames.find(aggrMethod) == gridAggregationMethodNames.end())
                 {
                     errorString = "Unknown aggregation method";
                     return false;
                 }
                 else
-                    interpolationSettings.setMeteoGridAggrMethod(aggregationMethodNames.at(aggrMethod));
+                    interpolationSettings.setMeteoGridAggrMethod(gridAggregationMethodNames.at(aggrMethod));
             }
 
             if (settings->contains("thermalInversion"))

@@ -1,6 +1,7 @@
 #include <QtWidgets>
 
 #include "interpolationDialog.h"
+#include "meteoGrid.h"
 
 
 InterpolationDialog::InterpolationDialog(QSettings *settings, Crit3DInterpolationSettings *myInterpolationSetting)
@@ -12,20 +13,20 @@ InterpolationDialog::InterpolationDialog(QSettings *settings, Crit3DInterpolatio
     QVBoxLayout *layoutDetrending = new QVBoxLayout();
 
     // grid aggregation
-//    QHBoxLayout *layoutAggregation = new QHBoxLayout;
-//    QLabel *labelAggregation = new QLabel(tr("aggregation method"));
-//    layoutAlgorithm->addWidget(labelAggregation);
+    QHBoxLayout *layoutAggregation = new QHBoxLayout;
+    QLabel *labelAggregation = new QLabel(tr("aggregation method"));
+    layoutAggregation->addWidget(labelAggregation);
 
-//    std::map<std::string, TInterpolationMethod>::const_iterator it;
-//    for (it = interpolationMethodNames.begin(); it != interpolationMethodNames.end(); ++it)
-//        algorithmEdit.addItem(QString::fromStdString(it->first), QString::fromStdString(it->first));
+    std::map<std::string, gridAggregationMethod>::const_iterator itAggr;
+    for (itAggr = gridAggregationMethodNames.begin(); itAggr != gridAggregationMethodNames.end(); ++itAggr)
+        gridAggregationMethodEdit.addItem(QString::fromStdString(itAggr->first), QString::fromStdString(itAggr->first));
 
-//    QString algorithmString = QString::fromStdString(getKeyStringInterpolationMethod(_interpolationSettings->getInterpolationMethod()));
-//    int indexAlgorithm = algorithmEdit.findData(algorithmString);
-//    if (indexAlgorithm != -1)
-//       algorithmEdit.setCurrentIndex(indexAlgorithm);
+    QString aggregationString = QString::fromStdString(getKeyStringAggregationMethod(_interpolationSettings->getMeteoGridAggrMethod()));
+    int indexAggregation = gridAggregationMethodEdit.findData(aggregationString);
+    if (indexAggregation != -1)
+       gridAggregationMethodEdit.setCurrentIndex(indexAggregation);
 
-//    layoutAlgorithm->addWidget(&algorithmEdit);
+    layoutAggregation->addWidget(&gridAggregationMethodEdit);
 
     // topographic distances
     topographicDistance = new QCheckBox(tr("use topographic distance"));
@@ -36,11 +37,6 @@ InterpolationDialog::InterpolationDialog(QSettings *settings, Crit3DInterpolatio
     useDewPointEdit = new QCheckBox(tr("interpolate relative humdity using dew point"));
     useDewPointEdit->setChecked(_interpolationSettings->getUseDewPoint());
     layoutMain->addWidget(useDewPointEdit);
-
-    //    QCheckBox topographicDistance;
-    //    QCheckBox useDewPointEdit;
-    //    QComboBox gridAggregationMethodEdit;
-
 
     // R2
     QLabel *labelMinR2 = new QLabel(tr("minimum regression R2"));
@@ -72,9 +68,9 @@ InterpolationDialog::InterpolationDialog(QSettings *settings, Crit3DInterpolatio
     QLabel *labelAlgorithm = new QLabel(tr("algorithm"));
     layoutAlgorithm->addWidget(labelAlgorithm);
 
-    std::map<std::string, TInterpolationMethod>::const_iterator it;
-    for (it = interpolationMethodNames.begin(); it != interpolationMethodNames.end(); ++it)
-        algorithmEdit.addItem(QString::fromStdString(it->first), QString::fromStdString(it->first));
+    std::map<std::string, TInterpolationMethod>::const_iterator itAlg;
+    for (itAlg = interpolationMethodNames.begin(); itAlg != interpolationMethodNames.end(); ++itAlg)
+        algorithmEdit.addItem(QString::fromStdString(itAlg->first), QString::fromStdString(itAlg->first));
 
     QString algorithmString = QString::fromStdString(getKeyStringInterpolationMethod(_interpolationSettings->getInterpolationMethod()));
     int indexAlgorithm = algorithmEdit.findData(algorithmString);

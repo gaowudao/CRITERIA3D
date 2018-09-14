@@ -14,11 +14,13 @@
 
 enum gridAggregationMethod {aggrAvg, aggrMedian, aggrStdDeviation};
 
-const std::map<std::string, gridAggregationMethod> aggregationMethodNames = {
+const std::map<std::string, gridAggregationMethod> gridAggregationMethodNames = {
   { "average", aggrAvg },
   { "median", aggrMedian },
   { "stddev", aggrStdDeviation }
 };
+
+std::string getKeyStringAggregationMethod(gridAggregationMethod value);
 
     class Crit3DMeteoGridStructure
     {
