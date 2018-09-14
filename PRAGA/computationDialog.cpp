@@ -34,8 +34,10 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
     QHBoxLayout secondElabLayout;
 
     QVBoxLayout anomalyMainLayout;
+    QHBoxLayout buttonLayout;
     QVBoxLayout saveClimaMainLayout;
     QFrame anomalyLine;
+
     anomalyLine.setFrameShape(QFrame::HLine);
     anomalyLine.setFrameShadow(QFrame::Sunken);
     QLabel anomalyLabel("<font color='red'>Reference Data:</font>");
@@ -265,17 +267,6 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
     }
     else if(saveClima)
     {
-
-        add.setText("Add");
-        del.setText("Delete");
-        delAll.setText("Delete all");
-        buttonLayout.addWidget(&add);
-        buttonLayout.addWidget(&del);
-        buttonLayout.addWidget(&delAll);
-
-        connect(&add, &QPushButton::clicked, [=](){ this->copyDataToSaveLayout(); });
-
-        saveClimaMainLayout.addLayout(&buttonLayout);
         saveClimaMainLayout.addWidget(&saveClimaLayout);
     }
 
@@ -313,6 +304,15 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
     }
     else if(saveClima)
     {
+        add.setText("Add");
+        del.setText("Delete");
+        delAll.setText("Delete all");
+        buttonLayout.addWidget(&add);
+        buttonLayout.addWidget(&del);
+        buttonLayout.addWidget(&delAll);
+
+        connect(&add, &QPushButton::clicked, [=](){ this->copyDataToSaveLayout(); });
+        mainLayout.addLayout(&buttonLayout);
         mainLayout.addLayout(&saveClimaMainLayout);
     }
 

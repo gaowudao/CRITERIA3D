@@ -48,8 +48,6 @@ class ComputationDialog : public QDialog
         AnomalyLayout anomaly;
         QPushButton copyData;
 
-        QHBoxLayout buttonLayout;
-
         QPushButton add;
         QPushButton del;
         QPushButton delAll;
