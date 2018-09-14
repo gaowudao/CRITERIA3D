@@ -6,7 +6,7 @@ extern Project myProject;
 
 
 ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool saveClima)
-        : settings(settings), isAnomaly(isAnomaly), saveClima(saveClima)
+    : settings(settings), isAnomaly(isAnomaly), saveClima(saveClima)
 {
 
     if (saveClima)
@@ -265,20 +265,17 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
     }
     else if(saveClima)
     {
-        saveClimaLayout.setFirstYear(firstYearEdit.text());
-        saveClimaLayout.setLastYear(lastYearEdit.text());
-        saveClimaLayout.setVariable(variableList.currentText());
-        saveClimaLayout.setPeriod(periodTypeList.currentText());
-        if (periodTypeList.currentText() == "Generic")
-        {
-            saveClimaLayout.setGenericPeriodStart(genericPeriodStart.text());
-            saveClimaLayout.setGenericPeriodEnd(genericPeriodEnd.text());
-            saveClimaLayout.setGenericNYear(nrYear.text());
-        }
-        saveClimaLayout.setSecondElab(secondElabList.currentText());
-        saveClimaLayout.setElab2Param(elab2Parameter.text());
-        saveClimaLayout.setElab(elaborationList.currentText());
-        saveClimaLayout.setElab1Param(elab1Parameter.text());
+
+        add.setText("Add");
+        del.setText("Delete");
+        delAll.setText("Delete all");
+        buttonLayout.addWidget(&add);
+        buttonLayout.addWidget(&del);
+        buttonLayout.addWidget(&delAll);
+
+        connect(&add, &QPushButton::clicked, [=](){ this->copyDataToSaveLayout(); });
+
+        saveClimaMainLayout.addLayout(&buttonLayout);
         saveClimaMainLayout.addWidget(&saveClimaLayout);
     }
 
@@ -356,6 +353,7 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
             }
     }
 
+
     show();
     exec();
 
@@ -367,57 +365,12 @@ void ComputationDialog::done(bool res)
 
     if(res)  // ok was pressed
     {
-        if (firstYearEdit.text().size() != 4)
+        if (!checkValidData())
         {
-            QMessageBox::information(NULL, "Missing year", "Insert first year");
-            return;
-        }
-        else if (lastYearEdit.text().size() != 4)
-        {
-            QMessageBox::information(NULL, "Missing year", "Insert last year");
             return;
         }
         else  // validate the data
         {
-            if (firstYearEdit.text().toInt() > lastYearEdit.text().toInt())
-            {
-                QMessageBox::information(NULL, "Invalid year", "first year greater than last year");
-                return;
-            }
-            if (elaborationList.currentText().toStdString() == "huglin" || elaborationList.currentText().toStdString() == "winkler" || elaborationList.currentText().toStdString() == "fregoni")
-            {
-                if (secondElabList.currentText().toStdString() == "None")
-                {
-                    QMessageBox::information(NULL, "Second Elaboration missing", elaborationList.currentText() + " requires second elaboration");
-                    return;
-                }
-
-            }
-            if ( MapElabWithParam.find(elaborationList.currentText().toStdString()) != MapElabWithParam.end())
-            {
-                if (elab1Parameter.text().isEmpty())
-                {
-                    QMessageBox::information(NULL, "Missing Parameter", "insert parameter");
-                    return;
-                }
-            }
-            if ( MapElabWithParam.find(secondElabList.currentText().toStdString()) != MapElabWithParam.end())
-            {
-                if (elab2Parameter.text().isEmpty())
-                {
-                    QMessageBox::information(NULL, "Missing Parameter", "insert second elaboration parameter");
-                    return;
-                }
-            }
-            if (periodTypeList.currentText() == "Generic")
-            {
-                if (nrYear.text().isEmpty())
-                {
-                    QMessageBox::information(NULL, "Missing Parameter", "insert Nr Years");
-                    return;
-                }
-            }
-
             // store elaboration values
 
             if (myProject.clima == NULL)
@@ -588,11 +541,6 @@ void ComputationDialog::checkYears()
     {
         listSecondElab(elaborationList.currentText());
     }
-    if (saveClima)
-    {
-        saveClimaLayout.setFirstYear(firstYearEdit.text());
-        saveClimaLayout.setLastYear(lastYearEdit.text());
-    }
 }
 
 
@@ -718,6 +666,7 @@ void ComputationDialog::displayPeriod(const QString value)
 
     }
 
+
 }
 
 void ComputationDialog::listElaboration(const QString value)
@@ -795,13 +744,6 @@ void ComputationDialog::listSecondElab(const QString value)
     settings->endArray();
     settings->endGroup();
 
-    if (saveClima)
-    {
-        saveClimaLayout.setSecondElab(secondElabList.currentText());
-        saveClimaLayout.setElab2Param(elab2Parameter.text());
-        saveClimaLayout.setElab(elaborationList.currentText());
-        saveClimaLayout.setElab1Param(elab1Parameter.text());
-    }
 
 }
 
@@ -864,6 +806,88 @@ void ComputationDialog::copyDataToAnomaly()
 
     anomaly.AnomalySetSecondElaboration(secondElabList.currentText());
     anomaly.AnomalySetParam2(elab2Parameter.text());
+
+}
+
+void ComputationDialog::copyDataToSaveLayout()
+{
+
+    if (!checkValidData())
+    {
+        return;
+    }
+    saveClimaLayout.setFirstYear(firstYearEdit.text());
+    saveClimaLayout.setLastYear(lastYearEdit.text());
+    saveClimaLayout.setVariable(variableList.currentText());
+    saveClimaLayout.setPeriod(periodTypeList.currentText());
+    if (periodTypeList.currentText() == "Generic")
+    {
+        saveClimaLayout.setGenericPeriodStart(genericPeriodStart.text());
+        saveClimaLayout.setGenericPeriodEnd(genericPeriodEnd.text());
+        saveClimaLayout.setGenericNYear(nrYear.text());
+    }
+    saveClimaLayout.setSecondElab(secondElabList.currentText());
+    saveClimaLayout.setElab2Param(elab2Parameter.text());
+    saveClimaLayout.setElab(elaborationList.currentText());
+    saveClimaLayout.setElab1Param(elab1Parameter.text());
+
+    saveClimaLayout.addElab();
+
+}
+
+bool ComputationDialog::checkValidData()
+{
+
+    if (firstYearEdit.text().size() != 4)
+    {
+        QMessageBox::information(NULL, "Missing year", "Insert first year");
+        return false;
+    }
+    if (lastYearEdit.text().size() != 4)
+    {
+        QMessageBox::information(NULL, "Missing year", "Insert last year");
+        return false;
+    }
+
+    if (firstYearEdit.text().toInt() > lastYearEdit.text().toInt())
+    {
+        QMessageBox::information(NULL, "Invalid year", "first year greater than last year");
+        return false;
+    }
+    if (elaborationList.currentText().toStdString() == "huglin" || elaborationList.currentText().toStdString() == "winkler" || elaborationList.currentText().toStdString() == "fregoni")
+    {
+        if (secondElabList.currentText().toStdString() == "None")
+        {
+            QMessageBox::information(NULL, "Second Elaboration missing", elaborationList.currentText() + " requires second elaboration");
+            return false;
+        }
+
+    }
+    if ( MapElabWithParam.find(elaborationList.currentText().toStdString()) != MapElabWithParam.end())
+    {
+        if (elab1Parameter.text().isEmpty())
+        {
+            QMessageBox::information(NULL, "Missing Parameter", "insert parameter");
+            return false;
+        }
+    }
+    if ( MapElabWithParam.find(secondElabList.currentText().toStdString()) != MapElabWithParam.end())
+    {
+        if (elab2Parameter.text().isEmpty())
+        {
+            QMessageBox::information(NULL, "Missing Parameter", "insert second elaboration parameter");
+            return false;
+        }
+    }
+    if (periodTypeList.currentText() == "Generic")
+    {
+        if (nrYear.text().isEmpty())
+        {
+            QMessageBox::information(NULL, "Missing Parameter", "insert Nr Years");
+            return false;
+        }
+    }
+    return true;
 
 }
 

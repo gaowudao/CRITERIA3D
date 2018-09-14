@@ -6,45 +6,11 @@
 #include <QtWidgets>
 
 
+
 class SaveClimaLayout : public QDialog
 {
 
     Q_OBJECT
-
-    private:
-
-        QVBoxLayout mainLayout;
-        QHBoxLayout buttonLayout;
-        QVBoxLayout listLayout;
-        QHBoxLayout saveButtonLayout;
-
-        QListView listview;
-        QStringListModel model;
-        QStringList list;
-
-        QPushButton add;
-        QPushButton del;
-        QPushButton delAll;
-
-        QPushButton saveList;
-        QPushButton loadList;
-
-        QString firstYear;
-        QString lastYear;
-        QString variable;
-        QString period;
-
-        QString genericPeriodStart;
-        QString genericPeriodEnd;
-        QString genericNYear;
-
-        QString secondElab;
-        QString elab2Param;
-
-        QString elab;
-        QString elab1Param;
-
-
 
     public:
         SaveClimaLayout();
@@ -71,6 +37,38 @@ class SaveClimaLayout : public QDialog
         void setElab(const QString &value);
         QString getElab1Param() const;
         void setElab1Param(const QString &value);
+
+        void addElab();
+
+    private:
+
+        QVBoxLayout mainLayout;
+        QVBoxLayout listLayout;
+        QHBoxLayout saveButtonLayout;
+
+        QListView listview;
+        QStringListModel model;
+        QStringList list;
+
+        QPushButton saveList;
+        QPushButton loadList;
+
+        QString firstYear;
+        QString lastYear;
+        QString variable;
+        QString period;
+
+        QString genericPeriodStart;
+        QString genericPeriodEnd;
+        QString genericNYear;
+
+        QString secondElab;
+        QString elab2Param;
+
+        QString elab;
+        QString elab1Param;
+
+
 };
 
 

@@ -48,6 +48,11 @@ class ComputationDialog : public QDialog
         AnomalyLayout anomaly;
         QPushButton copyData;
 
+        QHBoxLayout buttonLayout;
+
+        QPushButton add;
+        QPushButton del;
+        QPushButton delAll;
         SaveClimaLayout saveClimaLayout;
 
 
@@ -62,6 +67,8 @@ class ComputationDialog : public QDialog
         void activeSecondParameter(const QString value);
         void readParameter(int state);
         void copyDataToAnomaly();
+        void copyDataToSaveLayout();
+        bool checkValidData();
 };
 
 

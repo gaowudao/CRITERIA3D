@@ -1,4 +1,4 @@
-#include "saveClimaLayout.h".h"
+#include "saveClimaLayout.h"
 
 QString SaveClimaLayout::getFirstYear() const
 {
@@ -110,14 +110,9 @@ void SaveClimaLayout::setElab1Param(const QString &value)
     elab1Param = value;
 }
 
+
 SaveClimaLayout::SaveClimaLayout()
 {
-    add.setText("Add");
-    del.setText("Delete");
-    delAll.setText("Delete all");
-    buttonLayout.addWidget(&add);
-    buttonLayout.addWidget(&del);
-    buttonLayout.addWidget(&delAll);
 
     listLayout.addWidget(&listview);
 
@@ -126,11 +121,29 @@ SaveClimaLayout::SaveClimaLayout()
     saveButtonLayout.addWidget(&saveList);
     saveButtonLayout.addWidget(&loadList);
 
-    mainLayout.addLayout(&buttonLayout);
+
     mainLayout.addLayout(&listLayout);
     mainLayout.addLayout(&saveButtonLayout);
 
     setLayout(&mainLayout);
 
+}
+
+void SaveClimaLayout::addElab()
+{
+
+    qInfo() << "firstYear " << firstYear;
+    qInfo() << "lastYear " << lastYear;
+
+    qInfo() << "variable " << variable;
+
+    qInfo() << "period " << period;
+    qInfo() << "genericPeriodStart " << genericPeriodStart;
+    qInfo() << "genericPeriodEnd " << genericPeriodEnd;
+    qInfo() << "genericPeriodNYear " << genericNYear;
+    qInfo() << "secondElab " << secondElab;
+    qInfo() << "elab2Param " << elab2Param;
+    qInfo() << "elab " << elab;
+    qInfo() << "elab1Param " << elab1Param;
 }
 
