@@ -45,6 +45,12 @@ class SaveClimaLayout : public QDialog
         void setGenericPeriodEndMonth(const QString &value);
 
         void addElab();
+        void deleteRaw();
+        void deleteAll();
+
+        //bool eventFilter(QObject *obj, QEvent *event);
+        void saveElabList();
+        void loadElabList();
 
 private:
 
@@ -55,6 +61,7 @@ private:
         QListView listView;
         QStringListModel model;
         QStringList list;
+        QModelIndex index;
 
         QPushButton saveList;
         QPushButton loadList;

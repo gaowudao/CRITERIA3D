@@ -312,6 +312,8 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
         buttonLayout.addWidget(&delAll);
 
         connect(&add, &QPushButton::clicked, [=](){ this->copyDataToSaveLayout(); });
+        connect(&del, &QPushButton::clicked, [=](){ saveClimaLayout.deleteRaw(); });
+        connect(&delAll, &QPushButton::clicked, [=](){ saveClimaLayout.deleteAll(); });
         mainLayout.addLayout(&buttonLayout);
         mainLayout.addLayout(&saveClimaMainLayout);
     }
