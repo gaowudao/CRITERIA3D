@@ -67,8 +67,10 @@ void SaveClimaLayout::addElab()
 
 //    qInfo() << "elabAdded " << elabAdded;
 
-    list << elabAdded;
-
+    if (list.contains(elabAdded) == 0)
+    {
+        list << elabAdded;
+    }
     model.setStringList(list);
 
     // Get the position
@@ -131,7 +133,14 @@ void SaveClimaLayout::loadElabList()
     {
       QTextStream sIn(&elabList);
       while (!sIn.atEnd())
-        list += sIn.readLine();
+      {
+          QString line = sIn.readLine();
+          if (list.contains(line) == 0)
+          {
+            list << line;
+          }
+      }
+
     }
     else
     {
