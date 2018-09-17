@@ -75,8 +75,6 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
         readReference.setVisible(false);
     }
 
-    currentDayLabel.setText("Day/Month:");
-
     if (myProject.clima->genericPeriodDateStart() == QDate(1800,1,1))
     {
         currentDay.setDate(myProject.getCurrentDate());
@@ -88,8 +86,19 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
 
     currentDay.setDisplayFormat("dd/MM");
     currentDayLabel.setBuddy(&currentDay);
-    currentDayLabel.setVisible(true);
-    currentDay.setVisible(true);
+
+    if(saveClima)
+    {
+        currentDayLabel.setVisible(false);
+        currentDay.setVisible(false);
+    }
+    else
+    {
+        currentDayLabel.setText("Day/Month:");
+        currentDayLabel.setVisible(true);
+        currentDay.setVisible(true);
+    }
+
 
     int currentYear = myProject.getCurrentDate().year();
 
@@ -145,6 +154,11 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
     int dayOfYear = currentDay.date().dayOfYear();
     periodDisplay.setText("Day Of Year: " + QString::number(dayOfYear));
     periodDisplay.setReadOnly(true);
+
+    if (saveClima)
+    {
+        periodDisplay.setVisible(false);
+    }
 
     displayLayout.addWidget(&periodDisplay);
 
@@ -274,9 +288,9 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
     connect(&firstYearEdit, &QLineEdit::editingFinished, [=](){ this->checkYears(); });
     connect(&lastYearEdit, &QLineEdit::editingFinished, [=](){ this->checkYears(); });
     connect(&currentDay, &QDateEdit::dateChanged, [=](){ this->displayPeriod(periodTypeList.currentText()); });
+    connect(&periodTypeList, &QComboBox::currentTextChanged, [=](const QString &newVar){ this->displayPeriod(newVar); });
 
     connect(&variableList, &QComboBox::currentTextChanged, [=](const QString &newVar){ this->listElaboration(newVar); });
-    connect(&periodTypeList, &QComboBox::currentTextChanged, [=](const QString &newVar){ this->displayPeriod(newVar); });
     connect(&elaborationList, &QComboBox::currentTextChanged, [=](const QString &newElab){ this->listSecondElab(newElab); });
     connect(&secondElabList, &QComboBox::currentTextChanged, [=](const QString &newSecElab){ this->activeSecondParameter(newSecElab); });
     connect(&readParam, &QCheckBox::stateChanged, [=](int state){ this->readParameter(state); });
@@ -551,6 +565,10 @@ void ComputationDialog::displayPeriod(const QString value)
 
     if (value == "Daily")
     {
+        if (saveClima)
+        {
+            return;
+        }
         periodDisplay.setVisible(true);
         currentDayLabel.setVisible(true);
         currentDay.setVisible(true);
@@ -565,6 +583,10 @@ void ComputationDialog::displayPeriod(const QString value)
     }
     else if (value == "Decadal")
     {
+        if (saveClima)
+        {
+            return;
+        }
         periodDisplay.setVisible(true);
         currentDayLabel.setVisible(true);
         currentDay.setVisible(true);
@@ -579,6 +601,10 @@ void ComputationDialog::displayPeriod(const QString value)
     }
     else if (value == "Monthly")
     {
+        if (saveClima)
+        {
+            return;
+        }
         periodDisplay.setVisible(true);
         currentDayLabel.setVisible(true);
         currentDay.setVisible(true);
@@ -592,6 +618,10 @@ void ComputationDialog::displayPeriod(const QString value)
     }
     else if (value == "Seasonal")
     {
+        if (saveClima)
+        {
+            return;
+        }
         periodDisplay.setVisible(true);
         currentDayLabel.setVisible(true);
         currentDay.setVisible(true);
@@ -606,6 +636,10 @@ void ComputationDialog::displayPeriod(const QString value)
     }
     else if (value == "Annual")
     {
+        if (saveClima)
+        {
+            return;
+        }
         periodDisplay.setVisible(false);
         currentDayLabel.setVisible(true);
         currentDay.setVisible(true);
