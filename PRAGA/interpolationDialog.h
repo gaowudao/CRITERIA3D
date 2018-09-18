@@ -28,10 +28,11 @@ class InterpolationDialog : public QDialog
 
         QDialogButtonBox *buttonBox;
 
+        void writeInterpolationSettings();
         void accept();
-        void saveSettings();
 
     private:
+        QSettings* _paramSettings;
         Crit3DInterpolationSettings *_interpolationSettings;
 
 };

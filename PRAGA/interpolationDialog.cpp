@@ -6,6 +6,7 @@
 
 InterpolationDialog::InterpolationDialog(QSettings *settings, Crit3DInterpolationSettings *myInterpolationSetting)
 {
+    _paramSettings = settings;
     _interpolationSettings = myInterpolationSetting;
 
     setWindowTitle(tr("Interpolation settings"));
@@ -109,6 +110,13 @@ InterpolationDialog::InterpolationDialog(QSettings *settings, Crit3DInterpolatio
     exec();
 }
 
+void InterpolationDialog::writeInterpolationSettings()
+{
+    _paramSettings->beginGroup("interpolation");
+    _paramSettings->endGroup();
+
+}
+
 void InterpolationDialog::accept()
 {
     if (minRegressionR2Edit.text().isEmpty())
@@ -117,14 +125,36 @@ void InterpolationDialog::accept()
         return;
     }
 
-    Crit3DProxyCombination myCombination;
+    if (algorithmEdit.currentIndex() == -1)
+    {
+        QMessageBox::information(NULL, "No algorithm selected", "Choose algorithm");
+        return;
+    }
 
+    Crit3DProxyCombination myCombination;
     for (int i = 0; i < proxy.size(); i++)
     {
         if (proxy[i]->isChecked())
             myCombination.getIndexProxy().push_back(i);
     }
-
     _interpolationSettings->setSelectedCombination(myCombination);
+
+    QString algorithmString = algorithmEdit.itemData(algorithmEdit.currentIndex()).toString();
+    _interpolationSettings->setInterpolationMethod(interpolationMethodNames.at(algorithmString.toStdString()));
+
+    QString aggrString = gridAggregationMethodEdit.itemData(gridAggregationMethodEdit.currentIndex()).toString();
+    _interpolationSettings->setMeteoGridAggrMethod(gridAggregationMethodNames.at(aggrString.toStdString()));
+
+    _interpolationSettings->setUseTAD(topographicDistance->isChecked());
+    _interpolationSettings->setUseLapseRateCode(lapseRateCodeEdit->isChecked());
+    _interpolationSettings->setUseBestDetrending(optimalDetrendingEdit->isChecked());
+    _interpolationSettings->setUseThermalInversion(thermalInversionEdit->isChecked());
+    _interpolationSettings->setUseDewPoint(useDewPointEdit->isChecked());
+    _interpolationSettings->setMinRegressionR2(minRegressionR2Edit.text().toFloat());
+
+    writeInterpolationSettings();
+
+    QDialog::done(QDialog::Accepted);
+    return;
 
 }
