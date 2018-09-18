@@ -83,7 +83,6 @@
         gis::Crit3DRasterGrid DTM;
         gis::Crit3DRasterGrid dataRaster;
 
-        std::vector <Crit3DInterpolationDataPoint> interpolationPointList;
         Crit3DInterpolationSettings interpolationSettings;
         Crit3DInterpolationSettings qualityInterpolationSettings;
 

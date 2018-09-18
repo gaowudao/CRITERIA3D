@@ -1028,6 +1028,8 @@ bool Project::interpolationRaster(meteoVariable myVar, const Crit3DTime& myTime,
 
 bool Project::interpolateRasterRadiation(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster)
 {
+    std::vector <Crit3DInterpolationDataPoint> interpolationPoints;
+
     radSettings.setGisSettings(&gisSettings);
 
     gis::Crit3DPoint mapCenter = DTM.mapCenter();
@@ -1044,14 +1046,14 @@ bool Project::interpolateRasterRadiation(const Crit3DTime& myTime, gis::Crit3DRa
 
     if (checkAndPassDataToInterpolation(quality, atmTransmissivity, meteoPoints, nrMeteoPoints,
                                         myTime, &qualityInterpolationSettings,
-                                        &interpolationSettings, interpolationPointList, checkSpatialQuality))
+                                        &interpolationSettings, interpolationPoints, checkSpatialQuality))
     {
         errorString = "Function interpolateRasterRadiation: not enough transmissivity data.";
         return false;
     }
 
-    if (preInterpolation(interpolationPointList, &interpolationSettings, meteoPoints, nrMeteoPoints, atmTransmissivity, myTime))
-        if (! interpolationDem(interpolationPointList, &interpolationSettings, this->radiationMaps->transmissivityMap, this->DTM, atmTransmissivity), &interpolationSettings)
+    if (preInterpolation(interpolationPoints, &interpolationSettings, meteoPoints, nrMeteoPoints, atmTransmissivity, myTime))
+        if (! interpolationDem(interpolationPoints, &interpolationSettings, this->radiationMaps->transmissivityMap, this->DTM, atmTransmissivity), &interpolationSettings)
         {
             errorString = "Function interpolateRasterRadiation: error interpolating transmissivity.";
             return false;
