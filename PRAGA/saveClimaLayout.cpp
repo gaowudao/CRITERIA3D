@@ -16,8 +16,6 @@ SaveClimaLayout::SaveClimaLayout()
     mainLayout.addLayout(&listLayout);
     mainLayout.addLayout(&saveButtonLayout);
 
-    listView.setModel(&model);
-    listView.setEditTriggers(QAbstractItemView::NoEditTriggers);
     setLayout(&mainLayout);
 
 }
@@ -67,38 +65,26 @@ void SaveClimaLayout::addElab()
 
 //    qInfo() << "elabAdded " << elabAdded;
 
-    if (list.contains(elabAdded) == 0)
+    if (list.contains(elabAdded)!= 0)
     {
-        list << elabAdded;
+        return;
     }
-    model.setStringList(list);
 
-    // Get the position
-    int row = model.rowCount();
+    list << elabAdded;
+    listView.addItem(elabAdded);
 
-    // Enable add one or more rows
-    model.insertRows(row,1);
-
-    // Get the row for Edit mode
-    index = model.index(row);
-
-    // Enable item selection and put it edit mode
-     listView.setCurrentIndex(index);
-     listView.edit(index);
-     //listView.viewport()->installEventFilter(this);
-     //listView.installEventFilter(this);
 }
 
 void SaveClimaLayout::deleteRaw()
 {
-    model.removeRows(listView.currentIndex().row(),1);
     list.removeAt(listView.currentIndex().row());
+    listView.takeItem(listView.currentIndex().row());
 }
 
 void SaveClimaLayout::deleteAll()
 {
     list.clear();
-    model.setStringList(list);
+    listView.clear();
 }
 
 void SaveClimaLayout::saveElabList()
@@ -138,6 +124,7 @@ void SaveClimaLayout::loadElabList()
           if (list.contains(line) == 0)
           {
             list << line;
+            listView.addItem(line);
           }
       }
 
@@ -147,25 +134,8 @@ void SaveClimaLayout::loadElabList()
       qDebug() << "error opening output file\n";
       return;
     }
-    model.setStringList(list);
 
 }
-
-/*
-bool SaveClimaLayout::eventFilter(QObject *obj, QEvent *event)
-{
-
-    if (event->type() == QEvent::KeyPress)
-    {
-        return true;
-    }
-    else
-    {
-        // standard event processing
-        return QObject::eventFilter(obj, event);
-    }
-}
-*/
 
 QString SaveClimaLayout::getFirstYear() const
 {

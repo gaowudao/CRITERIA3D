@@ -48,7 +48,6 @@ class SaveClimaLayout : public QDialog
         void deleteRaw();
         void deleteAll();
 
-        //bool eventFilter(QObject *obj, QEvent *event);
         void saveElabList();
         void loadElabList();
 
@@ -58,10 +57,8 @@ private:
         QVBoxLayout listLayout;
         QHBoxLayout saveButtonLayout;
 
-        QListView listView;
-        QStringListModel model;
+        QListWidget listView;
         QStringList list;
-        QModelIndex index;
 
         QPushButton saveList;
         QPushButton loadList;
