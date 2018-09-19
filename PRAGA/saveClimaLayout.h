@@ -51,6 +51,9 @@ class SaveClimaLayout : public QDialog
         void saveElabList();
         void loadElabList();
 
+        QStringList getList() const;
+        void setList(const QStringList &value);
+
 private:
 
         QVBoxLayout mainLayout;

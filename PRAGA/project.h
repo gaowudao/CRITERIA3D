@@ -142,6 +142,7 @@
         bool elaborationPointsCycleGrid(bool isAnomaly, bool showInfo);
         bool elaborationCheck(bool isMeteoGrid, bool isAnomaly);
         bool elaboration(bool isMeteoGrid, bool isAnomaly);
+        bool elabSaveClima(bool isMeteoGrid);
 
         bool getIsElabMeteoPointsValue() const;
         void setIsElabMeteoPointsValue(bool value);

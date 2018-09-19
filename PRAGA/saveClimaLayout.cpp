@@ -137,6 +137,16 @@ void SaveClimaLayout::loadElabList()
 
 }
 
+QStringList SaveClimaLayout::getList() const
+{
+    return list;
+}
+
+void SaveClimaLayout::setList(const QStringList &value)
+{
+    list = value;
+}
+
 QString SaveClimaLayout::getFirstYear() const
 {
     return firstYear;

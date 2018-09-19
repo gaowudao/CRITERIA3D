@@ -1299,6 +1299,14 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
     return true;
 }
 
+bool Project::elabSaveClima(bool isMeteoGrid)
+{
+
+    //test
+    parserElaboration(clima);
+    return true;
+}
+
 
 bool Project::elaborationPointsCycle(bool isAnomaly, bool showInfo)
 {

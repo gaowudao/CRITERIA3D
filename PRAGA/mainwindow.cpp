@@ -1343,11 +1343,19 @@ void MainWindow::on_actionClimate_meteo_points_triggered()
 
 //        if (compDialog.result() == QDialog::Accepted)
 //            on_actionElaboration_meteo_grid_triggered();
+        QStringList listElab = compDialog.getElabSaveList();
+        for (int i = 0; i < listElab.size(); i++)
+        {
+            myProject.clima->setClimateElab(listElab.at(i));
+            myProject.elabSaveClima(isMeteoGrid);
+        }
+
     }
     else
     {
          myProject.logError();
     }
+
     return;
 }
 

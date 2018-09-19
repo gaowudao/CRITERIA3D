@@ -67,6 +67,7 @@ class ComputationDialog : public QDialog
         void copyDataToAnomaly();
         void copyDataToSaveLayout();
         bool checkValidData();
+        QStringList getElabSaveList();
 };
 
 

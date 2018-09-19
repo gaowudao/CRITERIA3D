@@ -4,7 +4,6 @@
 
 extern Project myProject;
 
-
 ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool saveClima)
     : settings(settings), isAnomaly(isAnomaly), saveClima(saveClima)
 {
@@ -928,5 +927,10 @@ bool ComputationDialog::checkValidData()
     }
     return true;
 
+}
+
+QStringList ComputationDialog::getElabSaveList()
+{
+    return saveClimaLayout.getList();
 }
 
