@@ -30,8 +30,8 @@ InterpolationDialog::InterpolationDialog(QSettings *settings, Crit3DInterpolatio
     layoutAggregation->addWidget(&gridAggregationMethodEdit);
 
     // topographic distances
-    topographicDistance = new QCheckBox(tr("use topographic distance"));
-    topographicDistance->setChecked(_interpolationSettings->getUseTAD());
+    topographicDistanceEdit = new QCheckBox(tr("use topographic distance"));
+    topographicDistanceEdit->setChecked(_interpolationSettings->getUseTAD());
     layoutMain->addWidget(topographicDistance);
 
     // dew point
@@ -113,6 +113,15 @@ InterpolationDialog::InterpolationDialog(QSettings *settings, Crit3DInterpolatio
 void InterpolationDialog::writeInterpolationSettings()
 {
     _paramSettings->beginGroup("interpolation");
+    _paramSettings->setValue("gridAggregationMethod", gridAggregationMethodEdit.itemData(gridAggregationMethodEdit.currentIndex()).toString());
+    _paramSettings->setValue("algorithm", algorithmEdit.itemData(algorithmEdit.currentIndex()).toString());
+    _paramSettings->setValue("lapseRateCode", lapseRateCodeEdit->isChecked());
+    _paramSettings->setValue("thermalInversion", thermalInversionEdit->isChecked());
+    _paramSettings->setValue("topographicDistance", topographicDistanceEdit->isChecked());
+    _paramSettings->setValue("optimalDetrending", optimalDetrendingEdit->isChecked());
+    _paramSettings->setValue("useDewPoint", useDewPointEdit->isChecked());
+    _paramSettings->setValue("thermalInversion", thermalInversionEdit->isChecked());
+    _paramSettings->setValue("minRegressionR2", minRegressionR2Edit.text());
     _paramSettings->endGroup();
 
 }
