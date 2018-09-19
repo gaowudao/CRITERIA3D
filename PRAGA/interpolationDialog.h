@@ -21,7 +21,7 @@ class InterpolationDialog : public QDialog
         QCheckBox* lapseRateCodeEdit;
         QCheckBox* thermalInversionEdit;
         QCheckBox* optimalDetrendingEdit;
-        QCheckBox* topographicDistance;
+        QCheckBox* topographicDistanceEdit;
         QCheckBox* useDewPointEdit;
         QComboBox gridAggregationMethodEdit;
         QVector <QCheckBox*> proxy;

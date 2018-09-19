@@ -32,7 +32,7 @@ InterpolationDialog::InterpolationDialog(QSettings *settings, Crit3DInterpolatio
     // topographic distances
     topographicDistanceEdit = new QCheckBox(tr("use topographic distance"));
     topographicDistanceEdit->setChecked(_interpolationSettings->getUseTAD());
-    layoutMain->addWidget(topographicDistance);
+    layoutMain->addWidget(topographicDistanceEdit);
 
     // dew point
     useDewPointEdit = new QCheckBox(tr("interpolate relative humdity using dew point"));
@@ -154,7 +154,7 @@ void InterpolationDialog::accept()
     QString aggrString = gridAggregationMethodEdit.itemData(gridAggregationMethodEdit.currentIndex()).toString();
     _interpolationSettings->setMeteoGridAggrMethod(gridAggregationMethodNames.at(aggrString.toStdString()));
 
-    _interpolationSettings->setUseTAD(topographicDistance->isChecked());
+    _interpolationSettings->setUseTAD(topographicDistanceEdit->isChecked());
     _interpolationSettings->setUseLapseRateCode(lapseRateCodeEdit->isChecked());
     _interpolationSettings->setUseBestDetrending(optimalDetrendingEdit->isChecked());
     _interpolationSettings->setUseThermalInversion(thermalInversionEdit->isChecked());
