@@ -39,7 +39,7 @@ void SaveClimaLayout::addElab()
 //    qInfo() << "elab " << elab;
 //    qInfo() << "elab1Param " << elab1Param;
 
-    QString elabAdded = firstYear + "÷" + lastYear + "_" + variable + "_" + period;
+    QString elabAdded = firstYear + "-" + lastYear + "_" + variable + "_" + period;
     if (period == "Generic")
     {
         elabAdded = elabAdded + "_" + genericPeriodStartDay + ":" + genericPeriodStartMonth + "-" + genericPeriodEndDay + ":" + genericPeriodEndMonth;

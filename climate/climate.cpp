@@ -1256,8 +1256,15 @@ bool parserElaboration(Crit3DClimate* clima)
         return false;
     }
 
-    QStringList myYearWords = words[pos].split('÷');
+    QString periodElabList = words.at(pos);
+    QStringList myYearWords = periodElabList.split('-'); // ÷
 
+    if (myYearWords[0].toInt() == false || myYearWords[1].toInt() == false)
+    {
+        return false;
+    }
+
+    /*
     foreach(QChar c, myYearWords[0])
     {
         if (!c.isDigit())
@@ -1268,6 +1275,7 @@ bool parserElaboration(Crit3DClimate* clima)
         if (!c.isDigit())
             return false;
     }
+    */
     clima->setYearStart(myYearWords[0].toInt());
     clima->setYearEnd(myYearWords[1].toInt());
 
