@@ -1361,11 +1361,11 @@ bool parserElaboration(Crit3DClimate* clima)
         }
     }
 
+    pos = pos + 1;
     if (words.size() > pos)
     {
         clima->setElab2(elab);
         clima->setParam2(param);
-        pos = pos + 1;
 
         QString elab1 = words[pos];
         elabMeteoComputation = MapMeteoComputation.at(elab1.toStdString());
