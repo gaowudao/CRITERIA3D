@@ -73,19 +73,20 @@
     class Crit3DProxyCombination
     {
     private:
-        std::vector <int> indexProxy;
+        std::vector<bool> isActive;
         bool useThermalInversion;
-        int indexHeight;
+
 
     public:
         Crit3DProxyCombination();
 
         bool getUseThermalInversion() const;
         void setUseThermalInversion(bool value);
-        std::vector<int> getIndexProxy() const;
-        void setIndexProxy(const std::vector<int> &value);
-        int getIndexHeight() const;
-        void setIndexHeight(int value);
+        std::vector<bool> getIsActive() const;
+        void setIsActive(const std::vector<bool> &value);
+        void addValue(bool isActive_);
+        void setValue(int index, bool isActive_);
+        bool getValue(int index);
     };
 
     class Crit3DInterpolationSettings
@@ -114,6 +115,7 @@
         std::vector <Crit3DProxyInterpolation> currentProxy;
         Crit3DProxyCombination optimalCombination;
         Crit3DProxyCombination selectedCombination;
+        int indexHeight;
 
         bool currentClimateParametersLoaded;
         Crit3DClimateParameters currentClimateParameters;
@@ -129,7 +131,7 @@
         Crit3DProxyInterpolation* getProxy(int pos);
         std::string getProxyName(int pos);
         int getProxyNr();
-        void addProxy(Crit3DProxy myProxy);
+        void addProxy(Crit3DProxy myProxy, bool isActive_);
         float getProxyValue(unsigned int pos, std::vector <float> proxyValues);
         Crit3DProxyCombination getCurrentCombination();
         bool getCombination(int combinationInteger, Crit3DProxyCombination* outCombination);
@@ -176,6 +178,8 @@
         void setOptimalCombination(const Crit3DProxyCombination &value);
         Crit3DProxyCombination getSelectedCombination() const;
         void setSelectedCombination(const Crit3DProxyCombination &value);
+        int getIndexHeight() const;
+        void setIndexHeight(int value);
     };
 
 #endif // INTERPOLATIONSETTINGS_H

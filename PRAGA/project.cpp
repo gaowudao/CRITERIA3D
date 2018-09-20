@@ -304,7 +304,6 @@ bool Project::readProxies()
     bool isActive;
     int proxyNr = 0;
     bool isGridLoaded;
-    Crit3DProxyCombination myCombination;
 
     interpolationSettings.initializeProxy();
     meteoPointsDbHandler->initializeProxy();
@@ -344,19 +343,14 @@ bool Project::readProxies()
                 return false;
             }
 
-            interpolationSettings.addProxy(myProxy);
+            interpolationSettings.addProxy(myProxy, isActive);
             if (isGridLoaded && meteoPointsDbHandler != NULL)
             {
                 meteoPointsDbHandler->addProxy(myProxy, proxyTable, proxyField);
                 proxyNr++;
             }
-
-            if (isActive)
-                myCombination.getIndexProxy().push_back(proxyNr);
         }
     }
-
-    interpolationSettings.setSelectedCombination(myCombination);
 
     return true;
 }

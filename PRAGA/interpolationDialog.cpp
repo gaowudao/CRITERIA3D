@@ -90,7 +90,7 @@ InterpolationDialog::InterpolationDialog(QSettings *settings, Crit3DInterpolatio
     {
          Crit3DProxyInterpolation* myProxy = _interpolationSettings->getProxy(i);
          QCheckBox *chkProxy = new QCheckBox(QString::fromStdString(myProxy->getName()));
-         chkProxy->setChecked(true);
+         chkProxy->setChecked(_interpolationSettings->getSelectedCombination().getIsActive().at(i));
          layoutProxy->addWidget(chkProxy);
          proxy.append(chkProxy);
     }
@@ -142,10 +142,8 @@ void InterpolationDialog::accept()
 
     Crit3DProxyCombination myCombination;
     for (int i = 0; i < proxy.size(); i++)
-    {
-        if (proxy[i]->isChecked())
-            myCombination.getIndexProxy().push_back(i);
-    }
+        myCombination.setValue(i, proxy[i]->isChecked());
+
     _interpolationSettings->setSelectedCombination(myCombination);
 
     QString algorithmString = algorithmEdit.itemData(algorithmEdit.currentIndex()).toString();

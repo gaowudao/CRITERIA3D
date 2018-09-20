@@ -291,10 +291,7 @@ bool setInterpolationSettings()
     if (myDialog.result() == QDialog::Accepted)
     {
         for (i = 0; i < myNrProxy; i++)
-        {
-            if (myButtons[i]->isChecked())
-                myCombination.getIndexProxy().push_back(i);
-        }
+            myCombination.getIsActive().at(i) = myButtons[i]->isChecked();
 
         myProject.interpolationSettings.setSelectedCombination(myCombination);
         return true;

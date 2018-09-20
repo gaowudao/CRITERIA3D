@@ -153,6 +153,16 @@ void Crit3DInterpolationSettings::setSelectedCombination(const Crit3DProxyCombin
     selectedCombination = value;
 }
 
+int Crit3DInterpolationSettings::getIndexHeight() const
+{
+    return indexHeight;
+}
+
+void Crit3DInterpolationSettings::setIndexHeight(int value)
+{
+    indexHeight = value;
+}
+
 Crit3DInterpolationSettings::Crit3DInterpolationSettings()
 {
     initialize();
@@ -161,8 +171,8 @@ Crit3DInterpolationSettings::Crit3DInterpolationSettings()
 void Crit3DInterpolationSettings::initializeProxy()
 {
     currentProxy.clear();
-    selectedCombination.getIndexProxy().clear();
-    optimalCombination.getIndexProxy().clear();
+    selectedCombination.getIsActive().clear();
+    optimalCombination.getIsActive().clear();
 }
 
 void Crit3DInterpolationSettings::initialize()
@@ -386,7 +396,7 @@ void Crit3DProxyInterpolation::initializeOrography()
     return;
 }
 
-void Crit3DInterpolationSettings::addProxy(Crit3DProxy myProxy)
+void Crit3DInterpolationSettings::addProxy(Crit3DProxy myProxy, bool isActive_)
 {
     Crit3DProxyInterpolation myInterpolationProxy;
     myInterpolationProxy.setName(myProxy.getName());
@@ -394,7 +404,7 @@ void Crit3DInterpolationSettings::addProxy(Crit3DProxy myProxy)
     myInterpolationProxy.setGrid(myProxy.getGrid());
     currentProxy.push_back(myInterpolationProxy);
 
-    selectedCombination.getIndexProxy().push_back((int)currentProxy.size()-1);
+    selectedCombination.addValue(isActive_);
 }
 
 std::string Crit3DInterpolationSettings::getProxyName(int pos)
@@ -421,30 +431,34 @@ void Crit3DInterpolationSettings::computeShepardInitialRadius(float area, int nr
     setShepardInitialRadius(sqrt((SHEPARD_AVG_NRPOINTS * area) / ((float)PI * nrPoints)));
 }
 
-std::vector<int> Crit3DProxyCombination::getIndexProxy() const
-{
-    return indexProxy;
-}
-
-void Crit3DProxyCombination::setIndexProxy(const std::vector<int> &value)
-{
-    indexProxy = value;
-}
-
-int Crit3DProxyCombination::getIndexHeight() const
-{
-    return indexHeight;
-}
-
-void Crit3DProxyCombination::setIndexHeight(int value)
-{
-    indexHeight = value;
-}
-
 Crit3DProxyCombination::Crit3DProxyCombination()
 {
     setUseThermalInversion(false);
-    setIndexHeight(NODATA);
+}
+
+std::vector<bool> Crit3DProxyCombination::getIsActive() const
+{
+    return isActive;
+}
+
+void Crit3DProxyCombination::setIsActive(const std::vector<bool> &value)
+{
+    isActive = value;
+}
+
+void Crit3DProxyCombination::addValue(bool isActive_)
+{
+    isActive.push_back(isActive_);
+}
+
+void Crit3DProxyCombination::setValue(int index, bool isActive_)
+{
+    isActive.at(index) = isActive_;
+}
+
+bool Crit3DProxyCombination::getValue(int index)
+{
+    return isActive.at(index);
 }
 
 bool Crit3DProxyCombination::getUseThermalInversion() const
@@ -461,7 +475,7 @@ bool Crit3DInterpolationSettings::getCombination(int combinationInteger, Crit3DP
 {
     std::string binaryString = binary(combinationInteger);
 
-    int indexHeight = selectedCombination.getIndexHeight();
+    int indexHeight = getIndexHeight();
 
     // avoid combinations with inversion (last index) and without orography
 //    if (combinationInteger % 2)
