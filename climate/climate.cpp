@@ -1303,6 +1303,7 @@ bool parserElaboration(Crit3DClimate* clima)
 
     QString periodTypeStr = words[pos];
 
+    clima->setPeriodStr(periodTypeStr);
     clima->setPeriodType(getPeriodTypeFromString(periodTypeStr));
 
     pos = pos + 1; // pos = 3
@@ -1368,6 +1369,7 @@ bool parserElaboration(Crit3DClimate* clima)
         clima->setParam2(param);
 
         QString elab1 = words[pos];
+        clima->setElab1(elab1);
         elabMeteoComputation = MapMeteoComputation.at(elab1.toStdString());
         nrParam = nParameters(elabMeteoComputation);
 

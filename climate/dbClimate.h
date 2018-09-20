@@ -20,6 +20,8 @@
         Crit3DClimate(const Crit3DClimate* reference);
         ~Crit3DClimate();
 
+        void resetParam();
+
         QSqlDatabase db() const;
         void setDb(const QSqlDatabase &db);
 

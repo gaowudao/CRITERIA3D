@@ -1346,6 +1346,7 @@ void MainWindow::on_actionClimate_meteo_points_triggered()
         QStringList listElab = compDialog.getElabSaveList();
         for (int i = 0; i < listElab.size(); i++)
         {
+            myProject.clima->resetParam();
             myProject.clima->setClimateElab(listElab.at(i));
             myProject.elabSaveClima(isMeteoGrid);
         }
