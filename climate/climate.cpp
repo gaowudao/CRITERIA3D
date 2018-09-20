@@ -1264,18 +1264,6 @@ bool parserElaboration(Crit3DClimate* clima)
         return false;
     }
 
-    /*
-    foreach(QChar c, myYearWords[0])
-    {
-        if (!c.isDigit())
-            return false;
-    }
-    foreach(QChar c, myYearWords[1])
-    {
-        if (!c.isDigit())
-            return false;
-    }
-    */
     clima->setYearStart(myYearWords[0].toInt());
     clima->setYearEnd(myYearWords[1].toInt());
 
@@ -1295,7 +1283,8 @@ bool parserElaboration(Crit3DClimate* clima)
     {
         try
         {
-          var = MapDailyMeteoVar.at(words[pos].toStdString());
+            var = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, words[pos].toStdString());
+          //var = MapDailyMeteoVar.at(words[pos].toStdString());
         }
         catch (const std::out_of_range& )
         {

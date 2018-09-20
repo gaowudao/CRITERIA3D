@@ -857,12 +857,49 @@ void ComputationDialog::copyDataToSaveLayout()
     saveClimaLayout.setPeriod(periodTypeList.currentText());
     if (periodTypeList.currentText() == "Generic")
     {
-        saveClimaLayout.setGenericPeriodStartDay(QString::number(genericPeriodStart.date().day()));
-        saveClimaLayout.setGenericPeriodStartMonth(QString::number(genericPeriodStart.date().month()));
+        if (genericPeriodStart.date().day() < 10)
+        {
+            saveClimaLayout.setGenericPeriodStartDay("0"+QString::number(genericPeriodStart.date().day()));
+        }
+        else
+        {
+            saveClimaLayout.setGenericPeriodStartDay(QString::number(genericPeriodStart.date().day()));
+        }
+        if (genericPeriodStart.date().month() < 10)
+        {
+            saveClimaLayout.setGenericPeriodStartMonth("0"+QString::number(genericPeriodStart.date().month()));
+        }
+        else
+        {
+            saveClimaLayout.setGenericPeriodStartMonth(QString::number(genericPeriodStart.date().month()));
+        }
 
-        saveClimaLayout.setGenericPeriodEndDay(QString::number(genericPeriodEnd.date().day()));
-        saveClimaLayout.setGenericPeriodEndMonth(QString::number(genericPeriodEnd.date().month()));
-        saveClimaLayout.setGenericNYear(nrYear.text());
+        if (genericPeriodEnd.date().day() < 10)
+        {
+            saveClimaLayout.setGenericPeriodEndDay("0"+QString::number(genericPeriodEnd.date().day()));
+        }
+        else
+        {
+            saveClimaLayout.setGenericPeriodEndDay(QString::number(genericPeriodEnd.date().day()));
+        }
+        if (genericPeriodEnd.date().month() < 10)
+        {
+            saveClimaLayout.setGenericPeriodEndMonth("0"+QString::number(genericPeriodEnd.date().month()));
+        }
+        else
+        {
+            saveClimaLayout.setGenericPeriodEndMonth(QString::number(genericPeriodEnd.date().month()));
+        }
+
+        if (nrYear.text().toInt() < 10)
+        {
+            saveClimaLayout.setGenericNYear("0"+nrYear.text());
+        }
+        else
+        {
+            saveClimaLayout.setGenericNYear(nrYear.text());
+        }
+
     }
     saveClimaLayout.setSecondElab(secondElabList.currentText());
     saveClimaLayout.setElab2Param(elab2Parameter.text());
