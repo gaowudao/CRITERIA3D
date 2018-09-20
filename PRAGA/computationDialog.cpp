@@ -566,6 +566,15 @@ void ComputationDialog::displayPeriod(const QString value)
     {
         if (saveClima)
         {
+            periodDisplay.setVisible(false);
+            currentDayLabel.setVisible(false);
+            currentDay.setVisible(false);
+            genericStartLabel.setVisible(false);
+            genericEndLabel.setVisible(false);
+            genericPeriodStart.setVisible(false);
+            genericPeriodEnd.setVisible(false);
+            nrYearLabel.setVisible(false);
+            nrYear.setVisible(false);
             return;
         }
         periodDisplay.setVisible(true);
@@ -584,6 +593,16 @@ void ComputationDialog::displayPeriod(const QString value)
     {
         if (saveClima)
         {
+            periodDisplay.setVisible(false);
+            currentDayLabel.setVisible(false);
+            currentDay.setVisible(false);
+            genericStartLabel.setVisible(false);
+            genericEndLabel.setVisible(false);
+            genericPeriodStart.setVisible(false);
+            genericPeriodEnd.setVisible(false);
+            nrYearLabel.setVisible(false);
+            nrYear.setVisible(false);
+            return;
             return;
         }
         periodDisplay.setVisible(true);
@@ -602,6 +621,16 @@ void ComputationDialog::displayPeriod(const QString value)
     {
         if (saveClima)
         {
+            periodDisplay.setVisible(false);
+            currentDayLabel.setVisible(false);
+            currentDay.setVisible(false);
+            genericStartLabel.setVisible(false);
+            genericEndLabel.setVisible(false);
+            genericPeriodStart.setVisible(false);
+            genericPeriodEnd.setVisible(false);
+            nrYearLabel.setVisible(false);
+            nrYear.setVisible(false);
+            return;
             return;
         }
         periodDisplay.setVisible(true);
@@ -619,6 +648,16 @@ void ComputationDialog::displayPeriod(const QString value)
     {
         if (saveClima)
         {
+            periodDisplay.setVisible(false);
+            currentDayLabel.setVisible(false);
+            currentDay.setVisible(false);
+            genericStartLabel.setVisible(false);
+            genericEndLabel.setVisible(false);
+            genericPeriodStart.setVisible(false);
+            genericPeriodEnd.setVisible(false);
+            nrYearLabel.setVisible(false);
+            nrYear.setVisible(false);
+            return;
             return;
         }
         periodDisplay.setVisible(true);
@@ -637,6 +676,16 @@ void ComputationDialog::displayPeriod(const QString value)
     {
         if (saveClima)
         {
+            periodDisplay.setVisible(false);
+            currentDayLabel.setVisible(false);
+            currentDay.setVisible(false);
+            genericStartLabel.setVisible(false);
+            genericEndLabel.setVisible(false);
+            genericPeriodStart.setVisible(false);
+            genericPeriodEnd.setVisible(false);
+            nrYearLabel.setVisible(false);
+            nrYear.setVisible(false);
+            return;
             return;
         }
         periodDisplay.setVisible(false);
