@@ -153,6 +153,11 @@ void Crit3DInterpolationSettings::setSelectedCombination(const Crit3DProxyCombin
     selectedCombination = value;
 }
 
+void Crit3DInterpolationSettings::setValueSelectedCombination(int index, bool isActive)
+{
+    selectedCombination.setValue(index, isActive);
+}
+
 int Crit3DInterpolationSettings::getIndexHeight() const
 {
     return indexHeight;
@@ -431,19 +436,19 @@ void Crit3DInterpolationSettings::computeShepardInitialRadius(float area, int nr
     setShepardInitialRadius(sqrt((SHEPARD_AVG_NRPOINTS * area) / ((float)PI * nrPoints)));
 }
 
-Crit3DProxyCombination::Crit3DProxyCombination()
-{
-    setUseThermalInversion(false);
-}
-
-std::vector<bool> Crit3DProxyCombination::getIsActive() const
+std::deque<bool> Crit3DProxyCombination::getIsActive() const
 {
     return isActive;
 }
 
-void Crit3DProxyCombination::setIsActive(const std::vector<bool> &value)
+void Crit3DProxyCombination::setIsActive(const std::deque<bool> &value)
 {
     isActive = value;
+}
+
+Crit3DProxyCombination::Crit3DProxyCombination()
+{
+    setUseThermalInversion(false);
 }
 
 void Crit3DProxyCombination::addValue(bool isActive_)

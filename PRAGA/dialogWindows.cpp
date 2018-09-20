@@ -255,51 +255,6 @@ bool chooseMeteoVariable()
    return true;
 }
 
-bool setInterpolationSettings()
-{
-    QDialog myDialog;
-    QVBoxLayout mainLayout;
-    QVBoxLayout layoutProxy;
-    QHBoxLayout layoutOk;
-    std::vector <QRadioButton*> myButtons;
-    myDialog.setWindowTitle("Interpolation settings");
-    myDialog.setFixedWidth(300);
-    int myNrProxy = myProject.interpolationSettings.getProxyNr();
-    int i;
-
-    for (i = 0; i < myNrProxy; i++)
-    {
-         Crit3DProxyInterpolation* myProxy = myProject.interpolationSettings.getProxy(i);
-         myButtons.push_back(new QRadioButton(QString::fromStdString(myProxy->getName())));
-         layoutProxy.addWidget(myButtons[i]);
-    }
-
-    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-
-    myDialog.connect(&buttonBox, SIGNAL(accepted()), &myDialog, SLOT(accept()));
-    myDialog.connect(&buttonBox, SIGNAL(rejected()), &myDialog, SLOT(reject()));
-
-    layoutOk.addWidget(&buttonBox);
-
-    mainLayout.addLayout(&layoutProxy);
-    mainLayout.addLayout(&layoutOk);
-    myDialog.setLayout(&mainLayout);
-    myDialog.exec();
-
-    Crit3DProxyCombination myCombination;
-
-    if (myDialog.result() == QDialog::Accepted)
-    {
-        for (i = 0; i < myNrProxy; i++)
-            myCombination.getIsActive().at(i) = myButtons[i]->isChecked();
-
-        myProject.interpolationSettings.setSelectedCombination(myCombination);
-        return true;
-    }
-    else
-        return false;
-}
-
 #ifdef NETCDF
     bool chooseNetCDFVariable(int* varId, QDateTime* firstDate, QDateTime* lastDate)
     {

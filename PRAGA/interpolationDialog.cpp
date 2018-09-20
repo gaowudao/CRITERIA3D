@@ -35,7 +35,7 @@ InterpolationDialog::InterpolationDialog(QSettings *settings, Crit3DInterpolatio
     layoutMain->addWidget(topographicDistanceEdit);
 
     // dew point
-    useDewPointEdit = new QCheckBox(tr("interpolate relative humdity using dew point"));
+    useDewPointEdit = new QCheckBox(tr("interpolate relative humidity using dew point"));
     useDewPointEdit->setChecked(_interpolationSettings->getUseDewPoint());
     layoutMain->addWidget(useDewPointEdit);
 
@@ -90,7 +90,7 @@ InterpolationDialog::InterpolationDialog(QSettings *settings, Crit3DInterpolatio
     {
          Crit3DProxyInterpolation* myProxy = _interpolationSettings->getProxy(i);
          QCheckBox *chkProxy = new QCheckBox(QString::fromStdString(myProxy->getName()));
-         chkProxy->setChecked(_interpolationSettings->getSelectedCombination().getIsActive().at(i));
+         chkProxy->setChecked(_interpolationSettings->getSelectedCombination().getValue(i));
          layoutProxy->addWidget(chkProxy);
          proxy.append(chkProxy);
     }
@@ -124,6 +124,14 @@ void InterpolationDialog::writeInterpolationSettings()
     _paramSettings->setValue("minRegressionR2", minRegressionR2Edit.text());
     _paramSettings->endGroup();
 
+    Crit3DProxyInterpolation* myProxy;
+    for (int i=0; i < _interpolationSettings->getProxyNr(); i++)
+    {
+        myProxy = _interpolationSettings->getProxy(i);
+        _paramSettings->beginGroup("proxy_" + QString::fromStdString(myProxy->getName()));
+        _paramSettings->setValue("active", _interpolationSettings->getSelectedCombination().getValue(i));
+        _paramSettings->endGroup();
+    }
 }
 
 void InterpolationDialog::accept()
@@ -140,11 +148,9 @@ void InterpolationDialog::accept()
         return;
     }
 
-    Crit3DProxyCombination myCombination;
     for (int i = 0; i < proxy.size(); i++)
-        myCombination.setValue(i, proxy[i]->isChecked());
+        _interpolationSettings->setValueSelectedCombination(i, proxy[i]->isChecked());
 
-    _interpolationSettings->setSelectedCombination(myCombination);
 
     QString algorithmString = algorithmEdit.itemData(algorithmEdit.currentIndex()).toString();
     _interpolationSettings->setInterpolationMethod(interpolationMethodNames.at(algorithmString.toStdString()));

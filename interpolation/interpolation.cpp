@@ -1038,7 +1038,7 @@ float retrend(meteoVariable myVar, vector <float> myProxyValues, Crit3DInterpola
     {
         myProxy = mySettings->getProxy(pos);
 
-        if (myCombination.getIsActive().at(pos) && myProxy->getIsSignificant())
+        if (myCombination.getValue(pos) && myProxy->getIsSignificant())
         {
             myProxyValue = mySettings->getProxyValue(proxyIndex, myProxyValues);
 
@@ -1102,7 +1102,7 @@ void detrending(std::vector <Crit3DInterpolationDataPoint> &myPoints,
 
     for (int pos=0; pos < mySettings->getProxyNr(); pos++)
     {
-        if (myCombination.getIsActive().at(pos))
+        if (myCombination.getValue(pos))
         {
             myProxy = mySettings->getProxy(pos);
             myProxy->setIsSignificant(false);

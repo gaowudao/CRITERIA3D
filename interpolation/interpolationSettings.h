@@ -11,6 +11,8 @@
         #include "meteoGrid.h"
     #endif
 
+    #include <deque>
+
     std::string getKeyStringInterpolationMethod(TInterpolationMethod value);
 
     class Crit3DProxy
@@ -73,7 +75,7 @@
     class Crit3DProxyCombination
     {
     private:
-        std::vector<bool> isActive;
+        std::deque<bool> isActive;
         bool useThermalInversion;
 
 
@@ -82,11 +84,11 @@
 
         bool getUseThermalInversion() const;
         void setUseThermalInversion(bool value);
-        std::vector<bool> getIsActive() const;
-        void setIsActive(const std::vector<bool> &value);
         void addValue(bool isActive_);
         void setValue(int index, bool isActive_);
         bool getValue(int index);
+        std::deque<bool> getIsActive() const;
+        void setIsActive(const std::deque<bool> &value);
     };
 
     class Crit3DInterpolationSettings
@@ -178,6 +180,7 @@
         void setOptimalCombination(const Crit3DProxyCombination &value);
         Crit3DProxyCombination getSelectedCombination() const;
         void setSelectedCombination(const Crit3DProxyCombination &value);
+        void setValueSelectedCombination(int index, bool isActive);
         int getIndexHeight() const;
         void setIndexHeight(int value);
     };

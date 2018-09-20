@@ -104,7 +104,7 @@ bool Project::readSettings()
                 interpolationSettings.setMinRegressionR2(settings->value("minRegressionR2").toFloat());
 
             if (settings->contains("useDewPoint"))
-                interpolationSettings.setUseDewPoint(settings->value("useDewPoint").toFloat());
+                interpolationSettings.setUseDewPoint(settings->value("useDewPoint").toBool());
 
             settings->endGroup();
         }
@@ -342,6 +342,9 @@ bool Project::readProxies()
                 errorString = "error reading grid, table or field for proxy " + proxyName;
                 return false;
             }
+
+            if (myProxy.getProxyPragaName() == height)
+                interpolationSettings.setIndexHeight(proxyNr);
 
             interpolationSettings.addProxy(myProxy, isActive);
             if (isGridLoaded && meteoPointsDbHandler != NULL)
