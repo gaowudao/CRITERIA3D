@@ -1316,9 +1316,8 @@ bool parserElaboration(Crit3DClimate* clima)
     {
         clima->setPeriodStr(words[pos]);
         parserGenericPeriodString(clima);
+        pos = pos + 1; // pos = 4
     }
-
-    pos = pos + 1; // pos = 4
 
     if (words.size() == pos)
     {
