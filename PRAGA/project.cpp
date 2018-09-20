@@ -281,7 +281,8 @@ bool loadProxyGrid(Crit3DProxy* myProxy)
     return (gis::readEsriGrid(gridName, myGrid, myError));
 }
 
-bool Project::checkProxySetting(QString group, std::string* name, std::string* grdName, std::string* table, std::string* field)
+bool Project::checkProxySetting(QString group, std::string* name, std::string* grdName,
+                                std::string* table, std::string* field, bool* isActive)
 {
     std::string grid;
 
@@ -291,6 +292,7 @@ bool Project::checkProxySetting(QString group, std::string* name, std::string* g
     *grdName = path.toStdString() + grid;
     *table = settings->value("table").toString().toStdString();
     *field = settings->value("field").toString().toStdString();
+    *isActive = settings->value("active").toBool();
     settings->endGroup();
 
     return (*name != "" && (grid != "" || (*table != "" && *field != "")));
@@ -299,8 +301,10 @@ bool Project::checkProxySetting(QString group, std::string* name, std::string* g
 bool Project::readProxies()
 {
     std::string proxyName, proxyGridName, proxyTable, proxyField;
+    bool isActive;
     int proxyNr = 0;
     bool isGridLoaded;
+    Crit3DProxyCombination myCombination;
 
     interpolationSettings.initializeProxy();
     meteoPointsDbHandler->initializeProxy();
@@ -312,7 +316,7 @@ bool Project::readProxies()
         {
             isGridLoaded = false;
 
-            if (! checkProxySetting(group, &proxyName, &proxyGridName, &proxyTable, &proxyField))
+            if (! checkProxySetting(group, &proxyName, &proxyGridName, &proxyTable, &proxyField, &isActive))
             {
                 errorString = "error parsing proxy " + proxyName;
                 return false;
@@ -334,6 +338,12 @@ bool Project::readProxies()
             else
                 isGridLoaded = loadProxyGrid(&myProxy);
 
+            if ( !isGridLoaded && (proxyTable == "" || proxyField == ""))
+            {
+                errorString = "error reading grid, table or field for proxy " + proxyName;
+                return false;
+            }
+
             interpolationSettings.addProxy(myProxy);
             if (isGridLoaded && meteoPointsDbHandler != NULL)
             {
@@ -341,10 +351,12 @@ bool Project::readProxies()
                 proxyNr++;
             }
 
-            if ( !isGridLoaded && (proxyTable == "" || proxyField == ""))
-                return false;
+            if (isActive)
+                myCombination.getIndexProxy().push_back(proxyNr);
         }
     }
+
+    interpolationSettings.setSelectedCombination(myCombination);
 
     return true;
 }
