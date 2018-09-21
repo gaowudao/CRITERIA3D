@@ -202,9 +202,13 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
     settings->endGroup();
     elaborationLayout.addWidget(&elaborationList);
 
+    QLocale local(QLocale::system().language());
+    local.setNumberOptions(QLocale::RejectGroupSeparator);
     elab1Parameter.setPlaceholderText("Parameter");
     elab1Parameter.setFixedWidth(90);
-    elab1Parameter.setValidator(new QDoubleValidator(-9999.0, 9999.0, 2)); //LC accetta double con 2 cifre decimali da -9999 a 9999
+    QDoubleValidator* validator = new QDoubleValidator(-9999.0, 9999.0, 2); //LC accetta double con 2 cifre decimali da -9999 a 9999
+    validator->setLocale(local);
+    elab1Parameter.setValidator(validator);
     readParam.setText("Read param from db Climate");
     readParam.setChecked(myProject.clima->param1IsClimate());
 
@@ -249,7 +253,8 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
 
     elab2Parameter.setPlaceholderText("Parameter");
     elab2Parameter.setFixedWidth(90);
-    elab2Parameter.setValidator(new QDoubleValidator(-9999.0, 9999.0, 2)); //LC accetta double con 2 cifre decimali da -9999 a 9999
+    elab2Parameter.setValidator(validator);
+    //elab2Parameter.setValidator(new QDoubleValidator(-9999.0, 9999.0, 2)); //LC accetta double con 2 cifre decimali da -9999 a 9999
 
     QString elab2Field = secondElabList.currentText();
     if ( MapElabWithParam.find(elab2Field.toStdString()) == MapElabWithParam.end())

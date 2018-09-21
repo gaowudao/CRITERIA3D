@@ -1358,7 +1358,7 @@ bool parserElaboration(Crit3DClimate* clima)
         {
             clima->setParam1IsClimate(false);
             clima->setParam1ClimateField("");
-            param = words[pos].toFloat(); // GA controllare se funziona bene gestione separatore decimale
+            param = words[pos].toFloat();
         }
     }
 
@@ -1399,7 +1399,7 @@ bool parserElaboration(Crit3DClimate* clima)
             {
                 clima->setParam1IsClimate(false);
                 clima->setParam1ClimateField("");
-                clima->setParam1( words[pos].toFloat() );// GA controllare se funziona bene gestione separatore decimale
+                clima->setParam1( words[pos].toFloat() );
             }
         }
 
