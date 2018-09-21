@@ -410,6 +410,7 @@ void Crit3DInterpolationSettings::addProxy(Crit3DProxy myProxy, bool isActive_)
     currentProxy.push_back(myInterpolationProxy);
 
     selectedCombination.addValue(isActive_);
+    optimalCombination.addValue(isActive_);
 }
 
 std::string Crit3DInterpolationSettings::getProxyName(int pos)
@@ -426,9 +427,9 @@ float Crit3DInterpolationSettings::getProxyValue(unsigned int pos, std::vector <
 Crit3DProxyCombination Crit3DInterpolationSettings::getCurrentCombination()
 {
     if (getUseBestDetrending())
-        return selectedCombination;
-    else
         return optimalCombination;
+    else
+        return selectedCombination;
 }
 
 void Crit3DInterpolationSettings::computeShepardInitialRadius(float area, int nrPoints)

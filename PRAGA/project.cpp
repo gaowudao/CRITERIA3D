@@ -344,9 +344,16 @@ bool Project::readProxies()
             }
 
             if (myProxy.getProxyPragaName() == height)
+            {
                 interpolationSettings.setIndexHeight(proxyNr);
+                // quality spatial control use only elevation
+                qualityInterpolationSettings.addProxy(myProxy, isActive);
+                qualityInterpolationSettings.setIndexHeight(0);
+            }
 
             interpolationSettings.addProxy(myProxy, isActive);
+
+
             if (isGridLoaded && meteoPointsDbHandler != NULL)
             {
                 meteoPointsDbHandler->addProxy(myProxy, proxyTable, proxyField);
