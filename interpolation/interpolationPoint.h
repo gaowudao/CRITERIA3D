@@ -17,6 +17,7 @@
         float deltaZ;
         float value;
         float detrendValue;
+        int lapseRateCode;
         int indexTopoDistMap;
         std::vector <float> proxyValues;
 

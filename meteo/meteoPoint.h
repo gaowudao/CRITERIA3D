@@ -99,6 +99,8 @@
         bool selected;
 
         std::vector <float> proxyValues;
+        int lapseRateCode;
+        int indexTopoDistMap;
 
         Crit3DMeteoPoint();
 

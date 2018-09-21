@@ -1032,7 +1032,6 @@ float retrend(meteoVariable myVar, vector <float> myProxyValues, Crit3DInterpola
     float myProxyValue;
     Crit3DProxyInterpolation* myProxy;
     Crit3DProxyCombination myCombination = mySettings->getCurrentCombination();
-    int proxyIndex;
 
     for (int pos=0; pos < mySettings->getProxyNr(); pos++)
     {
@@ -1302,17 +1301,21 @@ std::vector <float> getProxyValuesXY(gis::Crit3DUtmPoint myPoint, Crit3DInterpol
     gis::Crit3DRasterGrid* proxyGrid;
 
     myValues.resize(mySettings->getProxyNr());
+    Crit3DProxyCombination myCombination = mySettings->getCurrentCombination();
 
     for (unsigned int i=0; i < myValues.size(); i++)
     {
         myValues.at(i) = NODATA;
 
-        proxyGrid = mySettings->getProxy(i)->getGrid();
-        if (proxyGrid != NULL && proxyGrid->isLoaded)
+        if (myCombination.getValue(i))
         {
-            myValue = gis::getValueFromXY(*proxyGrid, myPoint.x, myPoint.y);
-            if (myValue != proxyGrid->header->flag)
-                myValues.at(i) = myValue;
+            proxyGrid = mySettings->getProxy(i)->getGrid();
+            if (proxyGrid != NULL && proxyGrid->isLoaded)
+            {
+                myValue = gis::getValueFromXY(*proxyGrid, myPoint.x, myPoint.y);
+                if (myValue != proxyGrid->header->flag)
+                    myValues.at(i) = myValue;
+            }
         }
     }
 

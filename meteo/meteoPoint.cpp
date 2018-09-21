@@ -71,6 +71,10 @@ Crit3DMeteoPoint::Crit3DMeteoPoint()
     this->selected = false;
 
     this->quality = quality::missing_data;
+
+    proxyValues.clear();
+    lapseRateCode = 0;
+    indexTopoDistMap = NODATA;
 }
 
 

@@ -76,6 +76,9 @@ bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nr
 
     for (int i = 0; i < nrMeteoPoints; i++)
     {
+        if (meteoPoints[i].id == "5512")
+            int a = 0;
+
         meteoPoints[i].residual = NODATA;
 
         if (meteoPoints[i].quality == quality::accepted)
@@ -226,7 +229,7 @@ bool checkData(Crit3DQuality* myQuality, meteoVariable myVar, Crit3DMeteoPoint* 
     for (int i = 0; i < nrMeteoPoints; i++)
         meteoPoints[i].currentValue = meteoPoints[i].getMeteoPointValue(myTime, myVar);
 
-    // quality control - synthctic
+    // quality control - syntactic
     myQuality->syntacticQualityControl(myVar, meteoPoints, nrMeteoPoints);
 
     // quality control - spatial

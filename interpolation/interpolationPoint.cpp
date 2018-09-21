@@ -37,6 +37,7 @@ Crit3DInterpolationDataPoint::Crit3DInterpolationDataPoint()
     value = NODATA;
     detrendValue = 0;
     indexTopoDistMap = NODATA;
+    lapseRateCode = 0;
     point = new gis::Crit3DPoint();
 }
 
