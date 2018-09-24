@@ -463,13 +463,17 @@ bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, 
     myProxyOrog->setRegressionSlope(climateLapseRate);
 
     maxPointsZ = getMaxHeight(myPoints);
+    heightInf = getMinHeight(myPoints);
+
+    if (maxPointsZ == heightInf)
+        return false;
 
     /*! not enough data to define a curve (use climate) */
     if (myPoints.size() < MIN_REGRESSION_POINTS)
         return true;
 
     /*! find intervals averages */
-    heightInf = getMinHeight(myPoints);
+
     heightSup = heightInf;
     deltaZ = DELTAZ_INI;
     while (heightSup <= maxPointsZ)
@@ -478,9 +482,6 @@ bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, 
         while (myAvg == NODATA)
         {
             heightSup = heightSup + deltaZ;
-            if (heightSup > maxPointsZ && !(maxPointsZ == 0 && heightInf == 0))
-                heightSup = maxPointsZ + (maxPointsZ - heightInf);
-
             myAvg = findHeightIntervalAvgValue(myPoints, heightInf, heightSup, maxPointsZ);
         }
         myIntervalsHeight.push_back((heightSup + heightInf) / float(2.));
@@ -1238,8 +1239,6 @@ bool preInterpolation(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit
         else
             mySettings->setPrecipitationAllZero(false);
     }
-
-
 
     if (mySettings->getUseBestDetrending())
         bestDetrending(myVar, myMeteoPoints, nrMeteoPoints, myPoints, mySettings, myTime);
