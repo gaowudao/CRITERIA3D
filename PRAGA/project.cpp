@@ -1318,9 +1318,15 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
 bool Project::elabSaveClima(bool isMeteoGrid)
 {
 
-    //test
-    parserElaboration(clima);
-    return true;
+    if (parserElaboration(clima))
+    {
+        elaboration(isMeteoGrid, false);
+    }
+    else
+    {
+        errorString = "parser elaboration error";
+        return false;
+    }
 }
 
 
