@@ -603,9 +603,9 @@ QList<Crit3DMeteoPoint> Crit3DMeteoPointsDbHandler::getPropertiesFromDb(const gi
                 meteoPoint.region = qry.value("region").toString().toStdString();
                 meteoPoint.province = qry.value("province").toString().toStdString();
                 meteoPoint.municipality = qry.value("municipality").toString().toStdString();
-                meteoPoint.isUTC = qry.value("is_active").toBool();
+                meteoPoint.active = qry.value("is_active").toBool();
                 meteoPoint.isUTC = qry.value("is_utc").toBool();
-
+                meteoPoint.lapseRateCode = (lapseRateCodeType)(qry.value("orog_code").toInt());
                 meteoPointsList << meteoPoint;
             }
         }

@@ -16,6 +16,8 @@
         #include "quality.h"
     #endif
 
+    enum lapseRateCodeType {primary, secondary, supplemental};
+
     struct TObsDataH {
         Crit3DDate date;
         float* tAir;
@@ -99,7 +101,7 @@
         bool selected;
 
         std::vector <float> proxyValues;
-        int lapseRateCode;
+        lapseRateCodeType lapseRateCode;
         int indexTopoDistMap;
 
         Crit3DMeteoPoint();
