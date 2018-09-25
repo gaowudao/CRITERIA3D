@@ -45,7 +45,7 @@ namespace dbClimatePoint
     void createAnnualTable(QSqlDatabase db)
     {
         QSqlQuery qry(db);
-        qry.prepare("CREATE TABLE IF NOT EXISTS `climate_annual` (id_point TEXT, years INTEGER);");
+        qry.prepare("CREATE TABLE IF NOT EXISTS `climate_annual` (id_point TEXT);");
         if( !qry.exec() )
         {
             qDebug() << qry.lastError();
