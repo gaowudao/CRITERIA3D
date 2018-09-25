@@ -21,7 +21,8 @@
         int indexTopoDistMap;
         std::vector <float> proxyValues;
 
-        float getProxy(unsigned int pos);
+        float getProxyValue(unsigned int pos);
+        std::vector <float> Crit3DInterpolationDataPoint::getProxyValues();
 
         Crit3DInterpolationDataPoint();
     };

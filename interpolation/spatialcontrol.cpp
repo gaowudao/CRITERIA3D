@@ -76,8 +76,7 @@ bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nr
 
     for (int i = 0; i < nrMeteoPoints; i++)
     {
-        if (meteoPoints[i].id == "5512")
-            int a = 0;
+        myProxyValues = meteoPoints[i].getProxyValues();
 
         meteoPoints[i].residual = NODATA;
 
@@ -279,7 +278,7 @@ bool passDataToInterpolation(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
             myPoint.proxyValues = meteoPoints[i].proxyValues;
             myPoint.isActive = true;
 
-            if (xMin = NODATA)
+            if (xMin == NODATA)
             {
                 xMin = (float)myPoint.point->utm.x;
                 xMax = (float)myPoint.point->utm.x;

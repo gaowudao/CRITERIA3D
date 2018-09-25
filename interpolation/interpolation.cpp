@@ -23,9 +23,7 @@
     ftomei@arpae.it
 */
 
-
 #include <stdlib.h>
-
 #include <math.h>
 #include <vector>
 
@@ -341,7 +339,7 @@ void regressionSimple(std::vector <Crit3DInterpolationDataPoint> &myPoints,
         myProxyValue = NODATA;
         if (myPoint.isActive)
         {
-            myProxyValue = myPoint.getProxy(proxyPosition);
+            myProxyValue = myPoint.getProxyValue(proxyPosition);
             if (myProxyValue != NODATA)
             {
                 myValues.push_back(myPoint.value);
@@ -413,7 +411,7 @@ float findHeightIntervalAvgValue(std::vector <Crit3DInterpolationDataPoint> &myP
     for (myIndex = 0; myIndex < long(myPoints.size()); myIndex++)
          if (myPoints.at(myIndex).point->z != NODATA && myPoints.at(myIndex).isActive)
             if (myPoints.at(myIndex).point->z >= heightInf && myPoints.at(myIndex).point->z <= heightSup)
-            {
+            {                    
                 myValue = (myPoints.at(myIndex)).value;
                 if (myValue != NODATA)
                 {
@@ -800,11 +798,11 @@ float computeShepard(vector <Crit3DInterpolationDataPoint> myPoints, Crit3DInter
 
     if (neighbourPoints.size() <= SHEPARD_MIN_NRPOINTS)
     {
-        sortPointsByDistance(SHEPARD_MIN_NRPOINTS, myPoints, validPoints);
+        sortPointsByDistance(SHEPARD_MIN_NRPOINTS + 1, myPoints, validPoints);
         if (validPoints.size() > SHEPARD_MIN_NRPOINTS)
         {
-            validPoints.pop_back();
             radius = validPoints.at(SHEPARD_MIN_NRPOINTS).distance;
+            validPoints.pop_back();
         }
         else
             radius = validPoints.at(validPoints.size()-1).distance + 1;
@@ -812,8 +810,8 @@ float computeShepard(vector <Crit3DInterpolationDataPoint> myPoints, Crit3DInter
     else if (neighbourPoints.size() > SHEPARD_MAX_NRPOINTS)
     {
         sortPointsByDistance(SHEPARD_MAX_NRPOINTS + 1, neighbourPoints, validPoints);
-        validPoints.pop_back();
         radius = validPoints.at(SHEPARD_MAX_NRPOINTS).distance;
+        validPoints.pop_back();
     }
     else
     {
@@ -878,7 +876,7 @@ float computeShepard(vector <Crit3DInterpolationDataPoint> myPoints, Crit3DInter
 
     result = 0;
     for (i=0; i<validPoints.size(); i++)
-        result += weight.at(i) * (validPoints.at(i).value + validPoints.at(i).detrendValue);
+        result += weight.at(i) * (validPoints.at(i).value - validPoints.at(i).detrendValue);
 
     return result;
 }
@@ -897,7 +895,7 @@ float inverseDistanceWeighted(vector <Crit3DInterpolationDataPoint> &myPointList
             weight = myPoint.distance / 10000. ;
             weight = fabs(1 / (weight * weight * weight));
             sumWeights += weight;
-            sum += (myPoint.value + myPoint.detrendValue) * weight;
+            sum += (myPoint.value - myPoint.detrendValue) * weight;
         }
     }
 
@@ -990,7 +988,7 @@ void detrendPoints(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DI
         detrendValue = 0;
         myPoint = &(myPoints.at(myIndex));
 
-        proxyValue = myPoint->getProxy(pos);
+        proxyValue = myPoint->getProxyValue(pos);
 
         if (ProxyVarNames.at(myProxy->getName()) == height)
         {

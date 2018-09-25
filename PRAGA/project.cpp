@@ -333,6 +333,8 @@ bool Project::readProxies()
                     isGridLoaded = true;
                     myProxy.setGrid(&DTM);
                 }
+                else
+                    isGridLoaded = loadProxyGrid(&myProxy);
             }
             else
                 isGridLoaded = loadProxyGrid(&myProxy);
@@ -352,7 +354,6 @@ bool Project::readProxies()
             }
 
             interpolationSettings.addProxy(myProxy, isActive);
-
 
             if (isGridLoaded && meteoPointsDbHandler != NULL)
             {

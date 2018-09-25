@@ -638,3 +638,20 @@ float Crit3DMeteoPoint::getMeteoPointValue(const Crit3DTime& myTime, meteoVariab
     else
         return NODATA;
 }
+
+float Crit3DMeteoPoint::getProxyValue(unsigned int pos)
+{
+    if (pos < proxyValues.size())
+        return proxyValues.at(pos);
+    else
+        return NODATA;
+}
+
+std::vector <float> Crit3DMeteoPoint::getProxyValues()
+{
+    std::vector <float> myValues;
+    for (int i=0; i < proxyValues.size(); i++)
+        myValues.push_back(getProxyValue(i));
+
+    return myValues;
+}

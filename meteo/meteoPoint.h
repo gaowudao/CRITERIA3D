@@ -131,6 +131,8 @@
 
         float getMeteoPointValue(const Crit3DTime& myTime, meteoVariable myVar);
 
+        float getProxyValue(unsigned int pos);
+        std::vector <float> getProxyValues();
     };
 
 
