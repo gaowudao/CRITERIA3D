@@ -876,7 +876,7 @@ float computeShepard(vector <Crit3DInterpolationDataPoint> myPoints, Crit3DInter
 
     result = 0;
     for (i=0; i<validPoints.size(); i++)
-        result += weight.at(i) * (validPoints.at(i).value - validPoints.at(i).detrendValue);
+        result += weight.at(i) * validPoints.at(i).value;
 
     return result;
 }
@@ -895,7 +895,7 @@ float inverseDistanceWeighted(vector <Crit3DInterpolationDataPoint> &myPointList
             weight = myPoint.distance / 10000. ;
             weight = fabs(1 / (weight * weight * weight));
             sumWeights += weight;
-            sum += (myPoint.value - myPoint.detrendValue) * weight;
+            sum += myPoint.value * weight;
         }
     }
 
@@ -990,7 +990,7 @@ void detrendPoints(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DI
 
         proxyValue = myPoint->getProxyValue(pos);
 
-        if (ProxyVarNames.at(myProxy->getName()) == height)
+        if (myProxy->getProxyPragaName() == height)
         {
             if (proxyValue != NODATA)
             {
@@ -1018,7 +1018,7 @@ void detrendPoints(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DI
                     detrendValue = proxyValue * myProxy->getRegressionSlope();
         }
 
-        myPoint->detrendValue = detrendValue;
+        myPoint->value -= detrendValue;
     }
 }
 
@@ -1089,9 +1089,6 @@ void detrending(std::vector <Crit3DInterpolationDataPoint> &myPoints,
                 Crit3DProxyCombination myCombination, Crit3DInterpolationSettings* mySettings,
                 meteoVariable myVar, Crit3DTime myTime)
 {
-    for (long myIndex = 0; myIndex < long(myPoints.size()); myIndex++)
-        myPoints.at(myIndex).detrendValue = 0;
-
     if (! getUseDetrendingVar(myVar)) return;
 
     Crit3DProxyInterpolation* myProxy;
