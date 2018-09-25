@@ -31,12 +31,14 @@ INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../utilities ../interpolati
 SOURCES += \
     climate.cpp \
     elaborationSettings.cpp \
-    crit3dClimate.cpp
+    crit3dClimate.cpp \
+    dbClimate.cpp
 
 HEADERS += \
     climate.h \
     elaborationSettings.h \
-    crit3dClimate.h
+    crit3dClimate.h \
+    dbClimate.h
 unix {
     target.path = /usr/lib
     INSTALLS += target
