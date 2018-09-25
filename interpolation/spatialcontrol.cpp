@@ -64,7 +64,8 @@ float findThreshold(meteoVariable myVar, float value, float stdDev, float nrStdD
 
 
 bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
-                      std::vector <Crit3DInterpolationDataPoint> &interpolationPoints, Crit3DInterpolationSettings* settings)
+                      std::vector <Crit3DInterpolationDataPoint> &interpolationPoints, Crit3DInterpolationSettings* settings,
+                      bool excludeSupplemental)
 {
 
     if (myVar == noMeteoVar) return false;
@@ -73,6 +74,7 @@ bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nr
     interpolatedValue = NODATA;
     myValue = NODATA;
     std::vector <float> myProxyValues;
+    bool isValid;
 
     for (int i = 0; i < nrMeteoPoints; i++)
     {
@@ -80,7 +82,9 @@ bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nr
 
         meteoPoints[i].residual = NODATA;
 
-        if (meteoPoints[i].quality == quality::accepted)
+        isValid = (! excludeSupplemental || checkLapseRateCode(meteoPoints[i].lapseRateCode, settings->getUseLapseRateCode(), false));
+
+        if (isValid && meteoPoints[i].quality == quality::accepted)
         {
             myValue = meteoPoints[i].currentValue;
 
@@ -153,7 +157,7 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
             return;
 
         // compute residuals
-        if (! computeResiduals(myVar, meteoPoints, nrMeteoPoints, myInterpolationPoints, settings))
+        if (! computeResiduals(myVar, meteoPoints, nrMeteoPoints, myInterpolationPoints, settings, false))
             return;
 
         for (i = 0; i < nrMeteoPoints; i++)

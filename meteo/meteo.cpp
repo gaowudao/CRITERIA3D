@@ -475,3 +475,11 @@ frequencyType getFrequency(meteoVariable myVar)
     else
         return hourly;
 }
+
+bool checkLapseRateCode(lapseRateCodeType myType, bool useLapseRateCode, bool useSupplemental)
+{
+    if (useSupplemental)
+        return (! useLapseRateCode || myType == primary || myType == supplemental);
+    else
+        return (! useLapseRateCode || myType == primary || myType == secondary);
+}

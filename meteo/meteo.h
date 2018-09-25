@@ -16,6 +16,8 @@
     #define FIELD_METEO_VARIABLE "id_variable"
     #define FIELD_METEO_VARIABLE_NAME "variable"
 
+    enum lapseRateCodeType {primary, secondary, supplemental};
+
     enum meteoVariable {airTemperature, dailyAirTemperatureMin, dailyAirTemperatureMax, dailyAirTemperatureAvg, dailyAirTemperatureRange,
                     precipitation, dailyPrecipitation,
                     airRelHumidity, dailyAirRelHumidityMin, dailyAirRelHumidityMax, dailyAirRelHumidityAvg,
@@ -173,5 +175,6 @@
 
     meteoVariable getKeyMeteoVarMeteoMap(std::map<meteoVariable,std::string> map, std::string value);
 
+    bool checkLapseRateCode(lapseRateCodeType myType, bool useLapseRateCode, bool useSupplemental);
 
 #endif // METEO_H

@@ -40,26 +40,26 @@
 using namespace std;
 
 
-float getMinHeight(std::vector <Crit3DInterpolationDataPoint> &myInterpolationPoints)
+float getMinHeight(std::vector <Crit3DInterpolationDataPoint> &myPoints, bool useLapseRateCode)
 {
     float myZmin = NODATA;
 
-    for (long i = 0; i < long(myInterpolationPoints.size()); i++)
-        if (myInterpolationPoints.at(i).point->z != NODATA)
-            if (myZmin == NODATA || myInterpolationPoints.at(i).point->z < myZmin)
-                myZmin = float(myInterpolationPoints.at(i).point->z);
+    for (long i = 0; i < long(myPoints.size()); i++)
+        if (myPoints.at(i).point->z != NODATA && myPoints.at(i).isActive && checkLapseRateCode(myPoints.at(i).lapseRateCode, useLapseRateCode, true))
+            if (myZmin == NODATA || myPoints.at(i).point->z < myZmin)
+                myZmin = float(myPoints.at(i).point->z);
     return myZmin;
 }
 
-float getMaxHeight(std::vector <Crit3DInterpolationDataPoint> &myInterpolationPoints)
+float getMaxHeight(std::vector <Crit3DInterpolationDataPoint> &myPoints, bool useLapseRateCode)
 {
     float zMax;
     zMax = NODATA;
 
-    for (long i = 1; i < long(myInterpolationPoints.size()); i++)
-        if (myInterpolationPoints.at(i).value != NODATA && myInterpolationPoints.at(i).isActive)
-            if (zMax == NODATA || (myInterpolationPoints.at(i)).point->z > zMax)
-                zMax = float(myInterpolationPoints.at(i).point->z);
+    for (long i = 1; i < long(myPoints.size()); i++)
+        if (myPoints.at(i).value != NODATA && myPoints.at(i).isActive && checkLapseRateCode(myPoints.at(i).lapseRateCode, useLapseRateCode, true))
+            if (zMax == NODATA || (myPoints.at(i)).point->z > zMax)
+                zMax = float(myPoints.at(i).point->z);
 
 
     return zMax;
@@ -171,9 +171,6 @@ float shepardFindRadius(Crit3DInterpolationSettings* mySettings,
     }
 }
 
-bool checkLapseRateCode()
-{ return true;}
-
 float topographicDistance(float X1, float Y1, float Z1, float X2, float Y2, float Z2, float distance,
                           Crit3DInterpolationSettings* mySettings)
 {
@@ -236,7 +233,7 @@ void computeDistances(vector <Crit3DInterpolationDataPoint> &myPoints,  Crit3DIn
 {
     for (unsigned long i = 0; i < myPoints.size() ; i++)
     {
-        if (excludeSupplemental && ! checkLapseRateCode())
+        if (excludeSupplemental && ! checkLapseRateCode(myPoints.at(i).lapseRateCode, mySettings->getUseLapseRateCode(), false))
             myPoints.at(i).distance = 0;
         else
         {
@@ -318,7 +315,7 @@ bool neighbourhoodVariability(std::vector <Crit3DInterpolationDataPoint> &myInte
 }
 
 
-void regressionSimple(std::vector <Crit3DInterpolationDataPoint> &myPoints,
+void regressionSimple(std::vector <Crit3DInterpolationDataPoint> &myPoints, bool useLapseRateCode,
                       int proxyPosition, bool isZeroIntercept, float* myCoeff, float* myIntercept, float* myR2)
 {
     long i;
@@ -337,7 +334,7 @@ void regressionSimple(std::vector <Crit3DInterpolationDataPoint> &myPoints,
     {
         myPoint = myPoints.at(i);
         myProxyValue = NODATA;
-        if (myPoint.isActive)
+        if (myPoint.isActive && checkLapseRateCode(myPoint.lapseRateCode, useLapseRateCode, true))
         {
             myProxyValue = myPoint.getProxyValue(proxyPosition);
             if (myProxyValue != NODATA)
@@ -358,7 +355,7 @@ bool regressionGeneric(std::vector <Crit3DInterpolationDataPoint> &myPoints, Cri
 {
     float q, m, r2;
 
-    regressionSimple(myPoints, proxyPos, isZeroIntercept, &m, &q, &r2);
+    regressionSimple(myPoints, mySettings->getUseLapseRateCode(), proxyPos, isZeroIntercept, &m, &q, &r2);
     Crit3DProxyInterpolation* myProxy = mySettings->getProxy(proxyPos);
 
     myProxy->setRegressionSlope(m);
@@ -372,11 +369,12 @@ bool regressionSimpleT(std::vector <Crit3DInterpolationDataPoint> &myPoints, Cri
                        Crit3DTime myTime, meteoVariable myVar, int orogProxyPos)
 {
     float q, m, r2;
+    bool useLRCode = mySettings->getUseLapseRateCode();
 
     Crit3DProxyInterpolation* myProxyOrog = mySettings->getProxy(orogProxyPos);
     myProxyOrog->initializeOrography();
 
-    regressionSimple(myPoints, orogProxyPos, false, &m, &q, &r2);
+    regressionSimple(myPoints, useLRCode, orogProxyPos, false, &m, &q, &r2);
 
     if (r2 < mySettings->getMinRegressionR2())
         return false;
@@ -389,7 +387,7 @@ bool regressionSimpleT(std::vector <Crit3DInterpolationDataPoint> &myPoints, Cri
     {
         myProxyOrog->setInversionLapseRate(m);
 
-        float maxZ = minValue(getMaxHeight(myPoints), mySettings->getMaxHeightInversion());
+        float maxZ = minValue(getMaxHeight(myPoints, useLRCode), mySettings->getMaxHeightInversion());
         myProxyOrog->setLapseRateH1(maxZ);
         myProxyOrog->setRegressionSlope(mySettings->getCurrentClimateLapseRate(myVar, myTime));
         myProxyOrog->setInversionIsSignificative(true);
@@ -399,20 +397,19 @@ bool regressionSimpleT(std::vector <Crit3DInterpolationDataPoint> &myPoints, Cri
 }
 
 
-float findHeightIntervalAvgValue(std::vector <Crit3DInterpolationDataPoint> &myPoints,
+float findHeightIntervalAvgValue(bool useLapseRateCode, std::vector <Crit3DInterpolationDataPoint> &myPoints,
                                  float heightInf, float heightSup, float maxPointsZ)
 {
-    long myIndex;
     float myValue, mySum, nValues;
 
     mySum = 0.;
     nValues = 0;
 
-    for (myIndex = 0; myIndex < long(myPoints.size()); myIndex++)
-         if (myPoints.at(myIndex).point->z != NODATA && myPoints.at(myIndex).isActive)
-            if (myPoints.at(myIndex).point->z >= heightInf && myPoints.at(myIndex).point->z <= heightSup)
+    for (long i = 0; i < long(myPoints.size()); i++)
+         if (myPoints.at(i).point->z != NODATA && myPoints.at(i).isActive && checkLapseRateCode(myPoints.at(i).lapseRateCode, useLapseRateCode, true))
+            if (myPoints.at(i).point->z >= heightInf && myPoints.at(i).point->z <= heightSup)
             {                    
-                myValue = (myPoints.at(myIndex)).value;
+                myValue = (myPoints.at(i)).value;
                 if (myValue != NODATA)
                 {
                     mySum += myValue;
@@ -445,6 +442,8 @@ bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, 
     float DELTAZ_INI = 80.;
     float maxHeightInv = mySettings->getMaxHeightInversion();
 
+    bool useLRCode = mySettings->getUseLapseRateCode();
+
     Crit3DProxyInterpolation* myProxyOrog = mySettings->getProxy(orogProxyPos);
 
     mySignificativeR2 = maxValue(mySettings->getMinRegressionR2(), float(0.2));
@@ -460,8 +459,8 @@ bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, 
 
     myProxyOrog->setRegressionSlope(climateLapseRate);
 
-    maxPointsZ = getMaxHeight(myPoints);
-    heightInf = getMinHeight(myPoints);
+    maxPointsZ = getMaxHeight(myPoints, useLRCode);
+    heightInf = getMinHeight(myPoints, useLRCode);
 
     if (maxPointsZ == heightInf)
         return false;
@@ -480,7 +479,7 @@ bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, 
         while (myAvg == NODATA)
         {
             heightSup = heightSup + deltaZ;
-            myAvg = findHeightIntervalAvgValue(myPoints, heightInf, heightSup, maxPointsZ);
+            myAvg = findHeightIntervalAvgValue(useLRCode, myPoints, heightInf, heightSup, maxPointsZ);
         }
         myIntervalsHeight.push_back((heightSup + heightInf) / float(2.));
         myIntervalsValues.push_back(myAvg);
@@ -506,7 +505,7 @@ bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, 
 
     /*! create vectors below and above inversion */
     for (i = 0; i < long(myPoints.size()); i++)
-        if (myPoints.at(i).point->z != NODATA && myPoints.at(i).isActive)
+        if (myPoints.at(i).point->z != NODATA && checkLapseRateCode(myPoints.at(i).lapseRateCode, useLRCode, true))
         {
             if (myPoints.at(i).point->z <= myProxyOrog->getLapseRateH1())
             {
@@ -519,7 +518,6 @@ bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, 
                 myHeights2.push_back(float(myPoints.at(i).point->z));
             }
         }
-
 
     /*! create vectors of height intervals below and above inversion */
     for (i = 0; i < long(myIntervalsValues.size()); i++)
@@ -538,7 +536,7 @@ bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, 
     /*! only positive lapse rate*/
     if (myProxyOrog->getInversionIsSignificative() && myIntervalsValues1.size() == myIntervalsValues.size())
     {
-        regressionSimple(myPoints, orogProxyPos, false, &m, &q, &r2);
+        regressionSimple(myPoints, useLRCode, orogProxyPos, false, &m, &q, &r2);
 
         if (r2 >= mySignificativeR2)
         {
@@ -580,7 +578,7 @@ bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, 
     /*! inversion is not significant with data neither with intervals */
     if (r2_values < mySignificativeR2Inv && r2_intervals < mySignificativeR2Inv)
     {
-        regressionSimple(myPoints, orogProxyPos, false, &m, &q, &r2);
+        regressionSimple(myPoints, useLRCode, orogProxyPos, false, &m, &q, &r2);
 
         /*! case 0: regression with all data much significant */
         if (r2 >= 0.5)
@@ -628,7 +626,7 @@ bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, 
         lapseRateT1 = NODATA;
 
         /*! case 2: regression with data */
-        regressionSimple(myPoints, orogProxyPos, false, &m, &q, &r2);
+        regressionSimple(myPoints, useLRCode, orogProxyPos, false, &m, &q, &r2);
 
         if (r2 >= mySignificativeR2)
         {
@@ -1138,7 +1136,7 @@ void topographicDistanceOptimize(meteoVariable myVar,
 
     while (kz <= 256)
     {
-        if (computeResiduals(myVar, myMeteoPoints, nrMeteoPoints, interpolationPoints, mySettings))
+        if (computeResiduals(myVar, myMeteoPoints, nrMeteoPoints, interpolationPoints, mySettings, true))
         {
             avgError = computeErrorCrossValidation(myVar, myMeteoPoints, nrMeteoPoints, myTime);
             if (bestError = NODATA || avgError < bestError)
@@ -1156,7 +1154,7 @@ void topographicDistanceOptimize(meteoVariable myVar,
     bestError = NODATA;
     while (kh <= 1000000)
     {
-        if (computeResiduals(myVar, myMeteoPoints, nrMeteoPoints, interpolationPoints, mySettings))
+        if (computeResiduals(myVar, myMeteoPoints, nrMeteoPoints, interpolationPoints, mySettings, true))
         {
             avgError = computeErrorCrossValidation(myVar, myMeteoPoints, nrMeteoPoints, myTime);
             if (bestError = NODATA || avgError < bestError)
@@ -1198,7 +1196,7 @@ void bestDetrending(meteoVariable myVar,
             if (mySettings->getUseTAD())
                 topographicDistanceOptimize(myVar, myMeteoPoints, nrMeteoPoints, interpolationPoints, mySettings, myTime);
 
-            if (computeResiduals(myVar, myMeteoPoints, nrMeteoPoints, interpolationPoints, mySettings))
+            if (computeResiduals(myVar, myMeteoPoints, nrMeteoPoints, interpolationPoints, mySettings, true))
             {
                 avgError = computeErrorCrossValidation(myVar, myMeteoPoints, nrMeteoPoints, myTime);
                 if (avgError != NODATA && (minError = NODATA || avgError < minError))

@@ -16,8 +16,6 @@
         #include "quality.h"
     #endif
 
-    enum lapseRateCodeType {primary, secondary, supplemental};
-
     struct TObsDataH {
         Crit3DDate date;
         float* tAir;

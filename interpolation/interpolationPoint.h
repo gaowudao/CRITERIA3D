@@ -4,6 +4,9 @@
     #ifndef GIS_H
         #include "gis.h"
     #endif
+    #ifndef METEO_H
+        #include "meteo.h"
+    #endif
 
     class Crit3DInterpolationDataPoint {
     private:
@@ -16,14 +19,14 @@
         float distance;
         float deltaZ;
         float value;
-        int lapseRateCode;
+        lapseRateCodeType lapseRateCode;
         int indexTopoDistMap;
         std::vector <float> proxyValues;
 
+        Crit3DInterpolationDataPoint();
+
         float getProxyValue(unsigned int pos);
         std::vector <float> Crit3DInterpolationDataPoint::getProxyValues();
-
-        Crit3DInterpolationDataPoint();
     };
 
 #endif // INTERPOLATIONPOINT_H
