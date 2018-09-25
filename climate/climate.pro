@@ -29,14 +29,14 @@ win32:{
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../utilities ../interpolation ../meteo ../dbMeteoPoints ../dbMeteoGrid
 
 SOURCES += \
-    dbClimate.cpp \
     climate.cpp \
-    elaborationSettings.cpp
+    elaborationSettings.cpp \
+    crit3dClimate.cpp
 
 HEADERS += \
-    dbClimate.h \
     climate.h \
-    elaborationSettings.h
+    elaborationSettings.h \
+    crit3dClimate.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

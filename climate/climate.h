@@ -21,7 +21,7 @@
     #endif
 
     #ifndef DBCLIMATE_H
-        #include "dbClimate.h"
+        #include "crit3dClimate.h"
     #endif
 
 

@@ -3,7 +3,7 @@
 #include <QtSql>
 
 #include "commonConstants.h"
-#include "dbClimate.h"
+#include "crit3dClimate.h"
 
 
 Crit3DClimate::Crit3DClimate()
