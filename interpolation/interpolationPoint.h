@@ -26,7 +26,7 @@
         Crit3DInterpolationDataPoint();
 
         float getProxyValue(unsigned int pos);
-        std::vector <float> Crit3DInterpolationDataPoint::getProxyValues();
+        std::vector <float> getProxyValues();
     };
 
 #endif // INTERPOLATIONPOINT_H
