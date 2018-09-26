@@ -51,6 +51,14 @@ Project::Project()
 
 }
 
+void Project::copyInterpolationSettingsToQuality()
+{
+    //set common properties
+    qualityInterpolationSettings.setMinRegressionR2(interpolationSettings.getMinRegressionR2());
+    qualityInterpolationSettings.setUseLapseRateCode(interpolationSettings.getUseLapseRateCode());
+    qualityInterpolationSettings.setUseThermalInversion(interpolationSettings.getUseThermalInversion());
+}
+
 bool Project::readSettings()
 {
     //interpolation settings
@@ -107,6 +115,8 @@ bool Project::readSettings()
                 interpolationSettings.setUseDewPoint(settings->value("useDewPoint").toBool());
 
             settings->endGroup();
+
+            copyInterpolationSettingsToQuality();
         }
         if (group == "quality")
         {

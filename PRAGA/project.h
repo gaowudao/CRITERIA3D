@@ -96,6 +96,7 @@
         bool readSettings();
         bool checkProxySetting(QString group, std::string* name, std::string* grdName, std::string* table, std::string* field, bool *isActive);
         bool readProxies();
+        void copyInterpolationSettingsToQuality();
 
         void setCurrentDate(QDate myDate);
         void setCurrentHour(int myHour);

@@ -263,7 +263,7 @@ bool passDataToInterpolation(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
                             std::vector <Crit3DInterpolationDataPoint> &myInterpolationPoints,
                             Crit3DInterpolationSettings* mySettings)
 {
-    int myCounter = 0;
+    int nrValid = 0;
     float xMin=NODATA, xMax, yMin, yMax;
 
     myInterpolationPoints.clear();
@@ -279,6 +279,7 @@ bool passDataToInterpolation(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
             myPoint.point->utm.x = float(meteoPoints[i].point.utm.x);
             myPoint.point->utm.y = float(meteoPoints[i].point.utm.y);
             myPoint.point->z = float(meteoPoints[i].point.z);
+            myPoint.lapseRateCode = meteoPoints[i].lapseRateCode;
             myPoint.proxyValues = meteoPoints[i].proxyValues;
             myPoint.isActive = true;
 
@@ -298,13 +299,15 @@ bool passDataToInterpolation(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
             }
 
             myInterpolationPoints.push_back(myPoint);
-            myCounter++;
+
+            if (checkLapseRateCode(myPoint.lapseRateCode, mySettings->getUseLapseRateCode(), false))
+                nrValid++;
         }
     }
 
-    if (myCounter > 0)
+    if (nrValid > 0)
     {
-        mySettings->computeShepardInitialRadius((xMax - xMin)*(yMax-yMin), myCounter);
+        mySettings->computeShepardInitialRadius((xMax - xMin)*(yMax-yMin), nrValid);
         return true;
     }
     else
