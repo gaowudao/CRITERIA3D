@@ -23,21 +23,6 @@ SaveClimaLayout::SaveClimaLayout()
 void SaveClimaLayout::addElab()
 {
 
-//    qInfo() << "firstYear " << firstYear;
-//    qInfo() << "lastYear " << lastYear;
-
-//    qInfo() << "variable " << variable;
-
-//    qInfo() << "period " << period;
-//    qInfo() << "genericPeriodStartDay " << genericPeriodStartDay;
-//    qInfo() << "genericPeriodStartMonth " << genericPeriodStartMonth;
-//    qInfo() << "genericPeriodEndDay " << genericPeriodEndDay;
-//    qInfo() << "genericPeriodEndMonth " << genericPeriodEndMonth;
-//    qInfo() << "genericPeriodNYear " << genericNYear;
-//    qInfo() << "secondElab " << secondElab;
-//    qInfo() << "elab2Param " << elab2Param;
-//    qInfo() << "elab " << elab;
-//    qInfo() << "elab1Param " << elab1Param;
 
     QString elabAdded = firstYear + "-" + lastYear + "_" + variable + "_" + period;
     if (period == "Generic")
@@ -63,15 +48,30 @@ void SaveClimaLayout::addElab()
         elabAdded = elabAdded + "_" + elab1Param;
     }
 
-//    qInfo() << "elabAdded " << elabAdded;
-
     if (list.contains(elabAdded)!= 0)
     {
         return;
     }
 
-    list << elabAdded;
-    listView.addItem(elabAdded);
+    // order by Variable
+    int pos = -1;
+    for (int i = 0; i < list.size(); i++)
+    {
+        QString item = list.at(i);
+        if (item.contains(variable) == true)
+        {
+            pos = i;
+        }
+    }
+
+    pos = pos + 1;
+    if (pos == 0)
+    {
+        pos = list.size();
+    }
+
+    list.insert(pos, elabAdded);
+    listView.insertItem(pos, elabAdded);
 
 }
 

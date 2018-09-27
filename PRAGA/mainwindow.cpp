@@ -1331,18 +1331,6 @@ void MainWindow::on_actionClimate_meteo_points_triggered()
         if (compDialog.result() != QDialog::Accepted)
             return;
 
-//        if (!myProject.elaboration(isMeteoGrid, isAnomaly))
-//        {
-//            qInfo() << "elaboration error " << endl;
-//            myProject.logError();
-//        }
-//        else
-//        {
-//            showElabResult(true, isMeteoGrid, isAnomaly);
-//        }
-
-//        if (compDialog.result() == QDialog::Accepted)
-//            on_actionElaboration_meteo_grid_triggered();
         QStringList listElab = compDialog.getElabSaveList();
         for (int i = 0; i < listElab.size(); i++)
         {
