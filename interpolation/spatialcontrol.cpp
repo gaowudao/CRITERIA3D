@@ -65,7 +65,7 @@ float findThreshold(meteoVariable myVar, float value, float stdDev, float nrStdD
 
 bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
                       std::vector <Crit3DInterpolationDataPoint> &interpolationPoints, Crit3DInterpolationSettings* settings,
-                      bool excludeSupplemental)
+                      bool excludeOutsideDem, bool excludeSupplemental)
 {
 
     if (myVar == noMeteoVar) return false;
@@ -83,6 +83,7 @@ bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nr
         meteoPoints[i].residual = NODATA;
 
         isValid = (! excludeSupplemental || checkLapseRateCode(meteoPoints[i].lapseRateCode, settings->getUseLapseRateCode(), false));
+        isValid = (isValid && ! (! excludeOutsideDem || meteoPoints[i].isInsideDem));
 
         if (isValid && meteoPoints[i].quality == quality::accepted)
         {
@@ -157,7 +158,7 @@ void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, i
             return;
 
         // compute residuals
-        if (! computeResiduals(myVar, meteoPoints, nrMeteoPoints, myInterpolationPoints, settings, false))
+        if (! computeResiduals(myVar, meteoPoints, nrMeteoPoints, myInterpolationPoints, settings, false, false))
             return;
 
         for (i = 0; i < nrMeteoPoints; i++)
@@ -281,7 +282,6 @@ bool passDataToInterpolation(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
             myPoint.point->z = float(meteoPoints[i].point.z);
             myPoint.lapseRateCode = meteoPoints[i].lapseRateCode;
             myPoint.proxyValues = meteoPoints[i].proxyValues;
-            myPoint.isInsideDem = meteoPoints[i].isInsideDem;
             myPoint.isActive = true;
 
             if (xMin == NODATA)

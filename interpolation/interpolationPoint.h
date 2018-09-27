@@ -19,7 +19,6 @@
         float deltaZ;
         float value;
         lapseRateCodeType lapseRateCode;
-        bool isInsideDem;
         int indexTopoDistMap;
         std::vector <float> proxyValues;
 

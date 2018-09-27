@@ -27,7 +27,7 @@
     bool passDataToInterpolation(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
                              std::vector<Crit3DInterpolationDataPoint> &myInterpolationPoints, Crit3DInterpolationSettings* mySettings);
     bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
-                          std::vector <Crit3DInterpolationDataPoint> &interpolationPoints, Crit3DInterpolationSettings* settings, bool excludeSupplemental);
+                          std::vector <Crit3DInterpolationDataPoint> &interpolationPoints, Crit3DInterpolationSettings* settings, bool excludeOutsideDem, bool excludeSupplemental);
     float computeErrorCrossValidation(meteoVariable myVar, Crit3DMeteoPoint *myPoints, int nrMeteoPoints, const Crit3DTime& myTime);
 
 

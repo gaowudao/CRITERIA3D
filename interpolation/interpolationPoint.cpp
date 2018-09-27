@@ -37,7 +37,6 @@ Crit3DInterpolationDataPoint::Crit3DInterpolationDataPoint()
     value = NODATA;
     indexTopoDistMap = NODATA;
     lapseRateCode = primary;
-    isInsideDem = false;
     point = new gis::Crit3DPoint();
 }
 
