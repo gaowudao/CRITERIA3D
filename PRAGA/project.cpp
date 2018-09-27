@@ -280,6 +280,9 @@ bool Project::loadDEM(QString myFileName)
     interpolationSettings.setCurrentDEM(&DTM);
     qualityInterpolationSettings.setCurrentDEM(&DTM);
 
+    //check points position with respect to DEM
+    checkMeteoPointsDEM();
+
     return (true);
 }
 
@@ -805,6 +808,10 @@ bool Project::loadMeteoPointsDB(QString dbName)
     }
     readProxyValues();
 
+    //position with respect to DEM
+    if (DTM.isLoaded)
+        checkMeteoPointsDEM();
+
     return true;
 }
 
@@ -1009,16 +1016,19 @@ bool Project::loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate, b
         return true;
 }
 
-
-bool Project::readProxyValues()
+void Project::checkMeteoPointsDEM()
 {
-    if (nrMeteoPoints == 0)
-        return false;
+    for (int i=0; i < nrMeteoPoints; i++)
+        meteoPoints[i].isInsideDem = ! gis::isOutOfGridXY(meteoPoints[i].point.utm.x, meteoPoints[i].point.utm.y, DTM.header);
+}
+
+void Project::readProxyValues()
+{
+    if (meteoPointsDbHandler == NULL)
+        return;
 
     for (int i = 0; i < nrMeteoPoints; i++)
         meteoPointsDbHandler->readPointProxyValues(&meteoPoints[i]);
-
-    return true;
 }
 
 bool interpolationRaster(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings,

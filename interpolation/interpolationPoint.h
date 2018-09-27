@@ -11,7 +11,6 @@
     class Crit3DInterpolationDataPoint {
     private:
 
-
     public:
         gis::Crit3DPoint* point;
         int index;
@@ -20,6 +19,7 @@
         float deltaZ;
         float value;
         lapseRateCodeType lapseRateCode;
+        bool isInsideDem;
         int indexTopoDistMap;
         std::vector <float> proxyValues;
 

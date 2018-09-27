@@ -78,6 +78,7 @@
         double area;
         int latInt;
         int lonInt;
+        bool isInsideDem;
 
         bool isUTC;
         bool isForecast;
