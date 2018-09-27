@@ -5,7 +5,7 @@
 #include <QGridLayout>
 #include <QtWidgets>
 
-
+bool compareClimateElab(const QString &el1, const QString &el2);
 
 class SaveClimaLayout : public QDialog
 {

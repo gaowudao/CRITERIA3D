@@ -1,5 +1,16 @@
 #include "saveClimaLayout.h"
 
+bool compareClimateElab(const QString &el1, const QString &el2) {
+
+    QString var1 = el1.split("_")[1];
+    QString var2 = el2.split("_")[1];
+
+    if (var1 != var2)
+        return var1.compare(var2) < 0;
+
+    return (el1.mid(5, 9).toInt() - el1.left(4).toInt()) > (el2.mid(5, 9).toInt() - el2.left(4).toInt());
+}
+
 SaveClimaLayout::SaveClimaLayout()
 {
 
@@ -53,25 +64,11 @@ void SaveClimaLayout::addElab()
         return;
     }
 
-    // order by Variable
-    int pos = -1;
-    for (int i = 0; i < list.size(); i++)
-    {
-        QString item = list.at(i);
-        if (item.contains(variable) == true)
-        {
-            pos = i;
-        }
-    }
+    list.append(elabAdded);
+    qSort(list.begin(), list.end(), compareClimateElab);
 
-    pos = pos + 1;
-    if (pos == 0)
-    {
-        pos = list.size();
-    }
-
-    list.insert(pos, elabAdded);
-    listView.insertItem(pos, elabAdded);
+    listView.clear();
+    listView.addItems(list);
 
 }
 
@@ -124,9 +121,12 @@ void SaveClimaLayout::loadElabList()
           if (list.contains(line) == 0)
           {
             list << line;
-            listView.addItem(line);
           }
       }
+      qSort(list.begin(), list.end(), compareClimateElab);
+
+      listView.clear();
+      listView.addItems(list);
 
     }
     else
