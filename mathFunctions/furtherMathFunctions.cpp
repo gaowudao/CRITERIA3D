@@ -30,17 +30,31 @@
 #include "commonConstants.h"
 #include "furtherMathFunctions.h"
 
-std::string binary(unsigned x)
+
+char *decimal_to_binary(unsigned int n, int nrBits)
 {
-    // Warning: this breaks for numbers with more than 64 bits
-    char buffer[64];
-    char* p = buffer + 64;
-    do
-    {
-        *--p = '0' + (x & 1);
-    } while (x >>= 1);
-    return std::string(p, buffer + 64);
+   int d, count;
+   char *pointer;
+
+   count = 0;
+   pointer = (char*)malloc(nrBits);
+
+   for (short c = nrBits-1 ; c >= 0 ; c--)
+   {
+      d = n >> c;
+
+      if (d & 1)
+         *(pointer+count) = 1 + '0';
+      else
+         *(pointer+count) = 0 + '0';
+
+      count++;
+   }
+   *(pointer+count) = '\0';
+
+   return  pointer;
 }
+
 
 float blackBodyShape(TfunctionInput fInput)
 {

@@ -117,6 +117,7 @@
         std::vector <Crit3DProxyInterpolation> currentProxy;
         Crit3DProxyCombination optimalCombination;
         Crit3DProxyCombination selectedCombination;
+        Crit3DProxyCombination *currentCombination;
         int indexHeight;
 
         bool currentClimateParametersLoaded;
@@ -135,7 +136,6 @@
         int getProxyNr();
         void addProxy(Crit3DProxy myProxy, bool isActive_);
         float getProxyValue(unsigned int pos, std::vector <float> proxyValues);
-        Crit3DProxyCombination getCurrentCombination();
         bool getCombination(int combinationInteger, Crit3DProxyCombination* outCombination);
 
         void setClimateParameters(Crit3DClimateParameters* myParameters);
@@ -177,12 +177,16 @@
         float getTopoDist_Kz() const;
         void setTopoDist_Kz(float value);
         Crit3DProxyCombination getOptimalCombination() const;
+        Crit3DProxyCombination* getOptimalCombinationRef();
         void setOptimalCombination(const Crit3DProxyCombination &value);
         Crit3DProxyCombination getSelectedCombination() const;
+        Crit3DProxyCombination* getSelectedCombinationRef();
         void setSelectedCombination(const Crit3DProxyCombination &value);
         void setValueSelectedCombination(int index, bool isActive);
         int getIndexHeight() const;
         void setIndexHeight(int value);
+        Crit3DProxyCombination *getCurrentCombination() const;
+        void setCurrentCombination(Crit3DProxyCombination *value);
     };
 
 #endif // INTERPOLATIONSETTINGS_H

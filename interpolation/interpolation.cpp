@@ -1028,13 +1028,13 @@ float retrend(meteoVariable myVar, vector <float> myProxyValues, Crit3DInterpola
     float retrendValue = 0.;
     float myProxyValue;
     Crit3DProxyInterpolation* myProxy;
-    Crit3DProxyCombination myCombination = mySettings->getCurrentCombination();
+    Crit3DProxyCombination* myCombination = mySettings->getCurrentCombination();
 
     for (int pos=0; pos < mySettings->getProxyNr(); pos++)
     {
         myProxy = mySettings->getProxy(pos);
 
-        if (myCombination.getValue(pos) && myProxy->getIsSignificant())
+        if (myCombination->getValue(pos) && myProxy->getIsSignificant())
         {
             myProxyValue = mySettings->getProxyValue(pos, myProxyValues);
 
@@ -1066,12 +1066,13 @@ float retrend(meteoVariable myVar, vector <float> myProxyValues, Crit3DInterpola
     return retrendValue;
 }
 
-bool regressionOrography(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings,
+bool regressionOrography(std::vector <Crit3DInterpolationDataPoint> &myPoints,
+                         Crit3DProxyCombination myCombination, Crit3DInterpolationSettings* mySettings,
                          Crit3DTime myTime, meteoVariable myVar, int orogProxyPos)
 {
     if (getUseDetrendingVar(myVar))
     {
-        if (mySettings->getUseThermalInversion())
+        if (myCombination.getUseThermalInversion())
             return regressionOrographyT(myPoints, mySettings, myTime, myVar, orogProxyPos, true);
         else
             return regressionSimpleT(myPoints, mySettings, myTime, myVar, orogProxyPos);
@@ -1100,7 +1101,7 @@ void detrending(std::vector <Crit3DInterpolationDataPoint> &myPoints,
 
             if (myProxy->getProxyPragaName() == height)
             {
-                if (regressionOrography(myPoints, mySettings, myTime, myVar, pos))
+                if (regressionOrography(myPoints, myCombination, mySettings, myTime, myVar, pos))
                 {
                     myProxy->setIsSignificant(true);
                     detrendPoints(myPoints, mySettings, myVar, pos);
@@ -1182,8 +1183,9 @@ void bestDetrending(meteoVariable myVar,
     float avgError, minError;
     int proxyNr = mySettings->getProxyNr();
     Crit3DProxyCombination myCombination, bestCombination;
+    myCombination = mySettings->getSelectedCombination();
 
-    nrCombination = 2 ^ (proxyNr + 1);
+    nrCombination = (short)pow(2, (proxyNr + 1));
 
     minError = NODATA;
 
@@ -1199,7 +1201,7 @@ void bestDetrending(meteoVariable myVar,
             if (computeResiduals(myVar, myMeteoPoints, nrMeteoPoints, interpolationPoints, mySettings, true))
             {
                 avgError = computeErrorCrossValidation(myVar, myMeteoPoints, nrMeteoPoints, myTime);
-                if (avgError != NODATA && (minError = NODATA || avgError < minError))
+                if (avgError != NODATA && (minError == NODATA || avgError < minError))
                 {
                     minError = avgError;
                     bestCombinationIndex = i;
@@ -1234,12 +1236,17 @@ bool preInterpolation(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit
     }
 
     if (mySettings->getUseBestDetrending())
+    {
         bestDetrending(myVar, myMeteoPoints, nrMeteoPoints, myPoints, mySettings, myTime);
+        mySettings->setCurrentCombination(mySettings->getOptimalCombinationRef());
+    }
     else
+    {
         detrending(myPoints, mySettings->getSelectedCombination(), mySettings, myVar, myTime);
-
-    if (! mySettings->getUseBestDetrending() && mySettings->getUseTAD())
-        topographicDistanceOptimize(myVar, myMeteoPoints, nrMeteoPoints, myPoints, mySettings, myTime);
+        mySettings->setCurrentCombination(mySettings->getSelectedCombinationRef());
+        if (mySettings->getUseTAD())
+            topographicDistanceOptimize(myVar, myMeteoPoints, nrMeteoPoints, myPoints, mySettings, myTime);
+    }
 
     return (true);
 }
@@ -1293,13 +1300,13 @@ std::vector <float> getProxyValuesXY(gis::Crit3DUtmPoint myPoint, Crit3DInterpol
     gis::Crit3DRasterGrid* proxyGrid;
 
     myValues.resize(mySettings->getProxyNr());
-    Crit3DProxyCombination myCombination = mySettings->getCurrentCombination();
+    Crit3DProxyCombination* myCombination = mySettings->getCurrentCombination();
 
     for (unsigned int i=0; i < myValues.size(); i++)
     {
         myValues.at(i) = NODATA;
 
-        if (myCombination.getValue(i))
+        if (myCombination->getValue(i))
         {
             proxyGrid = mySettings->getProxy(i)->getGrid();
             if (proxyGrid != NULL && proxyGrid->isLoaded)

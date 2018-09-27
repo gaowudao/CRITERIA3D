@@ -7,8 +7,8 @@
 enum estimateFunction {FUNCTION_CODE_SPHERICAL, FUNCTION_CODE_LINEAR, FUNCTION_CODE_PARABOLIC,
                        FUNCTION_CODE_EXPONENTIAL, FUNCTION_CODE_LOGARITMIC, TWOPARAMETERSPOLYNOMIAL};
 
-float errorFunctionPrimitive(float x);
-std::string binary(unsigned x);
+    float errorFunctionPrimitive(float x);
+    char *decimal_to_binary(unsigned int n, int nrBits);
 
     struct TfunctionInput{
         float x ;

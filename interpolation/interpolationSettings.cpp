@@ -138,6 +138,11 @@ Crit3DProxyCombination Crit3DInterpolationSettings::getOptimalCombination() cons
     return optimalCombination;
 }
 
+Crit3DProxyCombination* Crit3DInterpolationSettings::getOptimalCombinationRef()
+{
+    return &optimalCombination;
+}
+
 void Crit3DInterpolationSettings::setOptimalCombination(const Crit3DProxyCombination &value)
 {
     optimalCombination = value;
@@ -146,6 +151,11 @@ void Crit3DInterpolationSettings::setOptimalCombination(const Crit3DProxyCombina
 Crit3DProxyCombination Crit3DInterpolationSettings::getSelectedCombination() const
 {
     return selectedCombination;
+}
+
+Crit3DProxyCombination* Crit3DInterpolationSettings::getSelectedCombinationRef()
+{
+    return &selectedCombination;
 }
 
 void Crit3DInterpolationSettings::setSelectedCombination(const Crit3DProxyCombination &value)
@@ -166,6 +176,16 @@ int Crit3DInterpolationSettings::getIndexHeight() const
 void Crit3DInterpolationSettings::setIndexHeight(int value)
 {
     indexHeight = value;
+}
+
+void Crit3DInterpolationSettings::setCurrentCombination(Crit3DProxyCombination *value)
+{
+    currentCombination = value;
+}
+
+Crit3DProxyCombination *Crit3DInterpolationSettings::getCurrentCombination() const
+{
+    return currentCombination;
 }
 
 Crit3DInterpolationSettings::Crit3DInterpolationSettings()
@@ -200,6 +220,8 @@ void Crit3DInterpolationSettings::initialize()
     indexPointCV = NODATA;
 
     currentClimateParametersLoaded = false;
+    if (currentCombination == NULL)
+        currentCombination = new Crit3DProxyCombination();
 }
 
 std::string getKeyStringInterpolationMethod(TInterpolationMethod value)
@@ -248,7 +270,10 @@ void Crit3DInterpolationSettings::setInterpolationMethod(TInterpolationMethod my
 { interpolationMethod = myValue;}
 
 void Crit3DInterpolationSettings::setUseThermalInversion(bool myValue)
-{ useThermalInversion = myValue;}
+{
+    useThermalInversion = myValue;
+    selectedCombination.setUseThermalInversion(myValue);
+}
 
 void Crit3DInterpolationSettings::setUseTAD(bool myValue)
 { useTAD = myValue;}
@@ -424,14 +449,6 @@ float Crit3DInterpolationSettings::getProxyValue(unsigned int pos, std::vector <
         return NODATA;
 }
 
-Crit3DProxyCombination Crit3DInterpolationSettings::getCurrentCombination()
-{
-    if (getUseBestDetrending())
-        return optimalCombination;
-    else
-        return selectedCombination;
-}
-
 void Crit3DInterpolationSettings::computeShepardInitialRadius(float area, int nrPoints)
 {
     setShepardInitialRadius(sqrt((SHEPARD_AVG_NRPOINTS * area) / ((float)PI * nrPoints)));
@@ -479,22 +496,20 @@ void Crit3DProxyCombination::setUseThermalInversion(bool value)
 
 bool Crit3DInterpolationSettings::getCombination(int combinationInteger, Crit3DProxyCombination* outCombination)
 {
-    std::string binaryString = binary(combinationInteger);
+    *outCombination = selectedCombination;
+    std::string binaryString = decimal_to_binary(combinationInteger, getProxyNr()+1);
 
     int indexHeight = getIndexHeight();
 
     // avoid combinations with inversion (last index) and without orography
-//    if (combinationInteger % 2)
-//        if (indexHeight == NODATA || binaryString[indexHeight] == "0")
-//            return false;
+    if (combinationInteger % 2 == 1)
+        if (indexHeight == NODATA || binaryString[indexHeight] == '0')
+            return false;
 
-//    outCombination = new Crit3DProxyCombination();
+    for (int i=0; i < binaryString.length()-1; i++)
+        outCombination->setValue(i, binaryString[i] == '1' && selectedCombination.getValue(i));
 
-//    for (int i=0; i<binaryString.length(); i++)
-//        if (binaryString[i] == "1")
-//        {
-//            outCombination->getIndexProxy().push_back(selectedCombination.getIndexProxy().at(i));
-//        }
+    outCombination->setUseThermalInversion(binaryString.at(binaryString.length()-1) == '1' && selectedCombination.getUseThermalInversion());
 
     return true;
 }

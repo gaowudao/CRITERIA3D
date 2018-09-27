@@ -156,6 +156,27 @@ namespace statistics
         return sum / nrValidValues;
     }
 
+    float meanAbsoluteError(std::vector <float> measured, std::vector <float> simulated)
+    {
+        float sum=0.;
+        long nrValidValues = 0;
+
+        if (measured.size() != simulated.size()) return NODATA;
+
+        for (unsigned int i=0; i < measured.size(); i++)
+        {
+            if ((measured.at(i) != NODATA) && (simulated.at(i) != NODATA))
+            {
+                sum += fabs(measured.at(i)-simulated.at(i));
+                nrValidValues++;
+            }
+        }
+
+        if (nrValidValues == 0) return NODATA;
+
+        return sum / nrValidValues;
+    }
+
     float coefficientOfVariation(float *measured , float *simulated , int nrData)
     {
         double sigma=0;

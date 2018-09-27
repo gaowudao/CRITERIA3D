@@ -116,7 +116,6 @@ bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nr
 
 float computeErrorCrossValidation(meteoVariable myVar, Crit3DMeteoPoint* myPoints, int nrMeteoPoints, const Crit3DTime& myTime)
 {
-    return 0;
     std::vector <float> obsValues, estValues;
     float myValue, myEstimate, myResidual;
 
@@ -137,7 +136,8 @@ float computeErrorCrossValidation(meteoVariable myVar, Crit3DMeteoPoint* myPoint
     }
 
     if (obsValues.size() > 0)
-        return statistics::meanError(obsValues, estValues);
+        return statistics::meanAbsoluteError(obsValues, estValues);
+    else return NODATA;
 }
 
 void spatialQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
