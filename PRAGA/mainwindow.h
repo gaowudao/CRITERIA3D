@@ -141,7 +141,7 @@
         bool loadMeteoPointsDB(QString dbName);
         bool loadMeteoGridDB(QString xmlName);
         void setCurrentRaster(gis::Crit3DRasterGrid *myRaster);
-        void interpolateRasterGUI();
+        void interpolateDemGUI();
         void interpolateGridGUI();
         void showElabResult(bool updateColorSCale, bool isMeteoGrid, bool isAnomaly);
     };

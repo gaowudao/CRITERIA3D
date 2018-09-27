@@ -49,7 +49,6 @@
                                   float* devSt, float* devStDeltaZ, float* minDistance);
 
     float interpolate(std::vector<Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings *mySettings, meteoVariable myVar, float myX, float myY, float myZ, std::vector<float> myProxyValues, bool excludeSupplemental);
-    bool interpolationDem(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings,
-                            gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGrid& myDTM, meteoVariable myVar);
+    std::vector <float> getProxyValuesXY(gis::Crit3DUtmPoint myPoint, Crit3DInterpolationSettings* mySettings);
 
 #endif // INTERPOLATION_H

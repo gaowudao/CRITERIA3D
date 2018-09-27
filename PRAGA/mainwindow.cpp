@@ -640,11 +640,11 @@ void MainWindow::on_actionVariableQualitySpatial_triggered()
 }
 
 
-void MainWindow::interpolateRasterGUI()
+void MainWindow::interpolateDemGUI()
 {
     meteoVariable myVar = myProject.getCurrentVariable();
 
-    if (myProject.interpolationRasterMain(myVar,myProject.getCurrentTime(), &(myProject.dataRaster)))
+    if (myProject.interpolationDemMain(myVar,myProject.getCurrentTime(), &(myProject.dataRaster), true))
     {
         setColorScale(myVar, myProject.dataRaster.colorScale);
         setCurrentRaster(&(myProject.dataRaster));
@@ -657,7 +657,7 @@ void MainWindow::interpolateRasterGUI()
 
 void MainWindow::interpolateGridGUI()
 {
-    if (myProject.interpolationMeteoGrid(myProject.getCurrentVariable(), myProject.getFrequency(), myProject.getCurrentTime(), &(myProject.dataRaster)))
+    if (myProject.interpolationMeteoGrid(myProject.getCurrentVariable(), myProject.getFrequency(), myProject.getCurrentTime(), &(myProject.dataRaster), true))
     {
         setCurrentRaster(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid));
         ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myProject.getCurrentVariable())));
@@ -1156,7 +1156,7 @@ void MainWindow::on_actionInterpolation_to_DTM_triggered()
     formRunInfo myInfo;
     myInfo.start("Interpolation...", 0);
 
-    interpolateRasterGUI();
+    interpolateDemGUI();
 
     myInfo.close();
 }

@@ -1171,14 +1171,15 @@ void topographicDistanceOptimize(meteoVariable myVar,
 
 }
 
-void bestDetrending(meteoVariable myVar,
+void optimalDetrending(meteoVariable myVar,
                     Crit3DMeteoPoint* &myMeteoPoints,
                     int nrMeteoPoints,
-                    std::vector <Crit3DInterpolationDataPoint> &interpolationPoints,
+                    std::vector <Crit3DInterpolationDataPoint> &outInterpolationPoints,
                     Crit3DInterpolationSettings* mySettings,
                     const Crit3DTime &myTime)
 {
 
+    std::vector <Crit3DInterpolationDataPoint> interpolationPoints;
     short i, nrCombination, bestCombinationIndex;
     float avgError, minError;
     int proxyNr = mySettings->getProxyNr();
@@ -1193,7 +1194,9 @@ void bestDetrending(meteoVariable myVar,
     {
         if (mySettings->getCombination(i, &myCombination))
         {
+            passDataToInterpolation(myMeteoPoints, nrMeteoPoints, interpolationPoints, mySettings);
             detrending(interpolationPoints, myCombination, mySettings, myVar, myTime);
+            mySettings->setCurrentCombination(&myCombination);
 
             if (mySettings->getUseTAD())
                 topographicDistanceOptimize(myVar, myMeteoPoints, nrMeteoPoints, interpolationPoints, mySettings, myTime);
@@ -1212,7 +1215,11 @@ void bestDetrending(meteoVariable myVar,
     }
 
     if (mySettings->getCombination(bestCombinationIndex, &bestCombination))
-        detrending(interpolationPoints, bestCombination, mySettings, myVar, myTime);
+    {
+        passDataToInterpolation(myMeteoPoints, nrMeteoPoints, outInterpolationPoints, mySettings);
+        detrending(outInterpolationPoints, bestCombination, mySettings, myVar, myTime);
+        mySettings->setOptimalCombination(bestCombination);
+    }
 
     return;
 }
@@ -1237,7 +1244,7 @@ bool preInterpolation(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit
 
     if (mySettings->getUseBestDetrending())
     {
-        bestDetrending(myVar, myMeteoPoints, nrMeteoPoints, myPoints, mySettings, myTime);
+        optimalDetrending(myVar, myMeteoPoints, nrMeteoPoints, myPoints, mySettings, myTime);
         mySettings->setCurrentCombination(mySettings->getOptimalCombinationRef());
     }
     else
@@ -1321,26 +1328,3 @@ std::vector <float> getProxyValuesXY(gis::Crit3DUtmPoint myPoint, Crit3DInterpol
     return myValues;
 }
 
-
-bool interpolationDem(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings,
-                        gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGrid& myDTM, meteoVariable myVar)
-{
-    if (! myGrid->initializeGrid(myDTM))
-        return (false);
-
-    float myX, myY;
-
-    for (long myRow = 0; myRow < myGrid->header->nrRows ; myRow++)
-        for (long myCol = 0; myCol < myGrid->header->nrCols; myCol++)
-        {
-            gis::getUtmXYFromRowColSinglePrecision(*myGrid, myRow, myCol, &myX, &myY);
-            float myZ = myDTM.value[myRow][myCol];
-            if (myZ != myGrid->header->flag)
-                myGrid->value[myRow][myCol] = interpolate(myPoints, mySettings, myVar, myX, myY, myZ, getProxyValuesXY(gis::Crit3DUtmPoint(myX, myY), mySettings), true);
-        }
-
-    if (! gis::updateMinMaxRasterGrid(myGrid))
-        return (false);
-
-    return (true);
-}

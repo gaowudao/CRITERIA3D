@@ -1021,7 +1021,47 @@ bool Project::readProxyValues()
     return true;
 }
 
-bool Project::interpolationRaster(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster)
+bool interpolationRaster(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings,
+                        gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGrid& myDTM, meteoVariable myVar, bool showInfo)
+{
+    if (! myGrid->initializeGrid(myDTM))
+        return (false);
+
+    formRunInfo myInfo;
+    int infoStep;
+    QString infoStr;
+
+    if (showInfo)
+    {
+        infoStr = "Interpolation on DEM...";
+        infoStep = myInfo.start(infoStr, myGrid->header->nrRows);
+    }
+
+    float myX, myY;
+
+    for (long myRow = 0; myRow < myGrid->header->nrRows ; myRow++)
+    {
+        if (showInfo && (myRow % infoStep) == 0)
+            myInfo.setValue(myRow);
+
+        for (long myCol = 0; myCol < myGrid->header->nrCols; myCol++)
+        {
+            gis::getUtmXYFromRowColSinglePrecision(*myGrid, myRow, myCol, &myX, &myY);
+            float myZ = myDTM.value[myRow][myCol];
+            if (myZ != myGrid->header->flag)
+                myGrid->value[myRow][myCol] = interpolate(myPoints, mySettings, myVar, myX, myY, myZ, getProxyValuesXY(gis::Crit3DUtmPoint(myX, myY), mySettings), true);
+        }
+    }
+
+    if (showInfo) myInfo.close();
+
+    if (! gis::updateMinMaxRasterGrid(myGrid))
+        return (false);
+
+    return (true);
+}
+
+bool Project::interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo)
 {
     std::vector <Crit3DInterpolationDataPoint> interpolationPoints;
 
@@ -1042,7 +1082,7 @@ bool Project::interpolationRaster(meteoVariable myVar, const Crit3DTime& myTime,
     }
 
     // Interpolate
-    if (! interpolationDem(interpolationPoints, &interpolationSettings, myRaster, DTM, myVar))
+    if (! interpolationRaster(interpolationPoints, &interpolationSettings, myRaster, DTM, myVar, showInfo))
     {
        errorString = "Interpolation: error in function interpolateGridDtm";
         return false;
@@ -1053,7 +1093,7 @@ bool Project::interpolationRaster(meteoVariable myVar, const Crit3DTime& myTime,
     return true;
 }
 
-bool Project::interpolateRasterRadiation(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster)
+bool Project::interpolateDemRadiation(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo)
 {
     std::vector <Crit3DInterpolationDataPoint> interpolationPoints;
 
@@ -1080,7 +1120,7 @@ bool Project::interpolateRasterRadiation(const Crit3DTime& myTime, gis::Crit3DRa
     }
 
     if (preInterpolation(interpolationPoints, &interpolationSettings, meteoPoints, nrMeteoPoints, atmTransmissivity, myTime))
-        if (! interpolationDem(interpolationPoints, &interpolationSettings, this->radiationMaps->transmissivityMap, this->DTM, atmTransmissivity), &interpolationSettings)
+        if (! interpolationRaster(interpolationPoints, &interpolationSettings, this->radiationMaps->transmissivityMap, this->DTM, atmTransmissivity, showInfo), &interpolationSettings)
         {
             errorString = "Function interpolateRasterRadiation: error interpolating transmissivity.";
             return false;
@@ -1097,7 +1137,7 @@ bool Project::interpolateRasterRadiation(const Crit3DTime& myTime, gis::Crit3DRa
     return true;
 }
 
-bool Project::interpolationRasterMain(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster)
+bool Project::interpolationDemMain(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo)
 {
     if (myVar == noMeteoVar)
     {
@@ -1122,22 +1162,21 @@ bool Project::interpolationRasterMain(meteoVariable myVar, const Crit3DTime& myT
     if (myVar == globalIrradiance)
     {
         Crit3DTime measureTime = myTime.addSeconds(-1800);
-        return interpolateRasterRadiation(measureTime, myRaster);
+        return interpolateDemRadiation(measureTime, myRaster, showInfo);
     }
     else
     {
-        return interpolationRaster(myVar, myTime, myRaster);
+        return interpolationDem(myVar, myTime, myRaster, showInfo);
     }
 }
 
-
 bool Project::interpolationMeteoGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime,
-                              gis::Crit3DRasterGrid *myRaster)
+                              gis::Crit3DRasterGrid *myRaster, bool showInfo)
 {
 
     if (meteoGridDbHandler != NULL)
     {
-        if (!interpolationRaster(myVar, myTime, myRaster))
+        if (!interpolationDem(myVar, myTime, myRaster, showInfo))
         {
             return false;
         }
