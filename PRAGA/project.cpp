@@ -1031,6 +1031,33 @@ void Project::readProxyValues()
         meteoPointsDbHandler->readPointProxyValues(&meteoPoints[i]);
 }
 
+bool Project::writeTopographicDistanceMaps()
+{
+    if (! DTM.isLoaded)
+    {
+        logError("No DEM loaded");
+        return false;
+    }
+
+    std::string myError;
+    QString fileName;
+    gis::Crit3DRasterGrid myMap;
+    for (int i=0; i < nrMeteoPoints; i++)
+    {
+        if (meteoPoints[i].active && meteoPoints[i].selected)
+        {
+            if (gis::topographicDistanceMap(meteoPoints[i].point, DTM, &myMap))
+            {
+                fileName = this->path + "DATA/GEO/TAD/TAD_" + QString::fromStdString(meteoPoints[i].id);
+                if (! gis::writeEsriGrid(fileName.toStdString(), &myMap, &myError))
+                    logError(QString::fromStdString(myError));
+            }
+        }
+    }
+
+    return true;
+}
+
 bool interpolationRaster(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings,
                         gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGrid& myDTM, meteoVariable myVar, bool showInfo)
 {

@@ -161,7 +161,7 @@
 
             bool setConstantValueWithBase(float initValue, const Crit3DRasterGrid& initGrid);
             float getValueFromRowCol(int myRow, int myCol) const;
-            float getFastValueXY(double x, double y);
+            float getFastValueXY(double x, double y) const;
 
             Crit3DPoint mapCenter();
         };
@@ -245,6 +245,10 @@
 
         bool getUtmWindow(const Crit3DGridHeader &latLonHeader, const Crit3DRasterHeader &utmHeader,
                           const Crit3DRasterWindow &latLonWindow, Crit3DRasterWindow *UtmWindow, int utmZone);
+
+        float topographicDistance(float X1, float Y1, float Z1, float X2, float Y2, float Z2, float distance,
+                                  const gis::Crit3DRasterGrid& dem_);
+        bool topographicDistanceMap(Crit3DPoint point_, const gis::Crit3DRasterGrid& dem_, Crit3DRasterGrid* map_);
     }
 
 

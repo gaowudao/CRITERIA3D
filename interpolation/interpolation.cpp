@@ -171,62 +171,7 @@ float shepardFindRadius(Crit3DInterpolationSettings* mySettings,
     }
 }
 
-float topographicDistance(float X1, float Y1, float Z1, float X2, float Y2, float Z2, float distance,
-                          Crit3DInterpolationSettings* mySettings)
-{
-    float x, y;
-    float Xi, Yi, Zi, Xf, Yf;
-    float Dx, Dy;
-    float demValue;
-    int i, nrStep;
-    float maxDeltaZ;
 
-    gis::Crit3DRasterGrid* myDEM = mySettings->getCurrentDEM();
-    float stepMeter = (float)myDEM->header->cellSize;
-
-    if (distance < stepMeter)
-        return 0;
-
-    nrStep = int(distance / stepMeter);
-
-    if (Z1 < Z2)
-    {
-        Xi = X1;
-        Yi = Y1;
-        Zi = Z1;
-        Xf = X2;
-        Yf = Y2;
-    }
-    else
-    {
-        Xi = X2;
-        Yi = Y2;
-        Zi = Z2;
-        Xf = X1;
-        Yf = Y1;
-    }
-
-    Dx = (Xf - Xi) / nrStep;
-    Dy = (Yf - Yi) / nrStep;
-
-    x = Xi;
-    y = Yi;
-    maxDeltaZ = 0;
-
-    for (i=1; i<=nrStep; i++)
-    {
-        x = x + Dx;
-        y = y + Dy;
-        demValue = myDEM->getFastValueXY(x, y);
-        if (demValue != myDEM->header->flag)
-            if (demValue > Zi)
-                maxDeltaZ = maxValue(maxDeltaZ, demValue - Zi);
-    }
-
-    delete myDEM;
-
-    return maxDeltaZ;
-}
 
 void computeDistances(vector <Crit3DInterpolationDataPoint> &myPoints,  Crit3DInterpolationSettings* mySettings,
                       float x, float y, float z, bool excludeSupplemental)
@@ -258,7 +203,7 @@ void computeDistances(vector <Crit3DInterpolationDataPoint> &myPoints,  Crit3DIn
                         topoDistance = topographicDistance(x, y, z, (float)myPoints.at(i).point->utm.x,
                                                            (float)myPoints.at(i).point->utm.y,
                                                            (float)myPoints.at(i).point->z, myPoints.at(i).distance,
-                                                           mySettings);
+                                                           *(mySettings->getCurrentDEM()));
 
                     myPoints.at(i).distance += (kh * topoDistance) + (mySettings->getTopoDist_Kz() * myPoints.at(i).deltaZ);
                 }
@@ -268,7 +213,6 @@ void computeDistances(vector <Crit3DInterpolationDataPoint> &myPoints,  Crit3DIn
 
     return;
 }
-
 
 bool neighbourhoodVariability(std::vector <Crit3DInterpolationDataPoint> &myInterpolationPoints,
                               Crit3DInterpolationSettings* mySettings,

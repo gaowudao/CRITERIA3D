@@ -548,7 +548,7 @@ namespace gis
         return myGrid.value[myRow][myCol];
     }
 
-    float Crit3DRasterGrid::getFastValueXY(double x, double y)
+    float Crit3DRasterGrid::getFastValueXY(double x, double y) const
     {
         int myRow, myCol;
 
@@ -559,10 +559,10 @@ namespace gis
 
     float Crit3DRasterGrid::getValueFromRowCol(int myRow, int myCol) const
     {
-        if (myRow < 0 || myRow > (this->header->nrRows - 1) || myCol < 0 || myCol > this->header->nrCols - 1)
-            return this->header->flag;
+        if (myRow < 0 || myRow > (header->nrRows - 1) || myCol < 0 || myCol > header->nrCols - 1)
+            return header->flag;
         else
-            return this->value[myRow][myCol];
+            return value[myRow][myCol];
     }
 
     bool isOutOfGridXY(double x, double y, Crit3DRasterHeader* header)
@@ -1157,6 +1157,87 @@ namespace gis
                     outputMap->value[row][col] = outputMap->header->flag;
                 else
                     outputMap->value[row][col] = prevailingValue(valuesList);
+            }
+
+        return true;
+    }
+
+    float topographicDistance(float X1, float Y1, float Z1, float X2, float Y2, float Z2, float distance,
+                              const gis::Crit3DRasterGrid& dem_)
+    {
+        float x, y;
+        float Xi, Yi, Zi, Xf, Yf;
+        float Dx, Dy;
+        float demValue;
+        int i, nrStep;
+        float maxDeltaZ;
+
+        float stepMeter = (float)dem_.header->cellSize;
+
+        if (distance < stepMeter)
+            return 0;
+
+        nrStep = int(distance / stepMeter);
+
+        if (Z1 < Z2)
+        {
+            Xi = X1;
+            Yi = Y1;
+            Zi = Z1;
+            Xf = X2;
+            Yf = Y2;
+        }
+        else
+        {
+            Xi = X2;
+            Yi = Y2;
+            Zi = Z2;
+            Xf = X1;
+            Yf = Y1;
+        }
+
+        Dx = (Xf - Xi) / nrStep;
+        Dy = (Yf - Yi) / nrStep;
+
+        x = Xi;
+        y = Yi;
+        maxDeltaZ = 0;
+
+        for (i=1; i<=nrStep; i++)
+        {
+            x = x + Dx;
+            y = y + Dy;
+            demValue = dem_.getFastValueXY(x, y);
+            if (demValue != dem_.header->flag)
+                if (demValue > Zi)
+                    maxDeltaZ = maxValue(maxDeltaZ, demValue - Zi);
+        }
+
+        return maxDeltaZ;
+    }
+
+    bool topographicDistanceMap(Crit3DPoint point_, const gis::Crit3DRasterGrid& dem_, Crit3DRasterGrid* map_)
+    {
+
+        int row, col;
+        float distance;
+        double gridX, gridY;
+        float demValue;
+
+        map_->initializeGrid(dem_);
+
+        for (row = 0; row < dem_.header->nrRows; row++)
+            for (col = 0; col < dem_.header->nrCols; col++)
+            {
+                demValue = dem_.value[row][col];
+                if (demValue != dem_.header->flag)
+                {
+                    gis::getUtmXYFromRowCol(dem_, row, col, &gridX, &gridY);
+                    distance = computeDistance((float)gridX, (float)gridY, (float)point_.utm.x, (float)point_.utm.y);
+                    map_->value[row][col] = topographicDistance((float)gridX, (float)gridY, demValue, (float)(point_.utm.x), (float)(point_.utm.y), (float)(point_.z), distance, dem_);
+                }
+                else
+                    map_->value[row][col] = map_->header->flag;
             }
 
         return true;
