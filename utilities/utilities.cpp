@@ -5,7 +5,7 @@
 #include "commonConstants.h"
 #include "crit3dDate.h"
 #include "utilities.h"
-
+#include <sys/stat.h>
 
 bool getValue(QVariant myRs, int* myValue)
 {

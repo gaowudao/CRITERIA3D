@@ -1033,24 +1033,37 @@ void Project::readProxyValues()
 
 bool Project::writeTopographicDistanceMaps()
 {
-    if (! DTM.isLoaded)
+    if (nrMeteoPoints == 0)
     {
-        logError("No DEM loaded");
+        errorString = "No meteo points available";
         return false;
     }
 
+    if (! DTM.isLoaded)
+    {
+        errorString = "No DEM loaded";
+        return false;
+    }
+
+    QString mapsFolder = this->path + "DATA/GEO/TAD/";
+    if (! QDir(mapsFolder).exists())
+        QDir().mkdir(mapsFolder);
+
     std::string myError;
-    QString fileName;
+    std::string fileName;
     gis::Crit3DRasterGrid myMap;
     for (int i=0; i < nrMeteoPoints; i++)
     {
-        if (meteoPoints[i].active && meteoPoints[i].selected)
+        if (meteoPoints[i].active)
         {
             if (gis::topographicDistanceMap(meteoPoints[i].point, DTM, &myMap))
             {
-                fileName = this->path + "DATA/GEO/TAD/TAD_" + QString::fromStdString(meteoPoints[i].id);
-                if (! gis::writeEsriGrid(fileName.toStdString(), &myMap, &myError))
-                    logError(QString::fromStdString(myError));
+                fileName = mapsFolder.toStdString() + "TAD_" + meteoPoints[i].id;
+                if (! gis::writeEsriGrid(fileName, &myMap, &myError))
+                {
+                    errorString = myError;
+                    return false;
+                }
             }
         }
     }

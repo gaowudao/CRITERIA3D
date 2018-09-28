@@ -1950,7 +1950,7 @@
      <x>0</x>
      <y>0</y>
      <width>1368</width>
-     <height>30</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="palette">
@@ -2432,10 +2432,18 @@
     <property name="title">
      <string>Interpolation</string>
     </property>
+    <widget class="QMenu" name="menuTopographic_distance_maps">
+     <property name="title">
+      <string>Topographic distance maps</string>
+     </property>
+     <addaction name="actionWriteTAD"/>
+     <addaction name="actionLoadTAD"/>
+    </widget>
     <addaction name="actionInterpolation_to_DTM"/>
     <addaction name="actionInterpolation_to_Grid"/>
     <addaction name="actionInterpolationSettings"/>
     <addaction name="separator"/>
+    <addaction name="menuTopographic_distance_maps"/>
    </widget>
    <widget class="QMenu" name="menuClimate">
     <property name="title">
@@ -2761,6 +2769,16 @@
   <action name="actionParameters">
    <property name="text">
     <string>Parameters</string>
+   </property>
+  </action>
+  <action name="actionWriteTAD">
+   <property name="text">
+    <string>Write</string>
+   </property>
+  </action>
+  <action name="actionLoadTAD">
+   <property name="text">
+    <string>Load</string>
    </property>
   </action>
  </widget>

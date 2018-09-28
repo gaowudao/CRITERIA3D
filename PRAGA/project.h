@@ -134,7 +134,7 @@
 
         void readProxyValues();
         void checkMeteoPointsDEM();
-        bool Project::writeTopographicDistanceMaps();
+        bool writeTopographicDistanceMaps();
         bool interpolationDemMain(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
         bool interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
         bool interpolateDemRadiation(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
