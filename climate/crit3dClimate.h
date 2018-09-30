@@ -17,7 +17,7 @@
 
     public:
         Crit3DClimate();
-        Crit3DClimate(const Crit3DClimate* reference);
+        //Crit3DClimate(const Crit3DClimate* reference);
         ~Crit3DClimate();
 
         void resetParam();
@@ -91,6 +91,10 @@
         QString _elab2;
         float _param2;
         Crit3DElaborationSettings *elabSettings;
+        meteoVariable _currentVar;
+        QString _currentElab1;
+        int _currentYearStart;
+        int _currentYearEnd;
     };
 
 

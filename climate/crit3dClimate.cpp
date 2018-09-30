@@ -24,6 +24,11 @@ Crit3DClimate::Crit3DClimate()
     _elab2 = "";
     _param2 = NODATA;
 
+    _currentVar = noMeteoVar;
+    _currentElab1 = "";
+    _currentYearStart = NODATA;
+    _currentYearEnd = NODATA;
+
     elabSettings = new Crit3DElaborationSettings();
 }
 
@@ -47,24 +52,24 @@ void Crit3DClimate::resetParam()
 
 }
 
-Crit3DClimate::Crit3DClimate(const Crit3DClimate *reference)
-{
-    _climateElab = reference->_climateElab;
-    _yearStart = reference->_yearStart;
-    _yearEnd = reference->_yearEnd;
-    _periodType = reference->_periodType;
-    _variable = reference->_variable;
-    _periodStr = reference->_periodStr;
-    _genericPeriodDateStart = reference->_genericPeriodDateStart;
-    _genericPeriodDateEnd = reference->_genericPeriodDateEnd;
-    _nYears = reference->_nYears;
-    _elab1 = reference->_elab1;
-    _param1 = reference->_param1;
-    _param1IsClimate = reference->_param1IsClimate;
-    _param1ClimateField = reference->_param1ClimateField;
-    _elab2 = reference->_elab2;
-    _param2 = reference->_param2;
-}
+//Crit3DClimate::Crit3DClimate(const Crit3DClimate *reference)
+//{
+//    _climateElab = reference->_climateElab;
+//    _yearStart = reference->_yearStart;
+//    _yearEnd = reference->_yearEnd;
+//    _periodType = reference->_periodType;
+//    _variable = reference->_variable;
+//    _periodStr = reference->_periodStr;
+//    _genericPeriodDateStart = reference->_genericPeriodDateStart;
+//    _genericPeriodDateEnd = reference->_genericPeriodDateEnd;
+//    _nYears = reference->_nYears;
+//    _elab1 = reference->_elab1;
+//    _param1 = reference->_param1;
+//    _param1IsClimate = reference->_param1IsClimate;
+//    _param1ClimateField = reference->_param1ClimateField;
+//    _elab2 = reference->_elab2;
+//    _param2 = reference->_param2;
+//}
 
 Crit3DClimate::~Crit3DClimate()
 {
