@@ -1369,11 +1369,22 @@ bool Project::elaborationCheck(bool isMeteoGrid, bool isAnomaly)
 }
 
 
-bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
+bool Project::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
 {
 
     if (isMeteoGrid)
     {
+        if (saveClima)
+        {
+            if (!climatePointsCycleGrid(true))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
         if (!isAnomaly)
         {
             if (!elaborationPointsCycleGrid(isAnomaly, true))
@@ -1394,6 +1405,17 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
     }
     else
     {
+        if (saveClima)
+        {
+            if (!climatePointsCycle(true))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
         if (!isAnomaly)
         {
             if (!elaborationPointsCycle(isAnomaly, true))
@@ -1414,21 +1436,6 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly)
 
     return true;
 }
-
-bool Project::elabSaveClima(bool isMeteoGrid)
-{
-
-    if (parserElaboration(clima))
-    {
-        elaboration(isMeteoGrid, false);
-    }
-    else
-    {
-        errorString = "parser elaboration error";
-        return false;
-    }
-}
-
 
 bool Project::elaborationPointsCycle(bool isAnomaly, bool showInfo)
 {
@@ -1599,8 +1606,6 @@ bool Project::elaborationPointsCycleGrid(bool isAnomaly, bool showInfo)
                     clima->setParam1(currentParameter1);
                 }
 
-
-                //Crit3DMeteoPoint meteoPoint = meteoGridDbHandler->meteoGrid()->meteoPoint(row,col);
                 Crit3DMeteoPoint* meteoPoint = meteoGridDbHandler->meteoGrid()->meteoPointPointer(row,col);
                 if  ( elaborationOnPoint(&errorString, NULL, meteoGridDbHandler, meteoPoint, clima, isMeteoGrid, startDate, endDate, isAnomaly, true))
                 {
@@ -1624,6 +1629,82 @@ bool Project::elaborationPointsCycleGrid(bool isAnomaly, bool showInfo)
         return true;
     }
 
+}
+
+bool Project::climatePointsCycle(bool showInfo)
+{
+    formRunInfo myInfo;
+    int infoStep;
+    QString infoStr;
+
+    if (showInfo)
+    {
+        infoStr = "Climate  - Meteo Points";
+        infoStep = myInfo.start(infoStr, nrMeteoPoints);
+    }
+    if (parserElaboration(clima))
+    {
+        for (int i = 0; i < nrMeteoPoints; i++)
+        {
+            if (showInfo && (i % infoStep) == 0)
+            {
+                myInfo.setValue(i);
+            }
+
+            //climateOnPoint(&errorString, meteoPointsDbHandler, NULL, &meteoPoints[i], clima, isMeteoGrid, startDate, endDate, true);
+
+        }
+        if (showInfo) myInfo.close();
+
+    }
+    else
+    {
+        errorString = "parser elaboration error";
+        return false;
+    }
+}
+
+bool Project::climatePointsCycleGrid(bool showInfo)
+{
+
+    formRunInfo myInfo;
+    int infoStep;
+    QString infoStr;
+
+    std::string id;
+
+    if (showInfo)
+    {
+        infoStr = "Climate  - Meteo Grid";
+        infoStep = myInfo.start(infoStr, this->meteoGridDbHandler->gridStructure().header().nrRows);
+    }
+
+    if (parserElaboration(clima))
+    {
+        for (int row = 0; row < meteoGridDbHandler->gridStructure().header().nrRows; row++)
+        {
+            if (showInfo && (row % infoStep) == 0)
+                myInfo.setValue(row);
+
+            for (int col = 0; col < meteoGridDbHandler->gridStructure().header().nrCols; col++)
+            {
+
+               if (meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id))
+               {
+
+                   Crit3DMeteoPoint* meteoPoint = meteoGridDbHandler->meteoGrid()->meteoPointPointer(row,col);
+                   //climateOnPoint(&errorString, NULL, meteoGridDbHandler, meteoPoint, clima, isMeteoGrid, startDate, endDate, true);
+
+               }
+
+           }
+       }
+    }
+    else
+    {
+        errorString = "parser elaboration error";
+        return false;
+    }
 }
 
 /*-------------------
