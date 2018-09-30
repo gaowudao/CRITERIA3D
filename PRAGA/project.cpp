@@ -1637,13 +1637,33 @@ bool Project::climatePointsCycle(bool showInfo)
     int infoStep;
     QString infoStr;
 
+    QDate startDate;
+    QDate endDate;
+
     if (showInfo)
     {
         infoStr = "Climate  - Meteo Points";
         infoStep = myInfo.start(infoStr, nrMeteoPoints);
     }
+
     if (parserElaboration(clima))
     {
+
+        if (clima->periodType() == genericPeriod)
+        {
+            startDate.setDate(clima->yearStart(), clima->genericPeriodDateStart().month(), clima->genericPeriodDateStart().day());
+            endDate.setDate(clima->yearEnd() + clima->nYears(), clima->genericPeriodDateEnd().month(), clima->genericPeriodDateEnd().day());
+        }
+        else
+        {
+            startDate.setDate(clima->yearStart(), 1, 1);
+            endDate.setDate(clima->yearEnd(), 12, 31);
+        }
+
+        if (clima->param1IsClimate())
+        {
+//            param1ClimateField = Climate.getClimateFieldName(param1ClimateElab)
+        }
         for (int i = 0; i < nrMeteoPoints; i++)
         {
             if (showInfo && (i % infoStep) == 0)
@@ -1671,6 +1691,8 @@ bool Project::climatePointsCycleGrid(bool showInfo)
     int infoStep;
     QString infoStr;
 
+    QDate startDate;
+    QDate endDate;
     std::string id;
 
     if (showInfo)
@@ -1681,6 +1703,23 @@ bool Project::climatePointsCycleGrid(bool showInfo)
 
     if (parserElaboration(clima))
     {
+
+        if (clima->periodType() == genericPeriod)
+        {
+            startDate.setDate(clima->yearStart(), clima->genericPeriodDateStart().month(), clima->genericPeriodDateStart().day());
+            endDate.setDate(clima->yearEnd() + clima->nYears(), clima->genericPeriodDateEnd().month(), clima->genericPeriodDateEnd().day());
+        }
+        else
+        {
+            startDate.setDate(clima->yearStart(), 1, 1);
+            endDate.setDate(clima->yearEnd(), 12, 31);
+        }
+
+        if (clima->param1IsClimate())
+        {
+//            param1ClimateField = Climate.getClimateFieldName(param1ClimateElab)
+        }
+
         for (int row = 0; row < meteoGridDbHandler->gridStructure().header().nrRows; row++)
         {
             if (showInfo && (row % infoStep) == 0)

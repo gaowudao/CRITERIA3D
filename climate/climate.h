@@ -83,6 +83,9 @@
 
     bool anomalyOnPoint(Crit3DMeteoPoint* meteoPoint, float refValue);
 
+    bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler,
+                        Crit3DMeteoPoint* meteoPoint, Crit3DClimate* clima, bool isMeteoGrid, QDate startDate, QDate endDate, bool loadData);
+
     float thomDayTime(float tempMax, float relHumMinAir);
 
     float thomNightTime(float tempMin, float relHumMaxAir);
