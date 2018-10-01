@@ -235,6 +235,46 @@ void Crit3DClimate::setElabSettings(Crit3DElaborationSettings *value)
     elabSettings = value;
 }
 
+meteoVariable Crit3DClimate::getCurrentVar() const
+{
+    return _currentVar;
+}
+
+void Crit3DClimate::setCurrentVar(const meteoVariable &currentVar)
+{
+    _currentVar = currentVar;
+}
+
+QString Crit3DClimate::getCurrentElab1() const
+{
+    return _currentElab1;
+}
+
+void Crit3DClimate::setCurrentElab1(const QString &currentElab1)
+{
+    _currentElab1 = currentElab1;
+}
+
+int Crit3DClimate::getCurrentYearStart() const
+{
+    return _currentYearStart;
+}
+
+void Crit3DClimate::setCurrentYearStart(int currentYearStart)
+{
+    _currentYearStart = currentYearStart;
+}
+
+int Crit3DClimate::getCurrentYearEnd() const
+{
+    return _currentYearEnd;
+}
+
+void Crit3DClimate::setCurrentYearEnd(int currentYearEnd)
+{
+    _currentYearEnd = currentYearEnd;
+}
+
 QSqlDatabase Crit3DClimate::db() const
 {
     return _db;

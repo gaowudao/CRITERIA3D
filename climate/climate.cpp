@@ -151,8 +151,79 @@ bool anomalyOnPoint(Crit3DMeteoPoint* meteoPoint, float refValue)
 bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler,
                     Crit3DMeteoPoint* meteoPoint, Crit3DClimate* clima, bool isMeteoGrid, QDate startDate, QDate endDate, bool loadData)
 {
+    bool changeDataSet;
+    float percValue;
+    bool dataLoaded = true;
+
+    Crit3DMeteoPoint* meteoPointTemp = new Crit3DMeteoPoint;
+    std::vector<float> outputValues;
+
+    meteoPointTemp->id = meteoPoint->id;
+    meteoPointTemp->point.z = meteoPoint->point.z;
+    meteoPointTemp->latitude = meteoPoint->latitude;
+
+    if ( (clima->variable() != clima->getCurrentVar() || clima->yearStart() < clima->getCurrentYearStart() || clima->yearEnd() > clima->getCurrentYearEnd()) ||
+            (clima->elab1() != clima->getCurrentElab1() && (clima->elab1() == correctedDegreeDaysSum || clima->elab1() == huglin || clima->elab1() == winkler || clima->elab1() == fregoni) ) )
+    {
+        clima->setCurrentVar(clima->variable());
+        clima->setCurrentElab1(clima->elab1());
+        clima->setCurrentYearStart(clima->yearStart());
+        clima->setCurrentYearEnd(clima->yearEnd());
+        changeDataSet = true;
+    }
+    else
+    {
+        changeDataSet = false;
+    }
+
+    meteoComputation elab1MeteoComp;
+    try
+    {
+        elab1MeteoComp = MapMeteoComputation.at(clima->elab1().toStdString());
+    }
+    catch (const std::out_of_range& )
+    {
+        elab1MeteoComp = noMeteoComp;
+    }
+
+    if (changeDataSet)
+    {
+        dataLoaded = preElaboration(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPointTemp, isMeteoGrid, clima->variable(), elab1MeteoComp, startDate, endDate, outputValues, &percValue, clima->getElabSettings());
+    }
+
     // TO DO
+
     return false;
+}
+
+bool climateTemporalCycle(Crit3DClimate* clima, std::vector<float> &outputValues, Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate lastDate, meteoComputation elab1, meteoComputation elab2)
+{
+
+    // TO DO
+    switch(clima->periodType())
+    {
+
+    case dailyPeriod:
+    {
+        for (int i = 0; i<365; i++)
+        {
+
+        }
+    }
+    case decadalPeriod:
+
+    case monthlyPeriod:
+
+    case seasonalPeriod:
+
+    case annualPeriod:
+
+    case genericPeriod:
+
+    default:
+        return false;
+
+    }
 }
 
 float loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler,

@@ -73,6 +73,18 @@
         Crit3DElaborationSettings *getElabSettings() const;
         void setElabSettings(Crit3DElaborationSettings *value);
 
+        meteoVariable getCurrentVar() const;
+        void setCurrentVar(const meteoVariable &currentVar);
+
+        QString getCurrentElab1() const;
+        void setCurrentElab1(const QString &currentElab1);
+
+        int getCurrentYearStart() const;
+        void setCurrentYearStart(int currentYearStart);
+
+        int getCurrentYearEnd() const;
+        void setCurrentYearEnd(int currentYearEnd);
+
     private:
         QSqlDatabase _db;
         QString _climateElab;
