@@ -83,7 +83,7 @@ bool computeResiduals(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nr
         meteoPoints[i].residual = NODATA;
 
         isValid = (! excludeSupplemental || checkLapseRateCode(meteoPoints[i].lapseRateCode, settings->getUseLapseRateCode(), false));
-        isValid = (isValid && ! (! excludeOutsideDem || meteoPoints[i].isInsideDem));
+        isValid = (isValid && (! excludeOutsideDem || meteoPoints[i].isInsideDem));
 
         if (isValid && meteoPoints[i].quality == quality::accepted)
         {
