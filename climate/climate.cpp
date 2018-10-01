@@ -162,8 +162,18 @@ bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
     meteoPointTemp->point.z = meteoPoint->point.z;
     meteoPointTemp->latitude = meteoPoint->latitude;
 
+    meteoComputation elab1MeteoComp;
+    try
+    {
+        elab1MeteoComp = MapMeteoComputation.at(clima->elab1().toStdString());
+    }
+    catch (const std::out_of_range& )
+    {
+        elab1MeteoComp = noMeteoComp;
+    }
+
     if ( (clima->variable() != clima->getCurrentVar() || clima->yearStart() < clima->getCurrentYearStart() || clima->yearEnd() > clima->getCurrentYearEnd()) ||
-            (clima->elab1() != clima->getCurrentElab1() && (clima->elab1() == correctedDegreeDaysSum || clima->elab1() == huglin || clima->elab1() == winkler || clima->elab1() == fregoni) ) )
+            (clima->elab1() != clima->getCurrentElab1() && (elab1MeteoComp == correctedDegreeDaysSum || elab1MeteoComp == huglin || elab1MeteoComp == winkler ||  elab1MeteoComp == fregoni) ) )
     {
         clima->setCurrentVar(clima->variable());
         clima->setCurrentElab1(clima->elab1());
@@ -174,16 +184,6 @@ bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
     else
     {
         changeDataSet = false;
-    }
-
-    meteoComputation elab1MeteoComp;
-    try
-    {
-        elab1MeteoComp = MapMeteoComputation.at(clima->elab1().toStdString());
-    }
-    catch (const std::out_of_range& )
-    {
-        elab1MeteoComp = noMeteoComp;
     }
 
     if (changeDataSet)
@@ -207,6 +207,10 @@ bool climateTemporalCycle(Crit3DClimate* clima, std::vector<float> &outputValues
     {
         for (int i = 0; i<365; i++)
         {
+            //startDate = TimeUtility.DOYToDate(1999, i)
+            //finishDate = TimeUtility.DOYToDate(1999, i)
+
+            //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
 
         }
     }
