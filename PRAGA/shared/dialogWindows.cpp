@@ -367,6 +367,7 @@ bool chooseMeteoVariable()
 #endif
 
 
+#ifdef PRAGA
 bool downloadMeteoData()
 {
     if(myProject.nrMeteoPoints == 0)
@@ -525,5 +526,5 @@ bool downloadMeteoData()
         return true;
     }
 }
-
+#endif
 

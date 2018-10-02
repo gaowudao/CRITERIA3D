@@ -33,6 +33,7 @@ win32:{
 }
 
 CONFIG(debug, debug|release) {
+    LIBS += -L../climate/debug -lclimate
     LIBS += -L../dbMeteoGrid/debug -ldbMeteoGrid
     LIBS += -L../dbMeteoPoints/debug -ldbMeteoPoints
     LIBS += -L../utilities/debug -lutilities
@@ -47,6 +48,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../crit3dDate/debug -lcrit3dDate
     LIBS += -L../mathFunctions/debug -lmathFunctions
 } else {
+    LIBS += -L../climate/release -lclimate
     LIBS += -L../dbMeteoGrid/release -ldbMeteoGrid
     LIBS += -L../dbMeteoPoints/release -ldbMeteoPoints
     LIBS += -L../utilities/release -lutilities

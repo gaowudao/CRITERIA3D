@@ -1,6 +1,8 @@
 #ifndef PROJECT_H
 #define PROJECT_H
 
+    #define PRAGA
+
     #ifndef GIS_H
         #include "gis.h"
     #endif
