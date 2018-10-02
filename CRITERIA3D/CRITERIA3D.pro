@@ -68,9 +68,9 @@ CONFIG(debug, debug|release) {
 
 SOURCES += main.cpp\
     mainwindow.cpp \
-    dialogWindows.cpp \
     project.cpp \
-    stationMarker.cpp \
+    ../PRAGA/shared/dialogWindows.cpp \
+    ../PRAGA/shared/stationMarker.cpp \
     ../PRAGA/shared/settingsDialog.cpp \
     ../PRAGA/shared/interpolationDialog.cpp \
     ../PRAGA/shared/interpolationCmd.cpp \
@@ -80,9 +80,9 @@ SOURCES += main.cpp\
     ../PRAGA/shared/colorlegend.cpp
 
 HEADERS += mainwindow.h \
-    dialogWindows.h \
     project.h \
-    stationMarker.h \
+    ../PRAGA/shared/dialogWindows.h \
+    ../PRAGA/shared/stationMarker.h \
     ../PRAGA/shared/settingsDialog.h \
     ../PRAGA/shared/interpolationDialog.h \
     ../PRAGA/shared/interpolationCmd.h  \

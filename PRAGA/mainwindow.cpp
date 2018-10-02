@@ -1161,6 +1161,7 @@ void MainWindow::on_actionInterpolation_to_DTM_triggered()
     myInfo.close();
 }
 
+
 void MainWindow::on_actionInterpolation_to_Grid_triggered()
 {
     formRunInfo myInfo;
@@ -1552,8 +1553,8 @@ void MainWindow::on_actionParameters_triggered()
         startCenter->setLongitude(myProject.gisSettings.startLocation.longitude);
         this->mapView->centerOn(startCenter->lonLat());
     }
-
 }
+
 
 void MainWindow::on_actionWriteTAD_triggered()
 {

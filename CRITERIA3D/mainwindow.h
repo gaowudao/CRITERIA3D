@@ -13,7 +13,6 @@
     #include "tileSources/OSMTileSource.h"
     #include "rasterObject.h"
     #include "colorlegend.h"
-    #include "dbArkimet.h"
 
 
     namespace Ui
@@ -38,13 +37,9 @@
 
         void on_actionLoadDEM_triggered();
 
-        void on_actionNewMeteoPointsArkimet_triggered();
-
         void on_actionOpen_meteo_points_DB_triggered();
 
         void on_actionOpen_meteo_grid_triggered();
-
-        void on_actionDownload_meteo_data_triggered();
 
         void on_rasterOpacitySlider_sliderMoved(int position);
 
@@ -55,8 +50,6 @@
         void on_actionMapESRISatellite_triggered();
 
         void on_actionMapTerrain_triggered();
-
-        void on_actionSetUTMzone_triggered();
 
         void on_actionRectangle_Selection_triggered();
 
@@ -71,10 +64,6 @@
         void on_variableButton_clicked();
 
         void on_frequencyButton_clicked();
-
-        void enableAllDataset(bool toggled);
-
-        void disableAllButton(bool toggled);
 
         void on_actionVariableQualitySpatial_triggered();
 
@@ -91,8 +80,6 @@
         void on_actionClose_meteo_grid_triggered();
 
         void on_actionInterpolation_to_DTM_triggered();
-
-        void on_actionInterpolation_to_Grid_triggered();
 
         void on_actionOpen_model_parameters_triggered();
 
@@ -118,6 +105,8 @@
         void on_actionOpen_NetCDF_data_triggered();
         void on_actionExtract_NetCDF_series_triggered();
     #endif
+
+        void on_actionParameters_triggered();
 
     protected:
         /*!
@@ -162,7 +151,6 @@
         QLineEdit* elabPeriod;
 
         void setMapSource(OSMTileSource::OSMTileType mySource);
-        QString selectArkimetDataset(QDialog* datasetDialog);
 
         QPoint getMapPoint(QPoint* point) const;
 
@@ -176,8 +164,7 @@
         bool loadMeteoPointsDB(QString dbName);
         bool loadMeteoGridDB(QString xmlName);
         void setCurrentRaster(gis::Crit3DRasterGrid *myRaster);
-        void interpolateRasterGUI();
-        void interpolateGridGUI();
+        void interpolateDemGUI();
         void showElabResult(bool updateColorSCale, bool isMeteoGrid, bool isAnomaly);
     };
 

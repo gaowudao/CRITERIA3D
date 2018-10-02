@@ -9,6 +9,14 @@
 
 QT      -= core gui
 
+TEMPLATE = lib
+CONFIG += staticlib
+
+INCLUDEPATH +=  ../crit3dDate ../mathFunctions ../gis ../meteo \
+                ../solarRadiation ../soil \
+                ../soilFluxes3D/header
+
+
 unix:{
     CONFIG(debug, debug|release) {
         TARGET = debug/waterBalance3D
@@ -19,14 +27,6 @@ unix:{
 win32:{
     TARGET = waterBalance3D
 }
-
-TEMPLATE = lib
-CONFIG += staticlib
-
-INCLUDEPATH +=  ../crit3dDate ../mathFunctions ../gis ../meteo \
-                ../solarRadiation ../soil \
-                ../soilFluxes3D/header
-
 
 SOURCES += \
     crit3dMeteoMaps.cpp \

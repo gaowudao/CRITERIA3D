@@ -2388,7 +2388,6 @@
     <addaction name="separator"/>
     <addaction name="actionOpen_meteo_points_DB"/>
     <addaction name="menu_New_meteo_points_DB"/>
-    <addaction name="actionDownload_meteo_data"/>
     <addaction name="actionClose_meteo_points"/>
     <addaction name="separator"/>
     <addaction name="actionOpen_meteo_grid"/>
@@ -2397,6 +2396,9 @@
     <addaction name="actionOpen_crop_map"/>
     <addaction name="actionOpen_NetCDF_data"/>
     <addaction name="separator"/>
+    <addaction name="actionOpen_soil_map"/>
+    <addaction name="actionOpen_soil_data"/>
+    <addaction name="actionOpen_model_parameters"/>
    </widget>
    <widget class="QMenu" name="menuVariable">
     <property name="title">
@@ -2414,12 +2416,6 @@
     <property name="title">
      <string>Settin&amp;gs</string>
     </property>
-    <widget class="QMenu" name="menuGIS">
-     <property name="title">
-      <string>&amp;GIS</string>
-     </property>
-     <addaction name="actionSetUTMzone"/>
-    </widget>
     <widget class="QMenu" name="menuMap">
      <property name="title">
       <string>&amp;Map</string>
@@ -2429,24 +2425,20 @@
      <addaction name="actionMapTerrain"/>
      <addaction name="actionMapToner"/>
     </widget>
-    <addaction name="menuGIS"/>
     <addaction name="menuMap"/>
+    <addaction name="actionParameters"/>
    </widget>
    <widget class="QMenu" name="menuInterpolation">
     <property name="title">
      <string>Interpolation</string>
     </property>
     <addaction name="actionInterpolation_to_DTM"/>
-    <addaction name="actionInterpolation_to_Grid"/>
     <addaction name="actionInterpolationSettings"/>
    </widget>
    <widget class="QMenu" name="menuCriteria3D">
     <property name="title">
      <string>Criteria3D</string>
     </property>
-    <addaction name="actionOpen_soil_map"/>
-    <addaction name="actionOpen_soil_data"/>
-    <addaction name="actionOpen_model_parameters"/>
     <addaction name="separator"/>
     <addaction name="actionCriteria3D_Initialize"/>
     <addaction name="actionCriteria3D_settings"/>
@@ -2740,6 +2732,11 @@
    </property>
    <property name="toolTip">
     <string>Interpolation settings</string>
+   </property>
+  </action>
+  <action name="actionParameters">
+   <property name="text">
+    <string>Parameters</string>
    </property>
   </action>
  </widget>

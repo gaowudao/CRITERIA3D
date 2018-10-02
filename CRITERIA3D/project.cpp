@@ -200,23 +200,24 @@ bool Project::readSettings()
     return true;
 }
 
+
 bool Project::initializeSettings(QString currentPath)
 {
     this->path = currentPath;
-    QString pathFileName = currentPath + "praga.ini";
+    QString pathFileName = currentPath + "CRITERIA3D.ini";
 
     if (QFile(pathFileName).exists())
     {
         pathSetting = new QSettings(pathFileName, QSettings::IniFormat);
 
         pathSetting->beginGroup("path");
-        QString pragaPath = pathSetting->value("PragaPath").toString();
+        QString myPath = pathSetting->value("path").toString();
         pathSetting->endGroup();
-        if (! pragaPath.isEmpty())
+        if (! myPath.isEmpty())
         {
-            if (pragaPath.right(1) != "/" || pragaPath.right(1) != "\\" ) { pragaPath += "/"; }
+            if (myPath.right(1) != "/" || myPath.right(1) != "\\" ) { myPath += "/"; }
 
-            this->path = pragaPath;
+            this->path = myPath;
         }
 
         pathSetting->beginGroup("location");
@@ -385,192 +386,6 @@ bool Project::getMeteoPointSelected(int i)
     }
 
     return false;
-}
-
-
-bool Project::downloadDailyDataArkimet(QStringList variables, bool prec0024, QDate startDate, QDate endDate, bool showInfo)
-{
-    const int MAXDAYS = 30;
-
-    QString id, dataset;
-    QStringList datasetList;
-    QList<QStringList> idList;
-
-    QList<int> arkIdAirTemp;
-    arkIdAirTemp << 231 << 232 << 233;
-    int arkIdPrec = 250;
-    QList<int> arkIdRH;
-    arkIdRH << 240 << 241 << 242;
-    int arkIdRadiation = 706;
-    QList<int> arkIdWind;
-    arkIdWind << 227 << 230;
-
-    QList<int> arkIdVar;
-    for( int i=0; i < variables.size(); i++ )
-    {
-        if (variables[i] == "Air Temperature")
-            arkIdVar.append(arkIdAirTemp);
-        if (variables[i] == "Precipitation")
-            arkIdVar.append(arkIdPrec);
-        if (variables[i] == "Air Humidity")
-            arkIdVar.append(arkIdRH);
-        if (variables[i] == "Radiation")
-            arkIdVar.append(arkIdRadiation);
-        if (variables[i] == "Wind")
-            arkIdVar.append(arkIdWind);
-    }
-
-    Download* myDownload = new Download(meteoPointsDbHandler->getDbName());
-
-    int index, nrPoints = 0;
-    for( int i=0; i < nrMeteoPoints; i++ )
-    {
-        if (getMeteoPointSelected(i))
-        {
-            nrPoints ++;
-
-            id = QString::fromStdString(meteoPoints[i].id);
-            dataset = QString::fromStdString(meteoPoints[i].dataset);
-
-            if (!datasetList.contains(dataset))
-            {
-                datasetList << dataset;
-                QStringList myList;
-                myList << id;
-                idList.append(myList);
-            }
-            else
-            {
-                index = datasetList.indexOf(dataset);
-                idList[index].append(id);
-            }
-        }
-    }
-
-    formRunInfo myInfo;
-    QString infoStr;
-
-    int nrDays = startDate.daysTo(endDate) + 1;
-    if (showInfo) myInfo.start(infoStr, nrPoints*nrDays);
-
-    int currentPoints = 0.;
-    for( int i=0; i < datasetList.size(); i++ )
-    {
-        QDate date1 = startDate;
-        QDate date2 = std::min(date1.addDays(MAXDAYS-1), endDate);
-
-        while (date1 <= endDate)
-        {
-            if (showInfo)
-            {
-                myInfo.setText("Download data from: " + date1.toString("yyyy-MM-dd") + " to: " + date2.toString("yyyy-MM-dd") + " dataset:" + datasetList[i]);
-                currentPoints += idList[i].size() * (date1.daysTo(date2) + 1);
-                myInfo.setValue(currentPoints);
-            }
-
-            myDownload->downloadDailyData(date1, date2, datasetList[i], idList[i], arkIdVar, prec0024);
-
-            date1 = date2.addDays(1);
-            date2 = std::min(date1.addDays(MAXDAYS-1), endDate);
-        }
-    }
-
-    if (showInfo) myInfo.close();
-    return true;
-}
-
-
-bool Project::downloadHourlyDataArkimet(QStringList variables, QDate startDate, QDate endDate, bool showInfo)
-{
-    const int MAXDAYS = 7;
-
-    QList<int> arkIdAirTemp;
-    arkIdAirTemp << 78 << 158;
-    QList<int> arkIdPrec;
-    arkIdPrec << 160;
-    QList<int> arkIdRH;
-    arkIdRH << 139 << 140;
-    QList<int> arkIdRadiation;
-    arkIdRadiation << 164 << 409;
-    QList<int> arkIdWind;
-    arkIdWind << 69 << 165 << 166 << 431;
-
-    QList<int> arkIdVar;
-    for( int i=0; i < variables.size(); i++ )
-    {
-        if (variables[i] == "Air Temperature")
-            arkIdVar.append(arkIdAirTemp);
-        if (variables[i] == "Precipitation")
-            arkIdVar.append(arkIdPrec);
-        if (variables[i] == "Air Humidity")
-            arkIdVar.append(arkIdRH);
-        if (variables[i] == "Radiation")
-            arkIdVar.append(arkIdRadiation);
-        if (variables[i] == "Wind")
-            arkIdVar.append(arkIdWind);
-    }
-
-    int index, nrPoints = 0;
-    QString id, dataset;
-    QStringList datasetList;
-    QList<QStringList> idList;
-
-    for( int i=0; i < nrMeteoPoints; i++ )
-    {
-        if (getMeteoPointSelected(i))
-        {
-            nrPoints ++;
-
-            id = QString::fromStdString(meteoPoints[i].id);
-            dataset = QString::fromStdString(meteoPoints[i].dataset);
-
-            if (!datasetList.contains(dataset))
-            {
-                datasetList << dataset;
-                QStringList myList;
-                myList << id;
-                idList.append(myList);
-            }
-            else
-            {
-                index = datasetList.indexOf(dataset);
-                idList[index].append(id);
-            }
-        }
-    }
-
-    Download* myDownload = new Download(meteoPointsDbHandler->getDbName());
-
-    formRunInfo myInfo;
-    QString infoStr;
-
-    int nrDays = startDate.daysTo(endDate) + 1;
-    if (showInfo) myInfo.start(infoStr, nrPoints*nrDays);
-
-    int currentPoints = 0.;
-    for( int i=0; i < datasetList.size(); i++ )
-    {
-        QDate date1 = startDate;
-        QDate date2 = std::min(date1.addDays(MAXDAYS-1), endDate);
-
-        while (date1 <= endDate)
-        {
-            if (showInfo)
-            {
-                myInfo.setText("Download data from: " + date1.toString("yyyy-MM-dd") + " to:" + date2.toString("yyyy-MM-dd") + " dataset:" + datasetList[i]);
-                currentPoints += idList[i].size() * (date1.daysTo(date2) + 1);
-                myInfo.setValue(currentPoints);
-            }
-
-            myDownload->downloadHourlyData(date1, date2, datasetList[i], idList[i], arkIdVar);
-
-            date1 = date2.addDays(1);
-            date2 = std::min(date1.addDays(MAXDAYS-1), endDate);
-        }
-    }
-
-    if (showInfo) myInfo.close();
-    return true;
 }
 
 
@@ -958,46 +773,6 @@ bool Project::readProxyValues()
     return true;
 }
 
-bool Project::writeTopographicDistanceMaps()
-{
-    if (nrMeteoPoints == 0)
-    {
-        errorString = "No meteo points available";
-        return false;
-    }
-
-    if (! DTM.isLoaded)
-    {
-        errorString = "No DEM loaded";
-        return false;
-    }
-
-    QString mapsFolder = this->path + "DATA/GEO/TAD/";
-    if (! QDir(mapsFolder).exists())
-        QDir().mkdir(mapsFolder);
-
-    std::string myError;
-    std::string fileName;
-    gis::Crit3DRasterGrid myMap;
-    for (int i=0; i < nrMeteoPoints; i++)
-    {
-        if (meteoPoints[i].active)
-        {
-            if (gis::topographicDistanceMap(meteoPoints[i].point, DTM, &myMap))
-            {
-                fileName = mapsFolder.toStdString() + "TAD_" + meteoPoints[i].id;
-                if (! gis::writeEsriGrid(fileName, &myMap, &myError))
-                {
-                    errorString = myError;
-                    return false;
-                }
-            }
-        }
-    }
-
-    return true;
-}
-
 
 bool Project::interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo)
 {
@@ -1253,7 +1028,7 @@ bool Project::setLogFile()
          QDir().mkdir(this->path + "log");
 
     QString myDate = QDateTime().currentDateTime().toString("yyyy-MM-dd hh.mm");
-    QString fileName = "Praga_" + myDate + ".txt";
+    QString fileName = "Criteria3D_" + myDate + ".txt";
 
     this->logFileName = this->path + "log\\" + fileName;
 

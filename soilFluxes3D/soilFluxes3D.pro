@@ -15,6 +15,8 @@ QT   -= core gui
 TEMPLATE = lib
 CONFIG += staticlib
 
+CONFIG += debug_and_release
+
 unix:{
     CONFIG(debug, debug|release) {
         TARGET = debug/soilFluxes3D

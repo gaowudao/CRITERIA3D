@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include <QApplication>
 #include <QtNetwork/QNetworkProxy>
-#include <QDebug>
 #include <QMessageBox>
 
 #include "project.h"

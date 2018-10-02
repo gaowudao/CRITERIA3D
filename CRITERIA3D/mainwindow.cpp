@@ -7,6 +7,8 @@
 #include <QListWidget>
 #include <QRadioButton>
 #include <QTextBrowser>
+#include <QLineEdit>
+#include <QLabel>
 
 #include <sstream>
 #include <iostream>
@@ -21,7 +23,6 @@
 #include "ui_mainwindow.h"
 #include "Position.h"
 #include "dbMeteoPoints.h"
-#include "dbArkimet.h"
 #include "download.h"
 #include "project.h"
 #include "utilities.h"
@@ -29,6 +30,8 @@
 #include "dialogWindows.h"
 #include "gis.h"
 #include "spatialControl.h"
+#include "interpolationDialog.h"
+#include "settingsDialog.h"
 
 extern Project myProject;
 #define MAPBORDER 8
@@ -329,26 +332,6 @@ void MainWindow::on_actionMapTerrain_triggered()
 }
 
 
-void MainWindow::on_actionSetUTMzone_triggered()
-{
-    QString currentUTMZone = QString::number(myProject.gisSettings.utmZone);
-    int newUTMZone;
-    bool isOk = false;
-    while (! isOk)
-    {
-        QString retValue = editValue("UTM Zone number", currentUTMZone);
-        if (retValue == "")
-            return;
-
-        newUTMZone = retValue.toInt(&isOk);
-        if (! isOk)
-            QMessageBox::information(NULL, "Wrong value", "Insert a valid UTM zone number");
-    }
-
-    myProject.gisSettings.utmZone = newUTMZone;
-}
-
-
 void MainWindow::on_actionRectangle_Selection_triggered()
 {
     if (myRubberBand != NULL)
@@ -397,188 +380,6 @@ void MainWindow::on_actionLoadDEM_triggered()
 }
 
 
-void MainWindow::on_actionNewMeteoPointsArkimet_triggered()
-{
-    resetMeteoPoints();
-
-    QString templateName = QFileDialog::getOpenFileName(this, tr("Choose template DB meteo"), "", tr("DB files (*.db)"));
-    if (templateName == "")
-    {
-        qDebug() << "missing template";
-        return;
-    }
-    else
-    {
-        QString dbName = QFileDialog::getSaveFileName(this, tr("Save as"), "", tr("DB files (*.db)"));
-        if (dbName == "")
-        {
-            qDebug() << "missing new db file name";
-            return;
-        }
-        else
-        {
-            QFile dbFile(dbName);
-            if (dbFile.exists())
-            {
-                myProject.closeMeteoPointsDB();
-
-                if (! dbFile.remove())
-                {
-                    qInfo() << "Remove file failed:" << dbName << dbFile.errorString();
-                }
-            }
-
-            if (! QFile::copy(templateName, dbName))
-            {
-                qInfo() << "Copy file failed:" << templateName;
-            }
-
-            Download myDownload(dbName);
-
-            QStringList dataset = myDownload.getDbArkimet()->getDatasetsList();
-
-            QDialog datasetDialog;
-
-            datasetDialog.setWindowTitle("Datasets");
-            datasetDialog.setFixedWidth(500);
-            QVBoxLayout layout;
-
-            for (int i = 0; i < dataset.size(); i++)
-            {
-                QCheckBox* dat = new QCheckBox(dataset[i]);
-                layout.addWidget(dat);
-
-                datasetCheckbox.append(dat);
-            }
-
-            all = new QCheckBox("ALL");
-            layout.addSpacing(30);
-            layout.addWidget(all);
-
-            connect(all, SIGNAL(toggled(bool)), this, SLOT(enableAllDataset(bool)));
-
-            for (int i = 0; i < dataset.size(); i++)
-            {
-                connect(datasetCheckbox[i], SIGNAL(toggled(bool)), this, SLOT(disableAllButton(bool)));
-            }
-
-            QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
-                                                 | QDialogButtonBox::Cancel);
-
-            connect(buttonBox, SIGNAL(accepted()), &datasetDialog, SLOT(accept()));
-            connect(buttonBox, SIGNAL(rejected()), &datasetDialog, SLOT(reject()));
-
-            layout.addWidget(buttonBox);
-            datasetDialog.setLayout(&layout);
-
-            QString datasetSelected = selectArkimetDataset(&datasetDialog);
-
-            if (!datasetSelected.isEmpty())
-            {
-                myDownload.getDbArkimet()->setDatasetsActive(datasetSelected);
-                QStringList datasets = datasetSelected.remove("'").split(",");
-
-                formRunInfo myInfo;
-                myInfo.start("download points properties...", 0);
-                    if (myDownload.getPointProperties(datasets))
-                    {
-                        myProject.loadMeteoPointsDB(dbName);
-                        this->addMeteoPoints();
-                    }
-                    else
-                    {
-                        QMessageBox::information(NULL, "Network Error!", "Error in function getPointProperties");
-                    }
-
-                myInfo.close();
-            }
-            else
-            {
-                QFile::remove(dbName);
-            }
-
-            delete buttonBox;
-            delete all;
-        }
-    }
-}
-
-
-QString MainWindow::selectArkimetDataset(QDialog* datasetDialog) {
-
-        datasetDialog->exec();
-
-        if (datasetDialog->result() == QDialog::Accepted)
-        {
-
-            QString datasetSelected = "";
-            foreach (QCheckBox *checkBox, datasetCheckbox)
-            {
-                if (checkBox->isChecked())
-                {
-                    datasetSelected = datasetSelected % "'" % checkBox->text() % "',";
-                }
-            }
-
-            if (!datasetSelected.isEmpty())
-            {
-                datasetSelected = datasetSelected.left(datasetSelected.size() - 1);
-                return datasetSelected;
-            }
-            else
-            {
-                QMessageBox msgBox;
-                msgBox.setText("Select a dataset");
-                msgBox.exec();
-                return selectArkimetDataset(datasetDialog);
-            }
-        }
-        else
-            return "";
-}
-
-
-void MainWindow::enableAllDataset(bool toggled)
-{
-    bool AllChecked = 1;
-
-    foreach (QCheckBox *checkBox, datasetCheckbox)
-    {
-        if (toggled)
-        {
-            checkBox->setChecked(toggled);
-        }
-        else
-        {
-            if (!checkBox->isChecked())
-            {
-                AllChecked = 0;
-            }
-        }
-    }
-
-    foreach (QCheckBox *checkBox, datasetCheckbox)
-    {
-        if(AllChecked)
-        {
-            checkBox->setChecked(toggled);
-        }
-    }
-}
-
-
-void MainWindow::disableAllButton(bool toggled)
-{
-    if (!toggled)
-    {
-        if (all->isChecked())
-        {
-            all->setChecked(false);
-        }
-    }
-}
-
-
 void MainWindow::on_actionOpen_meteo_points_DB_triggered()
 {
     QString dbName = QFileDialog::getOpenFileName(this, tr("Open DB meteo"), "", tr("DB files (*.db)"));
@@ -611,16 +412,6 @@ void MainWindow::on_actionVariableNone_triggered()
     if (this->meteoGridObj != NULL) this->meteoGridObj->setDrawBorders(true);
     this->updateVariable();
 }
-
-
-void MainWindow::on_actionDownload_meteo_data_triggered()
-{
-    if (downloadMeteoData())
-        this->loadMeteoPointsDB(myProject.meteoPointsDbHandler->getDbName());
-}
-
-
-
 
 
 QPoint MainWindow::getMapPoint(QPoint* point) const
@@ -666,11 +457,11 @@ void MainWindow::on_actionVariableQualitySpatial_triggered()
 }
 
 
-void MainWindow::interpolateRasterGUI()
+void MainWindow::interpolateDemGUI()
 {
     meteoVariable myVar = myProject.getCurrentVariable();
 
-    if (myProject.interpolationRasterMain(myVar,myProject.getCurrentTime(), &(myProject.dataRaster)))
+    if (myProject.interpolationDemMain(myVar,myProject.getCurrentTime(), &(myProject.dataRaster), true))
     {
         setColorScale(myVar, myProject.dataRaster.colorScale);
         setCurrentRaster(&(myProject.dataRaster));
@@ -681,17 +472,6 @@ void MainWindow::interpolateRasterGUI()
         myProject.logError();
 }
 
-void MainWindow::interpolateGridGUI()
-{
-    if (myProject.interpolationMeteoGrid(myProject.getCurrentVariable(), myProject.getFrequency(), myProject.getCurrentTime(), &(myProject.dataRaster)))
-    {
-        setCurrentRaster(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid));
-        ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myProject.getCurrentVariable())));
-
-    }
-    else
-         myProject.logError();
-}
 
 void MainWindow::updateVariable()
 {
@@ -782,7 +562,6 @@ void MainWindow::on_dateChanged()
 
     redrawMeteoPoints(true);
     redrawMeteoGrid();
-
 }
 
 
@@ -1161,7 +940,6 @@ void MainWindow::on_actionClose_meteo_points_triggered()
 
 void MainWindow::on_actionClose_meteo_grid_triggered()
 {
-
     if (myProject.meteoGridDbHandler != NULL)
     {
         myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.isLoaded = false;
@@ -1172,25 +950,15 @@ void MainWindow::on_actionClose_meteo_grid_triggered()
         elaborationBox->hide();
         ui->meteoGridOpacitySlider->setEnabled(false);
     }
-
 }
+
 
 void MainWindow::on_actionInterpolation_to_DTM_triggered()
 {
     formRunInfo myInfo;
     myInfo.start("Interpolation...", 0);
 
-    interpolateRasterGUI();
-
-    myInfo.close();
-}
-
-void MainWindow::on_actionInterpolation_to_Grid_triggered()
-{
-    formRunInfo myInfo;
-    myInfo.start("Interpolation Grid...", 0);
-
-    interpolateGridGUI();
+    interpolateDemGUI();
 
     myInfo.close();
 }
@@ -1204,14 +972,21 @@ void MainWindow::on_actionInterpolationSettings_triggered()
         return;
     }
 
-    if (! setInterpolationSettings())
-    {
-        QMessageBox::information(NULL, "Interpolation settings", "Error setting interpolation settings");
-        return;
-    }
+    InterpolationDialog* myInterpolationDialog = new InterpolationDialog(myProject.settings, &myProject.interpolationSettings);
+    myProject.copyInterpolationSettingsToQuality();
 }
 
 
+void MainWindow::on_actionParameters_triggered()
+{
+    SettingsDialog* settingsDialog = new SettingsDialog(myProject.pathSetting, myProject.settings, &myProject.gisSettings, myProject.quality, myProject.clima->getElabSettings());
+    if (startCenter->latitude() != myProject.gisSettings.startLocation.latitude || startCenter->longitude() != myProject.gisSettings.startLocation.longitude)
+    {
+        startCenter->setLatitude(myProject.gisSettings.startLocation.latitude);
+        startCenter->setLongitude(myProject.gisSettings.startLocation.longitude);
+        this->mapView->centerOn(startCenter->lonLat());
+    }
+}
 
 
 // --------------------- CRITERIA3D functions ------------------------
@@ -1280,4 +1055,6 @@ void MainWindow::on_actionCriteria3D_Initialize_triggered()
         QMessageBox::information(NULL, "", "Criteria3D initialized.");
 }
 // ----------- end CRITERIA3D functions ------------------------------------
+
+
 

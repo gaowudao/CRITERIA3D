@@ -61,11 +61,11 @@ CONFIG(debug, debug|release) {
 SOURCES += main.cpp\
     mainwindow.cpp \
     project.cpp \
-    stationMarker.cpp \
-    dialogWindows.cpp \
     computationDialog.cpp \
     anomalyLayout.cpp \
     saveClimaLayout.cpp \
+    shared/dialogWindows.cpp \
+    shared/stationMarker.cpp \
     shared/rubberBand.cpp \
     shared/formRunInfo.cpp \
     shared/settingsDialog.cpp \
@@ -76,11 +76,11 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     project.h \
-    stationMarker.h \
-    dialogWindows.h \
     saveClimaLayout.h \
     computationDialog.h \
     anomalyLayout.h \
+    shared/dialogWindows.h \
+    shared/stationMarker.h \
     shared/rubberBand.h \
     shared/formRunInfo.h \
     shared/settingsDialog.h \

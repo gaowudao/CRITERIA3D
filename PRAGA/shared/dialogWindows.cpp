@@ -9,13 +9,17 @@
 #include <QLabel>
 #include <QDateEdit>
 #include <QDoubleValidator>
+#include <QSettings>
+#include <QGridLayout>
+#include <QComboBox>
+#include <QtWidgets>
 #include <map>
 
 #include "commonConstants.h"
 #include "dialogWindows.h"
 #include "project.h"
 #include "climate.h"
-#include "interpolationSettings.h"
+//#include "interpolationSettings.h"
 
 
 extern Project myProject;
@@ -266,7 +270,7 @@ bool chooseMeteoVariable()
         }
         if (! myProject.netCDF.isStandardTime)
         {
-            QMessageBox::information(NULL, "Wrong time", "Praga reads only POSIX standard (seconds since 1970-01-01)");
+            QMessageBox::information(NULL, "Wrong time", "Reads only POSIX standard (seconds since 1970-01-01)");
             return false;
         }
 

@@ -197,6 +197,7 @@ bool Project::readSettings()
     return true;
 }
 
+
 bool Project::initializeSettings(QString currentPath)
 {
     this->path = currentPath;

@@ -5,10 +5,9 @@
 #include <QMessageBox>
 
 #include "project.h"
-#include "formRunInfo.h"
+
 
 Project myProject;
-
 
 
 bool setProxy(QString hostName, unsigned short port)
