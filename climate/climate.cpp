@@ -1654,11 +1654,12 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
     Crit3DDate presentDate;
     int numberOfDays;
     int nValidValues = 0;
-    int nValid29Feb = 0;
+    //int nValid29Feb = 0;
     int nValues = 0;
-    int nLeapYears = 0;
+    //int nLeapYears = 0;
+    int noData29Feb = 0;
     unsigned int index;
-    bool leapYear29Feb = false;
+    //bool leapYear29Feb = false;
 
     float primary = NODATA;
 
@@ -1706,12 +1707,11 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                     numberOfDays = difference(firstDate, lastDate) +1;
                     presentDate = firstDate;
 
-                    if (isLeapYear(presentYear))
+                    if (!isLeapYear(presentYear))
                     {
-                        nLeapYears = nLeapYears + 1;
                         if ((presentDate.month == 2) && (presentDate.day == 29))
                         {
-                            leapYear29Feb = true;
+                            noData29Feb = noData29Feb + 1;
                         }
 
                     }
@@ -1728,23 +1728,27 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                         {
                             values.push_back(value);
                             nValidValues = nValidValues + 1;
-                            if (leapYear29Feb)
-                            {
-                                nValid29Feb = nValid29Feb + 1;
-                            }
+//                            if (leapYear29Feb)
+//                            {
+//                                nValid29Feb = nValid29Feb + 1;
+//                            }
                         }
 
                         nValues = nValues + 1;
+
                         presentDate = presentDate.addDays(1);
                     }
-                    leapYear29Feb = false;
+                    //leapYear29Feb = false;
                 }
 
                 if (nValidValues == 0)return NODATA;
 
+                // remove 29th Feb of NO leap Years
+                nValues = nValues - noData29Feb;
+
                 if (float(nValidValues) / float(nValues) * 100.f < elabSettings->getMinimumPercentage()) return NODATA;
 
-                // LC TBC
+                  // LC TBC
 //                if (nLeapYears > 0)
 //                {
 //                    if (float(nValid29Feb) / float(nLeapYears) * 100.f < elabSettings->getMinimumPercentage()) return NODATA;
