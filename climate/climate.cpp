@@ -9,6 +9,7 @@
 #include "utilities.h"
 #include "statistics.h"
 #include "quality.h"
+#include "dbClimate.h"
 
 bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler,
     Crit3DMeteoPoint* meteoPoint, Crit3DClimate* clima, bool isMeteoGrid, QDate startDate, QDate endDate, bool isAnomaly, bool loadData)
@@ -206,15 +207,43 @@ bool climateTemporalCycle(Crit3DClimate* clima, std::vector<float> &outputValues
 
     case dailyPeriod:
     {
-        for (int i = 0; i<365; i++)
+        bool okAtLeastOne = false;
+        int leapYears = 0;
+        int totYears = 0;
+        for (int i = clima->yearStart(); i<=clima->yearEnd(); i++)
         {
+            if (isLeapYear(i))
+            {
+                leapYears = leapYears + 1;
+            }
+            totYears = totYears + 1;
+        }
+
+        Crit3DElaborationSettings* settings = clima->getElabSettings();
+        float minPerc = settings->getMinimumPercentage();
+
+        for (int i = 0; i<366; i++)
+        {
+            if (i == 365)
+            {
+                settings->setMinimumPercentage(minPerc * leapYears/totYears);
+            }
             Crit3DDate startD = getDateFromDoy(clima->yearStart(), i);
             Crit3DDate endD = startD;
             //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
 
-            result = computeStatistic(outputValues, meteoPoint, clima->yearStart(), clima->yearEnd(), startD, endD, clima->nYears(), elab1, clima->param1(), elab2, clima->param2(), clima->getElabSettings());
-
+            result = computeStatistic(outputValues, meteoPoint, clima->yearStart(), clima->yearEnd(), startD, endD, clima->nYears(), elab1, clima->param1(), elab2, clima->param2(), settings);
+            QSqlDatabase d = clima->db();
+            dbClimatePoint::writeDailyResult(d, QString::fromStdString(meteoPoint->id), i, result, clima->climateElab());
+            if (result != NODATA)
+            {
+                okAtLeastOne = true;
+            }
         }
+
+        settings->setMinimumPercentage(minPerc);
+        return okAtLeastOne;
+
     }
     case decadalPeriod:
 
@@ -1654,12 +1683,8 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
     Crit3DDate presentDate;
     int numberOfDays;
     int nValidValues = 0;
-    //int nValid29Feb = 0;
     int nValues = 0;
-    //int nLeapYears = 0;
-    int noData29Feb = 0;
     unsigned int index;
-    //bool leapYear29Feb = false;
 
     float primary = NODATA;
 
@@ -1707,14 +1732,6 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                     numberOfDays = difference(firstDate, lastDate) +1;
                     presentDate = firstDate;
 
-                    if (!isLeapYear(presentYear))
-                    {
-                        if ((presentDate.month == 2) && (presentDate.day == 29))
-                        {
-                            noData29Feb = noData29Feb + 1;
-                        }
-
-                    }
                     for (int i = 0; i < numberOfDays; i++)
                     {
 
@@ -1728,31 +1745,18 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                         {
                             values.push_back(value);
                             nValidValues = nValidValues + 1;
-//                            if (leapYear29Feb)
-//                            {
-//                                nValid29Feb = nValid29Feb + 1;
-//                            }
                         }
 
                         nValues = nValues + 1;
 
                         presentDate = presentDate.addDays(1);
                     }
-                    //leapYear29Feb = false;
                 }
 
                 if (nValidValues == 0)return NODATA;
 
-                // remove 29th Feb of NO leap Years
-                nValues = nValues - noData29Feb;
 
                 if (float(nValidValues) / float(nValues) * 100.f < elabSettings->getMinimumPercentage()) return NODATA;
-
-                  // LC TBC
-//                if (nLeapYears > 0)
-//                {
-//                    if (float(nValid29Feb) / float(nLeapYears) * 100.f < elabSettings->getMinimumPercentage()) return NODATA;
-//                }
 
                 return elaborations::statisticalElab(elab1, param1, values, nValidValues, elabSettings->getRainfallThreshold());
 

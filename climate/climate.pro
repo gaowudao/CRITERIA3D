@@ -35,10 +35,11 @@ SOURCES += \
     dbClimate.cpp
 
 HEADERS += \
+    dbClimate.h \
     climate.h \
     elaborationSettings.h \
     crit3dClimate.h \
-    dbClimate.h
+
 unix {
     target.path = /usr/lib
     INSTALLS += target

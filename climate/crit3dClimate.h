@@ -1,5 +1,5 @@
-#ifndef DBCLIMATE_H
-#define DBCLIMATE_H
+#ifndef CRIT3DCLIMATE_H
+#define CRIT3DCLIMATE_H
 
     class QString;
     class QDate;
@@ -110,4 +110,4 @@
     };
 
 
-#endif // DBCLIMATE_H
+#endif // CRIT3DCLIMATE_H

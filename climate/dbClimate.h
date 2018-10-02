@@ -13,6 +13,8 @@ namespace dbClimatePoint
     void createAnnualTable(QSqlDatabase db);
     void createGenericPeriodTable(QSqlDatabase db);
 
+    void writeDailyResult(QSqlDatabase db, QString id, int day, float result, QString elab);
+
 }
 
 namespace dbClimateGrid
