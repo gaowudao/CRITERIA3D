@@ -199,6 +199,7 @@ bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
 bool climateTemporalCycle(Crit3DClimate* clima, std::vector<float> &outputValues, Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate lastDate, meteoComputation elab1, meteoComputation elab2)
 {
 
+    float result;
     // TO DO
     switch(clima->periodType())
     {
@@ -207,10 +208,11 @@ bool climateTemporalCycle(Crit3DClimate* clima, std::vector<float> &outputValues
     {
         for (int i = 0; i<365; i++)
         {
-            //startDate = TimeUtility.DOYToDate(1999, i)
-            //finishDate = TimeUtility.DOYToDate(1999, i)
-
+            Crit3DDate startD = getDateFromDoy(clima->yearStart(), i);
+            Crit3DDate endD = startD;
             //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
+
+            result = computeStatistic(outputValues, meteoPoint, clima->yearStart(), clima->yearEnd(), startD, endD, clima->nYears(), elab1, clima->param1(), elab2, clima->param2(), clima->getElabSettings());
 
         }
     }
@@ -1652,8 +1654,11 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
     Crit3DDate presentDate;
     int numberOfDays;
     int nValidValues = 0;
+    int nValid29Feb = 0;
     int nValues = 0;
+    int nLeapYears = 0;
     unsigned int index;
+    bool leapYear29Feb = false;
 
     float primary = NODATA;
 
@@ -1700,6 +1705,16 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
 
                     numberOfDays = difference(firstDate, lastDate) +1;
                     presentDate = firstDate;
+
+                    if (isLeapYear(presentYear))
+                    {
+                        nLeapYears = nLeapYears + 1;
+                        if ((presentDate.month == 2) && (presentDate.day == 29))
+                        {
+                            leapYear29Feb = true;
+                        }
+
+                    }
                     for (int i = 0; i < numberOfDays; i++)
                     {
 
@@ -1713,16 +1728,27 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                         {
                             values.push_back(value);
                             nValidValues = nValidValues + 1;
+                            if (leapYear29Feb)
+                            {
+                                nValid29Feb = nValid29Feb + 1;
+                            }
                         }
 
                         nValues = nValues + 1;
                         presentDate = presentDate.addDays(1);
                     }
+                    leapYear29Feb = false;
                 }
 
                 if (nValidValues == 0)return NODATA;
 
                 if (float(nValidValues) / float(nValues) * 100.f < elabSettings->getMinimumPercentage()) return NODATA;
+
+                // LC TBC
+//                if (nLeapYears > 0)
+//                {
+//                    if (float(nValid29Feb) / float(nLeapYears) * 100.f < elabSettings->getMinimumPercentage()) return NODATA;
+//                }
 
                 return elaborations::statisticalElab(elab1, param1, values, nValidValues, elabSettings->getRainfallThreshold());
 
