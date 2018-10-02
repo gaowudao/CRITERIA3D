@@ -71,7 +71,8 @@ SOURCES += main.cpp\
     shared/settingsDialog.cpp \
     shared/rasterObject.cpp \
     shared/colorlegend.cpp \
-    shared/interpolationDialog.cpp
+    shared/interpolationDialog.cpp \
+    shared/interpolationCmd.cpp
 
 HEADERS  += mainwindow.h \
     project.h \
@@ -85,7 +86,8 @@ HEADERS  += mainwindow.h \
     shared/settingsDialog.h \
     shared/rasterObject.h \
     shared/colorlegend.h \
-    shared/interpolationDialog.h
+    shared/interpolationDialog.h \
+    shared/interpolationCmd.h
 
 FORMS    += mainwindow.ui \
         shared/formInfo.ui
