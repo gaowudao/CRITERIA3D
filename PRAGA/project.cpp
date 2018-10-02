@@ -286,6 +286,7 @@ bool Project::loadDEM(QString myFileName)
     return (true);
 }
 
+
 bool Project::checkProxySetting(QString group, std::string* name, std::string* grdName,
                                 std::string* table, std::string* field, bool* isActive)
 {

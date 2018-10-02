@@ -144,8 +144,8 @@ bool Project::readSettings()
             }
 
             settings->endGroup();
-
         }
+
         if (group == "elaboration")
         {
             settings->beginGroup(group);
@@ -285,15 +285,10 @@ bool Project::loadDEM(QString myFileName)
     return (true);
 }
 
-bool loadProxyGrid(Crit3DProxy* myProxy)
-{
-    std::string* myError = new std::string();
-    std::string gridName = myProxy->getGridName();
-    gis::Crit3DRasterGrid* myGrid = myProxy->getGrid();
-    return (gis::readEsriGrid(gridName, myGrid, myError));
-}
 
-bool Project::checkProxySetting(QString group, std::string* name, std::string* grdName, std::string* table, std::string* field)
+
+bool Project::checkProxySetting(QString group, std::string* name, std::string* grdName,
+                                std::string* table, std::string* field, bool* isActive)
 {
     std::string grid;
 
@@ -303,6 +298,7 @@ bool Project::checkProxySetting(QString group, std::string* name, std::string* g
     *grdName = path.toStdString() + grid;
     *table = settings->value("table").toString().toStdString();
     *field = settings->value("field").toString().toStdString();
+    *isActive = settings->value("active").toBool();
     settings->endGroup();
 
     return (*name != "" && (grid != "" || (*table != "" && *field != "")));
@@ -827,61 +823,6 @@ bool Project::loadMeteoGridDB(QString xmlName)
     if (! this->meteoGridDbHandler->updateGridDate(&errorString))
         return false;
 
-
-
-
-// test
-//    this->meteoGridDbHandler->saveCellCurrrentGridDaily(&errorString, "lauraD", QDate(1985,01,01), 231, 30);
-//    this->meteoGridDbHandler->saveCellCurrrentGridDaily(&errorString, "lauraD", QDate(1985,01,01), 231, NODATA);
-//    this->meteoGridDbHandler->saveCellCurrrentGridDaily(&errorString, "lauraD", QDate(1985,01,02), 231, 40);
-//    this->meteoGridDbHandler->saveCellCurrentGridDailyFF(&errorString, "lauraD", QDate(1985,01,01), "DAILY_TAVG", 30);
-//    this->meteoGridDbHandler->saveCellCurrentGridDailyFF(&errorString, "lauraD", QDate(1985,01,01), "DAILY_W_INT_AVG", 10);
-//    this->meteoGridDbHandler->saveCellCurrentGridDailyFF(&errorString, "lauraD", QDate(1985,01,01), "DAILY_W_INT_AVG", 20);
-//    this->meteoGridDbHandler->saveCellCurrentGridDailyFF(&errorString, "lauraD", QDate(1985,01,02), "DAILY_TAVG", NODATA);
-//    this->meteoGridDbHandler->saveCellCurrentGridDailyFF(&errorString, "lauraD", QDate(1985,01,03), "DAILY_TAVG", 40);
-//    this->meteoGridDbHandler->saveCellCurrentGridHourlyFF(&errorString, "lauraH", QDateTime(QDate(1991,01,01),QTime(9,0,0)), "TAVG", 30);
-//    this->meteoGridDbHandler->saveCellCurrentGridHourlyFF(&errorString, "lauraH", QDateTime(QDate(1991,01,01),QTime(9,0,0)), "TAVG", NODATA);
-//    this->meteoGridDbHandler->saveCellCurrentGridHourlyFF(&errorString, "lauraH", QDateTime(QDate(1991,01,01),QTime(10,0,0)), "TAVG", 20);
-
-//    this->meteoGridDbHandler->saveCellCurrentGridHourly(&errorString, "lauraH", QDateTime(QDate(1991,01,01),QTime(9,0,0)), 78, 30);
-//    this->meteoGridDbHandler->saveCellCurrentGridHourly(&errorString, "lauraH", QDateTime(QDate(1991,01,01),QTime(9,0,0)), 78, NODATA);
-//    this->meteoGridDbHandler->saveCellCurrentGridHourly(&errorString, "lauraH", QDateTime(QDate(1991,01,01),QTime(10,0,0)), 78, 20);
-
-//    QDateTime firstDateDB;
-//    std::vector<float> hourlyVarList = this->meteoGridDbHandler->loadGridHourlyVar(&errorString, "01019", precipitation, QDateTime(QDate(1991,01,01),QTime(9,0,0)), QDateTime(QDate(1991,01,2),QTime(9,0,0)), &firstDateDB);
-//    if (hourlyVarList.size() == 0)
-//        return false;
-
-    /*
-    QDate lastDate = this->meteoGridDbHandler->lastDate();
-    if (! this->loadMeteoGridDailyData(lastDate, lastDate) )
-        return false;
-*/
-
-    //test
-//    QDate firstDateDB;
-//    std::vector<float> dailyVarList = this->meteoGridDbHandler->loadGridDailyVar(&errorString, "01010", dailyPrecipitation, QDate(1991,01,01), QDate(1991,01,10), &firstDateDB);
-//    std::vector<float> dailyVarList = this->meteoGridDbHandler->loadGridDailyVarFixedFields(&errorString, "01011", dailyAirTemperatureMin, QDate(2018,04,15), QDate(2018,04,17), &firstDateDB);
-//    if (dailyVarList.size() == 0)
-//        return false;
-
-//    if (! this->meteoGridDbHandler->loadGridHourlyData(&errorString, "01019", QDateTime(QDate(1991,01,01),QTime(9,0,0)), QDateTime(QDate(1991,01,2),QTime(9,0,0))))
-//        return false;
-//    QDateTime firstDateDB;
-//    std::vector<float> hourlyVarList = this->meteoGridDbHandler->loadGridHourlyVarFixedFields(&errorString, "01019", airTemperature, QDateTime(QDate(2018,04,15),QTime(20,0,0)), QDateTime(QDate(2018,04,15),QTime(23,0,0)), &firstDateDB);
-//        if (hourlyVarList.size() == 0)
-//            return false;
-
-//    loadMeteoGridData(QDate(2018,04,29), QDate(2018,04,30), 1);
-//    QList<meteoVariable> meteoVariableList = { dailyAirTemperatureMin , dailyAirTemperatureMax , dailyAirTemperatureAvg , dailyAirRelHumidityMax };
-//    this->meteoGridDbHandler->saveCellGridDailyData(&errorString, "write00097", 23, 2, QDate(2018,04,29), QDate(2018,04,30), meteoVariableList);
-
-
-//    loadMeteoGridData(QDate(2018,04,17), QDate(2018,04,30), 1);
-//    QList<meteoVariable> meteoVariableList = { airTemperature , precipitation , airHumidity , globalIrradiance };
-//    this->meteoGridDbHandler->saveCellGridHourlyData(&errorString, "Hwrite00097", 23, 2, QDateTime(QDate(2018,04,29),QTime(9,0,0)), QDateTime(QDate(2018,04,30),QTime(9,0,0)), meteoVariableList);
-//    this->meteoGridDbHandler->saveCellGridDailyDataFF(&errorString, "DW00097", 23, 2, QDate(2018,04,29), QDate(2018,04,30));
-//    this->meteoGridDbHandler->saveCellGridHourlyDataFF(&errorString, "HW00097", 23, 2, QDateTime(QDate(2018,04,17),QTime(20,0,0)), QDateTime(QDate(2018,04,18),QTime(9,0,0)));
     return true;
 }
 

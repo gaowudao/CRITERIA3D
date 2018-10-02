@@ -25,6 +25,10 @@
         #include "crit3dProject.h"
     #endif
 
+    #ifndef CRIT3DCLIMATE_H
+        #include "crit3dClimate.h"
+    #endif
+
     #ifdef NETCDF
         #include "netcdfHandler.h"
     #endif
@@ -57,6 +61,8 @@
         QList<gis::Crit3DGeoPoint> meteoPointsSelected;
         Crit3DMeteoGridDbHandler* meteoGridDbHandler;
         gridAggregationMethod grdAggrMethod;
+
+        Crit3DClimate* clima;
 
         Crit3DColorScale *meteoPointsColorScale;
 
@@ -92,7 +98,9 @@
 
         bool initializeSettings(QString currentPath);
         bool readSettings();
-        bool checkProxySetting(QString group, std::string* name, std::string* grdName, std::string* table, std::string* field);
+        bool checkProxySetting(QString group, std::string* name, std::string* grdName,
+                                        std::string* table, std::string* field, bool* isActive);
+
         bool readProxies();
 
         void setCurrentDate(QDate myDate);
