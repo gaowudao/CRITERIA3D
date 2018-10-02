@@ -132,7 +132,6 @@
         Ui::MainWindow* ui;
 
         Position* startCenter;
-
         MapGraphicsScene* mapScene;
         MapGraphicsView* mapView;
         RasterObject* rasterObj;

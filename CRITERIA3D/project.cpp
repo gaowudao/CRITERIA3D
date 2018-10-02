@@ -45,12 +45,9 @@ Project::Project()
     meteoPointsColorScale = new Crit3DColorScale();
     meteoPointsDbHandler = NULL;
     meteoGridDbHandler = NULL;
+    clima = new Crit3DClimate();
 
     radiationMaps = NULL;
-
-    // default: Bologna
-    startLocation.latitude = 44.5;
-    startLocation.longitude = 11.35;
 }
 
 
