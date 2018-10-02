@@ -7,7 +7,7 @@
 
 #include "gis.h"
 #include "quality.h"
-#include "elaborationSettings.h"
+#include "..\..\climate\elaborationSettings.h"
 
 class QDialogButtonBox;
 class QFileInfo;

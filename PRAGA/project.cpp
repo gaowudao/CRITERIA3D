@@ -240,7 +240,6 @@ bool Project::initializeSettings(QString currentPath)
         return readSettings();
     }
 
-
 }
 
 
@@ -303,6 +302,7 @@ bool Project::checkProxySetting(QString group, std::string* name, std::string* g
 
     return (*name != "" && (grid != "" || (*table != "" && *field != "")));
 }
+
 
 bool Project::readProxies()
 {
@@ -371,6 +371,7 @@ bool Project::readProxies()
 
     return true;
 }
+
 
 bool Project::getMeteoPointSelected(int i)
 {
@@ -1065,8 +1066,6 @@ bool Project::writeTopographicDistanceMaps()
 }
 
 
-
-
 bool Project::interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo)
 {
     std::vector <Crit3DInterpolationDataPoint> interpolationPoints;
@@ -1176,6 +1175,7 @@ bool Project::interpolationDemMain(meteoVariable myVar, const Crit3DTime& myTime
     }
 }
 
+
 bool Project::interpolationMeteoGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime,
                               gis::Crit3DRasterGrid *myRaster, bool showInfo)
 {
@@ -1197,6 +1197,7 @@ bool Project::interpolationMeteoGrid(meteoVariable myVar, frequencyType myFreque
     return true;
 }
 
+
 bool Project::saveGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, bool showInfo)
 {
     std::string id;
@@ -1211,7 +1212,6 @@ bool Project::saveGrid(meteoVariable myVar, frequencyType myFrequency, const Cri
             QString infoStr = "Save grid daily data";
             infoStep = myInfo.start(infoStr, this->meteoGridDbHandler->gridStructure().header().nrRows);
         }
-
 
         for (int row = 0; row < this->meteoGridDbHandler->gridStructure().header().nrRows; row++)
         {
@@ -1257,11 +1257,9 @@ bool Project::saveGrid(meteoVariable myVar, frequencyType myFrequency, const Cri
                     {
                         this->meteoGridDbHandler->saveCellCurrentGridHourlyFF(&errorString, QString::fromStdString(id), QDateTime(QDate(myTime.date.year, myTime.date.month, myTime.date.day), QTime(myTime.getHour(), myTime.getMinutes(), myTime.getSeconds())), QString::fromStdString(this->meteoGridDbHandler->getHourlyPragaName(myVar)), this->meteoGridDbHandler->meteoGrid()->meteoPoint(row,col).currentValue);
                     }
-
                 }
             }
         }
-
     }
 
     if (showInfo) myInfo.close();

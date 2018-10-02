@@ -6,13 +6,13 @@
     #include <QCheckBox>
     #include <QGroupBox>
 
-    #include "..\PRAGA\shared\rubberBand.h"
+    #include "rubberBand.h"
     #include "MapGraphicsView.h"
     #include "MapGraphicsScene.h"
     #include "stationMarker.h"
     #include "tileSources/OSMTileSource.h"
-    #include "..\PRAGA\shared\rasterObject.h"
-    #include "..\PRAGA\shared\colorlegend.h"
+    #include "rasterObject.h"
+    #include "colorlegend.h"
     #include "dbArkimet.h"
 
 
@@ -93,8 +93,6 @@
         void on_actionInterpolation_to_DTM_triggered();
 
         void on_actionInterpolation_to_Grid_triggered();
-
-        void on_actionSave_meteo_grid_triggered();
 
         void on_actionOpen_model_parameters_triggered();
 

@@ -12,7 +12,8 @@ QT       += core gui widgets network sql xml
 TARGET = CRITERIA3D
 TEMPLATE = app
 
-INCLUDEPATH +=  ../MapGraphics ../soilFluxes3D/header \
+INCLUDEPATH +=  ../PRAGA/shared ../climate \
+                ../MapGraphics ../soilFluxes3D/header \
                 ../crit3dDate ../mathFunctions ../soil ../crop \
                 ../meteo ../gis ../utilities \
                 ../interpolation ../solarRadiation ../waterBalance3D \
@@ -70,6 +71,9 @@ SOURCES += main.cpp\
     dialogWindows.cpp \
     project.cpp \
     stationMarker.cpp \
+    ../PRAGA/shared/settingsDialog.cpp \
+    ../PRAGA/shared/interpolationDialog.cpp \
+    ../PRAGA/shared/interpolationCmd.cpp \
     ../PRAGA/shared/formRunInfo.cpp \
     ../PRAGA/shared/rasterObject.cpp \
     ../PRAGA/shared/rubberBand.cpp \
@@ -79,6 +83,9 @@ HEADERS += mainwindow.h \
     dialogWindows.h \
     project.h \
     stationMarker.h \
+    ../PRAGA/shared/settingsDialog.h \
+    ../PRAGA/shared/interpolationDialog.h \
+    ../PRAGA/shared/interpolationCmd.h  \
     ../PRAGA/shared/formRunInfo.h \
     ../PRAGA/shared/rasterObject.h \
     ../PRAGA/shared/rubberBand.h \

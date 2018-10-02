@@ -278,8 +278,8 @@ QDateTime Crit3DMeteoPointsDbHandler::getFirstDay(frequencyType frequency)
 
     return firstDay;
 
-
 }
+
 
 bool Crit3DMeteoPointsDbHandler::loadDailyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3DMeteoPoint *meteoPoint)
 {

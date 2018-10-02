@@ -5,10 +5,9 @@
 #include <QMessageBox>
 
 #include "project.h"
-#include "..\PRAGA\shared\formRunInfo.h"
+
 
 Project myProject;
-
 
 
 bool setProxy(QString hostName, int port)

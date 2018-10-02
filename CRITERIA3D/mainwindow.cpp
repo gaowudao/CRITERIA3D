@@ -16,7 +16,7 @@
 #include "tileSources/GridTileSource.h"
 #include "tileSources/CompositeTileSource.h"
 #include "guts/CompositeTileSourceConfigurationWidget.h"
-#include "..\PRAGA\formRunInfo.h"
+#include "formRunInfo.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "Position.h"
@@ -1193,14 +1193,6 @@ void MainWindow::on_actionInterpolation_to_Grid_triggered()
     interpolateGridGUI();
 
     myInfo.close();
-}
-
-void MainWindow::on_actionSave_meteo_grid_triggered()
-{
-    if (myProject.meteoGridDbHandler != NULL)
-    {
-        myProject.saveGrid(myProject.getCurrentVariable(), myProject.getFrequency(), myProject.getCurrentTime(), true);
-    }
 }
 
 
