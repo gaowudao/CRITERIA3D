@@ -5,7 +5,7 @@
 #include <QMessageBox>
 
 #include "project.h"
-#include "..\PRAGA\formRunInfo.h"
+#include "..\PRAGA\shared\formRunInfo.h"
 
 Project myProject;
 

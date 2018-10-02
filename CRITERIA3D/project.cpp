@@ -2,7 +2,7 @@
 #include <QtDebug>
 #include <QMessageBox>
 
-#include "..\PRAGA\formRunInfo.h"
+#include "..\PRAGA\shared\formRunInfo.h"
 #include "project.h"
 #include "utilities.h"
 #include "commonConstants.h"

@@ -12,7 +12,7 @@ QT       += core gui widgets network sql xml
 TARGET = PRAGA
 TEMPLATE = app
 
-INCLUDEPATH +=  ../MapGraphics \
+INCLUDEPATH +=  ./shared ../MapGraphics \
                 ../crit3dDate ../mathFunctions ../meteo ../gis ../utilities \
                 ../interpolation ../solarRadiation ../dbMeteoPoints ../dbMeteoGrid ../climate
 
@@ -60,33 +60,33 @@ CONFIG(debug, debug|release) {
 
 SOURCES += main.cpp\
     mainwindow.cpp \
-    rasterObject.cpp \
-    colorlegend.cpp \
     project.cpp \
     stationMarker.cpp \
-    rubberBand.cpp \
     dialogWindows.cpp \
-    formRunInfo.cpp \
     computationDialog.cpp \
     anomalyLayout.cpp \
-    settingsDialog.cpp \
     saveClimaLayout.cpp \
-    interpolationDialog.cpp
+    shared/rubberBand.cpp \
+    shared/formRunInfo.cpp \
+    shared/settingsDialog.cpp \
+    shared/rasterObject.cpp \
+    shared/colorlegend.cpp \
+    shared/interpolationDialog.cpp
 
 HEADERS  += mainwindow.h \
-    rasterObject.h \
-    colorlegend.h \
     project.h \
     stationMarker.h \
-    rubberBand.h \
     dialogWindows.h \
-    formRunInfo.h \
+    saveClimaLayout.h \
     computationDialog.h \
     anomalyLayout.h \
-    settingsDialog.h \
-    saveClimaLayout.h \
-    interpolationDialog.h
+    shared/rubberBand.h \
+    shared/formRunInfo.h \
+    shared/settingsDialog.h \
+    shared/rasterObject.h \
+    shared/colorlegend.h \
+    shared/interpolationDialog.h
 
 FORMS    += mainwindow.ui \
-    formInfo.ui
+        shared/formInfo.ui
 

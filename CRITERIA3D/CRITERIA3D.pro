@@ -70,20 +70,20 @@ SOURCES += main.cpp\
     dialogWindows.cpp \
     project.cpp \
     stationMarker.cpp \
-    ../PRAGA/formRunInfo.cpp \
-    ../PRAGA/rasterObject.cpp \
-    ../PRAGA/rubberBand.cpp \
-    ../PRAGA/colorlegend.cpp
+    ../PRAGA/shared/formRunInfo.cpp \
+    ../PRAGA/shared/rasterObject.cpp \
+    ../PRAGA/shared/rubberBand.cpp \
+    ../PRAGA/shared/colorlegend.cpp
 
 HEADERS += mainwindow.h \
     dialogWindows.h \
     project.h \
     stationMarker.h \
-    ../PRAGA/formRunInfo.h \
-    ../PRAGA/rasterObject.h \
-    ../PRAGA/rubberBand.h \
-    ../PRAGA/colorlegend.h
+    ../PRAGA/shared/formRunInfo.h \
+    ../PRAGA/shared/rasterObject.h \
+    ../PRAGA/shared/rubberBand.h \
+    ../PRAGA/shared/colorlegend.h
 
 FORMS += mainwindow.ui \
-    ../PRAGA/formInfo.ui
+    ../PRAGA/shared/formInfo.ui
 

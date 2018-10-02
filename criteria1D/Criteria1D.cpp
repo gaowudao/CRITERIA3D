@@ -325,18 +325,18 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, std::string *myE
             else if (previousTmax != NODATA)
                 meteoPoint.obsDataD[i].tMax = previousTmax;
         }
+    }
 
-        // Fill watertable (all data)
-        // estende il dato precedente se mancante
-        float previousWatertable = NODATA;
-        for (long i = 0; i < meteoPoint.nrObsDataDaysD; i++)
-        {
-            // watertable
-            if (meteoPoint.obsDataD[i].waterTable != NODATA)
-                previousWatertable = meteoPoint.obsDataD[i].waterTable;
-            else if (previousWatertable != NODATA)
-                meteoPoint.obsDataD[i].waterTable = previousWatertable;
-        }
+    // fill watertable (all data)
+    // estende il dato precedente se mancante
+    float previousWatertable = NODATA;
+    for (long i = 0; i < meteoPoint.nrObsDataDaysD; i++)
+    {
+        // watertable
+        if (meteoPoint.obsDataD[i].waterTable != NODATA)
+            previousWatertable = meteoPoint.obsDataD[i].waterTable;
+        else if (previousWatertable != NODATA)
+            meteoPoint.obsDataD[i].waterTable = previousWatertable;
     }
 
     return true;

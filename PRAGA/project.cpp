@@ -1071,6 +1071,7 @@ bool Project::writeTopographicDistanceMaps()
     return true;
 }
 
+
 bool interpolationRaster(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings,
                         gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGrid& myDTM, meteoVariable myVar, bool showInfo)
 {

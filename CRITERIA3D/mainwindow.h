@@ -6,13 +6,13 @@
     #include <QCheckBox>
     #include <QGroupBox>
 
-    #include "..\PRAGA\rubberBand.h"
+    #include "..\PRAGA\shared\rubberBand.h"
     #include "MapGraphicsView.h"
     #include "MapGraphicsScene.h"
+    #include "stationMarker.h"
     #include "tileSources/OSMTileSource.h"
-    #include "..\PRAGA\rasterObject.h"
-    #include "..\PRAGA\stationMarker.h"
-    #include "..\PRAGA\colorlegend.h"
+    #include "..\PRAGA\shared\rasterObject.h"
+    #include "..\PRAGA\shared\colorlegend.h"
     #include "dbArkimet.h"
 
 
