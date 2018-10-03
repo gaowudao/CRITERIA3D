@@ -156,6 +156,16 @@ bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
     float percValue;
     bool dataLoaded = true;
 
+    if (isMeteoGrid)
+    {
+        using namespace dbClimateGrid;
+        clima->setDb(meteoGridDbHandler->db());
+    }
+    else
+    {
+        using namespace dbClimatePoint;
+        clima->setDb(meteoPointsDbHandler->getDb());
+    }
     Crit3DMeteoPoint* meteoPointTemp = new Crit3DMeteoPoint;
     std::vector<float> outputValues;
 
@@ -163,7 +173,6 @@ bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
     meteoPointTemp->point.z = meteoPoint->point.z;
     meteoPointTemp->latitude = meteoPoint->latitude;
 
-    clima->setDb(meteoPointsDbHandler->getDb());
 
     meteoComputation elab1MeteoComp;
     meteoComputation elab2MeteoComp;
@@ -267,7 +276,9 @@ bool climateTemporalCycle(Crit3DClimate* clima, std::vector<float> &outputValues
 
             result = computeStatistic(outputValues, meteoPoint, clima->yearStart(), clima->yearEnd(), startD, endD, clima->nYears(), elab1, clima->param1(), elab2, clima->param2(), settings);
 
-            dbClimatePoint::writeDailyResult(db, QString::fromStdString(meteoPoint->id), i, result, clima->climateElab());
+            // LC spostare poi la write in climateOnPoint e farne una unica
+            writeDailyResult(db, QString::fromStdString(meteoPoint->id), i, result, clima->climateElab());
+
             if (result != NODATA)
             {
                 okAtLeastOne = true;
