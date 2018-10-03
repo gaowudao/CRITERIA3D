@@ -525,8 +525,8 @@ void Project::closeMeteoPointsDB()
 
     meteoPointsSelected.clear();
     nrMeteoPoints = 0;
-    setIsElabMeteoPointsValue(false);
 }
+
 
 void Project::closeMeteoGridDB()
 {

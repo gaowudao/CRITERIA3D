@@ -23,11 +23,11 @@
         #include "crit3dProject.h"
     #endif
 
-    #include "elaborationSettings.h"
-
     #ifndef INTERPOLATIONPOINT_H
         #include "interpolationPoint.h"
     #endif
+
+    #include "elaborationSettings.h"
 
     #include <QString>
     #include <QList>
@@ -127,9 +127,6 @@
         bool loadSoilData(QString dbName);
         bool loadSoilMap(QString fileName);
         bool initializeCriteria3D();
-
-        bool getIsElabMeteoPointsValue() const;
-        void setIsElabMeteoPointsValue(bool value);
 
         void copyInterpolationSettingsToQuality();
     };

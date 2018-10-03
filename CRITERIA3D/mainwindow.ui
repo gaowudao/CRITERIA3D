@@ -2375,24 +2375,13 @@
     <property name="title">
      <string>Fi&amp;le</string>
     </property>
-    <widget class="QMenu" name="menu_New_meteo_points_DB">
-     <property name="title">
-      <string>&amp;New meteo points DB</string>
-     </property>
-     <addaction name="separator"/>
-     <addaction name="actionNewMeteoPointsArkimet"/>
-     <addaction name="actionMeteoPointsCSV"/>
-     <addaction name="separator"/>
-    </widget>
     <addaction name="actionLoadDEM"/>
     <addaction name="separator"/>
     <addaction name="actionOpen_meteo_points_DB"/>
-    <addaction name="menu_New_meteo_points_DB"/>
     <addaction name="actionClose_meteo_points"/>
     <addaction name="separator"/>
     <addaction name="actionOpen_meteo_grid"/>
     <addaction name="actionClose_meteo_grid"/>
-    <addaction name="actionSave_meteo_grid"/>
     <addaction name="actionOpen_crop_map"/>
     <addaction name="actionOpen_NetCDF_data"/>
     <addaction name="separator"/>
@@ -2478,16 +2467,6 @@
     <string>&amp;Open meteo points DB...</string>
    </property>
   </action>
-  <action name="actionNewMeteoPointsArkimet">
-   <property name="text">
-    <string>from Arkimet...</string>
-   </property>
-  </action>
-  <action name="actionMeteoPointsCSV">
-   <property name="text">
-    <string>from CSV...</string>
-   </property>
-  </action>
   <action name="actionRectangle_Selection">
    <property name="checkable">
     <bool>true</bool>
@@ -2558,11 +2537,6 @@
   <action name="actionInterpolation_to_DTM">
    <property name="text">
     <string>Interpolation to DTM</string>
-   </property>
-  </action>
-  <action name="actionSave_meteo_grid">
-   <property name="text">
-    <string>Save meteo grid...</string>
    </property>
   </action>
   <action name="actionOpen_model_parameters">
