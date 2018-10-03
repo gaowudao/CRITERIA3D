@@ -88,10 +88,6 @@
 
         Crit3DProject Criteria3Dproject;
 
-        #ifdef NETCDF
-            NetCDFHandler netCDF;
-        #endif
-
         Project();
 
         bool initializeSettings(QString currentPath);
