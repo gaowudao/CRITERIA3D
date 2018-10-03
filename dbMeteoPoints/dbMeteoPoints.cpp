@@ -495,6 +495,16 @@ std::vector<float> Crit3DMeteoPointsDbHandler::loadHourlyVar(std::string *myErro
     return hourlyVarList;
 }
 
+QSqlDatabase Crit3DMeteoPointsDbHandler::getDb() const
+{
+    return _db;
+}
+
+void Crit3DMeteoPointsDbHandler::setDb(const QSqlDatabase &db)
+{
+    _db = db;
+}
+
 bool Crit3DMeteoPointsDbHandler::readPointProxyValues(Crit3DMeteoPoint* myPoint)
 {
     if (myPoint == NULL) return false;

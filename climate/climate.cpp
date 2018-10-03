@@ -163,7 +163,10 @@ bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
     meteoPointTemp->point.z = meteoPoint->point.z;
     meteoPointTemp->latitude = meteoPoint->latitude;
 
+    clima->setDb(meteoPointsDbHandler->getDb());
+
     meteoComputation elab1MeteoComp;
+    meteoComputation elab2MeteoComp;
     try
     {
         elab1MeteoComp = MapMeteoComputation.at(clima->elab1().toStdString());
@@ -172,41 +175,71 @@ bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
     {
         elab1MeteoComp = noMeteoComp;
     }
-
-    if ( (clima->variable() != clima->getCurrentVar() || clima->yearStart() < clima->getCurrentYearStart() || clima->yearEnd() > clima->getCurrentYearEnd()) ||
-            (clima->elab1() != clima->getCurrentElab1() && (elab1MeteoComp == correctedDegreeDaysSum || elab1MeteoComp == huglin || elab1MeteoComp == winkler ||  elab1MeteoComp == fregoni) ) )
+    if (clima->elab2() == "")
     {
-        clima->setCurrentVar(clima->variable());
-        clima->setCurrentElab1(clima->elab1());
-        clima->setCurrentYearStart(clima->yearStart());
-        clima->setCurrentYearEnd(clima->yearEnd());
-        changeDataSet = true;
+        elab2MeteoComp = noMeteoComp;
     }
     else
     {
-        changeDataSet = false;
+        try
+        {
+            elab2MeteoComp = MapMeteoComputation.at(clima->elab2().toStdString());
+        }
+        catch (const std::out_of_range& )
+        {
+            elab2MeteoComp = noMeteoComp;
+        }
     }
+
+//    if ( (clima->variable() != clima->getCurrentVar() || clima->yearStart() < clima->getCurrentYearStart() || clima->yearEnd() > clima->getCurrentYearEnd()) ||
+//            (clima->elab1() != clima->getCurrentElab1() && (elab1MeteoComp == correctedDegreeDaysSum || elab1MeteoComp == huglin || elab1MeteoComp == winkler ||  elab1MeteoComp == fregoni) ) )
+//    {
+//        clima->setCurrentVar(clima->variable());
+//        clima->setCurrentElab1(clima->elab1());
+//        clima->setCurrentYearStart(clima->yearStart());
+//        clima->setCurrentYearEnd(clima->yearEnd());
+//        changeDataSet = true;
+//    }
+//    else
+//    {
+//        changeDataSet = false;
+//    }
+    changeDataSet = true; // LC TBC
 
     if (changeDataSet)
     {
         dataLoaded = preElaboration(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPointTemp, isMeteoGrid, clima->variable(), elab1MeteoComp, startDate, endDate, outputValues, &percValue, clima->getElabSettings());
     }
 
-    // TO DO
+    if (dataLoaded)
+    {
+        if (climateTemporalCycle(clima, outputValues, meteoPointTemp, startDate, endDate, elab1MeteoComp, elab2MeteoComp))
+        {
+            delete meteoPointTemp;
+            return true;
+        }
+    }
 
+    delete meteoPointTemp;
     return false;
+
+
 }
 
-bool climateTemporalCycle(Crit3DClimate* clima, std::vector<float> &outputValues, Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDate lastDate, meteoComputation elab1, meteoComputation elab2)
+bool climateTemporalCycle(Crit3DClimate* clima, std::vector<float> &outputValues, Crit3DMeteoPoint* meteoPoint, QDate startDate, QDate endDate, meteoComputation elab1, meteoComputation elab2)
 {
 
+    QSqlDatabase db = clima->db();
     float result;
-    // TO DO
+
     switch(clima->periodType())
     {
 
     case dailyPeriod:
     {
+
+        dbClimatePoint::createDailyTable(db);
+
         bool okAtLeastOne = false;
         int leapYears = 0;
         int totYears = 0;
@@ -222,9 +255,9 @@ bool climateTemporalCycle(Crit3DClimate* clima, std::vector<float> &outputValues
         Crit3DElaborationSettings* settings = clima->getElabSettings();
         float minPerc = settings->getMinimumPercentage();
 
-        for (int i = 0; i<366; i++)
+        for (int i = 1; i<=366; i++)
         {
-            if (i == 365)
+            if (i == 366)
             {
                 settings->setMinimumPercentage(minPerc * leapYears/totYears);
             }
@@ -233,8 +266,8 @@ bool climateTemporalCycle(Crit3DClimate* clima, std::vector<float> &outputValues
             //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
 
             result = computeStatistic(outputValues, meteoPoint, clima->yearStart(), clima->yearEnd(), startD, endD, clima->nYears(), elab1, clima->param1(), elab2, clima->param2(), settings);
-            QSqlDatabase d = clima->db();
-            dbClimatePoint::writeDailyResult(d, QString::fromStdString(meteoPoint->id), i, result, clima->climateElab());
+
+            dbClimatePoint::writeDailyResult(db, QString::fromStdString(meteoPoint->id), i, result, clima->climateElab());
             if (result != NODATA)
             {
                 okAtLeastOne = true;
@@ -1720,13 +1753,16 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                     firstDate.year = presentYear;
                     lastDate.year = presentYear;
 
-                    if (nYears < 0)
+                    if (nYears != NODATA)
                     {
-                        firstDate.year = (presentYear + nYears);
-                    }
-                    else if (nYears > 0)
-                    {
-                        lastDate.year = (presentYear + nYears);
+                        if (nYears < 0)
+                        {
+                            firstDate.year = (presentYear + nYears);
+                        }
+                        else if (nYears > 0)
+                        {
+                            lastDate.year = (presentYear + nYears);
+                        }
                     }
 
                     numberOfDays = difference(firstDate, lastDate) +1;
