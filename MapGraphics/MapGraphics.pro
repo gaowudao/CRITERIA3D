@@ -4,8 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += network sql
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT       += widgets network sql
 
 TEMPLATE = lib
 
@@ -16,7 +15,6 @@ unix:{
 win32:{
     TARGET = MapGraphics
 }
-
 
 
 DEFINES += MAPGRAPHICS_LIBRARY
@@ -38,7 +36,7 @@ SOURCES += MapGraphicsScene.cpp \
     tileSources/CompositeTileSource.cpp \
     guts/MapTileLayerListModel.cpp \
     guts/MapTileSourceDelegate.cpp \
-    guts/CompositeTileSourceConfigurationWidget.cpp \
+#    guts/CompositeTileSourceConfigurationWidget.cpp \
     CircleObject.cpp \
     guts/PrivateQGraphicsInfoSource.cpp \
     PolygonObject.cpp \
@@ -61,7 +59,7 @@ HEADERS += MapGraphicsScene.h\
     tileSources/CompositeTileSource.h \
     guts/MapTileLayerListModel.h \
     guts/MapTileSourceDelegate.h \
-    guts/CompositeTileSourceConfigurationWidget.h \
+#    guts/CompositeTileSourceConfigurationWidget.h \
     CircleObject.h \
     guts/PrivateQGraphicsInfoSource.h \
     PolygonObject.h \
@@ -87,8 +85,8 @@ unix:!symbian {
     INSTALLS += target
 }
 
-FORMS += \
-    guts/CompositeTileSourceConfigurationWidget.ui
+#FORMS += \
+#    guts/CompositeTileSourceConfigurationWidget.ui
 
 RESOURCES += \
     resources.qrc
