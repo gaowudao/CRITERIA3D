@@ -13,13 +13,10 @@
 #include <QGridLayout>
 #include <QComboBox>
 #include <QtWidgets>
-#include <map>
 
 #include "commonConstants.h"
 #include "dialogWindows.h"
 #include "project.h"
-#include "climate.h"
-//#include "interpolationSettings.h"
 
 
 extern Project myProject;

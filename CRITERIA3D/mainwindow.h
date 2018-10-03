@@ -54,11 +54,7 @@
 
         void on_actionRectangle_Selection_triggered();
 
-        void on_actionVariableChoose_triggered();
-
         void on_dateChanged();
-
-        void on_actionVariableNone_triggered();
 
         void on_rasterScaleButton_clicked();
 
@@ -102,12 +98,9 @@
 
         void on_meteoGridOpacitySlider_sliderMoved(int position);
 
-    #ifdef NETCDF
-        void on_actionOpen_NetCDF_data_triggered();
-        void on_actionExtract_NetCDF_series_triggered();
-    #endif
-
         void on_actionParameters_triggered();
+
+        void on_actionShowLocation_triggered();
 
     protected:
         /*!
@@ -146,12 +139,6 @@
         QList<QCheckBox*> datasetCheckbox;
         QCheckBox* all;
 
-        QGroupBox* elaborationBox;
-        QLineEdit* elabType1;
-        QLineEdit* elabType2;
-        QLineEdit* elabVariable;
-        QLineEdit* elabPeriod;
-
         void setMapSource(OSMTileSource::OSMTileType mySource);
 
         QPoint getMapPoint(QPoint* point) const;
@@ -169,11 +156,6 @@
         void interpolateDemGUI();
         void showElabResult(bool updateColorSCale, bool isMeteoGrid, bool isAnomaly);
     };
-
-
-    #ifdef NETCDF
-        void exportNetCDFDataSeries(gis::Crit3DGeoPoint geoPoint);
-    #endif
 
 
 #endif // MAINWINDOW_H

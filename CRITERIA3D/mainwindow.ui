@@ -2405,12 +2405,13 @@
      <string>Meteo Points</string>
     </property>
     <addaction name="actionPointsVisible"/>
-    <addaction name="actionVariableNone"/>
+    <addaction name="actionShowLocation"/>
     <addaction name="actionVariableQualitySpatial"/>
+    <addaction name="separator"/>
     <addaction name="actionRectangle_Selection"/>
     <addaction name="separator"/>
-    <addaction name="actionVariableChoose"/>
-    <addaction name="separator"/>
+    <addaction name="actionInterpolationSettings"/>
+    <addaction name="actionInterpolation_to_DTM"/>
    </widget>
    <widget class="QMenu" name="menuGIS_settings">
     <property name="title">
@@ -2428,13 +2429,6 @@
     <addaction name="menuMap"/>
     <addaction name="actionParameters"/>
    </widget>
-   <widget class="QMenu" name="menuInterpolation">
-    <property name="title">
-     <string>Interpolation</string>
-    </property>
-    <addaction name="actionInterpolation_to_DTM"/>
-    <addaction name="actionInterpolationSettings"/>
-   </widget>
    <widget class="QMenu" name="menuCriteria3D">
     <property name="title">
      <string>Criteria3D</string>
@@ -2450,7 +2444,6 @@
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuVariable"/>
-   <addaction name="menuInterpolation"/>
    <addaction name="menuCriteria3D"/>
    <addaction name="menuGIS_settings"/>
   </widget>
@@ -2458,16 +2451,6 @@
   <action name="actionLoadDEM">
    <property name="text">
     <string>&amp;Load DEM...</string>
-   </property>
-  </action>
-  <action name="actionSetUTMzone">
-   <property name="text">
-    <string>&amp;UTM zone...</string>
-   </property>
-  </action>
-  <action name="actionProxy">
-   <property name="text">
-    <string>&amp;Proxy</string>
    </property>
   </action>
   <action name="actionMapOpenStreetMap">
@@ -2495,11 +2478,6 @@
     <string>&amp;Open meteo points DB...</string>
    </property>
   </action>
-  <action name="actionDownload_meteo_data">
-   <property name="text">
-    <string>&amp;Download meteo data...</string>
-   </property>
-  </action>
   <action name="actionNewMeteoPointsArkimet">
    <property name="text">
     <string>from Arkimet...</string>
@@ -2518,31 +2496,7 @@
     <string>Rectangle Selection</string>
    </property>
   </action>
-  <action name="actionVariableChoose">
-   <property name="text">
-    <string>Choose variable...</string>
-   </property>
-  </action>
-  <action name="actionVariableDaily">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>daily</string>
-   </property>
-  </action>
-  <action name="actionVariableHourly">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>hourly</string>
-   </property>
-  </action>
-  <action name="actionVariableNone">
+  <action name="actionShowLocation">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -2562,11 +2516,6 @@
    </property>
    <property name="text">
     <string>Spatial quality control</string>
-   </property>
-  </action>
-  <action name="actionInterpolation">
-   <property name="text">
-    <string>Interpolation</string>
    </property>
   </action>
   <action name="actionPointsVisible">
@@ -2591,11 +2540,6 @@
     <bool>false</bool>
    </property>
   </action>
-  <action name="actionExtract_NetCDF_series">
-   <property name="text">
-    <string>Extract NetCDF series</string>
-   </property>
-  </action>
   <action name="actionOpen_meteo_grid">
    <property name="text">
     <string>Open meteo grid...</string>
@@ -2614,11 +2558,6 @@
   <action name="actionInterpolation_to_DTM">
    <property name="text">
     <string>Interpolation to DTM</string>
-   </property>
-  </action>
-  <action name="actionInterpolation_to_Grid">
-   <property name="text">
-    <string>Interpolation to Grid</string>
    </property>
   </action>
   <action name="actionSave_meteo_grid">
@@ -2683,49 +2622,9 @@
     <string>Show DEM</string>
    </property>
   </action>
-  <action name="actionElaboration_meteo_grid">
-   <property name="text">
-    <string>meteo grid</string>
-   </property>
-  </action>
-  <action name="actionElaboration_meteo_points">
-   <property name="text">
-    <string>meteo points</string>
-   </property>
-  </action>
-  <action name="actionAnomaly_meteo_points">
-   <property name="text">
-    <string>meteo points</string>
-   </property>
-  </action>
-  <action name="actionAnomaly_meteo_grid">
-   <property name="text">
-    <string>meteo grid</string>
-   </property>
-  </action>
-  <action name="actionClimate_meteo_points">
-   <property name="text">
-    <string>meteo points</string>
-   </property>
-  </action>
-  <action name="actionClimate_meteo_grid">
-   <property name="text">
-    <string>meteo grid</string>
-   </property>
-  </action>
-  <action name="actionOpen_climate">
-   <property name="text">
-    <string>Open climate...</string>
-   </property>
-  </action>
-  <action name="actionNew_climate">
-   <property name="text">
-    <string>New climate...</string>
-   </property>
-  </action>
   <action name="actionInterpolationSettings">
    <property name="text">
-    <string>Settings...</string>
+    <string>Interpolation settings...</string>
    </property>
    <property name="iconText">
     <string>Interpolation settings</string>

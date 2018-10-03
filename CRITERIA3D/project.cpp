@@ -45,7 +45,7 @@ Project::Project()
     meteoPointsColorScale = new Crit3DColorScale();
     meteoPointsDbHandler = NULL;
     meteoGridDbHandler = NULL;
-    clima = new Crit3DClimate();
+    elaborationSettings = new Crit3DElaborationSettings();
 
     radiationMaps = NULL;
 }
@@ -124,7 +124,6 @@ bool Project::readSettings()
             settings->beginGroup(group);
             if (settings->contains("reference_height") && !settings->value("reference_height").toString().isEmpty())
             {
-                qInfo() << "value: " << settings->value("reference_height");
                 quality->setReferenceHeight(settings->value("reference_height").toFloat());
             }
             if (settings->contains("delta_temperature_suspect") && !settings->value("delta_temperature_suspect").toString().isEmpty())
@@ -146,47 +145,46 @@ bool Project::readSettings()
         if (group == "elaboration")
         {
             settings->beginGroup(group);
-            Crit3DElaborationSettings* elabSettings = clima->getElabSettings();
+
             if (settings->contains("min_percentage") && !settings->value("min_percentage").toString().isEmpty())
             {
-                qInfo() << "value: " << settings->value("min_percentage");
-                elabSettings->setMinimumPercentage(settings->value("min_percentage").toFloat());
+                elaborationSettings->setMinimumPercentage(settings->value("min_percentage").toFloat());
             }
             if (settings->contains("prec_threshold") && !settings->value("prec_threshold").toString().isEmpty())
             {
-                elabSettings->setRainfallThreshold(settings->value("prec_threshold").toFloat());
+                elaborationSettings->setRainfallThreshold(settings->value("prec_threshold").toFloat());
             }
             if (settings->contains("anomaly_pts_max_distance") && !settings->value("anomaly_pts_max_distance").toString().isEmpty())
             {
-                elabSettings->setAnomalyPtsMaxDistance(settings->value("anomaly_pts_max_distance").toFloat());
+                elaborationSettings->setAnomalyPtsMaxDistance(settings->value("anomaly_pts_max_distance").toFloat());
             }
             if (settings->contains("anomaly_pts_max_delta_z") && !settings->value("anomaly_pts_max_delta_z").toString().isEmpty())
             {
-                elabSettings->setAnomalyPtsMaxDeltaZ(settings->value("anomaly_pts_max_delta_z").toFloat());
+                elaborationSettings->setAnomalyPtsMaxDeltaZ(settings->value("anomaly_pts_max_delta_z").toFloat());
             }
             if (settings->contains("thom_threshold") && !settings->value("thom_threshold").toString().isEmpty())
             {
-                elabSettings->setThomThreshold(settings->value("thom_threshold").toFloat());
+                elaborationSettings->setThomThreshold(settings->value("thom_threshold").toFloat());
             }
             if (settings->contains("grid_min_coverage") && !settings->value("grid_min_coverage").toString().isEmpty())
             {
-                elabSettings->setGridMinCoverage(settings->value("grid_min_coverage").toFloat());
+                elaborationSettings->setGridMinCoverage(settings->value("grid_min_coverage").toFloat());
             }
             if (settings->contains("samani_coefficient") && !settings->value("samani_coefficient").toString().isEmpty())
             {
-                elabSettings->setTransSamaniCoefficient(settings->value("samani_coefficient").toFloat());
+                elaborationSettings->setTransSamaniCoefficient(settings->value("samani_coefficient").toFloat());
             }
             if (settings->contains("compute_tmed") && !settings->value("compute_tmed").toString().isEmpty())
             {
-                elabSettings->setAutomaticTmed(settings->value("compute_tmed").toBool());
+                elaborationSettings->setAutomaticTmed(settings->value("compute_tmed").toBool());
             }
             if (settings->contains("compute_et0hs") && !settings->value("compute_et0hs").toString().isEmpty())
             {
-                elabSettings->setAutomaticETP(settings->value("compute_et0hs").toBool());
+                elaborationSettings->setAutomaticETP(settings->value("compute_et0hs").toBool());
             }
             if (settings->contains("merge_joint_stations") && !settings->value("merge_joint_stations").toString().isEmpty())
             {
-                elabSettings->setMergeJointStations(settings->value("merge_joint_stations").toBool());
+                elaborationSettings->setMergeJointStations(settings->value("merge_joint_stations").toBool());
             }
 
             settings->endGroup();

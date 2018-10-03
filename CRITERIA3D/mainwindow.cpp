@@ -89,33 +89,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this->ui->dateEdit, SIGNAL(editingFinished()), this, SLOT(on_dateChanged()));
 
     this->setMouseTracking(true);
-
-    elaborationBox = new QGroupBox(this);
-    elaborationBox->setTitle("Elaboration");
-    elabType1 = new QLineEdit;
-    elabType2 = new QLineEdit;
-    elabVariable = new QLineEdit;
-    elabPeriod = new QLineEdit;
-
-    QVBoxLayout *vbox = new QVBoxLayout(elaborationBox);
-    QLabel *secondElab = new QLabel();
-    secondElab->setText("<font color='black'>second Elab:</font>");
-    secondElab->setBuddy(elabType2);
-    QLabel *variable = new QLabel();
-    variable->setText("<font color='black'>variable:</font>");
-    variable->setBuddy(elabVariable);
-    QLabel *period  = new QLabel();
-    period->setText("<font color='black'>period:</font>");
-    period->setBuddy(elabPeriod);
-    vbox->addWidget(elabType1);
-    vbox->addWidget(elabType2);
-    vbox->addWidget(variable);
-    vbox->addWidget(elabVariable);
-    vbox->addWidget(period);
-    vbox->addWidget(elabPeriod);
-    elaborationBox->setLayout(vbox);
-
-    elaborationBox->hide();
 }
 
 
@@ -151,9 +124,6 @@ void MainWindow::resizeEvent(QResizeEvent * event)
 
     ui->groupBoxRaster->move(MAPBORDER/2, ui->groupBoxMeteoGrid->y() + ui->groupBoxMeteoGrid->height() + MAPBORDER);
     ui->groupBoxRaster->resize(TOOLSWIDTH, ui->groupBoxRaster->height());
-
-    elaborationBox->move(MAPBORDER/2, ui->groupBoxRaster->y() + ui->groupBoxRaster->height() + MAPBORDER*4);
-    elaborationBox->resize(TOOLSWIDTH, 180);
 
     // TODO sembrano non funzionare
     ui->widgetColorLegendRaster->resize(TOOLSWIDTH, ui->widgetColorLegendPoints->height());
@@ -404,16 +374,6 @@ void MainWindow::on_actionOpen_meteo_grid_triggered()
 }
 
 
-void MainWindow::on_actionVariableNone_triggered()
-{
-    //myProject.setFrequency(noFrequency);
-    myProject.currentVariable = noMeteoVar;
-    this->ui->actionVariableNone->setChecked(true);
-    if (this->meteoGridObj != NULL) this->meteoGridObj->setDrawBorders(true);
-    this->updateVariable();
-}
-
-
 QPoint MainWindow::getMapPoint(QPoint* point) const
 {
     QPoint mapPoint;
@@ -436,17 +396,6 @@ void MainWindow::resetMeteoPoints()
     datasetCheckbox.clear();
 
     this->myRubberBand = NULL;
-}
-
-
-void MainWindow::on_actionVariableChoose_triggered()
-{
-    if (chooseMeteoVariable())
-    {
-       this->ui->actionVariableNone->setChecked(false);
-       if (this->meteoGridObj != NULL) this->meteoGridObj->setDrawBorders(false);
-       this->updateVariable();
-    }
 }
 
 
@@ -484,7 +433,7 @@ void MainWindow::updateVariable()
     {
         if (myProject.currentVariable != noMeteoVar)
         {
-            this->ui->actionVariableNone->setChecked(false);
+            this->ui->actionShowLocation->setChecked(false);
             if (this->meteoGridObj != NULL) this->meteoGridObj->setDrawBorders(false);
         }
 
@@ -691,84 +640,8 @@ void MainWindow::redrawMeteoGrid()
 
     meteoGridObj->redrawRequested();
     meteoGridLegend->update();
-
 }
 
-#ifdef NETCDF
-    void MainWindow::on_actionOpen_NetCDF_data_triggered()
-    {
-        QString fileName = QFileDialog::getOpenFileName(this, tr("Open NetCDF data"), "", tr("NetCDF files (*.nc)"));
-
-        if (fileName == "") return;
-
-        myProject.netCDF.initialize(myProject.gisSettings.utmZone);
-
-        std::stringstream buffer;
-        myProject.netCDF.readProperties(fileName.toStdString(), &buffer);
-
-        if (myProject.netCDF.isLatLon)
-            meteoGridObj->initializeLatLon(&(myProject.netCDF.dataGrid), myProject.gisSettings, myProject.netCDF.latLonHeader, true);
-        else
-            meteoGridObj->initializeUTM(&(myProject.netCDF.dataGrid), myProject.gisSettings, true);
-
-        myProject.netCDF.dataGrid.emptyGrid();
-        meteoGridObj->updateCenter();
-
-        QDialog myDialog;
-        QVBoxLayout mainLayout;
-
-        myDialog.setWindowTitle("NetCDF file info  ");
-
-        QTextBrowser textBrowser;
-        textBrowser.setText(QString::fromStdString(buffer.str()));
-        buffer.clear();
-
-        mainLayout.addWidget(&textBrowser);
-
-        myDialog.setLayout(&mainLayout);
-        myDialog.setFixedSize(800,600);
-        myDialog.exec();
-    }
-
-    // deactivated
-    void MainWindow::on_actionExtract_NetCDF_series_triggered()
-    {
-        int idVar;
-        QDateTime firstDate, lastDate;
-
-        if (chooseNetCDFVariable(&idVar, &firstDate, &lastDate))
-        {
-            QMessageBox::information(NULL, "Variable",
-                                     "Variable: " + QString::number(idVar)
-                                     + "\nfirst date: " + firstDate.toString()
-                                     + "\nLast Date: " + lastDate.toString());
-        }
-    }
-
-    void exportNetCDFDataSeries(gis::Crit3DGeoPoint geoPoint)
-    {
-        if (myProject.netCDF.isPointInside(geoPoint))
-        {
-            int idVar;
-            QDateTime firstTime, lastTime;
-
-            if (chooseNetCDFVariable(&idVar, &firstTime, &lastTime))
-            {
-                std::stringstream buffer;
-                if (! myProject.netCDF.exportDataSeries(idVar, geoPoint, firstTime.toTime_t(), lastTime.toTime_t(), &buffer))
-                    QMessageBox::information(NULL, "ERROR", QString::fromStdString(buffer.str()));
-                else
-                {
-                    QString fileName = QFileDialog::getSaveFileName(NULL, "Save data series", "", "csv files (*.csv)");
-                    std::ofstream myFile;
-                    myFile.open(fileName.toStdString());
-                    myFile << buffer.str();
-                    myFile.close();
-                }
-            }
-        }
-    }
-#endif
 
 bool MainWindow::loadMeteoPointsDB(QString dbName)
 {
@@ -881,7 +754,7 @@ void MainWindow::on_variableButton_clicked()
 {
     if (chooseMeteoVariable())
     {
-       this->ui->actionVariableNone->setChecked(false);
+       this->ui->actionShowLocation->setChecked(false);
        this->updateVariable();
        if (this->meteoGridObj != NULL) this->meteoGridObj->setDrawBorders(false);
     }
@@ -935,7 +808,6 @@ void MainWindow::on_actionClose_meteo_points_triggered()
     resetMeteoPoints();
     meteoPointsLegend->setVisible(false);
     myProject.closeMeteoPointsDB();
-    elaborationBox->hide();
 }
 
 void MainWindow::on_actionClose_meteo_grid_triggered()
@@ -947,7 +819,6 @@ void MainWindow::on_actionClose_meteo_grid_triggered()
         meteoGridObj->redrawRequested();
         meteoGridLegend->setVisible(false);
         myProject.closeMeteoGridDB();
-        elaborationBox->hide();
         ui->meteoGridOpacitySlider->setEnabled(false);
     }
 }
@@ -974,18 +845,31 @@ void MainWindow::on_actionInterpolationSettings_triggered()
 
     InterpolationDialog* myInterpolationDialog = new InterpolationDialog(myProject.settings, &myProject.interpolationSettings);
     myProject.copyInterpolationSettingsToQuality();
+
+    myInterpolationDialog->close();
 }
 
 
 void MainWindow::on_actionParameters_triggered()
 {
-    SettingsDialog* settingsDialog = new SettingsDialog(myProject.pathSetting, myProject.settings, &myProject.gisSettings, myProject.quality, myProject.clima->getElabSettings());
+    SettingsDialog* mySettingsDialog = new SettingsDialog(myProject.pathSetting, myProject.settings, &myProject.gisSettings, myProject.quality, myProject.elaborationSettings);
     if (startCenter->latitude() != myProject.gisSettings.startLocation.latitude || startCenter->longitude() != myProject.gisSettings.startLocation.longitude)
     {
         startCenter->setLatitude(myProject.gisSettings.startLocation.latitude);
         startCenter->setLongitude(myProject.gisSettings.startLocation.longitude);
         this->mapView->centerOn(startCenter->lonLat());
     }
+
+    mySettingsDialog->close();
+}
+
+
+void MainWindow::on_actionShowLocation_triggered()
+{
+    myProject.currentVariable = noMeteoVar;
+    this->ui->actionShowLocation->setChecked(true);
+    if (this->meteoGridObj != NULL) this->meteoGridObj->setDrawBorders(true);
+    this->updateVariable();
 }
 
 
@@ -1055,6 +939,4 @@ void MainWindow::on_actionCriteria3D_Initialize_triggered()
         QMessageBox::information(NULL, "", "Criteria3D initialized.");
 }
 // ----------- end CRITERIA3D functions ------------------------------------
-
-
 

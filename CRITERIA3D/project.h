@@ -1,6 +1,8 @@
 #ifndef PROJECT_H
 #define PROJECT_H
 
+    #define CRITERIA3D
+
     #ifndef GIS_H
         #include "gis.h"
     #endif
@@ -25,9 +27,7 @@
         #include "crit3dProject.h"
     #endif
 
-    #ifndef CRIT3DCLIMATE_H
-        #include "crit3dClimate.h"
-    #endif
+    #include "elaborationSettings.h"
 
     #ifdef NETCDF
         #include "netcdfHandler.h"
@@ -62,12 +62,12 @@
         Crit3DMeteoGridDbHandler* meteoGridDbHandler;
         gridAggregationMethod grdAggrMethod;
 
-        Crit3DClimate* clima;
-
         Crit3DColorScale *meteoPointsColorScale;
 
         int nrMeteoPoints;
         bool isElabMeteoPointsValue;
+
+        Crit3DElaborationSettings* elaborationSettings;
 
         Crit3DQuality* quality;
         bool checkSpatialQuality;
