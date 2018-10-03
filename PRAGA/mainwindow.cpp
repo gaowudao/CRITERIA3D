@@ -15,7 +15,7 @@
 #include "tileSources/OSMTileSource.h"
 #include "tileSources/GridTileSource.h"
 #include "tileSources/CompositeTileSource.h"
-#include "guts/CompositeTileSourceConfigurationWidget.h"
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "formRunInfo.h"

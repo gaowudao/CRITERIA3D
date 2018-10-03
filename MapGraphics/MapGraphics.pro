@@ -7,6 +7,7 @@
 QT       += widgets network sql
 
 TEMPLATE = lib
+CONFIG += staticlib
 
 unix:{
     CONFIG += release
