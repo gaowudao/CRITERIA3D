@@ -1045,11 +1045,18 @@ bool Project::writeTopographicDistanceMaps()
     if (! QDir(mapsFolder).exists())
         QDir().mkdir(mapsFolder);
 
+    formRunInfo myInfo;
+    int infoStep;
+    QString infoStr = "Computing topographic distance maps...";
+    infoStep = myInfo.start(infoStr, nrMeteoPoints);
+
     std::string myError;
     std::string fileName;
     gis::Crit3DRasterGrid myMap;
     for (int i=0; i < nrMeteoPoints; i++)
     {
+        myInfo.setValue(i);
+
         if (meteoPoints[i].active)
         {
             if (gis::topographicDistanceMap(meteoPoints[i].point, DTM, &myMap))
@@ -1063,6 +1070,8 @@ bool Project::writeTopographicDistanceMaps()
             }
         }
     }
+
+    myInfo.close();
 
     return true;
 }
@@ -1078,10 +1087,17 @@ bool Project::loadTopographicDistanceMaps()
     QString mapsFolder = this->path + "DATA/GEO/TAD/";
     if (! QDir(mapsFolder).exists()) return false;
 
+    formRunInfo myInfo;
+    int infoStep;
+    QString infoStr = "Loading topographic distance maps...";
+    infoStep = myInfo.start(infoStr, nrMeteoPoints);
+
     std::string myError;
     std::string fileName;
     for (int i=0; i < nrMeteoPoints; i++)
     {
+        myInfo.setValue(i);
+
         if (meteoPoints[i].active)
         {
             fileName = mapsFolder.toStdString() + "TAD_" + meteoPoints[i].id;
@@ -1092,6 +1108,8 @@ bool Project::loadTopographicDistanceMaps()
             }
         }
     }
+
+    myInfo.close();
 
     return true;
 }
