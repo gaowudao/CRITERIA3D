@@ -1334,6 +1334,7 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
         {
             if (!climatePointsCycleGrid(true))
             {
+                errorString = "climatePointsCycleGrid error";
                 return false;
             }
             else
@@ -1345,6 +1346,7 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
         {
             if (!elaborationPointsCycleGrid(isAnomaly, true))
             {
+                errorString = "elaborationPointsCycleGrid error";
                 return false;
             }
             meteoGridDbHandler->meteoGrid()->fillMeteoRasterElabValue();
@@ -1353,6 +1355,7 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
         {
             if (!elaborationPointsCycleGrid(isAnomaly, true))
             {
+                errorString = "elaborationPointsCycleGrid error";
                 return false;
             }
             meteoGridDbHandler->meteoGrid()->fillMeteoRasterAnomalyValue();
@@ -1365,6 +1368,7 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
         {
             if (!climatePointsCycle(true))
             {
+                errorString = "climatePointsCycle error";
                 return false;
             }
             else
@@ -1376,6 +1380,7 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
         {
             if (!elaborationPointsCycle(isAnomaly, true))
             {
+                errorString = "elaborationPointsCycle error";
                 return false;
             }
         }
@@ -1383,6 +1388,7 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
         {
             if (!elaborationPointsCycle(isAnomaly, true))
             {
+                errorString = "elaborationPointsCycle error";
                 return false;
             }
         }
@@ -1589,10 +1595,12 @@ bool Project::elaborationPointsCycleGrid(bool isAnomaly, bool showInfo)
 
 bool Project::climatePointsCycle(bool showInfo)
 {
+    bool isMeteoGrid = false;
     formRunInfo myInfo;
     int infoStep;
     QString infoStr;
 
+    int validCell = 0;
     QDate startDate;
     QDate endDate;
 
@@ -1627,10 +1635,23 @@ bool Project::climatePointsCycle(bool showInfo)
                 myInfo.setValue(i);
             }
 
-            //climateOnPoint(&errorString, meteoPointsDbHandler, NULL, &meteoPoints[i], clima, isMeteoGrid, startDate, endDate, true);
+            if (climateOnPoint(&errorString, meteoPointsDbHandler, NULL, &meteoPoints[i], clima, isMeteoGrid, startDate, endDate, true))
+            {
+                validCell = validCell + 1;
+            }
 
         }
         if (showInfo) myInfo.close();
+
+        if (validCell == 0)
+        {
+            errorString = "no valid cells available";
+            return false;
+        }
+        else
+        {
+            return true;
+        }
 
     }
     else
@@ -1643,6 +1664,7 @@ bool Project::climatePointsCycle(bool showInfo)
 bool Project::climatePointsCycleGrid(bool showInfo)
 {
 
+    bool isMeteoGrid = true;
     formRunInfo myInfo;
     int infoStep;
     QString infoStr;
@@ -1688,7 +1710,7 @@ bool Project::climatePointsCycleGrid(bool showInfo)
                {
 
                    Crit3DMeteoPoint* meteoPoint = meteoGridDbHandler->meteoGrid()->meteoPointPointer(row,col);
-                   //climateOnPoint(&errorString, NULL, meteoGridDbHandler, meteoPoint, clima, isMeteoGrid, startDate, endDate, true);
+                   climateOnPoint(&errorString, NULL, meteoGridDbHandler, meteoPoint, clima, isMeteoGrid, startDate, endDate, true);
 
                }
 

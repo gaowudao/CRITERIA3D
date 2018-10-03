@@ -63,11 +63,14 @@ public:
         bool loadHourlyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3DMeteoPoint *meteoPoint);
         std::vector<float> loadHourlyVar(std::string *myError, meteoVariable variable, Crit3DDate dateStart, Crit3DDate dateEnd, QDateTime* firstDateDB, Crit3DMeteoPoint *meteoPoint);
         void closeDatabase();
-    protected:
-        QSqlDatabase _db;
-    signals:
+        QSqlDatabase getDb() const;
+        void setDb(const QSqlDatabase &db);
 
-    protected slots:
+protected:
+        QSqlDatabase _db;
+signals:
+
+protected slots:
 };
 
 
