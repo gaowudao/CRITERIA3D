@@ -11,12 +11,8 @@
         #include "quality.h"
     #endif
 
-    #ifndef QSTRING_H
-        #include <QString>
-    #endif
-
-    #ifndef DOWNLOAD_H
-        #include "download.h"
+    #ifndef DBMETEOPOINTS_H
+        #include "dbMeteoPoints.h"
     #endif
 
     #ifndef DBMETEOGRID_H
@@ -29,14 +25,11 @@
 
     #include "elaborationSettings.h"
 
-    #ifdef NETCDF
-        #include "netcdfHandler.h"
-    #endif
-
     #ifndef INTERPOLATIONPOINT_H
         #include "interpolationPoint.h"
     #endif
 
+    #include <QString>
     #include <QList>
     #include <QDate>
     #include <fstream>
@@ -56,18 +49,13 @@
         std::ofstream logFile;
         std::string errorString;
 
+        int nrMeteoPoints;
         Crit3DMeteoPoint* meteoPoints;
         Crit3DMeteoPointsDbHandler* meteoPointsDbHandler;
         QList<gis::Crit3DGeoPoint> meteoPointsSelected;
         Crit3DMeteoGridDbHandler* meteoGridDbHandler;
-        gridAggregationMethod grdAggrMethod;
 
         Crit3DColorScale *meteoPointsColorScale;
-
-        int nrMeteoPoints;
-        bool isElabMeteoPointsValue;
-
-        Crit3DElaborationSettings* elaborationSettings;
 
         Crit3DQuality* quality;
         bool checkSpatialQuality;
@@ -75,6 +63,7 @@
         meteoVariable currentVariable;
 
         gis::Crit3DGisSettings gisSettings;
+        Crit3DElaborationSettings* elaborationSettings;
 
         gis::Crit3DRasterGrid DTM;
         gis::Crit3DRasterGrid dataRaster;
@@ -102,7 +91,7 @@
         void setFrequency(frequencyType myFrequency);
         QDate getCurrentDate();
         int getCurrentHour();
-        //Crit3DTime Project::getCurrentTime();
+
         Crit3DTime getCurrentTime();
         frequencyType getFrequency();
         meteoVariable getCurrentVariable();
@@ -133,9 +122,6 @@
         bool interpolationDemMain(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
         bool interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
         bool interpolateDemRadiation(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
-
-        bool elaborationCheck(bool isMeteoGrid, bool isAnomaly);
-        bool elaboration(bool isMeteoGrid, bool isAnomaly);
 
         bool loadModelParameters(QString dbName);
         bool loadSoilData(QString dbName);
