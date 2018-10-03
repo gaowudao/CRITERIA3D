@@ -75,7 +75,7 @@ Crit3DMeteoPoint::Crit3DMeteoPoint()
 
     proxyValues.clear();
     lapseRateCode = primary;
-    indexTopoDistMap = NODATA;
+    topographicDistance = NULL;
 }
 
 

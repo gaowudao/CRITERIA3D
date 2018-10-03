@@ -282,6 +282,7 @@ bool passDataToInterpolation(Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints,
             myPoint.point->z = float(meteoPoints[i].point.z);
             myPoint.lapseRateCode = meteoPoints[i].lapseRateCode;
             myPoint.proxyValues = meteoPoints[i].proxyValues;
+            myPoint.topographicDistance = meteoPoints[i].topographicDistance;
             myPoint.isActive = true;
 
             if (xMin == NODATA)

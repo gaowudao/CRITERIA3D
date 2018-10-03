@@ -176,6 +176,8 @@ float shepardFindRadius(Crit3DInterpolationSettings* mySettings,
 void computeDistances(vector <Crit3DInterpolationDataPoint> &myPoints,  Crit3DInterpolationSettings* mySettings,
                       float x, float y, float z, bool excludeSupplemental)
 {
+    int row, col;
+
     for (unsigned long i = 0; i < myPoints.size() ; i++)
     {
         if (excludeSupplemental && ! checkLapseRateCode(myPoints.at(i).lapseRateCode, mySettings->getUseLapseRateCode(), false))
@@ -191,12 +193,13 @@ void computeDistances(vector <Crit3DInterpolationDataPoint> &myPoints,  Crit3DIn
                 if (kh != 0)
                 {
                     float topoDistance = NODATA;
-                    if (myPoints.at(i).indexTopoDistMap != NODATA)
+                    if (myPoints.at(i).topographicDistance != NULL)
                     {
-                        /*if (GIS.isOutOfGridXY(x, y, TadMaps(pts(i).indexTadMap)) Then
-                            GIS.GetRowColFromXY TadMaps(pts(i).indexTadMap), x, y, myRow, myCol
-                            topoDistance = TadMaps(pts(i).indexTadMap).Value(myRow, myCol)
-                        */
+                        if (! gis::isOutOfGridXY(x, y, myPoints.at(i).topographicDistance->header))
+                        {
+                            gis::getRowColFromXY(*(myPoints.at(i).topographicDistance->header), myPoints.at(i).point->utm, &row, &col);
+                            topoDistance = myPoints.at(i).topographicDistance->value[row][col];
+                        }
                     }
 
                     if (topoDistance = NODATA)

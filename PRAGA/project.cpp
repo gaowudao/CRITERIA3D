@@ -1067,6 +1067,34 @@ bool Project::writeTopographicDistanceMaps()
     return true;
 }
 
+bool Project::loadTopographicDistanceMaps()
+{
+    if (nrMeteoPoints == 0)
+    {
+        errorString = "No meteo points available";
+        return false;
+    }
+
+    QString mapsFolder = this->path + "DATA/GEO/TAD/";
+    if (! QDir(mapsFolder).exists()) return false;
+
+    std::string myError;
+    std::string fileName;
+    for (int i=0; i < nrMeteoPoints; i++)
+    {
+        if (meteoPoints[i].active)
+        {
+            fileName = mapsFolder.toStdString() + "TAD_" + meteoPoints[i].id;
+            if (! gis::readEsriGrid(fileName, meteoPoints[i].topographicDistance, &myError))
+            {
+                errorString = myError;
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
 
 bool Project::interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo)
 {

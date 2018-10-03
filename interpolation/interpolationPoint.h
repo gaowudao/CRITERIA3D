@@ -19,7 +19,7 @@
         float deltaZ;
         float value;
         lapseRateCodeType lapseRateCode;
-        int indexTopoDistMap;
+        gis::Crit3DRasterGrid* topographicDistance;
         std::vector <float> proxyValues;
 
         Crit3DInterpolationDataPoint();

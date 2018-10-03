@@ -101,7 +101,7 @@
 
         std::vector <float> proxyValues;
         lapseRateCodeType lapseRateCode;
-        int indexTopoDistMap;
+        gis::Crit3DRasterGrid* topographicDistance;
 
         Crit3DMeteoPoint();
 
