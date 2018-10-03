@@ -1,7 +1,9 @@
-#include <QtDebug>
+#include "commonConstants.h"
 #include "stationMarker.h"
 #include "project.h"
-#include "commonConstants.h"
+
+#include <QMenu>
+#include <QtDebug>
 
 
 extern Project myProject;

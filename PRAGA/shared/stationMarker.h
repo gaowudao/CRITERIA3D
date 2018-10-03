@@ -5,8 +5,6 @@
 #include "CircleObject.h"
 #include "MapGraphicsView.h"
 
-#include <QMenu>
-
 class StationMarker : public CircleObject
 {
     Q_OBJECT

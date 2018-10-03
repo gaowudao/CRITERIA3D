@@ -1,7 +1,6 @@
 #ifndef RUBBERBAND_H
 #define RUBBERBAND_H
 
-#include <QObject>
 #include <QRubberBand>
 #include <QPainter>
 #include <QPaintEvent>

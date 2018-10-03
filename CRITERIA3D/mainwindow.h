@@ -3,15 +3,13 @@
 
     #include <QMainWindow>
     #include <QList>
-    #include <QCheckBox>
-    #include <QGroupBox>
 
+    #include "tileSources/OSMTileSource.h"
     #include "Position.h"
     #include "rubberBand.h"
     #include "MapGraphicsView.h"
     #include "MapGraphicsScene.h"
     #include "stationMarker.h"
-    #include "tileSources/OSMTileSource.h"
     #include "rasterObject.h"
     #include "colorlegend.h"
 
@@ -134,10 +132,8 @@
         ColorLegend *meteoGridLegend;
         QList<StationMarker*> pointList;
         RubberBand *myRubberBand;
-        bool showPoints;
 
-        QList<QCheckBox*> datasetCheckbox;
-        QCheckBox* all;
+        bool showPoints;
 
         void setMapSource(OSMTileSource::OSMTileType mySource);
 

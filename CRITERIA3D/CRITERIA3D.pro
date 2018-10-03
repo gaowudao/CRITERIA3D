@@ -7,17 +7,18 @@
 #
 #-----------------------------------------------------
 
-QT       += core gui widgets network sql xml
+QT       += core gui network widgets sql xml
 
 TARGET = CRITERIA3D
 TEMPLATE = app
 
-INCLUDEPATH +=  ../PRAGA/shared ../climate \
-                ../MapGraphics ../soilFluxes3D/header \
+INCLUDEPATH +=  ../PRAGA/shared ../climate  \
+                ../MapGraphics ../soilFluxes3D/header  \
                 ../crit3dDate ../mathFunctions ../soil ../crop \
-                ../meteo ../gis ../utilities \
-                ../interpolation ../solarRadiation ../waterBalance3D \
-                ../dbMeteoPoints ../dbMeteoGrid
+                ../meteo ../gis ../utilities  \
+                ../interpolation ../solarRadiation  \
+                ../dbMeteoPoints ../dbMeteoGrid ../waterBalance3D
+
 
 CONFIG += debug_and_release
 
@@ -61,9 +62,6 @@ CONFIG(debug, debug|release) {
     LIBS += -L../crit3dDate/release -lcrit3dDate
     LIBS += -L../mathFunctions/release -lmathFunctions
 }
-
-
-#LIBS += -L$$(NC4_INSTALL_DIR)/lib -lnetcdf
 
 
 SOURCES += main.cpp\

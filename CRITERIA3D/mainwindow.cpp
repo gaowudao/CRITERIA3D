@@ -23,7 +23,6 @@
 #include "ui_mainwindow.h"
 #include "Position.h"
 #include "dbMeteoPoints.h"
-#include "download.h"
 #include "project.h"
 #include "utilities.h"
 #include "commonConstants.h"
@@ -392,8 +391,6 @@ void MainWindow::resetMeteoPoints()
         this->mapView->scene()->removeObject(this->pointList[i]);
 
     this->pointList.clear();
-
-    datasetCheckbox.clear();
 
     this->myRubberBand = NULL;
 }

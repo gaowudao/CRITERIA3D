@@ -10,7 +10,7 @@
 #ifndef INTERPOLATIONSETTINGS_H
     #include "interpolationSettings.h"
 #endif
-#ifndef INTERPOLATIONPOINT
+#ifndef INTERPOLATIONPOINT_H
     #include "interpolationPoint.h"
 #endif
 
