@@ -3,7 +3,6 @@
 
     #include <QString>
 
-    #include "color.h"
     #include "meteo.h"
 
     QString editValue(QString windowsTitle, QString defaultValue);

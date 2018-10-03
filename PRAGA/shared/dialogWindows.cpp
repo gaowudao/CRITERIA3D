@@ -16,6 +16,7 @@
 
 #include "commonConstants.h"
 #include "dialogWindows.h"
+#include "color.h"
 #include "project.h"
 
 
