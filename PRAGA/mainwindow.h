@@ -85,6 +85,8 @@
 
         void on_actionWriteTAD_triggered();
 
+        void on_actionLoadTAD_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

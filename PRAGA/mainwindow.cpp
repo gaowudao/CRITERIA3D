@@ -1561,3 +1561,9 @@ void MainWindow::on_actionWriteTAD_triggered()
     if (! myProject.writeTopographicDistanceMaps())
         myProject.logError();
 }
+
+void MainWindow::on_actionLoadTAD_triggered()
+{
+    if (! myProject.loadTopographicDistanceMaps())
+        myProject.logError();
+}
