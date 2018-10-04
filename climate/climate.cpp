@@ -314,6 +314,30 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
     }
 
     case monthlyPeriod:
+    {
+        bool okAtLeastOne = false;
+        for (int i = 1; i<=12; i++)
+        {
+
+            Crit3DDate startD (1, i, clima->yearStart());
+            QDate temp(clima->yearEnd(), i, 1);
+            int dayEnd = temp.daysInMonth();
+
+            Crit3DDate endD (dayEnd, i, clima->yearStart());
+            //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
+
+            result = computeStatistic(outputValues, meteoPoint, clima->yearStart(), clima->yearEnd(), startD, endD, clima->nYears(), elab1, clima->param1(), elab2, clima->param2(), clima->getElabSettings());
+
+            // LC spostare poi la write in climateOnPoint e farne una unica
+            saveMonthlyElab(db, myError, QString::fromStdString(meteoPoint->id), i, result, clima->climateElab());
+
+            if (result != NODATA)
+            {
+                okAtLeastOne = true;
+            }
+        }
+        return okAtLeastOne;
+    }
 
     case seasonalPeriod:
 
