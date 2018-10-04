@@ -274,7 +274,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
             result = computeStatistic(outputValues, meteoPoint, clima->yearStart(), clima->yearEnd(), startD, endD, clima->nYears(), elab1, clima->param1(), elab2, clima->param2(), settings);
 
             // LC spostare poi la write in climateOnPoint e farne una unica
-            writeDailyElab(db, myError, QString::fromStdString(meteoPoint->id), i, result, clima->climateElab());
+            saveDailyElab(db, myError, QString::fromStdString(meteoPoint->id), i, result, clima->climateElab());
 
             if (result != NODATA)
             {
