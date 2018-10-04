@@ -287,6 +287,31 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
 
     }
     case decadalPeriod:
+    {
+        bool okAtLeastOne = false;
+        for (int i = 1; i<=36; i++)
+        {
+            int dayStart;
+            int dayEnd;
+            int month;
+            intervalDecade(i, clima->yearStart(), &dayStart, &dayEnd, &month);
+
+            Crit3DDate startD (dayStart, month, clima->yearStart());
+            Crit3DDate endD (dayEnd, month, clima->yearStart());
+            //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
+
+            result = computeStatistic(outputValues, meteoPoint, clima->yearStart(), clima->yearEnd(), startD, endD, clima->nYears(), elab1, clima->param1(), elab2, clima->param2(), clima->getElabSettings());
+
+            // LC spostare poi la write in climateOnPoint e farne una unica
+            saveDecadalElab(db, myError, QString::fromStdString(meteoPoint->id), i, result, clima->climateElab());
+
+            if (result != NODATA)
+            {
+                okAtLeastOne = true;
+            }
+        }
+        return okAtLeastOne;
+    }
 
     case monthlyPeriod:
 
