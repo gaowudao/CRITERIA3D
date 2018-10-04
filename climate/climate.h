@@ -86,7 +86,7 @@
     bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler,
                         Crit3DMeteoPoint* meteoPoint, Crit3DClimate* clima, bool isMeteoGrid, QDate startDate, QDate endDate, bool loadData);
 
-    bool climateTemporalCycle(Crit3DClimate* clima, std::vector<float> &outputValues, Crit3DMeteoPoint* meteoPoint, QDate firstDate, QDate lastDate, meteoComputation elab1, meteoComputation elab2);
+    bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vector<float> &outputValues, Crit3DMeteoPoint* meteoPoint, QDate firstDate, QDate lastDate, meteoComputation elab1, meteoComputation elab2);
 
     float thomDayTime(float tempMax, float relHumMinAir);
 

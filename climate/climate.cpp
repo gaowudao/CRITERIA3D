@@ -158,12 +158,10 @@ bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
 
     if (isMeteoGrid)
     {
-        using namespace dbClimateGrid;
         clima->setDb(meteoGridDbHandler->db());
     }
     else
     {
-        using namespace dbClimatePoint;
         clima->setDb(meteoPointsDbHandler->getDb());
     }
     Crit3DMeteoPoint* meteoPointTemp = new Crit3DMeteoPoint;
@@ -222,7 +220,7 @@ bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
 
     if (dataLoaded)
     {
-        if (climateTemporalCycle(clima, outputValues, meteoPointTemp, startDate, endDate, elab1MeteoComp, elab2MeteoComp))
+        if (climateTemporalCycle(myError, clima, outputValues, meteoPointTemp, startDate, endDate, elab1MeteoComp, elab2MeteoComp))
         {
             delete meteoPointTemp;
             return true;
@@ -235,10 +233,11 @@ bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
 
 }
 
-bool climateTemporalCycle(Crit3DClimate* clima, std::vector<float> &outputValues, Crit3DMeteoPoint* meteoPoint, QDate startDate, QDate endDate, meteoComputation elab1, meteoComputation elab2)
+bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vector<float> &outputValues, Crit3DMeteoPoint* meteoPoint, QDate startDate, QDate endDate, meteoComputation elab1, meteoComputation elab2)
 {
 
     QSqlDatabase db = clima->db();
+
     float result;
 
     switch(clima->periodType())
@@ -246,8 +245,6 @@ bool climateTemporalCycle(Crit3DClimate* clima, std::vector<float> &outputValues
 
     case dailyPeriod:
     {
-
-        dbClimatePoint::createDailyTable(db);
 
         bool okAtLeastOne = false;
         int leapYears = 0;
@@ -277,7 +274,7 @@ bool climateTemporalCycle(Crit3DClimate* clima, std::vector<float> &outputValues
             result = computeStatistic(outputValues, meteoPoint, clima->yearStart(), clima->yearEnd(), startD, endD, clima->nYears(), elab1, clima->param1(), elab2, clima->param2(), settings);
 
             // LC spostare poi la write in climateOnPoint e farne una unica
-            writeDailyResult(db, QString::fromStdString(meteoPoint->id), i, result, clima->climateElab());
+            writeDailyElab(db, myError, QString::fromStdString(meteoPoint->id), i, result, clima->climateElab());
 
             if (result != NODATA)
             {
