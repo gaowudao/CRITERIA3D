@@ -28,6 +28,7 @@ Crit3DClimate::Crit3DClimate()
     _currentElab1 = "";
     _currentYearStart = NODATA;
     _currentYearEnd = NODATA;
+    _currentPeriodType = noPeriodType;
 
     elabSettings = new Crit3DElaborationSettings();
 }
@@ -273,6 +274,16 @@ int Crit3DClimate::getCurrentYearEnd() const
 void Crit3DClimate::setCurrentYearEnd(int currentYearEnd)
 {
     _currentYearEnd = currentYearEnd;
+}
+
+period Crit3DClimate::getCurrentPeriodType() const
+{
+    return _currentPeriodType;
+}
+
+void Crit3DClimate::setCurrentPeriodType(const period &currentPeriodType)
+{
+    _currentPeriodType = currentPeriodType;
 }
 
 QSqlDatabase Crit3DClimate::db() const

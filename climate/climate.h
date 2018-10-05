@@ -149,6 +149,6 @@
 
     int getClimateIndexFromDate(QDate myDate, period periodType);
 
-    float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoPoint, int firstYear, int lastYear, Crit3DDate firstDate, Crit3DDate lastDate, int nYears, meteoComputation elab1, float param1, meteoComputation elab2, float param2, Crit3DElaborationSettings *elabSettings);
+    float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoPoint, Crit3DClimate* clima, Crit3DDate firstDate, Crit3DDate lastDate, int nYears, meteoComputation elab1, meteoComputation elab2, Crit3DElaborationSettings *elabSettings);
 
 #endif // CLIMATE_H

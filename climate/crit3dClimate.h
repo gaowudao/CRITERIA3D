@@ -85,6 +85,9 @@
         int getCurrentYearEnd() const;
         void setCurrentYearEnd(int currentYearEnd);
 
+        period getCurrentPeriodType() const;
+        void setCurrentPeriodType(const period &currentPeriodType);
+
     private:
         QSqlDatabase _db;
         QString _climateElab;
@@ -104,6 +107,7 @@
         float _param2;
         Crit3DElaborationSettings *elabSettings;
         meteoVariable _currentVar;
+        period _currentPeriodType;
         QString _currentElab1;
         int _currentYearStart;
         int _currentYearEnd;

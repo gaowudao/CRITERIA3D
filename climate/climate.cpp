@@ -90,7 +90,7 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
             return false;
         }
 
-        result = computeStatistic(outputValues, meteoPointTemp, clima->yearStart(), clima->yearEnd(), startD, endD, clima->nYears(), elab1MeteoComp, clima->param1(), elab2MeteoComp, clima->param2(), clima->getElabSettings());
+        result = computeStatistic(outputValues, meteoPointTemp, clima, startD, endD, clima->nYears(), elab1MeteoComp, elab2MeteoComp, clima->getElabSettings());
 
         if (isAnomaly)
         {
@@ -209,10 +209,10 @@ bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
 //    }
 //    else
 //    {
-//        changeDataSet = false;
+//        changeDataSet = false;  // LC TBC
 //    }
-    changeDataSet = true; // LC TBC
 
+    changeDataSet = true;  // LC TBC
     if (changeDataSet)
     {
         dataLoaded = preElaboration(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPointTemp, isMeteoGrid, clima->variable(), elab1MeteoComp, startDate, endDate, outputValues, &percValue, clima->getElabSettings());
@@ -245,6 +245,8 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
 
     case dailyPeriod:
     {
+
+        clima->setCurrentPeriodType(clima->periodType());
 
         bool okAtLeastOne = false;
         int nLeapYears = 0;
@@ -293,7 +295,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
 
             //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
 
-            result = computeStatistic(outputValues, meteoPoint, clima->yearStart(), clima->yearEnd(), startD, endD, clima->nYears(), elab1, clima->param1(), elab2, clima->param2(), settings);
+            result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, settings);
 
             // LC spostare poi la write in climateOnPoint e farne una unica
             saveDailyElab(db, myError, QString::fromStdString(meteoPoint->id), i, result, clima->climateElab());
@@ -328,7 +330,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
             Crit3DDate endD (dayEnd, month, clima->yearStart());
             //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
 
-            result = computeStatistic(outputValues, meteoPoint, clima->yearStart(), clima->yearEnd(), startD, endD, clima->nYears(), elab1, clima->param1(), elab2, clima->param2(), clima->getElabSettings());
+            result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, clima->getElabSettings());
 
             // LC spostare poi la write in climateOnPoint e farne una unica
             saveDecadalElab(db, myError, QString::fromStdString(meteoPoint->id), i, result, clima->climateElab());
@@ -354,7 +356,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
             Crit3DDate endD (dayEnd, i, clima->yearStart());
             //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
 
-            result = computeStatistic(outputValues, meteoPoint, clima->yearStart(), clima->yearEnd(), startD, endD, clima->nYears(), elab1, clima->param1(), elab2, clima->param2(), clima->getElabSettings());
+            result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, clima->getElabSettings());
 
             // LC spostare poi la write in climateOnPoint e farne una unica
             saveMonthlyElab(db, myError, QString::fromStdString(meteoPoint->id), i, result, clima->climateElab());
@@ -396,7 +398,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
 
             //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
 
-            result = computeStatistic(outputValues, meteoPoint, clima->yearStart(), clima->yearEnd(), startD, endD, seasonalNPeriodYears, elab1, clima->param1(), elab2, clima->param2(), clima->getElabSettings());
+            result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, seasonalNPeriodYears, elab1, elab2, clima->getElabSettings());
 
             // LC spostare poi la write in climateOnPoint e farne una unica
             saveSeasonalElab(db, myError, QString::fromStdString(meteoPoint->id), i, result, clima->climateElab());
@@ -417,7 +419,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
         Crit3DDate endD (31, 12, clima->yearStart());
         //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
 
-        result = computeStatistic(outputValues, meteoPoint, clima->yearStart(), clima->yearEnd(), startD, endD, clima->nYears(), elab1, clima->param1(), elab2, clima->param2(), clima->getElabSettings());
+        result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, clima->getElabSettings());
 
         // LC spostare poi la write in climateOnPoint e farne una unica
         saveAnnualElab(db, myError, QString::fromStdString(meteoPoint->id), result, clima->climateElab());
@@ -438,7 +440,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
 
         //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
 
-        result = computeStatistic(outputValues, meteoPoint, clima->yearStart(), clima->yearEnd(), startD, endD, clima->nYears(), elab1, clima->param1(), elab2, clima->param2(), clima->getElabSettings());
+        result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, clima->getElabSettings());
 
         // LC spostare poi la write in climateOnPoint e farne una unica
         saveAnnualElab(db, myError, QString::fromStdString(meteoPoint->id), result, clima->climateElab());
@@ -1871,7 +1873,7 @@ int getClimateIndexFromDate(QDate myDate, period periodType)
 
 //nYears   = 0         same year
 //nYears   = 1,2,3...   betweend years 1,2,3...
-float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoPoint, int firstYear, int lastYear, Crit3DDate firstDate, Crit3DDate lastDate, int nYears, meteoComputation elab1, float param1, meteoComputation elab2, float param2, Crit3DElaborationSettings* elabSettings)
+float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoPoint, Crit3DClimate *clima, Crit3DDate firstDate, Crit3DDate lastDate, int nYears, meteoComputation elab1, meteoComputation elab2, Crit3DElaborationSettings* elabSettings)
 {
 
     std::vector<float> values;
@@ -1883,6 +1885,11 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
     unsigned int index;
 
     float primary = NODATA;
+
+    int firstYear = clima->yearStart();
+    int lastYear = clima->yearEnd();
+    float param1 = clima->param1();
+    float param2 = clima->param2();
 
     // no secondary elab
     if (elab2 == noMeteoComp)
@@ -1913,6 +1920,25 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
             {
                 for (int presentYear = firstYear; presentYear <= lastYear; presentYear++)
                 {
+
+                    bool skipInvalidDay = false;
+
+                    // daily clima elaboration, not leap year
+                    if ( (clima->getCurrentPeriodType() == dailyPeriod) && (!isLeapYear(presentYear)))
+                    {
+                        if ( (firstDate.day >= 29) && (firstDate.month >= 2) )
+                        {
+                            if ( (firstDate.day == 31) && (firstDate.month == 12) )
+                            {
+                                skipInvalidDay = true;
+                            }
+                            else
+                            {
+                                firstDate = firstDate.addDays(1);
+                                lastDate = lastDate.addDays(1);
+                            }
+                        }
+                    }
                     firstDate.year = presentYear;
                     lastDate.year = presentYear;
 
@@ -1931,19 +1957,23 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                     numberOfDays = difference(firstDate, lastDate) +1;
                     presentDate = firstDate;
 
+
                     for (int i = 0; i < numberOfDays; i++)
                     {
 
                         float value = NODATA;
-                        index = difference(meteoPoint->obsDataD[0].date, presentDate);
-                        if (index < inputValues.size())
+                        if (!skipInvalidDay)
                         {
-                            value = inputValues.at(index);
-                        }
-                        if (int(value) != NODATA)
-                        {
-                            values.push_back(value);
-                            nValidValues = nValidValues + 1;
+                            index = difference(meteoPoint->obsDataD[0].date, presentDate);
+                            if (index < inputValues.size())
+                            {
+                                value = inputValues.at(index);
+                            }
+                            if (int(value) != NODATA)
+                            {
+                                values.push_back(value);
+                                nValidValues = nValidValues + 1;
+                            }
                         }
 
                         nValues = nValues + 1;
@@ -1973,21 +2003,34 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
         for (int presentYear = firstYear; presentYear <= lastYear; presentYear++)
         {
 
-            // check valid date
-            if ( firstDate.year != 0 )
+            bool skipInvalidDay = false;
+            // daily elaboration, not leap year
+            if ( (clima->getCurrentPeriodType() == dailyPeriod) && (!isLeapYear(presentYear)))
             {
-                firstDate.year = presentYear;
-                lastDate.year = presentYear;
+                if ( (firstDate.day >= 29) && (firstDate.month >= 2) )
+                {
+                    if ( (firstDate.day == 31) && (firstDate.month == 12) )
+                    {
+                        skipInvalidDay = true;
+                    }
+                    else
+                    {
+                        firstDate = firstDate.addDays(1);
+                        lastDate = lastDate.addDays(1);
+                    }
+                }
+            }
+            firstDate.year = presentYear;
+            lastDate.year = presentYear;
 
 
-                if (nYears < 0)
-                {
-                    firstDate.year = (presentYear + nYears);
-                }
-                else if (nYears > 0)
-                {
-                    lastDate.year = (presentYear + nYears);
-                }
+            if (nYears < 0)
+            {
+                firstDate.year = (presentYear + nYears);
+            }
+            else if (nYears > 0)
+            {
+                lastDate.year = (presentYear + nYears);
             }
             primary = NODATA;
 
@@ -2024,14 +2067,14 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                 }
                 default:
                 {
-                    // check valid date
-                    if ( firstDate.year != 0 )
+
+                    numberOfDays = difference(firstDate, lastDate) +1;
+                    presentDate = firstDate;
+                    for (int i = 0; i < numberOfDays; i++)
                     {
-                        numberOfDays = difference(firstDate, lastDate) +1;
-                        presentDate = firstDate;
-                        for (int i = 0; i < numberOfDays; i++)
+                        float value = NODATA;
+                        if (!skipInvalidDay)
                         {
-                            float value = NODATA;
                             index = difference(meteoPoint->obsDataD[0].date, presentDate);
                             if (index < inputValues.size())
                             {
@@ -2042,11 +2085,11 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                                 values.push_back(value);
                                 nValidValues = nValidValues + 1;
                             }
-
-                            nValues = nValues + 1;
-                            presentDate = presentDate.addDays(1);
-
                         }
+
+                        nValues = nValues + 1;
+                        presentDate = presentDate.addDays(1);
+
                     }
 
                     if (nValidValues > 0)
