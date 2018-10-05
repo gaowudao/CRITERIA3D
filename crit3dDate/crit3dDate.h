@@ -36,6 +36,8 @@
         #include <string>
     #endif
 
+#define NO_DATE Crit3DDate(1,1,1800);
+
     class Crit3DDate
     {
     public:

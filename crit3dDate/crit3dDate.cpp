@@ -218,6 +218,14 @@ Crit3DDate min(const Crit3DDate& myDate1, const Crit3DDate& myDate2)
 
 Crit3DDate getDateFromDoy(int myYear, int myDoy)
 {
+    if (myDoy > 366)
+    {
+        return NO_DATE;
+    }
+    if (myDoy == 366 && isLeapYear(myYear) == false)
+    {
+        return NO_DATE;
+    }
     Crit3DDate myDate(1, 1, myYear);
     myDate = myDate.addDays(myDoy - 1);
     return (myDate);
