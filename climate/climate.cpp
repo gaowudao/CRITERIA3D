@@ -247,13 +247,20 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
     {
 
         bool okAtLeastOne = false;
-        int leapYears = 0;
+        int nLeapYears = 0;
         int totYears = 0;
+        int leapYear = 0;
+        int nDays = 366;
+
+        Crit3DDate startD;
+        Crit3DDate endD;
+
         for (int i = clima->yearStart(); i<=clima->yearEnd(); i++)
         {
             if (isLeapYear(i))
             {
-                leapYears = leapYears + 1;
+                nLeapYears = nLeapYears + 1;
+                leapYear = i; // save a leap year
             }
             totYears = totYears + 1;
         }
@@ -261,14 +268,29 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
         Crit3DElaborationSettings* settings = clima->getElabSettings();
         float minPerc = settings->getMinimumPercentage();
 
-        for (int i = 1; i<=366; i++)
+        if (nLeapYears == 0)
         {
+            nDays = nDays - 1;
+        }
+
+        for (int i = 1; i<=nDays; i++)
+        {
+            if (nLeapYears != 0)
+            {
+                startD = getDateFromDoy(leapYear, i);
+            }
+            else
+            {
+                // no leap years
+                startD = getDateFromDoy(clima->yearStart(), i);
+            }
+            endD = startD;
+
             if (i == 366)
             {
-                settings->setMinimumPercentage(minPerc * leapYears/totYears);
+                settings->setMinimumPercentage(minPerc * nLeapYears/totYears);
             }
-            Crit3DDate startD = getDateFromDoy(clima->yearStart(), i);
-            Crit3DDate endD = startD;
+
             //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
 
             result = computeStatistic(outputValues, meteoPoint, clima->yearStart(), clima->yearEnd(), startD, endD, clima->nYears(), elab1, clima->param1(), elab2, clima->param2(), settings);
@@ -280,6 +302,12 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
             {
                 okAtLeastOne = true;
             }
+        }
+
+        // if there are no leap years, save NODATA into 366row
+        if (nLeapYears == 0)
+        {
+            saveDailyElab(db, myError, QString::fromStdString(meteoPoint->id), 366, NODATA, clima->climateElab());
         }
 
         settings->setMinimumPercentage(minPerc);
@@ -1944,16 +1972,22 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
 
         for (int presentYear = firstYear; presentYear <= lastYear; presentYear++)
         {
-            firstDate.year = presentYear;
-            lastDate.year = presentYear;
 
-            if (nYears < 0)
+            // check valid date
+            if ( firstDate.year != 0 )
             {
-                firstDate.year = (presentYear + nYears);
-            }
-            else if (nYears > 0)
-            {
-                lastDate.year = (presentYear + nYears);
+                firstDate.year = presentYear;
+                lastDate.year = presentYear;
+
+
+                if (nYears < 0)
+                {
+                    firstDate.year = (presentYear + nYears);
+                }
+                else if (nYears > 0)
+                {
+                    lastDate.year = (presentYear + nYears);
+                }
             }
             primary = NODATA;
 
@@ -1990,25 +2024,29 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                 }
                 default:
                 {
-                    numberOfDays = difference(firstDate, lastDate) +1;
-                    presentDate = firstDate;
-                    for (int i = 0; i < numberOfDays; i++)
+                    // check valid date
+                    if ( firstDate.year != 0 )
                     {
-                        float value = NODATA;
-                        index = difference(meteoPoint->obsDataD[0].date, presentDate);
-                        if (index < inputValues.size())
+                        numberOfDays = difference(firstDate, lastDate) +1;
+                        presentDate = firstDate;
+                        for (int i = 0; i < numberOfDays; i++)
                         {
-                            value = inputValues.at(index);
-                        }
-                        if (int(value) != NODATA)
-                        {
-                            values.push_back(value);
-                            nValidValues = nValidValues + 1;
-                        }
+                            float value = NODATA;
+                            index = difference(meteoPoint->obsDataD[0].date, presentDate);
+                            if (index < inputValues.size())
+                            {
+                                value = inputValues.at(index);
+                            }
+                            if (int(value) != NODATA)
+                            {
+                                values.push_back(value);
+                                nValidValues = nValidValues + 1;
+                            }
 
-                        nValues = nValues + 1;
-                        presentDate = presentDate.addDays(1);
+                            nValues = nValues + 1;
+                            presentDate = presentDate.addDays(1);
 
+                        }
                     }
 
                     if (nValidValues > 0)
