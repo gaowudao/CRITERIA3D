@@ -251,8 +251,8 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
         bool okAtLeastOne = false;
         int nLeapYears = 0;
         int totYears = 0;
-        int leapYear = 0;
         int nDays = 366;
+        int leapYear;
 
         Crit3DDate startD;
         Crit3DDate endD;
@@ -262,7 +262,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
             if (isLeapYear(i))
             {
                 nLeapYears = nLeapYears + 1;
-                leapYear = i; // save a leap year
+                leapYear = i;
             }
             totYears = totYears + 1;
         }
@@ -277,14 +277,13 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
 
         for (int i = 1; i<=nDays; i++)
         {
-            if (nLeapYears != 0)
+            if (nLeapYears == 0)
             {
-                startD = getDateFromDoy(leapYear, i);
+                startD = getDateFromDoy(clima->yearStart(), i);
             }
             else
             {
-                // no leap years
-                startD = getDateFromDoy(clima->yearStart(), i);
+                startD = getDateFromDoy(leapYear, i);
             }
             endD = startD;
 
@@ -1918,9 +1917,20 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
             }
             default:
             {
+
+                int dOy;
+                if (clima->getCurrentPeriodType() == dailyPeriod)
+                {
+                    dOy = getDoyFromDate(firstDate);
+                }
+
                 for (int presentYear = firstYear; presentYear <= lastYear; presentYear++)
                 {
 
+                    if ( (clima->getCurrentPeriodType() == dailyPeriod) )
+                    {
+                        firstDate = getDateFromDoy(presentYear, dOy);
+                    }
                     firstDate.year = presentYear;
                     lastDate.year = presentYear;
 
@@ -1936,7 +1946,15 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                         }
                     }
 
-                    numberOfDays = difference(firstDate, lastDate) +1;
+                    if ( (clima->getCurrentPeriodType() == dailyPeriod) )
+                    {
+                        numberOfDays = 1;
+                    }
+                    else
+                    {
+                        numberOfDays = difference(firstDate, lastDate) +1;
+                    }
+
                     presentDate = firstDate;
 
 
@@ -1981,8 +1999,19 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
         int nValidYears = 0;
         valuesSecondElab.clear();
 
+        int dOy;
+        if (clima->getCurrentPeriodType() == dailyPeriod)
+        {
+            dOy = getDoyFromDate(firstDate);
+        }
+
         for (int presentYear = firstYear; presentYear <= lastYear; presentYear++)
         {
+
+            if ( (clima->getCurrentPeriodType() == dailyPeriod) )
+            {
+                firstDate = getDateFromDoy(presentYear, dOy);
+            }
 
             firstDate.year = presentYear;
             lastDate.year = presentYear;
@@ -2031,7 +2060,14 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                 default:
                 {
 
-                    numberOfDays = difference(firstDate, lastDate) +1;
+                    if ( (clima->getCurrentPeriodType() == dailyPeriod) )
+                    {
+                        numberOfDays = 1;
+                    }
+                    else
+                    {
+                        numberOfDays = difference(firstDate, lastDate) +1;
+                    }
                     presentDate = firstDate;
                     for (int i = 0; i < numberOfDays; i++)
                     {
