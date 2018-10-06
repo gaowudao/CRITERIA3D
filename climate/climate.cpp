@@ -1921,24 +1921,6 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                 for (int presentYear = firstYear; presentYear <= lastYear; presentYear++)
                 {
 
-                    bool skipInvalidDay = false;
-
-                    // daily clima elaboration, not leap year
-                    if ( (clima->getCurrentPeriodType() == dailyPeriod) && (!isLeapYear(presentYear)))
-                    {
-                        if ( (firstDate.day >= 29) && (firstDate.month >= 2) )
-                        {
-                            if ( (firstDate.day == 31) && (firstDate.month == 12) )
-                            {
-                                skipInvalidDay = true;
-                            }
-                            else
-                            {
-                                firstDate = firstDate.addDays(1);
-                                lastDate = lastDate.addDays(1);
-                            }
-                        }
-                    }
                     firstDate.year = presentYear;
                     lastDate.year = presentYear;
 
@@ -1962,23 +1944,22 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                     {
 
                         float value = NODATA;
-                        if (!skipInvalidDay)
+
+                        index = difference(meteoPoint->obsDataD[0].date, presentDate);
+                        if (index < inputValues.size())
                         {
-                            index = difference(meteoPoint->obsDataD[0].date, presentDate);
-                            if (index < inputValues.size())
-                            {
-                                value = inputValues.at(index);
-                            }
-                            if (int(value) != NODATA)
-                            {
-                                values.push_back(value);
-                                nValidValues = nValidValues + 1;
-                            }
+                            value = inputValues.at(index);
+                        }
+                        if (int(value) != NODATA)
+                        {
+                            values.push_back(value);
+                            nValidValues = nValidValues + 1;
                         }
 
                         nValues = nValues + 1;
 
                         presentDate = presentDate.addDays(1);
+
                     }
                 }
 
@@ -2003,26 +1984,8 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
         for (int presentYear = firstYear; presentYear <= lastYear; presentYear++)
         {
 
-            bool skipInvalidDay = false;
-            // daily elaboration, not leap year
-            if ( (clima->getCurrentPeriodType() == dailyPeriod) && (!isLeapYear(presentYear)))
-            {
-                if ( (firstDate.day >= 29) && (firstDate.month >= 2) )
-                {
-                    if ( (firstDate.day == 31) && (firstDate.month == 12) )
-                    {
-                        skipInvalidDay = true;
-                    }
-                    else
-                    {
-                        firstDate = firstDate.addDays(1);
-                        lastDate = lastDate.addDays(1);
-                    }
-                }
-            }
             firstDate.year = presentYear;
             lastDate.year = presentYear;
-
 
             if (nYears < 0)
             {
@@ -2073,19 +2036,17 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                     for (int i = 0; i < numberOfDays; i++)
                     {
                         float value = NODATA;
-                        if (!skipInvalidDay)
+                        index = difference(meteoPoint->obsDataD[0].date, presentDate);
+                        if (index < inputValues.size())
                         {
-                            index = difference(meteoPoint->obsDataD[0].date, presentDate);
-                            if (index < inputValues.size())
-                            {
-                                value = inputValues.at(index);
-                            }
-                            if (int(value) != NODATA)
-                            {
-                                values.push_back(value);
-                                nValidValues = nValidValues + 1;
-                            }
+                            value = inputValues.at(index);
                         }
+                        if (int(value) != NODATA)
+                        {
+                            values.push_back(value);
+                            nValidValues = nValidValues + 1;
+                        }
+
 
                         nValues = nValues + 1;
                         presentDate = presentDate.addDays(1);
