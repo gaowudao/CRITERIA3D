@@ -253,6 +253,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
         int totYears = 0;
         int nDays = 366;
         int leapYear;
+        std::vector<float> allResults;
 
         Crit3DDate startD;
         Crit3DDate endD;
@@ -296,33 +297,41 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
 
             result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, settings);
 
-            // LC spostare poi la write in climateOnPoint e farne una unica
-            saveDailyElab(db, myError, QString::fromStdString(meteoPoint->id), i, result, clima->climateElab());
-
             if (result != NODATA)
             {
                 okAtLeastOne = true;
             }
+            allResults.push_back(result);
         }
 
         // if there are no leap years, save NODATA into 366row
         if (nLeapYears == 0)
         {
-            saveDailyElab(db, myError, QString::fromStdString(meteoPoint->id), 366, NODATA, clima->climateElab());
+            allResults.push_back(NODATA);
         }
 
         settings->setMinimumPercentage(minPerc);
-        return okAtLeastOne;
+        if (okAtLeastOne)
+        {
+            return saveDailyElab(db, myError, QString::fromStdString(meteoPoint->id), allResults, clima->climateElab());
+        }
+        else
+        {
+            return false;
+        }
 
     }
     case decadalPeriod:
     {
         bool okAtLeastOne = false;
+        std::vector<float> allResults;
+
         for (int i = 1; i<=36; i++)
         {
             int dayStart;
             int dayEnd;
             int month;
+
             intervalDecade(i, clima->yearStart(), &dayStart, &dayEnd, &month);
 
             Crit3DDate startD (dayStart, month, clima->yearStart());
@@ -331,20 +340,27 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
 
             result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, clima->getElabSettings());
 
-            // LC spostare poi la write in climateOnPoint e farne una unica
-            saveDecadalElab(db, myError, QString::fromStdString(meteoPoint->id), i, result, clima->climateElab());
-
             if (result != NODATA)
             {
                 okAtLeastOne = true;
             }
+            allResults.push_back(result);
         }
-        return okAtLeastOne;
+        if (okAtLeastOne)
+        {
+            return saveDecadalElab(db, myError, QString::fromStdString(meteoPoint->id), allResults, clima->climateElab());
+        }
+        else
+        {
+            return false;
+        }
     }
 
     case monthlyPeriod:
     {
         bool okAtLeastOne = false;
+        std::vector<float> allResults;
+
         for (int i = 1; i<=12; i++)
         {
 
@@ -357,20 +373,27 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
 
             result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, clima->getElabSettings());
 
-            // LC spostare poi la write in climateOnPoint e farne una unica
-            saveMonthlyElab(db, myError, QString::fromStdString(meteoPoint->id), i, result, clima->climateElab());
-
             if (result != NODATA)
             {
                 okAtLeastOne = true;
             }
+            allResults.push_back(result);
         }
-        return okAtLeastOne;
+        if (okAtLeastOne)
+        {
+            return saveMonthlyElab(db, myError, QString::fromStdString(meteoPoint->id), allResults, clima->climateElab());
+        }
+        else
+        {
+            return false;
+        }
     }
 
     case seasonalPeriod:
     {
         bool okAtLeastOne = false;
+        std::vector<float> allResults;
+
         for (int i = 1; i<=4; i++)
         {
 
@@ -390,6 +413,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
             }
 
             QDate temp(clima->yearEnd(), monthEnd, 1);
+
             dayEnd = temp.daysInMonth();
 
             Crit3DDate startD (1, i*3, clima->yearStart());
@@ -399,20 +423,24 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
 
             result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, seasonalNPeriodYears, elab1, elab2, clima->getElabSettings());
 
-            // LC spostare poi la write in climateOnPoint e farne una unica
-            saveSeasonalElab(db, myError, QString::fromStdString(meteoPoint->id), i, result, clima->climateElab());
-
             if (result != NODATA)
             {
                 okAtLeastOne = true;
             }
+            allResults.push_back(result);
         }
-        return okAtLeastOne;
+        if (okAtLeastOne)
+        {
+            saveSeasonalElab(db, myError, QString::fromStdString(meteoPoint->id), allResults, clima->climateElab());
+        }
+        else
+        {
+            return false;
+        }
     }
 
     case annualPeriod:
     {
-        bool okAtLeastOne = false;
 
         Crit3DDate startD (1, 1, clima->yearStart());
         Crit3DDate endD (31, 12, clima->yearStart());
@@ -420,20 +448,19 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
 
         result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, clima->getElabSettings());
 
-        // LC spostare poi la write in climateOnPoint e farne una unica
-        saveAnnualElab(db, myError, QString::fromStdString(meteoPoint->id), result, clima->climateElab());
-
         if (result != NODATA)
         {
-            okAtLeastOne = true;
+            return saveAnnualElab(db, myError, QString::fromStdString(meteoPoint->id), result, clima->climateElab());
         }
-
-        return okAtLeastOne;
+        else
+        {
+            return false;
+        }
     }
 
     case genericPeriod:
     {
-        bool okAtLeastOne = false;
+
         Crit3DDate startD = getCrit3DDate(clima->genericPeriodDateStart());
         Crit3DDate endD = getCrit3DDate(clima->genericPeriodDateEnd());
 
@@ -441,15 +468,14 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
 
         result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, clima->getElabSettings());
 
-        // LC spostare poi la write in climateOnPoint e farne una unica
-        saveAnnualElab(db, myError, QString::fromStdString(meteoPoint->id), result, clima->climateElab());
-
         if (result != NODATA)
         {
-            okAtLeastOne = true;
+            return saveAnnualElab(db, myError, QString::fromStdString(meteoPoint->id), result, clima->climateElab());
         }
-
-        return okAtLeastOne;
+        else
+        {
+            return false;
+        }
     }
 
     default:
