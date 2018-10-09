@@ -1094,7 +1094,7 @@ bool Project::loadTopographicDistanceMaps()
 
     std::string myError;
     std::string fileName;
-    gis::Crit3DRasterGrid* myGrid = new gis::Crit3DRasterGrid();
+
 
     for (int i=0; i < nrMeteoPoints; i++)
     {
@@ -1103,11 +1103,8 @@ bool Project::loadTopographicDistanceMaps()
         if (meteoPoints[i].active)
         {
             fileName = mapsFolder.toStdString() + "TAD_" + meteoPoints[i].id;
-            if (gis::readEsriGrid(fileName, myGrid, &myError))
-            {
-                meteoPoints[i].topographicDistance = myGrid;
-            }
-            else
+            meteoPoints[i].topographicDistance = new gis::Crit3DRasterGrid();
+            if (! gis::readEsriGrid(fileName, meteoPoints[i].topographicDistance, &myError))
             {
                 errorString = myError;
                 return false;

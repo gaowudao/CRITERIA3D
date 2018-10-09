@@ -183,21 +183,22 @@ void computeDistances(vector <Crit3DInterpolationDataPoint> &myPoints,  Crit3DIn
         if (excludeSupplemental && ! checkLapseRateCode(myPoints.at(i).lapseRateCode, mySettings->getUseLapseRateCode(), false))
             myPoints.at(i).distance = 0;
         else
-        {
+        {            
             myPoints.at(i).distance = gis::computeDistance(x, y, float((myPoints.at(i)).point->utm.x) , float((myPoints.at(i)).point->utm.y));
             myPoints.at(i).deltaZ = float(fabs(myPoints.at(i).point->z - z));
 
             if (mySettings->getUseTAD())
             {
+                float topoDistance = 0.;
                 float kh = mySettings->getTopoDist_Kh();
                 if (kh != 0)
                 {
-                    float topoDistance = NODATA;
+                    topoDistance = NODATA;
                     if (myPoints.at(i).topographicDistance != NULL)
                     {
                         if (! gis::isOutOfGridXY(x, y, myPoints.at(i).topographicDistance->header))
                         {
-                            gis::getRowColFromXY(*(myPoints.at(i).topographicDistance->header), myPoints.at(i).point->utm, &row, &col);
+                            gis::getRowColFromXY(*(myPoints.at(i).topographicDistance->header), x, y, &row, &col);
                             topoDistance = myPoints.at(i).topographicDistance->value[row][col];
                         }
                     }
@@ -207,9 +208,9 @@ void computeDistances(vector <Crit3DInterpolationDataPoint> &myPoints,  Crit3DIn
                                                            (float)myPoints.at(i).point->utm.y,
                                                            (float)myPoints.at(i).point->z, myPoints.at(i).distance,
                                                            *(mySettings->getCurrentDEM()));
-
-                    myPoints.at(i).distance += (kh * topoDistance) + (mySettings->getTopoDist_Kz() * myPoints.at(i).deltaZ);
                 }
+
+                myPoints.at(i).distance += (kh * topoDistance) + (mySettings->getTopoDist_Kz() * myPoints.at(i).deltaZ);
             }
         }
     }
@@ -1080,14 +1081,13 @@ void topographicDistanceOptimize(meteoVariable myVar,
 
     bestError = NODATA;
 
-    return;
-
     while (kz <= 256)
     {
+        mySettings->setTopoDist_Kz(kz);
         if (computeResiduals(myVar, myMeteoPoints, nrMeteoPoints, interpolationPoints, mySettings, true, true))
         {
             avgError = computeErrorCrossValidation(myVar, myMeteoPoints, nrMeteoPoints, myTime);
-            if (bestError = NODATA || avgError < bestError)
+            if (bestError == NODATA || avgError < bestError)
             {
                 bestError = avgError;
                 bestK = kz;
@@ -1096,16 +1096,17 @@ void topographicDistanceOptimize(meteoVariable myVar,
         }
     }
 
-    kz = bestK;
+    mySettings->setTopoDist_Kz(bestK);
 
     kh = 0;
     bestError = NODATA;
     while (kh <= 1000000)
     {
+        mySettings->setTopoDist_Kh(kh);
         if (computeResiduals(myVar, myMeteoPoints, nrMeteoPoints, interpolationPoints, mySettings, true, true))
         {
             avgError = computeErrorCrossValidation(myVar, myMeteoPoints, nrMeteoPoints, myTime);
-            if (bestError = NODATA || avgError < bestError)
+            if (bestError == NODATA || avgError < bestError)
             {
                 bestError = avgError;
                 bestK = kh;
@@ -1114,7 +1115,7 @@ void topographicDistanceOptimize(meteoVariable myVar,
         }
     }
 
-    kh = bestK;
+    mySettings->setTopoDist_Kh(bestK);
 
 }
 
