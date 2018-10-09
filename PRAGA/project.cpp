@@ -1131,6 +1131,8 @@ bool Project::interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gi
     }
 
     // Proxy vars regression and detrend
+    if (showInfo) myInfo.start("Preparing interpolation...", 0);
+
     if (! preInterpolation(interpolationPoints, &interpolationSettings, meteoPoints, nrMeteoPoints, myVar, myTime))
     {
         errorString = "Interpolation: error in function preInterpolation";
