@@ -7,7 +7,7 @@
 QT       += widgets network sql
 
 TEMPLATE = lib
-CONFIG += staticlib
+#CONFIG += staticlib
 
 unix:{
     CONFIG += release
@@ -19,6 +19,7 @@ win32:{
 
 
 DEFINES += MAPGRAPHICS_LIBRARY
+
 
 INCLUDEPATH += .
 

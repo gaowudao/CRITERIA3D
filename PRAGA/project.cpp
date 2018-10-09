@@ -124,7 +124,7 @@ bool Project::readSettings()
             settings->beginGroup(group);
             if (settings->contains("reference_height") && !settings->value("reference_height").toString().isEmpty())
             {
-                qInfo() << "value: " << settings->value("reference_height");
+                //qInfo() << "value: " << settings->value("reference_height");
                 quality->setReferenceHeight(settings->value("reference_height").toFloat());
             }
             if (settings->contains("delta_temperature_suspect") && !settings->value("delta_temperature_suspect").toString().isEmpty())
@@ -149,7 +149,7 @@ bool Project::readSettings()
             Crit3DElaborationSettings* elabSettings = clima->getElabSettings();
             if (settings->contains("min_percentage") && !settings->value("min_percentage").toString().isEmpty())
             {
-                qInfo() << "value: " << settings->value("min_percentage");
+                //qInfo() << "value: " << settings->value("min_percentage");
                 elabSettings->setMinimumPercentage(settings->value("min_percentage").toFloat());
             }
             if (settings->contains("prec_threshold") && !settings->value("prec_threshold").toString().isEmpty())
@@ -1458,7 +1458,7 @@ bool Project::elaborationPointsCycle(bool isAnomaly, bool showInfo)
 {
 
     bool isMeteoGrid = 0; // meteoPoint
-    float currentParameter1;
+    float currentParameter1 = NODATA;
     int validCell = 0;
     int myClimateIndex;
 
@@ -1550,8 +1550,8 @@ bool Project::elaborationPointsCycle(bool isAnomaly, bool showInfo)
 bool Project::elaborationPointsCycleGrid(bool isAnomaly, bool showInfo)
 {
 
-    bool isMeteoGrid = 1; // grid
-    float currentParameter1;
+    bool isMeteoGrid = true; // grid
+    float currentParameter1 = NODATA;
     int validCell = 0;
     int myClimateIndex;
 

@@ -1541,18 +1541,22 @@ void MainWindow::on_actionInterpolationSettings_triggered()
 
     InterpolationDialog* myInterpolationDialog = new InterpolationDialog(myProject.settings, &myProject.interpolationSettings);
     myProject.copyInterpolationSettingsToQuality();
+
+    myInterpolationDialog->close();
 }
 
 
 void MainWindow::on_actionParameters_triggered()
 {
-    SettingsDialog* settingsDialog = new SettingsDialog(myProject.pathSetting, myProject.settings, &myProject.gisSettings, myProject.quality, myProject.clima->getElabSettings());
+    SettingsDialog* mySettingsDialog = new SettingsDialog(myProject.pathSetting, myProject.settings, &myProject.gisSettings, myProject.quality, myProject.clima->getElabSettings());
     if (startCenter->latitude() != myProject.gisSettings.startLocation.latitude || startCenter->longitude() != myProject.gisSettings.startLocation.longitude)
     {
         startCenter->setLatitude(myProject.gisSettings.startLocation.latitude);
         startCenter->setLongitude(myProject.gisSettings.startLocation.longitude);
         this->mapView->centerOn(startCenter->lonLat());
     }
+
+    mySettingsDialog->close();
 }
 
 
