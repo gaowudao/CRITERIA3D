@@ -409,7 +409,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
             else
             {
                 monthEnd = 2;
-                seasonalNPeriodYears = 1;
+                seasonalNPeriodYears = -1;
             }
 
             QDate temp(clima->yearEnd(), monthEnd, 1);

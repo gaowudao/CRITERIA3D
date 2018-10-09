@@ -608,7 +608,6 @@ void ComputationDialog::displayPeriod(const QString value)
             nrYearLabel.setVisible(false);
             nrYear.setVisible(false);
             return;
-            return;
         }
         periodDisplay.setVisible(true);
         currentDayLabel.setVisible(true);
@@ -636,7 +635,6 @@ void ComputationDialog::displayPeriod(const QString value)
             nrYearLabel.setVisible(false);
             nrYear.setVisible(false);
             return;
-            return;
         }
         periodDisplay.setVisible(true);
         currentDayLabel.setVisible(true);
@@ -662,7 +660,6 @@ void ComputationDialog::displayPeriod(const QString value)
             genericPeriodEnd.setVisible(false);
             nrYearLabel.setVisible(false);
             nrYear.setVisible(false);
-            return;
             return;
         }
         periodDisplay.setVisible(true);
@@ -690,7 +687,6 @@ void ComputationDialog::displayPeriod(const QString value)
             genericPeriodEnd.setVisible(false);
             nrYearLabel.setVisible(false);
             nrYear.setVisible(false);
-            return;
             return;
         }
         periodDisplay.setVisible(false);
