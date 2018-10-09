@@ -431,12 +431,13 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
         }
         if (okAtLeastOne)
         {
-            saveSeasonalElab(db, myError, QString::fromStdString(meteoPoint->id), allResults, clima->climateElab());
+            return saveSeasonalElab(db, myError, QString::fromStdString(meteoPoint->id), allResults, clima->climateElab());
         }
         else
         {
             return false;
         }
+
     }
 
     case annualPeriod:
@@ -470,7 +471,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
 
         if (result != NODATA)
         {
-            return saveAnnualElab(db, myError, QString::fromStdString(meteoPoint->id), result, clima->climateElab());
+            return saveGenericElab(db, myError, QString::fromStdString(meteoPoint->id), result, clima->climateElab());
         }
         else
         {
