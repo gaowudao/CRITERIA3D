@@ -245,6 +245,7 @@ bool isNullDate(Crit3DDate myDate)
 
 int difference(Crit3DDate myDatefirst, Crit3DDate myDatelast)
 {
+
     int myDiff = 0;
     while (myDatefirst < myDatelast)
     {

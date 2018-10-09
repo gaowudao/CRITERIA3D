@@ -1989,11 +1989,19 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
 
                         float value = NODATA;
 
-                        index = difference(meteoPoint->obsDataD[0].date, presentDate);
-                        if (index < inputValues.size())
+                        if (meteoPoint->obsDataD[0].date > presentDate)
                         {
-                            value = inputValues.at(index);
+                            value = NODATA;
                         }
+                        else
+                        {
+                            index = difference(meteoPoint->obsDataD[0].date, presentDate);
+                            if (index < inputValues.size())
+                            {
+                                value = inputValues.at(index);
+                            }
+                        }
+
                         if (int(value) != NODATA)
                         {
                             values.push_back(value);
@@ -2098,11 +2106,20 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                     for (int i = 0; i < numberOfDays; i++)
                     {
                         float value = NODATA;
-                        index = difference(meteoPoint->obsDataD[0].date, presentDate);
-                        if (index < inputValues.size())
+
+                        if (meteoPoint->obsDataD[0].date > presentDate)
                         {
-                            value = inputValues.at(index);
+                            value = NODATA;
                         }
+                        else
+                        {
+                            index = difference(meteoPoint->obsDataD[0].date, presentDate);
+                            if (index < inputValues.size())
+                            {
+                                value = inputValues.at(index);
+                            }
+                        }
+
                         if (int(value) != NODATA)
                         {
                             values.push_back(value);

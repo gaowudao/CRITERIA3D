@@ -311,7 +311,7 @@ bool saveSeasonalElab(QSqlDatabase db, std::string *myError, QString id, std::ve
         }
     }
     qry.prepare( "INSERT INTO `climate_seasonal` (season, id_point, elab, value)"
-                                      " VALUES (?, ?, ?, ?)" );
+                                      " VALUES (?, ?, ?,)" );
 
     for (unsigned int i = 0; i < allResults.size(); i++)
     {
