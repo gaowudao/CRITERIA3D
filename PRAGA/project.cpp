@@ -1724,6 +1724,7 @@ bool Project::climatePointsCycleGrid(bool showInfo)
     int infoStep;
     QString infoStr;
 
+    int validCell = 0;
     QDate startDate;
     QDate endDate;
     std::string id;
@@ -1765,12 +1766,27 @@ bool Project::climatePointsCycleGrid(bool showInfo)
                {
 
                    Crit3DMeteoPoint* meteoPoint = meteoGridDbHandler->meteoGrid()->meteoPointPointer(row,col);
-                   climateOnPoint(&errorString, NULL, meteoGridDbHandler, meteoPoint, clima, isMeteoGrid, startDate, endDate, true);
 
+                   if (climateOnPoint(&errorString, NULL, meteoGridDbHandler, meteoPoint, clima, isMeteoGrid, startDate, endDate, true))
+                   {
+                        validCell = validCell + 1;
+                   }
                }
-
            }
        }
+
+       if (showInfo) myInfo.close();
+
+       if (validCell == 0)
+       {
+            errorString = "no valid cells available";
+            return false;
+       }
+       else
+       {
+            return true;
+       }
+
     }
     else
     {
