@@ -8,6 +8,7 @@
     #ifndef METEO_H
         #include "meteo.h"
     #endif
+
     #include "elaborationSettings.h"
 
     enum period{ dailyPeriod, decadalPeriod, monthlyPeriod, seasonalPeriod, annualPeriod, genericPeriod, noPeriodType};

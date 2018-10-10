@@ -209,10 +209,11 @@ bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
 //    }
 //    else
 //    {
-//        changeDataSet = false;  // LC TBC
+//        changeDataSet = false;
 //    }
 
-    changeDataSet = true;  // LC TBC
+    changeDataSet = true; // LC TBC
+
     if (changeDataSet)
     {
         dataLoaded = preElaboration(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPointTemp, isMeteoGrid, clima->variable(), elab1MeteoComp, startDate, endDate, outputValues, &percValue, clima->getElabSettings());
@@ -311,6 +312,10 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
         }
 
         settings->setMinimumPercentage(minPerc);
+
+        // reset currentPeriod
+        clima->setCurrentPeriodType(noPeriodType);
+
         if (okAtLeastOne)
         {
             return saveDailyElab(db, myError, QString::fromStdString(meteoPoint->id), allResults, clima->climateElab());
