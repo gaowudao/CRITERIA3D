@@ -1495,8 +1495,8 @@ bool Project::elaborationPointsCycle(bool isAnomaly, bool showInfo)
 
     if (clima->param1IsClimate())
     {
-        parserElaboration(clima);
-        myClimateIndex = getClimateIndexFromDate(currentDate, clima->periodType());
+        //parserElaboration(clima);
+        //myClimateIndex = getClimateIndexFromDate(currentDate, clima->periodType());
      }
 
 
@@ -1591,8 +1591,8 @@ bool Project::elaborationPointsCycleGrid(bool isAnomaly, bool showInfo)
     if (clima->param1IsClimate())
     {
 
-        parserElaboration(clima);
-        myClimateIndex = getClimateIndexFromDate(currentDate, clima->periodType());
+        //parserElaboration(clima);
+        //myClimateIndex = getClimateIndexFromDate(currentDate, clima->periodType());
 
      }
 
@@ -1665,29 +1665,60 @@ bool Project::climatePointsCycle(bool showInfo)
         infoStep = myInfo.start(infoStr, nrMeteoPoints);
     }
 
-    if (parserElaboration(clima))
+    // parser all the list
+    Crit3DClimateList* climateList = clima->getListElab();
+    climateList->parserElaboration();
+
+
+    for (int i = 0; i < nrMeteoPoints; i++)
     {
-
-        if (clima->periodType() == genericPeriod)
+        if (showInfo && (i % infoStep) == 0)
         {
-            startDate.setDate(clima->yearStart(), clima->genericPeriodDateStart().month(), clima->genericPeriodDateStart().day());
-            endDate.setDate(clima->yearEnd() + clima->nYears(), clima->genericPeriodDateEnd().month(), clima->genericPeriodDateEnd().day());
-        }
-        else
-        {
-            startDate.setDate(clima->yearStart(), 1, 1);
-            endDate.setDate(clima->yearEnd(), 12, 31);
+            myInfo.setValue(i);
         }
 
-        if (clima->param1IsClimate())
+        for (int j = 0; j < climateList->listClimateElab().size(); j++)
         {
-//            param1ClimateField = Climate.getClimateFieldName(param1ClimateElab)
-        }
-        for (int i = 0; i < nrMeteoPoints; i++)
-        {
-            if (showInfo && (i % infoStep) == 0)
+            clima->resetParam();
+            clima->setClimateElab(climateList->listClimateElab().at(j));
+
+            if (climateList->listClimateElab().at(j)!= NULL)
             {
-                myInfo.setValue(i);
+
+                // copy current elaboration to clima
+                clima->setYearStart(climateList->listYearStart().at(j));
+                clima->setYearEnd(climateList->listYearEnd().at(j));
+                clima->setPeriodType(climateList->listPeriodType().at(j));
+                clima->setPeriodStr(climateList->listPeriodStr().at(j));
+                clima->setGenericPeriodDateStart(climateList->listGenericPeriodDateStart().at(j));
+                clima->setGenericPeriodDateEnd(climateList->listGenericPeriodDateEnd().at(j));
+                clima->setVariable(climateList->listVariable().at(j));
+                clima->setElab1(climateList->listElab1().at(j));
+                clima->setElab2(climateList->listElab2().at(j));
+                clima->setParam1(climateList->listParam1().at(j));
+                clima->setParam2(climateList->listParam2().at(j));
+                clima->setParam1IsClimate(climateList->listParam1IsClimate().at(j));
+
+                if (clima->periodType() == genericPeriod)
+                {
+                    startDate.setDate(clima->yearStart(), clima->genericPeriodDateStart().month(), clima->genericPeriodDateStart().day());
+                    endDate.setDate(clima->yearEnd() + clima->nYears(), clima->genericPeriodDateEnd().month(), clima->genericPeriodDateEnd().day());
+                }
+                else
+                {
+                    startDate.setDate(clima->yearStart(), 1, 1);
+                    endDate.setDate(clima->yearEnd(), 12, 31);
+                }
+
+                if (clima->param1IsClimate())
+                {
+        //            param1ClimateField = Climate.getClimateFieldName(param1ClimateElab)
+                }
+            }
+            else
+            {
+                errorString = "parser elaboration error";
+                return false;
             }
 
             if (climateOnPoint(&errorString, meteoPointsDbHandler, NULL, &meteoPoints[i], clima, isMeteoGrid, startDate, endDate, true))
@@ -1696,29 +1727,92 @@ bool Project::climatePointsCycle(bool showInfo)
             }
 
         }
-        if (showInfo) myInfo.close();
 
-        if (validCell == 0)
-        {
-            errorString = "no valid cells available";
-            return false;
-        }
-        else
-        {
-            return true;
-        }
+    }
+    if (showInfo) myInfo.close();
 
+    if (validCell == 0)
+    {
+        errorString = "no valid cells available";
+        return false;
     }
     else
     {
-        errorString = "parser elaboration error";
-        return false;
+        return true;
     }
 }
 
+//bool Project::climatePointsCycle(bool showInfo)
+//{
+//    bool isMeteoGrid = false;
+//    formRunInfo myInfo;
+//    int infoStep;
+//    QString infoStr;
+
+//    int validCell = 0;
+//    QDate startDate;
+//    QDate endDate;
+
+//    if (showInfo)
+//    {
+//        infoStr = "Climate  - Meteo Points";
+//        infoStep = myInfo.start(infoStr, nrMeteoPoints);
+//    }
+
+//    if (parserElaboration(clima))
+//    {
+
+//        if (clima->periodType() == genericPeriod)
+//        {
+//            startDate.setDate(clima->yearStart(), clima->genericPeriodDateStart().month(), clima->genericPeriodDateStart().day());
+//            endDate.setDate(clima->yearEnd() + clima->nYears(), clima->genericPeriodDateEnd().month(), clima->genericPeriodDateEnd().day());
+//        }
+//        else
+//        {
+//            startDate.setDate(clima->yearStart(), 1, 1);
+//            endDate.setDate(clima->yearEnd(), 12, 31);
+//        }
+
+//        if (clima->param1IsClimate())
+//        {
+////            param1ClimateField = Climate.getClimateFieldName(param1ClimateElab)
+//        }
+//        for (int i = 0; i < nrMeteoPoints; i++)
+//        {
+//            if (showInfo && (i % infoStep) == 0)
+//            {
+//                myInfo.setValue(i);
+//            }
+
+//            if (climateOnPoint(&errorString, meteoPointsDbHandler, NULL, &meteoPoints[i], clima, isMeteoGrid, startDate, endDate, true))
+//            {
+//                validCell = validCell + 1;
+//            }
+
+//        }
+//        if (showInfo) myInfo.close();
+
+//        if (validCell == 0)
+//        {
+//            errorString = "no valid cells available";
+//            return false;
+//        }
+//        else
+//        {
+//            return true;
+//        }
+
+//    }
+//    else
+//    {
+//        errorString = "parser elaboration error";
+//        return false;
+//    }
+//}
+
 bool Project::climatePointsCycleGrid(bool showInfo)
 {
-
+/*
     bool isMeteoGrid = true;
     formRunInfo myInfo;
     int infoStep;
@@ -1793,6 +1887,7 @@ bool Project::climatePointsCycleGrid(bool showInfo)
         errorString = "parser elaboration error";
         return false;
     }
+    */
 }
 
 /*-------------------

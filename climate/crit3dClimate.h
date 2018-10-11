@@ -9,9 +9,10 @@
         #include "meteo.h"
     #endif
 
-    #include "elaborationSettings.h"
 
-    enum period{ dailyPeriod, decadalPeriod, monthlyPeriod, seasonalPeriod, annualPeriod, genericPeriod, noPeriodType};
+    #include "elaborationSettings.h"
+    #include "crit3dClimateList.h"
+
 
     class Crit3DClimate
     {
@@ -89,6 +90,9 @@
         period getCurrentPeriodType() const;
         void setCurrentPeriodType(const period &currentPeriodType);
 
+        Crit3DClimateList *getListElab() const;
+        void setListElab(Crit3DClimateList *value);
+
     private:
         QSqlDatabase _db;
         QString _climateElab;
@@ -107,11 +111,14 @@
         QString _elab2;
         float _param2;
         Crit3DElaborationSettings *elabSettings;
+
         meteoVariable _currentVar;
         period _currentPeriodType;
         QString _currentElab1;
         int _currentYearStart;
         int _currentYearEnd;
+
+        Crit3DClimateList *listElab;
     };
 
 

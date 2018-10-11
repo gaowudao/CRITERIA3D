@@ -32,13 +32,15 @@ SOURCES += \
     climate.cpp \
     elaborationSettings.cpp \
     crit3dClimate.cpp \
-    dbClimate.cpp
+    dbClimate.cpp \
+    crit3dClimateList.cpp
 
 HEADERS += \
     dbClimate.h \
     climate.h \
     elaborationSettings.h \
     crit3dClimate.h \
+    crit3dClimateList.h
 
 unix {
     target.path = /usr/lib

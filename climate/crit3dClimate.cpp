@@ -31,6 +31,7 @@ Crit3DClimate::Crit3DClimate()
     _currentPeriodType = noPeriodType;
 
     elabSettings = new Crit3DElaborationSettings();
+    listElab = new Crit3DClimateList();
 }
 
 void Crit3DClimate::resetParam()
@@ -284,6 +285,16 @@ period Crit3DClimate::getCurrentPeriodType() const
 void Crit3DClimate::setCurrentPeriodType(const period &currentPeriodType)
 {
     _currentPeriodType = currentPeriodType;
+}
+
+Crit3DClimateList *Crit3DClimate::getListElab() const
+{
+    return listElab;
+}
+
+void Crit3DClimate::setListElab(Crit3DClimateList *value)
+{
+    listElab = value;
 }
 
 QSqlDatabase Crit3DClimate::db() const

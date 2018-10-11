@@ -39,37 +39,6 @@
       { "correctedDegreeDaysSum", 1 }
     };
 
-    const std::map<std::string, meteoComputation> MapMeteoComputation = {
-      { "average", average },
-      { "stdDev", stdDev },
-      { "sum", sum },
-      { "maxInList", maxInList },
-      { "minInList", minInList },
-      { "differenceWithThreshold", differenceWithThreshold },
-      { "lastDayBelowThreshold", lastDayBelowThreshold },
-      { "sumAbove", sumAbove },
-      { "avgAbove", avgAbove },
-      { "stdDevAbove", stdDevAbove },
-      { "percentile", percentile },
-      { "median", median },
-      { "freqPositive", freqPositive },
-      { "daysAbove", daysAbove },
-      { "daysBelow", daysBelow },
-      { "consecutiveDaysAbove", consecutiveDaysAbove },
-      { "consecutiveDaysBelow", consecutiveDaysBelow },
-      { "prevailingWindDir", prevailingWindDir },
-      { "trend", trend },
-      { "mannKendall", mannKendall },
-      { "phenology", phenology },
-      { "winkler", winkler },
-      { "huglin", huglin },
-      { "fregoni", fregoni },
-      { "correctedDegreeDaysSum", correctedDegreeDaysSum },
-      { "erosivityFactorElab", erosivityFactorElab },
-      { "rainIntensityElab", rainIntensityElab }
-    };
-
-
     bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler,
         Crit3DMeteoPoint* meteoPoint, Crit3DClimate* clima, bool isMeteoGrid, QDate startDate, QDate endDate, bool isAnomaly, bool loadData);
 
@@ -134,14 +103,6 @@
             meteoVariable variable, QDate first, QDate last, std::vector<float> &outputValues);
 
     float loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler, Crit3DMeteoGridDbHandler *meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, QDateTime first, QDateTime last);
-
-    period getPeriodTypeFromString(QString periodStr);
-
-    bool parserGenericPeriodString(Crit3DClimate* clima);
-
-    bool parserElaboration(Crit3DClimate* clima);
-
-    int nParameters(meteoComputation elab);
 
     void extractValidValuesCC(std::vector<float> &outputValues);
 
