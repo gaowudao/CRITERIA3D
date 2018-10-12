@@ -1677,10 +1677,14 @@ bool Project::climatePointsCycle(bool showInfo)
             myInfo.setValue(i);
         }
 
+        Crit3DMeteoPoint* meteoPointTemp = new Crit3DMeteoPoint;
+
         for (int j = 0; j < climateList->listClimateElab().size(); j++)
         {
+
             clima->resetParam();
             clima->setClimateElab(climateList->listClimateElab().at(j));
+
 
             if (climateList->listClimateElab().at(j)!= NULL)
             {
@@ -1718,16 +1722,18 @@ bool Project::climatePointsCycle(bool showInfo)
             else
             {
                 errorString = "parser elaboration error";
+                delete meteoPointTemp;
                 return false;
             }
 
-            if (climateOnPoint(&errorString, meteoPointsDbHandler, NULL, &meteoPoints[i], clima, isMeteoGrid, startDate, endDate, true))
+            if (climateOnPoint(&errorString, meteoPointsDbHandler, NULL, &meteoPoints[i], clima, meteoPointTemp, isMeteoGrid, startDate, endDate, true))
             {
                 validCell = validCell + 1;
             }
 
         }
 
+        delete meteoPointTemp;
     }
     if (showInfo) myInfo.close();
 
