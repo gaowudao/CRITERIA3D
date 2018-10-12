@@ -255,6 +255,8 @@ void Crit3DClimateList::parserElaboration()
         }
 
         QString elab = words[pos];
+        bool param1IsClimate;
+        QString param1ClimateField;
 
         meteoComputation elabMeteoComputation = MapMeteoComputation.at(elab.toStdString());
 
@@ -266,8 +268,8 @@ void Crit3DClimateList::parserElaboration()
             pos = pos + 1;
             if ( words[pos].at(0) == "|" )
             {
-                _listParam1IsClimate.push_back(true);
-                QString param1ClimateField = words[pos];
+                param1IsClimate = true;
+                param1ClimateField = words[pos];
                 param1ClimateField.remove(0,1);
 
                 pos = pos + 1;
@@ -282,24 +284,25 @@ void Crit3DClimateList::parserElaboration()
                     pos = pos + 1;
                 }
                 param1ClimateField = param1ClimateField + "_" + words[pos].left(words[pos].size() - 2);
-
-                _listParam1ClimateField.push_back(param1ClimateField);
                 param =  NODATA;
             }
             else
             {
-                _listParam1IsClimate.push_back(false);
-                _listParam1ClimateField.push_back(NULL);
+
+                param1IsClimate = false;
+                param1ClimateField = "";
                 param = words[pos].toFloat();
             }
         }
 
         pos = pos + 1;
         QString elab1;
+        // second elab present
         if (words.size() > pos)
         {
             _listElab2.push_back(elab);
             _listParam2.push_back(param);
+
 
             elab1 = words[pos];
             _listElab1.push_back(elab1);
@@ -311,8 +314,8 @@ void Crit3DClimateList::parserElaboration()
                 pos = pos + 1;
                 if ( words[pos].at(0) == "|" )
                 {
-                    _listParam1IsClimate.push_back(true);
-                    QString param1ClimateField = words[pos];
+                    param1IsClimate = true;
+                    param1ClimateField = words[pos];
                     param1ClimateField.remove(0,1);
 
                     pos = pos + 1;
@@ -333,17 +336,19 @@ void Crit3DClimateList::parserElaboration()
                 }
                 else
                 {
-                    _listParam1IsClimate.push_back(false);
-                    _listParam1ClimateField.push_back(NULL);
+                    param1IsClimate = false;
+                    param1ClimateField = "";
                     _listParam1.push_back( words[pos].toFloat() );
                 }
             }
             else
             {
-                _listParam1IsClimate.push_back(false);
-                _listParam1ClimateField.push_back(NULL);
+                param1IsClimate = false;
+                param1ClimateField = "";
                 _listParam1.push_back(NODATA);
             }
+            _listParam1IsClimate.push_back(param1IsClimate);
+            _listParam1ClimateField.push_back(param1ClimateField);
 
         }
         else
@@ -352,6 +357,9 @@ void Crit3DClimateList::parserElaboration()
             _listParam1.push_back(param);
             _listElab2.push_back(NULL);
             _listParam2.push_back(NODATA);
+
+            _listParam1IsClimate.push_back(param1IsClimate);
+            _listParam1ClimateField.push_back(param1ClimateField);
         }
 
     }
