@@ -445,6 +445,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
         }
         else
         {
+            *myError = "no valid cells available";
             return false;
         }
 

@@ -1423,7 +1423,7 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
         {
             if (!climatePointsCycle(true))
             {
-                errorString = "climatePointsCycle error";
+                //errorString = "climatePointsCycle error";
                 return false;
             }
             else
@@ -1686,7 +1686,7 @@ bool Project::climatePointsCycle(bool showInfo)
             }
 
             //reset mp
-            meteoPointTemp->id == "";
+            meteoPointTemp->id = "";
             std::vector<float> outputValues;
 
             for (int j = 0; j < climateList->listClimateElab().size(); j++)
@@ -1750,7 +1750,7 @@ bool Project::climatePointsCycle(bool showInfo)
 
     if (validCell == 0)
     {
-        errorString = "no valid cells available";
+        //errorString = "no valid cells available";
         delete meteoPointTemp;
         return false;
     }
