@@ -1674,7 +1674,7 @@ bool Project::climatePointsCycle(bool showInfo)
     Crit3DClimateList* climateList = clima->getListElab();
     climateList->parserElaboration();
 
-
+    Crit3DMeteoPoint* meteoPointTemp = new Crit3DMeteoPoint;
     for (int i = 0; i < nrMeteoPoints; i++)
     {
         if (meteoPoints[i].active)
@@ -1685,7 +1685,8 @@ bool Project::climatePointsCycle(bool showInfo)
                 myInfo.setValue(i);
             }
 
-            Crit3DMeteoPoint* meteoPointTemp = new Crit3DMeteoPoint;
+            //reset mp
+            meteoPointTemp->id == "";
             std::vector<float> outputValues;
 
             for (int j = 0; j < climateList->listClimateElab().size(); j++)
@@ -1743,7 +1744,6 @@ bool Project::climatePointsCycle(bool showInfo)
 
             }
 
-            delete meteoPointTemp;
         }
     }
     if (showInfo) myInfo.close();
@@ -1751,10 +1751,12 @@ bool Project::climatePointsCycle(bool showInfo)
     if (validCell == 0)
     {
         errorString = "no valid cells available";
+        delete meteoPointTemp;
         return false;
     }
     else
     {
+        delete meteoPointTemp;
         return true;
     }
 }

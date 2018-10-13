@@ -219,6 +219,8 @@ bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
     if (changeDataSet)
     {
         outputValues.clear();
+        meteoPointTemp->nrObsDataDaysD = 0;
+
         dataLoaded = preElaboration(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPointTemp, isMeteoGrid, clima->variable(), elab1MeteoComp, startDate, endDate, outputValues, &percValue, clima->getElabSettings());
     }
 
