@@ -1705,6 +1705,7 @@ bool Project::climatePointsCycle(bool showInfo)
                     clima->setPeriodStr(climateList->listPeriodStr().at(j));
                     clima->setGenericPeriodDateStart(climateList->listGenericPeriodDateStart().at(j));
                     clima->setGenericPeriodDateEnd(climateList->listGenericPeriodDateEnd().at(j));
+                    clima->setNYears(climateList->listNYears().at(j));
                     clima->setVariable(climateList->listVariable().at(j));
                     clima->setElab1(climateList->listElab1().at(j));
                     clima->setElab2(climateList->listElab2().at(j));
