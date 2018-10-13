@@ -150,7 +150,7 @@ bool anomalyOnPoint(Crit3DMeteoPoint* meteoPoint, float refValue)
 }
 
 bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler,
-                    Crit3DMeteoPoint* meteoPoint, Crit3DClimate* clima, Crit3DMeteoPoint* meteoPointTemp, bool isMeteoGrid, QDate startDate, QDate endDate, bool loadData)
+                    Crit3DMeteoPoint* meteoPoint, Crit3DClimate* clima, Crit3DMeteoPoint* meteoPointTemp, std::vector<float> &outputValues, bool isMeteoGrid, QDate startDate, QDate endDate, bool loadData)
 {
     bool changeDataSet = false;
     float percValue;
@@ -164,8 +164,6 @@ bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
     {
         clima->setDb(meteoPointsDbHandler->getDb());
     }
-
-    std::vector<float> outputValues; // LC da spostare nel chiamante
 
     if (meteoPointTemp->id == "")
     {
@@ -220,6 +218,7 @@ bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
 
     if (changeDataSet)
     {
+        outputValues.clear();
         dataLoaded = preElaboration(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPointTemp, isMeteoGrid, clima->variable(), elab1MeteoComp, startDate, endDate, outputValues, &percValue, clima->getElabSettings());
     }
 

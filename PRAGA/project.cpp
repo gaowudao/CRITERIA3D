@@ -1678,6 +1678,7 @@ bool Project::climatePointsCycle(bool showInfo)
         }
 
         Crit3DMeteoPoint* meteoPointTemp = new Crit3DMeteoPoint;
+        std::vector<float> outputValues;
 
         for (int j = 0; j < climateList->listClimateElab().size(); j++)
         {
@@ -1726,7 +1727,7 @@ bool Project::climatePointsCycle(bool showInfo)
                 return false;
             }
 
-            if (climateOnPoint(&errorString, meteoPointsDbHandler, NULL, &meteoPoints[i], clima, meteoPointTemp, isMeteoGrid, startDate, endDate, true))
+            if (climateOnPoint(&errorString, meteoPointsDbHandler, NULL, &meteoPoints[i], clima, meteoPointTemp, outputValues, isMeteoGrid, startDate, endDate, true))
             {
                 validCell = validCell + 1;
             }
