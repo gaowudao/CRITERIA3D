@@ -1854,7 +1854,7 @@ bool Project::climatePointsCycleGrid(bool showInfo)
                        return false;
                    }
 
-                   if (climateOnPoint(&errorString, NULL, meteoGridDbHandler, meteoPoints, clima, meteoPointTemp, outputValues, isMeteoGrid, startDate, endDate, true))
+                   if (climateOnPoint(&errorString, NULL, meteoGridDbHandler, meteoPoint, clima, meteoPointTemp, outputValues, isMeteoGrid, startDate, endDate, true))
                    {
                        validCell = validCell + 1;
                    }
