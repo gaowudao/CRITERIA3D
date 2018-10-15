@@ -168,6 +168,11 @@ bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
     if (meteoPointTemp->id == "")
     {
         changeDataSet = true;
+
+        clima->setCurrentVar(clima->variable());
+        clima->setCurrentElab1(clima->elab1());
+        clima->setCurrentYearStart(clima->yearStart());
+        clima->setCurrentYearEnd(clima->yearEnd());
     }
     meteoPointTemp->id = meteoPoint->id;
     meteoPointTemp->point.z = meteoPoint->point.z;
@@ -208,13 +213,15 @@ bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                 (clima->elab1() != clima->getCurrentElab1() && (elab1MeteoComp == correctedDegreeDaysSum || elab1MeteoComp == huglin || elab1MeteoComp == winkler ||  elab1MeteoComp == fregoni) ) )
         {
             changeDataSet = true;
+
+            clima->setCurrentVar(clima->variable());
+            clima->setCurrentElab1(clima->elab1());
+            clima->setCurrentYearStart(clima->yearStart());
+            clima->setCurrentYearEnd(clima->yearEnd());
         }
     }
 
-    clima->setCurrentVar(clima->variable());
-    clima->setCurrentElab1(clima->elab1());
-    clima->setCurrentYearStart(clima->yearStart());
-    clima->setCurrentYearEnd(clima->yearEnd());
+
 
     if (changeDataSet)
     {
