@@ -1389,7 +1389,6 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
         {
             if (!climatePointsCycleGrid(true))
             {
-                errorString = "climatePointsCycleGrid error";
                 return false;
             }
             else
@@ -1401,7 +1400,6 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
         {
             if (!elaborationPointsCycleGrid(isAnomaly, true))
             {
-                errorString = "elaborationPointsCycleGrid error";
                 return false;
             }
             meteoGridDbHandler->meteoGrid()->fillMeteoRasterElabValue();
@@ -1410,7 +1408,6 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
         {
             if (!elaborationPointsCycleGrid(isAnomaly, true))
             {
-                errorString = "elaborationPointsCycleGrid error";
                 return false;
             }
             meteoGridDbHandler->meteoGrid()->fillMeteoRasterAnomalyValue();
@@ -1770,7 +1767,7 @@ bool Project::climatePointsCycle(bool showInfo)
 
 bool Project::climatePointsCycleGrid(bool showInfo)
 {
-/*
+
     bool isMeteoGrid = true;
     formRunInfo myInfo;
     int infoStep;
@@ -1787,66 +1784,104 @@ bool Project::climatePointsCycleGrid(bool showInfo)
         infoStep = myInfo.start(infoStr, this->meteoGridDbHandler->gridStructure().header().nrRows);
     }
 
-    if (parserElaboration(clima))
+    // parser all the list
+    Crit3DClimateList* climateList = clima->getListElab();
+    climateList->parserElaboration();
+
+    Crit3DMeteoPoint* meteoPointTemp = new Crit3DMeteoPoint;
+    for (int row = 0; row < meteoGridDbHandler->gridStructure().header().nrRows; row++)
     {
+        if (showInfo && (row % infoStep) == 0)
+            myInfo.setValue(row);
 
-        if (clima->periodType() == genericPeriod)
+        for (int col = 0; col < meteoGridDbHandler->gridStructure().header().nrCols; col++)
         {
-            startDate.setDate(clima->yearStart(), clima->genericPeriodDateStart().month(), clima->genericPeriodDateStart().day());
-            endDate.setDate(clima->yearEnd() + clima->nYears(), clima->genericPeriodDateEnd().month(), clima->genericPeriodDateEnd().day());
-        }
-        else
-        {
-            startDate.setDate(clima->yearStart(), 1, 1);
-            endDate.setDate(clima->yearEnd(), 12, 31);
-        }
 
-        if (clima->param1IsClimate())
-        {
-//            param1ClimateField = Climate.getClimateFieldName(param1ClimateElab)
-        }
+           if (meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id))
+           {
 
-        for (int row = 0; row < meteoGridDbHandler->gridStructure().header().nrRows; row++)
-        {
-            if (showInfo && (row % infoStep) == 0)
-                myInfo.setValue(row);
+               //reset mp
+               meteoPointTemp->id = "";
+               std::vector<float> outputValues;
 
-            for (int col = 0; col < meteoGridDbHandler->gridStructure().header().nrCols; col++)
-            {
+               Crit3DMeteoPoint* meteoPoint = meteoGridDbHandler->meteoGrid()->meteoPointPointer(row,col);
 
-               if (meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id))
+               for (int j = 0; j < climateList->listClimateElab().size(); j++)
                {
 
-                   Crit3DMeteoPoint* meteoPoint = meteoGridDbHandler->meteoGrid()->meteoPointPointer(row,col);
+                   clima->resetParam();
+                   clima->setClimateElab(climateList->listClimateElab().at(j));
 
-                   if (climateOnPoint(&errorString, NULL, meteoGridDbHandler, meteoPoint, clima, isMeteoGrid, startDate, endDate, true))
+
+                   if (climateList->listClimateElab().at(j)!= NULL)
                    {
-                        validCell = validCell + 1;
+
+                       // copy current elaboration to clima
+                       clima->setYearStart(climateList->listYearStart().at(j));
+                       clima->setYearEnd(climateList->listYearEnd().at(j));
+                       clima->setPeriodType(climateList->listPeriodType().at(j));
+                       clima->setPeriodStr(climateList->listPeriodStr().at(j));
+                       clima->setGenericPeriodDateStart(climateList->listGenericPeriodDateStart().at(j));
+                       clima->setGenericPeriodDateEnd(climateList->listGenericPeriodDateEnd().at(j));
+                       clima->setNYears(climateList->listNYears().at(j));
+                       clima->setVariable(climateList->listVariable().at(j));
+                       clima->setElab1(climateList->listElab1().at(j));
+                       clima->setElab2(climateList->listElab2().at(j));
+                       clima->setParam1(climateList->listParam1().at(j));
+                       clima->setParam2(climateList->listParam2().at(j));
+                       clima->setParam1IsClimate(climateList->listParam1IsClimate().at(j));
+
+                       if (clima->periodType() == genericPeriod)
+                       {
+                           startDate.setDate(clima->yearStart(), clima->genericPeriodDateStart().month(), clima->genericPeriodDateStart().day());
+                           endDate.setDate(clima->yearEnd() + clima->nYears(), clima->genericPeriodDateEnd().month(), clima->genericPeriodDateEnd().day());
+                       }
+                       else
+                       {
+                           startDate.setDate(clima->yearStart(), 1, 1);
+                           endDate.setDate(clima->yearEnd(), 12, 31);
+                       }
+
+                       if (clima->param1IsClimate())
+                       {
+               //            param1ClimateField = Climate.getClimateFieldName(param1ClimateElab)
+                       }
                    }
+                   else
+                   {
+                       errorString = "parser elaboration error";
+                       delete meteoPointTemp;
+                       return false;
+                   }
+
+                   if (climateOnPoint(&errorString, NULL, meteoGridDbHandler, meteoPoints, clima, meteoPointTemp, outputValues, isMeteoGrid, startDate, endDate, true))
+                   {
+                       validCell = validCell + 1;
+                   }
+
                }
+
            }
        }
+   }
 
-       if (showInfo) myInfo.close();
+   if (showInfo) myInfo.close();
 
-       if (validCell == 0)
+   if (validCell == 0)
+   {
+       if (errorString.empty())
        {
-            errorString = "no valid cells available";
-            return false;
+           errorString = "no valid cells available";
        }
-       else
-       {
-            return true;
-       }
-
+       delete meteoPointTemp;
+       return false;
     }
     else
     {
-        errorString = "parser elaboration error";
-        return false;
+        delete meteoPointTemp;
+        return true;
     }
-    */
-    return true;
+
 }
 
 /*-------------------
