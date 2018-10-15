@@ -222,7 +222,6 @@ bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
     }
 
 
-
     if (changeDataSet)
     {
         outputValues.clear();
