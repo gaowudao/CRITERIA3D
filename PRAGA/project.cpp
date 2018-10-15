@@ -1423,7 +1423,6 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
         {
             if (!climatePointsCycle(true))
             {
-                //errorString = "climatePointsCycle error";
                 return false;
             }
             else
@@ -1435,7 +1434,6 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
         {
             if (!elaborationPointsCycle(isAnomaly, true))
             {
-                errorString = "elaborationPointsCycle error";
                 return false;
             }
         }
@@ -1443,7 +1441,6 @@ bool Project::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
         {
             if (!elaborationPointsCycle(isAnomaly, true))
             {
-                errorString = "elaborationPointsCycle error";
                 return false;
             }
         }
@@ -1541,7 +1538,10 @@ bool Project::elaborationPointsCycle(bool isAnomaly, bool showInfo)
 
     if (validCell == 0)
     {
-        errorString = "no valid cells available";
+        if (errorString.empty())
+        {
+            errorString = "no valid cells available";
+        }
         return false;
     }
     else
@@ -1643,7 +1643,10 @@ bool Project::elaborationPointsCycleGrid(bool isAnomaly, bool showInfo)
 
     if (validCell == 0)
     {
-        errorString = "no valid cells available";
+        if (errorString.empty())
+        {
+            errorString = "no valid cells available";
+        }
         return false;
     }
     else
@@ -1750,7 +1753,10 @@ bool Project::climatePointsCycle(bool showInfo)
 
     if (validCell == 0)
     {
-        //errorString = "no valid cells available";
+        if (errorString.empty())
+        {
+            errorString = "no valid cells available";
+        }
         delete meteoPointTemp;
         return false;
     }
@@ -1761,73 +1767,6 @@ bool Project::climatePointsCycle(bool showInfo)
     }
 }
 
-//bool Project::climatePointsCycle(bool showInfo)
-//{
-//    bool isMeteoGrid = false;
-//    formRunInfo myInfo;
-//    int infoStep;
-//    QString infoStr;
-
-//    int validCell = 0;
-//    QDate startDate;
-//    QDate endDate;
-
-//    if (showInfo)
-//    {
-//        infoStr = "Climate  - Meteo Points";
-//        infoStep = myInfo.start(infoStr, nrMeteoPoints);
-//    }
-
-//    if (parserElaboration(clima))
-//    {
-
-//        if (clima->periodType() == genericPeriod)
-//        {
-//            startDate.setDate(clima->yearStart(), clima->genericPeriodDateStart().month(), clima->genericPeriodDateStart().day());
-//            endDate.setDate(clima->yearEnd() + clima->nYears(), clima->genericPeriodDateEnd().month(), clima->genericPeriodDateEnd().day());
-//        }
-//        else
-//        {
-//            startDate.setDate(clima->yearStart(), 1, 1);
-//            endDate.setDate(clima->yearEnd(), 12, 31);
-//        }
-
-//        if (clima->param1IsClimate())
-//        {
-////            param1ClimateField = Climate.getClimateFieldName(param1ClimateElab)
-//        }
-//        for (int i = 0; i < nrMeteoPoints; i++)
-//        {
-//            if (showInfo && (i % infoStep) == 0)
-//            {
-//                myInfo.setValue(i);
-//            }
-
-//            if (climateOnPoint(&errorString, meteoPointsDbHandler, NULL, &meteoPoints[i], clima, isMeteoGrid, startDate, endDate, true))
-//            {
-//                validCell = validCell + 1;
-//            }
-
-//        }
-//        if (showInfo) myInfo.close();
-
-//        if (validCell == 0)
-//        {
-//            errorString = "no valid cells available";
-//            return false;
-//        }
-//        else
-//        {
-//            return true;
-//        }
-
-//    }
-//    else
-//    {
-//        errorString = "parser elaboration error";
-//        return false;
-//    }
-//}
 
 bool Project::climatePointsCycleGrid(bool showInfo)
 {
@@ -1907,6 +1846,7 @@ bool Project::climatePointsCycleGrid(bool showInfo)
         return false;
     }
     */
+    return true;
 }
 
 /*-------------------
