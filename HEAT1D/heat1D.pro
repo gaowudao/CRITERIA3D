@@ -9,13 +9,21 @@ QT       += widgets core
 TARGET = HEAT1D
 TEMPLATE = app
 
+CONFIG += debug_and_release
+
+CONFIG(debug, debug|release) {
+    LIBS += -L../soilFluxes3D/debug -lsoilFluxes3D
+    LIBS += -L../mathFunctions/debug -lmathFunctions
+    LIBS += -L../gis/debug -lgis
+} else {
+    LIBS += -L../soilFluxes3D/release -lsoilFluxes3D
+    LIBS += -L../mathFunctions/release -lmathFunctions
+    LIBS += -L../gis/release -lgis
+}
+
 INCLUDEPATH += ../mathFunctions
 INCLUDEPATH += ../soilFluxes3D/header
 INCLUDEPATH += ../gis
-
-LIBS += -L../soilFluxes3D/debug -lsoilFluxes3D
-LIBS += -L../mathFunctions/debug -lmathFunctions
-LIBS += -L../gis/debug -lgis
 
 SOURCES += main.cpp\
     mainwindow.cpp \
