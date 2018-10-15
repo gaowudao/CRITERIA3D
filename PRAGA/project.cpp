@@ -1907,8 +1907,6 @@ bool Project::climatePointsCycleGrid(bool showInfo)
         return false;
     }
     */
-
-    return true;
 }
 
 /*-------------------
