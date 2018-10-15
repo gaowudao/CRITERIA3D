@@ -502,6 +502,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
     }
 }
 
+
 float loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteoPointsDbHandler,
         Crit3DMeteoGridDbHandler *meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid,
         meteoVariable variable, QDate first, QDate last)
@@ -540,7 +541,7 @@ float loadDailyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler *meteo
     {
         if (meteoPoint->nrObsDataDaysD == 0)
         {
-            meteoPoint->initializeObsDataD(dailyValues.size(), getCrit3DDate(firstDateDB));
+            meteoPoint->initializeObsDataD(int(dailyValues.size()), getCrit3DDate(firstDateDB));
         }
 
         Crit3DDate currentDate = getCrit3DDate(firstDateDB);
@@ -599,7 +600,7 @@ float loadDailyVarSeries_SaveOutput(std::string *myError, Crit3DMeteoPointsDbHan
     {
         if (meteoPoint->nrObsDataDaysD == 0)
         {
-            meteoPoint->initializeObsDataD(dailyValues.size(), getCrit3DDate(firstDateDB));
+            meteoPoint->initializeObsDataD(int(dailyValues.size()), getCrit3DDate(firstDateDB));
         }
 
         Crit3DDate currentDate = getCrit3DDate(firstDateDB);
