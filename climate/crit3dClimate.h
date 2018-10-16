@@ -1,14 +1,22 @@
 #ifndef CRIT3DCLIMATE_H
 #define CRIT3DCLIMATE_H
 
-    class QString;
-    class QDate;
-    class QSqlDatabase;
+
+    #ifndef QDATETIME_H
+        #include <QDate>
+    #endif
+
+    #ifndef QSTRING_H
+        #include <QString>
+    #endif
+
+    #ifndef QSQLDATABASE_H
+        #include <QSqlDatabase>
+    #endif
 
     #ifndef METEO_H
         #include "meteo.h"
     #endif
-
 
     #include "elaborationSettings.h"
     #include "crit3dClimateList.h"

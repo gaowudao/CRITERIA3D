@@ -2,7 +2,7 @@
 #include "climate.h"
 #include "utilities.h"
 
-extern Project myProject;
+extern PragaProject myProject;
 
 AnomalyLayout::AnomalyLayout()
 { }

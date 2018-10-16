@@ -5,22 +5,25 @@
 #include "CircleObject.h"
 #include "MapGraphicsView.h"
 
-class StationMarker : public CircleObject
-{
-    Q_OBJECT
+    class Crit3DMeteoPoint;
+    class Project;
 
-    public:
-        explicit StationMarker(qreal radius, bool sizeIsZoomInvariant, QColor fillColor, MapGraphicsView* view, MapGraphicsObject *parent = 0);
-        void setToolTip(int i);
+    class StationMarker : public CircleObject
+    {
+        Q_OBJECT
 
-    private:
-        MapGraphicsView* _view;
+        public:
+            explicit StationMarker(qreal radius, bool sizeIsZoomInvariant, QColor fillColor, MapGraphicsView* view, MapGraphicsObject *parent = 0);
+            void setToolTip(Crit3DMeteoPoint* meteoPoint_);
 
-    protected:
-        void mousePressEvent(QGraphicsSceneMouseEvent *event);
-        //void mouseDoubleClickEvent(QGraphicsSceneMouseEvent * event);
+        private:
+            MapGraphicsView* _view;
 
-};
+        protected:
+            void mousePressEvent(Project *project, QGraphicsSceneMouseEvent *event);
+            //void mouseDoubleClickEvent(QGraphicsSceneMouseEvent * event);
+
+    };
 
 #endif // STATIONMARKER_H
 

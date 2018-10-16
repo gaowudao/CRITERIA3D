@@ -7,7 +7,7 @@
 #include <QComboBox>
 
 #include <QtWidgets>
-#include "project.h"
+#include "pragaProject.h"
 #include "mainwindow.h"
 #include "anomalyLayout.h"
 #include "saveClimaLayout.h"

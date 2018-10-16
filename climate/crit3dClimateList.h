@@ -4,6 +4,10 @@
     class QString;
     class QDate;
 
+    #ifndef QSTRINGLIST_H
+        #include <QStringList>
+    #endif
+
     #include <vector>
 
     #ifndef METEO_H

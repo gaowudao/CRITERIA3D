@@ -1,8 +1,6 @@
 #ifndef PROJECT_H
 #define PROJECT_H
 
-    #define PRAGA
-
     #ifndef GIS_H
         #include "gis.h"
     #endif
@@ -31,10 +29,6 @@
         #include "solarRadiation.h"
     #endif
 
-    #ifndef CRIT3DCLIMATE_H
-        #include "crit3dClimate.h"
-    #endif
-
     #ifdef NETCDF
         #include "netcdfHandler.h"
     #endif
@@ -58,20 +52,13 @@
         std::ofstream logFile;
         std::string errorString;
 
+        int nrMeteoPoints;
         Crit3DMeteoPoint* meteoPoints;
         Crit3DMeteoPointsDbHandler* meteoPointsDbHandler;
         QList<gis::Crit3DGeoPoint> meteoPointsSelected;
         Crit3DMeteoGridDbHandler* meteoGridDbHandler;
-        gridAggregationMethod grdAggrMethod;
-
-        Crit3DClimate* clima;
-        Crit3DClimate* climaFromDb;
-        Crit3DClimate* referenceClima;
 
         Crit3DColorScale *meteoPointsColorScale;
-
-        int nrMeteoPoints;
-        bool isElabMeteoPointsValue;
 
         Crit3DQuality* quality;
         bool checkSpatialQuality;
@@ -141,18 +128,6 @@
         bool interpolationDemMain(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
         bool interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
         bool interpolateDemRadiation(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
-        bool interpolationMeteoGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
-        bool saveGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, bool showInfo);
-
-        bool elaborationPointsCycle(bool isAnomaly, bool showInfo);
-        bool elaborationPointsCycleGrid(bool isAnomaly, bool showInfo);
-        bool elaborationCheck(bool isMeteoGrid, bool isAnomaly);
-        bool elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima);
-        bool climatePointsCycle(bool showInfo);
-        bool climatePointsCycleGrid(bool showInfo);
-
-        bool getIsElabMeteoPointsValue() const;
-        void setIsElabMeteoPointsValue(bool value);
     };
 
 

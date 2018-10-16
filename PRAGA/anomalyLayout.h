@@ -7,7 +7,7 @@
 #include <QComboBox>
 
 #include <QtWidgets>
-#include "project.h"
+#include "pragaProject.h"
 #include "mainwindow.h"
 
 class AnomalyLayout : public QDialog

@@ -20,8 +20,6 @@
 #include "project.h"
 
 
-extern Project myProject;
-
 
 QString editValue(QString windowsTitle, QString defaultValue)
 {
@@ -156,9 +154,9 @@ frequencyType chooseFrequency()
 }
 
 
-bool chooseMeteoVariable()
+bool chooseMeteoVariable(Project* project_)
 {
-    if (myProject.getFrequency() == noFrequency)
+    if (project_->getFrequency() == noFrequency)
     {
         QMessageBox::information(NULL, "No frequency", "Choose frequency before");
         return false;
@@ -181,7 +179,7 @@ bool chooseMeteoVariable()
     QRadioButton RHmax("Maximum relative humidity %");
     QRadioButton Rad("Solar radiation MJ m-2");
 
-    if (myProject.getFrequency() == daily)
+    if (project_->getFrequency() == daily)
     {
         layoutVariable.addWidget(&Tmin);
         layoutVariable.addWidget(&Tavg);
@@ -192,7 +190,7 @@ bool chooseMeteoVariable()
         layoutVariable.addWidget(&RHmax);
         layoutVariable.addWidget(&Rad);
     }
-    else if (myProject.getFrequency() == hourly)
+    else if (project_->getFrequency() == hourly)
     {
         Tavg.setText("Average temperature °C");
         Prec.setText("Precipitation mm");
@@ -221,35 +219,35 @@ bool chooseMeteoVariable()
     if (myDialog.result() != QDialog::Accepted)
         return false;
 
-   if (myProject.getFrequency() == daily)
+   if (project_->getFrequency() == daily)
    {
        if (Tmin.isChecked())
-           myProject.currentVariable = dailyAirTemperatureMin;
+           project_->currentVariable = dailyAirTemperatureMin;
        else if (Tmax.isChecked())
-           myProject.currentVariable = dailyAirTemperatureMax;
+           project_->currentVariable = dailyAirTemperatureMax;
        else if (Tavg.isChecked())
-           myProject.currentVariable = dailyAirTemperatureAvg;
+           project_->currentVariable = dailyAirTemperatureAvg;
        else if (Prec.isChecked())
-           myProject.currentVariable = dailyPrecipitation;
+           project_->currentVariable = dailyPrecipitation;
        else if (Rad.isChecked())
-           myProject.currentVariable = dailyGlobalRadiation;
+           project_->currentVariable = dailyGlobalRadiation;
        else if (RHmin.isChecked())
-           myProject.currentVariable = dailyAirRelHumidityMin;
+           project_->currentVariable = dailyAirRelHumidityMin;
        else if (RHmax.isChecked())
-           myProject.currentVariable = dailyAirRelHumidityMax;
+           project_->currentVariable = dailyAirRelHumidityMax;
        else if (RHavg.isChecked())
-           myProject.currentVariable = dailyAirRelHumidityAvg;
+           project_->currentVariable = dailyAirRelHumidityAvg;
    }
-   else if (myProject.getFrequency() == hourly)
+   else if (project_->getFrequency() == hourly)
    {
        if (Tavg.isChecked())
-           myProject.currentVariable = airTemperature;
+           project_->currentVariable = airTemperature;
        else if (RHavg.isChecked())
-           myProject.currentVariable = airRelHumidity;
+           project_->currentVariable = airRelHumidity;
        else if (Prec.isChecked())
-           myProject.currentVariable = precipitation;
+           project_->currentVariable = precipitation;
        else if (Rad.isChecked())
-           myProject.currentVariable = globalIrradiance;
+           project_->currentVariable = globalIrradiance;
    }
    else
        return false;
@@ -261,12 +259,12 @@ bool chooseMeteoVariable()
     bool chooseNetCDFVariable(int* varId, QDateTime* firstDate, QDateTime* lastDate)
     {
         // check
-        if (! myProject.netCDF.isLoaded)
+        if (! project_netCDF.isLoaded)
         {
             QMessageBox::information(NULL, "No data", "Load NetCDF before");
             return false;
         }
-        if (! myProject.netCDF.isStandardTime)
+        if (! project_netCDF.isStandardTime)
         {
             QMessageBox::information(NULL, "Wrong time", "Reads only POSIX standard (seconds since 1970-01-01)");
             return false;
@@ -284,12 +282,12 @@ bool chooseMeteoVariable()
         QLabel *VariableLabel = new QLabel("<b>Variable:</b>");
         layoutVariable.addWidget(VariableLabel);
 
-        int nrVariables = myProject.netCDF.getNrVariables();
+        int nrVariables = project_netCDF.getNrVariables();
         std::vector<QRadioButton*> buttonVars;
 
         for (int i = 0; i < nrVariables; i++)
         {
-            QString varName = QString::fromStdString(myProject.netCDF.variables[i].getVarName());
+            QString varName = QString::fromStdString(project_netCDF.variables[i].getVarName());
             buttonVars.push_back(new QRadioButton(varName));
 
             layoutVariable.addWidget(buttonVars[i]);
@@ -299,8 +297,8 @@ bool chooseMeteoVariable()
         layoutVariable.addWidget(new QLabel());
 
         //Date widgets
-        *firstDate = QDateTime::fromTime_t(myProject.netCDF.getFirstTime(), Qt::UTC);
-        *lastDate = QDateTime::fromTime_t(myProject.netCDF.getLastTime(), Qt::UTC);
+        *firstDate = QDateTime::fromTime_t(project_netCDF.getFirstTime(), Qt::UTC);
+        *lastDate = QDateTime::fromTime_t(project_netCDF.getLastTime(), Qt::UTC);
 
         QDateTimeEdit *firstYearEdit = new QDateTimeEdit;
         firstYearEdit->setDateTimeRange(*firstDate, *lastDate);
@@ -354,7 +352,7 @@ bool chooseMeteoVariable()
         {
             if (buttonVars[i]->isChecked())
             {
-               *varId = myProject.netCDF.variables[i].id;
+               *varId = project_netCDF.variables[i].id;
                 isVarSelected = true;
             }
             i++;
@@ -365,10 +363,9 @@ bool chooseMeteoVariable()
 #endif
 
 
-#ifdef PRAGA
-bool downloadMeteoData()
+bool downloadMeteoData(Project* project_)
 {
-    if(myProject.nrMeteoPoints == 0)
+    if(project_->nrMeteoPoints == 0)
     {
          QMessageBox::information(NULL, "DB not existing", "Create or Open a meteo points database before download");
          return false;
@@ -456,17 +453,17 @@ bool downloadMeteoData()
    if (!daily.isChecked() && !hourly.isChecked())
    {
        QMessageBox::information(NULL, "Missing parameter", "Select hourly or daily");
-       return downloadMeteoData();
+       return downloadMeteoData(project_);
    }
    else if ((! firstDate.isValid()) || (! lastDate.isValid()))
    {
        QMessageBox::information(NULL, "Missing parameter", "Select download period");
-       return downloadMeteoData();
+       return downloadMeteoData(project_);
    }
    else if (!item1.isSelected() && !item2.isSelected() && !item3.isSelected() && !item4.isSelected() && !item5.isSelected() && !item6.isSelected())
    {
        QMessageBox::information(NULL, "Missing parameter", "Select variable");
-       return downloadMeteoData();
+       return downloadMeteoData(project_);
    }
    else
    {
@@ -505,7 +502,7 @@ bool downloadMeteoData()
                     prec0024 = false;
             }
 
-            if (! myProject.downloadDailyDataArkimet(var, prec0024, firstDate, lastDate, true))
+            if (! project_->downloadDailyDataArkimet(var, prec0024, firstDate, lastDate, true))
             {
                 QMessageBox::information(NULL, "Error!", "Error in daily download");
                 return false;
@@ -514,7 +511,7 @@ bool downloadMeteoData()
 
         if (hourly.isChecked())
         {
-            if (! myProject.downloadHourlyDataArkimet(var, firstDate, lastDate, true))
+            if (! project_->downloadHourlyDataArkimet(var, firstDate, lastDate, true))
             {
                 QMessageBox::information(NULL, "Error!", "Error in hourly download");
                 return false;
@@ -524,5 +521,4 @@ bool downloadMeteoData()
         return true;
     }
 }
-#endif
 

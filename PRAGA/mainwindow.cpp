@@ -22,7 +22,7 @@
 #include "dbMeteoPoints.h"
 #include "dbArkimet.h"
 #include "download.h"
-#include "project.h"
+#include "pragaProject.h"
 #include "commonConstants.h"
 #include "dialogWindows.h"
 #include "computationDialog.h"
@@ -31,7 +31,8 @@
 #include "gis.h"
 #include "spatialControl.h"
 
-extern Project myProject;
+extern PragaProject myProject;
+
 #define MAPBORDER 8
 #define TOOLSWIDTH 260
 
@@ -419,6 +420,7 @@ void MainWindow::on_actionNewMeteoPointsArkimet_triggered()
     if (dbFile.exists())
     {
         myProject.closeMeteoPointsDB();
+        myProject.setIsElabMeteoPointsValue(false);
 
         if (! dbFile.remove())
         {
@@ -589,12 +591,9 @@ void MainWindow::on_actionVariableNone_triggered()
 
 void MainWindow::on_actionDownload_meteo_data_triggered()
 {
-    if (downloadMeteoData())
+    if (downloadMeteoData(&myProject))
         this->loadMeteoPointsDB(myProject.meteoPointsDbHandler->getDbName());
 }
-
-
-
 
 
 QPoint MainWindow::getMapPoint(QPoint* point) const
@@ -624,7 +623,7 @@ void MainWindow::resetMeteoPoints()
 
 void MainWindow::on_actionVariableChoose_triggered()
 {
-    if (chooseMeteoVariable())
+    if (chooseMeteoVariable(&myProject))
     {
        this->ui->actionVariableNone->setChecked(false);
        if (this->meteoGridObj != NULL) this->meteoGridObj->setDrawBorders(false);
@@ -795,7 +794,7 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
                 myProject.meteoPoints[i].currentValue = NODATA;
                 pointList[i]->setFillColor(QColor(Qt::white));
                 pointList[i]->setRadius(5);
-                pointList[i]->setToolTip(i);
+                pointList[i]->setToolTip(&(myProject.meteoPoints[i]));
                 pointList[i]->setVisible(true);
         }
 
@@ -840,7 +839,7 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
                 pointList[i]->setOpacity(0.5);
             }
 
-            pointList[i]->setToolTip(i);
+            pointList[i]->setToolTip(&(myProject.meteoPoints[i]));
             pointList[i]->setVisible(true);
         }
     }
@@ -1043,7 +1042,7 @@ void MainWindow::addMeteoPoints()
         this->pointList.append(point);
         this->mapView->scene()->addObject(this->pointList[i]);
 
-        point->setToolTip(i);
+        point->setToolTip(&(myProject.meteoPoints[i]));
     }
 }
 
@@ -1076,7 +1075,7 @@ void MainWindow::on_rasterScaleButton_clicked()
 
 void MainWindow::on_variableButton_clicked()
 {
-    if (chooseMeteoVariable())
+    if (chooseMeteoVariable(&myProject))
     {
        this->ui->actionVariableNone->setChecked(false);
        this->updateVariable();
@@ -1132,6 +1131,7 @@ void MainWindow::on_actionClose_meteo_points_triggered()
     resetMeteoPoints();
     meteoPointsLegend->setVisible(false);
     myProject.closeMeteoPointsDB();
+    myProject.setIsElabMeteoPointsValue(false);
     elaborationBox->hide();
 }
 
@@ -1464,7 +1464,7 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool is
                 pointList[i]->setRadius(5);
                 myColor = myProject.meteoPointsColorScale->getColor(myProject.meteoPoints[i].currentValue);
                 pointList[i]->setFillColor(QColor(myColor->red, myColor->green, myColor->blue));
-                pointList[i]->setToolTip(i);
+                pointList[i]->setToolTip(&(myProject.meteoPoints[i]));
                 pointList[i]->setVisible(true);
             }
         }

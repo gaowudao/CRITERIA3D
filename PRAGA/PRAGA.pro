@@ -72,7 +72,8 @@ SOURCES += main.cpp\
     shared/colorlegend.cpp \
     shared/interpolationDialog.cpp \
     shared/interpolationCmd.cpp \
-    shared/project.cpp
+    shared/project.cpp \
+    pragaProject.cpp
 
 HEADERS  += mainwindow.h \
     saveClimaLayout.h \
@@ -87,7 +88,8 @@ HEADERS  += mainwindow.h \
     shared/colorlegend.h \
     shared/interpolationDialog.h \
     shared/interpolationCmd.h \
-    shared/project.h
+    shared/project.h \
+    pragaProject.h
 
 FORMS    += mainwindow.ui \
         shared/formInfo.ui

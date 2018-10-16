@@ -4,10 +4,10 @@
 #include <QDebug>
 #include <QMessageBox>
 
-#include "project.h"
+#include "pragaProject.h"
 
 
-Project myProject;
+PragaProject myProject;
 
 
 bool setProxy(QString hostName, unsigned short port)
@@ -36,6 +36,9 @@ int main(int argc, char *argv[])
 
     QString currentPath = myApp.applicationDirPath() + "/";
     if (! myProject.initializeSettings(currentPath))
+        return -1;
+
+    if (! myProject.readPragaSettings())
         return -1;
 
     QNetworkProxyFactory::setUseSystemConfiguration(true);

@@ -6,9 +6,6 @@
 #include <QtDebug>
 
 
-extern Project myProject;
-
-
 StationMarker::StationMarker(qreal radius,bool sizeIsZoomInvariant, QColor fillColor, MapGraphicsView* view, MapGraphicsObject *parent) :
     CircleObject(radius, sizeIsZoomInvariant, fillColor, parent)
 {
@@ -20,26 +17,26 @@ StationMarker::StationMarker(qreal radius,bool sizeIsZoomInvariant, QColor fillC
 }
 
 
-void StationMarker::setToolTip(int i)
+void StationMarker::setToolTip(Crit3DMeteoPoint* meteoPoint_)
 {
-    QString idpoint = QString::fromStdString(myProject.meteoPoints[i].id);
-    QString name = QString::fromStdString(myProject.meteoPoints[i].name);
-    QString dataset = QString::fromStdString(myProject.meteoPoints[i].dataset);
-    float altitude = myProject.meteoPoints[i].point.z;
-    QString municipality = QString::fromStdString(myProject.meteoPoints[i].municipality);
+    QString idpoint = QString::fromStdString(meteoPoint_->id);
+    QString name = QString::fromStdString(meteoPoint_->name);
+    QString dataset = QString::fromStdString(meteoPoint_->dataset);
+    float altitude = meteoPoint_->point.z;
+    QString municipality = QString::fromStdString(meteoPoint_->municipality);
 
     QString toolTipText = QString("<b> %1 </b> <br/> ID: %2 <br/> dataset: %3 <br/> altitude: %4 m <br/> municipality: %5")
                             .arg(name).arg(idpoint).arg(dataset).arg(altitude).arg(municipality);
 
-    float myValue = myProject.meteoPoints[i].currentValue;
+    float myValue = meteoPoint_->currentValue;
     if (myValue != NODATA)
     {
         QString value = QString::number(myValue);
 
         QString myQuality = "";
-        if (myProject.meteoPoints[i].quality == quality::wrong_syntactic)
+        if (meteoPoint_->quality == quality::wrong_syntactic)
             myQuality = "WRONG DATA (syntax control)";
-        if (myProject.meteoPoints[i].quality == quality::wrong_spatial)
+        if (meteoPoint_->quality == quality::wrong_spatial)
             myQuality = "WRONG DATA (spatial control)";
 
         toolTipText = QString("value: <b> %1 <br/> %2 <br/> </b>").arg(value).arg(myQuality) + toolTipText;
@@ -49,7 +46,7 @@ void StationMarker::setToolTip(int i)
 }
 
 
-void StationMarker::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void StationMarker::mousePressEvent(Project* project_, QGraphicsSceneMouseEvent *event)
 {
     gis::Crit3DGeoPoint pointSelected;
     pointSelected.latitude = this->latitude();
@@ -61,16 +58,16 @@ void StationMarker::mousePressEvent(QGraphicsSceneMouseEvent *event)
         if ( color ==  Qt::white )
         {
             this->setFillColor(QColor((Qt::red)));
-            myProject.meteoPointsSelected << pointSelected;
+            project_->meteoPointsSelected << pointSelected;
         }
         else
         {
             this->setFillColor(QColor((Qt::white)));
-            for (int i = 0; i < myProject.meteoPointsSelected.size(); i++)
+            for (int i = 0; i < project_->meteoPointsSelected.size(); i++)
             {
-                if (myProject.meteoPointsSelected[i].latitude == pointSelected.latitude
-                    && myProject.meteoPointsSelected[i].longitude == pointSelected.longitude)
-                    myProject.meteoPointsSelected.removeAt(i);
+                if (project_->meteoPointsSelected[i].latitude == pointSelected.latitude
+                    && project_->meteoPointsSelected[i].longitude == pointSelected.longitude)
+                    project_->meteoPointsSelected.removeAt(i);
             }
         }
     }
@@ -148,15 +145,15 @@ void StationMarker::mouseDoubleClickEvent(QGraphicsSceneMouseEvent * event)
     {
         //this->setFillColor(QColor(255,0,0,255));
         this->setFillColor(QColor((Qt::red)));
-        myProject.meteoPointsSelected << pointSelected;
+        project_->meteoPointsSelected << pointSelected;
     }
     else
     {
         this->setFillColor(QColor((Qt::white)));
-        for (int i = 0; i < myProject.meteoPointsSelected.size(); i++)
+        for (int i = 0; i < project_->meteoPointsSelected.size(); i++)
         {
-            if (myProject.meteoPointsSelected[i].latitude == pointSelected.latitude && myProject.meteoPointsSelected[i].longitude == pointSelected.longitude)
-                myProject.meteoPointsSelected.removeAt(i);
+            if (project_->meteoPointsSelected[i].latitude == pointSelected.latitude && myProject.meteoPointsSelected[i].longitude == pointSelected.longitude)
+                project_->meteoPointsSelected.removeAt(i);
         }
     }
 

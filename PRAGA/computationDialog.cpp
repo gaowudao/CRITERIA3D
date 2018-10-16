@@ -2,7 +2,7 @@
 #include "climate.h"
 #include "utilities.h"
 
-extern Project myProject;
+extern PragaProject myProject;
 
 ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool saveClima)
     : settings(settings), isAnomaly(isAnomaly), saveClima(saveClima)
