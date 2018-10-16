@@ -344,7 +344,7 @@
     double ParticleDensity(double fractionOrganicMatter)
     {
         if (fractionOrganicMatter == NODATA)
-            fractionOrganicMatter = 0.5;
+            fractionOrganicMatter = 0.0;
         return (1./(0.377 + 0.57 * fractionOrganicMatter));
     }
 
@@ -363,7 +363,7 @@
         totalPorosity = myNode[i].Soil->Theta_s;
 
         // very small pores not water fillable
-        if (myNode[i].Soil->clay > 40)
+        if (myNode[i].Soil->clay > 0.4)
             totalPorosity *= 1.03;
         else
             totalPorosity *= 1.05;

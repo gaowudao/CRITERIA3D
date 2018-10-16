@@ -484,80 +484,80 @@ QString Crit3DOut::getTextOutput(outputGroup outGroup)
     if (outGroup == outputGroup::soilTemperature)
         for (int j=1; j<=nrLayers; j++)
         {
-            myString.append(QString("TempSoil_"));
-            myString.append(QString::number(j));
+            myString.append(QString("TempSoil_-"));
+            myString.append(QString::number(j * layerThickness));
             myString.append(QString(","));
         }
 
     if (outGroup == outputGroup::soilWater)
         for (int j=0; j<=nrLayers; j++)
         {
-            myString.append(QString("WaterContent_"));
-            myString.append(QString::number(j));
+            myString.append(QString("WaterContent_-"));
+            myString.append(QString::number(j * layerThickness));
             myString.append(QString(","));
         }
 
     if (outGroup == outputGroup::totalHeatFlux)
         for (int j=1; j<=nrLayers; j++)
         {
-            myString.append(QString("HeatFlux_tot"));
-            myString.append(QString::number(j));
+            myString.append(QString("HeatFluxTot_-"));
+            myString.append(QString::number(j * layerThickness));
             myString.append(QString(","));
         }
 
     if (outGroup == outputGroup::diffusiveHeatFlux)
         for (int j=1; j<=nrLayers; j++)
         {
-            myString.append(QString("HeatFlux_diff"));
-            myString.append(QString::number(j));
+            myString.append(QString("HeatFluxDiff_-"));
+            myString.append(QString::number(j * layerThickness));
             myString.append(QString(","));
         }
 
     if (outGroup == outputGroup::latentHeatFluxIso)
         for (int j=1; j<=nrLayers; j++)
         {
-            myString.append(QString("HeatFlux_latIso"));
-            myString.append(QString::number(j));
+            myString.append(QString("HeatFluxLatIso_-"));
+            myString.append(QString::number(j * layerThickness));
             myString.append(QString(","));
         }
 
     if (outGroup == outputGroup::latentHeatFluxTherm)
         for (int j=1; j<=nrLayers; j++)
         {
-            myString.append(QString("HeatFlux_latThe"));
-            myString.append(QString::number(j));
+            myString.append(QString("HeatFluxLatTherm_-"));
+            myString.append(QString::number(j * layerThickness));
             myString.append(QString(","));
         }
 
     if (outGroup == outputGroup::waterIsothLiquidFlux)
         for (int j=1; j<=nrLayers; j++)
         {
-            myString.append(QString("WaterFlux_liqIso"));
-            myString.append(QString::number(j));
+            myString.append(QString("WaterFluxLiqIso_-"));
+            myString.append(QString::number(j * layerThickness));
             myString.append(QString(","));
         }
 
     if (outGroup == outputGroup::waterThermLiquidFlux)
         for (int j=1; j<=nrLayers; j++)
         {
-            myString.append(QString("WaterFlux_liqThe"));
-            myString.append(QString::number(j));
+            myString.append(QString("WaterFluxLiqTherm_-"));
+            myString.append(QString::number(j * layerThickness));
             myString.append(QString(","));
         }
 
     if (outGroup == outputGroup::waterIsothVaporFlux)
         for (int j=1; j<=nrLayers; j++)
         {
-            myString.append(QString("WaterFlux_vapIso"));
-            myString.append(QString::number(j));
+            myString.append(QString("WaterFluxVapIso_-"));
+            myString.append(QString::number(j * layerThickness));
             myString.append(QString(","));
         }
 
     if (outGroup == outputGroup::waterThermVaporFlux)
         for (int j=1; j<=nrLayers; j++)
         {
-            myString.append(QString("WaterFlux_vapThe"));
-            myString.append(QString::number(j));
+            myString.append(QString("WaterFluxVapTherm_-"));
+            myString.append(QString::number(j * layerThickness));
             myString.append(QString(","));
         }
 

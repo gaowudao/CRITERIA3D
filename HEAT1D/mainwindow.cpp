@@ -35,6 +35,16 @@ bool soilDataLoaded = false;
 Crit3DOut myHeatOutput;
 Qsoil *myInputSoils = NULL;
 
+void initializeWeatherData()
+{
+    myTempInput = NULL;
+    myPrecInput = NULL;
+    myRHInput = NULL;
+    myWSInput = NULL;
+    myRadInput = NULL;
+    myNetRadInput = NULL;
+}
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -189,6 +199,8 @@ void MainWindow::on_pushRunAllPeriod_clicked()
 
 void MainWindow::on_pushLoadFileSoil_clicked()
 {
+    myInputSoils = NULL;
+
     QString myFilename = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                      "",
                                                      tr("Files (*.*)"));
@@ -247,6 +259,8 @@ void MainWindow::on_pushLoadFileSoil_clicked()
 
 void MainWindow::on_pushLoadFileMeteo_clicked()
 {
+    initializeWeatherData();
+
     QString myFilename = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                      "",
                                                      tr("Files (*.*)"));
