@@ -60,7 +60,6 @@ CONFIG(debug, debug|release) {
 
 SOURCES += main.cpp\
     mainwindow.cpp \
-    project.cpp \
     computationDialog.cpp \
     anomalyLayout.cpp \
     saveClimaLayout.cpp \
@@ -72,10 +71,10 @@ SOURCES += main.cpp\
     shared/rasterObject.cpp \
     shared/colorlegend.cpp \
     shared/interpolationDialog.cpp \
-    shared/interpolationCmd.cpp
+    shared/interpolationCmd.cpp \
+    shared/project.cpp
 
 HEADERS  += mainwindow.h \
-    project.h \
     saveClimaLayout.h \
     computationDialog.h \
     anomalyLayout.h \
@@ -87,7 +86,8 @@ HEADERS  += mainwindow.h \
     shared/rasterObject.h \
     shared/colorlegend.h \
     shared/interpolationDialog.h \
-    shared/interpolationCmd.h
+    shared/interpolationCmd.h \
+    shared/project.h
 
 FORMS    += mainwindow.ui \
         shared/formInfo.ui
