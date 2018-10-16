@@ -1725,6 +1725,11 @@ bool Project::climatePointsCycle(bool showInfo)
                         startDate.setDate(clima->yearStart(), clima->genericPeriodDateStart().month(), clima->genericPeriodDateStart().day());
                         endDate.setDate(clima->yearEnd() + clima->nYears(), clima->genericPeriodDateEnd().month(), clima->genericPeriodDateEnd().day());
                     }
+                    else if (clima->periodType() == seasonalPeriod)
+                    {
+                        startDate.setDate(clima->yearStart() -1, 12, 1);
+                        endDate.setDate(clima->yearEnd(), 12, 31);
+                    }
                     else
                     {
                         startDate.setDate(clima->yearStart(), 1, 1);
@@ -1843,6 +1848,11 @@ bool Project::climatePointsCycleGrid(bool showInfo)
                        {
                            startDate.setDate(clima->yearStart(), clima->genericPeriodDateStart().month(), clima->genericPeriodDateStart().day());
                            endDate.setDate(clima->yearEnd() + clima->nYears(), clima->genericPeriodDateEnd().month(), clima->genericPeriodDateEnd().day());
+                       }
+                       else if (clima->periodType() == seasonalPeriod)
+                       {
+                           startDate.setDate(clima->yearStart() -1, 12, 1);
+                           endDate.setDate(clima->yearEnd(), 12, 31);
                        }
                        else
                        {
