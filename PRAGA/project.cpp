@@ -1460,6 +1460,8 @@ bool Project::elaborationPointsCycle(bool isAnomaly, bool showInfo)
     int infoStep;
     QString infoStr;
 
+    errorString.clear();
+
     if (showInfo)
     {
         if (isAnomaly)
@@ -1563,6 +1565,8 @@ bool Project::elaborationPointsCycleGrid(bool isAnomaly, bool showInfo)
     int infoStep;
     QString infoStr;
 
+    errorString.clear();
+
     if (showInfo)
     {
         if (isAnomaly)
@@ -1663,6 +1667,8 @@ bool Project::climatePointsCycle(bool showInfo)
     int validCell = 0;
     QDate startDate;
     QDate endDate;
+
+    errorString.clear();
 
     if (showInfo)
     {
@@ -1777,6 +1783,8 @@ bool Project::climatePointsCycleGrid(bool showInfo)
     QDate startDate;
     QDate endDate;
     std::string id;
+
+    errorString.clear();
 
     if (showInfo)
     {

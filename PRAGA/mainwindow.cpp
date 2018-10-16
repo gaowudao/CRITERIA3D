@@ -1371,7 +1371,7 @@ void MainWindow::on_actionClimate_meteo_grid_triggered()
         }
 
         if (compDialog.result() == QDialog::Accepted)
-            on_actionClimate_meteo_points_triggered();
+            on_actionClimate_meteo_grid_triggered();
 
     }
     else
