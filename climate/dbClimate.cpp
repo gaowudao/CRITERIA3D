@@ -445,5 +445,64 @@ bool selectVarElab(QSqlDatabase db, std::string *myError, QString table, QString
     return found;
 }
 
+bool showClimateTables(QSqlDatabase db, std::string *myError, QStringList* climateTables)
+{
+    QSqlQuery qry(db);
+    QString table;
 
+    if (db.driverName() == "QSQLITE")
+    {
+        qry.prepare("SELECT * FROM sqlite_master");
+        if( !qry.exec() )
+        {
+            *myError = qry.lastError().text().toStdString();
+            return false;
+        }
+        else
+        {
+            while (qry.next())
+            {
+                if (getValue(qry.value("name"), &table))
+                {
+                    if( qry.value("type").toString() == "table" && table != "sqlite_sequence" ) //The "sqlite_sequence" table is an internal table used to help implement AUTOINCREMENT
+                    {
+                       climateTables->append(table);
+                    }
+
+                }
+                else
+                {
+                    *myError = qry.lastError().text().toStdString();
+                    return false;
+                }
+            }
+        }
+    }
+    else if (db.driverName() == "QMYSQL")
+    {
+        qry.prepare("SHOW TABLES LIKE 'climate_%'");
+        if( !qry.exec() )
+        {
+            *myError = qry.lastError().text().toStdString();
+            return false;
+        }
+        else
+        {
+            while (qry.next())
+            {
+                if (getValue(qry.value(0), &table))
+                {
+                    climateTables->append(table);
+                }
+                else
+                {
+                    *myError = qry.lastError().text().toStdString();
+                    return false;
+                }
+            }
+        }
+    }
+
+    return true;
+}
 

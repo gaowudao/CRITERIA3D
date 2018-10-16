@@ -20,6 +20,7 @@ bool saveGenericElab(QSqlDatabase db, std::string *myError, QString id, float re
 
 
 bool selectVarElab(QSqlDatabase db, std::string *myError, QString table, QString variable, QStringList* listElab);
+bool showClimateTables(QSqlDatabase db, std::string *myError, QStringList* climateTables);
 
 
 #endif // DBCLIMATE_H
