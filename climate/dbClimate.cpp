@@ -1,4 +1,5 @@
 #include "dbClimate.h"
+#include "utilities.h"
 
 // LC saveDailyElab is a bit more efficient respect saveDailyElabSingleValue, making prepare just once.
 // Anyway all the process for each id_point is only 2seconds.
@@ -405,6 +406,43 @@ bool saveGenericElab(QSqlDatabase db, std::string *myError, QString id, float re
     }
 
     return true;
+}
+
+bool selectVarElab(QSqlDatabase db, std::string *myError, QString table, QString variable, QStringList* listElab)
+{
+    QSqlQuery qry(db);
+    QString elab;
+
+    bool found = false;
+    QString statement = QString("SELECT DISTINCT elab from `%1` WHERE `elab` LIKE '%'||:variable||'%'").arg(table);
+
+    qry.prepare(statement);
+
+    qry.bindValue(":variable", variable);
+
+    if( !qry.exec() )
+    {
+        *myError = qry.lastError().text().toStdString();
+        return false;
+    }
+    else
+    {
+
+        while (qry.next())
+        {
+            if (getValue(qry.value("elab"), &elab))
+            {
+                listElab->append(elab);
+                found = true;
+            }
+            else
+            {
+                *myError = qry.lastError().text().toStdString();
+            }
+        }
+    }
+
+    return found;
 }
 
 

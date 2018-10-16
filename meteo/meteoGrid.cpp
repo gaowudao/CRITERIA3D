@@ -31,9 +31,6 @@
 //#include <QDebug>   //debug
 
 
-
-
-
 Crit3DMeteoGridStructure::Crit3DMeteoGridStructure()
 {    
 }

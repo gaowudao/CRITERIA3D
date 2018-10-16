@@ -19,5 +19,7 @@ bool saveAnnualElab(QSqlDatabase db, std::string *myError, QString id, float res
 bool saveGenericElab(QSqlDatabase db, std::string *myError, QString id, float result, QString elab);
 
 
+bool selectVarElab(QSqlDatabase db, std::string *myError, QString table, QString variable, QStringList* listElab);
+
 
 #endif // DBCLIMATE_H
