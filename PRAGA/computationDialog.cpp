@@ -1030,7 +1030,7 @@ bool ComputationDialog::checkValidData()
     }
     if ( MapElabWithParam.find(elaborationList.currentText().toStdString()) != MapElabWithParam.end())
     {
-        if (elab1Parameter.text().isEmpty())
+        if ( (!readParam.isChecked() && elab1Parameter.text().isEmpty()) || (readParam.isChecked() && climateDbElabList.currentText() == "No saved elaborations found" ))
         {
             QMessageBox::information(NULL, "Missing Parameter", "insert parameter");
             return false;
