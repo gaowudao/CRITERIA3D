@@ -55,7 +55,11 @@ class AnomalyLayout : public QDialog
         QHBoxLayout genericPeriodLayout;
 
         QHBoxLayout elaborationLayout;
+        QHBoxLayout readParamLayout;
         QHBoxLayout secondElabLayout;
+
+        QStringList climateDbElab;
+        QComboBox climateDbElabList;
 
     public:
         AnomalyLayout();

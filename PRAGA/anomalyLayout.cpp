@@ -1,5 +1,6 @@
 #include "anomalyLayout.h"
 #include "climate.h"
+#include "dbClimate.h"
 #include "utilities.h"
 
 extern PragaProject myProject;
@@ -155,7 +156,8 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
 
 
     elaborationLayout.addWidget(&elab1Parameter);
-    elaborationLayout.addWidget(&readParam);
+    readParamLayout.addWidget(&readParam);
+    readParamLayout.addWidget(&climateDbElabList);
     secondElabLayout.addWidget(new QLabel("Secondary Elaboration: "));
 
     if (firstYearEdit.text().toInt() == lastYearEdit.text().toInt())
@@ -212,6 +214,7 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
     mainLayout.addLayout(&displayLayout);
     mainLayout.addLayout(&genericPeriodLayout);
     mainLayout.addLayout(&elaborationLayout);
+    mainLayout.addLayout(&readParamLayout);
     mainLayout.addLayout(&secondElabLayout);
 
     setLayout(&mainLayout);
@@ -279,6 +282,11 @@ void AnomalyLayout::AnomalyListElaboration(const QString value)
         {
             elab1Parameter.setText(QString::number(myProject.referenceClima->param1()));
         }
+    }
+
+    if (readParam.isChecked())
+    {
+        AnomalyReadParameter(Qt::Checked);
     }
 
     AnomalyListSecondElab(elaborationList.currentText());
@@ -497,15 +505,49 @@ void AnomalyLayout::AnomalyActiveSecondParameter(const QString value)
 
 void AnomalyLayout::AnomalyReadParameter(int state)
 {
-    if (state)
+
+    std::string *myError;
+    climateDbElabList.clear();
+    climateDbElab.clear();
+
+    if (state!= 0)
     {
+        climateDbElabList.setVisible(true);
+        QStringList climateTables;
+        if ( !showClimateTables(myProject.clima->db(), myError, &climateTables) )
+        {
+            climateDbElabList.addItem("No saved elaborations found");
+        }
+        else
+        {
+            for (unsigned int i=0; i < climateTables.size(); i++)
+            {
+                selectVarElab(myProject.clima->db(), myError, climateTables.at(i), variableElab.text(), &climateDbElab);
+            }
+            if (climateDbElab.isEmpty())
+            {
+                climateDbElabList.addItem("No saved elaborations found");
+            }
+            else
+            {
+                for (unsigned int i=0; i < climateDbElab.size(); i++)
+                {
+                    climateDbElabList.addItem(climateDbElab.at(i));
+                }
+            }
+
+        }
+
+
         elab1Parameter.clear();
         elab1Parameter.setReadOnly(true);
     }
     else
     {
+        climateDbElabList.setVisible(false);
         elab1Parameter.setReadOnly(false);
     }
+
 }
 
 void AnomalyLayout::AnomalySetReadReference(bool set)
