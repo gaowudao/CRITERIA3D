@@ -449,6 +449,7 @@ bool showClimateTables(QSqlDatabase db, std::string *myError, QStringList* clima
 {
     QSqlQuery qry(db);
     QString table;
+    QString type;
 
     if (db.driverName() == "QSQLITE")
     {
@@ -462,9 +463,9 @@ bool showClimateTables(QSqlDatabase db, std::string *myError, QStringList* clima
         {
             while (qry.next())
             {
-                if (getValue(qry.value("name"), &table))
+                if (getValue(qry.value("name"), &table) && getValue(qry.value("type"),&type))
                 {
-                    if( qry.value("type").toString() == "table" && table != "sqlite_sequence" ) //The "sqlite_sequence" table is an internal table used to help implement AUTOINCREMENT
+                    if ( type == "table" && table.contains("climate_") )
                     {
                        climateTables->append(table);
                     }
