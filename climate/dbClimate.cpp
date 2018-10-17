@@ -414,11 +414,10 @@ bool selectVarElab(QSqlDatabase db, std::string *myError, QString table, QString
     QString elab;
 
     bool found = false;
-    QString statement = QString("SELECT DISTINCT elab from `%1` WHERE `elab` LIKE '%'||:variable||'%'").arg(table);
+
+    QString statement = QString("SELECT DISTINCT elab from `%1` WHERE `elab` LIKE '%%2%%'").arg(table).arg(variable);
 
     qry.prepare(statement);
-
-    qry.bindValue(":variable", variable);
 
     if( !qry.exec() )
     {

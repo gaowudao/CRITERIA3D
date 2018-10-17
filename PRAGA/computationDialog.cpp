@@ -857,15 +857,17 @@ void ComputationDialog::activeSecondParameter(const QString value)
 
 void ComputationDialog::readParameter(int state)
 {
-    std::string *myError;
+
     climateDbElabList.clear();
     climateDbElab.clear();
+
+    std::string myError = myProject.errorString;
 
     if (state!= 0)
     {
         climateDbElabList.setVisible(true);
         QStringList climateTables;
-        if ( !showClimateTables(myProject.clima->db(), myError, &climateTables) )
+        if ( !showClimateTables(myProject.clima->db(), &myError, &climateTables) )
         {
             climateDbElabList.addItem("No saved elaborations found");
         }
@@ -873,7 +875,7 @@ void ComputationDialog::readParameter(int state)
         {
             for (unsigned int i=0; i < climateTables.size(); i++)
             {
-                selectVarElab(myProject.clima->db(), myError, climateTables.at(i), variableList.currentText(), &climateDbElab);
+                selectVarElab(myProject.clima->db(), &myError, climateTables.at(i), variableList.currentText(), &climateDbElab);
             }
             if (climateDbElab.isEmpty())
             {

@@ -506,7 +506,7 @@ void AnomalyLayout::AnomalyActiveSecondParameter(const QString value)
 void AnomalyLayout::AnomalyReadParameter(int state)
 {
 
-    std::string *myError;
+    std::string myError  = myProject.errorString;
     climateDbElabList.clear();
     climateDbElab.clear();
 
@@ -514,7 +514,7 @@ void AnomalyLayout::AnomalyReadParameter(int state)
     {
         climateDbElabList.setVisible(true);
         QStringList climateTables;
-        if ( !showClimateTables(myProject.clima->db(), myError, &climateTables) )
+        if ( !showClimateTables(myProject.clima->db(), &myError, &climateTables) )
         {
             climateDbElabList.addItem("No saved elaborations found");
         }
@@ -522,7 +522,7 @@ void AnomalyLayout::AnomalyReadParameter(int state)
         {
             for (unsigned int i=0; i < climateTables.size(); i++)
             {
-                selectVarElab(myProject.clima->db(), myError, climateTables.at(i), variableElab.text(), &climateDbElab);
+                selectVarElab(myProject.clima->db(), &myError, climateTables.at(i), variableElab.text(), &climateDbElab);
             }
             if (climateDbElab.isEmpty())
             {
