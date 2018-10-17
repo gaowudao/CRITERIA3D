@@ -3,6 +3,7 @@
 #include <QMessageBox>
 
 #include "project.h"
+#include "download.h"
 #include "formRunInfo.h"
 #include "commonConstants.h"
 #include "spatialControl.h"

@@ -1,41 +1,36 @@
 #ifndef PROJECT_H
 #define PROJECT_H
 
-    #ifndef GIS_H
-        #include "gis.h"
-    #endif
+#include <fstream>
 
-    #ifndef QUALITY_H
-        #include "quality.h"
-    #endif
-
-    #ifndef QSTRING_H
-        #include <QString>
-    #endif
-
-    #ifndef DOWNLOAD_H
-        #include "download.h"
-    #endif
-
-    #ifndef DBMETEOGRID_H
-        #include "dbMeteoGrid.h"
-    #endif
-
-    #ifndef INTERPOLATIONPOINT_H
-        #include "interpolationPoint.h"
-    #endif
-
-    #ifndef SOLARRADIATION_H
-        #include "solarRadiation.h"
-    #endif
-
-    #ifdef NETCDF
-        #include "netcdfHandler.h"
-    #endif
-
+#ifndef QLIST_H
     #include <QList>
+#endif
+
+#ifndef QDATETIME_H
     #include <QDate>
-    #include <fstream>
+#endif
+
+#ifndef GIS_H
+    #include "gis.h"
+#endif
+
+#ifdef NETCDF
+    #include "netcdfHandler.h"
+#endif
+
+#ifndef DBMETEOPOINTS_H
+    #include "dbMeteoPoints.h"
+#endif
+
+#ifndef DBMETEOGRID_H
+    #include "dbMeteoGrid.h"
+#endif
+
+#ifndef SOLARRADIATION_H
+    #include "solarRadiation.h"
+#endif
+
 
     class Project {
     private:
