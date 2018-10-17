@@ -184,8 +184,9 @@ bool PragaProject::elaborationCheck(bool isMeteoGrid, bool isAnomaly)
         {
             if (this->clima == NULL)
             {
-                this->clima = new Crit3DClimate();
+                this->clima = new Crit3DClimate(); 
             }
+            clima->setDb(this->meteoGridDbHandler->db());
         }
     }
     else
@@ -201,6 +202,7 @@ bool PragaProject::elaborationCheck(bool isMeteoGrid, bool isAnomaly)
             {
                 this->clima = new Crit3DClimate();
             }
+            clima->setDb(this->meteoPointsDbHandler->getDb());
         }
     }
     if (isAnomaly)

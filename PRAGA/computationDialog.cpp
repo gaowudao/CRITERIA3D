@@ -1,5 +1,6 @@
 #include "computationDialog.h"
 #include "climate.h"
+#include "dbClimate.h"
 #include "utilities.h"
 
 extern PragaProject myProject;
@@ -30,6 +31,7 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
     QHBoxLayout layoutOk;
 
     QHBoxLayout elaborationLayout;
+    QHBoxLayout readParamLayout;
     QHBoxLayout secondElabLayout;
 
     QVBoxLayout anomalyMainLayout;
@@ -211,6 +213,7 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
     elab1Parameter.setValidator(validator);
     readParam.setText("Read param from db Climate");
     readParam.setChecked(myProject.clima->param1IsClimate());
+    climateDbElabList.setVisible(false);
 
 
     QString elab1Field = elaborationList.currentText();
@@ -228,7 +231,8 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
     }
 
     elaborationLayout.addWidget(&elab1Parameter);
-    elaborationLayout.addWidget(&readParam);
+    readParamLayout.addWidget(&readParam);
+    readParamLayout.addWidget(&climateDbElabList);
     secondElabLayout.addWidget(new QLabel("Secondary Elaboration: "));
 
     if (firstYearEdit.text().toInt() == lastYearEdit.text().toInt())
@@ -254,7 +258,6 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
     elab2Parameter.setPlaceholderText("Parameter");
     elab2Parameter.setFixedWidth(90);
     elab2Parameter.setValidator(validator);
-    //elab2Parameter.setValidator(new QDoubleValidator(-9999.0, 9999.0, 2)); //LC accetta double con 2 cifre decimali da -9999 a 9999
 
     QString elab2Field = secondElabList.currentText();
     if ( MapElabWithParam.find(elab2Field.toStdString()) == MapElabWithParam.end())
@@ -314,6 +317,7 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
     mainLayout.addLayout(&displayLayout);
     mainLayout.addLayout(&genericPeriodLayout);
     mainLayout.addLayout(&elaborationLayout);
+    mainLayout.addLayout(&readParamLayout);
     mainLayout.addLayout(&secondElabLayout);
 
     if (isAnomaly)
@@ -775,6 +779,10 @@ void ComputationDialog::listElaboration(const QString value)
     settings->endGroup();
 
     listSecondElab(elaborationList.currentText());
+    if (readParam.isChecked())
+    {
+        readParameter(Qt::Checked);
+    }
     if(isAnomaly)
     {
         anomaly.AnomalySetVariableElab(variableList.currentText());
@@ -849,13 +857,45 @@ void ComputationDialog::activeSecondParameter(const QString value)
 
 void ComputationDialog::readParameter(int state)
 {
+    std::string *myError;
+    climateDbElabList.clear();
+    climateDbElab.clear();
+
     if (state!= 0)
     {
+        climateDbElabList.setVisible(true);
+        QStringList climateTables;
+        if ( !showClimateTables(myProject.clima->db(), myError, &climateTables) )
+        {
+            climateDbElabList.addItem("No saved elaborations found");
+        }
+        else
+        {
+            for (unsigned int i=0; i < climateTables.size(); i++)
+            {
+                selectVarElab(myProject.clima->db(), myError, climateTables.at(i), variableList.currentText(), &climateDbElab);
+            }
+            if (climateDbElab.isEmpty())
+            {
+                climateDbElabList.addItem("No saved elaborations found");
+            }
+            else
+            {
+                for (unsigned int i=0; i < climateDbElab.size(); i++)
+                {
+                    climateDbElabList.addItem(climateDbElab.at(i));
+                }
+            }
+
+        }
+
+
         elab1Parameter.clear();
         elab1Parameter.setReadOnly(true);
     }
     else
     {
+        climateDbElabList.setVisible(false);
         elab1Parameter.setReadOnly(false);
     }
 

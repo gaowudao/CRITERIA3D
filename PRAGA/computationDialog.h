@@ -53,6 +53,9 @@ class ComputationDialog : public QDialog
         QPushButton delAll;
         SaveClimaLayout saveClimaLayout;
 
+        QStringList climateDbElab;
+        QComboBox climateDbElabList;
+
 
 
     public:
