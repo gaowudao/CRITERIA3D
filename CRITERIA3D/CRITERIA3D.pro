@@ -66,6 +66,7 @@ CONFIG(debug, debug|release) {
 
 SOURCES += main.cpp\
     mainwindow.cpp \
+    criteria3dProject.cpp \
     ../PRAGA/shared/dialogWindows.cpp \
     ../PRAGA/shared/stationMarker.cpp \
     ../PRAGA/shared/settingsDialog.cpp \
@@ -76,10 +77,10 @@ SOURCES += main.cpp\
     ../PRAGA/shared/rubberBand.cpp \
     ../PRAGA/shared/colorlegend.cpp \
     ../climate/elaborationSettings.cpp \
-    criteria3dProject.cpp \
     ../PRAGA/shared/project.cpp
 
 HEADERS += mainwindow.h \
+    criteria3dProject.h \
     ../PRAGA/shared/dialogWindows.h \
     ../PRAGA/shared/stationMarker.h \
     ../PRAGA/shared/settingsDialog.h \
@@ -89,9 +90,9 @@ HEADERS += mainwindow.h \
     ../PRAGA/shared/rasterObject.h \
     ../PRAGA/shared/rubberBand.h \
     ../PRAGA/shared/colorlegend.h \
-    ../climate/elaborationSettings.h \
-    criteria3dProject.h \
     ../PRAGA/shared/project.h
+    ../climate/elaborationSettings.h \
+
 
 FORMS += mainwindow.ui \
     ../PRAGA/shared/formInfo.ui
