@@ -1,13 +1,12 @@
-#include "mainwindow.h"
-
 #include <QApplication>
 #include <QtNetwork/QNetworkProxy>
 #include <QMessageBox>
 
-#include "project.h"
+#include "mainwindow.h"
+#include "criteria3dProject.h"
 
 
-Project myProject;
+Criteria3DProject myProject;
 
 
 bool setProxy(QString hostName, int port)
@@ -35,8 +34,12 @@ int main(int argc, char *argv[])
     QApplication myApp(argc, argv);
 
     QString currentPath = myApp.applicationDirPath() + "/";
+
     if (! myProject.initializeSettings(currentPath))
-        return false;
+        return -1;
+
+    if (! myProject.readCriteria3DSettings())
+        return -1;
 
     QNetworkProxyFactory::setUseSystemConfiguration(true);
 

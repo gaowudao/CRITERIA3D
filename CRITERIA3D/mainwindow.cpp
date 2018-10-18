@@ -23,7 +23,7 @@
 #include "ui_mainwindow.h"
 #include "Position.h"
 #include "dbMeteoPoints.h"
-#include "project.h"
+#include "criteria3dProject.h"
 #include "utilities.h"
 #include "commonConstants.h"
 #include "dialogWindows.h"
@@ -32,7 +32,8 @@
 #include "interpolationDialog.h"
 #include "settingsDialog.h"
 
-extern Project myProject;
+extern Criteria3DProject myProject;
+
 #define MAPBORDER 8
 #define TOOLSWIDTH 260
 
@@ -546,7 +547,7 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
                 myProject.meteoPoints[i].currentValue = NODATA;
                 pointList[i]->setFillColor(QColor(Qt::white));
                 pointList[i]->setRadius(5);
-                pointList[i]->setToolTip(i);
+                pointList[i]->setToolTip(&(myProject.meteoPoints[i]));
                 pointList[i]->setVisible(true);
         }
 
@@ -591,7 +592,7 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
                 pointList[i]->setOpacity(0.5);
             }
 
-            pointList[i]->setToolTip(i);
+            pointList[i]->setToolTip(&(myProject.meteoPoints[i]));
             pointList[i]->setVisible(true);
         }
     }
@@ -716,7 +717,7 @@ void MainWindow::addMeteoPoints()
         this->pointList.append(point);
         this->mapView->scene()->addObject(this->pointList[i]);
 
-        point->setToolTip(i);
+        point->setToolTip(&(myProject.meteoPoints[i]));
     }
 }
 
@@ -749,7 +750,7 @@ void MainWindow::on_rasterScaleButton_clicked()
 
 void MainWindow::on_variableButton_clicked()
 {
-    if (chooseMeteoVariable())
+    if (chooseMeteoVariable(&myProject))
     {
        this->ui->actionShowLocation->setChecked(false);
        this->updateVariable();
@@ -870,8 +871,6 @@ void MainWindow::on_actionShowLocation_triggered()
 }
 
 
-// --------------------- CRITERIA3D functions ------------------------
-
 void MainWindow::on_actionOpen_model_parameters_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open DB parameters"), "", tr("SQLite files (*.db)"));
@@ -909,19 +908,19 @@ void MainWindow::on_actionShow_DTM_triggered()
 
 void MainWindow::on_actionShow_boundary_triggered()
 {
-    if (myProject.Criteria3Dproject.boundaryMap.isLoaded)
+    if (myProject.myProject.boundaryMap.isLoaded)
     {
-        setColorScale(noMeteoTerrain, myProject.Criteria3Dproject.boundaryMap.colorScale);
-        this->setCurrentRaster(&(myProject.Criteria3Dproject.boundaryMap));
+        setColorScale(noMeteoTerrain, myProject.myProject.boundaryMap.colorScale);
+        this->setCurrentRaster(&(myProject.myProject.boundaryMap));
     }
 }
 
 void MainWindow::on_actionShow_soil_triggered()
 {
-    if (myProject.Criteria3Dproject.soilMap.isLoaded)
+    if (myProject.myProject.soilMap.isLoaded)
     {
-        setColorScale(noMeteoTerrain, myProject.Criteria3Dproject.soilMap.colorScale);
-        this->setCurrentRaster(&(myProject.Criteria3Dproject.soilMap));
+        setColorScale(noMeteoTerrain, myProject.myProject.soilMap.colorScale);
+        this->setCurrentRaster(&(myProject.myProject.soilMap));
     }
 }
 
@@ -935,6 +934,5 @@ void MainWindow::on_actionCriteria3D_Initialize_triggered()
     if (myProject.initializeCriteria3D())
         QMessageBox::information(NULL, "", "Criteria3D initialized.");
 }
-// ----------- end CRITERIA3D functions ------------------------------------
 
 
