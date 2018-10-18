@@ -835,13 +835,12 @@ float inverseDistanceWeighted(vector <Crit3DInterpolationDataPoint> &myPointList
     sumWeights = 0 ;
     for (int i = 0 ; i < (int)(myPointList.size()); i++)
     {
-        Crit3DInterpolationDataPoint myPoint = myPointList.at(i);
-        if (myPoint.distance > 0.)
+        if (myPointList.at(i).distance > 0.)
         {
-            weight = myPoint.distance / 10000. ;
+            weight = myPointList.at(i).distance / 10000. ;
             weight = fabs(1 / (weight * weight * weight));
             sumWeights += weight;
-            sum += myPoint.value * weight;
+            sum += myPointList.at(i).value * weight;
         }
     }
 
