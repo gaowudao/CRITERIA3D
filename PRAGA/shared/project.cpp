@@ -137,14 +137,15 @@ bool Project::readSettings()
 bool Project::initializeSettings(QString currentPath)
 {
     this->path = currentPath;
-    QString pathFileName = currentPath + "praga.ini";
+
+    QString pathFileName = currentPath + "settings.ini";
 
     if (QFile(pathFileName).exists())
     {
         pathSetting = new QSettings(pathFileName, QSettings::IniFormat);
 
         pathSetting->beginGroup("path");
-        QString pragaPath = pathSetting->value("PragaPath").toString();
+        QString pragaPath = pathSetting->value("Path").toString();
         pathSetting->endGroup();
         if (! pragaPath.isEmpty())
         {
