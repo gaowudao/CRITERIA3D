@@ -39,7 +39,7 @@ bool interpolationRaster(std::vector <Crit3DInterpolationDataPoint> &myPoints, C
             gis::getUtmXYFromRowColSinglePrecision(*myGrid, myRow, myCol, &myX, &myY);
             float myZ = myDTM.value[myRow][myCol];
             if (myZ != myGrid->header->flag)
-                myGrid->value[myRow][myCol] = interpolate(myPoints, mySettings, myVar, myX, myY, myZ, getProxyValuesXY(gis::Crit3DUtmPoint(myX, myY), mySettings), true);
+                myGrid->value[myRow][myCol] = interpolate(myPoints, mySettings, myVar, myX, myY, myZ, getProxyValuesXY(myX, myY, mySettings), true);
         }
     }
 

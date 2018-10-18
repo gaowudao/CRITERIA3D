@@ -1247,7 +1247,7 @@ float interpolate(vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpo
 
 }
 
-std::vector <float> getProxyValuesXY(gis::Crit3DUtmPoint myPoint, Crit3DInterpolationSettings* mySettings)
+std::vector <float> getProxyValuesXY(float x, float y, Crit3DInterpolationSettings* mySettings)
 {
     std::vector <float> myValues;
     float myValue;
@@ -1265,7 +1265,7 @@ std::vector <float> getProxyValuesXY(gis::Crit3DUtmPoint myPoint, Crit3DInterpol
             proxyGrid = mySettings->getProxy(i)->getGrid();
             if (proxyGrid != NULL && proxyGrid->isLoaded)
             {
-                myValue = gis::getValueFromXY(*proxyGrid, myPoint.x, myPoint.y);
+                myValue = gis::getValueFromXY(*proxyGrid, x, y);
                 if (myValue != proxyGrid->header->flag)
                     myValues.at(i) = myValue;
             }
