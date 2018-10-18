@@ -145,7 +145,7 @@ bool Project::initializeSettings(QString currentPath)
         pathSetting = new QSettings(pathFileName, QSettings::IniFormat);
 
         pathSetting->beginGroup("path");
-        QString pragaPath = pathSetting->value("Path").toString();
+        QString pragaPath = pathSetting->value("path").toString();
         pathSetting->endGroup();
         if (! pragaPath.isEmpty())
         {
