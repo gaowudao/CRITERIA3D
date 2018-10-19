@@ -8,6 +8,12 @@
 Criteria3DProject::Criteria3DProject()
 {
     elaborationSettings = new Crit3DElaborationSettings();
+    isParametersLoaded = false;
+    nrSoils = 0;
+    nrLayers = 0;
+    nrVoxelsPerLayer = 0;
+    nrVoxels = 0;
+    soilDepth = 0.3f;            //[m] default: 30 cm
 }
 
 

@@ -145,13 +145,23 @@ bool Project::initializeSettings(QString currentPath)
         pathSetting = new QSettings(pathFileName, QSettings::IniFormat);
 
         pathSetting->beginGroup("path");
-        QString pragaPath = pathSetting->value("path").toString();
+        QString myPath = pathSetting->value("path").toString();
         pathSetting->endGroup();
-        if (! pragaPath.isEmpty())
+        if (! myPath.isEmpty())
         {
-            if (pragaPath.right(1) != "/" || pragaPath.right(1) != "\\" ) { pragaPath += "/"; }
+            if (myPath.right(1) != "/" || myPath.right(1) != "\\" )
+            {
+                myPath += "/";
+            }
 
-            this->path = pragaPath;
+            if (myPath.left(1) == ".")
+            {
+                this->path = currentPath + myPath;
+            }
+            else
+            {
+                this->path = myPath;
+            }
         }
 
         pathSetting->beginGroup("location");
