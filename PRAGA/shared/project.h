@@ -11,6 +11,10 @@
     #include <QDate>
 #endif
 
+#ifndef QUALITY_H
+    #include "quality.h"
+#endif
+
 #ifndef GIS_H
     #include "gis.h"
 #endif
@@ -94,6 +98,7 @@
 
         bool setLogFile();
         void logError(QString myStr);
+        void log(std::string myStr);
         void logError();
 
         bool loadDEM(QString myFileName);

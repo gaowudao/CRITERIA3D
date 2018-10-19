@@ -3,10 +3,10 @@
 #include <QMessageBox>
 
 #include "mainwindow.h"
-#include "criteria3dProject.h"
+#include "crit3dProject.h"
 
 
-Criteria3DProject myProject;
+Crit3DProject myProject;
 
 
 bool setProxy(QString hostName, int port)

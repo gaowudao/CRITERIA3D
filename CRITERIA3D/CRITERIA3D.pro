@@ -17,7 +17,7 @@ INCLUDEPATH +=  ../PRAGA/shared ../climate  \
                 ../crit3dDate ../mathFunctions ../soil ../crop \
                 ../meteo ../gis ../utilities  \
                 ../interpolation ../solarRadiation  \
-                ../dbMeteoPoints ../dbMeteoGrid ../waterBalance3D
+                ../dbMeteoPoints ../dbMeteoGrid
 
 
 CONFIG += debug_and_release
@@ -37,7 +37,6 @@ CONFIG(debug, debug|release) {
     LIBS += -L../dbMeteoGrid/debug -ldbMeteoGrid
     LIBS += -L../dbMeteoPoints/debug -ldbMeteoPoints
     LIBS += -L../utilities/debug -lutilities
-    LIBS += -L../waterBalance3D/debug -lwaterBalance3D
     LIBS += -L../solarRadiation/debug -lsolarRadiation
     LIBS += -L../interpolation/debug -linterpolation
     LIBS += -L../meteo/debug -lmeteo
@@ -51,7 +50,6 @@ CONFIG(debug, debug|release) {
     LIBS += -L../dbMeteoGrid/release -ldbMeteoGrid
     LIBS += -L../dbMeteoPoints/release -ldbMeteoPoints
     LIBS += -L../utilities/release -lutilities
-    LIBS += -L../waterBalance3D/release -lwaterBalance3D
     LIBS += -L../solarRadiation/release -lsolarRadiation
     LIBS += -L../interpolation/release -linterpolation
     LIBS += -L../meteo/release -lmeteo
@@ -66,7 +64,6 @@ CONFIG(debug, debug|release) {
 
 SOURCES += main.cpp\
     mainwindow.cpp \
-    criteria3dProject.cpp \
     ../PRAGA/shared/dialogWindows.cpp \
     ../PRAGA/shared/stationMarker.cpp \
     ../PRAGA/shared/settingsDialog.cpp \
@@ -77,10 +74,12 @@ SOURCES += main.cpp\
     ../PRAGA/shared/rubberBand.cpp \
     ../PRAGA/shared/colorlegend.cpp \
     ../climate/elaborationSettings.cpp \
-    ../PRAGA/shared/project.cpp
+    ../PRAGA/shared/project.cpp \
+    meteoMaps.cpp \
+    waterBalance3D.cpp \
+    crit3dProject.cpp
 
 HEADERS += mainwindow.h \
-    criteria3dProject.h \
     ../PRAGA/shared/dialogWindows.h \
     ../PRAGA/shared/stationMarker.h \
     ../PRAGA/shared/settingsDialog.h \
@@ -90,7 +89,10 @@ HEADERS += mainwindow.h \
     ../PRAGA/shared/rasterObject.h \
     ../PRAGA/shared/rubberBand.h \
     ../PRAGA/shared/colorlegend.h \
-    ../PRAGA/shared/project.h
+    ../PRAGA/shared/project.h \
+    meteoMaps.h \
+    waterBalance3D.h \
+    crit3dProject.h
     ../climate/elaborationSettings.h \
 
 

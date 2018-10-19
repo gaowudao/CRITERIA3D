@@ -1208,6 +1208,12 @@ bool Project::setLogFile()
     return (this->logFile.is_open());
 }
 
+void Project::log(std::string myStr)
+{
+    if (logFile.is_open())
+        logFile << myStr << std::endl;
+}
+
 void Project::logError(QString myStr)
 {
     errorString = myStr.toStdString();
@@ -1221,3 +1227,5 @@ void Project::logError()
     else
         QMessageBox::critical(NULL, "Error!", QString::fromStdString(errorString));
 }
+
+

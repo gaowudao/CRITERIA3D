@@ -23,7 +23,7 @@
 #include "ui_mainwindow.h"
 #include "Position.h"
 #include "dbMeteoPoints.h"
-#include "criteria3dProject.h"
+#include "crit3dProject.h"
 #include "utilities.h"
 #include "commonConstants.h"
 #include "dialogWindows.h"
@@ -32,7 +32,7 @@
 #include "interpolationDialog.h"
 #include "settingsDialog.h"
 
-extern Criteria3DProject myProject;
+extern Crit3DProject myProject;
 
 #define MAPBORDER 8
 #define TOOLSWIDTH 260
@@ -908,19 +908,19 @@ void MainWindow::on_actionShow_DTM_triggered()
 
 void MainWindow::on_actionShow_boundary_triggered()
 {
-    if (myProject.myProject.boundaryMap.isLoaded)
+    if (myProject.boundaryMap.isLoaded)
     {
-        setColorScale(noMeteoTerrain, myProject.myProject.boundaryMap.colorScale);
-        this->setCurrentRaster(&(myProject.myProject.boundaryMap));
+        setColorScale(noMeteoTerrain, myProject.boundaryMap.colorScale);
+        this->setCurrentRaster(&(myProject.boundaryMap));
     }
 }
 
 void MainWindow::on_actionShow_soil_triggered()
 {
-    if (myProject.myProject.soilMap.isLoaded)
+    if (myProject.soilMap.isLoaded)
     {
-        setColorScale(noMeteoTerrain, myProject.myProject.soilMap.colorScale);
-        this->setCurrentRaster(&(myProject.myProject.soilMap));
+        setColorScale(noMeteoTerrain, myProject.soilMap.colorScale);
+        this->setCurrentRaster(&(myProject.soilMap));
     }
 }
 
