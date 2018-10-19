@@ -11,20 +11,16 @@
 #include "quality.h"
 #include "dbClimate.h"
 
+
 bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler,
-    Crit3DMeteoPoint* meteoPoint, Crit3DClimate* clima, bool isMeteoGrid, QDate startDate, QDate endDate, bool isAnomaly, bool loadData)
+    Crit3DMeteoPoint* meteoPointTemp, Crit3DClimate* clima, bool isMeteoGrid, QDate startDate, QDate endDate, bool isAnomaly, bool loadData)
 {
 
     float percValue;
     bool dataLoaded;
     float result;
 
-    Crit3DMeteoPoint* meteoPointTemp = new Crit3DMeteoPoint;
     std::vector<float> outputValues;
-
-    meteoPointTemp->id = meteoPoint->id;
-    meteoPointTemp->point.z = meteoPoint->point.z;
-    meteoPointTemp->latitude = meteoPoint->latitude;
 
     meteoComputation elab1MeteoComp;
     meteoComputation elab2MeteoComp;
@@ -94,31 +90,27 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
 
         if (isAnomaly)
         {
-            return anomalyOnPoint(meteoPoint, result);
+            return anomalyOnPoint(meteoPointTemp, result);
         }
         else
         {
-            meteoPoint->elaboration = result;
-            if (meteoPoint->elaboration != NODATA)
+            meteoPointTemp->elaboration = result;
+            if (meteoPointTemp->elaboration != NODATA)
             {
-                delete meteoPointTemp;
                 return true;
             }
             else
             {
-                delete meteoPointTemp;
                 return false;
             }
         }
     }
     else if (isAnomaly)
     {
-        meteoPoint->anomaly = NODATA;
-        meteoPoint->anomalyPercentage = NODATA;
+        meteoPointTemp->anomaly = NODATA;
+        meteoPointTemp->anomalyPercentage = NODATA;
     }
 
-
-    delete meteoPointTemp;
     return false;
 
 }
@@ -150,9 +142,9 @@ bool anomalyOnPoint(Crit3DMeteoPoint* meteoPoint, float refValue)
 }
 
 bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler,
-                    Crit3DMeteoPoint* meteoPoint, Crit3DClimate* clima, Crit3DMeteoPoint* meteoPointTemp, std::vector<float> &outputValues, bool isMeteoGrid, QDate startDate, QDate endDate, bool loadData)
+                    Crit3DClimate* clima, Crit3DMeteoPoint* meteoPointTemp, std::vector<float> &outputValues, bool isMeteoGrid, QDate startDate, QDate endDate, bool changeDataSet)
 {
-    bool changeDataSet = false;
+
     float percValue;
     bool dataLoaded = true;
 
@@ -164,19 +156,6 @@ bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
     {
         clima->setDb(meteoPointsDbHandler->getDb());
     }
-
-    if (meteoPointTemp->id == "")
-    {
-        changeDataSet = true;
-
-        clima->setCurrentVar(clima->variable());
-        clima->setCurrentElab1(clima->elab1());
-        clima->setCurrentYearStart(clima->yearStart());
-        clima->setCurrentYearEnd(clima->yearEnd());
-    }
-    meteoPointTemp->id = meteoPoint->id;
-    meteoPointTemp->point.z = meteoPoint->point.z;
-    meteoPointTemp->latitude = meteoPoint->latitude;
 
 
     meteoComputation elab1MeteoComp;
@@ -213,19 +192,20 @@ bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                 (clima->elab1() != clima->getCurrentElab1() && (elab1MeteoComp == correctedDegreeDaysSum || elab1MeteoComp == huglin || elab1MeteoComp == winkler ||  elab1MeteoComp == fregoni) ) )
         {
             changeDataSet = true;
-
-            clima->setCurrentVar(clima->variable());
-            clima->setCurrentElab1(clima->elab1());
-            clima->setCurrentYearStart(clima->yearStart());
-            clima->setCurrentYearEnd(clima->yearEnd());
         }
     }
 
 
     if (changeDataSet)
     {
+        clima->setCurrentVar(clima->variable());
+        clima->setCurrentElab1(clima->elab1());
+        clima->setCurrentYearStart(clima->yearStart());
+        clima->setCurrentYearEnd(clima->yearEnd());
+
         outputValues.clear();
         meteoPointTemp->nrObsDataDaysD = 0;
+        meteoPointTemp->nrObsDataDaysH = 0;
 
         dataLoaded = preElaboration(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPointTemp, isMeteoGrid, clima->variable(), elab1MeteoComp, startDate, endDate, outputValues, &percValue, clima->getElabSettings());
     }
@@ -238,11 +218,7 @@ bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
         }
     }
 
-    // meteoPointTemp is empty
-    meteoPointTemp->id = "";
     return false;
-
-
 }
 
 bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vector<float> &outputValues, Crit3DMeteoPoint* meteoPoint, QDate startDate, QDate endDate, meteoComputation elab1, meteoComputation elab2)

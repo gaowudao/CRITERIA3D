@@ -333,11 +333,22 @@ bool PragaProject::elaborationPointsCycle(bool isAnomaly, bool showInfo)
      }
 
 
+    Crit3DMeteoPoint* meteoPointTemp = new Crit3DMeteoPoint;
+
     for (int i = 0; i < nrMeteoPoints; i++)
     {
 
         if (meteoPoints[i].active)
         {
+
+            // copy data to MPTemp
+            meteoPointTemp->id = meteoPoints[i].id;
+            meteoPointTemp->point.z = meteoPoints[i].point.z;
+            meteoPointTemp->latitude = meteoPoints[i].latitude;
+
+            // meteoPointTemp should be init
+            meteoPointTemp->nrObsDataDaysH == 0;
+            meteoPointTemp->nrObsDataDaysD == 0;
 
             if (showInfo && (i % infoStep) == 0)
                         myInfo.setValue(i);
@@ -362,14 +373,19 @@ bool PragaProject::elaborationPointsCycle(bool isAnomaly, bool showInfo)
                 //Then currentPheno.setPhenoPoint i;  // TODO
             }
 
-            if ( elaborationOnPoint(&errorString, meteoPointsDbHandler, NULL, &meteoPoints[i], clima, isMeteoGrid, startDate, endDate, isAnomaly, true))
+            if ( elaborationOnPoint(&errorString, meteoPointsDbHandler, NULL, meteoPointTemp, clima, isMeteoGrid, startDate, endDate, isAnomaly, true))
             {
                 validCell = validCell + 1;
             }
 
+            // save result to MP
+            meteoPoints[i].elaboration = meteoPointTemp->elaboration;
+            meteoPoints[i].anomaly = meteoPointTemp->anomaly;
+            meteoPoints[i].anomalyPercentage = meteoPointTemp->anomalyPercentage;
+
         }
 
-    }
+    } // end for
     if (showInfo) myInfo.close();
 
     if (validCell == 0)
@@ -378,10 +394,12 @@ bool PragaProject::elaborationPointsCycle(bool isAnomaly, bool showInfo)
         {
             errorString = "no valid cells available";
         }
+        delete meteoPointTemp;
         return false;
     }
     else
     {
+        delete meteoPointTemp;
         return true;
     }
 
@@ -440,6 +458,8 @@ bool PragaProject::elaborationPointsCycleGrid(bool isAnomaly, bool showInfo)
      }
 
 
+     Crit3DMeteoPoint* meteoPointTemp = new Crit3DMeteoPoint;
+
      for (int row = 0; row < meteoGridDbHandler->gridStructure().header().nrRows; row++)
      {
          if (showInfo && (row % infoStep) == 0)
@@ -450,6 +470,17 @@ bool PragaProject::elaborationPointsCycleGrid(bool isAnomaly, bool showInfo)
 
             if (meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id))
             {
+
+                Crit3DMeteoPoint* meteoPoint = meteoGridDbHandler->meteoGrid()->meteoPointPointer(row,col);
+
+                // copy data to MPTemp
+                meteoPointTemp->id = meteoPoint->id;
+                meteoPointTemp->point.z = meteoPoint->point.z;
+                meteoPointTemp->latitude = meteoPoint->latitude;
+
+                // meteoPointTemp should be init
+                meteoPointTemp->nrObsDataDaysH == 0;
+                meteoPointTemp->nrObsDataDaysD == 0;
 
                 if (clima->param1IsClimate())
                 {
@@ -466,11 +497,15 @@ bool PragaProject::elaborationPointsCycleGrid(bool isAnomaly, bool showInfo)
                     clima->setParam1(currentParameter1);
                 }
 
-                Crit3DMeteoPoint* meteoPoint = meteoGridDbHandler->meteoGrid()->meteoPointPointer(row,col);
-                if  ( elaborationOnPoint(&errorString, NULL, meteoGridDbHandler, meteoPoint, clima, isMeteoGrid, startDate, endDate, isAnomaly, true))
+                if  ( elaborationOnPoint(&errorString, NULL, meteoGridDbHandler, meteoPointTemp, clima, isMeteoGrid, startDate, endDate, isAnomaly, true))
                 {
                     validCell = validCell + 1;
                 }
+
+                // save result to MP
+                meteoPoint->elaboration = meteoPointTemp->elaboration;
+                meteoPoint->anomaly = meteoPointTemp->anomaly;
+                meteoPoint->anomalyPercentage = meteoPointTemp->anomalyPercentage;
 
             }
 
@@ -485,10 +520,12 @@ bool PragaProject::elaborationPointsCycleGrid(bool isAnomaly, bool showInfo)
         {
             errorString = "no valid cells available";
         }
+        delete meteoPointTemp;
         return false;
     }
     else
     {
+        delete meteoPointTemp;
         return true;
     }
 
@@ -504,6 +541,7 @@ bool PragaProject::climatePointsCycle(bool showInfo)
     int validCell = 0;
     QDate startDate;
     QDate endDate;
+    bool changeDataSet = true;
 
     errorString.clear();
 
@@ -528,8 +566,11 @@ bool PragaProject::climatePointsCycle(bool showInfo)
                 myInfo.setValue(i);
             }
 
-            //reset mp
-            meteoPointTemp->id = "";
+            meteoPointTemp->id = meteoPoints[i].id;
+            meteoPointTemp->point.z = meteoPoints[i].point.z;
+            meteoPointTemp->latitude = meteoPoints[i].latitude;
+            changeDataSet = true;
+
             std::vector<float> outputValues;
 
             for (int j = 0; j < climateList->listClimateElab().size(); j++)
@@ -585,10 +626,11 @@ bool PragaProject::climatePointsCycle(bool showInfo)
                     return false;
                 }
 
-                if (climateOnPoint(&errorString, meteoPointsDbHandler, NULL, &meteoPoints[i], clima, meteoPointTemp, outputValues, isMeteoGrid, startDate, endDate, true))
+                if (climateOnPoint(&errorString, meteoPointsDbHandler, NULL, clima, meteoPointTemp, outputValues, isMeteoGrid, startDate, endDate, changeDataSet))
                 {
                     validCell = validCell + 1;
                 }
+                changeDataSet = false;
 
             }
 
@@ -625,6 +667,7 @@ bool PragaProject::climatePointsCycleGrid(bool showInfo)
     QDate startDate;
     QDate endDate;
     std::string id;
+    bool changeDataSet = true;
 
     errorString.clear();
 
@@ -650,11 +693,14 @@ bool PragaProject::climatePointsCycleGrid(bool showInfo)
            if (meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id))
            {
 
-               //reset mp
-               meteoPointTemp->id = "";
-               std::vector<float> outputValues;
-
                Crit3DMeteoPoint* meteoPoint = meteoGridDbHandler->meteoGrid()->meteoPointPointer(row,col);
+
+               meteoPointTemp->id = meteoPoint->id;
+               meteoPointTemp->point.z = meteoPoint->point.z;
+               meteoPointTemp->latitude = meteoPoint->latitude;
+
+               changeDataSet = true;
+               std::vector<float> outputValues;
 
                for (int j = 0; j < climateList->listClimateElab().size(); j++)
                {
@@ -709,10 +755,11 @@ bool PragaProject::climatePointsCycleGrid(bool showInfo)
                        return false;
                    }
 
-                   if (climateOnPoint(&errorString, NULL, meteoGridDbHandler, meteoPoint, clima, meteoPointTemp, outputValues, isMeteoGrid, startDate, endDate, true))
+                   if (climateOnPoint(&errorString, NULL, meteoGridDbHandler, clima, meteoPointTemp, outputValues, isMeteoGrid, startDate, endDate, changeDataSet))
                    {
                        validCell = validCell + 1;
                    }
+                   changeDataSet = false;
 
                }
 
