@@ -93,10 +93,13 @@ class AnomalyLayout : public QDialog
         void AnomalySetSecondElaboration(QString elab);
         QString AnomalyGetParam1() const;
         void AnomalySetParam1(QString param);
+        void AnomalySetParam1ReadOnly(bool visible);
         QString AnomalyGetParam2() const;
         void AnomalySetParam2(QString param);
         bool AnomalyReadParamIsChecked() const;
         void AnomalySetReadParamIsChecked(bool set);
+        QString AnomalyGetClimateDbElab() const;
+        void AnomalySetClimateDbElab(QString elab);
 };
 
 

@@ -655,6 +655,11 @@ void AnomalyLayout::AnomalySetParam1(QString param)
     elab1Parameter.setText(param);
 }
 
+void AnomalyLayout::AnomalySetParam1ReadOnly(bool visible)
+{
+    elab1Parameter.setReadOnly(visible);
+}
+
 QString AnomalyLayout::AnomalyGetParam2() const
 {
     return elab2Parameter.text();
@@ -675,3 +680,12 @@ void AnomalyLayout::AnomalySetReadParamIsChecked(bool set)
     readParam.setChecked(set);
 }
 
+QString AnomalyLayout::AnomalyGetClimateDbElab() const
+{
+    return climateDbElabList.currentText();
+}
+
+void AnomalyLayout::AnomalySetClimateDbElab(QString elab)
+{
+    climateDbElabList.setCurrentText(elab);
+}

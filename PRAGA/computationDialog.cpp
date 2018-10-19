@@ -454,7 +454,7 @@ void ComputationDialog::done(bool res)
             else
             {
                 myProject.clima->setParam1IsClimate(true);
-                // TO DO LC
+                myProject.clima->setParam1ClimateField(climateDbElabList.currentText());
 
             }
             if (secondElabList.currentText() == "None" || secondElabList.currentText() == "No elaboration available")
@@ -518,7 +518,7 @@ void ComputationDialog::done(bool res)
                 else
                 {
                     myProject.referenceClima->setParam1IsClimate(true);
-                    // TO DO LC
+                    myProject.referenceClima->setParam1ClimateField(anomaly.AnomalyGetClimateDbElab());
 
                 }
                 if (anomaly.AnomalyGetSecondElaboration() == "None" || anomaly.AnomalyGetSecondElaboration() == "No elaboration available")
@@ -928,7 +928,13 @@ void ComputationDialog::copyDataToAnomaly()
     anomaly.AnomalySetReadParamIsChecked(readParam.isChecked());
     if (readParam.isChecked() == false)
     {
+        anomaly.AnomalySetParam1ReadOnly(false);
         anomaly.AnomalySetParam1(elab1Parameter.text());
+    }
+    else
+    {
+        anomaly.AnomalySetClimateDbElab(climateDbElabList.currentText());
+        anomaly.AnomalySetParam1ReadOnly(true);
     }
 
     anomaly.AnomalySetSecondElaboration(secondElabList.currentText());
