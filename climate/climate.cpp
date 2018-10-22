@@ -49,6 +49,25 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
         }
     }
 
+    if (clima->param1IsClimate())
+    {
+
+        QList<float> paramList;
+        QString table = getTable(clima->param1ClimateField());
+        paramList = readElab(clima->db(), table, myError, QString::fromStdString(meteoPointTemp->id), clima->param1ClimateField());
+
+//            if ( ClimateReadPoint(PragaClimate.Point(i).TableName, climateElab, myPeriodType, myClimateIndex, PragaClimate.Point(i)))
+//            {
+
+//                currentParameter1 = passaggioDati.GetClimateData(myPeriodType, PragaClimate.Point(i), myClimateIndex);
+//            }
+//            else
+//            {
+//                currentParameter1 = NODATA;
+//            }
+//         clima->setParam1(currentParameter1);
+    }
+
     dataLoaded = false;
 
     if (loadData)

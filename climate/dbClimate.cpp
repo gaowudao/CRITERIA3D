@@ -87,6 +87,34 @@ bool saveDailyElabSingleValue(QSqlDatabase db, std::string *myError, QString id,
     return true;
 }
 
+QList<float> readElab(QSqlDatabase db, QString table, std::string *myError, QString id, QString elab)
+{
+    QSqlQuery qry(db);
+    float value;
+    QList<float> elabValueList;
+
+    QString statement = QString("SELECT * FROM `%1`").arg(table);
+    qry.prepare( statement + " WHERE id_point = :id_point AND elab = :elab" );
+
+    qry.bindValue(":id_point", id);
+    qry.bindValue(":elab", elab);
+
+    if( !qry.exec() )
+    {
+        *myError = qry.lastError().text().toStdString();
+    }
+    else
+    {
+        while (qry.next())
+        {
+            getValue(qry.value("value"), &value);
+            elabValueList << value;
+        }
+    }
+
+    return elabValueList;
+}
+
 
 bool saveDecadalElab(QSqlDatabase db, std::string *myError, QString id, std::vector<float> allResults, QString elab)
 {

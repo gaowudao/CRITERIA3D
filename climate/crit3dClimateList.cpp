@@ -460,11 +460,20 @@ period Crit3DClimateList::getPeriodTypeFromString(QString periodStr)
         return seasonalPeriod;
     if (periodStr == "Annual")
         return annualPeriod;
-    if (periodStr == "Generic") // era generic_period
+    if (periodStr == "Generic")
         return genericPeriod;
 
     return noPeriodType;
 
+}
+
+QString getTable(QString elab)
+{
+    QStringList words = elab.split('_');
+    QString periodTypeStr = words[2];
+    QString tableName = "climate_"+periodTypeStr.toLower();
+
+    return tableName;
 }
 
 

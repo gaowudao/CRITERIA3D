@@ -9,6 +9,8 @@
 
 QT       += core gui widgets network sql xml
 
+PRE_TARGETDEPS += ../climate/debug/libclimate.a
+
 TARGET = PRAGA
 TEMPLATE = app
 

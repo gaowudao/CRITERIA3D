@@ -353,21 +353,6 @@ bool PragaProject::elaborationPointsCycle(bool isAnomaly, bool showInfo)
             if (showInfo && (i % infoStep) == 0)
                         myInfo.setValue(i);
 
-            if (clima->param1IsClimate())
-            {
-    //            if ( ClimateReadPoint(PragaClimate.Point(i).TableName, climateElab, myPeriodType, myClimateIndex, PragaClimate.Point(i)))
-    //            {
-
-    //                currentParameter1 = passaggioDati.GetClimateData(myPeriodType, PragaClimate.Point(i), myClimateIndex);
-    //            }
-    //            else
-    //            {
-    //                currentParameter1 = NODATA;
-    //            }
-                 clima->setParam1(currentParameter1);
-            }
-
-
             if (clima->elab1() == "phenology")
             {
                 //Then currentPheno.setPhenoPoint i;  // TODO
