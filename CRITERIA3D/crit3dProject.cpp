@@ -265,9 +265,9 @@ double Crit3DProject::getSoilVar(int soilIndex, int layerIndex, soil::soilVariab
 bool Crit3DProject::createSoilIndexMap()
 {
     // check
-    if (!DTM->isLoaded || !soilMap.isLoaded || soilList.size() == 0)
+    if (!DTM.isLoaded || !soilMap.isLoaded || soilList.size() == 0)
     {
-        if (!DTM->isLoaded)
+        if (!DTM.isLoaded)
             logError("Missing DTM.");
         else if (!soilMap.isLoaded)
             logError("Missing soil map.");
@@ -280,7 +280,7 @@ bool Crit3DProject::createSoilIndexMap()
     soilIndexMap.initializeGrid(*(DTM.header));
     for (int row = 0; row < DTM.header->nrRows; row++)
     {
-        for (int col = 0; col < dtm->header->nrCols; col++)
+        for (int col = 0; col < DTM.header->nrCols; col++)
         {
             if (DTM.value[row][col] != DTM.header->flag)
             {
