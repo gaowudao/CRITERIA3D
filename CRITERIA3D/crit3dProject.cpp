@@ -262,6 +262,40 @@ double Crit3DProject::getSoilVar(int soilIndex, int layerIndex, soil::soilVariab
 }
 
 
+bool Crit3DProject::createSoilIndexMap()
+{
+    // check
+    if (!DTM->isLoaded || !soilMap.isLoaded || soilList.size() == 0)
+    {
+        if (!DTM->isLoaded)
+            logError("Missing DTM.");
+        else if (!soilMap.isLoaded)
+            logError("Missing soil map.");
+        else if (soilList.size() == 0)
+            logError("Missing soil properties.");
+        return false;
+    }
+
+    int soilIndex;
+    soilIndexMap.initializeGrid(*(DTM.header));
+    for (int row = 0; row < DTM.header->nrRows; row++)
+    {
+        for (int col = 0; col < dtm->header->nrCols; col++)
+        {
+            if (DTM.value[row][col] != DTM.header->flag)
+            {
+                soilIndex = getSoilIndex(row, col);
+                if (soilIndex != INDEX_ERROR)
+                    soilIndexMap.value[row][col] = float(soilIndex);
+            }
+        }
+    }
+
+    soilIndexMap.isLoaded = true;
+    return true;
+}
+
+
 void Crit3DProject::cleanProject()
 {
     soilIndexMap.freeGrid();
