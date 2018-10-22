@@ -3,6 +3,7 @@
 #include "dbTools.h"
 #include "utilities.h"
 #include "Crit3DProject.h"
+#include "waterBalance3D.h"
 
 
 Crit3DProject::Crit3DProject()
@@ -261,14 +262,52 @@ double Crit3DProject::getSoilVar(int soilIndex, int layerIndex, soil::soilVariab
 }
 
 
+void Crit3DProject::cleanProject()
+{
+    soilIndexMap.freeGrid();
+    cropIndexMap.freeGrid();
+    boundaryMap.freeGrid();
+    indexMap.freeGrid();
+
+    delete meteoMaps;
+
+    cleanWaterBalanceMemory();
+}
+
+
 bool Crit3DProject::initializeCriteria3D()
 {
-    /*if (!initializeProject(&DTM, radiationMaps))
-    {
-        logError();
-        return false;
-    }*/
+    cleanProject();
 
-    return true;
+    meteoMaps = new Crit3DMeteoMaps(DTM);
+
+    if (!createSoilIndexMap())
+        return false;
+
+    // loadCropProperties()
+    // load crop map
+
+    if (! initializeWaterBalance(this))
+    {
+        cleanProject();
+        return false;
+    }
+
+    //initialize root density
+    //TO DO: andrebbe rifatto per ogni tipo di suolo
+    //(ora considera solo suolo 0)
+    /*
+    int nrSoilLayersWithoutRoots = 2;
+    int soilLayerWithRoot = this->nrSoilLayers - nrSoilLayersWithoutRoots;
+    double depthModeRootDensity = 0.35*this->soilDepth;     //[m] depth of mode of root density
+    double depthMeanRootDensity = 0.5*this->soilDepth;      //[m] depth of mean of root density
+    initializeRootProperties(&(this->soilList[0]), this->nrSoilLayers, this->soilDepth,
+                         this->layerDepth.data(), this->layerThickness.data(),
+                         nrSoilLayersWithoutRoots, soilLayerWithRoot,
+                         GAMMA_DISTRIBUTION, depthModeRootDensity, depthMeanRootDensity);*/
+
+    log("Criteria3D Project initialized");
+
+    return(true);
 }
 

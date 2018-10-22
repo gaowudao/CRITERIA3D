@@ -51,6 +51,8 @@
         bool loadModelParameters(QString dbName);
         bool loadSoilData(QString dbName);
         bool loadSoilMap(QString fileName);
+
+        void cleanProject();
         bool initializeCriteria3D();
 
         bool createSoilIndexMap();
@@ -60,11 +62,10 @@
         double getSoilVar(int soilIndex, int layerIndex, soil::soilVariable myVar);
         double* getSoilVarProfile(int row, int col, soil::soilVariable myVar);
         bool setSoilProfileCrop(int row, int col);
+        bool createSoilIndexMap();
 
         int getSoilIndex(int dtmRow, int dtmCol);
         bool computeET0Map();
-
-        void closeCriteria3DProject();
     };
 
 
