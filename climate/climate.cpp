@@ -56,7 +56,7 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
         paramList = readElab(clima->db(), table, myError, QString::fromStdString(meteoPointTemp->id), clima->param1ClimateField());
         if (clima->getParam1ClimateIndex() != NODATA && clima->getParam1ClimateIndex() < paramList.size())
         {
-            clima->setParam1(paramList.at( clima->getParam1ClimateIndex() ));
+            clima->setParam1(paramList.at( clima->getParam1ClimateIndex() - 1 ));
         }
         else
         {
