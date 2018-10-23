@@ -11,7 +11,6 @@
 #include "quality.h"
 #include "dbClimate.h"
 
-
 bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler,
     Crit3DMeteoPoint* meteoPointTemp, Crit3DClimate* clima, bool isMeteoGrid, QDate startDate, QDate endDate, bool isAnomaly, bool loadData)
 {
@@ -227,7 +226,7 @@ bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
 
     if (dataLoaded)
     {
-        if (climateTemporalCycle(myError, clima, outputValues, meteoPointTemp, startDate, endDate, elab1MeteoComp, elab2MeteoComp))
+        if (climateTemporalCycle(myError, clima, outputValues, meteoPointTemp, elab1MeteoComp, elab2MeteoComp))
         {
             return true;
         }
@@ -236,7 +235,7 @@ bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
     return false;
 }
 
-bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vector<float> &outputValues, Crit3DMeteoPoint* meteoPoint, QDate startDate, QDate endDate, meteoComputation elab1, meteoComputation elab2)
+bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vector<float> &outputValues, Crit3DMeteoPoint* meteoPoint, meteoComputation elab1, meteoComputation elab2)
 {
 
     QSqlDatabase db = clima->db();
@@ -924,7 +923,7 @@ float computeWinkler(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DD
     {
         index = difference(meteoPoint->obsDataD[0].date, presentDate);
         checkData = false;
-        if (index >= 0 && index < meteoPoint->nrObsDataDaysD)
+        if (index < meteoPoint->nrObsDataDaysD)
         {
 
             // TO DO nella versione vb il check prevede anche l'immissione del parametro height
@@ -976,7 +975,7 @@ float computeWinkler(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DD
 
 float computeLastDayBelowThreshold(std::vector<float> &inputValues, Crit3DDate firstDateDailyVar, Crit3DDate firstDate, Crit3DDate finishDate, float param1)
 {
-    int index;
+    unsigned int index;
     float lastDay = NODATA;
 
     int numberOfDays = difference(firstDate, finishDate) +1;
@@ -984,7 +983,7 @@ float computeLastDayBelowThreshold(std::vector<float> &inputValues, Crit3DDate f
     for (int i = 0; i < numberOfDays; i++)
     {
         index = difference(firstDateDailyVar, presentDate);
-        if ( index >= 0 && index < inputValues.size())
+        if ( index < inputValues.size())
         {
             if (inputValues.at(index) != NODATA && inputValues.at(index) < param1)
             {
@@ -1020,7 +1019,7 @@ float computeHuglin(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DDa
     {
         index = difference(meteoPoint->obsDataD[0].date, presentDate);
         checkData = false;
-        if ( index >= 0 && index < meteoPoint->nrObsDataDaysD)
+        if ( index < meteoPoint->nrObsDataDaysD)
         {
 
             // TO DO nella versione vb il check prevede anche l'immissione del parametro height
@@ -1086,7 +1085,7 @@ float computeFregoni(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Crit3DD
     {
         index = difference(meteoPoint->obsDataD[0].date, presentDate);
         checkData = false;
-        if ( index >= 0 && index < meteoPoint->nrObsDataDaysD)
+        if ( index < meteoPoint->nrObsDataDaysD)
         {
 
             // TO DO nella versione vb il check prevede anche l'immissione del parametro height
@@ -1147,7 +1146,7 @@ float computeCorrectedSum(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Cr
     {
         index = difference(meteoPoint->obsDataD[0].date, presentDate);
         checkData = false;
-        if ( index >= 0 && index < meteoPoint->nrObsDataDaysD)
+        if ( index < meteoPoint->nrObsDataDaysD)
         {
 
             // TO DO nella versione vb il check prevede anche l'immissione del parametro height
@@ -1210,7 +1209,7 @@ bool elaborateDailyAggregatedVar(meteoVariable myVar, Crit3DMeteoPoint meteoPoin
     }
     else if (aggregationFrequency == daily)
     {
-            return elaborateDailyAggregatedVarFromDaily(myVar, meteoPoint, outputValues, percValue, elabSettings);
+            return elaborateDailyAggregatedVarFromDaily(myVar, meteoPoint, outputValues, percValue);
     }
     else
         return false;
@@ -1236,7 +1235,7 @@ frequencyType getAggregationFrequency(meteoVariable myVar)
 
 }
 
-bool elaborateDailyAggregatedVarFromDaily(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> &outputValues, float* percValue, Crit3DElaborationSettings* elabSettings)
+bool elaborateDailyAggregatedVarFromDaily(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> &outputValues, float* percValue)
 {
 
     float res;

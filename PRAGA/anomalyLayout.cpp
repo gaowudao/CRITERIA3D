@@ -520,7 +520,7 @@ void AnomalyLayout::AnomalyReadParameter(int state)
         }
         else
         {
-            for (unsigned int i=0; i < climateTables.size(); i++)
+            for (int i=0; i < climateTables.size(); i++)
             {
                 selectVarElab(myProject.clima->db(), &myError, climateTables.at(i), variableElab.text(), &climateDbElab);
             }
@@ -530,7 +530,7 @@ void AnomalyLayout::AnomalyReadParameter(int state)
             }
             else
             {
-                for (unsigned int i=0; i < climateDbElab.size(); i++)
+                for (int i=0; i < climateDbElab.size(); i++)
                 {
                     climateDbElabList.addItem(climateDbElab.at(i));
                 }

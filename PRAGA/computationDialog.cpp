@@ -877,7 +877,7 @@ void ComputationDialog::readParameter(int state)
         }
         else
         {
-            for (unsigned int i=0; i < climateTables.size(); i++)
+            for (int i=0; i < climateTables.size(); i++)
             {
                 selectVarElab(myProject.clima->db(), &myError, climateTables.at(i), variableList.currentText(), &climateDbElab);
             }
@@ -887,7 +887,7 @@ void ComputationDialog::readParameter(int state)
             }
             else
             {
-                for (unsigned int i=0; i < climateDbElab.size(); i++)
+                for (int i=0; i < climateDbElab.size(); i++)
                 {
                     climateDbElabList.addItem(climateDbElab.at(i));
                 }
