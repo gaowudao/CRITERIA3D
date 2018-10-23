@@ -911,7 +911,7 @@ void ComputationDialog::copyDataToAnomaly()
 {
 
     anomaly.AnomalySetReadReference(readReference.isChecked());
-    if (firstYearEdit.text().size() == 4 && lastYearEdit.text().size() == 4 && firstYearEdit.text().toInt() < lastYearEdit.text().toInt())
+    if (firstYearEdit.text().size() == 4 && lastYearEdit.text().size() == 4 && firstYearEdit.text().toInt() <= lastYearEdit.text().toInt())
     {
         anomaly.AnomalySetYearStart(firstYearEdit.text());
         anomaly.AnomalySetYearLast(lastYearEdit.text());
