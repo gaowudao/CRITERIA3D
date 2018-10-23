@@ -23,7 +23,6 @@ CONFIG(debug, debug|release) {
     LIBS += -L../mathFunctions/debug -lmathFunctions
     LIBS += -L../gis/debug -lgis
     LIBS += -L../meteo/debug -lmeteo
-    LIBS += -L../quality/debug -lquality
     LIBS += -L../Interpolation/debug -lInterpolation
     LIBS += -L../solarRadiation/debug -lsolarRadiation
     LIBS += -L../soil/debug -lsoil
@@ -39,7 +38,6 @@ CONFIG(debug, debug|release) {
     LIBS += -L../mathFunctions/release -lmathFunctions
     LIBS += -L../gis/release -lgis
     LIBS += -L../meteo/release -lmeteo
-    LIBS += -L../quality/release -lquality
     LIBS += -L../Interpolation/release -lInterpolation
     LIBS += -L../solarRadiation/release -lsolarRadiation
     LIBS += -L../soil/release -lsoil
