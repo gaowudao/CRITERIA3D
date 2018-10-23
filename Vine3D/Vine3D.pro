@@ -8,7 +8,7 @@
 
 QT  += core gui widgets xml sql network
 
-TARGET = Vine3D
+TARGET = VINE3D
 TEMPLATE = app
 
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../meteo
