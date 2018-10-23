@@ -269,27 +269,6 @@ bool Crit3DProject::createBoundaryMap()
 }
 
 
-double Crit3DProject::getSoilVar(int soilIndex, int layerIndex, soil::soilVariable myVar)
-{
-    int horizonIndex = soil::getHorizonIndex(&(soilList[soilIndex]), layerDepth[layerIndex]);
-    if (myVar == soil::soilWaterPotentialWP)
-        return soilList[soilIndex].horizon[horizonIndex].wiltingPoint;
-    else if (myVar == soil::soilWaterPotentialFC)
-        return soilList[soilIndex].horizon[horizonIndex].fieldCapacity;
-    else if (myVar == soil::soilWaterContentFC)
-        return soilList[soilIndex].horizon[horizonIndex].waterContentFC;
-    else if (myVar == soil::soilWaterContentSat)
-        return soilList[soilIndex].horizon[horizonIndex].vanGenuchten.thetaS;
-    else if (myVar == soil::soilWaterContentWP)
-    {
-        double signPsiLeaf = -160;      //[m]
-        return soil::thetaFromSignPsi(signPsiLeaf, &(soilList[soilIndex].horizon[horizonIndex]));
-    }
-    else
-        return NODATA;
-}
-
-
 bool Crit3DProject::createSoilIndexMap()
 {
     // check
@@ -345,6 +324,27 @@ int Crit3DProject::getSoilIndex(int dtmRow, int dtmCol)
 
     // no soil data
     return INDEX_ERROR;
+}
+
+
+double Crit3DProject::getSoilVar(int soilIndex, int layerIndex, soil::soilVariable myVar)
+{
+    int horizonIndex = soil::getHorizonIndex(&(soilList[soilIndex]), layerDepth[layerIndex]);
+    if (myVar == soil::soilWaterPotentialWP)
+        return soilList[soilIndex].horizon[horizonIndex].wiltingPoint;
+    else if (myVar == soil::soilWaterPotentialFC)
+        return soilList[soilIndex].horizon[horizonIndex].fieldCapacity;
+    else if (myVar == soil::soilWaterContentFC)
+        return soilList[soilIndex].horizon[horizonIndex].waterContentFC;
+    else if (myVar == soil::soilWaterContentSat)
+        return soilList[soilIndex].horizon[horizonIndex].vanGenuchten.thetaS;
+    else if (myVar == soil::soilWaterContentWP)
+    {
+        double signPsiLeaf = -160;      //[m]
+        return soil::thetaFromSignPsi(signPsiLeaf, &(soilList[soilIndex].horizon[horizonIndex]));
+    }
+    else
+        return NODATA;
 }
 
 
