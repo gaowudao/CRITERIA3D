@@ -18,7 +18,7 @@
 #include "tileSources/GridTileSource.h"
 #include "tileSources/CompositeTileSource.h"
 
-#include "formRunInfo.h"
+#include "formInfo.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "Position.h"
@@ -824,7 +824,7 @@ void MainWindow::on_actionClose_meteo_grid_triggered()
 
 void MainWindow::on_actionInterpolation_to_DTM_triggered()
 {
-    formRunInfo myInfo;
+    FormInfo myInfo;
     myInfo.start("Interpolation...", 0);
 
     interpolateDemGUI();

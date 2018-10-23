@@ -69,7 +69,6 @@ SOURCES += main.cpp\
     ../PRAGA/shared/settingsDialog.cpp \
     ../PRAGA/shared/interpolationDialog.cpp \
     ../PRAGA/shared/interpolationCmd.cpp \
-    ../PRAGA/shared/formRunInfo.cpp \
     ../PRAGA/shared/rasterObject.cpp \
     ../PRAGA/shared/rubberBand.cpp \
     ../PRAGA/shared/colorlegend.cpp \
@@ -77,7 +76,8 @@ SOURCES += main.cpp\
     ../PRAGA/shared/project.cpp \
     meteoMaps.cpp \
     waterBalance3D.cpp \
-    crit3dProject.cpp
+    crit3dProject.cpp \
+    ../PRAGA/shared/formInfo.cpp
 
 HEADERS += mainwindow.h \
     ../PRAGA/shared/dialogWindows.h \
@@ -85,14 +85,14 @@ HEADERS += mainwindow.h \
     ../PRAGA/shared/settingsDialog.h \
     ../PRAGA/shared/interpolationDialog.h \
     ../PRAGA/shared/interpolationCmd.h  \
-    ../PRAGA/shared/formRunInfo.h \
     ../PRAGA/shared/rasterObject.h \
     ../PRAGA/shared/rubberBand.h \
     ../PRAGA/shared/colorlegend.h \
     ../PRAGA/shared/project.h \
     meteoMaps.h \
     waterBalance3D.h \
-    crit3dProject.h
+    crit3dProject.h \
+    ../PRAGA/shared/formInfo.h
     ../climate/elaborationSettings.h \
 
 

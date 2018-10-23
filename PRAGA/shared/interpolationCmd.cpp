@@ -1,6 +1,6 @@
 #include "interpolationCmd.h"
 #include "interpolation.h"
-#include "formRunInfo.h"
+#include "formInfo.h"
 
 
 bool loadProxyGrid(Crit3DProxy* myProxy)
@@ -17,7 +17,7 @@ bool interpolationRaster(std::vector <Crit3DInterpolationDataPoint> &myPoints, C
     if (! myGrid->initializeGrid(myDTM))
         return (false);
 
-    formRunInfo myInfo;
+    FormInfo myInfo;
     int infoStep;
     QString infoStr;
 

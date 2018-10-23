@@ -4,7 +4,7 @@
 
 #include "project.h"
 #include "download.h"
-#include "formRunInfo.h"
+#include "formInfo.h"
 #include "commonConstants.h"
 #include "spatialControl.h"
 #include "radiationSettings.h"
@@ -395,7 +395,7 @@ bool Project::downloadDailyDataArkimet(QStringList variables, bool prec0024, QDa
         }
     }
 
-    formRunInfo myInfo;
+    FormInfo myInfo;
     QString infoStr;
 
     int nrDays = startDate.daysTo(endDate) + 1;
@@ -489,7 +489,7 @@ bool Project::downloadHourlyDataArkimet(QStringList variables, QDate startDate, 
 
     Download* myDownload = new Download(meteoPointsDbHandler->getDbName());
 
-    formRunInfo myInfo;
+    FormInfo myInfo;
     QString infoStr;
 
     int nrDays = startDate.daysTo(endDate) + 1;
@@ -615,7 +615,7 @@ bool Project::loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo
     if (firstDate == QDate(1800,1,1) || lastDate == QDate(1800,1,1)) return false;
 
     bool isData = false;
-    formRunInfo myInfo;
+    FormInfo myInfo;
     int step;
 
     QString infoStr = "Load data: " + firstDate.toString();
@@ -858,7 +858,7 @@ bool Project::loadMeteoGridDailyData(QDate firstDate, QDate lastDate, bool showI
     std::string id;
     int count = 0;
 
-    formRunInfo myInfo;
+    FormInfo myInfo;
     int infoStep;
 
     if (showInfo)
@@ -911,7 +911,7 @@ bool Project::loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate, b
 {
     std::string id;
     int count = 0;
-    formRunInfo myInfo;
+    FormInfo myInfo;
     int infoStep;
 
     if (showInfo)
@@ -991,7 +991,7 @@ bool Project::writeTopographicDistanceMaps()
     if (! QDir(mapsFolder).exists())
         QDir().mkdir(mapsFolder);
 
-    formRunInfo myInfo;
+    FormInfo myInfo;
     int infoStep;
     QString infoStr = "Computing topographic distance maps...";
     infoStep = myInfo.start(infoStr, nrMeteoPoints);
@@ -1033,7 +1033,7 @@ bool Project::loadTopographicDistanceMaps()
     QString mapsFolder = this->path + "DATA/GEO/TAD/";
     if (! QDir(mapsFolder).exists()) return false;
 
-    formRunInfo myInfo;
+    FormInfo myInfo;
     int infoStep;
     QString infoStr = "Loading topographic distance maps...";
     infoStep = myInfo.start(infoStr, nrMeteoPoints);
@@ -1079,7 +1079,7 @@ bool Project::interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gi
     // Proxy vars regression and detrend
     if (showInfo)
     {
-        formRunInfo myInfo;
+        FormInfo myInfo;
         myInfo.start("Preparing interpolation...", 0);
     }
 
