@@ -3,6 +3,7 @@
 
 #include "commonConstants.h"
 #include "crit3dClimateList.h"
+#include "climate.h"
 
 
 Crit3DClimateList::Crit3DClimateList()
@@ -398,84 +399,6 @@ bool Crit3DClimateList::parserGenericPeriodString(int index)
     return true;
 
 }
-
-
-int Crit3DClimateList::nParameters(meteoComputation elab)
-{
-    switch(elab)
-    {
-    case average:
-        return 0;
-    case maxInList:
-        return 0;
-    case minInList:
-        return 0;
-    case sum:
-        return 0;
-    case avgAbove:
-        return 1;
-    case stdDevAbove:
-        return 1;
-    case sumAbove:
-        return 1;
-    case daysAbove:
-        return 1;
-    case daysBelow:
-        return 1;
-    case consecutiveDaysAbove:
-        return 1;
-    case consecutiveDaysBelow:
-        return 1;
-    case percentile:
-        return 1;
-    case prevailingWindDir:
-        return 0;
-    case correctedDegreeDaysSum:
-        return 1;
-    case trend:
-        return 0;
-    case mannKendall:
-        return 0;
-    case differenceWithThreshold:
-        return 1;
-    case lastDayBelowThreshold:
-        return 1;
-    default:
-        return 0;
-    }
-
-
-}
-
-period Crit3DClimateList::getPeriodTypeFromString(QString periodStr)
-{
-
-    if (periodStr == "Daily")
-        return dailyPeriod;
-    if (periodStr == "Decadal")
-        return decadalPeriod;
-    if (periodStr == "Monthly")
-        return monthlyPeriod;
-    if (periodStr == "Seasonal")
-        return seasonalPeriod;
-    if (periodStr == "Annual")
-        return annualPeriod;
-    if (periodStr == "Generic")
-        return genericPeriod;
-
-    return noPeriodType;
-
-}
-
-QString getTable(QString elab)
-{
-    QStringList words = elab.split('_');
-    QString periodTypeStr = words[2];
-    QString tableName = "climate_"+periodTypeStr.toLower();
-
-    return tableName;
-}
-
 
 
 /* old

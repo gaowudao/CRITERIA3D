@@ -51,21 +51,17 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
 
     if (clima->param1IsClimate())
     {
-
         QList<float> paramList;
         QString table = getTable(clima->param1ClimateField());
         paramList = readElab(clima->db(), table, myError, QString::fromStdString(meteoPointTemp->id), clima->param1ClimateField());
-
-//            if ( ClimateReadPoint(PragaClimate.Point(i).TableName, climateElab, myPeriodType, myClimateIndex, PragaClimate.Point(i)))
-//            {
-
-//                currentParameter1 = passaggioDati.GetClimateData(myPeriodType, PragaClimate.Point(i), myClimateIndex);
-//            }
-//            else
-//            {
-//                currentParameter1 = NODATA;
-//            }
-//         clima->setParam1(currentParameter1);
+        if (clima->getParam1ClimateIndex() != NODATA && clima->getParam1ClimateIndex() < paramList.size())
+        {
+            clima->setParam1(paramList.at( clima->getParam1ClimateIndex() ));
+        }
+        else
+        {
+            clima->setParam1(NODATA);
+        }
     }
 
     dataLoaded = false;
@@ -1620,28 +1616,6 @@ void extractValidValuesWithThreshold(std::vector<float> &outputValues, float myT
 }
 
 
-int getClimateIndexFromDate(QDate myDate, period periodType)
-{
-
-    switch(periodType)
-    {
-    case annualPeriod: case genericPeriod:
-            return 1;
-    case decadalPeriod:
-            return decadeFromDate(myDate);
-    case monthlyPeriod:
-            return myDate.month();
-    case seasonalPeriod:
-            return getSeasonFromDate(myDate);
-    case dailyPeriod:
-            return myDate.dayOfYear();
-    default:
-            return NODATA;
-    }
-
-}
-
-
 //nYears   = 0         same year
 //nYears   = 1,2,3...   betweend years 1,2,3...
 float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoPoint, Crit3DClimate *clima, Crit3DDate firstDate, Crit3DDate lastDate, int nYears, meteoComputation elab1, meteoComputation elab2, Crit3DElaborationSettings* elabSettings)
@@ -1921,3 +1895,125 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
         }
     }
 }
+
+QString getTable(QString elab)
+{
+    QStringList words = elab.split('_');
+    QString periodTypeStr = words[2];
+    QString tableName = "climate_"+periodTypeStr.toLower();
+
+    return tableName;
+}
+
+int getClimateIndexFromElab(QDate myDate, QString elab)
+{
+
+    QStringList words = elab.split('_');
+    QString periodTypeStr = words[2];
+
+    period periodType = getPeriodTypeFromString(periodTypeStr);
+
+    switch(periodType)
+    {
+    case annualPeriod: case genericPeriod:
+            return 1;
+    case decadalPeriod:
+            return decadeFromDate(myDate);
+    case monthlyPeriod:
+            return myDate.month();
+    case seasonalPeriod:
+            return getSeasonFromDate(myDate);
+    case dailyPeriod:
+            return myDate.dayOfYear();
+    default:
+            return NODATA;
+    }
+}
+
+period getPeriodTypeFromString(QString periodStr)
+{
+
+    if (periodStr == "Daily")
+        return dailyPeriod;
+    if (periodStr == "Decadal")
+        return decadalPeriod;
+    if (periodStr == "Monthly")
+        return monthlyPeriod;
+    if (periodStr == "Seasonal")
+        return seasonalPeriod;
+    if (periodStr == "Annual")
+        return annualPeriod;
+    if (periodStr == "Generic")
+        return genericPeriod;
+
+    return noPeriodType;
+
+}
+
+int nParameters(meteoComputation elab)
+{
+    switch(elab)
+    {
+    case average:
+        return 0;
+    case maxInList:
+        return 0;
+    case minInList:
+        return 0;
+    case sum:
+        return 0;
+    case avgAbove:
+        return 1;
+    case stdDevAbove:
+        return 1;
+    case sumAbove:
+        return 1;
+    case daysAbove:
+        return 1;
+    case daysBelow:
+        return 1;
+    case consecutiveDaysAbove:
+        return 1;
+    case consecutiveDaysBelow:
+        return 1;
+    case percentile:
+        return 1;
+    case prevailingWindDir:
+        return 0;
+    case correctedDegreeDaysSum:
+        return 1;
+    case trend:
+        return 0;
+    case mannKendall:
+        return 0;
+    case differenceWithThreshold:
+        return 1;
+    case lastDayBelowThreshold:
+        return 1;
+    default:
+        return 0;
+    }
+
+}
+
+/*
+ * // LC old
+int getClimateIndexFromDate(QDate myDate, period periodType)
+{
+    switch(periodType)
+    {
+    case annualPeriod: case genericPeriod:
+            return 1;
+    case decadalPeriod:
+            return decadeFromDate(myDate);
+    case monthlyPeriod:
+            return myDate.month();
+    case seasonalPeriod:
+            return getSeasonFromDate(myDate);
+    case dailyPeriod:
+            return myDate.dayOfYear();
+    default:
+            return NODATA;
+    }
+}
+*/

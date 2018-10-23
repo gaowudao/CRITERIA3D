@@ -21,6 +21,7 @@ Crit3DClimate::Crit3DClimate()
     _param1 = NODATA;
     _param1IsClimate = false;
     _param1ClimateField = "";
+    _param1ClimateIndex = NODATA;
     _elab2 = "";
     _param2 = NODATA;
 
@@ -49,29 +50,11 @@ void Crit3DClimate::resetParam()
     _param1 = NODATA;
     _param1IsClimate = false;
     _param1ClimateField = "";
+    _param1ClimateIndex = NODATA;
     _elab2 = "";
     _param2 = NODATA;
 
 }
-
-//Crit3DClimate::Crit3DClimate(const Crit3DClimate *reference)
-//{
-//    _climateElab = reference->_climateElab;
-//    _yearStart = reference->_yearStart;
-//    _yearEnd = reference->_yearEnd;
-//    _periodType = reference->_periodType;
-//    _variable = reference->_variable;
-//    _periodStr = reference->_periodStr;
-//    _genericPeriodDateStart = reference->_genericPeriodDateStart;
-//    _genericPeriodDateEnd = reference->_genericPeriodDateEnd;
-//    _nYears = reference->_nYears;
-//    _elab1 = reference->_elab1;
-//    _param1 = reference->_param1;
-//    _param1IsClimate = reference->_param1IsClimate;
-//    _param1ClimateField = reference->_param1ClimateField;
-//    _elab2 = reference->_elab2;
-//    _param2 = reference->_param2;
-//}
 
 Crit3DClimate::~Crit3DClimate()
 {
@@ -295,6 +278,16 @@ Crit3DClimateList *Crit3DClimate::getListElab() const
 void Crit3DClimate::setListElab(Crit3DClimateList *value)
 {
     listElab = value;
+}
+
+int Crit3DClimate::getParam1ClimateIndex() const
+{
+    return _param1ClimateIndex;
+}
+
+void Crit3DClimate::setParam1ClimateIndex(int param1ClimateIndex)
+{
+    _param1ClimateIndex = param1ClimateIndex;
 }
 
 QSqlDatabase Crit3DClimate::db() const

@@ -27,7 +27,6 @@
 
     public:
         Crit3DClimate();
-        //Crit3DClimate(const Crit3DClimate* reference);
         ~Crit3DClimate();
 
         void resetParam();
@@ -101,6 +100,9 @@
         Crit3DClimateList *getListElab() const;
         void setListElab(Crit3DClimateList *value);
 
+        int getParam1ClimateIndex() const;
+        void setParam1ClimateIndex(int param1ClimateIndex);
+
     private:
         QSqlDatabase _db;
         QString _climateElab;
@@ -116,6 +118,7 @@
         float _param1;
         bool _param1IsClimate;
         QString _param1ClimateField;
+        int _param1ClimateIndex;
         QString _elab2;
         float _param2;
         Crit3DElaborationSettings *elabSettings;

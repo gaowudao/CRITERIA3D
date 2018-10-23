@@ -107,10 +107,16 @@
 
     void extractValidValuesWithThreshold(std::vector<float> &outputValues, float myThreshold);
 
+    float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoPoint, Crit3DClimate* clima, Crit3DDate firstDate, Crit3DDate lastDate, int nYears, meteoComputation elab1, meteoComputation elab2, Crit3DElaborationSettings *elabSettings);
+
     QString getTable(QString elab);
 
-    int getClimateIndexFromDate(QDate myDate, period periodType);
+    int getClimateIndexFromElab(QDate myDate, QString elab);
 
-    float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoPoint, Crit3DClimate* clima, Crit3DDate firstDate, Crit3DDate lastDate, int nYears, meteoComputation elab1, meteoComputation elab2, Crit3DElaborationSettings *elabSettings);
+    period getPeriodTypeFromString(QString periodStr);
+
+    int nParameters(meteoComputation elab);
+
+    //int getClimateIndexFromDate(QDate myDate, period periodType);
 
 #endif // CLIMATE_H

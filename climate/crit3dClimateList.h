@@ -106,8 +106,7 @@
 
         void parserElaboration();
         bool parserGenericPeriodString(int index);
-        int nParameters(meteoComputation elab);
-        period getPeriodTypeFromString(QString periodStr);
+
 
     private:
 

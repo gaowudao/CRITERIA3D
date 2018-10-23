@@ -455,6 +455,8 @@ void ComputationDialog::done(bool res)
             {
                 myProject.clima->setParam1IsClimate(true);
                 myProject.clima->setParam1ClimateField(climateDbElabList.currentText());
+                int climateIndex = getClimateIndexFromElab(currentDay.date(), climateDbElabList.currentText());
+                myProject.clima->setParam1ClimateIndex(climateIndex);
 
             }
             if (secondElabList.currentText() == "None" || secondElabList.currentText() == "No elaboration available")
@@ -519,6 +521,8 @@ void ComputationDialog::done(bool res)
                 {
                     myProject.referenceClima->setParam1IsClimate(true);
                     myProject.referenceClima->setParam1ClimateField(anomaly.AnomalyGetClimateDbElab());
+                    int climateIndex = getClimateIndexFromElab(anomaly.AnomalyGetCurrentDay(), anomaly.AnomalyGetClimateDbElab());
+                    myProject.referenceClima->setParam1ClimateIndex(climateIndex);
 
                 }
                 if (anomaly.AnomalyGetSecondElaboration() == "None" || anomaly.AnomalyGetSecondElaboration() == "No elaboration available")
