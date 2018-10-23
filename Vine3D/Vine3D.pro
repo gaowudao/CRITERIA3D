@@ -62,10 +62,10 @@ SOURCES += \
     parserXML.cpp \
     plant.cpp \
     waterBalance.cpp \
+    vine3DProject.cpp \
     ../PRAGA/shared/interpolationCmd.cpp \
     ../PRAGA/shared/project.cpp \
-    vine3DProject.cpp \
-    ../PRAGA/shared/formRunInfo.cpp
+    ../PRAGA/shared/formInfo.cpp
 
 HEADERS  += \
     atmosphere.h \
@@ -76,10 +76,10 @@ HEADERS  += \
     parserXML.h \
     plant.h \
     waterBalance.h \
+    vine3DProject.h \
     ../PRAGA/shared/interpolationCmd.h \
     ../PRAGA/shared/project.h \
-    vine3DProject.h \
-    ../PRAGA/shared/formRunInfo.h
+    ../PRAGA/shared/formInfo.h
 
 FORMS    += \
     ../PRAGA/shared/formInfo.ui
