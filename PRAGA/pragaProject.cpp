@@ -1,7 +1,7 @@
 #include "pragaProject.h"
 #include "project.h"
 #include "climate.h"
-#include "formRunInfo.h"
+#include "formInfo.h"
 
 #include <iostream> //debug
 
@@ -104,7 +104,7 @@ bool PragaProject::interpolationMeteoGrid(meteoVariable myVar, frequencyType myF
 bool PragaProject::saveGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, bool showInfo)
 {
     std::string id;
-    formRunInfo myInfo;
+    FormInfo myInfo;
     int infoStep;
 
 
@@ -291,7 +291,7 @@ bool PragaProject::elaborationPointsCycle(bool isAnomaly, bool showInfo)
     bool isMeteoGrid = 0; // meteoPoint
     int validCell = 0;
 
-    formRunInfo myInfo;
+    FormInfo myInfo;
     int infoStep;
     QString infoStr;
 
@@ -391,7 +391,7 @@ bool PragaProject::elaborationPointsCycleGrid(bool isAnomaly, bool showInfo)
 
     std::string id;
 
-    formRunInfo myInfo;
+    FormInfo myInfo;
     int infoStep;
     QString infoStr;
 
@@ -486,7 +486,7 @@ bool PragaProject::elaborationPointsCycleGrid(bool isAnomaly, bool showInfo)
 bool PragaProject::climatePointsCycle(bool showInfo)
 {
     bool isMeteoGrid = false;
-    formRunInfo myInfo;
+    FormInfo myInfo;
     int infoStep;
     QString infoStr;
 
@@ -611,7 +611,7 @@ bool PragaProject::climatePointsCycleGrid(bool showInfo)
 {
 
     bool isMeteoGrid = true;
-    formRunInfo myInfo;
+    FormInfo myInfo;
     int infoStep;
     QString infoStr;
 

@@ -18,7 +18,7 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "formRunInfo.h"
+#include "formInfo.h"
 #include "dbMeteoPoints.h"
 #include "dbArkimet.h"
 #include "download.h"
@@ -480,7 +480,7 @@ void MainWindow::on_actionNewMeteoPointsArkimet_triggered()
         myDownload.getDbArkimet()->setDatasetsActive(datasetSelected);
         QStringList datasets = datasetSelected.remove("'").split(",");
 
-        formRunInfo myInfo;
+        FormInfo myInfo;
         myInfo.start("download points properties...", 0);
             if (myDownload.getPointProperties(datasets))
             {
@@ -1153,7 +1153,7 @@ void MainWindow::on_actionClose_meteo_grid_triggered()
 
 void MainWindow::on_actionInterpolation_to_DTM_triggered()
 {
-    formRunInfo myInfo;
+    FormInfo myInfo;
     myInfo.start("Interpolation...", 0);
 
     interpolateDemGUI();
@@ -1164,7 +1164,7 @@ void MainWindow::on_actionInterpolation_to_DTM_triggered()
 
 void MainWindow::on_actionInterpolation_to_Grid_triggered()
 {
-    formRunInfo myInfo;
+    FormInfo myInfo;
     myInfo.start("Interpolation Grid...", 0);
 
     interpolateGridGUI();

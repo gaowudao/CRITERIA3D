@@ -80,8 +80,8 @@
 
         Project();
 
-        bool initializeSettings(QString currentPath);
-        bool readSettings();
+        bool readGenericSettings(QString currentPath);
+        bool readGenericParameters();
         bool checkProxySetting(QString group, std::string* name, std::string* grdName, std::string* table, std::string* field, bool *isActive);
         bool readProxies();
         void copyInterpolationSettingsToQuality();

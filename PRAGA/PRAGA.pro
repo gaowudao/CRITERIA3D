@@ -95,7 +95,7 @@ SOURCES += main.cpp\
     shared/dialogWindows.cpp \
     shared/stationMarker.cpp \
     shared/rubberBand.cpp \
-    shared/formRunInfo.cpp \
+    shared/formInfo.cpp \
     shared/settingsDialog.cpp \
     shared/rasterObject.cpp \
     shared/colorlegend.cpp \
@@ -111,7 +111,7 @@ HEADERS  += mainwindow.h \
     shared/dialogWindows.h \
     shared/stationMarker.h \
     shared/rubberBand.h \
-    shared/formRunInfo.h \
+    shared/formInfo.h \
     shared/settingsDialog.h \
     shared/rasterObject.h \
     shared/colorlegend.h \
