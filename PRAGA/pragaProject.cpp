@@ -341,6 +341,7 @@ bool PragaProject::elaborationPointsCycle(bool isAnomaly, bool showInfo)
             meteoPointTemp->id = meteoPoints[i].id;
             meteoPointTemp->point.z = meteoPoints[i].point.z;
             meteoPointTemp->latitude = meteoPoints[i].latitude;
+            meteoPointTemp->elaboration = meteoPoints[i].elaboration;
 
             // meteoPointTemp should be init
             meteoPointTemp->nrObsDataDaysH = 0;
@@ -442,6 +443,7 @@ bool PragaProject::elaborationPointsCycleGrid(bool isAnomaly, bool showInfo)
                 meteoPointTemp->id = meteoPoint->id;
                 meteoPointTemp->point.z = meteoPoint->point.z;
                 meteoPointTemp->latitude = meteoPoint->latitude;
+                meteoPointTemp->elaboration = meteoPoint->elaboration;
 
                 // meteoPointTemp should be init
                 meteoPointTemp->nrObsDataDaysH = 0;
