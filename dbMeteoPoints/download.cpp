@@ -1,3 +1,5 @@
+#include <QtNetwork>
+
 #include "download.h"
 #include "dbMeteoPoints.h"
 #include "dbArkimet.h"

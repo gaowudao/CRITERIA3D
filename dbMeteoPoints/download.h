@@ -1,7 +1,7 @@
 #ifndef DOWNLOAD_H
 #define DOWNLOAD_H
 
-#include <QtNetwork>
+//#include <QtNetwork>
 #include "dbArkimet.h"
 
 class Download : public QObject
