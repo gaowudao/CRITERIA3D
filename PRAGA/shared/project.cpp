@@ -45,7 +45,7 @@ void Project::copyInterpolationSettingsToQuality()
     qualityInterpolationSettings.setUseThermalInversion(interpolationSettings.getUseThermalInversion());
 }
 
-bool Project::readSettings()
+bool Project::readGenericParameters()
 {
     //interpolation settings
     interpolationSettings.initialize();
@@ -134,7 +134,7 @@ bool Project::readSettings()
 }
 
 
-bool Project::initializeSettings(QString currentPath)
+bool Project::readGenericSettings(QString currentPath)
 {
     this->path = currentPath;
 
@@ -167,25 +167,29 @@ bool Project::initializeSettings(QString currentPath)
         pathSetting->beginGroup("location");
         float latitude = pathSetting->value("lat").toFloat();
         float longitude = pathSetting->value("lon").toFloat();
+        int utmZone = pathSetting->value("utm_zone").toInt();
+        int isUtc = pathSetting->value("is_utc").toBool();
         pathSetting->endGroup();
 
         if (latitude != 0 && longitude != 0)
         {
             gisSettings.startLocation.latitude = latitude;
             gisSettings.startLocation.longitude = longitude;
+            gisSettings.utmZone = utmZone;
+            gisSettings.isUTC = isUtc;
         }
     }
 
-    QString settingsFileName = this->path + "DATA/settings/parameters.ini";
-    if (! QFile(settingsFileName).exists())
+    QString parametersFileName = this->path + "DATA/settings/parameters.ini";
+    if (! QFile(parametersFileName).exists())
     {
-        logError("Missing file: " + settingsFileName);
+        logError("Missing file: " + parametersFileName);
         return false;
     }
     else
     {
-        this->settings = new QSettings(settingsFileName, QSettings::IniFormat);
-        return readSettings();
+        this->settings = new QSettings(parametersFileName, QSettings::IniFormat);
+        return readGenericParameters();
     }
 
 }
