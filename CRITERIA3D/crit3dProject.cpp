@@ -47,28 +47,6 @@ Crit3DProject::Crit3DProject()
 
 bool Crit3DProject::readCriteria3DSettings()
 {          
-    Q_FOREACH (QString group, settings->childGroups())
-    {
-        if (group == "elaboration")
-        {
-            settings->beginGroup(group);
-
-            if (settings->contains("min_percentage") && !settings->value("min_percentage").toString().isEmpty())
-            {
-                meteoSettings->setMinimumPercentage(settings->value("min_percentage").toFloat());
-            }
-            if (settings->contains("prec_threshold") && !settings->value("prec_threshold").toString().isEmpty())
-            {
-                meteoSettings->setRainfallThreshold(settings->value("prec_threshold").toFloat());
-            }
-            if (settings->contains("samani_coefficient") && !settings->value("samani_coefficient").toString().isEmpty())
-            {
-                meteoSettings->setTransSamaniCoefficient(settings->value("samani_coefficient").toFloat());
-            }
-
-            settings->endGroup();
-        }
-    }
     return true;
 }
 

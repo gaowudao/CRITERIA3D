@@ -120,8 +120,6 @@ void PragaSettingsDialog::accept()
 
 void PragaSettingsDialog::savePragaSettings()
 {
-    saveSettings();
-
     getParamSettings()->beginGroup("elaboration");
     getParamSettings()->setValue("anomaly_pts_max_distance", elabTab->anomalyPtsMaxDisEdit.text());
     getParamSettings()->setValue("anomaly_pts_max_delta_z", elabTab->anomalyPtsMaxDeltaZEdit.text());

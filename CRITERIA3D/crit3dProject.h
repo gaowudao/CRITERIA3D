@@ -20,7 +20,6 @@
     private:
 
     public:
-        Crit3DMeteoSettings* meteoSettings;
         Crit3DMeteoMaps* meteoMaps;
         gis::Crit3DRasterGrid soilMap;
 
