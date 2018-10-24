@@ -69,7 +69,7 @@ class SettingsDialog : public QDialog
     Q_OBJECT
 
     public:
-        explicit SettingsDialog(QSettings *pthSetting, QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DMeteoSettings* meteoSettings);
+        SettingsDialog(QSettings *pathSetting, QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DMeteoSettings* meteoSettings);
         bool acceptValues();
         void accept();
         void saveSettings();

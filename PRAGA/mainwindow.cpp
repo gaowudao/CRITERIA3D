@@ -27,7 +27,7 @@
 #include "dialogWindows.h"
 #include "computationDialog.h"
 #include "interpolationDialog.h"
-#include "settingsDialog.h"
+#include "pragaSettingsDialog.h"
 #include "gis.h"
 #include "spatialControl.h"
 
@@ -1540,7 +1540,8 @@ void MainWindow::on_actionInterpolationSettings_triggered()
 
 void MainWindow::on_actionParameters_triggered()
 {
-    //SettingsDialog* mySettingsDialog = new SettingsDialog(myProject.pathSetting, myProject.settings, &myProject.gisSettings, myProject.quality, myProject.clima->getElabSettings(), myProject.clima->getMeteoSettings());
+    PragaSettingsDialog* mySettingsDialog = new PragaSettingsDialog(myProject.pathSetting, myProject.settings, &myProject.gisSettings, myProject.quality, myProject.clima->getElabSettings(), myProject.clima->getMeteoSettings());
+    mySettingsDialog->exec();
     if (startCenter->latitude() != myProject.gisSettings.startLocation.latitude || startCenter->longitude() != myProject.gisSettings.startLocation.longitude)
     {
         startCenter->setLatitude(myProject.gisSettings.startLocation.latitude);
@@ -1548,7 +1549,7 @@ void MainWindow::on_actionParameters_triggered()
         this->mapView->centerOn(startCenter->lonLat());
     }
 
-    //mySettingsDialog->close();
+    mySettingsDialog->close();
 }
 
 

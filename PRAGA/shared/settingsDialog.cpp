@@ -161,7 +161,6 @@ MeteoTab::MeteoTab(Crit3DMeteoSettings *meteoSettings)
 
 SettingsDialog::SettingsDialog(QSettings *pathSetting, QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DMeteoSettings *meteoSettings)
 {
-
     _pathSettings = pathSetting;
     _paramSettings = settings;
 
@@ -189,9 +188,6 @@ SettingsDialog::SettingsDialog(QSettings *pathSetting, QSettings *settings, gis:
     mainLayout->addWidget(tabWidget);
     mainLayout->addWidget(buttonBox);
     setLayout(mainLayout);
-
-    exec();
-
 }
 
 bool SettingsDialog::acceptValues()
