@@ -69,12 +69,18 @@ class SettingsDialog : public QDialog
     Q_OBJECT
 
     public:
-        SettingsDialog(QSettings *pathSetting, QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DMeteoSettings* meteoSettings);
+        explicit SettingsDialog(QSettings *pathSetting, QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DMeteoSettings* meteoSettings);
         bool acceptValues();
         void accept();
         void saveSettings();
 
-    private:
+        QTabWidget *getTabWidget() const;
+        void setTabWidget(QTabWidget *value);
+
+        QSettings *getParamSettings() const;
+        void setParamSettings(QSettings *paramSettings);
+
+private:
         QSettings *_pathSettings;
         QSettings *_paramSettings;
         gis::Crit3DGisSettings *_geoSettings;

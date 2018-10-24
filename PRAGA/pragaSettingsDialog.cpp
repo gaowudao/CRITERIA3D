@@ -62,17 +62,20 @@ ElaborationTab::ElaborationTab(Crit3DElaborationSettings *elabSettings)
 }
 
 
-PragaSettingsDialog::PragaSettingsDialog(QSettings *pathSettings, QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DElaborationSettings *elabSettings, Crit3DMeteoSettings *meteoSettings)
+PragaSettingsDialog::PragaSettingsDialog(QSettings *pathSettings,
+                                         QSettings *settings,
+                                         gis::Crit3DGisSettings *gisSettings,
+                                         Crit3DQuality *quality,
+                                         Crit3DMeteoSettings *meteoSettings,
+                                         Crit3DElaborationSettings *elabSettings) : SettingsDialog(pathSettings, settings, gisSettings, quality, meteoSettings)
 {
-    //SettingsDialog this(pathSettings, settings, gisSettings, quality, meteoSettings);
-
     _elabSettings = elabSettings;
     elabTab = new ElaborationTab(elabSettings);
 
-    tabWidget->addTab(elabTab, tr("ELABORATION"));
+    getTabWidget()->addTab(elabTab, tr("ELABORATION"));
 }
 
-bool PragaSettingsDialog::acceptValues()
+bool PragaSettingsDialog::acceptPragaValues()
 {
     if (elabTab->anomalyPtsMaxDisEdit.text().isEmpty())
     {
@@ -119,12 +122,12 @@ void PragaSettingsDialog::savePragaSettings()
 {
     saveSettings();
 
-    _paramSettings->beginGroup("elaboration");
-    _paramSettings->setValue("anomaly_pts_max_distance", elabTab->anomalyPtsMaxDisEdit.text());
-    _paramSettings->setValue("anomaly_pts_max_delta_z", elabTab->anomalyPtsMaxDeltaZEdit.text());
-    _paramSettings->setValue("grid_min_coverage", elabTab->gridMinCoverageEdit.text());
-    _paramSettings->setValue("compute_tmed", elabTab->automaticTmedEdit.isChecked());
-    _paramSettings->setValue("compute_et0hs", elabTab->automaticETPEdit.isChecked());
-    _paramSettings->setValue("merge_joint_stations", elabTab->mergeJointStationsEdit.isChecked());
-    _paramSettings->endGroup();
+    getParamSettings()->beginGroup("elaboration");
+    getParamSettings()->setValue("anomaly_pts_max_distance", elabTab->anomalyPtsMaxDisEdit.text());
+    getParamSettings()->setValue("anomaly_pts_max_delta_z", elabTab->anomalyPtsMaxDeltaZEdit.text());
+    getParamSettings()->setValue("grid_min_coverage", elabTab->gridMinCoverageEdit.text());
+    getParamSettings()->setValue("compute_tmed", elabTab->automaticTmedEdit.isChecked());
+    getParamSettings()->setValue("compute_et0hs", elabTab->automaticETPEdit.isChecked());
+    getParamSettings()->setValue("merge_joint_stations", elabTab->mergeJointStationsEdit.isChecked());
+    getParamSettings()->endGroup();
 }

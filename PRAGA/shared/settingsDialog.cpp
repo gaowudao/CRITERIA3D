@@ -324,3 +324,23 @@ void SettingsDialog::saveSettings()
     _paramSettings->setValue("thom_threshold", metTab->thomThresholdEdit.text());
     _paramSettings->endGroup();
 }
+
+QTabWidget *SettingsDialog::getTabWidget() const
+{
+    return tabWidget;
+}
+
+void SettingsDialog::setTabWidget(QTabWidget *value)
+{
+    tabWidget = value;
+}
+
+QSettings *SettingsDialog::getParamSettings() const
+{
+    return _paramSettings;
+}
+
+void SettingsDialog::setParamSettings(QSettings *paramSettings)
+{
+    _paramSettings = paramSettings;
+}

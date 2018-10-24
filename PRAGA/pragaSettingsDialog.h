@@ -33,7 +33,13 @@ class PragaSettingsDialog : public SettingsDialog
     Q_OBJECT
 
     public:
-        explicit PragaSettingsDialog(QSettings *pathSettings, QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DElaborationSettings *elabSettings, Crit3DMeteoSettings *meteoSettings);
+        explicit PragaSettingsDialog(QSettings *pathSettings,
+                                     QSettings *settings,
+                                     gis::Crit3DGisSettings *gisSettings,
+                                     Crit3DQuality *quality,
+                                     Crit3DMeteoSettings *meteoSettings,
+                                     Crit3DElaborationSettings *elabSettings);
+
         bool acceptPragaValues();
         void savePragaSettings();
         void accept();
