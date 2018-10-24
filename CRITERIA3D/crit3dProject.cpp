@@ -26,7 +26,6 @@
 
 
 #include "commonConstants.h"
-#include "elaborationSettings.h"
 #include "formInfo.h"
 #include "dbTools.h"
 #include "utilities.h"
@@ -56,43 +55,15 @@ bool Crit3DProject::readCriteria3DSettings()
 
             if (settings->contains("min_percentage") && !settings->value("min_percentage").toString().isEmpty())
             {
-                elaborationSettings->setMinimumPercentage(settings->value("min_percentage").toFloat());
+                meteoSettings->setMinimumPercentage(settings->value("min_percentage").toFloat());
             }
             if (settings->contains("prec_threshold") && !settings->value("prec_threshold").toString().isEmpty())
             {
-                elaborationSettings->setRainfallThreshold(settings->value("prec_threshold").toFloat());
-            }
-            if (settings->contains("anomaly_pts_max_distance") && !settings->value("anomaly_pts_max_distance").toString().isEmpty())
-            {
-                elaborationSettings->setAnomalyPtsMaxDistance(settings->value("anomaly_pts_max_distance").toFloat());
-            }
-            if (settings->contains("anomaly_pts_max_delta_z") && !settings->value("anomaly_pts_max_delta_z").toString().isEmpty())
-            {
-                elaborationSettings->setAnomalyPtsMaxDeltaZ(settings->value("anomaly_pts_max_delta_z").toFloat());
-            }
-            if (settings->contains("thom_threshold") && !settings->value("thom_threshold").toString().isEmpty())
-            {
-                elaborationSettings->setThomThreshold(settings->value("thom_threshold").toFloat());
-            }
-            if (settings->contains("grid_min_coverage") && !settings->value("grid_min_coverage").toString().isEmpty())
-            {
-                elaborationSettings->setGridMinCoverage(settings->value("grid_min_coverage").toFloat());
+                meteoSettings->setRainfallThreshold(settings->value("prec_threshold").toFloat());
             }
             if (settings->contains("samani_coefficient") && !settings->value("samani_coefficient").toString().isEmpty())
             {
-                elaborationSettings->setTransSamaniCoefficient(settings->value("samani_coefficient").toFloat());
-            }
-            if (settings->contains("compute_tmed") && !settings->value("compute_tmed").toString().isEmpty())
-            {
-                elaborationSettings->setAutomaticTmed(settings->value("compute_tmed").toBool());
-            }
-            if (settings->contains("compute_et0hs") && !settings->value("compute_et0hs").toString().isEmpty())
-            {
-                elaborationSettings->setAutomaticETP(settings->value("compute_et0hs").toBool());
-            }
-            if (settings->contains("merge_joint_stations") && !settings->value("merge_joint_stations").toString().isEmpty())
-            {
-                elaborationSettings->setMergeJointStations(settings->value("merge_joint_stations").toBool());
+                meteoSettings->setTransSamaniCoefficient(settings->value("samani_coefficient").toFloat());
             }
 
             settings->endGroup();

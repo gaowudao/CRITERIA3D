@@ -12,7 +12,7 @@
 #include "dbClimate.h"
 
 bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler,
-    Crit3DMeteoPoint* meteoPointTemp, Crit3DClimate* clima, bool isMeteoGrid, QDate startDate, QDate endDate, bool isAnomaly, bool loadData)
+    Crit3DMeteoPoint* meteoPointTemp, Crit3DClimate* clima, bool isMeteoGrid, QDate startDate, QDate endDate, bool isAnomaly, bool loadData, Crit3DMeteoSettings* meteoSettings)
 {
 
     float percValue;
@@ -67,7 +67,7 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
 
     if (loadData)
     {
-        dataLoaded = preElaboration(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPointTemp, isMeteoGrid, clima->variable(), elab1MeteoComp, startDate, endDate, outputValues, &percValue, clima->getMeteoSettings(), clima->getElabSettings());
+        dataLoaded = preElaboration(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPointTemp, isMeteoGrid, clima->variable(), elab1MeteoComp, startDate, endDate, outputValues, &percValue, meteoSettings, clima->getElabSettings());
     }
     else
     {
@@ -100,7 +100,7 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
             return false;
         }
 
-        result = computeStatistic(outputValues, meteoPointTemp, clima, startD, endD, clima->nYears(), elab1MeteoComp, elab2MeteoComp, clima->getMeteoSettings());
+        result = computeStatistic(outputValues, meteoPointTemp, clima, startD, endD, clima->nYears(), elab1MeteoComp, elab2MeteoComp, meteoSettings);
 
         if (isAnomaly)
         {
@@ -156,7 +156,7 @@ bool anomalyOnPoint(Crit3DMeteoPoint* meteoPoint, float refValue)
 }
 
 bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler,
-                    Crit3DClimate* clima, Crit3DMeteoPoint* meteoPointTemp, std::vector<float> &outputValues, bool isMeteoGrid, QDate startDate, QDate endDate, bool changeDataSet)
+                    Crit3DClimate* clima, Crit3DMeteoPoint* meteoPointTemp, std::vector<float> &outputValues, bool isMeteoGrid, QDate startDate, QDate endDate, bool changeDataSet, Crit3DMeteoSettings* meteoSettings)
 {
 
     float percValue;
@@ -221,12 +221,12 @@ bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
         meteoPointTemp->nrObsDataDaysD = 0;
         meteoPointTemp->nrObsDataDaysH = 0;
 
-        dataLoaded = preElaboration(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPointTemp, isMeteoGrid, clima->variable(), elab1MeteoComp, startDate, endDate, outputValues, &percValue, clima->getMeteoSettings(), clima->getElabSettings());
+        dataLoaded = preElaboration(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPointTemp, isMeteoGrid, clima->variable(), elab1MeteoComp, startDate, endDate, outputValues, &percValue, meteoSettings, clima->getElabSettings());
     }
 
     if (dataLoaded)
     {
-        if (climateTemporalCycle(myError, clima, outputValues, meteoPointTemp, elab1MeteoComp, elab2MeteoComp))
+        if (climateTemporalCycle(myError, clima, outputValues, meteoPointTemp, elab1MeteoComp, elab2MeteoComp, meteoSettings))
         {
             return true;
         }
@@ -235,7 +235,7 @@ bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
     return false;
 }
 
-bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vector<float> &outputValues, Crit3DMeteoPoint* meteoPoint, meteoComputation elab1, meteoComputation elab2)
+bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vector<float> &outputValues, Crit3DMeteoPoint* meteoPoint, meteoComputation elab1, meteoComputation elab2, Crit3DMeteoSettings* meteoSettings)
 {
 
     QSqlDatabase db = clima->db();
@@ -270,8 +270,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
             totYears = totYears + 1;
         }
 
-        Crit3DMeteoSettings* settings = clima->getMeteoSettings();
-        float minPerc = settings->getMinimumPercentage();
+        float minPerc = meteoSettings->getMinimumPercentage();
 
         if (nLeapYears == 0)
         {
@@ -292,12 +291,12 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
 
             if (i == 366)
             {
-                settings->setMinimumPercentage(minPerc * nLeapYears/totYears);
+                meteoSettings->setMinimumPercentage(minPerc * nLeapYears/totYears);
             }
 
             //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
 
-            result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, settings);
+            result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, meteoSettings);
 
             if (result != NODATA)
             {
@@ -312,7 +311,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
             allResults.push_back(NODATA);
         }
 
-        settings->setMinimumPercentage(minPerc);
+        meteoSettings->setMinimumPercentage(minPerc);
 
         // reset currentPeriod
         clima->setCurrentPeriodType(noPeriodType);
@@ -344,7 +343,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
             Crit3DDate endD (dayEnd, month, clima->yearStart());
             //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
 
-            result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, clima->getMeteoSettings());
+            result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, meteoSettings);
 
             if (result != NODATA)
             {
@@ -377,7 +376,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
             Crit3DDate endD (dayEnd, i, clima->yearStart());
             //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
 
-            result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, clima->getMeteoSettings());
+            result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, meteoSettings);
 
             if (result != NODATA)
             {
@@ -427,7 +426,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
 
             //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
 
-            result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, seasonalNPeriodYears, elab1, elab2, clima->getMeteoSettings());
+            result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, seasonalNPeriodYears, elab1, elab2, meteoSettings);
 
             if (result != NODATA)
             {
@@ -453,7 +452,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
         Crit3DDate endD (31, 12, clima->yearStart());
         //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
 
-        result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, clima->getMeteoSettings());
+        result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, meteoSettings);
 
         if (result != NODATA)
         {
@@ -473,7 +472,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
 
         //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
 
-        result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, clima->getMeteoSettings());
+        result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, meteoSettings);
 
         if (result != NODATA)
         {

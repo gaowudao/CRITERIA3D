@@ -63,6 +63,7 @@
         bool checkSpatialQuality;
 
         meteoVariable currentVariable;
+        Crit3DMeteoSettings* meteoSettings;
 
         gis::Crit3DGisSettings gisSettings;
         Crit3DRadiationSettings radSettings;

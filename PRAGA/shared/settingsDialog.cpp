@@ -158,68 +158,8 @@ MeteoTab::MeteoTab(Crit3DMeteoSettings *meteoSettings)
     setLayout(mainLayout);
 }
 
-ElaborationTab::ElaborationTab(Crit3DElaborationSettings *elabSettings)
-{
 
-    QLabel *anomalyPtsMaxDis = new QLabel(tr("maximum distance between points for anomaly [m]:"));
-    QDoubleValidator *doubleValAnomalyDis = new QDoubleValidator( -100.0, 100.0, 5, this );
-    doubleValAnomalyDis->setNotation(QDoubleValidator::StandardNotation);
-    anomalyPtsMaxDisEdit.setFixedWidth(130);
-    anomalyPtsMaxDisEdit.setValidator(doubleValAnomalyDis);
-    anomalyPtsMaxDisEdit.setText(QString::number(elabSettings->getAnomalyPtsMaxDistance()));
-
-    QLabel *anomalyPtsMaxDeltaZ = new QLabel(tr("maximum height difference between points for anomaly [m]:"));
-    QDoubleValidator *doubleValAnomalyDelta = new QDoubleValidator( -100.0, 100.0, 5, this );
-    doubleValAnomalyDelta->setNotation(QDoubleValidator::StandardNotation);
-    anomalyPtsMaxDeltaZEdit.setFixedWidth(130);
-    anomalyPtsMaxDeltaZEdit.setValidator(doubleValAnomalyDelta);
-    anomalyPtsMaxDeltaZEdit.setText(QString::number(elabSettings->getAnomalyPtsMaxDeltaZ()));
-
-    QLabel *gridMinCoverage = new QLabel(tr("minimum coverage for grid computation [%]:"));
-    QDoubleValidator *doubleValPerc = new QDoubleValidator( 0.0, 100.0, 5, this );
-    gridMinCoverageEdit.setFixedWidth(130);
-    gridMinCoverageEdit.setValidator(doubleValPerc);
-    gridMinCoverageEdit.setText(QString::number(elabSettings->getGridMinCoverage()));
-
-    QHBoxLayout *TmedLayout = new QHBoxLayout;
-    QLabel *automaticTmed = new QLabel(tr("compute daily tmed from tmin and tmax when missing:"));
-    TmedLayout->addWidget(automaticTmed);
-    automaticTmedEdit.setChecked(elabSettings->getAutomaticTmed());
-    TmedLayout->addWidget(&automaticTmedEdit);
-
-    QHBoxLayout *ETPLayout = new QHBoxLayout;
-    QLabel *automaticETP = new QLabel(tr("compute Hargreaves-Samani ET0 when missing:"));
-    ETPLayout->addWidget(automaticETP);
-    automaticETPEdit.setChecked(elabSettings->getAutomaticETP());
-    ETPLayout->addWidget(&automaticETPEdit);
-
-    QHBoxLayout *StationsLayout = new QHBoxLayout;
-    QLabel *mergeJointStations = new QLabel(tr("automatically merge joint stations:"));
-    StationsLayout->addWidget(mergeJointStations);
-    mergeJointStationsEdit.setChecked(elabSettings->getMergeJointStations());
-    StationsLayout->addWidget(&mergeJointStationsEdit);
-
-    QVBoxLayout *mainLayout = new QVBoxLayout;
-    mainLayout->addWidget(anomalyPtsMaxDis);
-    mainLayout->addWidget(&anomalyPtsMaxDisEdit);
-
-    mainLayout->addWidget(anomalyPtsMaxDeltaZ);
-    mainLayout->addWidget(&anomalyPtsMaxDeltaZEdit);
-
-    mainLayout->addWidget(gridMinCoverage);
-    mainLayout->addWidget(&gridMinCoverageEdit);
-
-    mainLayout->addLayout(TmedLayout);
-
-    mainLayout->addLayout(ETPLayout);
-
-    mainLayout->addLayout(StationsLayout);
-
-    mainLayout->addStretch(1);
-    setLayout(mainLayout);
-}
-
-SettingsDialog::SettingsDialog(QSettings *pathSetting, QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DElaborationSettings *elabSettings, Crit3DMeteoSettings *meteoSettings)
+SettingsDialog::SettingsDialog(QSettings *pathSetting, QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DMeteoSettings *meteoSettings)
 {
 
     _pathSettings = pathSetting;
@@ -227,20 +167,17 @@ SettingsDialog::SettingsDialog(QSettings *pathSetting, QSettings *settings, gis:
 
     _geoSettings = gisSettings;
     _qualitySettings = quality;
-    _elabSettings = elabSettings;
     _meteoSettings = meteoSettings;
 
     setWindowTitle(tr("Parameters"));
     setFixedSize(650,700);
     geoTab = new GeoTab(gisSettings);
     qualityTab = new QualityTab(quality);
-    elabTab = new ElaborationTab(elabSettings);
     metTab = new MeteoTab(meteoSettings);
 
     tabWidget = new QTabWidget;
     tabWidget->addTab(geoTab, tr("GEO"));
     tabWidget->addTab(qualityTab, tr("QUALITY"));
-    tabWidget->addTab(elabTab, tr("ELABORATION"));
     tabWidget->addTab(metTab, tr("METEO"));
 
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
@@ -257,133 +194,114 @@ SettingsDialog::SettingsDialog(QSettings *pathSetting, QSettings *settings, gis:
 
 }
 
+bool SettingsDialog::acceptValues()
+{
+
+    if (geoTab->startLocationLatEdit.text().isEmpty())
+    {
+        QMessageBox::information(NULL, "Missing Parameter", "insert start location latitude");
+        return false;
+    }
+
+    if (geoTab->startLocationLonEdit.text().isEmpty())
+    {
+        QMessageBox::information(NULL, "Missing Parameter", "insert start location longitude");
+        return false;
+    }
+
+    if (geoTab->utmZoneEdit.text().isEmpty())
+    {
+        QMessageBox::information(NULL, "Missing Parameter", "insert UTM zone");
+        return false;
+    }
+
+    if (!geoTab->utc.isChecked() && !geoTab->localTime.isChecked())
+    {
+        QMessageBox::information(NULL, "Missing time convention", "choose UTC or local time");
+        return false;
+    }
+
+    ////////////////
+
+    if (qualityTab->referenceClimateHeightEdit.text().isEmpty())
+    {
+        QMessageBox::information(NULL, "Missing Parameter", "insert reference height for quality control");
+        return false;
+    }
+
+    if (qualityTab->deltaTSuspectEdit.text().isEmpty())
+    {
+        QMessageBox::information(NULL, "Missing Parameter", "insert difference in temperature suspect value");
+        return false;
+    }
+
+    if (qualityTab->deltaTWrongEdit.text().isEmpty())
+    {
+        QMessageBox::information(NULL, "Missing Parameter", "insert difference in temperature wrong value");
+        return false;
+    }
+
+    if (qualityTab->humidityToleranceEdit.text().isEmpty())
+    {
+        QMessageBox::information(NULL, "Missing Parameter", "instrumental maximum allowed relative humidity");
+        return false;
+    }
+
+    ////////////////////
+
+    if (metTab->minimumPercentageEdit.text().isEmpty())
+    {
+        QMessageBox::information(NULL, "Missing Parameter", "insert minimum percentage of valid data");
+        return false;
+    }
+
+    if (metTab->rainfallThresholdEdit.text().isEmpty())
+    {
+        QMessageBox::information(NULL, "Missing Parameter", "insert minimum value for precipitation");
+        return false;
+    }
+
+    if (metTab->thomThresholdEdit.text().isEmpty())
+    {
+        QMessageBox::information(NULL, "Missing Parameter", "insert threshold for thom index");
+        return false;
+    }
+
+    if (metTab->transSamaniCoefficientEdit.text().isEmpty())
+    {
+        QMessageBox::information(NULL, "Missing Parameter", "insert Samani coefficient for ET0 computation");
+        return false;
+    }
+
+    // store elaboration values
+
+    _geoSettings->startLocation.latitude = geoTab->startLocationLatEdit.text().toDouble();
+    _geoSettings->startLocation.longitude = geoTab->startLocationLonEdit.text().toDouble();
+    _geoSettings->utmZone = geoTab->utmZoneEdit.text().toInt();
+    _geoSettings->isUTC = geoTab->utc.isChecked();
+
+    _qualitySettings->setReferenceHeight(qualityTab->referenceClimateHeightEdit.text().toFloat());
+    _qualitySettings->setDeltaTSuspect(qualityTab->deltaTSuspectEdit.text().toFloat());
+    _qualitySettings->setDeltaTWrong(qualityTab->deltaTWrongEdit.text().toFloat());
+    _qualitySettings->setRelHumTolerance(qualityTab->humidityToleranceEdit.text().toFloat());
+
+    _meteoSettings->setMinimumPercentage(metTab->minimumPercentageEdit.text().toFloat());
+    _meteoSettings->setRainfallThreshold(metTab->rainfallThresholdEdit.text().toFloat());
+    _meteoSettings->setThomThreshold(metTab->thomThresholdEdit.text().toFloat());
+    _meteoSettings->setTransSamaniCoefficient(metTab->transSamaniCoefficientEdit.text().toFloat());
+
+    saveSettings();
+
+    return true;
+}
 
 void SettingsDialog::accept()
 {
-
-        if (geoTab->startLocationLatEdit.text().isEmpty())
-        {
-            QMessageBox::information(NULL, "Missing Parameter", "insert start location latitude");
-            return;
-        }
-
-        if (geoTab->startLocationLonEdit.text().isEmpty())
-        {
-            QMessageBox::information(NULL, "Missing Parameter", "insert start location longitude");
-            return;
-        }
-
-        if (geoTab->utmZoneEdit.text().isEmpty())
-        {
-            QMessageBox::information(NULL, "Missing Parameter", "insert UTM zone");
-            return;
-        }
-
-        if (!geoTab->utc.isChecked() && !geoTab->localTime.isChecked())
-        {
-            QMessageBox::information(NULL, "Missing time convention", "choose UTC or local time");
-            return;
-        }
-
-        ////////////////
-
-        if (qualityTab->referenceClimateHeightEdit.text().isEmpty())
-        {
-            QMessageBox::information(NULL, "Missing Parameter", "insert reference height for quality control");
-            return;
-        }
-
-        if (qualityTab->deltaTSuspectEdit.text().isEmpty())
-        {
-            QMessageBox::information(NULL, "Missing Parameter", "insert difference in temperature suspect value");
-            return;
-        }
-
-        if (qualityTab->deltaTWrongEdit.text().isEmpty())
-        {
-            QMessageBox::information(NULL, "Missing Parameter", "insert difference in temperature wrong value");
-            return;
-        }
-
-        if (qualityTab->humidityToleranceEdit.text().isEmpty())
-        {
-            QMessageBox::information(NULL, "Missing Parameter", "instrumental maximum allowed relative humidity");
-            return;
-        }
-
-        ////////////////////
-
-        if (metTab->minimumPercentageEdit.text().isEmpty())
-        {
-            QMessageBox::information(NULL, "Missing Parameter", "insert minimum percentage of valid data");
-            return;
-        }
-
-        if (metTab->rainfallThresholdEdit.text().isEmpty())
-        {
-            QMessageBox::information(NULL, "Missing Parameter", "insert minimum value for precipitation");
-            return;
-        }
-
-        if (elabTab->anomalyPtsMaxDisEdit.text().isEmpty())
-        {
-            QMessageBox::information(NULL, "Missing Parameter", "insert maximum distance between points");
-            return;
-        }
-
-        if (elabTab->anomalyPtsMaxDeltaZEdit.text().isEmpty())
-        {
-            QMessageBox::information(NULL, "Missing Parameter", "insert maximum height difference between points");
-            return;
-        }
-
-        if (metTab->thomThresholdEdit.text().isEmpty())
-        {
-            QMessageBox::information(NULL, "Missing Parameter", "insert threshold for thom index");
-            return;
-        }
-
-        if (elabTab->gridMinCoverageEdit.text().isEmpty())
-        {
-            QMessageBox::information(NULL, "Missing Parameter", "insert minimum coverage for grid computation");
-            return;
-        }
-
-        if (metTab->transSamaniCoefficientEdit.text().isEmpty())
-        {
-            QMessageBox::information(NULL, "Missing Parameter", "insert Samani coefficient for ET0 computation");
-            return;
-        }
-
-        // store elaboration values
-
-        _geoSettings->startLocation.latitude = geoTab->startLocationLatEdit.text().toDouble();
-        _geoSettings->startLocation.longitude = geoTab->startLocationLonEdit.text().toDouble();
-        _geoSettings->utmZone = geoTab->utmZoneEdit.text().toInt();
-        _geoSettings->isUTC = geoTab->utc.isChecked();
-
-        _qualitySettings->setReferenceHeight(qualityTab->referenceClimateHeightEdit.text().toFloat());
-        _qualitySettings->setDeltaTSuspect(qualityTab->deltaTSuspectEdit.text().toFloat());
-        _qualitySettings->setDeltaTWrong(qualityTab->deltaTWrongEdit.text().toFloat());
-        _qualitySettings->setRelHumTolerance(qualityTab->humidityToleranceEdit.text().toFloat());
-
-        _meteoSettings->setMinimumPercentage(metTab->minimumPercentageEdit.text().toFloat());
-        _meteoSettings->setRainfallThreshold(metTab->rainfallThresholdEdit.text().toFloat());
-        _meteoSettings->setThomThreshold(metTab->thomThresholdEdit.text().toFloat());
-        _meteoSettings->setTransSamaniCoefficient(metTab->transSamaniCoefficientEdit.text().toFloat());
-
-        _elabSettings->setGridMinCoverage(elabTab->gridMinCoverageEdit.text().toFloat());
-        _elabSettings->setAnomalyPtsMaxDistance(elabTab->anomalyPtsMaxDisEdit.text().toFloat());
-        _elabSettings->setAnomalyPtsMaxDeltaZ(elabTab->anomalyPtsMaxDeltaZEdit.text().toFloat());
-        _elabSettings->setAutomaticTmed(elabTab->automaticTmedEdit.isChecked());
-        _elabSettings->setAutomaticETP(elabTab->automaticETPEdit.isChecked());
-        _elabSettings->setMergeJointStations(elabTab->mergeJointStationsEdit.isChecked());
-
-        saveSettings();
-
+    if (acceptValues())
+    {
         QDialog::done(QDialog::Accepted);
         return;
-
+    }
 }
 
 void SettingsDialog::saveSettings()
@@ -403,18 +321,10 @@ void SettingsDialog::saveSettings()
     _paramSettings->setValue("relhum_tolerance", qualityTab->humidityToleranceEdit.text());
     _paramSettings->endGroup();
 
-    _paramSettings->beginGroup("elaboration");
+    _paramSettings->beginGroup("meteo");
     _paramSettings->setValue("min_percentage", metTab->minimumPercentageEdit.text());
     _paramSettings->setValue("prec_threshold", metTab->rainfallThresholdEdit.text());
     _paramSettings->setValue("samani_coefficient", metTab->transSamaniCoefficientEdit.text());
     _paramSettings->setValue("thom_threshold", metTab->thomThresholdEdit.text());
-
-    _paramSettings->setValue("anomaly_pts_max_distance", elabTab->anomalyPtsMaxDisEdit.text());
-    _paramSettings->setValue("anomaly_pts_max_delta_z", elabTab->anomalyPtsMaxDeltaZEdit.text());
-    _paramSettings->setValue("grid_min_coverage", elabTab->gridMinCoverageEdit.text());
-    _paramSettings->setValue("compute_tmed", elabTab->automaticTmedEdit.isChecked());
-    _paramSettings->setValue("compute_et0hs", elabTab->automaticETPEdit.isChecked());
-    _paramSettings->setValue("merge_joint_stations", elabTab->mergeJointStationsEdit.isChecked());
     _paramSettings->endGroup();
-
 }

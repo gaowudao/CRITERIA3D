@@ -23,6 +23,7 @@ Project::Project()
     errorString = "";
     meteoPoints = NULL;
     nrMeteoPoints = 0;
+    meteoSettings = new Crit3DMeteoSettings();
     quality = new Crit3DQuality();
     checkSpatialQuality = true;
     currentVariable = noMeteoVar;
@@ -53,6 +54,29 @@ bool Project::readGenericParameters()
 
     Q_FOREACH (QString group, settings->childGroups())
     {
+        //meteo settings
+        if (group == "meteo")
+        {
+            settings->beginGroup(group);
+
+            if (settings->contains("min_percentage") && !settings->value("min_percentage").toString().isEmpty())
+            {
+                meteoSettings->setMinimumPercentage(settings->value("min_percentage").toFloat());
+            }
+            if (settings->contains("prec_threshold") && !settings->value("prec_threshold").toString().isEmpty())
+            {
+                meteoSettings->setRainfallThreshold(settings->value("prec_threshold").toFloat());
+            }
+            if (settings->contains("thom_threshold") && !settings->value("thom_threshold").toString().isEmpty())
+            {
+                meteoSettings->setThomThreshold(settings->value("thom_threshold").toFloat());
+            }
+            if (settings->contains("samani_coefficient") && !settings->value("samani_coefficient").toString().isEmpty())
+            {
+                meteoSettings->setTransSamaniCoefficient(settings->value("samani_coefficient").toFloat());
+            }
+        }
+
         //interpolation
         if (group == "interpolation")
         {
@@ -104,6 +128,7 @@ bool Project::readGenericParameters()
 
             copyInterpolationSettingsToQuality();
         }
+
         if (group == "quality")
         {
             settings->beginGroup(group);

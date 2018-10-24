@@ -30,16 +30,8 @@ bool PragaProject::readPragaSettings()
         {
             settings->beginGroup(group);
             Crit3DElaborationSettings* elabSettings = clima->getElabSettings();
-            Crit3DMeteoSettings* meteoSettings = clima->getMeteoSettings();
-            if (settings->contains("min_percentage") && !settings->value("min_percentage").toString().isEmpty())
-            {
-                //qInfo() << "value: " << settings->value("min_percentage");
-                meteoSettings->setMinimumPercentage(settings->value("min_percentage").toFloat());
-            }
-            if (settings->contains("prec_threshold") && !settings->value("prec_threshold").toString().isEmpty())
-            {
-                meteoSettings->setRainfallThreshold(settings->value("prec_threshold").toFloat());
-            }
+
+
             if (settings->contains("anomaly_pts_max_distance") && !settings->value("anomaly_pts_max_distance").toString().isEmpty())
             {
                 elabSettings->setAnomalyPtsMaxDistance(settings->value("anomaly_pts_max_distance").toFloat());
@@ -48,17 +40,9 @@ bool PragaProject::readPragaSettings()
             {
                 elabSettings->setAnomalyPtsMaxDeltaZ(settings->value("anomaly_pts_max_delta_z").toFloat());
             }
-            if (settings->contains("thom_threshold") && !settings->value("thom_threshold").toString().isEmpty())
-            {
-                meteoSettings->setThomThreshold(settings->value("thom_threshold").toFloat());
-            }
             if (settings->contains("grid_min_coverage") && !settings->value("grid_min_coverage").toString().isEmpty())
             {
                 elabSettings->setGridMinCoverage(settings->value("grid_min_coverage").toFloat());
-            }
-            if (settings->contains("samani_coefficient") && !settings->value("samani_coefficient").toString().isEmpty())
-            {
-                meteoSettings->setTransSamaniCoefficient(settings->value("samani_coefficient").toFloat());
             }
             if (settings->contains("compute_tmed") && !settings->value("compute_tmed").toString().isEmpty())
             {
@@ -354,7 +338,7 @@ bool PragaProject::elaborationPointsCycle(bool isAnomaly, bool showInfo)
                         myInfo.setValue(i);
 
 
-            if ( elaborationOnPoint(&errorString, meteoPointsDbHandler, NULL, meteoPointTemp, clima, isMeteoGrid, startDate, endDate, isAnomaly, true))
+            if ( elaborationOnPoint(&errorString, meteoPointsDbHandler, NULL, meteoPointTemp, clima, isMeteoGrid, startDate, endDate, isAnomaly, true, meteoSettings))
             {
                 validCell = validCell + 1;
             }
@@ -454,7 +438,7 @@ bool PragaProject::elaborationPointsCycleGrid(bool isAnomaly, bool showInfo)
                 meteoPointTemp->nrObsDataDaysD = 0;
 
 
-                if  ( elaborationOnPoint(&errorString, NULL, meteoGridDbHandler, meteoPointTemp, clima, isMeteoGrid, startDate, endDate, isAnomaly, true))
+                if  ( elaborationOnPoint(&errorString, NULL, meteoGridDbHandler, meteoPointTemp, clima, isMeteoGrid, startDate, endDate, isAnomaly, true, meteoSettings))
                 {
                     validCell = validCell + 1;
                 }
@@ -583,7 +567,7 @@ bool PragaProject::climatePointsCycle(bool showInfo)
                     return false;
                 }
 
-                if (climateOnPoint(&errorString, meteoPointsDbHandler, NULL, clima, meteoPointTemp, outputValues, isMeteoGrid, startDate, endDate, changeDataSet))
+                if (climateOnPoint(&errorString, meteoPointsDbHandler, NULL, clima, meteoPointTemp, outputValues, isMeteoGrid, startDate, endDate, changeDataSet, meteoSettings))
                 {
                     validCell = validCell + 1;
                 }
@@ -712,7 +696,7 @@ bool PragaProject::climatePointsCycleGrid(bool showInfo)
                        return false;
                    }
 
-                   if (climateOnPoint(&errorString, NULL, meteoGridDbHandler, clima, meteoPointTemp, outputValues, isMeteoGrid, startDate, endDate, changeDataSet))
+                   if (climateOnPoint(&errorString, NULL, meteoGridDbHandler, clima, meteoPointTemp, outputValues, isMeteoGrid, startDate, endDate, changeDataSet, meteoSettings))
                    {
                        validCell = validCell + 1;
                    }

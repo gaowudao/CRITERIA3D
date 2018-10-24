@@ -102,7 +102,8 @@ SOURCES += main.cpp\
     shared/interpolationDialog.cpp \
     shared/interpolationCmd.cpp \
     shared/project.cpp \
-    pragaProject.cpp
+    pragaProject.cpp \
+    pragaSettingsDialog.cpp
 
 HEADERS  += mainwindow.h \
     saveClimaLayout.h \
@@ -118,7 +119,8 @@ HEADERS  += mainwindow.h \
     shared/interpolationDialog.h \
     shared/interpolationCmd.h \
     shared/project.h \
-    pragaProject.h
+    pragaProject.h \
+    pragaSettingsDialog.h
 
 FORMS    += mainwindow.ui \
         shared/formInfo.ui

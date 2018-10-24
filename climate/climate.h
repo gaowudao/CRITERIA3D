@@ -40,7 +40,7 @@
     };
 
     bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler,
-        Crit3DMeteoPoint* meteoPointTemp, Crit3DClimate* clima, bool isMeteoGrid, QDate startDate, QDate endDate, bool isAnomaly, bool loadData);
+        Crit3DMeteoPoint* meteoPointTemp, Crit3DClimate* clima, bool isMeteoGrid, QDate startDate, QDate endDate, bool isAnomaly, bool loadData, Crit3DMeteoSettings *meteoSettings);
 
     frequencyType getAggregationFrequency(meteoVariable myVar);
 
@@ -52,9 +52,9 @@
 
     bool anomalyOnPoint(Crit3DMeteoPoint* meteoPoint, float refValue);
 
-    bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DClimate* clima, Crit3DMeteoPoint *meteoPointTemp, std::vector<float> &outputValues, bool isMeteoGrid, QDate startDate, QDate endDate, bool changeDataSet);
+    bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DClimate* clima, Crit3DMeteoPoint *meteoPointTemp, std::vector<float> &outputValues, bool isMeteoGrid, QDate startDate, QDate endDate, bool changeDataSet, Crit3DMeteoSettings *meteoSettings);
 
-    bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vector<float> &outputValues, Crit3DMeteoPoint* meteoPoint, meteoComputation elab1, meteoComputation elab2);
+    bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vector<float> &outputValues, Crit3DMeteoPoint* meteoPoint, meteoComputation elab1, meteoComputation elab2, Crit3DMeteoSettings *meteoSettings);
 
     float thomDayTime(float tempMax, float relHumMinAir);
 

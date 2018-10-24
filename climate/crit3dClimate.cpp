@@ -32,7 +32,6 @@ Crit3DClimate::Crit3DClimate()
     _currentPeriodType = noPeriodType;
 
     elabSettings = new Crit3DElaborationSettings();
-    meteoSettings = new Crit3DMeteoSettings();
     listElab = new Crit3DClimateList();
 }
 
@@ -289,16 +288,6 @@ int Crit3DClimate::getParam1ClimateIndex() const
 void Crit3DClimate::setParam1ClimateIndex(int param1ClimateIndex)
 {
     _param1ClimateIndex = param1ClimateIndex;
-}
-
-Crit3DMeteoSettings *Crit3DClimate::getMeteoSettings() const
-{
-    return meteoSettings;
-}
-
-void Crit3DClimate::setMeteoSettings(Crit3DMeteoSettings *value)
-{
-    meteoSettings = value;
 }
 
 QSqlDatabase Crit3DClimate::db() const

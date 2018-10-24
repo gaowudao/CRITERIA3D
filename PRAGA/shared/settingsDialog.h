@@ -8,7 +8,7 @@
 #include "gis.h"
 #include "quality.h"
 #include "meteo.h"
-#include "elaborationSettings.h"
+
 
 class QDialogButtonBox;
 class QFileInfo;
@@ -49,23 +49,6 @@ private:
 
 };
 
-class ElaborationTab : public QWidget
-{
-    Q_OBJECT
-
-public:
-    explicit ElaborationTab(Crit3DElaborationSettings *elabSettings);
-
-    QLineEdit anomalyPtsMaxDisEdit;
-    QLineEdit anomalyPtsMaxDeltaZEdit;
-    QLineEdit gridMinCoverageEdit;
-    QCheckBox automaticTmedEdit;
-    QCheckBox automaticETPEdit;
-    QCheckBox mergeJointStationsEdit;
-
-private:
-};
-
 class MeteoTab : public QWidget
 {
     Q_OBJECT
@@ -86,7 +69,8 @@ class SettingsDialog : public QDialog
     Q_OBJECT
 
     public:
-        explicit SettingsDialog(QSettings *pathSetting, QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DElaborationSettings *elabSettings, Crit3DMeteoSettings* meteoSettings);
+        explicit SettingsDialog(QSettings *pthSetting, QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DMeteoSettings* meteoSettings);
+        bool acceptValues();
         void accept();
         void saveSettings();
 
@@ -95,14 +79,12 @@ class SettingsDialog : public QDialog
         QSettings *_paramSettings;
         gis::Crit3DGisSettings *_geoSettings;
         Crit3DQuality *_qualitySettings;
-        Crit3DElaborationSettings *_elabSettings;
         Crit3DMeteoSettings* _meteoSettings;
 
         QTabWidget *tabWidget;
         QDialogButtonBox *buttonBox;
         GeoTab* geoTab;
         QualityTab* qualityTab;
-        ElaborationTab* elabTab;
         MeteoTab* metTab;
 };
 

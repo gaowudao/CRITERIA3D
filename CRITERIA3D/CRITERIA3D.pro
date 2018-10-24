@@ -74,12 +74,12 @@ SOURCES += main.cpp\
     ../PRAGA/shared/rasterObject.cpp \
     ../PRAGA/shared/rubberBand.cpp \
     ../PRAGA/shared/colorlegend.cpp \
-    ../climate/elaborationSettings.cpp \
     ../PRAGA/shared/project.cpp \
+    ../PRAGA/shared/formInfo.cpp \
+    ../climate/elaborationSettings.cpp \
     meteoMaps.cpp \
     waterBalance3D.cpp \
-    crit3dProject.cpp \
-    ../PRAGA/shared/formInfo.cpp
+    crit3dProject.cpp
 
 HEADERS += mainwindow.h \
     ../PRAGA/shared/dialogWindows.h \
@@ -91,11 +91,11 @@ HEADERS += mainwindow.h \
     ../PRAGA/shared/rubberBand.h \
     ../PRAGA/shared/colorlegend.h \
     ../PRAGA/shared/project.h \
+    ../PRAGA/shared/formInfo.h \
+    ../climate/elaborationSettings.h \
     meteoMaps.h \
     waterBalance3D.h \
-    crit3dProject.h \
-    ../PRAGA/shared/formInfo.h
-    ../climate/elaborationSettings.h \
+    crit3dProject.h
 
 
 FORMS += mainwindow.ui \

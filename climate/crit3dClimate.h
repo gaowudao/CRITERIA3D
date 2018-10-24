@@ -103,9 +103,6 @@
         int getParam1ClimateIndex() const;
         void setParam1ClimateIndex(int param1ClimateIndex);
 
-        Crit3DMeteoSettings *getMeteoSettings() const;
-        void setMeteoSettings(Crit3DMeteoSettings *value);
-
     private:
         QSqlDatabase _db;
         QString _climateElab;
@@ -125,7 +122,6 @@
         QString _elab2;
         float _param2;
         Crit3DElaborationSettings *elabSettings;
-        Crit3DMeteoSettings* meteoSettings;
 
         meteoVariable _currentVar;
         period _currentPeriodType;
