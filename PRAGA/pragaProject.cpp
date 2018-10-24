@@ -243,7 +243,6 @@ bool PragaProject::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
         }
         else
         {
-            //clima->copyFromReference(referenceClima);
             clima = referenceClima;
             if (!elaborationPointsCycleGrid(isAnomaly, true))
             {
@@ -275,7 +274,6 @@ bool PragaProject::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
         }
         else
         {
-            //clima->copyFromReference(referenceClima);
             clima = referenceClima;
             if (!elaborationPointsCycle(isAnomaly, true))
             {
