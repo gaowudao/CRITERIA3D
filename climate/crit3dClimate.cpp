@@ -32,6 +32,7 @@ Crit3DClimate::Crit3DClimate()
     _currentPeriodType = noPeriodType;
 
     elabSettings = new Crit3DElaborationSettings();
+    meteoSettings = new Crit3DMeteoSettings();
     listElab = new Crit3DClimateList();
 }
 

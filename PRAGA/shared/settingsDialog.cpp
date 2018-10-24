@@ -72,8 +72,6 @@ QualityTab::QualityTab(Crit3DQuality *quality)
     referenceClimateHeightEdit.setValidator(doubleValHeight);
     referenceClimateHeightEdit.setText(QString::number(quality->getReferenceHeight()));
 
-
-
     QLabel *deltaTSuspect = new QLabel(tr("difference in temperature in climatological control (suspect value) [degC]:"));
     QDoubleValidator *doubleValT = new QDoubleValidator( -100.0, 100.0, 5, this );
     doubleValT->setNotation(QDoubleValidator::StandardNotation);
@@ -112,7 +110,7 @@ QualityTab::QualityTab(Crit3DQuality *quality)
     setLayout(mainLayout);
 }
 
-ElaborationTab::ElaborationTab(Crit3DElaborationSettings *elabSettings)
+MeteoTab::MeteoTab(Crit3DMeteoSettings *meteoSettings)
 {
     QLabel *minimumPercentage = new QLabel(tr("minimum percentage of valid data [%]:"));
     minimumPercentageEdit.setFixedWidth(130);
@@ -120,14 +118,48 @@ ElaborationTab::ElaborationTab(Crit3DElaborationSettings *elabSettings)
     doubleValPerc->setNotation(QDoubleValidator::StandardNotation);
     minimumPercentageEdit.setFixedWidth(130);
     minimumPercentageEdit.setValidator(doubleValPerc);
-    minimumPercentageEdit.setText(QString::number(elabSettings->getMinimumPercentage()));
+    minimumPercentageEdit.setText(QString::number(meteoSettings->getMinimumPercentage()));
 
     QLabel *rainfallThreshold = new QLabel(tr("minimum value for valid precipitation [mm]:"));
     QDoubleValidator *doubleValThreshold = new QDoubleValidator( 0.0, 20.0, 5, this );
     doubleValThreshold->setNotation(QDoubleValidator::StandardNotation);
     rainfallThresholdEdit.setFixedWidth(130);
     rainfallThresholdEdit.setValidator(doubleValThreshold);
-    rainfallThresholdEdit.setText(QString::number(elabSettings->getRainfallThreshold()));
+    rainfallThresholdEdit.setText(QString::number(meteoSettings->getRainfallThreshold()));
+
+    QLabel *thomThreshold = new QLabel(tr("threshold for thom index [degC]:"));
+    QDoubleValidator *doubleValThom = new QDoubleValidator( -100.0, 100.0, 5, this );
+    doubleValThom->setNotation(QDoubleValidator::StandardNotation);
+    thomThresholdEdit.setFixedWidth(130);
+    thomThresholdEdit.setValidator(doubleValThom);
+    thomThresholdEdit.setText(QString::number(meteoSettings->getThomThreshold()));
+
+    QLabel *transSamaniCoefficient = new QLabel(tr("Samani coefficient for ET0 computation []:"));
+    QDoubleValidator *doubleValSamani = new QDoubleValidator( -5.0, 5.0, 5, this );
+    doubleValSamani->setNotation(QDoubleValidator::StandardNotation);
+    transSamaniCoefficientEdit.setFixedWidth(130);
+    transSamaniCoefficientEdit.setValidator(doubleValSamani);
+    transSamaniCoefficientEdit.setText(QString::number(meteoSettings->getTransSamaniCoefficient()));
+
+    QVBoxLayout *mainLayout = new QVBoxLayout;
+    mainLayout->addWidget(minimumPercentage);
+    mainLayout->addWidget(&minimumPercentageEdit);
+
+    mainLayout->addWidget(rainfallThreshold);
+    mainLayout->addWidget(&rainfallThresholdEdit);
+
+    mainLayout->addWidget(thomThreshold);
+    mainLayout->addWidget(&thomThresholdEdit);
+
+    mainLayout->addWidget(transSamaniCoefficient);
+    mainLayout->addWidget(&transSamaniCoefficientEdit);
+
+    mainLayout->addStretch(1);
+    setLayout(mainLayout);
+}
+
+ElaborationTab::ElaborationTab(Crit3DElaborationSettings *elabSettings)
+{
 
     QLabel *anomalyPtsMaxDis = new QLabel(tr("maximum distance between points for anomaly [m]:"));
     QDoubleValidator *doubleValAnomalyDis = new QDoubleValidator( -100.0, 100.0, 5, this );
@@ -143,24 +175,11 @@ ElaborationTab::ElaborationTab(Crit3DElaborationSettings *elabSettings)
     anomalyPtsMaxDeltaZEdit.setValidator(doubleValAnomalyDelta);
     anomalyPtsMaxDeltaZEdit.setText(QString::number(elabSettings->getAnomalyPtsMaxDeltaZ()));
 
-    QLabel *thomThreshold = new QLabel(tr("threshold for thom index [degC]:"));
-    QDoubleValidator *doubleValThom = new QDoubleValidator( -100.0, 100.0, 5, this );
-    doubleValThom->setNotation(QDoubleValidator::StandardNotation);
-    thomThresholdEdit.setFixedWidth(130);
-    thomThresholdEdit.setValidator(doubleValThom);
-    thomThresholdEdit.setText(QString::number(elabSettings->getThomThreshold()));
-
     QLabel *gridMinCoverage = new QLabel(tr("minimum coverage for grid computation [%]:"));
+    QDoubleValidator *doubleValPerc = new QDoubleValidator( 0.0, 100.0, 5, this );
     gridMinCoverageEdit.setFixedWidth(130);
     gridMinCoverageEdit.setValidator(doubleValPerc);
     gridMinCoverageEdit.setText(QString::number(elabSettings->getGridMinCoverage()));
-
-    QLabel *transSamaniCoefficient = new QLabel(tr("Samani coefficient for ET0 computation []:"));
-    QDoubleValidator *doubleValSamani = new QDoubleValidator( -5.0, 5.0, 5, this );
-    doubleValSamani->setNotation(QDoubleValidator::StandardNotation);
-    transSamaniCoefficientEdit.setFixedWidth(130);
-    transSamaniCoefficientEdit.setValidator(doubleValSamani);
-    transSamaniCoefficientEdit.setText(QString::number(elabSettings->getTransSamaniCoefficient()));
 
     QHBoxLayout *TmedLayout = new QHBoxLayout;
     QLabel *automaticTmed = new QLabel(tr("compute daily tmed from tmin and tmax when missing:"));
@@ -180,28 +199,15 @@ ElaborationTab::ElaborationTab(Crit3DElaborationSettings *elabSettings)
     mergeJointStationsEdit.setChecked(elabSettings->getMergeJointStations());
     StationsLayout->addWidget(&mergeJointStationsEdit);
 
-
     QVBoxLayout *mainLayout = new QVBoxLayout;
-    mainLayout->addWidget(minimumPercentage);
-    mainLayout->addWidget(&minimumPercentageEdit);
-
-    mainLayout->addWidget(rainfallThreshold);
-    mainLayout->addWidget(&rainfallThresholdEdit);
-
     mainLayout->addWidget(anomalyPtsMaxDis);
     mainLayout->addWidget(&anomalyPtsMaxDisEdit);
 
     mainLayout->addWidget(anomalyPtsMaxDeltaZ);
     mainLayout->addWidget(&anomalyPtsMaxDeltaZEdit);
 
-    mainLayout->addWidget(thomThreshold);
-    mainLayout->addWidget(&thomThresholdEdit);
-
     mainLayout->addWidget(gridMinCoverage);
     mainLayout->addWidget(&gridMinCoverageEdit);
-
-    mainLayout->addWidget(transSamaniCoefficient);
-    mainLayout->addWidget(&transSamaniCoefficientEdit);
 
     mainLayout->addLayout(TmedLayout);
 
@@ -209,12 +215,11 @@ ElaborationTab::ElaborationTab(Crit3DElaborationSettings *elabSettings)
 
     mainLayout->addLayout(StationsLayout);
 
-
     mainLayout->addStretch(1);
     setLayout(mainLayout);
 }
 
-SettingsDialog::SettingsDialog(QSettings *pathSetting, QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DElaborationSettings *elabSettings)
+SettingsDialog::SettingsDialog(QSettings *pathSetting, QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DElaborationSettings *elabSettings, Crit3DMeteoSettings *meteoSettings)
 {
 
     _pathSettings = pathSetting;
@@ -223,17 +228,20 @@ SettingsDialog::SettingsDialog(QSettings *pathSetting, QSettings *settings, gis:
     _geoSettings = gisSettings;
     _qualitySettings = quality;
     _elabSettings = elabSettings;
+    _meteoSettings = meteoSettings;
 
     setWindowTitle(tr("Parameters"));
     setFixedSize(650,700);
     geoTab = new GeoTab(gisSettings);
     qualityTab = new QualityTab(quality);
     elabTab = new ElaborationTab(elabSettings);
+    metTab = new MeteoTab(meteoSettings);
 
     tabWidget = new QTabWidget;
     tabWidget->addTab(geoTab, tr("GEO"));
     tabWidget->addTab(qualityTab, tr("QUALITY"));
     tabWidget->addTab(elabTab, tr("ELABORATION"));
+    tabWidget->addTab(metTab, tr("METEO"));
 
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
@@ -305,13 +313,13 @@ void SettingsDialog::accept()
 
         ////////////////////
 
-        if (elabTab->minimumPercentageEdit.text().isEmpty())
+        if (metTab->minimumPercentageEdit.text().isEmpty())
         {
             QMessageBox::information(NULL, "Missing Parameter", "insert minimum percentage of valid data");
             return;
         }
 
-        if (elabTab->rainfallThresholdEdit.text().isEmpty())
+        if (metTab->rainfallThresholdEdit.text().isEmpty())
         {
             QMessageBox::information(NULL, "Missing Parameter", "insert minimum value for precipitation");
             return;
@@ -329,7 +337,7 @@ void SettingsDialog::accept()
             return;
         }
 
-        if (elabTab->thomThresholdEdit.text().isEmpty())
+        if (metTab->thomThresholdEdit.text().isEmpty())
         {
             QMessageBox::information(NULL, "Missing Parameter", "insert threshold for thom index");
             return;
@@ -341,7 +349,7 @@ void SettingsDialog::accept()
             return;
         }
 
-        if (elabTab->transSamaniCoefficientEdit.text().isEmpty())
+        if (metTab->transSamaniCoefficientEdit.text().isEmpty())
         {
             QMessageBox::information(NULL, "Missing Parameter", "insert Samani coefficient for ET0 computation");
             return;
@@ -359,14 +367,14 @@ void SettingsDialog::accept()
         _qualitySettings->setDeltaTWrong(qualityTab->deltaTWrongEdit.text().toFloat());
         _qualitySettings->setRelHumTolerance(qualityTab->humidityToleranceEdit.text().toFloat());
 
-        _elabSettings->setMinimumPercentage(elabTab->minimumPercentageEdit.text().toFloat());
-        _elabSettings->setRainfallThreshold(elabTab->rainfallThresholdEdit.text().toFloat());
+        _meteoSettings->setMinimumPercentage(metTab->minimumPercentageEdit.text().toFloat());
+        _meteoSettings->setRainfallThreshold(metTab->rainfallThresholdEdit.text().toFloat());
+        _meteoSettings->setThomThreshold(metTab->thomThresholdEdit.text().toFloat());
+        _meteoSettings->setTransSamaniCoefficient(metTab->transSamaniCoefficientEdit.text().toFloat());
+
+        _elabSettings->setGridMinCoverage(elabTab->gridMinCoverageEdit.text().toFloat());
         _elabSettings->setAnomalyPtsMaxDistance(elabTab->anomalyPtsMaxDisEdit.text().toFloat());
         _elabSettings->setAnomalyPtsMaxDeltaZ(elabTab->anomalyPtsMaxDeltaZEdit.text().toFloat());
-        _elabSettings->setThomThreshold(elabTab->thomThresholdEdit.text().toFloat());
-        _elabSettings->setGridMinCoverage(elabTab->gridMinCoverageEdit.text().toFloat());
-        _elabSettings->setTransSamaniCoefficient(elabTab->transSamaniCoefficientEdit.text().toFloat());
-
         _elabSettings->setAutomaticTmed(elabTab->automaticTmedEdit.isChecked());
         _elabSettings->setAutomaticETP(elabTab->automaticETPEdit.isChecked());
         _elabSettings->setMergeJointStations(elabTab->mergeJointStationsEdit.isChecked());
@@ -396,13 +404,14 @@ void SettingsDialog::saveSettings()
     _paramSettings->endGroup();
 
     _paramSettings->beginGroup("elaboration");
-    _paramSettings->setValue("min_percentage", elabTab->minimumPercentageEdit.text());
-    _paramSettings->setValue("prec_threshold", elabTab->rainfallThresholdEdit.text());
+    _paramSettings->setValue("min_percentage", metTab->minimumPercentageEdit.text());
+    _paramSettings->setValue("prec_threshold", metTab->rainfallThresholdEdit.text());
+    _paramSettings->setValue("samani_coefficient", metTab->transSamaniCoefficientEdit.text());
+    _paramSettings->setValue("thom_threshold", metTab->thomThresholdEdit.text());
+
     _paramSettings->setValue("anomaly_pts_max_distance", elabTab->anomalyPtsMaxDisEdit.text());
     _paramSettings->setValue("anomaly_pts_max_delta_z", elabTab->anomalyPtsMaxDeltaZEdit.text());
-    _paramSettings->setValue("thom_threshold", elabTab->thomThresholdEdit.text());
     _paramSettings->setValue("grid_min_coverage", elabTab->gridMinCoverageEdit.text());
-    _paramSettings->setValue("samani_coefficient", elabTab->transSamaniCoefficientEdit.text());
     _paramSettings->setValue("compute_tmed", elabTab->automaticTmedEdit.isChecked());
     _paramSettings->setValue("compute_et0hs", elabTab->automaticETPEdit.isChecked());
     _paramSettings->setValue("merge_joint_stations", elabTab->mergeJointStationsEdit.isChecked());

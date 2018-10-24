@@ -1540,7 +1540,7 @@ void MainWindow::on_actionInterpolationSettings_triggered()
 
 void MainWindow::on_actionParameters_triggered()
 {
-    SettingsDialog* mySettingsDialog = new SettingsDialog(myProject.pathSetting, myProject.settings, &myProject.gisSettings, myProject.quality, myProject.clima->getElabSettings());
+    SettingsDialog* mySettingsDialog = new SettingsDialog(myProject.pathSetting, myProject.settings, &myProject.gisSettings, myProject.quality, myProject.clima->getElabSettings(), myProject.clima->getMeteoSettings());
     if (startCenter->latitude() != myProject.gisSettings.startLocation.latitude || startCenter->longitude() != myProject.gisSettings.startLocation.longitude)
     {
         startCenter->setLatitude(myProject.gisSettings.startLocation.latitude);

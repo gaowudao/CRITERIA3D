@@ -67,7 +67,7 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
 
     if (loadData)
     {
-        dataLoaded = preElaboration(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPointTemp, isMeteoGrid, clima->variable(), elab1MeteoComp, startDate, endDate, outputValues, &percValue, clima->getElabSettings());
+        dataLoaded = preElaboration(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPointTemp, isMeteoGrid, clima->variable(), elab1MeteoComp, startDate, endDate, outputValues, &percValue, clima->getMeteoSettings(), clima->getElabSettings());
     }
     else
     {
@@ -100,7 +100,7 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
             return false;
         }
 
-        result = computeStatistic(outputValues, meteoPointTemp, clima, startD, endD, clima->nYears(), elab1MeteoComp, elab2MeteoComp, clima->getElabSettings());
+        result = computeStatistic(outputValues, meteoPointTemp, clima, startD, endD, clima->nYears(), elab1MeteoComp, elab2MeteoComp, clima->getMeteoSettings());
 
         if (isAnomaly)
         {
@@ -221,7 +221,7 @@ bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
         meteoPointTemp->nrObsDataDaysD = 0;
         meteoPointTemp->nrObsDataDaysH = 0;
 
-        dataLoaded = preElaboration(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPointTemp, isMeteoGrid, clima->variable(), elab1MeteoComp, startDate, endDate, outputValues, &percValue, clima->getElabSettings());
+        dataLoaded = preElaboration(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPointTemp, isMeteoGrid, clima->variable(), elab1MeteoComp, startDate, endDate, outputValues, &percValue, clima->getMeteoSettings(), clima->getElabSettings());
     }
 
     if (dataLoaded)
@@ -270,7 +270,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
             totYears = totYears + 1;
         }
 
-        Crit3DElaborationSettings* settings = clima->getElabSettings();
+        Crit3DMeteoSettings* settings = clima->getMeteoSettings();
         float minPerc = settings->getMinimumPercentage();
 
         if (nLeapYears == 0)
@@ -344,7 +344,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
             Crit3DDate endD (dayEnd, month, clima->yearStart());
             //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
 
-            result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, clima->getElabSettings());
+            result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, clima->getMeteoSettings());
 
             if (result != NODATA)
             {
@@ -377,7 +377,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
             Crit3DDate endD (dayEnd, i, clima->yearStart());
             //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
 
-            result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, clima->getElabSettings());
+            result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, clima->getMeteoSettings());
 
             if (result != NODATA)
             {
@@ -427,7 +427,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
 
             //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
 
-            result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, seasonalNPeriodYears, elab1, elab2, clima->getElabSettings());
+            result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, seasonalNPeriodYears, elab1, elab2, clima->getMeteoSettings());
 
             if (result != NODATA)
             {
@@ -453,7 +453,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
         Crit3DDate endD (31, 12, clima->yearStart());
         //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
 
-        result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, clima->getElabSettings());
+        result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, clima->getMeteoSettings());
 
         if (result != NODATA)
         {
@@ -473,7 +473,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
 
         //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
 
-        result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, clima->getElabSettings());
+        result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, clima->getMeteoSettings());
 
         if (result != NODATA)
         {
@@ -1197,7 +1197,7 @@ float computeCorrectedSum(Crit3DMeteoPoint* meteoPoint, Crit3DDate firstDate, Cr
 }
 
 
-bool elaborateDailyAggregatedVar(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> &outputValues, float* percValue, Crit3DElaborationSettings* elabSettings)
+bool elaborateDailyAggregatedVar(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> &outputValues, float* percValue, Crit3DMeteoSettings* meteoSettings)
 {
     outputValues.clear();
 
@@ -1205,7 +1205,7 @@ bool elaborateDailyAggregatedVar(meteoVariable myVar, Crit3DMeteoPoint meteoPoin
 
     if (aggregationFrequency == hourly)
     {
-            return elaborateDailyAggregatedVarFromHourly(myVar, meteoPoint, outputValues, elabSettings);
+            return elaborateDailyAggregatedVarFromHourly(myVar, meteoPoint, outputValues, meteoSettings);
     }
     else if (aggregationFrequency == daily)
     {
@@ -1319,7 +1319,7 @@ bool elaborateDailyAggregatedVarFromDaily(meteoVariable myVar, Crit3DMeteoPoint 
 }
 
 
-bool elaborateDailyAggregatedVarFromHourly(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> &outputValues, Crit3DElaborationSettings *elabSettings)
+bool elaborateDailyAggregatedVarFromHourly(meteoVariable myVar, Crit3DMeteoPoint meteoPoint, std::vector<float> &outputValues, Crit3DMeteoSettings *meteoSettings)
 {
 
     float res;
@@ -1332,16 +1332,16 @@ bool elaborateDailyAggregatedVarFromHourly(meteoVariable myVar, Crit3DMeteoPoint
         switch(myVar)
         {
             case dailyThomHoursAbove:
-                res = thomDailyNHoursAbove(meteoPoint.obsDataH[index].tAir, meteoPoint.obsDataH[index].rhAir, elabSettings->getThomThreshold(), elabSettings->getMinimumPercentage());
+                res = thomDailyNHoursAbove(meteoPoint.obsDataH[index].tAir, meteoPoint.obsDataH[index].rhAir, meteoSettings->getThomThreshold(), meteoSettings->getMinimumPercentage());
                 break;
             case dailyThomMax:
-                res = thomDailyMax(meteoPoint.obsDataH[index].tAir, meteoPoint.obsDataH[index].rhAir, elabSettings->getMinimumPercentage());
+                res = thomDailyMax(meteoPoint.obsDataH[index].tAir, meteoPoint.obsDataH[index].rhAir, meteoSettings->getMinimumPercentage());
                 break;
             case dailyThomAvg:
-                res = thomDailyMean(meteoPoint.obsDataH[index].tAir, meteoPoint.obsDataH[index].rhAir, elabSettings->getMinimumPercentage());
+                res = thomDailyMean(meteoPoint.obsDataH[index].tAir, meteoPoint.obsDataH[index].rhAir, meteoSettings->getMinimumPercentage());
                 break;
             case dailyLeafWetness:
-                res = dailyLeafWetnessComputation(meteoPoint.obsDataH[index].leafW, elabSettings->getMinimumPercentage());
+                res = dailyLeafWetnessComputation(meteoPoint.obsDataH[index].leafW, meteoSettings->getMinimumPercentage());
                 break;
             default:
                 res = NODATA;
@@ -1365,7 +1365,7 @@ bool elaborateDailyAggregatedVarFromHourly(meteoVariable myVar, Crit3DMeteoPoint
 
 
 bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler, Crit3DMeteoPoint* meteoPoint, bool isMeteoGrid, meteoVariable variable, meteoComputation elab1,
-    QDate startDate, QDate endDate, std::vector<float> &outputValues, float* percValue, Crit3DElaborationSettings* elabSettings)
+    QDate startDate, QDate endDate, std::vector<float> &outputValues, float* percValue, Crit3DMeteoSettings* meteoSettings, Crit3DElaborationSettings* elabSettings)
 {
 
     bool preElaboration = false;
@@ -1379,7 +1379,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
         {
             if ( loadHourlyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, leafWetness, QDateTime(startDate,QTime(0,0,0)), QDateTime(endDate,QTime(23,0,0))) > 0)
             {
-                preElaboration = elaborateDailyAggregatedVar(dailyLeafWetness, *meteoPoint, outputValues, percValue, elabSettings);
+                preElaboration = elaborateDailyAggregatedVar(dailyLeafWetness, *meteoPoint, outputValues, percValue, meteoSettings);
             }
             break;
         }
@@ -1390,7 +1390,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
             {
                 if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirTemperatureMax, startDate, endDate) > 0)
                 {
-                    preElaboration = elaborateDailyAggregatedVar(dailyThomDaytime, *meteoPoint, outputValues, percValue, elabSettings);
+                    preElaboration = elaborateDailyAggregatedVar(dailyThomDaytime, *meteoPoint, outputValues, percValue, meteoSettings);
                 }
             }
             break;
@@ -1402,7 +1402,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
             {
                 if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirTemperatureMin, startDate, endDate) > 0)
                 {
-                    preElaboration = elaborateDailyAggregatedVar(dailyThomNighttime, *meteoPoint, outputValues, percValue, elabSettings);
+                    preElaboration = elaborateDailyAggregatedVar(dailyThomNighttime, *meteoPoint, outputValues, percValue, meteoSettings);
                 }
             }
             break;
@@ -1414,7 +1414,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
             {
                 if (loadHourlyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, airRelHumidity, QDateTime(startDate,QTime(0,0,0)), QDateTime(endDate,QTime(23,0,0)))  > 0)
                 {
-                    preElaboration = elaborateDailyAggregatedVar(variable, *meteoPoint, outputValues, percValue, elabSettings);
+                    preElaboration = elaborateDailyAggregatedVar(variable, *meteoPoint, outputValues, percValue, meteoSettings);
                 }
             }
             break;
@@ -1431,7 +1431,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                 {
                     if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirTemperatureMax, startDate, endDate) > 0)
                     {
-                        preElaboration = elaborateDailyAggregatedVar(dailyReferenceEvapotranspirationHS, *meteoPoint, outputValues, percValue, elabSettings);
+                        preElaboration = elaborateDailyAggregatedVar(dailyReferenceEvapotranspirationHS, *meteoPoint, outputValues, percValue, meteoSettings);
                     }
                 }
             }
@@ -1441,7 +1441,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                 preElaboration = false;
                 if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyPrecipitation, startDate, endDate) > 0)
                 {
-                    preElaboration = elaborateDailyAggregatedVar(dailyBIC, *meteoPoint, outputValues, percValue, elabSettings);
+                    preElaboration = elaborateDailyAggregatedVar(dailyBIC, *meteoPoint, outputValues, percValue, meteoSettings);
                 }
             }
             break;
@@ -1453,7 +1453,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
             {
                 if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirTemperatureMax, startDate, endDate) > 0)
                 {
-                    preElaboration = elaborateDailyAggregatedVar(dailyAirTemperatureRange, *meteoPoint, outputValues, percValue, elabSettings);
+                    preElaboration = elaborateDailyAggregatedVar(dailyAirTemperatureRange, *meteoPoint, outputValues, percValue, meteoSettings);
                 }
             }
             break;
@@ -1464,7 +1464,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
             {
                 if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirRelHumidityMin, startDate, endDate) > 0)
                 {
-                    preElaboration = elaborateDailyAggregatedVar(dailyAirDewTemperatureMax, *meteoPoint, outputValues, percValue, elabSettings);
+                    preElaboration = elaborateDailyAggregatedVar(dailyAirDewTemperatureMax, *meteoPoint, outputValues, percValue, meteoSettings);
                 }
             }
             break;
@@ -1476,7 +1476,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
             {
                 if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirRelHumidityMax, startDate, endDate) > 0)
                 {
-                    preElaboration = elaborateDailyAggregatedVar(dailyAirDewTemperatureMin, *meteoPoint, outputValues, percValue, elabSettings);
+                    preElaboration = elaborateDailyAggregatedVar(dailyAirDewTemperatureMin, *meteoPoint, outputValues, percValue, meteoSettings);
                 }
             }
             break;
@@ -1494,7 +1494,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                 {
                     if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirTemperatureMax, startDate, endDate) > 0)
                     {
-                        preElaboration = elaborateDailyAggregatedVar(dailyAirTemperatureAvg, *meteoPoint, outputValues, percValue, elabSettings);
+                        preElaboration = elaborateDailyAggregatedVar(dailyAirTemperatureAvg, *meteoPoint, outputValues, percValue, meteoSettings);
                     }
                 }
             }
@@ -1513,7 +1513,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                 {
                     if (loadDailyVarSeries(myError, meteoPointsDbHandler, meteoGridDbHandler, meteoPoint, isMeteoGrid, dailyAirTemperatureMax, startDate, endDate) > 0)
                     {
-                        preElaboration = elaborateDailyAggregatedVar(dailyReferenceEvapotranspirationHS, *meteoPoint, outputValues, percValue, elabSettings);
+                        preElaboration = elaborateDailyAggregatedVar(dailyReferenceEvapotranspirationHS, *meteoPoint, outputValues, percValue, meteoSettings);
                     }
                 }
             }
@@ -1536,7 +1536,7 @@ bool preElaboration(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
                             }
                             else if (automaticTmed)
                             {
-                                preElaboration = elaborateDailyAggregatedVar(dailyAirTemperatureAvg, *meteoPoint, outputValues, percValue, elabSettings);
+                                preElaboration = elaborateDailyAggregatedVar(dailyAirTemperatureAvg, *meteoPoint, outputValues, percValue, meteoSettings);
                             }
                         }
                     }
@@ -1617,7 +1617,7 @@ void extractValidValuesWithThreshold(std::vector<float> &outputValues, float myT
 
 //nYears   = 0         same year
 //nYears   = 1,2,3...   betweend years 1,2,3...
-float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoPoint, Crit3DClimate *clima, Crit3DDate firstDate, Crit3DDate lastDate, int nYears, meteoComputation elab1, meteoComputation elab2, Crit3DElaborationSettings* elabSettings)
+float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoPoint, Crit3DClimate *clima, Crit3DDate firstDate, Crit3DDate lastDate, int nYears, meteoComputation elab1, meteoComputation elab2, Crit3DMeteoSettings* meteoSettings)
 {
 
     std::vector<float> values;
@@ -1646,19 +1646,19 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
             }
             case winkler:
             {
-                return computeWinkler(meteoPoint, firstDate, lastDate, elabSettings->getMinimumPercentage());
+                return computeWinkler(meteoPoint, firstDate, lastDate, meteoSettings->getMinimumPercentage());
             }
             case huglin:
             {
-                return computeHuglin(meteoPoint, firstDate, lastDate, elabSettings->getMinimumPercentage());
+                return computeHuglin(meteoPoint, firstDate, lastDate, meteoSettings->getMinimumPercentage());
             }
             case fregoni:
             {
-                return computeFregoni(meteoPoint, firstDate, lastDate, elabSettings->getMinimumPercentage());
+                return computeFregoni(meteoPoint, firstDate, lastDate, meteoSettings->getMinimumPercentage());
             }
             case correctedDegreeDaysSum:
             {
-                return computeCorrectedSum(meteoPoint, firstDate, lastDate, param1, elabSettings->getMinimumPercentage());
+                return computeCorrectedSum(meteoPoint, firstDate, lastDate, param1, meteoSettings->getMinimumPercentage());
             }
             default:
             {
@@ -1737,9 +1737,9 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                 if (nValidValues == 0)return NODATA;
 
 
-                if (float(nValidValues) / float(nValues) * 100.f < elabSettings->getMinimumPercentage()) return NODATA;
+                if (float(nValidValues) / float(nValues) * 100.f < meteoSettings->getMinimumPercentage()) return NODATA;
 
-                return elaborations::statisticalElab(elab1, param1, values, nValidValues, elabSettings->getRainfallThreshold());
+                return elaborations::statisticalElab(elab1, param1, values, nValidValues, meteoSettings->getRainfallThreshold());
 
                 break;
             }
@@ -1792,22 +1792,22 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                 }
                 case winkler:
                 {
-                    primary = computeWinkler(meteoPoint, firstDate, lastDate, elabSettings->getMinimumPercentage());
+                    primary = computeWinkler(meteoPoint, firstDate, lastDate, meteoSettings->getMinimumPercentage());
                     break;
                 }
                 case huglin:
                 {
-                    primary = computeHuglin(meteoPoint, firstDate, lastDate, elabSettings->getMinimumPercentage());
+                    primary = computeHuglin(meteoPoint, firstDate, lastDate, meteoSettings->getMinimumPercentage());
                     break;
                 }
                 case fregoni:
                 {
-                    primary = computeFregoni(meteoPoint, firstDate, lastDate, elabSettings->getMinimumPercentage());
+                    primary = computeFregoni(meteoPoint, firstDate, lastDate, meteoSettings->getMinimumPercentage());
                     break;
                 }
                 case correctedDegreeDaysSum:
                 {
-                    primary = computeCorrectedSum(meteoPoint, firstDate, lastDate, param1, elabSettings->getMinimumPercentage());
+                    primary = computeCorrectedSum(meteoPoint, firstDate, lastDate, param1, meteoSettings->getMinimumPercentage());
                     break;
                 }
                 default:
@@ -1853,9 +1853,9 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
 
                     if (nValidValues > 0)
                     {
-                        if (float(nValidValues) / float(nValues) * 100.f >= elabSettings->getMinimumPercentage())
+                        if (float(nValidValues) / float(nValues) * 100.f >= meteoSettings->getMinimumPercentage())
                         {
-                            primary = elaborations::statisticalElab(elab1, param1, values, nValidValues, elabSettings->getRainfallThreshold());
+                            primary = elaborations::statisticalElab(elab1, param1, values, nValidValues, meteoSettings->getRainfallThreshold());
                         }
                     }
 
@@ -1878,7 +1878,7 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
         {
             return NODATA;
         }
-        else if (float(nValidYears) / float(nTotYears) * 100.f < elabSettings->getMinimumPercentage())
+        else if (float(nValidYears) / float(nTotYears) * 100.f < meteoSettings->getMinimumPercentage())
         {
             return NODATA;
         }
@@ -1887,9 +1887,9 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
             switch(elab2)
             {
                 case trend:
-                    return elaborations::statisticalElab(elab2, firstYear, valuesSecondElab, nValidYears, elabSettings->getRainfallThreshold());
+                    return elaborations::statisticalElab(elab2, firstYear, valuesSecondElab, nValidYears, meteoSettings->getRainfallThreshold());
                 default:
-                    return elaborations::statisticalElab(elab2, param2, valuesSecondElab, nValidYears, elabSettings->getRainfallThreshold());
+                    return elaborations::statisticalElab(elab2, param2, valuesSecondElab, nValidYears, meteoSettings->getRainfallThreshold());
             }
         }
     }

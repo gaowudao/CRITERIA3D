@@ -86,7 +86,7 @@ class SettingsDialog : public QDialog
     Q_OBJECT
 
     public:
-        explicit SettingsDialog(QSettings *pathSetting, QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DElaborationSettings *elabSettings);
+        explicit SettingsDialog(QSettings *pathSetting, QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DElaborationSettings *elabSettings, Crit3DMeteoSettings* meteoSettings);
         void accept();
         void saveSettings();
 
@@ -96,12 +96,14 @@ class SettingsDialog : public QDialog
         gis::Crit3DGisSettings *_geoSettings;
         Crit3DQuality *_qualitySettings;
         Crit3DElaborationSettings *_elabSettings;
+        Crit3DMeteoSettings* _meteoSettings;
 
         QTabWidget *tabWidget;
         QDialogButtonBox *buttonBox;
         GeoTab* geoTab;
         QualityTab* qualityTab;
         ElaborationTab* elabTab;
+        MeteoTab* metTab;
 };
 
 #endif // SETTINGSDIALOG_H
