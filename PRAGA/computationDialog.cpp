@@ -221,12 +221,16 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
     {
         elab1Parameter.clear();
         elab1Parameter.setReadOnly(true);
+        readParam.setCheckable(false);
+        climateDbElabList.setVisible(false);
     }
     else
     {
+        readParam.setCheckable(true);
         if (!readParam.isChecked())
         {
             elab1Parameter.setReadOnly(false);
+            climateDbElabList.setVisible(true);
         }
     }
 
@@ -801,10 +805,14 @@ void ComputationDialog::listSecondElab(const QString value)
     {
         elab1Parameter.clear();
         elab1Parameter.setReadOnly(true);
+        readParam.setCheckable(false);
+        climateDbElabList.setVisible(false);
     }
     else
     {
         elab1Parameter.setReadOnly(false);
+        readParam.setCheckable(true);
+        climateDbElabList.setVisible(true);
     }
 
     if (elaborationList.currentText().toStdString() == "huglin" || elaborationList.currentText().toStdString() == "winkler" || elaborationList.currentText().toStdString() == "fregoni")
@@ -1007,6 +1015,11 @@ void ComputationDialog::copyDataToSaveLayout()
     saveClimaLayout.setElab2Param(elab2Parameter.text());
     saveClimaLayout.setElab(elaborationList.currentText());
     saveClimaLayout.setElab1Param(elab1Parameter.text());
+
+    if (readParam.isChecked())
+    {
+        saveClimaLayout.setElab1ParamFromdB(climateDbElabList.currentText());
+    }
 
     saveClimaLayout.addElab();
 
