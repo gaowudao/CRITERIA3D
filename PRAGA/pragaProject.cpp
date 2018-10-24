@@ -244,6 +244,7 @@ bool PragaProject::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
         else
         {
             //clima->copyFromReference(referenceClima);
+            clima = referenceClima;
             if (!elaborationPointsCycleGrid(isAnomaly, true))
             {
                 return false;
@@ -275,6 +276,7 @@ bool PragaProject::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
         else
         {
             //clima->copyFromReference(referenceClima);
+            clima = referenceClima;
             if (!elaborationPointsCycle(isAnomaly, true))
             {
                 return false;
@@ -352,19 +354,10 @@ bool PragaProject::elaborationPointsCycle(bool isAnomaly, bool showInfo)
             if (showInfo && (i % infoStep) == 0)
                         myInfo.setValue(i);
 
-            if (!isAnomaly)
+
+            if ( elaborationOnPoint(&errorString, meteoPointsDbHandler, NULL, meteoPointTemp, clima, isMeteoGrid, startDate, endDate, isAnomaly, true))
             {
-                if ( elaborationOnPoint(&errorString, meteoPointsDbHandler, NULL, meteoPointTemp, clima, isMeteoGrid, startDate, endDate, isAnomaly, true))
-                {
-                    validCell = validCell + 1;
-                }
-            }
-            else
-            {
-                if ( elaborationOnPoint(&errorString, meteoPointsDbHandler, NULL, meteoPointTemp, referenceClima, isMeteoGrid, startDate, endDate, isAnomaly, true))
-                {
-                    validCell = validCell + 1;
-                }
+                validCell = validCell + 1;
             }
 
             // save result to MP
@@ -461,19 +454,10 @@ bool PragaProject::elaborationPointsCycleGrid(bool isAnomaly, bool showInfo)
                 meteoPointTemp->nrObsDataDaysH = 0;
                 meteoPointTemp->nrObsDataDaysD = 0;
 
-                if (!isAnomaly)
+
+                if  ( elaborationOnPoint(&errorString, NULL, meteoGridDbHandler, meteoPointTemp, clima, isMeteoGrid, startDate, endDate, isAnomaly, true))
                 {
-                    if  ( elaborationOnPoint(&errorString, NULL, meteoGridDbHandler, meteoPointTemp, clima, isMeteoGrid, startDate, endDate, isAnomaly, true))
-                    {
-                        validCell = validCell + 1;
-                    }
-                }
-                else
-                {
-                    if  ( elaborationOnPoint(&errorString, NULL, meteoGridDbHandler, meteoPointTemp, referenceClima, isMeteoGrid, startDate, endDate, isAnomaly, true))
-                    {
-                        validCell = validCell + 1;
-                    }
+                    validCell = validCell + 1;
                 }
 
                 // save result to MP
