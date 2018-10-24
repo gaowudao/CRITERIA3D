@@ -128,4 +128,3 @@ void PragaSettingsDialog::savePragaSettings()
     _paramSettings->setValue("merge_joint_stations", elabTab->mergeJointStationsEdit.isChecked());
     _paramSettings->endGroup();
 }
-

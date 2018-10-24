@@ -95,7 +95,8 @@ HEADERS += mainwindow.h \
     ../climate/elaborationSettings.h \
     meteoMaps.h \
     waterBalance3D.h \
-    crit3dProject.h
+    crit3dProject.h \
+    ../PRAGA/pragaSettingsDialog.h
 
 
 FORMS += mainwindow.ui \
