@@ -11,12 +11,23 @@ QT  += core gui widgets xml sql network
 TARGET = VINE3D
 TEMPLATE = app
 
-INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../meteo
-INCLUDEPATH += ../quality ../interpolation ../solarRadiation ../soil
-INCLUDEPATH += ../utilities ../soilFluxes3D/header
-INCLUDEPATH += ../dbMeteoPoints ../dbMeteoGrid
-INCLUDEPATH += ../grapevine ../powderyMildew ../downyMildew
-INCLUDEPATH += ../PRAGA/shared
+INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../meteo ../interpolation ../solarRadiation \
+                ../soil ../utilities ../soilFluxes3D/header ../dbMeteoPoints ../dbMeteoGrid \
+                ../grapevine ../powderyMildew ../downyMildew \
+                ../MapGraphics ../PRAGA/shared ../climate
+
+CONFIG += debug_and_release
+
+unix:{
+    LIBS += -L../MapGraphics/release -lMapGraphics
+}
+win32:{
+    CONFIG(debug, debug|release) {
+         LIBS += -L../MapGraphics/debug -lMapGraphics
+    } else {
+        LIBS += -L../MapGraphics/release -lMapGraphics
+    }
+}
 
 CONFIG(debug, debug|release) {
     LIBS += -L../crit3dDate/debug -lcrit3dDate
@@ -51,6 +62,9 @@ CONFIG(debug, debug|release) {
 }
 
 SOURCES += \
+    ../PRAGA/shared/interpolationCmd.cpp \
+    ../PRAGA/shared/project.cpp \
+    ../PRAGA/shared/formInfo.cpp \
     atmosphere.cpp \
     dataHandler.cpp \
     disease.cpp \
@@ -61,11 +75,13 @@ SOURCES += \
     plant.cpp \
     waterBalance.cpp \
     vine3DProject.cpp \
-    ../PRAGA/shared/interpolationCmd.cpp \
-    ../PRAGA/shared/project.cpp \
-    ../PRAGA/shared/formInfo.cpp
+    mainwindow.cpp \
+    ../PRAGA/shared/settingsDialog.cpp
 
 HEADERS  += \
+    ../PRAGA/shared/interpolationCmd.h \
+    ../PRAGA/shared/project.h \
+    ../PRAGA/shared/formInfo.h \
     atmosphere.h \
     dataHandler.h \
     disease.h \
@@ -75,9 +91,9 @@ HEADERS  += \
     plant.h \
     waterBalance.h \
     vine3DProject.h \
-    ../PRAGA/shared/interpolationCmd.h \
-    ../PRAGA/shared/project.h \
-    ../PRAGA/shared/formInfo.h
+    mainwindow.h \
+    ../PRAGA/shared/settingsDialog.h
 
 FORMS    += \
-    ../PRAGA/shared/formInfo.ui
+    ../PRAGA/shared/formInfo.ui \
+    mainwindow.ui
