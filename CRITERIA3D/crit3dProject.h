@@ -13,8 +13,6 @@
         #include "meteoMaps.h"
     #endif
 
-    #include "elaborationSettings.h"
-
     #include <QString>
 
     class Crit3DProject : public Project

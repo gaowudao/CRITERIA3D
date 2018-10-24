@@ -12,7 +12,7 @@ QT       += core gui network widgets sql xml
 TARGET = CRITERIA3D
 TEMPLATE = app
 
-INCLUDEPATH +=  ../PRAGA/shared ../climate  \
+INCLUDEPATH +=  ../PRAGA/shared  \
                 ../mapGraphics ../soilFluxes3D/header  \
                 ../crit3dDate ../mathFunctions ../soil ../crop \
                 ../meteo ../gis ../utilities  \
@@ -76,7 +76,6 @@ SOURCES += main.cpp\
     ../PRAGA/shared/colorlegend.cpp \
     ../PRAGA/shared/project.cpp \
     ../PRAGA/shared/formInfo.cpp \
-    ../climate/elaborationSettings.cpp \
     meteoMaps.cpp \
     waterBalance3D.cpp \
     crit3dProject.cpp
@@ -92,11 +91,9 @@ HEADERS += mainwindow.h \
     ../PRAGA/shared/colorlegend.h \
     ../PRAGA/shared/project.h \
     ../PRAGA/shared/formInfo.h \
-    ../climate/elaborationSettings.h \
     meteoMaps.h \
     waterBalance3D.h \
-    crit3dProject.h \
-    ../PRAGA/pragaSettingsDialog.h
+    crit3dProject.h
 
 
 FORMS += mainwindow.ui \

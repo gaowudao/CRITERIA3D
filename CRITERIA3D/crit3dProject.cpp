@@ -35,7 +35,7 @@
 
 Crit3DProject::Crit3DProject()
 {
-    elaborationSettings = new Crit3DElaborationSettings();
+    meteoSettings = new Crit3DMeteoSettings();
     isParametersLoaded = false;
     nrSoils = 0;
     nrLayers = 0;
