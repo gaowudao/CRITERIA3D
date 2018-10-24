@@ -312,6 +312,16 @@ void Crit3DClimate::setParam1ClimateIndex(int param1ClimateIndex)
     _param1ClimateIndex = param1ClimateIndex;
 }
 
+Crit3DMeteoSettings *Crit3DClimate::getMeteoSettings() const
+{
+    return meteoSettings;
+}
+
+void Crit3DClimate::setMeteoSettings(Crit3DMeteoSettings *value)
+{
+    meteoSettings = value;
+}
+
 QSqlDatabase Crit3DClimate::db() const
 {
     return _db;

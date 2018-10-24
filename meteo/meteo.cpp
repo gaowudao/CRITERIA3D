@@ -29,6 +29,53 @@
 #include "physics.h"
 #include "meteo.h"
 
+Crit3DMeteoSettings::Crit3DMeteoSettings()
+{
+    minimumPercentage = DEF_VALUE_MIN_PERCENTAGE;
+    rainfallThreshold = DEF_VALUE_RAINFALL_THRESHOLD;
+    thomThreshold = DEF_VALUE_THOM_THRESHOLD;
+    transSamaniCoefficient = DEF_VALUE_TRANSMISSIVITY_SAMANI;
+}
+
+float Crit3DMeteoSettings::getMinimumPercentage() const
+{
+    return minimumPercentage;
+}
+
+void Crit3DMeteoSettings::setMinimumPercentage(float value)
+{
+    minimumPercentage = value;
+}
+
+float Crit3DMeteoSettings::getRainfallThreshold() const
+{
+    return rainfallThreshold;
+}
+
+void Crit3DMeteoSettings::setRainfallThreshold(float value)
+{
+    rainfallThreshold = value;
+}
+
+float Crit3DMeteoSettings::getTransSamaniCoefficient() const
+{
+    return transSamaniCoefficient;
+}
+
+void Crit3DMeteoSettings::setTransSamaniCoefficient(float value)
+{
+    transSamaniCoefficient = value;
+}
+
+float Crit3DMeteoSettings::getThomThreshold() const
+{
+    return thomThreshold;
+}
+
+void Crit3DMeteoSettings::setThomThreshold(float value)
+{
+    thomThreshold = value;
+}
 
 Crit3DClimateParameters::Crit3DClimateParameters()
 {

@@ -10,11 +10,40 @@
         #include "color.h"
     #endif
 
+    #define DEF_VALUE_MIN_PERCENTAGE 80
+    #define DEF_VALUE_RAINFALL_THRESHOLD 0.2f
+    #define DEF_VALUE_THOM_THRESHOLD 24
+    #define DEF_VALUE_TRANSMISSIVITY_SAMANI 0.17f
+
     #define TABLE_METEO_POINTS "point_properties"
     #define FIELD_METEO_POINT "id_point"
     #define FIELD_METEO_DATETIME "date"
     #define FIELD_METEO_VARIABLE "id_variable"
     #define FIELD_METEO_VARIABLE_NAME "variable"
+
+    class Crit3DMeteoSettings
+    {
+    public:
+        Crit3DMeteoSettings();
+
+        float getMinimumPercentage() const;
+        void setMinimumPercentage(float value);
+
+        float getRainfallThreshold() const;
+        void setRainfallThreshold(float value);
+
+        float getThomThreshold() const;
+        void setThomThreshold(float value);
+
+        float getTransSamaniCoefficient() const;
+        void setTransSamaniCoefficient(float value);
+
+    private:
+        float minimumPercentage;
+        float rainfallThreshold;
+        float thomThreshold;
+        float transSamaniCoefficient;
+    };
 
     enum lapseRateCodeType {primary, secondary, supplemental};
 

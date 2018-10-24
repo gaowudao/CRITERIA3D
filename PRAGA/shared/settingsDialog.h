@@ -7,6 +7,7 @@
 
 #include "gis.h"
 #include "quality.h"
+#include "meteo.h"
 #include "elaborationSettings.h"
 
 class QDialogButtonBox;
@@ -55,19 +56,29 @@ class ElaborationTab : public QWidget
 public:
     explicit ElaborationTab(Crit3DElaborationSettings *elabSettings);
 
-    QLineEdit minimumPercentageEdit;
-    QLineEdit rainfallThresholdEdit;
     QLineEdit anomalyPtsMaxDisEdit;
     QLineEdit anomalyPtsMaxDeltaZEdit;
-    QLineEdit thomThresholdEdit;
     QLineEdit gridMinCoverageEdit;
-    QLineEdit transSamaniCoefficientEdit;
     QCheckBox automaticTmedEdit;
     QCheckBox automaticETPEdit;
     QCheckBox mergeJointStationsEdit;
 
 private:
+};
 
+class MeteoTab : public QWidget
+{
+    Q_OBJECT
+
+public:
+    explicit MeteoTab(Crit3DMeteoSettings *meteoSettings);
+
+    QLineEdit minimumPercentageEdit;
+    QLineEdit rainfallThresholdEdit;
+    QLineEdit thomThresholdEdit;
+    QLineEdit transSamaniCoefficientEdit;
+
+private:
 };
 
 class SettingsDialog : public QDialog

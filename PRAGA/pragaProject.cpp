@@ -30,14 +30,15 @@ bool PragaProject::readPragaSettings()
         {
             settings->beginGroup(group);
             Crit3DElaborationSettings* elabSettings = clima->getElabSettings();
+            Crit3DMeteoSettings* meteoSettings = clima->getMeteoSettings();
             if (settings->contains("min_percentage") && !settings->value("min_percentage").toString().isEmpty())
             {
                 //qInfo() << "value: " << settings->value("min_percentage");
-                elabSettings->setMinimumPercentage(settings->value("min_percentage").toFloat());
+                meteoSettings->setMinimumPercentage(settings->value("min_percentage").toFloat());
             }
             if (settings->contains("prec_threshold") && !settings->value("prec_threshold").toString().isEmpty())
             {
-                elabSettings->setRainfallThreshold(settings->value("prec_threshold").toFloat());
+                meteoSettings->setRainfallThreshold(settings->value("prec_threshold").toFloat());
             }
             if (settings->contains("anomaly_pts_max_distance") && !settings->value("anomaly_pts_max_distance").toString().isEmpty())
             {
@@ -49,7 +50,7 @@ bool PragaProject::readPragaSettings()
             }
             if (settings->contains("thom_threshold") && !settings->value("thom_threshold").toString().isEmpty())
             {
-                elabSettings->setThomThreshold(settings->value("thom_threshold").toFloat());
+                meteoSettings->setThomThreshold(settings->value("thom_threshold").toFloat());
             }
             if (settings->contains("grid_min_coverage") && !settings->value("grid_min_coverage").toString().isEmpty())
             {
@@ -57,7 +58,7 @@ bool PragaProject::readPragaSettings()
             }
             if (settings->contains("samani_coefficient") && !settings->value("samani_coefficient").toString().isEmpty())
             {
-                elabSettings->setTransSamaniCoefficient(settings->value("samani_coefficient").toFloat());
+                meteoSettings->setTransSamaniCoefficient(settings->value("samani_coefficient").toFloat());
             }
             if (settings->contains("compute_tmed") && !settings->value("compute_tmed").toString().isEmpty())
             {
