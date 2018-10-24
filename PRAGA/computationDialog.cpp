@@ -230,7 +230,6 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
         if (!readParam.isChecked())
         {
             elab1Parameter.setReadOnly(false);
-            climateDbElabList.setVisible(true);
         }
     }
 
@@ -786,11 +785,10 @@ void ComputationDialog::listElaboration(const QString value)
     settings->endArray();
     settings->endGroup();
 
+    readParam.setChecked(false);
+    climateDbElabList.setVisible(false);
     listSecondElab(elaborationList.currentText());
-    if (readParam.isChecked())
-    {
-        readParameter(Qt::Checked);
-    }
+
     if(isAnomaly)
     {
         anomaly.AnomalySetVariableElab(variableList.currentText());
@@ -805,14 +803,14 @@ void ComputationDialog::listSecondElab(const QString value)
     {
         elab1Parameter.clear();
         elab1Parameter.setReadOnly(true);
-        readParam.setCheckable(false);
+        readParam.setChecked(false);
         climateDbElabList.setVisible(false);
+        readParam.setCheckable(false);
     }
     else
     {
         elab1Parameter.setReadOnly(false);
         readParam.setCheckable(true);
-        climateDbElabList.setVisible(true);
     }
 
     if (elaborationList.currentText().toStdString() == "huglin" || elaborationList.currentText().toStdString() == "winkler" || elaborationList.currentText().toStdString() == "fregoni")
