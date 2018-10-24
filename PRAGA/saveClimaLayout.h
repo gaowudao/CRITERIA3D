@@ -54,6 +54,9 @@ class SaveClimaLayout : public QDialog
         QStringList getList() const;
         void setList(const QStringList &value);
 
+        QString getElab1ParamFromdB() const;
+        void setElab1ParamFromdB(const QString &value);
+
 private:
 
         QVBoxLayout mainLayout;
@@ -82,6 +85,7 @@ private:
 
         QString elab;
         QString elab1Param;
+        QString elab1ParamFromdB;
 
 
 };

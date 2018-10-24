@@ -58,6 +58,10 @@ void SaveClimaLayout::addElab()
     {
         elabAdded = elabAdded + "_" + elab1Param;
     }
+    else if(!elab1ParamFromdB.isEmpty())
+    {
+        elabAdded = elabAdded + "_|" + elab1ParamFromdB + "||";
+    }
 
     if (list.contains(elabAdded)!= 0)
     {
@@ -145,6 +149,16 @@ QStringList SaveClimaLayout::getList() const
 void SaveClimaLayout::setList(const QStringList &value)
 {
     list = value;
+}
+
+QString SaveClimaLayout::getElab1ParamFromdB() const
+{
+    return elab1ParamFromdB;
+}
+
+void SaveClimaLayout::setElab1ParamFromdB(const QString &value)
+{
+    elab1ParamFromdB = value;
 }
 
 QString SaveClimaLayout::getFirstYear() const
