@@ -12,20 +12,20 @@ QT       += core gui widgets network sql xml
 TARGET = PRAGA
 TEMPLATE = app
 
-INCLUDEPATH +=  ./shared ../MapGraphics \
+INCLUDEPATH +=  ./shared ../mapGraphics \
                 ../crit3dDate ../mathFunctions ../meteo ../gis ../utilities \
                 ../interpolation ../solarRadiation ../dbMeteoPoints ../dbMeteoGrid ../climate
 
 CONFIG += debug_and_release
 
 unix:{
-    LIBS += -L../MapGraphics/release -lMapGraphics
+    LIBS += -L../mapGraphics/release -lMapGraphics
 }
 win32:{
     CONFIG(debug, debug|release) {
-         LIBS += -L../MapGraphics/debug -lMapGraphics
+         LIBS += -L../mapGraphics/debug -lMapGraphics
     } else {
-        LIBS += -L../MapGraphics/release -lMapGraphics
+        LIBS += -L../mapGraphics/release -lMapGraphics
     }
 }
 

@@ -13,7 +13,7 @@ TARGET = CRITERIA3D
 TEMPLATE = app
 
 INCLUDEPATH +=  ../PRAGA/shared ../climate  \
-                ../MapGraphics ../soilFluxes3D/header  \
+                ../mapGraphics ../soilFluxes3D/header  \
                 ../crit3dDate ../mathFunctions ../soil ../crop \
                 ../meteo ../gis ../utilities  \
                 ../interpolation ../solarRadiation  \
@@ -23,13 +23,13 @@ INCLUDEPATH +=  ../PRAGA/shared ../climate  \
 CONFIG += debug_and_release
 
 unix:{
-    LIBS += -L../MapGraphics/release -lMapGraphics
+    LIBS += -L../mapGraphics/release -lMapGraphics
 }
 win32:{
     CONFIG(debug, debug|release) {
-         LIBS += -L../MapGraphics/debug -lMapGraphics
+         LIBS += -L../mapGraphics/debug -lMapGraphics
     } else {
-        LIBS += -L../MapGraphics/release -lMapGraphics
+        LIBS += -L../mapGraphics/release -lMapGraphics
     }
 }
 
@@ -46,7 +46,9 @@ CONFIG(debug, debug|release) {
     LIBS += -L../soil/debug -lsoil
     LIBS += -L../crit3dDate/debug -lcrit3dDate
     LIBS += -L../mathFunctions/debug -lmathFunctions
+
 } else {
+
     LIBS += -L../dbMeteoGrid/release -ldbMeteoGrid
     LIBS += -L../dbMeteoPoints/release -ldbMeteoPoints
     LIBS += -L../utilities/release -lutilities

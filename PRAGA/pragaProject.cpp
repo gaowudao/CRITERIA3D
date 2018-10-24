@@ -243,6 +243,8 @@ bool PragaProject::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
         }
         else
         {
+            //clima->copyFromReference(referenceClima);
+            clima = referenceClima;
             if (!elaborationPointsCycleGrid(isAnomaly, true))
             {
                 return false;
@@ -273,6 +275,8 @@ bool PragaProject::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
         }
         else
         {
+            //clima->copyFromReference(referenceClima);
+            clima = referenceClima;
             if (!elaborationPointsCycle(isAnomaly, true))
             {
                 return false;
@@ -349,6 +353,7 @@ bool PragaProject::elaborationPointsCycle(bool isAnomaly, bool showInfo)
 
             if (showInfo && (i % infoStep) == 0)
                         myInfo.setValue(i);
+
 
             if ( elaborationOnPoint(&errorString, meteoPointsDbHandler, NULL, meteoPointTemp, clima, isMeteoGrid, startDate, endDate, isAnomaly, true))
             {
@@ -448,6 +453,7 @@ bool PragaProject::elaborationPointsCycleGrid(bool isAnomaly, bool showInfo)
                 // meteoPointTemp should be init
                 meteoPointTemp->nrObsDataDaysH = 0;
                 meteoPointTemp->nrObsDataDaysD = 0;
+
 
                 if  ( elaborationOnPoint(&errorString, NULL, meteoGridDbHandler, meteoPointTemp, clima, isMeteoGrid, startDate, endDate, isAnomaly, true))
                 {

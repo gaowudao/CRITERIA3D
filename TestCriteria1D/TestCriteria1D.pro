@@ -17,7 +17,7 @@ HEADERS += \
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../utilities ../crop ../gis ../meteo ../soil ../criteria1D
 
 CONFIG(debug, debug|release) {
-    LIBS += -L../criteria1D/debug -lCriteria1D
+    LIBS += -L../criteria1D/debug -lcriteria1D
     LIBS += -L../utilities/debug -lutilities
     LIBS += -L../meteo/debug -lmeteo
     LIBS += -L../gis/debug -lgis
@@ -26,7 +26,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../crit3dDate/debug -lcrit3dDate
     LIBS += -L../mathFunctions/debug -lmathFunctions
 } else {
-    LIBS += -L../criteria1D/release -lCriteria1D
+    LIBS += -L../criteria1D/release -lcriteria1D
     LIBS += -L../utilities/release -lutilities
     LIBS += -L../meteo/release -lmeteo
     LIBS += -L../gis/release -lgis

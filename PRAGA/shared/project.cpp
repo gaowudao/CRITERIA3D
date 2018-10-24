@@ -138,46 +138,50 @@ bool Project::readGenericSettings(QString currentPath)
 {
     this->path = currentPath;
 
-    QString pathFileName = currentPath + "settings.ini";
+    QString settingsFileName = currentPath + "settings.ini";
 
-    if (QFile(pathFileName).exists())
+    if (! QFile(settingsFileName).exists())
     {
-        pathSetting = new QSettings(pathFileName, QSettings::IniFormat);
+        logError("Missing settings file: " + settingsFileName);
+        return false;
+    }
 
-        pathSetting->beginGroup("path");
-        QString myPath = pathSetting->value("path").toString();
-        pathSetting->endGroup();
-        if (! myPath.isEmpty())
+    pathSetting = new QSettings(settingsFileName, QSettings::IniFormat);
+
+    pathSetting->beginGroup("path");
+    QString myPath = pathSetting->value("path").toString();
+    pathSetting->endGroup();
+
+    if (! myPath.isEmpty())
+    {
+        if (myPath.right(1) != "/" || myPath.right(1) != "\\" )
         {
-            if (myPath.right(1) != "/" || myPath.right(1) != "\\" )
-            {
-                myPath += "/";
-            }
-
-            if (myPath.left(1) == ".")
-            {
-                this->path = currentPath + myPath;
-            }
-            else
-            {
-                this->path = myPath;
-            }
+            myPath += "/";
         }
 
-        pathSetting->beginGroup("location");
-        float latitude = pathSetting->value("lat").toFloat();
-        float longitude = pathSetting->value("lon").toFloat();
-        int utmZone = pathSetting->value("utm_zone").toInt();
-        int isUtc = pathSetting->value("is_utc").toBool();
-        pathSetting->endGroup();
-
-        if (latitude != 0 && longitude != 0)
+        if (myPath.left(1) == ".")
         {
-            gisSettings.startLocation.latitude = latitude;
-            gisSettings.startLocation.longitude = longitude;
-            gisSettings.utmZone = utmZone;
-            gisSettings.isUTC = isUtc;
+            this->path = currentPath + myPath;
         }
+        else
+        {
+            this->path = myPath;
+        }
+    }
+
+    pathSetting->beginGroup("location");
+    float latitude = pathSetting->value("lat").toFloat();
+    float longitude = pathSetting->value("lon").toFloat();
+    int utmZone = pathSetting->value("utm_zone").toInt();
+    int isUtc = pathSetting->value("is_utc").toBool();
+    pathSetting->endGroup();
+
+    if (latitude != 0 && longitude != 0)
+    {
+        gisSettings.startLocation.latitude = latitude;
+        gisSettings.startLocation.longitude = longitude;
+        gisSettings.utmZone = utmZone;
+        gisSettings.isUTC = isUtc;
     }
 
     QString parametersFileName = this->path + "DATA/settings/parameters.ini";
