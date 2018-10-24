@@ -28,13 +28,13 @@ int main(int argc, char *argv[])
 
     QString currentPath = myApp.applicationDirPath() + "/";
 
-    if (! myProject.initializeSettings(currentPath))
+    if (! myProject.readGenericSettings(currentPath))
         return -1;
 
     QDate today, firstDay;
     int nrDays, nrDaysForecast;
 
-    QString xmlFileName = QString(argv[1]);
+    QString settingsFileName = QString(argv[1]);
     if (argc > 3)
     {
         nrDaysForecast = QString(argv[3]).toInt();
@@ -51,9 +51,9 @@ int main(int argc, char *argv[])
         nrDaysForecast = 9;
     }
 
-    if (!myProject.loadProject(xmlFileName))
+    if (!myProject.loadProject(settingsFileName))
     {
-        myProject.logError("Open project failed:\n " + xmlFileName);
+        myProject.logError("Open project failed:\n " + settingsFileName);
     }
     myProject.setEnvironment(batch);
 

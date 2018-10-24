@@ -140,7 +140,7 @@ bool Vine3DProject::loadProject(QString myFileName)
         if (!loadFieldMap(myFileName)) return false;
     }
 
-    if (!initializeSettings(path + "data/settings/") || !loadVine3DSettings() || !loadSoils() || !loadTrainingSystems()
+    if (!loadVine3DSettings() || !loadSoils() || !loadTrainingSystems()
         || !loadAggregatedMeteoVarCodes() || !loadDBPoints())
     {
         logError();
