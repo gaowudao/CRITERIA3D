@@ -538,6 +538,7 @@ bool PragaProject::climatePointsCycle(bool showInfo)
                     clima->setParam1(climateList->listParam1().at(j));
                     clima->setParam2(climateList->listParam2().at(j));
                     clima->setParam1IsClimate(climateList->listParam1IsClimate().at(j));
+                    clima->setParam1ClimateField(climateList->listParam1ClimateField().at(j));
 
                     if (clima->periodType() == genericPeriod)
                     {
@@ -553,11 +554,6 @@ bool PragaProject::climatePointsCycle(bool showInfo)
                     {
                         startDate.setDate(clima->yearStart(), 1, 1);
                         endDate.setDate(clima->yearEnd(), 12, 31);
-                    }
-
-                    if (clima->param1IsClimate())
-                    {
-            //            param1ClimateField = Climate.getClimateFieldName(param1ClimateElab)
                     }
                 }
                 else
@@ -667,6 +663,7 @@ bool PragaProject::climatePointsCycleGrid(bool showInfo)
                        clima->setParam1(climateList->listParam1().at(j));
                        clima->setParam2(climateList->listParam2().at(j));
                        clima->setParam1IsClimate(climateList->listParam1IsClimate().at(j));
+                       clima->setParam1ClimateField(climateList->listParam1ClimateField().at(j));
 
                        if (clima->periodType() == genericPeriod)
                        {
@@ -684,10 +681,6 @@ bool PragaProject::climatePointsCycleGrid(bool showInfo)
                            endDate.setDate(clima->yearEnd(), 12, 31);
                        }
 
-                       if (clima->param1IsClimate())
-                       {
-               //            param1ClimateField = Climate.getClimateFieldName(param1ClimateElab)
-                       }
                    }
                    else
                    {
