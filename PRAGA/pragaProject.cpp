@@ -1,6 +1,7 @@
 #include "pragaProject.h"
 #include "project.h"
 #include "climate.h"
+#include "download.h"
 #include "formInfo.h"
 
 #include <iostream> //debug
@@ -718,4 +719,189 @@ bool PragaProject::climatePointsCycleGrid(bool showInfo)
         return true;
     }
 
+}
+
+bool PragaProject::downloadDailyDataArkimet(QStringList variables, bool prec0024, QDate startDate, QDate endDate, bool showInfo)
+{
+    const int MAXDAYS = 30;
+
+    QString id, dataset;
+    QStringList datasetList;
+    QList<QStringList> idList;
+
+    QList<int> arkIdAirTemp;
+    arkIdAirTemp << 231 << 232 << 233;
+    int arkIdPrec = 250;
+    QList<int> arkIdRH;
+    arkIdRH << 240 << 241 << 242;
+    int arkIdRadiation = 706;
+    QList<int> arkIdWind;
+    arkIdWind << 227 << 230;
+
+    QList<int> arkIdVar;
+    for( int i=0; i < variables.size(); i++ )
+    {
+        if (variables[i] == "Air Temperature")
+            arkIdVar.append(arkIdAirTemp);
+        if (variables[i] == "Precipitation")
+            arkIdVar.append(arkIdPrec);
+        if (variables[i] == "Air Humidity")
+            arkIdVar.append(arkIdRH);
+        if (variables[i] == "Radiation")
+            arkIdVar.append(arkIdRadiation);
+        if (variables[i] == "Wind")
+            arkIdVar.append(arkIdWind);
+    }
+
+    Download* myDownload = new Download(meteoPointsDbHandler->getDbName());
+
+    int index, nrPoints = 0;
+    for( int i=0; i < nrMeteoPoints; i++ )
+    {
+        if (getMeteoPointSelected(i))
+        {
+            nrPoints ++;
+
+            id = QString::fromStdString(meteoPoints[i].id);
+            dataset = QString::fromStdString(meteoPoints[i].dataset);
+
+            if (!datasetList.contains(dataset))
+            {
+                datasetList << dataset;
+                QStringList myList;
+                myList << id;
+                idList.append(myList);
+            }
+            else
+            {
+                index = datasetList.indexOf(dataset);
+                idList[index].append(id);
+            }
+        }
+    }
+
+    FormInfo myInfo;
+    QString infoStr;
+
+    int nrDays = startDate.daysTo(endDate) + 1;
+    if (showInfo) myInfo.start(infoStr, nrPoints*nrDays);
+
+    int currentPoints = 0.;
+    for( int i=0; i < datasetList.size(); i++ )
+    {
+        QDate date1 = startDate;
+        QDate date2 = std::min(date1.addDays(MAXDAYS-1), endDate);
+
+        while (date1 <= endDate)
+        {
+            if (showInfo)
+            {
+                myInfo.setText("Download data from: " + date1.toString("yyyy-MM-dd") + " to: " + date2.toString("yyyy-MM-dd") + " dataset:" + datasetList[i]);
+                currentPoints += idList[i].size() * (date1.daysTo(date2) + 1);
+                myInfo.setValue(currentPoints);
+            }
+
+            myDownload->downloadDailyData(date1, date2, datasetList[i], idList[i], arkIdVar, prec0024);
+
+            date1 = date2.addDays(1);
+            date2 = std::min(date1.addDays(MAXDAYS-1), endDate);
+        }
+    }
+
+    if (showInfo) myInfo.close();
+    return true;
+}
+
+
+bool PragaProject::downloadHourlyDataArkimet(QStringList variables, QDate startDate, QDate endDate, bool showInfo)
+{
+    const int MAXDAYS = 7;
+
+    QList<int> arkIdAirTemp;
+    arkIdAirTemp << 78 << 158;
+    QList<int> arkIdPrec;
+    arkIdPrec << 160;
+    QList<int> arkIdRH;
+    arkIdRH << 139 << 140;
+    QList<int> arkIdRadiation;
+    arkIdRadiation << 164 << 409;
+    QList<int> arkIdWind;
+    arkIdWind << 69 << 165 << 166 << 431;
+
+    QList<int> arkIdVar;
+    for( int i=0; i < variables.size(); i++ )
+    {
+        if (variables[i] == "Air Temperature")
+            arkIdVar.append(arkIdAirTemp);
+        if (variables[i] == "Precipitation")
+            arkIdVar.append(arkIdPrec);
+        if (variables[i] == "Air Humidity")
+            arkIdVar.append(arkIdRH);
+        if (variables[i] == "Radiation")
+            arkIdVar.append(arkIdRadiation);
+        if (variables[i] == "Wind")
+            arkIdVar.append(arkIdWind);
+    }
+
+    int index, nrPoints = 0;
+    QString id, dataset;
+    QStringList datasetList;
+    QList<QStringList> idList;
+
+    for( int i=0; i < nrMeteoPoints; i++ )
+    {
+        if (getMeteoPointSelected(i))
+        {
+            nrPoints ++;
+
+            id = QString::fromStdString(meteoPoints[i].id);
+            dataset = QString::fromStdString(meteoPoints[i].dataset);
+
+            if (!datasetList.contains(dataset))
+            {
+                datasetList << dataset;
+                QStringList myList;
+                myList << id;
+                idList.append(myList);
+            }
+            else
+            {
+                index = datasetList.indexOf(dataset);
+                idList[index].append(id);
+            }
+        }
+    }
+
+    Download* myDownload = new Download(meteoPointsDbHandler->getDbName());
+
+    FormInfo myInfo;
+    QString infoStr;
+
+    int nrDays = startDate.daysTo(endDate) + 1;
+    if (showInfo) myInfo.start(infoStr, nrPoints*nrDays);
+
+    int currentPoints = 0.;
+    for( int i=0; i < datasetList.size(); i++ )
+    {
+        QDate date1 = startDate;
+        QDate date2 = std::min(date1.addDays(MAXDAYS-1), endDate);
+
+        while (date1 <= endDate)
+        {
+            if (showInfo)
+            {
+                myInfo.setText("Download data from: " + date1.toString("yyyy-MM-dd") + " to:" + date2.toString("yyyy-MM-dd") + " dataset:" + datasetList[i]);
+                currentPoints += idList[i].size() * (date1.daysTo(date2) + 1);
+                myInfo.setValue(currentPoints);
+            }
+
+            myDownload->downloadHourlyData(date1, date2, datasetList[i], idList[i], arkIdVar);
+
+            date1 = date2.addDays(1);
+            date2 = std::min(date1.addDays(MAXDAYS-1), endDate);
+        }
+    }
+
+    if (showInfo) myInfo.close();
+    return true;
 }

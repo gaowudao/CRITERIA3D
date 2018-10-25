@@ -79,7 +79,8 @@ SOURCES += \
     ../PRAGA/shared/settingsDialog.cpp \
     ../PRAGA/shared/rubberBand.cpp \
     ../PRAGA/shared/stationMarker.cpp \
-    ../PRAGA/shared/colorlegend.cpp
+    ../PRAGA/shared/colorlegend.cpp \
+    ../PRAGA/shared/rasterObject.cpp
 
 HEADERS  += \
     ../PRAGA/shared/interpolationCmd.h \
@@ -98,7 +99,8 @@ HEADERS  += \
     ../PRAGA/shared/settingsDialog.h \
     ../PRAGA/shared/rubberBand.h \
     ../PRAGA/shared/stationMarker.h \
-    ../PRAGA/shared/colorlegend.h
+    ../PRAGA/shared/colorlegend.h \
+    ../PRAGA/shared/rasterObject.h
 
 FORMS    += \
     ../PRAGA/shared/formInfo.ui \

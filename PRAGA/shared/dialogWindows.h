@@ -13,7 +13,6 @@
     frequencyType chooseFrequency();
 
     bool chooseMeteoVariable(Project *project_);
-    bool downloadMeteoData(Project *project_);
 
     #ifdef NETCDF
         bool chooseNetCDFVariable(int *varId, QDateTime *firstDate, QDateTime *lastDate);

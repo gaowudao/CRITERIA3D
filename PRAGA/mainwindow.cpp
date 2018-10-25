@@ -25,6 +25,7 @@
 #include "pragaProject.h"
 #include "commonConstants.h"
 #include "dialogWindows.h"
+#include "pragaDialogs.h"
 #include "computationDialog.h"
 #include "interpolationDialog.h"
 #include "pragaSettingsDialog.h"
