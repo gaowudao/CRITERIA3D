@@ -74,23 +74,9 @@
 
         void on_actionInterpolation_to_DTM_triggered();
 
-        void on_actionOpen_model_parameters_triggered();
-
-        void on_actionOpen_soil_map_triggered();
-
-        void on_actionOpen_soil_data_triggered();
-
-        void on_actionShow_boundary_triggered();
-
-        void on_actionShow_soil_triggered();
-
         void on_actionShow_DTM_triggered();
 
         void on_actionInterpolationSettings_triggered();
-
-        void on_actionCriteria3D_settings_triggered();
-
-        void on_actionCriteria3D_Initialize_triggered();
 
         void on_meteoGridOpacitySlider_sliderMoved(int position);
 

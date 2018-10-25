@@ -849,18 +849,5 @@ void MainWindow::on_actionShow_DTM_triggered()
     }
 }
 
-void MainWindow::on_actionShow_boundary_triggered()
-{
-    if (myProject.boundaryMap.isLoaded)
-    {
-        setColorScale(noMeteoTerrain, myProject.boundaryMap.colorScale);
-        this->setCurrentRaster(&(myProject.boundaryMap));
-    }
-}
-
-void MainWindow::on_actionCriteria3D_settings_triggered()
-{
-
-}
 
 

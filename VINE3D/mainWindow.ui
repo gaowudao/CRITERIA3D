@@ -2375,8 +2375,6 @@
     <property name="title">
      <string>Fi&amp;le</string>
     </property>
-    <addaction name="actionOpen_crop_map"/>
-    <addaction name="actionOpen_NetCDF_data"/>
     <addaction name="actionOpen_project"/>
    </widget>
    <widget class="QMenu" name="menuVariable">
@@ -2403,13 +2401,12 @@
      <addaction name="actionMapToner"/>
     </widget>
     <addaction name="menuMap"/>
-    <addaction name="actionParameters"/>
    </widget>
    <widget class="QMenu" name="menuVine3D">
     <property name="title">
      <string>Vine3D</string>
     </property>
-    <addaction name="actionCriteria3D_settings"/>
+    <addaction name="actionVine3D_settings"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuVariable"/>
@@ -2488,17 +2485,6 @@
     <string>Visible</string>
    </property>
   </action>
-  <action name="actionOpen_NetCDF_data">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Open NetCDF data...</string>
-   </property>
-   <property name="visible">
-    <bool>false</bool>
-   </property>
-  </action>
   <action name="actionOpen_meteo_grid">
    <property name="text">
     <string>Open meteo grid...</string>
@@ -2519,56 +2505,9 @@
     <string>Interpolation to DTM</string>
    </property>
   </action>
-  <action name="actionOpen_model_parameters">
-   <property name="text">
-    <string>Load model parameters...</string>
-   </property>
-   <property name="visible">
-    <bool>true</bool>
-   </property>
-  </action>
-  <action name="actionOpen_soil_map">
-   <property name="text">
-    <string>Load soil map...</string>
-   </property>
-   <property name="visible">
-    <bool>true</bool>
-   </property>
-  </action>
-  <action name="actionOpen_soil_data">
-   <property name="text">
-    <string>Load soil data...</string>
-   </property>
-   <property name="visible">
-    <bool>true</bool>
-   </property>
-  </action>
-  <action name="actionOpen_crop_map">
-   <property name="text">
-    <string>Open crop map...</string>
-   </property>
-   <property name="visible">
-    <bool>false</bool>
-   </property>
-  </action>
-  <action name="actionCriteria3D_settings">
+  <action name="actionVine3D_settings">
    <property name="text">
     <string>Settings...</string>
-   </property>
-  </action>
-  <action name="actionCriteria3D_Initialize">
-   <property name="text">
-    <string>Initialize 3D</string>
-   </property>
-  </action>
-  <action name="actionShow_boundary">
-   <property name="text">
-    <string>Show boundary</string>
-   </property>
-  </action>
-  <action name="actionShow_soil">
-   <property name="text">
-    <string>Show soil map</string>
    </property>
   </action>
   <action name="actionShow_DTM">
