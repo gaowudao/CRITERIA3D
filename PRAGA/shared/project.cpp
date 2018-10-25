@@ -75,6 +75,8 @@ bool Project::readGenericParameters()
             {
                 meteoSettings->setTransSamaniCoefficient(settings->value("samani_coefficient").toFloat());
             }
+
+            settings->endGroup();
         }
 
         //interpolation
@@ -154,7 +156,6 @@ bool Project::readGenericParameters()
 
         }
     }
-
     return true;
 }
 
