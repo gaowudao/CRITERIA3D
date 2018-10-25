@@ -97,7 +97,7 @@
         frequencyType getFrequency();
         meteoVariable getCurrentVariable();
 
-        bool setLogFile();
+        bool setLogFile(QString callingProgram);
         void logError(QString myStr);
         void log(std::string myStr);
         void logError();

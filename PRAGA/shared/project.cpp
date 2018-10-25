@@ -1042,13 +1042,13 @@ float Project::meteoDataConsistency(meteoVariable myVar, const Crit3DTime& timeI
 
  -------------------*/
 
-bool Project::setLogFile()
+bool Project::setLogFile(QString callingProgram)
 {
     if (!QDir(this->path + "log").exists())
          QDir().mkdir(this->path + "log");
 
     QString myDate = QDateTime().currentDateTime().toString("yyyy-MM-dd hh.mm");
-    QString fileName = "Praga_" + myDate + ".txt";
+    QString fileName = myDate + callingProgram + ".txt";
 
     this->logFileName = this->path + "log\\" + fileName;
 
