@@ -45,7 +45,7 @@ Crit3DProject::Crit3DProject()
 }
 
 
-bool Crit3DProject::readCriteria3DSettings()
+bool Crit3DProject::readCriteria3DParameters()
 {          
     return true;
 }
