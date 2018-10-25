@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1200</width>
+    <width>1360</width>
     <height>768</height>
    </rect>
   </property>
@@ -1949,7 +1949,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1200</width>
+     <width>1360</width>
      <height>21</height>
     </rect>
    </property>
@@ -2375,7 +2375,16 @@
     <property name="title">
      <string>Fi&amp;le</string>
     </property>
-    <addaction name="actionOpen_project"/>
+    <addaction name="actionLoadDEM"/>
+    <addaction name="separator"/>
+    <addaction name="actionOpen_meteo_points_DB"/>
+    <addaction name="actionClose_meteo_points"/>
+    <addaction name="separator"/>
+    <addaction name="actionOpen_meteo_grid"/>
+    <addaction name="actionClose_meteo_grid"/>
+    <addaction name="actionOpen_crop_map"/>
+    <addaction name="actionOpen_NetCDF_data"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuVariable">
     <property name="title">
@@ -2385,7 +2394,10 @@
     <addaction name="actionShowLocation"/>
     <addaction name="actionVariableQualitySpatial"/>
     <addaction name="separator"/>
+    <addaction name="actionRectangle_Selection"/>
+    <addaction name="separator"/>
     <addaction name="actionInterpolationSettings"/>
+    <addaction name="actionInterpolation_to_DTM"/>
    </widget>
    <widget class="QMenu" name="menuGIS_settings">
     <property name="title">
@@ -2401,16 +2413,22 @@
      <addaction name="actionMapToner"/>
     </widget>
     <addaction name="menuMap"/>
+    <addaction name="actionParameters"/>
    </widget>
-   <widget class="QMenu" name="menuVine3D">
+   <widget class="QMenu" name="menuCriteria3D">
     <property name="title">
      <string>Vine3D</string>
     </property>
-    <addaction name="actionVine3D_settings"/>
+    <addaction name="actionVine3D_InitializeWaterBalance"/>
+    <addaction name="actionCriteria3D_settings"/>
+    <addaction name="separator"/>
+    <addaction name="actionShow_DTM"/>
+    <addaction name="actionShow_boundary"/>
+    <addaction name="separator"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuVariable"/>
-   <addaction name="menuVine3D"/>
+   <addaction name="menuCriteria3D"/>
    <addaction name="menuGIS_settings"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -2485,6 +2503,17 @@
     <string>Visible</string>
    </property>
   </action>
+  <action name="actionOpen_NetCDF_data">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Open NetCDF data...</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
   <action name="actionOpen_meteo_grid">
    <property name="text">
     <string>Open meteo grid...</string>
@@ -2505,9 +2534,27 @@
     <string>Interpolation to DTM</string>
    </property>
   </action>
-  <action name="actionVine3D_settings">
+  <action name="actionOpen_crop_map">
+   <property name="text">
+    <string>Open crop map...</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionCriteria3D_settings">
    <property name="text">
     <string>Settings...</string>
+   </property>
+  </action>
+  <action name="actionVine3D_InitializeWaterBalance">
+   <property name="text">
+    <string>Initialize 3D</string>
+   </property>
+  </action>
+  <action name="actionShow_boundary">
+   <property name="text">
+    <string>Show boundary</string>
    </property>
   </action>
   <action name="actionShow_DTM">
@@ -2529,11 +2576,6 @@
   <action name="actionParameters">
    <property name="text">
     <string>Parameters</string>
-   </property>
-  </action>
-  <action name="actionOpen_project">
-   <property name="text">
-    <string>Open project...</string>
    </property>
   </action>
  </widget>
