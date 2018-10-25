@@ -124,6 +124,6 @@ HEADERS  += mainWindow.h \
     pragaSettingsDialog.h \
     pragaDialogs.h
 
-FORMS    += mainwindow.ui \
+FORMS    += mainWindow.ui \
         shared/formInfo.ui
 

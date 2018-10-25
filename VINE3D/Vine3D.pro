@@ -106,4 +106,4 @@ HEADERS  += \
 
 FORMS    += \
     ../PRAGA/shared/formInfo.ui \
-    mainwindow.ui
+    mainWindow.ui
