@@ -34,7 +34,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../mathFunctions/debug -lmathFunctions
     LIBS += -L../gis/debug -lgis
     LIBS += -L../meteo/debug -lmeteo
-    LIBS += -L../Interpolation/debug -lInterpolation
+    LIBS += -L../interpolation/debug -lInterpolation
     LIBS += -L../solarRadiation/debug -lsolarRadiation
     LIBS += -L../soil/debug -lsoil
     LIBS += -L../soilFluxes3D/debug -lsoilFluxes3D
@@ -49,7 +49,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../mathFunctions/release -lmathFunctions
     LIBS += -L../gis/release -lgis
     LIBS += -L../meteo/release -lmeteo
-    LIBS += -L../Interpolation/release -lInterpolation
+    LIBS += -L../interpolation/release -lInterpolation
     LIBS += -L../solarRadiation/release -lsolarRadiation
     LIBS += -L../soil/release -lsoil
     LIBS += -L../soilFluxes3D/release -lsoilFluxes3D
@@ -65,6 +65,12 @@ SOURCES += \
     ../PRAGA/shared/interpolationCmd.cpp \
     ../PRAGA/shared/project.cpp \
     ../PRAGA/shared/formInfo.cpp \
+    ../PRAGA/shared/settingsDialog.cpp \
+    ../PRAGA/shared/rubberBand.cpp \
+    ../PRAGA/shared/stationMarker.cpp \
+    ../PRAGA/shared/colorlegend.cpp \
+    ../PRAGA/shared/rasterObject.cpp \
+    ../PRAGA/shared/dialogWindows.cpp \
     atmosphere.cpp \
     dataHandler.cpp \
     disease.cpp \
@@ -75,17 +81,18 @@ SOURCES += \
     plant.cpp \
     waterBalance.cpp \
     vine3DProject.cpp \
-    mainwindow.cpp \
-    ../PRAGA/shared/settingsDialog.cpp \
-    ../PRAGA/shared/rubberBand.cpp \
-    ../PRAGA/shared/stationMarker.cpp \
-    ../PRAGA/shared/colorlegend.cpp \
-    ../PRAGA/shared/rasterObject.cpp
+    mainWindow.cpp
 
 HEADERS  += \
     ../PRAGA/shared/interpolationCmd.h \
     ../PRAGA/shared/project.h \
     ../PRAGA/shared/formInfo.h \
+    ../PRAGA/shared/settingsDialog.h \
+    ../PRAGA/shared/rubberBand.h \
+    ../PRAGA/shared/stationMarker.h \
+    ../PRAGA/shared/colorlegend.h \
+    ../PRAGA/shared/rasterObject.h \
+    ../PRAGA/shared/dialogWindows.h \
     atmosphere.h \
     dataHandler.h \
     disease.h \
@@ -95,12 +102,7 @@ HEADERS  += \
     plant.h \
     waterBalance.h \
     vine3DProject.h \
-    mainwindow.h \
-    ../PRAGA/shared/settingsDialog.h \
-    ../PRAGA/shared/rubberBand.h \
-    ../PRAGA/shared/stationMarker.h \
-    ../PRAGA/shared/colorlegend.h \
-    ../PRAGA/shared/rasterObject.h
+    mainWindow.h
 
 FORMS    += \
     ../PRAGA/shared/formInfo.ui \
