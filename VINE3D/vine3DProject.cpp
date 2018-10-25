@@ -71,8 +71,8 @@ void Vine3DProject::deleteAllGrids()
 {
     DTM.freeGrid();
     fieldMap.freeGrid();
-    boundaryGrid.freeGrid();
-    indexGrid.freeGrid();
+    boundaryMap.freeGrid();
+    indexMap.freeGrid();
     interpolatedDtm.freeGrid();
 
     delete meteoMaps;

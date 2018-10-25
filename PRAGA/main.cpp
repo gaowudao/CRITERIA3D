@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     if (! myProject.readGenericSettings(currentPath))
         return -1;
 
-    if (! myProject.readPragaSettings())
+    if (! myProject.readPragaParameters())
         return -1;
 
     QNetworkProxyFactory::setUseSystemConfiguration(true);

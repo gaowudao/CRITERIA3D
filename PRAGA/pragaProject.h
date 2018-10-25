@@ -27,7 +27,7 @@
 
         PragaProject();
 
-        bool readPragaSettings();
+        bool readPragaParameters();
 
         bool interpolationMeteoGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
         bool saveGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime, bool showInfo);

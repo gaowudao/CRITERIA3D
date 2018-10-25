@@ -61,8 +61,8 @@
         QSqlDatabase db;
 
         gis::Crit3DRasterGrid interpolatedDtm;
-        gis::Crit3DRasterGrid indexGrid;
-        gis::Crit3DRasterGrid boundaryGrid;
+        gis::Crit3DRasterGrid indexMap;
+        gis::Crit3DRasterGrid boundaryMap;
         gis::Crit3DRasterGrid fieldMap;
 
         soil::Crit3DSoilClass soilClass[13];

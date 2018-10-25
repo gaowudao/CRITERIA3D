@@ -138,15 +138,15 @@ bool setLayersDepth(Vine3DProject* myProject, double minThickness, double maxThi
 }
 
 
-bool setIndexGrid(Vine3DProject* myProject)
+bool setindexMap(Vine3DProject* myProject)
 {
     long index = 0;
-    myProject->indexGrid.initializeGrid(myProject->DTM);
-    for (int row = 0; row < myProject->indexGrid.header->nrRows; row++)
-        for (int col = 0; col < myProject->indexGrid.header->nrCols; col++)
+    myProject->indexMap.initializeGrid(myProject->DTM);
+    for (int row = 0; row < myProject->indexMap.header->nrRows; row++)
+        for (int col = 0; col < myProject->indexMap.header->nrCols; col++)
             if (myProject->DTM.value[row][col] != myProject->DTM.header->flag)
             {
-                myProject->indexGrid.value[row][col] = index;
+                myProject->indexMap.value[row][col] = index;
                 index++;
             }
 
@@ -157,12 +157,12 @@ bool setIndexGrid(Vine3DProject* myProject)
 
 bool setBoundary(Vine3DProject* myProject)
 {
-    myProject->boundaryGrid.initializeGrid(myProject->DTM);
-    for (int row = 0; row < myProject->boundaryGrid.header->nrRows; row++)
-        for (int col = 0; col < myProject->boundaryGrid.header->nrCols; col++)
+    myProject->boundaryMap.initializeGrid(myProject->DTM);
+    for (int row = 0; row < myProject->boundaryMap.header->nrRows; row++)
+        for (int col = 0; col < myProject->boundaryMap.header->nrCols; col++)
             if (gis::isBoundary(myProject->DTM, row, col))
                 if (! gis::isStrictMaximum(myProject->DTM, row, col))
-                    myProject->boundaryGrid.value[row][col] = BOUNDARY_RUNOFF;
+                    myProject->boundaryMap.value[row][col] = BOUNDARY_RUNOFF;
     return true;
 }
 
@@ -175,11 +175,11 @@ bool setCrit3DTopography(Vine3DProject* myProject)
     int myResult;
     QString myError;
 
-    for (int row = 0; row < myProject->indexGrid.header->nrRows; row++)
-        for (int col = 0; col < myProject->indexGrid.header->nrCols; col++)
+    for (int row = 0; row < myProject->indexMap.header->nrRows; row++)
+        for (int col = 0; col < myProject->indexMap.header->nrCols; col++)
         {
-            surfaceIndex = myProject->indexGrid.value[row][col];
-            if (surfaceIndex != myProject->indexGrid.header->flag)
+            surfaceIndex = myProject->indexMap.value[row][col];
+            if (surfaceIndex != myProject->indexMap.header->flag)
             {
                 gis::getUtmXYFromRowCol(myProject->DTM, row, col, &x, &y);
                 area = myProject->DTM.header->cellSize * myProject->DTM.header->cellSize;
@@ -195,7 +195,7 @@ bool setCrit3DTopography(Vine3DProject* myProject)
                     if (layer == 0)
                     {
                         lateralArea = myProject->DTM.header->cellSize;
-                        if (myProject->boundaryGrid.value[row][col] == BOUNDARY_RUNOFF)
+                        if (myProject->boundaryMap.value[row][col] == BOUNDARY_RUNOFF)
                         {
                             myResult = soilFluxes3D::setNode(index, x, y, z, area,
                                              true, true, BOUNDARY_RUNOFF, slope);
@@ -218,7 +218,7 @@ bool setCrit3DTopography(Vine3DProject* myProject)
                         }
                         else
                         {
-                            if (myProject->boundaryGrid.value[row][col] == BOUNDARY_RUNOFF)
+                            if (myProject->boundaryMap.value[row][col] == BOUNDARY_RUNOFF)
                             {
                                 myResult = soilFluxes3D::setNode(index, x, y, z, volume,
                                                  false, true, BOUNDARY_FREELATERALDRAINAGE, slope);
@@ -265,10 +265,10 @@ bool setCrit3DTopography(Vine3DProject* myProject)
                     for (int i=-1; i <= 1; i++)
                         for (int j=-1; j <= 1; j++)
                             if ((i != 0)||(j != 0))
-                                if (! gis::isOutOfGridRowCol(row+i, col+j, myProject->indexGrid))
+                                if (! gis::isOutOfGridRowCol(row+i, col+j, myProject->indexMap))
                                 {
-                                    linkIndex = myProject->indexGrid.value[row+i][col+j];
-                                    if (linkIndex != myProject->indexGrid.header->flag)
+                                    linkIndex = myProject->indexMap.value[row+i][col+j];
+                                    if (linkIndex != myProject->indexMap.header->flag)
                                     {
                                         linkIndex += layer * myProject->nrLayerNodes;
                                         myResult = soilFluxes3D::setNodeLink(index, linkIndex, LATERAL, lateralArea / 2.0);
@@ -295,11 +295,11 @@ bool setCrit3DNodeSoil(Vine3DProject* myProject)
     int myResult;
     QString myError;
 
-    for (int row = 0; row < myProject->indexGrid.header->nrRows; row++)
-        for (int col = 0; col < myProject->indexGrid.header->nrCols; col++)
+    for (int row = 0; row < myProject->indexMap.header->nrRows; row++)
+        for (int col = 0; col < myProject->indexMap.header->nrCols; col++)
         {
-            surfaceIndex = myProject->indexGrid.value[row][col];
-            if (surfaceIndex != myProject->indexGrid.header->flag)
+            surfaceIndex = myProject->indexMap.value[row][col];
+            if (surfaceIndex != myProject->indexMap.header->flag)
             {
                 soilIndex = myProject->getSoilIndex(row, col);
                 for (int layer = 0; layer < myProject->nrSoilLayers; layer++)
@@ -357,11 +357,11 @@ bool initializeSoilMoisture(Vine3DProject* myProject, int month)
 
     myProject->logInfo("Initialize soil moisture");
 
-    for (int row = 0; row < myProject->indexGrid.header->nrRows; row++)
-        for (int col = 0; col < myProject->indexGrid.header->nrCols; col++)
+    for (int row = 0; row < myProject->indexMap.header->nrRows; row++)
+        for (int col = 0; col < myProject->indexMap.header->nrCols; col++)
         {
-            surfaceIndex = myProject->indexGrid.value[row][col];
-            if (surfaceIndex != myProject->indexGrid.header->flag)
+            surfaceIndex = myProject->indexMap.value[row][col];
+            if (surfaceIndex != myProject->indexMap.header->flag)
             {
                 //surface
                 soilFluxes3D::setWaterContent(surfaceIndex, 0.0);
@@ -476,11 +476,11 @@ bool setWaterSinkSource(Vine3DProject* myProject, double* totalPrecipitation,
 
     //precipitation - irrigation
     *totalPrecipitation = 0.0;
-    for (long row = 0; row < myProject->indexGrid.header->nrRows; row++)
-        for (long col = 0; col < myProject->indexGrid.header->nrCols; col++)
+    for (long row = 0; row < myProject->indexMap.header->nrRows; row++)
+        for (long col = 0; col < myProject->indexMap.header->nrCols; col++)
         {
-            surfaceIndex = myProject->indexGrid.value[row][col];
-            if (surfaceIndex != myProject->indexGrid.header->flag)
+            surfaceIndex = myProject->indexMap.value[row][col];
+            if (surfaceIndex != myProject->indexMap.header->flag)
             {
                 totalWater = 0.0;
                 prec = myProject->meteoMaps->precipitationMap->value[row][col];
@@ -500,11 +500,11 @@ bool setWaterSinkSource(Vine3DProject* myProject, double* totalPrecipitation,
 
     //Evaporation
     *totalEvaporation = 0.0;
-    for (long row = 0; row < myProject->indexGrid.header->nrRows; row++)
-        for (long col = 0; col < myProject->indexGrid.header->nrCols; col++)
+    for (long row = 0; row < myProject->indexMap.header->nrRows; row++)
+        for (long col = 0; col < myProject->indexMap.header->nrCols; col++)
         {
-            surfaceIndex = myProject->indexGrid.value[row][col];
-            if (surfaceIndex != myProject->indexGrid.header->flag)
+            surfaceIndex = myProject->indexMap.value[row][col];
+            if (surfaceIndex != myProject->indexMap.header->flag)
             {
                 realEvap = evaporation(myProject, row, col, surfaceIndex);
                 myProject->meteoMaps->evaporationMap->value[row][col] = realEvap;
@@ -516,11 +516,11 @@ bool setWaterSinkSource(Vine3DProject* myProject, double* totalPrecipitation,
 
     //crop transpiration
     *totalTranspiration = 0.0;
-    for (long row = 0; row < myProject->indexGrid.header->nrRows; row++)
-        for (long col = 0; col < myProject->indexGrid.header->nrCols; col++)
+    for (long row = 0; row < myProject->indexMap.header->nrRows; row++)
+        for (long col = 0; col < myProject->indexMap.header->nrCols; col++)
         {    
-            surfaceIndex = myProject->indexGrid.value[row][col];
-            if (surfaceIndex != myProject->indexGrid.header->flag)
+            surfaceIndex = myProject->indexMap.value[row][col];
+            if (surfaceIndex != myProject->indexMap.header->flag)
             {
                 for (layerIndex=1; layerIndex < myProject->nrSoilLayers; layerIndex++)
                 {
@@ -574,14 +574,14 @@ double getSoilVar(Vine3DProject* myProject, int soilIndex, int myLayerIndex, soi
 double* getSoilVarProfile(Vine3DProject* myProject, int row, int col, soilVariable myVar)
 {
     double* myProfile = (double *) calloc(myProject->nrSoilLayers, sizeof(double));
-    long surfaceIndex = myProject->indexGrid.value[row][col];
+    long surfaceIndex = myProject->indexMap.value[row][col];
     int soilIndex = myProject->getSoilIndex(row, col);
     int layerIndex;
 
     for (layerIndex = 0; layerIndex < myProject->nrSoilLayers; layerIndex++)
         myProfile[layerIndex] = NODATA;
 
-    if (surfaceIndex != myProject->indexGrid.header->flag)
+    if (surfaceIndex != myProject->indexMap.header->flag)
         for (layerIndex = 0; layerIndex < myProject->nrSoilLayers; layerIndex++)
             if ((myVar == soilWiltingPointPotential) || (myVar == soilFieldCapacityPotential)
                     || (myVar == soilWaterContentFC) || (myVar == soilWaterContentWP))
@@ -592,13 +592,13 @@ double* getSoilVarProfile(Vine3DProject* myProject, int row, int col, soilVariab
 double* getCriteria3DVarProfile(Vine3DProject* myProject, int myRow, int myCol, criteria3DVariable myVar)
 {
     double* myProfile = (double *) calloc(myProject->nrSoilLayers, sizeof(double));
-    long surfaceIndex = myProject->indexGrid.value[myRow][myCol];
+    long surfaceIndex = myProject->indexMap.value[myRow][myCol];
     long nodeIndex, layerIndex;
 
     for (layerIndex = 0; layerIndex < myProject->nrSoilLayers; layerIndex++)
         myProfile[layerIndex] = NODATA;
 
-    if (surfaceIndex != myProject->indexGrid.header->flag)
+    if (surfaceIndex != myProject->indexMap.header->flag)
         for (layerIndex = 0; layerIndex < myProject->nrSoilLayers; layerIndex++)
         {
             nodeIndex = layerIndex * myProject->nrLayerNodes + surfaceIndex;
@@ -655,11 +655,11 @@ bool setCriteria3DVarMap(int myLayerIndex, Vine3DProject* myProject, criteria3DV
 {
     long surfaceIndex, nodeIndex;
 
-    for (int row = 0; row < myProject->indexGrid.header->nrRows; row++)
-        for (int col = 0; col < myProject->indexGrid.header->nrCols; col++)
+    for (int row = 0; row < myProject->indexMap.header->nrRows; row++)
+        for (int col = 0; col < myProject->indexMap.header->nrCols; col++)
         {
-            surfaceIndex = myProject->indexGrid.value[row][col];
-            if (surfaceIndex != myProject->indexGrid.header->flag)
+            surfaceIndex = myProject->indexMap.value[row][col];
+            if (surfaceIndex != myProject->indexMap.header->flag)
             {
                 nodeIndex = myLayerIndex * myProject->nrLayerNodes + surfaceIndex;
                 if (! setCriteria3DVar(myVar, nodeIndex, myCriteria3DMap->value[row][col])) return false;
@@ -676,13 +676,13 @@ bool getCriteria3DVarMap(Vine3DProject* myProject, criteria3DVariable myVar,
     long surfaceIndex, nodeIndex;
     double myValue;
 
-    criteria3DMap->initializeGrid(myProject->indexGrid);
+    criteria3DMap->initializeGrid(myProject->indexMap);
 
-    for (int row = 0; row < myProject->indexGrid.header->nrRows; row++)
-        for (int col = 0; col < myProject->indexGrid.header->nrCols; col++)
+    for (int row = 0; row < myProject->indexMap.header->nrRows; row++)
+        for (int col = 0; col < myProject->indexMap.header->nrCols; col++)
         {
-            surfaceIndex = myProject->indexGrid.value[row][col];
-            if (surfaceIndex != myProject->indexGrid.header->flag)
+            surfaceIndex = myProject->indexMap.value[row][col];
+            if (surfaceIndex != myProject->indexMap.header->flag)
             {
                 nodeIndex = layerIndex * myProject->nrLayerNodes + surfaceIndex;
 
@@ -707,13 +707,13 @@ bool getSoilSurfaceMoisture(Vine3DProject* myProject, gis::Crit3DRasterGrid* out
     double waterContent, sumWater, wiltingPoint, minWater, saturation, maxWater;
     double soilSurfaceMoisture;     //[0-100]
 
-    for (int row = 0; row < myProject->indexGrid.header->nrRows; row++)
+    for (int row = 0; row < myProject->indexMap.header->nrRows; row++)
     {
-        for (int col = 0; col < myProject->indexGrid.header->nrCols; col++)
+        for (int col = 0; col < myProject->indexMap.header->nrCols; col++)
         {
             outputMap->value[row][col] = outputMap->header->flag;
-            surfaceIndex = myProject->indexGrid.value[row][col];
-            if (surfaceIndex != myProject->indexGrid.header->flag)
+            surfaceIndex = myProject->indexMap.value[row][col];
+            if (surfaceIndex != myProject->indexMap.header->flag)
             {
                 sumWater = soilFluxes3D::getWaterContent(surfaceIndex);           //[m]
                 minWater = 0.0;                                                 //[m]
@@ -744,14 +744,14 @@ bool getRootZoneAWCmap(Vine3DProject* myProject, gis::Crit3DRasterGrid* outputMa
     double awc, thickness, sumAWC, skeleton;
     int soilIndex, horizonIndex;
 
-    for (int row = 0; row < myProject->indexGrid.header->nrRows; row++)
-        for (int col = 0; col < myProject->indexGrid.header->nrCols; col++)
+    for (int row = 0; row < myProject->indexMap.header->nrRows; row++)
+        for (int col = 0; col < myProject->indexMap.header->nrCols; col++)
         {
             //initialize
             outputMap->value[row][col] = outputMap->header->flag;
 
-            surfaceIndex = myProject->indexGrid.value[row][col];
-            if (surfaceIndex != myProject->indexGrid.header->flag)
+            surfaceIndex = myProject->indexMap.value[row][col];
+            if (surfaceIndex != myProject->indexMap.header->flag)
             {
                 sumAWC = 0.0;
                 soilIndex = myProject->getSoilIndex(row, col);
@@ -806,15 +806,15 @@ bool getCriteria3DIntegrationMap(Vine3DProject* myProject, criteria3DVariable my
     double thickCoeff, sumCoeff;
     int soilIndex, horizonIndex;
 
-    for (int row = 0; row < myProject->indexGrid.header->nrRows; row++)
-        for (int col = 0; col < myProject->indexGrid.header->nrCols; col++)
+    for (int row = 0; row < myProject->indexMap.header->nrRows; row++)
+        for (int col = 0; col < myProject->indexMap.header->nrCols; col++)
         {
-            surfaceIndex = myProject->indexGrid.value[row][col];
+            surfaceIndex = myProject->indexMap.value[row][col];
             criteria3DMap->value[row][col] = criteria3DMap->header->flag;
             sumValues = 0.0;
             sumCoeff = 0.0;
 
-            if (surfaceIndex != myProject->indexGrid.header->flag)
+            if (surfaceIndex != myProject->indexMap.header->flag)
             {
                 soilIndex = myProject->getSoilIndex(row, col);
                 for (int i = firstIndex; i <= lastIndex; i++)
@@ -849,7 +849,7 @@ bool saveWaterBalanceOutput(Vine3DProject* myProject, QDate myDate, criteria3DVa
                             double upperDepth, double lowerDepth)
 {
     gis::Crit3DRasterGrid* myMap = new gis::Crit3DRasterGrid();
-    myMap->initializeGrid(myProject->indexGrid);
+    myMap->initializeGrid(myProject->indexMap);
 
     if (myVar == soilSurfaceMoisture)
     {
@@ -964,7 +964,7 @@ bool saveWaterBalanceState(Vine3DProject* myProject, QDate myDate, QString myAre
     std::string myErrorString;
     gis::Crit3DRasterGrid* myMap;
     myMap = new gis::Crit3DRasterGrid();
-    myMap->initializeGrid(myProject->indexGrid);
+    myMap->initializeGrid(myProject->indexMap);
 
     QString myPrefix = getPrefixFromVar(myDate, myArea, myVar);
 
@@ -1038,7 +1038,7 @@ bool initializeWaterBalance(Vine3DProject* myProject)
     setLayersDepth(myProject, minThickness, maxThickness, thickFactor);
     myProject->logInfo("nr of layers: " + QString::number(myProject->nrSoilLayers));
 
-    if (setIndexGrid(myProject))
+    if (setindexMap(myProject))
         myProject->logInfo("nr of surface cells: " + QString::number(myProject->nrLayerNodes));
     else
     {
