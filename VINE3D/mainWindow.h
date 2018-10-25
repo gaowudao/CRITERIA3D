@@ -50,6 +50,8 @@
 
         void on_actionMapTerrain_triggered();
 
+        void on_actionRectangle_Selection_triggered();
+
         void on_dateChanged();
 
         void on_rasterScaleButton_clicked();
@@ -74,9 +76,15 @@
 
         void on_actionInterpolation_to_DTM_triggered();
 
+        void on_actionShow_boundary_triggered();
+
         void on_actionShow_DTM_triggered();
 
         void on_actionInterpolationSettings_triggered();
+
+        void on_actionCriteria3D_settings_triggered();
+
+        void on_actionVine3D_InitializeWaterBalance_triggered();
 
         void on_meteoGridOpacitySlider_sliderMoved(int position);
 

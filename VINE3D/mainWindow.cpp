@@ -19,8 +19,9 @@
 #include "tileSources/CompositeTileSource.h"
 
 #include "formInfo.h"
-#include "mainWindow.h"
+#include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "waterBalance.h"
 #include "Position.h"
 #include "dbMeteoPoints.h"
 #include "vine3DProject.h"
@@ -31,7 +32,6 @@
 #include "spatialControl.h"
 #include "interpolationDialog.h"
 #include "settingsDialog.h"
-
 
 extern Vine3DProject myProject;
 
@@ -252,6 +252,17 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
             myRubberBand->setGeometry(QRect(mapPoint, QSize()));
             myRubberBand->show();
         }
+
+        #ifdef NETCDF
+        if (myProject.netCDF.isLoaded)
+        {
+            QPoint pos = event->pos();
+            Position myPos = mapView->mapToScene(getMapPoint(&pos));
+            gis::Crit3DGeoPoint geoPoint = gis::Crit3DGeoPoint(myPos.latitude(), myPos.longitude());
+
+            exportNetCDFDataSeries(geoPoint);
+        }
+        #endif
     }
 }
 
@@ -290,6 +301,27 @@ void MainWindow::on_actionMapTerrain_triggered()
 {
     this->setMapSource(OSMTileSource::Terrain);
 }
+
+
+void MainWindow::on_actionRectangle_Selection_triggered()
+{
+    if (myRubberBand != NULL)
+    {
+        delete myRubberBand;
+        myRubberBand = NULL;
+    }
+
+    if (ui->actionRectangle_Selection->isChecked())
+    {
+        myRubberBand = new RubberBand(QRubberBand::Rectangle, this->mapView);
+        QPoint origin(this->mapView->width()*0.5 , this->mapView->height()*0.5);
+        QPoint mapPoint = getMapPoint(&origin);
+        myRubberBand->setOrigin(mapPoint);
+        myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), QSize()));
+        myRubberBand->show();
+     }
+}
+
 
 void MainWindow::on_actionLoadDEM_triggered()
 {
@@ -840,6 +872,7 @@ void MainWindow::on_actionShowLocation_triggered()
     this->updateVariable();
 }
 
+
 void MainWindow::on_actionShow_DTM_triggered()
 {
     if (myProject.DTM.isLoaded)
@@ -849,5 +882,24 @@ void MainWindow::on_actionShow_DTM_triggered()
     }
 }
 
+void MainWindow::on_actionShow_boundary_triggered()
+{
+    if (myProject.boundaryMap.isLoaded)
+    {
+        setColorScale(noMeteoTerrain, myProject.boundaryMap.colorScale);
+        this->setCurrentRaster(&(myProject.boundaryMap));
+    }
+}
+
+void MainWindow::on_actionCriteria3D_settings_triggered()
+{
+
+}
+
+void MainWindow::on_actionVine3D_InitializeWaterBalance_triggered()
+{
+    if (initializeWaterBalance(&myProject))
+        QMessageBox::information(NULL, "", "Criteria3D initialized.");
+}
 
 
