@@ -339,7 +339,7 @@ bool PragaProject::elaborationPointsCycle(bool isAnomaly, bool showInfo)
                         myInfo.setValue(i);
 
 
-            if ( elaborationOnPoint(&errorString, meteoPointsDbHandler, NULL, meteoPointTemp, clima, isMeteoGrid, startDate, endDate, isAnomaly, true, meteoSettings))
+            if ( elaborationOnPoint(&errorString, meteoPointsDbHandler, NULL, meteoPointTemp, clima, isMeteoGrid, startDate, endDate, isAnomaly, meteoSettings))
             {
                 validCell = validCell + 1;
             }
@@ -439,7 +439,7 @@ bool PragaProject::elaborationPointsCycleGrid(bool isAnomaly, bool showInfo)
                 meteoPointTemp->nrObsDataDaysD = 0;
 
 
-                if  ( elaborationOnPoint(&errorString, NULL, meteoGridDbHandler, meteoPointTemp, clima, isMeteoGrid, startDate, endDate, isAnomaly, true, meteoSettings))
+                if  ( elaborationOnPoint(&errorString, NULL, meteoGridDbHandler, meteoPointTemp, clima, isMeteoGrid, startDate, endDate, isAnomaly, meteoSettings))
                 {
                     validCell = validCell + 1;
                 }

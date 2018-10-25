@@ -392,7 +392,7 @@ void ComputationDialog::done(bool res)
 
     if(res)  // ok was pressed
     {
-        if (!checkValidData())
+        if ( (!saveClima && !checkValidData()) || (saveClima && saveClimaLayout.getList().empty()) )
         {
             return;
         }
