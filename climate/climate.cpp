@@ -53,7 +53,7 @@ bool elaborationOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoP
         QList<float> paramList;
         QString table = getTable(clima->param1ClimateField());
         paramList = readElab(clima->db(), table, myError, QString::fromStdString(meteoPointTemp->id), clima->param1ClimateField());
-        if (clima->getParam1ClimateIndex() != NODATA && clima->getParam1ClimateIndex() < paramList.size())
+        if (clima->getParam1ClimateIndex() != NODATA && clima->getParam1ClimateIndex() <= paramList.size())
         {
             clima->setParam1(paramList.at( clima->getParam1ClimateIndex() - 1 ));
         }
@@ -304,7 +304,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
             if (clima->param1IsClimate())
             {
                 int climateIndex = getClimateIndexFromElab(getQDate(startD), clima->param1ClimateField());
-                if (climateIndex != NODATA && climateIndex < paramList.size())
+                if (climateIndex != NODATA && climateIndex <= paramList.size())
                 {
                     clima->setParam1(paramList.at( climateIndex - 1 ));
                 }
@@ -370,7 +370,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
             if (clima->param1IsClimate())
             {
                 int climateIndex = getClimateIndexFromElab(getQDate(startD), clima->param1ClimateField());
-                if (climateIndex != NODATA && climateIndex < paramList.size())
+                if (climateIndex != NODATA && climateIndex <= paramList.size())
                 {
                     clima->setParam1(paramList.at( climateIndex - 1 ));
                 }
@@ -422,7 +422,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
             if (clima->param1IsClimate())
             {
                 int climateIndex = getClimateIndexFromElab(getQDate(startD), clima->param1ClimateField());
-                if (climateIndex != NODATA && climateIndex < paramList.size())
+                if (climateIndex != NODATA && climateIndex <= paramList.size())
                 {
                     clima->setParam1(paramList.at( climateIndex - 1 ));
                 }
@@ -490,7 +490,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
             if (clima->param1IsClimate())
             {
                 int climateIndex = getClimateIndexFromElab(getQDate(startD), clima->param1ClimateField());
-                if (climateIndex != NODATA && climateIndex < paramList.size())
+                if (climateIndex != NODATA && climateIndex <= paramList.size())
                 {
                     clima->setParam1(paramList.at( climateIndex - 1 ));
                 }
@@ -532,7 +532,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
             paramList = readElab(db, table, myError, QString::fromStdString(meteoPoint->id), clima->param1ClimateField());
 
             int climateIndex = getClimateIndexFromElab(getQDate(startD), clima->param1ClimateField());
-            if (climateIndex != NODATA && climateIndex < paramList.size())
+            if (climateIndex != NODATA && climateIndex <= paramList.size())
             {
                 clima->setParam1(paramList.at( climateIndex - 1 ));
             }
@@ -567,7 +567,7 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
             paramList = readElab(db, table, myError, QString::fromStdString(meteoPoint->id), clima->param1ClimateField());
 
             int climateIndex = getClimateIndexFromElab(getQDate(startD), clima->param1ClimateField());
-            if (climateIndex != NODATA && climateIndex < paramList.size())
+            if (climateIndex != NODATA && climateIndex <= paramList.size())
             {
                 clima->setParam1(paramList.at( climateIndex - 1 ));
             }
