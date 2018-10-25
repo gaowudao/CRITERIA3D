@@ -242,6 +242,13 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
 
     float result;
 
+    QList<float> paramList;
+    if (clima->param1IsClimate())
+    {
+        QString table = getTable(clima->param1ClimateField());
+        paramList = readElab(db, table, myError, QString::fromStdString(meteoPoint->id), clima->param1ClimateField());
+    }
+
     switch(clima->periodType())
     {
 
@@ -294,7 +301,18 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
                 meteoSettings->setMinimumPercentage(minPerc * nLeapYears/totYears);
             }
 
-            //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
+            if (clima->param1IsClimate())
+            {
+                int climateIndex = getClimateIndexFromElab(getQDate(startD), clima->param1ClimateField());
+                if (climateIndex != NODATA && climateIndex < paramList.size())
+                {
+                    clima->setParam1(paramList.at( climateIndex - 1 ));
+                }
+                else
+                {
+                    clima->setParam1(NODATA);
+                }
+            }
 
             result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, meteoSettings);
 
@@ -331,6 +349,13 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
         bool okAtLeastOne = false;
         std::vector<float> allResults;
 
+        QList<float> paramList;
+        if (clima->param1IsClimate())
+        {
+            QString table = getTable(clima->param1ClimateField());
+            paramList = readElab(db, table, myError, QString::fromStdString(meteoPoint->id), clima->param1ClimateField());
+        }
+
         for (int i = 1; i<=36; i++)
         {
             int dayStart;
@@ -341,7 +366,19 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
 
             Crit3DDate startD (dayStart, month, clima->yearStart());
             Crit3DDate endD (dayEnd, month, clima->yearStart());
-            //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
+
+            if (clima->param1IsClimate())
+            {
+                int climateIndex = getClimateIndexFromElab(getQDate(startD), clima->param1ClimateField());
+                if (climateIndex != NODATA && climateIndex < paramList.size())
+                {
+                    clima->setParam1(paramList.at( climateIndex - 1 ));
+                }
+                else
+                {
+                    clima->setParam1(NODATA);
+                }
+            }
 
             result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, meteoSettings);
 
@@ -366,6 +403,13 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
         bool okAtLeastOne = false;
         std::vector<float> allResults;
 
+        QList<float> paramList;
+        if (clima->param1IsClimate())
+        {
+            QString table = getTable(clima->param1ClimateField());
+            paramList = readElab(db, table, myError, QString::fromStdString(meteoPoint->id), clima->param1ClimateField());
+        }
+
         for (int i = 1; i<=12; i++)
         {
 
@@ -374,7 +418,19 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
             int dayEnd = temp.daysInMonth();
 
             Crit3DDate endD (dayEnd, i, clima->yearStart());
-            //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
+
+            if (clima->param1IsClimate())
+            {
+                int climateIndex = getClimateIndexFromElab(getQDate(startD), clima->param1ClimateField());
+                if (climateIndex != NODATA && climateIndex < paramList.size())
+                {
+                    clima->setParam1(paramList.at( climateIndex - 1 ));
+                }
+                else
+                {
+                    clima->setParam1(NODATA);
+                }
+            }
 
             result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, meteoSettings);
 
@@ -398,6 +454,13 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
     {
         bool okAtLeastOne = false;
         std::vector<float> allResults;
+
+        QList<float> paramList;
+        if (clima->param1IsClimate())
+        {
+            QString table = getTable(clima->param1ClimateField());
+            paramList = readElab(db, table, myError, QString::fromStdString(meteoPoint->id), clima->param1ClimateField());
+        }
 
         for (int i = 1; i<=4; i++)
         {
@@ -424,7 +487,18 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
             Crit3DDate startD (1, i*3, clima->yearStart());
             Crit3DDate endD (dayEnd, monthEnd, clima->yearEnd());
 
-            //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
+            if (clima->param1IsClimate())
+            {
+                int climateIndex = getClimateIndexFromElab(getQDate(startD), clima->param1ClimateField());
+                if (climateIndex != NODATA && climateIndex < paramList.size())
+                {
+                    clima->setParam1(paramList.at( climateIndex - 1 ));
+                }
+                else
+                {
+                    clima->setParam1(NODATA);
+                }
+            }
 
             result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, seasonalNPeriodYears, elab1, elab2, meteoSettings);
 
@@ -450,7 +524,23 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
 
         Crit3DDate startD (1, 1, clima->yearStart());
         Crit3DDate endD (31, 12, clima->yearStart());
-        //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
+
+        if (clima->param1IsClimate())
+        {
+            QList<float> paramList;
+            QString table = getTable(clima->param1ClimateField());
+            paramList = readElab(db, table, myError, QString::fromStdString(meteoPoint->id), clima->param1ClimateField());
+
+            int climateIndex = getClimateIndexFromElab(getQDate(startD), clima->param1ClimateField());
+            if (climateIndex != NODATA && climateIndex < paramList.size())
+            {
+                clima->setParam1(paramList.at( climateIndex - 1 ));
+            }
+            else
+            {
+                clima->setParam1(NODATA);
+            }
+        }
 
         result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, meteoSettings);
 
@@ -470,7 +560,22 @@ bool climateTemporalCycle(std::string *myError, Crit3DClimate* clima, std::vecto
         Crit3DDate startD = getCrit3DDate(clima->genericPeriodDateStart());
         Crit3DDate endD = getCrit3DDate(clima->genericPeriodDateEnd());
 
-        //param1 = Elaboration.GetElabParam1(myClimatePoint, param1IsClimate, param1ClimateField, periodType, i, param1)
+        if (clima->param1IsClimate())
+        {
+            QList<float> paramList;
+            QString table = getTable(clima->param1ClimateField());
+            paramList = readElab(db, table, myError, QString::fromStdString(meteoPoint->id), clima->param1ClimateField());
+
+            int climateIndex = getClimateIndexFromElab(getQDate(startD), clima->param1ClimateField());
+            if (climateIndex != NODATA && climateIndex < paramList.size())
+            {
+                clima->setParam1(paramList.at( climateIndex - 1 ));
+            }
+            else
+            {
+                clima->setParam1(NODATA);
+            }
+        }
 
         result = computeStatistic(outputValues, meteoPoint, clima, startD, endD, clima->nYears(), elab1, elab2, meteoSettings);
 
