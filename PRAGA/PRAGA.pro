@@ -88,7 +88,7 @@ unix:{
 
 
 SOURCES += main.cpp\
-    mainwindow.cpp \
+    mainWindow.cpp \
     computationDialog.cpp \
     anomalyLayout.cpp \
     saveClimaLayout.cpp \
@@ -106,7 +106,7 @@ SOURCES += main.cpp\
     pragaSettingsDialog.cpp \
     pragaDialogs.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS  += mainWindow.h \
     saveClimaLayout.h \
     computationDialog.h \
     anomalyLayout.h \

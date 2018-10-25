@@ -16,7 +16,7 @@
 #include "tileSources/GridTileSource.h"
 #include "tileSources/CompositeTileSource.h"
 
-#include "mainwindow.h"
+#include "mainWindow.h"
 #include "ui_mainwindow.h"
 #include "formInfo.h"
 #include "dbMeteoPoints.h"
