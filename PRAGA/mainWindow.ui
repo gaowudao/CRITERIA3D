@@ -2487,16 +2487,6 @@
     <string>&amp;Load DEM...</string>
    </property>
   </action>
-  <action name="actionSetUTMzone">
-   <property name="text">
-    <string>&amp;UTM zone...</string>
-   </property>
-  </action>
-  <action name="actionProxy">
-   <property name="text">
-    <string>&amp;Proxy</string>
-   </property>
-  </action>
   <action name="actionMapOpenStreetMap">
    <property name="text">
     <string>&amp;OpenStreetMap</string>
@@ -2550,25 +2540,6 @@
     <string>Choose variable...</string>
    </property>
   </action>
-  <action name="actionVariableDaily">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>daily</string>
-   </property>
-  </action>
-  <action name="actionVariableHourly">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>hourly</string>
-   </property>
-  </action>
   <action name="actionVariableNone">
    <property name="checkable">
     <bool>true</bool>
@@ -2589,11 +2560,6 @@
    </property>
    <property name="text">
     <string>Spatial quality control</string>
-   </property>
-  </action>
-  <action name="actionInterpolation">
-   <property name="text">
-    <string>Interpolation</string>
    </property>
   </action>
   <action name="actionPointsVisible">
@@ -2653,61 +2619,12 @@
     <string>Save meteo grid...</string>
    </property>
   </action>
-  <action name="actionOpen_model_parameters">
-   <property name="text">
-    <string>Load model parameters...</string>
-   </property>
-   <property name="visible">
-    <bool>true</bool>
-   </property>
-  </action>
-  <action name="actionOpen_soil_map">
-   <property name="text">
-    <string>Load soil map...</string>
-   </property>
-   <property name="visible">
-    <bool>true</bool>
-   </property>
-  </action>
-  <action name="actionOpen_soil_data">
-   <property name="text">
-    <string>Load soil data...</string>
-   </property>
-   <property name="visible">
-    <bool>true</bool>
-   </property>
-  </action>
   <action name="actionOpen_crop_map">
    <property name="text">
     <string>Open crop map...</string>
    </property>
    <property name="visible">
     <bool>false</bool>
-   </property>
-  </action>
-  <action name="actionCriteria3D_settings">
-   <property name="text">
-    <string>Settings...</string>
-   </property>
-  </action>
-  <action name="actionCriteria3D_Initialize">
-   <property name="text">
-    <string>Initialize 3D</string>
-   </property>
-  </action>
-  <action name="actionShow_boundary">
-   <property name="text">
-    <string>Show boundary</string>
-   </property>
-  </action>
-  <action name="actionShow_soil">
-   <property name="text">
-    <string>Show soil map</string>
-   </property>
-  </action>
-  <action name="actionShow_DTM">
-   <property name="text">
-    <string>Show DEM</string>
    </property>
   </action>
   <action name="actionElaboration_meteo_grid">
@@ -2740,16 +2657,6 @@
     <string>meteo grid</string>
    </property>
   </action>
-  <action name="actionOpen_climate">
-   <property name="text">
-    <string>Open climate...</string>
-   </property>
-  </action>
-  <action name="actionNew_climate">
-   <property name="text">
-    <string>New climate...</string>
-   </property>
-  </action>
   <action name="actionInterpolationSettings">
    <property name="text">
     <string>Settings...</string>
@@ -2759,11 +2666,6 @@
    </property>
    <property name="toolTip">
     <string>Interpolation settings</string>
-   </property>
-  </action>
-  <action name="actionSettings">
-   <property name="text">
-    <string>Settings</string>
    </property>
   </action>
   <action name="actionParameters">

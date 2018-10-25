@@ -937,3 +937,8 @@ void MainWindow::on_actionCriteria3D_Initialize_triggered()
 }
 
 
+
+void MainWindow::on_actionOpen_NetCDF_data_triggered()
+{
+
+}

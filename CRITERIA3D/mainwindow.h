@@ -100,6 +100,8 @@
 
         void on_actionShowLocation_triggered();
 
+        void on_actionOpen_NetCDF_data_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
