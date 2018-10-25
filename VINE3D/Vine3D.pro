@@ -71,6 +71,7 @@ SOURCES += \
     ../PRAGA/shared/colorlegend.cpp \
     ../PRAGA/shared/rasterObject.cpp \
     ../PRAGA/shared/dialogWindows.cpp \
+    ../PRAGA/shared/interpolationDialog.cpp \
     atmosphere.cpp \
     dataHandler.cpp \
     disease.cpp \
@@ -81,8 +82,7 @@ SOURCES += \
     plant.cpp \
     waterBalance.cpp \
     vine3DProject.cpp \
-    mainWindow.cpp \
-    ../PRAGA/shared/interpolationDialog.cpp
+    mainWindow.cpp
 
 HEADERS  += \
     ../PRAGA/shared/interpolationCmd.h \
@@ -94,6 +94,7 @@ HEADERS  += \
     ../PRAGA/shared/colorlegend.h \
     ../PRAGA/shared/rasterObject.h \
     ../PRAGA/shared/dialogWindows.h \
+    ../PRAGA/shared/interpolationDialog.h \
     atmosphere.h \
     dataHandler.h \
     disease.h \
@@ -103,8 +104,7 @@ HEADERS  += \
     plant.h \
     waterBalance.h \
     vine3DProject.h \
-    mainWindow.h \
-    ../PRAGA/shared/interpolationDialog.h
+    mainWindow.h
 
 FORMS    += \
     ../PRAGA/shared/formInfo.ui \

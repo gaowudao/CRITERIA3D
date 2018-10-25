@@ -434,7 +434,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>CRITERIA-3D</string>
+   <string>VINE3D</string>
   </property>
   <property name="autoFillBackground">
    <bool>false</bool>
