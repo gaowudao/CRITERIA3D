@@ -76,7 +76,10 @@ SOURCES += \
     waterBalance.cpp \
     vine3DProject.cpp \
     mainwindow.cpp \
-    ../PRAGA/shared/settingsDialog.cpp
+    ../PRAGA/shared/settingsDialog.cpp \
+    ../PRAGA/shared/rubberBand.cpp \
+    ../PRAGA/shared/stationMarker.cpp \
+    ../PRAGA/shared/colorlegend.cpp
 
 HEADERS  += \
     ../PRAGA/shared/interpolationCmd.h \
@@ -92,7 +95,10 @@ HEADERS  += \
     waterBalance.h \
     vine3DProject.h \
     mainwindow.h \
-    ../PRAGA/shared/settingsDialog.h
+    ../PRAGA/shared/settingsDialog.h \
+    ../PRAGA/shared/rubberBand.h \
+    ../PRAGA/shared/stationMarker.h \
+    ../PRAGA/shared/colorlegend.h
 
 FORMS    += \
     ../PRAGA/shared/formInfo.ui \
