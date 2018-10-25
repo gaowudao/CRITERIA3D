@@ -43,7 +43,7 @@
 
         Crit3DProject();
 
-        bool readCriteria3DSettings();
+        bool readCriteria3DParameters();
 
         bool loadModelParameters(QString dbName);
         bool loadSoilData(QString dbName);

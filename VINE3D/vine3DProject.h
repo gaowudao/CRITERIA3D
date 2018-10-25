@@ -113,6 +113,8 @@
 
         Vine3DProject();
 
+        bool readVine3DParameters();
+
         void deleteAllGrids();
         void initializeMeteoPoints();
         void initialize();

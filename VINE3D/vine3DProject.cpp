@@ -67,6 +67,11 @@ Vine3DProject::Vine3DProject()
     initialize();
 }
 
+bool Vine3DProject::readVine3DParameters()
+{
+    return true;
+}
+
 void Vine3DProject::deleteAllGrids()
 {
     DTM.freeGrid();
