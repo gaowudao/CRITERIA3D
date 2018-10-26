@@ -477,8 +477,8 @@ void ComputationDialog::done(bool res)
             {
                 if (anomaly.AnomalyGetReadReferenceState())
                 {
-                    myProject.referenceClima->setIsClimateAnomalyFromDb(true);
                     myProject.referenceClima->resetParam();
+                    myProject.referenceClima->setIsClimateAnomalyFromDb(true);
                     myProject.referenceClima->setVariable(myProject.clima->variable());
                     myProject.referenceClima->setClimateElab(anomaly.AnomalyGetClimateDb());
                 }
