@@ -509,39 +509,13 @@ void AnomalyLayout::AnomalyActiveSecondParameter(const QString value)
 void AnomalyLayout::AnomalyReadParameter(int state)
 {
 
-    std::string myError  = myProject.errorString;
     climateDbElabList.clear();
     climateDbElab.clear();
 
     if (state!= 0)
     {
         climateDbElabList.setVisible(true);
-        QStringList climateTables;
-        if ( !showClimateTables(myProject.clima->db(), &myError, &climateTables) )
-        {
-            climateDbElabList.addItem("No saved elaborations found");
-        }
-        else
-        {
-            for (int i=0; i < climateTables.size(); i++)
-            {
-                selectVarElab(myProject.clima->db(), &myError, climateTables.at(i), variableElab.text(), &climateDbElab);
-            }
-            if (climateDbElab.isEmpty())
-            {
-                climateDbElabList.addItem("No saved elaborations found");
-            }
-            else
-            {
-                for (int i=0; i < climateDbElab.size(); i++)
-                {
-                    climateDbElabList.addItem(climateDbElab.at(i));
-                }
-            }
-
-        }
-
-
+        AnomalyFillClimateDbList();
         elab1Parameter.clear();
         elab1Parameter.setReadOnly(true);
     }
@@ -551,6 +525,35 @@ void AnomalyLayout::AnomalyReadParameter(int state)
         elab1Parameter.setReadOnly(false);
     }
 
+}
+
+void AnomalyLayout::AnomalyFillClimateDbList()
+{
+    QStringList climateTables;
+    std::string myError  = myProject.errorString;
+    if ( !showClimateTables(myProject.clima->db(), &myError, &climateTables) )
+    {
+        climateDbElabList.addItem("No saved elaborations found");
+    }
+    else
+    {
+        for (int i=0; i < climateTables.size(); i++)
+        {
+            selectVarElab(myProject.clima->db(), &myError, climateTables.at(i), variableElab.text(), &climateDbElab);
+        }
+        if (climateDbElab.isEmpty())
+        {
+            climateDbElabList.addItem("No saved elaborations found");
+        }
+        else
+        {
+            for (int i=0; i < climateDbElab.size(); i++)
+            {
+                climateDbElabList.addItem(climateDbElab.at(i));
+            }
+        }
+    }
+    return;
 }
 
 void AnomalyLayout::AnomalyReadReferenceState(int state)
