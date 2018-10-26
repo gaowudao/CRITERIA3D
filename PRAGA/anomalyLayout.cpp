@@ -14,7 +14,6 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
     this->AnomalySettings = AnomalySettings;
 
     readReference.setText("Read reference climate from db");
-    readReference.setTristate(false);
     varLayout.addWidget(&readReference);
 
     currentDayLabel.setText("Day/Month:");
@@ -116,7 +115,8 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
     genericPeriodLayout.addWidget(&nrYearLabel);
     genericPeriodLayout.addWidget(&nrYear);
 
-    elaborationLayout.addWidget(new QLabel("Elaboration: "));
+    elab.setText("Elaboration: ");
+    elaborationLayout.addWidget(&elab);
 
     meteoVariable key = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, variableElab.text().toStdString());
     std::string keyString = getKeyStringMeteoMap(MapDailyMeteoVar, key);
@@ -137,7 +137,7 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
     elab1Parameter.setValidator(new QDoubleValidator(-9999.0, 9999.0, 2)); //LC accetta double con 2 cifre decimali da -9999 a 9999
     readParam.setText("Read param from db Climate");
     readParam.setChecked(myProject.referenceClima->param1IsClimate());
-    readParam.setTristate(false);
+    climateDbElabList.setVisible(readParam.isChecked());
 
 
     QString elab1Field = elaborationList.currentText();
@@ -158,7 +158,9 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
     elaborationLayout.addWidget(&elab1Parameter);
     readParamLayout.addWidget(&readParam);
     readParamLayout.addWidget(&climateDbElabList);
-    secondElabLayout.addWidget(new QLabel("Secondary Elaboration: "));
+
+    secondElab.setText("Secondary Elaboration: ");
+    secondElabLayout.addWidget(&secondElab);
 
     if (firstYearEdit.text().toInt() == lastYearEdit.text().toInt())
     {
@@ -205,6 +207,7 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
     connect(&periodTypeList, &QComboBox::currentTextChanged, [=](const QString &newVar){ this->AnomalyDisplayPeriod(newVar); });
     connect(&elaborationList, &QComboBox::currentTextChanged, [=](const QString &newElab){ this->AnomalyListSecondElab(newElab); });
     connect(&secondElabList, &QComboBox::currentTextChanged, [=](const QString &newSecElab){ this->AnomalyActiveSecondParameter(newSecElab); });
+    connect(&readReference, &QCheckBox::stateChanged, [=](int state){ this->AnomalyReadReferenceState(state); });
     connect(&readParam, &QCheckBox::stateChanged, [=](int state){ this->AnomalyReadParameter(state); });
 
 
@@ -550,9 +553,41 @@ void AnomalyLayout::AnomalyReadParameter(int state)
 
 }
 
-void AnomalyLayout::AnomalySetReadReference(bool set)
+void AnomalyLayout::AnomalyReadReferenceState(int state)
 {
-    readReference.setChecked(set);
+
+    if (state!= 0)
+    {
+        AnomalySetAllEnable(false);
+    }
+    else
+    {
+        AnomalySetAllEnable(true);
+    }
+}
+
+void AnomalyLayout::AnomalySetAllEnable(bool set)
+{
+    currentDay.setEnabled(set);
+    firstYearEdit.setEnabled(set);
+    lastYearEdit.setEnabled(set);
+    genericPeriodStart.setEnabled(set);
+    genericPeriodEnd.setEnabled(set);
+    nrYear.setEnabled(set);
+    readParam.setCheckable(set);
+    climateDbElabList.setEnabled(set);
+    periodTypeList.setEnabled(set);
+    elaborationList.setEnabled(set);
+    secondElabList.setEnabled(set);
+    periodDisplay.setVisible(set);
+    elab1Parameter.setEnabled(set);
+    elab2Parameter.setEnabled(set);
+
+}
+
+bool AnomalyLayout::AnomalyGetReadReference()
+{
+    return readReference.isChecked();
 }
 
 QString AnomalyLayout::AnomalyGetPeriodTypeList() const

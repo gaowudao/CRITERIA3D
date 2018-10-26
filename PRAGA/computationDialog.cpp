@@ -68,14 +68,6 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
     varLayout.addWidget(&variableLabel);
     varLayout.addWidget(&variableList);
 
-    readReference.setText("Read reference climate from db");
-    readReference.setTristate(false);
-    varLayout.addWidget(&readReference);
-    if (!isAnomaly)
-    {
-        readReference.setVisible(false);
-    }
-
     if (myProject.clima->genericPeriodDateStart() == QDate(1800,1,1))
     {
         currentDay.setDate(myProject.getCurrentDate());
@@ -913,42 +905,45 @@ void ComputationDialog::readParameter(int state)
 
 }
 
+
 void ComputationDialog::copyDataToAnomaly()
 {
 
-    anomaly.AnomalySetReadReference(readReference.isChecked());
-    if (firstYearEdit.text().size() == 4 && lastYearEdit.text().size() == 4 && firstYearEdit.text().toInt() <= lastYearEdit.text().toInt())
+    if (!anomaly.AnomalyGetReadReference())
     {
-        anomaly.AnomalySetYearStart(firstYearEdit.text());
-        anomaly.AnomalySetYearLast(lastYearEdit.text());
-    }
+        if (firstYearEdit.text().size() == 4 && lastYearEdit.text().size() == 4 && firstYearEdit.text().toInt() <= lastYearEdit.text().toInt())
+        {
+            anomaly.AnomalySetYearStart(firstYearEdit.text());
+            anomaly.AnomalySetYearLast(lastYearEdit.text());
+        }
 
-    anomaly.AnomalySetPeriodTypeList(periodTypeList.currentText());
-    if (periodTypeList.currentText() == "Generic")
-    {
-        anomaly.AnomalySetGenericPeriodStart(genericPeriodStart.date());
-        anomaly.AnomalySetGenericPeriodEnd(genericPeriodEnd.date());
-        anomaly.AnomalySetNyears(nrYear.text());
-    }
-    else
-    {
-        anomaly.AnomalySetCurrentDay(currentDay.date());
-    }
-    anomaly.AnomalySetElaboration(elaborationList.currentText());
-    anomaly.AnomalySetReadParamIsChecked(readParam.isChecked());
-    if (readParam.isChecked() == false)
-    {
-        anomaly.AnomalySetParam1ReadOnly(false);
-        anomaly.AnomalySetParam1(elab1Parameter.text());
-    }
-    else
-    {
-        anomaly.AnomalySetClimateDbElab(climateDbElabList.currentText());
-        anomaly.AnomalySetParam1ReadOnly(true);
-    }
+        anomaly.AnomalySetPeriodTypeList(periodTypeList.currentText());
+        if (periodTypeList.currentText() == "Generic")
+        {
+            anomaly.AnomalySetGenericPeriodStart(genericPeriodStart.date());
+            anomaly.AnomalySetGenericPeriodEnd(genericPeriodEnd.date());
+            anomaly.AnomalySetNyears(nrYear.text());
+        }
+        else
+        {
+            anomaly.AnomalySetCurrentDay(currentDay.date());
+        }
+        anomaly.AnomalySetElaboration(elaborationList.currentText());
+        anomaly.AnomalySetReadParamIsChecked(readParam.isChecked());
+        if (readParam.isChecked() == false)
+        {
+            anomaly.AnomalySetParam1ReadOnly(false);
+            anomaly.AnomalySetParam1(elab1Parameter.text());
+        }
+        else
+        {
+            anomaly.AnomalySetClimateDbElab(climateDbElabList.currentText());
+            anomaly.AnomalySetParam1ReadOnly(true);
+        }
 
-    anomaly.AnomalySetSecondElaboration(secondElabList.currentText());
-    anomaly.AnomalySetParam2(elab2Parameter.text());
+        anomaly.AnomalySetSecondElaboration(secondElabList.currentText());
+        anomaly.AnomalySetParam2(elab2Parameter.text());
+    }
 
 }
 

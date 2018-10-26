@@ -26,7 +26,6 @@ class ComputationDialog : public QDialog
         QDateEdit currentDay;
         QLabel currentDayLabel;
         QComboBox variableList;
-        QCheckBox readReference;
         QLineEdit firstYearEdit;
         QLineEdit lastYearEdit;
         QLabel genericStartLabel;

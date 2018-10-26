@@ -40,7 +40,9 @@ class AnomalyLayout : public QDialog
         QCheckBox readParam;
 
         QComboBox periodTypeList;
+        QLabel elab;
         QComboBox elaborationList;
+        QLabel secondElab;
         QComboBox secondElabList;
         QLineEdit periodDisplay;
 
@@ -70,11 +72,12 @@ class AnomalyLayout : public QDialog
         void AnomalyListSecondElab(const QString value);
         void AnomalyActiveSecondParameter(const QString value);
         void AnomalyReadParameter(int state);
+        void AnomalyReadReferenceState(int state);
 
         void AnomalySetVariableElab(const QString &value);
         QString AnomalyGetPeriodTypeList() const;
         void AnomalySetPeriodTypeList(QString period);
-        void AnomalySetReadReference(bool set);
+        bool AnomalyGetReadReference();
         int AnomalyGetYearStart() const;
         int AnomalyGetYearLast() const;
         void AnomalySetYearStart(QString year);
@@ -100,6 +103,7 @@ class AnomalyLayout : public QDialog
         void AnomalySetReadParamIsChecked(bool set);
         QString AnomalyGetClimateDbElab() const;
         void AnomalySetClimateDbElab(QString elab);
+        void AnomalySetAllEnable(bool set);
 };
 
 
