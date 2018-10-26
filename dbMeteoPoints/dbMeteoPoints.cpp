@@ -14,6 +14,16 @@
 #include <QUuid>
 
 
+std::vector<Crit3DProxyMeteoPoint> Crit3DMeteoPointsDbHandler::getProxyMeteoPoint() const
+{
+    return ProxyMeteoPoint;
+}
+
+void Crit3DMeteoPointsDbHandler::setProxyMeteoPoint(const std::vector<Crit3DProxyMeteoPoint> &value)
+{
+    ProxyMeteoPoint = value;
+}
+
 Crit3DMeteoPointsDbHandler::Crit3DMeteoPointsDbHandler(QString dbName)
 {
     error = "";

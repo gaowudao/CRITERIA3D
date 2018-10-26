@@ -66,6 +66,9 @@ public:
         QSqlDatabase getDb() const;
         void setDb(const QSqlDatabase &db);
 
+        std::vector<Crit3DProxyMeteoPoint> getProxyMeteoPoint() const;
+        void setProxyMeteoPoint(const std::vector<Crit3DProxyMeteoPoint> &value);
+
 protected:
         QSqlDatabase _db;
 signals:

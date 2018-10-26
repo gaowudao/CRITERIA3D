@@ -3,7 +3,7 @@
 
 #include "interpolationDialog.h"
 #include "meteoGrid.h"
-
+#include "dbMeteoPoints.h"
 
 InterpolationDialog::InterpolationDialog(QSettings *settings, Crit3DInterpolationSettings *myInterpolationSetting)
 {
@@ -171,4 +171,60 @@ void InterpolationDialog::accept()
     QDialog::done(QDialog::Accepted);
     return;
 
+}
+
+void ProxyDialog::showProxyProperties()
+{
+    Crit3DProxy myProxy = _meteoPointsHandler->getProxyMeteoPoint().at(_proxy.currentIndex());
+    _proxyGridName.setText(QString::fromStdString(myProxy.getGridName()));
+
+}
+
+ProxyDialog::ProxyDialog(QSettings *settings, Crit3DMeteoPointsDbHandler *myMeteoPointsHandler)
+{
+    _paramSettings = settings;
+    _meteoPointsHandler = myMeteoPointsHandler;
+
+    setWindowTitle(tr("Interpolation proxy"));
+    QVBoxLayout *layoutMain = new QVBoxLayout;
+
+    QLabel *labelProxyList = new QLabel(tr("proxy list"));
+    layoutMain->addWidget(labelProxyList);
+
+    std::vector <Crit3DProxyMeteoPoint> myProxies = _meteoPointsHandler->getProxyMeteoPoint();
+    for (int i = 0; i < myProxies.size(); i++)
+    {
+         _proxy.addItem(QString::fromStdString(myProxies.at(i).getName()));
+    }
+    if (myProxies.size() > 0)
+        _proxy.setCurrentIndex(0);
+    layoutMain->addWidget(&_proxy);
+    connect(&_proxy, &QComboBox::currentTextChanged, [=](){ this->showProxyProperties(); });
+
+    QLabel *labelTableList = new QLabel(tr("table for point values"));
+    layoutMain->addWidget(labelTableList);
+
+    layoutMain->addWidget(&_table);
+    layoutMain->addWidget(&_field);
+
+    _proxyGridName.setEnabled(false);
+    layoutMain->addWidget(&_proxyGridName);
+
+    //buttons
+    buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
+    connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
+    layoutMain->addWidget(buttonBox);
+
+    layoutMain->addStretch(1);
+    setLayout(layoutMain);
+
+    exec();
+}
+
+
+void ProxyDialog::accept()
+{
+    QDialog::done(QDialog::Accepted);
+    return;
 }

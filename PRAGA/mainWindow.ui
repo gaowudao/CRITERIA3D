@@ -2444,6 +2444,7 @@
     <addaction name="actionInterpolationSettings"/>
     <addaction name="separator"/>
     <addaction name="menuTopographic_distance_maps"/>
+    <addaction name="actionProxy_variables"/>
    </widget>
    <widget class="QMenu" name="menuClimate">
     <property name="title">
@@ -2681,6 +2682,11 @@
   <action name="actionLoadTAD">
    <property name="text">
     <string>Load</string>
+   </property>
+  </action>
+  <action name="actionProxy_variables">
+   <property name="text">
+    <string>Proxy variables...</string>
    </property>
   </action>
  </widget>
