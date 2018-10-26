@@ -14,7 +14,9 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
     this->AnomalySettings = AnomalySettings;
 
     readReference.setText("Read reference climate from db");
+    climateDbClimaList.setVisible(readReference.isChecked());
     varLayout.addWidget(&readReference);
+    varLayout.addWidget(&climateDbClimaList);
 
     currentDayLabel.setText("Day/Month:");
 
@@ -287,7 +289,11 @@ void AnomalyLayout::AnomalyListElaboration(const QString value)
         }
     }
 
-    if (readParam.isChecked())
+    if (readReference.isChecked())
+    {
+        AnomalyReadReferenceState(Qt::Checked);
+    }
+    else if (readParam.isChecked())
     {
         AnomalyReadParameter(Qt::Checked);
     }
@@ -515,7 +521,7 @@ void AnomalyLayout::AnomalyReadParameter(int state)
     if (state!= 0)
     {
         climateDbElabList.setVisible(true);
-        AnomalyFillClimateDbList();
+        AnomalyFillClimateDbList(&climateDbElabList);
         elab1Parameter.clear();
         elab1Parameter.setReadOnly(true);
     }
@@ -527,13 +533,13 @@ void AnomalyLayout::AnomalyReadParameter(int state)
 
 }
 
-void AnomalyLayout::AnomalyFillClimateDbList()
+void AnomalyLayout::AnomalyFillClimateDbList(QComboBox* dbList)
 {
     QStringList climateTables;
     std::string myError  = myProject.errorString;
     if ( !showClimateTables(myProject.clima->db(), &myError, &climateTables) )
     {
-        climateDbElabList.addItem("No saved elaborations found");
+        dbList->addItem("No saved elaborations found");
     }
     else
     {
@@ -543,13 +549,13 @@ void AnomalyLayout::AnomalyFillClimateDbList()
         }
         if (climateDbElab.isEmpty())
         {
-            climateDbElabList.addItem("No saved elaborations found");
+            dbList->addItem("No saved elaborations found");
         }
         else
         {
             for (int i=0; i < climateDbElab.size(); i++)
             {
-                climateDbElabList.addItem(climateDbElab.at(i));
+                dbList->addItem(climateDbElab.at(i));
             }
         }
     }
@@ -561,11 +567,17 @@ void AnomalyLayout::AnomalyReadReferenceState(int state)
 
     if (state!= 0)
     {
+        climateDbClimaList.clear();
+        climateDbElab.clear();
+        climateDbClimaList.setVisible(true);
         AnomalySetAllEnable(false);
+        AnomalyFillClimateDbList(&climateDbClimaList);
+
     }
     else
     {
         AnomalySetAllEnable(true);
+        climateDbClimaList.setVisible(false);
     }
 }
 
@@ -578,13 +590,13 @@ void AnomalyLayout::AnomalySetAllEnable(bool set)
     genericPeriodEnd.setEnabled(set);
     nrYear.setEnabled(set);
     readParam.setCheckable(set);
-    climateDbElabList.setEnabled(set);
     periodTypeList.setEnabled(set);
     elaborationList.setEnabled(set);
     secondElabList.setEnabled(set);
     periodDisplay.setVisible(set);
     elab1Parameter.setEnabled(set);
     elab2Parameter.setEnabled(set);
+    climateDbElabList.setVisible(set);
 
 }
 

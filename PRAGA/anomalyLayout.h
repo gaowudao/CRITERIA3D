@@ -63,6 +63,8 @@ class AnomalyLayout : public QDialog
         QStringList climateDbElab;
         QComboBox climateDbElabList;
 
+        QComboBox climateDbClimaList;
+
     public:
         AnomalyLayout();
         void build(QSettings *settings);
@@ -104,7 +106,7 @@ class AnomalyLayout : public QDialog
         QString AnomalyGetClimateDbElab() const;
         void AnomalySetClimateDbElab(QString elab);
         void AnomalySetAllEnable(bool set);
-        void AnomalyFillClimateDbList();
+        void AnomalyFillClimateDbList(QComboBox *dbList);
 };
 
 
