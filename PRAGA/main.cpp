@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+#include "mainWindow.h"
 #include <QApplication>
 #include <QtNetwork/QNetworkProxy>
 #include <QDebug>

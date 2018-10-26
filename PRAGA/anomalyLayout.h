@@ -8,7 +8,7 @@
 
 #include <QtWidgets>
 #include "pragaProject.h"
-#include "mainwindow.h"
+#include "mainWindow.h"
 
 class AnomalyLayout : public QDialog
 {
