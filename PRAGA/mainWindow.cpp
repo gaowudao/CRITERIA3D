@@ -17,7 +17,7 @@
 #include "tileSources/CompositeTileSource.h"
 
 #include "mainWindow.h"
-#include "ui_mainwindow.h"
+#include "ui_mainWindow.h"
 #include "formInfo.h"
 #include "dbMeteoPoints.h"
 #include "dbArkimet.h"
