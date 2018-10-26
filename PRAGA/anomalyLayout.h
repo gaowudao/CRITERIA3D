@@ -79,7 +79,7 @@ class AnomalyLayout : public QDialog
         void AnomalySetVariableElab(const QString &value);
         QString AnomalyGetPeriodTypeList() const;
         void AnomalySetPeriodTypeList(QString period);
-        bool AnomalyGetReadReference();
+        bool AnomalyGetReadReferenceState();
         int AnomalyGetYearStart() const;
         int AnomalyGetYearLast() const;
         void AnomalySetYearStart(QString year);
@@ -104,6 +104,7 @@ class AnomalyLayout : public QDialog
         bool AnomalyReadParamIsChecked() const;
         void AnomalySetReadParamIsChecked(bool set);
         QString AnomalyGetClimateDbElab() const;
+        QString AnomalyGetClimateDb() const;
         void AnomalySetClimateDbElab(QString elab);
         void AnomalySetAllEnable(bool set);
         void AnomalyFillClimateDbList(QComboBox *dbList);

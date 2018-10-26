@@ -475,66 +475,77 @@ void ComputationDialog::done(bool res)
             // store reference data
             if (isAnomaly)
             {
-                myProject.referenceClima->setVariable(myProject.clima->variable());
-                QString AnomalyPeriodSelected = anomaly.AnomalyGetPeriodTypeList();
-
-                myProject.referenceClima->setYearStart(anomaly.AnomalyGetYearStart());
-                myProject.referenceClima->setYearEnd(anomaly.AnomalyGetYearLast());
-                myProject.referenceClima->setPeriodStr(AnomalyPeriodSelected);
-
-                if (AnomalyPeriodSelected == "Generic")
+                if (anomaly.AnomalyGetReadReferenceState())
                 {
-                    myProject.referenceClima->setGenericPeriodDateStart(anomaly.AnomalyGetGenericPeriodStart());
-                    myProject.referenceClima->setGenericPeriodDateEnd(anomaly.AnomalyGetGenericPeriodEnd());
-                    myProject.referenceClima->setNYears(anomaly.AnomalyGetNyears());
+                    myProject.referenceClima->setIsClimateAnomalyFromDb(true);
+                    myProject.referenceClima->resetParam();
+                    myProject.referenceClima->setVariable(myProject.clima->variable());
+                    myProject.referenceClima->setClimateElab(anomaly.AnomalyGetClimateDb());
                 }
                 else
                 {
-                    myProject.referenceClima->setNYears(0);
-                    QDate start;
-                    QDate end;
-                    getPeriodDates(AnomalyPeriodSelected, anomaly.AnomalyGetYearStart(), anomaly.AnomalyGetCurrentDay(), &start, &end);
-                    myProject.referenceClima->setNYears(start.year() - anomaly.AnomalyGetYearStart());
-                    myProject.referenceClima->setGenericPeriodDateStart(start);
-                    myProject.referenceClima->setGenericPeriodDateEnd(end);
-                }
-                myProject.referenceClima->setElab1(anomaly.AnomalyGetElaboration());
+                    myProject.referenceClima->setIsClimateAnomalyFromDb(false);
+                    myProject.referenceClima->setVariable(myProject.clima->variable());
+                    QString AnomalyPeriodSelected = anomaly.AnomalyGetPeriodTypeList();
 
-                if (!anomaly.AnomalyReadParamIsChecked())
-                {
-                    myProject.referenceClima->setParam1IsClimate(false);
-                    if (anomaly.AnomalyGetParam1() != "")
+                    myProject.referenceClima->setYearStart(anomaly.AnomalyGetYearStart());
+                    myProject.referenceClima->setYearEnd(anomaly.AnomalyGetYearLast());
+                    myProject.referenceClima->setPeriodStr(AnomalyPeriodSelected);
+
+                    if (AnomalyPeriodSelected == "Generic")
                     {
-                        myProject.referenceClima->setParam1(anomaly.AnomalyGetParam1().toFloat());
+                        myProject.referenceClima->setGenericPeriodDateStart(anomaly.AnomalyGetGenericPeriodStart());
+                        myProject.referenceClima->setGenericPeriodDateEnd(anomaly.AnomalyGetGenericPeriodEnd());
+                        myProject.referenceClima->setNYears(anomaly.AnomalyGetNyears());
                     }
                     else
                     {
-                        myProject.referenceClima->setParam1(NODATA);
+                        myProject.referenceClima->setNYears(0);
+                        QDate start;
+                        QDate end;
+                        getPeriodDates(AnomalyPeriodSelected, anomaly.AnomalyGetYearStart(), anomaly.AnomalyGetCurrentDay(), &start, &end);
+                        myProject.referenceClima->setNYears(start.year() - anomaly.AnomalyGetYearStart());
+                        myProject.referenceClima->setGenericPeriodDateStart(start);
+                        myProject.referenceClima->setGenericPeriodDateEnd(end);
                     }
-                }
-                else
-                {
-                    myProject.referenceClima->setParam1IsClimate(true);
-                    myProject.referenceClima->setParam1ClimateField(anomaly.AnomalyGetClimateDbElab());
-                    int climateIndex = getClimateIndexFromElab(anomaly.AnomalyGetCurrentDay(), anomaly.AnomalyGetClimateDbElab());
-                    myProject.referenceClima->setParam1ClimateIndex(climateIndex);
+                    myProject.referenceClima->setElab1(anomaly.AnomalyGetElaboration());
 
-                }
-                if (anomaly.AnomalyGetSecondElaboration() == "None" || anomaly.AnomalyGetSecondElaboration() == "No elaboration available")
-                {
-                    myProject.referenceClima->setElab2("");
-                    myProject.referenceClima->setParam2(NODATA);
-                }
-                else
-                {
-                    myProject.referenceClima->setElab2(anomaly.AnomalyGetSecondElaboration());
-                    if (anomaly.AnomalyGetParam2() != "")
+                    if (!anomaly.AnomalyReadParamIsChecked())
                     {
-                        myProject.referenceClima->setParam2(anomaly.AnomalyGetParam2().toFloat());
+                        myProject.referenceClima->setParam1IsClimate(false);
+                        if (anomaly.AnomalyGetParam1() != "")
+                        {
+                            myProject.referenceClima->setParam1(anomaly.AnomalyGetParam1().toFloat());
+                        }
+                        else
+                        {
+                            myProject.referenceClima->setParam1(NODATA);
+                        }
                     }
                     else
                     {
+                        myProject.referenceClima->setParam1IsClimate(true);
+                        myProject.referenceClima->setParam1ClimateField(anomaly.AnomalyGetClimateDbElab());
+                        int climateIndex = getClimateIndexFromElab(anomaly.AnomalyGetCurrentDay(), anomaly.AnomalyGetClimateDbElab());
+                        myProject.referenceClima->setParam1ClimateIndex(climateIndex);
+
+                    }
+                    if (anomaly.AnomalyGetSecondElaboration() == "None" || anomaly.AnomalyGetSecondElaboration() == "No elaboration available")
+                    {
+                        myProject.referenceClima->setElab2("");
                         myProject.referenceClima->setParam2(NODATA);
+                    }
+                    else
+                    {
+                        myProject.referenceClima->setElab2(anomaly.AnomalyGetSecondElaboration());
+                        if (anomaly.AnomalyGetParam2() != "")
+                        {
+                            myProject.referenceClima->setParam2(anomaly.AnomalyGetParam2().toFloat());
+                        }
+                        else
+                        {
+                            myProject.referenceClima->setParam2(NODATA);
+                        }
                     }
                 }
             }
@@ -909,7 +920,7 @@ void ComputationDialog::readParameter(int state)
 void ComputationDialog::copyDataToAnomaly()
 {
 
-    if (!anomaly.AnomalyGetReadReference())
+    if (!anomaly.AnomalyGetReadReferenceState())
     {
         if (firstYearEdit.text().size() == 4 && lastYearEdit.text().size() == 4 && firstYearEdit.text().toInt() <= lastYearEdit.text().toInt())
         {

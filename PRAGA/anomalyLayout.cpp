@@ -600,7 +600,7 @@ void AnomalyLayout::AnomalySetAllEnable(bool set)
 
 }
 
-bool AnomalyLayout::AnomalyGetReadReference()
+bool AnomalyLayout::AnomalyGetReadReferenceState()
 {
     return readReference.isChecked();
 }
@@ -739,3 +739,9 @@ void AnomalyLayout::AnomalySetClimateDbElab(QString elab)
 {
     climateDbElabList.setCurrentText(elab);
 }
+
+QString AnomalyLayout::AnomalyGetClimateDb() const
+{
+    return climateDbClimaList.currentText();
+}
+

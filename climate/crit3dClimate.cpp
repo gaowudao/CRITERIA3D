@@ -22,6 +22,7 @@ Crit3DClimate::Crit3DClimate()
     _param1IsClimate = false;
     _param1ClimateField = "";
     _param1ClimateIndex = NODATA;
+    _isClimateAnomalyFromDb = false;
     _elab2 = "";
     _param2 = NODATA;
 
@@ -51,6 +52,7 @@ void Crit3DClimate::resetParam()
     _param1IsClimate = false;
     _param1ClimateField = "";
     _param1ClimateIndex = NODATA;
+    _isClimateAnomalyFromDb = false;
     _elab2 = "";
     _param2 = NODATA;
 
@@ -288,6 +290,16 @@ int Crit3DClimate::getParam1ClimateIndex() const
 void Crit3DClimate::setParam1ClimateIndex(int param1ClimateIndex)
 {
     _param1ClimateIndex = param1ClimateIndex;
+}
+
+bool Crit3DClimate::getIsClimateAnomalyFromDb() const
+{
+    return _isClimateAnomalyFromDb;
+}
+
+void Crit3DClimate::setIsClimateAnomalyFromDb(bool isClimateAnomalyFromDb)
+{
+    _isClimateAnomalyFromDb = isClimateAnomalyFromDb;
 }
 
 QSqlDatabase Crit3DClimate::db() const

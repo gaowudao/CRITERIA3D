@@ -103,6 +103,9 @@
         int getParam1ClimateIndex() const;
         void setParam1ClimateIndex(int param1ClimateIndex);
 
+        bool getIsClimateAnomalyFromDb() const;
+        void setIsClimateAnomalyFromDb(bool isClimateFromDb);
+
     private:
         QSqlDatabase _db;
         QString _climateElab;
@@ -119,6 +122,7 @@
         bool _param1IsClimate;
         QString _param1ClimateField;
         int _param1ClimateIndex;
+        bool _isClimateAnomalyFromDb;
         QString _elab2;
         float _param2;
         Crit3DElaborationSettings *elabSettings;
