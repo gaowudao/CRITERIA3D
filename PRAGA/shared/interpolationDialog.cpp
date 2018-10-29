@@ -177,6 +177,7 @@ void InterpolationDialog::accept()
 void ProxyDialog::showProxyProperties()
 {
     Crit3DProxyMeteoPoint myProxy = _meteoPointsHandler->getProxyMeteoPoint().at(_proxy.currentIndex());
+
     //_table.v = QString::fromStdString(myProxy.getProxyTable());
     //_field = QString::fromStdString(myProxy.getProxyField());
     _proxyGridName.setText(QString::fromStdString(myProxy.getGridName()));
@@ -186,6 +187,9 @@ void ProxyDialog::showProxyProperties()
 void ProxyDialog::getGridFile()
 {
     QString qFileName = QFileDialog::getOpenFileName();
+    if (qFileName == "") return;
+    qFileName = qFileName.left(qFileName.length()-4);
+
     std::string fileName = qFileName.toStdString();
     std::string error_;
     gis::Crit3DRasterGrid* grid_ = new gis::Crit3DRasterGrid();
@@ -219,8 +223,10 @@ ProxyDialog::ProxyDialog(QSettings *settings, Crit3DMeteoPointsDbHandler *myMete
     // table
     QLabel *labelTableList = new QLabel(tr("table for point values"));
     layoutMain->addWidget(labelTableList);
-    _table.addItem("point_properties");
-    _table.addItem("proxy_values");
+    QStringList tables_ = myMeteoPointsHandler->getDb().tables();
+    for (int i=0; i < tables_.size(); i++)
+        _table.addItem(tables_.at(i));
+
     layoutMain->addWidget(&_table);
 
     QLabel *labelFieldList = new QLabel(tr("field for point values"));
