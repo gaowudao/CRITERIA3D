@@ -312,6 +312,7 @@ bool PragaProject::elaborationPointsCycle(bool isAnomaly, bool showInfo)
         startDate.setDate(clima->yearStart() + clima->nYears(), clima->genericPeriodDateStart().month(), clima->genericPeriodDateStart().day());
     }
 
+
 //    if (clima->elab1() == "phenology")
 //    {
 //        Then currentPheno.setPhenoPoint i;  // TODO
@@ -341,10 +342,21 @@ bool PragaProject::elaborationPointsCycle(bool isAnomaly, bool showInfo)
                         myInfo.setValue(i);
 
 
-            if ( elaborationOnPoint(&errorString, meteoPointsDbHandler, NULL, meteoPointTemp, clima, isMeteoGrid, startDate, endDate, isAnomaly, meteoSettings))
+            if (isAnomaly && clima->getIsClimateAnomalyFromDb())
             {
-                validCell = validCell + 1;
+                if ( passingClimateToAnomaly(&errorString, meteoPointTemp, clima, meteoPoints, nrMeteoPoints, clima->getElabSettings()) )
+                {
+                    validCell = validCell + 1;
+                }
             }
+            else
+            {
+                if ( elaborationOnPoint(&errorString, meteoPointsDbHandler, NULL, meteoPointTemp, clima, isMeteoGrid, startDate, endDate, isAnomaly, meteoSettings))
+                {
+                    validCell = validCell + 1;
+                }
+            }
+
 
             // save result to MP
             meteoPoints[i].elaboration = meteoPointTemp->elaboration;
