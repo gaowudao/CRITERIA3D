@@ -481,6 +481,8 @@ void ComputationDialog::done(bool res)
                     myProject.referenceClima->setIsClimateAnomalyFromDb(true);
                     myProject.referenceClima->setVariable(myProject.clima->variable());
                     myProject.referenceClima->setClimateElab(anomaly.AnomalyGetClimateDb());
+                    int climateIndex = getClimateIndexFromElab(anomaly.AnomalyGetCurrentDay(), anomaly.AnomalyGetClimateDb());
+                    myProject.referenceClima->setParam1ClimateIndex(climateIndex);
                 }
                 else
                 {

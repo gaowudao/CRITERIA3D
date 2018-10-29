@@ -145,6 +145,74 @@ bool anomalyOnPoint(Crit3DMeteoPoint* meteoPoint, float refValue)
 
 }
 
+bool passingClimateToAnomaly(std::string *myError, Crit3DMeteoPoint* meteoPointTemp, Crit3DClimate* clima, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints, Crit3DElaborationSettings *elabSettings)
+{
+
+    QList<float> valueList;
+    QString table = getTable(clima->climateElab());
+    valueList = readElab(clima->db(), table, myError, QString::fromStdString(meteoPointTemp->id), clima->climateElab());
+    if (clima->getParam1ClimateIndex() != NODATA && clima->getParam1ClimateIndex() <= valueList.size())
+    {
+        // MP found
+        return anomalyOnPoint(meteoPointTemp, valueList.at( clima->getParam1ClimateIndex() - 1 ));
+    }
+    else
+    {
+        float maxVerticalDist = elabSettings->getAnomalyPtsMaxDeltaZ();
+        float maxHorizontalDist = elabSettings->getAnomalyPtsMaxDistance();
+
+        QList<QString> idList;
+        getIdListFromElab(clima->db(), table, myError, clima->climateElab());
+
+        float minDist = NODATA;
+        float currentDist = NODATA;
+        bool noHeigth = false;
+        QString idNearMP = "";
+
+        for (int i = 0; i < idList.size(); i++)
+        {
+            for (int j = 0; j < nrMeteoPoints; j++)
+            {
+                if ( QString::fromStdString(meteoPoints[j].id) == idList.at(i))
+                {
+                    currentDist = gis::computeDistance(meteoPointTemp->point.utm.x, meteoPointTemp->point.utm.y, meteoPoints[j].point.utm.x, meteoPoints[j].point.utm.y);
+                    if (currentDist < maxHorizontalDist)
+                    {
+                        if (minDist == NODATA || currentDist < minDist)
+                        {
+                            if (meteoPointTemp->point.z == NODATA && meteoPoints[j].point.z == NODATA)
+                            {
+                                noHeigth = true;
+                            }
+                            if (noHeigth || abs(meteoPointTemp->point.z - meteoPoints[j].point.z) < maxVerticalDist)
+                            {
+                                minDist = currentDist;
+                                idNearMP = QString::fromStdString(meteoPoints[j].id);
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+
+        if (minDist != NODATA)
+        {
+            valueList.clear();
+            valueList = readElab(clima->db(), table, myError, idNearMP, clima->climateElab());
+            if (clima->getParam1ClimateIndex() != NODATA && clima->getParam1ClimateIndex() <= valueList.size())
+            {
+                return anomalyOnPoint(meteoPointTemp, valueList.at( clima->getParam1ClimateIndex() - 1 ));
+            }
+            else
+            {
+                return anomalyOnPoint(meteoPointTemp, NODATA);
+            }
+        }
+    }
+
+}
+
 bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler,
                     Crit3DClimate* clima, Crit3DMeteoPoint* meteoPointTemp, std::vector<float> &outputValues, bool isMeteoGrid, QDate startDate, QDate endDate, bool changeDataSet, Crit3DMeteoSettings* meteoSettings)
 {

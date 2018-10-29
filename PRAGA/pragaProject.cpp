@@ -327,6 +327,8 @@ bool PragaProject::elaborationPointsCycle(bool isAnomaly, bool showInfo)
 
             // copy data to MPTemp
             meteoPointTemp->id = meteoPoints[i].id;
+            meteoPointTemp->point.utm.x = meteoPoints[i].point.utm.x;  // LC to compute distance in passingClimateToAnomaly
+            meteoPointTemp->point.utm.y = meteoPoints[i].point.utm.y;  // LC to compute distance in passingClimateToAnomaly
             meteoPointTemp->point.z = meteoPoints[i].point.z;
             meteoPointTemp->latitude = meteoPoints[i].latitude;
             meteoPointTemp->elaboration = meteoPoints[i].elaboration;

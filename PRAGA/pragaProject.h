@@ -42,6 +42,7 @@
         bool climatePointsCycle(bool showInfo);
         bool climatePointsCycleGrid(bool showInfo);
 
+
         bool getIsElabMeteoPointsValue() const;
         void setIsElabMeteoPointsValue(bool value);
     };

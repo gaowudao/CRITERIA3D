@@ -23,6 +23,7 @@ bool selectVarElab(QSqlDatabase db, std::string *myError, QString table, QString
 bool showClimateTables(QSqlDatabase db, std::string *myError, QStringList* climateTables);
 
 QList<float> readElab(QSqlDatabase db, QString table, std::string *myError, QString id, QString elab);
+QList<QString> getIdListFromElab(QSqlDatabase db, QString table, std::string *myError, QString elab);
 
 
 #endif // DBCLIMATE_H

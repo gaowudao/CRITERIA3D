@@ -1,5 +1,6 @@
 #include "dbClimate.h"
 #include "utilities.h"
+#include "commonConstants.h"
 
 // LC saveDailyElab is a bit more efficient respect saveDailyElabSingleValue, making prepare just once.
 // Anyway all the process for each id_point is only 2seconds.
@@ -113,6 +114,39 @@ QList<float> readElab(QSqlDatabase db, QString table, std::string *myError, QStr
     }
 
     return elabValueList;
+}
+
+QList<QString> getIdListFromElab(QSqlDatabase db, QString table, std::string *myError, QString elab)
+{
+    QSqlQuery qry(db);
+    QString id;
+    QList<QString> idList;
+    float value;
+
+    QString statement = QString("SELECT * FROM `%1`").arg(table);
+    qry.prepare( statement + " WHERE elab = :elab" );
+
+    qry.bindValue(":elab", elab);
+
+    if( !qry.exec() )
+    {
+        *myError = qry.lastError().text().toStdString();
+    }
+    else
+    {
+        while (qry.next())
+        {
+            getValue(qry.value("id_point"), &id);
+            getValue(qry.value("value"), &value);
+            if (value != NODATA)
+            {
+                idList << id;
+            }
+
+        }
+    }
+
+    return idList;
 }
 
 
