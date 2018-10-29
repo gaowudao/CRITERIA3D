@@ -47,11 +47,13 @@ class ProxyDialog : public QDialog
     public:
         explicit ProxyDialog(QSettings *settings, Crit3DMeteoPointsDbHandler *myMeteoPointsHandler);
         void showProxyProperties();
+        void getGridFile();
 
         QComboBox _proxy;
         QComboBox _field;
         QComboBox _table;
         QLineEdit _proxyGridName;
+        QPushButton *_selectGrid;
 
         QDialogButtonBox *buttonBox;
 

@@ -1,6 +1,7 @@
 
 #include <QtWidgets>
 
+#include "gis.h"
 #include "interpolationDialog.h"
 #include "meteoGrid.h"
 #include "dbMeteoPoints.h"
@@ -175,9 +176,25 @@ void InterpolationDialog::accept()
 
 void ProxyDialog::showProxyProperties()
 {
-    Crit3DProxy myProxy = _meteoPointsHandler->getProxyMeteoPoint().at(_proxy.currentIndex());
+    Crit3DProxyMeteoPoint myProxy = _meteoPointsHandler->getProxyMeteoPoint().at(_proxy.currentIndex());
+    //_table.v = QString::fromStdString(myProxy.getProxyTable());
+    //_field = QString::fromStdString(myProxy.getProxyField());
     _proxyGridName.setText(QString::fromStdString(myProxy.getGridName()));
 
+}
+
+void ProxyDialog::getGridFile()
+{
+    QString qFileName = QFileDialog::getOpenFileName();
+    std::string fileName = qFileName.toStdString();
+    std::string error_;
+    gis::Crit3DRasterGrid* grid_ = new gis::Crit3DRasterGrid();
+    if (gis::readEsriGrid(fileName, grid_, &error_))
+        _proxyGridName.setText(qFileName);
+    else
+        QMessageBox::information(NULL, "Error", "Error opening " + qFileName);
+
+    grid_ = NULL;
 }
 
 ProxyDialog::ProxyDialog(QSettings *settings, Crit3DMeteoPointsDbHandler *myMeteoPointsHandler)
@@ -196,21 +213,27 @@ ProxyDialog::ProxyDialog(QSettings *settings, Crit3DMeteoPointsDbHandler *myMete
     {
          _proxy.addItem(QString::fromStdString(myProxies.at(i).getName()));
     }
-    if (myProxies.size() > 0)
-        _proxy.setCurrentIndex(0);
-    layoutMain->addWidget(&_proxy);
     connect(&_proxy, &QComboBox::currentTextChanged, [=](){ this->showProxyProperties(); });
+    layoutMain->addWidget(&_proxy);
 
+    // table
     QLabel *labelTableList = new QLabel(tr("table for point values"));
     layoutMain->addWidget(labelTableList);
-
+    _table.addItem("point_properties");
+    _table.addItem("proxy_values");
     layoutMain->addWidget(&_table);
+
+    QLabel *labelFieldList = new QLabel(tr("field for point values"));
+    layoutMain->addWidget(labelFieldList);
     layoutMain->addWidget(&_field);
 
+    // grid
+    _selectGrid = new QPushButton("Select file");
+    layoutMain->addWidget(_selectGrid);
     _proxyGridName.setEnabled(false);
     layoutMain->addWidget(&_proxyGridName);
+    connect(_selectGrid, &QPushButton::clicked, [=](){ this->getGridFile(); });
 
-    //buttons
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
     connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
@@ -218,6 +241,12 @@ ProxyDialog::ProxyDialog(QSettings *settings, Crit3DMeteoPointsDbHandler *myMete
 
     layoutMain->addStretch(1);
     setLayout(layoutMain);
+
+    if (myProxies.size() > 0)
+    {
+        _proxy.setCurrentIndex(0);
+        showProxyProperties();
+    }
 
     exec();
 }
