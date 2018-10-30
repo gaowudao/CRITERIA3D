@@ -45,24 +45,41 @@ class ProxyDialog : public QDialog
     Q_OBJECT
 
     public:
-        explicit ProxyDialog(QSettings *settings, Crit3DMeteoPointsDbHandler *myMeteoPointsHandler);
-        void changedProxy();
-        void changedTable();
-        void changedField();
-        void getGridFile();
+        explicit ProxyDialog(QSettings *settings,
+                             Crit3DInterpolationSettings *myInterpolationSettings,
+                             Crit3DMeteoPointsDbHandler *myMeteoPointsHandler);
+
+
+
+        QVBoxLayout layoutMain;
+        QHBoxLayout layoutProxyCombo;
+        QVBoxLayout layoutProxy;
+        QVBoxLayout layoutPointValues;
+        QVBoxLayout layoutGrid;
 
         QComboBox _proxy;
         QComboBox _field;
         QComboBox _table;
         QLineEdit _proxyGridName;
+        QPushButton *_add;
+        QPushButton *_delete;
         QPushButton *_selectGrid;
-
+        QPushButton *_save;
         QDialogButtonBox *buttonBox;
+
+        void changedProxy();
+        void changedTable();
+        void getGridFile();
+        void redrawProxies();
+        void addProxy();
+        void deleteProxy();
+        void saveProxies();
 
         void accept();
 
     private:
         QSettings* _paramSettings;
+        Crit3DInterpolationSettings *_interpolationSettings;
         Crit3DMeteoPointsDbHandler *_meteoPointsHandler;
 
 };
