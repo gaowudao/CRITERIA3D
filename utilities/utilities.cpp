@@ -6,6 +6,21 @@
 #include "crit3dDate.h"
 #include "utilities.h"
 #include <sys/stat.h>
+#include <QSqlDatabase>
+#include <QSqlDriver>
+#include <QSqlQuery>
+#include <QSqlRecord>
+
+QStringList getFields(QSqlDatabase* db_, QString tableName)
+{
+    QSqlDriver* driver_ = db_->driver();
+    QSqlRecord record_ = driver_->record(tableName);
+    QStringList fieldList;
+    for (int i=0; i < record_.count(); i++)
+        fieldList.append(record_.fieldName(i));
+
+    return fieldList;
+}
 
 bool getValue(QVariant myRs, int* myValue)
 {

@@ -5,6 +5,7 @@
 #include "interpolationDialog.h"
 #include "meteoGrid.h"
 #include "dbMeteoPoints.h"
+#include "utilities.h"
 
 InterpolationDialog::InterpolationDialog(QSettings *settings, Crit3DInterpolationSettings *myInterpolationSetting)
 {
@@ -174,12 +175,19 @@ void InterpolationDialog::accept()
 
 }
 
-void ProxyDialog::showProxyProperties()
+void ProxyDialog::changedTable()
+{
+    _field.addItems(getFields(&_meteoPointsHandler->getDb(), _table.currentData().toString()));
+}
+
+void ProxyDialog::changedProxy()
 {
     Crit3DProxyMeteoPoint myProxy = _meteoPointsHandler->getProxyMeteoPoint().at(_proxy.currentIndex());
 
-    //_table.v = QString::fromStdString(myProxy.getProxyTable());
-    //_field = QString::fromStdString(myProxy.getProxyField());
+    int index = _table.findData(QString::fromStdString(myProxy.getProxyTable()));
+    if ( index != -1 )
+       _table.setCurrentIndex(index);
+
     _proxyGridName.setText(QString::fromStdString(myProxy.getGridName()));
 
 }
@@ -217,7 +225,7 @@ ProxyDialog::ProxyDialog(QSettings *settings, Crit3DMeteoPointsDbHandler *myMete
     {
          _proxy.addItem(QString::fromStdString(myProxies.at(i).getName()));
     }
-    connect(&_proxy, &QComboBox::currentTextChanged, [=](){ this->showProxyProperties(); });
+    connect(&_proxy, &QComboBox::currentTextChanged, [=](){ this->changedProxy(); });
     layoutMain->addWidget(&_proxy);
 
     // table
@@ -228,6 +236,7 @@ ProxyDialog::ProxyDialog(QSettings *settings, Crit3DMeteoPointsDbHandler *myMete
         _table.addItem(tables_.at(i));
 
     layoutMain->addWidget(&_table);
+    connect(&_table, &QComboBox::currentTextChanged, [=](){ this->changedTable(); });
 
     QLabel *labelFieldList = new QLabel(tr("field for point values"));
     layoutMain->addWidget(labelFieldList);
@@ -251,7 +260,7 @@ ProxyDialog::ProxyDialog(QSettings *settings, Crit3DMeteoPointsDbHandler *myMete
     if (myProxies.size() > 0)
     {
         _proxy.setCurrentIndex(0);
-        showProxyProperties();
+        changedProxy();
     }
 
     exec();

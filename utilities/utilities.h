@@ -7,10 +7,14 @@
     class QDateTime;
     class QVariant;
     class QString;
+    class QStringList;
+    class QSqlDatabase;
 
     Crit3DDate getCrit3DDate(const QDate &myDate);
     Crit3DTime getCrit3DTime(const QDateTime &myTime);
     Crit3DTime getCrit3DTime(const QDate& t, int hour);
+
+    QStringList getFields(QSqlDatabase* db_, QString tableName);
 
     QDate getQDate(const Crit3DDate &myDate);
     QDateTime getQDateTime(const Crit3DTime &myCrit3DTime);
