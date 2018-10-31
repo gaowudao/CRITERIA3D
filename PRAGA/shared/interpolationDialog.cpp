@@ -243,6 +243,24 @@ void ProxyDialog::deleteProxy()
     redrawProxies();
 }
 
+void ProxyDialog::saveProxy()
+{
+    if (_proxyCombo.currentIndex() == -1)
+        return;
+
+    Crit3DProxyMeteoPoint* myProxy;
+    myProxy = &_proxy.at(_proxyCombo.currentIndex());
+
+    if (_table.currentIndex() != -1)
+        myProxy->setProxyTable(_table.currentText().toStdString());
+
+    if (_field.currentIndex() != -1)
+        myProxy->setProxyField(_field.currentText().toStdString());
+
+    if (_proxyGridName.text() != "")
+        myProxy->setGridName(_proxyGridName.text().toStdString());
+}
+
 ProxyDialog::ProxyDialog(QSettings *settings,
                          Crit3DInterpolationSettings *myInterpolationSettings,
                          Crit3DMeteoPointsDbHandler *myMeteoPointsHandler)
@@ -277,6 +295,11 @@ ProxyDialog::ProxyDialog(QSettings *settings,
     QPushButton *_delete = new QPushButton("delete");
     layoutProxyCombo.addWidget(_delete);
     connect(_delete, &QPushButton::clicked, [=](){ this->deleteProxy(); });
+
+    QPushButton *_saveProxy = new QPushButton("save");
+    layoutProxyCombo.addWidget(_saveProxy);
+    connect(_saveProxy, &QPushButton::clicked, [=](){ this->saveProxy(); });
+
     layoutProxy.addLayout(&layoutProxyCombo);
     layoutMain.addLayout(&layoutProxy);
 
@@ -334,8 +357,23 @@ void ProxyDialog::saveProxies()
     return;
 }
 
+bool checkProxy(Crit3DProxyMeteoPoint *myProxy, QString* error)
+{
+    return true;
+}
+
 void ProxyDialog::accept()
 {
+    // check proxies
+    QString* error;
+    for (int i=0; i<_proxy.size(); i++)
+    {
+        if (! checkProxy(&_proxy.at(i), error))
+        {
+            QMessageBox::information(NULL, "Proxy error", *error);
+            return;
+        }
+    }
 
     QDialog::done(QDialog::Accepted);
     return;

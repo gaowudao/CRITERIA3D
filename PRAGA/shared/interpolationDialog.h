@@ -60,6 +60,7 @@ class ProxyDialog : public QDialog
         void addProxy();
         void deleteProxy();
         void saveProxies();
+        void saveProxy();
 
         void accept();
 
