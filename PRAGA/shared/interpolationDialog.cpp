@@ -177,9 +177,7 @@ void InterpolationDialog::accept()
 
 void ProxyDialog::changedTable()
 {
-    _field.addItems(getFields(&_meteoPointsHandler->getDb(), _table.currentData().toString()));
-    QSqlDatabase db = _meteoPointsHandler->getDb();
-    _field.addItems(getFields(&db, _table.currentData().toString()));
+    _field.addItems(getFields(&_meteoPointsHandler->getDb(), _table.currentText()));
 }
 
 void ProxyDialog::changedProxy()
@@ -221,15 +219,12 @@ void ProxyDialog::redrawProxies()
 
 void ProxyDialog::addProxy()
 {
-    bool ok;
-    QString text = QInputDialog::getText(this, tr("New proxy"),
+    bool isValid;
+    QString proxyName = QInputDialog::getText(this, tr("New proxy"),
                                          tr("Insert proxy name:"), QLineEdit::Normal,
-                                         "", &ok);
-    if (!ok || !text.isEmpty())
-        return;
-
-    Crit3DProxyMeteoPoint myProxy;
-    myProxy.setName(text.toStdString());
+                                         "", &isValid);
+    if (isValid && proxyName.isEmpty())
+        _proxy.addItem(proxyName);
 
     return;
 }
@@ -256,10 +251,6 @@ ProxyDialog::ProxyDialog(QSettings *settings,
     QLabel *labelProxyList = new QLabel(tr("proxy list"));
     layoutProxy.addWidget(labelProxyList);
     redrawProxies();
-
-
-
-
 
     connect(&_proxy, &QComboBox::currentTextChanged, [=](){ this->changedProxy(); });
     layoutProxyCombo.addWidget(&_proxy);
