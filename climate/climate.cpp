@@ -162,7 +162,7 @@ bool passingClimateToAnomaly(std::string *myError, Crit3DMeteoPoint* meteoPointT
         float maxHorizontalDist = elabSettings->getAnomalyPtsMaxDistance();
 
         QList<QString> idList;
-        getIdListFromElab(clima->db(), table, myError, clima->climateElab());
+        idList = getIdListFromElab(clima->db(), table, myError, clima->climateElab());
 
         float minDist = NODATA;
         float currentDist = NODATA;
