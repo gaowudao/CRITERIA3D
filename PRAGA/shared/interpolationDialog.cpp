@@ -102,7 +102,7 @@ InterpolationDialog::InterpolationDialog(QSettings *settings, Crit3DInterpolatio
     layoutMain->addLayout(layoutDetrending);
 
     //buttons
-    buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
     connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
     layoutMain->addWidget(buttonBox);
@@ -183,13 +183,13 @@ void ProxyDialog::changedTable()
 
 void ProxyDialog::changedProxy()
 {
-    Crit3DProxyMeteoPoint myProxy = _meteoPointsHandler->getProxyMeteoPoint().at(_proxy.currentIndex());
-
-    int index = _table.findText(QString::fromStdString(myProxy.getProxyTable()));
-
+    if (_proxyCombo.count() == 0) return;
+    Crit3DProxyMeteoPoint *myProxy = &(_proxy.at(_proxyCombo.currentIndex()));
+    int index = _table.findText(QString::fromStdString(myProxy->getProxyTable()));
     _table.setCurrentIndex(index);
-
-    _proxyGridName.setText(QString::fromStdString(myProxy.getGridName()));
+    index = _field.findText(QString::fromStdString(myProxy->getProxyField()));
+    _field.setCurrentIndex(index);
+    _proxyGridName.setText(QString::fromStdString(myProxy->getGridName()));
 
 }
 
@@ -212,10 +212,11 @@ void ProxyDialog::getGridFile()
 
 void ProxyDialog::redrawProxies()
 {
-    _proxy.clear();
-    std::vector <Crit3DProxyMeteoPoint> myProxies = _meteoPointsHandler->getProxyMeteoPoint();
-    for (int i = 0; i < myProxies.size(); i++)
-         _proxy.addItem(QString::fromStdString(myProxies.at(i).getName()));
+    _proxyCombo.blockSignals(true);
+    _proxyCombo.clear();
+    for (int i = 0; i < _proxy.size(); i++)
+         _proxyCombo.addItem(QString::fromStdString(_proxy.at(i).getName()));
+    _proxyCombo.blockSignals(false);
 }
 
 void ProxyDialog::addProxy()
@@ -224,43 +225,56 @@ void ProxyDialog::addProxy()
     QString proxyName = QInputDialog::getText(this, tr("New proxy"),
                                          tr("Insert proxy name:"), QLineEdit::Normal,
                                          "", &isValid);
-    if (isValid && proxyName.isEmpty())
-        _proxy.addItem(proxyName);
+    if (isValid && !proxyName.isEmpty())
+    {
+        Crit3DProxyInterpolation myProxy;
+        myProxy.setName(proxyName.toStdString());
+        _proxy.push_back(myProxy);
+        redrawProxies();
+        _proxyCombo.setCurrentIndex(_proxyCombo.count()-1);
+    }
 
     return;
 }
 
 void ProxyDialog::deleteProxy()
 {
-    return;
+    _proxy.erase(_proxy.begin() + _proxyCombo.currentIndex());
+    redrawProxies();
 }
 
 ProxyDialog::ProxyDialog(QSettings *settings,
                          Crit3DInterpolationSettings *myInterpolationSettings,
                          Crit3DMeteoPointsDbHandler *myMeteoPointsHandler)
 {
+    QVBoxLayout layoutMain;
+    QHBoxLayout layoutProxyCombo;
+    QVBoxLayout layoutProxy;
+    QVBoxLayout layoutPointValues;
+    QVBoxLayout layoutGrid;
+
     this->resize(300, 100);
 
     _paramSettings = settings;
     _interpolationSettings = myInterpolationSettings;
     _meteoPointsHandler = myMeteoPointsHandler;
+    _proxy = myMeteoPointsHandler->getProxyMeteoPoint();
 
     setWindowTitle(tr("Interpolation proxy"));
-
 
     // proxy list
     QLabel *labelProxyList = new QLabel(tr("proxy list"));
     layoutProxy.addWidget(labelProxyList);
     redrawProxies();
 
-    connect(&_proxy, &QComboBox::currentTextChanged, [=](){ this->changedProxy(); });
-    layoutProxyCombo.addWidget(&_proxy);
+    connect(&_proxyCombo, &QComboBox::currentTextChanged, [=](){ this->changedProxy(); });
+    layoutProxyCombo.addWidget(&_proxyCombo);
 
-    _add = new QPushButton("add");
+    QPushButton *_add = new QPushButton("add");
     layoutProxyCombo.addWidget(_add);
     connect(_add, &QPushButton::clicked, [=](){ this->addProxy(); });
 
-    _delete = new QPushButton("delete");
+    QPushButton *_delete = new QPushButton("delete");
     layoutProxyCombo.addWidget(_delete);
     connect(_delete, &QPushButton::clicked, [=](){ this->deleteProxy(); });
     layoutProxy.addLayout(&layoutProxyCombo);
@@ -285,7 +299,7 @@ ProxyDialog::ProxyDialog(QSettings *settings,
     QLabel *labelGrid = new QLabel(tr("proxy grid"));
     layoutGrid.addWidget(labelGrid);
 
-    _selectGrid = new QPushButton("Select file");
+    QPushButton *_selectGrid = new QPushButton("Select file");
     layoutGrid.addWidget(_selectGrid);
     _proxyGridName.setEnabled(false);
     layoutGrid.addWidget(&_proxyGridName);
@@ -294,21 +308,21 @@ ProxyDialog::ProxyDialog(QSettings *settings,
     layoutMain.addLayout(&layoutGrid);
 
     // buttons
-    buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
     connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
     layoutMain.addWidget(buttonBox);
 
-    _save = new QPushButton("Save");
+    QPushButton *_save = new QPushButton("Save");
     connect(_save, &QPushButton::clicked, [=](){ this->saveProxies(); });
     layoutMain.addWidget(_save);
 
     layoutMain.addStretch(1);
     setLayout(&layoutMain);
 
-    if (_proxy.count() > 0)
+    if (_proxyCombo.count() > 0)
     {
-        _proxy.setCurrentIndex(0);
+        _proxyCombo.setCurrentIndex(0);
         changedProxy();
     }
 
@@ -322,6 +336,7 @@ void ProxyDialog::saveProxies()
 
 void ProxyDialog::accept()
 {
+
     QDialog::done(QDialog::Accepted);
     return;
 }
