@@ -177,7 +177,8 @@ void InterpolationDialog::accept()
 
 void ProxyDialog::changedTable()
 {
-    _field.addItems(getFields(&_meteoPointsHandler->getDb(), _table.currentText()));
+    QSqlDatabase db = _meteoPointsHandler->getDb();
+    _field.addItems(getFields(&db, _table.currentText()));
 }
 
 void ProxyDialog::changedProxy()
