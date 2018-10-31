@@ -24,6 +24,7 @@ bool showClimateTables(QSqlDatabase db, std::string *myError, QStringList* clima
 
 QList<float> readElab(QSqlDatabase db, QString table, std::string *myError, QString id, QString elab);
 QList<QString> getIdListFromElab(QSqlDatabase db, QString table, std::string *myError, QString elab);
+QList<QString> getIdListFromElab(QSqlDatabase db, QString table, std::string *myError, QString elab, int index);
 
 
 #endif // DBCLIMATE_H

@@ -150,11 +150,12 @@ bool passingClimateToAnomaly(std::string *myError, Crit3DMeteoPoint* meteoPointT
 
     QList<float> valueList;
     QString table = getTable(clima->climateElab());
+    int index = clima->getParam1ClimateIndex();
     valueList = readElab(clima->db(), table, myError, QString::fromStdString(meteoPointTemp->id), clima->climateElab());
-    if (clima->getParam1ClimateIndex() != NODATA && clima->getParam1ClimateIndex() <= valueList.size())
+    if (index != NODATA && index <= valueList.size())
     {
         // MP found
-        return anomalyOnPoint(meteoPointTemp, valueList.at( clima->getParam1ClimateIndex() - 1 ));
+        return anomalyOnPoint(meteoPointTemp, valueList.at( index - 1 ));
     }
     else
     {
@@ -162,7 +163,15 @@ bool passingClimateToAnomaly(std::string *myError, Crit3DMeteoPoint* meteoPointT
         float maxHorizontalDist = elabSettings->getAnomalyPtsMaxDistance();
 
         QList<QString> idList;
-        idList = getIdListFromElab(clima->db(), table, myError, clima->climateElab());
+        if (table == "climate_generic" || table == "climate_annual")
+        {
+            idList = getIdListFromElab(clima->db(), table, myError, clima->climateElab());
+        }
+        else
+        {
+            idList = getIdListFromElab(clima->db(), table, myError, clima->climateElab(), index);
+        }
+
 
         float minDist = NODATA;
         float currentDist = NODATA;
@@ -200,9 +209,9 @@ bool passingClimateToAnomaly(std::string *myError, Crit3DMeteoPoint* meteoPointT
         {
             valueList.clear();
             valueList = readElab(clima->db(), table, myError, idNearMP, clima->climateElab());
-            if (clima->getParam1ClimateIndex() != NODATA && clima->getParam1ClimateIndex() <= valueList.size())
+            if (index != NODATA && index <= valueList.size())
             {
-                return anomalyOnPoint(meteoPointTemp, valueList.at( clima->getParam1ClimateIndex() - 1 ));
+                return anomalyOnPoint(meteoPointTemp, valueList.at( index - 1 ));
             }
             else
             {

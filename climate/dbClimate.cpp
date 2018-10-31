@@ -121,10 +121,9 @@ QList<QString> getIdListFromElab(QSqlDatabase db, QString table, std::string *my
     QSqlQuery qry(db);
     QString id;
     QList<QString> idList;
-    float value;
 
-    QString statement = QString("SELECT * FROM `%1`").arg(table);
-    qry.prepare( statement + " WHERE elab = :elab" );
+    QString statement = QString("SELECT distinct(id_point) FROM `%1`").arg(table);
+    qry.prepare( statement + " WHERE elab = :elab AND value != -9999.0" );
 
     qry.bindValue(":elab", elab);
 
@@ -137,12 +136,39 @@ QList<QString> getIdListFromElab(QSqlDatabase db, QString table, std::string *my
         while (qry.next())
         {
             getValue(qry.value("id_point"), &id);
-            getValue(qry.value("value"), &value);
-            if (value != NODATA)
-            {
-                idList << id;
-            }
+            idList.append(id);
+        }
+    }
 
+    return idList;
+}
+
+QList<QString> getIdListFromElab(QSqlDatabase db, QString table, std::string *myError, QString elab, int index)
+{
+    QSqlQuery qry(db);
+    QString id;
+    QList<QString> idList;
+    int i;
+
+    QString statement = QString("SELECT * FROM `%1`").arg(table);
+    qry.prepare( statement + " WHERE elab = :elab AND value != -9999.0" );
+
+    qry.bindValue(":elab", elab);
+
+    if( !qry.exec() )
+    {
+        *myError = qry.lastError().text().toStdString();
+    }
+    else
+    {
+        while (qry.next())
+        {
+            getValue(qry.value(0), &i);
+            getValue(qry.value("id_point"), &id);
+            if (i == index)
+            {
+                idList.append(id);
+            }
         }
     }
 
