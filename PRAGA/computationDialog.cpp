@@ -448,9 +448,18 @@ void ComputationDialog::done(bool res)
             }
             else
             {
+                int climateIndex;
                 myProject.clima->setParam1IsClimate(true);
                 myProject.clima->setParam1ClimateField(climateDbElabList.currentText());
-                int climateIndex = getClimateIndexFromElab(currentDay.date(), climateDbElabList.currentText());
+                if (periodSelected == "Generic")
+                {
+                    climateIndex = getClimateIndexFromElab(genericPeriodStart.date(), climateDbElabList.currentText());
+
+                }
+                else
+                {
+                    climateIndex = getClimateIndexFromElab(currentDay.date(), climateDbElabList.currentText());
+                }
                 myProject.clima->setParam1ClimateIndex(climateIndex);
 
             }
@@ -481,7 +490,15 @@ void ComputationDialog::done(bool res)
                     myProject.referenceClima->setIsClimateAnomalyFromDb(true);
                     myProject.referenceClima->setVariable(myProject.clima->variable());
                     myProject.referenceClima->setClimateElab(anomaly.AnomalyGetClimateDb());
-                    int climateIndex = getClimateIndexFromElab(anomaly.AnomalyGetCurrentDay(), anomaly.AnomalyGetClimateDb());
+                    int climateIndex;
+                    if (periodSelected == "Generic")
+                    {
+                        climateIndex = getClimateIndexFromElab(genericPeriodStart.date(), anomaly.AnomalyGetClimateDb());
+                    }
+                    else
+                    {
+                        climateIndex = getClimateIndexFromElab(currentDay.date(), anomaly.AnomalyGetClimateDb());
+                    }
                     myProject.referenceClima->setParam1ClimateIndex(climateIndex);
                 }
                 else
@@ -528,7 +545,16 @@ void ComputationDialog::done(bool res)
                     {
                         myProject.referenceClima->setParam1IsClimate(true);
                         myProject.referenceClima->setParam1ClimateField(anomaly.AnomalyGetClimateDbElab());
-                        int climateIndex = getClimateIndexFromElab(anomaly.AnomalyGetCurrentDay(), anomaly.AnomalyGetClimateDbElab());
+                        int climateIndex;
+                        if (AnomalyPeriodSelected == "Generic")
+                        {
+                            climateIndex = getClimateIndexFromElab(anomaly.AnomalyGetGenericPeriodStart(), anomaly.AnomalyGetClimateDbElab());
+
+                        }
+                        else
+                        {
+                            climateIndex = getClimateIndexFromElab(anomaly.AnomalyGetCurrentDay(), anomaly.AnomalyGetClimateDbElab());
+                        }
                         myProject.referenceClima->setParam1ClimateIndex(climateIndex);
 
                     }
