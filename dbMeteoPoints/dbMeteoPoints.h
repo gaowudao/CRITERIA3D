@@ -28,6 +28,8 @@ public:
     void setProxyField(const std::string &value);
     std::string getProxyTable() const;
     void setProxyTable(const std::string &value);
+
+    bool check();
 };
 
 class Crit3DMeteoPointsDbHandler : public QObject

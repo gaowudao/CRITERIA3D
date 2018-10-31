@@ -83,7 +83,10 @@
 
         bool readGenericSettings(QString currentPath);
         bool readGenericParameters();
-        bool checkProxySetting(QString group, std::string* name, std::string* grdName, std::string* table, std::string* field, bool *isActive);
+        bool addProxy(std::string name_, std::string gridName_, bool isActive,
+                               std::string table_, std::string field_);
+        bool checkProxySetting(QString group, std::string* name, std::string* grdName,
+                                        std::string* table, std::string* field, bool* isActive);
         bool readProxies();
         void copyInterpolationSettingsToQuality();
 

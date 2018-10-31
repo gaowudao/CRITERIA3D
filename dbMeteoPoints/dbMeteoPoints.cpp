@@ -693,6 +693,11 @@ void Crit3DProxyMeteoPoint::setProxyTable(const std::string &value)
 Crit3DProxyMeteoPoint::Crit3DProxyMeteoPoint()
 {}
 
+bool Crit3DProxyMeteoPoint::check()
+{
+    return true;
+}
+
 Crit3DProxyMeteoPoint::Crit3DProxyMeteoPoint(Crit3DProxy myProxy)
 {
     setName(myProxy.getName());

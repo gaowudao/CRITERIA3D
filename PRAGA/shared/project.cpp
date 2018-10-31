@@ -285,6 +285,16 @@ bool Project::checkProxySetting(QString group, std::string* name, std::string* g
     return (*name != "" && (grid != "" || (*table != "" && *field != "")));
 }
 
+bool Project::addProxy(std::string name_, std::string gridName_, bool isActive,
+                       std::string table_, std::string field_)
+{
+    Crit3DProxy myProxy;
+
+    myProxy.setName(name_);
+    myProxy.setGridName(gridName_);
+
+    return true;
+}
 
 bool Project::readProxies()
 {
