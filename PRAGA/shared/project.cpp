@@ -977,7 +977,7 @@ bool Project::interpolateDemRadiation(const Crit3DTime& myTime, gis::Crit3DRaste
             return false;
         }
 
-    if (checkAndPassDataToInterpolation(quality, atmTransmissivity, meteoPoints, nrMeteoPoints,
+    if (! checkAndPassDataToInterpolation(quality, atmTransmissivity, meteoPoints, nrMeteoPoints,
                                         myTime, &qualityInterpolationSettings,
                                         &interpolationSettings, interpolationPoints, checkSpatialQuality))
     {
@@ -985,12 +985,13 @@ bool Project::interpolateDemRadiation(const Crit3DTime& myTime, gis::Crit3DRaste
         return false;
     }
 
-    if (preInterpolation(interpolationPoints, &interpolationSettings, meteoPoints, nrMeteoPoints, atmTransmissivity, myTime))
-        if (! interpolationRaster(interpolationPoints, &interpolationSettings, this->radiationMaps->transmissivityMap, this->DTM, atmTransmissivity, showInfo), &interpolationSettings)
-        {
-            errorString = "Function interpolateRasterRadiation: error interpolating transmissivity.";
-            return false;
-        }
+    preInterpolation(interpolationPoints, &interpolationSettings, meteoPoints, nrMeteoPoints, atmTransmissivity, myTime);
+
+    if (! interpolationRaster(interpolationPoints, &interpolationSettings, this->radiationMaps->transmissivityMap, DTM, atmTransmissivity, showInfo))
+    {
+        errorString = "Function interpolateRasterRadiation: error interpolating transmissivity.";
+        return false;
+    }
 
     if (! radiation::computeRadiationGridPresentTime(&radSettings, this->DTM, this->radiationMaps, myTime))
     {

@@ -1,6 +1,7 @@
 #include "interpolationCmd.h"
 #include "interpolation.h"
 #include "formInfo.h"
+#include "gis.h"
 
 
 bool loadProxyGrid(Crit3DProxy* myProxy)
@@ -15,7 +16,7 @@ bool interpolationRaster(std::vector <Crit3DInterpolationDataPoint> &myPoints, C
                         gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGrid& myDTM, meteoVariable myVar, bool showInfo)
 {
     if (! myGrid->initializeGrid(myDTM))
-        return (false);
+        return false;
 
     FormInfo myInfo;
     int infoStep;
@@ -46,7 +47,7 @@ bool interpolationRaster(std::vector <Crit3DInterpolationDataPoint> &myPoints, C
     if (showInfo) myInfo.close();
 
     if (! gis::updateMinMaxRasterGrid(myGrid))
-        return (false);
+        return false;
 
-    return (true);
+    return true;
 }
