@@ -149,7 +149,7 @@ namespace soil
         if ((sand == NODATA) || (silt == NODATA) || (clay == NODATA)) return NODATA;
 
         float sum = sand + clay + silt;
-        if (fabs(sum - 100.0) > 2.0) return NODATA;
+        if (fabs(sum - 100.0) > 1.0) return NODATA;
 
         int myClass = NODATA;
         /*! clay */

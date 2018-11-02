@@ -254,7 +254,7 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, 
     idHorizon = query.value("horizon_nr").toInt();
     if (idHorizon != 1)
     {
-        *myError = "Wrong soil: " + idSoilStr + " - wrong horizon nr.";
+        *myError = "Wrong soil: " + idSoilStr + " - horizons must start from 1";
         return false;
     }
     do
@@ -323,7 +323,13 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, 
 
         // bulk density and porosity
         getValue(query.value("bulk_density"), &bulkDensity);
-        if (bulkDensity <= 0) bulkDensity = NODATA;
+        if ((bulkDensity != NODATA) && (bulkDensity <= 0 || bulkDensity >= 2.7))
+        {
+                *myError = "Wrong soil: " + idSoilStr
+                    + " - wrong bulk density - horizon nr: "
+                    + QString::number(idHorizon).toStdString();
+                return false;
+        }
 
         getValue(query.value("theta_sat"), &theta_sat);
         if (theta_sat <= 0) theta_sat = NODATA;
