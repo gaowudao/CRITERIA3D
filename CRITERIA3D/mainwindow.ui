@@ -1950,7 +1950,7 @@
      <x>0</x>
      <y>0</y>
      <width>1360</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <property name="palette">
@@ -2383,7 +2383,6 @@
     <addaction name="actionOpen_meteo_grid"/>
     <addaction name="actionClose_meteo_grid"/>
     <addaction name="actionOpen_crop_map"/>
-    <addaction name="actionOpen_NetCDF_data"/>
     <addaction name="separator"/>
     <addaction name="actionOpen_soil_map"/>
     <addaction name="actionOpen_soil_data"/>
@@ -2506,17 +2505,6 @@
    </property>
    <property name="text">
     <string>Visible</string>
-   </property>
-  </action>
-  <action name="actionOpen_NetCDF_data">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Open NetCDF data...</string>
-   </property>
-   <property name="visible">
-    <bool>false</bool>
    </property>
   </action>
   <action name="actionOpen_meteo_grid">

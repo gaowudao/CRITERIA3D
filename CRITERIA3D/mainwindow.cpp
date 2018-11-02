@@ -881,6 +881,7 @@ void MainWindow::on_actionOpen_model_parameters_triggered()
         QMessageBox::information(NULL, "", "Model parameters loaded");
 }
 
+
 void MainWindow::on_actionOpen_soil_map_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open soil map"), "", tr("ESRI grid files (*.flt)"));
@@ -889,6 +890,7 @@ void MainWindow::on_actionOpen_soil_map_triggered()
     if (myProject.loadSoilMap(fileName))
         QMessageBox::information(NULL, "", "Soil map loaded.");
 }
+
 
 void MainWindow::on_actionOpen_soil_data_triggered()
 {
@@ -934,11 +936,4 @@ void MainWindow::on_actionCriteria3D_Initialize_triggered()
 {
     if (myProject.initializeCriteria3D())
         QMessageBox::information(NULL, "", "Criteria3D initialized.");
-}
-
-
-
-void MainWindow::on_actionOpen_NetCDF_data_triggered()
-{
-
 }

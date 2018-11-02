@@ -249,7 +249,14 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, 
     double sand, silt, clay, organicMatter, coarseFragments;
     double lowerDepth, upperDepth, bulkDensity, theta_sat, ksat;
     int i = 0;
+
     query.first();
+    idHorizon = query.value("horizon_nr").toInt();
+    if (idHorizon != 1)
+    {
+        *myError = "Wrong soil: " + idSoilStr + " - wrong horizon nr.";
+        return false;
+    }
     do
     {
         // horizon depth
@@ -266,7 +273,7 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, 
             || ((idHorizon == 1) && (mySoil->horizon[i].upperDepth > 0))
             || ((idHorizon > 1) && (fabs(mySoil->horizon[i].upperDepth - mySoil->horizon[i-1].lowerDepth) > EPSILON)))
         {
-            *myError = "Wrong depth in soil:" + idSoilStr + " horizon nr:" + QString::number(idHorizon).toStdString();
+            *myError = "Wrong soil: " + idSoilStr + " - wrong depth horizon: " + QString::number(idHorizon).toStdString();
             return false;
         }
 
@@ -290,8 +297,9 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, 
         idTextureUSDA = soil::getUSDATextureClass(sand, silt, clay);
         if (idTextureUSDA == NODATA)
         {
-                *myError = "Texture wrong! sand+silt+clay <> 1 in soil:"
-                        + idSoilStr + " horizon nr:" + QString::number(idHorizon).toStdString();
+                *myError = "Wrong soil: " + idSoilStr
+                    + " - sand+silt+clay <> 1 - horizon nr: "
+                    + QString::number(idHorizon).toStdString();
                 return false;
         }
         idTextureNL =  soil::getNLTextureClass(sand, silt, clay);
@@ -351,7 +359,7 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, 
 
     if (mySoil->totalDepth < 0.3)
     {
-        *myError = "Texture wrong! soil depth < 30cm:" + idSoilStr;
+        *myError = "Wrong soil: " + idSoilStr + " - soil depth < 30cm";
         return false;
     }
 

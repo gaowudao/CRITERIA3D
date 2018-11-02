@@ -120,6 +120,7 @@ bool Crit3DProject::loadSoilData(QString dbName)
         if (idSoil != NODATA && soilCode != "")
         {
             soil::Crit3DSoil *mySoil = new soil::Crit3DSoil;
+            myError = "";
             if (loadSoil(&dbSoil, soilCode, mySoil, soilClass, &myError))
             {
                 mySoil->id = idSoil;
@@ -127,7 +128,7 @@ bool Crit3DProject::loadSoilData(QString dbName)
             }
             else
             {
-                wrongSoils += " " + soilCode;
+                wrongSoils += QString::fromStdString(myError) + "\n";
             }
         }
     } while(query.next());
@@ -139,7 +140,7 @@ bool Crit3DProject::loadSoilData(QString dbName)
     }
     else if (wrongSoils != "")
     {
-        logError("Wrong soils:" + wrongSoils);
+        logError(wrongSoils);
     }
 
     return true;
