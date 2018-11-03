@@ -802,6 +802,7 @@ namespace gis
         else return false;
     }
 
+
     bool computeLatLonMaps(const gis::Crit3DRasterGrid& myGrid,
                            gis::Crit3DRasterGrid* latMap, gis::Crit3DRasterGrid* lonMap,
                            const gis::Crit3DGisSettings& gisSettings)
@@ -833,6 +834,7 @@ namespace gis
 
         return true;
     }
+
 
     bool computeSlopeAspectMaps(const gis::Crit3DRasterGrid& myDtm,
                                 gis::Crit3DRasterGrid* slopeMap, gis::Crit3DRasterGrid* aspectMap)
@@ -866,7 +868,7 @@ namespace gis
                     else if (zSouth != myDtm.header->flag)
                         dz_dy = (myZ - zSouth) * reciprocalCellSize;
                     else
-                        dz_dy = 0.000001;
+                        dz_dy = EPSILON;
 
                     zWest = myDtm.getValueFromRowCol(myRow, myCol-1);
                     zEast = myDtm.getValueFromRowCol(myRow, myCol+1);
