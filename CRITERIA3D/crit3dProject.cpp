@@ -200,6 +200,7 @@ bool Crit3DProject::createBoundaryMap()
         logError("Missing DTM.");
         return false;
     }
+
     boundaryMap.initializeGrid(*(DTM.header));
 
     for (int row = 0; row < boundaryMap.header->nrRows; row++)
