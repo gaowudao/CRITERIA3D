@@ -1001,16 +1001,21 @@ namespace gis
         z = myGrid.getValueFromRowCol(row, col);
         if (z == myGrid.header->flag) return false;
 
-        for (int r=-1; r<=1; r++)
-            for (int c=-1; c<=1; c++)
+        for (int r = -1; r <= 1; r++)
+        {
+            for (int c = -1; c <= 1; c++)
+            {
+                if (r != 0 || c != 0)
                 {
-                if ((r != 0)&&(c != 0))
-                    {
                     adjZ = myGrid.getValueFromRowCol(row+r, col+c);
                     if (adjZ != myGrid.header->flag)
+                    {
                         if (z <= adjZ) return (false);
                     }
-                }
+                 }
+             }
+        }
+
         return true;
     }
 
@@ -1055,9 +1060,15 @@ namespace gis
     {
         float z = myGrid.getValueFromRowCol(row, col);
         if (z != myGrid.header->flag)
+        {
             for (int r=-1; r<=1; r++)
+            {
                 for (int c=-1; c<=1; c++)
+                {
                     if (isMinimum(myGrid, row + r, col + c)) return true;
+                }
+            }
+        }
 
         return false;
     }

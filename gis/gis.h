@@ -212,6 +212,7 @@
         bool isOutOfGridXY(double x, double y, Crit3DRasterHeader* header);
 
         bool isMinimum(const Crit3DRasterGrid& myGrid, int row, int col);
+        bool isMinimumOrNearMinimum(const Crit3DRasterGrid& myGrid, int row, int col);
         bool isBoundary(const Crit3DRasterGrid& myGrid, int row, int col);
         bool isStrictMaximum(const Crit3DRasterGrid& myGrid, int row, int col);
 

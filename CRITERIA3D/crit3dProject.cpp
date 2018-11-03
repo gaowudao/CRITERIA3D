@@ -41,7 +41,7 @@ Crit3DProject::Crit3DProject()
     nrLayers = 0;
     nrVoxelsPerLayer = 0;
     nrVoxels = 0;
-    soilDepth = 0.3f;            //[m] default: 30 cm
+    soilDepth = 1.0f;            //[m] default: 1 m
 }
 
 
@@ -209,7 +209,7 @@ bool Crit3DProject::createBoundaryMap()
         {
             if (gis::isBoundary(DTM, row, col))
             {
-                //if (gis::isMinimum(DTM, row, col))
+                if (gis::isMinimum(DTM, row, col))
                     boundaryMap.value[row][col] = BOUNDARY_RUNOFF;
             }
         }

@@ -1029,6 +1029,8 @@ bool initializeWaterBalance(Crit3DProject* myProject)
     }
     myProject->nrVoxels = myProject->nrVoxelsPerLayer * myProject->nrLayers;
     waterSinkSource.resize(myProject->nrVoxels);
+
+    //BOUNDARY
     myProject->createBoundaryMap();
 
     int nrLateralLink = 8;
