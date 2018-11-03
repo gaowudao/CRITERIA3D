@@ -1075,11 +1075,19 @@ namespace gis
         float z = myGrid.getValueFromRowCol(row, col);
 
         if (z != myGrid.header->flag)
+        {
             for (int r = -1; r <= 1; r++)
+            {
                 for (int c = -1; c <= 1; c++)
+                {
                     if ((r != 0 || c != 0))
+                    {
                         if (myGrid.getValueFromRowCol(row + r, col + c) == myGrid.header->flag)
                             return true;
+                    }
+                }
+            }
+        }
         return false;
     }
 

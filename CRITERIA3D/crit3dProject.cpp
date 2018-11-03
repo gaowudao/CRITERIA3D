@@ -209,7 +209,7 @@ bool Crit3DProject::createBoundaryMap()
         {
             if (gis::isBoundary(DTM, row, col))
             {
-                if (gis::isMinimum(DTM, row, col))
+                //if (gis::isMinimum(DTM, row, col))
                     boundaryMap.value[row][col] = BOUNDARY_RUNOFF;
             }
         }
