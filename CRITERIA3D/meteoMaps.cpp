@@ -115,16 +115,15 @@ bool Crit3DMeteoMaps::computeET0Map(gis::Crit3DRasterGrid* dtm, Crit3DRadiationM
 
             if (height != dtm->header->flag)
             {
+                clearSkyTransmissivity = CLEAR_SKY_TRANSMISSIVITY_DEFAULT;
                 globalRadiation = radMaps->globalRadiationMap->value[row][col];
                 transmissivity = radMaps->transmissivityMap->value[row][col];
-                clearSkyTransmissivity = radMaps->clearSkyTransmissivityMap->value[row][col];
                 temperature = airTemperatureMap->value[row][col];
                 relHumidity = airHumidityMap->value[row][col];
                 windSpeed = windIntensityMap->value[row][col];
 
                 if (globalRadiation != radMaps->globalRadiationMap->header->flag
                         && transmissivity != radMaps->transmissivityMap->header->flag
-                        && clearSkyTransmissivity != radMaps->clearSkyTransmissivityMap->header->flag
                         && temperature != airTemperatureMap->header->flag
                         && relHumidity != airHumidityMap->header->flag
                         && windSpeed != windIntensityMap->header->flag)

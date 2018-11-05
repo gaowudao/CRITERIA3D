@@ -40,19 +40,18 @@ Crit3DRadiationMaps::Crit3DRadiationMaps()
     linkeMap = new gis::Crit3DRasterGrid;
     albedoMap = new gis::Crit3DRasterGrid;
 
-    clearSkyTransmissivityMap = new gis::Crit3DRasterGrid;
     transmissivityMap = new gis::Crit3DRasterGrid;
-    beamRadiationMap = new gis::Crit3DRasterGrid;
+    globalRadiationMap = new gis::Crit3DRasterGrid;
 
+    /*
+    beamRadiationMap = new gis::Crit3DRasterGrid;
     diffuseRadiationMap = new gis::Crit3DRasterGrid;
     reflectedRadiationMap = new gis::Crit3DRasterGrid;
-    globalRadiationMap = new gis::Crit3DRasterGrid;
     sunAzimuthMap = new gis::Crit3DRasterGrid;
     sunElevationMap = new gis::Crit3DRasterGrid;
     sunIncidenceMap = new gis::Crit3DRasterGrid;
-    sunRiseMap = new gis::Crit3DRasterGrid;
-    sunSetMap = new gis::Crit3DRasterGrid;
     sunShadowMap = new gis::Crit3DRasterGrid;
+    */
 
     isLoaded = false;
 }
@@ -71,33 +70,29 @@ Crit3DRadiationMaps::Crit3DRadiationMaps(const gis::Crit3DRasterGrid& myDtm, con
     linkeMap->initializeGrid(myDtm);
     albedoMap->initializeGrid(myDtm);
 
-    clearSkyTransmissivityMap = new gis::Crit3DRasterGrid;
     transmissivityMap = new gis::Crit3DRasterGrid;
-    /*! initialize with default value */
-    clearSkyTransmissivityMap->initializeGrid(myDtm, CLEAR_SKY_TRANSMISSIVITY_DEFAULT);
     transmissivityMap->initializeGrid(myDtm, CLEAR_SKY_TRANSMISSIVITY_DEFAULT);
 
+    globalRadiationMap = new gis::Crit3DRasterGrid;
+    globalRadiationMap->initializeGrid(myDtm);
+
+    /*
     beamRadiationMap = new gis::Crit3DRasterGrid;
     diffuseRadiationMap = new gis::Crit3DRasterGrid;
     reflectedRadiationMap = new gis::Crit3DRasterGrid;
-    globalRadiationMap = new gis::Crit3DRasterGrid;
     sunAzimuthMap = new gis::Crit3DRasterGrid;
     sunElevationMap = new gis::Crit3DRasterGrid;
     sunIncidenceMap = new gis::Crit3DRasterGrid;
-    sunRiseMap = new gis::Crit3DRasterGrid;
-    sunSetMap = new gis::Crit3DRasterGrid;
     sunShadowMap = new gis::Crit3DRasterGrid;
 
     beamRadiationMap->initializeGrid(myDtm);
     diffuseRadiationMap->initializeGrid(myDtm);
     reflectedRadiationMap->initializeGrid(myDtm);
-    globalRadiationMap->initializeGrid(myDtm);
     sunAzimuthMap->initializeGrid(myDtm);
     sunElevationMap->initializeGrid(myDtm);
     sunIncidenceMap->initializeGrid(myDtm);
-    sunRiseMap->initializeGrid(myDtm);
-    sunSetMap->initializeGrid(myDtm);
     sunShadowMap->initializeGrid(myDtm);
+    */
 
     isLoaded = true;
 }
@@ -114,39 +109,39 @@ void Crit3DRadiationMaps::clean()
     lonMap->freeGrid();
     slopeMap->freeGrid();
     aspectMap->freeGrid();
+    albedoMap->freeGrid();
+    linkeMap->freeGrid();
+    transmissivityMap->freeGrid();
+    globalRadiationMap->freeGrid();
+
+    /*
     beamRadiationMap->freeGrid();
     diffuseRadiationMap->freeGrid();
     reflectedRadiationMap->freeGrid();
-    globalRadiationMap->freeGrid();
-    albedoMap->freeGrid();
-    clearSkyTransmissivityMap->freeGrid();
-    linkeMap->freeGrid();
     sunAzimuthMap->freeGrid();
     sunElevationMap->freeGrid();
     sunIncidenceMap->freeGrid();
-    sunRiseMap->freeGrid();
-    sunSetMap->freeGrid();
     sunShadowMap->freeGrid();
-    transmissivityMap->freeGrid();
+    */
 
     delete latMap;
     delete lonMap;
     delete slopeMap;
     delete aspectMap;
+    delete albedoMap;
+    delete linkeMap;
+    delete transmissivityMap;
+    delete globalRadiationMap;
+
+    /*
     delete beamRadiationMap;
     delete diffuseRadiationMap;
     delete reflectedRadiationMap;
-    delete globalRadiationMap;
-    delete albedoMap;
-    delete clearSkyTransmissivityMap;
-    delete linkeMap;
     delete sunAzimuthMap;
     delete sunElevationMap;
     delete sunIncidenceMap;
-    delete sunRiseMap;
-    delete sunSetMap;
     delete sunShadowMap;
-    delete transmissivityMap;
+    */
 
     isLoaded = false;
 }
@@ -796,36 +791,42 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
                     myRadPoint.lon = radiationMaps->lonMap->value[myRow][myCol];
                     myRadPoint.slope = readSlope(mySettings, radiationMaps->slopeMap, myRow, myCol);
                     myRadPoint.aspect = readAspect(mySettings, radiationMaps->aspectMap, myRow, myCol);
+
+                    float linke = readLinke(mySettings, myRow, myCol, *(radiationMaps->linkeMap));
+                    float albedo = readAlbedo(mySettings, myRow, myCol, *(radiationMaps->albedoMap));
+
+                    float transmissivity = radiationMaps->transmissivityMap->value[myRow][myCol];
+
                     //CHIAMATA A SINGLE POINT
                     if (!computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, UTCTime,
-                                                    readLinke(mySettings, myRow, myCol, *(radiationMaps->linkeMap)),
-                                                    readAlbedo(mySettings, myRow, myCol, *(radiationMaps->albedoMap)), mySettings->getClearSky(), radiationMaps->transmissivityMap->value[myRow][myCol], &mySunPosition, &myRadPoint, myDtm))
+                        linke, albedo, mySettings->getClearSky(), transmissivity, &mySunPosition, &myRadPoint, myDtm))
                         return false;
 
+                    /*
                     radiationMaps->sunAzimuthMap->value[myRow][myCol] = mySunPosition.azimuth;
                     radiationMaps->sunElevationMap->value[myRow][myCol] = mySunPosition.elevationRefr;
                     radiationMaps->sunIncidenceMap->value[myRow][myCol] = mySunPosition.incidence;
-
                     radiationMaps->sunShadowMap->value[myRow][myCol] = float((mySunPosition.shadow) ?  0 : 1);
-
                     radiationMaps->beamRadiationMap->value[myRow][myCol] = float(myRadPoint.beam);
                     radiationMaps->diffuseRadiationMap->value[myRow][myCol] = float(myRadPoint.diffuse);
                     radiationMaps->reflectedRadiationMap->value[myRow][myCol] = float(myRadPoint.reflected);
+                    */
                     radiationMaps->globalRadiationMap->value[myRow][myCol] = float(myRadPoint.global);
                 }
             }
         }
 
+        /*
         gis::updateMinMaxRasterGrid(radiationMaps->sunAzimuthMap);
         gis::updateMinMaxRasterGrid(radiationMaps->sunElevationMap);
         gis::updateMinMaxRasterGrid(radiationMaps->sunIncidenceMap);
-        gis::updateMinMaxRasterGrid(radiationMaps->sunRiseMap);
-        gis::updateMinMaxRasterGrid(radiationMaps->sunSetMap);
         gis::updateMinMaxRasterGrid(radiationMaps->sunShadowMap);
-        gis::updateMinMaxRasterGrid(radiationMaps->transmissivityMap);
         gis::updateMinMaxRasterGrid(radiationMaps->diffuseRadiationMap);
         gis::updateMinMaxRasterGrid(radiationMaps->reflectedRadiationMap);
         gis::updateMinMaxRasterGrid(radiationMaps->beamRadiationMap);
+        */
+
+        gis::updateMinMaxRasterGrid(radiationMaps->transmissivityMap);
         gis::updateMinMaxRasterGrid(radiationMaps->globalRadiationMap);
 
         return true;
