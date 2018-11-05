@@ -5,13 +5,14 @@
     #include "interpolationSettings.h"
 #endif
 
+#ifndef DBMETEOPOINTS_H
+    #include "dbMeteoPoints.h"
+#endif
+
 #include <QSettings>
 #include <QDialog>
 #include <QtWidgets>
 #include <QPushButton>
-
-class Crit3DMeteoPointsDbHandler;
-class Crit3DProxyMeteoPoint;
 
 class InterpolationDialog : public QDialog
 {
