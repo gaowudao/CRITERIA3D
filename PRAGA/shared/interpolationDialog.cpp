@@ -336,7 +336,7 @@ ProxyDialog::ProxyDialog(QSettings *settings,
     connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
     layoutMain.addWidget(buttonBox);
 
-    QPushButton *_save = new QPushButton("Save");
+    QPushButton *_save = new QPushButton("Save proxies");
     connect(_save, &QPushButton::clicked, [=](){ this->saveProxies(); });
     layoutMain.addWidget(_save);
 
@@ -357,20 +357,15 @@ void ProxyDialog::saveProxies()
     return;
 }
 
-bool checkProxy(Crit3DProxyMeteoPoint *myProxy, QString* error)
-{
-    return true;
-}
-
 void ProxyDialog::accept()
 {
     // check proxies
-    QString* error;
+    std::string *error;
     for (int i=0; i<_proxy.size(); i++)
     {
-        if (! checkProxy(&_proxy.at(i), error))
+        if (! _proxy.at(i).check(error))
         {
-            QMessageBox::information(NULL, "Proxy error", *error);
+            QMessageBox::information(NULL, "Proxy error", QString::fromStdString(*error));
             return;
         }
     }

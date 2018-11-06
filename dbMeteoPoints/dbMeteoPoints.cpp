@@ -693,8 +693,20 @@ void Crit3DProxyMeteoPoint::setProxyTable(const std::string &value)
 Crit3DProxyMeteoPoint::Crit3DProxyMeteoPoint()
 {}
 
-bool Crit3DProxyMeteoPoint::check()
+bool Crit3DProxyMeteoPoint::check(std::string *error)
 {
+    if (getName() == "")
+    {
+        *error = "no name for proxy";
+        return false;
+    }
+
+    if (getGridName() == "")
+    {
+        *error = "no grid name for proxy " + getName();
+        return false;
+    }
+
     return true;
 }
 

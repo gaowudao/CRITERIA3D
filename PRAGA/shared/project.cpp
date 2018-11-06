@@ -282,18 +282,39 @@ bool Project::checkProxySetting(QString group, std::string* name, std::string* g
     *isActive = settings->value("active").toBool();
     settings->endGroup();
 
-    return (*name != "" && (grid != "" || (*table != "" && *field != "")));
+    bool isHeight = getProxyPragaName(*name);
+
+    // name is mandatory, grid or db source is mandatory (if proxy is not height)
+    return (*name != "" && (grid != "" || !isHeight || (*table != "" && *field != "")));
 }
 
-bool Project::addProxy(std::string name_, std::string gridName_, bool isActive,
-                       std::string table_, std::string field_)
+bool loadProxyGrid(Crit3DProxy* myProxy, std::string gridName)
 {
-    Crit3DProxy myProxy;
+    std::string* myError = new std::string();
+    gis::Crit3DRasterGrid* myGrid = myProxy->getGrid();
+    return (gis::readEsriGrid(gridName, myGrid, myError));
+}
 
-    myProxy.setName(name_);
-    myProxy.setGridName(gridName_);
+void Project::setProxyDEM()
+{
+    int index = interpolationSettings.getIndexHeight();
+    int indexQuality = qualityInterpolationSettings.getIndexHeight();
 
-    return true;
+    // if no elevation proxy defined nothing to do
+    if (index != NODATA && indexQuality == NODATA) return;
+
+    Crit3DProxy* proxyHeight = interpolationSettings.getProxy(index);
+
+    // if no alternative DEM defined and project DEM loaded, use it for elevation proxy
+    if (proxyHeight->getGridName() != "" && DTM.isLoaded)
+        proxyHeight->setGrid(&DTM);
+
+    proxyHeight = qualityInterpolationSettings.getProxy(indexQuality);
+    if (proxyHeight->getGridName() != "" && DTM.isLoaded)
+        proxyHeight->setGrid(&DTM);
+
+    return;
+
 }
 
 bool Project::readProxies()
@@ -324,18 +345,8 @@ bool Project::readProxies()
             myProxy.setName(proxyName);
             myProxy.setGridName(proxyGridName);
 
-            if (myProxy.getProxyPragaName() == height)
-            {
-                if (DTM.isLoaded)
-                {
-                    isGridLoaded = true;
-                    myProxy.setGrid(&DTM);
-                }
-                else
-                    isGridLoaded = loadProxyGrid(&myProxy);
-            }
-            else
-                isGridLoaded = loadProxyGrid(&myProxy);
+            if (getProxyPragaName(proxyName) != height)
+                isGridLoaded = loadProxyGrid(&myProxy, proxyGridName);
 
             if ( !isGridLoaded && (proxyTable == "" || proxyField == ""))
             {
@@ -343,7 +354,7 @@ bool Project::readProxies()
                 return false;
             }
 
-            if (myProxy.getProxyPragaName() == height)
+            if (getProxyPragaName(proxyName) == height)
             {
                 interpolationSettings.setIndexHeight(proxyNr);
                 // quality spatial control use only elevation
@@ -353,6 +364,9 @@ bool Project::readProxies()
 
             interpolationSettings.addProxy(myProxy, isActive);
 
+            if (getProxyPragaName(proxyName) == height)
+                setProxyDEM();
+
             if (isGridLoaded && meteoPointsDbHandler != NULL)
             {
                 meteoPointsDbHandler->addProxy(myProxy, proxyTable, proxyField);
@@ -360,6 +374,8 @@ bool Project::readProxies()
             }
         }
     }
+
+    readProxyValues();
 
     return true;
 }
@@ -606,7 +622,6 @@ bool Project::loadMeteoPointsDB(QString dbName)
         logError("Error loading interpolation proxies");
         return false;
     }
-    readProxyValues();
 
     //position with respect to DEM
     if (DTM.isLoaded)

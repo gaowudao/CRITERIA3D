@@ -14,6 +14,7 @@
     #include <deque>
 
     std::string getKeyStringInterpolationMethod(TInterpolationMethod value);
+    TProxyVar getProxyPragaName(std::string name_);
 
     class Crit3DProxy
     {
@@ -34,8 +35,6 @@
         void setGridName(const std::string &value);
         bool getIsSignificant() const;
         void setIsSignificant(bool value);
-
-        TProxyVar getProxyPragaName();
     };
 
     class Crit3DProxyInterpolation : public Crit3DProxy

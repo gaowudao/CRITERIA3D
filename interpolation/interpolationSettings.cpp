@@ -212,6 +212,7 @@ void Crit3DInterpolationSettings::initialize()
     minRegressionR2 = float(PEARSONSTANDARDTHRESHOLD);
     meteoGridAggrMethod = aggrAvg;
     initializeProxy();
+    indexHeight = NODATA;
 
     isKrigingReady = false;
     precipitationAllZero = false;
@@ -318,12 +319,12 @@ std::string Crit3DProxy::getGridName() const
     return gridName;
 }
 
-TProxyVar Crit3DProxy::getProxyPragaName()
+TProxyVar getProxyPragaName(std::string name_)
 {
-    if (ProxyVarNames.find(name) == ProxyVarNames.end())
+    if (ProxyVarNames.find(name_) == ProxyVarNames.end())
         return TProxyVar::noProxy;
     else
-        return ProxyVarNames.at(name);
+        return ProxyVarNames.at(name_);
 }
 
 void Crit3DProxy::setGridName(const std::string &value)

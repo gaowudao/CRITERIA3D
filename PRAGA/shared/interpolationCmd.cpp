@@ -4,14 +4,6 @@
 #include "gis.h"
 
 
-bool loadProxyGrid(Crit3DProxy* myProxy)
-{
-    std::string* myError = new std::string();
-    std::string gridName = myProxy->getGridName();
-    gis::Crit3DRasterGrid* myGrid = myProxy->getGrid();
-    return (gis::readEsriGrid(gridName, myGrid, myError));
-}
-
 bool interpolationRaster(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings,
                         gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGrid& myDTM, meteoVariable myVar, bool showInfo)
 {

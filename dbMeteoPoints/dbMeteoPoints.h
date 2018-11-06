@@ -29,7 +29,7 @@ public:
     std::string getProxyTable() const;
     void setProxyTable(const std::string &value);
 
-    bool check();
+    bool check(std::string *error);
 };
 
 class Crit3DMeteoPointsDbHandler : public QObject
