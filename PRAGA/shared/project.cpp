@@ -270,31 +270,6 @@ bool Project::loadDEM(QString myFileName)
 }
 
 
-bool Project::checkProxySetting(QString group, std::string* name, std::string* grdName,
-                                std::string* table, std::string* field, bool* isActive)
-{
-    QString grid;
-
-    *name = group.right(group.size()-6).toStdString();
-    settings->beginGroup(group);
-
-    grid = settings->value("raster").toString();
-    if (grid.left(1) == ".")
-        *grdName = path.toStdString() + grid.toStdString();
-    else
-        *grdName = grid.toStdString();
-
-    *table = settings->value("table").toString().toStdString();
-    *field = settings->value("field").toString().toStdString();
-    *isActive = settings->value("active").toBool();
-    settings->endGroup();
-
-    bool isHeight = (getProxyPragaName(*name) == height);
-
-    // name is mandatory, grid or db source is mandatory (if proxy is not height)
-    return (*name != "" && (grid != "" || !isHeight || (*table != "" && *field != "")));
-}
-
 bool loadProxyGrid(Crit3DProxy* myProxy, std::string gridName)
 {
     std::string* myError = new std::string();
@@ -319,19 +294,20 @@ void Project::setProxyDEM()
     proxyHeight = qualityInterpolationSettings.getProxy(indexQuality);
     if (proxyHeight->getGridName() == "" && DTM.isLoaded)
         proxyHeight->setGrid(&DTM);
-
-    return;
-
 }
+
 
 bool Project::readProxies()
 {
     std::string proxyName, proxyGridName, proxyTable, proxyField;
-    bool isActive;
-    int proxyNr = 0;
+    bool isActive, forQuality;
     bool isGridLoaded;
+    QString myGridName;
+    bool isHeight;
+    Crit3DProxy myProxy;
 
     interpolationSettings.initializeProxy();
+    qualityInterpolationSettings.initializeProxy();
     meteoPointsDbHandler->initializeProxy();
 
     Q_FOREACH (QString group, settings->childGroups())
@@ -341,13 +317,29 @@ bool Project::readProxies()
         {
             isGridLoaded = false;
 
-            if (! checkProxySetting(group, &proxyName, &proxyGridName, &proxyTable, &proxyField, &isActive))
+            proxyName = group.right(group.size()-6).toStdString();
+
+            settings->beginGroup(group);
+            myGridName = settings->value("raster").toString();
+            if (myGridName.left(1) == ".")
+                proxyGridName = path.toStdString() + myGridName.toStdString();
+            else
+                proxyGridName = myGridName.toStdString();
+
+            proxyTable = settings->value("table").toString().toStdString();
+            proxyField = settings->value("field").toString().toStdString();
+            isActive = settings->value("active").toBool();
+            forQuality = settings->value("useForSpatialQualityControl").toBool();
+
+            settings->endGroup();
+
+            isHeight = (getProxyPragaName(proxyName) == height);
+
+            if (proxyName == "" || (proxyGridName == "" && !isHeight && (proxyTable == "" || proxyField == "")))
             {
                 errorString = "error parsing proxy " + proxyName;
                 return false;
             }
-
-            Crit3DProxy myProxy;
 
             myProxy.setName(proxyName);
             myProxy.setGridName(proxyGridName);
@@ -362,21 +354,14 @@ bool Project::readProxies()
             }
 
             interpolationSettings.addProxy(myProxy, isActive);
-
-            if (getProxyPragaName(proxyName) == height)
+            meteoPointsDbHandler->addProxy(myProxy, proxyTable, proxyField);
+            if (forQuality)
             {
-                interpolationSettings.setIndexHeight(proxyNr);
-                // quality spatial control use only elevation
                 qualityInterpolationSettings.addProxy(myProxy, isActive);
-                qualityInterpolationSettings.setIndexHeight(0);
-                setProxyDEM();
             }
 
-            if (isGridLoaded && meteoPointsDbHandler != NULL)
-            {
-                meteoPointsDbHandler->addProxy(myProxy, proxyTable, proxyField);
-                proxyNr++;
-            }
+            if (isHeight) setProxyDEM();
+
         }
     }
 

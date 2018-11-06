@@ -707,6 +707,18 @@ bool Crit3DProxyMeteoPoint::check(std::string *error)
         return false;
     }
 
+    if (getGridName() == "")
+    {
+        gis::Crit3DRasterGrid* grid_ = new gis::Crit3DRasterGrid();
+        if (! gis::readEsriGrid(getGridName(), grid_, error))
+        {
+            *error = "error loading grid for proxy " + getName();
+            grid_ = NULL;
+            return false;
+        }
+        grid_ = NULL;
+    }
+
     return true;
 }
 

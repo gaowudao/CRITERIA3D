@@ -1574,6 +1574,6 @@ void MainWindow::on_actionProxy_variables_triggered()
         return;
     }
 
-    ProxyDialog* myProxyDialog = new ProxyDialog(myProject.settings, &(myProject.interpolationSettings), myProject.meteoPointsDbHandler);
+    ProxyDialog* myProxyDialog = new ProxyDialog(myProject.settings, &(myProject.interpolationSettings), &(myProject.qualityInterpolationSettings), myProject.meteoPointsDbHandler);
     myProxyDialog->close();
 }

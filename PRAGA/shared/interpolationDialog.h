@@ -14,6 +14,7 @@
 #include <QtWidgets>
 #include <QPushButton>
 
+
 class InterpolationDialog : public QDialog
 {
     Q_OBJECT
@@ -47,6 +48,7 @@ class ProxyDialog : public QDialog
     public:
         explicit ProxyDialog(QSettings *settings,
                              Crit3DInterpolationSettings *myInterpolationSettings,
+                             Crit3DInterpolationSettings *myQualityInterpolationSettings,
                              Crit3DMeteoPointsDbHandler *myMeteoPointsHandler);
 
         QComboBox _proxyCombo;
@@ -60,14 +62,16 @@ class ProxyDialog : public QDialog
         void redrawProxies();
         void addProxy();
         void deleteProxy();
+        void writeProxies();
         void saveProxies();
         void saveProxy();
-
+        bool checkProxies(std::string *error);
         void accept();
 
     private:
         QSettings* _paramSettings;
         Crit3DInterpolationSettings *_interpolationSettings;
+        Crit3DInterpolationSettings *_qualityInterpolationSettings;
         Crit3DMeteoPointsDbHandler *_meteoPointsHandler;
         std::vector <Crit3DProxyMeteoPoint> _proxy;
 

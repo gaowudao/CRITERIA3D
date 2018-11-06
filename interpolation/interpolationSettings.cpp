@@ -435,6 +435,9 @@ void Crit3DInterpolationSettings::addProxy(Crit3DProxy myProxy, bool isActive_)
     myInterpolationProxy.setGrid(myProxy.getGrid());
     currentProxy.push_back(myInterpolationProxy);
 
+    if (getProxyPragaName(myProxy.getName()) == height)
+        setIndexHeight(currentProxy.size()-1);
+
     selectedCombination.addValue(isActive_);
     optimalCombination.addValue(isActive_);
 }
