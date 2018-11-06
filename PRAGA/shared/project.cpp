@@ -257,6 +257,8 @@ bool Project::loadDEM(QString myFileName)
         // ciclo sulle celle della meteo grid -> clean vettore aggregation points
     }
 
+    setProxyDEM();
+
     //set interpolation settings DEM
     interpolationSettings.setCurrentDEM(&DTM);
     qualityInterpolationSettings.setCurrentDEM(&DTM);
