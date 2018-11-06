@@ -273,18 +273,23 @@ bool Project::loadDEM(QString myFileName)
 bool Project::checkProxySetting(QString group, std::string* name, std::string* grdName,
                                 std::string* table, std::string* field, bool* isActive)
 {
-    std::string grid;
+    QString grid;
 
     *name = group.right(group.size()-6).toStdString();
     settings->beginGroup(group);
-    grid = settings->value("raster").toString().toStdString();
-    *grdName = path.toStdString() + grid;
+
+    grid = settings->value("raster").toString();
+    if (grid.left(1) == ".")
+        *grdName = path.toStdString() + grid.toStdString();
+    else
+        *grdName = grid.toStdString();
+
     *table = settings->value("table").toString().toStdString();
     *field = settings->value("field").toString().toStdString();
     *isActive = settings->value("active").toBool();
     settings->endGroup();
 
-    bool isHeight = getProxyPragaName(*name);
+    bool isHeight = (getProxyPragaName(*name) == height);
 
     // name is mandatory, grid or db source is mandatory (if proxy is not height)
     return (*name != "" && (grid != "" || !isHeight || (*table != "" && *field != "")));
@@ -308,11 +313,11 @@ void Project::setProxyDEM()
     Crit3DProxy* proxyHeight = interpolationSettings.getProxy(index);
 
     // if no alternative DEM defined and project DEM loaded, use it for elevation proxy
-    if (proxyHeight->getGridName() != "" && DTM.isLoaded)
+    if (proxyHeight->getGridName() == "" && DTM.isLoaded)
         proxyHeight->setGrid(&DTM);
 
     proxyHeight = qualityInterpolationSettings.getProxy(indexQuality);
-    if (proxyHeight->getGridName() != "" && DTM.isLoaded)
+    if (proxyHeight->getGridName() == "" && DTM.isLoaded)
         proxyHeight->setGrid(&DTM);
 
     return;
@@ -356,18 +361,16 @@ bool Project::readProxies()
                 return false;
             }
 
+            interpolationSettings.addProxy(myProxy, isActive);
+
             if (getProxyPragaName(proxyName) == height)
             {
                 interpolationSettings.setIndexHeight(proxyNr);
                 // quality spatial control use only elevation
                 qualityInterpolationSettings.addProxy(myProxy, isActive);
                 qualityInterpolationSettings.setIndexHeight(0);
-            }
-
-            interpolationSettings.addProxy(myProxy, isActive);
-
-            if (getProxyPragaName(proxyName) == height)
                 setProxyDEM();
+            }
 
             if (isGridLoaded && meteoPointsDbHandler != NULL)
             {

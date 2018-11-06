@@ -265,11 +265,11 @@ ProxyDialog::ProxyDialog(QSettings *settings,
                          Crit3DInterpolationSettings *myInterpolationSettings,
                          Crit3DMeteoPointsDbHandler *myMeteoPointsHandler)
 {
-    QVBoxLayout layoutMain;
-    QHBoxLayout layoutProxyCombo;
-    QVBoxLayout layoutProxy;
-    QVBoxLayout layoutPointValues;
-    QVBoxLayout layoutGrid;
+    QVBoxLayout *layoutMain = new QVBoxLayout();
+    QHBoxLayout *layoutProxyCombo = new QHBoxLayout();
+    QVBoxLayout *layoutProxy = new QVBoxLayout();
+    QVBoxLayout *layoutPointValues = new QVBoxLayout();
+    QVBoxLayout *layoutGrid = new QVBoxLayout();
 
     this->resize(300, 100);
 
@@ -282,66 +282,66 @@ ProxyDialog::ProxyDialog(QSettings *settings,
 
     // proxy list
     QLabel *labelProxyList = new QLabel(tr("proxy list"));
-    layoutProxy.addWidget(labelProxyList);
+    layoutProxy->addWidget(labelProxyList);
     redrawProxies();
 
     connect(&_proxyCombo, &QComboBox::currentTextChanged, [=](){ this->changedProxy(); });
-    layoutProxyCombo.addWidget(&_proxyCombo);
+    layoutProxyCombo->addWidget(&_proxyCombo);
 
     QPushButton *_add = new QPushButton("add");
-    layoutProxyCombo.addWidget(_add);
+    layoutProxyCombo->addWidget(_add);
     connect(_add, &QPushButton::clicked, [=](){ this->addProxy(); });
 
     QPushButton *_delete = new QPushButton("delete");
-    layoutProxyCombo.addWidget(_delete);
+    layoutProxyCombo->addWidget(_delete);
     connect(_delete, &QPushButton::clicked, [=](){ this->deleteProxy(); });
 
     QPushButton *_saveProxy = new QPushButton("save");
-    layoutProxyCombo.addWidget(_saveProxy);
+    layoutProxyCombo->addWidget(_saveProxy);
     connect(_saveProxy, &QPushButton::clicked, [=](){ this->saveProxy(); });
 
-    layoutProxy.addLayout(&layoutProxyCombo);
-    layoutMain.addLayout(&layoutProxy);
+    layoutProxy->addLayout(layoutProxyCombo);
+    layoutMain->addLayout(layoutProxy);
 
     // point values
     QLabel *labelTableList = new QLabel(tr("table for point values"));
-    layoutPointValues.addWidget(labelTableList);
+    layoutPointValues->addWidget(labelTableList);
     QStringList tables_ = myMeteoPointsHandler->getDb().tables();
     for (int i=0; i < tables_.size(); i++)
         _table.addItem(tables_.at(i));
 
-    layoutPointValues.addWidget(&_table);
+    layoutPointValues->addWidget(&_table);
     connect(&_table, &QComboBox::currentTextChanged, [=](){ this->changedTable(); });
 
     QLabel *labelFieldList = new QLabel(tr("field for point values"));
-    layoutPointValues.addWidget(labelFieldList);
-    layoutPointValues.addWidget(&_field);
-    layoutMain.addLayout(&layoutPointValues);
+    layoutPointValues->addWidget(labelFieldList);
+    layoutPointValues->addWidget(&_field);
+    layoutMain->addLayout(layoutPointValues);
 
     // grid
     QLabel *labelGrid = new QLabel(tr("proxy grid"));
-    layoutGrid.addWidget(labelGrid);
+    layoutGrid->addWidget(labelGrid);
 
     QPushButton *_selectGrid = new QPushButton("Select file");
-    layoutGrid.addWidget(_selectGrid);
+    layoutGrid->addWidget(_selectGrid);
     _proxyGridName.setEnabled(false);
-    layoutGrid.addWidget(&_proxyGridName);
+    layoutGrid->addWidget(&_proxyGridName);
     connect(_selectGrid, &QPushButton::clicked, [=](){ this->getGridFile(); });
 
-    layoutMain.addLayout(&layoutGrid);
+    layoutMain->addLayout(layoutGrid);
 
     // buttons
     QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
     connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
-    layoutMain.addWidget(buttonBox);
+    layoutMain->addWidget(buttonBox);
 
     QPushButton *_save = new QPushButton("Save proxies");
     connect(_save, &QPushButton::clicked, [=](){ this->saveProxies(); });
-    layoutMain.addWidget(_save);
+    layoutMain->addWidget(_save);
 
-    layoutMain.addStretch(1);
-    setLayout(&layoutMain);
+    layoutMain->addStretch(1);
+    setLayout(layoutMain);
 
     if (_proxyCombo.count() > 0)
     {
