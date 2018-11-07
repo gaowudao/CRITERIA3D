@@ -73,7 +73,7 @@ class ProxyDialog : public QDialog
         Crit3DInterpolationSettings *_interpolationSettings;
         Crit3DInterpolationSettings *_qualityInterpolationSettings;
         Crit3DMeteoPointsDbHandler *_meteoPointsHandler;
-        std::vector <Crit3DProxyMeteoPoint> _proxy;
+        std::vector <Crit3DProxy> _proxy;
 
 };
 

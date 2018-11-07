@@ -2,6 +2,7 @@
 #include "commonConstants.h"
 #include "meteo.h"
 #include "meteoPoint.h"
+#include "interpolationSettings.h"
 
 #include <QDebug>
 
@@ -13,16 +14,6 @@
 #include <QStringBuilder>
 #include <QUuid>
 
-
-std::vector<Crit3DProxyMeteoPoint> Crit3DMeteoPointsDbHandler::getProxyMeteoPoint() const
-{
-    return ProxyMeteoPoint;
-}
-
-void Crit3DMeteoPointsDbHandler::setProxyMeteoPoint(const std::vector<Crit3DProxyMeteoPoint> &value)
-{
-    ProxyMeteoPoint = value;
-}
 
 Crit3DMeteoPointsDbHandler::Crit3DMeteoPointsDbHandler(QString dbName)
 {
@@ -515,7 +506,7 @@ void Crit3DMeteoPointsDbHandler::setDb(const QSqlDatabase &db)
     _db = db;
 }
 
-bool Crit3DMeteoPointsDbHandler::readPointProxyValues(Crit3DMeteoPoint* myPoint)
+bool Crit3DMeteoPointsDbHandler::readPointProxyValues(Crit3DMeteoPoint* myPoint, Crit3DInterpolationSettings* interpolationSettings)
 {
     if (myPoint == NULL) return false;
 
@@ -523,15 +514,15 @@ bool Crit3DMeteoPointsDbHandler::readPointProxyValues(Crit3DMeteoPoint* myPoint)
     QString proxyField;
     QString proxyTable;
     QString statement;
+    Crit3DProxy* myProxy;
 
-    myPoint->proxyValues.resize(ProxyMeteoPoint.size());
-
-    for (unsigned int i=0; i < ProxyMeteoPoint.size(); i++)
+    for (int i=0; i < interpolationSettings->getProxyNr() ; i++)
     {
         myPoint->proxyValues.at(i) = NODATA;
 
-        proxyField = QString::fromStdString(ProxyMeteoPoint.at(i).getProxyField());
-        proxyTable = QString::fromStdString(ProxyMeteoPoint.at(i).getProxyTable());
+        myProxy = interpolationSettings->getProxy(i);
+        proxyField = QString::fromStdString(myProxy->getProxyField());
+        proxyTable = QString::fromStdString(myProxy->getProxyTable());
         if (proxyField != "" && proxyTable != "")
         {
             statement = QString("SELECT `%1` FROM `%2` WHERE id_point = '%3'").arg(proxyField).arg(proxyTable).arg(QString::fromStdString((*myPoint).id));
@@ -545,7 +536,7 @@ bool Crit3DMeteoPointsDbHandler::readPointProxyValues(Crit3DMeteoPoint* myPoint)
 
         if (myPoint->proxyValues.at(i) == NODATA)
         {
-            gis::Crit3DRasterGrid* proxyGrid = (ProxyMeteoPoint.at(i).getGrid());
+            gis::Crit3DRasterGrid* proxyGrid = myProxy->getGrid();
             if (proxyGrid == NULL || ! proxyGrid->isLoaded)
                 return false;
             else
@@ -666,80 +657,4 @@ bool Crit3DMeteoPointsDbHandler::writePointProperties(Crit3DMeteoPoint *myPoint)
     else
         return true;
 
-}
-
-
-
-std::string Crit3DProxyMeteoPoint::getProxyField() const
-{
-    return proxyField;
-}
-
-void Crit3DProxyMeteoPoint::setProxyField(const std::string &value)
-{
-    proxyField = value;
-}
-
-std::string Crit3DProxyMeteoPoint::getProxyTable() const
-{
-    return proxyTable;
-}
-
-void Crit3DProxyMeteoPoint::setProxyTable(const std::string &value)
-{
-    proxyTable = value;
-}
-
-Crit3DProxyMeteoPoint::Crit3DProxyMeteoPoint()
-{}
-
-bool Crit3DProxyMeteoPoint::check(std::string *error)
-{
-    if (getName() == "")
-    {
-        *error = "no name for proxy";
-        return false;
-    }
-
-    if (getGridName() == "")
-    {
-        *error = "no grid name for proxy " + getName();
-        return false;
-    }
-
-    if (getGridName() == "")
-    {
-        gis::Crit3DRasterGrid* grid_ = new gis::Crit3DRasterGrid();
-        if (! gis::readEsriGrid(getGridName(), grid_, error))
-        {
-            *error = "error loading grid for proxy " + getName();
-            grid_ = NULL;
-            return false;
-        }
-        grid_ = NULL;
-    }
-
-    return true;
-}
-
-Crit3DProxyMeteoPoint::Crit3DProxyMeteoPoint(Crit3DProxy myProxy)
-{
-    setName(myProxy.getName());
-    setGridName(myProxy.getGridName());
-    setGrid(myProxy.getGrid());
-    setProxyField("");
-    setProxyTable("");
-}
-
-void Crit3DMeteoPointsDbHandler::initializeProxy()
-{
-    ProxyMeteoPoint.clear();
-}
-
-void Crit3DMeteoPointsDbHandler::addProxy(Crit3DProxy myProxy, std::string tableName_, std::string fieldName_)
-{
-    Crit3DProxyMeteoPoint myProxyMeteoPoint = Crit3DProxyMeteoPoint(myProxy);
-    myProxyMeteoPoint.setProxyField(fieldName_);
-    myProxyMeteoPoint.setProxyTable(tableName_);
-    ProxyMeteoPoint.push_back(myProxyMeteoPoint);
 }

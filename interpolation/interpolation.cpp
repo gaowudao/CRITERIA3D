@@ -304,7 +304,7 @@ bool regressionGeneric(std::vector <Crit3DInterpolationDataPoint> &myPoints, Cri
     float q, m, r2;
 
     regressionSimple(myPoints, mySettings->getUseLapseRateCode(), proxyPos, isZeroIntercept, &m, &q, &r2);
-    Crit3DProxyInterpolation* myProxy = mySettings->getProxy(proxyPos);
+    Crit3DProxy* myProxy = mySettings->getProxy(proxyPos);
 
     myProxy->setRegressionSlope(m);
     myProxy->setRegressionR2(r2);
@@ -319,7 +319,7 @@ bool regressionSimpleT(std::vector <Crit3DInterpolationDataPoint> &myPoints, Cri
     float q, m, r2;
     bool useLRCode = mySettings->getUseLapseRateCode();
 
-    Crit3DProxyInterpolation* myProxyOrog = mySettings->getProxy(orogProxyPos);
+    Crit3DProxy* myProxyOrog = mySettings->getProxy(orogProxyPos);
     myProxyOrog->initializeOrography();
 
     regressionSimple(myPoints, useLRCode, orogProxyPos, false, &m, &q, &r2);
@@ -392,7 +392,7 @@ bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, 
 
     bool useLRCode = mySettings->getUseLapseRateCode();
 
-    Crit3DProxyInterpolation* myProxyOrog = mySettings->getProxy(orogProxyPos);
+    Crit3DProxy* myProxyOrog = mySettings->getProxy(orogProxyPos);
 
     mySignificativeR2 = maxValue(mySettings->getMinRegressionR2(), float(0.2));
     mySignificativeR2Inv = maxValue(mySettings->getMinRegressionR2(), float(0.1));
@@ -922,7 +922,7 @@ void detrendPoints(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DI
     float detrendValue, proxyValue;
     long myIndex;
     Crit3DInterpolationDataPoint* myPoint;
-    Crit3DProxyInterpolation* myProxy;
+    Crit3DProxy* myProxy;
 
     if (! getUseDetrendingVar(myVar)) return;
 
@@ -974,7 +974,7 @@ float retrend(meteoVariable myVar, vector <float> myProxyValues, Crit3DInterpola
 
     float retrendValue = 0.;
     float myProxyValue;
-    Crit3DProxyInterpolation* myProxy;
+    Crit3DProxy* myProxy;
     Crit3DProxyCombination* myCombination = mySettings->getCurrentCombination();
 
     for (int pos=0; pos < mySettings->getProxyNr(); pos++)
@@ -1037,7 +1037,7 @@ void detrending(std::vector <Crit3DInterpolationDataPoint> &myPoints,
 {
     if (! getUseDetrendingVar(myVar)) return;
 
-    Crit3DProxyInterpolation* myProxy;
+    Crit3DProxy* myProxy;
 
     for (int pos=0; pos < mySettings->getProxyNr(); pos++)
     {

@@ -15,29 +15,9 @@
 #endif
 
 
-class Crit3DProxyMeteoPoint : public Crit3DProxy
-{
-private:
-    std::string proxyTable;
-    std::string proxyField;
-
-public:
-    Crit3DProxyMeteoPoint();
-    Crit3DProxyMeteoPoint(Crit3DProxy myProxy);
-    std::string getProxyField() const;
-    void setProxyField(const std::string &value);
-    std::string getProxyTable() const;
-    void setProxyTable(const std::string &value);
-
-    bool check(std::string *error);
-};
-
 class Crit3DMeteoPointsDbHandler : public QObject
 {
     Q_OBJECT
-
-private:
-    std::vector <Crit3DProxyMeteoPoint> ProxyMeteoPoint;
 
 public:
     QString error;
@@ -54,9 +34,7 @@ public:
         QDateTime getLastDay(frequencyType frequency);
         QDateTime getFirstDay(frequencyType frequency);
 
-        void initializeProxy();
-        void addProxy(Crit3DProxy myProxy, std::string tableName_, std::string fieldName_);
-        bool readPointProxyValues(Crit3DMeteoPoint* myPoint);
+        bool readPointProxyValues(Crit3DMeteoPoint* myPoint, Crit3DInterpolationSettings* interpolationSettings);
 
         bool writePointProperties(Crit3DMeteoPoint* pointProp);
         QList<Crit3DMeteoPoint> getPropertiesFromDb(const gis::Crit3DGisSettings& gisSettings);
@@ -67,9 +45,6 @@ public:
         void closeDatabase();
         QSqlDatabase getDb() const;
         void setDb(const QSqlDatabase &db);
-
-        std::vector<Crit3DProxyMeteoPoint> getProxyMeteoPoint() const;
-        void setProxyMeteoPoint(const std::vector<Crit3DProxyMeteoPoint> &value);
 
 protected:
         QSqlDatabase _db;

@@ -22,22 +22,10 @@
         std::string name;
         std::string gridName;
         gis::Crit3DRasterGrid* grid;
-
-    public:
-        Crit3DProxy();
-
-        std::string getName() const;
-        void setName(const std::string &value);
-        gis::Crit3DRasterGrid *getGrid() const;
-        void setGrid(gis::Crit3DRasterGrid *value);
-        std::string getGridName() const;
-        void setGridName(const std::string &value);
-    };
-
-    class Crit3DProxyInterpolation : public Crit3DProxy
-    {
-    private:
+        std::string proxyTable;
+        std::string proxyField;
         bool isSignificant;
+        bool forQualityControl;
 
         float regressionR2;
         float regressionSlope;
@@ -49,8 +37,16 @@
         bool inversionIsSignificative;
 
     public:
-        Crit3DProxyInterpolation();
+        Crit3DProxy();
 
+        bool check(std::string *error);
+
+        std::string getName() const;
+        void setName(const std::string &value);
+        gis::Crit3DRasterGrid *getGrid() const;
+        void setGrid(gis::Crit3DRasterGrid *value);
+        std::string getGridName() const;
+        void setGridName(const std::string &value);
         bool getIsSignificant() const;
         void setIsSignificant(bool value);
         void setRegressionR2(float myValue);
@@ -68,8 +64,12 @@
         void setInversionIsSignificative(bool value);
 
         void initializeOrography();
-        bool getProva() const;
-        void setProva(bool value);
+        bool getForQualityControl() const;
+        void setForQualityControl(bool value);
+        std::string getProxyTable() const;
+        void setProxyTable(const std::string &value);
+        std::string getProxyField() const;
+        void setProxyField(const std::string &value);
     };
 
     class Crit3DProxyCombination
@@ -114,7 +114,7 @@
         int indexPointCV;
         float topoDist_Kh, topoDist_Kz;
 
-        std::vector <Crit3DProxyInterpolation> currentProxy;
+        std::vector <Crit3DProxy> currentProxy;
         Crit3DProxyCombination optimalCombination;
         Crit3DProxyCombination selectedCombination;
         Crit3DProxyCombination *currentCombination;
@@ -131,7 +131,7 @@
 
         void computeShepardInitialRadius(float area, int nrPoints);
 
-        Crit3DProxyInterpolation* getProxy(int pos);
+        Crit3DProxy* getProxy(int pos);
         std::string getProxyName(int pos);
         int getProxyNr();
         void addProxy(Crit3DProxy myProxy, bool isActive_);
@@ -187,6 +187,8 @@
         void setIndexHeight(int value);
         Crit3DProxyCombination *getCurrentCombination() const;
         void setCurrentCombination(Crit3DProxyCombination *value);
+        std::vector<Crit3DProxy> getCurrentProxy() const;
+        void setCurrentProxy(const std::vector<Crit3DProxy> &value);
     };
 
 #endif // INTERPOLATIONSETTINGS_H

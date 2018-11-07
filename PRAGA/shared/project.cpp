@@ -308,7 +308,6 @@ bool Project::readProxies()
 
     interpolationSettings.initializeProxy();
     qualityInterpolationSettings.initializeProxy();
-    meteoPointsDbHandler->initializeProxy();
 
     Q_FOREACH (QString group, settings->childGroups())
     {
@@ -354,7 +353,6 @@ bool Project::readProxies()
             }
 
             interpolationSettings.addProxy(myProxy, isActive);
-            meteoPointsDbHandler->addProxy(myProxy, proxyTable, proxyField);
             if (forQuality)
             {
                 qualityInterpolationSettings.addProxy(myProxy, isActive);
@@ -833,7 +831,7 @@ void Project::readProxyValues()
         return;
 
     for (int i = 0; i < nrMeteoPoints; i++)
-        meteoPointsDbHandler->readPointProxyValues(&meteoPoints[i]);
+        meteoPointsDbHandler->readPointProxyValues(&meteoPoints[i], &interpolationSettings);
 }
 
 bool Project::writeTopographicDistanceMaps()

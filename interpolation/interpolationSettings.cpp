@@ -188,6 +188,16 @@ Crit3DProxyCombination *Crit3DInterpolationSettings::getCurrentCombination() con
     return currentCombination;
 }
 
+std::vector<Crit3DProxy> Crit3DInterpolationSettings::getCurrentProxy() const
+{
+    return currentProxy;
+}
+
+void Crit3DInterpolationSettings::setCurrentProxy(const std::vector<Crit3DProxy> &value)
+{
+    currentProxy = value;
+}
+
 Crit3DInterpolationSettings::Crit3DInterpolationSettings()
 {
     initialize();
@@ -291,7 +301,7 @@ bool Crit3DInterpolationSettings::getUseDewPoint()
 int Crit3DInterpolationSettings::getProxyNr()
 { return (int)currentProxy.size();}
 
-Crit3DProxyInterpolation* Crit3DInterpolationSettings::getProxy(int pos)
+Crit3DProxy* Crit3DInterpolationSettings::getProxy(int pos)
 { return &(currentProxy.at(pos));}
 
 std::string Crit3DProxy::getName() const
@@ -332,14 +342,44 @@ void Crit3DProxy::setGridName(const std::string &value)
     gridName = value;
 }
 
-bool Crit3DProxyInterpolation::getIsSignificant() const
+bool Crit3DProxy::getIsSignificant() const
 {
     return isSignificant;
 }
 
-void Crit3DProxyInterpolation::setIsSignificant(bool value)
+void Crit3DProxy::setIsSignificant(bool value)
 {
     isSignificant = value;
+}
+
+bool Crit3DProxy::getForQualityControl() const
+{
+    return forQualityControl;
+}
+
+void Crit3DProxy::setForQualityControl(bool value)
+{
+    forQualityControl = value;
+}
+
+std::string Crit3DProxy::getProxyTable() const
+{
+    return proxyTable;
+}
+
+void Crit3DProxy::setProxyTable(const std::string &value)
+{
+    proxyTable = value;
+}
+
+std::string Crit3DProxy::getProxyField() const
+{
+    return proxyField;
+}
+
+void Crit3DProxy::setProxyField(const std::string &value)
+{
+    proxyField = value;
 }
 
 Crit3DProxy::Crit3DProxy()
@@ -347,68 +387,73 @@ Crit3DProxy::Crit3DProxy()
     name = "";
     gridName = "";
     grid = new gis::Crit3DRasterGrid();
+    isSignificant = false;
+    forQualityControl = false;
+
+    regressionR2 = NODATA;
+    regressionSlope = NODATA;
+    lapseRateH0 = NODATA;
+    lapseRateH1 = NODATA;
+    inversionLapseRate = NODATA;
+    inversionIsSignificative = false;
+
+    proxyTable = "";
+    proxyField = "";
 }
 
-float Crit3DProxyInterpolation::getLapseRateH1() const
+float Crit3DProxy::getLapseRateH1() const
 {
     return lapseRateH1;
 }
 
-void Crit3DProxyInterpolation::setLapseRateH1(float value)
+void Crit3DProxy::setLapseRateH1(float value)
 {
     lapseRateH1 = value;
 }
 
-float Crit3DProxyInterpolation::getLapseRateH0() const
+float Crit3DProxy::getLapseRateH0() const
 {
     return lapseRateH0;
 }
 
-void Crit3DProxyInterpolation::setLapseRateH0(float value)
+void Crit3DProxy::setLapseRateH0(float value)
 {
     lapseRateH0 = value;
 }
 
-float Crit3DProxyInterpolation::getInversionLapseRate() const
+float Crit3DProxy::getInversionLapseRate() const
 {
     return inversionLapseRate;
 }
 
-void Crit3DProxyInterpolation::setInversionLapseRate(float value)
+void Crit3DProxy::setInversionLapseRate(float value)
 {
     inversionLapseRate = value;
 }
 
-bool Crit3DProxyInterpolation::getInversionIsSignificative() const
+bool Crit3DProxy::getInversionIsSignificative() const
 {
     return inversionIsSignificative;
 }
 
-void Crit3DProxyInterpolation::setInversionIsSignificative(bool value)
+void Crit3DProxy::setInversionIsSignificative(bool value)
 {
     inversionIsSignificative = value;
 }
 
-Crit3DProxyInterpolation::Crit3DProxyInterpolation()
-{
-    isSignificant = false;
-    regressionR2 = NODATA;
-    regressionSlope = NODATA;
-}
-
-void Crit3DProxyInterpolation::setRegressionR2(float myValue)
+void Crit3DProxy::setRegressionR2(float myValue)
 { regressionR2 = myValue;}
 
-float Crit3DProxyInterpolation::getRegressionR2()
+float Crit3DProxy::getRegressionR2()
 { return regressionR2;}
 
-void Crit3DProxyInterpolation::setRegressionSlope(float myValue)
+void Crit3DProxy::setRegressionSlope(float myValue)
 { regressionSlope = myValue;}
 
-float Crit3DProxyInterpolation::getRegressionSlope()
+float Crit3DProxy::getRegressionSlope()
 { return regressionSlope;}
 
-float Crit3DProxyInterpolation::getValue(unsigned int pos, std::vector <float> proxyValues)
+float Crit3DProxy::getValue(unsigned int pos, std::vector <float> proxyValues)
 {
     if (pos < proxyValues.size())
         return proxyValues.at(pos);
@@ -416,7 +461,7 @@ float Crit3DProxyInterpolation::getValue(unsigned int pos, std::vector <float> p
         return NODATA;
 }
 
-void Crit3DProxyInterpolation::initializeOrography()
+void Crit3DProxy::initializeOrography()
 {
     setLapseRateH0(0.);
     setLapseRateH1(NODATA);
@@ -430,17 +475,42 @@ void Crit3DProxyInterpolation::initializeOrography()
 
 void Crit3DInterpolationSettings::addProxy(Crit3DProxy myProxy, bool isActive_)
 {
-    Crit3DProxyInterpolation myInterpolationProxy;
-    myInterpolationProxy.setName(myProxy.getName());
-    myInterpolationProxy.setGridName(myProxy.getGridName());
-    myInterpolationProxy.setGrid(myProxy.getGrid());
-    currentProxy.push_back(myInterpolationProxy);
+    currentProxy.push_back(myProxy);
 
     if (getProxyPragaName(myProxy.getName()) == height)
         setIndexHeight((int)currentProxy.size()-1);
 
     selectedCombination.addValue(isActive_);
     optimalCombination.addValue(isActive_);
+}
+
+bool Crit3DProxy::check(std::string *error)
+{
+    if (getName() == "")
+    {
+        *error = "no name for proxy";
+        return false;
+    }
+
+    if (getGridName() == "")
+    {
+        *error = "no grid name for proxy " + getName();
+        return false;
+    }
+
+    if (getGridName() == "")
+    {
+        gis::Crit3DRasterGrid* grid_ = new gis::Crit3DRasterGrid();
+        if (! gis::readEsriGrid(getGridName(), grid_, error))
+        {
+            *error = "error loading grid for proxy " + getName();
+            grid_ = NULL;
+            return false;
+        }
+        grid_ = NULL;
+    }
+
+    return true;
 }
 
 std::string Crit3DInterpolationSettings::getProxyName(int pos)

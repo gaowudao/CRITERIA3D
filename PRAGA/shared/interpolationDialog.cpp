@@ -92,7 +92,7 @@ InterpolationDialog::InterpolationDialog(QSettings *settings, Crit3DInterpolatio
 
     for (int i = 0; i < _interpolationSettings->getProxyNr(); i++)
     {
-         Crit3DProxyInterpolation* myProxy = _interpolationSettings->getProxy(i);
+         Crit3DProxy* myProxy = _interpolationSettings->getProxy(i);
          QCheckBox *chkProxy = new QCheckBox(QString::fromStdString(myProxy->getName()));
          chkProxy->setChecked(_interpolationSettings->getSelectedCombination().getValue(i));
          layoutProxy->addWidget(chkProxy);
@@ -128,7 +128,7 @@ void InterpolationDialog::writeInterpolationSettings()
     _paramSettings->setValue("minRegressionR2", minRegressionR2Edit.text());
     _paramSettings->endGroup();
 
-    Crit3DProxyInterpolation* myProxy;
+    Crit3DProxy* myProxy;
     for (int i=0; i < _interpolationSettings->getProxyNr(); i++)
     {
         myProxy = _interpolationSettings->getProxy(i);
@@ -185,7 +185,7 @@ void ProxyDialog::changedTable()
 void ProxyDialog::changedProxy()
 {
     if (_proxyCombo.count() == 0) return;
-    Crit3DProxyMeteoPoint *myProxy = &(_proxy.at(_proxyCombo.currentIndex()));
+    Crit3DProxy *myProxy = &(_proxy.at(_proxyCombo.currentIndex()));
     int index = _table.findText(QString::fromStdString(myProxy->getProxyTable()));
     _table.setCurrentIndex(index);
     index = _field.findText(QString::fromStdString(myProxy->getProxyField()));
@@ -228,7 +228,7 @@ void ProxyDialog::addProxy()
                                          "", &isValid);
     if (isValid && !proxyName.isEmpty())
     {
-        Crit3DProxyMeteoPoint myProxy;
+        Crit3DProxy myProxy;
         myProxy.setName(proxyName.toStdString());
         _proxy.push_back(myProxy);
         redrawProxies();
@@ -249,7 +249,7 @@ void ProxyDialog::saveProxy()
     if (_proxyCombo.currentIndex() == -1)
         return;
 
-    Crit3DProxyMeteoPoint* myProxy;
+    Crit3DProxy* myProxy;
     myProxy = &_proxy.at(_proxyCombo.currentIndex());
 
     if (_table.currentIndex() != -1)
@@ -280,7 +280,7 @@ ProxyDialog::ProxyDialog(QSettings *settings,
     _qualityInterpolationSettings = myQualityInterpolationSettings;
     _meteoPointsHandler = myMeteoPointsHandler;
 
-    _proxy = _meteoPointsHandler->getProxyMeteoPoint();
+    _proxy = myInterpolationSettings->getCurrentProxy();
 
     setWindowTitle(tr("Interpolation proxy"));
 
@@ -371,7 +371,6 @@ void ProxyDialog::saveProxies()
 {
     Crit3DProxy myProxy;
 
-    _meteoPointsHandler->initializeProxy();
     _interpolationSettings->initializeProxy();
     _qualityInterpolationSettings->initializeProxy();
 
@@ -381,7 +380,6 @@ void ProxyDialog::saveProxies()
         myProxy.setGridName(_proxy.at(i).getGridName());
 
         _interpolationSettings->addProxy(myProxy, true);
-        _meteoPointsHandler->addProxy(myProxy, _proxy.at(i).getProxyTable(), _proxy.at(i).getProxyField());
         _qualityInterpolationSettings->addProxy(myProxy, true);
     }
 }
