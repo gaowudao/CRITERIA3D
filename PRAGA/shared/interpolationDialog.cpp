@@ -191,7 +191,7 @@ void ProxyDialog::changedProxy()
     index = _field.findText(QString::fromStdString(myProxy->getProxyField()));
     _field.setCurrentIndex(index);
     _proxyGridName.setText(QString::fromStdString(myProxy->getGridName()));
-
+    _forQuality.setChecked(myProxy->getForQualityControl());
 }
 
 void ProxyDialog::getGridFile()
@@ -260,6 +260,8 @@ void ProxyDialog::saveProxy()
 
     if (_proxyGridName.text() != "")
         myProxy->setGridName(_proxyGridName.text().toStdString());
+
+    myProxy->setForQualityControl(_forQuality.isChecked());
 }
 
 ProxyDialog::ProxyDialog(QSettings *settings,
@@ -307,7 +309,6 @@ ProxyDialog::ProxyDialog(QSettings *settings,
     layoutProxy->addLayout(layoutProxyCombo);
     layoutMain->addLayout(layoutProxy);
 
-    // point values
     QLabel *labelTableList = new QLabel(tr("table for point values"));
     layoutPointValues->addWidget(labelTableList);
     QStringList tables_ = myMeteoPointsHandler->getDb().tables();
@@ -325,14 +326,16 @@ ProxyDialog::ProxyDialog(QSettings *settings,
     // grid
     QLabel *labelGrid = new QLabel(tr("proxy grid"));
     layoutGrid->addWidget(labelGrid);
-
     QPushButton *_selectGrid = new QPushButton("Select file");
     layoutGrid->addWidget(_selectGrid);
     _proxyGridName.setEnabled(false);
     layoutGrid->addWidget(&_proxyGridName);
     connect(_selectGrid, &QPushButton::clicked, [=](){ this->getGridFile(); });
-
     layoutMain->addLayout(layoutGrid);
+
+    // quality control
+    _forQuality.setText("use for quality control");
+    layoutMain->addWidget(&_forQuality);
 
     // buttons
     QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
@@ -378,9 +381,13 @@ void ProxyDialog::saveProxies()
     {
         myProxy.setName(_proxy.at(i).getName());
         myProxy.setGridName(_proxy.at(i).getGridName());
+        myProxy.setProxyTable(_proxy.at(i).getProxyTable());
+        myProxy.setProxyField(_proxy.at(i).getProxyField());
+        myProxy.setForQualityControl(_proxy.at(i).getForQualityControl());
 
         _interpolationSettings->addProxy(myProxy, true);
-        _qualityInterpolationSettings->addProxy(myProxy, true);
+        if (_proxy.at(i).getForQualityControl())
+            _qualityInterpolationSettings->addProxy(myProxy, true);
     }
 }
 

@@ -55,6 +55,7 @@ class ProxyDialog : public QDialog
         QComboBox _field;
         QComboBox _table;
         QLineEdit _proxyGridName;
+        QCheckBox _forQuality;
 
         void changedProxy();
         void changedTable();
