@@ -184,6 +184,7 @@ bool passingClimateToAnomaly(std::string *myError, Crit3DMeteoPoint* meteoPointT
             {
                 if ( QString::fromStdString(meteoPoints[j].id) == idList.at(i))
                 {
+
                     currentDist = gis::computeDistance(meteoPointTemp->point.utm.x, meteoPointTemp->point.utm.y, meteoPoints[j].point.utm.x, meteoPoints[j].point.utm.y);
                     if (currentDist < maxHorizontalDist)
                     {
@@ -219,6 +220,7 @@ bool passingClimateToAnomaly(std::string *myError, Crit3DMeteoPoint* meteoPointT
             }
         }
     }
+
 
 }
 
@@ -825,6 +827,7 @@ float loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* mete
         {
             int nrOfDays = ceil(float(hourlyValues.size()) / float(24 * meteoPoint->hourlyFraction));
             meteoPoint->initializeObsDataH(meteoPoint->hourlyFraction, nrOfDays,getCrit3DDate(firstDateDB.date()));
+            meteoPoint->initializeObsDataD(nrOfDays, getCrit3DDate(firstDateDB.date()));
         }
 
         for (unsigned int i = 0; i < hourlyValues.size(); i++)
