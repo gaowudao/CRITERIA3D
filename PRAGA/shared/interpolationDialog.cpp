@@ -393,7 +393,14 @@ void ProxyDialog::saveProxies()
 
 void ProxyDialog::writeProxies()
 {
-
+    for (int i=0; i < _proxy.size(); i++)
+    {
+        _paramSettings->beginGroup("proxy_" + QString::fromStdString(_proxy.at(i).getName()));
+        _paramSettings->setValue("table", QString::fromStdString(_proxy.at(i).getProxyTable()));
+        _paramSettings->setValue("field", QString::fromStdString(_proxy.at(i).getProxyField()));
+        _paramSettings->setValue("raster", QString::fromStdString(_proxy.at(i).getGridName()));
+        _paramSettings->endGroup();
+    }
 }
 
 void ProxyDialog::accept()
@@ -401,7 +408,10 @@ void ProxyDialog::accept()
     // check proxies
     std::string error;
     if (checkProxies(&error))
+    {
+        writeProxies();
         QDialog::done(QDialog::Accepted);
+    }
     else
         QMessageBox::information(NULL, "Proxy error", QString::fromStdString(error));
 
