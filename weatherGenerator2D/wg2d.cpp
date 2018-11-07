@@ -181,55 +181,55 @@ void weatherGenerator2D::setObservedData(TObsDataD** observations)
 
     month = (int *)calloc(12, sizeof(int));
     lengthMonth = (int *)calloc(12, sizeof(int));
-    beginMonth = (int *)calloc(12, sizeof(int));
+    //beginMonth = (int *)calloc(12, sizeof(int));
 
     int monthNumber = 0 ;
     lengthMonth[monthNumber] = 31;
     month[monthNumber] = monthNumber + 1;
-    beginMonth[monthNumber] = 1;
+    //beginMonth[monthNumber] = 1;
     monthNumber++;
     month[monthNumber] = monthNumber + 1;
-    beginMonth[monthNumber] = beginMonth[monthNumber-1] + lengthMonth[monthNumber - 1];
+    //beginMonth[monthNumber] = beginMonth[monthNumber-1] + lengthMonth[monthNumber - 1];
     lengthMonth[monthNumber] = 28;
     monthNumber++;
     month[monthNumber] = monthNumber + 1;
-    beginMonth[monthNumber] = beginMonth[monthNumber-1] + lengthMonth[monthNumber - 1];
+    //beginMonth[monthNumber] = beginMonth[monthNumber-1] + lengthMonth[monthNumber - 1];
     lengthMonth[monthNumber] = 31;
     monthNumber++;
     month[monthNumber] = monthNumber + 1;
-    beginMonth[monthNumber] = beginMonth[monthNumber-1] + lengthMonth[monthNumber - 1];
+    //beginMonth[monthNumber] = beginMonth[monthNumber-1] + lengthMonth[monthNumber - 1];
     lengthMonth[monthNumber] = 30;
     monthNumber++;
     month[monthNumber] = monthNumber + 1;
-    beginMonth[monthNumber] = beginMonth[monthNumber-1] + lengthMonth[monthNumber - 1];
+    //beginMonth[monthNumber] = beginMonth[monthNumber-1] + lengthMonth[monthNumber - 1];
     lengthMonth[monthNumber] = 31;
     monthNumber++;
     month[monthNumber] = monthNumber + 1;
-    beginMonth[monthNumber] = beginMonth[monthNumber-1] +  lengthMonth[monthNumber - 1];
+    //beginMonth[monthNumber] = beginMonth[monthNumber-1] +  lengthMonth[monthNumber - 1];
     lengthMonth[monthNumber] = 30;
     monthNumber++;
     month[monthNumber] = monthNumber + 1;
-    beginMonth[monthNumber] = beginMonth[monthNumber-1] +  lengthMonth[monthNumber - 1];
+    //beginMonth[monthNumber] = beginMonth[monthNumber-1] +  lengthMonth[monthNumber - 1];
     lengthMonth[monthNumber] = 31;
     monthNumber++;
     month[monthNumber] = monthNumber + 1;
-    beginMonth[monthNumber] = beginMonth[monthNumber-1] +  lengthMonth[monthNumber - 1];
+    //beginMonth[monthNumber] = beginMonth[monthNumber-1] +  lengthMonth[monthNumber - 1];
     lengthMonth[monthNumber] = 31;
     monthNumber++;
     month[monthNumber] = monthNumber + 1;
-    beginMonth[monthNumber] = beginMonth[monthNumber-1] +  lengthMonth[monthNumber - 1];
+    //beginMonth[monthNumber] = beginMonth[monthNumber-1] +  lengthMonth[monthNumber - 1];
     lengthMonth[monthNumber] = 30;
     monthNumber++;
     month[monthNumber] = monthNumber + 1;
-    beginMonth[monthNumber] = beginMonth[monthNumber-1] +  lengthMonth[monthNumber - 1];
+    //beginMonth[monthNumber] = beginMonth[monthNumber-1] +  lengthMonth[monthNumber - 1];
     lengthMonth[monthNumber] = 31;
     monthNumber++;
     month[monthNumber] = monthNumber + 1;
-    beginMonth[monthNumber] = beginMonth[monthNumber-1] +  lengthMonth[monthNumber - 1];
+    //beginMonth[monthNumber] = beginMonth[monthNumber-1] +  lengthMonth[monthNumber - 1];
     lengthMonth[monthNumber] = 30;
     monthNumber++;
     month[monthNumber] = monthNumber + 1;
-    beginMonth[monthNumber] = beginMonth[monthNumber-1] +  lengthMonth[monthNumber - 1];
+    //beginMonth[monthNumber] = beginMonth[monthNumber-1] +  lengthMonth[monthNumber - 1];
     lengthMonth[monthNumber] = 31;
 
 }
@@ -244,7 +244,7 @@ void weatherGenerator2D::computeWeatherGenerator2D()
 void weatherGenerator2D::precipitationCompute()
 {
    // step 1 of precipitation WG2D
-   weatherGenerator2D::precipitationP00P10(); // computes the monthly probabilities p00 and p10
+   weatherGenerator2D::precipitationP00P10(); // it computes the monthly probabilities p00 and p10
    // step 2 of precipitation WG2D
    weatherGenerator2D::precipitationCorrelationMatrices();
    // step 3 of precipitation WG2D
@@ -257,6 +257,7 @@ void weatherGenerator2D::precipitationCompute()
 
 void weatherGenerator2D::precipitationP00P10()
 {
+    // initialization
     for (int idStation=0;idStation<nrStations;idStation++)
     {
         int daysWithoutRain[12]={0,0,0,0,0,0,0,0,0,0,0,0};
