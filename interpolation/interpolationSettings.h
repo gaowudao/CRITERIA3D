@@ -20,7 +20,6 @@
     {
     private:
         std::string name;
-        bool isSignificant;
         std::string gridName;
         gis::Crit3DRasterGrid* grid;
 
@@ -33,13 +32,13 @@
         void setGrid(gis::Crit3DRasterGrid *value);
         std::string getGridName() const;
         void setGridName(const std::string &value);
-        bool getIsSignificant() const;
-        void setIsSignificant(bool value);
     };
 
     class Crit3DProxyInterpolation : public Crit3DProxy
     {
     private:
+        bool isSignificant;
+
         float regressionR2;
         float regressionSlope;
 
@@ -52,6 +51,8 @@
     public:
         Crit3DProxyInterpolation();
 
+        bool getIsSignificant() const;
+        void setIsSignificant(bool value);
         void setRegressionR2(float myValue);
         float getRegressionR2();
         void setRegressionSlope(float myValue);

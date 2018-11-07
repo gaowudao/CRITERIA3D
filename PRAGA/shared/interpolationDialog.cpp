@@ -379,7 +379,6 @@ void ProxyDialog::saveProxies()
     {
         myProxy.setName(_proxy.at(i).getName());
         myProxy.setGridName(_proxy.at(i).getGridName());
-        myProxy.setIsSignificant(false);
 
         _interpolationSettings->addProxy(myProxy, true);
         _meteoPointsHandler->addProxy(myProxy, _proxy.at(i).getProxyTable(), _proxy.at(i).getProxyField());

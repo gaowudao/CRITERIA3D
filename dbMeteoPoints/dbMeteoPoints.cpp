@@ -725,7 +725,6 @@ bool Crit3DProxyMeteoPoint::check(std::string *error)
 Crit3DProxyMeteoPoint::Crit3DProxyMeteoPoint(Crit3DProxy myProxy)
 {
     setName(myProxy.getName());
-    setIsSignificant(myProxy.getIsSignificant());
     setGridName(myProxy.getGridName());
     setGrid(myProxy.getGrid());
     setProxyField("");
@@ -742,6 +741,5 @@ void Crit3DMeteoPointsDbHandler::addProxy(Crit3DProxy myProxy, std::string table
     Crit3DProxyMeteoPoint myProxyMeteoPoint = Crit3DProxyMeteoPoint(myProxy);
     myProxyMeteoPoint.setProxyField(fieldName_);
     myProxyMeteoPoint.setProxyTable(tableName_);
-    myProxyMeteoPoint.setIsSignificant(false);
     ProxyMeteoPoint.push_back(myProxyMeteoPoint);
 }

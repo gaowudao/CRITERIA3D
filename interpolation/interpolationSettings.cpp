@@ -332,12 +332,12 @@ void Crit3DProxy::setGridName(const std::string &value)
     gridName = value;
 }
 
-bool Crit3DProxy::getIsSignificant() const
+bool Crit3DProxyInterpolation::getIsSignificant() const
 {
     return isSignificant;
 }
 
-void Crit3DProxy::setIsSignificant(bool value)
+void Crit3DProxyInterpolation::setIsSignificant(bool value)
 {
     isSignificant = value;
 }
@@ -345,7 +345,7 @@ void Crit3DProxy::setIsSignificant(bool value)
 Crit3DProxy::Crit3DProxy()
 {
     name = "";
-    isSignificant = false;
+    gridName = "";
     grid = new gis::Crit3DRasterGrid();
 }
 
@@ -391,6 +391,7 @@ void Crit3DProxyInterpolation::setInversionIsSignificative(bool value)
 
 Crit3DProxyInterpolation::Crit3DProxyInterpolation()
 {
+    isSignificant = false;
     regressionR2 = NODATA;
     regressionSlope = NODATA;
 }
@@ -436,7 +437,7 @@ void Crit3DInterpolationSettings::addProxy(Crit3DProxy myProxy, bool isActive_)
     currentProxy.push_back(myInterpolationProxy);
 
     if (getProxyPragaName(myProxy.getName()) == height)
-        setIndexHeight(currentProxy.size()-1);
+        setIndexHeight((int)currentProxy.size()-1);
 
     selectedCombination.addValue(isActive_);
     optimalCombination.addValue(isActive_);
