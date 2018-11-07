@@ -514,9 +514,13 @@ bool Crit3DMeteoPointsDbHandler::readPointProxyValues(Crit3DMeteoPoint* myPoint,
     QString proxyField;
     QString proxyTable;
     QString statement;
+    int nrProxy;
     Crit3DProxy* myProxy;
 
-    for (int i=0; i < interpolationSettings->getProxyNr() ; i++)
+    nrProxy = interpolationSettings->getProxyNr();
+    myPoint->proxyValues.resize(nrProxy);
+
+    for (int i=0; i < nrProxy; i++)
     {
         myPoint->proxyValues.at(i) = NODATA;
 
