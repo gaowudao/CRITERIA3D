@@ -796,7 +796,7 @@ float loadHourlyVarSeries(std::string *myError, Crit3DMeteoPointsDbHandler* mete
     Crit3DQuality qualityCheck;
     int nrValidValues = 0;
     int nrRequestedDays = first.daysTo(last) +1;
-    int nrRequestedValues = nrRequestedDays * 24 * meteoPoint->hourlyFraction;
+    int nrRequestedValues = nrRequestedDays * 25 * meteoPoint->hourlyFraction;
 
     // meteoGrid
     if (isMeteoGrid)
@@ -911,7 +911,7 @@ int thomDailyNHoursAbove(float* tempAvg, float* relHumAvgAir, float thomthreshol
 
     int nData = 0;
     int thomDailyNHoursAbove = NODATA;
-    for (int hour = 0; hour < 24; hour++)
+    for (int hour = 0; hour <= 24; hour++)
     {
         float thom = thomH(tempAvg[hour], relHumAvgAir[hour]);
         if (thom != NODATA)
@@ -923,7 +923,7 @@ int thomDailyNHoursAbove(float* tempAvg, float* relHumAvgAir, float thomthreshol
                 thomDailyNHoursAbove = thomDailyNHoursAbove + 1;
         }
     }
-    if ( (float(nData) / 24.f * 100.f) < minimumPercentage)
+    if ( (float(nData) / 25.f * 100.f) < minimumPercentage)
         thomDailyNHoursAbove = NODATA;
 
     return thomDailyNHoursAbove;
@@ -936,7 +936,7 @@ float thomDailyMax(float *tempAvg, float* relHumAvgAir, float minimumPercentage)
 {
     int nData = 0;
     int thomDailyMax = NODATA;
-    for (int hour = 0; hour < 24; hour++)
+    for (int hour = 0; hour <= 24; hour++)
     {
         float thom = thomH(tempAvg[hour], relHumAvgAir[hour]);
         if (thom != NODATA)
@@ -946,7 +946,7 @@ float thomDailyMax(float *tempAvg, float* relHumAvgAir, float minimumPercentage)
                 thomDailyMax = thom;
         }
     }
-    if ( (float(nData) / 24.f * 100.f) < minimumPercentage)
+    if ( (float(nData) / 25.f * 100.f) < minimumPercentage)
         thomDailyMax = NODATA;
 
     return thomDailyMax;
@@ -969,7 +969,7 @@ float thomDailyMean(float *tempAvg, float* relHumAvgAir, float minimumPercentage
             nData = nData + 1;
         }
     }
-    if ( (float(nData) / 24.f * 100.f) < minimumPercentage)
+    if ( (float(nData) / 25.f * 100.f) < minimumPercentage)
         thomDailyMean = NODATA;
     else
         thomDailyMean = statistics::mean(thomValues, nData);
@@ -985,7 +985,7 @@ float dailyLeafWetnessComputation(int *leafW, float minimumPercentage)
     int nData = 0;
     float dailyLeafWetnessRes = 0;
 
-    for (int hour = 0; hour < 24; hour++)
+    for (int hour = 0; hour <= 24; hour++)
     {
         if (leafW[hour] == 0 || leafW[hour] == 1)
         {
@@ -993,7 +993,7 @@ float dailyLeafWetnessComputation(int *leafW, float minimumPercentage)
                 nData = nData + 1;
         }
     }
-    if ( (float(nData) / 24.f * 100.f) < minimumPercentage)
+    if ( (float(nData) / 25.f * 100.f) < minimumPercentage)
         dailyLeafWetnessRes = NODATA;
 
     return dailyLeafWetnessRes;

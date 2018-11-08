@@ -366,7 +366,7 @@ void Crit3DMeteoGrid::fillMeteoRasterElabValue()
 //                 {
 //                    float debug = dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j];
 //                    std::cout << " 02148 elab: " << debug;
-//                    qInfo() << " Info 02148 elab: " << debug;
+//                    //qInfo() << " Info 02148 elab: " << debug;
 //                 }
              }
         }
