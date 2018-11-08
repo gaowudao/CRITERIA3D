@@ -34,6 +34,7 @@ class InterpolationDialog : public QDialog
     private:
         QSettings* _paramSettings;
         Crit3DInterpolationSettings* _interpolationSettings;
+        Crit3DInterpolationSettings* _qualityInterpolationSettings;
 
 };
 

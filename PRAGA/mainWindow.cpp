@@ -1526,15 +1526,7 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool is
 
 void MainWindow::on_actionInterpolationSettings_triggered()
 {
-    if (myProject.meteoPointsDbHandler == NULL)
-    {
-        QMessageBox::information(NULL, "No DB open", "Open DB Points");
-        return;
-    }
-
     InterpolationDialog* myInterpolationDialog = new InterpolationDialog(&myProject);
-    myProject.copyInterpolationSettingsToQuality();
-
     myInterpolationDialog->close();
 }
 

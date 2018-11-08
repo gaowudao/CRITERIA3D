@@ -37,14 +37,6 @@ Project::Project()
 
 }
 
-void Project::copyInterpolationSettingsToQuality()
-{
-    //set common properties
-    qualityInterpolationSettings.setMinRegressionR2(interpolationSettings.getMinRegressionR2());
-    qualityInterpolationSettings.setUseLapseRateCode(interpolationSettings.getUseLapseRateCode());
-    qualityInterpolationSettings.setUseThermalInversion(interpolationSettings.getUseThermalInversion());
-}
-
 void Project::setProxyDEM()
 {
     int index = interpolationSettings.getIndexHeight();
@@ -168,26 +160,34 @@ bool Project::readGenericParameters()
             }
 
             if (settings->contains("thermalInversion"))
+            {
                 interpolationSettings.setUseThermalInversion(settings->value("thermalInversion").toBool());
+                qualityInterpolationSettings.setUseThermalInversion(settings->value("thermalInversion").toBool());
+            }
 
             if (settings->contains("topographicDistance"))
                 interpolationSettings.setUseTAD(settings->value("topographicDistance").toBool());
 
             if (settings->contains("lapseRateCode"))
+            {
                 interpolationSettings.setUseLapseRateCode(settings->value("lapseRateCode").toBool());
+                qualityInterpolationSettings.setUseLapseRateCode(settings->value("lapseRateCode").toBool());
+            }
 
             if (settings->contains("optimalDetrending"))
                 interpolationSettings.setUseBestDetrending(settings->value("optimalDetrending").toBool());
 
             if (settings->contains("minRegressionR2"))
+            {
                 interpolationSettings.setMinRegressionR2(settings->value("minRegressionR2").toFloat());
+                qualityInterpolationSettings.setMinRegressionR2(settings->value("minRegressionR2").toFloat());
+            }
 
             if (settings->contains("useDewPoint"))
                 interpolationSettings.setUseDewPoint(settings->value("useDewPoint").toBool());
 
             settings->endGroup();
 
-            copyInterpolationSettingsToQuality();
         }
 
         if (group == "quality")

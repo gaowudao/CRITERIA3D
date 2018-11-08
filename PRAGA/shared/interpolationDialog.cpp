@@ -7,8 +7,9 @@
 
 InterpolationDialog::InterpolationDialog(Project *myProject)
 {
-    _interpolationSettings = &(myProject->interpolationSettings);
     _paramSettings = myProject->settings;
+    _interpolationSettings = &(myProject->interpolationSettings);
+    _qualityInterpolationSettings = &(myProject->qualityInterpolationSettings);
 
     setWindowTitle(tr("Interpolation settings"));
     QVBoxLayout *layoutMain = new QVBoxLayout;
@@ -152,7 +153,6 @@ void InterpolationDialog::accept()
     for (int i = 0; i < proxy.size(); i++)
         _interpolationSettings->setValueSelectedCombination(i, proxy[i]->isChecked());
 
-
     QString algorithmString = algorithmEdit.itemData(algorithmEdit.currentIndex()).toString();
     _interpolationSettings->setInterpolationMethod(interpolationMethodNames.at(algorithmString.toStdString()));
 
@@ -165,6 +165,10 @@ void InterpolationDialog::accept()
     _interpolationSettings->setUseThermalInversion(thermalInversionEdit->isChecked());
     _interpolationSettings->setUseDewPoint(useDewPointEdit->isChecked());
     _interpolationSettings->setMinRegressionR2(minRegressionR2Edit.text().toFloat());
+
+    _qualityInterpolationSettings->setMinRegressionR2(minRegressionR2Edit.text().toFloat());
+    _qualityInterpolationSettings->setUseLapseRateCode(lapseRateCodeEdit->isChecked());
+    _qualityInterpolationSettings->setUseThermalInversion(thermalInversionEdit->isChecked());
 
     writeInterpolationSettings();
 
