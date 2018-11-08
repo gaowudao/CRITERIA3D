@@ -124,5 +124,6 @@ public:
     void setObservedData(TObsDataD** observations);
     void computeWeatherGenerator2D();
     double inverseGammaFunction(double valueProbability, double alpha, double beta);
+    void pressEnterToContinue();
 };
 

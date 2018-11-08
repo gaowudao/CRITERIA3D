@@ -291,8 +291,15 @@ void weatherGenerator2D::precipitationP00P10()
         }
         for (int month=0;month<12;month++)
         {
-            precOccurence[idStation][month].p00 =(float)((1.0*occurrence00[month])/daysWithoutRain[month]);
-            precOccurence[idStation][month].p10 =(float)((1.0*occurrence10[month])/daysWithRain[month]);
+            if (daysWithoutRain[month] != 0)
+                precOccurence[idStation][month].p00 =(float)((1.0*occurrence00[month])/daysWithoutRain[month]);
+            else
+                precOccurence[idStation][month].p00 = 0.0;
+            if (daysWithRain[month] != 0)
+                precOccurence[idStation][month].p10 =(float)((1.0*occurrence10[month])/daysWithRain[month]);
+            else
+                precOccurence[idStation][month].p10 = 0.0;
+
             precOccurence[idStation][month].month = month +1;
         }
     }
@@ -2250,4 +2257,11 @@ double weatherGenerator2D::inverseGammaFunction(double valueProbability, double 
     }
     x = (rightBound + leftBound)*0.5;
     return x;
+}
+
+
+void weatherGenerator2D::pressEnterToContinue()
+{
+    printf("press return to continue\n");
+    getchar();
 }
