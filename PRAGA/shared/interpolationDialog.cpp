@@ -1,5 +1,6 @@
 
 #include <QtWidgets>
+#include <QStringList>
 
 #include "project.h"
 #include "utilities.h"
@@ -180,6 +181,7 @@ void InterpolationDialog::accept()
 void ProxyDialog::changedTable()
 {
     QSqlDatabase db = _project->meteoPointsDbHandler->getDb();
+    _field.clear();
     _field.addItems(getFields(&db, _table.currentText()));
 }
 
@@ -356,10 +358,24 @@ ProxyDialog::ProxyDialog(Project *myProject)
 
 bool ProxyDialog::checkProxies(std::string *error)
 {
+    QStringList fields;
+    std::string table_;
+
     for (int i=0; i < _proxy.size(); i++)
     {
         if (!_project->checkProxy(_proxy.at(i).getName(), _proxy.at(i).getGridName(), _proxy.at(i).getProxyTable(), _proxy.at(i).getProxyField(), error))
             return false;
+
+        table_ = _proxy.at(i).getProxyTable();
+        if (table_ != "")
+        {
+            fields = getFields(&(_project->meteoPointsDbHandler->getDb()), QString::fromStdString(table_));
+            if (fields.filter("id_point").isEmpty())
+            {
+                *error = "no id_point field found in table " + table_ + " for proxy " + _proxy.at(i).getName();
+                return false;
+            }
+        }
     }
 
     return true;
@@ -369,6 +385,8 @@ void ProxyDialog::saveProxies()
 {
     for (int i=0; i < _proxy.size(); i++)
     {
+        _project->interpolationSettings.initializeProxy();
+        _project->qualityInterpolationSettings.initializeProxy();
         _project->addProxy(_proxy.at(i).getName(), _proxy.at(i).getGridName(),
                            _proxy.at(i).getProxyTable(), _proxy.at(i).getProxyField(),
                             _proxy.at(i).getForQualityControl(), true);
