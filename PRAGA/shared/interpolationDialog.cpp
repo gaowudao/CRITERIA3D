@@ -350,7 +350,7 @@ ProxyDialog::ProxyDialog(Project *myProject)
     exec();
 }
 
-bool ProxyDialog::checkProxies(QString *error)
+bool ProxyDialog::checkProxies(std::string *error)
 {
     for (int i=0; i < _proxy.size(); i++)
     {
@@ -386,14 +386,14 @@ void ProxyDialog::writeProxies()
 void ProxyDialog::accept()
 {
     // check proxies
-    QString error;
+    std::string error;
     if (checkProxies(&error))
     {
         saveProxies();
         QDialog::done(QDialog::Accepted);
     }
     else
-        QMessageBox::information(NULL, "Proxy error", error);
+        QMessageBox::information(NULL, "Proxy error", QString::fromStdString(error));
 
     return;
 }

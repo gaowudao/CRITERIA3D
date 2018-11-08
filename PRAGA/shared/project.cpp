@@ -45,11 +45,71 @@ void Project::copyInterpolationSettingsToQuality()
     qualityInterpolationSettings.setUseThermalInversion(interpolationSettings.getUseThermalInversion());
 }
 
+void Project::setProxyDEM()
+{
+    int index = interpolationSettings.getIndexHeight();
+    int indexQuality = qualityInterpolationSettings.getIndexHeight();
+
+    // if no elevation proxy defined nothing to do
+    if (index != NODATA && indexQuality == NODATA) return;
+
+    Crit3DProxy* proxyHeight = interpolationSettings.getProxy(index);
+
+    // if no alternative DEM defined and project DEM loaded, use it for elevation proxy
+    if (proxyHeight->getGridName() == "" && DTM.isLoaded)
+        proxyHeight->setGrid(&DTM);
+
+    proxyHeight = qualityInterpolationSettings.getProxy(indexQuality);
+    if (proxyHeight->getGridName() == "" && DTM.isLoaded)
+        proxyHeight->setGrid(&DTM);
+}
+
+bool Project::checkProxy(std::string name_, std::string gridName_, std::string table_, std::string field_, std::string *error)
+{
+    if (name_ == "")
+    {
+        *error = "no name";
+        return false;
+    }
+
+    bool isHeight = (getProxyPragaName(name_) == height);
+
+    if (gridName_ == "" && !isHeight && (table_ == "" && field_ == ""))
+    {
+        *error = "error reading grid, table or field for proxy " + name_;
+        return false;
+    }
+
+    return true;
+
+}
+void Project::addProxy(std::string name_, std::string gridName_, std::string table_, std::string field_,
+                                bool isForQuality_, bool isActive_)
+{
+    Crit3DProxy myProxy;
+
+    myProxy.setName(name_);
+    myProxy.setGridName(gridName_);
+    myProxy.setProxyTable(table_);
+    myProxy.setProxyField(field_);
+    myProxy.setForQualityControl(isForQuality_);
+
+    interpolationSettings.addProxy(myProxy, isActive_);
+    if (isForQuality_)
+        qualityInterpolationSettings.addProxy(myProxy, isActive_);
+
+    if (getProxyPragaName(name_) == height) setProxyDEM();
+}
+
 bool Project::readGenericParameters()
 {
     //interpolation settings
     interpolationSettings.initialize();
     qualityInterpolationSettings.initialize();
+
+    QString gridName;
+    std::string proxyName, proxyGridName, proxyTable, proxyField;
+    bool isActive, forQuality;
 
     Q_FOREACH (QString group, settings->childGroups())
     {
@@ -152,9 +212,33 @@ bool Project::readGenericParameters()
             }
 
             settings->endGroup();
+        }
+
+        //proxy variables (for interpolation)
+        if (group.startsWith("proxy"))
+        {
+            proxyName = group.right(group.size()-6).toStdString();
+
+            settings->beginGroup(group);
+            gridName = settings->value("raster").toString();
+            if (gridName.left(1) == ".")
+                proxyGridName = path.toStdString() + gridName.toStdString();
+            else
+                proxyGridName = gridName.toStdString();
+            proxyTable = settings->value("table").toString().toStdString();
+            proxyField = settings->value("field").toString().toStdString();
+            isActive = settings->value("active").toBool();
+            forQuality = settings->value("useForSpatialQualityControl").toBool();
+            settings->endGroup();
+
+            if (checkProxy(proxyName, proxyGridName, proxyTable, proxyField, &errorString))
+                addProxy(proxyName, proxyGridName, proxyTable, proxyField, forQuality, isActive);
+            else
+                return false;
 
         }
     }
+
     return true;
 }
 
@@ -268,102 +352,6 @@ bool Project::loadDEM(QString myFileName)
 
     return (true);
 }
-
-void Project::setProxyDEM()
-{
-    int index = interpolationSettings.getIndexHeight();
-    int indexQuality = qualityInterpolationSettings.getIndexHeight();
-
-    // if no elevation proxy defined nothing to do
-    if (index != NODATA && indexQuality == NODATA) return;
-
-    Crit3DProxy* proxyHeight = interpolationSettings.getProxy(index);
-
-    // if no alternative DEM defined and project DEM loaded, use it for elevation proxy
-    if (proxyHeight->getGridName() == "" && DTM.isLoaded)
-        proxyHeight->setGrid(&DTM);
-
-    proxyHeight = qualityInterpolationSettings.getProxy(indexQuality);
-    if (proxyHeight->getGridName() == "" && DTM.isLoaded)
-        proxyHeight->setGrid(&DTM);
-}
-
-bool Project::checkProxy(std::string name_, std::string gridName_, std::string table_, std::string field_, QString* error)
-{
-    if (name_ == "")
-    {
-        *error = "no name";
-        return false;
-    }
-
-    bool isHeight = (getProxyPragaName(name_) == height);
-
-    if (gridName_ == "" && !isHeight && (table_ == "" && field_ == ""))
-    {
-        *error = "error reading grid, table or field for proxy " + QString::fromStdString(name_);
-        return false;
-    }
-
-    return true;
-
-}
-void Project::addProxy(std::string name_, std::string gridName_, std::string table_, std::string field_,
-                                bool isForQuality_, bool isActive_)
-{
-    Crit3DProxy myProxy;
-
-    myProxy.setName(name_);
-    myProxy.setGridName(gridName_);
-    myProxy.setProxyTable(table_);
-    myProxy.setProxyField(field_);
-    myProxy.setForQualityControl(isForQuality_);
-
-    interpolationSettings.addProxy(myProxy, isActive_);
-    if (isForQuality_)
-        qualityInterpolationSettings.addProxy(myProxy, isActive_);
-
-    if (getProxyPragaName(name_) == height) setProxyDEM();
-}
-
-bool Project::readProxies(QString *errorString)
-{
-    QString gridName;
-    std::string proxyName, proxyGridName, proxyTable, proxyField;
-    bool isActive, forQuality;
-
-    interpolationSettings.initializeProxy();
-    qualityInterpolationSettings.initializeProxy();
-
-    Q_FOREACH (QString group, settings->childGroups())
-    {
-        //proxy variables (for interpolation)
-        if (group.startsWith("proxy"))
-        {
-            proxyName = group.right(group.size()-6).toStdString();
-
-            settings->beginGroup(group);
-            gridName = settings->value("raster").toString();
-            if (gridName.left(1) == ".")
-                proxyGridName = path.toStdString() + gridName.toStdString();
-            else
-                proxyGridName = gridName.toStdString();
-            proxyTable = settings->value("table").toString().toStdString();
-            proxyField = settings->value("field").toString().toStdString();
-            isActive = settings->value("active").toBool();
-            forQuality = settings->value("useForSpatialQualityControl").toBool();
-            settings->endGroup();
-
-            if (checkProxy(proxyName, proxyGridName, proxyTable, proxyField, errorString))
-                addProxy(proxyName, proxyGridName, proxyTable, proxyField, forQuality, isActive);
-            else
-                return false;
-
-        }
-    }
-
-    return true;
-}
-
 
 bool Project::getMeteoPointSelected(int i)
 {
@@ -599,14 +587,6 @@ bool Project::loadMeteoPointsDB(QString dbName)
     }
 
     listMeteoPoints.clear();
-
-    //interpolation proxies
-    QString errorProxy;
-    if (! readProxies(&errorProxy))
-    {
-        logError("Error loading interpolation proxies");
-        return false;
-    }
 
     //position with respect to DEM
     if (DTM.isLoaded)
