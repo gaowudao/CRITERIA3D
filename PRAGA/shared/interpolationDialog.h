@@ -1,12 +1,8 @@
 #ifndef INTERPOLATIONDIALOG_H
 #define INTERPOLATIONDIALOG_H
 
-#ifndef INTERPOLATIONSETTINGS_H
-    #include "interpolationSettings.h"
-#endif
-
-#ifndef DBMETEOPOINTS_H
-    #include "dbMeteoPoints.h"
+#ifndef PROJECT_H
+    #include "project.h"
 #endif
 
 #include <QSettings>
@@ -20,7 +16,7 @@ class InterpolationDialog : public QDialog
     Q_OBJECT
 
     public:
-        explicit InterpolationDialog(QSettings *settings, Crit3DInterpolationSettings *myInterpolationSetting);
+        explicit InterpolationDialog(Project *myProject);
 
         QComboBox algorithmEdit;
         QLineEdit minRegressionR2Edit;
@@ -37,7 +33,7 @@ class InterpolationDialog : public QDialog
 
     private:
         QSettings* _paramSettings;
-        Crit3DInterpolationSettings *_interpolationSettings;
+        Crit3DInterpolationSettings* _interpolationSettings;
 
 };
 
@@ -46,10 +42,7 @@ class ProxyDialog : public QDialog
     Q_OBJECT
 
     public:
-        explicit ProxyDialog(QSettings *settings,
-                             Crit3DInterpolationSettings *myInterpolationSettings,
-                             Crit3DInterpolationSettings *myQualityInterpolationSettings,
-                             Crit3DMeteoPointsDbHandler *myMeteoPointsHandler);
+        explicit ProxyDialog(Project *myProject);
 
         QComboBox _proxyCombo;
         QComboBox _field;
@@ -66,14 +59,11 @@ class ProxyDialog : public QDialog
         void writeProxies();
         void saveProxies();
         void saveProxy();
-        bool checkProxies(std::string *error);
+        bool checkProxies(QString *error);
         void accept();
 
     private:
-        QSettings* _paramSettings;
-        Crit3DInterpolationSettings *_interpolationSettings;
-        Crit3DInterpolationSettings *_qualityInterpolationSettings;
-        Crit3DMeteoPointsDbHandler *_meteoPointsHandler;
+        Project *_project;
         std::vector <Crit3DProxy> _proxy;
 
 };

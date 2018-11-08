@@ -39,8 +39,6 @@
     public:
         Crit3DProxy();
 
-        bool check(std::string *error);
-
         std::string getName() const;
         void setName(const std::string &value);
         gis::Crit3DRasterGrid *getGrid() const;

@@ -1532,7 +1532,7 @@ void MainWindow::on_actionInterpolationSettings_triggered()
         return;
     }
 
-    InterpolationDialog* myInterpolationDialog = new InterpolationDialog(myProject.settings, &myProject.interpolationSettings);
+    InterpolationDialog* myInterpolationDialog = new InterpolationDialog(&myProject);
     myProject.copyInterpolationSettingsToQuality();
 
     myInterpolationDialog->close();
@@ -1574,6 +1574,6 @@ void MainWindow::on_actionProxy_variables_triggered()
         return;
     }
 
-    ProxyDialog* myProxyDialog = new ProxyDialog(myProject.settings, &(myProject.interpolationSettings), &(myProject.qualityInterpolationSettings), myProject.meteoPointsDbHandler);
+    ProxyDialog* myProxyDialog = new ProxyDialog(&myProject);
     myProxyDialog->close();
 }

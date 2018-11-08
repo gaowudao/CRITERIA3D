@@ -1,17 +1,14 @@
 
 #include <QtWidgets>
 
-#include "gis.h"
-#include "interpolationConstants.h"
-#include "meteoGrid.h"
-#include "dbMeteoPoints.h"
+#include "project.h"
 #include "utilities.h"
 #include "interpolationDialog.h"
 
-InterpolationDialog::InterpolationDialog(QSettings *settings, Crit3DInterpolationSettings *myInterpolationSetting)
+InterpolationDialog::InterpolationDialog(Project *myProject)
 {
-    _paramSettings = settings;
-    _interpolationSettings = myInterpolationSetting;
+    _interpolationSettings = &(myProject->interpolationSettings);
+    _paramSettings = myProject->settings;
 
     setWindowTitle(tr("Interpolation settings"));
     QVBoxLayout *layoutMain = new QVBoxLayout;
@@ -178,7 +175,7 @@ void InterpolationDialog::accept()
 
 void ProxyDialog::changedTable()
 {
-    QSqlDatabase db = _meteoPointsHandler->getDb();
+    QSqlDatabase db = _project->meteoPointsDbHandler->getDb();
     _field.addItems(getFields(&db, _table.currentText()));
 }
 
@@ -264,10 +261,7 @@ void ProxyDialog::saveProxy()
     myProxy->setForQualityControl(_forQuality.isChecked());
 }
 
-ProxyDialog::ProxyDialog(QSettings *settings,
-                         Crit3DInterpolationSettings *myInterpolationSettings,
-                         Crit3DInterpolationSettings *myQualityInterpolationSettings,
-                         Crit3DMeteoPointsDbHandler *myMeteoPointsHandler)
+ProxyDialog::ProxyDialog(Project *myProject)
 {
     QVBoxLayout *layoutMain = new QVBoxLayout();
     QHBoxLayout *layoutProxyCombo = new QHBoxLayout();
@@ -277,12 +271,8 @@ ProxyDialog::ProxyDialog(QSettings *settings,
 
     this->resize(300, 100);
 
-    _paramSettings = settings;
-    _interpolationSettings = myInterpolationSettings;
-    _qualityInterpolationSettings = myQualityInterpolationSettings;
-    _meteoPointsHandler = myMeteoPointsHandler;
-
-    _proxy = myInterpolationSettings->getCurrentProxy();
+    _project = myProject;
+    _proxy = _project->interpolationSettings.getCurrentProxy();
 
     setWindowTitle(tr("Interpolation proxy"));
 
@@ -311,7 +301,7 @@ ProxyDialog::ProxyDialog(QSettings *settings,
 
     QLabel *labelTableList = new QLabel(tr("table for point values"));
     layoutPointValues->addWidget(labelTableList);
-    QStringList tables_ = myMeteoPointsHandler->getDb().tables();
+    QStringList tables_ = _project->meteoPointsDbHandler->getDb().tables();
     for (int i=0; i < tables_.size(); i++)
         _table.addItem(tables_.at(i));
 
@@ -343,7 +333,7 @@ ProxyDialog::ProxyDialog(QSettings *settings,
     connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
     layoutMain->addWidget(buttonBox);
 
-    QPushButton *_save = new QPushButton("Save proxies");
+    QPushButton *_save = new QPushButton("Save proxies to settings");
     connect(_save, &QPushButton::clicked, [=](){ this->writeProxies(); });
     layoutMain->addWidget(_save);
 
@@ -359,11 +349,11 @@ ProxyDialog::ProxyDialog(QSettings *settings,
     exec();
 }
 
-bool ProxyDialog::checkProxies(std::string* error)
+bool ProxyDialog::checkProxies(QString *error)
 {
     for (int i=0; i < _proxy.size(); i++)
     {
-        if (! _proxy.at(i).check(error))
+        if (!_project->checkProxy(_proxy.at(i).getName(), _proxy.at(i).getGridName(), _proxy.at(i).getProxyTable(), _proxy.at(i).getProxyField(), error))
             return false;
     }
 
@@ -372,22 +362,11 @@ bool ProxyDialog::checkProxies(std::string* error)
 
 void ProxyDialog::saveProxies()
 {
-    Crit3DProxy myProxy;
-
-    _interpolationSettings->initializeProxy();
-    _qualityInterpolationSettings->initializeProxy();
-
     for (int i=0; i < _proxy.size(); i++)
     {
-        myProxy.setName(_proxy.at(i).getName());
-        myProxy.setGridName(_proxy.at(i).getGridName());
-        myProxy.setProxyTable(_proxy.at(i).getProxyTable());
-        myProxy.setProxyField(_proxy.at(i).getProxyField());
-        myProxy.setForQualityControl(_proxy.at(i).getForQualityControl());
-
-        _interpolationSettings->addProxy(myProxy, true);
-        if (_proxy.at(i).getForQualityControl())
-            _qualityInterpolationSettings->addProxy(myProxy, true);
+        _project->addProxy(_proxy.at(i).getName(), _proxy.at(i).getGridName(),
+                           _proxy.at(i).getProxyTable(), _proxy.at(i).getProxyField(),
+                            _proxy.at(i).getForQualityControl(), true);
     }
 }
 
@@ -395,25 +374,25 @@ void ProxyDialog::writeProxies()
 {
     for (int i=0; i < _proxy.size(); i++)
     {
-        _paramSettings->beginGroup("proxy_" + QString::fromStdString(_proxy.at(i).getName()));
-        _paramSettings->setValue("table", QString::fromStdString(_proxy.at(i).getProxyTable()));
-        _paramSettings->setValue("field", QString::fromStdString(_proxy.at(i).getProxyField()));
-        _paramSettings->setValue("raster", QString::fromStdString(_proxy.at(i).getGridName()));
-        _paramSettings->endGroup();
+        _project->settings->beginGroup("proxy_" + QString::fromStdString(_proxy.at(i).getName()));
+        _project->settings->setValue("table", QString::fromStdString(_proxy.at(i).getProxyTable()));
+        _project->settings->setValue("field", QString::fromStdString(_proxy.at(i).getProxyField()));
+        _project->settings->setValue("raster", QString::fromStdString(_proxy.at(i).getGridName()));
+        _project->settings->endGroup();
     }
 }
 
 void ProxyDialog::accept()
 {
     // check proxies
-    std::string error;
+    QString error;
     if (checkProxies(&error))
     {
-        writeProxies();
+        saveProxies();
         QDialog::done(QDialog::Accepted);
     }
     else
-        QMessageBox::information(NULL, "Proxy error", QString::fromStdString(error));
+        QMessageBox::information(NULL, "Proxy error", error);
 
     return;
 }

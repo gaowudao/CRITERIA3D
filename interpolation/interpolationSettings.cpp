@@ -484,35 +484,6 @@ void Crit3DInterpolationSettings::addProxy(Crit3DProxy myProxy, bool isActive_)
     optimalCombination.addValue(isActive_);
 }
 
-bool Crit3DProxy::check(std::string *error)
-{
-    if (getName() == "")
-    {
-        *error = "no name for proxy";
-        return false;
-    }
-
-    if (getGridName() == "")
-    {
-        *error = "no grid name for proxy " + getName();
-        return false;
-    }
-
-    if (getGridName() == "")
-    {
-        gis::Crit3DRasterGrid* grid_ = new gis::Crit3DRasterGrid();
-        if (! gis::readEsriGrid(getGridName(), grid_, error))
-        {
-            *error = "error loading grid for proxy " + getName();
-            grid_ = NULL;
-            return false;
-        }
-        grid_ = NULL;
-    }
-
-    return true;
-}
-
 std::string Crit3DInterpolationSettings::getProxyName(int pos)
 { return currentProxy.at(pos).getName();}
 

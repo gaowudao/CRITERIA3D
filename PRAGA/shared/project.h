@@ -83,8 +83,10 @@
 
         bool readGenericSettings(QString currentPath);
         bool readGenericParameters();
-        bool readProxies();
+        bool readProxies(QString *errorString);
         void setProxyDEM();
+        bool checkProxy(std::string name_, std::string gridName_, std::string table_, std::string field_, QString* error);
+        void addProxy(std::string name_, std::string gridName_, std::string table_, std::string field_, bool isForQuality_, bool isActive_);
         void copyInterpolationSettingsToQuality();
 
         void setCurrentDate(QDate myDate);
