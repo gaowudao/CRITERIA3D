@@ -279,6 +279,7 @@ ProxyDialog::ProxyDialog(Project *myProject)
     // proxy list
     QLabel *labelProxyList = new QLabel(tr("proxy list"));
     layoutProxy->addWidget(labelProxyList);
+    _proxyCombo.clear();
     redrawProxies();
 
     connect(&_proxyCombo, &QComboBox::currentTextChanged, [=](){ this->changedProxy(); });

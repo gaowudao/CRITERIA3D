@@ -122,7 +122,7 @@
 
         float meteoDataConsistency(meteoVariable myVar, const Crit3DTime& timeIni, const Crit3DTime& timeFin);
 
-        void readProxyValues();
+        bool readProxyValues();
         void checkMeteoPointsDEM();
         bool writeTopographicDistanceMaps();
         bool loadTopographicDistanceMaps();

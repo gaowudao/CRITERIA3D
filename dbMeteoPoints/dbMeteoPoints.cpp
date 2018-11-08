@@ -524,30 +524,34 @@ bool Crit3DMeteoPointsDbHandler::readPointProxyValues(Crit3DMeteoPoint* myPoint,
     {
         myPoint->proxyValues.at(i) = NODATA;
 
-        myProxy = interpolationSettings->getProxy(i);
-        proxyField = QString::fromStdString(myProxy->getProxyField());
-        proxyTable = QString::fromStdString(myProxy->getProxyTable());
-        if (proxyField != "" && proxyTable != "")
+        // read only for active proxies
+        if (interpolationSettings->getSelectedCombination().getValue(i))
         {
-            statement = QString("SELECT `%1` FROM `%2` WHERE id_point = '%3'").arg(proxyField).arg(proxyTable).arg(QString::fromStdString((*myPoint).id));
-            if(qry.exec(statement))
+            myProxy = interpolationSettings->getProxy(i);
+            proxyField = QString::fromStdString(myProxy->getProxyField());
+            proxyTable = QString::fromStdString(myProxy->getProxyTable());
+            if (proxyField != "" && proxyTable != "")
             {
-                qry.last();
-                if (qry.value(proxyField) != "")
-                    myPoint->proxyValues.at(i) = qry.value(proxyField).toFloat();
+                statement = QString("SELECT `%1` FROM `%2` WHERE id_point = '%3'").arg(proxyField).arg(proxyTable).arg(QString::fromStdString((*myPoint).id));
+                if(qry.exec(statement))
+                {
+                    qry.last();
+                    if (qry.value(proxyField) != "")
+                        myPoint->proxyValues.at(i) = qry.value(proxyField).toFloat();
+                }
             }
-        }
 
-        if (myPoint->proxyValues.at(i) == NODATA)
-        {
-            gis::Crit3DRasterGrid* proxyGrid = myProxy->getGrid();
-            if (proxyGrid == NULL || ! proxyGrid->isLoaded)
-                return false;
-            else
+            if (myPoint->proxyValues.at(i) == NODATA)
             {
-                float myValue = gis::getValueFromXY(*proxyGrid, myPoint->point.utm.x, myPoint->point.utm.y);
-                if (myValue != proxyGrid->header->flag)
-                    myPoint->proxyValues.at(i) = myValue;
+                gis::Crit3DRasterGrid* proxyGrid = myProxy->getGrid();
+                if (proxyGrid == NULL || ! proxyGrid->isLoaded)
+                    return false;
+                else
+                {
+                    float myValue = gis::getValueFromXY(*proxyGrid, myPoint->point.utm.x, myPoint->point.utm.y);
+                    if (myValue != proxyGrid->header->flag)
+                        myPoint->proxyValues.at(i) = myValue;
+                }
             }
         }
     }

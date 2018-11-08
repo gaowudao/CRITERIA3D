@@ -297,16 +297,8 @@ bool Project::checkProxy(std::string name_, std::string gridName_, std::string t
     }
 
     bool isHeight = (getProxyPragaName(name_) == height);
-    bool isGridLoaded = false;
 
-    gis::Crit3DRasterGrid *grid_ = new gis::Crit3DRasterGrid();
-    if (isHeight)
-    {
-        std::string* myError = new std::string();
-        isGridLoaded = gis::readEsriGrid(gridName_, grid_, myError);
-    }
-
-    if ( !isGridLoaded && !isHeight && (table_ == "" && field_ == ""))
+    if (gridName_ == "" && !isHeight && (table_ == "" && field_ == ""))
     {
         *error = "error reading grid, table or field for proxy " + QString::fromStdString(name_);
         return false;
@@ -326,14 +318,6 @@ void Project::addProxy(std::string name_, std::string gridName_, std::string tab
     myProxy.setProxyField(field_);
     myProxy.setForQualityControl(isForQuality_);
 
-    gis::Crit3DRasterGrid* grid_ = new gis::Crit3DRasterGrid();
-    if (getProxyPragaName(name_) == height)
-    {
-        std::string* myError = new std::string();
-        gis::readEsriGrid(gridName_, grid_, myError);
-    }
-    myProxy.setGrid(grid_);
-
     interpolationSettings.addProxy(myProxy, isActive_);
     if (isForQuality_)
         qualityInterpolationSettings.addProxy(myProxy, isActive_);
@@ -346,7 +330,6 @@ bool Project::readProxies(QString *errorString)
     QString gridName;
     std::string proxyName, proxyGridName, proxyTable, proxyField;
     bool isActive, forQuality;
-    Crit3DProxy myProxy;
 
     interpolationSettings.initializeProxy();
     qualityInterpolationSettings.initializeProxy();
@@ -371,19 +354,12 @@ bool Project::readProxies(QString *errorString)
             settings->endGroup();
 
             if (checkProxy(proxyName, proxyGridName, proxyTable, proxyField, errorString))
-            {
-                interpolationSettings.addProxy(myProxy, isActive);
-                if (forQuality) qualityInterpolationSettings.addProxy(myProxy, isActive);
-            }
+                addProxy(proxyName, proxyGridName, proxyTable, proxyField, forQuality, isActive);
             else
-            {
                 return false;
-            }
 
         }
     }
-
-    readProxyValues();
 
     return true;
 }
@@ -846,13 +822,16 @@ void Project::checkMeteoPointsDEM()
         meteoPoints[i].isInsideDem = ! gis::isOutOfGridXY(meteoPoints[i].point.utm.x, meteoPoints[i].point.utm.y, DTM.header);
 }
 
-void Project::readProxyValues()
+bool Project::readProxyValues()
 {
     if (meteoPointsDbHandler == NULL)
-        return;
+        return false;
 
     for (int i = 0; i < nrMeteoPoints; i++)
-        meteoPointsDbHandler->readPointProxyValues(&meteoPoints[i], &interpolationSettings);
+        if (!meteoPointsDbHandler->readPointProxyValues(&meteoPoints[i], &interpolationSettings))
+            return false;
+
+    return true;
 }
 
 bool Project::writeTopographicDistanceMaps()
@@ -971,10 +950,24 @@ bool Project::interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gi
         return false;
     }
 
+    // check proxy grids for detrending
+    if (!loadProxyGrids(&interpolationSettings))
+    {
+        errorString = "Interpolation: error loading proxy grids";
+        return false;
+    }
+
+    // load proxy values for detrending
+    if (! readProxyValues())
+    {
+        errorString = "Error reading proxy values";
+        return false;
+    }
+
     // Interpolate
     if (! interpolationRaster(interpolationPoints, &interpolationSettings, myRaster, DTM, myVar, showInfo))
     {
-       errorString = "Interpolation: error in function interpolateGridDtm";
+        errorString = "Interpolation: error in function interpolateGridDtm";
         return false;
     }
 

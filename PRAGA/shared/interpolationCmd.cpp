@@ -4,6 +4,32 @@
 #include "gis.h"
 
 
+bool loadProxyGrids(Crit3DInterpolationSettings* mySettings)
+{
+    std::string* myError = new std::string();
+    Crit3DProxy *myProxy;
+    gis::Crit3DRasterGrid *myGrid;
+
+    for (int i=0; i<mySettings->getProxyNr(); i++)
+    {
+        myProxy = mySettings->getProxy(i);
+        myGrid = myProxy->getGrid();
+
+        if (mySettings->getSelectedCombination().getValue(i) || myProxy->getForQualityControl())
+        {
+            if (myGrid == NULL)
+            {
+                if (!getProxyPragaName(myProxy->getName()) == height)
+                {
+                    myGrid = new gis::Crit3DRasterGrid();
+                    if (!gis::readEsriGrid(myProxy->getGridName(), myGrid, myError))
+                        return false;
+                }
+            }
+        }
+    }
+}
+
 bool interpolationRaster(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings,
                         gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGrid& myDTM, meteoVariable myVar, bool showInfo)
 {
