@@ -90,16 +90,11 @@ InterpolationDialog::InterpolationDialog(Project *myProject)
     QLabel *labelProxy = new QLabel(tr("temperature detrending proxies"));
     layoutProxy->addWidget(labelProxy);
 
-    QVBoxLayout *layoutProxyList = new QVBoxLayout;
-    for (int i = 0; i < _interpolationSettings->getProxyNr(); i++)
-    {
-         Crit3DProxy* myProxy = _interpolationSettings->getProxy(i);
-         QCheckBox *chkProxy = new QCheckBox(QString::fromStdString(myProxy->getName()));
-         chkProxy->setChecked(_interpolationSettings->getSelectedCombination().getValue(i));
-         layoutProxyList->addWidget(chkProxy);
-         proxy.append(chkProxy);
-    }
+    layoutProxyList = new QVBoxLayout;
+    proxyListCheck = new QListWidget;
+    layoutProxyList->addWidget(proxyListCheck);
     layoutProxy->addLayout(layoutProxyList);
+    redrawProxies();
 
     QPushButton *editProxy = new QPushButton("Edit proxies...", this);
     layoutProxy->addWidget(editProxy);
@@ -120,6 +115,21 @@ InterpolationDialog::InterpolationDialog(Project *myProject)
     exec();
 }
 
+void InterpolationDialog::redrawProxies()
+{
+    proxyListCheck->clear();
+    for (int i = 0; i < _interpolationSettings->getProxyNr(); i++)
+    {
+         Crit3DProxy* myProxy = _interpolationSettings->getProxy(i);
+         QListWidgetItem *chkProxy = new QListWidgetItem(QString::fromStdString(myProxy->getName()), proxyListCheck);
+         chkProxy->setFlags(chkProxy->flags() | Qt::ItemIsUserCheckable);
+         if (_interpolationSettings->getSelectedCombination().getValue(i))
+            chkProxy->setCheckState(Qt::Checked);
+         else
+            chkProxy->setCheckState(Qt::Unchecked);
+    }
+}
+
 void InterpolationDialog::editProxies()
 {
     if (_project->meteoPointsDbHandler == NULL)
@@ -130,6 +140,9 @@ void InterpolationDialog::editProxies()
 
     ProxyDialog* myProxyDialog = new ProxyDialog(_project);
     myProxyDialog->close();
+
+    if (myProxyDialog->result() == QDialog::Accepted)
+        redrawProxies();
 }
 
 void InterpolationDialog::writeInterpolationSettings()
@@ -170,8 +183,8 @@ void InterpolationDialog::accept()
         return;
     }
 
-    for (int i = 0; i < proxy.size(); i++)
-        _interpolationSettings->setValueSelectedCombination(i, proxy[i]->isChecked());
+    for (int i = 0; i < proxyListCheck->count(); i++)
+        _interpolationSettings->setValueSelectedCombination(i, proxyListCheck->item(i)->checkState());
 
     QString algorithmString = algorithmEdit.itemData(algorithmEdit.currentIndex()).toString();
     _interpolationSettings->setInterpolationMethod(interpolationMethodNames.at(algorithmString.toStdString()));
@@ -410,10 +423,11 @@ bool ProxyDialog::checkProxies(std::string *error)
 
 void ProxyDialog::saveProxies()
 {
+    _project->interpolationSettings.initializeProxy();
+    _project->qualityInterpolationSettings.initializeProxy();
+
     for (int i=0; i < _proxy.size(); i++)
-    {
-        _project->interpolationSettings.initializeProxy();
-        _project->qualityInterpolationSettings.initializeProxy();
+    {   
         _project->addProxy(_proxy.at(i).getName(), _proxy.at(i).getGridName(),
                            _proxy.at(i).getProxyTable(), _proxy.at(i).getProxyField(),
                             _proxy.at(i).getForQualityControl(), true);

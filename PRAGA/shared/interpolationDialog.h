@@ -9,7 +9,7 @@
 #include <QDialog>
 #include <QtWidgets>
 #include <QPushButton>
-
+#include <QVBoxLayout>
 
 class InterpolationDialog : public QDialog
 {
@@ -26,8 +26,10 @@ class InterpolationDialog : public QDialog
         QCheckBox* topographicDistanceEdit;
         QCheckBox* useDewPointEdit;
         QComboBox gridAggregationMethodEdit;
-        QVector <QCheckBox*> proxy;
+        QVBoxLayout *layoutProxyList;
+        QListWidget *proxyListCheck;
 
+        void redrawProxies();
         void writeInterpolationSettings();
         void accept();
 
