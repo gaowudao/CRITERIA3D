@@ -369,7 +369,8 @@ bool ProxyDialog::checkProxies(std::string *error)
         table_ = _proxy.at(i).getProxyTable();
         if (table_ != "")
         {
-            fields = getFields(&(_project->meteoPointsDbHandler->getDb()), QString::fromStdString(table_));
+            QSqlDatabase db = _project->meteoPointsDbHandler->getDb();
+            fields = getFields(&db, QString::fromStdString(table_));
             if (fields.filter("id_point").isEmpty())
             {
                 *error = "no id_point field found in table " + table_ + " for proxy " + _proxy.at(i).getName();
