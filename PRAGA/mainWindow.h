@@ -124,7 +124,6 @@
         QList<QCheckBox*> datasetCheckbox;
         QCheckBox* all;
 
-        QGroupBox* elaborationBox;
         QLineEdit* elabType1;
         QLineEdit* elabType2;
         QLineEdit* elabVariable;

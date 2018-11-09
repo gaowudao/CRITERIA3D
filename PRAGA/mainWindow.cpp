@@ -90,14 +90,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->setMouseTracking(true);
 
-    elaborationBox = new QGroupBox(this);
-    elaborationBox->setTitle("Elaboration");
     elabType1 = new QLineEdit;
     elabType2 = new QLineEdit;
     elabVariable = new QLineEdit;
     elabPeriod = new QLineEdit;
 
-    QVBoxLayout *vbox = new QVBoxLayout(elaborationBox);
+    QVBoxLayout *vbox = new QVBoxLayout(ui->groupBoxElaboration);
     QLabel *secondElab = new QLabel();
     secondElab->setText("<font color='black'>second Elab:</font>");
     secondElab->setBuddy(elabType2);
@@ -113,9 +111,9 @@ MainWindow::MainWindow(QWidget *parent) :
     vbox->addWidget(elabVariable);
     vbox->addWidget(period);
     vbox->addWidget(elabPeriod);
-    elaborationBox->setLayout(vbox);
+    ui->groupBoxElaboration->setLayout(vbox);
 
-    elaborationBox->hide();
+    ui->groupBoxElaboration->hide();
 }
 
 
@@ -134,30 +132,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::resizeEvent(QResizeEvent * event)
 {
-    Q_UNUSED(event)
-    const int INFOHEIGHT = 40;
-
-    ui->widgetMap->setGeometry(TOOLSWIDTH, 0, this->width()-TOOLSWIDTH, this->height() - INFOHEIGHT);
-    mapView->resize(ui->widgetMap->size());
-
-    ui->groupBoxVariable->move(MAPBORDER/2, MAPBORDER);
-    ui->groupBoxVariable->resize(TOOLSWIDTH, ui->groupBoxVariable->height());
-
-    ui->groupBoxMeteoPoints->move(MAPBORDER/2, ui->groupBoxVariable->y() + ui->groupBoxVariable->height() + MAPBORDER);
-    ui->groupBoxMeteoPoints->resize(TOOLSWIDTH, ui->groupBoxMeteoPoints->height());
-
-    ui->groupBoxMeteoGrid->move(MAPBORDER/2, ui->groupBoxMeteoPoints->y() + ui->groupBoxMeteoPoints->height() + MAPBORDER);
-    ui->groupBoxMeteoGrid->resize(TOOLSWIDTH, ui->groupBoxMeteoGrid->height());
-
-    ui->groupBoxRaster->move(MAPBORDER/2, ui->groupBoxMeteoGrid->y() + ui->groupBoxMeteoGrid->height() + MAPBORDER);
-    ui->groupBoxRaster->resize(TOOLSWIDTH, ui->groupBoxRaster->height());
-
-    elaborationBox->move(MAPBORDER/2, ui->groupBoxRaster->y() + ui->groupBoxRaster->height() + MAPBORDER*4);
-    elaborationBox->resize(TOOLSWIDTH, 180);
-
-    // TODO sembrano non funzionare
-    ui->widgetColorLegendRaster->resize(TOOLSWIDTH, ui->widgetColorLegendPoints->height());
-    ui->widgetColorLegendPoints->resize(TOOLSWIDTH, ui->widgetColorLegendPoints->height());
+      mapView->resize(ui->widgetMap->size());
 }
 
 
@@ -1133,7 +1108,7 @@ void MainWindow::on_actionClose_meteo_points_triggered()
     meteoPointsLegend->setVisible(false);
     myProject.closeMeteoPointsDB();
     myProject.setIsElabMeteoPointsValue(false);
-    elaborationBox->hide();
+    ui->groupBoxElaboration->hide();
 }
 
 void MainWindow::on_actionClose_meteo_grid_triggered()
@@ -1146,7 +1121,7 @@ void MainWindow::on_actionClose_meteo_grid_triggered()
         meteoGridObj->redrawRequested();
         meteoGridLegend->setVisible(false);
         myProject.closeMeteoGridDB();
-        elaborationBox->hide();
+        ui->groupBoxElaboration->hide();
         ui->meteoGridOpacitySlider->setEnabled(false);
     }
 
@@ -1521,7 +1496,7 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool is
     elabType2->setReadOnly(true);
     elabVariable->setReadOnly(true);
     elabPeriod->setReadOnly(true);
-    elaborationBox->show();
+    ui->groupBoxElaboration->show();
 }
 
 void MainWindow::on_actionInterpolationSettings_triggered()
