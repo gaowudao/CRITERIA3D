@@ -87,8 +87,6 @@
 
         void on_actionLoadTAD_triggered();
 
-        void on_actionProxy_variables_triggered();
-
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

@@ -32,9 +32,13 @@ class InterpolationDialog : public QDialog
         void accept();
 
     private:
+        Project* _project;
         QSettings* _paramSettings;
         Crit3DInterpolationSettings* _interpolationSettings;
         Crit3DInterpolationSettings* _qualityInterpolationSettings;
+
+    private slots:
+        void editProxies();
 
 };
 
@@ -51,6 +55,7 @@ class ProxyDialog : public QDialog
         QLineEdit _proxyGridName;
         QCheckBox _forQuality;
 
+        bool edited(Project* myProject);
         void changedProxy();
         void changedTable();
         void getGridFile();

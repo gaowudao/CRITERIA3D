@@ -8,6 +8,7 @@
 
 InterpolationDialog::InterpolationDialog(Project *myProject)
 {
+    _project = myProject;
     _paramSettings = myProject->settings;
     _interpolationSettings = &(myProject->interpolationSettings);
     _qualityInterpolationSettings = &(myProject->qualityInterpolationSettings);
@@ -89,14 +90,20 @@ InterpolationDialog::InterpolationDialog(Project *myProject)
     QLabel *labelProxy = new QLabel(tr("temperature detrending proxies"));
     layoutProxy->addWidget(labelProxy);
 
+    QVBoxLayout *layoutProxyList = new QVBoxLayout;
     for (int i = 0; i < _interpolationSettings->getProxyNr(); i++)
     {
          Crit3DProxy* myProxy = _interpolationSettings->getProxy(i);
          QCheckBox *chkProxy = new QCheckBox(QString::fromStdString(myProxy->getName()));
          chkProxy->setChecked(_interpolationSettings->getSelectedCombination().getValue(i));
-         layoutProxy->addWidget(chkProxy);
+         layoutProxyList->addWidget(chkProxy);
          proxy.append(chkProxy);
     }
+    layoutProxy->addLayout(layoutProxyList);
+
+    QPushButton *editProxy = new QPushButton("Edit proxies...", this);
+    layoutProxy->addWidget(editProxy);
+    connect(editProxy, &QPushButton::clicked, this, &InterpolationDialog::editProxies);
     layoutDetrending->addLayout(layoutProxy);
 
     layoutMain->addLayout(layoutDetrending);
@@ -111,6 +118,18 @@ InterpolationDialog::InterpolationDialog(Project *myProject)
     setLayout(layoutMain);
 
     exec();
+}
+
+void InterpolationDialog::editProxies()
+{
+    if (_project->meteoPointsDbHandler == NULL)
+    {
+        QMessageBox::information(NULL, "No DB open", "Open DB Points to edit proxy tables and fields");
+        return;
+    }
+
+    ProxyDialog* myProxyDialog = new ProxyDialog(_project);
+    myProxyDialog->close();
 }
 
 void InterpolationDialog::writeInterpolationSettings()
@@ -308,7 +327,8 @@ ProxyDialog::ProxyDialog(Project *myProject)
 
     QLabel *labelTableList = new QLabel(tr("table for point values"));
     layoutPointValues->addWidget(labelTableList);
-    QStringList tables_ = _project->meteoPointsDbHandler->getDb().tables();
+    QSqlDatabase db = _project->meteoPointsDbHandler->getDb();
+    QStringList tables_ = db.tables();
     for (int i=0; i < tables_.size(); i++)
         _table.addItem(tables_.at(i));
 
@@ -354,6 +374,12 @@ ProxyDialog::ProxyDialog(Project *myProject)
     }
 
     exec();
+}
+
+bool ProxyDialog::edited(Project* myProject)
+{
+    _project = myProject;
+    return true;
 }
 
 bool ProxyDialog::checkProxies(std::string *error)

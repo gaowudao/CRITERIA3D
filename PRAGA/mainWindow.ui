@@ -1950,7 +1950,7 @@
      <x>0</x>
      <y>0</y>
      <width>1368</width>
-     <height>30</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="palette">
@@ -2444,7 +2444,6 @@
     <addaction name="actionInterpolationSettings"/>
     <addaction name="separator"/>
     <addaction name="menuTopographic_distance_maps"/>
-    <addaction name="actionProxy_variables"/>
    </widget>
    <widget class="QMenu" name="menuClimate">
     <property name="title">
@@ -2694,11 +2693,6 @@
   <action name="actionLoadTAD">
    <property name="text">
     <string>Load</string>
-   </property>
-  </action>
-  <action name="actionProxy_variables">
-   <property name="text">
-    <string>Proxy variables...</string>
    </property>
   </action>
   <action name="actionElaboration_meteo_points">

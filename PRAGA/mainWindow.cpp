@@ -1557,15 +1557,3 @@ void MainWindow::on_actionLoadTAD_triggered()
     if (! myProject.loadTopographicDistanceMaps())
         myProject.logError();
 }
-
-void MainWindow::on_actionProxy_variables_triggered()
-{
-    if (myProject.meteoPointsDbHandler == NULL)
-    {
-        QMessageBox::information(NULL, "No DB open", "Open DB Points");
-        return;
-    }
-
-    ProxyDialog* myProxyDialog = new ProxyDialog(&myProject);
-    myProxyDialog->close();
-}
