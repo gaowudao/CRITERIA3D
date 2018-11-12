@@ -1307,6 +1307,10 @@ void MainWindow::on_actionClimate_fields_triggered()
     }
 
     bool isMeteoGrid = ui->grid->isChecked();
+    QStringList climateDbElab;
+    QStringList climateDbVarList;
+    myProject.showClimateFields(isMeteoGrid, &climateDbElab, &climateDbVarList);
+    //TO DO
 }
 
 void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool isAnomaly)

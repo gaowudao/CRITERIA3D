@@ -1,6 +1,7 @@
 #include "pragaProject.h"
 #include "project.h"
 #include "climate.h"
+#include "dbClimate.h"
 #include "download.h"
 #include "formInfo.h"
 
@@ -208,6 +209,51 @@ bool PragaProject::elaborationCheck(bool isMeteoGrid, bool isAnomaly)
     }
 
     return true;
+}
+
+bool PragaProject::showClimateFields(bool isMeteoGrid, QStringList* climateDbElab, QStringList* climateDbVarList)
+{
+    QSqlDatabase db;
+    if (isMeteoGrid)
+    {
+        if (this->meteoGridDbHandler == NULL)
+        {
+            errorString = "Load grid";
+            return false;
+        }
+        db = this->meteoGridDbHandler->db();
+    }
+    else
+    {
+        if (this->meteoPointsDbHandler == NULL)
+        {
+            errorString = "Load meteo Points";
+            return false;
+        }
+        db = this->meteoPointsDbHandler->getDb();
+    }
+    QStringList climateTables;
+
+    if ( !showClimateTables(db, &errorString, &climateTables) )
+    {
+        errorString = "No climate tables";
+        return false;
+    }
+    else
+    {
+        for (int i=0; i < climateTables.size(); i++)
+        {
+            selectAllElab(db, &errorString, climateTables.at(i), climateDbElab);
+        }
+        if (climateDbElab->isEmpty())
+        {
+            errorString = "Empty climate tables";
+            return false;
+        }
+    }
+    // TO DO
+    return true;
+
 }
 
 
