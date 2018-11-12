@@ -532,6 +532,42 @@ bool selectVarElab(QSqlDatabase db, std::string *myError, QString table, QString
     return found;
 }
 
+bool selectAllElab(QSqlDatabase db, std::string *myError, QString table, QStringList* listElab)
+{
+    QSqlQuery qry(db);
+    QString elab;
+
+    bool found = false;
+
+    QString statement = QString("SELECT DISTINCT elab from `%1` ").arg(table);
+
+    qry.prepare(statement);
+
+    if( !qry.exec() )
+    {
+        *myError = qry.lastError().text().toStdString();
+        return false;
+    }
+    else
+    {
+
+        while (qry.next())
+        {
+            if (getValue(qry.value("elab"), &elab))
+            {
+                listElab->append(elab);
+                found = true;
+            }
+            else
+            {
+                *myError = qry.lastError().text().toStdString();
+            }
+        }
+    }
+
+    return found;
+}
+
 bool showClimateTables(QSqlDatabase db, std::string *myError, QStringList* climateTables)
 {
     QSqlQuery qry(db);

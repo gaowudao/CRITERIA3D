@@ -18,7 +18,7 @@ bool saveSeasonalElab(QSqlDatabase db, std::string *myError, QString id, std::ve
 bool saveAnnualElab(QSqlDatabase db, std::string *myError, QString id, float result, QString elab);
 bool saveGenericElab(QSqlDatabase db, std::string *myError, QString id, float result, QString elab);
 
-
+bool selectAllElab(QSqlDatabase db, std::string *myError, QString table, QStringList* listElab);
 bool selectVarElab(QSqlDatabase db, std::string *myError, QString table, QString variable, QStringList* listElab);
 bool showClimateTables(QSqlDatabase db, std::string *myError, QStringList* climateTables);
 

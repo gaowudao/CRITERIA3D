@@ -1297,6 +1297,18 @@ void MainWindow::on_actionCompute_climate_triggered()
     return;
 }
 
+void MainWindow::on_actionClimate_fields_triggered()
+{
+    if (!ui->meteoPoints->isChecked() && !ui->grid->isChecked())
+    {
+        myProject.errorString = "Load meteo Points or grid";
+        myProject.logError();
+        return;
+    }
+
+    bool isMeteoGrid = ui->grid->isChecked();
+}
+
 void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool isAnomaly)
 {
 
@@ -1471,3 +1483,5 @@ void MainWindow::on_actionLoadTAD_triggered()
     if (! myProject.loadTopographicDistanceMaps())
         myProject.logError();
 }
+
+

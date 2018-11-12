@@ -84,6 +84,8 @@
 
         void on_actionLoadTAD_triggered();
 
+        void on_actionClimate_fields_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
