@@ -204,8 +204,10 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
     validator->setLocale(local);
     elab1Parameter.setValidator(validator);
     readParam.setText("Read param from db Climate");
-    readParam.setChecked(myProject.clima->param1IsClimate());
+    readParam.setChecked(false);
     climateDbElabList.setVisible(false);
+
+
 
 
     QString elab1Field = elaborationList.currentText();
@@ -348,7 +350,7 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
     if (myProject.clima->elab1() != "")
     {
         elaborationList.setCurrentText(myProject.clima->elab1());
-        if (myProject.clima->param1() != NODATA)
+        if (myProject.clima->param1() != NODATA && !myProject.clima->param1IsClimate())
         {
             elab1Parameter.setText(QString::number(myProject.clima->param1()));
         }
