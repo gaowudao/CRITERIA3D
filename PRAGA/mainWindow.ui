@@ -2599,35 +2599,14 @@
      <property name="title">
       <string>Elaboration</string>
      </property>
-     <widget class="QMenu" name="menuCompute_elaboration">
-      <property name="title">
-       <string>Compute elaboration</string>
-      </property>
-      <addaction name="actionElaboration_meteo_points"/>
-      <addaction name="actionElaboration_meteo_grid"/>
-     </widget>
-     <widget class="QMenu" name="menuCompute_anomaly">
-      <property name="title">
-       <string>Compute anomaly</string>
-      </property>
-      <addaction name="actionAnomaly_meteo_points"/>
-      <addaction name="actionAnomaly_meteo_grid"/>
-     </widget>
-     <addaction name="menuCompute_elaboration"/>
-     <addaction name="menuCompute_anomaly"/>
+     <addaction name="actionCompute_elaboration"/>
+     <addaction name="actionCompute_anomaly"/>
     </widget>
     <widget class="QMenu" name="menuClimate_3">
      <property name="title">
       <string>Climate</string>
      </property>
-     <widget class="QMenu" name="menuCompute_climate">
-      <property name="title">
-       <string>Compute climate</string>
-      </property>
-      <addaction name="actionClimate_meteo_points"/>
-      <addaction name="actionClimate_meteo_grid"/>
-     </widget>
-     <addaction name="menuCompute_climate"/>
+     <addaction name="actionCompute_climate"/>
      <addaction name="actionClimate_fields"/>
     </widget>
     <addaction name="menuElaboration"/>
@@ -2785,16 +2764,6 @@
     <bool>false</bool>
    </property>
   </action>
-  <action name="actionElaboration_meteo_grid_bk">
-   <property name="text">
-    <string>meteo grid</string>
-   </property>
-  </action>
-  <action name="actionElaboration_meteo_points_bk">
-   <property name="text">
-    <string>meteo points</string>
-   </property>
-  </action>
   <action name="actionAnomaly_meteo_points_bk">
    <property name="text">
     <string>meteo points</string>
@@ -2841,16 +2810,6 @@
     <string>Load</string>
    </property>
   </action>
-  <action name="actionElaboration_meteo_points">
-   <property name="text">
-    <string>meteo points</string>
-   </property>
-  </action>
-  <action name="actionElaboration_meteo_grid">
-   <property name="text">
-    <string>meteo grid</string>
-   </property>
-  </action>
   <action name="actionAnomaly_meteo_points">
    <property name="text">
     <string>meteo points</string>
@@ -2874,6 +2833,21 @@
   <action name="actionClimate_fields">
    <property name="text">
     <string>Climate fields</string>
+   </property>
+  </action>
+  <action name="actionCompute_elaboration">
+   <property name="text">
+    <string>Compute elaboration</string>
+   </property>
+  </action>
+  <action name="actionCompute_anomaly">
+   <property name="text">
+    <string>Compute anomaly</string>
+   </property>
+  </action>
+  <action name="actionCompute_climate">
+   <property name="text">
+    <string>Compute climate</string>
    </property>
   </action>
  </widget>

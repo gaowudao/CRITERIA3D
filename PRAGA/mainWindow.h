@@ -67,12 +67,9 @@
         void on_actionInterpolation_to_DTM_triggered();
         void on_actionInterpolation_to_Grid_triggered();
         void on_actionSave_meteo_grid_triggered();
-        void on_actionElaboration_meteo_grid_triggered();
-        void on_actionElaboration_meteo_points_triggered();
-        void on_actionAnomaly_meteo_points_triggered();
-        void on_actionAnomaly_meteo_grid_triggered();
-        void on_actionClimate_meteo_points_triggered();
-        void on_actionClimate_meteo_grid_triggered();
+        void on_actionCompute_elaboration_triggered();
+        void on_actionCompute_anomaly_triggered();
+        void on_actionCompute_climate_triggered();
         void on_actionInterpolationSettings_triggered();
 
     #ifdef NETCDF
