@@ -364,6 +364,8 @@ void MainWindow::on_actionOpen_meteo_points_DB_triggered()
         this->loadMeteoPointsDB(dbName);
     }
     redrawMeteoPoints(true);
+    this->ui->meteoPoints->setChecked(true);
+    this->ui->grid->setChecked(false);
 }
 
 
@@ -375,6 +377,8 @@ void MainWindow::on_actionOpen_meteo_grid_triggered()
     {
         this->loadMeteoGridDB(xmlName);
     }
+    this->ui->meteoPoints->setChecked(false);
+    this->ui->grid->setChecked(true);
 
 }
 
@@ -1109,6 +1113,13 @@ void MainWindow::on_actionClose_meteo_points_triggered()
     myProject.closeMeteoPointsDB();
     myProject.setIsElabMeteoPointsValue(false);
     ui->groupBoxElaboration->hide();
+
+    this->ui->meteoPoints->setAutoExclusive(false);
+    this->ui->meteoPoints->setChecked(false);
+    if (myProject.meteoGridDbHandler != NULL)
+    {
+        this->ui->grid->setChecked(true);
+    }
 }
 
 void MainWindow::on_actionClose_meteo_grid_triggered()
@@ -1123,6 +1134,13 @@ void MainWindow::on_actionClose_meteo_grid_triggered()
         myProject.closeMeteoGridDB();
         ui->groupBoxElaboration->hide();
         ui->meteoGridOpacitySlider->setEnabled(false);
+
+        this->ui->grid->setAutoExclusive(false);
+        this->ui->grid->setChecked(false);
+        if (myProject.meteoPointsDbHandler != NULL)
+        {
+            this->ui->meteoPoints->setChecked(true);
+        }
     }
 
 }

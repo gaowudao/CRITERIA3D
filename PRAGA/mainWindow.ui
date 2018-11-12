@@ -502,7 +502,7 @@
             <property name="title">
              <string/>
             </property>
-            <widget class="QRadioButton" name="radioButton">
+            <widget class="QRadioButton" name="meteoPoints">
              <property name="geometry">
               <rect>
                <x>30</x>
@@ -515,7 +515,7 @@
               <string>meteo points</string>
              </property>
             </widget>
-            <widget class="QRadioButton" name="radioButton_2">
+            <widget class="QRadioButton" name="grid">
              <property name="geometry">
               <rect>
                <x>150</x>
@@ -2041,6 +2041,21 @@
             <property name="title">
              <string>Elaboration</string>
             </property>
+            <widget class="QWidget" name="verticalLayoutWidget">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>20</y>
+               <width>231</width>
+               <height>141</height>
+              </rect>
+             </property>
+             <layout class="QVBoxLayout" name="vbox">
+              <property name="spacing">
+               <number>0</number>
+              </property>
+             </layout>
+            </widget>
            </widget>
           </item>
          </layout>
