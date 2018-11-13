@@ -251,7 +251,16 @@ bool PragaProject::showClimateFields(bool isMeteoGrid, QStringList* climateDbEla
             return false;
         }
     }
-    // TO DO
+    for (int i=0; i < climateDbElab->size(); i++)
+    {
+        QString elab = climateDbElab->at(i);
+        QStringList words = elab.split('_');
+        QString var = words[1];
+        if (!climateDbVarList->contains(var))
+        {
+            climateDbVarList->append(var);
+        }
+    }
     return true;
 
 }

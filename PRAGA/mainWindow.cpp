@@ -1310,6 +1310,7 @@ void MainWindow::on_actionClimate_fields_triggered()
     QStringList climateDbElab;
     QStringList climateDbVarList;
     myProject.showClimateFields(isMeteoGrid, &climateDbElab, &climateDbVarList);
+    return;
     //TO DO
 }
 
