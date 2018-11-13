@@ -27,6 +27,7 @@
 #include "dialogWindows.h"
 #include "pragaDialogs.h"
 #include "computationDialog.h"
+#include "climateFieldsDialog.h"
 #include "interpolationDialog.h"
 #include "pragaSettingsDialog.h"
 #include "gis.h"
@@ -1309,9 +1310,12 @@ void MainWindow::on_actionClimate_fields_triggered()
     bool isMeteoGrid = ui->grid->isChecked();
     QStringList climateDbElab;
     QStringList climateDbVarList;
-    myProject.showClimateFields(isMeteoGrid, &climateDbElab, &climateDbVarList);
+    if (myProject.showClimateFields(isMeteoGrid, &climateDbElab, &climateDbVarList))
+    {
+        ClimateFieldsDialog climateDialog(climateDbElab, climateDbVarList);
+    }
     return;
-    //TO DO
+
 }
 
 void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool isAnomaly)

@@ -104,7 +104,8 @@ SOURCES += main.cpp\
     shared/project.cpp \
     pragaProject.cpp \
     pragaSettingsDialog.cpp \
-    pragaDialogs.cpp
+    pragaDialogs.cpp \
+    climateFieldsDialog.cpp
 
 HEADERS  += mainWindow.h \
     saveClimaLayout.h \
@@ -122,7 +123,8 @@ HEADERS  += mainWindow.h \
     shared/project.h \
     pragaProject.h \
     pragaSettingsDialog.h \
-    pragaDialogs.h
+    pragaDialogs.h \
+    climateFieldsDialog.h
 
 FORMS    += mainWindow.ui \
         shared/formInfo.ui
