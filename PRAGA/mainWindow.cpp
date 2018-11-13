@@ -1313,6 +1313,8 @@ void MainWindow::on_actionClimate_fields_triggered()
     if (myProject.showClimateFields(isMeteoGrid, &climateDbElab, &climateDbVarList))
     {
         ClimateFieldsDialog climateDialog(climateDbElab, climateDbVarList);
+        QString climaSelected = climateDialog.getSelected();
+        qInfo() << "climaSelected " << climaSelected; // debug
     }
     return;
 
