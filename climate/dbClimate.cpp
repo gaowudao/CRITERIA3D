@@ -49,6 +49,7 @@ bool saveDailyElab(QSqlDatabase db, std::string *myError, QString id, std::vecto
     return true;
 }
 
+/*
 bool saveDailyElabSingleValue(QSqlDatabase db, std::string *myError, QString id, int day, float result, QString elab)
 {
     QSqlQuery qry(db);
@@ -87,6 +88,7 @@ bool saveDailyElabSingleValue(QSqlDatabase db, std::string *myError, QString id,
 
     return true;
 }
+*/
 
 QList<float> readElab(QSqlDatabase db, QString table, std::string *myError, QString id, QString elab)
 {
@@ -218,6 +220,7 @@ bool saveDecadalElab(QSqlDatabase db, std::string *myError, QString id, std::vec
     return true;
 }
 
+/*
 bool saveDecadalElabSingleValue(QSqlDatabase db, std::string *myError, QString id, int decades, float result, QString elab)
 {
     QSqlQuery qry(db);
@@ -256,6 +259,7 @@ bool saveDecadalElabSingleValue(QSqlDatabase db, std::string *myError, QString i
 
     return true;
 }
+*/
 
 bool saveMonthlyElab(QSqlDatabase db, std::string *myError, QString id, std::vector<float> allResults, QString elab)
 {
@@ -299,6 +303,7 @@ bool saveMonthlyElab(QSqlDatabase db, std::string *myError, QString id, std::vec
     return true;
 }
 
+/*
 bool saveMonthlyElabSingleValue(QSqlDatabase db, std::string *myError, QString id, int months, float result, QString elab)
 {
     QSqlQuery qry(db);
@@ -337,7 +342,9 @@ bool saveMonthlyElabSingleValue(QSqlDatabase db, std::string *myError, QString i
 
     return true;
 }
+*/
 
+/*
 bool saveSeasonalElabSingleValue(QSqlDatabase db, std::string *myError, QString id, int season, float result, QString elab)
 {
     QSqlQuery qry(db);
@@ -376,6 +383,7 @@ bool saveSeasonalElabSingleValue(QSqlDatabase db, std::string *myError, QString 
 
     return true;
 }
+*/
 
 bool saveSeasonalElab(QSqlDatabase db, std::string *myError, QString id, std::vector<float> allResults, QString elab)
 {

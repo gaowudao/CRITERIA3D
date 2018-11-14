@@ -5,6 +5,11 @@ QString ClimateFieldsDialog::getSelected() const
     return selected;
 }
 
+meteoVariable ClimateFieldsDialog::getVar() const
+{
+    return var;
+}
+
 ClimateFieldsDialog::ClimateFieldsDialog(QStringList climateDbElab, QStringList climateDbVarList)
 : climateDbElab(climateDbElab), climateDbVarList(climateDbVarList)
 {
@@ -29,6 +34,10 @@ void ClimateFieldsDialog::itemClicked(QListWidgetItem* item)
 
     listElab.clear();
     QStringList elabVarSelected;
+
+    std::string variable = item->text().toStdString();
+    var = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, variable);
+
     for (int i=0; i < climateDbElab.size(); i++)
     {
         QString elab = climateDbElab.at(i);

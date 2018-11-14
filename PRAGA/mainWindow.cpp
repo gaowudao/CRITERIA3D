@@ -1314,9 +1314,90 @@ void MainWindow::on_actionClimate_fields_triggered()
     {
         ClimateFieldsDialog climateDialog(climateDbElab, climateDbVarList);
         QString climaSelected = climateDialog.getSelected();
+        meteoVariable variable = climateDialog.getVar();
+
         qInfo() << "climaSelected " << climaSelected; // debug
+
+        myProject.saveClimateResult(isMeteoGrid, climaSelected);
+        showClimateResult(true, isMeteoGrid, variable, climaSelected);
+
+
     }
     return;
+
+}
+
+void MainWindow::showClimateResult(bool updateColorSCale, bool isMeteoGrid, meteoVariable variable, QString climaSelected)
+{
+
+    if (isMeteoGrid)
+    {
+        setColorScale(variable, myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale);
+        ui->labelMeteoGridScale->setText(QString::fromStdString(getVariableString(variable)));
+        meteoGridLegend->setVisible(true);
+        meteoGridLegend->update();
+    }
+    else
+    {
+        if (!this->showPoints)
+        {
+            return;
+        }
+
+        meteoPointsLegend->setVisible(true);
+
+        if (updateColorSCale)
+        {
+            float minimum = NODATA;
+            float maximum = NODATA;
+            for (int i = 0; i < myProject.nrMeteoPoints; i++)
+            {
+                // hide all meteo points
+                pointList[i]->setVisible(false);
+
+                float v = myProject.meteoPoints[i].currentValue;
+
+                if (int(v) != NODATA)
+                {
+                    if (int(minimum) == NODATA)
+                    {
+                        minimum = v;
+                        maximum = v;
+                    }
+                    else if (v < minimum) minimum = v;
+                    else if (v > maximum) maximum = v;
+                }
+
+            }
+            myProject.meteoPointsColorScale->setRange(minimum, maximum);
+            roundColorScale(myProject.meteoPointsColorScale, 4, true);
+            setColorScale(variable, myProject.meteoPointsColorScale);
+        }
+
+
+        Crit3DColor *myColor;
+        for (int i = 0; i < myProject.nrMeteoPoints; i++)
+        {
+
+            if (!updateColorSCale)
+            {
+                // hide all meteo points
+                pointList[i]->setVisible(false);
+            }
+            if (int(myProject.meteoPoints[i].currentValue) != NODATA)
+            {
+
+                pointList[i]->setRadius(5);
+                myColor = myProject.meteoPointsColorScale->getColor(myProject.meteoPoints[i].currentValue);
+                pointList[i]->setFillColor(QColor(myColor->red, myColor->green, myColor->blue));
+                pointList[i]->setToolTip(&(myProject.meteoPoints[i]));
+                pointList[i]->setVisible(true);
+            }
+        }
+
+        meteoPointsLegend->update();
+
+    }
 
 }
 
@@ -1335,7 +1416,6 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool is
 
         if (!this->showPoints)
         {
-            qInfo() << "debug showPointsTemp" << this->showPoints << endl;
             return;
         }
 

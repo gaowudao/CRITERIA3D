@@ -146,6 +146,7 @@
         void interpolateDemGUI();
         void interpolateGridGUI();
         void showElabResult(bool updateColorSCale, bool isMeteoGrid, bool isAnomaly);
+        void showClimateResult(bool updateColorSCale, bool isMeteoGrid, meteoVariable variable, QString climaSelected);
     };
 
 

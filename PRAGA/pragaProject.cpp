@@ -265,6 +265,55 @@ bool PragaProject::showClimateFields(bool isMeteoGrid, QStringList* climateDbEla
 
 }
 
+void PragaProject::saveClimateResult(bool isMeteoGrid, QString climaSelected)
+{
+    QSqlDatabase db;
+    QList<float> results;
+
+    QStringList words = climaSelected.split('_');
+    QString period = words[2];
+    QString table = "climate_" + period;
+    int climateIndex;
+    if (table == "climate_generic" || table == "climate_annual")
+    {
+        climateIndex = 0;
+    }
+    else
+    {
+        climateIndex = getClimateIndexFromElab(getCurrentDate(), climaSelected);
+    }
+
+    if (isMeteoGrid)
+    {
+        db = this->meteoGridDbHandler->db();
+        // TO DO
+    }
+    else
+    {
+        db = this->meteoPointsDbHandler->getDb();
+        for (int i = 0; i < nrMeteoPoints; i++)
+        {
+            if (meteoPoints[i].active)
+            {
+                QString id = QString::fromStdString(meteoPoints[i].id);
+                results = readElab(db, table.toLower(), &errorString, id, climaSelected);
+                if (results.size() < climateIndex)
+                {
+                    errorString = "climate index error";
+                    meteoPoints[i].currentValue = NODATA;
+                }
+                else
+                {
+                    float value = results[climateIndex-1];
+                    meteoPoints[i].currentValue = value;
+                }
+            }
+        }
+        setIsElabMeteoPointsValue(true);
+
+    }
+}
+
 
 bool PragaProject::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
 {

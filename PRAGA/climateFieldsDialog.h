@@ -2,6 +2,7 @@
 #define CLIMATEFIELDSDIALOG_H
 
 #include <QtWidgets>
+#include "meteo.h"
 
 class ClimateFieldsDialog : public QDialog
 {
@@ -19,12 +20,14 @@ class ClimateFieldsDialog : public QDialog
         QVBoxLayout elabLayout;
 
         QString selected;
+        meteoVariable var;
 
     public:
         ClimateFieldsDialog(QStringList climateDbElab, QStringList climateDbVarList);
         void itemClicked(QListWidgetItem *item);
         void endSelection(QListWidgetItem* item);
         QString getSelected() const;
+        meteoVariable getVar() const;
 };
 
 #endif // CLIMATEFIELDSDIALOG_H
