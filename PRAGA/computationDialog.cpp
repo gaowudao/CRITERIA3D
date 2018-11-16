@@ -207,9 +207,6 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
     readParam.setChecked(false);
     climateDbElabList.setVisible(false);
 
-
-
-
     QString elab1Field = elaborationList.currentText();
     if ( MapElabWithParam.find(elab1Field.toStdString()) == MapElabWithParam.end())
     {
@@ -217,6 +214,7 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
         elab1Parameter.setReadOnly(true);
         readParam.setCheckable(false);
         climateDbElabList.setVisible(false);
+        adjustSize();
     }
     else
     {
@@ -350,9 +348,25 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
     if (myProject.clima->elab1() != "")
     {
         elaborationList.setCurrentText(myProject.clima->elab1());
-        if (myProject.clima->param1() != NODATA && !myProject.clima->param1IsClimate())
+        if ( (myProject.clima->param1() != NODATA) && (!myProject.clima->param1IsClimate()) )
         {
+            elab1Parameter.setReadOnly(false);
             elab1Parameter.setText(QString::number(myProject.clima->param1()));
+        }
+        else if (myProject.clima->param1IsClimate())
+        {
+            elab1Parameter.clear();
+            elab1Parameter.setReadOnly(true);
+            readParam.setChecked(true);
+            climateDbElabList.setVisible(true);
+            adjustSize();
+            climateDbElabList.setCurrentText(myProject.clima->param1ClimateField());
+        }
+        else
+        {
+            readParam.setChecked(false);
+            climateDbElabList.setVisible(false);
+            adjustSize();
         }
     }
     if (myProject.clima->elab2() != "")
@@ -820,6 +834,7 @@ void ComputationDialog::listElaboration(const QString value)
 
     readParam.setChecked(false);
     climateDbElabList.setVisible(false);
+    adjustSize();
     listSecondElab(elaborationList.currentText());
 
     if(isAnomaly)
@@ -838,6 +853,7 @@ void ComputationDialog::listSecondElab(const QString value)
         elab1Parameter.setReadOnly(true);
         readParam.setChecked(false);
         climateDbElabList.setVisible(false);
+        adjustSize();
         readParam.setCheckable(false);
     }
     else
@@ -909,6 +925,7 @@ void ComputationDialog::readParameter(int state)
     if (state!= 0)
     {
         climateDbElabList.setVisible(true);
+        adjustSize();
         QStringList climateTables;
         if ( !showClimateTables(myProject.clima->db(), &myError, &climateTables) )
         {
@@ -941,6 +958,7 @@ void ComputationDialog::readParameter(int state)
     else
     {
         climateDbElabList.setVisible(false);
+        adjustSize();
         elab1Parameter.setReadOnly(false);
     }
 
