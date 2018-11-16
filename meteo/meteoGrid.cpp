@@ -345,6 +345,12 @@ void Crit3DMeteoGrid::fillMeteoRaster()
              if (_meteoPoints[i][j]->active)
              {
                  dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j] = _meteoPoints[i][j]->currentValue;
+                 // debug
+//                 if (_meteoPoints[i][j]->id == "02148")
+//                 {
+//                    float debug = dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j];
+//                    std::cout << " 02148 current value: " << debug;
+//                 }
              }
         }
     }

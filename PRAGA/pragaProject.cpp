@@ -285,8 +285,31 @@ void PragaProject::saveClimateResult(bool isMeteoGrid, QString climaSelected)
 
     if (isMeteoGrid)
     {
+        std::string id;
         db = this->meteoGridDbHandler->db();
-        // TO DO
+        for (int row = 0; row < meteoGridDbHandler->gridStructure().header().nrRows; row++)
+        {
+             for (int col = 0; col < meteoGridDbHandler->gridStructure().header().nrCols; col++)
+             {
+                if (meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id))
+                {
+                    Crit3DMeteoPoint* meteoPoint = meteoGridDbHandler->meteoGrid()->meteoPointPointer(row,col);
+                    results = readElab(db, table.toLower(), &errorString, QString::fromStdString(meteoPoint->id), climaSelected);
+                    if (results.size() < climateIndex)
+                    {
+                        errorString = "climate index error";
+                        meteoPoint->currentValue = NODATA;
+                    }
+                    else
+                    {
+                        float value = results[climateIndex-1];
+                        meteoPoint->currentValue = value;
+                    }
+                }
+             }
+        }
+        meteoGridDbHandler->meteoGrid()->fillMeteoRaster();
+        meteoGridDbHandler->meteoGrid()->setIsElabValue(true);
     }
     else
     {
