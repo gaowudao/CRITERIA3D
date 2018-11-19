@@ -115,6 +115,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->groupBoxElaboration->setLayout(vbox);
 
     ui->groupBoxElaboration->hide();
+
+    ui->meteoPoints->setEnabled(false);
+    ui->grid->setEnabled(false);
 }
 
 
@@ -365,6 +368,7 @@ void MainWindow::on_actionOpen_meteo_points_DB_triggered()
         this->loadMeteoPointsDB(dbName);
     }
     redrawMeteoPoints(true);
+    this->ui->meteoPoints->setEnabled(true);
     this->ui->meteoPoints->setChecked(true);
     this->ui->grid->setChecked(false);
 }
@@ -379,6 +383,7 @@ void MainWindow::on_actionOpen_meteo_grid_triggered()
         this->loadMeteoGridDB(xmlName);
     }
     this->ui->meteoPoints->setChecked(false);
+    this->ui->grid->setEnabled(true);
     this->ui->grid->setChecked(true);
 
 }
@@ -1117,6 +1122,8 @@ void MainWindow::on_actionClose_meteo_points_triggered()
 
     this->ui->meteoPoints->setAutoExclusive(false);
     this->ui->meteoPoints->setChecked(false);
+    this->ui->meteoPoints->setEnabled(false);
+
     if (myProject.meteoGridDbHandler != NULL)
     {
         this->ui->grid->setChecked(true);
@@ -1138,6 +1145,8 @@ void MainWindow::on_actionClose_meteo_grid_triggered()
 
         this->ui->grid->setAutoExclusive(false);
         this->ui->grid->setChecked(false);
+        this->ui->grid->setEnabled(false);
+
         if (myProject.meteoPointsDbHandler != NULL)
         {
             this->ui->meteoPoints->setChecked(true);
@@ -1319,7 +1328,7 @@ void MainWindow::on_actionClimate_fields_triggered()
         qInfo() << "climaSelected " << climaSelected; // debug
 
         myProject.saveClimateResult(isMeteoGrid, climaSelected);
-        showClimateResult(true, isMeteoGrid, variable, climaSelected);
+        showClimateResult(true, isMeteoGrid, variable);
 
 
     }
@@ -1327,7 +1336,7 @@ void MainWindow::on_actionClimate_fields_triggered()
 
 }
 
-void MainWindow::showClimateResult(bool updateColorSCale, bool isMeteoGrid, meteoVariable variable, QString climaSelected)
+void MainWindow::showClimateResult(bool updateColorSCale, bool isMeteoGrid, meteoVariable variable)
 {
 
     if (isMeteoGrid)
