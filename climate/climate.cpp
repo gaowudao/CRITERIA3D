@@ -935,7 +935,7 @@ int thomDailyNHoursAbove(float* tempAvg, float* relHumAvgAir, float thomthreshol
 float thomDailyMax(float *tempAvg, float* relHumAvgAir, float minimumPercentage)
 {
     int nData = 0;
-    int thomDailyMax = NODATA;
+    float thomDailyMax = NODATA;
     for (int hour = 0; hour <= 24; hour++)
     {
         float thom = thomH(tempAvg[hour], relHumAvgAir[hour]);
