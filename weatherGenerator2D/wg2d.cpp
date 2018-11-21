@@ -250,7 +250,7 @@ void weatherGenerator2D::precipitationCompute()
    // step 3 of precipitation WG2D
    weatherGenerator2D::precipitationMultisiteOccurrenceGeneration();
    // step 4 of precipitation WG2D
-   weatherGenerator2D::precipitationMultiDistributionAmounts();
+   //weatherGenerator2D::precipitationMultiDistributionAmounts();
    // step 5 of precipitation WG2D
 }
 
@@ -465,15 +465,14 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
         {
             for (int j=0;j<nrStations;j++)
             {
-                matrixOccurrence[i][j]= correlationMatrix[iMonth].occurrence[i][j];
-                //printf("%f,",matrixOccurrence[i][j]);
+                matrixOccurrence[i][j]= correlationMatrix[iMonth].occurrence[i][j]; //checked
             }
-            //printf("month %d,\n",iMonth);
 
             /* since random numbers generated have a normal distribution, each p00 and
                p10 have to be recalculated according to a normal number*/
             normalizedTransitionProbability[i][0]= - (SQRT_2*(statistics::inverseERFC(2*precOccurence[i][iMonth].p00,0.0001)));
             normalizedTransitionProbability[i][1]= - (SQRT_2*(statistics::inverseERFC(2*precOccurence[i][iMonth].p10,0.0001)));
+            // checked inverseERF check if the formal is the same in the original text
             for (int j=0;j<nrDaysIterativeProcessMonthly[iMonth];j++)
             {
                normalizedRandomMatrix[i][j]= myrandom::normalRandom(&gasDevIset,&gasDevGset);               
