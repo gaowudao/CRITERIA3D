@@ -349,7 +349,7 @@ void Crit3DMeteoGrid::fillMeteoRaster()
 //                 if (_meteoPoints[i][j]->id == "02148")
 //                 {
 //                    float debug = dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j];
-//                    std::cout << " 02148 current value: " << debug;
+//                    std::cout << " fillMeteoRaster 02148 current value: " << debug;
 //                 }
              }
         }
@@ -368,12 +368,12 @@ void Crit3DMeteoGrid::fillMeteoRasterElabValue()
              {
                  dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j] = _meteoPoints[i][j]->elaboration;
                  // debug
-//                 if (_meteoPoints[i][j]->id == "02148")
-//                 {
-//                    float debug = dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j];
-//                    std::cout << " 02148 elab: " << debug;
-//                    //qInfo() << " Info 02148 elab: " << debug;
-//                 }
+                 if (_meteoPoints[i][j]->id == "02148")
+                 {
+                    float debug = dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j];
+                    std::cout << " fillMeteoRasterElabValue 02148 elab: " << debug;
+                    //qInfo() << " Info 02148 elab: " << debug;
+                 }
              }
         }
     }
@@ -394,7 +394,7 @@ void Crit3DMeteoGrid::fillMeteoRasterAnomalyValue()
 //                 if (_meteoPoints[i][j]->id == "02148")
 //                 {
 //                    float debug = dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j];
-//                    std::cout << " 02148 anomaly: " << debug;
+//                    std::cout << " fillMeteoRasterAnomalyValue 02148 anomaly: " << debug;
 //                 }
 
              }

@@ -842,7 +842,7 @@ void MainWindow::redrawMeteoGrid()
     frequencyType frequency = myProject.getFrequency();
     meteoVariable variable = myProject.getCurrentVariable();
 
-    if (myProject.getCurrentVariable() == noMeteoVar)
+    if (myProject.getCurrentVariable() == noMeteoVar && !myProject.meteoGridDbHandler->meteoGrid()->getIsElabValue())
     {
         meteoGridLegend->setVisible(false);
         ui->labelMeteoGridScale->setText("");
