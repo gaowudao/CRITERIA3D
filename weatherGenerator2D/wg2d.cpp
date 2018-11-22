@@ -292,11 +292,11 @@ void weatherGenerator2D::precipitationP00P10()
         for (int month=0;month<12;month++)
         {
             if (daysWithoutRain[month] != 0)
-                precOccurence[idStation][month].p00 =(float)((1.0*occurrence00[month])/daysWithoutRain[month]);
+                precOccurence[idStation][month].p00 = minValue(0.9999999,(float)((1.0*occurrence00[month])/daysWithoutRain[month]));
             else
                 precOccurence[idStation][month].p00 = 0.0;
             if (daysWithRain[month] != 0)
-                precOccurence[idStation][month].p10 =(float)((1.0*occurrence10[month])/daysWithRain[month]);
+                precOccurence[idStation][month].p10 = minValue(0.9999999,(float)((1.0*occurrence10[month])/daysWithRain[month]));
             else
                 precOccurence[idStation][month].p10 = 0.0;
 
@@ -472,12 +472,13 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
                p10 have to be recalculated according to a normal number*/
             normalizedTransitionProbability[i][0]= - (SQRT_2*(statistics::inverseERFC(2*precOccurence[i][iMonth].p00,0.0001)));
             normalizedTransitionProbability[i][1]= - (SQRT_2*(statistics::inverseERFC(2*precOccurence[i][iMonth].p10,0.0001)));
-            // checked inverseERF check if the formal is the same in the original text
+
+
             for (int j=0;j<nrDaysIterativeProcessMonthly[iMonth];j++)
             {
                normalizedRandomMatrix[i][j]= myrandom::normalRandom(&gasDevIset,&gasDevGset);               
             }
-
+            // checked until here
 
         }
 
