@@ -368,9 +368,6 @@ void MainWindow::on_actionOpen_meteo_points_DB_triggered()
         this->loadMeteoPointsDB(dbName);
     }
     redrawMeteoPoints(true);
-    this->ui->meteoPoints->setEnabled(true);
-    this->ui->meteoPoints->setChecked(true);
-    this->ui->grid->setChecked(false);
 }
 
 
@@ -382,9 +379,7 @@ void MainWindow::on_actionOpen_meteo_grid_triggered()
     {
         this->loadMeteoGridDB(xmlName);
     }
-    this->ui->meteoPoints->setChecked(false);
-    this->ui->grid->setEnabled(true);
-    this->ui->grid->setChecked(true);
+    redrawMeteoGrid();
 
 }
 
@@ -971,6 +966,10 @@ bool MainWindow::loadMeteoPointsDB(QString dbName)
         myProject.loadMeteoPointsData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
     }
 
+    this->ui->meteoPoints->setEnabled(true);
+    this->ui->meteoPoints->setChecked(true);
+    this->ui->grid->setChecked(false);
+
     return true;
 }
 
@@ -1008,7 +1007,9 @@ bool MainWindow::loadMeteoGridDB(QString xmlName)
 
     meteoGridObj->redrawRequested();
 
-    redrawMeteoGrid();
+    this->ui->meteoPoints->setChecked(false);
+    this->ui->grid->setEnabled(true);
+    this->ui->grid->setChecked(true);
 
     return true;
 }
