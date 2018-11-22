@@ -66,7 +66,10 @@ float statisticalElab(meteoComputation elab, float param, std::vector<float> val
         case freqPositive:
             return statistics::frequencyPositive(values, nValues);
         case prevailingWindDir:
-            return float(windPrevailingDir(values, values, nValues, false));
+        {
+            std::vector<float> intensity = values;
+            return float(windPrevailingDir(intensity, values, nValues, false));
+        }
         case trend:
             return statistics::trend(values, nValues, param);
         case mannKendall:

@@ -363,7 +363,7 @@ int windPrevailingDir(std::vector<float> intensity, std::vector<float> dir, int 
     }
 
     int windPrevailingDir = 0;
-    for (quadr = 1; quadr <= nClass; quadr++ )
+    for (quadr = 0; quadr < nClass; quadr++ )
     {
         if (dirQuadr[quadr] > 0)
         {
@@ -373,7 +373,15 @@ int windPrevailingDir(std::vector<float> intensity, std::vector<float> dir, int 
             }
             else
             {
-                condition = (dirQuadr[quadr] > dirQuadr[windPrevailingDir]);
+                if (dirQuadr[quadr] > dirQuadr[windPrevailingDir])
+                {
+                    condition = true;
+                }
+                else
+                {
+                    condition = false;
+                }
+
             }
             if (windPrevailingDir == 0)
             {
