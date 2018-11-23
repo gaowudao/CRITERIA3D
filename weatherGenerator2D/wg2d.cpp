@@ -476,10 +476,8 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
 
             for (int j=0;j<nrDaysIterativeProcessMonthly[iMonth];j++)
             {
-               normalizedRandomMatrix[i][j]= myrandom::normalRandom(&gasDevIset,&gasDevGset);               
+               normalizedRandomMatrix[i][j]= myrandom::normalRandom(&gasDevIset,&gasDevGset);
             }
-            // checked until here
-
         }
 
         // initialization outputs of weatherGenerator2D::spatialIterationOccurrence
@@ -488,7 +486,6 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
         double** occurrences;
         M = (double **)calloc(nrStations, sizeof(double*));
         K = (double **)calloc(nrStations, sizeof(double*));
-        //occurrences = (double **)calloc(nrDaysIterativeProcessMonthly[iMonth], sizeof(double*));
         occurrences = (double **)calloc(nrStations, sizeof(double*));
 
         for (int i=0;i<nrStations;i++)
@@ -499,9 +496,7 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             {
                 M[i][j]= NODATA;
                 K[i][j]= NODATA;
-
             }
-
         }
         for (int i=0;i<nrStations;i++)
         {
@@ -583,12 +578,6 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
         dummyMatrix3[i]= (double*)calloc(lengthSeries, sizeof(double));
         normRandom[i]= (double*)calloc(lengthSeries, sizeof(double));
     }
-    /*for (int i=0;i<lengthSeries;i++)
-    {
-        correlationRandom[i]= (double*)calloc(nrStations, sizeof(double));
-    }*/
-
-
 
     // initialization output M
     for (int i=0;i<nrStations;i++)
