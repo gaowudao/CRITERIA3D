@@ -401,7 +401,6 @@ bool PragaProject::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
                 return false;
             }
         }
-
         setIsElabMeteoPointsValue(true);
     }
 

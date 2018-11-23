@@ -755,7 +755,7 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
 
 void MainWindow::redrawMeteoPoints(bool updateColorSCale)
 {
-    if (myProject.nrMeteoPoints == 0)
+    if (myProject.nrMeteoPoints == 0 || myProject.getIsElabMeteoPointsValue())
         return;
 
     // hide all meteo points
@@ -769,7 +769,6 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
     // show location
     if (myProject.getCurrentVariable() == noMeteoVar)
     {
-
         for (int i = 0; i < myProject.nrMeteoPoints; i++)
         {
                 myProject.meteoPoints[i].currentValue = NODATA;
@@ -1207,7 +1206,6 @@ void MainWindow::on_actionCompute_elaboration_triggered()
 
         if (!myProject.elaboration(isMeteoGrid, isAnomaly, saveClima))
         {
-            qInfo() << "elaboration error " << endl;
             myProject.logError();
         }
         else
@@ -1251,7 +1249,6 @@ void MainWindow::on_actionCompute_anomaly_triggered()
         bool res = myProject.elaboration(isMeteoGrid, isAnomaly, saveClima);
         if (!res)
         {
-            qInfo() << "elaboration error " << endl;
             myProject.logError();
         }
         else
@@ -1292,7 +1289,6 @@ void MainWindow::on_actionCompute_climate_triggered()
         myProject.clima->getListElab()->setListClimateElab(compDialog.getElabSaveList());
         if (!myProject.elaboration(isMeteoGrid, isAnomaly, saveClima))
         {
-            qInfo() << "elaboration error " << endl;
             myProject.logError();
         }
 
@@ -1325,8 +1321,6 @@ void MainWindow::on_actionClimate_fields_triggered()
         ClimateFieldsDialog climateDialog(climateDbElab, climateDbVarList);
         QString climaSelected = climateDialog.getSelected();
         meteoVariable variable = climateDialog.getVar();
-
-        qInfo() << "climaSelected " << climaSelected; // debug
 
         myProject.saveClimateResult(isMeteoGrid, climaSelected);
         showClimateResult(true, isMeteoGrid, variable);
