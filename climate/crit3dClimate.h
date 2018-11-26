@@ -31,6 +31,8 @@
 
         void resetParam();
 
+        void copyParam(Crit3DClimate* clima);
+
         QSqlDatabase db() const;
         void setDb(const QSqlDatabase &db);
 

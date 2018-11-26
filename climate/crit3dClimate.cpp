@@ -58,6 +58,28 @@ void Crit3DClimate::resetParam()
 
 }
 
+void Crit3DClimate::copyParam(Crit3DClimate* clima)
+{
+    _climateElab = clima->climateElab();
+    _yearStart = clima->yearStart();
+    _yearEnd = clima->yearEnd();
+    _periodType = clima->periodType();
+    _variable = clima->variable();
+    _periodStr = clima->periodStr();
+    _genericPeriodDateStart = clima->genericPeriodDateStart();
+    _genericPeriodDateEnd = clima->genericPeriodDateEnd();
+    _nYears = clima->nYears();
+    _elab1 = clima->elab1();
+    _param1 = clima->param1();
+    _param1IsClimate = clima->param1IsClimate();
+    _param1ClimateField = clima->param1ClimateField();
+    _param1ClimateIndex = clima->getParam1ClimateIndex();
+    _isClimateAnomalyFromDb = clima->getIsClimateAnomalyFromDb();
+    _elab2 = clima->elab2();
+    _param2 = clima->param2();
+
+}
+
 Crit3DClimate::~Crit3DClimate()
 {
 }

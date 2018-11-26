@@ -364,7 +364,6 @@ bool PragaProject::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
         }
         else
         {
-            clima = referenceClima;
             if (!elaborationPointsCycleGrid(isAnomaly, true))
             {
                 return false;
@@ -395,7 +394,6 @@ bool PragaProject::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
         }
         else
         {
-            clima = referenceClima;
             if (!elaborationPointsCycle(isAnomaly, true))
             {
                 return false;
@@ -419,31 +417,38 @@ bool PragaProject::elaborationPointsCycle(bool isAnomaly, bool showInfo)
 
     errorString.clear();
 
-    if (showInfo)
+    Crit3DClimate* climaUsed = new Crit3DClimate();
+
+    if (isAnomaly)
     {
-        if (isAnomaly)
+        climaUsed->copyParam(referenceClima);
+        if (showInfo)
         {
             infoStr = "Anomaly - Meteo Points";
+            infoStep = myInfo.start(infoStr, nrMeteoPoints);
         }
-        else
+    }
+    else
+    {
+        climaUsed->copyParam(clima);
+        if (showInfo)
         {
             infoStr = "Elaboration - Meteo Points";
+            infoStep = myInfo.start(infoStr, nrMeteoPoints);
         }
-
-        infoStep = myInfo.start(infoStr, nrMeteoPoints);
     }
 
 
-    QDate startDate(clima->yearStart(), clima->genericPeriodDateStart().month(), clima->genericPeriodDateStart().day());
-    QDate endDate(clima->yearEnd(), clima->genericPeriodDateEnd().month(), clima->genericPeriodDateEnd().day());
+    QDate startDate(climaUsed->yearStart(), climaUsed->genericPeriodDateStart().month(), climaUsed->genericPeriodDateStart().day());
+    QDate endDate(climaUsed->yearEnd(), climaUsed->genericPeriodDateEnd().month(), climaUsed->genericPeriodDateEnd().day());
 
-    if (clima->nYears() > 0)
+    if (climaUsed->nYears() > 0)
     {
-        endDate.setDate(clima->yearEnd() + clima->nYears(), clima->genericPeriodDateEnd().month(), clima->genericPeriodDateEnd().day());
+        endDate.setDate(climaUsed->yearEnd() + climaUsed->nYears(), climaUsed->genericPeriodDateEnd().month(), climaUsed->genericPeriodDateEnd().day());
     }
-    else if (clima->nYears() < 0)
+    else if (climaUsed->nYears() < 0)
     {
-        startDate.setDate(clima->yearStart() + clima->nYears(), clima->genericPeriodDateStart().month(), clima->genericPeriodDateStart().day());
+        startDate.setDate(climaUsed->yearStart() + climaUsed->nYears(), climaUsed->genericPeriodDateStart().month(), climaUsed->genericPeriodDateStart().day());
     }
 
 
@@ -478,14 +483,14 @@ bool PragaProject::elaborationPointsCycle(bool isAnomaly, bool showInfo)
 
             if (isAnomaly && clima->getIsClimateAnomalyFromDb())
             {
-                if ( passingClimateToAnomaly(&errorString, meteoPointTemp, clima, meteoPoints, nrMeteoPoints, clima->getElabSettings()) )
+                if ( passingClimateToAnomaly(&errorString, meteoPointTemp, climaUsed, meteoPoints, nrMeteoPoints, clima->getElabSettings()) )
                 {
                     validCell = validCell + 1;
                 }
             }
             else
             {
-                if ( elaborationOnPoint(&errorString, meteoPointsDbHandler, NULL, meteoPointTemp, clima, isMeteoGrid, startDate, endDate, isAnomaly, meteoSettings))
+                if ( elaborationOnPoint(&errorString, meteoPointsDbHandler, NULL, meteoPointTemp, climaUsed, isMeteoGrid, startDate, endDate, isAnomaly, meteoSettings))
                 {
                     validCell = validCell + 1;
                 }
@@ -509,11 +514,13 @@ bool PragaProject::elaborationPointsCycle(bool isAnomaly, bool showInfo)
             errorString = "no valid cells available";
         }
         delete meteoPointTemp;
+        delete climaUsed;
         return false;
     }
     else
     {
         delete meteoPointTemp;
+        delete climaUsed;
         return true;
     }
 
@@ -534,30 +541,38 @@ bool PragaProject::elaborationPointsCycleGrid(bool isAnomaly, bool showInfo)
 
     errorString.clear();
 
-    if (showInfo)
+    Crit3DClimate* climaUsed = new Crit3DClimate();
+
+    if (isAnomaly)
     {
-        if (isAnomaly)
+        climaUsed->copyParam(referenceClima);
+        if (showInfo)
         {
             infoStr = "Anomaly - Meteo Grid";
+            infoStep = myInfo.start(infoStr, this->meteoGridDbHandler->gridStructure().header().nrRows);
         }
-        else
+    }
+    else
+    {
+        climaUsed->copyParam(clima);
+        if (showInfo)
         {
             infoStr = "Elaboration - Meteo Grid";
+            infoStep = myInfo.start(infoStr, this->meteoGridDbHandler->gridStructure().header().nrRows);
         }
-
-        infoStep = myInfo.start(infoStr, this->meteoGridDbHandler->gridStructure().header().nrRows);
     }
 
-    QDate startDate(clima->yearStart(), clima->genericPeriodDateStart().month(), clima->genericPeriodDateStart().day());
-    QDate endDate(clima->yearEnd(), clima->genericPeriodDateEnd().month(), clima->genericPeriodDateEnd().day());
 
-    if (clima->nYears() > 0)
+    QDate startDate(climaUsed->yearStart(), climaUsed->genericPeriodDateStart().month(), climaUsed->genericPeriodDateStart().day());
+    QDate endDate(climaUsed->yearEnd(), climaUsed->genericPeriodDateEnd().month(), climaUsed->genericPeriodDateEnd().day());
+
+    if (climaUsed->nYears() > 0)
     {
-        endDate.setDate(clima->yearEnd() + clima->nYears(), clima->genericPeriodDateEnd().month(), clima->genericPeriodDateEnd().day());
+        endDate.setDate(climaUsed->yearEnd() + climaUsed->nYears(), climaUsed->genericPeriodDateEnd().month(), climaUsed->genericPeriodDateEnd().day());
     }
-    else if (clima->nYears() < 0)
+    else if (climaUsed->nYears() < 0)
     {
-        startDate.setDate(clima->yearStart() + clima->nYears(), clima->genericPeriodDateStart().month(), clima->genericPeriodDateStart().day());
+        startDate.setDate(climaUsed->yearStart() + climaUsed->nYears(), climaUsed->genericPeriodDateStart().month(), climaUsed->genericPeriodDateStart().day());
     }
 
 
@@ -587,7 +602,7 @@ bool PragaProject::elaborationPointsCycleGrid(bool isAnomaly, bool showInfo)
                 meteoPointTemp->nrObsDataDaysD = 0;
 
 
-                if  ( elaborationOnPoint(&errorString, NULL, meteoGridDbHandler, meteoPointTemp, clima, isMeteoGrid, startDate, endDate, isAnomaly, meteoSettings))
+                if  ( elaborationOnPoint(&errorString, NULL, meteoGridDbHandler, meteoPointTemp, climaUsed, isMeteoGrid, startDate, endDate, isAnomaly, meteoSettings))
                 {
                     validCell = validCell + 1;
                 }
@@ -611,11 +626,13 @@ bool PragaProject::elaborationPointsCycleGrid(bool isAnomaly, bool showInfo)
             errorString = "no valid cells available";
         }
         delete meteoPointTemp;
+        delete climaUsed;
         return false;
     }
     else
     {
         delete meteoPointTemp;
+        delete climaUsed;
         return true;
     }
 
