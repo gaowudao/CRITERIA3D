@@ -391,11 +391,11 @@ void Crit3DMeteoGrid::fillMeteoRasterAnomalyValue()
              {
                  dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j] = _meteoPoints[i][j]->anomaly;
                  // debug
-//                 if (_meteoPoints[i][j]->id == "02148")
-//                 {
-//                    float debug = dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j];
-//                    std::cout << " fillMeteoRasterAnomalyValue 02148 anomaly: " << debug;
-//                 }
+                 if (_meteoPoints[i][j]->id == "02148")
+                 {
+                    float debug = dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j];
+                    std::cout << " fillMeteoRasterAnomalyValue 02148 anomaly: " << debug;
+                 }
 
              }
         }

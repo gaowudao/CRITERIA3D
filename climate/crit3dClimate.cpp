@@ -60,6 +60,7 @@ void Crit3DClimate::resetParam()
 
 void Crit3DClimate::copyParam(Crit3DClimate* clima)
 {
+    _db = clima->db();
     _climateElab = clima->climateElab();
     _yearStart = clima->yearStart();
     _yearEnd = clima->yearEnd();
