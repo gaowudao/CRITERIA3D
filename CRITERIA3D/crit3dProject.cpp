@@ -186,6 +186,7 @@ bool Crit3DProject::createIndexMap()
         }
     }
 
+    gis::updateMinMaxRasterGrid(&indexMap);
     indexMap.isLoaded = true;
     nrVoxelsPerLayer = index;
     return(nrVoxelsPerLayer > 0);
@@ -317,10 +318,27 @@ bool Crit3DProject::initializeCriteria3D()
 {
     cleanProject();
 
-    meteoMaps = new Crit3DMeteoMaps(DTM);
+    // check
+    if (!DTM.isLoaded)
+    {
+        logError("Missing DTM.");
+        return false;
+    }
+    else if (!soilMap.isLoaded)
+    {
+        logError("Missing soil map.");
+        return false;
+    }
+    else if (soilList.size() == 0)
+    {
+        logError("Missing soil properties.");
+        return false;
+    }
 
     if (!createSoilIndexMap())
         return false;
+
+    meteoMaps = new Crit3DMeteoMaps(DTM);
 
     // loadCropProperties()
     // load crop map

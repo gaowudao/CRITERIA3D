@@ -32,6 +32,14 @@
 #include "interpolationDialog.h"
 #include "settingsDialog.h"
 
+#include <Qt3DRender/QCamera>
+
+#include <Qt3DExtras/Qt3DWindow>
+#include <Qt3DExtras/QForwardRenderer>
+#include <Qt3DExtras/QOrbitCameraController>
+
+#include "scene.h"
+
 extern Crit3DProject myProject;
 
 #define MAPBORDER 8
@@ -932,6 +940,38 @@ void MainWindow::on_actionCriteria3D_settings_triggered()
 
 void MainWindow::on_actionCriteria3D_Initialize_triggered()
 {
+    if (! myProject.DTM.isLoaded)
+    {
+        myProject.logError("Missing DTM.");
+        return;
+    }
+
     if (myProject.initializeCriteria3D())
         QMessageBox::information(NULL, "", "Criteria3D initialized.");
+
+    myProject.createIndexMap();
+
+    // 3d Window
+    Qt3DExtras::Qt3DWindow *view3D = new Qt3DExtras::Qt3DWindow();
+    view3D->defaultFrameGraph()->setClearColor(QColor::fromRgbF(1, 1, 1, 1.0));
+    view3D->setTitle("CRITERIA-3D");
+    view3D->setWidth(600);
+    view3D->setHeight(400);
+
+    // Scene
+    Qt3DCore::QEntity *scene = createScene(&(myProject.DTM), &(myProject.indexMap));
+    view3D->setRootEntity(scene);
+
+    // Camera
+    Qt3DRender::QCamera *camera = view3D->camera();
+    camera->lens()->setPerspectiveProjection(45.0f, 16.0f/9.0f, 0.1f, 1000.0f);
+    camera->setPosition(QVector3D(1, -5, 2));
+    camera->setUpVector(QVector3D(0, 0, 1));
+    camera->setViewCenter(QVector3D(0, 0, 0));
+
+    // Camera controls
+    Qt3DExtras::QOrbitCameraController *camController = new Qt3DExtras::QOrbitCameraController(scene);
+    camController->setCamera(camera);
+
+    view3D->show();
 }
