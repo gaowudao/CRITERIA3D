@@ -1013,26 +1013,31 @@ bool initializeWaterBalance(Crit3DProject* myProject)
 
     std::string myError;
 
+    // TODO parameters
     double minThickness = 0.02;      //[m]
     double maxThickness = 0.1;       //[m]
     double thickFactor = 1.5;
+
+    // Layers depth
     myProject->nrLayers = computeNrLayers(myProject->soilDepth, minThickness, maxThickness, thickFactor);
     setLayersDepth(myProject, minThickness, maxThickness, thickFactor);
     myProject->log("nr of layers: " + std::to_string(myProject->nrLayers));
 
+    // Index map
     if (myProject->createIndexMap())
         myProject->log("nr of surface cells: " + std::to_string(myProject->nrVoxelsPerLayer));
     else
     {
-        myProject->logError("initializeWaterBalance: missing data in DTM");
+        myProject->logError("initializeWaterBalance: wrong DTM");
         return(false);
     }
     myProject->nrVoxels = myProject->nrVoxelsPerLayer * myProject->nrLayers;
     waterSinkSource.resize(myProject->nrVoxels);
 
-    //BOUNDARY
+    // Boundary
     myProject->createBoundaryMap();
 
+    // Initiale soil fluxes
     int nrLateralLink = 8;
     int myResult = soilFluxes3D::initialize(myProject->nrVoxels, myProject->nrLayers,
                                             nrLateralLink, true, false, false);
@@ -1042,6 +1047,7 @@ bool initializeWaterBalance(Crit3DProject* myProject)
         return(false);
     }
 
+    // Set properties for all voxels
     if (! setCrit3DSurfaces(myProject)) return(false);
     if (! setCrit3DSoils(myProject)) return(false);
     if (! setCrit3DTopography(myProject)) return(false);

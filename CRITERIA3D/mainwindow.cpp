@@ -841,9 +841,7 @@ void MainWindow::on_actionInterpolationSettings_triggered()
         return;
     }
 
-    InterpolationDialog* myInterpolationDialog = new InterpolationDialog(myProject.settings, &myProject.interpolationSettings);
-    myProject.copyInterpolationSettingsToQuality();
-
+    InterpolationDialog* myInterpolationDialog = new InterpolationDialog(&myProject);
     myInterpolationDialog->close();
 }
 
