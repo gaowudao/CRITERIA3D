@@ -955,8 +955,8 @@ void MainWindow::on_actionCriteria3D_Initialize_triggered()
     Qt3DExtras::Qt3DWindow *view3D = new Qt3DExtras::Qt3DWindow();
     view3D->defaultFrameGraph()->setClearColor(QColor::fromRgbF(1, 1, 1, 1.0));
     view3D->setTitle("CRITERIA-3D");
-    view3D->setWidth(600);
-    view3D->setHeight(400);
+    view3D->setWidth(800);
+    view3D->setHeight(450);
 
     // Scene
     Qt3DCore::QEntity *scene = createScene(&(myProject.DTM), &(myProject.indexMap));
@@ -965,9 +965,9 @@ void MainWindow::on_actionCriteria3D_Initialize_triggered()
     // Camera
     Qt3DRender::QCamera *camera = view3D->camera();
     camera->lens()->setPerspectiveProjection(45.0f, 16.0f/9.0f, 0.1f, 1000.0f);
-    camera->setPosition(QVector3D(1, -5, 2));
+    camera->setPosition(QVector3D(myProject.DTM.header->llCorner->x, myProject.DTM.header->llCorner->y-10000, 100));
     camera->setUpVector(QVector3D(0, 0, 1));
-    camera->setViewCenter(QVector3D(0, 0, 0));
+    camera->setViewCenter(QVector3D(myProject.DTM.header->llCorner->x, myProject.DTM.header->llCorner->y, 100));
 
     // Camera controls
     Qt3DExtras::QOrbitCameraController *camController = new Qt3DExtras::QOrbitCameraController(scene);

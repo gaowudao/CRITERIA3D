@@ -11,38 +11,48 @@
 
 Qt3DCore::QEntity *createScene(gis::Crit3DRasterGrid *dtm, gis::Crit3DRasterGrid *indexGrid)
 {
-    QByteArray vertexBufferData;
-    vertexBufferData.resize(5 * (3 + 3) * sizeof(float));
+    int nrVertex = indexGrid->maximum+1;
+    QByteArray vertexPosition, vertexColor;
+    vertexPosition.resize(nrVertex * 3 * sizeof(float));
+    vertexColor.resize(nrVertex * 3 * sizeof(float));
+
+    float *rawPosition = reinterpret_cast<float *>(vertexPosition.data());
+    float *rawColor = reinterpret_cast<float *>(vertexColor.data());
 
     // Vertices
-    QVector3D v0(-1.0f, -1.0f, 0.0f);
-    QVector3D v1(1.0f, -1.0f, 0.0f);
-    QVector3D v2(-1.0f, 1.0f, 0.0f);
-    QVector3D v3(1.0f, 1.0f, 1.0f);
-    QVector3D v4(3.0f, 1.0f, 0.0f);
+    long index;
+    double x, y;
+    float z;
+    Crit3DColor *myColor;
+    for (int row = 0; row < indexGrid->header->nrRows; row++)
+    {
+        for (int col = 0; col < indexGrid->header->nrCols; col++)
+        {
+            index = indexGrid->value[row][col];
+            if (index != indexGrid->header->flag)
+            {
+                z = dtm->value[row][col];
+                if (z != dtm->header->flag)
+                {
+                    gis::getUtmXYFromRowCol(*(dtm->header), row, col, &x, &y);
+                    myColor = dtm->colorScale->getColor(z);
 
-    // Colors
-    QVector3D red(1.0f, 0.0f, 0.0f);
-    QVector3D green(0.0f, 1.0f, 0.0f);
+                    rawPosition[index*3] = float(x);
+                    rawPosition[index*3+1] = float(y);
+                    rawPosition[index*3+2] = z;
 
-    QVector<QVector3D> vertices = QVector<QVector3D>()
-            << v0 << green
-            << v1 << green
-            << v2 << green
-            << v3 << red
-            << v4 << green;
-
-    float *rawVertexArray = reinterpret_cast<float *>(vertexBufferData.data());
-    int idx = 0;
-
-    for (const QVector3D &v : vertices) {
-        rawVertexArray[idx++] = v.x();
-        rawVertexArray[idx++] = v.y();
-        rawVertexArray[idx++] = v.z();
+                    rawColor[index*3] = float(myColor->red) / 256.f;
+                    rawColor[index*3+1] = float(myColor->green) / 256.f;
+                    rawColor[index*3+2] = float(myColor->blue) / 256.f;
+                }
+            }
+        }
     }
 
-    Qt3DRender::QBuffer *vertexDataBuffer = new Qt3DRender::QBuffer();
-    vertexDataBuffer->setData(vertexBufferData);
+    Qt3DRender::QBuffer *vertexPositionBuffer = new Qt3DRender::QBuffer();
+    vertexPositionBuffer->setData(vertexPosition);
+    Qt3DRender::QBuffer *vertexColorBuffer = new Qt3DRender::QBuffer();
+    vertexColorBuffer->setData(vertexColor);
 
     // Indices
     QByteArray indexBufferData;
@@ -68,18 +78,18 @@ Qt3DCore::QEntity *createScene(gis::Crit3DRasterGrid *dtm, gis::Crit3DRasterGrid
     // Attributes
     Qt3DRender::QAttribute *positionAttribute = new Qt3DRender::QAttribute();
     positionAttribute->setAttributeType(Qt3DRender::QAttribute::VertexAttribute);
-    positionAttribute->setBuffer(vertexDataBuffer);
+    positionAttribute->setBuffer(vertexPositionBuffer);
     positionAttribute->setDataSize(3);
     positionAttribute->setByteOffset(0);
-    positionAttribute->setByteStride(6 * sizeof(float));
+    positionAttribute->setByteStride(3 * sizeof(float));
     positionAttribute->setName(Qt3DRender::QAttribute::defaultPositionAttributeName());
 
     Qt3DRender::QAttribute *colorAttribute = new Qt3DRender::QAttribute();
     colorAttribute->setAttributeType(Qt3DRender::QAttribute::VertexAttribute);
-    colorAttribute->setBuffer(vertexDataBuffer);
+    colorAttribute->setBuffer(vertexColorBuffer);
     colorAttribute->setDataSize(3);
-    colorAttribute->setByteOffset(3 * sizeof(float));
-    colorAttribute->setByteStride(6 * sizeof(float));
+    colorAttribute->setByteOffset(0);
+    colorAttribute->setByteStride(3 * sizeof(float));
     colorAttribute->setName(Qt3DRender::QAttribute::defaultColorAttributeName());
 
     Qt3DRender::QAttribute *indexAttribute = new Qt3DRender::QAttribute();
