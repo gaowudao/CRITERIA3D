@@ -56,21 +56,19 @@ Qt3DCore::QEntity *createScene(gis::Crit3DRasterGrid *dtm, gis::Crit3DRasterGrid
 
     // Attributes
     Qt3DRender::QAttribute *positionAttribute = new Qt3DRender::QAttribute();
-    positionAttribute->setBuffer(vertexPositionBuffer);
     positionAttribute->setAttributeType(Qt3DRender::QAttribute::VertexAttribute);
     positionAttribute->setVertexBaseType(Qt3DRender::QAttribute::VertexBaseType::Float);
+    positionAttribute->setBuffer(vertexPositionBuffer);
     positionAttribute->setVertexSize(3);
-    positionAttribute->setByteOffset(0);
-    positionAttribute->setByteStride(3 * sizeof(float));
+    //positionAttribute->setByteStride(3 * sizeof(float));
     positionAttribute->setName(Qt3DRender::QAttribute::defaultPositionAttributeName());
 
     Qt3DRender::QAttribute *colorAttribute = new Qt3DRender::QAttribute();
-    colorAttribute->setBuffer(vertexColorBuffer);
     colorAttribute->setAttributeType(Qt3DRender::QAttribute::VertexAttribute);
     positionAttribute->setVertexBaseType(Qt3DRender::QAttribute::VertexBaseType::Float);
+    colorAttribute->setBuffer(vertexColorBuffer);
     colorAttribute->setVertexSize(3);
-    colorAttribute->setByteOffset(0);
-    colorAttribute->setByteStride(3 * sizeof(float));
+    //colorAttribute->setByteStride(3 * sizeof(float));
     colorAttribute->setName(Qt3DRender::QAttribute::defaultColorAttributeName());
 
     // Indices
@@ -108,7 +106,7 @@ Qt3DCore::QEntity *createScene(gis::Crit3DRasterGrid *dtm, gis::Crit3DRasterGrid
                 {
                     indexData[index*3] = uint(v2);
                     indexData[index*3+1] = uint(v3);
-                    indexData[index*3+2] = uint(v1);
+                    indexData[index*3+2] = uint(v0);
                     index++;
                 }
             }
@@ -116,7 +114,7 @@ Qt3DCore::QEntity *createScene(gis::Crit3DRasterGrid *dtm, gis::Crit3DRasterGrid
     }
 
     long nrTriangles = index;
-    //indexBufferData.resize(nrTriangles * 3 * sizeof(ushort));
+    indexBufferData.resize(nrTriangles * 3 * sizeof(uint));
     Qt3DRender::QBuffer *indexBuffer = new Qt3DRender::QBuffer();
     indexBuffer->setData(indexBufferData);
 
@@ -124,9 +122,6 @@ Qt3DCore::QEntity *createScene(gis::Crit3DRasterGrid *dtm, gis::Crit3DRasterGrid
     indexAttribute->setAttributeType(Qt3DRender::QAttribute::IndexAttribute);
     indexAttribute->setVertexBaseType(Qt3DRender::QAttribute::UnsignedInt);
     indexAttribute->setBuffer(indexBuffer);
-    //indexAttribute->setDataSize(1);
-    //indexAttribute->setByteOffset(0);
-    //indexAttribute->setByteStride(0);
 
     // Geometry
     Qt3DRender::QGeometry *geometry = new Qt3DRender::QGeometry();

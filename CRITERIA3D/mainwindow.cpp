@@ -964,14 +964,14 @@ void MainWindow::on_actionCriteria3D_Initialize_triggered()
 
     // Camera
     Qt3DRender::QCamera *camera = view3D->camera();
-    camera->lens()->setPerspectiveProjection(45.0f, 16.0f/9.0f, 0.1f, 1000.0f);
+    camera->lens()->setPerspectiveProjection(60.0f, 16.0f/9.0f, 0.1f, 1000.0f);
     camera->setUpVector(QVector3D(0, 0, 1));
 
     gis::Crit3DUtmPoint utmCenter;
     utmCenter.x = myProject.DTM.header->llCorner->x + myProject.DTM.header->nrCols * myProject.DTM.header->cellSize * 0.5;
     utmCenter.y = myProject.DTM.header->llCorner->y + myProject.DTM.header->nrRows * myProject.DTM.header->cellSize * 0.5;
     float z = (myProject.DTM.maximum + myProject.DTM.minimum) * 0.5;
-    camera->setPosition(QVector3D(utmCenter.x, utmCenter.y-500, z+20));
+    camera->setPosition(QVector3D(utmCenter.x, utmCenter.y-200, z+200));
     camera->setViewCenter(QVector3D(utmCenter.x, utmCenter.y, z));
 
     // Camera controls
