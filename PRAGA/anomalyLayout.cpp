@@ -309,14 +309,9 @@ void AnomalyLayout::AnomalyListElaboration(const QString value)
         }
     }
 
-    if (readReference.isChecked())
-    {
-        AnomalyReadReferenceState(Qt::Checked);
-    }
-    else if (readParam.isChecked())
-    {
-        AnomalyReadParameter(Qt::Checked);
-    }
+    readParam.setChecked(false);
+    climateDbElabList.setVisible(false);
+    adjustSize();
 
     AnomalyListSecondElab(elaborationList.currentText());
 }
@@ -604,19 +599,21 @@ void AnomalyLayout::AnomalyReadReferenceState(int state)
     else
     {
         AnomalySetAllEnable(true);
+        climateDbElabList.setVisible(false);
         climateDbClimaList.setVisible(false);
     }
 }
 
 void AnomalyLayout::AnomalySetAllEnable(bool set)
 {
+
     currentDay.setEnabled(set);
     firstYearEdit.setEnabled(set);
     lastYearEdit.setEnabled(set);
     genericPeriodStart.setEnabled(set);
     genericPeriodEnd.setEnabled(set);
     nrYear.setEnabled(set);
-    readParam.setCheckable(set);
+    readParam.setEnabled(set);
     periodTypeList.setEnabled(set);
     elaborationList.setEnabled(set);
     secondElabList.setEnabled(set);
