@@ -969,9 +969,9 @@ void MainWindow::on_actionCriteria3D_Initialize_triggered()
 
     gis::Crit3DUtmPoint utmCenter;
     utmCenter.x = myProject.DTM.header->llCorner->x + myProject.DTM.header->nrCols * myProject.DTM.header->cellSize * 0.5;
-    utmCenter.y = myProject.DTM.header->llCorner->y - myProject.DTM.header->nrRows * myProject.DTM.header->cellSize * 0.5;
+    utmCenter.y = myProject.DTM.header->llCorner->y + myProject.DTM.header->nrRows * myProject.DTM.header->cellSize * 0.5;
     float z = (myProject.DTM.maximum + myProject.DTM.minimum) * 0.5;
-    camera->setPosition(QVector3D(utmCenter.x, utmCenter.y-1000, z));
+    camera->setPosition(QVector3D(utmCenter.x, utmCenter.y-100, z+20));
     camera->setViewCenter(QVector3D(utmCenter.x, utmCenter.y, z));
 
     // Camera controls
