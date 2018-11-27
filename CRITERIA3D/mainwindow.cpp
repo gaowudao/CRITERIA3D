@@ -33,10 +33,10 @@
 #include "settingsDialog.h"
 
 #include <Qt3DRender/QCamera>
-
 #include <Qt3DExtras/Qt3DWindow>
 #include <Qt3DExtras/QForwardRenderer>
-#include <Qt3DExtras/QOrbitCameraController>
+#include <Qt3DExtras/QFirstPersonCameraController>
+#include <Qt3DInput>
 
 #include "scene.h"
 
@@ -938,6 +938,20 @@ void MainWindow::on_actionCriteria3D_settings_triggered()
 
 }
 
+
+void mouseManager(Qt3DExtras::Qt3DWindow *view3D, QMouseEvent *e)
+{
+    if(e->buttons() == Qt::RightButton)
+    {
+        QVector3D camPos = view3D->camera()->position();
+        camPos.normalize();
+        float dy = float(e->x()) / 300.f;
+        camPos = view3D->camera()->position() - QVector3D(dy, dy, dy);
+        view3D->camera()->setPosition(camPos);
+    }
+}
+
+
 void MainWindow::on_actionCriteria3D_Initialize_triggered()
 {
     if (! myProject.DTM.isLoaded)
@@ -956,7 +970,7 @@ void MainWindow::on_actionCriteria3D_Initialize_triggered()
     view3D->defaultFrameGraph()->setClearColor(QColor::fromRgbF(1, 1, 1, 1.0));
     view3D->setTitle("CRITERIA-3D");
     view3D->setWidth(800);
-    view3D->setHeight(450);
+    view3D->setHeight(800);
 
     // Scene
     Qt3DCore::QEntity *scene = createScene(&(myProject.DTM), &(myProject.indexMap));
@@ -964,21 +978,25 @@ void MainWindow::on_actionCriteria3D_Initialize_triggered()
 
     // Camera
     Qt3DRender::QCamera *camera = view3D->camera();
-    camera->lens()->setPerspectiveProjection(45.0f, 16.0f/9.0f, 1.f, 100000.0f);
-    camera->setUpVector(QVector3D(0, 0, 1));
+    camera->lens()->setPerspectiveProjection(45.0f, 16.0f/9.0f, 1.f, 1000000.0f);
+    camera->setUpVector(QVector3D(0, 1, 0));
 
     gis::Crit3DUtmPoint utmCenter;
-    utmCenter.x = myProject.DTM.header->llCorner->x + myProject.DTM.header->nrCols * myProject.DTM.header->cellSize * 0.5;
+
     float dz = maxValue(myProject.DTM.maximum - myProject.DTM.minimum, 10.f);
     float z = myProject.DTM.minimum + dz * 0.5;
     float dy = myProject.DTM.header->nrRows * myProject.DTM.header->cellSize;
+    float dx = myProject.DTM.header->nrCols * myProject.DTM.header->cellSize;
+    utmCenter.x = myProject.DTM.header->llCorner->x + dx * 0.5;
     utmCenter.y = myProject.DTM.header->llCorner->y + dy * 0.5;
+    float size = sqrt(dx*dy);
+    float ratio = minValue(size/dz, 100);
 
-    camera->setPosition(QVector3D(utmCenter.x, utmCenter.y - dy, z + dz*5.f));
+    camera->setPosition(QVector3D(utmCenter.x, utmCenter.y, z + dz*ratio*2));
     camera->setViewCenter(QVector3D(utmCenter.x, utmCenter.y, z));
 
     // Camera controls
-    Qt3DExtras::QOrbitCameraController *camController = new Qt3DExtras::QOrbitCameraController(scene);
+    Qt3DExtras::QFirstPersonCameraController *camController = new Qt3DExtras::QFirstPersonCameraController(scene);
     camController->setCamera(camera);
 
     view3D->show();
