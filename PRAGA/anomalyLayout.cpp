@@ -594,13 +594,15 @@ void AnomalyLayout::AnomalyReadReferenceState(int state)
         climateDbClimaList.setVisible(true);
         AnomalySetAllEnable(false);
         AnomalyFillClimateDbList(&climateDbClimaList);
+        adjustSize();
 
     }
     else
     {
         AnomalySetAllEnable(true);
-        climateDbElabList.setVisible(false);
+        climateDbElabList.setVisible(readParam.isChecked());
         climateDbClimaList.setVisible(false);
+        adjustSize();
     }
 }
 
