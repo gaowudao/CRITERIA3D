@@ -234,25 +234,25 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
     {
         elaborationList.setCurrentText(myProject.referenceClima->elab1());
         if ( (myProject.referenceClima->param1() != NODATA) && (!myProject.referenceClima->param1IsClimate()) )
-                {
-                    elab1Parameter.setReadOnly(false);
-                    elab1Parameter.setText(QString::number(myProject.clima->param1()));
-                }
-                else if (myProject.referenceClima->param1IsClimate())
-                {
-                    elab1Parameter.clear();
-                    elab1Parameter.setReadOnly(true);
-                    readParam.setChecked(true);
-                    climateDbElabList.setVisible(true);
-                    adjustSize();
-                    climateDbElabList.setCurrentText(myProject.clima->param1ClimateField());
-                }
-                else
-                {
-                    readParam.setChecked(false);
-                    climateDbElabList.setVisible(false);
-                    adjustSize();
-                }
+        {
+            elab1Parameter.setReadOnly(false);
+            elab1Parameter.setText(QString::number(myProject.referenceClima->param1()));
+        }
+        else if (myProject.referenceClima->param1IsClimate())
+        {
+            elab1Parameter.clear();
+            elab1Parameter.setReadOnly(true);
+            readParam.setChecked(true);
+            climateDbElabList.setVisible(true);
+            adjustSize();
+            climateDbElabList.setCurrentText(myProject.referenceClima->param1ClimateField());
+        }
+        else
+        {
+            readParam.setChecked(false);
+            climateDbElabList.setVisible(false);
+            adjustSize();
+        }
     }
     if (myProject.referenceClima->elab2() != "")
     {
