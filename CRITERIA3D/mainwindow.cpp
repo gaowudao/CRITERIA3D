@@ -992,7 +992,7 @@ void MainWindow::on_actionCriteria3D_Initialize_triggered()
     float size = sqrt(dx*dy);
     float ratio = minValue(size/dz, 100);
 
-    camera->setPosition(QVector3D(utmCenter.x, utmCenter.y, z + dz*ratio*2));
+    camera->setPosition(QVector3D(utmCenter.x, utmCenter.y - size, z + dz*ratio));
     camera->setViewCenter(QVector3D(utmCenter.x, utmCenter.y, z));
 
     // Camera controls
