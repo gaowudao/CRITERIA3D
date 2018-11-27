@@ -965,9 +965,14 @@ void MainWindow::on_actionCriteria3D_Initialize_triggered()
     // Camera
     Qt3DRender::QCamera *camera = view3D->camera();
     camera->lens()->setPerspectiveProjection(45.0f, 16.0f/9.0f, 0.1f, 1000.0f);
-    camera->setPosition(QVector3D(myProject.DTM.header->llCorner->x, myProject.DTM.header->llCorner->y-10000, 100));
     camera->setUpVector(QVector3D(0, 0, 1));
-    camera->setViewCenter(QVector3D(myProject.DTM.header->llCorner->x, myProject.DTM.header->llCorner->y, 100));
+
+    gis::Crit3DUtmPoint utmCenter;
+    utmCenter.x = myProject.DTM.header->llCorner->x + myProject.DTM.header->nrCols * myProject.DTM.header->cellSize * 0.5;
+    utmCenter.y = myProject.DTM.header->llCorner->y - myProject.DTM.header->nrRows * myProject.DTM.header->cellSize * 0.5;
+    float z = (myProject.DTM.maximum + myProject.DTM.minimum) * 0.5;
+    camera->setPosition(QVector3D(utmCenter.x, utmCenter.y-1000, z));
+    camera->setViewCenter(QVector3D(utmCenter.x, utmCenter.y, z));
 
     // Camera controls
     Qt3DExtras::QOrbitCameraController *camController = new Qt3DExtras::QOrbitCameraController(scene);

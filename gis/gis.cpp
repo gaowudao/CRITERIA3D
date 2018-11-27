@@ -510,8 +510,14 @@ namespace gis
     void getUtmXYFromRowColSinglePrecision(const Crit3DRasterGrid& myGrid,
         int myRow, int myCol, float* myX, float* myY)
     {
-            *myX = (float)(myGrid.header->llCorner->x + myGrid.header->cellSize * (myCol + 0.5));
-            *myY = (float)(myGrid.header->llCorner->y + myGrid.header->cellSize * (myGrid.header->nrRows - myRow - 0.5));
+            *myX = (float)(myGrid.header->llCorner->x + myGrid.header->cellSize * (float(myCol) + 0.5));
+            *myY = (float)(myGrid.header->llCorner->y + myGrid.header->cellSize * (float(myGrid.header->nrRows - myRow) - 0.5));
+    }
+
+    void getUtmXYFromRowColSinglePrecision(const Crit3DRasterHeader& myHeader, int myRow, int myCol, float* myX, float* myY)
+    {
+            *myX = (float)(myHeader.llCorner->x + myHeader.cellSize * (float(myCol) + 0.5));
+            *myY = (float)(myHeader.llCorner->y + myHeader.cellSize * (float(myHeader.nrRows - myRow) - 0.5));
     }
 
     void getUtmXYFromRowCol(const Crit3DRasterGrid& myGrid,
@@ -573,7 +579,6 @@ namespace gis
             return(true);
         else return(false);
     }
-
 
     void getLatLonFromUtm(const Crit3DGisSettings& gisSettings, double utmX, double utmY, double *myLat, double *myLon)
     {

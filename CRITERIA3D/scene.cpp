@@ -7,6 +7,7 @@
 #include <Qt3DRender/QGeometry>
 #include <Qt3DRender/QAttribute>
 #include <Qt3DRender/QBuffer>
+#include <QAttribute>
 
 
 Qt3DCore::QEntity *createScene(gis::Crit3DRasterGrid *dtm, gis::Crit3DRasterGrid *indexGrid)
@@ -21,8 +22,7 @@ Qt3DCore::QEntity *createScene(gis::Crit3DRasterGrid *dtm, gis::Crit3DRasterGrid
 
     // Vertices
     long index;
-    double x, y;
-    float z;
+    float x, y, z;
     Crit3DColor *myColor;
     for (int row = 0; row < indexGrid->header->nrRows; row++)
     {
@@ -34,7 +34,7 @@ Qt3DCore::QEntity *createScene(gis::Crit3DRasterGrid *dtm, gis::Crit3DRasterGrid
                 z = dtm->value[row][col];
                 if (z != dtm->header->flag)
                 {
-                    gis::getUtmXYFromRowCol(*(dtm->header), row, col, &x, &y);
+                    gis::getUtmXYFromRowColSinglePrecision(*(dtm->header), row, col, &x, &y);
                     myColor = dtm->colorScale->getColor(z);
 
                     rawPosition[index*3] = float(x);
@@ -54,51 +54,80 @@ Qt3DCore::QEntity *createScene(gis::Crit3DRasterGrid *dtm, gis::Crit3DRasterGrid
     Qt3DRender::QBuffer *vertexColorBuffer = new Qt3DRender::QBuffer();
     vertexColorBuffer->setData(vertexColor);
 
-    // Indices
-    QByteArray indexBufferData;
-    indexBufferData.resize(3 * 3 * sizeof(ushort));
-    ushort *indexData = reinterpret_cast<ushort *>(indexBufferData.data());
-
-    // 1
-    indexData[0] = 0;
-    indexData[1] = 1;
-    indexData[2] = 2;
-    // 2
-    indexData[3] = 1;
-    indexData[4] = 3;
-    indexData[5] = 2;
-    // 3
-    indexData[6] = 1;
-    indexData[7] = 4;
-    indexData[8] = 3;
-
-    Qt3DRender::QBuffer *indexDataBuffer = new Qt3DRender::QBuffer();
-    indexDataBuffer->setData(indexBufferData);
-
     // Attributes
     Qt3DRender::QAttribute *positionAttribute = new Qt3DRender::QAttribute();
-    positionAttribute->setAttributeType(Qt3DRender::QAttribute::VertexAttribute);
     positionAttribute->setBuffer(vertexPositionBuffer);
-    positionAttribute->setDataSize(3);
+    positionAttribute->setAttributeType(Qt3DRender::QAttribute::VertexAttribute);
+    positionAttribute->setVertexBaseType(Qt3DRender::QAttribute::VertexBaseType::Float);
+    positionAttribute->setVertexSize(3);
     positionAttribute->setByteOffset(0);
     positionAttribute->setByteStride(3 * sizeof(float));
     positionAttribute->setName(Qt3DRender::QAttribute::defaultPositionAttributeName());
 
     Qt3DRender::QAttribute *colorAttribute = new Qt3DRender::QAttribute();
-    colorAttribute->setAttributeType(Qt3DRender::QAttribute::VertexAttribute);
     colorAttribute->setBuffer(vertexColorBuffer);
-    colorAttribute->setDataSize(3);
+    colorAttribute->setAttributeType(Qt3DRender::QAttribute::VertexAttribute);
+    positionAttribute->setVertexBaseType(Qt3DRender::QAttribute::VertexBaseType::Float);
+    colorAttribute->setVertexSize(3);
     colorAttribute->setByteOffset(0);
     colorAttribute->setByteStride(3 * sizeof(float));
     colorAttribute->setName(Qt3DRender::QAttribute::defaultColorAttributeName());
 
+    // Indices
+    QByteArray indexBufferData;
+    indexBufferData.resize(nrVertex * 2 * 3 * sizeof(ushort));
+    ushort *indexData = reinterpret_cast<ushort *>(indexBufferData.data());
+
+    unsigned int v0, v1, v2, v3;
+    index = 0;
+    for (int row = 0; row < indexGrid->header->nrRows; row++)
+    {
+        for (int col = 0; col < indexGrid->header->nrCols; col++)
+        {
+            v0 = indexGrid->value[row][col];
+            v1 = indexGrid->header->flag;
+            v2 = indexGrid->header->flag;
+            v3 = indexGrid->header->flag;
+            if (v0 != indexGrid->header->flag)
+            {
+                if (row < (indexGrid->header->nrRows-1))
+                    v1 = indexGrid->value[row+1][col];
+                if (row < (indexGrid->header->nrRows-1) && col < (indexGrid->header->nrCols-1))
+                    v2 = indexGrid->value[row+1][col+1];
+                if (col < (indexGrid->header->nrCols-1))
+                    v3 = indexGrid->value[row][col+1];
+
+                if (v1 != indexGrid->header->flag && v2 != indexGrid->header->flag)
+                {
+                    indexData[index*3] = v0;
+                    indexData[index*3+1] = v1;
+                    indexData[index*3+2] = v2;
+                    index++;
+                }
+                if (v2 != indexGrid->header->flag && v3 != indexGrid->header->flag)
+                {
+                    indexData[index*3] = v2;
+                    indexData[index*3+1] = v3;
+                    indexData[index*3+2] = v1;
+                    index++;
+                }
+            }
+        }
+    }
+
+    long nrTriangles = index;
+
+    indexBufferData.resize(nrTriangles * 3 * sizeof(ushort));
+    Qt3DRender::QBuffer *indexBuffer = new Qt3DRender::QBuffer();
+    indexBuffer->setData(indexBufferData);
+
     Qt3DRender::QAttribute *indexAttribute = new Qt3DRender::QAttribute();
     indexAttribute->setAttributeType(Qt3DRender::QAttribute::IndexAttribute);
-    indexAttribute->setBuffer(indexDataBuffer);
-    indexAttribute->setDataType(Qt3DRender::QAttribute::UnsignedShort);
+    indexAttribute->setBuffer(indexBuffer);
+    indexAttribute->setVertexBaseType(Qt3DRender::QAttribute::UnsignedShort);
     indexAttribute->setDataSize(1);
-    //indexAttribute->setByteOffset(0);
-    //indexAttribute->setByteStride(0);
+    indexAttribute->setByteOffset(0);
+    indexAttribute->setByteStride(0);
 
     // Geometry
     Qt3DRender::QGeometry *geometry = new Qt3DRender::QGeometry();
@@ -113,8 +142,7 @@ Qt3DCore::QEntity *createScene(gis::Crit3DRasterGrid *dtm, gis::Crit3DRasterGrid
     geometryRenderer->setInstanceCount(1);
     geometryRenderer->setFirstVertex(0);
     geometryRenderer->setFirstInstance(0);
-    // 3 faces of 3 points
-    geometryRenderer->setVertexCount(9);
+    geometryRenderer->setVertexCount(nrTriangles*3);
 
     // Material
     Qt3DRender::QMaterial *material = new Qt3DExtras::QPerVertexColorMaterial();
