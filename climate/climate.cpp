@@ -224,6 +224,22 @@ bool passingClimateToAnomaly(std::string *myError, Crit3DMeteoPoint* meteoPointT
 
 }
 
+bool passingClimateToAnomalyGrid(std::string *myError, Crit3DMeteoPoint* meteoPointTemp, Crit3DClimate* clima)
+{
+
+    QList<float> valueList;
+    QString table = getTable(clima->climateElab());
+    int index = clima->getParam1ClimateIndex();
+    valueList = readElab(clima->db(), table, myError, QString::fromStdString(meteoPointTemp->id), clima->climateElab());
+    if (index != NODATA && index <= valueList.size())
+    {
+        // MP found
+        return anomalyOnPoint(meteoPointTemp, valueList.at( index - 1 ));
+    }
+    else
+        return false;
+}
+
 bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPointsDbHandler, Crit3DMeteoGridDbHandler* meteoGridDbHandler,
                     Crit3DClimate* clima, Crit3DMeteoPoint* meteoPointTemp, std::vector<float> &outputValues, bool isMeteoGrid, QDate startDate, QDate endDate, bool changeDataSet, Crit3DMeteoSettings* meteoSettings)
 {

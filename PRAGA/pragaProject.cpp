@@ -601,10 +601,19 @@ bool PragaProject::elaborationPointsCycleGrid(bool isAnomaly, bool showInfo)
                 meteoPointTemp->nrObsDataDaysH = 0;
                 meteoPointTemp->nrObsDataDaysD = 0;
 
-
-                if  ( elaborationOnPoint(&errorString, NULL, meteoGridDbHandler, meteoPointTemp, climaUsed, isMeteoGrid, startDate, endDate, isAnomaly, meteoSettings))
+                if (isAnomaly && climaUsed->getIsClimateAnomalyFromDb())
                 {
-                    validCell = validCell + 1;
+                    if ( passingClimateToAnomalyGrid(&errorString, meteoPointTemp, climaUsed))
+                    {
+                        validCell = validCell + 1;
+                    }
+                }
+                else
+                {
+                    if  ( elaborationOnPoint(&errorString, NULL, meteoGridDbHandler, meteoPointTemp, climaUsed, isMeteoGrid, startDate, endDate, isAnomaly, meteoSettings))
+                    {
+                        validCell = validCell + 1;
+                    }
                 }
 
                 // save result to MP
