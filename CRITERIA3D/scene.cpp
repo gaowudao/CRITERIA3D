@@ -75,10 +75,10 @@ Qt3DCore::QEntity *createScene(gis::Crit3DRasterGrid *dtm, gis::Crit3DRasterGrid
 
     // Indices
     QByteArray indexBufferData;
-    indexBufferData.resize(nrVertex * 2 * 3 * sizeof(ushort));
-    ushort *indexData = reinterpret_cast<ushort *>(indexBufferData.data());
+    indexBufferData.resize(nrVertex * 2 * 3 * sizeof(uint));
+    uint *indexData = reinterpret_cast<uint *>(indexBufferData.data());
 
-    unsigned int v0, v1, v2, v3;
+    long v0, v1, v2, v3;
     index = 0;
     for (int row = 0; row < indexGrid->header->nrRows; row++)
     {
@@ -99,16 +99,16 @@ Qt3DCore::QEntity *createScene(gis::Crit3DRasterGrid *dtm, gis::Crit3DRasterGrid
 
                 if (v1 != indexGrid->header->flag && v2 != indexGrid->header->flag)
                 {
-                    indexData[index*3] = v0;
-                    indexData[index*3+1] = v1;
-                    indexData[index*3+2] = v2;
+                    indexData[index*3] = uint(v0);
+                    indexData[index*3+1] = uint(v1);
+                    indexData[index*3+2] = uint(v2);
                     index++;
                 }
                 if (v2 != indexGrid->header->flag && v3 != indexGrid->header->flag)
                 {
-                    indexData[index*3] = v2;
-                    indexData[index*3+1] = v3;
-                    indexData[index*3+2] = v1;
+                    indexData[index*3] = uint(v2);
+                    indexData[index*3+1] = uint(v3);
+                    indexData[index*3+2] = uint(v1);
                     index++;
                 }
             }
@@ -116,18 +116,17 @@ Qt3DCore::QEntity *createScene(gis::Crit3DRasterGrid *dtm, gis::Crit3DRasterGrid
     }
 
     long nrTriangles = index;
-
-    indexBufferData.resize(nrTriangles * 3 * sizeof(ushort));
+    //indexBufferData.resize(nrTriangles * 3 * sizeof(ushort));
     Qt3DRender::QBuffer *indexBuffer = new Qt3DRender::QBuffer();
     indexBuffer->setData(indexBufferData);
 
     Qt3DRender::QAttribute *indexAttribute = new Qt3DRender::QAttribute();
     indexAttribute->setAttributeType(Qt3DRender::QAttribute::IndexAttribute);
+    indexAttribute->setVertexBaseType(Qt3DRender::QAttribute::UnsignedInt);
     indexAttribute->setBuffer(indexBuffer);
-    indexAttribute->setVertexBaseType(Qt3DRender::QAttribute::UnsignedShort);
-    indexAttribute->setDataSize(1);
-    indexAttribute->setByteOffset(0);
-    indexAttribute->setByteStride(0);
+    //indexAttribute->setDataSize(1);
+    //indexAttribute->setByteOffset(0);
+    //indexAttribute->setByteStride(0);
 
     // Geometry
     Qt3DRender::QGeometry *geometry = new Qt3DRender::QGeometry();
