@@ -849,7 +849,9 @@ namespace gis
         double reciprocalCellSize;
         double dz_dx, dz_dy;
         double slope, aspect;
-        double z, zNorth, zSouth, zEast, zWest;
+        double z, dz;
+        double zNorth, zSouth, zEast, zWest;
+        int i, nr;
 
         slopeMap->initializeGrid(dtm);
         aspectMap->initializeGrid(dtm);
@@ -862,6 +864,7 @@ namespace gis
                 z = dtm.value[myRow][myCol];
                 if (z != dtm.header->flag)
                 {
+                    /* OLD METHOD
                     zNorth = dtm.getValueFromRowCol(myRow-1, myCol);
                     zSouth = dtm.getValueFromRowCol(myRow+1, myCol);
 
@@ -884,7 +887,53 @@ namespace gis
                     else if (zEast != dtm.header->flag)
                         dz_dx = (z - zEast) * reciprocalCellSize;
                     else
+                        dz_dx = EPSILON;*/
+
+                    /*! compute dz/dy */
+                    nr = 0;
+                    dz = 0;
+                    for (i=-1; i <=1; i++)
+                    {
+                        zNorth = dtm.getValueFromRowCol(myRow-1, myCol+i);
+                        zSouth = dtm.getValueFromRowCol(myRow+1, myCol+i);
+                        if (zNorth != dtm.header->flag)
+                        {
+                            dz += zNorth - z;
+                            nr++;
+                        }
+                        if (zSouth != dtm.header->flag)
+                        {
+                            dz += z - zSouth;
+                            nr++;
+                        }
+                    }
+                    if (nr == 0)
+                        dz_dy = EPSILON;
+                    else
+                        dz_dy = dz / (nr * dtm.header->cellSize);
+
+                    /*! compute dz/dx */
+                    nr = 0;
+                    dz = 0;
+                    for (i=-1; i <=1; i++)
+                    {
+                        zWest = dtm.getValueFromRowCol(myRow+i, myCol-1);
+                        zEast = dtm.getValueFromRowCol(myRow+i, myCol+1);
+                        if (zWest != dtm.header->flag)
+                        {
+                            dz += zWest - z;
+                            nr++;
+                        }
+                        if (zEast != dtm.header->flag)
+                        {
+                            dz += z - zEast;
+                            nr++;
+                        }
+                    }
+                    if (nr == 0)
                         dz_dx = EPSILON;
+                    else
+                        dz_dx = dz / (nr * dtm.header->cellSize);
 
                     /*! slope in degrees */
                     slope = atan(sqrt(dz_dx * dz_dx + dz_dy * dz_dy)) * RAD_TO_DEG;
