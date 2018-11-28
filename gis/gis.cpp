@@ -848,7 +848,7 @@ namespace gis
 
         double reciprocalCellSize;
         double dz_dx, dz_dy;
-        double mySlope, myAspect;
+        double slope, aspect;
         double z, zNorth, zSouth, zEast, zWest;
 
         slopeMap->initializeGrid(dtm);
@@ -887,24 +887,24 @@ namespace gis
                         dz_dx = EPSILON;
 
                     /*! slope in degrees */
-                    mySlope = atan(sqrt(dz_dx * dz_dx + dz_dy * dz_dy)) * RAD_TO_DEG;
-                    slopeMap->value[myRow][myCol] = (float)mySlope;
+                    slope = atan(sqrt(dz_dx * dz_dx + dz_dy * dz_dy)) * RAD_TO_DEG;
+                    slopeMap->value[myRow][myCol] = float(slope);
 
                     /*! avoid arctan to infinite */
                     if (dz_dx == 0.) dz_dx = EPSILON;
 
                     /*! compute with zero to east */
-                    myAspect = 0.0;
+                    aspect = 0.0;
                     if (dz_dx > 0)
-                        myAspect = atan(dz_dy / dz_dx);
+                        aspect = atan(dz_dy / dz_dx);
                     else if (dz_dx < 0)
-                        myAspect = PI + atan(dz_dy / dz_dx);
+                        aspect = PI + atan(dz_dy / dz_dx);
 
                     /*! convert to zero from north and to degrees */
-                    myAspect += (PI / 2.);
-                    myAspect *= RAD_TO_DEG;
+                    aspect += (PI / 2.);
+                    aspect *= RAD_TO_DEG;
 
-                    aspectMap->value[myRow][myCol] = (float)myAspect;
+                    aspectMap->value[myRow][myCol] = float(aspect);
 
                 }
             }
