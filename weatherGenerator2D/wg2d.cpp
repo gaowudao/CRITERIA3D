@@ -597,21 +597,26 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
         {
             for (int j=0;j<nrStations;j++) // avoid solutions with correlation coefficient greater than 1
             {
-                M[i][j] = min_value(M[i][j],1);
+                M[i][j] = minValue(M[i][j],1);
                 correlationArray[counter] = M[i][j];
                 counter++;
-                //printf("%f ",M[i][j]);
             }
-            //printf("\n");
         }
-        //printf("inizio sub\n");
+        for (int i=0;i<nrStations;i++)
+        {
+            for (int j=0;j<nrStations;j++)
+            {
+                //printf("%f  ",M[i][j]);
+            }
+            printf("\n");
+        }
         eigenproblem::rs(nrStations,correlationArray,eigenvalues,true,eigenvectors);
         for (int i=0;i<nrStations;i++)
         {
             if (eigenvalues[i] <= 0)
             {
                 nrEigenvaluesLessThan0++;
-                eigenvalues[i] = 0.000001;
+                eigenvalues[i] = EPSILON;
             }
         }
         if (nrEigenvaluesLessThan0 > 0)
@@ -631,11 +636,9 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
         // the matrix called M is the final matrix exiting from the calculation
         for (int i=0;i<nrStations;i++)
             for (int j=0;j<nrStations;j++) dummyMatrix[i][j] = M[i][j];
-
-        matricial::choleskyDecompositionTriangularMatrix(dummyMatrix,nrStations,true);
-        //printf("Cholesky\n");
+        bool isLowerDiagonal = true;
+        matricial::choleskyDecompositionTriangularMatrix(dummyMatrix,nrStations,isLowerDiagonal);
         matricial::matrixProduct(dummyMatrix,normalizedMatrixRandom,nrStations,nrStations,lengthSeries,nrStations,dummyMatrix3);
-        //printf("prodottoMatriciale\n");
         for (int i=0;i<nrStations;i++)
         {
             // compute mean and standard deviation without NODATA check
@@ -655,7 +658,6 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
             }
         }
         // initialize occurrence to 0
-
         for (int i=0;i<nrStations;i++)
         {
             for (int j=0;j<lengthSeries;j++)
@@ -682,11 +684,9 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
         {
             for (int j=0;j<nrStations;j++)
             {
-                val = max_value(val,fabs(K[i][j] - matrixOccurrence[i][j]));
+                val = maxValue(val,fabs(K[i][j] - matrixOccurrence[i][j]));
             }
         }
-        //printf("%f \n",val);
-        //getchar();
         if ((ii != MAX_ITERATION_MULGETS) && (val > TOLERANCE_MULGETS))
         {
             for (int i=0; i<nrStations;i++)
@@ -740,8 +740,8 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
     {
         for (int j=0;j<nrData;j++)
         {
-            beginYear = min_value(beginYear,obsDataD[i][j].date.year);
-            endYear =  max_value(endYear,obsDataD[i][j].date.year);
+            beginYear = minValue(beginYear,obsDataD[i][j].date.year);
+            endYear =  maxValue(endYear,obsDataD[i][j].date.year);
         }
     }
     // create the seasonal correlation matrices
@@ -1025,7 +1025,7 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
             if (obsPrecDataD[ijk][j].date.month == 9 || obsPrecDataD[ijk][j].date.month == 10 || obsPrecDataD[ijk][j].date.month == 11)
                 numberObservedSON++;
         }
-        numberObservedMax = max_value(numberObservedDJF,max_value(numberObservedMAM,max_value(numberObservedJJA,numberObservedSON)));
+        numberObservedMax = maxValue(numberObservedDJF,maxValue(numberObservedMAM,maxValue(numberObservedJJA,numberObservedSON)));
 
         moran[ijk] = (double**)calloc(4, sizeof(double*));
         rainfallLessThreshold[ijk] = (double**)calloc(4, sizeof(double*));
@@ -2040,7 +2040,7 @@ void weatherGenerator2D::spatialIterationAmounts(double ** amountsCorrelationMat
         {
             for (int j=0;j<nrStations;j++) // avoid solutions with correlation coefficient greater than 1
             {
-                amountsCorrelationMatrix[i][j] = min_value(amountsCorrelationMatrix[i][j],1);
+                amountsCorrelationMatrix[i][j] = minValue(amountsCorrelationMatrix[i][j],1);
                 correlationArray[counter] = amountsCorrelationMatrix[i][j];
                 counter++;
                 //printf("%f ",M[i][j]);
