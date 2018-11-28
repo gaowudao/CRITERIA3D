@@ -2419,19 +2419,27 @@
    </widget>
    <widget class="QMenu" name="menuCriteria3D">
     <property name="title">
-     <string>Criteria3D</string>
+     <string>Model</string>
     </property>
-    <addaction name="separator"/>
-    <addaction name="actionCriteria3D_Initialize"/>
     <addaction name="actionCriteria3D_settings"/>
     <addaction name="separator"/>
-    <addaction name="actionShow_3D"/>
-    <addaction name="actionShow_DTM"/>
-    <addaction name="actionShow_boundary"/>
-    <addaction name="actionShow_soil"/>
+    <addaction name="actionCriteria3D_Initialize"/>
+   </widget>
+   <widget class="QMenu" name="menuShow">
+    <property name="title">
+     <string>Show</string>
+    </property>
+    <addaction name="actionView_3D"/>
     <addaction name="separator"/>
+    <addaction name="actionView_DTM"/>
+    <addaction name="actionView_Slope"/>
+    <addaction name="actionView_Aspect"/>
+    <addaction name="separator"/>
+    <addaction name="actionView_Soil"/>
+    <addaction name="actionView_Boundary"/>
    </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuShow"/>
    <addaction name="menuVariable"/>
    <addaction name="menuCriteria3D"/>
    <addaction name="menuGIS_settings"/>
@@ -2570,19 +2578,19 @@
     <string>Initialize</string>
    </property>
   </action>
-  <action name="actionShow_boundary">
+  <action name="actionView_Boundary">
    <property name="text">
-    <string>Show boundary</string>
+    <string>Boundary</string>
    </property>
   </action>
-  <action name="actionShow_soil">
+  <action name="actionView_Soil">
    <property name="text">
-    <string>Show soil map</string>
+    <string>Soil map</string>
    </property>
   </action>
-  <action name="actionShow_DTM">
+  <action name="actionView_DTM">
    <property name="text">
-    <string>Show DEM</string>
+    <string>DEM</string>
    </property>
   </action>
   <action name="actionInterpolationSettings">
@@ -2601,9 +2609,19 @@
     <string>Parameters</string>
    </property>
   </action>
-  <action name="actionShow_3D">
+  <action name="actionView_3D">
    <property name="text">
-    <string>Show 3D</string>
+    <string>3D</string>
+   </property>
+  </action>
+  <action name="actionView_Slope">
+   <property name="text">
+    <string>Slope</string>
+   </property>
+  </action>
+  <action name="actionView_Aspect">
+   <property name="text">
+    <string>Aspect</string>
    </property>
   </action>
  </widget>

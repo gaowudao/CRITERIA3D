@@ -28,6 +28,7 @@
 #include "commonConstants.h"
 #include "sunPosition.h"
 #include "solarRadiation.h"
+#include "gis.h"
 #include <cmath>
 
 

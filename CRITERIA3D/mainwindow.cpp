@@ -906,38 +906,6 @@ void MainWindow::on_actionOpen_soil_data_triggered()
     myProject.loadSoilData(fileName);
 }
 
-void MainWindow::on_actionShow_DTM_triggered()
-{
-    if (myProject.DTM.isLoaded)
-    {
-        setColorScale(noMeteoTerrain, myProject.DTM.colorScale);
-        this->setCurrentRaster(&(myProject.DTM));
-    }
-}
-
-void MainWindow::on_actionShow_boundary_triggered()
-{
-    if (myProject.boundaryMap.isLoaded)
-    {
-        setColorScale(noMeteoTerrain, myProject.boundaryMap.colorScale);
-        this->setCurrentRaster(&(myProject.boundaryMap));
-    }
-}
-
-void MainWindow::on_actionShow_soil_triggered()
-{
-    if (myProject.soilMap.isLoaded)
-    {
-        setColorScale(noMeteoTerrain, myProject.soilMap.colorScale);
-        this->setCurrentRaster(&(myProject.soilMap));
-    }
-}
-
-void MainWindow::on_actionCriteria3D_settings_triggered()
-{
-
-}
-
 
 void mouseManager(Qt3DExtras::Qt3DWindow *view3D, QMouseEvent *e)
 {
@@ -959,11 +927,12 @@ void MainWindow::on_actionCriteria3D_Initialize_triggered()
 }
 
 
-void MainWindow::on_actionShow_3D_triggered()
+
+void MainWindow::on_actionView_3D_triggered()
 {
     if (! myProject.DTM.isLoaded)
     {
-        myProject.logError("Missing DTM.");
+        myProject.logError("Load DTM");
         return;
     }
 
@@ -1006,4 +975,79 @@ void MainWindow::on_actionShow_3D_triggered()
     camController->setCamera(camera);
 
     view3D->show();
+}
+
+
+void MainWindow::on_actionView_DTM_triggered()
+{
+    if (myProject.DTM.isLoaded)
+    {
+        setColorScale(noMeteoTerrain, myProject.DTM.colorScale);
+        this->setCurrentRaster(&(myProject.DTM));
+    }
+    else
+    {
+        myProject.logError("Load DTM");
+        return;
+    }
+}
+
+
+void MainWindow::on_actionView_Soil_triggered()
+{
+    if (myProject.soilMap.isLoaded)
+    {
+        setColorScale(noMeteoTerrain, myProject.soilMap.colorScale);
+        this->setCurrentRaster(&(myProject.soilMap));
+    }
+    else
+    {
+        myProject.logError("Load Soil map");
+        return;
+    }
+}
+
+
+void MainWindow::on_actionView_Boundary_triggered()
+{
+    if (myProject.boundaryMap.isLoaded)
+    {
+        setColorScale(noMeteoTerrain, myProject.boundaryMap.colorScale);
+        this->setCurrentRaster(&(myProject.boundaryMap));
+    }
+    else
+    {
+        myProject.logError("Initialize model before.");
+        return;
+    }
+}
+
+
+void MainWindow::on_actionView_Slope_triggered()
+{
+    if (myProject.DTM.isLoaded)
+    {
+        setColorScale(noMeteoTerrain, myProject.radiationMaps->slopeMap->colorScale);
+        this->setCurrentRaster(myProject.radiationMaps->slopeMap);
+    }
+    else
+    {
+        myProject.logError("Load DTM");
+        return;
+    }
+}
+
+
+void MainWindow::on_actionView_Aspect_triggered()
+{
+    if (myProject.DTM.isLoaded)
+    {
+        setColorScale(airTemperature, myProject.radiationMaps->aspectMap->colorScale);
+        this->setCurrentRaster(myProject.radiationMaps->aspectMap);
+    }
+    else
+    {
+        myProject.logError("Load DTM");
+        return;
+    }
 }
