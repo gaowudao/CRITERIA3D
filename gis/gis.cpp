@@ -954,7 +954,6 @@ namespace gis
                     aspect *= RAD_TO_DEG;
 
                     aspectMap->value[myRow][myCol] = float(aspect);
-
                 }
             }
 
