@@ -62,6 +62,8 @@
         QStringList listClimateElab() const;
         void setListClimateElab(const QStringList &listClimateElab);
 
+        void resetListClimateElab();
+
         std::vector<int> listYearStart() const;
         void setListYearStart(const std::vector<int> &listYearStart);
 

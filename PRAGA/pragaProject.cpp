@@ -660,6 +660,7 @@ bool PragaProject::climatePointsCycle(bool showInfo)
     bool changeDataSet = true;
 
     errorString.clear();
+    clima->resetCurrentValues();
 
     if (showInfo)
     {
@@ -782,6 +783,7 @@ bool PragaProject::climatePointsCycleGrid(bool showInfo)
     bool changeDataSet = true;
 
     errorString.clear();
+    clima->resetCurrentValues();
 
     if (showInfo)
     {

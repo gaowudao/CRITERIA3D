@@ -1282,6 +1282,7 @@ void MainWindow::on_actionCompute_climate_triggered()
 
     if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
+        myProject.clima->resetListElab();
         ComputationDialog compDialog(myProject.settings, isAnomaly, saveClima);
         if (compDialog.result() != QDialog::Accepted)
             return;

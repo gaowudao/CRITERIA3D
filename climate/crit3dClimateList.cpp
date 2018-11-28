@@ -25,6 +25,11 @@ void Crit3DClimateList::setListClimateElab(const QStringList &listClimateElab)
     _listClimateElab = listClimateElab;
 }
 
+void Crit3DClimateList::resetListClimateElab()
+{
+    _listClimateElab.clear();
+}
+
 std::vector<int> Crit3DClimateList::listYearStart() const
 {
     return _listYearStart;
