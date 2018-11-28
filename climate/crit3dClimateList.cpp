@@ -314,6 +314,12 @@ void Crit3DClimateList::parserElaboration()
                 param = words[pos].toFloat();
             }
         }
+        else
+        {
+            param1IsClimate = false;
+            param1ClimateField = "";
+            param =  NODATA;
+        }
 
         pos = pos + 1;
         QString elab1;
