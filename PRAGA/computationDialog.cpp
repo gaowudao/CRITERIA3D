@@ -1072,6 +1072,10 @@ void ComputationDialog::copyDataToSaveLayout()
     {
         saveClimaLayout.setElab1ParamFromdB(climateDbElabList.currentText());
     }
+    else
+    {
+        saveClimaLayout.setElab1ParamFromdB("");
+    }
 
     saveClimaLayout.addElab();
 

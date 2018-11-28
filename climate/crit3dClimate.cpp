@@ -58,6 +58,15 @@ void Crit3DClimate::resetParam()
 
 }
 
+void Crit3DClimate::resetCurrentValues()
+{
+    _currentVar = noMeteoVar;
+    _currentElab1 = "";
+    _currentYearStart = NODATA;
+    _currentYearEnd = NODATA;
+    _currentPeriodType = noPeriodType;
+}
+
 void Crit3DClimate::copyParam(Crit3DClimate* clima)
 {
     _db = clima->db();
@@ -298,6 +307,11 @@ void Crit3DClimate::setCurrentPeriodType(const period &currentPeriodType)
 Crit3DClimateList *Crit3DClimate::getListElab() const
 {
     return listElab;
+}
+
+void Crit3DClimate::resetListElab()
+{
+    listElab->resetListClimateElab();
 }
 
 void Crit3DClimate::setListElab(Crit3DClimateList *value)
