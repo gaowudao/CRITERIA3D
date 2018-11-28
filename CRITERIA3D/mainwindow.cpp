@@ -932,7 +932,7 @@ void MainWindow::on_actionView_3D_triggered()
 {
     if (! myProject.DTM.isLoaded)
     {
-        myProject.logError("Load DTM");
+        myProject.logError("Load DTM before.");
         return;
     }
 
@@ -987,7 +987,7 @@ void MainWindow::on_actionView_DTM_triggered()
     }
     else
     {
-        myProject.logError("Load DTM");
+        myProject.logError("Load DTM before.");
         return;
     }
 }
@@ -1002,7 +1002,7 @@ void MainWindow::on_actionView_Soil_triggered()
     }
     else
     {
-        myProject.logError("Load Soil map");
+        myProject.logError("Load soil map before.");
         return;
     }
 }
@@ -1032,7 +1032,7 @@ void MainWindow::on_actionView_Slope_triggered()
     }
     else
     {
-        myProject.logError("Load DTM");
+        myProject.logError("Load DTM before.");
         return;
     }
 }
@@ -1047,7 +1047,7 @@ void MainWindow::on_actionView_Aspect_triggered()
     }
     else
     {
-        myProject.logError("Load DTM");
+        myProject.logError("Load DTM before.");
         return;
     }
 }
