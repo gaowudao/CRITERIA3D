@@ -1319,12 +1319,18 @@ void MainWindow::on_actionClimate_fields_triggered()
     if (myProject.showClimateFields(isMeteoGrid, &climateDbElab, &climateDbVarList))
     {
         ClimateFieldsDialog climateDialog(climateDbElab, climateDbVarList);
-        QString climaSelected = climateDialog.getSelected();
-        meteoVariable variable = climateDialog.getVar();
+        if (climateDialog.result() == QDialog::Accepted)
+        {
+            QString climaSelected = climateDialog.getSelected();
+            meteoVariable variable = climateDialog.getVar();
 
-        myProject.saveClimateResult(isMeteoGrid, climaSelected);
-        showClimateResult(true, isMeteoGrid, variable);
-
+            myProject.saveClimateResult(isMeteoGrid, climaSelected);
+            showClimateResult(true, isMeteoGrid, variable);
+        }
+        else
+        {
+            return;
+        }
 
     }
     return;
