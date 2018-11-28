@@ -28,6 +28,20 @@ void Crit3DClimateList::setListClimateElab(const QStringList &listClimateElab)
 void Crit3DClimateList::resetListClimateElab()
 {
     _listClimateElab.clear();
+    _listElab1.clear();
+    _listElab2.clear();
+    _listGenericPeriodDateStart.clear();
+    _listGenericPeriodDateEnd.clear();
+    _listNYears.clear();
+    _listParam1.clear();
+    _listParam1ClimateField.clear();
+    _listParam1IsClimate.clear();
+    _listParam2.clear();
+    _listPeriodStr.clear();
+    _listPeriodType.clear();
+    _listVariable.clear();
+    _listYearEnd.clear();
+    _listYearStart.clear();
 }
 
 std::vector<int> Crit3DClimateList::listYearStart() const
