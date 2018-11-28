@@ -132,9 +132,9 @@ bool setDefaultDTMScale(Crit3DColorScale* myScale)
     myScale->color = new Crit3DColor[myScale->nrColors];
     myScale->classification = classificationMethod::EqualInterval;
 
-    myScale->keyColor[0] = Crit3DColor(32, 128, 32);        /*!<  green */
+    myScale->keyColor[0] = Crit3DColor(32, 160, 32);        /*!<  green */
     myScale->keyColor[1] = Crit3DColor(255, 255, 0);        /*!<  yellow */
-    myScale->keyColor[2] = Crit3DColor(128, 64, 0);         /*!<  red */
+    myScale->keyColor[2] = Crit3DColor(160, 64, 0);         /*!<  red */
     myScale->keyColor[3] = Crit3DColor(255, 255, 255);      /*!<  gray */
 
     return(myScale->classify());
