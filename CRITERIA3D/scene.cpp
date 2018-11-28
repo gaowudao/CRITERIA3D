@@ -60,7 +60,6 @@ Qt3DCore::QEntity *createScene(gis::Crit3DRasterGrid *dtm, gis::Crit3DRasterGrid
     positionAttribute->setVertexBaseType(Qt3DRender::QAttribute::VertexBaseType::Float);
     positionAttribute->setBuffer(vertexPositionBuffer);
     positionAttribute->setVertexSize(3);
-    //positionAttribute->setByteStride(3 * sizeof(float));
     positionAttribute->setName(Qt3DRender::QAttribute::defaultPositionAttributeName());
 
     Qt3DRender::QAttribute *colorAttribute = new Qt3DRender::QAttribute();
@@ -68,7 +67,6 @@ Qt3DCore::QEntity *createScene(gis::Crit3DRasterGrid *dtm, gis::Crit3DRasterGrid
     positionAttribute->setVertexBaseType(Qt3DRender::QAttribute::VertexBaseType::Float);
     colorAttribute->setBuffer(vertexColorBuffer);
     colorAttribute->setVertexSize(3);
-    //colorAttribute->setByteStride(3 * sizeof(float));
     colorAttribute->setName(Qt3DRender::QAttribute::defaultColorAttributeName());
 
     // Indices

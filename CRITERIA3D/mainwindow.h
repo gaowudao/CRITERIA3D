@@ -76,6 +76,8 @@
 
         void on_actionView_Aspect_triggered();
 
+        void on_actionView_Variable_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

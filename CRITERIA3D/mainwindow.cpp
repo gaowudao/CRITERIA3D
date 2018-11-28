@@ -942,7 +942,7 @@ void MainWindow::on_actionView_3D_triggered()
     // 3d Window
     Qt3DExtras::Qt3DWindow *view3D = new Qt3DExtras::Qt3DWindow();
     view3D->defaultFrameGraph()->setClearColor(QColor::fromRgbF(1, 1, 1, 1.0));
-    view3D->setTitle("CRITERIA-3D");
+    view3D->setTitle("3D");
     view3D->setWidth(1000);
     view3D->setHeight(600);
 
@@ -984,6 +984,7 @@ void MainWindow::on_actionView_DTM_triggered()
     {
         setColorScale(noMeteoTerrain, myProject.DTM.colorScale);
         this->setCurrentRaster(&(myProject.DTM));
+        ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
     }
     else
     {
@@ -999,6 +1000,7 @@ void MainWindow::on_actionView_Soil_triggered()
     {
         setColorScale(noMeteoTerrain, myProject.soilMap.colorScale);
         this->setCurrentRaster(&(myProject.soilMap));
+        ui->labelRasterScale->setText("Soil map");
     }
     else
     {
@@ -1014,6 +1016,7 @@ void MainWindow::on_actionView_Boundary_triggered()
     {
         setColorScale(noMeteoTerrain, myProject.boundaryMap.colorScale);
         this->setCurrentRaster(&(myProject.boundaryMap));
+        ui->labelRasterScale->setText("Boundary map");
     }
     else
     {
@@ -1029,6 +1032,7 @@ void MainWindow::on_actionView_Slope_triggered()
     {
         setColorScale(noMeteoTerrain, myProject.radiationMaps->slopeMap->colorScale);
         this->setCurrentRaster(myProject.radiationMaps->slopeMap);
+        ui->labelRasterScale->setText("Slope °");
     }
     else
     {
@@ -1044,10 +1048,25 @@ void MainWindow::on_actionView_Aspect_triggered()
     {
         setColorScale(airTemperature, myProject.radiationMaps->aspectMap->colorScale);
         this->setCurrentRaster(myProject.radiationMaps->aspectMap);
+        ui->labelRasterScale->setText("Aspect °");
     }
     else
     {
         myProject.logError("Load DTM before.");
+        return;
+    }
+}
+
+void MainWindow::on_actionView_Variable_triggered()
+{
+    if (myProject.dataRaster.isLoaded)
+    {
+        this->setCurrentRaster(&(myProject.dataRaster));
+        ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myProject.getCurrentVariable())));
+    }
+    else
+    {
+        myProject.logError("Compute a variable before.");
         return;
     }
 }
