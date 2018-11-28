@@ -4,6 +4,6 @@
     #include <Qt3DCore/QEntity>
     #include "gis.h"
 
-    Qt3DCore::QEntity *createScene(gis::Crit3DRasterGrid *dtm, gis::Crit3DRasterGrid *indexGrid);
+    Qt3DCore::QEntity *createScene(gis::Crit3DRasterGrid *dtm, gis::Crit3DRasterGrid *indexGrid, float magnify);
 
 #endif // SCENE_H

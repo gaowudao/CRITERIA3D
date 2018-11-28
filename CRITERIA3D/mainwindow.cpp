@@ -977,13 +977,9 @@ void MainWindow::on_actionShow_3D_triggered()
     view3D->setWidth(1000);
     view3D->setHeight(600);
 
-    // Scene
-    Qt3DCore::QEntity *scene = createScene(&(myProject.DTM), &(myProject.indexMap));
-    view3D->setRootEntity(scene);
-
     // Camera
     Qt3DRender::QCamera *camera = view3D->camera();
-    camera->lens()->setPerspectiveProjection(60.0f, 16.0f/9.0f, 1.f, 1000000.0f);
+    camera->lens()->setPerspectiveProjection(45.0f, 16.0f/9.0f, 1.f, 1000000.0f);
     camera->setUpVector(QVector3D(0, 0, 1));
 
     gis::Crit3DUtmPoint utmCenter;
@@ -995,10 +991,15 @@ void MainWindow::on_actionShow_3D_triggered()
     utmCenter.x = myProject.DTM.header->llCorner->x + dx * 0.5;
     utmCenter.y = myProject.DTM.header->llCorner->y + dy * 0.5;
     float size = sqrt(dx*dy);
-    float ratio = minValue(size/dz, 100);
+    float ratio = size / dz;
+    float magnify = maxValue(1., minValue(10.f, ratio / 5.f));
 
-    camera->setPosition(QVector3D(utmCenter.x, utmCenter.y - size, z + dz*ratio));
-    camera->setViewCenter(QVector3D(utmCenter.x, utmCenter.y, z));
+    camera->setPosition(QVector3D(utmCenter.x, utmCenter.y - size, z*magnify + dz*2*magnify));
+    camera->setViewCenter(QVector3D(utmCenter.x, utmCenter.y, z*magnify));
+
+    // Scene
+    Qt3DCore::QEntity *scene = createScene(&(myProject.DTM), &(myProject.indexMap), magnify);
+    view3D->setRootEntity(scene);
 
     // Camera controls
     Qt3DExtras::QFirstPersonCameraController *camController = new Qt3DExtras::QFirstPersonCameraController(scene);

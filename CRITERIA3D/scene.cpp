@@ -10,7 +10,7 @@
 #include <QAttribute>
 
 
-Qt3DCore::QEntity *createScene(gis::Crit3DRasterGrid *dtm, gis::Crit3DRasterGrid *indexGrid)
+Qt3DCore::QEntity *createScene(gis::Crit3DRasterGrid *dtm, gis::Crit3DRasterGrid *indexGrid, float magnify)
 {
     int nrVertex = indexGrid->maximum+1;
     QByteArray vertexPosition, vertexColor;
@@ -37,9 +37,9 @@ Qt3DCore::QEntity *createScene(gis::Crit3DRasterGrid *dtm, gis::Crit3DRasterGrid
                     gis::getUtmXYFromRowColSinglePrecision(*(dtm->header), row, col, &x, &y);
                     myColor = dtm->colorScale->getColor(z);
 
-                    rawPosition[index*3] = float(x);
-                    rawPosition[index*3+1] = float(y);
-                    rawPosition[index*3+2] = z;
+                    rawPosition[index*3] = x;
+                    rawPosition[index*3+1] = y;
+                    rawPosition[index*3+2] = z  *magnify;
 
                     rawColor[index*3] = float(myColor->red) / 256.f;
                     rawColor[index*3+1] = float(myColor->green) / 256.f;
