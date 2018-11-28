@@ -957,7 +957,7 @@ bool MainWindow::loadMeteoPointsDB(QString dbName)
 
     if (myProject.meteoGridDbHandler == NULL)
     {
-        myProject.loadlastMeteoData();
+        myProject.loadLastMeteoData();
         this->updateDateTime();
     }
     else

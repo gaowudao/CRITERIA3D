@@ -37,6 +37,7 @@ Crit3DProject::Crit3DProject()
 {
     meteoSettings = new Crit3DMeteoSettings();
     isParametersLoaded = false;
+    isInitialized = false;
     nrSoils = 0;
     nrLayers = 0;
     nrVoxelsPerLayer = 0;
@@ -311,6 +312,7 @@ void Crit3DProject::cleanProject()
     delete meteoMaps;
 
     cleanWaterBalanceMemory();
+    isInitialized = false;
 }
 
 
@@ -319,17 +321,17 @@ bool Crit3DProject::initializeCriteria3D()
     cleanProject();
 
     // check
-    if (!DTM.isLoaded)
+    if (! this->DTM.isLoaded)
     {
         logError("Missing DTM.");
         return false;
     }
-    else if (!soilMap.isLoaded)
+    else if (! this->soilMap.isLoaded)
     {
         logError("Missing soil map.");
         return false;
     }
-    else if (soilList.size() == 0)
+    else if (this->soilList.size() == 0)
     {
         logError("Missing soil properties.");
         return false;
@@ -338,7 +340,7 @@ bool Crit3DProject::initializeCriteria3D()
     if (!createSoilIndexMap())
         return false;
 
-    meteoMaps = new Crit3DMeteoMaps(DTM);
+    this->meteoMaps = new Crit3DMeteoMaps(this->DTM);
 
     // loadCropProperties()
     // load crop map
@@ -364,6 +366,7 @@ bool Crit3DProject::initializeCriteria3D()
 
     log("Criteria3D Project initialized");
 
-    return(true);
+    this->isInitialized = true;
+    return true;
 }
 

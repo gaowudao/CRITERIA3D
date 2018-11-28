@@ -660,7 +660,7 @@ bool MainWindow::loadMeteoPointsDB(QString dbName)
 
     if (myProject.meteoGridDbHandler == NULL)
     {
-        myProject.loadlastMeteoData();
+        myProject.loadLastMeteoData();
         this->updateDateTime();
     }
     else
@@ -954,23 +954,28 @@ void mouseManager(Qt3DExtras::Qt3DWindow *view3D, QMouseEvent *e)
 
 void MainWindow::on_actionCriteria3D_Initialize_triggered()
 {
+    if (myProject.initializeCriteria3D())
+        QMessageBox::information(NULL, "", "Criteria3D initialized.");
+}
+
+
+void MainWindow::on_actionShow_3D_triggered()
+{
     if (! myProject.DTM.isLoaded)
     {
         myProject.logError("Missing DTM.");
         return;
     }
 
-    if (myProject.initializeCriteria3D())
-        QMessageBox::information(NULL, "", "Criteria3D initialized.");
-
-    myProject.createIndexMap();
+    if (! myProject.isInitialized)
+        myProject.createIndexMap();
 
     // 3d Window
     Qt3DExtras::Qt3DWindow *view3D = new Qt3DExtras::Qt3DWindow();
     view3D->defaultFrameGraph()->setClearColor(QColor::fromRgbF(1, 1, 1, 1.0));
     view3D->setTitle("CRITERIA-3D");
-    view3D->setWidth(800);
-    view3D->setHeight(800);
+    view3D->setWidth(1000);
+    view3D->setHeight(600);
 
     // Scene
     Qt3DCore::QEntity *scene = createScene(&(myProject.DTM), &(myProject.indexMap));
@@ -978,8 +983,8 @@ void MainWindow::on_actionCriteria3D_Initialize_triggered()
 
     // Camera
     Qt3DRender::QCamera *camera = view3D->camera();
-    camera->lens()->setPerspectiveProjection(45.0f, 16.0f/9.0f, 1.f, 1000000.0f);
-    camera->setUpVector(QVector3D(0, 1, 0));
+    camera->lens()->setPerspectiveProjection(60.0f, 16.0f/9.0f, 1.f, 1000000.0f);
+    camera->setUpVector(QVector3D(0, 0, 1));
 
     gis::Crit3DUtmPoint utmCenter;
 

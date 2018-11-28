@@ -102,19 +102,19 @@
         void log(std::string myStr);
         void logError();
 
-        bool loadDEM(QString myFileName);
-        bool loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo);
-        void getMeteoPointsRange(float *minimum, float *maximum);
-
-        bool loadlastMeteoData();
         void closeMeteoPointsDB();
         void closeMeteoGridDB();
+
+        bool loadDEM(QString myFileName);
+        bool loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo);
         bool loadMeteoPointsDB(QString dbName);
         bool loadMeteoGridDB(QString xmlName);
         bool loadMeteoGridDailyData(QDate firstDate, QDate lastDate, bool showInfo);
         bool loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate, bool showInfo);
         void loadMeteoGridData(QDate firstDate, QDate lastDate, bool showInfo);
+        bool loadLastMeteoData();
 
+        void getMeteoPointsRange(float *minimum, float *maximum);
         bool getMeteoPointSelected(int i);
         bool updateMeteoPointsData();
 

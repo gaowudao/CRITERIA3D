@@ -34,6 +34,7 @@
         long nrVoxels;
         long nrVoxelsPerLayer;
         bool isParametersLoaded;
+        bool isInitialized;
 
         float soilDepth;                                 //[m]
         std::vector <double> layerDepth;                 //[m]

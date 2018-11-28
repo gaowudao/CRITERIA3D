@@ -307,51 +307,6 @@ bool Project::readGenericSettings(QString currentPath)
 }
 
 
-
-/*!
- * \brief loadDEM
- * \param fileName the name of the file
- * \param raster a Crit3DRasterGrid pointer
- * \return true if file is ok, false otherwise
- */
-bool Project::loadDEM(QString myFileName)
-{
-    std::string* myError = new std::string();
-    std::string fileName = myFileName.left(myFileName.length()-4).toStdString();
-
-    if (! gis::readEsriGrid(fileName, &DTM, myError))
-    {
-        qDebug("Load raster failed!");
-        return (false);
-    }
-
-    setColorScale(noMeteoTerrain, DTM.colorScale);
-
-    // initialize radition maps: slope, aspect, lat/lon
-    if (radiationMaps != NULL)
-        radiationMaps->clean();
-    radiationMaps = new Crit3DRadiationMaps(DTM, gisSettings);
-
-    //reset aggregationPoints meteoGrid
-    if (meteoGridDbHandler != NULL)
-    {
-        meteoGridDbHandler->meteoGrid()->setIsAggregationDefined(false);
-        // TODO
-        // ciclo sulle celle della meteo grid -> clean vettore aggregation points
-    }
-
-    setProxyDEM();
-
-    //set interpolation settings DEM
-    interpolationSettings.setCurrentDEM(&DTM);
-    qualityInterpolationSettings.setCurrentDEM(&DTM);
-
-    //check points position with respect to DEM
-    checkMeteoPointsDEM();
-
-    return (true);
-}
-
 bool Project::getMeteoPointSelected(int i)
 {
     if (meteoPointsSelected.isEmpty()) return true;
@@ -413,85 +368,9 @@ meteoVariable Project::getCurrentVariable()
 }
 
 
-bool Project::loadlastMeteoData()
-{
-    QDate lastDateD = meteoPointsDbHandler->getLastDay(daily).date();
-    QDate lastDateH = meteoPointsDbHandler->getLastDay(hourly).date();
-
-    /*
-     *
-    */
-/*
-    QDate firstDateD = meteoPointsDbHandler->getFirstDay(daily).date();
-    QDate firstDateH = meteoPointsDbHandler->getFirstDay(hourly).date();
-
-
-    int numberOfDaysD = firstDateD.daysTo(lastDateD) + 1;
-    int numberOfDaysH = firstDateH.daysTo(lastDateH) + 1;
-    int myHourlyFraction = 1;
-
-    for (int i=0; i < nrMeteoPoints; i++)
-    {
-        meteoPoints[i].initializeObsDataD(numberOfDaysD, getCrit3DDate(firstDateD));
-        meteoPoints[i].initializeObsDataH(myHourlyFraction, numberOfDaysH, getCrit3DDate(firstDateH));
-    }
-*/
-    /*
-     *
-    */
-
-    QDate lastDate = (lastDateD > lastDateH) ? lastDateD : lastDateH;
-
-    this->setCurrentDate(lastDate);
-    this->setCurrentHour(12);
-
-    return this->loadMeteoPointsData (lastDate, lastDate, true);
-}
-
-
 bool Project::updateMeteoPointsData()
 {
     return loadMeteoPointsData(currentDate, currentDate, true);
-}
-
-
-bool Project::loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo)
-{
-    //check
-    if (firstDate == QDate(1800,1,1) || lastDate == QDate(1800,1,1)) return false;
-
-    bool isData = false;
-    FormInfo myInfo;
-    int step;
-
-    QString infoStr = "Load data: " + firstDate.toString();
-
-    if (firstDate != lastDate)
-        infoStr += " - " + lastDate.toString();
-
-    if (showInfo)
-        step = myInfo.start(infoStr, nrMeteoPoints);
-
-    for (int i=0; i < nrMeteoPoints; i++)
-    {
-
-        if (showInfo)
-            if ((i % step) == 0) myInfo.setValue(i);
-
-        if (meteoPointsDbHandler->loadDailyData(getCrit3DDate(firstDate), getCrit3DDate(lastDate), &(meteoPoints[i])))
-        {
-            isData = true;
-        }
-        if (meteoPointsDbHandler->loadHourlyData(getCrit3DDate(firstDate), getCrit3DDate(lastDate), &(meteoPoints[i])))
-        {
-            isData = true;
-        }
-
-    }
-
-    if (showInfo) myInfo.close();
-
-    return isData;
 }
 
 
@@ -551,6 +430,51 @@ void Project::closeMeteoGridDB()
 
     meteoGridDbHandler = NULL;
 
+}
+
+
+/*!
+ * \brief loadDEM
+ * \param fileName the name of the file
+ * \param raster a Crit3DRasterGrid pointer
+ * \return true if file is ok, false otherwise
+ */
+bool Project::loadDEM(QString myFileName)
+{
+    std::string* myError = new std::string();
+    std::string fileName = myFileName.left(myFileName.length()-4).toStdString();
+
+    if (! gis::readEsriGrid(fileName, &DTM, myError))
+    {
+        qDebug("Load raster failed!");
+        return (false);
+    }
+
+    setColorScale(noMeteoTerrain, DTM.colorScale);
+
+    // initialize radition maps: slope, aspect, lat/lon
+    if (radiationMaps != NULL)
+        radiationMaps->clean();
+    radiationMaps = new Crit3DRadiationMaps(DTM, gisSettings);
+
+    //reset aggregationPoints meteoGrid
+    if (meteoGridDbHandler != NULL)
+    {
+        meteoGridDbHandler->meteoGrid()->setIsAggregationDefined(false);
+        // TODO
+        // ciclo sulle celle della meteo grid -> clean vettore aggregation points
+    }
+
+    setProxyDEM();
+
+    //set interpolation settings DEM
+    interpolationSettings.setCurrentDEM(&DTM);
+    qualityInterpolationSettings.setCurrentDEM(&DTM);
+
+    //check points position with respect to DEM
+    checkMeteoPointsDEM();
+
+    return (true);
 }
 
 
@@ -618,6 +542,46 @@ bool Project::loadMeteoGridDB(QString xmlName)
         return false;
 
     return true;
+}
+
+
+bool Project::loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo)
+{
+    //check
+    if (firstDate == QDate(1800,1,1) || lastDate == QDate(1800,1,1)) return false;
+
+    bool isData = false;
+    FormInfo myInfo;
+    int step;
+
+    QString infoStr = "Load data: " + firstDate.toString();
+
+    if (firstDate != lastDate)
+        infoStr += " - " + lastDate.toString();
+
+    if (showInfo)
+        step = myInfo.start(infoStr, nrMeteoPoints);
+
+    for (int i=0; i < nrMeteoPoints; i++)
+    {
+
+        if (showInfo)
+            if ((i % step) == 0) myInfo.setValue(i);
+
+        if (meteoPointsDbHandler->loadDailyData(getCrit3DDate(firstDate), getCrit3DDate(lastDate), &(meteoPoints[i])))
+        {
+            isData = true;
+        }
+        if (meteoPointsDbHandler->loadHourlyData(getCrit3DDate(firstDate), getCrit3DDate(lastDate), &(meteoPoints[i])))
+        {
+            isData = true;
+        }
+
+    }
+
+    if (showInfo) myInfo.close();
+
+    return isData;
 }
 
 
@@ -739,6 +703,21 @@ bool Project::loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate, b
     else
         return true;
 }
+
+
+bool Project::loadLastMeteoData()
+{
+    QDate lastDateD = meteoPointsDbHandler->getLastDay(daily).date();
+    QDate lastDateH = meteoPointsDbHandler->getLastDay(hourly).date();
+
+    QDate lastDate = (lastDateD > lastDateH) ? lastDateD : lastDateH;
+
+    this->setCurrentDate(lastDate);
+    this->setCurrentHour(12);
+
+    return this->loadMeteoPointsData (lastDate, lastDate, true);
+}
+
 
 void Project::checkMeteoPointsDEM()
 {

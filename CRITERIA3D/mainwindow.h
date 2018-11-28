@@ -68,6 +68,8 @@
         void on_actionParameters_triggered();
         void on_actionShowLocation_triggered();
 
+        void on_actionShow_3D_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

@@ -1950,7 +1950,7 @@
      <x>0</x>
      <y>0</y>
      <width>1360</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="palette">
@@ -2425,6 +2425,7 @@
     <addaction name="actionCriteria3D_Initialize"/>
     <addaction name="actionCriteria3D_settings"/>
     <addaction name="separator"/>
+    <addaction name="actionShow_3D"/>
     <addaction name="actionShow_DTM"/>
     <addaction name="actionShow_boundary"/>
     <addaction name="actionShow_soil"/>
@@ -2566,7 +2567,7 @@
   </action>
   <action name="actionCriteria3D_Initialize">
    <property name="text">
-    <string>Initialize 3D</string>
+    <string>Initialize</string>
    </property>
   </action>
   <action name="actionShow_boundary">
@@ -2598,6 +2599,11 @@
   <action name="actionParameters">
    <property name="text">
     <string>Parameters</string>
+   </property>
+  </action>
+  <action name="actionShow_3D">
+   <property name="text">
+    <string>Show 3D</string>
    </property>
   </action>
  </widget>
