@@ -127,11 +127,11 @@ namespace gis
         this->z = NODATA;
     }
 
-    Crit3DPoint::Crit3DPoint(double myX, double myY, double myZ)
+    Crit3DPoint::Crit3DPoint(double myX, double myY, double z)
     {
         utm.x = myX;
         utm.y = myY;
-        z = myZ;
+        z = z;
     }
 
     Crit3DRasterHeader::Crit3DRasterHeader()
@@ -841,49 +841,48 @@ namespace gis
     }
 
 
-    bool computeSlopeAspectMaps(const gis::Crit3DRasterGrid& myDtm,
+    bool computeSlopeAspectMaps(const gis::Crit3DRasterGrid& dtm,
                                 gis::Crit3DRasterGrid* slopeMap, gis::Crit3DRasterGrid* aspectMap)
     {
-        if (! myDtm.isLoaded) return false;
+        if (! dtm.isLoaded) return false;
 
         double reciprocalCellSize;
         double dz_dx, dz_dy;
         double mySlope, myAspect;
-        double myZ;
-        double zNorth, zSouth, zEast, zWest;
+        double z, zNorth, zSouth, zEast, zWest;
 
-        slopeMap->initializeGrid(myDtm);
-        aspectMap->initializeGrid(myDtm);
+        slopeMap->initializeGrid(dtm);
+        aspectMap->initializeGrid(dtm);
 
-        reciprocalCellSize = 1. / myDtm.header->cellSize;
+        reciprocalCellSize = 1. / dtm.header->cellSize;
 
-        for (int myRow = 0; myRow < myDtm.header->nrRows; myRow++)
-            for (int myCol = 0; myCol < myDtm.header->nrCols; myCol++)
+        for (int myRow = 0; myRow < dtm.header->nrRows; myRow++)
+            for (int myCol = 0; myCol < dtm.header->nrCols; myCol++)
             {
-                myZ = myDtm.value[myRow][myCol];
-                if (myZ != myDtm.header->flag)
+                z = dtm.value[myRow][myCol];
+                if (z != dtm.header->flag)
                 {
-                    zNorth = myDtm.getValueFromRowCol(myRow-1, myCol);
-                    zSouth = myDtm.getValueFromRowCol(myRow+1, myCol);
+                    zNorth = dtm.getValueFromRowCol(myRow-1, myCol);
+                    zSouth = dtm.getValueFromRowCol(myRow+1, myCol);
 
-                    if (zNorth != myDtm.header->flag && zSouth != myDtm.header->flag)
+                    if (zNorth != dtm.header->flag && zSouth != dtm.header->flag)
                         dz_dy = 0.5 * (zNorth - zSouth) * reciprocalCellSize;
-                    else if (zNorth != myDtm.header->flag)
-                        dz_dy = (zNorth - myZ) * reciprocalCellSize;
-                    else if (zSouth != myDtm.header->flag)
-                        dz_dy = (myZ - zSouth) * reciprocalCellSize;
+                    else if (zNorth != dtm.header->flag)
+                        dz_dy = (zNorth - z) * reciprocalCellSize;
+                    else if (zSouth != dtm.header->flag)
+                        dz_dy = (z - zSouth) * reciprocalCellSize;
                     else
                         dz_dy = EPSILON;
 
-                    zWest = myDtm.getValueFromRowCol(myRow, myCol-1);
-                    zEast = myDtm.getValueFromRowCol(myRow, myCol+1);
+                    zWest = dtm.getValueFromRowCol(myRow, myCol-1);
+                    zEast = dtm.getValueFromRowCol(myRow, myCol+1);
 
-                    if (zWest != myDtm.header->flag && zEast != myDtm.header->flag)
+                    if (zWest != dtm.header->flag && zEast != dtm.header->flag)
                         dz_dx = 0.5 * (zWest - zEast) * reciprocalCellSize;
-                    else if (zWest != myDtm.header->flag)
-                        dz_dx = (zWest - myZ) * reciprocalCellSize;
-                    else if (zEast != myDtm.header->flag)
-                        dz_dx = (myZ - zEast) * reciprocalCellSize;
+                    else if (zWest != dtm.header->flag)
+                        dz_dx = (zWest - z) * reciprocalCellSize;
+                    else if (zEast != dtm.header->flag)
+                        dz_dx = (z - zEast) * reciprocalCellSize;
                     else
                         dz_dx = EPSILON;
 
