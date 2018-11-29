@@ -1326,7 +1326,7 @@ void MainWindow::on_actionClimate_fields_triggered()
             meteoVariable variable = climateDialog.getVar();
 
             myProject.saveClimateResult(isMeteoGrid, climaSelected);
-            showClimateResult(true, isMeteoGrid, variable);
+            showClimateResult(true, isMeteoGrid, variable, climaSelected);
         }
         else
         {
@@ -1338,7 +1338,7 @@ void MainWindow::on_actionClimate_fields_triggered()
 
 }
 
-void MainWindow::showClimateResult(bool updateColorSCale, bool isMeteoGrid, meteoVariable variable)
+void MainWindow::showClimateResult(bool updateColorSCale, bool isMeteoGrid, meteoVariable variable, QString climaSelected)
 {
 
     if (isMeteoGrid)
@@ -1409,6 +1409,17 @@ void MainWindow::showClimateResult(bool updateColorSCale, bool isMeteoGrid, mete
         meteoPointsLegend->update();
 
     }
+
+    QStringList words = climaSelected.split('_');
+
+    elabType1->setText("Climate - " + words[3]);
+    elabVariable->setText(words[1]);
+    elabPeriod->setText(words[2]);
+    elabType1->setReadOnly(true);
+    elabVariable->setReadOnly(true);
+    elabPeriod->setReadOnly(true);
+    ui->groupBoxElaboration->show();
+
 
 }
 
