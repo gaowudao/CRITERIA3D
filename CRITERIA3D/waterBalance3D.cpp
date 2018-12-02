@@ -33,7 +33,7 @@
 #include "crit3dDate.h"
 
 
-std::vector <double> waterSinkSource;     //[m^3/sec]
+static std::vector <double> waterSinkSource;     //[m^3/sec]
 
 
 void cleanWaterBalanceMemory()
