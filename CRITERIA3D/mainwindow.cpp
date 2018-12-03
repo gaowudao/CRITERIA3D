@@ -964,7 +964,7 @@ void MainWindow::on_actionView_3D_triggered()
     float ratio = size / dz;
     float magnify = maxValue(1., minValue(10.f, ratio / 6.f));
 
-    camera->setPosition(QVector3D(utmCenter.x, utmCenter.y - dy, z * magnify + size));
+    camera->setPosition(QVector3D(utmCenter.x, utmCenter.y - dy*0.5, (z + dz*2) * magnify));
     camera->setViewCenter(QVector3D(utmCenter.x, utmCenter.y, z * magnify));
 
     // Scene

@@ -11,6 +11,37 @@
 #include "crit3dProject.h"
 
 
+static float cosTable[3600];
+
+
+void buildLookupTables()
+{
+    for (int angle = 0; angle < 3600; angle++)
+    {
+        cosTable[angle] = cos(float(angle) / 10.f * DEG_TO_RAD);
+    }
+}
+
+
+float getValueInRange(float value, float minimum, float maximum)
+{
+    if (value < minimum)
+        return minimum;
+    else if (value > maximum)
+        return maximum;
+    else
+        return value;
+}
+
+
+float getCosTable(float angle)
+{
+    if (angle < 0)
+        angle += 360.f;
+    return cosTable[int(angle * 10)];
+}
+
+
 Qt3DCore::QEntity *createScene(Crit3DProject* myProject, float magnify)
 {
     int nrVertex = int(myProject->indexMap.maximum) + 1;
@@ -20,6 +51,12 @@ Qt3DCore::QEntity *createScene(Crit3DProject* myProject, float magnify)
 
     float *rawPosition = reinterpret_cast<float *>(vertexPosition.data());
     float *rawColor = reinterpret_cast<float *>(vertexColor.data());
+
+    float SlopeAmplification = 90.f / myProject->radiationMaps->slopeMap->maximum;
+    float myAspect, mySlope, shadow;
+    float red, green, blue;
+
+    buildLookupTables();
 
     // Vertices
     long index;
@@ -36,28 +73,31 @@ Qt3DCore::QEntity *createScene(Crit3DProject* myProject, float magnify)
                 if (z != myProject->DTM.header->flag)
                 {
                     gis::getUtmXYFromRowColSinglePrecision(*(myProject->DTM.header), row, col, &x, &y);
-                    myColor = myProject->DTM.colorScale->getColor(z);
 
                     rawPosition[index*3] = x;
                     rawPosition[index*3+1] = y;
                     rawPosition[index*3+2] = z  *magnify;
 
-                    /*
-                    k3D.SlopeAmplification = 90 / GIS.slopeMap.ValMax
+                    myColor = myProject->DTM.colorScale->getColor(z);
+                    red = myColor->red;
+                    green = myColor->green;
+                    blue = myColor->blue;
 
-                    Aspect = GIS.aspectMap.Value(myRow, myCol)
-                    Slope = GIS.slopeMap.Value(myRow, myCol)
-                    If Aspect <> GIS.aspectMap.header.flag And Slope <> GIS.slopeMap.header.flag Then
-                        Shadow = GetCosTable_NESW(Aspect) * max(3, Slope * SlopeAmplification)
-                        color.red = valueRange(color.red + Shadow, 0, 255)
-                        color.green = valueRange(color.green + Shadow, 0, 255)
-                        color.blue = valueRange(color.blue + Shadow, 0, 255)
-                    End If
-                    */
+                    myAspect = myProject->radiationMaps->aspectMap->value[row][col];
+                    mySlope = myProject->radiationMaps->slopeMap->value[row][col];
 
-                    rawColor[index*3] = float(myColor->red) / 256.f;
-                    rawColor[index*3+1] = float(myColor->green) / 256.f;
-                    rawColor[index*3+2] = float(myColor->blue) / 256.f;
+                    if ((myAspect != myProject->radiationMaps->aspectMap->header->flag)
+                        && (mySlope != myProject->radiationMaps->slopeMap->header->flag))
+                    {
+                        shadow = getCosTable(myAspect) * mySlope * SlopeAmplification;
+                        red = getValueInRange(red + shadow, 0, 255);
+                        green = getValueInRange(green + shadow, 0, 255);
+                        blue = getValueInRange(blue + shadow, 0, 255);
+                    }
+
+                    rawColor[index*3] = red / 256.f;
+                    rawColor[index*3+1] = green / 256.f;
+                    rawColor[index*3+2] = blue / 256.f;
                 }
             }
         }
