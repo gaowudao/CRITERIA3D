@@ -481,7 +481,7 @@ bool PragaProject::elaborationPointsCycle(bool isAnomaly, bool showInfo)
                         myInfo.setValue(i);
 
 
-            if (isAnomaly && clima->getIsClimateAnomalyFromDb())
+            if (isAnomaly && climaUsed->getIsClimateAnomalyFromDb())
             {
                 if ( passingClimateToAnomaly(&errorString, meteoPointTemp, climaUsed, meteoPoints, nrMeteoPoints, clima->getElabSettings()) )
                 {

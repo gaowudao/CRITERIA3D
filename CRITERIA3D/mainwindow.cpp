@@ -53,7 +53,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->showPoints = true;
 
-    this->myRubberBand = NULL;
+    this->myRubberBand = nullptr;
 
     // Set the MapGraphics Scene and View
     this->mapScene = new MapGraphicsScene(this);
@@ -147,7 +147,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event){
 
     gis::Crit3DGeoPoint pointSelected;
 
-    if (myRubberBand != NULL && myRubberBand->isVisible())
+    if (myRubberBand != nullptr && myRubberBand->isVisible())
     {
         QPointF lastCornerOffset = event->localPos();
         QPointF firstCornerOffset = myRubberBand->getFirstCorner();
@@ -238,7 +238,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent * event)
     Position geoPoint = this->mapView->mapToScene(mapPoint);
     this->ui->statusBar->showMessage(QString::number(geoPoint.latitude()) + " " + QString::number(geoPoint.longitude()));
 
-    if (myRubberBand != NULL)
+    if (myRubberBand != nullptr)
     {
         myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), mapPoint).normalized());
     }
@@ -249,7 +249,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::RightButton)
     {
-        if (myRubberBand != NULL)
+        if (myRubberBand != nullptr)
         {
             QPoint pos = event->pos();
             QPointF firstCorner = event->localPos();
@@ -312,16 +312,16 @@ void MainWindow::on_actionMapTerrain_triggered()
 
 void MainWindow::on_actionRectangle_Selection_triggered()
 {
-    if (myRubberBand != NULL)
+    if (myRubberBand != nullptr)
     {
         delete myRubberBand;
-        myRubberBand = NULL;
+        myRubberBand = nullptr;
     }
 
     if (ui->actionRectangle_Selection->isChecked())
     {
         myRubberBand = new RubberBand(QRubberBand::Rectangle, this->mapView);
-        QPoint origin(this->mapView->width()*0.5 , this->mapView->height()*0.5);
+        QPoint origin(int(this->mapView->width()*0.5), int(this->mapView->height()*0.5));
         QPoint mapPoint = getMapPoint(&origin);
         myRubberBand->setOrigin(mapPoint);
         myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), QSize()));
@@ -349,7 +349,7 @@ void MainWindow::on_actionLoadDEM_triggered()
 
     // resize map
     float size = this->rasterObj->getRasterMaxSize();
-    size = log2(1000.0/size);
+    size = log2(1000.f/size);
     this->mapView->setZoomLevel(quint8(size));
     this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
 
@@ -401,7 +401,7 @@ void MainWindow::resetMeteoPoints()
 
     this->pointList.clear();
 
-    this->myRubberBand = NULL;
+    this->myRubberBand = nullptr;
 }
 
 
@@ -440,7 +440,7 @@ void MainWindow::updateVariable()
         if (myProject.currentVariable != noMeteoVar)
         {
             this->ui->actionShowLocation->setChecked(false);
-            if (this->meteoGridObj != NULL) this->meteoGridObj->setDrawBorders(false);
+            if (this->meteoGridObj != nullptr) this->meteoGridObj->setDrawBorders(false);
         }
 
         if (myProject.getFrequency() == daily)
@@ -583,7 +583,7 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
     Crit3DColor *myColor;
     for (int i = 0; i < myProject.nrMeteoPoints; i++)
     {
-        if (myProject.meteoPoints[i].currentValue != NODATA)
+        if (int(myProject.meteoPoints[i].currentValue) != NODATA)
         {
             if (myProject.meteoPoints[i].quality == quality::accepted)
             {
@@ -611,7 +611,7 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
 void MainWindow::redrawMeteoGrid()
 {
 
-    if (myProject.meteoGridDbHandler == NULL)
+    if (myProject.meteoGridDbHandler == nullptr)
         return;
 
     frequencyType frequency = myProject.getFrequency();
@@ -658,7 +658,7 @@ bool MainWindow::loadMeteoPointsDB(QString dbName)
 
     this->addMeteoPoints();
 
-    if (myProject.meteoGridDbHandler == NULL)
+    if (myProject.meteoGridDbHandler == nullptr)
     {
         myProject.loadLastMeteoData();
         this->updateDateTime();
@@ -742,9 +742,9 @@ void MainWindow::setMapSource(OSMTileSource::OSMTileType mySource)
 
 void MainWindow::on_rasterScaleButton_clicked()
 {
-    if (this->rasterObj->currentRaster == NULL)
+    if (this->rasterObj->currentRaster == nullptr)
     {
-        QMessageBox::information(NULL, "No Raster", "Load raster before");
+        QMessageBox::information(nullptr, "No Raster", "Load raster before");
         return;
     }
 
@@ -762,7 +762,7 @@ void MainWindow::on_variableButton_clicked()
     {
        this->ui->actionShowLocation->setChecked(false);
        this->updateVariable();
-       if (this->meteoGridObj != NULL) this->meteoGridObj->setDrawBorders(false);
+       if (this->meteoGridObj != nullptr) this->meteoGridObj->setDrawBorders(false);
     }
 }
 
@@ -785,9 +785,9 @@ void MainWindow::on_actionPointsVisible_triggered()
 
 void MainWindow::on_rasterRestoreButton_clicked()
 {
-    if (this->rasterObj->currentRaster == NULL)
+    if (this->rasterObj->currentRaster == nullptr)
     {
-        QMessageBox::information(NULL, "No Raster", "Load raster before");
+        QMessageBox::information(nullptr, "No Raster", "Load raster before");
         return;
     }
 
@@ -818,7 +818,7 @@ void MainWindow::on_actionClose_meteo_points_triggered()
 
 void MainWindow::on_actionClose_meteo_grid_triggered()
 {
-    if (myProject.meteoGridDbHandler != NULL)
+    if (myProject.meteoGridDbHandler != nullptr)
     {
         myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.isLoaded = false;
         meteoGridObj->clean();
@@ -843,9 +843,9 @@ void MainWindow::on_actionInterpolation_to_DTM_triggered()
 
 void MainWindow::on_actionInterpolationSettings_triggered()
 {
-    if (myProject.meteoPointsDbHandler == NULL)
+    if (myProject.meteoPointsDbHandler == nullptr)
     {
-        QMessageBox::information(NULL, "No DB open", "Open DB Points");
+        QMessageBox::information(nullptr, "No DB open", "Open DB Points");
         return;
     }
 
@@ -858,7 +858,8 @@ void MainWindow::on_actionParameters_triggered()
 {
     SettingsDialog* mySettingsDialog = new SettingsDialog(myProject.pathSetting, myProject.settings, &myProject.gisSettings, myProject.quality, myProject.meteoSettings);
     mySettingsDialog->exec();
-    if (startCenter->latitude() != myProject.gisSettings.startLocation.latitude || startCenter->longitude() != myProject.gisSettings.startLocation.longitude)
+    if (startCenter->latitude() != myProject.gisSettings.startLocation.latitude
+            || startCenter->longitude() != myProject.gisSettings.startLocation.longitude)
     {
         startCenter->setLatitude(myProject.gisSettings.startLocation.latitude);
         startCenter->setLongitude(myProject.gisSettings.startLocation.longitude);
@@ -873,7 +874,7 @@ void MainWindow::on_actionShowLocation_triggered()
 {
     myProject.currentVariable = noMeteoVar;
     this->ui->actionShowLocation->setChecked(true);
-    if (this->meteoGridObj != NULL) this->meteoGridObj->setDrawBorders(true);
+    if (this->meteoGridObj != nullptr) this->meteoGridObj->setDrawBorders(true);
     this->updateVariable();
 }
 
@@ -884,7 +885,7 @@ void MainWindow::on_actionOpen_model_parameters_triggered()
     if (fileName == "") return;
 
     if (myProject.loadModelParameters(fileName))
-        QMessageBox::information(NULL, "", "Model parameters loaded");
+        QMessageBox::information(nullptr, "", "Model parameters loaded");
 }
 
 
@@ -894,7 +895,7 @@ void MainWindow::on_actionOpen_soil_map_triggered()
     if (fileName == "") return;
 
     if (myProject.loadSoilMap(fileName))
-        QMessageBox::information(NULL, "", "Soil map loaded.");
+        QMessageBox::information(nullptr, "", "Soil map loaded.");
 }
 
 
@@ -923,7 +924,7 @@ void mouseManager(Qt3DExtras::Qt3DWindow *view3D, QMouseEvent *e)
 void MainWindow::on_actionCriteria3D_Initialize_triggered()
 {
     if (myProject.initializeCriteria3D())
-        QMessageBox::information(NULL, "", "Criteria3D initialized.");
+        QMessageBox::information(nullptr, "", "Criteria3D initialized.");
 }
 
 
@@ -954,20 +955,20 @@ void MainWindow::on_actionView_3D_triggered()
     gis::Crit3DUtmPoint utmCenter;
 
     float dz = maxValue(myProject.DTM.maximum - myProject.DTM.minimum, 10.f);
-    float z = myProject.DTM.minimum + dz * 0.5;
+    float z = myProject.DTM.minimum + dz * 0.5f;
     float dy = myProject.DTM.header->nrRows * myProject.DTM.header->cellSize;
     float dx = myProject.DTM.header->nrCols * myProject.DTM.header->cellSize;
-    utmCenter.x = myProject.DTM.header->llCorner->x + dx * 0.5;
-    utmCenter.y = myProject.DTM.header->llCorner->y + dy * 0.5;
+    utmCenter.x = myProject.DTM.header->llCorner->x + dx * 0.5f;
+    utmCenter.y = myProject.DTM.header->llCorner->y + dy * 0.5f;
     float size = sqrt(dx*dy);
     float ratio = size / dz;
     float magnify = maxValue(1., minValue(10.f, ratio / 6.f));
 
-    camera->setPosition(QVector3D(utmCenter.x, utmCenter.y - dy, z*magnify + size));
-    camera->setViewCenter(QVector3D(utmCenter.x, utmCenter.y, z*magnify));
+    camera->setPosition(QVector3D(utmCenter.x, utmCenter.y - dy, z * magnify + size));
+    camera->setViewCenter(QVector3D(utmCenter.x, utmCenter.y, z * magnify));
 
     // Scene
-    Qt3DCore::QEntity *scene = createScene(&(myProject.DTM), &(myProject.indexMap), magnify);
+    Qt3DCore::QEntity *scene = createScene(&myProject, magnify);
     view3D->setRootEntity(scene);
 
     // Camera controls

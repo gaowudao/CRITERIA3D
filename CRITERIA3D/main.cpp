@@ -9,7 +9,7 @@
 Crit3DProject myProject;
 
 
-bool setProxy(QString hostName, int port)
+bool setProxy(QString hostName, unsigned short port)
 {
     QNetworkProxy myProxy;
 
@@ -21,7 +21,7 @@ bool setProxy(QString hostName, int port)
        QNetworkProxy::setApplicationProxy(myProxy);
     }
     catch (...) {
-        QMessageBox::information(NULL, "Error in proxy configuration!", "");
+        QMessageBox::information(nullptr, "Error in proxy configuration!", "");
         return false;
     }
 

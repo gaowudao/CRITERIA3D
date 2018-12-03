@@ -29,7 +29,7 @@
 #include "formInfo.h"
 #include "dbTools.h"
 #include "utilities.h"
-#include "Crit3DProject.h"
+#include "crit3dProject.h"
 #include "waterBalance3D.h"
 
 
@@ -272,7 +272,7 @@ int Crit3DProject::getSoilIndex(int dtmRow, int dtmCol)
     // search id soil
     for (unsigned int i = 0; i < soilList.size(); i++)
     {
-        if (soilList[i].id == idSoil) return(i);
+        if (soilList[i].id == idSoil) return(int(i));
     }
 
     // no soil data
