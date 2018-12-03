@@ -514,13 +514,16 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             for (int j=0;j<nrStations;j++)
             {
                 randomMatrix[iMonth].matrixK[i][j] = float(K[i][j]);
-                randomMatrix[iMonth].matrixM[i][j] = float(M[i][j]);
+                randomMatrix[iMonth].matrixM[i][j] = float(M[i][j]);                
             }
+
+
             for (int j=0;j<nrDaysIterativeProcessMonthly[iMonth];j++)
             {
                 randomMatrix[iMonth].matrixOccurrences[i][j]= float(occurrences[i][j]);
             }
         }
+
         randomMatrix[iMonth].month = iMonth + 1;
         // free memory
         for (int i=0;i<nrStations;i++)
@@ -531,7 +534,7 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             occurrences[i];
 
         }
-        //for (int i=0;i<nrDaysIterativeProcessMonthly[iMonth];i++) free(occurrences[i]);
+
         free(normalizedRandomMatrix);
         free(M);
         free(K);
@@ -602,14 +605,7 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
                 counter++;
             }
         }
-        for (int i=0;i<nrStations;i++)
-        {
-            for (int j=0;j<nrStations;j++)
-            {
-                //printf("%f  ",M[i][j]);
-            }
-            printf("\n");
-        }
+
         eigenproblem::rs(nrStations,correlationArray,eigenvalues,true,eigenvectors);
         for (int i=0;i<nrStations;i++)
         {
@@ -687,11 +683,15 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
                 val = maxValue(val,fabs(K[i][j] - matrixOccurrence[i][j]));
             }
         }
+        for (int i=0; i<nrStations;i++)
+        {
+            M[i][i]= 1.;
+        }
         if ((ii != MAX_ITERATION_MULGETS) && (val > TOLERANCE_MULGETS))
         {
             for (int i=0; i<nrStations;i++)
             {
-                M[i][i]= 1.;
+                //M[i][i]= 1.;
                 for (int j=i+1;j<nrStations;j++)
                 {
                     M[i][j] += kiter*(matrixOccurrence[i][j]-K[i][j]);
