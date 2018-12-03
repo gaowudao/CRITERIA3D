@@ -12,6 +12,7 @@
 
 
 static float cosTable[3600];
+static QByteArray vertexPositionArray, vertexColorArray, triangleIndexArray;
 
 
 void buildLookupTables()
@@ -42,19 +43,30 @@ float getCosTable(float angle)
 }
 
 
+void setVertexColor(float * vertexColor, int vertexIndex, Crit3DColor *myColor, float shadow)
+{
+    float red = getValueInRange(myColor->red + shadow, 0, 255);
+    float green = getValueInRange(myColor->green + shadow, 0, 255);
+    float blue = getValueInRange(myColor->blue + shadow, 0, 255);
+
+    vertexColor[vertexIndex*3] = red / 256.f;
+    vertexColor[vertexIndex*3+1] = green / 256.f;
+    vertexColor[vertexIndex*3+2] = blue / 256.f;
+}
+
+
 Qt3DCore::QEntity *createScene(Crit3DProject* myProject, float magnify)
 {
     int nrVertex = int(myProject->indexMap.maximum) + 1;
-    QByteArray vertexPosition, vertexColor;
-    vertexPosition.resize(nrVertex * 3 * int(sizeof(float)));
-    vertexColor.resize(nrVertex * 3 * int(sizeof(float)));
 
-    float *rawPosition = reinterpret_cast<float *>(vertexPosition.data());
-    float *rawColor = reinterpret_cast<float *>(vertexColor.data());
+    vertexPositionArray.resize(nrVertex * 3 * int(sizeof(float)));
+    vertexColorArray.resize(nrVertex * 3 * int(sizeof(float)));
+
+    float *vertexPosition = reinterpret_cast<float *>(vertexPositionArray.data());
+    float *vertexColor = reinterpret_cast<float *>(vertexColorArray.data());
 
     float SlopeAmplification = 90.f / myProject->radiationMaps->slopeMap->maximum;
     float myAspect, mySlope, shadow;
-    float red, green, blue;
 
     buildLookupTables();
 
@@ -74,39 +86,31 @@ Qt3DCore::QEntity *createScene(Crit3DProject* myProject, float magnify)
                 {
                     gis::getUtmXYFromRowColSinglePrecision(*(myProject->DTM.header), row, col, &x, &y);
 
-                    rawPosition[index*3] = x;
-                    rawPosition[index*3+1] = y;
-                    rawPosition[index*3+2] = z  *magnify;
+                    vertexPosition[index*3] = x;
+                    vertexPosition[index*3+1] = y;
+                    vertexPosition[index*3+2] = z  *magnify;
 
                     myColor = myProject->DTM.colorScale->getColor(z);
-                    red = myColor->red;
-                    green = myColor->green;
-                    blue = myColor->blue;
 
+                    shadow = 0.f;
                     myAspect = myProject->radiationMaps->aspectMap->value[row][col];
                     mySlope = myProject->radiationMaps->slopeMap->value[row][col];
-
                     if ((myAspect != myProject->radiationMaps->aspectMap->header->flag)
-                        && (mySlope != myProject->radiationMaps->slopeMap->header->flag))
+                            && (mySlope != myProject->radiationMaps->slopeMap->header->flag))
                     {
-                        shadow = getCosTable(myAspect) * mySlope * SlopeAmplification;
-                        red = getValueInRange(red + shadow, 0, 255);
-                        green = getValueInRange(green + shadow, 0, 255);
-                        blue = getValueInRange(blue + shadow, 0, 255);
+                            shadow = getCosTable(myAspect) * mySlope * SlopeAmplification;
                     }
 
-                    rawColor[index*3] = red / 256.f;
-                    rawColor[index*3+1] = green / 256.f;
-                    rawColor[index*3+2] = blue / 256.f;
+                    setVertexColor(vertexColor, index, myColor, shadow);
                 }
             }
         }
     }
 
     Qt3DRender::QBuffer *vertexPositionBuffer = new Qt3DRender::QBuffer();
-    vertexPositionBuffer->setData(vertexPosition);
+    vertexPositionBuffer->setData(vertexPositionArray);
     Qt3DRender::QBuffer *vertexColorBuffer = new Qt3DRender::QBuffer();
-    vertexColorBuffer->setData(vertexColor);
+    vertexColorBuffer->setData(vertexColorArray);
 
     // Attributes
     Qt3DRender::QAttribute *positionAttribute = new Qt3DRender::QAttribute();
@@ -124,9 +128,8 @@ Qt3DCore::QEntity *createScene(Crit3DProject* myProject, float magnify)
     colorAttribute->setName(Qt3DRender::QAttribute::defaultColorAttributeName());
 
     // Indices
-    QByteArray indexBufferData;
-    indexBufferData.resize(nrVertex * 2 * 3 * int(sizeof(uint)));
-    uint *indexData = reinterpret_cast<uint *>(indexBufferData.data());
+    triangleIndexArray.resize(nrVertex * 2 * 3 * int(sizeof(uint)));
+    uint *indexData = reinterpret_cast<uint *>(triangleIndexArray.data());
 
     long v0, v1, v2, v3;
     index = 0;
@@ -166,9 +169,8 @@ Qt3DCore::QEntity *createScene(Crit3DProject* myProject, float magnify)
     }
 
     long nrTriangles = index;
-    indexBufferData.resize(nrTriangles * 3 * int(sizeof(uint)));
     Qt3DRender::QBuffer *indexBuffer = new Qt3DRender::QBuffer();
-    indexBuffer->setData(indexBufferData);
+    indexBuffer->setData(triangleIndexArray);
 
     Qt3DRender::QAttribute *indexAttribute = new Qt3DRender::QAttribute();
     indexAttribute->setAttributeType(Qt3DRender::QAttribute::IndexAttribute);

@@ -962,9 +962,9 @@ void MainWindow::on_actionView_3D_triggered()
     utmCenter.y = myProject.DTM.header->llCorner->y + dy * 0.5f;
     float size = sqrt(dx*dy);
     float ratio = size / dz;
-    float magnify = maxValue(1., minValue(10.f, ratio / 6.f));
+    float magnify = maxValue(1., minValue(8.f, int(ratio / 5.f)));
 
-    camera->setPosition(QVector3D(utmCenter.x, utmCenter.y - dy*0.5, (z + dz*2) * magnify));
+    camera->setPosition(QVector3D(utmCenter.x, utmCenter.y - dy*0.75, (z + dz*3) * magnify));
     camera->setViewCenter(QVector3D(utmCenter.x, utmCenter.y, z * magnify));
 
     // Scene
