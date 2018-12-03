@@ -41,6 +41,19 @@ Qt3DCore::QEntity *createScene(gis::Crit3DRasterGrid *dtm, gis::Crit3DRasterGrid
                     rawPosition[index*3+1] = y;
                     rawPosition[index*3+2] = z  *magnify;
 
+                    /*
+                    k3D.SlopeAmplification = 90 / GIS.slopeMap.ValMax
+
+                    Aspect = GIS.aspectMap.Value(myRow, myCol)
+                    Slope = GIS.slopeMap.Value(myRow, myCol)
+                    If Aspect <> GIS.aspectMap.header.flag And Slope <> GIS.slopeMap.header.flag Then
+                        Shadow = GetCosTable_NESW(Aspect) * max(3, Slope * SlopeAmplification)
+                        color.red = valueRange(color.red + Shadow, 0, 255)
+                        color.green = valueRange(color.green + Shadow, 0, 255)
+                        color.blue = valueRange(color.blue + Shadow, 0, 255)
+                    End If
+                    */
+
                     rawColor[index*3] = float(myColor->red) / 256.f;
                     rawColor[index*3+1] = float(myColor->green) / 256.f;
                     rawColor[index*3+2] = float(myColor->blue) / 256.f;
