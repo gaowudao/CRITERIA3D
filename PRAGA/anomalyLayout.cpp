@@ -138,8 +138,8 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
     elab1Parameter.setFixedWidth(90);
     elab1Parameter.setValidator(new QDoubleValidator(-9999.0, 9999.0, 2)); //LC accetta double con 2 cifre decimali da -9999 a 9999
     readParam.setText("Read param from db Climate");
-    readParam.setChecked(myProject.referenceClima->param1IsClimate());
-    climateDbElabList.setVisible(readParam.isChecked());
+    readParam.setChecked(false);
+    climateDbElabList.setVisible(false);
 
 
     QString elab1Field = elaborationList.currentText();
@@ -147,9 +147,13 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
     {
         elab1Parameter.clear();
         elab1Parameter.setReadOnly(true);
+        readParam.setCheckable(false);
+        climateDbElabList.setVisible(false);
+        adjustSize();
     }
     else
     {
+        readParam.setCheckable(true);
         if (!readParam.isChecked())
         {
             elab1Parameter.setReadOnly(false);
@@ -229,9 +233,25 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
     if (myProject.referenceClima->elab1() != "")
     {
         elaborationList.setCurrentText(myProject.referenceClima->elab1());
-        if (myProject.referenceClima->param1() != NODATA)
+        if ( (myProject.referenceClima->param1() != NODATA) && (!myProject.referenceClima->param1IsClimate()) )
         {
+            elab1Parameter.setReadOnly(false);
             elab1Parameter.setText(QString::number(myProject.referenceClima->param1()));
+        }
+        else if (myProject.referenceClima->param1IsClimate())
+        {
+            elab1Parameter.clear();
+            elab1Parameter.setReadOnly(true);
+            readParam.setChecked(true);
+            climateDbElabList.setVisible(true);
+            adjustSize();
+            climateDbElabList.setCurrentText(myProject.referenceClima->param1ClimateField());
+        }
+        else
+        {
+            readParam.setChecked(false);
+            climateDbElabList.setVisible(false);
+            adjustSize();
         }
     }
     if (myProject.referenceClima->elab2() != "")
@@ -289,14 +309,9 @@ void AnomalyLayout::AnomalyListElaboration(const QString value)
         }
     }
 
-    if (readReference.isChecked())
-    {
-        AnomalyReadReferenceState(Qt::Checked);
-    }
-    else if (readParam.isChecked())
-    {
-        AnomalyReadParameter(Qt::Checked);
-    }
+    readParam.setChecked(false);
+    climateDbElabList.setVisible(false);
+    adjustSize();
 
     AnomalyListSecondElab(elaborationList.currentText());
 }
@@ -447,10 +462,15 @@ void AnomalyLayout::AnomalyListSecondElab(const QString value)
     {
         elab1Parameter.clear();
         elab1Parameter.setReadOnly(true);
+        readParam.setChecked(false);
+        climateDbElabList.setVisible(false);
+        adjustSize();
+        readParam.setCheckable(false);
     }
     else
     {
         elab1Parameter.setReadOnly(false);
+        readParam.setCheckable(true);
     }
 
     if (elaborationList.currentText().toStdString() == "huglin" || elaborationList.currentText().toStdString() == "winkler" || elaborationList.currentText().toStdString() == "fregoni")
@@ -521,6 +541,7 @@ void AnomalyLayout::AnomalyReadParameter(int state)
     if (state!= 0)
     {
         climateDbElabList.setVisible(true);
+        adjustSize();
         AnomalyFillClimateDbList(&climateDbElabList);
         elab1Parameter.clear();
         elab1Parameter.setReadOnly(true);
@@ -528,6 +549,7 @@ void AnomalyLayout::AnomalyReadParameter(int state)
     else
     {
         climateDbElabList.setVisible(false);
+        adjustSize();
         elab1Parameter.setReadOnly(false);
     }
 
@@ -572,24 +594,28 @@ void AnomalyLayout::AnomalyReadReferenceState(int state)
         climateDbClimaList.setVisible(true);
         AnomalySetAllEnable(false);
         AnomalyFillClimateDbList(&climateDbClimaList);
+        adjustSize();
 
     }
     else
     {
         AnomalySetAllEnable(true);
+        climateDbElabList.setVisible(readParam.isChecked());
         climateDbClimaList.setVisible(false);
+        adjustSize();
     }
 }
 
 void AnomalyLayout::AnomalySetAllEnable(bool set)
 {
+
     currentDay.setEnabled(set);
     firstYearEdit.setEnabled(set);
     lastYearEdit.setEnabled(set);
     genericPeriodStart.setEnabled(set);
     genericPeriodEnd.setEnabled(set);
     nrYear.setEnabled(set);
-    readParam.setCheckable(set);
+    readParam.setEnabled(set);
     periodTypeList.setEnabled(set);
     elaborationList.setEnabled(set);
     secondElabList.setEnabled(set);

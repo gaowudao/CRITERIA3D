@@ -17,9 +17,9 @@ bool loadProxyGrids(Crit3DInterpolationSettings* mySettings)
 
         if (mySettings->getSelectedCombination().getValue(i) || myProxy->getForQualityControl())
         {
-            if (myGrid == NULL)
+            if (myGrid == nullptr)
             {
-                if (!getProxyPragaName(myProxy->getName()) == height)
+                if (getProxyPragaName(myProxy->getName()) != height)
                 {
                     myGrid = new gis::Crit3DRasterGrid();
                     if (!gis::readEsriGrid(myProxy->getGridName(), myGrid, myError))

@@ -32,6 +32,14 @@
 #include "interpolationDialog.h"
 #include "settingsDialog.h"
 
+#include <Qt3DRender/QCamera>
+#include <Qt3DExtras/Qt3DWindow>
+#include <Qt3DExtras/QForwardRenderer>
+#include <Qt3DExtras/QFirstPersonCameraController>
+#include <Qt3DInput>
+
+#include "scene.h"
+
 extern Crit3DProject myProject;
 
 #define MAPBORDER 8
@@ -45,7 +53,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->showPoints = true;
 
-    this->myRubberBand = NULL;
+    this->myRubberBand = nullptr;
 
     // Set the MapGraphics Scene and View
     this->mapScene = new MapGraphicsScene(this);
@@ -139,7 +147,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event){
 
     gis::Crit3DGeoPoint pointSelected;
 
-    if (myRubberBand != NULL && myRubberBand->isVisible())
+    if (myRubberBand != nullptr && myRubberBand->isVisible())
     {
         QPointF lastCornerOffset = event->localPos();
         QPointF firstCornerOffset = myRubberBand->getFirstCorner();
@@ -230,7 +238,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent * event)
     Position geoPoint = this->mapView->mapToScene(mapPoint);
     this->ui->statusBar->showMessage(QString::number(geoPoint.latitude()) + " " + QString::number(geoPoint.longitude()));
 
-    if (myRubberBand != NULL)
+    if (myRubberBand != nullptr)
     {
         myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), mapPoint).normalized());
     }
@@ -241,7 +249,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::RightButton)
     {
-        if (myRubberBand != NULL)
+        if (myRubberBand != nullptr)
         {
             QPoint pos = event->pos();
             QPointF firstCorner = event->localPos();
@@ -304,16 +312,16 @@ void MainWindow::on_actionMapTerrain_triggered()
 
 void MainWindow::on_actionRectangle_Selection_triggered()
 {
-    if (myRubberBand != NULL)
+    if (myRubberBand != nullptr)
     {
         delete myRubberBand;
-        myRubberBand = NULL;
+        myRubberBand = nullptr;
     }
 
     if (ui->actionRectangle_Selection->isChecked())
     {
         myRubberBand = new RubberBand(QRubberBand::Rectangle, this->mapView);
-        QPoint origin(this->mapView->width()*0.5 , this->mapView->height()*0.5);
+        QPoint origin(int(this->mapView->width()*0.5), int(this->mapView->height()*0.5));
         QPoint mapPoint = getMapPoint(&origin);
         myRubberBand->setOrigin(mapPoint);
         myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), QSize()));
@@ -341,7 +349,7 @@ void MainWindow::on_actionLoadDEM_triggered()
 
     // resize map
     float size = this->rasterObj->getRasterMaxSize();
-    size = log2(1000.0/size);
+    size = log2(1000.f/size);
     this->mapView->setZoomLevel(quint8(size));
     this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
 
@@ -393,7 +401,7 @@ void MainWindow::resetMeteoPoints()
 
     this->pointList.clear();
 
-    this->myRubberBand = NULL;
+    this->myRubberBand = nullptr;
 }
 
 
@@ -432,7 +440,7 @@ void MainWindow::updateVariable()
         if (myProject.currentVariable != noMeteoVar)
         {
             this->ui->actionShowLocation->setChecked(false);
-            if (this->meteoGridObj != NULL) this->meteoGridObj->setDrawBorders(false);
+            if (this->meteoGridObj != nullptr) this->meteoGridObj->setDrawBorders(false);
         }
 
         if (myProject.getFrequency() == daily)
@@ -575,7 +583,7 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
     Crit3DColor *myColor;
     for (int i = 0; i < myProject.nrMeteoPoints; i++)
     {
-        if (myProject.meteoPoints[i].currentValue != NODATA)
+        if (int(myProject.meteoPoints[i].currentValue) != NODATA)
         {
             if (myProject.meteoPoints[i].quality == quality::accepted)
             {
@@ -603,7 +611,7 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
 void MainWindow::redrawMeteoGrid()
 {
 
-    if (myProject.meteoGridDbHandler == NULL)
+    if (myProject.meteoGridDbHandler == nullptr)
         return;
 
     frequencyType frequency = myProject.getFrequency();
@@ -650,9 +658,9 @@ bool MainWindow::loadMeteoPointsDB(QString dbName)
 
     this->addMeteoPoints();
 
-    if (myProject.meteoGridDbHandler == NULL)
+    if (myProject.meteoGridDbHandler == nullptr)
     {
-        myProject.loadlastMeteoData();
+        myProject.loadLastMeteoData();
         this->updateDateTime();
     }
     else
@@ -734,9 +742,9 @@ void MainWindow::setMapSource(OSMTileSource::OSMTileType mySource)
 
 void MainWindow::on_rasterScaleButton_clicked()
 {
-    if (this->rasterObj->currentRaster == NULL)
+    if (this->rasterObj->currentRaster == nullptr)
     {
-        QMessageBox::information(NULL, "No Raster", "Load raster before");
+        QMessageBox::information(nullptr, "No Raster", "Load raster before");
         return;
     }
 
@@ -754,7 +762,7 @@ void MainWindow::on_variableButton_clicked()
     {
        this->ui->actionShowLocation->setChecked(false);
        this->updateVariable();
-       if (this->meteoGridObj != NULL) this->meteoGridObj->setDrawBorders(false);
+       if (this->meteoGridObj != nullptr) this->meteoGridObj->setDrawBorders(false);
     }
 }
 
@@ -777,9 +785,9 @@ void MainWindow::on_actionPointsVisible_triggered()
 
 void MainWindow::on_rasterRestoreButton_clicked()
 {
-    if (this->rasterObj->currentRaster == NULL)
+    if (this->rasterObj->currentRaster == nullptr)
     {
-        QMessageBox::information(NULL, "No Raster", "Load raster before");
+        QMessageBox::information(nullptr, "No Raster", "Load raster before");
         return;
     }
 
@@ -810,7 +818,7 @@ void MainWindow::on_actionClose_meteo_points_triggered()
 
 void MainWindow::on_actionClose_meteo_grid_triggered()
 {
-    if (myProject.meteoGridDbHandler != NULL)
+    if (myProject.meteoGridDbHandler != nullptr)
     {
         myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.isLoaded = false;
         meteoGridObj->clean();
@@ -835,15 +843,13 @@ void MainWindow::on_actionInterpolation_to_DTM_triggered()
 
 void MainWindow::on_actionInterpolationSettings_triggered()
 {
-    if (myProject.meteoPointsDbHandler == NULL)
+    if (myProject.meteoPointsDbHandler == nullptr)
     {
-        QMessageBox::information(NULL, "No DB open", "Open DB Points");
+        QMessageBox::information(nullptr, "No DB open", "Open DB Points");
         return;
     }
 
-    InterpolationDialog* myInterpolationDialog = new InterpolationDialog(myProject.settings, &myProject.interpolationSettings);
-    myProject.copyInterpolationSettingsToQuality();
-
+    InterpolationDialog* myInterpolationDialog = new InterpolationDialog(&myProject);
     myInterpolationDialog->close();
 }
 
@@ -852,7 +858,8 @@ void MainWindow::on_actionParameters_triggered()
 {
     SettingsDialog* mySettingsDialog = new SettingsDialog(myProject.pathSetting, myProject.settings, &myProject.gisSettings, myProject.quality, myProject.meteoSettings);
     mySettingsDialog->exec();
-    if (startCenter->latitude() != myProject.gisSettings.startLocation.latitude || startCenter->longitude() != myProject.gisSettings.startLocation.longitude)
+    if (startCenter->latitude() != myProject.gisSettings.startLocation.latitude
+            || startCenter->longitude() != myProject.gisSettings.startLocation.longitude)
     {
         startCenter->setLatitude(myProject.gisSettings.startLocation.latitude);
         startCenter->setLongitude(myProject.gisSettings.startLocation.longitude);
@@ -867,7 +874,7 @@ void MainWindow::on_actionShowLocation_triggered()
 {
     myProject.currentVariable = noMeteoVar;
     this->ui->actionShowLocation->setChecked(true);
-    if (this->meteoGridObj != NULL) this->meteoGridObj->setDrawBorders(true);
+    if (this->meteoGridObj != nullptr) this->meteoGridObj->setDrawBorders(true);
     this->updateVariable();
 }
 
@@ -878,7 +885,7 @@ void MainWindow::on_actionOpen_model_parameters_triggered()
     if (fileName == "") return;
 
     if (myProject.loadModelParameters(fileName))
-        QMessageBox::information(NULL, "", "Model parameters loaded");
+        QMessageBox::information(nullptr, "", "Model parameters loaded");
 }
 
 
@@ -888,7 +895,7 @@ void MainWindow::on_actionOpen_soil_map_triggered()
     if (fileName == "") return;
 
     if (myProject.loadSoilMap(fileName))
-        QMessageBox::information(NULL, "", "Soil map loaded.");
+        QMessageBox::information(nullptr, "", "Soil map loaded.");
 }
 
 
@@ -900,40 +907,167 @@ void MainWindow::on_actionOpen_soil_data_triggered()
     myProject.loadSoilData(fileName);
 }
 
-void MainWindow::on_actionShow_DTM_triggered()
+
+void mouseManager(Qt3DExtras::Qt3DWindow *view3D, QMouseEvent *e)
+{
+    if(e->buttons() == Qt::RightButton)
+    {
+        QVector3D camPos = view3D->camera()->position();
+        camPos.normalize();
+        float dy = float(e->x()) / 300.f;
+        camPos = view3D->camera()->position() - QVector3D(dy, dy, dy);
+        view3D->camera()->setPosition(camPos);
+    }
+}
+
+
+void MainWindow::on_actionCriteria3D_Initialize_triggered()
+{
+    if (myProject.initializeCriteria3D())
+        QMessageBox::information(nullptr, "", "Criteria3D initialized.");
+}
+
+
+
+void MainWindow::on_actionView_3D_triggered()
+{
+    if (! myProject.DTM.isLoaded)
+    {
+        myProject.logError("Load DTM before.");
+        return;
+    }
+
+    if (! myProject.isInitialized)
+        myProject.createIndexMap();
+
+    // 3d Window
+    Qt3DExtras::Qt3DWindow *view3D = new Qt3DExtras::Qt3DWindow();
+    view3D->defaultFrameGraph()->setClearColor(QColor::fromRgbF(1, 1, 1, 1.0));
+    view3D->setTitle("3D");
+    view3D->setWidth(1000);
+    view3D->setHeight(600);
+
+    // Camera
+    Qt3DRender::QCamera *camera = view3D->camera();
+    camera->lens()->setPerspectiveProjection(45.0f, 16.0f/9.0f, 1.f, 1000000.0f);
+    camera->setUpVector(QVector3D(0, 0, 1));
+
+    gis::Crit3DUtmPoint utmCenter;
+
+    float dz = maxValue(myProject.DTM.maximum - myProject.DTM.minimum, 10.f);
+    float z = myProject.DTM.minimum + dz * 0.5f;
+    float dy = myProject.DTM.header->nrRows * myProject.DTM.header->cellSize;
+    float dx = myProject.DTM.header->nrCols * myProject.DTM.header->cellSize;
+    utmCenter.x = myProject.DTM.header->llCorner->x + dx * 0.5f;
+    utmCenter.y = myProject.DTM.header->llCorner->y + dy * 0.5f;
+    float size = sqrt(dx*dy);
+    float ratio = size / dz;
+    float magnify = maxValue(1., minValue(8.f, int(ratio / 5.f)));
+
+    camera->setPosition(QVector3D(utmCenter.x, utmCenter.y - dy*0.75, (z + dz*3) * magnify));
+    camera->setViewCenter(QVector3D(utmCenter.x, utmCenter.y, z * magnify));
+
+    // Scene
+    Qt3DCore::QEntity *scene = createScene(&myProject, magnify);
+    view3D->setRootEntity(scene);
+
+    // Camera controls
+    Qt3DExtras::QFirstPersonCameraController *camController = new Qt3DExtras::QFirstPersonCameraController(scene);
+    camController->setCamera(camera);
+
+    view3D->show();
+}
+
+
+void MainWindow::on_actionView_DTM_triggered()
 {
     if (myProject.DTM.isLoaded)
     {
         setColorScale(noMeteoTerrain, myProject.DTM.colorScale);
         this->setCurrentRaster(&(myProject.DTM));
+        ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
     }
-}
-
-void MainWindow::on_actionShow_boundary_triggered()
-{
-    if (myProject.boundaryMap.isLoaded)
+    else
     {
-        setColorScale(noMeteoTerrain, myProject.boundaryMap.colorScale);
-        this->setCurrentRaster(&(myProject.boundaryMap));
+        myProject.logError("Load DTM before.");
+        return;
     }
 }
 
-void MainWindow::on_actionShow_soil_triggered()
+
+void MainWindow::on_actionView_Soil_triggered()
 {
     if (myProject.soilMap.isLoaded)
     {
         setColorScale(noMeteoTerrain, myProject.soilMap.colorScale);
         this->setCurrentRaster(&(myProject.soilMap));
+        ui->labelRasterScale->setText("Soil map");
+    }
+    else
+    {
+        myProject.logError("Load soil map before.");
+        return;
     }
 }
 
-void MainWindow::on_actionCriteria3D_settings_triggered()
-{
 
+void MainWindow::on_actionView_Boundary_triggered()
+{
+    if (myProject.boundaryMap.isLoaded)
+    {
+        setColorScale(noMeteoTerrain, myProject.boundaryMap.colorScale);
+        this->setCurrentRaster(&(myProject.boundaryMap));
+        ui->labelRasterScale->setText("Boundary map");
+    }
+    else
+    {
+        myProject.logError("Initialize model before.");
+        return;
+    }
 }
 
-void MainWindow::on_actionCriteria3D_Initialize_triggered()
+
+void MainWindow::on_actionView_Slope_triggered()
 {
-    if (myProject.initializeCriteria3D())
-        QMessageBox::information(NULL, "", "Criteria3D initialized.");
+    if (myProject.DTM.isLoaded)
+    {
+        setColorScale(noMeteoTerrain, myProject.radiationMaps->slopeMap->colorScale);
+        this->setCurrentRaster(myProject.radiationMaps->slopeMap);
+        ui->labelRasterScale->setText("Slope °");
+    }
+    else
+    {
+        myProject.logError("Load DTM before.");
+        return;
+    }
+}
+
+
+void MainWindow::on_actionView_Aspect_triggered()
+{
+    if (myProject.DTM.isLoaded)
+    {
+        setColorScale(airTemperature, myProject.radiationMaps->aspectMap->colorScale);
+        this->setCurrentRaster(myProject.radiationMaps->aspectMap);
+        ui->labelRasterScale->setText("Aspect °");
+    }
+    else
+    {
+        myProject.logError("Load DTM before.");
+        return;
+    }
+}
+
+void MainWindow::on_actionView_Variable_triggered()
+{
+    if (myProject.dataRaster.isLoaded)
+    {
+        this->setCurrentRaster(&(myProject.dataRaster));
+        ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myProject.getCurrentVariable())));
+    }
+    else
+    {
+        myProject.logError("Compute a variable before.");
+        return;
+    }
 }

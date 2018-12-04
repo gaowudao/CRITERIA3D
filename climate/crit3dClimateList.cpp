@@ -25,6 +25,25 @@ void Crit3DClimateList::setListClimateElab(const QStringList &listClimateElab)
     _listClimateElab = listClimateElab;
 }
 
+void Crit3DClimateList::resetListClimateElab()
+{
+    _listClimateElab.clear();
+    _listElab1.clear();
+    _listElab2.clear();
+    _listGenericPeriodDateStart.clear();
+    _listGenericPeriodDateEnd.clear();
+    _listNYears.clear();
+    _listParam1.clear();
+    _listParam1ClimateField.clear();
+    _listParam1IsClimate.clear();
+    _listParam2.clear();
+    _listPeriodStr.clear();
+    _listPeriodType.clear();
+    _listVariable.clear();
+    _listYearEnd.clear();
+    _listYearStart.clear();
+}
+
 std::vector<int> Crit3DClimateList::listYearStart() const
 {
     return _listYearStart;
@@ -294,6 +313,12 @@ void Crit3DClimateList::parserElaboration()
                 param1ClimateField = "";
                 param = words[pos].toFloat();
             }
+        }
+        else
+        {
+            param1IsClimate = false;
+            param1ClimateField = "";
+            param =  NODATA;
         }
 
         pos = pos + 1;

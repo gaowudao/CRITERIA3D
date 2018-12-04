@@ -127,11 +127,11 @@ namespace gis
         this->z = NODATA;
     }
 
-    Crit3DPoint::Crit3DPoint(double myX, double myY, double myZ)
+    Crit3DPoint::Crit3DPoint(double myX, double myY, double z)
     {
         utm.x = myX;
         utm.y = myY;
-        z = myZ;
+        z = z;
     }
 
     Crit3DRasterHeader::Crit3DRasterHeader()
@@ -510,8 +510,14 @@ namespace gis
     void getUtmXYFromRowColSinglePrecision(const Crit3DRasterGrid& myGrid,
         int myRow, int myCol, float* myX, float* myY)
     {
-            *myX = (float)(myGrid.header->llCorner->x + myGrid.header->cellSize * (myCol + 0.5));
-            *myY = (float)(myGrid.header->llCorner->y + myGrid.header->cellSize * (myGrid.header->nrRows - myRow - 0.5));
+            *myX = (float)(myGrid.header->llCorner->x + myGrid.header->cellSize * (float(myCol) + 0.5));
+            *myY = (float)(myGrid.header->llCorner->y + myGrid.header->cellSize * (float(myGrid.header->nrRows - myRow) - 0.5));
+    }
+
+    void getUtmXYFromRowColSinglePrecision(const Crit3DRasterHeader& myHeader, int myRow, int myCol, float* myX, float* myY)
+    {
+            *myX = (float)(myHeader.llCorner->x + myHeader.cellSize * (float(myCol) + 0.5));
+            *myY = (float)(myHeader.llCorner->y + myHeader.cellSize * (float(myHeader.nrRows - myRow) - 0.5));
     }
 
     void getUtmXYFromRowCol(const Crit3DRasterGrid& myGrid,
@@ -573,7 +579,6 @@ namespace gis
             return(true);
         else return(false);
     }
-
 
     void getLatLonFromUtm(const Crit3DGisSettings& gisSettings, double utmX, double utmY, double *myLat, double *myLon)
     {
@@ -836,72 +841,119 @@ namespace gis
     }
 
 
-    bool computeSlopeAspectMaps(const gis::Crit3DRasterGrid& myDtm,
+    bool computeSlopeAspectMaps(const gis::Crit3DRasterGrid& dtm,
                                 gis::Crit3DRasterGrid* slopeMap, gis::Crit3DRasterGrid* aspectMap)
     {
-        if (! myDtm.isLoaded) return false;
+        if (! dtm.isLoaded) return false;
 
         double reciprocalCellSize;
         double dz_dx, dz_dy;
-        double mySlope, myAspect;
-        double myZ;
+        double slope, aspect;
+        double z, dz;
         double zNorth, zSouth, zEast, zWest;
+        int i, nr;
 
-        slopeMap->initializeGrid(myDtm);
-        aspectMap->initializeGrid(myDtm);
+        slopeMap->initializeGrid(dtm);
+        aspectMap->initializeGrid(dtm);
 
-        reciprocalCellSize = 1. / myDtm.header->cellSize;
+        reciprocalCellSize = 1. / dtm.header->cellSize;
 
-        for (int myRow = 0; myRow < myDtm.header->nrRows; myRow++)
-            for (int myCol = 0; myCol < myDtm.header->nrCols; myCol++)
+        for (int myRow = 0; myRow < dtm.header->nrRows; myRow++)
+            for (int myCol = 0; myCol < dtm.header->nrCols; myCol++)
             {
-                myZ = myDtm.value[myRow][myCol];
-                if (myZ != myDtm.header->flag)
+                z = dtm.value[myRow][myCol];
+                if (z != dtm.header->flag)
                 {
-                    zNorth = myDtm.getValueFromRowCol(myRow-1, myCol);
-                    zSouth = myDtm.getValueFromRowCol(myRow+1, myCol);
+                    /* OLD METHOD
+                    zNorth = dtm.getValueFromRowCol(myRow-1, myCol);
+                    zSouth = dtm.getValueFromRowCol(myRow+1, myCol);
 
-                    if (zNorth != myDtm.header->flag && zSouth != myDtm.header->flag)
+                    if (zNorth != dtm.header->flag && zSouth != dtm.header->flag)
                         dz_dy = 0.5 * (zNorth - zSouth) * reciprocalCellSize;
-                    else if (zNorth != myDtm.header->flag)
-                        dz_dy = (zNorth - myZ) * reciprocalCellSize;
-                    else if (zSouth != myDtm.header->flag)
-                        dz_dy = (myZ - zSouth) * reciprocalCellSize;
+                    else if (zNorth != dtm.header->flag)
+                        dz_dy = (zNorth - z) * reciprocalCellSize;
+                    else if (zSouth != dtm.header->flag)
+                        dz_dy = (z - zSouth) * reciprocalCellSize;
                     else
                         dz_dy = EPSILON;
 
-                    zWest = myDtm.getValueFromRowCol(myRow, myCol-1);
-                    zEast = myDtm.getValueFromRowCol(myRow, myCol+1);
+                    zWest = dtm.getValueFromRowCol(myRow, myCol-1);
+                    zEast = dtm.getValueFromRowCol(myRow, myCol+1);
 
-                    if (zWest != myDtm.header->flag && zEast != myDtm.header->flag)
+                    if (zWest != dtm.header->flag && zEast != dtm.header->flag)
                         dz_dx = 0.5 * (zWest - zEast) * reciprocalCellSize;
-                    else if (zWest != myDtm.header->flag)
-                        dz_dx = (zWest - myZ) * reciprocalCellSize;
-                    else if (zEast != myDtm.header->flag)
-                        dz_dx = (myZ - zEast) * reciprocalCellSize;
+                    else if (zWest != dtm.header->flag)
+                        dz_dx = (zWest - z) * reciprocalCellSize;
+                    else if (zEast != dtm.header->flag)
+                        dz_dx = (z - zEast) * reciprocalCellSize;
                     else
+                        dz_dx = EPSILON;*/
+
+                    /*! compute dz/dy */
+                    nr = 0;
+                    dz = 0;
+                    for (i=-1; i <=1; i++)
+                    {
+                        zNorth = dtm.getValueFromRowCol(myRow-1, myCol+i);
+                        zSouth = dtm.getValueFromRowCol(myRow+1, myCol+i);
+                        if (zNorth != dtm.header->flag)
+                        {
+                            dz += zNorth - z;
+                            nr++;
+                        }
+                        if (zSouth != dtm.header->flag)
+                        {
+                            dz += z - zSouth;
+                            nr++;
+                        }
+                    }
+                    if (nr == 0)
+                        dz_dy = EPSILON;
+                    else
+                        dz_dy = dz / (nr * dtm.header->cellSize);
+
+                    /*! compute dz/dx */
+                    nr = 0;
+                    dz = 0;
+                    for (i=-1; i <=1; i++)
+                    {
+                        zWest = dtm.getValueFromRowCol(myRow+i, myCol-1);
+                        zEast = dtm.getValueFromRowCol(myRow+i, myCol+1);
+                        if (zWest != dtm.header->flag)
+                        {
+                            dz += zWest - z;
+                            nr++;
+                        }
+                        if (zEast != dtm.header->flag)
+                        {
+                            dz += z - zEast;
+                            nr++;
+                        }
+                    }
+                    if (nr == 0)
                         dz_dx = EPSILON;
+                    else
+                        dz_dx = dz / (nr * dtm.header->cellSize);
 
                     /*! slope in degrees */
-                    mySlope = atan(sqrt(dz_dx * dz_dx + dz_dy * dz_dy)) * RAD_TO_DEG;
-                    slopeMap->value[myRow][myCol] = (float)mySlope;
+                    slope = atan(sqrt(dz_dx * dz_dx + dz_dy * dz_dy)) * RAD_TO_DEG;
+                    slopeMap->value[myRow][myCol] = float(slope);
 
                     /*! avoid arctan to infinite */
                     if (dz_dx == 0.) dz_dx = EPSILON;
 
                     /*! compute with zero to east */
-                    myAspect = 0.0;
+                    aspect = 0.0;
                     if (dz_dx > 0)
-                        myAspect = atan(dz_dy / dz_dx);
+                        aspect = atan(dz_dy / dz_dx);
                     else if (dz_dx < 0)
-                        myAspect = PI + atan(dz_dy / dz_dx);
+                        aspect = PI + atan(dz_dy / dz_dx);
 
                     /*! convert to zero from north and to degrees */
-                    myAspect += (PI / 2.);
-                    myAspect *= RAD_TO_DEG;
+                    aspect += (PI / 2.);
+                    aspect *= RAD_TO_DEG;
 
-                    aspectMap->value[myRow][myCol] = (float)myAspect;
-
+                    aspectMap->value[myRow][myCol] = float(aspect);
                 }
             }
 

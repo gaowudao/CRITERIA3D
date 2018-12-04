@@ -28,7 +28,7 @@
 
     public:
 
-        explicit MainWindow(QWidget *parent = 0);
+        explicit MainWindow(QWidget *parent = nullptr);
         ~MainWindow();
 
 
@@ -58,15 +58,25 @@
         void on_actionOpen_model_parameters_triggered();
         void on_actionOpen_soil_map_triggered();
         void on_actionOpen_soil_data_triggered();
-        void on_actionShow_boundary_triggered();
-        void on_actionShow_soil_triggered();
-        void on_actionShow_DTM_triggered();
         void on_actionInterpolationSettings_triggered();
-        void on_actionCriteria3D_settings_triggered();
         void on_actionCriteria3D_Initialize_triggered();
         void on_meteoGridOpacitySlider_sliderMoved(int position);
         void on_actionParameters_triggered();
         void on_actionShowLocation_triggered();
+
+        void on_actionView_DTM_triggered();
+
+        void on_actionView_3D_triggered();
+
+        void on_actionView_Soil_triggered();
+
+        void on_actionView_Boundary_triggered();
+
+        void on_actionView_Slope_triggered();
+
+        void on_actionView_Aspect_triggered();
+
+        void on_actionView_Variable_triggered();
 
     protected:
         /*!

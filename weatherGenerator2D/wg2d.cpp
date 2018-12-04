@@ -250,7 +250,7 @@ void weatherGenerator2D::precipitationCompute()
    // step 3 of precipitation WG2D
    weatherGenerator2D::precipitationMultisiteOccurrenceGeneration();
    // step 4 of precipitation WG2D
-   weatherGenerator2D::precipitationMultiDistributionAmounts();
+   //weatherGenerator2D::precipitationMultiDistributionAmounts();
    // step 5 of precipitation WG2D
 }
 
@@ -292,11 +292,11 @@ void weatherGenerator2D::precipitationP00P10()
         for (int month=0;month<12;month++)
         {
             if (daysWithoutRain[month] != 0)
-                precOccurence[idStation][month].p00 =(float)((1.0*occurrence00[month])/daysWithoutRain[month]);
+                precOccurence[idStation][month].p00 = minValue(0.9999999,(float)((1.0*occurrence00[month])/daysWithoutRain[month]));
             else
                 precOccurence[idStation][month].p00 = 0.0;
             if (daysWithRain[month] != 0)
-                precOccurence[idStation][month].p10 =(float)((1.0*occurrence10[month])/daysWithRain[month]);
+                precOccurence[idStation][month].p10 = minValue(0.9999999,(float)((1.0*occurrence10[month])/daysWithRain[month]));
             else
                 precOccurence[idStation][month].p10 = 0.0;
 
@@ -465,21 +465,19 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
         {
             for (int j=0;j<nrStations;j++)
             {
-                matrixOccurrence[i][j]= correlationMatrix[iMonth].occurrence[i][j];
-                //printf("%f,",matrixOccurrence[i][j]);
+                matrixOccurrence[i][j]= correlationMatrix[iMonth].occurrence[i][j]; //checked
             }
-            //printf("month %d,\n",iMonth);
 
             /* since random numbers generated have a normal distribution, each p00 and
                p10 have to be recalculated according to a normal number*/
             normalizedTransitionProbability[i][0]= - (SQRT_2*(statistics::inverseERFC(2*precOccurence[i][iMonth].p00,0.0001)));
             normalizedTransitionProbability[i][1]= - (SQRT_2*(statistics::inverseERFC(2*precOccurence[i][iMonth].p10,0.0001)));
+
+
             for (int j=0;j<nrDaysIterativeProcessMonthly[iMonth];j++)
             {
-               normalizedRandomMatrix[i][j]= myrandom::normalRandom(&gasDevIset,&gasDevGset);               
+               normalizedRandomMatrix[i][j]= myrandom::normalRandom(&gasDevIset,&gasDevGset);
             }
-
-
         }
 
         // initialization outputs of weatherGenerator2D::spatialIterationOccurrence
@@ -488,7 +486,6 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
         double** occurrences;
         M = (double **)calloc(nrStations, sizeof(double*));
         K = (double **)calloc(nrStations, sizeof(double*));
-        //occurrences = (double **)calloc(nrDaysIterativeProcessMonthly[iMonth], sizeof(double*));
         occurrences = (double **)calloc(nrStations, sizeof(double*));
 
         for (int i=0;i<nrStations;i++)
@@ -499,9 +496,7 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             {
                 M[i][j]= NODATA;
                 K[i][j]= NODATA;
-
             }
-
         }
         for (int i=0;i<nrStations;i++)
         {
@@ -519,13 +514,16 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             for (int j=0;j<nrStations;j++)
             {
                 randomMatrix[iMonth].matrixK[i][j] = float(K[i][j]);
-                randomMatrix[iMonth].matrixM[i][j] = float(M[i][j]);
+                randomMatrix[iMonth].matrixM[i][j] = float(M[i][j]);                
             }
+
+
             for (int j=0;j<nrDaysIterativeProcessMonthly[iMonth];j++)
             {
                 randomMatrix[iMonth].matrixOccurrences[i][j]= float(occurrences[i][j]);
             }
         }
+
         randomMatrix[iMonth].month = iMonth + 1;
         // free memory
         for (int i=0;i<nrStations;i++)
@@ -536,7 +534,7 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             occurrences[i];
 
         }
-        //for (int i=0;i<nrDaysIterativeProcessMonthly[iMonth];i++) free(occurrences[i]);
+
         free(normalizedRandomMatrix);
         free(M);
         free(K);
@@ -583,12 +581,6 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
         dummyMatrix3[i]= (double*)calloc(lengthSeries, sizeof(double));
         normRandom[i]= (double*)calloc(lengthSeries, sizeof(double));
     }
-    /*for (int i=0;i<lengthSeries;i++)
-    {
-        correlationRandom[i]= (double*)calloc(nrStations, sizeof(double));
-    }*/
-
-
 
     // initialization output M
     for (int i=0;i<nrStations;i++)
@@ -608,21 +600,19 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
         {
             for (int j=0;j<nrStations;j++) // avoid solutions with correlation coefficient greater than 1
             {
-                M[i][j] = min_value(M[i][j],1);
+                M[i][j] = minValue(M[i][j],1);
                 correlationArray[counter] = M[i][j];
                 counter++;
-                //printf("%f ",M[i][j]);
             }
-            //printf("\n");
         }
-        //printf("inizio sub\n");
+
         eigenproblem::rs(nrStations,correlationArray,eigenvalues,true,eigenvectors);
         for (int i=0;i<nrStations;i++)
         {
             if (eigenvalues[i] <= 0)
             {
                 nrEigenvaluesLessThan0++;
-                eigenvalues[i] = 0.000001;
+                eigenvalues[i] = EPSILON;
             }
         }
         if (nrEigenvaluesLessThan0 > 0)
@@ -642,11 +632,9 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
         // the matrix called M is the final matrix exiting from the calculation
         for (int i=0;i<nrStations;i++)
             for (int j=0;j<nrStations;j++) dummyMatrix[i][j] = M[i][j];
-
-        matricial::choleskyDecompositionTriangularMatrix(dummyMatrix,nrStations,true);
-        //printf("Cholesky\n");
+        bool isLowerDiagonal = true;
+        matricial::choleskyDecompositionTriangularMatrix(dummyMatrix,nrStations,isLowerDiagonal);
         matricial::matrixProduct(dummyMatrix,normalizedMatrixRandom,nrStations,nrStations,lengthSeries,nrStations,dummyMatrix3);
-        //printf("prodottoMatriciale\n");
         for (int i=0;i<nrStations;i++)
         {
             // compute mean and standard deviation without NODATA check
@@ -666,7 +654,6 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
             }
         }
         // initialize occurrence to 0
-
         for (int i=0;i<nrStations;i++)
         {
             for (int j=0;j<lengthSeries;j++)
@@ -693,16 +680,18 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
         {
             for (int j=0;j<nrStations;j++)
             {
-                val = max_value(val,fabs(K[i][j] - matrixOccurrence[i][j]));
+                val = maxValue(val,fabs(K[i][j] - matrixOccurrence[i][j]));
             }
         }
-        //printf("%f \n",val);
-        //getchar();
+        for (int i=0; i<nrStations;i++)
+        {
+            M[i][i]= 1.;
+        }
         if ((ii != MAX_ITERATION_MULGETS) && (val > TOLERANCE_MULGETS))
         {
             for (int i=0; i<nrStations;i++)
             {
-                M[i][i]= 1.;
+                //M[i][i]= 1.;
                 for (int j=i+1;j<nrStations;j++)
                 {
                     M[i][j] += kiter*(matrixOccurrence[i][j]-K[i][j]);
@@ -751,8 +740,8 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
     {
         for (int j=0;j<nrData;j++)
         {
-            beginYear = min_value(beginYear,obsDataD[i][j].date.year);
-            endYear =  max_value(endYear,obsDataD[i][j].date.year);
+            beginYear = minValue(beginYear,obsDataD[i][j].date.year);
+            endYear =  maxValue(endYear,obsDataD[i][j].date.year);
         }
     }
     // create the seasonal correlation matrices
@@ -1036,7 +1025,7 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
             if (obsPrecDataD[ijk][j].date.month == 9 || obsPrecDataD[ijk][j].date.month == 10 || obsPrecDataD[ijk][j].date.month == 11)
                 numberObservedSON++;
         }
-        numberObservedMax = max_value(numberObservedDJF,max_value(numberObservedMAM,max_value(numberObservedJJA,numberObservedSON)));
+        numberObservedMax = maxValue(numberObservedDJF,maxValue(numberObservedMAM,maxValue(numberObservedJJA,numberObservedSON)));
 
         moran[ijk] = (double**)calloc(4, sizeof(double*));
         rainfallLessThreshold[ijk] = (double**)calloc(4, sizeof(double*));
@@ -2051,7 +2040,7 @@ void weatherGenerator2D::spatialIterationAmounts(double ** amountsCorrelationMat
         {
             for (int j=0;j<nrStations;j++) // avoid solutions with correlation coefficient greater than 1
             {
-                amountsCorrelationMatrix[i][j] = min_value(amountsCorrelationMatrix[i][j],1);
+                amountsCorrelationMatrix[i][j] = minValue(amountsCorrelationMatrix[i][j],1);
                 correlationArray[counter] = amountsCorrelationMatrix[i][j];
                 counter++;
                 //printf("%f ",M[i][j]);

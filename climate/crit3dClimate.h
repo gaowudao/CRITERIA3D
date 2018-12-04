@@ -31,6 +31,10 @@
 
         void resetParam();
 
+        void resetCurrentValues();
+
+        void copyParam(Crit3DClimate* clima);
+
         QSqlDatabase db() const;
         void setDb(const QSqlDatabase &db);
 
@@ -99,6 +103,7 @@
 
         Crit3DClimateList *getListElab() const;
         void setListElab(Crit3DClimateList *value);
+        void resetListElab();
 
         int getParam1ClimateIndex() const;
         void setParam1ClimateIndex(int param1ClimateIndex);

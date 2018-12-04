@@ -28,6 +28,7 @@
 #include "commonConstants.h"
 #include "sunPosition.h"
 #include "solarRadiation.h"
+#include "gis.h"
 #include <cmath>
 
 
@@ -37,13 +38,12 @@ Crit3DRadiationMaps::Crit3DRadiationMaps()
     lonMap = new gis::Crit3DRasterGrid;
     slopeMap = new gis::Crit3DRasterGrid;
     aspectMap = new gis::Crit3DRasterGrid;
-    linkeMap = new gis::Crit3DRasterGrid;
-    albedoMap = new gis::Crit3DRasterGrid;
-
     transmissivityMap = new gis::Crit3DRasterGrid;
     globalRadiationMap = new gis::Crit3DRasterGrid;
 
     /*
+    linkeMap = new gis::Crit3DRasterGrid;
+    albedoMap = new gis::Crit3DRasterGrid;
     beamRadiationMap = new gis::Crit3DRasterGrid;
     diffuseRadiationMap = new gis::Crit3DRasterGrid;
     reflectedRadiationMap = new gis::Crit3DRasterGrid;
@@ -60,15 +60,11 @@ Crit3DRadiationMaps::Crit3DRadiationMaps(const gis::Crit3DRasterGrid& myDtm, con
 {
     latMap = new gis::Crit3DRasterGrid;
     lonMap = new gis::Crit3DRasterGrid;
+    gis::computeLatLonMaps(myDtm, latMap, lonMap, myGisSettings);
+
     slopeMap = new gis::Crit3DRasterGrid;
     aspectMap = new gis::Crit3DRasterGrid;
-    albedoMap = new gis::Crit3DRasterGrid;
-    linkeMap = new gis::Crit3DRasterGrid;
-
     gis::computeSlopeAspectMaps(myDtm, slopeMap, aspectMap);
-    gis::computeLatLonMaps(myDtm, latMap, lonMap, myGisSettings);
-    linkeMap->initializeGrid(myDtm);
-    albedoMap->initializeGrid(myDtm);
 
     transmissivityMap = new gis::Crit3DRasterGrid;
     transmissivityMap->initializeGrid(myDtm, CLEAR_SKY_TRANSMISSIVITY_DEFAULT);
@@ -77,6 +73,8 @@ Crit3DRadiationMaps::Crit3DRadiationMaps(const gis::Crit3DRasterGrid& myDtm, con
     globalRadiationMap->initializeGrid(myDtm);
 
     /*
+    albedoMap = new gis::Crit3DRasterGrid;
+    linkeMap = new gis::Crit3DRasterGrid;
     beamRadiationMap = new gis::Crit3DRasterGrid;
     diffuseRadiationMap = new gis::Crit3DRasterGrid;
     reflectedRadiationMap = new gis::Crit3DRasterGrid;
@@ -85,6 +83,8 @@ Crit3DRadiationMaps::Crit3DRadiationMaps(const gis::Crit3DRasterGrid& myDtm, con
     sunIncidenceMap = new gis::Crit3DRasterGrid;
     sunShadowMap = new gis::Crit3DRasterGrid;
 
+    linkeMap->initializeGrid(myDtm);
+    albedoMap->initializeGrid(myDtm);
     beamRadiationMap->initializeGrid(myDtm);
     diffuseRadiationMap->initializeGrid(myDtm);
     reflectedRadiationMap->initializeGrid(myDtm);
@@ -109,12 +109,12 @@ void Crit3DRadiationMaps::clean()
     lonMap->freeGrid();
     slopeMap->freeGrid();
     aspectMap->freeGrid();
-    albedoMap->freeGrid();
-    linkeMap->freeGrid();
     transmissivityMap->freeGrid();
     globalRadiationMap->freeGrid();
 
     /*
+    albedoMap->freeGrid();
+    linkeMap->freeGrid();
     beamRadiationMap->freeGrid();
     diffuseRadiationMap->freeGrid();
     reflectedRadiationMap->freeGrid();
@@ -128,12 +128,12 @@ void Crit3DRadiationMaps::clean()
     delete lonMap;
     delete slopeMap;
     delete aspectMap;
-    delete albedoMap;
-    delete linkeMap;
     delete transmissivityMap;
     delete globalRadiationMap;
 
     /*
+    delete albedoMap;
+    delete linkeMap;
     delete beamRadiationMap;
     delete diffuseRadiationMap;
     delete reflectedRadiationMap;
@@ -792,8 +792,10 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
                     myRadPoint.slope = readSlope(mySettings, radiationMaps->slopeMap, myRow, myCol);
                     myRadPoint.aspect = readAspect(mySettings, radiationMaps->aspectMap, myRow, myCol);
 
-                    float linke = readLinke(mySettings, myRow, myCol, *(radiationMaps->linkeMap));
-                    float albedo = readAlbedo(mySettings, myRow, myCol, *(radiationMaps->albedoMap));
+                    //float linke = readLinke(mySettings, myRow, myCol, *(radiationMaps->linkeMap));
+                    //float albedo = readAlbedo(mySettings, myRow, myCol, *(radiationMaps->albedoMap));
+                    float linke = readLinke(mySettings);
+                    float albedo = readAlbedo(mySettings);
 
                     float transmissivity = radiationMaps->transmissivityMap->value[myRow][myCol];
 

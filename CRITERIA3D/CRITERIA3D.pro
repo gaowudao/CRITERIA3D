@@ -3,11 +3,12 @@
 # CRITERIA3D
 # Soil Water Balance 3D
 #
-# this software is part of CRITERIA3D distribution
+# this file is part of CRITERIA3D distribution
+# CRITERIA3D has been developed under contract issued by ARPAE Emilia-Romagna
 #
 #-----------------------------------------------------
 
-QT       += core gui network widgets sql xml
+QT       += core gui network widgets sql xml 3dcore 3drender 3dextras
 
 TARGET = CRITERIA3D
 TEMPLATE = app
@@ -78,7 +79,8 @@ SOURCES += main.cpp\
     ../PRAGA/shared/formInfo.cpp \
     meteoMaps.cpp \
     waterBalance3D.cpp \
-    crit3dProject.cpp
+    crit3dProject.cpp \
+    scene.cpp
 
 HEADERS += mainwindow.h \
     ../PRAGA/shared/dialogWindows.h \
@@ -93,7 +95,8 @@ HEADERS += mainwindow.h \
     ../PRAGA/shared/formInfo.h \
     meteoMaps.h \
     waterBalance3D.h \
-    crit3dProject.h
+    crit3dProject.h \
+    scene.h
 
 
 FORMS += mainwindow.ui \

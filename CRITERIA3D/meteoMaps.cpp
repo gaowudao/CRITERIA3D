@@ -95,7 +95,7 @@ gis::Crit3DRasterGrid* Crit3DMeteoMaps::getMapFromVar(meteoVariable myVar)
     else if (myVar == referenceEvapotranspiration)
         return ET0Map;
     else
-        return NULL;
+        return nullptr;
 }
 
 

@@ -29,7 +29,7 @@
 #include "formInfo.h"
 #include "dbTools.h"
 #include "utilities.h"
-#include "Crit3DProject.h"
+#include "crit3dProject.h"
 #include "waterBalance3D.h"
 
 
@@ -37,6 +37,7 @@ Crit3DProject::Crit3DProject()
 {
     meteoSettings = new Crit3DMeteoSettings();
     isParametersLoaded = false;
+    isInitialized = false;
     nrSoils = 0;
     nrLayers = 0;
     nrVoxelsPerLayer = 0;
@@ -186,6 +187,7 @@ bool Crit3DProject::createIndexMap()
         }
     }
 
+    gis::updateMinMaxRasterGrid(&indexMap);
     indexMap.isLoaded = true;
     nrVoxelsPerLayer = index;
     return(nrVoxelsPerLayer > 0);
@@ -270,7 +272,7 @@ int Crit3DProject::getSoilIndex(int dtmRow, int dtmCol)
     // search id soil
     for (unsigned int i = 0; i < soilList.size(); i++)
     {
-        if (soilList[i].id == idSoil) return(i);
+        if (soilList[i].id == idSoil) return(int(i));
     }
 
     // no soil data
@@ -310,6 +312,7 @@ void Crit3DProject::cleanProject()
     delete meteoMaps;
 
     cleanWaterBalanceMemory();
+    isInitialized = false;
 }
 
 
@@ -317,10 +320,27 @@ bool Crit3DProject::initializeCriteria3D()
 {
     cleanProject();
 
-    meteoMaps = new Crit3DMeteoMaps(DTM);
+    // check
+    if (! this->DTM.isLoaded)
+    {
+        logError("Missing DTM.");
+        return false;
+    }
+    else if (! this->soilMap.isLoaded)
+    {
+        logError("Missing soil map.");
+        return false;
+    }
+    else if (this->soilList.size() == 0)
+    {
+        logError("Missing soil properties.");
+        return false;
+    }
 
     if (!createSoilIndexMap())
         return false;
+
+    this->meteoMaps = new Crit3DMeteoMaps(this->DTM);
 
     // loadCropProperties()
     // load crop map
@@ -346,6 +366,7 @@ bool Crit3DProject::initializeCriteria3D()
 
     log("Criteria3D Project initialized");
 
-    return(true);
+    this->isInitialized = true;
+    return true;
 }
 
