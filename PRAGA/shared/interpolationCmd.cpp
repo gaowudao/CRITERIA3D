@@ -28,6 +28,8 @@ bool loadProxyGrids(Crit3DInterpolationSettings* mySettings)
             }
         }
     }
+
+    return true;
 }
 
 bool interpolationRaster(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings,
