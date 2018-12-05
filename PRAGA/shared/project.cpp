@@ -552,7 +552,7 @@ bool Project::loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo
 
     bool isData = false;
     FormInfo myInfo;
-    int step;
+    int step = 0;
 
     QString infoStr = "Load data: " + firstDate.toString();
 
@@ -579,11 +579,7 @@ bool Project::loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo
             isData = true;
         }
     }
-
     if (showInfo) myInfo.close();
-    qInfo() << "loadMeteoPointsData getCurrentDate " << this->getCurrentDate();
-    qInfo() << "firstDate " << firstDate;
-    qInfo() << "lastdate " << lastDate;
 
     return isData;
 }
@@ -709,7 +705,7 @@ bool Project::loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate, b
 }
 
 
-bool Project::loadLastMeteoData()
+void Project::getLastMeteoData()
 {
     QDate lastDateD = meteoPointsDbHandler->getLastDay(daily).date();
     QDate lastDateH = meteoPointsDbHandler->getLastDay(hourly).date();
@@ -718,8 +714,6 @@ bool Project::loadLastMeteoData()
 
     this->setCurrentDate(lastDate);
     this->setCurrentHour(12);
-
-    return this->loadMeteoPointsData (lastDate, lastDate, true);
 }
 
 

@@ -134,7 +134,7 @@ MainWindow::~MainWindow()
 }
 
 
-void MainWindow::resizeEvent(QResizeEvent * event)
+void MainWindow::resizeEvent(QResizeEvent *event)
 {
       mapView->resize(ui->widgetMap->size());
 }
@@ -716,7 +716,6 @@ void MainWindow::updateDateTime()
     int myHour = myProject.getCurrentHour();
     this->ui->dateEdit->setDate(myProject.getCurrentDate());
     this->ui->timeEdit->setTime(QTime(myHour,0,0));
-
 }
 
 
@@ -726,7 +725,6 @@ void MainWindow::on_dateChanged()
 
     if (date != myProject.getCurrentDate())
     {
-        qInfo() << "dateEdit.date " << date;
         myProject.setCurrentDate(date);
         myProject.loadMeteoPointsData(date, date, true);
         myProject.loadMeteoGridData(date, date, true);
@@ -955,13 +953,10 @@ bool MainWindow::loadMeteoPointsDB(QString dbName)
 
     if (myProject.meteoGridDbHandler == nullptr)
     {
-        myProject.loadLastMeteoData();
+        myProject.getLastMeteoData();
         this->updateDateTime();
     }
-    else
-    {
-        myProject.loadMeteoPointsData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
-    }
+    myProject.loadMeteoPointsData (myProject.getCurrentDate(), myProject.getCurrentDate(), true);
 
     this->ui->meteoPoints->setEnabled(true);
     this->ui->meteoPoints->setChecked(true);
