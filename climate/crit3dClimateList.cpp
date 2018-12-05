@@ -27,7 +27,6 @@ void Crit3DClimateList::setListClimateElab(const QStringList &listClimateElab)
 
 void Crit3DClimateList::resetListClimateElab()
 {
-    _listClimateElab.clear();
     _listElab1.clear();
     _listElab2.clear();
     _listGenericPeriodDateStart.clear();
