@@ -68,7 +68,7 @@ void halveTimeStep()
  */
 inline bool link_uguali(long n, TlinkedNode *myLink)
 {
-     if ((myLink != NULL) && ((*myLink).index == n)) return (true);
+     if ((myLink != nullptr) && ((*myLink).index == n)) return (true);
      else return (false);
 }
 
@@ -103,7 +103,7 @@ void InitializeBalanceWater()
 
     /*! initialize boundary flow */
     for (long n = 0; n < myStructure.nrNodes; n++)
-        if (myNode[n].boundary != NULL)
+        if (myNode[n].boundary != nullptr)
             myNode[n].boundary->sumBoundaryWaterFlow = 0.;
 }
 
@@ -169,7 +169,7 @@ void computeMassBalance(double deltaT)
 
 double getMatrixValue(long i, TlinkedNode *link)
 {
-	if (link != NULL)
+	if (link != nullptr)
         {
         int j = 1;
         while ((j < myStructure.maxNrColumns) && (A[i][j].index != NOLINK) && (A[i][j].index != (*link).index)) j++;
@@ -235,7 +235,7 @@ void acceptStep(double deltaT)
         for (short j = 0; j < myStructure.nrLateralLinks; j++)
 			update_flux(i, &(myNode[i].lateral[j]), deltaT);
 
-        if (myNode[i].boundary != NULL)
+        if (myNode[i].boundary != nullptr)
             myNode[i].boundary->sumBoundaryWaterFlow += myNode[i].boundary->waterFlow * deltaT;
         }
 

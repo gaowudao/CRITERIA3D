@@ -314,7 +314,7 @@
 
     double getTMean(long i)
     {
-        if (myStructure.computeHeat && myNode[i].extra->Heat != NULL)
+        if (myStructure.computeHeat && myNode[i].extra->Heat != nullptr)
             return arithmeticMean(myNode[i].extra->Heat->oldT, myNode[i].extra->Heat->T);
         else
             return NODATA;

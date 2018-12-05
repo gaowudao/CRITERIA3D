@@ -49,7 +49,7 @@ void initializeExtra(TCrit3DnodeExtra *myNodeExtra, bool computeHeat, bool compu
         (*myNodeExtra).Heat = new(TCrit3DNodeHeat);
         initializeExtraHeat(myNodeExtra->Heat);
     }
-    else (*myNodeExtra).Heat = NULL;
+    else (*myNodeExtra).Heat = nullptr;
 
     if (computeSolutes)
     {
@@ -59,8 +59,8 @@ void initializeExtra(TCrit3DnodeExtra *myNodeExtra, bool computeHeat, bool compu
 
 void initializeNodeHeatFlux(TCrit3DLinkedNodeExtra* myLinkExtra, bool initHeat, bool initWater)
 {
-    if (myLinkExtra == NULL) return;
-    if (myLinkExtra->heatFlux == NULL) return;
+    if (myLinkExtra == nullptr) return;
+    if (myLinkExtra->heatFlux == nullptr) return;
     if (! myStructure.computeHeat) return;
 
     if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_TOTAL && initHeat)
@@ -101,12 +101,12 @@ void initializeLinkExtra(TCrit3DLinkedNodeExtra* myLinkedNodeExtra, bool compute
         else if (myStructure.saveHeatFluxesType == SAVE_HEATFLUXES_TOTAL)
             (*myLinkedNodeExtra).heatFlux->fluxes = new float[1];
         else
-            (*myLinkedNodeExtra).heatFlux->fluxes = NULL;
+            (*myLinkedNodeExtra).heatFlux->fluxes = nullptr;
 
         initializeNodeHeatFlux(myLinkedNodeExtra, true, true);
 
     }
-    else (*myLinkedNodeExtra).heatFlux = NULL;
+    else (*myLinkedNodeExtra).heatFlux = nullptr;
 
     if (computeSolutes)
     {

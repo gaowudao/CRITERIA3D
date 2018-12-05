@@ -45,18 +45,18 @@ double CourantHeat, fluxCourant;
 bool isHeatNode(long i)
 {
     return (myStructure.computeHeat &&
-            myNode != NULL &&
-            myNode[i].extra != NULL &&
-            myNode[i].extra->Heat != NULL &&
+            myNode != nullptr &&
+            myNode[i].extra != nullptr &&
+            myNode[i].extra->Heat != nullptr &&
             ! myNode[i].isSurface);
 }
 
 bool isHeatLinkedNode(TlinkedNode* myLink)
 {
     return (myStructure.computeHeat &&
-            myLink != NULL &&
-            myLink->linkedExtra != NULL &&
-            myLink->linkedExtra->heatFlux != NULL);
+            myLink != nullptr &&
+            myLink->linkedExtra != nullptr &&
+            myLink->linkedExtra->heatFlux != nullptr);
 }
 
 double getH_timeStep(long i, double timeStep, double timeStepWater)
@@ -637,7 +637,7 @@ double Conduction(long i, TlinkedNode *myLink, double timeStep, double timeStepW
 
 bool computeHeatFlux(long i, int myMatrixIndex, TlinkedNode *myLink, double timeStep, double timeStepWater)
 {
-    if (myLink == NULL) return false;
+    if (myLink == nullptr) return false;
     if ((*myLink).index == NOLINK) return false;
 
     long myLinkIndex = (*myLink).index;
@@ -684,7 +684,7 @@ bool computeHeatFlux(long i, int myMatrixIndex, TlinkedNode *myLink, double time
 // should be called only BEFORE heat computation, since A matrix should contain water flux values
 void saveNodeWaterFlux(long i, TlinkedNode *link, double timeStepHeat, double timeStepWater)
 {
-    if (link == NULL) return;
+    if (link == nullptr) return;
 
     double fluxLiquid = 0.;         // m3 s-1
     double fluxVapor = 0.;          // kg s-1
@@ -734,17 +734,17 @@ void saveWaterFluxes(double dtHeat, double dtWater)
 {
     for (long i = 0; i < myStructure.nrNodes; i++)
         {
-            if (&myNode[i].up != NULL)
-                if (myNode[i].up.linkedExtra != NULL)
+            if (&myNode[i].up != nullptr)
+                if (myNode[i].up.linkedExtra != nullptr)
                     saveNodeWaterFlux(i, &myNode[i].up, dtHeat, dtWater);
 
-            if (&myNode[i].down != NULL)
-                if (myNode[i].down.linkedExtra != NULL)
+            if (&myNode[i].down != nullptr)
+                if (myNode[i].down.linkedExtra != nullptr)
                     saveNodeWaterFlux(i, &myNode[i].down, dtHeat, dtWater);
 
             for (short j = 0; j < myStructure.nrLateralLinks; j++)
-                if (&myNode[i].lateral[j] != NULL)
-                    if (myNode[i].lateral[j].linkedExtra != NULL)
+                if (&myNode[i].lateral[j] != nullptr)
+                    if (myNode[i].lateral[j].linkedExtra != nullptr)
                         saveNodeWaterFlux(i, &myNode[i].lateral[j], dtHeat, dtWater);
 
         }
@@ -796,16 +796,16 @@ void updateHeatFluxes(double timeStep, double timeStepWater)
     for (long i = 1; i < myStructure.nrNodes; i++)
     {
         if (myNode[i].up.index != NOLINK)
-            if (myNode[i].up.linkedExtra->heatFlux != NULL)
+            if (myNode[i].up.linkedExtra->heatFlux != nullptr)
                 saveNodeHeatFlux(i, &(myNode[i].up), timeStep, timeStepWater);
 
         if (myNode[i].down.index != NOLINK)
-            if (myNode[i].down.linkedExtra->heatFlux != NULL)
+            if (myNode[i].down.linkedExtra->heatFlux != nullptr)
                 saveNodeHeatFlux(i, &(myNode[i].down), timeStep, timeStepWater);
 
         for (short j = 0; j < myStructure.nrLateralLinks; j++)
             if (myNode[i].lateral[j].index != NOLINK)
-                if (myNode[i].lateral[j].linkedExtra->heatFlux != NULL)
+                if (myNode[i].lateral[j].linkedExtra->heatFlux != nullptr)
                     saveNodeHeatFlux(i, &(myNode[i].lateral[j]), timeStep, timeStepWater);
     }
 }

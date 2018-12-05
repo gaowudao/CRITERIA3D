@@ -48,13 +48,13 @@ TCrit3DStructure myStructure;
 
 Tculvert myCulvert;
 
-TCrit3Dnode *myNode = NULL;
-TmatrixElement **A = NULL;
+TCrit3Dnode *myNode = nullptr;
+TmatrixElement **A = nullptr;
 
-double *invariantFlux = NULL;
-double *C = NULL;
-double *X = NULL;
-double *b = NULL;
+double *invariantFlux = nullptr;
+double *C = nullptr;
+double *X = nullptr;
+double *b = nullptr;
 
 Tsoil Soil_List[MAX_SOILS][MAX_HORIZONS];
 Tsoil Surface_List[MAX_SURFACES];
@@ -110,8 +110,8 @@ namespace soilFluxes3D {
     myNode = (TCrit3Dnode *) calloc(myStructure.nrNodes, sizeof(TCrit3Dnode));
 	for (long i = 0; i < myStructure.nrNodes; i++)
 	{
-		myNode[i].Soil = NULL;
-		myNode[i].boundary = NULL;
+		myNode[i].Soil = nullptr;
+		myNode[i].boundary = nullptr;
 		myNode[i].up.index = NOLINK;
 		myNode[i].down.index = myNode[i].up.index = NOLINK;
 
@@ -125,7 +125,7 @@ namespace soilFluxes3D {
     }
 
     /*! build the matrix */
-    if (myNode == NULL)
+    if (myNode == nullptr)
         {return(MEMORY_ERROR);}
     else
 		{return(initializeArrays());}
@@ -222,7 +222,7 @@ namespace soilFluxes3D {
  {
 
 
-    if (myNode == NULL) return(MEMORY_ERROR);
+    if (myNode == nullptr) return(MEMORY_ERROR);
     if ((myIndex < 0) || (myIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
 
 	if (isBoundary)
@@ -253,7 +253,7 @@ namespace soilFluxes3D {
  int DLL_EXPORT __STDCALL setNodeLink(long n, long linkIndex, short direction, float interfaceArea)
  {
     /*! error check */
-    if (myNode == NULL) return(MEMORY_ERROR);
+    if (myNode == nullptr) return(MEMORY_ERROR);
 
     if ((n < 0) || (n >= myStructure.nrNodes) || (linkIndex < 0) || (linkIndex >= myStructure.nrNodes))
         return(INDEX_ERROR);
@@ -336,7 +336,7 @@ namespace soilFluxes3D {
      */
  int DLL_EXPORT __STDCALL setNodeSurface(long nodeIndex, int surfaceIndex)
  {
-	if (myNode == NULL) return(MEMORY_ERROR);
+	if (myNode == nullptr) return(MEMORY_ERROR);
     if ((nodeIndex < 0) || (! myNode[nodeIndex].isSurface)) return(INDEX_ERROR);
     if ((surfaceIndex < 0) || (surfaceIndex >= MAX_SURFACES)) return(PARAMETER_ERROR);
 
@@ -355,7 +355,7 @@ namespace soilFluxes3D {
      */
  int DLL_EXPORT __STDCALL setNodeSoil(long nodeIndex, int soilIndex, int horizonIndex)
  {
-	if (myNode == NULL) return(MEMORY_ERROR);
+	if (myNode == nullptr) return(MEMORY_ERROR);
     if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
     if ((soilIndex < 0) || (soilIndex >= MAX_SOILS)) return(PARAMETER_ERROR);
     if ((horizonIndex < 0) || (horizonIndex >= MAX_HORIZONS)) return(PARAMETER_ERROR);
@@ -433,7 +433,7 @@ namespace soilFluxes3D {
  {
 
 
-     if (myNode == NULL)
+     if (myNode == nullptr)
          return(MEMORY_ERROR);
      if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes))
          return(INDEX_ERROR);
@@ -465,7 +465,7 @@ namespace soilFluxes3D {
 	int DLL_EXPORT __STDCALL setTotalPotential(long nodeIndex, double totalPotential)
  {
 
-	 if (myNode == NULL)
+	 if (myNode == nullptr)
 		 return(MEMORY_ERROR);
 
 	 if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes))
@@ -499,7 +499,7 @@ namespace soilFluxes3D {
  {
 
 
-    if (myNode == NULL) return(MEMORY_ERROR);
+    if (myNode == nullptr) return(MEMORY_ERROR);
 
     if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
 
@@ -535,7 +535,7 @@ namespace soilFluxes3D {
 	int DLL_EXPORT __STDCALL setWaterSinkSource(long nodeIndex, double waterSinkSource)
  {
 
-    if (myNode == NULL) return(MEMORY_ERROR);
+    if (myNode == nullptr) return(MEMORY_ERROR);
     if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
 
     myNode[nodeIndex].waterSinkSource = waterSinkSource;
@@ -553,9 +553,9 @@ namespace soilFluxes3D {
 	int DLL_EXPORT __STDCALL setPrescribedTotalPotential(long nodeIndex, double prescribedTotalPotential)
  {
 
-    if (myNode == NULL) return(MEMORY_ERROR);
+    if (myNode == nullptr) return(MEMORY_ERROR);
     if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
-    if (myNode[nodeIndex].boundary == NULL) return(BOUNDARY_ERROR);
+    if (myNode[nodeIndex].boundary == nullptr) return(BOUNDARY_ERROR);
 	if (myNode[nodeIndex].boundary->type != BOUNDARY_PRESCRIBEDTOTALPOTENTIAL) return(BOUNDARY_ERROR);
 
     myNode[nodeIndex].boundary->prescribedTotalPotential = prescribedTotalPotential;
@@ -572,7 +572,7 @@ namespace soilFluxes3D {
 	double DLL_EXPORT __STDCALL getWaterContent(long nodeIndex)
 
  {
-        if (myNode == NULL) return(MEMORY_ERROR);
+        if (myNode == nullptr) return(MEMORY_ERROR);
         if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
 
         if  (myNode[nodeIndex].isSurface)
@@ -591,7 +591,7 @@ namespace soilFluxes3D {
      */
 	double DLL_EXPORT __STDCALL getAvailableWaterContent(long index)
  {
-        if (myNode == NULL) return(MEMORY_ERROR);
+        if (myNode == nullptr) return(MEMORY_ERROR);
         if ((index < 0) || (index >= myStructure.nrNodes)) return(INDEX_ERROR);
 
         if  (myNode[index].isSurface)
@@ -611,7 +611,7 @@ namespace soilFluxes3D {
      */
 	double DLL_EXPORT __STDCALL getWaterDeficit(long index, double fieldCapacity)
  {
-        if (myNode == NULL) return(MEMORY_ERROR);
+        if (myNode == nullptr) return(MEMORY_ERROR);
         if ((index < 0) || (index >= myStructure.nrNodes)) return(INDEX_ERROR);
 
         if  (myNode[index].isSurface)
@@ -631,7 +631,7 @@ namespace soilFluxes3D {
   */
  double DLL_EXPORT __STDCALL getDegreeOfSaturation(long nodeIndex)
  {
-        if (myNode == NULL) return(MEMORY_ERROR);
+        if (myNode == nullptr) return(MEMORY_ERROR);
         if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
 
         if  (myNode[nodeIndex].isSurface)
@@ -664,7 +664,7 @@ namespace soilFluxes3D {
  double DLL_EXPORT __STDCALL getWaterConductivity(long nodeIndex)
  {
     /*! error check */
-    if (myNode == NULL) return(MEMORY_ERROR);
+    if (myNode == nullptr) return(MEMORY_ERROR);
     if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
 
     return (myNode[nodeIndex].k);
@@ -678,7 +678,7 @@ namespace soilFluxes3D {
   */
  double DLL_EXPORT __STDCALL getMatricPotential(long nodeIndex)
  {
-    if (myNode == NULL) return(MEMORY_ERROR);
+    if (myNode == nullptr) return(MEMORY_ERROR);
     if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
 
     return (myNode[nodeIndex].H - myNode[nodeIndex].z);
@@ -692,7 +692,7 @@ namespace soilFluxes3D {
   */
  double DLL_EXPORT __STDCALL getTotalPotential(long nodeIndex)
  {
-	 if (myNode == NULL) return(MEMORY_ERROR);
+	 if (myNode == nullptr) return(MEMORY_ERROR);
 	 if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
 
 	 return (myNode[nodeIndex].H);
@@ -707,7 +707,7 @@ namespace soilFluxes3D {
   */
  double DLL_EXPORT __STDCALL getWaterFlow(long n, short direction)
  {
-    if (myNode == NULL) return MEMORY_ERROR;
+    if (myNode == nullptr) return MEMORY_ERROR;
     if ((n < 0) || (n >= myStructure.nrNodes)) return INDEX_ERROR;
 
 	double maxFlow = 0.0;
@@ -743,7 +743,7 @@ namespace soilFluxes3D {
   */
  double DLL_EXPORT __STDCALL getSumLateralWaterFlow(long n)
  {
-    if (myNode == NULL) return MEMORY_ERROR;
+    if (myNode == nullptr) return MEMORY_ERROR;
     if ((n < 0) || (n >= myStructure.nrNodes)) return INDEX_ERROR;
 
     double sumLateralFlow = 0.0;
@@ -784,10 +784,10 @@ namespace soilFluxes3D {
  double DLL_EXPORT __STDCALL getBoundaryWaterFlow(long nodeIndex)
  {
 
-    if (myNode == NULL) return(MEMORY_ERROR);
+    if (myNode == nullptr) return(MEMORY_ERROR);
     if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
 
-	if (myNode[nodeIndex].boundary == NULL) return(BOUNDARY_ERROR);
+	if (myNode[nodeIndex].boundary == nullptr) return(BOUNDARY_ERROR);
 
     return(myNode[nodeIndex].boundary->sumBoundaryWaterFlow);
  }
@@ -804,7 +804,7 @@ namespace soilFluxes3D {
     double sumBoundaryFlow = 0.0;
 
     for (long n = 0; n < myStructure.nrNodes; n++)
-        if (myNode[n].boundary != NULL)
+        if (myNode[n].boundary != nullptr)
             if (myNode[n].boundary->type == boundaryType)
 				sumBoundaryFlow += myNode[n].boundary->sumBoundaryWaterFlow;
 
@@ -897,7 +897,7 @@ int DLL_EXPORT __STDCALL setTemperature(long nodeIndex, double myT)
    // myT              [K] temperature
    //----------------------------------------------------------------------------------------------
 
-   if (myNode == NULL) return(MEMORY_ERROR);
+   if (myNode == nullptr) return(MEMORY_ERROR);
 
    if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
 
@@ -919,10 +919,10 @@ int DLL_EXPORT __STDCALL setTemperature(long nodeIndex, double myT)
  */
 int DLL_EXPORT __STDCALL setFixedTemperature(long nodeIndex, double myT, double myDepth)
 {
-   if (myNode == NULL) return(MEMORY_ERROR);
+   if (myNode == nullptr) return(MEMORY_ERROR);
    if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
-   if (myNode[nodeIndex].boundary == NULL) return(BOUNDARY_ERROR);
-   if (myNode[nodeIndex].boundary->Heat == NULL) return(BOUNDARY_ERROR);
+   if (myNode[nodeIndex].boundary == nullptr) return(BOUNDARY_ERROR);
+   if (myNode[nodeIndex].boundary->Heat == nullptr) return(BOUNDARY_ERROR);
    if (myNode[nodeIndex].boundary->type != BOUNDARY_PRESCRIBEDTOTALPOTENTIAL &&
            myNode[nodeIndex].boundary->type != BOUNDARY_FREEDRAINAGE) return(BOUNDARY_ERROR);
 
@@ -940,11 +940,11 @@ int DLL_EXPORT __STDCALL setFixedTemperature(long nodeIndex, double myT, double 
  */
 int DLL_EXPORT __STDCALL setHeatBoundaryWindSpeed(long nodeIndex, double myWindSpeed)
 {
-   if (myNode == NULL) return(MEMORY_ERROR);
+   if (myNode == nullptr) return(MEMORY_ERROR);
    if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
    if ((myWindSpeed < 0) && (myWindSpeed > 1000)) return(PARAMETER_ERROR);
 
-   if (myNode[nodeIndex].boundary == NULL || myNode[nodeIndex].boundary->Heat == NULL)
+   if (myNode[nodeIndex].boundary == nullptr || myNode[nodeIndex].boundary->Heat == nullptr)
        return (BOUNDARY_ERROR);
 
    myNode[nodeIndex].boundary->Heat->windSpeed = myWindSpeed;
@@ -960,11 +960,11 @@ int DLL_EXPORT __STDCALL setHeatBoundaryWindSpeed(long nodeIndex, double myWindS
  */
 int DLL_EXPORT __STDCALL setHeatBoundaryRoughness(long nodeIndex, double myRoughness)
 {
-   if (myNode == NULL) return(MEMORY_ERROR);
+   if (myNode == nullptr) return(MEMORY_ERROR);
    if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
    if (myRoughness < 0) return(PARAMETER_ERROR);
 
-   if (myNode[nodeIndex].boundary == NULL || myNode[nodeIndex].boundary->Heat == NULL)
+   if (myNode[nodeIndex].boundary == nullptr || myNode[nodeIndex].boundary->Heat == nullptr)
        return (BOUNDARY_ERROR);
 
    myNode[nodeIndex].boundary->Heat->roughnessHeight = myRoughness;
@@ -980,7 +980,7 @@ int DLL_EXPORT __STDCALL setHeatBoundaryRoughness(long nodeIndex, double myRough
  */
 int DLL_EXPORT __STDCALL setHeatSinkSource(long nodeIndex, double myHeatFlow)
 {
-   if (myNode == NULL)
+   if (myNode == nullptr)
        return(MEMORY_ERROR);
 
    if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes))
@@ -999,13 +999,13 @@ int DLL_EXPORT __STDCALL setHeatSinkSource(long nodeIndex, double myHeatFlow)
  */
 int DLL_EXPORT __STDCALL setHeatBoundaryTemperature(long nodeIndex, double myTemperature)
 {
-   if (myNode == NULL)
+   if (myNode == nullptr)
        return(MEMORY_ERROR);
 
    if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes))
        return(INDEX_ERROR);
 
-   if (myNode[nodeIndex].boundary == NULL || myNode[nodeIndex].boundary->Heat == NULL)
+   if (myNode[nodeIndex].boundary == nullptr || myNode[nodeIndex].boundary->Heat == nullptr)
        return (BOUNDARY_ERROR);
 
    myNode[nodeIndex].boundary->Heat->temperature = myTemperature;
@@ -1021,13 +1021,13 @@ int DLL_EXPORT __STDCALL setHeatBoundaryTemperature(long nodeIndex, double myTem
  */
 int DLL_EXPORT __STDCALL setHeatBoundaryNetIrradiance(long nodeIndex, double myNetIrradiance)
 {
-   if (myNode == NULL)
+   if (myNode == nullptr)
        return(MEMORY_ERROR);
 
    if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes))
        return(INDEX_ERROR);
 
-   if (myNode[nodeIndex].boundary == NULL || myNode[nodeIndex].boundary->Heat == NULL)
+   if (myNode[nodeIndex].boundary == nullptr || myNode[nodeIndex].boundary->Heat == nullptr)
        return (BOUNDARY_ERROR);
 
    myNode[nodeIndex].boundary->Heat->netIrradiance = myNetIrradiance;
@@ -1043,13 +1043,13 @@ int DLL_EXPORT __STDCALL setHeatBoundaryNetIrradiance(long nodeIndex, double myN
  */
 int DLL_EXPORT __STDCALL setHeatBoundaryRelativeHumidity(long nodeIndex, double myRelativeHumidity)
 {
-   if (myNode == NULL)
+   if (myNode == nullptr)
        return(MEMORY_ERROR);
 
    if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes))
        return(INDEX_ERROR);
 
-   if (myNode[nodeIndex].boundary == NULL || myNode[nodeIndex].boundary->Heat == NULL)
+   if (myNode[nodeIndex].boundary == nullptr || myNode[nodeIndex].boundary->Heat == nullptr)
        return (BOUNDARY_ERROR);
 
    myNode[nodeIndex].boundary->Heat->relativeHumidity = myRelativeHumidity;
@@ -1065,10 +1065,10 @@ int DLL_EXPORT __STDCALL setHeatBoundaryRelativeHumidity(long nodeIndex, double 
  */
 int DLL_EXPORT __STDCALL setHeatBoundaryHeightWind(long nodeIndex, double myHeight)
 {
-   if (myNode == NULL) return(MEMORY_ERROR);
+   if (myNode == nullptr) return(MEMORY_ERROR);
    if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
 
-   if (myNode[nodeIndex].boundary == NULL || myNode[nodeIndex].boundary->Heat == NULL)
+   if (myNode[nodeIndex].boundary == nullptr || myNode[nodeIndex].boundary->Heat == nullptr)
        return (BOUNDARY_ERROR);
 
    myNode[nodeIndex].boundary->Heat->heightWind = myHeight;
@@ -1085,10 +1085,10 @@ int DLL_EXPORT __STDCALL setHeatBoundaryHeightWind(long nodeIndex, double myHeig
  */
 int DLL_EXPORT __STDCALL setHeatBoundaryHeightTemperature(long nodeIndex, double myHeight)
 {
-   if (myNode == NULL) return(MEMORY_ERROR);
+   if (myNode == nullptr) return(MEMORY_ERROR);
    if ((nodeIndex < 0) || (nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
 
-   if (myNode[nodeIndex].boundary == NULL || myNode[nodeIndex].boundary->Heat == NULL)
+   if (myNode[nodeIndex].boundary == nullptr || myNode[nodeIndex].boundary->Heat == nullptr)
        return (BOUNDARY_ERROR);
 
    myNode[nodeIndex].boundary->Heat->heightTemperature = myHeight;
@@ -1103,7 +1103,7 @@ int DLL_EXPORT __STDCALL setHeatBoundaryHeightTemperature(long nodeIndex, double
 */
 double DLL_EXPORT __STDCALL getTemperature(long nodeIndex)
 {
-    if (myNode == NULL) return(TOPOGRAPHY_ERROR);
+    if (myNode == nullptr) return(TOPOGRAPHY_ERROR);
     if ((nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
     if (! isHeatNode(nodeIndex)) return (MEMORY_ERROR);
 
@@ -1117,7 +1117,7 @@ double DLL_EXPORT __STDCALL getTemperature(long nodeIndex)
  */
 double DLL_EXPORT __STDCALL getHeatConductivity(long nodeIndex)
 {
-    if (myNode == NULL) return(TOPOGRAPHY_ERROR);
+    if (myNode == nullptr) return(TOPOGRAPHY_ERROR);
     if ((nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
     if (! isHeatNode(nodeIndex)) return (MEMORY_ERROR);
 
@@ -1132,7 +1132,7 @@ double DLL_EXPORT __STDCALL getHeatConductivity(long nodeIndex)
 */
 float DLL_EXPORT __STDCALL getHeatFlux(long nodeIndex, short myDirection, int fluxType)
 {
-    if (myNode == NULL) return(TOPOGRAPHY_ERROR);
+    if (myNode == nullptr) return(TOPOGRAPHY_ERROR);
     if ((nodeIndex >= myStructure.nrNodes)) return(INDEX_ERROR);
     if (! isHeatNode(nodeIndex)) return (MEMORY_ERROR);
 
@@ -1170,10 +1170,10 @@ float DLL_EXPORT __STDCALL getHeatFlux(long nodeIndex, short myDirection, int fl
 */
 double DLL_EXPORT __STDCALL getBoundarySensibleFlux(long nodeIndex)
 {
-    if (myNode == NULL) return (TOPOGRAPHY_ERROR);
+    if (myNode == nullptr) return (TOPOGRAPHY_ERROR);
     if (nodeIndex >= myStructure.nrNodes) return (INDEX_ERROR);
     if (! myStructure.computeHeat) return (MISSING_DATA_ERROR);
-    if (myNode[nodeIndex].boundary == NULL) return (INDEX_ERROR);
+    if (myNode[nodeIndex].boundary == nullptr) return (INDEX_ERROR);
     if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT_SURFACE) return (INDEX_ERROR);
 
     // boundary sensible heat flow density
@@ -1188,10 +1188,10 @@ double DLL_EXPORT __STDCALL getBoundarySensibleFlux(long nodeIndex)
 */
 double DLL_EXPORT __STDCALL getBoundaryLatentFlux(long nodeIndex)
 {
-    if (myNode == NULL) return (TOPOGRAPHY_ERROR);
+    if (myNode == nullptr) return (TOPOGRAPHY_ERROR);
     if (nodeIndex >= myStructure.nrNodes) return (INDEX_ERROR);
     if (! myStructure.computeHeat || ! myStructure.computeWater || ! myStructure.computeHeatVapor) return (MISSING_DATA_ERROR);
-    if (myNode[nodeIndex].boundary == NULL) return (INDEX_ERROR);
+    if (myNode[nodeIndex].boundary == nullptr) return (INDEX_ERROR);
     if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT_SURFACE) return (INDEX_ERROR);
 
     // boundary latent heat flow density
@@ -1205,11 +1205,11 @@ double DLL_EXPORT __STDCALL getBoundaryLatentFlux(long nodeIndex)
 */
 double DLL_EXPORT __STDCALL getBoundaryAdvectiveFlux(long nodeIndex)
 {
-    if (myNode == NULL) return (TOPOGRAPHY_ERROR);
+    if (myNode == nullptr) return (TOPOGRAPHY_ERROR);
     if (nodeIndex >= myStructure.nrNodes) return (INDEX_ERROR);
     if (! myStructure.computeHeat || ! myStructure.computeWater || ! myStructure.computeHeatAdvection) return (MISSING_DATA_ERROR);
-    if (myNode[nodeIndex].boundary == NULL) return (BOUNDARY_ERROR);
-    if (myNode[nodeIndex].boundary->Heat == NULL) return (BOUNDARY_ERROR);
+    if (myNode[nodeIndex].boundary == nullptr) return (BOUNDARY_ERROR);
+    if (myNode[nodeIndex].boundary->Heat == nullptr) return (BOUNDARY_ERROR);
     if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT_SURFACE) return (BOUNDARY_ERROR);
 
     // boundary advective heat flow density
@@ -1223,10 +1223,10 @@ double DLL_EXPORT __STDCALL getBoundaryAdvectiveFlux(long nodeIndex)
 */
 double DLL_EXPORT __STDCALL getBoundaryRadiativeFlux(long nodeIndex)
 {
-    if (myNode == NULL) return (TOPOGRAPHY_ERROR);
+    if (myNode == nullptr) return (TOPOGRAPHY_ERROR);
     if (nodeIndex >= myStructure.nrNodes) return (INDEX_ERROR);
     if (! myStructure.computeHeat) return (MISSING_DATA_ERROR);
-    if (myNode[nodeIndex].boundary == NULL) return (INDEX_ERROR);
+    if (myNode[nodeIndex].boundary == nullptr) return (INDEX_ERROR);
     if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT_SURFACE) return (INDEX_ERROR);
 
     // boundary net radiative heat flow density
@@ -1240,10 +1240,10 @@ double DLL_EXPORT __STDCALL getBoundaryRadiativeFlux(long nodeIndex)
 */
 double DLL_EXPORT __STDCALL getBoundaryAerodynamicConductance(long nodeIndex)
 {
-    if (myNode == NULL) return (TOPOGRAPHY_ERROR);
+    if (myNode == nullptr) return (TOPOGRAPHY_ERROR);
     if (nodeIndex >= myStructure.nrNodes) return (INDEX_ERROR);
     if (! myStructure.computeHeat) return (MISSING_DATA_ERROR);
-    if (myNode[nodeIndex].boundary == NULL) return (INDEX_ERROR);
+    if (myNode[nodeIndex].boundary == nullptr) return (INDEX_ERROR);
     if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT_SURFACE) return (INDEX_ERROR);
 
     // boundary aerodynamic resistance
@@ -1260,10 +1260,10 @@ double DLL_EXPORT __STDCALL getBoundaryAerodynamicConductance(long nodeIndex)
 /*
 double DLL_EXPORT getBoundaryAerodynamicConductanceOpenWater(long nodeIndex)
 {
-    if (myNode == NULL) return (TOPOGRAPHY_ERROR);
+    if (myNode == nullptr) return (TOPOGRAPHY_ERROR);
     if ((nodeIndex < 1) || (nodeIndex >= myStructure.nrNodes)) return (INDEX_ERROR);
     if (! myStructure.computeHeat) return (MISSING_DATA_ERROR);
-    if (myNode[nodeIndex].boundary == NULL) return (INDEX_ERROR);
+    if (myNode[nodeIndex].boundary == nullptr) return (INDEX_ERROR);
     if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT) return (INDEX_ERROR);
 
     // boundary aerodynamic resistance
@@ -1278,10 +1278,10 @@ double DLL_EXPORT getBoundaryAerodynamicConductanceOpenWater(long nodeIndex)
 */
 double DLL_EXPORT __STDCALL getBoundarySoilConductance(long nodeIndex)
 {
-    if (myNode == NULL) return (TOPOGRAPHY_ERROR);
+    if (myNode == nullptr) return (TOPOGRAPHY_ERROR);
     if (nodeIndex >= myStructure.nrNodes) return (INDEX_ERROR);
     if (! myStructure.computeHeat) return (MISSING_DATA_ERROR);
-    if (myNode[nodeIndex].boundary == NULL) return (INDEX_ERROR);
+    if (myNode[nodeIndex].boundary == nullptr) return (INDEX_ERROR);
     if (myNode[nodeIndex].boundary->type != BOUNDARY_HEAT_SURFACE) return (INDEX_ERROR);
 
     // boundary soil conductance
@@ -1295,7 +1295,7 @@ double DLL_EXPORT __STDCALL getBoundarySoilConductance(long nodeIndex)
 */
 double DLL_EXPORT __STDCALL getNodeVapor(long i)
 {
-    if (myNode == NULL) return(TOPOGRAPHY_ERROR);
+    if (myNode == nullptr) return(TOPOGRAPHY_ERROR);
     if (i >= myStructure.nrNodes) return(INDEX_ERROR);
     if (! myStructure.computeHeat || ! myStructure.computeWater || ! myStructure.computeHeatVapor) return (MISSING_DATA_ERROR);
 
@@ -1312,10 +1312,10 @@ double DLL_EXPORT __STDCALL getNodeVapor(long i)
 */
 double DLL_EXPORT __STDCALL getHeat(long i, double h)
 {
-    if (myNode == NULL) return(TOPOGRAPHY_ERROR);
+    if (myNode == nullptr) return(TOPOGRAPHY_ERROR);
     if (i >= myStructure.nrNodes) return(INDEX_ERROR);
     if (! myStructure.computeHeat) return (MISSING_DATA_ERROR);
-    if (myNode[i].extra->Heat == NULL) return MISSING_DATA_ERROR;
+    if (myNode[i].extra->Heat == nullptr) return MISSING_DATA_ERROR;
     if (myNode[i].extra->Heat->T == NODATA) return MISSING_DATA_ERROR;
 
     double myHeat = SoilHeatCapacity(i, h, myNode[i].extra->Heat->T) * myNode[i].volume_area  * myNode[i].extra->Heat->T;

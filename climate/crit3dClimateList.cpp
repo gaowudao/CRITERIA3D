@@ -380,7 +380,7 @@ void Crit3DClimateList::parserElaboration()
         {
             _listElab1.push_back(elab);
             _listParam1.push_back(param);
-            _listElab2.push_back(NULL);
+            _listElab2.push_back(nullptr);
             _listParam2.push_back(NODATA);
 
             _listParam1IsClimate.push_back(param1IsClimate);

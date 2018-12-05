@@ -405,7 +405,7 @@ float computeThomIndex(float temp, float relHum)
 
 bool setColorScale(meteoVariable variable, Crit3DColorScale *colorScale)
 {
-    if (colorScale == NULL) return false;
+    if (colorScale == nullptr) return false;
 
     switch(variable)
     {

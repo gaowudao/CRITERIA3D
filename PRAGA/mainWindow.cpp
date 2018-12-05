@@ -350,7 +350,7 @@ void MainWindow::on_actionLoadDEM_triggered()
 
     // resize map
     float size = this->rasterObj->getRasterMaxSize();
-    size = log2(1000.0/size);
+    size = log2(1000.f/size);
     this->mapView->setZoomLevel(quint8(size));
     this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
 

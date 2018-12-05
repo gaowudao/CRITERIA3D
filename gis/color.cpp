@@ -266,7 +266,7 @@ bool setRadiationScale(Crit3DColorScale* myScale)
  */
 bool roundColorScale(Crit3DColorScale* myScale, int nrIntervals, bool lessRounded)
 {
-    if (myScale == NULL) return false;
+    if (myScale == nullptr) return false;
     if (myScale->minimum == NODATA || myScale->maximum == NODATA) return false;
     if (nrIntervals < 1) return false;
     if (myScale->minimum == myScale->maximum) return false;

@@ -181,7 +181,7 @@ namespace gis
         colorScale = new Crit3DColorScale();
         minimum = NODATA;
         maximum = NODATA;
-        value = NULL;
+        value = nullptr;
     }
 
 
@@ -203,7 +203,7 @@ namespace gis
         for (int row = 0; row < this->header->nrRows; row++)
         {
             this->value[row] = (float *) calloc(this->header->nrCols, sizeof(float));
-            if (this->value[row] == NULL)
+            if (this->value[row] == nullptr)
             {
                 // Memory error: file too big
                 this->freeGrid();
@@ -311,10 +311,10 @@ namespace gis
 
     void Crit3DRasterGrid::freeGrid()
     {
-        if (value != NULL)
+        if (value != nullptr)
         {
             for (int myRow = 0; myRow < header->nrRows; myRow++)
-                if (value[myRow] != NULL) ::free(value[myRow]);
+                if (value[myRow] != nullptr) ::free(value[myRow]);
             if (header->nrRows != 0) ::free(value);
         }
 
@@ -970,7 +970,7 @@ namespace gis
     bool mapAlgebra(gis::Crit3DRasterGrid* myMap1, gis::Crit3DRasterGrid* myMap2,
                     gis::Crit3DRasterGrid* myMapOut, operationType myOperation)
     {
-        if (myMapOut == NULL || myMap1 == NULL || myMap2 == NULL) return false;
+        if (myMapOut == nullptr || myMap1 == nullptr || myMap2 == nullptr) return false;
         if (! (*(myMap1->header) == *(myMap2->header))) return false;
         if (! (*(myMapOut->header) == *(myMap1->header))) return false;
 
@@ -1009,7 +1009,7 @@ namespace gis
     bool mapAlgebra(gis::Crit3DRasterGrid* myMap1, float myValue,
                     gis::Crit3DRasterGrid* myMapOut, operationType myOperation)
     {
-        if (myMapOut == NULL || myMap1 == NULL) return false;
+        if (myMapOut == nullptr || myMap1 == nullptr) return false;
         if (! (*(myMap1->header) == *(myMapOut->header))) return false;
 
         for (int myRow=0; myRow<myMapOut->header->nrRows; myRow++)

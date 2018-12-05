@@ -34,33 +34,33 @@
 void cleanArrays()
 {
     /*! free matrix A */
-    if (A != NULL)
+    if (A != nullptr)
     {
             for (long i=0; i < myStructure.nrNodes; i++)
-                if (A[i] != NULL) free(A[i]);
+                if (A[i] != nullptr) free(A[i]);
             free(A);
-            A = NULL;
+            A = nullptr;
     }
 
     /*! free arrays */
-    if (b != NULL){ free(b); b = NULL; }
-    if (C != NULL){ free(C); C = NULL; }
-    if (invariantFlux != NULL){ free(invariantFlux); invariantFlux = NULL; }
-    if (X != NULL) { free(X); X = NULL; }
+    if (b != nullptr){ free(b); b = nullptr; }
+    if (C != nullptr){ free(C); C = nullptr; }
+    if (invariantFlux != nullptr){ free(invariantFlux); invariantFlux = nullptr; }
+    if (X != nullptr) { free(X); X = nullptr; }
     }
 
 
 void cleanNodes()
 {
-    if (myNode != NULL)
+    if (myNode != nullptr)
     {
         for (long i = 0; i < myStructure.nrNodes; i++)
         {
-			if (myNode[i].boundary != NULL) free(myNode[i].boundary);
+			if (myNode[i].boundary != nullptr) free(myNode[i].boundary);
 			free(myNode[i].lateral);
         }
         free(myNode);
-        myNode = NULL;
+        myNode = nullptr;
     }
 }
 
@@ -104,6 +104,6 @@ int initializeArrays()
     invariantFlux = (double *) calloc(myStructure.nrNodes, sizeof(double));
     for (n = 0; n < myStructure.nrNodes; n++) invariantFlux[n] = 0.;
 
-    if (A == NULL) return(MEMORY_ERROR);
+    if (A == nullptr) return(MEMORY_ERROR);
     else return(CRIT3D_OK);
 }

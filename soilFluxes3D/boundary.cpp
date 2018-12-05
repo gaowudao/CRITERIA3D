@@ -75,7 +75,7 @@ void initializeBoundary(Tboundary *myBoundary, int myType, float slope)
         (*myBoundary).Heat->fixedTemperature = NODATA;
         (*myBoundary).Heat->fixedTemperatureDepth = NODATA;
     }
-    else (*myBoundary).Heat = NULL;
+    else (*myBoundary).Heat = nullptr;
 }
 
 double computeSoilSurfaceResistance(double myThetaTop)
@@ -98,7 +98,7 @@ double computeSoilSurfaceResistanceCG(double theta, double thetaSat)
  */
 double computeAtmosphericSensibleFlux(long i)
 {
-    if (myNode[i].boundary->Heat == NULL || ! myNode[myNode[i].up.index].isSurface)
+    if (myNode[i].boundary->Heat == nullptr || ! myNode[myNode[i].up.index].isSurface)
         return 0;
 
     double myPressure = PressureFromAltitude(myNode[i].z);
@@ -117,7 +117,7 @@ double computeAtmosphericSensibleFlux(long i)
  */
 double computeAtmosphericLatentFlux(long i)
 {
-    if (myNode[i].boundary->Heat == NULL || ! myNode[myNode[i].up.index].isSurface)
+    if (myNode[i].boundary->Heat == nullptr || ! myNode[myNode[i].up.index].isSurface)
         return 0;
 
     double PressSat, ConcVapSat, BoundaryVapor;
@@ -146,11 +146,11 @@ double computeAtmosphericLatentFlux(long i)
 double computeAtmosphericLatentFluxSurfaceWater(long i)
 {
     if (! myNode[i].isSurface) return 0.;
-    if (&(myNode[i].down) == NULL) return 0.;
+    if (&(myNode[i].down) == nullptr) return 0.;
 
     long downIndex = myNode[i].down.index;
 
-    if (myNode[downIndex].boundary->Heat == NULL || myNode[downIndex].boundary->type != BOUNDARY_HEAT_SURFACE) return 0.;
+    if (myNode[downIndex].boundary->Heat == nullptr || myNode[downIndex].boundary->type != BOUNDARY_HEAT_SURFACE) return 0.;
 
     double PressSat, ConcVapSat, BoundaryVapor;
 
@@ -176,7 +176,7 @@ double computeAtmosphericLatentFluxSurfaceWater(long i)
  */
 double computeAtmosphericLatentHeatFlux(long i)
 {
-    if (myNode[i].boundary->Heat == NULL || ! myNode[myNode[i].up.index].isSurface)
+    if (myNode[i].boundary->Heat == nullptr || ! myNode[myNode[i].up.index].isSurface)
         return 0;
 
     double latentHeatFlow = 0.;
@@ -203,9 +203,9 @@ double getSurfaceWaterFraction(int i)
 void updateBoundary()
 {
     for (long i = 0; i < myStructure.nrNodes; i++)
-        if (myNode[i].boundary != NULL)
+        if (myNode[i].boundary != nullptr)
             if (myStructure.computeHeat)
-                if (myNode[i].extra->Heat != NULL)
+                if (myNode[i].extra->Heat != nullptr)
                     if (myNode[i].boundary->type == BOUNDARY_HEAT_SURFACE)
                     {
                         // update aerodynamic conductance
@@ -238,7 +238,7 @@ void updateBoundaryWater(double deltaT)
         // extern sink/source
         myNode[i].Qw = myNode[i].waterSinkSource;
 
-        if (myNode[i].boundary != NULL)
+        if (myNode[i].boundary != nullptr)
         {
             // initialize
             myNode[i].boundary->waterFlow = 0.;
@@ -298,7 +298,7 @@ void updateBoundaryWater(double deltaT)
                     long upIndex;
 
                     double surfaceWaterFraction = 0.;
-                    if (&(myNode[i].up) != NULL)
+                    if (&(myNode[i].up) != nullptr)
                     {
                         upIndex = myNode[i].up.index;
                         surfaceWaterFraction = getSurfaceWaterFraction(upIndex);
@@ -317,7 +317,7 @@ void updateBoundaryWater(double deltaT)
 
                         evapFromSurface = max_value(evapFromSurface, -waterVolume / deltaT);
 
-                        if (myNode[upIndex].boundary != NULL)
+                        if (myNode[upIndex].boundary != nullptr)
                             myNode[upIndex].boundary->waterFlow = evapFromSurface;
                         else
                             myNode[upIndex].Qw += evapFromSurface;
@@ -400,7 +400,7 @@ void updateBoundaryHeat()
         {
             myNode[i].extra->Heat->Qh = myNode[i].extra->Heat->sinkSource;
 
-            if (myNode[i].boundary != NULL)
+            if (myNode[i].boundary != nullptr)
             {
                 if (myNode[i].boundary->type == BOUNDARY_HEAT_SURFACE)
                 {

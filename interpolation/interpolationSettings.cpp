@@ -231,7 +231,7 @@ void Crit3DInterpolationSettings::initialize()
     indexPointCV = NODATA;
 
     currentClimateParametersLoaded = false;
-    if (currentCombination == NULL)
+    if (currentCombination == nullptr)
         currentCombination = new Crit3DProxyCombination();
 }
 

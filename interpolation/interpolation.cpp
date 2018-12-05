@@ -194,7 +194,7 @@ void computeDistances(vector <Crit3DInterpolationDataPoint> &myPoints,  Crit3DIn
                 if (kh != 0)
                 {
                     topoDistance = NODATA;
-                    if (myPoints.at(i).topographicDistance != NULL)
+                    if (myPoints.at(i).topographicDistance != nullptr)
                     {
                         if (! gis::isOutOfGridXY(x, y, myPoints.at(i).topographicDistance->header))
                         {
@@ -1263,7 +1263,7 @@ std::vector <float> getProxyValuesXY(float x, float y, Crit3DInterpolationSettin
         if (myCombination->getValue(i))
         {
             proxyGrid = mySettings->getProxy(i)->getGrid();
-            if (proxyGrid != NULL && proxyGrid->isLoaded)
+            if (proxyGrid != nullptr && proxyGrid->isLoaded)
             {
                 myValue = gis::getValueFromXY(*proxyGrid, x, y);
                 if (myValue != proxyGrid->header->flag)

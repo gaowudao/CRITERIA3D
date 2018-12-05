@@ -46,7 +46,7 @@ QList<VariablesList> DbArkimet::getVariableProperties(QList<int> id)
 
 QString DbArkimet::getVarName(int id)
 {
-    QString varName = NULL;
+    QString varName = nullptr;
     QSqlQuery qry(_db);
 
     qry.prepare( "SELECT variable FROM variable_properties WHERE id_arkimet = :id" );

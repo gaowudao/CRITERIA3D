@@ -8879,7 +8879,7 @@ namespace eigenproblem {
       const struct tm *tm;
       time_t now;
 
-      now = time ( NULL );
+      now = time ( nullptr );
       tm = localtime ( &now );
 
       strftime (time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", tm );
