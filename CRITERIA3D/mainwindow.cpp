@@ -945,8 +945,9 @@ void MainWindow::on_actionView_3D_triggered()
     {
         viewer3D = new Viewer3D(this);
     }
-    viewer3D->initialize(&myProject);
+
     viewer3D->show();
+    viewer3D->initialize(&myProject);
 }
 
 

@@ -7,12 +7,12 @@
 ColorLegend::ColorLegend(QWidget *parent) :
     QWidget(parent)
 {
-    colorScale = NULL;
+    colorScale = nullptr;
 }
 
 ColorLegend::~ColorLegend()
 {
-    colorScale = NULL;
+    colorScale = nullptr;
 }
 
 void ColorLegend::paintEvent(QPaintEvent *)
@@ -23,7 +23,7 @@ void ColorLegend::paintEvent(QPaintEvent *)
 
 bool drawColorLegend(Crit3DColorScale* colorScale, QPainter* myPainter)
 {
-    if (colorScale == NULL) return false;
+    if (colorScale == nullptr) return false;
 
     float minimum = colorScale->minimum;
     float maximum = colorScale->maximum;

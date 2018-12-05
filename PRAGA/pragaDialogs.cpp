@@ -16,7 +16,7 @@ bool downloadMeteoData(PragaProject* project_)
 {
     if(project_->nrMeteoPoints == 0)
     {
-         QMessageBox::information(NULL, "DB not existing", "Create or Open a meteo points database before download");
+         QMessageBox::information(nullptr, "DB not existing", "Create or Open a meteo points database before download");
          return false;
     }
 
@@ -101,17 +101,17 @@ bool downloadMeteoData(PragaProject* project_)
 
    if (!daily.isChecked() && !hourly.isChecked())
    {
-       QMessageBox::information(NULL, "Missing parameter", "Select hourly or daily");
+       QMessageBox::information(nullptr, "Missing parameter", "Select hourly or daily");
        return downloadMeteoData(project_);
    }
    else if ((! firstDate.isValid()) || (! lastDate.isValid()))
    {
-       QMessageBox::information(NULL, "Missing parameter", "Select download period");
+       QMessageBox::information(nullptr, "Missing parameter", "Select download period");
        return downloadMeteoData(project_);
    }
    else if (!item1.isSelected() && !item2.isSelected() && !item3.isSelected() && !item4.isSelected() && !item5.isSelected() && !item6.isSelected())
    {
-       QMessageBox::information(NULL, "Missing parameter", "Select variable");
+       QMessageBox::information(nullptr, "Missing parameter", "Select variable");
        return downloadMeteoData(project_);
    }
    else
@@ -153,7 +153,7 @@ bool downloadMeteoData(PragaProject* project_)
 
             if (! project_->downloadDailyDataArkimet(var, prec0024, firstDate, lastDate, true))
             {
-                QMessageBox::information(NULL, "Error!", "Error in daily download");
+                QMessageBox::information(nullptr, "Error!", "Error in daily download");
                 return false;
             }
         }
@@ -162,7 +162,7 @@ bool downloadMeteoData(PragaProject* project_)
         {
             if (! project_->downloadHourlyDataArkimet(var, firstDate, lastDate, true))
             {
-                QMessageBox::information(NULL, "Error!", "Error in hourly download");
+                QMessageBox::information(nullptr, "Error!", "Error in hourly download");
                 return false;
             }
         }
