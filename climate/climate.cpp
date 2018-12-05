@@ -292,6 +292,13 @@ bool climateOnPoint(std::string *myError, Crit3DMeteoPointsDbHandler* meteoPoint
         {
             changeDataSet = true;
         }
+        else
+        {
+            if (meteoPointTemp->nrObsDataDaysD == 0)
+            {
+                dataLoaded = false;
+            }
+        }
     }
 
 

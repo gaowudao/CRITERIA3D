@@ -283,6 +283,7 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
     }
     else if(saveClima)
     {
+        saveClimaLayout.setList(myProject.clima->getListElab()->listClimateElab());
         saveClimaMainLayout.addWidget(&saveClimaLayout);
     }
 

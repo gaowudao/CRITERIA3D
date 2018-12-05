@@ -1120,7 +1120,6 @@ void MainWindow::on_actionClose_meteo_points_triggered()
     myProject.setIsElabMeteoPointsValue(false);
     ui->groupBoxElaboration->hide();
 
-    this->ui->meteoPoints->setAutoExclusive(false);
     this->ui->meteoPoints->setChecked(false);
     this->ui->meteoPoints->setEnabled(false);
 
@@ -1143,7 +1142,6 @@ void MainWindow::on_actionClose_meteo_grid_triggered()
         ui->groupBoxElaboration->hide();
         ui->meteoGridOpacitySlider->setEnabled(false);
 
-        this->ui->grid->setAutoExclusive(false);
         this->ui->grid->setChecked(false);
         this->ui->grid->setEnabled(false);
 
