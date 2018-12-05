@@ -722,12 +722,11 @@ void MainWindow::updateDateTime()
 
 void MainWindow::on_dateChanged()
 {
-
     QDate date = this->ui->dateEdit->date();
 
     if (date != myProject.getCurrentDate())
     {
-
+        qInfo() << "dateEdit.date " << date;
         myProject.setCurrentDate(date);
         myProject.loadMeteoPointsData(date, date, true);
         myProject.loadMeteoGridData(date, date, true);
@@ -736,7 +735,6 @@ void MainWindow::on_dateChanged()
 
     redrawMeteoPoints(true);
     redrawMeteoGrid();
-
 }
 
 
