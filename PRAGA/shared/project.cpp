@@ -562,24 +562,30 @@ bool Project::loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo
     if (showInfo)
         step = myInfo.start(infoStr, nrMeteoPoints);
 
+
     for (int i=0; i < nrMeteoPoints; i++)
     {
 
         if (showInfo)
-            if ((i % step) == 0) myInfo.setValue(i);
+        {
+            //if ((i % step) == 0) myInfo.setValue(i);
+            //qInfo() << "5. loadMeteoPointsData getCurrentDate " << this->getCurrentDate();
+        }
 
         if (meteoPointsDbHandler->loadDailyData(getCrit3DDate(firstDate), getCrit3DDate(lastDate), &(meteoPoints[i])))
         {
             isData = true;
         }
+
         if (meteoPointsDbHandler->loadHourlyData(getCrit3DDate(firstDate), getCrit3DDate(lastDate), &(meteoPoints[i])))
         {
             isData = true;
         }
 
-    }
 
+    }
     if (showInfo) myInfo.close();
+
 
     return isData;
 }
@@ -712,9 +718,9 @@ bool Project::loadLastMeteoData()
 
     QDate lastDate = (lastDateD > lastDateH) ? lastDateD : lastDateH;
 
+
     this->setCurrentDate(lastDate);
     this->setCurrentHour(12);
-
     return this->loadMeteoPointsData (lastDate, lastDate, true);
 }
 
