@@ -38,7 +38,8 @@
 #include <Qt3DExtras/QFirstPersonCameraController>
 #include <Qt3DInput>
 
-#include "viewer3d.h"
+//#include "viewer3d.h"
+#include "crit3dProject.h"
 
 extern Crit3DProject myProject;
 
@@ -54,7 +55,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->showPoints = true;
 
     this->myRubberBand = nullptr;
-    this->viewer3D = nullptr;
+    //this->viewer3D = nullptr;
 
     // Set the MapGraphics Scene and View
     this->mapScene = new MapGraphicsScene(this);
@@ -661,13 +662,11 @@ bool MainWindow::loadMeteoPointsDB(QString dbName)
 
     if (myProject.meteoGridDbHandler == nullptr)
     {
-        myProject.loadLastMeteoData();
+        myProject.getLastMeteoData();
         this->updateDateTime();
     }
-    else
-    {
-        myProject.loadMeteoPointsData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
-    }
+
+    myProject.loadMeteoPointsData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
 
     return true;
 }
@@ -941,13 +940,13 @@ void MainWindow::on_actionView_3D_triggered()
     if (! myProject.isInitialized)
         myProject.createIndexMap();
 
-    if (viewer3D == nullptr)
+    /*if (viewer3D == nullptr)
     {
         viewer3D = new Viewer3D(this);
     }
 
     viewer3D->show();
-    viewer3D->initialize(&myProject);
+    viewer3D->initialize(&myProject);*/
 }
 
 
