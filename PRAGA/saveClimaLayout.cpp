@@ -149,6 +149,7 @@ QStringList SaveClimaLayout::getList() const
 void SaveClimaLayout::setList(const QStringList &value)
 {
     list = value;
+    listView.addItems(list);
 }
 
 QString SaveClimaLayout::getElab1ParamFromdB() const
