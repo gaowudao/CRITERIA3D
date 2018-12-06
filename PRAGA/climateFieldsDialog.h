@@ -9,23 +9,31 @@ class ClimateFieldsDialog : public QDialog
     Q_OBJECT
 
     private:
-        QStringList climateDbElab;
+
+        QWidget elabW;
+        QWidget indexW;
+
         QStringList climateDbVarList;
+        QStringList climateDbElab;
 
         QListWidget listVariable;
         QListWidget listElab;
+        QListWidget listIndex;
 
         QHBoxLayout mainLayout;
         QVBoxLayout variableLayout;
         QVBoxLayout elabLayout;
+        QVBoxLayout indexLayout;
 
-        QString selected;
+        QString climaSelected;
         meteoVariable var;
+        QString indexSelected;
 
     public:
         ClimateFieldsDialog(QStringList climateDbElab, QStringList climateDbVarList);
-        void itemClicked(QListWidgetItem *item);
-        void endSelection(QListWidgetItem* item);
+        void variableClicked(QListWidgetItem *item);
+        void elabClicked(QListWidgetItem* item);
+        void indexClicked(QListWidgetItem* item);
         QString getSelected() const;
         meteoVariable getVar() const;
 };

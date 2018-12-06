@@ -1,8 +1,9 @@
 #include "climateFieldsDialog.h"
+#include "climate.h"
 
 QString ClimateFieldsDialog::getSelected() const
 {
-    return selected;
+    return climaSelected;
 }
 
 meteoVariable ClimateFieldsDialog::getVar() const
@@ -17,11 +18,21 @@ ClimateFieldsDialog::ClimateFieldsDialog(QStringList climateDbElab, QStringList 
 
     listVariable.addItems(climateDbVarList);
     variableLayout.addWidget(&listVariable);
+    indexLayout.addWidget(&listIndex);
 
-    connect(&listVariable, &QListWidget::itemClicked, [=](QListWidgetItem* item){ this->itemClicked(item); });
+    connect(&listVariable, &QListWidget::itemClicked, [=](QListWidgetItem* item){ this->variableClicked(item); });
 
     mainLayout.addLayout(&variableLayout);
-    mainLayout.addLayout(&elabLayout);
+
+    elabW.setLayout(&elabLayout);
+    mainLayout.addWidget(&elabW);
+    indexW.setLayout(&indexLayout);
+    mainLayout.addWidget(&indexW);
+
+    elabW.setVisible(false);
+    indexW.setVisible(false);
+
+
     setLayout(&mainLayout);
     mainLayout.setSizeConstraint(QLayout::SetFixedSize);
 
@@ -29,8 +40,10 @@ ClimateFieldsDialog::ClimateFieldsDialog(QStringList climateDbElab, QStringList 
     exec();
 }
 
-void ClimateFieldsDialog::itemClicked(QListWidgetItem* item)
+void ClimateFieldsDialog::variableClicked(QListWidgetItem* item)
 {
+    elabW.setVisible(true);
+    indexW.setVisible(false);
 
     listElab.clear();
     QStringList elabVarSelected;
@@ -51,12 +64,58 @@ void ClimateFieldsDialog::itemClicked(QListWidgetItem* item)
 
     listElab.addItems(elabVarSelected);
     elabLayout.addWidget(&listElab);
-    connect(&listElab, &QListWidget::itemClicked, [=](QListWidgetItem* item){ this->endSelection(item); });
+    connect(&listElab, &QListWidget::itemClicked, [=](QListWidgetItem* item){ this->elabClicked(item); });
 
 }
 
-void ClimateFieldsDialog::endSelection(QListWidgetItem* item)
+void ClimateFieldsDialog::elabClicked(QListWidgetItem* item)
 {
-    selected = item->text();
+    climaSelected = item->text();
+    listIndex.clear();
+    QStringList listIndexSelected;
+
+    int n = getNumberClimateIndexFromElab(climaSelected);
+    if (n == 1)
+    {
+        indexSelected = 1;
+        indexW.setVisible(false);
+    }
+    else
+    {
+        indexW.setVisible(true);
+        for (int i=1; i <= n; i++)
+        {
+            if (n==4)
+            {
+                switch(i) {
+                    case 1 : listIndexSelected.append("MAM");
+                             break;
+                    case 2 : listIndexSelected.append("JJA");
+                             break;
+                    case 3 : listIndexSelected.append("SON");
+                             break;
+                    case 4 : listIndexSelected.append("DJF");
+                             break;
+                }
+
+            }
+            else
+            {
+                listIndexSelected.append(QString::number(i));
+            }
+
+        }
+
+        listIndex.addItems(listIndexSelected);
+        indexLayout.addWidget(&listIndex);
+        connect(&listIndex, &QListWidget::itemClicked, [=](QListWidgetItem* item){ this->indexClicked(item); });
+    }
+
+}
+
+
+void ClimateFieldsDialog::indexClicked(QListWidgetItem* item)
+{
+    indexSelected = item->text();
     QDialog::done(QDialog::Accepted);
 }
