@@ -26,7 +26,7 @@ bool saveDailyElab(QSqlDatabase db, std::string *myError, QString id, std::vecto
             return false;
         }
     }
-    qry.prepare( "INSERT INTO `climate_daily` (days, id_point, elab, value)"
+    qry.prepare( "REPLACE INTO `climate_daily` (days, id_point, elab, value)"
                                       " VALUES (?, ?, ?, ?)" );
 
 
@@ -160,7 +160,7 @@ bool saveDecadalElab(QSqlDatabase db, std::string *myError, QString id, std::vec
             return false;
         }
     }
-    qry.prepare( "INSERT INTO `climate_decadal` (decades, id_point, elab, value)"
+    qry.prepare( "REPLACE INTO `climate_decadal` (decades, id_point, elab, value)"
                                       " VALUES (?, ?, ?, ?)" );
 
     for (unsigned int i = 0; i < allResults.size(); i++)
@@ -202,7 +202,7 @@ bool saveMonthlyElab(QSqlDatabase db, std::string *myError, QString id, std::vec
             return false;
         }
     }
-    qry.prepare( "INSERT INTO `climate_monthly` (months, id_point, elab, value)"
+    qry.prepare( "REPLACE INTO `climate_monthly` (months, id_point, elab, value)"
                                       " VALUES (?, ?, ?, ?)" );
 
     for (unsigned int i = 0; i < allResults.size(); i++)
@@ -245,7 +245,7 @@ bool saveSeasonalElab(QSqlDatabase db, std::string *myError, QString id, std::ve
             return false;
         }
     }
-    qry.prepare( "INSERT INTO `climate_seasonal` (season, id_point, elab, value)"
+    qry.prepare( "REPLACE INTO `climate_seasonal` (season, id_point, elab, value)"
                                       " VALUES (?, ?, ?,?)" );
 
     for (unsigned int i = 0; i < allResults.size(); i++)
@@ -288,7 +288,7 @@ bool saveAnnualElab(QSqlDatabase db, std::string *myError, QString id, float res
             return false;
         }
     }
-    qry.prepare( "INSERT INTO `climate_annual` (id_point, elab, value)"
+    qry.prepare( "REPLACE INTO `climate_annual` (id_point, elab, value)"
                                       " VALUES (:id_point, :elab, :value)" );
 
     qry.bindValue(":id_point", id);
@@ -326,7 +326,7 @@ bool saveGenericElab(QSqlDatabase db, std::string *myError, QString id, float re
             return false;
         }
     }
-    qry.prepare( "INSERT INTO `climate_generic` (id_point, elab, value)"
+    qry.prepare( "REPLACE INTO `climate_generic` (id_point, elab, value)"
                                       " VALUES (:id_point, :elab, :value)" );
 
     qry.bindValue(":id_point", id);
