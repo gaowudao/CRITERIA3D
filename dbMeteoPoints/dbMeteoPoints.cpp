@@ -189,7 +189,7 @@ QDateTime Crit3DMeteoPointsDbHandler::getLastDay(frequencyType frequency)
         statement = QString( "SELECT MAX(date_time) FROM `%1` AS dateTime").arg(table);
         if( !qry.exec(statement) )
         {
-            qDebug() << qry.lastError();
+            //qDebug() << qry.lastError();
         }
         else
         {
