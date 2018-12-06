@@ -24,6 +24,10 @@ class ClimateFieldsDialog : public QDialog
         QVBoxLayout variableLayout;
         QVBoxLayout elabLayout;
         QVBoxLayout indexLayout;
+        QVBoxLayout buttonLayout;
+
+        QPushButton showButton;
+        QPushButton deleteButton;
 
         QString climaSelected;
         meteoVariable var;
