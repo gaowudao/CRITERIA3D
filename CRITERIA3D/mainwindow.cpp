@@ -38,7 +38,6 @@
 #include <Qt3DExtras/QFirstPersonCameraController>
 #include <Qt3DInput>
 
-//#include "viewer3d.h"
 #include "crit3dProject.h"
 
 extern Crit3DProject myProject;
@@ -55,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->showPoints = true;
 
     this->myRubberBand = nullptr;
-    //this->viewer3D = nullptr;
+    this->viewer3D = nullptr;
 
     // Set the MapGraphics Scene and View
     this->mapScene = new MapGraphicsScene(this);
@@ -940,13 +939,13 @@ void MainWindow::on_actionView_3D_triggered()
     if (! myProject.isInitialized)
         myProject.createIndexMap();
 
-    /*if (viewer3D == nullptr)
+    if (viewer3D == nullptr)
     {
         viewer3D = new Viewer3D(this);
     }
 
+    viewer3D->initialize(&myProject);
     viewer3D->show();
-    viewer3D->initialize(&myProject);*/
 }
 
 

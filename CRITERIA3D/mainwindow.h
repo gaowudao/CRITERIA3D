@@ -12,7 +12,7 @@
     #include "stationMarker.h"
     #include "rasterObject.h"
     #include "colorlegend.h"
-    //#include "viewer3d.h"
+    #include "viewer3d.h"
 
 
     namespace Ui
@@ -111,7 +111,7 @@
         ColorLegend *meteoGridLegend;
         QList<StationMarker*> pointList;
         RubberBand *myRubberBand;
-        //Viewer3D *viewer3D;
+        Viewer3D *viewer3D;
 
         bool showPoints;
 
