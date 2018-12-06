@@ -58,8 +58,8 @@ Crit3DMeteoPoint::Crit3DMeteoPoint()
     this->nrObsDataDaysD = 0;
     this->hourlyFraction = 1;
 
-    this->obsDataH = NULL;
-    this->obsDataD = NULL;
+    this->obsDataH = nullptr;
+    this->obsDataD = nullptr;
 
     this->currentValue = NODATA;
     this->residual = NODATA;
@@ -75,7 +75,7 @@ Crit3DMeteoPoint::Crit3DMeteoPoint()
 
     proxyValues.clear();
     lapseRateCode = primary;
-    topographicDistance = NULL;
+    topographicDistance = nullptr;
 }
 
 
@@ -340,7 +340,7 @@ bool Crit3DMeteoPoint::isDateIntervalLoadedH(const Crit3DTime& timeIni, const Cr
         return false;
     else if (timeIni > timeFin)
         return false;
-    else if (obsDataH == NULL)
+    else if (obsDataH == nullptr)
         return false;
     else if (timeIni.date < obsDataH[0].date || timeFin.date > (obsDataH[0].date.addDays(nrObsDataDaysH - 1)))
         return (false);
@@ -354,7 +354,7 @@ float Crit3DMeteoPoint::obsDataConsistencyH(meteoVariable myVar, const Crit3DTim
         return 0.0;
     else if (timeIni > timeFin)
         return 0.0;
-    else if (obsDataH == NULL)
+    else if (obsDataH == nullptr)
         return 0.0;
     else if (timeFin.date < obsDataH[0].date || timeIni.date > (obsDataH[0].date.addDays(nrObsDataDaysH - 1)))
         return 0.0;
@@ -531,7 +531,7 @@ float Crit3DMeteoPoint::getMeteoPointValueH(const Crit3DDate& myDate, int myHour
     {
         return NODATA;
     }
-    if (obsDataH == NULL)
+    if (obsDataH == nullptr)
     {
         return NODATA;
     }
@@ -588,7 +588,7 @@ float Crit3DMeteoPoint::getMeteoPointValueD(const Crit3DDate& myDate, meteoVaria
 {
     //check
     if (myVar == noMeteoVar) return NODATA;
-    if (obsDataD == NULL) return NODATA;
+    if (obsDataD == nullptr) return NODATA;
 
     int i = obsDataD[0].date.daysTo(myDate);
     if ((i < 0) || (i >= nrObsDataDaysD)) return NODATA;

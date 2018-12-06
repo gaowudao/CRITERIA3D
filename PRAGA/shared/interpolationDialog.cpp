@@ -132,9 +132,9 @@ void InterpolationDialog::redrawProxies()
 
 void InterpolationDialog::editProxies()
 {
-    if (_project->meteoPointsDbHandler == NULL)
+    if (_project->meteoPointsDbHandler == nullptr)
     {
-        QMessageBox::information(NULL, "No DB open", "Open DB Points to edit proxy tables and fields");
+        QMessageBox::information(nullptr, "No DB open", "Open DB Points to edit proxy tables and fields");
         return;
     }
 
@@ -173,13 +173,13 @@ void InterpolationDialog::accept()
 {
     if (minRegressionR2Edit.text().isEmpty())
     {
-        QMessageBox::information(NULL, "Missing R2", "insert minimum regression R2");
+        QMessageBox::information(nullptr, "Missing R2", "insert minimum regression R2");
         return;
     }
 
     if (algorithmEdit.currentIndex() == -1)
     {
-        QMessageBox::information(NULL, "No algorithm selected", "Choose algorithm");
+        QMessageBox::information(nullptr, "No algorithm selected", "Choose algorithm");
         return;
     }
 
@@ -241,9 +241,9 @@ void ProxyDialog::getGridFile()
     if (gis::readEsriGrid(fileName, grid_, &error_))
         _proxyGridName.setText(qFileName);
     else
-        QMessageBox::information(NULL, "Error", "Error opening " + qFileName);
+        QMessageBox::information(nullptr, "Error", "Error opening " + qFileName);
 
-    grid_ = NULL;
+    grid_ = nullptr;
 }
 
 void ProxyDialog::redrawProxies()
@@ -456,7 +456,7 @@ void ProxyDialog::accept()
         QDialog::done(QDialog::Accepted);
     }
     else
-        QMessageBox::information(NULL, "Proxy error", QString::fromStdString(error));
+        QMessageBox::information(nullptr, "Proxy error", QString::fromStdString(error));
 
     return;
 }

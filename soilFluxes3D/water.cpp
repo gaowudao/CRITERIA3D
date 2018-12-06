@@ -50,7 +50,7 @@
  */
 double getWaterExchange(long i, TlinkedNode *link, double deltaT)
 {
-	if (link != NULL)
+    if (link != nullptr)
         {
 		double matrixValue = getMatrixValue(i, link);
 		double flow = matrixValue * (myNode[i].H - myNode[link->index].H) * deltaT;

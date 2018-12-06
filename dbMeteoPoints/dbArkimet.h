@@ -31,8 +31,6 @@ class DbArkimet : public Crit3DMeteoPointsDbHandler
         void createTmpTableDaily();
         void deleteTmpTableDaily();
 
-        //void insertOrUpdate(QString date, QString id_point, int id_variable, QString variable_name, double value, int frequency, QString flag);
-
         bool saveHourlyData();
         bool saveDailyData(QDate startDate, QDate endDate);
 

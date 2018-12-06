@@ -20,8 +20,8 @@ void PragaProject::setIsElabMeteoPointsValue(bool value)
 PragaProject::PragaProject()
 {
     clima = new Crit3DClimate();
-    climaFromDb = NULL;
-    referenceClima = NULL;
+    climaFromDb = nullptr;
+    referenceClima = nullptr;
 }
 
 bool PragaProject::readPragaParameters()
@@ -71,7 +71,7 @@ bool PragaProject::interpolationMeteoGrid(meteoVariable myVar, frequencyType myF
                               gis::Crit3DRasterGrid *myRaster, bool showInfo)
 {
 
-    if (meteoGridDbHandler != NULL)
+    if (meteoGridDbHandler != nullptr)
     {
         if (!interpolationDem(myVar, myTime, myRaster, showInfo))
         {
@@ -162,14 +162,14 @@ bool PragaProject::elaborationCheck(bool isMeteoGrid, bool isAnomaly)
 
     if (isMeteoGrid)
     {
-        if (this->meteoGridDbHandler == NULL)
+        if (this->meteoGridDbHandler == nullptr)
         {
             errorString = "Load grid";
             return false;
         }
         else
         {
-            if (this->clima == NULL)
+            if (this->clima == nullptr)
             {
                 this->clima = new Crit3DClimate(); 
             }
@@ -178,14 +178,14 @@ bool PragaProject::elaborationCheck(bool isMeteoGrid, bool isAnomaly)
     }
     else
     {
-        if (this->meteoPointsDbHandler == NULL)
+        if (this->meteoPointsDbHandler == nullptr)
         {
             errorString = "Load meteo Points";
             return false;
         }
         else
         {
-            if (this->clima == NULL)
+            if (this->clima == nullptr)
             {
                 this->clima = new Crit3DClimate();
             }
@@ -194,7 +194,7 @@ bool PragaProject::elaborationCheck(bool isMeteoGrid, bool isAnomaly)
     }
     if (isAnomaly)
     {
-        if (this->referenceClima == NULL)
+        if (this->referenceClima == nullptr)
         {
             this->referenceClima = new Crit3DClimate();
         }
@@ -216,7 +216,7 @@ bool PragaProject::showClimateFields(bool isMeteoGrid, QStringList* climateDbEla
     QSqlDatabase db;
     if (isMeteoGrid)
     {
-        if (this->meteoGridDbHandler == NULL)
+        if (this->meteoGridDbHandler == nullptr)
         {
             errorString = "Load grid";
             return false;
@@ -225,7 +225,7 @@ bool PragaProject::showClimateFields(bool isMeteoGrid, QStringList* climateDbEla
     }
     else
     {
-        if (this->meteoPointsDbHandler == NULL)
+        if (this->meteoPointsDbHandler == nullptr)
         {
             errorString = "Load meteo Points";
             return false;
@@ -490,7 +490,7 @@ bool PragaProject::elaborationPointsCycle(bool isAnomaly, bool showInfo)
             }
             else
             {
-                if ( elaborationOnPoint(&errorString, meteoPointsDbHandler, NULL, meteoPointTemp, climaUsed, isMeteoGrid, startDate, endDate, isAnomaly, meteoSettings))
+                if ( elaborationOnPoint(&errorString, meteoPointsDbHandler, nullptr, meteoPointTemp, climaUsed, isMeteoGrid, startDate, endDate, isAnomaly, meteoSettings))
                 {
                     validCell = validCell + 1;
                 }
@@ -610,7 +610,7 @@ bool PragaProject::elaborationPointsCycleGrid(bool isAnomaly, bool showInfo)
                 }
                 else
                 {
-                    if  ( elaborationOnPoint(&errorString, NULL, meteoGridDbHandler, meteoPointTemp, climaUsed, isMeteoGrid, startDate, endDate, isAnomaly, meteoSettings))
+                    if  ( elaborationOnPoint(&errorString, nullptr, meteoGridDbHandler, meteoPointTemp, climaUsed, isMeteoGrid, startDate, endDate, isAnomaly, meteoSettings))
                     {
                         validCell = validCell + 1;
                     }
@@ -697,7 +697,7 @@ bool PragaProject::climatePointsCycle(bool showInfo)
                 clima->setClimateElab(climateList->listClimateElab().at(j));
 
 
-                if (climateList->listClimateElab().at(j)!= NULL)
+                if (climateList->listClimateElab().at(j)!= nullptr)
                 {
 
                     // copy current elaboration to clima
@@ -739,7 +739,7 @@ bool PragaProject::climatePointsCycle(bool showInfo)
                     return false;
                 }
 
-                if (climateOnPoint(&errorString, meteoPointsDbHandler, NULL, clima, meteoPointTemp, outputValues, isMeteoGrid, startDate, endDate, changeDataSet, meteoSettings))
+                if (climateOnPoint(&errorString, meteoPointsDbHandler, nullptr, clima, meteoPointTemp, outputValues, isMeteoGrid, startDate, endDate, changeDataSet, meteoSettings))
                 {
                     validCell = validCell + 1;
                 }
@@ -823,7 +823,7 @@ bool PragaProject::climatePointsCycleGrid(bool showInfo)
                    clima->setClimateElab(climateList->listClimateElab().at(j));
 
 
-                   if (climateList->listClimateElab().at(j)!= NULL)
+                   if (climateList->listClimateElab().at(j)!= nullptr)
                    {
 
                        // copy current elaboration to clima
@@ -866,7 +866,7 @@ bool PragaProject::climatePointsCycleGrid(bool showInfo)
                        return false;
                    }
 
-                   if (climateOnPoint(&errorString, NULL, meteoGridDbHandler, clima, meteoPointTemp, outputValues, isMeteoGrid, startDate, endDate, changeDataSet, meteoSettings))
+                   if (climateOnPoint(&errorString, nullptr, meteoGridDbHandler, clima, meteoPointTemp, outputValues, isMeteoGrid, startDate, endDate, changeDataSet, meteoSettings))
                    {
                        validCell = validCell + 1;
                    }

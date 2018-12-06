@@ -409,16 +409,16 @@ void ComputationDialog::done(bool res)
         {
             // store elaboration values
 
-            if (myProject.clima == NULL)
+            if (myProject.clima == nullptr)
             {
-                QMessageBox::information(NULL, "Error!", "clima is null...");
+                QMessageBox::information(nullptr, "Error!", "clima is null...");
                 return;
             }
             else
             {
-                if (isAnomaly && myProject.referenceClima == NULL)
+                if (isAnomaly && myProject.referenceClima == nullptr)
                 {
-                    QMessageBox::information(NULL, "Error!", "reference clima is null...");
+                    QMessageBox::information(nullptr, "Error!", "reference clima is null...");
                     return;
                 }
             }
@@ -1087,25 +1087,25 @@ bool ComputationDialog::checkValidData()
 
     if (firstYearEdit.text().size() != 4)
     {
-        QMessageBox::information(NULL, "Missing year", "Insert first year");
+        QMessageBox::information(nullptr, "Missing year", "Insert first year");
         return false;
     }
     if (lastYearEdit.text().size() != 4)
     {
-        QMessageBox::information(NULL, "Missing year", "Insert last year");
+        QMessageBox::information(nullptr, "Missing year", "Insert last year");
         return false;
     }
 
     if (firstYearEdit.text().toInt() > lastYearEdit.text().toInt())
     {
-        QMessageBox::information(NULL, "Invalid year", "first year greater than last year");
+        QMessageBox::information(nullptr, "Invalid year", "first year greater than last year");
         return false;
     }
     if (elaborationList.currentText().toStdString() == "huglin" || elaborationList.currentText().toStdString() == "winkler" || elaborationList.currentText().toStdString() == "fregoni")
     {
         if (secondElabList.currentText().toStdString() == "None")
         {
-            QMessageBox::information(NULL, "Second Elaboration missing", elaborationList.currentText() + " requires second elaboration");
+            QMessageBox::information(nullptr, "Second Elaboration missing", elaborationList.currentText() + " requires second elaboration");
             return false;
         }
 
@@ -1114,7 +1114,7 @@ bool ComputationDialog::checkValidData()
     {
         if ( (!readParam.isChecked() && elab1Parameter.text().isEmpty()) || (readParam.isChecked() && climateDbElabList.currentText() == "No saved elaborations found" ))
         {
-            QMessageBox::information(NULL, "Missing Parameter", "insert parameter");
+            QMessageBox::information(nullptr, "Missing Parameter", "insert parameter");
             return false;
         }
     }
@@ -1122,7 +1122,7 @@ bool ComputationDialog::checkValidData()
     {
         if (elab2Parameter.text().isEmpty())
         {
-            QMessageBox::information(NULL, "Missing Parameter", "insert second elaboration parameter");
+            QMessageBox::information(nullptr, "Missing Parameter", "insert second elaboration parameter");
             return false;
         }
     }
@@ -1130,7 +1130,7 @@ bool ComputationDialog::checkValidData()
     {
         if (nrYear.text().isEmpty())
         {
-            QMessageBox::information(NULL, "Missing Parameter", "insert Nr Years");
+            QMessageBox::information(nullptr, "Missing Parameter", "insert Nr Years");
             return false;
         }
     }

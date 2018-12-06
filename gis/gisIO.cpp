@@ -142,7 +142,7 @@ namespace gis
         }
 
         filePointer = fopen (fileName.c_str(), "rb" );
-        if (filePointer == NULL)
+        if (filePointer == nullptr)
         {
             *myError = "File .flt error.";
             return(false);
@@ -216,7 +216,7 @@ namespace gis
         FILE* filePointer;
 
         filePointer = fopen (myFileName.c_str(), "wb" );
-        if (filePointer == NULL)
+        if (filePointer == nullptr)
         {
             *myError = "File .flt error.";
             return(false);
@@ -231,7 +231,7 @@ namespace gis
 
     bool readEsriGrid(string myFileName, Crit3DRasterGrid* myGrid, string* myError)
     {
-        if (myGrid == NULL) return(false);
+        if (myGrid == nullptr) return(false);
         myGrid->isLoaded = false;
 
         Crit3DRasterHeader *myHeader;

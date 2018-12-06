@@ -79,19 +79,19 @@ bool PragaSettingsDialog::acceptPragaValues()
 {
     if (elabTab->anomalyPtsMaxDisEdit.text().isEmpty())
     {
-        QMessageBox::information(NULL, "Missing Parameter", "insert maximum distance between points");
+        QMessageBox::information(nullptr, "Missing Parameter", "insert maximum distance between points");
         return false;
     }
 
     if (elabTab->anomalyPtsMaxDeltaZEdit.text().isEmpty())
     {
-        QMessageBox::information(NULL, "Missing Parameter", "insert maximum height difference between points");
+        QMessageBox::information(nullptr, "Missing Parameter", "insert maximum height difference between points");
         return false;
     }
 
     if (elabTab->gridMinCoverageEdit.text().isEmpty())
     {
-        QMessageBox::information(NULL, "Missing Parameter", "insert minimum coverage for grid computation");
+        QMessageBox::information(nullptr, "Missing Parameter", "insert minimum coverage for grid computation");
         return false;
     }
 

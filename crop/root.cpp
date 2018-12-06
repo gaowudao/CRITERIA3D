@@ -21,8 +21,8 @@
         this->lastRootLayer = NODATA;
         this->rootLength = NODATA;
         this->rootDepth = NODATA;
-        this->rootDensity = NULL;
-        this->transpiration = NULL;
+        this->rootDensity = nullptr;
+        this->transpiration = nullptr;
     }
 
     Crit3DRoot::Crit3DRoot(rootDistributionType myShape, double myDepthMin, double myDepthMax, double myDegreeDaysRootGrowth)
@@ -34,8 +34,8 @@
         firstRootLayer = NODATA;
         lastRootLayer = NODATA;
         rootDepth = 0;
-        rootDensity = NULL;
-        transpiration = NULL;
+        rootDensity = nullptr;
+        transpiration = nullptr;
     }
 
 namespace root

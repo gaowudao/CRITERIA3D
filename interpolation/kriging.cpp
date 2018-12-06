@@ -297,34 +297,34 @@ double krigingRMSE()
 
 void krigingFreeMemory()
     {
-        if (V != NULL)
+        if (V != nullptr)
         {
             free(V);
-            V = NULL;
+            V = nullptr;
         }
-        if (VM != NULL)
+        if (VM != nullptr)
         {
             free(VM);
-            VM = NULL;
+            VM = nullptr;
         }
-        if (pos != NULL)
+        if (pos != nullptr)
         {
             free(pos);
-            pos = NULL;
+            pos = nullptr;
         }
-        if (val != NULL)
+        if (val != nullptr)
         {
             free(val);
-            val = NULL;
+            val = nullptr;
         }
-        if (D != NULL)
+        if (D != nullptr)
         {
             free(D);
-            D = NULL;
+            D = nullptr;
         }
-        if (weight != NULL)
+        if (weight != nullptr)
         {
             free(weight);
-            weight = NULL;
+            weight = nullptr;
         }
     }

@@ -36,7 +36,7 @@ Crit3DInterpolationDataPoint::Crit3DInterpolationDataPoint()
     deltaZ = NODATA;
     value = NODATA;
     lapseRateCode = primary;
-    topographicDistance = NULL;
+    topographicDistance = nullptr;
     point = new gis::Crit3DPoint();
 }
 

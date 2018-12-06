@@ -112,7 +112,7 @@
         bool loadMeteoGridDailyData(QDate firstDate, QDate lastDate, bool showInfo);
         bool loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate, bool showInfo);
         void loadMeteoGridData(QDate firstDate, QDate lastDate, bool showInfo);
-        bool loadLastMeteoData();
+        void getLastMeteoData();
 
         void getMeteoPointsRange(float *minimum, float *maximum);
         bool getMeteoPointSelected(int i);

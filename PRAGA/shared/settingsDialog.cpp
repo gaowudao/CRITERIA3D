@@ -195,25 +195,25 @@ bool SettingsDialog::acceptValues()
 
     if (geoTab->startLocationLatEdit.text().isEmpty())
     {
-        QMessageBox::information(NULL, "Missing Parameter", "insert start location latitude");
+        QMessageBox::information(nullptr, "Missing Parameter", "insert start location latitude");
         return false;
     }
 
     if (geoTab->startLocationLonEdit.text().isEmpty())
     {
-        QMessageBox::information(NULL, "Missing Parameter", "insert start location longitude");
+        QMessageBox::information(nullptr, "Missing Parameter", "insert start location longitude");
         return false;
     }
 
     if (geoTab->utmZoneEdit.text().isEmpty())
     {
-        QMessageBox::information(NULL, "Missing Parameter", "insert UTM zone");
+        QMessageBox::information(nullptr, "Missing Parameter", "insert UTM zone");
         return false;
     }
 
     if (!geoTab->utc.isChecked() && !geoTab->localTime.isChecked())
     {
-        QMessageBox::information(NULL, "Missing time convention", "choose UTC or local time");
+        QMessageBox::information(nullptr, "Missing time convention", "choose UTC or local time");
         return false;
     }
 
@@ -221,25 +221,25 @@ bool SettingsDialog::acceptValues()
 
     if (qualityTab->referenceClimateHeightEdit.text().isEmpty())
     {
-        QMessageBox::information(NULL, "Missing Parameter", "insert reference height for quality control");
+        QMessageBox::information(nullptr, "Missing Parameter", "insert reference height for quality control");
         return false;
     }
 
     if (qualityTab->deltaTSuspectEdit.text().isEmpty())
     {
-        QMessageBox::information(NULL, "Missing Parameter", "insert difference in temperature suspect value");
+        QMessageBox::information(nullptr, "Missing Parameter", "insert difference in temperature suspect value");
         return false;
     }
 
     if (qualityTab->deltaTWrongEdit.text().isEmpty())
     {
-        QMessageBox::information(NULL, "Missing Parameter", "insert difference in temperature wrong value");
+        QMessageBox::information(nullptr, "Missing Parameter", "insert difference in temperature wrong value");
         return false;
     }
 
     if (qualityTab->humidityToleranceEdit.text().isEmpty())
     {
-        QMessageBox::information(NULL, "Missing Parameter", "instrumental maximum allowed relative humidity");
+        QMessageBox::information(nullptr, "Missing Parameter", "instrumental maximum allowed relative humidity");
         return false;
     }
 
@@ -247,25 +247,25 @@ bool SettingsDialog::acceptValues()
 
     if (metTab->minimumPercentageEdit.text().isEmpty())
     {
-        QMessageBox::information(NULL, "Missing Parameter", "insert minimum percentage of valid data");
+        QMessageBox::information(nullptr, "Missing Parameter", "insert minimum percentage of valid data");
         return false;
     }
 
     if (metTab->rainfallThresholdEdit.text().isEmpty())
     {
-        QMessageBox::information(NULL, "Missing Parameter", "insert minimum value for precipitation");
+        QMessageBox::information(nullptr, "Missing Parameter", "insert minimum value for precipitation");
         return false;
     }
 
     if (metTab->thomThresholdEdit.text().isEmpty())
     {
-        QMessageBox::information(NULL, "Missing Parameter", "insert threshold for thom index");
+        QMessageBox::information(nullptr, "Missing Parameter", "insert threshold for thom index");
         return false;
     }
 
     if (metTab->transSamaniCoefficientEdit.text().isEmpty())
     {
-        QMessageBox::information(NULL, "Missing Parameter", "insert Samani coefficient for ET0 computation");
+        QMessageBox::information(nullptr, "Missing Parameter", "insert Samani coefficient for ET0 computation");
         return false;
     }
 

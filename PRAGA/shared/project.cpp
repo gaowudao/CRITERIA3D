@@ -20,7 +20,7 @@ Project::Project()
     path = "";
     logFileName = "";
     errorString = "";
-    meteoPoints = NULL;
+    meteoPoints = nullptr;
     nrMeteoPoints = 0;
     meteoSettings = new Crit3DMeteoSettings();
     quality = new Crit3DQuality();
@@ -31,9 +31,9 @@ Project::Project()
     previousDate = currentDate;
     currentHour = 12;
     meteoPointsColorScale = new Crit3DColorScale();
-    meteoPointsDbHandler = NULL;
-    meteoGridDbHandler = NULL;
-    radiationMaps = NULL;
+    meteoPointsDbHandler = nullptr;
+    meteoGridDbHandler = nullptr;
+    radiationMaps = nullptr;
 
 }
 
@@ -403,18 +403,18 @@ void Project::getMeteoPointsRange(float *minimum, float *maximum)
 void Project::closeMeteoPointsDB()
 {
 
-    if (meteoPointsDbHandler != NULL)
+    if (meteoPointsDbHandler != nullptr)
     {
         delete meteoPointsDbHandler;
     }
 
-    if (meteoPoints != NULL)
+    if (meteoPoints != nullptr)
     {
         delete [] meteoPoints;
     }
 
-    meteoPointsDbHandler = NULL;
-    meteoPoints = NULL;
+    meteoPointsDbHandler = nullptr;
+    meteoPoints = nullptr;
 
     meteoPointsSelected.clear();
     nrMeteoPoints = 0;
@@ -423,12 +423,12 @@ void Project::closeMeteoPointsDB()
 void Project::closeMeteoGridDB()
 {
 
-    if (meteoGridDbHandler != NULL)
+    if (meteoGridDbHandler != nullptr)
     {
         delete meteoGridDbHandler;
     }
 
-    meteoGridDbHandler = NULL;
+    meteoGridDbHandler = nullptr;
 
 }
 
@@ -453,12 +453,12 @@ bool Project::loadDEM(QString myFileName)
     setColorScale(noMeteoTerrain, DTM.colorScale);
 
     // initialize radition maps: slope, aspect, lat/lon
-    if (radiationMaps != NULL)
+    if (radiationMaps != nullptr)
         radiationMaps->clean();
     radiationMaps = new Crit3DRadiationMaps(DTM, gisSettings);
 
     //reset aggregationPoints meteoGrid
-    if (meteoGridDbHandler != NULL)
+    if (meteoGridDbHandler != nullptr)
     {
         meteoGridDbHandler->meteoGrid()->setIsAggregationDefined(false);
         // TODO
@@ -552,7 +552,7 @@ bool Project::loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo
 
     bool isData = false;
     FormInfo myInfo;
-    int step;
+    int step = 0;
 
     QString infoStr = "Load data: " + firstDate.toString();
 
@@ -562,14 +562,11 @@ bool Project::loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo
     if (showInfo)
         step = myInfo.start(infoStr, nrMeteoPoints);
 
-
     for (int i=0; i < nrMeteoPoints; i++)
     {
-
         if (showInfo)
         {
-            //if ((i % step) == 0) myInfo.setValue(i);
-            //qInfo() << "5. loadMeteoPointsData getCurrentDate " << this->getCurrentDate();
+            if ((i % step) == 0) myInfo.setValue(i);
         }
 
         if (meteoPointsDbHandler->loadDailyData(getCrit3DDate(firstDate), getCrit3DDate(lastDate), &(meteoPoints[i])))
@@ -581,11 +578,8 @@ bool Project::loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo
         {
             isData = true;
         }
-
-
     }
     if (showInfo) myInfo.close();
-
 
     return isData;
 }
@@ -593,7 +587,7 @@ bool Project::loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo
 
 void Project::loadMeteoGridData(QDate firstDate, QDate lastDate, bool showInfo)
 {
-    if (this->meteoGridDbHandler != NULL)
+    if (this->meteoGridDbHandler != nullptr)
     {
         QDateTime t1 = QDateTime(firstDate);
         QDateTime t2 = QDateTime(lastDate.addDays(1));
@@ -711,17 +705,15 @@ bool Project::loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate, b
 }
 
 
-bool Project::loadLastMeteoData()
+void Project::getLastMeteoData()
 {
     QDate lastDateD = meteoPointsDbHandler->getLastDay(daily).date();
     QDate lastDateH = meteoPointsDbHandler->getLastDay(hourly).date();
 
     QDate lastDate = (lastDateD > lastDateH) ? lastDateD : lastDateH;
 
-
     this->setCurrentDate(lastDate);
     this->setCurrentHour(12);
-    return this->loadMeteoPointsData (lastDate, lastDate, true);
 }
 
 
@@ -733,7 +725,7 @@ void Project::checkMeteoPointsDEM()
 
 bool Project::readProxyValues()
 {
-    if (meteoPointsDbHandler == NULL)
+    if (meteoPointsDbHandler == nullptr)
         return false;
 
     for (int i = 0; i < nrMeteoPoints; i++)
@@ -1010,7 +1002,7 @@ void Project::logError()
     if (logFile.is_open())
         logFile << "----ERROR!----\n" << this->errorString << std::endl;
     else
-        QMessageBox::critical(NULL, "Error!", QString::fromStdString(errorString));
+        QMessageBox::critical(nullptr, "Error!", QString::fromStdString(errorString));
 }
 
 

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1368</width>
-    <height>768</height>
+    <width>1387</width>
+    <height>812</height>
    </rect>
   </property>
   <property name="palette">
@@ -487,6 +487,9 @@
           </property>
           <item>
            <widget class="QGroupBox" name="groupBox">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
             <property name="minimumSize">
              <size>
               <width>261</width>
@@ -2046,8 +2049,8 @@
               <rect>
                <x>10</x>
                <y>20</y>
-               <width>231</width>
-               <height>141</height>
+               <width>241</width>
+               <height>151</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="vbox">
@@ -2095,8 +2098,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1368</width>
-     <height>30</height>
+     <width>1387</width>
+     <height>21</height>
     </rect>
    </property>
    <property name="palette">

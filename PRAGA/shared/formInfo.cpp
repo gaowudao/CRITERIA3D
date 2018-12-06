@@ -36,14 +36,12 @@ int FormInfo::start(QString info, int nrValues)
 void FormInfo::setValue(int myValue)
 {
     this->ui->progressBar->setValue(myValue);
-    qApp->processEvents();
 }
 
 
 void FormInfo::setText(QString myText)
 {
     this->ui->label->setText(myText);
-    qApp->processEvents();
 }
 
 

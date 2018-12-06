@@ -71,7 +71,7 @@ int Crit3DMeteoPointsDbHandler::getIdfromMeteoVar(meteoVariable meteoVar)
 QString Crit3DMeteoPointsDbHandler::getDatasetURL(QString dataset)
 {
     QSqlQuery qry(_db);
-    QString url = NULL;
+    QString url = nullptr;
 
     qry.prepare( "SELECT URL FROM datasets WHERE dataset = :dataset");
     qry.bindValue(":dataset", dataset);
@@ -189,7 +189,7 @@ QDateTime Crit3DMeteoPointsDbHandler::getLastDay(frequencyType frequency)
         statement = QString( "SELECT MAX(date_time) FROM `%1` AS dateTime").arg(table);
         if( !qry.exec(statement) )
         {
-            qDebug() << qry.lastError();
+            //qDebug() << qry.lastError();
         }
         else
         {
@@ -508,7 +508,7 @@ void Crit3DMeteoPointsDbHandler::setDb(const QSqlDatabase &db)
 
 bool Crit3DMeteoPointsDbHandler::readPointProxyValues(Crit3DMeteoPoint* myPoint, Crit3DInterpolationSettings* interpolationSettings)
 {
-    if (myPoint == NULL) return false;
+    if (myPoint == nullptr) return false;
 
     QSqlQuery qry(_db);
     QString proxyField;
@@ -544,7 +544,7 @@ bool Crit3DMeteoPointsDbHandler::readPointProxyValues(Crit3DMeteoPoint* myPoint,
             if (myPoint->proxyValues.at(i) == NODATA)
             {
                 gis::Crit3DRasterGrid* proxyGrid = myProxy->getGrid();
-                if (proxyGrid == NULL || ! proxyGrid->isLoaded)
+                if (proxyGrid == nullptr || ! proxyGrid->isLoaded)
                     return false;
                 else
                 {

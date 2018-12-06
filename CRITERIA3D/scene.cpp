@@ -43,7 +43,7 @@ float getCosTable(float angle)
 }
 
 
-void setVertexColor(float * vertexColor, int vertexIndex, Crit3DColor *myColor, float shadow)
+void setVertexColor(float* vertexColor, int vertexIndex, Crit3DColor* myColor, float shadow)
 {
     float red = getValueInRange(myColor->red + shadow, 0, 255);
     float green = getValueInRange(myColor->green + shadow, 0, 255);
@@ -57,13 +57,20 @@ void setVertexColor(float * vertexColor, int vertexIndex, Crit3DColor *myColor, 
 
 Qt3DCore::QEntity *createScene(Crit3DProject* myProject, float magnify)
 {
+    vertexPositionArray.clear();
+    vertexColorArray.clear();
+    triangleIndexArray.clear();
+    Qt3DCore::QEntity *scene = new Qt3DCore::QEntity();
+
     int nrVertex = int(myProject->indexMap.maximum) + 1;
 
     vertexPositionArray.resize(nrVertex * 3 * int(sizeof(float)));
     vertexColorArray.resize(nrVertex * 3 * int(sizeof(float)));
+    triangleIndexArray.resize(nrVertex * 2 * 3 * int(sizeof(uint)));
 
     float *vertexPosition = reinterpret_cast<float *>(vertexPositionArray.data());
     float *vertexColor = reinterpret_cast<float *>(vertexColorArray.data());
+    uint *indexData = reinterpret_cast<uint *>(triangleIndexArray.data());
 
     float SlopeAmplification = 90.f / myProject->radiationMaps->slopeMap->maximum;
     float myAspect, mySlope, shadow;
@@ -128,9 +135,6 @@ Qt3DCore::QEntity *createScene(Crit3DProject* myProject, float magnify)
     colorAttribute->setName(Qt3DRender::QAttribute::defaultColorAttributeName());
 
     // Indices
-    triangleIndexArray.resize(nrVertex * 2 * 3 * int(sizeof(uint)));
-    uint *indexData = reinterpret_cast<uint *>(triangleIndexArray.data());
-
     long v0, v1, v2, v3;
     index = 0;
     for (int row = 0; row < myProject->indexMap.header->nrRows; row++)
@@ -183,6 +187,7 @@ Qt3DCore::QEntity *createScene(Crit3DProject* myProject, float magnify)
     geometry->addAttribute(colorAttribute);
     geometry->addAttribute(indexAttribute);
 
+
     // Geometry renderer
     Qt3DRender::QGeometryRenderer *geometryRenderer = new Qt3DRender::QGeometryRenderer;
     geometryRenderer->setPrimitiveType(Qt3DRender::QGeometryRenderer::Triangles);
@@ -196,7 +201,6 @@ Qt3DCore::QEntity *createScene(Crit3DProject* myProject, float magnify)
     Qt3DRender::QMaterial *material = new Qt3DExtras::QPerVertexColorMaterial();
 
     // Entity
-    Qt3DCore::QEntity *scene = new Qt3DCore::QEntity();
     scene->addComponent(material);
     scene->addComponent(geometryRenderer);
 

@@ -38,7 +38,8 @@
 #include <Qt3DExtras/QFirstPersonCameraController>
 #include <Qt3DInput>
 
-#include "scene.h"
+//#include "viewer3d.h"
+#include "crit3dProject.h"
 
 extern Crit3DProject myProject;
 
@@ -54,6 +55,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->showPoints = true;
 
     this->myRubberBand = nullptr;
+    //this->viewer3D = nullptr;
 
     // Set the MapGraphics Scene and View
     this->mapScene = new MapGraphicsScene(this);
@@ -660,13 +662,11 @@ bool MainWindow::loadMeteoPointsDB(QString dbName)
 
     if (myProject.meteoGridDbHandler == nullptr)
     {
-        myProject.loadLastMeteoData();
+        myProject.getLastMeteoData();
         this->updateDateTime();
     }
-    else
-    {
-        myProject.loadMeteoPointsData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
-    }
+
+    myProject.loadMeteoPointsData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
 
     return true;
 }
@@ -940,42 +940,13 @@ void MainWindow::on_actionView_3D_triggered()
     if (! myProject.isInitialized)
         myProject.createIndexMap();
 
-    // 3d Window
-    Qt3DExtras::Qt3DWindow *view3D = new Qt3DExtras::Qt3DWindow();
-    view3D->defaultFrameGraph()->setClearColor(QColor::fromRgbF(1, 1, 1, 1.0));
-    view3D->setTitle("3D");
-    view3D->setWidth(1000);
-    view3D->setHeight(600);
+    /*if (viewer3D == nullptr)
+    {
+        viewer3D = new Viewer3D(this);
+    }
 
-    // Camera
-    Qt3DRender::QCamera *camera = view3D->camera();
-    camera->lens()->setPerspectiveProjection(45.0f, 16.0f/9.0f, 1.f, 1000000.0f);
-    camera->setUpVector(QVector3D(0, 0, 1));
-
-    gis::Crit3DUtmPoint utmCenter;
-
-    float dz = maxValue(myProject.DTM.maximum - myProject.DTM.minimum, 10.f);
-    float z = myProject.DTM.minimum + dz * 0.5f;
-    float dy = myProject.DTM.header->nrRows * myProject.DTM.header->cellSize;
-    float dx = myProject.DTM.header->nrCols * myProject.DTM.header->cellSize;
-    utmCenter.x = myProject.DTM.header->llCorner->x + dx * 0.5f;
-    utmCenter.y = myProject.DTM.header->llCorner->y + dy * 0.5f;
-    float size = sqrt(dx*dy);
-    float ratio = size / dz;
-    float magnify = maxValue(1., minValue(8.f, int(ratio / 5.f)));
-
-    camera->setPosition(QVector3D(utmCenter.x, utmCenter.y - dy*0.75, (z + dz*3) * magnify));
-    camera->setViewCenter(QVector3D(utmCenter.x, utmCenter.y, z * magnify));
-
-    // Scene
-    Qt3DCore::QEntity *scene = createScene(&myProject, magnify);
-    view3D->setRootEntity(scene);
-
-    // Camera controls
-    Qt3DExtras::QFirstPersonCameraController *camController = new Qt3DExtras::QFirstPersonCameraController(scene);
-    camController->setCamera(camera);
-
-    view3D->show();
+    viewer3D->show();
+    viewer3D->initialize(&myProject);*/
 }
 
 

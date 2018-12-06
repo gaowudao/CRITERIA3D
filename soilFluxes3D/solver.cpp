@@ -85,7 +85,7 @@ TlinkedNode* getLink(long i, long j)
     for (short l = 0; l < myStructure.nrLateralLinks; l++)
          if (myNode[i].lateral[l].index == j) return &(myNode[i].lateral[l]);
 
-    return(NULL);
+    return(nullptr);
 }
 
 

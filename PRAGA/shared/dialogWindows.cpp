@@ -158,7 +158,7 @@ bool chooseMeteoVariable(Project* project_)
 {
     if (project_->getFrequency() == noFrequency)
     {
-        QMessageBox::information(NULL, "No frequency", "Choose frequency before");
+        QMessageBox::information(nullptr, "No frequency", "Choose frequency before");
         return false;
     }
 
@@ -261,12 +261,12 @@ bool chooseMeteoVariable(Project* project_)
         // check
         if (! project_netCDF.isLoaded)
         {
-            QMessageBox::information(NULL, "No data", "Load NetCDF before");
+            QMessageBox::information(nullptr, "No data", "Load NetCDF before");
             return false;
         }
         if (! project_netCDF.isStandardTime)
         {
-            QMessageBox::information(NULL, "Wrong time", "Reads only POSIX standard (seconds since 1970-01-01)");
+            QMessageBox::information(nullptr, "Wrong time", "Reads only POSIX standard (seconds since 1970-01-01)");
             return false;
         }
 

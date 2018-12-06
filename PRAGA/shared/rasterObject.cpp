@@ -10,9 +10,9 @@ RasterObject::RasterObject(MapGraphicsView* view, MapGraphicsObject *parent) :
     this->setFlag(MapGraphicsObject::ObjectIsFocusable);
     _view = view;
 
-    matrix = NULL;
-    currentRaster = NULL;
-    legend = NULL;
+    matrix = nullptr;
+    currentRaster = nullptr;
+    legend = nullptr;
     this->isLatLon = false;
     this->isGrid = false;
     this->geoMap = new gis::Crit3DGeoMap();
@@ -45,7 +45,7 @@ void RasterObject::clean()
     freeIndexesMatrix();
     latLonHeader.nrCols = 0;
     latLonHeader.nrRows = 0;
-    legend = NULL;
+    legend = nullptr;
 }
 
 
@@ -72,10 +72,10 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     {
         setMapResolution();
 
-        if (currentRaster != NULL)
+        if (currentRaster != nullptr)
             drawRaster(currentRaster, painter, drawBorder);
 
-        if (legend != NULL)
+        if (legend != nullptr)
             legend->update();
     }
 }
@@ -121,14 +121,14 @@ gis::Crit3DGeoPoint* RasterObject::getRasterCenter()
 
 void RasterObject::freeIndexesMatrix()
 {
-    if (matrix == NULL) return;
+    if (matrix == nullptr) return;
 
     for (int row = 0; row < latLonHeader.nrRows; row++)
-        if (matrix[row] != NULL) ::free(matrix[row]);
+        if (matrix[row] != nullptr) ::free(matrix[row]);
 
     if (latLonHeader.nrRows != 0) ::free(matrix);
 
-    matrix = NULL;
+    matrix = nullptr;
 }
 
 
@@ -171,7 +171,7 @@ bool RasterObject::setMapResolution()
 
 bool RasterObject::initializeUTM(gis::Crit3DRasterGrid* myRaster, const gis::Crit3DGisSettings& gisSettings, bool isGrid_)
 {
-    if (myRaster == NULL) return false;
+    if (myRaster == nullptr) return false;
     if (! myRaster->isLoaded) return false;
 
     double lat, lon, x, y;
@@ -211,7 +211,7 @@ bool RasterObject::initializeUTM(gis::Crit3DRasterGrid* myRaster, const gis::Cri
 
 bool RasterObject::initializeLatLon(gis::Crit3DRasterGrid* myRaster, const gis::Crit3DGisSettings& gisSettings, const gis::Crit3DGridHeader& latLonHeader_, bool isGrid_)
 {
-    if (myRaster == NULL) return false;
+    if (myRaster == nullptr) return false;
     if (! myRaster->isLoaded) return false;
 
     isLatLon = true;
@@ -232,7 +232,7 @@ bool RasterObject::initializeLatLon(gis::Crit3DRasterGrid* myRaster, const gis::
 
 bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPainter, bool drawBorder)
 {
-    if (myRaster == NULL) return false;
+    if (myRaster == nullptr) return false;
     if (! this->isDrawing) return false;
     if (! myRaster->isLoaded) return false;
 

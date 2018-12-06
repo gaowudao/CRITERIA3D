@@ -129,7 +129,7 @@ quality::Range* Crit3DQuality::getQualityRange(meteoVariable myVar)
         return qualityDailyWInt;
 
     else
-        return NULL;
+        return nullptr;
 }
 
 
@@ -138,7 +138,7 @@ void Crit3DQuality::syntacticQualityControl(meteoVariable myVar, Crit3DMeteoPoin
     float qualityMin, qualityMax;
 
     quality::Range* myRange = this->getQualityRange(myVar);
-    if (myRange != NULL)
+    if (myRange != nullptr)
     {
         qualityMin = myRange->getMin();
         qualityMax = myRange->getMax();
@@ -150,7 +150,7 @@ void Crit3DQuality::syntacticQualityControl(meteoVariable myVar, Crit3DMeteoPoin
             meteoPoints[i].quality = quality::missing_data;
         else
         {
-            if (myRange == NULL)
+            if (myRange == nullptr)
                 meteoPoints[i].quality = quality::accepted;
 
             else if (meteoPoints[i].currentValue < qualityMin || meteoPoints[i].currentValue > qualityMax)
@@ -168,7 +168,7 @@ quality::qualityType Crit3DQuality::syntacticQualitySingleValue(meteoVariable my
     float qualityMin, qualityMax;
 
     quality::Range* myRange = this->getQualityRange(myVar);
-    if (myRange != NULL)
+    if (myRange != nullptr)
     {
         qualityMin = myRange->getMin();
         qualityMax = myRange->getMax();
@@ -178,7 +178,7 @@ quality::qualityType Crit3DQuality::syntacticQualitySingleValue(meteoVariable my
         return quality::missing_data;
     else
     {
-        if (myRange == NULL)
+        if (myRange == nullptr)
             return quality::accepted;
 
         else if (myValue < qualityMin || myValue > qualityMax)
