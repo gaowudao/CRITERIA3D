@@ -1315,9 +1315,14 @@ void MainWindow::on_actionClimate_fields_triggered()
         {
             QString climaSelected = climateDialog.getSelected();
             meteoVariable variable = climateDialog.getVar();
+            QString index = climateDialog.getIndexSelected();
 
-            myProject.saveClimateResult(isMeteoGrid, climaSelected);
-            showClimateResult(true, isMeteoGrid, variable, climaSelected);
+            if (climateDialog.getIsShowClicked())
+            {
+                myProject.saveClimateResult(isMeteoGrid, climaSelected, index.toInt());
+                showClimateResult(true, isMeteoGrid, variable, climaSelected);
+            }
+
         }
         else
         {

@@ -11,6 +11,16 @@ meteoVariable ClimateFieldsDialog::getVar() const
     return var;
 }
 
+QString ClimateFieldsDialog::getIndexSelected() const
+{
+    return indexSelected;
+}
+
+bool ClimateFieldsDialog::getIsShowClicked() const
+{
+    return isShowClicked;
+}
+
 ClimateFieldsDialog::ClimateFieldsDialog(QStringList climateDbElab, QStringList climateDbVarList)
 : climateDbElab(climateDbElab), climateDbVarList(climateDbVarList)
 {
@@ -31,8 +41,8 @@ ClimateFieldsDialog::ClimateFieldsDialog(QStringList climateDbElab, QStringList 
 
     connect(&listVariable, &QListWidget::itemClicked, [=](QListWidgetItem* item){ this->variableClicked(item); });
 
-//    connect(&showButton, &QPushButton::clicked, [=](){ showClimate(); });
-//    connect(&deleteButton, &QPushButton::clicked, [=](){ deleteClimate(); });
+    connect(&showButton, &QPushButton::clicked, [=](){ showClicked(); });
+    connect(&deleteButton, &QPushButton::clicked, [=](){ deleteClicked(); });
     //connect(&buttonBox, &QDialogButtonBox::accepted, [=](){ this->done(true); });
     //connect(&buttonBox, &QDialogButtonBox::rejected, [=](){ this->done(false); });
 
@@ -96,7 +106,7 @@ void ClimateFieldsDialog::elabClicked(QListWidgetItem* item)
     int n = getNumberClimateIndexFromElab(climaSelected);
     if (n == 1)
     {
-        indexSelected = 1;
+        indexSelected = "1";
         indexW.setVisible(false);
         showButton.setEnabled(true);
         deleteButton.setEnabled(true);
@@ -140,5 +150,16 @@ void ClimateFieldsDialog::indexClicked(QListWidgetItem* item)
     indexSelected = item->text();
     showButton.setEnabled(true);
     deleteButton.setEnabled(true);
-    //QDialog::done(QDialog::Accepted);
+}
+
+void ClimateFieldsDialog::showClicked()
+{
+    isShowClicked = true;
+    QDialog::done(QDialog::Accepted);
+}
+
+void ClimateFieldsDialog::deleteClicked()
+{
+    isShowClicked = false;
+    QDialog::done(QDialog::Accepted);
 }

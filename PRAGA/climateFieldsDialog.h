@@ -33,13 +33,19 @@ class ClimateFieldsDialog : public QDialog
         meteoVariable var;
         QString indexSelected;
 
+        bool isShowClicked;
+
     public:
         ClimateFieldsDialog(QStringList climateDbElab, QStringList climateDbVarList);
         void variableClicked(QListWidgetItem *item);
         void elabClicked(QListWidgetItem* item);
         void indexClicked(QListWidgetItem* item);
+        void showClicked();
+        void deleteClicked();
         QString getSelected() const;
         meteoVariable getVar() const;
+        QString getIndexSelected() const;
+        bool getIsShowClicked() const;
 };
 
 #endif // CLIMATEFIELDSDIALOG_H

@@ -265,7 +265,7 @@ bool PragaProject::showClimateFields(bool isMeteoGrid, QStringList* climateDbEla
 
 }
 
-void PragaProject::saveClimateResult(bool isMeteoGrid, QString climaSelected)
+void PragaProject::saveClimateResult(bool isMeteoGrid, QString climaSelected, int climateIndex)
 {
     QSqlDatabase db;
     QList<float> results;
@@ -273,15 +273,6 @@ void PragaProject::saveClimateResult(bool isMeteoGrid, QString climaSelected)
     QStringList words = climaSelected.split('_');
     QString period = words[2];
     QString table = "climate_" + period;
-    int climateIndex;
-    if (table == "climate_generic" || table == "climate_annual")
-    {
-        climateIndex = 0;
-    }
-    else
-    {
-        climateIndex = getClimateIndexFromElab(getCurrentDate(), climaSelected);
-    }
 
     if (isMeteoGrid)
     {

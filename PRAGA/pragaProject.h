@@ -40,7 +40,7 @@
         bool elaborationCheck(bool isMeteoGrid, bool isAnomaly);
         bool elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima);
         bool showClimateFields(bool isMeteoGrid, QStringList *climateDbElab, QStringList *climateDbVarList);
-        void saveClimateResult(bool isMeteoGrid, QString climaSelected);
+        void saveClimateResult(bool isMeteoGrid, QString climaSelected, int climateIndex);
         bool climatePointsCycle(bool showInfo);
         bool climatePointsCycleGrid(bool showInfo);
 
