@@ -12,7 +12,7 @@ class FormInfo : public QDialog
     Q_OBJECT
 
 public:
-    explicit FormInfo(QWidget *parent = 0);
+    explicit FormInfo(QWidget *parent = nullptr);
     ~FormInfo();
 
     int start(QString info, int nrValues);

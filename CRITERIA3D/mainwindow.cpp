@@ -942,9 +942,9 @@ void MainWindow::on_actionView_3D_triggered()
     if (viewer3D == nullptr)
     {
         viewer3D = new Viewer3D(this);
+        viewer3D->initialize(&myProject);
     }
 
-    viewer3D->initialize(&myProject);
     viewer3D->show();
 }
 

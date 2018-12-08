@@ -10,8 +10,9 @@ class Viewer3D : public QDialog
     Q_OBJECT
 
     public:
-        Viewer3D(QWidget *parent = 0);
+        Viewer3D(QWidget *parent = nullptr);
         void initialize(Crit3DProject *project);
+        ~Viewer3D();
 
     protected:
         bool eventFilter(QObject *obj, QEvent *ev);

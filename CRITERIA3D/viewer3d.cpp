@@ -1,4 +1,4 @@
-#include "viewer3D.h"
+#include "viewer3d.h"
 #include "scene.h"
 #include "QHBoxLayout"
 
@@ -24,11 +24,11 @@ Viewer3D::Viewer3D(QWidget *parent) :
     container->setMaximumSize(screenSize);
 
     QHBoxLayout *hLayout = new QHBoxLayout(this);
-    QVBoxLayout *vLayout = new QVBoxLayout();
+    //QVBoxLayout *vLayout = new QVBoxLayout();
     hLayout->addWidget(container, 1);
 
     // Window geometry
-    resize(parent->geometry().width() * 0.8, parent->geometry().height() * 0.8);
+    resize(int(parent->geometry().width() * 0.8), int(parent->geometry().height() * 0.8));
     move(parent->geometry().center() - QPoint(width() / 2, height() / 2));
 }
 
@@ -57,7 +57,13 @@ void Viewer3D::initialize(Crit3DProject *project)
     // Set root object of the scene
     m_rootEntity = createScene(m_project, m_magnify);
     m_view->setRootEntity(m_rootEntity);
-    m_view->show();
+    //m_view->show();
+}
+
+
+Viewer3D::~Viewer3D()
+{
+    //delete ui;
 }
 
 

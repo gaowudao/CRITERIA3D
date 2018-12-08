@@ -12,14 +12,13 @@
 
 
 static float cosTable[3600];
-static QByteArray vertexPositionArray, vertexColorArray, triangleIndexArray;
 
 
 void buildLookupTables()
 {
     for (int angle = 0; angle < 3600; angle++)
     {
-        cosTable[angle] = cos(float(angle) / 10.f * DEG_TO_RAD);
+        cosTable[angle] = cos(float(angle) / 10.f * float(DEG_TO_RAD));
     }
 }
 
@@ -57,10 +56,11 @@ void setVertexColor(float* vertexColor, int vertexIndex, Crit3DColor* myColor, f
 
 Qt3DCore::QEntity *createScene(Crit3DProject* myProject, float magnify)
 {
-    vertexPositionArray.clear();
-    vertexColorArray.clear();
-    triangleIndexArray.clear();
-    Qt3DCore::QEntity *scene = new Qt3DCore::QEntity();
+    QByteArray vertexPositionArray, vertexColorArray, triangleIndexArray;
+
+    //vertexPositionArray.clear();
+    //vertexColorArray.clear();
+    //triangleIndexArray.clear();
 
     int nrVertex = int(myProject->indexMap.maximum) + 1;
 
@@ -187,7 +187,6 @@ Qt3DCore::QEntity *createScene(Crit3DProject* myProject, float magnify)
     geometry->addAttribute(colorAttribute);
     geometry->addAttribute(indexAttribute);
 
-
     // Geometry renderer
     Qt3DRender::QGeometryRenderer *geometryRenderer = new Qt3DRender::QGeometryRenderer;
     geometryRenderer->setPrimitiveType(Qt3DRender::QGeometryRenderer::Triangles);
@@ -199,6 +198,8 @@ Qt3DCore::QEntity *createScene(Crit3DProject* myProject, float magnify)
 
     // Material
     Qt3DRender::QMaterial *material = new Qt3DExtras::QPerVertexColorMaterial();
+
+    Qt3DCore::QEntity *scene = new Qt3DCore::QEntity();
 
     // Entity
     scene->addComponent(material);
