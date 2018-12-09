@@ -80,7 +80,6 @@ SOURCES += main.cpp\
     meteoMaps.cpp \
     waterBalance3D.cpp \
     crit3dProject.cpp \
-    scene.cpp \
     viewer3d.cpp
 
 HEADERS += mainwindow.h \
@@ -97,7 +96,6 @@ HEADERS += mainwindow.h \
     meteoMaps.h \
     waterBalance3D.h \
     crit3dProject.h \
-    scene.h \
     viewer3d.h
 
 

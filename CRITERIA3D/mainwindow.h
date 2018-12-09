@@ -44,7 +44,6 @@
         void on_actionMapESRISatellite_triggered();
         void on_actionMapTerrain_triggered();
         void on_actionRectangle_Selection_triggered();
-        void on_dateChanged();
         void on_rasterScaleButton_clicked();
         void on_variableButton_clicked();
         void on_frequencyButton_clicked();
@@ -78,6 +77,8 @@
         void on_actionView_Aspect_triggered();
 
         void on_actionView_Variable_triggered();
+        void on_viewer3DClosed();
+        void on_dateChanged();
 
     protected:
         /*!
@@ -131,6 +132,7 @@
         void setCurrentRaster(gis::Crit3DRasterGrid *myRaster);
         void interpolateDemGUI();
         void showElabResult(bool updateColorSCale, bool isMeteoGrid, bool isAnomaly);
+        void initializeViewer3D();
     };
 
 

@@ -1,11 +1,10 @@
 #ifndef VIEWER3D_H
 #define VIEWER3D_H
 
-#include <QDialog>
 #include <Qt3DExtras>
 #include "crit3dProject.h"
 
-class Viewer3D : public QDialog
+class Viewer3D : public QWidget
 {
     Q_OBJECT
 
@@ -22,12 +21,28 @@ class Viewer3D : public QDialog
         void wheelEvent(QWheelEvent *we);
 
     private:
-        Crit3DProject *m_project;
-        QPointer<Qt3DCore::QEntity> m_rootEntity;
         Qt3DExtras::Qt3DWindow *m_view;
         QPoint m_moveStartPoint;
         QMatrix4x4 m_cameraMatrix;
+        QByteArray m_vertexPositionArray;
+        QByteArray m_vertexColorArray;
+        QByteArray m_triangleIndexArray;
+        Crit3DProject *m_project;
+        Qt3DRender::QGeometry *m_geometry;
+        QPointer<Qt3DCore::QEntity> m_rootEntity;
+
         float m_magnify;
+        float m_size;
+        float m_ratio;
+        float m_cosTable[3600];
+        int m_nrVertex;
+        gis::Crit3DUtmPoint m_center;
+        Qt::MouseButton m_button;
+
+        void buildLookupTables();
+        float getCosTable(float angle);
+        void createScene();
+        void cleanScene();
 };
 
 
