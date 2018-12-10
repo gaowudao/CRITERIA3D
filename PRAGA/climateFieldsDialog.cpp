@@ -148,6 +148,23 @@ void ClimateFieldsDialog::elabClicked(QListWidgetItem* item)
 void ClimateFieldsDialog::indexClicked(QListWidgetItem* item)
 {
     indexSelected = item->text();
+    if (indexSelected == "MAM")
+    {
+        indexSelected = "1";
+    }
+    else if (indexSelected == "JJA")
+    {
+        indexSelected = "2";
+    }
+    else if (indexSelected == "SON")
+    {
+        indexSelected = "3";
+    }
+    else if (indexSelected == "DJF")
+    {
+        indexSelected = "4";
+    }
+
     showButton.setEnabled(true);
     deleteButton.setEnabled(true);
 }

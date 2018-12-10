@@ -1319,12 +1319,12 @@ void MainWindow::on_actionClimate_fields_triggered()
 
             if (climateDialog.getIsShowClicked())
             {
-                myProject.saveClimateResult(isMeteoGrid, climaSelected, index.toInt());
+                myProject.saveClimateResult(isMeteoGrid, climaSelected, index.toInt(), true);
                 showClimateResult(true, isMeteoGrid, variable, climaSelected);
             }
             else
             {
-                myProject.deleteClima(isMeteoGrid, climaSelected, index.toInt());
+                myProject.deleteClima(isMeteoGrid, climaSelected);
             }
 
         }

@@ -265,8 +265,13 @@ bool PragaProject::showClimateFields(bool isMeteoGrid, QStringList* climateDbEla
 
 }
 
-void PragaProject::saveClimateResult(bool isMeteoGrid, QString climaSelected, int climateIndex)
+void PragaProject::saveClimateResult(bool isMeteoGrid, QString climaSelected, int climateIndex, bool showInfo)
 {
+
+    FormInfo myInfo;
+    int infoStep;
+    QString infoStr;
+
     QSqlDatabase db;
     QList<float> results;
 
@@ -276,12 +281,21 @@ void PragaProject::saveClimateResult(bool isMeteoGrid, QString climaSelected, in
 
     if (isMeteoGrid)
     {
+        if (showInfo)
+        {
+            infoStr = "Read Climate - Meteo Grid";
+            infoStep = myInfo.start(infoStr, this->meteoGridDbHandler->gridStructure().header().nrRows);
+        }
         std::string id;
         db = this->meteoGridDbHandler->db();
         for (int row = 0; row < meteoGridDbHandler->gridStructure().header().nrRows; row++)
         {
-             for (int col = 0; col < meteoGridDbHandler->gridStructure().header().nrCols; col++)
-             {
+            if (showInfo && (row % infoStep) == 0 )
+            {
+                 myInfo.setValue(row);
+            }
+            for (int col = 0; col < meteoGridDbHandler->gridStructure().header().nrCols; col++)
+            {
                 if (meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id))
                 {
                     Crit3DMeteoPoint* meteoPoint = meteoGridDbHandler->meteoGrid()->meteoPointPointer(row,col);
@@ -304,11 +318,20 @@ void PragaProject::saveClimateResult(bool isMeteoGrid, QString climaSelected, in
     }
     else
     {
+        if (showInfo)
+        {
+            infoStr = "Read Climate - Meteo Points";
+            infoStep = myInfo.start(infoStr, nrMeteoPoints);
+        }
         db = this->meteoPointsDbHandler->getDb();
         for (int i = 0; i < nrMeteoPoints; i++)
         {
             if (meteoPoints[i].active)
             {
+                if (showInfo && (i % infoStep) == 0)
+                {
+                    myInfo.setValue(i);
+                }
                 QString id = QString::fromStdString(meteoPoints[i].id);
                 results = readElab(db, table.toLower(), &errorString, id, climaSelected);
                 if (results.size() < climateIndex)
@@ -326,14 +349,16 @@ void PragaProject::saveClimateResult(bool isMeteoGrid, QString climaSelected, in
         setIsElabMeteoPointsValue(true);
 
     }
+    if (showInfo) myInfo.close();
 }
 
-bool PragaProject::deleteClima(bool isMeteoGrid, QString climaSelected, int climateIndex)
+bool PragaProject::deleteClima(bool isMeteoGrid, QString climaSelected)
 {
     QSqlDatabase db;
 
     QStringList words = climaSelected.split('_');
     QString period = words[2];
+    QString table = "climate_" + period;
 
     if (isMeteoGrid)
     {
@@ -344,23 +369,7 @@ bool PragaProject::deleteClima(bool isMeteoGrid, QString climaSelected, int clim
         db = this->meteoPointsDbHandler->getDb();
     }
 
-    if (period == "Daily")
-        return deleteDailyElab(db, &errorString, climateIndex, climaSelected);
-    if (period == "Decadal")
-        return deleteDecadalElab(db, &errorString, climateIndex, climaSelected);
-    if (period == "Monthly")
-        return deleteMonthlyElab(db, &errorString, climateIndex, climaSelected);;
-    if (period == "Seasonal")
-        return deleteSeasonalElab(db, &errorString, climateIndex, climaSelected);
-    if (period == "Annual")
-        return deleteAnnualElab(db, &errorString, climaSelected);;
-    if (period == "Generic")
-        return deleteGenericElab(db, &errorString, climaSelected);
-    else
-    {
-        errorString = "error - climate name";
-        return false;
-    }
+    return deleteElab(db, &errorString, table.toLower(), climaSelected);
 }
 
 

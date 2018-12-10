@@ -14,12 +14,7 @@ bool selectAllElab(QSqlDatabase db, std::string *myError, QString table, QString
 bool selectVarElab(QSqlDatabase db, std::string *myError, QString table, QString variable, QStringList* listElab);
 bool showClimateTables(QSqlDatabase db, std::string *myError, QStringList* climateTables);
 
-bool deleteDailyElab(QSqlDatabase db, std::string *myError, int day, QString elab);
-bool deleteDecadalElab(QSqlDatabase db, std::string *myError, int decade, QString elab);
-bool deleteMonthlyElab(QSqlDatabase db, std::string *myError, int month, QString elab);
-bool deleteSeasonalElab(QSqlDatabase db, std::string *myError, int season, QString elab);
-bool deleteAnnualElab(QSqlDatabase db, std::string *myError, QString elab);
-bool deleteGenericElab(QSqlDatabase db, std::string *myError, QString elab);
+bool deleteElab(QSqlDatabase db, std::string *myError, QString table, QString elab);
 
 QList<float> readElab(QSqlDatabase db, QString table, std::string *myError, QString id, QString elab);
 QList<QString> getIdListFromElab(QSqlDatabase db, QString table, std::string *myError, QString elab);
