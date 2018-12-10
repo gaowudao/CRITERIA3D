@@ -328,6 +328,41 @@ void PragaProject::saveClimateResult(bool isMeteoGrid, QString climaSelected, in
     }
 }
 
+bool PragaProject::deleteClima(bool isMeteoGrid, QString climaSelected, int climateIndex)
+{
+    QSqlDatabase db;
+
+    QStringList words = climaSelected.split('_');
+    QString period = words[2];
+
+    if (isMeteoGrid)
+    {
+        db = this->meteoGridDbHandler->db();
+    }
+    else
+    {
+        db = this->meteoPointsDbHandler->getDb();
+    }
+
+    if (period == "Daily")
+        return deleteDailyElab(db, &errorString, climateIndex, climaSelected);
+    if (period == "Decadal")
+        return deleteDecadalElab(db, &errorString, climateIndex, climaSelected);
+    if (period == "Monthly")
+        return deleteMonthlyElab(db, &errorString, climateIndex, climaSelected);;
+    if (period == "Seasonal")
+        return deleteSeasonalElab(db, &errorString, climateIndex, climaSelected);
+    if (period == "Annual")
+        return deleteAnnualElab(db, &errorString, climaSelected);;
+    if (period == "Generic")
+        return deleteGenericElab(db, &errorString, climaSelected);
+    else
+    {
+        errorString = "error - climate name";
+        return false;
+    }
+}
+
 
 bool PragaProject::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
 {
