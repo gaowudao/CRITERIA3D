@@ -24,6 +24,7 @@ class Viewer3D : public QWidget
         Qt3DExtras::Qt3DWindow *m_view;
         QPoint m_moveStartPoint;
         QMatrix4x4 m_cameraMatrix;
+        QVector3D m_cameraPosition;
         QByteArray m_vertexPositionArray;
         QByteArray m_vertexColorArray;
         QByteArray m_triangleIndexArray;

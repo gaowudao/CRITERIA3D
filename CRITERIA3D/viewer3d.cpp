@@ -64,9 +64,10 @@ void Viewer3D::initialize(Crit3DProject *project)
     // Camera
     Qt3DRender::QCamera *camera = m_view->camera();
     camera->lens()->setPerspectiveProjection(45.0f, 16.f/9.f, 0.01f, 1000000.f);
-    camera->setUpVector(QVector3D(0, 1, 0));
+    camera->setUpVector(QVector3D(0, 1, 1));
     camera->setPosition(QVector3D(float(m_center.x), float(m_center.y), (z + dz*5) * m_magnify));
     camera->setViewCenter(QVector3D(float(m_center.x), float(m_center.y), z * m_magnify));
+    m_cameraPosition = camera->position();
 
     // Set root object of the scene
     createScene();
@@ -132,8 +133,8 @@ void Viewer3D::mousePressEvent(QMouseEvent *ev)
     {
         m_button = ev->button();
         m_moveStartPoint = ev->pos();
-        if (ev->button() == Qt::LeftButton)
-            m_cameraMatrix = m_view->camera()->transform()->matrix();
+        m_cameraMatrix = m_view->camera()->transform()->matrix();
+        m_cameraPosition = m_view->camera()->transform()->translation();
     }
 }
 
@@ -143,7 +144,7 @@ void Viewer3D::mouseMoveEvent(QMouseEvent *ev)
     if (m_moveStartPoint.x() > -1)
     {
         QPoint delta = ev->pos() - m_moveStartPoint;
-        if (m_button == Qt::LeftButton)
+        if (m_button == Qt::RightButton)
         {
             float zoom = delta.y() * (m_size/10000000.f);
             QVector3D axis = QVector3D(1, 1, 0);
@@ -151,13 +152,12 @@ void Viewer3D::mouseMoveEvent(QMouseEvent *ev)
             QMatrix4x4 matrix = zoomMatrix * m_cameraMatrix;
             m_view->camera()->transform()->setMatrix(matrix);
         }
-        else if (m_button == Qt::RightButton)
+        else if (m_button == Qt::LeftButton)
         {
-            QVector3D translation = QVector3D(m_view->camera()->position().x() - delta.x() * (m_size/1000.f),
-                                              m_view->camera()->position().y() + delta.y() * (m_size/1000.f),
-                                              m_view->camera()->position().z());
-            m_view->camera()->translateWorld(translation, Qt3DRender::QCamera::CameraTranslationOption::DontTranslateViewCenter);
-            //m_view->camera()->transform()->translation();
+            QVector3D translation = QVector3D(m_cameraPosition.x() + delta.x() * (m_size/1000.f),
+                                              m_cameraPosition.y() - delta.y() * (m_size/1000.f),
+                                              m_cameraPosition.z());
+            m_view->camera()->transform()->setTranslation(translation);
         }
     }
 }
@@ -170,6 +170,7 @@ void Viewer3D::mouseReleaseEvent(QMouseEvent* ev)
     {
         m_moveStartPoint.setX(-1);
         m_cameraMatrix = m_view->camera()->transform()->matrix();
+        m_cameraPosition = m_view->camera()->transform()->translation();
     }
 }
 
