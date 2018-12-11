@@ -32,6 +32,7 @@
 #include "pragaSettingsDialog.h"
 #include "gis.h"
 #include "spatialControl.h"
+#include "keyboardFilter.h"
 
 extern PragaProject myProject;
 
@@ -87,6 +88,8 @@ MainWindow::MainWindow(QWidget *parent) :
     this->updateVariable();
     this->updateDateTime();
 
+    KeyboardFilter *filter = new KeyboardFilter();
+    this->ui->dateEdit->installEventFilter(filter);
     connect(this->ui->dateEdit, SIGNAL(editingFinished()), this, SLOT(on_dateChanged()));
 
     this->setMouseTracking(true);
