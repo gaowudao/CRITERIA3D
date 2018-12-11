@@ -1212,7 +1212,7 @@ void MainWindow::on_actionCompute_elaboration_triggered()
         }
         else
         {
-            showElabResult(true, isMeteoGrid, isAnomaly);
+            showElabResult(true, isMeteoGrid, isAnomaly, saveClima, nullptr);
         }
         if (compDialog.result() == QDialog::Accepted)
             on_actionCompute_elaboration_triggered();
@@ -1257,7 +1257,7 @@ void MainWindow::on_actionCompute_anomaly_triggered()
         {
             isAnomaly = true;
             myProject.elaboration(isMeteoGrid, isAnomaly, saveClima);
-            showElabResult(true, isMeteoGrid, isAnomaly);
+            showElabResult(true, isMeteoGrid, isAnomaly, saveClima, nullptr);
         }
         if (compDialog.result() == QDialog::Accepted)
             on_actionCompute_anomaly_triggered();
@@ -1317,8 +1317,11 @@ void MainWindow::on_actionClimate_fields_triggered()
     }
 
     bool isMeteoGrid = ui->grid->isChecked();
+    bool isAnomaly = false;
+    bool isClima = true;
     QStringList climateDbElab;
     QStringList climateDbVarList;
+    myProject.clima->resetListElab();
     if (myProject.showClimateFields(isMeteoGrid, &climateDbElab, &climateDbVarList))
     {
         ClimateFieldsDialog climateDialog(climateDbElab, climateDbVarList);
@@ -1328,10 +1331,9 @@ void MainWindow::on_actionClimate_fields_triggered()
 
             if (climateDialog.getIsShowClicked())
             {
-                meteoVariable variable = climateDialog.getVar();
                 QString index = climateDialog.getIndexSelected();
                 myProject.saveClimateResult(isMeteoGrid, climaSelected, index.toInt(), true);
-                showClimateResult(true, isMeteoGrid, variable, climaSelected);
+                showElabResult(true, isMeteoGrid, isAnomaly, isClima, index);
             }
             else
             {
@@ -1349,92 +1351,7 @@ void MainWindow::on_actionClimate_fields_triggered()
 
 }
 
-void MainWindow::showClimateResult(bool updateColorSCale, bool isMeteoGrid, meteoVariable variable, QString climaSelected)
-{
-/*
-    if (isMeteoGrid)
-    {
-        setColorScale(variable, myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale);
-        ui->labelMeteoGridScale->setText(QString::fromStdString(getVariableString(variable)));
-        meteoGridLegend->setVisible(true);
-        meteoGridLegend->update();
-    }
-    else
-    {
-        if (!this->showPoints)
-        {
-            return;
-        }
-
-        meteoPointsLegend->setVisible(true);
-
-        if (updateColorSCale)
-        {
-            float minimum = NODATA;
-            float maximum = NODATA;
-            for (int i = 0; i < myProject.nrMeteoPoints; i++)
-            {
-                // hide all meteo points
-                pointList[i]->setVisible(false);
-
-                float v = myProject.meteoPoints[i].currentValue;
-
-                if (int(v) != NODATA)
-                {
-                    if (int(minimum) == NODATA)
-                    {
-                        minimum = v;
-                        maximum = v;
-                    }
-                    else if (v < minimum) minimum = v;
-                    else if (v > maximum) maximum = v;
-                }
-
-            }
-            myProject.meteoPointsColorScale->setRange(minimum, maximum);
-            roundColorScale(myProject.meteoPointsColorScale, 4, true);
-            setColorScale(variable, myProject.meteoPointsColorScale);
-        }
-
-
-        Crit3DColor *myColor;
-        for (int i = 0; i < myProject.nrMeteoPoints; i++)
-        {
-
-            if (!updateColorSCale)
-            {
-                // hide all meteo points
-                pointList[i]->setVisible(false);
-            }
-            if (int(myProject.meteoPoints[i].currentValue) != NODATA)
-            {
-
-                pointList[i]->setRadius(5);
-                myColor = myProject.meteoPointsColorScale->getColor(myProject.meteoPoints[i].currentValue);
-                pointList[i]->setFillColor(QColor(myColor->red, myColor->green, myColor->blue));
-                pointList[i]->setToolTip(&(myProject.meteoPoints[i]));
-                pointList[i]->setVisible(true);
-            }
-        }
-
-        meteoPointsLegend->update();
-
-    }
-
-    QStringList words = climaSelected.split('_');
-
-    elabType1->setText("Climate - " + words[3]);
-    elabVariable->setText(words[1]);
-    elabPeriod->setText(words[2]);
-    elabType1->setReadOnly(true);
-    elabVariable->setReadOnly(true);
-    elabPeriod->setReadOnly(true);
-    ui->groupBoxElaboration->show();
-*/
-
-}
-
-void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool isAnomaly)
+void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool isAnomaly, bool isClima, QString index)
 {
 
     if (isMeteoGrid)
@@ -1462,7 +1379,10 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool is
             {
                 if (!isAnomaly)
                 {
-                    myProject.meteoPoints[i].currentValue = myProject.meteoPoints[i].elaboration;
+                    if (!isClima)
+                    {
+                        myProject.meteoPoints[i].currentValue = myProject.meteoPoints[i].elaboration;
+                    }
                 }
                 else
                 {
@@ -1500,7 +1420,10 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool is
             {
                 if (!isAnomaly)
                 {
-                    myProject.meteoPoints[i].currentValue = myProject.meteoPoints[i].elaboration;
+                    if (!isClima)
+                    {
+                        myProject.meteoPoints[i].currentValue = myProject.meteoPoints[i].elaboration;
+                    }
                 }
                 else
                 {
@@ -1574,7 +1497,14 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool is
 
     QString startYear = QString::number(myProject.clima->yearStart());
     QString endYear = QString::number(myProject.clima->yearEnd());
-    ui->lineEditPeriod->setText(startDay + "/" + startMonth + "-" + endDay + "/" + endMonth + " " + startYear + "÷" + endYear);
+    if (!isClima)
+    {
+        ui->lineEditPeriod->setText(startDay + "/" + startMonth + "-" + endDay + "/" + endMonth + " " + startYear + "÷" + endYear);
+    }
+    else
+    {
+        ui->lineEditPeriod->setText(startYear + "÷" + endYear + "-" + myProject.clima->periodStr() + " index: " + index);
+    }
 
     ui->lineEditElab1->setReadOnly(true);
     ui->lineEditElab2->setReadOnly(true);

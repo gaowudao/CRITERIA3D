@@ -275,9 +275,30 @@ void PragaProject::saveClimateResult(bool isMeteoGrid, QString climaSelected, in
     QSqlDatabase db;
     QList<float> results;
 
-    QStringList words = climaSelected.split('_');
-    QString period = words[2];
-    QString table = "climate_" + period;
+    Crit3DClimateList climateList;
+    QStringList climate;
+    climate.push_back(climaSelected);
+
+    climateList.setListClimateElab(climate);
+    climateList.parserElaboration();
+
+    // copy elaboration to clima
+    clima->setYearStart(climateList.listYearStart().at(0));
+    clima->setYearEnd(climateList.listYearEnd().at(0));
+    clima->setPeriodType(climateList.listPeriodType().at(0));
+    clima->setPeriodStr(climateList.listPeriodStr().at(0));
+    clima->setGenericPeriodDateStart(climateList.listGenericPeriodDateStart().at(0));
+    clima->setGenericPeriodDateEnd(climateList.listGenericPeriodDateEnd().at(0));
+    clima->setNYears(climateList.listNYears().at(0));
+    clima->setVariable(climateList.listVariable().at(0));
+    clima->setElab1(climateList.listElab1().at(0));
+    clima->setElab2(climateList.listElab2().at(0));
+    clima->setParam1(climateList.listParam1().at(0));
+    clima->setParam2(climateList.listParam2().at(0));
+    clima->setParam1IsClimate(climateList.listParam1IsClimate().at(0));
+    clima->setParam1ClimateField(climateList.listParam1ClimateField().at(0));
+
+    QString table = "climate_" + climateList.listPeriodStr().at(0);
 
     if (isMeteoGrid)
     {
