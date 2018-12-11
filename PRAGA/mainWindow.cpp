@@ -94,6 +94,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->setMouseTracking(true);
 
+    ui->meteoPoints->setEnabled(false);
+    ui->grid->setEnabled(false);
+
+    ui->groupBoxElab->hide();
+
+
+/*
     elabType1 = new QLineEdit;
     elabType2 = new QLineEdit;
     elabVariable = new QLineEdit;
@@ -121,6 +128,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->meteoPoints->setEnabled(false);
     ui->grid->setEnabled(false);
+*/
 }
 
 
@@ -1343,7 +1351,7 @@ void MainWindow::on_actionClimate_fields_triggered()
 
 void MainWindow::showClimateResult(bool updateColorSCale, bool isMeteoGrid, meteoVariable variable, QString climaSelected)
 {
-
+/*
     if (isMeteoGrid)
     {
         setColorScale(variable, myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale);
@@ -1422,7 +1430,7 @@ void MainWindow::showClimateResult(bool updateColorSCale, bool isMeteoGrid, mete
     elabVariable->setReadOnly(true);
     elabPeriod->setReadOnly(true);
     ui->groupBoxElaboration->show();
-
+*/
 
 }
 
@@ -1521,35 +1529,44 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool is
     {
         if (!isAnomaly)
         {
-            elabType1->setText(myProject.clima->elab1() + " " + QString::number(myProject.clima->param1()));
+
+            ui->lineEditElab1->setText(myProject.clima->elab1() + " " + QString::number(myProject.clima->param1()));
         }
         else
         {
-            elabType1->setText(myProject.clima->elab1() + " Anomaly of: " + QString::number(myProject.clima->param1()));
+            ui->lineEditElab1->setText(myProject.clima->elab1() + " Anomaly of: " + QString::number(myProject.clima->param1()));
         }
     }
     else
     {
         if (!isAnomaly)
         {
-            elabType1->setText(myProject.clima->elab1());
+            ui->lineEditElab1->setText(myProject.clima->elab1());
         }
         else
         {
-            elabType1->setText("Anomaly respect to " + myProject.clima->elab1());
+            ui->lineEditElab1->setText("Anomaly respect to " + myProject.clima->elab1());
         }
     }
     if (myProject.clima->elab2().isEmpty())
     {
-        elabType2->setVisible(false);
+        ui->lineEditElab2->setVisible(false);
     }
     else
     {
-        elabType2->setVisible(true);
-        elabType2->setText(myProject.clima->elab2());
+        ui->lineEditElab2->setVisible(true);
+        if (int(myProject.clima->param2()) != NODATA)
+        {
+            ui->lineEditElab2->setText(myProject.clima->elab2() + " " + QString::number(myProject.clima->param2()));
+        }
+        else
+        {
+            ui->lineEditElab2->setText(myProject.clima->elab2());
+        }
+
     }
     std::string var = MapDailyMeteoVarToString.at(myProject.clima->variable());
-    elabVariable->setText(QString::fromStdString(var));
+    ui->lineEditVariable->setText(QString::fromStdString(var));
     QString startDay = QString::number(myProject.clima->genericPeriodDateStart().day());
     QString startMonth = QString::number(myProject.clima->genericPeriodDateStart().month());
     QString endDay = QString::number(myProject.clima->genericPeriodDateEnd().day());
@@ -1557,13 +1574,15 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool is
 
     QString startYear = QString::number(myProject.clima->yearStart());
     QString endYear = QString::number(myProject.clima->yearEnd());
-    elabPeriod->setText(startDay + "/" + startMonth + "-" + endDay + "/" + endMonth + " " + startYear + "÷" + endYear);
+    ui->lineEditPeriod->setText(startDay + "/" + startMonth + "-" + endDay + "/" + endMonth + " " + startYear + "÷" + endYear);
 
-    elabType1->setReadOnly(true);
-    elabType2->setReadOnly(true);
-    elabVariable->setReadOnly(true);
-    elabPeriod->setReadOnly(true);
-    ui->groupBoxElaboration->show();
+    ui->lineEditElab1->setReadOnly(true);
+    ui->lineEditElab2->setReadOnly(true);
+    ui->lineEditVariable->setReadOnly(true);
+    ui->lineEditPeriod->setReadOnly(true);
+    ui->groupBoxElab->show();
+
+
 }
 
 void MainWindow::on_actionInterpolationSettings_triggered()

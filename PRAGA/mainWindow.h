@@ -123,10 +123,12 @@
         QList<QCheckBox*> datasetCheckbox;
         QCheckBox* all;
 
+        /*
         QLineEdit* elabType1;
         QLineEdit* elabType2;
         QLineEdit* elabVariable;
         QLineEdit* elabPeriod;
+        */
 
         void setMapSource(OSMTileSource::OSMTileType mySource);
         QString selectArkimetDataset(QDialog* datasetDialog);
