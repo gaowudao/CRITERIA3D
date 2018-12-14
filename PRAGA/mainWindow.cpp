@@ -98,37 +98,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->grid->setEnabled(false);
 
     ui->groupBoxElab->hide();
-
-
-/*
-    elabType1 = new QLineEdit;
-    elabType2 = new QLineEdit;
-    elabVariable = new QLineEdit;
-    elabPeriod = new QLineEdit;
-
-    QVBoxLayout *vbox = new QVBoxLayout(ui->groupBoxElaboration);
-    QLabel *secondElab = new QLabel();
-    secondElab->setText("<font color='black'>second Elab:</font>");
-    secondElab->setBuddy(elabType2);
-    QLabel *variable = new QLabel();
-    variable->setText("<font color='black'>variable:</font>");
-    variable->setBuddy(elabVariable);
-    QLabel *period  = new QLabel();
-    period->setText("<font color='black'>period:</font>");
-    period->setBuddy(elabPeriod);
-    vbox->addWidget(elabType1);
-    vbox->addWidget(elabType2);
-    vbox->addWidget(variable);
-    vbox->addWidget(elabVariable);
-    vbox->addWidget(period);
-    vbox->addWidget(elabPeriod);
-    ui->groupBoxElaboration->setLayout(vbox);
-
-    ui->groupBoxElaboration->hide();
-
-    ui->meteoPoints->setEnabled(false);
-    ui->grid->setEnabled(false);
-*/
 }
 
 
@@ -1124,7 +1093,7 @@ void MainWindow::on_actionClose_meteo_points_triggered()
     meteoPointsLegend->setVisible(false);
     myProject.closeMeteoPointsDB();
     myProject.setIsElabMeteoPointsValue(false);
-    ui->groupBoxElaboration->hide();
+    ui->groupBoxElab->hide();
 
     this->ui->meteoPoints->setChecked(false);
     this->ui->meteoPoints->setEnabled(false);
@@ -1145,7 +1114,7 @@ void MainWindow::on_actionClose_meteo_grid_triggered()
         meteoGridObj->redrawRequested();
         meteoGridLegend->setVisible(false);
         myProject.closeMeteoGridDB();
-        ui->groupBoxElaboration->hide();
+        ui->groupBoxElab->hide();
         ui->meteoGridOpacitySlider->setEnabled(false);
 
         this->ui->grid->setChecked(false);
@@ -1505,7 +1474,14 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool is
     }
     else
     {
-        ui->lineEditPeriod->setText(startYear + "÷" + endYear + "-" + myProject.clima->periodStr() + " index: " + index);
+        if (myProject.clima->periodType() != genericPeriod && myProject.clima->periodType() != annualPeriod)
+        {
+            ui->lineEditPeriod->setText(startYear + "÷" + endYear + "-" + myProject.clima->periodStr() + " index: " + index);
+        }
+        else
+        {
+            ui->lineEditPeriod->setText(startYear + "÷" + endYear + "-" + myProject.clima->periodStr());
+        }
     }
 
     ui->lineEditElab1->setReadOnly(true);
