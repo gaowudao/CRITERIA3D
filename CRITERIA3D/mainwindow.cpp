@@ -38,7 +38,6 @@
 #include <Qt3DExtras/QFirstPersonCameraController>
 #include <Qt3DInput>
 
-//#include "viewer3d.h"
 #include "crit3dProject.h"
 
 extern Crit3DProject myProject;
@@ -55,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->showPoints = true;
 
     this->myRubberBand = nullptr;
-    //this->viewer3D = nullptr;
+    this->viewer3D = nullptr;
 
     // Set the MapGraphics Scene and View
     this->mapScene = new MapGraphicsScene(this);
@@ -357,6 +356,13 @@ void MainWindow::on_actionLoadDEM_triggered()
 
     // active raster object
     this->rasterObj->updateCenter();
+
+    if (this->viewer3D != nullptr)
+    {
+        initializeViewer3D();
+        //this->viewer3D->close();
+        //this->viewer3D = nullptr;
+    }
 }
 
 
@@ -928,6 +934,24 @@ void MainWindow::on_actionCriteria3D_Initialize_triggered()
 }
 
 
+void MainWindow::on_viewer3DClosed()
+{
+    this->viewer3D = nullptr;
+}
+
+
+void MainWindow::initializeViewer3D()
+{
+    if (viewer3D != nullptr)
+    {
+        if (! myProject.isInitialized)
+        {
+            myProject.createIndexMap();
+        }
+        viewer3D->initialize(&myProject);
+    }
+}
+
 
 void MainWindow::on_actionView_3D_triggered()
 {
@@ -937,16 +961,14 @@ void MainWindow::on_actionView_3D_triggered()
         return;
     }
 
-    if (! myProject.isInitialized)
-        myProject.createIndexMap();
-
-    /*if (viewer3D == nullptr)
+    if (viewer3D == nullptr || !viewer3D->isVisible())
     {
         viewer3D = new Viewer3D(this);
+        initializeViewer3D();
     }
 
     viewer3D->show();
-    viewer3D->initialize(&myProject);*/
+    connect (viewer3D, SIGNAL(destroyed()), this, SLOT(on_viewer3DClosed()));
 }
 
 

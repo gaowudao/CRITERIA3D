@@ -117,6 +117,8 @@
 
     int getClimateIndexFromElab(QDate myDate, QString elab);
 
+    int getNumberClimateIndexFromElab(QString elab);
+
     period getPeriodTypeFromString(QString periodStr);
 
     int nParameters(meteoComputation elab);

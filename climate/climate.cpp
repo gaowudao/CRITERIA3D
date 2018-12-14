@@ -2126,6 +2126,31 @@ int getClimateIndexFromElab(QDate myDate, QString elab)
     }
 }
 
+int getNumberClimateIndexFromElab(QString elab)
+{
+
+    QStringList words = elab.split('_');
+    QString periodTypeStr = words[2];
+
+    period periodType = getPeriodTypeFromString(periodTypeStr);
+
+    switch(periodType)
+    {
+    case annualPeriod: case genericPeriod:
+            return 1;
+    case decadalPeriod:
+            return 10;
+    case monthlyPeriod:
+            return 12;
+    case seasonalPeriod:
+            return 4;
+    case dailyPeriod:
+            return 366;
+    default:
+            return NODATA;
+    }
+}
+
 period getPeriodTypeFromString(QString periodStr)
 {
 

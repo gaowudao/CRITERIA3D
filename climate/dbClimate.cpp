@@ -49,6 +49,23 @@ bool saveDailyElab(QSqlDatabase db, std::string *myError, QString id, std::vecto
     return true;
 }
 
+bool deleteElab(QSqlDatabase db, std::string *myError, QString table, QString elab)
+{
+    QSqlQuery qry(db);
+    QString statement = QString("DELETE FROM `%1`").arg(table);
+    qry.prepare( statement + " WHERE elab = :elab" );
+
+    qry.bindValue(":elab", elab);
+
+    if( !qry.exec() )
+    {
+        *myError = qry.lastError().text().toStdString();
+        return false;
+    }
+
+    return true;
+}
+
 
 QList<float> readElab(QSqlDatabase db, QString table, std::string *myError, QString id, QString elab)
 {
@@ -222,7 +239,6 @@ bool saveMonthlyElab(QSqlDatabase db, std::string *myError, QString id, std::vec
     return true;
 }
 
-
 bool saveSeasonalElab(QSqlDatabase db, std::string *myError, QString id, std::vector<float> allResults, QString elab)
 {
     QSqlQuery qry(db);
@@ -264,7 +280,6 @@ bool saveSeasonalElab(QSqlDatabase db, std::string *myError, QString id, std::ve
 
     return true;
 }
-
 
 bool saveAnnualElab(QSqlDatabase db, std::string *myError, QString id, float result, QString elab)
 {
