@@ -90,7 +90,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     KeyboardFilter *filter = new KeyboardFilter();
     this->ui->dateEdit->installEventFilter(filter);
-    connect(this->ui->dateEdit, SIGNAL(editingFinished()), this, SLOT(on_dateChanged()));
+    //connect(this->ui->dateEdit, SIGNAL(editingFinished()), this, SLOT(on_dateChanged()));
 
     this->setMouseTracking(true);
 
@@ -1110,11 +1110,13 @@ void MainWindow::setCurrentRaster(gis::Crit3DRasterGrid *myRaster)
     this->rasterObj->redrawRequested();
 }
 
+
 void MainWindow::on_dateEdit_dateChanged(const QDate &date)
 {
     Q_UNUSED(date);
     this->on_dateChanged();
 }
+
 
 void MainWindow::on_actionClose_meteo_points_triggered()
 {
