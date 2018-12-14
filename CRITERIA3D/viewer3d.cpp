@@ -64,7 +64,7 @@ void Viewer3D::initialize(Crit3DProject *project)
     // Camera
     Qt3DRender::QCamera *camera = m_view->camera();
     camera->lens()->setPerspectiveProjection(45.0f, 16.f/9.f, 0.01f, 1000000.f);
-    camera->setUpVector(QVector3D(0, 1, 1));
+    camera->setUpVector(QVector3D(0, 1, -1));
     camera->setPosition(QVector3D(float(m_center.x), float(m_center.y), (z + dz*5) * m_magnify));
     camera->setViewCenter(QVector3D(float(m_center.x), float(m_center.y), z * m_magnify));
     m_cameraPosition = camera->position();
@@ -145,12 +145,22 @@ void Viewer3D::mouseMoveEvent(QMouseEvent *ev)
     {
         QPoint delta = ev->pos() - m_moveStartPoint;
         if (m_button == Qt::RightButton)
-        {
-            float zoom = delta.y() * (m_size/10000000.f);
+        {  
+            /*float scale = m_view->camera()->transform()->scale();
+            float zoom_distance = scale * static_cast<float>(delta.y()) / 500.f;
+            scale -= zoom_distance;
+            scale = std::min(10.0000f, scale);
+            scale = std::max(0.001f, scale);
+            m_view->camera()->transform()->setScale(scale);*/
+
+            /*float zoom = delta.y() * (m_size/10000000.f);
             QVector3D axis = QVector3D(1, 1, 0);
             QMatrix4x4 zoomMatrix = Qt3DCore::QTransform::rotateAround(-m_view->camera()->position(), zoom, axis);
             QMatrix4x4 matrix = zoomMatrix * m_cameraMatrix;
-            m_view->camera()->transform()->setMatrix(matrix);
+            m_view->camera()->transform()->setMatrix(matrix);*/
+
+            float dx = delta.x() * (m_size/1000000.f);
+            m_view->camera()->setUpVector(QVector3D(dx, 1, -1));
         }
         else if (m_button == Qt::LeftButton)
         {
