@@ -2334,7 +2334,7 @@
      <x>0</x>
      <y>0</y>
      <width>1387</width>
-     <height>30</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="palette">
@@ -2788,12 +2788,9 @@
     <property name="title">
      <string>Meteo Points</string>
     </property>
-    <addaction name="actionPointsVisible"/>
-    <addaction name="actionVariableNone"/>
     <addaction name="actionVariableQualitySpatial"/>
     <addaction name="actionRectangle_Selection"/>
     <addaction name="separator"/>
-    <addaction name="actionVariableChoose"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuGIS_settings">
@@ -2850,7 +2847,54 @@
     <addaction name="menuElaboration"/>
     <addaction name="menuClimate_3"/>
    </widget>
+   <widget class="QMenu" name="menuShow">
+    <property name="title">
+     <string>Show</string>
+    </property>
+    <widget class="QMenu" name="menuShowPoints">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="title">
+      <string>Points</string>
+     </property>
+     <widget class="QMenu" name="menuShowPointsAnomaly">
+      <property name="title">
+       <string>Anomaly</string>
+      </property>
+      <addaction name="actionShowPointsAnomalyAbs"/>
+      <addaction name="actionShowPointsAnomalyPerc"/>
+     </widget>
+     <addaction name="actionShowPointsHide"/>
+     <addaction name="actionShowPointsLocation"/>
+     <addaction name="actionShowPointsCurrent"/>
+     <addaction name="actionShowPointsElab"/>
+     <addaction name="menuShowPointsAnomaly"/>
+     <addaction name="actionShowPointsClimate"/>
+    </widget>
+    <widget class="QMenu" name="menuShowGrid">
+     <property name="title">
+      <string>Grid</string>
+     </property>
+     <widget class="QMenu" name="menuShowGridAnomaly">
+      <property name="title">
+       <string>Anomaly</string>
+      </property>
+      <addaction name="actionShowGridAnomalyAbs"/>
+      <addaction name="actionShowGridAnomalyPerc"/>
+     </widget>
+     <addaction name="actionShowGridHide"/>
+     <addaction name="actionShowGridLocation"/>
+     <addaction name="actionShowGridCurrent"/>
+     <addaction name="actionShowGridElab"/>
+     <addaction name="menuShowGridAnomaly"/>
+     <addaction name="actionShowGridClimate"/>
+    </widget>
+    <addaction name="menuShowPoints"/>
+    <addaction name="menuShowGrid"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuShow"/>
    <addaction name="menuVariable"/>
    <addaction name="menuInterpolation"/>
    <addaction name="menuClimate"/>
@@ -2910,22 +2954,6 @@
     <string>Rectangle Selection</string>
    </property>
   </action>
-  <action name="actionVariableChoose">
-   <property name="text">
-    <string>Choose variable...</string>
-   </property>
-  </action>
-  <action name="actionVariableNone">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Location</string>
-   </property>
-  </action>
   <action name="actionVariableQualitySpatial">
    <property name="checkable">
     <bool>true</bool>
@@ -2935,17 +2963,6 @@
    </property>
    <property name="text">
     <string>Spatial quality control</string>
-   </property>
-  </action>
-  <action name="actionPointsVisible">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Visible</string>
    </property>
   </action>
   <action name="actionOpen_NetCDF_data">
@@ -3086,6 +3103,121 @@
   <action name="actionCompute_climate">
    <property name="text">
     <string>Compute climate</string>
+   </property>
+  </action>
+  <action name="actionShowPointsHide">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Hide</string>
+   </property>
+  </action>
+  <action name="actionShowPointsCurrent">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Current variable</string>
+   </property>
+  </action>
+  <action name="actionShowPointsElab">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Elaboration</string>
+   </property>
+  </action>
+  <action name="actionShowPointsAnomalyAbs">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Absolute</string>
+   </property>
+  </action>
+  <action name="actionShowPointsAnomalyPerc">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Percentage</string>
+   </property>
+  </action>
+  <action name="actionShowPointsClimate">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Climate</string>
+   </property>
+  </action>
+  <action name="actionShowGridHide">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Hide</string>
+   </property>
+  </action>
+  <action name="actionShowGridLocation">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Location</string>
+   </property>
+  </action>
+  <action name="actionShowGridCurrent">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Current variable</string>
+   </property>
+  </action>
+  <action name="actionShowGridElab">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Elaboration</string>
+   </property>
+  </action>
+  <action name="actionShowGridAnomalyAbs">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Absolute</string>
+   </property>
+  </action>
+  <action name="actionShowGridAnomalyPerc">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Percentage</string>
+   </property>
+  </action>
+  <action name="actionShowGridClimate">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Climate</string>
+   </property>
+  </action>
+  <action name="actionShowPointsLocation">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Location</string>
    </property>
   </action>
  </widget>

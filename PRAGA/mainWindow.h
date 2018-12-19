@@ -5,6 +5,7 @@
     #include <QList>
     #include <QCheckBox>
     #include <QGroupBox>
+    #include <QActionGroup>
 
     #include "Position.h"
     #include "rubberBand.h"
@@ -16,6 +17,7 @@
     #include "colorlegend.h"
     #include "dbArkimet.h"
 
+    enum visualizationType {notShown, showLocation, showCurrentVariable, showElaboration, showAnomalyAbsolute, showAnomalyPercentage, showClimate};
 
     namespace Ui
     {
@@ -34,7 +36,6 @@
         explicit MainWindow( QWidget *parent = 0);
         ~MainWindow();
 
-
     private slots:
 
         void on_actionLoadDEM_triggered();
@@ -49,16 +50,13 @@
         void on_actionMapESRISatellite_triggered();
         void on_actionMapTerrain_triggered();
         void on_actionRectangle_Selection_triggered();
-        void on_actionVariableChoose_triggered();
         void on_dateChanged();
-        void on_actionVariableNone_triggered();
         void on_rasterScaleButton_clicked();
         void on_variableButton_clicked();
         void on_frequencyButton_clicked();
         void enableAllDataset(bool toggled);
         void disableAllButton(bool toggled);
         void on_actionVariableQualitySpatial_triggered();
-        void on_actionPointsVisible_triggered();
         void on_rasterRestoreButton_clicked();
         void on_timeEdit_timeChanged(const QTime &time);
         void on_dateEdit_dateChanged(const QDate &date);
@@ -77,14 +75,13 @@
         void on_actionExtract_NetCDF_series_triggered();
     #endif
 
-
         void on_actionParameters_triggered();
-
         void on_actionWriteTAD_triggered();
-
         void on_actionLoadTAD_triggered();
-
         void on_actionClimate_fields_triggered();
+
+        void on_actionShowPointsHide_triggered();
+        void on_actionShowPointsLocation_triggered();
 
     protected:
         /*!
@@ -118,7 +115,10 @@
         ColorLegend *meteoGridLegend;
         QList<StationMarker*> pointList;
         RubberBand *myRubberBand;
-        bool showPoints;
+        visualizationType currentPointsVisualization;
+        visualizationType currentGridVisualization;
+        QActionGroup *showPointsGroup;
+        QActionGroup *showGridGroup;
 
         QList<QCheckBox*> datasetCheckbox;
         QCheckBox* all;
@@ -139,8 +139,8 @@
         void updateDateTime();
         void resetMeteoPoints();
         void addMeteoPoints();
-        void redrawMeteoPoints(bool updateColorSCale);
-        void redrawMeteoGrid();
+        void redrawMeteoPoints(visualizationType showType, bool updateColorSCale);
+        void redrawMeteoGrid(visualizationType showType);
 
         bool loadMeteoPointsDB(QString dbName);
         bool loadMeteoGridDB(QString xmlName);
