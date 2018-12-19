@@ -106,6 +106,9 @@ MainWindow::MainWindow(QWidget *parent) :
     showPointsGroup->addAction(this->ui->actionShowPointsAnomalyPerc);
     showPointsGroup->addAction(this->ui->actionShowPointsClimate);
 
+    showPointsGroup->setEnabled(false);
+    this->ui->menuShowPointsAnomaly->setEnabled(false);
+
     showGridGroup = new QActionGroup(this);
     showGridGroup->setExclusive(true);
     showGridGroup->addAction(this->ui->actionShowGridHide);
@@ -115,6 +118,9 @@ MainWindow::MainWindow(QWidget *parent) :
     showGridGroup->addAction(this->ui->actionShowGridAnomalyAbs);
     showGridGroup->addAction(this->ui->actionShowGridAnomalyPerc);
     showGridGroup->addAction(this->ui->actionShowGridClimate);
+
+    showGridGroup->setEnabled(false);
+    this->ui->menuShowGridAnomaly->setEnabled(false);
 
     this->currentPointsVisualization = notShown;
     this->currentGridVisualization = notShown;
@@ -932,6 +938,10 @@ bool MainWindow::loadMeteoPointsDB(QString dbName)
 
     this->ui->meteoPoints->setEnabled(true);
     this->ui->meteoPoints->setChecked(true);
+    showPointsGroup->setEnabled(true);
+    this->ui->actionShowPointsElab->setEnabled(false);
+    this->ui->actionShowPointsClimate->setEnabled(false);
+
     this->ui->grid->setChecked(false);
 
     return true;
@@ -974,6 +984,9 @@ bool MainWindow::loadMeteoGridDB(QString xmlName)
     this->ui->meteoPoints->setChecked(false);
     this->ui->grid->setEnabled(true);
     this->ui->grid->setChecked(true);
+    showGridGroup->setEnabled(true);
+    this->ui->actionShowGridElab->setEnabled(false);
+    this->ui->actionShowGridClimate->setEnabled(false);
 
     return true;
 }
@@ -1088,6 +1101,9 @@ void MainWindow::on_actionClose_meteo_points_triggered()
     this->ui->meteoPoints->setChecked(false);
     this->ui->meteoPoints->setEnabled(false);
 
+    showPointsGroup->setEnabled(false);
+    this->ui->menuShowPointsAnomaly->setEnabled(false);
+
     if (myProject.meteoGridDbHandler != nullptr)
     {
         this->ui->grid->setChecked(true);
@@ -1109,6 +1125,9 @@ void MainWindow::on_actionClose_meteo_grid_triggered()
 
         this->ui->grid->setChecked(false);
         this->ui->grid->setEnabled(false);
+
+        showGridGroup->setEnabled(false);
+        this->ui->menuShowGridAnomaly->setEnabled(false);
 
         if (myProject.meteoPointsDbHandler != nullptr)
         {
