@@ -811,13 +811,19 @@ void MainWindow::redrawMeteoPoints(visualizationType showType, bool updateColorS
     case showElaboration:
     {
         this->ui->actionShowPointsElab->setChecked(true);
-        showElabResult(true, false, false, false, nullptr);
+        showElabResult(true, false, false, false, false, nullptr);
         break;
     }
     case showAnomalyAbsolute:
     {
         this->ui->actionShowPointsAnomalyAbs->setChecked(true);
-        showElabResult(true, false, true, false, nullptr);
+        showElabResult(true, false, true, false, false, nullptr);
+        break;
+    }
+    case showAnomalyPercentage:
+    {
+        this->ui->actionShowPointsAnomalyPerc->setChecked(true);
+        showElabResult(true, false, true, true, false, nullptr);
         break;
     }
     default:
@@ -888,13 +894,19 @@ void MainWindow::redrawMeteoGrid(visualizationType showType)
     case showElaboration:
     {
         this->ui->actionShowGridElab->setChecked(true);
-        showElabResult(true, true, false, false, nullptr);
+        showElabResult(true, true, false, false, false, nullptr);
         break;
     }
     case showAnomalyAbsolute:
     {
         this->ui->actionShowGridAnomalyAbs->setChecked(true);
-        showElabResult(true, true, true, false, nullptr);
+        showElabResult(true, true, true, false, false, nullptr);
+        break;
+    }
+    case showAnomalyPercentage:
+    {
+        this->ui->actionShowGridAnomalyPerc->setChecked(true);
+        showElabResult(true, true, true, true, false, nullptr);
         break;
     }
     default:
@@ -1398,6 +1410,7 @@ void MainWindow::on_actionClimate_fields_triggered()
 
     bool isMeteoGrid = ui->grid->isChecked();
     bool isAnomaly = false;
+    bool isAnomalyPerc = false;
     bool isClima = true;
     QStringList climateDbElab;
     QStringList climateDbVarList;
@@ -1413,7 +1426,7 @@ void MainWindow::on_actionClimate_fields_triggered()
             {
                 QString index = climateDialog.getIndexSelected();
                 myProject.saveClimateResult(isMeteoGrid, climaSelected, index.toInt(), true);
-                showElabResult(true, isMeteoGrid, isAnomaly, isClima, index);
+                showElabResult(true, isMeteoGrid, isAnomaly, isAnomalyPerc, isClima, index);
             }
             else
             {
@@ -1431,7 +1444,7 @@ void MainWindow::on_actionClimate_fields_triggered()
 
 }
 
-void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool isAnomaly, bool isClima, QString index)
+void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool isAnomaly, bool isAnomalyPerc, bool isClima, QString index)
 {
 
     if (isMeteoGrid)
@@ -1460,7 +1473,15 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool is
                 }
                 else
                 {
-                    myProject.meteoPoints[i].currentValue = myProject.meteoPoints[i].anomaly;
+                    if (isAnomalyPerc)
+                    {
+                        myProject.meteoPoints[i].currentValue = myProject.meteoPoints[i].anomalyPercentage;
+                    }
+                    else
+                    {
+                        myProject.meteoPoints[i].currentValue = myProject.meteoPoints[i].anomaly;
+                    }
+
                 }
 
                 // hide all meteo points
@@ -1501,7 +1522,14 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool is
                 }
                 else
                 {
-                    myProject.meteoPoints[i].currentValue = myProject.meteoPoints[i].anomaly;
+                    if (isAnomalyPerc)
+                    {
+                        myProject.meteoPoints[i].currentValue = myProject.meteoPoints[i].anomalyPercentage;
+                    }
+                    else
+                    {
+                        myProject.meteoPoints[i].currentValue = myProject.meteoPoints[i].anomaly;
+                    }
                 }
                 // hide all meteo points
                 pointList[i]->setVisible(false);
@@ -1531,7 +1559,15 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool is
         }
         else
         {
-            ui->lineEditElab1->setText(myProject.clima->elab1() + " Anomaly of: " + QString::number(myProject.clima->param1()));
+            if (isAnomalyPerc)
+            {
+                ui->lineEditElab1->setText(myProject.clima->elab1() + "%Anomaly of: " + QString::number(myProject.clima->param1()));
+            }
+            else
+            {
+                ui->lineEditElab1->setText(myProject.clima->elab1() + "Anomaly of: " + QString::number(myProject.clima->param1()));
+            }
+
         }
     }
     else
@@ -1542,7 +1578,15 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool is
         }
         else
         {
-            ui->lineEditElab1->setText("Anomaly respect to " + myProject.clima->elab1());
+            if (isAnomalyPerc)
+            {
+                ui->lineEditElab1->setText("%Anomaly respect to " + myProject.clima->elab1());
+            }
+            else
+            {
+                ui->lineEditElab1->setText("Anomaly respect to " + myProject.clima->elab1());
+            }
+
         }
     }
     if (myProject.clima->elab2().isEmpty())
@@ -1666,6 +1710,11 @@ void MainWindow::on_actionShowPointsAnomalyAbs_triggered()
     redrawMeteoPoints(showAnomalyAbsolute, true);
 }
 
+void MainWindow::on_actionShowPointsAnomalyPerc_triggered()
+{
+    redrawMeteoPoints(showAnomalyPercentage, true);
+}
+
 void MainWindow::on_actionShowGridHide_triggered()
 {
     redrawMeteoGrid(notShown);
@@ -1689,4 +1738,9 @@ void MainWindow::on_actionShowGridElab_triggered()
 void MainWindow::on_actionShowGridAnomalyAbs_triggered()
 {
     redrawMeteoGrid(showAnomalyAbsolute);
+}
+
+void MainWindow::on_actionShowGridAnomalyPerc_triggered()
+{
+    redrawMeteoGrid(showAnomalyPercentage);
 }

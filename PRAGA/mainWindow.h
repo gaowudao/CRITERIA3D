@@ -100,6 +100,10 @@
 
         void on_actionShowGridAnomalyAbs_triggered();
 
+        void on_actionShowPointsAnomalyPerc_triggered();
+
+        void on_actionShowGridAnomalyPerc_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
@@ -164,7 +168,7 @@
         void setCurrentRaster(gis::Crit3DRasterGrid *myRaster);
         void interpolateDemGUI();
         void interpolateGridGUI();
-        void showElabResult(bool updateColorSCale, bool isMeteoGrid, bool isAnomaly, bool isClima, QString index);
+        void showElabResult(bool updateColorSCale, bool isMeteoGrid, bool isAnomaly, bool isAnomalyPerc, bool isClima, QString index);
     };
 
 
