@@ -726,8 +726,9 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
 void MainWindow::redrawMeteoPoints(visualizationType showType, bool updateColorSCale)
 {
     currentPointsVisualization = showType;
+    ui->groupBoxElab->hide();
 
-    if (myProject.nrMeteoPoints == 0 || myProject.getIsElabMeteoPointsValue())
+    if (myProject.nrMeteoPoints == 0)
         return;
 
     // hide all meteo points
@@ -807,6 +808,12 @@ void MainWindow::redrawMeteoPoints(visualizationType showType, bool updateColorS
         meteoPointsLegend->update();
         break;
     }
+    case showElaboration:
+    {
+        this->ui->actionShowPointsElab->setChecked(true);
+        showElabResult(true, false, false, false, nullptr);
+        break;
+    }
     default:
         return;
     }
@@ -815,6 +822,7 @@ void MainWindow::redrawMeteoPoints(visualizationType showType, bool updateColorS
 void MainWindow::redrawMeteoGrid(visualizationType showType)
 {
     currentGridVisualization = showType;
+    ui->groupBoxElab->hide();
 
     if (myProject.meteoGridDbHandler == nullptr)
         return;
@@ -840,7 +848,7 @@ void MainWindow::redrawMeteoGrid(visualizationType showType)
         frequencyType frequency = myProject.getFrequency();
         meteoVariable variable = myProject.getCurrentVariable();
 
-        if (myProject.getCurrentVariable() == noMeteoVar && !myProject.meteoGridDbHandler->meteoGrid()->getIsElabValue())
+        if (myProject.getCurrentVariable() == noMeteoVar)
         {
             meteoGridLegend->setVisible(false);
             ui->labelMeteoGridScale->setText("");
@@ -869,6 +877,12 @@ void MainWindow::redrawMeteoGrid(visualizationType showType)
 
         meteoGridObj->redrawRequested();
         meteoGridLegend->update();
+        break;
+    }
+    case showElaboration:
+    {
+        this->ui->actionShowGridElab->setChecked(true);
+        showElabResult(true, true, false, false, nullptr);
         break;
     }
     default:
@@ -1022,7 +1036,14 @@ bool MainWindow::loadMeteoGridDB(QString xmlName)
     this->ui->grid->setEnabled(true);
     this->ui->grid->setChecked(true);
     showGridGroup->setEnabled(true);
-    this->ui->actionShowGridCurrent->setEnabled(false);
+    if (myProject.getCurrentVariable() != noMeteoVar && myProject.getFrequency() != noFrequency)
+    {
+        this->ui->actionShowGridCurrent->setEnabled(true);
+    }
+    else
+    {
+        this->ui->actionShowGridCurrent->setEnabled(false);
+    }
     this->ui->actionShowGridElab->setEnabled(false);
     this->ui->actionShowGridClimate->setEnabled(false);
 
@@ -1240,7 +1261,16 @@ void MainWindow::on_actionCompute_elaboration_triggered()
         }
         else
         {
-            showElabResult(true, isMeteoGrid, isAnomaly, saveClima, nullptr);
+            if (isMeteoGrid)
+            {
+                this->ui->actionShowGridElab->setEnabled(true);
+                redrawMeteoGrid(showElaboration);
+            }
+            else
+            {
+                this->ui->actionShowPointsElab->setEnabled(true);
+                redrawMeteoPoints(showElaboration, true);
+            }
         }
         if (compDialog.result() == QDialog::Accepted)
             on_actionCompute_elaboration_triggered();
@@ -1391,10 +1421,6 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool is
     }
     else
     {
-
-        if (currentPointsVisualization == notShown)
-            return;
-
         meteoPointsLegend->setVisible(true);
 
         if (updateColorSCale)
@@ -1598,6 +1624,11 @@ void MainWindow::on_actionShowPointsCurrent_triggered()
     redrawMeteoPoints(showCurrentVariable, true);
 }
 
+void MainWindow::on_actionShowPointsElab_triggered()
+{
+    redrawMeteoPoints(showElaboration, true);
+}
+
 void MainWindow::on_actionShowGridHide_triggered()
 {
     redrawMeteoGrid(notShown);
@@ -1608,8 +1639,12 @@ void MainWindow::on_actionShowGridLocation_triggered()
     redrawMeteoGrid(showLocation);
 }
 
-
 void MainWindow::on_actionShowGridCurrent_triggered()
 {
     redrawMeteoGrid(showCurrentVariable);
+}
+
+void MainWindow::on_actionShowGridElab_triggered()
+{
+    redrawMeteoGrid(showElaboration);
 }

@@ -88,6 +88,10 @@
         void on_actionShowGridLocation_triggered();
         void on_actionShowGridCurrent_triggered();
 
+        void on_actionShowPointsElab_triggered();
+
+        void on_actionShowGridElab_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
