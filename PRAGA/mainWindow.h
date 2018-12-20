@@ -82,6 +82,11 @@
 
         void on_actionShowPointsHide_triggered();
         void on_actionShowPointsLocation_triggered();
+        void on_actionShowPointsCurrent_triggered();
+
+        void on_actionShowGridHide_triggered();
+        void on_actionShowGridLocation_triggered();
+        void on_actionShowGridCurrent_triggered();
 
     protected:
         /*!

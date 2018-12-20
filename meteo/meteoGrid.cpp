@@ -357,6 +357,21 @@ void Crit3DMeteoGrid::fillMeteoRaster()
 
 }
 
+void Crit3DMeteoGrid::fillMeteoRasterNoData()
+{
+    for (int i = 0; i < dataMeteoGrid.header->nrRows; i++)
+    {
+        for (int j = 0; j < dataMeteoGrid.header->nrCols; j++)
+        {
+             if (_meteoPoints[i][j]->active)
+             {
+                 dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j] = NODATA;
+             }
+        }
+    }
+
+}
+
 void Crit3DMeteoGrid::fillMeteoRasterElabValue()
 {
 

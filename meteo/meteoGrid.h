@@ -106,6 +106,7 @@ std::string getKeyStringAggregationMethod(gridAggregationMethod value);
 
             bool createRasterGrid();
             void fillMeteoRaster();
+            void fillMeteoRasterNoData();
             void fillMeteoRasterElabValue();
             void fillMeteoRasterAnomalyValue();
 
