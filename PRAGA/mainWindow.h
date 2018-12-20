@@ -92,6 +92,14 @@
 
         void on_actionShowGridElab_triggered();
 
+        void on_meteoPoints_clicked();
+
+        void on_grid_clicked();
+
+        void on_actionShowPointsAnomalyAbs_triggered();
+
+        void on_actionShowGridAnomalyAbs_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

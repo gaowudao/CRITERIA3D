@@ -814,6 +814,12 @@ void MainWindow::redrawMeteoPoints(visualizationType showType, bool updateColorS
         showElabResult(true, false, false, false, nullptr);
         break;
     }
+    case showAnomalyAbsolute:
+    {
+        this->ui->actionShowPointsAnomalyAbs->setChecked(true);
+        showElabResult(true, false, true, false, nullptr);
+        break;
+    }
     default:
         return;
     }
@@ -883,6 +889,12 @@ void MainWindow::redrawMeteoGrid(visualizationType showType)
     {
         this->ui->actionShowGridElab->setChecked(true);
         showElabResult(true, true, false, false, nullptr);
+        break;
+    }
+    case showAnomalyAbsolute:
+    {
+        this->ui->actionShowGridAnomalyAbs->setChecked(true);
+        showElabResult(true, true, true, false, nullptr);
         break;
     }
     default:
@@ -1314,8 +1326,18 @@ void MainWindow::on_actionCompute_anomaly_triggered()
         else
         {
             isAnomaly = true;
+
             myProject.elaboration(isMeteoGrid, isAnomaly, saveClima);
-            showElabResult(true, isMeteoGrid, isAnomaly, saveClima, nullptr);
+            if (isMeteoGrid)
+            {
+                this->ui->menuShowGridAnomaly->setEnabled(true);
+                redrawMeteoGrid(showAnomalyAbsolute);
+            }
+            else
+            {
+                this->ui->menuShowPointsAnomaly->setEnabled(true);
+                redrawMeteoPoints(showAnomalyAbsolute, true);
+            }
         }
         if (compDialog.result() == QDialog::Accepted)
             on_actionCompute_anomaly_triggered();
@@ -1608,6 +1630,16 @@ void MainWindow::on_actionLoadTAD_triggered()
         myProject.logError();
 }
 
+void MainWindow::on_meteoPoints_clicked()
+{
+    redrawMeteoPoints(currentPointsVisualization, true);
+}
+
+void MainWindow::on_grid_clicked()
+{
+    redrawMeteoGrid(currentGridVisualization);
+}
+
 void MainWindow::on_actionShowPointsHide_triggered()
 {
     redrawMeteoPoints(notShown, true);
@@ -1629,6 +1661,11 @@ void MainWindow::on_actionShowPointsElab_triggered()
     redrawMeteoPoints(showElaboration, true);
 }
 
+void MainWindow::on_actionShowPointsAnomalyAbs_triggered()
+{
+    redrawMeteoPoints(showAnomalyAbsolute, true);
+}
+
 void MainWindow::on_actionShowGridHide_triggered()
 {
     redrawMeteoGrid(notShown);
@@ -1647,4 +1684,9 @@ void MainWindow::on_actionShowGridCurrent_triggered()
 void MainWindow::on_actionShowGridElab_triggered()
 {
     redrawMeteoGrid(showElaboration);
+}
+
+void MainWindow::on_actionShowGridAnomalyAbs_triggered()
+{
+    redrawMeteoGrid(showAnomalyAbsolute);
 }
