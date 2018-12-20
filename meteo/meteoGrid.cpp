@@ -418,6 +418,52 @@ void Crit3DMeteoGrid::fillMeteoRasterAnomalyValue()
 
 }
 
+void Crit3DMeteoGrid::fillMeteoRasterAnomalyPercValue()
+{
+
+    for (int i = 0; i < dataMeteoGrid.header->nrRows; i++)
+    {
+        for (int j = 0; j < dataMeteoGrid.header->nrCols; j++)
+        {
+             if (_meteoPoints[i][j]->active)
+             {
+                 dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j] = _meteoPoints[i][j]->anomalyPercentage;
+                 // debug
+//                 if (_meteoPoints[i][j]->id == "02148")
+//                 {
+//                    float debug = dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j];
+//                    std::cout << " fillMeteoRasterAnomalyValue 02148 anomaly: " << debug;
+//                 }
+
+             }
+        }
+    }
+
+}
+
+void Crit3DMeteoGrid::fillMeteoRasterClimateValue()
+{
+
+    for (int i = 0; i < dataMeteoGrid.header->nrRows; i++)
+    {
+        for (int j = 0; j < dataMeteoGrid.header->nrCols; j++)
+        {
+             if (_meteoPoints[i][j]->active)
+             {
+                 dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j] = _meteoPoints[i][j]->climate;
+                 // debug
+//                 if (_meteoPoints[i][j]->id == "02148")
+//                 {
+//                    float debug = dataMeteoGrid.value[_gridStructure.header().nrRows-1-i][j];
+//                    std::cout << " fillMeteoRasterAnomalyValue 02148 anomaly: " << debug;
+//                 }
+
+             }
+        }
+    }
+
+}
+
 gis::Crit3DGisSettings Crit3DMeteoGrid::getGisSettings() const
 {
     return _gisSettings;

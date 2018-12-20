@@ -104,6 +104,10 @@
 
         void on_actionShowGridAnomalyPerc_triggered();
 
+        void on_actionShowPointsClimate_triggered();
+
+        void on_actionShowGridClimate_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

@@ -324,17 +324,17 @@ void PragaProject::saveClimateResult(bool isMeteoGrid, QString climaSelected, in
                     if (results.size() < climateIndex)
                     {
                         errorString = "climate index error";
-                        meteoPoint->currentValue = NODATA;
+                        meteoPoint->climate = NODATA;
                     }
                     else
                     {
                         float value = results[climateIndex-1];
-                        meteoPoint->currentValue = value;
+                        meteoPoint->climate = value;
                     }
                 }
              }
         }
-        meteoGridDbHandler->meteoGrid()->fillMeteoRaster();
+        //meteoGridDbHandler->meteoGrid()->fillMeteoRasterClimateValue();
         meteoGridDbHandler->meteoGrid()->setIsElabValue(true);
     }
     else
@@ -358,12 +358,12 @@ void PragaProject::saveClimateResult(bool isMeteoGrid, QString climaSelected, in
                 if (results.size() < climateIndex)
                 {
                     errorString = "climate index error";
-                    meteoPoints[i].currentValue = NODATA;
+                    meteoPoints[i].climate = NODATA;
                 }
                 else
                 {
                     float value = results[climateIndex-1];
-                    meteoPoints[i].currentValue = value;
+                    meteoPoints[i].climate = value;
                 }
             }
         }
@@ -416,7 +416,7 @@ bool PragaProject::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
             {
                 return false;
             }
-            meteoGridDbHandler->meteoGrid()->fillMeteoRasterElabValue();
+            //meteoGridDbHandler->meteoGrid()->fillMeteoRasterElabValue();
         }
         else
         {
@@ -424,7 +424,7 @@ bool PragaProject::elaboration(bool isMeteoGrid, bool isAnomaly, bool saveClima)
             {
                 return false;
             }
-            meteoGridDbHandler->meteoGrid()->fillMeteoRasterAnomalyValue();
+            //meteoGridDbHandler->meteoGrid()->fillMeteoRasterAnomalyValue();
         }
         meteoGridDbHandler->meteoGrid()->setIsElabValue(true);
     }
