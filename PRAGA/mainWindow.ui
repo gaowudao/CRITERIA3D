@@ -1195,6 +1195,9 @@
                <pointsize>9</pointsize>
               </font>
              </property>
+             <property name="buttonSymbols">
+              <enum>QAbstractSpinBox::PlusMinus</enum>
+             </property>
              <property name="maximumDate">
               <date>
                <year>2000</year>
@@ -2334,7 +2337,7 @@
      <x>0</x>
      <y>0</y>
      <width>1387</width>
-     <height>30</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="palette">
