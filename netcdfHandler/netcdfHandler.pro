@@ -1,7 +1,7 @@
 #-------------------------------------------------
 #
 # CRITERIA3D distribution
-# netcdfHandler library
+# netCDF handler library
 #
 #-------------------------------------------------
 
@@ -11,6 +11,9 @@ TEMPLATE = lib
 CONFIG += staticlib
 
 CONFIG += debug_and_release
+
+DEFINES += NETCDF_HANDLER_LIBRARY
+DEFINES += _CRT_SECURE_NO_WARNINGS
 
 unix:{
     CONFIG(debug, debug|release) {

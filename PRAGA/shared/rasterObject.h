@@ -29,7 +29,7 @@ public:
      * \param view a MapGraphicsView pointer
      * \param parent MapGraphicsObject
      */
-    explicit RasterObject(MapGraphicsView* view, MapGraphicsObject *parent = 0);
+    explicit RasterObject(MapGraphicsView* view, MapGraphicsObject *parent = nullptr);
 
     /*!
      * \brief boundingRect pure-virtual from MapGraphicsObject

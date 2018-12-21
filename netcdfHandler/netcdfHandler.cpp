@@ -78,9 +78,9 @@ void NetCDFHandler::initialize(int myUtmZone)
     isStandardTime = false;
     timeType = NODATA;
 
-    x = NULL;
-    y = NULL;
-    time = NULL;
+    x = nullptr;
+    y = nullptr;
+    time = nullptr;
 
     dataGrid.freeGrid();
     dimensions.clear();
@@ -93,7 +93,7 @@ int NetCDFHandler::getDimensionIndex(char* dimName)
     for (unsigned int i = 0; i < dimensions.size(); i++)
     {
         if (dimensions[i].name == std::string(dimName))
-            return i;
+            return int(i);
     }
 
     return NODATA;
@@ -509,8 +509,8 @@ bool NetCDFHandler::exportDataSeries(int idVar, gis::Crit3DGeoPoint geoPoint, ti
 
     // write data
     size_t* index = (size_t*) calloc(3, sizeof(size_t));
-    index[1] = row;
-    index[2] = col;
+    index[1] = size_t(row);
+    index[2] = size_t(col);
 
     float value;
     for (int t = t1; t <= t2; t++)
