@@ -322,29 +322,53 @@ namespace radiation
 
     /*!
      * \brief Clear sky beam irradiance on a horizontal surface [W m-2]
+     * \brief (Rigollier et al. 2000)
      * \param myLinke
      * \param mySunPosition a pointer to a TsunPosition
      * \return result
      */
     float clearSkyBeamHorizontal(float myLinke, TsunPosition* mySunPosition)
     {
-        //tl:        air mass 2 Linke atmospheric turbidity factor (Kasten, 1996)    []
-        //rayl:      Rayleigh optical thickness (Kasten, 1996)                       []
-        //am:        relative optical air mass corrected for pressure                []
-        float turbidityLinke, rayleighThickness;
-        float airMass ;
+        //myLinke:   Linke turbidity factor for an air mass equal to 2 ()
+        //rayl:      Rayleigh optical thickness (Kasten, 1996) ()
+        //am:        relative optical air mass corrected for pressure ()
 
-        airMass = mySunPosition->relOptAirMassCorr ;
-        turbidityLinke = float(0.8662 * myLinke);
+        float rayleighThickness;
+        float airMass = mySunPosition->relOptAirMassCorr ;
         if (airMass <= 20)
             rayleighThickness = float(1.0 / (6.6296 + 1.7513 * airMass - 0.1202 * pow(airMass,2)
                                             + 0.0065 * pow(airMass,3) - 0.00013 * pow(airMass,4)));
         else
             rayleighThickness = float(1.0 / (10.4 + 0.718 * airMass));
 
-        return mySunPosition->extraIrradianceNormal * getSinDecimalDegree(mySunPosition->elevationRefr) * exp(-rayleighThickness * airMass * turbidityLinke);
+        return mySunPosition->extraIrradianceNormal * getSinDecimalDegree(mySunPosition->elevation) * (float)exp(-0.8662 * myLinke * airMass * rayleighThickness);
     }
 
+    /*!
+     * \brief Diffuse irradiance on a horizontal surface [W m-2]
+     * \brief (Rigollier et al. 2000)
+     * \param myLinke
+     * \param mySunPosition a pointer to a TsunPosition
+     * \return result
+     */
+    float clearSkyDiffuseHorizontal(float myLinke, TsunPosition* mySunPosition)
+    {
+        double Fd;          /*!< diffuse solar altitude function [] */
+        double Trd;         /*!< transmission function [] */
+        double A0, A1, A2;
+        double sinElev;
+
+        Trd = -0.015843 + myLinke * (0.030543 + 0.0003797 * myLinke);
+
+        sinElev = maxValue(getSinDecimalDegree(mySunPosition->elevation), 0.);
+        A0 = 0.26463 + myLinke * (-0.061581 + 0.0031408 * myLinke);
+        if ((A0 * Trd) < 0.0022) A0 = 0.002 / Trd;
+        A1 = 2.0402 + myLinke * (0.018945 - 0.011161 * myLinke);
+        A2 = -1.3025 + myLinke * (0.039231 + 0.0085079 * myLinke);
+        Fd = A0 + A1 * sinElev + A2 * sinElev * sinElev;
+
+        return float(mySunPosition->extraIrradianceNormal * Fd * Trd);
+    }
 
     /*!
      * \brief Beam irradiance on an inclined surface                         [W m-2]
@@ -357,36 +381,6 @@ namespace radiation
         /*! Bh: clear sky beam irradiance on a horizontal surface */
         return (beamIrradianceHor * getSinDecimalDegree(mySunPosition->incidence) / getSinDecimalDegree(mySunPosition->elevationRefr)) ;
     }
-
-    /*!
-     * \brief Diffuse irradiance on a horizontal surface (Scharmer and Greif, 2000   [W m-2]
-     * \param myLinke
-     * \param mySunPosition a pointer to a TsunPosition
-     * \return result
-     */
-    float clearSkyDiffuseHorizontal(float myLinke, TsunPosition* mySunPosition)
-    {
-        double diffuseSolarAltitudeFunction; /*!< diffuse solar altitude function (Scharmer and Greif, 2000)     []   */
-        double transmissionFunction;         /*!< ransmission function                                           []   */
-        double A1b, a1, a2, A3;
-        double sinElev;
-
-        sinElev = maxValue(getSinDecimalDegree(mySunPosition->elevation), float(0.00001));
-        transmissionFunction = -0.015843 + myLinke * (0.030543 + 0.0003797 * myLinke);
-        A1b = 0.26463 + myLinke * (-0.061581 + 0.0031408 * myLinke);
-
-        if ((A1b * transmissionFunction) < 0.0022)
-            a1 = 0.0022 / transmissionFunction;
-        else
-            a1 = A1b;
-
-        a2 = 2.0402 + myLinke * (0.018945 - 0.011161 * myLinke);
-        A3 = -1.3025 + myLinke * (0.039231 + 0.0085079 * myLinke);
-        diffuseSolarAltitudeFunction = a1 + a2 * sinElev + A3 * sinElev * sinElev;
-
-        return float(mySunPosition->extraIrradianceNormal * diffuseSolarAltitudeFunction * transmissionFunction);
-    }
-
 
     /*!
      * \brief Diffuse irradiance on an inclined surface (Muneer, 1990)               [W m-2]
@@ -582,6 +576,13 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
         myMinute = localTime.getMinutes();
         mySecond = int(localTime.getSeconds());
 
+        /*! Surface pressure at sea level (millibars) (used for refraction correction and optical air mass) */
+        myPressure = PRESSURE_SEALEVEL * (float)exp(-myPoint->height / RAYLEIGH_Z0);
+
+        /*! Ambient default dry-bulb temperature (degrees C) (used for refraction correction) */
+        //should be passed
+        if (myTemperature == NODATA) myTemperature = TEMPERATURE_DEFAULT;
+
         /*! Sun position */
         if (! computeSunPosition(float(myPoint->lon), float(myPoint->lat), mySettings->gisSettings->timeZone,
             myYear, myMonth, myDay, myHour, myMinute, mySecond,
@@ -609,6 +610,7 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
             Bhc = clearSkyBeamHorizontal(myLinke, mySunPosition);
             Dhc = clearSkyDiffuseHorizontal(myLinke, mySunPosition);
             Ghc = Dhc + Bhc;
+
             if (mySettings->getComputeRealData())
             {
                 if (myTransmissivity != NODATA)
@@ -645,7 +647,7 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
             else
             {
                 Bh = 0;
-                Gh = dH;
+                Gh = dH; // approximation (portion of shadowed sky should be considered)
             }
             if (mySettings->getTiltMode() == TILT_TYPE_HORIZONTAL)
             {
@@ -722,10 +724,10 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
         }
 
         // Threshold: half potential radiation at noon
-        computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, noonTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
+        computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_SEALEVEL, noonTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
         sumPotentialRadThreshold = float(myRadPoint.global * 0.5);
 
-        computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, myTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
+        computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_SEALEVEL, myTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
         sumPotentialRad = float(myRadPoint.global);
 
         int backwardTimeStep,forwardTimeStep;
@@ -742,10 +744,10 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
             backwardTime = myTime.addSeconds(float(backwardTimeStep));
             forwardTime = myTime.addSeconds(float(forwardTimeStep));
 
-            computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, backwardTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
+            computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_SEALEVEL, backwardTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
             sumPotentialRad+= float(myRadPoint.global);
 
-            computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, forwardTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
+            computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_SEALEVEL, forwardTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
             sumPotentialRad+= float(myRadPoint.global);
         }
 
@@ -800,7 +802,7 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
                     float transmissivity = radiationMaps->transmissivityMap->value[myRow][myCol];
 
                     //CHIAMATA A SINGLE POINT
-                    if (!computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, UTCTime,
+                    if (!computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_SEALEVEL, UTCTime,
                         linke, albedo, mySettings->getClearSky(), transmissivity, &mySunPosition, &myRadPoint, myDtm))
                         return false;
 
@@ -1058,7 +1060,7 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
 
         float sumMeasuredRad = measuredRad[intervalCenter];
 
-        computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, UTCTime, myLinke, myAlbedo,
+        computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_SEALEVEL, UTCTime, myLinke, myAlbedo,
                myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
 
         float sumPotentialRad = float(myRadPoint.global);
@@ -1073,13 +1075,13 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
             if (measuredRad[windowIndex] != NODATA)
             {
                 sumMeasuredRad += measuredRad[windowIndex];
-                computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, backwardTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
+                computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_SEALEVEL, backwardTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
                 sumPotentialRad += float(myRadPoint.global);
             }
             if (measuredRad[windowWidth-windowIndex-1] != NODATA)
             {
                 sumMeasuredRad+= measuredRad[windowWidth-windowIndex-1];
-                computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_DEFAULT, forwardTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
+                computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_SEALEVEL, forwardTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
                 sumPotentialRad+= float(myRadPoint.global);
             }
         }

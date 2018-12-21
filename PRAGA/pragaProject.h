@@ -24,6 +24,7 @@
         Crit3DClimate* referenceClima;
 
         bool isElabMeteoPointsValue;
+        QString climateIndex;
 
         PragaProject();
 

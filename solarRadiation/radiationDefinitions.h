@@ -5,10 +5,12 @@
         #include "gis.h"
     #endif
 
-    /*! Surface pressure (millibars) used for refraction correction and RelOptAirMassCorr */
-    #define PRESSURE_DEFAULT 1013
-    /*! Ambient dry-bulb temperature (degrees C) used for refraction correction */
+    /*! Surface pressure at sea level (millibars) (used for refraction correction and optical air mass) */
+    #define PRESSURE_SEALEVEL 1013
+    /*! Ambient default dry-bulb temperature (degrees C) (used for refraction correction) */
     #define TEMPERATURE_DEFAULT 15
+    /*! scale height of Rayleigh atmosphere near the Earth surface */
+    #define RAYLEIGH_Z0 8434.5
 
     /*! Eppley shadow band width (cm) */
     #define SBWID 7.6f

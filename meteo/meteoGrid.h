@@ -106,8 +106,11 @@ std::string getKeyStringAggregationMethod(gridAggregationMethod value);
 
             bool createRasterGrid();
             void fillMeteoRaster();
+            void fillMeteoRasterNoData();
             void fillMeteoRasterElabValue();
             void fillMeteoRasterAnomalyValue();
+            void fillMeteoRasterAnomalyPercValue();
+            void fillMeteoRasterClimateValue();
 
             gis::Crit3DGisSettings getGisSettings() const;
             void setGisSettings(const gis::Crit3DGisSettings &gisSettings);
