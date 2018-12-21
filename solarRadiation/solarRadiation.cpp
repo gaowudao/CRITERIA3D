@@ -353,8 +353,8 @@ namespace radiation
      */
     float clearSkyDiffuseHorizontal(float myLinke, TsunPosition* mySunPosition)
     {
-        double Fd; /*!< diffuse solar altitude function [] */
-        double Trd;         /*!< transmission function                                           []   */
+        double Fd;          /*!< diffuse solar altitude function [] */
+        double Trd;         /*!< transmission function [] */
         double A0, A1, A2;
         double sinElev;
 
