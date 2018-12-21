@@ -12,6 +12,8 @@ Water fluxes equations may be coupled with the heat flux equations, which includ
 http://www.sciencedirect.com/science/article/pii/S0309170809001754
 
 ## PRAGA (PRogram for AGrometeorological Analysis)
+![](https://github.com/ARPA-SIMC/CRITERIA3D/blob/master/DOC/img/PRAGA_screenshot.png)
+
 ![](https://github.com/ARPA-SIMC/CRITERIA3D/blob/master/doc/img/PRAGA_screenshot.png)
 PRAGA is a geographical application for agrometeorological and climate analysis.
 
