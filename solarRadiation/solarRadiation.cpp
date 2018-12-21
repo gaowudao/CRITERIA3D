@@ -610,6 +610,7 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
             Bhc = clearSkyBeamHorizontal(myLinke, mySunPosition);
             Dhc = clearSkyDiffuseHorizontal(myLinke, mySunPosition);
             Ghc = Dhc + Bhc;
+
             if (mySettings->getComputeRealData())
             {
                 if (myTransmissivity != NODATA)
@@ -646,7 +647,7 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
             else
             {
                 Bh = 0;
-                Gh = dH;
+                Gh = dH; // approximation (portion of shadowed sky should be considered)
             }
             if (mySettings->getTiltMode() == TILT_TYPE_HORIZONTAL)
             {
