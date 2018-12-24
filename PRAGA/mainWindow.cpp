@@ -867,6 +867,7 @@ void MainWindow::redrawMeteoGrid(visualizationType showType)
         this->ui->actionShowGridCurrent->setChecked(true);
         frequencyType frequency = myProject.getFrequency();
         meteoVariable variable = myProject.getCurrentVariable();
+        meteoGridObj->setDrawBorders(false);
 
         if (myProject.getCurrentVariable() == noMeteoVar)
         {
@@ -1470,6 +1471,7 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool is
 
     if (isMeteoGrid)
     {
+        meteoGridObj->setDrawBorders(false);
         if (!isAnomaly)
         {
             if (!isClima)
