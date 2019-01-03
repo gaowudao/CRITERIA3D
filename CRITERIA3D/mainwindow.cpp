@@ -595,10 +595,12 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
     setColorScale(myProject.currentVariable, myProject.meteoPointsColorScale);
 
     Crit3DColor *myColor;
+    bool isData = false;
     for (int i = 0; i < myProject.nrMeteoPoints; i++)
     {
         if (int(myProject.meteoPoints[i].currentValue) != NODATA)
         {
+            isData = true;
             if (myProject.meteoPoints[i].quality == quality::accepted)
             {
                 pointList[i]->setRadius(5);
@@ -619,8 +621,12 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
         }
     }
 
+    if (isData)
+        ui->labelVariablePoints->setText(QString::fromStdString(getVariableString(myProject.currentVariable)));
+    else
+        ui->labelVariablePoints->setText("No data");
+
     meteoPointsLegend->update();
-    ui->labelVariablePoints->setText(QString::fromStdString(getVariableString(myProject.currentVariable)));
 }
 
 void MainWindow::redrawMeteoGrid()
