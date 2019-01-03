@@ -147,9 +147,7 @@ namespace soil
     int getUSDATextureClass(float sand, float silt, float clay)
     {
         if ((sand == NODATA) || (silt == NODATA) || (clay == NODATA)) return NODATA;
-
-        float sum = sand + clay + silt;
-        if (fabs(sum - 100.0) > 1.0) return NODATA;
+        if (fabs(double(sand + clay + silt) - 100) > 2.0) return NODATA;
 
         int myClass = NODATA;
         /*! clay */
@@ -159,24 +157,24 @@ namespace soil
         /*! sandy clay */
         if ((clay >= 35) && (sand >= 45)) myClass = 10;
         /*! silty loam */
-        if (((clay < 27.5) && (silt >= 50) & (silt <= 80)) || ((clay >= 12.5) && (silt >= 80))) myClass = 4;
+        if (((clay < 27.5f) && (silt >= 50) & (silt <= 80)) || ((clay >= 12.5f) && (silt >= 80))) myClass = 4;
         /*! silt */
-        if ((clay < 12.5) && (silt >= 80)) myClass = 6;
+        if ((clay < 12.5f) && (silt >= 80)) myClass = 6;
         /*! silty clay loam */
-        if ((clay < 40) && (sand < 20) && (clay >= 27.5)) myClass = 8;
+        if ((clay < 40) && (sand < 20) && (clay >= 27.5f)) myClass = 8;
         /*! loamy sand */
-        if (((clay < 20) && (sand >= 52.5)) ||
-           ((clay < 7.5) && (silt < 50) && (sand >= 42.5) && (sand <= 52.5))) myClass = 3;
+        if (((clay < 20) && (sand >= 52.5f)) ||
+           ((clay < 7.5f) && (silt < 50) && (sand >= 42.5f) && (sand <= 52.5f))) myClass = 3;
         /*! sandy loam */
         if ((sand >= 70) && (clay <= (sand - 70))) myClass = 2;
         /*! sand */
         if ((sand >= 85) && (clay <= (2 * sand -170))) myClass = 1;
         /*! sandy clay loam */
-        if ((clay >= 20) && (clay < 35) && (sand >= 45) && (silt < 27.5)) myClass = 7;
+        if ((clay >= 20) && (clay < 35) && (sand >= 45) && (silt < 27.5f)) myClass = 7;
         /*! loam */
-        if ((clay >= 7.5) && (clay < 27.5) && (sand < 52.5)  && (silt >= 27.5) & (silt < 50)) myClass = 5;
+        if ((clay >= 7.5f) && (clay < 27.5f) && (sand < 52.5f)  && (silt >= 27.5f) & (silt < 50)) myClass = 5;
         /*! clay loam */
-        if ((clay >= 27.5) && (clay < 40) && (sand >= 20) && (sand < 45)) myClass = 9;
+        if ((clay >= 27.5f) && (clay < 40) && (sand >= 20) && (sand < 45)) myClass = 9;
 
         return myClass;
     }
@@ -192,9 +190,7 @@ namespace soil
     int getNLTextureClass(float sand, float silt, float clay)
     {
         if ((sand == NODATA) || (silt == NODATA) || (clay == NODATA)) return NODATA;
-
-        float sum = sand + clay + silt;
-        if (fabs(sum - 100.0) > 2.0) return NODATA;
+        if (fabs(double(sand + clay + silt) - 100) > 2.0) return NODATA;
 
         /*! heavy clay */
         if (clay >= 65) return 12;
@@ -283,18 +279,18 @@ namespace soil
         double fcMin = -10;                 /*!< [kPa] clay < 20% sandy soils */
         double fcMax = -33;                 /*!< [kPa] clay > 50% clay soils */
 
-        const double CLAYMIN = 20.f;
-        const double CLAYMAX = 50.f;
+        const double CLAYMIN = 20;
+        const double CLAYMAX = 50;
 
         double fieldCapacity;
 
-        if (horizon->texture.clay <= CLAYMIN)
+        if (double(horizon->texture.clay) <= CLAYMIN)
             fieldCapacity = fcMin;
-        else if (horizon->texture.clay >= CLAYMAX)
+        else if (double(horizon->texture.clay) >= CLAYMAX)
             fieldCapacity = fcMax;
         else
         {
-            double clayFactor = (horizon->texture.clay - CLAYMIN) / (CLAYMAX - CLAYMIN);
+            double clayFactor = (double(horizon->texture.clay) - CLAYMIN) / (CLAYMAX - CLAYMIN);
             fieldCapacity = (fcMin + (fcMax - fcMin) * clayFactor);
         }
 
@@ -317,13 +313,13 @@ namespace soil
     double getWiltingPoint(soil::units unit)
     {           
         if (unit == KPA)
-            return -1600.f;
+            return -1600;
         else if (unit == METER)
-            return kPaToMeters(-1600.f);
+            return kPaToMeters(-1600);
         else if (unit == CM)
-            return kPaToCm(-1600.f);
+            return kPaToCm(-1600);
         else
-            return(-1600.f);
+            return(-1600);
     }
 
 
@@ -339,12 +335,12 @@ namespace soil
 
     double kPaToCm(double value)
     {
-        return kPaToMeters(value) * 100.f;
+        return kPaToMeters(value) * 100;
     }
 
     double cmTokPa(double value)
     {
-        return metersTokPa(value / 100.f);
+        return metersTokPa(value / 100);
     }
 
     double getThetaFC(Crit3DHorizon* horizon)
@@ -444,7 +440,7 @@ namespace soil
     double getWaterContentFromPsi(double psi, Crit3DLayer* layer)
     {
         double theta = soil::thetaFromSignPsi(-psi, layer->horizon);
-        return theta * layer->thickness * layer->soilFraction * 1000.f;
+        return theta * layer->thickness * layer->soilFraction * 1000;
     }
 
 
@@ -475,7 +471,7 @@ namespace soil
     double getVolumetricWaterContent(Crit3DLayer* layer)
     {
         // layer->thickness in [m]
-        double theta = layer->waterContent / (layer->thickness * layer->soilFraction * 1000.f);
+        double theta = layer->waterContent / (layer->thickness * layer->soilFraction * 1000);
         return theta;
     }
 

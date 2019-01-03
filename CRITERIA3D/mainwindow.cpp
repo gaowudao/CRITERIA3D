@@ -70,6 +70,8 @@ MainWindow::MainWindow(QWidget *parent) :
     this->meteoPointsLegend->resize(this->ui->widgetColorLegendPoints->size());
     this->meteoPointsLegend->colorScale = myProject.meteoPointsColorScale;
 
+    this->ui->groupBoxMeteoGrid->setVisible(false);
+
     // Set tiles source
     this->setMapSource(OSMTileSource::OSMTiles);
 
@@ -122,17 +124,18 @@ void MainWindow::resizeEvent(QResizeEvent * event)
     ui->widgetMap->setGeometry(TOOLSWIDTH, 0, this->width()-TOOLSWIDTH, this->height() - INFOHEIGHT);
     mapView->resize(ui->widgetMap->size());
 
-    ui->groupBoxVariable->move(MAPBORDER/2, MAPBORDER);
+    ui->groupBoxVariable->move(MAPBORDER/2, this->height()/2
+                          - ui->groupBoxVariable->height() - ui->groupBoxMeteoPoints->height() - MAPBORDER);
     ui->groupBoxVariable->resize(TOOLSWIDTH, ui->groupBoxVariable->height());
 
     ui->groupBoxMeteoPoints->move(MAPBORDER/2, ui->groupBoxVariable->y() + ui->groupBoxVariable->height() + MAPBORDER);
     ui->groupBoxMeteoPoints->resize(TOOLSWIDTH, ui->groupBoxMeteoPoints->height());
 
-    ui->groupBoxMeteoGrid->move(MAPBORDER/2, ui->groupBoxMeteoPoints->y() + ui->groupBoxMeteoPoints->height() + MAPBORDER);
-    ui->groupBoxMeteoGrid->resize(TOOLSWIDTH, ui->groupBoxMeteoGrid->height());
-
-    ui->groupBoxRaster->move(MAPBORDER/2, ui->groupBoxMeteoGrid->y() + ui->groupBoxMeteoGrid->height() + MAPBORDER);
+    ui->groupBoxRaster->move(MAPBORDER/2, ui->groupBoxMeteoPoints->y() + ui->groupBoxMeteoPoints->height() + MAPBORDER);
     ui->groupBoxRaster->resize(TOOLSWIDTH, ui->groupBoxRaster->height());
+
+    ui->groupBoxMeteoGrid->move(MAPBORDER/2, ui->groupBoxRaster->y() + ui->groupBoxRaster->height() + MAPBORDER);
+    ui->groupBoxMeteoGrid->resize(TOOLSWIDTH, ui->groupBoxMeteoGrid->height());
 
     // TODO sembrano non funzionare
     ui->widgetColorLegendRaster->resize(TOOLSWIDTH, ui->widgetColorLegendPoints->height());
@@ -384,9 +387,9 @@ void MainWindow::on_actionOpen_meteo_grid_triggered()
 
     if (xmlName != "")
     {
-        this->loadMeteoGridDB(xmlName);
+        if (this->loadMeteoGridDB(xmlName))
+            ui->groupBoxMeteoGrid->setVisible(true);
     }
-
 }
 
 
@@ -544,7 +547,10 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
 void MainWindow::redrawMeteoPoints(bool updateColorSCale)
 {
     if (myProject.nrMeteoPoints == 0)
+    {
+        ui->labelVariablePoints->setText("");
         return;
+    }
 
     // hide all meteo points
     for (int i = 0; i < myProject.nrMeteoPoints; i++)
@@ -557,7 +563,6 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
     // show location
     if (myProject.getCurrentVariable() == noMeteoVar)
     {
-
         for (int i = 0; i < myProject.nrMeteoPoints; i++)
         {
                 myProject.meteoPoints[i].currentValue = NODATA;
@@ -569,6 +574,7 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
 
         myProject.meteoPointsColorScale->setRange(NODATA, NODATA);
         meteoPointsLegend->update();
+        ui->labelVariablePoints->setText("Location");
         return;
     }
 
@@ -614,6 +620,7 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
     }
 
     meteoPointsLegend->update();
+    ui->labelVariablePoints->setText(QString::fromStdString(getVariableString(myProject.currentVariable)));
 }
 
 void MainWindow::redrawMeteoGrid()
@@ -910,7 +917,8 @@ void MainWindow::on_actionOpen_soil_data_triggered()
     QString fileName = QFileDialog::getOpenFileName(this, tr("Load DB soil"), "", tr("SQLite files (*.db)"));
     if (fileName == "") return;
 
-    myProject.loadSoilData(fileName);
+    if (myProject.loadSoilData(fileName))
+        QMessageBox::information(nullptr, "", "Soil data loaded.");
 }
 
 

@@ -1,6 +1,8 @@
 #ifndef BALANCE_H
 #define BALANCE_H
 
+    struct TlinkedNode;
+
     void halveTimeStep();
     bool getForcedHalvedTime();
     void setForcedHalvedTime(bool isForced);

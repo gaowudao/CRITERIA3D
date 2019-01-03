@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     QSqlQuery myQuery;
     float RAW, rootDepth, prec, maxTranspiration;
     float forecastIrrigation, previousAllIrrigation;
-    float irriRatio;
+    double irriRatio;
     double percentile;
 
     if (argc > 1)
@@ -111,8 +111,8 @@ int main(int argc, char *argv[])
             else
             {
                 //IRRI_RATIO
-                irriRatio = getIrriRatioFromClass(&(myProject.criteria.dbParameters), "crop_class", "id_class",
-                                                  myProject.unit[i].idCropClass, &(myProject.projectError));
+                irriRatio = double(getIrriRatioFromClass(&(myProject.criteria.dbParameters), "crop_class", "id_class",
+                                                  myProject.unit[i].idCropClass, &(myProject.projectError)));
                 if (irriRatio == NODATA)
                     myProject.logInfo("Unit " + myProject.unit[i].idCase + " " + myProject.unit[i].idCropClass + " ***** missing IRRIGATION RATIO *****");
                 else
@@ -245,12 +245,12 @@ int main(int argc, char *argv[])
                                     myProject.outputFile << "," << myProject.unit[i].idCrop.toStdString();
                                     myProject.outputFile << "," << myProject.unit[i].idSoil.toStdString();
                                     myProject.outputFile << "," << myProject.unit[i].idMeteo.toStdString();
-                                    myProject.outputFile << "," << QString::number(RAW,'f',1).toStdString();
-                                    myProject.outputFile << "," << QString::number(rootDepth,'f',2).toStdString();
-                                    myProject.outputFile << "," << QString::number(prec,'f',1).toStdString();
-                                    myProject.outputFile << "," << QString::number(maxTranspiration,'f',1).toStdString();
-                                    myProject.outputFile << "," << forecastIrrigation * irriRatio;
-                                    myProject.outputFile << "," << previousAllIrrigation * irriRatio << "\n";
+                                    myProject.outputFile << "," << QString::number(double(RAW),'f',1).toStdString();
+                                    myProject.outputFile << "," << QString::number(double(rootDepth),'f',2).toStdString();
+                                    myProject.outputFile << "," << QString::number(double(prec),'f',1).toStdString();
+                                    myProject.outputFile << "," << QString::number(double(maxTranspiration),'f',1).toStdString();
+                                    myProject.outputFile << "," << double(forecastIrrigation) * irriRatio;
+                                    myProject.outputFile << "," << double(previousAllIrrigation) * irriRatio << "\n";
                                     myProject.outputFile.flush();
                                 }
                             }

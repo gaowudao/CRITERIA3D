@@ -42,7 +42,7 @@
 
 void initializeBoundary(Tboundary *myBoundary, int myType, float slope)
 {
-	(*myBoundary).type = myType;
+    (*myBoundary).type = short(myType);
 	(*myBoundary).slope = slope;
     (*myBoundary).waterFlow = 0.;
     (*myBoundary).sumBoundaryWaterFlow = 0;
@@ -101,7 +101,7 @@ double computeAtmosphericSensibleFlux(long i)
     if (myNode[i].boundary->Heat == nullptr || ! myNode[myNode[i].up.index].isSurface)
         return 0;
 
-    double myPressure = PressureFromAltitude(myNode[i].z);
+    double myPressure = PressureFromAltitude(double(myNode[i].z));
 
     double myDeltaT = myNode[i].boundary->Heat->temperature - myNode[i].extra->Heat->T;
 
@@ -195,8 +195,8 @@ double getSurfaceWaterFraction(int i)
         return 0.0;
     else
     {
-        double h = max_value(myNode[i].H - myNode[i].z, 0.0);
-        return 1.0 - max_value(0.0, myNode[i].Soil->Pond - h) / myNode[i].Soil->Pond;
+        double h = maxValue(myNode[i].H - myNode[i].z, 0.0);
+        return 1.0 - maxValue(0.0, myNode[i].Soil->Pond - h) / myNode[i].Soil->Pond;
     }
 }
 
@@ -247,7 +247,7 @@ void updateBoundaryWater(double deltaT)
             {
                 // current surface water available to runoff [m]
                 avgH = (myNode[i].H + myNode[i].oldH) * 0.5;
-                Hs = max_value(avgH - (myNode[i].z + myNode[i].Soil->Pond), 0.0);
+                Hs = maxValue(avgH - (myNode[i].z + myNode[i].Soil->Pond), 0.0);
                 if (Hs > EPSILON_mm)
                 {
                     area = myNode[i].volume_area;       //  [m^2] (surface)
@@ -256,7 +256,7 @@ void updateBoundaryWater(double deltaT)
                     boundaryArea = boundarySide * Hs;   //  [m^2]
                     // [m^3 s^-1] Manning
                     flow = boundaryArea *(pow(Hs, (2./3.)) / myNode[i].Soil->Roughness) * sqrt(myNode[i].boundary->slope);
-                    myNode[i].boundary->waterFlow = -min_value(flow, maxFlow);
+                    myNode[i].boundary->waterFlow = -minValue(flow, maxFlow);
                 }
             }
             else if (myNode[i].boundary->type == BOUNDARY_FREEDRAINAGE)
@@ -315,7 +315,7 @@ void updateBoundaryWater(double deltaT)
                         evapFromSoil *= (1. - surfaceWaterFraction);
                         evapFromSurface *= surfaceWaterFraction;
 
-                        evapFromSurface = max_value(evapFromSurface, -waterVolume / deltaT);
+                        evapFromSurface = maxValue(evapFromSurface, -waterVolume / deltaT);
 
                         if (myNode[upIndex].boundary != nullptr)
                             myNode[upIndex].boundary->waterFlow = evapFromSurface;
@@ -325,9 +325,9 @@ void updateBoundaryWater(double deltaT)
                     }
 
                     if (evapFromSoil < 0.)
-                        evapFromSoil = max_value(evapFromSoil, -(theta_from_Se(i) - myNode[i].Soil->Theta_r) * myNode[i].volume_area / deltaT);
+                        evapFromSoil = maxValue(evapFromSoil, -(theta_from_Se(i) - myNode[i].Soil->Theta_r) * myNode[i].volume_area / deltaT);
                     else
-                        evapFromSoil = min_value(evapFromSoil, (myNode[i].Soil->Theta_s - myNode[i].Soil->Theta_r) * myNode[i].volume_area / deltaT);
+                        evapFromSoil = minValue(evapFromSoil, (myNode[i].Soil->Theta_s - myNode[i].Soil->Theta_r) * myNode[i].volume_area / deltaT);
 
                     myNode[i].boundary->waterFlow = evapFromSoil;
                 }

@@ -96,8 +96,8 @@ double runoff(long i, long j, TlinkedNode *link, double deltaT, unsigned long ap
     }
 
 
-    double H = max_value(Hi, Hj);
-    double z = max_value(myNode[i].z + myNode[i].Soil->Pond, myNode[j].z + myNode[j].Soil->Pond);
+    double H = maxValue(Hi, Hj);
+    double z = maxValue(myNode[i].z + myNode[i].Soil->Pond, myNode[j].z + myNode[j].Soil->Pond);
     double Hs = H - z;
     if (Hs <= 0.) return(0.);
 
@@ -111,7 +111,7 @@ double runoff(long i, long j, TlinkedNode *link, double deltaT, unsigned long ap
     double v = pow(Hs, 2.0/3.0) * sqrt(dH/cellDistance) / roughness;
     double flowArea = link->area * Hs;
 
-    Courant = max_value(Courant, v * deltaT / cellDistance);
+    Courant = maxValue(Courant, v * deltaT / cellDistance);
     return (v * flowArea) / dH;
 }
 
@@ -138,7 +138,7 @@ double infiltration(long sup, long inf, TlinkedNode *link, double deltaT)
         double dH = myNode[sup].H - myNode[inf].H;
         double maxK = maxInfiltrationRate * (cellDistance / dH);
 
-        double k = min_value(meanK , maxK);
+        double k = minValue(meanK , maxK);
 
         return (k * link->area) / cellDistance;
         }
@@ -345,7 +345,7 @@ bool waterFlowComputation(double deltaT)
 
  while (!isStepOK)
  {
-        *acceptedTime = min_value(myParameters.current_delta_t, maxTime);
+        *acceptedTime = minValue(myParameters.current_delta_t, maxTime);
 
         /*! save the instantaneous H values - Prepare the solutions vector (X = H) */
         for (long n = 0; n < myStructure.nrNodes; n++)

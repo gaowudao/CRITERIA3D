@@ -33,6 +33,7 @@
 #include "header/types.h"
 #include "header/solver.h"
 
+
 double distance(unsigned long i, unsigned long j)
 {
     return (sqrt(square(fabs(myNode[i].x - myNode[j].x))
@@ -43,7 +44,7 @@ double distance(unsigned long i, unsigned long j)
 
 double distance2D(unsigned long i, unsigned long j)
 {
-    return (sqrt(square(fabs(myNode[i].x - myNode[j].x)) + square(fabs(myNode[i].y - myNode[j].y))));
+    return (sqrt(square(fabs(myNode[i].x - myNode[j].x)) + square(abs(myNode[i].y - myNode[j].y))));
 }
 
 double arithmeticMean(double v1, double v2)
@@ -61,7 +62,8 @@ double logarithmicMean(double v1, double v2)
 
 double geometricMean(double v1, double v2)
 {
-    return sign(v1)*sqrt(v1 * v2);
+    double sign = v1/fabs(v1);
+    return sign * sqrt(v1 * v2);
 }
 
 double computeMean(double v1, double v2)
@@ -91,8 +93,9 @@ TlinkedNode* getLink(long i, long j)
 
 int calcola_iterazioni_max(int num_approssimazione)
 {
- float max_iterazioni = (float)myParameters.iterazioni_max / (float)myParameters.maxApproximationsNumber * (float)(num_approssimazione + 1);
- return(max_value(20, int(max_iterazioni)));
+    float max_iterazioni = float(myParameters.iterazioni_max)
+                            / float(myParameters.maxApproximationsNumber) * float(num_approssimazione + 1);
+    return maxValue(20, int(max_iterazioni));
 }
 
 

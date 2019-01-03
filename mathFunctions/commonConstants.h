@@ -35,14 +35,6 @@
         #define maxValue(a, b) (((a) > (b))? (a) : (b))
     #endif
 
-    #ifndef min_value
-        #define min_value(a, b) (((a) < (b))? (a) : (b))
-    #endif
-
-    #ifndef max_value
-        #define max_value(a, b) (((a) > (b))? (a) : (b))
-    #endif
-
     #ifndef NODATA
         #define NODATA -9999
     #endif
@@ -52,11 +44,11 @@
     #endif
 
     #ifndef HOUR_SECONDS
-        #define HOUR_SECONDS 3600.f
+        #define HOUR_SECONDS 3600.
     #endif
 
     #ifndef DAY_SECONDS
-        #define DAY_SECONDS 86400.f
+        #define DAY_SECONDS 86400.
     #endif
 
     //criteria3D

@@ -1,9 +1,10 @@
-#-------------------------------------------------
+#----------------------------------------------------
 #
 # CRITERIA3D distribution
-# Common constants and math functions
+# Library of math, physics and statistic functions
+# Contains common constants and defines
 #
-#-------------------------------------------------
+#----------------------------------------------------
 
 QT       -= core gui
 

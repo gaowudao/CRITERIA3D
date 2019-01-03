@@ -92,11 +92,11 @@ Crit3DClimateParameters::Crit3DClimateParameters()
 float computeTminHourlyWeight(int myHour)
 {
     if (myHour >= 6 && myHour <= 14)
-        return (1 - ((float)myHour - 6) / 8);
+        return (1 - (myHour - 6) / 8.f);
     else if (myHour > 14)
-        return (1 - min_value((24 - (float)myHour) + 6, 12) / 12);
+        return (1 - minValue(24 - myHour + 6, 12) / 12.f);
     else
-        return (1 - (6 - (float)myHour) / 12);
+        return (1 - (6 - myHour) / 12.f);
 }
 
 
@@ -429,6 +429,7 @@ bool setColorScale(meteoVariable variable, Crit3DColorScale *colorScale)
             break;
         case noMeteoTerrain:
             setDefaultDTMScale(colorScale);
+            break;
         default:
             setDefaultDTMScale(colorScale);
     }
@@ -474,7 +475,7 @@ std::string getVariableString(meteoVariable myVar)
     else if (myVar == dailyBIC)
         return "Hydro-climatic balance mm";
     else if (myVar == noMeteoTerrain)
-        return "Digital Terrain Model m";
+        return "Elevation m";
 
     else
         return "None";
@@ -501,7 +502,7 @@ meteoVariable getKeyMeteoVarMeteoMap(std::map<meteoVariable,std::string> map, st
 {
 
     std::map<meteoVariable, std::string>::const_iterator it;
-    meteoVariable key;
+    meteoVariable key = noMeteoVar;
 
     for (it = map.begin(); it != map.end(); ++it)
     {

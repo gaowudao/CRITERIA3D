@@ -197,7 +197,7 @@ double AerodynamicConductance(double heightTemperature,
     double H;                           // (W m-2) sensible heat flux
     double Ch;                          // (J m-3 K-1) volumetric specific heat of air
 
-    windSpeed = max_value(windSpeed, 0.1);
+    windSpeed = maxValue(windSpeed, 0.1);
 
     zeroPlane = 0.77 * roughnessHeight;
     roughnessMomentum = 0.13 * roughnessHeight;
@@ -253,7 +253,7 @@ double AerodynamicConductanceOpenwater(double myHeight, double myWaterBodySurfac
     myPsycro = Psychro(myPressure, myT);
 
     windFunction = pow((5. / (myWaterBodySurface * 1000000)), 0.05) * (3.8 + 1.57 * myWindSpeed10);
-    windFunction *= 1000000 / DAY_SECONDS; //to J m-2 s-1 kPa
+    windFunction *= 1000000. / DAY_SECONDS; //to J m-2 s-1 kPa
 
     return (1. / (myVolSpecHeat / (myPsycro * windFunction)));
 }
@@ -314,19 +314,16 @@ float rainIntensity(std::vector<float> values, int nValues, float rainfallThresh
 
 int windPrevailingDir(std::vector<float> intensity, std::vector<float> dir, int nValues, bool useIntensity)
 {
-
-    float windInt;
+    float windInt = NODATA;
     float windDir;
+    float delta = 45.f;
+    unsigned long quadr;
+    unsigned long nrClass = 8;
+    unsigned long prevailingDir = 0;
     bool condition;
-    int quadr;
 
-    int nClass = 8;
-    int delta = 45;
-
-
-    std::vector<float> intQuadr(nClass);
-    std::vector<int> dirQuadr(nClass);
-
+    std::vector<float> intQuadr(nrClass);
+    std::vector<int> dirQuadr(nrClass);
 
     for (int i = 0; i < nValues; i++)
     {
@@ -339,10 +336,10 @@ int windPrevailingDir(std::vector<float> intensity, std::vector<float> dir, int 
         {
             if ( windDir != NODATA && windInt != NODATA && windDir >= 0 && windInt > 0 )
             {
-                quadr = int(round(windDir / delta));
+                quadr = (unsigned long) round(windDir / delta);
                 if (quadr == 0)
                 {
-                    quadr = nClass;
+                    quadr = nrClass;
                 }
                 dirQuadr[quadr] = dirQuadr[quadr] + 1;
                 intQuadr[quadr] = intQuadr[quadr] + windInt;
@@ -355,25 +352,24 @@ int windPrevailingDir(std::vector<float> intensity, std::vector<float> dir, int 
                 quadr = int(round(windDir / delta));
                 if (quadr == 0)
                 {
-                    quadr = nClass;
+                    quadr = nrClass;
                 }
                 dirQuadr[quadr] = dirQuadr[quadr] + 1;
             }
         }
     }
 
-    int windPrevailingDir = 0;
-    for (quadr = 0; quadr < nClass; quadr++ )
+    for (quadr = 0; quadr < nrClass; quadr++ )
     {
         if (dirQuadr[quadr] > 0)
         {
             if (useIntensity)
             {
-                condition = (dirQuadr[quadr] > dirQuadr[windPrevailingDir]) || ((dirQuadr[quadr] = dirQuadr[windPrevailingDir]) && (intQuadr[quadr] > intQuadr[windPrevailingDir]));
+                condition = (dirQuadr[quadr] > dirQuadr[prevailingDir]) || ((dirQuadr[quadr] = dirQuadr[prevailingDir]) && (intQuadr[quadr] > intQuadr[prevailingDir]));
             }
             else
             {
-                if (dirQuadr[quadr] > dirQuadr[windPrevailingDir])
+                if (dirQuadr[quadr] > dirQuadr[prevailingDir])
                 {
                     condition = true;
                 }
@@ -383,24 +379,24 @@ int windPrevailingDir(std::vector<float> intensity, std::vector<float> dir, int 
                 }
 
             }
-            if (windPrevailingDir == 0)
+            if (prevailingDir == 0)
             {
-                windPrevailingDir = quadr;
+                prevailingDir = quadr;
             }
             else if (condition)
             {
-                windPrevailingDir = quadr;
+                prevailingDir = quadr;
             }
         }
     }
 
-    if (windPrevailingDir == 0)
+    if (prevailingDir == 0)
     {
-        return NODATA;
+        return int(NODATA);
     }
     else
     {
-        return windPrevailingDir * delta;
+        return int(prevailingDir * delta);
     }
 
 }

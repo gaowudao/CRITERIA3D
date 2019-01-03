@@ -265,8 +265,8 @@
 	 double m    = myNode[myIndex].Soil->VG_m;
 	 double dSe_dH;
 
-     double psi = fabs(min_value(myNode[myIndex].H - myNode[myIndex].z, 0.));
-     double psiPrevious = fabs(min_value(myNode[myIndex].oldH - myNode[myIndex].z, 0.));
+     double psi = fabs(minValue(myNode[myIndex].H - myNode[myIndex].z, 0.));
+     double psiPrevious = fabs(minValue(myNode[myIndex].oldH - myNode[myIndex].z, 0.));
 
 	if (myParameters.waterRetentionCurve == MODIFIEDVANGENUCHTEN)
 		{ if ((psi <= myNode[myIndex].Soil->VG_he) && (psiPrevious <= myNode[myIndex].Soil->VG_he)) return 0.;}
@@ -296,8 +296,8 @@
 
 		if (myNode[i].isSurface)
 		{
-            double mySurfaceWater = max_value(myHMean - myNode[i].z, 0.);		//[m]
-            return (min_value(mySurfaceWater / 0.01, 1.));
+            double mySurfaceWater = maxValue(myHMean - myNode[i].z, 0.);		//[m]
+            return (minValue(mySurfaceWater / 0.01, 1.));
 		}
 		else
 		{
@@ -330,7 +330,7 @@
 	{
         double Psi;
         double meanH = getHMean(i);
-        Psi = min_value(0., (meanH - myNode[i].z));
+        Psi = minValue(0., (meanH - myNode[i].z));
         return Psi;
 	}
 

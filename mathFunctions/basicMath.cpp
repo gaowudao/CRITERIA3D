@@ -38,7 +38,7 @@
 
     bool greaterThan(float a, float b)
     {
-        return (fabs(a - b) > fabs(b / 100.));
+        return (fabs(a - b) > fabs(b / 100.f));
     }
 
     bool greaterThan(double a, double b)
@@ -132,7 +132,7 @@
 
     bool findLinesIntersection(float q1, float m1, float q2, float m2, float* x, float* y)
     {
-        if (m1 != m2)
+        if (fabs(double(m1 - m2)) < EPSILON)
         {
             *x = (q2 - q1) / (m1 - m2);
             *y = m1 * (q2 - q1) / (m1 - m2) + q1;
@@ -148,7 +148,7 @@
 
     bool findLinesIntersectionAboveThreshold(float q1, float m1, float q2, float m2, float myThreshold, float* x, float* y)
     {
-        if (m1 != m2)
+        if (fabs(double(m1 - m2)) < EPSILON)
         {
             *x = (q2 - q1) / (m1 - m2);
             *y = m1 * (q2 - q1) / (m1 - m2) + q1;
