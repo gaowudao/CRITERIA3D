@@ -129,7 +129,7 @@ namespace soil
         this->cleanSoil();
         this->id = idSoil;
         this->nrHorizons = nrHorizons;
-        this->horizon = new Crit3DHorizon[this->nrHorizons];
+        this->horizon = new Crit3DHorizon[unsigned(this->nrHorizons)];
         this->totalDepth = 0;
     }
 
@@ -146,8 +146,11 @@ namespace soil
     // [%]
     int getUSDATextureClass(float sand, float silt, float clay)
     {
-        if ((sand == NODATA) || (silt == NODATA) || (clay == NODATA)) return NODATA;
-        if (fabs(double(sand + clay + silt) - 100) > 2.0) return NODATA;
+        if (int(sand) == int(NODATA) || int(silt) == int(NODATA) || int(clay) == int(NODATA))
+            return NODATA;
+
+        if (fabs(double(sand + clay + silt) - 100) > 2.0)
+            return NODATA;
 
         int myClass = NODATA;
         /*! clay */
@@ -189,8 +192,11 @@ namespace soil
      */
     int getNLTextureClass(float sand, float silt, float clay)
     {
-        if ((sand == NODATA) || (silt == NODATA) || (clay == NODATA)) return NODATA;
-        if (fabs(double(sand + clay + silt) - 100) > 2.0) return NODATA;
+        if (int(sand) == int(NODATA) || int(silt) == int(NODATA) || int(clay) == int(NODATA))
+            return NODATA;
+
+        if (fabs(double(sand + clay + silt) - 100) > 2.0)
+            return NODATA;
 
         /*! heavy clay */
         if (clay >= 65) return 12;
@@ -208,7 +214,8 @@ namespace soil
 
     double getSpecificDensity(double organicMatter)
     {
-        if (organicMatter == NODATA) organicMatter = 0.01;
+        if (int(organicMatter) == int(NODATA))
+            organicMatter = 0.01;
 
         /*! [Driessen] */
         return 1.0 / ((1.0 - organicMatter) / 2.65 + organicMatter / 1.43);
@@ -217,7 +224,7 @@ namespace soil
 
     double estimateBulkDensity(Crit3DHorizon* mySoil, double totalPorosity)
     {
-        if (totalPorosity == NODATA)
+        if (int(totalPorosity) == int(NODATA))
             totalPorosity = mySoil->vanGenuchten.refThetaS;
 
         double specificDensity = getSpecificDensity(mySoil->organicMatter);
@@ -237,7 +244,8 @@ namespace soil
 
     double estimateTotalPorosity(Crit3DHorizon* mySoil, double bulkDensity)
     {
-        if (bulkDensity == NODATA) return(NODATA);
+        if (int(bulkDensity) == int(NODATA)) return(NODATA);
+
         double specificDensity = getSpecificDensity(mySoil->organicMatter);
         return (1.0 - (bulkDensity /specificDensity));
     }
@@ -245,7 +253,8 @@ namespace soil
 
     double estimateSaturatedConductivity(Crit3DHorizon* mySoil, double bulkDensity)
     {
-        if (bulkDensity == NODATA) return(NODATA);
+        if (int(bulkDensity) == int(NODATA)) return(NODATA);
+
         double refTotalPorosity = mySoil->vanGenuchten.refThetaS;
         double specificDensity = getSpecificDensity(mySoil->organicMatter);
         double refBulkDensity = (1.0 - refTotalPorosity) * specificDensity;
