@@ -198,11 +198,11 @@ namespace gis
 
     bool Crit3DRasterGrid::initializeGrid()
     {
-        this->value = (float **) calloc(this->header->nrRows, sizeof(float *));
+        this->value = (float **) calloc(unsigned(this->header->nrRows), sizeof(float *));
 
         for (int row = 0; row < this->header->nrRows; row++)
         {
-            this->value[row] = (float *) calloc(this->header->nrCols, sizeof(float));
+            this->value[row] = (float *) calloc(unsigned(this->header->nrCols), sizeof(float));
             if (this->value[row] == nullptr)
             {
                 // Memory error: file too big
@@ -617,11 +617,11 @@ namespace gis
         eccSquared = referenceEllipsoid.eccentricitySquared;
 
         //!< Make sure the longitude is between -180.00 .. 179.9: */
-        lonTemp = (lon + 180) - (floor)((lon + 180) / 360) * 360 - 180;
+        lonTemp = (lon + 180.) - floor((lon + 180.) / 360.) * 360. - 180.;
 
         latRad = lat * DEG_TO_RAD ;
         lonRad = lonTemp * DEG_TO_RAD ;
-        *zoneNumber = (int)ceil((lonTemp + 180.) / 6);
+        *zoneNumber = int(ceil((lonTemp + 180.) / 6.));
 
         //!<  Special zones for Norway: */
         if ((lat >= 56.0) && (lat < 64.0) && (lonTemp >= 3.0) && (lonTemp < 12.0)) (*zoneNumber) = 32 ;
@@ -635,36 +635,36 @@ namespace gis
         }
 
         //!<  puts origin in middle of zone */
-        lonOrigin = ((*zoneNumber) - 1) * 6 - 180 + 3;
+        lonOrigin = ((*zoneNumber) - 1.) * 6. - 180. + 3.;
         lonOriginRad = lonOrigin * DEG_TO_RAD;
 
-        eccPrimeSquared = eccSquared / (1.0 - eccSquared);
+        eccPrimeSquared = eccSquared / (1. - eccSquared);
 
         n = ae / sqrt(1.0 - eccSquared * sin(latRad) * sin(latRad));
         t = tan(latRad) * tan(latRad);
         c = eccPrimeSquared * cos(latRad) * cos(latRad);
         a = cos(latRad) * (lonRad - lonOriginRad);
 
-        m = ae * ((1 - eccSquared / 4 - 3 * eccSquared * eccSquared / 64
-          - 5 * eccSquared * eccSquared * eccSquared / 256) * latRad
-          - (3 * eccSquared / 8 + 3 * eccSquared * eccSquared / 32
-          + 45 * eccSquared * eccSquared * eccSquared / 1024) * sin(2 * latRad)
-          + (15 * eccSquared * eccSquared / 256
-          + 45 * eccSquared * eccSquared * eccSquared / 1024) * sin(4 * latRad)
-          - (35 * eccSquared * eccSquared * eccSquared / 3072) * sin(6 * latRad));
+        m = ae * ((1. - eccSquared / 4. - 3. * eccSquared * eccSquared / 64.
+          - 5. * eccSquared * eccSquared * eccSquared / 256.) * latRad
+          - (3. * eccSquared / 8 + 3 * eccSquared * eccSquared / 32.
+          + 45. * eccSquared * eccSquared * eccSquared / 1024.) * sin(2. * latRad)
+          + (15. * eccSquared * eccSquared / 256.
+          + 45. * eccSquared * eccSquared * eccSquared / 1024.) * sin(4. * latRad)
+          - (35. * eccSquared * eccSquared * eccSquared / 3072.) * sin(6. * latRad));
 
-        *utmEasting = (ellipsoidK0 * n * (a + (1 - t + c) * a * a * a / 6
-                   + (5 - 18 * t + t * t + 72 * c
-                   - 58 * eccPrimeSquared) * a * a * a * a * a / 120)
-                   + 500000.0);
+        *utmEasting = (ellipsoidK0 * n * (a + (1 - t + c) * a * a * a / 6.
+                   + (5. - 18. * t + t * t + 72. * c
+                   - 58. * eccPrimeSquared) * a * a * a * a * a / 120.)
+                   + 500000.);
 
-        *utmNorthing = (ellipsoidK0 * (m + n * tan(latRad) * (a * a / 2
-                    + (5 - t + 9 * c + 4 * c * c) * a * a * a * a / 24
-                    + (61 - 58 * t + t * t + 600 * c
-                    - 330 * eccPrimeSquared) * a * a * a * a * a * a / 720)));
+        *utmNorthing = (ellipsoidK0 * (m + n * tan(latRad) * (a * a / 2.
+                    + (5. - t + 9. * c + 4. * c * c) * a * a * a * a / 24.
+                    + (61. - 58. * t + t * t + 600. * c
+                    - 330. * eccPrimeSquared) * a * a * a * a * a * a / 720.)));
 
         //!<  offset for southern hemisphere: */
-        if (lat < 0) (*utmNorthing) += 10000000.0;
+        if (lat < 0) (*utmNorthing) += 10000000.;
     }
 
     void getUtmFromLatLon(int zoneNumber, const Crit3DGeoPoint& geoPoint, Crit3DUtmPoint* utmPoint)
@@ -686,18 +686,18 @@ namespace gis
         eccSquared = referenceEllipsoid.eccentricitySquared;
 
         //!<  make sure the longitude is between -180.00 .. 179.9: */
-        lonTemp = (lon + 180) - (floor)((lon + 180) / 360) * 360 - 180;
+        lonTemp = (lon + 180.) - floor((lon + 180.) / 360.) * 360. - 180.;
 
         latRad = lat * DEG_TO_RAD;
         lonRad = lonTemp * DEG_TO_RAD;
 
         //!<  puts origin in middle of zone */
-        lonOrigin = (zoneNumber - 1) * 6 - 180 + 3;
+        lonOrigin = (zoneNumber - 1.) * 6. - 180. + 3.;
         lonOriginRad = lonOrigin * DEG_TO_RAD;
 
-        eccPrimeSquared = eccSquared / (1.0 - eccSquared);
+        eccPrimeSquared = eccSquared / (1. - eccSquared);
 
-        n = ae / sqrt(1.0 - eccSquared * sin(latRad) * sin(latRad));
+        n = ae / sqrt(1. - eccSquared * sin(latRad) * sin(latRad));
         t = tan(latRad) * tan(latRad);
         c = eccPrimeSquared * cos(latRad) * cos(latRad);
         a = cos(latRad) * (lonRad - lonOriginRad);
@@ -721,7 +721,7 @@ namespace gis
                     - 330 * eccPrimeSquared) * a * a * a * a * a * a / 720)));
 
         //!<  offset for southern hemisphere: */
-        if (lat < 0) (*utmNorthing) += 10000000.0;
+        if (lat < 0) (*utmNorthing) += 10000000.;
 
     }
 
@@ -746,20 +746,21 @@ namespace gis
         ae = referenceEllipsoid.equatorialRadius;
         eccSquared = referenceEllipsoid.eccentricitySquared;
 
-        e1 = (1.0 - sqrt(1.0 - eccSquared)) / (1.0 + sqrt(1.0 - eccSquared));
+        e1 = (1. - sqrt(1. - eccSquared)) / (1. + sqrt(1. - eccSquared));
 
         /*! offset for longitude */
         x = utmEasting - 500000.0;
         y = utmNorthing;
 
         /*! offset used for southern hemisphere */
-        if (startLat < 0)    y -= 10000000.0;
+        if (startLat < 0)
+            y -= 10000000.;
 
-        eccPrimeSquared = (eccSquared) / (1.0 - eccSquared);
+        eccPrimeSquared = (eccSquared) / (1. - eccSquared);
 
         m = y / ellipsoidK0;
-        mu = m / (ae * (1.0 - eccSquared / 4.0 - 3.0 * eccSquared * eccSquared / 64.0
-           - 5.0 * eccSquared * eccSquared * eccSquared / 256.0));
+        mu = m / (ae * (1. - eccSquared / 4. - 3. * eccSquared * eccSquared / 64.
+           - 5. * eccSquared * eccSquared * eccSquared / 256.));
 
         phi1Rad = mu + (3.0 * e1 / 2.0 - 27.0 * e1 * e1 * e1 / 32.0) * sin(2.0 * mu)
                 + (21.0 * e1 * e1 / 16.0 - 55.0 * e1 * e1 * e1 * e1 / 32.0) * sin(4.0 * mu)
@@ -786,7 +787,7 @@ namespace gis
             * d * d * d * d * d / 120.0) / cos(phi1Rad);
 
         /*! puts origin in middle of zone */
-        longOrigin = (float)(zoneNumber - 1) * 6 - 180 + 3;
+        longOrigin = double(zoneNumber - 1.) * 6. - 180. + 3.;
 
         *lon *= RAD_TO_DEG ;
         *lon += longOrigin ;
