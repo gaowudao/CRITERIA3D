@@ -46,10 +46,8 @@ namespace root
             {
                 case (1):
                     return CYLINDRICAL_DISTRIBUTION;
-                    break;
                 case (4):
                     return CARDIOID_DISTRIBUTION;
-                    break;
                 case (5):
                     return GAMMA_DISTRIBUTION;
                 default:
@@ -114,8 +112,11 @@ namespace root
         const double MAX_DAILY_GROWTH = 0.02;             // [m]
         const double MIN_WATERTABLE_DISTANCE = 0.2;       // [m]
 
-        if (waterTableDepth != NODATA && waterTableDepth > 0 && myCrop->roots.rootLength != NODATA
-                && !myCrop->isWaterSurplusResistant() && myRootLength > myCrop->roots.rootLength)
+        if (int(waterTableDepth) != int(NODATA)
+                && waterTableDepth > 0
+                && int(myCrop->roots.rootLength) != int(NODATA)
+                && !myCrop->isWaterSurplusResistant()
+                && myRootLength > myCrop->roots.rootLength)
         {
             // check on growth
             if (currentDD > myCrop->roots.degreeDaysRootGrowth)
@@ -235,7 +236,7 @@ namespace root
 
         double tmp = *minThickness * 1.001;
         if (tmp < 1)
-            multiplicationFactor = (int)(pow(10.0,-orderOfMagnitude(tmp)));
+            multiplicationFactor = int(pow(10.0,-orderOfMagnitude(tmp)));
 
         if (*minThickness < 1)
         {
@@ -256,13 +257,13 @@ namespace root
 
     void cardioidDistribution(double shapeFactor, int nrLayersWithRoot,int nrUpperLayersWithoutRoot , int totalLayers,double* densityThinLayers)
     {
-        double *lunette =  (double *) calloc(2*nrLayersWithRoot, sizeof(double));
-        double *lunetteDensity = (double *) calloc(2*nrLayersWithRoot, sizeof(double));
+        double *lunette =  (double *) calloc(unsigned(2*nrLayersWithRoot), sizeof(double));
+        double *lunetteDensity = (double *) calloc(unsigned(2*nrLayersWithRoot), sizeof(double));
         for (int i = 0 ; i<nrLayersWithRoot ; i++)
         {
             double sinAlfa, cosAlfa, alfa;
-            sinAlfa = 1.0 - (double)(1+i)/((double)(nrLayersWithRoot)) ;
-            cosAlfa = maxValue(sqrt(1.0 - pow(sinAlfa,2)), 0.0001);
+            sinAlfa = 1. - double(1.+i)/(double(nrLayersWithRoot)) ;
+            cosAlfa = maxValue(sqrt(1. - pow(sinAlfa,2)), 0.0001);
             alfa = atan(sinAlfa/cosAlfa);
             lunette[i]= ((PI/2) - alfa - sinAlfa*cosAlfa) / PI;
         }
@@ -306,7 +307,7 @@ namespace root
 
        int i;
 
-       double *cylinderDensity =  (double *) calloc(2*nrLayersWithRoot, sizeof(double));
+       double *cylinderDensity =  (double *) calloc(unsigned(2*nrLayersWithRoot), sizeof(double));
        for (i = 0 ; i<2*nrLayersWithRoot; i++)
        {
            cylinderDensity[i]= 1./(2*nrLayersWithRoot);
@@ -357,12 +358,12 @@ namespace root
         if ((myCrop->roots.rootShape == CARDIOID_DISTRIBUTION) || (myCrop->roots.rootShape == CYLINDRICAL_DISTRIBUTION))
         {
             double minimumThickness;
-            int *atoms =  (int *) calloc(nrLayers, sizeof(int));
+            int *atoms =  (int *) calloc(unsigned(nrLayers), sizeof(int));
             int numberOfRootedLayers, numberOfTopUnrootedLayers, totalLayers;
             totalLayers = root::nrAtoms(layers, nrLayers, myCrop->roots.rootDepthMin, &minimumThickness, atoms);
             numberOfTopUnrootedLayers = int(round(myCrop->roots.rootDepthMin / minimumThickness));
             numberOfRootedLayers = int(ceil(minValue(myCrop->roots.rootLength, soilDepth) / minimumThickness));
-            double *densityThinLayers =  (double *) calloc(totalLayers+1, sizeof(double));
+            double *densityThinLayers =  (double *) calloc(unsigned(totalLayers+1), sizeof(double));
             densityThinLayers[totalLayers] = 0.;
             for (i=0; i < totalLayers; i++)
                 densityThinLayers[i] = 0.;

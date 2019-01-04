@@ -158,7 +158,9 @@
                 // is sowing possible? (check period and watertable depth)
                 if (daysFromSowing >= 0 && daysFromSowing <= sowingDoyPeriod)
                 {
-                    if (isWaterSurplusResistant() || waterTableDepth == NODATA || waterTableDepth >= waterTableThreshold)
+                    if (isWaterSurplusResistant()
+                            || int(waterTableDepth) == int(NODATA)
+                            || waterTableDepth >= waterTableThreshold)
                     {
                         isLiving = true;
                         // update sowing doy
@@ -229,7 +231,7 @@
             return GRASS;
         else if (cropType == "fallow")
             return FALLOW;
-        else if (cropType == "tree", "fruit_tree")
+        else if (cropType == "tree" || cropType == "fruit_tree")
             return FRUIT_TREE;
         else
             return HERBACEOUS_ANNUAL;
