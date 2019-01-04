@@ -28,7 +28,6 @@
 #include "statistics.h"
 #include "furtherMathFunctions.h"
 #include <iostream> //debug
-//#include <QDebug>   //debug
 
 
 Crit3DMeteoGridStructure::Crit3DMeteoGridStructure()

@@ -56,7 +56,6 @@
         float relHumTolerance;
 
 
-
     public:
 
         Crit3DQuality();

@@ -135,7 +135,8 @@ quality::Range* Crit3DQuality::getQualityRange(meteoVariable myVar)
 
 void Crit3DQuality::syntacticQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints)
 {
-    float qualityMin, qualityMax;
+    float qualityMin = NODATA;
+    float qualityMax = NODATA;
 
     quality::Range* myRange = this->getQualityRange(myVar);
     if (myRange != nullptr)
@@ -146,18 +147,21 @@ void Crit3DQuality::syntacticQualityControl(meteoVariable myVar, Crit3DMeteoPoin
 
     for (int i = 0; i < nrMeteoPoints; i++)
     {
-        if (meteoPoints[i].currentValue == NODATA)
+        if (int(meteoPoints[i].currentValue) == int(NODATA))
             meteoPoints[i].quality = quality::missing_data;
         else
         {
             if (myRange == nullptr)
+            {
                 meteoPoints[i].quality = quality::accepted;
-
-            else if (meteoPoints[i].currentValue < qualityMin || meteoPoints[i].currentValue > qualityMax)
-                meteoPoints[i].quality = quality::wrong_syntactic;
-
+            }
             else
-                meteoPoints[i].quality = quality::accepted;
+            {
+                if (meteoPoints[i].currentValue < qualityMin || meteoPoints[i].currentValue > qualityMax)
+                    meteoPoints[i].quality = quality::wrong_syntactic;
+                else
+                    meteoPoints[i].quality = quality::accepted;
+            }
         }
     }
 }
@@ -165,7 +169,8 @@ void Crit3DQuality::syntacticQualityControl(meteoVariable myVar, Crit3DMeteoPoin
 
 quality::qualityType Crit3DQuality::syntacticQualitySingleValue(meteoVariable myVar, float myValue)
 {
-    float qualityMin, qualityMax;
+    float qualityMin = NODATA;
+    float qualityMax = NODATA;
 
     quality::Range* myRange = this->getQualityRange(myVar);
     if (myRange != nullptr)
@@ -174,7 +179,7 @@ quality::qualityType Crit3DQuality::syntacticQualitySingleValue(meteoVariable my
         qualityMax = myRange->getMax();
     }
 
-    if (myValue == NODATA)
+    if (int(myValue) == int(NODATA))
         return quality::missing_data;
     else
     {

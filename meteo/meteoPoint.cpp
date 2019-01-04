@@ -87,22 +87,22 @@ void Crit3DMeteoPoint::initializeObsDataH(int myHourlyFraction, int numberOfDays
     nrObsDataDaysH = numberOfDays;
     hourlyFraction = myHourlyFraction;
     int nrDayValues = hourlyFraction * 24 + 1;
-    obsDataH = (TObsDataH *) calloc(numberOfDays, sizeof(TObsDataH));
+    obsDataH = (TObsDataH *) calloc(unsigned(numberOfDays), sizeof(TObsDataH));
     quality = quality::missing_data;
     residual = NODATA;
 
     for (int i = 0; i < numberOfDays; i++)
     {
         obsDataH[i].date = firstDate.addDays(i);
-        obsDataH[i].tAir = (float *) calloc(nrDayValues, sizeof(float));
-        obsDataH[i].prec = (float *) calloc(nrDayValues, sizeof(float));
-        obsDataH[i].rhAir = (float *) calloc(nrDayValues, sizeof(float));
-        obsDataH[i].tDew = (float *) calloc(nrDayValues, sizeof(float));
-        obsDataH[i].irradiance = (float *) calloc(nrDayValues, sizeof(float));
-        obsDataH[i].et0 = (float *) calloc(nrDayValues, sizeof(float));
-        obsDataH[i].windInt = (float *) calloc(nrDayValues, sizeof(float));
-        obsDataH[i].leafW = (int *) calloc(nrDayValues, sizeof(int));
-        obsDataH[i].transmissivity = (float *) calloc(nrDayValues, sizeof(float));
+        obsDataH[i].tAir = (float *) calloc(unsigned(nrDayValues), sizeof(float));
+        obsDataH[i].prec = (float *) calloc(unsigned(nrDayValues), sizeof(float));
+        obsDataH[i].rhAir = (float *) calloc(unsigned(nrDayValues), sizeof(float));
+        obsDataH[i].tDew = (float *) calloc(unsigned(nrDayValues), sizeof(float));
+        obsDataH[i].irradiance = (float *) calloc(unsigned(nrDayValues), sizeof(float));
+        obsDataH[i].et0 = (float *) calloc(unsigned(nrDayValues), sizeof(float));
+        obsDataH[i].windInt = (float *) calloc(unsigned(nrDayValues), sizeof(float));
+        obsDataH[i].leafW = (int *) calloc(unsigned(nrDayValues), sizeof(int));
+        obsDataH[i].transmissivity = (float *) calloc(unsigned(nrDayValues), sizeof(float));
         for (int j = 0; j < nrDayValues; j++)
         {
             obsDataH[i].tAir[j] = NODATA;
@@ -124,7 +124,7 @@ void Crit3DMeteoPoint::initializeObsDataD(int numberOfDays, const Crit3DDate& fi
     this->cleanObsDataD();
 
     nrObsDataDaysD = numberOfDays;
-    obsDataD = (TObsDataD *) calloc(numberOfDays, sizeof(TObsDataD));
+    obsDataD = (TObsDataD *) calloc(unsigned(numberOfDays), sizeof(TObsDataD));
 
     quality = quality::missing_data;
     residual = NODATA;
@@ -153,7 +153,7 @@ void Crit3DMeteoPoint::initializeObsDataM(int numberOfMonths, int month, int yea
     this->cleanObsDataM();
 
     nrObsDataDaysM = numberOfMonths;
-    obsDataM = (TObsDataM *) calloc(numberOfMonths, sizeof(TObsDataM));
+    obsDataM = (TObsDataM *) calloc(unsigned(numberOfMonths), sizeof(TObsDataM));
 
     quality = quality::missing_data;
     residual = NODATA;
@@ -363,12 +363,14 @@ float Crit3DMeteoPoint::obsDataConsistencyH(meteoVariable myVar, const Crit3DTim
     {
         Crit3DTime myTime = timeIni;
         float myValue;
-        float myDeltaSeconds = (float)3600.0 / hourlyFraction;
+        float myDeltaSeconds = 3600.f / float(hourlyFraction);
         int counter=0, counterAll=0;
         while (myTime <= timeFin)
         {
             myValue = getMeteoPointValueH(myTime.date, myTime.getHour(), myTime.getMinutes(), myVar);
-            if (myValue != NODATA) counter++;
+            if (int(myValue) != int(NODATA))
+                counter++;
+
             counterAll++;
             myTime = myTime.addSeconds(myDeltaSeconds);
         }
@@ -440,7 +442,7 @@ bool Crit3DMeteoPoint::setMeteoPointValueH(const Crit3DDate& myDate, int myHour,
     else if (myVar == windIntensity)
         obsDataH[i].windInt[h] = myValue;
     else if (myVar == leafWetness)
-        obsDataH[i].leafW[h] = (int)myValue;
+        obsDataH[i].leafW[h] = int(myValue);
     else if (myVar == atmTransmissivity)
         obsDataH[i].transmissivity[h] = myValue;
     else
@@ -470,7 +472,7 @@ bool Crit3DMeteoPoint::setMeteoPointValueH(const Crit3DDate& myDate, int myHour,
             else if (myVar == windIntensity)
                 obsDataH[i].windInt[h] = myValue;
             else if (myVar == leafWetness)
-                obsDataH[i].leafW[h] = (int)myValue;
+                obsDataH[i].leafW[h] = int(myValue);
             else if (myVar == atmTransmissivity)
                 obsDataH[i].transmissivity[h] = myValue;
             else
@@ -563,7 +565,7 @@ float Crit3DMeteoPoint::getMeteoPointValueH(const Crit3DDate& myDate, int myHour
         return (obsDataH[i].rhAir[h]);
     else if (myVar == airDewTemperature)
     {
-        if (obsDataH[i].tDew[h] != NODATA)
+        if (int(obsDataH[i].tDew[h]) != int(NODATA))
             return obsDataH[i].tDew[h];
         else
             return tDewFromRelHum(obsDataH[i].rhAir[h], obsDataH[i].tAir[h]);
@@ -575,7 +577,7 @@ float Crit3DMeteoPoint::getMeteoPointValueH(const Crit3DDate& myDate, int myHour
     else if (myVar == windIntensity)
         return (obsDataH[i].windInt[h]);
     else if (myVar == leafWetness)
-        return (float)(obsDataH[i].leafW[h]);
+        return float(obsDataH[i].leafW[h]);
     else if (myVar == atmTransmissivity)
         return (obsDataH[i].transmissivity[h]);
     else
@@ -605,7 +607,7 @@ float Crit3DMeteoPoint::getMeteoPointValueD(const Crit3DDate& myDate, meteoVaria
     else if (myVar == dailyAirRelHumidityMax)
         return (obsDataD[i].rhMax);
     else if (myVar == dailyAirRelHumidityMin)
-        return (float)(obsDataD[i].rhMin);
+        return float(obsDataD[i].rhMin);
     else if (myVar == dailyAirRelHumidityAvg)
         return (obsDataD[i].rhAvg);
     else if (myVar == dailyGlobalRadiation)
@@ -652,7 +654,7 @@ float Crit3DMeteoPoint::getProxyValue(unsigned int pos)
 std::vector <float> Crit3DMeteoPoint::getProxyValues()
 {
     std::vector <float> myValues;
-    for (int i=0; i < proxyValues.size(); i++)
+    for (unsigned int i=0; i < proxyValues.size(); i++)
         myValues.push_back(getProxyValue(i));
 
     return myValues;
