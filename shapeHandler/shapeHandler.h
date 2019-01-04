@@ -3,7 +3,7 @@
 
     #include <string>
     #include <shapefil.h>
-    #include "shape.h"
+    #include "shapeObject.h"
 
     class Crit3DShapeHandler
     {
@@ -18,7 +18,7 @@
 
         bool open(std::string filename);
         void close();
-        bool getShape(int index, Crit3DShape &shape);
+        bool getShape(int index, ShapeObject &shape);
         int	getShapeCount();
         int	getType();
         std::string	getTypeString();

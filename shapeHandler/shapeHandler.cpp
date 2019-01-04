@@ -38,7 +38,7 @@ std::string Crit3DShapeHandler::getTypeString()
 }
 
 
-bool Crit3DShapeHandler::getShape(int index, Crit3DShape &shape)
+bool Crit3DShapeHandler::getShape(int index, ShapeObject &shape)
 {
     if (m_handle == nullptr) return false;
 

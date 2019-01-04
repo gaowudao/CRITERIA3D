@@ -8,6 +8,9 @@
 QT  -= core gui
 
 TEMPLATE = lib
+
+DEFINES += _CRT_SECURE_NO_WARNINGS
+
 CONFIG += staticlib
 
 CONFIG += debug_and_release

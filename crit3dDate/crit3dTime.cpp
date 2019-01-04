@@ -109,12 +109,12 @@ Crit3DTime Crit3DTime::addSeconds(float mySeconds) const
         if (myTime.time >= float(DAY_SECONDS))
         {
             ++(myTime.date);
-            myTime.time -= DAY_SECONDS;
+            myTime.time -= float(DAY_SECONDS);
         }
         else if (myTime.time < 0)
         {
             --(myTime.date);
-            myTime.time += DAY_SECONDS;
+            myTime.time += float(DAY_SECONDS);
         }
     }
     return myTime;

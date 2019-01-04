@@ -108,7 +108,7 @@ namespace gis
                     myHeader->cellSize = ::atof(myValue.c_str());
 
                 else if ((upKey == "NODATA_VALUE") || (upKey == "NODATA"))
-                    myHeader->flag = (float)(::atof(myValue.c_str()));
+                    myHeader->flag = float(::atof(myValue.c_str()));
             }
         }
         myFile.close();
@@ -149,7 +149,7 @@ namespace gis
         }
 
         for (int row = 0; row < myGrid->header->nrRows; row++)
-            fread (myGrid->value[row], sizeof(float), myGrid->header->nrCols, filePointer);
+            fread (myGrid->value[row], sizeof(float), unsigned(myGrid->header->nrCols), filePointer);
 
         fclose (filePointer);
 
@@ -215,7 +215,7 @@ namespace gis
 
         FILE* filePointer;
 
-        filePointer = fopen (myFileName.c_str(), "wb" );
+        filePointer = fopen(myFileName.c_str(), "wb" );
         if (filePointer == nullptr)
         {
             *myError = "File .flt error.";
@@ -223,7 +223,7 @@ namespace gis
         }
 
         for (int myRow = 0; myRow < myGrid->header->nrRows; myRow++)
-            fwrite (myGrid->value[myRow], sizeof(float), myGrid->header->nrCols, filePointer);
+            fwrite(myGrid->value[myRow], sizeof(float), unsigned(myGrid->header->nrCols), filePointer);
 
         fclose (filePointer);
         return (true);

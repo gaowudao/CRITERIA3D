@@ -3,10 +3,11 @@
 # Shapefile handler
 # this library is part of CRITERIA3D distribution
 #
-# it uses shapelib of Frank Warmerdam:
+# It uses:
+# shapelib of Frank Warmerdam
 # http://shapelib.maptools.org/
 #
-# and portion of code of shapes of Erik Svensson:
+# shapeobject.cpp of Erik Svensson
 # https://github.com/blueluna/shapes
 #
 #-------------------------------------------------
@@ -23,19 +24,19 @@ DEFINES += _CRT_SECURE_NO_WARNINGS
 INCLUDEPATH =  shapelib
 
 SOURCES += \
-    shape.cpp \
-    shapeHandler.cpp \
-    shapelib/dbfopen.c \
-    shapelib/safileio.c \
-    shapelib/sbnsearch.c \
-    shapelib/shpopen.c \
-    shapelib/shptree.c
+    shapelib/dbfopen.c      \
+    shapelib/safileio.c     \
+    shapelib/sbnsearch.c    \
+    shapelib/shpopen.c      \
+    shapelib/shptree.c      \
+    shapeObject.cpp         \
+    shapeHandler.cpp
 
 
 HEADERS += \
-    shape.h \
-    shapeHandler.h \
-    shapelib/shapefil.h
+    shapelib/shapefil.h     \
+    shapeHandler.h          \
+    shapeObject.h
 
 
 unix {

@@ -58,8 +58,8 @@ namespace gis
 
     Crit3DPixel::Crit3DPixel(int x0, int y0)
     {
-        this->x = x0;
-        this->y = y0;
+        this->x = short(x0);
+        this->y = short(y0);
     }
 
     Crit3DUtmPoint::Crit3DUtmPoint()
@@ -127,11 +127,11 @@ namespace gis
         this->z = NODATA;
     }
 
-    Crit3DPoint::Crit3DPoint(double myX, double myY, double z)
+    Crit3DPoint::Crit3DPoint(double myX, double myY, double myZ)
     {
         utm.x = myX;
         utm.y = myY;
-        z = z;
+        z = myZ;
     }
 
     Crit3DRasterHeader::Crit3DRasterHeader()
@@ -167,8 +167,8 @@ namespace gis
     {
         return ((myHeader1.cellSize == myHeader2.cellSize) &&
                 (myHeader1.flag == myHeader2.flag) &&
-                (fabs(myHeader1.llCorner->x - myHeader2.llCorner->x)<0.1) &&
-                (fabs(myHeader1.llCorner->y - myHeader2.llCorner->y)<0.1) &&
+                (fabs(myHeader1.llCorner->x - myHeader2.llCorner->x) < 0.1) &&
+                (fabs(myHeader1.llCorner->y - myHeader2.llCorner->y) < 0.1) &&
                 (myHeader1.nrCols == myHeader2.nrCols) &&
                 (myHeader1.nrRows == myHeader2.nrRows));
     }
@@ -801,8 +801,8 @@ namespace gis
     bool isValidUtmTimeZone(int utmZone, int timeZone)
     {
         float lonUtmZone , lonTimeZone;
-        lonUtmZone = (float)((utmZone - 1) * 6 - 180 + 3);
-        lonTimeZone = (float)(timeZone * 15);
+        lonUtmZone = float((utmZone - 1) * 6 - 180 + 3);
+        lonTimeZone = float(timeZone * 15);
         if (fabs(lonTimeZone - lonUtmZone) <= 7.5) return true;
         else return false;
     }
@@ -827,8 +827,8 @@ namespace gis
                     getUtmXYFromRowCol(myGrid, myRow, myCol, &utmX, &utmY);
                     getLatLonFromUtm(gisSettings, utmX, utmY, &latDegrees, &lonDegrees);
 
-                    latMap->value[myRow][myCol] = (float)latDegrees;
-                    lonMap->value[myRow][myCol] = (float)lonDegrees;
+                    latMap->value[myRow][myCol] = float(latDegrees);
+                    lonMap->value[myRow][myCol] = float(lonDegrees);
                 }
 
         gis::updateMinMaxRasterGrid(latMap);
@@ -1307,7 +1307,7 @@ namespace gis
                 if (demValue != dem_.header->flag)
                 {
                     gis::getUtmXYFromRowCol(dem_, row, col, &gridX, &gridY);
-                    distance = computeDistance((float)gridX, (float)gridY, (float)point_.utm.x, (float)point_.utm.y);
+                    distance = computeDistance(float(gridX), float(gridY), float(point_.utm.x), float(point_.utm.y));
                     map_->value[row][col] = topographicDistance((float)gridX, (float)gridY, demValue, (float)(point_.utm.x), (float)(point_.utm.y), (float)(point_.z), distance, dem_);
                 }
                 else
