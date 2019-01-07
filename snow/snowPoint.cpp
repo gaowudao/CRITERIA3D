@@ -72,7 +72,9 @@ Crit3DSnowPoint::Crit3DSnowPoint(struct TradPoint* radpoint, float temp, float p
 
 bool Crit3DSnowPoint::checkValidPoint()
 {
-    if (_radpoint->global != NODATA && _radpoint->beam != NODATA && _snowFall!= NODATA && _snowWaterEquivalent != NODATA && _snowSurfaceTemp != NODATA)
+    if (int(_radpoint->global) != int(NODATA) && int(_radpoint->beam) != int(NODATA)
+            && int(_snowFall) != int(NODATA) && int(_snowWaterEquivalent) != int(NODATA)
+            && int(_snowSurfaceTemp) != int(NODATA))
         return true;
     else
         return false;
@@ -139,7 +141,7 @@ void Crit3DSnowPoint::computeSnowBrooksModel()
      {
         float dewPoint = tDewFromRelHum(_airRH, _airT);     /*!< [°C] */
 
-        if (_radpoint->transmissivity != NODATA)
+        if (int(_radpoint->transmissivity) != int(NODATA))
             cloudCover = 1 - minValue(float(_radpoint->transmissivity) / _clearSkyTransmissivity, 1.0f);
         else
             cloudCover = 0.1f;
@@ -169,7 +171,7 @@ void Crit3DSnowPoint::computeSnowBrooksModel()
         if (prevSurfacetemp < -30)
             prevSurfacetemp = -30;
 
-        if (previousSWE == 0)
+        if (previousSWE <= 0)
         {
             prevIceContent = 0;
             prevLWaterContent = 0;
@@ -180,7 +182,7 @@ void Crit3DSnowPoint::computeSnowBrooksModel()
             prevIceContent = _iceContent;
             prevLWaterContent = _lWContent;
 
-            if ( (prevIceContent == 0) && (prevLWaterContent == 0) )
+            if ( (prevIceContent <= 0) && (prevLWaterContent <= 0) )
             {
                 // neve aggiunta
                 prevIceContent = previousSWE;
@@ -196,7 +198,7 @@ void Crit3DSnowPoint::computeSnowBrooksModel()
 
             /*! check on sum */
             currentRatio = previousSWE / (prevIceContent + prevLWaterContent);
-            if ( abs(currentRatio - 1) > 0.001)
+            if (fabs(currentRatio - 1) > 0.001f)
             {
                 prevIceContent = prevIceContent * currentRatio;
                 prevLWaterContent = prevLWaterContent * currentRatio;
@@ -243,14 +245,14 @@ void Crit3DSnowPoint::computeSnowBrooksModel()
 
           /*! Age of snow & albedo */
 
-          if ( _snowFall > 0 && _prec == 0)
+          if ( _snowFall > 0 && _prec <= 0)
             _ageOfSnow = 1 / 24;
           else if (previousSWE > 0)
              _ageOfSnow = _ageOfSnow + 1 / 24;
           else
             _ageOfSnow = 0;
 
-          if ( (previousSWE > 0) || (_snowFall > 0 && _prec == 0))
+          if ( (previousSWE > 0) || (_snowFall > 0 && _prec <= 0))
                 /*! O'NEILL, A.D.J. GRAY D.M.1973. Spatial and temporal variations of the albedo of prairie snowpacks. The Role of Snow and Ice in Hydrology: Proceedings of the Banff Syn~posia, 1972. Unesc - WMO -IAHS, Geneva -Budapest-Paris, Vol. 1,  pp. 176-186
                 * arrotondato da U.S. Army Corps
                 */
@@ -268,7 +270,7 @@ void Crit3DSnowPoint::computeSnowBrooksModel()
           // energia acqua libera (TROY site test)
           QWaterHeat = 0;
           QWaterKinetic = 0;
-          if (surfaceWaterContent > 0.1)
+          if (surfaceWaterContent > 0.1f)
           {
             //temperatura dell 'acqua: almeno 1 grado
             QWaterHeat = (HEAT_CAPACITY_WATER / 1000.0f) * (surfaceWaterContent / 1000.0f) * (std::max(1.0f, (prevSurfacetemp + _airT) / 2.0f) - prevSurfacetemp);
@@ -366,7 +368,7 @@ void Crit3DSnowPoint::computeSnowBrooksModel()
               /*! \brief Snow Pack Mass */
 
               /*! Ice content */
-              if (_internalEnergy > 0.001)
+              if (_internalEnergy > 0.001f)
                 _iceContent = 0;
               else
                 _iceContent = std::max(prevIceContent + _snowFall + refreeze + EvapCond, 0.0f);
@@ -375,7 +377,7 @@ void Crit3DSnowPoint::computeSnowBrooksModel()
                float waterHoldingCapacity = _parameters->snowWaterHoldingCapacity / (1 - _parameters->snowWaterHoldingCapacity); //[%]
 
                /*! Liquid water content */
-               if (abs(_internalEnergy) < 0.001)
+               if (fabs(_internalEnergy) < 0.001f)
                 _lWContent = std::min(waterHoldingCapacity * _iceContent, prevLWaterContent + _prec + surfaceWaterContent - refreeze);
                else
                 _lWContent = 0;
@@ -391,7 +393,7 @@ void Crit3DSnowPoint::computeSnowBrooksModel()
                _snowMelt = previousSWE + _snowFall + EvapCond - _snowWaterEquivalent;
 
                /*! Snow surface energy */
-               if ( abs(_internalEnergy) < 0.001)
+               if (fabs(_internalEnergy) < 0.001f)
                {
                 _surfaceInternalEnergy = 0;
                }
@@ -558,8 +560,5 @@ float Crit3DSnowPoint::aerodynamicResistanceCampbell77(bool isSnow , float zRefW
     //formula 3.18 pag 51
     log1 = log((zRefWind - zeroPlane + momentumRoughness) / momentumRoughness);
 
-    float aerodResis = float(log1 * log2 / (VON_KARMAN_CONST * VON_KARMAN_CONST * myWindSpeed));
-
-    return aerodResis;
-
+    return log1 * log2 / (float(VON_KARMAN_CONST * VON_KARMAN_CONST) * myWindSpeed);
 }

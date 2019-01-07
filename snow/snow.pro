@@ -1,7 +1,13 @@
+#-------------------------------------------------
+#
+# CRITERIA3D distribution
+# snow accumulation and melt library
+#
+#-------------------------------------------------
+
 QT += core
 QT -= gui
 
-CONFIG += c++11
 
 TARGET = snow
 CONFIG += staticlib

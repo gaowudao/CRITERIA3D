@@ -100,7 +100,7 @@ void Crit3DSnowMaps::resetSnowModel(gis::Crit3DRasterGrid* sweGrid, Crit3DSnowPo
         for (long col = 0; col < sweGrid->header->nrCols; col++)
         {
             initSWE = sweGrid->value[row][col];
-            if (initSWE != sweGrid->header->flag)
+            if (int(initSWE) != int(sweGrid->header->flag))
             {
                 // TODO usare dato reale bulk density se disponibile
                 surfaceBulkDensity = DEFAULT_BULK_DENSITY;
