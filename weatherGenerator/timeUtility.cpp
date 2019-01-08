@@ -36,9 +36,9 @@ int checkLastYearDate(Crit3DDate inputFirstDate, Crit3DDate inputLastDate, int d
     int predictionMonth = predictionFirstDate.month;
     int monthIndex = 0;
     int totalDay = 0;
-    for (unsigned int i = 0; i < 9; i++)
+    for (int i = 0; i < 9; i++)
     {
-        monthIndex = (predictionMonth-1)- i;
+        monthIndex = (predictionMonth -1) -i;
         if (monthIndex <= 0)
         {
             monthIndex = monthIndex + 12 ;
@@ -83,11 +83,11 @@ int checkLastYearDate(Crit3DDate inputFirstDate, Crit3DDate inputLastDate, int d
 bool getDoyFromSeason(QString season, int myPredictionYear, int* wgDoy1, int* wgDoy2)
 {
     QString period[12] = {"JFM","FMA","MAM","AMJ","MJJ","JJA","JAS","ASO","SON","OND","NDJ","DJF"};
-    unsigned int i = 0;
+    int i = 0;
     int found = 0;
     int month1, month2 = 0;
 
-    for (i = 0; i<12; i++)
+    for (i = 0; i < 12; i++)
     {
         if (season.compare(period[i]) == 0)
         {

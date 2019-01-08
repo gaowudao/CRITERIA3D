@@ -5,6 +5,7 @@
     #define USEDATA false
 
     class Crit3DDate;
+    class QString;
 
     int numMonthsInPeriod(int m1, int m2);
 

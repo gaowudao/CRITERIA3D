@@ -49,14 +49,14 @@ int main(int argc, char *argv[])
         //settingsFileName = "\\\\praga-smr\\MOSES\\SWB\\DA_MO\\seasonalPredictions\\WG_MO.ini";
         qDebug() << "\n CRITERIA3D Weather Generator ";
         qDebug() << "\n USAGE: WG.exe settings.ini\n";
-        return false;
+        return 0;
     }
 
     QFile myFile(settingsFileName);
     if (!myFile.exists())
     {
         qDebug() << "Error!\n" << "Missing settings file:" << settingsFileName;
-        return false;
+        return -1;
     }
 
     QFileInfo fileInfo(settingsFileName);
@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
         if (!outputDirectory.mkdir(outputPath))
         {
             qDebug() << outputPath;
-            return false;
+            return -1;
         }
 
     QString mySeparator = mySettings->value("separator",0).toString();
@@ -93,7 +93,8 @@ int main(int argc, char *argv[])
 
     bool isFirst = true;
     QString season;
-    int wgDoy1, wgDoy2;
+    int wgDoy1 = NODATA;
+    int wgDoy2 = NODATA;
     Crit3DDate climateDateIni, climateDateFin;
 
     // iterate input files on climate (climateName.csv = observedName.csv = forecastName.xml)
@@ -135,7 +136,7 @@ int main(int argc, char *argv[])
 
             // read SEASONAL PREDICTIONS
             if (! parseXMLClimate(xmlFileName, &XMLAnomaly))
-                return false;
+                return -1;
 
             if (isFirst)
             {
@@ -153,11 +154,11 @@ int main(int argc, char *argv[])
 
             // read CLIMATE data
             if ( !readMeteoDataCsv(climateFileName, separator, NODATA, &climateDailyObsData) )
-                return false;
+                return -1;
 
             // read OBSERVED data (at least last 9 months)
             if ( !readMeteoDataCsv(observedFileName, separator, NODATA, &lastYearDailyObsData) )
-                return false;
+                return -1;
 
             //check climate dates
             Crit3DDate climateObsFirstDate = climateDailyObsData.inputFirstDate;
@@ -188,10 +189,11 @@ int main(int argc, char *argv[])
                     qDebug() << "\n...Climate OK\n";
 
                     /* initialize random seed: */
-                    srand (time(NULL));
+                    srand (time(nullptr));
 
                     // SEASONAL FORECAST
-                    if (! makeSeasonalForecast(outputFileName, separator, &XMLAnomaly, wGenClimate, &lastYearDailyObsData, XMLAnomaly.repetitions, XMLAnomaly.anomalyYear, wgDoy1, wgDoy2, thresholdPrec))
+                    if (! makeSeasonalForecast(outputFileName, separator, &XMLAnomaly, wGenClimate,
+                          &lastYearDailyObsData, XMLAnomaly.repetitions, XMLAnomaly.anomalyYear, wgDoy1, wgDoy2, thresholdPrec))
                         qDebug() << "\n***** ERROR! *****" << fileName << "Computation FAILED\n";
 
                 }

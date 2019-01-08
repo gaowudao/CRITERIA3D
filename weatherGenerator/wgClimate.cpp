@@ -7,23 +7,19 @@
 #include "crit3dDate.h"
 
 
-/*-----------------------------------------------------------------
-    computeWGClimate
--------------------------------------------------------------------
-    Compute mean monthly values
-    Returns true if the input data are valid data
--------------------------------------------------------------------
-    INPUT
-    int         nData           [-] number of data (366 x n where n is the number of years)
-    Crit3DDate  inputFirstDate
-    float       *inputTMin      [°C] array(1...nData) of minimum temp. data
-    float       *inputTMax      [°C] array(1...nData) of maximum temp. data
-    float       *inputPrec      [mm] array(1...nData) of precipitation data
--------------------------------------------------------------------*/
+/*!
+  * \brief Compute climate (monthly values)
+  * \returns true if the input data are valid
+  * \param  nrDays          [-] number of data (366 x n where n is the number of years)
+  * \param  inputFirstDate  [Crit3DDate]
+  * \param  *inputTMin      [°C] array(1..nrDays) of minimum temperature
+  * \param  *inputTMax      [°C] array(1..nrDays) of maximum temperature
+  * \param  *inputPrec      [mm] array(1..nrDays) of precipitation
+*/
 bool computeWGClimate(int nrDays, Crit3DDate inputFirstDate, float *inputTMin, float *inputTMax, float *inputPrec, float precThreshold, float minPercData, TwheatherGenClimate* wGen)
 {
     int nValidData = 0;
-    double dataPresence = 0;
+    float dataPresence = 0;
     float sumTMin[12] = {0};
     float sumTMax[12] = {0};
     float sumPrec[12] = {0};
@@ -47,7 +43,9 @@ bool computeWGClimate(int nrDays, Crit3DDate inputFirstDate, float *inputTMin, f
         m = tmpCurrentDate.month-1;
 
         // the day is valid if all values are different from nodata
-        if ( (inputTMin[n] != NODATA) && (inputTMax[n] != NODATA) && (inputPrec[n] != NODATA) )
+        if (int(inputTMin[n]) != int(NODATA)
+            && int(inputTMax[n]) != int(NODATA)
+            && int(inputPrec[n]) != int(NODATA))
         {
             nValidData = nValidData + 1;
             nrData[m] = nrData[m] + 1;
@@ -73,7 +71,7 @@ bool computeWGClimate(int nrDays, Crit3DDate inputFirstDate, float *inputTMin, f
         }
     }
 
-    dataPresence = (double)nValidData / (double)nrDays;
+    dataPresence = float(nValidData) / float(nrDays);
     if (dataPresence < minPercData)
         return false;
 
@@ -89,16 +87,16 @@ bool computeWGClimate(int nrDays, Crit3DDate inputFirstDate, float *inputTMin, f
 
             wGen->monthly.sumPrec[m] = sumPrec[m] / nrData[m] * daysInMonth;
 
-            wGen->monthly.fractionWetDays[m] = ((double)nWetDays[m] / (double)nrData[m]);
-            wGen->monthly.probabilityWetWet[m] = ((double)nWetWetDays[m] / (double)nWetDays[m]);
+            wGen->monthly.fractionWetDays[m] = float(nWetDays[m]) / float(nrData[m]);
+            wGen->monthly.probabilityWetWet[m] = float(nWetWetDays[m]) / float(nWetDays[m]);
 
             if ( (nDryDays[m] > 0) && (nWetDays[m] > 0) )
                 wGen->monthly.dw_Tmax[m] = (sumTmaxDry[m] / nDryDays[m]) - (sumTmaxWet[m] / nWetDays[m]);
             else
                 wGen->monthly.dw_Tmax[m] = 0;
 
-            wGen->monthly.stDevTmax[m] = sqrt( std::max(nrData[m]*sumTMax2[m]-(sumTMax[m]*sumTMax[m]),(float)0.0) / (nrData[m]*(nrData[m]-1)));
-            wGen->monthly.stDevTmin[m] = sqrt( std::max(nrData[m]*sumTMin2[m]-(sumTMin[m]*sumTMin[m]),(float)0.0) / (nrData[m]*(nrData[m]-1)));
+            wGen->monthly.stDevTmax[m] = sqrt(std::max(nrData[m]*sumTMax2[m]-(sumTMax[m]*sumTMax[m]), 0.f) / (nrData[m]*(nrData[m]-1)));
+            wGen->monthly.stDevTmin[m] = sqrt(std::max(nrData[m]*sumTMin2[m]-(sumTMin[m]*sumTMin[m]), 0.f) / (nrData[m]*(nrData[m]-1)));
         }
         else
         {
@@ -113,7 +111,8 @@ bool computeWGClimate(int nrDays, Crit3DDate inputFirstDate, float *inputTMin, f
     }
 
 
-    /*--------------------------------- WRITE CLIMATE -----------------------------------
+    /*
+     * --------------------------------- WRITE CLIMATE -----------------------------------
     QString filename="climateWG.txt";
     qDebug() << "...Write WG climate file -->" << filename;
     QFile file(filename);
@@ -138,10 +137,9 @@ bool computeWGClimate(int nrDays, Crit3DDate inputFirstDate, float *inputTMin, f
 }
 
 
-/*-----------------------------------------------------
-    climateGenerator
-    Generates a climate starting from daily weather
--------------------------------------------------------*/
+/*!
+  * \brief Generates a climate starting from daily weather
+  */
 bool climateGenerator(int nrData, TinputObsData climateDailyObsData, Crit3DDate climateDateIni, Crit3DDate climateDateFin, float precThreshold, float minPercData, TwheatherGenClimate* wGen)
 
 {
@@ -153,9 +151,9 @@ bool climateGenerator(int nrData, TinputObsData climateDailyObsData, Crit3DDate 
     nrDays = difference(climateDateIni,climateDateFin)+1;
 
     newDailyObsData.inputFirstDate = climateDateIni;
-    newDailyObsData.inputTMin = (float*)malloc(nrDays*sizeof(float));
-    newDailyObsData.inputTMax = (float*)malloc(nrDays*sizeof(float));
-    newDailyObsData.inputPrecip = (float*)malloc(nrDays*sizeof(float));
+    newDailyObsData.inputTMin = (float*) malloc(nrDays*sizeof(float));
+    newDailyObsData.inputTMax = (float*) malloc(nrDays*sizeof(float));
+    newDailyObsData.inputPrecip = (float*) malloc(nrDays*sizeof(float));
 
     int j = 0;
 
@@ -180,9 +178,9 @@ bool climateGenerator(int nrData, TinputObsData climateDailyObsData, Crit3DDate 
 }
 
 
-/*-------------------------------------------------------------------------------
- Compute sample standard deviation
----------------------------------------------------------------------------------*/
+/*!
+  * \brief Compute sample standard deviation
+*/
 float sampleStdDeviation(float values[], int nElement)
 {
     float sum = 0;
@@ -201,7 +199,7 @@ float sampleStdDeviation(float values[], int nElement)
             sum2 = sum2 + (values[i] * values[i]);
         }
 
-        stdDeviation = sqrt(std::max(nElement * sum2 - (sum * sum), (float)0.0) / (float(nElement) * float(nElement - 1)));
+        stdDeviation = sqrt( std::max(nElement * sum2 - (sum * sum), 0.f) / float(nElement * (nElement - 1)) );
     }
     return stdDeviation;
 }

@@ -1,5 +1,5 @@
-#ifndef WG_CLIMATE_H
-#define WG_CLIMATE_H
+#ifndef WGCLIMATE_H
+#define WGCLIMATE_H
 
     class Crit3DDate;
     struct TinputObsData;
@@ -14,5 +14,5 @@
     float sampleStdDeviation(float values[], int nElement);
 
 
-#endif // WG_CLIMATE_H
+#endif // WGCLIMATE_H
 

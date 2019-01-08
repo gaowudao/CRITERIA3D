@@ -1,7 +1,7 @@
 #-------------------------------------------------
 #
-# CRITERIA3D distribution
 # crit3dDate library
+# this library is part of CRITERIA3D distribution
 #
 #-------------------------------------------------
 

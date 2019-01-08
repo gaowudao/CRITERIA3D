@@ -1,3 +1,14 @@
+#-------------------------------------------------------------------
+#
+# weatherGenerator library
+# this library is part of CRITERIA3D distribution
+#
+# Based on:
+# Richardson, C. W. and D. A. Wright
+# WGEN: A model for generating daily weather variables, USDA, 1984
+#
+#-------------------------------------------------------------------
+
 
 QT  += core xml
 QT  -= gui

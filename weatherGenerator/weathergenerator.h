@@ -45,13 +45,13 @@
 
     struct TstateWheather
     {
-        float currentDay;                 //[-] day we have just passed as argument to "newday" function
-        float maxTemp;                    //[°C] maximum temperature of the day passed as argument to "newday" function
-        float minTemp;                    //[°C] minimum temperature of the day passed as argument to "newday" function
-        float precip;                     //[mm] precipitation of the day passed as argument to "newday" function
-        float resTMaxPrev;                //[-] residual of maximum temperature for previous day
-        float resTMinPrev;                //[-] residual of minimum temperature for previous day
-        bool wetPreviousDay;              //[-] true if the previous day has been a wet day, false otherwise
+        int currentDay;                     // [-] day we have just passed as argument to "newday" function
+        float currentTmax;                  // [°C] maximum temperature of the day passed as argument to "newday" function
+        float currentTmin;                  // [°C] minimum temperature of the day passed as argument to "newday" function
+        float currentPrec;                  // [mm] precipitation of the day passed as argument to "newday" function
+        float resTMaxPrev;                  // [-] residual of maximum temperature for previous day
+        float resTMinPrev;                  // [-] residual of minimum temperature for previous day
+        bool wetPreviousDay;                // [-] true if the previous day has been a wet day, false otherwise
     };
 
     struct TwheatherGenClimate
@@ -81,9 +81,9 @@
 
     void initializeWeather(TwheatherGenClimate* wGen);
 
-    float normalRandom(int *gasDevIset,float *gasDevGset);
+    void normalRandom(float *rnd_1, float *rnd_2);
 
-    bool markov(float pwd,float pww, bool wetPreviousDay);
+    bool markov(float pwd, float pww, bool isWetPreviousDay);
     float weibull (float mean, float precThreshold);
 
     void qSplineYearInterpolate(float *meanY, float *dayVal);

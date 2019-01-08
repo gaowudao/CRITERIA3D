@@ -1,6 +1,9 @@
 /*!
-    weatherGenerator.cpp
-    \copyright 2016 Fausto Tomei, Laura Costantini
+======================================================================================================
+    \name weatherGenerator.cpp
+======================================================================================================
+    \copyright
+    2016 Fausto Tomei, Laura Costantini
 
     This file is part of CRITERIA3D.
     CRITERIA3D has been developed under contract issued by A.R.P.A. Emilia-Romagna
@@ -21,8 +24,41 @@
     contacts:
     fausto.tomei@gmail.com
     ftomei@arpae.it
-*/
 
+======================================================================================================
+    \brief
+    Generate weather data from monthly mean and standard deviation information.
+
+    Based on:
+    Richardson, C. W. and D. A. Wright
+    WGEN: A model for generating daily weather variables.
+    USDA, ARS, publication ARS-8, 1984.
+
+    Modified by:
+    G. S. Campbell, Dept. of Crop and Soil Sciences,
+    Washington State University, Pullman, WA 99164-6420.
+    last modified Nov 1991.
+======================================================================================================
+    \details
+    Richardson uses a 1-term Fourier series to model temperatures, while this model
+    uses quadratic spline interpolation, set up so that monthly averages are correct.
+    This model also uses the quadratic spline to interpolate between monthly values of other variables.
+    This model uses a Weibull distribution to generate rain amounts
+    which requires only knowing the mean rainfall on wet days.
+    (see Selker and Haith, Water Resour. Res. 26:2733, 1990)
+    Transition probabilities for WD and WW days are computed from fraction of wet days
+    (see Geng et al., Agric. Forest Meteorol. 36:363, 1986)
+======================================================================================================
+    \param
+    (Tmax) monthly maximum temp.  (C)
+    (Tmin) monthly minimum temp.  (C)
+    (Prcp) total monthly precip        (mm)
+    (fwet) fraction of wet days        (must be > 0)
+    (Td-Tw)difference between maximum temperatures on dry and wet days (C)
+    (Txsd) maximum temperature standard deviation   (C)
+    (Tnsd) minimum temperature standard deviation   (C)
+======================================================================================================
+*/
 
 #include <cstdio>
 #include <stdlib.h>
@@ -44,42 +80,45 @@
 #include "fileUtility.h"
 
 
-
 float getTMax(int dayOfYear, float precThreshold, TwheatherGenClimate* wGen)
 {
-  dayOfYear = dayOfYear % 365;
-  if (dayOfYear != wGen->state.currentDay)
-    newDay(dayOfYear, precThreshold, wGen);
+    dayOfYear = dayOfYear % 365;
+    if (dayOfYear != wGen->state.currentDay)
+        newDay(dayOfYear, precThreshold, wGen);
 
-  return wGen->state.maxTemp;
+    return wGen->state.currentTmax;
 }
+
 
 float getTMin(int dayOfYear, float precThreshold, TwheatherGenClimate* wGen)
 {
-  dayOfYear = dayOfYear % 365;
-  if (dayOfYear != wGen->state.currentDay)
-    newDay(dayOfYear,precThreshold,  wGen);
+    dayOfYear = dayOfYear % 365;
+    if (dayOfYear != wGen->state.currentDay)
+        newDay(dayOfYear, precThreshold,  wGen);
 
-  return wGen->state.minTemp;
+    return wGen->state.currentTmin;
 }
+
 
 float getTAverage(int dayOfYear, float precThreshold, TwheatherGenClimate* wGen)
 {
-  dayOfYear = dayOfYear % 365;
-  if (dayOfYear != wGen->state.currentDay)
-    newDay(dayOfYear, precThreshold, wGen);
+    dayOfYear = dayOfYear % 365;
+    if (dayOfYear != wGen->state.currentDay)
+        newDay(dayOfYear, precThreshold, wGen);
 
-  return (0.5*(wGen->state.maxTemp + wGen->state.minTemp));
+    return 0.5f * (wGen->state.currentTmax + wGen->state.currentTmin);
 }
+
 
 float getPrecip(int dayOfYear, float precThreshold, TwheatherGenClimate* wGen)
 {
-  dayOfYear = dayOfYear % 365;
-  if (dayOfYear != wGen->state.currentDay)
-    newDay(dayOfYear, precThreshold, wGen);
+    dayOfYear = dayOfYear % 365;
+    if (dayOfYear != wGen->state.currentDay)
+        newDay(dayOfYear, precThreshold, wGen);
 
-  return wGen->state.precip;
+    return wGen->state.currentPrec;
 }
+
 
 // main function
 void newDay(int dayOfYear, float precThreshold, TwheatherGenClimate* wGen)
@@ -95,12 +134,12 @@ void newDay(int dayOfYear, float precThreshold, TwheatherGenClimate* wGen)
     if (isWetDay)
     {
         meanTMax = wGen->daily.meanWetTMax[dayOfYear];
-        wGen->state.precip = weibull(wGen->daily.meanPrecip[dayOfYear], precThreshold);
+        wGen->state.currentPrec = weibull(wGen->daily.meanPrecip[dayOfYear], precThreshold);
     }
     else
     {
         meanTMax = wGen->daily.meanDryTMax[dayOfYear];
-        wGen->state.precip = 0;
+        wGen->state.currentPrec = 0;
     }
 
     //store information
@@ -111,10 +150,11 @@ void newDay(int dayOfYear, float precThreshold, TwheatherGenClimate* wGen)
     stdTMax = wGen->daily.maxTempStd[dayOfYear];
     stdTMin = wGen->daily.minTempStd[dayOfYear];
 
-    genTemps(&wGen->state.maxTemp, &wGen->state.minTemp, meanTMax, meanTMin, stdTMax, stdTMin,&(wGen->state.resTMaxPrev), &(wGen->state.resTMinPrev));
+    genTemps(&wGen->state.currentTmax, &wGen->state.currentTmin, meanTMax, meanTMin, stdTMax, stdTMin, &(wGen->state.resTMaxPrev), &(wGen->state.resTMinPrev));
 
     wGen->state.currentDay = dayOfYear;
 }
+
 
 void initializeWeather(TwheatherGenClimate* wGen)
 {
@@ -135,13 +175,11 @@ void initializeWeather(TwheatherGenClimate* wGen)
     int daysInMonth;
     int m;
 
-    // initialize random seed - spostato nel main (uno solo)
-    //srand (time(NULL));
-
-    wGen->state.currentDay = 0;
-    wGen->state.maxTemp = 0;
-    wGen->state.minTemp = 0;
-    wGen->state.precip = 0;
+    wGen->state.currentDay = NODATA;
+    wGen->state.currentTmax = NODATA;
+    wGen->state.currentTmin = NODATA;
+    wGen->state.currentPrec = NODATA;
+    // TODO: pass residual data of last observed day
     wGen->state.resTMaxPrev = 0;
     wGen->state.resTMinPrev = 0;
     wGen->state.wetPreviousDay = false;
@@ -181,7 +219,7 @@ void initializeWeather(TwheatherGenClimate* wGen)
         mMeanDryTMax[m] = mMeanTMax[m] + fWetDays[m] * mMeanDiff[m];
         mMeanWetTMax[m] = mMeanDryTMax[m] - mMeanDiff[m];
 
-        mpwd[m] = (1.0 - mpww[m]) * (fWetDays[m] / (1.0 - fWetDays[m]));
+        mpwd[m] = (1.f - mpww[m]) * (fWetDays[m] / (1.f - fWetDays[m]));
 
         daysInMonth = getDefaultDaysInMonth(m);
 
@@ -200,79 +238,71 @@ void initializeWeather(TwheatherGenClimate* wGen)
 }
 
 
-//----------------------------------------------------------------------
-// Generate a standard normally-distributed random variable
-// (See Numerical Recipes in Pascal W. H. Press, et al. 1989 p. 225)
-//----------------------------------------------------------------------
-float normalRandom(int *gasDevIset,float *gasDevGset)
+/*!
+  * \brief Generate two standard normally-distributed random numbers
+  * \cite  Numerical Recipes in Pascal, W. H. Press et al. 1989, p. 225
+*/
+void normalRandom(float *rnd_1, float *rnd_2)
 {
-    float fac = 0;
-    float r = 0;
-    float v1, v2, normalRandom;
-    float temp;
+    double rnd, factor, r, v1, v2;
 
-    if (*gasDevIset == 0) //We don't have an extra deviate
+    do
     {
-        do
-        {
-            temp = (float) rand() / (RAND_MAX);
-            v1 = 2*temp - 1;
-            temp = (float) rand() / (RAND_MAX);
-            v2 = 2*temp - 1;
-            r = v1 * v1 + v2 * v2;
-        } while ( (r>=1) | (r==0) ); // see if they are in the unit circle, and if they are not, try again.
-        // Box-Muller transformation to get two normal deviates. Return one and save the other for next time.
-        fac = sqrt(-2 * log(r) / r);
-        *gasDevGset = v1 * fac; //Gaussian random deviates
-        normalRandom = v2 * fac;
-        *gasDevIset = 1; //set the flag
+        rnd = double(rand()) / double(RAND_MAX);
+        v1 = 2.0 * rnd - 1.0;
+        rnd = double(rand()) / double(RAND_MAX);
+        v2 = 2.0 * rnd - 1.0;
+        r = v1 * v1 + v2 * v2;
     }
-    // We have already an extra deviate
-    else
-    {
-        *gasDevIset = 0; //unset the flag
-        normalRandom = *gasDevGset;
-    }
-    return normalRandom;
+    while ((r <= 0) || (r >= 1)); // see if they are in the unit circle, and if they are not, try again.
+
+    // Box-Muller transformation to get two normal deviates
+    factor = sqrt(-2.0 * log(r) / r);
+
+    // Gaussian random deviates
+    *rnd_1 = float(v1 * factor);
+    *rnd_2 = float(v2 * factor);
 }
-
 
 
 /*!
- * \brief markov     markov chain
+ * \brief dry/wet markov chain
  * \param pwd     probability wet-dry
  * \param pww     probability wet-wet
- * \param wetPreviousDay   is true if the previous day has been a wet day, false otherwise
+ * \param isWetPreviousDay  true if the previous day has been a wet day, false otherwise
  * \return true if the day is wet, false otherwise
  */
-bool markov(float pwd,float pww, bool wetPreviousDay)
+bool markov(float pwd,float pww, bool isWetPreviousDay)
 {
-    float c;
+    double c;
 
-    if (wetPreviousDay)
-        c = ((double) rand() / (RAND_MAX)) - pww;
+    if (isWetPreviousDay)
+        c = double(rand()) / double(RAND_MAX) - double(pww);
 
     else
-        c = ((double) rand() / (RAND_MAX)) - pwd;
+        c = double(rand()) / double(RAND_MAX) - double(pwd);
 
 
     if (c <= 0)
-        return true;  //wet
+        return true;  // wet
     else
-        return false; //dry
+        return false; // dry
 }
 
 
-// Returns [mm] precipitation
+/*!
+  * \brief weibull distribution
+  * \returns precipitation [mm]
+*/
 float weibull (float mean, float precThreshold)
 {
-    float r = 0;
+    double r = 0;
     float w;
 
-    while (r == 0)
-        r = ((double) rand() / (RAND_MAX));
+    while (r < EPSILON)
+        r = double(rand()) / double(RAND_MAX);
 
-    w = 0.84 * mean * pow( (-log(r)), 1.333);
+    w = 0.84f * mean * float(pow(-log(r), 1.333));
 
     if (w > precThreshold)
         return w;
@@ -281,8 +311,10 @@ float weibull (float mean, float precThreshold)
 }
 
 
-// quadratic spline
-// Computes daily values starting from monthly mean
+/*!
+  * \brief Computes daily values starting from monthly mean
+  * using quadratic spline
+*/
 void qSplineYearInterpolate(float *meanY, float *dayVal)
 {
     float a[13] = {0};
@@ -348,34 +380,30 @@ void qSplineYearInterpolate(float *meanY, float *dayVal)
 }
 
 
-// Computes maximum and minimum temperature
+/*!
+  * \brief generates maximum and minimum temperature
+*/
 void genTemps(float *tMax, float *tMin, float meanTMax, float meanTMin, float stdMax, float stdMin, float *resTMaxPrev, float *resTMinPrev)
 {
-
-    float resTMaxCurr;
-    float resTMinCurr;
-
     // matrix of serial correlation coefficients.
     float serialCorrelation[2][2]=
     {
-        {0.567f,0.086f},
-        {0.253f,0.504f}
+        {0.567f, 0.086f},
+        {0.253f, 0.504f}
     };
 
     // matrix of cross correlation coefficients.
     float crossCorrelation[2][2]=
     {
-        {0.781f,0.0f},
-        {0.328f,0.637f}
+        {0.781f, 0.0f},
+        {0.328f, 0.637f}
     };
 
-    int gasDevIset = 0;
-    float gasDevGset = 0;
-
     // standard normal random value for TMax and TMin
-    float NorTMax = normalRandom(&gasDevIset,&gasDevGset);
-    float NorTMin = normalRandom(&gasDevIset,&gasDevGset);
+    float NorTMin, NorTMax;
+    normalRandom(&NorTMin, &NorTMax);
 
+    float resTMaxCurr, resTMinCurr;
     resTMaxCurr = crossCorrelation[0][0] * NorTMax + serialCorrelation[0][0] * (*resTMaxPrev) + serialCorrelation[0][1] * (*resTMinPrev);
     resTMinCurr = crossCorrelation[1][0] * NorTMax + crossCorrelation[1][1] * NorTMin + serialCorrelation[1][0] * (*resTMaxPrev) + serialCorrelation[1][1] * (*resTMinPrev);
 
@@ -394,6 +422,7 @@ void genTemps(float *tMax, float *tMin, float meanTMax, float meanTMin, float st
         *tMax = NorTMax;
     }
 
+    // minimum deltaT (TODO improve)
     if (*tMax - *tMin < 1)
         *tMin = *tMax - 1;
 }
@@ -415,12 +444,12 @@ bool assignXMLAnomaly(TXMLSeasonalAnomaly* XMLAnomaly, int modelIndex, int anoma
             myVar = XMLAnomaly->forecast[i].type.toUpper();
             result = false;
 
-            if (XMLAnomaly->forecast[i].value[modelIndex] != NULL)
+            if (XMLAnomaly->forecast[i].value[modelIndex] != nullptr)
                 myValue = XMLAnomaly->forecast[i].value[modelIndex].toFloat();
             else
                 myValue = NODATA;
 
-            if (myValue != NODATA)
+            if (int(myValue) != int(NODATA))
             {
                 if ( (myVar == "TMIN") || (myVar == "AVGTMIN") )
                     result = assignAnomalyNoPrec(myValue, anomalyMonth1, anomalyMonth2, wGenNoAnomaly->monthly.monthlyTmin, wGen->monthly.monthlyTmin);
@@ -528,7 +557,7 @@ bool assignAnomalyPrec(float myAnomaly, int anomalyMonth1, int anomalyMonth2, fl
             mySumClimatePrec = mySumClimatePrec + myWGMonthlyVarNoAnomaly[myMonth-1];
     }
 
-    myNewSumPrec = std::max(mySumClimatePrec + myAnomaly, (float)0.0);
+    myNewSumPrec = std::max(mySumClimatePrec + myAnomaly, 0.f);
 
     if (mySumClimatePrec > 0)
         myFraction = myNewSumPrec / mySumClimatePrec;
@@ -639,10 +668,11 @@ bool makeSeasonalForecast(QString outputFileName, char separator, TXMLSeasonalAn
         return false;
     }
 
-    myDailyPredictions = (ToutputDailyMeteo*)malloc(myNumValues*sizeof(ToutputDailyMeteo));
+    myDailyPredictions = (ToutputDailyMeteo*) malloc(unsigned(myNumValues) * sizeof(ToutputDailyMeteo));
 
     // copy the last 9 months before wgDoy1
-    float lastTmax, lastTmin;
+    float lastTmax = NODATA;
+    float lastTmin = NODATA;
     for (tmp = 0; tmp < nrDaysBeforeWgDoy1; tmp++)
     {
         myDailyPredictions[tmp].date = myFirstDatePrediction.addDays(tmp);
@@ -651,7 +681,9 @@ bool makeSeasonalForecast(QString outputFileName, char separator, TXMLSeasonalAn
         myDailyPredictions[tmp].maxTemp = lastYearDailyObsData->inputTMax[obsIndex];
         myDailyPredictions[tmp].prec = lastYearDailyObsData->inputPrecip[obsIndex];
 
-        if ((myDailyPredictions[tmp].maxTemp == NODATA) || (myDailyPredictions[tmp].minTemp == NODATA) || (myDailyPredictions[tmp].prec == NODATA))
+        if ((int(myDailyPredictions[tmp].maxTemp) == int(NODATA))
+                || (int(myDailyPredictions[tmp].minTemp) == int(NODATA))
+                || (int(myDailyPredictions[tmp].prec) == int(NODATA)))
         {
             if (tmp == 0)
             {
@@ -662,13 +694,13 @@ bool makeSeasonalForecast(QString outputFileName, char separator, TXMLSeasonalAn
             {
                 qDebug() << "WARNING: Missing data:" << QString::fromStdString(myDailyPredictions[tmp].date.toStdString());
 
-                if (myDailyPredictions[tmp].maxTemp == NODATA)
+                if (int(myDailyPredictions[tmp].maxTemp) == int(NODATA))
                     myDailyPredictions[tmp].maxTemp = lastTmax;
 
-                if (myDailyPredictions[tmp].minTemp == NODATA)
+                if (int(myDailyPredictions[tmp].minTemp) == int(NODATA))
                     myDailyPredictions[tmp].minTemp = lastTmin;
 
-                if (myDailyPredictions[tmp].prec == NODATA)
+                if (int(myDailyPredictions[tmp].prec) == int(NODATA))
                     myDailyPredictions[tmp].prec = 0;
             }
         }
@@ -729,9 +761,9 @@ bool makeSeasonalForecast(QString outputFileName, char separator, TXMLSeasonalAn
 
 /*---------------------------------------------------------------------
 Generates a time series of daily data ( Tmin , Tmax , Prec), the lenght
-is equals to ' numYears ' years , saved from ' firstYear ' in which the
-period between ' wgDoy1 ' and ' wgDoy2 ' is produced by the WG.
-Others data are a copy of the observed data of ' predictionYear ' previous wgDoy1
+is equals to // numYears // years , saved from // firstYear // in which the
+period between // wgDoy1 // and // wgDoy2 // is produced by the WG.
+Others data are a copy of the observed data of // predictionYear // previous wgDoy1
 ------------------------------------------------------------------------*/
 bool computeSeasonalPredictions(TinputObsData *lastYearDailyObsData, int dataLenght, TwheatherGenClimate* wGen, int predictionYear, int firstYear, int numRepetitions, int wgDoy1, int wgDoy2, float minPrec, ToutputDailyMeteo* mydailyData, bool last)
 
@@ -845,6 +877,7 @@ bool computeSeasonalPredictions(TinputObsData *lastYearDailyObsData, int dataLen
      return true;
 }
 
+
 void initializeDailyDataBasic(ToutputDailyMeteo* mydailyData, Crit3DDate myDate)
 {
     mydailyData->date = myDate;
@@ -853,6 +886,7 @@ void initializeDailyDataBasic(ToutputDailyMeteo* mydailyData, Crit3DDate myDate)
     mydailyData->prec = NODATA;
 
 }
+
 
 bool isWGDate(Crit3DDate myDate, int wgDoy1, int wgDoy2)
 {

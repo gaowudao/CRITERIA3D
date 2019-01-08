@@ -3,7 +3,7 @@
 #include <QTextStream>
 
 #include "commonConstants.h"
-#include "Crit3DDate.h"
+#include "crit3dDate.h"
 #include "weatherGenerator.h"
 #include "fileUtility.h"
 
@@ -26,7 +26,7 @@ bool readMeteoDataCsv (QString namefile, char separator, float noData, TinputObs
     int indexDate = 0;
     Crit3DDate tempDate;
 
-    QString noDataString = QString::number(noData);
+    QString noDataString = QString::number(double(noData));
     QString strDate;
 
     // header
@@ -142,9 +142,9 @@ bool readMeteoDataCsv (QString namefile, char separator, float noData, TinputObs
 
     inputData->dataLenght = listDate.length();
 
-    inputData->inputTMin = (float*)malloc( inputData->dataLenght *sizeof(float));
-    inputData->inputTMax = (float*)malloc( inputData->dataLenght *sizeof(float));
-    inputData->inputPrecip = (float*)malloc( inputData->dataLenght *sizeof(float));
+    inputData->inputTMin = (float*) malloc( inputData->dataLenght *sizeof(float));
+    inputData->inputTMax = (float*) malloc( inputData->dataLenght *sizeof(float));
+    inputData->inputPrecip = (float*) malloc( inputData->dataLenght *sizeof(float));
 
     for (int i = 0; i < inputData->dataLenght; i++)
     {
@@ -153,7 +153,7 @@ bool readMeteoDataCsv (QString namefile, char separator, float noData, TinputObs
         inputData->inputPrecip[i] = listPrecip[i].toFloat();
 
         // check tmin <= tmax
-        if ((inputData->inputTMin[i] != noData) &&  (inputData->inputTMax[i] != noData)
+        if ((int(inputData->inputTMin[i]) != int(noData)) && (int(inputData->inputTMax[i]) != int(noData))
              && (inputData->inputTMin[i] > inputData->inputTMax[i]))
         {
             qDebug() << "WARNING: TMIN > TMAX: " << listDate[i];
