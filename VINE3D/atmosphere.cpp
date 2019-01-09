@@ -27,7 +27,7 @@ bool isDataPresent(Vine3DProject* myProject, meteoVariable myVar, Crit3DTime myD
     for (int i = 0; i < myProject->nrMeteoPoints; i++)
     {
          value = myProject->meteoPoints[i].getMeteoPointValueH(myDateTime.date, myDateTime.getHour(), myDateTime.getMinutes(), myVar);
-         if (value != NODATA)
+         if (int(value) != NODATA)
              return true;
     }
     return false;
@@ -58,7 +58,7 @@ bool checkLackOfData(Vine3DProject* myProject, meteoVariable myVar, Crit3DTime m
     //--------------------------------------------------------
     int i, day, nrValues;
     float myValue, avgValue;
-    double sumValues;
+    float sumValues;
     bool isReplacedData = false;
 
     for (i = 0; i < myProject->nrMeteoPoints; i++)
@@ -68,7 +68,7 @@ bool checkLackOfData(Vine3DProject* myProject, meteoVariable myVar, Crit3DTime m
         for (day = -30; day <= 30; day++)
         {
             myValue = myProject->meteoPoints[i].getMeteoPointValueH(currentDate.addDays(day), hour, minutes, myVar);
-            if (myValue != NODATA)
+            if (int(myValue) != NODATA)
             {
                 nrValues++;
                 sumValues += myValue;
@@ -133,13 +133,13 @@ bool computeLeafWetnessMap(Vine3DProject* myProject)
             //initialize
             myMap->value[row][col] = myMap->header->flag;
 
-            if (myProject->DTM.value[row][col] != myProject->DTM.header->flag)
+            if (int(myProject->DTM.value[row][col]) != int(myProject->DTM.header->flag))
             {
                 relHumidity = myProject->meteoMaps->airRelHumidityMap->value[row][col];
                 precipitation = myProject->meteoMaps->precipitationMap->value[row][col];
 
-                if (relHumidity != myProject->meteoMaps->airRelHumidityMap->header->flag
-                        && precipitation != myProject->meteoMaps->precipitationMap->header->flag)
+                if (int(relHumidity) != int(myProject->meteoMaps->airRelHumidityMap->header->flag)
+                        && int(precipitation) != int(myProject->meteoMaps->precipitationMap->header->flag))
                 {
                     leafWetness = 0;
                     if (precipitation > 0.0)
@@ -162,7 +162,7 @@ bool computeLeafWetnessMap(Vine3DProject* myProject)
 bool computeET0Map(Vine3DProject* myProject)
 {
     float myET0;
-    float myGlobalRadiation, myTransmissivity, myClearSkyTransmissivity;
+    float myGlobalRadiation, myTransmissivity;
     float myTemperature, myRelHumidity, myWindSpeed;
     float myHeight;
 
@@ -183,19 +183,17 @@ bool computeET0Map(Vine3DProject* myProject)
                 //    myGlobalRadiation = myProject->meteoMaps->radiationMaps->globalRadiationMap->neighbourValue(myRow, myCol);
 
                 myTransmissivity = myProject->meteoMaps->radiationMaps->transmissivityMap->value[myRow][myCol];
-                myClearSkyTransmissivity = myProject->meteoMaps->radiationMaps->clearSkyTransmissivityMap->value[myRow][myCol];
                 myTemperature = myProject->meteoMaps->airTemperatureMap->value[myRow][myCol];
                 myRelHumidity = myProject->meteoMaps->airRelHumidityMap->value[myRow][myCol];
                 myWindSpeed = myProject->meteoMaps->windIntensityMap->value[myRow][myCol];
 
-                if (myGlobalRadiation != myProject->meteoMaps->radiationMaps->globalRadiationMap->header->flag
-                        && myTransmissivity != myProject->meteoMaps->radiationMaps->transmissivityMap->header->flag
-                        && myClearSkyTransmissivity != myProject->meteoMaps->radiationMaps->clearSkyTransmissivityMap->header->flag
-                        && myTemperature != myProject->meteoMaps->airTemperatureMap->header->flag
-                        && myRelHumidity != myProject->meteoMaps->airRelHumidityMap->header->flag
-                        && myWindSpeed != myProject->meteoMaps->windIntensityMap->header->flag)
+                if (int(myGlobalRadiation) != int(myProject->meteoMaps->radiationMaps->globalRadiationMap->header->flag)
+                        && int(myTransmissivity) != int(myProject->meteoMaps->radiationMaps->transmissivityMap->header->flag)
+                        && int(myTemperature) != int(myProject->meteoMaps->airTemperatureMap->header->flag)
+                        && int(myRelHumidity) != int(myProject->meteoMaps->airRelHumidityMap->header->flag)
+                        && int(myWindSpeed) != int(myProject->meteoMaps->windIntensityMap->header->flag))
                 {
-                    myET0 = ET0_Penman_hourly(myHeight, myTransmissivity / myClearSkyTransmissivity,
+                    myET0 = ET0_Penman_hourly(myHeight, myTransmissivity / float(CLEAR_SKY_TRANSMISSIVITY_DEFAULT),
                                       myGlobalRadiation, myTemperature, myRelHumidity, myWindSpeed);
 
                     myEt0Map->value[myRow][myCol] = myET0;

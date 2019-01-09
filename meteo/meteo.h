@@ -185,13 +185,13 @@
 
     float tDewFromRelHum(float rhAir, float airT);
 
-    double ET0_Penman_hourly(double heigth, double normalizedTransmissivity, double globalSWRadiation,
-                    double airTemp, double airHum, double windSpeed10);
+    float ET0_Penman_hourly(float heigth, float clearSkyIndex, float globalSWRadiation,
+                    float airTemp, float airHum, float windSpeed10);
 
-    double ET0_Penman_daily(int myDOY, float myLatitude, float myPressure, float myTmin, float myTmax,
+    float ET0_Penman_daily(int myDOY, float myLatitude, float myPressure, float myTmin, float myTmax,
                             float myTminDayAfter, float myUmed, float myVmed10, float mySWGlobRad);
 
-    double ET0_Hargreaves(double KT, double myLat, int myDoy, double tmax, double tmin);
+    float ET0_Hargreaves(float KT, float myLat, int myDoy, float tmax, float tmin);
 
     float computeThomIndex(float temp, float relHum);
 

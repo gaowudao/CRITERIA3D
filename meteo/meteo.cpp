@@ -210,9 +210,9 @@ double emissivityFromVaporPressure(double myVP)
  * \param mySWGlobRad [MJ m-2 d-1] daily global short wave radiation
  * \return result
  */
-double ET0_Penman_daily(int myDOY, float myElevation, float myLatitude,
-                        float myTmin, float myTmax, float myTminDayAfter,
-                        float myUmed, float myVmed10, float mySWGlobRad)
+double ET0_Penman_daily(int myDOY, double myElevation, double myLatitude,
+                        double myTmin, double myTmax, double myTminDayAfter,
+                        double myUmed, double myVmed10, double mySWGlobRad)
 {
         double MAXTRANSMISSIVITY = 0.75;
 
