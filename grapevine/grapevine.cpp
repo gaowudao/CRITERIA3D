@@ -169,17 +169,18 @@ bool Vine3D_Grapevine::setWeather(double meanDailyTemp, double temp, double irra
     return isReadingOK ;
 }
 
-bool Vine3D_Grapevine::setDerivedVariables ( double diffuseIrradiance, double directIrradiance, double transmissivity, double sunElevation, float clearSkyTransmissivity, double etp)
+bool Vine3D_Grapevine::setDerivedVariables(double diffuseIrradiance, double directIrradiance, double cloudIndex, double sunElevation, double etp)
 {
     bool isReadingOK = false;
     myDiffuseIrradiance = diffuseIrradiance ;
     myDirectIrradiance = directIrradiance ;
     //myLongWaveIrradiance = longWaveIrradiance ;
-    myCloudiness = minValue(1,maxValue(0,1. - transmissivity/clearSkyTransmissivity)) ;
+    myCloudiness = minValue(1,maxValue(0,cloudIndex)) ;
     //myAirVapourPressure = airVapourPressure ;
     mySunElevation =  sunElevation;
     potentialEvapotranspiration = etp;
-    if ((etp != NODATA) && (sunElevation != NODATA)&&(diffuseIrradiance != NODATA) && (directIrradiance != NODATA)  && (transmissivity != NODATA) ) isReadingOK = true ;
+    if (int(etp) != NODATA && int(sunElevation) != NODATA && int(diffuseIrradiance) != NODATA && int(directIrradiance) != NODATA
+            && int(cloudIndex) != NODATA) isReadingOK = true ;
     return isReadingOK ;
 }
 

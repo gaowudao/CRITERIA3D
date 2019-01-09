@@ -445,7 +445,7 @@ public:
     bool setWeather(double meanDailyTemp, double temp, double irradiance ,
             double prec , double relativeHumidity , double windSpeed, double atmosphericPressure);
     bool setDerivedVariables (double diffuseIrradiance, double directIrradiance,
-            double transmissivity, double sunElevation, float clearSkyTransmissivity,double etp);
+            double cloudIndex, double sunElevation, double etp);
     bool setSoilProfile(double* myWiltingPoint, double *myFieldCapacity,
                         double *myPsiSoilProfile , double *mySoilWaterContentProfile,
                         double* mySoilWaterContentFC, double* mySoilWaterContentWP);

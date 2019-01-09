@@ -563,7 +563,6 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
         float normalizedTransmittance;
         float globalTransmittance;  /*!<   real sky global irradiation coefficient (global transmittance) */
         float diffuseTransmittance; /*!<   real sky mypoint.diffuse irradiation coefficient (mypoint.diffuse transmittance) */
-        float beamTransmittance;    /*! real sky mypoint.beam irradiation coefficient (mypoint.beam transmittance) */
         float dhsOverGhs;           /*!<  ratio horizontal mypoint.diffuse over horizontal global */
         bool isPointIlluminated;
 

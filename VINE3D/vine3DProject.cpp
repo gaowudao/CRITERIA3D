@@ -1036,11 +1036,7 @@ void Vine3DProject::initializeRadiationMaps()
     meteoMaps->radiationMaps->beamRadiationMap->emptyGrid();
     meteoMaps->radiationMaps->diffuseRadiationMap->emptyGrid();
     meteoMaps->radiationMaps->globalRadiationMap->emptyGrid();
-    meteoMaps->radiationMaps->reflectedRadiationMap->emptyGrid();
-    meteoMaps->radiationMaps->sunAzimuthMap->emptyGrid();
     meteoMaps->radiationMaps->sunElevationMap->emptyGrid();
-    meteoMaps->radiationMaps->sunIncidenceMap->emptyGrid();
-    meteoMaps->radiationMaps->sunShadowMap->emptyGrid();
     meteoMaps->radiationMaps->transmissivityMap->emptyGrid();
 }
 

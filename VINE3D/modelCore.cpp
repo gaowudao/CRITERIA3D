@@ -152,9 +152,8 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
 
                     if (!myProject->grapevine.setDerivedVariables(myProject->meteoMaps->radiationMaps->diffuseRadiationMap->value[row][col],
                                 myProject->meteoMaps->radiationMaps->beamRadiationMap->value[row][col],
-                                myProject->meteoMaps->radiationMaps->transmissivityMap->value[row][col],
+                                myProject->meteoMaps->radiationMaps->transmissivityMap->value[row][col] / CLEAR_SKY_TRANSMISSIVITY_DEFAULT,
                                 myProject->meteoMaps->radiationMaps->sunElevationMap->value[row][col],
-                                myProject->meteoMaps->radiationMaps->clearSkyTransmissivityMap->value[row][col],
                                 myProject->meteoMaps->ET0Map->value[row][col])) return (false);
 
                     if (! setSoilProfileCrop(myProject, row, col)) return false;
