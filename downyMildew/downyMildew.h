@@ -15,7 +15,7 @@
     {
         float mmo;              // Pool of dormant oospore (Morphologically Mature Oospore)
         bool isInfection;
-        float oilSpots;          // oil spots on leaves (the symptom appears at the end of infection)
+        float oilSpots;         // oil spots on leaves (the symptom appears at the end of infection)
         float infectionRate;
     };
 
