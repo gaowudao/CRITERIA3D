@@ -55,9 +55,6 @@ void Vine3DProject::initialize()
 
     statePlant.stateGrowth.initialize();
     statePlant.statePheno.initialize();
-
-    delete parameters;
-    delete projectSettings;
 }
 
 
@@ -119,7 +116,8 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
 
     initialize();
 
-    projectSettings = new QSettings(projectFile, QSettings::IniFormat);
+    if (projectSettings ==nullptr)
+        projectSettings = new QSettings(projectFile, QSettings::IniFormat);
 
     projectSettings->beginGroup("path");
     QString myPath = projectSettings->value("path").toString();
@@ -200,7 +198,7 @@ bool Vine3DProject::loadProject(QString myFileName)
     this->initialize();
 
     if (myFileName == "") return(false);
-    if (! readXmlProject(this, myFileName))
+    if (! loadVine3DProjectSettings(myFileName))
     {
         this->logError("Wrong Project File.\n" + this->projectError);
         return (false);
@@ -275,7 +273,7 @@ bool Vine3DProject::loadProject(QString myFileName)
 
 bool Vine3DProject::loadGrapevineParameters()
 {
-    logInfo ("Read Grapevine parameters...");
+    logInfo ("Read Grapevine parameters->..");
     QString myQueryString =
             " SELECT id_cultivar, name,"
             " phenovitis_force_physiological_maturity, miglietta_radiation_use_efficiency,"
@@ -683,7 +681,7 @@ bool Vine3DProject::loadFieldsProperties()
     if (maxFieldIndex != this->nrVineFields)
     {
         this->logInfo("\nWarning! The number of field in the DB is different from the number in the fields map."
-                      "\nSome fields will be set to default parameters.\n");
+                      "\nSome fields will be set to default parameters->\n");
     }
 
     this->nrVineFields = maxValue(this->nrVineFields, maxFieldIndex) +1;
@@ -748,7 +746,7 @@ bool Vine3DProject::loadFieldsProperties()
 
 bool Vine3DProject::loadClimateParameters()
 {
-    logInfo ("Read climate parameters...");
+    logInfo ("Read climate parameters->..");
     QString myQueryString = "SELECT month, tmin_lapse_rate, tmax_lapse_rate, tdmin_lapse_rate, tdmax_lapse_rate";
     myQueryString += " FROM climate";
     myQueryString += " ORDER BY month";
@@ -847,7 +845,7 @@ bool Vine3DProject::openDB()
 
 bool Vine3DProject::loadVanGenuchtenParameters()
 {
-    logInfo ("Read soil parameters...");
+    logInfo ("Read soil parameters->..");
 
     QString queryString = "SELECT id_texture, alpha, n, he, theta_r, theta_s, ksat, l";
     queryString += " FROM soil_van_genuchten";

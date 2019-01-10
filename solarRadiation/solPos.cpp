@@ -252,7 +252,7 @@ long S_solpos (struct posdata *pdat)
 * \brief initiates all of the input parameters in the struct
 *    posdata passed to S_solpos().  Initialization is either to nominal
 *    values or to out of range values, which forces the calling program to
-*    specify parameters.
+*    specify parameters->
 * *    NOTE: This function is optional if you initialize ALL input parameters
 *          in your calling code.  Note that the required parameters of date
 *          and location are deliberately initialized out of bounds to force

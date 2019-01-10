@@ -352,7 +352,7 @@ void MainWindow::on_actionLoadDEM_triggered()
 
 void MainWindow::on_actionOpen_project_triggered()
 {
-    QString myFileName = QFileDialog::getOpenFileName(this,tr("Open Project"), "", tr("Project files (*.xml)"));
+    QString myFileName = QFileDialog::getOpenFileName(this,tr("Open Project"), "", tr("Project files (*.ini)"));
     if (myFileName != "")
     {
         if (myProject.loadProject(myFileName))

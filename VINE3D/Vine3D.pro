@@ -78,7 +78,6 @@ SOURCES += \
     main.cpp \
     meteoMaps.cpp \
     modelCore.cpp \
-    parserXML.cpp \
     plant.cpp \
     waterBalance.cpp \
     vine3DProject.cpp \
@@ -101,7 +100,6 @@ HEADERS  += \
     disease.h \
     meteoMaps.h \
     modelCore.h \
-    parserXML.h \
     plant.h \
     waterBalance.h \
     vine3DProject.h \

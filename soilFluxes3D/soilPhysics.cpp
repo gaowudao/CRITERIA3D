@@ -104,7 +104,7 @@
 	{
 		double Se = NODATA;
 
-		if (myParameters.waterRetentionCurve == MODIFIEDVANGENUCHTEN)
+        if (myParameters.waterRetentionCurve == MODIFIEDVANGENUCHTEN)
 			if (myPsi <=  mySoil->VG_he)
 				Se = 1.;
 			else
@@ -112,7 +112,7 @@
                 Se = pow(1. + pow(mySoil->VG_alpha * myPsi, mySoil->VG_n), - mySoil->VG_m);
 				Se *= (1. / mySoil->VG_Sc);
 				}
-		else if (myParameters.waterRetentionCurve == VANGENUCHTEN)
+        else if (myParameters.waterRetentionCurve == VANGENUCHTEN)
             Se = pow(1. + pow(mySoil->VG_alpha * myPsi, mySoil->VG_n), - mySoil->VG_m);
 
 		return Se;
@@ -147,12 +147,12 @@
 		if (Se >= 1.) return(mySoil->K_sat );
 
 		double myTmp = NODATA;
-		if (myParameters.waterRetentionCurve == MODIFIEDVANGENUCHTEN)
+        if (myParameters.waterRetentionCurve == MODIFIEDVANGENUCHTEN)
 		{
 			double myNumerator = 1. - pow(1. - pow(Se*mySoil->VG_Sc, 1./mySoil->VG_m), mySoil->VG_m);
 			myTmp = myNumerator / (1. - pow(1. - pow(mySoil->VG_Sc, 1./mySoil->VG_m), mySoil->VG_m));
 		}
-		else if (myParameters.waterRetentionCurve == VANGENUCHTEN)
+        else if (myParameters.waterRetentionCurve == VANGENUCHTEN)
 			myTmp = 1. - pow(1. - pow(Se, 1./mySoil->VG_m), mySoil->VG_m);
 
 		return (mySoil->K_sat * pow(Se, mySoil->Mualem_L) * pow(myTmp , 2.));
@@ -176,12 +176,12 @@
 		if (Se >= 1.) return(Ksat);
 		double temp= NODATA;
 
-		if (myParameters.waterRetentionCurve == MODIFIEDVANGENUCHTEN)
+        if (myParameters.waterRetentionCurve == MODIFIEDVANGENUCHTEN)
         {
             double num = 1. - pow(1. - pow(Se*VG_Sc, 1./VG_m), VG_m);
             temp = num / (1. - pow(1. - pow(VG_Sc, 1./VG_m), VG_m));
         }
-		else if (myParameters.waterRetentionCurve == VANGENUCHTEN)
+        else if (myParameters.waterRetentionCurve == VANGENUCHTEN)
         {
 			temp = 1. - pow(1. - pow(Se, 1./VG_m), VG_m);
         }
@@ -226,7 +226,7 @@
 		double m = myNode[myIndex].Soil->VG_m;
 		double temp = NODATA;
 
-		if (myParameters.waterRetentionCurve == MODIFIEDVANGENUCHTEN)
+        if (myParameters.waterRetentionCurve == MODIFIEDVANGENUCHTEN)
 				temp = pow(1./ (myNode[myIndex].Se * myNode[myIndex].Soil->VG_Sc) , 1./ m ) - 1.;
         else if (myParameters.waterRetentionCurve == VANGENUCHTEN)
 				temp = pow(1./ myNode[myIndex].Se, 1./ m ) - 1.;
@@ -268,15 +268,15 @@
      double psi = fabs(minValue(myNode[myIndex].H - myNode[myIndex].z, 0.));
      double psiPrevious = fabs(minValue(myNode[myIndex].oldH - myNode[myIndex].z, 0.));
 
-	if (myParameters.waterRetentionCurve == MODIFIEDVANGENUCHTEN)
+    if (myParameters.waterRetentionCurve == MODIFIEDVANGENUCHTEN)
 		{ if ((psi <= myNode[myIndex].Soil->VG_he) && (psiPrevious <= myNode[myIndex].Soil->VG_he)) return 0.;}
-	else if (myParameters.waterRetentionCurve == VANGENUCHTEN)
+    else if (myParameters.waterRetentionCurve == VANGENUCHTEN)
 		{ if ((psi == 0.) && (psiPrevious == 0.)) return 0.;}
 
 	 if (psi == psiPrevious)
 			{
 			dSe_dH = alfa * n * m * pow(1. + pow(alfa * psi, n), -(m + 1.)) * pow(alfa * psi, n - 1.);
-			if (myParameters.waterRetentionCurve == MODIFIEDVANGENUCHTEN)
+            if (myParameters.waterRetentionCurve == MODIFIEDVANGENUCHTEN)
 					dSe_dH *= (1. / myNode[myIndex].Soil->VG_Sc);
 			}
 	 else
