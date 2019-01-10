@@ -159,9 +159,9 @@ MeteoTab::MeteoTab(Crit3DMeteoSettings *meteoSettings)
 }
 
 
-SettingsDialog::SettingsDialog(QSettings *pathSettings, QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DMeteoSettings *meteoSettings)
+SettingsDialog::SettingsDialog(QSettings *projectSettings, QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DMeteoSettings *meteoSettings)
 {
-    _pathSettings = pathSettings;
+    _pathSettings = projectSettings;
     _paramSettings = settings;
 
     _geoSettings = gisSettings;

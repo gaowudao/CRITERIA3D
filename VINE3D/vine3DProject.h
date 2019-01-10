@@ -112,7 +112,7 @@
         Vine3DProject();
 
         bool loadVine3DSettings();
-        bool loadVine3DProjectSettings();
+        bool loadVine3DProjectSettings(QString projectFile);
         bool loadVine3DProjectParameters();
         bool loadClimateParameters();
         bool loadAggregatedMeteoVarCodes();

@@ -62,12 +62,12 @@ ElaborationTab::ElaborationTab(Crit3DElaborationSettings *elabSettings)
 }
 
 
-PragaSettingsDialog::PragaSettingsDialog(QSettings *pathSettings,
+PragaSettingsDialog::PragaSettingsDialog(QSettings *projectSettings,
                                          QSettings *settings,
                                          gis::Crit3DGisSettings *gisSettings,
                                          Crit3DQuality *quality,
                                          Crit3DMeteoSettings *meteoSettings,
-                                         Crit3DElaborationSettings *elabSettings) : SettingsDialog(pathSettings, settings, gisSettings, quality, meteoSettings)
+                                         Crit3DElaborationSettings *elabSettings) : SettingsDialog(projectSettings, settings, gisSettings, quality, meteoSettings)
 {
     _elabSettings = elabSettings;
     elabTab = new ElaborationTab(elabSettings);

@@ -45,7 +45,7 @@
 
     public:
         QSettings* parameters;
-        QSettings* pathSettings;
+        QSettings* projectSettings;
         QString path;
         QString logFileName;
         std::ofstream logFile;

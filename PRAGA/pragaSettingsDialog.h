@@ -33,7 +33,7 @@ class PragaSettingsDialog : public SettingsDialog
     Q_OBJECT
 
     public:
-        explicit PragaSettingsDialog(QSettings *pathSettings,
+        explicit PragaSettingsDialog(QSettings *projectSettings,
                                      QSettings *settings,
                                      gis::Crit3DGisSettings *gisSettings,
                                      Crit3DQuality *quality,

@@ -55,6 +55,9 @@ void Vine3DProject::initialize()
 
     statePlant.stateGrowth.initialize();
     statePlant.statePheno.initialize();
+
+    delete parameters;
+    delete pathSettings;
 }
 
 
@@ -106,6 +109,189 @@ QString Vine3DProject::getGeoserverPath()
     return (this->path + "geoserver/");
 }
 
+bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
+{
+    if (! QFile(projectFile).exists())
+    {
+        logError("Project file not found: " + projectFile);
+        return false;
+    }
+
+    initialize();
+
+    pathSettings = new QSettings(projectFile, QSettings::IniFormat);
+
+    pathSettings->beginGroup("path");
+    QString myPath = pathSettings->value("path").toString();
+    pathSettings->endGroup();
+
+    if (! myPath.isEmpty())
+    {
+        if (myPath.right(1) != "/" || myPath.right(1) != "\\" )
+            myPath += "/";
+
+        if (myPath.left(1) == ".")
+            this->path = getPath(projectFile) + "/" + myPath;
+        else
+            this->path = myPath;
+    }
+
+    pathSettings->beginGroup("location");
+    int utmZone = pathSettings->value("utm_zone").toInt();
+    int isUtc = pathSettings->value("is_utc").toBool();
+    int timeZone = pathSettings->value("time_zone").toInt();
+    pathSettings->endGroup();
+
+    gisSettings.utmZone = utmZone;
+    gisSettings.isUTC = isUtc;
+    gisSettings.timeZone = timeZone;
+
+    Q_FOREACH (QString group, settings->childGroups())
+    {
+        //meteo settings
+        if (group == "meteo")
+        {
+            settings->beginGroup(group);
+
+            if (settings->contains("min_percentage") && !settings->value("min_percentage").toString().isEmpty())
+            {
+                meteoSettings->setMinimumPercentage(settings->value("min_percentage").toFloat());
+            }
+            if (settings->contains("prec_threshold") && !settings->value("prec_threshold").toString().isEmpty())
+            {
+                meteoSettings->setRainfallThreshold(settings->value("prec_threshold").toFloat());
+            }
+            if (settings->contains("thom_threshold") && !settings->value("thom_threshold").toString().isEmpty())
+            {
+                meteoSettings->setThomThreshold(settings->value("thom_threshold").toFloat());
+            }
+            if (settings->contains("samani_coefficient") && !settings->value("samani_coefficient").toString().isEmpty())
+            {
+                meteoSettings->setTransSamaniCoefficient(settings->value("samani_coefficient").toFloat());
+            }
+            if (settings->contains("hourly_intervals") && !settings->value("hourly_intervals").toString().isEmpty())
+            {
+                meteoSettings->setHourlyIntervals(settings->value("hourly_intervals").toInt());
+            }
+            if (settings->contains("wind_intensity_default") && !settings->value("wind_intensity_default").toString().isEmpty())
+            {
+                meteoSettings->setWindIntensityDefault(settings->value("wind_intensity_default").toInt());
+            }
+
+            settings->endGroup();
+        }
+
+        //interpolation
+        if (group == "interpolation")
+        {
+            settings->beginGroup(group);
+
+            if (settings->contains("algorithm"))
+            {
+                std::string algorithm = settings->value("algorithm").toString().toStdString();
+                if (interpolationMethodNames.find(algorithm) == interpolationMethodNames.end())
+                {
+                    errorString = "Unknown interpolation method";
+                    return false;
+                }
+                else
+                    interpolationSettings.setInterpolationMethod(interpolationMethodNames.at(algorithm));
+            }
+
+            if (settings->contains("gridAggregationMethod"))
+            {
+                std::string aggrMethod = settings->value("gridAggregationMethod").toString().toStdString();
+                if (gridAggregationMethodNames.find(aggrMethod) == gridAggregationMethodNames.end())
+                {
+                    errorString = "Unknown aggregation method";
+                    return false;
+                }
+                else
+                    interpolationSettings.setMeteoGridAggrMethod(gridAggregationMethodNames.at(aggrMethod));
+            }
+
+            if (settings->contains("thermalInversion"))
+            {
+                interpolationSettings.setUseThermalInversion(settings->value("thermalInversion").toBool());
+                qualityInterpolationSettings.setUseThermalInversion(settings->value("thermalInversion").toBool());
+            }
+
+            if (settings->contains("topographicDistance"))
+                interpolationSettings.setUseTAD(settings->value("topographicDistance").toBool());
+
+            if (settings->contains("lapseRateCode"))
+            {
+                interpolationSettings.setUseLapseRateCode(settings->value("lapseRateCode").toBool());
+                qualityInterpolationSettings.setUseLapseRateCode(settings->value("lapseRateCode").toBool());
+            }
+
+            if (settings->contains("optimalDetrending"))
+                interpolationSettings.setUseBestDetrending(settings->value("optimalDetrending").toBool());
+
+            if (settings->contains("minRegressionR2"))
+            {
+                interpolationSettings.setMinRegressionR2(settings->value("minRegressionR2").toFloat());
+                qualityInterpolationSettings.setMinRegressionR2(settings->value("minRegressionR2").toFloat());
+            }
+
+            if (settings->contains("useDewPoint"))
+                interpolationSettings.setUseDewPoint(settings->value("useDewPoint").toBool());
+
+            settings->endGroup();
+
+        }
+
+        if (group == "quality")
+        {
+            settings->beginGroup(group);
+            if (settings->contains("reference_height") && !settings->value("reference_height").toString().isEmpty())
+            {
+                quality->setReferenceHeight(settings->value("reference_height").toFloat());
+            }
+            if (settings->contains("delta_temperature_suspect") && !settings->value("delta_temperature_suspect").toString().isEmpty())
+            {
+                quality->setDeltaTSuspect(settings->value("delta_temperature_suspect").toFloat());
+            }
+            if (settings->contains("delta_temperature_wrong") && !settings->value("delta_temperature_wrong").toString().isEmpty())
+            {
+                quality->setDeltaTWrong(settings->value("delta_temperature_wrong").toFloat());
+            }
+            if (settings->contains("relhum_tolerance") && !settings->value("relhum_tolerance").toString().isEmpty())
+            {
+                quality->setRelHumTolerance(settings->value("relhum_tolerance").toFloat());
+            }
+
+            settings->endGroup();
+        }
+
+        //proxy variables (for interpolation)
+        if (group.startsWith("proxy"))
+        {
+            proxyName = group.right(group.size()-6).toStdString();
+
+            settings->beginGroup(group);
+            gridName = settings->value("raster").toString();
+            if (gridName.left(1) == ".")
+                proxyGridName = path.toStdString() + gridName.toStdString();
+            else
+                proxyGridName = gridName.toStdString();
+            proxyTable = settings->value("table").toString().toStdString();
+            proxyField = settings->value("field").toString().toStdString();
+            isActive = settings->value("active").toBool();
+            forQuality = settings->value("useForSpatialQualityControl").toBool();
+            settings->endGroup();
+
+            if (checkProxy(proxyName, proxyGridName, proxyTable, proxyField, &errorString))
+                addProxy(proxyName, proxyGridName, proxyTable, proxyField, forQuality, isActive);
+            else
+                return false;
+
+        }
+    }
+
+    return true;
+
+}
 
 bool Vine3DProject::loadProject(QString myFileName)
 {

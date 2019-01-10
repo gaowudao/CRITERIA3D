@@ -262,11 +262,11 @@ bool Project::loadDefaultSettings(QString currentPath)
         return false;
     }
 
-    pathSettings = new QSettings(settingsFileName, QSettings::IniFormat);
+    projectSettings = new QSettings(settingsFileName, QSettings::IniFormat);
 
-    pathSettings->beginGroup("path");
-    QString myPath = pathSettings->value("path").toString();
-    pathSettings->endGroup();
+    projectSettings->beginGroup("path");
+    QString myPath = projectSettings->value("path").toString();
+    projectSettings->endGroup();
 
     if (! myPath.isEmpty())
     {
@@ -285,12 +285,12 @@ bool Project::loadDefaultSettings(QString currentPath)
         }
     }
 
-    pathSettings->beginGroup("location");
-    float latitude = pathSettings->value("lat").toFloat();
-    float longitude = pathSettings->value("lon").toFloat();
-    int utmZone = pathSettings->value("utm_zone").toInt();
-    int isUtc = pathSettings->value("is_utc").toBool();
-    pathSettings->endGroup();
+    projectSettings->beginGroup("location");
+    float latitude = projectSettings->value("lat").toFloat();
+    float longitude = projectSettings->value("lon").toFloat();
+    int utmZone = projectSettings->value("utm_zone").toInt();
+    int isUtc = projectSettings->value("is_utc").toBool();
+    projectSettings->endGroup();
 
     if (latitude != 0 && longitude != 0)
     {
