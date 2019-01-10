@@ -53,7 +53,7 @@
         QString idArea;
         QString path;
         QString dailyOutputPath;
-        QString dtmFileName;
+        QString demFileName;
         QString fieldMapName;
         QString logFileName;
         std::ofstream logFile;

@@ -93,8 +93,8 @@ bool readXmlProject(Vine3DProject* myProject, QString xmlFileName)
                    {myProject->idArea = child.toElement().text(); nrTokens++;}
                else if ((myTag == "PATH") || (myTag == "PROJECTPATH"))
                     {myProject->path = myPath + child.toElement().text(); nrTokens++;}
-               else if ((myTag == "DTM") || (myTag == "DTMFILE") || (myTag == "DTMFILENAME"))
-                    {myProject->dtmFileName = child.toElement().text(); nrTokens++;}
+               else if ((myTag == "DTM") || (myTag == "DTMFILE") || (myTag == "demFileName"))
+                    {myProject->demFileName = child.toElement().text(); nrTokens++;}
                else if (myTag == "FIELDMAP")
                     {myProject->fieldMapName = child.toElement().text();}
                child = child.nextSibling();

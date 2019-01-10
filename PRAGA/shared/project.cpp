@@ -93,7 +93,7 @@ void Project::addProxy(std::string name_, std::string gridName_, std::string tab
     if (getProxyPragaName(name_) == height) setProxyDEM();
 }
 
-bool Project::loadDefaultParameters()
+bool Project::loadParameters()
 {
     //interpolation settings
     interpolationSettings.initialize();
@@ -309,7 +309,7 @@ bool Project::loadDefaultSettings(QString currentPath)
     else
     {
         parameters = new QSettings(parametersFileName, QSettings::IniFormat);
-        return loadDefaultParameters();
+        return loadParameters();
     }
 
 }

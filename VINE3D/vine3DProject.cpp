@@ -38,7 +38,7 @@ void Vine3DProject::initialize()
 
     path = "";
     dailyOutputPath = "daily_output/";
-    dtmFileName = "";
+    demFileName = "";
     fieldMapName = "";
     logFileName = "";
     projectError = "";
@@ -57,7 +57,7 @@ void Vine3DProject::initialize()
     statePlant.statePheno.initialize();
 
     delete parameters;
-    delete pathSettings;
+    delete projectSettings;
 }
 
 
@@ -119,11 +119,11 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
 
     initialize();
 
-    pathSettings = new QSettings(projectFile, QSettings::IniFormat);
+    projectSettings = new QSettings(projectFile, QSettings::IniFormat);
 
-    pathSettings->beginGroup("path");
-    QString myPath = pathSettings->value("path").toString();
-    pathSettings->endGroup();
+    projectSettings->beginGroup("path");
+    QString myPath = projectSettings->value("path").toString();
+    projectSettings->endGroup();
 
     if (! myPath.isEmpty())
     {
@@ -136,162 +136,63 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
             this->path = myPath;
     }
 
-    pathSettings->beginGroup("location");
-    int utmZone = pathSettings->value("utm_zone").toInt();
-    int isUtc = pathSettings->value("is_utc").toBool();
-    int timeZone = pathSettings->value("time_zone").toInt();
-    pathSettings->endGroup();
+    projectSettings->beginGroup("location");
+    int utmZone = projectSettings->value("utm_zone").toInt();
+    int isUtc = projectSettings->value("is_utc").toBool();
+    int timeZone = projectSettings->value("time_zone").toInt();
+    projectSettings->endGroup();
 
     gisSettings.utmZone = utmZone;
     gisSettings.isUTC = isUtc;
     gisSettings.timeZone = timeZone;
 
-    Q_FOREACH (QString group, settings->childGroups())
+    projectSettings->beginGroup("project");
+    QString myId = projectSettings->value("id").toString();
+    QString projectName = projectSettings->value("name").toString();
+    QString demName = projectSettings->value("dem").toString();
+    QString fieldName = projectSettings->value("fieldMap").toString();
+    projectSettings->endGroup();
+
+    idArea = myId;
+    demFileName = demName;
+    fieldMapName = fieldName;
+
+    projectSettings->beginGroup("database");
+    QString driver = projectSettings->value("driver").toString();
+    QString host = projectSettings->value("host").toString();
+    int port = projectSettings->value("host").toInt();
+    QString dbname = projectSettings->value("dbname").toString();
+    QString user = projectSettings->value("username").toString();
+    QString pass = projectSettings->value("password").toString();
+    projectSettings->endGroup();
+
+    sqlDriver = driver;
+    hostName = host;
+    connectionPort = port;
+    databaseName = dbname;
+    userName = user;
+    password = pass;
+
+    projectSettings->beginGroup("settings");
+    QString paramFile = this->path + projectSettings->value("parameters_file").toString();
+    float depth = projectSettings->value("soil_depth").toFloat();
+    projectSettings->endGroup();
+
+    soilDepth = depth;
+
+    if (! QFile(paramFile).exists())
     {
-        //meteo settings
-        if (group == "meteo")
-        {
-            settings->beginGroup(group);
-
-            if (settings->contains("min_percentage") && !settings->value("min_percentage").toString().isEmpty())
-            {
-                meteoSettings->setMinimumPercentage(settings->value("min_percentage").toFloat());
-            }
-            if (settings->contains("prec_threshold") && !settings->value("prec_threshold").toString().isEmpty())
-            {
-                meteoSettings->setRainfallThreshold(settings->value("prec_threshold").toFloat());
-            }
-            if (settings->contains("thom_threshold") && !settings->value("thom_threshold").toString().isEmpty())
-            {
-                meteoSettings->setThomThreshold(settings->value("thom_threshold").toFloat());
-            }
-            if (settings->contains("samani_coefficient") && !settings->value("samani_coefficient").toString().isEmpty())
-            {
-                meteoSettings->setTransSamaniCoefficient(settings->value("samani_coefficient").toFloat());
-            }
-            if (settings->contains("hourly_intervals") && !settings->value("hourly_intervals").toString().isEmpty())
-            {
-                meteoSettings->setHourlyIntervals(settings->value("hourly_intervals").toInt());
-            }
-            if (settings->contains("wind_intensity_default") && !settings->value("wind_intensity_default").toString().isEmpty())
-            {
-                meteoSettings->setWindIntensityDefault(settings->value("wind_intensity_default").toInt());
-            }
-
-            settings->endGroup();
-        }
-
-        //interpolation
-        if (group == "interpolation")
-        {
-            settings->beginGroup(group);
-
-            if (settings->contains("algorithm"))
-            {
-                std::string algorithm = settings->value("algorithm").toString().toStdString();
-                if (interpolationMethodNames.find(algorithm) == interpolationMethodNames.end())
-                {
-                    errorString = "Unknown interpolation method";
-                    return false;
-                }
-                else
-                    interpolationSettings.setInterpolationMethod(interpolationMethodNames.at(algorithm));
-            }
-
-            if (settings->contains("gridAggregationMethod"))
-            {
-                std::string aggrMethod = settings->value("gridAggregationMethod").toString().toStdString();
-                if (gridAggregationMethodNames.find(aggrMethod) == gridAggregationMethodNames.end())
-                {
-                    errorString = "Unknown aggregation method";
-                    return false;
-                }
-                else
-                    interpolationSettings.setMeteoGridAggrMethod(gridAggregationMethodNames.at(aggrMethod));
-            }
-
-            if (settings->contains("thermalInversion"))
-            {
-                interpolationSettings.setUseThermalInversion(settings->value("thermalInversion").toBool());
-                qualityInterpolationSettings.setUseThermalInversion(settings->value("thermalInversion").toBool());
-            }
-
-            if (settings->contains("topographicDistance"))
-                interpolationSettings.setUseTAD(settings->value("topographicDistance").toBool());
-
-            if (settings->contains("lapseRateCode"))
-            {
-                interpolationSettings.setUseLapseRateCode(settings->value("lapseRateCode").toBool());
-                qualityInterpolationSettings.setUseLapseRateCode(settings->value("lapseRateCode").toBool());
-            }
-
-            if (settings->contains("optimalDetrending"))
-                interpolationSettings.setUseBestDetrending(settings->value("optimalDetrending").toBool());
-
-            if (settings->contains("minRegressionR2"))
-            {
-                interpolationSettings.setMinRegressionR2(settings->value("minRegressionR2").toFloat());
-                qualityInterpolationSettings.setMinRegressionR2(settings->value("minRegressionR2").toFloat());
-            }
-
-            if (settings->contains("useDewPoint"))
-                interpolationSettings.setUseDewPoint(settings->value("useDewPoint").toBool());
-
-            settings->endGroup();
-
-        }
-
-        if (group == "quality")
-        {
-            settings->beginGroup(group);
-            if (settings->contains("reference_height") && !settings->value("reference_height").toString().isEmpty())
-            {
-                quality->setReferenceHeight(settings->value("reference_height").toFloat());
-            }
-            if (settings->contains("delta_temperature_suspect") && !settings->value("delta_temperature_suspect").toString().isEmpty())
-            {
-                quality->setDeltaTSuspect(settings->value("delta_temperature_suspect").toFloat());
-            }
-            if (settings->contains("delta_temperature_wrong") && !settings->value("delta_temperature_wrong").toString().isEmpty())
-            {
-                quality->setDeltaTWrong(settings->value("delta_temperature_wrong").toFloat());
-            }
-            if (settings->contains("relhum_tolerance") && !settings->value("relhum_tolerance").toString().isEmpty())
-            {
-                quality->setRelHumTolerance(settings->value("relhum_tolerance").toFloat());
-            }
-
-            settings->endGroup();
-        }
-
-        //proxy variables (for interpolation)
-        if (group.startsWith("proxy"))
-        {
-            proxyName = group.right(group.size()-6).toStdString();
-
-            settings->beginGroup(group);
-            gridName = settings->value("raster").toString();
-            if (gridName.left(1) == ".")
-                proxyGridName = path.toStdString() + gridName.toStdString();
-            else
-                proxyGridName = gridName.toStdString();
-            proxyTable = settings->value("table").toString().toStdString();
-            proxyField = settings->value("field").toString().toStdString();
-            isActive = settings->value("active").toBool();
-            forQuality = settings->value("useForSpatialQualityControl").toBool();
-            settings->endGroup();
-
-            if (checkProxy(proxyName, proxyGridName, proxyTable, proxyField, &errorString))
-                addProxy(proxyName, proxyGridName, proxyTable, proxyField, forQuality, isActive);
-            else
-                return false;
-
-        }
+        logError("Missing file: " + paramFile);
+        return false;
+    }
+    else
+    {
+        parameters = new QSettings(paramFile, QSettings::IniFormat);
+        return loadParameters();
     }
 
-    return true;
-
 }
+
 
 bool Vine3DProject::loadProject(QString myFileName)
 {
@@ -310,7 +211,7 @@ bool Vine3DProject::loadProject(QString myFileName)
     else
         this->logError("LogFile Wrong.");
 
-    myFileName = path + dtmFileName;
+    myFileName = path + demFileName;
     if (loadDEM(myFileName))
     {
         this->logInfo("Initialize DTM and project maps...");
