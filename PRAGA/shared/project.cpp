@@ -93,7 +93,7 @@ void Project::addProxy(std::string name_, std::string gridName_, std::string tab
     if (getProxyPragaName(name_) == height) setProxyDEM();
 }
 
-bool Project::readGenericParameters()
+bool Project::loadGenericParameters()
 {
     //interpolation settings
     interpolationSettings.initialize();
@@ -242,7 +242,7 @@ bool Project::readGenericParameters()
 }
 
 
-bool Project::readGenericSettings(QString currentPath)
+bool Project::loadGenericSettings(QString currentPath)
 {
     this->path = currentPath;
 
@@ -301,7 +301,7 @@ bool Project::readGenericSettings(QString currentPath)
     else
     {
         this->settings = new QSettings(parametersFileName, QSettings::IniFormat);
-        return readGenericParameters();
+        return loadGenericParameters();
     }
 
 }

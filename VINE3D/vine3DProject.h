@@ -113,7 +113,18 @@
 
         Vine3DProject();
 
-        bool readVine3DParameters();
+        bool loadVine3DSettings();
+        bool loadVine3DProjectParameters();
+        bool loadClimateParameters();
+        bool loadAggregatedMeteoVarCodes();
+        bool loadFieldsProperties();
+        bool loadDBPoints();
+        bool loadVanGenuchtenParameters();
+        bool loadGrapevineParameters();
+        bool loadTrainingSystems();
+        bool loadSoils();
+        bool loadFieldBook();
+        bool loadHorizons(soil::Crit3DSoil* mySoil, int idSoil);
 
         void deleteAllGrids();
         void initializeMeteoPoints();
@@ -133,15 +144,8 @@
                             int* soilIndex, float* maxLaiGrass,  float* maxIrrigationRate);
         bool setField(int fieldIndex, int soilIndex, int vineIndex, int trainingIndex,
                             float maxLaiGrass,  float maxIrrigationRate);
+        bool getFieldBookIndex(int firstIndex, QDate myQDate, int fieldIndex, int* outputIndex);
 
-        bool loadFieldsProperties();
-        bool loadDBPoints();
-        bool loadVanGenuchtenParameters();
-        bool loadGrapevineParameters();
-        bool loadTrainingSystems();
-        bool loadSoils();
-        bool loadFieldBook();
-        bool loadHorizons(soil::Crit3DSoil* mySoil, int idSoil);
         int getAggregatedVarCode(int rawVarCode);
         bool getMeteoVarIndexRaw(meteoVariable myVar, int *nrVarIndices, int **varIndices);
         bool loadObsDataSubHourly(int indexPoint, meteoVariable myVar, QDateTime d1, QDateTime d2, QString tableName);
@@ -151,9 +155,8 @@
         bool loadObsDataAllPointsVar(meteoVariable myVar, QDate d1, QDate d2);
         bool meteoDataLoaded(const Crit3DTime& myTimeIni, const Crit3DTime& myTimeFin);
         float meteoDataConsistency(meteoVariable myVar, const Crit3DTime& myTimeIni, const Crit3DTime& myTimeFin);
-        bool loadVine3DSettings();
-        bool loadClimateParameters();
-        bool loadAggregatedMeteoVarCodes();
+        bool LoadObsDataFilled(QDateTime firstTime, QDateTime lastTime);
+
         bool loadStates(QDate myDate, QString myArea);
         bool saveStateAndOutput(QDate myDate, QString myArea);
 
@@ -169,9 +172,7 @@
         int getFieldIndex(long row, long col);
         bool isVineyard(long row, long col);
         int getSoilIndex(long row, long col);
-        bool getFieldBookIndex(int firstIndex, QDate myQDate, int fieldIndex, int* outputIndex);
 
-        bool LoadObsDataFilled(QDateTime firstTime, QDateTime lastTime);
         bool runModels(QDateTime myTime1, QDateTime myTime2, bool isSaveOutput, const QString& myArea);
     };
 

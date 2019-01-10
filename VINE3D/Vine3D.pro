@@ -82,7 +82,8 @@ SOURCES += \
     plant.cpp \
     waterBalance.cpp \
     vine3DProject.cpp \
-    mainWindow.cpp
+    mainWindow.cpp \
+    formPeriod.cpp
 
 HEADERS  += \
     ../PRAGA/shared/interpolationCmd.h \
@@ -104,8 +105,10 @@ HEADERS  += \
     plant.h \
     waterBalance.h \
     vine3DProject.h \
-    mainWindow.h
+    mainWindow.h \
+    formPeriod.h
 
 FORMS    += \
     ../PRAGA/shared/formInfo.ui \
-    mainWindow.ui
+    mainWindow.ui \
+    formPeriod.ui

@@ -18,20 +18,20 @@
 #include "tileSources/GridTileSource.h"
 #include "tileSources/CompositeTileSource.h"
 
-#include "formInfo.h"
-#include "mainwindow.h"
-#include "ui_mainWindow.h"
+#include "commonConstants.h"
+#include "gis.h"
 #include "waterBalance.h"
-#include "Position.h"
-#include "dbMeteoPoints.h"
 #include "vine3DProject.h"
 #include "utilities.h"
-#include "commonConstants.h"
-#include "dialogWindows.h"
-#include "gis.h"
+#include "Position.h"
 #include "spatialControl.h"
 #include "interpolationDialog.h"
 #include "settingsDialog.h"
+#include "dialogWindows.h"
+#include "formInfo.h"
+#include "formPeriod.h"
+#include "mainwindow.h"
+#include "ui_mainWindow.h"
 
 extern Vine3DProject myProject;
 
@@ -393,6 +393,17 @@ void MainWindow::on_actionOpen_meteo_points_DB_triggered()
     redrawMeteoPoints(true);
 }
 
+void MainWindow::on_actionRun_models_triggered()
+{
+    if (! myProject.isProjectLoaded) return;
+
+       formPeriod myForm;
+       myForm.show();
+       int myReturn = myForm.exec();
+       if (myReturn == QDialog::Rejected) return;
+
+       myProject.runModels(myForm.dateTimeFirst, myForm.dateTimeLast, true, myProject.idArea);
+}
 
 QPoint MainWindow::getMapPoint(QPoint* point) const
 {

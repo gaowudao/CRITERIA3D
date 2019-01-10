@@ -2580,6 +2580,8 @@
     <property name="title">
      <string>Vine3D</string>
     </property>
+    <addaction name="actionRun_models"/>
+    <addaction name="separator"/>
     <addaction name="actionVine3D_InitializeWaterBalance"/>
     <addaction name="actionCriteria3D_settings"/>
     <addaction name="separator"/>
@@ -2726,6 +2728,11 @@
   <action name="actionOpen_project">
    <property name="text">
     <string>Open project...</string>
+   </property>
+  </action>
+  <action name="actionRun_models">
+   <property name="text">
+    <string>Run models...</string>
    </property>
   </action>
  </widget>

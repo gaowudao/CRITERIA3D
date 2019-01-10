@@ -24,8 +24,6 @@
 
 void Vine3DProject::initialize()
 {
-    environment = gui;
-
     idArea = "0000";
     sqlDriver = "QPSQL";
     hostName = "127.0.0.1";
@@ -67,8 +65,9 @@ Vine3DProject::Vine3DProject()
     initialize();
 }
 
-bool Vine3DProject::readVine3DParameters()
+bool Vine3DProject::loadVine3DSettings()
 {
+    //eventually put Vine3D generic settings
     return true;
 }
 
@@ -145,7 +144,7 @@ bool Vine3DProject::loadProject(QString myFileName)
         if (!loadFieldMap(myFileName)) return false;
     }
 
-    if (!loadVine3DSettings() || !loadSoils() || !loadTrainingSystems()
+    if (!loadVine3DProjectParameters() || !loadSoils() || !loadTrainingSystems()
         || !loadAggregatedMeteoVarCodes() || !loadDBPoints())
     {
         logError();
@@ -699,7 +698,7 @@ bool Vine3DProject::loadClimateParameters()
 
 }
 
-bool Vine3DProject::loadVine3DSettings()
+bool Vine3DProject::loadVine3DProjectParameters()
 {
     if (!loadClimateParameters()) return false;
     if (!loadVanGenuchtenParameters()) return false;

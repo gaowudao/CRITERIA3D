@@ -81,8 +81,8 @@
 
         Project();
 
-        bool readGenericSettings(QString currentPath);
-        bool readGenericParameters();
+        bool loadGenericSettings(QString currentPath);
+        bool loadGenericParameters();
         void setProxyDEM();
         bool checkProxy(std::string name_, std::string gridName_, std::string table_, std::string field_, std::string *error);
         void addProxy(std::string name_, std::string gridName_, std::string table_, std::string field_, bool isForQuality_, bool isActive_);

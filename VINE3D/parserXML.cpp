@@ -46,11 +46,6 @@ bool parseXMLFile(Vine3DProject* myProject, QString xmlFileName, QDomDocument* m
     return true;
 }
 
-bool readVine3DSettings(QString currentPath)
-{
-    return false;
-}
-
 bool readXmlProject(Vine3DProject* myProject, QString xmlFileName)
 {
    myProject->logInfo("Read xml " + xmlFileName);

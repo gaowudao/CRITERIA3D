@@ -25,12 +25,14 @@ int main(int argc, char *argv[])
 
     QString currentPath = myApp.applicationDirPath() + "/";
 
+    if (! myProject.loadVine3DSettings())
+        return -1;
+
     if (argc == 1)
     {
-        if (! myProject.readGenericSettings(currentPath))
-            return -1;
+        myProject.setEnvironment(gui);
 
-        if (! myProject.readVine3DParameters())
+        if (! myProject.loadGenericSettings(currentPath))
             return -1;
 
         QNetworkProxyFactory::setUseSystemConfiguration(true);
@@ -43,6 +45,8 @@ int main(int argc, char *argv[])
     }
     else
     {
+        myProject.setEnvironment(batch);
+
         QDate today, firstDay;
         int nrDays, nrDaysForecast;
 
@@ -66,8 +70,7 @@ int main(int argc, char *argv[])
         if (!myProject.loadProject(settingsFileName))
         {
             myProject.logError("Open project failed:\n " + settingsFileName);
-        }
-        myProject.setEnvironment(batch);
+        }   
 
         today = QDate::currentDate();
         QDateTime lastDateTime = QDateTime(today);

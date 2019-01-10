@@ -67,6 +67,8 @@
         void on_actionVine3D_InitializeWaterBalance_triggered();
         void on_actionParameters_triggered();
 
+        void on_actionRun_models_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
