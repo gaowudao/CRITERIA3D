@@ -33,7 +33,6 @@ void Vine3DProject::initialize()
     password = "postgres";
 
     isObsDataLoaded = false;
-    windIntensityDefault = 2.0;
 
     isProjectLoaded = false;
 
@@ -44,7 +43,6 @@ void Vine3DProject::initialize()
     logFileName = "";
     projectError = "";
 
-    hourlyIntervals = 1;
     lastDateTransmissivity.setDate(1900,1,1);
 
     nrVines = 0;
@@ -1126,7 +1124,7 @@ bool Vine3DProject::loadObsDataSubHourly(int indexPoint, meteoVariable myVar, QD
     int nrDays = d1.daysTo(d2) + 1;
 
     //initialize data
-    myPoint->initializeObsDataH(hourlyIntervals, nrDays, getCrit3DDate(d1.date()));
+    myPoint->initializeObsDataH(meteoSettings->getHourlyIntervals(), nrDays, getCrit3DDate(d1.date()));
 
     queryString = "SELECT date_time, id_variable, obs_value FROM " + tableName;
     queryString += " WHERE id_location = " + QString::fromStdString(myPoint->id);
@@ -1154,7 +1152,7 @@ bool Vine3DProject::loadObsDataSubHourly(int indexPoint, meteoVariable myVar, QD
             //if myHour != previuousHour  -> aggregazione
 
             i = d1.daysTo(myDateTime);
-            j = myHour * hourlyIntervals;
+            j = myHour * meteoSettings->getHourlyIntervals();
 
         //check var
             if (myVar == airTemperature)
@@ -1360,7 +1358,7 @@ bool Vine3DProject::loadObsDataHourlyVar(int indexPoint, meteoVariable myVar, QD
         i = pointFirstDate.daysTo(myDate);
         if (i>=0)
         {
-            j = myHour * hourlyIntervals;
+            j = myHour * meteoSettings->getHourlyIntervals();
 
             if (useAggrCodes)
                 isValid = true;
@@ -1488,7 +1486,7 @@ int Vine3DProject::getIndexPointFromId(QString myId)
 
 
 float Vine3DProject::getTimeStep()
-{ return (3600. / this->hourlyIntervals);}
+{ return (3600. / meteoSettings->getHourlyIntervals());}
 
 
 bool removeDirectory(QString myPath)

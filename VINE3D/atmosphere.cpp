@@ -93,7 +93,7 @@ bool checkLackOfData(Vine3DProject* myProject, meteoVariable myVar, Crit3DTime m
     //------------------------------------------------------
     if (myVar == windIntensity)
     {
-        myProject->meteoPoints[indexPoint].setMeteoPointValueH(currentDate, hour, minutes, myVar, myProject->windIntensityDefault);
+        myProject->meteoPoints[indexPoint].setMeteoPointValueH(currentDate, hour, minutes, myVar, myProject->meteoSettings->getWindIntensityDefault());
         (*nrReplacedData)++;
         return true;
     }
@@ -263,8 +263,9 @@ bool vine3DInterpolationDemRadiation(Vine3DProject* myProject, const Crit3DTime&
     myProject->radSettings.setGisSettings(&(myProject->gisSettings));
 
     gis::Crit3DPoint myDtmCenter = myProject->DTM.mapCenter();
-    int intervalWidth = radiation::estimateTransmissivityWindow(&(myProject->radSettings), myProject->DTM, *(myProject->meteoMaps->radiationMaps), &myDtmCenter, myCrit3DTime, (int)(3600 / myProject->hourlyIntervals));
-    int myTimeStep = getTimeStepFromHourlyInterval(myProject->hourlyIntervals);
+    int intervalWidth = radiation::estimateTransmissivityWindow(&(myProject->radSettings), myProject->DTM, *(myProject->meteoMaps->radiationMaps),
+                                                                &myDtmCenter, myCrit3DTime, (int)(3600 / myProject->meteoSettings->getHourlyIntervals()));
+    int myTimeStep = getTimeStepFromHourlyInterval(myProject->meteoSettings->getHourlyIntervals());
 
     float myDeltaTime = (intervalWidth-1) * 0.5 * myTimeStep;
     Crit3DTime myTimeIni = myCrit3DTime.addSeconds(-myDeltaTime);
@@ -368,7 +369,7 @@ bool interpolationProjectDtmMain(Vine3DProject* myProject, meteoVariable myVar, 
         myResult = vine3DInterpolationDem(myProject, windIntensity, myCrit3DTime, isLoadData);
         if (myResult == false)
         {
-            myProject->meteoMaps->windIntensityMap->setConstantValueWithBase(myProject->windIntensityDefault, myProject->DTM);
+            myProject->meteoMaps->windIntensityMap->setConstantValueWithBase(myProject->meteoSettings->getWindIntensityDefault(), myProject->DTM);
             myResult = postInterpolation(windIntensity, myProject->meteoMaps->windIntensityMap);
         }
     }
@@ -429,7 +430,7 @@ bool aggregateAndSaveDailyMap(Vine3DProject* myProject, meteoVariable myVar,
                          const QString& dailyPath, const QString& hourlyPath, const QString& myArea)
 {
     std::string myError;
-    int myTimeStep = 3600. / myProject->hourlyIntervals;
+    int myTimeStep = 3600. / myProject->meteoSettings->getHourlyIntervals();
     Crit3DTime myTimeIni(myDate, myTimeStep);
     Crit3DTime myTimeFin(myDate.addDays(1), 0.);
 

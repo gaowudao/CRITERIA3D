@@ -71,7 +71,7 @@ bool assignIrrigation(Vine3DProject* myProject, Crit3DTime myTime)
                             if (hour >= (24-nrHours))
                             {
                                 irrigationRate = myProject->vineFields[fieldIndex].maxIrrigationRate;
-                                rate = irrigationRate / myProject->hourlyIntervals;
+                                rate = irrigationRate / myProject->meteoSettings->getHourlyIntervals();
                                 myProject->meteoMaps->irrigationMap->value[row][col] = rate;
                             }
                         }

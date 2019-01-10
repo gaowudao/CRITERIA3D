@@ -40,6 +40,7 @@ bool parseXMLFile(Vine3DProject* myProject, QString xmlFileName, QDomDocument* m
     return true;
 }
 
+
 bool readXmlProject(Vine3DProject* myProject, QString xmlFileName)
 {
    myProject->logInfo("Read xml " + xmlFileName);
@@ -106,13 +107,13 @@ bool readXmlProject(Vine3DProject* myProject, QString xmlFileName)
            {
                myTag = child.toElement().tagName().toUpper();
                if ((myTag == "HOURLYFRACTION") || (myTag == "HOURLYINTERVALS"))
-                    {myProject->hourlyIntervals = child.toElement().text().toInt();}
+                    myProject->meteoSettings->setHourlyIntervals(child.toElement().text().toInt());
                else if ((myTag == "TIMEREFERENCE") || (myTag == "TIMETYPE"))
                     {myProject->gisSettings.isUTC = (child.toElement().text().toUpper() == "UTC"); nrTokens++;}
                else if ((myTag == "TOTALDEPTH") || (myTag == "SOILDEPTH"))
                     myProject->soilDepth = child.toElement().text().toFloat();
                else if ((myTag == "WINDINTENSITYDEFAULT") || (myTag == "WINDDEFAULT"))
-                    myProject->windIntensityDefault = child.toElement().text().toFloat();
+                    myProject->meteoSettings->setWindIntensityDefault(child.toElement().text().toFloat());
 
                child = child.nextSibling();
            }
