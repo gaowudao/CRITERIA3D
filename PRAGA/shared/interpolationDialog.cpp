@@ -9,7 +9,7 @@
 InterpolationDialog::InterpolationDialog(Project *myProject)
 {
     _project = myProject;
-    _paramSettings = myProject->settings;
+    _paramSettings = myProject->parameters;
     _interpolationSettings = &(myProject->interpolationSettings);
     _qualityInterpolationSettings = &(myProject->qualityInterpolationSettings);
 
@@ -438,11 +438,11 @@ void ProxyDialog::writeProxies()
 {
     for (int i=0; i < _proxy.size(); i++)
     {
-        _project->settings->beginGroup("proxy_" + QString::fromStdString(_proxy.at(i).getName()));
-        _project->settings->setValue("table", QString::fromStdString(_proxy.at(i).getProxyTable()));
-        _project->settings->setValue("field", QString::fromStdString(_proxy.at(i).getProxyField()));
-        _project->settings->setValue("raster", QString::fromStdString(_proxy.at(i).getGridName()));
-        _project->settings->endGroup();
+        _project->parameters->beginGroup("proxy_" + QString::fromStdString(_proxy.at(i).getName()));
+        _project->parameters->setValue("table", QString::fromStdString(_proxy.at(i).getProxyTable()));
+        _project->parameters->setValue("field", QString::fromStdString(_proxy.at(i).getProxyField()));
+        _project->parameters->setValue("raster", QString::fromStdString(_proxy.at(i).getGridName()));
+        _project->parameters->endGroup();
     }
 }
 

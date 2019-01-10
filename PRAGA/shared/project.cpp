@@ -103,49 +103,49 @@ bool Project::loadDefaultParameters()
     std::string proxyName, proxyGridName, proxyTable, proxyField;
     bool isActive, forQuality;
 
-    Q_FOREACH (QString group, settings->childGroups())
+    Q_FOREACH (QString group, parameters->childGroups())
     {
         //meteo settings
         if (group == "meteo")
         {
-            settings->beginGroup(group);
+            parameters->beginGroup(group);
 
-            if (settings->contains("min_percentage") && !settings->value("min_percentage").toString().isEmpty())
+            if (parameters->contains("min_percentage") && !parameters->value("min_percentage").toString().isEmpty())
             {
-                meteoSettings->setMinimumPercentage(settings->value("min_percentage").toFloat());
+                meteoSettings->setMinimumPercentage(parameters->value("min_percentage").toFloat());
             }
-            if (settings->contains("prec_threshold") && !settings->value("prec_threshold").toString().isEmpty())
+            if (parameters->contains("prec_threshold") && !parameters->value("prec_threshold").toString().isEmpty())
             {
-                meteoSettings->setRainfallThreshold(settings->value("prec_threshold").toFloat());
+                meteoSettings->setRainfallThreshold(parameters->value("prec_threshold").toFloat());
             }
-            if (settings->contains("thom_threshold") && !settings->value("thom_threshold").toString().isEmpty())
+            if (parameters->contains("thom_threshold") && !parameters->value("thom_threshold").toString().isEmpty())
             {
-                meteoSettings->setThomThreshold(settings->value("thom_threshold").toFloat());
+                meteoSettings->setThomThreshold(parameters->value("thom_threshold").toFloat());
             }
-            if (settings->contains("samani_coefficient") && !settings->value("samani_coefficient").toString().isEmpty())
+            if (parameters->contains("samani_coefficient") && !parameters->value("samani_coefficient").toString().isEmpty())
             {
-                meteoSettings->setTransSamaniCoefficient(settings->value("samani_coefficient").toFloat());
+                meteoSettings->setTransSamaniCoefficient(parameters->value("samani_coefficient").toFloat());
             }
-            if (settings->contains("hourly_intervals") && !settings->value("hourly_intervals").toString().isEmpty())
+            if (parameters->contains("hourly_intervals") && !parameters->value("hourly_intervals").toString().isEmpty())
             {
-                meteoSettings->setHourlyIntervals(settings->value("hourly_intervals").toInt());
+                meteoSettings->setHourlyIntervals(parameters->value("hourly_intervals").toInt());
             }
-            if (settings->contains("wind_intensity_default") && !settings->value("wind_intensity_default").toString().isEmpty())
+            if (parameters->contains("wind_intensity_default") && !parameters->value("wind_intensity_default").toString().isEmpty())
             {
-                meteoSettings->setWindIntensityDefault(settings->value("wind_intensity_default").toInt());
+                meteoSettings->setWindIntensityDefault(parameters->value("wind_intensity_default").toInt());
             }
 
-            settings->endGroup();
+            parameters->endGroup();
         }
 
         //interpolation
         if (group == "interpolation")
         {
-            settings->beginGroup(group);
+            parameters->beginGroup(group);
 
-            if (settings->contains("algorithm"))
+            if (parameters->contains("algorithm"))
             {
-                std::string algorithm = settings->value("algorithm").toString().toStdString();
+                std::string algorithm = parameters->value("algorithm").toString().toStdString();
                 if (interpolationMethodNames.find(algorithm) == interpolationMethodNames.end())
                 {
                     errorString = "Unknown interpolation method";
@@ -155,9 +155,9 @@ bool Project::loadDefaultParameters()
                     interpolationSettings.setInterpolationMethod(interpolationMethodNames.at(algorithm));
             }
 
-            if (settings->contains("gridAggregationMethod"))
+            if (parameters->contains("gridAggregationMethod"))
             {
-                std::string aggrMethod = settings->value("gridAggregationMethod").toString().toStdString();
+                std::string aggrMethod = parameters->value("gridAggregationMethod").toString().toStdString();
                 if (gridAggregationMethodNames.find(aggrMethod) == gridAggregationMethodNames.end())
                 {
                     errorString = "Unknown aggregation method";
@@ -167,58 +167,58 @@ bool Project::loadDefaultParameters()
                     interpolationSettings.setMeteoGridAggrMethod(gridAggregationMethodNames.at(aggrMethod));
             }
 
-            if (settings->contains("thermalInversion"))
+            if (parameters->contains("thermalInversion"))
             {
-                interpolationSettings.setUseThermalInversion(settings->value("thermalInversion").toBool());
-                qualityInterpolationSettings.setUseThermalInversion(settings->value("thermalInversion").toBool());
+                interpolationSettings.setUseThermalInversion(parameters->value("thermalInversion").toBool());
+                qualityInterpolationSettings.setUseThermalInversion(parameters->value("thermalInversion").toBool());
             }
 
-            if (settings->contains("topographicDistance"))
-                interpolationSettings.setUseTAD(settings->value("topographicDistance").toBool());
+            if (parameters->contains("topographicDistance"))
+                interpolationSettings.setUseTAD(parameters->value("topographicDistance").toBool());
 
-            if (settings->contains("lapseRateCode"))
+            if (parameters->contains("lapseRateCode"))
             {
-                interpolationSettings.setUseLapseRateCode(settings->value("lapseRateCode").toBool());
-                qualityInterpolationSettings.setUseLapseRateCode(settings->value("lapseRateCode").toBool());
+                interpolationSettings.setUseLapseRateCode(parameters->value("lapseRateCode").toBool());
+                qualityInterpolationSettings.setUseLapseRateCode(parameters->value("lapseRateCode").toBool());
             }
 
-            if (settings->contains("optimalDetrending"))
-                interpolationSettings.setUseBestDetrending(settings->value("optimalDetrending").toBool());
+            if (parameters->contains("optimalDetrending"))
+                interpolationSettings.setUseBestDetrending(parameters->value("optimalDetrending").toBool());
 
-            if (settings->contains("minRegressionR2"))
+            if (parameters->contains("minRegressionR2"))
             {
-                interpolationSettings.setMinRegressionR2(settings->value("minRegressionR2").toFloat());
-                qualityInterpolationSettings.setMinRegressionR2(settings->value("minRegressionR2").toFloat());
+                interpolationSettings.setMinRegressionR2(parameters->value("minRegressionR2").toFloat());
+                qualityInterpolationSettings.setMinRegressionR2(parameters->value("minRegressionR2").toFloat());
             }
 
-            if (settings->contains("useDewPoint"))
-                interpolationSettings.setUseDewPoint(settings->value("useDewPoint").toBool());
+            if (parameters->contains("useDewPoint"))
+                interpolationSettings.setUseDewPoint(parameters->value("useDewPoint").toBool());
 
-            settings->endGroup();
+            parameters->endGroup();
 
         }
 
         if (group == "quality")
         {
-            settings->beginGroup(group);
-            if (settings->contains("reference_height") && !settings->value("reference_height").toString().isEmpty())
+            parameters->beginGroup(group);
+            if (parameters->contains("reference_height") && !parameters->value("reference_height").toString().isEmpty())
             {
-                quality->setReferenceHeight(settings->value("reference_height").toFloat());
+                quality->setReferenceHeight(parameters->value("reference_height").toFloat());
             }
-            if (settings->contains("delta_temperature_suspect") && !settings->value("delta_temperature_suspect").toString().isEmpty())
+            if (parameters->contains("delta_temperature_suspect") && !parameters->value("delta_temperature_suspect").toString().isEmpty())
             {
-                quality->setDeltaTSuspect(settings->value("delta_temperature_suspect").toFloat());
+                quality->setDeltaTSuspect(parameters->value("delta_temperature_suspect").toFloat());
             }
-            if (settings->contains("delta_temperature_wrong") && !settings->value("delta_temperature_wrong").toString().isEmpty())
+            if (parameters->contains("delta_temperature_wrong") && !parameters->value("delta_temperature_wrong").toString().isEmpty())
             {
-                quality->setDeltaTWrong(settings->value("delta_temperature_wrong").toFloat());
+                quality->setDeltaTWrong(parameters->value("delta_temperature_wrong").toFloat());
             }
-            if (settings->contains("relhum_tolerance") && !settings->value("relhum_tolerance").toString().isEmpty())
+            if (parameters->contains("relhum_tolerance") && !parameters->value("relhum_tolerance").toString().isEmpty())
             {
-                quality->setRelHumTolerance(settings->value("relhum_tolerance").toFloat());
+                quality->setRelHumTolerance(parameters->value("relhum_tolerance").toFloat());
             }
 
-            settings->endGroup();
+            parameters->endGroup();
         }
 
         //proxy variables (for interpolation)
@@ -226,17 +226,17 @@ bool Project::loadDefaultParameters()
         {
             proxyName = group.right(group.size()-6).toStdString();
 
-            settings->beginGroup(group);
-            gridName = settings->value("raster").toString();
+            parameters->beginGroup(group);
+            gridName = parameters->value("raster").toString();
             if (gridName.left(1) == ".")
                 proxyGridName = path.toStdString() + gridName.toStdString();
             else
                 proxyGridName = gridName.toStdString();
-            proxyTable = settings->value("table").toString().toStdString();
-            proxyField = settings->value("field").toString().toStdString();
-            isActive = settings->value("active").toBool();
-            forQuality = settings->value("useForSpatialQualityControl").toBool();
-            settings->endGroup();
+            proxyTable = parameters->value("table").toString().toStdString();
+            proxyField = parameters->value("field").toString().toStdString();
+            isActive = parameters->value("active").toBool();
+            forQuality = parameters->value("useForSpatialQualityControl").toBool();
+            parameters->endGroup();
 
             if (checkProxy(proxyName, proxyGridName, proxyTable, proxyField, &errorString))
                 addProxy(proxyName, proxyGridName, proxyTable, proxyField, forQuality, isActive);
@@ -262,11 +262,11 @@ bool Project::loadDefaultSettings(QString currentPath)
         return false;
     }
 
-    pathSetting = new QSettings(settingsFileName, QSettings::IniFormat);
+    pathSettings = new QSettings(settingsFileName, QSettings::IniFormat);
 
-    pathSetting->beginGroup("path");
-    QString myPath = pathSetting->value("path").toString();
-    pathSetting->endGroup();
+    pathSettings->beginGroup("path");
+    QString myPath = pathSettings->value("path").toString();
+    pathSettings->endGroup();
 
     if (! myPath.isEmpty())
     {
@@ -285,12 +285,12 @@ bool Project::loadDefaultSettings(QString currentPath)
         }
     }
 
-    pathSetting->beginGroup("location");
-    float latitude = pathSetting->value("lat").toFloat();
-    float longitude = pathSetting->value("lon").toFloat();
-    int utmZone = pathSetting->value("utm_zone").toInt();
-    int isUtc = pathSetting->value("is_utc").toBool();
-    pathSetting->endGroup();
+    pathSettings->beginGroup("location");
+    float latitude = pathSettings->value("lat").toFloat();
+    float longitude = pathSettings->value("lon").toFloat();
+    int utmZone = pathSettings->value("utm_zone").toInt();
+    int isUtc = pathSettings->value("is_utc").toBool();
+    pathSettings->endGroup();
 
     if (latitude != 0 && longitude != 0)
     {
@@ -308,7 +308,7 @@ bool Project::loadDefaultSettings(QString currentPath)
     }
     else
     {
-        this->settings = new QSettings(parametersFileName, QSettings::IniFormat);
+        parameters = new QSettings(parametersFileName, QSettings::IniFormat);
         return loadDefaultParameters();
     }
 

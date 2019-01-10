@@ -44,8 +44,8 @@
         int currentHour;
 
     public:
-        QSettings* settings;
-        QSettings* pathSetting;
+        QSettings* parameters;
+        QSettings* pathSettings;
         QString path;
         QString logFileName;
         std::ofstream logFile;

@@ -26,39 +26,39 @@ PragaProject::PragaProject()
 
 bool PragaProject::loadPragaSettings()
 {
-    Q_FOREACH (QString group, settings->childGroups())
+    Q_FOREACH (QString group, parameters->childGroups())
     {
         if (group == "elaboration")
         {
-            settings->beginGroup(group);
+            parameters->beginGroup(group);
             Crit3DElaborationSettings* elabSettings = clima->getElabSettings();
 
-            if (settings->contains("anomaly_pts_max_distance") && !settings->value("anomaly_pts_max_distance").toString().isEmpty())
+            if (parameters->contains("anomaly_pts_max_distance") && !parameters->value("anomaly_pts_max_distance").toString().isEmpty())
             {
-                elabSettings->setAnomalyPtsMaxDistance(settings->value("anomaly_pts_max_distance").toFloat());
+                elabSettings->setAnomalyPtsMaxDistance(parameters->value("anomaly_pts_max_distance").toFloat());
             }
-            if (settings->contains("anomaly_pts_max_delta_z") && !settings->value("anomaly_pts_max_delta_z").toString().isEmpty())
+            if (parameters->contains("anomaly_pts_max_delta_z") && !parameters->value("anomaly_pts_max_delta_z").toString().isEmpty())
             {
-                elabSettings->setAnomalyPtsMaxDeltaZ(settings->value("anomaly_pts_max_delta_z").toFloat());
+                elabSettings->setAnomalyPtsMaxDeltaZ(parameters->value("anomaly_pts_max_delta_z").toFloat());
             }
-            if (settings->contains("grid_min_coverage") && !settings->value("grid_min_coverage").toString().isEmpty())
+            if (parameters->contains("grid_min_coverage") && !parameters->value("grid_min_coverage").toString().isEmpty())
             {
-                elabSettings->setGridMinCoverage(settings->value("grid_min_coverage").toFloat());
+                elabSettings->setGridMinCoverage(parameters->value("grid_min_coverage").toFloat());
             }
-            if (settings->contains("compute_tmed") && !settings->value("compute_tmed").toString().isEmpty())
+            if (parameters->contains("compute_tmed") && !parameters->value("compute_tmed").toString().isEmpty())
             {
-                elabSettings->setAutomaticTmed(settings->value("compute_tmed").toBool());
+                elabSettings->setAutomaticTmed(parameters->value("compute_tmed").toBool());
             }
-            if (settings->contains("compute_et0hs") && !settings->value("compute_et0hs").toString().isEmpty())
+            if (parameters->contains("compute_et0hs") && !parameters->value("compute_et0hs").toString().isEmpty())
             {
-                elabSettings->setAutomaticETP(settings->value("compute_et0hs").toBool());
+                elabSettings->setAutomaticETP(parameters->value("compute_et0hs").toBool());
             }
-            if (settings->contains("merge_joint_stations") && !settings->value("merge_joint_stations").toString().isEmpty())
+            if (parameters->contains("merge_joint_stations") && !parameters->value("merge_joint_stations").toString().isEmpty())
             {
-                elabSettings->setMergeJointStations(settings->value("merge_joint_stations").toBool());
+                elabSettings->setMergeJointStations(parameters->value("merge_joint_stations").toBool());
             }
 
-            settings->endGroup();
+            parameters->endGroup();
 
         }
     }
