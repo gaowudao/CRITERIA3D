@@ -33,7 +33,6 @@ bool PragaProject::readPragaSettings()
             settings->beginGroup(group);
             Crit3DElaborationSettings* elabSettings = clima->getElabSettings();
 
-
             if (settings->contains("anomaly_pts_max_distance") && !settings->value("anomaly_pts_max_distance").toString().isEmpty())
             {
                 elabSettings->setAnomalyPtsMaxDistance(settings->value("anomaly_pts_max_distance").toFloat());
