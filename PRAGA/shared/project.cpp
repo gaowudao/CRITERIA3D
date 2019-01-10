@@ -300,7 +300,7 @@ bool Project::loadDefaultSettings(QString currentPath)
         gisSettings.isUTC = isUtc;
     }
 
-    QString parametersFileName = this->path + "DATA/settings/parameters->ini";
+    QString parametersFileName = this->path + "DATA/settings/parameters.ini";
     if (! QFile(parametersFileName).exists())
     {
         logError("Missing file: " + parametersFileName);

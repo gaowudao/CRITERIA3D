@@ -51,12 +51,9 @@
         QString password;
 
         QString idArea;
-        QString path;
         QString dailyOutputPath;
         QString demFileName;
         QString fieldMapName;
-        QString logFileName;
-        std::ofstream logFile;
 
         QSqlDatabase db;
 
@@ -77,7 +74,6 @@
         std::vector <double> layerDepth;                     //[m]
         std::vector <double> layerThickness;                 //[m]
         soil::Crit3DSoil* soilList;
-        gis::Crit3DGisSettings gisSettings;
 
         Tvine* vine;
         int nrVines;

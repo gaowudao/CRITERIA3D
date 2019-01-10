@@ -116,8 +116,8 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
 
     initialize();
 
-    if (projectSettings ==nullptr)
-        projectSettings = new QSettings(projectFile, QSettings::IniFormat);
+    if (projectSettings != nullptr) delete projectSettings;
+    projectSettings = new QSettings(projectFile, QSettings::IniFormat);
 
     projectSettings->beginGroup("path");
     QString myPath = projectSettings->value("path").toString();
@@ -125,7 +125,7 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
 
     if (! myPath.isEmpty())
     {
-        if (myPath.right(1) != "/" || myPath.right(1) != "\\" )
+        if (myPath.right(1) != "/" && myPath.right(2) != "\\" )
             myPath += "/";
 
         if (myPath.left(1) == ".")
@@ -137,7 +137,7 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
     projectSettings->beginGroup("location");
     int utmZone = projectSettings->value("utm_zone").toInt();
     int isUtc = projectSettings->value("is_utc").toBool();
-    int timeZone = projectSettings->value("time_zone").toInt();
+    int timeZone = projectSettings->value("timezone").toInt();
     projectSettings->endGroup();
 
     gisSettings.utmZone = utmZone;
@@ -185,7 +185,9 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
     }
     else
     {
-        parameters = new QSettings(paramFile, QSettings::IniFormat);
+        if (parameters != nullptr)
+            parameters = new QSettings(paramFile, QSettings::IniFormat);
+
         return loadParameters();
     }
 
