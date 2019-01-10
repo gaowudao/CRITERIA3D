@@ -93,7 +93,6 @@
         int* varCodes;
         int* aggrVarCodes;
         int nrAggrVar;
-        float windIntensityDefault;
 
         bool isProjectLoaded;
 
@@ -108,7 +107,6 @@
         TstatePlant statePlant;
         Vine3D_Grapevine grapevine;
 
-        int hourlyIntervals;
         QDate lastDateTransmissivity;
 
         Vine3DProject();

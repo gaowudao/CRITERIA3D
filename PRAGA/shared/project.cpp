@@ -128,12 +128,12 @@ bool Project::loadDefaultParameters()
             }
             if (settings->contains("hourly_intervals") && !settings->value("hourly_intervals").toString().isEmpty())
             {
-                meteoSettings->setTransSamaniCoefficient(settings->value("hourly_intervals").toInt());
+                meteoSettings->setHourlyIntervals(settings->value("hourly_intervals").toInt());
             }
-
-            hourlyIntervals=1
-            windIntensityDefault=3.0
-
+            if (settings->contains("wind_intensity_default") && !settings->value("wind_intensity_default").toString().isEmpty())
+            {
+                meteoSettings->setWindIntensityDefault(settings->value("wind_intensity_default").toInt());
+            }
 
             settings->endGroup();
         }
