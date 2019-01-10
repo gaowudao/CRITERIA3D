@@ -110,8 +110,8 @@ bool setCrit3DSurfaces(Crit3DProject* myProject)
 
     // TODO
     int nrSurfaces = 1;
-    float ManningRoughness = (float)0.24;         //[s m^-1/3]
-    float surfacePond = (float)0.002;             //[m]
+    float ManningRoughness = 0.24f;         //[s m^-1/3]
+    float surfacePond = 0.002f;             //[m]
 
     for (int surfaceIndex = 0; surfaceIndex < nrSurfaces; surfaceIndex++)
     {
@@ -154,15 +154,19 @@ bool setLayersDepth(Crit3DProject* myProject, double minThickness, double maxThi
     myProject->layerThickness[0] = 0.0;
     myProject->layerThickness[1] = minThickness;
     myProject->layerDepth[1] = minThickness * 0.5;
-    for (int i = 2; i < myProject->nrLayers; i++)
+    for (unsigned int i = 2; i < unsigned(myProject->nrLayers); i++)
     {
-        if (i == lastLayer)
+        if (i == unsigned(lastLayer))
+        {
             myProject->layerThickness[i] = myProject->soilDepth - (myProject->layerDepth[i-1]
-                    + myProject->layerThickness[i-1] / 2.0);
+                                          + myProject->layerThickness[i-1] / 2.0);
+        }
         else
+        {
             myProject->layerThickness[i] = minValue(maxThickness, myProject->layerThickness[i-1] * factor);
+        }
         myProject->layerDepth[i] = myProject->layerDepth[i-1] +
-                (myProject->layerThickness[i-1] + myProject->layerThickness[i]) * 0.5;
+                                (myProject->layerThickness[i-1] + myProject->layerThickness[i]) * 0.5f;
     }
     return(true);
 }

@@ -179,7 +179,7 @@ bool Crit3DProject::createIndexMap()
     {
         for (int col = 0; col < indexMap.header->nrCols; col++)
         {
-            if (DTM.value[row][col] != DTM.header->flag)
+            if (int(DTM.value[row][col]) != int(DTM.header->flag))
             {
                 indexMap.value[row][col] = float(index);
                 index++;
@@ -242,7 +242,7 @@ bool Crit3DProject::createSoilIndexMap()
     {
         for (int col = 0; col < DTM.header->nrCols; col++)
         {
-            if (DTM.value[row][col] != DTM.header->flag)
+            if (int(DTM.value[row][col]) != int(DTM.header->flag))
             {
                 soilIndex = getSoilIndex(row, col);
                 if (soilIndex != INDEX_ERROR)
@@ -282,7 +282,7 @@ int Crit3DProject::getSoilIndex(int dtmRow, int dtmCol)
 
 double Crit3DProject::getSoilVar(int soilIndex, int layerIndex, soil::soilVariable myVar)
 {
-    int horizonIndex = soil::getHorizonIndex(&(soilList[soilIndex]), layerDepth[layerIndex]);
+    int horizonIndex = soil::getHorizonIndex(&(soilList[unsigned(soilIndex)]), layerDepth[unsigned(layerIndex)]);
     if (myVar == soil::soilWaterPotentialWP)
         return soilList[soilIndex].horizon[horizonIndex].wiltingPoint;
     else if (myVar == soil::soilWaterPotentialFC)

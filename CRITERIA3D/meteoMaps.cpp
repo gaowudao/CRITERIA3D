@@ -113,7 +113,7 @@ bool Crit3DMeteoMaps::computeET0Map(gis::Crit3DRasterGrid* dtm, Crit3DRadiationM
 
             height = dtm->value[row][col];
 
-            if (height != dtm->header->flag)
+            if (int(height) != int(dtm->header->flag))
             {
                 clearSkyTransmissivity = CLEAR_SKY_TRANSMISSIVITY_DEFAULT;
                 globalRadiation = radMaps->globalRadiationMap->value[row][col];

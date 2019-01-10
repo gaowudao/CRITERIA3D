@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 
     QString currentPath = myApp.applicationDirPath() + "/";
 
-    if (! myProject.readGenericSettings(currentPath))
+    if (! myProject.loadDefaultSettings(currentPath))
         return -1;
 
     if (! myProject.readCriteria3DParameters())

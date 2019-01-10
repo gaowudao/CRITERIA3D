@@ -18,7 +18,9 @@ INCLUDEPATH +=  ../PRAGA/shared  \
                 ../crit3dDate ../mathFunctions ../soil ../crop \
                 ../meteo ../gis ../utilities  \
                 ../interpolation ../solarRadiation  \
-                ../dbMeteoPoints ../dbMeteoGrid
+                ../dbMeteoPoints ../dbMeteoGrid \
+                ../shapeHandler
+
 
 
 CONFIG += debug_and_release
@@ -45,6 +47,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../crop/debug -lcrop
     LIBS += -L../soilFluxes3D/debug -lsoilFluxes3D
     LIBS += -L../soil/debug -lsoil
+    LIBS += -L../shapeHandler/debug -lshapeHandler
     LIBS += -L../crit3dDate/debug -lcrit3dDate
     LIBS += -L../mathFunctions/debug -lmathFunctions
 
@@ -60,6 +63,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../crop/release -lcrop
     LIBS += -L../soilFluxes3D/release -lsoilFluxes3D
     LIBS += -L../soil/release -lsoil
+    LIBS += -L../shapeHandler/release -lshapeHandler
     LIBS += -L../crit3dDate/release -lcrit3dDate
     LIBS += -L../mathFunctions/release -lmathFunctions
 }

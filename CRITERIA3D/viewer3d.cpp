@@ -267,7 +267,7 @@ void Viewer3D::createScene()
             if (index != long(m_project->indexMap.header->flag))
             {
                 z = m_project->DTM.value[row][col];
-                if (z != m_project->DTM.header->flag)
+                if (int(z) != int(m_project->DTM.header->flag))
                 {
                     gis::getUtmXYFromRowColSinglePrecision(*(m_project->DTM.header), row, col, &x, &y);
 
