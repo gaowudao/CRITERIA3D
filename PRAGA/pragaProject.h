@@ -28,7 +28,7 @@
 
         PragaProject();
 
-        bool readPragaParameters();
+        bool readPragaSettings();
 
         bool downloadDailyDataArkimet(QStringList variables, bool prec0024, QDate startDate, QDate endDate, bool showInfo);
         bool downloadHourlyDataArkimet(QStringList variables, QDate startDate, QDate endDate, bool showInfo);

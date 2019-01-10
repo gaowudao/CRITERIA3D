@@ -24,7 +24,7 @@ PragaProject::PragaProject()
     referenceClima = nullptr;
 }
 
-bool PragaProject::readPragaParameters()
+bool PragaProject::readPragaSettings()
 {
     Q_FOREACH (QString group, settings->childGroups())
     {
