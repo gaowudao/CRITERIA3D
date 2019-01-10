@@ -1,4 +1,4 @@
-#include <QDomElement>
+//#include <QDomElement>
 #include <QFile>
 
 #include "meteo.h"
@@ -8,12 +8,6 @@
 #include "parserXML.h"
 #include "utilities.h"
 
-
-bool stopParsing(Vine3DProject* myProject, QString myWarning, bool isIgnored)
-{
-    myProject->logError(myWarning);
-    return(!isIgnored);
-}
 
 bool parseXMLFile(Vine3DProject* myProject, QString xmlFileName, QDomDocument* myDocument)
 {

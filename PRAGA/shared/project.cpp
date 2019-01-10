@@ -246,7 +246,7 @@ bool Project::loadGenericSettings(QString currentPath)
 {
     this->path = currentPath;
 
-    QString settingsFileName = currentPath + "settings.ini";
+    QString settingsFileName = currentPath + "default.ini";
 
     if (! QFile(settingsFileName).exists())
     {
