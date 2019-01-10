@@ -126,6 +126,14 @@ bool Project::loadDefaultParameters()
             {
                 meteoSettings->setTransSamaniCoefficient(settings->value("samani_coefficient").toFloat());
             }
+            if (settings->contains("hourly_intervals") && !settings->value("hourly_intervals").toString().isEmpty())
+            {
+                meteoSettings->setTransSamaniCoefficient(settings->value("hourly_intervals").toInt());
+            }
+
+            hourlyIntervals=1
+            windIntensityDefault=3.0
+
 
             settings->endGroup();
         }

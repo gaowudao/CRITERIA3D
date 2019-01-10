@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     {
         myProject.setEnvironment(gui);
 
-        if (! myProject.loadGenericSettings(currentPath))
+        if (! myProject.loadDefaultSettings(currentPath))
             return -1;
 
         QNetworkProxyFactory::setUseSystemConfiguration(true);

@@ -31,10 +31,12 @@
 
 Crit3DMeteoSettings::Crit3DMeteoSettings()
 {
-    minimumPercentage = DEF_VALUE_MIN_PERCENTAGE;
-    rainfallThreshold = DEF_VALUE_RAINFALL_THRESHOLD;
-    thomThreshold = DEF_VALUE_THOM_THRESHOLD;
-    transSamaniCoefficient = DEF_VALUE_TRANSMISSIVITY_SAMANI;
+    minimumPercentage = DEFAULT_MIN_PERCENTAGE;
+    rainfallThreshold = DEFAULT_RAINFALL_THRESHOLD;
+    thomThreshold = DEFAULT_THOM_THRESHOLD;
+    transSamaniCoefficient = DEFAULT_TRANSMISSIVITY_SAMANI;
+    windIntensityDefault = DEFAULT_WIND_INTENSITY;
+    hourlyIntervals = DEFAULT_HOURLY_INTERVALS;
 }
 
 float Crit3DMeteoSettings::getMinimumPercentage() const
@@ -65,6 +67,26 @@ float Crit3DMeteoSettings::getTransSamaniCoefficient() const
 void Crit3DMeteoSettings::setTransSamaniCoefficient(float value)
 {
     transSamaniCoefficient = value;
+}
+
+int Crit3DMeteoSettings::getHourlyIntervals() const
+{
+    return hourlyIntervals;
+}
+
+void Crit3DMeteoSettings::setHourlyIntervals(int value)
+{
+    hourlyIntervals = value;
+}
+
+float Crit3DMeteoSettings::getWindIntensityDefault() const
+{
+    return windIntensityDefault;
+}
+
+void Crit3DMeteoSettings::setWindIntensityDefault(float value)
+{
+    windIntensityDefault = value;
 }
 
 float Crit3DMeteoSettings::getThomThreshold() const

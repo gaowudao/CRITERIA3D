@@ -10,10 +10,12 @@
         #include "color.h"
     #endif
 
-    #define DEF_VALUE_MIN_PERCENTAGE 80
-    #define DEF_VALUE_RAINFALL_THRESHOLD 0.2f
-    #define DEF_VALUE_THOM_THRESHOLD 24
-    #define DEF_VALUE_TRANSMISSIVITY_SAMANI 0.17f
+    #define DEFAULT_MIN_PERCENTAGE 80
+    #define DEFAULT_RAINFALL_THRESHOLD 0.2f
+    #define DEFAULT_THOM_THRESHOLD 24
+    #define DEFAULT_TRANSMISSIVITY_SAMANI 0.17f
+    #define DEFAULT_HOURLY_INTERVALS 1
+    #define DEFAULT_WIND_INTENSITY 2.0f
 
     #define TABLE_METEO_POINTS "point_properties"
     #define FIELD_METEO_POINT "id_point"
@@ -38,11 +40,19 @@
         float getTransSamaniCoefficient() const;
         void setTransSamaniCoefficient(float value);
 
+        int getHourlyIntervals() const;
+        void setHourlyIntervals(int value);
+
+        float getWindIntensityDefault() const;
+        void setWindIntensityDefault(float value);
+
     private:
         float minimumPercentage;
         float rainfallThreshold;
         float thomThreshold;
         float transSamaniCoefficient;
+        int hourlyIntervals;
+        float windIntensityDefault;
     };
 
     enum lapseRateCodeType {primary, secondary, supplemental};
