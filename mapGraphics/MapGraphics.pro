@@ -1,13 +1,15 @@
-#-------------------------------------------------
+#==========================================================
 #
-# Project created by QtCreator 2012-03-03T10:50:47
+# MapGraphics
+# A tile-based "slippy map" library written in/for C++/Qt
+# BSD licensed (see LICENSE)
+# https://github.com/raptorswing/MapGraphics
 #
-#-------------------------------------------------
+#==========================================================
 
 QT       += widgets network sql
 
 TEMPLATE = lib
-#CONFIG += staticlib
 
 unix:{
     CONFIG += release
@@ -17,11 +19,8 @@ win32:{
     TARGET = MapGraphics
 }
 
-
 DEFINES += MAPGRAPHICS_LIBRARY
 
-
-INCLUDEPATH += .
 
 SOURCES += MapGraphicsScene.cpp \
     MapGraphicsObject.cpp \
@@ -87,8 +86,3 @@ unix:!symbian {
     INSTALLS += target
 }
 
-#FORMS += \
-#    guts/CompositeTileSourceConfigurationWidget.ui
-
-RESOURCES += \
-    resources.qrc
