@@ -174,6 +174,8 @@ void weatherGenerator2D::setObservedData(TObsDataD** observations)
             obsDataD[i][j].tMin = observations[i][j].tMin;
             obsDataD[i][j].tMax = observations[i][j].tMax;
             obsDataD[i][j].prec = observations[i][j].prec;
+            printf("%d/%d/%d,%.1f,%.1f,%.1f\n",observations[i][j].date.day,observations[i][j].date.month,observations[i][j].date.year,observations[i][j].tMin,observations[i][j].tMax,observations[i][j].prec);
+            pressEnterToContinue();
         }
 
     }
@@ -276,19 +278,24 @@ void weatherGenerator2D::precipitationP00P10()
                         if (obsDataD[idStation][i].prec > parametersModel.precipitationThreshold)
                         {
                             daysWithRain[month-1]++;
-                            if (obsDataD[idStation][i+1].prec < parametersModel.precipitationThreshold)
+                            if (obsDataD[idStation][i+1].prec <= parametersModel.precipitationThreshold)
                                 occurrence10[month-1]++;
                         }
                         else
                         {
                             daysWithoutRain[month-1]++;
-                            if (obsDataD[idStation][i+1].prec < parametersModel.precipitationThreshold)
+                            if (obsDataD[idStation][i+1].prec <= parametersModel.precipitationThreshold)
                                 occurrence00[month-1]++;
                         }
                     }
                 }
             }
         }
+        for (int month=0;month<12;month++)
+        {
+            printf("month %d n00 %d \n",month,occurrence00[month]);
+        }
+        pressEnterToContinue();
         for (int month=0;month<12;month++)
         {
             if (daysWithoutRain[month] != 0)
@@ -303,7 +310,15 @@ void weatherGenerator2D::precipitationP00P10()
             precOccurence[idStation][month].month = month +1;
         }
     }
+    pressEnterToContinue();
+    for (int month=0;month<12;month++)
+    {
 
+           printf("%f  %f %f\n",precOccurence[0][month].p00,precOccurence[1][month].p00,precOccurence[2][month].p00);
+           printf("%f  %f %f\n",precOccurence[0][month].p10,precOccurence[1][month].p10,precOccurence[2][month].p10);
+
+    }
+    pressEnterToContinue();
 }
 
 
