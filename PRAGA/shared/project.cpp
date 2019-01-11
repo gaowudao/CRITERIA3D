@@ -45,15 +45,23 @@ void Project::setProxyDEM()
     // if no elevation proxy defined nothing to do
     if (index == NODATA && indexQuality == NODATA) return;
 
-    Crit3DProxy* proxyHeight = interpolationSettings.getProxy(index);
+    Crit3DProxy* proxyHeight;
 
-    // if no alternative DEM defined and project DEM loaded, use it for elevation proxy
-    if (proxyHeight->getGridName() == "" && DTM.isLoaded)
-        proxyHeight->setGrid(&DTM);
+    if (index != NODATA)
+    {
+        proxyHeight = interpolationSettings.getProxy(index);
 
-    proxyHeight = qualityInterpolationSettings.getProxy(indexQuality);
-    if (proxyHeight->getGridName() == "" && DTM.isLoaded)
-        proxyHeight->setGrid(&DTM);
+        // if no alternative DEM defined and project DEM loaded, use it for elevation proxy
+        if (proxyHeight->getGridName() == "" && DTM.isLoaded)
+            proxyHeight->setGrid(&DTM);
+    }
+
+    if (indexQuality != NODATA)
+    {
+        proxyHeight = qualityInterpolationSettings.getProxy(indexQuality);
+        if (proxyHeight->getGridName() == "" && DTM.isLoaded)
+            proxyHeight->setGrid(&DTM);
+    }
 }
 
 bool Project::checkProxy(std::string name_, std::string gridName_, std::string table_, std::string field_, std::string *error)
