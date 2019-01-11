@@ -125,18 +125,18 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
 
     if (! myPath.isEmpty())
     {
-        if (myPath.right(1) != "/" && myPath.right(2) != "\\" )
+        if (myPath.right(1) != "/")
             myPath += "/";
 
-        if (myPath.left(1) == ".")
-            this->path = getPath(projectFile) + "/" + myPath;
+        if (myPath.left(2) == "./")
+            this->path = getPath(projectFile) + myPath.right(myPath.length()-2);
         else
             this->path = myPath;
     }
 
     projectSettings->beginGroup("location");
     int utmZone = projectSettings->value("utm_zone").toInt();
-    int isUtc = projectSettings->value("is_utc").toBool();
+    bool isUtc = projectSettings->value("is_utc").toBool();
     int timeZone = projectSettings->value("timezone").toInt();
     projectSettings->endGroup();
 
@@ -152,13 +152,13 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
     projectSettings->endGroup();
 
     idArea = myId;
-    demFileName = demName;
-    fieldMapName = fieldName;
+    demFileName = this->path + demName;
+    fieldMapName = this->path + fieldName;
 
     projectSettings->beginGroup("database");
     QString driver = projectSettings->value("driver").toString();
     QString host = projectSettings->value("host").toString();
-    int port = projectSettings->value("host").toInt();
+    int port = projectSettings->value("port").toInt();
     QString dbname = projectSettings->value("dbname").toString();
     QString user = projectSettings->value("username").toString();
     QString pass = projectSettings->value("password").toString();
