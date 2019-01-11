@@ -282,9 +282,17 @@ bool Project::loadDefaultSettings(QString currentPath)
             myPath += "/";
 
         if (myPath.left(2) == "./")
+        {
             this->path = currentPath + myPath.right(myPath.length()-2);
+        }
+        else if(myPath.left(2) == "..")
+        {
+            this->path = currentPath + myPath;
+        }
         else
+        {
             this->path = myPath;
+        }
     }
 
     projectSettings->beginGroup("location");
