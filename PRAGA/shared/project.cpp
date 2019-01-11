@@ -43,7 +43,7 @@ void Project::setProxyDEM()
     int indexQuality = qualityInterpolationSettings.getIndexHeight();
 
     // if no elevation proxy defined nothing to do
-    if (index != NODATA && indexQuality == NODATA) return;
+    if (index == NODATA && indexQuality == NODATA) return;
 
     Crit3DProxy* proxyHeight = interpolationSettings.getProxy(index);
 

@@ -152,8 +152,8 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
     projectSettings->endGroup();
 
     idArea = myId;
-    demFileName = this->path + demName;
-    fieldMapName = this->path + fieldName;
+    demFileName = demName;
+    fieldMapName = fieldName;
 
     projectSettings->beginGroup("database");
     QString driver = projectSettings->value("driver").toString();
