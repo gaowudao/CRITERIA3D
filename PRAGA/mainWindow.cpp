@@ -395,7 +395,7 @@ void MainWindow::on_actionNewMeteoPointsArkimet_triggered()
 {
     resetMeteoPoints();
 
-    QString templateFileName = myProject.path + "DATA/template/template_meteo.db";
+    QString templateFileName = myProject.getPath() + "DATA/template/template_meteo.db";
 
     QString dbName = QFileDialog::getSaveFileName(this, tr("Save as"), "", tr("DB files (*.db)"));
     if (dbName == "")
