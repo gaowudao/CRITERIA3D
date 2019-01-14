@@ -69,6 +69,13 @@ MainWindow::MainWindow(QWidget *parent) :
     this->meteoPointsLegend->colorScale = myProject.meteoPointsColorScale;
 
     this->currentPointsVisualization = notShown;
+    // show menu
+    showPointsGroup = new QActionGroup(this);
+    showPointsGroup->setExclusive(true);
+    showPointsGroup->addAction(this->ui->actionView_PointsHide);
+    showPointsGroup->addAction(this->ui->actionView_PointsLocation);
+    showPointsGroup->addAction(this->ui->actionView_PointsCurrentVariable);
+    showPointsGroup->setEnabled(false);
 
     this->ui->groupBoxMeteoGrid->setVisible(false);
 
@@ -779,6 +786,8 @@ bool MainWindow::loadMeteoPointsDB(QString dbName)
 
     myProject.loadMeteoPointsData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
 
+    this->showPointsGroup->setEnabled(true);
+
     return true;
 }
 
@@ -916,9 +925,10 @@ void MainWindow::on_dateEdit_dateChanged(const QDate &date)
 
 void MainWindow::on_actionClose_meteo_points_triggered()
 {
-    resetMeteoPoints();
-    meteoPointsLegend->setVisible(false);
+    this->resetMeteoPoints();
+    this->meteoPointsLegend->setVisible(false);
     myProject.closeMeteoPointsDB();
+    this->showPointsGroup->setEnabled(false);
 }
 
 void MainWindow::on_actionClose_meteo_grid_triggered()

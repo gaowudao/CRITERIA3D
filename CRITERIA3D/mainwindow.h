@@ -3,6 +3,7 @@
 
     #include <QMainWindow>
     #include <QList>
+    #include <QActionGroup>
 
     #include "tileSources/OSMTileSource.h"
     #include "Position.h"
@@ -49,7 +50,6 @@
         void on_variableButton_clicked();
         void on_frequencyButton_clicked();
         void on_actionVariableQualitySpatial_triggered();
-        void on_actionPointsVisible_triggered();
         void on_rasterRestoreButton_clicked();
         void on_timeEdit_timeChanged(const QTime &time);
         void on_dateEdit_dateChanged(const QDate &date);
@@ -63,7 +63,6 @@
         void on_actionCriteria3D_Initialize_triggered();
         void on_meteoGridOpacitySlider_sliderMoved(int position);
         void on_actionParameters_triggered();
-        void on_actionShowLocation_triggered();
 
         void on_actionView_DTM_triggered();
 
@@ -77,10 +76,6 @@
 
         void on_actionView_Aspect_triggered();
 
-        void on_actionView_Variable_triggered();
-        void on_viewer3DClosed();
-        void on_dateChanged();
-
         void on_actionView_PointsHide_triggered();
 
         void on_actionView_PointsLocation_triggered();
@@ -88,6 +83,9 @@
         void on_actionView_PointsCurrentVariable_triggered();
 
         void on_actionView_MapVariable_triggered();
+
+        void on_viewer3DClosed();
+        void on_dateChanged();
 
     protected:
         /*!
@@ -122,6 +120,7 @@
         QList<StationMarker*> pointList;
         RubberBand *myRubberBand;
         visualizationType currentPointsVisualization;
+        QActionGroup *showPointsGroup;
 
         Viewer3D *viewer3D;
 
