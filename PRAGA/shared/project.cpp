@@ -17,6 +17,7 @@
 
 Project::Project()
 {
+    inizializeConnection();
     path = "";
     logFileName = "";
     errorString = "";
@@ -35,6 +36,16 @@ Project::Project()
     meteoGridDbHandler = nullptr;
     radiationMaps = nullptr;
 
+}
+
+void Project::inizializeConnection()
+{
+    dbProvider = "QSQLITE";
+    dbHostname = "";
+    dbDatabase = "";
+    dbPort = NODATA;
+    dbUsername = "";
+    dbPassword = "";
 }
 
 void Project::setProxyDEM()
@@ -258,7 +269,7 @@ bool Project::loadParameters()
 }
 
 
-bool Project::loadDefaultSettings(QString currentPath)
+bool Project::loadCommonSettings(QString currentPath)
 {
     this->path = currentPath;
 
@@ -294,6 +305,16 @@ bool Project::loadDefaultSettings(QString currentPath)
             this->path = myPath;
         }
     }
+
+    inizializeConnection();
+    projectSettings->beginGroup("database");
+    if (projectSettings->contains("driver") && !projectSettings->value("driver").toString().isEmpty()) dbProvider = projectSettings->value("driver").toString();
+    if (projectSettings->contains("host") && !projectSettings->value("host").toString().isEmpty()) dbHostname = projectSettings->value("host").toString();
+    if (projectSettings->contains("port") && !projectSettings->value("port").toString().isEmpty()) dbPort = projectSettings->value("port").toInt();
+    if (projectSettings->contains("dbname") && !projectSettings->value("dbname").toString().isEmpty()) dbDatabase = projectSettings->value("dbname").toString();
+    if (projectSettings->contains("username") && !projectSettings->value("username").toString().isEmpty()) dbUsername = projectSettings->value("username").toString();
+    if (projectSettings->contains("password") && !projectSettings->value("password").toString().isEmpty()) dbPassword = projectSettings->value("password").toString();
+    projectSettings->endGroup();
 
     projectSettings->beginGroup("location");
     float latitude = projectSettings->value("lat").toFloat();

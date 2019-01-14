@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
     QApplication myApp(argc, argv);
 
     QString currentPath = myApp.applicationDirPath() + "/";
-    if (! myProject.loadDefaultSettings(currentPath))
+    if (! myProject.loadCommonSettings(currentPath))
         return -1;
 
     if (! myProject.loadPragaSettings())

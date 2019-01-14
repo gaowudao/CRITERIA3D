@@ -15,7 +15,34 @@
 #include <QUuid>
 
 
-Crit3DMeteoPointsDbHandler::Crit3DMeteoPointsDbHandler(QString dbName)
+Crit3DMeteoPointsDbHandler::Crit3DMeteoPointsDbHandler(QString provider_, QString host_, QString dbname_, int port_,
+                                                       QString user_, QString pass_)
+{
+    error = "";
+
+    if(_db.isOpen())
+    {
+        qDebug() << _db.connectionName() << "is already open";
+        _db.close();
+    }
+
+    _db = QSqlDatabase::addDatabase(provider_, QUuid::createUuid().toString());
+    _db.setDatabaseName(dbname_);
+
+    if (provider_ != "QSQLITE")
+    {
+        _db.setHostName(host_);
+        _db.setPort(port_);
+        _db.setUserName(user_);
+        _db.setPassword(pass_);
+    }
+
+    if (!_db.open())
+       error = _db.lastError().text();    
+
+}
+
+Crit3DMeteoPointsDbHandler::Crit3DMeteoPointsDbHandler(QString dbname_)
 {
     error = "";
 
@@ -26,12 +53,11 @@ Crit3DMeteoPointsDbHandler::Crit3DMeteoPointsDbHandler(QString dbName)
     }
 
     _db = QSqlDatabase::addDatabase("QSQLITE", QUuid::createUuid().toString());
-    _db.setDatabaseName(dbName);
+    _db.setDatabaseName(dbname_);
 
     if (!_db.open())
-    {
        error = _db.lastError().text();
-    }
+
 }
 
 Crit3DMeteoPointsDbHandler::~Crit3DMeteoPointsDbHandler()

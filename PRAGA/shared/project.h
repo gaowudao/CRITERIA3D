@@ -44,6 +44,13 @@
         int currentHour;
 
     public:
+        QString dbProvider;
+        QString dbHostname;
+        QString dbDatabase;
+        int dbPort;
+        QString dbUsername;
+        QString dbPassword;
+
         QSettings* parameters;
         QSettings* projectSettings;
         QString path;
@@ -81,7 +88,8 @@
 
         Project();
 
-        bool loadDefaultSettings(QString currentPath);
+        void inizializeConnection();
+        bool loadCommonSettings(QString currentPath);
         bool loadParameters();
         void setProxyDEM();
         bool checkProxy(std::string name_, std::string gridName_, std::string table_, std::string field_, std::string *error);

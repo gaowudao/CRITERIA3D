@@ -22,7 +22,8 @@ class Crit3DMeteoPointsDbHandler : public QObject
 public:
     QString error;
 
-    explicit Crit3DMeteoPointsDbHandler(QString dbName);
+    explicit Crit3DMeteoPointsDbHandler(QString dbname_);
+    explicit Crit3DMeteoPointsDbHandler(QString provider_, QString host_, QString dbname_, int port_, QString user_, QString pass_);
 
         ~Crit3DMeteoPointsDbHandler();
         void dbManager();
