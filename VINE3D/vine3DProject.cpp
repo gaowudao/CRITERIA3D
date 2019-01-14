@@ -559,7 +559,7 @@ bool Vine3DProject::loadFieldShape()
             }
 
     gis::updateMinMaxRasterGrid(&(this->fieldMap));
-    this->nrVineFields = this->fieldMap.maximum;
+    this->nrVineFields = int(this->fieldMap.maximum);
     return true;
 }
 
@@ -1822,14 +1822,14 @@ bool Vine3DProject::saveStateAndOutput(QDate myDate, QString myArea)
 
     if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential10", "10cm", outputPath, myArea, 0.1, 0.1)) return false;
     if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential30", "30cm", outputPath, myArea, 0.3, 0.3)) return false;
-    if (this->soilDepth >= 0.7)
+    if (this->soilDepth >= 0.7f)
     {
         if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential70", "70cm", outputPath, myArea, 0.7, 0.7)) return false;
     }
 
-    if (!saveWaterBalanceOutput(this, myDate, degreeOfSaturation, "degreeOfSaturation", "soilDepth", outputPath, myArea, 0.0, this->soilDepth-0.01)) return false;
+    if (!saveWaterBalanceOutput(this, myDate, degreeOfSaturation, "degreeOfSaturation", "soilDepth", outputPath, myArea, 0.0, double(this->soilDepth) - 0.01)) return false;
     if (!saveWaterBalanceOutput(this, myDate, soilSurfaceMoisture, "SSM", "5cm", outputPath, myArea, 0.0, 0.05)) return false;
-    if (!saveWaterBalanceOutput(this, myDate, availableWaterContent, "waterContent", "rootZone", outputPath, myArea, 0.0, this->soilDepth)) return false;
+    if (!saveWaterBalanceOutput(this, myDate, availableWaterContent, "waterContent", "rootZone", outputPath, myArea, 0.0, double(this->soilDepth))) return false;
 
     return(true);
 }

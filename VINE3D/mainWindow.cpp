@@ -30,7 +30,7 @@
 #include "dialogWindows.h"
 #include "formInfo.h"
 #include "formPeriod.h"
-#include "mainwindow.h"
+#include "mainWindow.h"
 #include "ui_mainWindow.h"
 
 extern Vine3DProject myProject;
@@ -472,16 +472,16 @@ void MainWindow::updateVariable()
 
             //check
             if (myProject.getCurrentVariable() == airTemperature)
-                myProject.currentVariable = dailyAirTemperatureAvg;
+                myProject.setCurrentVariable(dailyAirTemperatureAvg);
 
             else if (myProject.getCurrentVariable() == precipitation)
-                myProject.currentVariable = dailyPrecipitation;
+                myProject.setCurrentVariable(dailyPrecipitation);
 
             else if (myProject.getCurrentVariable() == globalIrradiance)
-                myProject.currentVariable = dailyGlobalRadiation;
+                myProject.setCurrentVariable(dailyGlobalRadiation);
 
             else if (myProject.getCurrentVariable() == airRelHumidity)
-                myProject.currentVariable = dailyAirRelHumidityAvg;
+                myProject.setCurrentVariable(dailyAirRelHumidityAvg);
         }
 
         else if (myProject.getFrequency() == hourly)
@@ -492,22 +492,22 @@ void MainWindow::updateVariable()
             if ((myProject.getCurrentVariable() == dailyAirTemperatureAvg)
                     || (myProject.getCurrentVariable() == dailyAirTemperatureMax)
                     || (myProject.getCurrentVariable() == dailyAirTemperatureMin))
-                myProject.currentVariable = airTemperature;
+                myProject.setCurrentVariable(airTemperature);
 
             else if ((myProject.getCurrentVariable() == dailyAirRelHumidityAvg)
                      || (myProject.getCurrentVariable() == dailyAirRelHumidityMax)
                      || (myProject.getCurrentVariable() == dailyAirRelHumidityMin))
-                 myProject.currentVariable = airRelHumidity;
+                 myProject.setCurrentVariable(airRelHumidity);
 
             else if (myProject.getCurrentVariable() == dailyPrecipitation)
-                    myProject.currentVariable = precipitation;
+                    myProject.setCurrentVariable(precipitation);
 
             else if (myProject.getCurrentVariable() == dailyGlobalRadiation)
-                myProject.currentVariable = globalIrradiance;
+                myProject.setCurrentVariable(globalIrradiance);
         }
     }
 
-    std::string myString = getVariableString(myProject.currentVariable);
+    std::string myString = getVariableString(myProject.getCurrentVariable());
     ui->labelVariable->setText(QString::fromStdString(myString));
 
     redrawMeteoPoints(true);
@@ -880,7 +880,7 @@ void MainWindow::on_actionParameters_triggered()
 
 void MainWindow::on_actionShowLocation_triggered()
 {
-    myProject.currentVariable = noMeteoVar;
+    myProject.setCurrentVariable(noMeteoVar);
     this->ui->actionShowLocation->setChecked(true);
     if (this->meteoGridObj != nullptr) this->meteoGridObj->setDrawBorders(true);
     this->updateVariable();
