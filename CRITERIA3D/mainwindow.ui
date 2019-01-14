@@ -2592,11 +2592,10 @@
     <property name="title">
      <string>Interpolation</string>
     </property>
-    <addaction name="actionVariableQualitySpatial"/>
-    <addaction name="separator"/>
-    <addaction name="actionInterpolationSettings"/>
     <addaction name="actionInterpolation_to_DTM"/>
+    <addaction name="actionInterpolationSettings"/>
     <addaction name="separator"/>
+    <addaction name="actionVariableQualitySpatial"/>
    </widget>
    <widget class="QMenu" name="menuGIS_settings">
     <property name="title">
@@ -2756,7 +2755,7 @@
   </action>
   <action name="actionCriteria3D_settings">
    <property name="text">
-    <string>Settings...</string>
+    <string>Criteria3D settings...</string>
    </property>
   </action>
   <action name="actionCriteria3D_Initialize">
@@ -2812,7 +2811,7 @@
   </action>
   <action name="actionView_MapVariable">
    <property name="text">
-    <string>Variable</string>
+    <string>Current variable</string>
    </property>
   </action>
   <action name="actionView_PointsHide">

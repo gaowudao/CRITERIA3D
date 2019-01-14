@@ -68,7 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->meteoPointsLegend->resize(this->ui->widgetColorLegendPoints->size());
     this->meteoPointsLegend->colorScale = myProject.meteoPointsColorScale;
 
-    this->currentPointsVisualization = notShown;
+    this->currentPointsVisualization = showNone;
     // show menu
     showPointsGroup = new QActionGroup(this);
     showPointsGroup->setExclusive(true);
@@ -567,7 +567,7 @@ void MainWindow::redrawMeteoPoints(visualizationType myType, bool updateColorSCa
 
     switch(currentPointsVisualization)
     {
-    case notShown:
+    case showNone:
     {
         meteoPointsLegend->setVisible(false);
         this->ui->actionView_PointsHide->setChecked(true);
@@ -880,6 +880,7 @@ void MainWindow::on_variableButton_clicked()
 {
     if (chooseMeteoVariable(&myProject))
     {
+       this->currentPointsVisualization = showCurrentVariable;
        this->updateVariable();
        if (this->meteoGridObj != nullptr) this->meteoGridObj->setDrawBorders(false);
     }
@@ -1156,7 +1157,7 @@ void MainWindow::on_actionView_Aspect_triggered()
 
 void MainWindow::on_actionView_PointsHide_triggered()
 {
-    redrawMeteoPoints(notShown, true);
+    redrawMeteoPoints(showNone, true);
 }
 
 

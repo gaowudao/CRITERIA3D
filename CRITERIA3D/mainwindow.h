@@ -15,7 +15,7 @@
     #include "colorlegend.h"
     #include "viewer3d.h"
 
-    enum visualizationType {notShown, showLocation, showCurrentVariable};
+    enum visualizationType {showNone, showLocation, showCurrentVariable};
 
     namespace Ui
     {
