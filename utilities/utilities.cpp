@@ -52,7 +52,7 @@ bool getValue(QVariant myRs, float* myValue)
             *myValue = myRs.toFloat();
     }
 
-    return (*myValue != NODATA);
+    return (int(*myValue) != int(NODATA));
 }
 
 
@@ -68,7 +68,7 @@ bool getValue(QVariant myRs, double* myValue)
             *myValue = myRs.toDouble();
     }
 
-    return (*myValue != NODATA);
+    return (int(*myValue) != int(NODATA));
 }
 
 bool getValue(QVariant myRs, QDate* myValue)
@@ -158,20 +158,20 @@ QDateTime getQDateTime(const Crit3DTime& t)
     QDateTime myTime;
     QDate myQDate = QDate(t.date.year, t.date.month, t.date.day);
     myTime.setDate(myQDate);
-    QTime myQTime = QTime(t.getHour(), t.getMinutes(), t.getSeconds(), 0);
+    QTime myQTime = QTime(t.getHour(), t.getMinutes(), int(t.getSeconds()), 0);
     myTime.setTime(myQTime);
 
     return myTime;
 }
 
 
-QString getFileName(QString filePath)
+QString getFileName(QString fileNameComplete)
 {
     QString c;
     QString fileName = "";
-    for (int i = filePath.length()-1; i >= 0; i--)
+    for (int i = fileNameComplete.length()-1; i >= 0; i--)
     {
-        c = filePath.mid(i,1);
+        c = fileNameComplete.mid(i,1);
         if ((c != "\\") && (c != "/"))
             fileName = c + fileName;
         else
@@ -181,11 +181,11 @@ QString getFileName(QString filePath)
 }
 
 
-
-QString getPath(QString filePath)
+QString getFilePath(QString fileNameComplete)
 {
-    QString fileName = getFileName(filePath);
-    return filePath.left(filePath.length() - fileName.length());
+    QString fileName = getFileName(fileNameComplete);
+    QString filePath = fileNameComplete.left(fileNameComplete.length() - fileName.length());
+    return filePath;
 }
 
 

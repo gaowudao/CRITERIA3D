@@ -66,7 +66,7 @@ bool readMOSESDailyData(QSqlQuery *query, Crit3DMeteoPoint *meteoPoint, std::str
                     {
                         tmin = previousTmin;
                         tmax = previousTmax;
-                        tmed = (tmin + tmax) * 0.5;
+                        tmed = (tmin + tmax) * 0.5f;
                         prec = 0;
                         et0 = NODATA;
                         waterTable = previousWaterTable;
@@ -98,13 +98,13 @@ bool readMOSESDailyData(QSqlQuery *query, Crit3DMeteoPoint *meteoPoint, std::str
             if (tmin < -50 || tmin > 40) tmin = NODATA;
             if (tmax < -40 || tmax > 50) tmax = NODATA;
 
-            if ((tmin == NODATA) || (tmax == NODATA) || (prec == NODATA))
+            if (int(tmin) == int(NODATA) || int(tmax) == int(NODATA) || int(prec) == int(NODATA))
             {
                 if (nrMissingData < MAX_MISSING_DAYS)
                 {
-                    if (tmin == NODATA) tmin = previousTmin;
-                    if (tmax == NODATA) tmax = previousTmax;
-                    if (prec == NODATA) prec = 0;
+                    if (int(tmin) == int(NODATA)) tmin = previousTmin;
+                    if (int(tmax) == int(NODATA)) tmax = previousTmax;
+                    if (int(prec) == int(NODATA)) prec = 0;
                     nrMissingData++;
                 }
                 else
@@ -119,8 +119,8 @@ bool readMOSESDailyData(QSqlQuery *query, Crit3DMeteoPoint *meteoPoint, std::str
 
             // TAVG [°C]
             getValue(query->value("tavg"), &tmed);
-            if (tmed == NODATA || tmed < -40.f || tmed > 40.f)
-                 tmed = (tmin + tmax) * 0.5;
+            if (int(tmed) == int(NODATA) || tmed < -40.f || tmed > 40.f)
+                 tmed = (tmin + tmax) * 0.5f;
 
             // ET0 [mm]
             getValue(query->value("etp"), &et0);
@@ -134,11 +134,11 @@ bool readMOSESDailyData(QSqlQuery *query, Crit3DMeteoPoint *meteoPoint, std::str
             date = getCrit3DDate(myDate);
             if (meteoPoint->obsDataD[0].date.daysTo(date) < meteoPoint->nrObsDataDaysD)
             {
-                meteoPoint->setMeteoPointValueD(date, dailyAirTemperatureMin, (float)tmin);
-                meteoPoint->setMeteoPointValueD(date, dailyAirTemperatureMax, (float)tmax);
-                meteoPoint->setMeteoPointValueD(date, dailyAirTemperatureAvg, (float)tmed);
-                meteoPoint->setMeteoPointValueD(date, dailyPrecipitation, (float)prec);
-                meteoPoint->setMeteoPointValueD(date, dailyReferenceEvapotranspirationHS, (float)et0);
+                meteoPoint->setMeteoPointValueD(date, dailyAirTemperatureMin, float(tmin));
+                meteoPoint->setMeteoPointValueD(date, dailyAirTemperatureMax, float(tmax));
+                meteoPoint->setMeteoPointValueD(date, dailyAirTemperatureAvg, float(tmed));
+                meteoPoint->setMeteoPointValueD(date, dailyPrecipitation, float(prec));
+                meteoPoint->setMeteoPointValueD(date, dailyReferenceEvapotranspirationHS, float(et0));
                 meteoPoint->setMeteoPointValueD(date, dailyWaterTableDepth, waterTable);
             }
             else

@@ -31,8 +31,8 @@
     bool getValue(QVariant myRs, QDateTime* myValue);
     bool getValue(QVariant myRs, QString* myValue);
 
-    QString getPath(QString filePath);
-    QString getFileName(QString filePath);
+    QString getFilePath(QString fileNameComplete);
+    QString getFileName(QString fileNameComplete);
 
 
 #endif // UTILITIES_H

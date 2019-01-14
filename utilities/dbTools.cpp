@@ -191,9 +191,9 @@ bool loadDriessenParameters(soil::Crit3DSoilClass *soilTexture, QSqlDatabase* db
                 return(false);
             }
 
-        soilTexture[id].Driessen.k0 = query.value("k_sat").toFloat();
-        soilTexture[id].Driessen.gravConductivity = query.value("grav_conductivity").toFloat();
-        soilTexture[id].Driessen.maxSorptivity = query.value("max_sorptivity").toFloat();
+        soilTexture[id].Driessen.k0 = query.value("k_sat").toDouble();
+        soilTexture[id].Driessen.gravConductivity = query.value("grav_conductivity").toDouble();
+        soilTexture[id].Driessen.maxSorptivity = query.value("max_sorptivity").toDouble();
 
     } while(query.next());
 
@@ -246,8 +246,8 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, 
     mySoil->initialize(1, nrHorizons);
 
     int idTextureUSDA, idTextureNL, idHorizon;
-    double sand, silt, clay, organicMatter, coarseFragments;
-    double lowerDepth, upperDepth, bulkDensity, theta_sat, ksat;
+    float sand, silt, clay;
+    double organicMatter, coarseFragments, lowerDepth, upperDepth, bulkDensity, theta_sat, ksat;
     int i = 0;
 
     query.first();
@@ -279,19 +279,19 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, 
 
         // coarse fragments %
         getValue(query.value("coarse_fragment"), &coarseFragments);
-        if (coarseFragments == NODATA)
-            mySoil->horizon[i].coarseFragments = 0.;    //default = no coarse fragment
+        if (int(coarseFragments) == int(NODATA))
+            mySoil->horizon[i].coarseFragments = 0.0;    //default = no coarse fragment
         else
             //[0,1]
             mySoil->horizon[i].coarseFragments = coarseFragments / 100.0;
 
         // sand silt clay [-]
         getValue(query.value("sand"), &sand);
-        if (sand < 1) sand *= 100.0;
+        if (sand < 1.f) sand *= 100.f;
         getValue(query.value("silt"), &silt);
-        if (silt < 1) silt *= 100.0;
+        if (silt < 1.f) silt *= 100.f;
         getValue(query.value("clay"), &clay);
-        if (clay < 1) clay *= 100.0;
+        if (clay < 1.f) clay *= 100.f;
 
         // texture
         idTextureUSDA = soil::getUSDATextureClass(sand, silt, clay);
@@ -315,15 +315,15 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, 
 
         // organic matter (%)
         getValue(query.value("organic_matter"), &organicMatter);
-        if ((organicMatter == NODATA) || (organicMatter == 0.0))
-            organicMatter = 0.005;      //default: 0.5%
+        if ((int(organicMatter) == int(NODATA)) || (organicMatter == 0.0))
+            organicMatter = 0.005;      // default: 0.5%
         else
-            organicMatter /= 100.0;     //[-]
+            organicMatter /= 100.0;     // [-]
         mySoil->horizon[i].organicMatter = organicMatter;
 
         // bulk density and porosity
         getValue(query.value("bulk_density"), &bulkDensity);
-        if ((bulkDensity != NODATA) && (bulkDensity <= 0 || bulkDensity >= 2.7))
+        if ((int(bulkDensity) != int(NODATA)) && (bulkDensity <= 0 || bulkDensity >= 2.7))
         {
                 *myError = "Wrong soil: " + idSoilStr
                     + " - wrong bulk density - horizon nr: "
@@ -334,20 +334,20 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, 
         getValue(query.value("theta_sat"), &theta_sat);
         if (theta_sat <= 0) theta_sat = NODATA;
 
-        if ((theta_sat == NODATA) && (bulkDensity != NODATA))
+        if ((int(theta_sat) == int(NODATA)) && (bulkDensity != int(NODATA)))
             theta_sat = soil::estimateTotalPorosity(&(mySoil->horizon[i]), bulkDensity);
 
-        if (theta_sat != NODATA)
+        if (int(theta_sat) != int(NODATA))
             mySoil->horizon[i].vanGenuchten.thetaS = theta_sat;
 
-        if (bulkDensity == NODATA)
+        if (int(bulkDensity) == int(NODATA))
             bulkDensity = soil::estimateBulkDensity(&(mySoil->horizon[i]), theta_sat);
 
         mySoil->horizon[i].bulkDensity = bulkDensity;
 
         // SATURATED CONDUCTIVITY (cm/day)
         getValue(query.value("ksat"), &ksat);
-        if ((ksat == NODATA) || (ksat <= 0))
+        if ((int(ksat) == int(NODATA)) || (ksat <= 0))
             ksat = soil::estimateSaturatedConductivity(&(mySoil->horizon[i]), bulkDensity);
 
         mySoil->horizon[i].waterConductivity.kSat = ksat;
@@ -465,3 +465,5 @@ float getIrriRatioFromId(QSqlDatabase* dbCrop, QString cropClassTable, QString c
     else
         return NODATA;
 }
+
+
