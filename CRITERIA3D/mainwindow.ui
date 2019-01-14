@@ -2590,13 +2590,9 @@
    </widget>
    <widget class="QMenu" name="menuVariable">
     <property name="title">
-     <string>Meteo Points</string>
+     <string>Interpolation</string>
     </property>
-    <addaction name="actionPointsVisible"/>
-    <addaction name="actionShowLocation"/>
     <addaction name="actionVariableQualitySpatial"/>
-    <addaction name="separator"/>
-    <addaction name="actionRectangle_Selection"/>
     <addaction name="separator"/>
     <addaction name="actionInterpolationSettings"/>
     <addaction name="actionInterpolation_to_DTM"/>
@@ -2630,17 +2626,27 @@
     <property name="title">
      <string>Show</string>
     </property>
+    <widget class="QMenu" name="menuPoints">
+     <property name="title">
+      <string>Points</string>
+     </property>
+     <addaction name="actionView_PointsHide"/>
+     <addaction name="actionView_PointsLocation"/>
+     <addaction name="actionView_PointsCurrentVariable"/>
+    </widget>
+    <addaction name="menuPoints"/>
+    <addaction name="separator"/>
     <addaction name="actionView_3D"/>
     <addaction name="separator"/>
     <addaction name="actionView_DTM"/>
     <addaction name="actionView_Slope"/>
     <addaction name="actionView_Aspect"/>
-    <addaction name="separator"/>
-    <addaction name="actionView_Variable"/>
+    <addaction name="actionView_MapVariable"/>
     <addaction name="separator"/>
     <addaction name="actionView_Soil"/>
     <addaction name="actionView_Boundary"/>
     <addaction name="separator"/>
+    <addaction name="actionRectangle_Selection"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuShow"/>
@@ -2687,17 +2693,6 @@
     <string>Rectangle Selection</string>
    </property>
   </action>
-  <action name="actionShowLocation">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Location</string>
-   </property>
-  </action>
   <action name="actionVariableQualitySpatial">
    <property name="checkable">
     <bool>true</bool>
@@ -2707,17 +2702,6 @@
    </property>
    <property name="text">
     <string>Spatial quality control</string>
-   </property>
-  </action>
-  <action name="actionPointsVisible">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Visible</string>
    </property>
   </action>
   <action name="actionOpen_meteo_grid">
@@ -2828,9 +2812,33 @@
     <string>Aspect</string>
    </property>
   </action>
-  <action name="actionView_Variable">
+  <action name="actionView_MapVariable">
    <property name="text">
     <string>Variable</string>
+   </property>
+  </action>
+  <action name="actionView_PointsHide">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Hide</string>
+   </property>
+  </action>
+  <action name="actionView_PointsLocation">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Location</string>
+   </property>
+  </action>
+  <action name="actionView_PointsCurrentVariable">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Current variable</string>
    </property>
   </action>
  </widget>

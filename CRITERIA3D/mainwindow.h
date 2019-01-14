@@ -14,6 +14,7 @@
     #include "colorlegend.h"
     #include "viewer3d.h"
 
+    enum visualizationType {notShown, showLocation, showCurrentVariable};
 
     namespace Ui
     {
@@ -80,6 +81,14 @@
         void on_viewer3DClosed();
         void on_dateChanged();
 
+        void on_actionView_PointsHide_triggered();
+
+        void on_actionView_PointsLocation_triggered();
+
+        void on_actionView_PointsCurrentVariable_triggered();
+
+        void on_actionView_MapVariable_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
@@ -112,9 +121,9 @@
         ColorLegend *meteoGridLegend;
         QList<StationMarker*> pointList;
         RubberBand *myRubberBand;
-        Viewer3D *viewer3D;
+        visualizationType currentPointsVisualization;
 
-        bool showPoints;
+        Viewer3D *viewer3D;
 
         void setMapSource(OSMTileSource::OSMTileType mySource);
 
@@ -124,7 +133,7 @@
         void updateDateTime();
         void resetMeteoPoints();
         void addMeteoPoints();
-        void redrawMeteoPoints(bool updateColorSCale);
+        void redrawMeteoPoints(visualizationType myType, bool updateColorSCale);
         void redrawMeteoGrid();
 
         bool loadMeteoPointsDB(QString dbName);
