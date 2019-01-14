@@ -46,7 +46,7 @@
     public:
         QString dbProvider;
         QString dbHostname;
-        QString dbDatabase;
+        QString dbDatabaseName;
         int dbPort;
         QString dbUsername;
         QString dbPassword;

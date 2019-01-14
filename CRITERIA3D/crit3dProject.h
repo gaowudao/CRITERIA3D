@@ -36,7 +36,7 @@
         bool isParametersLoaded;
         bool isInitialized;
 
-        double soilDepth;                                 //[m]
+        double soilDepth;                                //[m]
         std::vector <double> layerDepth;                 //[m]
         std::vector <double> layerThickness;             //[m]
         std::vector <soil::Crit3DSoil> soilList;

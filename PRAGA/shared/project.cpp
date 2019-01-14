@@ -42,7 +42,7 @@ void Project::inizializeConnection()
 {
     dbProvider = "QSQLITE";
     dbHostname = "";
-    dbDatabase = "";
+    dbDatabaseName = "";
     dbPort = NODATA;
     dbUsername = "";
     dbPassword = "";
@@ -308,19 +308,19 @@ bool Project::loadCommonSettings(QString currentPath)
 
     inizializeConnection();
     projectSettings->beginGroup("database");
-    if (projectSettings->contains("driver") && !projectSettings->value("driver").toString().isEmpty()) dbProvider = projectSettings->value("driver").toString();
-    if (projectSettings->contains("host") && !projectSettings->value("host").toString().isEmpty()) dbHostname = projectSettings->value("host").toString();
-    if (projectSettings->contains("port") && !projectSettings->value("port").toString().isEmpty()) dbPort = projectSettings->value("port").toInt();
-    if (projectSettings->contains("dbname") && !projectSettings->value("dbname").toString().isEmpty()) dbDatabase = projectSettings->value("dbname").toString();
-    if (projectSettings->contains("username") && !projectSettings->value("username").toString().isEmpty()) dbUsername = projectSettings->value("username").toString();
-    if (projectSettings->contains("password") && !projectSettings->value("password").toString().isEmpty()) dbPassword = projectSettings->value("password").toString();
+        if (projectSettings->contains("driver") && !projectSettings->value("driver").toString().isEmpty()) dbProvider = projectSettings->value("driver").toString();
+        if (projectSettings->contains("host") && !projectSettings->value("host").toString().isEmpty()) dbHostname = projectSettings->value("host").toString();
+        if (projectSettings->contains("port") && !projectSettings->value("port").toString().isEmpty()) dbPort = projectSettings->value("port").toInt();
+        if (projectSettings->contains("dbname") && !projectSettings->value("dbname").toString().isEmpty()) dbDatabaseName = projectSettings->value("dbname").toString();
+        if (projectSettings->contains("username") && !projectSettings->value("username").toString().isEmpty()) dbUsername = projectSettings->value("username").toString();
+        if (projectSettings->contains("password") && !projectSettings->value("password").toString().isEmpty()) dbPassword = projectSettings->value("password").toString();
     projectSettings->endGroup();
 
     projectSettings->beginGroup("location");
-    float latitude = projectSettings->value("lat").toFloat();
-    float longitude = projectSettings->value("lon").toFloat();
-    int utmZone = projectSettings->value("utm_zone").toInt();
-    int isUtc = projectSettings->value("is_utc").toBool();
+        float latitude = projectSettings->value("lat").toFloat();
+        float longitude = projectSettings->value("lon").toFloat();
+        int utmZone = projectSettings->value("utm_zone").toInt();
+        int isUtc = projectSettings->value("is_utc").toBool();
     projectSettings->endGroup();
 
     if (latitude != 0 && longitude != 0)
