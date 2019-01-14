@@ -86,7 +86,7 @@ void downyMildew(TdownyMildew* downyMildewCore, bool isFirstJanuary){
         downyMildewCore->isGermination = false;
 
     downyMildewCore->currentPmo += hourlyPmo;      // update mature oospores
-    downyMildewCore->output.mmo = (float)1.0 - sumPMO;
+    downyMildewCore->output.mmo = 1.f - sumPMO;
 
     nrEvents = (int)downyMildewCore->state.size();
 
