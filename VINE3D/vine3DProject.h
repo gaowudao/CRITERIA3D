@@ -130,7 +130,6 @@
 
         void closeProject();
         bool loadProject(QString myFileName);
-        bool openDB();
 
         int queryFieldPoint(double x, double y);
         bool loadFieldShape();

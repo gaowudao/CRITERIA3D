@@ -44,6 +44,7 @@
         int currentHour;
 
     public:
+        QSqlDatabase db_;
         QString dbProvider;
         QString dbHostname;
         QString dbDatabase;
@@ -89,6 +90,7 @@
         Project();
 
         void inizializeConnection();
+        bool openDB();
         bool loadCommonSettings(QString currentPath);
         bool loadParameters();
         void setProxyDEM();
@@ -128,6 +130,7 @@
 
         float meteoDataConsistency(meteoVariable myVar, const Crit3DTime& timeIni, const Crit3DTime& timeFin);
 
+        bool readPointProxyValues(Crit3DMeteoPoint* myPoint, QSqlDatabase* myDb);
         bool readProxyValues();
         void checkMeteoPointsDEM();
         bool writeTopographicDistanceMaps();

@@ -823,28 +823,6 @@ bool Vine3DProject::loadAggregatedMeteoVarCodes()
     return(true);
 }
 
-bool Vine3DProject::openDB()
-{
-    db.close();
-
-    logInfo ("Open DB  " + hostName + "//" + databaseName);
-
-    db = QSqlDatabase::addDatabase(sqlDriver);
-    db.setHostName(hostName);
-    db.setDatabaseName(databaseName);
-    db.setPort(connectionPort);
-    db.setUserName(userName);
-    db.setPassword(password);
-    if (! db.open())
-    {
-        logError("Open DB failed: " + hostName + "//" + databaseName +"\n" + db.lastError().text());
-        db.close();
-        return(false);
-    }
-
-    return (true);
-}
-
 bool Vine3DProject::loadVanGenuchtenParameters()
 {
     logInfo ("Read soil parameters->..");
