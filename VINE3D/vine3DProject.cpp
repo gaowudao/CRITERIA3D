@@ -128,7 +128,9 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
             myPath += "/";
 
         if (myPath.left(2) == "./")
-            this->setPath(getPath(projectFile) + myPath.right(myPath.length()-2));
+        {
+            this->setPath(getFilePath(projectFile) + myPath.right(myPath.length()-2));
+        }
         else
             this->setPath(myPath);
     }
@@ -1082,7 +1084,7 @@ void Vine3DProject::initializeMeteoPoints()
 {
     if (nrMeteoPoints > 0)
     {
-        if (meteoPoints != NULL)
+        if (meteoPoints != nullptr)
         {
             for (int i = 0; i < nrMeteoPoints; i++)
                 meteoPoints[i].cleanObsDataH();
