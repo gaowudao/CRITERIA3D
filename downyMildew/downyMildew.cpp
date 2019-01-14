@@ -339,11 +339,11 @@ float dormancyBreaking(float htime) {
 float survivalRateSporangia(float tair, float relativeHumidity) {
 
     //check relativeHumidity
-    if (relativeHumidity < 1.0) relativeHumidity = 1.0;
-    if (relativeHumidity > 100.0) relativeHumidity = 100.0;
-    relativeHumidity /= 100.0;
+    if (relativeHumidity < 1.f) relativeHumidity = 1.0;
+    if (relativeHumidity > 100.f) relativeHumidity = 100.0;
+    relativeHumidity /= 100.f;
 
-    return (float)(1.0/(24.0*(5.67-0.47*(tair*(1.0-relativeHumidity))+0.01*pow((tair*(1.0-relativeHumidity)),2.0))));
+    return 1.f / (24.f*(5.67f-0.47f*(tair*(1.f-relativeHumidity))+0.01f*pow((tair*(1.f-relativeHumidity)),2.f)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
