@@ -144,7 +144,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
-      mapView->resize(ui->widgetMap->size());
+    mapView->resize(ui->widgetMap->size());
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event){
@@ -644,17 +644,17 @@ void MainWindow::updateVariable()
             this->ui->labelFrequency->setText("Daily");
 
             //check
-            if (myProject.currentVariable == airTemperature)
-                myProject.currentVariable = dailyAirTemperatureAvg;
+            if (myProject.getCurrentVariable() == airTemperature)
+                myProject.setCurrentVariable(dailyAirTemperatureAvg);
 
-            else if (myProject.currentVariable == precipitation)
-                myProject.currentVariable = dailyPrecipitation;
+            else if (myProject.getCurrentVariable() == precipitation)
+                myProject.setCurrentVariable(dailyPrecipitation);
 
-            else if (myProject.currentVariable == globalIrradiance)
-                myProject.currentVariable = dailyGlobalRadiation;
+            else if (myProject.getCurrentVariable() == globalIrradiance)
+                myProject.setCurrentVariable(dailyGlobalRadiation);
 
-            else if (myProject.currentVariable == airRelHumidity)
-                myProject.currentVariable = dailyAirRelHumidityAvg;
+            else if (myProject.getCurrentVariable() == airRelHumidity)
+                myProject.setCurrentVariable(dailyAirRelHumidityAvg);
         }
 
         else if (myProject.getFrequency() == hourly)
@@ -662,25 +662,25 @@ void MainWindow::updateVariable()
             this->ui->labelFrequency->setText("Hourly");
 
             //check
-            if ((myProject.currentVariable == dailyAirTemperatureAvg)
-                    || (myProject.currentVariable == dailyAirTemperatureMax)
-                    || (myProject.currentVariable == dailyAirTemperatureMin))
-                myProject.currentVariable = airTemperature;
+            if ((myProject.getCurrentVariable() == dailyAirTemperatureAvg)
+                    || (myProject.getCurrentVariable() == dailyAirTemperatureMax)
+                    || (myProject.getCurrentVariable() == dailyAirTemperatureMin))
+                myProject.setCurrentVariable(airTemperature);
 
-            else if ((myProject.currentVariable == dailyAirRelHumidityAvg)
-                     || (myProject.currentVariable == dailyAirRelHumidityMax)
-                     || (myProject.currentVariable == dailyAirRelHumidityMin))
-                 myProject.currentVariable = airRelHumidity;
+            else if ((myProject.getCurrentVariable() == dailyAirRelHumidityAvg)
+                     || (myProject.getCurrentVariable() == dailyAirRelHumidityMax)
+                     || (myProject.getCurrentVariable() == dailyAirRelHumidityMin))
+                 myProject.setCurrentVariable(airRelHumidity);
 
-            else if (myProject.currentVariable == dailyPrecipitation)
-                    myProject.currentVariable = precipitation;
+            else if (myProject.getCurrentVariable() == dailyPrecipitation)
+                    myProject.setCurrentVariable(precipitation);
 
-            else if (myProject.currentVariable == dailyGlobalRadiation)
-                myProject.currentVariable = globalIrradiance;
+            else if (myProject.getCurrentVariable() == dailyGlobalRadiation)
+                myProject.setCurrentVariable(globalIrradiance);
         }
     }
 
-    std::string myString = getVariableString(myProject.currentVariable);
+    std::string myString = getVariableString(myProject.getCurrentVariable());
     ui->labelVariable->setText(QString::fromStdString(myString));
 }
 
@@ -778,7 +778,7 @@ void MainWindow::redrawMeteoPoints(visualizationType showType, bool updateColorS
         }
 
         roundColorScale(myProject.meteoPointsColorScale, 4, true);
-        setColorScale(myProject.currentVariable, myProject.meteoPointsColorScale);
+        setColorScale(myProject.getCurrentVariable(), myProject.meteoPointsColorScale);
 
         Crit3DColor *myColor;
         for (int i = 0; i < myProject.nrMeteoPoints; i++)
@@ -832,8 +832,6 @@ void MainWindow::redrawMeteoPoints(visualizationType showType, bool updateColorS
         showElabResult(true, false, false, false, true, myProject.climateIndex);
         break;
     }
-    default:
-        return;
     }
 }
 
@@ -894,7 +892,7 @@ void MainWindow::redrawMeteoGrid(visualizationType showType)
         meteoGridLegend->setVisible(true);
 
         setColorScale(variable, myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale);
-        ui->labelMeteoGridScale->setText(QString::fromStdString(getVariableString(myProject.currentVariable)));
+        ui->labelMeteoGridScale->setText(QString::fromStdString(getVariableString(myProject.getCurrentVariable())));
 
         meteoGridObj->redrawRequested();
         meteoGridLegend->update();
@@ -924,8 +922,6 @@ void MainWindow::redrawMeteoGrid(visualizationType showType)
         showElabResult(true, true, false, false, true, myProject.climateIndex);
         break;
     }
-    default:
-        return;
 
     }
 
@@ -1705,7 +1701,8 @@ void MainWindow::on_actionParameters_triggered()
 {
     PragaSettingsDialog* mySettingsDialog = new PragaSettingsDialog(myProject.projectSettings, myProject.parameters, &myProject.gisSettings, myProject.quality, myProject.meteoSettings, myProject.clima->getElabSettings());
     mySettingsDialog->exec();
-    if (startCenter->latitude() != myProject.gisSettings.startLocation.latitude || startCenter->longitude() != myProject.gisSettings.startLocation.longitude)
+    if (startCenter->latitude() != myProject.gisSettings.startLocation.latitude
+        || startCenter->longitude() != myProject.gisSettings.startLocation.longitude)
     {
         startCenter->setLatitude(myProject.gisSettings.startLocation.latitude);
         startCenter->setLongitude(myProject.gisSettings.startLocation.longitude);

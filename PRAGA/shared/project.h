@@ -37,11 +37,13 @@
 
     class Project {
     private:
-
+        // current frequency, variable, date and hour
         frequencyType currentFrequency;
+        meteoVariable currentVariable;
         QDate previousDate, currentDate;
         int currentHour;
 
+        // database connection
         QSqlDatabase dbConnection;
         QString dbProvider;
         QString dbHostname;
@@ -69,7 +71,6 @@
         Crit3DQuality* quality;
         bool checkSpatialQuality;
 
-        meteoVariable currentVariable;
         Crit3DMeteoSettings* meteoSettings;
 
         gis::Crit3DGisSettings gisSettings;
@@ -98,10 +99,10 @@
 
         void setCurrentDate(QDate myDate);
         void setCurrentHour(int myHour);
-        void setFrequency(frequencyType myFrequency);
+        void setFrequency(frequencyType frequency);
+        void setCurrentVariable(meteoVariable variable);
         QDate getCurrentDate();
         int getCurrentHour();
-        //Crit3DTime Project::getCurrentTime();
         Crit3DTime getCurrentTime();
         frequencyType getFrequency();
         meteoVariable getCurrentVariable();

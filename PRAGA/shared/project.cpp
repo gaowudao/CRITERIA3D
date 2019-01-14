@@ -381,6 +381,25 @@ bool Project::getMeteoPointSelected(int i)
     return false;
 }
 
+void Project::setFrequency(frequencyType frequency)
+{
+    this->currentFrequency = frequency;
+}
+
+frequencyType Project::getFrequency()
+{
+    return this->currentFrequency;
+}
+
+void Project::setCurrentVariable(meteoVariable variable)
+{
+    this->currentVariable = variable;
+}
+
+meteoVariable Project::getCurrentVariable()
+{
+    return this->currentVariable;
+}
 
 void Project::setCurrentDate(QDate myDate)
 {
@@ -391,24 +410,14 @@ void Project::setCurrentDate(QDate myDate)
     }
 }
 
-void Project::setCurrentHour(int myHour)
-{
-    this->currentHour = myHour;
-}
-
-void Project::setFrequency(frequencyType myFrequency)
-{
-    this->currentFrequency = myFrequency;
-}
-
 QDate Project::getCurrentDate()
 {
     return this->currentDate;
 }
 
-Crit3DTime Project::getCurrentTime()
+void Project::setCurrentHour(int myHour)
 {
-    return getCrit3DTime(this->currentDate, this->currentHour);
+    this->currentHour = myHour;
 }
 
 int Project::getCurrentHour()
@@ -416,14 +425,9 @@ int Project::getCurrentHour()
     return this->currentHour;
 }
 
-frequencyType Project::getFrequency()
+Crit3DTime Project::getCurrentTime()
 {
-    return this->currentFrequency;
-}
-
-meteoVariable Project::getCurrentVariable()
-{
-    return this->currentVariable;
+    return getCrit3DTime(this->currentDate, this->currentHour);
 }
 
 

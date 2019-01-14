@@ -154,9 +154,9 @@ frequencyType chooseFrequency()
 }
 
 
-bool chooseMeteoVariable(Project* project_)
+bool chooseMeteoVariable(Project* myProject)
 {
-    if (project_->getFrequency() == noFrequency)
+    if (myProject->getFrequency() == noFrequency)
     {
         QMessageBox::information(nullptr, "No frequency", "Choose frequency before");
         return false;
@@ -179,7 +179,7 @@ bool chooseMeteoVariable(Project* project_)
     QRadioButton RHmax("Maximum relative humidity %");
     QRadioButton Rad("Solar radiation MJ m-2");
 
-    if (project_->getFrequency() == daily)
+    if (myProject->getFrequency() == daily)
     {
         layoutVariable.addWidget(&Tmin);
         layoutVariable.addWidget(&Tavg);
@@ -190,7 +190,7 @@ bool chooseMeteoVariable(Project* project_)
         layoutVariable.addWidget(&RHmax);
         layoutVariable.addWidget(&Rad);
     }
-    else if (project_->getFrequency() == hourly)
+    else if (myProject->getFrequency() == hourly)
     {
         Tavg.setText("Average temperature °C");
         Prec.setText("Precipitation mm");
@@ -219,35 +219,35 @@ bool chooseMeteoVariable(Project* project_)
     if (myDialog.result() != QDialog::Accepted)
         return false;
 
-   if (project_->getFrequency() == daily)
+   if (myProject->getFrequency() == daily)
    {
        if (Tmin.isChecked())
-           project_->currentVariable = dailyAirTemperatureMin;
+           myProject->setCurrentVariable(dailyAirTemperatureMin);
        else if (Tmax.isChecked())
-           project_->currentVariable = dailyAirTemperatureMax;
+           myProject->setCurrentVariable(dailyAirTemperatureMax);
        else if (Tavg.isChecked())
-           project_->currentVariable = dailyAirTemperatureAvg;
+           myProject->setCurrentVariable(dailyAirTemperatureAvg);
        else if (Prec.isChecked())
-           project_->currentVariable = dailyPrecipitation;
+           myProject->setCurrentVariable(dailyPrecipitation);
        else if (Rad.isChecked())
-           project_->currentVariable = dailyGlobalRadiation;
+           myProject->setCurrentVariable(dailyGlobalRadiation);
        else if (RHmin.isChecked())
-           project_->currentVariable = dailyAirRelHumidityMin;
+           myProject->setCurrentVariable(dailyAirRelHumidityMin);
        else if (RHmax.isChecked())
-           project_->currentVariable = dailyAirRelHumidityMax;
+           myProject->setCurrentVariable(dailyAirRelHumidityMax);
        else if (RHavg.isChecked())
-           project_->currentVariable = dailyAirRelHumidityAvg;
+           myProject->setCurrentVariable(dailyAirRelHumidityAvg);
    }
-   else if (project_->getFrequency() == hourly)
+   else if (myProject->getFrequency() == hourly)
    {
        if (Tavg.isChecked())
-           project_->currentVariable = airTemperature;
+           myProject->setCurrentVariable(airTemperature);
        else if (RHavg.isChecked())
-           project_->currentVariable = airRelHumidity;
+           myProject->setCurrentVariable(airRelHumidity);
        else if (Prec.isChecked())
-           project_->currentVariable = precipitation;
+           myProject->setCurrentVariable(precipitation);
        else if (Rad.isChecked())
-           project_->currentVariable = globalIrradiance;
+           myProject->setCurrentVariable(globalIrradiance);
    }
    else
        return false;
