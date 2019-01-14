@@ -23,6 +23,7 @@ public:
     QString error;
 
     explicit Crit3DMeteoPointsDbHandler(QString dbName);
+
         ~Crit3DMeteoPointsDbHandler();
         void dbManager();
         int getIdfromMeteoVar(meteoVariable meteoVar);

@@ -1142,13 +1142,13 @@ bool Vine3DProject::loadDBPoints()
 {
     logInfo ("Read points locations...");
 
-    QString queryString = "SELECT id_location, name, utm_x, utm_y, height, is_utc, is_point_forecast FROM locations";
-    queryString += " ORDER BY id_location";
+    QString queryString = "SELECT id_point, name, utm_x, utm_y, altitude, is_utc, is_forecast FROM points_properties";
+    queryString += " ORDER BY id_point";
 
     QSqlQuery query = db.exec(queryString);
     if (query.size() == -1)
     {
-        this->projectError = "Query failed in Table 'locations'\n" + query.lastError().text();
+        this->projectError = "Query failed in Table 'points_properties'\n" + query.lastError().text();
         return(false);
     }
 
@@ -1161,19 +1161,28 @@ bool Vine3DProject::loadDBPoints()
     int id;
     while (query.next())
     {
-        id = query.value(0).toInt();
+        id = query.value("id_point").toInt();
         meteoPoints[i].id = std::to_string(id);
-        meteoPoints[i].name = query.value(1).toString().toStdString();
-        meteoPoints[i].point.utm.x = query.value(2).toFloat();
-        meteoPoints[i].point.utm.y = query.value(3).toFloat();
-        meteoPoints[i].point.z = query.value(4).toFloat();
-        meteoPoints[i].isUTC = query.value(5).toBool();
-        meteoPoints[i].isForecast = query.value(6).toBool();
+        meteoPoints[i].name = query.value("name").toString().toStdString();
+        meteoPoints[i].point.utm.x = query.value("utm_x").toFloat();
+        meteoPoints[i].point.utm.y = query.value("utm_y").toFloat();
+        meteoPoints[i].point.z = query.value("altitude").toFloat();
+        meteoPoints[i].isUTC = query.value("is_utc").toBool();
+        meteoPoints[i].isForecast = query.value("is_forecast").toBool();
+
+        //temporary
+        meteoPoints[i].lapseRateCode = primary;
+
         i++;
     }
 
+    //position with respect to DEM
+    if (DTM.isLoaded)
+        checkMeteoPointsDEM();
+
     return(true);
 }
+
 
 float Vine3DProject::meteoDataConsistency(meteoVariable myVar, const Crit3DTime& myTimeIni, const Crit3DTime& myTimeFin)
 {

@@ -110,6 +110,7 @@
         bool loadVine3DSettings();
         bool loadVine3DProjectSettings(QString projectFile);
         bool loadVine3DProjectParameters();
+
         bool loadClimateParameters();
         bool loadAggregatedMeteoVarCodes();
         bool loadFieldsProperties();
@@ -140,6 +141,7 @@
         bool setField(int fieldIndex, int soilIndex, int vineIndex, int trainingIndex,
                             float maxLaiGrass,  float maxIrrigationRate);
         bool getFieldBookIndex(int firstIndex, QDate myQDate, int fieldIndex, int* outputIndex);
+
 
         int getAggregatedVarCode(int rawVarCode);
         bool getMeteoVarIndexRaw(meteoVariable myVar, int *nrVarIndices, int **varIndices);

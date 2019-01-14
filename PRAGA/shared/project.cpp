@@ -495,7 +495,6 @@ bool Project::loadDEM(QString myFileName)
     return (true);
 }
 
-
 bool Project::loadMeteoPointsDB(QString dbName)
 {
     if (dbName == "") return false;
@@ -536,10 +535,8 @@ bool Project::loadMeteoPointsDB(QString dbName)
     return true;
 }
 
-
 bool Project::loadMeteoGridDB(QString xmlName)
 {
-
     if (xmlName == "")
         return false;
 
@@ -561,7 +558,6 @@ bool Project::loadMeteoGridDB(QString xmlName)
 
     return true;
 }
-
 
 bool Project::loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo)
 {

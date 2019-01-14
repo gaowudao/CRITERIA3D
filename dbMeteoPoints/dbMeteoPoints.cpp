@@ -34,7 +34,6 @@ Crit3DMeteoPointsDbHandler::Crit3DMeteoPointsDbHandler(QString dbName)
     }
 }
 
-
 Crit3DMeteoPointsDbHandler::~Crit3DMeteoPointsDbHandler()
 {
     if ((_db.isValid()) && (_db.isOpen()))
@@ -624,7 +623,7 @@ QList<Crit3DMeteoPoint> Crit3DMeteoPointsDbHandler::getPropertiesFromDb(const gi
                 meteoPoint.municipality = qry.value("municipality").toString().toStdString();
                 meteoPoint.active = qry.value("is_active").toBool();
                 meteoPoint.isUTC = qry.value("is_utc").toBool();
-                meteoPoint.lapseRateCode = (lapseRateCodeType)(qry.value("orog_code").toInt());
+                meteoPoint.lapseRateCode = lapseRateCodeType((qry.value("orog_code").toInt()));
                 meteoPointsList << meteoPoint;
             }
         }
