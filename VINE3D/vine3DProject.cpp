@@ -221,7 +221,7 @@ bool Vine3DProject::loadProject(QString myFileName)
     else
         return(false);
 
-    if (! openDB()) return (false);
+    if (! openDBConnection()) return (false);
 
     if (!loadFieldShape())
     {

@@ -35,7 +35,6 @@
     #include "solarRadiation.h"
 #endif
 
-
     class Project {
     private:
 
@@ -43,15 +42,15 @@
         QDate previousDate, currentDate;
         int currentHour;
 
-    public:
-        QSqlDatabase db_;
+        QSqlDatabase dbConnection;
         QString dbProvider;
         QString dbHostname;
-        QString dbDatabaseName;
+        QString dbName;
         int dbPort;
         QString dbUsername;
         QString dbPassword;
 
+    public:
         QSettings* parameters;
         QSettings* projectSettings;
         QString path;
@@ -90,7 +89,7 @@
         Project();
 
         void inizializeConnection();
-        bool openDB();
+        bool openDBConnection();
         bool loadCommonSettings(QString currentPath);
         bool loadParameters();
         void setProxyDEM();

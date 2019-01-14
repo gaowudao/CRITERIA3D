@@ -42,31 +42,33 @@ void Project::inizializeConnection()
 {
     dbProvider = "QSQLITE";
     dbHostname = "";
-    dbDatabaseName = "";
+    dbName = "";
     dbPort = NODATA;
     dbUsername = "";
     dbPassword = "";
 }
 
-bool Project::openDB()
+bool Project::openDBConnection()
 {
-    db_.close();
+    dbConnection.close();
 
-    db_ = QSqlDatabase::addDatabase(dbProvider);
-    db_.setHostName(dbHostname);
-    db_.setDatabaseName(dbDatabase);
-    db_.setPort(dbPort);
-    db_.setUserName(dbUsername);
-    db_.setPassword(dbPassword);
-    if (! db_.open())
+    dbConnection = QSqlDatabase::addDatabase(dbProvider);
+    dbConnection.setHostName(dbHostname);
+    dbConnection.setDatabaseName(dbName);
+    dbConnection.setPort(dbPort);
+    dbConnection.setUserName(dbUsername);
+    dbConnection.setPassword(dbPassword);
+    if (! dbConnection.open())
     {
-        logError("Open DB failed: " + dbHostname + "//" + dbDatabase +"\n" + db_.lastError().text());
-        db_.close();
+        logError("Open DB failed: " + dbHostname + "//" + dbName +"\n" + dbConnection.lastError().text());
+        dbConnection.close();
         return(false);
     }
 
     return (true);
 }
+
+
 void Project::setProxyDEM()
 {
     int index = interpolationSettings.getIndexHeight();
@@ -330,7 +332,7 @@ bool Project::loadCommonSettings(QString currentPath)
         if (projectSettings->contains("driver") && !projectSettings->value("driver").toString().isEmpty()) dbProvider = projectSettings->value("driver").toString();
         if (projectSettings->contains("host") && !projectSettings->value("host").toString().isEmpty()) dbHostname = projectSettings->value("host").toString();
         if (projectSettings->contains("port") && !projectSettings->value("port").toString().isEmpty()) dbPort = projectSettings->value("port").toInt();
-        if (projectSettings->contains("dbname") && !projectSettings->value("dbname").toString().isEmpty()) dbDatabaseName = projectSettings->value("dbname").toString();
+        if (projectSettings->contains("dbname") && !projectSettings->value("dbname").toString().isEmpty()) dbName = projectSettings->value("dbname").toString();
         if (projectSettings->contains("username") && !projectSettings->value("username").toString().isEmpty()) dbUsername = projectSettings->value("username").toString();
         if (projectSettings->contains("password") && !projectSettings->value("password").toString().isEmpty()) dbPassword = projectSettings->value("password").toString();
     projectSettings->endGroup();
@@ -371,14 +373,13 @@ bool Project::getMeteoPointSelected(int i)
 
     for (int j = 0; j < meteoPointsSelected.size(); j++)
     {
-        if (meteoPoints[i].latitude == meteoPointsSelected[j].latitude && meteoPoints[i].longitude == meteoPointsSelected[j].longitude)
+        if (abs(meteoPoints[i].latitude - meteoPointsSelected[j].latitude) < EPSILON
+            && abs(meteoPoints[i].longitude - meteoPointsSelected[j].longitude) < EPSILON)
             return true;
     }
 
     return false;
 }
-
-
 
 
 void Project::setCurrentDate(QDate myDate)
@@ -445,9 +446,9 @@ void Project::getMeteoPointsRange(float *minimum, float *maximum)
     {
         v = meteoPoints[i].currentValue;
 
-        if (v != NODATA && meteoPoints[i].quality == quality::accepted)
+        if (int(v) != int(NODATA) && meteoPoints[i].quality == quality::accepted)
         {
-            if (*minimum == NODATA)
+            if (int(*minimum) == int(NODATA))
             {
                 *minimum = v;
                 *maximum = v;
@@ -559,7 +560,7 @@ bool Project::loadMeteoPointsDB(QString dbName)
         return false;
     }
 
-    meteoPoints = new Crit3DMeteoPoint[nrMeteoPoints];
+    meteoPoints = new Crit3DMeteoPoint[unsigned(nrMeteoPoints)];
 
     for (int i=0; i < nrMeteoPoints; i++)
     {
@@ -659,7 +660,7 @@ bool Project::loadMeteoGridDailyData(QDate firstDate, QDate lastDate, bool showI
     int count = 0;
 
     FormInfo myInfo;
-    int infoStep;
+    int infoStep = 1;
 
     if (showInfo)
     {
@@ -712,7 +713,7 @@ bool Project::loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate, b
     std::string id;
     int count = 0;
     FormInfo myInfo;
-    int infoStep;
+    int infoStep = 1;
 
     if (showInfo)
     {
@@ -790,16 +791,16 @@ bool Project::readPointProxyValues(Crit3DMeteoPoint* myPoint, QSqlDatabase* myDb
     Crit3DProxy* myProxy;
 
     nrProxy = interpolationSettings.getProxyNr();
-    myPoint->proxyValues.resize(nrProxy);
+    myPoint->proxyValues.resize(unsigned(nrProxy));
 
-    for (int i=0; i < nrProxy; i++)
+    for (unsigned int i=0; i < unsigned(nrProxy); i++)
     {
         myPoint->proxyValues.at(i) = NODATA;
 
         // read only for active proxies
-        if (interpolationSettings.getSelectedCombination().getValue(i))
+        if (interpolationSettings.getSelectedCombination().getValue(signed(i)))
         {
-            myProxy = interpolationSettings.getProxy(i);
+            myProxy = interpolationSettings.getProxy(signed(i));
             proxyField = QString::fromStdString(myProxy->getProxyField());
             proxyTable = QString::fromStdString(myProxy->getProxyTable());
             if (proxyField != "" && proxyTable != "")
@@ -813,7 +814,7 @@ bool Project::readPointProxyValues(Crit3DMeteoPoint* myPoint, QSqlDatabase* myDb
                 }
             }
 
-            if (myPoint->proxyValues.at(i) == NODATA)
+            if (int(myPoint->proxyValues.at(i)) == int(NODATA))
             {
                 gis::Crit3DRasterGrid* proxyGrid = myProxy->getGrid();
                 if (proxyGrid == nullptr || ! proxyGrid->isLoaded)
@@ -821,8 +822,8 @@ bool Project::readPointProxyValues(Crit3DMeteoPoint* myPoint, QSqlDatabase* myDb
                 else
                 {
                     float myValue = gis::getValueFromXY(*proxyGrid, myPoint->point.utm.x, myPoint->point.utm.y);
-                    if (myValue != proxyGrid->header->flag)
-                        myPoint->proxyValues.at(i) = myValue;
+                    if (int(myValue) != int(proxyGrid->header->flag))
+                        myPoint->proxyValues.at(unsigned(i)) = myValue;
                 }
             }
         }
@@ -833,20 +834,20 @@ bool Project::readPointProxyValues(Crit3DMeteoPoint* myPoint, QSqlDatabase* myDb
 
 bool Project::readProxyValues()
 {
-    if (dbProvider == "QSQLITE")
+    if (this->dbProvider == "QSQLITE")
     {
-        if (meteoPointsDbHandler == nullptr)
+        if (this->meteoPointsDbHandler == nullptr)
             return false;
 
-        QSqlDatabase myDb = meteoPointsDbHandler->getDb();
-        for (int i = 0; i < nrMeteoPoints; i++)
-            if (! readPointProxyValues(&meteoPoints[i], &myDb))
+        QSqlDatabase myDb = this->meteoPointsDbHandler->getDb();
+        for (int i = 0; i < this->nrMeteoPoints; i++)
+            if (! readPointProxyValues(&(this->meteoPoints[i]), &myDb))
                 return false;
     }
     else
     {
-        for (int i = 0; i < nrMeteoPoints; i++)
-            if (! readPointProxyValues(&meteoPoints[i], &(db_)))
+        for (int i = 0; i < this->nrMeteoPoints; i++)
+            if (! readPointProxyValues(&(this->meteoPoints[i]), &(this->dbConnection)))
                 return false;
     }
 
