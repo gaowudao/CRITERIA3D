@@ -48,6 +48,25 @@ void Project::inizializeConnection()
     dbPassword = "";
 }
 
+bool Project::openDB()
+{
+    db_.close();
+
+    db_ = QSqlDatabase::addDatabase(dbProvider);
+    db_.setHostName(dbHostname);
+    db_.setDatabaseName(dbDatabase);
+    db_.setPort(dbPort);
+    db_.setUserName(dbUsername);
+    db_.setPassword(dbPassword);
+    if (! db_.open())
+    {
+        logError("Open DB failed: " + dbHostname + "//" + dbDatabase +"\n" + db_.lastError().text());
+        db_.close();
+        return(false);
+    }
+
+    return (true);
+}
 void Project::setProxyDEM()
 {
     int index = interpolationSettings.getIndexHeight();
@@ -758,14 +777,78 @@ void Project::checkMeteoPointsDEM()
         meteoPoints[i].isInsideDem = ! gis::isOutOfGridXY(meteoPoints[i].point.utm.x, meteoPoints[i].point.utm.y, DTM.header);
 }
 
+bool Project::readPointProxyValues(Crit3DMeteoPoint* myPoint, QSqlDatabase* myDb)
+{
+    if (myPoint == nullptr) return false;
+
+    QSqlQuery qry(*myDb);
+
+    QString proxyField;
+    QString proxyTable;
+    QString statement;
+    int nrProxy;
+    Crit3DProxy* myProxy;
+
+    nrProxy = interpolationSettings.getProxyNr();
+    myPoint->proxyValues.resize(nrProxy);
+
+    for (int i=0; i < nrProxy; i++)
+    {
+        myPoint->proxyValues.at(i) = NODATA;
+
+        // read only for active proxies
+        if (interpolationSettings.getSelectedCombination().getValue(i))
+        {
+            myProxy = interpolationSettings.getProxy(i);
+            proxyField = QString::fromStdString(myProxy->getProxyField());
+            proxyTable = QString::fromStdString(myProxy->getProxyTable());
+            if (proxyField != "" && proxyTable != "")
+            {
+                statement = QString("SELECT `%1` FROM `%2` WHERE id_point = '%3'").arg(proxyField).arg(proxyTable).arg(QString::fromStdString((*myPoint).id));
+                if(qry.exec(statement))
+                {
+                    qry.last();
+                    if (qry.value(proxyField) != "")
+                        myPoint->proxyValues.at(i) = qry.value(proxyField).toFloat();
+                }
+            }
+
+            if (myPoint->proxyValues.at(i) == NODATA)
+            {
+                gis::Crit3DRasterGrid* proxyGrid = myProxy->getGrid();
+                if (proxyGrid == nullptr || ! proxyGrid->isLoaded)
+                    return false;
+                else
+                {
+                    float myValue = gis::getValueFromXY(*proxyGrid, myPoint->point.utm.x, myPoint->point.utm.y);
+                    if (myValue != proxyGrid->header->flag)
+                        myPoint->proxyValues.at(i) = myValue;
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
 bool Project::readProxyValues()
 {
-    if (meteoPointsDbHandler == nullptr)
-        return false;
-
-    for (int i = 0; i < nrMeteoPoints; i++)
-        if (!meteoPointsDbHandler->readPointProxyValues(&meteoPoints[i], &interpolationSettings))
+    if (dbProvider == "QSQLITE")
+    {
+        if (meteoPointsDbHandler == nullptr)
             return false;
+
+        QSqlDatabase myDb = meteoPointsDbHandler->getDb();
+        for (int i = 0; i < nrMeteoPoints; i++)
+            if (! readPointProxyValues(&meteoPoints[i], &myDb))
+                return false;
+    }
+    else
+    {
+        for (int i = 0; i < nrMeteoPoints; i++)
+            if (! readPointProxyValues(&meteoPoints[i], &(db_)))
+                return false;
+    }
 
     return true;
 }
