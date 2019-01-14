@@ -1,5 +1,5 @@
-#include <QLabel>
-#include <QtDebug>
+//#include <QLabel>
+//#include <QtDebug>
 #include <QMessageBox>
 
 #include "project.h"
@@ -17,7 +17,7 @@
 
 Project::Project()
 {
-    inizializeConnection();
+    inizializeDBConnection();
     path = "";
     logFileName = "";
     errorString = "";
@@ -38,7 +38,7 @@ Project::Project()
 
 }
 
-void Project::inizializeConnection()
+void Project::inizializeDBConnection()
 {
     dbProvider = "QSQLITE";
     dbHostname = "";
@@ -327,7 +327,7 @@ bool Project::loadCommonSettings(QString currentPath)
         }
     }
 
-    inizializeConnection();
+    inizializeDBConnection();
     projectSettings->beginGroup("database");
         if (projectSettings->contains("driver") && !projectSettings->value("driver").toString().isEmpty()) dbProvider = projectSettings->value("driver").toString();
         if (projectSettings->contains("host") && !projectSettings->value("host").toString().isEmpty()) dbHostname = projectSettings->value("host").toString();
@@ -379,6 +379,11 @@ bool Project::getMeteoPointSelected(int i)
     }
 
     return false;
+}
+
+QString Project::getPath()
+{
+    return this->path;
 }
 
 void Project::setFrequency(frequencyType frequency)

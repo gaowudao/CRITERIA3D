@@ -52,13 +52,21 @@
         QString dbUsername;
         QString dbPassword;
 
-    public:
-        QSettings* parameters;
-        QSettings* projectSettings;
+        // project path
         QString path;
+
+        // logfile
         QString logFileName;
         std::ofstream logFile;
+
+        void inizializeDBConnection();
+        bool openDBConnection();
+
+    public:
         std::string errorString;
+
+        QSettings* parameters;
+        QSettings* projectSettings;
 
         int nrMeteoPoints;
         Crit3DMeteoPoint* meteoPoints;
@@ -89,8 +97,6 @@
 
         Project();
 
-        void inizializeConnection();
-        bool openDBConnection();
         bool loadCommonSettings(QString currentPath);
         bool loadParameters();
         void setProxyDEM();
@@ -101,11 +107,12 @@
         void setCurrentHour(int myHour);
         void setFrequency(frequencyType frequency);
         void setCurrentVariable(meteoVariable variable);
-        QDate getCurrentDate();
         int getCurrentHour();
+        QDate getCurrentDate();
         Crit3DTime getCurrentTime();
         frequencyType getFrequency();
         meteoVariable getCurrentVariable();
+        QString getPath();
 
         bool setLogFile(QString callingProgram);
         void logError(QString myStr);
