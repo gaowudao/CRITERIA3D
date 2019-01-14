@@ -448,7 +448,7 @@ void MainWindow::updateVariable()
     }
     else
     {
-        if (myProject.currentVariable != noMeteoVar)
+        if (myProject.getCurrentVariable() != noMeteoVar)
         {
             this->ui->actionShowLocation->setChecked(false);
             if (this->meteoGridObj != nullptr) this->meteoGridObj->setDrawBorders(false);
@@ -495,7 +495,7 @@ void MainWindow::updateVariable()
         }
     }
 
-    std::string myString = getVariableString(myProject.currentVariable);
+    std::string myString = getVariableString(myProject.getCurrentVariable());
     ui->labelVariable->setText(QString::fromStdString(myString));
 
     redrawMeteoPoints(true);
@@ -592,7 +592,7 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
     }
 
     roundColorScale(myProject.meteoPointsColorScale, 4, true);
-    setColorScale(myProject.currentVariable, myProject.meteoPointsColorScale);
+    setColorScale(myProject.getCurrentVariable(), myProject.meteoPointsColorScale);
 
     Crit3DColor *myColor;
     bool isData = false;
@@ -622,7 +622,7 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
     }
 
     if (isData)
-        ui->labelVariablePoints->setText(QString::fromStdString(getVariableString(myProject.currentVariable)));
+        ui->labelVariablePoints->setText(QString::fromStdString(getVariableString(myProject.getCurrentVariable())));
     else
         ui->labelVariablePoints->setText("No data");
 
@@ -663,7 +663,7 @@ void MainWindow::redrawMeteoGrid()
     meteoGridLegend->setVisible(true);
 
     setColorScale(variable, myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale);
-    ui->labelMeteoGridScale->setText(QString::fromStdString(getVariableString(myProject.currentVariable)));
+    ui->labelMeteoGridScale->setText(QString::fromStdString(getVariableString(myProject.getCurrentVariable())));
 
     meteoGridObj->redrawRequested();
     meteoGridLegend->update();
@@ -891,7 +891,7 @@ void MainWindow::on_actionParameters_triggered()
 
 void MainWindow::on_actionShowLocation_triggered()
 {
-    myProject.currentVariable = noMeteoVar;
+    myProject.setCurrentVariable(noMeteoVar);
     this->ui->actionShowLocation->setChecked(true);
     if (this->meteoGridObj != nullptr) this->meteoGridObj->setDrawBorders(true);
     this->updateVariable();

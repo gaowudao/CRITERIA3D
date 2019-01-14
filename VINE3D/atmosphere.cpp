@@ -507,7 +507,7 @@ bool aggregateAndSaveDailyMap(Vine3DProject* myProject, meteoVariable myVar,
 
 bool loadDailyMeteoMap(Vine3DProject* myProject, meteoVariable myDailyVar, QDate myDate, const QString& myArea)
 {
-    QString myPath = myProject->path + myProject->dailyOutputPath + myDate.toString("yyyy/MM/dd/");
+    QString myPath = myProject->getPath() + myProject->dailyOutputPath + myDate.toString("yyyy/MM/dd/");
     QString varName = getVarNameFromMeteoVariable(myDailyVar);
     QString myFileName = myPath + getOutputNameDaily("ARPA", varName, myArea, "", myDate);
     std::string myError;

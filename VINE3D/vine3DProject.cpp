@@ -36,7 +36,6 @@ void Vine3DProject::initialize()
 
     isProjectLoaded = false;
 
-    path = "";
     dailyOutputPath = "daily_output/";
     demFileName = "";
     fieldMapName = "";
@@ -103,7 +102,7 @@ void Vine3DProject::setEnvironment(Tenvironment myEnvironment)
 
 QString Vine3DProject::getGeoserverPath()
 {
-    return (this->path + "geoserver/");
+    return (this->getPath() + "geoserver/");
 }
 
 bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
@@ -129,9 +128,9 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
             myPath += "/";
 
         if (myPath.left(2) == "./")
-            this->path = getPath(projectFile) + myPath.right(myPath.length()-2);
+            this->setPath(getPath(projectFile) + myPath.right(myPath.length()-2));
         else
-            this->path = myPath;
+            this->setPath(myPath);
     }
 
     projectSettings->beginGroup("location");
@@ -172,7 +171,7 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
     password = pass;
 
     projectSettings->beginGroup("settings");
-    QString paramFile = this->path + projectSettings->value("parameters_file").toString();
+    QString paramFile = this->getPath() + projectSettings->value("parameters_file").toString();
     float depth = projectSettings->value("soil_depth").toFloat();
     projectSettings->endGroup();
 
@@ -211,7 +210,7 @@ bool Vine3DProject::loadProject(QString myFileName)
     else
         this->logError("LogFile Wrong.");
 
-    myFileName = path + demFileName;
+    myFileName = getPath() + demFileName;
     if (loadDEM(myFileName))
     {
         this->logInfo("Initialize DTM and project maps...");
@@ -225,7 +224,7 @@ bool Vine3DProject::loadProject(QString myFileName)
 
     if (!loadFieldShape())
     {
-        myFileName = this->path + this->fieldMapName;
+        myFileName = this->getPath() + this->fieldMapName;
         if (!loadFieldMap(myFileName)) return false;
     }
 
@@ -1658,8 +1657,8 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool isS
             if (isSaveOutput)
             {
                 //create output directories
-                myOutputPathDaily = this->path + this->dailyOutputPath + myDate.toString("yyyy/MM/dd/");
-                myOutputPathHourly = this->path + "hourly_output/" + myDate.toString("yyyy/MM/dd/");
+                myOutputPathDaily = this->getPath() + this->dailyOutputPath + myDate.toString("yyyy/MM/dd/");
+                myOutputPathHourly = this->getPath() + "hourly_output/" + myDate.toString("yyyy/MM/dd/");
 
                 if ((! myDir.mkpath(myOutputPathDaily)) || (! myDir.mkpath(myOutputPathHourly)))
                 {
@@ -1723,7 +1722,7 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool isS
 
 bool Vine3DProject::loadStates(QDate myDate, QString myArea)
 {
-    QString statePath = this->path + "states/" + myDate.toString("yyyy/MM/dd/");
+    QString statePath = this->getPath() + "states/" + myDate.toString("yyyy/MM/dd/");
 
     //if (!loadPlantState(this, tartaricAcidVar, myDate, myStatePath)) return(false);
     //if (!loadPlantState(this, pHBerryVar, myDate, myStatePath)) return(false);
@@ -1767,8 +1766,8 @@ bool Vine3DProject::loadStates(QDate myDate, QString myArea)
 bool Vine3DProject::saveStateAndOutput(QDate myDate, QString myArea)
 {
     QDir myDir;
-    QString statePath = this->path + "states/" + myDate.toString("yyyy/MM/dd/");
-    QString outputPath = this->path + this->dailyOutputPath + myDate.toString("yyyy/MM/dd/");
+    QString statePath = this->getPath() + "states/" + myDate.toString("yyyy/MM/dd/");
+    QString outputPath = this->getPath() + this->dailyOutputPath + myDate.toString("yyyy/MM/dd/");
     if (! myDir.mkpath(statePath))
     {
         this->logError("Creation directory states failed." );
@@ -1886,7 +1885,7 @@ bool Vine3DProject::setLogFile()
     QString fileName, myPath, myDate;
     QDir myDir;
 
-    myPath = this->path + "log/";
+    myPath = this->getPath() + "log/";
     myDir.mkpath(myPath);
     //TODO check and error if directory not created
 

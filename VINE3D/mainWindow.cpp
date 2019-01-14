@@ -460,7 +460,7 @@ void MainWindow::updateVariable()
     }
     else
     {
-        if (myProject.currentVariable != noMeteoVar)
+        if (myProject.getCurrentVariable() != noMeteoVar)
         {
             this->ui->actionShowLocation->setChecked(false);
             if (this->meteoGridObj != nullptr) this->meteoGridObj->setDrawBorders(false);
@@ -471,16 +471,16 @@ void MainWindow::updateVariable()
             this->ui->labelFrequency->setText("Daily");
 
             //check
-            if (myProject.currentVariable == airTemperature)
+            if (myProject.getCurrentVariable() == airTemperature)
                 myProject.currentVariable = dailyAirTemperatureAvg;
 
-            else if (myProject.currentVariable == precipitation)
+            else if (myProject.getCurrentVariable() == precipitation)
                 myProject.currentVariable = dailyPrecipitation;
 
-            else if (myProject.currentVariable == globalIrradiance)
+            else if (myProject.getCurrentVariable() == globalIrradiance)
                 myProject.currentVariable = dailyGlobalRadiation;
 
-            else if (myProject.currentVariable == airRelHumidity)
+            else if (myProject.getCurrentVariable() == airRelHumidity)
                 myProject.currentVariable = dailyAirRelHumidityAvg;
         }
 
@@ -489,20 +489,20 @@ void MainWindow::updateVariable()
             this->ui->labelFrequency->setText("Hourly");
 
             //check
-            if ((myProject.currentVariable == dailyAirTemperatureAvg)
-                    || (myProject.currentVariable == dailyAirTemperatureMax)
-                    || (myProject.currentVariable == dailyAirTemperatureMin))
+            if ((myProject.getCurrentVariable() == dailyAirTemperatureAvg)
+                    || (myProject.getCurrentVariable() == dailyAirTemperatureMax)
+                    || (myProject.getCurrentVariable() == dailyAirTemperatureMin))
                 myProject.currentVariable = airTemperature;
 
-            else if ((myProject.currentVariable == dailyAirRelHumidityAvg)
-                     || (myProject.currentVariable == dailyAirRelHumidityMax)
-                     || (myProject.currentVariable == dailyAirRelHumidityMin))
+            else if ((myProject.getCurrentVariable() == dailyAirRelHumidityAvg)
+                     || (myProject.getCurrentVariable() == dailyAirRelHumidityMax)
+                     || (myProject.getCurrentVariable() == dailyAirRelHumidityMin))
                  myProject.currentVariable = airRelHumidity;
 
-            else if (myProject.currentVariable == dailyPrecipitation)
+            else if (myProject.getCurrentVariable() == dailyPrecipitation)
                     myProject.currentVariable = precipitation;
 
-            else if (myProject.currentVariable == dailyGlobalRadiation)
+            else if (myProject.getCurrentVariable() == dailyGlobalRadiation)
                 myProject.currentVariable = globalIrradiance;
         }
     }
@@ -601,7 +601,7 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
     }
 
     roundColorScale(myProject.meteoPointsColorScale, 4, true);
-    setColorScale(myProject.currentVariable, myProject.meteoPointsColorScale);
+    setColorScale(myProject.getCurrentVariable(), myProject.meteoPointsColorScale);
 
     Crit3DColor *myColor;
     for (int i = 0; i < myProject.nrMeteoPoints; i++)
@@ -665,7 +665,7 @@ void MainWindow::redrawMeteoGrid()
     meteoGridLegend->setVisible(true);
 
     setColorScale(variable, myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale);
-    ui->labelMeteoGridScale->setText(QString::fromStdString(getVariableString(myProject.currentVariable)));
+    ui->labelMeteoGridScale->setText(QString::fromStdString(getVariableString(myProject.getCurrentVariable())));
 
     meteoGridObj->redrawRequested();
     meteoGridLegend->update();

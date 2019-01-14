@@ -269,7 +269,7 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
         for (n = 0; n < nrSavingDays; n++)
         {
             myDate = firstDate.addDays(n);
-            dailyPath = myProject->path + myProject->dailyOutputPath + myDate.toString("yyyy/MM/dd/");
+            dailyPath = myProject->getPath() + myProject->dailyOutputPath + myDate.toString("yyyy/MM/dd/");
 
             fileName = getOutputNameDaily("ARPA", "downyINFR", myArea, "", myDate);
             outputFileName = dailyPath + fileName;

@@ -1,5 +1,3 @@
-//#include <QLabel>
-//#include <QtDebug>
 #include <QMessageBox>
 
 #include "project.h"
@@ -379,6 +377,11 @@ bool Project::getMeteoPointSelected(int i)
     }
 
     return false;
+}
+
+void Project::setPath(QString myPath)
+{
+    this->path = myPath;
 }
 
 QString Project::getPath()
