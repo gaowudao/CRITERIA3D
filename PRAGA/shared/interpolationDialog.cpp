@@ -340,8 +340,7 @@ ProxyDialog::ProxyDialog(Project *myProject)
 
     QLabel *labelTableList = new QLabel(tr("table for point values"));
     layoutPointValues->addWidget(labelTableList);
-    QSqlDatabase db = _project->meteoPointsDbHandler->getDb();
-    QStringList tables_ = db.tables();
+    QStringList tables_ = _project->meteoPointsDbHandler->getDb().tables();
     for (int i=0; i < tables_.size(); i++)
         _table.addItem(tables_.at(i));
 

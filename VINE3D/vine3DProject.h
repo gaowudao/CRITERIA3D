@@ -43,21 +43,12 @@
     public:
         Crit3DTime currentTime;
 
-        QString sqlDriver;
-        QString hostName;
-        QString databaseName;
-        int connectionPort;
-        QString userName;
-        QString password;
-
         QString parametersFile;
 
         QString idArea;
         QString dailyOutputPath;
         QString demFileName;
         QString fieldMapName;
-
-        QSqlDatabase db;
 
         gis::Crit3DRasterGrid interpolatedDtm;
         gis::Crit3DRasterGrid indexMap;

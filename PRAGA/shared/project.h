@@ -45,6 +45,7 @@
         QDate previousDate, currentDate;
         int currentHour;
 
+    protected:
         // database connection
         QSqlDatabase dbConnection;
         QString dbProvider;
