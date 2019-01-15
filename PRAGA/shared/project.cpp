@@ -564,13 +564,14 @@ bool Project::loadMeteoPointsDB(QString dbName)
         return false;
     }
 
-    QList<Crit3DMeteoPoint> listMeteoPoints = meteoPointsDbHandler->getPropertiesFromDb(this->gisSettings);
+    QList<Crit3DMeteoPoint> listMeteoPoints = meteoPointsDbHandler->getPropertiesFromDb(this->gisSettings, &(this->errorString));
 
     nrMeteoPoints = listMeteoPoints.size();
     if (nrMeteoPoints == 0)
     {
-        logError("Missing meteo point properties.");
-        closeMeteoPointsDB();
+        errorString = "It is not possible to read the point properties:\n" + errorString;
+        this->logError();
+        this->closeMeteoPointsDB();
         return false;
     }
 

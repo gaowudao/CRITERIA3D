@@ -584,7 +584,7 @@ bool Crit3DMeteoPointsDbHandler::readPointProxyValues(Crit3DMeteoPoint* myPoint,
     return true;
 }
 
-QList<Crit3DMeteoPoint> Crit3DMeteoPointsDbHandler::getPropertiesFromDb(const gis::Crit3DGisSettings& gisSettings)
+QList<Crit3DMeteoPoint> Crit3DMeteoPointsDbHandler::getPropertiesFromDb(const gis::Crit3DGisSettings& gisSettings, std::string *errorString)
 {
     QList<Crit3DMeteoPoint> meteoPointsList;
     Crit3DMeteoPoint meteoPoint;
@@ -595,7 +595,7 @@ QList<Crit3DMeteoPoint> Crit3DMeteoPointsDbHandler::getPropertiesFromDb(const gi
 
     if( !qry.exec() )
     {
-        qDebug() << qry.lastError();
+        *errorString = qry.lastError().text().toStdString();
     }
     else
     {
