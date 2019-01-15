@@ -749,8 +749,8 @@ void ComputationDialog::displayPeriod(const QString value)
             return;
         }
         periodDisplay.setVisible(false);
-        currentDayLabel.setVisible(true);
-        currentDay.setVisible(true);
+        currentDayLabel.setVisible(false);
+        currentDay.setVisible(false);
         genericStartLabel.setVisible(false);
         genericEndLabel.setVisible(false);
         genericPeriodStart.setVisible(false);
