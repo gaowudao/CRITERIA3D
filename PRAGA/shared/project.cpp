@@ -288,11 +288,9 @@ bool Project::loadParameters()
 }
 
 
-bool Project::loadCommonSettings(QString currentPath)
+bool Project::loadCommonSettings(QString settingsFileName)
 {
-    this->path = currentPath;
-
-    QString settingsFileName = currentPath + "default.ini";
+    this->path = getFilePath(settingsFileName);
 
     if (! QFile(settingsFileName).exists())
     {
@@ -313,11 +311,11 @@ bool Project::loadCommonSettings(QString currentPath)
 
         if (myPath.left(2) == "./")
         {
-            this->path = currentPath + myPath.right(myPath.length()-2);
+            this->path += myPath.right(myPath.length()-2);
         }
         else if(myPath.left(2) == "..")
         {
-            this->path = currentPath + myPath;
+            this->path += myPath;
         }
         else
         {

@@ -115,6 +115,12 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
 
     initialize();
 
+    if (! loadCommonSettings(projectFile))
+    {
+        logError("Error reading common settings in " + projectFile);
+        return false;
+    }
+
     if (projectSettings != nullptr) delete projectSettings;
     projectSettings = new QSettings(projectFile, QSettings::IniFormat);
 

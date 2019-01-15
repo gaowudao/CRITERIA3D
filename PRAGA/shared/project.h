@@ -94,7 +94,7 @@
         Project();
 
         bool openDBConnection();
-        bool loadCommonSettings(QString currentPath);
+        bool loadCommonSettings(QString settingsFileName);
         bool loadParameters();
         void setProxyDEM();
         bool checkProxy(std::string name_, std::string gridName_, std::string table_, std::string field_, std::string *error);
