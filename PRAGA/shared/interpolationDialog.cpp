@@ -453,6 +453,7 @@ void ProxyDialog::accept()
     if (checkProxies(&error))
     {
         saveProxies();
+        _project->updateProxy();
         QDialog::done(QDialog::Accepted);
     }
     else

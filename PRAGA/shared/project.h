@@ -136,8 +136,10 @@
 
         float meteoDataConsistency(meteoVariable myVar, const Crit3DTime& timeIni, const Crit3DTime& timeFin);
 
+        bool loadProxyGrids();
         bool readPointProxyValues(Crit3DMeteoPoint* myPoint, QSqlDatabase* myDb);
         bool readProxyValues();
+        bool updateProxy();
         void checkMeteoPointsDEM();
         bool writeTopographicDistanceMaps();
         bool loadTopographicDistanceMaps();

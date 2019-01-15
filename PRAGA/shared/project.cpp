@@ -284,6 +284,13 @@ bool Project::loadParameters()
         }
     }
 
+    // check proxy grids for detrending
+    if (!loadProxyGrids())
+    {
+        errorString = "Error loading proxy grids";
+        return false;
+    }
+
     return true;
 }
 
@@ -579,6 +586,13 @@ bool Project::loadMeteoPointsDB(QString dbName)
 
     listMeteoPoints.clear();
 
+    // load proxy values for detrending
+    if (! readProxyValues())
+    {
+        logError("Error reading proxy values");
+        return false;
+    }
+
     //position with respect to DEM
     if (DTM.isLoaded)
         checkMeteoPointsDEM();
@@ -842,11 +856,38 @@ bool Project::readPointProxyValues(Crit3DMeteoPoint* myPoint, QSqlDatabase* myDb
     return true;
 }
 
+bool Project::loadProxyGrids()
+{
+    std::string* myError = new std::string();
+    Crit3DProxy *myProxy;
+    gis::Crit3DRasterGrid *myGrid;
+    std::string gridName;
+
+    for (int i=0; i < interpolationSettings.getProxyNr(); i++)
+    {
+        myProxy = interpolationSettings.getProxy(i);
+        myGrid = myProxy->getGrid();
+        gridName = myProxy->getGridName();
+
+        if (interpolationSettings.getSelectedCombination().getValue(i) || myProxy->getForQualityControl())
+        {
+            if (myGrid == nullptr && gridName != "")
+            {
+                myGrid = new gis::Crit3DRasterGrid();
+                if (!gis::readEsriGrid(gridName, myGrid, myError))
+                    return false;
+            }
+        }
+    }
+
+    return true;
+}
+
 bool Project::readProxyValues()
 {
-    if (this->dbProvider == "QSQLITE")
+    if (dbProvider == "QSQLITE")
     {
-        if (this->meteoPointsDbHandler == nullptr)
+        if (meteoPointsDbHandler == nullptr)
             return false;
 
         QSqlDatabase myDb = this->meteoPointsDbHandler->getDb();
@@ -856,12 +897,19 @@ bool Project::readProxyValues()
     }
     else
     {
-        for (int i = 0; i < this->nrMeteoPoints; i++)
-            if (! readPointProxyValues(&(this->meteoPoints[i]), &(this->dbConnection)))
-                return false;
+        if (dbConnection.isOpen())
+            for (int i = 0; i < this->nrMeteoPoints; i++)
+                if (! readPointProxyValues(&(this->meteoPoints[i]), &(this->dbConnection)))
+                    return false;
     }
 
     return true;
+}
+
+bool Project::updateProxy()
+{
+    if (! loadProxyGrids()) return false;
+    if (! readProxyValues()) return false;
 }
 
 bool Project::writeTopographicDistanceMaps()
@@ -974,23 +1022,10 @@ bool Project::interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gi
         myInfo.start("Preparing interpolation...", 0);
     }
 
+    //detrending and checking precipitation
     if (! preInterpolation(interpolationPoints, &interpolationSettings, meteoPoints, nrMeteoPoints, myVar, myTime))
     {
         errorString = "Interpolation: error in function preInterpolation";
-        return false;
-    }
-
-    // check proxy grids for detrending
-    if (!loadProxyGrids(&interpolationSettings))
-    {
-        errorString = "Interpolation: error loading proxy grids";
-        return false;
-    }
-
-    // load proxy values for detrending
-    if (! readProxyValues())
-    {
-        errorString = "Error reading proxy values";
         return false;
     }
 
