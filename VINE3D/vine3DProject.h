@@ -50,6 +50,8 @@
         QString userName;
         QString password;
 
+        QString parametersFile;
+
         QString idArea;
         QString dailyOutputPath;
         QString demFileName;

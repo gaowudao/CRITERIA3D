@@ -121,62 +121,22 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
         return false;
     }
 
-    if (projectSettings != nullptr) delete projectSettings;
-    projectSettings = new QSettings(projectFile, QSettings::IniFormat);
-
-    projectSettings->beginGroup("path");
-    QString myPath = projectSettings->value("path").toString();
-    projectSettings->endGroup();
-
-    if (! myPath.isEmpty())
-    {
-        if (myPath.right(1) != "/")
-            myPath += "/";
-
-        if (myPath.left(2) == "./")
-        {
-            this->setPath(getFilePath(projectFile) + myPath.right(myPath.length()-2));
-        }
-        else
-            this->setPath(myPath);
-    }
-
     projectSettings->beginGroup("location");
-    int utmZone = projectSettings->value("utm_zone").toInt();
-    bool isUtc = projectSettings->value("is_utc").toBool();
-    int timeZone = projectSettings->value("timezone").toInt();
+        int timeZone = projectSettings->value("timezone").toInt();
     projectSettings->endGroup();
 
-    gisSettings.utmZone = utmZone;
-    gisSettings.isUTC = isUtc;
     gisSettings.timeZone = timeZone;
 
     projectSettings->beginGroup("project");
-    QString myId = projectSettings->value("id").toString();
-    QString projectName = projectSettings->value("name").toString();
-    QString demName = projectSettings->value("dem").toString();
-    QString fieldName = projectSettings->value("fieldMap").toString();
+        QString myId = projectSettings->value("id").toString();
+        QString projectName = projectSettings->value("name").toString();
+        QString demName = projectSettings->value("dem").toString();
+        QString fieldName = projectSettings->value("fieldMap").toString();
     projectSettings->endGroup();
 
     idArea = myId;
     demFileName = demName;
     fieldMapName = fieldName;
-
-    projectSettings->beginGroup("database");
-    QString driver = projectSettings->value("driver").toString();
-    QString host = projectSettings->value("host").toString();
-    int port = projectSettings->value("port").toInt();
-    QString dbname = projectSettings->value("dbname").toString();
-    QString user = projectSettings->value("username").toString();
-    QString pass = projectSettings->value("password").toString();
-    projectSettings->endGroup();
-
-    sqlDriver = driver;
-    hostName = host;
-    connectionPort = port;
-    databaseName = dbname;
-    userName = user;
-    password = pass;
 
     projectSettings->beginGroup("settings");
     QString paramFile = this->getPath() + projectSettings->value("parameters_file").toString();
@@ -184,19 +144,9 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
     projectSettings->endGroup();
 
     soilDepth = depth;
+    parametersFile = paramFile;
 
-    if (! QFile(paramFile).exists())
-    {
-        logError("Missing file: " + paramFile);
-        return false;
-    }
-    else
-    {
-        if (parameters != nullptr)
-            parameters = new QSettings(paramFile, QSettings::IniFormat);
-
-        return loadParameters();
-    }
+    return true;
 
 }
 
@@ -208,10 +158,10 @@ bool Vine3DProject::loadProject(QString myFileName)
 
     if (myFileName == "") return(false);
     if (! loadVine3DProjectSettings(myFileName))
-    {
-        this->logError("Wrong Project File.\n" + this->projectError);
-        return (false);
-    }
+        return false;
+
+    if (! loadParameters(parametersFile))
+        return false;
 
     if (this->setLogFile())
         this->logInfo("Set LogFile: " + this->logFileName);

@@ -95,7 +95,7 @@
 
         bool openDBConnection();
         bool loadCommonSettings(QString settingsFileName);
-        bool loadParameters();
+        bool loadParameters(QString parametersFileName);
         void setProxyDEM();
         bool checkProxy(std::string name_, std::string gridName_, std::string table_, std::string field_, std::string *error);
         void addProxy(std::string name_, std::string gridName_, std::string table_, std::string field_, bool isForQuality_, bool isActive_);

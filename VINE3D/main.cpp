@@ -35,6 +35,9 @@ int main(int argc, char *argv[])
         if (! myProject.loadCommonSettings(currentPath + "default.ini"))
             return -1;
 
+        if (! myProject.loadParameters(myProject.getPath() + "DATA/settings/parameters.ini"))
+            return -1;
+
         QNetworkProxyFactory::setUseSystemConfiguration(true);
 
         QApplication::setOverrideCursor(Qt::ArrowCursor);

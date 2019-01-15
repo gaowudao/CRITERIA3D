@@ -131,8 +131,16 @@ void Project::addProxy(std::string name_, std::string gridName_, std::string tab
     if (getProxyPragaName(name_) == height) setProxyDEM();
 }
 
-bool Project::loadParameters()
+bool Project::loadParameters(QString parametersFileName)
 {
+    if (! QFile(parametersFileName).exists())
+    {
+        logError("Missing file: " + parametersFileName);
+        return false;
+    }
+
+    parameters = new QSettings(parametersFileName, QSettings::IniFormat);
+
     //interpolation settings
     interpolationSettings.initialize();
     qualityInterpolationSettings.initialize();
@@ -355,18 +363,7 @@ bool Project::loadCommonSettings(QString settingsFileName)
         gisSettings.isUTC = isUtc;
     }
 
-    QString parametersFileName = this->path + "DATA/settings/parameters.ini";
-    if (! QFile(parametersFileName).exists())
-    {
-        logError("Missing file: " + parametersFileName);
-        return false;
-    }
-    else
-    {
-        parameters = new QSettings(parametersFileName, QSettings::IniFormat);
-        return loadParameters();
-    }
-
+    return true;
 }
 
 
