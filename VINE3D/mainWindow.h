@@ -3,6 +3,7 @@
 
     #include <QMainWindow>
     #include <QList>
+    #include <QActionGroup>
 
     #include "tileSources/OSMTileSource.h"
     #include "Position.h"
@@ -13,6 +14,7 @@
     #include "rasterObject.h"
     #include "colorlegend.h"
 
+    enum visualizationType {showNone, showLocation, showCurrentVariable};
 
     namespace Ui
     {
@@ -51,7 +53,6 @@
         void on_variableButton_clicked();
         void on_frequencyButton_clicked();
         void on_actionVariableQualitySpatial_triggered();
-        void on_actionPointsVisible_triggered();
         void on_rasterRestoreButton_clicked();
         void on_timeEdit_timeChanged(const QTime &time);
         void on_dateEdit_dateChanged(const QDate &date);
@@ -68,6 +69,12 @@
         void on_actionParameters_triggered();
 
         void on_actionRun_models_triggered();
+
+        void on_actionShowPointsHide_triggered();
+
+        void on_actionShowPointsLocation_triggered();
+
+        void on_actionShowPointsVariable_triggered();
 
     protected:
         /*!
@@ -99,6 +106,9 @@
         QList<StationMarker*> pointList;
         RubberBand *myRubberBand;
 
+        visualizationType currentPointsVisualization;
+        QActionGroup *showPointsGroup;
+
         bool showPoints;
 
         void setMapSource(OSMTileSource::OSMTileType mySource);
@@ -109,7 +119,9 @@
         void updateDateTime();
         void resetMeteoPoints();
         void addMeteoPoints();
-        void redrawMeteoPoints(bool updateColorSCale);
+
+        void redrawMeteoPoints(visualizationType myType, bool updateColorSCale);
+
         void redrawMeteoGrid();
 
         bool loadMeteoPointsDB(QString dbName);

@@ -62,6 +62,15 @@ MainWindow::MainWindow(QWidget *parent) :
     this->meteoPointsLegend->resize(this->ui->widgetColorLegendPoints->size());
     this->meteoPointsLegend->colorScale = myProject.meteoPointsColorScale;
 
+    this->currentPointsVisualization = showNone;
+    // show menu
+    showPointsGroup = new QActionGroup(this);
+    showPointsGroup->setExclusive(true);
+    showPointsGroup->addAction(this->ui->actionShowPointsHide);
+    showPointsGroup->addAction(this->ui->actionShowPointsLocation);
+    showPointsGroup->addAction(this->ui->actionShowPointsVariable);
+    showPointsGroup->setEnabled(false);
+
     // Set tiles source
     this->setMapSource(OSMTileSource::OSMTiles);
 
@@ -376,6 +385,14 @@ void MainWindow::on_actionOpen_project_triggered()
 
             // active raster object
             this->rasterObj->updateCenter();
+
+            this->resetMeteoPoints();
+            this->addMeteoPoints();
+            this->updateDateTime();
+            this->showPointsGroup->setEnabled(true);
+            currentPointsVisualization = showLocation;
+            redrawMeteoPoints(currentPointsVisualization, true);
+
         }
         else myProject.logError("Open project failed:\n " + myFileName);
         this->update();
@@ -390,7 +407,9 @@ void MainWindow::on_actionOpen_meteo_points_DB_triggered()
     {
         this->loadMeteoPointsDB(dbName);
     }
-    redrawMeteoPoints(true);
+
+    currentPointsVisualization = showLocation;
+    redrawMeteoPoints(currentPointsVisualization, true);
 }
 
 void MainWindow::on_actionRun_models_triggered()
@@ -510,7 +529,7 @@ void MainWindow::updateVariable()
     std::string myString = getVariableString(myProject.getCurrentVariable());
     ui->labelVariable->setText(QString::fromStdString(myString));
 
-    redrawMeteoPoints(true);
+    redrawMeteoPoints(currentPointsVisualization, true);
     redrawMeteoGrid();
 }
 
@@ -538,7 +557,7 @@ void MainWindow::on_dateChanged()
 
     }
 
-    redrawMeteoPoints(true);
+    redrawMeteoPoints(currentPointsVisualization, true);
     redrawMeteoGrid();
 }
 
@@ -551,13 +570,15 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
         myProject.setCurrentHour(time.hour());
     }
 
-    redrawMeteoPoints(true);
+    redrawMeteoPoints(currentPointsVisualization, true);
     redrawMeteoGrid();
 }
 
 
-void MainWindow::redrawMeteoPoints(bool updateColorSCale)
+void MainWindow::redrawMeteoPoints(visualizationType myType, bool updateColorSCale)
 {
+    currentPointsVisualization = myType;
+
     if (myProject.nrMeteoPoints == 0)
         return;
 
@@ -565,70 +586,81 @@ void MainWindow::redrawMeteoPoints(bool updateColorSCale)
     for (int i = 0; i < myProject.nrMeteoPoints; i++)
         pointList[i]->setVisible(false);
 
-    if (! this->showPoints)
-        return;
-
     meteoPointsLegend->setVisible(true);
-    // show location
-    if (myProject.getCurrentVariable() == noMeteoVar)
-    {
 
-        for (int i = 0; i < myProject.nrMeteoPoints; i++)
+    switch(currentPointsVisualization)
+    {
+        case showNone:
         {
-                myProject.meteoPoints[i].currentValue = NODATA;
-                pointList[i]->setFillColor(QColor(Qt::white));
-                pointList[i]->setRadius(5);
-                pointList[i]->setToolTip(&(myProject.meteoPoints[i]));
-                pointList[i]->setVisible(true);
+            meteoPointsLegend->setVisible(false);
+            this->ui->actionShowPointsHide->setChecked(true);
+            break;
         }
-
-        myProject.meteoPointsColorScale->setRange(NODATA, NODATA);
-        meteoPointsLegend->update();
-        return;
-    }
-
-    // quality control
-    checkData(myProject.quality, myProject.getCurrentVariable(),
-              myProject.meteoPoints, myProject.nrMeteoPoints, myProject.getCurrentTime(),
-              &myProject.qualityInterpolationSettings, myProject.checkSpatialQuality);
-
-    if (updateColorSCale)
-    {
-        float minimum, maximum;
-        myProject.getMeteoPointsRange(&minimum, &maximum);
-
-        myProject.meteoPointsColorScale->setRange(minimum, maximum);
-    }
-
-    roundColorScale(myProject.meteoPointsColorScale, 4, true);
-    setColorScale(myProject.getCurrentVariable(), myProject.meteoPointsColorScale);
-
-    Crit3DColor *myColor;
-    for (int i = 0; i < myProject.nrMeteoPoints; i++)
-    {
-        if (int(myProject.meteoPoints[i].currentValue) != NODATA)
+        case showLocation:
         {
-            if (myProject.meteoPoints[i].quality == quality::accepted)
+            this->ui->actionShowPointsLocation->setChecked(true);
+            for (int i = 0; i < myProject.nrMeteoPoints; i++)
             {
-                pointList[i]->setRadius(5);
-                myColor = myProject.meteoPointsColorScale->getColor(myProject.meteoPoints[i].currentValue);
-                pointList[i]->setFillColor(QColor(myColor->red, myColor->green, myColor->blue));
-                pointList[i]->setOpacity(1.0);
-            }
-            else
-            {
-                // Wrong data
-                pointList[i]->setRadius(10);
-                pointList[i]->setFillColor(QColor(Qt::black));
-                pointList[i]->setOpacity(0.5);
+                    myProject.meteoPoints[i].currentValue = NODATA;
+                    pointList[i]->setFillColor(QColor(Qt::white));
+                    pointList[i]->setRadius(5);
+                    pointList[i]->setToolTip(&(myProject.meteoPoints[i]));
+                    pointList[i]->setVisible(true);
             }
 
-            pointList[i]->setToolTip(&(myProject.meteoPoints[i]));
-            pointList[i]->setVisible(true);
+            myProject.meteoPointsColorScale->setRange(NODATA, NODATA);
+            meteoPointsLegend->update();
+            break;
+        }
+        case showCurrentVariable:
+        {
+            this->ui->actionShowPointsVariable->setChecked(true);
+
+            // quality control
+            checkData(myProject.quality, myProject.getCurrentVariable(),
+                      myProject.meteoPoints, myProject.nrMeteoPoints, myProject.getCurrentTime(),
+                      &myProject.qualityInterpolationSettings, myProject.checkSpatialQuality);
+
+            if (updateColorSCale)
+            {
+                float minimum, maximum;
+                myProject.getMeteoPointsRange(&minimum, &maximum);
+
+                myProject.meteoPointsColorScale->setRange(minimum, maximum);
+            }
+
+            roundColorScale(myProject.meteoPointsColorScale, 4, true);
+            setColorScale(myProject.getCurrentVariable(), myProject.meteoPointsColorScale);
+
+            Crit3DColor *myColor;
+            for (int i = 0; i < myProject.nrMeteoPoints; i++)
+            {
+                if (int(myProject.meteoPoints[i].currentValue) != NODATA)
+                {
+                    if (myProject.meteoPoints[i].quality == quality::accepted)
+                    {
+                        pointList[i]->setRadius(5);
+                        myColor = myProject.meteoPointsColorScale->getColor(myProject.meteoPoints[i].currentValue);
+                        pointList[i]->setFillColor(QColor(myColor->red, myColor->green, myColor->blue));
+                        pointList[i]->setOpacity(1.0);
+                    }
+                    else
+                    {
+                        // Wrong data
+                        pointList[i]->setRadius(10);
+                        pointList[i]->setFillColor(QColor(Qt::black));
+                        pointList[i]->setOpacity(0.5);
+                    }
+
+                    pointList[i]->setToolTip(&(myProject.meteoPoints[i]));
+                    pointList[i]->setVisible(true);
+                }
+            }
+
+            meteoPointsLegend->update();
+            break;
         }
     }
-
-    meteoPointsLegend->update();
 }
 
 void MainWindow::redrawMeteoGrid()
@@ -800,12 +832,6 @@ void MainWindow::on_frequencyButton_clicked()
    }
 }
 
-void MainWindow::on_actionPointsVisible_triggered()
-{
-    this->showPoints = ui->actionPointsVisible->isChecked();
-    redrawMeteoPoints(false);
-}
-
 void MainWindow::on_rasterRestoreButton_clicked()
 {
     if (this->rasterObj->currentRaster == nullptr)
@@ -916,4 +942,17 @@ void MainWindow::on_actionVine3D_InitializeWaterBalance_triggered()
         QMessageBox::information(nullptr, "", "Criteria3D initialized.");
 }
 
+void MainWindow::on_actionShowPointsHide_triggered()
+{
+    redrawMeteoPoints(showNone, true);
+}
 
+void MainWindow::on_actionShowPointsLocation_triggered()
+{
+    redrawMeteoPoints(showLocation, true);
+}
+
+void MainWindow::on_actionShowPointsVariable_triggered()
+{
+    redrawMeteoPoints(showCurrentVariable, true);
+}

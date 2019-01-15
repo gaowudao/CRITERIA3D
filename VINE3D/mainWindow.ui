@@ -2549,16 +2549,12 @@
    </widget>
    <widget class="QMenu" name="menuVariable">
     <property name="title">
-     <string>Meteo Points</string>
+     <string>Interpolation</string>
     </property>
-    <addaction name="actionPointsVisible"/>
-    <addaction name="actionShowLocation"/>
-    <addaction name="actionVariableQualitySpatial"/>
-    <addaction name="separator"/>
-    <addaction name="actionRectangle_Selection"/>
-    <addaction name="separator"/>
     <addaction name="actionInterpolationSettings"/>
     <addaction name="actionInterpolation_to_DTM"/>
+    <addaction name="separator"/>
+    <addaction name="actionVariableQualitySpatial"/>
    </widget>
    <widget class="QMenu" name="menuGIS_settings">
     <property name="title">
@@ -2589,7 +2585,22 @@
     <addaction name="actionShow_boundary"/>
     <addaction name="separator"/>
    </widget>
+   <widget class="QMenu" name="menuShow">
+    <property name="title">
+     <string>Show</string>
+    </property>
+    <widget class="QMenu" name="menuPoints">
+     <property name="title">
+      <string>Meteo points</string>
+     </property>
+     <addaction name="actionShowPointsHide"/>
+     <addaction name="actionShowPointsLocation"/>
+     <addaction name="actionShowPointsVariable"/>
+    </widget>
+    <addaction name="menuPoints"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuShow"/>
    <addaction name="menuVariable"/>
    <addaction name="menuCriteria3D"/>
    <addaction name="menuGIS_settings"/>
@@ -2733,6 +2744,30 @@
   <action name="actionRun_models">
    <property name="text">
     <string>Run models...</string>
+   </property>
+  </action>
+  <action name="actionShowPointsHide">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Hide</string>
+   </property>
+  </action>
+  <action name="actionShowPointsLocation">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Location</string>
+   </property>
+  </action>
+  <action name="actionShowPointsVariable">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Current variable</string>
    </property>
   </action>
  </widget>
