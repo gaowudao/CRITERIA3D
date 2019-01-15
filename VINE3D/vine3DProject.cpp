@@ -1111,6 +1111,13 @@ bool Vine3DProject::loadDBPoints()
         i++;
     }
 
+    // load proxy values for detrending
+    if (! readProxyValues())
+    {
+        logError("Error reading proxy values");
+        return false;
+    }
+
     //position with respect to DEM
     if (DTM.isLoaded)
         checkMeteoPointsDEM();
