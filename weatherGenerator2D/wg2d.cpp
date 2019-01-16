@@ -174,10 +174,10 @@ void weatherGenerator2D::setObservedData(TObsDataD** observations)
             obsDataD[i][j].tMin = observations[i][j].tMin;
             obsDataD[i][j].tMax = observations[i][j].tMax;
             obsDataD[i][j].prec = observations[i][j].prec;
-            printf("%d/%d/%d,%.1f,%.1f,%.1f\n",observations[i][j].date.day,observations[i][j].date.month,observations[i][j].date.year,observations[i][j].tMin,observations[i][j].tMax,observations[i][j].prec);
-            pressEnterToContinue();
-        }
+            //printf("%d/%d/%d,%.1f,%.1f,%.1f\n",observations[i][j].date.day,observations[i][j].date.month,observations[i][j].date.year,observations[i][j].tMin,observations[i][j].tMax,observations[i][j].prec);
 
+        }
+        //pressEnterToContinue();
     }
 
 
