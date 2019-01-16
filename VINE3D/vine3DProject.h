@@ -140,7 +140,7 @@
         bool loadObsDataSubHourly(int indexPoint, meteoVariable myVar, QDateTime d1, QDateTime d2, QString tableName);
         bool loadObsDataHourly(int indexPoint, QDate d1, QDate d2, QString tableName, bool useAggrCodes);
         bool loadObsDataHourlyVar(int indexPoint, meteoVariable myVar, QDate d1, QDate d2, QString tableName, bool useAggrCodes);
-        bool loadObsDataAllPoints(QDate d1, QDate d2);
+        bool loadObsDataAllPoints(QDate d1, QDate d2, bool showInfo);
         bool loadObsDataAllPointsVar(meteoVariable myVar, QDate d1, QDate d2);
         bool meteoDataLoaded(const Crit3DTime& myTimeIni, const Crit3DTime& myTimeFin);
         float meteoDataConsistency(meteoVariable myVar, const Crit3DTime& myTimeIni, const Crit3DTime& myTimeFin);

@@ -27,16 +27,16 @@ public:
     {
         if (formInfo->objectName().isEmpty())
             formInfo->setObjectName(QString::fromUtf8("formInfo"));
-        formInfo->resize(432, 175);
+        formInfo->resize(481, 175);
         label = new QLabel(formInfo);
         label->setObjectName(QString::fromUtf8("label"));
-        label->setGeometry(QRect(20, 20, 361, 71));
+        label->setGeometry(QRect(20, 20, 441, 71));
         QFont font;
         font.setPointSize(10);
         label->setFont(font);
         progressBar = new QProgressBar(formInfo);
         progressBar->setObjectName(QString::fromUtf8("progressBar"));
-        progressBar->setGeometry(QRect(10, 120, 421, 21));
+        progressBar->setGeometry(QRect(10, 120, 461, 21));
         progressBar->setValue(24);
 
         retranslateUi(formInfo);

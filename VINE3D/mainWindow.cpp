@@ -55,9 +55,6 @@ MainWindow::MainWindow(QWidget *parent) :
     this->rasterLegend = new ColorLegend(this->ui->widgetColorLegendRaster);
     this->rasterLegend->resize(this->ui->widgetColorLegendRaster->size());
 
-    this->meteoGridLegend = new ColorLegend(this->ui->widgetColorLegendGrid);
-    this->meteoGridLegend->resize(this->ui->widgetColorLegendGrid->size());
-
     this->meteoPointsLegend = new ColorLegend(this->ui->widgetColorLegendPoints);
     this->meteoPointsLegend->resize(this->ui->widgetColorLegendPoints->size());
     this->meteoPointsLegend->colorScale = myProject.meteoPointsColorScale;
@@ -82,16 +79,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Set raster objects
     this->rasterObj = new RasterObject(this->mapView);
-    this->meteoGridObj = new RasterObject(this->mapView);
 
     this->rasterObj->setOpacity(this->ui->rasterOpacitySlider->value() / 100.0);
-    this->meteoGridObj->setOpacity(this->ui->meteoGridOpacitySlider->value() / 100.0);
 
     this->rasterObj->setColorLegend(this->rasterLegend);
-    this->meteoGridObj->setColorLegend(this->meteoGridLegend);
 
     this->mapView->scene()->addObject(this->rasterObj);
-    this->mapView->scene()->addObject(this->meteoGridObj);
 
     this->updateVariable();
     this->updateDateTime();
@@ -105,9 +98,7 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete rasterObj;
-    delete meteoGridObj;
     delete rasterLegend;
-    delete meteoGridLegend;
     delete meteoPointsLegend;
     delete mapView;
     delete mapScene;
@@ -129,10 +120,7 @@ void MainWindow::resizeEvent(QResizeEvent * event)
     ui->groupBoxMeteoPoints->move(MAPBORDER/2, ui->groupBoxVariable->y() + ui->groupBoxVariable->height() + MAPBORDER);
     ui->groupBoxMeteoPoints->resize(TOOLSWIDTH, ui->groupBoxMeteoPoints->height());
 
-    ui->groupBoxMeteoGrid->move(MAPBORDER/2, ui->groupBoxMeteoPoints->y() + ui->groupBoxMeteoPoints->height() + MAPBORDER);
-    ui->groupBoxMeteoGrid->resize(TOOLSWIDTH, ui->groupBoxMeteoGrid->height());
-
-    ui->groupBoxRaster->move(MAPBORDER/2, ui->groupBoxMeteoGrid->y() + ui->groupBoxMeteoGrid->height() + MAPBORDER);
+    ui->groupBoxRaster->move(MAPBORDER/2, MAPBORDER);
     ui->groupBoxRaster->resize(TOOLSWIDTH, ui->groupBoxRaster->height());
 
     // TODO sembrano non funzionare
@@ -145,7 +133,6 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event){
     Q_UNUSED(event)
 
     this->rasterObj->updateCenter();
-    this->meteoGridObj->updateCenter();
 
     gis::Crit3DGeoPoint pointSelected;
 
@@ -227,7 +214,6 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
     this->mapView->centerOn(newCenter.lonLat());
 
     this->rasterObj->updateCenter();
-    this->meteoGridObj->updateCenter();
 }
 
 
@@ -280,13 +266,6 @@ void MainWindow::on_rasterOpacitySlider_sliderMoved(int position)
 {
     this->rasterObj->setOpacity(position / 100.0);
 }
-
-
-void MainWindow::on_meteoGridOpacitySlider_sliderMoved(int position)
-{
-    this->meteoGridObj->setOpacity(position / 100.0);
-}
-
 
 void MainWindow::on_actionMapToner_triggered()
 {
@@ -472,65 +451,32 @@ void MainWindow::interpolateDemGUI()
 
 void MainWindow::updateVariable()
 {
-    // FREQUENCY
-    if (myProject.getFrequency() == noFrequency)
+    if (myProject.getCurrentVariable() != noMeteoVar)
     {
-        this->ui->labelFrequency->setText("None");
+        this->ui->actionShowLocation->setChecked(false);
     }
-    else
-    {
-        if (myProject.getCurrentVariable() != noMeteoVar)
-        {
-            this->ui->actionShowLocation->setChecked(false);
-            if (this->meteoGridObj != nullptr) this->meteoGridObj->setDrawBorders(false);
-        }
 
-        if (myProject.getFrequency() == daily)
-        {
-            this->ui->labelFrequency->setText("Daily");
+    //check
+    if ((myProject.getCurrentVariable() == dailyAirTemperatureAvg)
+            || (myProject.getCurrentVariable() == dailyAirTemperatureMax)
+            || (myProject.getCurrentVariable() == dailyAirTemperatureMin))
+        myProject.setCurrentVariable(airTemperature);
 
-            //check
-            if (myProject.getCurrentVariable() == airTemperature)
-                myProject.setCurrentVariable(dailyAirTemperatureAvg);
+    else if ((myProject.getCurrentVariable() == dailyAirRelHumidityAvg)
+             || (myProject.getCurrentVariable() == dailyAirRelHumidityMax)
+             || (myProject.getCurrentVariable() == dailyAirRelHumidityMin))
+         myProject.setCurrentVariable(airRelHumidity);
 
-            else if (myProject.getCurrentVariable() == precipitation)
-                myProject.setCurrentVariable(dailyPrecipitation);
+    else if (myProject.getCurrentVariable() == dailyPrecipitation)
+            myProject.setCurrentVariable(precipitation);
 
-            else if (myProject.getCurrentVariable() == globalIrradiance)
-                myProject.setCurrentVariable(dailyGlobalRadiation);
-
-            else if (myProject.getCurrentVariable() == airRelHumidity)
-                myProject.setCurrentVariable(dailyAirRelHumidityAvg);
-        }
-
-        else if (myProject.getFrequency() == hourly)
-        {
-            this->ui->labelFrequency->setText("Hourly");
-
-            //check
-            if ((myProject.getCurrentVariable() == dailyAirTemperatureAvg)
-                    || (myProject.getCurrentVariable() == dailyAirTemperatureMax)
-                    || (myProject.getCurrentVariable() == dailyAirTemperatureMin))
-                myProject.setCurrentVariable(airTemperature);
-
-            else if ((myProject.getCurrentVariable() == dailyAirRelHumidityAvg)
-                     || (myProject.getCurrentVariable() == dailyAirRelHumidityMax)
-                     || (myProject.getCurrentVariable() == dailyAirRelHumidityMin))
-                 myProject.setCurrentVariable(airRelHumidity);
-
-            else if (myProject.getCurrentVariable() == dailyPrecipitation)
-                    myProject.setCurrentVariable(precipitation);
-
-            else if (myProject.getCurrentVariable() == dailyGlobalRadiation)
-                myProject.setCurrentVariable(globalIrradiance);
-        }
-    }
+    else if (myProject.getCurrentVariable() == dailyGlobalRadiation)
+        myProject.setCurrentVariable(globalIrradiance);
 
     std::string myString = getVariableString(myProject.getCurrentVariable());
     ui->labelVariable->setText(QString::fromStdString(myString));
 
     redrawMeteoPoints(currentPointsVisualization, true);
-    redrawMeteoGrid();
 }
 
 
@@ -558,7 +504,6 @@ void MainWindow::on_dateChanged()
     }
 
     redrawMeteoPoints(currentPointsVisualization, true);
-    redrawMeteoGrid();
 }
 
 
@@ -571,7 +516,6 @@ void MainWindow::on_timeEdit_timeChanged(const QTime &time)
     }
 
     redrawMeteoPoints(currentPointsVisualization, true);
-    redrawMeteoGrid();
 }
 
 
@@ -663,47 +607,6 @@ void MainWindow::redrawMeteoPoints(visualizationType myType, bool updateColorSCa
     }
 }
 
-void MainWindow::redrawMeteoGrid()
-{
-
-    if (myProject.meteoGridDbHandler == nullptr)
-        return;
-
-    frequencyType frequency = myProject.getFrequency();
-    meteoVariable variable = myProject.getCurrentVariable();
-
-    if (myProject.getCurrentVariable() == noMeteoVar)
-    {
-        meteoGridLegend->setVisible(false);
-        ui->labelMeteoGridScale->setText("");
-        meteoGridObj->redrawRequested();
-        return;
-    }
-
-    Crit3DTime time = myProject.getCurrentTime();
-
-    if (frequency == daily)
-    {
-        myProject.meteoGridDbHandler->meteoGrid()->fillMeteoPointCurrentDailyValue(time.date, variable);
-    }
-    else if (frequency == hourly)
-    {
-        myProject.meteoGridDbHandler->meteoGrid()->fillMeteoPointCurrentHourlyValue(time.date, time.getHour(), time.getMinutes(), variable);
-    }
-    else
-        return;
-
-    myProject.meteoGridDbHandler->meteoGrid()->fillMeteoRaster();
-    meteoGridLegend->setVisible(true);
-
-    setColorScale(variable, myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale);
-    ui->labelMeteoGridScale->setText(QString::fromStdString(getVariableString(myProject.getCurrentVariable())));
-
-    meteoGridObj->redrawRequested();
-    meteoGridLegend->update();
-}
-
-
 bool MainWindow::loadMeteoPointsDB(QString dbName)
 {
     this->resetMeteoPoints();
@@ -726,46 +629,6 @@ bool MainWindow::loadMeteoPointsDB(QString dbName)
     return true;
 }
 
-
-bool MainWindow::loadMeteoGridDB(QString xmlName)
-{
-    if (!myProject.loadMeteoGridDB(xmlName))
-    {
-        myProject.logError();
-        return false;
-    }
-
-    myProject.meteoGridDbHandler->meteoGrid()->createRasterGrid();
-
-    if (myProject.meteoGridDbHandler->gridStructure().isUTM() == false)
-    {
-        meteoGridObj->initializeLatLon(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid), myProject.gisSettings, myProject.meteoGridDbHandler->gridStructure().header(), true);
-    }
-    else
-    {
-        meteoGridObj->initializeUTM(&(myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid), myProject.gisSettings, true);
-    }
-
-    meteoGridLegend->colorScale = myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale;
-    ui->meteoGridOpacitySlider->setEnabled(true);
-
-    // update dateTime Edit if there are not MeteoPoints
-    if (this->pointList.isEmpty())
-    {
-        myProject.setCurrentDate(myProject.meteoGridDbHandler->lastDate());
-        this->updateDateTime();
-    }
-
-    myProject.loadMeteoGridData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
-
-    meteoGridObj->redrawRequested();
-
-    redrawMeteoGrid();
-
-    return true;
-}
-
-
 void MainWindow::addMeteoPoints()
 {
     myProject.meteoPointsSelected.clear();
@@ -783,7 +646,6 @@ void MainWindow::addMeteoPoints()
         point->setToolTip(&(myProject.meteoPoints[i]));
     }
 }
-
 
 void MainWindow::setMapSource(OSMTileSource::OSMTileType mySource)
 {
@@ -817,7 +679,6 @@ void MainWindow::on_variableButton_clicked()
     {
        this->ui->actionShowLocation->setChecked(false);
        this->updateVariable();
-       if (this->meteoGridObj != nullptr) this->meteoGridObj->setDrawBorders(false);
     }
 }
 
@@ -908,7 +769,6 @@ void MainWindow::on_actionShowLocation_triggered()
 {
     myProject.setCurrentVariable(noMeteoVar);
     this->ui->actionShowLocation->setChecked(true);
-    if (this->meteoGridObj != nullptr) this->meteoGridObj->setDrawBorders(true);
     this->updateVariable();
 }
 

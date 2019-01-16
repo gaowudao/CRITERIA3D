@@ -7,6 +7,7 @@
 
 #include <iostream>
 
+#include "formInfo.h"
 #include "utilities.h"
 #include "commonConstants.h"
 #include "meteo.h"
@@ -1108,6 +1109,9 @@ bool Vine3DProject::loadDBPoints()
         //temporary
         meteoPoints[i].lapseRateCode = primary;
 
+        gis::getLatLonFromUtm(gisSettings, meteoPoints[i].point.utm.x, meteoPoints[i].point.utm.y,
+                                    &(meteoPoints[i].latitude), &(meteoPoints[i].longitude));
+
         i++;
     }
 
@@ -1432,7 +1436,7 @@ bool Vine3DProject::loadObsDataHourlyVar(int indexPoint, meteoVariable myVar, QD
 }
 
 
-bool Vine3DProject::loadObsDataAllPoints(QDate d1, QDate d2)
+bool Vine3DProject::loadObsDataAllPoints(QDate d1, QDate d2, bool showInfo)
 {
     isObsDataLoaded = false;
 
@@ -1444,8 +1448,21 @@ bool Vine3DProject::loadObsDataAllPoints(QDate d1, QDate d2)
     int nrDays = d1.daysTo(d2) + 1;
     int hourlyFraction = 1;
 
+    int step = 1;
+    FormInfo myInfo;
+    QString infoStr;
+
+    if (showInfo)
+    {
+        infoStr = "Loading data from " + d1.toString() + " to " + d2.toString();
+        step = myInfo.start(infoStr, nrMeteoPoints);
+    }
+
     for (int i = 0; i < nrMeteoPoints; i++)
     {
+        if (showInfo)
+            if ((i % step) == 0) myInfo.setValue(i);
+
         meteoPoints[i].initializeObsDataH(hourlyFraction, nrDays, getCrit3DDate(d1));
 
         if (meteoPoints[i].isForecast)
