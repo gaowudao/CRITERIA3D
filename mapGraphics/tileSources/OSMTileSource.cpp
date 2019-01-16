@@ -116,7 +116,7 @@ void OSMTileSource::fetchTile(quint32 x, quint32 y, quint8 z)
     else if (_tileType == ESRIWorldImagery)
     {
         host = "http://server.arcgisonline.com";
-        url = "/ArcGIS/rest/services/World_Imagery/MapServer/tile/%1/%3/%2.png";
+        url = "/arcgis/rest/services/World_Imagery/MapServer/tile/%1/%3/%2.png";
     }
     else if (_tileType == Terrain)
     {
