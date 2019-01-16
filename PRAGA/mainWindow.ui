@@ -2966,10 +2966,9 @@
      <property name="title">
       <string>&amp;Map</string>
      </property>
+     <addaction name="actionMapTerrain"/>
      <addaction name="actionMapOpenStreetMap"/>
      <addaction name="actionMapESRISatellite"/>
-     <addaction name="actionMapTerrain"/>
-     <addaction name="actionMapToner"/>
     </widget>
     <addaction name="menuMap"/>
     <addaction name="actionParameters"/>
@@ -3072,23 +3071,30 @@
    </property>
   </action>
   <action name="actionMapOpenStreetMap">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>&amp;OpenStreetMap</string>
    </property>
   </action>
   <action name="actionMapESRISatellite">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>&amp;ESRI - World Imagery</string>
    </property>
   </action>
   <action name="actionMapTerrain">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>&amp;Stamen - Terrain</string>
-   </property>
-  </action>
-  <action name="actionMapToner">
-   <property name="text">
-    <string>Stamen - Toner</string>
    </property>
   </action>
   <action name="actionOpen_meteo_points_DB">

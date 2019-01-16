@@ -45,10 +45,11 @@
         void on_actionDownload_meteo_data_triggered();
         void on_rasterOpacitySlider_sliderMoved(int position);
         void on_meteoGridOpacitySlider_sliderMoved(int position);
-        void on_actionMapToner_triggered();
+
+        void on_actionMapTerrain_triggered();
         void on_actionMapOpenStreetMap_triggered();
         void on_actionMapESRISatellite_triggered();
-        void on_actionMapTerrain_triggered();
+
         void on_actionRectangle_Selection_triggered();
         void on_dateChanged();
         void on_rasterScaleButton_clicked();

@@ -294,27 +294,30 @@ void MainWindow::on_meteoGridOpacitySlider_sliderMoved(int position)
 }
 
 
-void MainWindow::on_actionMapToner_triggered()
+void MainWindow::on_actionMapTerrain_triggered()
 {
-    this->setMapSource(OSMTileSource::TonerLite);
+    this->setMapSource(OSMTileSource::Terrain);
+    ui->actionMapTerrain->setChecked(true);
+    ui->actionMapOpenStreetMap->setChecked(false);
+    ui->actionMapESRISatellite->setChecked(false);
 }
 
 
 void MainWindow::on_actionMapOpenStreetMap_triggered()
 {
     this->setMapSource(OSMTileSource::OSMTiles);
+    ui->actionMapTerrain->setChecked(false);
+    ui->actionMapOpenStreetMap->setChecked(true);
+    ui->actionMapESRISatellite->setChecked(false);
 }
 
 
 void MainWindow::on_actionMapESRISatellite_triggered()
 {
     this->setMapSource(OSMTileSource::ESRIWorldImagery);
-}
-
-
-void MainWindow::on_actionMapTerrain_triggered()
-{
-    this->setMapSource(OSMTileSource::Terrain);
+    ui->actionMapTerrain->setChecked(false);
+    ui->actionMapOpenStreetMap->setChecked(false);
+    ui->actionMapESRISatellite->setChecked(true);
 }
 
 
