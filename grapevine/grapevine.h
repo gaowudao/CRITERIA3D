@@ -1,6 +1,8 @@
 #ifndef GRAPEVINE_H
 #define GRAPEVINE_H
 
+#include "commonConstants.h"
+
 #ifndef CRIT3DDATE_H
     #include "crit3dDate.h"
 #endif
