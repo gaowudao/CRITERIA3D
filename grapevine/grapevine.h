@@ -1,10 +1,6 @@
 #ifndef GRAPEVINE_H
 #define GRAPEVINE_H
 
-#ifndef NODATA
-    #define NODATA -9999
-#endif
-
 #ifndef CRIT3DDATE_H
     #include "crit3dDate.h"
 #endif
@@ -254,13 +250,13 @@ struct TsoilProfileTest {
     double* temp;
 };
 
-struct Vintage_Nitrogen {
+struct Vine3D_Nitrogen {
     double interceptLeaf,slopeLeaf,leafNitrogen;
     double leaf , stem , root , shoot;
 };
 
 
-struct Vintage_SunShade {
+struct Vine3D_SunShade {
 
     double absorbedPAR ;
     double isothermalNetRadiation;
@@ -278,7 +274,7 @@ struct Vintage_SunShade {
     double assimilation,transpiration,stomatalConductance ;
 };
 
-struct Vintage_DeltaTimeResults {
+struct Vine3D_DeltaTimeResults {
 
     double netAssimilation;
     double grossAssimilation ;
@@ -291,7 +287,7 @@ struct Vintage_DeltaTimeResults {
     double transpirationNoStress;
 };
 
-struct Vintage_Biomass {
+struct Vine3D_Biomass {
 
     double total ;
     double leaf ;
@@ -341,11 +337,11 @@ private:
     double directLightK, diffuseLightK, diffuseLightKPAR, diffuseLightKNIR,directLightKPAR, directLightKNIR;
     double leafNitrogen ;
     bool isAmphystomatic ;
-    Vintage_SunShade shaded ;
-    Vintage_SunShade sunlit ;
-    Vintage_Nitrogen nitrogen ;
-    Vintage_DeltaTimeResults deltaTime ;
-    Vintage_Biomass biomass ;
+    Vine3D_SunShade shaded ;
+    Vine3D_SunShade sunlit ;
+    Vine3D_Nitrogen nitrogen ;
+    Vine3D_DeltaTimeResults deltaTime ;
+    Vine3D_Biomass biomass ;
     double specificLeafArea ;
     double alphaLeuning ;
     double wiltingPoint;

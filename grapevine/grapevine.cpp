@@ -15,8 +15,8 @@ Vine3D_Grapevine::Vine3D_Grapevine()
 
 bool Vine3D_Grapevine::compute(bool computeDaily, int secondsPerStep, TvineField* vineField, double chlorophyll)
 {
-    simulationStepInSeconds = (double)(secondsPerStep) ;
-    isAmphystomatic = true ;
+    simulationStepInSeconds = double(secondsPerStep);
+    isAmphystomatic = true;
     myLeafWidth = 0.2;       // [m]
     // Stomatal conductance Adjust stom conductance-photosynth ratio for soil water (Pa)
     alphaLeuning = vineField->cultivar->parameterWangLeuning.alpha;
@@ -1789,7 +1789,7 @@ double Vine3D_Grapevine::getTartaricAcid()
     double berryVolume;
     if (this->statePlant.statePheno.stage >= veraison)
     {
-        berryVolume = gompertzDistribution((double)(this->statePlant.statePheno.stage-veraison+0.2));
+        berryVolume = gompertzDistribution(double(this->statePlant.statePheno.stage-veraison+0.2));
         tartrate = 1.0/berryVolume;
     }
     return tartrate;

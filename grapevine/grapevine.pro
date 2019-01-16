@@ -1,24 +1,32 @@
-#-------------------------------------------------
+#-----------------------------------------------
 #
-# Project created by QtCreator 2015-04-30T11:28:07
+# grapevine library
 #
-#-------------------------------------------------
+#-----------------------------------------------
 
-QT       -= gui
+QT      -= core gui
 
 TARGET = grapevine
 TEMPLATE = lib
 CONFIG += staticlib
 
-INCLUDEPATH += C:/GitHub/CRITERIA3D/crit3dDate
-INCLUDEPATH += C:/GitHub/CRITERIA3D/mathFunctions
-INCLUDEPATH += C:/GitHub/CRITERIA3D/soil
+CONFIG += debug_and_release
+
+
+unix:{
+    CONFIG(debug, debug|release) {
+        TARGET = debug/grapevine
+    } else {
+        TARGET = release/grapevine
+    }
+}
+win32:{
+    TARGET = grapevine
+}
+
+INCLUDEPATH += ../mathFunctions ../crit3dDate ../soil
 
 SOURCES += grapevine.cpp
 
 HEADERS += grapevine.h
 
-unix {
-    target.path = /usr/lib
-    INSTALLS += target
-}
