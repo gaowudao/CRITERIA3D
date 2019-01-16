@@ -42,7 +42,6 @@
         void on_actionClose_meteo_points_triggered();
 
         void on_rasterOpacitySlider_sliderMoved(int position);
-        void on_meteoGridOpacitySlider_sliderMoved(int position);
         void on_actionMapToner_triggered();
         void on_actionMapOpenStreetMap_triggered();
         void on_actionMapESRISatellite_triggered();
@@ -99,10 +98,8 @@
         MapGraphicsScene* mapScene;
         MapGraphicsView* mapView;
         RasterObject* rasterObj;
-        RasterObject* meteoGridObj;
         ColorLegend *rasterLegend;
         ColorLegend *meteoPointsLegend;
-        ColorLegend *meteoGridLegend;
         QList<StationMarker*> pointList;
         RubberBand *myRubberBand;
 
@@ -121,8 +118,6 @@
         void addMeteoPoints();
 
         void redrawMeteoPoints(visualizationType myType, bool updateColorSCale);
-
-        void redrawMeteoGrid();
 
         bool loadMeteoPointsDB(QString dbName);
         bool loadMeteoGridDB(QString xmlName);
