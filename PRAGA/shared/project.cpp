@@ -901,6 +901,7 @@ bool Project::updateProxy()
 {
     if (! loadProxyGrids()) return false;
     if (! readProxyValues()) return false;
+    return true;
 }
 
 bool Project::writeTopographicDistanceMaps()

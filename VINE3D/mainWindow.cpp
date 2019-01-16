@@ -109,23 +109,24 @@ MainWindow::~MainWindow()
 void MainWindow::resizeEvent(QResizeEvent * event)
 {
     Q_UNUSED(event)
-    const int INFOHEIGHT = 40;
+        const int INFOHEIGHT = 40;
 
-    ui->widgetMap->setGeometry(TOOLSWIDTH, 0, this->width()-TOOLSWIDTH, this->height() - INFOHEIGHT);
-    mapView->resize(ui->widgetMap->size());
+        ui->widgetMap->setGeometry(TOOLSWIDTH, 0, this->width()-TOOLSWIDTH, this->height() - INFOHEIGHT);
+        mapView->resize(ui->widgetMap->size());
 
-    ui->groupBoxVariable->move(MAPBORDER/2, MAPBORDER);
-    ui->groupBoxVariable->resize(TOOLSWIDTH, ui->groupBoxVariable->height());
+        ui->groupBoxVariable->move(MAPBORDER/2, this->height()/2
+                              - ui->groupBoxVariable->height() - ui->groupBoxMeteoPoints->height() - MAPBORDER);
+        ui->groupBoxVariable->resize(TOOLSWIDTH, ui->groupBoxVariable->height());
 
-    ui->groupBoxMeteoPoints->move(MAPBORDER/2, ui->groupBoxVariable->y() + ui->groupBoxVariable->height() + MAPBORDER);
-    ui->groupBoxMeteoPoints->resize(TOOLSWIDTH, ui->groupBoxMeteoPoints->height());
+        ui->groupBoxMeteoPoints->move(MAPBORDER/2, ui->groupBoxVariable->y() + ui->groupBoxVariable->height() + MAPBORDER);
+        ui->groupBoxMeteoPoints->resize(TOOLSWIDTH, ui->groupBoxMeteoPoints->height());
 
-    ui->groupBoxRaster->move(MAPBORDER/2, MAPBORDER);
-    ui->groupBoxRaster->resize(TOOLSWIDTH, ui->groupBoxRaster->height());
+        ui->groupBoxRaster->move(MAPBORDER/2, ui->groupBoxMeteoPoints->y() + ui->groupBoxMeteoPoints->height() + MAPBORDER);
+        ui->groupBoxRaster->resize(TOOLSWIDTH, ui->groupBoxRaster->height());
 
-    // TODO sembrano non funzionare
-    ui->widgetColorLegendRaster->resize(TOOLSWIDTH, ui->widgetColorLegendPoints->height());
-    ui->widgetColorLegendPoints->resize(TOOLSWIDTH, ui->widgetColorLegendPoints->height());
+        // TODO sembrano non funzionare
+        ui->widgetColorLegendRaster->resize(TOOLSWIDTH, ui->widgetColorLegendPoints->height());
+        ui->widgetColorLegendPoints->resize(TOOLSWIDTH, ui->widgetColorLegendPoints->height());
 }
 
 
