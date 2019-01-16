@@ -10,8 +10,10 @@ TARGET = grapevine
 TEMPLATE = lib
 CONFIG += staticlib
 
-CONFIG += debug_and_release
+DEFINES += GRAPEVINE_LIBRARY
+DEFINES += _CRT_SECURE_NO_WARNINGS
 
+CONFIG += debug_and_release
 
 unix:{
     CONFIG(debug, debug|release) {

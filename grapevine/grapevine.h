@@ -175,8 +175,6 @@ struct TparameterBindiMigliettaFix{
         extinctionCoefficient = 0.5;
         shadedSurface = 0.8;
     }
-
-
 };
 
 struct TparameterWangLeuning{
