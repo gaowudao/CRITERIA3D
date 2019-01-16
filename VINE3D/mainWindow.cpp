@@ -498,9 +498,7 @@ void MainWindow::on_dateChanged()
     {
 
         myProject.setCurrentDate(date);
-        myProject.loadMeteoPointsData(date, date, true);
-        myProject.loadMeteoGridData(date, date, true);
-
+        myProject.loadObsDataAllPoints(date, date, true);
     }
 
     redrawMeteoPoints(currentPointsVisualization, true);

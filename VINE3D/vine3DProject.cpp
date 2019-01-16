@@ -1481,6 +1481,8 @@ bool Vine3DProject::loadObsDataAllPoints(QDate d1, QDate d2, bool showInfo)
 
     }
 
+    if (showInfo) myInfo.close();
+
     isObsDataLoaded = (isObsDataBoundaryLoaded || isObsDataWMSLoaded || isForecast);
 
     if (! isObsDataLoaded) this->projectError = "Missing observed data.";
@@ -1564,7 +1566,7 @@ bool Vine3DProject::LoadObsDataFilled(QDateTime firstTime, QDateTime lastTime)
     QDate d2 = lastTime.date().addDays(30);
     //if (d2 > today) d2 = today;
 
-    if (! this->loadObsDataAllPoints(d1, d2)) return(false);
+    if (! this->loadObsDataAllPoints(d1, d2, false)) return(false);
 
     // Replace missing data
     long nrReplacedData = 0;

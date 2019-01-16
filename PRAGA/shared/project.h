@@ -133,7 +133,6 @@
 
         void getMeteoPointsRange(float *minimum, float *maximum);
         bool getMeteoPointSelected(int i);
-        bool updateMeteoPointsData();
 
         float meteoDataConsistency(meteoVariable myVar, const Crit3DTime& timeIni, const Crit3DTime& timeFin);
 

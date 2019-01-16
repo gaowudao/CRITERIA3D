@@ -440,13 +440,6 @@ Crit3DTime Project::getCurrentTime()
     return getCrit3DTime(this->currentDate, this->currentHour);
 }
 
-
-bool Project::updateMeteoPointsData()
-{
-    return loadMeteoPointsData(currentDate, currentDate, true);
-}
-
-
 void Project::getMeteoPointsRange(float *minimum, float *maximum)
 {
     *minimum = NODATA;
