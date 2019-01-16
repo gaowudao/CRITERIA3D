@@ -186,7 +186,7 @@ void MapGraphicsView::setScene(MapGraphicsScene * scene)
             SLOT(handleChildViewContextMenu(QContextMenuEvent*)));
 
     //Insert new stuff
-    if (this->layout() != 0)
+    if (this->layout() != nullptr)
         delete this->layout();
     this->setLayout(new QVBoxLayout(this));
     this->layout()->addWidget(childView);
