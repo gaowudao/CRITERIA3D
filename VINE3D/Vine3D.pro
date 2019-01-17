@@ -13,8 +13,7 @@ TEMPLATE = app
 
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../meteo ../interpolation ../solarRadiation \
                 ../soil ../utilities ../soilFluxes3D/header ../dbMeteoPoints ../dbMeteoGrid \
-                ../grapevine ../powderyMildew ../downyMildew \
-                ../MapGraphics ../PRAGA/shared ../climate
+                ../grapevine ../climate ../MapGraphics ../PRAGA/shared
 
 CONFIG += debug_and_release
 
@@ -42,8 +41,6 @@ CONFIG(debug, debug|release) {
     LIBS += -L../dbMeteoGrid/debug -ldbMeteoGrid
     LIBS += -L../dbMeteoPoints/debug -ldbMeteoPoints
     LIBS += -L../grapevine/debug -lgrapevine
-    LIBS += -L../powderyMildew/debug -lpowderyMildew
-    LIBS += -L../downyMildew/debug -ldownyMildew
 } else {
     LIBS += -L../crit3dDate/release -lcrit3dDate
     LIBS += -L../mathFunctions/release -lmathFunctions
@@ -57,8 +54,6 @@ CONFIG(debug, debug|release) {
     LIBS += -L../dbMeteoGrid/release -ldbMeteoGrid
     LIBS += -L../dbMeteoPoints/release -ldbMeteoPoints
     LIBS += -L../grapevine/release -lgrapevine
-    LIBS += -L../powderyMildew/release -lpowderyMildew
-    LIBS += -L../downyMildew/release -ldownyMildew
 }
 
 SOURCES += \

@@ -1,3 +1,11 @@
+/*!
+    \name grapevine.cpp
+    \brief models to simulate vine phenology, growth and ripening
+    and photosynthetical processes for C3 crops
+    \authors Antonio Volta
+*/
+
+
 #include <stdio.h>
 #include <math.h>
 #include <malloc.h>
@@ -7,6 +15,10 @@
 #include "physics.h"
 #include "gammaFunction.h"
 #include "grapevine.h"
+
+
+const int minShootLeafNr = 1;
+const float LAIMIN = 0.01f;
 
 
 Vine3D_Grapevine::Vine3D_Grapevine()
@@ -153,7 +165,7 @@ void Vine3D_Grapevine::setDate (Crit3DTime myTime)
 }
 
 
-bool Vine3D_Grapevine::setWeather(double meanDailyTemp, double temp, double irradiance , double prec , double relativeHumidity , double windSpeed, double atmospheriCP_AIRressure)
+bool Vine3D_Grapevine::setWeather(double meanDailyTemp, double temp, double irradiance , double prec , double relativeHumidity , double windSpeed, double atmosphericPressure)
 {
     bool isReadingOK = false ;
     myIrradiance = irradiance ;
@@ -161,12 +173,12 @@ bool Vine3D_Grapevine::setWeather(double meanDailyTemp, double temp, double irra
     myPrec = prec ;
     myRelativeHumidity = relativeHumidity ;
     myWindSpeed = windSpeed ;
-    myAtmosphericPressure = atmospheriCP_AIRressure ;
+    myAtmosphericPressure = atmosphericPressure ;
     meanDailyTemperature = meanDailyTemp;
     double deltaRelHum = maxValue(100.0 - myRelativeHumidity, 0.01);
     vaporPressureDeficit = 0.01 * deltaRelHum * 613.75 * exp(17.502 * myInstantTemp / (240.97 + myInstantTemp));
     //globalRadiation = globRad;
-    if ((prec != NODATA) && (temp != NODATA) && (windSpeed != NODATA) && (irradiance != NODATA) && (relativeHumidity != NODATA) && (atmospheriCP_AIRressure != NODATA)) isReadingOK = true ;
+    if ((prec != NODATA) && (temp != NODATA) && (windSpeed != NODATA) && (irradiance != NODATA) && (relativeHumidity != NODATA) && (atmosphericPressure != NODATA)) isReadingOK = true ;
     return isReadingOK ;
 }
 
@@ -629,7 +641,7 @@ void Vine3D_Grapevine::aerodynamicalCoupling()
             sensibleHeatOld = sensibleHeat ;
             double moninObukhovLength,zeta,deviationFunctionForMomentum,deviationFunctionForHeat,radiativeConductance,totalConductanceToHeatExchange,stomatalConductanceWater ;
 
-            moninObukhovLength = -(pow(frictionVelocity,3))*CP_AIR*myAtmosphericPressure;
+            moninObukhovLength = -(pow(frictionVelocity,3))*HEAT_CAPACITY_AIR_MOLAR*myAtmosphericPressure;
             moninObukhovLength /= (R_GAS*(KARM*9.8*sensibleHeat));
 
             zeta = minValue((heightReference-zeroPlaneDisplacement)/moninObukhovLength,0.25) ;
@@ -670,7 +682,7 @@ void Vine3D_Grapevine::aerodynamicalCoupling()
             sunlit.aerodynamicConductanceHeatExchange = aerodynamicConductanceForHeat * sunlit.leafAreaIndex/statePlant.stateGrowth.leafAreaIndex ;//sunlit big-leaf
             shaded.aerodynamicConductanceHeatExchange = aerodynamicConductanceForHeat - sunlit.aerodynamicConductanceHeatExchange ; //  shaded big-leaf
             // Canopy radiative conductance (mol m-2 s-1)
-            radiativeConductance= 4*(slopeSatVapPressureVSTemp/GAMMA)*(STEFAN_BOLTZMANN/CP_AIR)*pow((myInstantTemp + ZEROCELSIUS),3);
+            radiativeConductance= 4*(slopeSatVapPressureVSTemp/GAMMA)*(STEFAN_BOLTZMANN/HEAT_CAPACITY_AIR_MOLAR)*pow((myInstantTemp + ZEROCELSIUS),3);
             // Total conductance to heat exchange (mol m-2 s-1)
             totalConductanceToHeatExchange =  aerodynamicConductanceForHeat + radiativeConductance; //whole canopy
             sunlit.totalConductanceHeatExchange = totalConductanceToHeatExchange * sunlit.leafAreaIndex/statePlant.stateGrowth.leafAreaIndex;	//sunlit big-leaf
@@ -681,7 +693,12 @@ void Vine3D_Grapevine::aerodynamicalCoupling()
             {
                 stomatalConductanceWater= (10.0/sunlit.leafAreaIndex); //dummy stom res for sunlit big-leaf
                 //if (sunlit.isothermalNetRadiation > 100) stomatalConductanceWater *= pow(100/sunlit.isothermalNetRadiation,0.5);
-                sunlitDeltaTemp = ((stomatalConductanceWater+1.0/sunlit.aerodynamicConductanceHeatExchange)*GAMMA*sunlit.isothermalNetRadiation/CP_AIR - vaporPressureDeficit*(1+0.001*sunlit.isothermalNetRadiation))/sunlit.totalConductanceHeatExchange/(GAMMA*(stomatalConductanceWater+1.0/sunlit.aerodynamicConductanceCO2Exchange) + slopeSatVapPressureVSTemp/sunlit.totalConductanceHeatExchange);
+                sunlitDeltaTemp = ((stomatalConductanceWater+1.0/sunlit.aerodynamicConductanceHeatExchange)
+                                   *GAMMA*sunlit.isothermalNetRadiation/HEAT_CAPACITY_AIR_MOLAR
+                                   - vaporPressureDeficit*(1+0.001*sunlit.isothermalNetRadiation))
+                                    /sunlit.totalConductanceHeatExchange/(GAMMA*(stomatalConductanceWater
+                                    +1.0/sunlit.aerodynamicConductanceCO2Exchange)
+                                    + slopeSatVapPressureVSTemp/sunlit.totalConductanceHeatExchange);
             }
             else
             {
@@ -691,11 +708,13 @@ void Vine3D_Grapevine::aerodynamicalCoupling()
             sunlit.leafTemperature = myInstantTemp + sunlitDeltaTemp	+ ZEROCELSIUS ; //sunlit big-leaf
             stomatalConductanceWater = 10.0/shaded.leafAreaIndex ; //dummy stom res for shaded big-leaf
             //if (shaded.isothermalNetRadiation > 100) stomatalConductanceWater *= pow(100/shaded.isothermalNetRadiation,0.5);
-            shadedDeltaTemp = ((stomatalConductanceWater + 1.0/shaded.aerodynamicConductanceHeatExchange)*GAMMA*shaded.isothermalNetRadiation/CP_AIR- vaporPressureDeficit*(1+0.001*shaded.isothermalNetRadiation))/shaded.totalConductanceHeatExchange/(GAMMA*(stomatalConductanceWater + 1.0/shaded.aerodynamicConductanceHeatExchange) + slopeSatVapPressureVSTemp/shaded.totalConductanceHeatExchange);
+            shadedDeltaTemp = ((stomatalConductanceWater + 1.0/shaded.aerodynamicConductanceHeatExchange)*GAMMA*shaded.isothermalNetRadiation/HEAT_CAPACITY_AIR_MOLAR
+                               - vaporPressureDeficit*(1+0.001*shaded.isothermalNetRadiation))/shaded.totalConductanceHeatExchange/(GAMMA*(stomatalConductanceWater + 1.0/shaded.aerodynamicConductanceHeatExchange)
+                              + slopeSatVapPressureVSTemp/shaded.totalConductanceHeatExchange);
             shadedDeltaTemp = 0.0;
             shaded.leafTemperature = myInstantTemp + shadedDeltaTemp + ZEROCELSIUS;  //shaded big-leaf
             // Sensible heat flux from the whole canopy
-            sensibleHeat = CP_AIR * (sunlit.aerodynamicConductanceHeatExchange*sunlitDeltaTemp + shaded.aerodynamicConductanceHeatExchange*shadedDeltaTemp);
+            sensibleHeat = HEAT_CAPACITY_AIR_MOLAR * (sunlit.aerodynamicConductanceHeatExchange*sunlitDeltaTemp + shaded.aerodynamicConductanceHeatExchange*shadedDeltaTemp);
         }
         if (isAmphystomatic) aerodynamicConductanceToCO2 = 0.78 * aerodynamicConductanceForHeat; //amphystomatous species. Ratio of diffusivities from Wang & Leuning 1998
         else aerodynamicConductanceToCO2 = 0.78 * (canopyAerodynamicConductanceToMomentum*leafBoundaryLayerConductance)/(leafBoundaryLayerConductance + 2.0*canopyAerodynamicConductanceToMomentum) * dummy; //hypostomatous species
@@ -736,8 +755,8 @@ void Vine3D_Grapevine::upscale(Tvine *cultivar)
         // Carboxylation rate
         //sunlit.maximalCarboxylationRate = optimalCarboxylationRate * exp(CVCM - HAVCM/dum[0]); //sunlit big leaf
         //shaded.maximalCarboxylationRate = optimalCarboxylationRate * exp(CVCM - HAVCM/dum[1]); //shaded big leaf
-        sunlit.maximalCarboxylationRate = optimalCarboxylationRate * acclimationFunction(HAVCM*1000,HD*1000,sunlit.leafTemperature,entropicFactorCarboxyliation,parameterWangLeuningFix.optimalTemperatureForPhotosynthesis); //sunlit big leaf
-        shaded.maximalCarboxylationRate = optimalCarboxylationRate * acclimationFunction(HAVCM*1000,HD*1000,shaded.leafTemperature,entropicFactorCarboxyliation,parameterWangLeuningFix.optimalTemperatureForPhotosynthesis); //shaded big leaf
+        sunlit.maximalCarboxylationRate = optimalCarboxylationRate * acclimationFunction(HAVCM*1000,HDEACTIVATION*1000,sunlit.leafTemperature,entropicFactorCarboxyliation,parameterWangLeuningFix.optimalTemperatureForPhotosynthesis); //sunlit big leaf
+        shaded.maximalCarboxylationRate = optimalCarboxylationRate * acclimationFunction(HAVCM*1000,HDEACTIVATION*1000,shaded.leafTemperature,entropicFactorCarboxyliation,parameterWangLeuningFix.optimalTemperatureForPhotosynthesis); //shaded big leaf
         // Scale-up maximum carboxylation rate (mol m-2 s-1)
         sunlit.maximalCarboxylationRate *= UPSCALINGFUNC((directLightK+diffuseLightKPAR),statePlant.stateGrowth.leafAreaIndex);
         shaded.maximalCarboxylationRate *= (UPSCALINGFUNC(diffuseLightKPAR,statePlant.stateGrowth.leafAreaIndex) - UPSCALINGFUNC((directLightK+diffuseLightKPAR),statePlant.stateGrowth.leafAreaIndex));
@@ -757,8 +776,8 @@ void Vine3D_Grapevine::upscale(Tvine *cultivar)
         // Adjust maximum potential electron transport for temperature (mol m-2 s-1)
         //sunlit.maximalElectronTrasportRate = optimalElectronTransportRate * exp(CJM - HAJM/dum[0]);
         //shaded.maximalElectronTrasportRate = optimalElectronTransportRate * exp(CJM - HAJM/dum[1]);
-        sunlit.maximalElectronTrasportRate = optimalElectronTransportRate * acclimationFunction(HAJM*1000,HD*1000,sunlit.leafTemperature,entropicFactorElectronTransporRate,parameterWangLeuningFix.optimalTemperatureForPhotosynthesis);
-        shaded.maximalElectronTrasportRate = optimalElectronTransportRate * acclimationFunction(HAJM*1000,HD*1000,shaded.leafTemperature,entropicFactorElectronTransporRate,parameterWangLeuningFix.optimalTemperatureForPhotosynthesis);
+        sunlit.maximalElectronTrasportRate = optimalElectronTransportRate * acclimationFunction(HAJM*1000,HDEACTIVATION*1000,sunlit.leafTemperature,entropicFactorElectronTransporRate,parameterWangLeuningFix.optimalTemperatureForPhotosynthesis);
+        shaded.maximalElectronTrasportRate = optimalElectronTransportRate * acclimationFunction(HAJM*1000,HDEACTIVATION*1000,shaded.leafTemperature,entropicFactorElectronTransporRate,parameterWangLeuningFix.optimalTemperatureForPhotosynthesis);
 
         // Compute maximum PSII quantum yield, light-acclimated (mol e- mol-1 quanta absorbed)
         sunlit.quantumYieldPS2 = 0.352 + 0.022*dum[2] - 3.4E-4*pow(dum[2],2);      //sunlit big-leaf
@@ -834,7 +853,7 @@ void Vine3D_Grapevine::photosynthesisKernel(Tvine* cultivar, double COMP,double 
                 myStromalCarbonDioxide = CS - myAtmosphericPressure * (*ASS - RD) / (*GSC);	 //CO2 concentr at carboxyl sites (Pa)
                 myStromalCarbonDioxide = maxValue(1.0e-2,myStromalCarbonDioxide) ;
                 //Vapour pressure deficit at leaf surface
-                VPDS = (slopeSatVapPressureVSTemp/CP_AIR*RNI + vaporPressureDeficit*GHR) / (GHR+(*GSC)*DUM1);  //VPD at the leaf surface (Pa)
+                VPDS = (slopeSatVapPressureVSTemp/HEAT_CAPACITY_AIR_MOLAR*RNI + vaporPressureDeficit*GHR) / (GHR+(*GSC)*DUM1);  //VPD at the leaf surface (Pa)
                 deltaAssimilation = fabs((*ASS) - ASSOLD);
                 ASSOLD = *ASS ;
             }
@@ -890,7 +909,7 @@ void Vine3D_Grapevine::photosynthesisKernelSimplified(Tvine* cultivar, double CO
                 myStromalCarbonDioxide = CS - myAtmosphericPressure * (*ASS - RD) / (*GSC);	 //CO2 concentr at carboxyl sites (Pa)
                 myStromalCarbonDioxide = maxValue(1.0e-2,myStromalCarbonDioxide) ;
                 //Vapour pressure deficit at leaf surface
-                //VPDS = (slopeSatVapPressureVSTemp/CP_AIR*RNI + vaporPressureDeficit*GHR) / (GHR+(*GSC)*DUM1);  //VPD at the leaf surface (Pa)
+                //VPDS = (slopeSatVapPressureVSTemp/HEAT_CAPACITY_AIR_MOLAR*RNI + vaporPressureDeficit*GHR) / (GHR+(*GSC)*DUM1);  //VPD at the leaf surface (Pa)
                 deltaAssimilation = fabs((*ASS) - ASSOLD);
                 ASSOLD = *ASS ;
             }
@@ -1020,7 +1039,7 @@ void Vine3D_Grapevine::cumulatedResults()
     deltaTime.grossAssimilation = simulationStepInSeconds * assimilationInstant ; // canopy gross assimilation (mol m-2)
     deltaTime.respiration = simulationStepInSeconds * Vine3D_Grapevine::plantRespiration() ;
     deltaTime.netAssimilation = deltaTime.grossAssimilation- deltaTime.respiration ;
-    deltaTime.netAssimilation = deltaTime.netAssimilation*12/1000.0/FC ;
+    deltaTime.netAssimilation = deltaTime.netAssimilation*12/1000.0/CARBONFACTOR ;
     statePlant.stateGrowth.cumulatedBiomass += deltaTime.netAssimilation ;
 
     deltaTime.transpiration = 0.;
@@ -1319,9 +1338,9 @@ bool Vine3D_Grapevine::getExtractedWaterFromGrassTranspirationandEvaporation(dou
 
 
 // phenology by Caffarra and Eccel 2011
-double Vine3D_Grapevine::chillingRate(double temp, double aParameter, double CP_AIRarameter)
+double Vine3D_Grapevine::chillingRate(double temp, double aParameter, double Cparameter)
 {
-    return (2./(1+exp(aParameter*(temp-CP_AIRarameter)*(temp-CP_AIRarameter))));
+    return (2./(1+exp(aParameter*(temp-Cparameter)*(temp-Cparameter))));
 }
 
 double Vine3D_Grapevine::criticalForceState(double chillingState,double co1 , double co2)

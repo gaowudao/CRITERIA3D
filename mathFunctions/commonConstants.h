@@ -183,7 +183,7 @@
     #define HEAT_CAPACITY_WATER_VAPOR 1996
 
     // [J mol-1 K-1] molar specific heat of air at constant pressure
-    #define HEAT_CAPACITY_AIR_MOLAR 29.3
+    #define HEAT_CAPACITY_AIR_MOLAR 29.31
 
     // [m2 s-1] vapor diffusivity at standard conditions
     #define	 VAPOR_DIFFUSIVITY0 0.0000212
