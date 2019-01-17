@@ -5,16 +5,29 @@
 using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// <summary> Model mildew implementation </summary>
+/// <summary> powdery mildew model (grapevine) </summary>
 ///
 /// <remarks> Author: Laura Costantini, 30/08/2013.
 ///
-///		<para>Read the TmildewInput structure and implement the model mildew, filling the TmildewOutput structure and updating TmildewState.</para>
+///		<para>Read the TmildewInput structure and implement the model mildew,
+///     filling the TmildewOutput structure and updating TmildewState.</para>
 ///
 ///	</remarks>
 ///
 /// <param name="mildewCore"> Pointer to a Tmildew structure. </param>
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+// constants
+const double delta = 0.969;
+const double lambda = 0.0004;
+const double fi = 7.391;
+const double nu = 2.403;
+const double csi = 0.892;
+const double upsilon = 0.221;
+const double gamma = 44.7;
+const double psi = 0.067;
+const double theta = 3.244;
 
 
 void powderyMildew(Tmildew* mildewCore, bool isBudBreak){
@@ -67,7 +80,7 @@ void powderyMildew(Tmildew* mildewCore, bool isBudBreak){
     mildewCore->output.col = mildewCore->output.aol * mildewCore->output.infectionRate;
 
     // dayInfection: the day on which germinate colonies
-    if (mildewCore->output.col > 0.001)
+    if (mildewCore->output.col > 0.001f)
             mildewCore->output.dayInfection = true;
 
     // current latency
@@ -101,8 +114,8 @@ void powderyMildew(Tmildew* mildewCore, bool isBudBreak){
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 float computeDegreeDay(float temp){
 
-    if (temp > 10.0)
-        return (temp-(float)10.0);
+    if (temp > 10.f)
+        return (temp - 10.f);
     else
         return 0.0;
 }
@@ -126,7 +139,7 @@ float computeDegreeDay(float temp){
 ///
 float ascosporesReadyFraction(float degreeDay){
 
-        return (float)exp(-1.95 * exp (-1.91 * degreeDay / 100.0));
+        return exp(-1.95f * exp (-1.91f * degreeDay / 100.f));
 
 }
 
@@ -153,7 +166,7 @@ float ascosporeDischargeRate(float temp,float rain,int leafWetness){
         return 0;
 
     else
-        return (float)(1-delta*exp(-lambda*pow(temp,2.0)*leafWetness));
+        return float(1.0 -delta * exp(-lambda * pow(temp, 2.0) * leafWetness));
 
 }
 
@@ -178,9 +191,9 @@ float vpd(float temp, float relativeHumidity)
     //check relativeHumidity
     if (relativeHumidity < 1) relativeHumidity = 1.0;
     if (relativeHumidity > 100) relativeHumidity = 100.0;
-    relativeHumidity /= 100.0;
+    relativeHumidity /= 100.f;
 
-    return (float)((1.0-relativeHumidity)*6.1375 * exp((17.502*temp)/(240.97+temp)));
+    return (1.f-relativeHumidity)*6.1375f * exp((17.502f*temp)/(240.97f+temp));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -206,7 +219,7 @@ float infectionRate(float temp, float vapourPressure){
 
     else
     {
-        float Tequivalent = (float)((temp-5.0)/(31.0-5.0));
+        float Tequivalent = (temp - 5.f) / (31.f - 5.f);
         return (float)(( pow((fi*pow(Tequivalent, nu)*(1.0-Tequivalent)), csi))*exp(-upsilon*vapourPressure));
     }
 
@@ -230,7 +243,7 @@ float infectionRate(float temp, float vapourPressure){
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 float latencyProgress(float temp){
 
-        return (float)(1/(gamma+psi*pow(temp,2.0)-theta*temp));
+        return 1.f / (gamma + psi*pow(temp,2.0) - theta*temp);
 
 }
 

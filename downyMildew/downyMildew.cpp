@@ -2,7 +2,7 @@
 #include <math.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// <summary> Model downyMildew implementation </summary>
+/// <summary> downy mildew model (grapevine) </summary>
 ///
 /// <remarks> Author: Laura Costantini, 27/11/2013.
 ///
