@@ -13,7 +13,7 @@ TEMPLATE = app
 
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../meteo ../interpolation ../solarRadiation \
                 ../soil ../utilities ../soilFluxes3D/header ../dbMeteoPoints ../dbMeteoGrid \
-                ../grapevine ../climate ../MapGraphics ../PRAGA/shared
+                ../crop ../grapevine ../climate ../MapGraphics ../PRAGA/shared
 
 CONFIG += debug_and_release
 
