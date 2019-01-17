@@ -571,11 +571,12 @@ bool Project::loadMeteoPointsDB(QString dbName)
     meteoPoints = new Crit3DMeteoPoint[unsigned(nrMeteoPoints)];
 
     for (int i=0; i < nrMeteoPoints; i++)
-    {
         meteoPoints[i] = listMeteoPoints[i];
-    }
 
     listMeteoPoints.clear();
+
+    // find last date
+    findLastMeteoDate();
 
     // load proxy values for detrending
     if (! readProxyValues())
@@ -775,15 +776,15 @@ bool Project::loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate, b
 }
 
 
-void Project::getLastMeteoData()
+void Project::findLastMeteoDate()
 {
-    QDate lastDateD = meteoPointsDbHandler->getLastDay(daily).date();
-    QDate lastDateH = meteoPointsDbHandler->getLastDay(hourly).date();
+    QDate lastDateD = meteoPointsDbHandler->getLastDate(daily).date();
+    QDate lastDateH = meteoPointsDbHandler->getLastDate(hourly).date();
 
     QDate lastDate = (lastDateD > lastDateH) ? lastDateD : lastDateH;
 
-    this->setCurrentDate(lastDate);
-    this->setCurrentHour(12);
+    setCurrentDate(lastDate);
+    setCurrentHour(12);
 }
 
 
@@ -820,7 +821,7 @@ bool Project::readPointProxyValues(Crit3DMeteoPoint* myPoint, QSqlDatabase* myDb
             proxyTable = QString::fromStdString(myProxy->getProxyTable());
             if (proxyField != "" && proxyTable != "")
             {
-                statement = QString("SELECT %1 FROM %2 WHERE id_point = '%3'").arg(proxyField).arg(proxyTable).arg(QString::fromStdString((*myPoint).id));
+                statement = QString("SELECT \"%1\" FROM \"%2\" WHERE id_point = '%3'").arg(proxyField).arg(proxyTable).arg(QString::fromStdString((*myPoint).id));
                 if(qry.exec(statement))
                 {
                     qry.last();

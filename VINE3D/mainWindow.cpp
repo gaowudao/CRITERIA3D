@@ -268,75 +268,30 @@ void MainWindow::on_rasterOpacitySlider_sliderMoved(int position)
     this->rasterObj->setOpacity(position / 100.0);
 }
 
-void MainWindow::on_actionMapToner_triggered()
+void MainWindow::on_actionMapTerrain_triggered()
 {
-    this->setMapSource(OSMTileSource::TonerLite);
+    this->setMapSource(OSMTileSource::Terrain);
+    ui->actionMapTerrain->setChecked(true);
+    ui->actionMapOpenStreetMap->setChecked(false);
+    ui->actionMapESRISatellite->setChecked(false);
 }
 
 
 void MainWindow::on_actionMapOpenStreetMap_triggered()
 {
     this->setMapSource(OSMTileSource::OSMTiles);
+    ui->actionMapTerrain->setChecked(false);
+    ui->actionMapOpenStreetMap->setChecked(true);
+    ui->actionMapESRISatellite->setChecked(false);
 }
 
 
 void MainWindow::on_actionMapESRISatellite_triggered()
 {
     this->setMapSource(OSMTileSource::ESRIWorldImagery);
-}
-
-
-void MainWindow::on_actionMapTerrain_triggered()
-{
-    this->setMapSource(OSMTileSource::Terrain);
-}
-
-
-void MainWindow::on_actionRectangle_Selection_triggered()
-{
-    if (myRubberBand != nullptr)
-    {
-        delete myRubberBand;
-        myRubberBand = nullptr;
-    }
-
-    if (ui->actionRectangle_Selection->isChecked())
-    {
-        myRubberBand = new RubberBand(QRubberBand::Rectangle, this->mapView);
-        QPoint origin(int(this->mapView->width()*0.5), int(this->mapView->height()*0.5));
-        QPoint mapPoint = getMapPoint(&origin);
-        myRubberBand->setOrigin(mapPoint);
-        myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), QSize()));
-        myRubberBand->show();
-     }
-}
-
-
-void MainWindow::on_actionLoadDEM_triggered()
-{
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open raster Grid"), "", tr("ESRI grid files (*.flt)"));
-
-    if (fileName == "") return;
-
-    qDebug() << "loading raster";
-    if (!myProject.loadDEM(fileName)) return;
-
-    this->setCurrentRaster(&(myProject.DTM));
-    ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
-    this->ui->rasterOpacitySlider->setEnabled(true);
-
-    // center map
-    gis::Crit3DGeoPoint* center = this->rasterObj->getRasterCenter();
-    this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
-
-    // resize map
-    float size = this->rasterObj->getRasterMaxSize();
-    size = float(log2(1000.0/double(size)));
-    this->mapView->setZoomLevel(quint8(size));
-    this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
-
-    // active raster object
-    this->rasterObj->updateCenter();
+    ui->actionMapTerrain->setChecked(false);
+    ui->actionMapOpenStreetMap->setChecked(false);
+    ui->actionMapESRISatellite->setChecked(true);
 }
 
 void MainWindow::on_actionOpen_project_triggered()
@@ -377,19 +332,6 @@ void MainWindow::on_actionOpen_project_triggered()
         else myProject.logError("Open project failed:\n " + myFileName);
         this->update();
     }
-}
-
-void MainWindow::on_actionOpen_meteo_points_DB_triggered()
-{
-    QString dbName = QFileDialog::getOpenFileName(this, tr("Open DB meteo"), "", tr("DB files (*.db)"));
-
-    if (dbName != "")
-    {
-        this->loadMeteoPointsDB(dbName);
-    }
-
-    currentPointsVisualization = showLocation;
-    redrawMeteoPoints(currentPointsVisualization, true);
 }
 
 void MainWindow::on_actionRun_models_triggered()
@@ -454,7 +396,7 @@ void MainWindow::updateVariable()
 {
     if (myProject.getCurrentVariable() != noMeteoVar)
     {
-        this->ui->actionShowLocation->setChecked(false);
+        this->ui->actionShowPointsLocation->setChecked(false);
     }
 
     //check
@@ -606,28 +548,6 @@ void MainWindow::redrawMeteoPoints(visualizationType myType, bool updateColorSCa
     }
 }
 
-bool MainWindow::loadMeteoPointsDB(QString dbName)
-{
-    this->resetMeteoPoints();
-
-    if (!myProject.loadMeteoPointsDB(dbName))
-        return false;
-
-    this->addMeteoPoints();
-
-    if (myProject.meteoGridDbHandler == nullptr)
-    {
-        myProject.getLastMeteoData();
-        this->updateDateTime();
-    }
-    else
-    {
-        myProject.loadMeteoPointsData(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
-    }
-
-    return true;
-}
-
 void MainWindow::addMeteoPoints()
 {
     myProject.meteoPointsSelected.clear();
@@ -712,13 +632,6 @@ void MainWindow::on_dateEdit_dateChanged(const QDate &date)
     this->on_dateChanged();
 }
 
-void MainWindow::on_actionClose_meteo_points_triggered()
-{
-    resetMeteoPoints();
-    meteoPointsLegend->setVisible(false);
-    myProject.closeMeteoPointsDB();
-}
-
 void MainWindow::on_actionInterpolation_to_DTM_triggered()
 {
     FormInfo myInfo;
@@ -728,7 +641,6 @@ void MainWindow::on_actionInterpolation_to_DTM_triggered()
 
     myInfo.close();
 }
-
 
 void MainWindow::on_actionInterpolationSettings_triggered()
 {
@@ -741,7 +653,6 @@ void MainWindow::on_actionInterpolationSettings_triggered()
     InterpolationDialog* myInterpolationDialog = new InterpolationDialog(&myProject);
     myInterpolationDialog->close();
 }
-
 
 void MainWindow::on_actionParameters_triggered()
 {
@@ -756,15 +667,6 @@ void MainWindow::on_actionParameters_triggered()
 
     mySettingsDialog->close();
 }
-
-
-void MainWindow::on_actionShowLocation_triggered()
-{
-    myProject.setCurrentVariable(noMeteoVar);
-    this->ui->actionShowLocation->setChecked(true);
-    this->updateVariable();
-}
-
 
 void MainWindow::on_actionShow_DTM_triggered()
 {

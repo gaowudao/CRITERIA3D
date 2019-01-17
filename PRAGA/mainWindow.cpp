@@ -1019,7 +1019,7 @@ bool MainWindow::loadMeteoPointsDB(QString dbName)
 
     if (myProject.meteoGridDbHandler == nullptr)
     {
-        myProject.getLastMeteoData();
+
         this->updateDateTime();
     }
     myProject.loadMeteoPointsData (myProject.getCurrentDate(), myProject.getCurrentDate(), true);

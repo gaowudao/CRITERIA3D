@@ -33,7 +33,7 @@ public:
         QStringList getDatasetsList();
         QStringList getDatasetsActive();
         void setDatasetsActive(QString active);
-        QDateTime getLastDay(frequencyType frequency);
+        QDateTime getLastDate(frequencyType frequency);
         QDateTime getFirstDay(frequencyType frequency);
 
         bool readPointProxyValues(Crit3DMeteoPoint* myPoint, Crit3DInterpolationSettings* interpolationSettings);

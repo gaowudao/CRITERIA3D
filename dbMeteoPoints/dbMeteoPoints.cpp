@@ -178,7 +178,7 @@ QStringList Crit3DMeteoPointsDbHandler::getDatasetsList()
 }
 
 
-QDateTime Crit3DMeteoPointsDbHandler::getLastDay(frequencyType frequency)
+QDateTime Crit3DMeteoPointsDbHandler::getLastDate(frequencyType frequency)
 {
     QSqlQuery qry(_db);
     QStringList tables;

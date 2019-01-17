@@ -2374,10 +2374,7 @@
     </property>
     <addaction name="actionOpen_project"/>
     <addaction name="separator"/>
-    <addaction name="actionOpen_meteo_points_DB"/>
-    <addaction name="actionClose_meteo_points"/>
     <addaction name="actionOpen_crop_map"/>
-    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuVariable">
     <property name="title">
@@ -2396,10 +2393,9 @@
      <property name="title">
       <string>&amp;Map</string>
      </property>
+     <addaction name="actionMapTerrain"/>
      <addaction name="actionMapOpenStreetMap"/>
      <addaction name="actionMapESRISatellite"/>
-     <addaction name="actionMapTerrain"/>
-     <addaction name="actionMapToner"/>
     </widget>
     <addaction name="menuMap"/>
     <addaction name="actionParameters"/>
@@ -2439,39 +2435,22 @@
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionMapOpenStreetMap">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>&amp;OpenStreetMap</string>
    </property>
   </action>
   <action name="actionMapESRISatellite">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>&amp;ESRI - World Imagery</string>
    </property>
   </action>
   <action name="actionMapTerrain">
-   <property name="text">
-    <string>&amp;Stamen - Terrain</string>
-   </property>
-  </action>
-  <action name="actionMapToner">
-   <property name="text">
-    <string>Stamen - Toner</string>
-   </property>
-  </action>
-  <action name="actionOpen_meteo_points_DB">
-   <property name="text">
-    <string>&amp;Open meteo points DB...</string>
-   </property>
-  </action>
-  <action name="actionRectangle_Selection">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Rectangle Selection</string>
-   </property>
-  </action>
-  <action name="actionShowLocation">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -2479,7 +2458,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Location</string>
+    <string>&amp;Stamen - Terrain</string>
    </property>
   </action>
   <action name="actionVariableQualitySpatial">
@@ -2491,32 +2470,6 @@
    </property>
    <property name="text">
     <string>Spatial quality control</string>
-   </property>
-  </action>
-  <action name="actionPointsVisible">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Visible</string>
-   </property>
-  </action>
-  <action name="actionOpen_meteo_grid">
-   <property name="text">
-    <string>Open meteo grid...</string>
-   </property>
-  </action>
-  <action name="actionClose_meteo_points">
-   <property name="text">
-    <string>Close meteo points...</string>
-   </property>
-  </action>
-  <action name="actionClose_meteo_grid">
-   <property name="text">
-    <string>Close meteo grid...</string>
    </property>
   </action>
   <action name="actionInterpolation_to_DTM">

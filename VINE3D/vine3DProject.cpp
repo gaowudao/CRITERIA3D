@@ -1116,6 +1116,8 @@ bool Vine3DProject::loadDBPoints()
         i++;
     }
 
+    findVine3DLastMeteoDate();
+
     // load proxy values for detrending
     if (! readProxyValues())
     {
@@ -1130,6 +1132,37 @@ bool Vine3DProject::loadDBPoints()
     return(true);
 }
 
+void Vine3DProject::findVine3DLastMeteoDate()
+{
+    QSqlQuery qry(dbConnection);
+    QStringList tables;
+    QDateTime lastDate(QDate(1800, 1, 1), QTime(0, 0, 0));
+
+    tables << "obs_values_boundary";
+    tables << "obs_values_h";
+
+    QDateTime date;
+    QString dateStr, statement;
+    foreach (QString table, tables)
+    {
+        statement = QString( "SELECT MAX(date_) FROM \"%1\" AS dateTime").arg(table);
+        if(qry.exec(statement))
+        {
+            if (qry.next())
+            {
+                dateStr = qry.value(0).toString();
+                if (!dateStr.isEmpty())
+                {
+                    date = QDateTime::fromString(dateStr,"yyyy-MM-dd HH:mm:ss");
+                    if (date > lastDate) lastDate = date;
+                }
+            }
+        }
+    }
+
+    setCurrentDate(lastDate.date());
+    setCurrentHour(12);
+}
 
 float Vine3DProject::meteoDataConsistency(meteoVariable myVar, const Crit3DTime& myTimeIni, const Crit3DTime& myTimeFin)
 {
