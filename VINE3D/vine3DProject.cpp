@@ -34,6 +34,7 @@ void Vine3DProject::initialize()
     dbPassword = "postgres";
 
     isObsDataLoaded = false;
+    setFrequency(hourly);
 
     isProjectLoaded = false;
 
@@ -103,7 +104,7 @@ void Vine3DProject::setEnvironment(Tenvironment myEnvironment)
 
 QString Vine3DProject::getGeoserverPath()
 {
-    return (this->getPath() + "geoserver/");
+    return (path + "geoserver/");
 }
 
 bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
@@ -140,7 +141,7 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
     fieldMapName = fieldName;
 
     projectSettings->beginGroup("settings");
-    QString paramFile = this->getPath() + projectSettings->value("parameters_file").toString();
+    QString paramFile = path + projectSettings->value("parameters_file").toString();
     float depth = projectSettings->value("soil_depth").toFloat();
     projectSettings->endGroup();
 
@@ -169,7 +170,7 @@ bool Vine3DProject::loadProject(QString myFileName)
     else
         this->logError("LogFile Wrong.");
 
-    myFileName = getPath() + demFileName;
+    myFileName = path + demFileName;
     if (loadDEM(myFileName))
     {
         this->logInfo("Initialize DTM and project maps...");
@@ -183,7 +184,7 @@ bool Vine3DProject::loadProject(QString myFileName)
 
     if (!loadFieldShape())
     {
-        myFileName = this->getPath() + this->fieldMapName;
+        myFileName = path + fieldMapName;
         if (!loadFieldMap(myFileName)) return false;
     }
 
@@ -1641,8 +1642,8 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool isS
             if (isSaveOutput)
             {
                 //create output directories
-                myOutputPathDaily = this->getPath() + this->dailyOutputPath + myDate.toString("yyyy/MM/dd/");
-                myOutputPathHourly = this->getPath() + "hourly_output/" + myDate.toString("yyyy/MM/dd/");
+                myOutputPathDaily = path + dailyOutputPath + myDate.toString("yyyy/MM/dd/");
+                myOutputPathHourly = path + "hourly_output/" + myDate.toString("yyyy/MM/dd/");
 
                 if ((! myDir.mkpath(myOutputPathDaily)) || (! myDir.mkpath(myOutputPathHourly)))
                 {
@@ -1706,7 +1707,7 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool isS
 
 bool Vine3DProject::loadStates(QDate myDate, QString myArea)
 {
-    QString statePath = this->getPath() + "states/" + myDate.toString("yyyy/MM/dd/");
+    QString statePath = path + "states/" + myDate.toString("yyyy/MM/dd/");
 
     //if (!loadPlantState(this, tartaricAcidVar, myDate, myStatePath)) return(false);
     //if (!loadPlantState(this, pHBerryVar, myDate, myStatePath)) return(false);
@@ -1750,8 +1751,8 @@ bool Vine3DProject::loadStates(QDate myDate, QString myArea)
 bool Vine3DProject::saveStateAndOutput(QDate myDate, QString myArea)
 {
     QDir myDir;
-    QString statePath = this->getPath() + "states/" + myDate.toString("yyyy/MM/dd/");
-    QString outputPath = this->getPath() + this->dailyOutputPath + myDate.toString("yyyy/MM/dd/");
+    QString statePath = path + "states/" + myDate.toString("yyyy/MM/dd/");
+    QString outputPath = path + this->dailyOutputPath + myDate.toString("yyyy/MM/dd/");
     if (! myDir.mkpath(statePath))
     {
         this->logError("Creation directory states failed." );
@@ -1869,7 +1870,7 @@ bool Vine3DProject::setLogFile()
     QString fileName, myPath, myDate;
     QDir myDir;
 
-    myPath = this->getPath() + "log/";
+    myPath = path + "log/";
     myDir.mkpath(myPath);
     //TODO check and error if directory not created
 

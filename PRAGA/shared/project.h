@@ -37,15 +37,11 @@
 
     class Project {
     private:
-        QString path;
 
-        // current frequency, variable, date and hour
-        frequencyType currentFrequency;
-        meteoVariable currentVariable;
-        QDate previousDate, currentDate;
-        int currentHour;
 
     protected:
+        QString path;
+
         // database connection
         QSqlDatabase dbConnection;
         QString dbProvider;
@@ -54,6 +50,11 @@
         int dbPort;
         QString dbUsername;
         QString dbPassword;
+
+        frequencyType currentFrequency;
+        meteoVariable currentVariable;
+        QDate previousDate, currentDate;
+        int currentHour;
 
         void inizializeDBConnection();
 

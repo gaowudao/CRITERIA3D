@@ -676,20 +676,14 @@ void MainWindow::on_variableButton_clicked()
 {
     if (chooseMeteoVariable(&myProject))
     {
-       this->ui->actionShowLocation->setChecked(false);
-       this->updateVariable();
+        this->updateVariable();
+
+        if (myProject.getFrequency() != noFrequency)
+        {
+            this->ui->actionShowPointsVariable->setEnabled(true);
+            redrawMeteoPoints(showCurrentVariable, true);
+        }
     }
-}
-
-void MainWindow::on_frequencyButton_clicked()
-{
-   frequencyType myFrequency = chooseFrequency();
-
-   if (myFrequency != noFrequency)
-   {
-       myProject.setFrequency(myFrequency);
-       this->updateVariable();
-   }
 }
 
 void MainWindow::on_rasterRestoreButton_clicked()

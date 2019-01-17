@@ -50,7 +50,6 @@
         void on_dateChanged();
         void on_rasterScaleButton_clicked();
         void on_variableButton_clicked();
-        void on_frequencyButton_clicked();
         void on_actionVariableQualitySpatial_triggered();
         void on_rasterRestoreButton_clicked();
         void on_timeEdit_timeChanged(const QTime &time);
