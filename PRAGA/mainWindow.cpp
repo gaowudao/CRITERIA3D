@@ -42,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    this->setMouseTracking(true);
     ui->setupUi(this);
 
     this->myRubberBand = nullptr;
@@ -88,8 +89,6 @@ MainWindow::MainWindow(QWidget *parent) :
     this->ui->dateEdit->installEventFilter(filter);
     //connect(this->ui->dateEdit, SIGNAL(editingFinished()), this, SLOT(on_dateChanged()));
 
-    this->setMouseTracking(true);
-
     ui->meteoPoints->setEnabled(false);
     ui->grid->setEnabled(false);
 
@@ -125,7 +124,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->groupBoxElab->hide();
 }
-
 
 MainWindow::~MainWindow()
 {
@@ -239,6 +237,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent * event)
 {
     QPoint pos = event->pos();
     QPoint mapPoint = getMapPoint(&pos);
+    qDebug() << this->hasMouseTracking();
     if ((mapPoint.x() <= 0) || (mapPoint.y() <= 0)) return;
 
     Position geoPoint = this->mapView->mapToScene(mapPoint);
