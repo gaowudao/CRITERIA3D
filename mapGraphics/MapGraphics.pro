@@ -1,11 +1,11 @@
-#==========================================================
+#===========================================================
 #
-# MapGraphics
-# A tile-based "slippy map" library written in/for C++/Qt
+# MapGraphics (modified)
+# A tile-based "slippy map" library written in C++/Qt
 # BSD licensed (see LICENSE)
 # https://github.com/raptorswing/MapGraphics
 #
-#==========================================================
+#===========================================================
 
 QT       += widgets network sql
 
@@ -67,22 +67,4 @@ HEADERS += MapGraphicsScene.h\
     Position.h \
     LineObject.h
 
-symbian {
-    MMP_RULES += EXPORTUNFROZEN
-    TARGET.UID3 = 0xE4F7F973
-    TARGET.CAPABILITY = 
-    TARGET.EPOCALLOWDLLDATA = 1
-    addFiles.sources = MapGraphics.dll
-    addFiles.path = !:/sys/bin
-    DEPLOYMENT += addFiles
-}
-
-unix:!symbian {
-    maemo5 {
-        target.path = /opt/usr/lib
-    } else {
-        target.path = /usr/lib
-    }
-    INSTALLS += target
-}
 

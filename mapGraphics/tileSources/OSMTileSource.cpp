@@ -45,7 +45,7 @@ QPointF OSMTileSource::qgs2ll(const QPointF &qgs, quint8 zoomLevel) const
 
 quint64 OSMTileSource::tilesOnZoomLevel(quint8 zoomLevel) const
 {
-    return pow(4.0,zoomLevel);
+    return quint64(pow(4.0, zoomLevel));
 }
 
 quint16 OSMTileSource::tileSize() const
@@ -71,23 +71,15 @@ QString OSMTileSource::name() const
     {
     case OSMTiles:
         return "OpenStreetMap standard tiles";
-        break;
 
     case ESRIWorldImagery:
         return "ESRI - World Imagery tiles";
-        break;
 
     case Terrain:
         return "Stamen Terrain tiles";
-        break;
-
-    case TonerLite:
-        return "Stamen Toner tiles";
-        break;
 
     default:
         return "Unknown tiles";
-        break;
     }
 }
 
@@ -122,11 +114,6 @@ void OSMTileSource::fetchTile(quint32 x, quint32 y, quint8 z)
     {
         host = "http://tile.stamen.com";
         url = "/terrain/%1/%2/%3.png";
-    }
-    else if (_tileType == TonerLite)
-    {
-        host = "http://tile.stamen.com";
-        url = "/toner-lite/%1/%2/%3.png";
     }
     else
     {
@@ -164,7 +151,7 @@ void OSMTileSource::handleNetworkRequestFinished()
     QObject * sender = QObject::sender();
     QNetworkReply * reply = qobject_cast<QNetworkReply *>(sender);
 
-    if (reply == 0)
+    if (reply == nullptr)
     {
         qWarning() << "QNetworkReply cast failure";
         return;

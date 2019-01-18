@@ -15,7 +15,6 @@
 #include <fstream>
 
 #include "tileSources/OSMTileSource.h"
-#include "tileSources/GridTileSource.h"
 #include "tileSources/CompositeTileSource.h"
 
 #include "formInfo.h"
@@ -86,7 +85,6 @@ MainWindow::MainWindow(QWidget *parent) :
     this->startCenter = new Position (myProject.gisSettings.startLocation.longitude, myProject.gisSettings.startLocation.latitude, 0.0);
     this->mapView->setZoomLevel(8);
     this->mapView->centerOn(startCenter->lonLat());
-    this->setMapSource(OSMTileSource::Terrain);
 
     // Set raster objects
     this->rasterObj = new RasterObject(this->mapView);
@@ -297,28 +295,7 @@ void MainWindow::on_meteoGridOpacitySlider_sliderMoved(int position)
 }
 
 
-void MainWindow::on_actionMapToner_triggered()
-{
-    this->setMapSource(OSMTileSource::TonerLite);
-}
 
-
-void MainWindow::on_actionMapOpenStreetMap_triggered()
-{
-    this->setMapSource(OSMTileSource::OSMTiles);
-}
-
-
-void MainWindow::on_actionMapESRISatellite_triggered()
-{
-    this->setMapSource(OSMTileSource::ESRIWorldImagery);
-}
-
-
-void MainWindow::on_actionMapTerrain_triggered()
-{
-    this->setMapSource(OSMTileSource::Terrain);
-}
 
 
 void MainWindow::on_actionRectangle_Selection_triggered()
@@ -1098,3 +1075,30 @@ void MainWindow::on_actionView_MapVariable_triggered()
         return;
     }
 }
+
+void MainWindow::on_actionMapTerrain_triggered()
+{
+    this->setMapSource(OSMTileSource::Terrain);
+    ui->actionMapTerrain->setChecked(true);
+    ui->actionMapOpenStreetMap->setChecked(false);
+    ui->actionMapESRISatellite->setChecked(false);
+}
+
+
+void MainWindow::on_actionMapOpenStreetMap_triggered()
+{
+    this->setMapSource(OSMTileSource::OSMTiles);
+    ui->actionMapTerrain->setChecked(false);
+    ui->actionMapOpenStreetMap->setChecked(true);
+    ui->actionMapESRISatellite->setChecked(false);
+}
+
+
+void MainWindow::on_actionMapESRISatellite_triggered()
+{
+    this->setMapSource(OSMTileSource::ESRIWorldImagery);
+    ui->actionMapTerrain->setChecked(false);
+    ui->actionMapOpenStreetMap->setChecked(false);
+    ui->actionMapESRISatellite->setChecked(true);
+}
+

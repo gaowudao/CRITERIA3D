@@ -13,7 +13,6 @@
 #include <fstream>
 
 #include "tileSources/OSMTileSource.h"
-#include "tileSources/GridTileSource.h"
 #include "tileSources/CompositeTileSource.h"
 
 #include "mainWindow.h"
@@ -62,13 +61,12 @@ MainWindow::MainWindow(QWidget *parent) :
     this->meteoPointsLegend->colorScale = myProject.meteoPointsColorScale;
 
     // Set tiles source
-    this->setMapSource(OSMTileSource::OSMTiles);
+    this->setMapSource(OSMTileSource::Terrain);
 
     // Set start size and position
     this->startCenter = new Position (myProject.gisSettings.startLocation.longitude, myProject.gisSettings.startLocation.latitude, 0.0);
     this->mapView->setZoomLevel(8);
     this->mapView->centerOn(startCenter->lonLat());
-    this->setMapSource(OSMTileSource::Terrain);
 
     // Set raster objects
     this->rasterObj = new RasterObject(this->mapView);

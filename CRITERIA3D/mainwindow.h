@@ -41,7 +41,6 @@
         void on_actionOpen_meteo_points_DB_triggered();
         void on_actionOpen_meteo_grid_triggered();
         void on_rasterOpacitySlider_sliderMoved(int position);
-        void on_actionMapToner_triggered();
         void on_actionMapOpenStreetMap_triggered();
         void on_actionMapESRISatellite_triggered();
         void on_actionMapTerrain_triggered();

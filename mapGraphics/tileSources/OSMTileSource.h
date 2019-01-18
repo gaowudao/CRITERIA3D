@@ -17,8 +17,7 @@ public:
     {
         OSMTiles,
         ESRIWorldImagery,
-        Terrain,
-        TonerLite
+        Terrain
     };
 
 public:
