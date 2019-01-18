@@ -2380,8 +2380,8 @@
     <property name="title">
      <string>Interpolation</string>
     </property>
-    <addaction name="actionInterpolationSettings"/>
     <addaction name="actionInterpolation_to_DTM"/>
+    <addaction name="actionInterpolationSettings"/>
     <addaction name="separator"/>
     <addaction name="actionVariableQualitySpatial"/>
    </widget>
@@ -2408,10 +2408,6 @@
     <addaction name="separator"/>
     <addaction name="actionVine3D_InitializeWaterBalance"/>
     <addaction name="actionCriteria3D_settings"/>
-    <addaction name="separator"/>
-    <addaction name="actionShow_DTM"/>
-    <addaction name="actionShow_boundary"/>
-    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuShow">
     <property name="title">
@@ -2426,6 +2422,9 @@
      <addaction name="actionShowPointsVariable"/>
     </widget>
     <addaction name="menuPoints"/>
+    <addaction name="separator"/>
+    <addaction name="actionShow_DTM"/>
+    <addaction name="actionShow_boundary"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuShow"/>
@@ -2474,7 +2473,7 @@
   </action>
   <action name="actionInterpolation_to_DTM">
    <property name="text">
-    <string>Interpolation to DTM</string>
+    <string>Interpolation to DEM</string>
    </property>
   </action>
   <action name="actionOpen_crop_map">
@@ -2502,7 +2501,7 @@
   </action>
   <action name="actionShow_DTM">
    <property name="text">
-    <string>Show DEM</string>
+    <string>DEM</string>
    </property>
   </action>
   <action name="actionInterpolationSettings">

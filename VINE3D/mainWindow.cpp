@@ -643,12 +643,6 @@ void MainWindow::on_actionInterpolation_to_DTM_triggered()
 
 void MainWindow::on_actionInterpolationSettings_triggered()
 {
-    if (myProject.meteoPointsDbHandler == nullptr)
-    {
-        QMessageBox::information(nullptr, "No DB open", "Open DB Points");
-        return;
-    }
-
     InterpolationDialog* myInterpolationDialog = new InterpolationDialog(&myProject);
     myInterpolationDialog->close();
 }
@@ -673,16 +667,28 @@ void MainWindow::on_actionShow_DTM_triggered()
     {
         setColorScale(noMeteoTerrain, myProject.DTM.colorScale);
         this->setCurrentRaster(&(myProject.DTM));
+        ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
+    }
+    else
+    {
+        myProject.logError("Load DEM");
+        return;
     }
 }
 
 void MainWindow::on_actionShow_boundary_triggered()
 {
     if (myProject.boundaryMap.isLoaded)
-    {
-        setColorScale(noMeteoTerrain, myProject.boundaryMap.colorScale);
-        this->setCurrentRaster(&(myProject.boundaryMap));
-    }
+        {
+            setColorScale(noMeteoTerrain, myProject.boundaryMap.colorScale);
+            this->setCurrentRaster(&(myProject.boundaryMap));
+            ui->labelRasterScale->setText("Boundary map");
+        }
+        else
+        {
+            myProject.logError("Initialize model");
+            return;
+        }
 }
 
 void MainWindow::on_actionCriteria3D_settings_triggered()
