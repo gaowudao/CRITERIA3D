@@ -1,9 +1,9 @@
 ﻿<xml version="1.0" encoding="ISO-8859-1">
 
 	<connection>
-		<provider>MYSQL</provider>
-		<server>172.20.5.46</server>
-		<name>ERG5_v2.0</name>
+		<provider>mysql</provider>
+		<server>172.20.7.116</server>
+		<name>ERG5_v2</name>
 		<user>root</user>
 		<password>Praga</password>
 	</connection>

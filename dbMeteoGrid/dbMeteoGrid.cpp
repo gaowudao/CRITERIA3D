@@ -815,7 +815,7 @@ bool Crit3DMeteoGridDbHandler::loadCellProperties(std::string *myError)
     }
 
     //qry.prepare( "SELECT * FROM CellsProperties ORDER BY Code" );
-    QString statement = QString("SELECT * FROM `1` ORDER BY Code").arg(tableCellsProp);
+    QString statement = QString("SELECT * FROM `%1` ORDER BY Code").arg(tableCellsProp);
 
     if( !qry.exec(statement) )
     {
@@ -908,7 +908,7 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(std::string *myError)
     QString tableD = _tableDaily.prefix + QString::fromStdString(id) + _tableDaily.postFix;
     QString tableH = _tableHourly.prefix + QString::fromStdString(id) + _tableHourly.postFix;
 
-    QString statement = QString("SELECT MIN(`1`) as minDate, MAX(`1`) as maxDate FROM `2`").arg(_tableDaily.fieldTime).arg(tableD);
+    QString statement = QString("SELECT MIN(`%1`) as minDate, MAX(`%1`) as maxDate FROM `%2`").arg(_tableDaily.fieldTime).arg(tableD);
     if( !qry.exec(statement) )
     {
         while( qry.lastError().number() == tableNotFoundError)
@@ -1091,7 +1091,7 @@ bool Crit3DMeteoGridDbHandler::loadGridDailyData(std::string *myError, QString m
         return false;
     }
 
-    QString statement = QString("SELECT * FROM `1`WHERE `2`>= '%3' AND `2`<= '%4' ORDER BY `2`").arg(tableD).arg(_tableDaily.fieldTime).arg(first.toString("yyyy-MM-dd")).arg(last.toString("yyyy-MM-dd"));
+    QString statement = QString("SELECT * FROM `%1` WHERE `%2`>= '%3' AND `%2`<= '%4' ORDER BY `%2`").arg(tableD).arg(_tableDaily.fieldTime).arg(first.toString("yyyy-MM-dd")).arg(last.toString("yyyy-MM-dd"));
     if( !qry.exec(statement) )
     {
         *myError = qry.lastError().text().toStdString();
@@ -1153,7 +1153,7 @@ bool Crit3DMeteoGridDbHandler::loadGridDailyDataFixedFields(std::string *myError
         return false;
     }
 
-    QString statement = QString("SELECT * FROM `1`WHERE `2`>= '%3' AND `2`<= '%4' ORDER BY `2`").arg(tableD).arg(_tableDaily.fieldTime).arg(first.toString("yyyy-MM-dd")).arg(last.toString("yyyy-MM-dd"));
+    QString statement = QString("SELECT * FROM `%1` WHERE `%2` >= '%3' AND `%2` <= '%4' ORDER BY `%2`").arg(tableD).arg(_tableDaily.fieldTime).arg(first.toString("yyyy-MM-dd")).arg(last.toString("yyyy-MM-dd"));
     if( !qry.exec(statement) )
     {
         *myError = qry.lastError().text().toStdString();
@@ -1215,7 +1215,7 @@ bool Crit3DMeteoGridDbHandler::loadGridHourlyData(std::string *myError, QString 
         return false;
     }
 
-    QString statement = QString("SELECT * FROM `1`WHERE `2`>= '%3' AND `2`<= '%4' ORDER BY `2`").arg(tableH).arg(_tableHourly.fieldTime).arg(first.toString("yyyy-MM-dd hh:mm")).arg(last.toString("yyyy-MM-dd hh:mm"));
+    QString statement = QString("SELECT * FROM `%1` WHERE `%2` >= '%3' AND `%2` <= '%4' ORDER BY `%2`").arg(tableH).arg(_tableHourly.fieldTime).arg(first.toString("yyyy-MM-dd hh:mm")).arg(last.toString("yyyy-MM-dd hh:mm"));
     if( !qry.exec(statement) )
     {
         *myError = qry.lastError().text().toStdString();
@@ -1278,7 +1278,7 @@ bool Crit3DMeteoGridDbHandler::loadGridHourlyDataFixedFields(std::string *myErro
         return false;
     }
 
-    QString statement = QString("SELECT * FROM `1`WHERE `2`>= '%3' AND `2`<= '%4' ORDER BY `2`").arg(tableH).arg(_tableHourly.fieldTime).arg(first.toString("yyyy-MM-dd hh:mm")).arg(last.toString("yyyy-MM-dd hh:mm"));
+    QString statement = QString("SELECT * FROM `%1` WHERE `%2` >= '%3' AND `%2`<= '%4' ORDER BY `%2`").arg(tableH).arg(_tableHourly.fieldTime).arg(first.toString("yyyy-MM-dd hh:mm")).arg(last.toString("yyyy-MM-dd hh:mm"));
     if( !qry.exec(statement) )
     {
         *myError = qry.lastError().text().toStdString();
@@ -1345,7 +1345,7 @@ std::vector<float> Crit3DMeteoGridDbHandler::loadGridDailyVar(std::string *myErr
         return dailyVarList;
     }
 
-    QString statement = QString("SELECT * FROM `1`WHERE VariableCode = '%2' AND `3`>= '%4' AND `3`<= '%5' ORDER BY %3").arg(tableD).arg(varCode).arg(_tableDaily.fieldTime).arg(first.toString("yyyy-MM-dd")).arg(last.toString("yyyy-MM-dd"));
+    QString statement = QString("SELECT * FROM `%1` WHERE VariableCode = '%2' AND `%3` >= '%4' AND `%3`<= '%5' ORDER BY `%3`").arg(tableD).arg(varCode).arg(_tableDaily.fieldTime).arg(first.toString("yyyy-MM-dd")).arg(last.toString("yyyy-MM-dd"));
     if( !qry.exec(statement) )
     {
         *myError = qry.lastError().text().toStdString();
@@ -1431,7 +1431,7 @@ std::vector<float> Crit3DMeteoGridDbHandler::loadGridDailyVarFixedFields(std::st
         }
     }
 
-    QString statement = QString("SELECT `1`, `2`FROM `3`WHERE `1`>= '%4' AND `1`<= '%5' ORDER BY %1").arg(_tableDaily.fieldTime).arg(varField).arg(tableD).arg(first.toString("yyyy-MM-dd")).arg(last.toString("yyyy-MM-dd"));
+    QString statement = QString("SELECT `%1`, `%2` FROM `%3` WHERE `%1` >= '%4' AND `%1` <= '%5' ORDER BY `%1`").arg(_tableDaily.fieldTime).arg(varField).arg(tableD).arg(first.toString("yyyy-MM-dd")).arg(last.toString("yyyy-MM-dd"));
     if( !qry.exec(statement) )
     {
         *myError = qry.lastError().text().toStdString();
@@ -1518,7 +1518,7 @@ std::vector<float> Crit3DMeteoGridDbHandler::loadGridHourlyVar(std::string *myEr
     // take also 00:00 day after
     last = last.addSecs(3600);
 
-    QString statement = QString("SELECT * FROM `1`WHERE VariableCode = '%2' AND `3`>= '%4' AND `3`<= '%5' ORDER BY `3`").arg(tableH).arg(varCode).arg(_tableHourly.fieldTime).arg(first.toString("yyyy-MM-dd hh:mm")).arg(last.toString("yyyy-MM-dd hh:mm"));
+    QString statement = QString("SELECT * FROM `%1` WHERE VariableCode = '%2' AND `%3` >= '%4' AND `%3` <= '%5' ORDER BY `%3`").arg(tableH).arg(varCode).arg(_tableHourly.fieldTime).arg(first.toString("yyyy-MM-dd hh:mm")).arg(last.toString("yyyy-MM-dd hh:mm"));
     if( !qry.exec(statement) )
     {
         *myError = qry.lastError().text().toStdString();
@@ -1606,7 +1606,7 @@ std::vector<float> Crit3DMeteoGridDbHandler::loadGridHourlyVarFixedFields(std::s
     // take also 00:00 day after
     last = last.addSecs(3600);
 
-    QString statement = QString("SELECT `1`, `2`FROM `3`WHERE `1`>= '%4' AND `1`<= '%5' ORDER BY %1").arg(_tableHourly.fieldTime).arg(varField).arg(tableH).arg(first.toString("yyyy-MM-dd hh:mm")).arg(last.toString("yyyy-MM-dd hh:mm"));
+    QString statement = QString("SELECT `%1`, `%2` FROM `%3` WHERE `%1` >= '%4' AND `%1` <= '%5' ORDER BY `%1`").arg(_tableHourly.fieldTime).arg(varField).arg(tableH).arg(first.toString("yyyy-MM-dd hh:mm")).arg(last.toString("yyyy-MM-dd hh:mm"));
     if( !qry.exec(statement) )
     {
         *myError = qry.lastError().text().toStdString();
@@ -1679,7 +1679,7 @@ bool Crit3DMeteoGridDbHandler::saveCellGridDailyData(std::string *myError, QStri
     else
     {
 
-        statement =  QString(("REPLACE INTO `1`VALUES")).arg(tableD);
+        statement =  QString(("REPLACE INTO `%1` VALUES")).arg(tableD);
         int nrDays = firstDate.daysTo(lastDate) + 1;
         for (int i = 0; i < nrDays; i++)
         {
@@ -1693,7 +1693,7 @@ bool Crit3DMeteoGridDbHandler::saveCellGridDailyData(std::string *myError, QStri
 
                 int varCode = getDailyVarCode(meteoVar);
 
-                //        statement = QString("REPLACE INTO `1`VALUES ('%2','%3',%4)").arg(tableD).arg(date.toString("yyyy-MM-dd")).arg(varCode).arg(valueS);
+                //        statement = QString("REPLACE INTO `%1` VALUES ('%2','%3',%4)").arg(tableD).arg(date.toString("yyyy-MM-dd")).arg(varCode).arg(valueS);
                 statement += QString(" ('%1','%2',%3),").arg(date.toString("yyyy-MM-dd")).arg(varCode).arg(valueS);
             }
         }
@@ -1724,7 +1724,7 @@ bool Crit3DMeteoGridDbHandler::saveCellGridDailyDataFF(std::string *myError, QSt
         tableFields = tableFields  + ", " + varFieldItem.toLower() + " " + type;
     }
 
-    QString statement = QString("CREATE TABLE IF NOT EXISTS `1`").arg(tableD) + QString("(`1`date ").arg(_tableDaily.fieldTime) + tableFields + QString(", PRIMARY KEY(`1`))").arg(_tableDaily.fieldTime);
+    QString statement = QString("CREATE TABLE IF NOT EXISTS `%1`").arg(tableD) + QString("(`%1` date ").arg(_tableDaily.fieldTime) + tableFields + QString(", PRIMARY KEY(`%1`))").arg(_tableDaily.fieldTime);
 
     if( !qry.exec(statement) )
     {
@@ -1734,7 +1734,7 @@ bool Crit3DMeteoGridDbHandler::saveCellGridDailyDataFF(std::string *myError, QSt
     else
     {
 
-        statement =  QString(("REPLACE INTO `1`VALUES")).arg(tableD);
+        statement =  QString(("REPLACE INTO `%1` VALUES")).arg(tableD);
         int nrDays = firstDate.daysTo(lastDate) + 1;
         for (int i = 0; i < nrDays; i++)
         {
@@ -1770,8 +1770,8 @@ bool Crit3DMeteoGridDbHandler::saveCellCurrrentGridDaily(std::string *myError, Q
     QString tableD = _tableDaily.prefix + meteoPointID + _tableDaily.postFix;
 
 
-    QString statement = QString("CREATE TABLE IF NOT EXISTS `1`"
-                                "(%2 date, VariableCode tinyint(3) UNSIGNED, Value float(6,1), PRIMARY KEY(%2,VariableCode))").arg(tableD).arg(_tableDaily.fieldTime);
+    QString statement = QString("CREATE TABLE IF NOT EXISTS `%1` "
+                                "(`%2` date, VariableCode tinyint(3) UNSIGNED, Value float(6,1), PRIMARY KEY(`%2`,VariableCode))").arg(tableD).arg(_tableDaily.fieldTime);
 
     if( !qry.exec(statement) )
     {
@@ -1784,7 +1784,7 @@ bool Crit3DMeteoGridDbHandler::saveCellCurrrentGridDaily(std::string *myError, Q
         if (value == NODATA)
             valueS = "NULL";
 
-        statement = QString("REPLACE INTO `1`VALUES ('%2','%3',%4)").arg(tableD).arg(date.toString("yyyy-MM-dd")).arg(varCode).arg(valueS);
+        statement = QString("REPLACE INTO `%1` VALUES ('%2','%3',%4)").arg(tableD).arg(date.toString("yyyy-MM-dd")).arg(varCode).arg(valueS);
 
         if( !qry.exec(statement) )
         {
@@ -1832,7 +1832,7 @@ bool Crit3DMeteoGridDbHandler::saveCellCurrentGridDailyFF(std::string *myError, 
         if (value == NODATA)
             valueS = "NULL";
 
-        statement = QString("INSERT INTO `1`(`2`, `3`) VALUES ('%4',%5) ON DUPLICATE KEY UPDATE `3`= %5").arg(tableD).arg(_tableDaily.fieldTime).arg(varField.toLower()).arg(date.toString("yyyy-MM-dd")).arg(valueS);
+        statement = QString("INSERT INTO `%1` (`%2`, `%3`) VALUES ('%4',%5) ON DUPLICATE KEY UPDATE `%3`= %5").arg(tableD).arg(_tableDaily.fieldTime).arg(varField.toLower()).arg(date.toString("yyyy-MM-dd")).arg(valueS);
 
         if( !qry.exec(statement) )
         {
@@ -1851,8 +1851,8 @@ bool Crit3DMeteoGridDbHandler::saveCellGridHourlyData(std::string *myError, QStr
     QString tableH = _tableHourly.prefix + meteoPointID + _tableHourly.postFix;
 
 
-    QString statement = QString("CREATE TABLE IF NOT EXISTS `1`"
-                                "(%2 datetime, VariableCode tinyint(3) UNSIGNED, Value float(6,1), PRIMARY KEY(%2,VariableCode))").arg(tableH).arg(_tableHourly.fieldTime);
+    QString statement = QString("CREATE TABLE IF NOT EXISTS `%1` "
+                                "(`%2` datetime, VariableCode tinyint(3) UNSIGNED, Value float(6,1), PRIMARY KEY(`%2`,VariableCode))").arg(tableH).arg(_tableHourly.fieldTime);
 
     if( !qry.exec(statement) )
     {
@@ -1862,7 +1862,7 @@ bool Crit3DMeteoGridDbHandler::saveCellGridHourlyData(std::string *myError, QStr
     else
     {
 
-        statement =  QString(("REPLACE INTO `1`VALUES")).arg(tableH);
+        statement =  QString(("REPLACE INTO `%1` VALUES")).arg(tableH);
         int nrDayTime = firstDate.msecsTo(lastDate.addDays(1)) /(1000*3600);
         for (int i = 0; i < nrDayTime; i++)
         {
@@ -1905,7 +1905,7 @@ bool Crit3DMeteoGridDbHandler::saveCellGridHourlyDataFF(std::string *myError, QS
         tableFields = tableFields  + ", " + varFieldItem.toLower() + " " + type;
     }
 
-    QString statement = QString("CREATE TABLE IF NOT EXISTS `1`").arg(tableH) + QString("(`1`datetime ").arg(_tableHourly.fieldTime) + tableFields + QString(", PRIMARY KEY(`1`))").arg(_tableHourly.fieldTime);
+    QString statement = QString("CREATE TABLE IF NOT EXISTS `%1` ").arg(tableH) + QString("(`%1` datetime ").arg(_tableHourly.fieldTime) + tableFields + QString(", PRIMARY KEY(`%1`))").arg(_tableHourly.fieldTime);
 
     if( !qry.exec(statement) )
     {
@@ -1915,7 +1915,7 @@ bool Crit3DMeteoGridDbHandler::saveCellGridHourlyDataFF(std::string *myError, QS
     else
     {
 
-        statement =  QString(("REPLACE INTO `1`VALUES")).arg(tableH);
+        statement =  QString(("REPLACE INTO `%1` VALUES")).arg(tableH);
         int nrDayTime = firstDate.msecsTo(lastDate.addDays(1)) /(1000*3600);
         for (int i = 0; i < nrDayTime; i++)
         {
@@ -1951,8 +1951,8 @@ bool Crit3DMeteoGridDbHandler::saveCellCurrentGridHourly(std::string *myError, Q
     QString tableH = _tableHourly.prefix + meteoPointID + _tableHourly.postFix;
 
 
-    QString statement = QString("CREATE TABLE IF NOT EXISTS `1`"
-                                "(%2 datetime, VariableCode tinyint(3) UNSIGNED, Value float(6,1), PRIMARY KEY(%2,VariableCode))").arg(tableH).arg(_tableHourly.fieldTime);
+    QString statement = QString("CREATE TABLE IF NOT EXISTS `%1` "
+                                "(`%2` datetime, VariableCode tinyint(3) UNSIGNED, Value float(6,1), PRIMARY KEY(`%2`,VariableCode))").arg(tableH).arg(_tableHourly.fieldTime);
 
     if( !qry.exec(statement) )
     {
@@ -1967,7 +1967,7 @@ bool Crit3DMeteoGridDbHandler::saveCellCurrentGridHourly(std::string *myError, Q
         if (value == NODATA)
             valueS = "NULL";
 
-        statement = QString("REPLACE INTO `1`VALUES ('%2','%3',%4)").arg(tableH).arg(dateTime.toString("yyyy-MM-dd hh:mm")).arg(varCode).arg(valueS);
+        statement = QString("REPLACE INTO `%1` VALUES ('%2','%3',%4)").arg(tableH).arg(dateTime.toString("yyyy-MM-dd hh:mm")).arg(varCode).arg(valueS);
 
         if( !qry.exec(statement) )
         {
@@ -1999,7 +1999,7 @@ bool Crit3DMeteoGridDbHandler::saveCellCurrentGridHourlyFF(std::string *myError,
         tableFields = tableFields  + ", " + varFieldItem.toLower() + " " + type;
     }
 
-    QString statement = QString("CREATE TABLE IF NOT EXISTS `1`").arg(tableH) + QString("(`1`datetime ").arg(_tableHourly.fieldTime) + tableFields + QString(", PRIMARY KEY(%1))").arg(_tableHourly.fieldTime);
+    QString statement = QString("CREATE TABLE IF NOT EXISTS `%1` ").arg(tableH) + QString("(`%1` datetime ").arg(_tableHourly.fieldTime) + tableFields + QString(", PRIMARY KEY(`%1`))").arg(_tableHourly.fieldTime);
 
     if( !qry.exec(statement) )
     {
@@ -2012,7 +2012,7 @@ bool Crit3DMeteoGridDbHandler::saveCellCurrentGridHourlyFF(std::string *myError,
         if (value == NODATA)
             valueS = "NULL";
 
-        statement = QString("INSERT INTO `1`(`2`, `3`) VALUES ('%4',%5) ON DUPLICATE KEY UPDATE `%3` = %5").arg(tableH).arg(_tableHourly.fieldTime).arg(varField.toLower()).arg(dateTime.toString("yyyy-MM-dd hh:mm")).arg(valueS);
+        statement = QString("INSERT INTO `%1` (`%2`, `%3`) VALUES ('%4',%5) ON DUPLICATE KEY UPDATE `%3` = %5").arg(tableH).arg(_tableHourly.fieldTime).arg(varField.toLower()).arg(dateTime.toString("yyyy-MM-dd hh:mm")).arg(valueS);
 
         if( !qry.exec(statement) )
         {
