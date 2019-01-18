@@ -66,10 +66,8 @@ void Viewer3D::initialize(Crit3DProject *project)
 
     // Camera
     m_view->camera()->lens()->setPerspectiveProjection(45.0f, 16.f/9.f, 0.01f, 1000000.f);
-    m_view->camera()->setUpVector(QVector3D(0, 1, -1));
     m_view->camera()->setPosition(QVector3D(float(m_center.x), float(m_center.y), (z + dz * m_zoomLevel) * m_magnify));
     m_view->camera()->setViewCenter(QVector3D(float(m_center.x), float(m_center.y), z * m_magnify));
-    m_cameraPosition = m_view->camera()->position();
 
     // Set root object of the scene
     createScene();
@@ -136,7 +134,7 @@ void Viewer3D::mousePressEvent(QMouseEvent *ev)
         m_moveStartPoint = ev->pos();
         m_cameraMatrix = m_view->camera()->transform()->matrix();
         m_cameraPosition = m_view->camera()->transform()->translation();
-        m_rotation = m_view->camera()->transform()->rotation();
+        m_rotationZ = m_view->camera()->transform()->rotationZ();
         isCameraChanging = true;
     }
 }
@@ -149,15 +147,19 @@ void Viewer3D::mouseMoveEvent(QMouseEvent *ev)
         QPoint delta = ev->pos() - m_moveStartPoint;
         if (m_button == Qt::LeftButton)
         {  
-            /* zoom
-            float zoom = delta.y() * (m_size/10000000.f);
-            QVector3D axis = QVector3D(1, 1, 0);
+            /*float zoom = delta.y() * (m_size/10000000.f);
+            QVector3D axis = QVector3D(1, 0, 0);
             QMatrix4x4 zoomMatrix = Qt3DCore::QTransform::rotateAround(-m_view->camera()->position(), zoom, axis);
             QMatrix4x4 matrix = zoomMatrix * m_cameraMatrix;
             m_view->camera()->transform()->setMatrix(matrix);*/
 
-            float dz = -delta.x() * m_zoomLevel / 10;
-            m_view->camera()->transform()->setRotationZ(dz);
+            /*float dz = maxValue(m_project->DTM.maximum - m_project->DTM.minimum, 10.f);
+            float z = m_project->DTM.minimum + dz * 0.5f;
+            float dy = delta.y() * m_zoomLevel;
+            m_view->camera()->setViewCenter(QVector3D(float(m_center.x), float(m_center.y), z * m_magnify));*/
+
+            float angle = m_rotationZ - delta.x() * m_zoomLevel / 10.f;
+            m_view->camera()->transform()->setRotationZ(angle);
         }
         else if (m_button == Qt::RightButton)
         {
@@ -177,7 +179,7 @@ void Viewer3D::mouseReleaseEvent(QMouseEvent* ev)
     {
         m_cameraMatrix = m_view->camera()->transform()->matrix();
         m_cameraPosition = m_view->camera()->transform()->translation();
-        m_rotation = m_view->camera()->transform()->rotation();
+        m_rotationZ = m_view->camera()->transform()->rotationZ();
         isCameraChanging = false;
     }
 }

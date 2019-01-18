@@ -4,7 +4,6 @@
 # Soil Water Balance 3D
 #
 # this file is part of CRITERIA3D distribution
-# CRITERIA3D has been developed under contract issued by ARPAE Emilia-Romagna
 #
 #-----------------------------------------------------
 
@@ -44,7 +43,6 @@ CONFIG(debug, debug|release) {
     LIBS += -L../crop/debug -lcrop
     LIBS += -L../soilFluxes3D/debug -lsoilFluxes3D
     LIBS += -L../soil/debug -lsoil
-    LIBS += -L../shapeHandler/debug -lshapeHandler
     LIBS += -L../crit3dDate/debug -lcrit3dDate
     LIBS += -L../mathFunctions/debug -lmathFunctions
 
@@ -60,7 +58,6 @@ CONFIG(debug, debug|release) {
     LIBS += -L../crop/release -lcrop
     LIBS += -L../soilFluxes3D/release -lsoilFluxes3D
     LIBS += -L../soil/release -lsoil
-    LIBS += -L../shapeHandler/release -lshapeHandler
     LIBS += -L../crit3dDate/release -lcrit3dDate
     LIBS += -L../mathFunctions/release -lmathFunctions
 }
