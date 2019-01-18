@@ -19,9 +19,6 @@ INCLUDEPATH +=  ../PRAGA/shared  \
                 ../meteo ../gis ../utilities  \
                 ../interpolation ../solarRadiation  \
                 ../dbMeteoPoints ../dbMeteoGrid \
-                ../shapeHandler
-
-
 
 CONFIG += debug_and_release
 

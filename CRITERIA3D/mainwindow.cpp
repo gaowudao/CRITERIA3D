@@ -739,16 +739,6 @@ void MainWindow::addMeteoPoints()
 }
 
 
-void MainWindow::setMapSource(OSMTileSource::OSMTileType mySource)
-{
-    QSharedPointer<OSMTileSource> myTiles(new OSMTileSource(mySource), &QObject::deleteLater);
-    QSharedPointer<CompositeTileSource> composite(new CompositeTileSource(), &QObject::deleteLater);
-    composite->addSourceBottom(myTiles);
-
-    this->mapView->setTileSource(composite);
-}
-
-
 void MainWindow::on_rasterScaleButton_clicked()
 {
     if (this->rasterObj->currentRaster == nullptr)
@@ -1076,29 +1066,50 @@ void MainWindow::on_actionView_MapVariable_triggered()
     }
 }
 
+
 void MainWindow::on_actionMapTerrain_triggered()
 {
     this->setMapSource(OSMTileSource::Terrain);
-    ui->actionMapTerrain->setChecked(true);
-    ui->actionMapOpenStreetMap->setChecked(false);
-    ui->actionMapESRISatellite->setChecked(false);
 }
 
 
 void MainWindow::on_actionMapOpenStreetMap_triggered()
 {
     this->setMapSource(OSMTileSource::OSMTiles);
-    ui->actionMapTerrain->setChecked(false);
-    ui->actionMapOpenStreetMap->setChecked(true);
-    ui->actionMapESRISatellite->setChecked(false);
 }
 
 
 void MainWindow::on_actionMapESRISatellite_triggered()
 {
     this->setMapSource(OSMTileSource::ESRIWorldImagery);
-    ui->actionMapTerrain->setChecked(false);
+}
+
+
+void MainWindow::setMapSource(OSMTileSource::OSMTileType mySource)
+{
+    // set menu
     ui->actionMapOpenStreetMap->setChecked(false);
-    ui->actionMapESRISatellite->setChecked(true);
+    ui->actionMapTerrain->setChecked(false);
+    ui->actionMapESRISatellite->setChecked(false);
+
+    if (mySource == OSMTileSource::OSMTiles)
+    {
+        ui->actionMapOpenStreetMap->setChecked(true);
+    }
+    else if (mySource == OSMTileSource::Terrain)
+    {
+        ui->actionMapTerrain->setChecked(true);
+    }
+    else if (mySource == OSMTileSource::ESRIWorldImagery)
+    {
+        ui->actionMapESRISatellite->setChecked(true);
+    }
+
+    // set tiles source
+    QSharedPointer<OSMTileSource> myTiles(new OSMTileSource(mySource), &QObject::deleteLater);
+    QSharedPointer<CompositeTileSource> composite(new CompositeTileSource(), &QObject::deleteLater);
+    composite->addSourceBottom(myTiles);
+
+    this->mapView->setTileSource(composite);
 }
 

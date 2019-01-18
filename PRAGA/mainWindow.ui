@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1287</width>
+    <width>1387</width>
     <height>814</height>
    </rect>
   </property>
@@ -2471,7 +2471,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1287</width>
+     <width>1387</width>
      <height>21</height>
     </rect>
    </property>
@@ -2966,8 +2966,8 @@
      <property name="title">
       <string>&amp;Map</string>
      </property>
-     <addaction name="actionMapTerrain"/>
      <addaction name="actionMapOpenStreetMap"/>
+     <addaction name="actionMapTerrain"/>
      <addaction name="actionMapESRISatellite"/>
     </widget>
     <addaction name="menuMap"/>
@@ -3091,7 +3091,7 @@
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>&amp;Stamen - Terrain</string>
