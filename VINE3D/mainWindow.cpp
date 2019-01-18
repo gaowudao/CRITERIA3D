@@ -324,6 +324,7 @@ void MainWindow::on_actionOpen_project_triggered()
             this->resetMeteoPoints();
             this->addMeteoPoints();
             this->updateDateTime();
+            myProject.loadObsDataAllPoints(myProject.getCurrentDate(), myProject.getCurrentDate(), true);
             this->showPointsGroup->setEnabled(true);
             currentPointsVisualization = showLocation;
             redrawMeteoPoints(currentPointsVisualization, true);
@@ -428,7 +429,6 @@ void MainWindow::updateDateTime()
     int myHour = myProject.getCurrentHour();
     this->ui->dateEdit->setDate(myProject.getCurrentDate());
     this->ui->timeEdit->setTime(QTime(myHour,0,0));
-
 }
 
 
@@ -439,7 +439,6 @@ void MainWindow::on_dateChanged()
 
     if (date != myProject.getCurrentDate())
     {
-
         myProject.setCurrentDate(date);
         myProject.loadObsDataAllPoints(date, date, true);
     }

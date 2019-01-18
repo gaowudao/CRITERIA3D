@@ -1153,7 +1153,7 @@ void Vine3DProject::findVine3DLastMeteoDate()
                 dateStr = qry.value(0).toString();
                 if (!dateStr.isEmpty())
                 {
-                    date = QDateTime::fromString(dateStr,"yyyy-MM-dd HH:mm:ss");
+                    date = QDateTime::fromString(dateStr,"yyyy-MM-dd");
                     if (date > lastDate) lastDate = date;
                 }
             }
