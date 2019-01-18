@@ -13,6 +13,9 @@
 
 Viewer3D::Viewer3D(QWidget *parent)
 {
+    isCameraChanging = false;
+    m_zoomLevel = 6.f;
+
     m_project = nullptr;
     m_geometry = nullptr;
     m_rootEntity = nullptr;
@@ -62,20 +65,14 @@ void Viewer3D::initialize(Crit3DProject *project)
     m_magnify = maxValue(1.f, minValue(10.f, m_ratio / 5.f));
 
     // Camera
-    Qt3DRender::QCamera *camera = m_view->camera();
-    camera->lens()->setPerspectiveProjection(45.0f, 16.f/9.f, 0.01f, 1000000.f);
-    camera->setUpVector(QVector3D(0, 1, -1));
-    camera->setPosition(QVector3D(float(m_center.x), float(m_center.y), (z + dz*5) * m_magnify));
-    camera->setViewCenter(QVector3D(float(m_center.x), float(m_center.y), z * m_magnify));
-    m_cameraPosition = camera->position();
+    m_view->camera()->lens()->setPerspectiveProjection(45.0f, 16.f/9.f, 0.01f, 1000000.f);
+    m_view->camera()->setUpVector(QVector3D(0, 1, -1));
+    m_view->camera()->setPosition(QVector3D(float(m_center.x), float(m_center.y), (z + dz * m_zoomLevel) * m_magnify));
+    m_view->camera()->setViewCenter(QVector3D(float(m_center.x), float(m_center.y), z * m_magnify));
+    m_cameraPosition = m_view->camera()->position();
 
     // Set root object of the scene
     createScene();
-
-    /*Qt3DExtras::QOrbitCameraController *camController = new Qt3DExtras::QOrbitCameraController(m_rootEntity);
-    camController->setLinearSpeed( 50.0f );
-    camController->setLookSpeed( 180.0f );
-    camController->setCamera(camera);*/
 
     m_view->setRootEntity(m_rootEntity);
 }
@@ -115,15 +112,19 @@ bool Viewer3D::eventFilter(QObject *obj, QEvent *ev)
 
 void Viewer3D::wheelEvent(QWheelEvent *we)
 {
-    Qt3DCore::QTransform* transform = m_view->camera()->transform();
-
-    float scale = transform->scale();
     QPoint delta = we->angleDelta();
-    float zoom_distance = scale * static_cast<float>(delta.y()) / 500.f;
-    scale -= zoom_distance;
-    scale = std::min(10.0000f, scale);
-    scale = std::max(0.001f, scale);
-    transform->setScale(scale);
+
+    if (delta.y() < 0)
+        m_zoomLevel *= 1.25f;
+    else
+        m_zoomLevel *= 0.8f;
+
+    float dz = maxValue(m_project->DTM.maximum - m_project->DTM.minimum, 10.f);
+    float z = m_project->DTM.minimum + dz * 0.5f;
+    QVector3D translation = QVector3D(m_cameraPosition.x(), m_cameraPosition.y(), (z + dz * m_zoomLevel) * m_magnify);
+
+    m_view->camera()->transform()->setTranslation(translation);
+    m_cameraPosition = m_view->camera()->transform()->translation();
 }
 
 
@@ -135,37 +136,33 @@ void Viewer3D::mousePressEvent(QMouseEvent *ev)
         m_moveStartPoint = ev->pos();
         m_cameraMatrix = m_view->camera()->transform()->matrix();
         m_cameraPosition = m_view->camera()->transform()->translation();
+        m_rotation = m_view->camera()->transform()->rotation();
+        isCameraChanging = true;
     }
 }
 
 
 void Viewer3D::mouseMoveEvent(QMouseEvent *ev)
 {
-    if (m_moveStartPoint.x() > -1)
+    if (isCameraChanging)
     {
         QPoint delta = ev->pos() - m_moveStartPoint;
-        if (m_button == Qt::RightButton)
+        if (m_button == Qt::LeftButton)
         {  
-            /*float scale = m_view->camera()->transform()->scale();
-            float zoom_distance = scale * static_cast<float>(delta.y()) / 500.f;
-            scale -= zoom_distance;
-            scale = std::min(10.0000f, scale);
-            scale = std::max(0.001f, scale);
-            m_view->camera()->transform()->setScale(scale);*/
-
-            /*float zoom = delta.y() * (m_size/10000000.f);
+            /* zoom
+            float zoom = delta.y() * (m_size/10000000.f);
             QVector3D axis = QVector3D(1, 1, 0);
             QMatrix4x4 zoomMatrix = Qt3DCore::QTransform::rotateAround(-m_view->camera()->position(), zoom, axis);
             QMatrix4x4 matrix = zoomMatrix * m_cameraMatrix;
             m_view->camera()->transform()->setMatrix(matrix);*/
 
-            float dx = delta.x() * (m_size/1000000.f);
-            m_view->camera()->setUpVector(QVector3D(dx, 1, -1));
+            float dz = -delta.x() * m_zoomLevel / 10;
+            m_view->camera()->transform()->setRotationZ(dz);
         }
-        else if (m_button == Qt::LeftButton)
+        else if (m_button == Qt::RightButton)
         {
-            QVector3D translation = QVector3D(m_cameraPosition.x() + delta.x() * (m_size/1000.f),
-                                              m_cameraPosition.y() - delta.y() * (m_size/1000.f),
+            QVector3D translation = QVector3D(m_cameraPosition.x() - delta.x() * m_zoomLevel * m_size / 3000.f,
+                                              m_cameraPosition.y() + delta.y() * m_zoomLevel * m_size / 3000.f,
                                               m_cameraPosition.z());
             m_view->camera()->transform()->setTranslation(translation);
         }
@@ -176,11 +173,12 @@ void Viewer3D::mouseMoveEvent(QMouseEvent *ev)
 void Viewer3D::mouseReleaseEvent(QMouseEvent* ev)
 {
     Q_UNUSED(ev);
-    if (m_moveStartPoint.x() > -1)
+    if (isCameraChanging)
     {
-        m_moveStartPoint.setX(-1);
         m_cameraMatrix = m_view->camera()->transform()->matrix();
         m_cameraPosition = m_view->camera()->transform()->translation();
+        m_rotation = m_view->camera()->transform()->rotation();
+        isCameraChanging = false;
     }
 }
 

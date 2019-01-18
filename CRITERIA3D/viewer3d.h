@@ -21,10 +21,12 @@ class Viewer3D : public QWidget
         void wheelEvent(QWheelEvent *we);
 
     private:
+        bool isCameraChanging;
         Qt3DExtras::Qt3DWindow *m_view;
         QPoint m_moveStartPoint;
         QMatrix4x4 m_cameraMatrix;
         QVector3D m_cameraPosition;
+        QQuaternion m_rotation;
         QByteArray m_vertexPositionArray;
         QByteArray m_vertexColorArray;
         QByteArray m_triangleIndexArray;
@@ -32,7 +34,9 @@ class Viewer3D : public QWidget
         Qt3DRender::QGeometry *m_geometry;
         QPointer<Qt3DCore::QEntity> m_rootEntity;
 
+        float m_x_angle;
         float m_magnify;
+        float m_zoomLevel;
         float m_size;
         float m_ratio;
         float m_cosTable[3600];
