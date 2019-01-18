@@ -237,7 +237,6 @@ void MainWindow::mouseMoveEvent(QMouseEvent * event)
 {
     QPoint pos = event->pos();
     QPoint mapPoint = getMapPoint(&pos);
-    qDebug() << this->hasMouseTracking();
     if ((mapPoint.x() <= 0) || (mapPoint.y() <= 0)) return;
 
     Position geoPoint = this->mapView->mapToScene(mapPoint);
