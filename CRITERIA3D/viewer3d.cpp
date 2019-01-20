@@ -14,7 +14,7 @@
 Viewer3D::Viewer3D(QWidget *parent)
 {
     isCameraChanging = false;
-    m_zoomLevel = 6.f;
+    m_zoomLevel = 8.f;
 
     m_project = nullptr;
     m_geometry = nullptr;
@@ -64,13 +64,13 @@ void Viewer3D::initialize(Crit3DProject *project)
     m_ratio = m_size / dz;
     m_magnify = maxValue(1.f, minValue(10.f, m_ratio / 5.f));
 
+    // Set root object of the scene
+    createScene();
+
     // Camera
     m_view->camera()->lens()->setPerspectiveProjection(45.0f, 16.f/9.f, 0.01f, 1000000.f);
     m_view->camera()->setPosition(QVector3D(float(m_center.x), float(m_center.y), (z + dz * m_zoomLevel) * m_magnify));
     m_view->camera()->setViewCenter(QVector3D(float(m_center.x), float(m_center.y), z * m_magnify));
-
-    // Set root object of the scene
-    createScene();
 
     m_view->setRootEntity(m_rootEntity);
 }
@@ -158,8 +158,10 @@ void Viewer3D::mouseMoveEvent(QMouseEvent *ev)
             float dy = delta.y() * m_zoomLevel;
             m_view->camera()->setViewCenter(QVector3D(float(m_center.x), float(m_center.y), z * m_magnify));*/
 
-            float angle = m_rotationZ - delta.x() * m_zoomLevel / 10.f;
-            m_view->camera()->transform()->setRotationZ(angle);
+            float anglex = m_rotationZ - delta.x() * m_zoomLevel / 10.f;
+            //float angley = delta.y() * m_zoomLevel / 360.f;
+            m_view->camera()->transform()->setRotationZ(anglex);
+            //m_view->camera()->panAboutViewCenter(angley);
         }
         else if (m_button == Qt::RightButton)
         {
@@ -335,8 +337,8 @@ void Viewer3D::createScene()
                 if (v1 != long(m_project->indexMap.header->flag) && v2 != long(m_project->indexMap.header->flag))
                 {
                     indexData[index*3] = uint(v0);
-                    indexData[index*3+1] = uint(v1);
-                    indexData[index*3+2] = uint(v2);
+                    indexData[index*3+1] = uint(v2);
+                    indexData[index*3+2] = uint(v1);
                     index++;
                 }
                 if (v2 != long(m_project->indexMap.header->flag) && v3 != long(m_project->indexMap.header->flag))
