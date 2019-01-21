@@ -58,7 +58,7 @@
         QString idForecast;
         QString idCropClass;
         int idSoilNumber;
-        int idICM;
+        int idICM;              // for MOSES
 
         Criteria1DUnit();
     };
