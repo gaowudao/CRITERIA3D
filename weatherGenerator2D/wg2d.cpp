@@ -287,13 +287,19 @@ void weatherGenerator2D::precipitationP00P10()
                             if (obsDataD[idStation][i+1].prec <= parametersModel.precipitationThreshold)
                                 occurrence00[month-1]++;
                         }
+                        if (month == 1)
+                        {
+                            printf("%d/%d/%d  ",obsDataD[idStation][i].date.day,obsDataD[idStation][i].date.month,obsDataD[idStation][i].date.year);
+                            printf("month %d n10 %d n00 %d \n",month,occurrence10[month-1],occurrence00[month-1]);
+                            pressEnterToContinue();
+                        }
                     }
                 }
             }
         }
         for (int month=0;month<12;month++)
         {
-            printf("month %d n00 %d \n",month,occurrence00[month]);
+            printf("month %d n10 %d n00 %d \n",month,occurrence10[month],occurrence00[month]);
         }
         pressEnterToContinue();
         for (int month=0;month<12;month++)
