@@ -1,6 +1,10 @@
 #ifndef GRAPEVINE_H
 #define GRAPEVINE_H
 
+#ifndef _MAP_
+    #include <map>
+#endif
+
 #ifndef COMMONCONSTANTS_H
     #include "commonConstants.h"
 #endif
@@ -42,6 +46,13 @@ enum phenoStage {endoDormancy, ecoDormancy , budBurst , flowering , fruitSet, ve
 enum rootDistribution {CARDIOID_DISTRIBUTION, BLACKBODY_DISTRIBUTION , GAMMA_DISTRIBUTION};
 enum TfieldOperation {irrigationOperation, grassSowing, grassRemoving, trimming, leafRemoval,
                       clusterThinning, harvesting, tartaricAnalysis};
+enum Crit3DLanduse {landuse_nodata, landuse_bare, landuse_vineyard};
+
+const std::map<std::string, Crit3DLanduse> landuseNames = {
+    { "UNDEFINED", landuse_nodata },
+    { "BARESOIL", landuse_bare },
+    { "VINEYARD", landuse_vineyard}
+};
 
 struct TstateGrowth{
     double cumulatedBiomass;
@@ -172,7 +183,7 @@ struct TparameterPhenoVitisFix{
     }
 };
 
-struct Tvine {
+struct TVineCultivar {
     int id;
     TparameterBindiMiglietta parameterBindiMiglietta;
     TparameterWangLeuning parameterWangLeuning;
@@ -190,13 +201,14 @@ struct TtrainingSystem {
 
 struct TvineField {
     int id;
+    Crit3DLanduse landuse;
     int soilIndex;
     float shootsPerPlant;
     float plantDensity;
     float maxLAIGrass;
     int trainingSystem;
     float maxIrrigationRate;        //[mm/h]
-    Tvine* cultivar;
+    TVineCultivar* cultivar;
 };
 
 struct TsoilProfileTest {
@@ -332,21 +344,21 @@ private:
 
 
 private: // functions
-    void photosynthesisRadiationUseEfficiency(Tvine* cultivar);
+    void photosynthesisRadiationUseEfficiency(TVineCultivar* cultivar);
     double getCO2();
     double acclimationFunction(double Ha, double Hd, double leafTemp,double entropicTerm,double optimumTemp);
     double acclimationFunction2(double preFactor, double expFactor, double leafTemp,double optimumTemp);
     void weatherVariables();
     void radiationAbsorption ();
     void aerodynamicalCoupling ();
-    void upscale(Tvine* cultivar);
-    void photosynthesisAndTranspiration(Tvine* cultivar);
-    void carbonWaterFluxes(Tvine* cultivar);
-    void carbonWaterFluxesProfile(Tvine *cultivar);
-    void carbonWaterFluxesProfileNoStress(Tvine *cultivar);
-    void photosynthesisKernel(Tvine *cultivar, double COMP, double GAC, double GHR, double GSCD, double J, double KC, double KO
+    void upscale(TVineCultivar* cultivar);
+    void photosynthesisAndTranspiration(TVineCultivar* cultivar);
+    void carbonWaterFluxes(TVineCultivar* cultivar);
+    void carbonWaterFluxesProfile(TVineCultivar *cultivar);
+    void carbonWaterFluxesProfileNoStress(TVineCultivar *cultivar);
+    void photosynthesisKernel(TVineCultivar *cultivar, double COMP, double GAC, double GHR, double GSCD, double J, double KC, double KO
                               , double RD, double RNI, double STOMWL, double VCMAX, double *ASS, double *GSC, double *TR);
-    void photosynthesisKernelSimplified(Tvine *cultivar, double COMP, double GSCD, double J, double KC, double KO
+    void photosynthesisKernelSimplified(TVineCultivar *cultivar, double COMP, double GSCD, double J, double KC, double KO
                          , double RD, double STOMWL, double VCmax, double *ASS, double *GSC, double *TR);
     void cumulatedResults();
     double plantRespiration();
@@ -364,16 +376,16 @@ private: // functions
     double forceStateFunction(double forceState , double temp);
     double forceStateFunction(double forceState , double temp, double degDays);
 
-    void computePhenology(bool computeDaily, bool* isVegSeason, Tvine* cultivar);
+    void computePhenology(bool computeDaily, bool* isVegSeason, TVineCultivar* cultivar);
     double leafWidth();
     void leafTemperature();
     double getLAIGrass(bool isShadow, double laiMax);
     void getLAIVine(TvineField *vineField);
 
     double getWaterStressByPsiSoil(double myPsiSoil,double psiSoilStressParameter,double exponentialFactorForPsiRatio);
-    double getWaterStressSawFunction(int index, Tvine *cultivar);
+    double getWaterStressSawFunction(int index, TVineCultivar *cultivar);
     bool getExtractedWaterFromGrassTranspirationandEvaporation(double* myWaterExtractionProfile);
-    double getWaterStressSawFunctionAverage(Tvine* cultivar);
+    double getWaterStressSawFunctionAverage(TVineCultivar* cultivar);
     double getGrassTranspiration(double stress, double laiGrassMax, double sensitivityToVPD, double fieldCoverByPlant);
     double getFallowTranspiration(double stress, double laiGrassMax, double sensitivityToVPD);
     double getGrassRootDensity(int layer, float startRootDepth, float totalRootDepth);
@@ -382,7 +394,7 @@ private: // functions
     void getFixSimulationParameters();
     double getLaiStressCoefficient();
     void getPotentialBrix();
-    void initializeWaterStress(Tvine* cultivar);
+    void initializeWaterStress(TVineCultivar* cultivar);
     double gompertzDistribution(double stage);
     double getTartaricAcid();
     double soilTemperatureModel();
@@ -391,7 +403,7 @@ private: // functions
 public:
     Vine3D_Grapevine();
 
-    //void initializeGrapevineModel(Tvine* vine, double secondsPerStep);
+    //void initializeGrapevineModel(TVineCultivar* cultivar, double secondsPerStep);
     void setDate (Crit3DTime myTime);
     bool setWeather(double meanDailyTemp, double temp, double irradiance ,
             double prec , double relativeHumidity , double windSpeed, double atmosphericPressure);
@@ -413,7 +425,7 @@ public:
 
     //bool getOutputPlant(int hour, ToutputPlant *outputPlant);
     bool initializeStatePlant(int doy, TvineField *vineField);
-    void printResults(std::string fileName, bool* isFirst, Tvine *cultivar);
+    void printResults(std::string fileName, bool* isFirst, TVineCultivar *cultivar);
     double getStressCoefficient();
     double getRealTranspirationGrapevine();
     double getRealTranspirationGrass();

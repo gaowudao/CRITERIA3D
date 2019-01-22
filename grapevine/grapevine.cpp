@@ -198,7 +198,7 @@ bool Vine3D_Grapevine::setDerivedVariables(double diffuseIrradiance, double dire
 }
 
 
-void Vine3D_Grapevine::initializeWaterStress(Tvine* cultivar)
+void Vine3D_Grapevine::initializeWaterStress(TVineCultivar* cultivar)
 {
     for (int i = 0; i < soilLayersNr; i++)
     {
@@ -379,7 +379,7 @@ bool Vine3D_Grapevine::fieldBookAction(TvineField* vineField, TfieldOperation ac
 }
 
 
-void Vine3D_Grapevine::photosynthesisRadiationUseEfficiency(Tvine* cultivar)
+void Vine3D_Grapevine::photosynthesisRadiationUseEfficiency(TVineCultivar* cultivar)
 {
     stepPhotosynthesis = (myIrradiance*(simulationStepInSeconds)*1e-6)
     *(1-exp(-parameterBindiMigliettaFix.extinctionCoefficient*statePlant.stateGrowth.leafAreaIndex))*cultivar->parameterBindiMiglietta.radiationUseEfficiency
@@ -389,7 +389,7 @@ void Vine3D_Grapevine::photosynthesisRadiationUseEfficiency(Tvine* cultivar)
 }
 
 
-void Vine3D_Grapevine::photosynthesisAndTranspiration(Tvine* cultivar)
+void Vine3D_Grapevine::photosynthesisAndTranspiration(TVineCultivar* cultivar)
 {
     Vine3D_Grapevine::weatherVariables();
     Vine3D_Grapevine::radiationAbsorption();
@@ -723,7 +723,7 @@ void Vine3D_Grapevine::aerodynamicalCoupling()
         shaded.aerodynamicConductanceCO2Exchange = aerodynamicConductanceToCO2 * shaded.leafAreaIndex/statePlant.stateGrowth.leafAreaIndex ;  //shaded big-leaf
 }
 
-void Vine3D_Grapevine::upscale(Tvine *cultivar)
+void Vine3D_Grapevine::upscale(TVineCultivar *cultivar)
 {
     // taken from Hydrall Model, Magnani UNIBO
     double sineSolarElevation;
@@ -814,7 +814,7 @@ void Vine3D_Grapevine::upscale(Tvine *cultivar)
 
 }
 
-void Vine3D_Grapevine::photosynthesisKernel(Tvine* cultivar, double COMP,double GAC,double GHR,double GSCD,double J,double KC,double KO
+void Vine3D_Grapevine::photosynthesisKernel(TVineCultivar* cultivar, double COMP,double GAC,double GHR,double GSCD,double J,double KC,double KO
                      ,double RD,double RNI,double STOMWL,double VCmax,double *ASS,double *GSC,double *TR)
 {
     // taken from Hydrall Model, Magnani UNIBO
@@ -869,7 +869,7 @@ void Vine3D_Grapevine::photosynthesisKernel(Tvine* cultivar, double COMP,double 
       *TR = maxValue(1.0E-8,*TR) ;
 }
 
-void Vine3D_Grapevine::photosynthesisKernelSimplified(Tvine* cultivar, double COMP,double GSCD,double J,double KC,double KO
+void Vine3D_Grapevine::photosynthesisKernelSimplified(TVineCultivar* cultivar, double COMP,double GSCD,double J,double KC,double KO
                      ,double RD,double STOMWL,double VCmax,double *ASS,double *GSC,double *TR)
 {
     // taken from Hydrall Model, Magnani UNIBO
@@ -925,7 +925,7 @@ void Vine3D_Grapevine::photosynthesisKernelSimplified(Tvine* cultivar, double CO
       *TR = maxValue(1E-8, *TR) ;
 }
 
-void Vine3D_Grapevine::carbonWaterFluxes(Tvine* cultivar)
+void Vine3D_Grapevine::carbonWaterFluxes(TVineCultivar* cultivar)
     {
         // taken from Hydrall Model, Magnani UNIBO
         assimilationInstant = 0 ;
@@ -951,7 +951,7 @@ void Vine3D_Grapevine::carbonWaterFluxes(Tvine* cultivar)
         totalStomatalConductance += shaded.stomatalConductance ; //canopy conductance to CO2 (mol m-2 s-1)
     }
 
-void Vine3D_Grapevine::carbonWaterFluxesProfile(Tvine* cultivar)
+void Vine3D_Grapevine::carbonWaterFluxesProfile(TVineCultivar* cultivar)
     {
         // taken from Hydrall Model, Magnani UNIBO
         assimilationInstant = 0 ;
@@ -991,7 +991,7 @@ void Vine3D_Grapevine::carbonWaterFluxesProfile(Tvine* cultivar)
         }
     }
 
-void Vine3D_Grapevine::carbonWaterFluxesProfileNoStress(Tvine* cultivar)
+void Vine3D_Grapevine::carbonWaterFluxesProfileNoStress(TVineCultivar* cultivar)
     {
         // taken from Hydrall Model, Magnani UNIBO
         double assimilationInstantNoStress = 0 ;
@@ -1373,7 +1373,7 @@ double Vine3D_Grapevine::forceStateFunction(double forceState , double temp)
     forceState += (1./(1+exp(-0.26*(temp-16.06))));
     return forceState;
 }
-void Vine3D_Grapevine::printResults(std::string fileName, bool* isFirst, Tvine* cultivar)
+void Vine3D_Grapevine::printResults(std::string fileName, bool* isFirst, TVineCultivar* cultivar)
 {
     FILE *fp;
     if (*isFirst)
@@ -1393,7 +1393,7 @@ void Vine3D_Grapevine::printResults(std::string fileName, bool* isFirst, Tvine* 
 
 
 
-void Vine3D_Grapevine::computePhenology(bool computeDaily, bool* isVegSeason, Tvine* cultivar)
+void Vine3D_Grapevine::computePhenology(bool computeDaily, bool* isVegSeason, TVineCultivar* cultivar)
 {
     double criticalForceStateBudBurst;
 
@@ -1550,7 +1550,7 @@ double Vine3D_Grapevine::getWaterStressByPsiSoil(double myPsiSoil,double psiSoil
     return waterStressFactor;
 }
 
-double Vine3D_Grapevine::getWaterStressSawFunction(int index, Tvine* cultivar)
+double Vine3D_Grapevine::getWaterStressSawFunction(int index, TVineCultivar* cultivar)
 {
     if (cultivar->parameterWangLeuning.waterStressThreshold < fractionTranspirableSoilWaterProfile[index])
         return 1.; // no stress
@@ -1558,7 +1558,7 @@ double Vine3D_Grapevine::getWaterStressSawFunction(int index, Tvine* cultivar)
         return fractionTranspirableSoilWaterProfile[index] / cultivar->parameterWangLeuning.waterStressThreshold ;
 }
 
-double Vine3D_Grapevine::getWaterStressSawFunctionAverage(Tvine* cultivar)
+double Vine3D_Grapevine::getWaterStressSawFunctionAverage(TVineCultivar* cultivar)
 {
     if (cultivar->parameterWangLeuning.waterStressThreshold < fractionTranspirableSoilWaterAverage)
         return 1.; // no stress

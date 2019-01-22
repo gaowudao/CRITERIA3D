@@ -212,7 +212,7 @@ void Crit3DInterpolationSettings::initializeProxy()
 
 void Crit3DInterpolationSettings::initialize()
 {
-    delete currentDEM;
+    currentDEM = nullptr;
     interpolationMethod = idw;
     useThermalInversion = true;
     useTAD = false;

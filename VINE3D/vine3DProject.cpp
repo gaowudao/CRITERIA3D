@@ -46,7 +46,7 @@ void Vine3DProject::initialize()
 
     lastDateTransmissivity.setDate(1900,1,1);
 
-    nrVines = 0;
+    nrCultivar = 0;
     nrSoils = 0;
     nrSoilLayers = 0;
     nrLayerNodes = 0;
@@ -255,32 +255,32 @@ bool Vine3DProject::loadGrapevineParameters()
         return(false);
     }
     //initialize vines
-    this->nrVines = myQuery.size();
-    this->vine = (Tvine *) calloc(this->nrVines, sizeof(Tvine));
+    this->nrCultivar = myQuery.size();
+    this->cultivar = (TVineCultivar *) calloc(this->nrCultivar, sizeof(TVineCultivar));
 
     //read values
     int i = 0;
     while (myQuery.next())
     {
-        this->vine[i].id = myQuery.value(0).toInt();
-        //strcpy(this->vine[i].name.cultivar, myQuery.value(1).toString().toStdString().c_str());
-        this->vine[i].parameterPhenoVitis.criticalForceStatePhysiologicalMaturity = myQuery.value(2).toFloat();
-        this->vine[i].parameterBindiMiglietta.radiationUseEfficiency = myQuery.value(3).toFloat();
-        this->vine[i].parameterBindiMiglietta.d = myQuery.value(4).toFloat();
-        this->vine[i].parameterBindiMiglietta.f = myQuery.value(5).toFloat();
-        this->vine[i].parameterBindiMiglietta.fruitBiomassOffset = myQuery.value(6).toFloat();
-        this->vine[i].parameterBindiMiglietta.fruitBiomassSlope = myQuery.value(7).toFloat();
-        this->vine[i].parameterWangLeuning.psiLeaf = myQuery.value(8).toFloat();
-        this->vine[i].parameterWangLeuning.waterStressThreshold = myQuery.value(9).toFloat();
-        this->vine[i].parameterWangLeuning.sensitivityToVapourPressureDeficit = myQuery.value(10).toFloat();
-        this->vine[i].parameterWangLeuning.alpha = myQuery.value(11).toFloat() * 1E5;
-        this->vine[i].parameterPhenoVitis.co1 = myQuery.value(12).toFloat();
-        this->vine[i].parameterPhenoVitis.criticalChilling = myQuery.value(13).toFloat();
-        this->vine[i].parameterPhenoVitis.criticalForceStateFlowering = myQuery.value(14).toFloat();
-        this->vine[i].parameterPhenoVitis.criticalForceStateVeraison = myQuery.value(15).toFloat();
-        this->vine[i].parameterPhenoVitis.criticalForceStateFruitSet = myQuery.value(16).toFloat();
-        this->vine[i].parameterPhenoVitis.degreeDaysAtVeraison = myQuery.value(17).toFloat();
-        this->vine[i].parameterWangLeuning.maxCarboxRate = myQuery.value(18).toFloat();
+        this->cultivar[i].id = myQuery.value(0).toInt();
+        //strcpy(this->cultivar[i].name.cultivar, myQuery.value(1).toString().toStdString().c_str());
+        this->cultivar[i].parameterPhenoVitis.criticalForceStatePhysiologicalMaturity = myQuery.value(2).toFloat();
+        this->cultivar[i].parameterBindiMiglietta.radiationUseEfficiency = myQuery.value(3).toFloat();
+        this->cultivar[i].parameterBindiMiglietta.d = myQuery.value(4).toFloat();
+        this->cultivar[i].parameterBindiMiglietta.f = myQuery.value(5).toFloat();
+        this->cultivar[i].parameterBindiMiglietta.fruitBiomassOffset = myQuery.value(6).toFloat();
+        this->cultivar[i].parameterBindiMiglietta.fruitBiomassSlope = myQuery.value(7).toFloat();
+        this->cultivar[i].parameterWangLeuning.psiLeaf = myQuery.value(8).toFloat();
+        this->cultivar[i].parameterWangLeuning.waterStressThreshold = myQuery.value(9).toFloat();
+        this->cultivar[i].parameterWangLeuning.sensitivityToVapourPressureDeficit = myQuery.value(10).toFloat();
+        this->cultivar[i].parameterWangLeuning.alpha = myQuery.value(11).toFloat() * 1E5;
+        this->cultivar[i].parameterPhenoVitis.co1 = myQuery.value(12).toFloat();
+        this->cultivar[i].parameterPhenoVitis.criticalChilling = myQuery.value(13).toFloat();
+        this->cultivar[i].parameterPhenoVitis.criticalForceStateFlowering = myQuery.value(14).toFloat();
+        this->cultivar[i].parameterPhenoVitis.criticalForceStateVeraison = myQuery.value(15).toFloat();
+        this->cultivar[i].parameterPhenoVitis.criticalForceStateFruitSet = myQuery.value(16).toFloat();
+        this->cultivar[i].parameterPhenoVitis.degreeDaysAtVeraison = myQuery.value(17).toFloat();
+        this->cultivar[i].parameterWangLeuning.maxCarboxRate = myQuery.value(18).toFloat();
         i++;
     }
 
@@ -552,42 +552,54 @@ bool Vine3DProject::loadFieldMap(QString myFileName)
 }
 
 
-bool Vine3DProject::setField(int fieldIndex, int soilIndex, int vineIndex, int trainingIndex,
+bool Vine3DProject::setField(int fieldIndex, Crit3DLanduse landuse, int soilIndex, int vineIndex, int trainingIndex,
                              float maxLaiGrass, float maxIrrigationRate)
 {
     if (fieldIndex >= nrVineFields) return false;
 
     int i = fieldIndex;
-    this->vineFields[i].id = fieldIndex;
+    vineFields[i].id = fieldIndex;
 
-    this->vineFields[i].soilIndex = soilIndex;
+    vineFields[i].landuse = landuse;
+    vineFields[i].soilIndex = soilIndex;
 
-    this->vineFields[i].cultivar = &(this->vine[vineIndex]);
-    this->vineFields[i].maxLAIGrass = maxLaiGrass;
-    this->vineFields[i].maxIrrigationRate = maxIrrigationRate;
+    vineFields[i].cultivar = &(this->cultivar[vineIndex]);
+    vineFields[i].maxLAIGrass = maxLaiGrass;
+    vineFields[i].maxIrrigationRate = maxIrrigationRate;
 
     float density = 1.0 / (this->trainingSystems[trainingIndex].rowDistance
                            * this->trainingSystems[trainingIndex].plantDistance);
 
-    this->vineFields[i].trainingSystem = trainingIndex;
-    this->vineFields[i].plantDensity = density;
-    this->vineFields[i].shootsPerPlant = this->trainingSystems[trainingIndex].shootsPerPlant;
+    vineFields[i].trainingSystem = trainingIndex;
+    vineFields[i].plantDensity = density;
+    vineFields[i].shootsPerPlant = this->trainingSystems[trainingIndex].shootsPerPlant;
+
     return true;
 }
 
 
-bool Vine3DProject::readFieldQuery(QSqlQuery myQuery, int* idField, int* vineIndex, int* trainingIndex,
+bool Vine3DProject::readFieldQuery(QSqlQuery myQuery, int* idField, Crit3DLanduse* landuse, int* vineIndex, int* trainingIndex,
                                    int* soilIndex, float* maxLaiGrass, float* maxIrrigationRate)
 {
     int i, idCultivar, idTraining, idSoil;
 
-    *idField = myQuery.value(0).toInt();
+    *idField = myQuery.value("id_field").toInt();
+
+    //LANDUSE
+    std::string landuse_name = myQuery.value("id_landuse").toString().toStdString();
+    if (landuseNames.find(landuse_name) == landuseNames.end())
+    {
+        this->projectError = "Unknown landuse for field " + *idField;
+        return false;
+    }
+    else
+        *landuse = landuseNames.at(landuse_name);
 
     //CULTIVAR
-    idCultivar = myQuery.value(1).toInt();
+    idCultivar = myQuery.value("id_cultivar").toInt();
     i=0;
-    while (i < this->nrVines && idCultivar != vine[i].id) i++;
-    if (i == this->nrVines)
+    while (i < this->nrCultivar && idCultivar != cultivar[i].id) i++;
+    if (i == this->nrCultivar)
     {
         this->projectError = "cultivar " + QString::number(idCultivar) + " not found" + myQuery.lastError().text();
         return false;
@@ -595,7 +607,7 @@ bool Vine3DProject::readFieldQuery(QSqlQuery myQuery, int* idField, int* vineInd
     *vineIndex = i;
 
     //TRAINING SYSTEM
-    idTraining = myQuery.value(2).toInt();
+    idTraining = myQuery.value("id_training_system").toInt();
     i=0;
     while (i < this->nrTrainingSystems && idTraining != this->trainingSystems[i].id) i++;
     if (i == this->nrTrainingSystems)
@@ -606,7 +618,7 @@ bool Vine3DProject::readFieldQuery(QSqlQuery myQuery, int* idField, int* vineInd
     *trainingIndex = i;
 
     //SOIL
-    idSoil = myQuery.value(3).toInt();
+    idSoil = myQuery.value("id_soil").toInt();
     i=0;
     while (i < this->nrSoils && idSoil != soilList[i].id) i++;
     if (i == this->nrSoils)
@@ -616,8 +628,9 @@ bool Vine3DProject::readFieldQuery(QSqlQuery myQuery, int* idField, int* vineInd
     }
     *soilIndex = i;
 
-    *maxLaiGrass = myQuery.value(4).toFloat();
-    *maxIrrigationRate = myQuery.value(5).toFloat();
+
+    *maxLaiGrass = myQuery.value("max_lai_grass").toFloat();
+    *maxIrrigationRate = myQuery.value("irrigation_max_rate").toFloat();
 
     return true;
 }
@@ -653,8 +666,10 @@ bool Vine3DProject::loadFieldsProperties()
     // READ DEFAULT FIELD PROPERTIES
     int idField, vineIndex, trainingIndex, soilIndex;
     float maxLaiGrass, maxIrrigationRate;
+    Crit3DLanduse landuse;
+
     myQueryString =
-            " SELECT id_field, id_cultivar,"
+            " SELECT id_field, id_landuse, id_cultivar,"
             " id_training_system, id_soil, max_lai_grass, irrigation_max_rate"
             " FROM fields"
             " WHERE id_field=0";
@@ -673,12 +688,12 @@ bool Vine3DProject::loadFieldsProperties()
     }
 
     myQuery.next();
-    if (!readFieldQuery(myQuery, &idField, &vineIndex, &trainingIndex, &soilIndex, &maxLaiGrass, &maxIrrigationRate))
+    if (!readFieldQuery(myQuery, &idField, &landuse, &vineIndex, &trainingIndex, &soilIndex, &maxLaiGrass, &maxIrrigationRate))
         return false;
 
     // INITIALIZE FIELDS
     for (int i = 0; i<nrVineFields; i++)
-        setField(i, soilIndex, vineIndex, trainingIndex, maxLaiGrass, maxIrrigationRate);
+        setField(i, landuse, soilIndex, vineIndex, trainingIndex, maxLaiGrass, maxIrrigationRate);
 
    // READ PROPERTIES
     myQueryString =
@@ -697,8 +712,8 @@ bool Vine3DProject::loadFieldsProperties()
     // SET PROPERTIES
     while (myQuery.next())
     {
-       if (readFieldQuery(myQuery, &idField, &vineIndex, &trainingIndex, &soilIndex, &maxLaiGrass, &maxIrrigationRate))
-            setField(idField, soilIndex, vineIndex, trainingIndex, maxLaiGrass, maxIrrigationRate);
+       if (readFieldQuery(myQuery, &idField, &landuse, &vineIndex, &trainingIndex, &soilIndex, &maxLaiGrass, &maxIrrigationRate))
+            setField(idField, landuse, soilIndex, vineIndex, trainingIndex, maxLaiGrass, maxIrrigationRate);
     }
 
     return(true);
@@ -1864,8 +1879,9 @@ int Vine3DProject::getFieldIndex(long row, long col)
 
 bool Vine3DProject::isVineyard(long row, long col)
 {
+    //TODO check landuse field
     int fieldIndex = getFieldIndex(row, col);
-    if ((fieldIndex != NODATA) && (fieldIndex > 0))
+    if ((fieldIndex != NODATA) && (fieldIndex != 0))
         return true;
     else
         return false;

@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# VINE 3D Project
+# VINE3D Project
 # simulations of vineyard ecosystem
 # with 3D soil-water balance
 #
