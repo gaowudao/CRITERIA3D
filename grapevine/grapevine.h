@@ -199,7 +199,7 @@ struct TtrainingSystem {
     float plantDistance;
 };
 
-struct TvineField {
+struct Crit3DModelCase {
     int id;
     Crit3DLanduse landuse;
     int soilIndex;
@@ -380,7 +380,7 @@ private: // functions
     double leafWidth();
     void leafTemperature();
     double getLAIGrass(bool isShadow, double laiMax);
-    void getLAIVine(TvineField *vineField);
+    void getLAIVine(Crit3DModelCase *vineField);
 
     double getWaterStressByPsiSoil(double myPsiSoil,double psiSoilStressParameter,double exponentialFactorForPsiRatio);
     double getWaterStressSawFunction(int index, TVineCultivar *cultivar);
@@ -421,15 +421,15 @@ public:
               double* myLayerDepth, double* myLayerThickness,
               int nrSoilLayersWithoutRoot, int nrSoilLayerWithRoot,
               rootDistribution type, double depthMode, double depthMean);
-    bool compute(bool computeDaily, int secondsPerStep, TvineField *vineField, double chlorophyll);
+    bool compute(bool computeDaily, int secondsPerStep, Crit3DModelCase *vineField, double chlorophyll);
 
     //bool getOutputPlant(int hour, ToutputPlant *outputPlant);
-    bool initializeStatePlant(int doy, TvineField *vineField);
+    bool initializeStatePlant(int doy, Crit3DModelCase *vineField);
     void printResults(std::string fileName, bool* isFirst, TVineCultivar *cultivar);
     double getStressCoefficient();
     double getRealTranspirationGrapevine();
     double getRealTranspirationGrass();
-    bool fieldBookAction(TvineField* vineField, TfieldOperation action, float quantity);
+    bool fieldBookAction(Crit3DModelCase* vineField, TfieldOperation action, float quantity);
     double getRootDensity(int myLayer);
 
 };

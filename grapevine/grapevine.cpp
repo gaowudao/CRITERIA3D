@@ -26,7 +26,7 @@ Vine3D_Grapevine::Vine3D_Grapevine()
 }
 
 
-bool Vine3D_Grapevine::compute(bool computeDaily, int secondsPerStep, TvineField* vineField, double chlorophyll)
+bool Vine3D_Grapevine::compute(bool computeDaily, int secondsPerStep, Crit3DModelCase* vineField, double chlorophyll)
 {
     simulationStepInSeconds = double(secondsPerStep);
     isAmphystomatic = true;
@@ -294,7 +294,7 @@ void Vine3D_Grapevine::getFixSimulationParameters()
 }
 
 
-bool Vine3D_Grapevine::initializeStatePlant(int doy, TvineField* vineField)
+bool Vine3D_Grapevine::initializeStatePlant(int doy, Crit3DModelCase* vineField)
 {
     getFixSimulationParameters();
 
@@ -345,7 +345,7 @@ bool Vine3D_Grapevine::initializeStatePlant(int doy, TvineField* vineField)
 }
 
 
-bool Vine3D_Grapevine::fieldBookAction(TvineField* vineField, TfieldOperation action, float quantity)
+bool Vine3D_Grapevine::fieldBookAction(Crit3DModelCase* vineField, TfieldOperation action, float quantity)
 {
     /*enum TfieldOperation {irrigationOperation, grassSowing, grassRemoving, trimming, leafRemoval,
                           clusterThinning, harvesting, tartaricAnalysis};*/
@@ -1725,7 +1725,7 @@ double Vine3D_Grapevine::getLAIGrass(bool isShadow, double laiGrassMax)
     return laiGrass;
 }
 
-void Vine3D_Grapevine::getLAIVine(TvineField* vineField)
+void Vine3D_Grapevine::getLAIVine(Crit3DModelCase* vineField)
 {
     double shootLeafArea;
     double deltaLai, laiOld;

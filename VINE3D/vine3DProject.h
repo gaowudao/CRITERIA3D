@@ -53,7 +53,7 @@
         gis::Crit3DRasterGrid interpolatedDtm;
         gis::Crit3DRasterGrid indexMap;
         gis::Crit3DRasterGrid boundaryMap;
-        gis::Crit3DRasterGrid fieldMap;
+        gis::Crit3DRasterGrid modelCaseMap;
 
         soil::Crit3DSoilClass soilClass[13];
 
@@ -71,7 +71,7 @@
         TVineCultivar* cultivar;
         int nrCultivar;
 
-        TvineField* vineFields;
+        Crit3DModelCase* modelCases;
         TtrainingSystem* trainingSystems;
         TfieldBook* fieldBook;
         int nrTrainingSystems;
@@ -159,7 +159,7 @@
         void logInfo(QString myLog);
         void setEnvironment(Tenvironment myEnv);
         float getTimeStep();
-        int getFieldIndex(long row, long col);
+        int getModelCase(long row, long col);
         bool isVineyard(long row, long col);
         int getSoilIndex(long row, long col);
 

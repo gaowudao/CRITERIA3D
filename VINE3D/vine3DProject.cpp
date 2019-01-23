@@ -73,7 +73,7 @@ bool Vine3DProject::loadVine3DSettings()
 void Vine3DProject::deleteAllGrids()
 {
     DTM.freeGrid();
-    fieldMap.freeGrid();
+    modelCaseMap.freeGrid();
     boundaryMap.freeGrid();
     indexMap.freeGrid();
     interpolatedDtm.freeGrid();
@@ -133,7 +133,7 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
         QString myId = projectSettings->value("id").toString();
         QString projectName = projectSettings->value("name").toString();
         QString demName = projectSettings->value("dem").toString();
-        QString fieldName = projectSettings->value("fieldMap").toString();
+        QString fieldName = projectSettings->value("modelCaseMap").toString();
     projectSettings->endGroup();
 
     idArea = myId;
@@ -487,19 +487,19 @@ bool Vine3DProject::loadFieldShape()
     }
     myQuery.clear();
 
-    this->fieldMap.initializeGrid(this->DTM);
+    this->modelCaseMap.initializeGrid(this->DTM);
 
-    double step = this->fieldMap.header->cellSize / (2*dim+1);
+    double step = this->modelCaseMap.header->cellSize / (2*dim+1);
 
-    for (long row = 0; row < this->fieldMap.header->nrRows ; row++)
-        for (long col = 0; col < this->fieldMap.header->nrCols; col++)
+    for (long row = 0; row < this->modelCaseMap.header->nrRows ; row++)
+        for (long col = 0; col < this->modelCaseMap.header->nrCols; col++)
             if (this->DTM.value[row][col] != this->DTM.header->flag)
             {
                 //center
-                gis::getUtmXYFromRowCol(this->fieldMap, row, col, &x0, &y0);
+                gis::getUtmXYFromRowCol(this->modelCaseMap, row, col, &x0, &y0);
                 id = queryFieldPoint(x0, y0);
                 if (id != NODATA)
-                    this->fieldMap.value[row][col] = id;
+                    this->modelCaseMap.value[row][col] = id;
                 else
                 {
                     valuesList.resize(0);
@@ -512,14 +512,14 @@ bool Vine3DProject::loadFieldShape()
                                     valuesList.push_back(id);
                             }
                     if (valuesList.size() == 0)
-                        this->fieldMap.value[row][col] = this->fieldMap.header->flag;
+                        this->modelCaseMap.value[row][col] = this->modelCaseMap.header->flag;
                     else
-                        this->fieldMap.value[row][col] = gis::prevailingValue(valuesList);
+                        this->modelCaseMap.value[row][col] = gis::prevailingValue(valuesList);
                 }
             }
 
-    gis::updateMinMaxRasterGrid(&(this->fieldMap));
-    this->nrVineFields = int(this->fieldMap.maximum);
+    gis::updateMinMaxRasterGrid(&(this->modelCaseMap));
+    this->nrVineFields = int(this->modelCaseMap.maximum);
     return true;
 }
 
@@ -541,11 +541,11 @@ bool Vine3DProject::loadFieldMap(QString myFileName)
     else
     {
         // compute prevailing map
-        fieldMap.initializeGrid(DTM);
-        gis::prevailingMap(myGrid, &(fieldMap));
+        modelCaseMap.initializeGrid(DTM);
+        gis::prevailingMap(myGrid, &(modelCaseMap));
 
-        gis::updateMinMaxRasterGrid(&(fieldMap));
-        this->nrVineFields = fieldMap.maximum;
+        gis::updateMinMaxRasterGrid(&(modelCaseMap));
+        this->nrVineFields = modelCaseMap.maximum;
 
         return (true);
     }
@@ -558,21 +558,21 @@ bool Vine3DProject::setField(int fieldIndex, Crit3DLanduse landuse, int soilInde
     if (fieldIndex >= nrVineFields) return false;
 
     int i = fieldIndex;
-    vineFields[i].id = fieldIndex;
+    modelCases[i].id = fieldIndex;
 
-    vineFields[i].landuse = landuse;
-    vineFields[i].soilIndex = soilIndex;
+    modelCases[i].landuse = landuse;
+    modelCases[i].soilIndex = soilIndex;
 
-    vineFields[i].cultivar = &(this->cultivar[vineIndex]);
-    vineFields[i].maxLAIGrass = maxLaiGrass;
-    vineFields[i].maxIrrigationRate = maxIrrigationRate;
+    modelCases[i].cultivar = &(this->cultivar[vineIndex]);
+    modelCases[i].maxLAIGrass = maxLaiGrass;
+    modelCases[i].maxIrrigationRate = maxIrrigationRate;
 
     float density = 1.0 / (this->trainingSystems[trainingIndex].rowDistance
                            * this->trainingSystems[trainingIndex].plantDistance);
 
-    vineFields[i].trainingSystem = trainingIndex;
-    vineFields[i].plantDensity = density;
-    vineFields[i].shootsPerPlant = this->trainingSystems[trainingIndex].shootsPerPlant;
+    modelCases[i].trainingSystem = trainingIndex;
+    modelCases[i].plantDensity = density;
+    modelCases[i].shootsPerPlant = this->trainingSystems[trainingIndex].shootsPerPlant;
 
     return true;
 }
@@ -586,7 +586,7 @@ bool Vine3DProject::readFieldQuery(QSqlQuery myQuery, int* idField, Crit3DLandus
     *idField = myQuery.value("id_field").toInt();
 
     //LANDUSE
-    std::string landuse_name = myQuery.value("id_landuse").toString().toStdString();
+    std::string landuse_name = myQuery.value("landuse").toString().toStdString();
     if (landuseNames.find(landuse_name) == landuseNames.end())
     {
         this->projectError = "Unknown landuse for field " + *idField;
@@ -661,7 +661,7 @@ bool Vine3DProject::loadFieldsProperties()
     this->nrVineFields = maxValue(this->nrVineFields, maxFieldIndex) +1;
 
     //alloc memory for vines
-    this->vineFields = (TvineField *) calloc(this->nrVineFields, sizeof(TvineField));
+    this->modelCases = (Crit3DModelCase *) calloc(this->nrVineFields, sizeof(Crit3DModelCase));
 
     // READ DEFAULT FIELD PROPERTIES
     int idField, vineIndex, trainingIndex, soilIndex;
@@ -669,7 +669,7 @@ bool Vine3DProject::loadFieldsProperties()
     Crit3DLanduse landuse;
 
     myQueryString =
-            " SELECT id_field, id_landuse, id_cultivar,"
+            " SELECT id_field, landuse, id_cultivar,"
             " id_training_system, id_soil, max_lai_grass, irrigation_max_rate"
             " FROM fields"
             " WHERE id_field=0";
@@ -1778,7 +1778,7 @@ bool Vine3DProject::loadStates(QDate myDate, QString myArea)
     if (!loadPlantState(this, fruitBiomassIndexVar, myDate, statePath, myArea))
     {
         //defualt= chardonnay
-        this->statePlantMaps->fruitBiomassIndexMap->setConstantValueWithBase(this->vineFields[1].cultivar->parameterBindiMiglietta.fruitBiomassSlope, DTM);
+        this->statePlantMaps->fruitBiomassIndexMap->setConstantValueWithBase(this->modelCases[1].cultivar->parameterBindiMiglietta.fruitBiomassSlope, DTM);
     }
 
     //problema: mancano nei precedenti stati
@@ -1867,30 +1867,26 @@ bool Vine3DProject::saveStateAndOutput(QDate myDate, QString myArea)
     return(true);
 }
 
-int Vine3DProject::getFieldIndex(long row, long col)
+int Vine3DProject::getModelCase(long row, long col)
 {
-    int fieldIndex = this->fieldMap.value[row][col];
-    if (fieldIndex == this->fieldMap.header->flag)
+    int caseIndex = this->modelCaseMap.value[row][col];
+    if (caseIndex == this->modelCaseMap.header->flag)
         //DEFAULT
-        fieldIndex = 0;
-    return fieldIndex;
+        caseIndex = 0;
+    return caseIndex;
 }
 
 
 bool Vine3DProject::isVineyard(long row, long col)
 {
-    //TODO check landuse field
-    int fieldIndex = getFieldIndex(row, col);
-    if ((fieldIndex != NODATA) && (fieldIndex != 0))
-        return true;
-    else
-        return false;
+    int caseIndex = getModelCase(row, col);
+    return (modelCases[caseIndex].landuse == landuse_vineyard);
 }
 
 int Vine3DProject::getSoilIndex(long row, long col)
 {
-    int fieldIndex = this->getFieldIndex(row, col);
-    return this->vineFields[fieldIndex].soilIndex;
+    int fieldIndex = this->getModelCase(row, col);
+    return this->modelCases[fieldIndex].soilIndex;
 }
 
 bool Vine3DProject::getFieldBookIndex(int firstIndex, QDate myDate, int fieldIndex, int* outputIndex)

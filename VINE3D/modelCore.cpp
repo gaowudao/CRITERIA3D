@@ -59,7 +59,7 @@ bool assignIrrigation(Vine3DProject* myProject, Crit3DTime myTime)
                 //initialize
                 myProject->meteoMaps->irrigationMap->value[row][col] = 0.0;
 
-                fieldIndex = myProject->getFieldIndex(row, col);
+                fieldIndex = myProject->getModelCase(row, col);
                 if (fieldIndex > 0)
                 {
                     int idBook = 0;
@@ -70,7 +70,7 @@ bool assignIrrigation(Vine3DProject* myProject, Crit3DTime myTime)
                             nrHours = myProject->fieldBook[idBook].quantity;
                             if (hour >= (24-nrHours))
                             {
-                                irrigationRate = myProject->vineFields[fieldIndex].maxIrrigationRate;
+                                irrigationRate = myProject->modelCases[fieldIndex].maxIrrigationRate;
                                 rate = irrigationRate / myProject->meteoSettings->getHourlyIntervals();
                                 myProject->meteoMaps->irrigationMap->value[row][col] = rate;
                             }
@@ -137,7 +137,7 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
             {
                 if (myProject->DTM.value[row][col] != myProject->DTM.header->flag)
                 {
-                    fieldIndex = myProject->getFieldIndex(row,col);
+                    fieldIndex = myProject->getModelCase(row,col);
                     isNewField = (myProject->statePlantMaps->fruitBiomassMap->value[row][col]
                                   == myProject->statePlantMaps->fruitBiomassMap->header->flag);
 
@@ -160,7 +160,7 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
 
                     if ((isInitialState) || (isNewField))
                     {
-                        if(!myProject->grapevine.initializeStatePlant(getDoyFromDate(myDate), &(myProject->vineFields[fieldIndex])))
+                        if(!myProject->grapevine.initializeStatePlant(getDoyFromDate(myDate), &(myProject->modelCases[fieldIndex])))
                         {
                             myProject->logInfo("It's not possible initialize grapevine in the present growing season.\nIt will be replaced by a complete grass cover.");
                         }
@@ -173,7 +173,7 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
                     double chlorophyll = NODATA;
 
                     if (! myProject->grapevine.compute((myCurrentTime == myFirstTime), myTimeStep,
-                          &(myProject->vineFields[fieldIndex]), chlorophyll))
+                          &(myProject->modelCases[fieldIndex]), chlorophyll))
                           return(false);
 
                     // check field book (first hour)
@@ -184,7 +184,7 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
                         {
                             operation = myProject->fieldBook[idBook].operation;
                             quantity = myProject->fieldBook[idBook].quantity;
-                            myProject->grapevine.fieldBookAction(&(myProject->vineFields[fieldIndex]), operation, quantity);
+                            myProject->grapevine.fieldBookAction(&(myProject->modelCases[fieldIndex]), operation, quantity);
                             idBook++;
                         }
                     }

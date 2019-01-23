@@ -409,10 +409,10 @@ double evaporation(Vine3DProject* myProject, int row, int col, long surfaceIndex
     double const MAX_PROF_EVAPORATION = 0.15;           //[m]
     int lastEvapLayer = getSoilLayerIndex(myProject, MAX_PROF_EVAPORATION);
     double area = myProject->DTM.header->cellSize * myProject->DTM.header->cellSize;
-    int idField = myProject->getFieldIndex(row, col);
+    int idField = myProject->getModelCase(row, col);
 
     //LAI
-    laiGrass = myProject->vineFields[idField].maxLAIGrass;
+    laiGrass = myProject->modelCases[idField].maxLAIGrass;
     laiVine = myProject->statePlantMaps->leafAreaIndexMap->value[row][col];
     laiTot = laiVine + laiGrass;
 
