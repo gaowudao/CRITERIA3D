@@ -852,7 +852,7 @@ bool Vine3DProject::loadHorizons(soil::Crit3DSoil* outputSoil, int idSoil, QStri
 {
     QString queryString = "SELECT soil_code, horizon_nr, upper_depth, lower_depth, coarse_fragment, ";
     queryString += "organic_matter, sand, silt, clay, bulk_density, theta_sat, ksat FROM horizons ";
-    queryString += "WHERE soil_code='" + soil_code + "' ORDER BY id_horizon";
+    queryString += "WHERE soil_code='" + soil_code + "' ORDER BY horizon_nr";
 
     QSqlQuery query = dbConnection.exec(queryString);
     if (query.size() < 1)
