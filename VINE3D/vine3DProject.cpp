@@ -697,7 +697,7 @@ bool Vine3DProject::loadFieldsProperties()
 
    // READ PROPERTIES
     myQueryString =
-            " SELECT id_field, id_cultivar,"
+            " SELECT id_field, landuse, id_cultivar,"
             " id_training_system, id_soil, max_lai_grass, irrigation_max_rate"
             " FROM fields"
             " ORDER BY id_field";
