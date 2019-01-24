@@ -848,12 +848,11 @@ bool Vine3DProject::loadVanGenuchtenParameters()
 }
 
 
-bool Vine3DProject::loadHorizons(soil::Crit3DSoil* outputSoil, int idSoil)
+bool Vine3DProject::loadHorizons(soil::Crit3DSoil* outputSoil, int idSoil, QString soil_code)
 {
-    QString queryString = "SELECT id_soil, id_horizon, upper_depth, lower_depth, skeleton, ";
-    queryString += "id_texture, sand, silt, clay, ";
-    queryString += "organic_matter, bulk_density, theta_sat, ksat FROM horizons ";
-    queryString += "WHERE id_soil=" + QString::number(idSoil) + " ORDER BY id_horizon";
+    QString queryString = "SELECT soil_code, horizon_nr, upper_depth, lower_depth, coarse_fragment, ";
+    queryString += "organic_matter, sand, silt, clay, bulk_density, theta_sat, ksat FROM horizons ";
+    queryString += "WHERE soil_code='" + soil_code + "' ORDER BY id_horizon";
 
     QSqlQuery query = dbConnection.exec(queryString);
     if (query.size() < 1)
@@ -868,16 +867,16 @@ bool Vine3DProject::loadHorizons(soil::Crit3DSoil* outputSoil, int idSoil)
     int nrHorizons = query.size();
     soil::Crit3DSoil* mySoil = new soil::Crit3DSoil(idSoil, nrHorizons);
 
-    int idTexture, idHorizon;
+    int idHorizon;
     double sand, silt, clay, organicMatter, skeleton;
     double bulkDensity, porosity, ksat;
     int i = 0;
     while (query.next())
     {
         //check depth
-        idHorizon = query.value(1).toInt();
-        getValue(query.value(2), &(mySoil->horizon[i].upperDepth));
-        getValue(query.value(3), &(mySoil->horizon[i].lowerDepth));
+        idHorizon = query.value("horizon_nr").toInt();
+        getValue(query.value("upper_depth"), &(mySoil->horizon[i].upperDepth));
+        getValue(query.value("lower_depth"), &(mySoil->horizon[i].lowerDepth));
         if ((mySoil->horizon[i].upperDepth == NODATA) || (mySoil->horizon[i].lowerDepth == NODATA)
                 || (mySoil->horizon[i].lowerDepth < mySoil->horizon[i].upperDepth))
         {
@@ -890,7 +889,7 @@ bool Vine3DProject::loadHorizons(soil::Crit3DSoil* outputSoil, int idSoil)
         mySoil->horizon[i].lowerDepth /= 100.0;
 
         //check skeleton
-        getValue(query.value(4), &skeleton);
+        getValue(query.value("coarse_fragment"), &skeleton);
         if (skeleton == NODATA)
             mySoil->horizon[i].coarseFragments = 0.;
         else
@@ -898,30 +897,26 @@ bool Vine3DProject::loadHorizons(soil::Crit3DSoil* outputSoil, int idSoil)
             mySoil->horizon[i].coarseFragments = skeleton / 100.0;
 
         //texture
-        getValue(query.value(5), &idTexture);
-        getValue(query.value(6), &sand);
-        getValue(query.value(7), &silt);
-        getValue(query.value(8), &clay);
+        getValue(query.value("sand"), &sand);
+        getValue(query.value("silt"), &silt);
+        getValue(query.value("clay"), &clay);
+
+        if ((sand == NODATA) || (silt == NODATA) || (clay == NODATA))
+        {
+            this->projectError = "Missing texture data in soil " + soil_code + " horizon " + QString::number(idHorizon);
+            return (false);
+        }
+
+        //check Texture
+        int idTexture = soil::getUSDATextureClass(sand*100, silt*100, clay*100);
         if (idTexture == NODATA)
         {
-            if ((sand == NODATA) || (silt == NODATA) || (clay == NODATA))
-            {
-                    this->projectError = "Missing texture data in soil "
-                            + QString::number(idSoil) + " horizon " + QString::number(idHorizon);
-                    return (false);
-            }
-
-            //check Texture
-            idTexture = soil::getUSDATextureClass(sand, silt, clay);
-            if (idTexture == NODATA)
-            {
-                    this->projectError = "Texture wrong (sand+silt+clay <> 100) in soil "
-                            + QString::number(idSoil) + " horizon " + QString::number(idHorizon);
-                    return (false);
-            }
+            this->projectError = "Wrong texture for soil " + soil_code + " horizon " + QString::number(idHorizon);
+            return (false);
         }
+
         // TODO
-        if (clay == NODATA) clay = 25;
+        if (clay == NODATA) clay = 0.25;
         mySoil->horizon[i].texture.sand = sand;
         mySoil->horizon[i].texture.silt = silt;
         mySoil->horizon[i].texture.clay = clay;
@@ -932,7 +927,7 @@ bool Vine3DProject::loadHorizons(soil::Crit3DSoil* outputSoil, int idSoil)
         mySoil->horizon[i].waterConductivity = soilClass[idTexture].waterConductivity;
 
         //organic matter
-        getValue(query.value(9), &organicMatter);
+        getValue(query.value("organic_matter"), &organicMatter);
         if (organicMatter == NODATA)
             organicMatter = 0.005;      //minimum value: 0.5%
         else
@@ -940,8 +935,8 @@ bool Vine3DProject::loadHorizons(soil::Crit3DSoil* outputSoil, int idSoil)
         mySoil->horizon[i].organicMatter = organicMatter;
 
         //bulk density and porosity
-        getValue(query.value(10), &bulkDensity);
-        getValue(query.value(11), &porosity);
+        getValue(query.value("bulk_density"), &bulkDensity);
+        getValue(query.value("theta_sat"), &porosity);
 
         if (bulkDensity == NODATA)
             bulkDensity = soil::estimateBulkDensity(&(mySoil->horizon[i]), porosity);
@@ -951,7 +946,7 @@ bool Vine3DProject::loadHorizons(soil::Crit3DSoil* outputSoil, int idSoil)
         mySoil->horizon[i].bulkDensity = bulkDensity;
 
         //saturated conductivity
-        getValue(query.value(12), &ksat);
+        getValue(query.value("ksat"), &ksat);
         if (ksat != NODATA)
         {
             if ((ksat < (mySoil->horizon[i].waterConductivity.kSat / 10.)) || (ksat > (mySoil->horizon[i].waterConductivity.kSat * 10.)))
@@ -986,7 +981,7 @@ bool Vine3DProject::loadSoils()
 {
     logInfo ("Read soils...");
 
-    QString queryString = "SELECT id_soil FROM soils ORDER BY id_soil";
+    QString queryString = "SELECT id_soil, soil_code FROM soils ORDER BY id_soil";
 
     QSqlQuery query = dbConnection.exec(queryString);
     if (query.size() == -1)
@@ -1000,11 +995,14 @@ bool Vine3DProject::loadSoils()
     soilList = new soil::Crit3DSoil[nrSoils];
 
     int idSoil, index = 0;
+    QString soilCode;
     float maxSoilDepth = 0;
     while (query.next())
     {
-        idSoil = query.value(0).toInt();
-        if (! loadHorizons(&(soilList[index]), idSoil))
+        idSoil = query.value("id_soil").toInt();
+        soilCode = query.value("soil_code").toString();
+
+        if (! loadHorizons(&(soilList[index]), idSoil, soilCode))
         {
              this->projectError = "Function 'loadHorizon' " + this->projectError;
              return(false);
