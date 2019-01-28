@@ -287,21 +287,21 @@ void weatherGenerator2D::precipitationP00P10()
                             if (obsDataD[idStation][i+1].prec <= parametersModel.precipitationThreshold)
                                 occurrence00[month-1]++;
                         }
-                        if (month == 1)
+                        /*if (month == 1)
                         {
                             printf("%d/%d/%d  ",obsDataD[idStation][i].date.day,obsDataD[idStation][i].date.month,obsDataD[idStation][i].date.year);
                             printf("month %d n10 %d n00 %d \n",month,occurrence10[month-1],occurrence00[month-1]);
                             pressEnterToContinue();
-                        }
+                        }*/
                     }
                 }
             }
         }
-        for (int month=0;month<12;month++)
+        /*for (int month=0;month<12;month++)
         {
             printf("month %d n10 %d n00 %d \n",month,occurrence10[month],occurrence00[month]);
         }
-        pressEnterToContinue();
+        pressEnterToContinue();*/
         for (int month=0;month<12;month++)
         {
             if (daysWithoutRain[month] != 0)
@@ -316,15 +316,16 @@ void weatherGenerator2D::precipitationP00P10()
             precOccurence[idStation][month].month = month +1;
         }
     }
-    pressEnterToContinue();
+    /*pressEnterToContinue();
     for (int month=0;month<12;month++)
     {
 
            printf("%f  %f %f\n",precOccurence[0][month].p00,precOccurence[1][month].p00,precOccurence[2][month].p00);
            printf("%f  %f %f\n",precOccurence[0][month].p10,precOccurence[1][month].p10,precOccurence[2][month].p10);
+           pressEnterToContinue();
 
     }
-    pressEnterToContinue();
+    pressEnterToContinue();*/
 }
 
 
@@ -419,6 +420,7 @@ void weatherGenerator2D::precipitationCorrelationMatrices()
                 correlationMatrix[iMonth].occurrence[i][j] = correlationMatrix[iMonth].occurrence[j][i];
             }
         }
+
     }
 }
 
