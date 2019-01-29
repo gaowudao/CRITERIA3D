@@ -364,7 +364,7 @@ void weatherGenerator2D::precipitationCorrelationMatrices()
                             counter++;
                             if (obsDataD[j][k].prec > parametersModel.precipitationThreshold)
                             {
-                                amount.meanValueMonthlyPrec1 += obsDataD[j][k].prec;
+                                amount.meanValueMonthlyPrec1 += obsDataD[j][k].prec ;
                                 occurrence.meanValueMonthlyPrec1++ ;
                             }
                             if (obsDataD[i][k].prec > parametersModel.precipitationThreshold)
@@ -420,6 +420,15 @@ void weatherGenerator2D::precipitationCorrelationMatrices()
                 correlationMatrix[iMonth].occurrence[i][j] = correlationMatrix[iMonth].occurrence[j][i];
             }
         }
+        /*printf("mese %d\n",iMonth+1);
+        for (int i=0;i<nrStations;i++)
+        {
+            for (int j=0;j<nrStations;j++)
+            {
+                printf("%f  ",correlationMatrix[iMonth].occurrence[j][i]);
+            }
+            printf("\n");
+        }*/
 
     }
 }
@@ -483,19 +492,28 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
                normalizedRandomMatrix[i][j]= NODATA;
             }
         }
-
+        printf("mese %d\n", iMonth+1);
         for (int i=0;i<nrStations;i++)
         {
             for (int j=0;j<nrStations;j++)
             {
                 matrixOccurrence[i][j]= correlationMatrix[iMonth].occurrence[i][j]; //checked
             }
+            //printf("mese %d\n",iMonth+1);
+            //for (int i=0;i<nrStations;i++)
+            //{
+                //for (int j=0;j<nrStations;j++)
+                //{
+                    //printf("%f  ",matrixOccurrence[i][j]);
+                //}
+                //printf("\n");
+            //}
 
             /* since random numbers generated have a normal distribution, each p00 and
                p10 have to be recalculated according to a normal number*/
             normalizedTransitionProbability[i][0]= - (SQRT_2*(statistics::inverseERFC(2*precOccurence[i][iMonth].p00,0.0001)));
             normalizedTransitionProbability[i][1]= - (SQRT_2*(statistics::inverseERFC(2*precOccurence[i][iMonth].p10,0.0001)));
-
+            printf("%f\n",normalizedTransitionProbability[i][0]);
 
             for (int j=0;j<nrDaysIterativeProcessMonthly[iMonth];j++)
             {
