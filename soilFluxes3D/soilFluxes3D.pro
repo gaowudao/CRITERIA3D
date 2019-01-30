@@ -28,6 +28,8 @@ win32:{
     TARGET = soilFluxes3D
 }
 
+# do not include mathFunctions to compile as dll
+
 SOURCES +=  \
     boundary.cpp \
     balance.cpp \
