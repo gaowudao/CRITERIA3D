@@ -149,7 +149,7 @@ bool Criteria1DProject::readSettings()
     if (this->dbOutputName.left(1) == ".")
         this->dbOutputName = this->path + this->dbOutputName;
 
-    this->dbOutputPath = getPath(this->dbOutputName);
+    this->dbOutputPath = getFilePath(this->dbOutputName);
 
     // seasonal or short-term forecast
     projectSettings->endGroup();
@@ -164,7 +164,7 @@ bool Criteria1DProject::readSettings()
         if (this->irrigationFileName.left(1) == ".")
             this->irrigationFileName = this->path + this->irrigationFileName;
 
-        this->irrigationPath = getPath(this->irrigationFileName);
+        this->irrigationPath = getFilePath(this->irrigationFileName);
 
         this->criteria.firstSeasonMonth = projectSettings->value("firstMonth",0).toInt();
     }
