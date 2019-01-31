@@ -110,6 +110,14 @@ contributors:
 #include "gammaFunction.h"
 
 
+int randomPseudo(int next)
+{
+    next = next*1103515245 + 12345;
+    //return (unsigned int)(next/65536) % 32768;
+    return sqrt(((next/65536) % 32768)*((next/65536) % 32768));
+}
+
+
 bool weatherGenerator2D::initializeData(int lengthDataSeries, int stations)
 
 {
@@ -247,6 +255,14 @@ void weatherGenerator2D::precipitationCompute()
 {
    // step 1 of precipitation WG2D
    weatherGenerator2D::precipitationP00P10(); // it computes the monthly probabilities p00 and p10
+   int month = 0;
+   precOccurence[0][month].p00 = 0.8254;
+   precOccurence[0][month].p10 = 0.4444;
+   precOccurence[1][month].p00 = 0.8413;
+   precOccurence[1][month].p10 = 0.4074;
+   precOccurence[2][month].p00 = 0.8413;
+   precOccurence[2][month].p10 = 0.4074;
+
    // step 2 of precipitation WG2D
    weatherGenerator2D::precipitationCorrelationMatrices();
    // step 3 of precipitation WG2D
@@ -513,8 +529,9 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
                p10 have to be recalculated according to a normal number*/
             normalizedTransitionProbability[i][0]= - (SQRT_2*(statistics::inverseERFC(2*precOccurence[i][iMonth].p00,0.0001)));
             normalizedTransitionProbability[i][1]= - (SQRT_2*(statistics::inverseERFC(2*precOccurence[i][iMonth].p10,0.0001)));
-            printf("%f\n",normalizedTransitionProbability[i][0]);
-
+            //printf("%f\t",normalizedTransitionProbability[i][0]);
+            //printf("%f\n",normalizedTransitionProbability[i][1]);
+            // checked
             for (int j=0;j<nrDaysIterativeProcessMonthly[iMonth];j++)
             {
                normalizedRandomMatrix[i][j]= myrandom::normalRandom(&gasDevIset,&gasDevGset);
