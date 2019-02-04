@@ -495,6 +495,7 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
         }
 
     // arrays initialization
+    int randomGeneration = 1;
     for (int iMonth=0; iMonth<12; iMonth++)
     {
         // initialization and definition of the random matrix
@@ -532,10 +533,26 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             //printf("%f\t",normalizedTransitionProbability[i][0]);
             //printf("%f\n",normalizedTransitionProbability[i][1]);
             // checked
+
             for (int j=0;j<nrDaysIterativeProcessMonthly[iMonth];j++)
             {
+
                normalizedRandomMatrix[i][j]= myrandom::normalRandom(&gasDevIset,&gasDevGset);
+               double valueRandomUniform;
+               valueRandomUniform = ((double)(randomPseudo(randomGeneration)))/32768.0;
+               // use Box-Mueller tranform!!!
+               randomGeneration = randomPseudo(randomGeneration);
             }
+            printf("mese %d\n",iMonth+1);
+
+                for (int jj=0;jj<nrDaysIterativeProcessMonthly[iMonth];jj++)
+                {
+                    printf("%f  ",normalizedRandomMatrix[i][jj]);
+                }
+                printf("\n");
+
+            pressEnterToContinue();
+
         }
 
         // initialization outputs of weatherGenerator2D::spatialIterationOccurrence
