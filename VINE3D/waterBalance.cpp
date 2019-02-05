@@ -1069,12 +1069,12 @@ bool initializeWaterBalance(Vine3DProject* myProject)
         return(false);
     }
 
-    double minThickness = 0.02;      //[m]
-    double maxThickness = 0.1;       //[m]
-    double thickFactor = 1.5;
+    myProject->waterBalanceSettings->minThinkness = 0.02;      //[m]
+    myProject->waterBalanceSettings->maxThickness = 0.1;       //[m]
+    myProject->waterBalanceSettings->thickFactor = 1.5;
 
-    myProject->waterBalanceSettings->nrSoilLayers = computeNrLayers(myProject->waterBalanceSettings->soilDepth, minThickness, maxThickness, thickFactor);
-    setLayersDepth(myProject, minThickness, maxThickness, thickFactor);
+    myProject->waterBalanceSettings->nrSoilLayers = computeNrLayers(myProject->waterBalanceSettings->soilDepth, myProject->waterBalanceSettings->minThinkness, myProject->waterBalanceSettings->maxThickness, myProject->waterBalanceSettings->thickFactor);
+    setLayersDepth(myProject, myProject->waterBalanceSettings->minThinkness, myProject->waterBalanceSettings->maxThickness, myProject->waterBalanceSettings->thickFactor);
 
     myProject->logInfo("nr of layers: " + QString::number(myProject->waterBalanceSettings->nrSoilLayers));
 
