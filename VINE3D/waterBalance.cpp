@@ -1034,8 +1034,10 @@ bool initializeWaterBalance(Vine3DProject* myProject)
     double minThickness = 0.02;      //[m]
     double maxThickness = 0.1;       //[m]
     double thickFactor = 1.5;
+
     myProject->nrSoilLayers = computeNrLayers(myProject->soilDepth, minThickness, maxThickness, thickFactor);
     setLayersDepth(myProject, minThickness, maxThickness, thickFactor);
+
     myProject->logInfo("nr of layers: " + QString::number(myProject->nrSoilLayers));
 
     if (setindexMap(myProject))
@@ -1045,6 +1047,8 @@ bool initializeWaterBalance(Vine3DProject* myProject)
         myProject->logError("initializeWaterBalance: missing data in DTM");
         return(false);
     }
+
+
     myProject->nrNodes = myProject->nrLayerNodes * myProject->nrSoilLayers;
     waterSinkSource.resize(myProject->nrNodes);
     setBoundary(myProject);

@@ -51,7 +51,7 @@
         QString fieldMapName;
 
         gis::Crit3DRasterGrid interpolatedDtm;
-        gis::Crit3DRasterGrid indexMap;
+        std::vector <gis::Crit3DRasterGrid> indexMap;
         gis::Crit3DRasterGrid boundaryMap;
         gis::Crit3DRasterGrid modelCaseMap;
 
