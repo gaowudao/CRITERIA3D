@@ -18,7 +18,6 @@ class Crit3DSoilFluxesSettings
     public:
         Crit3DSoilFluxesSettings();
 
-    private:
         double minThinkness;
         double maxThickness;
         double thickFactor;
@@ -39,7 +38,10 @@ class Crit3DSoilFluxesSettings
 
 class Crit3DSoilFluxesMaps
 {
-    std::vector <gis::Crit3DRasterGrid> indexMap;
+    public:
+        Crit3DSoilFluxesMaps();
+
+        std::vector <gis::Crit3DRasterGrid> indexMap;
 };
 
 #endif // SOILFLUXES3DSETTINGS_H

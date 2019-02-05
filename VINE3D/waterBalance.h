@@ -59,7 +59,7 @@
     double* getSoilVarProfile(Vine3DProject* myProject, int myRow, int myCol, soilVariable myVar);
     double getCriteria3DVar(criteria3DVariable myVar, long nodeIndex);
 
-    double evaporation(Vine3DProject* myProject, int row, int col, long surfaceIndex);
+    double evaporation(Vine3DProject* myProject, int row, int col);
 
 
 #endif // CRITERIA3DMODEL_H

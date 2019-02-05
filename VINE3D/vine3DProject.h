@@ -25,6 +25,10 @@
     #include "project.h"
 #endif
 
+#ifndef SOILFLUXES3DSETTINGS_H
+    #include "soilFluxes3DSettings.h"
+#endif
+
     enum Tenvironment {gui, batch};
 
     struct TfieldBook {
@@ -50,23 +54,15 @@
         QString demFileName;
         QString fieldMapName;
 
+        Crit3DSoilFluxesSettings* waterBalanceSettings;
+        Crit3DSoilFluxesMaps* waterBalanceMaps;
+
         gis::Crit3DRasterGrid interpolatedDtm;
-        std::vector <gis::Crit3DRasterGrid> indexMap;
+
         gis::Crit3DRasterGrid boundaryMap;
         gis::Crit3DRasterGrid modelCaseMap;
 
         soil::Crit3DSoilClass soilClass[13];
-
-        //waterbalance
-        int nrSoils;
-        int nrSoilLayers;
-        long nrNodes;
-        long nrLayerNodes;
-        float soilDepth;                                    //[m]
-        double* currentProfile;
-        std::vector <double> layerDepth;                     //[m]
-        std::vector <double> layerThickness;                 //[m]
-        soil::Crit3DSoil* soilList;
 
         TVineCultivar* cultivar;
         int nrCultivar;

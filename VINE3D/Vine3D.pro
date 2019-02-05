@@ -13,7 +13,7 @@ TEMPLATE = app
 
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../meteo ../interpolation ../solarRadiation \
                 ../soil ../utilities ../soilFluxes3D/header ../dbMeteoPoints ../dbMeteoGrid \
-                ../crop ../grapevine ../climate ../MapGraphics ../PRAGA/shared
+                ../crop ../grapevine ../climate ../MapGraphics ../PRAGA/shared ../criteria3d/shared
 
 CONFIG += debug_and_release
 
@@ -77,7 +77,8 @@ SOURCES += \
     waterBalance.cpp \
     vine3DProject.cpp \
     mainWindow.cpp \
-    formPeriod.cpp
+    formPeriod.cpp \
+    ../CRITERIA3D/shared/soilfluxes3dsettings.cpp
 
 HEADERS  += \
     ../PRAGA/shared/interpolationCmd.h \
