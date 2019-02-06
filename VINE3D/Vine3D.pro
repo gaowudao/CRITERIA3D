@@ -78,7 +78,7 @@ SOURCES += \
     vine3DProject.cpp \
     mainWindow.cpp \
     formPeriod.cpp \
-    ../CRITERIA3D/shared/soilfluxes3dsettings.cpp
+    ../CRITERIA3D/shared/soil3D.cpp
 
 HEADERS  += \
     ../PRAGA/shared/interpolationCmd.h \
@@ -101,7 +101,7 @@ HEADERS  += \
     vine3DProject.h \
     mainWindow.h \
     formPeriod.h \
-    ../criteria3d/shared/soilFluxes3DSettings.h
+    ../criteria3d/shared/soil3D.h
 
 FORMS    += \
     ../PRAGA/shared/formInfo.ui \
