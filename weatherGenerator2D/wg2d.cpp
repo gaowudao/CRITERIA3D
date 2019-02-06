@@ -538,10 +538,16 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             {
 
                normalizedRandomMatrix[i][j]= myrandom::normalRandom(&gasDevIset,&gasDevGset);
-               double valueRandomUniform;
-               valueRandomUniform = ((double)(randomPseudo(randomGeneration)))/32768.0;
-               // use Box-Mueller tranform!!!
+               double valueRandomUniform1,valueRandomUniform2;
+               double valueRandomNormal1,valueRandomNormal2;
+               valueRandomUniform1 = ((double)(randomPseudo(randomGeneration)))/32768.0;
                randomGeneration = randomPseudo(randomGeneration);
+               valueRandomUniform2 = ((double)(randomPseudo(randomGeneration)))/32768.0;
+               randomGeneration = randomPseudo(randomGeneration);
+               // use Box-Mueller tranform!!!
+               normalizedRandomMatrix[i][j] = valueRandomNormal1 = sqrt(-2*log(valueRandomUniform1))*cos(2*PI*valueRandomUniform2);
+               //valueRandomNormal2 = sqrt(-2*log(valueRandomUniform1))*sin(2*PI*valueRandomUniform2);
+
             }
             printf("mese %d\n",iMonth+1);
 
