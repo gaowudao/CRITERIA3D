@@ -20,7 +20,7 @@
 #include "parserXML.h"
 #include "atmosphere.h"
 #include "disease.h"
-#include "soilFluxes3DSettings.h"
+#include "soil3D.h"
 #include "vine3DProject.h"
 
 
@@ -55,8 +55,8 @@ void Vine3DProject::initialize()
     statePlant.statePheno.initialize();
 
     //water balance
-    waterBalanceSettings = new Crit3DSoilFluxesSettings();
-    waterBalanceMaps = new Crit3DSoilFluxesMaps();
+    WBSettings = new Crit3DSoilFluxesSettings();
+    WBMaps = new Crit3DSoilFluxesMaps();
 
 }
 
@@ -79,8 +79,8 @@ void Vine3DProject::deleteAllGrids()
     boundaryMap.freeGrid();
     interpolatedDtm.freeGrid();
 
-    for (int i=0; i<waterBalanceSettings->nrSoilLayers; i++)
-        waterBalanceMaps->indexMap.at(i).freeGrid();
+    for (int i=0; i<WBSettings->nrSoilLayers; i++)
+        WBMaps->indexMap.at(i).freeGrid();
 
     delete meteoMaps;
 }
@@ -149,7 +149,7 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
     float depth = projectSettings->value("soil_depth").toFloat();
     projectSettings->endGroup();
 
-    waterBalanceSettings->soilDepth = depth;
+    WBSettings->soilDepth = depth;
 
     parametersFile = paramFile;
 
@@ -193,15 +193,15 @@ bool Vine3DProject::loadProject(QString myFileName)
         if (!loadFieldMap(myFileName)) return false;
     }
 
-    if (!loadVine3DProjectParameters() || !loadSoils() || !loadTrainingSystems()
-        || !loadAggregatedMeteoVarCodes() || !loadDBPoints())
+    if (!loadFieldsProperties() || !loadFieldBook())
     {
         logError();
         dbConnection.close();
         return(false);
     }
 
-    if (!loadFieldsProperties() || !loadFieldBook())
+    if (!loadVine3DProjectParameters() || !loadSoils() || !loadTrainingSystems()
+        || !loadAggregatedMeteoVarCodes() || !loadDBPoints())
     {
         logError();
         dbConnection.close();
@@ -216,19 +216,19 @@ bool Vine3DProject::loadProject(QString myFileName)
         return(false);
     }
 
-    waterBalanceSettings->currentProfile = (double *) calloc(waterBalanceSettings->nrSoilLayers, sizeof(double));
+    WBSettings->currentProfile = (double *) calloc(WBSettings->nrSoilLayers, sizeof(double));
 
-    outputPlantMaps = new Crit3DOutputPlantMaps(DTM, waterBalanceSettings->nrSoilLayers);
+    outputPlantMaps = new Crit3DOutputPlantMaps(DTM, WBSettings->nrSoilLayers);
 
     //initialize root density
     //TO DO: andrebbe rifatto per ogni tipo di suolo
     //(ora considera solo suolo 0)
     int nrSoilLayersWithoutRoots = 2;
-    int soilLayerWithRoot = waterBalanceSettings->nrSoilLayers - nrSoilLayersWithoutRoots;
-    double depthModeRootDensity = 0.35 * waterBalanceSettings->soilDepth;     //[m] depth of mode of root density
-    double depthMeanRootDensity = 0.5 * waterBalanceSettings->soilDepth;      //[m] depth of mean of root density
-    this->grapevine.initializeRootProperties(&(waterBalanceSettings->soilList[0]), waterBalanceSettings->nrSoilLayers, waterBalanceSettings->soilDepth,
-                         waterBalanceSettings->layerDepth.data(), waterBalanceSettings->layerThickness.data(),
+    int soilLayerWithRoot = WBSettings->nrSoilLayers - nrSoilLayersWithoutRoots;
+    double depthModeRootDensity = 0.35 * WBSettings->soilDepth;     //[m] depth of mode of root density
+    double depthMeanRootDensity = 0.5 * WBSettings->soilDepth;      //[m] depth of mean of root density
+    this->grapevine.initializeRootProperties(&(WBSettings->soilList[0]), WBSettings->nrSoilLayers, WBSettings->soilDepth,
+                         WBSettings->layerDepth.data(), WBSettings->layerThickness.data(),
                          nrSoilLayersWithoutRoots, soilLayerWithRoot,
                          GAMMA_DISTRIBUTION, depthModeRootDensity, depthMeanRootDensity);
 
@@ -548,9 +548,7 @@ bool Vine3DProject::loadFieldMap(QString myFileName)
         // compute prevailing map
         modelCaseMap.initializeGrid(DTM);
         gis::prevailingMap(myGrid, &(modelCaseMap));
-
         gis::updateMinMaxRasterGrid(&(modelCaseMap));
-        this->nrVineFields = modelCaseMap.maximum;
 
         return (true);
     }
@@ -625,14 +623,13 @@ bool Vine3DProject::readFieldQuery(QSqlQuery myQuery, int* idField, Crit3DLandus
     //SOIL
     idSoil = myQuery.value("id_soil").toInt();
     i=0;
-    while (i < this->waterBalanceSettings->nrSoils && idSoil != waterBalanceSettings->soilList[i].id) i++;
-    if (i == this->waterBalanceSettings->nrSoils)
+    while (i < this->WBSettings->nrSoils && idSoil != WBSettings->soilList[i].id) i++;
+    if (i == this->WBSettings->nrSoils)
     {
         this->projectError = "soil " + QString::number(idSoil) + " not found" + myQuery.lastError().text();
         return false;
     }
     *soilIndex = i;
-
 
     *maxLaiGrass = myQuery.value("max_lai_grass").toFloat();
     *maxIrrigationRate = myQuery.value("irrigation_max_rate").toFloat();
@@ -645,76 +642,54 @@ bool Vine3DProject::loadFieldsProperties()
 {
     logInfo ("Read fields properties...");
 
-    // READ NUMBER OF FIELDS
-    QString myQueryString = " SELECT max(id_field) FROM fields";
-    QSqlQuery myQuery = dbConnection.exec(myQueryString);
-    if (myQuery.size() == -1)
-    {
-        this->projectError = "NO DATA in the table 'fields'" + myQuery.lastError().text();
-        return(false);
-    }
-
-    myQuery.next();
-    int maxFieldIndex = myQuery.value(0).toInt();
-    // check number of fields
-    if (maxFieldIndex != this->nrVineFields)
-    {
-        this->logInfo("\nWarning! The number of field in the DB is different from the number in the fields map."
-                      "\nSome fields will be set to default parameters->\n");
-    }
-
-    this->nrVineFields = maxValue(this->nrVineFields, maxFieldIndex) +1;
-
-    //alloc memory for vines
-    this->modelCases = (Crit3DModelCase *) calloc(this->nrVineFields, sizeof(Crit3DModelCase));
-
-    // READ DEFAULT FIELD PROPERTIES
+    QString myQueryString;
+    QSqlQuery myQuery;
     int idField, vineIndex, trainingIndex, soilIndex;
     float maxLaiGrass, maxIrrigationRate;
     Crit3DLanduse landuse;
 
-    myQueryString =
-            " SELECT id_field, landuse, id_cultivar,"
-            " id_training_system, id_soil, max_lai_grass, irrigation_max_rate"
-            " FROM fields"
-            " WHERE id_field=0";
+    // NR FIELDS
+    myQueryString = "SELECT COUNT(*) FROM fields";
     myQuery = dbConnection.exec(myQueryString);
-
     if (myQuery.size() == -1)
     {
-        this->projectError = "Wrong structure in table 'fields'\n" + myQuery.lastError().text();
+        this->projectError = "Error reading fields table" + myQuery.lastError().text();
         return(false);
     }
-    // missing default value
+    nrVineFields = myQuery.value(0).toInt();
+    if (nrVineFields == 0)
+    {
+        this->projectError = "Empty fields table";
+        return false;
+    }
+    this->modelCases = (Crit3DModelCase *) calloc(this->nrVineFields, sizeof(Crit3DModelCase));
+
+    // CHECK DEFAULT
+    myQueryString = "SELECT id_field, landuse, id_cultivar, id_training_system, id_soil, max_lai_grass, irrigation_max_rate FROM fields WHERE id_field=0";
+    myQuery = dbConnection.exec(myQueryString);
+    if (myQuery.size() == -1)
+    {
+        this->projectError = "Wrong structure in in fields table" + myQuery.lastError().text();
+        return(false);
+    }
     if (myQuery.size() == 0)
     {
-        this->projectError = "Default field (index = 0) is missing in the table 'fields'";
+        this->projectError = "Missing default field (index = 0) in fields table";
         return(false);
     }
-
-    myQuery.next();
-    if (!readFieldQuery(myQuery, &idField, &landuse, &vineIndex, &trainingIndex, &soilIndex, &maxLaiGrass, &maxIrrigationRate))
+    if (! readFieldQuery(myQuery, &idField, &landuse, &vineIndex, &trainingIndex, &soilIndex, &maxLaiGrass, &maxIrrigationRate))
+    {
+        this->projectError = "Error reading default value in fields table";
         return false;
+    }
 
     // INITIALIZE FIELDS
-    for (int i = 0; i<nrVineFields; i++)
+    for (int i = 0; i < nrVineFields; i++)
         setField(i, landuse, soilIndex, vineIndex, trainingIndex, maxLaiGrass, maxIrrigationRate);
 
-   // READ PROPERTIES
-    myQueryString =
-            " SELECT id_field, landuse, id_cultivar,"
-            " id_training_system, id_soil, max_lai_grass, irrigation_max_rate"
-            " FROM fields"
-            " ORDER BY id_field";
-    myQuery = dbConnection.exec(myQueryString);
-
-    if (myQuery.size() == -1)
-    {
-        this->projectError = "Wrong structure in table 'fields'\n" + myQuery.lastError().text();
-        return(false);
-    }
-
-    // SET PROPERTIES
+    // READ PROPERTIES
+    myQueryString = "SELECT id_field, landuse, id_cultivar, id_training_system, id_soil, max_lai_grass, irrigation_max_rate FROM fields ORDER BY id_field";
+    myQuery = dbConnection.exec(myQueryString);    
     while (myQuery.next())
     {
        if (readFieldQuery(myQuery, &idField, &landuse, &vineIndex, &trainingIndex, &soilIndex, &maxLaiGrass, &maxIrrigationRate))
@@ -995,9 +970,9 @@ bool Vine3DProject::loadSoils()
         return(false);
     }
 
-    free(waterBalanceSettings->soilList);
-    waterBalanceSettings->nrSoils = query.size();
-    waterBalanceSettings->soilList = new soil::Crit3DSoil[waterBalanceSettings->nrSoils];
+    free(WBSettings->soilList);
+    WBSettings->nrSoils = query.size();
+    WBSettings->soilList = new soil::Crit3DSoil[WBSettings->nrSoils];
 
     int idSoil, index = 0;
     QString soilCode;
@@ -1007,15 +982,15 @@ bool Vine3DProject::loadSoils()
         idSoil = query.value("id_soil").toInt();
         soilCode = query.value("soil_code").toString();
 
-        if (! loadHorizons(&(waterBalanceSettings->soilList[index]), idSoil, soilCode))
+        if (! loadHorizons(&(WBSettings->soilList[index]), idSoil, soilCode))
         {
              this->projectError = "Function 'loadHorizon' " + this->projectError;
              return(false);
         }
-        maxSoilDepth = maxValue(maxSoilDepth, waterBalanceSettings->soilList[index].totalDepth);
+        maxSoilDepth = maxValue(maxSoilDepth, WBSettings->soilList[index].totalDepth);
         index++;
     }
-    this->waterBalanceSettings->soilDepth = minValue(this->waterBalanceSettings->soilDepth, maxSoilDepth);
+    this->WBSettings->soilDepth = minValue(this->WBSettings->soilDepth, maxSoilDepth);
 
     return(true);
 }
@@ -1858,14 +1833,14 @@ bool Vine3DProject::saveStateAndOutput(QDate myDate, QString myArea)
 
     if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential10", "10cm", outputPath, myArea, 0.1, 0.1)) return false;
     if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential30", "30cm", outputPath, myArea, 0.3, 0.3)) return false;
-    if (waterBalanceSettings->soilDepth >= 0.7f)
+    if (WBSettings->soilDepth >= 0.7f)
     {
         if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential70", "70cm", outputPath, myArea, 0.7, 0.7)) return false;
     }
 
-    if (!saveWaterBalanceOutput(this, myDate, degreeOfSaturation, "degreeOfSaturation", "soilDepth", outputPath, myArea, 0.0, double(waterBalanceSettings->soilDepth) - 0.01)) return false;
+    if (!saveWaterBalanceOutput(this, myDate, degreeOfSaturation, "degreeOfSaturation", "soilDepth", outputPath, myArea, 0.0, double(WBSettings->soilDepth) - 0.01)) return false;
     if (!saveWaterBalanceOutput(this, myDate, soilSurfaceMoisture, "SSM", "5cm", outputPath, myArea, 0.0, 0.05)) return false;
-    if (!saveWaterBalanceOutput(this, myDate, availableWaterContent, "waterContent", "rootZone", outputPath, myArea, 0.0, double(waterBalanceSettings->soilDepth))) return false;
+    if (!saveWaterBalanceOutput(this, myDate, availableWaterContent, "waterContent", "rootZone", outputPath, myArea, 0.0, double(WBSettings->soilDepth))) return false;
 
     return(true);
 }

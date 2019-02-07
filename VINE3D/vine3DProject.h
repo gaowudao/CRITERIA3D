@@ -26,7 +26,7 @@
 #endif
 
 #ifndef SOILFLUXES3DSETTINGS_H
-    #include "soilFluxes3DSettings.h"
+    #include "soil3D.h"
 #endif
 
     enum Tenvironment {gui, batch};
@@ -54,8 +54,8 @@
         QString demFileName;
         QString fieldMapName;
 
-        Crit3DSoilFluxesSettings* waterBalanceSettings;
-        Crit3DSoilFluxesMaps* waterBalanceMaps;
+        Crit3DSoilFluxesSettings* WBSettings;
+        Crit3DSoilFluxesMaps* WBMaps;
 
         gis::Crit3DRasterGrid interpolatedDtm;
 

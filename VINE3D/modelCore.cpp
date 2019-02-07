@@ -193,7 +193,7 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
                     getStatePlantToMap(row, col, myProject, &(myProject->statePlant));
 
                     //pass transpiration to water balance
-                    if (myProject->grapevine.getExtractedWater(myProject->waterBalanceSettings->currentProfile))
+                    if (myProject->grapevine.getExtractedWater(myProject->WBSettings->currentProfile))
                         passPlantTranspirationProfileToMap(row, col, myProject);
 
                     //stress transpiration output

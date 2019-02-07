@@ -1,4 +1,4 @@
-#include "soilFluxes3DSettings.h"
+#include "soil3D.h"
 
 Crit3DSoilFluxesSettings::Crit3DSoilFluxesSettings()
 {

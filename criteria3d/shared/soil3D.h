@@ -1,5 +1,5 @@
-#ifndef SOILFLUXES3DSETTINGS_H
-#define SOILFLUXES3DSETTINGS_H
+#ifndef SOIL3D_H
+#define SOIL3D_H
 
 #ifndef VECTOR_H
     #include <vector>
@@ -18,7 +18,7 @@ class Crit3DSoilFluxesSettings
     public:
         Crit3DSoilFluxesSettings();
 
-        double minThinkness;
+        double minThickness;
         double maxThickness;
         double thickFactor;
         int nrLateralLink;
@@ -44,4 +44,4 @@ class Crit3DSoilFluxesMaps
         std::vector <gis::Crit3DRasterGrid> indexMap;
 };
 
-#endif // SOILFLUXES3DSETTINGS_H
+#endif // SOIL3D_H

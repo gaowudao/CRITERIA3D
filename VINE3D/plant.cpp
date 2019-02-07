@@ -229,9 +229,9 @@ gis::Crit3DRasterGrid* Crit3DOutputPlantMaps::getMapFromVar(plantVariable myVar)
 bool passPlantTranspirationProfileToMap(long row, long col, Vine3DProject* myProject)
 {
     //layer 0 = surface (only evaporation)
-    for (int layer=0; layer<(myProject->waterBalanceSettings->nrSoilLayers-1); layer++)
+    for (int layer=0; layer<(myProject->WBSettings->nrSoilLayers-1); layer++)
     {
-        myProject->outputPlantMaps->transpirationLayerMaps[layer]->value[row][col] = myProject->waterBalanceSettings->currentProfile[layer];
+        myProject->outputPlantMaps->transpirationLayerMaps[layer]->value[row][col] = myProject->WBSettings->currentProfile[layer];
     }
     return true;
 }
