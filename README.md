@@ -52,14 +52,12 @@ Algorithms for the spatialization of meteorological data.
 CRITERIA3D has been developed under contract issued by 
 ARPAE Hydro-Meteo-Climate Service, Emilia-Romagna, Italy: http://www.arpae.it/sim/
 
-CRITERIA3D is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, 
-either version 3 of the License, or (at your option) any later version.
+Executables (CRITERIA3D, PRAGA, VINE3D, HEAT1D, etc.) are released under the GNU GPL, libreries are released under the GNU LGPL.
 
 # Authors
-**Fausto Tomei** <ftomei@arpae.it>
+Fausto Tomei <ftomei@arpae.it>
 
-**Gabriele Antolini**	 <gantolini@arpae.it>
+Gabriele Antolini	 <gantolini@arpae.it>
 
 Laura Costantini  <laura.costantini0@gmail.com>
 
