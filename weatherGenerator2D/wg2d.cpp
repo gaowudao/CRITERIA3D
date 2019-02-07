@@ -538,26 +538,27 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             {
 
                normalizedRandomMatrix[i][j]= myrandom::normalRandom(&gasDevIset,&gasDevGset);
-               double valueRandomUniform1,valueRandomUniform2;
-               double valueRandomNormal1,valueRandomNormal2;
-               valueRandomUniform1 = ((double)(randomPseudo(randomGeneration)))/32768.0;
-               randomGeneration = randomPseudo(randomGeneration);
-               valueRandomUniform2 = ((double)(randomPseudo(randomGeneration)))/32768.0;
-               randomGeneration = randomPseudo(randomGeneration);
+               //double valueRandomUniform1,valueRandomUniform2;
+               //double valueRandomNormal1;
+               //valueRandomUniform1 = ((double)(randomPseudo(randomGeneration)))/32768.0;
+               //randomGeneration = randomPseudo(randomGeneration);
+               //valueRandomUniform2 = ((double)(randomPseudo(randomGeneration)))/32768.0;
+               //randomGeneration = randomPseudo(randomGeneration);
                // use Box-Mueller tranform!!!
-               normalizedRandomMatrix[i][j] = valueRandomNormal1 = sqrt(-2*log(valueRandomUniform1))*cos(2*PI*valueRandomUniform2);
+               //normalizedRandomMatrix[i][j] = valueRandomNormal1 = sqrt(-2*log(valueRandomUniform1))*cos(2*PI*valueRandomUniform2);
                //valueRandomNormal2 = sqrt(-2*log(valueRandomUniform1))*sin(2*PI*valueRandomUniform2);
-
+               normalizedRandomMatrix[i][j] = 0.5;
             }
             printf("mese %d\n",iMonth+1);
 
                 for (int jj=0;jj<nrDaysIterativeProcessMonthly[iMonth];jj++)
                 {
-                    printf("%f  ",normalizedRandomMatrix[i][jj]);
+                    //printf("%f  ",normalizedRandomMatrix[i][jj]);
+                    //pressEnterToContinue();
                 }
                 printf("\n");
 
-            pressEnterToContinue();
+            //pressEnterToContinue();
 
         }
 
@@ -690,6 +691,8 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
         eigenproblem::rs(nrStations,correlationArray,eigenvalues,true,eigenvectors);
         for (int i=0;i<nrStations;i++)
         {
+            printf("eigenvalue %f\n",eigenvalues[i]);
+            pressEnterToContinue();
             if (eigenvalues[i] <= 0)
             {
                 nrEigenvaluesLessThan0++;
@@ -715,6 +718,10 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
             for (int j=0;j<nrStations;j++) dummyMatrix[i][j] = M[i][j];
         bool isLowerDiagonal = true;
         matricial::choleskyDecompositionTriangularMatrix(dummyMatrix,nrStations,isLowerDiagonal);
+        for (int i=0;i<nrStations;i++)
+            for (int j=0;j<nrStations;j++)
+                printf("%f \n", dummyMatrix[i][j]);
+        pressEnterToContinue();
         matricial::matrixProduct(dummyMatrix,normalizedMatrixRandom,nrStations,nrStations,lengthSeries,nrStations,dummyMatrix3);
         for (int i=0;i<nrStations;i++)
         {
