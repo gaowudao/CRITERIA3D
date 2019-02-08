@@ -59,7 +59,7 @@ bool assignIrrigation(Vine3DProject* myProject, Crit3DTime myTime)
                 //initialize
                 myProject->meteoMaps->irrigationMap->value[row][col] = 0.0;
 
-                fieldIndex = myProject->getModelCase(row, col);
+                fieldIndex = myProject->getModelCaseIndex(row, col);
                 if (fieldIndex > 0)
                 {
                     int idBook = 0;
@@ -137,7 +137,7 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
             {
                 if (myProject->DTM.value[row][col] != myProject->DTM.header->flag)
                 {
-                    fieldIndex = myProject->getModelCase(row,col);
+                    fieldIndex = myProject->getModelCaseIndex(row,col);
                     isNewField = (myProject->statePlantMaps->fruitBiomassMap->value[row][col]
                                   == myProject->statePlantMaps->fruitBiomassMap->header->flag);
 

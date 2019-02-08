@@ -155,7 +155,7 @@ bool setIndexMap(Vine3DProject* myProject)
                 if (myProject->DTM.value[row][col] != myProject->DTM.header->flag)
                 {
                     //read field
-                    caseIndex = myProject->getModelCase(row, col);
+                    caseIndex = myProject->getModelCaseIndex(row, col);
                     if (caseIndex != NODATA)
                     {
 
@@ -264,12 +264,15 @@ bool setCrit3DTopography(Vine3DProject* myProject)
                     {
                         linkIndex = myProject->WBMaps->indexMap.at(layer - 1).value[row][col];
 
-                        myResult = soilFluxes3D::setNodeLink(index, linkIndex, UP, area);
-                        if (isCrit3dError(myResult, &myError))
+                        if (linkIndex != myProject->WBMaps->indexMap.at(layer - 1).header->flag)
                         {
-                            myProject->projectError = "setNodeLink:" + myError
-                                    + " in layer nr:" + QString::number(layer);
-                            return(false);
+                            myResult = soilFluxes3D::setNodeLink(index, linkIndex, UP, area);
+                            if (isCrit3dError(myResult, &myError))
+                            {
+                                myProject->projectError = "setNodeLink:" + myError
+                                        + " in layer nr:" + QString::number(layer);
+                                return(false);
+                            }
                         }
                     }
                     //down link
@@ -277,12 +280,15 @@ bool setCrit3DTopography(Vine3DProject* myProject)
                     {
                         linkIndex = myProject->WBMaps->indexMap.at(layer + 1).value[row][col];
 
-                        myResult = soilFluxes3D::setNodeLink(index, linkIndex, DOWN, area);
-                        if (isCrit3dError(myResult, &myError))
+                        if (linkIndex != myProject->WBMaps->indexMap.at(layer + 1).header->flag)
                         {
-                            myProject->projectError = "setNodeLink:" + myError
-                                    + " in layer nr:" + QString::number(layer);
-                            return(false);
+                            myResult = soilFluxes3D::setNodeLink(index, linkIndex, DOWN, area);
+                            if (isCrit3dError(myResult, &myError))
+                            {
+                                myProject->projectError = "setNodeLink:" + myError
+                                        + " in layer nr:" + QString::number(layer);
+                                return(false);
+                            }
                         }
                     }
                     //lateral links
@@ -428,7 +434,7 @@ double evaporation(Vine3DProject* myProject, int row, int col)
     double const MAX_PROF_EVAPORATION = 0.15;           //[m]
     int lastEvapLayer = getSoilLayerIndex(myProject, MAX_PROF_EVAPORATION);
     double area = myProject->DTM.header->cellSize * myProject->DTM.header->cellSize;
-    int idField = myProject->getModelCase(row, col);
+    int idField = myProject->getModelCaseIndex(row, col);
 
     //LAI
     laiGrass = myProject->modelCases[idField].maxLAIGrass;

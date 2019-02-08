@@ -60,7 +60,7 @@
         gis::Crit3DRasterGrid interpolatedDtm;
 
         gis::Crit3DRasterGrid boundaryMap;
-        gis::Crit3DRasterGrid modelCaseMap;
+        gis::Crit3DRasterGrid modelCaseIndexMap;
 
         soil::Crit3DSoilClass soilClass[13];
 
@@ -126,7 +126,7 @@
 
         bool readFieldQuery(QSqlQuery myQuery, int* idField, Crit3DLanduse* landuse, int* vineIndex, int* trainingIndex,
                             int* soilIndex, float* maxLaiGrass,  float* maxIrrigationRate);
-        bool setField(int fieldIndex, Crit3DLanduse landuse, int soilIndex, int vineIndex, int trainingIndex,
+        bool setField(int fieldIndex, int fieldId, Crit3DLanduse landuse, int soilIndex, int vineIndex, int trainingIndex,
                             float maxLaiGrass,  float maxIrrigationRate);
         bool getFieldBookIndex(int firstIndex, QDate myQDate, int fieldIndex, int* outputIndex);
 
@@ -155,7 +155,7 @@
         void logInfo(QString myLog);
         void setEnvironment(Tenvironment myEnv);
         float getTimeStep();
-        int getModelCase(long row, long col);
+        int getModelCaseIndex(long row, long col);
         bool isVineyard(long row, long col);
         int getSoilIndex(long row, long col);
 
