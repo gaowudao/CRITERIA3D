@@ -71,7 +71,7 @@
         TtrainingSystem* trainingSystems;
         TfieldBook* fieldBook;
         int nrTrainingSystems;
-        int nrVineFields;
+        int nrModelCases;
         long nrFieldOperations;
 
         bool isObsDataLoaded;

@@ -49,7 +49,7 @@ void Vine3DProject::initialize()
 
     nrCultivar = 0;
 
-    nrVineFields = 0;
+    nrModelCases = 0;
 
     statePlant.stateGrowth.initialize();
     statePlant.statePheno.initialize();
@@ -79,8 +79,8 @@ void Vine3DProject::deleteAllGrids()
     boundaryMap.freeGrid();
     interpolatedDtm.freeGrid();
 
-    for (int i=0; i<WBSettings->nrSoilLayers; i++)
-        WBMaps->indexMap.at(i).freeGrid();
+    for (int i=0; i<WBSettings->nrLayers; i++)
+        WBMaps->indexMap.at(size_t(i)).freeGrid();
 
     delete meteoMaps;
 }
@@ -146,10 +146,10 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
 
     projectSettings->beginGroup("settings");
     QString paramFile = path + projectSettings->value("parameters_file").toString();
-    float depth = projectSettings->value("soil_depth").toFloat();
+    float depth = projectSettings->value("depth").toFloat();
     projectSettings->endGroup();
 
-    WBSettings->soilDepth = depth;
+    WBSettings->depth = depth;
 
     parametersFile = paramFile;
 
@@ -216,21 +216,13 @@ bool Vine3DProject::loadProject(QString myFileName)
         return(false);
     }
 
-    WBSettings->currentProfile = (double *) calloc(WBSettings->nrSoilLayers, sizeof(double));
+    WBSettings->currentProfile = (double *) calloc(WBSettings->nrLayers, sizeof(double));
 
-    outputPlantMaps = new Crit3DOutputPlantMaps(DTM, WBSettings->nrSoilLayers);
-
-    //initialize root density
-    //TO DO: andrebbe rifatto per ogni tipo di suolo
-    //(ora considera solo suolo 0)
-    int nrSoilLayersWithoutRoots = 2;
-    int soilLayerWithRoot = WBSettings->nrSoilLayers - nrSoilLayersWithoutRoots;
-    double depthModeRootDensity = 0.35 * WBSettings->soilDepth;     //[m] depth of mode of root density
-    double depthMeanRootDensity = 0.5 * WBSettings->soilDepth;      //[m] depth of mean of root density
-    this->grapevine.initializeRootProperties(&(WBSettings->soilList[0]), WBSettings->nrSoilLayers, WBSettings->soilDepth,
-                         WBSettings->layerDepth.data(), WBSettings->layerThickness.data(),
-                         nrSoilLayersWithoutRoots, soilLayerWithRoot,
-                         GAMMA_DISTRIBUTION, depthModeRootDensity, depthMeanRootDensity);
+    if (! initializeGrapevine(this))
+    {
+        logError();
+        return false;
+    }
 
     logInfo("Project loaded");
     return(true);
@@ -475,6 +467,8 @@ int Vine3DProject::queryFieldPoint(double x, double y)
 
 bool Vine3DProject::loadFieldShape()
 {
+    return false;
+    /* to be revised
     this->logInfo ("Read Fields...");
     int dim = 1;
     int i, j, id;
@@ -524,8 +518,9 @@ bool Vine3DProject::loadFieldShape()
             }
 
     gis::updateMinMaxRasterGrid(&(this->modelCaseIndexMap));
-    this->nrVineFields = int(this->modelCaseIndexMap.maximum);
+    this->nrModelCases = int(this->modelCaseIndexMap.maximum);
     return true;
+    */
 }
 
 int getCaseIndexFromId(int caseId, Crit3DModelCase* modelCases, int nrModelCases)
@@ -541,6 +536,8 @@ int getCaseIndexFromId(int caseId, Crit3DModelCase* modelCases, int nrModelCases
     //default value
     if (i == nrModelCases - 1)
         return 0;
+
+    return NODATA;
 }
 
 void modelCaseIndexMapIndexFromId(gis::Crit3DRasterGrid* myGrid, Crit3DModelCase* modelCases, int nrModelCases)
@@ -582,7 +579,7 @@ bool Vine3DProject::loadFieldMap(QString myFileName)
         gis::prevailingMap(myGrid, &(modelCaseIndexMap));
         gis::updateMinMaxRasterGrid(&(modelCaseIndexMap));
 
-        modelCaseIndexMapIndexFromId(&modelCaseIndexMap, this->modelCases, this->nrVineFields);
+        modelCaseIndexMapIndexFromId(&modelCaseIndexMap, this->modelCases, this->nrModelCases);
 
         return (true);
     }
@@ -686,14 +683,14 @@ bool Vine3DProject::loadFieldsProperties()
         return(false);
     }
     if (myQuery.next())
-        nrVineFields = myQuery.value(0).toInt();
+        nrModelCases = myQuery.value(0).toInt();
 
-    if (nrVineFields == 0)
+    if (nrModelCases == 0)
     {
         this->projectError = "Empty fields table";
         return false;
     }
-    this->modelCases = (Crit3DModelCase *) calloc(this->nrVineFields, sizeof(Crit3DModelCase));
+    this->modelCases = (Crit3DModelCase *) calloc(this->nrModelCases, sizeof(Crit3DModelCase));
 
     // CHECK DEFAULT
     myQueryString = "SELECT id_field, landuse, id_cultivar, id_training_system, id_soil, max_lai_grass, irrigation_max_rate FROM fields WHERE id_field=0";
@@ -1021,7 +1018,7 @@ bool Vine3DProject::loadSoils()
         maxSoilDepth = maxValue(maxSoilDepth, WBSettings->soilList[index].totalDepth);
         index++;
     }
-    this->WBSettings->soilDepth = minValue(this->WBSettings->soilDepth, maxSoilDepth);
+    this->WBSettings->depth = minValue(this->WBSettings->depth, maxSoilDepth);
 
     return(true);
 }
@@ -1864,14 +1861,14 @@ bool Vine3DProject::saveStateAndOutput(QDate myDate, QString myArea)
 
     if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential10", "10cm", outputPath, myArea, 0.1, 0.1)) return false;
     if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential30", "30cm", outputPath, myArea, 0.3, 0.3)) return false;
-    if (WBSettings->soilDepth >= 0.7f)
+    if (WBSettings->depth >= 0.7f)
     {
         if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential70", "70cm", outputPath, myArea, 0.7, 0.7)) return false;
     }
 
-    if (!saveWaterBalanceOutput(this, myDate, degreeOfSaturation, "degreeOfSaturation", "soilDepth", outputPath, myArea, 0.0, double(WBSettings->soilDepth) - 0.01)) return false;
+    if (!saveWaterBalanceOutput(this, myDate, degreeOfSaturation, "degreeOfSaturation", "soilDepth", outputPath, myArea, 0.0, double(WBSettings->depth) - 0.01)) return false;
     if (!saveWaterBalanceOutput(this, myDate, soilSurfaceMoisture, "SSM", "5cm", outputPath, myArea, 0.0, 0.05)) return false;
-    if (!saveWaterBalanceOutput(this, myDate, availableWaterContent, "waterContent", "rootZone", outputPath, myArea, 0.0, double(WBSettings->soilDepth))) return false;
+    if (!saveWaterBalanceOutput(this, myDate, availableWaterContent, "waterContent", "rootZone", outputPath, myArea, 0.0, double(WBSettings->depth))) return false;
 
     return(true);
 }

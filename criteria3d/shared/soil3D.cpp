@@ -2,13 +2,11 @@
 
 Crit3DSoilFluxesSettings::Crit3DSoilFluxesSettings()
 {
+    depth = 1.0;
     nrSoils = 0;
-    nrSoilLayers = 0;
-    nrLayerNodes = 0;
+    nrLayers = 0;
     nrNodes = 0;
     nrLateralLink = 8;
-    soilDepth = 1.0;
-
     soilList = nullptr;
 }
 

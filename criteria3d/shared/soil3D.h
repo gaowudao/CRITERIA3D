@@ -24,12 +24,11 @@ class Crit3DSoilFluxesSettings
         int nrLateralLink;
 
         int nrSoils;
-        int nrSoilLayers;
-        float soilDepth;
+        int nrLayers;
+        float depth;
         soil::Crit3DSoil* soilList;
 
         long nrNodes;
-        long nrLayerNodes;
         double* currentProfile;
 
         std::vector <double> layerDepth;

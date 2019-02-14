@@ -26,32 +26,32 @@ Vine3D_Grapevine::Vine3D_Grapevine()
 }
 
 
-bool Vine3D_Grapevine::compute(bool computeDaily, int secondsPerStep, Crit3DModelCase* vineField, double chlorophyll)
+bool Vine3D_Grapevine::compute(bool computeDaily, int secondsPerStep, Crit3DModelCase* modelCase, double chlorophyll)
 {
     simulationStepInSeconds = double(secondsPerStep);
     isAmphystomatic = true;
     myLeafWidth = 0.2;       // [m]
     // Stomatal conductance Adjust stom conductance-photosynth ratio for soil water (Pa)
-    alphaLeuning = vineField->cultivar->parameterWangLeuning.alpha;
+    alphaLeuning = modelCase->cultivar->parameterWangLeuning.alpha;
     getFixSimulationParameters();
-    initializeWaterStress(vineField->cultivar);
+    initializeWaterStress(modelCase);
 
-    if (chlorophyll == NODATA) chlorophyllContent = CHLDEFAULT;
+    if (int(chlorophyll) == NODATA) chlorophyllContent = CHLDEFAULT;
     else chlorophyllContent = chlorophyll;
 
     this->statePlant.stateGrowth.meanTemperatureLastMonth = meanLastMonthTemperature(this->statePlant.stateGrowth.meanTemperatureLastMonth);
-    myThermalUnit = minValue(maxValue(0.0 ,(meanDailyTemperature - parameterBindiMigliettaFix.baseTemperature)),
-                             parameterBindiMigliettaFix.tempMaxThreshold);
+
+    //myThermalUnit = minValue(maxValue(0.0 ,(meanDailyTemperature - parameterBindiMigliettaFix.baseTemperature)), parameterBindiMigliettaFix.tempMaxThreshold);
 
     bool isVegetativeSeason;
-    this->computePhenology(computeDaily, &isVegetativeSeason, vineField->cultivar);
+    this->computePhenology(computeDaily, &isVegetativeSeason, modelCase->cultivar);
 
     // vine not initialized ->Fallow
-    if (statePlant.statePheno.stage == NOT_INITIALIZED_VINE)
+    if (int(statePlant.statePheno.stage) == NOT_INITIALIZED_VINE)
     {
         double fallowLAI = 3.0;
         double sensitivityToVPD = 1000;
-        fallowTranspiration(fallowLAI, sensitivityToVPD);
+        fallowTranspiration(modelCase, fallowLAI, sensitivityToVPD);
         return(true);
     }
 
@@ -63,10 +63,10 @@ bool Vine3D_Grapevine::compute(bool computeDaily, int secondsPerStep, Crit3DMode
     {
         if (computeDaily)
         {
-            Vine3D_Grapevine::getLAIVine(vineField);
+            Vine3D_Grapevine::getLAIVine(modelCase);
         }
         //Vine3D_Grapevine::photosynthesisRadiationUseEfficiency(); // da usare solo quando non funziona Farquhar
-        Vine3D_Grapevine::photosynthesisAndTranspiration(vineField->cultivar);
+        Vine3D_Grapevine::photosynthesisAndTranspiration(modelCase);
 
         // check fruit set
         if(this->statePlant.statePheno.daysAfterBloom >= 5)
@@ -77,9 +77,9 @@ bool Vine3D_Grapevine::compute(bool computeDaily, int secondsPerStep, Crit3DMode
                     (vineField->cultivar->parameterBindiMiglietta.fruitBiomassOffset + vineField->cultivar->parameterBindiMiglietta.fruitBiomassSlope * minValue(80,(this->statePlant.statePheno.daysAfterBloom - 5)));
                  */
                 double denominator, numerator , cumulatedFruitBiomass, incrementalRatio;
-                incrementalRatio = this->statePlant.stateGrowth.fruitBiomassIndex * vineField->shootsPerPlant/11.0;
-                numerator = (vineField->cultivar->parameterBindiMiglietta.fruitBiomassOffset + incrementalRatio * minValue(80,(this->statePlant.statePheno.daysAfterBloom - 5)));
-                denominator = (vineField->cultivar->parameterBindiMiglietta.fruitBiomassOffset + incrementalRatio * minValue(80,(this->statePlant.statePheno.daysAfterBloom-1 - 5)));
+                incrementalRatio = this->statePlant.stateGrowth.fruitBiomassIndex * double(modelCase->shootsPerPlant) / 11.0;
+                numerator = (modelCase->cultivar->parameterBindiMiglietta.fruitBiomassOffset + incrementalRatio * minValue(80,(this->statePlant.statePheno.daysAfterBloom - 5)));
+                denominator = (modelCase->cultivar->parameterBindiMiglietta.fruitBiomassOffset + incrementalRatio * minValue(80,(this->statePlant.statePheno.daysAfterBloom-1 - 5)));
                 cumulatedFruitBiomass = deltaTime.netAssimilation * numerator;
                 if (computeDaily)
                 {
@@ -101,60 +101,50 @@ bool Vine3D_Grapevine::compute(bool computeDaily, int secondsPerStep, Crit3DMode
             }
         }
     }
+    
     fruitBiomassRateDecreaseDueToRainfall();
-    grassTranspiration(vineField->maxLAIGrass, vineField->cultivar->parameterWangLeuning.sensitivityToVapourPressureDeficit, vineField->plantDensity * parameterBindiMigliettaFix.shadedSurface);
+    
+    grassTranspiration(modelCase);
 
     return(true);
 
 }
 
-
-void Vine3D_Grapevine::initializeRootProperties (soil::Crit3DSoil* mySoil,
-                                                  int nrLayers, float maxRootDepth,
-                                                  double* myLayerDepth, double* myLayerThickness,
-                                                  int soilLayersWithoutRootUp, int soilLayerWithRoot,
-                                                  rootDistribution type, double depthMode, double depthMean)
+void Vine3D_Grapevine::resetLayers()
 {
-    soilTotalDepth = maxRootDepth;
-    soilLayersNr = nrLayers;
-    layerRootDensity =  (double *) calloc(soilLayersNr, sizeof(double));
-
-    layerDepth =  (double *) calloc(soilLayersNr, sizeof(double));
-    layerThickness =  (double *) calloc(soilLayersNr, sizeof(double));
-    for (int i = 0; i <nrLayers; i++)
+    for (int i=0 ; i < nrMaxLayers ; i++)
     {
-        layerDepth[i] = myLayerDepth[i];
-        layerThickness[i] = myLayerThickness[i];
-    }
-    layerRootDensity = rootDensity(mySoil, soilLayersNr, soilLayerWithRoot,
-               soilLayersWithoutRootUp, type, layerDepth, layerThickness, depthMode, depthMean);
-
-    psiSoilProfile = (double *) calloc(soilLayersNr, sizeof(double));
-    soilWaterContentProfile = (double *) calloc(soilLayersNr, sizeof(double));
-    soilWaterContentProfileFC = (double *) calloc(soilLayersNr, sizeof(double));
-    soilWaterContentProfileWP = (double *) calloc(soilLayersNr, sizeof(double));
-    fractionTranspirableSoilWaterProfile = (double *) calloc(soilLayersNr, sizeof(double));
-    stressCoefficientProfile = (double *) calloc(soilLayersNr, sizeof(double));
-    soilTempProfile = (double *) calloc (soilLayersNr, sizeof(double));
-    soilFieldCapacity = (double *) calloc (soilLayersNr, sizeof(double));
-    transpirationInstantLayer = (double *) calloc (soilLayersNr, sizeof(double));
-    transpirationLayer = (double *) calloc (soilLayersNr, sizeof(double));
-    transpirationCumulatedGrass = (double *) calloc (soilLayersNr, sizeof(double));
-
-    for (int i=0 ; i< soilLayersNr ; i++)
-    {
-        psiSoilProfile[i] = NODATA ;
-        soilWaterContentProfile[i]= NODATA ;
-        soilWaterContentProfileFC[i]= NODATA;
-        soilWaterContentProfileWP[i]= NODATA;
+        //psiSoilProfile[i] = NODATA ;
+        //soilWaterContentProfile[i]= NODATA ;
+        //soilWaterContentProfileFC[i]= NODATA;
+        //soilWaterContentProfileWP[i]= NODATA;
+        //soilFieldCapacity[i] = NODATA;
         fractionTranspirableSoilWaterProfile[i]= NODATA;
-        soilTempProfile[i] = NODATA ;
-        soilFieldCapacity[i] = NODATA;
         stressCoefficientProfile[i] = NODATA;
         transpirationInstantLayer[i] = NODATA;
         transpirationLayer[i] = NODATA;
         transpirationCumulatedGrass[i] = NODATA;
     }
+}
+
+bool Vine3D_Grapevine::initializeLayers(int myMaxLayers)
+{
+    nrMaxLayers = myMaxLayers;
+
+    //psiSoilProfile = (double *) calloc(nrLayers, sizeof(double));
+    //soilWaterContentProfile = (double *) calloc(nrLayers, sizeof(double));
+    //soilWaterContentProfileFC = (double *) calloc(nrLayers, sizeof(double));
+    //soilWaterContentProfileWP = (double *) calloc(nrLayers, sizeof(double));
+    //soilFieldCapacity = (double *) calloc (nrLayers, sizeof(double));
+    fractionTranspirableSoilWaterProfile = (double *) calloc(nrMaxLayers, sizeof(double));
+    stressCoefficientProfile = (double *) calloc(nrMaxLayers, sizeof(double));
+    transpirationInstantLayer = (double *) calloc (nrMaxLayers, sizeof(double));
+    transpirationLayer = (double *) calloc (nrMaxLayers, sizeof(double));
+    transpirationCumulatedGrass = (double *) calloc (nrMaxLayers, sizeof(double));
+
+    resetLayers();
+
+    return true;
 }
 
 void Vine3D_Grapevine::setDate (Crit3DTime myTime)
@@ -178,11 +168,11 @@ bool Vine3D_Grapevine::setWeather(double meanDailyTemp, double temp, double irra
     double deltaRelHum = maxValue(100.0 - myRelativeHumidity, 0.01);
     vaporPressureDeficit = 0.01 * deltaRelHum * 613.75 * exp(17.502 * myInstantTemp / (240.97 + myInstantTemp));
     //globalRadiation = globRad;
-    if ((prec != NODATA) && (temp != NODATA) && (windSpeed != NODATA) && (irradiance != NODATA) && (relativeHumidity != NODATA) && (atmosphericPressure != NODATA)) isReadingOK = true ;
+    if ((int(prec) != NODATA) && (int(temp) != NODATA) && (int(windSpeed) != NODATA) && (int(irradiance) != NODATA) && (int(relativeHumidity) != NODATA) && (int(atmosphericPressure) != NODATA)) isReadingOK = true ;
     return isReadingOK ;
 }
 
-bool Vine3D_Grapevine::setDerivedVariables(double diffuseIrradiance, double directIrradiance, double cloudIndex, double sunElevation, double etp)
+bool Vine3D_Grapevine::setDerivedVariables(double diffuseIrradiance, double directIrradiance, double cloudIndex, double sunElevation)
 {
     bool isReadingOK = false;
     myDiffuseIrradiance = diffuseIrradiance ;
@@ -191,55 +181,59 @@ bool Vine3D_Grapevine::setDerivedVariables(double diffuseIrradiance, double dire
     myCloudiness = minValue(1,maxValue(0,cloudIndex)) ;
     //myAirVapourPressure = airVapourPressure ;
     mySunElevation =  sunElevation;
-    potentialEvapotranspiration = etp;
-    if (int(etp) != NODATA && int(sunElevation) != NODATA && int(diffuseIrradiance) != NODATA && int(directIrradiance) != NODATA
+    if (int(sunElevation) != NODATA && int(diffuseIrradiance) != NODATA && int(directIrradiance) != NODATA
             && int(cloudIndex) != NODATA) isReadingOK = true ;
     return isReadingOK ;
 }
 
 
-void Vine3D_Grapevine::initializeWaterStress(TVineCultivar* cultivar)
+void Vine3D_Grapevine::initializeWaterStress(Crit3DModelCase* modelCase)
 {
-    for (int i = 0; i < soilLayersNr; i++)
+    for (int i = 0; i < modelCase->soilLayersNr; i++)
     {
-         stressCoefficientProfile[i] = getWaterStressSawFunction(i, cultivar);
+         stressCoefficientProfile[i] = getWaterStressSawFunction(i, modelCase->cultivar);
     }
 }
 
 
-bool Vine3D_Grapevine::setSoilProfile(double* myWiltingPoint, double* myFieldCapacity,
+bool Vine3D_Grapevine::setSoilProfile(Crit3DModelCase* modelCase, double* myWiltingPoint, double* myFieldCapacity,
                             double* myPsiSoilProfile, double* mySoilWaterContentProfile,
                             double* mySoilWaterContentFC, double* mySoilWaterContentWP)
 {
     bool isReadingOK = true ;
-    psiSoilAverage = 0.;
-    psiFieldCapacityAverage = 0.;
+    double psiSoilProfile;
     double logPsiSoilAverage = 0.;
     double logPsiFCAverage = 0.;
-    wiltingPoint = myWiltingPoint[int(soilLayersNr/2)] / 101.97;     // conversion from mH2O to MPa
+    double soilFieldCapacity;
+
+    psiSoilAverage = 0.;
+    psiFieldCapacityAverage = 0.;
+    wiltingPoint = myWiltingPoint[int(modelCase->soilLayersNr / 2)] / 101.97;     // conversion from mH2O to MPa
+
     //layer 0: surface, no soil
-    for (int i = 1; i < soilLayersNr; i++)
+    for (int i = 1; i < modelCase->soilLayersNr; i++)
     {
-        if (myPsiSoilProfile[i] == NODATA) isReadingOK = false;
-        soilFieldCapacity[i] = myFieldCapacity[i]/101.97; // conversion from mH2O to MPa
-        psiSoilProfile[i] = minValue(myPsiSoilProfile[i],-1.)/101.97 ; // conversion from mH2O to MPa
-        logPsiSoilAverage += log(-psiSoilProfile[i]) * layerRootDensity[i];
-        logPsiFCAverage += log(-soilFieldCapacity[i]) * layerRootDensity[i];
+        if (int(myPsiSoilProfile[i]) == NODATA) isReadingOK = false;
+        soilFieldCapacity = myFieldCapacity[i]/101.97; // conversion from mH2O to MPa
+        psiSoilProfile = minValue(myPsiSoilProfile[i],-1.)/101.97 ; // conversion from mH2O to MPa
+        logPsiSoilAverage += log(-psiSoilProfile) * modelCase->rootDensity[i];
+        logPsiFCAverage += log(-soilFieldCapacity) * modelCase->rootDensity[i];
     }
+
     psiSoilAverage = -exp(logPsiSoilAverage);
     psiFieldCapacityAverage = -exp(logPsiFCAverage);
-    //double psiLogPosition = (log(-wiltingPoint) - logPsiSoilAverage) / (log(-wiltingPoint) - logPsiFCAverage);
     fractionTranspirableSoilWaterAverage = 0;
 
+    double soilWaterContentProfile, soilWaterContentProfileFC, soilWaterContentProfileWP;
 
-    for (int i = 0; i < soilLayersNr; i++)
+    for (int i = 0; i < modelCase->soilLayersNr; i++)
     {
-        soilWaterContentProfile[i] = mySoilWaterContentProfile[i];
-        soilWaterContentProfileFC[i] = mySoilWaterContentFC[i];
-        soilWaterContentProfileWP[i] = mySoilWaterContentWP[i];
+        soilWaterContentProfile = mySoilWaterContentProfile[i];
+        soilWaterContentProfileFC = mySoilWaterContentFC[i];
+        soilWaterContentProfileWP = mySoilWaterContentWP[i];
 
-        fractionTranspirableSoilWaterProfile[i]= maxValue(0,minValue(1,(soilWaterContentProfile[i]-soilWaterContentProfileWP[i])/(soilWaterContentProfileFC[i]-soilWaterContentProfileWP[i])));
-        fractionTranspirableSoilWaterAverage += fractionTranspirableSoilWaterProfile[i] * layerRootDensity[i];
+        fractionTranspirableSoilWaterProfile[i] = maxValue(0,minValue(1,(soilWaterContentProfile - soilWaterContentProfileWP) / (soilWaterContentProfileFC - soilWaterContentProfileWP)));
+        fractionTranspirableSoilWaterAverage += fractionTranspirableSoilWaterProfile[i] * modelCase->rootDensity[i];
         transpirationLayer[i] = 0.;
         transpirationCumulatedGrass[i] = 0. ;
     }
@@ -279,8 +273,8 @@ void Vine3D_Grapevine::getFixSimulationParameters()
     parameterBindiMigliettaFix.a = -0.28;
     parameterBindiMigliettaFix.b = 0.04;
     parameterBindiMigliettaFix.c = -0.015;
-    parameterBindiMigliettaFix.baseTemperature = 10;
-    parameterBindiMigliettaFix.tempMaxThreshold = 35;
+    //parameterBindiMigliettaFix.baseTemperature = 10;
+    //parameterBindiMigliettaFix.tempMaxThreshold = 35;
     parameterBindiMigliettaFix.extinctionCoefficient = 0.5;
     parameterBindiMigliettaFix.shadedSurface = 0.8;
     // Wang Leuning parameters
@@ -352,23 +346,23 @@ bool Vine3D_Grapevine::fieldBookAction(Crit3DModelCase* vineField, TfieldOperati
     if (action == trimming)
     {
         double shootLeafArea;
-        this->statePlant.stateGrowth.shootLeafNumber -= quantity;
+        this->statePlant.stateGrowth.shootLeafNumber -= double(quantity);
         shootLeafArea = vineField->cultivar->parameterBindiMiglietta.d * pow(this->statePlant.stateGrowth.shootLeafNumber, vineField->cultivar->parameterBindiMiglietta.f) ;
         // water unstressed leaf area index
-        this->statePlant.stateGrowth.leafAreaIndex = shootLeafArea * vineField->shootsPerPlant * vineField->plantDensity / parameterBindiMigliettaFix.shadedSurface;
+        this->statePlant.stateGrowth.leafAreaIndex = shootLeafArea * double(vineField->shootsPerPlant) * double(vineField->plantDensity) / parameterBindiMigliettaFix.shadedSurface;
     }
     if (action == leafRemoval)
     {
         double shootLeafArea;
-        this->statePlant.stateGrowth.shootLeafNumber -= quantity;
+        this->statePlant.stateGrowth.shootLeafNumber -= double(quantity);
         shootLeafArea = vineField->cultivar->parameterBindiMiglietta.d * pow(this->statePlant.stateGrowth.shootLeafNumber, vineField->cultivar->parameterBindiMiglietta.f) ;
         // water unstressed leaf area index
-        this->statePlant.stateGrowth.leafAreaIndex = shootLeafArea * vineField->shootsPerPlant * vineField->plantDensity / parameterBindiMigliettaFix.shadedSurface;
+        this->statePlant.stateGrowth.leafAreaIndex = shootLeafArea * double(vineField->shootsPerPlant) * double(vineField->plantDensity) / parameterBindiMigliettaFix.shadedSurface;
     }
     if (action == clusterThinning)
     {
-        this->statePlant.stateGrowth.fruitBiomass *= 0.01*(100.0 - quantity);
-        this->statePlant.stateGrowth.fruitBiomassIndex *= 0.01*(100.0 - quantity*0.6);
+        this->statePlant.stateGrowth.fruitBiomass *= 0.01*(100.0 - double(quantity));
+        this->statePlant.stateGrowth.fruitBiomassIndex *= 0.01*(100.0 - double(quantity) * 0.6);
     }
     if (action == harvesting)
     {
@@ -389,16 +383,16 @@ void Vine3D_Grapevine::photosynthesisRadiationUseEfficiency(TVineCultivar* culti
 }
 
 
-void Vine3D_Grapevine::photosynthesisAndTranspiration(TVineCultivar* cultivar)
+void Vine3D_Grapevine::photosynthesisAndTranspiration(Crit3DModelCase* modelCase)
 {
     Vine3D_Grapevine::weatherVariables();
     Vine3D_Grapevine::radiationAbsorption();
     //Vine3D_Grapevine::leafTemperature();
     Vine3D_Grapevine::aerodynamicalCoupling();
-    Vine3D_Grapevine::upscale(cultivar);
-    Vine3D_Grapevine::carbonWaterFluxesProfileNoStress(cultivar);
-    Vine3D_Grapevine::carbonWaterFluxesProfile(cultivar);
-    Vine3D_Grapevine::cumulatedResults();
+    Vine3D_Grapevine::upscale(modelCase->cultivar);
+    Vine3D_Grapevine::carbonWaterFluxesProfileNoStress(modelCase);
+    Vine3D_Grapevine::carbonWaterFluxesProfile(modelCase);
+    Vine3D_Grapevine::cumulatedResults(modelCase);
     Vine3D_Grapevine::getStressCoefficient();
 
 }
@@ -745,8 +739,8 @@ void Vine3D_Grapevine::upscale(TVineCultivar *cultivar)
     sunlit.darkRespiration = darkRespirationT0 * exp(CRD - HARD/dum[0])* UPSCALINGFUNC((directLightK + diffuseLightKPAR),statePlant.stateGrowth.leafAreaIndex); //sunlit big-leaf
     shaded.darkRespiration = darkRespirationT0 * exp(CRD - HARD/dum[1]); //shaded big-leaf
     shaded.darkRespiration *= (UPSCALINGFUNC(diffuseLightKPAR,statePlant.stateGrowth.leafAreaIndex) - UPSCALINGFUNC((directLightK + diffuseLightKPAR),statePlant.stateGrowth.leafAreaIndex));
-    entropicFactorElectronTransporRate = (-0.75*(this->statePlant.stateGrowth.meanTemperatureLastMonth)+660);  // entropy term for J (kJ mol-1 oC-1)
-    entropicFactorCarboxyliation = (-1.07*(this->statePlant.stateGrowth.meanTemperatureLastMonth)+668); // entropy term for VCmax (kJ mol-1 oC-1)
+    double entropicFactorElectronTransporRate = (-0.75*(this->statePlant.stateGrowth.meanTemperatureLastMonth)+660);  // entropy term for J (kJ mol-1 oC-1)
+    double entropicFactorCarboxyliation = (-1.07*(this->statePlant.stateGrowth.meanTemperatureLastMonth)+668); // entropy term for VCmax (kJ mol-1 oC-1)
     if (sineSolarElevation > 1.0e-3)
     {
         //Stomatal conductance to CO2 in darkness (molCO2 m-2 s-1)
@@ -951,21 +945,22 @@ void Vine3D_Grapevine::carbonWaterFluxes(TVineCultivar* cultivar)
         totalStomatalConductance += shaded.stomatalConductance ; //canopy conductance to CO2 (mol m-2 s-1)
     }
 
-void Vine3D_Grapevine::carbonWaterFluxesProfile(TVineCultivar* cultivar)
+void Vine3D_Grapevine::carbonWaterFluxesProfile(Crit3DModelCase* modelCase)
     {
         // taken from Hydrall Model, Magnani UNIBO
         assimilationInstant = 0 ;
 
         totalStomatalConductance = 0 ;
-        for (int i=0;i<soilLayersNr;i++)
+        for (int i=0; i < modelCase->soilLayersNr; i++)
         {
             transpirationInstantLayer[i] = 0 ;
+
             if(sunlit.leafAreaIndex > 0)
             {
-                Vine3D_Grapevine::photosynthesisKernelSimplified(cultivar, sunlit.compensationPoint,sunlit.minimalStomatalConductance,
+                Vine3D_Grapevine::photosynthesisKernelSimplified(modelCase->cultivar, sunlit.compensationPoint,sunlit.minimalStomatalConductance,
                                                                   sunlit.maximalElectronTrasportRate,sunlit.carbonMichaelisMentenConstant,
                                                                   sunlit.oxygenMichaelisMentenConstant,sunlit.darkRespiration,
-                                                                  alphaLeuning*stressCoefficientProfile[i], sunlit.maximalCarboxylationRate,
+                                                                  alphaLeuning * stressCoefficientProfile[i], sunlit.maximalCarboxylationRate,
                                                                   &(sunlit.assimilation),&(sunlit.stomatalConductance),
                                                                   &(sunlit.transpiration));	//sunlit big-leaf
             }
@@ -975,34 +970,34 @@ void Vine3D_Grapevine::carbonWaterFluxesProfile(TVineCultivar* cultivar)
                 sunlit.stomatalConductance = 0.0;
                 sunlit.transpiration = 0.0;
             }
-            assimilationInstant += sunlit.assimilation*layerRootDensity[i] ;
-            transpirationInstantLayer[i] += sunlit.transpiration*layerRootDensity[i] ;
-            totalStomatalConductance += sunlit.stomatalConductance*layerRootDensity[i] ;
+
+            assimilationInstant += sunlit.assimilation * modelCase->rootDensity[i] ;
+            transpirationInstantLayer[i] += sunlit.transpiration * modelCase->rootDensity[i] ;
+            totalStomatalConductance += sunlit.stomatalConductance * modelCase->rootDensity[i] ;
             // shaded big leaf
-            Vine3D_Grapevine::photosynthesisKernelSimplified(cultivar, shaded.compensationPoint,shaded.minimalStomatalConductance,
+            Vine3D_Grapevine::photosynthesisKernelSimplified(modelCase->cultivar, shaded.compensationPoint,shaded.minimalStomatalConductance,
                                                               shaded.maximalElectronTrasportRate,shaded.carbonMichaelisMentenConstant,
                                                               shaded.oxygenMichaelisMentenConstant,shaded.darkRespiration,
                                                               alphaLeuning * stressCoefficientProfile[i],
                                                               shaded.maximalCarboxylationRate,&(shaded.assimilation),
                                                               &(shaded.stomatalConductance),&(shaded.transpiration));
-            assimilationInstant += shaded.assimilation*layerRootDensity[i] ; //canopy gross assimilation (mol m-2 s-1)
-            transpirationInstantLayer[i] += shaded.transpiration*layerRootDensity[i] ; //canopy transpiration (mol m-2 s-1)
-            totalStomatalConductance += shaded.stomatalConductance*layerRootDensity[i] ; //canopy conductance to CO2 (mol m-2 s-1)
+            assimilationInstant += shaded.assimilation * modelCase->rootDensity[i] ; //canopy gross assimilation (mol m-2 s-1)
+            transpirationInstantLayer[i] += shaded.transpiration * modelCase->rootDensity[i] ; //canopy transpiration (mol m-2 s-1)
+            totalStomatalConductance += shaded.stomatalConductance * modelCase->rootDensity[i] ; //canopy conductance to CO2 (mol m-2 s-1)
         }
     }
 
-void Vine3D_Grapevine::carbonWaterFluxesProfileNoStress(TVineCultivar* cultivar)
+void Vine3D_Grapevine::carbonWaterFluxesProfileNoStress(Crit3DModelCase* modelCase)
     {
         // taken from Hydrall Model, Magnani UNIBO
         double assimilationInstantNoStress = 0 ;
         transpirationInstantNoStress = 0;
         totalStomatalConductanceNoStress = 0 ;
-        for (int i=0;i<soilLayersNr;i++)
+        for (int i=0; i < modelCase->soilLayersNr; i++)
         {
-            //transpirationInstantLayer[i] = 0 ;
             if(sunlit.leafAreaIndex > 0)
             {
-                Vine3D_Grapevine::photosynthesisKernelSimplified(cultivar, sunlit.compensationPoint,sunlit.minimalStomatalConductance,sunlit.maximalElectronTrasportRate,sunlit.carbonMichaelisMentenConstant,sunlit.oxygenMichaelisMentenConstant,sunlit.darkRespiration, alphaLeuning, sunlit.maximalCarboxylationRate,&sunlit.assimilation,&sunlit.stomatalConductance,&sunlit.transpiration);	//sunlit big-leaf
+                Vine3D_Grapevine::photosynthesisKernelSimplified(modelCase->cultivar, sunlit.compensationPoint,sunlit.minimalStomatalConductance,sunlit.maximalElectronTrasportRate,sunlit.carbonMichaelisMentenConstant,sunlit.oxygenMichaelisMentenConstant,sunlit.darkRespiration, alphaLeuning, sunlit.maximalCarboxylationRate,&sunlit.assimilation,&sunlit.stomatalConductance,&sunlit.transpiration);	//sunlit big-leaf
             }
             else
             {
@@ -1010,14 +1005,14 @@ void Vine3D_Grapevine::carbonWaterFluxesProfileNoStress(TVineCultivar* cultivar)
                 sunlit.stomatalConductance = 0.0;
                 sunlit.transpiration = 0.0;
             }
-            assimilationInstantNoStress += sunlit.assimilation*layerRootDensity[i] ;
-            transpirationInstantNoStress += sunlit.transpiration*layerRootDensity[i] ;
-            totalStomatalConductanceNoStress += sunlit.stomatalConductance*layerRootDensity[i] ;
+            assimilationInstantNoStress += sunlit.assimilation * modelCase->rootDensity[i] ;
+            transpirationInstantNoStress += sunlit.transpiration * modelCase->rootDensity[i] ;
+            totalStomatalConductanceNoStress += sunlit.stomatalConductance * modelCase->rootDensity[i] ;
             // shaded big leaf
-            Vine3D_Grapevine::photosynthesisKernelSimplified(cultivar, shaded.compensationPoint,shaded.minimalStomatalConductance,shaded.maximalElectronTrasportRate,shaded.carbonMichaelisMentenConstant,shaded.oxygenMichaelisMentenConstant,shaded.darkRespiration, alphaLeuning, shaded.maximalCarboxylationRate,&shaded.assimilation,&shaded.stomatalConductance,&shaded.transpiration);
-            assimilationInstantNoStress += shaded.assimilation*layerRootDensity[i] ; //canopy gross assimilation (mol m-2 s-1)
-            transpirationInstantNoStress += shaded.transpiration*layerRootDensity[i] ; //canopy transpiration (mol m-2 s-1)
-            totalStomatalConductanceNoStress += shaded.stomatalConductance*layerRootDensity[i] ; //canopy conductance to CO2 (mol m-2 s-1)
+            Vine3D_Grapevine::photosynthesisKernelSimplified(modelCase->cultivar, shaded.compensationPoint,shaded.minimalStomatalConductance,shaded.maximalElectronTrasportRate,shaded.carbonMichaelisMentenConstant,shaded.oxygenMichaelisMentenConstant,shaded.darkRespiration, alphaLeuning, shaded.maximalCarboxylationRate,&shaded.assimilation,&shaded.stomatalConductance,&shaded.transpiration);
+            assimilationInstantNoStress += shaded.assimilation * modelCase->rootDensity[i] ; //canopy gross assimilation (mol m-2 s-1)
+            transpirationInstantNoStress += shaded.transpiration * modelCase->rootDensity[i] ; //canopy transpiration (mol m-2 s-1)
+            totalStomatalConductanceNoStress += shaded.stomatalConductance * modelCase->rootDensity[i] ; //canopy conductance to CO2 (mol m-2 s-1)
         }
     }
 
@@ -1031,7 +1026,7 @@ double Vine3D_Grapevine::getStressCoefficient()
     return 1.0 - stomatalRatio;
 }
 
-void Vine3D_Grapevine::cumulatedResults()
+void Vine3D_Grapevine::cumulatedResults(Crit3DModelCase* modelCase)
 {
     // taken from Hydrall Model, Magnani UNIBO
     // Cumulate hourly values of gas exchange
@@ -1044,9 +1039,9 @@ void Vine3D_Grapevine::cumulatedResults()
 
     deltaTime.transpiration = 0.;
 
-    for (int i=0; i<soilLayersNr; i++)
+    for (int i=0; i < modelCase->soilLayersNr; i++)
     {
-        transpirationLayer[i]= simulationStepInSeconds * H2OMOLECULARWEIGHT * transpirationInstantLayer[i]; // [mm]
+        transpirationLayer[i] = simulationStepInSeconds * H2OMOLECULARWEIGHT * transpirationInstantLayer[i]; // [mm]
         deltaTime.transpiration += transpirationLayer[i];
     }
     this->statePlant.outputPlant.transpirationNoStress = simulationStepInSeconds * H2OMOLECULARWEIGHT * transpirationInstantNoStress; //mm
@@ -1081,7 +1076,7 @@ double Vine3D_Grapevine::plantRespiration()
     // hourly canopy respiration (sapwood+fine roots)
     totalRespiration =(leafRespiration + sapwoodRespiration + rootRespiration + shootRespiration);
     // per second respiration
-    totalRespiration /= (double)(HOUR_SECONDS);
+    totalRespiration /= double(HOUR_SECONDS);
     return totalRespiration;
 }
 
@@ -1169,24 +1164,22 @@ double Vine3D_Grapevine::meanLastMonthTemperature(double previousLastMonthTemp)
 
 
 
-double* Vine3D_Grapevine::rootDensity(soil::Crit3DSoil* mySoil, int nrLayers,
-                                       int nrLayersWithRoot, int nrUpperLayersWithoutRoot,
-                                       rootDistribution type, double* layerDepth,
-                                       double* layerThickness, double mode , double mean)
+void Vine3D_Grapevine::setRootDensity(Crit3DModelCase* modelCase, soil::Crit3DSoil* mySoil, std::vector <double> layerDepth, std::vector <double> layerThickness,
+                                       int nrLayersWithRoot, int nrUpperLayersWithoutRoot, rootDistribution type, double mode , double mean)
 {
 
-    double shapeFactor=2.;
+    modelCase->rootDensity =  (double *) calloc(modelCase->soilLayersNr, sizeof(double));
 
-    double *layerRootDensity =  (double *) calloc(nrLayers, sizeof(double));
+    double shapeFactor=2.;
 
     if (type == CARDIOID_DISTRIBUTION)
     {
         double *lunette =  (double *) calloc(2*nrLayersWithRoot, sizeof(double));
         double *lunetteDensity =  (double *) calloc(2*nrLayersWithRoot, sizeof(double));
-        for (int i = 0 ; i<nrLayersWithRoot ; i++)
+        for (int i = 0 ; i < nrLayersWithRoot ; i++)
         {
             double sinAlfa,cosAlfa,alfa;
-            sinAlfa = 1.0 - (double)(1+i)/((double)(nrLayersWithRoot)) ;
+            sinAlfa = 1.0 - (1+i)/(nrLayersWithRoot);
             cosAlfa = maxValue(sqrt(1.0 - pow(sinAlfa,2)),0.0001);
             alfa = atan(sinAlfa/cosAlfa);
             lunette[i]= ((PI/2) - alfa - sinAlfa*cosAlfa)/PI;
@@ -1211,13 +1204,13 @@ double* Vine3D_Grapevine::rootDensity(soil::Crit3DSoil* mySoil, int nrLayers,
         {
             lunetteDensity[i] /= normalizationFactor ;
         }
-        for  (int i = 0 ; i<(nrLayers) ; i++)
+        for  (int i = 0 ; i<(modelCase->soilLayersNr) ; i++)
         {
-            layerRootDensity[i]=0;
+            modelCase->rootDensity[i]=0;
         }
         for (int i = 0 ; i<( nrLayersWithRoot) ; i++)
         {
-            layerRootDensity[nrUpperLayersWithoutRoot+i]=lunetteDensity[2*i] + lunetteDensity[2*i+1] ;
+            modelCase->rootDensity[nrUpperLayersWithoutRoot+i]=lunetteDensity[2*i] + lunetteDensity[2*i+1] ;
         }
     }
 
@@ -1232,75 +1225,73 @@ double* Vine3D_Grapevine::rootDensity(soil::Crit3DSoil* mySoil, int nrLayers,
         // complete gamma function
         normalizationFactor = Gamma_Function(kappa);
         double rootDensitySum = 0. ;
-        for (int i=0 ; i<nrLayers ; i++)
+        for (int i=0 ; i < modelCase->soilLayersNr ; i++)
         {
-            layerRootDensity[i] = 0;
+            modelCase->rootDensity[i] = 0;
             if (i >= nrUpperLayersWithoutRoot)
             {
-                a = layerDepth[i] - layerThickness[i]*0.5;
-                b = layerDepth[i] + layerThickness[i]*0.5;
-                layerRootDensity[i] = Incomplete_Gamma_Function(b/theta,kappa) - Incomplete_Gamma_Function(a/theta,kappa);
-                layerRootDensity[i] /= normalizationFactor;
+                a = layerDepth.at(sizeof(i)) - layerThickness.at(sizeof(i)) * 0.5;
+                b = layerDepth.at(sizeof(i)) + layerThickness.at(sizeof(i)) * 0.5;
+                modelCase->rootDensity[i] = Incomplete_Gamma_Function(b/theta,kappa) - Incomplete_Gamma_Function(a/theta,kappa);
+                modelCase->rootDensity[i] /= normalizationFactor;
 
                 //skeleton
-                indexHorizon = soil::getHorizonIndex(mySoil, (float)layerDepth[i]);
+                indexHorizon = soil::getHorizonIndex(mySoil, layerDepth.at(sizeof(i)));
                 skeleton = mySoil->horizon[indexHorizon].coarseFragments;
-                layerRootDensity[i] *= (1.0-skeleton);
+                modelCase->rootDensity[i] *= (1.0 - skeleton);
 
-                rootDensitySum += layerRootDensity[i];
+                rootDensitySum += modelCase->rootDensity[i];
             }
         }
-        for (int i=0 ; i<nrLayers ; i++)
+        for (int i=0 ; i < modelCase->soilLayersNr; i++)
         {
-            layerRootDensity[i] /= rootDensitySum;
+            modelCase->rootDensity[i] /= rootDensitySum;
         }
     }
-
-    return layerRootDensity ;
 }
 
 
-bool Vine3D_Grapevine::getExtractedWater(double* myWaterExtractionProfile)
+bool Vine3D_Grapevine::getExtractedWater(Crit3DModelCase* modelCase, double* myWaterExtractionProfile)
 {
-    for(int i=0; i<soilLayersNr; i++)
+    for(int i=0; i < modelCase->soilLayersNr; i++)
     {
         myWaterExtractionProfile[i] = 0;
-        if (transpirationLayer[i] != NODATA)
+        if (int(transpirationLayer[i]) != NODATA)
             myWaterExtractionProfile[i] += transpirationLayer[i];
         //if ((myWaterExtractionProfile[i] > 0.1) || (myWaterExtractionProfile[i]<0)) printf("estrazione  %f\n",myWaterExtractionProfile[i]);
-        if (transpirationCumulatedGrass[i] != NODATA)
-            myWaterExtractionProfile[i]+= transpirationCumulatedGrass[i];
+        if (int(transpirationCumulatedGrass[i]) != NODATA)
+            myWaterExtractionProfile[i] += transpirationCumulatedGrass[i];
 
 
     }
     return true;
 }
 
-double Vine3D_Grapevine::getRealTranspirationGrapevine()
+double Vine3D_Grapevine::getRealTranspirationGrapevine(Crit3DModelCase* modelCase)
 {
     double sum = 0.0;
-    for(int i=0; i<soilLayersNr; i++)
+    for(int i=0; i < modelCase->soilLayersNr; i++)
     {
-        if (transpirationLayer[i] != NODATA)
+        if (int(transpirationLayer[i]) != NODATA)
             sum += transpirationLayer[i];
     }
 
     return sum;
 }
 
-double Vine3D_Grapevine::getRealTranspirationGrass()
+double Vine3D_Grapevine::getRealTranspirationGrass(Crit3DModelCase* modelCase)
 {
     double sum = 0.0;
-    for(int i=0; i<soilLayersNr; i++)
+    for(int i=0; i < modelCase->soilLayersNr; i++)
     {
-        if (transpirationCumulatedGrass[i] != NODATA)
+        if (int(transpirationCumulatedGrass[i]) != NODATA)
             sum += transpirationCumulatedGrass[i];
     }
 
     return sum;
 }
 
-
+/*
 bool Vine3D_Grapevine::getExtractedWaterFromGrassTranspirationandEvaporation(double* myWaterExtractionProfile)
 {
     bool* underWiltingPointLayers = (bool*) calloc(soilLayersNr, sizeof(bool));
@@ -1335,7 +1326,7 @@ bool Vine3D_Grapevine::getExtractedWaterFromGrassTranspirationandEvaporation(dou
     free(underWiltingPointLayers);
     return true;
 }
-
+*/
 
 // phenology by Caffarra and Eccel 2011
 double Vine3D_Grapevine::chillingRate(double temp, double aParameter, double Cparameter)
@@ -1373,54 +1364,35 @@ double Vine3D_Grapevine::forceStateFunction(double forceState , double temp)
     forceState += (1./(1+exp(-0.26*(temp-16.06))));
     return forceState;
 }
-void Vine3D_Grapevine::printResults(std::string fileName, bool* isFirst, TVineCultivar* cultivar)
-{
-    FILE *fp;
-    if (*isFirst)
-    {
-        fp = fopen(fileName.c_str(),"w");
-        *isFirst = false;
-    }
-    else
-    {
-        fp = fopen(fileName.c_str(),"a");
-        printf("GPP:%.3f\t lai:%.2f \tStage:%.1f \n",assimilationInstant*1e6, statePlant.stateGrowth.leafAreaIndex, this->statePlant.statePheno.stage );
-        printf("%.1f  temperature   %.1f  sunlit %.1f  shaded", myInstantTemp,sunlit.leafTemperature-ZEROCELSIUS, shaded.leafTemperature-ZEROCELSIUS);
-    }
-    fprintf(fp,"%d\t%f\t%f\t%f\t%f\t%f\n", myDoy,myHour, potentialEvapotranspiration, deltaTime.transpiration, deltaTime.transpirationGrass ,getWaterStressSawFunctionAverage(cultivar));
-    fclose(fp);
-}
-
-
 
 void Vine3D_Grapevine::computePhenology(bool computeDaily, bool* isVegSeason, TVineCultivar* cultivar)
 {
     double criticalForceStateBudBurst;
 
-    if (this->statePlant.statePheno.stage < ecoDormancy)
+    if (statePlant.statePheno.stage < ecoDormancy)
     {
-        this->statePlant.stateGrowth.isHarvested = 0;
-        this->statePlant.stateGrowth.cumulatedBiomass = 0.; // [g m-2]
-        this->statePlant.stateGrowth.fruitBiomass = 0.;
-        this->statePlant.stateGrowth.fruitBiomassIndex = cultivar->parameterBindiMiglietta.fruitBiomassSlope;
-        this->statePlant.stateGrowth.leafAreaIndex = LAIMIN;
-        this->statePlant.stateGrowth.shootLeafNumber = minShootLeafNr;
-        this->statePlant.statePheno.daysAfterBloom = 0.;
-        this->statePlant.statePheno.cumulatedRadiationFromFruitsetToVeraison = 0.;
-        this->statePlant.statePheno.degreeDaysAtFruitSet = NODATA;
-        this->statePlant.statePheno.degreeDaysFromFirstMarch = NODATA;
+        statePlant.stateGrowth.isHarvested = 0;
+        statePlant.stateGrowth.cumulatedBiomass = 0.; // [g m-2]
+        statePlant.stateGrowth.fruitBiomass = 0.;
+        statePlant.stateGrowth.fruitBiomassIndex = cultivar->parameterBindiMiglietta.fruitBiomassSlope;
+        statePlant.stateGrowth.leafAreaIndex = double(LAIMIN);
+        statePlant.stateGrowth.shootLeafNumber = minShootLeafNr;
+        statePlant.statePheno.daysAfterBloom = 0.;
+        statePlant.statePheno.cumulatedRadiationFromFruitsetToVeraison = 0.;
+        statePlant.statePheno.degreeDaysAtFruitSet = NODATA;
+        statePlant.statePheno.degreeDaysFromFirstMarch = NODATA;
 
         leafNumberRate = 0. ;
-        myThermalUnit = 0.;
+        //myThermalUnit = 0.;
 
-        if (this->statePlant.statePheno.stage == NOT_INITIALIZED_VINE)
+        if (int(statePlant.statePheno.stage) == NOT_INITIALIZED_VINE)
         {
-            this->statePlant.stateGrowth.isHarvested = 0;
-            this->statePlant.stateGrowth.leafAreaIndex = NODATA;
-            this->statePlant.stateGrowth.shootLeafNumber = NODATA;
-            this->statePlant.stateGrowth.fruitBiomass = NODATA;
-            this->statePlant.stateGrowth.cumulatedBiomass = NODATA;
-            this->statePlant.statePheno.daysAfterBloom = NODATA;
+            statePlant.stateGrowth.isHarvested = 0;
+            statePlant.stateGrowth.leafAreaIndex = NODATA;
+            statePlant.stateGrowth.shootLeafNumber = NODATA;
+            statePlant.stateGrowth.fruitBiomass = NODATA;
+            statePlant.stateGrowth.cumulatedBiomass = NODATA;
+            statePlant.statePheno.daysAfterBloom = NODATA;
         }
     }
 
@@ -1432,67 +1404,65 @@ void Vine3D_Grapevine::computePhenology(bool computeDaily, bool* isVegSeason, TV
     if (computeDaily)
     {
         if (myDoy == parameterPhenoVitisFix.startingDay)
-            this->statePlant.statePheno.chillingState = 0;
-
+            statePlant.statePheno.chillingState = 0;
         else
-            this->statePlant.statePheno.chillingState += chillingRate(meanDailyTemperature, parameterPhenoVitisFix.a,parameterPhenoVitisFix.optimalChillingTemp);
+            statePlant.statePheno.chillingState += chillingRate(meanDailyTemperature, parameterPhenoVitisFix.a,parameterPhenoVitisFix.optimalChillingTemp);
 
-        if (this->statePlant.statePheno.stage != NOT_INITIALIZED_VINE)
-            this->statePlant.statePheno.stage = endoDormancy + minValue(1,this->statePlant.statePheno.chillingState / cultivar->parameterPhenoVitis.criticalChilling);
+        if (int(statePlant.statePheno.stage) != NOT_INITIALIZED_VINE)
+            statePlant.statePheno.stage = endoDormancy + minValue(1, statePlant.statePheno.chillingState / cultivar->parameterPhenoVitis.criticalChilling);
 
-        if ((this->statePlant.statePheno.chillingState > cultivar->parameterPhenoVitis.criticalChilling))
+        if (statePlant.statePheno.chillingState > cultivar->parameterPhenoVitis.criticalChilling)
         {
-            this->statePlant.statePheno.forceStateBudBurst = forceStateFunction(this->statePlant.statePheno.forceStateBudBurst , meanDailyTemperature);
-            criticalForceStateBudBurst = criticalForceState(this->statePlant.statePheno.chillingState, cultivar->parameterPhenoVitis.co1 , parameterPhenoVitisFix.co2);
-            this->statePlant.statePheno.stage = ecoDormancy + minValue(1,1 -
-                        ((criticalForceStateBudBurst-this->statePlant.statePheno.forceStateBudBurst)/criticalForceStateBudBurst));
+            statePlant.statePheno.forceStateBudBurst = forceStateFunction(statePlant.statePheno.forceStateBudBurst , meanDailyTemperature);
+            criticalForceStateBudBurst = criticalForceState(statePlant.statePheno.chillingState, cultivar->parameterPhenoVitis.co1 , parameterPhenoVitisFix.co2);
+            statePlant.statePheno.stage = ecoDormancy + minValue(1,1 - ((criticalForceStateBudBurst - statePlant.statePheno.forceStateBudBurst) / criticalForceStateBudBurst));
         }
 
-        if ((this->statePlant.statePheno.forceStateBudBurst > criticalForceStateBudBurst))
+        if ((statePlant.statePheno.forceStateBudBurst > criticalForceStateBudBurst))
         {
             *isVegSeason = true;
-            this->statePlant.statePheno.forceStateVegetativeSeason = forceStateFunction(this->statePlant.statePheno.forceStateVegetativeSeason, meanDailyTemperature,cultivar->parameterPhenoVitis.degreeDaysAtVeraison);
+            statePlant.statePheno.forceStateVegetativeSeason = forceStateFunction(statePlant.statePheno.forceStateVegetativeSeason, meanDailyTemperature,cultivar->parameterPhenoVitis.degreeDaysAtVeraison);
 
             //veraison->physiologicalMaturity
-            if (this->statePlant.statePheno.forceStateVegetativeSeason > cultivar->parameterPhenoVitis.criticalForceStateVeraison)
+            if (statePlant.statePheno.forceStateVegetativeSeason > cultivar->parameterPhenoVitis.criticalForceStateVeraison)
             {
-                this->statePlant.statePheno.stage = veraison +
-                      ((this->statePlant.statePheno.forceStateVegetativeSeason-cultivar->parameterPhenoVitis.criticalForceStateVeraison) /
+                statePlant.statePheno.stage = veraison +
+                      ((statePlant.statePheno.forceStateVegetativeSeason-cultivar->parameterPhenoVitis.criticalForceStateVeraison) /
                       (cultivar->parameterPhenoVitis.criticalForceStatePhysiologicalMaturity - cultivar->parameterPhenoVitis.criticalForceStateVeraison));
-                if (this->statePlant.statePheno.stage > vineSenescence)
-                    this->statePlant.statePheno.stage = vineSenescence;
+                if (statePlant.statePheno.stage > vineSenescence)
+                    statePlant.statePheno.stage = vineSenescence;
             }
             //fruitset->veraison - mixed models
-            else if (this->statePlant.statePheno.forceStateVegetativeSeason > cultivar->parameterPhenoVitis.criticalForceStateFruitSet)
+            else if (statePlant.statePheno.forceStateVegetativeSeason > cultivar->parameterPhenoVitis.criticalForceStateFruitSet)
             {
-                if (this->statePlant.statePheno.degreeDaysAtFruitSet == NODATA)
-                    this->statePlant.statePheno.stage = fruitSet;
+                if (int(statePlant.statePheno.degreeDaysAtFruitSet) == NODATA)
+                    statePlant.statePheno.stage = fruitSet;
                 else
-                    this->statePlant.statePheno.stage = fruitSet +
-                        ((this->statePlant.statePheno.degreeDaysFromFirstMarch - this->statePlant.statePheno.degreeDaysAtFruitSet) /
-                        (cultivar->parameterPhenoVitis.degreeDaysAtVeraison - this->statePlant.statePheno.degreeDaysAtFruitSet));
+                    statePlant.statePheno.stage = fruitSet +
+                        ((statePlant.statePheno.degreeDaysFromFirstMarch - statePlant.statePheno.degreeDaysAtFruitSet) /
+                        (cultivar->parameterPhenoVitis.degreeDaysAtVeraison - statePlant.statePheno.degreeDaysAtFruitSet));
 
-                if (this->statePlant.statePheno.stage >= veraison)
-                    this->statePlant.statePheno.forceStateVegetativeSeason = cultivar->parameterPhenoVitis.criticalForceStateVeraison;
+                if (statePlant.statePheno.stage >= veraison)
+                    statePlant.statePheno.forceStateVegetativeSeason = cultivar->parameterPhenoVitis.criticalForceStateVeraison;
             }
             //flowering->fruitset
-            else if (this->statePlant.statePheno.forceStateVegetativeSeason > cultivar->parameterPhenoVitis.criticalForceStateFlowering)
+            else if (statePlant.statePheno.forceStateVegetativeSeason > cultivar->parameterPhenoVitis.criticalForceStateFlowering)
             {
-                this->statePlant.statePheno.stage = flowering +
-                        ((this->statePlant.statePheno.forceStateVegetativeSeason - cultivar->parameterPhenoVitis.criticalForceStateFlowering) /
+                statePlant.statePheno.stage = flowering +
+                        ((statePlant.statePheno.forceStateVegetativeSeason - cultivar->parameterPhenoVitis.criticalForceStateFlowering) /
                         (cultivar->parameterPhenoVitis.criticalForceStateFruitSet - cultivar->parameterPhenoVitis.criticalForceStateFlowering));
             }
             else
             {
-                this->statePlant.statePheno.stage = budBurst +
-                        (this->statePlant.statePheno.forceStateVegetativeSeason/cultivar->parameterPhenoVitis.criticalForceStateFlowering);
+                statePlant.statePheno.stage = budBurst +
+                        (statePlant.statePheno.forceStateVegetativeSeason/cultivar->parameterPhenoVitis.criticalForceStateFlowering);
             }
 
         }
     }
 
     // brix calculation
-    if ((this->statePlant.statePheno.stage >= veraison)&& (this->statePlant.statePheno.stage < vineSenescence))
+    if ((statePlant.statePheno.stage >= veraison)&& (statePlant.statePheno.stage < vineSenescence))
     {
 
         /*if ((this->statePlant.statePheno.degreeDaysFromFirstMarch > cultivar->parameterPhenoVitis.degreeDaysAtVeraison) && (myHour == 14))
@@ -1510,26 +1480,26 @@ void Vine3D_Grapevine::computePhenology(bool computeDaily, bool* isVegSeason, TV
             this->statePlant.statePheno.forceStateVegetativeSeason += coldCorrection;
         }*/
         //per sangiovese
-        this->statePlant.outputPlant.brixBerry = minValue(potentialBrix,0.28 * (this->statePlant.statePheno.forceStateVegetativeSeason - cultivar->parameterPhenoVitis.criticalForceStateVeraison)  + 11.5) ;
+        statePlant.outputPlant.brixBerry = minValue(potentialBrix,0.28 * (statePlant.statePheno.forceStateVegetativeSeason - cultivar->parameterPhenoVitis.criticalForceStateVeraison)  + 11.5) ;
         //this->statePlant.outputPlant.brixBerry = minValue(potentialBrix,0.41 * (this->statePlant.statePheno.forceStateVegetativeSeason - cultivar->parameterPhenoVitis.criticalForceStateVeraison)  + 11.5) ;
-        this->statePlant.outputPlant.brixMaximum = potentialBrix;
+        statePlant.outputPlant.brixMaximum = potentialBrix;
     }
     else
     {
-        this->statePlant.outputPlant.brixBerry = NODATA;
-        this->statePlant.outputPlant.brixMaximum = NODATA;
+        statePlant.outputPlant.brixBerry = NODATA;
+        statePlant.outputPlant.brixMaximum = NODATA;
     }
 
     //15 november
     if (myDoy == 320)
     {
-        this->statePlant.statePheno.stage = endoDormancy;
-        this->statePlant.statePheno.forceStateBudBurst = 0.;
-        this->statePlant.statePheno.forceStateVegetativeSeason = 0.;
-        this->statePlant.outputPlant.brixBerry = NODATA;
-        this->statePlant.outputPlant.brixMaximum = NODATA;
-        this->statePlant.statePheno.degreeDaysAtFruitSet = NODATA;
-        this->statePlant.statePheno.degreeDaysFromFirstMarch = NODATA;
+        statePlant.statePheno.stage = endoDormancy;
+        statePlant.statePheno.forceStateBudBurst = 0.;
+        statePlant.statePheno.forceStateVegetativeSeason = 0.;
+        statePlant.outputPlant.brixBerry = NODATA;
+        statePlant.outputPlant.brixMaximum = NODATA;
+        statePlant.statePheno.degreeDaysAtFruitSet = NODATA;
+        statePlant.statePheno.degreeDaysFromFirstMarch = NODATA;
         *isVegSeason = false;
     }
 
@@ -1537,12 +1507,12 @@ void Vine3D_Grapevine::computePhenology(bool computeDaily, bool* isVegSeason, TV
 
 double  Vine3D_Grapevine::leafWidth()
 {
-    if (this->statePlant.statePheno.stage == budBurst) return (myLeafWidth*0.2);
-    else if (this->statePlant.statePheno.stage == flowering) return (myLeafWidth*0.5);
+    if (int(statePlant.statePheno.stage) == budBurst) return (myLeafWidth * 0.2);
+    else if (int(statePlant.statePheno.stage) == flowering) return (myLeafWidth * 0.5);
     else return (myLeafWidth) ;
 }
 
-double Vine3D_Grapevine::getWaterStressByPsiSoil(double myPsiSoil,double psiSoilStressParameter,double exponentialFactorForPsiRatio)
+double Vine3D_Grapevine::getWaterStressByPsiSoil(double myPsiSoil, double psiSoilStressParameter, double exponentialFactorForPsiRatio)
 {
     // Green et al. 2007 soil potentials in MPa and positive sign
     double waterStressFactor; // MPa
@@ -1639,22 +1609,44 @@ double Vine3D_Grapevine::getGrassTranspiration(double stress, double laiGrassMax
     return grassTransp; // molH2O m-2 s-1
 }
 
-
-double Vine3D_Grapevine::getGrassRootDensity(int layer, float startRootDepth, float totalRootDepth)
+double* getTrapezoidRoots(int layersNr, std::vector<double> layerDepth, std::vector<double> layerThickness, double startRootDepth, double totalRootDepth)
 {
-    double upperDepth = layerDepth[layer] - layerThickness[layer]*0.5;
-    double lowerDepth = layerDepth[layer] + layerThickness[layer]*0.5;
-    if (upperDepth > totalRootDepth) return 0.0;
-    if (lowerDepth < startRootDepth) return 0.0;
+    double upperDepth, lowerDepth;
+    double x1, x2, m, q, y1, y2;
 
-    double x1 = maxValue(startRootDepth, upperDepth);
-    double x2 = minValue(totalRootDepth, lowerDepth);
-    double m = -2.0 / (totalRootDepth*totalRootDepth);
-    double q = 2.0 / totalRootDepth;
-    double y1 = m*x1 + q;
-    double y2 = m*x2 + q;
-    //trapezoid
-    return (y1+y2) * fabs(x2-x1) * 0.5;
+    double* myRoots = (double *) calloc(layersNr, sizeof(double));
+
+    for (size_t layer = 0; layer < size_t(layersNr); layer++)
+    {
+        upperDepth = layerDepth.at(layer) - layerThickness.at(layer) * 0.5;
+        lowerDepth = layerDepth.at(layer) + layerThickness.at(layer) * 0.5;
+        if (upperDepth > totalRootDepth || lowerDepth < startRootDepth)
+            myRoots[layer] = 0.0;
+
+        //trapezoid
+        x1 = maxValue(startRootDepth, upperDepth);
+        x2 = minValue(totalRootDepth, lowerDepth);
+        m = -2.0 / (totalRootDepth*totalRootDepth);
+        q = 2.0 / totalRootDepth;
+        y1 = m*x1 + q;
+        y2 = m*x2 + q;
+
+        myRoots[layer] = (y1+y2) * fabs(x2-x1) * 0.5;
+    }
+
+    return myRoots;
+}
+
+void Vine3D_Grapevine::setGrassRootDensity(Crit3DModelCase* modelCase, std::vector<double> layerDepth, std::vector<double> layerThickness,
+                                           double startRootDepth, double totalRootDepth)
+{
+    modelCase->grassRootDensity = getTrapezoidRoots(modelCase->soilLayersNr, layerDepth, layerThickness, startRootDepth, totalRootDepth);
+}
+
+void Vine3D_Grapevine::setFallowRootDensity(Crit3DModelCase* modelCase, std::vector<double> layerDepth, std::vector<double> layerThickness,
+                                           double startRootDepth, double totalRootDepth)
+{
+    modelCase->fallowRootDensity = getTrapezoidRoots(modelCase->soilLayersNr, layerDepth, layerThickness, startRootDepth, totalRootDepth);
 }
 
 //----------------------------------------------------------------------
@@ -1662,35 +1654,39 @@ double Vine3D_Grapevine::getGrassRootDensity(int layer, float startRootDepth, fl
 // LAI minimo = 1
 // usato per le zone non definite e vigneti non ancora inizializzati
 //----------------------------------------------------------------------
-void Vine3D_Grapevine::fallowTranspiration(double lai, double sensitivityToVPD)
+void Vine3D_Grapevine::fallowTranspiration(Crit3DModelCase* modelCase, double lai, double sensitivityToVPD)
 {
     deltaTime.transpirationGrass = 0.;
-    double transpiration, rootDensity;
-    for (int layer=0; layer < soilLayersNr; layer++)
+    double transpiration, fallowRootDensity;
+    for (int layer=0; layer < modelCase->soilLayersNr; layer++)
     {
         transpiration = getFallowTranspiration(stressCoefficientProfile[layer], lai, sensitivityToVPD);
-        rootDensity = getGrassRootDensity(layer, (float)0.02, (float)soilTotalDepth);
+        fallowRootDensity = modelCase->fallowRootDensity[layer];
         transpirationCumulatedGrass[layer] = simulationStepInSeconds * H2OMOLECULARWEIGHT
-                                        * transpiration * rootDensity; // conversion into mm
+                                        * transpiration * fallowRootDensity; // conversion into mm
         deltaTime.transpirationGrass += transpirationCumulatedGrass[layer];
     }
     this->statePlant.outputPlant.transpirationNoStress += simulationStepInSeconds * H2OMOLECULARWEIGHT*getFallowTranspiration(1, lai, sensitivityToVPD);;
 }
 
 
-void Vine3D_Grapevine::grassTranspiration(double laiGrassMax, double sensitivityToVPD, double fieldCoverByPlant)
-{
+void Vine3D_Grapevine::grassTranspiration(Crit3DModelCase* modelCase)
+{    
     deltaTime.transpirationGrass = 0.;
-    double transpiration, rootDensity;
-    for (int layer=0; layer < soilLayersNr; layer++)
+    double transpiration, grassRootDensity;
+    for (int layer=0; layer < modelCase->soilLayersNr; layer++)
     {
-        transpiration = getGrassTranspiration(stressCoefficientProfile[layer], laiGrassMax, sensitivityToVPD, fieldCoverByPlant);
-        rootDensity = getGrassRootDensity(layer, (float)0.02, float(soilTotalDepth * 0.66));
-        transpirationCumulatedGrass[layer] = simulationStepInSeconds * H2OMOLECULARWEIGHT
-                                        * transpiration * rootDensity; // conversion into mm
+        transpiration = getGrassTranspiration(stressCoefficientProfile[layer], double(modelCase->maxLAIGrass),
+                                              modelCase->cultivar->parameterWangLeuning.sensitivityToVapourPressureDeficit,
+                                              double(modelCase->plantDensity) * parameterBindiMigliettaFix.shadedSurface);
+        grassRootDensity = modelCase->grassRootDensity[layer];
+        transpirationCumulatedGrass[layer] = simulationStepInSeconds * H2OMOLECULARWEIGHT * transpiration * grassRootDensity; // conversion into mm
         deltaTime.transpirationGrass += transpirationCumulatedGrass[layer];
     }
-    this->statePlant.outputPlant.transpirationNoStress += simulationStepInSeconds * H2OMOLECULARWEIGHT*getGrassTranspiration(1., laiGrassMax, sensitivityToVPD, fieldCoverByPlant);
+
+    statePlant.outputPlant.transpirationNoStress += simulationStepInSeconds * H2OMOLECULARWEIGHT * getGrassTranspiration(1., double(modelCase->maxLAIGrass),
+                                                                                                                         modelCase->cultivar->parameterWangLeuning.sensitivityToVapourPressureDeficit,
+                                                                                                                         double(modelCase->plantDensity) * parameterBindiMigliettaFix.shadedSurface);
 }
 
 
@@ -1731,48 +1727,49 @@ void Vine3D_Grapevine::getLAIVine(Crit3DModelCase* vineField)
     double deltaLai, laiOld;
     laiOld = NODATA;
 
-    if (this->statePlant.stateGrowth.shootLeafNumber >= 5 )
+    if (statePlant.stateGrowth.shootLeafNumber >= 5 )
     {
-        laiOld = this->statePlant.stateGrowth.leafAreaIndex;
-        shootLeafArea = this->statePlant.stateGrowth.leafAreaIndex * parameterBindiMigliettaFix.shadedSurface / (vineField->shootsPerPlant*vineField->plantDensity);
-        this->statePlant.stateGrowth.shootLeafNumber = pow(shootLeafArea/vineField->cultivar->parameterBindiMiglietta.d,1./vineField->cultivar->parameterBindiMiglietta.f);
+        laiOld = statePlant.stateGrowth.leafAreaIndex;
+        shootLeafArea = statePlant.stateGrowth.leafAreaIndex * parameterBindiMigliettaFix.shadedSurface / double(vineField->shootsPerPlant*vineField->plantDensity);
+        statePlant.stateGrowth.shootLeafNumber = pow(shootLeafArea/vineField->cultivar->parameterBindiMiglietta.d,1./vineField->cultivar->parameterBindiMiglietta.f);
     }
 
     if (myDoy < 260)
     {
-        leafNumberRate = maxValue(0,(parameterBindiMigliettaFix.a + parameterBindiMigliettaFix.b * meanDailyTemperature) * (1 + parameterBindiMigliettaFix.c * this->statePlant.stateGrowth.shootLeafNumber));
+        leafNumberRate = maxValue(0,(parameterBindiMigliettaFix.a + parameterBindiMigliettaFix.b * meanDailyTemperature) * (1 + parameterBindiMigliettaFix.c * statePlant.stateGrowth.shootLeafNumber));
     }
     else leafNumberRate = 0;
 
-    if((this->statePlant.statePheno.stage >= veraison) && (this->statePlant.statePheno.stage <= physiologicalMaturity))
+    if (statePlant.statePheno.stage >= veraison && statePlant.statePheno.stage <= physiologicalMaturity)
     {
-        leafNumberRate *= 1 - (vineField->cultivar->parameterBindiMiglietta.fruitBiomassOffset + this->statePlant.stateGrowth.fruitBiomassIndex * this->statePlant.statePheno.daysAfterBloom);
+        leafNumberRate *= 1 - (vineField->cultivar->parameterBindiMiglietta.fruitBiomassOffset + statePlant.stateGrowth.fruitBiomassIndex * statePlant.statePheno.daysAfterBloom);
     }
 
-    this->statePlant.stateGrowth.shootLeafNumber += leafNumberRate;
-    shootLeafArea = vineField->cultivar->parameterBindiMiglietta.d * pow(this->statePlant.stateGrowth.shootLeafNumber, vineField->cultivar->parameterBindiMiglietta.f) ;
+    statePlant.stateGrowth.shootLeafNumber += leafNumberRate;
+    shootLeafArea = vineField->cultivar->parameterBindiMiglietta.d * pow(statePlant.stateGrowth.shootLeafNumber, vineField->cultivar->parameterBindiMiglietta.f) ;
 
     // water unstressed leaf area index
-    this->statePlant.stateGrowth.leafAreaIndex = shootLeafArea * vineField->shootsPerPlant * vineField->plantDensity / parameterBindiMigliettaFix.shadedSurface;
-    if (laiOld != NODATA)
+    statePlant.stateGrowth.leafAreaIndex = shootLeafArea * double(vineField->shootsPerPlant) * double(vineField->plantDensity) / parameterBindiMigliettaFix.shadedSurface;
+
+    if (int(laiOld) != NODATA)
     {
-        deltaLai = maxValue(0,this->statePlant.stateGrowth.leafAreaIndex-laiOld);
+        deltaLai = maxValue(0, statePlant.stateGrowth.leafAreaIndex-laiOld);
         deltaLai *= Vine3D_Grapevine::getLaiStressCoefficient();
-        this->statePlant.stateGrowth.leafAreaIndex = laiOld + deltaLai;
-        this->statePlant.stateGrowth.leafAreaIndex = minValue(6.0,this->statePlant.stateGrowth.leafAreaIndex);
+        statePlant.stateGrowth.leafAreaIndex = laiOld + deltaLai;
+        statePlant.stateGrowth.leafAreaIndex = minValue(6.0, statePlant.stateGrowth.leafAreaIndex);
     }
 
-    if (this->statePlant.statePheno.stage >= physiologicalMaturity)
+    if (statePlant.statePheno.stage >= physiologicalMaturity)
     {
         int deltaDoy = 320 - myDoy;  // 15 nov: laimin
-        this->statePlant.stateGrowth.leafAreaIndex *= (1.0 - 1.0/deltaDoy);
-        this->statePlant.stateGrowth.leafAreaIndex = maxValue(this->statePlant.stateGrowth.leafAreaIndex, LAIMIN);
+        statePlant.stateGrowth.leafAreaIndex *= (1.0 - 1.0/deltaDoy);
+        statePlant.stateGrowth.leafAreaIndex = maxValue(statePlant.stateGrowth.leafAreaIndex, double(LAIMIN));
     }
-    else if ((this->statePlant.statePheno.stage < physiologicalMaturity) && (myDoy > 273))
+    else if ((statePlant.statePheno.stage < physiologicalMaturity) && (myDoy > 273))
     {
         int deltaDoy = 320 - myDoy;  // 15 nov: laimin
-        this->statePlant.stateGrowth.leafAreaIndex *= (1.0 - 1.0/deltaDoy);
-        this->statePlant.stateGrowth.leafAreaIndex = maxValue(this->statePlant.stateGrowth.leafAreaIndex, LAIMIN);
+        statePlant.stateGrowth.leafAreaIndex *= (1.0 - 1.0/deltaDoy);
+        statePlant.stateGrowth.leafAreaIndex = maxValue(statePlant.stateGrowth.leafAreaIndex, double(LAIMIN));
     }
 
 }
@@ -1780,24 +1777,24 @@ void Vine3D_Grapevine::getLAIVine(Crit3DModelCase* vineField)
 void Vine3D_Grapevine::getPotentialBrix()
 {
     //potentialBrix = 28;
-    if ((this->statePlant.statePheno.stage >=fruitSet) && (this->statePlant.statePheno.stage <=veraison))
+    if (statePlant.statePheno.stage >=fruitSet && statePlant.statePheno.stage <=veraison)
     {
-        this->statePlant.statePheno.cumulatedRadiationFromFruitsetToVeraison += maxValue(0,1e-6*(simulationStepInSeconds*myIrradiance));
-        potentialBrix = 0.015*this->statePlant.statePheno.cumulatedRadiationFromFruitsetToVeraison + 5.71;
+        statePlant.statePheno.cumulatedRadiationFromFruitsetToVeraison += maxValue(0,1e-6*(simulationStepInSeconds*myIrradiance));
+        potentialBrix = 0.015 * statePlant.statePheno.cumulatedRadiationFromFruitsetToVeraison + 5.71;
         //per sangiovese
-        potentialBrix = 0.019*this->statePlant.statePheno.cumulatedRadiationFromFruitsetToVeraison;
+        potentialBrix = 0.019 * statePlant.statePheno.cumulatedRadiationFromFruitsetToVeraison;
         //potentialBrix =  minValue(31,potentialBrix);
     }
-    else if (this->statePlant.statePheno.stage > veraison)
+    else if (statePlant.statePheno.stage > veraison)
     {
         //per sangiovese
-        potentialBrix = 0.019*this->statePlant.statePheno.cumulatedRadiationFromFruitsetToVeraison;
+        potentialBrix = 0.019 * statePlant.statePheno.cumulatedRadiationFromFruitsetToVeraison;
         //potentialBrix = 0.015*this->statePlant.statePheno.cumulatedRadiationFromFruitsetToVeraison + 5.71;
         potentialBrix = minValue(31,potentialBrix);
     }
-    else if (this->statePlant.statePheno.stage < fruitSet)
+    else if (statePlant.statePheno.stage < fruitSet)
     {
-        this->statePlant.statePheno.cumulatedRadiationFromFruitsetToVeraison = 0;
+        statePlant.statePheno.cumulatedRadiationFromFruitsetToVeraison = 0;
         potentialBrix = NODATA;
     }
 
@@ -1807,9 +1804,10 @@ double Vine3D_Grapevine::getTartaricAcid()
 {
     double tartrate = NODATA;
     double berryVolume;
-    if (this->statePlant.statePheno.stage >= veraison)
+
+    if (statePlant.statePheno.stage >= veraison)
     {
-        berryVolume = gompertzDistribution(double(this->statePlant.statePheno.stage-veraison+0.2));
+        berryVolume = gompertzDistribution(double(statePlant.statePheno.stage-veraison+0.2));
         tartrate = 1.0/berryVolume;
     }
     return tartrate;
@@ -1833,15 +1831,17 @@ void Vine3D_Grapevine::fruitBiomassRateDecreaseDueToRainfall()
         if ((this->statePlant.statePheno.stage >= 2.8) && (this->statePlant.statePheno.stage <= 4))
         {
             reduction = 5.*(1 / (1 + exp(-5.*(myPrec - 10)))); // percentage damage due to rainfall between flowering and fruitset
-            this->statePlant.stateGrowth.fruitBiomassIndex *= 0.01*(100 - reduction) ;
+            statePlant.stateGrowth.fruitBiomassIndex *= 0.01*(100 - reduction) ;
         }
 
     }
 }
 
-double Vine3D_Grapevine::getRootDensity(int myLayer)
+double Vine3D_Grapevine::getRootDensity(Crit3DModelCase* modelCase, int myLayer)
 {
-    if ((myLayer <= 0) || (myLayer >= this->soilLayersNr)) return 0.0;
-    return this->layerRootDensity[myLayer];
+    if (myLayer <= 0 || myLayer >= modelCase->soilLayersNr)
+        return 0.0;
+    else
+        return modelCase->rootDensity[myLayer];
 }
 

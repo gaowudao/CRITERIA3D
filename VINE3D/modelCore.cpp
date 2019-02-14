@@ -13,13 +13,12 @@
 #include "atmosphere.h"
 #include "utilities.h"
 
-bool firstTimePrint = true;
 extern Vine3DProject myProject;
 
 // [Pa] default atmospheric pressure at sea level
 #define PRESS 101325
 
-bool setSoilProfileCrop(Vine3DProject* myProject, int row, int col)
+bool setSoilProfileCrop(Vine3DProject* myProject, int row, int col, Crit3DModelCase* modelCase)
 {
     double* soilWPProfile = getSoilVarProfile(myProject, row, col, soilWiltingPointPotential);
     double* soilFCProfile = getSoilVarProfile(myProject, row, col, soilFieldCapacityPotential) ;
@@ -28,8 +27,7 @@ bool setSoilProfileCrop(Vine3DProject* myProject, int row, int col)
     double* waterContentProfileWP = getSoilVarProfile(myProject, row, col, soilWaterContentWP);
     double* waterContentProfileFC = getSoilVarProfile(myProject, row, col, soilWaterContentFC);
 
-    double* soilTempProfile = getCriteria3DVarProfile(myProject, row, col, soilTemperature);
-    if (! myProject->grapevine.setSoilProfile(soilWPProfile, soilFCProfile,
+    if (! myProject->grapevine.setSoilProfile(modelCase, soilWPProfile, soilFCProfile,
             matricPotentialProfile, waterContentProfile, waterContentProfileFC,
             waterContentProfileWP)) return false;
 
@@ -39,7 +37,6 @@ bool setSoilProfileCrop(Vine3DProject* myProject, int row, int col)
     free(waterContentProfile);
     free(waterContentProfileWP);
     free(waterContentProfileFC);
-    free(soilTempProfile);
 
     return true;
 }
@@ -95,8 +92,8 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
     int myTimeStep = myProject->getTimeStep();
     myFirstTime = Crit3DTime(myDate, myTimeStep);
     myLastTime = Crit3DTime(myDate, nrHours * 3600);
-    bool isNewField;
-    int fieldIndex;
+    bool isNewModelCase;
+    int modelCaseIndex;
 
     int checkStressHour;
     if (!myProject->gisSettings.isUTC)
@@ -137,8 +134,8 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
             {
                 if (myProject->DTM.value[row][col] != myProject->DTM.header->flag)
                 {
-                    fieldIndex = myProject->getModelCaseIndex(row,col);
-                    isNewField = (myProject->statePlantMaps->fruitBiomassMap->value[row][col]
+                    modelCaseIndex = myProject->getModelCaseIndex(row,col);
+                    isNewModelCase = (myProject->statePlantMaps->fruitBiomassMap->value[row][col]
                                   == myProject->statePlantMaps->fruitBiomassMap->header->flag);
 
                     if (! myProject->grapevine.setWeather(
@@ -153,14 +150,15 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
                     if (!myProject->grapevine.setDerivedVariables(myProject->meteoMaps->radiationMaps->diffuseRadiationMap->value[row][col],
                                 myProject->meteoMaps->radiationMaps->beamRadiationMap->value[row][col],
                                 myProject->meteoMaps->radiationMaps->transmissivityMap->value[row][col] / CLEAR_SKY_TRANSMISSIVITY_DEFAULT,
-                                myProject->meteoMaps->radiationMaps->sunElevationMap->value[row][col],
-                                myProject->meteoMaps->ET0Map->value[row][col])) return (false);
+                                myProject->meteoMaps->radiationMaps->sunElevationMap->value[row][col])) return (false);
 
-                    if (! setSoilProfileCrop(myProject, row, col)) return false;
+                    myProject->grapevine.resetLayers();
 
-                    if ((isInitialState) || (isNewField))
+                    if (! setSoilProfileCrop(myProject, row, col, &(myProject->modelCases[modelCaseIndex]))) return false;
+
+                    if ((isInitialState) || (isNewModelCase))
                     {
-                        if(!myProject->grapevine.initializeStatePlant(getDoyFromDate(myDate), &(myProject->modelCases[fieldIndex])))
+                        if(!myProject->grapevine.initializeStatePlant(getDoyFromDate(myDate), &(myProject->modelCases[modelCaseIndex])))
                         {
                             myProject->logInfo("It's not possible initialize grapevine in the present growing season.\nIt will be replaced by a complete grass cover.");
                         }
@@ -173,18 +171,18 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
                     double chlorophyll = NODATA;
 
                     if (! myProject->grapevine.compute((myCurrentTime == myFirstTime), myTimeStep,
-                          &(myProject->modelCases[fieldIndex]), chlorophyll))
+                          &(myProject->modelCases[modelCaseIndex]), chlorophyll))
                           return(false);
 
                     // check field book (first hour)
                     if (myCurrentTime.getHour() == 1)
                     {
                         int idBook = 0;
-                        while (myProject->getFieldBookIndex(idBook, myQDate, fieldIndex, &idBook))
+                        while (myProject->getFieldBookIndex(idBook, myQDate, modelCaseIndex, &idBook))
                         {
                             operation = myProject->fieldBook[idBook].operation;
                             quantity = myProject->fieldBook[idBook].quantity;
-                            myProject->grapevine.fieldBookAction(&(myProject->modelCases[fieldIndex]), operation, quantity);
+                            myProject->grapevine.fieldBookAction(&(myProject->modelCases[modelCaseIndex]), operation, quantity);
                             idBook++;
                         }
                     }
@@ -193,27 +191,27 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
                     getStatePlantToMap(row, col, myProject, &(myProject->statePlant));
 
                     //pass transpiration to water balance
-                    if (myProject->grapevine.getExtractedWater(myProject->WBSettings->currentProfile))
+                    if (myProject->grapevine.getExtractedWater(&(myProject->modelCases[modelCaseIndex]), myProject->WBSettings->currentProfile))
                         passPlantTranspirationProfileToMap(row, col, myProject);
 
                     //stress transpiration output
                     if (myCurrentTime.getHour()==checkStressHour)
                     {
-                        myProject->outputPlantMaps->stressMap->value[row][col] = myProject->grapevine.getStressCoefficient();
+                        myProject->outputPlantMaps->stressMap->value[row][col] = float(myProject->grapevine.getStressCoefficient());
                     }
 
-                    vineTranspiration = myProject->grapevine.getRealTranspirationGrapevine();
-                    grassTranspiration = myProject->grapevine.getRealTranspirationGrass();
+                    vineTranspiration = myProject->grapevine.getRealTranspirationGrapevine(&(myProject->modelCases[modelCaseIndex]));
+                    grassTranspiration = myProject->grapevine.getRealTranspirationGrass(&(myProject->modelCases[modelCaseIndex]));
 
                     if (myCurrentTime == myFirstTime)
                     {
-                        myProject->outputPlantMaps->vineyardTranspirationMap->value[row][col] = vineTranspiration;
-                        myProject->outputPlantMaps->grassTranspirationMap->value[row][col] = grassTranspiration;
+                        myProject->outputPlantMaps->vineyardTranspirationMap->value[row][col] = float(vineTranspiration);
+                        myProject->outputPlantMaps->grassTranspirationMap->value[row][col] = float(grassTranspiration);
                     }
                     else
                     {
-                        myProject->outputPlantMaps->vineyardTranspirationMap->value[row][col] += vineTranspiration;
-                        myProject->outputPlantMaps->grassTranspirationMap->value[row][col] += grassTranspiration;
+                        myProject->outputPlantMaps->vineyardTranspirationMap->value[row][col] += float(vineTranspiration);
+                        myProject->outputPlantMaps->grassTranspirationMap->value[row][col] += float(grassTranspiration);
                     }
                 }
             }

@@ -1,6 +1,10 @@
 #ifndef GRAPEVINE_H
 #define GRAPEVINE_H
 
+#ifndef VECTOR_H
+    #include <vector>
+#endif
+
 #ifndef _MAP_
     #include <map>
 #endif
@@ -128,16 +132,16 @@ struct TparameterBindiMigliettaFix
     double a,b,c;
     double shadedSurface;
     double extinctionCoefficient ;
-    double baseTemperature ;
-    double tempMaxThreshold ;
+    //double baseTemperature ;
+    //double tempMaxThreshold ;
 
     void initialize()
     {
         a =  -0.28;
         b = 0.04;
         c = -0.015;
-        baseTemperature = 10; //Celsius deg
-        tempMaxThreshold = 35; //Celsius deg
+        //baseTemperature = 10; //Celsius deg
+        //tempMaxThreshold = 35; //Celsius deg
         extinctionCoefficient = 0.5;
         shadedSurface = 0.8;
     }
@@ -203,11 +207,19 @@ struct Crit3DModelCase {
     int id;
     Crit3DLanduse landuse;
     int soilIndex;
+
     float shootsPerPlant;
     float plantDensity;
     float maxLAIGrass;
     int trainingSystem;
     float maxIrrigationRate;        //[mm/h]
+
+    int soilLayersNr;
+    double soilTotalDepth;
+    double* rootDensity;
+    double* grassRootDensity;
+    double* fallowRootDensity;
+
     TVineCultivar* cultivar;
 };
 
@@ -218,7 +230,7 @@ struct TsoilProfileTest {
 };
 
 struct Vine3D_Nitrogen {
-    double interceptLeaf,slopeLeaf,leafNitrogen;
+    double interceptLeaf, slopeLeaf, leafNitrogen;
     double leaf , stem , root , shoot;
 };
 
@@ -275,73 +287,77 @@ class Vine3D_Grapevine {
 private:
     TstatePlant statePlant;
 
-    double myIrradiance ;
-    double myInstantTemp ;
-    double meanDailyTemperature;
-    double chlorophyllContent;
-    double myThermalUnit ;
-    double leafNumberRate ;
-    double stepPhotosynthesis ;
+    double simulationStepInSeconds ;
+
     int myDoy ;
     int myYear ;
-    double mySunElevation ;
-    double myDiffuseIrradiance;
-    double myDirectIrradiance ;
-    double myLongWaveIrradiance ;
+    double myHour ;
+
+    double myAtmosphericPressure ;
+    double myPrec ;
+    double meanDailyTemperature;
+    double myInstantTemp ;
     double myRelativeHumidity ;
     double vaporPressureDeficit ;
-    double myHour ;
-    double myCloudiness ;
     double myAirVapourPressure ;
-    double myWindSpeed ;
+    double myIrradiance, myDiffuseIrradiance, myDirectIrradiance, myLongWaveIrradiance;
     double emissivitySky ;
+    double slopeSatVapPressureVSTemp ;
+    double mySunElevation ;
+    double myCloudiness ;
+    double myWindSpeed ;
+    //double myThermalUnit ;
+    //double potentialEvapotranspiration;
+
+    double mySoilTemp ;
+    //double* soilTempProfile;
+
+    int nrMaxLayers;
+
+    double wiltingPoint;
+    double psiSoilAverage;
+    double psiFieldCapacityAverage;
+
+    //double* soilFieldCapacity;
+    //double* psiSoilProfile;
+    //double* soilWaterContentProfile;
+    //double* soilWaterContentProfileFC;
+    //double* soilWaterContentProfileWP;
+
+    //double* layerRootDensity;
+    double totalStomatalConductance, totalStomatalConductanceNoStress ;
+    double transpirationInstant;
+    double* transpirationInstantLayer;          //molH2O m^-2 s^-1
+    double* transpirationLayer;                 //mm
+    double* transpirationCumulatedGrass;
+    double transpirationInstantNoStress;
+    double* fractionTranspirableSoilWaterProfile;
+    double* stressCoefficientProfile;
+    double fractionTranspirableSoilWaterAverage;
+    double assimilationInstant;
+
+    TparameterBindiMigliettaFix parameterBindiMigliettaFix;
+    TparameterWangLeuningFix parameterWangLeuningFix;
+    TparameterPhenoVitisFix parameterPhenoVitisFix;
+
+    double potentialBrix;
+    double chlorophyllContent;
+    double leafNumberRate ;
+    double stepPhotosynthesis ;
     double myPlantHeight ;
     double myLeafWidth ;
-    double myAtmosphericPressure ;
-    double mySoilTemp ;
-    double myPrec ;
-    double slopeSatVapPressureVSTemp ;
-    double directLightK, diffuseLightK, diffuseLightKPAR, diffuseLightKNIR,directLightKPAR, directLightKNIR;
-    double leafNitrogen ;
+    double directLightK, diffuseLightK, diffuseLightKPAR, diffuseLightKNIR, directLightKPAR, directLightKNIR;
     bool isAmphystomatic ;
+    double specificLeafArea ;
+    double alphaLeuning ;
+    //double leafNitrogen ;
+    //double entropicFactorCarboxyliation,entropicFactorElectronTransporRate ;
+
     Vine3D_SunShade shaded ;
     Vine3D_SunShade sunlit ;
     Vine3D_Nitrogen nitrogen ;
     Vine3D_DeltaTimeResults deltaTime ;
     Vine3D_Biomass biomass ;
-    double specificLeafArea ;
-    double alphaLeuning ;
-    double wiltingPoint;
-    double psiSoilAverage;
-    double psiFieldCapacityAverage;
-    double assimilationInstant , transpirationInstant , totalStomatalConductance, totalStomatalConductanceNoStress ;
-    double* transpirationInstantLayer;          //molH2O m^-2 s^-1
-    double* transpirationLayer;                 //mm
-    double* transpirationCumulatedGrass;
-    double entropicFactorCarboxyliation,entropicFactorElectronTransporRate ;
-    double simulationStepInSeconds ;
-    double* psiSoilProfile;
-    double* soilWaterContentProfile;
-    double* soilWaterContentProfileFC;
-    double* soilWaterContentProfileWP;
-    double* fractionTranspirableSoilWaterProfile;
-    double* stressCoefficientProfile;
-    double fractionTranspirableSoilWaterAverage;
-    double* soilTempProfile;
-    double soilWaterContent;
-    double* soilFieldCapacity;
-    double* layerRootDensity;
-    double* layerDepth;
-    double* layerThickness;
-    int soilLayersNr;
-    double soilTotalDepth;
-    double potentialEvapotranspiration;
-    double potentialBrix;
-    TparameterBindiMigliettaFix parameterBindiMigliettaFix;
-    TparameterWangLeuningFix parameterWangLeuningFix;
-    TparameterPhenoVitisFix parameterPhenoVitisFix;
-    double transpirationInstantNoStress;
-
 
 private: // functions
     void photosynthesisRadiationUseEfficiency(TVineCultivar* cultivar);
@@ -352,23 +368,20 @@ private: // functions
     void radiationAbsorption ();
     void aerodynamicalCoupling ();
     void upscale(TVineCultivar* cultivar);
-    void photosynthesisAndTranspiration(TVineCultivar* cultivar);
+    void photosynthesisAndTranspiration(Crit3DModelCase *modelCase);
     void carbonWaterFluxes(TVineCultivar* cultivar);
-    void carbonWaterFluxesProfile(TVineCultivar *cultivar);
-    void carbonWaterFluxesProfileNoStress(TVineCultivar *cultivar);
+    void carbonWaterFluxesProfile(Crit3DModelCase *modelCase);
+    void carbonWaterFluxesProfileNoStress(Crit3DModelCase *modelCase);
     void photosynthesisKernel(TVineCultivar *cultivar, double COMP, double GAC, double GHR, double GSCD, double J, double KC, double KO
                               , double RD, double RNI, double STOMWL, double VCMAX, double *ASS, double *GSC, double *TR);
     void photosynthesisKernelSimplified(TVineCultivar *cultivar, double COMP, double GSCD, double J, double KC, double KO
                          , double RD, double STOMWL, double VCmax, double *ASS, double *GSC, double *TR);
-    void cumulatedResults();
+    void cumulatedResults(Crit3DModelCase *modelCase);
     double plantRespiration();
     double temperatureMoistureFunction(double temperature);
     void plantInterception(double fieldCoverByPlant);
     double meanLastMonthTemperature(double temperature);
-    double* rootDensity(soil::Crit3DSoil* mySoil,
-                        int nrLayersSoilProfile, int nrLayersWithRoot, int nrUpperLayersWithoutRoot,
-                        rootDistribution type, double *layerDepth, double *layeThickness,
-                        double mode, double mean);
+
     double* waterSuctionDistribution(int nrLayers, double *layerRootDensity, double *psiSoil);
 
     double chillingRate(double temp, double aParameter, double cParameter);
@@ -384,17 +397,16 @@ private: // functions
 
     double getWaterStressByPsiSoil(double myPsiSoil,double psiSoilStressParameter,double exponentialFactorForPsiRatio);
     double getWaterStressSawFunction(int index, TVineCultivar *cultivar);
-    bool getExtractedWaterFromGrassTranspirationandEvaporation(double* myWaterExtractionProfile);
+    //bool getExtractedWaterFromGrassTranspirationandEvaporation(double* myWaterExtractionProfile);
     double getWaterStressSawFunctionAverage(TVineCultivar* cultivar);
     double getGrassTranspiration(double stress, double laiGrassMax, double sensitivityToVPD, double fieldCoverByPlant);
     double getFallowTranspiration(double stress, double laiGrassMax, double sensitivityToVPD);
-    double getGrassRootDensity(int layer, float startRootDepth, float totalRootDepth);
-    void grassTranspiration(double laiGrassMax, double sensitivityToVPD, double fieldCoverByPlant);
-    void fallowTranspiration(double laiGrassMax, double sensitivityToVPD);
+    void grassTranspiration(Crit3DModelCase *modelCase);
+    void fallowTranspiration(Crit3DModelCase *modelCase, double laiGrassMax, double sensitivityToVPD);
     void getFixSimulationParameters();
     double getLaiStressCoefficient();
     void getPotentialBrix();
-    void initializeWaterStress(TVineCultivar* cultivar);
+    void initializeWaterStress(Crit3DModelCase *modelCase);
     double gompertzDistribution(double stage);
     double getTartaricAcid();
     double soilTemperatureModel();
@@ -404,19 +416,30 @@ public:
     Vine3D_Grapevine();
 
     //void initializeGrapevineModel(TVineCultivar* cultivar, double secondsPerStep);
+
+    bool initializeLayers(int myMaxLayers);
+    void resetLayers();
+    void setRootDensity(Crit3DModelCase *modelCase, soil::Crit3DSoil* mySoil, std::vector<double> layerDepth, std::vector<double> layerThickness,
+                        int nrLayersWithRoot, int nrUpperLayersWithoutRoot, rootDistribution type, double mode, double mean);
+    void setGrassRootDensity(Crit3DModelCase* modelCase, std::vector<double> layerDepth, std::vector<double> layerThickness,
+                             double startRootDepth, double totalRootDepth);
+    void setFallowRootDensity(Crit3DModelCase* modelCase, std::vector<double> layerDepth, std::vector<double> layerThickness,
+                             double startRootDepth, double totalRootDepth);
+
     void setDate (Crit3DTime myTime);
     bool setWeather(double meanDailyTemp, double temp, double irradiance ,
             double prec , double relativeHumidity , double windSpeed, double atmosphericPressure);
     bool setDerivedVariables (double diffuseIrradiance, double directIrradiance,
-            double cloudIndex, double sunElevation, double etp);
-    bool setSoilProfile(double* myWiltingPoint, double *myFieldCapacity,
+            double cloudIndex, double sunElevation);
+    bool setSoilProfile(Crit3DModelCase *modelCase, double* myWiltingPoint, double *myFieldCapacity,
                         double *myPsiSoilProfile , double *mySoilWaterContentProfile,
                         double* mySoilWaterContentFC, double* mySoilWaterContentWP);
     bool setStatePlant(TstatePlant myStatePlant, bool isVineyard);
     TstatePlant getStatePlant();
     ToutputPlant getOutputPlant();
-    bool getExtractedWater(double* myWaterExtractionProfile);
-    void initializeRootProperties (soil::Crit3DSoil* mySoil,
+    bool getExtractedWater(Crit3DModelCase *modelCase, double* myWaterExtractionProfile);
+
+    void initializeModelCaseRoots (Crit3DModelCase *modelCase, soil::Crit3DSoil* mySoil,
               int nrSoilLayers, float maxRootDepth,
               double* myLayerDepth, double* myLayerThickness,
               int nrSoilLayersWithoutRoot, int nrSoilLayerWithRoot,
@@ -425,12 +448,11 @@ public:
 
     //bool getOutputPlant(int hour, ToutputPlant *outputPlant);
     bool initializeStatePlant(int doy, Crit3DModelCase *vineField);
-    void printResults(std::string fileName, bool* isFirst, TVineCultivar *cultivar);
     double getStressCoefficient();
-    double getRealTranspirationGrapevine();
-    double getRealTranspirationGrass();
+    double getRealTranspirationGrapevine(Crit3DModelCase *modelCase);
+    double getRealTranspirationGrass(Crit3DModelCase *modelCase);
     bool fieldBookAction(Crit3DModelCase* vineField, TfieldOperation action, float quantity);
-    double getRootDensity(int myLayer);
+    double getRootDensity(Crit3DModelCase *modelCase, int myLayer);
 
 };
 
