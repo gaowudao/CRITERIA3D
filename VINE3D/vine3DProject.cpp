@@ -146,7 +146,7 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
 
     projectSettings->beginGroup("settings");
     QString paramFile = path + projectSettings->value("parameters_file").toString();
-    float depth = projectSettings->value("depth").toFloat();
+    float depth = projectSettings->value("soil_depth").toFloat();
     projectSettings->endGroup();
 
     WBSettings->depth = depth;
@@ -216,7 +216,7 @@ bool Vine3DProject::loadProject(QString myFileName)
         return(false);
     }
 
-    WBSettings->currentProfile = (double *) calloc(WBSettings->nrLayers, sizeof(double));
+    WBSettings->currentProfile = static_cast<double*> (calloc(size_t(WBSettings->nrLayers), sizeof(double)));
 
     if (! initializeGrapevine(this))
     {

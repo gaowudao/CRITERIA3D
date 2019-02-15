@@ -136,11 +136,11 @@ bool Vine3D_Grapevine::initializeLayers(int myMaxLayers)
     //soilWaterContentProfileFC = (double *) calloc(nrLayers, sizeof(double));
     //soilWaterContentProfileWP = (double *) calloc(nrLayers, sizeof(double));
     //soilFieldCapacity = (double *) calloc (nrLayers, sizeof(double));
-    fractionTranspirableSoilWaterProfile = (double *) calloc(nrMaxLayers, sizeof(double));
-    stressCoefficientProfile = (double *) calloc(nrMaxLayers, sizeof(double));
-    transpirationInstantLayer = (double *) calloc (nrMaxLayers, sizeof(double));
-    transpirationLayer = (double *) calloc (nrMaxLayers, sizeof(double));
-    transpirationCumulatedGrass = (double *) calloc (nrMaxLayers, sizeof(double));
+    fractionTranspirableSoilWaterProfile = static_cast<double*> (calloc(size_t(nrMaxLayers), sizeof(double)));
+    stressCoefficientProfile = static_cast<double*> (calloc(size_t(nrMaxLayers), sizeof(double)));
+    transpirationInstantLayer = static_cast<double*> (calloc(size_t(nrMaxLayers), sizeof(double)));
+    transpirationLayer = static_cast<double*> (calloc(size_t(nrMaxLayers), sizeof(double)));
+    transpirationCumulatedGrass = static_cast<double*> (calloc(size_t(nrMaxLayers), sizeof(double)));
 
     resetLayers();
 
@@ -604,29 +604,32 @@ void Vine3D_Grapevine::aerodynamicalCoupling()
         static double A = 0.0067;
         static double BETA = 3.0;
         static double KARM = 0.41;
-        double heightReference , roughnessLength,zeroPlaneDisplacement, sensibleHeat, frictionVelocity, windSpeedTopCanopy, leafBoundaryLayerConductance;
-        double canopyAerodynamicConductanceToMomentum,aerodynamicConductanceToCO2,dummy,aerodynamicConductanceForHeat,sunlitDeltaTemp,shadedDeltaTemp;
+        double heightReference , roughnessLength,zeroPlaneDisplacement, sensibleHeat, frictionVelocity, windSpeedTopCanopy;
+        double canopyAerodynamicConductanceToMomentum, aerodynamicConductanceToCO2, dummy, sunlitDeltaTemp,shadedDeltaTemp;
+        double leafBoundaryLayerConductance;
+        double aerodynamicConductanceForHeat;
         double windSpeed;
+
         windSpeed = maxValue(5,myWindSpeed);
         heightReference = myPlantHeight + 5 ; // [m]
         dummy = 0.2 * statePlant.stateGrowth.leafAreaIndex ;
         zeroPlaneDisplacement = minValue(myPlantHeight * (log(1+pow(dummy,0.166)) + 0.03*log(1+pow(dummy,6))), 0.99*myPlantHeight) ;
         if (dummy < 0.2) roughnessLength = 0.01 + 0.28*sqrt(dummy) * myPlantHeight ;
         else roughnessLength = 0.3 * myPlantHeight * (1.0 - zeroPlaneDisplacement/myPlantHeight);
+
         // Canopy energy balance.
         // Compute iteratively:
         // - leaf temperature (different for sunlit and shaded foliage)
         // - aerodynamic conductance (non-neutral conditions)
 
-
         // Initialize sensible heat flux and friction velocity
         sensibleHeat = sunlit.isothermalNetRadiation + shaded.isothermalNetRadiation ;
         frictionVelocity = maxValue(1.0e-4,KARM*windSpeed/log((heightReference-zeroPlaneDisplacement)/roughnessLength));
 
-
         short i = 0 ;
         double sensibleHeatOld = -9999;
         double threshold = fabs(sensibleHeat/10000.0);
+
         while( (20 > i++) && (fabs(sensibleHeat - sensibleHeatOld)> threshold)) {
         // Monin-Obukhov length (m) and nondimensional height
         // Note: imposed a limit to non-dimensional height under stable
@@ -710,8 +713,9 @@ void Vine3D_Grapevine::aerodynamicalCoupling()
             // Sensible heat flux from the whole canopy
             sensibleHeat = HEAT_CAPACITY_AIR_MOLAR * (sunlit.aerodynamicConductanceHeatExchange*sunlitDeltaTemp + shaded.aerodynamicConductanceHeatExchange*shadedDeltaTemp);
         }
+
         if (isAmphystomatic) aerodynamicConductanceToCO2 = 0.78 * aerodynamicConductanceForHeat; //amphystomatous species. Ratio of diffusivities from Wang & Leuning 1998
-        else aerodynamicConductanceToCO2 = 0.78 * (canopyAerodynamicConductanceToMomentum*leafBoundaryLayerConductance)/(leafBoundaryLayerConductance + 2.0*canopyAerodynamicConductanceToMomentum) * dummy; //hypostomatous species
+        else aerodynamicConductanceToCO2 = 0.78 * (canopyAerodynamicConductanceToMomentum * leafBoundaryLayerConductance)/(leafBoundaryLayerConductance + 2.0*canopyAerodynamicConductanceToMomentum) * dummy; //hypostomatous species
 
         sunlit.aerodynamicConductanceCO2Exchange = aerodynamicConductanceToCO2 * sunlit.leafAreaIndex/statePlant.stateGrowth.leafAreaIndex ; //sunlit big-leaf
         shaded.aerodynamicConductanceCO2Exchange = aerodynamicConductanceToCO2 * shaded.leafAreaIndex/statePlant.stateGrowth.leafAreaIndex ;  //shaded big-leaf
@@ -1168,14 +1172,15 @@ void Vine3D_Grapevine::setRootDensity(Crit3DModelCase* modelCase, soil::Crit3DSo
                                        int nrLayersWithRoot, int nrUpperLayersWithoutRoot, rootDistribution type, double mode , double mean)
 {
 
-    modelCase->rootDensity =  (double *) calloc(modelCase->soilLayersNr, sizeof(double));
+    modelCase->rootDensity =  static_cast<double*> (calloc(size_t(modelCase->soilLayersNr), sizeof(double)));
 
     double shapeFactor=2.;
 
     if (type == CARDIOID_DISTRIBUTION)
     {
-        double *lunette =  (double *) calloc(2*nrLayersWithRoot, sizeof(double));
-        double *lunetteDensity =  (double *) calloc(2*nrLayersWithRoot, sizeof(double));
+        double *lunette = static_cast<double*> (calloc(size_t(2 * nrLayersWithRoot), sizeof(double)));
+        double *lunetteDensity =  static_cast<double*> (calloc(size_t(2 * nrLayersWithRoot), sizeof(double)));
+
         for (int i = 0 ; i < nrLayersWithRoot ; i++)
         {
             double sinAlfa,cosAlfa,alfa;
@@ -1614,7 +1619,7 @@ double* getTrapezoidRoots(int layersNr, std::vector<double> layerDepth, std::vec
     double upperDepth, lowerDepth;
     double x1, x2, m, q, y1, y2;
 
-    double* myRoots = (double *) calloc(layersNr, sizeof(double));
+    double* myRoots = static_cast<double*> (calloc(size_t(layersNr), sizeof(double)));
 
     for (size_t layer = 0; layer < size_t(layersNr); layer++)
     {
