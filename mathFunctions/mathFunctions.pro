@@ -6,7 +6,7 @@
 #
 #----------------------------------------------------
 
-QT       -= gui
+QT       -= core gui
 
 TEMPLATE = lib
 CONFIG += staticlib

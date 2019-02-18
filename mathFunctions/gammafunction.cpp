@@ -3,7 +3,7 @@
 #include <limits.h>             // required for LONG_MAX
 #include "commonConstants.h"
 #include "gammaFunction.h"
-#include <QDebug>
+
 
     static long double xSmall_x(long double x, long double nu);
     static long double xMedium_x(long double x, long double nu);
@@ -180,7 +180,6 @@
           temp_sum = sum2 + corrected_term;
           correction = (sum2 - temp_sum) + corrected_term;
           sum2 = temp_sum;
-          qDebug() << "term " << QString::number(term + correction, 'g', 6) << " epsilon " << QString::number(epsilon * sum2, 'g', 6);
        }
        sum2 += correction;
        sum2 *= coef;

@@ -1221,7 +1221,6 @@ void Vine3D_Grapevine::setRootDensity(Crit3DModelCase* modelCase, soil::Crit3DSo
 
     else if (type == GAMMA_DISTRIBUTION)
     {
-        double normalizationFactor ;
         double kappa, theta;
         double a, b, skeleton;
         int indexHorizon;
