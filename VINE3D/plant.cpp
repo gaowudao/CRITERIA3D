@@ -33,8 +33,8 @@ bool initializeGrapevine(Vine3DProject* myProject)
         nrHorizons = myProject->WBSettings->soilList[soilIndex].nrHorizons;
         myHorizon = myProject->WBSettings->soilList[soilIndex].horizon[nrHorizons - 1];
 
-        size_t j=0;
-        while (j < myProject->WBSettings->nrLayers - 1 && myProject->WBSettings->layerDepth.at(j) <= myHorizon.lowerDepth)
+        int j=0;
+        while (j < myProject->WBSettings->nrLayers - 1 && myProject->WBSettings->layerDepth.at(size_t(j)) <= myHorizon.lowerDepth)
             j++;
 
         myProject->modelCases[i].soilLayersNr = j;

@@ -1227,9 +1227,8 @@ void Vine3D_Grapevine::setRootDensity(Crit3DModelCase* modelCase, soil::Crit3DSo
         int indexHorizon;
         theta = mean - mode;
         kappa = mean / theta;
-        // complete gamma function
-        normalizationFactor = Gamma_Function(kappa);
         double rootDensitySum = 0. ;
+        double gammaComplete;
         for (int i=0 ; i < modelCase->soilLayersNr ; i++)
         {
             modelCase->rootDensity[i] = 0;
@@ -1237,8 +1236,9 @@ void Vine3D_Grapevine::setRootDensity(Crit3DModelCase* modelCase, soil::Crit3DSo
             {
                 a = layerDepth.at(sizeof(i)) - layerThickness.at(sizeof(i)) * 0.5;
                 b = layerDepth.at(sizeof(i)) + layerThickness.at(sizeof(i)) * 0.5;
-                modelCase->rootDensity[i] = Incomplete_Gamma_Function(b/theta,kappa) - Incomplete_Gamma_Function(a/theta,kappa);
-                modelCase->rootDensity[i] /= normalizationFactor;
+                //modelCase->rootDensity[i] = Incomplete_Gamma_Function(b/theta,kappa) - Incomplete_Gamma_Function(a/theta,kappa);
+                modelCase->rootDensity[i] = gammaDistributions::incompleteGamma(kappa, b / theta, &gammaComplete) - gammaDistributions::incompleteGamma(kappa, a / theta, &gammaComplete);
+                modelCase->rootDensity[i] /= gammaComplete;
 
                 //skeleton
                 indexHorizon = soil::getHorizonIndex(mySoil, layerDepth.at(sizeof(i)));
@@ -1627,16 +1627,17 @@ double* getTrapezoidRoots(int layersNr, std::vector<double> layerDepth, std::vec
         lowerDepth = layerDepth.at(layer) + layerThickness.at(layer) * 0.5;
         if (upperDepth > totalRootDepth || lowerDepth < startRootDepth)
             myRoots[layer] = 0.0;
+        else
+        {
+            x1 = maxValue(startRootDepth, upperDepth);
+            x2 = minValue(totalRootDepth, lowerDepth);
+            m = -2.0 / (totalRootDepth*totalRootDepth);
+            q = 2.0 / totalRootDepth;
+            y1 = m*x1 + q;
+            y2 = m*x2 + q;
 
-        //trapezoid
-        x1 = maxValue(startRootDepth, upperDepth);
-        x2 = minValue(totalRootDepth, lowerDepth);
-        m = -2.0 / (totalRootDepth*totalRootDepth);
-        q = 2.0 / totalRootDepth;
-        y1 = m*x1 + q;
-        y2 = m*x2 + q;
-
-        myRoots[layer] = (y1+y2) * fabs(x2-x1) * 0.5;
+            myRoots[layer] = (y1+y2) * fabs(x2-x1) * 0.5;
+        }
     }
 
     return myRoots;
