@@ -1224,23 +1224,22 @@ void Vine3D_Grapevine::setRootDensity(Crit3DModelCase* modelCase, soil::Crit3DSo
         double kappa, theta;
         double a, b, skeleton;
         int indexHorizon;
+        double depthWithoutRoots = layerDepth.at(size_t(nrUpperLayersWithoutRoot)) + layerThickness.at(size_t(nrUpperLayersWithoutRoot)) * 0.5;
+
         theta = mean - mode;
-        kappa = mean / theta;
-        double rootDensitySum = 0. ;
-        double gammaComplete;
+        kappa = (mean - depthWithoutRoots) / theta;
+        double rootDensitySum = 0;
         for (int i=0 ; i < modelCase->soilLayersNr ; i++)
         {
             modelCase->rootDensity[i] = 0;
             if (i >= nrUpperLayersWithoutRoot)
             {
-                a = layerDepth.at(sizeof(i)) - layerThickness.at(sizeof(i)) * 0.5;
-                b = layerDepth.at(sizeof(i)) + layerThickness.at(sizeof(i)) * 0.5;
-                //modelCase->rootDensity[i] = Incomplete_Gamma_Function(b/theta,kappa) - Incomplete_Gamma_Function(a/theta,kappa);
-                modelCase->rootDensity[i] = gammaDistributions::incompleteGamma(kappa, b / theta, &gammaComplete) - gammaDistributions::incompleteGamma(kappa, a / theta, &gammaComplete);
-                modelCase->rootDensity[i] /= gammaComplete;
+                a = layerDepth.at(size_t(i)) - layerThickness.at(size_t(i)) * 0.5;
+                b = layerDepth.at(size_t(i)) + layerThickness.at(size_t(i)) * 0.5;
+                modelCase->rootDensity[i] = gammaDistributions::incompleteGamma(kappa, (b - depthWithoutRoots) / theta) - gammaDistributions::incompleteGamma(kappa, (a - depthWithoutRoots)/ theta);
 
                 //skeleton
-                indexHorizon = soil::getHorizonIndex(mySoil, layerDepth.at(sizeof(i)));
+                indexHorizon = soil::getHorizonIndex(mySoil, layerDepth.at(size_t(i)));
                 skeleton = mySoil->horizon[indexHorizon].coarseFragments;
                 modelCase->rootDensity[i] *= (1.0 - skeleton);
 

@@ -117,8 +117,8 @@ int computeNrLayers(float totalDepth, float minThickness, float maxThickness, fl
 bool setLayersDepth(Vine3DProject* myProject)
 {
     int lastLayer = myProject->WBSettings->nrLayers-1;
-    myProject->WBSettings->layerDepth.resize(myProject->WBSettings->nrLayers);
-    myProject->WBSettings->layerThickness.resize(myProject->WBSettings->nrLayers);
+    myProject->WBSettings->layerDepth.resize(size_t(myProject->WBSettings->nrLayers));
+    myProject->WBSettings->layerThickness.resize(size_t(myProject->WBSettings->nrLayers));
 
     myProject->WBSettings->layerDepth[0] = 0.0;
     myProject->WBSettings->layerThickness[0] = 0.0;
@@ -127,13 +127,14 @@ bool setLayersDepth(Vine3DProject* myProject)
     for (int i = 2; i < myProject->WBSettings->nrLayers; i++)
     {
         if (i == lastLayer)
-            myProject->WBSettings->layerThickness[i] = myProject->WBSettings->depth - (myProject->WBSettings->layerDepth[i-1]
-                    + myProject->WBSettings->layerThickness[i-1] / 2.0);
+            myProject->WBSettings->layerThickness[size_t(i)] = double(myProject->WBSettings->depth) - (myProject->WBSettings->layerDepth[size_t(i-1)]
+                    + myProject->WBSettings->layerThickness[size_t(i-1)] / 2.0);
         else
-            myProject->WBSettings->layerThickness[i] = minValue(myProject->WBSettings->maxThickness, myProject->WBSettings->layerThickness[i-1] * myProject->WBSettings->thickFactor);
+            myProject->WBSettings->layerThickness[size_t(i)] = minValue(myProject->WBSettings->maxThickness,
+                                                                        myProject->WBSettings->layerThickness[size_t(i-1)] * myProject->WBSettings->thickFactor);
 
-        myProject->WBSettings->layerDepth[i] = myProject->WBSettings->layerDepth[i-1] +
-                (myProject->WBSettings->layerThickness[i-1] + myProject->WBSettings->layerThickness[i]) * 0.5;
+        myProject->WBSettings->layerDepth[size_t(i)] = myProject->WBSettings->layerDepth[size_t(i-1)] +
+                (myProject->WBSettings->layerThickness[size_t(i-1)] + myProject->WBSettings->layerThickness[size_t(i)]) * 0.5;
     }
     return(true);
 }
@@ -367,7 +368,7 @@ bool setCrit3DNodeSoil(Vine3DProject* myProject)
 
 bool initializeSoilMoisture(Vine3DProject* myProject, int month)
 {
-    int myResult;
+    int myResult = CRIT3D_OK;
     QString myError;
     long index;
     long soilIndex, horizonIndex;
@@ -383,24 +384,24 @@ bool initializeSoilMoisture(Vine3DProject* myProject, int month)
 
     myProject->logInfo("Initialize soil moisture");
 
-    for (int layer = 1; layer < myProject->WBSettings->nrLayers; layer++)
-        for (int row = 0; row < myProject->WBMaps->indexMap.at(layer).header->nrRows; row++)
-            for (int col = 0; col < myProject->WBMaps->indexMap.at(layer).header->nrCols; col++)
+    for (int layer = 0; layer < myProject->WBSettings->nrLayers; layer++)
+        for (int row = 0; row < myProject->WBMaps->indexMap.at(size_t(layer)).header->nrRows; row++)
+            for (int col = 0; col < myProject->WBMaps->indexMap.at(size_t(layer)).header->nrCols; col++)
             {
-                index = myProject->WBMaps->indexMap.at(layer).value[row][col];
-                if (index != myProject->WBMaps->indexMap.at(layer).header->flag)
+                index = long(myProject->WBMaps->indexMap.at(size_t(layer)).value[row][col]);
+                if (index != long(myProject->WBMaps->indexMap.at(size_t(layer)).header->flag))
                 {
                     //surface
-                    soilFluxes3D::setWaterContent(index, 0.0);
-
-                    soilIndex = myProject->getSoilIndex(row, col);
-
-                    horizonIndex = soil::getHorizonIndex(&(myProject->WBSettings->soilList[soilIndex]), myProject->WBSettings->layerDepth[layer]);
-
-                    fieldCapacity = myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].fieldCapacity;
-                    waterPotential = fieldCapacity - moistureIndex * (fieldCapacity-dry);
-
-                    myResult = soilFluxes3D::setMatricPotential(index, waterPotential);
+                    if (layer == 0)
+                        soilFluxes3D::setWaterContent(index, 0.0);
+                    else
+                    {
+                        soilIndex = myProject->getSoilIndex(row, col);
+                        horizonIndex = soil::getHorizonIndex(&(myProject->WBSettings->soilList[soilIndex]), myProject->WBSettings->layerDepth[size_t(layer)]);
+                        fieldCapacity = myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].fieldCapacity;
+                        waterPotential = fieldCapacity - moistureIndex * (fieldCapacity-dry);
+                        myResult = soilFluxes3D::setMatricPotential(index, waterPotential);
+                    }
 
                     if (isCrit3dError(myResult, &myError))
                     {

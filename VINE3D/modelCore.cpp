@@ -219,6 +219,8 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
 
         //Irrigation
         assignIrrigation(myProject, myCurrentTime);
+
+        //3D soil water balance
         waterBalance(myProject);
 
         saveMeteoHourlyOutput(myProject, actualEvaporation, myOutputPath, myCurrentTime, myArea);
