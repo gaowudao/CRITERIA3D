@@ -216,8 +216,6 @@ bool Vine3DProject::loadProject(QString myFileName)
         return(false);
     }
 
-    WBSettings->currentProfile = static_cast<double*> (calloc(size_t(WBSettings->nrLayers), sizeof(double)));
-
     if (! initializeGrapevine(this))
     {
         logError();

@@ -95,7 +95,7 @@
     bool setStatePlantfromMap(long row, long col , Vine3DProject* myProject);
     bool getStatePlantToMap(long row,long col, Vine3DProject* myProject, TstatePlant* statePlant);
     bool getOutputPlantToMap(long row, long col, Vine3DProject* myProject);
-    bool passPlantTranspirationProfileToMap(long row, long col, Vine3DProject* myProject);
+    bool passPlantTranspirationProfileToMap(long row, long col, Vine3DProject* myProject, double *myProfile, int nrLayers);
 
     bool savePlantState(Vine3DProject* myProject, plantVariable myVar,
                         QDate myDate, QString myPath, QString myArea);

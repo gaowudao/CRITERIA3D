@@ -269,17 +269,7 @@ gis::Crit3DRasterGrid* Crit3DOutputPlantMaps::getMapFromVar(plantVariable myVar)
         return downyOilSpotMap;
 
     else
-        return NULL;
-}
-
-bool passPlantTranspirationProfileToMap(long row, long col, Vine3DProject* myProject)
-{
-    //layer 0 = surface (only evaporation)
-    for (int layer=0; layer<(myProject->WBSettings->nrLayers-1); layer++)
-    {
-        myProject->outputPlantMaps->transpirationLayerMaps[layer]->value[row][col] = myProject->WBSettings->currentProfile[layer];
-    }
-    return true;
+        return nullptr;
 }
 
 bool setStatePlantfromMap(long row, long col , Vine3DProject* myProject)

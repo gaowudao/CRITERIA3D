@@ -29,7 +29,6 @@ class Crit3DSoilFluxesSettings
         soil::Crit3DSoil* soilList;
 
         long nrNodes;
-        double* currentProfile;
 
         std::vector <double> layerDepth;
         std::vector <double> layerThickness;

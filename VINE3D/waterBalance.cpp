@@ -577,26 +577,32 @@ double getSoilVar(Vine3DProject* myProject, int soilIndex, int myLayerIndex, soi
 {
     int horizonIndex = soil::getHorizonIndex(&(myProject->WBSettings->soilList[soilIndex]), myProject->WBSettings->layerDepth[myLayerIndex]);
 
-    if (myVar == soilWiltingPointPotential)
-        return myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].wiltingPoint;
-    else if (myVar == soilFieldCapacityPotential)
-        return myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].fieldCapacity;
-    else if (myVar == soilWaterContentFC)
-        return myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].waterContentFC;
-    else if (myVar == soilSaturation)
-        return myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].vanGenuchten.thetaS;
-    else if (myVar == soilWaterContentWP)
+    if (int(horizonIndex) != int(NODATA))
     {
-        double signPsiLeaf = - myProject->cultivar->parameterWangLeuning.psiLeaf; //kPa
-        return soil::thetaFromSignPsi(signPsiLeaf, &(myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex]));
+        if (myVar == soilWiltingPointPotential)
+            return myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].wiltingPoint;
+        else if (myVar == soilFieldCapacityPotential)
+            return myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].fieldCapacity;
+        else if (myVar == soilWaterContentFC)
+            return myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].waterContentFC;
+        else if (myVar == soilSaturation)
+            return myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].vanGenuchten.thetaS;
+        else if (myVar == soilWaterContentWP)
+        {
+            double signPsiLeaf = - myProject->cultivar->parameterWangLeuning.psiLeaf; //kPa
+            return soil::thetaFromSignPsi(signPsiLeaf, &(myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex]));
+        }
+        else
+            return NODATA;
     }
-    else
+    else {
         return NODATA;
+    }
 }
 
 double* getSoilVarProfile(Vine3DProject* myProject, int row, int col, soilVariable myVar)
 {
-    double* myProfile = (double *) calloc(myProject->WBSettings->nrLayers, sizeof(double));
+    double* myProfile = static_cast<double*> (calloc(size_t(myProject->WBSettings->nrLayers), sizeof(double)));
 
     for (int layerIndex = 0; layerIndex < myProject->WBSettings->nrLayers; layerIndex++)
         myProfile[layerIndex] = NODATA;
@@ -607,9 +613,9 @@ double* getSoilVarProfile(Vine3DProject* myProject, int row, int col, soilVariab
 
     for (int layerIndex = 0; layerIndex < myProject->WBSettings->nrLayers; layerIndex++)
     {
-        nodeIndex = myProject->WBMaps->indexMap.at(layerIndex).value[row][col];
+        nodeIndex = int(myProject->WBMaps->indexMap.at(size_t(layerIndex)).value[row][col]);
 
-        if (nodeIndex != myProject->WBMaps->indexMap.at(layerIndex).header->flag)
+        if (nodeIndex != int(myProject->WBMaps->indexMap.at(size_t(layerIndex)).header->flag))
             if ((myVar == soilWiltingPointPotential) || (myVar == soilFieldCapacityPotential)
                 || (myVar == soilWaterContentFC) || (myVar == soilWaterContentWP))
                     myProfile[layerIndex] = getSoilVar(myProject, soilIndex, layerIndex, myVar);

@@ -416,9 +416,10 @@ public:
     Vine3D_Grapevine();
 
     //void initializeGrapevineModel(TVineCultivar* cultivar, double secondsPerStep);
-
     bool initializeLayers(int myMaxLayers);
+    bool initializeStatePlant(int doy, Crit3DModelCase *vineField);
     void resetLayers();
+
     void setRootDensity(Crit3DModelCase *modelCase, soil::Crit3DSoil* mySoil, std::vector<double> layerDepth, std::vector<double> layerThickness,
                         int nrLayersWithRoot, int nrUpperLayersWithoutRoot, rootDistribution type, double mode, double mean);
     void setGrassRootDensity(Crit3DModelCase* modelCase, std::vector<double> layerDepth, std::vector<double> layerThickness,
@@ -435,25 +436,18 @@ public:
                         double *myPsiSoilProfile , double *mySoilWaterContentProfile,
                         double* mySoilWaterContentFC, double* mySoilWaterContentWP);
     bool setStatePlant(TstatePlant myStatePlant, bool isVineyard);
+
     TstatePlant getStatePlant();
     ToutputPlant getOutputPlant();
-    bool getExtractedWater(Crit3DModelCase *modelCase, double* myWaterExtractionProfile);
-
-    void initializeModelCaseRoots (Crit3DModelCase *modelCase, soil::Crit3DSoil* mySoil,
-              int nrSoilLayers, float maxRootDepth,
-              double* myLayerDepth, double* myLayerThickness,
-              int nrSoilLayersWithoutRoot, int nrSoilLayerWithRoot,
-              rootDistribution type, double depthMode, double depthMean);
-    bool compute(bool computeDaily, int secondsPerStep, Crit3DModelCase *vineField, double chlorophyll);
-
+    double* getExtractedWater(Crit3DModelCase* modelCase);
     //bool getOutputPlant(int hour, ToutputPlant *outputPlant);
-    bool initializeStatePlant(int doy, Crit3DModelCase *vineField);
     double getStressCoefficient();
     double getRealTranspirationGrapevine(Crit3DModelCase *modelCase);
     double getRealTranspirationGrass(Crit3DModelCase *modelCase);
     bool fieldBookAction(Crit3DModelCase* vineField, TfieldOperation action, float quantity);
     double getRootDensity(Crit3DModelCase *modelCase, int myLayer);
 
+    bool compute(bool computeDaily, int secondsPerStep, Crit3DModelCase *vineField, double chlorophyll);
 };
 
 

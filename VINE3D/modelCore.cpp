@@ -12,6 +12,7 @@
 #include "grapevine.h"
 #include "atmosphere.h"
 #include "utilities.h"
+#include <QDebug>
 
 extern Vine3DProject myProject;
 
@@ -89,11 +90,13 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
     float quantity;
     QDate myQDate = getQDate(myDate);
     Crit3DTime myCurrentTime, myFirstTime, myLastTime;
-    int myTimeStep = myProject->getTimeStep();
+    int myTimeStep = int(myProject->getTimeStep());
     myFirstTime = Crit3DTime(myDate, myTimeStep);
     myLastTime = Crit3DTime(myDate, nrHours * 3600);
     bool isNewModelCase;
     int modelCaseIndex;
+    double* myProfile;
+
 
     int checkStressHour;
     if (!myProject->gisSettings.isUTC)
@@ -132,25 +135,26 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
         {
             for (long col = 0; col < myProject->DTM.header->nrCols; col++)
             {
-                if (myProject->DTM.value[row][col] != myProject->DTM.header->flag)
+                if (int(myProject->DTM.value[row][col]) != int(myProject->DTM.header->flag))
                 {
                     modelCaseIndex = myProject->getModelCaseIndex(row,col);
-                    isNewModelCase = (myProject->statePlantMaps->fruitBiomassMap->value[row][col]
-                                  == myProject->statePlantMaps->fruitBiomassMap->header->flag);
+                    isNewModelCase = (int(myProject->statePlantMaps->fruitBiomassMap->value[row][col])
+                                  == int(myProject->statePlantMaps->fruitBiomassMap->header->flag));
 
                     if (! myProject->grapevine.setWeather(
-                                myProject->meteoMaps->avgDailyTemperature->value[row][col],
-                                myProject->meteoMaps->airTemperatureMap->value[row][col],
-                                myProject->meteoMaps->radiationMaps->globalRadiationMap->value[row][col],
-                                myProject->meteoMaps->precipitationMap->value[row][col],
-                                myProject->meteoMaps->airRelHumidityMap->value[row][col],
-                                myProject->meteoMaps->windIntensityMap->value[row][col],
+                                double(myProject->meteoMaps->avgDailyTemperature->value[row][col]),
+                                double(myProject->meteoMaps->airTemperatureMap->value[row][col]),
+                                double(myProject->meteoMaps->radiationMaps->globalRadiationMap->value[row][col]),
+                                double(myProject->meteoMaps->precipitationMap->value[row][col]),
+                                double(myProject->meteoMaps->airRelHumidityMap->value[row][col]),
+                                double(myProject->meteoMaps->windIntensityMap->value[row][col]),
                                 PRESS)) return(false);
 
-                    if (!myProject->grapevine.setDerivedVariables(myProject->meteoMaps->radiationMaps->diffuseRadiationMap->value[row][col],
-                                myProject->meteoMaps->radiationMaps->beamRadiationMap->value[row][col],
-                                myProject->meteoMaps->radiationMaps->transmissivityMap->value[row][col] / CLEAR_SKY_TRANSMISSIVITY_DEFAULT,
-                                myProject->meteoMaps->radiationMaps->sunElevationMap->value[row][col])) return (false);
+                    if (!myProject->grapevine.setDerivedVariables(
+                                double(myProject->meteoMaps->radiationMaps->diffuseRadiationMap->value[row][col]),
+                                double(myProject->meteoMaps->radiationMaps->beamRadiationMap->value[row][col]),
+                                double(myProject->meteoMaps->radiationMaps->transmissivityMap->value[row][col] / CLEAR_SKY_TRANSMISSIVITY_DEFAULT),
+                                double(myProject->meteoMaps->radiationMaps->sunElevationMap->value[row][col]))) return (false);
 
                     myProject->grapevine.resetLayers();
 
@@ -190,15 +194,16 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
                     myProject->statePlant = myProject->grapevine.getStatePlant();
                     getStatePlantToMap(row, col, myProject, &(myProject->statePlant));
 
-                    //pass transpiration to water balance
-                    if (myProject->grapevine.getExtractedWater(&(myProject->modelCases[modelCaseIndex]), myProject->WBSettings->currentProfile))
-                        passPlantTranspirationProfileToMap(row, col, myProject);
+                    myProfile = myProject->grapevine.getExtractedWater(&(myProject->modelCases[modelCaseIndex]));
+                    //layer 0 = surface (only evaporation)
+                    for (int layer=0; layer < myProject->WBSettings->nrLayers; layer++)
+                    {    myProject->outputPlantMaps->transpirationLayerMaps[layer]->value[row][col] = float(myProfile[layer]);
+                            qDebug() << myProfile[layer];
+                    }
 
                     //stress transpiration output
                     if (myCurrentTime.getHour()==checkStressHour)
-                    {
                         myProject->outputPlantMaps->stressMap->value[row][col] = float(myProject->grapevine.getStressCoefficient());
-                    }
 
                     vineTranspiration = myProject->grapevine.getRealTranspirationGrapevine(&(myProject->modelCases[modelCaseIndex]));
                     grassTranspiration = myProject->grapevine.getRealTranspirationGrass(&(myProject->modelCases[modelCaseIndex]));

@@ -1254,20 +1254,23 @@ void Vine3D_Grapevine::setRootDensity(Crit3DModelCase* modelCase, soil::Crit3DSo
 }
 
 
-bool Vine3D_Grapevine::getExtractedWater(Crit3DModelCase* modelCase, double* myWaterExtractionProfile)
+double* Vine3D_Grapevine::getExtractedWater(Crit3DModelCase* modelCase)
 {
+    double* myWaterExtractionProfile = static_cast<double*> (calloc(size_t(nrMaxLayers), sizeof(double)));
+
+    for(int i=0; i < nrMaxLayers; i++)
+        myWaterExtractionProfile[i] = 0;
+
     for(int i=0; i < modelCase->soilLayersNr; i++)
     {
-        myWaterExtractionProfile[i] = 0;
-        if (int(transpirationLayer[i]) != NODATA)
+       if (int(transpirationLayer[i]) != NODATA)
             myWaterExtractionProfile[i] += transpirationLayer[i];
-        //if ((myWaterExtractionProfile[i] > 0.1) || (myWaterExtractionProfile[i]<0)) printf("estrazione  %f\n",myWaterExtractionProfile[i]);
+
         if (int(transpirationCumulatedGrass[i]) != NODATA)
             myWaterExtractionProfile[i] += transpirationCumulatedGrass[i];
-
-
     }
-    return true;
+
+    return myWaterExtractionProfile;
 }
 
 double Vine3D_Grapevine::getRealTranspirationGrapevine(Crit3DModelCase* modelCase)
