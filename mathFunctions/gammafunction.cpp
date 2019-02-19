@@ -1086,7 +1086,7 @@
             int i;
             double an,b,c,d,del,h;
             *gammaLn=gammaNaturalLogarithm(alpha);
-            b=x+1.0-alpha; //Set up for evaluating continued fractionby modified Lentz’s method (§5.2)with b0 = 0.
+            b=x+1.0-alpha; //Set up for evaluating continued fraction by modified Lentz’s method (§5.2)with b0 = 0.
             c=1.0/FPMINIMUM;
             d=1.0/b;
             h=d;
@@ -1102,23 +1102,50 @@
                 del=d*c;
                 h *= del;
                 if (fabs(del-1.0) < EPSTHRESHOLD) break;
-            }
-            //if (i > ITERATIONSMAX) printf("a too large, ITERATIONSMAX too small in gammaIncompleteComplementaryFunction");
+            }            
             *gammaComplementaryFunction=exp(-x+alpha*log(x)-(*gammaLn))*h; //Put factors in front.
         }
 
-        double incompleteGamma(double alpha, double x, double *gammaValue)
+        double incompleteGamma(double alpha, double x, double *lnGammaValue)
         {
+            /* this function returns
+             * 1) the value of the normalized incomplete gamma function
+             * 2) the natural logarithm of the complete gamma function
+             * pay attention to the inputs: input variable x is actually beta*x or x/theta
+             * written by Antonio Volta avolta@arpae.it
+            */
             double gammaIncompleteCF;
             double gammaIncomplete;
-            if (x >( 1))
+            if (x > alpha)
             {
-                gammaIncompleteComplementaryFunction(&gammaIncompleteCF,alpha,x,gammaValue);
+                gammaIncompleteComplementaryFunction(&gammaIncompleteCF,alpha,x,lnGammaValue);
                 gammaIncomplete = 1 - gammaIncompleteCF;
             }
             else
-                gammaIncompleteP(&gammaIncomplete,alpha,x,gammaValue);
+                gammaIncompleteP(&gammaIncomplete,alpha,x,lnGammaValue);
 
             return gammaIncomplete;
         }
+
+        double incompleteGamma(double alpha, double x)
+        {
+            /* this function returns
+             * 1) the value of the normalized incomplete gamma function
+             * pay attention to the inputs: input variable x is actually beta*x or x/theta
+             * written by Antonio Volta avolta@arpae.it
+            */
+            double gammaIncompleteCF;
+            double gammaIncomplete;
+            double lnGammaValue;
+            if (x > alpha)
+            {
+                gammaIncompleteComplementaryFunction(&gammaIncompleteCF,alpha,x,&lnGammaValue);
+                gammaIncomplete = 1 - gammaIncompleteCF;
+            }
+            else
+                gammaIncompleteP(&gammaIncomplete,alpha,x,&lnGammaValue);
+
+            return gammaIncomplete;
+        }
+
     }

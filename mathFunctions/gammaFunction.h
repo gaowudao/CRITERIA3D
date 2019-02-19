@@ -33,7 +33,8 @@
         double gammaNaturalLogarithm(double value);
         void gammaIncompleteP(double *gammaDevelopmentSeries, double alpha, double x, double *gammaLn);
         void gammaIncompleteComplementaryFunction(double *gammaComplementaryFunction, double alpha, double x, double *gammaLn);
-        double incompleteGamma(double alpha, double x, double *gammaValue);
+        double incompleteGamma(double alpha, double x, double *lnGammaValue); // incomplete + complete
+        double incompleteGamma(double alpha, double x); // only incomplete
     }
 
 
