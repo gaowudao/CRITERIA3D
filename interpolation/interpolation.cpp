@@ -600,6 +600,9 @@ bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, 
     statistics::linearRegression(myHeights1.data(), myData1.data(), int(myHeights1.size()), false, &q1, &m1, &r21);
     statistics::linearRegression(myHeights2.data(), myData2.data(), int(myHeights2.size()), false, &q2, &m2, &r22);
 
+    if (m1 <= 0)
+        r21 = 0;
+
     myProxyOrog->setRegressionR2(r22);
 
     if (r21 >= mySignificativeR2Inv && r22 >= mySignificativeR2)

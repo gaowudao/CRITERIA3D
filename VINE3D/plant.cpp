@@ -10,7 +10,6 @@
 #include "vine3DProject.h"
 #include "commonConstants.h"
 
-
 bool initializeGrapevine(Vine3DProject* myProject)
 {
     myProject->outputPlantMaps = new Crit3DOutputPlantMaps(myProject->DTM, myProject->WBSettings->nrLayers);

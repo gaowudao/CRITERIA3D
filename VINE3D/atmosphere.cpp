@@ -178,10 +178,6 @@ bool computeET0Map(Vine3DProject* myProject)
             if (myHeight != myProject->DTM.header->flag)
             {
                 myGlobalRadiation = myProject->meteoMaps->radiationMaps->globalRadiationMap->value[myRow][myCol];
-
-                //if (myGlobalRadiation == myProject->meteoMaps->radiationMaps->globalRadiationMap->header->flag)
-                //    myGlobalRadiation = myProject->meteoMaps->radiationMaps->globalRadiationMap->neighbourValue(myRow, myCol);
-
                 myTransmissivity = myProject->meteoMaps->radiationMaps->transmissivityMap->value[myRow][myCol];
                 myTemperature = myProject->meteoMaps->airTemperatureMap->value[myRow][myCol];
                 myRelHumidity = myProject->meteoMaps->airRelHumidityMap->value[myRow][myCol];

@@ -106,6 +106,9 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
 
     for (myCurrentTime = myFirstTime; myCurrentTime <= myLastTime; myCurrentTime = myCurrentTime.addSeconds(myTimeStep))
     {
+        if (myCurrentTime.date.day == 2 && myCurrentTime.time > 7 * 3600)
+            int a = 0;
+
         myProject->logInfo("\n" + getQDateTime(myCurrentTime).toString("yyyy-MM-dd hh:mm"));
         myProject->grapevine.setDate(myCurrentTime);
 
@@ -195,10 +198,11 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
                     getStatePlantToMap(row, col, myProject, &(myProject->statePlant));
 
                     myProfile = myProject->grapevine.getExtractedWater(&(myProject->modelCases[modelCaseIndex]));
-                    //layer 0 = surface (only evaporation)
                     for (int layer=0; layer < myProject->WBSettings->nrLayers; layer++)
-                    {    myProject->outputPlantMaps->transpirationLayerMaps[layer]->value[row][col] = float(myProfile[layer]);
-                            qDebug() << myProfile[layer];
+                    {
+                        myProject->outputPlantMaps->transpirationLayerMaps[layer]->value[row][col] = float(myProfile[layer]);
+                        //if (myCurrentTime.time > 7200)
+                          //  qDebug() << myProfile[layer];
                     }
 
                     //stress transpiration output

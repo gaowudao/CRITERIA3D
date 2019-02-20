@@ -7,13 +7,13 @@
 
 #include <vector>
 
-std::vector <double> waterSinkSource;     //[m^3/sec]
+std::vector <double> myWaterSinkSource;     //[m^3/sec]
 
 
 void cleanWaterBalanceMemory()
 {
     soilFluxes3D::cleanMemory();
-    waterSinkSource.resize(0);
+    myWaterSinkSource.resize(0);
 }
 
 bool isCrit3dError(int myResult, QString* myError)
@@ -478,14 +478,14 @@ double evaporation(Vine3DProject* myProject, int row, int col)
         {
             realEvap += layerEvap;
             flow = area * (layerEvap / 1000.0);                  //[m^3/h]
-            waterSinkSource[nodeIndex] -= (flow / 3600.0);        //[m^3/s]
+            myWaterSinkSource.at(size_t(nodeIndex)) -= (flow / 3600.0);        //[m^3/s]
         }
     }
     return realEvap;
 }
 
 
-bool setWaterSinkSource(Vine3DProject* myProject, double* totalPrecipitation,
+bool waterBalanceSinkSource(Vine3DProject* myProject, double* totalPrecipitation,
                         double* totalEvaporation, double *totalTranspiration)
 {
     long surfaceIndex, nodeIndex, layerIndex;
@@ -496,7 +496,7 @@ bool setWaterSinkSource(Vine3DProject* myProject, double* totalPrecipitation,
 
     //initialize
     for (long i = 0; i < myProject->WBSettings->nrNodes; i++)
-        waterSinkSource[i] = 0.0;
+        myWaterSinkSource.at(size_t(i)) = 0.0;
 
     double area = myProject->DTM.header->cellSize * myProject->DTM.header->cellSize;
 
@@ -505,21 +505,21 @@ bool setWaterSinkSource(Vine3DProject* myProject, double* totalPrecipitation,
     for (long row = 0; row < myProject->WBMaps->indexMap.at(0).header->nrRows; row++)
         for (long col = 0; col < myProject->WBMaps->indexMap.at(0).header->nrCols; col++)
         {
-            surfaceIndex = myProject->WBMaps->indexMap.at(0).value[row][col];
-            if (surfaceIndex != myProject->WBMaps->indexMap.at(0).header->flag)
+            surfaceIndex = long(myProject->WBMaps->indexMap.at(0).value[row][col]);
+            if (surfaceIndex != long(myProject->WBMaps->indexMap.at(0).header->flag))
             {
                 totalWater = 0.0;
-                prec = myProject->meteoMaps->precipitationMap->value[row][col];
-                if (prec != myProject->meteoMaps->precipitationMap->header->flag) totalWater += prec;
+                prec = double(myProject->meteoMaps->precipitationMap->value[row][col]);
+                if (int(prec) != int(myProject->meteoMaps->precipitationMap->header->flag)) totalWater += prec;
 
-                irr = myProject->meteoMaps->irrigationMap->value[row][col];
-                if (irr != myProject->meteoMaps->irrigationMap->header->flag) totalWater += irr;
+                irr = double(myProject->meteoMaps->irrigationMap->value[row][col]);
+                if (int(irr) != int(myProject->meteoMaps->irrigationMap->header->flag)) totalWater += irr;
 
                 if (totalWater > 0.0)
                 {
                     flow = area * (totalWater / 1000.0);                //[m^3/h]
                     *totalPrecipitation += flow;
-                    waterSinkSource[surfaceIndex] += flow / 3600.0;     //[m^3/s]
+                    myWaterSinkSource[size_t(surfaceIndex)] += flow / 3600.0;     //[m^3/s]
                 }
             }
         }
@@ -529,11 +529,11 @@ bool setWaterSinkSource(Vine3DProject* myProject, double* totalPrecipitation,
     for (long row = 0; row < myProject->WBMaps->indexMap.at(0).header->nrRows; row++)
         for (long col = 0; col < myProject->WBMaps->indexMap.at(0).header->nrCols; col++)
         {
-            surfaceIndex = myProject->WBMaps->indexMap.at(0).value[row][col];
-            if (surfaceIndex != myProject->WBMaps->indexMap.at(0).header->flag)
+            surfaceIndex = long(myProject->WBMaps->indexMap.at(0).value[row][col]);
+            if (surfaceIndex != long(myProject->WBMaps->indexMap.at(0).header->flag))
             {
                 realEvap = evaporation(myProject, row, col);
-                myProject->meteoMaps->evaporationMap->value[row][col] = realEvap;
+                myProject->meteoMaps->evaporationMap->value[row][col] = float(realEvap);
 
                 flow = area * (realEvap / 1000.0);                  //[m^3/h]
                 *totalEvaporation += flow;
@@ -543,26 +543,26 @@ bool setWaterSinkSource(Vine3DProject* myProject, double* totalPrecipitation,
     //crop transpiration
     *totalTranspiration = 0.0;
     for (layerIndex=1; layerIndex < myProject->WBSettings->nrLayers; layerIndex++)
-        for (long row = 0; row < myProject->WBMaps->indexMap.at(layerIndex).header->nrRows; row++)
-            for (long col = 0; col < myProject->WBMaps->indexMap.at(layerIndex).header->nrCols; col++)
+        for (long row = 0; row < myProject->WBMaps->indexMap.at(size_t(layerIndex)).header->nrRows; row++)
+            for (long col = 0; col < myProject->WBMaps->indexMap.at(size_t(layerIndex)).header->nrCols; col++)
             {
-                nodeIndex = myProject->WBMaps->indexMap.at(layerIndex).value[row][col];
-                if (nodeIndex != myProject->WBMaps->indexMap.at(layerIndex).header->flag)
+                nodeIndex = long(myProject->WBMaps->indexMap.at(size_t(layerIndex)).value[row][col]);
+                if (nodeIndex != long(myProject->WBMaps->indexMap.at(size_t(layerIndex)).header->flag))
                 {
-                    transp = myProject->outputPlantMaps->transpirationLayerMaps[layerIndex]->value[row][col];
+                    transp = double(myProject->outputPlantMaps->transpirationLayerMaps[layerIndex]->value[row][col]);
 
-                    if (transp != myProject->outputPlantMaps->transpirationLayerMaps[layerIndex]->header->flag)
+                    if (int(transp) != int(myProject->outputPlantMaps->transpirationLayerMaps[layerIndex]->header->flag))
                     {
                         flow = area * (transp / 1000.0);                    //[m^3/h]
                         *totalTranspiration += flow;
-                        waterSinkSource[nodeIndex] -= flow / 3600.0;        //[m^3/s]
+                        myWaterSinkSource.at(size_t(nodeIndex)) -= flow / 3600.0;        //[m^3/s]
                     }
                 }
             }
 
     for (long i = 0; i < myProject->WBSettings->nrNodes; i++)
     {
-        myResult = soilFluxes3D::setWaterSinkSource(i, waterSinkSource[i]);
+        myResult = soilFluxes3D::setWaterSinkSource(i, myWaterSinkSource.at(size_t(i)));
         if (isCrit3dError(myResult, &myError))
         {
             myProject->projectError = "initializeSoilMoisture:" + myError;
@@ -1049,7 +1049,7 @@ bool waterBalance(Vine3DProject* myProject)
     previousWaterContent = soilFluxes3D::getTotalWaterContent();
     myProject->logInfo("total water [m^3]: " + QString::number(previousWaterContent));
 
-    if (! setWaterSinkSource(myProject, &totalPrecipitation,
+    if (! waterBalanceSinkSource(myProject, &totalPrecipitation,
                              &totalEvaporation, &totalTranspiration)) return(false);
 
     myProject->logInfo("precipitation [m^3]: " + QString::number(totalPrecipitation));
@@ -1105,7 +1105,7 @@ bool initializeWaterBalance(Vine3DProject* myProject)
         return(false);
     }
 
-    waterSinkSource.resize(myProject->WBSettings->nrNodes);
+    myWaterSinkSource.resize(size_t(myProject->WBSettings->nrNodes));
     setBoundary(myProject);
 
     int myResult = soilFluxes3D::initialize(myProject->WBSettings->nrNodes, myProject->WBSettings->nrLayers,
