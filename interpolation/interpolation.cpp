@@ -263,7 +263,7 @@ bool neighbourhoodVariability(std::vector <Crit3DInterpolationDataPoint> &myInte
 }
 
 
-void regressionSimple(std::vector <Crit3DInterpolationDataPoint> &myPoints, bool useLapseRateCode,
+bool regressionSimple(std::vector <Crit3DInterpolationDataPoint> &myPoints, bool useLapseRateCode,
                       int proxyPosition, bool isZeroIntercept, float* myCoeff, float* myIntercept, float* myR2)
 {
     long i;
@@ -294,8 +294,13 @@ void regressionSimple(std::vector <Crit3DInterpolationDataPoint> &myPoints, bool
     }
 
     if (myValues.size() >= MIN_REGRESSION_POINTS)
+    {
         statistics::linearRegression((float*)(myZ.data()), (float*)(myValues.data()), (long)(myZ.size()), isZeroIntercept,
                                      myIntercept, myCoeff, myR2);
+        return true;
+    }
+    else
+        return false;
 }
 
 bool regressionGeneric(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings,
@@ -303,12 +308,12 @@ bool regressionGeneric(std::vector <Crit3DInterpolationDataPoint> &myPoints, Cri
 {
     float q, m, r2;
 
-    regressionSimple(myPoints, mySettings->getUseLapseRateCode(), proxyPos, isZeroIntercept, &m, &q, &r2);
-    Crit3DProxy* myProxy = mySettings->getProxy(proxyPos);
+    if (! regressionSimple(myPoints, mySettings->getUseLapseRateCode(), proxyPos, isZeroIntercept, &m, &q, &r2))
+        return false;
 
+    Crit3DProxy* myProxy = mySettings->getProxy(proxyPos);
     myProxy->setRegressionSlope(m);
     myProxy->setRegressionR2(r2);
-
     return (r2 >= mySettings->getMinRegressionR2());
 }
 
@@ -322,7 +327,8 @@ bool regressionSimpleT(std::vector <Crit3DInterpolationDataPoint> &myPoints, Cri
     Crit3DProxy* myProxyOrog = mySettings->getProxy(orogProxyPos);
     myProxyOrog->initializeOrography();
 
-    regressionSimple(myPoints, useLRCode, orogProxyPos, false, &m, &q, &r2);
+    if (! regressionSimple(myPoints, useLRCode, orogProxyPos, false, &m, &q, &r2))
+        return false;
 
     if (r2 < mySettings->getMinRegressionR2())
         return false;
@@ -484,7 +490,8 @@ bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, 
     /*! only positive lapse rate*/
     if (myProxyOrog->getInversionIsSignificative() && myIntervalsValues1.size() == myIntervalsValues.size())
     {
-        regressionSimple(myPoints, useLRCode, orogProxyPos, false, &m, &q, &r2);
+        if (! regressionSimple(myPoints, useLRCode, orogProxyPos, false, &m, &q, &r2))
+            return false;
 
         if (r2 >= mySignificativeR2)
         {
@@ -526,7 +533,8 @@ bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, 
     /*! inversion is not significant with data neither with intervals */
     if (r2_values < mySignificativeR2Inv && r2_intervals < mySignificativeR2Inv)
     {
-        regressionSimple(myPoints, useLRCode, orogProxyPos, false, &m, &q, &r2);
+        if (! regressionSimple(myPoints, useLRCode, orogProxyPos, false, &m, &q, &r2))
+            return false;
 
         /*! case 0: regression with all data much significant */
         if (r2 >= 0.5)
@@ -574,7 +582,8 @@ bool regressionOrographyT(std::vector <Crit3DInterpolationDataPoint> &myPoints, 
         lapseRateT1 = NODATA;
 
         /*! case 2: regression with data */
-        regressionSimple(myPoints, useLRCode, orogProxyPos, false, &m, &q, &r2);
+        if (! regressionSimple(myPoints, useLRCode, orogProxyPos, false, &m, &q, &r2))
+            return false;
 
         if (r2 >= mySignificativeR2)
         {

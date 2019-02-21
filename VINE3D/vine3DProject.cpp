@@ -43,7 +43,7 @@ void Vine3DProject::initialize()
     demFileName = "";
     fieldMapName = "";
     logFileName = "";
-    projectError = "";
+    errorString = "";
 
     lastDateTransmissivity.setDate(1900,1,1);
 
@@ -246,7 +246,7 @@ bool Vine3DProject::loadGrapevineParameters()
     QSqlQuery myQuery = dbConnection.exec(myQueryString);
     if (myQuery.size() == -1)
     {
-        this->projectError = "wrong Grapevine parameters" + myQuery.lastError().text();
+        errorString = "wrong Grapevine parameters" + myQuery.lastError().text();
         return(false);
     }
     //initialize vines
@@ -296,7 +296,7 @@ bool Vine3DProject::loadTrainingSystems()
 
     if (myQuery.size() < 1)
     {
-        this->projectError = "missing training system" + myQuery.lastError().text();
+        this->errorString = "missing training system" + myQuery.lastError().text();
         return false;
     }
     //initialize training system
@@ -336,7 +336,7 @@ bool Vine3DProject::loadFieldBook()
 
     if (myQuery.size() == -1)
     {
-        this->projectError = "missing field_book\n" + myQuery.lastError().text();
+        this->errorString = "missing field_book\n" + myQuery.lastError().text();
         return false;
     }
 
@@ -448,7 +448,7 @@ int Vine3DProject::queryFieldPoint(double x, double y)
 
     if (myQuery.size() == -1)
     {
-        this->projectError = myQuery.lastError().text();
+        this->errorString = myQuery.lastError().text();
         this->logError();
         return(NODATA);
     }
@@ -479,7 +479,7 @@ bool Vine3DProject::loadFieldShape()
     myQuery = this->dbConnection.exec(myQueryString);
     if (myQuery.size() == -1)
     {
-        this->projectError = myQuery.lastError().text();
+        this->errorString = myQuery.lastError().text();
         return(false);
     }
     myQuery.clear();
@@ -566,7 +566,7 @@ bool Vine3DProject::loadFieldMap(QString myFileName)
 
     if (! gis::readEsriGrid(fn, &(myGrid), myError))
     {
-        this->projectError = "Load fields map failed:\n" + myFileName + "\n" + QString::fromStdString(*myError);
+        this->errorString = "Load fields map failed:\n" + myFileName + "\n" + QString::fromStdString(*myError);
         logError();
         return (false);
     }
@@ -616,7 +616,7 @@ bool Vine3DProject::readFieldQuery(QSqlQuery myQuery, int* idField, Crit3DLandus
     std::string landuse_name = myQuery.value("landuse").toString().toStdString();
     if (landuseNames.find(landuse_name) == landuseNames.end())
     {
-        this->projectError = "Unknown landuse for field " + *idField;
+        this->errorString = "Unknown landuse for field " + *idField;
         return false;
     }
     else
@@ -628,7 +628,7 @@ bool Vine3DProject::readFieldQuery(QSqlQuery myQuery, int* idField, Crit3DLandus
     while (i < this->nrCultivar && idCultivar != cultivar[i].id) i++;
     if (i == this->nrCultivar)
     {
-        this->projectError = "cultivar " + QString::number(idCultivar) + " not found" + myQuery.lastError().text();
+        this->errorString = "cultivar " + QString::number(idCultivar) + " not found" + myQuery.lastError().text();
         return false;
     }
     *vineIndex = i;
@@ -639,7 +639,7 @@ bool Vine3DProject::readFieldQuery(QSqlQuery myQuery, int* idField, Crit3DLandus
     while (i < this->nrTrainingSystems && idTraining != this->trainingSystems[i].id) i++;
     if (i == this->nrTrainingSystems)
     {
-        this->projectError = "training system nr." + QString::number(idTraining) + " not found" + myQuery.lastError().text();
+        this->errorString = "training system nr." + QString::number(idTraining) + " not found" + myQuery.lastError().text();
         return false;
     }
     *trainingIndex = i;
@@ -650,7 +650,7 @@ bool Vine3DProject::readFieldQuery(QSqlQuery myQuery, int* idField, Crit3DLandus
     while (i < this->WBSettings->nrSoils && idSoil != WBSettings->soilList[i].id) i++;
     if (i == this->WBSettings->nrSoils)
     {
-        this->projectError = "soil " + QString::number(idSoil) + " not found" + myQuery.lastError().text();
+        this->errorString = "soil " + QString::number(idSoil) + " not found" + myQuery.lastError().text();
         return false;
     }
     *soilIndex = i;
@@ -677,7 +677,7 @@ bool Vine3DProject::loadFieldsProperties()
     myQuery = dbConnection.exec(myQueryString);
     if (myQuery.size() == -1)
     {
-        this->projectError = "Error reading fields table" + myQuery.lastError().text();
+        this->errorString = "Error reading fields table" + myQuery.lastError().text();
         return(false);
     }
     if (myQuery.next())
@@ -685,7 +685,7 @@ bool Vine3DProject::loadFieldsProperties()
 
     if (nrModelCases == 0)
     {
-        this->projectError = "Empty fields table";
+        this->errorString = "Empty fields table";
         return false;
     }
     this->modelCases = (Crit3DModelCase *) calloc(this->nrModelCases, sizeof(Crit3DModelCase));
@@ -695,12 +695,12 @@ bool Vine3DProject::loadFieldsProperties()
     myQuery = dbConnection.exec(myQueryString);
     if (myQuery.size() == -1)
     {
-        this->projectError = "Wrong structure in in fields table" + myQuery.lastError().text();
+        this->errorString = "Wrong structure in in fields table" + myQuery.lastError().text();
         return(false);
     }
     if (myQuery.size() == 0)
     {
-        this->projectError = "Missing default field (index = 0) in fields table";
+        this->errorString = "Missing default field (index = 0) in fields table";
         return(false);
     }
 
@@ -717,7 +717,7 @@ bool Vine3DProject::loadFieldsProperties()
         }
         else
         {
-            projectError = "Error reading fields";
+            errorString = "Error reading fields";
             return false;
         }
     }
@@ -736,12 +736,12 @@ bool Vine3DProject::loadClimateParameters()
     QSqlQuery myQuery = dbConnection.exec(myQueryString);
     if (myQuery.size() == -1)
     {
-        this->projectError = myQuery.lastError().text();
+        this->errorString = myQuery.lastError().text();
         return(false);
     }
     else if (myQuery.size() != 12)
     {
-        this->projectError = "wrong number of climate records (must be 12)";
+        this->errorString = "wrong number of climate records (must be 12)";
         return(false);
     }
 
@@ -782,7 +782,7 @@ bool Vine3DProject::loadAggregatedMeteoVarCodes()
     QSqlQuery myQuery = dbConnection.exec(myQueryString);
     if (myQuery.size() == -1)
     {
-        this->projectError = myQuery.lastError().text();
+        this->errorString = myQuery.lastError().text();
         return(false);
     }
 
@@ -814,12 +814,12 @@ bool Vine3DProject::loadVanGenuchtenParameters()
     QSqlQuery query = dbConnection.exec(queryString);
     if (query.size() == -1)
     {
-        this->projectError = "Table 'soil_van_genuchten': " + query.lastError().text();
+        this->errorString = "Table 'soil_van_genuchten': " + query.lastError().text();
         return(false);
     }
     else if (query.size() != 12)
     {
-        this->projectError = "Table 'soil_van_genuchten' Wrong number of soil textures (must be 12)";
+        this->errorString = "Table 'soil_van_genuchten' Wrong number of soil textures (must be 12)";
         return(false);
     }
 
@@ -833,7 +833,7 @@ bool Vine3DProject::loadVanGenuchtenParameters()
         for (j = 0; j <= 7; j++)
             if (! getValue(query.value(j), &myValue))
             {
-                this->projectError = "Table 'soil_van_genuchten' Missing data in soil texture:" + QString::number(id);
+                this->errorString = "Table 'soil_van_genuchten' Missing data in soil texture:" + QString::number(id);
                 return(false);
             }
         soilClass[id].vanGenuchten.alpha = query.value(1).toDouble();
@@ -864,9 +864,9 @@ bool Vine3DProject::loadHorizons(soil::Crit3DSoil* outputSoil, int idSoil, QStri
     if (query.size() < 1)
     {
         if (query.size() == -1)
-            this->projectError = "Table 'horizons' " + query.lastError().text();
+            this->errorString = "Table 'horizons' " + query.lastError().text();
         else if (query.size() == 0)
-            this->projectError = "Missing horizons in soil nr:" + QString::number(idSoil);
+            this->errorString = "Missing horizons in soil nr:" + QString::number(idSoil);
         return(false);
     }
 
@@ -886,7 +886,7 @@ bool Vine3DProject::loadHorizons(soil::Crit3DSoil* outputSoil, int idSoil, QStri
         if ((mySoil->horizon[i].upperDepth == NODATA) || (mySoil->horizon[i].lowerDepth == NODATA)
                 || (mySoil->horizon[i].lowerDepth < mySoil->horizon[i].upperDepth))
         {
-            this->projectError = "Wrong depths in soil " + QString::number(idSoil)
+            this->errorString = "Wrong depths in soil " + QString::number(idSoil)
                     + " horizon " + QString::number(idHorizon);
             return(false);
         }
@@ -909,7 +909,7 @@ bool Vine3DProject::loadHorizons(soil::Crit3DSoil* outputSoil, int idSoil, QStri
 
         if ((sand == NODATA) || (silt == NODATA) || (clay == NODATA))
         {
-            this->projectError = "Missing texture data in soil " + soil_code + " horizon " + QString::number(idHorizon);
+            this->errorString = "Missing texture data in soil " + soil_code + " horizon " + QString::number(idHorizon);
             return (false);
         }
 
@@ -917,7 +917,7 @@ bool Vine3DProject::loadHorizons(soil::Crit3DSoil* outputSoil, int idSoil, QStri
         int idTexture = soil::getUSDATextureClass(sand*100, silt*100, clay*100);
         if (idTexture == NODATA)
         {
-            this->projectError = "Wrong texture for soil " + soil_code + " horizon " + QString::number(idHorizon);
+            this->errorString = "Wrong texture for soil " + soil_code + " horizon " + QString::number(idHorizon);
             return (false);
         }
 
@@ -992,7 +992,7 @@ bool Vine3DProject::loadSoils()
     QSqlQuery query = dbConnection.exec(queryString);
     if (query.size() == -1)
     {
-        this->projectError = "Function 'loadSoils' - Table 'soils'\n" + query.lastError().text();
+        this->errorString = "Function 'loadSoils' - Table 'soils'\n" + query.lastError().text();
         return(false);
     }
 
@@ -1010,7 +1010,7 @@ bool Vine3DProject::loadSoils()
 
         if (! loadHorizons(&(WBSettings->soilList[index]), idSoil, soilCode))
         {
-             this->projectError = "Function 'loadHorizon' " + this->projectError;
+             this->errorString = "Function 'loadHorizon' " + this->errorString;
              return(false);
         }
         maxSoilDepth = maxValue(maxSoilDepth, WBSettings->soilList[index].totalDepth);
@@ -1104,7 +1104,7 @@ bool Vine3DProject::loadDBPoints()
     QSqlQuery query = dbConnection.exec(queryString);
     if (query.size() == -1)
     {
-        this->projectError = "Query failed in Table 'points_properties'\n" + query.lastError().text();
+        this->errorString = "Query failed in Table 'points_properties'\n" + query.lastError().text();
         return(false);
     }
 
@@ -1538,7 +1538,7 @@ bool Vine3DProject::loadObsDataAllPoints(QDate d1, QDate d2, bool showInfo)
 
     isObsDataLoaded = (isObsDataBoundaryLoaded || isObsDataWMSLoaded || isForecast);
 
-    if (! isObsDataLoaded) this->projectError = "Missing observed data.";
+    if (! isObsDataLoaded) this->errorString = "Missing observed data.";
 
     return(isObsDataLoaded);
 }
@@ -1581,7 +1581,7 @@ bool Vine3DProject::loadObsDataAllPointsVar(meteoVariable myVar, QDate d1, QDate
 
     isObsDataLoaded = (isObsDataBoundaryLoaded || isObsDataWMSLoaded || isForecastLoaded);
 
-    if (! isObsDataLoaded) this->projectError = "missing data";
+    if (! isObsDataLoaded) this->errorString = "missing data";
     return(isObsDataLoaded);
 }
 
@@ -1949,19 +1949,19 @@ void Vine3DProject::logInfo(QString myLog)
 
 void Vine3DProject::logError()
 {
-    this->projectError = "Error! " + this->projectError;
+    this->errorString = "Error! " + this->errorString;
     if (environment == gui)
     {
         QMessageBox msgBox;
-        msgBox.setText(this->projectError);
+        msgBox.setText(this->errorString);
         msgBox.exec();
     }
     if (logFile.is_open())
-        logFile << this->projectError.toStdString() << std::endl;
+        logFile << this->errorString.toStdString() << std::endl;
 }
 
 void Vine3DProject::logError(QString myError)
 {
-    this->projectError = myError;
+    this->errorString = myError;
     logError();
 }

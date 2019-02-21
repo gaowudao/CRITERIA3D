@@ -67,7 +67,7 @@ class ProxyDialog : public QDialog
         void writeProxies();
         void saveProxies();
         void saveProxy();
-        bool checkProxies(std::string *error);
+        bool checkProxies(QString *error);
         void accept();
 
     private:

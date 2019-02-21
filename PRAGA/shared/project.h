@@ -59,7 +59,7 @@
         void inizializeDBConnection();
 
     public:
-        std::string errorString;
+        QString errorString;
         QString logFileName;
         std::ofstream logFile;
 
@@ -99,7 +99,7 @@
         bool loadCommonSettings(QString settingsFileName);
         bool loadParameters(QString parametersFileName);
         void setProxyDEM();
-        bool checkProxy(std::string name_, std::string gridName_, std::string table_, std::string field_, std::string *error);
+        bool checkProxy(std::string name_, std::string gridName_, std::string table_, std::string field_, QString *error);
         void addProxy(std::string name_, std::string gridName_, std::string table_, std::string field_, bool isForQuality_, bool isActive_);
 
         void setCurrentDate(QDate myDate);

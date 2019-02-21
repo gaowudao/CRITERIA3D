@@ -10,9 +10,9 @@
 #include "utilities.h"
 
 
-bool loadCropParameters(QString idCrop, Crit3DCrop* myCrop, QSqlDatabase* dbCrop, std::string *myError)
+bool loadCropParameters(QString idCrop, Crit3DCrop* myCrop, QSqlDatabase* dbCrop, QString *myError)
 {
-    std::string idCropString = idCrop.toStdString();
+    QString idCropString = idCrop;
 
     QString queryString = "SELECT * FROM crop WHERE id_crop = '" + idCrop + "'";
 
@@ -22,13 +22,13 @@ bool loadCropParameters(QString idCrop, Crit3DCrop* myCrop, QSqlDatabase* dbCrop
     if (! query.isValid())
     {
         if (query.lastError().number() > 0)
-            *myError = "Error in reading crop parameters of " + idCropString + "\n" + query.lastError().text().toStdString();
+            *myError = "Error in reading crop parameters of " + idCropString + "\n" + query.lastError().text();
         else
             *myError = "Missing crop: " + idCropString;
         return(false);
     }
 
-    myCrop->idCrop = idCropString;
+    myCrop->idCrop = idCropString.toStdString();
     myCrop->type = getCropType(query.value("type").toString().toStdString());
     myCrop->plantCycle = query.value("plant_cycle_max_duration").toInt();
     getValue(query.value("sowing_doy"), &(myCrop->sowingDoy));
@@ -95,7 +95,7 @@ bool loadCropParameters(QString idCrop, Crit3DCrop* myCrop, QSqlDatabase* dbCrop
 }
 
 
-bool loadVanGenuchtenParameters(soil::Crit3DSoilClass *soilTexture, QSqlDatabase* dbParameters, std::string *myError)
+bool loadVanGenuchtenParameters(soil::Crit3DSoilClass *soilTexture, QSqlDatabase* dbParameters, QString *myError)
 {
     QString queryString = "SELECT id_texture, alpha, n, he, theta_r, theta_s, k_sat, l ";
     queryString        += "FROM soil_vangenuchten ORDER BY id_texture";
@@ -106,7 +106,7 @@ bool loadVanGenuchtenParameters(soil::Crit3DSoilClass *soilTexture, QSqlDatabase
 
     if (tableSize == 0)
     {
-        *myError = "Table soil_vangenuchten\n" + query.lastError().text().toStdString();
+        *myError = "Table soil_vangenuchten\n" + query.lastError().text();
         return(false);
     }
     else if (tableSize != 12)
@@ -127,7 +127,7 @@ bool loadVanGenuchtenParameters(soil::Crit3DSoilClass *soilTexture, QSqlDatabase
         for (j = 0; j <= 7; j++)
             if (! getValue(query.value(j), &myValue))
             {
-                *myError = "Table soil_van_genuchten: missing data in soil texture:" + QString::number(id).toStdString();
+                *myError = "Table soil_van_genuchten: missing data in soil texture:" + QString::number(id);
                 return(false);
             }
 
@@ -156,7 +156,7 @@ bool loadVanGenuchtenParameters(soil::Crit3DSoilClass *soilTexture, QSqlDatabase
 }
 
 
-bool loadDriessenParameters(soil::Crit3DSoilClass *soilTexture, QSqlDatabase* dbParameters, std::string *myError)
+bool loadDriessenParameters(soil::Crit3DSoilClass *soilTexture, QSqlDatabase* dbParameters, QString *myError)
 {
     QString queryString = "SELECT id_texture, k_sat, grav_conductivity, max_sorptivity";
     queryString += " FROM soil_driessen ORDER BY id_texture";
@@ -167,7 +167,7 @@ bool loadDriessenParameters(soil::Crit3DSoilClass *soilTexture, QSqlDatabase* db
 
     if (tableSize == 0)
     {
-        *myError = "Table soil_driessen\n" + query.lastError().text().toStdString();
+        *myError = "Table soil_driessen\n" + query.lastError().text();
         return(false);
     }
     else if (tableSize != 12)
@@ -187,7 +187,7 @@ bool loadDriessenParameters(soil::Crit3DSoilClass *soilTexture, QSqlDatabase* db
         for (j = 0; j <= 3; j++)
             if (! getValue(query.value(j), &myValue))
             {
-                *myError = "Table soil_driessen: missing data in soil texture:" + QString::number(id).toStdString();
+                *myError = "Table soil_driessen: missing data in soil texture:" + QString::number(id);
                 return(false);
             }
 
@@ -201,7 +201,7 @@ bool loadDriessenParameters(soil::Crit3DSoilClass *soilTexture, QSqlDatabase* db
 }
 
 
-QString getIdSoilString(QSqlDatabase* dbSoil, int idSoilNumber, std::string *myError)
+QString getIdSoilString(QSqlDatabase* dbSoil, int idSoilNumber, QString *myError)
 {
     *myError = "";
     QString queryString = "SELECT * FROM soils WHERE id_soil='" + QString::number(idSoilNumber) +"'";
@@ -212,7 +212,7 @@ QString getIdSoilString(QSqlDatabase* dbSoil, int idSoilNumber, std::string *myE
     if (! query.isValid())
     {
         if (query.lastError().number() > 0)
-            *myError = query.lastError().text().toStdString();
+            *myError = query.lastError().text();
         return "";
     }
 
@@ -223,9 +223,9 @@ QString getIdSoilString(QSqlDatabase* dbSoil, int idSoilNumber, std::string *myE
 }
 
 
-bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, soil::Crit3DSoilClass *soilTexture, std::string *myError)
+bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, soil::Crit3DSoilClass *soilTexture, QString *myError)
 {
-    std::string idSoilStr = soilCode.toStdString();
+    QString idSoilStr = soilCode;
 
     QString queryString = "SELECT * FROM horizons ";
     queryString += "WHERE soil_code='" + soilCode + "' ORDER BY horizon_nr";
@@ -236,7 +236,7 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, 
     if (! query.isValid())
     {
         if (query.lastError().number() > 0)
-            *myError = "dbSoil error: " + query.lastError().text().toStdString();
+            *myError = "dbSoil error: " + query.lastError().text();
         else
             *myError = "Missing soil:" + idSoilStr;
         return false;
@@ -273,7 +273,7 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, 
             || ((idHorizon == 1) && (mySoil->horizon[i].upperDepth > 0))
             || ((idHorizon > 1) && (fabs(mySoil->horizon[i].upperDepth - mySoil->horizon[i-1].lowerDepth) > EPSILON)))
         {
-            *myError = "Wrong soil: " + idSoilStr + " - wrong depth horizon: " + QString::number(idHorizon).toStdString();
+            *myError = "Wrong soil: " + idSoilStr + " - wrong depth horizon: " + QString::number(idHorizon);
             return false;
         }
 
@@ -299,7 +299,7 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, 
         {
                 *myError = "Wrong soil: " + idSoilStr
                     + " - sand+silt+clay <> 1 - horizon nr: "
-                    + QString::number(idHorizon).toStdString();
+                    + QString::number(idHorizon);
                 return false;
         }
         idTextureNL =  soil::getNLTextureClass(sand, silt, clay);
@@ -327,7 +327,7 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, 
         {
                 *myError = "Wrong soil: " + idSoilStr
                     + " - wrong bulk density - horizon nr: "
-                    + QString::number(idHorizon).toStdString();
+                    + QString::number(idHorizon);
                 return false;
         }
 
@@ -373,7 +373,7 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, 
 }
 
 
-QString getCropFromClass(QSqlDatabase* dbCrop, QString cropClassTable, QString cropClassField, QString idCropClass, std::string *myError)
+QString getCropFromClass(QSqlDatabase* dbCrop, QString cropClassTable, QString cropClassField, QString idCropClass, QString *myError)
 {
     *myError = "";
     QString queryString = "SELECT * FROM " + cropClassTable + " WHERE " + cropClassField + " = '" + idCropClass + "'";
@@ -384,7 +384,7 @@ QString getCropFromClass(QSqlDatabase* dbCrop, QString cropClassTable, QString c
     if (! query.isValid())
     {
         if (query.lastError().number() > 0)
-            *myError = query.lastError().text().toStdString();
+            *myError = query.lastError().text();
         return "";
     }
 
@@ -395,7 +395,7 @@ QString getCropFromClass(QSqlDatabase* dbCrop, QString cropClassTable, QString c
 }
 
 
-QString getCropFromId(QSqlDatabase* dbCrop, QString cropClassTable, QString cropIdField, int cropId, std::string *myError)
+QString getCropFromId(QSqlDatabase* dbCrop, QString cropClassTable, QString cropIdField, int cropId, QString *myError)
 {
     *myError = "";
     QString queryString = "SELECT * FROM " + cropClassTable + " WHERE " + cropIdField + " = " + QString::number(cropId);
@@ -406,7 +406,7 @@ QString getCropFromId(QSqlDatabase* dbCrop, QString cropClassTable, QString crop
     if (! query.isValid())
     {
         if (query.lastError().number() > 0)
-            *myError = query.lastError().text().toStdString();
+            *myError = query.lastError().text();
         return "";
     }
 
@@ -417,7 +417,7 @@ QString getCropFromId(QSqlDatabase* dbCrop, QString cropClassTable, QString crop
 }
 
 
-float getIrriRatioFromClass(QSqlDatabase* dbCrop, QString cropClassTable, QString cropClassField, QString idCrop, std::string *myError)
+float getIrriRatioFromClass(QSqlDatabase* dbCrop, QString cropClassTable, QString cropClassField, QString idCrop, QString *myError)
 {
     *myError = "";
 
@@ -429,7 +429,7 @@ float getIrriRatioFromClass(QSqlDatabase* dbCrop, QString cropClassTable, QStrin
     if (! query.isValid())
     {
         if (query.lastError().number() > 0)
-            *myError = query.lastError().text().toStdString();
+            *myError = query.lastError().text();
         return(NODATA);
     }
 
@@ -442,7 +442,7 @@ float getIrriRatioFromClass(QSqlDatabase* dbCrop, QString cropClassTable, QStrin
 }
 
 
-float getIrriRatioFromId(QSqlDatabase* dbCrop, QString cropClassTable, QString cropIdField, int cropId, std::string *myError)
+float getIrriRatioFromId(QSqlDatabase* dbCrop, QString cropClassTable, QString cropIdField, int cropId, QString *myError)
 {
     *myError = "";
 
@@ -454,7 +454,7 @@ float getIrriRatioFromId(QSqlDatabase* dbCrop, QString cropClassTable, QString c
     if (! query.isValid())
     {
         if (query.lastError().number() > 0)
-            *myError = query.lastError().text().toStdString();
+            *myError = query.lastError().text();
         return(NODATA);
     }
 

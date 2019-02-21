@@ -394,7 +394,7 @@ bool ProxyDialog::edited(Project* myProject)
     return true;
 }
 
-bool ProxyDialog::checkProxies(std::string *error)
+bool ProxyDialog::checkProxies(QString *error)
 {
     QStringList fields;
     std::string table_;
@@ -411,7 +411,7 @@ bool ProxyDialog::checkProxies(std::string *error)
             fields = getFields(&db, QString::fromStdString(table_));
             if (fields.filter("id_point").isEmpty())
             {
-                *error = "no id_point field found in table " + table_ + " for proxy " + _proxy.at(i).getName();
+                *error = "no id_point field found in table " + QString::fromStdString(table_) + " for proxy " + QString::fromStdString(_proxy.at(i).getName());
                 return false;
             }
         }
@@ -448,7 +448,7 @@ void ProxyDialog::writeProxies()
 void ProxyDialog::accept()
 {
     // check proxies
-    std::string error;
+    QString error;
     if (checkProxies(&error))
     {
         saveProxies();
@@ -456,7 +456,7 @@ void ProxyDialog::accept()
         QDialog::done(QDialog::Accepted);
     }
     else
-        QMessageBox::information(nullptr, "Proxy error", QString::fromStdString(error));
+        QMessageBox::information(nullptr, "Proxy error", error);
 
     return;
 }

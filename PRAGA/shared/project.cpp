@@ -94,7 +94,7 @@ void Project::setProxyDEM()
     }
 }
 
-bool Project::checkProxy(std::string name_, std::string gridName_, std::string table_, std::string field_, std::string *error)
+bool Project::checkProxy(std::string name_, std::string gridName_, std::string table_, std::string field_, QString *error)
 {
     if (name_ == "")
     {
@@ -106,7 +106,7 @@ bool Project::checkProxy(std::string name_, std::string gridName_, std::string t
 
     if (gridName_ == "" && !isHeight && (table_ == "" && field_ == ""))
     {
-        *error = "error reading grid, table or field for proxy " + name_;
+        *error = "error reading grid, table or field for proxy " + QString::fromStdString(name_);
         return false;
     }
 
@@ -557,7 +557,7 @@ bool Project::loadMeteoPointsDB(QString dbName)
         return false;
     }
 
-    QList<Crit3DMeteoPoint> listMeteoPoints = meteoPointsDbHandler->getPropertiesFromDb(this->gisSettings, &(this->errorString));
+    QList<Crit3DMeteoPoint> listMeteoPoints = meteoPointsDbHandler->getPropertiesFromDb(gisSettings, &errorString);
 
     nrMeteoPoints = listMeteoPoints.size();
     if (nrMeteoPoints == 0)
@@ -597,11 +597,11 @@ bool Project::loadMeteoGridDB(QString xmlName)
     if (xmlName == "")
         return false;
 
-    this->meteoGridDbHandler = new Crit3DMeteoGridDbHandler();
-    this->meteoGridDbHandler->meteoGrid()->setGisSettings(this->gisSettings);
+    meteoGridDbHandler = new Crit3DMeteoGridDbHandler();
+    meteoGridDbHandler->meteoGrid()->setGisSettings(this->gisSettings);
 
 
-    if (! this->meteoGridDbHandler->parseXMLGrid(xmlName, &errorString))
+    if (! meteoGridDbHandler->parseXMLGrid(xmlName, &errorString))
         return false;
 
     if (! this->meteoGridDbHandler->openDatabase(&errorString))
@@ -821,7 +821,7 @@ bool Project::readPointProxyValues(Crit3DMeteoPoint* myPoint, QSqlDatabase* myDb
             proxyTable = QString::fromStdString(myProxy->getProxyTable());
             if (proxyField != "" && proxyTable != "")
             {
-                statement = QString("SELECT `%1`FROM `%2` WHERE id_point = '%3'").arg(proxyField).arg(proxyTable).arg(QString::fromStdString((*myPoint).id));
+                statement = QString("SELECT %1 FROM %2 WHERE id_point = '%3'").arg(proxyField).arg(proxyTable).arg(QString::fromStdString((*myPoint).id));
                 if(qry.exec(statement))
                 {
                     qry.last();
@@ -942,7 +942,7 @@ bool Project::writeTopographicDistanceMaps()
                 fileName = mapsFolder.toStdString() + "TAD_" + meteoPoints[i].id;
                 if (! gis::writeEsriGrid(fileName, &myMap, &myError))
                 {
-                    errorString = myError;
+                    errorString = QString::fromStdString(myError);
                     return false;
                 }
             }
@@ -984,7 +984,7 @@ bool Project::loadTopographicDistanceMaps()
             meteoPoints[i].topographicDistance = new gis::Crit3DRasterGrid();
             if (! gis::readEsriGrid(fileName, meteoPoints[i].topographicDistance, &myError))
             {
-                errorString = myError;
+                errorString = QString::fromStdString(myError);
                 return false;
             }
         }
@@ -1150,16 +1150,16 @@ void Project::log(std::string myStr)
 
 void Project::logError(QString myStr)
 {
-    errorString = myStr.toStdString();
+    errorString = myStr;
     logError();
 }
 
 void Project::logError()
 {
     if (logFile.is_open())
-        logFile << "----ERROR!----\n" << this->errorString << std::endl;
+        logFile << "----ERROR!----\n" << errorString.toStdString() << std::endl;
     else
-        QMessageBox::critical(nullptr, "Error!", QString::fromStdString(errorString));
+        QMessageBox::critical(nullptr, "Error!", errorString);
 }
 
 

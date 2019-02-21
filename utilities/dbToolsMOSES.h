@@ -7,7 +7,7 @@
     class QString;
     class Crit3DMeteoPoint;
 
-    float getMOSESIrriRatio(QSqlDatabase* dbCrop, QString idCrop, std::string *myError);
-    bool readMOSESDailyData(QSqlQuery *query, Crit3DMeteoPoint *meteoPoint, std::string *myError);
+    float getMOSESIrriRatio(QSqlDatabase* dbCrop, QString idCrop, QString *myError);
+    bool readMOSESDailyData(QSqlQuery *query, Crit3DMeteoPoint *meteoPoint, QString *myError);
 
 #endif // DBTOOLSMOSES_H

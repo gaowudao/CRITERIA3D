@@ -245,7 +245,7 @@ bool vine3DInterpolationDem(Vine3DProject* myProject, meteoVariable myVar,
         return true;
     else
     {
-        myProject->projectError = "Function vine3DInterpolationDem: post interpolation";
+        myProject->errorString = "Function vine3DInterpolationDem: post interpolation";
         return false;
     }
 }
@@ -310,7 +310,7 @@ bool vine3DInterpolationDemRadiation(Vine3DProject* myProject, const Crit3DTime&
 
     if (! transComputed)
     {
-        myProject->projectError = "Function computeRadiationProjectDtm: transmissivity data unavailable";
+        myProject->errorString = "Function computeRadiationProjectDtm: transmissivity data unavailable";
         return false;
     }
 
@@ -318,21 +318,21 @@ bool vine3DInterpolationDemRadiation(Vine3DProject* myProject, const Crit3DTime&
                                           &(myProject->qualityInterpolationSettings), &(myProject->interpolationSettings),
                                           interpolationPoints, true))
     {
-        myProject->projectError = "Function computeRadiationProjectDtm: no transmissivity data available";
+        myProject->errorString = "Function computeRadiationProjectDtm: no transmissivity data available";
         return false;
     }
 
     if (preInterpolation(interpolationPoints, &(myProject->interpolationSettings), myProject->meteoPoints, myProject->nrMeteoPoints, atmTransmissivity, myCrit3DTime))
         if (! interpolationRaster(interpolationPoints, &(myProject->interpolationSettings), myProject->meteoMaps->radiationMaps->transmissivityMap, myProject->DTM, atmTransmissivity, false))
         {
-            myProject->projectError = "Function computeRadiationProjectDtm: error interpolating transmissivity";
+            myProject->errorString = "Function computeRadiationProjectDtm: error interpolating transmissivity";
             return false;
         }
 
     if (radiation::computeRadiationGridPresentTime(&(myProject->radSettings), myProject->DTM, myProject->meteoMaps->radiationMaps, myCrit3DTime))
         myResult = setRadiationScale(myProject->meteoMaps->radiationMaps->globalRadiationMap->colorScale);
     else
-        myProject->projectError = "Function computeRadiationProjectDtm: error computing irradiance";
+        myProject->errorString = "Function computeRadiationProjectDtm: error computing irradiance";
 
     return myResult;
 }

@@ -17,7 +17,7 @@
  * \return true if data are correctly loaded
  * \note meteoPoint have to be initialized BEFORE function
  */
-bool readMOSESDailyData(QSqlQuery *query, Crit3DMeteoPoint *meteoPoint, std::string *myError)
+bool readMOSESDailyData(QSqlQuery *query, Crit3DMeteoPoint *meteoPoint, QString *myError)
 {
     const int MAX_MISSING_DAYS = 3;
     QDate myDate, expectedDate, previousDate;
@@ -46,7 +46,7 @@ bool readMOSESDailyData(QSqlQuery *query, Crit3DMeteoPoint *meteoPoint, std::str
 
         if (! myDate.isValid())
         {
-            *myError = "Wrong date format: " + query->value("date").toString().toStdString();
+            *myError = "Wrong date format: " + query->value("date").toString();
             return false;
         }
 
@@ -56,7 +56,7 @@ bool readMOSESDailyData(QSqlQuery *query, Crit3DMeteoPoint *meteoPoint, std::str
             {
                 if (expectedDate.daysTo(myDate) > MAX_MISSING_DAYS)
                 {
-                    *myError = "Wrong METEO: too many missing data." + expectedDate.toString().toStdString();
+                    *myError = "Wrong METEO: too many missing data." + expectedDate.toString();
                     return false;
                 }
                 else
@@ -109,7 +109,7 @@ bool readMOSESDailyData(QSqlQuery *query, Crit3DMeteoPoint *meteoPoint, std::str
                 }
                 else
                 {
-                    *myError = "Wrong METEO: too many missing data " + myDate.toString().toStdString();
+                    *myError = "Wrong METEO: too many missing data " + myDate.toString();
                     return false;
                 }
             }

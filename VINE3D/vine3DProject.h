@@ -81,8 +81,6 @@
 
         bool isProjectLoaded;
 
-        QString projectError;
-
         Crit3DQuality qualityParameters;
 
         Crit3DMeteoMaps* meteoMaps;

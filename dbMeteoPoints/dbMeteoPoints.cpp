@@ -399,7 +399,7 @@ bool Crit3DMeteoPointsDbHandler::loadHourlyData(Crit3DDate dateStart, Crit3DDate
 }
 
 
-std::vector<float> Crit3DMeteoPointsDbHandler::loadDailyVar(std::string *myError, meteoVariable variable, Crit3DDate dateStart, Crit3DDate dateEnd, QDate* firstDateDB, Crit3DMeteoPoint *meteoPoint)
+std::vector<float> Crit3DMeteoPointsDbHandler::loadDailyVar(QString *myError, meteoVariable variable, Crit3DDate dateStart, Crit3DDate dateEnd, QDate* firstDateDB, Crit3DMeteoPoint *meteoPoint)
 {
     QString dateStr;
     QDate d, previousDate;
@@ -420,7 +420,7 @@ std::vector<float> Crit3DMeteoPointsDbHandler::loadDailyVar(std::string *myError
 
     if( !myQuery.exec(statement) )
     {
-        *myError = myQuery.lastError().text().toStdString();
+        *myError = myQuery.lastError().text();
         return dailyVarList;
     }
     else
@@ -463,7 +463,7 @@ std::vector<float> Crit3DMeteoPointsDbHandler::loadDailyVar(std::string *myError
     return dailyVarList;
 }
 
-std::vector<float> Crit3DMeteoPointsDbHandler::loadHourlyVar(std::string *myError, meteoVariable variable, Crit3DDate dateStart, Crit3DDate dateEnd, QDateTime* firstDateDB, Crit3DMeteoPoint *meteoPoint)
+std::vector<float> Crit3DMeteoPointsDbHandler::loadHourlyVar(QString *myError, meteoVariable variable, Crit3DDate dateStart, Crit3DDate dateEnd, QDateTime* firstDateDB, Crit3DMeteoPoint *meteoPoint)
 {
     QString dateStr;
     QDateTime d, previousDate;
@@ -483,7 +483,7 @@ std::vector<float> Crit3DMeteoPointsDbHandler::loadHourlyVar(std::string *myErro
                                  .arg(tableName).arg(FIELD_METEO_VARIABLE).arg(idVar).arg(startDate).arg(endDate);
     if( !qry.exec(statement) )
     {
-        *myError = qry.lastError().text().toStdString();
+        *myError = qry.lastError().text();
         return hourlyVarList;
     }
     else
@@ -584,7 +584,7 @@ bool Crit3DMeteoPointsDbHandler::readPointProxyValues(Crit3DMeteoPoint* myPoint,
     return true;
 }
 
-QList<Crit3DMeteoPoint> Crit3DMeteoPointsDbHandler::getPropertiesFromDb(const gis::Crit3DGisSettings& gisSettings, std::string *errorString)
+QList<Crit3DMeteoPoint> Crit3DMeteoPointsDbHandler::getPropertiesFromDb(const gis::Crit3DGisSettings& gisSettings, QString *errorString)
 {
     QList<Crit3DMeteoPoint> meteoPointsList;
     Crit3DMeteoPoint meteoPoint;
@@ -595,7 +595,7 @@ QList<Crit3DMeteoPoint> Crit3DMeteoPointsDbHandler::getPropertiesFromDb(const gi
 
     if( !qry.exec() )
     {
-        *errorString = qry.lastError().text().toStdString();
+        *errorString = qry.lastError().text();
     }
     else
     {

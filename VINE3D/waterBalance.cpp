@@ -62,8 +62,8 @@ bool setCrit3DSoils(Vine3DProject* myProject)
 
                  if (isCrit3dError(myResult, &myError))
                  {
-                     myProject->projectError = "setCrit3DSoils:" + myError
-                         + " in soil nr:" + QString::number(myProject->WBSettings->soilList[soilIndex].id)
+                     myProject->errorString = "setCrit3DSoils: " + myError
+                         + " in soil nr: " + QString::number(myProject->WBSettings->soilList[soilIndex].id)
                          + " horizon nr: " + QString::number(horizIndex);
                      return(false);
                  }
@@ -88,7 +88,7 @@ bool setCrit3DSurfaces(Vine3DProject* myProject)
         myResult = soilFluxes3D::setSurfaceProperties(surfaceIndex, ManningRoughness, surfacePond);
         if (isCrit3dError(myResult, &myError))
         {
-            myProject->projectError = "setCrit3DSurfaces:" + myError
+            myProject->errorString = "setCrit3DSurfaces:" + myError
                 + " in surface nr:" + QString::number(surfaceIndex);
             return(false);
         }
@@ -256,7 +256,7 @@ bool setCrit3DTopography(Vine3DProject* myProject)
                     //check error
                     if (isCrit3dError(myResult, &myError))
                     {
-                        myProject->projectError = "setCrit3DTopography:" + myError
+                        myProject->errorString = "setCrit3DTopography:" + myError
                                     + " in layer nr:" + QString::number(layer);
                         return(false);
                     }
@@ -270,7 +270,7 @@ bool setCrit3DTopography(Vine3DProject* myProject)
                             myResult = soilFluxes3D::setNodeLink(index, linkIndex, UP, area);
                             if (isCrit3dError(myResult, &myError))
                             {
-                                myProject->projectError = "setNodeLink:" + myError
+                                myProject->errorString = "setNodeLink:" + myError
                                         + " in layer nr:" + QString::number(layer);
                                 return(false);
                             }
@@ -286,7 +286,7 @@ bool setCrit3DTopography(Vine3DProject* myProject)
                             myResult = soilFluxes3D::setNodeLink(index, linkIndex, DOWN, area);
                             if (isCrit3dError(myResult, &myError))
                             {
-                                myProject->projectError = "setNodeLink:" + myError
+                                myProject->errorString = "setNodeLink:" + myError
                                         + " in layer nr:" + QString::number(layer);
                                 return(false);
                             }
@@ -304,7 +304,7 @@ bool setCrit3DTopography(Vine3DProject* myProject)
                                         myResult = soilFluxes3D::setNodeLink(index, linkIndex, LATERAL, lateralArea / 2.0);
                                         if (isCrit3dError(myResult, &myError))
                                         {
-                                            myProject->projectError = "setNodeLink:" + myError
+                                            myProject->errorString = "setNodeLink:" + myError
                                                     + " in layer nr:" + QString::number(layer);
                                             return(false);
                                         }
@@ -343,7 +343,7 @@ bool setCrit3DNodeSoil(Vine3DProject* myProject)
                         horizonIndex = soil::getHorizonIndex(&(myProject->WBSettings->soilList[soilIndex]), myProject->WBSettings->layerDepth[layer]);
                         if (horizonIndex == NODATA)
                         {
-                            myProject->projectError = "function setCrit3DNodeSoil: \nno horizon definition in soil "
+                            myProject->errorString = "function setCrit3DNodeSoil: \nno horizon definition in soil "
                                     + QString::number(myProject->WBSettings->soilList[soilIndex].id) + " depth: " + QString::number(myProject->WBSettings->layerDepth[layer])
                                     +"\nCheck soil totalDepth in .xml file.";
                             return(false);
@@ -354,7 +354,7 @@ bool setCrit3DNodeSoil(Vine3DProject* myProject)
                         //check error
                         if (isCrit3dError(myResult, &myError))
                         {
-                            myProject->projectError = "setCrit3DNodeSoil:" + myError + " in soil nr: " + QString::number(soilIndex)
+                            myProject->errorString = "setCrit3DNodeSoil:" + myError + " in soil nr: " + QString::number(soilIndex)
                                     + " horizon nr:" + QString::number(horizonIndex);
                             return(false);
                         }
@@ -405,7 +405,7 @@ bool initializeSoilMoisture(Vine3DProject* myProject, int month)
 
                     if (isCrit3dError(myResult, &myError))
                     {
-                        myProject->projectError = "initializeSoilMoisture:" + myError;
+                        myProject->errorString = "initializeSoilMoisture:" + myError;
                         return(false);
                     }
                 }
@@ -565,7 +565,7 @@ bool waterBalanceSinkSource(Vine3DProject* myProject, double* totalPrecipitation
         myResult = soilFluxes3D::setWaterSinkSource(i, myWaterSinkSource.at(size_t(i)));
         if (isCrit3dError(myResult, &myError))
         {
-            myProject->projectError = "initializeSoilMoisture:" + myError;
+            myProject->errorString = "initializeSoilMoisture:" + myError;
             return(false);
         }
     }
@@ -1084,7 +1084,7 @@ bool initializeWaterBalance(Vine3DProject* myProject)
     QString myError;
     if (! myProject->isProjectLoaded)
     {
-        myProject->projectError = "initializeWaterBalance: project not loaded";
+        myProject->errorString = "initializeWaterBalance: project not loaded";
         return(false);
     }
 
@@ -1113,7 +1113,7 @@ bool initializeWaterBalance(Vine3DProject* myProject)
 
     if (isCrit3dError(myResult, &myError))
     {
-        myProject->projectError = "initializeCriteria3D:" + myError;
+        myProject->errorString = "initializeCriteria3D:" + myError;
         return(false);
     }
 
