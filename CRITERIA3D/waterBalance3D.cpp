@@ -42,7 +42,7 @@ void cleanWaterBalanceMemory()
     soilFluxes3D::cleanMemory();
 }
 
-bool isCrit3dError(int myResult, std::string* myError)
+bool isCrit3dError(int myResult, QString* myError)
 {
     if (myResult == CRIT3D_OK) return(false);
 
@@ -66,7 +66,7 @@ bool isCrit3dError(int myResult, std::string* myError)
 bool setCrit3DSoils(Crit3DProject* myProject)
 {
     soil::Crit3DHorizon* myHorizon;
-    std::string myError;
+    QString myError;
     int myResult;
 
     for (int soilIndex = 0; soilIndex < myProject->nrSoils; soilIndex++)
@@ -92,8 +92,8 @@ bool setCrit3DSoils(Crit3DProject* myProject)
                  if (isCrit3dError(myResult, &myError))
                  {
                      myProject->errorString = "setCrit3DSoils:" + myError
-                         + " in soil nr:" + std::to_string(myProject->soilList[soilIndex].id)
-                         + " horizon nr: " + std::to_string(horizIndex);
+                         + " in soil nr:" + QString::number(myProject->soilList[soilIndex].id)
+                         + " horizon nr: " + QString::number(horizIndex);
                      return(false);
                  }
             }
@@ -105,7 +105,7 @@ bool setCrit3DSoils(Crit3DProject* myProject)
 
 bool setCrit3DSurfaces(Crit3DProject* myProject)
 {
-    std::string myError;
+    QString myError;
     int myResult;
 
     // TODO
@@ -119,7 +119,7 @@ bool setCrit3DSurfaces(Crit3DProject* myProject)
         if (isCrit3dError(myResult, &myError))
         {
             myProject->errorString = "setCrit3DSurfaces:" + myError
-                + " in surface nr:" + std::to_string(surfaceIndex);
+                + " in surface nr:" + QString::number(surfaceIndex);
             return(false);
         }
     }
@@ -178,7 +178,7 @@ bool setCrit3DTopography(Crit3DProject* myProject)
     double z, area, lateralArea, volume, slope;
     long index, surfaceIndex, linkIndex;
     int myResult;
-    std::string myError;
+    QString myError;
 
     for (int row = 0; row < myProject->indexMap.header->nrRows; row++)
         for (int col = 0; col < myProject->indexMap.header->nrCols; col++)
@@ -239,7 +239,7 @@ bool setCrit3DTopography(Crit3DProject* myProject)
                     if (isCrit3dError(myResult, &myError))
                     {
                         myProject->errorString = "setCrit3DTopography:" + myError
-                                    + " in layer nr:" + std::to_string(layer);
+                                    + " in layer nr:" + QString::number(layer);
                         return(false);
                     }
                     //up link
@@ -250,7 +250,7 @@ bool setCrit3DTopography(Crit3DProject* myProject)
                         if (isCrit3dError(myResult, &myError))
                         {
                             myProject->errorString = "setNodeLink:" + myError
-                                    + " in layer nr:" + std::to_string(layer);
+                                    + " in layer nr:" + QString::number(layer);
                             return(false);
                         }
                     }
@@ -262,7 +262,7 @@ bool setCrit3DTopography(Crit3DProject* myProject)
                         if (isCrit3dError(myResult, &myError))
                         {
                             myProject->errorString = "setNodeLink:" + myError
-                                    + " in layer nr:" + std::to_string(layer);
+                                    + " in layer nr:" + QString::number(layer);
                             return(false);
                         }
                     }
@@ -283,7 +283,7 @@ bool setCrit3DTopography(Crit3DProject* myProject)
                                         if (isCrit3dError(myResult, &myError))
                                         {
                                             myProject->errorString = "setNodeLink:" + myError
-                                                    + " in layer nr:" + std::to_string(layer);
+                                                    + " in layer nr:" + QString::number(layer);
                                             return(false);
                                         }
                                     }
@@ -304,7 +304,7 @@ bool setCrit3DNodeSoil(Crit3DProject* myProject)
     long index, surfaceIndex;
     int soilIndex, horizonIndex;
     int myResult;
-    std::string myError;
+    QString myError;
 
     for (int row = 0; row < myProject->indexMap.header->nrRows; row++)
         for (int col = 0; col < myProject->indexMap.header->nrCols; col++)
@@ -330,7 +330,7 @@ bool setCrit3DNodeSoil(Crit3DProject* myProject)
                             if (horizonIndex == NODATA)
                             {
                                 myProject->errorString = "function setCrit3DNodeSoil: \nno horizon definition in soil nr: "
-                                        + std::to_string(soilIndex) + " depth: " + std::to_string(myProject->layerDepth[layer])
+                                        + QString::number(soilIndex) + " depth: " + QString::number(myProject->layerDepth[layer])
                                         +"\nCheck soil totalDepth.";
                                 return(false);
                             }
@@ -340,8 +340,8 @@ bool setCrit3DNodeSoil(Crit3DProject* myProject)
                             //check error
                             if (isCrit3dError(myResult, &myError))
                             {
-                                myProject->errorString = "setCrit3DNodeSoil:" + myError + " in soil nr: " + std::to_string(soilIndex)
-                                        + " horizon nr:" + std::to_string(horizonIndex);
+                                myProject->errorString = "setCrit3DNodeSoil:" + myError + " in soil nr: " + QString::number(soilIndex)
+                                        + " horizon nr:" + QString::number(horizonIndex);
                                 return(false);
                             }
                         }
@@ -356,7 +356,7 @@ bool setCrit3DNodeSoil(Crit3DProject* myProject)
 bool initializeSoilMoisture(Crit3DProject* myProject, int month)
 {
     int myResult;
-    std::string myError;
+    QString myError;
     long index, surfaceIndex;
     int soilIndex, horizonIndex;
     double moistureIndex, waterPotential;
@@ -485,7 +485,7 @@ bool setWaterSinkSource(Crit3DProject* myProject, double* totalPrecipitation,
     double prec, totalWater;
     double transp, flow, realEvap;
     int myResult;
-    std::string myError;
+    QString myError;
 
     // initialize
     for (long i = 0; i < myProject->nrVoxels; i++)
@@ -1015,7 +1015,7 @@ bool initializeWaterBalance(Crit3DProject* myProject)
 {
     myProject->log("\nInitialize Waterbalance...");
 
-    std::string myError;
+    QString myError;
 
     // TODO parameters
     double minThickness = 0.02;      //[m]

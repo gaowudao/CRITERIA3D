@@ -78,7 +78,7 @@ bool Crit3DProject::loadSoilData(QString dbName)
 {
     soilList.clear();
 
-    std::string myError;
+    QString myError;
     QSqlDatabase dbSoil;
 
     dbSoil = QSqlDatabase::addDatabase("QSQLITE", QUuid::createUuid().toString());
@@ -92,7 +92,7 @@ bool Crit3DProject::loadSoilData(QString dbName)
 
     if (! loadVanGenuchtenParameters(soilClass, &dbSoil, &myError))
     {
-        logError(QString::fromStdString(myError));
+        logError(myError);
         return false;
     }
 
@@ -129,7 +129,7 @@ bool Crit3DProject::loadSoilData(QString dbName)
             }
             else
             {
-                wrongSoils += QString::fromStdString(myError) + "\n";
+                wrongSoils += myError + "\n";
             }
         }
     } while(query.next());
