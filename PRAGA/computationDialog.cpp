@@ -921,14 +921,14 @@ void ComputationDialog::readParameter(int state)
     climateDbElabList.clear();
     climateDbElab.clear();
 
-    std::string myError = myProject.errorString;
+    QString myError = myProject.errorString;
 
     if (state!= 0)
     {
         climateDbElabList.setVisible(true);
         adjustSize();
         QStringList climateTables;
-        if ( !showClimateTables(myProject.clima->db(), &myError, &climateTables) )
+        if (! showClimateTables(myProject.clima->db(), &myError, &climateTables) )
         {
             climateDbElabList.addItem("No saved elaborations found");
         }

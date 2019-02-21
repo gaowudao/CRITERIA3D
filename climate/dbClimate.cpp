@@ -4,7 +4,7 @@
 
 // LC saveDailyElab is a bit more efficient respect saveDailyElabSingleValue, making prepare just once.
 // Anyway all the process for each id_point is only 2seconds.
-bool saveDailyElab(QSqlDatabase db, std::string *myError, QString id, std::vector<float> allResults, QString elab)
+bool saveDailyElab(QSqlDatabase db, QString *myError, QString id, std::vector<float> allResults, QString elab)
 {
     QSqlQuery qry(db);
     if (db.driverName() == "QSQLITE")
@@ -12,7 +12,7 @@ bool saveDailyElab(QSqlDatabase db, std::string *myError, QString id, std::vecto
         qry.prepare("CREATE TABLE IF NOT EXISTS `climate_daily` (days INTEGER, id_point TEXT, elab TEXT, value REAL, PRIMARY KEY(days,id_point,elab));");
         if( !qry.exec() )
         {
-            *myError = qry.lastError().text().toStdString();
+            *myError = qry.lastError().text();
             return false;
         }
 
@@ -22,7 +22,7 @@ bool saveDailyElab(QSqlDatabase db, std::string *myError, QString id, std::vecto
         qry.prepare("CREATE TABLE IF NOT EXISTS `climate_daily` (days smallint(5), id_point varchar(20), elab varchar(100), value float(5,2), PRIMARY KEY(days,id_point,elab) );");
         if( !qry.exec() )
         {
-            *myError = qry.lastError().text().toStdString();
+            *myError = qry.lastError().text();
             return false;
         }
     }
@@ -40,7 +40,7 @@ bool saveDailyElab(QSqlDatabase db, std::string *myError, QString id, std::vecto
 
         if( !qry.exec() )
         {
-            *myError = qry.lastError().text().toStdString();
+            *myError = qry.lastError().text();
             return false;
         }
     }
@@ -49,7 +49,7 @@ bool saveDailyElab(QSqlDatabase db, std::string *myError, QString id, std::vecto
     return true;
 }
 
-bool deleteElab(QSqlDatabase db, std::string *myError, QString table, QString elab)
+bool deleteElab(QSqlDatabase db, QString *myError, QString table, QString elab)
 {
     QSqlQuery qry(db);
     QString statement = QString("DELETE FROM `%1`").arg(table);
@@ -59,7 +59,7 @@ bool deleteElab(QSqlDatabase db, std::string *myError, QString table, QString el
 
     if( !qry.exec() )
     {
-        *myError = qry.lastError().text().toStdString();
+        *myError = qry.lastError().text();
         return false;
     }
 
@@ -67,7 +67,7 @@ bool deleteElab(QSqlDatabase db, std::string *myError, QString table, QString el
 }
 
 
-QList<float> readElab(QSqlDatabase db, QString table, std::string *myError, QString id, QString elab)
+QList<float> readElab(QSqlDatabase db, QString table, QString *myError, QString id, QString elab)
 {
     QSqlQuery qry(db);
     float value;
@@ -81,7 +81,7 @@ QList<float> readElab(QSqlDatabase db, QString table, std::string *myError, QStr
 
     if( !qry.exec() )
     {
-        *myError = qry.lastError().text().toStdString();
+        *myError = qry.lastError().text();
     }
     else
     {
@@ -95,7 +95,7 @@ QList<float> readElab(QSqlDatabase db, QString table, std::string *myError, QStr
     return elabValueList;
 }
 
-QList<QString> getIdListFromElab(QSqlDatabase db, QString table, std::string *myError, QString elab)
+QList<QString> getIdListFromElab(QSqlDatabase db, QString table, QString *myError, QString elab)
 {
     QSqlQuery qry(db);
     QString id;
@@ -108,7 +108,7 @@ QList<QString> getIdListFromElab(QSqlDatabase db, QString table, std::string *my
 
     if( !qry.exec() )
     {
-        *myError = qry.lastError().text().toStdString();
+        *myError = qry.lastError().text();
     }
     else
     {
@@ -122,7 +122,7 @@ QList<QString> getIdListFromElab(QSqlDatabase db, QString table, std::string *my
     return idList;
 }
 
-QList<QString> getIdListFromElab(QSqlDatabase db, QString table, std::string *myError, QString elab, int index)
+QList<QString> getIdListFromElab(QSqlDatabase db, QString table, QString *myError, QString elab, int index)
 {
     QSqlQuery qry(db);
     QString id;
@@ -136,7 +136,7 @@ QList<QString> getIdListFromElab(QSqlDatabase db, QString table, std::string *my
 
     if( !qry.exec() )
     {
-        *myError = qry.lastError().text().toStdString();
+        *myError = qry.lastError().text();
     }
     else
     {
@@ -155,7 +155,7 @@ QList<QString> getIdListFromElab(QSqlDatabase db, QString table, std::string *my
 }
 
 
-bool saveDecadalElab(QSqlDatabase db, std::string *myError, QString id, std::vector<float> allResults, QString elab)
+bool saveDecadalElab(QSqlDatabase db, QString *myError, QString id, std::vector<float> allResults, QString elab)
 {
     QSqlQuery qry(db);
     if (db.driverName() == "QSQLITE")
@@ -163,7 +163,7 @@ bool saveDecadalElab(QSqlDatabase db, std::string *myError, QString id, std::vec
         qry.prepare("CREATE TABLE IF NOT EXISTS `climate_decadal` (decades INTEGER, id_point TEXT, elab TEXT, value REAL, PRIMARY KEY(decades,id_point,elab));");
         if( !qry.exec() )
         {
-            *myError = qry.lastError().text().toStdString();
+            *myError = qry.lastError().text();
             return false;
         }
 
@@ -173,7 +173,7 @@ bool saveDecadalElab(QSqlDatabase db, std::string *myError, QString id, std::vec
         qry.prepare("CREATE TABLE IF NOT EXISTS `climate_decadal` (decades smallint(5), id_point varchar(20), elab  varchar(100), value float(5,2), PRIMARY KEY(decades,id_point,elab) );");
         if( !qry.exec() )
         {
-            *myError = qry.lastError().text().toStdString();
+            *myError = qry.lastError().text();
             return false;
         }
     }
@@ -189,7 +189,7 @@ bool saveDecadalElab(QSqlDatabase db, std::string *myError, QString id, std::vec
 
         if( !qry.exec() )
         {
-            *myError = qry.lastError().text().toStdString();
+            *myError = qry.lastError().text();
             return false;
         }
     }
@@ -197,7 +197,7 @@ bool saveDecadalElab(QSqlDatabase db, std::string *myError, QString id, std::vec
     return true;
 }
 
-bool saveMonthlyElab(QSqlDatabase db, std::string *myError, QString id, std::vector<float> allResults, QString elab)
+bool saveMonthlyElab(QSqlDatabase db, QString *myError, QString id, std::vector<float> allResults, QString elab)
 {
     QSqlQuery qry(db);
     if (db.driverName() == "QSQLITE")
@@ -205,7 +205,7 @@ bool saveMonthlyElab(QSqlDatabase db, std::string *myError, QString id, std::vec
         qry.prepare("CREATE TABLE IF NOT EXISTS `climate_monthly` (months INTEGER, id_point TEXT, elab TEXT, value REAL, PRIMARY KEY(months,id_point,elab));");
         if( !qry.exec() )
         {
-            *myError = qry.lastError().text().toStdString();
+            *myError = qry.lastError().text();
             return false;
         }
 
@@ -215,7 +215,7 @@ bool saveMonthlyElab(QSqlDatabase db, std::string *myError, QString id, std::vec
         qry.prepare("CREATE TABLE IF NOT EXISTS `climate_monthly` (months smallint(5), id_point varchar(20), elab  varchar(100), value float(5,2), PRIMARY KEY(months,id_point,elab) );");
         if( !qry.exec() )
         {
-            *myError = qry.lastError().text().toStdString();
+            *myError = qry.lastError().text();
             return false;
         }
     }
@@ -231,7 +231,7 @@ bool saveMonthlyElab(QSqlDatabase db, std::string *myError, QString id, std::vec
 
         if( !qry.exec() )
         {
-            *myError = qry.lastError().text().toStdString();
+            *myError = qry.lastError().text();
             return false;
         }
     }
@@ -239,7 +239,7 @@ bool saveMonthlyElab(QSqlDatabase db, std::string *myError, QString id, std::vec
     return true;
 }
 
-bool saveSeasonalElab(QSqlDatabase db, std::string *myError, QString id, std::vector<float> allResults, QString elab)
+bool saveSeasonalElab(QSqlDatabase db, QString *myError, QString id, std::vector<float> allResults, QString elab)
 {
     QSqlQuery qry(db);
     if (db.driverName() == "QSQLITE")
@@ -247,7 +247,7 @@ bool saveSeasonalElab(QSqlDatabase db, std::string *myError, QString id, std::ve
         qry.prepare("CREATE TABLE IF NOT EXISTS `climate_seasonal` (season INTEGER, id_point TEXT, elab TEXT, value REAL, PRIMARY KEY(season,id_point,elab));");
         if( !qry.exec() )
         {
-            *myError = qry.lastError().text().toStdString();
+            *myError = qry.lastError().text();
             return false;
         }
 
@@ -257,7 +257,7 @@ bool saveSeasonalElab(QSqlDatabase db, std::string *myError, QString id, std::ve
         qry.prepare("CREATE TABLE IF NOT EXISTS `climate_seasonal` (season smallint(5), id_point varchar(20), elab  varchar(100), value float(5,2), PRIMARY KEY(season,id_point,elab) );");
         if( !qry.exec() )
         {
-            *myError = qry.lastError().text().toStdString();
+            *myError = qry.lastError().text();
             return false;
         }
     }
@@ -273,7 +273,7 @@ bool saveSeasonalElab(QSqlDatabase db, std::string *myError, QString id, std::ve
 
         if( !qry.exec() )
         {
-            *myError = qry.lastError().text().toStdString();
+            *myError = qry.lastError().text();
             return false;
         }
     }
@@ -281,7 +281,7 @@ bool saveSeasonalElab(QSqlDatabase db, std::string *myError, QString id, std::ve
     return true;
 }
 
-bool saveAnnualElab(QSqlDatabase db, std::string *myError, QString id, float result, QString elab)
+bool saveAnnualElab(QSqlDatabase db, QString *myError, QString id, float result, QString elab)
 {
     QSqlQuery qry(db);
     if (db.driverName() == "QSQLITE")
@@ -289,7 +289,7 @@ bool saveAnnualElab(QSqlDatabase db, std::string *myError, QString id, float res
         qry.prepare("CREATE TABLE IF NOT EXISTS `climate_annual` (id_point TEXT, elab TEXT, value REAL, PRIMARY KEY(id_point,elab));");
         if( !qry.exec() )
         {
-            *myError = qry.lastError().text().toStdString();
+            *myError = qry.lastError().text();
             return false;
         }
 
@@ -299,7 +299,7 @@ bool saveAnnualElab(QSqlDatabase db, std::string *myError, QString id, float res
         qry.prepare("CREATE TABLE IF NOT EXISTS `climate_annual` (id_point varchar(20), elab  varchar(100), value float(5,2), PRIMARY KEY(id_point,elab) );");
         if( !qry.exec() )
         {
-            *myError = qry.lastError().text().toStdString();
+            *myError = qry.lastError().text();
             return false;
         }
     }
@@ -312,14 +312,14 @@ bool saveAnnualElab(QSqlDatabase db, std::string *myError, QString id, float res
 
     if( !qry.exec() )
     {
-        *myError = qry.lastError().text().toStdString();
+        *myError = qry.lastError().text();
         return false;
     }
 
     return true;
 }
 
-bool saveGenericElab(QSqlDatabase db, std::string *myError, QString id, float result, QString elab)
+bool saveGenericElab(QSqlDatabase db, QString *myError, QString id, float result, QString elab)
 {
     QSqlQuery qry(db);
     if (db.driverName() == "QSQLITE")
@@ -327,7 +327,7 @@ bool saveGenericElab(QSqlDatabase db, std::string *myError, QString id, float re
         qry.prepare("CREATE TABLE IF NOT EXISTS `climate_generic` (id_point TEXT, elab TEXT, value REAL, PRIMARY KEY(id_point,elab));");
         if( !qry.exec() )
         {
-            *myError = qry.lastError().text().toStdString();
+            *myError = qry.lastError().text();
             return false;
         }
 
@@ -337,7 +337,7 @@ bool saveGenericElab(QSqlDatabase db, std::string *myError, QString id, float re
         qry.prepare("CREATE TABLE IF NOT EXISTS `climate_generic` (id_point varchar(20), elab  varchar(100), value float(5,2), PRIMARY KEY(id_point,elab) );");
         if( !qry.exec() )
         {
-            *myError = qry.lastError().text().toStdString();
+            *myError = qry.lastError().text();
             return false;
         }
     }
@@ -350,14 +350,14 @@ bool saveGenericElab(QSqlDatabase db, std::string *myError, QString id, float re
 
     if( !qry.exec() )
     {
-        *myError = qry.lastError().text().toStdString();
+        *myError = qry.lastError().text();
         return false;
     }
 
     return true;
 }
 
-bool selectVarElab(QSqlDatabase db, std::string *myError, QString table, QString variable, QStringList* listElab)
+bool selectVarElab(QSqlDatabase db, QString *myError, QString table, QString variable, QStringList* listElab)
 {
     QSqlQuery qry(db);
     QString elab;
@@ -370,7 +370,7 @@ bool selectVarElab(QSqlDatabase db, std::string *myError, QString table, QString
 
     if( !qry.exec() )
     {
-        *myError = qry.lastError().text().toStdString();
+        *myError = qry.lastError().text();
         return false;
     }
     else
@@ -385,7 +385,7 @@ bool selectVarElab(QSqlDatabase db, std::string *myError, QString table, QString
             }
             else
             {
-                *myError = qry.lastError().text().toStdString();
+                *myError = qry.lastError().text();
             }
         }
     }
@@ -393,7 +393,7 @@ bool selectVarElab(QSqlDatabase db, std::string *myError, QString table, QString
     return found;
 }
 
-bool selectAllElab(QSqlDatabase db, std::string *myError, QString table, QStringList* listElab)
+bool selectAllElab(QSqlDatabase db, QString *myError, QString table, QStringList* listElab)
 {
     QSqlQuery qry(db);
     QString elab;
@@ -406,7 +406,7 @@ bool selectAllElab(QSqlDatabase db, std::string *myError, QString table, QString
 
     if( !qry.exec() )
     {
-        *myError = qry.lastError().text().toStdString();
+        *myError = qry.lastError().text();
         return false;
     }
     else
@@ -421,7 +421,7 @@ bool selectAllElab(QSqlDatabase db, std::string *myError, QString table, QString
             }
             else
             {
-                *myError = qry.lastError().text().toStdString();
+                *myError = qry.lastError().text();
             }
         }
     }
@@ -429,7 +429,7 @@ bool selectAllElab(QSqlDatabase db, std::string *myError, QString table, QString
     return found;
 }
 
-bool showClimateTables(QSqlDatabase db, std::string *myError, QStringList* climateTables)
+bool showClimateTables(QSqlDatabase db, QString *myError, QStringList* climateTables)
 {
     QSqlQuery qry(db);
     QString table;
@@ -440,7 +440,7 @@ bool showClimateTables(QSqlDatabase db, std::string *myError, QStringList* clima
         qry.prepare("SELECT * FROM sqlite_master");
         if( !qry.exec() )
         {
-            *myError = qry.lastError().text().toStdString();
+            *myError = qry.lastError().text();
             return false;
         }
         else
@@ -457,7 +457,7 @@ bool showClimateTables(QSqlDatabase db, std::string *myError, QStringList* clima
                 }
                 else
                 {
-                    *myError = qry.lastError().text().toStdString();
+                    *myError = qry.lastError().text();
                     return false;
                 }
             }
@@ -468,7 +468,7 @@ bool showClimateTables(QSqlDatabase db, std::string *myError, QStringList* clima
         qry.prepare("SHOW TABLES LIKE 'climate_%'");
         if( !qry.exec() )
         {
-            *myError = qry.lastError().text().toStdString();
+            *myError = qry.lastError().text();
             return false;
         }
         else
@@ -481,7 +481,7 @@ bool showClimateTables(QSqlDatabase db, std::string *myError, QStringList* clima
                 }
                 else
                 {
-                    *myError = qry.lastError().text().toStdString();
+                    *myError = qry.lastError().text();
                     return false;
                 }
             }

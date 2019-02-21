@@ -564,7 +564,7 @@ bool PragaProject::elaborationPointsCycle(bool isAnomaly, bool showInfo)
 
     if (validCell == 0)
     {
-        if (errorString.empty())
+        if (errorString.isEmpty())
         {
             errorString = "no valid cells available";
         }
@@ -685,7 +685,7 @@ bool PragaProject::elaborationPointsCycleGrid(bool isAnomaly, bool showInfo)
 
     if (validCell == 0)
     {
-        if (errorString.empty())
+        if (errorString.isEmpty())
         {
             errorString = "no valid cells available";
         }
@@ -808,7 +808,7 @@ bool PragaProject::climatePointsCycle(bool showInfo)
 
     if (validCell == 0)
     {
-        if (errorString.empty())
+        if (errorString.isEmpty())
         {
             errorString = "no valid cells available";
         }
@@ -937,7 +937,7 @@ bool PragaProject::climatePointsCycleGrid(bool showInfo)
 
    if (validCell == 0)
    {
-       if (errorString.empty())
+       if (errorString.isEmpty())
        {
            errorString = "no valid cells available";
        }

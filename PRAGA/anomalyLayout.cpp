@@ -558,8 +558,8 @@ void AnomalyLayout::AnomalyReadParameter(int state)
 void AnomalyLayout::AnomalyFillClimateDbList(QComboBox* dbList)
 {
     QStringList climateTables;
-    std::string myError  = myProject.errorString;
-    if ( !showClimateTables(myProject.clima->db(), &myError, &climateTables) )
+    QString myError  = myProject.errorString;
+    if (! showClimateTables(myProject.clima->db(), &myError, &climateTables) )
     {
         dbList->addItem("No saved elaborations found");
     }
