@@ -20,8 +20,8 @@
     bool evaporation(Criteria1D* myCase);
     double cropTranspiration(Criteria1D* myCase, bool getWaterStress);
 
-    double getWeightedRAW(Criteria1D* myCase);
-    double getReadilyAvailableWater(Criteria1D* myCase);
+    double getCropReadilyAvailableWater(Criteria1D* myCase);
+    double getTotalReadilyAvailableWater(Criteria1D* myCase);
     double getCropWaterDeficit(Criteria1D* myCase);
 
 

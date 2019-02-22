@@ -399,7 +399,7 @@ void Criteria1D::prepareOutput(Crit3DDate myDate, bool isFirst)
     if (isFirst)
         this->outputString = "INSERT INTO '" + this->idCase + "'"
             + " (DATE, PREC, IRRIGATION, WATER_CONTENT, SURFACE_WC, RAW, DEFICIT, DRAINAGE, RUNOFF, ET0,"
-            + " EVAP_MAX, TRANSP_MAX, EVAP, TRANSP, LAI, KC, ROOTDEPTH) "
+            + " TRANSP_MAX, TRANSP, EVAP_MAX, EVAP, LAI, KC, ROOTDEPTH) "
             + " VALUES ";
     else
         this->outputString += ",";
@@ -415,10 +415,10 @@ void Criteria1D::prepareOutput(Crit3DDate myDate, bool isFirst)
             + "," + QString::number(this->output.dailyDrainage)
             + "," + QString::number(this->output.dailySurfaceRunoff)
             + "," + QString::number(this->output.dailyEt0)
-            + "," + QString::number(this->output.dailyMaxEvaporation)
             + "," + QString::number(this->output.dailyMaxTranspiration)
-            + "," + QString::number(this->output.dailyEvaporation)
             + "," + QString::number(this->output.dailyTranspiration)
+            + "," + QString::number(this->output.dailyMaxEvaporation)
+            + "," + QString::number(this->output.dailyEvaporation)
             + "," + getOutputString(this->myCrop.LAI)
             + "," + getOutputString(this->output.dailyKc)
             + "," + getOutputString(this->myCrop.roots.rootDepth)

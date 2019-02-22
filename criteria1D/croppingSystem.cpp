@@ -182,24 +182,24 @@ bool updateRoots(Criteria1D* myCase)
 }
 
 
-double getWeightedRAW(Criteria1D* myCase)
+/*!
+ * \brief getCropReadilyAvailableWater
+ * \return sum of readily available water (mm) in the rooting zone
+ */
+double getCropReadilyAvailableWater(Criteria1D* myCase)
 {
     if (! myCase->myCrop.isLiving) return 0.;
     if (myCase->myCrop.roots.rootDepth <= myCase->myCrop.roots.rootDepthMin) return 0.;
     if (myCase->myCrop.roots.firstRootLayer == NODATA) return 0.;
 
-    double densMax = 0.0;
-    for (int i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
-        densMax = maxValue(densMax, myCase->myCrop.roots.rootDensity[i]);
-
     double depth, threshold, layerRAW;
-    double sumRAW = 0.0;
 
+    double sumRAW = 0.0;
     for (int i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
     {
         threshold = myCase->layer[i].FC - myCase->myCrop.fRAW * (myCase->layer[i].FC - myCase->layer[i].WP);
 
-        layerRAW = (myCase->layer[i].waterContent - threshold) *(myCase->myCrop.roots.rootDensity[i] / densMax);
+        layerRAW = (myCase->layer[i].waterContent - threshold);
 
         depth = myCase->layer[i].depth + myCase->layer[i].thickness / 2.0;
 
@@ -207,7 +207,6 @@ double getWeightedRAW(Criteria1D* myCase)
                 layerRAW *= (myCase->myCrop.roots.rootDepth - depth) / myCase->layer[i].thickness;
 
         sumRAW += layerRAW;
-
     }
 
     return sumRAW;
@@ -215,11 +214,11 @@ double getWeightedRAW(Criteria1D* myCase)
 
 
 /*!
- * \brief getReadilyAvailableWater
- * \param myCase
- * \return sum of readily available water (mm) in the rooting zone (minimum first meter of soil)
+ * \brief getTotalReadilyAvailableWater
+ * \return sum of readily available water (mm)
+ * \note take into account at minimum the forst meter f soil and the surface water
  */
-double getReadilyAvailableWater(Criteria1D* myCase)
+double getTotalReadilyAvailableWater(Criteria1D* myCase)
 {
     if (! myCase->myCrop.isLiving) return NODATA;
     if (myCase->myCrop.roots.rootDepth <= myCase->myCrop.roots.rootDepthMin) return NODATA;
