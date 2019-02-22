@@ -81,7 +81,7 @@ bool computeModel(Criteria1D* myCase, const Crit3DDate& firstDate, const Crit3DD
     int indexSeasonalForecast = NODATA;
     bool isInsideSeason;
 
-    if (myCase->meteoPoint.latitude == NODATA)
+    if (int(myCase->meteoPoint.latitude) == int(NODATA))
     {
         *myError = "Latitude is missing";
         return false;
@@ -232,7 +232,7 @@ bool computeModel(Criteria1D* myCase, const Crit3DDate& firstDate, const Crit3DD
                 // sum of irrigations
                 if (indexSeasonalForecast != NODATA)
                 {
-                    if (myCase->seasonalForecasts[indexSeasonalForecast] == NODATA)
+                    if (int(myCase->seasonalForecasts[indexSeasonalForecast]) == int(NODATA))
                         myCase->seasonalForecasts[indexSeasonalForecast] = myCase->output.dailyIrrigation;
                     else
                         myCase->seasonalForecasts[indexSeasonalForecast] += myCase->output.dailyIrrigation;

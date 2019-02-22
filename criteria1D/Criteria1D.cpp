@@ -120,12 +120,12 @@ bool Criteria1D::setSoil(QString idSoil, QString *myError)
         return false;
 
     // nr of layers
-    this->nrLayers = ceil(mySoil.totalDepth / layerThickness) + 1;
+    this->nrLayers = int(ceil(mySoil.totalDepth / layerThickness)) + 1;
 
     // alloc memory
     if (this->layer != nullptr)
         free(this->layer);
-    this->layer = (soil::Crit3DLayer *) calloc(nrLayers, sizeof(soil::Crit3DLayer));
+    this->layer = (soil::Crit3DLayer *) calloc(unsigned(nrLayers), sizeof(soil::Crit3DLayer));
 
     double soilFraction, hygroscopicHumidity;
     int horizonIndex;
@@ -235,7 +235,7 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, QString *myError
     query.last();
     QDate lastObsDate = query.value("date").toDate();
 
-    int nrDays = firstObsDate.daysTo(lastObsDate) + 1;
+    long nrDays = long(firstObsDate.daysTo(lastObsDate)) + 1;
 
     // Is Forecast: increase nr of days
     if (this->isShortTermForecast)
@@ -311,7 +311,7 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, QString *myError
         // estende il dato precedente se mancante
         float previousTmin = NODATA;
         float previousTmax = NODATA;
-        long lastObservedIndex = firstObsDate.daysTo(lastObsDate);
+        long lastObservedIndex = long(firstObsDate.daysTo(lastObsDate));
         for (long i = lastObservedIndex; i < meteoPoint.nrObsDataDaysD; i++)
         {
             // tmin
@@ -334,9 +334,9 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, QString *myError
     for (long i = 0; i < meteoPoint.nrObsDataDaysD; i++)
     {
         // watertable
-        if (meteoPoint.obsDataD[i].waterTable != NODATA)
+        if (int(meteoPoint.obsDataD[i].waterTable) != int(NODATA))
             previousWatertable = meteoPoint.obsDataD[i].waterTable;
-        else if (previousWatertable != NODATA)
+        else if (int(previousWatertable) != int(NODATA))
             meteoPoint.obsDataD[i].waterTable = previousWatertable;
     }
 
@@ -349,10 +349,10 @@ void Criteria1D::initializeSeasonalForecast(const Crit3DDate& firstDate, const C
 {
     if (isSeasonalForecast)
     {
-        if (seasonalForecasts != NULL) free(seasonalForecasts);
+        if (seasonalForecasts != nullptr) free(seasonalForecasts);
 
         nrSeasonalForecasts = lastDate.year - firstDate.year +1;
-        seasonalForecasts = (double*) calloc(nrSeasonalForecasts, sizeof(double));
+        seasonalForecasts = (double*) calloc(unsigned(nrSeasonalForecasts), sizeof(double));
         for (int i = 0; i < nrSeasonalForecasts; i++)
             seasonalForecasts[i] = NODATA;
     }
@@ -387,7 +387,7 @@ bool Criteria1D::createOutputTable(QString* myError)
 
 QString getOutputString(double value)
 {
-    if (value != NODATA)
+    if (int(value) != int(NODATA))
         return QString::number(value);
     else
         return QString::number(0);

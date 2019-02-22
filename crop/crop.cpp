@@ -211,6 +211,7 @@
         }
 
         LAIstartSenescence = NODATA;
+        daysSinceIrrigation = NODATA;
     }
 
 

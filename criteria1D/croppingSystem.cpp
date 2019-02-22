@@ -36,22 +36,19 @@
 #include "root.h"
 
 
-int daysSinceIrrigation;
-
-
 // initialization of crop
 void initializeCrop(Criteria1D* myCase, int currentDoy)
 {    
     // initialize root density
     if (myCase->myCrop.roots.rootDensity != nullptr) free(myCase->myCrop.roots.rootDensity);
-    myCase->myCrop.roots.rootDensity = (double*) calloc(myCase->nrLayers, sizeof(double));
+    myCase->myCrop.roots.rootDensity = (double*) calloc(unsigned(myCase->nrLayers), sizeof(double));
 
     // initialize root depth
     myCase->myCrop.roots.rootDepth = 0;
 
     // initialize transpiration
     if (myCase->myCrop.roots.transpiration != nullptr) free(myCase->myCrop.roots.transpiration);
-    myCase->myCrop.roots.transpiration = (double*) calloc(myCase->nrLayers, sizeof(double));
+    myCase->myCrop.roots.transpiration = (double*) calloc(unsigned(myCase->nrLayers), sizeof(double));
 
     // root max depth
     if (myCase->myCrop.roots.rootDepthMax > myCase->mySoil.totalDepth)
@@ -67,7 +64,7 @@ void initializeCrop(Criteria1D* myCase, int currentDoy)
     myCase->myCrop.LAIstartSenescence = NODATA;
     myCase->myCrop.currentSowingDoy = NODATA;
 
-    daysSinceIrrigation = NODATA;
+    myCase->myCrop.daysSinceIrrigation = NODATA;
 
     // is crop living?
     if (myCase->myCrop.isPluriannual())
@@ -93,7 +90,7 @@ bool cropWaterDemand(Criteria1D* myCase)
     double ke = 0.6;            // light extinction factor
     const double maxEvapRatio = 0.66;
 
-    if (myCase->myCrop.idCrop == "" || ! myCase->myCrop.isLiving || myCase->myCrop.LAI == 0)
+    if (myCase->myCrop.idCrop == "" || ! myCase->myCrop.isLiving || myCase->myCrop.LAI < EPSILON)
     {
         myCase->output.dailyMaxEvaporation = myCase->output.dailyEt0 * maxEvapRatio;
         myCase->output.dailyMaxTranspiration = 0.0;
@@ -160,7 +157,7 @@ bool updateLAI(Criteria1D* myCase, int myDoy)
 
         if (inSenescence)
         {
-            if (myDoy == myCase->myCrop.doyStartSenescence || myCase->myCrop.LAIstartSenescence == NODATA)
+            if (myDoy == myCase->myCrop.doyStartSenescence || int(myCase->myCrop.LAIstartSenescence) == int(NODATA))
                 myCase->myCrop.LAIstartSenescence = myLai;
             else
                 myLai = leafDevelopment::getLAISenescence(myCase->myCrop.LAImin,
@@ -258,13 +255,15 @@ double getReadilyAvailableWater(Criteria1D* myCase)
 float cropIrrigationDemand(Criteria1D* myCase, int doy, float currentPrec, float nextPrec)
 {
     // update days since last irrigation
-    if (daysSinceIrrigation != NODATA)
-        daysSinceIrrigation++;
+    if (myCase->myCrop.daysSinceIrrigation != NODATA)
+        myCase->myCrop.daysSinceIrrigation++;
 
     // check irrigated crop
-    if ((myCase->myCrop.idCrop == "")
-        || (! myCase->myCrop.isLiving)
-        || (myCase->myCrop.irrigationVolume == 0)) return 0;
+    if (myCase->myCrop.idCrop == ""
+        || ! myCase->myCrop.isLiving
+        || int(myCase->myCrop.irrigationVolume) == int(NODATA)
+        || int(myCase->myCrop.irrigationVolume) == 0)
+        return 0;
 
     // check irrigation period
     if (myCase->myCrop.doyStartIrrigation != NODATA && myCase->myCrop.doyEndIrrigation != NODATA)
@@ -279,11 +278,11 @@ float cropIrrigationDemand(Criteria1D* myCase, int doy, float currentPrec, float
     }
 
     // check today rainfall and surface water content
-    if ((myCase->layer[0].waterContent + currentPrec) > 4.0) return 0.;
+    if ((float(myCase->layer[0].waterContent) + currentPrec) > 4.f) return 0;
 
     // check rainfall forecast (at least half of irrigation volume)
     if (myCase->myCrop.irrigationShift > 1)
-        if ((currentPrec + nextPrec) >  myCase->myCrop.irrigationVolume * 0.5) return 0.;
+        if ((currentPrec + nextPrec) > float(myCase->myCrop.irrigationVolume * 0.5)) return 0;
 
     // check readily available water (weighted on root density)
     // disattivato perchè sostituito con water stress
@@ -295,12 +294,12 @@ float cropIrrigationDemand(Criteria1D* myCase, int doy, float currentPrec, float
     if (waterStress <= threshold) return 0.;
 
     // check irrigation shift
-    if (daysSinceIrrigation != NODATA)
+    if (myCase->myCrop.daysSinceIrrigation != NODATA)
     {
         // too much water stress -> supplementary irrigation
         if (waterStress < (threshold + 0.2))
         {
-            if (daysSinceIrrigation < myCase->myCrop.irrigationShift)
+            if (myCase->myCrop.daysSinceIrrigation < myCase->myCrop.irrigationShift)
                 return 0;
         }
     }
@@ -308,12 +307,12 @@ float cropIrrigationDemand(Criteria1D* myCase, int doy, float currentPrec, float
     // all check passed --> IRRIGATION
 
     // reset irrigation shift
-    daysSinceIrrigation = 0;
+    myCase->myCrop.daysSinceIrrigation = 0;
 
     if (myCase->optimizeIrrigation)
-        return minValue(getCropWaterDeficit(myCase), myCase->myCrop.irrigationVolume);
+        return float(minValue(getCropWaterDeficit(myCase), myCase->myCrop.irrigationVolume));
     else
-        return myCase->myCrop.irrigationVolume;
+        return float(myCase->myCrop.irrigationVolume);
 }
 
 
@@ -324,7 +323,7 @@ bool irrigateCrop(Criteria1D* myCase, double irrigationDemand)
     myCase->output.dailyIrrigation = irrigationDemand;
 
     int i=0;
-    while (i < myCase->nrLayers && irrigationDemand > 0.0f)
+    while (i < myCase->nrLayers && float(irrigationDemand) > 0.f)
     {
         if (myCase->layer[i].waterContent < myCase->layer[i].FC)
         {
@@ -357,8 +356,8 @@ bool evaporation(Criteria1D* myCase)
         return true;
 
     // evaporation on soil
-    int lastLayerEvap = floor(MAX_EVAPORATION_DEPTH / myCase->layerThickness) +1;
-    double* coeffEvap = (double *) calloc(lastLayerEvap, sizeof(double));
+    int lastLayerEvap = int(floor(MAX_EVAPORATION_DEPTH / myCase->layerThickness)) +1;
+    double* coeffEvap = (double *) calloc(unsigned(lastLayerEvap), sizeof(double));
     double sumCoeff = 0.0;
     double layerDepth;
     int i;
@@ -432,11 +431,11 @@ double cropTranspiration(Criteria1D* myCase, bool getWaterStress)
     for (i=0; i < myCase->nrLayers; i++)
         myCase->myCrop.roots.transpiration[i] = 0.0;
 
-    if (myCase->output.dailyMaxTranspiration == 0)
-        return 0.f;
+    if (myCase->output.dailyMaxTranspiration < EPSILON)
+        return 0;
 
     // initialize stressed layers
-    bool* isLayerStressed = (bool*) calloc(myCase->nrLayers, sizeof(bool));
+    bool* isLayerStressed = (bool*) calloc(unsigned(myCase->nrLayers), sizeof(bool));
     for (i=0; i < myCase->nrLayers; i++)
         isLayerStressed[i] = false;
 
@@ -543,10 +542,9 @@ bool updateCrop(Criteria1D* myCase, QString* myError, Crit3DDate myDate,
         return false;
 
     // check start/end crop cycle (update isLiving)
-    if (myCase->myCrop.needReset(myDate, myCase->meteoPoint.latitude, waterTableDepth))
+    if (myCase->myCrop.needReset(myDate, float(myCase->meteoPoint.latitude), waterTableDepth))
     {
         myCase->myCrop.resetCrop(myCase->nrLayers);
-        daysSinceIrrigation = NODATA;
     }
 
     if (myCase->myCrop.isLiving)

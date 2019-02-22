@@ -22,9 +22,7 @@
         std::string idCrop;
         speciesType type;
 
-
         Crit3DRoot roots;
-
 
         /*!
          * crop cycle
@@ -64,6 +62,7 @@
         bool isEmerged;
         double LAI;
         double LAIstartSenescence;
+        int daysSinceIrrigation;
 
         Crit3DCrop();
 
