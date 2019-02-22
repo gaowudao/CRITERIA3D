@@ -31,7 +31,6 @@ int main(int argc, char *argv[])
         settingsFileName = argv[1];
     else
     {
-        //settingsFileName = "./../../DATA/criteria1D/example/exampleCriteria1D.ini";
         settingsFileName = "./../../DATA/criteria1D/example/kiwifruit.ini";
 
         //myProject.logError("USAGE: CRITERIA1D settings_filename.ini");
@@ -113,7 +112,7 @@ int main(int argc, char *argv[])
                 //IRRI_RATIO
                 irriRatio = double(getIrriRatioFromClass(&(myProject.criteria.dbParameters), "crop_class", "id_class",
                                                   myProject.unit[i].idCropClass, &(myProject.projectError)));
-                if (irriRatio == NODATA)
+                if (int(irriRatio) == int(NODATA))
                     myProject.logInfo("Unit " + myProject.unit[i].idCase + " " + myProject.unit[i].idCropClass + " ***** missing IRRIGATION RATIO *****");
                 else
                 {
@@ -132,7 +131,7 @@ int main(int argc, char *argv[])
                         // SEASONAL
                         if (myProject.criteria.isSeasonalForecast)
                         {
-                            if (irriRatio == 0)
+                            if (irriRatio < EPSILON)
                             {
                                 myProject.outputFile << myProject.unit[i].idCase.toStdString() << "," << myProject.unit[i].idCrop.toStdString() << ",";
                                 myProject.outputFile << myProject.unit[i].idSoil.toStdString() << "," << myProject.unit[i].idMeteo.toStdString();

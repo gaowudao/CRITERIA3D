@@ -43,7 +43,7 @@ void Criteria1DProject::initialize()
 void Criteria1DProject::initializeUnit(int nr)
 {
     this->nrUnits = nr;
-    this->unit = new Criteria1DUnit[nr];
+    this->unit = new Criteria1DUnit[unsigned(nr)];
 }
 
 
@@ -84,7 +84,7 @@ int Criteria1DProject::initializeProject(QString settingsFileName)
     }
     else
     {
-        this->projectError = "Cannot find settings file: " + settingsFileName.toStdString();
+        this->projectError = "Cannot find settings file: " + settingsFileName;
         return ERROR_SETTINGS_WRONGFILENAME;
     }
 
@@ -203,7 +203,7 @@ int Criteria1DProject::openAllDatabase()
     this->criteria.dbParameters.setDatabaseName(this->dbParametersName);
     if (! this->criteria.dbParameters.open())
     {
-        this->projectError = "Open parameters DB failed: " + this->criteria.dbParameters.lastError().text().toStdString();
+        this->projectError = "Open parameters DB failed: " + this->criteria.dbParameters.lastError().text();
         this->closeAllDatabase();
         return ERROR_DBPARAMETERS;
     }
@@ -220,7 +220,7 @@ int Criteria1DProject::openAllDatabase()
     this->criteria.dbSoil.setDatabaseName(this->dbSoilName);
     if (! this->criteria.dbSoil.open())
     {
-        this->projectError = "Open soil DB failed: " + this->criteria.dbSoil.lastError().text().toStdString();
+        this->projectError = "Open soil DB failed: " + this->criteria.dbSoil.lastError().text();
         this->closeAllDatabase();
         return ERROR_DBSOIL;
     }
@@ -237,7 +237,7 @@ int Criteria1DProject::openAllDatabase()
     this->criteria.dbMeteo.setDatabaseName(this->dbMeteoName);
     if (! this->criteria.dbMeteo.open())
     {
-        this->projectError = "Open meteo DB failed: " + this->criteria.dbMeteo.lastError().text().toStdString();
+        this->projectError = "Open meteo DB failed: " + this->criteria.dbMeteo.lastError().text();
         this->closeAllDatabase();
         return ERROR_DBMETEO_OBSERVED;
     }
@@ -256,7 +256,7 @@ int Criteria1DProject::openAllDatabase()
         this->criteria.dbForecast.setDatabaseName(this->dbForecastName);
         if (! this->criteria.dbForecast.open())
         {
-            this->projectError = "Open forecast DB failed: " + this->criteria.dbForecast.lastError().text().toStdString();
+            this->projectError = "Open forecast DB failed: " + this->criteria.dbForecast.lastError().text();
             this->closeAllDatabase();
             return ERROR_DBMETEO_FORECAST;
         }
@@ -276,7 +276,7 @@ int Criteria1DProject::openAllDatabase()
 
         if (! this->criteria.dbOutput.open())
         {
-            this->projectError = "Open output DB failed: " + this->criteria.dbOutput.lastError().text().toStdString();
+            this->projectError = "Open output DB failed: " + this->criteria.dbOutput.lastError().text();
             this->closeAllDatabase();
             return ERROR_DBOUTPUT;
         }
@@ -288,7 +288,7 @@ int Criteria1DProject::openAllDatabase()
     this->dbUnits.setDatabaseName(this->dbUnitsName);
     if (! this->dbUnits.open())
     {
-        this->projectError = "Open Units DB failed: " + this->dbUnits.lastError().text().toStdString();
+        this->projectError = "Open Units DB failed: " + this->dbUnits.lastError().text();
         this->closeAllDatabase();
         return ERROR_DBUNITS;
     }
@@ -306,14 +306,14 @@ bool Criteria1DProject::loadUnits()
     query.last();
     if (! query.isValid())
     {
-        if (query.lastError().number() > 0)
-            this->projectError = "dbUnits error: " + query.lastError().text().toStdString();
+        if (query.lastError().nativeErrorCode() != "")
+            this->projectError = "dbUnits error: " + query.lastError().nativeErrorCode() + " - " + query.lastError().text();
         else
             this->projectError = "Missing units";
         return false;
     }
 
-    int nr = query.at() + 1;     //SQLITE doesn't support SIZE
+    int nr = query.at() + 1;     // SQLITE doesn't support SIZE
     this->initializeUnit(nr);
 
     int i = 0;
@@ -367,15 +367,15 @@ void Criteria1DProject::logInfo(QString logStr)
 void Criteria1DProject::logError()
 {
     if (logFile.is_open())
-        logFile << "----ERROR!----\n" << this->projectError << std::endl;
+        logFile << "----ERROR!----\n" << this->projectError.toStdString() << std::endl;
 
-    std::cout << "----ERROR!----\n" << this->projectError << std::endl << std::endl;
+    std::cout << "----ERROR!----\n" << this->projectError.toStdString() << std::endl << std::endl;
 }
 
 
-void Criteria1DProject::logError(QString errorStr)
+void Criteria1DProject::logError(QString myErrorStr)
 {
-    this->projectError = errorStr.toStdString();
+    this->projectError = myErrorStr;
     logError();
 }
 

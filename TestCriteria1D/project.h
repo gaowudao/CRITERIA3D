@@ -58,7 +58,7 @@ class Criteria1DProject
         QString irrigationPath;
         QString dbOutputPath;
 
-        std::string projectError;
+        QString projectError;
 
         Criteria1D criteria;
 
@@ -80,7 +80,7 @@ class Criteria1DProject
 
         void logInfo(QString logStr);
         void logError();
-        void logError(QString errorStr);
+        void logError(QString myErrorStr);
 };
 
 #endif // PROJECT
