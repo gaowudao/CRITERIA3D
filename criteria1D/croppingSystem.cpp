@@ -311,7 +311,7 @@ float cropIrrigationDemand(Criteria1D* myCase, int doy, float currentPrec, float
     if (myCase->optimizeIrrigation)
         return float(minValue(getCropWaterDeficit(myCase), myCase->myCrop.irrigationVolume));
     else
-        return float(myCase->myCrop.irrigationVolume);
+        return float(maxValue(myCase->myCrop.irrigationVolume, getCropReadilyAvailableWater(myCase)));
 }
 
 
@@ -419,7 +419,7 @@ double cropTranspiration(Criteria1D* myCase, bool getWaterStress)
     double TRe=0.0;                                 // [mm] actual transpiration with only water surplus stress
     double totRootDensityWithoutStress = 0.0;       // [-]
     double stress = 0.0;                            // [-]
-    double balance = 0.0;                           // [mm]
+    double redistribution = 0.0;                    // [mm]
     int i;
 
     // initialize layer transpiration
@@ -478,8 +478,16 @@ double cropTranspiration(Criteria1D* myCase, bool getWaterStress)
 
             TRs += myCase->myCrop.roots.transpiration[i];
             TRe += myCase->myCrop.roots.transpiration[i];
-            isLayerStressed[i] = false;
-            totRootDensityWithoutStress +=  myCase->myCrop.roots.rootDensity[i];
+
+            if ((myCase->layer[i].waterContent - myCase->myCrop.roots.transpiration[i]) > waterScarcityThreshold)
+            {
+                isLayerStressed[i] = false;
+                totRootDensityWithoutStress +=  myCase->myCrop.roots.rootDensity[i];
+            }
+            else
+            {
+                isLayerStressed[i] = true;
+            }
         }
     }
 
@@ -490,15 +498,18 @@ double cropTranspiration(Criteria1D* myCase, bool getWaterStress)
     {
         stress = 1.0 - (TRs / myCase->output.dailyMaxTranspiration);
 
-        if (stress > 0.01 && totRootDensityWithoutStress > 0.01)
+        // at least 20% of roots not stressed
+        if ((stress > EPSILON) && (totRootDensityWithoutStress > 0.2))
         {
-            balance = minValue(stress, totRootDensityWithoutStress) * myCase->output.dailyMaxTranspiration;
+            redistribution = minValue(stress, totRootDensityWithoutStress) * myCase->output.dailyMaxTranspiration;
+            // maximum 1.2 mm
+            redistribution = minValue(redistribution, 1.2);
 
             for (int i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
             {
                 if (! isLayerStressed[i])
                 {
-                    value = balance * (myCase->myCrop.roots.rootDensity[i] / totRootDensityWithoutStress);
+                    value = redistribution * (myCase->myCrop.roots.rootDensity[i] / totRootDensityWithoutStress);
                     myCase->myCrop.roots.transpiration[i] += value;
                     TRs += value;
                     TRe += value;

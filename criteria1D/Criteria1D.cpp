@@ -372,7 +372,7 @@ bool Criteria1D::createOutputTable(QString* myError)
     queryString = "CREATE TABLE '" + this->idCase + "'"
             + " ( DATE TEXT, PREC REAL, IRRIGATION REAL, WATER_CONTENT REAL, SURFACE_WC REAL, "
             + " RAW REAL, DEFICIT REAL, DRAINAGE REAL, RUNOFF REAL, ET0 REAL, "
-            + " EVAP_MAX REAL, TRANSP_MAX, EVAP REAL, TRANSP REAL, LAI REAL, KC REAL, ROOTDEPTH REAL )";
+            + " TRANSP_MAX, TRANSP REAL, EVAP_MAX REAL, EVAP REAL, LAI REAL, KC REAL, ROOTDEPTH REAL )";
     myQuery = this->dbOutput.exec(queryString);
 
     if (myQuery.lastError().number() > 0)
