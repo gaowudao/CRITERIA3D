@@ -269,35 +269,35 @@ float cropIrrigationDemand(Criteria1D* myCase, int doy, float currentPrec, float
     if (myCase->myCrop.doyStartIrrigation != NODATA && myCase->myCrop.doyEndIrrigation != NODATA)
     {
         if (doy < myCase->myCrop.doyStartIrrigation ||
-            doy > myCase->myCrop.doyEndIrrigation) return 0.;
+            doy > myCase->myCrop.doyEndIrrigation) return 0;
     }
     if (myCase->myCrop.degreeDaysStartIrrigation != NODATA && myCase->myCrop.degreeDaysEndIrrigation != NODATA)
     {
         if (myCase->myCrop.degreeDays < myCase->myCrop.degreeDaysStartIrrigation ||
-            myCase->myCrop.degreeDays > myCase->myCrop.degreeDaysEndIrrigation) return 0.;
+            myCase->myCrop.degreeDays > myCase->myCrop.degreeDaysEndIrrigation) return 0;
     }
 
     // check today rainfall and surface water content
-    if ((float(myCase->layer[0].waterContent) + currentPrec) > 4.f) return 0;
+    if (currentPrec + float(myCase->layer[0].waterContent) >= 5.f) return 0;
 
     // check rainfall forecast (at least half of irrigation volume)
     if (myCase->myCrop.irrigationShift > 1)
         if ((currentPrec + nextPrec) > float(myCase->myCrop.irrigationVolume * 0.5)) return 0;
 
     // check readily available water (weighted on root density)
-    // disattivato perchè sostituito con water stress
+    // disattivato perchè sostituito da water stress
     // if (getWeightedRAW(myCase) > 5.) return 0.;
 
     // check water stress (before infiltration)
     double threshold = 1. - myCase->myCrop.stressTolerance;
     double waterStress = cropTranspiration(myCase, true);
-    if (waterStress <= threshold) return 0.;
+    if (waterStress <= threshold) return 0;
 
     // check irrigation shift
     if (myCase->myCrop.daysSinceIrrigation != NODATA)
     {
         // too much water stress -> supplementary irrigation
-        if (waterStress < (threshold + 0.2))
+        if (waterStress < (threshold + 0.1))
         {
             if (myCase->myCrop.daysSinceIrrigation < myCase->myCrop.irrigationShift)
                 return 0;
