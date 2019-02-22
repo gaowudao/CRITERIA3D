@@ -80,7 +80,7 @@ int Criteria1DProject::initializeProject(QString settingsFileName)
         //qDebug("Using config file %s", qPrintable(configFileName));
 
         QFileInfo fileInfo(configFileName);
-        path = fileInfo.path() + "\\";
+        path = fileInfo.path() + "/";
     }
     else
     {
@@ -347,7 +347,7 @@ bool Criteria1DProject::setLogFile()
     QString myDate = QDateTime().currentDateTime().toString("yyyy-MM-dd hh.mm");
     QString fileName = this->name + "_" + myDate + ".txt";
 
-    this->logFileName = this->path + "log\\" + fileName;
+    this->logFileName = this->path + "log/" + fileName;
     std::cout << "SWB PROCESSOR - log file created:\n" << this->logFileName.toStdString() << std::endl;
 
     this->logFile.open(this->logFileName.toStdString().c_str());
