@@ -1,19 +1,16 @@
 #ifndef CROPPINGSYSTEM_H
 #define CROPPINGSYSTEM_H
 
-    #ifndef _STRING_
-        #include <string>
-    #endif
-
     class Criteria1D;
     class Crit3DDate;
     class Crit3DCrop;
+    class QString;
 
     #define MIN_EMERGENCE_DAYS 7
     #define MAX_EVAPORATION_DEPTH 0.15
 
     void initializeCrop(Criteria1D* myCase, int currentDoy);
-    bool updateCrop(Criteria1D* myCase, std::string* myError, Crit3DDate myDate, double tmin, double tmax, float waterTableDepth);
+    bool updateCrop(Criteria1D* myCase, QString *myError, Crit3DDate myDate, double tmin, double tmax, float waterTableDepth);
     bool updateLAI(Criteria1D* myCase, int myDoy);
 
     float cropIrrigationDemand(Criteria1D* myCase, int doy, float myPrec, float nextPrec);

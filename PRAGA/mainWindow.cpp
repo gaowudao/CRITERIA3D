@@ -85,8 +85,8 @@ MainWindow::MainWindow(QWidget *parent) :
     this->updateVariable();
     this->updateDateTime();
 
-    KeyboardFilter *filter = new KeyboardFilter();
-    this->ui->dateEdit->installEventFilter(filter);
+    KeyboardFilter *keyboardFilter = new KeyboardFilter();
+    this->ui->dateEdit->installEventFilter(keyboardFilter);
     //connect(this->ui->dateEdit, SIGNAL(editingFinished()), this, SLOT(on_dateChanged()));
 
     ui->meteoPoints->setEnabled(false);

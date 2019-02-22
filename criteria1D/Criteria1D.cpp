@@ -28,6 +28,7 @@
 #include <QSqlError>
 #include <QDate>
 #include <QVariant>
+#include <QString>
 #include <iostream>
 #include <math.h>
 
@@ -60,7 +61,7 @@ Criteria1D::Criteria1D()
     this->idCase = "";
     this->outputString = "";
 
-    this->layer = NULL;
+    this->layer = nullptr;
     this->nrLayers = 0;
     this->layerThickness = 0.02;          /*!<  [m] default thickness = 2 cm  */
 
@@ -77,7 +78,7 @@ Criteria1D::Criteria1D()
     this->isSeasonalForecast = false;
     this->firstSeasonMonth = NODATA;
     this->nrSeasonalForecasts = 0;
-    this->seasonalForecasts = NULL;
+    this->seasonalForecasts = nullptr;
 
     this->isShortTermForecast = false;
     this->daysOfForecast = NODATA;
@@ -112,7 +113,7 @@ Criteria1DOutput::Criteria1DOutput()
 }
 
 
-bool Criteria1D::setSoil(QString idSoil, std::string *myError)
+bool Criteria1D::setSoil(QString idSoil, QString *myError)
 {
     // load Soil
     if (! loadSoil (&dbSoil, idSoil, &mySoil, &(soilTexture[0]), myError))
@@ -122,7 +123,7 @@ bool Criteria1D::setSoil(QString idSoil, std::string *myError)
     this->nrLayers = ceil(mySoil.totalDepth / layerThickness) + 1;
 
     // alloc memory
-    if (this->layer != NULL)
+    if (this->layer != nullptr)
         free(this->layer);
     this->layer = (soil::Crit3DLayer *) calloc(nrLayers, sizeof(soil::Crit3DLayer));
 
@@ -179,7 +180,7 @@ QString getId5Char(QString id)
 }
 
 
-bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, std::string *myError)
+bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, QString *myError)
 {
     QString queryString = "SELECT * FROM meteo_locations WHERE id_meteo='" + idMeteo + "'";
     QSqlQuery query = dbMeteo.exec(queryString);
@@ -195,9 +196,9 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, std::string *myE
         if (! query.isValid())
         {
             if (query.lastError().number() > 0)
-                *myError = "dbMeteo error: " + query.lastError().text().toStdString();
+                *myError = "dbMeteo error: " + query.lastError().text();
             else
-                *myError = "Missing meteo location:" + idMeteo.toStdString();
+                *myError = "Missing meteo location:" + idMeteo;
             return(false);
         }
     }
@@ -209,7 +210,7 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, std::string *myE
         this->meteoPoint.latitude = myLat;
     else
     {
-        *myError = "Missing latitude in idMeteo: " + idMeteo.toStdString();
+        *myError = "Missing latitude in idMeteo: " + idMeteo;
         return false;
     }
 
@@ -223,9 +224,9 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, std::string *myE
     if (! query.isValid())
     {
         if (query.lastError().number() > 0)
-            *myError = "dbMeteo error: " + query.lastError().text().toStdString();
+            *myError = "dbMeteo error: " + query.lastError().text();
         else
-            *myError = "Missing meteo table:" + tableName.toStdString();
+            *myError = "Missing meteo table:" + tableName;
         return false;
     }
 
@@ -263,9 +264,9 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, std::string *myE
             if (! query.isValid())
             {
                 if (query.lastError().number() > 0)
-                    *myError = "dbForecast error: " + query.lastError().text().toStdString();
+                    *myError = "dbForecast error: " + query.lastError().text();
                 else
-                    *myError = "Missing forecast location:" + idForecast.toStdString();
+                    *myError = "Missing forecast location:" + idForecast;
                 return false;
             }
         }
@@ -280,9 +281,9 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, std::string *myE
         if (! query.isValid())
         {
             if (query.lastError().number() > 0)
-                *myError = "dbForecast error: " + query.lastError().text().toStdString();
+                *myError = "dbForecast error: " + query.lastError().text();
             else
-                *myError = "Missing forecast table:" + tableName.toStdString();
+                *myError = "Missing forecast table:" + tableName;
             return false;
         }
 
@@ -314,15 +315,15 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, std::string *myE
         for (long i = lastObservedIndex; i < meteoPoint.nrObsDataDaysD; i++)
         {
             // tmin
-            if (meteoPoint.obsDataD[i].tMin != NODATA)
+            if (int(meteoPoint.obsDataD[i].tMin) != int(NODATA))
                 previousTmin = meteoPoint.obsDataD[i].tMin;
-            else if (previousTmin != NODATA)
+            else if (int(previousTmin) != int(NODATA))
                 meteoPoint.obsDataD[i].tMin = previousTmin;
 
             // tmax
-            if (meteoPoint.obsDataD[i].tMax != NODATA)
+            if (int(meteoPoint.obsDataD[i].tMax) != int(NODATA))
                 previousTmax = meteoPoint.obsDataD[i].tMax;
-            else if (previousTmax != NODATA)
+            else if (int(previousTmax) != int(NODATA))
                 meteoPoint.obsDataD[i].tMax = previousTmax;
         }
     }
@@ -358,14 +359,14 @@ void Criteria1D::initializeSeasonalForecast(const Crit3DDate& firstDate, const C
 }
 
 
-bool Criteria1D::createOutputTable(std::string* myError)
+bool Criteria1D::createOutputTable(QString* myError)
 {
     QString queryString = "DROP TABLE '" + this->idCase + "'";
     QSqlQuery myQuery = this->dbOutput.exec(queryString);
 
     if (myQuery.lastError().number() > 0)
     {
-        *myError = "Error in dropping table: " + this->idCase.toStdString() + "\n" + myQuery.lastError().text().toStdString();
+        *myError = "Error in dropping table: " + this->idCase + "\n" + myQuery.lastError().text();
     }
 
     queryString = "CREATE TABLE '" + this->idCase + "'"
@@ -376,7 +377,7 @@ bool Criteria1D::createOutputTable(std::string* myError)
 
     if (myQuery.lastError().number() > 0)
     {
-        *myError = "Error in creating table: " + this->idCase.toStdString() + "\n" + myQuery.lastError().text().toStdString();
+        *myError = "Error in creating table: " + this->idCase + "\n" + myQuery.lastError().text();
         return false;
     }
 
@@ -425,13 +426,13 @@ void Criteria1D::prepareOutput(Crit3DDate myDate, bool isFirst)
 }
 
 
-bool Criteria1D::saveOutput(std::string* myError)
+bool Criteria1D::saveOutput(QString* myError)
 {
     QSqlQuery myQuery = this->dbOutput.exec(this->outputString);
 
     if (myQuery.lastError().type() != QSqlError::NoError)
     {
-        *myError = "Error in saving output:\n" + myQuery.lastError().text().toStdString();
+        *myError = "Error in saving output:\n" + myQuery.lastError().text();
         return false;
     }
 

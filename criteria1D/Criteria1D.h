@@ -14,6 +14,7 @@
     #ifndef QSTRING_H
         #include <QString>
     #endif
+
     #ifndef QSQLDATABASE_H
         #include <QSqlDatabase>
     #endif
@@ -112,11 +113,11 @@
 
         Criteria1D();
 
-        bool loadMeteo(QString idMeteo, QString idForecast, std::string *myError);
-        bool setSoil(QString idSoil, std::string *myError);
-        bool createOutputTable(std::string* myError);
+        bool loadMeteo(QString idMeteo, QString idForecast, QString *myError);
+        bool setSoil(QString idSoil, QString *myError);
+        bool createOutputTable(QString* myError);
         void prepareOutput(Crit3DDate myDate, bool isFirst);
-        bool saveOutput(std::string* myError);
+        bool saveOutput(QString* myError);
         void initializeSeasonalForecast(const Crit3DDate& firstDate, const Crit3DDate& lastDate);
     };
 

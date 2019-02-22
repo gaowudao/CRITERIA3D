@@ -27,6 +27,7 @@
 #include <iostream>
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QString>
 #include <math.h>
 
 #include "commonConstants.h"
@@ -37,7 +38,7 @@
 #include "dbTools.h"
 
 
-bool runModel(Criteria1D* myCase, Criteria1DUnit *myUnit, std::string* myError)
+bool runModel(Criteria1D* myCase, Criteria1DUnit *myUnit, QString* myError)
 {
     myCase->idCase = myUnit->idCase;
 
@@ -67,7 +68,7 @@ bool runModel(Criteria1D* myCase, Criteria1DUnit *myUnit, std::string* myError)
 }
 
 
-bool computeModel(Criteria1D* myCase, const Crit3DDate& firstDate, const Crit3DDate& lastDate, std::string* myError)
+bool computeModel(Criteria1D* myCase, const Crit3DDate& firstDate, const Crit3DDate& lastDate, QString* myError)
 {
     Crit3DDate myDate;
     long myIndex;
@@ -100,7 +101,7 @@ bool computeModel(Criteria1D* myCase, const Crit3DDate& firstDate, const Crit3DD
         myIndex = myCase->meteoPoint.obsDataD[0].date.daysTo(myDate);
         if ((myIndex < 0) || (myIndex >= myCase->meteoPoint.nrObsDataDaysD))
         {
-            *myError = "Missing weather data: " + myDate.toStdString();
+            *myError = "Missing weather data: " + QString::fromStdString(myDate.toStdString());
             return false;
         }
 
@@ -108,9 +109,9 @@ bool computeModel(Criteria1D* myCase, const Crit3DDate& firstDate, const Crit3DD
         tmin = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyAirTemperatureMin);
         tmax = myCase->meteoPoint.getMeteoPointValueD(myDate, dailyAirTemperatureMax);
 
-        if ((prec == NODATA) || (tmin == NODATA) || (tmax == NODATA))
+        if (int(prec) == int(NODATA) || int(tmin) == int(NODATA) || int(tmax) == int(NODATA))
         {
-            *myError = "Missing weather data: " + myDate.toStdString();
+            *myError = "Missing weather data: " + QString::fromStdString(myDate.toStdString());
             return false;
         }
 

@@ -43,14 +43,14 @@ int daysSinceIrrigation;
 void initializeCrop(Criteria1D* myCase, int currentDoy)
 {    
     // initialize root density
-    if (myCase->myCrop.roots.rootDensity != NULL) free(myCase->myCrop.roots.rootDensity);
+    if (myCase->myCrop.roots.rootDensity != nullptr) free(myCase->myCrop.roots.rootDensity);
     myCase->myCrop.roots.rootDensity = (double*) calloc(myCase->nrLayers, sizeof(double));
 
     // initialize root depth
     myCase->myCrop.roots.rootDepth = 0;
 
     // initialize transpiration
-    if (myCase->myCrop.roots.transpiration != NULL) free(myCase->myCrop.roots.transpiration);
+    if (myCase->myCrop.roots.transpiration != nullptr) free(myCase->myCrop.roots.transpiration);
     myCase->myCrop.roots.transpiration = (double*) calloc(myCase->nrLayers, sizeof(double));
 
     // root max depth
@@ -534,7 +534,7 @@ double cropTranspiration(Criteria1D* myCase, bool getWaterStress)
 }
 
 
-bool updateCrop(Criteria1D* myCase, std::string* myError, Crit3DDate myDate,
+bool updateCrop(Criteria1D* myCase, QString* myError, Crit3DDate myDate,
                 double tmin, double tmax, float waterTableDepth)
 {
     *myError = "";
@@ -559,14 +559,14 @@ bool updateCrop(Criteria1D* myCase, std::string* myError, Crit3DDate myDate,
         // update LAI
         if (! updateLAI(myCase, currentDoy))
         {
-            *myError = "Error in updating LAI for crop " + myCase->myCrop.idCrop;
+            *myError = "Error in updating LAI for crop " + QString::fromStdString(myCase->myCrop.idCrop);
             return false;
         }
 
         // update roots
         if (! updateRoots(myCase))
         {
-            *myError = "Error in updating roots for crop " + myCase->myCrop.idCrop;
+            *myError = "Error in updating roots for crop " + QString::fromStdString(myCase->myCrop.idCrop);
             return false;
         }
     }

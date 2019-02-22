@@ -10,6 +10,7 @@
 #include "utilities.h"
 
 
+
 bool loadCropParameters(QString idCrop, Crit3DCrop* myCrop, QSqlDatabase* dbCrop, QString *myError)
 {
     QString idCropString = idCrop;
