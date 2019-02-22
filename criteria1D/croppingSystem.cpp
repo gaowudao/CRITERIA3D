@@ -316,30 +316,26 @@ float cropIrrigationDemand(Criteria1D* myCase, int doy, float currentPrec, float
 }
 
 
-bool irrigateCrop(Criteria1D* myCase, double irrigationDemand)
+bool optimalIrrigation(Criteria1D* myCase, float myIrrigation)
 {
-    double myDeficit;
-
-    myCase->output.dailyIrrigation = irrigationDemand;
+    float myDeficit;
+    float residualIrrigation = myIrrigation;
 
     int i=0;
-    while (i < myCase->nrLayers && float(irrigationDemand) > 0.f)
+    while (i < myCase->nrLayers && residualIrrigation > 0)
     {
         if (myCase->layer[i].waterContent < myCase->layer[i].FC)
         {
-            myDeficit = myCase->layer[i].FC - myCase->layer[i].waterContent;
-            if (myDeficit > irrigationDemand)
-                myDeficit = irrigationDemand;
+            myDeficit = float(myCase->layer[i].FC - myCase->layer[i].waterContent);
+            myDeficit = minValue(myDeficit, residualIrrigation);
 
-            myCase->layer[i].waterContent += myDeficit;
-            irrigationDemand -= myDeficit;
+            myCase->layer[i].waterContent += double(myDeficit);
+            residualIrrigation -= myDeficit;
         }
         i++;
     }
 
-    if (irrigationDemand > 0)
-        myCase->output.dailyIrrigation -= irrigationDemand;
-
+    myCase->output.dailyIrrigation = double(myIrrigation - residualIrrigation);
     return true;
 }
 
@@ -534,7 +530,7 @@ double cropTranspiration(Criteria1D* myCase, bool getWaterStress)
 
 
 bool updateCrop(Criteria1D* myCase, QString* myError, Crit3DDate myDate,
-                double tmin, double tmax, float waterTableDepth)
+                float tmin, float tmax, float waterTableDepth)
 {
     *myError = "";
 
@@ -552,7 +548,7 @@ bool updateCrop(Criteria1D* myCase, QString* myError, Crit3DDate myDate,
         int currentDoy = getDoyFromDate(myDate);
 
         // update degree days
-        myCase->myCrop.degreeDays += computeDegreeDays(tmin, tmax, myCase->myCrop.thermalThreshold, myCase->myCrop.upperThermalThreshold);
+        myCase->myCrop.degreeDays += computeDegreeDays(double(tmin), double(tmax), myCase->myCrop.thermalThreshold, myCase->myCrop.upperThermalThreshold);
 
         // update LAI
         if (! updateLAI(myCase, currentDoy))

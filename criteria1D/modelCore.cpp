@@ -144,17 +144,17 @@ bool computeModel(Criteria1D* myCase, const Crit3DDate& firstDate, const Crit3DD
             return false;
 
         // WATERTABLE (if available)
-        computeCapillaryRise(myCase, waterTableDepth);
+        computeCapillaryRise(myCase, double(waterTableDepth));
 
         // IRRIGATION
         irrigation = cropIrrigationDemand(myCase, doy, prec, tomorrowPrec);
-        myCase->output.dailyIrrigation = irrigation;
-
+        myCase->output.dailyIrrigation = double(irrigation);
         irrigationPrec = 0.0;
+
         if (irrigation > 0)
         {
             if (myCase->optimizeIrrigation)
-                irrigateCrop(myCase, irrigation);
+                optimalIrrigation(myCase, irrigation);
             else
                 irrigationPrec = irrigation;
         }

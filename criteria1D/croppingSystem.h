@@ -10,12 +10,12 @@
     #define MAX_EVAPORATION_DEPTH 0.15
 
     void initializeCrop(Criteria1D* myCase, int currentDoy);
-    bool updateCrop(Criteria1D* myCase, QString *myError, Crit3DDate myDate, double tmin, double tmax, float waterTableDepth);
+    bool updateCrop(Criteria1D* myCase, QString *myError, Crit3DDate myDate, float tmin, float tmax, float waterTableDepth);
     bool updateLAI(Criteria1D* myCase, int myDoy);
 
     float cropIrrigationDemand(Criteria1D* myCase, int doy, float myPrec, float nextPrec);
     bool cropWaterDemand(Criteria1D* myCase);
-    bool irrigateCrop(Criteria1D* myCase, double irrigationDemand);
+    bool optimalIrrigation(Criteria1D* myCase, float myIrrigation);
 
     bool evaporation(Criteria1D* myCase);
     double cropTranspiration(Criteria1D* myCase, bool getWaterStress);

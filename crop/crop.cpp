@@ -240,7 +240,7 @@
 
     double computeDegreeDays(double myTmin, double myTmax, double myLowerThreshold, double myUpperThreshold)
     {
-        return maxValue((myTmin + minValue(myTmax, myUpperThreshold)) / 2 - myLowerThreshold, 0);
+        return maxValue((myTmin + minValue(myTmax, myUpperThreshold)) / 2. - myLowerThreshold, 0);
     }
 
 
