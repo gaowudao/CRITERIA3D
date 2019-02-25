@@ -310,15 +310,8 @@ float cropIrrigationDemand(Criteria1D* myCase, int doy, float currentPrec, float
 
     if (myCase->optimizeIrrigation)
     {
-        //return float(minValue(getCropWaterDeficit(myCase), myCase->myCrop.irrigationVolume));
-        if (myCase->output.dailyMaxTranspiration > myCase->myCrop.irrigationVolume)
-        {
-            return int(myCase->output.dailyMaxTranspiration) + 1.0;
-        }
-        else
-        {
-            return float(myCase->myCrop.irrigationVolume);
-        }
+        return float(minValue(getCropWaterDeficit(myCase), myCase->myCrop.irrigationVolume));
+        //return float(maxValue(int(myCase->output.dailyMaxTranspiration), myCase->myCrop.irrigationVolume));
     }
     else
     {
@@ -515,8 +508,8 @@ double cropTranspiration(Criteria1D* myCase, bool getWaterStress)
         if ((stress > EPSILON) && (totRootDensityWithoutStress > 0.2))
         {
             redistribution = minValue(stress, totRootDensityWithoutStress) * myCase->output.dailyMaxTranspiration;
-            // maximum 2.0 mm
-            redistribution = minValue(redistribution, 2.0);
+            // maximum 1.5 mm
+            redistribution = minValue(redistribution, 1.5);
 
             for (int i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
             {
