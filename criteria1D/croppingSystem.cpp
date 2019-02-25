@@ -493,19 +493,20 @@ double cropTranspiration(Criteria1D* myCase, bool getWaterStress)
         }
     }
 
-    // water compensation (not stressed layers vs stressed layers)
-    // TODO add hydraulic redistribution of water in tree roots
+    // Hydraulic redistribution
+    // the movement of water from moist to dry soil through plant roots
+    // TODO add numerical process
     double value;
     if (myCase->output.dailyMaxTranspiration > 0)
     {
         stress = 1.0 - (TRs / myCase->output.dailyMaxTranspiration);
 
-        // at least 20% of roots not stressed
+        // at least 20% of roots moist
         if ((stress > EPSILON) && (totRootDensityWithoutStress > 0.2))
         {
             redistribution = minValue(stress, totRootDensityWithoutStress) * myCase->output.dailyMaxTranspiration;
-            // maximum 1.5 mm
-            redistribution = minValue(redistribution, 1.5);
+            // maximum 1.6 mm (Neumann at al. values span from 0 to 3.2)
+            redistribution = minValue(redistribution, 1.6);
 
             for (int i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
             {
