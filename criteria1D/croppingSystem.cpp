@@ -283,10 +283,6 @@ float cropIrrigationDemand(Criteria1D* myCase, int doy, float currentPrec, float
     if (myCase->myCrop.irrigationShift > 1)
         if ((currentPrec + nextPrec) > float(myCase->myCrop.irrigationVolume * 0.5)) return 0;
 
-    // check readily available water (weighted on root density)
-    // disattivato perchè sostituito da water stress
-    // if (getWeightedRAW(myCase) > 5.) return 0.;
-
     // check water stress (before infiltration)
     double threshold = 1. - myCase->myCrop.stressTolerance;
     double waterStress = cropTranspiration(myCase, true);
@@ -309,9 +305,15 @@ float cropIrrigationDemand(Criteria1D* myCase, int doy, float currentPrec, float
     myCase->myCrop.daysSinceIrrigation = 0;
 
     if (myCase->optimizeIrrigation)
+    {
         return float(minValue(getCropWaterDeficit(myCase), myCase->myCrop.irrigationVolume));
+    }
     else
-        return float(maxValue(myCase->myCrop.irrigationVolume, getCropReadilyAvailableWater(myCase)));
+    {
+        //return float(myCase->myCrop.irrigationVolume);
+        return float(maxValue(int(myCase->output.dailyMaxTranspiration), myCase->myCrop.irrigationVolume));
+    }
+
 }
 
 
@@ -502,8 +504,8 @@ double cropTranspiration(Criteria1D* myCase, bool getWaterStress)
         if ((stress > EPSILON) && (totRootDensityWithoutStress > 0.2))
         {
             redistribution = minValue(stress, totRootDensityWithoutStress) * myCase->output.dailyMaxTranspiration;
-            // maximum 1.2 mm
-            redistribution = minValue(redistribution, 1.2);
+            // maximum 1.5 mm
+            redistribution = minValue(redistribution, 1.5);
 
             for (int i = myCase->myCrop.roots.firstRootLayer; i <= myCase->myCrop.roots.lastRootLayer; i++)
             {

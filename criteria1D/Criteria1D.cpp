@@ -73,7 +73,7 @@ Criteria1D::Criteria1D()
     this->initialAW[0] = 0.85;            /*!<  [-] fraction of available Water (ploughed soil)  */
     this->initialAW[1] = 0.8;             /*!<  [-] fraction of available Water (deep soil)  */
 
-    this->optimizeIrrigation = true;
+    this->optimizeIrrigation = false;
 
     this->isSeasonalForecast = false;
     this->firstSeasonMonth = NODATA;
