@@ -45,14 +45,15 @@ bool setSoilProfileCrop(Vine3DProject* myProject, int row, int col, Crit3DModelC
 
 bool assignIrrigation(Vine3DProject* myProject, Crit3DTime myTime)
 {
-    int fieldIndex, nrHours;
+    int fieldIndex;
+    float nrHours;
     float irrigationRate, rate;
     int hour = myTime.getHour();
     QDate myDate = getQDate(myTime.date);
 
     for (long row = 0; row < myProject->DTM.header->nrRows ; row++)
         for (long col = 0; col < myProject->DTM.header->nrCols; col++)
-            if (myProject->DTM.value[row][col] != myProject->DTM.header->flag)
+            if (int(myProject->DTM.value[row][col]) != int(myProject->DTM.header->flag))
             {
                 //initialize
                 myProject->meteoMaps->irrigationMap->value[row][col] = 0.0;
@@ -106,9 +107,6 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
 
     for (myCurrentTime = myFirstTime; myCurrentTime <= myLastTime; myCurrentTime = myCurrentTime.addSeconds(myTimeStep))
     {
-        if (myCurrentTime.date.day == 2 && myCurrentTime.time > 7 * 3600)
-            int a = 0;
-
         myProject->logInfo("\n" + getQDateTime(myCurrentTime).toString("yyyy-MM-dd hh:mm"));
         myProject->grapevine.setDate(myCurrentTime);
 

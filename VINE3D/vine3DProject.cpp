@@ -1949,19 +1949,19 @@ void Vine3DProject::logInfo(QString myLog)
 
 void Vine3DProject::logError()
 {
-    this->errorString = "Error! " + this->errorString;
+    errorString = "Error! " + errorString;
     if (environment == gui)
     {
         QMessageBox msgBox;
-        msgBox.setText(this->errorString);
+        msgBox.setText(errorString);
         msgBox.exec();
     }
     if (logFile.is_open())
-        logFile << this->errorString.toStdString() << std::endl;
+        logFile << errorString.toStdString() << std::endl;
 }
 
 void Vine3DProject::logError(QString myError)
 {
-    this->errorString = myError;
+    errorString = myError;
     logError();
 }

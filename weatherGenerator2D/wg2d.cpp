@@ -262,7 +262,20 @@ void weatherGenerator2D::precipitationCompute()
    precOccurence[1][month].p10 = 0.4074;
    precOccurence[2][month].p00 = 0.8413;
    precOccurence[2][month].p10 = 0.4074;
-
+   month++;
+   precOccurence[0][month].p00 = 0.66;
+   precOccurence[0][month].p10 = 0.4839;
+   precOccurence[1][month].p00 = 0.6981;
+   precOccurence[1][month].p10 = 0.5;
+   precOccurence[2][month].p00 = 0.6939;
+   precOccurence[2][month].p10 = 0.4063;
+   month++;
+   precOccurence[0][month].p00 = 0.7273;
+   precOccurence[0][month].p10 = 0.4286;
+   precOccurence[1][month].p00 = 0.75;
+   precOccurence[1][month].p10 = 0.4118;
+   precOccurence[2][month].p00 = 0.8033;
+   precOccurence[2][month].p10 = 0.4138;
    // step 2 of precipitation WG2D
    weatherGenerator2D::precipitationCorrelationMatrices();
    // step 3 of precipitation WG2D
@@ -436,15 +449,6 @@ void weatherGenerator2D::precipitationCorrelationMatrices()
                 correlationMatrix[iMonth].occurrence[i][j] = correlationMatrix[iMonth].occurrence[j][i];
             }
         }
-        /*printf("mese %d\n",iMonth+1);
-        for (int i=0;i<nrStations;i++)
-        {
-            for (int j=0;j<nrStations;j++)
-            {
-                printf("%f  ",correlationMatrix[iMonth].occurrence[j][i]);
-            }
-            printf("\n");
-        }*/
 
     }
 }
@@ -495,7 +499,7 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
         }
 
     // arrays initialization
-    int randomGeneration = 1;
+    //int randomGeneration = 1;
     for (int iMonth=0; iMonth<12; iMonth++)
     {
         // initialization and definition of the random matrix
@@ -509,22 +513,13 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
                normalizedRandomMatrix[i][j]= NODATA;
             }
         }
-        printf("mese %d\n", iMonth+1);
+        //printf("mese %d\n", iMonth+1);
         for (int i=0;i<nrStations;i++)
         {
             for (int j=0;j<nrStations;j++)
             {
                 matrixOccurrence[i][j]= correlationMatrix[iMonth].occurrence[i][j]; //checked
             }
-            //printf("mese %d\n",iMonth+1);
-            //for (int i=0;i<nrStations;i++)
-            //{
-                //for (int j=0;j<nrStations;j++)
-                //{
-                    //printf("%f  ",matrixOccurrence[i][j]);
-                //}
-                //printf("\n");
-            //}
 
             /* since random numbers generated have a normal distribution, each p00 and
                p10 have to be recalculated according to a normal number*/
@@ -552,16 +547,6 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
                //valueRandomNormal2 = sqrt(-2*log(valueRandomUniform1))*sin(2*PI*valueRandomUniform2);
                //normalizedRandomMatrix[i][j] = 0.5;
             }
-            //printf("mese %d\n",iMonth+1);
-
-                for (int jj=0;jj<nrDaysIterativeProcessMonthly[iMonth];jj++)
-                {
-                    //printf("%f  ",normalizedRandomMatrix[i][jj]);
-                    //pressEnterToContinue();
-                }
-                //printf("\n");
-
-            //pressEnterToContinue();
 
         }
 
@@ -593,13 +578,14 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
         }
 
         weatherGenerator2D::spatialIterationOccurrence(M,K,occurrences,matrixOccurrence,normalizedRandomMatrix,normalizedTransitionProbability,nrDaysIterativeProcessMonthly[iMonth]);
-
+        printf("mese %d\n",iMonth+1);
         for (int i=0;i<nrStations;i++)
         {
             for (int j=0;j<nrStations;j++)
             {
                 randomMatrix[iMonth].matrixK[i][j] = float(K[i][j]);
-                randomMatrix[iMonth].matrixM[i][j] = float(M[i][j]);                
+                randomMatrix[iMonth].matrixM[i][j] = float(M[i][j]);
+                printf("%f  ",randomMatrix[iMonth].matrixM[i][j]);
             }
 
 
@@ -607,8 +593,9 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             {
                 randomMatrix[iMonth].matrixOccurrences[i][j]= float(occurrences[i][j]);
             }
+            printf("\n");
         }
-
+        pressEnterToContinue();
         randomMatrix[iMonth].month = iMonth + 1;
         // free memory
         for (int i=0;i<nrStations;i++)
@@ -694,8 +681,6 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
         eigenproblem::rs(nrStations,correlationArray,eigenvalues,true,eigenvectors);
         for (int i=0;i<nrStations;i++)
         {
-            //printf("eigenvalue %f\n",eigenvalues[i]);
-            //pressEnterToContinue();
             if (eigenvalues[i] <= 0)
             {
                 nrEigenvaluesLessThan0++;
@@ -721,17 +706,7 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
             for (int j=0;j<nrStations;j++) dummyMatrix[i][j] = M[i][j];
         bool isLowerDiagonal = true;
         matricial::choleskyDecompositionTriangularMatrix(dummyMatrix,nrStations,isLowerDiagonal);
-        //for (int i=0;i<nrStations;i++)
-            //for (int j=0;j<nrStations;j++)
-              //  printf("%f \n", dummyMatrix[i][j]);
-        //pressEnterToContinue();
         matricial::matrixProduct(dummyMatrix,normalizedMatrixRandom,nrStations,nrStations,lengthSeries,nrStations,dummyMatrix3);
-        //for (int i=0;i<2;i++)
-            //for (int j=0;j<lengthSeries;j++)
-                //printf("%f \n", dummyMatrix3[i][j]);
-
-        //pressEnterToContinue();
-
 
         for (int i=0;i<nrStations;i++)
         {
@@ -749,9 +724,7 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
             for (int j=0;j<lengthSeries;j++)
             {
                 normRandom[i][j]= (dummyMatrix3[i][j]-meanValue)/stdDevValue;
-                // printf("%f \n", normRandom[i][j]);
             }
-            // pressEnterToContinue();
         }
         // initialize occurrence to 0
         for (int i=0;i<nrStations;i++)
@@ -772,9 +745,7 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
                 {
                     if(normRandom[i][j]> transitionNormal[i][1]) occurrences[i][j] = 1.;
                 }
-                 //printf("%f \n", occurrences[i][j]);
             }
-            //pressEnterToContinue();
         }
         statistics::correlationsMatrix(nrStations,occurrences,lengthSeries,K);
         val = 0;
@@ -783,19 +754,9 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
             for (int j=0;j<nrStations;j++)
             {
                 val = maxValue(val,fabs(K[i][j] - matrixOccurrence[i][j]));
-                //printf("%f\t", matrixOccurrence[i][j]);
             }
-            //printf("\n");
+
         }
-        /*for (int i=0; i<nrStations;i++)
-        {
-            for (int j=0; j<nrStations;j++)
-            {
-                printf("%f\t", M[i][j]);
-            }
-            printf("\n");
-        }
-        pressEnterToContinue(); */
 
         for (int i=0; i<nrStations;i++)
         {
@@ -810,29 +771,12 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
                 {
                     M[i][j] += kiter*(matrixOccurrence[i][j]-K[i][j]);
                     M[j][i] = M[i][j];
-                }
-                for (int j=0; j<nrStations;j++)
-                {
-                    printf("%f\t", M[i][j]);
-                }
-                printf("\n");
+                }                
             }
-            pressEnterToContinue();
         }
 
-        /*for (int i=0; i<nrStations;i++)
-        {
-            for (int j=0; j<nrStations;j++)
-            {
-                printf("%f\t", M[i][j]);
-            }
-            printf("\n");
-        }
-        pressEnterToContinue(); */
+
     }  // end of the while cycle
-    //printf("press return to continue");
-    //getchar();
-    //printf("%d\n",ii);
 
 
 
@@ -846,7 +790,6 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
         free(normRandom[i]);
     }
     free(normRandom);
-    //free(dummyArray);
     free(dummyMatrix);
     free(dummyMatrix2);
     free(dummyMatrix3);
