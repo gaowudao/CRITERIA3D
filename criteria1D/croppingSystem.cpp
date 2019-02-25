@@ -283,10 +283,6 @@ float cropIrrigationDemand(Criteria1D* myCase, int doy, float currentPrec, float
     if (myCase->myCrop.irrigationShift > 1)
         if ((currentPrec + nextPrec) > float(myCase->myCrop.irrigationVolume * 0.5)) return 0;
 
-    // check readily available water (weighted on root density)
-    // disattivato perchè sostituito da water stress
-    // if (getWeightedRAW(myCase) > 5.) return 0.;
-
     // check water stress (before infiltration)
     double threshold = 1. - myCase->myCrop.stressTolerance;
     double waterStress = cropTranspiration(myCase, true);
@@ -311,11 +307,11 @@ float cropIrrigationDemand(Criteria1D* myCase, int doy, float currentPrec, float
     if (myCase->optimizeIrrigation)
     {
         return float(minValue(getCropWaterDeficit(myCase), myCase->myCrop.irrigationVolume));
-        //return float(maxValue(int(myCase->output.dailyMaxTranspiration), myCase->myCrop.irrigationVolume));
     }
     else
     {
-        return float(myCase->myCrop.irrigationVolume);
+        //return float(myCase->myCrop.irrigationVolume);
+        return float(maxValue(int(myCase->output.dailyMaxTranspiration), myCase->myCrop.irrigationVolume));
     }
 
 }
