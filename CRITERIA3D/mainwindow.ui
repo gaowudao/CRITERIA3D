@@ -2641,7 +2641,10 @@
     <addaction name="actionView_DTM"/>
     <addaction name="actionView_Slope"/>
     <addaction name="actionView_Aspect"/>
+    <addaction name="separator"/>
     <addaction name="actionView_MapVariable"/>
+    <addaction name="actionView_Transmissivity"/>
+    <addaction name="actionView_ET0"/>
     <addaction name="separator"/>
     <addaction name="actionView_Soil"/>
     <addaction name="actionView_Boundary"/>
@@ -2847,6 +2850,16 @@
    </property>
    <property name="text">
     <string>Current variable</string>
+   </property>
+  </action>
+  <action name="actionView_Transmissivity">
+   <property name="text">
+    <string>Transmissivity</string>
+   </property>
+  </action>
+  <action name="actionView_ET0">
+   <property name="text">
+    <string>ET0</string>
    </property>
   </action>
  </widget>
