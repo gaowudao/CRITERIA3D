@@ -161,9 +161,34 @@ gis::Crit3DRasterGrid* Crit3DStatePlantMaps::getMapFromVar(plantVariable myVar)
     else if (myVar == powderySporulatingColoniesVar)
         return powderySporulatingColoniesMap;
     else
-        return NULL;
+        return nullptr;
 }
 
+Crit3DOutputPlantMaps::Crit3DOutputPlantMaps()
+{
+    this->initialize();
+    transpirationLayerMaps = new gis::Crit3DRasterGrid*[0];
+}
+
+Crit3DOutputPlantMaps::Crit3DOutputPlantMaps(const gis::Crit3DRasterGrid &dtm)
+{
+    this->initializeWithDtm(dtm);
+    transpirationLayerMaps = new gis::Crit3DRasterGrid*[0];
+    transpirationLayerMaps[0]->initializeGrid(dtm);
+}
+
+Crit3DOutputPlantMaps::Crit3DOutputPlantMaps(const gis::Crit3DRasterGrid &dtm, int nrSoilLayers)
+{
+    this->initializeWithDtm(dtm);
+
+    transpirationLayerMaps = new gis::Crit3DRasterGrid*[nrSoilLayers];
+
+    for (int layer=0; layer<nrSoilLayers; layer++)
+    {
+        transpirationLayerMaps[layer] = new gis::Crit3DRasterGrid();
+        transpirationLayerMaps[layer]->initializeGrid(dtm);
+    }
+}
 
 void Crit3DOutputPlantMaps::initialize()
 {
@@ -183,14 +208,6 @@ void Crit3DOutputPlantMaps::initialize()
     downyInfectionRateMap = new gis::Crit3DRasterGrid;
     downyOilSpotMap = new gis::Crit3DRasterGrid;
 }
-
-
-Crit3DOutputPlantMaps::Crit3DOutputPlantMaps()
-{
-    this->initialize();
-    transpirationLayerMaps = new gis::Crit3DRasterGrid*[0];
-}
-
 
 void Crit3DOutputPlantMaps::initializeWithDtm(const gis::Crit3DRasterGrid &dtm)
 {
@@ -214,25 +231,7 @@ void Crit3DOutputPlantMaps::initializeWithDtm(const gis::Crit3DRasterGrid &dtm)
 }
 
 
-Crit3DOutputPlantMaps::Crit3DOutputPlantMaps(const gis::Crit3DRasterGrid &dtm)
-{
-    this->initializeWithDtm(dtm);
-    transpirationLayerMaps = new gis::Crit3DRasterGrid*[0];
-    transpirationLayerMaps[0]->initializeGrid(dtm);
-}
 
-Crit3DOutputPlantMaps::Crit3DOutputPlantMaps(const gis::Crit3DRasterGrid &dtm, int nrSoilLayers)
-{
-    this->initializeWithDtm(dtm);
-
-    transpirationLayerMaps = new gis::Crit3DRasterGrid*[nrSoilLayers];
-
-    for (int layer=0; layer<nrSoilLayers; layer++)
-    {
-        transpirationLayerMaps[layer] = new gis::Crit3DRasterGrid();
-        transpirationLayerMaps[layer]->initializeGrid(dtm);
-    }
-}
 
 gis::Crit3DRasterGrid* Crit3DOutputPlantMaps::getMapFromVar(plantVariable myVar)
 {
@@ -392,10 +391,6 @@ bool savePlantOutput(Vine3DProject* myProject, plantVariable myVar,
         myProject->logError(QString::fromStdString(myErrorString));
         return false;
     }
-
-    //geoserver - no error check
-    QString geoserverFileName = myProject->getGeoserverPath() + fileName;
-    gis::writeEsriGrid(geoserverFileName.toStdString(), &outputMap, &myErrorString);
 
     outputMap.freeGrid();
 

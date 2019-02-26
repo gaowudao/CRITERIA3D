@@ -164,9 +164,9 @@ QString getVarNameFromPlantVariable(plantVariable myVar)
 QString getOutputNameDaily(QString producer, QString varName, QString strArea, QString notes, QDate myDate)
 {
     if (notes != "")
-        return producer + "_" + varName + "_" + strArea + "_" + notes + "_" + myDate.toString("yyyyMMdd");
+        return varName + "_" + strArea + "_" + notes + "_" + myDate.toString("yyyyMMdd");
     else
-        return producer + "_" + varName + "_" + strArea + "_" + myDate.toString("yyyyMMdd");
+        return varName + "_" + strArea + "_" + myDate.toString("yyyyMMdd");
 }
 
 QString getOutputNameHourly(meteoVariable myVar, Crit3DTime myTime, QString myArea)

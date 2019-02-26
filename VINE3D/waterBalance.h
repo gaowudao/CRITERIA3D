@@ -18,19 +18,35 @@
 
     enum criteria3DVariable {waterContent, waterTotalPotential, waterMatricPotential,
                             availableWaterContent, waterDeficit, degreeOfSaturation, soilTemperature,
-                            soilSurfaceMoisture};
+                            soilSurfaceMoisture, bottomDrainage};
 
     enum soilVariable {soilWaterContentFC, soilWaterContentWP, soilWiltingPointPotential,
                        soilFieldCapacityPotential, soilSaturation, soilWaterContentUI};
 
     class Vine3DProject;
 
+
+    class Crit3DWaterBalanceMaps
+    {
+        public:
+            gis::Crit3DRasterGrid* bottomDrainageMap;
+
+            Crit3DWaterBalanceMaps();
+            Crit3DWaterBalanceMaps(const gis::Crit3DRasterGrid &myDtm);
+
+            void initialize();
+            void initializeWithDtm(const gis::Crit3DRasterGrid &dtm);
+            void reset();
+            void update();
+            gis::Crit3DRasterGrid* getMapFromVar(criteria3DVariable myVar);
+    };
+
     void cleanWaterBalanceMemory();
 
     int computeNrLayers(float totalDepth, float minThickness, float maxThickness, float factor);
-    int getSoilLayerIndex(Vine3DProject* myProject, double depth);
-    double getSoilLayerTop(Vine3DProject* myProject, int i);
-    double getSoilLayerBottom(Vine3DProject* myProject, int i);
+    int getLayerIndex(Vine3DProject* myProject, double depth);
+    double getLayerTop(Vine3DProject* myProject, int i);
+    double getLayerBottom(Vine3DProject* myProject, int i);
     bool initializeWaterBalance(Vine3DProject* myProject);
     bool initializeSoilMoisture(Vine3DProject* myProject, int month);
 
@@ -62,4 +78,4 @@
     double evaporation(Vine3DProject* myProject, int row, int col);
 
 
-#endif // CRITERIA3DMODEL_H
+#endif // WATERBALANCE_H

@@ -21,6 +21,10 @@
     #include "plant.h"
 #endif
 
+#ifndef WATERBALANCE_H
+    #include "waterBalance.h"
+#endif
+
 #ifndef PROJECT_H
     #include "project.h"
 #endif
@@ -84,6 +88,7 @@
         Crit3DQuality qualityParameters;
 
         Crit3DMeteoMaps* meteoMaps;
+        Crit3DWaterBalanceMaps* outputWaterBalanceMaps;
         Crit3DStatePlantMaps* statePlantMaps;
         Crit3DOutputPlantMaps* outputPlantMaps;
 
@@ -144,7 +149,6 @@
         bool loadStates(QDate myDate, QString myArea);
         bool saveStateAndOutput(QDate myDate, QString myArea);
 
-        QString getGeoserverPath();
         int getIndexPointFromId(QString myId);
 
         bool setLogFile();

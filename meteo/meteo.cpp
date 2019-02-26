@@ -282,7 +282,7 @@ double ET0_Penman_daily(int myDOY, double myElevation, double myLatitude,
         /*! Monteith and Unsworth (2008) */
         mySatVapPress = 0.61078 * exp(17.27 * myTmed / (myTmed + 237.3));
         myVapPress = mySatVapPress * myUmed / 100;
-        delta = SaturationSlope(myTmed, mySatVapPress) / 1000;    /*!<  to kPa */
+        delta = SaturationSlope(myTmed, mySatVapPress);
 
         myDailySB = STEFAN_BOLTZMANN * DAY_SECONDS / 1000000;       /*!<   to MJ */
         myEmissivity = emissivityFromVaporPressure(myVapPress);
@@ -320,8 +320,10 @@ double ET0_Penman_hourly(double heigth, double normalizedTransmissivity, double 
     double es;                                   /*!<  saturation vapor pressure (kPa) at the mean hourly air temperature in C */
     double ea;                                   /*!<  actual vapor pressure (kPa) at the mean hourly air temperature in C */
     double emissivity;                           /*!<  net emissivity of the surface */
+    double cloudFactor;                          /*!<  cloudiness factor for long wave radiation */
     double netRadiation;                         /*!<  net radiation (J m-2 h-1) */
     double netLWRadiation;                       /*!<  net longwave radiation (J m-2 h-1) */
+    double netSWRadiation;                       /*!<  net shortwave radiation (J m-2 h-1) */
     double g;                                    /*!<  soil heat flux density (J m-2 h-1) */
     double Cd;                                   /*!<  bulk surface resistance and aerodynamic resistance coefficient */
     double tAirK;                                /*!<  air temperature (Kelvin) */
@@ -338,10 +340,12 @@ double ET0_Penman_hourly(double heigth, double normalizedTransmissivity, double 
     emissivity = emissivityFromVaporPressure(ea);
     tAirK = airTemp + ZEROCELSIUS;
     mySigma = STEFAN_BOLTZMANN * HOUR_SECONDS;
-    netLWRadiation = minValue(normalizedTransmissivity, 1) * emissivity * mySigma * (pow(tAirK, 4));
+    cloudFactor = 1.35 * minValue(normalizedTransmissivity, 1) - 0.35;
+    netLWRadiation = cloudFactor * emissivity * mySigma * (pow(tAirK, 4));
 
     /*!   from [W m-2] to [J h-1 m-2] */
-    netRadiation = ALBEDO_CROP_REFERENCE * (3600 * globalSWRadiation) - netLWRadiation;
+    netSWRadiation = (3600 * globalSWRadiation);
+    netRadiation = (1 - ALBEDO_CROP_REFERENCE) * netSWRadiation - netLWRadiation;
 
     /*!   values for grass */
     if (netRadiation > 0)
@@ -354,9 +358,9 @@ double ET0_Penman_hourly(double heigth, double normalizedTransmissivity, double 
         Cd = 0.96;
     }
 
-    delta = SaturationSlope(airTemp, es) / 1000;    /*!<  to kPa */
+    delta = SaturationSlope(airTemp, es);
 
-    pressure = PressureFromAltitude(heigth)/1000.;
+    pressure = PressureFromAltitude(heigth) / 1000.;
 
     gamma = Psychro(pressure, airTemp);
     lambda = LatentHeatVaporization(airTemp);

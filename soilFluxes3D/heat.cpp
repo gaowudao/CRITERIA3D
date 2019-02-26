@@ -324,7 +324,7 @@ double ThermalVaporConductivity(long i, double temperature, double h)
 
 	// slope of saturation vapor pressure
     svp = SaturationVaporPressure(tempCelsius);
-    slopesvp = SaturationSlope(tempCelsius, svp);
+    slopesvp = SaturationSlope(tempCelsius, svp / 1000);
 
     // slope of saturation vapor concentration
     slopesvc = slopesvp * MH2O * AirMolarDensity(myPressure, temperature) / myPressure;

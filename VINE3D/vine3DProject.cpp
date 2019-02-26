@@ -106,11 +106,6 @@ void Vine3DProject::setEnvironment(Tenvironment myEnvironment)
     environment = myEnvironment;
 }
 
-QString Vine3DProject::getGeoserverPath()
-{
-    return (path + "geoserver/");
-}
-
 bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
 {
     if (! QFile(projectFile).exists())
@@ -1731,7 +1726,7 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool isS
                 aggregateAndSaveDailyMap(this, leafWetness, aggregationSum, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
                 aggregateAndSaveDailyMap(this, referenceEvapotranspiration, aggregationSum, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
                 aggregateAndSaveDailyMap(this, actualEvaporation, aggregationSum, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
-                if (removeDirectory(myOutputPathHourly)) this->logInfo("Delete hourly files");
+                //if (removeDirectory(myOutputPathHourly)) this->logInfo("Delete hourly files");
             }
 
             //load daily map (for desease)
@@ -1813,56 +1808,56 @@ bool Vine3DProject::saveStateAndOutput(QDate myDate, QString myArea)
 
     this->logInfo("Save state and output");
 
-    if (!savePlantState(this, daysAfterBloomVar, myDate, statePath, myArea)) return(false);
-    if (!savePlantState(this, cumulatedBiomassVar, myDate, statePath, myArea)) return(false);
-    if (!savePlantState(this, fruitBiomassVar, myDate, statePath, myArea)) return(false);
-    if (!savePlantState(this, isHarvestedVar, myDate, statePath, myArea)) return(false);
-    if (!savePlantState(this, shootLeafNumberVar, myDate, statePath, myArea)) return(false);
     if (!savePlantState(this, meanTemperatureLastMonthVar, myDate, statePath, myArea)) return(false);
     if (!savePlantState(this, chillingUnitsVar, myDate, statePath, myArea)) return(false);
     if (!savePlantState(this, forceStateBudBurstVar, myDate, statePath, myArea)) return(false);
     if (!savePlantState(this, forceStateVegetativeSeasonVar, myDate, statePath, myArea)) return(false);
-    if (!savePlantState(this, stageVar, myDate, statePath, myArea)) return(false);
     if (!savePlantState(this, cumRadFruitsetVerVar, myDate, statePath, myArea)) return(false);
-    if (!savePlantState(this, leafAreaIndexVar, myDate, statePath, myArea)) return(false);
-    if (!savePlantState(this, powderyAICVar, myDate, statePath, myArea)) return(false);
+
+    if (!savePlantState(this, stageVar, myDate, statePath, myArea)) return(false);
     if (!savePlantState(this, degreeDaysFromFirstMarchVar, myDate, statePath, myArea)) return(false);
     if (!savePlantState(this, degreeDays10FromBudBurstVar, myDate, statePath, myArea)) return(false);
     if (!savePlantState(this, degreeDaysAtFruitSetVar, myDate, statePath, myArea)) return(false);
+    if (!savePlantState(this, daysAfterBloomVar, myDate, statePath, myArea)) return(false);
+    if (!savePlantState(this, shootLeafNumberVar, myDate, statePath, myArea)) return(false);
+    if (!savePlantState(this, isHarvestedVar, myDate, statePath, myArea)) return(false);
+
+    if (!savePlantState(this, leafAreaIndexVar, myDate, statePath, myArea)) return(false);
+    if (!savePlantState(this, cumulatedBiomassVar, myDate, statePath, myArea)) return(false);
+    if (!savePlantState(this, fruitBiomassVar, myDate, statePath, myArea)) return(false);
+    if (!savePlantState(this, fruitBiomassIndexVar,myDate,statePath, myArea)) return(false);
+
+    if (!savePlantState(this, powderyAICVar, myDate, statePath, myArea)) return(false);
     if (!savePlantState(this, powderyCurrentColoniesVar, myDate, statePath, myArea)) return(false);
     if (!savePlantState(this, powderySporulatingColoniesVar, myDate, statePath, myArea)) return(false);
-    if (!savePlantState(this,fruitBiomassIndexVar,myDate,statePath, myArea)) return(false);
 
     if (!saveWaterBalanceState(this, myDate, myArea, statePath, waterMatricPotential)) return (false);
 
     QString notes = "";
-    if (!savePlantOutput(this, wineYieldVar, myDate, outputPath, myArea, notes, false, true)) return(false);
+    if (!savePlantOutput(this, daysFromFloweringVar, myDate, outputPath, myArea, notes, false, true)) return(false);
+    if (!savePlantOutput(this, shootLeafNumberVar, myDate, outputPath, myArea, notes, true, true)) return(false);
+    if (!savePlantOutput(this, leafAreaIndexVar, myDate, outputPath, myArea, notes, true, true)) return(false);
     if (!savePlantOutput(this, stageVar, myDate, outputPath, myArea, notes, true, true)) return(false);
     if (!savePlantOutput(this, tartaricAcidVar, myDate, outputPath, myArea, notes, false, true)) return(false);
-    if (!savePlantOutput(this, daysFromFloweringVar, myDate, outputPath, myArea, notes, false, true)) return(false);
     if (!savePlantOutput(this, brixMaximumVar, myDate, outputPath, myArea, notes, false, true)) return(false);
     if (!savePlantOutput(this, brixBerryVar, myDate, outputPath, myArea, notes, false, true)) return(false);
     if (!savePlantOutput(this, deltaBrixVar, myDate, outputPath, myArea, notes, false, true)) return(false);
     if (!savePlantOutput(this, cumulatedBiomassVar, myDate, outputPath, myArea, notes, true, true)) return(false);
     if (!savePlantOutput(this, fruitBiomassVar, myDate, outputPath, myArea, notes, true, true)) return(false);
-    if (!savePlantOutput(this, shootLeafNumberVar, myDate, outputPath, myArea, notes, true, true)) return(false);
-    if (!savePlantOutput(this, leafAreaIndexVar, myDate, outputPath, myArea, notes, true, true)) return(false);
     if (!savePlantOutput(this, transpirationStressVar, myDate, outputPath, myArea, notes, false, true)) return(false);
     if (!savePlantOutput(this, transpirationVineyardVar, myDate, outputPath, myArea, notes, false, true)) return(false);
     if (!savePlantOutput(this, transpirationGrassVar, myDate, outputPath, myArea, notes, false, false)) return(false);
+    if (!savePlantOutput(this, wineYieldVar, myDate, outputPath, myArea, notes, false, true)) return(false);
+
     if (!savePlantOutput(this, powderyAICVar, myDate, outputPath, myArea, notes, true, true)) return(false);
     if (!savePlantOutput(this, powderySporulatingColoniesVar, myDate, outputPath, myArea, notes, true, true)) return(false);
-
     if (!savePlantOutput(this, powderyCOLVar, myDate, outputPath, myArea, notes, false, true)) return(false);
     if (!savePlantOutput(this, powderyINFRVar, myDate, outputPath, myArea, notes, false, true)) return(false);
     if (!savePlantOutput(this, powderyPrimaryInfectionRiskVar, myDate, outputPath, myArea, notes, false, true)) return(false);
 
     if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential10", "10cm", outputPath, myArea, 0.1, 0.1)) return false;
     if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential30", "30cm", outputPath, myArea, 0.3, 0.3)) return false;
-    if (WBSettings->depth >= 0.7f)
-    {
-        if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential70", "70cm", outputPath, myArea, 0.7, 0.7)) return false;
-    }
+    if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential70", "70cm", outputPath, myArea, 0.7, 0.7)) return false;
 
     if (!saveWaterBalanceOutput(this, myDate, degreeOfSaturation, "degreeOfSaturation", "soilDepth", outputPath, myArea, 0.0, double(WBSettings->depth) - 0.01)) return false;
     if (!saveWaterBalanceOutput(this, myDate, soilSurfaceMoisture, "SSM", "5cm", outputPath, myArea, 0.0, 0.05)) return false;
@@ -1892,10 +1887,10 @@ bool Vine3DProject::isVineyard(long row, long col)
 
 int Vine3DProject::getSoilIndex(long row, long col)
 {
-    int fieldIndex = this->getModelCaseIndex(row, col);
+    int caseIndex = this->getModelCaseIndex(row, col);
 
-    if (fieldIndex != NODATA)
-        return this->modelCases[fieldIndex].soilIndex;
+    if (caseIndex != NODATA)
+        return this->modelCases[caseIndex].soilIndex;
     else
         return NODATA;
 }

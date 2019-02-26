@@ -110,9 +110,9 @@ double SaturationVaporPressure(double myTCelsius)
 
 
 /*!
- * \brief [Pa K-1] slope of saturation vapor pressure curve
- * \param airTCelsius
- * \param satVapPressure
+ * \brief [kPa degC-1] slope of saturation vapor pressure curve
+ * \param airTCelsius (degC)
+ * \param satVapPressure (kPa)
  * \return result
  */
 double SaturationSlope(double airTCelsius, double satVapPressure)
@@ -142,7 +142,7 @@ double LatentHeatVaporization(double myTCelsius)
 
 /*!
  * \brief [kPa °C-1] psychrometric instrument constant
- * \param myPressure [Pa]
+ * \param myPressure [kPa]
  * \param myTemp [°C]
  * \return result
  */
@@ -250,7 +250,7 @@ double AerodynamicConductanceOpenwater(double myHeight, double myWaterBodySurfac
     myPressure = PressureFromAltitude(myHeight);
     myT = myAirTemperature;
     myVolSpecHeat = AirVolumetricSpecificHeat(myPressure, myT);
-    myPsycro = Psychro(myPressure, myT);
+    myPsycro = Psychro(myPressure / 1000, myT);
 
     windFunction = pow((5. / (myWaterBodySurface * 1000000)), 0.05) * (3.8 + 1.57 * myWindSpeed10);
     windFunction *= 1000000. / DAY_SECONDS; //to J m-2 s-1 kPa

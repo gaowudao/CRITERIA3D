@@ -482,10 +482,6 @@ bool aggregateAndSaveDailyMap(Vine3DProject* myProject, meteoVariable myVar,
 
     QString filename = getOutputNameDaily("ARPA", varName, myArea , "", qDate);
 
-    //geoserver - no error check
-    QString geoserverFileName = myProject->getGeoserverPath() + filename;
-    gis::writeEsriGrid(geoserverFileName.toStdString(), myAggrMap, &myError);
-
     QString outputFileName = dailyPath + filename;
     bool isOk = gis::writeEsriGrid(outputFileName.toStdString(), myAggrMap, &myError);
     myMap->freeGrid();
