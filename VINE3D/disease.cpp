@@ -263,7 +263,7 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
     // Save output
     if (! missingData)
     {
-        QString fileName, outputFileName, geoserverFileName;
+        QString fileName, outputFileName;
         QDate myDate;
         std::string myErrorString;
         for (n = 0; n < nrSavingDays; n++)
@@ -274,14 +274,10 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
             fileName = getOutputNameDaily("ARPA", "downyINFR", myArea, "", myDate);
             outputFileName = dailyPath + fileName;
             gis::writeEsriGrid(outputFileName.toStdString(), infectionMap[n], &myErrorString);
-            geoserverFileName = myProject->getGeoserverPath() + fileName;
-            gis::writeEsriGrid(geoserverFileName.toStdString(), infectionMap[n], &myErrorString);
 
             fileName = getOutputNameDaily("ARPA", "downySymptoms", myArea, "", myDate);
             outputFileName = dailyPath + fileName;
             gis::writeEsriGrid(outputFileName.toStdString(), oilSpotMap[n], &myErrorString);
-            geoserverFileName = myProject->getGeoserverPath() + fileName;
-            gis::writeEsriGrid(geoserverFileName.toStdString(), oilSpotMap[n], &myErrorString);
         }
         myProject->logInfo("Downy mildew computed.");
     }
