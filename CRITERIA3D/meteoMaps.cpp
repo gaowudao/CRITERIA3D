@@ -102,41 +102,39 @@ gis::Crit3DRasterGrid* Crit3DMeteoMaps::getMapFromVar(meteoVariable myVar)
 }
 
 
-bool Crit3DMeteoMaps::computeET0Map(gis::Crit3DRasterGrid* dtm, Crit3DRadiationMaps *radMaps)
+bool Crit3DMeteoMaps::computeET0Map(gis::Crit3DRasterGrid* DTM, Crit3DRadiationMaps *radMaps)
 {
     float globalRadiation, transmissivity, clearSkyTransmissivity;
     float temperature, relHumidity, windSpeed, height;
 
-    gis::Crit3DRasterGrid* map = ET0Map;
-
-    for (long row = 0; row < map->header->nrRows; row++)
-        for (long col = 0; col < map->header->nrCols; col++)
+    for (long row = 0; row < this->ET0Map->header->nrRows; row++)
+        for (long col = 0; col < this->ET0Map->header->nrCols; col++)
         {
-            map->value[row][col] = map->header->flag;
+            this->ET0Map->value[row][col] = this->ET0Map->header->flag;
 
-            height = dtm->value[row][col];
+            height = DTM->value[row][col];
 
-            if (int(height) != int(dtm->header->flag))
+            if (int(height) != int(DTM->header->flag))
             {
                 clearSkyTransmissivity = CLEAR_SKY_TRANSMISSIVITY_DEFAULT;
                 globalRadiation = radMaps->globalRadiationMap->value[row][col];
                 transmissivity = radMaps->transmissivityMap->value[row][col];
-                temperature = airTemperatureMap->value[row][col];
-                relHumidity = airHumidityMap->value[row][col];
-                windSpeed = windIntensityMap->value[row][col];
+                temperature = this->airTemperatureMap->value[row][col];
+                relHumidity = this->airHumidityMap->value[row][col];
+                windSpeed = this->windIntensityMap->value[row][col];
 
                 if (globalRadiation != radMaps->globalRadiationMap->header->flag
                         && transmissivity != radMaps->transmissivityMap->header->flag
-                        && temperature != airTemperatureMap->header->flag
-                        && relHumidity != airHumidityMap->header->flag
-                        && windSpeed != windIntensityMap->header->flag)
+                        && temperature != this->airTemperatureMap->header->flag
+                        && relHumidity != this->airHumidityMap->header->flag
+                        && windSpeed != this->windIntensityMap->header->flag)
                 {
-                    map->value[row][col] = float(ET0_Penman_hourly(height, transmissivity / clearSkyTransmissivity,
-                                      globalRadiation, temperature, relHumidity, windSpeed));
+                    this->ET0Map->value[row][col] = ET0_Penman_hourly(height, transmissivity / clearSkyTransmissivity,
+                                      globalRadiation, temperature, relHumidity, windSpeed);
                 }
             }
         }
 
-    isET0Computed = true;
-    return gis::updateMinMaxRasterGrid(map);
+    this->isET0Computed = true;
+    return gis::updateMinMaxRasterGrid(this->ET0Map);
 }

@@ -334,7 +334,16 @@ bool Crit3DProject::computeET0(const Crit3DTime& myTime, bool showInfo)
         return false;
     }
 
-    if (! interpolationDemMain(airTemperature, myTime, meteoMaps->airTemperatureMap, showInfo))
+    if (! interpolationDemMain(airTemperature, myTime, this->meteoMaps->airTemperatureMap, showInfo))
+        return false;
+    if (! interpolationDemMain(airRelHumidity, myTime, this->meteoMaps->airHumidityMap, showInfo))
+        return false;
+    if (! interpolationDemMain(windIntensity, myTime, this->meteoMaps->windIntensityMap, showInfo))
+        return false;
+    if (! interpolationDemMain(globalIrradiance, myTime, &(this->dataRaster), showInfo))
+        return false;
+
+    if (! this->meteoMaps->computeET0Map(&(this->DTM), this->radiationMaps))
         return false;
 
     return true;
