@@ -828,12 +828,12 @@ void MainWindow::on_actionClose_meteo_grid_triggered()
 
 void MainWindow::on_actionInterpolation_to_DTM_triggered()
 {
-    FormInfo myInfo;
-    myInfo.start("Interpolation...", 0);
+    /*FormInfo myInfo;
+    myInfo.start("Interpolation...", 0);*/
 
     interpolateDemGUI();
 
-    myInfo.close();
+    //myInfo.close();
 }
 
 
@@ -1160,6 +1160,7 @@ void MainWindow::on_actionCompute_solar_radiation_triggered()
 {
     myProject.setFrequency(hourly);
     myProject.setCurrentVariable(globalIrradiance);
+    this->currentPointsVisualization = showCurrentVariable;
     this->updateVariable();
     this->interpolateDemGUI();
 }

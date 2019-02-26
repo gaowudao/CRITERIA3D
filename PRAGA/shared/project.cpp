@@ -1086,12 +1086,6 @@ bool Project::interpolateDemRadiation(const Crit3DTime& myTime, gis::Crit3DRaste
 
 bool Project::interpolationDemMain(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo)
 {
-    if (myVar == noMeteoVar)
-    {
-        errorString = "Select a variable before.";
-        return false;
-    }
-
     if (! DTM.isLoaded)
     {
         errorString = "Load a DEM before.";
@@ -1101,6 +1095,12 @@ bool Project::interpolationDemMain(meteoVariable myVar, const Crit3DTime& myTime
     if (nrMeteoPoints == 0)
     {
         errorString = "Open a meteo points DB before.";
+        return false;
+    }
+
+    if (myVar == noMeteoVar)
+    {
+        errorString = "Select a variable before.";
         return false;
     }
 
