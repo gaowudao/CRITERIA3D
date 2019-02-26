@@ -1051,7 +1051,7 @@ void MainWindow::on_actionView_Transmissivity_triggered()
 
     setColorScale(airTemperature, myProject.radiationMaps->transmissivityMap->colorScale);
     this->setCurrentRaster(myProject.radiationMaps->transmissivityMap);
-    ui->labelRasterScale->setText("Atmospheric transmissivity [-]");
+    ui->labelRasterScale->setText("Atm. transmissivity [-]");
 }
 
 
@@ -1071,7 +1071,7 @@ void MainWindow::on_actionView_ET0_triggered()
 
     setColorScale(airTemperature, myProject.meteoMaps->ET0Map->colorScale);
     this->setCurrentRaster(myProject.meteoMaps->ET0Map);
-    ui->labelRasterScale->setText("Potential evapotranspiration [mm]");
+    ui->labelRasterScale->setText("ET0 [mm]");
 }
 
 
