@@ -1050,7 +1050,7 @@ void MainWindow::on_actionView_Transmissivity_triggered()
         return;
     }
 
-    setColorScale(airTemperature, myProject.radiationMaps->transmissivityMap->colorScale);
+    setColorScale(atmTransmissivity, myProject.radiationMaps->transmissivityMap->colorScale);
     this->setCurrentRaster(myProject.radiationMaps->transmissivityMap);
     ui->labelRasterScale->setText("Atm. transmissivity [-]");
 }
@@ -1070,7 +1070,7 @@ void MainWindow::on_actionView_ET0_triggered()
         return;
     }
 
-    setColorScale(airTemperature, myProject.meteoMaps->ET0Map->colorScale);
+    setColorScale(referenceEvapotranspiration, myProject.meteoMaps->ET0Map->colorScale);
     this->setCurrentRaster(myProject.meteoMaps->ET0Map);
     ui->labelRasterScale->setText("ET0 [mm]");
 }
@@ -1162,26 +1162,24 @@ void MainWindow::on_actionCompute_solar_radiation_triggered()
     if (myProject.nrMeteoPoints == 0)
     {
         myProject.logError("Open a meteo points DB before.");
+        return;
     }
-    else
-    {
-        myProject.setFrequency(hourly);
-        myProject.setCurrentVariable(globalIrradiance);
-        this->currentPointsVisualization = showCurrentVariable;
-        this->updateVariable();
-        this->interpolateDemGUI();
-    }
+
+    myProject.setFrequency(hourly);
+    myProject.setCurrentVariable(globalIrradiance);
+    this->currentPointsVisualization = showCurrentVariable;
+    this->updateVariable();
+    this->interpolateDemGUI();
 }
 
 
 void MainWindow::on_actionCompute_ET0_triggered()
 {
-    if (myProject.computeET0(myProject.getCurrentTime(), true))
+    if (! myProject.computeET0(myProject.getCurrentTime(), true))
     {
-        setColorScale(airTemperature, myProject.meteoMaps->ET0Map->colorScale);
-        this->setCurrentRaster(myProject.meteoMaps->ET0Map);
-        ui->labelRasterScale->setText("ET0 [mm]");
-    }
-    else
         myProject.logError();
+        return;
+    }
+
+    this->on_actionView_ET0_triggered();
 }
