@@ -325,7 +325,8 @@ void MainWindow::on_actionLoadDEM_triggered()
     if (fileName == "") return;
 
     qDebug() << "loading raster";
-    if (!myProject.loadDEM(fileName)) return;
+    if (! myProject.loadDEM_CreateMaps(fileName))
+        return;
 
     this->setCurrentRaster(&(myProject.DTM));
     ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
@@ -1054,6 +1055,26 @@ void MainWindow::on_actionView_Transmissivity_triggered()
 }
 
 
+void MainWindow::on_actionView_ET0_triggered()
+{
+    if (! myProject.DTM.isLoaded)
+    {
+        myProject.logError("Load DTM before.");
+        return;
+    }
+
+    if (! myProject.meteoMaps->ET0Map->isLoaded)
+    {
+        myProject.logError("Compute Potential EvapoTranspiration before.");
+        return;
+    }
+
+    setColorScale(airTemperature, myProject.meteoMaps->ET0Map->colorScale);
+    this->setCurrentRaster(myProject.meteoMaps->ET0Map);
+    ui->labelRasterScale->setText("Potential EvapoTranspiration [mm]");
+}
+
+
 void MainWindow::on_actionView_MapVariable_triggered()
 {
     if (myProject.dataRaster.isLoaded)
@@ -1133,4 +1154,5 @@ void MainWindow::setMapSource(OSMTileSource::OSMTileType mySource)
 
     this->mapView->setTileSource(composite);
 }
+
 

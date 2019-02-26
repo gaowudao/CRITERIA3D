@@ -88,6 +88,8 @@
 
         void on_actionView_Transmissivity_triggered();
 
+        void on_actionView_ET0_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

@@ -316,6 +316,16 @@ void Crit3DProject::cleanProject()
 }
 
 
+bool Crit3DProject::loadDEM_CreateMaps(QString myFileName)
+{
+    if (! this->loadDEM(myFileName))
+        return false;
+
+    this->meteoMaps = new Crit3DMeteoMaps(this->DTM);
+    return true;
+}
+
+
 bool Crit3DProject::initializeCriteria3D()
 {
     cleanProject();
@@ -339,8 +349,6 @@ bool Crit3DProject::initializeCriteria3D()
 
     if (!createSoilIndexMap())
         return false;
-
-    this->meteoMaps = new Crit3DMeteoMaps(this->DTM);
 
     // loadCropProperties()
     // load crop map

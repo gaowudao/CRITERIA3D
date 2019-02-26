@@ -62,7 +62,8 @@
         bool setSoilProfileCrop(int row, int col);
 
         int getSoilIndex(int dtmRow, int dtmCol);
-        bool computeET0Map();
+
+        bool loadDEM_CreateMaps(QString myFileName);
     };
 
 
