@@ -42,7 +42,7 @@ Crit3DProject::Crit3DProject()
     nrLayers = 0;
     nrVoxelsPerLayer = 0;
     nrVoxels = 0;
-    soilDepth = 0.5f;            //[m] default: 1 m
+    soilDepth = 0.5;                    // [m]
 }
 
 
