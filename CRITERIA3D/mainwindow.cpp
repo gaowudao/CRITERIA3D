@@ -1162,14 +1162,15 @@ void MainWindow::on_actionCompute_solar_radiation_triggered()
     if (myProject.nrMeteoPoints == 0)
     {
         myProject.logError("Open a meteo points DB before.");
-        return;
     }
-
-    myProject.setFrequency(hourly);
-    myProject.setCurrentVariable(globalIrradiance);
-    this->currentPointsVisualization = showCurrentVariable;
-    this->updateVariable();
-    this->interpolateDemGUI();
+    else
+    {
+        myProject.setFrequency(hourly);
+        myProject.setCurrentVariable(globalIrradiance);
+        this->currentPointsVisualization = showCurrentVariable;
+        this->updateVariable();
+        this->interpolateDemGUI();
+    }
 }
 
 

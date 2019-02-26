@@ -328,6 +328,12 @@ bool Crit3DProject::loadDEM_CreateMaps(QString myFileName)
 
 bool Crit3DProject::computeET0(const Crit3DTime& myTime, bool showInfo)
 {
+    if (! DTM.isLoaded)
+    {
+        errorString = "Load a DEM before.";
+        return false;
+    }
+
     if (! interpolationDemMain(airTemperature, myTime, meteoMaps->airTemperatureMap, showInfo))
         return false;
 
