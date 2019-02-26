@@ -955,6 +955,7 @@ bool Project::writeTopographicDistanceMaps()
     return true;
 }
 
+
 bool Project::loadTopographicDistanceMaps()
 {
     if (nrMeteoPoints == 0)
@@ -995,6 +996,7 @@ bool Project::loadTopographicDistanceMaps()
 
     return true;
 }
+
 
 bool Project::interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo)
 {
@@ -1114,6 +1116,7 @@ bool Project::interpolationDemMain(meteoVariable myVar, const Crit3DTime& myTime
         return interpolationDem(myVar, myTime, myRaster, showInfo);
     }
 }
+
 
 float Project::meteoDataConsistency(meteoVariable myVar, const Crit3DTime& timeIni, const Crit3DTime& timeFin)
 {
