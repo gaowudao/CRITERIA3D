@@ -46,12 +46,21 @@ bool drawColorLegend(Crit3DColorScale* colorScale, QPainter* myPainter)
         myQColor = QColor(myColor->red, myColor->green, myColor->blue);
         myPainter->setBrush(myQColor);
         myPainter->fillRect(DELTA+dx*i, 0, ceil(dx), 20, myPainter->brush());
+
         if ((i % n) == 0)
         {
             if (int(value) == value)
-                myPainter->drawText(DELTA*0.5 + dx*i, 36, QString::number(value));
-            else
+            {
+                myPainter->drawText(DELTA*0.5 + dx*i, 36, QString::number(int(value)));
+            }
+            else if (int(value * 10) == value * 10)
+            {
                 myPainter->drawText(DELTA*0.5 + dx*i, 36, QString::number(value,'f',1));
+            }
+            else
+            {
+                myPainter->drawText(DELTA*0.5 + dx*i, 36, QString::number(value,'f',2));
+            }
         }
         value += step;
     }

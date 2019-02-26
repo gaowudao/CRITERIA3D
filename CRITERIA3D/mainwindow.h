@@ -86,6 +86,8 @@
         void on_viewer3DClosed();
         void on_dateChanged();
 
+        void on_actionView_Transmissivity_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

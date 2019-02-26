@@ -1034,21 +1034,23 @@ void MainWindow::on_actionView_Aspect_triggered()
 }
 
 
-void MainWindow::on_actionView_PointsHide_triggered()
+void MainWindow::on_actionView_Transmissivity_triggered()
 {
-    redrawMeteoPoints(showNone, true);
-}
+    if (! myProject.DTM.isLoaded)
+    {
+        myProject.logError("Load DTM before.");
+        return;
+    }
 
+    if (! myProject.radiationMaps->globalRadiationMap->isLoaded)
+    {
+        myProject.logError("Compute solar radiation before.");
+        return;
+    }
 
-void MainWindow::on_actionView_PointsLocation_triggered()
-{
-    redrawMeteoPoints(showLocation, true);
-}
-
-
-void MainWindow::on_actionView_PointsCurrentVariable_triggered()
-{
-    redrawMeteoPoints(showCurrentVariable, true);
+    setColorScale(airTemperature, myProject.radiationMaps->transmissivityMap->colorScale);
+    this->setCurrentRaster(myProject.radiationMaps->transmissivityMap);
+    ui->labelRasterScale->setText("Atmospheric transmissivity [-]");
 }
 
 
@@ -1064,6 +1066,25 @@ void MainWindow::on_actionView_MapVariable_triggered()
         myProject.logError("Compute a variable before.");
         return;
     }
+}
+
+
+
+void MainWindow::on_actionView_PointsHide_triggered()
+{
+    redrawMeteoPoints(showNone, true);
+}
+
+
+void MainWindow::on_actionView_PointsLocation_triggered()
+{
+    redrawMeteoPoints(showLocation, true);
+}
+
+
+void MainWindow::on_actionView_PointsCurrentVariable_triggered()
+{
+    redrawMeteoPoints(showCurrentVariable, true);
 }
 
 
