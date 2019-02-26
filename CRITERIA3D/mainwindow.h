@@ -92,6 +92,8 @@
 
         void on_actionCompute_solar_radiation_triggered();
 
+        void on_actionCompute_ET0_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

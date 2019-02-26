@@ -1159,9 +1159,28 @@ void MainWindow::setMapSource(OSMTileSource::OSMTileType mySource)
 
 void MainWindow::on_actionCompute_solar_radiation_triggered()
 {
+    if (myProject.nrMeteoPoints == 0)
+    {
+        myProject.logError("Open a meteo points DB before.");
+        return;
+    }
+
     myProject.setFrequency(hourly);
     myProject.setCurrentVariable(globalIrradiance);
     this->currentPointsVisualization = showCurrentVariable;
     this->updateVariable();
     this->interpolateDemGUI();
+}
+
+
+void MainWindow::on_actionCompute_ET0_triggered()
+{
+    if (myProject.computeET0(myProject.getCurrentTime(), true))
+    {
+        setColorScale(airTemperature, myProject.meteoMaps->ET0Map->colorScale);
+        this->setCurrentRaster(myProject.meteoMaps->ET0Map);
+        ui->labelRasterScale->setText("ET0 [mm]");
+    }
+    else
+        myProject.logError();
 }
