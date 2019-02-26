@@ -940,7 +940,7 @@ void MainWindow::on_actionView_3D_triggered()
 {
     if (! myProject.DTM.isLoaded)
     {
-        myProject.logError("Load DTM before.");
+        myProject.logError("Load a DEM before.");
         return;
     }
 
@@ -965,7 +965,7 @@ void MainWindow::on_actionView_DTM_triggered()
     }
     else
     {
-        myProject.logError("Load DTM before.");
+        myProject.logError("Load a DEM before.");
         return;
     }
 }
@@ -981,7 +981,7 @@ void MainWindow::on_actionView_Soil_triggered()
     }
     else
     {
-        myProject.logError("Load soil map before.");
+        myProject.logError("Load a soil map before.");
         return;
     }
 }
@@ -997,7 +997,7 @@ void MainWindow::on_actionView_Boundary_triggered()
     }
     else
     {
-        myProject.logError("Initialize model before.");
+        myProject.logError("Initialize Criteria-3D model before.");
         return;
     }
 }
@@ -1013,7 +1013,7 @@ void MainWindow::on_actionView_Slope_triggered()
     }
     else
     {
-        myProject.logError("Load DTM before.");
+        myProject.logError("Load a DEM before.");
         return;
     }
 }
@@ -1029,7 +1029,7 @@ void MainWindow::on_actionView_Aspect_triggered()
     }
     else
     {
-        myProject.logError("Load DTM before.");
+        myProject.logError("Load a DEM before.");
         return;
     }
 }
@@ -1039,7 +1039,7 @@ void MainWindow::on_actionView_Transmissivity_triggered()
 {
     if (! myProject.DTM.isLoaded)
     {
-        myProject.logError("Load DTM before.");
+        myProject.logError("Load a DEM before.");
         return;
     }
 
@@ -1059,7 +1059,7 @@ void MainWindow::on_actionView_ET0_triggered()
 {
     if (! myProject.DTM.isLoaded)
     {
-        myProject.logError("Load DTM before.");
+        myProject.logError("Load a DEM before.");
         return;
     }
 

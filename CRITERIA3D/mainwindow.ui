@@ -2590,10 +2590,13 @@
    </widget>
    <widget class="QMenu" name="menuVariable">
     <property name="title">
-     <string>Interpolation</string>
+     <string>Data spatialization</string>
     </property>
-    <addaction name="actionInterpolation_to_DTM"/>
     <addaction name="actionInterpolationSettings"/>
+    <addaction name="actionInterpolation_to_DTM"/>
+    <addaction name="separator"/>
+    <addaction name="actionCompute_solar_radiation"/>
+    <addaction name="actionCompute_ET0"/>
     <addaction name="separator"/>
     <addaction name="actionVariableQualitySpatial"/>
     <addaction name="separator"/>
@@ -2634,9 +2637,9 @@
      <addaction name="actionView_PointsLocation"/>
      <addaction name="actionView_PointsCurrentVariable"/>
     </widget>
-    <addaction name="actionView_3D"/>
-    <addaction name="separator"/>
     <addaction name="menuPoints"/>
+    <addaction name="separator"/>
+    <addaction name="actionView_3D"/>
     <addaction name="separator"/>
     <addaction name="actionView_DTM"/>
     <addaction name="actionView_Slope"/>
@@ -2693,7 +2696,7 @@
   </action>
   <action name="actionOpen_meteo_points_DB">
    <property name="text">
-    <string>&amp;Open meteo points DB...</string>
+    <string>&amp;Open meteo points...</string>
    </property>
   </action>
   <action name="actionRectangle_Selection">
@@ -2860,6 +2863,16 @@
   <action name="actionView_ET0">
    <property name="text">
     <string>ET0</string>
+   </property>
+  </action>
+  <action name="actionCompute_solar_radiation">
+   <property name="text">
+    <string>Compute solar radiation</string>
+   </property>
+  </action>
+  <action name="actionCompute_ET0">
+   <property name="text">
+    <string>Compute ET0</string>
    </property>
   </action>
  </widget>
