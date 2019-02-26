@@ -75,7 +75,6 @@ MainWindow::MainWindow(QWidget *parent) :
     this->startCenter = new Position (myProject.gisSettings.startLocation.longitude, myProject.gisSettings.startLocation.latitude, 0.0);
     this->mapView->setZoomLevel(8);
     this->mapView->centerOn(startCenter->lonLat());
-    this->setMapSource(OSMTileSource::Terrain);
 
     // Set raster objects
     this->rasterObj = new RasterObject(this->mapView);
