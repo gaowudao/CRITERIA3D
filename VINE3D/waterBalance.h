@@ -37,7 +37,7 @@
             void initialize();
             void initializeWithDtm(const gis::Crit3DRasterGrid &dtm);
             void reset();
-            void update();
+            void update(Vine3DProject *myProject);
             gis::Crit3DRasterGrid* getMapFromVar(criteria3DVariable myVar);
     };
 

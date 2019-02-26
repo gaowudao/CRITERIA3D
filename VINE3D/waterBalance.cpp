@@ -36,9 +36,20 @@ void Crit3DWaterBalanceMaps::reset()
     bottomDrainageMap->setConstantValue(0);
 }
 
-void Crit3DWaterBalanceMaps::update()
+void Crit3DWaterBalanceMaps::update(Vine3DProject(* myProject))
 {
-    return;
+    long row, col;
+    long nodeIndex;
+
+    for (row = 0; row < bottomDrainageMap->header->nrRows; row++)
+        for (col = 0; col < bottomDrainageMap->header->nrCols; col++)
+        {
+            if (int(myProject->WBMaps->indexMap.at(0).value[row][col]) != myProject->WBMaps->indexMap.at(0).header->flag)
+            {
+                nodeIndex = 0;
+                bottomDrainageMap->value[row][col] += soilFluxes3D::getBoundaryWaterFlow(nodeIndex);
+            }
+        }
 
 }
 
