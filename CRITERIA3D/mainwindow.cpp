@@ -1063,15 +1063,15 @@ void MainWindow::on_actionView_ET0_triggered()
         return;
     }
 
-    if (! myProject.meteoMaps->ET0Map->isLoaded)
+    if (! myProject.meteoMaps->isET0Computed)
     {
-        myProject.logError("Compute Potential EvapoTranspiration before.");
+        myProject.logError("Compute potential evapotranspiration before.");
         return;
     }
 
     setColorScale(airTemperature, myProject.meteoMaps->ET0Map->colorScale);
     this->setCurrentRaster(myProject.meteoMaps->ET0Map);
-    ui->labelRasterScale->setText("Potential EvapoTranspiration [mm]");
+    ui->labelRasterScale->setText("Potential evapotranspiration [mm]");
 }
 
 

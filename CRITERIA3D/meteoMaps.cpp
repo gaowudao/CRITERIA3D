@@ -36,6 +36,7 @@ Crit3DMeteoMaps::Crit3DMeteoMaps()
     ET0Map = new gis::Crit3DRasterGrid;
 
     isInitialized = false;
+    isET0Computed = false;
 }
 
 
@@ -54,6 +55,7 @@ Crit3DMeteoMaps::Crit3DMeteoMaps(const gis::Crit3DRasterGrid& rasterGrid)
     ET0Map->initializeGrid(rasterGrid);
 
     isInitialized = true;
+    isET0Computed = false;
 }
 
 
@@ -68,6 +70,7 @@ Crit3DMeteoMaps::~Crit3DMeteoMaps()
         ET0Map->freeGrid();
 
         isInitialized = false;
+        isET0Computed = false;
     }
 }
 
@@ -134,5 +137,6 @@ bool Crit3DMeteoMaps::computeET0Map(gis::Crit3DRasterGrid* dtm, Crit3DRadiationM
             }
         }
 
+    isET0Computed = true;
     return gis::updateMinMaxRasterGrid(map);
 }
