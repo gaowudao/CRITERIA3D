@@ -910,13 +910,13 @@ bool Project::writeTopographicDistanceMaps()
 {
     if (nrMeteoPoints == 0)
     {
-        errorString = "No meteo points available";
+        errorString = "Open a meteo points DB before.";
         return false;
     }
 
     if (! DTM.isLoaded)
     {
-        errorString = "No DEM loaded";
+        errorString = "Load a DEM before.";
         return false;
     }
 
@@ -960,7 +960,7 @@ bool Project::loadTopographicDistanceMaps()
 {
     if (nrMeteoPoints == 0)
     {
-        errorString = "No meteo points available";
+        errorString = "Open a meteo points DB before.";
         return false;
     }
 
@@ -1088,19 +1088,19 @@ bool Project::interpolationDemMain(meteoVariable myVar, const Crit3DTime& myTime
 {
     if (myVar == noMeteoVar)
     {
-        errorString = "No variable selected";
+        errorString = "Select a variable before.";
         return false;
     }
 
     if (! DTM.isLoaded)
     {
-        errorString = "No DEM loaded";
+        errorString = "Load a DEM before.";
         return false;
     }
 
     if (nrMeteoPoints == 0)
     {
-        errorString = "No points available";
+        errorString = "Open a meteo points DB before.";
         return false;
     }
 

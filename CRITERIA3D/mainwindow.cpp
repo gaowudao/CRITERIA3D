@@ -414,7 +414,7 @@ void MainWindow::interpolateDemGUI()
 {
     meteoVariable myVar = myProject.getCurrentVariable();
 
-    if (myProject.interpolationDemMain(myVar,myProject.getCurrentTime(), &(myProject.dataRaster), true))
+    if (myProject.interpolationDemMain(myVar, myProject.getCurrentTime(), &(myProject.dataRaster), true))
     {
         setColorScale(myVar, myProject.dataRaster.colorScale);
         setCurrentRaster(&(myProject.dataRaster));
@@ -1156,3 +1156,10 @@ void MainWindow::setMapSource(OSMTileSource::OSMTileType mySource)
 }
 
 
+void MainWindow::on_actionCompute_solar_radiation_triggered()
+{
+    myProject.setFrequency(hourly);
+    myProject.setCurrentVariable(globalIrradiance);
+    this->updateVariable();
+    this->interpolateDemGUI();
+}
