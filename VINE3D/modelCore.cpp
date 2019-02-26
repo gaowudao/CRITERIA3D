@@ -49,6 +49,7 @@ bool assignIrrigation(Vine3DProject* myProject, Crit3DTime myTime)
     float nrHours;
     float irrigationRate, rate;
     int hour = myTime.getHour();
+    int idBook;
     QDate myDate = getQDate(myTime.date);
 
     for (long row = 0; row < myProject->DTM.header->nrRows ; row++)
@@ -61,7 +62,7 @@ bool assignIrrigation(Vine3DProject* myProject, Crit3DTime myTime)
                 fieldIndex = myProject->getModelCaseIndex(row, col);
                 if (fieldIndex > 0)
                 {
-                    int idBook = 0;
+                    idBook = 0;
                     while (myProject->getFieldBookIndex(idBook, myDate, fieldIndex, &idBook))
                     {
                         if (myProject->fieldBook[idBook].operation == irrigationOperation)

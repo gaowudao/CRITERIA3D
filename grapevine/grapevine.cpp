@@ -141,6 +141,7 @@ bool Vine3D_Grapevine::initializeLayers(int myMaxLayers)
     transpirationInstantLayer = static_cast<double*> (calloc(size_t(nrMaxLayers), sizeof(double)));
     transpirationLayer = static_cast<double*> (calloc(size_t(nrMaxLayers), sizeof(double)));
     transpirationCumulatedGrass = static_cast<double*> (calloc(size_t(nrMaxLayers), sizeof(double)));
+    currentProfile = static_cast<double*> (calloc(size_t(nrMaxLayers), sizeof(double)));
 
     resetLayers();
 
@@ -1256,21 +1257,19 @@ void Vine3D_Grapevine::setRootDensity(Crit3DModelCase* modelCase, soil::Crit3DSo
 
 double* Vine3D_Grapevine::getExtractedWater(Crit3DModelCase* modelCase)
 {
-    double* myWaterExtractionProfile = static_cast<double*> (calloc(size_t(nrMaxLayers), sizeof(double)));
-
     for(int i=0; i < nrMaxLayers; i++)
-        myWaterExtractionProfile[i] = 0;
+        currentProfile[i] = 0;
 
     for(int i=0; i < modelCase->soilLayersNr; i++)
     {
        if (int(transpirationLayer[i]) != NODATA)
-            myWaterExtractionProfile[i] += transpirationLayer[i];
+            currentProfile[i] += transpirationLayer[i];
 
         if (int(transpirationCumulatedGrass[i]) != NODATA)
-            myWaterExtractionProfile[i] += transpirationCumulatedGrass[i];
+            currentProfile[i] += transpirationCumulatedGrass[i];
     }
 
-    return myWaterExtractionProfile;
+    return currentProfile;
 }
 
 double Vine3D_Grapevine::getRealTranspirationGrapevine(Crit3DModelCase* modelCase)

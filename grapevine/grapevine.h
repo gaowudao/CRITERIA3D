@@ -327,6 +327,7 @@ private:
     //double* layerRootDensity;
     double totalStomatalConductance, totalStomatalConductanceNoStress ;
     double transpirationInstant;
+    double* currentProfile;
     double* transpirationInstantLayer;          //molH2O m^-2 s^-1
     double* transpirationLayer;                 //mm
     double* transpirationCumulatedGrass;
