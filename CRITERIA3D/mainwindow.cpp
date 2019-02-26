@@ -483,6 +483,7 @@ void MainWindow::updateVariable()
 
     std::string myString = getVariableString(myProject.getCurrentVariable());
     ui->labelVariable->setText(QString::fromStdString(myString));
+    ui->labelVariablePoints->setText(QString::fromStdString(myString));
 
     redrawMeteoPoints(currentPointsVisualization, true);
     redrawMeteoGrid();
