@@ -231,7 +231,7 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
         //3D soil water balance
         waterBalance(myProject);
         if (myCurrentTime == myFirstTime)
-            myProject->outputWaterBalanceMaps->reset();
+            resetWaterBalanceMap(myProject);
 
         updateWaterBalanceMaps(myProject);
 

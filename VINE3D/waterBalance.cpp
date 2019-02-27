@@ -31,9 +31,9 @@ void Crit3DWaterBalanceMaps::initializeWithDtm(const gis::Crit3DRasterGrid &dtm)
     bottomDrainageMap->initializeGrid(dtm);
 }
 
-void Crit3DWaterBalanceMaps::reset()
+void resetWaterBalanceMap(Vine3DProject* myProject)
 {
-    bottomDrainageMap->setConstantValue(0);
+    myProject->outputWaterBalanceMaps->bottomDrainageMap->setConstantValueWithBase(0, myProject->DTM);
 }
 
 void updateWaterBalanceMaps(Vine3DProject* myProject)
@@ -41,6 +41,7 @@ void updateWaterBalanceMaps(Vine3DProject* myProject)
     long row, col;
     long nodeIndex;
     int layer;
+    double flow;
 
     for (row = 0; row < myProject->outputWaterBalanceMaps->bottomDrainageMap->header->nrRows; row++)
         for (col = 0; col < myProject->outputWaterBalanceMaps->bottomDrainageMap->header->nrCols; col++)
@@ -50,10 +51,12 @@ void updateWaterBalanceMaps(Vine3DProject* myProject)
                 do
                 {
                     layer++;
-                } while (isWithinSoil(myProject, row, col, myProject->WBSettings->layerDepth.at(size_t(layer))));
+                } while (layer < myProject->WBSettings->nrLayers && isWithinSoil(myProject, row, col, myProject->WBSettings->layerDepth.at(size_t(layer))));
 
-                nodeIndex = long(myProject->WBMaps->indexMap.at(size_t(layer)).value[row][col]);
-                myProject->outputWaterBalanceMaps->bottomDrainageMap->value[row][col] += float(soilFluxes3D::getBoundaryWaterFlow(nodeIndex));
+                nodeIndex = long(myProject->WBMaps->indexMap.at(size_t(--layer)).value[row][col]);
+
+                flow = soilFluxes3D::getBoundaryWaterFlow(nodeIndex);
+                myProject->outputWaterBalanceMaps->bottomDrainageMap->value[row][col] += float(flow);
             }
 
 }
@@ -757,7 +760,6 @@ bool setCriteria3DVarMap(int myLayerIndex, Vine3DProject* myProject, criteria3DV
     return true;
 }
 
-
 bool getCriteria3DVarMap(Vine3DProject* myProject, criteria3DVariable myVar,
                         int layerIndex, gis::Crit3DRasterGrid* criteria3DMap)
 {
@@ -956,6 +958,20 @@ bool getCriteria3DIntegrationMap(Vine3DProject* myProject, criteria3DVariable my
     return true;
 }
 
+bool saveWaterBalanceCumulatedOutput(Vine3DProject* myProject, QDate myDate, criteria3DVariable myVar,
+                            QString varName, QString notes, QString outputPath, QString myArea)
+{
+    QString outputFilename = outputPath + getOutputNameDaily(varName, myArea, notes, myDate);
+    std::string myErrorString;
+    gis::Crit3DRasterGrid* myMap = myProject->outputWaterBalanceMaps->getMapFromVar(myVar);
+    if (! gis::writeEsriGrid(outputFilename.toStdString(), myMap, &myErrorString))
+    {
+         myProject->logError(QString::fromStdString(myErrorString));
+         return false;
+    }
+
+    return true;
+}
 
 bool saveWaterBalanceOutput(Vine3DProject* myProject, QDate myDate, criteria3DVariable myVar,
                             QString varName, QString notes, QString outputPath, QString myArea,
@@ -966,7 +982,7 @@ bool saveWaterBalanceOutput(Vine3DProject* myProject, QDate myDate, criteria3DVa
 
     if (myVar == soilSurfaceMoisture)
     {
-        if (! getSoilSurfaceMoisture(myProject, myMap, 0.04))
+        if (! getSoilSurfaceMoisture(myProject, myMap, lowerDepth))
             return false;
     }
     else if(myVar == availableWaterContent)
@@ -980,8 +996,7 @@ bool saveWaterBalanceOutput(Vine3DProject* myProject, QDate myDate, criteria3DVa
             return false;
     }
 
-    QString producer = "ARPA";
-    QString outputFilename = outputPath + getOutputNameDaily(producer, varName, myArea, notes, myDate);
+    QString outputFilename = outputPath + getOutputNameDaily(varName, myArea, notes, myDate);
     std::string myErrorString;
     if (! gis::writeEsriGrid(outputFilename.toStdString(), myMap, &myErrorString))
     {

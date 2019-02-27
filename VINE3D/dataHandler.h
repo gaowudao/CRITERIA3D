@@ -31,7 +31,7 @@
     meteoVariable getMeteoVariable(int myVar);
     int getMeteoVarIndex(meteoVariable myVar);
 
-    QString getOutputNameDaily(QString producer, QString varName, QString strArea, QString notes, QDate myDate);
+    QString getOutputNameDaily(QString varName, QString strArea, QString notes, QDate myDate);
     QString getOutputNameHourly(meteoVariable myVar, Crit3DTime myTime, QString myArea);
     QString getOutputNameHourly(meteoVariable myVar, QDateTime myTime, QString myArea);
     QString getVarNameFromMeteoVariable(meteoVariable myVar);
