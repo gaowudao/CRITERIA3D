@@ -706,8 +706,8 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
         if (myPoint->z == NODATA) myRadPoint.height = gis::getValueFromXY(myDtm, myRadPoint.x, myRadPoint.y);
 
         gis::getRowColFromXY(myDtm, myRadPoint.x, myRadPoint.y, &myRow, &myCol);
-        myRadPoint.aspect = readAspect(mySettings, myRadiationMaps.aspectMap, myRow, myCol);
-        myRadPoint.slope = readSlope(mySettings, myRadiationMaps.slopeMap, myRow, myCol);
+        myRadPoint.aspect = 0;
+        myRadPoint.slope = 0;
 
         gis::getLatLonFromUtm(*(mySettings->gisSettings), myPoint->utm.x, myPoint->utm.y, &latDegrees, &lonDegrees);
         myRadPoint.lat = (float)(latDegrees);
@@ -725,9 +725,9 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
             noonTime = noonTime.addSeconds(-float(mySettings->gisSettings->timeZone * 3600));
         }
 
-        // Threshold: half potential radiation at noon
+        // Threshold: potential radiation at noon
         computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_SEALEVEL, noonTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
-        sumPotentialRadThreshold = float(myRadPoint.global * 0.5);
+        sumPotentialRadThreshold = float(myRadPoint.global);
 
         computeRadiationPointRsun(mySettings, TEMPERATURE_DEFAULT, PRESSURE_SEALEVEL, myTime, myLinke, myAlbedo, myClearSkyTransmissivity, myClearSkyTransmissivity, &mySunPosition, &myRadPoint, myDtm);
         sumPotentialRad = float(myRadPoint.global);
