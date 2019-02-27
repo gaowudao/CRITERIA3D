@@ -99,7 +99,8 @@ HEADERS  += \
     waterBalance.h \
     vine3DProject.h \
     mainWindow.h \
-    formPeriod.h
+    formPeriod.h \
+    ../CRITERIA3D/shared/soil3D.h
 
 FORMS    += \
     ../PRAGA/shared/formInfo.ui \

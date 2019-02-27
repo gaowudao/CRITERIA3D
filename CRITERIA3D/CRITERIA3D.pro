@@ -78,7 +78,8 @@ SOURCES += main.cpp\
     meteoMaps.cpp \
     waterBalance3D.cpp \
     crit3dProject.cpp \
-    viewer3d.cpp
+    viewer3d.cpp \
+    shared/soil3D.cpp
 
 HEADERS += mainwindow.h \
     ../PRAGA/shared/dialogWindows.h \
@@ -94,7 +95,8 @@ HEADERS += mainwindow.h \
     meteoMaps.h \
     waterBalance3D.h \
     crit3dProject.h \
-    viewer3d.h
+    viewer3d.h \
+    shared/soil3D.h
 
 
 FORMS += mainwindow.ui \
