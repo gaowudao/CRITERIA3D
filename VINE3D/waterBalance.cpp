@@ -36,20 +36,25 @@ void Crit3DWaterBalanceMaps::reset()
     bottomDrainageMap->setConstantValue(0);
 }
 
-void Crit3DWaterBalanceMaps::update(Vine3DProject(* myProject))
+void updateWaterBalanceMaps(Vine3DProject* myProject)
 {
     long row, col;
     long nodeIndex;
+    int layer;
 
-    for (row = 0; row < bottomDrainageMap->header->nrRows; row++)
-        for (col = 0; col < bottomDrainageMap->header->nrCols; col++)
-        {
-            if (int(myProject->WBMaps->indexMap.at(0).value[row][col]) != myProject->WBMaps->indexMap.at(0).header->flag)
+    for (row = 0; row < myProject->outputWaterBalanceMaps->bottomDrainageMap->header->nrRows; row++)
+        for (col = 0; col < myProject->outputWaterBalanceMaps->bottomDrainageMap->header->nrCols; col++)
+            if (int(myProject->WBMaps->indexMap.at(0).value[row][col]) != int(myProject->WBMaps->indexMap.at(0).header->flag))
             {
-                nodeIndex = 0;
-                bottomDrainageMap->value[row][col] += soilFluxes3D::getBoundaryWaterFlow(nodeIndex);
+                layer = 0;
+                do
+                {
+                    layer++;
+                } while (isWithinSoil(myProject, row, col, myProject->WBSettings->layerDepth.at(size_t(layer))));
+
+                nodeIndex = long(myProject->WBMaps->indexMap.at(size_t(layer)).value[row][col]);
+                myProject->outputWaterBalanceMaps->bottomDrainageMap->value[row][col] += float(soilFluxes3D::getBoundaryWaterFlow(nodeIndex));
             }
-        }
 
 }
 
@@ -190,38 +195,43 @@ bool setLayersDepth(Vine3DProject* myProject)
     return(true);
 }
 
+bool isWithinSoil(Vine3DProject* myProject, long row, long col, double depth)
+{
+    int caseIndex, soilIndex, nrHorizons;
+    soil::Crit3DHorizon* myHorizon;
+
+    caseIndex = myProject->getModelCaseIndex(row, col);
+    if (caseIndex == NODATA) return false;
+
+    //read soil and last horizon
+    soilIndex = myProject->modelCases[caseIndex].soilIndex;
+    nrHorizons = myProject->WBSettings->soilList[soilIndex].nrHorizons;
+    myHorizon = &(myProject->WBSettings->soilList[soilIndex].horizon[nrHorizons - 1]);
+
+    //check if we are within last horizon
+    return (depth <= myHorizon->lowerDepth);
+}
+
 
 bool setIndexMap(Vine3DProject* myProject)
 {
     long index = 0;
-    int caseIndex, soilIndex, nrHorizons;
-    soil::Crit3DHorizon* myHorizon;
 
-    myProject->WBMaps->indexMap.resize(myProject->WBSettings->nrLayers);
+    int i, row, col;
 
-    for (int i=0; i < myProject->WBSettings->nrLayers; i++)
+    myProject->WBMaps->indexMap.resize(size_t(myProject->WBSettings->nrLayers));
+
+    for (i=0; i < myProject->WBSettings->nrLayers; i++)
     {
-        myProject->WBMaps->indexMap.at(i).initializeGrid(myProject->DTM);
-        for (int row = 0; row < myProject->WBMaps->indexMap.at(i).header->nrRows; row++)
-            for (int col = 0; col < myProject->WBMaps->indexMap.at(i).header->nrCols; col++)
-                if (myProject->DTM.value[row][col] != myProject->DTM.header->flag)
+        myProject->WBMaps->indexMap.at(size_t(i)).initializeGrid(myProject->DTM);
+        for (row = 0; row < myProject->WBMaps->indexMap.at(size_t(i)).header->nrRows; row++)
+            for (col = 0; col < myProject->WBMaps->indexMap.at(size_t(i)).header->nrCols; col++)
+                if (int(myProject->DTM.value[row][col]) != int(myProject->DTM.header->flag))
                 {
-                    //read field
-                    caseIndex = myProject->getModelCaseIndex(row, col);
-                    if (caseIndex != NODATA)
+                    if (isWithinSoil(myProject, row, col, myProject->WBSettings->layerDepth.at(size_t(i))))
                     {
-
-                        //read soil and last horizon
-                        soilIndex = myProject->modelCases[caseIndex].soilIndex;
-                        nrHorizons = myProject->WBSettings->soilList[soilIndex].nrHorizons;
-                        myHorizon = &(myProject->WBSettings->soilList[soilIndex].horizon[nrHorizons - 1]);
-
-                        //if we are within last horizon add node
-                        if (myProject->WBSettings->layerDepth.at(i) <= myHorizon->lowerDepth)
-                        {
-                            myProject->WBMaps->indexMap.at(i).value[row][col] = index; 
-                            index++;
-                        }
+                        myProject->WBMaps->indexMap.at(size_t(i)).value[row][col] = index;
+                        index++;
                     }
                 }
     }
@@ -246,117 +256,106 @@ bool setBoundary(Vine3DProject* myProject)
 bool setCrit3DTopography(Vine3DProject* myProject)
 {
     double x, y;
-    float z, area, lateralArea, volume, slope;
+    float z, lateralArea, slope;
+    double area, volume;
     long index, linkIndex;
     int myResult;
     QString myError;
 
-    for (int layer = 0; layer < myProject->WBSettings->nrLayers; layer++)
+    for (size_t layer = 0; layer < size_t(myProject->WBSettings->nrLayers); layer++)
         for (int row = 0; row < myProject->WBMaps->indexMap.at(layer).header->nrRows; row++)
             for (int col = 0; col < myProject->WBMaps->indexMap.at(layer).header->nrCols; col++)
             {
-                index = myProject->WBMaps->indexMap.at(layer).value[row][col];
+                index = long(myProject->WBMaps->indexMap.at(layer).value[row][col]);
 
-                if (index != myProject->WBMaps->indexMap.at(layer).header->flag)
+                if (index != long(myProject->WBMaps->indexMap.at(layer).header->flag))
                 {
                     gis::getUtmXYFromRowCol(myProject->DTM, row, col, &x, &y);
                     area = myProject->DTM.header->cellSize * myProject->DTM.header->cellSize;
-                    slope = myProject->meteoMaps->radiationMaps->slopeMap->value[row][col] / 100.0;
-                    z = myProject->DTM.value[row][col] - myProject->WBSettings->layerDepth[layer];
+                    slope = myProject->meteoMaps->radiationMaps->slopeMap->value[row][col] / 100;
+                    z = myProject->DTM.value[row][col] - float(myProject->WBSettings->layerDepth[layer]);
                     volume = area * myProject->WBSettings->layerThickness[layer];
 
                     //surface
                     if (layer == 0)
                     {
-                        lateralArea = myProject->DTM.header->cellSize;
-                        if (myProject->boundaryMap.value[row][col] == BOUNDARY_RUNOFF)
-                        {
-                            myResult = soilFluxes3D::setNode(index, x, y, z, area,
-                                             true, true, BOUNDARY_RUNOFF, slope);
-                        }
+                        lateralArea = float(myProject->DTM.header->cellSize);
+
+                        if (int(myProject->boundaryMap.value[row][col]) == BOUNDARY_RUNOFF)
+                            myResult = soilFluxes3D::setNode(index, float(x), float(y), float(z), area, true, true, BOUNDARY_RUNOFF, float(slope));
                         else
-                        {
-                            myResult = soilFluxes3D::setNode(index, x, y, z, area,
-                                             true, false, BOUNDARY_NONE, 0.0);
-                        }
+                            myResult = soilFluxes3D::setNode(index, float(x), float(y), z, area, true, false, BOUNDARY_NONE, 0.0);
                     }
                     //sub-surface
                     else
                     {
-                        lateralArea = myProject->DTM.header->cellSize * myProject->WBSettings->layerThickness[layer];
-                        //last layer
-                        if (layer == (myProject->WBSettings->nrLayers - 1))
-                        {
-                            myResult = soilFluxes3D::setNode(index, x, y, z, volume,
-                                             false, true, BOUNDARY_FREEDRAINAGE, 0.0);
-                        }
+                        lateralArea = float(myProject->DTM.header->cellSize * myProject->WBSettings->layerThickness[layer]);
+
+                        //last project layer or last soil layer
+                        if (int(layer) == myProject->WBSettings->nrLayers - 1 || ! isWithinSoil(myProject, row, col, myProject->WBSettings->layerDepth.at(size_t(layer+1))))
+                            myResult = soilFluxes3D::setNode(index, float(x), float(y), z, volume, false, true, BOUNDARY_FREEDRAINAGE, 0.0);
                         else
                         {
-                            if (myProject->boundaryMap.value[row][col] == BOUNDARY_RUNOFF)
-                            {
-                                myResult = soilFluxes3D::setNode(index, x, y, z, volume,
-                                                 false, true, BOUNDARY_FREELATERALDRAINAGE, slope);
-                            }
+                            if (int(myProject->boundaryMap.value[row][col]) == BOUNDARY_RUNOFF)
+                                myResult = soilFluxes3D::setNode(index, float(x), float(y), z, volume, false, true, BOUNDARY_FREELATERALDRAINAGE, slope);
                             else
-                            {
-                                myResult = soilFluxes3D::setNode(index, x, y, z, volume,
-                                             false, false, BOUNDARY_NONE, 0.0);
-                            }
+                                myResult = soilFluxes3D::setNode(index, float(x), float(y), z, volume, false, false, BOUNDARY_NONE, 0.0);
                         }
                     }
+
                     //check error
                     if (isCrit3dError(myResult, &myError))
                     {
-                        myProject->errorString = "setCrit3DTopography:" + myError
-                                    + " in layer nr:" + QString::number(layer);
+                        myProject->errorString = "setCrit3DTopography:" + myError + " in layer nr:" + QString::number(layer);
                         return(false);
                     }
+
                     //up link
                     if (layer > 0)
                     {
-                        linkIndex = myProject->WBMaps->indexMap.at(layer - 1).value[row][col];
+                        linkIndex = long(myProject->WBMaps->indexMap.at(layer - 1).value[row][col]);
 
-                        if (linkIndex != myProject->WBMaps->indexMap.at(layer - 1).header->flag)
+                        if (linkIndex != long(myProject->WBMaps->indexMap.at(layer - 1).header->flag))
                         {
-                            myResult = soilFluxes3D::setNodeLink(index, linkIndex, UP, area);
+                            myResult = soilFluxes3D::setNodeLink(index, linkIndex, UP, float(area));
                             if (isCrit3dError(myResult, &myError))
                             {
-                                myProject->errorString = "setNodeLink:" + myError
-                                        + " in layer nr:" + QString::number(layer);
+                                myProject->errorString = "setNodeLink:" + myError + " in layer nr:" + QString::number(layer);
                                 return(false);
                             }
                         }
                     }
+
                     //down link
-                    if (layer < (myProject->WBSettings->nrLayers - 1))
+                    if (int(layer) < (myProject->WBSettings->nrLayers - 1) && isWithinSoil(myProject, row, col, myProject->WBSettings->layerDepth.at(size_t(layer + 1))))
                     {
-                        linkIndex = myProject->WBMaps->indexMap.at(layer + 1).value[row][col];
+                        linkIndex = long(myProject->WBMaps->indexMap.at(layer + 1).value[row][col]);
 
-                        if (linkIndex != myProject->WBMaps->indexMap.at(layer + 1).header->flag)
+                        if (linkIndex != long(myProject->WBMaps->indexMap.at(layer + 1).header->flag))
                         {
-                            myResult = soilFluxes3D::setNodeLink(index, linkIndex, DOWN, area);
+                            myResult = soilFluxes3D::setNodeLink(index, linkIndex, DOWN, float(area));
+
                             if (isCrit3dError(myResult, &myError))
                             {
-                                myProject->errorString = "setNodeLink:" + myError
-                                        + " in layer nr:" + QString::number(layer);
+                                myProject->errorString = "setNodeLink:" + myError + " in layer nr:" + QString::number(layer);
                                 return(false);
                             }
                         }
                     }
+
                     //lateral links
                     for (int i=-1; i <= 1; i++)
                         for (int j=-1; j <= 1; j++)
                             if ((i != 0)||(j != 0))
                                 if (! gis::isOutOfGridRowCol(row+i, col+j, myProject->WBMaps->indexMap.at(layer)))
                                 {
-                                    linkIndex = myProject->WBMaps->indexMap.at(layer).value[row+i][col+j];
-                                    if (linkIndex != myProject->WBMaps->indexMap.at(layer).header->flag)
+                                    linkIndex = long(myProject->WBMaps->indexMap.at(layer).value[row+i][col+j]);
+                                    if (linkIndex != long(myProject->WBMaps->indexMap.at(layer).header->flag))
                                     {
-                                        myResult = soilFluxes3D::setNodeLink(index, linkIndex, LATERAL, lateralArea / 2.0);
+                                        myResult = soilFluxes3D::setNodeLink(index, linkIndex, LATERAL, float(lateralArea / 2));
                                         if (isCrit3dError(myResult, &myError))
                                         {
-                                            myProject->errorString = "setNodeLink:" + myError
-                                                    + " in layer nr:" + QString::number(layer);
+                                            myProject->errorString = "setNodeLink:" + myError + " in layer nr:" + QString::number(layer);
                                             return(false);
                                         }
                                     }

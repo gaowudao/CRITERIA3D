@@ -37,7 +37,6 @@
             void initialize();
             void initializeWithDtm(const gis::Crit3DRasterGrid &dtm);
             void reset();
-            void update(Vine3DProject *myProject);
             gis::Crit3DRasterGrid* getMapFromVar(criteria3DVariable myVar);
     };
 
@@ -47,6 +46,8 @@
     int getLayerIndex(Vine3DProject* myProject, double depth);
     double getLayerTop(Vine3DProject* myProject, int i);
     double getLayerBottom(Vine3DProject* myProject, int i);
+    bool isWithinSoil(Vine3DProject* myProject, long row, long col, double depth);
+
     bool initializeWaterBalance(Vine3DProject* myProject);
     bool initializeSoilMoisture(Vine3DProject* myProject, int month);
 
@@ -77,5 +78,6 @@
 
     double evaporation(Vine3DProject* myProject, int row, int col);
 
+    void updateWaterBalanceMaps(Vine3DProject* myProject);
 
 #endif // WATERBALANCE_H

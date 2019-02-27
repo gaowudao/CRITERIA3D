@@ -108,9 +108,6 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
 
     for (myCurrentTime = myFirstTime; myCurrentTime <= myLastTime; myCurrentTime = myCurrentTime.addSeconds(myTimeStep))
     {
-        if (myCurrentTime.getHour() == 12)
-            int a = 0;
-
         myProject->logInfo("\n" + getQDateTime(myCurrentTime).toString("yyyy-MM-dd hh:mm"));
         myProject->grapevine.setDate(myCurrentTime);
 
@@ -234,12 +231,9 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
         //3D soil water balance
         waterBalance(myProject);
         if (myCurrentTime == myFirstTime)
-        {
             myProject->outputWaterBalanceMaps->reset();
-            myProject->outputWaterBalanceMaps->update();
-        }
-        else
-            myProject->outputWaterBalanceMaps->update();
+
+        updateWaterBalanceMaps(myProject);
 
         saveMeteoHourlyOutput(myProject, actualEvaporation, myOutputPath, myCurrentTime, myArea);
 
