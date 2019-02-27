@@ -271,11 +271,11 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
             myDate = firstDate.addDays(n);
             dailyPath = myProject->getPath() + myProject->dailyOutputPath + myDate.toString("yyyy/MM/dd/");
 
-            fileName = getOutputNameDaily("ARPA", "downyINFR", myArea, "", myDate);
+            fileName = getOutputNameDaily("downyINFR", myArea, "", myDate);
             outputFileName = dailyPath + fileName;
             gis::writeEsriGrid(outputFileName.toStdString(), infectionMap[n], &myErrorString);
 
-            fileName = getOutputNameDaily("ARPA", "downySymptoms", myArea, "", myDate);
+            fileName = getOutputNameDaily("downySymptoms", myArea, "", myDate);
             outputFileName = dailyPath + fileName;
             gis::writeEsriGrid(outputFileName.toStdString(), oilSpotMap[n], &myErrorString);
         }

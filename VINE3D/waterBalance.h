@@ -36,7 +36,6 @@
 
             void initialize();
             void initializeWithDtm(const gis::Crit3DRasterGrid &dtm);
-            void reset();
             gis::Crit3DRasterGrid* getMapFromVar(criteria3DVariable myVar);
     };
 
@@ -70,6 +69,9 @@
                                 QString varName, QString notes, QString outputPath, QString myArea,
                                 double upperDepth, double lowerDepth);
 
+    bool saveWaterBalanceCumulatedOutput(Vine3DProject* myProject, QDate myDate, criteria3DVariable myVar,
+                                QString varName, QString notes, QString outputPath, QString myArea);
+
     double getMaxEvaporation(float ET0, float LAI);
 
     double* getCriteria3DVarProfile(Vine3DProject* myProject, int myRow, int myCol, criteria3DVariable myVar);
@@ -78,6 +80,7 @@
 
     double evaporation(Vine3DProject* myProject, int row, int col);
 
+    void resetWaterBalanceMap(Vine3DProject* myProject);
     void updateWaterBalanceMaps(Vine3DProject* myProject);
 
 #endif // WATERBALANCE_H

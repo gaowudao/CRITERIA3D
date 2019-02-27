@@ -359,7 +359,7 @@ bool savePlantOutput(Vine3DProject* myProject, plantVariable myVar,
                    QDate myDate, QString myPath, QString myArea, QString notes, bool isStateMap, bool isMasked)
 {
     QString varName = getVarNameFromPlantVariable(myVar);
-    QString fileName = getOutputNameDaily("ARPA", varName, myArea, notes, myDate);
+    QString fileName = getOutputNameDaily(varName, myArea, notes, myDate);
     QString outputFileName = myPath + fileName;
 
     gis::Crit3DRasterGrid *myMap;

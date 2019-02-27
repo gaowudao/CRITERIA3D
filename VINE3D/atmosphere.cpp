@@ -480,7 +480,7 @@ bool aggregateAndSaveDailyMap(Vine3DProject* myProject, meteoVariable myVar,
     QString varName = getVarNameFromMeteoVariable(myAggrVar);
     QDate qDate = getQDate(myTimeIni.date);
 
-    QString filename = getOutputNameDaily("ARPA", varName, myArea , "", qDate);
+    QString filename = getOutputNameDaily(varName, myArea , "", qDate);
 
     QString outputFileName = dailyPath + filename;
     bool isOk = gis::writeEsriGrid(outputFileName.toStdString(), myAggrMap, &myError);
@@ -501,7 +501,7 @@ bool loadDailyMeteoMap(Vine3DProject* myProject, meteoVariable myDailyVar, QDate
 {
     QString myPath = myProject->getPath() + myProject->dailyOutputPath + myDate.toString("yyyy/MM/dd/");
     QString varName = getVarNameFromMeteoVariable(myDailyVar);
-    QString myFileName = myPath + getOutputNameDaily("ARPA", varName, myArea, "", myDate);
+    QString myFileName = myPath + getOutputNameDaily(varName, myArea, "", myDate);
     std::string myError;
 
     QFile myFile;
