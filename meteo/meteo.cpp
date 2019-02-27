@@ -310,7 +310,7 @@ double ET0_Penman_daily(int myDOY, double myElevation, double myLatitude,
  * \param globalSWRadiation net Short Wave radiation (W m-2)
  * \param airTemp air temperature (C)
  * \param airHum relative humidity (%)
- * \param windSpeed10 wind speed at 2 meters (m s-1)
+ * \param windSpeed10 wind speed at 10 meters (m s-1)
  * \return result
  */
 double ET0_Penman_hourly(double heigth, double normalizedTransmissivity, double globalSWRadiation,
