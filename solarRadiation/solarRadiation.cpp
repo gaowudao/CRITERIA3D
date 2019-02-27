@@ -53,7 +53,8 @@ Crit3DRadiationMaps::Crit3DRadiationMaps()
     sunShadowMap = new gis::Crit3DRasterGrid;
     */
 
-    isLoaded = false;
+    isComputed = false;
+
 }
 
 Crit3DRadiationMaps::Crit3DRadiationMaps(const gis::Crit3DRasterGrid& myDtm, const gis::Crit3DGisSettings& myGisSettings)
@@ -97,7 +98,7 @@ Crit3DRadiationMaps::Crit3DRadiationMaps(const gis::Crit3DRasterGrid& myDtm, con
     sunShadowMap->initializeGrid(myDtm);
     */
 
-    isLoaded = true;
+    isComputed = false;
 }
 
 Crit3DRadiationMaps::~Crit3DRadiationMaps()
@@ -146,7 +147,7 @@ void Crit3DRadiationMaps::clean()
     delete sunShadowMap;
     */
 
-    isLoaded = false;
+    isComputed = false;
 }
 
 
@@ -835,6 +836,7 @@ bool computeRadiationPointRsun(Crit3DRadiationSettings* mySettings, float myTemp
         gis::updateMinMaxRasterGrid(radiationMaps->diffuseRadiationMap);
         gis::updateMinMaxRasterGrid(radiationMaps->sunElevationMap);
 
+        radiationMaps->isComputed = true;
         return true;
     }
 
