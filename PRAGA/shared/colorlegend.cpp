@@ -49,11 +49,11 @@ bool drawColorLegend(Crit3DColorScale* colorScale, QPainter* myPainter)
 
         if ((i % n) == 0)
         {
-            if (int(value) == value)
+            if (fabs(int(value) - value) < float(EPSILON))
             {
                 myPainter->drawText(int(DELTA*0.5f + dx*i), 36, QString::number(int(value)));
             }
-            else if (int(value * 10) - (value * 10) < 0.01f)
+            else if (fabs(int(value * 10) - (value * 10)) < 0.01f)
             {
                 myPainter->drawText(int(DELTA*0.5f + dx*i), 36, QString::number(double(value),'f',1));
             }
