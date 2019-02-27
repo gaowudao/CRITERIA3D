@@ -48,7 +48,6 @@
                                 float temp, float pressure, float aspect, float slope, TsunPosition *mySunPosition);
 
         int estimateTransmissivityWindow(Crit3DRadiationSettings* mySettings, const gis::Crit3DRasterGrid& myDtm,
-                                         const Crit3DRadiationMaps& myRadiationMaps,
                                          gis::Crit3DPoint* myPoint, Crit3DTime myTime, int timeStepSecond);
 
         bool computeRadiationGridPresentTime(Crit3DRadiationSettings *mySettings, const gis::Crit3DRasterGrid& myDtm,
