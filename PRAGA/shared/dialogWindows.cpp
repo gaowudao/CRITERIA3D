@@ -170,14 +170,15 @@ bool chooseMeteoVariable(Project* myProject)
     myDialog.setWindowTitle("Choose variable");
     myDialog.setFixedWidth(300);
 
-    QRadioButton Tavg("Average temperature °C");
-    QRadioButton Tmin("Minimum temperature °C");
-    QRadioButton Tmax("Maximum temperature °C");
-    QRadioButton Prec("Precipitation mm");
-    QRadioButton RHavg("Average relative humidity %");
-    QRadioButton RHmin("Minimum relative humidity %");
-    QRadioButton RHmax("Maximum relative humidity %");
-    QRadioButton Rad("Solar radiation MJ m-2");
+    QRadioButton Tavg("Average temperature  °C");
+    QRadioButton Tmin("Minimum temperature  °C");
+    QRadioButton Tmax("Maximum temperature  °C");
+    QRadioButton Prec("Precipitation  mm");
+    QRadioButton RHavg("Average relative humidity  %");
+    QRadioButton RHmin("Minimum relative humidity  %");
+    QRadioButton RHmax("Maximum relative humidity  %");
+    QRadioButton Rad("Solar radiation  MJ m-2");
+    QRadioButton Wind("Average wind intensity  m s-1");
 
     if (myProject->getFrequency() == daily)
     {
@@ -189,6 +190,7 @@ bool chooseMeteoVariable(Project* myProject)
         layoutVariable.addWidget(&RHavg);
         layoutVariable.addWidget(&RHmax);
         layoutVariable.addWidget(&Rad);
+        layoutVariable.addWidget(&Wind);
     }
     else if (myProject->getFrequency() == hourly)
     {
@@ -201,6 +203,7 @@ bool chooseMeteoVariable(Project* myProject)
         layoutVariable.addWidget(&Prec);
         layoutVariable.addWidget(&RHavg);
         layoutVariable.addWidget(&Rad);
+        layoutVariable.addWidget(&Wind);
     }
     else return false;
 
@@ -237,6 +240,8 @@ bool chooseMeteoVariable(Project* myProject)
            myProject->setCurrentVariable(dailyAirRelHumidityMax);
        else if (RHavg.isChecked())
            myProject->setCurrentVariable(dailyAirRelHumidityAvg);
+       else if (Wind.isChecked())
+           myProject->setCurrentVariable(dailyWindIntensityAvg);
    }
    else if (myProject->getFrequency() == hourly)
    {
@@ -248,6 +253,8 @@ bool chooseMeteoVariable(Project* myProject)
            myProject->setCurrentVariable(precipitation);
        else if (Rad.isChecked())
            myProject->setCurrentVariable(globalIrradiance);
+       else if (Wind.isChecked())
+           myProject->setCurrentVariable(windIntensity);
    }
    else
        return false;

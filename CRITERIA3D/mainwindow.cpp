@@ -456,6 +456,9 @@ void MainWindow::updateVariable()
 
             else if (myProject.getCurrentVariable() == airRelHumidity)
                 myProject.setCurrentVariable(dailyAirRelHumidityAvg);
+
+            else if (myProject.getCurrentVariable() == windIntensity)
+                myProject.setCurrentVariable(dailyWindIntensityAvg);
         }
 
         else if (myProject.getFrequency() == hourly)
@@ -478,6 +481,9 @@ void MainWindow::updateVariable()
 
             else if (myProject.getCurrentVariable() == dailyGlobalRadiation)
                 myProject.setCurrentVariable(globalIrradiance);
+
+            else if (myProject.getCurrentVariable() == dailyWindIntensityAvg)
+                myProject.setCurrentVariable(windIntensity);
         }
     }
 

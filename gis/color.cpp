@@ -54,6 +54,7 @@ Crit3DColorScale::Crit3DColorScale()
     classification = classificationMethod::EqualInterval;
 }
 
+
 bool Crit3DColorScale::setRange(float myMinimum, float myMaximum)
 {
     if (myMaximum < myMinimum) return false;
@@ -62,6 +63,7 @@ bool Crit3DColorScale::setRange(float myMinimum, float myMaximum)
     maximum = myMaximum;
     return true;
 }
+
 
 bool Crit3DColorScale::classify()
 {
@@ -140,6 +142,7 @@ bool setDefaultDTMScale(Crit3DColorScale* myScale)
     return(myScale->classify());
 }
 
+
 bool setTemperatureScale(Crit3DColorScale* myScale)
 {
     myScale->nrKeyColors = 5;
@@ -156,6 +159,7 @@ bool setTemperatureScale(Crit3DColorScale* myScale)
 
     return(myScale->classify());
 }
+
 
 bool setPrecipitationScale(Crit3DColorScale* myScale)
 {
@@ -209,6 +213,7 @@ bool setRelativeHumidityScale(Crit3DColorScale* myScale)
     return(myScale->classify());
 }
 
+
 bool setLeafWetnessScale(Crit3DColorScale* myScale)
 {
     myScale->nrKeyColors = 3;
@@ -223,6 +228,7 @@ bool setLeafWetnessScale(Crit3DColorScale* myScale)
 
     return(myScale->classify());
 }
+
 
 bool setWindIntensityScale(Crit3DColorScale* myScale)
 {
@@ -239,6 +245,7 @@ bool setWindIntensityScale(Crit3DColorScale* myScale)
     return(myScale->classify());
 }
 
+
 bool setRadiationScale(Crit3DColorScale* myScale)
 {
     myScale->nrKeyColors = 4;
@@ -254,6 +261,7 @@ bool setRadiationScale(Crit3DColorScale* myScale)
 
     return(myScale->classify());
 }
+
 
 /*!
  * \brief roundColorScale round colorScale values on the second (or third) digit of each range.
