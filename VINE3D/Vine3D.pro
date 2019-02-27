@@ -89,7 +89,6 @@ HEADERS  += \
     ../PRAGA/shared/stationMarker.h \
     ../PRAGA/shared/colorlegend.h \
     ../PRAGA/shared/rasterObject.h \
-    ../PRAGA/shared/dialogWindows.h \
     ../PRAGA/shared/interpolationDialog.h \
     atmosphere.h \
     dataHandler.h \
@@ -100,8 +99,7 @@ HEADERS  += \
     waterBalance.h \
     vine3DProject.h \
     mainWindow.h \
-    formPeriod.h \
-    ../criteria3d/shared/soil3D.h
+    formPeriod.h
 
 FORMS    += \
     ../PRAGA/shared/formInfo.ui \
