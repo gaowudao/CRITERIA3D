@@ -340,7 +340,7 @@ double ET0_Penman_hourly(double heigth, double normalizedTransmissivity, double 
     emissivity = emissivityFromVaporPressure(ea);
     tAirK = airTemp + ZEROCELSIUS;
     mySigma = STEFAN_BOLTZMANN * HOUR_SECONDS;
-    cloudFactor = 1.35 * minValue(normalizedTransmissivity, 1) - 0.35;
+    cloudFactor = maxValue(1.35 * minValue(normalizedTransmissivity, 1) - 0.35, 0);
     netLWRadiation = cloudFactor * emissivity * mySigma * (pow(tAirK, 4));
 
     /*!   from [W m-2] to [J h-1 m-2] */
