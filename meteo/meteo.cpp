@@ -486,16 +486,18 @@ std::string getVariableString(meteoVariable myVar)
         return "Min. relative humidity %";
     else if (myVar == globalIrradiance)
         return "Solar irradiance W m-2";
+    else if (myVar == atmTransmissivity)
+        return "Atm. transmissivity [-]";
     else if (myVar == windIntensity)
         return "Wind intensity m s-1";
 	else if (myVar == dailyWindIntensityAvg)
-        return "Average wind intensity m s-1";
+        return "Avg wind intensity m s-1";
     else if (myVar == dailyWindIntensityMax)
-        return "Maximum wind intensity m s-1";
+        return "Max. wind intensity m s-1";
     else if (myVar == dailyWindDirectionPrevailing)
-        return "Prevailing wind direction °";
+        return "Prev. wind direction °";
     else if (myVar == referenceEvapotranspiration || myVar == dailyReferenceEvapotranspirationHS)
-        return "Reference evapotranspiration mm";
+        return "Ref. evapotranspiration mm";
     else if (myVar == leafWetness || myVar == dailyLeafWetness)
         return "Leaf wetness h";
     else if (myVar == dailyBIC)

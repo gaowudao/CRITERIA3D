@@ -2596,7 +2596,7 @@
     <addaction name="actionInterpolation_to_DTM"/>
     <addaction name="separator"/>
     <addaction name="actionCompute_solar_radiation"/>
-    <addaction name="actionCompute_ET0"/>
+    <addaction name="actionCompute_AllMeteoMaps"/>
     <addaction name="separator"/>
     <addaction name="actionVariableQualitySpatial"/>
     <addaction name="separator"/>
@@ -2642,18 +2642,27 @@
       <string>DEM</string>
      </property>
      <addaction name="actionView_DTM"/>
+     <addaction name="separator"/>
      <addaction name="actionView_Slope"/>
      <addaction name="actionView_Aspect"/>
+     <addaction name="separator"/>
      <addaction name="actionView_Boundary"/>
+     <addaction name="separator"/>
     </widget>
     <widget class="QMenu" name="menuMeteo_variables">
      <property name="title">
       <string>Meteo variables</string>
      </property>
-     <addaction name="actionView_MapVariable"/>
+     <addaction name="actionView_Air_temperature"/>
+     <addaction name="actionView_Air_relative_humidity"/>
+     <addaction name="actionView_Precipitation"/>
+     <addaction name="actionView_Wind_intensity"/>
+     <addaction name="separator"/>
      <addaction name="actionView_Global_radiation"/>
      <addaction name="actionView_Transmissivity"/>
+     <addaction name="separator"/>
      <addaction name="actionView_ET0"/>
+     <addaction name="separator"/>
     </widget>
     <addaction name="menuPoints"/>
     <addaction name="separator"/>
@@ -2839,11 +2848,6 @@
     <string>Aspect</string>
    </property>
   </action>
-  <action name="actionView_MapVariable">
-   <property name="text">
-    <string>Current variable</string>
-   </property>
-  </action>
   <action name="actionView_PointsHide">
    <property name="checkable">
     <bool>true</bool>
@@ -2870,7 +2874,7 @@
   </action>
   <action name="actionView_Transmissivity">
    <property name="text">
-    <string>Transmissivity</string>
+    <string>Atm. transmissivity</string>
    </property>
   </action>
   <action name="actionView_ET0">
@@ -2883,14 +2887,34 @@
     <string>Compute Solar Radiation</string>
    </property>
   </action>
-  <action name="actionCompute_ET0">
+  <action name="actionCompute_AllMeteoMaps">
    <property name="text">
-    <string>Compute ET0</string>
+    <string>Compute all meteo maps</string>
    </property>
   </action>
   <action name="actionView_Global_radiation">
    <property name="text">
     <string>Global radiation</string>
+   </property>
+  </action>
+  <action name="actionView_Air_temperature">
+   <property name="text">
+    <string>Air temperature</string>
+   </property>
+  </action>
+  <action name="actionView_Precipitation">
+   <property name="text">
+    <string>Precipitation</string>
+   </property>
+  </action>
+  <action name="actionView_Air_relative_humidity">
+   <property name="text">
+    <string>Air relative humidity</string>
+   </property>
+  </action>
+  <action name="actionView_Wind_intensity">
+   <property name="text">
+    <string>Wind intensity</string>
    </property>
   </action>
  </widget>

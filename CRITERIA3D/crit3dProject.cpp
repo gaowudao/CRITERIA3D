@@ -316,7 +316,7 @@ void Crit3DProject::cleanProject()
 }
 
 
-bool Crit3DProject::loadDEM_CreateMaps(QString myFileName)
+bool Crit3DProject::setDEM(QString myFileName)
 {
     if (! this->loadDEM(myFileName))
         return false;
@@ -326,7 +326,7 @@ bool Crit3DProject::loadDEM_CreateMaps(QString myFileName)
 }
 
 
-bool Crit3DProject::computeET0(const Crit3DTime& myTime, bool showInfo)
+bool Crit3DProject::computeAllMeteoMaps(const Crit3DTime& myTime, bool showInfo)
 {
     if (! DTM.isLoaded)
     {
@@ -334,17 +334,45 @@ bool Crit3DProject::computeET0(const Crit3DTime& myTime, bool showInfo)
         return false;
     }
 
-    if (! interpolationDemMain(airTemperature, myTime, this->meteoMaps->airTemperatureMap, showInfo))
+    this->meteoMaps->isComputed = false;
+
+    FormInfo myInfo;
+    if (showInfo)
+    {
+        myInfo.start("Compute meteo maps...", 6);
+    }
+
+    if (! interpolationDemMain(airTemperature, myTime, this->meteoMaps->airTemperatureMap, false))
         return false;
-    if (! interpolationDemMain(airRelHumidity, myTime, this->meteoMaps->airHumidityMap, showInfo))
+
+    if (showInfo) myInfo.setValue(1);
+
+    if (! interpolationDemMain(airRelHumidity, myTime, this->meteoMaps->airHumidityMap, false))
         return false;
-    if (! interpolationDemMain(windIntensity, myTime, this->meteoMaps->windIntensityMap, showInfo))
+
+    if (showInfo) myInfo.setValue(2);
+
+    if (! interpolationDemMain(precipitation, myTime, this->meteoMaps->precipitationMap, false))
         return false;
-    if (! interpolationDemMain(globalIrradiance, myTime, &(this->dataRaster), showInfo))
+
+    if (showInfo) myInfo.setValue(3);
+
+    if (! interpolationDemMain(windIntensity, myTime, this->meteoMaps->windIntensityMap, false))
         return false;
+
+    if (showInfo) myInfo.setValue(4);
+
+    if (! interpolationDemMain(globalIrradiance, myTime, &(this->dataRaster), false))
+        return false;
+
+    if (showInfo) myInfo.setValue(5);
 
     if (! this->meteoMaps->computeET0Map(&(this->DTM), this->radiationMaps))
         return false;
+
+    if (showInfo) myInfo.close();
+
+    this->meteoMaps->isComputed = true;
 
     return true;
 }

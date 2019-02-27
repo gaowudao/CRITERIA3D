@@ -63,8 +63,8 @@
 
         int getSoilIndex(int dtmRow, int dtmCol);
 
-        bool loadDEM_CreateMaps(QString myFileName);
-        bool computeET0(const Crit3DTime &myTime, bool showInfo);
+        bool setDEM(QString myFileName);
+        bool computeAllMeteoMaps(const Crit3DTime &myTime, bool showInfo);
     };
 
 

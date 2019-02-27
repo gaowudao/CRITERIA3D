@@ -1042,80 +1042,79 @@ void MainWindow::on_actionView_Aspect_triggered()
 }
 
 
-void MainWindow::on_actionView_Transmissivity_triggered()
+bool MainWindow::checkMapVariable(bool isComputed)
 {
     if (! myProject.DTM.isLoaded)
     {
         myProject.logError("Load a DEM before.");
-        return;
+        return false;
     }
 
-    if (! myProject.radiationMaps->isComputed)
+    if (! isComputed)
     {
-        myProject.logError("Compute solar radiation before.");
-        return;
+        myProject.logError("Compute variable before.");
+        return false;
     }
 
-    setColorScale(atmTransmissivity, myProject.radiationMaps->transmissivityMap->colorScale);
-    this->setCurrentRaster(myProject.radiationMaps->transmissivityMap);
-    ui->labelRasterScale->setText("Atm. transmissivity [-]");
+    return true;
+}
+
+
+void MainWindow::setMapVariable(meteoVariable myVar, gis::Crit3DRasterGrid *myGrid)
+{
+    setColorScale(myVar, myGrid->colorScale);
+    this->setCurrentRaster(myGrid);
+    ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myVar)));
+}
+
+
+void MainWindow::on_actionView_Transmissivity_triggered()
+{
+    if (this->checkMapVariable(myProject.radiationMaps->isComputed))
+        setMapVariable(atmTransmissivity, myProject.radiationMaps->transmissivityMap);
 }
 
 
 void MainWindow::on_actionView_Global_radiation_triggered()
 {
-    if (! myProject.DTM.isLoaded)
-    {
-        myProject.logError("Load a DEM before.");
-        return;
-    }
-
-    if (! myProject.radiationMaps->isComputed)
-    {
-        myProject.logError("Compute solar radiation before.");
-        return;
-    }
-
-    setColorScale(globalIrradiance, myProject.radiationMaps->globalRadiationMap->colorScale);
-    this->setCurrentRaster(myProject.radiationMaps->globalRadiationMap);
-    ui->labelRasterScale->setText(QString::fromStdString(getVariableString(globalIrradiance)));
+    if (this->checkMapVariable(myProject.radiationMaps->isComputed))
+        setMapVariable(globalIrradiance, myProject.radiationMaps->globalRadiationMap);
 }
 
 
 void MainWindow::on_actionView_ET0_triggered()
 {
-    if (! myProject.DTM.isLoaded)
-    {
-        myProject.logError("Load a DEM before.");
-        return;
-    }
-
-    if (! myProject.meteoMaps->isET0Computed)
-    {
-        myProject.logError("Compute potential evapotranspiration before.");
-        return;
-    }
-
-    setColorScale(referenceEvapotranspiration, myProject.meteoMaps->ET0Map->colorScale);
-    this->setCurrentRaster(myProject.meteoMaps->ET0Map);
-    ui->labelRasterScale->setText("ET0 [mm]");
+    if (this->checkMapVariable(myProject.meteoMaps->isComputed))
+        setMapVariable(referenceEvapotranspiration, myProject.meteoMaps->ET0Map);
 }
 
 
-void MainWindow::on_actionView_MapVariable_triggered()
+void MainWindow::on_actionView_Air_temperature_triggered()
 {
-    if (myProject.dataRaster.isLoaded)
-    {
-        this->setCurrentRaster(&(myProject.dataRaster));
-        ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myProject.getCurrentVariable())));
-    }
-    else
-    {
-        myProject.logError("Compute a variable before.");
-        return;
-    }
+    if (this->checkMapVariable(myProject.meteoMaps->isComputed))
+        setMapVariable(airTemperature, myProject.meteoMaps->airTemperatureMap);
 }
 
+
+void MainWindow::on_actionView_Precipitation_triggered()
+{
+    if (this->checkMapVariable(myProject.meteoMaps->isComputed))
+        setMapVariable(precipitation, myProject.meteoMaps->precipitationMap);
+}
+
+
+void MainWindow::on_actionView_Air_relative_humidity_triggered()
+{
+    if (this->checkMapVariable(myProject.meteoMaps->isComputed))
+        setMapVariable(airRelHumidity, myProject.meteoMaps->airHumidityMap);
+}
+
+
+void MainWindow::on_actionView_Wind_intensity_triggered()
+{
+    if (this->checkMapVariable(myProject.meteoMaps->isComputed))
+        setMapVariable(windIntensity, myProject.meteoMaps->windIntensityMap);
+}
 
 
 void MainWindow::on_actionView_PointsHide_triggered()
@@ -1199,14 +1198,11 @@ void MainWindow::on_actionCompute_solar_radiation_triggered()
 }
 
 
-void MainWindow::on_actionCompute_ET0_triggered()
+void MainWindow::on_actionCompute_AllMeteoMaps_triggered()
 {
-    if (! myProject.computeET0(myProject.getCurrentTime(), true))
+    if (! myProject.computeAllMeteoMaps(myProject.getCurrentTime(), true))
     {
         myProject.logError();
         return;
     }
-
-    this->on_actionView_ET0_triggered();
 }
-

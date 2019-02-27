@@ -21,7 +21,7 @@
         gis::Crit3DRasterGrid* ET0Map;                      //[mm]
 
         bool isInitialized;
-        bool isET0Computed;
+        bool isComputed;
 
         Crit3DMeteoMaps();
         Crit3DMeteoMaps(const gis::Crit3DRasterGrid& rasterGrid);
