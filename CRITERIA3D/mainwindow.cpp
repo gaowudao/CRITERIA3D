@@ -1056,6 +1056,26 @@ void MainWindow::on_actionView_Transmissivity_triggered()
 }
 
 
+void MainWindow::on_actionView_Global_radiation_triggered()
+{
+    if (! myProject.DTM.isLoaded)
+    {
+        myProject.logError("Load a DEM before.");
+        return;
+    }
+
+    if (! myProject.radiationMaps->globalRadiationMap->isLoaded)
+    {
+        myProject.logError("Compute solar radiation before.");
+        return;
+    }
+
+    setColorScale(globalIrradiance, myProject.radiationMaps->globalRadiationMap->colorScale);
+    this->setCurrentRaster(myProject.radiationMaps->globalRadiationMap);
+    ui->labelRasterScale->setText(QString::fromStdString(getVariableString(globalIrradiance)));
+}
+
+
 void MainWindow::on_actionView_ET0_triggered()
 {
     if (! myProject.DTM.isLoaded)
@@ -1183,3 +1203,4 @@ void MainWindow::on_actionCompute_ET0_triggered()
 
     this->on_actionView_ET0_triggered();
 }
+

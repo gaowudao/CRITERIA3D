@@ -2637,20 +2637,33 @@
      <addaction name="actionView_PointsLocation"/>
      <addaction name="actionView_PointsCurrentVariable"/>
     </widget>
+    <widget class="QMenu" name="menuDEM">
+     <property name="title">
+      <string>DEM</string>
+     </property>
+     <addaction name="actionView_DTM"/>
+     <addaction name="actionView_Slope"/>
+     <addaction name="actionView_Aspect"/>
+     <addaction name="actionView_Boundary"/>
+    </widget>
+    <widget class="QMenu" name="menuMeteo_variables">
+     <property name="title">
+      <string>Meteo variables</string>
+     </property>
+     <addaction name="actionView_MapVariable"/>
+     <addaction name="actionView_Global_radiation"/>
+     <addaction name="actionView_Transmissivity"/>
+     <addaction name="actionView_ET0"/>
+    </widget>
     <addaction name="menuPoints"/>
+    <addaction name="separator"/>
+    <addaction name="menuDEM"/>
+    <addaction name="separator"/>
+    <addaction name="menuMeteo_variables"/>
     <addaction name="separator"/>
     <addaction name="actionView_3D"/>
     <addaction name="separator"/>
-    <addaction name="actionView_DTM"/>
-    <addaction name="actionView_Slope"/>
-    <addaction name="actionView_Aspect"/>
-    <addaction name="separator"/>
-    <addaction name="actionView_MapVariable"/>
-    <addaction name="actionView_Transmissivity"/>
-    <addaction name="actionView_ET0"/>
-    <addaction name="separator"/>
     <addaction name="actionView_Soil"/>
-    <addaction name="actionView_Boundary"/>
     <addaction name="separator"/>
     <addaction name="actionRectangle_Selection"/>
     <addaction name="separator"/>
@@ -2873,6 +2886,11 @@
   <action name="actionCompute_ET0">
    <property name="text">
     <string>Compute ET0</string>
+   </property>
+  </action>
+  <action name="actionView_Global_radiation">
+   <property name="text">
+    <string>Global radiation</string>
    </property>
   </action>
  </widget>

@@ -94,6 +94,8 @@
 
         void on_actionCompute_ET0_triggered();
 
+        void on_actionView_Global_radiation_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
