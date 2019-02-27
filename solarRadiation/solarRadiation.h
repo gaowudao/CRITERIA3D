@@ -36,7 +36,8 @@
 
         void clean();
 
-        bool isLoaded;
+        //bool isLoaded;
+        bool isComputed;
     };
 
     namespace radiation

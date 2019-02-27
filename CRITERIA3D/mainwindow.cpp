@@ -1044,7 +1044,7 @@ void MainWindow::on_actionView_Transmissivity_triggered()
         return;
     }
 
-    if (! myProject.radiationMaps->globalRadiationMap->isLoaded)
+    if (! myProject.radiationMaps->isComputed)
     {
         myProject.logError("Compute solar radiation before.");
         return;
@@ -1064,7 +1064,7 @@ void MainWindow::on_actionView_Global_radiation_triggered()
         return;
     }
 
-    if (! myProject.radiationMaps->globalRadiationMap->isLoaded)
+    if (! myProject.radiationMaps->isComputed)
     {
         myProject.logError("Compute solar radiation before.");
         return;
