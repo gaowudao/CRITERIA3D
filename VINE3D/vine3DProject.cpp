@@ -1011,7 +1011,7 @@ bool Vine3DProject::loadSoils()
         maxSoilDepth = maxValue(maxSoilDepth, WBSettings->soilList[index].totalDepth);
         index++;
     }
-    this->WBSettings->depth = minValue(this->WBSettings->depth, maxSoilDepth);
+    this->WBSettings->soilDepth = minValue(this->WBSettings->soilDepth, maxSoilDepth);
 
     return(true);
 }
@@ -1837,9 +1837,9 @@ bool Vine3DProject::saveStateAndOutput(QDate myDate, QString myArea)
     if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential30", "30cm", outputPath, myArea, 0.3, 0.3)) return false;
     if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential70", "70cm", outputPath, myArea, 0.7, 0.7)) return false;
 
-    if (!saveWaterBalanceOutput(this, myDate, degreeOfSaturation, "degreeOfSaturation", "soilDepth", outputPath, myArea, 0.0, double(WBSettings->depth) - 0.01)) return false;
+    if (!saveWaterBalanceOutput(this, myDate, degreeOfSaturation, "degreeOfSaturation", "soilDepth", outputPath, myArea, 0.0, double(WBSettings->soilDepth) - 0.01)) return false;
     if (!saveWaterBalanceOutput(this, myDate, soilSurfaceMoisture, "SSM", "5cm", outputPath, myArea, 0.0, 0.05)) return false;
-    if (!saveWaterBalanceOutput(this, myDate, availableWaterContent, "waterContent", "rootZone", outputPath, myArea, 0.0, double(WBSettings->depth))) return false;
+    if (!saveWaterBalanceOutput(this, myDate, availableWaterContent, "waterContent", "rootZone", outputPath, myArea, 0.0, double(WBSettings->soilDepth))) return false;
 
     if (!saveWaterBalanceCumulatedOutput(this, myDate, bottomDrainage, "bottomDrainage", "", outputPath, myArea)) return false;
 

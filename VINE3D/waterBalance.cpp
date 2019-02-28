@@ -186,7 +186,7 @@ bool setLayersDepth(Vine3DProject* myProject)
     for (int i = 2; i < myProject->WBSettings->nrLayers; i++)
     {
         if (i == lastLayer)
-            myProject->WBSettings->layerThickness[size_t(i)] = myProject->WBSettings->depth - (myProject->WBSettings->layerDepth[size_t(i-1)]
+            myProject->WBSettings->layerThickness[size_t(i)] = myProject->WBSettings->soilDepth - (myProject->WBSettings->layerDepth[size_t(i-1)]
                     + myProject->WBSettings->layerThickness[size_t(i-1)] / 2.0);
         else
             myProject->WBSettings->layerThickness[size_t(i)] = minValue(myProject->WBSettings->maxThickness,
@@ -889,8 +889,8 @@ bool getRootZoneAWCmap(Vine3DProject* myProject, gis::Crit3DRasterGrid* outputMa
 bool getCriteria3DIntegrationMap(Vine3DProject* myProject, criteria3DVariable myVar,
                        double upperDepth, double lowerDepth, gis::Crit3DRasterGrid* criteria3DMap)
 {
-    if (upperDepth > myProject->WBSettings->depth) return false;
-    lowerDepth = minValue(lowerDepth, myProject->WBSettings->depth);
+    if (upperDepth > myProject->WBSettings->soilDepth) return false;
+    lowerDepth = minValue(lowerDepth, myProject->WBSettings->soilDepth);
 
     if (upperDepth == lowerDepth)
     {
@@ -1159,7 +1159,7 @@ bool initializeWaterBalance(Vine3DProject* myProject)
     myProject->WBSettings->maxThickness = 0.1;       //[m]
     myProject->WBSettings->thickFactor = 1.5;
 
-    myProject->WBSettings->nrLayers = computeNrLayers(myProject->WBSettings->depth, myProject->WBSettings->minThickness, myProject->WBSettings->maxThickness, myProject->WBSettings->thickFactor);
+    myProject->WBSettings->nrLayers = computeNrLayers(myProject->WBSettings->soilDepth, myProject->WBSettings->minThickness, myProject->WBSettings->maxThickness, myProject->WBSettings->thickFactor);
     setLayersDepth(myProject);
 
     myProject->logInfo("nr of layers: " + QString::number(myProject->WBSettings->nrLayers));
