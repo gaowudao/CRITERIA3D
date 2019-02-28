@@ -9,6 +9,7 @@
 
 #define TOLERANCE_MULGETS 0.001
 #define MAX_ITERATION_MULGETS 200
+
 #include "meteoPoint.h"
 
 enum Tseason {DJF,MAM,JJA,SON};
@@ -79,6 +80,7 @@ struct TparametersModel{
     float precipitationThreshold;
 };
 
+void randomSet(double *arrayNormal,int dimArray);
 class weatherGenerator2D
 {
 private:
