@@ -514,6 +514,12 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             }
         }
         //printf("mese %d\n", iMonth+1);
+        double* arrayRandomNormal;
+        arrayRandomNormal = (double *)calloc(nrStations*nrDaysIterativeProcessMonthly[iMonth], sizeof(double));
+        randomSet(arrayRandomNormal,nrStations*nrDaysIterativeProcessMonthly[iMonth]);
+
+        int counterRandomNumber = 0;
+        double testValue;
         for (int i=0;i<nrStations;i++)
         {
             for (int j=0;j<nrStations;j++)
@@ -529,27 +535,32 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             //printf("%f\n",normalizedTransitionProbability[i][1]);
             // checked
 
+
             for (int jCount=0;jCount<nrDaysIterativeProcessMonthly[iMonth];jCount++)
             {
 
                normalizedRandomMatrix[i][jCount]= myrandom::normalRandom(&gasDevIset,&gasDevGset);
-               double valueRandomUniform1,valueRandomUniform2;
-               double valueRandomNormal1;
+               normalizedRandomMatrix[i][jCount]= arrayRandomNormal[counterRandomNumber];
+               counterRandomNumber++;
+               testValue = normalizedRandomMatrix[i][jCount];
+               //double valueRandomUniform1,valueRandomUniform2;
+               //double valueRandomNormal1;
                //valueRandomUniform1 = ((double)(randomPseudo(randomGeneration)))/32768.0;
                //randomGeneration = randomPseudo(randomGeneration);
                //valueRandomUniform2 = ((double)(randomPseudo(randomGeneration)))/32768.0;
                //randomGeneration = randomPseudo(randomGeneration);
                // use Box-Mueller tranform!!!
-               valueRandomUniform1 = fabs(sin(PI/nrDaysIterativeProcessMonthly[iMonth]*(jCount+1+i+1)));
-               valueRandomUniform2 = fabs(cos(PI*0.98/nrDaysIterativeProcessMonthly[iMonth]*(jCount+1+i+1)+PI/6.));
+               //valueRandomUniform1 = fabs(sin(PI/nrDaysIterativeProcessMonthly[iMonth]*(jCount+1+i+1)));
+               //valueRandomUniform2 = fabs(cos(PI*0.98/nrDaysIterativeProcessMonthly[iMonth]*(jCount+1+i+1)+PI/6.));
 
-               normalizedRandomMatrix[i][jCount] = valueRandomNormal1 = sqrt(-2*log(valueRandomUniform1))*cos(2*PI*valueRandomUniform2);
+               //normalizedRandomMatrix[i][jCount] = valueRandomNormal1 = sqrt(-2*log(valueRandomUniform1))*cos(2*PI*valueRandomUniform2);
                //valueRandomNormal2 = sqrt(-2*log(valueRandomUniform1))*sin(2*PI*valueRandomUniform2);
                //normalizedRandomMatrix[i][j] = 0.5;
+
             }
 
         }
-
+        free(arrayRandomNormal);
         // initialization outputs of weatherGenerator2D::spatialIterationOccurrence
         double** M;
         double** K;

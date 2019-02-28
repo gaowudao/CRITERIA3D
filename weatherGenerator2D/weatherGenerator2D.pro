@@ -17,6 +17,7 @@ INCLUDEPATH += ../gis
 
 
 
-SOURCES += wg2D.cpp
+SOURCES += wg2D.cpp \
+    randomset.cpp
 
 HEADERS += wg2D.h
