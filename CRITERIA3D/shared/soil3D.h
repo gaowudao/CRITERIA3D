@@ -25,7 +25,7 @@ class Crit3DSoilFluxesSettings
 
         int nrSoils;
         int nrLayers;
-        double depth;
+        double soilDepth;
         soil::Crit3DSoil* soilList;
 
         long nrNodes;

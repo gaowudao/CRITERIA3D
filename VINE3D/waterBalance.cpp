@@ -1189,7 +1189,7 @@ bool initializeWaterBalance(Vine3DProject* myProject)
     if (! setCrit3DTopography(myProject)) return(false);
     if (! setCrit3DNodeSoil(myProject)) return(false);
 
-    soilFluxes3D::setNumericalParameters(6.0, 1800.0, 200, 10, 12, 4);   // precision
+    soilFluxes3D::setNumericalParameters(6.0, 1800.0, 200, 10, 12, 3);   // precision
     //soilFluxes3D::setNumericalParameters(30.0, 1800.0, 100, 10, 12, 2);  // speedy
     soilFluxes3D::setHydraulicProperties(MODIFIEDVANGENUCHTEN, MEAN_LOGARITHMIC, 10.0);
 

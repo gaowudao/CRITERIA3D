@@ -71,14 +71,14 @@ SOURCES += \
     dataHandler.cpp \
     disease.cpp \
     main.cpp \
-    meteoMaps.cpp \
     modelCore.cpp \
     plant.cpp \
     waterBalance.cpp \
     vine3DProject.cpp \
     mainWindow.cpp \
     formPeriod.cpp \
-    ../CRITERIA3D/shared/soil3D.cpp
+    ../CRITERIA3D/shared/soil3D.cpp \
+    ../CRITERIA3D/shared/meteoMaps.cpp
 
 HEADERS  += \
     ../PRAGA/shared/interpolationCmd.h \
@@ -93,14 +93,14 @@ HEADERS  += \
     atmosphere.h \
     dataHandler.h \
     disease.h \
-    meteoMaps.h \
     modelCore.h \
     plant.h \
     waterBalance.h \
     vine3DProject.h \
     mainWindow.h \
     formPeriod.h \
-    ../CRITERIA3D/shared/soil3D.h
+    ../CRITERIA3D/shared/soil3D.h \
+    ../CRITERIA3D/shared/meteoMaps.h
 
 FORMS    += \
     ../PRAGA/shared/formInfo.ui \
