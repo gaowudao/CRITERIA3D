@@ -1,4 +1,5 @@
 #include <math.h>
+#include <vector>
 #include "commonConstants.h"
 #include "gis.h"
 #include "dataHandler.h"
@@ -6,7 +7,6 @@
 #include "soilFluxes3D.h"
 #include "waterBalance.h"
 
-#include <vector>
 
 std::vector <double> myWaterSinkSource;     //[m^3/sec]
 
@@ -41,7 +41,10 @@ void updateWaterBalanceMaps(Vine3DProject* myProject)
     long row, col;
     long nodeIndex;
     int layer;
-    double flow;
+    double flow, flow_mm;
+    double area;
+
+    area = pow(myProject->outputWaterBalanceMaps->bottomDrainageMap->header->cellSize, 2);
 
     for (row = 0; row < myProject->outputWaterBalanceMaps->bottomDrainageMap->header->nrRows; row++)
         for (col = 0; col < myProject->outputWaterBalanceMaps->bottomDrainageMap->header->nrCols; col++)
@@ -55,10 +58,11 @@ void updateWaterBalanceMaps(Vine3DProject* myProject)
 
                 nodeIndex = long(myProject->WBMaps->indexMap.at(size_t(--layer)).value[row][col]);
 
-                flow = soilFluxes3D::getBoundaryWaterFlow(nodeIndex);
-                myProject->outputWaterBalanceMaps->bottomDrainageMap->value[row][col] += float(flow);
-            }
+                flow = soilFluxes3D::getBoundaryWaterFlow(nodeIndex); //m3
+                flow_mm = flow * 1000 / area;
+                myProject->outputWaterBalanceMaps->bottomDrainageMap->value[row][col] -= float(flow_mm);
 
+            }
 }
 
 gis::Crit3DRasterGrid* Crit3DWaterBalanceMaps::getMapFromVar(criteria3DVariable myVar)
