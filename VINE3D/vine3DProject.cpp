@@ -1067,19 +1067,6 @@ void Vine3DProject::initializeMeteoPoints()
 }
 
 
-void Vine3DProject::initializeMeteoMaps()
-{
-    meteoMaps->airTemperatureMap->emptyGrid();
-    meteoMaps->precipitationMap->emptyGrid();
-    meteoMaps->airRelHumidityMap->emptyGrid();
-    meteoMaps->airDewTemperatureMap->emptyGrid();
-    meteoMaps->leafWetnessMap->emptyGrid();
-    meteoMaps->ET0Map->emptyGrid();
-    meteoMaps->windIntensityMap->emptyGrid();
-    meteoMaps->evaporationMap->emptyGrid();
-    meteoMaps->irrigationMap->emptyGrid();
-}
-
 bool Vine3DProject::loadDBPoints()
 {
     logInfo ("Read points locations...");
@@ -1716,7 +1703,7 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool isS
                 aggregateAndSaveDailyMap(this, globalIrradiance, aggregationIntegration, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
                 aggregateAndSaveDailyMap(this, leafWetness, aggregationSum, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
                 aggregateAndSaveDailyMap(this, referenceEvapotranspiration, aggregationSum, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
-                aggregateAndSaveDailyMap(this, actualEvaporation, aggregationSum, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
+                //aggregateAndSaveDailyMap(this, actualEvaporation, aggregationSum, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
                 //if (removeDirectory(myOutputPathHourly)) this->logInfo("Delete hourly files");
             }
 

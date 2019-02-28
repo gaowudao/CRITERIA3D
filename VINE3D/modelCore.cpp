@@ -113,12 +113,13 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
 
         // meteo interpolation
         myProject->logInfo("Interpolate meteo data");
-        myProject->initializeMeteoMaps();
+        myProject->meteoMaps->clean();
         interpolateAndSaveHourlyMeteo(myProject, airTemperature, myCurrentTime, myOutputPath, isSave, myArea);
         interpolateAndSaveHourlyMeteo(myProject, precipitation, myCurrentTime, myOutputPath, isSave, myArea);
         interpolateAndSaveHourlyMeteo(myProject, airRelHumidity, myCurrentTime, myOutputPath, isSave, myArea);
         interpolateAndSaveHourlyMeteo(myProject, windIntensity, myCurrentTime, myOutputPath, isSave, myArea);
         interpolateAndSaveHourlyMeteo(myProject, globalIrradiance, myCurrentTime, myOutputPath, isSave, myArea);
+
         //ET0
         if (computeET0Map(myProject))
             saveMeteoHourlyOutput(myProject, referenceEvapotranspiration, myOutputPath, myCurrentTime, myArea);
@@ -144,7 +145,7 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
                                   == int(myProject->statePlantMaps->fruitBiomassMap->header->flag));
 
                     if (! myProject->grapevine.setWeather(
-                                double(myProject->meteoMaps->avgDailyTemperature->value[row][col]),
+                                double(myProject->meteoMaps->avgDailyTemperatureMap->value[row][col]),
                                 double(myProject->meteoMaps->airTemperatureMap->value[row][col]),
                                 double(myProject->radiationMaps->globalRadiationMap->value[row][col]),
                                 double(myProject->meteoMaps->precipitationMap->value[row][col]),
@@ -235,7 +236,7 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
 
         updateWaterBalanceMaps(myProject);
 
-        saveMeteoHourlyOutput(myProject, actualEvaporation, myOutputPath, myCurrentTime, myArea);
+        //saveMeteoHourlyOutput(myProject, actualEvaporation, myOutputPath, myCurrentTime, myArea);
 
         if (isInitialState) isInitialState = false;
     }

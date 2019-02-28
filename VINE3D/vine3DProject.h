@@ -117,7 +117,6 @@
         void deleteAllGrids();
         void initializeMeteoPoints();
         void initialize();
-        void initializeMeteoMaps();
 
         void closeProject();
         bool loadProject(QString myFileName);

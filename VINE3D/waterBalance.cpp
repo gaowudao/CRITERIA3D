@@ -186,7 +186,7 @@ bool setLayersDepth(Vine3DProject* myProject)
     for (int i = 2; i < myProject->WBSettings->nrLayers; i++)
     {
         if (i == lastLayer)
-            myProject->WBSettings->layerThickness[size_t(i)] = double(myProject->WBSettings->depth) - (myProject->WBSettings->layerDepth[size_t(i-1)]
+            myProject->WBSettings->layerThickness[size_t(i)] = myProject->WBSettings->depth - (myProject->WBSettings->layerDepth[size_t(i-1)]
                     + myProject->WBSettings->layerThickness[size_t(i-1)] / 2.0);
         else
             myProject->WBSettings->layerThickness[size_t(i)] = minValue(myProject->WBSettings->maxThickness,
@@ -586,7 +586,6 @@ bool waterBalanceSinkSource(Vine3DProject* myProject, double* totalPrecipitation
             if (surfaceIndex != long(myProject->WBMaps->indexMap.at(0).header->flag))
             {
                 realEvap = evaporation(myProject, row, col);
-                myProject->meteoMaps->evaporationMap->value[row][col] = float(realEvap);
 
                 flow = area * (realEvap / 1000.0);                  //[m^3/h]
                 *totalEvaporation += flow;
