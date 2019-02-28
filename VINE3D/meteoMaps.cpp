@@ -21,7 +21,8 @@ Crit3DMeteoMaps::Crit3DMeteoMaps()
     isLoaded = false;
 }
 
-Crit3DMeteoMaps::Crit3DMeteoMaps(const gis::Crit3DRasterGrid& dtmGrid, const gis::Crit3DGisSettings& gisSettings)
+
+Crit3DMeteoMaps::Crit3DMeteoMaps(const gis::Crit3DRasterGrid& dtmGrid)
 {
     this->initializeMaps();
 
@@ -38,6 +39,7 @@ Crit3DMeteoMaps::Crit3DMeteoMaps(const gis::Crit3DRasterGrid& dtmGrid, const gis
 
     isLoaded = true;
 }
+
 
 Crit3DMeteoMaps::~Crit3DMeteoMaps()
 {
@@ -80,7 +82,6 @@ gis::Crit3DRasterGrid* Crit3DMeteoMaps::getMapFromVar(meteoVariable myVar)
     else if (myVar == airRelHumidity)
         return airRelHumidityMap;
     else if (myVar == dailyAirRelHumidityAvg)
-        //todo: aggiungere mappa daily
         return airRelHumidityMap;
     else if (myVar == airDewTemperature)
         return airDewTemperatureMap;

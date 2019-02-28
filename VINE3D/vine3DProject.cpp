@@ -174,7 +174,7 @@ bool Vine3DProject::loadProject(QString myFileName)
     if (loadDEM(myFileName))
     {
         this->logInfo("Initialize DTM and project maps...");
-        meteoMaps = new Crit3DMeteoMaps(DTM, this->gisSettings);
+        meteoMaps = new Crit3DMeteoMaps(DTM);
         statePlantMaps = new Crit3DStatePlantMaps(DTM);
     }
     else
