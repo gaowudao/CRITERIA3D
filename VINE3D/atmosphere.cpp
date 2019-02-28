@@ -235,8 +235,11 @@ bool vine3DInterpolationDem(Vine3DProject* myProject, meteoVariable myVar,
 
     if (! dataAvailable) return false;
 
-    gis::Crit3DRasterGrid* myMap;
-    myMap = myProject->meteoMaps->getMapFromVar(myVar);
+    gis::Crit3DRasterGrid* myMap = myProject->meteoMaps->getMapFromVar(myVar);
+    if (myMap == nullptr)
+    {
+        myMap = &(myProject->dataRaster);
+    }
 
     if (! myProject->interpolationDem(myVar, myCrit3DTime, myMap, false))
         return false;
@@ -249,6 +252,7 @@ bool vine3DInterpolationDem(Vine3DProject* myProject, meteoVariable myVar,
         return false;
     }
 }
+
 
 bool vine3DInterpolationDemRadiation(Vine3DProject* myProject, const Crit3DTime& myCrit3DTime, bool isLoadData)
 {
@@ -348,14 +352,20 @@ bool interpolationProjectDtmMain(Vine3DProject* myProject, meteoVariable myVar, 
         if (myProject->interpolationSettings.getUseDewPoint())
         {
             std::string myTime = getQDateTime(myCrit3DTime).toString("yyyyMMdd:hhmm").toStdString();
+
             if (myProject->meteoMaps->airTemperatureMap->timeString != myTime)
+            {
                 if (! vine3DInterpolationDem(myProject, airTemperature, myCrit3DTime, isLoadData))
                     return false;
+            }
 
             if (vine3DInterpolationDem(myProject, airDewTemperature, myCrit3DTime, isLoadData))
+            {
+                // Dew Temp is saved on dataRaster
                 myResult = computeHumidityMap(*(myProject->meteoMaps->airTemperatureMap),
-                                              *(myProject->meteoMaps->airDewTemperatureMap),
+                                              myProject->dataRaster,
                                               myProject->meteoMaps->airRelHumidityMap);
+            }
         }
         else
             myResult = vine3DInterpolationDem(myProject, airRelHumidity, myCrit3DTime, isLoadData);

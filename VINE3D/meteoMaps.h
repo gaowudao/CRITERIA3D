@@ -14,30 +14,28 @@
     class Crit3DMeteoMaps
     {
     private:
-         void initialize();
+        bool isInitialized;
 
     public:
         gis::Crit3DRasterGrid* airTemperatureMap;
         gis::Crit3DRasterGrid* precipitationMap;
         gis::Crit3DRasterGrid* airRelHumidityMap;
         gis::Crit3DRasterGrid* windIntensityMap;
-        gis::Crit3DRasterGrid* airDewTemperatureMap;
+        gis::Crit3DRasterGrid* ET0Map;
 
         gis::Crit3DRasterGrid* leafWetnessMap;
-        gis::Crit3DRasterGrid* ET0Map;
         gis::Crit3DRasterGrid* irrigationMap;
 
         gis::Crit3DRasterGrid* avgDailyTemperatureMap;
 
-        Crit3DMeteoMaps();
         Crit3DMeteoMaps(const gis::Crit3DRasterGrid& myDtm);
         ~Crit3DMeteoMaps();
 
         void clean();
 
         gis::Crit3DRasterGrid* getMapFromVar(meteoVariable myVar);
+        bool computeET0Map(gis::Crit3DRasterGrid* DTM, Crit3DRadiationMaps *radMaps);
 
-        bool isInitialized;
         bool isComputed;
     };
 
