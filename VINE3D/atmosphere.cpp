@@ -177,14 +177,14 @@ bool computeET0Map(Vine3DProject* myProject)
 
             if (myHeight != myProject->DTM.header->flag)
             {
-                myGlobalRadiation = myProject->meteoMaps->radiationMaps->globalRadiationMap->value[myRow][myCol];
-                myTransmissivity = myProject->meteoMaps->radiationMaps->transmissivityMap->value[myRow][myCol];
+                myGlobalRadiation = myProject->radiationMaps->globalRadiationMap->value[myRow][myCol];
+                myTransmissivity = myProject->radiationMaps->transmissivityMap->value[myRow][myCol];
                 myTemperature = myProject->meteoMaps->airTemperatureMap->value[myRow][myCol];
                 myRelHumidity = myProject->meteoMaps->airRelHumidityMap->value[myRow][myCol];
                 myWindSpeed = myProject->meteoMaps->windIntensityMap->value[myRow][myCol];
 
-                if (int(myGlobalRadiation) != int(myProject->meteoMaps->radiationMaps->globalRadiationMap->header->flag)
-                        && int(myTransmissivity) != int(myProject->meteoMaps->radiationMaps->transmissivityMap->header->flag)
+                if (int(myGlobalRadiation) != int(myProject->radiationMaps->globalRadiationMap->header->flag)
+                        && int(myTransmissivity) != int(myProject->radiationMaps->transmissivityMap->header->flag)
                         && int(myTemperature) != int(myProject->meteoMaps->airTemperatureMap->header->flag)
                         && int(myRelHumidity) != int(myProject->meteoMaps->airRelHumidityMap->header->flag)
                         && int(myWindSpeed) != int(myProject->meteoMaps->windIntensityMap->header->flag))
@@ -322,19 +322,20 @@ bool vine3DInterpolationDemRadiation(Vine3DProject* myProject, const Crit3DTime&
     }
 
     if (preInterpolation(interpolationPoints, &(myProject->interpolationSettings), myProject->meteoPoints, myProject->nrMeteoPoints, atmTransmissivity, myCrit3DTime))
-        if (! interpolationRaster(interpolationPoints, &(myProject->interpolationSettings), myProject->meteoMaps->radiationMaps->transmissivityMap, myProject->DTM, atmTransmissivity, false))
+        if (! interpolationRaster(interpolationPoints, &(myProject->interpolationSettings), myProject->radiationMaps->transmissivityMap, myProject->DTM, atmTransmissivity, false))
         {
             myProject->errorString = "Function computeRadiationProjectDtm: error interpolating transmissivity";
             return false;
         }
 
-    if (radiation::computeRadiationGridPresentTime(&(myProject->radSettings), myProject->DTM, myProject->meteoMaps->radiationMaps, myCrit3DTime))
-        myResult = setRadiationScale(myProject->meteoMaps->radiationMaps->globalRadiationMap->colorScale);
+    if (radiation::computeRadiationGridPresentTime(&(myProject->radSettings), myProject->DTM, myProject->radiationMaps, myCrit3DTime))
+        myResult = setRadiationScale(myProject->radiationMaps->globalRadiationMap->colorScale);
     else
         myProject->errorString = "Function computeRadiationProjectDtm: error computing irradiance";
 
     return myResult;
 }
+
 
 bool interpolationProjectDtmMain(Vine3DProject* myProject, meteoVariable myVar, const Crit3DTime& myCrit3DTime, bool isLoadData)
 {
@@ -523,7 +524,15 @@ bool saveMeteoHourlyOutput(Vine3DProject* myProject, meteoVariable myVar, const 
     QString outputFileName = myOutputPath + fileName;
     std::string myErrorString;
     gis::Crit3DRasterGrid* myMap;
-    myMap = myProject->meteoMaps->getMapFromVar(myVar);
+    if (myVar == globalIrradiance)
+    {
+        myMap = myProject->radiationMaps->globalRadiationMap;
+    }
+    else
+    {
+        myMap = myProject->meteoMaps->getMapFromVar(myVar);
+    }
+
 
     if (! gis::writeEsriGrid(outputFileName.toStdString(), myMap, &myErrorString))
     {

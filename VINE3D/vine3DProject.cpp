@@ -1066,14 +1066,6 @@ void Vine3DProject::initializeMeteoPoints()
     }
 }
 
-void Vine3DProject::initializeRadiationMaps()
-{
-    meteoMaps->radiationMaps->beamRadiationMap->emptyGrid();
-    meteoMaps->radiationMaps->diffuseRadiationMap->emptyGrid();
-    meteoMaps->radiationMaps->globalRadiationMap->emptyGrid();
-    meteoMaps->radiationMaps->sunElevationMap->emptyGrid();
-    meteoMaps->radiationMaps->transmissivityMap->emptyGrid();
-}
 
 void Vine3DProject::initializeMeteoMaps()
 {
@@ -1086,7 +1078,6 @@ void Vine3DProject::initializeMeteoMaps()
     meteoMaps->windIntensityMap->emptyGrid();
     meteoMaps->evaporationMap->emptyGrid();
     meteoMaps->irrigationMap->emptyGrid();
-    initializeRadiationMaps();
 }
 
 bool Vine3DProject::loadDBPoints()

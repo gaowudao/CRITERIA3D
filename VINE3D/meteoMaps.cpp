@@ -17,7 +17,6 @@ void Crit3DMeteoMaps::initializeMaps()
 Crit3DMeteoMaps::Crit3DMeteoMaps()
 {
     this->initializeMaps();
-    radiationMaps = new Crit3DRadiationMaps();
 
     isLoaded = false;
 }
@@ -36,8 +35,6 @@ Crit3DMeteoMaps::Crit3DMeteoMaps(const gis::Crit3DRasterGrid& dtmGrid, const gis
     ET0Map->initializeGrid(dtmGrid);
     evaporationMap->initializeGrid(dtmGrid);
     irrigationMap->initializeGrid(dtmGrid);
-
-    radiationMaps = new Crit3DRadiationMaps(dtmGrid, gisSettings);
 
     isLoaded = true;
 }
@@ -68,8 +65,6 @@ Crit3DMeteoMaps::~Crit3DMeteoMaps()
         delete avgDailyTemperature;
         delete irrigationMap;
 
-        delete radiationMaps;
-
         isLoaded = false;
     }
 }
@@ -91,8 +86,6 @@ gis::Crit3DRasterGrid* Crit3DMeteoMaps::getMapFromVar(meteoVariable myVar)
         return airDewTemperatureMap;
     else if (myVar == windIntensity)
         return windIntensityMap;
-    else if (myVar == globalIrradiance)
-        return this->radiationMaps->globalRadiationMap;
     else if (myVar == referenceEvapotranspiration)
         return ET0Map;
     else if (myVar == actualEvaporation)
@@ -100,5 +93,5 @@ gis::Crit3DRasterGrid* Crit3DMeteoMaps::getMapFromVar(meteoVariable myVar)
     else if (myVar == leafWetness)
         return leafWetnessMap;
     else
-        return NULL;
+        return nullptr;
 }

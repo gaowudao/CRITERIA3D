@@ -520,7 +520,9 @@ bool Project::loadDEM(QString myFileName)
 
     // initialize radition maps: slope, aspect, lat/lon
     if (radiationMaps != nullptr)
+    {
         radiationMaps->clean();
+    }
     radiationMaps = new Crit3DRadiationMaps(DTM, gisSettings);
 
     //reset aggregationPoints meteoGrid
@@ -1078,7 +1080,10 @@ bool Project::interpolateDemRadiation(const Crit3DTime& myTime, gis::Crit3DRaste
         return false;
     }
 
-    myRaster->copyGrid(*(this->radiationMaps->globalRadiationMap));
+    if (myRaster != this->radiationMaps->globalRadiationMap)
+    {
+        myRaster->copyGrid(*(this->radiationMaps->globalRadiationMap));
+    }
 
     return true;
 }

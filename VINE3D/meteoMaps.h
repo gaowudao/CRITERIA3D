@@ -14,7 +14,7 @@
     class Crit3DMeteoMaps
     {
     public:
-        Crit3DRadiationMaps* radiationMaps;
+        //Crit3DRadiationMaps* radiationMaps;
         gis::Crit3DRasterGrid* airTemperatureMap;
         gis::Crit3DRasterGrid* precipitationMap;
         gis::Crit3DRasterGrid* airRelHumidityMap;

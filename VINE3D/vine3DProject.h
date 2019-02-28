@@ -118,7 +118,6 @@
         void initializeMeteoPoints();
         void initialize();
         void initializeMeteoMaps();
-        void initializeRadiationMaps();
 
         void closeProject();
         bool loadProject(QString myFileName);

@@ -146,17 +146,17 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
                     if (! myProject->grapevine.setWeather(
                                 double(myProject->meteoMaps->avgDailyTemperature->value[row][col]),
                                 double(myProject->meteoMaps->airTemperatureMap->value[row][col]),
-                                double(myProject->meteoMaps->radiationMaps->globalRadiationMap->value[row][col]),
+                                double(myProject->radiationMaps->globalRadiationMap->value[row][col]),
                                 double(myProject->meteoMaps->precipitationMap->value[row][col]),
                                 double(myProject->meteoMaps->airRelHumidityMap->value[row][col]),
                                 double(myProject->meteoMaps->windIntensityMap->value[row][col]),
                                 PRESS)) return(false);
 
                     if (!myProject->grapevine.setDerivedVariables(
-                                double(myProject->meteoMaps->radiationMaps->diffuseRadiationMap->value[row][col]),
-                                double(myProject->meteoMaps->radiationMaps->beamRadiationMap->value[row][col]),
-                                double(myProject->meteoMaps->radiationMaps->transmissivityMap->value[row][col] / CLEAR_SKY_TRANSMISSIVITY_DEFAULT),
-                                double(myProject->meteoMaps->radiationMaps->sunElevationMap->value[row][col]))) return (false);
+                                double(myProject->radiationMaps->diffuseRadiationMap->value[row][col]),
+                                double(myProject->radiationMaps->beamRadiationMap->value[row][col]),
+                                double(myProject->radiationMaps->transmissivityMap->value[row][col] / CLEAR_SKY_TRANSMISSIVITY_DEFAULT),
+                                double(myProject->radiationMaps->sunElevationMap->value[row][col]))) return (false);
 
                     myProject->grapevine.resetLayers();
 

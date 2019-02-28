@@ -362,7 +362,7 @@ bool Crit3DProject::computeAllMeteoMaps(const Crit3DTime& myTime, bool showInfo)
 
     if (showInfo) myInfo.setValue(4);
 
-    if (! interpolationDemMain(globalIrradiance, myTime, &(this->dataRaster), false))
+    if (! interpolationDemMain(globalIrradiance, myTime, this->radiationMaps->globalRadiationMap, false))
         return false;
 
     if (showInfo) myInfo.setValue(5);

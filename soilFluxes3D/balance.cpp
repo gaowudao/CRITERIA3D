@@ -158,8 +158,9 @@ void computeMassBalance(double deltaT)
 
      balanceCurrentTimeStep.waterMBE = dStorage - balanceCurrentTimeStep.sinkSourceWater;
 
-     /*! reference water: sumWaterFlow or 1percent of storage */
-     double denominator = maxValue(fabs(balanceCurrentTimeStep.sinkSourceWater), balanceCurrentTimeStep.storageWater * 1e-2);
+     /*! reference water: sumWaterFlow or 0.1% of storage */
+     double denominator = maxValue(fabs(balanceCurrentTimeStep.sinkSourceWater), balanceCurrentTimeStep.storageWater * 1e-3);
+
      /*! no water - minimum 1 liter */
      denominator = maxValue(denominator, 0.001);
 
