@@ -347,7 +347,7 @@ bool Crit3DProject::computeAllMeteoMaps(const Crit3DTime& myTime, bool showInfo)
 
     if (showInfo) myInfo.setValue(1);
 
-    if (! interpolationDemMain(airRelHumidity, myTime, this->meteoMaps->airHumidityMap, false))
+    if (! interpolationDemMain(airRelHumidity, myTime, this->meteoMaps->airRelHumidityMap, false))
         return false;
 
     if (showInfo) myInfo.setValue(2);
@@ -362,7 +362,7 @@ bool Crit3DProject::computeAllMeteoMaps(const Crit3DTime& myTime, bool showInfo)
 
     if (showInfo) myInfo.setValue(4);
 
-    if (! interpolationDemMain(globalIrradiance, myTime, &(this->dataRaster), false))
+    if (! interpolationDemMain(globalIrradiance, myTime, this->radiationMaps->globalRadiationMap, false))
         return false;
 
     if (showInfo) myInfo.setValue(5);

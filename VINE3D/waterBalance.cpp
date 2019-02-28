@@ -190,7 +190,7 @@ bool setLayersDepth(Vine3DProject* myProject)
     for (int i = 2; i < myProject->WBSettings->nrLayers; i++)
     {
         if (i == lastLayer)
-            myProject->WBSettings->layerThickness[size_t(i)] = double(myProject->WBSettings->depth) - (myProject->WBSettings->layerDepth[size_t(i-1)]
+            myProject->WBSettings->layerThickness[size_t(i)] = myProject->WBSettings->soilDepth - (myProject->WBSettings->layerDepth[size_t(i-1)]
                     + myProject->WBSettings->layerThickness[size_t(i-1)] / 2.0);
         else
             myProject->WBSettings->layerThickness[size_t(i)] = minValue(myProject->WBSettings->maxThickness,
@@ -279,7 +279,7 @@ bool setCrit3DTopography(Vine3DProject* myProject)
                 {
                     gis::getUtmXYFromRowCol(myProject->DTM, row, col, &x, &y);
                     area = myProject->DTM.header->cellSize * myProject->DTM.header->cellSize;
-                    slope = myProject->meteoMaps->radiationMaps->slopeMap->value[row][col] / 100;
+                    slope = myProject->radiationMaps->slopeMap->value[row][col] / 100;
                     z = myProject->DTM.value[row][col] - float(myProject->WBSettings->layerDepth[layer]);
                     volume = area * myProject->WBSettings->layerThickness[layer];
 
@@ -590,7 +590,6 @@ bool waterBalanceSinkSource(Vine3DProject* myProject, double* totalPrecipitation
             if (surfaceIndex != long(myProject->WBMaps->indexMap.at(0).header->flag))
             {
                 realEvap = evaporation(myProject, row, col);
-                myProject->meteoMaps->evaporationMap->value[row][col] = float(realEvap);
 
                 flow = area * (realEvap / 1000.0);                  //[m^3/h]
                 *totalEvaporation += flow;
@@ -894,8 +893,8 @@ bool getRootZoneAWCmap(Vine3DProject* myProject, gis::Crit3DRasterGrid* outputMa
 bool getCriteria3DIntegrationMap(Vine3DProject* myProject, criteria3DVariable myVar,
                        double upperDepth, double lowerDepth, gis::Crit3DRasterGrid* criteria3DMap)
 {
-    if (upperDepth > myProject->WBSettings->depth) return false;
-    lowerDepth = minValue(lowerDepth, myProject->WBSettings->depth);
+    if (upperDepth > myProject->WBSettings->soilDepth) return false;
+    lowerDepth = minValue(lowerDepth, myProject->WBSettings->soilDepth);
 
     if (upperDepth == lowerDepth)
     {
@@ -1164,7 +1163,7 @@ bool initializeWaterBalance(Vine3DProject* myProject)
     myProject->WBSettings->maxThickness = 0.1;       //[m]
     myProject->WBSettings->thickFactor = 1.5;
 
-    myProject->WBSettings->nrLayers = computeNrLayers(myProject->WBSettings->depth, myProject->WBSettings->minThickness, myProject->WBSettings->maxThickness, myProject->WBSettings->thickFactor);
+    myProject->WBSettings->nrLayers = computeNrLayers(myProject->WBSettings->soilDepth, myProject->WBSettings->minThickness, myProject->WBSettings->maxThickness, myProject->WBSettings->thickFactor);
     setLayersDepth(myProject);
 
     myProject->logInfo("nr of layers: " + QString::number(myProject->WBSettings->nrLayers));
@@ -1194,9 +1193,8 @@ bool initializeWaterBalance(Vine3DProject* myProject)
     if (! setCrit3DTopography(myProject)) return(false);
     if (! setCrit3DNodeSoil(myProject)) return(false);
 
-    //soilFluxes3D::setNumericalParameters(6.0, 600.0, 200, 10, 12, 3);   // precision
-    soilFluxes3D::setNumericalParameters(30.0, 1800.0, 100, 10, 12, 2);  // speedy
-    //soilFluxes3D::setNumericalParameters(300.0, 3600.0, 100, 10, 12, 1);   // very speedy (high error)
+    soilFluxes3D::setNumericalParameters(6.0, 1800.0, 200, 10, 12, 3);   // precision
+    //soilFluxes3D::setNumericalParameters(30.0, 1800.0, 100, 10, 12, 2);  // speedy
     soilFluxes3D::setHydraulicProperties(MODIFIEDVANGENUCHTEN, MEAN_LOGARITHMIC, 10.0);
 
     myProject->logInfo("Waterbalance initialized");

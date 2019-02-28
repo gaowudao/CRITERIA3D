@@ -441,7 +441,7 @@ bool updateThermalSum(Vine3DProject* myProject, QDate myDate)
                 phenoPhase = myProject->statePlantMaps->stageMap->value[row][col];
                 isFruitSet = (phenoPhase >= fruitSet);
 
-                airTemp = myProject->meteoMaps->avgDailyTemperature->value[row][col];
+                airTemp = myProject->meteoMaps->avgDailyTemperatureMap->value[row][col];
                 degreeDays = myProject->statePlantMaps->degreeDaysFromFirstMarchMap->value[row][col];
 
                 // thermal sum at fruit set

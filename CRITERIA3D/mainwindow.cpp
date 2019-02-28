@@ -1106,7 +1106,7 @@ void MainWindow::on_actionView_Precipitation_triggered()
 void MainWindow::on_actionView_Air_relative_humidity_triggered()
 {
     if (this->checkMapVariable(myProject.meteoMaps->isComputed))
-        setMapVariable(airRelHumidity, myProject.meteoMaps->airHumidityMap);
+        setMapVariable(airRelHumidity, myProject.meteoMaps->airRelHumidityMap);
 }
 
 

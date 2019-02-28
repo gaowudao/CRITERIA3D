@@ -137,14 +137,14 @@ namespace soilFluxes3D {
         \brief Set numerical solution parameters
      */
 
-        if (minDeltaT < 0.1) minDeltaT = float(0.1);
+        if (minDeltaT < 0.1f) minDeltaT = 0.1f;
         if (minDeltaT > 3600) minDeltaT = 3600;
-        myParameters.delta_t_min = minDeltaT;
+        myParameters.delta_t_min = double(minDeltaT);
 
         if (maxDeltaT < 60) maxDeltaT = 60;
         if (maxDeltaT > 3600) maxDeltaT = 3600;
         if (maxDeltaT < minDeltaT) maxDeltaT = minDeltaT;
-        myParameters.delta_t_max = maxDeltaT;
+        myParameters.delta_t_max = double(maxDeltaT);
 
         myParameters.current_delta_t = myParameters.delta_t_max;
 
@@ -163,8 +163,8 @@ namespace soilFluxes3D {
         if (ResidualTolerance > 16) ResidualTolerance = 16;
         myParameters.ResidualTolerance = pow(double(10.), -ResidualTolerance);
 
-        if (MBRThreshold < 1.) MBRThreshold = 1.;
-        if (MBRThreshold > 6.) MBRThreshold = 6.;
+        if (MBRThreshold < 1) MBRThreshold = 1;
+        if (MBRThreshold > 6) MBRThreshold = 6;
         myParameters.MBRThreshold = pow(double(10.), double(-MBRThreshold));
 
         return(CRIT3D_OK);

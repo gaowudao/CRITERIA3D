@@ -49,7 +49,7 @@ bool computePowderyMildew(Vine3DProject* myProject)
                         powdery.state.totalSporulatingColonies = myProject->statePlantMaps->powderySporulatingColoniesMap->value[row][col];
 
                         // read meteo
-                        powdery.input.tavg = myProject->meteoMaps->avgDailyTemperature->value[row][col];
+                        powdery.input.tavg = myProject->meteoMaps->avgDailyTemperatureMap->value[row][col];
                         powdery.input.relativeHumidity = myProject->meteoMaps->airRelHumidityMap->value[row][col];
                         powdery.input.rain = myProject->meteoMaps->precipitationMap->value[row][col];
                         powdery.input.leafWetness = myProject->meteoMaps->leafWetnessMap->value[row][col];

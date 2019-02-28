@@ -113,12 +113,13 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
 
         // meteo interpolation
         myProject->logInfo("Interpolate meteo data");
-        myProject->initializeMeteoMaps();
+        myProject->meteoMaps->clean();
         interpolateAndSaveHourlyMeteo(myProject, airTemperature, myCurrentTime, myOutputPath, isSave, myArea);
         interpolateAndSaveHourlyMeteo(myProject, precipitation, myCurrentTime, myOutputPath, isSave, myArea);
         interpolateAndSaveHourlyMeteo(myProject, airRelHumidity, myCurrentTime, myOutputPath, isSave, myArea);
         interpolateAndSaveHourlyMeteo(myProject, windIntensity, myCurrentTime, myOutputPath, isSave, myArea);
         interpolateAndSaveHourlyMeteo(myProject, globalIrradiance, myCurrentTime, myOutputPath, isSave, myArea);
+
         //ET0
         if (computeET0Map(myProject))
             saveMeteoHourlyOutput(myProject, referenceEvapotranspiration, myOutputPath, myCurrentTime, myArea);
@@ -144,19 +145,19 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
                                   == int(myProject->statePlantMaps->fruitBiomassMap->header->flag));
 
                     if (! myProject->grapevine.setWeather(
-                                double(myProject->meteoMaps->avgDailyTemperature->value[row][col]),
+                                double(myProject->meteoMaps->avgDailyTemperatureMap->value[row][col]),
                                 double(myProject->meteoMaps->airTemperatureMap->value[row][col]),
-                                double(myProject->meteoMaps->radiationMaps->globalRadiationMap->value[row][col]),
+                                double(myProject->radiationMaps->globalRadiationMap->value[row][col]),
                                 double(myProject->meteoMaps->precipitationMap->value[row][col]),
                                 double(myProject->meteoMaps->airRelHumidityMap->value[row][col]),
                                 double(myProject->meteoMaps->windIntensityMap->value[row][col]),
                                 PRESS)) return(false);
 
                     if (!myProject->grapevine.setDerivedVariables(
-                                double(myProject->meteoMaps->radiationMaps->diffuseRadiationMap->value[row][col]),
-                                double(myProject->meteoMaps->radiationMaps->beamRadiationMap->value[row][col]),
-                                double(myProject->meteoMaps->radiationMaps->transmissivityMap->value[row][col] / CLEAR_SKY_TRANSMISSIVITY_DEFAULT),
-                                double(myProject->meteoMaps->radiationMaps->sunElevationMap->value[row][col]))) return (false);
+                                double(myProject->radiationMaps->diffuseRadiationMap->value[row][col]),
+                                double(myProject->radiationMaps->beamRadiationMap->value[row][col]),
+                                double(myProject->radiationMaps->transmissivityMap->value[row][col] / CLEAR_SKY_TRANSMISSIVITY_DEFAULT),
+                                double(myProject->radiationMaps->sunElevationMap->value[row][col]))) return (false);
 
                     myProject->grapevine.resetLayers();
 
@@ -235,7 +236,7 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
 
         updateWaterBalanceMaps(myProject);
 
-        saveMeteoHourlyOutput(myProject, actualEvaporation, myOutputPath, myCurrentTime, myArea);
+        //saveMeteoHourlyOutput(myProject, actualEvaporation, myOutputPath, myCurrentTime, myArea);
 
         if (isInitialState) isInitialState = false;
     }
