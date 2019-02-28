@@ -1703,7 +1703,9 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool isS
                 aggregateAndSaveDailyMap(this, globalIrradiance, aggregationIntegration, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
                 aggregateAndSaveDailyMap(this, leafWetness, aggregationSum, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
                 aggregateAndSaveDailyMap(this, referenceEvapotranspiration, aggregationSum, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
+
                 //aggregateAndSaveDailyMap(this, actualEvaporation, aggregationSum, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
+
                 //if (removeDirectory(myOutputPathHourly)) this->logInfo("Delete hourly files");
             }
 
