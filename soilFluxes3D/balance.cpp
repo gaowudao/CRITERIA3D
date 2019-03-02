@@ -116,10 +116,10 @@ double computeTotalWaterContent()
 {
    double theta, sum = 0.0;
 
-   for (long i = 0; i < myStructure.nrNodes; i++)
+   for (unsigned long i = 0; i < unsigned(myStructure.nrNodes); i++)
        if  (myNode[i].isSurface)
        {
-           sum += (myNode[i].H - myNode[i].z) * myNode[i].volume_area;
+           sum += (myNode[i].H - double(myNode[i].z)) * myNode[i].volume_area;
        }
        else
        {
@@ -208,7 +208,7 @@ void saveBestStep()
 
 void restoreBestStep(double deltaT)
 {
-    for (long n = 0; n < myStructure.nrNodes; n++)
+    for (unsigned long n = 0; n < unsigned(myStructure.nrNodes); n++)
     {
         myNode[n].H = myNode[n].bestH;
 

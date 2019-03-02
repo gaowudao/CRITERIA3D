@@ -44,7 +44,7 @@ double distance(unsigned long i, unsigned long j)
 
 double distance2D(unsigned long i, unsigned long j)
 {
-    return (sqrt(square(fabs(myNode[i].x - myNode[j].x)) + square(abs(myNode[i].y - myNode[j].y))));
+    return sqrt(square(fabs(myNode[i].x - myNode[j].x)) + square(fabs(myNode[i].y - myNode[j].y)));
 }
 
 double arithmeticMean(double v1, double v2)

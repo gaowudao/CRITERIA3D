@@ -713,13 +713,17 @@ namespace soilFluxes3D {
 
 	switch (direction) {
         case UP:
-            if (myNode[n].up.index != NOLINK) return (myNode[n].up.sumFlow);
-            else return INDEX_ERROR;
-            break;
+            if (myNode[n].up.index != NOLINK)
+                return (myNode[n].up.sumFlow);
+            else
+                return INDEX_ERROR;
+
 		case DOWN:
-            if (myNode[n].down.index != NOLINK) return (myNode[n].down.sumFlow);
-            else return INDEX_ERROR;
-            break;
+            if (myNode[n].down.index != NOLINK)
+                return (myNode[n].down.sumFlow);
+            else
+                return INDEX_ERROR;
+
 		case LATERAL:
 			// return maximum lateral flow
             for (short i = 0; i < myStructure.nrLateralLinks; i++)
@@ -727,11 +731,10 @@ namespace soilFluxes3D {
                     if (fabs(myNode[n].lateral[i].sumFlow) > maxFlow)
                         maxFlow = myNode[n].lateral[i].sumFlow;
             return maxFlow;
-            break;
+
         default:
-            break;
+            return INDEX_ERROR;
         }
-    return INDEX_ERROR;
  }
 
 
@@ -1142,11 +1145,9 @@ float DLL_EXPORT __STDCALL getHeatFlux(long nodeIndex, short myDirection, int fl
     {
     case UP:
         return readHeatFlux(&(myNode[nodeIndex].up), fluxType);
-        break;
 
     case DOWN:
         return readHeatFlux(&(myNode[nodeIndex].down), fluxType);
-        break;
 
     case LATERAL:
         for (short i = 0; i < myStructure.nrLateralLinks; i++)
@@ -1156,7 +1157,6 @@ float DLL_EXPORT __STDCALL getHeatFlux(long nodeIndex, short myDirection, int fl
                 myMaxFlux = myFlux;
         }
         return myMaxFlux;
-        break;
 
     default : return(INDEX_ERROR);
     }
