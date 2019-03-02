@@ -156,35 +156,36 @@ float Crit3DClimateParameters::getClimateLapseRate(meteoVariable myVar, Crit3DDa
 
 float tDewFromRelHum(float rhAir, float airT)
 {
-    if (rhAir == NODATA || airT == NODATA)
+    if (int(rhAir) == int(NODATA) || int(airT) == int(NODATA))
         return NODATA;
 
     rhAir = minValue(100, rhAir);
 
-    double mySaturatedVaporPres = exp((16.78 * airT - 116.9) / (airT + 237.3));
-    double actualVaporPres = rhAir / 100. * mySaturatedVaporPres;
+    double mySaturatedVaporPres = exp((16.78 * double(airT) - 116.9) / (double(airT) + 237.3));
+    double actualVaporPres = double(rhAir) / 100. * mySaturatedVaporPres;
     return float((log(actualVaporPres) * 237.3 + 116.9) / (16.78 - log(actualVaporPres)));
 }
 
-float relHumFromTdew(float DewT, float airT)
+
+float relHumFromTdew(float dewT, float airT)
 {
-    if (DewT == NODATA || airT == NODATA)
+    if (int(dewT) == int(NODATA) || int(airT) == int(NODATA))
         return NODATA;
+
+    double d = 237.3;
+    double c = 17.2693882;
+    double esp = 1 / (double(airT) + d);
+    double myValue = pow((exp((c * double(dewT)) - ((c * double(airT) / (double(airT) + d))) * (double(dewT) + d))), esp);
+    myValue *= 100.;
+
+    if (myValue > 100.)
+        return 100;
+    else if (myValue <= 0.)
+        return 1.;
     else
-    {
-        double d = 237.3;
-        double c = 17.2693882;
-        double esp = 1 / (airT + d);
-        double myValue = pow((exp((c * DewT) - ((c * airT / (airT + d))) * (DewT + d))), esp);
-        myValue *= 100.;
-        if (myValue > 100.)
-            return 100;
-        else if (myValue == 0.)
-            return 1.;
-        else
-            return float(myValue);
-    }
+        return float(myValue);
 }
+
 
 double dailyExtrRadiation(double myLat, int myDoy)
 {

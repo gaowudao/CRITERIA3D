@@ -126,6 +126,7 @@
             Crit3DRasterHeader();
 
             void convertFromLatLon(const Crit3DGridHeader& latLonHeader);
+            bool isEqualTo(const Crit3DRasterHeader& myHeader);
 
             friend bool operator == (const Crit3DRasterHeader& myHeader1, const Crit3DRasterHeader& myHeader2);
         };

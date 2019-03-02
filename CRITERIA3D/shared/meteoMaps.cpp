@@ -116,3 +116,28 @@ bool Crit3DMeteoMaps::computeET0Map(gis::Crit3DRasterGrid* DTM, Crit3DRadiationM
     return gis::updateMinMaxRasterGrid(this->ET0Map);
 }
 
+
+bool Crit3DMeteoMaps::computeRelativeHumidityMap(const gis::Crit3DRasterGrid& dewTemperatureMap)
+{
+    float airT, dewT;
+    airRelHumidityMap->emptyGrid();
+
+    if (! dewTemperatureMap.header->isEqualTo(*(airTemperatureMap->header)))
+        return false;
+
+    for (long row = 0; row < airRelHumidityMap->header->nrRows ; row++)
+    {
+        for (long col = 0; col < airRelHumidityMap->header->nrCols; col++)
+        {
+            airT = airTemperatureMap->value[row][col];
+            dewT = dewTemperatureMap.value[row][col];
+            if ( int(airT) != int(airTemperatureMap->header->flag)
+                 && int(dewT) != int(dewTemperatureMap.header->flag) )
+            {
+                    airRelHumidityMap->value[row][col] = relHumFromTdew(dewT, airT);
+            }
+        }
+    }
+
+    return gis::updateMinMaxRasterGrid(airRelHumidityMap);
+}

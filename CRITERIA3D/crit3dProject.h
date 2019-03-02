@@ -64,6 +64,8 @@
         int getSoilIndex(int dtmRow, int dtmCol);
 
         bool setDEM(QString myFileName);
+
+        bool interpolationRelHumidity(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
         bool computeAllMeteoMaps(const Crit3DTime &myTime, bool showInfo);
     };
 

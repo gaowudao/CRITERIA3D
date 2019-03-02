@@ -167,10 +167,20 @@ namespace gis
     {
         return ((myHeader1.cellSize == myHeader2.cellSize) &&
                 (myHeader1.flag == myHeader2.flag) &&
-                (fabs(myHeader1.llCorner->x - myHeader2.llCorner->x) < 0.1) &&
-                (fabs(myHeader1.llCorner->y - myHeader2.llCorner->y) < 0.1) &&
+                (fabs(myHeader1.llCorner->x - myHeader2.llCorner->x) < 0.01) &&
+                (fabs(myHeader1.llCorner->y - myHeader2.llCorner->y) < 0.01) &&
                 (myHeader1.nrCols == myHeader2.nrCols) &&
                 (myHeader1.nrRows == myHeader2.nrRows));
+    }
+
+    bool Crit3DRasterHeader::isEqualTo(const Crit3DRasterHeader& myHeader)
+    {
+        return ((cellSize == myHeader.cellSize) &&
+                (flag == myHeader.flag) &&
+                (fabs(llCorner->x - myHeader.llCorner->x) < 0.01) &&
+                (fabs(llCorner->y - myHeader.llCorner->y) < 0.01) &&
+                (nrCols == myHeader.nrCols) &&
+                (nrRows == myHeader.nrRows));
     }
 
     Crit3DRasterGrid::Crit3DRasterGrid()

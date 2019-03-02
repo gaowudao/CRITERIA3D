@@ -891,26 +891,28 @@ float gaussWeighted(vector <Crit3DInterpolationDataPoint> &myPointList)
         return NODATA;
 }
 
+
 bool checkPrecipitationZero(std::vector <Crit3DInterpolationDataPoint> &myPoints, int* nrPrecNotNull, bool* flatPrecipitation)
 {
     *flatPrecipitation = true;
     *nrPrecNotNull = 0;
     float myValue = NODATA;
 
-    for (int i = 0; i < (int)(myPoints.size()); i++)
+    for (unsigned int i = 0; i < myPoints.size(); i++)
         if (myPoints.at(i).isActive)
-            if (myPoints.at(i).value != NODATA)
-                if (myPoints.at(i).value >= PREC_THRESHOLD)
+            if (int(myPoints.at(i).value) != int(NODATA))
+                if (myPoints.at(i).value >= float(PREC_THRESHOLD))
                 {
                     if (*nrPrecNotNull > 0 && myPoints.at(i).value != myValue)
                         *flatPrecipitation = false;
 
                     myValue = myPoints.at(i).value;
-                    nrPrecNotNull++;
+                    (*nrPrecNotNull)++;
                 }
 
-    return (nrPrecNotNull == 0);
+    return (*nrPrecNotNull == 0);
 }
+
 
 bool getUseDetrendingVar(meteoVariable myVar)
 {
@@ -927,6 +929,7 @@ bool getUseDetrendingVar(meteoVariable myVar)
     else
         return false;
 }
+
 
 void detrendPoints(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings,
                    meteoVariable myVar, int pos)
@@ -1230,20 +1233,29 @@ float interpolate(vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpo
     computeDistances(myPoints, mySettings, myX, myY, myZ, excludeSupplemental);
 
     if (mySettings->getInterpolationMethod() == idw)
+    {
         myResult = inverseDistanceWeighted(myPoints);
+    }
     else if (mySettings->getInterpolationMethod() == kriging)
-        myResult = NODATA; //todo
+    {
+        //TODO kriging
+        myResult = NODATA;
+    }
     else if (mySettings->getInterpolationMethod() == shepard)
+    {
         myResult = computeShepard(myPoints, mySettings, myX, myY);
+    }
 
-    if (myResult != NODATA)
+    if (int(myResult) != int(NODATA))
+    {
         myResult += retrend(myVar, myProxyValues, mySettings);
+    }
     else
         return NODATA;
 
     if (myVar == precipitation || myVar == dailyPrecipitation)
     {
-        if (myResult < PREC_THRESHOLD)
+        if (myResult < float(PREC_THRESHOLD))
             return 0.;
     }
     else if (myVar == airRelHumidity || myVar == dailyAirRelHumidityAvg

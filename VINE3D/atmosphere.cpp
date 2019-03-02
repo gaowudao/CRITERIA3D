@@ -204,7 +204,7 @@ bool computeHumidityMap(const gis::Crit3DRasterGrid& myTemperatureMap,
                         const gis::Crit3DRasterGrid& myDewTemperatureMap,
                         gis::Crit3DRasterGrid* myHumidityMap)
 {
-    if (myHumidityMap == NULL) return false;
+    if (myHumidityMap == nullptr) return false;
     if (! myHumidityMap->isLoaded) return false;
 
     if (! (*(myHumidityMap->header) == *(myTemperatureMap.header) && *(myHumidityMap->header) == *(myDewTemperatureMap.header)))

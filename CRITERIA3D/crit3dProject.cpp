@@ -284,13 +284,13 @@ double Crit3DProject::getSoilVar(int soilIndex, int layerIndex, soil::soilVariab
 {
     int horizonIndex = soil::getHorizonIndex(&(soilList[unsigned(soilIndex)]), layerDepth[unsigned(layerIndex)]);
     if (myVar == soil::soilWaterPotentialWP)
-        return soilList[soilIndex].horizon[horizonIndex].wiltingPoint;
+        return soilList[unsigned(soilIndex)].horizon[horizonIndex].wiltingPoint;
     else if (myVar == soil::soilWaterPotentialFC)
-        return soilList[soilIndex].horizon[horizonIndex].fieldCapacity;
+        return soilList[unsigned(soilIndex)].horizon[horizonIndex].fieldCapacity;
     else if (myVar == soil::soilWaterContentFC)
-        return soilList[soilIndex].horizon[horizonIndex].waterContentFC;
+        return soilList[unsigned(soilIndex)].horizon[horizonIndex].waterContentFC;
     else if (myVar == soil::soilWaterContentSat)
-        return soilList[soilIndex].horizon[horizonIndex].vanGenuchten.thetaS;
+        return soilList[unsigned(soilIndex)].horizon[horizonIndex].vanGenuchten.thetaS;
     else if (myVar == soil::soilWaterContentWP)
     {
         double signPsiLeaf = -160;      //[m]
@@ -326,6 +326,44 @@ bool Crit3DProject::setDEM(QString myFileName)
 }
 
 
+bool Crit3DProject::interpolationRelHumidity(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo)
+{
+    if (! DTM.isLoaded)
+    {
+        errorString = "Load a DEM before.";
+        return false;
+    }
+
+    if (nrMeteoPoints == 0)
+    {
+        errorString = "Open a meteo points DB before.";
+        return false;
+    }
+
+    if (interpolationSettings.getUseDewPoint())
+    {
+        // TODO check on airTemperatureMap
+
+        gis::Crit3DRasterGrid dewT_Map;
+        dewT_Map.initializeGrid(DTM);
+
+        if (! interpolationDem(airDewTemperature, myTime, myRaster, showInfo))
+            return false;
+
+        /*if (! this->meteoMaps->computeRelativeHumidityMap(dewT_Map))
+            return false;
+
+        *myRaster = *(this->meteoMaps->airRelHumidityMap);*/
+
+        return true;
+    }
+    else
+    {
+        return interpolationDem(airRelHumidity, myTime, myRaster, showInfo);
+    }
+}
+
+
 bool Crit3DProject::computeAllMeteoMaps(const Crit3DTime& myTime, bool showInfo)
 {
     if (! DTM.isLoaded)
@@ -347,7 +385,7 @@ bool Crit3DProject::computeAllMeteoMaps(const Crit3DTime& myTime, bool showInfo)
 
     if (showInfo) myInfo.setValue(1);
 
-    if (! interpolationDemMain(airRelHumidity, myTime, this->meteoMaps->airRelHumidityMap, false))
+    if (! interpolationRelHumidity(myTime, this->meteoMaps->airRelHumidityMap, false))
         return false;
 
     if (showInfo) myInfo.setValue(2);

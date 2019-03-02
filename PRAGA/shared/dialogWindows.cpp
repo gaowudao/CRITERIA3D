@@ -179,6 +179,7 @@ bool chooseMeteoVariable(Project* myProject)
     QRadioButton RHmax("Maximum relative humidity  %");
     QRadioButton Rad("Solar radiation  MJ m-2");
     QRadioButton Wind("Average wind intensity  m s-1");
+    QRadioButton DewT("Dew temperature  °C");
 
     if (myProject->getFrequency() == daily)
     {
@@ -204,6 +205,7 @@ bool chooseMeteoVariable(Project* myProject)
         layoutVariable.addWidget(&RHavg);
         layoutVariable.addWidget(&Rad);
         layoutVariable.addWidget(&Wind);
+        layoutVariable.addWidget(&DewT);
     }
     else return false;
 
@@ -255,12 +257,15 @@ bool chooseMeteoVariable(Project* myProject)
            myProject->setCurrentVariable(globalIrradiance);
        else if (Wind.isChecked())
            myProject->setCurrentVariable(windIntensity);
+       else if (DewT.isChecked())
+           myProject->setCurrentVariable(airDewTemperature);
    }
    else
        return false;
 
    return true;
 }
+
 
 #ifdef NETCDF
     bool chooseNetCDFVariable(int* varId, QDateTime* firstDate, QDateTime* lastDate)
