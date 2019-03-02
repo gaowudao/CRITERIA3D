@@ -179,7 +179,7 @@ bool chooseMeteoVariable(Project* myProject)
     QRadioButton RHmax("Maximum relative humidity  %");
     QRadioButton Rad("Solar radiation  MJ m-2");
     QRadioButton Wind("Average wind intensity  m s-1");
-    QRadioButton DewT("Dew temperature  °C");
+    QRadioButton DewT("Air dew temperature  °C");
 
     if (myProject->getFrequency() == daily)
     {

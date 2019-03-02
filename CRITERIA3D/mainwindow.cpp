@@ -457,6 +457,9 @@ void MainWindow::updateVariable()
             else if (myProject.getCurrentVariable() == airRelHumidity)
                 myProject.setCurrentVariable(dailyAirRelHumidityAvg);
 
+            else if (myProject.getCurrentVariable() == airDewTemperature)
+                myProject.setCurrentVariable(dailyAirDewTemperatureAvg);
+
             else if (myProject.getCurrentVariable() == windIntensity)
                 myProject.setCurrentVariable(dailyWindIntensityAvg);
         }
@@ -475,6 +478,9 @@ void MainWindow::updateVariable()
                      || (myProject.getCurrentVariable() == dailyAirRelHumidityMax)
                      || (myProject.getCurrentVariable() == dailyAirRelHumidityMin))
                  myProject.setCurrentVariable(airRelHumidity);
+
+            else if (myProject.getCurrentVariable() == dailyAirDewTemperatureAvg)
+                myProject.setCurrentVariable(airDewTemperature);
 
             else if (myProject.getCurrentVariable() == dailyPrecipitation)
                     myProject.setCurrentVariable(precipitation);

@@ -436,13 +436,17 @@ bool setColorScale(meteoVariable variable, Crit3DColorScale *colorScale)
 
     switch(variable)
     {
-        case airTemperature: case dailyAirTemperatureAvg: case dailyAirTemperatureMax: case dailyAirTemperatureMin: case dailyAirTemperatureRange:
+        case airTemperature: case dailyAirTemperatureAvg: case dailyAirTemperatureMax:
+        case dailyAirTemperatureMin: case dailyAirTemperatureRange:
+        case airDewTemperature: case dailyAirDewTemperatureAvg:
             setTemperatureScale(colorScale);
             break;
-        case airRelHumidity: case dailyAirRelHumidityAvg: case dailyAirRelHumidityMax: case dailyAirRelHumidityMin: case leafWetness: case dailyLeafWetness:
+        case airRelHumidity: case dailyAirRelHumidityAvg: case dailyAirRelHumidityMax:
+        case dailyAirRelHumidityMin: case leafWetness: case dailyLeafWetness:
             setRelativeHumidityScale(colorScale);
             break;
-        case precipitation: case dailyPrecipitation: case referenceEvapotranspiration: case dailyReferenceEvapotranspirationHS:
+        case precipitation: case dailyPrecipitation: case referenceEvapotranspiration:
+        case dailyReferenceEvapotranspirationHS:
             setPrecipitationScale(colorScale);
             break;
         case dailyBIC:
@@ -473,6 +477,8 @@ std::string getVariableString(meteoVariable myVar)
         return "Air temerature range °C";
     else if (myVar == airRelHumidity || myVar == dailyAirRelHumidityAvg)
         return "Relative humidity %";
+    else if (myVar == airDewTemperature || myVar == dailyAirDewTemperatureAvg)
+        return "Air dew temperature °C";
     else if ((myVar == dailyPrecipitation ||  myVar == precipitation))
         return "Precipitation mm";
     else if (myVar == dailyAirTemperatureMax)

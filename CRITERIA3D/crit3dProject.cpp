@@ -344,16 +344,16 @@ bool Crit3DProject::interpolationRelHumidity(const Crit3DTime& myTime, gis::Crit
     {
         // TODO check on airTemperatureMap
 
-        gis::Crit3DRasterGrid dewT_Map;
-        dewT_Map.initializeGrid(DTM);
+        gis::Crit3DRasterGrid *dewT_Map = new(gis::Crit3DRasterGrid);
+        dewT_Map->initializeGrid(DTM);
 
-        if (! interpolationDem(airDewTemperature, myTime, myRaster, showInfo))
+        if (! interpolationDem(airDewTemperature, myTime, dewT_Map, showInfo))
             return false;
 
-        /*if (! this->meteoMaps->computeRelativeHumidityMap(dewT_Map))
+        if (! this->meteoMaps->computeRelativeHumidityMap(*dewT_Map))
             return false;
 
-        *myRaster = *(this->meteoMaps->airRelHumidityMap);*/
+        *myRaster = *(this->meteoMaps->airRelHumidityMap);
 
         return true;
     }
