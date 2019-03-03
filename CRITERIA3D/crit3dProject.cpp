@@ -294,7 +294,7 @@ double Crit3DProject::getSoilVar(int soilIndex, int layerIndex, soil::soilVariab
     else if (myVar == soil::soilWaterContentWP)
     {
         double signPsiLeaf = -160;      //[m]
-        return soil::thetaFromSignPsi(signPsiLeaf, &(soilList[soilIndex].horizon[horizonIndex]));
+        return soil::thetaFromSignPsi(signPsiLeaf, &(soilList[unsigned(soilIndex)].horizon[horizonIndex]));
     }
     else
         return NODATA;
