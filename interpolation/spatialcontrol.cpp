@@ -14,7 +14,7 @@ float findThreshold(meteoVariable myVar, float value, float stdDev, float nrStdD
         || myVar == dailyPrecipitation)
     {
         distWeight = maxValue(1.f, minDistance / 2000.f);
-        if (value < PREC_THRESHOLD)
+        if (value < float(PREC_THRESHOLD))
             threshold = maxValue(5.f, distWeight + stdDev * (nrStdDev + 1));
         else
             return 800.f;
