@@ -514,12 +514,12 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             }
         }
         //printf("mese %d\n", iMonth+1);
-        double* arrayRandomNormal;
-        arrayRandomNormal = (double *)calloc(nrStations*nrDaysIterativeProcessMonthly[iMonth], sizeof(double));
-        randomSet(arrayRandomNormal,nrStations*nrDaysIterativeProcessMonthly[iMonth]);
+        //double* arrayRandomNormal;
+        //arrayRandomNormal = (double *)calloc(nrStations*nrDaysIterativeProcessMonthly[iMonth], sizeof(double));
+        //randomSet(arrayRandomNormal,nrStations*nrDaysIterativeProcessMonthly[iMonth]);
 
-        int counterRandomNumber = 0;
-        double testValue;
+        //int counterRandomNumber = 0;
+        //double testValue;
         for (int i=0;i<nrStations;i++)
         {
             for (int j=0;j<nrStations;j++)
@@ -540,9 +540,9 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             {
 
                normalizedRandomMatrix[i][jCount]= myrandom::normalRandom(&gasDevIset,&gasDevGset);
-               normalizedRandomMatrix[i][jCount]= arrayRandomNormal[counterRandomNumber];
-               counterRandomNumber++;
-               testValue = normalizedRandomMatrix[i][jCount];
+               //normalizedRandomMatrix[i][jCount]= arrayRandomNormal[counterRandomNumber];
+               //counterRandomNumber++;
+               //testValue = normalizedRandomMatrix[i][jCount];
                //double valueRandomUniform1,valueRandomUniform2;
                //double valueRandomNormal1;
                //valueRandomUniform1 = ((double)(randomPseudo(randomGeneration)))/32768.0;
@@ -560,7 +560,7 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             }
 
         }
-        free(arrayRandomNormal);
+        //free(arrayRandomNormal);
         // initialization outputs of weatherGenerator2D::spatialIterationOccurrence
         double** M;
         double** K;
@@ -596,7 +596,7 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             {
                 randomMatrix[iMonth].matrixK[i][j] = float(K[i][j]);
                 randomMatrix[iMonth].matrixM[i][j] = float(M[i][j]);
-                printf("%f  ",randomMatrix[iMonth].matrixM[i][j]);
+                printf("%f  ",randomMatrix[iMonth].matrixK[i][j]);
             }
 
 
@@ -606,7 +606,7 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             }
             printf("\n");
         }
-        pressEnterToContinue();
+        //pressEnterToContinue();
         randomMatrix[iMonth].month = iMonth + 1;
         // free memory
         for (int i=0;i<nrStations;i++)
@@ -666,13 +666,20 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
     }
 
     // initialization output M
+    //matrixOccurrence[0][1]=matrixOccurrence[1][0]=0.9478;
+    //matrixOccurrence[0][2]=matrixOccurrence[2][0]=0.7391;
+    //matrixOccurrence[1][2]=matrixOccurrence[2][1]=0.7391;
     for (int i=0;i<nrStations;i++)
     {
        for (int j=0;j<nrStations;j++)
         {
             M[i][j] = matrixOccurrence[i][j];  // M is the matrix named mat in the original code
+            printf("%f\t",M[i][j]);
         }
+       printf("\n");
     }
+    //M[0][2]=M[2][0]=M[2][1];
+
 
     while ((val>TOLERANCE_MULGETS) && (ii<MAX_ITERATION_MULGETS))
     {
@@ -785,6 +792,25 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
                 }                
             }
         }
+        printf("%d val %f\n",ii, val);
+        for (int i=0;i<nrStations;i++)
+        {
+            for (int j=0;j<nrStations;j++)
+            {
+                printf("%f\t", K[i][j]);
+            }
+            printf("\n");
+        }
+        printf("\n");
+        for (int i=0;i<nrStations;i++)
+        {
+            for (int j=0;j<nrStations;j++)
+            {
+                printf("%f\t", M[i][j]);
+            }
+            printf("\n");
+        }
+        //pressEnterToContinue();
 
 
     }  // end of the while cycle
