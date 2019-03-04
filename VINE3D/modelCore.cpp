@@ -82,6 +82,13 @@ bool assignIrrigation(Vine3DProject* myProject, Crit3DTime myTime)
     return true;
 }
 
+QString grapevineError(Crit3DTime myTime, long row, long col, QString errorIni)
+{
+    QString myString = "Error computing grapevine for DEM cell (" + QString::number(row) + "," + QString::number(col) + ")\n";
+    myString += errorIni + "\n";
+    myString += QString::fromStdString(myTime.date.toStdString()) + " " + QString("%1").arg(myTime.getHour(), 2, 10, QChar('0')) + ":00\n";
+    return myString;
+}
 
 bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
                      Vine3DProject* myProject, const QString& myOutputPath,
@@ -108,6 +115,9 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
 
     for (myCurrentTime = myFirstTime; myCurrentTime <= myLastTime; myCurrentTime = myCurrentTime.addSeconds(myTimeStep))
     {
+        if (myCurrentTime.getHour() == 20)
+            int a = 0;
+
         myProject->logInfo("\n" + getQDateTime(myCurrentTime).toString("yyyy-MM-dd hh:mm"));
         myProject->grapevine.setDate(myCurrentTime);
 
@@ -151,17 +161,26 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
                                 double(myProject->meteoMaps->precipitationMap->value[row][col]),
                                 double(myProject->meteoMaps->airRelHumidityMap->value[row][col]),
                                 double(myProject->meteoMaps->windIntensityMap->value[row][col]),
-                                PRESS)) return(false);
+                                PRESS)) {
+                        myProject->errorString = grapevineError(myCurrentTime, row, col, "Weather data missing");
+                        return(false);
+                    }
 
                     if (!myProject->grapevine.setDerivedVariables(
                                 double(myProject->radiationMaps->diffuseRadiationMap->value[row][col]),
                                 double(myProject->radiationMaps->beamRadiationMap->value[row][col]),
                                 double(myProject->radiationMaps->transmissivityMap->value[row][col] / CLEAR_SKY_TRANSMISSIVITY_DEFAULT),
-                                double(myProject->radiationMaps->sunElevationMap->value[row][col]))) return (false);
+                                double(myProject->radiationMaps->sunElevationMap->value[row][col]))) {
+                        myProject->errorString = grapevineError(myCurrentTime, row, col, "Radiation data missing");
+                        return (false);
+                    }
 
                     myProject->grapevine.resetLayers();
 
-                    if (! setSoilProfileCrop(myProject, row, col, &(myProject->modelCases[modelCaseIndex]))) return false;
+                    if (! setSoilProfileCrop(myProject, row, col, &(myProject->modelCases[modelCaseIndex]))) {
+                        myProject->errorString = grapevineError(myCurrentTime, row, col, "Error setting soil profile");
+                        return false;
+                    }
 
                     if ((isInitialState) || (isNewModelCase))
                     {
@@ -177,9 +196,11 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
                     }
                     double chlorophyll = NODATA;
 
-                    if (! myProject->grapevine.compute((myCurrentTime == myFirstTime), myTimeStep,
-                          &(myProject->modelCases[modelCaseIndex]), chlorophyll))
-                          return(false);
+                    if (! myProject->grapevine.compute((myCurrentTime == myFirstTime), myTimeStep, &(myProject->modelCases[modelCaseIndex]), chlorophyll))
+                    {
+                        myProject->errorString = grapevineError(myCurrentTime, row, col, "Error in grapevine computation");
+                        return(false);
+                    }
 
                     // check field book (first hour)
                     if (myCurrentTime.getHour() == 1)
@@ -199,11 +220,7 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
 
                     myProfile = myProject->grapevine.getExtractedWater(&(myProject->modelCases[modelCaseIndex]));
                     for (int layer=0; layer < myProject->WBSettings->nrLayers; layer++)
-                    {
                         myProject->outputPlantMaps->transpirationLayerMaps[layer]->value[row][col] = float(myProfile[layer]);
-                        //if (myCurrentTime.time > 7200)
-                          //  qDebug() << myProfile[layer];
-                    }
 
                     //stress transpiration output
                     if (myCurrentTime.getHour()==checkStressHour)

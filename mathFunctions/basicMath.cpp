@@ -172,3 +172,7 @@
       return 0;
     }
 
+    bool isNODATA(double value)
+    {
+        return fabs(value - NODATA) < EPSILON;
+    }

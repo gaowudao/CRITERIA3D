@@ -11,6 +11,7 @@
 #include <malloc.h>
 #include "crit3dDate.h"
 #include "commonConstants.h"
+#include "basicMath.h"
 #include "furtherMathFunctions.h"
 #include "physics.h"
 #include "gammaFunction.h"
@@ -201,7 +202,6 @@ bool Vine3D_Grapevine::setSoilProfile(Crit3DModelCase* modelCase, double* myWilt
                             double* myPsiSoilProfile, double* mySoilWaterContentProfile,
                             double* mySoilWaterContentFC, double* mySoilWaterContentWP)
 {
-    bool isReadingOK = true ;
     double psiSoilProfile;
     double logPsiSoilAverage = 0.;
     double logPsiFCAverage = 0.;
@@ -209,12 +209,19 @@ bool Vine3D_Grapevine::setSoilProfile(Crit3DModelCase* modelCase, double* myWilt
 
     psiSoilAverage = 0.;
     psiFieldCapacityAverage = 0.;
+
+    if (int(myWiltingPoint[int(modelCase->soilLayersNr / 2)]) == NODATA)
+        return false;
+
     wiltingPoint = myWiltingPoint[int(modelCase->soilLayersNr / 2)] / 101.97;     // conversion from mH2O to MPa
 
     //layer 0: surface, no soil
     for (int i = 1; i < modelCase->soilLayersNr; i++)
     {
-        if (int(myPsiSoilProfile[i]) == NODATA) isReadingOK = false;
+        if (isNODATA(myPsiSoilProfile[i]) || isNODATA(myFieldCapacity[i]) || isNODATA(mySoilWaterContentProfile[i])
+                || isNODATA(mySoilWaterContentProfile[i]) || isNODATA(mySoilWaterContentWP[i]))
+            return false;
+
         soilFieldCapacity = myFieldCapacity[i]/101.97; // conversion from mH2O to MPa
         psiSoilProfile = minValue(myPsiSoilProfile[i],-1.)/101.97 ; // conversion from mH2O to MPa
         logPsiSoilAverage += log(-psiSoilProfile) * modelCase->rootDensity[i];
@@ -238,7 +245,7 @@ bool Vine3D_Grapevine::setSoilProfile(Crit3DModelCase* modelCase, double* myWilt
         transpirationLayer[i] = 0.;
         transpirationCumulatedGrass[i] = 0. ;
     }
-    return isReadingOK ;
+    return true ;
 }
 
 bool Vine3D_Grapevine::setStatePlant(TstatePlant myStatePlant, bool isVineyard)

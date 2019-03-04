@@ -1682,7 +1682,7 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool isS
 
             if (! modelDailyCycle(isInitialState, getCrit3DDate(myDate), finalHour, this, myOutputPathHourly, isSaveOutput, myArea))
             {
-                logError("Model cycle error.");
+                logError(errorString);
                 return false;
             }
         }

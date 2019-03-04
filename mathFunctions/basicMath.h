@@ -23,6 +23,7 @@
     bool findLinesIntersection(float q1, float m1, float q2, float m2, float* x, float* y);
     bool findLinesIntersectionAboveThreshold(float q1, float m1, float q2, float m2, float myThreshold, float* x, float* y);
     int sgn(float v);
+    bool isNODATA(double value);
 ;
 
 #endif // BASICMATH_H

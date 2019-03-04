@@ -212,5 +212,4 @@
     #define SQRT_2 1.41421356237
 
 
-
 #endif // COMMONCONSTANTS_H
