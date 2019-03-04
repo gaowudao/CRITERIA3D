@@ -255,33 +255,100 @@ void weatherGenerator2D::precipitationCompute()
 {
    // step 1 of precipitation WG2D
    weatherGenerator2D::precipitationP00P10(); // it computes the monthly probabilities p00 and p10
-   int month = 0;
+   int month = 0; // gennaio
    precOccurence[0][month].p00 = 0.8254;
    precOccurence[0][month].p10 = 0.4444;
    precOccurence[1][month].p00 = 0.8413;
    precOccurence[1][month].p10 = 0.4074;
    precOccurence[2][month].p00 = 0.8413;
    precOccurence[2][month].p10 = 0.4074;
-   month++;
+   month++; // febbraio
    precOccurence[0][month].p00 = 0.66;
    precOccurence[0][month].p10 = 0.4839;
    precOccurence[1][month].p00 = 0.6981;
    precOccurence[1][month].p10 = 0.5;
    precOccurence[2][month].p00 = 0.6939;
    precOccurence[2][month].p10 = 0.4063;
-   month++;
+   month++; // marzo
    precOccurence[0][month].p00 = 0.7273;
    precOccurence[0][month].p10 = 0.4286;
    precOccurence[1][month].p00 = 0.75;
    precOccurence[1][month].p10 = 0.4118;
    precOccurence[2][month].p00 = 0.8033;
    precOccurence[2][month].p10 = 0.4138;
+   month++; // aprile
+   precOccurence[0][month].p00 = 0.8806;
+   precOccurence[0][month].p10 = 0.4;
+   precOccurence[1][month].p00 = 0.8125;
+   precOccurence[1][month].p10 = 0.5652;
+   precOccurence[2][month].p00 = 0.8525;
+   precOccurence[2][month].p10 = 0.4231;
+   month++; // maggio
+   precOccurence[0][month].p00 = 0.8438;
+   precOccurence[0][month].p10 = 0.4615;
+   precOccurence[1][month].p00 = 0.8382;
+   precOccurence[1][month].p10 = 0.5455;
+   precOccurence[2][month].p00 = 0.8382;
+   precOccurence[2][month].p10 = 0.5455;
+   month++; //giugno
+   precOccurence[0][month].p00 = 0.7541;
+   precOccurence[0][month].p10 = 0.5769;
+   precOccurence[1][month].p00 = 0.8358;
+   precOccurence[1][month].p10 = 0.55;
+   precOccurence[2][month].p00 = 0.8406;
+   precOccurence[2][month].p10 = 0.6111;
+   month++; // luglio
+   precOccurence[0][month].p00 = 0.8533;
+   precOccurence[0][month].p10 = 0.7333;
+   precOccurence[1][month].p00 = 0.9;
+   precOccurence[1][month].p10 = 0.8;
+   precOccurence[2][month].p00 = 0.8684;
+   precOccurence[2][month].p10 = 0.7143;
+   month++; // agosto
+   precOccurence[0][month].p00 = 0.8182;
+   precOccurence[0][month].p10 = 1.;
+   precOccurence[1][month].p00 = 0.7778;
+   precOccurence[1][month].p10 = 0.8333;
+   precOccurence[2][month].p00 = 0.8734;
+   precOccurence[2][month].p10 = 0.9091;
+   month++; // settembre
+   precOccurence[0][month].p00 = 0.8493;
+   precOccurence[0][month].p10 = 0.7143;
+   precOccurence[1][month].p00 = 0.8611;
+   precOccurence[1][month].p10 = 0.6000;
+   precOccurence[2][month].p00 = 0.8784;
+   precOccurence[2][month].p10 = 0.6154;
+   month++; // ottobre
+   precOccurence[0][month].p00 = 0.8356;
+   precOccurence[0][month].p10 = 0.5882;
+   precOccurence[1][month].p00 = 0.7941;
+   precOccurence[1][month].p10 = 0.5455;
+   precOccurence[2][month].p00 = 0.7941;
+   precOccurence[2][month].p10 = 0.5455;
+   month++; // novembre
+   precOccurence[0][month].p00 = 0.8571;
+   precOccurence[0][month].p10 = 0.4167;
+   precOccurence[1][month].p00 = 0.8197;
+   precOccurence[1][month].p10 = 0.4615;
+   precOccurence[2][month].p00 = 0.8;
+   precOccurence[2][month].p10 = 0.6364;
+   month++; // dicembre
+   precOccurence[0][month].p00 = 0.9375;
+   precOccurence[0][month].p10 = 0.4;
+   precOccurence[1][month].p00 = 0.9259;
+   precOccurence[1][month].p10 = 0.5556;
+   precOccurence[2][month].p00 = 0.939;
+   precOccurence[2][month].p10 = 0.625;
+
+
+
+
    // step 2 of precipitation WG2D
    weatherGenerator2D::precipitationCorrelationMatrices();
    // step 3 of precipitation WG2D
    weatherGenerator2D::precipitationMultisiteOccurrenceGeneration();
    // step 4 of precipitation WG2D
-   //weatherGenerator2D::precipitationMultiDistributionAmounts();
+   weatherGenerator2D::precipitationMultiDistributionAmounts();
    // step 5 of precipitation WG2D
 }
 
@@ -514,12 +581,12 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             }
         }
         //printf("mese %d\n", iMonth+1);
-        //double* arrayRandomNormal;
-        //arrayRandomNormal = (double *)calloc(nrStations*nrDaysIterativeProcessMonthly[iMonth], sizeof(double));
-        //randomSet(arrayRandomNormal,nrStations*nrDaysIterativeProcessMonthly[iMonth]);
+        double* arrayRandomNormal;
+        arrayRandomNormal = (double *)calloc(nrStations*nrDaysIterativeProcessMonthly[iMonth], sizeof(double));
+        randomSet(arrayRandomNormal,nrStations*nrDaysIterativeProcessMonthly[iMonth]);
 
-        //int counterRandomNumber = 0;
-        //double testValue;
+        int counterRandomNumber = 0;
+        double testValue;
         for (int i=0;i<nrStations;i++)
         {
             for (int j=0;j<nrStations;j++)
@@ -540,9 +607,9 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             {
 
                normalizedRandomMatrix[i][jCount]= myrandom::normalRandom(&gasDevIset,&gasDevGset);
-               //normalizedRandomMatrix[i][jCount]= arrayRandomNormal[counterRandomNumber];
-               //counterRandomNumber++;
-               //testValue = normalizedRandomMatrix[i][jCount];
+               normalizedRandomMatrix[i][jCount]= arrayRandomNormal[counterRandomNumber];
+               counterRandomNumber++;
+               testValue = normalizedRandomMatrix[i][jCount];
                //double valueRandomUniform1,valueRandomUniform2;
                //double valueRandomNormal1;
                //valueRandomUniform1 = ((double)(randomPseudo(randomGeneration)))/32768.0;
@@ -560,7 +627,7 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             }
 
         }
-        //free(arrayRandomNormal);
+        free(arrayRandomNormal);
         // initialization outputs of weatherGenerator2D::spatialIterationOccurrence
         double** M;
         double** K;
@@ -589,14 +656,14 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
         }
 
         weatherGenerator2D::spatialIterationOccurrence(M,K,occurrences,matrixOccurrence,normalizedRandomMatrix,normalizedTransitionProbability,nrDaysIterativeProcessMonthly[iMonth]);
-        printf("mese %d\n",iMonth+1);
+        //printf("mese %d\n",iMonth+1);
         for (int i=0;i<nrStations;i++)
         {
             for (int j=0;j<nrStations;j++)
             {
                 randomMatrix[iMonth].matrixK[i][j] = float(K[i][j]);
                 randomMatrix[iMonth].matrixM[i][j] = float(M[i][j]);
-                printf("%f  ",randomMatrix[iMonth].matrixK[i][j]);
+                //printf("%f  ",randomMatrix[iMonth].matrixM[i][j]);
             }
 
 
@@ -604,7 +671,7 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             {
                 randomMatrix[iMonth].matrixOccurrences[i][j]= float(occurrences[i][j]);
             }
-            printf("\n");
+            //printf("\n");
         }
         //pressEnterToContinue();
         randomMatrix[iMonth].month = iMonth + 1;
@@ -666,22 +733,20 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
     }
 
     // initialization output M
-    //matrixOccurrence[0][1]=matrixOccurrence[1][0]=0.9478;
-    //matrixOccurrence[0][2]=matrixOccurrence[2][0]=0.7391;
-    //matrixOccurrence[1][2]=matrixOccurrence[2][1]=0.7391;
     for (int i=0;i<nrStations;i++)
     {
        for (int j=0;j<nrStations;j++)
         {
             M[i][j] = matrixOccurrence[i][j];  // M is the matrix named mat in the original code
-            printf("%f\t",M[i][j]);
+            //printf("%f\t",M[i][j]);
         }
-       printf("\n");
+       //printf("\n");
     }
     //M[0][2]=M[2][0]=M[2][1];
 
 
-    while ((val>TOLERANCE_MULGETS) && (ii<MAX_ITERATION_MULGETS))
+//    while ((val>TOLERANCE_MULGETS) && (ii<MAX_ITERATION_MULGETS))
+    while ((val>TOLERANCE_MULGETS) && (ii<2))
     {
         ii++;
         int nrEigenvaluesLessThan0 = 0;
@@ -780,7 +845,8 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
         {
             M[i][i]= 1.;
         }
-        if ((ii != MAX_ITERATION_MULGETS) && (val > TOLERANCE_MULGETS))
+        //if ((ii != MAX_ITERATION_MULGETS) && (val > TOLERANCE_MULGETS))
+        if ((ii != 2) && (val > TOLERANCE_MULGETS))
         {
             for (int i=0; i<nrStations;i++)
             {
@@ -792,23 +858,23 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
                 }                
             }
         }
-        printf("%d val %f\n",ii, val);
+        //printf("%d val %f\n",ii, val);
         for (int i=0;i<nrStations;i++)
         {
             for (int j=0;j<nrStations;j++)
             {
-                printf("%f\t", K[i][j]);
+                //printf("%f\t", K[i][j]);
             }
-            printf("\n");
+            //printf("\n");
         }
-        printf("\n");
+        //printf("\n");
         for (int i=0;i<nrStations;i++)
         {
             for (int j=0;j<nrStations;j++)
             {
-                printf("%f\t", M[i][j]);
+                //printf("%f\t", M[i][j]);
             }
-            printf("\n");
+            //printf("\n");
         }
         //pressEnterToContinue();
 
@@ -1005,7 +1071,23 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
     statistics::correlationsMatrix(nrStations,occurrenceMatrixSeasonMAM,lengthSeason[1]*parametersModel.yearOfSimulation,wMAM);
     statistics::correlationsMatrix(nrStations,occurrenceMatrixSeasonJJA,lengthSeason[2]*parametersModel.yearOfSimulation,wJJA);
     statistics::correlationsMatrix(nrStations,occurrenceMatrixSeasonSON,lengthSeason[3]*parametersModel.yearOfSimulation,wSON);
-
+    /*for (int i=0;i<nrStations;i++)
+    {
+        for (int j=0;j<nrStations;j++)
+        {
+            printf("%f\t", wJJA[i][j]);
+        }
+        printf("\n");
+    }
+    for (int i=0;i<nrStations;i++)
+    {
+        for (int j=0;j<nrStations;j++)
+        {
+            printf("%f\t", wSON[i][j]);
+        }
+        printf("\n");
+    }
+    pressEnterToContinue();*/
 
 
     // initialize amounts and occurrences structures for precipitation
@@ -1210,8 +1292,8 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                 }
             }
             int counterData = 0;
-            double rainCumulated, moranCumulated;
-            rainCumulated = moranCumulated = 0;
+            double rainCumulated, moranCumulated; // ??????????????????????????????????
+            rainCumulated = moranCumulated = 0; // ??????????????????????????????????????
 
             for (int i=0;i<nrData;i++)
             {
@@ -1255,6 +1337,18 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
 
 
             }
+            //for (int i=0;i<nrStations;i++)
+            //{
+                //for (int j=0; j<4;j++)
+                //{
+            for (int k=0; k<numberObservedMax;k++)
+            {
+                printf("%d %f\n",k,moran[ijk][qq][k]);
+                pressEnterToContinue();
+            }
+            pressEnterToContinue();
+                //}
+            //}
             int lengthBins = 11;
             double bins[11], bins2[11],bincenter[10];
             int nrBins[10];
