@@ -181,7 +181,7 @@ Crit3DOutputPlantMaps::Crit3DOutputPlantMaps(const gis::Crit3DRasterGrid &dtm, i
 {
     this->initializeWithDtm(dtm);
 
-    transpirationLayerMaps = new gis::Crit3DRasterGrid*[nrSoilLayers];
+    transpirationLayerMaps = new gis::Crit3DRasterGrid*[unsigned(nrSoilLayers)];
 
     for (int layer=0; layer<nrSoilLayers; layer++)
     {
@@ -273,7 +273,7 @@ gis::Crit3DRasterGrid* Crit3DOutputPlantMaps::getMapFromVar(plantVariable myVar)
 bool setStatePlantfromMap(long row, long col , Vine3DProject* myProject)
 {
     //growth
-    myProject->statePlant.stateGrowth.fruitBiomassIndex = myProject->statePlantMaps->fruitBiomassIndexMap->value[row][col];
+    myProject->statePlant.stateGrowth.fruitBiomassIndex = double(myProject->statePlantMaps->fruitBiomassIndexMap->value[row][col]);
     myProject->statePlant.stateGrowth.isHarvested = myProject->statePlantMaps->isHarvestedMap->value[row][col] ;
     myProject->statePlant.stateGrowth.fruitBiomass = myProject->statePlantMaps->fruitBiomassMap->value[row][col] ;
     myProject->statePlant.stateGrowth.cumulatedBiomass = myProject->statePlantMaps->cumulatedBiomassMap->value[row][col] ;

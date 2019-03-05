@@ -115,9 +115,6 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
 
     for (myCurrentTime = myFirstTime; myCurrentTime <= myLastTime; myCurrentTime = myCurrentTime.addSeconds(myTimeStep))
     {
-        if (myCurrentTime.getHour() == 20)
-            int a = 0;
-
         myProject->logInfo("\n" + getQDateTime(myCurrentTime).toString("yyyy-MM-dd hh:mm"));
         myProject->grapevine.setDate(myCurrentTime);
 

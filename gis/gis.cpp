@@ -564,6 +564,14 @@ namespace gis
         return myGrid.value[myRow][myCol];
     }
 
+    bool Crit3DRasterGrid::isFlag(int myRow, int myCol)
+    {
+        if (myRow < 0 || myRow > (header->nrRows - 1) || myCol < 0 || myCol > header->nrCols - 1)
+            return true;
+        else
+            return (fabs(double(value[myRow][myCol] - header->flag)) < EPSILON);
+    }
+
     float Crit3DRasterGrid::getFastValueXY(double x, double y) const
     {
         int myRow, myCol;

@@ -254,23 +254,23 @@ bool Vine3DProject::loadGrapevineParameters()
     {
         this->cultivar[i].id = myQuery.value(0).toInt();
         //strcpy(this->cultivar[i].name.cultivar, myQuery.value(1).toString().toStdString().c_str());
-        this->cultivar[i].parameterPhenoVitis.criticalForceStatePhysiologicalMaturity = myQuery.value(2).toFloat();
-        this->cultivar[i].parameterBindiMiglietta.radiationUseEfficiency = myQuery.value(3).toFloat();
-        this->cultivar[i].parameterBindiMiglietta.d = myQuery.value(4).toFloat();
-        this->cultivar[i].parameterBindiMiglietta.f = myQuery.value(5).toFloat();
-        this->cultivar[i].parameterBindiMiglietta.fruitBiomassOffset = myQuery.value(6).toFloat();
-        this->cultivar[i].parameterBindiMiglietta.fruitBiomassSlope = myQuery.value(7).toFloat();
-        this->cultivar[i].parameterWangLeuning.psiLeaf = myQuery.value(8).toFloat();
-        this->cultivar[i].parameterWangLeuning.waterStressThreshold = myQuery.value(9).toFloat();
-        this->cultivar[i].parameterWangLeuning.sensitivityToVapourPressureDeficit = myQuery.value(10).toFloat();
-        this->cultivar[i].parameterWangLeuning.alpha = myQuery.value(11).toFloat() * 1E5;
-        this->cultivar[i].parameterPhenoVitis.co1 = myQuery.value(12).toFloat();
-        this->cultivar[i].parameterPhenoVitis.criticalChilling = myQuery.value(13).toFloat();
-        this->cultivar[i].parameterPhenoVitis.criticalForceStateFlowering = myQuery.value(14).toFloat();
-        this->cultivar[i].parameterPhenoVitis.criticalForceStateVeraison = myQuery.value(15).toFloat();
-        this->cultivar[i].parameterPhenoVitis.criticalForceStateFruitSet = myQuery.value(16).toFloat();
-        this->cultivar[i].parameterPhenoVitis.degreeDaysAtVeraison = myQuery.value(17).toFloat();
-        this->cultivar[i].parameterWangLeuning.maxCarboxRate = myQuery.value(18).toFloat();
+        this->cultivar[i].parameterPhenoVitis.criticalForceStatePhysiologicalMaturity = myQuery.value(2).toDouble();
+        this->cultivar[i].parameterBindiMiglietta.radiationUseEfficiency = myQuery.value(3).toDouble();
+        this->cultivar[i].parameterBindiMiglietta.d = myQuery.value(4).toDouble();
+        this->cultivar[i].parameterBindiMiglietta.f = myQuery.value(5).toDouble();
+        this->cultivar[i].parameterBindiMiglietta.fruitBiomassOffset = myQuery.value(6).toDouble();
+        this->cultivar[i].parameterBindiMiglietta.fruitBiomassSlope = myQuery.value(7).toDouble();
+        this->cultivar[i].parameterWangLeuning.psiLeaf = myQuery.value(8).toDouble();
+        this->cultivar[i].parameterWangLeuning.waterStressThreshold = myQuery.value(9).toDouble();
+        this->cultivar[i].parameterWangLeuning.sensitivityToVapourPressureDeficit = myQuery.value(10).toDouble();
+        this->cultivar[i].parameterWangLeuning.alpha = myQuery.value(11).toDouble() * 1E5;
+        this->cultivar[i].parameterPhenoVitis.co1 = myQuery.value(12).toDouble();
+        this->cultivar[i].parameterPhenoVitis.criticalChilling = myQuery.value(13).toDouble();
+        this->cultivar[i].parameterPhenoVitis.criticalForceStateFlowering = myQuery.value(14).toDouble();
+        this->cultivar[i].parameterPhenoVitis.criticalForceStateVeraison = myQuery.value(15).toDouble();
+        this->cultivar[i].parameterPhenoVitis.criticalForceStateFruitSet = myQuery.value(16).toDouble();
+        this->cultivar[i].parameterPhenoVitis.degreeDaysAtVeraison = myQuery.value(17).toDouble();
+        this->cultivar[i].parameterWangLeuning.maxCarboxRate = myQuery.value(18).toDouble();
         i++;
     }
 
@@ -341,7 +341,7 @@ bool Vine3DProject::loadFieldBook()
     {
         for(i=2; i<=8; i++)
         {
-            if (myQuery.value(i).toFloat() > 0.0)
+            if (myQuery.value(i).toFloat() > 0)
                 nrOperations++;
         }
     }
@@ -590,8 +590,7 @@ bool Vine3DProject::setField(int fieldIndex, int fieldId, Crit3DLanduse landuse,
     modelCases[fieldIndex].maxLAIGrass = maxLaiGrass;
     modelCases[fieldIndex].maxIrrigationRate = maxIrrigationRate;
 
-    float density = 1.0 / (this->trainingSystems[trainingIndex].rowDistance
-                           * this->trainingSystems[trainingIndex].plantDistance);
+    float density = 1 / (trainingSystems[trainingIndex].rowDistance * trainingSystems[trainingIndex].plantDistance);
 
     modelCases[fieldIndex].trainingSystem = trainingIndex;
     modelCases[fieldIndex].plantDensity = density;
