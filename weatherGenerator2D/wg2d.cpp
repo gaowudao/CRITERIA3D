@@ -1124,16 +1124,18 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
         }
 
     }
-    /*
+
     for (int i=0;i<nrData;i++)
     {
+        printf("%d\n",i);
         for (int j=0;j<nrStations;j++)
         {
-            printf("site %d,%.1f,%.0f\n",j,obsPrecDataD[j][i].amounts,obsPrecDataD[j][i].occurrences);
+            //printf("site %d,%.1f,%.0f\n",j,obsPrecDataD[j][i].amounts,obsPrecDataD[j][i].occurrences);
+            printf("%f\t",obsPrecDataD[j][i].amountsLessThreshold );
         }
-        getchar();
+        pressEnterToContinue();
     }
-    */
+
     // create the array seasonal amounts
     /*
     TseasonalMatrix* seasonalMatrix;
@@ -1306,14 +1308,28 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                         double numeratorMoran = 0.;
                         for (int iStations=0;iStations<nrStations;iStations++)
                         {
-                            if ((iStations != ijk) && (obsPrecDataD[iStations][i].occurrences != NODATA))
-                            {
-                                  numeratorMoran += obsPrecDataD[iStations][i].occurrences*wSeason[ijk][iStations];
-                                  denominatorMoran += wSeason[ijk][iStations];
+                            //if ((iStations != ijk) && (obsPrecDataD[iStations][i].occurrences != NODATA))
+                            //{
+                                //for (int countStation=0; countStation<nrStations;countStation++)
+                                //{
+                                    if (obsPrecDataD[iStations][i].occurrences != NODATA)
+                                    {
+                                        double value;
+                                        printf("%f\n",obsPrecDataD[iStations][i].occurrences);
+                                        value = obsPrecDataD[iStations][i].occurrences*wSeason[ijk][iStations];
+                                        numeratorMoran += obsPrecDataD[iStations][i].occurrences*wSeason[ijk][iStations];
+                                        denominatorMoran += wSeason[ijk][iStations];
+                                        //printf("%f\t",obsPrecDataD[iStations][i].occurrences);
+                                        printf("num %f den %f\n", numeratorMoran,denominatorMoran);
+                                        //printf("%f\t%f\t%f\n",obsPrecDataD[0][i].occurrences,obsPrecDataD[1][i].occurrences,obsPrecDataD[2][i].occurrences);
+                                    }
+                                //}
+
                                   //printf("precipitazione sito %f prec atre %f\n",obsPrecDataD[ijk][i].amounts,obsPrecDataD[iStations][i].amounts);
                                   //printf(" %f   %f\n",obsPrecDataD[iStations][i].occurrences*wSeason[ijk][iStations],wSeason[ijk][iStations]);
-                            }
+                            //}
                         }
+                        printf("num %f den %f\n", numeratorMoran,denominatorMoran);
                         if (denominatorMoran != 0)
                         {
                             moran[ijk][qq][counterData] = numeratorMoran / denominatorMoran;
