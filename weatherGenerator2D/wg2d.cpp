@@ -1406,11 +1406,11 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                         nrBins[i]++;
                     }
                 }
-                //printf("prima %d %.1f %d\n",i,bins[i],nrBins[i]);   // risultati strani da fare debug
+                printf("prima %d %.1f %d\n",i,bins[i],nrBins[i]);   // risultati strani da fare debug
             }
             //for (int i=0;i<11;i++)
                 //printf("prima %d %.1f\n",i,bins[i]);
-
+            //pressEnterToContinue();
 
 
             int counter = 1;
@@ -1418,7 +1418,7 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
             for (int i=1;i<11;i++)
                 bins2[i] = NODATA;
             bins2[0]= 0;
-            int nrMinimalPointsForBins = 5;
+            int nrMinimalPointsForBins = 50;
             for (int i=0;i<9;i++)
             {
                 if(nrBins[i] < nrMinimalPointsForBins)
@@ -1432,12 +1432,12 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                 }
             }
 
-            if (nrBins[10] < nrMinimalPointsForBins)
+            if (nrBins[9] < nrMinimalPointsForBins)
             {
                 --counter;
             }
             bins2[counter] = bins[10];
-
+// arrivo debugging
             int newCounter = 1;
             for (int i=1;i<11;i++)
             {
@@ -1452,10 +1452,12 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                     bincenter[i-1]= NODATA;
 
             }
-            /*for (int i=0;i<10;i++)
+            for (int i=0;i<10;i++)
             {
-               printf("dopo %d %f %f\n",i,bins[i],bincenter[i]);
-            }*/
+               printf("dopo %d %d %f\n",i,nrBins[i]);
+            }
+            pressEnterToContinue();
+
             for (int i=0;i<(newCounter-1);i++)
             {
                 for (int j=0;j<numberObservedMax;j++)
