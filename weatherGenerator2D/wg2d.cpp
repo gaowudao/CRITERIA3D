@@ -1639,9 +1639,9 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
             //printf("moran %d moranSenzaNODATA %d \n",parametersModel.yearOfSimulation*lengthSeason[qq],indexMoranArrayPrec);
             for (int i=0;i<indexMoranArrayPrec;i++)
             {
-                printf("%f\n",moranArrayPrec[i]);
+                //printf("%f\n",moranArrayPrec[i]);
             }
-            pressEnterToContinue();
+            //pressEnterToContinue();
 
             int counterBins = 0;
             for(int i=0; i<11;i++)
@@ -1714,8 +1714,12 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                 {
                     occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][0]=meanPFit[i]*meanPFit[i]/(PstdDev[i]*PstdDev[i]);
                     occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][1]=(PstdDev[i]*PstdDev[i])/meanPFit[i];
+                    printf("lambda %f\t%f\n",occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][0],occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][1]);
+                    pressEnterToContinue();
                 }
+
             }
+
             for (int i=0;i<nrBincenter;i++)
             {
                 occurrenceIndexSeasonal[ijk].meanP[qq][i] = Pmean[i];
