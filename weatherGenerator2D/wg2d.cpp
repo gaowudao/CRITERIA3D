@@ -1402,12 +1402,12 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                 Pmean[i] = 0;
                 PstdDev[i] = 0;
             }
-            /*for (int k=0; k<lengthBins-1;k++)
+            for (int k=0; k<lengthBins-1;k++)
             {
-                printf("%d %f %f\n",k,bins[k],bincenter[k]);
+                //printf("%d %f %f\n",k,bins[k],bincenter[k]);
                 //pressEnterToContinue();
             }
-            pressEnterToContinue();*/
+            //pressEnterToContinue();
 
             for (int i=0;i<10;i++)
             {
@@ -1449,7 +1449,6 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                 --counter;
             }
             bins2[counter] = bins[10];
-// arrivo debugging
             int newCounter = 1;
             for (int i=1;i<11;i++)
             {
@@ -1468,8 +1467,8 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
             {
                printf("dopo %d %d %f\n",i,nrBins[i]);
             }
-            pressEnterToContinue();*/
-
+            pressEnterToContinue();
+            */
             for (int i=0;i<(newCounter-1);i++)
             {
                 for (int j=0;j<numberObservedMax;j++)
@@ -1543,7 +1542,8 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
             }
             for (int i=0;i<nrBincenter;i++)
             {
-                //printf("prima %f %f\n",binCenter[i],meanPFit[i]);
+                //printf("mean obs %f %f\n",binCenter[i],Pmean[i]);
+                //printf("std obs %f %f\n",binCenter[i],PstdDev[i]);
             }
             //for (int i=0;i<3;i++)
                 //printf("prima %f\n",par[i]);
@@ -1553,12 +1553,12 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
             // for da 2 a 20 (presente nel codice originale) risulta inutile nel codice tradotto
             for (int i=0;i<nrBincenter;i++)
             {
-                meanPFit[i] = par[0]+par[1]* powf(binCenter[i],par[2]);
+                meanPFit[i] = par[0]+par[1]* pow(binCenter[i],par[2]);
             }
-            /*for (int i=0;i<nrBincenter;i++)
+            for (int i=0;i<nrBincenter;i++)
             {
-               printf("prima %f %f\n",binCenter[i],par[0]+par[1]*powf(binCenter[i],par[2]));
-            }*/
+               //printf("mean fit %f %f\n",binCenter[i],par[0]+par[1]*powf(binCenter[i],par[2]));
+            }
             //for (int i=0;i<3;i++)
                 //printf("dopo %f\n",par[i]);
 
@@ -1567,13 +1567,13 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                 interpolation::fittingMarquardt(parMin,parMax,par,nrPar,parDelta,maxIterations,epsilon,functionCode,binCenter,nrBincenter,stdDevFit);
                 for (int i=0;i<nrBincenter;i++)
                 {
-                    stdDevFit[i] = par[0]+par[1]* powf(binCenter[i],par[2]);
+                    stdDevFit[i] = par[0]+par[1]* pow(binCenter[i],par[2]);
                 }
             }
             /*for (int i=0;i<nrBincenter;i++)
             {
-               printf("prima %f %f\n",binCenter[i],par[0]+par[1]*powf(binCenter[i],par[2]));
-            }*/
+               printf("std fit %f %f\n",binCenter[i],par[0]+par[1]*powf(binCenter[i],par[2]));
+            } pressEnterToContinue();*/
             double** occurrenceMatrixSeason = (double **)calloc(nrStations, sizeof(double*));
             double* moranArray = (double *)calloc(lengthSeason[qq]*parametersModel.yearOfSimulation, sizeof(double));
             int counterMoranPrec = 0;
@@ -1715,9 +1715,9 @@ void weatherGenerator2D::precipitationMultiDistributionAmounts()
                     occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][0]=meanPFit[i]*meanPFit[i]/(PstdDev[i]*PstdDev[i]);
                     occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][1]=(PstdDev[i]*PstdDev[i])/meanPFit[i];
                     printf("lambda %f\t%f\n",occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][0],occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][1]);
-                    pressEnterToContinue();
-                }
 
+                }
+                pressEnterToContinue();
             }
 
             for (int i=0;i<nrBincenter;i++)
