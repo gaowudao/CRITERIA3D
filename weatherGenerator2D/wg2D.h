@@ -91,6 +91,9 @@ private:
     int nrStations;
     TparametersModel parametersModel;
     int *month,*lengthMonth,*beginMonth;
+    int lengthSeason[4];
+    int numberObservedDJF,numberObservedMAM,numberObservedJJA,numberObservedSON;
+    int numberObservedMax;
     TObsDataD** obsDataD;
     TObsPrecDataD** obsPrecDataD;
     TprecOccurrence** precOccurence;
@@ -108,7 +111,8 @@ private:
     void precipitationCorrelationMatrices();
     void precipitationMultisiteOccurrenceGeneration();
     void spatialIterationOccurrence(double ** M, double **K, double **occurrences, double** matrixOccurrence, double** normalizedMatrixRandom, double **transitionNormal, int lengthSeries);
-    void precipitationMultiDistributionAmounts();
+    void precipitationMultiDistributionParameterization();
+    void precipitationMultisiteAmountsGeneration();
     void initializeOccurrenceIndex();
     void initializePrecipitationOutputs(int lengthSeason[]);
     void spatialIterationAmounts(double ** amountsCorrelationMatrix , double** randomMatrix, int length, double** occurrences, double** phatAlpha, double** phatBeta,double** simulatedPrecipitationAmounts);

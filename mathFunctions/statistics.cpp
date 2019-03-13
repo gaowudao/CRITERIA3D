@@ -591,6 +591,7 @@ namespace statistics
     {
         // input: myLists matrix
         // output: c matrix
+
         for(int i = 0;i<nrRowCol;i++)
         {
             c[i][i]=1.;
