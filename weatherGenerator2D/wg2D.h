@@ -102,6 +102,18 @@ private:
     ToccurrenceIndexSeasonal* occurrenceIndexSeasonal;
     TsimulatedPrecipitationAmounts *simulatedPrecipitationAmounts;
 
+    // create the seasonal correlation matrices
+    double** occurrenceMatrixSeasonDJF;
+    double** occurrenceMatrixSeasonMAM;
+    double** occurrenceMatrixSeasonJJA;
+    double** occurrenceMatrixSeasonSON;
+
+    double** wDJF ;
+    double** wMAM;
+    double** wJJA;
+    double** wSON;
+    double** wSeason;
+
     //functions
 
     void precipitationCompute();
