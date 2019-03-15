@@ -2027,7 +2027,7 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
        }
 
 
-       /*
+
        int gasDevIset = 0;
        float gasDevGset = 0;
        srand (time(NULL));
@@ -2038,6 +2038,24 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
                 randomMatrixNormalDistribution[i][j] = myrandom::normalRandom(&gasDevIset,&gasDevGset);
            }
        }
+       // !! da cavare
+       int counterRandom=0;
+       double* arrayRandomNormal;
+       arrayRandomNormal = (double *)calloc(nrStations*lengthSeason[iSeason]*parametersModel.yearOfSimulation, sizeof(double));
+       randomSet(arrayRandomNormal,lengthSeason[iSeason]*parametersModel.yearOfSimulation);
+       for (int j=0;j<lengthSeason[iSeason]*parametersModel.yearOfSimulation;j++)
+       {
+           for (int i=0;i<nrStations;i++)
+           {
+                randomMatrixNormalDistribution[i][j] = arrayRandomNormal[counterRandom] ;
+                counterRandom++;
+           }
+       }
+       free(arrayRandomNormal);
+       // fine da cavare
+
+
+       /*
        weatherGenerator2D::spatialIterationAmounts(amountCorrelationMatrixSeason,randomMatrixNormalDistribution,lengthSeason[iSeason]*parametersModel.yearOfSimulation,occurrenceSeason,phatAlpha,phatBeta,simulatedPrecipitationAmounts);
 
 
