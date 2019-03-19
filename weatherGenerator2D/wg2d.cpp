@@ -2011,7 +2011,6 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
                 {
                     if ((moranRandom[i][j] > occurrenceIndexSeasonal[i].bin[iSeason][k]) && (moranRandom[i][j] <= occurrenceIndexSeasonal[i].bin[iSeason][k+1]))
                     {
-                        double dummyTest;
                         phatAlpha[i][j] = occurrenceIndexSeasonal[i].parMultiexp[iSeason][k][0];
                         if (parametersModel.distributionPrecipitation == 2)
                         {
@@ -2020,10 +2019,10 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
                     }
 
                 }
-                printf("%f  ",phatAlpha[i][j]);
+                //printf("%f  ",phatAlpha[i][j]);
 
            }
-           printf("\n");
+           //printf("\n");
        }
 
 
@@ -2036,21 +2035,32 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
            for (int i=0;i<nrStations;i++)
            {
                 randomMatrixNormalDistribution[i][j] = myrandom::normalRandom(&gasDevIset,&gasDevGset);
+                //printf("%f  ",randomMatrixNormalDistribution[i][j]);
            }
+           //printf("\n");
        }
+       //pressEnterToContinue();
        // !! da cavare
        int counterRandom=0;
        double* arrayRandomNormal;
        arrayRandomNormal = (double *)calloc(nrStations*lengthSeason[iSeason]*parametersModel.yearOfSimulation, sizeof(double));
-       randomSet(arrayRandomNormal,lengthSeason[iSeason]*parametersModel.yearOfSimulation);
+       randomSet(arrayRandomNormal,nrStations*lengthSeason[iSeason]*parametersModel.yearOfSimulation);
+       /*for (int i=0;i<nrStations*lengthSeason[iSeason]*parametersModel.yearOfSimulation;i++)
+       {
+            printf("%d %f\n",i,arrayRandomNormal[i]);
+            pressEnterToContinue();
+       }*/
        for (int j=0;j<lengthSeason[iSeason]*parametersModel.yearOfSimulation;j++)
        {
            for (int i=0;i<nrStations;i++)
            {
                 randomMatrixNormalDistribution[i][j] = arrayRandomNormal[counterRandom] ;
                 counterRandom++;
+                printf("%f  ",randomMatrixNormalDistribution[i][j]);
            }
+           printf("\n");
        }
+       //pressEnterToContinue();
        free(arrayRandomNormal);
        // fine da cavare
 

@@ -4,6 +4,25 @@
 
 void randomSet(double *arrayNormal,int dimArray)
 {
+    double randomArrayNormal2[10]={
+        -1.900845,
+        0.341526,
+        1.087318,
+        -0.237564,
+        0.380205,
+        1.920039,
+        1.115282,
+        -0.947208,
+        -0.310149,
+        0.416627
+    };
+    /*for (int i=0; i<dimArray; i++)
+    {
+        int j;
+        j = i%10;
+        arrayNormal[i] = randomArrayNormal2[j];
+    }*/
+
     double randomArrayNormal[10000]={
         -1.900845,
         0.341526,

@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <math.h>
-//#include <time.h>
+#include <time.h>
 //#include <iostream>
 
 
@@ -14,7 +14,68 @@
 //#include "eispack.h"
 //#include "gammaFunction.h"
 
+double rootMeanSquare(double* y, double* yObs, int nrObs)
+{
+    double sum=0;
+    for (int i=0;i<nrObs;i++) sum += (y[i]-yObs[i])*(y[i]-yObs[i]);
+    sum /= nrObs;
 
+    return sqrt(sum);
+}
+
+void fittingRandom(int nrIterations, double eps, double* myParameter,int nrPar, double *parMax, double *parMin, double* xObs,double* yObs, int nrObs)
+{
+    double y[nrObs];
+    double yOld[nrObs];
+    double parameters[nrPar];
+    double sum, sumOld;
+    sum = sumOld = 1000;
+    bool isFirstTime = true;
+    double deltaPar[nrPar];
+    for  (int i=0;i<nrPar;i++)
+        deltaPar[i]= parMax[i]-parMin[i];
+    srand (time(NULL));
+    int iteration = 0;
+    while (iteration<nrIterations)// && sumOld>eps)
+    {
+        double randomNumber;
+        randomNumber = (float) rand() / (RAND_MAX);
+        for  (int i=0;i<nrPar;i++)
+            parameters[i]= parMin[i] + deltaPar[i]*(randomNumber);
+        for (int i=0;i<nrObs;i++)
+        {
+            //y[i] = myParameter[0]+myParameter[1]*xObs[i]+myParameter[2]*xObs[i]*xObs[i];
+            double xPoint;
+            xPoint = xObs[i];
+            y[i]= interpolation::estimateFunction(TWOPARAMETERSPOLYNOMIAL,parameters,&xPoint);
+        }
+        printf("sum %f %f \n",sumOld, randomNumber);
+        if (isFirstTime)
+        {
+            isFirstTime = false;
+            for (int i=0;i<nrObs;i++)
+                yOld[i]=y[i];
+            sumOld = rootMeanSquare(yOld,yObs,nrObs);
+            for  (int i=0;i<nrPar;i++)
+                myParameter[i]=parameters[i];
+
+        }
+        else
+        {
+            sum = rootMeanSquare(y,yObs,nrObs);
+            if (sum < sumOld)
+            {
+                sumOld = sum;
+                for (int i=0;i<nrObs;i++)
+                    yOld[i]=y[i];
+                for  (int i=0;i<nrPar;i++)
+                    myParameter[i]=parameters[i];
+                //printf("sum %f \n",sum);
+            }
+        }
+        iteration++;
+    }
+}
 
 weatherGenerator2D WG2D;
 
@@ -177,7 +238,7 @@ int main()
 
 
     WG2D.initializeParameters(NODATA,2,2,1,1);
-    WG2D.computeWeatherGenerator2D();
+    //WG2D.computeWeatherGenerator2D();
     /*FILE *fp;
     fp = fopen("randomNumbersNormalized.dat","w");
     int gasDevIset = 0;
@@ -190,6 +251,47 @@ int main()
     }
     fclose(fp);
     */
+
+    int nrIterations= 10000;
+    double eps = 0.1;
+    int nrPar = 3;
+    double *myParameter = (double *)calloc(nrPar, sizeof(double));
+    double *parMax = (double *)calloc(nrPar, sizeof(double));
+    double *parMin = (double *)calloc(nrPar, sizeof(double));
+    int nrObs = 4;
+    double *xObs = (double *)calloc(nrObs, sizeof(double));
+    double *yObs = (double *)calloc(nrObs, sizeof(double));
+
+    xObs[0]=0;
+    xObs[1]=1;
+    xObs[2]=2;
+    xObs[3]=3;
+    yObs[0]=0;
+    yObs[1]=0.8;
+    yObs[2]=1.6;
+    yObs[3]= 3.4;
+    parMin[0]= -5;
+    parMin[1]= -3;
+    parMin[2]= -10;
+    parMax[0]= 13;
+    parMax[1]= 18;
+    parMax[2]= 10;
+    myParameter[0]=parMin[0];
+    myParameter[1]=parMin[1];
+    myParameter[2]=parMin[2];
+    fittingRandom(nrIterations, eps, myParameter, nrPar,parMax,parMin,xObs,yObs,nrObs);
+    printf("par %f %f %f\n",myParameter[0],myParameter[1],myParameter[2]);
+    double yy;
+    double xx;
+    xx =xObs[0];
+    yy = interpolation::estimateFunction(TWOPARAMETERSPOLYNOMIAL,myParameter,&xx);
+    printf("value %f\n",yy);
+    xx =xObs[1];
+    yy = interpolation::estimateFunction(TWOPARAMETERSPOLYNOMIAL,myParameter,&xx);
+    printf("value %f\n",yy);
+    xx =xObs[2];
+    yy = interpolation::estimateFunction(TWOPARAMETERSPOLYNOMIAL,myParameter,&xx);
+    printf("value %f\n",yy);
     return 0;
 }
 
