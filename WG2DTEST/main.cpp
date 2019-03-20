@@ -13,7 +13,7 @@
 #include "furtherMathFunctions.h"
 //#include "eispack.h"
 //#include "gammaFunction.h"
-
+/*
 double rootMeanSquare(double* y, double* yObs, int nrObs)
 {
     double sum=0;
@@ -76,7 +76,7 @@ void fittingRandom(int nrIterations, double eps, double* myParameter,int nrPar, 
         iteration++;
     }
 }
-
+*/
 weatherGenerator2D WG2D;
 
 
@@ -238,7 +238,7 @@ int main()
 
 
     WG2D.initializeParameters(NODATA,2,2,1,1);
-    //WG2D.computeWeatherGenerator2D();
+    WG2D.computeWeatherGenerator2D();
     /*FILE *fp;
     fp = fopen("randomNumbersNormalized.dat","w");
     int gasDevIset = 0;
@@ -251,7 +251,7 @@ int main()
     }
     fclose(fp);
     */
-
+    /*
     int nrIterations= 10000;
     double eps = 0.1;
     int nrPar = 3;
@@ -291,7 +291,9 @@ int main()
     printf("value %f\n",yy);
     xx =xObs[2];
     yy = interpolation::estimateFunction(TWOPARAMETERSPOLYNOMIAL,myParameter,&xx);
-    printf("value %f\n",yy);
+    printf("value %f\n",yy);*/
+
+
     return 0;
 }
 
