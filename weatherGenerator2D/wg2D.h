@@ -26,8 +26,8 @@ struct ToccurrenceIndexSeasonal{
 
 
 struct TprecOccurrence{
-    float p00;
-    float p10;
+    double p00;
+    double p10;
     int month;
 };
 
@@ -40,10 +40,10 @@ struct TcorrelationVar{
 
 struct TObsPrecDataD{
     Crit3DDate date;
-    float prec;
-    float amounts;
-    float amountsLessThreshold;
-    float occurrences;
+    double prec;
+    double amounts;
+    double amountsLessThreshold;
+    double occurrences;
 };
 
 struct TcorrelationMatrix{
@@ -61,9 +61,9 @@ struct TseasonalCorrelationMatrix{
 };
 
 struct TrandomMatrix{
-    float** matrixM;
-    float** matrixK;
-    float** matrixOccurrences;
+    double** matrixM;
+    double** matrixK;
+    double** matrixOccurrences;
     int month;
 };
 
@@ -77,7 +77,7 @@ struct TsimulatedPrecipitationAmounts{
 struct TparametersModel{
     int yearOfSimulation;
     int distributionPrecipitation; //Select a distribution to generate daily precipitation amount,1: Multi-exponential or 2: Multi-gamma
-    float precipitationThreshold;
+    double precipitationThreshold;
 };
 
 void randomSet(double *arrayNormal,int dimArray);

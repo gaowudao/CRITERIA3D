@@ -41,7 +41,10 @@ enum estimateFunction {FUNCTION_CODE_SPHERICAL, FUNCTION_CODE_LINEAR, FUNCTION_C
         float trapzdParametric(float (*func)(TfunctionInput), int nrPar, float *par , float a , float b , int n);
         float qsimpParametric(float (*func)(TfunctionInput), int nrPar, float *par,float a , float b , float EPS);
         float trapzd(float (*func)(float) , float a , float b , int n);
+        float trapezoidalRule(float (*func)(float) , float a , float b , int n);
+        double trapezoidalRule(double (*func)(double) , double a , double b , int n);
         float simpsonRule(float (*func)(float),float a , float b , float EPS);
+        double simpsonRule(double (*func)(double),double a , double b , double EPS);
         float monteCarlo3D(bool (*func)(TfunctionInputMonteCarlo3D),float den,float xLower, float xUpper, float yLower , float yUpper , float zLower , float zUpper,int nrPar, float *par, float requiredPercentageError ,  float *reachedPercentageErrorW);
         float monteCarlo2D(bool (*func)(TfunctionInputMonteCarlo2D),float den,float xLower, float xUpper, float yLower , float yUpper,int nrPar, float *par, float requiredPercentageError ,  float *reachedPercentageErrorW);
     }
@@ -90,6 +93,7 @@ enum estimateFunction {FUNCTION_CODE_SPHERICAL, FUNCTION_CODE_LINEAR, FUNCTION_C
         //float ran1(long *idum);
         //float gasdev(long *idum);
         float normalRandom(int *gasDevIset,float *gasDevGset);
+        double normalRandom(int *gasDevIset,double *gasDevGset);
 
     }
 

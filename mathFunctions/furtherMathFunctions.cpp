@@ -212,7 +212,7 @@ namespace integration
             return (-simpsonRule(func,b, a , EPS)); //recursive formula
         }
         float old_s [10] = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
-        float trapezoidalRule(float (*func)(float) , float a , float b , int n) ;
+        //float trapezoidalRule(float (*func)(float) , float a , float b , int n) ;
         int j;
         float sumInfenitesimal , sumTrapezoidal , old_sumTrapezoidal=0.0 , old_sumInfinitesimal = 0.0 ;
         float s1 = 0.;
@@ -220,6 +220,70 @@ namespace integration
         {
             sumTrapezoidal = trapezoidalRule(func,a,b,j) ;
             sumInfenitesimal = (float)((4.0*sumTrapezoidal-old_sumTrapezoidal)/3.0) ;
+            for ( short k=1 ; k < 10 ; k++)
+            {
+                old_s[k-1]=old_s[k];
+            }
+            old_s[9] = sumInfenitesimal ;
+            if (j == 5) s1 = sumInfenitesimal ;
+            if (j > 5 )
+                if (fabs(sumInfenitesimal-old_sumInfinitesimal) < EPS*fabs(old_sumInfinitesimal) || (sumInfenitesimal == 0.0 && old_sumInfinitesimal == 0.0) ) return sumInfenitesimal ;
+                old_sumInfinitesimal = sumInfenitesimal ;
+                old_sumTrapezoidal = sumTrapezoidal ;
+        }
+        float average_s=0.0 , average_s2 = 0.0 , variance ;
+        for ( short k=0 ; k < 10 ; k++)
+        {
+            average_s  += old_s[k];
+            average_s2 += old_s[k]*old_s[k] ;
+        }
+        average_s  /= 10.0 ;
+        average_s2 /= 10.0 ;
+        variance = average_s2 - average_s * average_s ;
+        if (variance < 0.01*fabs(s1)) return sumInfenitesimal ; // s is converging slowly
+        else return average_s ; // s ondulates
+
+    }
+
+    double trapezoidalRule(double (*func)(double) , double a , double b , int n)
+    {
+        float x , tnm , sum , del ;
+        static double sumInfinitesimal ;
+        int it , j ;
+
+        if (n == 1)
+        {
+            return (sumInfinitesimal=(float)(0.5*(b-a)* ((*func) (a) +(*func)(b)))) ;
+        }
+        else
+        {
+            for (it = 1 , j = 1 ; j < n-1 ; j++ ) it <<= 1 ;
+            tnm = (double)(it) ;
+            del = (b-a) / tnm ;
+            x = (float)(a + 0.5 * del) ;
+            for(sum = 0.0 , j=1 ; j <= it ; j++ , x += del) sum += (*func)(x) ;
+            //s = (float)(0.5 * (s + (b-a)*sum/tnm)) ;
+            return (sumInfinitesimal= (double)(0.5 * (sumInfinitesimal + (b-a)*sum/tnm))) ;
+        }
+    }
+
+
+    double simpsonRule(double (*func)(double),double a , double b , double EPS)
+    {
+        /*! this function calculates definte integrals using the Simpson rule */
+        if (a > b)
+        {
+            return (-simpsonRule(func,b, a , EPS)); //recursive formula
+        }
+        float old_s [10] = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
+        //double trapezoidalRule(double (*func)(double) , double a , double b , int n) ;
+        int j;
+        float sumInfenitesimal , sumTrapezoidal , old_sumTrapezoidal=0.0 , old_sumInfinitesimal = 0.0 ;
+        float s1 = 0.;
+        for ( j=1 ; j <= 20 ; j++)
+        {
+            sumTrapezoidal = trapezoidalRule(func,a,b,j) ;
+            sumInfenitesimal = (double)((4.0*sumTrapezoidal-old_sumTrapezoidal)/3.0) ;
             for ( short k=1 ; k < 10 ; k++)
             {
                 old_s[k-1]=old_s[k];
@@ -911,6 +975,37 @@ namespace myrandom {
         return normalRandom;
     }
 
+    double normalRandom(int *gasDevIset,double *gasDevGset)
+    {
+        double fac = 0;
+        double r = 0;
+        double v1, v2, normalRandom;
+        double temp;
+
+        if (*gasDevIset == 0) //We don't have an extra deviate
+        {
+            do
+            {
+                temp = (double) rand() / (RAND_MAX);
+                v1 = 2*temp - 1;
+                temp = (double) rand() / (RAND_MAX);
+                v2 = 2*temp - 1;
+                r = v1 * v1 + v2 * v2;
+            } while ( (r>=1) | (r==0) ); // see if they are in the unit circle, and if they are not, try again.
+            // Box-Muller transformation to get two normal deviates. Return one and save the other for next time.
+            fac = sqrt(-2 * log(r) / r);
+            *gasDevGset = v1 * fac; //Gaussian random deviates
+            normalRandom = v2 * fac;
+            *gasDevIset = 1; //set the flag
+        }
+        // We have already an extra deviate
+        else
+        {
+            *gasDevIset = 0; //unset the flag
+            normalRandom = *gasDevGset;
+        }
+        return normalRandom;
+    }
 
 
 
