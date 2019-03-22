@@ -7,6 +7,10 @@
 
 namespace eigenproblem {
 
+    void Jacobi_Cyclic_Method(double *eigenvalues, double *eigenvectors, double *A, int n);
+
+
+
     int bakvec ( int n, double t[], double e[], int m, double z[] );
     //void balanc ( int n, double a[], int *low, int *igh, double scale[] );
     void balbak ( int n, int low, int igh, double scale[], int m, double z[] );
