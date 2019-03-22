@@ -742,10 +742,10 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
             M[i][j] = matrixOccurrence[i][j];  // M is the matrix named mat in the original code
             //printf("%f\t",M[i][j]);
         }
-       //printf("\n");
+       //printf("\n"); pressEnterToContinue();
     }
     //M[0][2]=M[2][0]=M[2][1];
-    M[0][0]=1;
+    /*M[0][0]=1;
     M[0][1]=0.9478;
     M[0][2]=0.7391;
     M[1][0]=0.9478;
@@ -764,7 +764,7 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
        //printf("\n");
     }
 
-
+*/
     while ((val>TOLERANCE_MULGETS) && (ii<MAX_ITERATION_MULGETS))
     //while ((val>TOLERANCE_MULGETS) && (ii<2))
     {
@@ -780,8 +780,8 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
                 counter++;
             }
         }
-        eigenproblem::Jacobi_Cyclic_Method(eigenvalues,eigenvectors,correlationArray,nrStations);
-        //eigenproblem::rs(nrStations,correlationArray,eigenvalues,true,eigenvectors);
+        //eigenproblem::Jacobi_Cyclic_Method(eigenvalues,eigenvectors,correlationArray,nrStations);
+        eigenproblem::rs(nrStations,correlationArray,eigenvalues,true,eigenvectors);
         double sumEigenvector[9]={0,0,0,0,0,0,0,0,0};
         int countEigenvector=0;
         for (int i=0;i<nrStations;i++)
@@ -797,11 +797,12 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
         }
         for (int i=0;i<nrStations*nrStations;i++)
         {
-            printf("sum of eigenVector %f\n",sumEigenvector[i]);
+            //printf("sum of eigenVector %f\n",sumEigenvector[i]);
+            //printf("eigenVectors %f\n",eigenvectors[i]);
         }
         for (int i=0;i<nrStations;i++)
         {
-            printf("%d eigenvalue %f \n",ii,eigenvalues[i]);
+            //printf("%d eigenvalue %f \n",ii,eigenvalues[i]);
             if (eigenvalues[i] <= 0)
             {
                 nrEigenvaluesLessThan0++;
@@ -835,15 +836,16 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
 
         for (int i=0;i<nrStations;i++)
             for (int j=i+1;j<nrStations;j++)dummyMatrix[j][i]=dummyMatrix[i][j];
-        for (int i=0;i<nrStations;i++)
+        */
+        /*for (int i=0;i<nrStations;i++)
         {
             for (int j=0;j<nrStations;j++)
             {
                 printf("%f\t", dummyMatrix[i][j]);
             }
             printf("\n");
-        } pressEnterToContinue();*/
-
+        } pressEnterToContinue();
+*/
 
         bool isLowerDiagonal = true;
         matricial::choleskyDecompositionTriangularMatrix(dummyMatrix,nrStations,isLowerDiagonal);
@@ -897,7 +899,7 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
         {
             for (int j=1;j<lengthSeries;j++)
             {
-                if(occurrences[i][j-1] < EPSILON)
+                if(fabs(occurrences[i][j-1]) < EPSILON)
                 {
                     if(normRandom[i][j]> transitionNormal[i][0]) occurrences[i][j] = 1.;
                 }
@@ -913,7 +915,7 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
         {
             for (int j=0;j<nrStations;j++)
             {
-                val = maxValue(val,fabs(K[i][j] - matrixOccurrence[i][j]));
+                val = maxValue(val, fabs(K[i][j] - matrixOccurrence[i][j]));
             }
 
         }
@@ -936,28 +938,28 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
             }
         }
         printf("%d val %f\n K\n",ii, val);
-        for (int i=0;i<nrStations;i++)
+        /*for (int i=0;i<nrStations;i++)
         {
             for (int j=0;j<nrStations;j++)
             {
-                printf("%f\t", K[i][j]);
+                //printf("%f\t", K[i][j]);
             }
-            printf("\n");
+            //printf("\n");
         }
-        printf(" M \n");
+        //printf(" M \n");
         for (int i=0;i<nrStations;i++)
         {
             for (int j=0;j<nrStations;j++)
             {
-                printf("%f ", M[i][j]);
+                //printf("%f ", M[i][j]);
             }
-           printf("\n");
+           //printf("\n");
         } printf("iterazione %d\n",ii);pressEnterToContinue();
-
+        */
 
 
     }  // end of the while cycle
-
+        pressEnterToContinue();
 
 
     // free memory

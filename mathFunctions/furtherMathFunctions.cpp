@@ -73,6 +73,7 @@ double twoParametersAndExponentialPolynomialFunctions(double x, double* par)
     return (double)(par[0]+par[1]*pow(x,par[2]));
 }
 
+
 /*float straightLine(TfunctionInput fInput)
 {
     float m,q,y;
