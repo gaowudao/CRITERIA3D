@@ -2725,3 +2725,14 @@ void weatherGenerator2D::pressEnterToContinue()
     printf("press return to continue\n");
     getchar();
 }
+
+double weatherGenerator2D::bestFit(double *par, int nrPar, double*x, double *yObs, int nrX)
+{
+    double ySim[nrPar];
+
+    for (int i=0; i<nrX; i++)
+    {
+        ySim[i]= par[0]+ par[1]*x[i]+par[2]*pow(x[i],par[3]);
+    }
+    return statistics::rootMeanSquareError(yObs,ySim,nrX);
+}
