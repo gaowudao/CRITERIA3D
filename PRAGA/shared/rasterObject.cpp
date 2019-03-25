@@ -317,6 +317,7 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
                 lx = (x1 - x0) +1;
                 ly = (y1 - y0) +1;
                 myPainter->fillRect(x0, y0, lx, ly, myPainter->brush());
+
             }
             else if (isGrid && myValue == myRaster->header->flag && drawBorder)
             {
