@@ -469,9 +469,9 @@ namespace interpolation
             for (j = i ; j< nrMyParameters;j++)
             {
                 a[i][j] = 0.;
-                for (k = 0 ; k< nrMyData ; k++) a[i][j] += P[i][k]*P[i][k];
+                for (k = 0 ; k< nrMyData ; k++) a[i][j] += P[i][k]*P[j][k];
             }
-            z[i] = sqrt(a[i][i]) + 0.000001; //?
+            z[i] = sqrt(a[i][i]) + EPSILON; //?
         }
         for (i = 0 ; i<nrMyParameters;i++)
         {
