@@ -3,11 +3,11 @@
 # Shapefile handler
 # this library is part of CRITERIA3D distribution
 #
-# It uses:
-# shapelib of Frank Warmerdam
+# The library uses:
+# - shapelib of Frank Warmerdam
 # http://shapelib.maptools.org/
 #
-# shapeobject.cpp of Erik Svensson
+# - shapeobject.cpp of Erik Svensson
 # https://github.com/blueluna/shapes
 #
 #-------------------------------------------------
