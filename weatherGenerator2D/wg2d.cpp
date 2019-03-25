@@ -1509,7 +1509,7 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
             for (int i=1;i<11;i++)
                 bins2[i] = NODATA;
             bins2[0]= 0;
-            int nrMinimalPointsForBins = 50;
+            int nrMinimalPointsForBins = 15;
             for (int i=0;i<9;i++)
             {
                 if(nrBins[i] < nrMinimalPointsForBins)
@@ -1627,8 +1627,8 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
             //for (int i=0;i<3;i++)
                 //printf("prima %f\n",par[i]);
 
-            //interpolation::fittingMarquardt(parMin,parMax,par,nrPar,parDelta,maxIterations,epsilon,functionCode,binCenter,nrBincenter,meanPFit);
-            weatherGenerator2D::bestParametersNonLinearFit(par,nrPar,binCenter,meanPFit,nrBincenter);
+            interpolation::fittingMarquardt(parMin,parMax,par,nrPar,parDelta,maxIterations,epsilon,functionCode,binCenter,nrBincenter,meanPFit);
+            //weatherGenerator2D::bestParametersNonLinearFit(par,nrPar,binCenter,meanPFit,nrBincenter);
             for (int i=0;i<3;i++) printf("marquardt %f\n",par[i]);
             for (int i=0;i<nrBincenter;i++) printf("marquardt %f %f \n",Pmean[i],par[0]+par[1]* pow(binCenter[i],par[2])); //pressEnterToContinue();
             // con marquardt stimo già tutti i parametri compreso l'esponente quindi il ciclo
@@ -1648,8 +1648,8 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
 
             if (parametersModel.distributionPrecipitation == 2)
             {
-                //interpolation::fittingMarquardt(parMin,parMax,par,nrPar,parDelta,maxIterations,epsilon,functionCode,binCenter,nrBincenter,stdDevFit);
-                weatherGenerator2D::bestParametersNonLinearFit(par,nrPar,binCenter,stdDevFit,nrBincenter);
+                interpolation::fittingMarquardt(parMin,parMax,par,nrPar,parDelta,maxIterations,epsilon,functionCode,binCenter,nrBincenter,stdDevFit);
+                //weatherGenerator2D::bestParametersNonLinearFit(par,nrPar,binCenter,stdDevFit,nrBincenter);
                 //par[0] = 2.0953;
                 //par[1] = 18.5122;
                 //par[2] = 7.;
