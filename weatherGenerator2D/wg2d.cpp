@@ -675,7 +675,7 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             }
             printf("\n");
         }
-        pressEnterToContinue();
+        //pressEnterToContinue();
         randomMatrix[iMonth].month = iMonth + 1;
         // free memory
         for (int i=0;i<nrStations;i++)
@@ -959,7 +959,7 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
 
 
     }  // end of the while cycle
-        pressEnterToContinue();
+        //pressEnterToContinue();
 
 
     // free memory
@@ -1592,8 +1592,8 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
             parMax[0]= 20;
             parDelta[0] = 0.01;
             par[0] = (parMin[0]+parMax[0])*0.5;
-            parMin[1]= -10;
-            parMax[1]= 30.;
+            parMin[1]= 0;
+            parMax[1]= 50.;
             parDelta[1] = 0.0001;
             par[1] = (parMin[1]+parMax[1])*0.5;
             parMin[2]= 2;
@@ -1627,13 +1627,17 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
             //for (int i=0;i<3;i++)
                 //printf("prima %f\n",par[i]);
 
-            interpolation::fittingMarquardt(parMin,parMax,par,nrPar,parDelta,maxIterations,epsilon,functionCode,binCenter,nrBincenter,meanPFit);
+            //interpolation::fittingMarquardt(parMin,parMax,par,nrPar,parDelta,maxIterations,epsilon,functionCode,binCenter,nrBincenter,meanPFit);
+            weatherGenerator2D::bestParametersNonLinearFit(par,nrPar,binCenter,meanPFit,nrBincenter);
+            for (int i=0;i<3;i++) printf("marquardt %f\n",par[i]);
+            for (int i=0;i<nrBincenter;i++) printf("marquardt %f %f \n",Pmean[i],par[0]+par[1]* pow(binCenter[i],par[2])); //pressEnterToContinue();
             // con marquardt stimo già tutti i parametri compreso l'esponente quindi il ciclo
-            // for da 2 a 20 (presente nel codice originale) risulta inutile nel codice tradotto
+            // for da 2 a 20 (presente nel codice originale) risulta inutile nel codice tradotto            
             for (int i=0;i<nrBincenter;i++)
             {
                 meanPFit[i] = par[0]+par[1]* pow(binCenter[i],par[2]);
             }
+
             // !!! da togliere il seguente for
             for (int i=0;i<nrBincenter;i++)
             {
@@ -1644,12 +1648,18 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
 
             if (parametersModel.distributionPrecipitation == 2)
             {
-                interpolation::fittingMarquardt(parMin,parMax,par,nrPar,parDelta,maxIterations,epsilon,functionCode,binCenter,nrBincenter,stdDevFit);
+                //interpolation::fittingMarquardt(parMin,parMax,par,nrPar,parDelta,maxIterations,epsilon,functionCode,binCenter,nrBincenter,stdDevFit);
+                weatherGenerator2D::bestParametersNonLinearFit(par,nrPar,binCenter,stdDevFit,nrBincenter);
+                //par[0] = 2.0953;
+                //par[1] = 18.5122;
+                //par[2] = 7.;
                 for (int i=0;i<nrBincenter;i++)
                 {
                     stdDevFit[i] = par[0]+par[1]* pow(binCenter[i],par[2]);
                 }
             }
+            for (int i=0;i<3;i++) printf("marquardt %f\n",par[i]);
+            for (int i=0;i<nrBincenter;i++) printf("marquardt %f %f \n",PstdDev[i],stdDevFit[i]); pressEnterToContinue();
             // !!! da togliere il seguente for
             for (int i=0;i<nrBincenter;i++)
             {
@@ -1795,7 +1805,7 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
                 {
                     occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][0]=meanPFit[i]*meanPFit[i]/(PstdDev[i]*PstdDev[i]);
                     occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][1]=(PstdDev[i]*PstdDev[i])/meanPFit[i];
-                    printf("lambda %f\t%f\n",occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][0],occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][1]);
+                    //printf("lambda %f\t%f\n",occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][0],occurrenceIndexSeasonal[ijk].parMultiexp[qq][i][1]);
 
                 }
                 //pressEnterToContinue();
@@ -2728,11 +2738,81 @@ void weatherGenerator2D::pressEnterToContinue()
 
 double weatherGenerator2D::bestFit(double *par, int nrPar, double*x, double *yObs, int nrX)
 {
-    double ySim[nrPar];
-
+    double sigma=0.;
+    double diff;
+    double ySim[3];
     for (int i=0; i<nrX; i++)
     {
-        ySim[i]= par[0]+ par[1]*x[i]+par[2]*pow(x[i],par[3]);
+        diff = par[0]+ par[1]*pow(x[i],par[2])-yObs[i];
+        sigma += (diff * diff);
     }
-    return statistics::rootMeanSquareError(yObs,ySim,nrX);
+
+
+                //diff = ySim[i]-yObs[i];
+                //sigma += (diff * diff);
+                //nrValidValues++;
+
+    return sigma;
+    //return statistics::rootMeanSquareError(yObs,ySim,nrX);
+}
+
+
+
+int weatherGenerator2D::bestParametersNonLinearFit(double *par, int nrPar, double*x, double *yObs, int nrX)
+{
+    par[0]= 0.;
+    par[1]= 0.;
+    double bestPar[3], rootMeanSquare;
+    double maxPar[2];
+    int deltaStep[2];
+    bool firstStep = true;
+    double accuracy = 0.5;
+    double rmsNew;
+    maxPar[0] = maxPar [1] = yObs[0];
+    rootMeanSquare = NODATA;
+    for (int i=0 ; i<nrX-1; i++)
+    {
+        maxPar[0]= maxValue(yObs[i],yObs[i+1])*10;
+        maxPar[1]= 5*maxPar[0];
+    }
+    deltaStep[0] = (int)(ceil((maxPar[0]-par[0])/accuracy));
+    deltaStep[1] = (int)(ceil((maxPar[1]-par[1])/accuracy));
+    for (int i=2 ; i<20; i++)
+    {
+        par[2]=(double)(i);
+        //printf("esponente %d\t ",i);
+        for (int j=0 ; j<deltaStep[0]; j++)
+        {
+            par[0] += accuracy;
+            for (int k=0 ; k<deltaStep[1]; k++)
+            {
+                par[1] += accuracy;
+                rmsNew = weatherGenerator2D::bestFit(par,3,x,yObs,nrX);
+                if (firstStep)
+                {
+                    rootMeanSquare = rmsNew;
+                    bestPar[0]=par[0];
+                    bestPar[1]=par[1];
+                    bestPar[2]=par[2];
+                    firstStep = false;
+                }
+                else if (rmsNew < rootMeanSquare)
+                {
+                    rootMeanSquare = rmsNew;
+                    bestPar[0]=par[0];
+                    bestPar[1]=par[1];
+                    bestPar[2]=par[2];
+                }
+            }
+            par[1]= 0;
+        }
+        par[0]= 0;
+        par[1]= 0.;
+    }
+    par[0]= bestPar[0];
+    par[1]= bestPar[1];
+    par[2]= bestPar[2];
+    if ((par[0] >= maxPar[0]) || (par[1] >= maxPar[1])) return 0;
+    else return 1;
+
 }
