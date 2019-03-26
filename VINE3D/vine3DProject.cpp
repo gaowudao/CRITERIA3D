@@ -959,6 +959,7 @@ bool Vine3DProject::loadHorizons(soil::Crit3DSoil* outputSoil, int idSoil, QStri
         mySoil->horizon[i].waterConductivity.kSat = ksat;
 
         //update with skeleton
+
         mySoil->horizon[i].vanGenuchten.thetaS = porosity * (1.0 - mySoil->horizon[i].coarseFragments);
         mySoil->horizon[i].vanGenuchten.thetaR = mySoil->horizon[i].vanGenuchten.thetaR * (1.0 - mySoil->horizon[i].coarseFragments);
 
@@ -967,8 +968,8 @@ bool Vine3DProject::loadHorizons(soil::Crit3DSoil* outputSoil, int idSoil, QStri
 
         mySoil->horizon[i].fieldCapacity = soil::getFieldCapacity(&(mySoil->horizon[i]), soil::KPA);
         mySoil->horizon[i].wiltingPoint = soil::getWiltingPoint(soil::KPA);
-        mySoil->horizon[i].waterContentFC = soil::getThetaFC(&(mySoil->horizon[i])) * (1.0 - mySoil->horizon[i].coarseFragments);
-        mySoil->horizon[i].waterContentWP = soil::getThetaWP(&(mySoil->horizon[i])) * (1.0 - mySoil->horizon[i].coarseFragments);
+        mySoil->horizon[i].waterContentFC = soil::getThetaFC(&(mySoil->horizon[i]));
+        mySoil->horizon[i].waterContentWP = soil::getThetaWP(&(mySoil->horizon[i]));
 
         i++;
     }

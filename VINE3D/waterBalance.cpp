@@ -635,10 +635,11 @@ double getSoilVar(Vine3DProject* myProject, int soilIndex, int myLayerIndex, soi
 
     if (int(horizonIndex) != int(NODATA))
     {
+        // from kPa to meters
         if (myVar == soilWiltingPointPotential)
-            return myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].wiltingPoint;
+            return myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].wiltingPoint / GRAVITY;
         else if (myVar == soilFieldCapacityPotential)
-            return myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].fieldCapacity;
+            return myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].fieldCapacity / GRAVITY;
         else if (myVar == soilWaterContentFC)
             return myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].waterContentFC;
         else if (myVar == soilSaturation)
@@ -672,9 +673,13 @@ double* getSoilVarProfile(Vine3DProject* myProject, int row, int col, soilVariab
         nodeIndex = int(myProject->WBMaps->indexMap.at(size_t(layerIndex)).value[row][col]);
 
         if (nodeIndex != int(myProject->WBMaps->indexMap.at(size_t(layerIndex)).header->flag))
-            if ((myVar == soilWiltingPointPotential) || (myVar == soilFieldCapacityPotential)
-                || (myVar == soilWaterContentFC) || (myVar == soilWaterContentWP))
-                    myProfile[layerIndex] = getSoilVar(myProject, soilIndex, layerIndex, myVar);
+        {
+            if (myVar == soilWiltingPointPotential || myVar == soilFieldCapacityPotential
+                || myVar == soilSaturation  || myVar == soilWaterContentFC || myVar == soilWaterContentWP)
+            {
+                myProfile[layerIndex] = getSoilVar(myProject, soilIndex, layerIndex, myVar);
+            }
+        }
     }
 
     return myProfile;
@@ -716,14 +721,22 @@ double getCriteria3DVar(criteria3DVariable myVar, long nodeIndex)
     {
         myCrit3dVar = soilFluxes3D::getAvailableWaterContent(nodeIndex);
     }
-    if (myVar == waterTotalPotential)
+    else if (myVar == waterTotalPotential)
+    {
         myCrit3dVar = soilFluxes3D::getTotalPotential(nodeIndex);
+    }
     else if (myVar == waterMatricPotential)
+    {
         myCrit3dVar = soilFluxes3D::getMatricPotential(nodeIndex);
+    }
     else if (myVar == degreeOfSaturation)
+    {
         myCrit3dVar = soilFluxes3D::getDegreeOfSaturation(nodeIndex);
+    }
     else
+    {
         myCrit3dVar = MISSING_DATA_ERROR;
+    }
 
     if (myCrit3dVar != INDEX_ERROR && myCrit3dVar != MEMORY_ERROR &&
             myCrit3dVar != MISSING_DATA_ERROR && myCrit3dVar != TOPOGRAPHY_ERROR)
