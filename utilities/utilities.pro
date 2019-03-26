@@ -26,13 +26,16 @@ win32:{
 
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../crop ../soil ../meteo ../gis
 
-SOURCES += utilities.cpp \
+SOURCES += \
+    utilities.cpp \
     dbTools.cpp \
     dbToolsMOSES.cpp
 
-HEADERS += utilities.h \
+HEADERS += \
+    utilities.h \
     dbTools.h \
     dbToolsMOSES.h
+
 unix {
     target.path = /usr/lib
     INSTALLS += target

@@ -959,6 +959,7 @@ bool Vine3DProject::loadHorizons(soil::Crit3DSoil* outputSoil, int idSoil, QStri
         mySoil->horizon[i].waterConductivity.kSat = ksat;
 
         //update with skeleton
+
         mySoil->horizon[i].vanGenuchten.thetaS = porosity * (1.0 - mySoil->horizon[i].coarseFragments);
         mySoil->horizon[i].vanGenuchten.thetaR = mySoil->horizon[i].vanGenuchten.thetaR * (1.0 - mySoil->horizon[i].coarseFragments);
 
@@ -979,7 +980,7 @@ bool Vine3DProject::loadHorizons(soil::Crit3DSoil* outputSoil, int idSoil, QStri
 
 bool Vine3DProject::loadSoils()
 {
-    logInfo ("Read soils...");
+    logInfo ("Read soils->..");
 
     QString queryString = "SELECT id_soil, soil_code FROM soils ORDER BY id_soil";
 
@@ -990,13 +991,16 @@ bool Vine3DProject::loadSoils()
         return(false);
     }
 
-    free(WBSettings->soilList);
+    if (WBSettings->soilList != nullptr)
+        free(WBSettings->soilList);
+
     WBSettings->nrSoils = query.size();
     WBSettings->soilList = new soil::Crit3DSoil[WBSettings->nrSoils];
 
     int idSoil, index = 0;
     QString soilCode;
     float maxSoilDepth = 0;
+
     while (query.next())
     {
         idSoil = query.value("id_soil").toInt();
@@ -1716,7 +1720,7 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool isS
             updateThermalSum(this, myDate);
 
             //powdery mildew
-            computePowderyMildew(this);
+            //computePowderyMildew(this);
 
             //state and output
             saveStateAndOutput(myDate, myArea);
@@ -1724,7 +1728,7 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool isS
     }
 
     // Downy mildew (computation from 1 January)
-    computeDownyMildew(this, firstDate, lastDate, hourTime2, myArea);
+    //computeDownyMildew(this, firstDate, lastDate, hourTime2, myArea);
 
     logInfo("end of run");
     return true;
@@ -1837,7 +1841,7 @@ bool Vine3DProject::saveStateAndOutput(QDate myDate, QString myArea)
     if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential10", "10cm", outputPath, myArea, 0.1, 0.1)) return false;
     if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential30", "30cm", outputPath, myArea, 0.3, 0.3)) return false;
     if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential70", "70cm", outputPath, myArea, 0.7, 0.7)) return false;
-    if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential70", "150cm", outputPath, myArea, 0.7, 0.7)) return false;
+    if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential150", "150cm", outputPath, myArea, 1.5, 1.5)) return false;
 
     if (!saveWaterBalanceOutput(this, myDate, degreeOfSaturation, "degreeOfSaturation", "soilDepth", outputPath, myArea, 0.0, double(WBSettings->soilDepth) - 0.01)) return false;
     if (!saveWaterBalanceOutput(this, myDate, soilSurfaceMoisture, "SSM", "5cm", outputPath, myArea, 0.0, 0.05)) return false;
@@ -1875,6 +1879,13 @@ int Vine3DProject::getSoilIndex(long row, long col)
         return this->modelCases[caseIndex].soilIndex;
     else
         return NODATA;
+}
+
+soil::Crit3DHorizon* Vine3DProject::getSoilHorizon(long row, long col, int layer)
+{
+    int soilIndex = getSoilIndex(row, col);
+    int horizonIndex = soil::getHorizonIndex(&(WBSettings->soilList[soilIndex]), layer);
+    return &(WBSettings->soilList[soilIndex].horizon[horizonIndex]);
 }
 
 bool Vine3DProject::getFieldBookIndex(int firstIndex, QDate myDate, int fieldIndex, int* outputIndex)

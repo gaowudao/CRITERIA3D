@@ -17,7 +17,7 @@
 
 
     enum criteria3DVariable {waterContent, waterTotalPotential, waterMatricPotential,
-                            availableWaterContent, waterDeficit, degreeOfSaturation, soilTemperature,
+                            availableWaterContent, degreeOfSaturation, soilTemperature,
                             soilSurfaceMoisture, bottomDrainage};
 
     enum soilVariable {soilWaterContentFC, soilWaterContentWP, soilWiltingPointPotential,
