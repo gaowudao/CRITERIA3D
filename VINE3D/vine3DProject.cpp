@@ -980,7 +980,7 @@ bool Vine3DProject::loadHorizons(soil::Crit3DSoil* outputSoil, int idSoil, QStri
 
 bool Vine3DProject::loadSoils()
 {
-    logInfo ("Read soils...");
+    logInfo ("Read soils->..");
 
     QString queryString = "SELECT id_soil, soil_code FROM soils ORDER BY id_soil";
 
@@ -991,13 +991,16 @@ bool Vine3DProject::loadSoils()
         return(false);
     }
 
-    free(WBSettings->soilList);
+    if (WBSettings->soilList != nullptr)
+        free(WBSettings->soilList);
+
     WBSettings->nrSoils = query.size();
     WBSettings->soilList = new soil::Crit3DSoil[WBSettings->nrSoils];
 
     int idSoil, index = 0;
     QString soilCode;
     float maxSoilDepth = 0;
+
     while (query.next())
     {
         idSoil = query.value("id_soil").toInt();
@@ -1717,7 +1720,7 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool isS
             updateThermalSum(this, myDate);
 
             //powdery mildew
-            computePowderyMildew(this);
+            //computePowderyMildew(this);
 
             //state and output
             saveStateAndOutput(myDate, myArea);
@@ -1725,7 +1728,7 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool isS
     }
 
     // Downy mildew (computation from 1 January)
-    computeDownyMildew(this, firstDate, lastDate, hourTime2, myArea);
+    //computeDownyMildew(this, firstDate, lastDate, hourTime2, myArea);
 
     logInfo("end of run");
     return true;

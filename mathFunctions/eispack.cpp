@@ -126,7 +126,7 @@ namespace eigenproblem {
                                                                   double *A, int n)
     {
 
-       int row, i, j, k, m;
+       int i, j, k, m;
        double *pAk, *pAm, *p_r, *p_e;
        double threshold_norm;
        double threshold;
@@ -135,7 +135,6 @@ namespace eigenproblem {
        double dum1;
        double dum2;
        double dum3;
-       double r;
        double max;
 
                       // Take care of trivial cases
