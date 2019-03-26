@@ -967,8 +967,8 @@ bool Vine3DProject::loadHorizons(soil::Crit3DSoil* outputSoil, int idSoil, QStri
 
         mySoil->horizon[i].fieldCapacity = soil::getFieldCapacity(&(mySoil->horizon[i]), soil::KPA);
         mySoil->horizon[i].wiltingPoint = soil::getWiltingPoint(soil::KPA);
-        mySoil->horizon[i].waterContentFC = soil::getThetaFC(&(mySoil->horizon[i]));
-        mySoil->horizon[i].waterContentWP = soil::getThetaWP(&(mySoil->horizon[i]));
+        mySoil->horizon[i].waterContentFC = soil::getThetaFC(&(mySoil->horizon[i])) * (1.0 - mySoil->horizon[i].coarseFragments);
+        mySoil->horizon[i].waterContentWP = soil::getThetaWP(&(mySoil->horizon[i])) * (1.0 - mySoil->horizon[i].coarseFragments);
 
         i++;
     }
@@ -1837,7 +1837,7 @@ bool Vine3DProject::saveStateAndOutput(QDate myDate, QString myArea)
     if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential10", "10cm", outputPath, myArea, 0.1, 0.1)) return false;
     if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential30", "30cm", outputPath, myArea, 0.3, 0.3)) return false;
     if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential70", "70cm", outputPath, myArea, 0.7, 0.7)) return false;
-    if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential70", "150cm", outputPath, myArea, 0.7, 0.7)) return false;
+    if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential150", "150cm", outputPath, myArea, 1.5, 1.5)) return false;
 
     if (!saveWaterBalanceOutput(this, myDate, degreeOfSaturation, "degreeOfSaturation", "soilDepth", outputPath, myArea, 0.0, double(WBSettings->soilDepth) - 0.01)) return false;
     if (!saveWaterBalanceOutput(this, myDate, soilSurfaceMoisture, "SSM", "5cm", outputPath, myArea, 0.0, 0.05)) return false;
@@ -1875,6 +1875,13 @@ int Vine3DProject::getSoilIndex(long row, long col)
         return this->modelCases[caseIndex].soilIndex;
     else
         return NODATA;
+}
+
+soil::Crit3DHorizon* Vine3DProject::getSoilHorizon(long row, long col, int layer)
+{
+    int soilIndex = getSoilIndex(row, col);
+    int horizonIndex = soil::getHorizonIndex(&(WBSettings->soilList[soilIndex]), layer);
+    return &(WBSettings->soilList[soilIndex].horizon[horizonIndex]);
 }
 
 bool Vine3DProject::getFieldBookIndex(int firstIndex, QDate myDate, int fieldIndex, int* outputIndex)
