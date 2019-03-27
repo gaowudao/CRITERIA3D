@@ -46,8 +46,8 @@ bool initializeGrapevine(Vine3DProject* myProject)
         double grassRootDepth = myProject->modelCases[i].soilTotalDepth * 0.66;
         double fallowRootDepth = myProject->modelCases[i].soilTotalDepth;
 
-        myProject->grapevine.setGrassRootDensity(&(myProject->modelCases[i]), myProject->WBSettings->layerDepth, myProject->WBSettings->layerThickness, 0.02, grassRootDepth);
-        myProject->grapevine.setFallowRootDensity(&(myProject->modelCases[i]), myProject->WBSettings->layerDepth, myProject->WBSettings->layerThickness, 0.02, fallowRootDepth);
+        myProject->grapevine.setGrassRootDensity(&(myProject->modelCases[i]), &(myProject->WBSettings->soilList[soilIndex]), myProject->WBSettings->layerDepth, myProject->WBSettings->layerThickness, 0.02, grassRootDepth);
+        myProject->grapevine.setFallowRootDensity(&(myProject->modelCases[i]), &(myProject->WBSettings->soilList[soilIndex]), myProject->WBSettings->layerDepth, myProject->WBSettings->layerThickness, 0.02, fallowRootDepth);
         myProject->grapevine.setRootDensity(&(myProject->modelCases[i]), &(myProject->WBSettings->soilList[soilIndex]),
                                             myProject->WBSettings->layerDepth, myProject->WBSettings->layerThickness, soilLayerWithRoot, nrSoilLayersWithoutRoots,
                                             GAMMA_DISTRIBUTION, depthModeRootDensity, depthMeanRootDensity);

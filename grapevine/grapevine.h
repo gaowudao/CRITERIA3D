@@ -423,9 +423,9 @@ public:
 
     void setRootDensity(Crit3DModelCase *modelCase, soil::Crit3DSoil* mySoil, std::vector<double> layerDepth, std::vector<double> layerThickness,
                         int nrLayersWithRoot, int nrUpperLayersWithoutRoot, rootDistribution type, double mode, double mean);
-    void setGrassRootDensity(Crit3DModelCase* modelCase, std::vector<double> layerDepth, std::vector<double> layerThickness,
+    void setGrassRootDensity(Crit3DModelCase* modelCase, soil::Crit3DSoil *mySoil, std::vector<double> layerDepth, std::vector<double> layerThickness,
                              double startRootDepth, double totalRootDepth);
-    void setFallowRootDensity(Crit3DModelCase* modelCase, std::vector<double> layerDepth, std::vector<double> layerThickness,
+    void setFallowRootDensity(Crit3DModelCase* modelCase, soil::Crit3DSoil* mySoil, std::vector<double> layerDepth, std::vector<double> layerThickness,
                              double startRootDepth, double totalRootDepth);
 
     void setDate (Crit3DTime myTime);

@@ -1620,17 +1620,22 @@ double Vine3D_Grapevine::getGrassTranspiration(double stress, double laiGrassMax
 }
 
 
-double* getTrapezoidRoots(int layersNr, std::vector<double> layerDepth, std::vector<double> layerThickness, double startRootDepth, double totalRootDepth)
+double* getTrapezoidRoots(int layersNr, soil::Crit3DSoil* mySoil, std::vector<double> layerDepth, std::vector<double> layerThickness, double startRootDepth, double totalRootDepth)
 {
     double upperDepth, lowerDepth;
     double x1, x2, m, q, y1, y2;
+    int indexHorizon;
+    double skeleton;
+    double rootDensitySum = 0.0;
+    size_t layer;
 
     double* myRoots = static_cast<double*> (calloc(size_t(layersNr), sizeof(double)));
 
-    for (size_t layer = 0; layer < size_t(layersNr); layer++)
+    for (layer = 0; layer < size_t(layersNr); layer++)
     {
         upperDepth = layerDepth.at(layer) - layerThickness.at(layer) * 0.5;
         lowerDepth = layerDepth.at(layer) + layerThickness.at(layer) * 0.5;
+
         if (upperDepth > totalRootDepth || lowerDepth < startRootDepth)
             myRoots[layer] = 0.0;
         else
@@ -1642,24 +1647,35 @@ double* getTrapezoidRoots(int layersNr, std::vector<double> layerDepth, std::vec
             y1 = m*x1 + q;
             y2 = m*x2 + q;
 
-            myRoots[layer] = (y1+y2) * fabs(x2-x1) * 0.5;
+            indexHorizon = soil::getHorizonIndex(mySoil, layerDepth.at(size_t(layer)));
+            skeleton = mySoil->horizon[indexHorizon].coarseFragments;
+            myRoots[layer] = (y1+y2) * fabs(x2-x1) * 0.5 * (1 - skeleton);
+            rootDensitySum += myRoots[layer];
+
         }
     }
+
+    for (layer=0 ; layer < size_t(layersNr); layer++)
+    {
+        myRoots[layer] /= rootDensitySum;
+    }
+
+
 
     return myRoots;
 }
 
 
-void Vine3D_Grapevine::setGrassRootDensity(Crit3DModelCase* modelCase, std::vector<double> layerDepth, std::vector<double> layerThickness,
+void Vine3D_Grapevine::setGrassRootDensity(Crit3DModelCase* modelCase, soil::Crit3DSoil* mySoil, std::vector<double> layerDepth, std::vector<double> layerThickness,
                                            double startRootDepth, double totalRootDepth)
 {
-    modelCase->grassRootDensity = getTrapezoidRoots(modelCase->soilLayersNr, layerDepth, layerThickness, startRootDepth, totalRootDepth);
+    modelCase->grassRootDensity = getTrapezoidRoots(modelCase->soilLayersNr, mySoil, layerDepth, layerThickness, startRootDepth, totalRootDepth);
 }
 
-void Vine3D_Grapevine::setFallowRootDensity(Crit3DModelCase* modelCase, std::vector<double> layerDepth, std::vector<double> layerThickness,
+void Vine3D_Grapevine::setFallowRootDensity(Crit3DModelCase* modelCase, soil::Crit3DSoil* mySoil, std::vector<double> layerDepth, std::vector<double> layerThickness,
                                            double startRootDepth, double totalRootDepth)
 {
-    modelCase->fallowRootDensity = getTrapezoidRoots(modelCase->soilLayersNr, layerDepth, layerThickness, startRootDepth, totalRootDepth);
+    modelCase->fallowRootDensity = getTrapezoidRoots(modelCase->soilLayersNr, mySoil, layerDepth, layerThickness, startRootDepth, totalRootDepth);
 }
 
 //----------------------------------------------------------------------
