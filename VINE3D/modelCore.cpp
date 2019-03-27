@@ -108,7 +108,6 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
     int modelCaseIndex;
     double* myProfile;
 
-
     int checkStressHour;
     if (!myProject->gisSettings.isUTC)
         checkStressHour = 12;
@@ -125,20 +124,26 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
         myProject->meteoMaps->clean();
         interpolateAndSaveHourlyMeteo(myProject, airTemperature, myCurrentTime, myOutputPath, isSave, myArea);
         interpolateAndSaveHourlyMeteo(myProject, precipitation, myCurrentTime, myOutputPath, isSave, myArea);
-        interpolateAndSaveHourlyMeteo(myProject, airRelHumidity, myCurrentTime, myOutputPath, isSave, myArea);
-        interpolateAndSaveHourlyMeteo(myProject, windIntensity, myCurrentTime, myOutputPath, isSave, myArea);
-        interpolateAndSaveHourlyMeteo(myProject, globalIrradiance, myCurrentTime, myOutputPath, isSave, myArea);
+        interpolateAndSaveHourlyMeteo(myProject, airRelHumidity, myCurrentTime, myOutputPath, false, myArea);
+        interpolateAndSaveHourlyMeteo(myProject, windIntensity, myCurrentTime, myOutputPath, false, myArea);
+        interpolateAndSaveHourlyMeteo(myProject, globalIrradiance, myCurrentTime, myOutputPath, false, myArea);
 
-        //ET0
+        // ET0
         if (computeET0Map(myProject))
+        {
             saveMeteoHourlyOutput(myProject, referenceEvapotranspiration, myOutputPath, myCurrentTime, myArea);
+        }
 
-        //Leaf Wetness
+        // Leaf Wetness
         if (computeLeafWetnessMap(myProject))
-            saveMeteoHourlyOutput(myProject, leafWetness, myOutputPath, myCurrentTime, myArea);
+        {
+            //saveMeteoHourlyOutput(myProject, leafWetness, myOutputPath, myCurrentTime, myArea);
+        }
 
         if (isInitialState)
+        {
             initializeSoilMoisture(myProject, myCurrentTime.date.month);
+        }
 
         //Grapevine
         double vineTranspiration, grassTranspiration;
@@ -252,7 +257,7 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
 
         updateWaterBalanceMaps(myProject);
 
-        //saveMeteoHourlyOutput(myProject, actualEvaporation, myOutputPath, myCurrentTime, myArea);
+        // saveMeteoHourlyOutput(myProject, actualEvaporation, myOutputPath, myCurrentTime, myArea);
 
         if (isInitialState) isInitialState = false;
     }
