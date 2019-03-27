@@ -2659,7 +2659,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
         {
             for (int j=0;j<nrStations;j++)
             {
-                val = maxValue(val,fabs(correlationMatrixSimulatedData[i][j]- amountsCorrelationMatrix[i][j]));
+                val = maxValue(val,fabs(correlationMatrixSimulatedData[i][j]- initialAmountsCorrelationMatrix[i][j]));
             }
         }
         if (val < fabs(minimalValueToExitFromCycle))
@@ -2675,7 +2675,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
         {
             if (val <= fabs(minimalValueToExitFromCycle) + TOLERANCE_MULGETS) exitWhileCycle = true;
         }
-        //printf("contatore per uscire %d contatore %d val %f",counterConvergence, ii, val); pressEnterToContinue();
+        printf("contatore per uscire %d contatore %d val %f",counterConvergence, ii, val); pressEnterToContinue();
 
         if (ii != MAX_ITERATION_MULGETS && val> TOLERANCE_MULGETS && (!exitWhileCycle))
         {
