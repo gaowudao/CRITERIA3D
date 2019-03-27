@@ -629,33 +629,47 @@ bool waterBalanceSinkSource(Vine3DProject* myProject, double* totalPrecipitation
     return(true);
 }
 
-double getSoilVar(Vine3DProject* myProject, int soilIndex, int myLayerIndex, soilVariable myVar)
-{
-    int horizonIndex = soil::getHorizonIndex(&(myProject->WBSettings->soilList[soilIndex]), myProject->WBSettings->layerDepth[myLayerIndex]);
 
-    if (int(horizonIndex) != int(NODATA))
+double getSoilVar(Vine3DProject* myProject, int soilIndex, int layerIndex, soilVariable myVar)
+{
+    int horizonIndex = soil::getHorizonIndex(&(myProject->WBSettings->soilList[soilIndex]),
+                                          myProject->WBSettings->layerDepth[unsigned(layerIndex)]);
+
+    if (int(horizonIndex) == int(NODATA)) return NODATA;
+
+    if (myVar == soilWiltingPointPotential)
     {
-        // from kPa to meters
-        if (myVar == soilWiltingPointPotential)
-            return myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].wiltingPoint / GRAVITY;
-        else if (myVar == soilFieldCapacityPotential)
-            return myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].fieldCapacity / GRAVITY;
-        else if (myVar == soilWaterContentFC)
-            return myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].waterContentFC;
-        else if (myVar == soilSaturation)
-            return myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].vanGenuchten.thetaS;
-        else if (myVar == soilWaterContentWP)
-        {
-            double signPsiLeaf = - myProject->cultivar->parameterWangLeuning.psiLeaf; //kPa
-            return soil::thetaFromSignPsi(signPsiLeaf, &(myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex]));
-        }
-        else
-            return NODATA;
+        // [m]
+        return myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].wiltingPoint / GRAVITY;
     }
-    else {
+    else if (myVar == soilFieldCapacityPotential)
+    {
+        // [m]
+        return myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].fieldCapacity / GRAVITY;
+    }
+    else if (myVar == soilWaterContentFC)
+    {
+        // [m^3 m^-3]
+        return myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].waterContentFC;
+    }
+    else if (myVar == soilSaturation)
+    {
+        // [m^3 m^-3]
+        return myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].vanGenuchten.thetaS;
+    }
+    else if (myVar == soilWaterContentWP)
+    {
+        // [kPa]
+        double signPsiLeaf = - myProject->cultivar->parameterWangLeuning.psiLeaf;
+        // [m^3 m^-3]
+        return soil::thetaFromSignPsi(signPsiLeaf, &(myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex]));
+    }
+    else
+    {
         return NODATA;
     }
 }
+
 
 double* getSoilVarProfile(Vine3DProject* myProject, int row, int col, soilVariable myVar)
 {

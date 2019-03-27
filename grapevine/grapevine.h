@@ -150,7 +150,7 @@ struct TparameterBindiMigliettaFix
 struct TparameterWangLeuning{
     double sensitivityToVapourPressureDeficit;
     double alpha;
-    double psiLeaf;
+    double psiLeaf;                 // kPa
     double waterStressThreshold;
     double maxCarboxRate;           // Vcmo at optimal temperature
 };
