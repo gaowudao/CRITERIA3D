@@ -232,15 +232,17 @@ bool Vine3D_Grapevine::setSoilProfile(Crit3DModelCase* modelCase, double* myWilt
     psiFieldCapacityAverage = -exp(logPsiFCAverage);
     fractionTranspirableSoilWaterAverage = 0;
 
-    double soilWaterContentProfile, soilWaterContentProfileFC, soilWaterContentProfileWP;
+    double waterContent, waterContentFC, waterContentWP;
+    double tmp;
 
     for (int i = 0; i < modelCase->soilLayersNr; i++)
     {
-        soilWaterContentProfile = mySoilWaterContentProfile[i];
-        soilWaterContentProfileFC = mySoilWaterContentFC[i];
-        soilWaterContentProfileWP = mySoilWaterContentWP[i];
+        waterContent = mySoilWaterContentProfile[i];
+        waterContentFC = mySoilWaterContentFC[i];
+        waterContentWP = mySoilWaterContentWP[i];
 
-        fractionTranspirableSoilWaterProfile[i] = maxValue(0,minValue(1,(soilWaterContentProfile - soilWaterContentProfileWP) / (soilWaterContentProfileFC - soilWaterContentProfileWP)));
+        fractionTranspirableSoilWaterProfile[i] = maxValue(0, minValue(1, (waterContent - waterContentWP) / (waterContentFC - waterContentWP)));
+        tmp = fractionTranspirableSoilWaterProfile[i];
         fractionTranspirableSoilWaterAverage += fractionTranspirableSoilWaterProfile[i] * modelCase->rootDensity[i];
         transpirationLayer[i] = 0.;
         transpirationCumulatedGrass[i] = 0. ;
@@ -1609,17 +1611,16 @@ double Vine3D_Grapevine::getGrassTranspiration(double stress, double laiGrassMax
     double stomatalConductanceGrass, compensationPoint,dum;
     dum = R_GAS/1000. * (myInstantTemp + ZEROCELSIUS );
     compensationPoint = exp(CGSTAR - HAGSTAR/dum) * 1.0e-6 * myAtmosphericPressure ;
-    stomatalConductanceGrass = parameterWangLeuningFix.minimalStomatalConductance + alphaLeuning
-            * (((assimilationGrassShaded+assimilationGrassSunlit)*(1-0.089)) / (getCO2()-compensationPoint))
-            * (sensitivityToVPD / (sensitivityToVPD + vaporPressureDeficit)); //stom conduct to CO2 (mol m-2 s-1)
-    stomatalConductanceGrass = maxValue(stomatalConductanceGrass,1.0e-5);
 
-    //Transpiration rate (mol m-2 s-1). Ratio of diffusivities from Wang & Leuning 1998
-    double grassTransp = (stomatalConductanceGrass / 0.64) * vaporPressureDeficit/myAtmosphericPressure ;
-    grassTransp = maxValue(1.0E-8,grassTransp) ;
+    // stom conduct to CO2 (mol m-2 s-1)
+    stomatalConductanceGrass = alphaLeuning * (((assimilationGrassShaded+assimilationGrassSunlit)*(1-0.089)) / (getCO2()-compensationPoint))
+            * (sensitivityToVPD / (sensitivityToVPD + vaporPressureDeficit));
 
+    // Transpiration rate (mol m-2 s-1). Ratio of diffusivities from Wang & Leuning 1998
+    double grassTransp = (stomatalConductanceGrass / 0.64) * vaporPressureDeficit / myAtmosphericPressure ;
     return grassTransp; // molH2O m-2 s-1
 }
+
 
 double* getTrapezoidRoots(int layersNr, std::vector<double> layerDepth, std::vector<double> layerThickness, double startRootDepth, double totalRootDepth)
 {
@@ -1649,6 +1650,7 @@ double* getTrapezoidRoots(int layersNr, std::vector<double> layerDepth, std::vec
 
     return myRoots;
 }
+
 
 void Vine3D_Grapevine::setGrassRootDensity(Crit3DModelCase* modelCase, std::vector<double> layerDepth, std::vector<double> layerThickness,
                                            double startRootDepth, double totalRootDepth)
