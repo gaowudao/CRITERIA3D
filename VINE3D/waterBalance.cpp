@@ -97,7 +97,7 @@ bool isCrit3dError(int myResult, QString* myError)
     return (true);
 }
 
-
+// ThetaS and ThetaR already corrected for coarse fragments
 bool setCrit3DSoils(Vine3DProject* myProject)
 {
     soil::Crit3DHorizon* myHorizon;
@@ -434,8 +434,8 @@ bool initializeSoilMoisture(Vine3DProject* myProject, int month)
     double  wiltingPoint = -160.0;           //[m]
     double dry = wiltingPoint / 3.0;         //[m] dry potential
 
-    //[0-1] min: july  max: january
-    moistureIndex = fabs(1.0 - (month - 1) / 6.0);
+    //[0-1] min: august  max: february
+    moistureIndex = fabs(1 - (month - 2) / 6);
     moistureIndex = maxValue(moistureIndex, 0.001);
     moistureIndex = log(moistureIndex) / log(0.001);
 
@@ -635,10 +635,11 @@ double getSoilVar(Vine3DProject* myProject, int soilIndex, int myLayerIndex, soi
 
     if (int(horizonIndex) != int(NODATA))
     {
+        // from kPa to meters
         if (myVar == soilWiltingPointPotential)
-            return myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].wiltingPoint;
+            return myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].wiltingPoint / GRAVITY;
         else if (myVar == soilFieldCapacityPotential)
-            return myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].fieldCapacity;
+            return myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].fieldCapacity / GRAVITY;
         else if (myVar == soilWaterContentFC)
             return myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].waterContentFC;
         else if (myVar == soilSaturation)
@@ -672,13 +673,18 @@ double* getSoilVarProfile(Vine3DProject* myProject, int row, int col, soilVariab
         nodeIndex = int(myProject->WBMaps->indexMap.at(size_t(layerIndex)).value[row][col]);
 
         if (nodeIndex != int(myProject->WBMaps->indexMap.at(size_t(layerIndex)).header->flag))
-            if ((myVar == soilWiltingPointPotential) || (myVar == soilFieldCapacityPotential)
-                || (myVar == soilWaterContentFC) || (myVar == soilWaterContentWP))
-                    myProfile[layerIndex] = getSoilVar(myProject, soilIndex, layerIndex, myVar);
+        {
+            if (myVar == soilWiltingPointPotential || myVar == soilFieldCapacityPotential
+                || myVar == soilSaturation  || myVar == soilWaterContentFC || myVar == soilWaterContentWP)
+            {
+                myProfile[layerIndex] = getSoilVar(myProject, soilIndex, layerIndex, myVar);
+            }
+        }
     }
 
     return myProfile;
 }
+
 
 double* getCriteria3DVarProfile(Vine3DProject* myProject, int row, int col, criteria3DVariable myVar)
 {
@@ -695,32 +701,42 @@ double* getCriteria3DVarProfile(Vine3DProject* myProject, int row, int col, crit
 
         if (nodeIndex != myProject->WBMaps->indexMap.at(layerIndex).header->flag)
         {
-            myProfile[layerIndex] = getCriteria3DVar(myVar, nodeIndex);
+             myProfile[layerIndex] = getCriteria3DVar(myVar, nodeIndex);
         }
     }
 
     return myProfile;
 }
 
+
 double getCriteria3DVar(criteria3DVariable myVar, long nodeIndex)
 {
     double myCrit3dVar;
 
     if (myVar == waterContent)
+    {
         myCrit3dVar = soilFluxes3D::getWaterContent(nodeIndex);
+    }
     else if (myVar == availableWaterContent)
+    {
         myCrit3dVar = soilFluxes3D::getAvailableWaterContent(nodeIndex);
-    else if (myVar == waterDeficit)
-        //TODO chiamare soil per field capacity
-        myCrit3dVar = soilFluxes3D::getWaterDeficit(nodeIndex, 3.0);
+    }
     else if (myVar == waterTotalPotential)
+    {
         myCrit3dVar = soilFluxes3D::getTotalPotential(nodeIndex);
+    }
     else if (myVar == waterMatricPotential)
+    {
         myCrit3dVar = soilFluxes3D::getMatricPotential(nodeIndex);
+    }
     else if (myVar == degreeOfSaturation)
+    {
         myCrit3dVar = soilFluxes3D::getDegreeOfSaturation(nodeIndex);
+    }
     else
+    {
         myCrit3dVar = MISSING_DATA_ERROR;
+    }
 
     if (myCrit3dVar != INDEX_ERROR && myCrit3dVar != MEMORY_ERROR &&
             myCrit3dVar != MISSING_DATA_ERROR && myCrit3dVar != TOPOGRAPHY_ERROR)
@@ -733,12 +749,18 @@ bool setCriteria3DVar(criteria3DVariable myVar, long nodeIndex, double myValue)
 {
     int myResult;
 
-    if (myVar == waterContent)
-        myResult = soilFluxes3D::setWaterContent(nodeIndex, myValue);
-    else if (myVar == waterMatricPotential)
+    if (myVar == waterMatricPotential)
+    {
         myResult = soilFluxes3D::setMatricPotential(nodeIndex, myValue);
+    }
+    /*else if (myVar == waterContent)
+    {   //TODO skeleton
+        myResult = soilFluxes3D::setWaterContent(nodeIndex, myValue);
+    }*/
     else
+    {
         myResult = MISSING_DATA_ERROR;
+    }
 
     return (myResult != INDEX_ERROR && myResult != MEMORY_ERROR && myResult != MISSING_DATA_ERROR &&
             myResult != TOPOGRAPHY_ERROR);
@@ -778,6 +800,7 @@ bool getCriteria3DVarMap(Vine3DProject* myProject, criteria3DVariable myVar,
             if (nodeIndex != myProject->WBMaps->indexMap.at(layerIndex).header->flag)
             {
                 myValue = getCriteria3DVar(myVar, nodeIndex);
+
                 if (myValue == NODATA)
                     criteria3DMap->value[row][col] = criteria3DMap->header->flag;
                 else
@@ -843,7 +866,7 @@ bool getSoilSurfaceMoisture(Vine3DProject* myProject, gis::Crit3DRasterGrid* out
 bool getRootZoneAWCmap(Vine3DProject* myProject, gis::Crit3DRasterGrid* outputMap)
 {
     long nodeIndex;
-    double awc, thickness, sumAWC, skeleton;
+    double awc, thickness, sumAWC;
     int soilIndex, horizonIndex;
     int modelCaseIndex;
 
@@ -875,9 +898,7 @@ bool getRootZoneAWCmap(Vine3DProject* myProject, gis::Crit3DRasterGrid* outputMa
                                     thickness = myProject->WBSettings->layerThickness[layer] * 1000.0;  //[mm]
                                     horizonIndex = soil::getHorizonIndex(&(myProject->WBSettings->soilList[soilIndex]),
                                                                          myProject->WBSettings->layerDepth[layer]);
-                                    skeleton = myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].coarseFragments;
-
-                                    sumAWC += (awc * thickness * (1.0 - skeleton));         //[mm]
+                                    sumAWC += (awc * thickness);         //[mm]
                                 }
                             }
                         }
@@ -889,6 +910,7 @@ bool getRootZoneAWCmap(Vine3DProject* myProject, gis::Crit3DRasterGrid* outputMa
 
     return true;
 }
+
 
 bool getCriteria3DIntegrationMap(Vine3DProject* myProject, criteria3DVariable myVar,
                        double upperDepth, double lowerDepth, gis::Crit3DRasterGrid* criteria3DMap)
@@ -913,9 +935,9 @@ bool getCriteria3DIntegrationMap(Vine3DProject* myProject, criteria3DVariable my
     lastThickness = lowerDepth - getLayerTop(myProject, lastIndex);
 
     long nodeIndex;
-    double myValue, sumValues, skeleton;
+    double myValue, sumValues;
     double thickCoeff, sumCoeff;
-    int soilIndex, horizonIndex;
+    int soilIndex;
 
     for (int row = 0; row < myProject->WBMaps->indexMap.at(0).header->nrRows; row++)
         for (int col = 0; col < myProject->WBMaps->indexMap.at(0).header->nrCols; col++)
@@ -937,16 +959,15 @@ bool getCriteria3DIntegrationMap(Vine3DProject* myProject, criteria3DVariable my
                         if (nodeIndex != long(myProject->WBMaps->indexMap.at(size_t(i)).header->flag))
                         {
                             myValue = getCriteria3DVar(myVar, nodeIndex);
+
                             if (myValue != NODATA)
                             {
-                                horizonIndex = soil::getHorizonIndex(&(myProject->WBSettings->soilList[soilIndex]), myProject->WBSettings->layerDepth[i]);
-                                skeleton = myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].coarseFragments;
                                 if (i == firstIndex)
-                                    thickCoeff = firstThickness * (1.0 - skeleton);
+                                    thickCoeff = firstThickness;
                                 else if (i == lastIndex)
-                                    thickCoeff = lastThickness * (1.0 - skeleton);
+                                    thickCoeff = lastThickness;
                                 else
-                                    thickCoeff = myProject->WBSettings->layerThickness[i] * (1.0 - skeleton);
+                                    thickCoeff = myProject->WBSettings->layerThickness[i];
 
                                 sumValues += (myValue * thickCoeff);
                                 sumCoeff += thickCoeff;

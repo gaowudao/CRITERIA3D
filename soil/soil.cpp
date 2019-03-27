@@ -377,7 +377,7 @@ namespace soil
         if (theta >= horizon->vanGenuchten.thetaS) return 1.;
         if (theta <= horizon->vanGenuchten.thetaR) return 0.;
 
-        return (theta - horizon->vanGenuchten.thetaR)/(horizon->vanGenuchten.thetaS - horizon->vanGenuchten.thetaR);
+        return (theta - horizon->vanGenuchten.thetaR) / (horizon->vanGenuchten.thetaS - horizon->vanGenuchten.thetaR);
     }
 
 

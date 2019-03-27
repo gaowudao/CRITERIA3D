@@ -82,6 +82,7 @@ bool assignIrrigation(Vine3DProject* myProject, Crit3DTime myTime)
     return true;
 }
 
+
 QString grapevineError(Crit3DTime myTime, long row, long col, QString errorIni)
 {
     QString myString = "Error computing grapevine for DEM cell (" + QString::number(row) + "," + QString::number(col) + ")\n";
@@ -89,6 +90,7 @@ QString grapevineError(Crit3DTime myTime, long row, long col, QString errorIni)
     myString += QString::fromStdString(myTime.date.toStdString()) + " " + QString("%1").arg(myTime.getHour(), 2, 10, QChar('0')) + ":00\n";
     return myString;
 }
+
 
 bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
                      Vine3DProject* myProject, const QString& myOutputPath,
