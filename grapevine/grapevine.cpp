@@ -1566,17 +1566,14 @@ double Vine3D_Grapevine::getFallowTranspiration(double stress, double lai, doubl
 
     double dum = R_GAS/1000. * (myInstantTemp + ZEROCELSIUS );
     double compensationPoint = exp(CGSTAR - HAGSTAR/dum) * 1.0e-6 * myAtmosphericPressure;
-    double stomatalConductanceGrass = parameterWangLeuningFix.minimalStomatalConductance + alphaLeuning
-            * ((assimilationGrass*(1-0.089)) / (getCO2()-compensationPoint))
+
+    double stomatalConductanceGrass = alphaLeuning * ((assimilationGrass*(1-0.089)) / (getCO2()-compensationPoint))
             * (sensitivityToVPD / (sensitivityToVPD + vaporPressureDeficit)); //stom conduct to CO2 (mol m-2 s-1)
 
-    stomatalConductanceGrass = maxValue(stomatalConductanceGrass, 1.0e-5);
     //Transpiration rate (mol m-2 s-1). Ratio of diffusivities from Wang & Leuning 1998
-    double grassTransp = (stomatalConductanceGrass / 0.64) * vaporPressureDeficit/myAtmosphericPressure ;
+    double fallowTransp = (stomatalConductanceGrass / 0.64) * vaporPressureDeficit/myAtmosphericPressure ;
 
-    grassTransp = maxValue(1.0E-8, grassTransp) ;
-
-    return grassTransp; // molH2O m-2 s-1
+    return fallowTransp; // molH2O m-2 s-1
 }
 
 
