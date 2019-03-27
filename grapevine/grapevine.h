@@ -157,12 +157,7 @@ struct TparameterWangLeuning{
 
 struct TparameterWangLeuningFix{
     double optimalTemperatureForPhotosynthesis;
-    double minimalStomatalConductance;
-    void initialize()
-    {
-        optimalTemperatureForPhotosynthesis = 298.15; // Celsius deg
-        minimalStomatalConductance = 0.008;
-    }
+    double stomatalConductanceMin;
 };
 
 struct TparameterPhenoVitis{
@@ -287,42 +282,32 @@ class Vine3D_Grapevine {
 private:
     TstatePlant statePlant;
 
-    double simulationStepInSeconds ;
+    double simulationStepInSeconds;
 
-    int myDoy ;
-    int myYear ;
-    double myHour ;
+    int myDoy;
+    int myYear;
+    double myHour;
 
-    double myAtmosphericPressure ;
-    double myPrec ;
-    double meanDailyTemperature;
-    double myInstantTemp ;
-    double myRelativeHumidity ;
-    double vaporPressureDeficit ;
-    double myAirVapourPressure ;
+    double myAtmosphericPressure;
+    double myPrec;
+    double myMeanDailyTemperature;
+    double myInstantTemp;
+    double myRelativeHumidity;
+    double myVaporPressureDeficit;
+    double myAirVapourPressure;
     double myIrradiance, myDiffuseIrradiance, myDirectIrradiance, myLongWaveIrradiance;
-    double emissivitySky ;
-    double slopeSatVapPressureVSTemp ;
-    double mySunElevation ;
-    double myCloudiness ;
-    double myWindSpeed ;
-    //double myThermalUnit ;
-    //double potentialEvapotranspiration;
-
-    double mySoilTemp ;
-    //double* soilTempProfile;
+    double myEmissivitySky;
+    double mySlopeSatVapPressureVSTemp;
+    double mySunElevation;
+    double myCloudiness;
+    double myWindSpeed;
+    double mySoilTemp;
 
     int nrMaxLayers;
 
     double wiltingPoint;
     double psiSoilAverage;
     double psiFieldCapacityAverage;
-
-    //double* soilFieldCapacity;
-    //double* psiSoilProfile;
-    //double* soilWaterContentProfile;
-    //double* soilWaterContentProfileFC;
-    //double* soilWaterContentProfileWP;
 
     //double* layerRootDensity;
     double totalStomatalConductance, totalStomatalConductanceNoStress ;

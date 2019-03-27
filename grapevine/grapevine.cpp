@@ -166,9 +166,9 @@ bool Vine3D_Grapevine::setWeather(double meanDailyTemp, double temp, double irra
     myRelativeHumidity = relativeHumidity ;
     myWindSpeed = windSpeed ;
     myAtmosphericPressure = atmosphericPressure ;
-    meanDailyTemperature = meanDailyTemp;
+    myMeanDailyTemperature = meanDailyTemp;
     double deltaRelHum = maxValue(100.0 - myRelativeHumidity, 0.01);
-    vaporPressureDeficit = 0.01 * deltaRelHum * 613.75 * exp(17.502 * myInstantTemp / (240.97 + myInstantTemp));
+    myVaporPressureDeficit = 0.01 * deltaRelHum * 613.75 * exp(17.502 * myInstantTemp / (240.97 + myInstantTemp));
     //globalRadiation = globRad;
     if ((int(prec) != NODATA) && (int(temp) != NODATA) && (int(windSpeed) != NODATA) && (int(irradiance) != NODATA) && (int(relativeHumidity) != NODATA) && (int(atmosphericPressure) != NODATA)) isReadingOK = true ;
     return isReadingOK ;
@@ -286,7 +286,7 @@ void Vine3D_Grapevine::getFixSimulationParameters()
     parameterBindiMigliettaFix.extinctionCoefficient = 0.5;
     parameterBindiMigliettaFix.shadedSurface = 0.8;
     // Wang Leuning parameters
-    parameterWangLeuningFix.minimalStomatalConductance = 0.008;
+    parameterWangLeuningFix.stomatalConductanceMin = 0.008;
     parameterWangLeuningFix.optimalTemperatureForPhotosynthesis = 298.15;
     // fenovitis parameters
     parameterPhenoVitisFix.a= 0.005;
@@ -318,7 +318,7 @@ bool Vine3D_Grapevine::initializeStatePlant(int doy, Crit3DModelCase* vineField)
     this->statePlant.statePheno.degreeDaysAtFruitSet = NODATA;
     this->statePlant.statePheno.forceStateVegetativeSeason = 0;
 
-    meanDailyTemperature = 0.0016*squareDayAfterEOD -0.412*dayAfterStartEOD + 28.013;
+    myMeanDailyTemperature = 0.0016*squareDayAfterEOD - 0.412*dayAfterStartEOD + 28.013;
 
     if (doy > 90 && doy < parameterPhenoVitisFix.startingDay)
         {
@@ -442,9 +442,9 @@ void Vine3D_Grapevine::weatherVariables()
 {
     // taken from Hydrall Model, Magnani UNIBO
     myAirVapourPressure = SaturationVaporPressure(myInstantTemp)*myRelativeHumidity/100.;
-    emissivitySky = 1.24*pow((myAirVapourPressure/100.0)/(myInstantTemp+ZEROCELSIUS),(1.0/7.0))*(1 - 0.84*myCloudiness)+ 0.84*myCloudiness;
-    myLongWaveIrradiance = pow(myInstantTemp+ZEROCELSIUS,4)* emissivitySky * STEFAN_BOLTZMANN ;
-    slopeSatVapPressureVSTemp = 2588464.2/pow(240.97+myInstantTemp,2) * exp(17.502* myInstantTemp /(240.97+ myInstantTemp)) ;
+    myEmissivitySky = 1.24 * pow((myAirVapourPressure/100.0) / (myInstantTemp+ZEROCELSIUS),(1.0/7.0))*(1 - 0.84*myCloudiness)+ 0.84*myCloudiness;
+    myLongWaveIrradiance = pow(myInstantTemp+ZEROCELSIUS,4) * myEmissivitySky * STEFAN_BOLTZMANN ;
+    mySlopeSatVapPressureVSTemp = 2588464.2 / pow(240.97 + myInstantTemp, 2) * exp(17.502 * myInstantTemp / (240.97 + myInstantTemp)) ;
 }
 
 
@@ -529,7 +529,7 @@ void Vine3D_Grapevine::radiationAbsorption()
         double emissivityLeaf, emissivitySoil;
         emissivityLeaf = 0.96 ; // supposed constant because variation is very small
         emissivitySoil= 0.94 ;   // supposed constant because variation is very small
-        sunlitAbsorbedLW = (dum[16] * UPSCALINGFUNC((directLightK+diffuseLightK),statePlant.stateGrowth.leafAreaIndex))*emissivityLeaf+(1.0-emissivitySoil)*(emissivityLeaf-emissivitySky)* UPSCALINGFUNC((2*diffuseLightK),statePlant.stateGrowth.leafAreaIndex)* UPSCALINGFUNC((directLightK-diffuseLightK),statePlant.stateGrowth.leafAreaIndex);
+        sunlitAbsorbedLW = (dum[16] * UPSCALINGFUNC((directLightK+diffuseLightK),statePlant.stateGrowth.leafAreaIndex))*emissivityLeaf+(1.0-emissivitySoil)*(emissivityLeaf-myEmissivitySky)* UPSCALINGFUNC((2*diffuseLightK),statePlant.stateGrowth.leafAreaIndex)* UPSCALINGFUNC((directLightK-diffuseLightK),statePlant.stateGrowth.leafAreaIndex);
         shadedAbsorbedLW = dum[16] * UPSCALINGFUNC(diffuseLightK,statePlant.stateGrowth.leafAreaIndex) - sunlitAbsorbedLW ;
         // Isothermal net radiation for sunlit (1) and shaded (2) big-leaf
         sunlit.isothermalNetRadiation= sunlit.absorbedPAR + sunlitAbsorbedNIR + sunlitAbsorbedLW ;
@@ -591,12 +591,12 @@ void Vine3D_Grapevine::leafTemperature()
 
         //shadedIrradiance = myDiffuseIrradiance * shaded.leafAreaIndex / statePlant.stateGrowth.leafAreaIndex;
         shadedGlobalRadiation = myDiffuseIrradiance * simulationStepInSeconds ;
-        shaded.leafTemperature = myInstantTemp + 1.67*1.0e-6 * shadedGlobalRadiation - 0.25 * vaporPressureDeficit / GAMMA ; // by Stanghellini 1987 phd thesis
+        shaded.leafTemperature = myInstantTemp + 1.67*1.0e-6 * shadedGlobalRadiation - 0.25 * myVaporPressureDeficit / GAMMA ; // by Stanghellini 1987 phd thesis
 
         // sunlitIrradiance = myDiffuseIrradiance * sunlit.leafAreaIndex/ statePlant.stateGrowth.leafAreaIndex;
         //sunlitIrradiance = myDirectIrradiance * sunlit.leafAreaIndex/ statePlant.stateGrowth.leafAreaIndex;
         sunlitGlobalRadiation = myIrradiance * simulationStepInSeconds ;
-        sunlit.leafTemperature = myInstantTemp + 1.67*1.0e-6 * sunlitGlobalRadiation - 0.25 * vaporPressureDeficit / GAMMA ; // by Stanghellini 1987 phd thesis
+        sunlit.leafTemperature = myInstantTemp + 1.67*1.0e-6 * sunlitGlobalRadiation - 0.25 * myVaporPressureDeficit / GAMMA ; // by Stanghellini 1987 phd thesis
     }
     else
     {
@@ -687,7 +687,7 @@ void Vine3D_Grapevine::aerodynamicalCoupling()
             sunlit.aerodynamicConductanceHeatExchange = aerodynamicConductanceForHeat * sunlit.leafAreaIndex/statePlant.stateGrowth.leafAreaIndex ;//sunlit big-leaf
             shaded.aerodynamicConductanceHeatExchange = aerodynamicConductanceForHeat - sunlit.aerodynamicConductanceHeatExchange ; //  shaded big-leaf
             // Canopy radiative conductance (mol m-2 s-1)
-            radiativeConductance= 4*(slopeSatVapPressureVSTemp/GAMMA)*(STEFAN_BOLTZMANN/HEAT_CAPACITY_AIR_MOLAR)*pow((myInstantTemp + ZEROCELSIUS),3);
+            radiativeConductance= 4*(mySlopeSatVapPressureVSTemp/GAMMA)*(STEFAN_BOLTZMANN/HEAT_CAPACITY_AIR_MOLAR)*pow((myInstantTemp + ZEROCELSIUS),3);
             // Total conductance to heat exchange (mol m-2 s-1)
             totalConductanceToHeatExchange =  aerodynamicConductanceForHeat + radiativeConductance; //whole canopy
             sunlit.totalConductanceHeatExchange = totalConductanceToHeatExchange * sunlit.leafAreaIndex/statePlant.stateGrowth.leafAreaIndex;	//sunlit big-leaf
@@ -700,10 +700,10 @@ void Vine3D_Grapevine::aerodynamicalCoupling()
                 //if (sunlit.isothermalNetRadiation > 100) stomatalConductanceWater *= pow(100/sunlit.isothermalNetRadiation,0.5);
                 sunlitDeltaTemp = ((stomatalConductanceWater+1.0/sunlit.aerodynamicConductanceHeatExchange)
                                    *GAMMA*sunlit.isothermalNetRadiation/HEAT_CAPACITY_AIR_MOLAR
-                                   - vaporPressureDeficit*(1+0.001*sunlit.isothermalNetRadiation))
+                                   - myVaporPressureDeficit*(1+0.001*sunlit.isothermalNetRadiation))
                                     /sunlit.totalConductanceHeatExchange/(GAMMA*(stomatalConductanceWater
                                     +1.0/sunlit.aerodynamicConductanceCO2Exchange)
-                                    + slopeSatVapPressureVSTemp/sunlit.totalConductanceHeatExchange);
+                                    + mySlopeSatVapPressureVSTemp/sunlit.totalConductanceHeatExchange);
             }
             else
             {
@@ -714,8 +714,8 @@ void Vine3D_Grapevine::aerodynamicalCoupling()
             stomatalConductanceWater = 10.0/shaded.leafAreaIndex ; //dummy stom res for shaded big-leaf
             //if (shaded.isothermalNetRadiation > 100) stomatalConductanceWater *= pow(100/shaded.isothermalNetRadiation,0.5);
             shadedDeltaTemp = ((stomatalConductanceWater + 1.0/shaded.aerodynamicConductanceHeatExchange)*GAMMA*shaded.isothermalNetRadiation/HEAT_CAPACITY_AIR_MOLAR
-                               - vaporPressureDeficit*(1+0.001*shaded.isothermalNetRadiation))/shaded.totalConductanceHeatExchange/(GAMMA*(stomatalConductanceWater + 1.0/shaded.aerodynamicConductanceHeatExchange)
-                              + slopeSatVapPressureVSTemp/shaded.totalConductanceHeatExchange);
+                               - myVaporPressureDeficit*(1+0.001*shaded.isothermalNetRadiation))/shaded.totalConductanceHeatExchange/(GAMMA*(stomatalConductanceWater + 1.0/shaded.aerodynamicConductanceHeatExchange)
+                              + mySlopeSatVapPressureVSTemp/shaded.totalConductanceHeatExchange);
             shadedDeltaTemp = 0.0;
             shaded.leafTemperature = myInstantTemp + shadedDeltaTemp + ZEROCELSIUS;  //shaded big-leaf
             // Sensible heat flux from the whole canopy
@@ -756,8 +756,8 @@ void Vine3D_Grapevine::upscale(TVineCultivar *cultivar)
     if (sineSolarElevation > 1.0e-3)
     {
         //Stomatal conductance to CO2 in darkness (molCO2 m-2 s-1)
-        sunlit.minimalStomatalConductance = parameterWangLeuningFix.minimalStomatalConductance  * UPSCALINGFUNC((directLightK+diffuseLightKPAR),statePlant.stateGrowth.leafAreaIndex)	;
-        shaded.minimalStomatalConductance = parameterWangLeuningFix.minimalStomatalConductance  * (UPSCALINGFUNC(diffuseLightKPAR,statePlant.stateGrowth.leafAreaIndex) - UPSCALINGFUNC((directLightK+diffuseLightKPAR),statePlant.stateGrowth.leafAreaIndex));
+        sunlit.minimalStomatalConductance = parameterWangLeuningFix.stomatalConductanceMin  * UPSCALINGFUNC((directLightK+diffuseLightKPAR),statePlant.stateGrowth.leafAreaIndex)	;
+        shaded.minimalStomatalConductance = parameterWangLeuningFix.stomatalConductanceMin  * (UPSCALINGFUNC(diffuseLightKPAR,statePlant.stateGrowth.leafAreaIndex) - UPSCALINGFUNC((directLightK+diffuseLightKPAR),statePlant.stateGrowth.leafAreaIndex));
         // Carboxylation rate
         //sunlit.maximalCarboxylationRate = optimalCarboxylationRate * exp(CVCM - HAVCM/dum[0]); //sunlit big leaf
         //shaded.maximalCarboxylationRate = optimalCarboxylationRate * exp(CVCM - HAVCM/dum[1]); //shaded big leaf
@@ -837,10 +837,10 @@ void Vine3D_Grapevine::photosynthesisKernel(TVineCultivar* cultivar, double COMP
       {
             // Initialize variables
             myStromalCarbonDioxide = 0.7 * getCO2() ;
-            VPDS = vaporPressureDeficit;
+            VPDS = myVaporPressureDeficit;
             //myPreviousVPDS = VPDS;
             ASSOLD = NODATA ;
-            DUM1 = 1.6*slopeSatVapPressureVSTemp/GAMMA+ GHR/GAC;
+            DUM1 = 1.6*mySlopeSatVapPressureVSTemp/GAMMA+ GHR/GAC;
             I = 0 ; // initialize the cycle variable
             while ((I++ < Imax) && (deltaAssimilation > myTolerance))
             {
@@ -859,7 +859,7 @@ void Vine3D_Grapevine::photosynthesisKernel(TVineCultivar* cultivar, double COMP
                 myStromalCarbonDioxide = CS - myAtmosphericPressure * (*ASS - RD) / (*GSC);	 //CO2 concentr at carboxyl sites (Pa)
                 myStromalCarbonDioxide = maxValue(1.0e-2,myStromalCarbonDioxide) ;
                 //Vapour pressure deficit at leaf surface
-                VPDS = (slopeSatVapPressureVSTemp/HEAT_CAPACITY_AIR_MOLAR*RNI + vaporPressureDeficit*GHR) / (GHR+(*GSC)*DUM1);  //VPD at the leaf surface (Pa)
+                VPDS = (mySlopeSatVapPressureVSTemp / HEAT_CAPACITY_AIR_MOLAR*RNI + myVaporPressureDeficit * GHR) / (GHR+(*GSC)*DUM1);  //VPD at the leaf surface (Pa)
                 deltaAssimilation = fabs((*ASS) - ASSOLD);
                 ASSOLD = *ASS ;
             }
@@ -868,7 +868,7 @@ void Vine3D_Grapevine::photosynthesisKernel(TVineCultivar* cultivar, double COMP
       {
         *ASS= 0.0;
         *GSC= GSCD;
-        VPDS= vaporPressureDeficit ;
+        VPDS= myVaporPressureDeficit ;
       }
       //  Transpiration rate
       *TR = (*GSC / 0.64) * VPDS/myAtmosphericPressure ;  //Transpiration rate (mol m-2 s-1). Ratio of diffusivities from Wang & Leuning 1998
@@ -893,10 +893,10 @@ void Vine3D_Grapevine::photosynthesisKernelSimplified(TVineCultivar* cultivar, d
             // Initialize variables
             myStromalCarbonDioxide = 0.7 * getCO2() ;
             CS = getCO2();
-            VPDS = vaporPressureDeficit;
+            VPDS = myVaporPressureDeficit;
             //myPreviousVPDS = VPDS;
             ASSOLD = NODATA ;
-            //DUM1 = 1.6*slopeSatVapPressureVSTemp/GAMMA+ GHR/GAC;
+            //DUM1 = 1.6*mySlopeSatVapPressureVSTemp/GAMMA+ GHR/GAC;
             I = 0 ; // initialize the cycle variable
             while ((I++ < Imax) && (deltaAssimilation > myTolerance))
             {
@@ -915,7 +915,7 @@ void Vine3D_Grapevine::photosynthesisKernelSimplified(TVineCultivar* cultivar, d
                 myStromalCarbonDioxide = CS - myAtmosphericPressure * (*ASS - RD) / (*GSC);	 //CO2 concentr at carboxyl sites (Pa)
                 myStromalCarbonDioxide = maxValue(1.0e-2,myStromalCarbonDioxide) ;
                 //Vapour pressure deficit at leaf surface
-                //VPDS = (slopeSatVapPressureVSTemp/HEAT_CAPACITY_AIR_MOLAR*RNI + vaporPressureDeficit*GHR) / (GHR+(*GSC)*DUM1);  //VPD at the leaf surface (Pa)
+                //VPDS = (mySlopeSatVapPressureVSTemp/HEAT_CAPACITY_AIR_MOLAR*RNI + myVaporPressureDeficit*GHR) / (GHR+(*GSC)*DUM1);  //VPD at the leaf surface (Pa)
                 deltaAssimilation = fabs((*ASS) - ASSOLD);
                 ASSOLD = *ASS ;
             }
@@ -924,7 +924,7 @@ void Vine3D_Grapevine::photosynthesisKernelSimplified(TVineCultivar* cultivar, d
       {
         *ASS= 0.0;
         *GSC= GSCD;
-        VPDS= vaporPressureDeficit ;
+        VPDS= myVaporPressureDeficit ;
       }
       //  Transpiration rate
       *TR = (*GSC / 0.64) * VPDS/myAtmosphericPressure ;  //Transpiration rate (mol m-2 s-1). Ratio of diffusivities from Wang & Leuning 1998
@@ -1418,14 +1418,14 @@ void Vine3D_Grapevine::computePhenology(bool computeDaily, bool* isVegSeason, TV
         if (myDoy == parameterPhenoVitisFix.startingDay)
             statePlant.statePheno.chillingState = 0;
         else
-            statePlant.statePheno.chillingState += chillingRate(meanDailyTemperature, parameterPhenoVitisFix.a,parameterPhenoVitisFix.optimalChillingTemp);
+            statePlant.statePheno.chillingState += chillingRate(myMeanDailyTemperature, parameterPhenoVitisFix.a,parameterPhenoVitisFix.optimalChillingTemp);
 
         if (int(statePlant.statePheno.stage) != NOT_INITIALIZED_VINE)
             statePlant.statePheno.stage = endoDormancy + minValue(1, statePlant.statePheno.chillingState / cultivar->parameterPhenoVitis.criticalChilling);
 
         if (statePlant.statePheno.chillingState > cultivar->parameterPhenoVitis.criticalChilling)
         {
-            statePlant.statePheno.forceStateBudBurst = forceStateFunction(statePlant.statePheno.forceStateBudBurst , meanDailyTemperature);
+            statePlant.statePheno.forceStateBudBurst = forceStateFunction(statePlant.statePheno.forceStateBudBurst , myMeanDailyTemperature);
             criticalForceStateBudBurst = criticalForceState(statePlant.statePheno.chillingState, cultivar->parameterPhenoVitis.co1 , parameterPhenoVitisFix.co2);
             statePlant.statePheno.stage = ecoDormancy + minValue(1,1 - ((criticalForceStateBudBurst - statePlant.statePheno.forceStateBudBurst) / criticalForceStateBudBurst));
         }
@@ -1433,7 +1433,7 @@ void Vine3D_Grapevine::computePhenology(bool computeDaily, bool* isVegSeason, TV
         if ((statePlant.statePheno.forceStateBudBurst > criticalForceStateBudBurst))
         {
             *isVegSeason = true;
-            statePlant.statePheno.forceStateVegetativeSeason = forceStateFunction(statePlant.statePheno.forceStateVegetativeSeason, meanDailyTemperature,cultivar->parameterPhenoVitis.degreeDaysAtVeraison);
+            statePlant.statePheno.forceStateVegetativeSeason = forceStateFunction(statePlant.statePheno.forceStateVegetativeSeason, myMeanDailyTemperature,cultivar->parameterPhenoVitis.degreeDaysAtVeraison);
 
             //veraison->physiologicalMaturity
             if (statePlant.statePheno.forceStateVegetativeSeason > cultivar->parameterPhenoVitis.criticalForceStateVeraison)
@@ -1554,7 +1554,7 @@ double Vine3D_Grapevine::getFallowTranspiration(double stress, double lai, doubl
 {
     if (lai <= 0) return 0.0;
 
-    double waterUseEfficiencyGrass = getCO2() * 0.3 / (1.6*vaporPressureDeficit);
+    double waterUseEfficiencyGrass = getCO2() * 0.3 / (1.6*myVaporPressureDeficit);
     double photosyntheticActiveRadiation = 0.5 * myIrradiance;
 
     double grassAbsorbedPAR = photosyntheticActiveRadiation * (1-exp(-0.8*lai));
@@ -1568,10 +1568,10 @@ double Vine3D_Grapevine::getFallowTranspiration(double stress, double lai, doubl
     double compensationPoint = exp(CGSTAR - HAGSTAR/dum) * 1.0e-6 * myAtmosphericPressure;
 
     double stomatalConductanceGrass = alphaLeuning * ((assimilationGrass*(1-0.089)) / (getCO2()-compensationPoint))
-            * (sensitivityToVPD / (sensitivityToVPD + vaporPressureDeficit)); //stom conduct to CO2 (mol m-2 s-1)
+            * (sensitivityToVPD / (sensitivityToVPD + myVaporPressureDeficit)); //stom conduct to CO2 (mol m-2 s-1)
 
     //Transpiration rate (mol m-2 s-1). Ratio of diffusivities from Wang & Leuning 1998
-    double fallowTransp = (stomatalConductanceGrass / 0.64) * vaporPressureDeficit/myAtmosphericPressure ;
+    double fallowTransp = (stomatalConductanceGrass / 0.64) * myVaporPressureDeficit/myAtmosphericPressure ;
 
     return fallowTransp; // molH2O m-2 s-1
 }
@@ -1584,7 +1584,7 @@ double Vine3D_Grapevine::getGrassTranspiration(double stress, double laiGrassMax
     if (laiGrassMax <= 0) return 0.0;
 
     // water-limited transpiration
-    double waterUseEfficiencyGrass = getCO2() * 0.3 / (1.6*vaporPressureDeficit);
+    double waterUseEfficiencyGrass = getCO2() * 0.3 / (1.6*myVaporPressureDeficit);
     double photosyntheticActiveRadiation = 0.5 * myIrradiance;
 
     double grassAbsorbedPARSunlit, grassAbsorbedPARShaded;
@@ -1609,10 +1609,10 @@ double Vine3D_Grapevine::getGrassTranspiration(double stress, double laiGrassMax
 
     // stom conduct to CO2 (mol m-2 s-1)
     stomatalConductanceGrass = alphaLeuning * (((assimilationGrassShaded+assimilationGrassSunlit)*(1-0.089)) / (getCO2()-compensationPoint))
-            * (sensitivityToVPD / (sensitivityToVPD + vaporPressureDeficit));
+            * (sensitivityToVPD / (sensitivityToVPD + myVaporPressureDeficit));
 
     // Transpiration rate (mol m-2 s-1). Ratio of diffusivities from Wang & Leuning 1998
-    double grassTransp = (stomatalConductanceGrass / 0.64) * vaporPressureDeficit / myAtmosphericPressure ;
+    double grassTransp = (stomatalConductanceGrass / 0.64) * myVaporPressureDeficit / myAtmosphericPressure ;
     return grassTransp; // molH2O m-2 s-1
 }
 
@@ -1762,7 +1762,7 @@ void Vine3D_Grapevine::getLAIVine(Crit3DModelCase* vineField)
 
     if (myDoy < 260)
     {
-        leafNumberRate = maxValue(0,(parameterBindiMigliettaFix.a + parameterBindiMigliettaFix.b * meanDailyTemperature) * (1 + parameterBindiMigliettaFix.c * statePlant.stateGrowth.shootLeafNumber));
+        leafNumberRate = maxValue(0,(parameterBindiMigliettaFix.a + parameterBindiMigliettaFix.b * myMeanDailyTemperature) * (1 + parameterBindiMigliettaFix.c * statePlant.stateGrowth.shootLeafNumber));
     }
     else leafNumberRate = 0;
 
