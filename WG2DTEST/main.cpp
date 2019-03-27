@@ -239,61 +239,6 @@ int main()
 
     WG2D.initializeParameters(NODATA,2,2,1,1);
     WG2D.computeWeatherGenerator2D();
-    /*FILE *fp;
-    fp = fopen("randomNumbersNormalized.dat","w");
-    int gasDevIset = 0;
-    float gasDevGset = 0;
-
-    srand (time(NULL));
-    for (int i=0;i<10000;i++)
-    {
-        fprintf(fp,"%f\n",myrandom::normalRandom(&gasDevIset,&gasDevGset));
-    }
-    fclose(fp);
-    */
-    /*
-    int nrIterations= 10000;
-    double eps = 0.1;
-    int nrPar = 3;
-    double *myParameter = (double *)calloc(nrPar, sizeof(double));
-    double *parMax = (double *)calloc(nrPar, sizeof(double));
-    double *parMin = (double *)calloc(nrPar, sizeof(double));
-    int nrObs = 4;
-    double *xObs = (double *)calloc(nrObs, sizeof(double));
-    double *yObs = (double *)calloc(nrObs, sizeof(double));
-
-    xObs[0]=0;
-    xObs[1]=1;
-    xObs[2]=2;
-    xObs[3]=3;
-    yObs[0]=0;
-    yObs[1]=0.8;
-    yObs[2]=1.6;
-    yObs[3]= 3.4;
-    parMin[0]= -5;
-    parMin[1]= -3;
-    parMin[2]= -10;
-    parMax[0]= 13;
-    parMax[1]= 18;
-    parMax[2]= 10;
-    myParameter[0]=parMin[0];
-    myParameter[1]=parMin[1];
-    myParameter[2]=parMin[2];
-    fittingRandom(nrIterations, eps, myParameter, nrPar,parMax,parMin,xObs,yObs,nrObs);
-    printf("par %f %f %f\n",myParameter[0],myParameter[1],myParameter[2]);
-    double yy;
-    double xx;
-    xx =xObs[0];
-    yy = interpolation::estimateFunction(TWOPARAMETERSPOLYNOMIAL,myParameter,&xx);
-    printf("value %f\n",yy);
-    xx =xObs[1];
-    yy = interpolation::estimateFunction(TWOPARAMETERSPOLYNOMIAL,myParameter,&xx);
-    printf("value %f\n",yy);
-    xx =xObs[2];
-    yy = interpolation::estimateFunction(TWOPARAMETERSPOLYNOMIAL,myParameter,&xx);
-    printf("value %f\n",yy);*/
-
-
     return 0;
 }
 
