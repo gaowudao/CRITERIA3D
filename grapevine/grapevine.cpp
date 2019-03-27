@@ -233,7 +233,6 @@ bool Vine3D_Grapevine::setSoilProfile(Crit3DModelCase* modelCase, double* myWilt
     fractionTranspirableSoilWaterAverage = 0;
 
     double waterContent, waterContentFC, waterContentWP;
-    double tmp;
 
     for (int i = 0; i < modelCase->soilLayersNr; i++)
     {
@@ -242,7 +241,6 @@ bool Vine3D_Grapevine::setSoilProfile(Crit3DModelCase* modelCase, double* myWilt
         waterContentWP = mySoilWaterContentWP[i];
 
         fractionTranspirableSoilWaterProfile[i] = maxValue(0, minValue(1, (waterContent - waterContentWP) / (waterContentFC - waterContentWP)));
-        tmp = fractionTranspirableSoilWaterProfile[i];
         fractionTranspirableSoilWaterAverage += fractionTranspirableSoilWaterProfile[i] * modelCase->rootDensity[i];
         transpirationLayer[i] = 0.;
         transpirationCumulatedGrass[i] = 0. ;
