@@ -1044,7 +1044,7 @@
         //Returns the incomplete gamma function P(a, x) evaluated by its series representation as gamser.
         //Also returns ln Γ(a) as gln.
         {
-            double gammaNaturalLogarithm(double value);
+            //double gammaNaturalLogarithm(double value);
 
 
             //void nrerror(char error_text[]);
@@ -1081,7 +1081,7 @@
         //Returns the incomplete gamma function Q(a, x) evaluated by its continued fraction representation
         //as gammcf. Also returns lnΓ(a) as gln.
         {
-            double gammaNaturalLogarithm(double value);
+            //double gammaNaturalLogarithm(double value);
             //void nrerror(char error_text[]);
             int i;
             double an,b,c,d,del,h;

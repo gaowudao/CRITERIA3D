@@ -2113,7 +2113,7 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
        // fine da cavare
 
 
-
+       printf("fase 5a\n");
        weatherGenerator2D::spatialIterationAmounts(amountCorrelationMatrixSeasonSimulated , amountCorrelationMatrixSeason,randomMatrixNormalDistribution,lengthSeason[iSeason]*parametersModel.yearOfSimulation,occurrenceSeason,phatAlpha,phatBeta,simulatedPrecipitationAmountsSeasonal);
        //printf("%d \n",iSeason);
        for (int i=0;i<nrStations;i++)
@@ -2130,7 +2130,7 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
             }
             //printf("\n");
        }
-
+        printf("fase 5b\n");
 
        // free memory
        for (int i=0;i<nrStations;i++)
@@ -2673,21 +2673,23 @@ double weatherGenerator2D::inverseGammaFunction(double valueProbability, double 
 {
     double x;
     double y;
-    double gammaComplete;
+    //double gammaComplete;
     double rightBound = 2500.0;
     double leftBound = 0.0;
     int counter = 0;
     do {
-        y = gammaDistributions::incompleteGamma(alpha,rightBound/beta,&gammaComplete);
+        //y = gammaDistributions::incompleteGamma(alpha,rightBound/beta,&gammaComplete);
+        y = gammaDistributions::incompleteGamma(alpha,rightBound/beta);
         rightBound *= 2.;
         counter++;
     } while ((valueProbability>y) && (counter<5));
     counter = 0;
     x = (rightBound + leftBound)*0.5;
-    y = gammaDistributions::incompleteGamma(alpha,x/beta,&gammaComplete);
+    //y = gammaDistributions::incompleteGamma(alpha,x/beta,&gammaComplete);
+    y = gammaDistributions::incompleteGamma(alpha,x/beta);
     //double prova;
     //prova = gammaDistributions::incompleteGamma(0.8321,15.1591/4.6847);
-    //printf("%f \n",prova); pressEnterToContinue();
+    //printf("prova\n"); //pressEnterToContinue();
     while ((fabs(valueProbability - y) > EPSILON) && (counter < 200))
     {
         if (y > valueProbability)
@@ -2699,7 +2701,8 @@ double weatherGenerator2D::inverseGammaFunction(double valueProbability, double 
             leftBound = x;
         }
         x = (rightBound + leftBound)*0.5;
-        y = gammaDistributions::incompleteGamma(alpha,x/beta,&gammaComplete);
+        //y = gammaDistributions::incompleteGamma(alpha,x/beta,&gammaComplete);
+        y = gammaDistributions::incompleteGamma(alpha,x/beta);
         counter++;
         //printf("valore %f valore Input %f prec %f contatore %d\n",y,valueProbability,x,counter);
     }
