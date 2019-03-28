@@ -142,7 +142,7 @@ public:
     void initializeParameters(float thresholdPrecipitation, int simulatedYears, int distributionType, bool computePrecWG2D, bool computeTempWG2D);
     void setObservedData(TObsDataD** observations);
     void computeWeatherGenerator2D();
-    double inverseGammaFunction(double valueProbability, double alpha, double beta);
+    double inverseGammaFunction(double valueProbability, double alpha, double beta, double accuracy);
     void pressEnterToContinue();
 };
 

@@ -2561,7 +2561,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
                     else
                     {
                         if (uniformRandom[i][j] <= 0) uniformRandom[i][j] = 0.00001;
-                        simulatedPrecipitationAmountsSeasonal[i][j] = weatherGenerator2D::inverseGammaFunction(uniformRandom[i][j],phatAlpha[i][j],phatBeta[i][j]) + parametersModel.precipitationThreshold;
+                        simulatedPrecipitationAmountsSeasonal[i][j] = weatherGenerator2D::inverseGammaFunction(uniformRandom[i][j],phatAlpha[i][j],phatBeta[i][j],0.0001) + parametersModel.precipitationThreshold;
                         //printf("%f %f %f %f\n",simulatedPrecipitationAmounts[i][j], uniformRandom[i][j],phatAlpha[i][j],phatBeta[i][j]);
                         //pressEnterToContinue();
                         // check uniformRandom phatAlpha e phatBeta i dati non vanno bene
@@ -2669,12 +2669,12 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
 }
 
 
-double weatherGenerator2D::inverseGammaFunction(double valueProbability, double alpha, double beta)
+double weatherGenerator2D::inverseGammaFunction(double valueProbability, double alpha, double beta, double accuracy)
 {
     double x;
     double y;
     //double gammaComplete;
-    double rightBound = 2500.0;
+    double rightBound = 25.0;
     double leftBound = 0.0;
     int counter = 0;
     do {
@@ -2682,7 +2682,7 @@ double weatherGenerator2D::inverseGammaFunction(double valueProbability, double 
         y = gammaDistributions::incompleteGamma(alpha,rightBound/beta);
         rightBound *= 2.;
         counter++;
-    } while ((valueProbability>y) && (counter<5));
+    } while ((valueProbability>y) && (counter<10));
     counter = 0;
     x = (rightBound + leftBound)*0.5;
     //y = gammaDistributions::incompleteGamma(alpha,x/beta,&gammaComplete);
@@ -2690,7 +2690,7 @@ double weatherGenerator2D::inverseGammaFunction(double valueProbability, double 
     //double prova;
     //prova = gammaDistributions::incompleteGamma(0.8321,15.1591/4.6847);
     //printf("prova\n"); //pressEnterToContinue();
-    while ((fabs(valueProbability - y) > EPSILON) && (counter < 200))
+    while ((fabs(valueProbability - y) > accuracy) && (counter < 200))
     {
         if (y > valueProbability)
         {
