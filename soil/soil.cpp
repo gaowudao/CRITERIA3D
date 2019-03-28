@@ -117,11 +117,7 @@ namespace soil
         this->id = NODATA;
         this->totalDepth = 0;
         this->nrHorizons = 0;
-    }
-
-    Crit3DSoil::Crit3DSoil(int idSoil, int nrHorizons)
-    {
-        this->initialize(idSoil, nrHorizons);
+        this->horizon = nullptr;
     }
 
     void Crit3DSoil::initialize(int idSoil, int nrHorizons)
@@ -135,7 +131,7 @@ namespace soil
 
     void Crit3DSoil::cleanSoil()
     {
-        if (this->nrHorizons > 0)
+        if (this->horizon != nullptr)
             delete [] (this->horizon);
 
         this->id = NODATA;

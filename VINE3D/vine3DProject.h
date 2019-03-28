@@ -112,7 +112,7 @@
         bool loadTrainingSystems();
         bool loadSoils();
         bool loadFieldBook();
-        bool loadHorizons(soil::Crit3DSoil* mySoil, int idSoil, QString soil_code);
+        soil::Crit3DSoil *loadHorizons(int idSoil, QString soil_code);
 
         void deleteAllGrids();
         void initializeMeteoPoints();

@@ -107,7 +107,6 @@
             Crit3DHorizon* horizon;
 
             Crit3DSoil();
-            Crit3DSoil(int idSoil, int nrHorizons);
             void initialize(int idSoil, int nrHorizons);
             void cleanSoil();
         };
