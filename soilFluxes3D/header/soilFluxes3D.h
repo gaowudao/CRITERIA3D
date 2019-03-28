@@ -71,6 +71,8 @@
     __EXTERN double DLL_EXPORT __STDCALL getWaterConductivity(long index);
     __EXTERN double DLL_EXPORT __STDCALL getWaterFlow(long index, short direction);
     __EXTERN double DLL_EXPORT __STDCALL getSumLateralWaterFlow(long n);
+    __EXTERN double DLL_EXPORT __STDCALL getSumLateralWaterFlowIn(long n);
+    __EXTERN double DLL_EXPORT __STDCALL getSumLateralWaterFlowOut(long n);
 
     // HEAT
     __EXTERN int DLL_EXPORT __STDCALL setHeatSinkSource(long nodeIndex, double myHeatFlow);

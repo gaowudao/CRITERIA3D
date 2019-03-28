@@ -746,6 +746,14 @@ double getCriteria3DVar(criteria3DVariable myVar, long nodeIndex)
     {
         myCrit3dVar = soilFluxes3D::getDegreeOfSaturation(nodeIndex);
     }
+    else if (myVar == waterInflow)
+    {
+        myCrit3dVar = soilFluxes3D::getSumLateralWaterFlowIn(nodeIndex);
+    }
+    else if (myVar == waterOutflow)
+    {
+        myCrit3dVar = soilFluxes3D::getSumLateralWaterFlowOut(nodeIndex);
+    }
     else
     {
         myCrit3dVar = MISSING_DATA_ERROR;

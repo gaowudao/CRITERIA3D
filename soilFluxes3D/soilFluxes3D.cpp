@@ -756,6 +756,45 @@ namespace soilFluxes3D {
  }
 
 
+ /*!
+  * \brief computes [m^3] integrated inflow over the time step
+  * \param n
+  * \return result
+  */
+ double DLL_EXPORT __STDCALL getSumLateralWaterFlowIn(long n)
+ {
+    if (myNode == nullptr) return MEMORY_ERROR;
+    if ((n < 0) || (n >= myStructure.nrNodes)) return INDEX_ERROR;
+
+    double sumLateralFlow = 0.0;
+    for (short i = 0; i < myStructure.nrLateralLinks; i++)
+        if (myNode[n].lateral[i].index != NOLINK)
+            if (myNode[n].lateral[i].sumFlow > 0)
+                sumLateralFlow += myNode[n].lateral[i].sumFlow;
+
+    return sumLateralFlow;
+ }
+
+ /*!
+  * \brief computes [m^3] integrated outflow over the time step
+  * \param n
+  * \return result
+  */
+ double DLL_EXPORT __STDCALL getSumLateralWaterFlowOut(long n)
+ {
+    if (myNode == nullptr) return MEMORY_ERROR;
+    if ((n < 0) || (n >= myStructure.nrNodes)) return INDEX_ERROR;
+
+    double sumLateralFlow = 0.0;
+    for (short i = 0; i < myStructure.nrLateralLinks; i++)
+        if (myNode[n].lateral[i].index != NOLINK)
+            if (myNode[n].lateral[i].sumFlow < 0)
+                sumLateralFlow += myNode[n].lateral[i].sumFlow;
+
+    return sumLateralFlow;
+ }
+
+
  void DLL_EXPORT __STDCALL initializeBalance()
 {
     InitializeBalanceWater();
