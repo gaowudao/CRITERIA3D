@@ -584,8 +584,7 @@ bool Project::loadMeteoPointsDB(QString dbName)
     // load proxy values for detrending
     if (! readProxyValues())
     {
-        logError("Error reading proxy values");
-        return false;
+        log("Error reading proxy values");
     }
 
     //position with respect to DEM
