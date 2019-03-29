@@ -23,17 +23,20 @@ Crit3DWaterBalanceMaps::Crit3DWaterBalanceMaps(const gis::Crit3DRasterGrid &dtm)
 void Crit3DWaterBalanceMaps::initialize()
 {
     bottomDrainageMap = new gis::Crit3DRasterGrid;
+    waterInflowMap = new gis::Crit3DRasterGrid;
 }
 
 void Crit3DWaterBalanceMaps::initializeWithDtm(const gis::Crit3DRasterGrid &dtm)
 {
     initialize();
     bottomDrainageMap->initializeGrid(dtm);
+    waterInflowMap->initializeGrid(dtm);
 }
 
 void resetWaterBalanceMap(Vine3DProject* myProject)
 {
     myProject->outputWaterBalanceMaps->bottomDrainageMap->setConstantValueWithBase(0, myProject->DTM);
+    myProject->outputWaterBalanceMaps->waterInflowMap->setConstantValueWithBase(0, myProject->DTM);
 }
 
 void updateWaterBalanceMaps(Vine3DProject* myProject)
@@ -42,7 +45,7 @@ void updateWaterBalanceMaps(Vine3DProject* myProject)
     long nodeIndex;
     int layer;
     double flow, flow_mm;
-    double area;
+    double area, lateralArea;
 
     area = pow(myProject->outputWaterBalanceMaps->bottomDrainageMap->header->cellSize, 2);
 
@@ -53,6 +56,11 @@ void updateWaterBalanceMaps(Vine3DProject* myProject)
                 layer = 0;
                 do
                 {
+                    flow = soilFluxes3D::getSumLateralWaterFlowIn(nodeIndex);
+                    lateralArea = (myProject->WBSettings->layerThickness.at(layer) * myProject->outputWaterBalanceMaps->waterInflowMap->header->cellSize);
+                    flow_mm = flow * 1000 / lateralArea;
+                    myProject->outputWaterBalanceMaps->waterInflowMap->value[row][col] += float(flow_mm);
+
                     layer++;
                 } while (layer < myProject->WBSettings->nrLayers && isWithinSoil(myProject, row, col, myProject->WBSettings->layerDepth.at(size_t(layer))));
 
@@ -61,7 +69,6 @@ void updateWaterBalanceMaps(Vine3DProject* myProject)
                 flow = soilFluxes3D::getBoundaryWaterFlow(nodeIndex); //m3
                 flow_mm = flow * 1000 / area;
                 myProject->outputWaterBalanceMaps->bottomDrainageMap->value[row][col] -= float(flow_mm);
-
             }
 }
 
@@ -69,6 +76,8 @@ gis::Crit3DRasterGrid* Crit3DWaterBalanceMaps::getMapFromVar(criteria3DVariable 
 {
     if (myVar == bottomDrainage)
         return bottomDrainageMap;
+    else if (myVar == waterInflow)
+        return waterInflowMap;
     else
         return nullptr;
 }
@@ -748,11 +757,11 @@ double getCriteria3DVar(criteria3DVariable myVar, long nodeIndex)
     }
     else if (myVar == waterInflow)
     {
-        myCrit3dVar = soilFluxes3D::getSumLateralWaterFlowIn(nodeIndex);
+        myCrit3dVar = soilFluxes3D::getSumLateralWaterFlowIn(nodeIndex) * 1000;
     }
     else if (myVar == waterOutflow)
     {
-        myCrit3dVar = soilFluxes3D::getSumLateralWaterFlowOut(nodeIndex);
+        myCrit3dVar = soilFluxes3D::getSumLateralWaterFlowOut(nodeIndex) * 1000;
     }
     else
     {

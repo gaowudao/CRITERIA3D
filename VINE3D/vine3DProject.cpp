@@ -1860,18 +1860,16 @@ bool Vine3DProject::saveStateAndOutput(QDate myDate, QString myArea)
     if (!savePlantOutput(this, powderyINFRVar, myDate, outputPath, myArea, notes, false, true)) return(false);
     if (!savePlantOutput(this, powderyPrimaryInfectionRiskVar, myDate, outputPath, myArea, notes, false, true)) return(false);
 
-    if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential10", "10cm", outputPath, myArea, 0.1, 0.1)) return false;
-    if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential30", "30cm", outputPath, myArea, 0.3, 0.3)) return false;
-    if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential70", "70cm", outputPath, myArea, 0.7, 0.7)) return false;
-    if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential150", "150cm", outputPath, myArea, 1.5, 1.5)) return false;
+    if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential_m", "10cm", outputPath, myArea, 0.1, 0.1)) return false;
+    if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential_m", "30cm", outputPath, myArea, 0.3, 0.3)) return false;
+    if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential_m", "70cm", outputPath, myArea, 0.7, 0.7)) return false;
+    if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential_m", "150cm", outputPath, myArea, 1.5, 1.5)) return false;
 
     if (!saveWaterBalanceOutput(this, myDate, degreeOfSaturation, "degreeOfSaturation", "soilDepth", outputPath, myArea, 0.0, double(WBSettings->soilDepth) - 0.01)) return false;
-    if (!saveWaterBalanceOutput(this, myDate, soilSurfaceMoisture, "SSM", "5cm", outputPath, myArea, 0.0, 0.05)) return false;
-    if (!saveWaterBalanceOutput(this, myDate, availableWaterContent, "waterContent", "rootZone", outputPath, myArea, 0.0, double(WBSettings->soilDepth))) return false;
-    if (!saveWaterBalanceOutput(this, myDate, waterInflow, "waterInflow", "", outputPath, myArea, 0.0, double(WBSettings->soilDepth))) return false;
-    if (!saveWaterBalanceOutput(this, myDate, waterOutflow, "waterOutflow", "", outputPath, myArea, 0.0, double(WBSettings->soilDepth))) return false;
-
-    if (!saveWaterBalanceCumulatedOutput(this, myDate, bottomDrainage, "bottomDrainage", "", outputPath, myArea)) return false;
+    //if (!saveWaterBalanceOutput(this, myDate, soilSurfaceMoisture, "SSM", "5cm", outputPath, myArea, 0.0, 0.05)) return false;
+    if (!saveWaterBalanceOutput(this, myDate, availableWaterContent, "waterContent_mm", "rootZone", outputPath, myArea, 0.0, double(WBSettings->soilDepth))) return false;
+    if (!saveWaterBalanceCumulatedOutput(this, myDate, waterInflow, "waterInflow_mm", "", outputPath, myArea)) return false;
+    if (!saveWaterBalanceCumulatedOutput(this, myDate, bottomDrainage, "bottomDrainage_mm", "", outputPath, myArea)) return false;
 
     return(true);
 }
