@@ -1868,9 +1868,8 @@ bool Vine3DProject::saveStateAndOutput(QDate myDate, QString myArea)
     if (!saveWaterBalanceOutput(this, myDate, degreeOfSaturation, "degreeOfSaturation", "soilDepth", outputPath, myArea, 0.0, double(WBSettings->soilDepth) - 0.01)) return false;
     //if (!saveWaterBalanceOutput(this, myDate, soilSurfaceMoisture, "SSM", "5cm", outputPath, myArea, 0.0, 0.05)) return false;
     if (!saveWaterBalanceOutput(this, myDate, availableWaterContent, "waterContent_mm", "rootZone", outputPath, myArea, 0.0, double(WBSettings->soilDepth))) return false;
-    if (!saveWaterBalanceOutput(this, myDate, waterInflow, "waterInflow_l", "", outputPath, myArea, 0.0, double(WBSettings->soilDepth))) return false;
-    if (!saveWaterBalanceOutput(this, myDate, waterOutflow, "waterOutflow_l", "", outputPath, myArea, 0.0, double(WBSettings->soilDepth))) return false;
-    if (!saveWaterBalanceCumulatedOutput(this, myDate, bottomDrainage, "bottomDrainage_l", "", outputPath, myArea)) return false;
+    if (!saveWaterBalanceCumulatedOutput(this, myDate, waterInflow, "waterInflow_mm", "", outputPath, myArea)) return false;
+    if (!saveWaterBalanceCumulatedOutput(this, myDate, bottomDrainage, "bottomDrainage_mm", "", outputPath, myArea)) return false;
 
     return(true);
 }

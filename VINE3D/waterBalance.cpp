@@ -76,6 +76,8 @@ gis::Crit3DRasterGrid* Crit3DWaterBalanceMaps::getMapFromVar(criteria3DVariable 
 {
     if (myVar == bottomDrainage)
         return bottomDrainageMap;
+    else if (myVar == waterInflow)
+        return waterInflowMap;
     else
         return nullptr;
 }
