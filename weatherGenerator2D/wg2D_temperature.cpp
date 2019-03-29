@@ -13,10 +13,7 @@
 #include "gammaFunction.h"
 
 
-void weatherGenerator2D::initializeTemperaturesParameters()
-{
-    temperatureCoefficients = (TtemperatureCoefficients *)calloc(nrStations, sizeof(TtemperatureCoefficients));
-}
+
 
 void weatherGenerator2D::temperatureCompute()
 {
@@ -27,3 +24,7 @@ void weatherGenerator2D::temperatureCompute()
     // step 5 of temperature WG2D
 }
 
+void weatherGenerator2D::computeTemperatureParameters()
+{
+    temperatureCoefficients = (TtemperatureCoefficients *)calloc(nrStations, sizeof(TtemperatureCoefficients));
+}

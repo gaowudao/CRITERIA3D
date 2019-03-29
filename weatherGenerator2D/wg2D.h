@@ -162,7 +162,7 @@
 
 
         void temperatureCompute();
-        void initializeTemperaturesParameters();
+        void computeTemperatureParameters();
 
     public:
         // variables
