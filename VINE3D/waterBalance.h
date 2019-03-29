@@ -30,6 +30,7 @@
     {
         public:
             gis::Crit3DRasterGrid* bottomDrainageMap;
+            gis::Crit3DRasterGrid* waterInflowMap;
 
             Crit3DWaterBalanceMaps();
             Crit3DWaterBalanceMaps(const gis::Crit3DRasterGrid &myDtm);
