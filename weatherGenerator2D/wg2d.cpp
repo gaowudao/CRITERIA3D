@@ -126,15 +126,19 @@ bool weatherGenerator2D::initializeData(int lengthDataSeries, int stations)
 
     // use of PRAGA formats from meteoPoint.h
     obsDataD = (TObsDataD **)calloc(nrStations, sizeof(TObsDataD*));
+    //obsDataD = NULL ;
     for (int i=0;i<nrStations;i++)
     {
         obsDataD[i] = (TObsDataD *)calloc(nrData, sizeof(TObsDataD));
+        //obsDataD[i] = NULL;
     }
     // occurrence structure
     precOccurence = (TprecOccurrence **) calloc(nrStations, sizeof(TprecOccurrence*));
+    //precOccurence = NULL;
     for (int i=0;i<nrStations;i++)
     {
         precOccurence[i] = (TprecOccurrence *)calloc(12, sizeof(TprecOccurrence));
+        //precOccurence[i] = NULL;
     }
     // correlation matrix structure
     correlationMatrix = (TcorrelationMatrix*)calloc(12, sizeof(TcorrelationMatrix));
@@ -2643,7 +2647,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
         free(dummyMatrix3[i]);
         free(normRandom[i]);
         free(uniformRandom[i]);
-        free(correlationMatrixSimulatedData[i]);
+        //free(correlationMatrixSimulatedData[i]);
         free(initialAmountsCorrelationMatrix[i]);
     }
 
@@ -2656,7 +2660,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
         free(correlationArray);
         free(eigenvalues);
         free(eigenvectors);
-        free(correlationMatrixSimulatedData);
+        //free(correlationMatrixSimulatedData);
         free(initialAmountsCorrelationMatrix);
 
 }
@@ -2673,8 +2677,11 @@ double weatherGenerator2D::inverseGammaFunction(double valueProbability, double 
     do {
         //y = gammaDistributions::incompleteGamma(alpha,rightBound/beta,&gammaComplete);
         y = gammaDistributions::incompleteGamma(alpha,rightBound/beta);
-        rightBound *= 2.;
-        counter++;
+        if (valueProbability>y)
+        {   leftBound += rightBound;
+            rightBound += 25;
+            counter++;
+        }
     } while ((valueProbability>y) && (counter<10));
     counter = 0;
     x = (rightBound + leftBound)*0.5;
