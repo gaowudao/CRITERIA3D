@@ -14,7 +14,7 @@ INCLUDEPATH += ../mathFunctions
 INCLUDEPATH += ../crit3dDate
 INCLUDEPATH += ../meteo
 INCLUDEPATH += ../gis
-
+INCLUDEPATH += ../crit3dDate
 
 
 SOURCES += wg2D.cpp \
