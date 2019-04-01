@@ -3,6 +3,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QDebug>
+
 #include "shapeHandler.h"
 
 
@@ -32,8 +33,8 @@ void MainWindow::onFileOpen()
 		ui->shapeEntityCount->setText(QString::number(count));
         QString typeString = QString::fromStdString(shapeHandler.getTypeString());
 		ui->shapeType->setText(typeString);
+
 		QList<QTreeWidgetItem *> items;
-        ShapeObject object;
         for (int i = 0; i < count; i++)
         {
 			QStringList list(QString::number(i));
@@ -41,7 +42,6 @@ void MainWindow::onFileOpen()
 			QVariant v(i);
 			item->setData(0, Qt::UserRole, v);
 			items.append(item);
-            shapeHandler.getShape(i, object);
 		}
 		ui->treeWidget->clear();
 		ui->treeWidget->insertTopLevelItems(0, items);
