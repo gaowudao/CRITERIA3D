@@ -126,19 +126,17 @@ bool weatherGenerator2D::initializeData(int lengthDataSeries, int stations)
 
     // use of PRAGA formats from meteoPoint.h
     obsDataD = (TObsDataD **)calloc(nrStations, sizeof(TObsDataD*));
-    //obsDataD = NULL ;
+
     for (int i=0;i<nrStations;i++)
     {
         obsDataD[i] = (TObsDataD *)calloc(nrData, sizeof(TObsDataD));
-        //obsDataD[i] = NULL;
     }
     // occurrence structure
     precOccurence = (TprecOccurrence **) calloc(nrStations, sizeof(TprecOccurrence*));
-    //precOccurence = NULL;
+
     for (int i=0;i<nrStations;i++)
     {
         precOccurence[i] = (TprecOccurrence *)calloc(12, sizeof(TprecOccurrence));
-        //precOccurence[i] = NULL;
     }
     // correlation matrix structure
     correlationMatrix = (TcorrelationMatrix*)calloc(12, sizeof(TcorrelationMatrix));
@@ -1869,6 +1867,11 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
             amountMatrixSeasonJJA[i][j] = NODATA;
             amountMatrixSeasonSON[i][j] = NODATA;
         }
+        for (int j=0;j<nrStations;j++)
+        {
+            amountCorrelationMatrixSeason[i][j]= NODATA;
+            amountCorrelationMatrixSeasonSimulated[i][j]= NODATA;
+        }
 
         counterDJF = counterJJA = counterMAM = counterSON = 0;
         for (int j=0;j<nrData;j++)
@@ -1923,6 +1926,7 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
        {
            for (int j=0;j<lengthSeason[iSeason]*parametersModel.yearOfSimulation;j++)
            {
+               occurrenceSeason[i][j]= NODATA;
                moranRandom[i][j] = NODATA;
            }
        }
@@ -2009,7 +2013,7 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
                                  numeratorMoran += occurrenceSeason[jStations][i]*wSeason[nrStations-1][jStations];
                                  denominatorMoran += wSeason[nrStations-1][jStations];
                            }
-                           if (denominatorMoran != 0)
+                           if (fabs(denominatorMoran) < EPSILON)
                            {
                                moranRandom[iStations][i] = numeratorMoran / denominatorMoran;
                            }
@@ -2045,6 +2049,14 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
             phatBeta[i] = (double *)calloc(lengthSeason[iSeason]*parametersModel.yearOfSimulation, sizeof(double));
             randomMatrixNormalDistribution[i] = (double *)calloc(lengthSeason[iSeason]*parametersModel.yearOfSimulation, sizeof(double));
             simulatedPrecipitationAmountsSeasonal[i] = (double *)calloc(lengthSeason[iSeason]*parametersModel.yearOfSimulation, sizeof(double));
+       }
+
+       for (int i=0;i<nrStations;i++)
+       {
+           for (int j=0;j<lengthSeason[iSeason]*parametersModel.yearOfSimulation;j++)
+           {
+              simulatedPrecipitationAmountsSeasonal[i][j]= NODATA;
+           }
        }
 
        for (int j=0;j<lengthSeason[iSeason]*parametersModel.yearOfSimulation;j++)
@@ -2089,7 +2101,7 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
        double* arrayRandomNormal;
        arrayRandomNormal = (double *)calloc(nrStations*lengthSeason[iSeason]*parametersModel.yearOfSimulation, sizeof(double));
        randomSet(arrayRandomNormal,nrStations*lengthSeason[iSeason]*parametersModel.yearOfSimulation);
-       /*for (int i=0;i<nrStations*lengthSeason[iSeason]*parametersModel.yearOfSimulation;i++)
+       for (int i=0;i<nrStations*lengthSeason[iSeason]*parametersModel.yearOfSimulation;i++)
        {
             printf("%d %f\n",i,arrayRandomNormal[i]);
             pressEnterToContinue();
@@ -2120,6 +2132,8 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
        printf("fase 5a\n");
        weatherGenerator2D::spatialIterationAmounts(amountCorrelationMatrixSeasonSimulated , amountCorrelationMatrixSeason,randomMatrixNormalDistribution,lengthSeason[iSeason]*parametersModel.yearOfSimulation,occurrenceSeason,phatAlpha,phatBeta,simulatedPrecipitationAmountsSeasonal);
        //printf("%d \n",iSeason);
+
+
        for (int i=0;i<nrStations;i++)
        {
             for (int j=0;j<nrStations;j++)
@@ -2134,7 +2148,8 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
             }
             //printf("\n");
        }
-        printf("fase 5b\n");
+
+       printf("fase 5b\n");
 
        // free memory
        for (int i=0;i<nrStations;i++)
@@ -2145,7 +2160,7 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
            free(occurrenceSeason[i]);
            free(moranRandom[i]);
            free(simulatedPrecipitationAmountsSeasonal[i]);
-           free(amountCorrelationMatrixSeasonSimulated[i]);
+
        }
        free(phatAlpha);
        free(phatBeta);
@@ -2153,7 +2168,7 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
        free(occurrenceSeason);
        free(moranRandom);
        free(simulatedPrecipitationAmountsSeasonal);
-       free(amountCorrelationMatrixSeasonSimulated);
+
     }
 
 
@@ -2183,6 +2198,7 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
         free(amountCorrelationMatrixMAM[i]);
         free(amountCorrelationMatrixSON[i]);
         free(amountCorrelationMatrixSeason[i]);
+        free(amountCorrelationMatrixSeasonSimulated[i]);
     }
 
     free(amountCorrelationMatrixDJF);
@@ -2190,6 +2206,7 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
     free(amountCorrelationMatrixMAM);
     free(amountCorrelationMatrixSON);
     free(amountCorrelationMatrixSeason);
+    free(amountCorrelationMatrixSeasonSimulated);
 
     // free the memory of arrays declared in step 4 but used in 5
     for (int i=0;i<nrStations;i++)
@@ -2413,14 +2430,33 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
         dummyMatrix2[i]= (double*)calloc(nrStations, sizeof(double));
         correlationMatrixSimulatedData[i]= (double*)calloc(nrStations, sizeof(double));
         initialAmountsCorrelationMatrix[i]= (double*)calloc(nrStations, sizeof(double));
+        for (int j=0;j<nrStations;j++)
+        {
+            dummyMatrix[i][j]= NODATA;
+            dummyMatrix2[i][j]= NODATA;
+            correlationMatrixSimulatedData[i][j]= NODATA;
+            initialAmountsCorrelationMatrix[i][j]= NODATA;
+        }
     }
-
+    for (int i=0;i<nrStations;i++)
+    {
+        eigenvalues[i]=NODATA;
+        for (int j=0;j<nrStations;j++) eigenvectors[i*nrStations+j] = NODATA;
+    }
     for (int i=0;i<nrStations;i++)
     {
         dummyMatrix3[i]= (double*)calloc(lengthSeries, sizeof(double));
         normRandom[i]= (double*)calloc(lengthSeries, sizeof(double));
         uniformRandom[i]= (double*)calloc(lengthSeries, sizeof(double));
+        for (int j=0;j<lengthSeries;j++)
+        {
+            dummyMatrix3[i][j]= NODATA;
+            normRandom[i][j]= NODATA;
+            uniformRandom[i][j]= NODATA;
+        }
+
     }
+
     for (int i=0;i<nrStations;i++)
     {
         for (int j=0;j<nrStations;j++)
@@ -2629,8 +2665,8 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
                 }
             }
         }
-        /*printf("step %d\n",ii);
-        for (int i=0;i<nrStations;i++)
+        printf("step %d %f\n",ii,val);
+        /*for (int i=0;i<nrStations;i++)
                 {
                     for (int j=0;j<nrStations;j++) printf("%f ",amountsCorrelationMatrix[j][i]);
                     printf("\n");
@@ -2638,7 +2674,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
 
     }
 
-
+    printf("\t");
     // free memory
     for (int i=0;i<nrStations;i++)
     {
@@ -2675,20 +2711,17 @@ double weatherGenerator2D::inverseGammaFunction(double valueProbability, double 
     double leftBound = 0.0;
     int counter = 0;
     do {
-        //y = gammaDistributions::incompleteGamma(alpha,rightBound/beta,&gammaComplete);
         y = gammaDistributions::incompleteGamma(alpha,rightBound/beta);
         if (valueProbability>y)
-        {   leftBound += rightBound - 2*accuracy;
+        {
+            //leftBound += rightBound - 2*accuracy;
             rightBound += 25;
             counter++;
         }
     } while ((valueProbability>y) && (counter<10));
     counter = 0;
     x = (rightBound + leftBound)*0.5;
-    //y = gammaDistributions::incompleteGamma(alpha,x/beta,&gammaComplete);
     y = gammaDistributions::incompleteGamma(alpha,x/beta);
-    //double prova;
-    //prova = gammaDistributions::incompleteGamma(0.8321,15.1591/4.6847);
     //printf("prova\n"); //pressEnterToContinue();
     while ((fabs(valueProbability - y) > accuracy) && (counter < 200))
     {
