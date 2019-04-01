@@ -59,7 +59,7 @@ void updateWaterBalanceMaps(Vine3DProject* myProject)
                 {
                     nodeIndex = long(myProject->WBMaps->indexMap.at(size_t(layer)).value[row][col]);
                     flow = soilFluxes3D::getSumLateralWaterFlowIn(nodeIndex);
-                    myProject->outputWaterBalanceMaps->waterInflowMap->value[row][col] += float(flow / 1000); //liters
+                    myProject->outputWaterBalanceMaps->waterInflowMap->value[row][col] += float(flow * 1000); //liters
 
                     layer++;
                 } while (layer < myProject->WBSettings->nrLayers && isWithinSoil(myProject, row, col, myProject->WBSettings->layerDepth.at(size_t(layer))));
