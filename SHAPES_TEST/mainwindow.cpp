@@ -67,7 +67,7 @@ void MainWindow::onSelectShape(QTreeWidgetItem *item, int)
             const Point<double> *p_ptr = object.getVertices();
             const Point<double> *p_end = p_ptr + (vertexCount - 1);
 
-            if (p_ptr->x == p_ptr->y && p_end->x == p_end->y)
+            if (p_ptr->x == p_end->x && p_ptr->y == p_end->y)
             {
                 qDebug() << "First == Last";
             }
