@@ -45,7 +45,7 @@ void updateWaterBalanceMaps(Vine3DProject* myProject)
     long nodeIndex;
     int layer;
     double flow, flow_mm;
-    double area, lateralArea;
+    double area;
 
     area = pow(myProject->outputWaterBalanceMaps->bottomDrainageMap->header->cellSize, 2);
 
@@ -56,10 +56,9 @@ void updateWaterBalanceMaps(Vine3DProject* myProject)
                 layer = 0;
                 do
                 {
+                    nodeIndex = long(myProject->WBMaps->indexMap.at(size_t(layer)).value[row][col]);
                     flow = soilFluxes3D::getSumLateralWaterFlowIn(nodeIndex);
-                    lateralArea = (myProject->WBSettings->layerThickness.at(layer) * myProject->outputWaterBalanceMaps->waterInflowMap->header->cellSize);
-                    flow_mm = flow * 1000 / lateralArea;
-                    myProject->outputWaterBalanceMaps->waterInflowMap->value[row][col] += float(flow_mm);
+                    myProject->outputWaterBalanceMaps->waterInflowMap->value[row][col] += float(flow / 1000); //liters
 
                     layer++;
                 } while (layer < myProject->WBSettings->nrLayers && isWithinSoil(myProject, row, col, myProject->WBSettings->layerDepth.at(size_t(layer))));
