@@ -55,36 +55,28 @@ void MainWindow::onSelectShape(QTreeWidgetItem *item, int)
     {
 		bool ok;
 		int index = item->data(0, Qt::UserRole).toInt(&ok);
+
 		if (ok) {
             ShapeObject object;
             shapeHandler.getShape(index, object);
 
-			qDebug() << "Shape " << index;
+            qDebug() << "\nShape" << index;
             int32_t vertexCount = int(object.getVertexCount());
+            qDebug() << "Nr vertices:" << vertexCount;
 
-			QFile vertexFile("vertex.txt");
-			vertexFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text);
-			{
-				QTextStream vstrm(&vertexFile);
-                const Point<double> *p_ptr = object.getVertices();
-				const Point<double> *p_end = p_ptr + vertexCount;
-				while (p_ptr < p_end) {
-                    vstrm << p_ptr->x << ", " << p_ptr->y << "\n";
-					p_ptr++;
-				}
-                p_ptr = object.getVertices();
-				double x_first = p_ptr->x;
-				double y_first = p_ptr->y;
-				p_ptr += (vertexCount - 1);
-				double x_last = p_ptr->x;
-				double y_last = p_ptr->y;
-                if (x_first == x_last && y_first == y_last)
-                {
-					qDebug() << "First == Last";
-					vertexCount--;
-				}
-			}
-			vertexFile.close();
+            const Point<double> *p_ptr = object.getVertices();
+            const Point<double> *p_end = p_ptr + (vertexCount - 1);
+
+            if (p_ptr->x == p_ptr->y && p_end->x == p_end->y)
+            {
+                qDebug() << "First == Last";
+            }
+
+            while (p_ptr <= p_end)
+            {
+                qDebug() << p_ptr->x << p_ptr->y;
+                p_ptr++;
+            }
 		}
 	}
 }
