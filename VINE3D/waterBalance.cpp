@@ -39,6 +39,7 @@ void resetWaterBalanceMap(Vine3DProject* myProject)
     myProject->outputWaterBalanceMaps->waterInflowMap->setConstantValueWithBase(0, myProject->DTM);
 }
 
+
 void updateWaterBalanceMaps(Vine3DProject* myProject)
 {
     long row, col;
@@ -53,7 +54,7 @@ void updateWaterBalanceMaps(Vine3DProject* myProject)
         for (col = 0; col < myProject->outputWaterBalanceMaps->bottomDrainageMap->header->nrCols; col++)
             if (int(myProject->WBMaps->indexMap.at(0).value[row][col]) != int(myProject->WBMaps->indexMap.at(0).header->flag))
             {
-                layer = 0;
+                layer = 1;
                 do
                 {
                     nodeIndex = long(myProject->WBMaps->indexMap.at(size_t(layer)).value[row][col]);
@@ -1011,6 +1012,7 @@ bool getCriteria3DIntegrationMap(Vine3DProject* myProject, criteria3DVariable my
     return true;
 }
 
+
 bool saveWaterBalanceCumulatedOutput(Vine3DProject* myProject, QDate myDate, criteria3DVariable myVar,
                             QString varName, QString notes, QString outputPath, QString myArea)
 {
@@ -1025,6 +1027,7 @@ bool saveWaterBalanceCumulatedOutput(Vine3DProject* myProject, QDate myDate, cri
 
     return true;
 }
+
 
 bool saveWaterBalanceOutput(Vine3DProject* myProject, QDate myDate, criteria3DVariable myVar,
                             QString varName, QString notes, QString outputPath, QString myArea,
