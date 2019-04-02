@@ -237,7 +237,7 @@ int main()
     free(dateArrayFourTimes);
 
 
-    WG2D.initializeParameters(NODATA,2,2,1,1);
+    WG2D.initializeParameters(NODATA,2,2,0,1);
     WG2D.computeWeatherGenerator2D();
     return 0;
 }
