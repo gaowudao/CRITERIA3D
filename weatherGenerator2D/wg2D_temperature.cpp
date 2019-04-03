@@ -107,7 +107,7 @@ void weatherGenerator2D::computeTemperatureParameters()
 {
     weatherGenerator2D::initializeTemperatureParameters();
 
-    for (int iStation; iStation<1; iStation++)
+    for (int iStation=0; iStation<nrStations; iStation++)
     {
         double averageTMaxDry[365];
         double averageTMaxWet[365];
@@ -146,39 +146,37 @@ void weatherGenerator2D::computeTemperatureParameters()
             dayOfYear = doyFromDate(obsDataD[iStation][iDatum].date.day,obsDataD[iStation][iDatum].date.month,obsDataD[iStation][iDatum].date.year);
             if ((isLeapYear(obsDataD[iStation][iDatum].date.year)) && (obsDataD[iStation][iDatum].date.month > 2)) dayOfYear--;
             dayOfYear--;
-            /*if (obsDataD[iStation][iDatum].date.month == 2 && obsDataD[iStation][iDatum].date.day == 29)
+            if (obsDataD[iStation][iDatum].date.month == 2 && obsDataD[iStation][iDatum].date.day == 29)
             {
                 dayOfYear-- ;
-            }*/
+            }
             //if (fabs(obsDataD[iStation][iDatum].prec-NODATA)> EPSILON && getDoyFromDate(&(obsDataD[iStation][iDatum].date))== iDay)
-            if (dayOfYear == 71) printf("%f  %f \n ",obsDataD[iStation][iDatum].prec, obsDataD[iStation][iDatum].tMax);
+            //if (dayOfYear == 71) printf("%f  %f \n ",obsDataD[iStation][iDatum].prec, obsDataD[iStation][iDatum].tMax);
             if (fabs(obsDataD[iStation][iDatum].prec-NODATA) > EPSILON)
-                //if (obsDataD[iStation][iDatum].prec> (-EPSILON))
                 {
                     if (obsDataD[iStation][iDatum].prec > parametersModel.precipitationThreshold)
                     {
-                        if ((fabs(obsDataD[iStation][iDatum].tMax)-NODATA)> EPSILON)
+                        if ((fabs((obsDataD[iStation][iDatum].tMax)-NODATA))> EPSILON)
                         {
-                            (countTMaxWet[dayOfYear])++;
+                            ++countTMaxWet[dayOfYear];
                             averageTMaxWet[dayOfYear] += obsDataD[iStation][iDatum].tMax;
                         }
                         if ((fabs(obsDataD[iStation][iDatum].tMin)-NODATA)> EPSILON)
                         {
-                            (countTMinWet[dayOfYear])++;
+                            ++countTMinWet[dayOfYear];
                             averageTMinWet[dayOfYear] += obsDataD[iStation][iDatum].tMin;
                         }
                     }
                     else if (obsDataD[iStation][iDatum].prec <= parametersModel.precipitationThreshold)
                     {
-                        if ((fabs(obsDataD[iStation][iDatum].tMax)-NODATA)> EPSILON)
-                        //if ((fabs(obsDataD[iStation][iDatum].tMax))> -50)
+                        if ((fabs((obsDataD[iStation][iDatum].tMax)-NODATA))> EPSILON)
                         {
-                            countTMaxDry[dayOfYear]=countTMaxDry[dayOfYear]+1;
+                            ++countTMaxDry[dayOfYear];
                             averageTMaxDry[dayOfYear] += obsDataD[iStation][iDatum].tMax;
                         }
-                        if ((fabs(obsDataD[iStation][iDatum].tMin)-NODATA)> EPSILON)
+                        if ((fabs((obsDataD[iStation][iDatum].tMin)-NODATA))> EPSILON)
                         {
-                            countTMinDry[dayOfYear]=countTMinDry[dayOfYear]+1;
+                            ++countTMinDry[dayOfYear];
                             averageTMinDry[dayOfYear] += obsDataD[iStation][iDatum].tMin;
                         }
                     }
@@ -193,61 +191,76 @@ void weatherGenerator2D::computeTemperatureParameters()
             else averageTMaxWet[iDay] = NODATA;
             if (countTMinDry[iDay] != 0) averageTMinDry[iDay] /= countTMinDry[iDay];
             else averageTMinDry[iDay] = NODATA;
-            if (countTMinDry[iDay] != 0) averageTMinWet[iDay] /= countTMinWet[iDay];
+            if (countTMinWet[iDay] != 0) averageTMinWet[iDay] /= countTMinWet[iDay];
             else averageTMinWet[iDay] = NODATA;
-            if (iDay == 71)
-            printf("%d %f %d %f %d\n",iDay,averageTMaxDry[iDay],countTMaxDry[iDay],averageTMinDry[iDay],countTMinDry[iDay]);
+            //printf("%d %f %d %f %d\n",iDay,averageTMaxWet[iDay],countTMaxWet[iDay],averageTMinWet[iDay],countTMinWet[iDay]);
+            //printf("%d %f %d %f %d\n",iDay,averageTMaxDry[iDay],countTMaxDry[iDay],averageTMinDry[iDay],countTMinDry[iDay]);
         }
-            /*
-                for (int iDatum=0; iDatum<nrData; iDatum++)
+
+        for (int iDatum=0; iDatum<nrData; iDatum++)
+        {
+            int dayOfYear;
+            dayOfYear = doyFromDate(obsDataD[iStation][iDatum].date.day,obsDataD[iStation][iDatum].date.month,obsDataD[iStation][iDatum].date.year);
+            if ((isLeapYear(obsDataD[iStation][iDatum].date.year)) && (obsDataD[iStation][iDatum].date.month > 2)) dayOfYear--;
+            dayOfYear--;
+            if (obsDataD[iStation][iDatum].date.month == 2 && obsDataD[iStation][iDatum].date.day == 29)
+            {
+                dayOfYear-- ;
+            }
+            //if (fabs(obsDataD[iStation][iDatum].prec-NODATA)> EPSILON && getDoyFromDate(&(obsDataD[iStation][iDatum].date))== iDay)
+            //if (dayOfYear == 71) printf("%f  %f \n ",obsDataD[iStation][iDatum].prec, obsDataD[iStation][iDatum].tMax);
+            if (fabs(obsDataD[iStation][iDatum].prec - NODATA) > EPSILON)
                 {
-                    //if (fabs(obsDataD[iStation][iDatum].prec-NODATA)> EPSILON && getDoyFromDate(&(obsDataD[iStation][iDatum].date))== iDay)
-                    if (fabs(obsDataD[iStation][iDatum].prec-NODATA)> EPSILON)
+                    if (obsDataD[iStation][iDatum].prec > parametersModel.precipitationThreshold)
                     {
-                        if(obsDataD[iStation][iDatum].prec > parametersModel.precipitationThreshold)
+                        if ((fabs((obsDataD[iStation][iDatum].tMax) - NODATA))> EPSILON)
                         {
-                            if ((fabs(obsDataD[iStation][iDatum].tMax)-NODATA)> EPSILON)
-                            {
-                                //countTMaxWet++;
-                                stdDevTMaxWet[iDay] += (obsDataD[iStation][iDatum].tMax - averageTMaxWet[iDay])*(obsDataD[iStation][iDatum].tMax - averageTMaxWet[iDay]);
-                            }
-                            if ((fabs(obsDataD[iStation][iDatum].tMin)-NODATA)> EPSILON)
-                            {
-                                //countTMinWet++;
-                                stdDevTMinWet[iDay] += (obsDataD[iStation][iDatum].tMin - averageTMinWet[iDay])*(obsDataD[iStation][iDatum].tMin - averageTMinWet[iDay]);
-                            }
+                            stdDevTMaxWet[dayOfYear] += (obsDataD[iStation][iDatum].tMax - averageTMaxWet[dayOfYear])*(obsDataD[iStation][iDatum].tMax - averageTMaxWet[dayOfYear]);
                         }
-                        else
+                        if ((fabs(obsDataD[iStation][iDatum].tMin) - NODATA)> EPSILON)
                         {
-                            if ((fabs(obsDataD[iStation][iDatum].tMax)-NODATA)> EPSILON)
-                            {
-                                //countTMaxDry++;
-                                stdDevTMaxDry[iDay] += (obsDataD[iStation][iDatum].tMax - averageTMaxDry[iDay])*(obsDataD[iStation][iDatum].tMax - averageTMaxDry[iDay]);
-                            }
-                            if ((fabs(obsDataD[iStation][iDatum].tMin)-NODATA)> EPSILON)
-                            {
-                                //countTMinDry++;
-                                stdDevTMinDry[iDay] += (obsDataD[iStation][iDatum].tMin - averageTMinDry[iDay])*(obsDataD[iStation][iDatum].tMin - averageTMinDry[iDay]);
-                            }
+                            stdDevTMinWet[dayOfYear] += (obsDataD[iStation][iDatum].tMin - averageTMinWet[dayOfYear])*(obsDataD[iStation][iDatum].tMin - averageTMinWet[dayOfYear]);
                         }
                     }
+                    else if (obsDataD[iStation][iDatum].prec <= parametersModel.precipitationThreshold)
+                    {
+                        if ((fabs((obsDataD[iStation][iDatum].tMax) - NODATA))> EPSILON)
+                        {
+                            stdDevTMaxDry[dayOfYear] += (obsDataD[iStation][iDatum].tMax - averageTMaxDry[dayOfYear])*(obsDataD[iStation][iDatum].tMax - averageTMaxDry[dayOfYear]);
+                        }
+                        if ((fabs((obsDataD[iStation][iDatum].tMin) - NODATA))> EPSILON)
+                        {
+                            stdDevTMinDry[dayOfYear] += (obsDataD[iStation][iDatum].tMin - averageTMinDry[dayOfYear])*(obsDataD[iStation][iDatum].tMin - averageTMinDry[dayOfYear]);
+                        }
+                    }
+                }
 
-                }*/ // fine ciclo bisestile
-            //}
-/*            if (countTMaxDry != 0) stdDevTMaxDry[iDay] /= countTMaxDry;
+        }
+        for (int iDay=0; iDay<365; iDay++)
+        {
+            if (countTMaxDry[iDay] != 0) stdDevTMaxDry[iDay] /= countTMaxDry[iDay];
             else stdDevTMaxDry[iDay] = NODATA;
-            if (countTMaxWet != 0) stdDevTMaxWet[iDay] /= countTMaxWet;
+            if (countTMaxWet[iDay] != 0) stdDevTMaxWet[iDay] /= countTMaxWet[iDay];
             else stdDevTMaxWet[iDay] = NODATA;
-            if (countTMinDry != 0) stdDevTMinDry[iDay] /= countTMinDry;
+            if (countTMinDry[iDay] != 0) stdDevTMinDry[iDay] /= countTMinDry[iDay];
             else stdDevTMinDry[iDay] = NODATA;
-            if (countTMinDry != 0) stdDevTMinWet[iDay] /= countTMinWet;
+            if (countTMinWet[iDay] != 0) stdDevTMinWet[iDay] /= countTMinWet[iDay];
             else stdDevTMinWet[iDay] = NODATA;
 
-            if (countTMaxDry != 0) stdDevTMaxDry[iDay] = sqrt(stdDevTMaxDry[iDay]);
-            if (countTMaxWet != 0) stdDevTMaxWet[iDay] = sqrt(stdDevTMaxWet[iDay]);
-            if (countTMinDry != 0) stdDevTMinDry[iDay] = sqrt(stdDevTMinDry[iDay]);
-            if (countTMinDry != 0) stdDevTMinWet[iDay] = sqrt(stdDevTMinWet[iDay]);
-*/
+            if (countTMaxDry[iDay] != 0) stdDevTMaxDry[iDay] = sqrt(stdDevTMaxDry[iDay]);
+            if (countTMaxWet[iDay] != 0) stdDevTMaxWet[iDay] = sqrt(stdDevTMaxWet[iDay]);
+            if (countTMinDry[iDay] != 0) stdDevTMinDry[iDay] = sqrt(stdDevTMinDry[iDay]);
+            if (countTMinWet[iDay] != 0) stdDevTMinWet[iDay] = sqrt(stdDevTMinWet[iDay]);
+
+            //printf("%d %f %d %f %d\n",iDay,stdDevTMaxWet[iDay],countTMaxWet[iDay],stdDevTMinWet[iDay],countTMinWet[iDay]);
+            //getchar();
+            //printf("%d %f %d %f %d\n",iDay,stdDevTMaxDry[iDay],countTMaxDry[iDay],stdDevTMinDry[iDay],countTMinDry[iDay]);
+        }
+
+        // devo calcolare la funzione con le armoniche di fourier
+        // par[0] + par[1]*cos[2*PI/365*X] + par[2]*sin[2*PI/365*X] + par[3]*cos[4*PI/365*X] + par[4]*sin[4*PI/365*X]
+
+
 
 
 
