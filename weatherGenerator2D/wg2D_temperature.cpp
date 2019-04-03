@@ -151,9 +151,11 @@ void weatherGenerator2D::computeTemperatureParameters()
                 dayOfYear-- ;
             }*/
             //if (fabs(obsDataD[iStation][iDatum].prec-NODATA)> EPSILON && getDoyFromDate(&(obsDataD[iStation][iDatum].date))== iDay)
-                if (fabs(obsDataD[iStation][iDatum].prec-NODATA)> EPSILON)
+            if (dayOfYear == 71) printf("%f  %f \n ",obsDataD[iStation][iDatum].prec, obsDataD[iStation][iDatum].tMax);
+            if (fabs(obsDataD[iStation][iDatum].prec-NODATA) > EPSILON)
+                //if (obsDataD[iStation][iDatum].prec> (-EPSILON))
                 {
-                    if(obsDataD[iStation][iDatum].prec > parametersModel.precipitationThreshold)
+                    if (obsDataD[iStation][iDatum].prec > parametersModel.precipitationThreshold)
                     {
                         if ((fabs(obsDataD[iStation][iDatum].tMax)-NODATA)> EPSILON)
                         {
@@ -166,16 +168,17 @@ void weatherGenerator2D::computeTemperatureParameters()
                             averageTMinWet[dayOfYear] += obsDataD[iStation][iDatum].tMin;
                         }
                     }
-                    else
+                    else if (obsDataD[iStation][iDatum].prec <= parametersModel.precipitationThreshold)
                     {
                         if ((fabs(obsDataD[iStation][iDatum].tMax)-NODATA)> EPSILON)
+                        //if ((fabs(obsDataD[iStation][iDatum].tMax))> -50)
                         {
-                            (countTMaxDry[dayOfYear])++;
+                            countTMaxDry[dayOfYear]=countTMaxDry[dayOfYear]+1;
                             averageTMaxDry[dayOfYear] += obsDataD[iStation][iDatum].tMax;
                         }
                         if ((fabs(obsDataD[iStation][iDatum].tMin)-NODATA)> EPSILON)
                         {
-                            (countTMinDry[dayOfYear])++;
+                            countTMinDry[dayOfYear]=countTMinDry[dayOfYear]+1;
                             averageTMinDry[dayOfYear] += obsDataD[iStation][iDatum].tMin;
                         }
                     }
@@ -192,7 +195,7 @@ void weatherGenerator2D::computeTemperatureParameters()
             else averageTMinDry[iDay] = NODATA;
             if (countTMinDry[iDay] != 0) averageTMinWet[iDay] /= countTMinWet[iDay];
             else averageTMinWet[iDay] = NODATA;
-
+            if (iDay == 71)
             printf("%d %f %d %f %d\n",iDay,averageTMaxDry[iDay],countTMaxDry[iDay],averageTMinDry[iDay],countTMinDry[iDay]);
         }
             /*
