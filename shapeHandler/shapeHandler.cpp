@@ -35,10 +35,13 @@ bool Crit3DShapeHandler::open(std::string filename)
 
     unsigned long size = 20;
     char *fieldName =  (char *) malloc(sizeof(char) * size);
+    DBFFieldType fieldType;
+
     for (int i = 0; i<m_fields; i++)
     {
-        DBFGetFieldInfo( m_dbf, i, fieldName, nullptr, nullptr);
+        fieldType = DBFGetFieldInfo( m_dbf, i, fieldName, nullptr, nullptr);
         m_fieldsList.push_back(std::string(fieldName));
+        m_fieldsTypeList.push_back(fieldType);
     }
     free(fieldName);
     return true;

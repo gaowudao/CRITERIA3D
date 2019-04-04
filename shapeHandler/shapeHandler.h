@@ -15,6 +15,7 @@
         int			m_type;
         unsigned int         m_fields;
         std::vector<std::string> m_fieldsList;
+        std::vector<DBFFieldType> m_fieldsTypeList;
 
     public:
         Crit3DShapeHandler();
