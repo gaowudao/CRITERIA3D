@@ -9,8 +9,10 @@
     {
     protected:
         SHPHandle	m_handle;
+        DBFHandle   m_dbf;
         int			m_count;
         int			m_type;
+        int         m_fields;
 
     public:
         Crit3DShapeHandler();
@@ -21,6 +23,7 @@
         bool getShape(int index, ShapeObject &shape);
         int	getShapeCount();
         int	getType();
+        int	getFieldNumbers();
         std::string	getTypeString();
     };
 

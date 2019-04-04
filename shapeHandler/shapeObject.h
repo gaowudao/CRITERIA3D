@@ -124,7 +124,7 @@
         };
 
     protected:
-        int                index;
+        int                 index;
         int					type;
         unsigned int		vertexCount;
         Point<double>		*vertices;

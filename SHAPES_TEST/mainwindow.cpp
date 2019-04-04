@@ -33,6 +33,9 @@ void MainWindow::onFileOpen()
 		ui->shapeEntityCount->setText(QString::number(count));
         QString typeString = QString::fromStdString(shapeHandler.getTypeString());
 		ui->shapeType->setText(typeString);
+        int fieldNr = shapeHandler.getFieldNumbers();
+        ui->fieldsCount->setText(QString::number(fieldNr));
+
 
 		QList<QTreeWidgetItem *> items;
         for (int i = 0; i < count; i++)
