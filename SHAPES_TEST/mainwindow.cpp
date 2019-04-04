@@ -67,6 +67,15 @@ void MainWindow::onSelectShape(QTreeWidgetItem *item, int)
             int32_t vertexCount = int(object.getVertexCount());
             qDebug() << "Nr vertices:" << vertexCount;
 
+            /* test print list of attributes*/
+            qDebug() << "List of attributes: " ;
+            for (unsigned int i = 0; i < shapeHandler.getFieldNumbers(); i++)
+            {
+                std::string nameField =  shapeHandler.getFieldName(i);
+                qDebug() << QString::fromStdString(nameField) << " ";
+            }
+            /* */
+
             const Point<double> *p_ptr = object.getVertices();
             const Point<double> *p_end = p_ptr + (vertexCount - 1);
 

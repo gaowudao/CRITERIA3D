@@ -32,6 +32,15 @@ bool Crit3DShapeHandler::open(std::string filename)
 
     SHPGetInfo(m_handle, &m_count, &m_type, nullptr, nullptr);
     m_fields = m_dbf->nFields;
+
+    unsigned long size = 20;
+    char *fieldName =  (char *) malloc(sizeof(char) * size);
+    for (int i = 0; i<m_fields; i++)
+    {
+        DBFGetFieldInfo( m_dbf, i, fieldName, nullptr, nullptr);
+        m_fieldsList.push_back(std::string(fieldName));
+    }
+    free(fieldName);
     return true;
 }
 
@@ -64,7 +73,12 @@ int	Crit3DShapeHandler::getType()
     return m_type;
 }
 
-int	Crit3DShapeHandler::getFieldNumbers()
+unsigned int	Crit3DShapeHandler::getFieldNumbers()
 {
     return m_fields;
+}
+
+std::string	Crit3DShapeHandler::getFieldName(unsigned long fieldPos)
+{
+    return m_fieldsList.at(fieldPos);
 }

@@ -2,6 +2,7 @@
 #define SHAPEHANDLER_H
 
     #include <string>
+    #include <vector>
     #include <shapefil.h>
     #include "shapeObject.h"
 
@@ -12,7 +13,8 @@
         DBFHandle   m_dbf;
         int			m_count;
         int			m_type;
-        int         m_fields;
+        unsigned int         m_fields;
+        std::vector<std::string> m_fieldsList;
 
     public:
         Crit3DShapeHandler();
@@ -23,7 +25,8 @@
         bool getShape(int index, ShapeObject &shape);
         int	getShapeCount();
         int	getType();
-        int	getFieldNumbers();
+        unsigned int getFieldNumbers();
+        std::string	getFieldName(unsigned long fieldPos);
         std::string	getTypeString();
     };
 
