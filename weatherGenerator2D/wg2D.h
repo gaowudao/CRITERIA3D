@@ -85,6 +85,7 @@
     struct Tvariable{
         TfourierParameters averageFourierParameters;
         TfourierParameters standardDeviationFourierParameters;
+        double estimation[365];
     };
 
     struct TtemperatureCoefficients{
@@ -135,7 +136,6 @@
         TtemperatureCoefficients* temperatureCoefficients;
 
 
-
         //functions
 
         void precipitationCompute();
@@ -158,6 +158,8 @@
         void temperatureCompute();
         void computeTemperatureParameters();
         void initializeTemperatureParameters();
+        int  doyFromDate(int day,int month,int year);
+        void harmonicsFourier(double* variable, double *par, int nrPar, double estimatedVariable[], int nrEstimatedVariable);
 
     public:
         // variables

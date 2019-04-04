@@ -5,7 +5,7 @@
 #include <string>
 
 enum estimateFunction {FUNCTION_CODE_SPHERICAL, FUNCTION_CODE_LINEAR, FUNCTION_CODE_PARABOLIC,
-                       FUNCTION_CODE_EXPONENTIAL, FUNCTION_CODE_LOGARITMIC, TWOPARAMETERSPOLYNOMIAL};
+                       FUNCTION_CODE_EXPONENTIAL, FUNCTION_CODE_LOGARITMIC, FUNCTION_CODE_TWOPARAMETERSPOLYNOMIAL,FUNCTION_CODE_FOURIER_2_HARMONICS};
 
     float errorFunctionPrimitive(float x);
     char *decimal_to_binary(unsigned int n, int nrBits);

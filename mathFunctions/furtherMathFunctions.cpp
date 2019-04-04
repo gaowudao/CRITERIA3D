@@ -73,6 +73,10 @@ double twoParametersAndExponentialPolynomialFunctions(double x, double* par)
     return (double)(par[0]+par[1]*pow(x,par[2]));
 }
 
+double twoHarmonicsFourier(double x, double* par)
+{
+    return par[0] + par[1]*cos(2*PI/par[5]*x) + par[2]*sin(2*PI/par[5]*x) + par[3]*cos(4*PI/par[5]*x) + par[4]*sin(4*PI/par[5]*x);
+}
 
 /*float straightLine(TfunctionInput fInput)
 {
@@ -549,9 +553,13 @@ namespace interpolation
                 else
                     output = float(myParameters[2]);
                 break;
-            case TWOPARAMETERSPOLYNOMIAL :
+            case FUNCTION_CODE_TWOPARAMETERSPOLYNOMIAL :
                 myTmp = *myX;
                 output = (float)(twoParametersAndExponentialPolynomialFunctions(myTmp,myParameters));
+                break;
+            case FUNCTION_CODE_FOURIER_2_HARMONICS :
+                myTmp = *myX;
+                output = (float)(twoHarmonicsFourier(myTmp,myParameters));
                 break;
 
             default:

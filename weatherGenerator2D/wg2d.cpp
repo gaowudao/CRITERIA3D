@@ -1556,7 +1556,7 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
 
             maxIterations = 1000000;
             epsilon = 0.0001;
-            functionCode = TWOPARAMETERSPOLYNOMIAL;
+            functionCode = FUNCTION_CODE_TWOPARAMETERSPOLYNOMIAL;
             int nrBincenter=0;
             for (int i=0;i<(lengthBins-1);i++)
             {

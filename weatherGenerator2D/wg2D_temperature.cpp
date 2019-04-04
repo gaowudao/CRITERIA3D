@@ -13,7 +13,7 @@
 #include "gammaFunction.h"
 #include "crit3dDate.h"
 
-int doyFromDate(int day,int month,int year)
+int weatherGenerator2D::doyFromDate(int day,int month,int year)
 {
     int daysOfMonth[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
     if (isLeapYear(year)) (daysOfMonth[1])++;
@@ -142,8 +142,13 @@ void weatherGenerator2D::computeTemperatureParameters()
         }
         for (int iDatum=0; iDatum<nrData; iDatum++)
         {
+            obsDataD[iStation][iDatum].tMax += EPSILON;
+            obsDataD[iStation][iDatum].tMin += EPSILON;
+        }
+        for (int iDatum=0; iDatum<nrData; iDatum++)
+        {
             int dayOfYear;
-            dayOfYear = doyFromDate(obsDataD[iStation][iDatum].date.day,obsDataD[iStation][iDatum].date.month,obsDataD[iStation][iDatum].date.year);
+            dayOfYear = weatherGenerator2D::doyFromDate(obsDataD[iStation][iDatum].date.day,obsDataD[iStation][iDatum].date.month,obsDataD[iStation][iDatum].date.year);
             if ((isLeapYear(obsDataD[iStation][iDatum].date.year)) && (obsDataD[iStation][iDatum].date.month > 2)) dayOfYear--;
             dayOfYear--;
             if (obsDataD[iStation][iDatum].date.month == 2 && obsDataD[iStation][iDatum].date.day == 29)
@@ -200,7 +205,7 @@ void weatherGenerator2D::computeTemperatureParameters()
         for (int iDatum=0; iDatum<nrData; iDatum++)
         {
             int dayOfYear;
-            dayOfYear = doyFromDate(obsDataD[iStation][iDatum].date.day,obsDataD[iStation][iDatum].date.month,obsDataD[iStation][iDatum].date.year);
+            dayOfYear = weatherGenerator2D::doyFromDate(obsDataD[iStation][iDatum].date.day,obsDataD[iStation][iDatum].date.month,obsDataD[iStation][iDatum].date.year);
             if ((isLeapYear(obsDataD[iStation][iDatum].date.year)) && (obsDataD[iStation][iDatum].date.month > 2)) dayOfYear--;
             dayOfYear--;
             if (obsDataD[iStation][iDatum].date.month == 2 && obsDataD[iStation][iDatum].date.day == 29)
@@ -256,16 +261,188 @@ void weatherGenerator2D::computeTemperatureParameters()
             //getchar();
             //printf("%d %f %d %f %d\n",iDay,stdDevTMaxDry[iDay],countTMaxDry[iDay],stdDevTMinDry[iDay],countTMinDry[iDay]);
         }
+        for (int iDatum=0; iDatum<nrData; iDatum++)
+        {
+            obsDataD[iStation][iDatum].tMax -= EPSILON;
+            obsDataD[iStation][iDatum].tMin -= EPSILON;
+        }
 
-        // devo calcolare la funzione con le armoniche di fourier
-        // par[0] + par[1]*cos[2*PI/365*X] + par[2]*sin[2*PI/365*X] + par[3]*cos[4*PI/365*X] + par[4]*sin[4*PI/365*X]
 
+        // compute the Fourier coefficients
 
+        double *par;
+        int nrPar = 5;
+        par = (double *) calloc(nrPar, sizeof(double));
+        for (int i=0;i<nrPar;i++)
+        {
+            par[i] = NODATA;
+        }
+        weatherGenerator2D::harmonicsFourier(averageTMaxDry,par,nrPar,temperatureCoefficients[iStation].maxTDry.estimation,365);
+        temperatureCoefficients[iStation].maxTDry.averageFourierParameters.a0 = par[0];
+        temperatureCoefficients[iStation].maxTDry.averageFourierParameters.aCos1 = par[1];
+        temperatureCoefficients[iStation].maxTDry.averageFourierParameters.aSin1 = par[2];
+        temperatureCoefficients[iStation].maxTDry.averageFourierParameters.aCos2 = par[3];
+        temperatureCoefficients[iStation].maxTDry.averageFourierParameters.aSin2 = par[4];
+        for (int i=0;i<nrPar;i++)
+        {
+            par[i] = NODATA;
+        }
+/*        weatherGenerator2D::harmonicsFourier(averageTMinDry,par,nrPar);
+        temperatureCoefficients[iStation].minTDry.averageFourierParameters.a0 = par[0];
+        temperatureCoefficients[iStation].minTDry.averageFourierParameters.aCos1 = par[1];
+        temperatureCoefficients[iStation].minTDry.averageFourierParameters.aSin1 = par[2];
+        temperatureCoefficients[iStation].minTDry.averageFourierParameters.aCos2 = par[3];
+        temperatureCoefficients[iStation].minTDry.averageFourierParameters.aSin2 = par[4];
+        for (int i=0;i<nrPar;i++)
+        {
+            par[i] = NODATA;
+        }
+        weatherGenerator2D::harmonicsFourier(averageTMaxDry,par,nrPar);
+        temperatureCoefficients[iStation].maxTWet.averageFourierParameters.a0 = par[0];
+        temperatureCoefficients[iStation].maxTWet.averageFourierParameters.aCos1 = par[1];
+        temperatureCoefficients[iStation].maxTWet.averageFourierParameters.aSin1 = par[2];
+        temperatureCoefficients[iStation].maxTWet.averageFourierParameters.aCos2 = par[3];
+        temperatureCoefficients[iStation].maxTWet.averageFourierParameters.aSin2 = par[4];
+        for (int i=0;i<nrPar;i++)
+        {
+            par[i] = NODATA;
+        }
+        weatherGenerator2D::harmonicsFourier(averageTMinDry,par,nrPar);
+        temperatureCoefficients[iStation].minTWet.averageFourierParameters.a0 = par[0];
+        temperatureCoefficients[iStation].minTWet.averageFourierParameters.aCos1 = par[1];
+        temperatureCoefficients[iStation].minTWet.averageFourierParameters.aSin1 = par[2];
+        temperatureCoefficients[iStation].minTWet.averageFourierParameters.aCos2 = par[3];
+        temperatureCoefficients[iStation].minTWet.averageFourierParameters.aSin2 = par[4];
 
-
-
+        for (int i=0;i<nrPar;i++)
+        {
+            par[i] = NODATA;
+        }
+        weatherGenerator2D::harmonicsFourier(averageTMaxDry,par,nrPar);
+        temperatureCoefficients[iStation].maxTDry.standardDeviationFourierParameters.a0 = par[0];
+        temperatureCoefficients[iStation].maxTDry.standardDeviationFourierParameters.aCos1 = par[1];
+        temperatureCoefficients[iStation].maxTDry.standardDeviationFourierParameters.aSin1 = par[2];
+        temperatureCoefficients[iStation].maxTDry.standardDeviationFourierParameters.aCos2 = par[3];
+        temperatureCoefficients[iStation].maxTDry.standardDeviationFourierParameters.aSin2 = par[4];
+        for (int i=0;i<nrPar;i++)
+        {
+            par[i] = NODATA;
+        }
+        weatherGenerator2D::harmonicsFourier(averageTMinDry,par,nrPar);
+        temperatureCoefficients[iStation].minTDry.standardDeviationFourierParameters.a0 = par[0];
+        temperatureCoefficients[iStation].minTDry.standardDeviationFourierParameters.aCos1 = par[1];
+        temperatureCoefficients[iStation].minTDry.standardDeviationFourierParameters.aSin1 = par[2];
+        temperatureCoefficients[iStation].minTDry.standardDeviationFourierParameters.aCos2 = par[3];
+        temperatureCoefficients[iStation].minTDry.standardDeviationFourierParameters.aSin2 = par[4];
+        for (int i=0;i<nrPar;i++)
+        {
+            par[i] = NODATA;
+        }
+        weatherGenerator2D::harmonicsFourier(averageTMaxDry,par,nrPar);
+        temperatureCoefficients[iStation].maxTWet.standardDeviationFourierParameters.a0 = par[0];
+        temperatureCoefficients[iStation].maxTWet.standardDeviationFourierParameters.aCos1 = par[1];
+        temperatureCoefficients[iStation].maxTWet.standardDeviationFourierParameters.aSin1 = par[2];
+        temperatureCoefficients[iStation].maxTWet.standardDeviationFourierParameters.aCos2 = par[3];
+        temperatureCoefficients[iStation].maxTWet.standardDeviationFourierParameters.aSin2 = par[4];
+        for (int i=0;i<nrPar;i++)
+        {
+            par[i] = NODATA;
+        }
+        weatherGenerator2D::harmonicsFourier(averageTMinDry,par,nrPar);
+        temperatureCoefficients[iStation].minTWet.standardDeviationFourierParameters.a0 = par[0];
+        temperatureCoefficients[iStation].minTWet.standardDeviationFourierParameters.aCos1 = par[1];
+        temperatureCoefficients[iStation].minTWet.standardDeviationFourierParameters.aSin1 = par[2];
+        temperatureCoefficients[iStation].minTWet.standardDeviationFourierParameters.aCos2 = par[3];
+        temperatureCoefficients[iStation].minTWet.standardDeviationFourierParameters.aSin2 = par[4];
+ */       free(par);
 
 
     } // end of iStation "for" cycle
+
+}
+
+void weatherGenerator2D::harmonicsFourier(double* variable, double *par,int nrPar, double estimatedVariable[], int nrEstimatedVariable)
+{
+    int maxIterations = 100000;
+    int functionCode;
+
+    // find the upper bound
+    double valueMax,valueMin;
+    bool validDays[365];
+    int nrValidDays;
+
+
+    valueMax = 0;
+    nrValidDays = 0;
+    for (int i=0;i<365;i++)
+    {
+        if (fabs(variable[i] - NODATA)< EPSILON  || fabs(variable[i]) < EPSILON)
+        {
+            validDays[i] = false;
+        }
+        else
+        {
+            if (fabs(variable[i]) > valueMax) valueMax = fabs(variable[i]);
+            validDays[i] = true;
+            nrValidDays++;
+        }
+    }
+    valueMin = -valueMax;
+
+    double* x = (double *) calloc(nrValidDays, sizeof(double));
+    double* y = (double *) calloc(nrValidDays, sizeof(double));
+    int indexVariable = 0;
+    for (int i=0;i<365;i++)
+    {
+        if(validDays[i])
+        {
+            x[indexVariable] = i + 1.0;
+            y[indexVariable] = variable[i];
+            indexVariable++;
+        }
+    }
+    double *parMin = (double *) calloc(nrPar+1, sizeof(double));
+    double* parMax = (double *) calloc(nrPar+1, sizeof(double));
+    double* parDelta = (double *) calloc(nrPar+1, sizeof(double));
+    double* parMarquardt = (double *) calloc(nrPar+1, sizeof(double));
+    for (int i=0;i<(nrPar);i++)
+    {
+        parMin[i]= valueMin;
+        parMax[i]= valueMax;
+        parDelta[i] = 0.0001;
+    }
+    parMin[5]= 365 - EPSILON;
+    parMax[5]= 365 + EPSILON;
+    parDelta[5] = EPSILON;
+    double meanVariable = 0;
+    for (int i=0;i<nrValidDays;i++) meanVariable += y[i];
+    meanVariable /= nrValidDays;
+    parMarquardt[0] = par[0] = meanVariable;
+    parMarquardt[1] = par[1] = 0;
+    parMarquardt[2] = par[2] = 0;
+    parMarquardt[3] = par[3] = 0;
+    parMarquardt[4] = par[4] = 0;
+    parMarquardt[5] = 365;
+
+    interpolation::fittingMarquardt(parMin,parMax,parMarquardt,nrPar+1,parDelta,1000000,0.0001,FUNCTION_CODE_FOURIER_2_HARMONICS,x,nrValidDays,y);
+
+    for (int i=0;i<nrPar;i++)
+    {
+        par[i] = parMarquardt[i];
+        //printf("%f\n",par[i]);
+    }
+    //pressEnterToContinue();
+    for (int i=0;i<365;i++)
+        estimatedVariable[i] = par[0] + par[1]*cos(2*PI/nrEstimatedVariable*i) + par[2]*sin(2*PI/nrEstimatedVariable*i) + par[3]*cos(4*PI/nrEstimatedVariable*i) + par[4]*sin(4*PI/nrEstimatedVariable*i);
+
+    // par[0] + par[1]*cos[2*PI/365*X] + par[2]*sin[2*PI/365*X] + par[3]*cos[4*PI/365*X] + par[4]*sin[4*PI/365*X]
+
+    // free memory
+    free(x);
+    free(y);
+    free(parMin);
+    free(parMax);
+    free(parDelta);
+    free(parMarquardt);
 
 }
