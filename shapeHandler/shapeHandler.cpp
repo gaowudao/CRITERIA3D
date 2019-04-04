@@ -16,6 +16,7 @@ void Crit3DShapeHandler::close()
     if ((m_handle != nullptr) || (m_dbf != nullptr))
     {
         SHPClose(m_handle);
+        DBFClose(m_dbf);
     }
     m_handle = nullptr;
     m_dbf = nullptr;
