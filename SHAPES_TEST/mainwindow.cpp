@@ -69,10 +69,28 @@ void MainWindow::onSelectShape(QTreeWidgetItem *item, int)
 
             /* test print list of attributes*/
             qDebug() << "List of attributes: " ;
-            for (unsigned int i = 0; i < shapeHandler.getFieldNumbers(); i++)
+            for (int i = 0; i < shapeHandler.getFieldNumbers(); i++)
             {
                 std::string nameField =  shapeHandler.getFieldName(i);
-                qDebug() << QString::fromStdString(nameField) << " ";
+                int typeField = shapeHandler.getFieldType(i);
+                qDebug() << QString::fromStdString(nameField) << " = ";
+                if (typeField == 0)
+                {
+                    qDebug() << QString::fromStdString(shapeHandler.readStringAttribute(index,i)) << " ";
+                }
+                else if (typeField == 1)
+                {
+                    qDebug() << shapeHandler.readIntAttribute(index,i) << " ";
+                }
+                else if (typeField == 2)
+                {
+                    qDebug() << shapeHandler.readDoubleAttribute(index,i) << " ";
+                }
+                else
+                {
+                    qDebug() << "invalid field type ";
+                }
+
             }
             /* */
 

@@ -76,12 +76,32 @@ int	Crit3DShapeHandler::getType()
     return m_type;
 }
 
-unsigned int	Crit3DShapeHandler::getFieldNumbers()
+int Crit3DShapeHandler::getFieldNumbers()
 {
     return m_fields;
 }
 
-std::string	Crit3DShapeHandler::getFieldName(unsigned long fieldPos)
+std::string	Crit3DShapeHandler::getFieldName(int fieldPos)
 {
     return m_fieldsList.at(fieldPos);
+}
+
+DBFFieldType Crit3DShapeHandler::getFieldType(int fieldPos)
+{
+    return m_fieldsTypeList.at(fieldPos);
+}
+
+int Crit3DShapeHandler::readIntAttribute(int shapeNumber, int fieldPos)
+{
+    return DBFReadIntegerAttribute(m_dbf,shapeNumber,fieldPos);
+}
+
+double Crit3DShapeHandler::readDoubleAttribute(int shapeNumber, int fieldPos)
+{
+    return DBFReadDoubleAttribute(m_dbf,shapeNumber,fieldPos);
+}
+
+std::string Crit3DShapeHandler::readStringAttribute(int shapeNumber, int fieldPos)
+{
+    return DBFReadStringAttribute(m_dbf,shapeNumber,fieldPos);
 }

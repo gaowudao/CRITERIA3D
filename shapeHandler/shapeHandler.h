@@ -13,7 +13,7 @@
         DBFHandle   m_dbf;
         int			m_count;
         int			m_type;
-        unsigned int         m_fields;
+        int         m_fields;
         std::vector<std::string> m_fieldsList;
         std::vector<DBFFieldType> m_fieldsTypeList;
 
@@ -26,9 +26,13 @@
         bool getShape(int index, ShapeObject &shape);
         int	getShapeCount();
         int	getType();
-        unsigned int getFieldNumbers();
-        std::string	getFieldName(unsigned long fieldPos);
+        int getFieldNumbers();
+        std::string	getFieldName(int fieldPos);
+        DBFFieldType getFieldType(int fieldPos);
         std::string	getTypeString();
+        int readIntAttribute(int shapeNumber, int fieldPos);
+        double readDoubleAttribute(int shapeNumber, int fieldPos);
+        std::string readStringAttribute(int shapeNumber, int fieldPos);
     };
 
 
