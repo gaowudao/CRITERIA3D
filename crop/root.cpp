@@ -255,10 +255,10 @@ namespace root
     }
 
     /*!
-     * \brief Compute root density distribution of a cardioid
-     * \param shapeFactor [] deformation factor
+     * \brief Compute root density distribution (cardioid)
+     * \param shapeFactor: deformation factor []
      * \note author: Franco Zinoni
-     * \return array densityThinLayers []
+     * \return densityThinLayers [] (array)
      */
     void cardioidDistribution(double shapeFactor, int nrLayersWithRoot,
                               int nrUpperLayersWithoutRoot , int totalLayers, double* densityThinLayers)
