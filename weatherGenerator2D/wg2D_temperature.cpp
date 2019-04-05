@@ -47,59 +47,77 @@ void weatherGenerator2D::initializeTemperatureParameters()
 {
     // initialize temp parameters
     temperatureCoefficients = (TtemperatureCoefficients *)calloc(nrStations, sizeof(TtemperatureCoefficients));
-
-    temperatureCoefficients->maxTDry.averageFourierParameters.a0 = NODATA;
-    temperatureCoefficients->maxTDry.averageFourierParameters.aCos1 = NODATA;
-    temperatureCoefficients->maxTDry.averageFourierParameters.aSin1 = NODATA;
-    temperatureCoefficients->maxTDry.averageFourierParameters.aCos2 = NODATA;
-    temperatureCoefficients->maxTDry.averageFourierParameters.aSin2 = NODATA;
-    temperatureCoefficients->maxTDry.standardDeviationFourierParameters.a0 = NODATA;
-    temperatureCoefficients->maxTDry.standardDeviationFourierParameters.aCos1 = NODATA;
-    temperatureCoefficients->maxTDry.standardDeviationFourierParameters.aSin1 = NODATA;
-    temperatureCoefficients->maxTDry.standardDeviationFourierParameters.aCos2 = NODATA;
-    temperatureCoefficients->maxTDry.standardDeviationFourierParameters.aSin2 = NODATA;
-
-    temperatureCoefficients->minTDry.averageFourierParameters.a0 = NODATA;
-    temperatureCoefficients->minTDry.averageFourierParameters.aCos1 = NODATA;
-    temperatureCoefficients->minTDry.averageFourierParameters.aSin1 = NODATA;
-    temperatureCoefficients->minTDry.averageFourierParameters.aCos2 = NODATA;
-    temperatureCoefficients->minTDry.averageFourierParameters.aSin2 = NODATA;
-    temperatureCoefficients->minTDry.standardDeviationFourierParameters.a0 = NODATA;
-    temperatureCoefficients->minTDry.standardDeviationFourierParameters.aCos1 = NODATA;
-    temperatureCoefficients->minTDry.standardDeviationFourierParameters.aSin1 = NODATA;
-    temperatureCoefficients->minTDry.standardDeviationFourierParameters.aCos2 = NODATA;
-    temperatureCoefficients->minTDry.standardDeviationFourierParameters.aSin2 = NODATA;
-
-    temperatureCoefficients->maxTWet.averageFourierParameters.a0 = NODATA;
-    temperatureCoefficients->maxTWet.averageFourierParameters.aCos1 = NODATA;
-    temperatureCoefficients->maxTWet.averageFourierParameters.aSin1 = NODATA;
-    temperatureCoefficients->maxTWet.averageFourierParameters.aCos2 = NODATA;
-    temperatureCoefficients->maxTWet.averageFourierParameters.aSin2 = NODATA;
-    temperatureCoefficients->maxTWet.standardDeviationFourierParameters.a0 = NODATA;
-    temperatureCoefficients->maxTWet.standardDeviationFourierParameters.aCos1 = NODATA;
-    temperatureCoefficients->maxTWet.standardDeviationFourierParameters.aSin1 = NODATA;
-    temperatureCoefficients->maxTWet.standardDeviationFourierParameters.aCos2 = NODATA;
-    temperatureCoefficients->maxTWet.standardDeviationFourierParameters.aSin2 = NODATA;
-
-    temperatureCoefficients->minTWet.averageFourierParameters.a0 = NODATA;
-    temperatureCoefficients->minTWet.averageFourierParameters.aCos1 = NODATA;
-    temperatureCoefficients->minTWet.averageFourierParameters.aSin1 = NODATA;
-    temperatureCoefficients->minTWet.averageFourierParameters.aCos2 = NODATA;
-    temperatureCoefficients->minTWet.averageFourierParameters.aSin2 = NODATA;
-    temperatureCoefficients->minTWet.standardDeviationFourierParameters.a0 = NODATA;
-    temperatureCoefficients->minTWet.standardDeviationFourierParameters.aCos1 = NODATA;
-    temperatureCoefficients->minTWet.standardDeviationFourierParameters.aSin1 = NODATA;
-    temperatureCoefficients->minTWet.standardDeviationFourierParameters.aCos2 = NODATA;
-    temperatureCoefficients->minTWet.standardDeviationFourierParameters.aSin2 = NODATA;
-
-    for (int i=0; i<2; i++)
+    for (int i = 0; i < nrStations; i++)
     {
-        for (int j=0; j<2; j++)
+        temperatureCoefficients[i].maxTDry.averageEstimation = (double *)calloc(365, sizeof(double));
+        for (int j=0; j<365; j++) temperatureCoefficients[i].maxTDry.averageEstimation[j] = NODATA;
+        temperatureCoefficients[i].maxTDry.stdDevEstimation = (double *)calloc(365, sizeof(double));
+        for (int j=0; j<365; j++) temperatureCoefficients[i].maxTDry.stdDevEstimation[j] = NODATA;
+        temperatureCoefficients[i].maxTDry.averageFourierParameters.a0 = NODATA;
+        temperatureCoefficients[i].maxTDry.averageFourierParameters.aCos1 = NODATA;
+        temperatureCoefficients[i].maxTDry.averageFourierParameters.aSin1 = NODATA;
+        temperatureCoefficients[i].maxTDry.averageFourierParameters.aCos2 = NODATA;
+        temperatureCoefficients[i].maxTDry.averageFourierParameters.aSin2 = NODATA;
+        temperatureCoefficients[i].maxTDry.standardDeviationFourierParameters.a0 = NODATA;
+        temperatureCoefficients[i].maxTDry.standardDeviationFourierParameters.aCos1 = NODATA;
+        temperatureCoefficients[i].maxTDry.standardDeviationFourierParameters.aSin1 = NODATA;
+        temperatureCoefficients[i].maxTDry.standardDeviationFourierParameters.aCos2 = NODATA;
+        temperatureCoefficients[i].maxTDry.standardDeviationFourierParameters.aSin2 = NODATA;
+
+        temperatureCoefficients[i].minTDry.averageEstimation = (double *)calloc(365, sizeof(double));
+        for (int j=0; j<365; j++) temperatureCoefficients[i].minTDry.averageEstimation[j] = NODATA;
+        temperatureCoefficients[i].minTDry.stdDevEstimation = (double *)calloc(365, sizeof(double));
+        for (int j=0; j<365; j++) temperatureCoefficients[i].minTDry.stdDevEstimation[j] = NODATA;
+        temperatureCoefficients[i].minTDry.averageFourierParameters.a0 = NODATA;
+        temperatureCoefficients[i].minTDry.averageFourierParameters.aCos1 = NODATA;
+        temperatureCoefficients[i].minTDry.averageFourierParameters.aSin1 = NODATA;
+        temperatureCoefficients[i].minTDry.averageFourierParameters.aCos2 = NODATA;
+        temperatureCoefficients[i].minTDry.averageFourierParameters.aSin2 = NODATA;
+        temperatureCoefficients[i].minTDry.standardDeviationFourierParameters.a0 = NODATA;
+        temperatureCoefficients[i].minTDry.standardDeviationFourierParameters.aCos1 = NODATA;
+        temperatureCoefficients[i].minTDry.standardDeviationFourierParameters.aSin1 = NODATA;
+        temperatureCoefficients[i].minTDry.standardDeviationFourierParameters.aCos2 = NODATA;
+        temperatureCoefficients[i].minTDry.standardDeviationFourierParameters.aSin2 = NODATA;
+
+        temperatureCoefficients[i].maxTWet.averageEstimation = (double *)calloc(365, sizeof(double));
+        for (int j=0; j<365; j++) temperatureCoefficients[i].maxTWet.averageEstimation[j] = NODATA;
+        temperatureCoefficients[i].maxTWet.stdDevEstimation = (double *)calloc(365, sizeof(double));
+        for (int j=0; j<365; j++) temperatureCoefficients[i].maxTWet.stdDevEstimation[j] = NODATA;
+        temperatureCoefficients[i].maxTWet.averageFourierParameters.a0 = NODATA;
+        temperatureCoefficients[i].maxTWet.averageFourierParameters.aCos1 = NODATA;
+        temperatureCoefficients[i].maxTWet.averageFourierParameters.aSin1 = NODATA;
+        temperatureCoefficients[i].maxTWet.averageFourierParameters.aCos2 = NODATA;
+        temperatureCoefficients[i].maxTWet.averageFourierParameters.aSin2 = NODATA;
+        temperatureCoefficients[i].maxTWet.standardDeviationFourierParameters.a0 = NODATA;
+        temperatureCoefficients[i].maxTWet.standardDeviationFourierParameters.aCos1 = NODATA;
+        temperatureCoefficients[i].maxTWet.standardDeviationFourierParameters.aSin1 = NODATA;
+        temperatureCoefficients[i].maxTWet.standardDeviationFourierParameters.aCos2 = NODATA;
+        temperatureCoefficients[i].maxTWet.standardDeviationFourierParameters.aSin2 = NODATA;
+
+        temperatureCoefficients[i].minTWet.averageEstimation = (double *)calloc(365, sizeof(double));
+        for (int j=0; j<365; j++) temperatureCoefficients[i].minTWet.averageEstimation[j] = NODATA;
+        temperatureCoefficients[i].minTWet.stdDevEstimation = (double *)calloc(365, sizeof(double));
+        for (int j=0; j<365; j++) temperatureCoefficients[i].minTWet.stdDevEstimation[j] = NODATA;
+        temperatureCoefficients[i].minTWet.averageFourierParameters.a0 = NODATA;
+        temperatureCoefficients[i].minTWet.averageFourierParameters.aCos1 = NODATA;
+        temperatureCoefficients[i].minTWet.averageFourierParameters.aSin1 = NODATA;
+        temperatureCoefficients[i].minTWet.averageFourierParameters.aCos2 = NODATA;
+        temperatureCoefficients[i].minTWet.averageFourierParameters.aSin2 = NODATA;
+        temperatureCoefficients[i].minTWet.standardDeviationFourierParameters.a0 = NODATA;
+        temperatureCoefficients[i].minTWet.standardDeviationFourierParameters.aCos1 = NODATA;
+        temperatureCoefficients[i].minTWet.standardDeviationFourierParameters.aSin1 = NODATA;
+        temperatureCoefficients[i].minTWet.standardDeviationFourierParameters.aCos2 = NODATA;
+        temperatureCoefficients[i].minTWet.standardDeviationFourierParameters.aSin2 = NODATA;
+
+        for (int i=0; i<2; i++)
         {
-            temperatureCoefficients->A[i][j]= NODATA;
-            temperatureCoefficients->B[i][j]= NODATA;
+            for (int j=0; j<2; j++)
+            {
+                temperatureCoefficients[i].A[i][j]= NODATA;
+                temperatureCoefficients[i].B[i][j]= NODATA;
+            }
         }
-    }
+     }
 }
 
 
@@ -277,7 +295,7 @@ void weatherGenerator2D::computeTemperatureParameters()
         {
             par[i] = NODATA;
         }
-        weatherGenerator2D::harmonicsFourier(averageTMaxDry,par,nrPar,temperatureCoefficients[iStation].maxTDry.estimation,365);
+        weatherGenerator2D::harmonicsFourier(averageTMaxDry,par,nrPar,temperatureCoefficients[iStation].maxTDry.averageEstimation,365);
         temperatureCoefficients[iStation].maxTDry.averageFourierParameters.a0 = par[0];
         temperatureCoefficients[iStation].maxTDry.averageFourierParameters.aCos1 = par[1];
         temperatureCoefficients[iStation].maxTDry.averageFourierParameters.aSin1 = par[2];
@@ -287,7 +305,8 @@ void weatherGenerator2D::computeTemperatureParameters()
         {
             par[i] = NODATA;
         }
-/*        weatherGenerator2D::harmonicsFourier(averageTMinDry,par,nrPar);
+        for (int i=0;i<365;i++) printf("%d %f \n",i,temperatureCoefficients[iStation].maxTDry.averageEstimation[i]);
+        weatherGenerator2D::harmonicsFourier(averageTMinDry,par,nrPar,temperatureCoefficients[iStation].minTDry.averageEstimation,365);
         temperatureCoefficients[iStation].minTDry.averageFourierParameters.a0 = par[0];
         temperatureCoefficients[iStation].minTDry.averageFourierParameters.aCos1 = par[1];
         temperatureCoefficients[iStation].minTDry.averageFourierParameters.aSin1 = par[2];
@@ -297,7 +316,7 @@ void weatherGenerator2D::computeTemperatureParameters()
         {
             par[i] = NODATA;
         }
-        weatherGenerator2D::harmonicsFourier(averageTMaxDry,par,nrPar);
+        weatherGenerator2D::harmonicsFourier(averageTMaxWet,par,nrPar,temperatureCoefficients[iStation].maxTDry.averageEstimation,365);
         temperatureCoefficients[iStation].maxTWet.averageFourierParameters.a0 = par[0];
         temperatureCoefficients[iStation].maxTWet.averageFourierParameters.aCos1 = par[1];
         temperatureCoefficients[iStation].maxTWet.averageFourierParameters.aSin1 = par[2];
@@ -307,7 +326,7 @@ void weatherGenerator2D::computeTemperatureParameters()
         {
             par[i] = NODATA;
         }
-        weatherGenerator2D::harmonicsFourier(averageTMinDry,par,nrPar);
+        weatherGenerator2D::harmonicsFourier(averageTMinWet,par,nrPar,temperatureCoefficients[iStation].minTWet.averageEstimation,365);
         temperatureCoefficients[iStation].minTWet.averageFourierParameters.a0 = par[0];
         temperatureCoefficients[iStation].minTWet.averageFourierParameters.aCos1 = par[1];
         temperatureCoefficients[iStation].minTWet.averageFourierParameters.aSin1 = par[2];
@@ -318,7 +337,7 @@ void weatherGenerator2D::computeTemperatureParameters()
         {
             par[i] = NODATA;
         }
-        weatherGenerator2D::harmonicsFourier(averageTMaxDry,par,nrPar);
+        weatherGenerator2D::harmonicsFourier(stdDevTMaxDry,par,nrPar,temperatureCoefficients[iStation].maxTDry.stdDevEstimation,365);
         temperatureCoefficients[iStation].maxTDry.standardDeviationFourierParameters.a0 = par[0];
         temperatureCoefficients[iStation].maxTDry.standardDeviationFourierParameters.aCos1 = par[1];
         temperatureCoefficients[iStation].maxTDry.standardDeviationFourierParameters.aSin1 = par[2];
@@ -328,7 +347,7 @@ void weatherGenerator2D::computeTemperatureParameters()
         {
             par[i] = NODATA;
         }
-        weatherGenerator2D::harmonicsFourier(averageTMinDry,par,nrPar);
+        weatherGenerator2D::harmonicsFourier(stdDevTMinDry,par,nrPar,temperatureCoefficients[iStation].minTDry.stdDevEstimation,365);
         temperatureCoefficients[iStation].minTDry.standardDeviationFourierParameters.a0 = par[0];
         temperatureCoefficients[iStation].minTDry.standardDeviationFourierParameters.aCos1 = par[1];
         temperatureCoefficients[iStation].minTDry.standardDeviationFourierParameters.aSin1 = par[2];
@@ -338,7 +357,7 @@ void weatherGenerator2D::computeTemperatureParameters()
         {
             par[i] = NODATA;
         }
-        weatherGenerator2D::harmonicsFourier(averageTMaxDry,par,nrPar);
+        weatherGenerator2D::harmonicsFourier(stdDevTMaxWet,par,nrPar,temperatureCoefficients[iStation].maxTWet.stdDevEstimation,365);
         temperatureCoefficients[iStation].maxTWet.standardDeviationFourierParameters.a0 = par[0];
         temperatureCoefficients[iStation].maxTWet.standardDeviationFourierParameters.aCos1 = par[1];
         temperatureCoefficients[iStation].maxTWet.standardDeviationFourierParameters.aSin1 = par[2];
@@ -348,20 +367,20 @@ void weatherGenerator2D::computeTemperatureParameters()
         {
             par[i] = NODATA;
         }
-        weatherGenerator2D::harmonicsFourier(averageTMinDry,par,nrPar);
+        weatherGenerator2D::harmonicsFourier(stdDevTMinWet,par,nrPar,temperatureCoefficients[iStation].minTWet.stdDevEstimation,365);
         temperatureCoefficients[iStation].minTWet.standardDeviationFourierParameters.a0 = par[0];
         temperatureCoefficients[iStation].minTWet.standardDeviationFourierParameters.aCos1 = par[1];
         temperatureCoefficients[iStation].minTWet.standardDeviationFourierParameters.aSin1 = par[2];
         temperatureCoefficients[iStation].minTWet.standardDeviationFourierParameters.aCos2 = par[3];
         temperatureCoefficients[iStation].minTWet.standardDeviationFourierParameters.aSin2 = par[4];
- */       free(par);
+        free(par);
 
 
     } // end of iStation "for" cycle
 
 }
 
-void weatherGenerator2D::harmonicsFourier(double* variable, double *par,int nrPar, double estimatedVariable[], int nrEstimatedVariable)
+void weatherGenerator2D::harmonicsFourier(double* variable, double *par,int nrPar, double* estimatedVariable, int nrEstimatedVariable)
 {
     int maxIterations = 100000;
     int functionCode;
@@ -386,7 +405,10 @@ void weatherGenerator2D::harmonicsFourier(double* variable, double *par,int nrPa
             validDays[i] = true;
             nrValidDays++;
         }
+        //printf("%d\n",validDays[i]);
     }
+    //printf("%d giorni validi \n",nrValidDays);
+    //pressEnterToContinue();
     valueMin = -valueMax;
 
     double* x = (double *) calloc(nrValidDays, sizeof(double));
@@ -401,6 +423,10 @@ void weatherGenerator2D::harmonicsFourier(double* variable, double *par,int nrPa
             indexVariable++;
         }
     }
+    //for (int i=0; i<nrValidDays; i++)
+        //printf("%f %f\n",x[i],y[i]);
+    //pressEnterToContinue();
+
     double *parMin = (double *) calloc(nrPar+1, sizeof(double));
     double* parMax = (double *) calloc(nrPar+1, sizeof(double));
     double* parDelta = (double *) calloc(nrPar+1, sizeof(double));
@@ -424,7 +450,7 @@ void weatherGenerator2D::harmonicsFourier(double* variable, double *par,int nrPa
     parMarquardt[4] = par[4] = 0;
     parMarquardt[5] = 365;
 
-    interpolation::fittingMarquardt(parMin,parMax,parMarquardt,nrPar+1,parDelta,1000000,0.0001,FUNCTION_CODE_FOURIER_2_HARMONICS,x,nrValidDays,y);
+    interpolation::fittingMarquardt(parMin,parMax,parMarquardt,nrPar+1,parDelta,10000,0.0001,FUNCTION_CODE_FOURIER_2_HARMONICS,x,nrValidDays,y);
 
     for (int i=0;i<nrPar;i++)
     {
@@ -433,8 +459,11 @@ void weatherGenerator2D::harmonicsFourier(double* variable, double *par,int nrPa
     }
     //pressEnterToContinue();
     for (int i=0;i<365;i++)
+    {
         estimatedVariable[i] = par[0] + par[1]*cos(2*PI/nrEstimatedVariable*i) + par[2]*sin(2*PI/nrEstimatedVariable*i) + par[3]*cos(4*PI/nrEstimatedVariable*i) + par[4]*sin(4*PI/nrEstimatedVariable*i);
-
+        //printf("%d %f\n",i, estimatedVariable[i]);
+    }
+    //pressEnterToContinue();
     // par[0] + par[1]*cos[2*PI/365*X] + par[2]*sin[2*PI/365*X] + par[3]*cos[4*PI/365*X] + par[4]*sin[4*PI/365*X]
 
     // free memory
