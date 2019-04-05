@@ -12,6 +12,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
+    ui->dbfButton->setEnabled(false);
+
 }
 
 MainWindow::~MainWindow()
@@ -48,6 +50,8 @@ void MainWindow::onFileOpen()
 		}
 		ui->treeWidget->clear();
 		ui->treeWidget->insertTopLevelItems(0, items);
+        ui->dbfButton->setEnabled(true);
+
 	}
 }
 
@@ -109,5 +113,27 @@ void MainWindow::onSelectShape(QTreeWidgetItem *item, int)
             }
 		}
 	}
+}
+
+
+void MainWindow::on_dbfButton_clicked()
+{
+    QString file = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("shapefile (*.dbf)"));
+
+    QFileInfo fileInfo(file);
+
+    m_tableView.setModel(0);
+
+    if (!m_model.open(file))
+    {
+        QMessageBox::warning(this, tr("Bad file"), tr("Something is wrong"));
+    }
+    else
+    {
+        m_tableView.setModel(&m_model);
+        m_tableView.setSelectionMode(QAbstractItemView::SingleSelection);
+        m_tableView.setSelectionBehavior(QAbstractItemView::SelectItems);
+        m_tableView.show();
+    }
 }
 

@@ -6,7 +6,6 @@
 
 QT  += widgets
 
-#TARGET = SHAPES_TEST
 TEMPLATE = app
 
 SOURCES += main.cpp \
@@ -32,16 +31,16 @@ win32:{
 }
 
 
-INCLUDEPATH +=  ../shapeHandler ../shapeHandler/shapelib
+INCLUDEPATH +=  ../shapeHandler ../shapeHandler/shapelib ../shapeDBF
 
 unix:{
-    LIBS += -L../shapeHandler/release -lshapeHandler
+    LIBS += -L../shapeHandler/release -lshapeHandler -L../shapeDBF/release -lshapeDBF
 }
 win32:{
     CONFIG(debug, debug|release) {
-        LIBS += -L../shapeHandler/debug -lshapeHandler
+        LIBS += -L../shapeHandler/debug -lshapeHandler -L../shapeDBF/debug -lshapeDBF
     } else {
-        LIBS += -L../shapeHandler/release -lshapeHandler
+        LIBS += -L../shapeHandler/release -lshapeHandler -L../shapeDBF/release -lshapeDBF
     }
 }
 
