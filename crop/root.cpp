@@ -254,15 +254,21 @@ namespace root
         return counter;
     }
 
-
-    void cardioidDistribution(double shapeFactor, int nrLayersWithRoot,int nrUpperLayersWithoutRoot , int totalLayers,double* densityThinLayers)
+    /*!
+     * \brief Compute root density distribution of a cardioid
+     * \param shapeFactor [] deformation factor
+     * \note author: Franco Zinoni
+     * \return array densityThinLayers []
+     */
+    void cardioidDistribution(double shapeFactor, int nrLayersWithRoot,
+                              int nrUpperLayersWithoutRoot , int totalLayers, double* densityThinLayers)
     {
         double *lunette =  (double *) calloc(unsigned(2*nrLayersWithRoot), sizeof(double));
         double *lunetteDensity = (double *) calloc(unsigned(2*nrLayersWithRoot), sizeof(double));
         for (int i = 0 ; i<nrLayersWithRoot ; i++)
         {
             double sinAlfa, cosAlfa, alfa;
-            sinAlfa = 1. - double(1.+i)/(double(nrLayersWithRoot)) ;
+            sinAlfa = 1. - double(1.+i)/(double(nrLayersWithRoot));
             cosAlfa = maxValue(sqrt(1. - pow(sinAlfa,2)), 0.0001);
             alfa = atan(sinAlfa/cosAlfa);
             lunette[i]= ((PI/2) - alfa - sinAlfa*cosAlfa) / PI;
@@ -271,36 +277,39 @@ namespace root
         lunetteDensity[2*nrLayersWithRoot - 1]= lunetteDensity[0] = lunette[0];
         for (int i = 1 ; i<nrLayersWithRoot ; i++)
         {
-            lunetteDensity[2*nrLayersWithRoot - i - 1]=lunetteDensity[i]=lunette[i]-lunette[i-1] ;
+            lunetteDensity[2*nrLayersWithRoot - i - 1]=lunetteDensity[i]=lunette[i]-lunette[i-1];
         }
 
         // cardioid deformation
         double LiMin,Limax,k,rootDensitySum ;
-        LiMin = -log(0.2)/nrLayersWithRoot;
-        Limax = -log(0.05)/nrLayersWithRoot;
-        k = LiMin + (Limax - LiMin)*(shapeFactor-1); //da controllare
+        LiMin = -log(0.2) / nrLayersWithRoot;
+        Limax = -log(0.05) / nrLayersWithRoot;
+        // TODO verify
+        k = LiMin + (Limax - LiMin) * (shapeFactor-1);
         rootDensitySum = 0 ;
         for (int i = 0 ; i<(2*nrLayersWithRoot) ; i++)
         {
-            lunetteDensity[i] *= exp(-k*(i+0.5)); //changed from basic to C
+            // modified from VB6 to C
+            lunetteDensity[i] *= exp(-k*(i+0.5));
             rootDensitySum += lunetteDensity[i];
         }
         for (int i = 0 ; i<(2*nrLayersWithRoot) ; i++)
         {
             lunetteDensity[i] /= rootDensitySum ;
         }
-        for  (int i = 0 ; i<totalLayers ; i++)
+        for  (int i = 0 ; i < totalLayers ; i++)
         {
             densityThinLayers[i]=0;
         }
         for (int i = 0 ; i<nrLayersWithRoot ; i++)
         {
-            densityThinLayers[nrUpperLayersWithoutRoot+i]=lunetteDensity[2*i] + lunetteDensity[2*i+1] ;
+            densityThinLayers[nrUpperLayersWithoutRoot+i] = lunetteDensity[2*i] + lunetteDensity[2*i+1];
         }
 
         free(lunette);
         free(lunetteDensity);
     }
+
 
     void cylindricalDistribution(double deformation, int nrLayersWithRoot,int nrUpperLayersWithoutRoot , int totalLayers,double* densityThinLayers)
     {
