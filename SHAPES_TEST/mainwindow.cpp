@@ -123,19 +123,40 @@ void MainWindow::on_dbfButton_clicked()
     QVBoxLayout* DBFLayout = new QVBoxLayout;
     DBFWidget->resize(QDesktopWidget().availableGeometry().size());
 
-    //m_DBFTableWidget = new QTableWidget(DBFWidget);
     m_DBFTableWidget = new QTableWidget();
     DBFLayout->addWidget(m_DBFTableWidget);
 
-    m_DBFTableWidget->setRowCount(shapeHandler.getShapeCount());
+
     int colNumber = shapeHandler.getFieldNumbers();
+    int rowNumber = shapeHandler.getShapeCount();
+    m_DBFTableWidget->setRowCount(rowNumber);
     m_DBFTableWidget->setColumnCount(colNumber);
     QStringList m_DBFTableHeader;
+    std::string nameField;
+    int typeField;
 
     for (int i = 0; i < colNumber; i++)
     {
-        std::string nameField =  shapeHandler.getFieldName(i);
+        nameField =  shapeHandler.getFieldName(i);
+        typeField = shapeHandler.getFieldType(i);
         m_DBFTableHeader << QString::fromStdString(nameField);
+
+        for (int j = 0; j < rowNumber; j++)
+        {
+            if (typeField == 0)
+            {
+                m_DBFTableWidget->setItem(j, i, new QTableWidgetItem( QString::fromStdString(shapeHandler.readStringAttribute(j,i) )));
+            }
+            else if (typeField == 1)
+            {
+                m_DBFTableWidget->setItem(j, i, new QTableWidgetItem( QString::number(shapeHandler.readIntAttribute(j,i) )));
+            }
+            else if (typeField == 2)
+            {
+                m_DBFTableWidget->setItem(j, i, new QTableWidgetItem( QString::number(shapeHandler.readDoubleAttribute(j,i) )));
+            }
+
+        }
     }
     m_DBFTableWidget->setHorizontalHeaderLabels(m_DBFTableHeader);
     m_DBFTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
