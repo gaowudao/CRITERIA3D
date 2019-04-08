@@ -68,6 +68,11 @@ float errorFunctionPrimitive(float x)
     return expf(-x*x);
 }
 
+double errorFunctionPrimitive(double x)
+{
+    return exp(-x*x);
+}
+
 double twoParametersAndExponentialPolynomialFunctions(double x, double* par)
 {
     return (double)(par[0]+par[1]*pow(x,par[2]));
@@ -78,6 +83,27 @@ double twoHarmonicsFourier(double x, double* par)
     return par[0] + par[1]*cos(2*PI/par[5]*x) + par[2]*sin(2*PI/par[5]*x) + par[3]*cos(4*PI/par[5]*x) + par[4]*sin(4*PI/par[5]*x);
 }
 
+double harmonicsFourierGeneral(double x, double* par,int nrPar)
+{
+    // the last parameter is the period
+    if (nrPar == 2) return par[0];
+    else
+    {
+        int counter = 0;
+        double y = par[0];
+        int requiredHarmonics;
+        requiredHarmonics = (nrPar - 2)/2;
+        double angularVelocity;
+        angularVelocity = 2*PI/par[nrPar-1];
+        while (counter < requiredHarmonics)
+        {
+            y += par[1+counter*2]*cos(angularVelocity*(counter+1)*x) + par[2+counter*2]*sin(angularVelocity*(counter+1)*x);
+            counter++;
+        }
+        return y;
+    }
+
+}
 /*float straightLine(TfunctionInput fInput)
 {
     float m,q,y;
@@ -102,7 +128,7 @@ namespace integration
         float old_s [10] = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
         //void nerror(char error_text[]);
         int j;
-        float s , st , ost=0.0 , os = 0.0 ;
+        float s = NODATA , st = NODATA , ost = 0.0 , os = 0.0 ;
         float s1 = 0.;
         for ( j=1 ; j <= 20 ; j++)
         {
@@ -280,15 +306,15 @@ namespace integration
         {
             return (-simpsonRule(func,b, a , EPS)); //recursive formula
         }
-        float old_s [10] = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
+        double old_s [10] = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
         //double trapezoidalRule(double (*func)(double) , double a , double b , int n) ;
         int j;
-        float sumInfenitesimal , sumTrapezoidal , old_sumTrapezoidal=0.0 , old_sumInfinitesimal = 0.0 ;
-        float s1 = 0.;
+        double sumInfenitesimal = 0. , sumTrapezoidal = 0. , old_sumTrapezoidal=0.0 , old_sumInfinitesimal = 0.0 ;
+        double s1 = 0.;
         for ( j=1 ; j <= 20 ; j++)
         {
             sumTrapezoidal = trapezoidalRule(func,a,b,j) ;
-            sumInfenitesimal = (double)((4.0*sumTrapezoidal-old_sumTrapezoidal)/3.0) ;
+            sumInfenitesimal = (4.0*sumTrapezoidal-old_sumTrapezoidal)/3.0 ;
             for ( short k=1 ; k < 10 ; k++)
             {
                 old_s[k-1]=old_s[k];
@@ -300,7 +326,7 @@ namespace integration
                 old_sumInfinitesimal = sumInfenitesimal ;
                 old_sumTrapezoidal = sumTrapezoidal ;
         }
-        float average_s=0.0 , average_s2 = 0.0 , variance ;
+        double average_s=0.0 , average_s2 = 0.0 , variance ;
         for ( short k=0 ; k < 10 ; k++)
         {
             average_s  += old_s[k];
@@ -376,7 +402,7 @@ namespace interpolation
         }
 
 
-        mySSE = normGeneric(myPar, myX, nrMyX, myY, myFunctionCode);
+        mySSE = normGeneric(myPar, nrMyPar, myX, nrMyX, myY, myFunctionCode);
         myDiffSSE = myEpsilon * 1000 ;
 
         do
@@ -399,7 +425,7 @@ namespace interpolation
                 }
             }
 
-            myNewSSE = normGeneric(myNewPar, myX, nrMyX, myY, myFunctionCode);
+            myNewSSE = normGeneric(myNewPar,nrMyPar, myX, nrMyX, myY, myFunctionCode);
 
             if (myNewSSE == NODATA) return output;
 
@@ -454,7 +480,7 @@ namespace interpolation
         }
         double pivot,mult,top;
         //get a first set of estimates
-        for (i = 0 ; i< nrMyData ; i++) myFirstEst[i] = estimateFunction(myFunctionCode, myParameters, &(myX[i]));
+        for (i = 0 ; i< nrMyData ; i++) myFirstEst[i] = estimateFunction(myFunctionCode, myParameters, nrMyParameters, &(myX[i]));
 
 
         //change parameters and compute derivatives
@@ -463,7 +489,7 @@ namespace interpolation
             myParameters[i] += myParametersDelta[i];
             for (j = 0 ;j< nrMyData;j++)
             {
-                myNewEst = estimateFunction(myFunctionCode, myParameters, &(myX[j]));
+                myNewEst = estimateFunction(myFunctionCode, myParameters, nrMyParameters, &(myX[j]));
                 P[i][j] = (myNewEst - myFirstEst[j]) / myParametersDelta[i];
             }
             myParameters[i] -= myParametersDelta[i];
@@ -528,7 +554,7 @@ namespace interpolation
     }
 
 
-    float estimateFunction(int myFunctionCode, double *myParameters, double *myX)
+    double estimateFunction(int myFunctionCode, double *myParameters,int nrMyParameters, double *myX)
     {
         /*
             '' spherical
@@ -536,7 +562,7 @@ namespace interpolation
             '' myParameters(1): nugget
             '' myParameters(2): sill
         */
-        float output;
+        double output;
         double myTmp;
         switch (myFunctionCode)
         {
@@ -549,17 +575,21 @@ namespace interpolation
                 }
                 myTmp = (*myX) / myParameters[0];
                 if ((*myX) < myParameters[0])
-                    output = float(myParameters[1] + (myParameters[2] - myParameters[1]) * (1.5 * myTmp - 0.5 * myTmp * myTmp * myTmp));
+                    output = (myParameters[1] + (myParameters[2] - myParameters[1]) * (1.5 * myTmp - 0.5 * myTmp * myTmp * myTmp));
                 else
-                    output = float(myParameters[2]);
+                    output = (myParameters[2]);
                 break;
             case FUNCTION_CODE_TWOPARAMETERSPOLYNOMIAL :
                 myTmp = *myX;
-                output = (float)(twoParametersAndExponentialPolynomialFunctions(myTmp,myParameters));
+                output = (twoParametersAndExponentialPolynomialFunctions(myTmp,myParameters));
                 break;
             case FUNCTION_CODE_FOURIER_2_HARMONICS :
                 myTmp = *myX;
-                output = (float)(twoHarmonicsFourier(myTmp,myParameters));
+                output = (twoHarmonicsFourier(myTmp,myParameters));
+                break;
+            case FUNCTION_CODE_FOURIER_GENERAL_HARMONICS :
+                myTmp = *myX;
+                output = harmonicsFourierGeneral(myTmp,myParameters,nrMyParameters);
                 break;
 
             default:
@@ -571,7 +601,7 @@ namespace interpolation
     }
 
 
-    double normGeneric(double *myParameters,double *myX, int nrMyX,double *myY,int myFunctionCode)
+    double normGeneric(double *myParameters,int nrMyParameters, double *myX, int nrMyX,double *myY,int myFunctionCode)
     {
         int i;
         float myError;
@@ -579,7 +609,7 @@ namespace interpolation
         double output = 0;
         for (i = 0; i < nrMyX ; i++)
         {
-            myEstimate = estimateFunction(myFunctionCode, myParameters, &(myX[i]));
+            myEstimate = estimateFunction(myFunctionCode, myParameters, nrMyParameters, &(myX[i]));
             if (myEstimate == NODATA)
             {
                 output = NODATA;

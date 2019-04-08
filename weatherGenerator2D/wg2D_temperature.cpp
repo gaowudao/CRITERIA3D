@@ -450,7 +450,7 @@ void weatherGenerator2D::harmonicsFourier(double* variable, double *par,int nrPa
     parMarquardt[4] = par[4] = 0;
     parMarquardt[5] = 365;
 
-    interpolation::fittingMarquardt(parMin,parMax,parMarquardt,nrPar+1,parDelta,10000,0.0001,FUNCTION_CODE_FOURIER_2_HARMONICS,x,nrValidDays,y);
+    interpolation::fittingMarquardt(parMin,parMax,parMarquardt,nrPar+1,parDelta,10000,0.0001,FUNCTION_CODE_FOURIER_GENERAL_HARMONICS,x,nrValidDays,y);
 
     for (int i=0;i<nrPar;i++)
     {

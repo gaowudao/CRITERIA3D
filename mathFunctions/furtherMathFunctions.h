@@ -5,10 +5,15 @@
 #include <string>
 
 enum estimateFunction {FUNCTION_CODE_SPHERICAL, FUNCTION_CODE_LINEAR, FUNCTION_CODE_PARABOLIC,
-                       FUNCTION_CODE_EXPONENTIAL, FUNCTION_CODE_LOGARITMIC, FUNCTION_CODE_TWOPARAMETERSPOLYNOMIAL,FUNCTION_CODE_FOURIER_2_HARMONICS};
+                       FUNCTION_CODE_EXPONENTIAL, FUNCTION_CODE_LOGARITMIC, FUNCTION_CODE_TWOPARAMETERSPOLYNOMIAL,FUNCTION_CODE_FOURIER_2_HARMONICS,FUNCTION_CODE_FOURIER_GENERAL_HARMONICS};
 
     float errorFunctionPrimitive(float x);
+    double errorFunctionPrimitive(double x);
     char *decimal_to_binary(unsigned int n, int nrBits);
+    double twoParametersAndExponentialPolynomialFunctions(double x, double* par);
+    double twoHarmonicsFourier(double x, double* par);
+    double harmonicsFourierGeneral(double x, double* par,int nrPar);
+
 
     struct TfunctionInput{
         float x ;
@@ -53,8 +58,8 @@ enum estimateFunction {FUNCTION_CODE_SPHERICAL, FUNCTION_CODE_LINEAR, FUNCTION_C
     {
         float linearInterpolation (float x, float *xColumn , float *yColumn, int dimTable );
         float linearExtrapolation(double x3,double x1,double y1,double x2 , double y2);
-        double normGeneric(double *myParameters, double *myX,int nrMyX, double *myY,int myFunctionCode);
-        float estimateFunction(int myFunctionCode, double *myParameters, double *myX);
+        double normGeneric(double *myParameters, int nrMyParameters, double *myX,int nrMyX, double *myY,int myFunctionCode);
+        double estimateFunction(int myFunctionCode, double *myParameters, int nrMyParameters, double *myX);
         void leastSquares(int myFunctionCode,double *myParameters, int nrMyParameters,
                     double *myX,int nrMyX, double *myY,double *myLambda,
                     double *myParametersDelta, double *myParametersChange);
