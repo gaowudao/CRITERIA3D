@@ -1,4 +1,4 @@
-#include "mainwindow.hpp"
+﻿#include "mainwindow.hpp"
 #include "ui_mainwindow.h"
 #include <QFileDialog>
 #include <QMessageBox>
@@ -121,6 +121,8 @@ void MainWindow::on_dbfButton_clicked()
 
     QWidget *DBFWidget = new QWidget;
     QVBoxLayout* DBFLayout = new QVBoxLayout;
+    QHBoxLayout* buttonLayout = new QHBoxLayout;
+
     DBFWidget->resize(QDesktopWidget().availableGeometry().size());
 
     m_DBFTableWidget = new QTableWidget();
@@ -171,42 +173,34 @@ void MainWindow::on_dbfButton_clicked()
     m_DBFTableWidget->setMinimumHeight(DBFWidget->height() - offset);
     m_DBFTableWidget->setMaximumHeight(DBFWidget->height() - offset);
 
+    const QSize BUTTON_SIZE = QSize(22, 22);
+    m_addRowButton = new QPushButton();
+    m_addRowButton->setText("+");
+    m_addRowButton->setMaximumSize(BUTTON_SIZE);
+    m_removeRowButton = new QPushButton();
+    m_removeRowButton->setText("-");
+    m_removeRowButton->setMaximumSize(BUTTON_SIZE);
+
+    buttonLayout->addWidget(m_addRowButton);
+    buttonLayout->addWidget(m_removeRowButton);
+    DBFLayout->addLayout(buttonLayout);
+
+    connect(m_addRowButton, &QPushButton::clicked, [=](){ this->addRowClicked(); });
+    connect(m_removeRowButton, &QPushButton::clicked, [=](){ this->removeRowClicked(); });
+
+
     DBFWidget->setLayout(DBFLayout);
     DBFWidget->show();
 
-
-     ////////////////////////////////////////////////////////////shapeDBF lib ////////////////
-//    QString file = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("shapefile (*.dbf)"));
-
-//    QFileInfo fileInfo(file);
-
-//    m_tableView.setModel(0);
-
-//    if (!m_model.open(file))
-//    {
-//        QMessageBox::warning(this, tr("Bad file"), tr("Something is wrong"));
-//    }
-//    else
-//    {
-//        m_tableView.setModel(&m_model);
-//        m_tableView.setSelectionMode(QAbstractItemView::SingleSelection);
-//        m_tableView.setSelectionBehavior(QAbstractItemView::SelectItems);
-//        m_addRowButton.setText(QLatin1String("+"));
-//        m_buttonBox.addButton(m_addRowButton, QDialogButtonBox::ActionRole);
-
-//        m_removeRowButton.setText(QLatin1String("-"));
-//        m_buttonBox.addButton(m_removeRowButton, QDialogButtonBox::ActionRole);
-
-//        q->connect(m_buttonBox, SIGNAL(clicked(QAbstractButton*)), SLOT(processButtonClicked(QAbstractButton*)));
-//        m_baseLayout->addWidget(m_buttonBox);
-
-//        m_addRowButton->setToolTip(trUtf8(ADD_ROW_BUTTON_TOOL_TIP));
-//        m_addRowButton->setEnabled(false);
-
-//        m_removeRowButton->setToolTip(trUtf8(REMOVE_ROW_BUTTON_TOOL_TIP));
-//        m_removeRowButton->setEnabled(false);
-
-//        m_tableView.show();
-//    }
 }
 
+
+void MainWindow::addRowClicked()
+{
+    qDebug() << "addRowClicked ";
+}
+
+void MainWindow::removeRowClicked()
+{
+    qDebug() << "removeRowClicked ";
+}

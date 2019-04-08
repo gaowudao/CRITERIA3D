@@ -43,16 +43,4 @@ win32:{
     }
 }
 
-#INCLUDEPATH +=  ../shapeHandler ../shapeHandler/shapelib ../shapeDBF
-
-#unix:{
-#    LIBS += -L../shapeHandler/release -lshapeHandler -L../shapeDBF/release -lshapeDBF
-#}
-#win32:{
-#    CONFIG(debug, debug|release) {
-#        LIBS += -L../shapeHandler/debug -lshapeHandler -L../shapeDBF/debug -lshapeDBF
-#    } else {
-#        LIBS += -L../shapeHandler/release -lshapeHandler -L../shapeDBF/release -lshapeDBF
-#    }
-#}
 

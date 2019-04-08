@@ -5,12 +5,10 @@
     #include <QTreeWidgetItem>
     #include <QDialogButtonBox>
     #include <QLineEdit>
-    //#include <QTableView>
     #include <QDesktopWidget>
     #include <QTableWidget>
 
     #include "shapeHandler.h"
-    //#include "qdbftablemodel.h"
 
     namespace Ui {
     class MainWindow;
@@ -30,16 +28,15 @@
     private:
         Ui::MainWindow *ui;
         QTableWidget* m_DBFTableWidget;
-        //QTableView m_tableView;
-        //QDbf::QDbfTableModel m_model;
-        //QDialogButtonBox m_buttonBox;
-        //QToolButton m_addRowButton;
-        //QToolButton m_removeRowButton;
+        QPushButton *m_addRowButton;
+        QPushButton *m_removeRowButton;
 
     private slots:
         void onFileOpen();
         void onSelectShape(QTreeWidgetItem *item, int column);
         void on_dbfButton_clicked();
+        void addRowClicked();
+        void removeRowClicked();
     };
 
 #endif // MAINWINDOW_HPP
