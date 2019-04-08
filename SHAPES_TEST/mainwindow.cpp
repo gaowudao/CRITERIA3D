@@ -118,22 +118,74 @@ void MainWindow::onSelectShape(QTreeWidgetItem *item, int)
 
 void MainWindow::on_dbfButton_clicked()
 {
-    QString file = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("shapefile (*.dbf)"));
 
-    QFileInfo fileInfo(file);
+    QWidget *DBFWidget = new QWidget;
+    QVBoxLayout* DBFLayout = new QVBoxLayout;
+    DBFWidget->resize(QDesktopWidget().availableGeometry().size());
 
-    m_tableView.setModel(0);
+    //m_DBFTableWidget = new QTableWidget(DBFWidget);
+    m_DBFTableWidget = new QTableWidget();
+    DBFLayout->addWidget(m_DBFTableWidget);
 
-    if (!m_model.open(file))
+    m_DBFTableWidget->setRowCount(shapeHandler.getShapeCount());
+    int colNumber = shapeHandler.getFieldNumbers();
+    m_DBFTableWidget->setColumnCount(colNumber);
+    QStringList m_DBFTableHeader;
+
+    for (int i = 0; i < colNumber; i++)
     {
-        QMessageBox::warning(this, tr("Bad file"), tr("Something is wrong"));
+        std::string nameField =  shapeHandler.getFieldName(i);
+        m_DBFTableHeader << QString::fromStdString(nameField);
     }
-    else
-    {
-        m_tableView.setModel(&m_model);
-        m_tableView.setSelectionMode(QAbstractItemView::SingleSelection);
-        m_tableView.setSelectionBehavior(QAbstractItemView::SelectItems);
-        m_tableView.show();
-    }
+    m_DBFTableWidget->setHorizontalHeaderLabels(m_DBFTableHeader);
+    m_DBFTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    m_DBFTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_DBFTableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+    m_DBFTableWidget->setShowGrid(false);
+    m_DBFTableWidget->setStyleSheet("QTableView {selection-background-color: red;}");
+
+    int offset = 100;
+    m_DBFTableWidget->setMinimumWidth(DBFWidget->width());
+    m_DBFTableWidget->setMaximumWidth(DBFWidget->width());
+    m_DBFTableWidget->setMinimumHeight(DBFWidget->height() - offset);
+    m_DBFTableWidget->setMaximumHeight(DBFWidget->height() - offset);
+
+    DBFWidget->setLayout(DBFLayout);
+    DBFWidget->show();
+
+
+     ////////////////////////////////////////////////////////////shapeDBF lib ////////////////
+//    QString file = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("shapefile (*.dbf)"));
+
+//    QFileInfo fileInfo(file);
+
+//    m_tableView.setModel(0);
+
+//    if (!m_model.open(file))
+//    {
+//        QMessageBox::warning(this, tr("Bad file"), tr("Something is wrong"));
+//    }
+//    else
+//    {
+//        m_tableView.setModel(&m_model);
+//        m_tableView.setSelectionMode(QAbstractItemView::SingleSelection);
+//        m_tableView.setSelectionBehavior(QAbstractItemView::SelectItems);
+//        m_addRowButton.setText(QLatin1String("+"));
+//        m_buttonBox.addButton(m_addRowButton, QDialogButtonBox::ActionRole);
+
+//        m_removeRowButton.setText(QLatin1String("-"));
+//        m_buttonBox.addButton(m_removeRowButton, QDialogButtonBox::ActionRole);
+
+//        q->connect(m_buttonBox, SIGNAL(clicked(QAbstractButton*)), SLOT(processButtonClicked(QAbstractButton*)));
+//        m_baseLayout->addWidget(m_buttonBox);
+
+//        m_addRowButton->setToolTip(trUtf8(ADD_ROW_BUTTON_TOOL_TIP));
+//        m_addRowButton->setEnabled(false);
+
+//        m_removeRowButton->setToolTip(trUtf8(REMOVE_ROW_BUTTON_TOOL_TIP));
+//        m_removeRowButton->setEnabled(false);
+
+//        m_tableView.show();
+//    }
 }
 

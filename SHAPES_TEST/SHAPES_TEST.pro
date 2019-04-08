@@ -30,17 +30,29 @@ win32:{
     TARGET = SHAPES_TEST
 }
 
-
-INCLUDEPATH +=  ../shapeHandler ../shapeHandler/shapelib ../shapeDBF
+INCLUDEPATH +=  ../shapeHandler ../shapeHandler/shapelib
 
 unix:{
-    LIBS += -L../shapeHandler/release -lshapeHandler -L../shapeDBF/release -lshapeDBF
+    LIBS += -L../shapeHandler/release -lshapeHandler -L../shapeDBF/release
 }
 win32:{
     CONFIG(debug, debug|release) {
-        LIBS += -L../shapeHandler/debug -lshapeHandler -L../shapeDBF/debug -lshapeDBF
+        LIBS += -L../shapeHandler/debug -lshapeHandler -L../shapeDBF/debug
     } else {
-        LIBS += -L../shapeHandler/release -lshapeHandler -L../shapeDBF/release -lshapeDBF
+        LIBS += -L../shapeHandler/release -lshapeHandler -L../shapeDBF/release
     }
 }
+
+#INCLUDEPATH +=  ../shapeHandler ../shapeHandler/shapelib ../shapeDBF
+
+#unix:{
+#    LIBS += -L../shapeHandler/release -lshapeHandler -L../shapeDBF/release -lshapeDBF
+#}
+#win32:{
+#    CONFIG(debug, debug|release) {
+#        LIBS += -L../shapeHandler/debug -lshapeHandler -L../shapeDBF/debug -lshapeDBF
+#    } else {
+#        LIBS += -L../shapeHandler/release -lshapeHandler -L../shapeDBF/release -lshapeDBF
+#    }
+#}
 
