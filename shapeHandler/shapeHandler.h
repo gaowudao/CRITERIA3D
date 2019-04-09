@@ -34,6 +34,7 @@
         double readDoubleAttribute(int shapeNumber, int fieldPos);
         std::string readStringAttribute(int shapeNumber, int fieldPos);
         bool deleteRecord(int shapeNumber);
+        bool addRecord(std::vector<std::string> fields);
     };
 
 
