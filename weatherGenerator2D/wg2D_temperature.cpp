@@ -301,17 +301,35 @@ void weatherGenerator2D::computeTemperatureParameters()
         temperatureCoefficients[iStation].maxTDry.averageFourierParameters.aSin1 = par[2];
         temperatureCoefficients[iStation].maxTDry.averageFourierParameters.aCos2 = par[3];
         temperatureCoefficients[iStation].maxTDry.averageFourierParameters.aSin2 = par[4];
+        for (int i=0;i<365;i++) printf("%d %f \n",i,temperatureCoefficients[iStation].maxTDry.averageEstimation[i]);
+        FILE* fpMaxT;
+        fpMaxT = fopen("comparisonTmaxDry.dat","w");
+        for (int i=0;i<365;i++)
+        {
+            fprintf(fpMaxT,"%d;%f;%f\n",i+1,averageTMaxDry[i],temperatureCoefficients[iStation].maxTDry.averageEstimation[i]);
+        }
+        fclose(fpMaxT);
+
         for (int i=0;i<nrPar;i++)
         {
             par[i] = NODATA;
         }
-        for (int i=0;i<365;i++) printf("%d %f \n",i,temperatureCoefficients[iStation].maxTDry.averageEstimation[i]);
         weatherGenerator2D::harmonicsFourier(averageTMinDry,par,nrPar,temperatureCoefficients[iStation].minTDry.averageEstimation,365);
         temperatureCoefficients[iStation].minTDry.averageFourierParameters.a0 = par[0];
         temperatureCoefficients[iStation].minTDry.averageFourierParameters.aCos1 = par[1];
         temperatureCoefficients[iStation].minTDry.averageFourierParameters.aSin1 = par[2];
         temperatureCoefficients[iStation].minTDry.averageFourierParameters.aCos2 = par[3];
         temperatureCoefficients[iStation].minTDry.averageFourierParameters.aSin2 = par[4];
+        FILE* fpMinT;
+        fpMinT = fopen("comparisonTminDry.dat","w");
+        for (int i=0;i<365;i++)
+        {
+            fprintf(fpMinT,"%d;%f;%f\n",i+1,averageTMinDry[i],temperatureCoefficients[iStation].minTDry.averageEstimation[i]);
+        }
+        fclose(fpMinT);
+
+
+
         for (int i=0;i<nrPar;i++)
         {
             par[i] = NODATA;

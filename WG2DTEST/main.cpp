@@ -239,7 +239,7 @@ int main()
 
     WG2D.initializeParameters(NODATA,2,2,0,1);
     WG2D.computeWeatherGenerator2D();
-
+    /*
     int numeroArmoniche = 4;
     double *parMin = (double *) calloc(numeroArmoniche*2+2, sizeof(double));
     double* parMax = (double *) calloc(numeroArmoniche*2+2, sizeof(double));
@@ -283,7 +283,7 @@ int main()
         printf("%f,%f,%f\n",valoriX[i],valori[i],harmonicsFourierGeneral(valoriX[i],parMarquardt,numeroArmoniche*2+2));
     }
 
-
+    */
     return 0;
 }
 
