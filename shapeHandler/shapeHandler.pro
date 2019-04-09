@@ -25,9 +25,9 @@ INCLUDEPATH =  shapelib
 
 SOURCES += \
     shapelib/dbfopen.c      \
-    shapelib/dbfadd.c      \
-    shapelib/dbfcreate.c      \
-    shapelib/dbfdump.c      \
+#    shapelib/dbfadd.c      \
+#    shapelib/dbfcreate.c      \
+#    shapelib/dbfdump.c      \
     shapelib/safileio.c     \
     shapelib/sbnsearch.c    \
     shapelib/shpopen.c      \
