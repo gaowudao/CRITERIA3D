@@ -105,3 +105,8 @@ std::string Crit3DShapeHandler::readStringAttribute(int shapeNumber, int fieldPo
 {
     return DBFReadStringAttribute(m_dbf,shapeNumber,fieldPos);
 }
+
+bool Crit3DShapeHandler::deleteRecord(int shapeNumber)
+{
+    return DBFMarkRecordDeleted(m_dbf,shapeNumber,true);
+}

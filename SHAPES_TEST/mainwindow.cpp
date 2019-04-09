@@ -136,6 +136,7 @@ void MainWindow::on_dbfButton_clicked()
     QStringList m_DBFTableHeader;
     std::string nameField;
     int typeField;
+    QStringList labels;
 
     for (int i = 0; i < colNumber; i++)
     {
@@ -157,9 +158,11 @@ void MainWindow::on_dbfButton_clicked()
             {
                 m_DBFTableWidget->setItem(j, i, new QTableWidgetItem( QString::number(shapeHandler.readDoubleAttribute(j,i) )));
             }
+            labels << QString::number(j);
 
         }
     }
+    m_DBFTableWidget->setVerticalHeaderLabels(labels);
     m_DBFTableWidget->setHorizontalHeaderLabels(m_DBFTableHeader);
     m_DBFTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_DBFTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -203,4 +206,22 @@ void MainWindow::addRowClicked()
 void MainWindow::removeRowClicked()
 {
     qDebug() << "removeRowClicked ";
+    QItemSelectionModel *select = m_DBFTableWidget->selectionModel();
+
+    if (select->hasSelection())
+    {
+        QModelIndexList indexList = select->selectedRows();
+        int row = indexList.at(0).row();
+        qDebug() << "row = " << row;
+
+        if (shapeHandler.deleteRecord(row))
+        {
+            m_DBFTableWidget->removeRow(row);
+        }
+    }
+    else
+    {
+        qDebug() << "no row selected ";
+    }
+
 }
