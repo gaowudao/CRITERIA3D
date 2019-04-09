@@ -201,6 +201,16 @@ void MainWindow::on_dbfButton_clicked()
 void MainWindow::addRowClicked()
 {
     qDebug() << "addRowClicked ";
+    // test
+    std::vector<std::string> test = {"0", "19850526",  "M0M0M0", "RAINFEDWHEAT" , "CTL4", "01139" , "01139" , "-9.99900e+003" , "7.3", "0", "0", "0", "0", "-9.99900e+003" , "-9.99900e+003"};
+    if (shapeHandler.addRecord(test))
+    {
+        qDebug() << "addRecord true ";
+    }
+    else
+    {
+        qDebug() << "addRecord false ";
+    }
 }
 
 void MainWindow::removeRowClicked()

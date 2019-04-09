@@ -110,3 +110,46 @@ bool Crit3DShapeHandler::deleteRecord(int shapeNumber)
 {
     return DBFMarkRecordDeleted(m_dbf,shapeNumber,true);
 }
+
+bool Crit3DShapeHandler::addRecord(std::vector<std::string> fields)
+{
+    if( DBFGetFieldCount(m_dbf) != fields.size() )
+    {
+        return false;
+    }
+
+    int iRecord = DBFGetRecordCount( m_dbf );
+    int typeField;
+
+    /* -------------------------------------------------------------------- */
+    /*	Loop assigning the new field values.				*/
+    /* -------------------------------------------------------------------- */
+    for( int i = 0; i < DBFGetFieldCount(m_dbf); i++ )
+    {
+        typeField = getFieldType(i);
+        if( fields.at(i) == "")
+        {
+            DBFWriteNULLAttribute(m_dbf, iRecord, i );
+        }
+        else if( typeField == 0 )
+        {
+            DBFWriteStringAttribute(m_dbf, iRecord, i, fields.at(i).c_str() );
+        }
+        else if (typeField == 1)
+        {
+            DBFWriteIntegerAttribute(m_dbf, iRecord, i, std::stoi(fields.at(i))) ;
+        }
+        else if (typeField == 2)
+        {
+            DBFWriteDoubleAttribute(m_dbf, iRecord, i, std::stod(fields.at(i)) );
+        }
+
+    }
+
+    /* -------------------------------------------------------------------- */
+    /*      Close and cleanup.                                              */
+    /* -------------------------------------------------------------------- */
+        DBFClose( m_dbf );
+
+        return true;
+}
