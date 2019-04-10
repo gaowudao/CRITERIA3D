@@ -29,6 +29,7 @@
     private:
         Ui::MainWindow *ui;
         tableDBFDialog *DBFWidget;
+        QString filepath;
 
     private slots:
         void onFileOpen();

@@ -118,3 +118,9 @@ void tableDBFDialog::removeRowClicked()
     }
 
 }
+
+void tableDBFDialog::closeEvent(QCloseEvent *event)
+{
+    shapeHandler->closeDBF();
+    QDialog::closeEvent(event);
+}
