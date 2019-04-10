@@ -22,6 +22,23 @@ void Crit3DShapeHandler::close()
     m_dbf = nullptr;
 }
 
+void Crit3DShapeHandler::closeDBF()
+{
+    if (m_dbf != nullptr)
+    {
+        DBFClose(m_dbf);
+    }
+    m_dbf = nullptr;
+}
+
+void Crit3DShapeHandler::closeSHP()
+{
+    if ((m_handle != nullptr))
+    {
+        SHPClose(m_handle);
+    }
+    m_handle = nullptr;
+}
 
 bool Crit3DShapeHandler::open(std::string filename)
 {
@@ -47,6 +64,38 @@ bool Crit3DShapeHandler::open(std::string filename)
     return true;
 }
 
+bool Crit3DShapeHandler::openDBF(std::string filename)
+{
+    closeDBF();
+    m_dbf = DBFOpen(filename.c_str(), "r+b");
+    if (m_dbf == nullptr) return false;
+
+    m_fields = m_dbf->nFields;
+
+    unsigned long size = 20;
+    char *fieldName =  (char *) malloc(sizeof(char) * size);
+    DBFFieldType fieldType;
+
+    for (int i = 0; i<m_fields; i++)
+    {
+        fieldType = DBFGetFieldInfo( m_dbf, i, fieldName, nullptr, nullptr);
+        m_fieldsList.push_back(std::string(fieldName));
+        m_fieldsTypeList.push_back(fieldType);
+    }
+    free(fieldName);
+    return true;
+}
+
+bool Crit3DShapeHandler::openSHP(std::string filename)
+{
+    closeSHP();
+    m_handle = SHPOpen(filename.c_str(), "r+b");
+    if (m_handle == nullptr) return false;
+
+    SHPGetInfo(m_handle, &m_count, &m_type, nullptr, nullptr);
+    return true;
+}
+
 
 std::string Crit3DShapeHandler::getTypeString()
 {
@@ -69,6 +118,11 @@ bool Crit3DShapeHandler::getShape(int index, ShapeObject &shape)
 int	Crit3DShapeHandler::getShapeCount()
 {
     return m_count;
+}
+
+int	Crit3DShapeHandler::getDBFRecordCount()
+{
+    return m_dbf->nRecords;
 }
 
 int	Crit3DShapeHandler::getType()

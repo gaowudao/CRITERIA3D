@@ -22,9 +22,14 @@
         ~Crit3DShapeHandler();
 
         bool open(std::string filename);
+        bool openDBF(std::string filename);
+        bool openSHP(std::string filename);
         void close();
+        void closeDBF();
+        void closeSHP();
         bool getShape(int index, ShapeObject &shape);
         int	getShapeCount();
+        int	getDBFRecordCount();
         int	getType();
         int getFieldNumbers();
         std::string	getFieldName(int fieldPos);

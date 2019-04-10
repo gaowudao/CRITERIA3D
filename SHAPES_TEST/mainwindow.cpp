@@ -25,7 +25,7 @@ MainWindow::~MainWindow()
 void MainWindow::onFileOpen()
 {
     shapeHandler.close();
-    QString filepath = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("shapefile (*.shp)"));
+    filepath = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("shapefile (*.shp)"));
     if (!shapeHandler.open(filepath.toStdString()))
     {
         QMessageBox::warning(this, tr("Bad file"), tr("Something is wrong"));
@@ -119,6 +119,9 @@ void MainWindow::onSelectShape(QTreeWidgetItem *item, int)
 
 void MainWindow::on_dbfButton_clicked()
 {
+
+    shapeHandler.openDBF(filepath.toStdString());
+    //qDebug() << "record count = " << shapeHandler.getDBFRecordCount();
     DBFWidget = new tableDBFDialog(&shapeHandler);
 }
 

@@ -13,13 +13,12 @@ tableDBFDialog::tableDBFDialog(Crit3DShapeHandler* shapeHandler)
 
 
     int colNumber = shapeHandler->getFieldNumbers();
-    int rowNumber = shapeHandler->getShapeCount();
+    int rowNumber = shapeHandler->getDBFRecordCount();
     m_DBFTableWidget->setRowCount(rowNumber);
     m_DBFTableWidget->setColumnCount(colNumber);
     QStringList m_DBFTableHeader;
     std::string nameField;
     int typeField;
-    QStringList labels;
 
     for (int i = 0; i < colNumber; i++)
     {
@@ -44,6 +43,12 @@ tableDBFDialog::tableDBFDialog(Crit3DShapeHandler* shapeHandler)
             labels << QString::number(j);
 
         }
+    }
+
+    labels.clear();
+    for (int j = 0; j < rowNumber; j++)
+    {
+        labels << QString::number(j);
     }
     m_DBFTableWidget->setVerticalHeaderLabels(labels);
     m_DBFTableWidget->setHorizontalHeaderLabels(m_DBFTableHeader);
@@ -83,9 +88,16 @@ tableDBFDialog::tableDBFDialog(Crit3DShapeHandler* shapeHandler)
 
 void tableDBFDialog::addRowClicked()
 {
-    qDebug() << "addRowClicked ";
+
+    m_DBFTableWidget->insertRow(m_DBFTableWidget->rowCount());
+    labels << QString::number(labels.size());
+    m_DBFTableWidget->setVerticalHeaderLabels(labels);
+
+
     // test
-    std::vector<std::string> test = {"0", "19850526",  "M0M0M0", "RAINFEDWHEAT" , "CTL4", "01139" , "01139" , "-9.99900e+003" , "7.3", "0", "0", "0", "0", "-9.99900e+003" , "-9.99900e+003"};
+    //std::vector<std::string> test = {"0", "19850526",  "M0M0M0", "RAINFEDWHEAT" , "CTL4", "01139" , "01139" , "-9.99900e+003" , "7.3", "0", "0", "0", "0", "-9.99900e+003" , "-9.99900e+003"};
+    std::vector<std::string> test = {"6667"};
+
     if (shapeHandler->addRecord(test))
     {
         qDebug() << "addRecord true ";
@@ -117,4 +129,10 @@ void tableDBFDialog::removeRowClicked()
         qDebug() << "no row selected ";
     }
 
+}
+
+void tableDBFDialog::closeEvent(QCloseEvent *event)
+{
+    shapeHandler->closeDBF();
+    QDialog::closeEvent(event);
 }
