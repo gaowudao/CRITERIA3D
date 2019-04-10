@@ -156,6 +156,21 @@ bool weatherGenerator2D::initializeData(int lengthDataSeries, int stations)
     {
         obsPrecDataD[i] = (TObsPrecDataD *)calloc(nrData, sizeof(TObsPrecDataD));
     }
+    for (int i=0;i<nrStations;i++)
+    {
+        for (int j=0;j<nrData;j++)
+        {
+            obsPrecDataD[i][j].amounts = NODATA;
+            obsPrecDataD[i][j].amountsLessThreshold = NODATA;
+            obsPrecDataD[i][j].date.day = NODATA;
+            obsPrecDataD[i][j].date.month = NODATA;
+            obsPrecDataD[i][j].date.year = NODATA;
+            obsPrecDataD[i][j].occurrences = NODATA;
+            obsPrecDataD[i][j].prec = NODATA;
+        }
+
+    }
+
     return 0;
 }
 
@@ -189,61 +204,6 @@ void weatherGenerator2D::setObservedData(TObsDataD** observations)
         }
         //pressEnterToContinue();
     }
-
-
-    month = (int *)calloc(12, sizeof(int));
-    lengthMonth = (int *)calloc(12, sizeof(int));
-    //beginMonth = (int *)calloc(12, sizeof(int));
-
-    int monthNumber = 0 ;
-    lengthMonth[monthNumber] = 31;
-    month[monthNumber] = monthNumber + 1;
-    //beginMonth[monthNumber] = 1;
-    monthNumber++;
-    month[monthNumber] = monthNumber + 1;
-    //beginMonth[monthNumber] = beginMonth[monthNumber-1] + lengthMonth[monthNumber - 1];
-    lengthMonth[monthNumber] = 28;
-    monthNumber++;
-    month[monthNumber] = monthNumber + 1;
-    //beginMonth[monthNumber] = beginMonth[monthNumber-1] + lengthMonth[monthNumber - 1];
-    lengthMonth[monthNumber] = 31;
-    monthNumber++;
-    month[monthNumber] = monthNumber + 1;
-    //beginMonth[monthNumber] = beginMonth[monthNumber-1] + lengthMonth[monthNumber - 1];
-    lengthMonth[monthNumber] = 30;
-    monthNumber++;
-    month[monthNumber] = monthNumber + 1;
-    //beginMonth[monthNumber] = beginMonth[monthNumber-1] + lengthMonth[monthNumber - 1];
-    lengthMonth[monthNumber] = 31;
-    monthNumber++;
-    month[monthNumber] = monthNumber + 1;
-    //beginMonth[monthNumber] = beginMonth[monthNumber-1] +  lengthMonth[monthNumber - 1];
-    lengthMonth[monthNumber] = 30;
-    monthNumber++;
-    month[monthNumber] = monthNumber + 1;
-    //beginMonth[monthNumber] = beginMonth[monthNumber-1] +  lengthMonth[monthNumber - 1];
-    lengthMonth[monthNumber] = 31;
-    monthNumber++;
-    month[monthNumber] = monthNumber + 1;
-    //beginMonth[monthNumber] = beginMonth[monthNumber-1] +  lengthMonth[monthNumber - 1];
-    lengthMonth[monthNumber] = 31;
-    monthNumber++;
-    month[monthNumber] = monthNumber + 1;
-    //beginMonth[monthNumber] = beginMonth[monthNumber-1] +  lengthMonth[monthNumber - 1];
-    lengthMonth[monthNumber] = 30;
-    monthNumber++;
-    month[monthNumber] = monthNumber + 1;
-    //beginMonth[monthNumber] = beginMonth[monthNumber-1] +  lengthMonth[monthNumber - 1];
-    lengthMonth[monthNumber] = 31;
-    monthNumber++;
-    month[monthNumber] = monthNumber + 1;
-    //beginMonth[monthNumber] = beginMonth[monthNumber-1] +  lengthMonth[monthNumber - 1];
-    lengthMonth[monthNumber] = 30;
-    monthNumber++;
-    month[monthNumber] = monthNumber + 1;
-    //beginMonth[monthNumber] = beginMonth[monthNumber-1] +  lengthMonth[monthNumber - 1];
-    lengthMonth[monthNumber] = 31;
-
 }
 
 
@@ -256,6 +216,8 @@ void weatherGenerator2D::computeWeatherGenerator2D()
 void weatherGenerator2D::precipitationCompute()
 {
    // step 1 of precipitation WG2D
+   weatherGenerator2D::initializePrecipitationInternalArrays();
+   weatherGenerator2D::initializePrecipitationOutputs(lengthSeason);
    weatherGenerator2D::precipitationP00P10(); // it computes the monthly probabilities p00 and p10
    printf("fase 1\n");
    /*int month = 0; // gennaio
@@ -989,6 +951,130 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
     free(correlationArray);
 
 }
+ void weatherGenerator2D::initializePrecipitationInternalArrays()
+ {
+
+     month = (int *)calloc(12, sizeof(int));
+     for (int i=0; i<12;i++) month[i] = NODATA;
+     lengthMonth = (int *)calloc(12, sizeof(int));
+     for (int i=0; i<12;i++) lengthMonth[i] = NODATA;
+     //beginMonth = (int *)calloc(12, sizeof(int));
+     int monthNumber = 0 ;
+     lengthMonth[monthNumber] = 31;
+     month[monthNumber] = monthNumber + 1;
+     //beginMonth[monthNumber] = 1;
+     monthNumber++;
+     month[monthNumber] = monthNumber + 1;
+     //beginMonth[monthNumber] = beginMonth[monthNumber-1] + lengthMonth[monthNumber - 1];
+     lengthMonth[monthNumber] = 28;
+     monthNumber++;
+     month[monthNumber] = monthNumber + 1;
+     //beginMonth[monthNumber] = beginMonth[monthNumber-1] + lengthMonth[monthNumber - 1];
+     lengthMonth[monthNumber] = 31;
+     monthNumber++;
+     month[monthNumber] = monthNumber + 1;
+     //beginMonth[monthNumber] = beginMonth[monthNumber-1] + lengthMonth[monthNumber - 1];
+     lengthMonth[monthNumber] = 30;
+     monthNumber++;
+     month[monthNumber] = monthNumber + 1;
+     //beginMonth[monthNumber] = beginMonth[monthNumber-1] + lengthMonth[monthNumber - 1];
+     lengthMonth[monthNumber] = 31;
+     monthNumber++;
+     month[monthNumber] = monthNumber + 1;
+     //beginMonth[monthNumber] = beginMonth[monthNumber-1] +  lengthMonth[monthNumber - 1];
+     lengthMonth[monthNumber] = 30;
+     monthNumber++;
+     month[monthNumber] = monthNumber + 1;
+     //beginMonth[monthNumber] = beginMonth[monthNumber-1] +  lengthMonth[monthNumber - 1];
+     lengthMonth[monthNumber] = 31;
+     monthNumber++;
+     month[monthNumber] = monthNumber + 1;
+     //beginMonth[monthNumber] = beginMonth[monthNumber-1] +  lengthMonth[monthNumber - 1];
+     lengthMonth[monthNumber] = 31;
+     monthNumber++;
+     month[monthNumber] = monthNumber + 1;
+     //beginMonth[monthNumber] = beginMonth[monthNumber-1] +  lengthMonth[monthNumber - 1];
+     lengthMonth[monthNumber] = 30;
+     monthNumber++;
+     month[monthNumber] = monthNumber + 1;
+     //beginMonth[monthNumber] = beginMonth[monthNumber-1] +  lengthMonth[monthNumber - 1];
+     lengthMonth[monthNumber] = 31;
+     monthNumber++;
+     month[monthNumber] = monthNumber + 1;
+     //beginMonth[monthNumber] = beginMonth[monthNumber-1] +  lengthMonth[monthNumber - 1];
+     lengthMonth[monthNumber] = 30;
+     monthNumber++;
+     month[monthNumber] = monthNumber + 1;
+     //beginMonth[monthNumber] = beginMonth[monthNumber-1] +  lengthMonth[monthNumber - 1];
+     lengthMonth[monthNumber] = 31;
+
+
+
+     lengthSeason[0] = lengthMonth[11]+lengthMonth[0]+lengthMonth[1];
+     lengthSeason[1] = lengthMonth[2]+lengthMonth[3]+lengthMonth[4];
+     lengthSeason[2] = lengthMonth[5]+lengthMonth[6]+lengthMonth[7];
+     lengthSeason[3] = lengthMonth[8]+lengthMonth[9]+lengthMonth[10];
+
+
+
+     // create the seasonal correlation matrices
+     occurrenceMatrixSeasonDJF = (double **)calloc(nrStations, sizeof(double*));
+     occurrenceMatrixSeasonMAM = (double **)calloc(nrStations, sizeof(double*));
+     occurrenceMatrixSeasonJJA = (double **)calloc(nrStations, sizeof(double*));
+     occurrenceMatrixSeasonSON = (double **)calloc(nrStations, sizeof(double*));
+     for (int i=0;i<nrStations;i++)
+     {
+         occurrenceMatrixSeasonDJF[i] = (double *)calloc(lengthSeason[0]*parametersModel.yearOfSimulation, sizeof(double));
+         occurrenceMatrixSeasonMAM[i] = (double *)calloc(lengthSeason[1]*parametersModel.yearOfSimulation, sizeof(double));
+         occurrenceMatrixSeasonJJA[i] = (double *)calloc(lengthSeason[2]*parametersModel.yearOfSimulation, sizeof(double));
+         occurrenceMatrixSeasonSON[i] = (double *)calloc(lengthSeason[3]*parametersModel.yearOfSimulation, sizeof(double));
+     }
+
+     for (int i=0;i<nrStations;i++)
+     {
+         for (int j=0;j<lengthSeason[0]*parametersModel.yearOfSimulation;j++)
+         {
+             occurrenceMatrixSeasonDJF[i][j] = NODATA;
+         }
+         for (int j=0;j<lengthSeason[1]*parametersModel.yearOfSimulation;j++)
+         {
+             occurrenceMatrixSeasonMAM[i][j] = NODATA;
+         }
+         for (int j=0;j<lengthSeason[2]*parametersModel.yearOfSimulation;j++)
+         {
+             occurrenceMatrixSeasonJJA[i][j] = NODATA;
+         }
+         for (int j=0;j<lengthSeason[3]*parametersModel.yearOfSimulation;j++)
+         {
+             occurrenceMatrixSeasonSON[i][j] = NODATA;
+         }
+
+     }
+
+     wDJF = (double **)calloc(nrStations, sizeof(double*));
+     wMAM = (double **)calloc(nrStations, sizeof(double*));
+     wJJA = (double **)calloc(nrStations, sizeof(double*));
+     wSON = (double **)calloc(nrStations, sizeof(double*));
+     wSeason = (double **)calloc(nrStations, sizeof(double*));
+
+     for (int i=0;i<nrStations;i++)
+     {
+         wDJF[i]= (double *)calloc(nrStations, sizeof(double));
+         wMAM[i]= (double *)calloc(nrStations, sizeof(double));
+         wJJA[i]= (double *)calloc(nrStations, sizeof(double));
+         wSON[i]= (double *)calloc(nrStations, sizeof(double));
+         wSeason[i]= (double *)calloc(nrStations, sizeof(double));
+     }
+
+     for (int i=0;i<nrStations;i++)
+     {
+         for (int j=0;j<nrStations;j++)
+         {
+            wDJF[i][j] = wMAM[i][j] = wJJA[i][j] = wSON[i][j] = wSeason[i][j] = NODATA;
+         }
+     }
+
+ }
 
 void weatherGenerator2D::precipitationMultiDistributionParameterization()
 {
@@ -1009,7 +1095,7 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
         }
     }
     // create the seasonal correlation matrices
-    occurrenceMatrixSeasonDJF = (double **)calloc(nrStations, sizeof(double*));
+    /*occurrenceMatrixSeasonDJF = (double **)calloc(nrStations, sizeof(double*));
     occurrenceMatrixSeasonMAM = (double **)calloc(nrStations, sizeof(double*));
     occurrenceMatrixSeasonJJA = (double **)calloc(nrStations, sizeof(double*));
     occurrenceMatrixSeasonSON = (double **)calloc(nrStations, sizeof(double*));
@@ -1024,10 +1110,7 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
 
     //int lengthDJF,lengthMAM,lengthJJA,lengthSON;
     //int lengthSeason[4];
-    lengthSeason[0] = lengthMonth[11]+lengthMonth[0]+lengthMonth[1];
-    lengthSeason[1] = lengthMonth[2]+lengthMonth[3]+lengthMonth[4];
-    lengthSeason[2] = lengthMonth[5]+lengthMonth[6]+lengthMonth[7];
-    lengthSeason[3] = lengthMonth[8]+lengthMonth[9]+lengthMonth[10];
+
 
     for (int i=0;i<nrStations;i++)
     {
@@ -1057,7 +1140,7 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
         }
 
     }
-
+    */
     for (int i=0;i<nrStations;i++)
     {
         int counterMonth = 11;
@@ -1085,14 +1168,14 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
         //getchar();
     }
 
-    for (int j=0;j<lengthSeason[0]*parametersModel.yearOfSimulation;j++)
+    /*for (int j=0;j<lengthSeason[0]*parametersModel.yearOfSimulation;j++)
     {
-        /*for (int i=0;i<nrStations;i++)
+        for (int i=0;i<nrStations;i++)
         {
             printf("%f\t",occurrenceMatrixSeasonDJF[i][j]);
-        }*/
+        }
         //pressEnterToContinue();
-    }
+    }*/
     //pressEnterToContinue();
     for (int i=0;i<nrStations;i++)
     {
@@ -1159,14 +1242,14 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
     }
 
 
-    for (int i=0;i<nrStations;i++)
+    /*for (int i=0;i<nrStations;i++)
     {
         wDJF[i]= (double *)calloc(nrStations, sizeof(double));
         wMAM[i]= (double *)calloc(nrStations, sizeof(double));
         wJJA[i]= (double *)calloc(nrStations, sizeof(double));
         wSON[i]= (double *)calloc(nrStations, sizeof(double));
         wSeason[i]= (double *)calloc(nrStations, sizeof(double));
-    }
+    }*/
     statistics::correlationsMatrix(nrStations,occurrenceMatrixSeasonDJF,lengthSeason[0]*parametersModel.yearOfSimulation,wDJF);
     statistics::correlationsMatrix(nrStations,occurrenceMatrixSeasonMAM,lengthSeason[1]*parametersModel.yearOfSimulation,wMAM);
     statistics::correlationsMatrix(nrStations,occurrenceMatrixSeasonJJA,lengthSeason[2]*parametersModel.yearOfSimulation,wJJA);
@@ -1825,7 +1908,6 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
 void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
 {
     // begin of step 5
-    weatherGenerator2D::initializePrecipitationOutputs(lengthSeason);
 
     double** amountMatrixSeasonDJF = (double **)calloc(nrStations, sizeof(double*));
     double** amountMatrixSeasonMAM = (double **)calloc(nrStations, sizeof(double*));

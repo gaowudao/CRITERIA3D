@@ -6,7 +6,7 @@
 #include <time.h>
 //#include <iostream>
 
-
+#include "hops.h"
 #include "wg2D.h"
 #include "commonConstants.h"
 //#include "statistics.h"
@@ -202,6 +202,34 @@ int main()
     WG2D.setObservedData(observedDataDaily);
 
 
+
+    bool computePrecipitation = false;
+    bool computeTemperature = true;
+    printf("weather generator\n");
+    WG2D.initializeParameters(NODATA,2,2,computePrecipitation,computeTemperature);
+    WG2D.computeWeatherGenerator2D();
+
+    printf("hops\n");
+    hops hopsSimulation;
+    hopsSimulation.initializeData(1095*4,nrStations);
+    hopsSimulation.setObservedData(observedDataDaily);
+    Tphenology pheno;
+    pheno.sproutingDD = 243;
+    pheno.floweringDD = 899;
+    pheno.conesDevelopmentDD = 1040;
+    pheno.conesRipeningDD = 1899;
+    pheno.conesMaturityDD = 2099;
+    Tevapotranspiration et;
+    et.sproutingKc = 0.3;
+    et.floweringKc = NODATA;
+    et.conesDevelopmentKc = 1.05;
+    et.conesRipeningKc = 1.05;
+    et.conesMaturityKc = 0.85;
+    hopsSimulation.initializeParametersPhenology(pheno);
+    hopsSimulation.initializeParametersEvapotranspiration(et);
+    hopsSimulation.compute();
+
+
     for (int i=0;i<nrStations;i++)
     {
         free(observedDataDaily[i]);
@@ -237,53 +265,6 @@ int main()
     free(dateArrayFourTimes);
 
 
-    WG2D.initializeParameters(NODATA,2,2,0,1);
-    WG2D.computeWeatherGenerator2D();
-    /*
-    int numeroArmoniche = 4;
-    double *parMin = (double *) calloc(numeroArmoniche*2+2, sizeof(double));
-    double* parMax = (double *) calloc(numeroArmoniche*2+2, sizeof(double));
-    double* parDelta = (double *) calloc(numeroArmoniche*2+2, sizeof(double));
-    double* parMarquardt = (double *) calloc(numeroArmoniche*2+2, sizeof(double));
-    double* valori = (double *) calloc(365, sizeof(double));
-    double* valoriX = (double *) calloc(365, sizeof(double));
-    valori[0] = 20;
-    valoriX[0] = 1;
-
-    for (int i=1; i<365; i++)
-    {
-        if (i < 365.0/4) valori[i] = valori[i-1]+0.1;
-        else if (i > 365. - 365.0/4) valori[i] = valori[i-1]+0.1;
-        else valori[i] = valori[i-1]- 0.1;
-
-        valoriX[i] = i+1;
-    }
-
-    for (int i=0;i<numeroArmoniche*2+1;i++)
-    {
-        parMin[i] = -100;
-        parMax[i] = 100;
-        parMarquardt[i] = 0;
-        parDelta[i] = 0.0001;
-    }
-    parMin[numeroArmoniche*2+1] = 364;
-    parMax[numeroArmoniche*2+1] = 366;
-    parMarquardt[numeroArmoniche*2+1] = 365;
-    parDelta[numeroArmoniche*2+1] = 0.0001;
-
-
-    interpolation::fittingMarquardt(parMin,parMax,parMarquardt,numeroArmoniche*2+2,parDelta,100000,0.001,FUNCTION_CODE_FOURIER_GENERAL_HARMONICS,valoriX,365,valori);
-    for (int i=0; i<numeroArmoniche*2+2; i++)
-    {
-        printf("%f\n",parMarquardt[i]);
-    }
-    getchar();
-    for (int i=0; i<365; i++)
-    {
-        printf("%f,%f,%f\n",valoriX[i],valori[i],harmonicsFourierGeneral(valoriX[i],parMarquardt,numeroArmoniche*2+2));
-    }
-
-    */
     return 0;
 }
 

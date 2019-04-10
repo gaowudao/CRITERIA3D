@@ -20,6 +20,8 @@ INCLUDEPATH += ../crit3dDate
 SOURCES += wg2D.cpp \
     randomset.cpp \
     wg2D_precipitation.cpp \
-    wg2D_temperature.cpp
+    wg2D_temperature.cpp \
+    hops.cpp
 
-HEADERS += wg2D.h
+HEADERS += wg2D.h \
+    hops.h
