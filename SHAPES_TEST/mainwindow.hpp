@@ -9,6 +9,7 @@
     #include <QTableWidget>
 
     #include "shapeHandler.h"
+    #include "tableDBFDialog.h"
 
     namespace Ui {
     class MainWindow;
@@ -27,16 +28,13 @@
 
     private:
         Ui::MainWindow *ui;
-        QTableWidget* m_DBFTableWidget;
-        QPushButton *m_addRowButton;
-        QPushButton *m_removeRowButton;
+        tableDBFDialog *DBFWidget;
 
     private slots:
         void onFileOpen();
         void onSelectShape(QTreeWidgetItem *item, int column);
         void on_dbfButton_clicked();
-        void addRowClicked();
-        void removeRowClicked();
+
     };
 
 #endif // MAINWINDOW_HPP

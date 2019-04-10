@@ -26,8 +26,8 @@ void Crit3DShapeHandler::close()
 bool Crit3DShapeHandler::open(std::string filename)
 {
     close();
-    m_handle = SHPOpen(filename.c_str(), "rb");
-    m_dbf = DBFOpen(filename.c_str(), "rb");
+    m_handle = SHPOpen(filename.c_str(), "r+b");
+    m_dbf = DBFOpen(filename.c_str(), "r+b");
     if ( (m_handle == nullptr) || (m_dbf == nullptr)) return false;
 
     SHPGetInfo(m_handle, &m_count, &m_type, nullptr, nullptr);
@@ -146,10 +146,5 @@ bool Crit3DShapeHandler::addRecord(std::vector<std::string> fields)
 
     }
 
-    /* -------------------------------------------------------------------- */
-    /*      Close and cleanup.                                              */
-    /* -------------------------------------------------------------------- */
-        DBFClose( m_dbf );
-
-        return true;
+    return true;
 }

@@ -24,8 +24,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::onFileOpen()
 {
+    shapeHandler.close();
     QString filepath = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("shapefile (*.shp)"));
-    if (! shapeHandler.open(filepath.toStdString()))
+    if (!shapeHandler.open(filepath.toStdString()))
     {
         QMessageBox::warning(this, tr("Bad file"), tr("Something is wrong"));
 	}
@@ -118,120 +119,10 @@ void MainWindow::onSelectShape(QTreeWidgetItem *item, int)
 
 void MainWindow::on_dbfButton_clicked()
 {
-
-    QWidget *DBFWidget = new QWidget;
-    QVBoxLayout* DBFLayout = new QVBoxLayout;
-    QHBoxLayout* buttonLayout = new QHBoxLayout;
-
-    DBFWidget->resize(QDesktopWidget().availableGeometry().size());
-
-    m_DBFTableWidget = new QTableWidget();
-    DBFLayout->addWidget(m_DBFTableWidget);
-
-
-    int colNumber = shapeHandler.getFieldNumbers();
-    int rowNumber = shapeHandler.getShapeCount();
-    m_DBFTableWidget->setRowCount(rowNumber);
-    m_DBFTableWidget->setColumnCount(colNumber);
-    QStringList m_DBFTableHeader;
-    std::string nameField;
-    int typeField;
-    QStringList labels;
-
-    for (int i = 0; i < colNumber; i++)
-    {
-        nameField =  shapeHandler.getFieldName(i);
-        typeField = shapeHandler.getFieldType(i);
-        m_DBFTableHeader << QString::fromStdString(nameField);
-
-        for (int j = 0; j < rowNumber; j++)
-        {
-            if (typeField == 0)
-            {
-                m_DBFTableWidget->setItem(j, i, new QTableWidgetItem( QString::fromStdString(shapeHandler.readStringAttribute(j,i) )));
-            }
-            else if (typeField == 1)
-            {
-                m_DBFTableWidget->setItem(j, i, new QTableWidgetItem( QString::number(shapeHandler.readIntAttribute(j,i) )));
-            }
-            else if (typeField == 2)
-            {
-                m_DBFTableWidget->setItem(j, i, new QTableWidgetItem( QString::number(shapeHandler.readDoubleAttribute(j,i) )));
-            }
-            labels << QString::number(j);
-
-        }
-    }
-    m_DBFTableWidget->setVerticalHeaderLabels(labels);
-    m_DBFTableWidget->setHorizontalHeaderLabels(m_DBFTableHeader);
-    m_DBFTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    m_DBFTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
-    m_DBFTableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
-    m_DBFTableWidget->setShowGrid(false);
-    m_DBFTableWidget->setStyleSheet("QTableView {selection-background-color: red;}");
-
-    int offset = 100;
-    m_DBFTableWidget->setMinimumWidth(DBFWidget->width());
-    m_DBFTableWidget->setMaximumWidth(DBFWidget->width());
-    m_DBFTableWidget->setMinimumHeight(DBFWidget->height() - offset);
-    m_DBFTableWidget->setMaximumHeight(DBFWidget->height() - offset);
-
-    const QSize BUTTON_SIZE = QSize(22, 22);
-    m_addRowButton = new QPushButton();
-    m_addRowButton->setText("+");
-    m_addRowButton->setMaximumSize(BUTTON_SIZE);
-    m_removeRowButton = new QPushButton();
-    m_removeRowButton->setText("-");
-    m_removeRowButton->setMaximumSize(BUTTON_SIZE);
-
-    buttonLayout->addWidget(m_addRowButton);
-    buttonLayout->addWidget(m_removeRowButton);
-    DBFLayout->addLayout(buttonLayout);
-
-    connect(m_addRowButton, &QPushButton::clicked, [=](){ this->addRowClicked(); });
-    connect(m_removeRowButton, &QPushButton::clicked, [=](){ this->removeRowClicked(); });
-
-
-    DBFWidget->setLayout(DBFLayout);
-    DBFWidget->show();
-
+    DBFWidget = new tableDBFDialog(&shapeHandler);
 }
 
 
-void MainWindow::addRowClicked()
-{
-    qDebug() << "addRowClicked ";
-    // test
-    std::vector<std::string> test = {"0", "19850526",  "M0M0M0", "RAINFEDWHEAT" , "CTL4", "01139" , "01139" , "-9.99900e+003" , "7.3", "0", "0", "0", "0", "-9.99900e+003" , "-9.99900e+003"};
-    if (shapeHandler.addRecord(test))
-    {
-        qDebug() << "addRecord true ";
-    }
-    else
-    {
-        qDebug() << "addRecord false ";
-    }
-}
 
-void MainWindow::removeRowClicked()
-{
-    qDebug() << "removeRowClicked ";
-    QItemSelectionModel *select = m_DBFTableWidget->selectionModel();
 
-    if (select->hasSelection())
-    {
-        QModelIndexList indexList = select->selectedRows();
-        int row = indexList.at(0).row();
-        qDebug() << "row = " << row;
 
-        if (shapeHandler.deleteRecord(row))
-        {
-            m_DBFTableWidget->removeRow(row);
-        }
-    }
-    else
-    {
-        qDebug() << "no row selected ";
-    }
-
-}
