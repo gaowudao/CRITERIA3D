@@ -119,7 +119,9 @@ void MainWindow::onSelectShape(QTreeWidgetItem *item, int)
 
 void MainWindow::on_dbfButton_clicked()
 {
+
     shapeHandler.openDBF(filepath.toStdString());
+    //qDebug() << "record count = " << shapeHandler.getDBFRecordCount();
     DBFWidget = new tableDBFDialog(&shapeHandler);
 }
 

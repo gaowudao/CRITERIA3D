@@ -29,6 +29,7 @@
         void closeSHP();
         bool getShape(int index, ShapeObject &shape);
         int	getShapeCount();
+        int	getDBFRecordCount();
         int	getType();
         int getFieldNumbers();
         std::string	getFieldName(int fieldPos);

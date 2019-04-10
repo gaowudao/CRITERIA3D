@@ -13,7 +13,7 @@ tableDBFDialog::tableDBFDialog(Crit3DShapeHandler* shapeHandler)
 
 
     int colNumber = shapeHandler->getFieldNumbers();
-    int rowNumber = shapeHandler->getShapeCount();
+    int rowNumber = shapeHandler->getDBFRecordCount();
     m_DBFTableWidget->setRowCount(rowNumber);
     m_DBFTableWidget->setColumnCount(colNumber);
     QStringList m_DBFTableHeader;
