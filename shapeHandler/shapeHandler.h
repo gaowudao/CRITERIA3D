@@ -30,6 +30,7 @@
         bool getShape(int index, ShapeObject &shape);
         int	getShapeCount();
         int	getDBFRecordCount();
+        int	isDBFRecordDeleted(int record);
         int	getType();
         int getFieldNumbers();
         std::string	getFieldName(int fieldPos);

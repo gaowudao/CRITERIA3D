@@ -125,6 +125,11 @@ int	Crit3DShapeHandler::getDBFRecordCount()
     return m_dbf->nRecords;
 }
 
+int	Crit3DShapeHandler::isDBFRecordDeleted(int record)
+{
+    return DBFIsRecordDeleted(m_dbf, record);
+}
+
 int	Crit3DShapeHandler::getType()
 {
     return m_type;

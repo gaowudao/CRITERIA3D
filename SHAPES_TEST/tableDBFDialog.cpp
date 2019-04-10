@@ -28,6 +28,7 @@ tableDBFDialog::tableDBFDialog(Crit3DShapeHandler* shapeHandler)
 
         for (int j = 0; j < rowNumber; j++)
         {
+
             if (typeField == 0)
             {
                 m_DBFTableWidget->setItem(j, i, new QTableWidgetItem( QString::fromStdString(shapeHandler->readStringAttribute(j,i) )));
@@ -40,7 +41,11 @@ tableDBFDialog::tableDBFDialog(Crit3DShapeHandler* shapeHandler)
             {
                 m_DBFTableWidget->setItem(j, i, new QTableWidgetItem( QString::number(shapeHandler->readDoubleAttribute(j,i) )));
             }
-            labels << QString::number(j);
+            if (shapeHandler->isDBFRecordDeleted(j))
+            {
+                m_DBFTableWidget->item(j,i)->setBackgroundColor(Qt::yellow);    // mark as DELETED records
+            }
+
 
         }
     }
