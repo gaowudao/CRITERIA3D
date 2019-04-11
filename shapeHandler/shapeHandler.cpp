@@ -155,14 +155,29 @@ int Crit3DShapeHandler::readIntAttribute(int shapeNumber, int fieldPos)
     return DBFReadIntegerAttribute(m_dbf,shapeNumber,fieldPos);
 }
 
+bool Crit3DShapeHandler::writeIntAttribute(int shapeNumber, int fieldPos, int nFieldValue)
+{
+    return DBFWriteIntegerAttribute(m_dbf,shapeNumber,fieldPos,nFieldValue);
+}
+
 double Crit3DShapeHandler::readDoubleAttribute(int shapeNumber, int fieldPos)
 {
     return DBFReadDoubleAttribute(m_dbf,shapeNumber,fieldPos);
 }
 
+bool Crit3DShapeHandler::writeDoubleAttribute(int shapeNumber, int fieldPos, double dFieldValue)
+{
+    return DBFWriteDoubleAttribute(m_dbf,shapeNumber,fieldPos,dFieldValue);
+}
+
 std::string Crit3DShapeHandler::readStringAttribute(int shapeNumber, int fieldPos)
 {
     return DBFReadStringAttribute(m_dbf,shapeNumber,fieldPos);
+}
+
+bool Crit3DShapeHandler::writeStringAttribute(int shapeNumber, int fieldPos, const char* pszFieldValue)
+{
+    return DBFWriteStringAttribute(m_dbf,shapeNumber,fieldPos, pszFieldValue);
 }
 
 bool Crit3DShapeHandler::deleteRecord(int shapeNumber)

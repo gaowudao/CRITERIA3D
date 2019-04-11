@@ -57,7 +57,7 @@ tableDBFDialog::tableDBFDialog(Crit3DShapeHandler* shapeHandler)
     }
     m_DBFTableWidget->setVerticalHeaderLabels(labels);
     m_DBFTableWidget->setHorizontalHeaderLabels(m_DBFTableHeader);
-    m_DBFTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    //m_DBFTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_DBFTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_DBFTableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
     m_DBFTableWidget->setShowGrid(false);
@@ -70,6 +70,8 @@ tableDBFDialog::tableDBFDialog(Crit3DShapeHandler* shapeHandler)
     m_DBFTableWidget->setMaximumHeight(this->height() - offset);
 
     const QSize BUTTON_SIZE = QSize(22, 22);
+    QLabel* labelLengend = new QLabel();
+    labelLengend->setText("Deleted rows: yellow");
     m_addRowButton = new QPushButton();
     m_addRowButton->setText("+");
     m_addRowButton->setMaximumSize(BUTTON_SIZE);
@@ -77,10 +79,12 @@ tableDBFDialog::tableDBFDialog(Crit3DShapeHandler* shapeHandler)
     m_removeRowButton->setText("-");
     m_removeRowButton->setMaximumSize(BUTTON_SIZE);
 
+    buttonLayout->addWidget(labelLengend);
     buttonLayout->addWidget(m_addRowButton);
     buttonLayout->addWidget(m_removeRowButton);
     DBFLayout->addLayout(buttonLayout);
 
+    connect(m_DBFTableWidget, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
     connect(m_addRowButton, &QPushButton::clicked, [=](){ this->addRowClicked(); });
     connect(m_removeRowButton, &QPushButton::clicked, [=](){ this->removeRowClicked(); });
 
@@ -101,16 +105,15 @@ void tableDBFDialog::addRowClicked()
 
     // test
     //std::vector<std::string> test = {"0", "19850526",  "M0M0M0", "RAINFEDWHEAT" , "CTL4", "01139" , "01139" , "-9.99900e+003" , "7.3", "0", "0", "0", "0", "-9.99900e+003" , "-9.99900e+003"};
-    std::vector<std::string> test = {"6667"};
-
-    if (shapeHandler->addRecord(test))
-    {
-        qDebug() << "addRecord true ";
-    }
-    else
-    {
-        qDebug() << "addRecord false ";
-    }
+//    std::vector<std::string> test = {"6667"};
+//    if (shapeHandler->addRecord(test))
+//    {
+//        qDebug() << "addRecord true ";
+//    }
+//    else
+//    {
+//        qDebug() << "addRecord false ";
+//    }
 }
 
 void tableDBFDialog::removeRowClicked()
@@ -122,10 +125,10 @@ void tableDBFDialog::removeRowClicked()
     {
         QModelIndexList indexList = select->selectedRows();
         int row = indexList.at(0).row();
-        qDebug() << "row = " << row;
 
-        if (shapeHandler->deleteRecord(row))
+        if (shapeHandler->deleteRecord(row) || !indexList.at(0).data(Qt::DisplayRole).isValid())
         {
+            qDebug() << "deleteRecord = " << row;
             m_DBFTableWidget->removeRow(row);
         }
     }
@@ -136,8 +139,30 @@ void tableDBFDialog::removeRowClicked()
 
 }
 
+void tableDBFDialog::cellChanged(int row, int column)
+{
+    //qDebug() << "Cell at row: " << QString::number(row) << " column " << QString::number(column)<<" was changed.";
+    QString data = m_DBFTableWidget->item(row, column)->text();
+    int typeField = shapeHandler->getFieldType(column);
+    if (typeField == 0)
+    {
+        shapeHandler->writeStringAttribute(row,column,data.toStdString().c_str());
+    }
+    else if (typeField == 1)
+    {
+        shapeHandler->writeIntAttribute(row,column, data.toInt());
+    }
+    else if (typeField == 2)
+    {
+        shapeHandler->writeDoubleAttribute(row,column, data.toDouble());
+    }
+
+}
+
 void tableDBFDialog::closeEvent(QCloseEvent *event)
 {
     shapeHandler->closeDBF();
     QDialog::closeEvent(event);
 }
+
+

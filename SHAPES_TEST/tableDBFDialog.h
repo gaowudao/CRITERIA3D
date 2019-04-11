@@ -20,6 +20,7 @@ class tableDBFDialog : public QDialog
         tableDBFDialog(Crit3DShapeHandler *shapeHandler);
         void addRowClicked();
         void removeRowClicked();
+        void cellChanged(int row, int column);
         void closeEvent(QCloseEvent *);
 };
 

@@ -37,8 +37,11 @@
         DBFFieldType getFieldType(int fieldPos);
         std::string	getTypeString();
         int readIntAttribute(int shapeNumber, int fieldPos);
+        bool writeIntAttribute(int shapeNumber, int fieldPos, int nFieldValue);
         double readDoubleAttribute(int shapeNumber, int fieldPos);
+        bool writeDoubleAttribute(int shapeNumber, int fieldPos, double dFieldValue);
         std::string readStringAttribute(int shapeNumber, int fieldPos);
+        bool writeStringAttribute(int shapeNumber, int fieldPos, const char* pszFieldValue);
         bool deleteRecord(int shapeNumber);
         bool addRecord(std::vector<std::string> fields);
     };
