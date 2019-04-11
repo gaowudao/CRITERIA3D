@@ -70,6 +70,8 @@ tableDBFDialog::tableDBFDialog(Crit3DShapeHandler* shapeHandler)
     m_DBFTableWidget->setMaximumHeight(this->height() - offset);
 
     const QSize BUTTON_SIZE = QSize(22, 22);
+    QLabel* labelLengend = new QLabel();
+    labelLengend->setText("Deleted rows: yellow");
     m_addRowButton = new QPushButton();
     m_addRowButton->setText("+");
     m_addRowButton->setMaximumSize(BUTTON_SIZE);
@@ -77,6 +79,7 @@ tableDBFDialog::tableDBFDialog(Crit3DShapeHandler* shapeHandler)
     m_removeRowButton->setText("-");
     m_removeRowButton->setMaximumSize(BUTTON_SIZE);
 
+    buttonLayout->addWidget(labelLengend);
     buttonLayout->addWidget(m_addRowButton);
     buttonLayout->addWidget(m_removeRowButton);
     DBFLayout->addLayout(buttonLayout);
@@ -122,10 +125,10 @@ void tableDBFDialog::removeRowClicked()
     {
         QModelIndexList indexList = select->selectedRows();
         int row = indexList.at(0).row();
-        qDebug() << "row = " << row;
 
-        if (shapeHandler->deleteRecord(row))
+        if (shapeHandler->deleteRecord(row) || !indexList.at(0).data(Qt::DisplayRole).isValid())
         {
+            qDebug() << "deleteRecord = " << row;
             m_DBFTableWidget->removeRow(row);
         }
     }
