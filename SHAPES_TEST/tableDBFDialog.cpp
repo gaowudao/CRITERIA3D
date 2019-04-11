@@ -60,7 +60,7 @@ tableDBFDialog::tableDBFDialog(Crit3DShapeHandler* shapeHandler)
     //m_DBFTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_DBFTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_DBFTableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
-    m_DBFTableWidget->setShowGrid(false);
+    m_DBFTableWidget->setShowGrid(true);
     m_DBFTableWidget->setStyleSheet("QTableView {selection-background-color: red;}");
 
     int offset = 100;
