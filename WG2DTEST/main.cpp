@@ -219,6 +219,7 @@ int main()
     pheno.conesDevelopmentDD = 1040;
     pheno.conesRipeningDD = 1899;
     pheno.conesMaturityDD = 2099;
+    pheno.senescenceDD = 3200;
     Tevapotranspiration et;
     et.sproutingKc = 0.3;
     et.floweringKc = NODATA;
