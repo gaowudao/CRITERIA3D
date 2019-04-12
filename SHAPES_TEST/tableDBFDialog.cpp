@@ -69,7 +69,6 @@ tableDBFDialog::tableDBFDialog(Crit3DShapeHandler* shapeHandler)
     }
     m_DBFTableWidget->setVerticalHeaderLabels(labels);
     m_DBFTableWidget->setHorizontalHeaderLabels(m_DBFTableHeader);
-    //m_DBFTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_DBFTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_DBFTableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
     m_DBFTableWidget->setShowGrid(true);
@@ -104,6 +103,7 @@ void tableDBFDialog::addRowClicked()
     m_DBFTableWidget->insertRow(m_DBFTableWidget->rowCount());
     labels << QString::number(labels.size());
     m_DBFTableWidget->setVerticalHeaderLabels(labels);
+    m_DBFTableWidget->scrollToBottom();
 
 
     // test

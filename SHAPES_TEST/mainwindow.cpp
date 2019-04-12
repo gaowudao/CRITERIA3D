@@ -127,6 +127,7 @@ void MainWindow::on_dbfButton_clicked()
 
     shapeHandler.openDBF(filepath.toStdString());
     DBFWidget = new tableDBFDialog(&shapeHandler);
+    DBFWidget->resize(500, 600);
 }
 
 
