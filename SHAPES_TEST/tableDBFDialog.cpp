@@ -89,6 +89,7 @@ tableDBFDialog::tableDBFDialog(Crit3DShapeHandler* shapeHandler)
     connect(m_DBFTableWidget, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
     connect(addRow, &QAction::triggered, [=](){ this->addRowClicked(); });
     connect(deleteRow, &QAction::triggered, [=](){ this->removeRowClicked(); });
+    connect(save, &QAction::triggered, [=](){ this->saveChangesClicked(); });
 
 
     setLayout(mainLayout);
@@ -143,7 +144,7 @@ void tableDBFDialog::removeRowClicked()
 
 void tableDBFDialog::cellChanged(int row, int column)
 {
-    //qDebug() << "Cell at row: " << QString::number(row) << " column " << QString::number(column)<<" was changed.";
+    qDebug() << "Cell at row: " << QString::number(row) << " column " << QString::number(column)<<" was changed.";
     QString data = m_DBFTableWidget->item(row, column)->text();
     int typeField = shapeHandler->getFieldType(column);
     if (typeField == 0)
@@ -164,7 +165,27 @@ void tableDBFDialog::cellChanged(int row, int column)
 void tableDBFDialog::closeEvent(QCloseEvent *event)
 {
     shapeHandler->closeDBF();
+    QString filepath = QString::fromStdString(shapeHandler->getFilepath());
+    QFileInfo filepathInfo(filepath);
+    QString file_temp = filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+"_temp.dbf";
+
+    QFile::remove(filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+".dbf");
+    QFile::copy(file_temp, filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+".dbf");    // file temp to .dbf
+    QFile::remove(file_temp);
+
     QDialog::closeEvent(event);
+}
+
+void tableDBFDialog::saveChangesClicked()
+{
+    shapeHandler->closeDBF();
+    QString filepath = QString::fromStdString(shapeHandler->getFilepath());
+    QFileInfo filepathInfo(filepath);
+    QString file_temp = filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+"_temp.dbf";
+
+    QFile::remove(file_temp);   //remove old file_temp
+    QFile::copy(filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+".dbf", file_temp);    // copy modified file to file_temp
+    shapeHandler->openDBF(shapeHandler->getFilepath());
 }
 
 

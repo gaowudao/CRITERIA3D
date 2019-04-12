@@ -27,6 +27,7 @@ class tableDBFDialog : public QDialog
         void removeRowClicked();
         void cellChanged(int row, int column);
         void closeEvent(QCloseEvent *);
+        void saveChangesClicked();
 };
 
 #endif // TABLEDBFDIALOG_H

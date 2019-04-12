@@ -14,6 +14,7 @@
         int			m_count;
         int			m_type;
         int         m_fields;
+        std::string m_filepath;
         std::vector<std::string> m_fieldsList;
         std::vector<DBFFieldType> m_fieldsTypeList;
 
@@ -44,6 +45,7 @@
         bool writeStringAttribute(int shapeNumber, int fieldPos, const char* pszFieldValue);
         bool deleteRecord(int shapeNumber);
         bool addRecord(std::vector<std::string> fields);
+        std::string getFilepath() const;
     };
 
 
