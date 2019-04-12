@@ -220,10 +220,10 @@ void hops::computeEvapotranspration()
     Kc[4] = evapotranspiration.senescenceKc;
 
     degDays[0] = phenology.sproutingDD;
-    degDays[0] = phenology.conesDevelopmentDD;
-    degDays[0] = phenology.conesRipeningDD;
-    degDays[0] = phenology.conesMaturityDD;
-    degDays[0] = phenology.senescenceDD;
+    degDays[1] = phenology.conesDevelopmentDD;
+    degDays[2] = phenology.conesRipeningDD;
+    degDays[3] = phenology.conesMaturityDD;
+    degDays[4] = phenology.senescenceDD;
 
     for (int iStation=0; iStation<nrStations; iStation++)
     {
@@ -238,9 +238,10 @@ void hops::computeEvapotranspration()
                 thermalSum = 0;
             }
             actualKc = interpolation::linearInterpolation(thermalSum,degDays,Kc,5);
+            printf("day %d thermal sum %f Kc %f \n",dayOfYear, thermalSum, actualKc);
             thermalSum += maxValue(obsDataD[iStation][iDatum].tAvg - baseTemperature,0);
             iDatum++;
-            printf("day %d thermal sum %f Kc %f \n",dayOfYear, thermalSum, actualKc);
+
 
         }
     }
