@@ -1,6 +1,6 @@
 #include "tableDBFDialog.h"
 
-tableDBFDialog::tableDBFDialog(Crit3DShapeHandler* shapeHandler)
+TableDBFDialog::TableDBFDialog(Crit3DShapeHandler* shapeHandler)
     :shapeHandler(shapeHandler)
 {
     QVBoxLayout* mainLayout = new QVBoxLayout;
@@ -88,6 +88,8 @@ tableDBFDialog::tableDBFDialog(Crit3DShapeHandler* shapeHandler)
     connect(m_DBFTableWidget, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
     connect(addRow, &QAction::triggered, [=](){ this->addRowClicked(); });
     connect(deleteRow, &QAction::triggered, [=](){ this->removeRowClicked(); });
+    connect(addCol, &QAction::triggered, [=](){ this->addColClicked(); });
+    connect(deleteCol, &QAction::triggered, [=](){ this->removeColClicked(); });
     connect(save, &QAction::triggered, [=](){ this->saveChangesClicked(); });
 
 
@@ -97,7 +99,7 @@ tableDBFDialog::tableDBFDialog(Crit3DShapeHandler* shapeHandler)
 }
 
 
-void tableDBFDialog::addRowClicked()
+void TableDBFDialog::addRowClicked()
 {
 
     m_DBFTableWidget->insertRow(m_DBFTableWidget->rowCount());
@@ -119,7 +121,7 @@ void tableDBFDialog::addRowClicked()
 //    }
 }
 
-void tableDBFDialog::removeRowClicked()
+void TableDBFDialog::removeRowClicked()
 {
     qDebug() << "removeRowClicked ";
     QItemSelectionModel *select = m_DBFTableWidget->selectionModel();
@@ -142,7 +144,17 @@ void tableDBFDialog::removeRowClicked()
 
 }
 
-void tableDBFDialog::cellChanged(int row, int column)
+void TableDBFDialog::addColClicked()
+{
+    newColDialog = new NewColDialog();
+}
+
+void TableDBFDialog::removeColClicked()
+{
+}
+
+
+void TableDBFDialog::cellChanged(int row, int column)
 {
     qDebug() << "Cell at row: " << QString::number(row) << " column " << QString::number(column)<<" was changed.";
     QString data = m_DBFTableWidget->item(row, column)->text();
@@ -162,7 +174,7 @@ void tableDBFDialog::cellChanged(int row, int column)
 
 }
 
-void tableDBFDialog::closeEvent(QCloseEvent *event)
+void TableDBFDialog::closeEvent(QCloseEvent *event)
 {
     shapeHandler->closeDBF();
     QString filepath = QString::fromStdString(shapeHandler->getFilepath());
@@ -176,7 +188,7 @@ void tableDBFDialog::closeEvent(QCloseEvent *event)
     QDialog::closeEvent(event);
 }
 
-void tableDBFDialog::saveChangesClicked()
+void TableDBFDialog::saveChangesClicked()
 {
     shapeHandler->closeDBF();
     QString filepath = QString::fromStdString(shapeHandler->getFilepath());

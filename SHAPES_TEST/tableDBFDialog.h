@@ -1,10 +1,11 @@
-#ifndef TABLEDBFDIALOG_H
-#define TABLEDBFDIALOG_H
+#ifndef tableDBFDialog_H
+#define tableDBFDialog_H
 
 #include <QtWidgets>
 #include "shapeHandler.h"
+#include "newColDialog.h"
 
-class tableDBFDialog : public QDialog
+class TableDBFDialog : public QDialog
 {
     Q_OBJECT
 
@@ -12,6 +13,7 @@ class tableDBFDialog : public QDialog
 
     Crit3DShapeHandler *shapeHandler;
     QTableWidget* m_DBFTableWidget;
+    NewColDialog* newColDialog;
     QMenuBar *menuBar;
     QMenu *editMenu;
     QAction *addRow;
@@ -22,12 +24,14 @@ class tableDBFDialog : public QDialog
     QStringList labels;
 
     public:
-        tableDBFDialog(Crit3DShapeHandler *shapeHandler);
+        TableDBFDialog(Crit3DShapeHandler *shapeHandler);
         void addRowClicked();
         void removeRowClicked();
+        void addColClicked();
+        void removeColClicked();
         void cellChanged(int row, int column);
         void closeEvent(QCloseEvent *);
         void saveChangesClicked();
 };
 
-#endif // TABLEDBFDIALOG_H
+#endif // TableDBFDialog_H
