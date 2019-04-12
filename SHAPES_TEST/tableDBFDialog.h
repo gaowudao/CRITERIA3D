@@ -12,8 +12,13 @@ class tableDBFDialog : public QDialog
 
     Crit3DShapeHandler *shapeHandler;
     QTableWidget* m_DBFTableWidget;
-    QPushButton *m_addRowButton;
-    QPushButton *m_removeRowButton;
+    QMenuBar *menuBar;
+    QMenu *editMenu;
+    QAction *addRow;
+    QAction *deleteRow;
+    QAction *addCol;
+    QAction *deleteCol;
+    QAction *save;
     QStringList labels;
 
     public:

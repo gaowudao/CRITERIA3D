@@ -3,13 +3,25 @@
 tableDBFDialog::tableDBFDialog(Crit3DShapeHandler* shapeHandler)
     :shapeHandler(shapeHandler)
 {
-    QVBoxLayout* DBFLayout = new QVBoxLayout;
-    QHBoxLayout* buttonLayout = new QHBoxLayout;
+    QVBoxLayout* mainLayout = new QVBoxLayout;
+
+    menuBar = new QMenuBar;
+    editMenu = new QMenu(tr("&Edit"), this);
+    addRow = editMenu->addAction(tr("Insert row"));
+    deleteRow = editMenu->addAction(tr("Delete row"));
+    editMenu->addSeparator();
+    addCol = editMenu->addAction(tr("Insert column"));
+    deleteCol = editMenu->addAction(tr("Delete column"));
+    editMenu->addSeparator();
+    save = editMenu->addAction(tr("Save changes"));
+    menuBar->addMenu(editMenu);
+
+    mainLayout->setMenuBar(menuBar);
 
     resize(QDesktopWidget().availableGeometry().size());
 
     m_DBFTableWidget = new QTableWidget();
-    DBFLayout->addWidget(m_DBFTableWidget);
+    mainLayout->addWidget(m_DBFTableWidget);
 
 
     int colNumber = shapeHandler->getFieldNumbers();
@@ -69,27 +81,17 @@ tableDBFDialog::tableDBFDialog(Crit3DShapeHandler* shapeHandler)
     m_DBFTableWidget->setMinimumHeight(this->height() - offset);
     m_DBFTableWidget->setMaximumHeight(this->height() - offset);
 
-    const QSize BUTTON_SIZE = QSize(22, 22);
     QLabel* labelLengend = new QLabel();
     labelLengend->setText("Deleted rows: yellow");
-    m_addRowButton = new QPushButton();
-    m_addRowButton->setText("+");
-    m_addRowButton->setMaximumSize(BUTTON_SIZE);
-    m_removeRowButton = new QPushButton();
-    m_removeRowButton->setText("-");
-    m_removeRowButton->setMaximumSize(BUTTON_SIZE);
 
-    buttonLayout->addWidget(labelLengend);
-    buttonLayout->addWidget(m_addRowButton);
-    buttonLayout->addWidget(m_removeRowButton);
-    DBFLayout->addLayout(buttonLayout);
+    mainLayout->addWidget(labelLengend);
 
     connect(m_DBFTableWidget, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
-    connect(m_addRowButton, &QPushButton::clicked, [=](){ this->addRowClicked(); });
-    connect(m_removeRowButton, &QPushButton::clicked, [=](){ this->removeRowClicked(); });
+    connect(addRow, &QAction::triggered, [=](){ this->addRowClicked(); });
+    connect(deleteRow, &QAction::triggered, [=](){ this->removeRowClicked(); });
 
 
-    setLayout(DBFLayout);
+    setLayout(mainLayout);
     show();
 
 }
