@@ -120,9 +120,14 @@ void MainWindow::onSelectShape(QTreeWidgetItem *item, int)
 void MainWindow::on_dbfButton_clicked()
 {
 
+    QFileInfo filepathInfo(filepath);
+    QString file_temp = filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+"_temp.dbf";
+
+    QFile::copy(filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+".dbf", file_temp);
+
     shapeHandler.openDBF(filepath.toStdString());
-    //qDebug() << "record count = " << shapeHandler.getDBFRecordCount();
     DBFWidget = new tableDBFDialog(&shapeHandler);
+    DBFWidget->resize(500, 600);
 }
 
 

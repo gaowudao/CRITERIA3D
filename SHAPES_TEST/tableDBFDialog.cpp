@@ -1,15 +1,27 @@
 #include "tableDBFDialog.h"
 
-tableDBFDialog::tableDBFDialog(Crit3DShapeHandler* shapeHandler)
+TableDBFDialog::TableDBFDialog(Crit3DShapeHandler* shapeHandler)
     :shapeHandler(shapeHandler)
 {
-    QVBoxLayout* DBFLayout = new QVBoxLayout;
-    QHBoxLayout* buttonLayout = new QHBoxLayout;
+    QVBoxLayout* mainLayout = new QVBoxLayout;
+
+    menuBar = new QMenuBar;
+    editMenu = new QMenu(tr("&Edit"), this);
+    addRow = editMenu->addAction(tr("Insert row"));
+    deleteRow = editMenu->addAction(tr("Delete row"));
+    editMenu->addSeparator();
+    addCol = editMenu->addAction(tr("Insert column"));
+    deleteCol = editMenu->addAction(tr("Delete column"));
+    editMenu->addSeparator();
+    save = editMenu->addAction(tr("Save changes"));
+    menuBar->addMenu(editMenu);
+
+    mainLayout->setMenuBar(menuBar);
 
     resize(QDesktopWidget().availableGeometry().size());
 
     m_DBFTableWidget = new QTableWidget();
-    DBFLayout->addWidget(m_DBFTableWidget);
+    mainLayout->addWidget(m_DBFTableWidget);
 
 
     int colNumber = shapeHandler->getFieldNumbers();
@@ -57,7 +69,6 @@ tableDBFDialog::tableDBFDialog(Crit3DShapeHandler* shapeHandler)
     }
     m_DBFTableWidget->setVerticalHeaderLabels(labels);
     m_DBFTableWidget->setHorizontalHeaderLabels(m_DBFTableHeader);
-    //m_DBFTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_DBFTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_DBFTableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
     m_DBFTableWidget->setShowGrid(true);
@@ -69,38 +80,32 @@ tableDBFDialog::tableDBFDialog(Crit3DShapeHandler* shapeHandler)
     m_DBFTableWidget->setMinimumHeight(this->height() - offset);
     m_DBFTableWidget->setMaximumHeight(this->height() - offset);
 
-    const QSize BUTTON_SIZE = QSize(22, 22);
     QLabel* labelLengend = new QLabel();
     labelLengend->setText("Deleted rows: yellow");
-    m_addRowButton = new QPushButton();
-    m_addRowButton->setText("+");
-    m_addRowButton->setMaximumSize(BUTTON_SIZE);
-    m_removeRowButton = new QPushButton();
-    m_removeRowButton->setText("-");
-    m_removeRowButton->setMaximumSize(BUTTON_SIZE);
 
-    buttonLayout->addWidget(labelLengend);
-    buttonLayout->addWidget(m_addRowButton);
-    buttonLayout->addWidget(m_removeRowButton);
-    DBFLayout->addLayout(buttonLayout);
+    mainLayout->addWidget(labelLengend);
 
     connect(m_DBFTableWidget, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
-    connect(m_addRowButton, &QPushButton::clicked, [=](){ this->addRowClicked(); });
-    connect(m_removeRowButton, &QPushButton::clicked, [=](){ this->removeRowClicked(); });
+    connect(addRow, &QAction::triggered, [=](){ this->addRowClicked(); });
+    connect(deleteRow, &QAction::triggered, [=](){ this->removeRowClicked(); });
+    connect(addCol, &QAction::triggered, [=](){ this->addColClicked(); });
+    connect(deleteCol, &QAction::triggered, [=](){ this->removeColClicked(); });
+    connect(save, &QAction::triggered, [=](){ this->saveChangesClicked(); });
 
 
-    setLayout(DBFLayout);
+    setLayout(mainLayout);
     show();
 
 }
 
 
-void tableDBFDialog::addRowClicked()
+void TableDBFDialog::addRowClicked()
 {
 
     m_DBFTableWidget->insertRow(m_DBFTableWidget->rowCount());
     labels << QString::number(labels.size());
     m_DBFTableWidget->setVerticalHeaderLabels(labels);
+    m_DBFTableWidget->scrollToBottom();
 
 
     // test
@@ -116,7 +121,7 @@ void tableDBFDialog::addRowClicked()
 //    }
 }
 
-void tableDBFDialog::removeRowClicked()
+void TableDBFDialog::removeRowClicked()
 {
     qDebug() << "removeRowClicked ";
     QItemSelectionModel *select = m_DBFTableWidget->selectionModel();
@@ -139,9 +144,19 @@ void tableDBFDialog::removeRowClicked()
 
 }
 
-void tableDBFDialog::cellChanged(int row, int column)
+void TableDBFDialog::addColClicked()
 {
-    //qDebug() << "Cell at row: " << QString::number(row) << " column " << QString::number(column)<<" was changed.";
+    newColDialog = new NewColDialog();
+}
+
+void TableDBFDialog::removeColClicked()
+{
+}
+
+
+void TableDBFDialog::cellChanged(int row, int column)
+{
+    qDebug() << "Cell at row: " << QString::number(row) << " column " << QString::number(column)<<" was changed.";
     QString data = m_DBFTableWidget->item(row, column)->text();
     int typeField = shapeHandler->getFieldType(column);
     if (typeField == 0)
@@ -159,10 +174,30 @@ void tableDBFDialog::cellChanged(int row, int column)
 
 }
 
-void tableDBFDialog::closeEvent(QCloseEvent *event)
+void TableDBFDialog::closeEvent(QCloseEvent *event)
 {
     shapeHandler->closeDBF();
+    QString filepath = QString::fromStdString(shapeHandler->getFilepath());
+    QFileInfo filepathInfo(filepath);
+    QString file_temp = filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+"_temp.dbf";
+
+    QFile::remove(filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+".dbf");
+    QFile::copy(file_temp, filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+".dbf");    // file temp to .dbf
+    QFile::remove(file_temp);
+
     QDialog::closeEvent(event);
+}
+
+void TableDBFDialog::saveChangesClicked()
+{
+    shapeHandler->closeDBF();
+    QString filepath = QString::fromStdString(shapeHandler->getFilepath());
+    QFileInfo filepathInfo(filepath);
+    QString file_temp = filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+"_temp.dbf";
+
+    QFile::remove(file_temp);   //remove old file_temp
+    QFile::copy(filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+".dbf", file_temp);    // copy modified file to file_temp
+    shapeHandler->openDBF(shapeHandler->getFilepath());
 }
 
 

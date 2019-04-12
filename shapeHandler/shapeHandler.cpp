@@ -1,6 +1,11 @@
 #include "shapeHandler.h"
 
 
+std::string Crit3DShapeHandler::getFilepath() const
+{
+    return m_filepath;
+}
+
 Crit3DShapeHandler::Crit3DShapeHandler()
     : m_handle(nullptr), m_dbf(nullptr), m_count(0), m_type(0)
 {}
@@ -45,6 +50,7 @@ bool Crit3DShapeHandler::open(std::string filename)
     close();
     m_handle = SHPOpen(filename.c_str(), "r+b");
     m_dbf = DBFOpen(filename.c_str(), "r+b");
+    m_filepath = filename;
     if ( (m_handle == nullptr) || (m_dbf == nullptr)) return false;
 
     SHPGetInfo(m_handle, &m_count, &m_type, nullptr, nullptr);
