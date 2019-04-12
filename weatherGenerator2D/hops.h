@@ -18,6 +18,7 @@ struct Tevapotranspiration{
     double conesDevelopmentKc;
     double conesRipeningKc;
     double conesMaturityKc;
+    double senescenceKc;
 };
 
 struct ToutputPhenology{

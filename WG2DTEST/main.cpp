@@ -226,6 +226,7 @@ int main()
     et.conesDevelopmentKc = 1.05;
     et.conesRipeningKc = 1.05;
     et.conesMaturityKc = 0.85;
+    et.senescenceKc = NODATA;
     hopsSimulation.initializeParametersPhenology(pheno);
     hopsSimulation.initializeParametersEvapotranspiration(et);
     hopsSimulation.compute();
