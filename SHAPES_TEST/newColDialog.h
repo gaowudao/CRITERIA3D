@@ -11,6 +11,7 @@ class NewColDialog : public QDialog
 
     public:
         NewColDialog();
+        void insertCol();
 };
 
 #endif // NEWCOLDIALOG_H

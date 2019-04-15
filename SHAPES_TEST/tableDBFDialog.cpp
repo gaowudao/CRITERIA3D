@@ -3,6 +3,8 @@
 TableDBFDialog::TableDBFDialog(Crit3DShapeHandler* shapeHandler)
     :shapeHandler(shapeHandler)
 {
+
+    this->resize(800,600);
     QVBoxLayout* mainLayout = new QVBoxLayout;
 
     menuBar = new QMenuBar;

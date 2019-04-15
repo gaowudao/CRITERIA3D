@@ -28,7 +28,7 @@
 
     private:
         Ui::MainWindow *ui;
-        tableDBFDialog *DBFWidget;
+        TableDBFDialog *DBFWidget;
         QString filepath;
 
     private slots:

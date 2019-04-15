@@ -8,9 +8,11 @@ QT  += widgets
 
 TEMPLATE = app
 
-SOURCES += main.cpp mainwindow.cpp tableDBFDialog.cpp
+SOURCES += main.cpp mainwindow.cpp tableDBFDialog.cpp \
+    newColDialog.cpp
 
-HEADERS += mainwindow.hpp tableDBFDialog.h
+HEADERS += mainwindow.hpp tableDBFDialog.h \
+    newColDialog.h
 
 FORMS   += mainwindow.ui
 
