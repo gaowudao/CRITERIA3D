@@ -17,9 +17,10 @@ class NewColDialog : public QDialog
 
     public:
         NewColDialog();
-        void insertCol();
+        bool insertCol();
         void showDecimalEdit();
         void hideDecimalEdit();
+        bool checkValidData();
 };
 
 #endif // NEWCOLDIALOG_H
