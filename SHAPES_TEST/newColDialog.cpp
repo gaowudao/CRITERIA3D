@@ -3,26 +3,26 @@
 NewColDialog::NewColDialog()
 {
 
-    this->setFixedSize(400,250);
+    this->setFixedSize(400,300);
     this->setWindowTitle("New Column");
     QVBoxLayout* mainLayout = new QVBoxLayout;
     QVBoxLayout *vbox = new QVBoxLayout;
 
-    QLineEdit* name = new QLineEdit();
-    name->setText("Insert name: ");
+    name = new QLineEdit();
+    name->setPlaceholderText("Insert name: ");
 
     QGroupBox *groupBox = new QGroupBox(tr("Insert type"));
-    QRadioButton *stringButton = new QRadioButton(tr("FTString"));
-    QRadioButton *intButton = new QRadioButton(tr("FTInteger"));
-    QRadioButton *doubleButton = new QRadioButton(tr("FTDouble"));
+    stringButton = new QRadioButton(tr("FTString"));
+    intButton = new QRadioButton(tr("FTInteger"));
+    doubleButton = new QRadioButton(tr("FTDouble"));
     stringButton->setChecked(true);
 
 
-    QLineEdit* nWidth = new QLineEdit();
-    nWidth->setText("Insert the width of the field: ");
+    nWidth = new QLineEdit();
+    nWidth->setPlaceholderText("Insert the width of the field: ");
 
-    QLineEdit* nDecimals = new QLineEdit();
-    nDecimals->setText("Insert the number of decimal: ");
+    nDecimals = new QLineEdit();
+    nDecimals->setPlaceholderText("Insert the number of decimal: ");
     nDecimals->setVisible(false);
 
     mainLayout->addWidget(name);
@@ -41,6 +41,9 @@ NewColDialog::NewColDialog()
     QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
                                              | QDialogButtonBox::Cancel);
 
+    connect(stringButton, &QRadioButton::clicked, [=](){ this->hideDecimalEdit(); });
+    connect(intButton, &QRadioButton::clicked, [=](){ this->showDecimalEdit(); });
+    connect(doubleButton, &QRadioButton::clicked, [=](){ this->showDecimalEdit(); });
     connect(buttonBox, &QDialogButtonBox::accepted, [=](){ this->insertCol(); });
     connect(buttonBox, &QDialogButtonBox::rejected, [=](){ QDialog::done(QDialog::Rejected); });
 
@@ -51,5 +54,17 @@ NewColDialog::NewColDialog()
 
 void NewColDialog::insertCol()
 {
+    return;
+}
+
+void NewColDialog::showDecimalEdit()
+{
+    nDecimals->setVisible(true);
+    return;
+}
+
+void NewColDialog::hideDecimalEdit()
+{
+    nDecimals->setVisible(false);
     return;
 }
