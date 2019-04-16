@@ -126,6 +126,7 @@ void TableDBFDialog::addRowClicked()
 void TableDBFDialog::removeRowClicked()
 {
     qDebug() << "removeRowClicked ";
+    m_DBFTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     QItemSelectionModel *select = m_DBFTableWidget->selectionModel();
 
     if (select->hasSelection())
@@ -172,6 +173,50 @@ void TableDBFDialog::addColClicked()
 
 void TableDBFDialog::removeColClicked()
 {
+/*
+    qDebug() << "removeColClicked ";
+    m_DBFTableWidget->setSelectionBehavior(QAbstractItemView::SelectColumns);
+
+    QItemSelectionModel *select = m_DBFTableWidget->selectionModel();
+
+    if (select->hasSelection())
+    {
+//        QModelIndexList indexList = select->selectedColumns();
+//        int col = indexList.at(0).column();
+
+//        ///test///
+
+//        std::string nameField;
+//        int typeField;
+
+//        qDebug() << "prima #fields: " << shapeHandler->getFieldNumbers();
+//        for (int i = 0; i < shapeHandler->getFieldNumbers(); i++)
+//        {
+//            nameField =  shapeHandler->getFieldName(i);
+//            typeField = shapeHandler->getFieldType(i);
+//            qDebug() << "prima nameField: " << QString::fromStdString(nameField) << " typeField: " << typeField;
+//        }
+
+//        if (shapeHandler->removeField(col))
+//        {
+//            qDebug() << "deleteRecord = " << col;
+//            m_DBFTableWidget->removeColumn(col);
+
+//            ////
+//            qDebug() << "dopo #fields: " << shapeHandler->getFieldNumbers();
+//            for (int i = 0; i < shapeHandler->getFieldNumbers(); i++)
+//            {
+//                nameField =  shapeHandler->getFieldName(i);
+//                typeField = shapeHandler->getFieldType(i);
+//                qDebug() << "dopo nameField: " << QString::fromStdString(nameField) << " typeField: " << typeField;
+//            }
+//        }
+    }
+    else
+    {
+        qDebug() << "no col selected ";
+    }
+    */
 }
 
 

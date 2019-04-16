@@ -262,3 +262,18 @@ bool Crit3DShapeHandler::addField(const char * fieldName, int type, int nWidth, 
         return false;
     }
 }
+
+bool Crit3DShapeHandler::removeField(int iField)
+{
+    if (DBFDeleteField(m_dbf, iField))
+    {
+        m_fields = m_fields - 1;
+        m_fieldsList.erase(m_fieldsList.begin()+iField);
+        m_fieldsTypeList.erase(m_fieldsTypeList.begin()+iField);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
