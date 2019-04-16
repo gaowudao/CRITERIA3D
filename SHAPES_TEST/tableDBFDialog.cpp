@@ -30,7 +30,7 @@ TableDBFDialog::TableDBFDialog(Crit3DShapeHandler* shapeHandler)
     int rowNumber = shapeHandler->getDBFRecordCount();
     m_DBFTableWidget->setRowCount(rowNumber);
     m_DBFTableWidget->setColumnCount(colNumber);
-    QStringList m_DBFTableHeader;
+
     std::string nameField;
     int typeField;
 
@@ -149,6 +149,25 @@ void TableDBFDialog::removeRowClicked()
 void TableDBFDialog::addColClicked()
 {
     newColDialog = new NewColDialog();
+    if (newColDialog->getInsertOK())
+    {
+        QString name = newColDialog->getName();
+        int typeField = newColDialog->getType();
+        int width = newColDialog->getWidth();
+        int decimals = newColDialog->getDecimals();
+
+        if (shapeHandler->addField(name.toStdString().c_str(), typeField, width, decimals))
+        {
+            m_DBFTableWidget->insertColumn(m_DBFTableWidget->columnCount());
+            m_DBFTableHeader << name;
+            m_DBFTableWidget->setHorizontalHeaderLabels(m_DBFTableHeader);
+        }
+        else
+        {
+            qDebug() << "addition of field failed";
+        }
+
+    }
 }
 
 void TableDBFDialog::removeColClicked()

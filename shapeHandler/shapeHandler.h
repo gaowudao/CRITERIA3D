@@ -45,6 +45,7 @@
         bool writeStringAttribute(int shapeNumber, int fieldPos, const char* pszFieldValue);
         bool deleteRecord(int shapeNumber);
         bool addRecord(std::vector<std::string> fields);
+        bool addField(const char * fieldName, int type, int nWidth, int nDecimals );
         std::string getFilepath() const;
     };
 

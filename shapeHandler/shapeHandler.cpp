@@ -228,3 +228,37 @@ bool Crit3DShapeHandler::addRecord(std::vector<std::string> fields)
 
     return true;
 }
+
+bool Crit3DShapeHandler::addField(const char * fieldName, int type, int nWidth, int nDecimals )
+{
+
+    DBFFieldType DBFtype;
+    if (type == 0)
+    {
+        DBFtype = FTString;
+    }
+    else if (type == 1)
+    {
+        DBFtype = FTInteger;
+    }
+    else if (type == 2)
+    {
+        DBFtype = FTDouble;
+    }
+    else
+    {
+        DBFtype = FTInvalid;
+    }
+
+    if (DBFAddField(m_dbf, fieldName, DBFtype, nWidth, nDecimals) != -1)
+    {
+        m_fields = m_fields + 1;
+        m_fieldsList.push_back(std::string(fieldName));
+        m_fieldsTypeList.push_back(DBFtype);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
