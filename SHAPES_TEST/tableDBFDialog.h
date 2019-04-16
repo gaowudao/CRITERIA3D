@@ -22,6 +22,7 @@ class TableDBFDialog : public QDialog
     QAction *deleteCol;
     QAction *save;
     QStringList labels;
+    QStringList m_DBFTableHeader;;
 
     public:
         TableDBFDialog(Crit3DShapeHandler *shapeHandler);

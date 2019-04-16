@@ -1,8 +1,10 @@
 #include "newColDialog.h"
 
+
 NewColDialog::NewColDialog()
 {
 
+    insertOK = false;
     this->setFixedSize(400,300);
     this->setWindowTitle("New Column");
     QVBoxLayout* mainLayout = new QVBoxLayout;
@@ -24,6 +26,7 @@ NewColDialog::NewColDialog()
 
     nDecimals = new QLineEdit();
     nDecimals->setPlaceholderText("Insert the number of decimal: ");
+    nDecimals->setText("0");
     nDecimals->setVisible(false);
     nDecimals->setValidator(new QIntValidator(0,10));
 
@@ -52,14 +55,18 @@ NewColDialog::NewColDialog()
     mainLayout->addWidget(buttonBox);
     this->setLayout(mainLayout);
     show();
+    exec();
 }
 
 bool NewColDialog::insertCol()
 {
     if (!checkValidData())
     {
+        insertOK = false;
         return false;
     }
+    insertOK = true;
+    QDialog::done(QDialog::Accepted);
     return true;
 
 }
@@ -106,6 +113,41 @@ void NewColDialog::showDecimalEdit()
 
 void NewColDialog::hideDecimalEdit()
 {
+    nDecimals->setText("0");
     nDecimals->setVisible(false);
     return;
+}
+
+bool NewColDialog::getInsertOK() const
+{
+    return insertOK;
+}
+
+QString NewColDialog::getName()
+{
+    return name->text();
+}
+
+int NewColDialog::getType()
+{
+    if (stringButton->isChecked())
+    {
+       return FTString;
+    }
+    else if (intButton->isChecked())
+    {
+       return FTInteger;
+    }
+    else
+       return FTDouble;
+}
+
+int NewColDialog::getWidth()
+{
+    return nWidth->text().toInt();
+}
+
+int NewColDialog::getDecimals()
+{
+    return nDecimals->text().toInt();
 }

@@ -30,7 +30,7 @@ TableDBFDialog::TableDBFDialog(Crit3DShapeHandler* shapeHandler)
     int rowNumber = shapeHandler->getDBFRecordCount();
     m_DBFTableWidget->setRowCount(rowNumber);
     m_DBFTableWidget->setColumnCount(colNumber);
-    QStringList m_DBFTableHeader;
+
     std::string nameField;
     int typeField;
 
@@ -109,23 +109,17 @@ void TableDBFDialog::addRowClicked()
     m_DBFTableWidget->setVerticalHeaderLabels(labels);
     m_DBFTableWidget->scrollToBottom();
 
-
-    // test
-    //std::vector<std::string> test = {"0", "19850526",  "M0M0M0", "RAINFEDWHEAT" , "CTL4", "01139" , "01139" , "-9.99900e+003" , "7.3", "0", "0", "0", "0", "-9.99900e+003" , "-9.99900e+003"};
-//    std::vector<std::string> test = {"6667"};
-//    if (shapeHandler->addRecord(test))
-//    {
-//        qDebug() << "addRecord true ";
-//    }
-//    else
-//    {
-//        qDebug() << "addRecord false ";
-//    }
 }
 
 void TableDBFDialog::removeRowClicked()
 {
     qDebug() << "removeRowClicked ";
+    if (m_DBFTableWidget->selectionBehavior() == QAbstractItemView::SelectColumns)
+    {
+        m_DBFTableWidget->clearSelection();
+        m_DBFTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
+    }
+
     QItemSelectionModel *select = m_DBFTableWidget->selectionModel();
 
     if (select->hasSelection())
@@ -149,10 +143,56 @@ void TableDBFDialog::removeRowClicked()
 void TableDBFDialog::addColClicked()
 {
     newColDialog = new NewColDialog();
+    if (newColDialog->getInsertOK())
+    {
+        QString name = newColDialog->getName();
+        int typeField = newColDialog->getType();
+        int width = newColDialog->getWidth();
+        int decimals = newColDialog->getDecimals();
+
+        if (shapeHandler->addField(name.toStdString().c_str(), typeField, width, decimals))
+        {
+            m_DBFTableWidget->insertColumn(m_DBFTableWidget->columnCount());
+            m_DBFTableHeader << name;
+            m_DBFTableWidget->setHorizontalHeaderLabels(m_DBFTableHeader);
+        }
+        else
+        {
+            qDebug() << "addition of field failed";
+        }
+
+    }
 }
 
 void TableDBFDialog::removeColClicked()
 {
+
+    qDebug() << "removeColClicked ";
+    if (m_DBFTableWidget->selectionBehavior() == QAbstractItemView::SelectRows)
+    {
+        m_DBFTableWidget->clearSelection();
+        m_DBFTableWidget->setSelectionBehavior(QAbstractItemView::SelectColumns);
+    }
+
+
+    QItemSelectionModel *select = m_DBFTableWidget->selectionModel();
+
+    if (select->hasSelection())
+    {
+        QModelIndexList indexList = select->selectedColumns();
+        int col = indexList.at(0).column();
+
+        if (shapeHandler->removeField(col))
+        {
+            qDebug() << "deleteCol = " << col;
+            m_DBFTableWidget->removeColumn(col);
+        }
+    }
+    else
+    {
+        qDebug() << "no col selected ";
+    }
+
 }
 
 
