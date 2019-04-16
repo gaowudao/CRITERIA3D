@@ -162,6 +162,7 @@
         void initializeTemperatureParameters();
         int  doyFromDate(int day,int month,int year);
         void harmonicsFourier(double* variable, double *par, int nrPar, double* estimatedVariable, int nrEstimatedVariable);
+        void computeResiduals(double averageTDry[],double averageTWet[],double stdDevTDry[],double stdDevTWet[],int lengthArray);
 
     public:
         // variables

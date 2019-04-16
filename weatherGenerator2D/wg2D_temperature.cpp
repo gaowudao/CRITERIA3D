@@ -279,12 +279,13 @@ void weatherGenerator2D::computeTemperatureParameters()
             //getchar();
             //printf("%d %f %d %f %d\n",iDay,stdDevTMaxDry[iDay],countTMaxDry[iDay],stdDevTMinDry[iDay],countTMinDry[iDay]);
         }
+        /*
         for (int iDatum=0; iDatum<nrData; iDatum++)
         {
             obsDataD[iStation][iDatum].tMax -= EPSILON;
             obsDataD[iStation][iDatum].tMin -= EPSILON;
         }
-
+        */
 
         // compute the Fourier coefficients
 
@@ -380,7 +381,10 @@ void weatherGenerator2D::computeTemperatureParameters()
         free(par);
 
 
+
+
     } // end of iStation "for" cycle
+
 
 }
 
@@ -482,4 +486,12 @@ void weatherGenerator2D::harmonicsFourier(double* variable, double *par,int nrPa
     free(parDelta);
     free(parMarquardt);
 
+}
+
+void weatherGenerator2D::computeResiduals(double averageTDry[],double averageTWet[],double stdDevTDry[],double stdDevTWet[],int lengthArray)
+{
+    for (int i = 0; i< nrData ; i++)
+    {
+
+    }
 }
