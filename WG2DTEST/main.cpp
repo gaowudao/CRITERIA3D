@@ -203,12 +203,12 @@ int main()
 
 
 
-    bool computePrecipitation = false;
+    bool computePrecipitation = true;
     bool computeTemperature = true;
     printf("weather generator\n");
     WG2D.initializeParameters(NODATA,2,2,computePrecipitation,computeTemperature);
     WG2D.computeWeatherGenerator2D();
-
+    /*
     printf("hops\n");
     hops hopsSimulation;
     hopsSimulation.initializeData(1095*4,nrStations);
@@ -230,7 +230,7 @@ int main()
     hopsSimulation.initializeParametersPhenology(pheno);
     hopsSimulation.initializeParametersEvapotranspiration(et);
     hopsSimulation.compute();
-
+    */
 
     for (int i=0;i<nrStations;i++)
     {
