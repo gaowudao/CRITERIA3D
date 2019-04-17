@@ -277,3 +277,35 @@ bool Crit3DShapeHandler::removeField(int iField)
         return false;
     }
 }
+
+/// DA TESTARE LC ///
+void Crit3DShapeHandler::pack(std::string newFile)
+{
+    DBFHandle hDBF;
+    hDBF = DBFCreate(newFile.c_str());
+
+
+    // copy fields
+    for( int i = 0; i < m_fields; i++ )
+    {
+        int nWidth = m_dbf->panFieldSize[i];
+        int nDecimals = m_dbf->panFieldDecimals[i];
+        DBFAddField( hDBF, m_fieldsList.at(i).c_str(), m_fieldsTypeList.at(i), nWidth, nDecimals );
+    }
+
+    //copy records if not deleted
+    int nRecord = DBFGetRecordCount(m_dbf);
+    int newCount = 0;
+    for (int i = 0; i<nRecord; i++)
+    {
+        if (!DBFIsRecordDeleted(m_dbf, i))
+        {
+            newCount = newCount + 1;
+            const char * row = DBFReadTuple(m_dbf, i );
+            DBFWriteTuple(hDBF, newCount, (void*)row);
+        }
+
+    }
+    DBFClose( hDBF );
+
+}
