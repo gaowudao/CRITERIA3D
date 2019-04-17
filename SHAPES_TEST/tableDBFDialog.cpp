@@ -232,6 +232,7 @@ void TableDBFDialog::closeEvent(QCloseEvent *event)
 
 void TableDBFDialog::saveChangesClicked()
 {
+    //shapeHandler->pack("/home/laura/CRITERIA3D/SHAPES_TEST/prove/prova_pack.dbf");   //test
     shapeHandler->closeDBF();
     QString filepath = QString::fromStdString(shapeHandler->getFilepath());
     QFileInfo filepathInfo(filepath);
