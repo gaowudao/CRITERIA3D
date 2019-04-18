@@ -1,8 +1,10 @@
 #----------------------------------------------------
 #
-# CRITERIA3D distribution
-# Library of math, physics and statistic functions
-# Contains common constants and defines
+#   Library mathFunctions
+#   contains common constants and defines
+#   math, physics and statistic functions
+#
+#   this project is part of CRITERIA3D distribution
 #
 #----------------------------------------------------
 
