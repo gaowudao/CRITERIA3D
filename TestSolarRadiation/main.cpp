@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 
     // DTM INPUT
     std::string path = a.applicationDirPath().toStdString() + "/";
-    std::string fileName = path + ("../../DATA/DTM/dem_ravone");
+    std::string fileName = path + ("../../DATA/DEM/dem_ravone");
 
     // GIS SETTINGS (UTM zone, Time zone)
     gis::Crit3DGisSettings* gisSettings = new gis::Crit3DGisSettings();
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
     else
     {
         std::cout << "Error in reading:" << fileName << std::endl << *error << std::endl;
-        return false;
+        return 0;
     }
 
     // SET RADIATION SETTINGS
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
     // INITIALIZE RADIATION MAPS (deafult trasmissivity = 0.75)
     Crit3DRadiationMaps* radMaps = new Crit3DRadiationMaps(*dtm, *gisSettings);
 
-    float mySeconds = HOUR_SECONDS * myHour;
+    float mySeconds = float(HOUR_SECONDS * myHour);
     Crit3DTime* myTime = new Crit3DTime(*myDate, mySeconds);
 
     std::cout << "\nComputing..." << std::endl;

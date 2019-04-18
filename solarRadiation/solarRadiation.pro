@@ -1,9 +1,10 @@
-#-------------------------------------------------
+#-----------------------------------------------------
 #
-# CRITERIA3D distribution
-# solarRadiation library
+#   library solarRadiation
+#   this project is part of CRITERIA3D distribution
+#   it uses G_calc_solar_position() by Markus Neteler
 #
-#-------------------------------------------------
+#-----------------------------------------------------
 
 QT       -= core gui
 

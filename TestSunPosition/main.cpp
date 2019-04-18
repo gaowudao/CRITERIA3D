@@ -15,17 +15,18 @@
 #include "radiationDefinitions.h"
 
 
-void printSunRiseSet(int timeMinutes, QString rise_set)
+void printSunriseSunset(int timeMinutes, QString rise_set)
 {
     int h = timeMinutes / 60;
     int m = timeMinutes - (h*60);
     std::cout << "Sun " << rise_set.toStdString() << " at (solar time) " << h << ":" << m << std::endl;
 }
 
+
 bool testSunPosition(float lat, float lon, int timeZone, QDate myDate, QTime myTime)
 {
     int chk;
-    float etrTilt;          // Extraterrestrial (top-of-atmosphere) global irradiance on a tilted surface (W m-2)
+    float etrTilt;                  // Extraterrestrial (top-of-atmosphere) global irradiance on a tilted surface (W m-2)
     float cosZen;                   // Cosine of refraction corrected solar zenith angle
     float sbcf;                     // Shadow-band correction factor
     float prime;                    // Factor that normalizes Kt, Kn, etc.
@@ -40,7 +41,7 @@ bool testSunPosition(float lat, float lon, int timeZone, QDate myDate, QTime myT
 
     chk = RSUN_compute_solar_position(lon, lat, timeZone, myDate.year(), myDate.month(), myDate.day(),
                                       myTime.hour(), myTime.minute(), myTime.second(),
-                                      TEMPERATURE_DEFAULT, PRESSURE_DEFAULT,
+                                      TEMPERATURE_DEFAULT, PRESSURE_SEALEVEL,
                                       180, 0, SBWID, SBRAD, SBSKY);
     if (chk > 0)
     {
@@ -56,8 +57,8 @@ bool testSunPosition(float lat, float lon, int timeZone, QDate myDate, QTime myT
                      &((*mySunPosition).extraIrradianceNormal),
                      &etrTilt, &prime, &sbcf, &sunRiseMinutes, &sunSetMinutes, &unPrime, &zenRef);
 
-    printSunRiseSet(sunRiseMinutes, "rise");
-    printSunRiseSet(sunSetMinutes, "set");
+    printSunriseSunset(int(sunRiseMinutes), "rise");
+    printSunriseSunset(int(sunSetMinutes), "set");
     std::cout << "\nValues at solar time: " << myTime.toString().toStdString() << std::endl;
     std::cout << "azimuth [deg.] " << (*mySunPosition).azimuth << std::endl;
     std::cout << "elevation angle refracted [deg. from horizon] " << (*mySunPosition).elevationRefr << std::endl;

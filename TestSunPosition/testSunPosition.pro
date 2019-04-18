@@ -1,8 +1,10 @@
-#-------------------------------------------------
+#---------------------------------------------------------
 #
-# Project created by QtCreator 2013-12-08T19:31:05
+#   testSunPosition
+#   show current sunrise and sunset at Bologna and Madrid
+#   this project is part of CRITERIA3D distribution
 #
-#-------------------------------------------------
+#---------------------------------------------------------
 
 QT       += core
 QT       -= gui

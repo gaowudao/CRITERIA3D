@@ -1,5 +1,5 @@
 
-QT -= GUI
+QT -= gui
 QT += core sql
 
 TARGET = CRITERIA1D

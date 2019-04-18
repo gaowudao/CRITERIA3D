@@ -10,10 +10,10 @@ Crit3DRadiationSettings::Crit3DRadiationSettings()
     computeShadowing = true;
     shadowDistanceFactor = 1;
     linkeMode = PARAM_MODE_FIXED;
-    linke = 4.0;
+    linke = 4.f;
     landUse = LAND_USE_RURAL;
     albedoMode = PARAM_MODE_FIXED;
-    albedo = (float)0.2;
+    albedo = 0.2f;
     tiltMode = TILT_TYPE_DEM;
     tilt = NODATA;
     aspect = NODATA;

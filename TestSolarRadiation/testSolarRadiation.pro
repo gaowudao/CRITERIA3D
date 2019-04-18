@@ -1,3 +1,14 @@
+#---------------------------------------------------------
+#
+#   testSolarRadiation
+#   compute a map of global solar irradiance (clear sky)
+#   for a specified date/time, starting from a DTM
+#
+#   this project is part of CRITERIA3D distribution
+#
+#---------------------------------------------------------
+
+
 QT       -= gui
 
 TARGET = testSolarRadiation
