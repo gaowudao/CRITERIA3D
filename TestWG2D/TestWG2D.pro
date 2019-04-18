@@ -1,7 +1,7 @@
 QT += core
 QT -= gui
 
-TARGET = WG2DTEST
+TARGET = TestWG2D
 CONFIG += console
 CONFIG -= app_bundle
 
