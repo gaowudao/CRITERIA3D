@@ -56,8 +56,8 @@ bool Crit3DShapeHandler::open(std::string filename)
     SHPGetInfo(m_handle, &m_count, &m_type, nullptr, nullptr);
     m_fields = m_dbf->nFields;
 
-    unsigned long size = 20;
-    char *fieldName =  (char *) malloc(sizeof(char) * size);
+
+    char *fieldName =  (char *) malloc(sizeof(char) * (XBASE_FLDNAME_LEN_READ+1));
     DBFFieldType fieldType;
 
     for (int i = 0; i<m_fields; i++)
@@ -67,6 +67,7 @@ bool Crit3DShapeHandler::open(std::string filename)
         m_fieldsTypeList.push_back(fieldType);
     }
     free(fieldName);
+
     return true;
 }
 
@@ -78,8 +79,7 @@ bool Crit3DShapeHandler::openDBF(std::string filename)
 
     m_fields = m_dbf->nFields;
 
-    unsigned long size = 20;
-    char *fieldName =  (char *) malloc(sizeof(char) * size);
+    char *fieldName =  (char *) malloc(sizeof(char) * (XBASE_FLDNAME_LEN_READ+1));
     DBFFieldType fieldType;
 
     for (int i = 0; i<m_fields; i++)
@@ -191,6 +191,7 @@ bool Crit3DShapeHandler::deleteRecord(int shapeNumber)
     return DBFMarkRecordDeleted(m_dbf,shapeNumber,true);
 }
 
+/*
 bool Crit3DShapeHandler::addRecord(std::vector<std::string> fields)
 {
     if( DBFGetFieldCount(m_dbf) != fields.size() )
@@ -201,9 +202,10 @@ bool Crit3DShapeHandler::addRecord(std::vector<std::string> fields)
     int iRecord = DBFGetRecordCount( m_dbf );
     int typeField;
 
-    /* -------------------------------------------------------------------- */
-    /*	Loop assigning the new field values.				*/
-    /* -------------------------------------------------------------------- */
+    // --------------------------------------------------------------------
+    //	Loop assigning the new field values.
+    // --------------------------------------------------------------------
+
     for( int i = 0; i < DBFGetFieldCount(m_dbf); i++ )
     {
         typeField = getFieldType(i);
@@ -228,6 +230,7 @@ bool Crit3DShapeHandler::addRecord(std::vector<std::string> fields)
 
     return true;
 }
+*/
 
 bool Crit3DShapeHandler::addField(const char * fieldName, int type, int nWidth, int nDecimals )
 {
