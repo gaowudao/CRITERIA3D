@@ -1,4 +1,4 @@
-#include "tableDBFDialog.h"
+#include "dbfTableDialog.h"
 
 TableDBFDialog::TableDBFDialog(Crit3DShapeHandler* shapeHandler)
     :shapeHandler(shapeHandler)
