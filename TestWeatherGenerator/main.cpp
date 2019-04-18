@@ -3,6 +3,7 @@
 #include <QStringList>
 #include <QDebug>
 #include <QSettings>
+#include <QCoreApplication>
 
 #include <float.h>
 #include <time.h>
@@ -31,13 +32,14 @@ void printSeasonalForecastInfo(TXMLSeasonalAnomaly *XMLAnomaly)
 }
 
 
-
 int main(int argc, char *argv[])
 {
     TXMLSeasonalAnomaly XMLAnomaly;
     TinputObsData climateDailyObsData;
     TinputObsData lastYearDailyObsData;
     TwheatherGenClimate wGenClimate;
+
+    QCoreApplication a(argc, argv);
 
     //read settings
     QString settingsFileName;
@@ -46,16 +48,17 @@ int main(int argc, char *argv[])
         settingsFileName = argv[1];
     else
     {
-        //settingsFileName = "\\\\praga-smr\\MOSES\\SWB\\DA_MO\\seasonalPredictions\\WG_MO.ini";
-        qDebug() << "\n CRITERIA3D Weather Generator ";
-        qDebug() << "\n USAGE: WG.exe settings.ini\n";
-        return 0;
+        QString path = a.applicationDirPath();
+        settingsFileName = path + "/../data/testWG.ini";
+        /*qDebug() << "A settings file is required.";
+        qDebug() << "\nUSAGE: WG settings.ini\n";
+        return 0;*/
     }
 
     QFile myFile(settingsFileName);
     if (!myFile.exists())
     {
-        qDebug() << "Error!\n" << "Missing settings file:" << settingsFileName;
+        qDebug() << "Error!" << "\nMissing settings file:" << settingsFileName;
         return -1;
     }
 
@@ -82,7 +85,7 @@ int main(int argc, char *argv[])
     if (!outputDirectory.exists())
         if (!outputDirectory.mkdir(outputPath))
         {
-            qDebug() << outputPath;
+            qDebug() << "Error: missing output directory" << outputPath;
             return -1;
         }
 
@@ -91,7 +94,6 @@ int main(int argc, char *argv[])
     float minPercData = mySettings->value("minDataPercentage",0).toFloat();
     float thresholdPrec = mySettings->value("rainfallThreshold",0).toFloat();
 
-    bool isFirst = true;
     QString season;
     int wgDoy1 = NODATA;
     int wgDoy2 = NODATA;
@@ -126,7 +128,7 @@ int main(int argc, char *argv[])
         testFile = new QFile(xmlFileName);
         if (!testFile->exists())
         {
-            qDebug() << "ERROR: missing seasonal forecast:" << fileName;
+            qDebug() << "ERROR: missing seasonal forecast:" << xmlFileName;
             isOk = false;
         }
 
@@ -138,19 +140,15 @@ int main(int argc, char *argv[])
             if (! parseXMLClimate(xmlFileName, &XMLAnomaly))
                 return -1;
 
-            if (isFirst)
-            {
-                // compute first and last day of the year of the season period
-                season = XMLAnomaly.anomalySeason.toUpper();
-                getDoyFromSeason(season, XMLAnomaly.anomalyYear, &wgDoy1, &wgDoy2);
+            // compute first and last day of the year of the season period
+            season = XMLAnomaly.anomalySeason.toUpper();
+            getDoyFromSeason(season, XMLAnomaly.anomalyYear, &wgDoy1, &wgDoy2);
 
-                // set climate dates
-                climateDateIni = Crit3DDate(1,1,XMLAnomaly.climatePeriod.yearFrom);
-                climateDateFin = Crit3DDate(31, 12, XMLAnomaly.climatePeriod.yearTo);
+            // set climate dates
+            climateDateIni = Crit3DDate(1,1,XMLAnomaly.climatePeriod.yearFrom);
+            climateDateFin = Crit3DDate(31, 12, XMLAnomaly.climatePeriod.yearTo);
 
-                printSeasonalForecastInfo(&XMLAnomaly);
-                isFirst = false;
-            }
+            printSeasonalForecastInfo(&XMLAnomaly);
 
             // read CLIMATE data
             if ( !readMeteoDataCsv(climateFileName, separator, NODATA, &climateDailyObsData) )

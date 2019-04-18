@@ -65,7 +65,7 @@ bool parseXMLClimate(QString xmlFileName, TXMLSeasonalAnomaly* XMLAnomaly)
 
      if (!parseXMLFile(xmlFileName, &xmlDoc))
     {
-        qDebug() << "parseXMLFile error";
+        qDebug() << "parseXMLClimate error";
         return false;
     }
 
