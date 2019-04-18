@@ -123,8 +123,11 @@ void TableDBFDialog::removeRowClicked()
 
     if (select->hasSelection())
     {
+        QModelIndexList indexList = select->selectedRows();
+        int row = indexList.at(0).row();
+
         QMessageBox::StandardButton confirm = QMessageBox::Yes;
-        confirm = QMessageBox::question( this, "Row Delete", tr("You sure?\n"),
+        confirm = QMessageBox::question( this, "Delete confirmation", "Delete shape number " + QString::number(row),
                          QMessageBox::No | QMessageBox::Yes, QMessageBox::Yes);
 
         if (confirm == QMessageBox::Yes)
@@ -136,8 +139,7 @@ void TableDBFDialog::removeRowClicked()
                 m_DBFTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
             }
 
-            QModelIndexList indexList = select->selectedRows();
-            int row = indexList.at(0).row();
+
 
             if (shapeHandler->deleteRecord(row) || !indexList.at(0).data(Qt::DisplayRole).isValid())
             {
