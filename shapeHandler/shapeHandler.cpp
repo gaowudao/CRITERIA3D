@@ -278,7 +278,7 @@ bool Crit3DShapeHandler::removeField(int iField)
     }
 }
 
-/// DA TESTARE LC ///
+
 void Crit3DShapeHandler::pack(std::string newFile)
 {
     DBFHandle hDBF;
@@ -300,9 +300,10 @@ void Crit3DShapeHandler::pack(std::string newFile)
     {
         if (!DBFIsRecordDeleted(m_dbf, i))
         {
-            newCount = newCount + 1;
             const char * row = DBFReadTuple(m_dbf, i );
+
             DBFWriteTuple(hDBF, newCount, (void*)row);
+            newCount = newCount + 1;
         }
 
     }
