@@ -120,7 +120,6 @@ bool Crit3DShapeHandler::getShape(int index, ShapeObject &shape)
     return true;
 }
 
-
 int	Crit3DShapeHandler::getShapeCount()
 {
     return m_count;

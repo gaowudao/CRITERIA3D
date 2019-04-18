@@ -12,9 +12,20 @@
 QT  += core xml
 QT  -= gui
 
-TARGET = weatherGenerator
 TEMPLATE = lib
 CONFIG += staticlib
+
+unix:{
+    CONFIG(debug, debug|release) {
+        TARGET = debug/weatherGenerator
+    } else {
+        TARGET = release/weatherGenerator
+    }
+}
+win32:{
+    TARGET = weatherGenerator
+}
+
 
 INCLUDEPATH += ../crit3dDate ../mathFunctions
 
