@@ -22,13 +22,13 @@ CONFIG += debug_and_release
 
 unix:{
     CONFIG(debug, debug|release) {
-        TARGET = debug/SHAPES_TEST
+        TARGET = debug/TESTSHAPE
     } else {
-        TARGET = release/SHAPES_TEST
+        TARGET = release/TESTSHAPE
     }
 }
 win32:{
-    TARGET = SHAPES_TEST
+    TARGET = TESTSHAPE
 }
 
 INCLUDEPATH +=  ../shapeHandler ../shapeHandler/shapelib
