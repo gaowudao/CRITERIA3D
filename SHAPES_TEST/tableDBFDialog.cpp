@@ -113,13 +113,12 @@ void TableDBFDialog::addRowClicked()
 
 void TableDBFDialog::removeRowClicked()
 {
-    qDebug() << "removeRowClicked ";
+
     if (m_DBFTableWidget->selectionBehavior() == QAbstractItemView::SelectColumns)
     {
         m_DBFTableWidget->clearSelection();
         m_DBFTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     }
-
     QItemSelectionModel *select = m_DBFTableWidget->selectionModel();
 
     if (select->hasSelection())
@@ -127,15 +126,40 @@ void TableDBFDialog::removeRowClicked()
         QModelIndexList indexList = select->selectedRows();
         int row = indexList.at(0).row();
 
-        if (shapeHandler->deleteRecord(row) || !indexList.at(0).data(Qt::DisplayRole).isValid())
+        QMessageBox::StandardButton confirm = QMessageBox::Yes;
+        confirm = QMessageBox::question( this, "Delete confirmation", "Delete shape number " + QString::number(row),
+                         QMessageBox::No | QMessageBox::Yes, QMessageBox::Yes);
+
+        if (confirm == QMessageBox::Yes)
         {
-            qDebug() << "deleteRecord = " << row;
-            m_DBFTableWidget->removeRow(row);
+            qDebug() << "removeRowClicked ";
+            if (m_DBFTableWidget->selectionBehavior() == QAbstractItemView::SelectColumns)
+            {
+                m_DBFTableWidget->clearSelection();
+                m_DBFTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
+            }
+
+
+
+            if (shapeHandler->deleteRecord(row) || !indexList.at(0).data(Qt::DisplayRole).isValid())
+            {
+                qDebug() << "deleteRecord = " << row;
+                for (int i = 0; i < shapeHandler->getFieldNumbers(); i++)
+                {
+                    m_DBFTableWidget->item(row,i)->setBackgroundColor(Qt::yellow);
+                }
+                //m_DBFTableWidget->removeRow(row);
+            }
+        }
+        else
+        {
+            qDebug() << "cancel operation ";
+            return;
         }
     }
     else
     {
-        qDebug() << "no row selected ";
+        QMessageBox::information(nullptr, "Select a row", "no row selected");
     }
 
 }
@@ -190,7 +214,7 @@ void TableDBFDialog::removeColClicked()
     }
     else
     {
-        qDebug() << "no col selected ";
+        QMessageBox::information(nullptr, "Select a column", "no column selected");
     }
 
 }
