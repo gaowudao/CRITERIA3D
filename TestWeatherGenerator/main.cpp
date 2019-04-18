@@ -41,20 +41,23 @@ int main(int argc, char *argv[])
 
     QCoreApplication a(argc, argv);
 
-    //read settings
     QString settingsFileName;
 
     if (argc > 1)
         settingsFileName = argv[1];
     else
-    {
+    {  
         QString path = a.applicationDirPath();
         settingsFileName = path + "/../data/testWG.ini";
-        /*qDebug() << "A settings file is required.";
+
+        /*
+        qDebug() << "A settings file is required.";
         qDebug() << "\nUSAGE: WG settings.ini\n";
-        return 0;*/
+        return 0;
+        */
     }
 
+    // read settings
     QFile myFile(settingsFileName);
     if (!myFile.exists())
     {

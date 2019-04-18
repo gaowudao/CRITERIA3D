@@ -6,8 +6,6 @@
 #-------------------------------------------------------------------
 
 
-TARGET = WG
-
 QT += core xml
 QT -= gui
 
@@ -17,6 +15,17 @@ CONFIG += console
 CONFIG -= app_bundle
 
 TEMPLATE = app
+
+unix:{
+    CONFIG(debug, debug|release) {
+        TARGET = debug/WG
+    } else {
+        TARGET = release/WG
+    }
+}
+win32:{
+    TARGET = WG
+}
 
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../weatherGenerator
 
