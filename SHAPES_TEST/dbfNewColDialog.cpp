@@ -1,7 +1,7 @@
 #include "dbfNewColDialog.h"
 
 
-NewColDialog::NewColDialog()
+DbfNewColDialog::DbfNewColDialog()
 {
 
     insertOK = false;
@@ -58,7 +58,7 @@ NewColDialog::NewColDialog()
     exec();
 }
 
-bool NewColDialog::insertCol()
+bool DbfNewColDialog::insertCol()
 {
     if (!checkValidData())
     {
@@ -71,7 +71,7 @@ bool NewColDialog::insertCol()
 
 }
 
-bool NewColDialog::checkValidData()
+bool DbfNewColDialog::checkValidData()
 {
     if (name->text().isEmpty())
     {
@@ -105,30 +105,30 @@ bool NewColDialog::checkValidData()
     return true;
 }
 
-void NewColDialog::showDecimalEdit()
+void DbfNewColDialog::showDecimalEdit()
 {
     nDecimals->setVisible(true);
     return;
 }
 
-void NewColDialog::hideDecimalEdit()
+void DbfNewColDialog::hideDecimalEdit()
 {
     nDecimals->setText("0");
     nDecimals->setVisible(false);
     return;
 }
 
-bool NewColDialog::getInsertOK() const
+bool DbfNewColDialog::getInsertOK() const
 {
     return insertOK;
 }
 
-QString NewColDialog::getName()
+QString DbfNewColDialog::getName()
 {
     return name->text();
 }
 
-int NewColDialog::getType()
+int DbfNewColDialog::getType()
 {
     if (stringButton->isChecked())
     {
@@ -142,12 +142,12 @@ int NewColDialog::getType()
        return FTDouble;
 }
 
-int NewColDialog::getWidth()
+int DbfNewColDialog::getWidth()
 {
     return nWidth->text().toInt();
 }
 
-int NewColDialog::getDecimals()
+int DbfNewColDialog::getDecimals()
 {
     return nDecimals->text().toInt();
 }

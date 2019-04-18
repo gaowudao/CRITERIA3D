@@ -9,7 +9,7 @@
     #include <QTableWidget>
 
     #include "shapeHandler.h"
-    #include "tableDBFDialog.h"
+    #include "dbfTableDialog.h"
 
     namespace Ui {
     class MainWindow;
@@ -28,7 +28,7 @@
 
     private:
         Ui::MainWindow *ui;
-        TableDBFDialog *DBFWidget;
+        DbfTableDialog *DBFWidget;
         QString filepath;
 
     private slots:

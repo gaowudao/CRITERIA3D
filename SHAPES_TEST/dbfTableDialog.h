@@ -5,7 +5,7 @@
 #include "shapeHandler.h"
 #include "dbfNewColDialog.h"
 
-class TableDBFDialog : public QDialog
+class DbfTableDialog : public QDialog
 {
     Q_OBJECT
 
@@ -13,7 +13,7 @@ class TableDBFDialog : public QDialog
 
     Crit3DShapeHandler *shapeHandler;
     QTableWidget* m_DBFTableWidget;
-    NewColDialog* newColDialog;
+    DbfNewColDialog* newColDialog;
     QMenuBar *menuBar;
     QMenu *editMenu;
     QAction *addRow;
@@ -25,7 +25,7 @@ class TableDBFDialog : public QDialog
     QStringList m_DBFTableHeader;
 
     public:
-        TableDBFDialog(Crit3DShapeHandler *shapeHandler);
+        DbfTableDialog(Crit3DShapeHandler *shapeHandler);
         void addRowClicked();
         void removeRowClicked();
         void addColClicked();

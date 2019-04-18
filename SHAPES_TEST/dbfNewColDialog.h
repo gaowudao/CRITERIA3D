@@ -3,7 +3,7 @@
 
 #include <QtWidgets>
 
-class NewColDialog : public QDialog
+class DbfNewColDialog : public QDialog
 {
     Q_OBJECT
 
@@ -25,7 +25,7 @@ class NewColDialog : public QDialog
             FTDouble
         };
 
-        NewColDialog();
+        DbfNewColDialog();
         bool insertCol();
         void showDecimalEdit();
         void hideDecimalEdit();

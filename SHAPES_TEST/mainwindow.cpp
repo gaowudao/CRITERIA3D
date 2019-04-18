@@ -126,7 +126,7 @@ void MainWindow::on_dbfButton_clicked()
     QFile::copy(filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+".dbf", file_temp);
 
     shapeHandler.openDBF(filepath.toStdString());
-    DBFWidget = new TableDBFDialog(&shapeHandler);
+    DBFWidget = new DbfTableDialog(&shapeHandler);
 
 }
 

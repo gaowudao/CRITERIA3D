@@ -1,6 +1,6 @@
 #include "dbfTableDialog.h"
 
-TableDBFDialog::TableDBFDialog(Crit3DShapeHandler* shapeHandler)
+DbfTableDialog::DbfTableDialog(Crit3DShapeHandler* shapeHandler)
     :shapeHandler(shapeHandler)
 {
 
@@ -101,7 +101,7 @@ TableDBFDialog::TableDBFDialog(Crit3DShapeHandler* shapeHandler)
 }
 
 
-void TableDBFDialog::addRowClicked()
+void DbfTableDialog::addRowClicked()
 {
 
     m_DBFTableWidget->insertRow(m_DBFTableWidget->rowCount());
@@ -111,7 +111,7 @@ void TableDBFDialog::addRowClicked()
 
 }
 
-void TableDBFDialog::removeRowClicked()
+void DbfTableDialog::removeRowClicked()
 {
 
     if (m_DBFTableWidget->selectionBehavior() == QAbstractItemView::SelectColumns)
@@ -141,14 +141,21 @@ void TableDBFDialog::removeRowClicked()
 
 
 
-            if (shapeHandler->deleteRecord(row) || !indexList.at(0).data(Qt::DisplayRole).isValid())
+            if (shapeHandler->deleteRecord(row) || !(indexList.at(0).data(Qt::DisplayRole).isValid()) )
             {
                 qDebug() << "deleteRecord = " << row;
                 for (int i = 0; i < shapeHandler->getFieldNumbers(); i++)
                 {
-                    m_DBFTableWidget->item(row,i)->setBackgroundColor(Qt::yellow);
+                    if (m_DBFTableWidget->item(row,i) != nullptr)
+                    {
+                        m_DBFTableWidget->item(row,i)->setBackgroundColor(Qt::yellow);
+                    }
+                    else
+                    {
+                        m_DBFTableWidget->removeRow(row);
+                    }
                 }
-                //m_DBFTableWidget->removeRow(row);
+
             }
         }
         else
@@ -164,9 +171,9 @@ void TableDBFDialog::removeRowClicked()
 
 }
 
-void TableDBFDialog::addColClicked()
+void DbfTableDialog::addColClicked()
 {
-    newColDialog = new NewColDialog();
+    newColDialog = new DbfNewColDialog();
     if (newColDialog->getInsertOK())
     {
         QString name = newColDialog->getName();
@@ -188,7 +195,7 @@ void TableDBFDialog::addColClicked()
     }
 }
 
-void TableDBFDialog::removeColClicked()
+void DbfTableDialog::removeColClicked()
 {
 
     qDebug() << "removeColClicked ";
@@ -220,7 +227,7 @@ void TableDBFDialog::removeColClicked()
 }
 
 
-void TableDBFDialog::cellChanged(int row, int column)
+void DbfTableDialog::cellChanged(int row, int column)
 {
     qDebug() << "Cell at row: " << QString::number(row) << " column " << QString::number(column)<<" was changed.";
     QString data = m_DBFTableWidget->item(row, column)->text();
@@ -240,7 +247,7 @@ void TableDBFDialog::cellChanged(int row, int column)
 
 }
 
-void TableDBFDialog::closeEvent(QCloseEvent *event)
+void DbfTableDialog::closeEvent(QCloseEvent *event)
 {
     shapeHandler->closeDBF();
     QString filepath = QString::fromStdString(shapeHandler->getFilepath());
@@ -254,7 +261,7 @@ void TableDBFDialog::closeEvent(QCloseEvent *event)
     QDialog::closeEvent(event);
 }
 
-void TableDBFDialog::saveChangesClicked()
+void DbfTableDialog::saveChangesClicked()
 {
     //shapeHandler->pack("/home/laura/CRITERIA3D/SHAPES_TEST/prove/prova_pack.dbf");   //test
     shapeHandler->closeDBF();
