@@ -3,6 +3,25 @@ QT -= gui
 CONFIG += c++11 console
 CONFIG -= app_bundle
 
+INCLUDEPATH += ../mathFunctions
+INCLUDEPATH += ../crit3dDate
+INCLUDEPATH += ../meteo
+INCLUDEPATH += ../gis
+CONFIG(release, debug|release) {
+
+    LIBS += -L../mathFunctions/release -lmathFunctions
+    LIBS += -L../crit3dDate/release -lcrit3dDate
+    LIBS += -L../meteo/release -lmeteo
+    LIBS += -L../gis/release -lgis
+} else {
+
+    LIBS += -L../mathFunctions/debug -lmathFunctions
+    LIBS += -L../crit3dDate/debug -lcrit3dDate
+    LIBS += -L../meteo/debug -lmeteo
+    LIBS += -L../gis/debug -lgis
+}
+
+
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
