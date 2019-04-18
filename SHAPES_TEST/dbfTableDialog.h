@@ -3,7 +3,7 @@
 
 #include <QtWidgets>
 #include "shapeHandler.h"
-#include "newColDialog.h"
+#include "dbfNewColDialog.h"
 
 class TableDBFDialog : public QDialog
 {
@@ -22,7 +22,7 @@ class TableDBFDialog : public QDialog
     QAction *deleteCol;
     QAction *save;
     QStringList labels;
-    QStringList m_DBFTableHeader;;
+    QStringList m_DBFTableHeader;
 
     public:
         TableDBFDialog(Crit3DShapeHandler *shapeHandler);

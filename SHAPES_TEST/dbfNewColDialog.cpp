@@ -1,4 +1,4 @@
-#include "newColDialog.h"
+#include "dbfNewColDialog.h"
 
 
 NewColDialog::NewColDialog()
