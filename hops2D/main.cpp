@@ -29,7 +29,192 @@ void obsDataMeteoPointFormat(int nrStations, int nrData, float*** weatherArray, 
 
 int main(int argc, char *argv[])
 {
+
     QCoreApplication a(argc, argv);
+
+    int nrStations = 3;
+    int lengthDataSeries = 1099;
+    int nrVariables = 3;
+    int nrDate = 3;
+    float *** weatherArray;
+    int ** dateArray;
+    float *** weatherArrayFourTimes;
+    int ** dateArrayFourTimes;
+
+    weatherArray = (float ***)calloc(nrStations, sizeof(float**));
+    //weatherArray = NULL;
+    for (int i=0;i<nrStations;i++)
+    {
+        weatherArray[i] = (float **)calloc(lengthDataSeries, sizeof(float*));
+        //weatherArray[i] = NULL;
+        for (int j=0;j<lengthDataSeries;j++)
+        {
+            weatherArray[i][j] = (float *)calloc(nrVariables, sizeof(float));
+            //weatherArray[i][j] = NULL;
+            for (int k=0;k<nrVariables;k++)
+            {
+                weatherArray[i][j][k] = NODATA;
+            }
+        }
+    }
+    printf("scherzo?");
+    dateArray = (int **)calloc(lengthDataSeries, sizeof(int*));
+    //dateArray = NULL;
+    for (int j=0;j<lengthDataSeries;j++)
+    {
+        dateArray[j] = (int *)calloc(nrDate, sizeof(int));
+        //dateArray[j] = NULL;
+        for (int k=0;k<nrDate;k++)
+        {
+            dateArray[j][k]= NODATA;
+        }
+
+    }
+    fillObservationArray(lengthDataSeries,weatherArray,dateArray);
+
+    weatherArrayFourTimes = (float ***)calloc(nrStations, sizeof(float**));
+    //weatherArrayFourTimes = NULL;
+    for (int i=0;i<nrStations;i++)
+    {
+        weatherArrayFourTimes[i] = (float **)calloc(1095*4, sizeof(float*));
+        //weatherArrayFourTimes[i] = NULL;
+        for (int j=0;j<1095*4;j++)
+        {
+            weatherArrayFourTimes[i][j] = (float *)calloc(nrVariables, sizeof(float));
+            //weatherArrayFourTimes[i][j] = NULL;
+            for (int k=0;k<nrVariables;k++)
+            {
+                weatherArrayFourTimes[i][j][k] = NODATA;
+            }
+        }
+    }
+    dateArrayFourTimes = (int **)calloc(1095*4, sizeof(int*));
+    //dateArrayFourTimes = NULL;
+    for (int j=0;j<1095*4;j++)
+    {
+        dateArrayFourTimes[j] = (int *)calloc(nrDate, sizeof(int));
+        //dateArrayFourTimes[j] = NULL;
+        for (int k=0;k<nrDate;k++)
+        {
+            dateArrayFourTimes[j][k] = NODATA;
+        }
+    }
+
+
+    for (int i=0;i<nrStations;i++)
+    {
+        for (int j=0;j<1095;j++)
+        {
+            for (int k=0;k<nrVariables;k++)
+            {
+                weatherArrayFourTimes[i][j][k] = weatherArray[i][j][k];
+                weatherArrayFourTimes[i][j+1095][k] = weatherArray[i][j][k];
+                weatherArrayFourTimes[i][j+1095*2][k] = weatherArray[i][j][k];
+                weatherArrayFourTimes[i][j+1095*3][k] = weatherArray[i][j][k];
+            }
+
+        }
+    }
+    for (int j=0;j<1095;j++)
+    {
+
+        for (int k=0;k<nrDate;k++)
+        {
+            dateArrayFourTimes[j][k] = dateArray[j][k];
+            if (k== 2)
+            {
+                dateArrayFourTimes[j+1095][k] = dateArray[j][k]+3;
+                dateArrayFourTimes[j+1095*2][k] = dateArray[j][k]+6;
+                dateArrayFourTimes[j+1095*3][k] = dateArray[j][k]+9;
+            }
+            else
+            {
+                dateArrayFourTimes[j+1095][k] = dateArray[j][k];
+                dateArrayFourTimes[j+1095*2][k] = dateArray[j][k];
+                dateArrayFourTimes[j+1095*3][k] = dateArray[j][k];
+            }
+
+        }
+
+    }
+
+
+    TObsDataD** observedDataDaily = (TObsDataD **)calloc(nrStations, sizeof(TObsDataD*));
+    //observedDataDaily = NULL;
+    for (int i=0;i<nrStations;i++)
+    {
+        observedDataDaily[i] = (TObsDataD *)calloc(1095*4, sizeof(TObsDataD));
+        //observedDataDaily[i] = NULL;
+        for (int j=0;j<1095*4;j++)
+        {
+            observedDataDaily[i][j].prec = NODATA;
+            observedDataDaily[i][j].tAvg = NODATA;
+            observedDataDaily[i][j].tMax = NODATA;
+            observedDataDaily[i][j].tMin = NODATA;
+            observedDataDaily[i][j].date.day = NODATA;
+            observedDataDaily[i][j].date.month = NODATA;
+            observedDataDaily[i][j].date.year = NODATA;
+        }
+    }
+    printf("scherzo?");
+    obsDataMeteoPointFormat(nrStations,1095*4,weatherArrayFourTimes,dateArrayFourTimes,observedDataDaily);
+
+    printf("hops\n");
+    hops hopsSimulation;
+    hopsSimulation.initializeData(1095*4,nrStations);
+    hopsSimulation.setObservedData(observedDataDaily);
+    Tphenology pheno;
+    pheno.sproutingDD = 243;
+    pheno.floweringDD = 899;
+    pheno.conesDevelopmentDD = 1040;
+    pheno.conesRipeningDD = 1899;
+    pheno.conesMaturityDD = 2099;
+    pheno.senescenceDD = 3200;
+    Tevapotranspiration et;
+    et.sproutingKc = 0.3;
+    et.floweringKc = NODATA;
+    et.conesDevelopmentKc = 1.05;
+    et.conesRipeningKc = 1.05;
+    et.conesMaturityKc = 0.85;
+    et.senescenceKc = NODATA;
+    hopsSimulation.initializeParametersPhenology(pheno);
+    hopsSimulation.initializeParametersEvapotranspiration(et);
+    hopsSimulation.compute();
+
+
+    for (int i=0;i<nrStations;i++)
+    {
+        free(observedDataDaily[i]);
+        for (int j=0;j<lengthDataSeries;j++)
+        {
+            free(weatherArray[i][j]);
+        }
+        free(weatherArray[i]);
+    }
+    for (int j=0;j<lengthDataSeries;j++)
+    {
+        free(dateArray[j]);
+    }
+    free(observedDataDaily);
+    free(weatherArray);
+    free(dateArray);
+
+    for (int i=0;i<nrStations;i++)
+    {
+        //free(observedDataDaily[i]);
+        for (int j=0;j<1095*4;j++)
+        {
+            free(weatherArrayFourTimes[i][j]);
+        }
+        free(weatherArrayFourTimes[i]);
+    }
+    for (int j=0;j<1095*4;j++)
+    {
+        free(dateArrayFourTimes[j]);
+    }
+    //free(observedDataDaily);
+    free(weatherArrayFourTimes);
+    free(dateArrayFourTimes);
 
     return 0;
 }

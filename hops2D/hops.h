@@ -58,7 +58,8 @@ class hops
     TObsDataD** obsDataD;
     hops()
     {
-
+        outputPhenology = nullptr;
+        obsDataD = nullptr;
     }
     void initializeData(int lengthDataSeries, int nrStations);
     void initializeParametersPhenology(Tphenology pheno);

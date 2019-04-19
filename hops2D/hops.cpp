@@ -33,10 +33,11 @@ void hops::initializeData(int lengthDataSeries, int stations)
 
     // use of PRAGA formats from meteoPoint.h
     obsDataD = (TObsDataD **)calloc(nrStations, sizeof(TObsDataD*));
-
+    //obsDataD = NULL;
     for (int i=0;i<nrStations;i++)
     {
         obsDataD[i] = (TObsDataD *)calloc(nrData, sizeof(TObsDataD));
+        //obsDataD[i] = NULL;
     }
     //int minYear,maxYear;
     for(int i=0;i<nrStations;i++)
@@ -127,9 +128,10 @@ void hops::initializeOutputsPhenology()
 
 void hops::compute()
 {
+    printf("non capisco");
     //hops::computeAverageTemperatures();
-    //hops::computePhenology();
-    //hops::computeEvapotranspration();
+    hops::computePhenology();
+    hops::computeEvapotranspration();
 }
 
 void hops::computeAverageTemperatures()
@@ -145,7 +147,7 @@ void hops::computeAverageTemperatures()
                 int iYear;
                 iYear = obsDataD[iStation][iDatum].date.year - obsDataD[iStation][0].date.year;
                 outputPhenology[iStation][iYear].nrLackingTemperatureData = 1 + outputPhenology[iStation][iYear].nrLackingTemperatureData;
-                //printf("%d %d %d\n",iYear,obsDataD[iStation][iDatum].date.year,obsDataD[iStation][0].date.year);
+                printf("%d %d %d\n",iYear,obsDataD[iStation][iDatum].date.year,obsDataD[iStation][0].date.year);
                 printf("%d %d nryear\n",outputPhenology[iStation][iYear].nrLackingTemperatureData,iYear);
                 if ((fabs(obsDataD[iStation][iDatum-1].tAvg - NODATA) > EPSILON) && iDatum>0)
                     obsDataD[iStation][iDatum].tAvg = obsDataD[iStation][iDatum-1].tAvg;
@@ -195,7 +197,7 @@ void hops::computePhenology()
             if (thermalSum >= phenology.senescenceDD && thermalSumPrevious < phenology.senescenceDD)
                 outputPhenology[iStation][iYear].doySenescence = dayOfYear;
 
-            //printf("%d %f %f\n",dayOfYear,thermalSum,outputPhenology[iStation][iYear].thermalSum[dayOfYear]);
+            printf("%d %f %f\n",dayOfYear,thermalSum,outputPhenology[iStation][iYear].thermalSum[dayOfYear]);
             outputPhenology[iStation][iYear].thermalSum[dayOfYear]= thermalSum;
             if (dayOfYear == 360)
             {
