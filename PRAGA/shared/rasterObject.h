@@ -10,8 +10,8 @@
 
 struct RowCol
 {
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
 };
 
 

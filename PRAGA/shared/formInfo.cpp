@@ -1,6 +1,7 @@
 #include "formInfo.h"
 #include "ui_formInfo.h"
 
+
 FormInfo::FormInfo(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::formInfo)
@@ -8,10 +9,12 @@ FormInfo::FormInfo(QWidget *parent) :
     ui->setupUi(this);
 }
 
+
 FormInfo::~FormInfo()
 {
     delete ui;
 }
+
 
 int FormInfo::start(QString info, int nrValues)
 {

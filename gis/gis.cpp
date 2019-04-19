@@ -58,8 +58,8 @@ namespace gis
 
     Crit3DPixel::Crit3DPixel(int x0, int y0)
     {
-        this->x = short(x0);
-        this->y = short(y0);
+        this->x = x0;
+        this->y = y0;
     }
 
     Crit3DUtmPoint::Crit3DUtmPoint()
@@ -1265,7 +1265,7 @@ namespace gis
         int i, nrStep;
         float maxDeltaZ;
 
-        float stepMeter = (float)dem_.header->cellSize;
+        float stepMeter = float(dem_.header->cellSize);
 
         if (distance < stepMeter)
             return 0;

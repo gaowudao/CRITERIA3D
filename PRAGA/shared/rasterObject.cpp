@@ -83,7 +83,7 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 
 void RasterObject::updateCenter()
 {
-    QPointF newCenter = _view->mapToScene(QPoint(_view->width() * 0.5, _view->height() * 0.5));
+    QPointF newCenter = _view->mapToScene(QPoint(int(_view->width() * 0.5), int(_view->height() * 0.5)));
     geoMap->referencePoint.latitude = newCenter.y();
     geoMap->referencePoint.longitude = newCenter.x();
     this->setPos(newCenter);
@@ -102,7 +102,7 @@ void RasterObject::setCurrentRaster(gis::Crit3DRasterGrid* rasterPointer)
  */
 float RasterObject::getRasterMaxSize()
 {
-    return maxValue(latLonHeader.nrRows * latLonHeader.dy, latLonHeader.nrCols * latLonHeader.dx);
+    return float(maxValue(latLonHeader.nrRows * latLonHeader.dy, latLonHeader.nrCols * latLonHeader.dx));
 }
 
 
@@ -134,10 +134,10 @@ void RasterObject::freeIndexesMatrix()
 
 void RasterObject::initializeIndexesMatrix()
 {
-    matrix = (RowCol **) calloc(latLonHeader.nrRows, sizeof(RowCol *));
+    matrix = (RowCol **) calloc(unsigned(latLonHeader.nrRows), sizeof(RowCol *));
 
     for (int row = 0; row < latLonHeader.nrRows; row++)
-        matrix[row] = (RowCol *) calloc(this->latLonHeader.nrCols, sizeof(RowCol));
+        matrix[row] = (RowCol *) calloc(unsigned(this->latLonHeader.nrCols), sizeof(RowCol));
 
     for (int row = 0; row < latLonHeader.nrRows; row++)
         for (int col = 0; col < latLonHeader.nrCols; col++)
@@ -197,8 +197,8 @@ bool RasterObject::initializeUTM(gis::Crit3DRasterGrid* myRaster, const gis::Cri
                 gis::getRowColFromXY(*(myRaster->header), x, y, &utmRow, &utmCol);
                 if (isGrid || myRaster->getValueFromRowCol(utmRow, utmCol) != myRaster->header->flag)
                 {
-                    matrix[row][col].row = utmRow;
-                     matrix[row][col].col = utmCol;
+                    matrix[row][col].row = unsigned(utmRow);
+                    matrix[row][col].col = unsigned(utmCol);
                 }
             }
         }
@@ -278,8 +278,8 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
     gis::Crit3DPixel pixelLL;
     llCorner.longitude = latLonHeader.llCorner->longitude + col0 * latLonHeader.dx;
     llCorner.latitude = latLonHeader.llCorner->latitude + (latLonHeader.nrRows-1 - rowBottom) * latLonHeader.dy;
-    pixelLL.x = (llCorner.longitude - this->geoMap->referencePoint.longitude) * this->geoMap->degreeToPixelX;
-    pixelLL.y = (llCorner.latitude - this->geoMap->referencePoint.latitude) * this->geoMap->degreeToPixelY;
+    pixelLL.x = int(this->geoMap->degreeToPixelX * (llCorner.longitude - this->geoMap->referencePoint.longitude));
+    pixelLL.y = int(this->geoMap->degreeToPixelY * (llCorner.latitude - this->geoMap->referencePoint.latitude));
 
     double dx = latLonHeader.dx * this->geoMap->degreeToPixelX;
     double dy = latLonHeader.dy * this->geoMap->degreeToPixelY;
@@ -293,11 +293,11 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
     y0 = pixelLL.y;
     for (int row = rowBottom; row >= rowTop; row -= step)
     {
-        y1 = pixelLL.y + (rowBottom-row + step) * dy;
+        y1 = int(pixelLL.y + (rowBottom-row + step) * dy);
         x0 = pixelLL.x;
         for (int col = col0; col <= col1; col += step)
         {
-            x1 = pixelLL.x + (col-col0 + step) * dx;
+            x1 = int(pixelLL.x + (col-col0 + step) * dx);
 
             if (isLatLon)
                 myValue = myRaster->value[row][col];

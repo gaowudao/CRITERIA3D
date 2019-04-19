@@ -1,28 +1,27 @@
 #ifndef FORMINFO_H
 #define FORMINFO_H
 
-#include <QDialog>
+    #include <QDialog>
 
-namespace Ui {
-class formInfo;
-}
+    namespace Ui {
+    class formInfo;
+    }
 
-class FormInfo : public QDialog
-{
-    Q_OBJECT
+    class FormInfo : public QDialog
+    {
+        Q_OBJECT
 
-public:
-    explicit FormInfo(QWidget *parent = nullptr);
-    ~FormInfo();
+    public:
+        explicit FormInfo(QWidget *parent = nullptr);
+        ~FormInfo();
 
-    int start(QString info, int nrValues);
-    void setValue(int myValue);
-    void setText(QString myText);
-    void showInfo(QString info);
+        int start(QString info, int nrValues);
+        void setValue(int myValue);
+        void setText(QString myText);
+        void showInfo(QString info);
 
-private:
-    Ui::formInfo *ui;
-};
-
+    private:
+        Ui::formInfo *ui;
+    };
 
 #endif // FORMINFO_H

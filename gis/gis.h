@@ -43,8 +43,8 @@
     {
         class  Crit3DPixel {
         public:
-            short x;
-            short y;
+            int x;
+            int y;
             Crit3DPixel();
             Crit3DPixel(int _x, int _y);
         };
