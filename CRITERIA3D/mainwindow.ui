@@ -506,7 +506,7 @@
       <x>0</x>
       <y>280</y>
       <width>261</width>
-      <height>141</height>
+      <height>131</height>
      </rect>
     </property>
     <property name="palette">
@@ -1011,7 +1011,7 @@
      <property name="geometry">
       <rect>
        <x>-1</x>
-       <y>90</y>
+       <y>80</y>
        <width>261</width>
        <height>41</height>
       </rect>
@@ -1029,7 +1029,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>60</y>
+       <y>50</y>
        <width>71</width>
        <height>23</height>
       </rect>
@@ -1047,7 +1047,7 @@
      <property name="geometry">
       <rect>
        <x>100</x>
-       <y>60</y>
+       <y>50</y>
        <width>151</width>
        <height>21</height>
       </rect>
@@ -1901,9 +1901,9 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>430</y>
+      <y>420</y>
       <width>261</width>
-      <height>121</height>
+      <height>111</height>
      </rect>
     </property>
     <property name="autoFillBackground">
@@ -1916,7 +1916,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>70</y>
+       <y>60</y>
        <width>261</width>
        <height>41</height>
       </rect>
@@ -1974,7 +1974,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>50</y>
+       <y>40</y>
        <width>221</width>
        <height>21</height>
       </rect>
