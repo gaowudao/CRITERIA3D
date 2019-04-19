@@ -25,6 +25,7 @@ class DbfNewColDialog : public QDialog
         };
 
         DbfNewColDialog();
+        ~DbfNewColDialog();
         bool insertCol();
         void showWidthEdit();
         void hideWidthEdit();

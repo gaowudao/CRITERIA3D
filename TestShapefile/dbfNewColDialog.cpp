@@ -51,6 +51,11 @@ DbfNewColDialog::DbfNewColDialog()
     exec();
 }
 
+DbfNewColDialog::~DbfNewColDialog()
+{
+    close();
+}
+
 bool DbfNewColDialog::insertCol()
 {
     if (!checkValidData())

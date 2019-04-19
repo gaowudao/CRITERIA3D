@@ -30,6 +30,7 @@ class DbfTableDialog : public QDialog
 
     public:
         DbfTableDialog(Crit3DShapeHandler *shapeHandler);
+        ~DbfTableDialog();
         void addRowClicked();
         void removeRowClicked();
         void addColClicked();
