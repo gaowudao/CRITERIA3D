@@ -48,7 +48,8 @@
         bool addField(const char * fieldName, int type, int nWidth, int nDecimals );
         bool removeField(int iField);
         std::string getFilepath() const;
-        void pack(std::string newFile);
+        void packDBF(std::string newFile);
+        void packSHP(std::string newFile);
     };
 
 

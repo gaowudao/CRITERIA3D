@@ -1,4 +1,5 @@
 #include "shapeHandler.h"
+#include "iostream"
 
 
 std::string Crit3DShapeHandler::getFilepath() const
@@ -281,7 +282,7 @@ bool Crit3DShapeHandler::removeField(int iField)
 }
 
 
-void Crit3DShapeHandler::pack(std::string newFile)
+void Crit3DShapeHandler::packDBF(std::string newFile)
 {
     DBFHandle hDBF;
     hDBF = DBFCreate(newFile.c_str());
@@ -311,4 +312,22 @@ void Crit3DShapeHandler::pack(std::string newFile)
     }
     DBFClose( hDBF );
 
+}
+
+void Crit3DShapeHandler::packSHP(std::string newFile)
+{
+    SHPHandle hSHP;
+    hSHP = SHPCreate(newFile.c_str(), m_type);
+
+    for( int i = 0; i < m_count; i++ )
+    {
+        if (!DBFIsRecordDeleted(m_dbf, i))
+        {
+            SHPObject *obj = SHPReadObject(m_handle, i);
+            SHPWriteObject(hSHP, -1, obj);
+            SHPDestroyObject(obj);
+        }
+    }
+
+    SHPClose(hSHP);
 }

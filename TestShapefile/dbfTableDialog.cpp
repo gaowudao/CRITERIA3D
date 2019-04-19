@@ -263,7 +263,8 @@ void DbfTableDialog::closeEvent(QCloseEvent *event)
 
 void DbfTableDialog::saveChangesClicked()
 {
-    //shapeHandler->pack("/home/laura/CRITERIA3D/SHAPES_TEST/prove/prova_pack.dbf");   //test
+    //shapeHandler->packSHP("/home/laura/CRITERIA3D/TestShapefile/prove/prova_pack.shp");   //test
+    //shapeHandler->packDBF("/home/laura/CRITERIA3D/TestShapefile/prove/prova_pack.dbf");   //test
     shapeHandler->closeDBF();
     QString filepath = QString::fromStdString(shapeHandler->getFilepath());
     QFileInfo filepathInfo(filepath);
