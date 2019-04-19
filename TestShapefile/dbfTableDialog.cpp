@@ -34,6 +34,9 @@ DbfTableDialog::DbfTableDialog(Crit3DShapeHandler* shapeHandler)
     std::string nameField;
     int typeField;
 
+    labels.clear();
+    m_DBFTableHeader.clear();
+
     for (int i = 0; i < colNumber; i++)
     {
         nameField =  shapeHandler->getFieldName(i);
@@ -60,11 +63,9 @@ DbfTableDialog::DbfTableDialog(Crit3DShapeHandler* shapeHandler)
                 m_DBFTableWidget->item(j,i)->setBackgroundColor(Qt::yellow);    // mark as DELETED records
             }
 
-
         }
     }
 
-    labels.clear();
     for (int j = 0; j < rowNumber; j++)
     {
         labels << QString::number(j);
@@ -274,28 +275,52 @@ void DbfTableDialog::cellChanged(int row, int column)
 void DbfTableDialog::closeEvent(QCloseEvent *event)
 {
     shapeHandler->closeDBF();
+
     QString filepath = QString::fromStdString(shapeHandler->getFilepath());
     QFileInfo filepathInfo(filepath);
     QString file_temp = filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+"_temp.dbf";
 
+    // dbf
     QFile::remove(filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+".dbf");
     QFile::copy(file_temp, filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+".dbf");    // file temp to .dbf
     QFile::remove(file_temp);
+    // shp
+    QString shp_temp = filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+"_temp.shp";
+    QString shx_temp = filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+"_temp.shx";
+    if (QFile::exists(shp_temp) && QFile::exists(shx_temp))
+    {
+        QFile::remove(filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+".shp");
+        QFile::copy(shp_temp, filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+".shp");
+        QFile::remove(shp_temp);
+
+        QFile::remove(filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+".shx");
+        QFile::copy(shx_temp, filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+".shx");
+        QFile::remove(shx_temp);
+    }
+
 
     QDialog::closeEvent(event);
 }
 
 void DbfTableDialog::saveChangesClicked()
 {
-    //shapeHandler->packSHP("/home/laura/CRITERIA3D/TestShapefile/prove/prova_pack.shp");   //test
-    //shapeHandler->packDBF("/home/laura/CRITERIA3D/TestShapefile/prove/prova_pack.dbf");   //test
-    shapeHandler->closeDBF();
+
     QString filepath = QString::fromStdString(shapeHandler->getFilepath());
     QFileInfo filepathInfo(filepath);
     QString file_temp = filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+"_temp.dbf";
 
     QFile::remove(file_temp);   //remove old file_temp
-    QFile::copy(filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+".dbf", file_temp);    // copy modified file to file_temp
+    if (shapeHandler->existRecordDeleted())
+    {
+        shapeHandler->packSHP(file_temp.toStdString());
+        shapeHandler->packDBF(file_temp.toStdString());
+        shapeHandler->closeDBF();
+    }
+    else
+    {
+        shapeHandler->closeDBF();
+        QFile::copy(filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+".dbf", file_temp);    // copy modified file to file_temp
+    }
     shapeHandler->openDBF(shapeHandler->getFilepath());
 }
 

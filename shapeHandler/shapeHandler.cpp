@@ -314,6 +314,19 @@ void Crit3DShapeHandler::packDBF(std::string newFile)
 
 }
 
+bool Crit3DShapeHandler::existRecordDeleted()
+{
+    int nRecord = DBFGetRecordCount(m_dbf);
+    for (int i = 0; i<nRecord; i++)
+    {
+        if (DBFIsRecordDeleted(m_dbf, i))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 void Crit3DShapeHandler::packSHP(std::string newFile)
 {
     SHPHandle hSHP;

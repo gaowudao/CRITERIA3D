@@ -50,6 +50,7 @@
         std::string getFilepath() const;
         void packDBF(std::string newFile);
         void packSHP(std::string newFile);
+        bool existRecordDeleted();
     };
 
 
