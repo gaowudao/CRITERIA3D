@@ -95,6 +95,9 @@ DbfTableDialog::DbfTableDialog(Crit3DShapeHandler* shapeHandler)
     connect(deleteCol, &QAction::triggered, [=](){ this->removeColClicked(); });
     connect(save, &QAction::triggered, [=](){ this->saveChangesClicked(); });
 
+    connect(m_DBFTableWidget->horizontalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->horizontalHeaderClick(index); });
+    connect(m_DBFTableWidget->verticalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->verticalHeaderClick(index); });
+
 
     setLayout(mainLayout);
     show();
@@ -324,4 +327,15 @@ void DbfTableDialog::saveChangesClicked()
     shapeHandler->openDBF(shapeHandler->getFilepath());
 }
 
+void DbfTableDialog::horizontalHeaderClick(int index)
+{
+    m_DBFTableWidget->setSelectionBehavior(QAbstractItemView::SelectColumns);
+    m_DBFTableWidget->setCurrentCell(0, index);
+}
+
+void DbfTableDialog::verticalHeaderClick(int index)
+{
+    m_DBFTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_DBFTableWidget->setCurrentCell(index, 0);
+}
 

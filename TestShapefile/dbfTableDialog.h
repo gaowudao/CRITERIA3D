@@ -37,6 +37,8 @@ class DbfTableDialog : public QDialog
         void cellChanged(int row, int column);
         void closeEvent(QCloseEvent *);
         void saveChangesClicked();
+        void horizontalHeaderClick(int index);
+        void verticalHeaderClick(int index);
 };
 
 #endif // TableDBFDialog_H
