@@ -13,7 +13,6 @@ class DbfNewColDialog : public QDialog
         QRadioButton *intButton;
         QRadioButton *doubleButton;
         QLineEdit* nWidth;
-        QLineEdit* nDecimals;
         bool insertOK;
 
 
@@ -27,14 +26,13 @@ class DbfNewColDialog : public QDialog
 
         DbfNewColDialog();
         bool insertCol();
-        void showDecimalEdit();
-        void hideDecimalEdit();
+        void showWidthEdit();
+        void hideWidthEdit();
         bool checkValidData();
         bool getInsertOK() const;
         QString getName();
         int getType();
         int getWidth();
-        int getDecimals();
 };
 
 #endif // NEWCOLDIALOG_H

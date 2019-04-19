@@ -178,8 +178,32 @@ void DbfTableDialog::addColClicked()
     {
         QString name = newColDialog->getName();
         int typeField = newColDialog->getType();
-        int width = newColDialog->getWidth();
-        int decimals = newColDialog->getDecimals();
+        int width;
+        int decimals;
+
+        // FTString
+        if (typeField == 0)
+        {
+            width = newColDialog->getWidth();
+            decimals = 0;
+        }
+        // FTInteger
+        else if (typeField == 1)
+        {
+            width = DEFAULT_INTEGER_MAX_DIGITS;
+            decimals = 0;
+        }
+        // FTDouble
+        else if (typeField == 2)
+        {
+            width = DEFAULT_DOUBLE_MAX_DIGITS;
+            decimals = DEFAULT_DOUBLE_MAX_DECIMALS;
+        }
+        else
+        {
+            qDebug() << "addition of field failed";
+            return;
+        }
 
         if (shapeHandler->addField(name.toStdString().c_str(), typeField, width, decimals))
         {

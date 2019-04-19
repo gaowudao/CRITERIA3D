@@ -24,12 +24,6 @@ DbfNewColDialog::DbfNewColDialog()
     nWidth->setPlaceholderText("Insert the width of the field: ");
     nWidth->setValidator(new QIntValidator(0,100));
 
-    nDecimals = new QLineEdit();
-    nDecimals->setPlaceholderText("Insert the number of decimal: ");
-    nDecimals->setText("0");
-    nDecimals->setVisible(false);
-    nDecimals->setValidator(new QIntValidator(0,10));
-
     mainLayout->addWidget(name);
 
     vbox->addWidget(stringButton);
@@ -41,14 +35,13 @@ DbfNewColDialog::DbfNewColDialog()
     mainLayout->addWidget(groupBox);
 
     mainLayout->addWidget(nWidth);
-    mainLayout->addWidget(nDecimals);
 
     QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
                                              | QDialogButtonBox::Cancel);
 
-    connect(stringButton, &QRadioButton::clicked, [=](){ this->hideDecimalEdit(); });
-    connect(intButton, &QRadioButton::clicked, [=](){ this->showDecimalEdit(); });
-    connect(doubleButton, &QRadioButton::clicked, [=](){ this->showDecimalEdit(); });
+    connect(stringButton, &QRadioButton::clicked, [=](){ this->showWidthEdit(); });
+    connect(intButton, &QRadioButton::clicked, [=](){ this->hideWidthEdit(); });
+    connect(doubleButton, &QRadioButton::clicked, [=](){ this->hideWidthEdit(); });
     connect(buttonBox, &QDialogButtonBox::accepted, [=](){ this->insertCol(); });
     connect(buttonBox, &QDialogButtonBox::rejected, [=](){ QDialog::done(QDialog::Rejected); });
 
@@ -71,6 +64,18 @@ bool DbfNewColDialog::insertCol()
 
 }
 
+void DbfNewColDialog::showWidthEdit()
+{
+    nWidth->setVisible(true);
+    return;
+}
+
+void DbfNewColDialog::hideWidthEdit()
+{
+    nWidth->setVisible(false);
+    return;
+}
+
 bool DbfNewColDialog::checkValidData()
 {
     if (name->text().isEmpty())
@@ -78,45 +83,21 @@ bool DbfNewColDialog::checkValidData()
         QMessageBox::information(nullptr, "Missing name", "Insert name");
         return false;
     }
-    if (nWidth->text().isEmpty())
+    if (stringButton->isChecked() && nWidth->text().isEmpty())
     {
         QMessageBox::information(nullptr, "Missing width", "Insert the width of the field");
         return false;
     }
-    if (intButton->isChecked() || doubleButton->isChecked())
-    {
-        if (nDecimals->text().isEmpty())
-        {
-            QMessageBox::information(nullptr, "Missing decimals", "Insert the number of decimal");
-            return false;
-        }
-    }
+
 
     if (nWidth->text().contains(",") || nWidth->text().contains("+") || nWidth->text().contains("-"))
     {
         QMessageBox::information(nullptr, "Invalid width", "Insert only digits");
         return false;
     }
-    if (nDecimals->text().contains(",") || nDecimals->text().contains("+") || nDecimals->text().contains("-"))
-    {
-        QMessageBox::information(nullptr, "Invalid decimals", "Insert only digits");
-        return false;
-    }
     return true;
 }
 
-void DbfNewColDialog::showDecimalEdit()
-{
-    nDecimals->setVisible(true);
-    return;
-}
-
-void DbfNewColDialog::hideDecimalEdit()
-{
-    nDecimals->setText("0");
-    nDecimals->setVisible(false);
-    return;
-}
 
 bool DbfNewColDialog::getInsertOK() const
 {
@@ -147,7 +128,3 @@ int DbfNewColDialog::getWidth()
     return nWidth->text().toInt();
 }
 
-int DbfNewColDialog::getDecimals()
-{
-    return nDecimals->text().toInt();
-}

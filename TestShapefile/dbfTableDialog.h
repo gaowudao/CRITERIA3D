@@ -5,6 +5,10 @@
 #include "shapeHandler.h"
 #include "dbfNewColDialog.h"
 
+#define DEFAULT_INTEGER_MAX_DIGITS 9
+#define DEFAULT_DOUBLE_MAX_DIGITS 13
+#define DEFAULT_DOUBLE_MAX_DECIMALS 3
+
 class DbfTableDialog : public QDialog
 {
     Q_OBJECT
