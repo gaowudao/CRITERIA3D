@@ -280,7 +280,7 @@ void DbfTableDialog::cellChanged(int row, int column)
 
 void DbfTableDialog::closeEvent(QCloseEvent *event)
 {
-    //shapeHandler->closeDBF();
+    shapeHandler->closeDBF();
 
     QString filepath = QString::fromStdString(shapeHandler->getFilepath());
     QFileInfo filepathInfo(filepath);
@@ -320,14 +320,14 @@ void DbfTableDialog::saveChangesClicked()
     {
         shapeHandler->packSHP(file_temp.toStdString());
         shapeHandler->packDBF(file_temp.toStdString());
-        //shapeHandler->closeDBF();
+        shapeHandler->closeDBF();
     }
     else
     {
-        //shapeHandler->closeDBF();
+        shapeHandler->closeDBF();
         QFile::copy(filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+".dbf", file_temp);    // copy modified file to file_temp
     }
-    //shapeHandler->openDBF(shapeHandler->getFilepath());
+    shapeHandler->openDBF(shapeHandler->getFilepath());
 }
 
 void DbfTableDialog::horizontalHeaderClick(int index)

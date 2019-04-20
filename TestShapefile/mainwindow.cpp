@@ -128,6 +128,7 @@ void MainWindow::on_dbfButton_clicked()
     if (DBFWidget != nullptr)
     {
         delete DBFWidget;
+        shapeHandler.openDBF(filepath.toStdString());
     }
     DBFWidget = new DbfTableDialog(&shapeHandler);
 
