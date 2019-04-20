@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
     ui->dbfButton->setEnabled(false);
+    DBFWidget = nullptr;
 
 }
 
