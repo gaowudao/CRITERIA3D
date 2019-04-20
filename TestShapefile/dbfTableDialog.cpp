@@ -4,7 +4,8 @@ DbfTableDialog::DbfTableDialog(Crit3DShapeHandler* shapeHandler)
     :shapeHandler(shapeHandler)
 {
 
-    this->resize(800,600);
+    this->setMaximumWidth(800);
+    this->setMaximumHeight(600);
     QVBoxLayout* mainLayout = new QVBoxLayout;
 
     menuBar = new QMenuBar;
