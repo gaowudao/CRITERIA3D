@@ -283,7 +283,7 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
 
     double dx = latLonHeader.dx * this->geoMap->degreeToPixelX;
     double dy = latLonHeader.dy * this->geoMap->degreeToPixelY;
-    int step = std::max(int(1. / (std::min(dx, dy))), 1);
+    int step = std::max(int(1.0/(std::min(dx, dy))), 1);
 
     int x0, y0, x1, y1, lx, ly;
     Crit3DColor* myColor;
@@ -314,15 +314,15 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
                 myQColor = QColor(myColor->red, myColor->green, myColor->blue);
                 myPainter->setBrush(myQColor);
 
-                lx = (x1 - x0) +1;
-                ly = (y1 - y0) +1;
+                lx = (x1 - x0) + 1;
+                ly = (y1 - y0) + 1;
                 myPainter->fillRect(x0, y0, lx, ly, myPainter->brush());
 
             }
             else if (isGrid && myValue == myRaster->header->flag && drawBorder)
             {
-                lx = (x1 - x0) +1;
-                ly = (y1 - y0) +1;
+                lx = (x1 - x0) + 1;
+                ly = (y1 - y0) + 1;
                 myPainter->setPen(QColor(64, 64, 64));
                 myPainter->setBrush(Qt::NoBrush);
                 myPainter->drawRect(x0, y0, lx, ly);
