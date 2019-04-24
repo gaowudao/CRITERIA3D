@@ -26,6 +26,7 @@
 */
 
 #include <QFileDialog>
+#include <cmath>
 #include "tileSources/CompositeTileSource.h"
 
 #include "gis.h"
