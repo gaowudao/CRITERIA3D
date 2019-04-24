@@ -25,8 +25,15 @@
     Laura Costantini laura.costantini0@gmail.com
 */
 
-#include <QFileDialog>
 #include <cmath>
+
+#include <QFileDialog>
+#include <QLayout>
+#include <QCheckBox>
+#include <QWidget>
+#include <QFrame>
+#include <QVBoxLayout>
+
 #include "tileSources/CompositeTileSource.h"
 
 #include "gis.h"
@@ -53,9 +60,6 @@ MainWindow::MainWindow(QWidget *parent) :
     this->mapScene = new MapGraphicsScene(this);
     this->mapView = new MapGraphicsView(mapScene, this->ui->widgetMap);
 
-    this->rasterLegend = new ColorLegend(this->ui->widgetColorLegendRaster);
-    this->rasterLegend->resize(this->ui->widgetColorLegendRaster->size());
-
     // Set tiles source
     this->setMapSource(OSMTileSource::OSMTiles);
 
@@ -64,21 +68,20 @@ MainWindow::MainWindow(QWidget *parent) :
     this->mapView->setZoomLevel(8);
     this->mapView->centerOn(startCenter->lonLat());
 
-    // Set raster objects
-    this->rasterObj = new RasterObject(this->mapView);
-    this->rasterObj->setOpacity(this->ui->rasterOpacitySlider->value() / 100.0);
-    this->rasterObj->setColorLegend(this->rasterLegend);
-
-    this->mapView->scene()->addObject(this->rasterObj);
-
     this->setMouseTracking(true);
 }
 
 
 MainWindow::~MainWindow()
 {
-    delete rasterObj;
-    delete rasterLegend;
+    if (! this->rasterObjList.empty())
+        for (unsigned int i = 0; i < this->rasterObjList.size(); i++)
+            delete this->rasterObjList[i];
+
+    if (! this->rasterColorScaleList.empty())
+        for (unsigned int i = 0; i < this->rasterColorScaleList.size(); i++)
+            delete this->rasterColorScaleList[i];
+
     delete mapView;
     delete mapScene;
     delete ui;
@@ -92,15 +95,23 @@ void MainWindow::resizeEvent(QResizeEvent * event)
     ui->widgetMap->setGeometry(TOOLSWIDTH, 0, this->width()-TOOLSWIDTH, this->height() - INFOHEIGHT);
     mapView->resize(ui->widgetMap->size());
 
-    ui->groupBoxRaster->move(MAPBORDER/2, int((this->height() - ui->groupBoxRaster->height() - INFOHEIGHT)*0.5));
-    ui->groupBoxRaster->resize(TOOLSWIDTH, ui->groupBoxRaster->height());
+    ui->groupBox->move(MAPBORDER/2, MAPBORDER);
+    ui->groupBox->resize(TOOLSWIDTH, this->height() - INFOHEIGHT - MAPBORDER * 2);
+}
+
+
+void MainWindow::updateCenter()
+{
+    if (! this->rasterObjList.empty())
+        for (unsigned int i = 0; i < this->rasterObjList.size(); i++)
+            this->rasterObjList[i]->updateCenter();
 }
 
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event){
     Q_UNUSED(event)
 
-    this->rasterObj->updateCenter();
+    this->updateCenter();
 }
 
 
@@ -119,8 +130,7 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent * event)
         this->mapView->zoomOut();
 
     this->mapView->centerOn(newCenter.lonLat());
-
-    this->rasterObj->updateCenter();
+    this->updateCenter();
 }
 
 
@@ -144,11 +154,11 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     }
 }
 
-
+/*
 void MainWindow::on_rasterOpacitySlider_sliderMoved(int position)
 {
     this->rasterObj->setOpacity(position / 100.0);
-}
+}*/
 
 
 void MainWindow::on_actionMapTerrain_triggered()
@@ -210,37 +220,52 @@ QPoint MainWindow::getMapPoint(QPoint* point) const
 }
 
 
-void MainWindow::setCurrentRaster(gis::Crit3DRasterGrid *myRaster)
+void MainWindow::addRaster(QString fileName, gis::Crit3DRasterGrid *myRaster)
 {
-    this->rasterObj->initializeUTM(myRaster, myProject.gisSettings, false);
-    this->rasterLegend->colorScale = myRaster->colorScale;
-    this->rasterObj->redrawRequested();
+    if (ui->groupBox->layout() == nullptr)
+    {
+        QVBoxLayout *vbox = new QVBoxLayout;
+        vbox->setAlignment(Qt::AlignTop);
+        ui->groupBox->setLayout(vbox);
+    }
+
+    QCheckBox *newCheckBox = new QCheckBox(fileName);
+    newCheckBox->setCheckState(Qt::Checked);
+    ui->groupBox->layout()->addWidget(newCheckBox);
+
+    // TODO non funziona
+    ColorLegend* myColorScale = new ColorLegend();
+    myColorScale->resize(ui->groupBox->width(), 100);
+    myColorScale->colorScale = myRaster->colorScale;
+    ui->groupBox->layout()->addWidget(myColorScale);
+
+    RasterObject* newRasterObj = new RasterObject(this->mapView);
+    newRasterObj->setOpacity(0.66);
+    newRasterObj->setColorLegend(myColorScale);
+    newRasterObj->initializeUTM(myRaster, myProject.gisSettings, false);
+    this->rasterObjList.push_back(newRasterObj);
+
+    this->mapView->scene()->addObject(newRasterObj);
+    newRasterObj->redrawRequested();
 }
 
 
 void MainWindow::on_actionLoadRaster_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open raster Grid"), "", tr("ESRI grid files (*.flt)"));
-    if (fileName == "") return;
+    QString fileNameWithPath = QFileDialog::getOpenFileName(this, tr("Open raster Grid"), "", tr("ESRI grid files (*.flt)"));
+    if (fileNameWithPath == "") return;
 
     qDebug() << "loading raster";
-    if (! myProject.loadRaster(fileName))
+    if (! myProject.loadRaster(fileNameWithPath))
         return;
 
-    ui->groupBoxRaster->setTitle(getFileName(fileName));
-    this->setCurrentRaster(myProject.rasterList.back());
-    this->ui->rasterOpacitySlider->setEnabled(true);
+    QString fileName = getFileName(fileNameWithPath);
+    this->addRaster(fileName, myProject.rasterList.back());
 
-    // center map
-    gis::Crit3DGeoPoint* center = this->rasterObj->getRasterCenter();
+    // resize and center map
+    gis::Crit3DGeoPoint* center = this->rasterObjList.back()->getRasterCenter();
+    float size = this->rasterObjList.back()->getRasterMaxSize();
+    this->mapView->setZoomLevel(quint8(log2(ui->widgetMap->width() / size)));
     this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
-
-    // resize map
-    float size = this->rasterObj->getRasterMaxSize();
-    size = log2(1000.f/size);
-    this->mapView->setZoomLevel(quint8(size));
-    this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
-
-    // active raster object
-    this->rasterObj->updateCenter();
+    this->updateCenter();
 }

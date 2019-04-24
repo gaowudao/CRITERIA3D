@@ -32,7 +32,6 @@
         void on_actionMapOpenStreetMap_triggered();
         void on_actionMapESRISatellite_triggered();
         void on_actionMapTerrain_triggered();
-        void on_rasterOpacitySlider_sliderMoved(int position);
 
         void on_actionLoadRaster_triggered();
 
@@ -61,11 +60,12 @@
         Position* startCenter;
         MapGraphicsScene* mapScene;
         MapGraphicsView* mapView;
-        RasterObject* rasterObj;
-        ColorLegend *rasterLegend;
+        std::vector<RasterObject *> rasterObjList;
+        std::vector<ColorLegend *> rasterColorScaleList;
 
+        void updateCenter();
         void setMapSource(OSMTileSource::OSMTileType mySource);
-        void setCurrentRaster(gis::Crit3DRasterGrid *myRaster);
+        void addRaster(QString fileName, gis::Crit3DRasterGrid *myRaster);
 
         QPoint getMapPoint(QPoint* point) const;
     };

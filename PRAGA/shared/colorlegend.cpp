@@ -15,6 +15,12 @@ ColorLegend::~ColorLegend()
     colorScale = nullptr;
 }
 
+void ColorLegend::redraw()
+{
+    QPainter painter(this);
+    drawColorLegend(colorScale, &painter);
+}
+
 void ColorLegend::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);

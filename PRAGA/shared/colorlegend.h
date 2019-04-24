@@ -14,6 +14,8 @@
 
         Crit3DColorScale *colorScale;
 
+        void redraw();
+
     private:
         void paintEvent(QPaintEvent *);
     };
