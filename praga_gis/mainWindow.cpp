@@ -1,7 +1,7 @@
 /*!
     \file mainWindow.cpp
 
-    \abstract Praga Gis mainwindow
+    \abstract Praga-Gis mainwindow
 
     This file is part of CRITERIA-3D distribution.
 

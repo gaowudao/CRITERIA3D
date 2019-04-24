@@ -1,7 +1,7 @@
 /*!
     \file gisProject.cpp
 
-    \abstract Praga Gis project class
+    \abstract Praga-Gis project class
 
     This file is part of CRITERIA-3D distribution.
 
@@ -34,12 +34,6 @@ GisProject::GisProject()
 }
 
 
-/*!
- * \brief loadDEM
- * \param fileName the name of the file
- * \param raster a Crit3DRasterGrid pointer
- * \return true if file is ok, false otherwise
- */
 bool GisProject::loadRaster(QString myFileName)
 {
     std::string* myError = new std::string();
