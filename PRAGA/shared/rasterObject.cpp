@@ -104,7 +104,7 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
             drawRaster(currentRaster, painter, drawBorder);
 
         if (legend != nullptr)
-            legend->update();
+            legend->repaint();
     }
 }
 

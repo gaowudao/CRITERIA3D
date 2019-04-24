@@ -31,6 +31,10 @@ bool drawColorLegend(Crit3DColorScale* colorScale, QPainter* myPainter)
 {
     if (colorScale == nullptr) return false;
 
+    // clean
+    myPainter->setBrush(Qt::white);
+    myPainter->fillRect(0, 0, myPainter->window().width(), myPainter->window().height(), myPainter->brush());
+
     float minimum = colorScale->minimum;
     float maximum = colorScale->maximum;
     if ((minimum == NODATA) || (maximum == NODATA)) return false;
