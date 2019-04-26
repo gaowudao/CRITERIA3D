@@ -43,7 +43,7 @@
 #include "ui_mainWindow.h"
 
 
-#define MAPBORDER 8
+#define MAPBORDER 10
 #define TOOLSWIDTH 260
 #define INFOHEIGHT 40
 
