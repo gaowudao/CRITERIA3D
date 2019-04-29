@@ -29,38 +29,61 @@
 #include "gisProject.h"
 
 
+GisObject::GisObject()
+{
+    this->type = gisObjectNone;
+    this->fileName = "";
+    this->isSelected = true;
+
+    this->rasterPtr = nullptr;
+    this->shapePtr = nullptr;
+}
+
+
+void GisObject::setRaster(QString filename, gis::Crit3DRasterGrid* rasterPtr)
+{
+    this->type = gisObjectRaster;
+    this->fileName = filename;
+    this->isSelected = true;
+
+    this->rasterPtr = rasterPtr;
+}
+
+
 GisProject::GisProject()
 {
 }
 
 
-bool GisProject::loadRaster(QString myFileName)
+bool GisProject::loadRaster(QString fileNameWithPath)
 {
     std::string* myError = new std::string();
-    std::string fileName = myFileName.left(myFileName.length()-4).toStdString();
+    std::string fnWithoutExt = fileNameWithPath.left(fileNameWithPath.length()-4).toStdString();
 
     gis::Crit3DRasterGrid *myRaster = new(gis::Crit3DRasterGrid);
-    if (! gis::readEsriGrid(fileName, myRaster, myError))
+    if (! gis::readEsriGrid(fnWithoutExt, myRaster, myError))
     {
         qDebug("Load raster failed!");
         return (false);
     }
 
-    this->rasterList.push_back(myRaster);
+    setDefaultDTMScale(myRaster->colorScale);
 
-    setDefaultDTMScale(this->rasterList.back()->colorScale);
+    GisObject* newObject = new(GisObject);
+    newObject->setRaster(getFileName(fileNameWithPath), myRaster);
+    this->objectList.push_back(newObject);
 
     return (true);
 }
 
 
-QString getFileName(QString fileNameComplete)
+QString getFileName(QString fileNameWithPath)
 {
     QString c;
     QString fileName = "";
-    for (int i = fileNameComplete.length()-1; i >= 0; i--)
+    for (int i = fileNameWithPath.length()-1; i >= 0; i--)
     {
-        c = fileNameComplete.mid(i,1);
+        c = fileNameWithPath.mid(i,1);
         if ((c != "\\") && (c != "/"))
             fileName = c + fileName;
         else

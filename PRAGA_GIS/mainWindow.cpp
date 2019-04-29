@@ -220,7 +220,7 @@ QPoint MainWindow::getMapPoint(QPoint* point) const
 }
 
 
-void MainWindow::addRaster(QString fileName, gis::Crit3DRasterGrid *myRaster)
+void MainWindow::addRasterObject(GisObject* myObject)
 {
     if (ui->groupBox->layout() == nullptr)
     {
@@ -229,20 +229,20 @@ void MainWindow::addRaster(QString fileName, gis::Crit3DRasterGrid *myRaster)
         ui->groupBox->setLayout(vbox);
     }
 
-    QCheckBox *newCheckBox = new QCheckBox(fileName);
+    QCheckBox *newCheckBox = new QCheckBox(myObject->fileName);
     newCheckBox->setCheckState(Qt::Checked);
     ui->groupBox->layout()->addWidget(newCheckBox);
 
     // TODO non funziona
-    ColorLegend* myColorScale = new ColorLegend();
+    /*ColorLegend* myColorScale = new ColorLegend();
     myColorScale->resize(ui->groupBox->width(), 100);
-    myColorScale->colorScale = myRaster->colorScale;
-    ui->groupBox->layout()->addWidget(myColorScale);
+    myColorScale->colorScale = myObject->rasterPtr->colorScale;
+    ui->groupBox->layout()->addWidget(myColorScale);*/
 
     RasterObject* newRasterObj = new RasterObject(this->mapView);
     newRasterObj->setOpacity(0.66);
-    newRasterObj->setColorLegend(myColorScale);
-    newRasterObj->initializeUTM(myRaster, myProject.gisSettings, false);
+    //newRasterObj->setColorLegend(myColorScale);
+    newRasterObj->initializeUTM(myObject->rasterPtr, myProject.gisSettings, false);
     this->rasterObjList.push_back(newRasterObj);
 
     this->mapView->scene()->addObject(newRasterObj);
@@ -259,8 +259,7 @@ void MainWindow::on_actionLoadRaster_triggered()
     if (! myProject.loadRaster(fileNameWithPath))
         return;
 
-    QString fileName = getFileName(fileNameWithPath);
-    this->addRaster(fileName, myProject.rasterList.back());
+    this->addRasterObject(myProject.objectList.back());
 
     // resize and center map
     gis::Crit3DGeoPoint* center = this->rasterObjList.back()->getRasterCenter();

@@ -7,6 +7,7 @@
     #include "Position.h"
 
     #include "rasterObject.h"
+    #include "gisProject.h"
     #include "colorlegend.h"
 
     namespace Ui
@@ -65,7 +66,7 @@
 
         void updateCenter();
         void setMapSource(OSMTileSource::OSMTileType mySource);
-        void addRaster(QString fileName, gis::Crit3DRasterGrid *myRaster);
+        void addRasterObject(GisObject* myObject);
 
         QPoint getMapPoint(QPoint* point) const;
     };
