@@ -12,8 +12,8 @@ TARGET = PRAGA_GIS
 TEMPLATE = app
 
 INCLUDEPATH +=  ../PRAGA/shared ../mapGraphics  \
-                ../crit3dDate ../mathFunctions \
-                ../gis  \
+                ../crit3dDate ../mathFunctions ../gis  \
+                ../shapeHandler ../shapeHandler/shapelib
 
 CONFIG += debug_and_release
 
@@ -32,12 +32,12 @@ CONFIG(debug, debug|release) {
     LIBS += -L../crit3dDate/debug -lcrit3dDate
     LIBS += -L../mathFunctions/debug -lmathFunctions
     LIBS += -L../gis/debug -lgis
-
+    LIBS += -L../shapeHandler/debug -lshapeHandler
 } else {
-
     LIBS += -L../crit3dDate/release -lcrit3dDate
     LIBS += -L../mathFunctions/release -lmathFunctions
     LIBS += -L../gis/release -lgis
+    LIBS += -L../shapeHandler/release -lshapeHandler
 }
 
 

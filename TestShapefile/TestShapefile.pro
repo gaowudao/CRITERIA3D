@@ -1,6 +1,6 @@
 #-----------------------------------------------------
 #
-#   TEST of shapeHandler libray
+#   Test of shapeHandler
 #   this project is part of CRITERIA-3D distribution
 #
 #-----------------------------------------------------
@@ -9,11 +9,13 @@ QT  += widgets
 
 TEMPLATE = app
 
-SOURCES += main.cpp mainwindow.cpp dbfTableDialog.cpp \
-    dbfNewColDialog.cpp
+SOURCES += main.cpp mainwindow.cpp \
+        dbfTableDialog.cpp \
+        dbfNewColDialog.cpp
 
-HEADERS += mainwindow.hpp dbfTableDialog.h \
-    dbfNewColDialog.h
+HEADERS += mainwindow.hpp \
+        dbfTableDialog.h \
+        dbfNewColDialog.h
 
 FORMS   += mainwindow.ui
 
@@ -35,13 +37,13 @@ win32:{
 INCLUDEPATH +=  ../shapeHandler ../shapeHandler/shapelib
 
 unix:{
-    LIBS += -L../shapeHandler/release -lshapeHandler -L../shapeDBF/release
+    LIBS += -L../shapeHandler/release -lshapeHandler
 }
 win32:{
     CONFIG(debug, debug|release) {
-        LIBS += -L../shapeHandler/debug -lshapeHandler -L../shapeDBF/debug
+        LIBS += -L../shapeHandler/debug -lshapeHandler
     } else {
-        LIBS += -L../shapeHandler/release -lshapeHandler -L../shapeDBF/release
+        LIBS += -L../shapeHandler/release -lshapeHandler
     }
 }
 
