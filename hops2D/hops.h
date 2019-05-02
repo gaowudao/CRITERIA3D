@@ -50,6 +50,7 @@ class hops
     void initializeOutputsPhenology();
     int doyFromDate(int day,int month,int year);
 
+
     public:
     //
     Tphenology phenology;
@@ -66,5 +67,6 @@ class hops
     void initializeParametersEvapotranspiration(Tevapotranspiration Kc);
     void setObservedData(TObsDataD** observations);
     void compute();
+    double dayLengthCompute(double lat , int doy , int year);
 };
 #endif // HOPS_H

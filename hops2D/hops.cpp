@@ -7,6 +7,30 @@
 #include "furtherMathFunctions.h"
 #include "hops.h"
 
+double hops::dayLengthCompute(double lat , int doy , int year)
+{
+    /* from Ecological Modeling_, volume 80 (1995) pp. 87-95, called "A Model
+       Comparison for Daylength as a Function of Latitude and Day of the
+     Year."  or the website http://mathforum.org/library/drmath/view/56478.html */
+     //float   D ;       // daylength
+     //float   L ;       // latitude in degrees
+     //int     doy ;       // day of the year
+     double   parm ;       // dummy variable
+     double   pi = 3.14159265 ;
+     char leap = 0 ;
+     double length;
+    if (year%4 == 0)
+    {
+      leap = 1;
+      if (year%100 == 0 && year%400 != 0) leap = 0 ;
+    }
+    if (lat < -70 || lat > 70) return (PARAMETER_ERROR);
+    if (doy < 1 || doy > (365 + leap)) return(PARAMETER_ERROR);
+    parm = asin(0.39795*cos(0.2163108 + 2*atan(0.9671396*tan(0.0086*(doy-186))))) ;
+    length =  24.0 - (24.0/pi)*acos((sin(0.8333*pi/180) + sin(lat*pi/180)*sin(parm)) / cos(lat*pi/180)*cos(parm)) ;
+    return length;
+}
+
 int hops::doyFromDate(int day,int month,int year)
 {
     int daysOfMonth[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
@@ -131,7 +155,7 @@ void hops::compute()
     printf("non capisco");
     //hops::computeAverageTemperatures();
     hops::computePhenology();
-    hops::computeEvapotranspration();
+    //hops::computeEvapotranspration();
 }
 
 void hops::computeAverageTemperatures()

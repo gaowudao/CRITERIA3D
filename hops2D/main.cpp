@@ -32,6 +32,8 @@ int main(int argc, char *argv[])
 
     QCoreApplication a(argc, argv);
 
+
+
     int nrStations = 3;
     int lengthDataSeries = 1099;
     int nrVariables = 3;
@@ -161,6 +163,14 @@ int main(int argc, char *argv[])
 
     printf("hops\n");
     hops hopsSimulation;
+    FILE* fp;
+    fp = fopen("dayLengthTuscia.dat","w");
+    for (int i=1;i<367;i++)
+    {
+        double dayL = hopsSimulation.dayLengthCompute(42 + 26./60. + 50./3600.,i,2013); // 42°26'
+        fprintf(fp,"%d,%f\n",i,dayL);
+    }
+    fclose(fp);
     hopsSimulation.initializeData(1095*4,nrStations);
     hopsSimulation.setObservedData(observedDataDaily);
     Tphenology pheno;
@@ -180,7 +190,7 @@ int main(int argc, char *argv[])
     hopsSimulation.initializeParametersPhenology(pheno);
     hopsSimulation.initializeParametersEvapotranspiration(et);
     hopsSimulation.compute();
-
+    //printf("arrivo qui\n");
 
     for (int i=0;i<nrStations;i++)
     {
