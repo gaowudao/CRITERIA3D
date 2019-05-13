@@ -50,6 +50,16 @@ void GisObject::setRaster(QString filename, gis::Crit3DRasterGrid* rasterPtr)
 }
 
 
+void GisObject::setShape(QString filename, Crit3DShapeHandler* shapePtr)
+{
+    this->type = gisObjectShape;
+    this->fileName = filename;
+    this->isSelected = true;
+
+    this->shapePtr = shapePtr;
+}
+
+
 GisProject::GisProject()
 {
 }
@@ -71,6 +81,23 @@ bool GisProject::loadRaster(QString fileNameWithPath)
 
     GisObject* newObject = new(GisObject);
     newObject->setRaster(getFileName(fileNameWithPath), myRaster);
+    this->objectList.push_back(newObject);
+
+    return (true);
+}
+
+
+bool GisProject::loadShapefile(QString fileNameWithPath)
+{
+    Crit3DShapeHandler *myShape = new(Crit3DShapeHandler);
+    if (!myShape->open(fileNameWithPath.toStdString()))
+    {
+        qDebug("Load shapefile failed!");
+        return (false);
+    }
+
+    GisObject* newObject = new(GisObject);
+    newObject->setShape(getFileName(fileNameWithPath), myShape);
     this->objectList.push_back(newObject);
 
     return (true);

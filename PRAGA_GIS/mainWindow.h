@@ -35,6 +35,7 @@
         void on_actionMapTerrain_triggered();
 
         void on_actionLoadRaster_triggered();
+        void on_actionLoadShapefile_triggered();
 
     protected:
         /*!
@@ -67,6 +68,7 @@
         void updateCenter();
         void setMapSource(OSMTileSource::OSMTileType mySource);
         void addRasterObject(GisObject* myObject);
+        void addShapeObject(GisObject* myObject);
 
         QPoint getMapPoint(QPoint* point) const;
     };

@@ -38,12 +38,3 @@ HEADERS += gis.h \
     gisIO.h \
     map.h
 
-
-unix:!symbian {
-    maemo5 {
-        target.path = /opt/usr/lib
-    } else {
-        target.path = /usr/lib
-    }
-    INSTALLS += target
-}

@@ -1428,6 +1428,7 @@
      <string>Fi&amp;le</string>
     </property>
     <addaction name="actionLoadRaster"/>
+    <addaction name="actionLoadShapefile"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuGIS_settings">
@@ -1479,6 +1480,11 @@
    </property>
    <property name="text">
     <string>&amp;Stamen - Terrain</string>
+   </property>
+  </action>
+  <action name="actionLoadShapefile">
+   <property name="text">
+    <string>Load Shapefile...</string>
    </property>
   </action>
  </widget>

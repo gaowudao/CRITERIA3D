@@ -27,6 +27,7 @@
 
         GisObject();
         void setRaster(QString filename, gis::Crit3DRasterGrid* rasterPtr);
+        void setShape(QString filename, Crit3DShapeHandler* shapePtr);
 
     };
 
@@ -42,6 +43,7 @@
         GisProject();
 
         bool loadRaster(QString fileName);
+        bool loadShapefile(QString fileName);
     };
 
     QString getFileName(QString fileNameComplete);

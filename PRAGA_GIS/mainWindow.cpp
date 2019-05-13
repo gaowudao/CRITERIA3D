@@ -229,7 +229,7 @@ void MainWindow::addRasterObject(GisObject* myObject)
         ui->groupBox->setLayout(vbox);
     }
 
-    QCheckBox *newCheckBox = new QCheckBox(myObject->fileName);
+    QCheckBox *newCheckBox = new QCheckBox("GRID_" + myObject->fileName);
     newCheckBox->setCheckState(Qt::Checked);
     ui->groupBox->layout()->addWidget(newCheckBox);
 
@@ -250,12 +250,28 @@ void MainWindow::addRasterObject(GisObject* myObject)
 }
 
 
+void MainWindow::addShapeObject(GisObject* myObject)
+{
+    if (ui->groupBox->layout() == nullptr)
+    {
+        QVBoxLayout *vbox = new QVBoxLayout;
+        vbox->setAlignment(Qt::AlignTop);
+        ui->groupBox->setLayout(vbox);
+    }
+
+    QCheckBox *newCheckBox = new QCheckBox("SHAPE_" + myObject->fileName);
+    newCheckBox->setCheckState(Qt::Checked);
+    ui->groupBox->layout()->addWidget(newCheckBox);
+
+    // TODO creare e visualizzare shapeObject
+}
+
+
 void MainWindow::on_actionLoadRaster_triggered()
 {
     QString fileNameWithPath = QFileDialog::getOpenFileName(this, tr("Open raster Grid"), "", tr("ESRI grid files (*.flt)"));
     if (fileNameWithPath == "") return;
 
-    qDebug() << "loading raster";
     if (! myProject.loadRaster(fileNameWithPath))
         return;
 
@@ -267,4 +283,19 @@ void MainWindow::on_actionLoadRaster_triggered()
     this->mapView->setZoomLevel(quint8(log2(ui->widgetMap->width() / size)));
     this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
     this->updateCenter();
+}
+
+
+
+void MainWindow::on_actionLoadShapefile_triggered()
+{
+    QString fileNameWithPath = QFileDialog::getOpenFileName(this, tr("Open Shapefile"), "", tr("shp files (*.shp)"));
+    if (fileNameWithPath == "") return;
+
+    if (! myProject.loadShapefile(fileNameWithPath))
+        return;
+
+    this->addShapeObject(myProject.objectList.back());
+
+    // TODO resize and center map
 }
