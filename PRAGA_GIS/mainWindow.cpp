@@ -286,7 +286,6 @@ void MainWindow::on_actionLoadRaster_triggered()
 }
 
 
-
 void MainWindow::on_actionLoadShapefile_triggered()
 {
     QString fileNameWithPath = QFileDialog::getOpenFileName(this, tr("Open Shapefile"), "", tr("shp files (*.shp)"));
