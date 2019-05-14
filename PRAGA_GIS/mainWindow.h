@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
     #include <QMainWindow>
+    #include <QtWidgets>
 
     #include "tileSources/OSMTileSource.h"
     #include "Position.h"
@@ -69,6 +70,7 @@
         void setMapSource(OSMTileSource::OSMTileType mySource);
         void addRasterObject(GisObject* myObject);
         void addShapeObject(GisObject* myObject);
+        void itemClicked(QListWidgetItem* item);
 
         QPoint getMapPoint(QPoint* point) const;
     };

@@ -29,7 +29,6 @@
 
 #include <QFileDialog>
 #include <QLayout>
-#include <QCheckBox>
 #include <QWidget>
 #include <QFrame>
 #include <QVBoxLayout>
@@ -69,6 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->mapView->centerOn(startCenter->lonLat());
 
     this->setMouseTracking(true);
+
 }
 
 
@@ -82,6 +82,7 @@ MainWindow::~MainWindow()
         for (unsigned int i = 0; i < this->rasterColorScaleList.size(); i++)
             delete this->rasterColorScaleList[i];
 
+    ui->checkList->clear();
     delete mapView;
     delete mapScene;
     delete ui;
@@ -95,8 +96,8 @@ void MainWindow::resizeEvent(QResizeEvent * event)
     ui->widgetMap->setGeometry(TOOLSWIDTH, 0, this->width()-TOOLSWIDTH, this->height() - INFOHEIGHT);
     mapView->resize(ui->widgetMap->size());
 
-    ui->groupBox->move(MAPBORDER/2, MAPBORDER);
-    ui->groupBox->resize(TOOLSWIDTH, this->height() - INFOHEIGHT - MAPBORDER * 2);
+    ui->checkList->move(MAPBORDER/2, MAPBORDER);
+    ui->checkList->resize(TOOLSWIDTH, this->height() - INFOHEIGHT - MAPBORDER * 2);
 }
 
 
@@ -222,16 +223,11 @@ QPoint MainWindow::getMapPoint(QPoint* point) const
 
 void MainWindow::addRasterObject(GisObject* myObject)
 {
-    if (ui->groupBox->layout() == nullptr)
-    {
-        QVBoxLayout *vbox = new QVBoxLayout;
-        vbox->setAlignment(Qt::AlignTop);
-        ui->groupBox->setLayout(vbox);
-    }
 
-    QCheckBox *newCheckBox = new QCheckBox("GRID_" + myObject->fileName);
-    newCheckBox->setCheckState(Qt::Checked);
-    ui->groupBox->layout()->addWidget(newCheckBox);
+    QListWidgetItem* item = new QListWidgetItem("GRID_" + myObject->fileName);
+    item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+    item->setCheckState(Qt::Checked);
+    ui->checkList->addItem(item);
 
     // TODO non funziona
     /*ColorLegend* myColorScale = new ColorLegend();
@@ -247,21 +243,18 @@ void MainWindow::addRasterObject(GisObject* myObject)
 
     this->mapView->scene()->addObject(newRasterObj);
     newRasterObj->redrawRequested();
+
+    connect(ui->checkList, &QListWidget::itemClicked, [=](QListWidgetItem* item){ this->itemClicked(item); });
 }
 
 
 void MainWindow::addShapeObject(GisObject* myObject)
 {
-    if (ui->groupBox->layout() == nullptr)
-    {
-        QVBoxLayout *vbox = new QVBoxLayout;
-        vbox->setAlignment(Qt::AlignTop);
-        ui->groupBox->setLayout(vbox);
-    }
 
-    QCheckBox *newCheckBox = new QCheckBox("SHAPE_" + myObject->fileName);
-    newCheckBox->setCheckState(Qt::Checked);
-    ui->groupBox->layout()->addWidget(newCheckBox);
+    QListWidgetItem* item = new QListWidgetItem("SHAPE_" + myObject->fileName);
+    item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+    item->setCheckState(Qt::Checked);
+    ui->checkList->addItem(item);
 
     // TODO creare e visualizzare shapeObject
 }
@@ -297,4 +290,10 @@ void MainWindow::on_actionLoadShapefile_triggered()
     this->addShapeObject(myProject.objectList.back());
 
     // TODO resize and center map
+}
+
+void MainWindow::itemClicked(QListWidgetItem* item)
+{
+    QString indexSelected = item->text();
+    qDebug() << "clicked " << indexSelected;
 }
