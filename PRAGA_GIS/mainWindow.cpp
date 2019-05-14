@@ -69,6 +69,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->setMouseTracking(true);
 
+    connect(ui->checkList, &QListWidget::itemClicked, [=](QListWidgetItem* item){ this->itemClicked(item); });
+    ui->checkList->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->checkList, &QListWidget::customContextMenuRequested, [=](const QPoint point){ this->itemMenuRequested(point); });
+
 }
 
 
@@ -243,8 +247,6 @@ void MainWindow::addRasterObject(GisObject* myObject)
 
     this->mapView->scene()->addObject(newRasterObj);
     newRasterObj->redrawRequested();
-
-    connect(ui->checkList, &QListWidget::itemClicked, [=](QListWidgetItem* item){ this->itemClicked(item); });
 }
 
 
@@ -296,4 +298,20 @@ void MainWindow::itemClicked(QListWidgetItem* item)
 {
     QString indexSelected = item->text();
     qDebug() << "clicked " << indexSelected;
+    // TO DO
 }
+
+void MainWindow::itemMenuRequested(const QPoint point)
+{
+    QPoint item = ui->checkList->mapToGlobal(point);
+    QMenu submenu;
+    submenu.addAction("Close");
+    QAction* rightClickItem = submenu.exec(item);
+    if (rightClickItem && rightClickItem->text().contains("Close") )
+    {
+        qDebug() << "Close clicked ";
+        // TO DO
+        //ui->checkList->takeItem(ui->checkList->indexAt(point).row());
+    }
+}
+
