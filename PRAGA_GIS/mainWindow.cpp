@@ -296,9 +296,40 @@ void MainWindow::on_actionLoadShapefile_triggered()
 
 void MainWindow::itemClicked(QListWidgetItem* item)
 {
-    QString indexSelected = item->text();
-    qDebug() << "clicked " << indexSelected;
-    // TO DO
+
+    int pos = ui->checkList->row(item);
+    GisObject* myObject = myProject.objectList.at(pos);
+
+    if (myObject->type == gisObjectRaster)
+    {
+        unsigned int i;
+        for (i = 0; i < rasterObjList.size(); i++)
+        {
+            if (rasterObjList.at(i)->currentRaster == myObject->rasterPtr)
+            {
+                break;
+            }
+        }
+
+        if (item->checkState())
+        {
+            this->mapView->scene()->addObject(rasterObjList.at(i));
+            myObject->isSelected = true;
+            rasterObjList.at(i)->redrawRequested();
+        }
+        else
+        {
+            this->mapView->scene()->removeObject(rasterObjList.at(i));
+            myObject->isSelected = false;
+            rasterObjList.at(i)->redrawRequested();
+        }
+
+    }
+    else
+    {
+        // TO DO SHAPE
+    }
+    return;
 }
 
 void MainWindow::itemMenuRequested(const QPoint point)
