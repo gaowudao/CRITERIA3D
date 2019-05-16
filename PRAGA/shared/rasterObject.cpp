@@ -55,6 +55,7 @@ void RasterObject::setDrawing(bool value)
     this->isDrawing = value;
 }
 
+
 void RasterObject::setDrawBorders(bool value)
 {
     this->drawBorder = value;

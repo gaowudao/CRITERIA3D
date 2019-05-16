@@ -311,19 +311,8 @@ void MainWindow::itemClicked(QListWidgetItem* item)
             }
         }
 
-        if (item->checkState())
-        {
-            this->mapView->scene()->addObject(rasterObjList.at(i));
-            myObject->isSelected = true;
-            rasterObjList.at(i)->redrawRequested();
-        }
-        else
-        {
-            this->mapView->scene()->removeObject(rasterObjList.at(i));
-            myObject->isSelected = false;
-            rasterObjList.at(i)->redrawRequested();
-        }
-
+        myObject->isSelected = item->checkState();
+        rasterObjList.at(i)->setVisible(myObject->isSelected);
     }
     else
     {
@@ -359,11 +348,9 @@ void MainWindow::itemMenuRequested(const QPoint point)
                     break;
                 }
             }
-            if (myObject->isSelected == true)
-            {
-                this->mapView->scene()->removeObject(rasterObjList.at(i));
-                rasterObjList.at(i)->redrawRequested();
-            }
+
+            // remove from scene
+            this->mapView->scene()->removeObject(rasterObjList.at(i));
 
             // remove from list
             myProject.objectList.erase(myProject.objectList.begin()+pos);
