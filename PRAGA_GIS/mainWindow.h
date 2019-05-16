@@ -10,6 +10,7 @@
     #include "rasterObject.h"
     #include "gisProject.h"
     #include "colorlegend.h"
+    #include "showProperties.h"
 
     namespace Ui
     {

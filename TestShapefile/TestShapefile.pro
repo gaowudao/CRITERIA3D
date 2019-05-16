@@ -14,8 +14,8 @@ SOURCES += main.cpp mainwindow.cpp \
         dbfNewColDialog.cpp
 
 HEADERS += mainwindow.hpp \
-        dbfTableDialog.h \
-        dbfNewColDialog.h
+        dbfNewColDialog.h \
+    dbfTableDialog.h
 
 FORMS   += mainwindow.ui
 

@@ -334,17 +334,21 @@ void MainWindow::itemClicked(QListWidgetItem* item)
 
 void MainWindow::itemMenuRequested(const QPoint point)
 {
-    QPoint item = ui->checkList->mapToGlobal(point);
+    QPoint itemPoint = ui->checkList->mapToGlobal(point);
+    QListWidgetItem* item = ui->checkList->itemAt(point);
+    int pos = ui->checkList->row(item);
+    GisObject* myObject = myProject.objectList.at(pos);
+
     QMenu submenu;
     submenu.addAction("Close");
-    QAction* rightClickItem = submenu.exec(item);
+    if (myObject->type == gisObjectShape)
+    {
+        submenu.addAction("Show Properties");
+    }
+    QAction* rightClickItem = submenu.exec(itemPoint);
+
     if (rightClickItem && rightClickItem->text().contains("Close") )
     {
-
-        QListWidgetItem* item = ui->checkList->itemAt(point);
-        int pos = ui->checkList->row(item);
-        GisObject* myObject = myProject.objectList.at(pos);
-
         if (myObject->type == gisObjectRaster)
         {
             unsigned int i;
@@ -371,9 +375,13 @@ void MainWindow::itemMenuRequested(const QPoint point)
         {
             myProject.objectList.erase(myProject.objectList.begin()+pos);
             ui->checkList->takeItem(ui->checkList->indexAt(point).row());
-            return;
             // TO DO SHAPE
         }
+    }
+    else if (rightClickItem && rightClickItem->text().contains("Show Properties") )
+    {
+        qDebug() << "Show";
+        ShowProperties* show = new ShowProperties();
     }
     return;
 }

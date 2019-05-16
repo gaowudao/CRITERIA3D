@@ -45,16 +45,22 @@ SOURCES += main.cpp\
     ../PRAGA/shared/rasterObject.cpp \
     ../PRAGA/shared/colorlegend.cpp \
     mainWindow.cpp \
-    gisProject.cpp
+    gisProject.cpp \
+    showProperties.cpp \
+    dbfTableDialog.cpp \
+    dbfNewColDialog.cpp
 
 
 HEADERS += \
     ../PRAGA/shared/rasterObject.h \
     ../PRAGA/shared/colorlegend.h \
     mainWindow.h \
-    gisProject.h
+    gisProject.h \
+    showProperties.h \
+    dbfTableDialog.h \
+    dbfNewColDialog.h
 
 
 FORMS += mainWindow.ui \
-    ../PRAGA/shared/formInfo.ui
+../PRAGA/shared/formInfo.ui
 
