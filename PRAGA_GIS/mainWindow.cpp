@@ -340,9 +340,41 @@ void MainWindow::itemMenuRequested(const QPoint point)
     QAction* rightClickItem = submenu.exec(item);
     if (rightClickItem && rightClickItem->text().contains("Close") )
     {
-        qDebug() << "Close clicked ";
-        // TO DO
-        //ui->checkList->takeItem(ui->checkList->indexAt(point).row());
+
+        QListWidgetItem* item = ui->checkList->itemAt(point);
+        int pos = ui->checkList->row(item);
+        GisObject* myObject = myProject.objectList.at(pos);
+
+        if (myObject->type == gisObjectRaster)
+        {
+            unsigned int i;
+            for (i = 0; i < rasterObjList.size(); i++)
+            {
+                if (rasterObjList.at(i)->currentRaster == myObject->rasterPtr)
+                {
+                    break;
+                }
+            }
+            if (myObject->isSelected == true)
+            {
+                this->mapView->scene()->removeObject(rasterObjList.at(i));
+                rasterObjList.at(i)->redrawRequested();
+            }
+
+            // remove from list
+            myProject.objectList.erase(myProject.objectList.begin()+pos);
+            rasterObjList.erase(rasterObjList.begin()+i);
+            ui->checkList->takeItem(ui->checkList->indexAt(point).row());
+
+        }
+        else
+        {
+            myProject.objectList.erase(myProject.objectList.begin()+pos);
+            ui->checkList->takeItem(ui->checkList->indexAt(point).row());
+            return;
+            // TO DO SHAPE
+        }
     }
+    return;
 }
 
