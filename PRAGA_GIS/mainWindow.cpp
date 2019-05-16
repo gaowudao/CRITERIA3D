@@ -380,8 +380,7 @@ void MainWindow::itemMenuRequested(const QPoint point)
     }
     else if (rightClickItem && rightClickItem->text().contains("Show Properties") )
     {
-        qDebug() << "Show";
-        ShowProperties* show = new ShowProperties();
+        ShowProperties* show = new ShowProperties(myObject->getFileNameWithPath());
     }
     return;
 }

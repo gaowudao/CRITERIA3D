@@ -66,6 +66,7 @@ void MainWindow::onSelectShape(QTreeWidgetItem *item, int)
 		int index = item->data(0, Qt::UserRole).toInt(&ok);
 
 		if (ok) {
+
             ShapeObject object;
             shapeHandler.getShape(index, object);
 

@@ -101,7 +101,7 @@ DbfTableDialog::DbfTableDialog(Crit3DShapeHandler* shapeHandler)
 
 
     setLayout(mainLayout);
-    show();
+    exec();
 
 }
 
@@ -305,7 +305,7 @@ void DbfTableDialog::closeEvent(QCloseEvent *event)
         QFile::remove(shx_temp);
     }
 
-
+    shapeHandler->openDBF(shapeHandler->getFilepath());
     QDialog::closeEvent(event);
 }
 

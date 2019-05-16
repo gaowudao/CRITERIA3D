@@ -13,7 +13,7 @@ protected:
     Crit3DShapeHandler shapeHandler;
 
 public:
-    explicit ShowProperties();
+    explicit ShowProperties(QString filepath);
     ~ShowProperties();
 
 private:
@@ -26,7 +26,6 @@ private:
     QString filepath;
 
 private slots:
-    void onFileOpen();
     void onSelectShape(QTreeWidgetItem *item, int column);
     void on_dbfButton_clicked();
 };

@@ -29,10 +29,21 @@
 #include "gisProject.h"
 
 
+QString GisObject::getFileNameWithPath() const
+{
+    return fileNameWithPath;
+}
+
+void GisObject::setFileNameWithPath(const QString &value)
+{
+    fileNameWithPath = value;
+}
+
 GisObject::GisObject()
 {
     this->type = gisObjectNone;
     this->fileName = "";
+    this->fileNameWithPath = "";
     this->isSelected = true;
 
     this->rasterPtr = nullptr;
@@ -98,6 +109,7 @@ bool GisProject::loadShapefile(QString fileNameWithPath)
 
     GisObject* newObject = new(GisObject);
     newObject->setShape(getFileName(fileNameWithPath), myShape);
+    newObject->setFileNameWithPath(fileNameWithPath);
     this->objectList.push_back(newObject);
 
     return (true);

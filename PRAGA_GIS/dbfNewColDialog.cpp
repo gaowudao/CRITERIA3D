@@ -47,7 +47,6 @@ DbfNewColDialog::DbfNewColDialog()
 
     mainLayout->addWidget(buttonBox);
     this->setLayout(mainLayout);
-    show();
     exec();
 }
 
