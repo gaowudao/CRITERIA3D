@@ -118,6 +118,13 @@ void weatherGenerator2D::initializeTemperatureParameters()
             }
         }
      }
+    dailyResidual = (TdailyResidual*) calloc(nrData,sizeof(TdailyResidual));
+    for (int i=0; i<nrData; i++)
+    {
+        dailyResidual[i].maxT = 0;
+        dailyResidual[i].minT = 0;
+    }
+
 }
 
 
@@ -380,7 +387,7 @@ void weatherGenerator2D::computeTemperatureParameters()
         temperatureCoefficients[iStation].minTWet.standardDeviationFourierParameters.aSin2 = par[4];
         free(par);
 
-
+        //weatherGenerator2D::computeResiduals(averageTMaxDry,averageTMaxWet,stdDevTMaxDry,stdDevTMaxWet,365);
 
 
     } // end of iStation "for" cycle
@@ -488,10 +495,26 @@ void weatherGenerator2D::harmonicsFourier(double* variable, double *par,int nrPa
 
 }
 
-void weatherGenerator2D::computeResiduals(double averageTDry[],double averageTWet[],double stdDevTDry[],double stdDevTWet[],int lengthArray)
+void weatherGenerator2D::computeResiduals(double averageTMaxDry[],double averageTMaxWet[],double stdDevTMaxDry[],double stdDevTMaxWet[],double averageTMinDry[],double averageTMinWet[],double stdDevTMinDry[],double stdDevTMinWet[],int lengthArray,int idStation)
 {
+
+    //printf("%d\n",lengthArray);
+    for (int i=0; i<nrData; i++)
+    {
+        dailyResidual[i].maxT = 0.;
+        dailyResidual[i].minT = 0.;
+    }
+
     for (int i = 0; i< nrData ; i++)
     {
+        if ((fabs(obsDataD[idStation][i].tMax - NODATA)> EPSILON) && (fabs(obsDataD[idStation][i].tMax)> EPSILON))
+        {
+            dailyResidual[i].maxT = 0; //(obsDataD[idStation][i].tMax - );
+        }
+        if ((fabs(obsDataD[idStation][i].tMin - NODATA)> EPSILON) && (fabs(obsDataD[idStation][i].tMin)> EPSILON))
+        {
+            dailyResidual[i].minT = 0.;
+        }
 
     }
 }

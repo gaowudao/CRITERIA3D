@@ -6,7 +6,6 @@
 #include <time.h>
 //#include <iostream>
 
-#include "hops.h"
 #include "wg2D.h"
 #include "commonConstants.h"
 //#include "statistics.h"
@@ -203,34 +202,11 @@ int main()
 
 
 
-    bool computePrecipitation = false;
-    bool computeTemperature = false;
+    bool computePrecipitation = true;
+    bool computeTemperature = true;
     printf("weather generator\n");
     WG2D.initializeParameters(NODATA,2,2,computePrecipitation,computeTemperature);
     WG2D.computeWeatherGenerator2D();
-
-    printf("hops\n");
-    hops hopsSimulation;
-    hopsSimulation.initializeData(1095*4,nrStations);
-    hopsSimulation.setObservedData(observedDataDaily);
-    Tphenology pheno;
-    pheno.sproutingDD = 243;
-    pheno.floweringDD = 899;
-    pheno.conesDevelopmentDD = 1040;
-    pheno.conesRipeningDD = 1899;
-    pheno.conesMaturityDD = 2099;
-    pheno.senescenceDD = 3200;
-    Tevapotranspiration et;
-    et.sproutingKc = 0.3;
-    et.floweringKc = NODATA;
-    et.conesDevelopmentKc = 1.05;
-    et.conesRipeningKc = 1.05;
-    et.conesMaturityKc = 0.85;
-    et.senescenceKc = NODATA;
-    hopsSimulation.initializeParametersPhenology(pheno);
-    hopsSimulation.initializeParametersEvapotranspiration(et);
-    hopsSimulation.compute();
-
 
     for (int i=0;i<nrStations;i++)
     {

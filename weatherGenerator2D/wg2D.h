@@ -98,6 +98,11 @@
         Tvariable maxTDry;
     };
 
+    struct TdailyResidual{
+        double maxT;
+        double minT;
+    };
+
 
     void randomSet(double *arrayNormal,int dimArray);
     class weatherGenerator2D
@@ -135,6 +140,7 @@
 
         // variables only for temperatures
         TtemperatureCoefficients* temperatureCoefficients;
+        TdailyResidual* dailyResidual;
 
 
         //functions
@@ -162,7 +168,8 @@
         void initializeTemperatureParameters();
         int  doyFromDate(int day,int month,int year);
         void harmonicsFourier(double* variable, double *par, int nrPar, double* estimatedVariable, int nrEstimatedVariable);
-        void computeResiduals(double averageTDry[],double averageTWet[],double stdDevTDry[],double stdDevTWet[],int lengthArray);
+        void computeResiduals(double averageTMaxDry[],double averageTMaxWet[],double stdDevTMaxDry[],double stdDevTMaxWet[],double averageTMinDry[],double averageTMinWet[],double stdDevTMinDry[],double stdDevTMinWet[],int lengthArray,int idStation);
+
 
     public:
         // variables
