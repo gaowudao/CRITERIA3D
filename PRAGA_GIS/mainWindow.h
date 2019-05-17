@@ -65,7 +65,6 @@
         MapGraphicsScene* mapScene;
         MapGraphicsView* mapView;
         std::vector<RasterObject *> rasterObjList;
-        std::vector<ColorLegend *> rasterColorScaleList;
 
         void updateCenter();
         void setMapSource(OSMTileSource::OSMTileType mySource);

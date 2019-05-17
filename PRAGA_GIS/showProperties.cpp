@@ -19,7 +19,7 @@ ShowProperties::ShowProperties(QString filepath)
     shapeType = new QLineEdit();
 
     QLabel fields;
-    fields.setText("Attribute");
+    fields.setText("Nr. of attributes");
     fieldsCount = new QLineEdit();
 
     formLayout->addWidget(&countLabel);

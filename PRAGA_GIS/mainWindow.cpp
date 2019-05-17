@@ -83,10 +83,6 @@ MainWindow::~MainWindow()
         for (unsigned int i = 0; i < this->rasterObjList.size(); i++)
             delete this->rasterObjList[i];
 
-    if (! this->rasterColorScaleList.empty())
-        for (unsigned int i = 0; i < this->rasterColorScaleList.size(); i++)
-            delete this->rasterColorScaleList[i];
-
     ui->checkList->clear();
     delete mapView;
     delete mapScene;
@@ -228,21 +224,13 @@ QPoint MainWindow::getMapPoint(QPoint* point) const
 
 void MainWindow::addRasterObject(GisObject* myObject)
 {
-
     QListWidgetItem* item = new QListWidgetItem("GRID_" + myObject->fileName);
     item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
     item->setCheckState(Qt::Checked);
     ui->checkList->addItem(item);
 
-    // TODO non funziona
-    /*ColorLegend* myColorScale = new ColorLegend();
-    myColorScale->resize(ui->groupBox->width(), 100);
-    myColorScale->colorScale = myObject->rasterPtr->colorScale;
-    ui->groupBox->layout()->addWidget(myColorScale);*/
-
     RasterObject* newRasterObj = new RasterObject(this->mapView);
     newRasterObj->setOpacity(0.66);
-    //newRasterObj->setColorLegend(myColorScale);
     newRasterObj->initializeUTM(myObject->rasterPtr, myProject.gisSettings, false);
     this->rasterObjList.push_back(newRasterObj);
 
@@ -299,7 +287,7 @@ void MainWindow::itemClicked(QListWidgetItem* item)
 {
 
     int pos = ui->checkList->row(item);
-    GisObject* myObject = myProject.objectList.at(pos);
+    GisObject* myObject = myProject.objectList.at(unsigned(pos));
 
     if (myObject->type == gisObjectRaster)
     {
@@ -327,7 +315,7 @@ void MainWindow::itemMenuRequested(const QPoint point)
     QPoint itemPoint = ui->checkList->mapToGlobal(point);
     QListWidgetItem* item = ui->checkList->itemAt(point);
     int pos = ui->checkList->row(item);
-    GisObject* myObject = myProject.objectList.at(pos);
+    GisObject* myObject = myProject.objectList.at(unsigned(pos));
 
     QMenu submenu;
     submenu.addAction("Close");
@@ -350,7 +338,6 @@ void MainWindow::itemMenuRequested(const QPoint point)
                     break;
                 }
             }
-
             // remove from scene
             this->mapView->scene()->removeObject(rasterObjList.at(i));
 
@@ -358,7 +345,6 @@ void MainWindow::itemMenuRequested(const QPoint point)
             myProject.objectList.erase(myProject.objectList.begin()+pos);
             rasterObjList.erase(rasterObjList.begin()+i);
             ui->checkList->takeItem(ui->checkList->indexAt(point).row());
-
         }
         else
         {
