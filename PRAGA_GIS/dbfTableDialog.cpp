@@ -9,8 +9,6 @@ DbfTableDialog::DbfTableDialog(Crit3DShapeHandler* shapeHandler, QString fileNam
     QString file_temp = filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+"_temp.dbf";
     QFile::copy(filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+".dbf", file_temp);
 
-    //shapeHandler->open(shapeHandler->getFilepath());
-
     this->setWindowTitle(fileName);
     this->setMaximumWidth(800);
     this->setMaximumHeight(600);
@@ -312,6 +310,9 @@ void DbfTableDialog::closeEvent(QCloseEvent *event)
         QFile::copy(shx_temp, filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+".shx");
         QFile::remove(shx_temp);
     }
+
+    // re-open shapefile
+    shapeHandler->open(shapeHandler->getFilepath());
 
     QDialog::closeEvent(event);
 }
