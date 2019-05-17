@@ -37,6 +37,7 @@
 
 #include "gis.h"
 #include "gisProject.h"
+#include "dbfTableDialog.h"
 
 #include "mainWindow.h"
 #include "ui_mainWindow.h"
@@ -332,7 +333,7 @@ void MainWindow::itemMenuRequested(const QPoint point)
     submenu.addAction("Close");
     if (myObject->type == gisObjectShape)
     {
-        submenu.addAction("Show Properties");
+        submenu.addAction("Open attribute table");
     }
     QAction* rightClickItem = submenu.exec(itemPoint);
 
@@ -365,9 +366,12 @@ void MainWindow::itemMenuRequested(const QPoint point)
             // TO DO SHAPE
         }
     }
-    else if (rightClickItem && rightClickItem->text().contains("Show Properties") )
+    else if (rightClickItem && rightClickItem->text().contains("Open attribute table") )
     {
-        ShowProperties* show = new ShowProperties(myObject->getFileNameWithPath());
+
+        myObject->shapePtr->setFilepath(myObject->getFileNameWithPath().toStdString());
+        DbfTableDialog DBFWidget(myObject->shapePtr);
+
     }
     return;
 }

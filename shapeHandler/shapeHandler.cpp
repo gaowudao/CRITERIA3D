@@ -2,11 +2,6 @@
 #include "iostream"
 
 
-std::string Crit3DShapeHandler::getFilepath() const
-{
-    return m_filepath;
-}
-
 Crit3DShapeHandler::Crit3DShapeHandler()
     : m_handle(nullptr), m_dbf(nullptr), m_count(0), m_type(0)
 {}
@@ -61,6 +56,8 @@ bool Crit3DShapeHandler::open(std::string filename)
     char *fieldName =  (char *) malloc(sizeof(char) * (XBASE_FLDNAME_LEN_READ+1));
     DBFFieldType fieldType;
 
+    m_fieldsList.clear();
+    m_fieldsTypeList.clear();
     for (int i = 0; i<m_fields; i++)
     {
         fieldType = DBFGetFieldInfo( m_dbf, i, fieldName, nullptr, nullptr);
@@ -82,6 +79,9 @@ bool Crit3DShapeHandler::openDBF(std::string filename)
 
     char *fieldName =  (char *) malloc(sizeof(char) * (XBASE_FLDNAME_LEN_READ+1));
     DBFFieldType fieldType;
+
+    m_fieldsList.clear();
+    m_fieldsTypeList.clear();
 
     for (int i = 0; i<m_fields; i++)
     {
@@ -343,4 +343,14 @@ void Crit3DShapeHandler::packSHP(std::string newFile)
     }
 
     SHPClose(hSHP);
+}
+
+std::string Crit3DShapeHandler::getFilepath() const
+{
+    return m_filepath;
+}
+
+void Crit3DShapeHandler::setFilepath(std::string filename)
+{
+    m_filepath = filename;
 }

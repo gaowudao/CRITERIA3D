@@ -46,7 +46,6 @@ SOURCES += main.cpp\
     ../PRAGA/shared/colorlegend.cpp \
     mainWindow.cpp \
     gisProject.cpp \
-    showProperties.cpp \
     dbfTableDialog.cpp \
     dbfNewColDialog.cpp
 
@@ -56,7 +55,6 @@ HEADERS += \
     ../PRAGA/shared/colorlegend.h \
     mainWindow.h \
     gisProject.h \
-    showProperties.h \
     dbfTableDialog.h \
     dbfNewColDialog.h
 

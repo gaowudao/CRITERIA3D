@@ -4,6 +4,14 @@ DbfTableDialog::DbfTableDialog(Crit3DShapeHandler* shapeHandler)
     :shapeHandler(shapeHandler)
 {
 
+    // make a copy
+    QFileInfo filepathInfo(QString::fromStdString(shapeHandler->getFilepath()));
+    QString file_temp = filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+"_temp.dbf";
+    QFile::copy(filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+".dbf", file_temp);
+
+    shapeHandler->open(shapeHandler->getFilepath());
+
+
     this->setMaximumWidth(800);
     this->setMaximumHeight(600);
     QVBoxLayout* mainLayout = new QVBoxLayout;
@@ -29,6 +37,8 @@ DbfTableDialog::DbfTableDialog(Crit3DShapeHandler* shapeHandler)
 
     int colNumber = shapeHandler->getFieldNumbers();
     int rowNumber = shapeHandler->getDBFRecordCount();
+
+
     m_DBFTableWidget->setRowCount(rowNumber);
     m_DBFTableWidget->setColumnCount(colNumber);
 
@@ -88,6 +98,7 @@ DbfTableDialog::DbfTableDialog(Crit3DShapeHandler* shapeHandler)
     labelLengend->setText("Deleted rows: yellow");
 
     mainLayout->addWidget(labelLengend);
+
 
     connect(m_DBFTableWidget, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
     connect(addRow, &QAction::triggered, [=](){ this->addRowClicked(); });
@@ -281,7 +292,7 @@ void DbfTableDialog::cellChanged(int row, int column)
 
 void DbfTableDialog::closeEvent(QCloseEvent *event)
 {
-    shapeHandler->closeDBF();
+    shapeHandler->close();
 
     QString filepath = QString::fromStdString(shapeHandler->getFilepath());
     QFileInfo filepathInfo(filepath);
@@ -305,7 +316,6 @@ void DbfTableDialog::closeEvent(QCloseEvent *event)
         QFile::remove(shx_temp);
     }
 
-    shapeHandler->openDBF(shapeHandler->getFilepath());
     QDialog::closeEvent(event);
 }
 
@@ -321,14 +331,14 @@ void DbfTableDialog::saveChangesClicked()
     {
         shapeHandler->packSHP(file_temp.toStdString());
         shapeHandler->packDBF(file_temp.toStdString());
-        shapeHandler->closeDBF();
+        shapeHandler->close();
     }
     else
     {
-        shapeHandler->closeDBF();
+        shapeHandler->close();
         QFile::copy(filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+".dbf", file_temp);    // copy modified file to file_temp
     }
-    shapeHandler->openDBF(shapeHandler->getFilepath());
+    shapeHandler->open(shapeHandler->getFilepath());
 }
 
 void DbfTableDialog::horizontalHeaderClick(int index)
