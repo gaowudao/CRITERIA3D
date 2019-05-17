@@ -1,31 +1,28 @@
 #ifndef SHOWPROPERTIES_H
 #define SHOWPROPERTIES_H
 
-#include <QtWidgets>
+    #include <QtWidgets>
     #include "shapeHandler.h"
     #include "dbfTableDialog.h"
 
-class ShowProperties : public QDialog
-{   
-    Q_OBJECT
+    class ShowProperties : public QDialog
+    {
+        Q_OBJECT
 
-protected:
-    Crit3DShapeHandler shapeHandler;
+    public:
+        explicit ShowProperties(Crit3DShapeHandler* shapeHandler, QString filename);
+        ~ShowProperties();
 
-public:
-    explicit ShowProperties(QString filepath);
-    ~ShowProperties();
+    private:
+        Crit3DShapeHandler* shapeHandler;
+        QLineEdit* shapeType;
+        QLineEdit* shapeEntityCount;
+        QLineEdit* fieldsCount;
+        QTextEdit* shapeData;
+        QTreeWidget* treeWidget;
 
-private:
-    DbfTableDialog *DBFWidget;
-    QLineEdit* shapeEntityCount;
-    QLineEdit* shapeType;
-    QLineEdit* fieldsCount;
-    QTreeWidget* treeWidget;
-    QString filepath;
-
-private slots:
-    void onSelectShape(QTreeWidgetItem *item, int column);
-};
+    private slots:
+        void onSelectShape(QTreeWidgetItem *item, int column);
+    };
 
 #endif // SHOWPROPERTIES_H

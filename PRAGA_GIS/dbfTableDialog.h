@@ -29,7 +29,7 @@ class DbfTableDialog : public QDialog
     QStringList m_DBFTableHeader;
 
     public:
-        DbfTableDialog(Crit3DShapeHandler *shapeHandler);
+        DbfTableDialog(Crit3DShapeHandler *shapeHandler, QString fileName);
         ~DbfTableDialog();
         void addRowClicked();
         void removeRowClicked();

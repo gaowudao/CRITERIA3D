@@ -29,16 +29,6 @@
 #include "gisProject.h"
 
 
-QString GisObject::getFileNameWithPath() const
-{
-    return fileNameWithPath;
-}
-
-void GisObject::setFileNameWithPath(const QString &value)
-{
-    fileNameWithPath = value;
-}
-
 GisObject::GisObject()
 {
     this->type = gisObjectNone;
@@ -51,20 +41,22 @@ GisObject::GisObject()
 }
 
 
-void GisObject::setRaster(QString filename, gis::Crit3DRasterGrid* rasterPtr)
+void GisObject::setRaster(QString fileNameWithPath, gis::Crit3DRasterGrid* rasterPtr)
 {
     this->type = gisObjectRaster;
-    this->fileName = filename;
+    this->fileNameWithPath = fileNameWithPath;
+    this->fileName = getFileName(fileNameWithPath);
     this->isSelected = true;
 
     this->rasterPtr = rasterPtr;
 }
 
 
-void GisObject::setShape(QString filename, Crit3DShapeHandler* shapePtr)
+void GisObject::setShape(QString fileNameWithPath, Crit3DShapeHandler* shapePtr)
 {
     this->type = gisObjectShape;
-    this->fileName = filename;
+    this->fileNameWithPath = fileNameWithPath;
+    this->fileName = getFileName(fileNameWithPath);
     this->isSelected = true;
 
     this->shapePtr = shapePtr;
@@ -91,7 +83,7 @@ bool GisProject::loadRaster(QString fileNameWithPath)
     setDefaultDTMScale(myRaster->colorScale);
 
     GisObject* newObject = new(GisObject);
-    newObject->setRaster(getFileName(fileNameWithPath), myRaster);
+    newObject->setRaster(fileNameWithPath, myRaster);
     this->objectList.push_back(newObject);
 
     return (true);
@@ -108,8 +100,7 @@ bool GisProject::loadShapefile(QString fileNameWithPath)
     }
 
     GisObject* newObject = new(GisObject);
-    newObject->setShape(getFileName(fileNameWithPath), myShape);
-    newObject->setFileNameWithPath(fileNameWithPath);
+    newObject->setShape(fileNameWithPath, myShape);
     this->objectList.push_back(newObject);
 
     return (true);

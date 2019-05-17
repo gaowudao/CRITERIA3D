@@ -1,6 +1,6 @@
 #include "dbfTableDialog.h"
 
-DbfTableDialog::DbfTableDialog(Crit3DShapeHandler* shapeHandler)
+DbfTableDialog::DbfTableDialog(Crit3DShapeHandler* shapeHandler, QString fileName)
     :shapeHandler(shapeHandler)
 {
 
@@ -9,9 +9,9 @@ DbfTableDialog::DbfTableDialog(Crit3DShapeHandler* shapeHandler)
     QString file_temp = filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+"_temp.dbf";
     QFile::copy(filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+".dbf", file_temp);
 
-    shapeHandler->open(shapeHandler->getFilepath());
+    //shapeHandler->open(shapeHandler->getFilepath());
 
-
+    this->setWindowTitle(fileName);
     this->setMaximumWidth(800);
     this->setMaximumHeight(600);
     QVBoxLayout* mainLayout = new QVBoxLayout;
@@ -34,10 +34,8 @@ DbfTableDialog::DbfTableDialog(Crit3DShapeHandler* shapeHandler)
     m_DBFTableWidget = new QTableWidget();
     mainLayout->addWidget(m_DBFTableWidget);
 
-
     int colNumber = shapeHandler->getFieldNumbers();
     int rowNumber = shapeHandler->getDBFRecordCount();
-
 
     m_DBFTableWidget->setRowCount(rowNumber);
     m_DBFTableWidget->setColumnCount(colNumber);
@@ -98,7 +96,6 @@ DbfTableDialog::DbfTableDialog(Crit3DShapeHandler* shapeHandler)
     labelLengend->setText("Deleted rows: yellow");
 
     mainLayout->addWidget(labelLengend);
-
 
     connect(m_DBFTableWidget, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
     connect(addRow, &QAction::triggered, [=](){ this->addRowClicked(); });

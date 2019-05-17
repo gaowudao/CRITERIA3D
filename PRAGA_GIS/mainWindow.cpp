@@ -156,12 +156,6 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     }
 }
 
-/*
-void MainWindow::on_rasterOpacitySlider_sliderMoved(int position)
-{
-    this->rasterObj->setOpacity(position / 100.0);
-}*/
-
 
 void MainWindow::on_actionMapTerrain_triggered()
 {
@@ -224,7 +218,7 @@ QPoint MainWindow::getMapPoint(QPoint* point) const
 
 void MainWindow::addRasterObject(GisObject* myObject)
 {
-    QListWidgetItem* item = new QListWidgetItem("GRID_" + myObject->fileName);
+    QListWidgetItem* item = new QListWidgetItem("[GRID] " + myObject->fileName);
     item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
     item->setCheckState(Qt::Checked);
     ui->checkList->addItem(item);
@@ -242,7 +236,7 @@ void MainWindow::addRasterObject(GisObject* myObject)
 void MainWindow::addShapeObject(GisObject* myObject)
 {
 
-    QListWidgetItem* item = new QListWidgetItem("SHAPE_" + myObject->fileName);
+    QListWidgetItem* item = new QListWidgetItem("[SHAPE] " + myObject->fileName);
     item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
     item->setCheckState(Qt::Checked);
     ui->checkList->addItem(item);
@@ -321,7 +315,7 @@ void MainWindow::itemMenuRequested(const QPoint point)
     submenu.addAction("Close");
     if (myObject->type == gisObjectShape)
     {
-        submenu.addAction("Show info");
+        submenu.addAction("Show data");
         submenu.addAction("Open attribute table");
     }
     QAction* rightClickItem = submenu.exec(itemPoint);
@@ -353,15 +347,13 @@ void MainWindow::itemMenuRequested(const QPoint point)
             // TO DO SHAPE
         }
     }
-    else if (rightClickItem && rightClickItem->text().contains("Show info") )
+    else if (rightClickItem && rightClickItem->text().contains("Show data") )
     {
-        ShowProperties show(myObject->getFileNameWithPath());
+        ShowProperties showData(myObject->shapePtr, myObject->fileName);
     }
     else if (rightClickItem && rightClickItem->text().contains("Open attribute table") )
     {
-
-        myObject->shapePtr->setFilepath(myObject->getFileNameWithPath().toStdString());
-        DbfTableDialog DBFWidget(myObject->shapePtr);
+        DbfTableDialog showTable(myObject->shapePtr, myObject->fileName);
 
     }
     return;

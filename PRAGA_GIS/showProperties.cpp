@@ -1,74 +1,72 @@
 #include "showProperties.h"
 
-ShowProperties::ShowProperties(QString filepath)
-    :filepath(filepath)
+
+ShowProperties::ShowProperties(Crit3DShapeHandler* shapeHandler, QString filename)
+    :shapeHandler(shapeHandler)
 {
+    setFixedSize(600,600);
+    setWindowTitle(filename);
 
-    setFixedSize(800,600);
-    setWindowTitle("ShowProperties");
     QHBoxLayout* mainLayout = new QHBoxLayout;
-    QFormLayout* formLayout = new QFormLayout;
-    QVBoxLayout* verticalLayout = new QVBoxLayout;
-
-    QLabel countLabel;
-    countLabel.setText("Count");
-    shapeEntityCount = new QLineEdit();
+    QVBoxLayout* sxLayout = new QVBoxLayout;
+    QVBoxLayout* dxLayout = new QVBoxLayout;
 
     QLabel typeLabel;
     typeLabel.setText("Type");
     shapeType = new QLineEdit();
 
-    QLabel fields;
-    fields.setText("Nr. of attributes");
+    QLabel countLabel;
+    countLabel.setText("Nr. of shapes");
+    shapeEntityCount = new QLineEdit();
+
+    QLabel fieldsLabel;
+    fieldsLabel.setText("Nr. of attributes");
     fieldsCount = new QLineEdit();
 
-    formLayout->addWidget(&countLabel);
-    formLayout->addWidget(shapeEntityCount);
-    formLayout->addWidget(&typeLabel);
-    formLayout->addWidget(shapeType);
-    formLayout->addWidget(&fields);
-    formLayout->addWidget(fieldsCount);
+    QLabel infoLabel;
+    infoLabel.setText("Data");
+    shapeData = new QTextEdit();
+
+    sxLayout->addWidget(&typeLabel);
+    sxLayout->addWidget(shapeType);
+    sxLayout->addWidget(&countLabel);
+    sxLayout->addWidget(shapeEntityCount);
+    sxLayout->addWidget(&fieldsLabel);
+    sxLayout->addWidget(fieldsCount);
+    sxLayout->addWidget(&infoLabel);
+    sxLayout->addWidget(shapeData);
 
     treeWidget = new QTreeWidget();
     treeWidget->setColumnCount(1);
     QStringList headerLabels;
-    headerLabels.push_back("Node");
+    headerLabels.push_back("Shape");
     treeWidget->setHeaderLabels(headerLabels);
-    verticalLayout->addWidget(treeWidget);
+    dxLayout->addWidget(treeWidget);
 
-    DBFWidget = nullptr;
-
-    mainLayout->addLayout(formLayout);
-    mainLayout->addLayout(verticalLayout);
+    mainLayout->addLayout(sxLayout);
+    mainLayout->addLayout(dxLayout);
     this->setLayout(mainLayout);
 
-    if (!shapeHandler.open(filepath.toStdString()))
+    int count = shapeHandler->getShapeCount();
+    shapeEntityCount->setText(QString::number(count));
+    QString typeString = QString::fromStdString(shapeHandler->getTypeString());
+    shapeType->setText(typeString);
+    int fieldNr = shapeHandler->getFieldNumbers();
+    fieldsCount->setText(QString::number(fieldNr));
+
+
+    QList<QTreeWidgetItem *> items;
+    for (int i = 0; i < count; i++)
     {
-        QMessageBox::warning(this, tr("Bad file"), tr("Something is wrong"));
+        QStringList list(QString::number(i));
+        QTreeWidgetItem *item = new QTreeWidgetItem((QTreeWidget*)nullptr, list);
+        QVariant v(i);
+        item->setData(0, Qt::UserRole, v);
+        items.append(item);
     }
-    else
-    {
-        int count = shapeHandler.getShapeCount();
-        shapeEntityCount->setText(QString::number(count));
-        QString typeString = QString::fromStdString(shapeHandler.getTypeString());
-        shapeType->setText(typeString);
-        int fieldNr = shapeHandler.getFieldNumbers();
-        fieldsCount->setText(QString::number(fieldNr));
+    treeWidget->clear();
+    treeWidget->insertTopLevelItems(0, items);
 
-
-        QList<QTreeWidgetItem *> items;
-        for (int i = 0; i < count; i++)
-        {
-            QStringList list(QString::number(i));
-            QTreeWidgetItem *item = new QTreeWidgetItem((QTreeWidget*)nullptr, list);
-            QVariant v(i);
-            item->setData(0, Qt::UserRole, v);
-            items.append(item);
-        }
-        treeWidget->clear();
-        treeWidget->insertTopLevelItems(0, items);
-
-    }
     connect(treeWidget, &QTreeWidget::itemClicked, [=](QTreeWidgetItem *item, int i){ this->onSelectShape(item, i); });
 
     exec();
@@ -81,7 +79,6 @@ ShowProperties::~ShowProperties()
 
 void ShowProperties::onSelectShape(QTreeWidgetItem *item, int)
 {
-
     if (item != nullptr)
     {
         bool ok;
@@ -89,54 +86,52 @@ void ShowProperties::onSelectShape(QTreeWidgetItem *item, int)
 
         if (ok) {
             ShapeObject object;
-            shapeHandler.getShape(index, object);
+            shapeHandler->getShape(index, object);
 
-            qDebug() << "\nShape" << index;
-            int32_t vertexCount = int(object.getVertexCount());
-            qDebug() << "Nr vertices:" << vertexCount;
+            shapeData->clear();
+            QString myStr;
 
-            /* test print list of attributes*/
-            qDebug() << "List of attributes: " ;
-            for (int i = 0; i < shapeHandler.getFieldNumbers(); i++)
+            shapeData->append("Shape nr. " + QString::number(index));
+
+            /* print list of attributes */
+            shapeData->append("\nAttributes: ");
+            for (int i = 0; i < shapeHandler->getFieldNumbers(); i++)
             {
-                std::string nameField =  shapeHandler.getFieldName(i);
-                int typeField = shapeHandler.getFieldType(i);
-                qDebug() << QString::fromStdString(nameField) << " = ";
+                std::string nameField =  shapeHandler->getFieldName(i);
+                int typeField = shapeHandler->getFieldType(i);
                 if (typeField == 0)
                 {
-                    qDebug() << QString::fromStdString(shapeHandler.readStringAttribute(index,i)) << " ";
+                    myStr = QString::fromStdString(shapeHandler->readStringAttribute(index,i));
                 }
                 else if (typeField == 1)
                 {
-                    qDebug() << shapeHandler.readIntAttribute(index,i) << " ";
+                    myStr = QString::number(shapeHandler->readIntAttribute(index,i));
                 }
                 else if (typeField == 2)
                 {
-                    qDebug() << shapeHandler.readDoubleAttribute(index,i) << " ";
+                    myStr = QString::number(shapeHandler->readDoubleAttribute(index,i));
                 }
                 else
                 {
-                    qDebug() << "invalid field type ";
+                    myStr = "invalid field type ";
                 }
-
+                shapeData->append(QString::fromStdString(nameField) + " = " + myStr);
             }
-            /* */
 
+            /* print list of vertices */
+            int32_t vertexCount = int(object.getVertexCount());
+            shapeData->append("\nNr. of vertices: " + QString::number(vertexCount));
             const Point<double> *p_ptr = object.getVertices();
             const Point<double> *p_end = p_ptr + (vertexCount - 1);
 
-            if (p_ptr->x == p_end->x && p_ptr->y == p_end->y)
-            {
-                qDebug() << "First == Last";
-            }
-
+            bool isClosed = (p_ptr->x == p_end->x && p_ptr->y == p_end->y);
             while (p_ptr <= p_end)
             {
-                qDebug() << p_ptr->x << p_ptr->y;
+                shapeData->append("x = "+QString::number(p_ptr->x) + " y = " + QString::number(p_ptr->y));
                 p_ptr++;
             }
+            if (isClosed) shapeData->append("First vertex == last vertex");
         }
     }
 }
-
 

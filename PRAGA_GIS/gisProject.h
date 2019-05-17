@@ -19,8 +19,8 @@
 
     public:
         gisObjectType type;
-        QString fileName;
         QString fileNameWithPath;
+        QString fileName;
         bool isSelected;
 
         gis::Crit3DRasterGrid * rasterPtr;
@@ -29,9 +29,6 @@
         GisObject();
         void setRaster(QString filename, gis::Crit3DRasterGrid* rasterPtr);
         void setShape(QString filename, Crit3DShapeHandler* shapePtr);
-
-        QString getFileNameWithPath() const;
-        void setFileNameWithPath(const QString &value);
     };
 
 
