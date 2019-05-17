@@ -353,7 +353,7 @@ void MainWindow::itemMenuRequested(const QPoint point)
     }
     else if (rightClickItem && rightClickItem->text().contains("Open attribute table") )
     {
-        DbfTableDialog showTable(myObject->shapePtr, myObject->fileName);
+        DbfTableDialog Table(myObject->shapePtr, myObject->fileName);
 
     }
     return;

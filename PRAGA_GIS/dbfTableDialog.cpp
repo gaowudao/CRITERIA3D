@@ -153,8 +153,6 @@ void DbfTableDialog::removeRowClicked()
                 m_DBFTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
             }
 
-
-
             if (shapeHandler->deleteRecord(row) || !(indexList.at(0).data(Qt::DisplayRole).isValid()) )
             {
                 qDebug() << "deleteRecord = " << row;
