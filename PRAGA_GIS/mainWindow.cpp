@@ -333,6 +333,7 @@ void MainWindow::itemMenuRequested(const QPoint point)
     submenu.addAction("Close");
     if (myObject->type == gisObjectShape)
     {
+        submenu.addAction("Show info");
         submenu.addAction("Open attribute table");
     }
     QAction* rightClickItem = submenu.exec(itemPoint);
@@ -365,6 +366,10 @@ void MainWindow::itemMenuRequested(const QPoint point)
             ui->checkList->takeItem(ui->checkList->indexAt(point).row());
             // TO DO SHAPE
         }
+    }
+    else if (rightClickItem && rightClickItem->text().contains("Show info") )
+    {
+        ShowProperties show(myObject->getFileNameWithPath());
     }
     else if (rightClickItem && rightClickItem->text().contains("Open attribute table") )
     {

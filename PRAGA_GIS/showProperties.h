@@ -22,12 +22,10 @@ private:
     QLineEdit* shapeType;
     QLineEdit* fieldsCount;
     QTreeWidget* treeWidget;
-    QPushButton *dbfButton;
     QString filepath;
 
 private slots:
     void onSelectShape(QTreeWidgetItem *item, int column);
-    void on_dbfButton_clicked();
 };
 
 #endif // SHOWPROPERTIES_H

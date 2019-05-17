@@ -29,11 +29,6 @@ ShowProperties::ShowProperties(QString filepath)
     formLayout->addWidget(&fields);
     formLayout->addWidget(fieldsCount);
 
-    dbfButton = new QPushButton();
-    dbfButton->setText("Edit DBF Table");
-
-    formLayout->addWidget(dbfButton);
-
     treeWidget = new QTreeWidget();
     treeWidget->setColumnCount(1);
     QStringList headerLabels;
@@ -72,11 +67,8 @@ ShowProperties::ShowProperties(QString filepath)
         }
         treeWidget->clear();
         treeWidget->insertTopLevelItems(0, items);
-        dbfButton->setEnabled(true);
 
     }
-
-    connect(dbfButton, &QPushButton::clicked, [=](){ this->on_dbfButton_clicked(); });
     connect(treeWidget, &QTreeWidget::itemClicked, [=](QTreeWidgetItem *item, int i){ this->onSelectShape(item, i); });
 
     exec();
@@ -148,19 +140,3 @@ void ShowProperties::onSelectShape(QTreeWidgetItem *item, int)
 }
 
 
-void ShowProperties::on_dbfButton_clicked()
-{
-
-    QFileInfo filepathInfo(filepath);
-    QString file_temp = filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+"_temp.dbf";
-
-    QFile::copy(filepathInfo.absolutePath()+"/"+filepathInfo.baseName()+".dbf", file_temp);
-
-    if (DBFWidget != nullptr)
-    {
-        delete DBFWidget;
-        shapeHandler.openDBF(filepath.toStdString());
-    }
-    DBFWidget = new DbfTableDialog(&shapeHandler);
-
-}
