@@ -99,8 +99,13 @@
     };
 
     struct TdailyResidual{
+        double maxTDry;
+        double minTDry;
+        double maxTWet;
+        double minTWet;
         double maxT;
         double minT;
+
     };
 
 
@@ -168,7 +173,7 @@
         void initializeTemperatureParameters();
         int  doyFromDate(int day,int month,int year);
         void harmonicsFourier(double* variable, double *par, int nrPar, double* estimatedVariable, int nrEstimatedVariable);
-        void computeResiduals(double averageTMaxDry[],double averageTMaxWet[],double stdDevTMaxDry[],double stdDevTMaxWet[],double averageTMinDry[],double averageTMinWet[],double stdDevTMinDry[],double stdDevTMinWet[],int lengthArray,int idStation);
+        void computeResiduals(double* averageTMaxDry,double* averageTMaxWet,double* stdDevTMaxDry,double* stdDevTMaxWet,double* averageTMinDry,double* averageTMinWet,double* stdDevTMinDry,double* stdDevTMinWet,int lengthArray,int idStation);
 
 
     public:
