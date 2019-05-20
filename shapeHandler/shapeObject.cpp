@@ -174,7 +174,7 @@ std::vector<ShapeObject::Part> ShapeObject::getParts() const
 
 double ShapeObject::polygonArea(int indexPart)
 {
-    double area = 0;
+    double area = 0.0;
     if (indexPart > getPartCount())
     {
         return -9999;
@@ -182,14 +182,13 @@ double ShapeObject::polygonArea(int indexPart)
     long offSet = getParts().at(indexPart).offset;
     long length = getParts().at(indexPart).length;
 
-    for (long i = offSet; i < length; i++)
+    for (long i = offSet; i < offSet+length; i++)
     {
             int j = (i + 1) % length;
             area += vertices[i].x * vertices[j].y;
             area -= vertices[j].x * vertices[i].y;
     }
     return area / 2;
-
 }
 
 bool ShapeObject::isClockWise(int indexPart)

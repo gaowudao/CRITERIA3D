@@ -132,6 +132,7 @@ void ShowProperties::onSelectShape(QTreeWidgetItem *item, int)
                 qDebug() << "part offset" << object.getParts().at(i).offset;
                 qDebug() << "part length" << object.getParts().at(i).length;
                 qDebug() << "part type" << object.getParts().at(i).type;
+                qDebug() << "polygonArea " << object.polygonArea(i);  // (HOLE: COUNTERCLOCK)
                 qDebug() << "isClockWise " << object.isClockWise(i);  // (HOLE: COUNTERCLOCK)
                 qDebug() << "**********";
             }
