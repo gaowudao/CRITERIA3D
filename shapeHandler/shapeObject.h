@@ -127,6 +127,7 @@
         int                 index;
         int					type;
         unsigned int		vertexCount;
+        int                 partCount;
         Point<double>		*vertices;
         Box<double>			bounds;
         std::vector<Part>	parts;
@@ -157,6 +158,9 @@
         Box<double>				getBounds() const;
 
         std::vector<Part>		getParts() const;
+        int getPartCount() const;
+        double polygonArea(int indexPart);
+        bool isClockWise(int indexPart);
     };
 
     std::string getShapeTypeAsString(int shapeType);

@@ -22,6 +22,11 @@
 #include "shapeObject.h"
 
 
+int ShapeObject::getPartCount() const
+{
+    return partCount;
+}
+
 ShapeObject::ShapeObject()
     : index(-1), type(0), vertexCount(0), vertices(nullptr) {}
 
@@ -54,6 +59,7 @@ void ShapeObject::destroy()
         delete [] vertices;
         vertices = nullptr;
         vertexCount = 0;
+        partCount = 0;
     }
     type = 0;
     index = -1;
@@ -90,6 +96,7 @@ void ShapeObject::assign(const SHPObject* obj)
         int *pt = obj->panPartType;
         Part part;
         parts.clear();
+        partCount = obj->nParts;
         for (int n = 0; n < obj->nParts; n++) {
             part.type = *pt;
             part.offset = *ps;
@@ -115,6 +122,7 @@ void ShapeObject::assign(const ShapeObject& other)
         index = other.index;
         type = other.type;
         vertexCount = other.vertexCount;
+        partCount = other.partCount;
         if (vertexCount > 0) {
             vertices = new Point<double> [vertexCount];
             memcpy(vertices, other.vertices, other.vertexCount * sizeof(Point<double>));
@@ -164,6 +172,30 @@ std::vector<ShapeObject::Part> ShapeObject::getParts() const
     return parts;
 }
 
+double ShapeObject::polygonArea(int indexPart)
+{
+    double area = 0;
+    if (indexPart > getPartCount())
+    {
+        return -9999;
+    }
+    long offSet = getParts().at(indexPart).offset;
+    long length = getParts().at(indexPart).length;
+
+    for (long i = offSet; i < length; i++)
+    {
+            int j = (i + 1) % length;
+            area += vertices[i].x * vertices[j].y;
+            area -= vertices[j].x * vertices[i].y;
+    }
+    return area / 2;
+
+}
+
+bool ShapeObject::isClockWise(int indexPart)
+{
+    return polygonArea(indexPart) < 0;
+}
 
 std::string getShapeTypeAsString(int shapeType)
 {
