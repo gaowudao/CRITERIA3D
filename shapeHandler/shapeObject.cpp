@@ -212,6 +212,7 @@ bool ShapeObject::isClockWise(int indexPart)
     return polygonArea(indexPart) < 0;
 }
 
+// LC If the test point is on the border of the polygon, this algorithm will deliver unpredictable results
 int ShapeObject::pointInPolygon(Point<double> UTMpoint)
 {
     bool  oddNodes=false;
@@ -236,7 +237,7 @@ int ShapeObject::pointInPolygon(Point<double> UTMpoint)
         }
         if (oddNodes == true)
         {
-            return indexPart;
+            return index;
         }
     }
     return -9999;

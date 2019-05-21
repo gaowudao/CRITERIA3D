@@ -139,6 +139,9 @@ void ShowProperties::onSelectShape(QTreeWidgetItem *item, int)
                 qDebug() << "res " << res ;  // (HOLE: COUNTERCLOCK)
                 //qDebug() << "polygonArea " << object.polygonArea(i);  // (HOLE: COUNTERCLOCK)
                 //qDebug() << "**********";
+                Point<double> UTMpoint(610479, 4980160);
+                int shape = object.pointInPolygon(UTMpoint);
+                qDebug() << "shape " << shape ;
             }
             //
             while (p_ptr <= p_end)
