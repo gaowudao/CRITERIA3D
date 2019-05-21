@@ -19,6 +19,7 @@
  *******************************************************************/
 
 #include <string.h>
+#include <iostream> // debug
 #include "shapeObject.h"
 
 
@@ -175,6 +176,9 @@ std::vector<ShapeObject::Part> ShapeObject::getParts() const
 double ShapeObject::polygonArea(int indexPart)
 {
     double area = 0.0;
+    long i;
+    int j;
+
     if (indexPart > getPartCount())
     {
         return -9999;
@@ -182,18 +186,50 @@ double ShapeObject::polygonArea(int indexPart)
     long offSet = getParts().at(indexPart).offset;
     long length = getParts().at(indexPart).length;
 
-    for (long i = offSet; i < offSet+length; i++)
+    for (i = 0; i < length; i++)
     {
-            int j = (i + 1) % length;
-            area += vertices[i].x * vertices[j].y;
-            area -= vertices[j].x * vertices[i].y;
+        j = (i + 1) % length;
+        area += (vertices[i+offSet].x * vertices[j+offSet].y - vertices[j+offSet].x * vertices[i+offSet].y);
     }
-    return area / 2;
+
+    return (area / 2);
 }
 
 bool ShapeObject::isClockWise(int indexPart)
 {
     return polygonArea(indexPart) < 0;
+}
+
+// LC If the test point is on the border of the polygon, this algorithm will deliver unpredictable results
+int ShapeObject::pointInPolygon(Point<double> UTMpoint)
+{
+    bool  oddNodes=false;
+    for (int indexPart = 0; indexPart < getPartCount(); indexPart++)
+    {
+        if (!isClockWise(indexPart))
+        {
+            return -9999;  //HOLE
+        }
+        long offSet = getParts().at(indexPart).offset;
+        long length = getParts().at(indexPart).length;
+
+        int j = offSet+length - 1;
+        for (int i = offSet; i < (offSet+length); i++)
+        {
+            if ((vertices[i].y< UTMpoint.y && vertices[j].y >= UTMpoint.y ||   vertices[j].y < UTMpoint.y && vertices[i].y>= UTMpoint.y)
+                &&  (vertices[i].x <= UTMpoint.x || vertices[j].x <= UTMpoint.x))
+            {
+                oddNodes^=(vertices[i].x+(UTMpoint.y-vertices[i].y)/(vertices[j].y-vertices[i].y)*(vertices[j].x-vertices[i].x)<UTMpoint.x);
+            }
+            j=i;
+        }
+        if (oddNodes == true)
+        {
+            return index;
+        }
+    }
+    return -9999;
+
 }
 
 std::string getShapeTypeAsString(int shapeType)

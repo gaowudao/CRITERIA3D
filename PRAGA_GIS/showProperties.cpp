@@ -128,13 +128,20 @@ void ShowProperties::onSelectShape(QTreeWidgetItem *item, int)
             // DEBUG
             for (int i = 0; i<object.getParts().size(); i++ )
             {
-                qDebug() << "part size " << object.getParts().size();
-                qDebug() << "part offset" << object.getParts().at(i).offset;
-                qDebug() << "part length" << object.getParts().at(i).length;
-                qDebug() << "part type" << object.getParts().at(i).type;
-                qDebug() << "polygonArea " << object.polygonArea(i);  // (HOLE: COUNTERCLOCK)
-                qDebug() << "isClockWise " << object.isClockWise(i);  // (HOLE: COUNTERCLOCK)
-                qDebug() << "**********";
+                //qDebug() << "part size " << object.getParts().size();
+                //qDebug() << "part offset" << object.getParts().at(i).offset;
+                //qDebug() << "part length" << object.getParts().at(i).length;
+                //qDebug() << "part type" << object.getParts().at(i).type;
+                //qDebug() << "polygonArea " << object.polygonArea(i);  // (HOLE: COUNTERCLOCK)
+                //qDebug() << "**********";
+                //qDebug() << "i " << i;
+                bool res = object.isClockWise(i);
+                qDebug() << "res " << res ;  // (HOLE: COUNTERCLOCK)
+                //qDebug() << "polygonArea " << object.polygonArea(i);  // (HOLE: COUNTERCLOCK)
+                //qDebug() << "**********";
+                Point<double> UTMpoint(610479, 4980160);
+                int shape = object.pointInPolygon(UTMpoint);
+                qDebug() << "shape " << shape ;
             }
             //
             while (p_ptr <= p_end)
