@@ -86,6 +86,10 @@ enum estimateFunction {FUNCTION_CODE_SPHERICAL, FUNCTION_CODE_LINEAR, FUNCTION_C
         void choleskyDecompositionTriangularMatrix(double **a, int n, bool isLowerMatrix);
         void transposedSquareMatrix(double **a, int n);
         void transposedMatrix(double** inputMatrix, int nrRows, int nrColumns,double** outputMatrix);
+        void inverse(double** a,double** d,int n);
+        void cofactor(double** a,double** d,int n,double determinantOfMatrix);
+        double determinant(double** a,int n);
+        void minor(double** b,double** a,int i,int n);
     }
 
     namespace distribution

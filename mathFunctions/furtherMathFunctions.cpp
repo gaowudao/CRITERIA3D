@@ -964,6 +964,116 @@ namespace matricial
         }
     }
 
+    void minor(double** b,double** a,int i,int n)
+    {
+        //	calculate minor of matrix OR build new matrix : k-had = minor
+        int j,l,h=0,k=0;
+        for(l=1;l<n;l++)
+            for( j=0;j<n;j++){
+                if(j == i)
+                    continue;
+                b[h][k] = a[l][j];
+                k++;
+                if(k == (n-1)){
+                    h++;
+                    k=0;
+                }
+            }
+    }
+
+
+    double determinant(double** a,int n)
+    {
+        //	calculate determinte of matrix
+        int i;
+        double sum=0;
+        if (n == 1)
+            return a[0][0];
+        else if(n == 2)
+            return (a[0][0]*a[1][1]-a[0][1]*a[1][0]);
+        else
+        {
+            double** b = (double**)calloc(n, sizeof(double*));
+            for (int i=0;i<n;i++)
+                b[i]= (double*)calloc(n, sizeof(double));
+            for(i=0;i<n;i++)
+            {
+                minor(b,a,i,n);	// read function
+                sum = (sum + a[0][i]*pow(-1,i)*matricial::determinant(b,(n-1)));	// sum = determinte matrix
+            }
+            for (int i=0;i<n;i++)
+                free(b[i]);
+            free(b);
+            return sum;
+        }
+    }
+
+    void cofactor(double** a,double** d,int n,double determinantOfMatrix)
+    {
+        double** b;
+        double** c;
+        b = (double**)calloc(n, sizeof(double*));
+        for (int i=0;i<n;i++)
+        {
+            b[i]= (double*)calloc(n, sizeof(double));
+        }
+        c = (double**)calloc(n, sizeof(double*));
+        for (int i=0;i<n;i++)
+        {
+            c[i]= (double*)calloc(n, sizeof(double));
+        }
+        //int l,h,m,k,i,j;
+        int m,k;
+        for (int h=0;h<n;h++)
+            for (int l=0;l<n;l++)
+            {
+                m=0;
+                k=0;
+                for (int i=0;i<n;i++)
+                    for (int j=0;j<n;j++)
+                        if (i != h && j != l){
+                            b[m][k]=a[i][j];
+                            if (k<(n-2))
+                                k++;
+                            else{
+                                k=0;
+                                m++;
+                            }
+                        }
+                c[h][l] = pow(-1,(h+l))*matricial::determinant(b,(n-1));	// c = cofactor Matrix
+            }
+        matricial::transposedMatrix(c,n,n,d);
+        for (int h=0;h<n;h++)
+        {
+            for (int l=0;l<n;l++)
+            {
+                d[h][l] /= determinantOfMatrix;
+            }
+        }
+
+        for (int h=0;h<n;h++)
+        {
+            free(b[h]);
+            free(c[h]);
+        }
+        free(b);
+        free(c);
+    }
+
+    void inverse(double** a,double** d,int n)
+    {
+        double determinantOfMatrix;
+        determinantOfMatrix = determinant(a,n);
+        //	calculate inverse of matrix
+        if(determinantOfMatrix == 0)
+            printf("\nInverse of Entered Matrix is not possible\n");
+        else if(n == 1)
+            d[0][0] = 1;
+        else
+            matricial::cofactor(a,d,n,determinantOfMatrix);
+    }
+
+
 
 }
 

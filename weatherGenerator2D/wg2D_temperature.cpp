@@ -169,50 +169,56 @@ void weatherGenerator2D::computeTemperatureParameters()
         }
         for (int iDatum=0; iDatum<nrData; iDatum++)
         {
-            obsDataD[iStation][iDatum].tMax += EPSILON;
-            obsDataD[iStation][iDatum].tMin += EPSILON;
+           if ((fabs((obsDataD[iStation][iDatum].tMax)-NODATA))> EPSILON)
+            {
+                obsDataD[iStation][iDatum].tMax += EPSILON;
+
+            }
+            if ((fabs((obsDataD[iStation][iDatum].tMin)-NODATA))> EPSILON)
+            {
+                obsDataD[iStation][iDatum].tMin += EPSILON;
+            }
         }
         for (int iDatum=0; iDatum<nrData; iDatum++)
         {
             int dayOfYear;
             dayOfYear = weatherGenerator2D::doyFromDate(obsDataD[iStation][iDatum].date.day,obsDataD[iStation][iDatum].date.month,obsDataD[iStation][iDatum].date.year);
             if ((isLeapYear(obsDataD[iStation][iDatum].date.year)) && (obsDataD[iStation][iDatum].date.month > 2)) dayOfYear--;
-            dayOfYear--;
             if (obsDataD[iStation][iDatum].date.month == 2 && obsDataD[iStation][iDatum].date.day == 29)
             {
                 dayOfYear-- ;
             }
-            //if (fabs(obsDataD[iStation][iDatum].prec-NODATA)> EPSILON && getDoyFromDate(&(obsDataD[iStation][iDatum].date))== iDay)
-            //if (dayOfYear == 71) printf("%f  %f \n ",obsDataD[iStation][iDatum].prec, obsDataD[iStation][iDatum].tMax);
+            dayOfYear--;
+
             if (fabs(obsDataD[iStation][iDatum].prec-NODATA) > EPSILON)
+            {
+                if (obsDataD[iStation][iDatum].prec > parametersModel.precipitationThreshold)
                 {
-                    if (obsDataD[iStation][iDatum].prec > parametersModel.precipitationThreshold)
+                    if ((fabs((obsDataD[iStation][iDatum].tMax)-NODATA))> EPSILON)
                     {
-                        if ((fabs((obsDataD[iStation][iDatum].tMax)-NODATA))> EPSILON)
-                        {
-                            ++countTMaxWet[dayOfYear];
-                            averageTMaxWet[dayOfYear] += obsDataD[iStation][iDatum].tMax;
-                        }
-                        if ((fabs(obsDataD[iStation][iDatum].tMin)-NODATA)> EPSILON)
-                        {
-                            ++countTMinWet[dayOfYear];
-                            averageTMinWet[dayOfYear] += obsDataD[iStation][iDatum].tMin;
-                        }
+                        ++countTMaxWet[dayOfYear];
+                        averageTMaxWet[dayOfYear] += obsDataD[iStation][iDatum].tMax;
                     }
-                    else if (obsDataD[iStation][iDatum].prec <= parametersModel.precipitationThreshold)
+                    if ((fabs(obsDataD[iStation][iDatum].tMin)-NODATA)> EPSILON && obsDataD[iStation][iDatum].tMin> -100)
                     {
-                        if ((fabs((obsDataD[iStation][iDatum].tMax)-NODATA))> EPSILON)
-                        {
-                            ++countTMaxDry[dayOfYear];
-                            averageTMaxDry[dayOfYear] += obsDataD[iStation][iDatum].tMax;
-                        }
-                        if ((fabs((obsDataD[iStation][iDatum].tMin)-NODATA))> EPSILON)
-                        {
-                            ++countTMinDry[dayOfYear];
-                            averageTMinDry[dayOfYear] += obsDataD[iStation][iDatum].tMin;
-                        }
+                        ++countTMinWet[dayOfYear];
+                        averageTMinWet[dayOfYear] += obsDataD[iStation][iDatum].tMin;
                     }
                 }
+                else if (obsDataD[iStation][iDatum].prec <= parametersModel.precipitationThreshold)
+                {
+                    if ((fabs((obsDataD[iStation][iDatum].tMax)-NODATA))> EPSILON)
+                    {
+                        ++countTMaxDry[dayOfYear];
+                        averageTMaxDry[dayOfYear] += obsDataD[iStation][iDatum].tMax;
+                    }
+                    if ((fabs((obsDataD[iStation][iDatum].tMin)-NODATA))> EPSILON)
+                    {
+                        ++countTMinDry[dayOfYear];
+                        averageTMinDry[dayOfYear] += obsDataD[iStation][iDatum].tMin;
+                    }
+                }
+            }
 
         }
         for (int iDay=0; iDay<365; iDay++)
@@ -243,30 +249,30 @@ void weatherGenerator2D::computeTemperatureParameters()
             }            
             dayOfYear--; // to change from 1-365 to 0-364
             if (fabs(obsDataD[iStation][iDatum].prec - NODATA) > EPSILON)
+            {
+                if (obsDataD[iStation][iDatum].prec > parametersModel.precipitationThreshold)
                 {
-                    if (obsDataD[iStation][iDatum].prec > parametersModel.precipitationThreshold)
+                    if ((fabs((obsDataD[iStation][iDatum].tMax) - NODATA))> EPSILON)
                     {
-                        if ((fabs((obsDataD[iStation][iDatum].tMax) - NODATA))> EPSILON)
-                        {
-                            stdDevTMaxWet[dayOfYear] += (obsDataD[iStation][iDatum].tMax - averageTMaxWet[dayOfYear])*(obsDataD[iStation][iDatum].tMax - averageTMaxWet[dayOfYear]);
-                        }
-                        if ((fabs(obsDataD[iStation][iDatum].tMin) - NODATA)> EPSILON)
-                        {
-                            stdDevTMinWet[dayOfYear] += (obsDataD[iStation][iDatum].tMin - averageTMinWet[dayOfYear])*(obsDataD[iStation][iDatum].tMin - averageTMinWet[dayOfYear]);
-                        }
+                        stdDevTMaxWet[dayOfYear] += (obsDataD[iStation][iDatum].tMax - averageTMaxWet[dayOfYear])*(obsDataD[iStation][iDatum].tMax - averageTMaxWet[dayOfYear]);
                     }
-                    else if (obsDataD[iStation][iDatum].prec <= parametersModel.precipitationThreshold)
+                    if ((fabs(obsDataD[iStation][iDatum].tMin) - NODATA)> EPSILON)
                     {
-                        if ((fabs((obsDataD[iStation][iDatum].tMax) - NODATA))> EPSILON)
-                        {
-                            stdDevTMaxDry[dayOfYear] += (obsDataD[iStation][iDatum].tMax - averageTMaxDry[dayOfYear])*(obsDataD[iStation][iDatum].tMax - averageTMaxDry[dayOfYear]);
-                        }
-                        if ((fabs((obsDataD[iStation][iDatum].tMin) - NODATA))> EPSILON)
-                        {
-                            stdDevTMinDry[dayOfYear] += (obsDataD[iStation][iDatum].tMin - averageTMinDry[dayOfYear])*(obsDataD[iStation][iDatum].tMin - averageTMinDry[dayOfYear]);
-                        }
+                        stdDevTMinWet[dayOfYear] += (obsDataD[iStation][iDatum].tMin - averageTMinWet[dayOfYear])*(obsDataD[iStation][iDatum].tMin - averageTMinWet[dayOfYear]);
                     }
                 }
+                else if (obsDataD[iStation][iDatum].prec <= parametersModel.precipitationThreshold)
+                {
+                    if ((fabs((obsDataD[iStation][iDatum].tMax) - NODATA))> EPSILON)
+                    {
+                        stdDevTMaxDry[dayOfYear] += (obsDataD[iStation][iDatum].tMax - averageTMaxDry[dayOfYear])*(obsDataD[iStation][iDatum].tMax - averageTMaxDry[dayOfYear]);
+                    }
+                    if ((fabs((obsDataD[iStation][iDatum].tMin) - NODATA))> EPSILON)
+                    {
+                        stdDevTMinDry[dayOfYear] += (obsDataD[iStation][iDatum].tMin - averageTMinDry[dayOfYear])*(obsDataD[iStation][iDatum].tMin - averageTMinDry[dayOfYear]);
+                    }
+                }
+            }
 
         }
         for (int iDay=0; iDay<365; iDay++)
@@ -285,9 +291,9 @@ void weatherGenerator2D::computeTemperatureParameters()
             if (countTMinDry[iDay] != 0) stdDevTMinDry[iDay] = sqrt(stdDevTMinDry[iDay]);
             if (countTMinWet[iDay] != 0) stdDevTMinWet[iDay] = sqrt(stdDevTMinWet[iDay]);
 
-            //printf("%d %f %d %f %d\n",iDay,stdDevTMaxWet[iDay],countTMaxWet[iDay],stdDevTMinWet[iDay],countTMinWet[iDay]);
+            //printf("%d %f %d %f %d\n",iDay,stdDevTMaxWet[iDay],countTMaxWet[iDay],averageTMaxWet[iDay],countTMaxWet[iDay]);
+            //printf("%d %f %d %f %d\n",iDay,stdDevTMinWet[iDay],countTMinWet[iDay],averageTMinWet[iDay],countTMinWet[iDay]);
             //getchar();
-            //printf("%d %f %d %f %d\n",iDay,stdDevTMaxDry[iDay],countTMaxDry[iDay],stdDevTMinDry[iDay],countTMinDry[iDay]);
         }
         /*
         for (int iDatum=0; iDatum<nrData; iDatum++)
@@ -390,8 +396,18 @@ void weatherGenerator2D::computeTemperatureParameters()
         temperatureCoefficients[iStation].minTWet.standardDeviationFourierParameters.aSin2 = par[4];
         free(par);
 
-        weatherGenerator2D::computeResiduals(averageTMaxDry,averageTMaxWet,stdDevTMaxDry,stdDevTMaxWet,averageTMinDry,averageTMinWet,stdDevTMinDry,stdDevTMinWet,365,iStation);
-
+        weatherGenerator2D::computeResiduals(temperatureCoefficients[iStation].maxTDry.averageEstimation,temperatureCoefficients[iStation].maxTWet.averageEstimation,temperatureCoefficients[iStation].maxTDry.stdDevEstimation,temperatureCoefficients[iStation].maxTWet.stdDevEstimation,temperatureCoefficients[iStation].minTDry.averageEstimation,temperatureCoefficients[iStation].minTWet.averageEstimation,temperatureCoefficients[iStation].minTDry.stdDevEstimation,temperatureCoefficients[iStation].minTWet.stdDevEstimation,365,iStation);
+        /*for (int i=0;i<nrData;i++)
+        {
+            printf("%f %f\n",dailyResidual[i].maxTWet,dailyResidual[i].minTWet);
+        }*/
+        for (int i=0;i<365;i++)
+        {
+            //printf("%f %f\n",averageTMinWet[i],stdDevTMinWet[i]);
+            //printf("%f %f\n",temperatureCoefficients[iStation].minTWet.averageEstimation[i],temperatureCoefficients[iStation].minTWet.stdDevEstimation[i]);
+            //pressEnterToContinue();
+        }
+        pressEnterToContinue();
     } // end of iStation "for" cycle
     free(dailyResidual);
 
@@ -437,7 +453,11 @@ void weatherGenerator2D::harmonicsFourier(double* variable, double *par,int nrPa
             indexVariable++;
         }
     }
-
+    for(int i=0;i<nrValidDays;i++)
+    {
+        printf("%d  %f  %f \n",i, x[i],y[i]);
+    }
+    pressEnterToContinue();
     double *parMin = (double *) calloc(nrPar+1, sizeof(double));
     double* parMax = (double *) calloc(nrPar+1, sizeof(double));
     double* parDelta = (double *) calloc(nrPar+1, sizeof(double));
@@ -523,4 +543,81 @@ void weatherGenerator2D::computeResiduals(double* averageTMaxDry,double* average
         dailyResidual[i].maxT = dailyResidual[i].maxTWet + dailyResidual[i].maxTDry;
         dailyResidual[i].minT = dailyResidual[i].minTWet + dailyResidual[i].minTDry;
     }
+}
+
+void weatherGenerator2D::covarianceOfResiduals(double** covarianceMatrix, int lag)
+{
+    if (lag == 0)
+    {
+        covarianceMatrix[0][0] = 1.0;
+        covarianceMatrix[1][1] = 1.0;
+        covarianceMatrix[1][0] = 0.0;
+        covarianceMatrix[0][1] = 0.0;
+        int denominator = -1;
+
+        for (int i=0; i<nrData; i++)
+        {
+            if ((fabs(dailyResidual[i].maxT)> EPSILON) && (fabs(dailyResidual[i].minT)> EPSILON))
+            {
+                denominator++;
+                covarianceMatrix[0][1] += dailyResidual[i].maxT * dailyResidual[i].minT;
+            }
+        }
+        if (denominator > 0)
+        {
+            covarianceMatrix[0][1] /= denominator;
+        }
+        covarianceMatrix[1][0] =  covarianceMatrix[0][1];
+    }
+    else
+    {
+        covarianceMatrix[0][0] = 0.0;
+        covarianceMatrix[1][1] = 0.0;
+        covarianceMatrix[1][0] = 0.0;
+        covarianceMatrix[0][1] = 0.0;
+        int denominator11 = -2;
+        int denominator12 = -2;
+        int denominator21 = -2;
+        int denominator22 = -2;
+        for (int i=0; i<nrData-1; i++)
+        {
+            if ((fabs(dailyResidual[i].maxT)> EPSILON) && (fabs(dailyResidual[i+1].maxT)> EPSILON))
+            {
+                denominator11++;
+                covarianceMatrix[0][0] += dailyResidual[i].maxT*dailyResidual[i+1].maxT;
+            }
+            if ((fabs(dailyResidual[i].maxT)> EPSILON) && (fabs(dailyResidual[i+1].minT)> EPSILON))
+            {
+                denominator12++;
+                covarianceMatrix[0][1] += dailyResidual[i].maxT*dailyResidual[i+1].minT;
+            }
+            if ((fabs(dailyResidual[i].minT)> EPSILON) && (fabs(dailyResidual[i+1].maxT)> EPSILON))
+            {
+                denominator21++;
+                covarianceMatrix[1][0] += dailyResidual[i].minT*dailyResidual[i+1].maxT;
+            }
+            if ((fabs(dailyResidual[i].minT)> EPSILON) && (fabs(dailyResidual[i+1].minT)> EPSILON))
+            {
+                denominator22++;
+                covarianceMatrix[1][1] += dailyResidual[i].minT*dailyResidual[i+1].minT;
+            }
+        }
+        if (denominator11 != 0)
+        {
+            covarianceMatrix[0][0] /= denominator11;
+        }
+        if (denominator12 != 0)
+        {
+            covarianceMatrix[0][1] /= denominator12;
+        }
+        if (denominator21 != 0)
+        {
+            covarianceMatrix[1][0] /= denominator21;
+        }
+        if (denominator22 != 0)
+        {
+            covarianceMatrix[1][1] /= denominator22;
+        }
+    }
+
 }
