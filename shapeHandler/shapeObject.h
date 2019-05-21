@@ -161,6 +161,7 @@
         int getPartCount() const;
         double polygonArea(int indexPart);
         bool isClockWise(int indexPart);
+        int pointInPolygon(Point<double> UTMpoint);
     };
 
     std::string getShapeTypeAsString(int shapeType);

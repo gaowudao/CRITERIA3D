@@ -19,6 +19,7 @@
  *******************************************************************/
 
 #include <string.h>
+#include <iostream> // debug
 #include "shapeObject.h"
 
 
@@ -175,6 +176,9 @@ std::vector<ShapeObject::Part> ShapeObject::getParts() const
 double ShapeObject::polygonArea(int indexPart)
 {
     double area = 0.0;
+    long i;
+    int j;
+
     if (indexPart > getPartCount())
     {
         return -9999;
@@ -182,18 +186,61 @@ double ShapeObject::polygonArea(int indexPart)
     long offSet = getParts().at(indexPart).offset;
     long length = getParts().at(indexPart).length;
 
-    for (long i = offSet; i < offSet+length; i++)
+//    std::cout << "polygonArea offSet: " << offSet << std::endl; // debug
+//    std::cout << "polygonArea length: " << length << std::endl; // debug
+    for (i = offSet; i < (offSet+length); i++)
     {
-            int j = (i + 1) % length;
-            area += vertices[i].x * vertices[j].y;
-            area -= vertices[j].x * vertices[i].y;
+        j = (i + 1) % length;
+//        std::cout << "vertices[i].x: " << vertices[i].x << std::endl; // debug
+//        std::cout << "vertices[i].y: " << vertices[i].y << std::endl; // debug
+//        std::cout << "vertices[j].x: " << vertices[j].x << std::endl; // debug
+//        std::cout << "vertices[j].y: " << vertices[j].y << std::endl; // debug
+
+        area += (vertices[i].x * vertices[j].y - vertices[j].x * vertices[i].y);
+//        std::cout << "polygonArea area: " << area << std::endl; // debug
     }
-    return area / 2;
+
+//    std::cout << "polygonArea i: " << i << std::endl; // debug
+//    std::cout << "polygonArea j: " << j << std::endl; // debug
+//    std::cout << "polygonArea area: " << area << std::endl; // debug
+
+    return (area / 2);
 }
 
 bool ShapeObject::isClockWise(int indexPart)
 {
     return polygonArea(indexPart) < 0;
+}
+
+int ShapeObject::pointInPolygon(Point<double> UTMpoint)
+{
+    bool  oddNodes=false;
+    for (int indexPart = 0; indexPart < getPartCount(); indexPart++)
+    {
+        if (!isClockWise(indexPart))
+        {
+            return -9999;  //HOLE
+        }
+        long offSet = getParts().at(indexPart).offset;
+        long length = getParts().at(indexPart).length;
+
+        int j = offSet+length - 1;
+        for (int i = offSet; i < (offSet+length); i++)
+        {
+            if ((vertices[i].y< UTMpoint.y && vertices[j].y >= UTMpoint.y ||   vertices[j].y < UTMpoint.y && vertices[i].y>= UTMpoint.y)
+                &&  (vertices[i].x <= UTMpoint.x || vertices[j].x <= UTMpoint.x))
+            {
+                oddNodes^=(vertices[i].x+(UTMpoint.y-vertices[i].y)/(vertices[j].y-vertices[i].y)*(vertices[j].x-vertices[i].x)<UTMpoint.x);
+            }
+            j=i;
+        }
+        if (oddNodes == true)
+        {
+            return indexPart;
+        }
+    }
+    return -9999;
+
 }
 
 std::string getShapeTypeAsString(int shapeType)
