@@ -186,23 +186,11 @@ double ShapeObject::polygonArea(int indexPart)
     long offSet = getParts().at(indexPart).offset;
     long length = getParts().at(indexPart).length;
 
-//    std::cout << "polygonArea offSet: " << offSet << std::endl; // debug
-//    std::cout << "polygonArea length: " << length << std::endl; // debug
-    for (i = offSet; i < (offSet+length); i++)
+    for (i = 0; i < length; i++)
     {
         j = (i + 1) % length;
-//        std::cout << "vertices[i].x: " << vertices[i].x << std::endl; // debug
-//        std::cout << "vertices[i].y: " << vertices[i].y << std::endl; // debug
-//        std::cout << "vertices[j].x: " << vertices[j].x << std::endl; // debug
-//        std::cout << "vertices[j].y: " << vertices[j].y << std::endl; // debug
-
-        area += (vertices[i].x * vertices[j].y - vertices[j].x * vertices[i].y);
-//        std::cout << "polygonArea area: " << area << std::endl; // debug
+        area += (vertices[i+offSet].x * vertices[j+offSet].y - vertices[j+offSet].x * vertices[i+offSet].y);
     }
-
-//    std::cout << "polygonArea i: " << i << std::endl; // debug
-//    std::cout << "polygonArea j: " << j << std::endl; // debug
-//    std::cout << "polygonArea area: " << area << std::endl; // debug
 
     return (area / 2);
 }
