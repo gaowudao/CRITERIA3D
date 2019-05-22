@@ -25,6 +25,7 @@
         bool open(std::string filename);
         bool openDBF(std::string filename);
         bool openSHP(std::string filename);
+        bool isWGS84Proj(std::string prjFileName);
         void close();
         void closeDBF();
         void closeSHP();

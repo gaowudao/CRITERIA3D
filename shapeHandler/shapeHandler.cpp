@@ -1,5 +1,6 @@
 #include "shapeHandler.h"
 #include "iostream"
+#include <fstream>
 
 
 Crit3DShapeHandler::Crit3DShapeHandler()
@@ -101,6 +102,35 @@ bool Crit3DShapeHandler::openSHP(std::string filename)
 
     SHPGetInfo(m_handle, &m_count, &m_type, nullptr, nullptr);
     return true;
+}
+
+bool Crit3DShapeHandler::isWGS84Proj(std::string prjFileName)
+{
+    std::ifstream prjFile (prjFileName);
+    std::string line;
+    std::string proj = "WGS_1984";
+
+    if (prjFile.is_open())
+    {
+        while ( getline (prjFile,line) )
+        {
+            if (line.find(proj) != std::string::npos)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        prjFile.close();
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+
 }
 
 

@@ -48,7 +48,8 @@ SOURCES += main.cpp\
     gisProject.cpp \
     showProperties.cpp\
     dbfTableDialog.cpp \
-    dbfNewColDialog.cpp
+    dbfNewColDialog.cpp \
+    unitCropMap.cpp
 
 
 HEADERS += \
@@ -58,7 +59,8 @@ HEADERS += \
     gisProject.h \
     showProperties.h\
     dbfTableDialog.h \
-    dbfNewColDialog.h
+    dbfNewColDialog.h \
+    unitCropMap.h
 
 
 FORMS += mainWindow.ui \
