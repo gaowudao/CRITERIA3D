@@ -1,0 +1,47 @@
+#ifndef MAPSHAPEOBJECT_H
+#define MAPSHAPEOBJECT_H
+
+    #include "MapGraphics_global.h"
+    #include "MapGraphicsObject.h"
+    #include "MapGraphicsView.h"
+
+    #ifndef SHAPEHANDLER_H
+        #include "shapeHandler.h"
+    #endif
+
+    class MapGraphicsShapeObject : public MapGraphicsObject
+    {
+        Q_OBJECT
+    private:
+        Crit3DShapeHandler* shapePtr;
+        MapGraphicsView* view;
+
+    public:
+        /*!
+         * \brief mapShapeObject constructor
+         * \param view a MapGraphicsView pointer
+         * \param parent MapGraphicsObject
+         */
+        explicit MapGraphicsShapeObject(MapGraphicsView* view, MapGraphicsObject *parent = nullptr);
+
+        /*!
+         * \brief boundingRect pure-virtual from MapGraphicsObject
+         * Defines the outer bounds of the item as a rectangle; all painting must be restricted to inside an item's bounding rect.
+         * \return the bounding rect QRectF
+         */
+        QRectF boundingRect() const;
+
+        /*!
+         * \brief paint pure-virtual from MapGraphicsObject
+         * \param painter a QPainter pointer
+         * \param option a QStyleOptionGraphicsItem pointer
+         * \param widget a QWidget pointer
+         */
+        //void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+
+        void setShape(Crit3DShapeHandler* shapePtr);
+    };
+
+
+
+#endif // MAPSHAPEOBJECT_H
