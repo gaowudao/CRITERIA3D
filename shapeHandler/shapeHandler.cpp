@@ -65,6 +65,18 @@ bool Crit3DShapeHandler::open(std::string filename)
         m_fieldsList.push_back(std::string(fieldName));
         m_fieldsTypeList.push_back(fieldType);
     }
+
+    // check if WGS84 PROJ and set UTM
+    std::string filePrj = filename;
+    std::string::size_type i = filePrj.rfind('.', filePrj.length());
+    std::string prjExt = "prj";
+    if (i != std::string::npos)
+    {
+        filePrj.replace(i+1, prjExt.length(), prjExt);
+    }
+    isWGS84Proj(filePrj);
+    setUTMzone(filePrj);
+
     free(fieldName);
 
     return true;
