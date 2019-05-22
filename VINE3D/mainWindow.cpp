@@ -343,7 +343,7 @@ void MainWindow::on_actionRun_models_triggered()
        int myReturn = myForm.exec();
        if (myReturn == QDialog::Rejected) return;
 
-       myProject.runModels(myForm.dateTimeFirst, myForm.dateTimeLast, true, myProject.idArea);
+       myProject.runModels(myForm.dateTimeFirst, myForm.dateTimeLast, true, true, myProject.idArea);
 }
 
 QPoint MainWindow::getMapPoint(QPoint* point) const

@@ -70,7 +70,6 @@ gis::Crit3DRasterGrid* Crit3DMeteoMaps::getMapFromVar(meteoVariable myVar)
         return ET0Map;
     else if (myVar == leafWetness)
         return leafWetnessMap;
-
     else if (myVar == dailyAirTemperatureAvg)
         return avgDailyTemperatureMap;
     else if (myVar == dailyAirRelHumidityAvg)

@@ -1,5 +1,6 @@
 #include "shapeHandler.h"
 #include "iostream"
+#include <fstream>
 
 
 Crit3DShapeHandler::Crit3DShapeHandler()
@@ -64,6 +65,18 @@ bool Crit3DShapeHandler::open(std::string filename)
         m_fieldsList.push_back(std::string(fieldName));
         m_fieldsTypeList.push_back(fieldType);
     }
+
+    // check if WGS84 PROJ and set UTM
+    std::string filePrj = filename;
+    std::string::size_type i = filePrj.rfind('.', filePrj.length());
+    std::string prjExt = "prj";
+    if (i != std::string::npos)
+    {
+        filePrj.replace(i+1, prjExt.length(), prjExt);
+    }
+    isWGS84Proj(filePrj);
+    setUTMzone(filePrj);
+
     free(fieldName);
 
     return true;
@@ -101,6 +114,73 @@ bool Crit3DShapeHandler::openSHP(std::string filename)
 
     SHPGetInfo(m_handle, &m_count, &m_type, nullptr, nullptr);
     return true;
+}
+
+bool Crit3DShapeHandler::isWGS84Proj(std::string prjFileName)
+{
+    std::ifstream prjFile (prjFileName);
+    std::string line;
+    std::string proj = "WGS_1984";
+
+    if (prjFile.is_open())
+    {
+        while ( getline (prjFile,line) )
+        {
+            if (line.find(proj) != std::string::npos)
+            {
+                m_isWGS84 = true;
+                prjFile.close();
+                return true;
+            }
+            else
+            {
+                m_isWGS84 = false;
+                prjFile.close();
+                return false;
+            }
+        }
+    }
+    else
+    {
+        m_isWGS84 = false;
+        return false;
+    }
+
+}
+
+bool Crit3DShapeHandler::setUTMzone(std::string prjFileName)
+{
+    std::ifstream prjFile (prjFileName);
+    std::string line;
+    std::string utmString = "UTM_Zone_";
+    std::string separator = ",";
+
+    if (prjFile.is_open())
+    {
+        while ( getline (prjFile,line) )
+        {
+            std::size_t found = line.find(utmString);
+            if (found != std::string::npos)
+            {
+                int start = found+9;
+                std::size_t foundEnd = line.find(separator);
+                std::string utm = line.substr(start, foundEnd-1-start);
+                m_utmZone = std::stoi(utm);
+                prjFile.close();
+                return true;
+            }
+            else
+            {
+                prjFile.close();
+                return false;
+            }
+        }
+    }
+    else
+    {
+        return false;
+    }
+
 }
 
 
@@ -154,6 +234,16 @@ std::string	Crit3DShapeHandler::getFieldName(int fieldPos)
 DBFFieldType Crit3DShapeHandler::getFieldType(int fieldPos)
 {
     return m_fieldsTypeList.at(fieldPos);
+}
+
+bool Crit3DShapeHandler::getIsWGS84() const
+{
+    return m_isWGS84;
+}
+
+int Crit3DShapeHandler::getUtmZone() const
+{
+    return m_utmZone;
 }
 
 int Crit3DShapeHandler::readIntAttribute(int shapeNumber, int fieldPos)

@@ -1644,7 +1644,7 @@ bool Vine3DProject::LoadObsDataFilled(QDateTime firstTime, QDateTime lastTime)
 }
 
 
-bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool isSaveOutput, const QString& myArea)
+bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool saveOutput, bool computeDiseases, const QString& myArea)
 {
     if (! this->isProjectLoaded) return (false);
 
@@ -1687,7 +1687,7 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool isS
 
         if (finalHour > 0)
         {
-            if (isSaveOutput)
+            if (saveOutput)
             {
                 //create output directories
                 myOutputPathDaily = path + dailyOutputPath + myDate.toString("yyyy/MM/dd/");
@@ -1696,14 +1696,14 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool isS
                 if ((! myDir.mkpath(myOutputPathDaily)) || (! myDir.mkpath(myOutputPathHourly)))
                 {
                     this->logError("Creation output directories failed." );
-                    isSaveOutput = false;
+                    saveOutput = false;
                 }
             }
 
             // load average air temperature map, if exists
             loadDailyMeteoMap(this, dailyAirTemperatureAvg, myDate.addDays(-1), myArea);
 
-            if (! modelDailyCycle(isInitialState, getCrit3DDate(myDate), finalHour, this, myOutputPathHourly, isSaveOutput, myArea))
+            if (! modelDailyCycle(isInitialState, getCrit3DDate(myDate), finalHour, this, myOutputPathHourly, saveOutput, myArea))
             {
                 logError(errorString);
                 return false;
@@ -1712,7 +1712,7 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool isS
 
         if ((finalHour == 24) || ((myDate == lastDate) && (finalHour == 23)))
         {
-            if (isSaveOutput)
+            if (saveOutput)
             {
                 this->logInfo("Aggregate daily meteo data");
                 aggregateAndSaveDailyMap(this, airTemperature, aggregationMin, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
@@ -1726,7 +1726,6 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool isS
                 aggregateAndSaveDailyMap(this, windIntensity, aggregationMean, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
                 aggregateAndSaveDailyMap(this, globalIrradiance, aggregationIntegration, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
                 aggregateAndSaveDailyMap(this, leafWetness, aggregationSum, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
-                aggregateAndSaveDailyMap(this, actualEvaporation, aggregationSum, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
 
                 if (removeDirectory(myOutputPathHourly)) this->logInfo("Delete hourly files");
             }
@@ -1739,15 +1738,15 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool isS
             updateThermalSum(this, myDate);
 
             //powdery mildew
-            //computePowderyMildew(this);
+            if (computeDiseases) computePowderyMildew(this);
 
             //state and output
-            saveStateAndOutput(myDate, myArea);
+            saveStateAndOutput(myDate, myArea, computeDiseases);
         }
     }
 
     // Downy mildew (computation from 1 January)
-    //computeDownyMildew(this, firstDate, lastDate, hourTime2, myArea);
+    if (computeDiseases) computeDownyMildew(this, firstDate, lastDate, hourTime2, myArea);
 
     logInfo("end of run");
     return true;
@@ -1798,7 +1797,7 @@ bool Vine3DProject::loadStates(QDate myDate, QString myArea)
 }
 
 
-bool Vine3DProject::saveStateAndOutput(QDate myDate, QString myArea)
+bool Vine3DProject::saveStateAndOutput(QDate myDate, QString myArea, bool saveDiseases)
 {
     QDir myDir;
     QString statePath = path + "states/" + myDate.toString("yyyy/MM/dd/");
@@ -1830,9 +1829,12 @@ bool Vine3DProject::saveStateAndOutput(QDate myDate, QString myArea)
     if (!savePlantState(this, fruitBiomassVar, myDate, statePath, myArea)) return(false);
     if (!savePlantState(this, fruitBiomassIndexVar,myDate,statePath, myArea)) return(false);
 
-    if (!savePlantState(this, powderyAICVar, myDate, statePath, myArea)) return(false);
-    if (!savePlantState(this, powderyCurrentColoniesVar, myDate, statePath, myArea)) return(false);
-    if (!savePlantState(this, powderySporulatingColoniesVar, myDate, statePath, myArea)) return(false);
+    if (saveDiseases)
+    {
+        if (!savePlantState(this, powderyAICVar, myDate, statePath, myArea)) return(false);
+        if (!savePlantState(this, powderyCurrentColoniesVar, myDate, statePath, myArea)) return(false);
+        if (!savePlantState(this, powderySporulatingColoniesVar, myDate, statePath, myArea)) return(false);
+    }
 
     if (!saveWaterBalanceState(this, myDate, myArea, statePath, waterMatricPotential)) return (false);
 
@@ -1852,11 +1854,14 @@ bool Vine3DProject::saveStateAndOutput(QDate myDate, QString myArea)
     if (!savePlantOutput(this, transpirationGrassVar, myDate, outputPath, myArea, notes, false, false)) return(false);
     if (!savePlantOutput(this, wineYieldVar, myDate, outputPath, myArea, notes, false, true)) return(false);
 
-    if (!savePlantOutput(this, powderyAICVar, myDate, outputPath, myArea, notes, true, true)) return(false);
-    if (!savePlantOutput(this, powderySporulatingColoniesVar, myDate, outputPath, myArea, notes, true, true)) return(false);
-    if (!savePlantOutput(this, powderyCOLVar, myDate, outputPath, myArea, notes, false, true)) return(false);
-    if (!savePlantOutput(this, powderyINFRVar, myDate, outputPath, myArea, notes, false, true)) return(false);
-    if (!savePlantOutput(this, powderyPrimaryInfectionRiskVar, myDate, outputPath, myArea, notes, false, true)) return(false);
+    if (saveDiseases)
+    {
+        if (!savePlantOutput(this, powderyAICVar, myDate, outputPath, myArea, notes, true, true)) return(false);
+        if (!savePlantOutput(this, powderySporulatingColoniesVar, myDate, outputPath, myArea, notes, true, true)) return(false);
+        if (!savePlantOutput(this, powderyCOLVar, myDate, outputPath, myArea, notes, false, true)) return(false);
+        if (!savePlantOutput(this, powderyINFRVar, myDate, outputPath, myArea, notes, false, true)) return(false);
+        if (!savePlantOutput(this, powderyPrimaryInfectionRiskVar, myDate, outputPath, myArea, notes, false, true)) return(false);
+    }
 
     if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential_m", "10cm", outputPath, myArea, 0.1, 0.1)) return false;
     if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential_m", "30cm", outputPath, myArea, 0.3, 0.3)) return false;
@@ -1864,7 +1869,6 @@ bool Vine3DProject::saveStateAndOutput(QDate myDate, QString myArea)
     if (!saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential_m", "130cm", outputPath, myArea, 1.3, 1.3)) return false;
 
     if (!saveWaterBalanceOutput(this, myDate, degreeOfSaturation, "degreeOfSaturation", "soilDepth", outputPath, myArea, 0.0, double(WBSettings->soilDepth) - 0.01)) return false;
-    //if (!saveWaterBalanceOutput(this, myDate, soilSurfaceMoisture, "SSM", "5cm", outputPath, myArea, 0.0, 0.05)) return false;
     if (!saveWaterBalanceOutput(this, myDate, availableWaterContent, "waterContent_mm", "rootZone", outputPath, myArea, 0.0, double(WBSettings->soilDepth))) return false;
     if (!saveWaterBalanceCumulatedOutput(this, myDate, waterInflow, "waterInflow_l", "", outputPath, myArea)) return false;
     if (!saveWaterBalanceCumulatedOutput(this, myDate, bottomDrainage, "bottomDrainage_mm", "", outputPath, myArea)) return false;

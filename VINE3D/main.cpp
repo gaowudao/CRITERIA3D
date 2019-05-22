@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
         QDateTime firstDateTime = QDateTime(firstDay);
         firstDateTime.setTime(QTime(1,0,0,0));
 
-        myProject.runModels(firstDateTime, lastDateTime, true, myProject.idArea);
+        myProject.runModels(firstDateTime, lastDateTime, true, true, myProject.idArea);
 
         myProject.closeProject();
 
