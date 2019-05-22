@@ -12,7 +12,7 @@
     #include "MapGraphicsView.h"
     #include "MapGraphicsScene.h"
     #include "tileSources/OSMTileSource.h"
-    #include "rasterObject.h"
+    #include "mapGraphicsRasterObject.h"
     #include "stationMarker.h"
     #include "colorlegend.h"
     #include "dbArkimet.h"

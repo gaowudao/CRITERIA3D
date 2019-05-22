@@ -1,5 +1,5 @@
-#ifndef MAPSHAPEOBJECT_H
-#define MAPSHAPEOBJECT_H
+#ifndef MAPGRAPHICSSHAPEOBJECT_H
+#define MAPGRAPHICSSHAPEOBJECT_H
 
     #include "MapGraphics_global.h"
     #include "MapGraphicsObject.h"
@@ -44,4 +44,4 @@
 
 
 
-#endif // MAPSHAPEOBJECT_H
+#endif // MAPGRAPHICSSHAPEOBJECT_H

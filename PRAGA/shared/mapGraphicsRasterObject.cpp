@@ -1,5 +1,5 @@
 /*!
-    \file rasterObject.cpp
+    \file mapGraphicsRasterObject.cpp
 
     \abstract draw raster in MapGraphics widget
 
