@@ -17,6 +17,8 @@
         std::string m_filepath;
         std::vector<std::string> m_fieldsList;
         std::vector<DBFFieldType> m_fieldsTypeList;
+        bool m_isWGS84;
+        int m_utmZone;
 
     public:
         Crit3DShapeHandler();
@@ -26,6 +28,7 @@
         bool openDBF(std::string filename);
         bool openSHP(std::string filename);
         bool isWGS84Proj(std::string prjFileName);
+        bool setUTMzone(std::string prjFileName);
         void close();
         void closeDBF();
         void closeSHP();
@@ -53,6 +56,8 @@
         void packDBF(std::string newFile);
         void packSHP(std::string newFile);
         bool existRecordDeleted();
+        bool getIsWGS84() const;
+        int getUtmZone() const;
     };
 
 
