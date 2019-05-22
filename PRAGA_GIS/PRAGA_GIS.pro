@@ -42,25 +42,27 @@ CONFIG(debug, debug|release) {
 
 
 SOURCES += main.cpp\
-    ../PRAGA/shared/rasterObject.cpp \
-    ../PRAGA/shared/colorlegend.cpp \
+    ../PRAGA/shared/colorLegend.cpp \
     mainWindow.cpp \
     gisProject.cpp \
     showProperties.cpp\
     dbfTableDialog.cpp \
     dbfNewColDialog.cpp \
-    unitCropMap.cpp
+    unitCropMap.cpp \
+    ../PRAGA/shared/mapGraphicsShapeObject.cpp \
+    ../PRAGA/shared/mapGraphicsRasterObject.cpp
 
 
 HEADERS += \
-    ../PRAGA/shared/rasterObject.h \
-    ../PRAGA/shared/colorlegend.h \
+    ../PRAGA/shared/colorLegend.h \
     mainWindow.h \
     gisProject.h \
     showProperties.h\
     dbfTableDialog.h \
     dbfNewColDialog.h \
-    unitCropMap.h
+    unitCropMap.h \
+    ../PRAGA/shared/mapGraphicsShapeObject.h \
+    ../PRAGA/shared/mapGraphicsRasterObject.h
 
 
 FORMS += mainWindow.ui \

@@ -61,10 +61,7 @@ SOURCES += \
     ../PRAGA/shared/project.cpp \
     ../PRAGA/shared/formInfo.cpp \
     ../PRAGA/shared/settingsDialog.cpp \
-    ../PRAGA/shared/rubberBand.cpp \
     ../PRAGA/shared/stationMarker.cpp \
-    ../PRAGA/shared/colorlegend.cpp \
-    ../PRAGA/shared/rasterObject.cpp \
     ../PRAGA/shared/dialogWindows.cpp \
     ../PRAGA/shared/interpolationDialog.cpp \
     atmosphere.cpp \
@@ -78,17 +75,17 @@ SOURCES += \
     mainWindow.cpp \
     formPeriod.cpp \
     ../CRITERIA3D/shared/soil3D.cpp \
-    ../CRITERIA3D/shared/meteoMaps.cpp
+    ../CRITERIA3D/shared/meteoMaps.cpp \
+    ../PRAGA/shared/mapGraphicsRasterObject.cpp \
+    ../PRAGA/shared/rubberBand.cpp \
+    ../PRAGA/shared/colorLegend.cpp
 
 HEADERS  += \
     ../PRAGA/shared/interpolationCmd.h \
     ../PRAGA/shared/project.h \
     ../PRAGA/shared/formInfo.h \
     ../PRAGA/shared/settingsDialog.h \
-    ../PRAGA/shared/rubberBand.h \
     ../PRAGA/shared/stationMarker.h \
-    ../PRAGA/shared/colorlegend.h \
-    ../PRAGA/shared/rasterObject.h \
     ../PRAGA/shared/interpolationDialog.h \
     atmosphere.h \
     dataHandler.h \
@@ -100,7 +97,10 @@ HEADERS  += \
     mainWindow.h \
     formPeriod.h \
     ../CRITERIA3D/shared/soil3D.h \
-    ../CRITERIA3D/shared/meteoMaps.h
+    ../CRITERIA3D/shared/meteoMaps.h \
+    ../PRAGA/shared/mapGraphicsRasterObject.h \
+    ../PRAGA/shared/rubberBand.h \
+    ../PRAGA/shared/colorLegend.h
 
 FORMS    += \
     ../PRAGA/shared/formInfo.ui \

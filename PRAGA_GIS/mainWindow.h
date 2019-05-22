@@ -7,9 +7,9 @@
     #include "tileSources/OSMTileSource.h"
     #include "Position.h"
 
-    #include "rasterObject.h"
+    #include "mapGraphicsRasterObject.h"
     #include "gisProject.h"
-    #include "colorlegend.h"
+    #include "colorLegend.h"
     #include "showProperties.h"
 
     namespace Ui
