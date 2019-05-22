@@ -97,7 +97,6 @@ SOURCES += main.cpp\
     shared/rubberBand.cpp \
     shared/formInfo.cpp \
     shared/settingsDialog.cpp \
-    shared/colorlegend.cpp \
     shared/mapGraphicsRasterObject.cpp \
     shared/interpolationDialog.cpp \
     shared/interpolationCmd.cpp \
@@ -106,7 +105,8 @@ SOURCES += main.cpp\
     pragaSettingsDialog.cpp \
     pragaDialogs.cpp \
     climateFieldsDialog.cpp \
-    keyboardFilter.cpp
+    keyboardFilter.cpp \
+    shared/colorLegend.cpp
 
 
 HEADERS  += mainWindow.h \
@@ -119,7 +119,6 @@ HEADERS  += mainWindow.h \
     shared/formInfo.h \
     shared/settingsDialog.h \
     shared/mapGraphicsRasterObject.h \
-    shared/colorlegend.h \
     shared/interpolationDialog.h \
     shared/interpolationCmd.h \
     shared/project.h \
@@ -127,7 +126,8 @@ HEADERS  += mainWindow.h \
     pragaSettingsDialog.h \
     pragaDialogs.h \
     climateFieldsDialog.h \
-    keyboardFilter.h
+    keyboardFilter.h \
+    shared/colorLegend.h
 
 
 FORMS    += mainWindow.ui \
