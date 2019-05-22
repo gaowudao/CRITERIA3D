@@ -173,13 +173,13 @@ QString getOutputNameHourly(meteoVariable myVar, Crit3DTime myTime, QString myAr
 {
     QDateTime myQDateTime = getQDateTime(myTime);
     QString varName = getVarNameFromMeteoVariable(myVar);
-    return "ARPA_" + varName + "_" + myArea + "_" + myQDateTime.toString("yyyyMMddThhmm");
+    return varName + "_" + myArea + "_" + myQDateTime.toString("yyyyMMddThhmm");
 }
 
 QString getOutputNameHourly(meteoVariable myVar, QDateTime myTime, QString myArea)
 {
     QString varName = getVarNameFromMeteoVariable(myVar);
-    return "ARPA_" + varName + "_" + myArea + "_" + myTime.toString("yyyyMMddThhmm");
+    return varName + "_" + myArea + "_" + myTime.toString("yyyyMMddThhmm");
 }
 
 

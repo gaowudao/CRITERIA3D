@@ -94,7 +94,7 @@ QString grapevineError(Crit3DTime myTime, long row, long col, QString errorIni)
 
 bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
                      Vine3DProject* myProject, const QString& myOutputPath,
-                     bool isSave, const QString& myArea)
+                     bool saveOutput, const QString& myArea)
 {
 
     TfieldOperation operation;
@@ -122,22 +122,22 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
         // meteo interpolation
         myProject->logInfo("Interpolate meteo data");
         myProject->meteoMaps->clean();
-        interpolateAndSaveHourlyMeteo(myProject, airTemperature, myCurrentTime, myOutputPath, isSave, myArea);
-        interpolateAndSaveHourlyMeteo(myProject, precipitation, myCurrentTime, myOutputPath, isSave, myArea);
-        interpolateAndSaveHourlyMeteo(myProject, airRelHumidity, myCurrentTime, myOutputPath, false, myArea);
-        interpolateAndSaveHourlyMeteo(myProject, windIntensity, myCurrentTime, myOutputPath, false, myArea);
-        interpolateAndSaveHourlyMeteo(myProject, globalIrradiance, myCurrentTime, myOutputPath, false, myArea);
+        interpolateAndSaveHourlyMeteo(myProject, airTemperature, myCurrentTime, myOutputPath, saveOutput, myArea);
+        interpolateAndSaveHourlyMeteo(myProject, precipitation, myCurrentTime, myOutputPath, saveOutput, myArea);
+        interpolateAndSaveHourlyMeteo(myProject, airRelHumidity, myCurrentTime, myOutputPath, saveOutput, myArea);
+        interpolateAndSaveHourlyMeteo(myProject, windIntensity, myCurrentTime, myOutputPath, saveOutput, myArea);
+        interpolateAndSaveHourlyMeteo(myProject, globalIrradiance, myCurrentTime, myOutputPath, saveOutput, myArea);
 
         // ET0
-        if (computeET0Map(myProject))
+        if (computeET0Map(myProject) && saveOutput)
         {
             saveMeteoHourlyOutput(myProject, referenceEvapotranspiration, myOutputPath, myCurrentTime, myArea);
         }
 
         // Leaf Wetness
-        if (computeLeafWetnessMap(myProject))
+        if (computeLeafWetnessMap(myProject) && saveOutput)
         {
-            //saveMeteoHourlyOutput(myProject, leafWetness, myOutputPath, myCurrentTime, myArea);
+            saveMeteoHourlyOutput(myProject, leafWetness, myOutputPath, myCurrentTime, myArea);
         }
 
         if (isInitialState)
@@ -190,7 +190,7 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
                     {
                         if(!myProject->grapevine.initializeStatePlant(getDoyFromDate(myDate), &(myProject->modelCases[modelCaseIndex])))
                         {
-                            myProject->logInfo("It's not possible initialize grapevine in the present growing season.\nIt will be replaced by a complete grass cover.");
+                            myProject->logInfo("Could not initialize grapevine in the present growing season.\nIt will be replaced by a complete grass cover.");
                         }
                     }
                     else
@@ -256,8 +256,6 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
             resetWaterBalanceMap(myProject);
 
         updateWaterBalanceMaps(myProject);
-
-        // saveMeteoHourlyOutput(myProject, actualEvaporation, myOutputPath, myCurrentTime, myArea);
 
         if (isInitialState) isInitialState = false;
     }

@@ -145,7 +145,7 @@
         void findVine3DLastMeteoDate();
 
         bool loadStates(QDate myDate, QString myArea);
-        bool saveStateAndOutput(QDate myDate, QString myArea);
+        bool saveStateAndOutput(QDate myDate, QString myArea, bool saveDiseases);
 
         int getIndexPointFromId(QString myId);
 
@@ -160,7 +160,7 @@
         int getSoilIndex(long row, long col);
         soil::Crit3DHorizon* getSoilHorizon(long row, long col, int layer);
 
-        bool runModels(QDateTime myTime1, QDateTime myTime2, bool isSaveOutput, const QString& myArea);
+        bool runModels(QDateTime myTime1, QDateTime myTime2, bool saveOutput, bool computeDiseases, const QString& myArea);
     };
 
 #endif // PROJECT_H
