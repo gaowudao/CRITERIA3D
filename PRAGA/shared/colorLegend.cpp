@@ -1,7 +1,6 @@
 #include "commonConstants.h"
 #include "colorLegend.h"
 #include <QPainter>
-#include <QDebug>
 #include <cmath>
 
 
@@ -38,7 +37,7 @@ void ColorLegend::paintEvent(QPaintEvent *event)
     int nrStep = this->colorScale->nrColors;
     float step = (colorScale->maximum - colorScale->minimum) / float(nrStep);
     float dx = float(legendWidth) / float(nrStep+1);
-    int stepText = maxValue(nrStep/4, 1);
+    int stepText = maxValue(nrStep / 4, 1);
 
     float value = this->colorScale->minimum;
     for (int i = 0; i<=nrStep; i++)
