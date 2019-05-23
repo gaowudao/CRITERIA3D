@@ -827,7 +827,20 @@ namespace matricial
         {
             for (int j=0 ; j< colA ; j++)
             {
-                c[i][j]= a[i][j]+b[i][j];
+                c[i][j]= a[i][j] + b[i][j];
+            }
+        }
+        return CRIT3D_OK ;
+    }
+
+    int matrixDifference(double**a , double**b, int rowA , int rowB, int colA, int colB, double **c)
+    {
+        if ((rowA != rowB) || (colA!=colB)) return NODATA;
+        for (int i = 0 ; i< rowA; i++)
+        {
+            for (int j=0 ; j< colA ; j++)
+            {
+                c[i][j]= a[i][j] - b[i][j];
             }
         }
         return CRIT3D_OK ;
@@ -1075,6 +1088,47 @@ namespace matricial
             matricial::cofactor(a,d,n,determinantOfMatrix);
     }
 
+    int eigenSystemMatrix2x2(double** a, double* eigenvalueA, double** eigenvectorA, int n)
+    {
+        double b,c;
+        b = - a[0][0] - a[1][1];
+        c = (a[0][0] * a[1][1] - a[0][1] * a[1][0]);
+        if ((b*b - 4*c) < 0) return PARAMETER_ERROR;
+        if (fabs(a[0][1]) < EPSILON)
+        {
+            eigenvalueA[0]= a[0][0];
+            eigenvalueA[1]= a[1][1];
+
+            eigenvectorA[1][0] = 1;
+            eigenvectorA[0][0] = (eigenvalueA[0] - a[1][1]) * eigenvectorA[1][0];
+
+            eigenvectorA[0][1] = 0;
+            eigenvectorA[1][1] = 1;
+            return 0;
+        }
+        if (fabs(a[1][0]) < EPSILON)
+        {
+            eigenvalueA[0]= a[0][0];
+            eigenvalueA[1]= a[1][1];
+
+            eigenvectorA[0][0] = 1;
+            eigenvectorA[1][0] = 0;
+
+
+            eigenvectorA[0][1] = 1;
+            eigenvectorA[1][1] = (eigenvalueA[1] - a[0][0]) * eigenvectorA[0][1];
+            return 0;
+
+        }
+        eigenvalueA[0] = (-b + sqrt(b*b - 4*c))/2;
+        eigenvalueA[1] = (-b - sqrt(b*b - 4*c))/2;
+        for (int i=0;i<2;i++)
+        {
+            eigenvectorA[0][i] = 1;
+            eigenvectorA[1][i] = (eigenvalueA[i]-a[0][0])/a[0][1];
+        }
+        return 0;
+    }
 
 
 }
