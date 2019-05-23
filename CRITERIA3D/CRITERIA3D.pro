@@ -70,9 +70,9 @@ SOURCES += main.cpp\
     ../PRAGA/shared/settingsDialog.cpp \
     ../PRAGA/shared/interpolationDialog.cpp \
     ../PRAGA/shared/interpolationCmd.cpp \
-    ../PRAGA/shared/rasterObject.cpp \
+    ../PRAGA/shared/mapGraphicsRasterObject.cpp \
     ../PRAGA/shared/rubberBand.cpp \
-    ../PRAGA/shared/colorlegend.cpp \
+    ../PRAGA/shared/colorLegend.cpp \
     ../PRAGA/shared/project.cpp \
     ../PRAGA/shared/formInfo.cpp \
     waterBalance3D.cpp \
@@ -88,9 +88,9 @@ HEADERS += mainwindow.h \
     ../PRAGA/shared/settingsDialog.h \
     ../PRAGA/shared/interpolationDialog.h \
     ../PRAGA/shared/interpolationCmd.h  \
-    ../PRAGA/shared/rasterObject.h \
+    ../PRAGA/shared/mapGraphicsRasterObject.h \
     ../PRAGA/shared/rubberBand.h \
-    ../PRAGA/shared/colorlegend.h \
+    ../PRAGA/shared/colorLegend.h \
     ../PRAGA/shared/project.h \
     ../PRAGA/shared/formInfo.h \
     waterBalance3D.h \

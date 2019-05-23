@@ -11,8 +11,8 @@
     #include "MapGraphicsView.h"
     #include "MapGraphicsScene.h"
     #include "stationMarker.h"
-    #include "rasterObject.h"
-    #include "colorlegend.h"
+    #include "mapGraphicsRasterObject.h"
+    #include "colorLegend.h"
     #include "viewer3d.h"
 
     enum visualizationType {showNone, showLocation, showCurrentVariable};
