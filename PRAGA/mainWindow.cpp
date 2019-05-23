@@ -1079,7 +1079,7 @@ void MainWindow::addMeteoPoints()
 
 void MainWindow::on_rasterScaleButton_clicked()
 {
-    if (this->rasterObj->currentRaster == nullptr)
+    if (this->rasterObj->getRaster() == nullptr)
     {
         QMessageBox::information(nullptr, "No Raster", "Load raster before");
         return;
@@ -1088,7 +1088,7 @@ void MainWindow::on_rasterScaleButton_clicked()
     meteoVariable myVar = chooseColorScale();
     if (myVar != noMeteoVar)
     {
-        setColorScale(myVar, this->rasterObj->currentRaster->colorScale);
+        setColorScale(myVar, this->rasterObj->getRaster()->colorScale);
         ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myVar)));
     }
 }
@@ -1130,7 +1130,7 @@ void MainWindow::on_frequencyButton_clicked()
 
 void MainWindow::on_rasterRestoreButton_clicked()
 {
-    if (this->rasterObj->currentRaster == nullptr)
+    if (this->rasterObj->getRaster() == nullptr)
     {
         QMessageBox::information(nullptr, "No Raster", "Load raster before");
         return;
