@@ -181,7 +181,7 @@ void RasterObject::initializeIndexesMatrix()
 }
 
 
-bool RasterObject::setMapResolution()
+void RasterObject::setMapResolution()
 {
     QPointF bottomLeft = this->view->mapToScene(QPoint(0.0, this->view->height()));
     QPointF topRight = this->view->mapToScene(QPoint(this->view->width(),0.0));
@@ -198,7 +198,6 @@ bool RasterObject::setMapResolution()
     qreal dydegree = heightlat / this->view->height();
 
     this->geoMap->setResolution(dxdegree, dydegree);
-    return true;
 }
 
 

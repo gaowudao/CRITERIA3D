@@ -16,10 +16,12 @@
     {
         Q_OBJECT
     private:
-        Crit3DShapeHandler* shapePtr;
         MapGraphicsView* view;
+        Crit3DShapeHandler* shapePointer;
         gis::Crit3DGeoMap* geoMap;
         bool isDrawing;
+
+        void setMapResolution();
 
     public:
         /*!
@@ -45,8 +47,10 @@
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
         void setShape(Crit3DShapeHandler* shapePtr);
-        void updateCenter();
+        Crit3DShapeHandler* getShape();
+
         void setDrawing(bool value);
+        void updateCenter();
     };
 
 

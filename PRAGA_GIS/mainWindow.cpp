@@ -224,7 +224,7 @@ QPoint MainWindow::getMapPoint(QPoint* point) const
 
 void MainWindow::addRasterObject(GisObject* myObject)
 {
-    QListWidgetItem* item = new QListWidgetItem("[GRID] " + myObject->fileName);
+    QListWidgetItem* item = new QListWidgetItem("[RASTER] " + myObject->fileName);
     item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
     item->setCheckState(Qt::Checked);
     ui->checkList->addItem(item);

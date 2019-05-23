@@ -42,12 +42,41 @@ void MapGraphicsShapeObject::paint(QPainter *painter, const QStyleOptionGraphics
 
     if (this->isDrawing)
     {
-        /*setMapResolution();
+        setMapResolution();
 
-        if (this->shapePtr != nullptr)
-            drawRaster(this->currentRaster, painter, this->drawBorder);
-
-        if (this->legend != nullptr)
-            this->legend->repaint();*/
+        //if (this->shapePointer != nullptr)
+           // drawRaster(this->currentRaster, painter, this->drawBorder);
     }
+}
+
+
+void MapGraphicsShapeObject::setShape(Crit3DShapeHandler* shapePtr)
+{
+    this->shapePointer = shapePtr;
+}
+
+
+Crit3DShapeHandler* MapGraphicsShapeObject::getShape()
+{
+    return this->shapePointer;
+}
+
+
+void MapGraphicsShapeObject::setMapResolution()
+{
+    QPointF bottomLeft = this->view->mapToScene(QPoint(0.0, this->view->height()));
+    QPointF topRight = this->view->mapToScene(QPoint(this->view->width(),0.0));
+
+    this->geoMap->bottomLeft.longitude = bottomLeft.x();
+    this->geoMap->bottomLeft.latitude = bottomLeft.y();
+    this->geoMap->topRight.longitude = topRight.x();
+    this->geoMap->topRight.latitude = topRight.y();
+
+    const qreal widthLon = qAbs<qreal>(topRight.x() - bottomLeft.x());
+    const qreal heightlat = qAbs<qreal>(topRight.y() - bottomLeft.y());
+
+    qreal dxdegree = widthLon / this->view->width();
+    qreal dydegree = heightlat / this->view->height();
+
+    this->geoMap->setResolution(dxdegree, dydegree);
 }

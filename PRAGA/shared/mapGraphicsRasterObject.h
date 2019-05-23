@@ -90,8 +90,8 @@
 
     private:
         MapGraphicsView* view;
-        gis::Crit3DGeoMap* geoMap;
         gis::Crit3DRasterGrid* rasterPointer;
+        gis::Crit3DGeoMap* geoMap;
         ColorLegend* legend;
         bool isDrawing;
         bool drawBorder;
@@ -104,7 +104,7 @@
         void freeIndexesMatrix();
         void initializeIndexesMatrix();
 
-        bool setMapResolution();
+        void setMapResolution();
         bool drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPainter, bool drawBorder);
     };
 
