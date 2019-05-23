@@ -40,7 +40,7 @@ RasterObject::RasterObject(MapGraphicsView* _view, MapGraphicsObject *parent) :
 
     this->matrix = nullptr;
     this->rasterPointer = nullptr;
-    this->legend = nullptr;
+    this->colorScaleLegend = nullptr;
     this->isLatLon = false;
     this->isGrid = false;
     this->geoMap = new gis::Crit3DGeoMap();
@@ -60,9 +60,10 @@ void RasterObject::setDrawBorders(bool value)
     this->drawBorder = value;
 }
 
+
 void RasterObject::setColorLegend(ColorLegend* myLegend)
 {
- this->legend = myLegend;
+    this->colorScaleLegend = myLegend;
 }
 
 
@@ -73,7 +74,7 @@ void RasterObject::clean()
     freeIndexesMatrix();
     this->latLonHeader.nrCols = 0;
     this->latLonHeader.nrRows = 0;
-    this->legend = nullptr;
+    this->colorScaleLegend = nullptr;
 }
 
 
@@ -101,8 +102,8 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
         if (this->rasterPointer != nullptr)
             drawRaster(this->rasterPointer, painter, this->drawBorder);
 
-        if (this->legend != nullptr)
-            this->legend->repaint();
+        if (this->colorScaleLegend != nullptr)
+            this->colorScaleLegend->update();
     }
 }
 
@@ -265,7 +266,6 @@ bool RasterObject::initializeLatLon(gis::Crit3DRasterGrid* myRaster, const gis::
 bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPainter, bool drawBorder)
 {
     if (myRaster == nullptr) return false;
-    if (! this->isDrawing) return false;
     if (! myRaster->isLoaded) return false;
 
     // current view extent

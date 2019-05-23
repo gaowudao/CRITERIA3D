@@ -140,10 +140,13 @@ MainWindow::~MainWindow()
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
+    Q_UNUSED(event)
     mapView->resize(ui->widgetMap->size());
 }
 
-void MainWindow::mouseReleaseEvent(QMouseEvent *event){
+
+void MainWindow::mouseReleaseEvent(QMouseEvent *event)
+{
     Q_UNUSED(event)
 
     this->rasterObj->updateCenter();

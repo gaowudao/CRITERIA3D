@@ -14,12 +14,8 @@
 
         Crit3DColorScale *colorScale;
 
-        void redraw();
-
     private:
-        void paintEvent(QPaintEvent *);
+        void paintEvent(QPaintEvent *event);
     };
-
-    bool drawColorLegend(Crit3DColorScale* colorScale, QPainter* myPainter);
 
 #endif // COLORLEGEND_H

@@ -92,7 +92,7 @@
         MapGraphicsView* view;
         gis::Crit3DRasterGrid* rasterPointer;
         gis::Crit3DGeoMap* geoMap;
-        ColorLegend* legend;
+        ColorLegend* colorScaleLegend;
         bool isDrawing;
         bool drawBorder;
         RowCol **matrix;
