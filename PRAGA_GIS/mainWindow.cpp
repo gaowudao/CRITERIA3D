@@ -110,9 +110,9 @@ void MainWindow::updateCenter()
 }
 
 
-void MainWindow::mouseReleaseEvent(QMouseEvent *event){
+void MainWindow::mouseReleaseEvent(QMouseEvent *event)
+{
     Q_UNUSED(event)
-
     this->updateCenter();
 }
 
@@ -144,7 +144,13 @@ void MainWindow::mouseMoveEvent(QMouseEvent * event)
 
     Position geoPoint = this->mapView->mapToScene(mapPoint);
     this->ui->statusBar->showMessage(QString::number(geoPoint.latitude()) + " " + QString::number(geoPoint.longitude()));
+}
 
+
+void MainWindow::wheelEvent(QWheelEvent * event)
+{
+    Q_UNUSED(event)
+    this->updateCenter();
 }
 
 
