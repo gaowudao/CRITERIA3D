@@ -1814,4 +1814,3 @@ void MainWindow::setMapSource(OSMTileSource::OSMTileType mySource)
     this->mapView->setTileSource(composite);
 }
 
-

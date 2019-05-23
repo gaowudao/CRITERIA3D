@@ -35,7 +35,7 @@ RasterObject::RasterObject(MapGraphicsView* _view, MapGraphicsObject *parent) :
 {
     this->setFlag(MapGraphicsObject::ObjectIsSelectable, false);
     this->setFlag(MapGraphicsObject::ObjectIsMovable, false);
-    this->setFlag(MapGraphicsObject::ObjectIsFocusable);
+    this->setFlag(MapGraphicsObject::ObjectIsFocusable, false);
     this->view = _view;
 
     this->matrix = nullptr;
