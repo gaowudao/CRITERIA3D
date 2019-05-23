@@ -50,8 +50,6 @@
     {
         Q_OBJECT
     public:
-        gis::Crit3DRasterGrid *currentRaster;
-
         /*!
          * \brief RasterObject constructor
          * \param view a MapGraphicsView pointer
@@ -84,7 +82,8 @@
                               const gis::Crit3DGridHeader& latLonHeader, bool isGrid_);
         float getRasterMaxSize();
         gis::Crit3DGeoPoint* getRasterCenter();
-        void setCurrentRaster(gis::Crit3DRasterGrid* rasterPointer);
+        void setRaster(gis::Crit3DRasterGrid* rasterPtr);
+        gis::Crit3DRasterGrid* getRaster();
 
     protected:
         //virtual from MapGraphicsObject
@@ -92,6 +91,7 @@
     private:
         MapGraphicsView* view;
         gis::Crit3DGeoMap* geoMap;
+        gis::Crit3DRasterGrid* rasterPointer;
         ColorLegend* legend;
         bool isDrawing;
         bool drawBorder;

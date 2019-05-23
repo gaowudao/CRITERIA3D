@@ -110,9 +110,9 @@ void MainWindow::updateCenter()
 }
 
 
-void MainWindow::mouseReleaseEvent(QMouseEvent *event){
+void MainWindow::mouseReleaseEvent(QMouseEvent *event)
+{
     Q_UNUSED(event)
-
     this->updateCenter();
 }
 
@@ -144,7 +144,13 @@ void MainWindow::mouseMoveEvent(QMouseEvent * event)
 
     Position geoPoint = this->mapView->mapToScene(mapPoint);
     this->ui->statusBar->showMessage(QString::number(geoPoint.latitude()) + " " + QString::number(geoPoint.longitude()));
+}
 
+
+void MainWindow::wheelEvent(QWheelEvent * event)
+{
+    Q_UNUSED(event)
+    this->updateCenter();
 }
 
 
@@ -288,7 +294,7 @@ void MainWindow::itemClicked(QListWidgetItem* item)
         unsigned int i;
         for (i = 0; i < rasterObjList.size(); i++)
         {
-            if (rasterObjList.at(i)->currentRaster == myObject->rasterPtr)
+            if (rasterObjList.at(i)->getRaster() == myObject->rasterPtr)
             {
                 break;
             }
@@ -327,7 +333,7 @@ void MainWindow::itemMenuRequested(const QPoint point)
             unsigned int i;
             for (i = 0; i < rasterObjList.size(); i++)
             {
-                if (rasterObjList.at(i)->currentRaster == myObject->rasterPtr)
+                if (rasterObjList.at(i)->getRaster() == myObject->rasterPtr)
                 {
                     break;
                 }

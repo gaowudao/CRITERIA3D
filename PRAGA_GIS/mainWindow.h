@@ -54,6 +54,8 @@
 
         void mouseMoveEvent(QMouseEvent * event);
 
+        void wheelEvent(QWheelEvent * event);
+
         void mousePressEvent(QMouseEvent *event);
 
         void resizeEvent(QResizeEvent * event);

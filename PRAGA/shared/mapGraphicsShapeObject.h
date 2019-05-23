@@ -8,6 +8,9 @@
     #ifndef SHAPEHANDLER_H
         #include "shapeHandler.h"
     #endif
+    #ifndef MAP_H
+        #include "map.h"
+    #endif
 
     class MapGraphicsShapeObject : public MapGraphicsObject
     {
@@ -15,6 +18,8 @@
     private:
         Crit3DShapeHandler* shapePtr;
         MapGraphicsView* view;
+        gis::Crit3DGeoMap* geoMap;
+        bool isDrawing;
 
     public:
         /*!
@@ -37,9 +42,11 @@
          * \param option a QStyleOptionGraphicsItem pointer
          * \param widget a QWidget pointer
          */
-        //void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+        void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
         void setShape(Crit3DShapeHandler* shapePtr);
+        void updateCenter();
+        void setDrawing(bool value);
     };
 
 
