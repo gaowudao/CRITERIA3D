@@ -969,12 +969,14 @@ namespace matricial
         //	calculate minor of matrix OR build new matrix : k-had = minor
         int j,l,h=0,k=0;
         for(l=1;l<n;l++)
-            for( j=0;j<n;j++){
+            for( j=0;j<n;j++)
+            {
                 if(j == i)
                     continue;
                 b[h][k] = a[l][j];
                 k++;
-                if(k == (n-1)){
+                if(k == (n-1))
+                {
                     h++;
                     k=0;
                 }
@@ -998,7 +1000,7 @@ namespace matricial
                 b[i]= (double*)calloc(n, sizeof(double));
             for(i=0;i<n;i++)
             {
-                minor(b,a,i,n);	// read function
+                matricial::minor(b,a,i,n);	// read function
                 sum = (sum + a[0][i]*pow(-1,i)*matricial::determinant(b,(n-1)));	// sum = determinte matrix
             }
             for (int i=0;i<n;i++)

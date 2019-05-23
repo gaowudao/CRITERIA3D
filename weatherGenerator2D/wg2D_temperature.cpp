@@ -411,6 +411,57 @@ void weatherGenerator2D::computeTemperatureParameters()
         free(par);
 
         weatherGenerator2D::computeResiduals(temperatureCoefficients[iStation].maxTDry.averageEstimation,temperatureCoefficients[iStation].maxTWet.averageEstimation,temperatureCoefficients[iStation].maxTDry.stdDevEstimation,temperatureCoefficients[iStation].maxTWet.stdDevEstimation,temperatureCoefficients[iStation].minTDry.averageEstimation,temperatureCoefficients[iStation].minTWet.averageEstimation,temperatureCoefficients[iStation].minTDry.stdDevEstimation,temperatureCoefficients[iStation].minTWet.stdDevEstimation,365,iStation);
+        //printf("che d'è?");
+        double** matrixCovarianceLag0 = (double **) calloc(3, sizeof(double*));
+        double** matrixCovarianceLag1 = (double **) calloc(3, sizeof(double*));
+        for (int i=0;i<3;i++)
+        {
+            matrixCovarianceLag0[i] = (double *) calloc(3, sizeof(double));
+            matrixCovarianceLag1[i] = (double *) calloc(3, sizeof(double));
+            for (int j=0;j<2;j++)
+            {
+                matrixCovarianceLag0[i][j] = NODATA;
+                matrixCovarianceLag1[i][j] = NODATA;
+            }
+        }
+        //weatherGenerator2D::covarianceOfResiduals(matrixCovarianceLag0,0);
+        //weatherGenerator2D::covarianceOfResiduals(matrixCovarianceLag1,1);
+
+        /*for (int i=0;i<2;i++)
+            for (int j=0; j<2; j++)
+                printf("%f\n",matrixCovarianceLag1[i][j]);
+        printf("\n");
+        */
+        matrixCovarianceLag0[0][0]= 1;
+        matrixCovarianceLag0[1][1]= 1;
+        matrixCovarianceLag0[0][1]= 0;
+        matrixCovarianceLag0[1][0]= 0;
+        matrixCovarianceLag0[0][2]= 0;
+        matrixCovarianceLag0[1][2]= 0;
+        matrixCovarianceLag0[2][2]= 1;
+        matrixCovarianceLag0[2][0]= 0;
+        matrixCovarianceLag0[2][1]= 0;
+
+        //printf("che d'è?");
+
+        //matricial::minor(matrixCovarianceLag1,matrixCovarianceLag0,0,3);
+        matricial::inverse(matrixCovarianceLag0,matrixCovarianceLag1,3);
+        printf("%f\n",matricial::determinant(matrixCovarianceLag0,3));
+        for (int i=0;i<3;i++)
+            for (int j=0; j<3; j++)
+                printf("%f\n",matrixCovarianceLag1[i][j]);
+        printf("\n");
+
+        for (int i=0;i<2;i++)
+        {
+            free(matrixCovarianceLag0[i]);
+            free(matrixCovarianceLag1[i]);
+        }
+        free(matrixCovarianceLag0);
+        free(matrixCovarianceLag1);
+
+
+
         /*for (int i=0;i<nrData;i++)
         {
             if (dailyResidual[i].maxTDry >5)
@@ -473,11 +524,6 @@ void weatherGenerator2D::harmonicsFourier(double* variable, double *par,int nrPa
             indexVariable++;
         }
     }
-    /*for(int i=0;i<nrValidDays;i++)
-    {
-        printf("%d  %f  %f \n",i, x[i],y[i]);
-    }
-    pressEnterToContinue();*/
     double *parMin = (double *) calloc(nrPar+1, sizeof(double));
     double* parMax = (double *) calloc(nrPar+1, sizeof(double));
     double* parDelta = (double *) calloc(nrPar+1, sizeof(double));
@@ -512,12 +558,6 @@ void weatherGenerator2D::harmonicsFourier(double* variable, double *par,int nrPa
     {
         estimatedVariable[i] = par[0] + par[1]*cos(2*PI/nrEstimatedVariable*i) + par[2]*sin(2*PI/nrEstimatedVariable*i) + par[3]*cos(4*PI/nrEstimatedVariable*i) + par[4]*sin(4*PI/nrEstimatedVariable*i);
     }
-
-    for(int i=0;i<365;i++)
-        {
-            //printf("%d %f \n",i, estimatedVariable[i]);
-        }
-        //pressEnterToContinue();
 
     // free memory
     free(x);
