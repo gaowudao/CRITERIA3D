@@ -22,6 +22,8 @@
 #include <iostream> // debug
 #include "shapeObject.h"
 
+#define NODATA -9999
+
 
 int ShapeObject::getPartCount() const
 {
@@ -181,7 +183,7 @@ double ShapeObject::polygonArea(int indexPart)
 
     if (indexPart > getPartCount())
     {
-        return -9999;
+        return NODATA;
     }
     long offSet = getParts().at(indexPart).offset;
     long length = getParts().at(indexPart).length;
@@ -208,7 +210,7 @@ int ShapeObject::pointInPolygon(Point<double> UTMpoint)
     {
         if (!isClockWise(indexPart))
         {
-            return -9999;  //HOLE
+            return NODATA;  //HOLE
         }
         long offSet = getParts().at(indexPart).offset;
         long length = getParts().at(indexPart).length;
@@ -228,7 +230,7 @@ int ShapeObject::pointInPolygon(Point<double> UTMpoint)
             return index;
         }
     }
-    return -9999;
+    return NODATA;
 
 }
 
