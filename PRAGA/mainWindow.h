@@ -14,7 +14,7 @@
     #include "tileSources/OSMTileSource.h"
     #include "mapGraphicsRasterObject.h"
     #include "stationMarker.h"
-    #include "colorlegend.h"
+    #include "colorLegend.h"
     #include "dbArkimet.h"
 
     enum visualizationType {notShown, showLocation, showCurrentVariable, showElaboration, showAnomalyAbsolute, showAnomalyPercentage, showClimate};
