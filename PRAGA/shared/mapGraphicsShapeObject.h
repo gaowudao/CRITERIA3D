@@ -42,7 +42,7 @@
          * \param option a QStyleOptionGraphicsItem pointer
          * \param widget a QWidget pointer
          */
-        //void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+        void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
         void setShape(Crit3DShapeHandler* shapePtr);
         void updateCenter();

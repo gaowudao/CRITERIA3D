@@ -39,14 +39,13 @@ RasterObject::RasterObject(MapGraphicsView* _view, MapGraphicsObject *parent) :
     this->view = _view;
 
     this->matrix = nullptr;
-    this->currentRaster = nullptr;
+    this->rasterPointer = nullptr;
     this->legend = nullptr;
     this->isLatLon = false;
     this->isGrid = false;
     this->geoMap = new gis::Crit3DGeoMap();
     this->isDrawing = false;
     this->drawBorder = false;
-    this->updateCenter();
 }
 
 
@@ -99,8 +98,8 @@ void RasterObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     {
         setMapResolution();
 
-        if (this->currentRaster != nullptr)
-            drawRaster(this->currentRaster, painter, this->drawBorder);
+        if (this->rasterPointer != nullptr)
+            drawRaster(this->rasterPointer, painter, this->drawBorder);
 
         if (this->legend != nullptr)
             this->legend->repaint();
@@ -117,9 +116,15 @@ void RasterObject::updateCenter()
 }
 
 
-void RasterObject::setCurrentRaster(gis::Crit3DRasterGrid* rasterPointer)
+void RasterObject::setRaster(gis::Crit3DRasterGrid* rasterPtr)
 {
-    this->currentRaster = rasterPointer;
+    this->rasterPointer = rasterPtr;
+}
+
+
+gis::Crit3DRasterGrid* RasterObject::getRaster()
+{
+    return this->rasterPointer;
 }
 
 
@@ -209,7 +214,7 @@ bool RasterObject::initializeUTM(gis::Crit3DRasterGrid* myRaster, const gis::Cri
 
     this->isGrid = isGrid_;
     this->utmZone = gisSettings.utmZone;
-    this->currentRaster = myRaster;
+    this->rasterPointer = myRaster;
 
     freeIndexesMatrix();
     gis::getGeoExtentsFromUTMHeader(gisSettings, myRaster->header, &latLonHeader);
@@ -246,7 +251,7 @@ bool RasterObject::initializeLatLon(gis::Crit3DRasterGrid* myRaster, const gis::
 
     this->isGrid = isGrid_;
     this->utmZone = gisSettings.utmZone;
-    this->currentRaster = myRaster;
+    this->rasterPointer = myRaster;
 
     freeIndexesMatrix();
 
@@ -266,15 +271,15 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
 
     // current view extent
     int rowBottom, rowTop, col0, col1;
-    gis::getRowColFromLatLon(latLonHeader, this->geoMap->bottomLeft, &rowBottom, &col0);
-    gis::getRowColFromLatLon(latLonHeader, this->geoMap->topRight, &rowTop, &col1);
+    gis::getRowColFromLatLon(this->latLonHeader, this->geoMap->bottomLeft, &rowBottom, &col0);
+    gis::getRowColFromLatLon(this->latLonHeader, this->geoMap->topRight, &rowTop, &col1);
     rowTop--;
 
     // check if current view is out of data
     if (((col0 < 0) && (col1 < 0))
     || ((rowBottom < 0) && (rowTop < 0))
-    || ((col0 >= latLonHeader.nrCols) && (col1 >= latLonHeader.nrCols))
-    || ((rowBottom >= latLonHeader.nrRows) && (rowTop >= latLonHeader.nrRows)))
+    || ((col0 >= this->latLonHeader.nrCols) && (col1 >= this->latLonHeader.nrCols))
+    || ((rowBottom >= this->latLonHeader.nrRows) && (rowTop >= this->latLonHeader.nrRows)))
     {
         myRaster->minimum = NODATA;
         myRaster->maximum = NODATA;
@@ -282,20 +287,20 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
     }
 
     // fix extent
-    rowBottom = std::min(latLonHeader.nrRows-1, std::max(0, rowBottom));
-    rowTop = std::min(latLonHeader.nrRows-1, std::max(0, rowTop));
-    col0 = std::min(latLonHeader.nrCols-1, std::max(0, col0));
-    col1 = std::min(latLonHeader.nrCols-1, std::max(0, col1));
+    rowBottom = std::min(this->latLonHeader.nrRows-1, std::max(0, rowBottom));
+    rowTop = std::min(this->latLonHeader.nrRows-1, std::max(0, rowTop));
+    col0 = std::min(this->latLonHeader.nrCols-1, std::max(0, col0));
+    col1 = std::min(this->latLonHeader.nrCols-1, std::max(0, col1));
 
     // dynamic color scale
     gis::Crit3DRasterWindow* latLonWindow = new gis::Crit3DRasterWindow(rowTop, col0, rowBottom, col1);
-    if (isLatLon)
+    if (this->isLatLon)
         gis::updateColorScale(myRaster, *latLonWindow);
     else
     {
         // UTM raster
         gis::Crit3DRasterWindow* utmWindow = new gis::Crit3DRasterWindow();
-        gis::getUtmWindow(latLonHeader, *(myRaster->header), *latLonWindow, utmWindow, this->utmZone);
+        gis::getUtmWindow(this->latLonHeader, *(myRaster->header), *latLonWindow, utmWindow, this->utmZone);
         gis::updateColorScale(myRaster, *utmWindow);
     }
 
@@ -304,8 +309,8 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
     // lower left position
     gis::Crit3DGeoPoint llCorner;
     gis::Crit3DPixel pixelLL;
-    llCorner.longitude = latLonHeader.llCorner->longitude + col0 * latLonHeader.dx;
-    llCorner.latitude = latLonHeader.llCorner->latitude + (latLonHeader.nrRows-1 - rowBottom) * latLonHeader.dy;
+    llCorner.longitude =this-> latLonHeader.llCorner->longitude + col0 * this->latLonHeader.dx;
+    llCorner.latitude = this->latLonHeader.llCorner->latitude + (this->latLonHeader.nrRows-1 - rowBottom) * this->latLonHeader.dy;
     pixelLL.x = int(this->geoMap->degreeToPixelX * (llCorner.longitude - this->geoMap->referencePoint.longitude));
     pixelLL.y = int(this->geoMap->degreeToPixelY * (llCorner.latitude - this->geoMap->referencePoint.latitude));
 
@@ -327,12 +332,12 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
         {
             x1 = int(pixelLL.x + (col-col0 + step) * dx);
 
-            if (isLatLon)
+            if (this->isLatLon)
                 myValue = myRaster->value[row][col];
             else
             {
                 myValue = INDEX_ERROR;
-                if (matrix[row][col].row != NODATA_UNSIGNED_SHORT)
+                if (this->matrix[row][col].row != NODATA_UNSIGNED_SHORT)
                     myValue = myRaster->value[matrix[row][col].row][matrix[row][col].col];
             }
 
@@ -347,7 +352,7 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
                 myPainter->fillRect(x0, y0, lx, ly, myPainter->brush());
 
             }
-            else if (isGrid && myValue == myRaster->header->flag && drawBorder)
+            else if (this->isGrid && myValue == myRaster->header->flag && drawBorder)
             {
                 lx = (x1 - x0) + 1;
                 ly = (y1 - y0) + 1;

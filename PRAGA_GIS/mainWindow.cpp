@@ -288,7 +288,7 @@ void MainWindow::itemClicked(QListWidgetItem* item)
         unsigned int i;
         for (i = 0; i < rasterObjList.size(); i++)
         {
-            if (rasterObjList.at(i)->currentRaster == myObject->rasterPtr)
+            if (rasterObjList.at(i)->getRaster() == myObject->rasterPtr)
             {
                 break;
             }
@@ -327,7 +327,7 @@ void MainWindow::itemMenuRequested(const QPoint point)
             unsigned int i;
             for (i = 0; i < rasterObjList.size(); i++)
             {
-                if (rasterObjList.at(i)->currentRaster == myObject->rasterPtr)
+                if (rasterObjList.at(i)->getRaster() == myObject->rasterPtr)
                 {
                     break;
                 }
