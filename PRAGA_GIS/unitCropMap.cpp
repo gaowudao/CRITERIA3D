@@ -23,7 +23,9 @@ bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
     }
 
     gis::Crit3DRasterGrid rasterRef = shapeToRaster(*shapeRef, cellSize);
-    gis::Crit3DRasterGrid rasterVal = rasterRef;
+    fillRasterWithShapeNumber(&rasterRef, *shapeRef);
+    gis::Crit3DRasterGrid rasterVal = shapeToRaster(*shapeRef, cellSize);
+    fillRasterWithShapeNumber(&rasterVal, *shapeVal);
 
     int fieldIndex = shapeVal->getDBFFieldIndex(valField.c_str());
 
@@ -47,10 +49,13 @@ bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
             for (int col = 0; col < rasterVal.header->nrCols; col++)
             {
                 int shape = rasterVal.value[row][col];
-                std::string valueField = shapeVal->readStringAttribute(shape,fieldIndex);
-                int vectorFieldPos = std::distance(varFieldVector.begin(), std::find (varFieldVector.begin(), varFieldVector.end(), valueField));
-                //replace value
-                rasterVal.value[row][col] = vectorFieldPos;
+                if (shape!= NODATA)
+                {
+                    std::string valueField = shapeVal->readStringAttribute(shape,fieldIndex);
+                    int vectorFieldPos = std::distance(varFieldVector.begin(), std::find (varFieldVector.begin(), varFieldVector.end(), valueField));
+                    //replace value
+                    rasterVal.value[row][col] = vectorFieldPos;
+                }
             }
         }
     }
@@ -71,10 +76,13 @@ bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
             for (int col = 0; col < rasterVal.header->nrCols; col++)
             {
                 int shape = rasterVal.value[row][col];
-                std::string valueField = shapeVal->readStringAttribute(shape,fieldIndex);
-                int vectorFieldPos = std::distance(varFieldVector.begin(), std::find (varFieldVector.begin(), varFieldVector.end(), valueField));
-                //replace value
-                rasterVal.value[row][col] = vectorFieldPos;
+                if (shape!= NODATA)
+                {
+                    int valueField = shapeVal->readIntAttribute(shape,fieldIndex);
+                    int vectorFieldPos = std::distance(varFieldVector.begin(), std::find (varFieldVector.begin(), varFieldVector.end(), valueField));
+//                    //replace value
+                    rasterVal.value[row][col] = vectorFieldPos;
+                }
             }
         }
     }
@@ -95,10 +103,13 @@ bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
             for (int col = 0; col < rasterVal.header->nrCols; col++)
             {
                 int shape = rasterVal.value[row][col];
-                std::string valueField = shapeVal->readStringAttribute(shape,fieldIndex);
-                int vectorFieldPos = std::distance(varFieldVector.begin(), std::find (varFieldVector.begin(), varFieldVector.end(), valueField));
-                //replace value
-                rasterVal.value[row][col] = vectorFieldPos;
+                if (shape!= NODATA)
+                {
+                    double valueField = shapeVal->readDoubleAttribute(shape,fieldIndex);
+                    int vectorFieldPos = std::distance(varFieldVector.begin(), std::find (varFieldVector.begin(), varFieldVector.end(), valueField));
+//                    //replace value
+                    rasterVal.value[row][col] = vectorFieldPos;
+                }
             }
         }
     }
@@ -148,13 +159,18 @@ gis::Crit3DRasterGrid shapeToRaster(Crit3DShapeHandler shape, int cellSize)
 
     gis::Crit3DRasterGrid raster;
     raster.initializeGrid(header);
+    return raster;
+}
 
+void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler shape)
+{
+    ShapeObject object;
     int value = NODATA;
-    for (int row = 0; row < header.nrRows; row++)
+    for (int row = 0; row < raster->header->nrRows; row++)
     {
-        for (int col = 0; col < header.nrCols; col++)
+        for (int col = 0; col < raster->header->nrCols; col++)
         {
-            gis::Crit3DUtmPoint* point = raster.utmPoint(row, col);
+            gis::Crit3DUtmPoint* point = raster->utmPoint(row, col);
             Point<double> UTMpoint;
             UTMpoint.x = point->x;
             UTMpoint.y = point->y;
@@ -167,11 +183,10 @@ gis::Crit3DRasterGrid shapeToRaster(Crit3DShapeHandler shape, int cellSize)
                     break;
                 }
             }
-            raster.value[row][col] = value;
+            raster->value[row][col] = value;
         }
     }
-
-    return raster;
+    return;
 }
 
 
