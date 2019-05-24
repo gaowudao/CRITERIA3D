@@ -1090,18 +1090,28 @@ namespace matricial
 
     int eigenSystemMatrix2x2(double** a, double* eigenvalueA, double** eigenvectorA, int n)
     {
+        if (n != 2) return PARAMETER_ERROR;
         double b,c;
         b = - a[0][0] - a[1][1];
         c = (a[0][0] * a[1][1] - a[0][1] * a[1][0]);
         if ((b*b - 4*c) < 0) return PARAMETER_ERROR;
+
+        if (fabs(a[0][1]) < EPSILON && fabs(a[1][0]) < EPSILON)
+        {
+            eigenvalueA[0]= a[0][0];
+            eigenvalueA[1]= a[1][1];
+            eigenvectorA[1][0] = 1;
+            eigenvectorA[0][0] = 0;
+            eigenvectorA[0][1] = 0;
+            eigenvectorA[1][1] = 1;
+            return 0;
+        }
         if (fabs(a[0][1]) < EPSILON)
         {
             eigenvalueA[0]= a[0][0];
             eigenvalueA[1]= a[1][1];
-
             eigenvectorA[1][0] = 1;
             eigenvectorA[0][0] = (eigenvalueA[0] - a[1][1]) * eigenvectorA[1][0];
-
             eigenvectorA[0][1] = 0;
             eigenvectorA[1][1] = 1;
             return 0;
@@ -1110,11 +1120,8 @@ namespace matricial
         {
             eigenvalueA[0]= a[0][0];
             eigenvalueA[1]= a[1][1];
-
             eigenvectorA[0][0] = 1;
             eigenvectorA[1][0] = 0;
-
-
             eigenvectorA[0][1] = 1;
             eigenvectorA[1][1] = (eigenvalueA[1] - a[0][0]) * eigenvectorA[0][1];
             return 0;
@@ -1129,8 +1136,6 @@ namespace matricial
         }
         return 0;
     }
-
-
 }
 
 

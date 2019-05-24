@@ -418,6 +418,9 @@ void weatherGenerator2D::computeTemperatureParameters()
         double** matrixA = (double **) calloc(matrixRang, sizeof(double*));
         double** matrixC = (double **) calloc(matrixRang, sizeof(double*));
         double** matrixB = (double **) calloc(matrixRang, sizeof(double*));
+        double** eigenvectors = (double **) calloc(matrixRang, sizeof(double*));
+        double* eigenvalues = (double *) calloc(matrixRang, sizeof(double));
+
         for (int i=0;i<matrixRang;i++)
         {
             matrixCovarianceLag0[i] = (double *) calloc(matrixRang, sizeof(double));
@@ -425,6 +428,7 @@ void weatherGenerator2D::computeTemperatureParameters()
             matrixA[i] = (double *) calloc(matrixRang, sizeof(double));
             matrixC[i] = (double *) calloc(matrixRang, sizeof(double));
             matrixB[i] = (double *) calloc(matrixRang, sizeof(double));
+            eigenvectors[i]=  (double *) calloc(matrixRang, sizeof(double));
             for (int j=0;j<matrixRang;j++)
             {
                 matrixCovarianceLag0[i][j] = NODATA;
@@ -432,11 +436,13 @@ void weatherGenerator2D::computeTemperatureParameters()
                 matrixA[i][j] = NODATA;
                 matrixC[i][j] = NODATA;
                 matrixB[i][j] = NODATA;
+                eigenvectors[i][j] = NODATA;
             }
+            eigenvalues[i] = NODATA;
         }
         weatherGenerator2D::covarianceOfResiduals(matrixCovarianceLag0,0);
         weatherGenerator2D::covarianceOfResiduals(matrixCovarianceLag1,1);
-        printf("lag0\n");
+        /*printf("lag0\n");
         for (int i=0;i<matrixRang;i++)
         {
             for (int j=0; j<matrixRang; j++)
@@ -449,16 +455,59 @@ void weatherGenerator2D::computeTemperatureParameters()
             for (int j=0; j<matrixRang; j++)
                 printf("%f\t",matrixCovarianceLag1[i][j]);
             printf("\n");
-        }
+        }*/
+
         matricial::inverse(matrixCovarianceLag0,matrixC,matrixRang); // matrixC becomes temporarely the inverse of lag0
         matricial::matrixProduct(matrixCovarianceLag1,matrixC,matrixRang,matrixRang,matrixRang,matrixRang,matrixA);
         matricial::transposedSquareMatrix(matrixCovarianceLag1,matrixRang);
         matricial::matrixProduct(matrixA,matrixCovarianceLag1,matrixRang,matrixRang,matrixRang,matrixRang,matrixC);
         matricial::matrixDifference(matrixCovarianceLag0,matrixC,matrixRang,matrixRang,matrixRang,matrixRang,matrixC);
+
+
         for (int i=0;i<matrixRang;i++)
             for (int j=0; j<matrixRang; j++)
                 printf("%f\n",matrixC[i][j]);
+        printf("\n");printf("\n");
+
+        matricial::eigenSystemMatrix2x2(matrixC,eigenvalues,eigenvectors,matrixRang);
+        int negativeEigenvalues = 0;
+        if (eigenvalues[0] < 0)
+        {
+            eigenvalues[0] = EPSILON;
+            negativeEigenvalues++;
+        }
+        if (eigenvalues[1] < 0)
+        {
+            eigenvalues[1] = EPSILON;
+            negativeEigenvalues++;
+        }
+        if (negativeEigenvalues > 0)
+        {
+            matricial::inverse(eigenvectors,matrixC,matrixRang);
+            matrixC[0][0] *= eigenvalues[0];
+            matrixC[0][1] *= eigenvalues[0];
+            matrixC[1][0] *= eigenvalues[1];
+            matrixC[1][1] *= eigenvalues[1];
+            matricial::matrixProduct(eigenvectors,matrixC,matrixRang,matrixRang,matrixRang,matrixRang,matrixC);
+            matricial::eigenSystemMatrix2x2(matrixC,eigenvalues,eigenvectors,matrixRang);
+        }
+        matricial::transposedMatrix(eigenvectors,2,2,matrixB);
+        matrixB[0][0] *= sqrt(eigenvalues[0]);
+        matrixB[0][1] *= sqrt(eigenvalues[0]);
+        matrixB[1][0] *= sqrt(eigenvalues[1]);
+        matrixB[1][1] *= sqrt(eigenvalues[1]);
+        matricial::matrixProduct(eigenvectors,matrixB,matrixRang,matrixRang,matrixRang,matrixRang,matrixB);
+
+        /*
+        for (int i=0;i<matrixRang;i++)
+            printf("%f\n",eigenvalues[i]);
         printf("\n");
+        for (int i=0;i<matrixRang;i++)
+            for (int j=0; j<matrixRang; j++)
+                printf("%f\n",eigenvectors[j][i]);
+        printf("\n"); printf("\n");
+        */
+
 
         for (int i=0;i<matrixRang;i++)
         {
@@ -467,12 +516,15 @@ void weatherGenerator2D::computeTemperatureParameters()
             free(matrixA[i]);
             free(matrixC[i]);
             free(matrixB[i]);
+            free(eigenvectors[i]);
         }
         free(matrixCovarianceLag0);
         free(matrixCovarianceLag1);
         free(matrixA);
         free(matrixC);
         free(matrixB);
+        free(eigenvalues);
+        free(eigenvectors);
 
 
         /*for (int i=0;i<nrData;i++)
