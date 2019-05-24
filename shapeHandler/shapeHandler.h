@@ -35,6 +35,7 @@
         bool getShape(int index, ShapeObject &shape);
         int	getShapeCount();
         int	getDBFRecordCount();
+        int	getDBFFieldIndex(const char *pszFieldName);
         int	isDBFRecordDeleted(int record);
         int	getType();
         int getFieldNumbers();
@@ -58,6 +59,8 @@
         bool existRecordDeleted();
         bool getIsWGS84() const;
         int getUtmZone() const;
+        int nWidthField(int fieldIndex);
+        int nDecimalsField(int fieldIndex);
     };
 
 

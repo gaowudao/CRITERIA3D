@@ -211,6 +211,11 @@ int	Crit3DShapeHandler::getDBFRecordCount()
     return m_dbf->nRecords;
 }
 
+int	Crit3DShapeHandler::getDBFFieldIndex(const char *pszFieldName)
+{
+    return DBFGetFieldIndex(m_dbf, pszFieldName);
+}
+
 int	Crit3DShapeHandler::isDBFRecordDeleted(int record)
 {
     return DBFIsRecordDeleted(m_dbf, record);
@@ -443,4 +448,14 @@ std::string Crit3DShapeHandler::getFilepath() const
 void Crit3DShapeHandler::setFilepath(std::string filename)
 {
     m_filepath = filename;
+}
+
+int Crit3DShapeHandler::nWidthField(int fieldIndex)
+{
+    return m_dbf->panFieldSize[fieldIndex];
+}
+
+int Crit3DShapeHandler::nDecimalsField(int fieldIndex)
+{
+    return m_dbf->panFieldDecimals[fieldIndex];
 }
