@@ -211,6 +211,11 @@ int	Crit3DShapeHandler::getDBFRecordCount()
     return m_dbf->nRecords;
 }
 
+int	Crit3DShapeHandler::getDBFFieldIndex(const char *pszFieldName)
+{
+    return DBFGetFieldIndex(m_dbf, pszFieldName);
+}
+
 int	Crit3DShapeHandler::isDBFRecordDeleted(int record)
 {
     return DBFIsRecordDeleted(m_dbf, record);

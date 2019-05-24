@@ -1,6 +1,7 @@
 #include "unitCropMap.h"
 #include "commonConstants.h"
 #include <float.h>
+#include <algorithm>
 
 bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal, std::string valField, DBFFieldType fieldType, int cellSize, opType type)
 {
@@ -20,6 +21,50 @@ bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
     {
         return false;
     }
+
+    gis::Crit3DRasterGrid rasterRef = shapeToRaster(*shapeRef, cellSize);
+    gis::Crit3DRasterGrid rasterVal = rasterRef;
+
+    int fieldIndex = shapeVal->getDBFFieldIndex(valField.c_str());
+
+    if (fieldType == 0)
+    {
+        std::vector<std::string> varFieldVector;
+        for (int record = 0; record < shapeVal->getDBFRecordCount(); record++)
+        {
+            std::string value = shapeVal->readStringAttribute(record,fieldIndex);
+            if (std::find (varFieldVector.begin(), varFieldVector.end(), value) != varFieldVector.end())
+            {
+                varFieldVector.push_back(value);
+            }
+
+        }
+    }
+    else if (fieldType == 1)
+    {
+        std::vector<int> varFieldVector;
+        for (int record = 0; record < shapeVal->getDBFRecordCount(); record++)
+        {
+            int value = shapeVal->readIntAttribute(record,fieldIndex);
+            if (std::find (varFieldVector.begin(), varFieldVector.end(), value) != varFieldVector.end())
+            {
+                varFieldVector.push_back(value);
+            }
+        }
+    }
+    else if (fieldType == 2)
+    {
+        std::vector<double> varFieldVector;
+        for (int record = 0; record < shapeVal->getDBFRecordCount(); record++)
+        {
+            double value = shapeVal->readDoubleAttribute(record,fieldIndex);
+            if (std::find (varFieldVector.begin(), varFieldVector.end(), value) != varFieldVector.end())
+            {
+                varFieldVector.push_back(value);
+            }
+        }
+    }
+
 
     return true;
 

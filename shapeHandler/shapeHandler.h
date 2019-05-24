@@ -35,6 +35,7 @@
         bool getShape(int index, ShapeObject &shape);
         int	getShapeCount();
         int	getDBFRecordCount();
+        int	getDBFFieldIndex(const char *pszFieldName);
         int	isDBFRecordDeleted(int record);
         int	getType();
         int getFieldNumbers();
