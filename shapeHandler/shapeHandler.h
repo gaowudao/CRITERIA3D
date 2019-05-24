@@ -59,6 +59,8 @@
         bool existRecordDeleted();
         bool getIsWGS84() const;
         int getUtmZone() const;
+        int nWidthField(int fieldIndex);
+        int nDecimalsField(int fieldIndex);
     };
 
 

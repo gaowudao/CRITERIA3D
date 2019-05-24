@@ -27,6 +27,9 @@ bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
 
     int fieldIndex = shapeVal->getDBFFieldIndex(valField.c_str());
 
+    // add new field to shapeRed
+    shapeRef->addField(valField.c_str(), fieldType, shapeVal->nWidthField(fieldIndex), shapeVal->nDecimalsField(fieldIndex));
+
     if (fieldType == 0)
     {
         std::vector<std::string> varFieldVector;
@@ -37,7 +40,6 @@ bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
             {
                 varFieldVector.push_back(value);
             }
-
         }
     }
     else if (fieldType == 1)

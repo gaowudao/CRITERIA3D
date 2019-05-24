@@ -449,3 +449,13 @@ void Crit3DShapeHandler::setFilepath(std::string filename)
 {
     m_filepath = filename;
 }
+
+int Crit3DShapeHandler::nWidthField(int fieldIndex)
+{
+    return m_dbf->panFieldSize[fieldIndex];
+}
+
+int Crit3DShapeHandler::nDecimalsField(int fieldIndex)
+{
+    return m_dbf->panFieldDecimals[fieldIndex];
+}
