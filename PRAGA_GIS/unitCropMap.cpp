@@ -41,6 +41,18 @@ bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
                 varFieldVector.push_back(value);
             }
         }
+
+        for (int row = 0; row < rasterVal.header->nrRows; row++)
+        {
+            for (int col = 0; col < rasterVal.header->nrCols; col++)
+            {
+                int shape = rasterVal.value[row][col];
+                std::string valueField = shapeVal->readStringAttribute(shape,fieldIndex);
+                int vectorFieldPos = std::distance(varFieldVector.begin(), std::find (varFieldVector.begin(), varFieldVector.end(), valueField));
+                //replace value
+                rasterVal.value[row][col] = vectorFieldPos;
+            }
+        }
     }
     else if (fieldType == 1)
     {
@@ -53,6 +65,18 @@ bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
                 varFieldVector.push_back(value);
             }
         }
+
+        for (int row = 0; row < rasterVal.header->nrRows; row++)
+        {
+            for (int col = 0; col < rasterVal.header->nrCols; col++)
+            {
+                int shape = rasterVal.value[row][col];
+                std::string valueField = shapeVal->readStringAttribute(shape,fieldIndex);
+                int vectorFieldPos = std::distance(varFieldVector.begin(), std::find (varFieldVector.begin(), varFieldVector.end(), valueField));
+                //replace value
+                rasterVal.value[row][col] = vectorFieldPos;
+            }
+        }
     }
     else if (fieldType == 2)
     {
@@ -63,6 +87,18 @@ bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
             if (std::find (varFieldVector.begin(), varFieldVector.end(), value) != varFieldVector.end())
             {
                 varFieldVector.push_back(value);
+            }
+        }
+
+        for (int row = 0; row < rasterVal.header->nrRows; row++)
+        {
+            for (int col = 0; col < rasterVal.header->nrCols; col++)
+            {
+                int shape = rasterVal.value[row][col];
+                std::string valueField = shapeVal->readStringAttribute(shape,fieldIndex);
+                int vectorFieldPos = std::distance(varFieldVector.begin(), std::find (varFieldVector.begin(), varFieldVector.end(), valueField));
+                //replace value
+                rasterVal.value[row][col] = vectorFieldPos;
             }
         }
     }
