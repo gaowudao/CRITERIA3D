@@ -32,6 +32,8 @@ bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
     // add new field to shapeRed
     shapeRef->addField(valField.c_str(), fieldType, shapeVal->nWidthField(fieldIndex), shapeVal->nDecimalsField(fieldIndex));
 
+    int varFieldVectorSize = 0;
+
     if (fieldType == 0)
     {
         std::vector<std::string> varFieldVector;
@@ -43,6 +45,7 @@ bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
                 varFieldVector.push_back(value);
             }
         }
+        varFieldVectorSize = varFieldVector.size();
 
         for (int row = 0; row < rasterVal.header->nrRows; row++)
         {
@@ -71,6 +74,8 @@ bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
             }
         }
 
+        varFieldVectorSize = varFieldVector.size();
+
         for (int row = 0; row < rasterVal.header->nrRows; row++)
         {
             for (int col = 0; col < rasterVal.header->nrCols; col++)
@@ -98,6 +103,8 @@ bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
             }
         }
 
+        varFieldVectorSize = varFieldVector.size();
+
         for (int row = 0; row < rasterVal.header->nrRows; row++)
         {
             for (int col = 0; col < rasterVal.header->nrCols; col++)
@@ -110,6 +117,24 @@ bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
 //                    //replace value
                     rasterVal.value[row][col] = vectorFieldPos;
                 }
+            }
+        }
+    }
+
+    int matrix[shapeRef->getShapeCount()][varFieldVectorSize];
+    std::fill(*matrix, *matrix + shapeRef->getShapeCount()*varFieldVectorSize, 0);
+
+
+    for (int row = 0; row < rasterRef.header->nrRows; row++)
+    {
+        for (int col = 0; col < rasterRef.header->nrCols; col++)
+        {
+            int refValue = rasterRef.value[row][col];
+            int valValue = rasterVal.value[row][col];
+
+            if ( refValue != NODATA && valValue != NODATA)
+            {
+                matrix[refValue][valValue] = matrix[refValue][valValue] + 1;
             }
         }
     }
