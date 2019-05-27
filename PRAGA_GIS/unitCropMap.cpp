@@ -22,31 +22,38 @@ bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
         return false;
     }
 
+    int nShape = shapeRef->getShapeCount();
+
     gis::Crit3DRasterGrid rasterRef = shapeToRaster(*shapeRef, cellSize);
     fillRasterWithShapeNumber(&rasterRef, *shapeRef);
     gis::Crit3DRasterGrid rasterVal = shapeToRaster(*shapeRef, cellSize);
     fillRasterWithShapeNumber(&rasterVal, *shapeVal);
 
+    // add new field to shapeRef
     int fieldIndex = shapeVal->getDBFFieldIndex(valField.c_str());
-
-    // add new field to shapeRed
     shapeRef->addField(valField.c_str(), fieldType, shapeVal->nWidthField(fieldIndex), shapeVal->nDecimalsField(fieldIndex));
 
+    // LC da fare restyle codice affinchè gestisca i 3 casi
+    std::vector<std::string> varFieldVectorString;
+    std::vector<int> varFieldVectorInt;
+    std::vector<double> varFieldVectorDouble;
     int varFieldVectorSize = 0;
+
 
     if (fieldType == 0)
     {
-        std::vector<std::string> varFieldVector;
+        // fill varFieldVector
         for (int record = 0; record < shapeVal->getDBFRecordCount(); record++)
         {
             std::string value = shapeVal->readStringAttribute(record,fieldIndex);
-            if (std::find (varFieldVector.begin(), varFieldVector.end(), value) != varFieldVector.end())
+            if (std::find (varFieldVectorString.begin(), varFieldVectorString.end(), value) != varFieldVectorString.end())
             {
-                varFieldVector.push_back(value);
+                varFieldVectorString.push_back(value);
             }
         }
-        varFieldVectorSize = varFieldVector.size();
+        varFieldVectorSize = varFieldVectorString.size();
 
+        // assign varFieldVector index to each pixel of rasterVal
         for (int row = 0; row < rasterVal.header->nrRows; row++)
         {
             for (int col = 0; col < rasterVal.header->nrCols; col++)
@@ -55,7 +62,7 @@ bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
                 if (shape!= NODATA)
                 {
                     std::string valueField = shapeVal->readStringAttribute(shape,fieldIndex);
-                    int vectorFieldPos = std::distance(varFieldVector.begin(), std::find (varFieldVector.begin(), varFieldVector.end(), valueField));
+                    int vectorFieldPos = std::distance(varFieldVectorString.begin(), std::find (varFieldVectorString.begin(), varFieldVectorString.end(), valueField));
                     //replace value
                     rasterVal.value[row][col] = vectorFieldPos;
                 }
@@ -64,17 +71,17 @@ bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
     }
     else if (fieldType == 1)
     {
-        std::vector<int> varFieldVector;
+
         for (int record = 0; record < shapeVal->getDBFRecordCount(); record++)
         {
             int value = shapeVal->readIntAttribute(record,fieldIndex);
-            if (std::find (varFieldVector.begin(), varFieldVector.end(), value) != varFieldVector.end())
+            if (std::find (varFieldVectorInt.begin(), varFieldVectorInt.end(), value) != varFieldVectorInt.end())
             {
-                varFieldVector.push_back(value);
+                varFieldVectorInt.push_back(value);
             }
         }
 
-        varFieldVectorSize = varFieldVector.size();
+        varFieldVectorSize = varFieldVectorInt.size();
 
         for (int row = 0; row < rasterVal.header->nrRows; row++)
         {
@@ -84,7 +91,7 @@ bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
                 if (shape!= NODATA)
                 {
                     int valueField = shapeVal->readIntAttribute(shape,fieldIndex);
-                    int vectorFieldPos = std::distance(varFieldVector.begin(), std::find (varFieldVector.begin(), varFieldVector.end(), valueField));
+                    int vectorFieldPos = std::distance(varFieldVectorInt.begin(), std::find (varFieldVectorInt.begin(), varFieldVectorInt.end(), valueField));
 //                    //replace value
                     rasterVal.value[row][col] = vectorFieldPos;
                 }
@@ -93,17 +100,17 @@ bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
     }
     else if (fieldType == 2)
     {
-        std::vector<double> varFieldVector;
+
         for (int record = 0; record < shapeVal->getDBFRecordCount(); record++)
         {
             double value = shapeVal->readDoubleAttribute(record,fieldIndex);
-            if (std::find (varFieldVector.begin(), varFieldVector.end(), value) != varFieldVector.end())
+            if (std::find (varFieldVectorDouble.begin(), varFieldVectorDouble.end(), value) != varFieldVectorDouble.end())
             {
-                varFieldVector.push_back(value);
+                varFieldVectorDouble.push_back(value);
             }
         }
 
-        varFieldVectorSize = varFieldVector.size();
+        varFieldVectorSize = varFieldVectorDouble.size();
 
         for (int row = 0; row < rasterVal.header->nrRows; row++)
         {
@@ -113,7 +120,7 @@ bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
                 if (shape!= NODATA)
                 {
                     double valueField = shapeVal->readDoubleAttribute(shape,fieldIndex);
-                    int vectorFieldPos = std::distance(varFieldVector.begin(), std::find (varFieldVector.begin(), varFieldVector.end(), valueField));
+                    int vectorFieldPos = std::distance(varFieldVectorDouble.begin(), std::find (varFieldVectorDouble.begin(), varFieldVectorDouble.end(), valueField));
 //                    //replace value
                     rasterVal.value[row][col] = vectorFieldPos;
                 }
@@ -121,8 +128,10 @@ bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
         }
     }
 
-    int matrix[shapeRef->getShapeCount()][varFieldVectorSize];
-    std::fill(*matrix, *matrix + shapeRef->getShapeCount()*varFieldVectorSize, 0);
+    // analysis matrix
+
+    int matrix[nShape][varFieldVectorSize];
+    std::fill(*matrix, *matrix + nShape *varFieldVectorSize, 0);
 
 
     for (int row = 0; row < rasterRef.header->nrRows; row++)
@@ -138,6 +147,66 @@ bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
             }
         }
     }
+
+    // save right matrix element for each shape
+    int index[nShape];
+
+    if (type == MAJORITY)
+    {
+        for (int row = 0; row < rasterRef.header->nrRows; row++)
+        {
+            index[row] = 0;
+            for (int col = 0; col < rasterRef.header->nrCols; col++)
+            {
+                if (matrix[row][col] > index[row])
+                {
+                    index[row] = matrix[row][col];
+                }
+            }
+        }
+    }
+    else if (type == MIN)
+    {
+        for (int row = 0; row < rasterRef.header->nrRows; row++)
+        {
+            // TO DO
+        }
+    }
+    else if (type == MAX)
+    {
+        for (int row = 0; row < rasterRef.header->nrRows; row++)
+        {
+            // TO DO
+        }
+    }
+    else if (type == AVG)
+    {
+        for (int row = 0; row < rasterRef.header->nrRows; row++)
+        {
+            // TO DO
+        }
+    }
+
+    // save value of the new field
+    for (int shapeIndex = 0; shapeIndex < nShape; shapeIndex++)
+    {
+        if (fieldType == 0)
+        {
+            std::string varFieldFound = varFieldVectorString[index[shapeIndex]];
+            shapeRef->writeStringAttribute(shapeIndex, shapeRef->getDBFFieldIndex(valField.c_str()), varFieldFound.c_str());
+        }
+        else if (fieldType == 1)
+        {
+            int varFieldFound = varFieldVectorInt[index[shapeIndex]];
+            shapeRef->writeIntAttribute(shapeIndex, shapeRef->getDBFFieldIndex(valField.c_str()), varFieldFound);
+        }
+        else if (fieldType == 2)
+        {
+            int varFieldFound = varFieldVectorDouble[index[shapeIndex]];
+            shapeRef->writeDoubleAttribute(shapeIndex, shapeRef->getDBFFieldIndex(valField.c_str()), varFieldFound);
+        }
+    }
+
 
 
     return true;
@@ -213,5 +282,6 @@ void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler
     }
     return;
 }
+
 
 
