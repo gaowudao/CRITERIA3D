@@ -249,8 +249,8 @@ gis::Crit3DRasterGrid shapeToRaster(Crit3DShapeHandler shape, int cellSize)
     header.cellSize = cellSize;
     header.llCorner->x = xmin;
     header.llCorner->y = ymin;
-    header.nrRows = floor((ymax - ymin) / cellSize)+1;
-    header.nrCols = floor((xmax - xmin) / cellSize)+1;
+    header.nrRows = int(floor((ymax - ymin) / cellSize))+1;
+    header.nrCols = int(floor((xmax - xmin) / cellSize))+1;
 
     gis::Crit3DRasterGrid raster;
     raster.initializeGrid(header);
