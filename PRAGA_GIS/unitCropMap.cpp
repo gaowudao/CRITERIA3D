@@ -130,9 +130,7 @@ bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
     }
 
     // analysis matrix
-
-    int matrix[nShape][varFieldVectorSize];
-    std::fill(*matrix, *matrix + nShape *varFieldVectorSize, 0);
+    std::vector <std::vector<int> > matrix(nShape, std::vector<int>(varFieldVectorSize, 0));
 
 
     for (int row = 0; row < rasterRef.header->nrRows; row++)
@@ -150,18 +148,18 @@ bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
     }
 
     // save right matrix element for each shape
-    int index[nShape];
+    std::vector<int> index;
 
     if (type == MAJORITY)
     {
         for (int row = 0; row < rasterRef.header->nrRows; row++)
         {
-            index[row] = 0;
+            index.push_back(0);
             for (int col = 0; col < rasterRef.header->nrCols; col++)
             {
-                if (matrix[row][col] > index[row])
+                if (matrix[row][col] > index.at(row))
                 {
-                    index[row] = matrix[row][col];
+                    index.at(row) = matrix[row][col];
                 }
             }
         }
