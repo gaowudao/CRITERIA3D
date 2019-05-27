@@ -2,6 +2,7 @@
 #include "commonConstants.h"
 #include <float.h>
 #include <algorithm>
+#include <math.h>
 
 bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal, std::string valField, DBFFieldType fieldType, int cellSize, opType type)
 {
@@ -245,11 +246,13 @@ gis::Crit3DRasterGrid shapeToRaster(Crit3DShapeHandler shape, int cellSize)
         }
     }
 
+    xmin = floor(xmin);
+    ymin = floor(ymin);
     header.cellSize = cellSize;
-    header.nrRows = (ymax - ymin) / cellSize;
-    header.nrCols = (xmax - xmin) / cellSize;
     header.llCorner->x = xmin;
     header.llCorner->y = ymin;
+    header.nrRows = floor((ymax - ymin) / cellSize)+1;
+    header.nrCols = floor((xmax - xmin) / cellSize)+1;
 
     gis::Crit3DRasterGrid raster;
     raster.initializeGrid(header);
