@@ -19,6 +19,7 @@
         MapGraphicsView* view;
         Crit3DShapeHandler* shapePointer;
         gis::Crit3DGeoMap* geoMap;
+        std::vector<gis::Crit3DGeoPoint> geoPoints;
         bool isDrawing;
 
         void setMapResolution();

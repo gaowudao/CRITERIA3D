@@ -63,15 +63,14 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr, const g
     shapePtr->getShape(index, myShape);
 
     unsigned long nrVertices = myShape.getVertexCount();
-    std::vector<gis::Crit3DGeoPoint> points;
-    points.resize(nrVertices);
+    this->geoPoints.resize(nrVertices);
 
     const Point<double> *p_ptr = myShape.getVertices();
     for (unsigned long i = 0; i < nrVertices; i++)
     {
         gis::getLatLonFromUtm(gisSettings, p_ptr->x, p_ptr->y, &lat, &lon);
-        points[i].latitude = lat;
-        points[i].longitude = lon;
+        this->geoPoints[i].latitude = lat;
+        this->geoPoints[i].longitude = lon;
         p_ptr++;
     }
 
@@ -89,6 +88,12 @@ void MapGraphicsShapeObject::setShape(Crit3DShapeHandler* shapePtr)
 Crit3DShapeHandler* MapGraphicsShapeObject::getShape()
 {
     return this->shapePointer;
+}
+
+
+void MapGraphicsShapeObject::setDrawing(bool value)
+{
+    this->isDrawing = value;
 }
 
 
