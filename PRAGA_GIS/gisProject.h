@@ -44,6 +44,7 @@
 
         bool loadRaster(QString fileName);
         bool loadShapefile(QString fileName);
+        void setObjectRaster(gis::Crit3DRasterGrid *myRaster, QString fileName);
     };
 
     QString getFileName(QString fileNameComplete);

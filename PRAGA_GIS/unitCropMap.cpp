@@ -26,9 +26,9 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
     int nrRefShapes = shapeRef->getShapeCount();
 
     gis::Crit3DRasterGrid rasterRef = initializeRasterFromShape(*shapeRef, cellSize);
-    fillRasterWithShapeNumber(&rasterRef, *shapeRef);
+    fillRasterWithShapeNumber(&rasterRef, shapeRef);
     gis::Crit3DRasterGrid rasterVal = initializeRasterFromShape(*shapeRef, cellSize);
-    fillRasterWithShapeNumber(&rasterVal, *shapeVal);
+    fillRasterWithShapeNumber(&rasterVal, shapeVal);
 
     // add new field to shapeRef
     int fieldIndex = shapeVal->getDBFFieldIndex(valField.c_str());
@@ -137,8 +137,8 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
     {
         for (int col = 0; col < rasterRef.header->nrCols; col++)
         {
-            int refValue = rasterRef.value[row][col];
-            int valValue = rasterVal.value[row][col];
+            int refValue = int(rasterRef.value[row][col]);
+            int valValue = int(rasterVal.value[row][col]);
 
             if ( refValue != NODATA && valValue != NODATA)
             {
@@ -255,7 +255,8 @@ gis::Crit3DRasterGrid initializeRasterFromShape(Crit3DShapeHandler shape, int ce
     return raster;
 }
 
-void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler shape)
+
+void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler *shape)
 {
     ShapeObject object;
     int value = NODATA;
@@ -267,9 +268,9 @@ void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler
             Point<double> UTMpoint;
             UTMpoint.x = point->x;
             UTMpoint.y = point->y;
-            for (int shapeIndex = 0; shapeIndex < shape.getShapeCount(); shapeIndex++)
+            for (int shapeIndex = 0; shapeIndex < shape->getShapeCount(); shapeIndex++)
             {
-                shape.getShape(shapeIndex, object);
+                shape->getShape(shapeIndex, object);
                 value = object.pointInPolygon(UTMpoint);
                 if (value != NODATA)
                 {
@@ -283,6 +284,12 @@ void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler
     return;
 }
 
+
+void fillRasterWithField(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler* shape, std::string valField)
+{
+
+}
+
 // TODO funzione fillRasterWithPrevailingShapeNumber con valore prevalente (nrSubdivision, minPercentage)
 // shift = cellsize / (nrSubdivision +1)
 // x primo punto = utmPoint.x - cellsize/2 + shift
@@ -292,4 +299,11 @@ void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler
 // fare un nuovo modulo zonalStatistic che contiene:
 // zonalStatisticShape
 // zonalStatisticRaster (da Praga Vb)
+
+
+// function unitCropMap(6 campi)
+// 1) copiare crop > UCM (memoria se si può fare)
+// 2) zonalstatistic UCM MeteoGrid (id_meteo)
+// 3) zonalstatistic UCM Soil (id_soil)
+// 4) add UCM agli shape in interfaccia
 

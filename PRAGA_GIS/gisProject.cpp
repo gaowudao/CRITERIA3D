@@ -68,6 +68,15 @@ GisProject::GisProject()
 }
 
 
+void GisProject::setObjectRaster(gis::Crit3DRasterGrid *myRaster, QString fileName)
+{
+    GisObject* newObject = new(GisObject);
+    newObject->setRaster(fileName, myRaster);
+    this->objectList.push_back(newObject);
+}
+
+
+
 bool GisProject::loadRaster(QString fileNameWithPath)
 {
     std::string* myError = new std::string();
@@ -81,11 +90,7 @@ bool GisProject::loadRaster(QString fileNameWithPath)
     }
 
     setDefaultDTMScale(myRaster->colorScale);
-
-    GisObject* newObject = new(GisObject);
-    newObject->setRaster(fileNameWithPath, myRaster);
-    this->objectList.push_back(newObject);
-
+    setObjectRaster(myRaster, fileNameWithPath);
     return (true);
 }
 
