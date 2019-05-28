@@ -9,7 +9,9 @@ MapGraphicsShapeObject::MapGraphicsShapeObject(MapGraphicsView* _view, MapGraphi
     this->setFlag(MapGraphicsObject::ObjectIsFocusable);
     view = _view;
 
+    this->geoMap = new gis::Crit3DGeoMap();
     this->isDrawing = false;
+    this->shapePointer = nullptr;
     this->updateCenter();
 }
 

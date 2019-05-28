@@ -251,7 +251,7 @@ void MainWindow::addShapeObject(GisObject* myObject)
     this->shapeObjList.push_back(newShapeObj);
 
     this->mapView->scene()->addObject(newShapeObj);
-    //newShapeObj->redrawRequested();
+    newShapeObj->redrawRequested();
 }
 
 
