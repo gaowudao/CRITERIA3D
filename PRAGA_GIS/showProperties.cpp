@@ -119,7 +119,7 @@ void ShowProperties::onSelectShape(QTreeWidgetItem *item, int)
             }
 
             /* print list of vertices */
-            int32_t vertexCount = int(object.getVertexCount());
+            unsigned int vertexCount = object.getVertexCount();
             shapeData->append("\nNr. of vertices: " + QString::number(vertexCount));
             const Point<double> *p_ptr = object.getVertices();
             const Point<double> *p_end = p_ptr + (vertexCount - 1);

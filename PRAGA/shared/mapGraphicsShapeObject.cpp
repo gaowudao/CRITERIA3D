@@ -52,6 +52,34 @@ void MapGraphicsShapeObject::paint(QPainter *painter, const QStyleOptionGraphics
 }
 
 
+bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr, const gis::Crit3DGisSettings& gisSettings)
+{
+    if (shapePtr == nullptr) return false;
+    this->setShape(shapePtr);
+
+    double lat, lon;
+    ShapeObject myShape;
+    int index = 0;
+    shapePtr->getShape(index, myShape);
+
+    unsigned long nrVertices = myShape.getVertexCount();
+    std::vector<gis::Crit3DGeoPoint> points;
+    points.resize(nrVertices);
+
+    const Point<double> *p_ptr = myShape.getVertices();
+    for (unsigned long i = 0; i < nrVertices; i++)
+    {
+        gis::getLatLonFromUtm(gisSettings, p_ptr->x, p_ptr->y, &lat, &lon);
+        points[i].latitude = lat;
+        points[i].longitude = lon;
+        p_ptr++;
+    }
+
+    setDrawing(true);
+    return true;
+}
+
+
 void MapGraphicsShapeObject::setShape(Crit3DShapeHandler* shapePtr)
 {
     this->shapePointer = shapePtr;

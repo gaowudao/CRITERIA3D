@@ -46,6 +46,7 @@
          */
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
+        bool initializeUTM(Crit3DShapeHandler* shapePtr, const gis::Crit3DGisSettings& gisSettings);
         void setShape(Crit3DShapeHandler* shapePtr);
         Crit3DShapeHandler* getShape();
 

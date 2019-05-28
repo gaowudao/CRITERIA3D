@@ -63,8 +63,7 @@ void GisObject::setShapeFile(QString fileNameWithPath, Crit3DShapeHandler* shape
 
 
 GisProject::GisProject()
-{
-}
+{}
 
 
 void GisProject::addRaster(gis::Crit3DRasterGrid *myRaster, QString fileName)
