@@ -464,11 +464,11 @@ void weatherGenerator2D::computeTemperatureParameters()
         matricial::matrixDifference(matrixCovarianceLag0,matrixC,matrixRang,matrixRang,matrixRang,matrixRang,matrixC);
 
 
-        for (int i=0;i<matrixRang;i++)
+        /*for (int i=0;i<matrixRang;i++)
             for (int j=0; j<matrixRang; j++)
                 printf("%f\n",matrixC[i][j]);
         printf("\n");printf("\n");
-
+        */
         matricial::eigenSystemMatrix2x2(matrixC,eigenvalues,eigenvectors,matrixRang);
         int negativeEigenvalues = 0;
         if (eigenvalues[0] < 0)
@@ -483,7 +483,7 @@ void weatherGenerator2D::computeTemperatureParameters()
         }
         if (negativeEigenvalues > 0)
         {
-            matricial::inverse(eigenvectors,matrixC,matrixRang);
+            matricial::inverse(eigenvectors,matrixC,matrixRang); // matrix C temporarely becomes the inverse matrix of the right eigenvectors
             matrixC[0][0] *= eigenvalues[0];
             matrixC[0][1] *= eigenvalues[0];
             matrixC[1][0] *= eigenvalues[1];
@@ -491,22 +491,23 @@ void weatherGenerator2D::computeTemperatureParameters()
             matricial::matrixProduct(eigenvectors,matrixC,matrixRang,matrixRang,matrixRang,matrixRang,matrixC);
             matricial::eigenSystemMatrix2x2(matrixC,eigenvalues,eigenvectors,matrixRang);
         }
-        matricial::transposedMatrix(eigenvectors,2,2,matrixB);
+        //matricial::transposedMatrix(eigenvectors,2,2,matrixB);
+        matricial::inverse(eigenvectors,matrixB,2); // compulsory because our algorithm does not look at orthogonal vectors;
         matrixB[0][0] *= sqrt(eigenvalues[0]);
         matrixB[0][1] *= sqrt(eigenvalues[0]);
         matrixB[1][0] *= sqrt(eigenvalues[1]);
         matrixB[1][1] *= sqrt(eigenvalues[1]);
         matricial::matrixProduct(eigenvectors,matrixB,matrixRang,matrixRang,matrixRang,matrixRang,matrixB);
 
-        /*
+
         for (int i=0;i<matrixRang;i++)
-            printf("%f\n",eigenvalues[i]);
+            //printf("%f\n",eigenvalues[i]);
         printf("\n");
         for (int i=0;i<matrixRang;i++)
             for (int j=0; j<matrixRang; j++)
-                printf("%f\n",eigenvectors[j][i]);
+                printf("%f\n",matrixB[i][j]);
         printf("\n"); printf("\n");
-        */
+
 
 
         for (int i=0;i<matrixRang;i++)
