@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <math.h>
 
-bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal, std::string valField, DBFFieldType fieldType, int cellSize, opType type)
+bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal, std::string valField, DBFFieldType fieldType, int cellSize, opType type)
 {
 
     // check shape type
@@ -23,12 +23,12 @@ bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
         return false;
     }
 
-    int nShape = shapeRef->getShapeCount();
+    int nrRefShapes = shapeRef->getShapeCount();
 
-    gis::Crit3DRasterGrid rasterRef = shapeToRaster(*shapeRef, cellSize);
-    fillRasterWithShapeNumber(&rasterRef, *shapeRef);
-    gis::Crit3DRasterGrid rasterVal = shapeToRaster(*shapeRef, cellSize);
-    fillRasterWithShapeNumber(&rasterVal, *shapeVal);
+    gis::Crit3DRasterGrid rasterRef = initializeRasterFromShape(*shapeRef, cellSize);
+    fillRasterWithShapeNumber(&rasterRef, shapeRef);
+    gis::Crit3DRasterGrid rasterVal = initializeRasterFromShape(*shapeRef, cellSize);
+    fillRasterWithShapeNumber(&rasterVal, shapeVal);
 
     // add new field to shapeRef
     int fieldIndex = shapeVal->getDBFFieldIndex(valField.c_str());
@@ -130,15 +130,15 @@ bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
     }
 
     // analysis matrix
-    std::vector <std::vector<int> > matrix(nShape, std::vector<int>(varFieldVectorSize, 0));
+    std::vector <std::vector<int> > matrix(nrRefShapes, std::vector<int>(varFieldVectorSize, 0));
 
 
     for (int row = 0; row < rasterRef.header->nrRows; row++)
     {
         for (int col = 0; col < rasterRef.header->nrCols; col++)
         {
-            int refValue = rasterRef.value[row][col];
-            int valValue = rasterVal.value[row][col];
+            int refValue = int(rasterRef.value[row][col]);
+            int valValue = int(rasterVal.value[row][col]);
 
             if ( refValue != NODATA && valValue != NODATA)
             {
@@ -148,18 +148,18 @@ bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
     }
 
     // save right matrix element for each shape
-    std::vector<int> index;
+    std::vector<int> indexVector;
 
     if (type == MAJORITY)
     {
         for (int row = 0; row < rasterRef.header->nrRows; row++)
         {
-            index.push_back(0);
+            indexVector.push_back(0);
             for (int col = 0; col < rasterRef.header->nrCols; col++)
             {
-                if (matrix[row][col] > index.at(row))
+                if (matrix[row][col] > indexVector.at(row))
                 {
-                    index.at(row) = matrix[row][col];
+                    indexVector.at(row) = matrix[row][col];
                 }
             }
         }
@@ -187,33 +187,31 @@ bool zonalStatistics(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal,
     }
 
     // save value of the new field
-    for (int shapeIndex = 0; shapeIndex < nShape; shapeIndex++)
+    // each row of matrix is a shape of shapeRef
+    for (int shapeIndex = 0; shapeIndex < nrRefShapes; shapeIndex++)
     {
         if (fieldType == 0)
         {
-            std::string varFieldFound = varFieldVectorString[index[shapeIndex]];
+            std::string varFieldFound = varFieldVectorString[indexVector[shapeIndex]];
             shapeRef->writeStringAttribute(shapeIndex, shapeRef->getDBFFieldIndex(valField.c_str()), varFieldFound.c_str());
         }
         else if (fieldType == 1)
         {
-            int varFieldFound = varFieldVectorInt[index[shapeIndex]];
+            int varFieldFound = varFieldVectorInt[indexVector[shapeIndex]];
             shapeRef->writeIntAttribute(shapeIndex, shapeRef->getDBFFieldIndex(valField.c_str()), varFieldFound);
         }
         else if (fieldType == 2)
         {
-            int varFieldFound = varFieldVectorDouble[index[shapeIndex]];
+            int varFieldFound = varFieldVectorDouble[indexVector[shapeIndex]];
             shapeRef->writeDoubleAttribute(shapeIndex, shapeRef->getDBFFieldIndex(valField.c_str()), varFieldFound);
         }
     }
 
-
-
     return true;
-
-
 }
 
-gis::Crit3DRasterGrid shapeToRaster(Crit3DShapeHandler shape, int cellSize)
+
+gis::Crit3DRasterGrid initializeRasterFromShape(Crit3DShapeHandler shape, int cellSize)
 {
     gis::Crit3DRasterHeader header;
     ShapeObject object;
@@ -257,7 +255,8 @@ gis::Crit3DRasterGrid shapeToRaster(Crit3DShapeHandler shape, int cellSize)
     return raster;
 }
 
-void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler shape)
+
+void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler *shape)
 {
     ShapeObject object;
     int value = NODATA;
@@ -269,15 +268,16 @@ void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler
             Point<double> UTMpoint;
             UTMpoint.x = point->x;
             UTMpoint.y = point->y;
-            for (int shapeIndex = 0; shapeIndex < shape.getShapeCount(); shapeIndex++)
+            for (int shapeIndex = 0; shapeIndex < shape->getShapeCount(); shapeIndex++)
             {
-                shape.getShape(shapeIndex, object);
+                shape->getShape(shapeIndex, object);
                 value = object.pointInPolygon(UTMpoint);
                 if (value != NODATA)
                 {
                     break;
                 }
             }
+
             raster->value[row][col] = value;
         }
     }
@@ -285,4 +285,25 @@ void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler
 }
 
 
+void fillRasterWithField(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler* shape, std::string valField)
+{
+
+}
+
+// TODO funzione fillRasterWithPrevailingShapeNumber con valore prevalente (nrSubdivision, minPercentage)
+// shift = cellsize / (nrSubdivision +1)
+// x primo punto = utmPoint.x - cellsize/2 + shift
+
+// fare un modulo a parte per queste funzioni shapeToRaster.cpp
+
+// fare un nuovo modulo zonalStatistic che contiene:
+// zonalStatisticShape
+// zonalStatisticRaster (da Praga Vb)
+
+
+// function unitCropMap(6 campi)
+// 1) copiare crop > UCM (memoria se si può fare)
+// 2) zonalstatistic UCM MeteoGrid (id_meteo)
+// 3) zonalstatistic UCM Soil (id_soil)
+// 4) add UCM agli shape in interfaccia
 
