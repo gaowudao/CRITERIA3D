@@ -35,7 +35,6 @@ GisObject::GisObject()
     this->fileName = "";
     this->fileNameWithPath = "";
     this->isSelected = true;
-
     this->rasterPtr = nullptr;
     this->shapePtr = nullptr;
 }
@@ -52,7 +51,7 @@ void GisObject::setRaster(QString fileNameWithPath, gis::Crit3DRasterGrid* raste
 }
 
 
-void GisObject::setShape(QString fileNameWithPath, Crit3DShapeHandler* shapePtr)
+void GisObject::setShapeFile(QString fileNameWithPath, Crit3DShapeHandler* shapePtr)
 {
     this->type = gisObjectShape;
     this->fileNameWithPath = fileNameWithPath;
@@ -68,13 +67,20 @@ GisProject::GisProject()
 }
 
 
-void GisProject::setObjectRaster(gis::Crit3DRasterGrid *myRaster, QString fileName)
+void GisProject::addRaster(gis::Crit3DRasterGrid *myRaster, QString fileName)
 {
     GisObject* newObject = new(GisObject);
     newObject->setRaster(fileName, myRaster);
     this->objectList.push_back(newObject);
 }
 
+
+void GisProject::addShapeFile(Crit3DShapeHandler *myShape, QString fileName)
+{
+    GisObject* newObject = new(GisObject);
+    newObject->setShapeFile(fileName, myShape);
+    this->objectList.push_back(newObject);
+}
 
 
 bool GisProject::loadRaster(QString fileNameWithPath)
@@ -90,7 +96,7 @@ bool GisProject::loadRaster(QString fileNameWithPath)
     }
 
     setDefaultDTMScale(myRaster->colorScale);
-    setObjectRaster(myRaster, fileNameWithPath);
+    addRaster(myRaster, fileNameWithPath);
     return (true);
 }
 
@@ -104,10 +110,7 @@ bool GisProject::loadShapefile(QString fileNameWithPath)
         return (false);
     }
 
-    GisObject* newObject = new(GisObject);
-    newObject->setShape(fileNameWithPath, myShape);
-    this->objectList.push_back(newObject);
-
+    addShapeFile(myShape, fileNameWithPath);
     return (true);
 }
 

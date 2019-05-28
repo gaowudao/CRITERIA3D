@@ -28,7 +28,7 @@
 
         GisObject();
         void setRaster(QString filename, gis::Crit3DRasterGrid* rasterPtr);
-        void setShape(QString filename, Crit3DShapeHandler* shapePtr);
+        void setShapeFile(QString filename, Crit3DShapeHandler* shapePtr);
     };
 
 
@@ -44,7 +44,8 @@
 
         bool loadRaster(QString fileName);
         bool loadShapefile(QString fileName);
-        void setObjectRaster(gis::Crit3DRasterGrid *myRaster, QString fileName);
+        void addRaster(gis::Crit3DRasterGrid *myRaster, QString fileName);
+        void addShapeFile(Crit3DShapeHandler *myShape, QString fileName);
     };
 
     QString getFileName(QString fileNameComplete);
