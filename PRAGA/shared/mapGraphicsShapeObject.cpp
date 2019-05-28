@@ -46,8 +46,33 @@ void MapGraphicsShapeObject::paint(QPainter *painter, const QStyleOptionGraphics
     {
         setMapResolution();
 
-        //if (this->shapePointer != nullptr)
-           // drawRaster(this->currentRaster, painter, this->drawBorder);
+        if (this->shapePointer != nullptr)
+            drawShape(painter);
+    }
+}
+
+
+gis::Crit3DPixel MapGraphicsShapeObject::getPixel(const gis::Crit3DGeoPoint& geoPoint)
+{
+    gis::Crit3DPixel pixel;
+    pixel.x = int((geoPoint.longitude - this->geoMap->referencePoint.longitude) * this->geoMap->degreeToPixelX);
+    pixel.y = int((geoPoint.latitude - this->geoMap->referencePoint.latitude) * this->geoMap->degreeToPixelY);
+    return pixel;
+}
+
+
+void MapGraphicsShapeObject::drawShape(QPainter* myPainter)
+{
+    myPainter->setBrush(Qt::black);
+    unsigned long nrVertices = unsigned(this->geoPoints.size());
+
+    gis::Crit3DPixel p1, p2;
+    p1 = getPixel(this->geoPoints[0]);
+    for (unsigned long i = 1; i < nrVertices; i++)
+    {
+        p2 = getPixel(this->geoPoints[i]);
+        myPainter->drawLine(p1.x, p1.y, p2.x, p2.y);
+        p1 = p2;
     }
 }
 
