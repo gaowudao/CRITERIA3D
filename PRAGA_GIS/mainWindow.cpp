@@ -247,7 +247,11 @@ void MainWindow::addShapeObject(GisObject* myObject)
     item->setCheckState(Qt::Checked);
     ui->checkList->addItem(item);
 
-    // TODO creare e visualizzare shapeObject
+    MapGraphicsShapeObject* newShapeObj = new MapGraphicsShapeObject(this->mapView);
+    this->shapeObjList.push_back(newShapeObj);
+
+    this->mapView->scene()->addObject(newShapeObj);
+    //newShapeObj->redrawRequested();
 }
 
 

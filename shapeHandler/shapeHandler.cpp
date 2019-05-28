@@ -146,7 +146,9 @@ bool Crit3DShapeHandler::isWGS84Proj(std::string prjFileName)
         return false;
     }
 
+    return false;
 }
+
 
 bool Crit3DShapeHandler::setUTMzone(std::string prjFileName)
 {
@@ -162,7 +164,7 @@ bool Crit3DShapeHandler::setUTMzone(std::string prjFileName)
             std::size_t found = line.find(utmString);
             if (found != std::string::npos)
             {
-                int start = found+9;
+                int start = int(found + 9);
                 std::size_t foundEnd = line.find(separator);
                 std::string utm = line.substr(start, foundEnd-1-start);
                 m_utmZone = std::stoi(utm);
@@ -176,11 +178,8 @@ bool Crit3DShapeHandler::setUTMzone(std::string prjFileName)
             }
         }
     }
-    else
-    {
-        return false;
-    }
 
+    return false;
 }
 
 
@@ -233,12 +232,12 @@ int Crit3DShapeHandler::getFieldNumbers()
 
 std::string	Crit3DShapeHandler::getFieldName(int fieldPos)
 {
-    return m_fieldsList.at(fieldPos);
+    return m_fieldsList.at(unsigned(fieldPos));
 }
 
 DBFFieldType Crit3DShapeHandler::getFieldType(int fieldPos)
 {
-    return m_fieldsTypeList.at(fieldPos);
+    return m_fieldsTypeList.at(unsigned(fieldPos));
 }
 
 bool Crit3DShapeHandler::getIsWGS84() const

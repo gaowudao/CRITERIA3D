@@ -8,6 +8,7 @@
     #include "Position.h"
 
     #include "mapGraphicsRasterObject.h"
+    #include "mapGraphicsShapeObject.h"
     #include "gisProject.h"
     #include "colorLegend.h"
     #include "showProperties.h"
@@ -67,6 +68,7 @@
         MapGraphicsScene* mapScene;
         MapGraphicsView* mapView;
         std::vector<RasterObject *> rasterObjList;
+        std::vector<MapGraphicsShapeObject *> shapeObjList;
 
         void updateCenter();
         void setMapSource(OSMTileSource::OSMTileType mySource);
