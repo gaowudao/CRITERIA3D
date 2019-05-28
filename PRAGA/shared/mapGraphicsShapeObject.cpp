@@ -64,15 +64,19 @@ gis::Crit3DPixel MapGraphicsShapeObject::getPixel(const gis::Crit3DGeoPoint& geo
 void MapGraphicsShapeObject::drawShape(QPainter* myPainter)
 {
     myPainter->setBrush(Qt::black);
-    unsigned long nrVertices = unsigned(this->geoPoints.size());
-
     gis::Crit3DPixel p1, p2;
-    p1 = getPixel(this->geoPoints[0]);
-    for (unsigned long i = 1; i < nrVertices; i++)
+
+    unsigned long nrShapes = unsigned(this->geoPoints.size());
+    for (unsigned int i = 0; i < nrShapes; i++)
     {
-        p2 = getPixel(this->geoPoints[i]);
-        myPainter->drawLine(p1.x, p1.y, p2.x, p2.y);
-        p1 = p2;
+        p1 = getPixel(this->geoPoints[i][0]);
+        unsigned long nrVertices = unsigned(this->geoPoints[i].size());
+        for (unsigned long j = 1; j < nrVertices; j++)
+        {
+            p2 = getPixel(this->geoPoints[i][j]);
+            myPainter->drawLine(p1.x, p1.y, p2.x, p2.y);
+            p1 = p2;
+        }
     }
 }
 
@@ -84,19 +88,24 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr, const g
 
     double lat, lon;
     ShapeObject myShape;
-    int index = 0;
-    shapePtr->getShape(index, myShape);
 
-    unsigned long nrVertices = myShape.getVertexCount();
-    this->geoPoints.resize(nrVertices);
+    unsigned int nrShapes = unsigned(shapePtr->getShapeCount());
+    this->geoPoints.resize(nrShapes);
 
-    const Point<double> *p_ptr = myShape.getVertices();
-    for (unsigned long i = 0; i < nrVertices; i++)
+    for (unsigned int i = 0; i < nrShapes; i++)
     {
-        gis::getLatLonFromUtm(gisSettings, p_ptr->x, p_ptr->y, &lat, &lon);
-        this->geoPoints[i].latitude = lat;
-        this->geoPoints[i].longitude = lon;
-        p_ptr++;
+        shapePtr->getShape(int(i), myShape);
+        unsigned long nrVertices = myShape.getVertexCount();
+        this->geoPoints[i].resize(nrVertices);
+
+        const Point<double> *p_ptr = myShape.getVertices();
+        for (unsigned long j = 0; j < nrVertices; j++)
+        {
+            gis::getLatLonFromUtm(gisSettings, p_ptr->x, p_ptr->y, &lat, &lon);
+            this->geoPoints[i][j].latitude = lat;
+            this->geoPoints[i][j].longitude = lon;
+            p_ptr++;
+        }
     }
 
     setDrawing(true);
