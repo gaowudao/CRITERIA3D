@@ -76,6 +76,8 @@ void MapGraphicsShapeObject::drawShape(QPainter* myPainter)
             unsigned long offset = this->shapeParts[i][p].offset;
             unsigned long lenght = this->shapeParts[i][p].length;
 
+            // TODO check bounds
+
             unsigned long j = offset;
             p1 = getPixel(this->geoPoints[i][j]);
             for (unsigned long v = 1; v < lenght; v++)
@@ -109,6 +111,8 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr, const g
         unsigned long nrParts = myShape.getPartCount();
         this->shapeParts[i].resize(nrParts);
         this->shapeParts[i] = myShape.getParts();
+
+        // TODO save bounds
 
         unsigned long nrVertices = myShape.getVertexCount();
         this->geoPoints[i].resize(nrVertices);
