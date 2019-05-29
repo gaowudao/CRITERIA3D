@@ -51,7 +51,9 @@ SOURCES += main.cpp\
     dbfNewColDialog.cpp \
     unitCropMap.cpp \
     ../PRAGA/shared/mapGraphicsShapeObject.cpp \
-    ../PRAGA/shared/mapGraphicsRasterObject.cpp
+    ../PRAGA/shared/mapGraphicsRasterObject.cpp \
+    shapeToRaster.cpp \
+    zonalStatistic.cpp
 
 
 HEADERS += \
@@ -63,7 +65,9 @@ HEADERS += \
     dbfNewColDialog.h \
     unitCropMap.h \
     ../PRAGA/shared/mapGraphicsShapeObject.h \
-    ../PRAGA/shared/mapGraphicsRasterObject.h
+    ../PRAGA/shared/mapGraphicsRasterObject.h \
+    shapeToRaster.h \
+    zonalStatistic.h
 
 
 FORMS += mainWindow.ui \

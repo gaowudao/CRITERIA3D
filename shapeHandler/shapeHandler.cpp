@@ -307,15 +307,15 @@ bool Crit3DShapeHandler::addRecord(std::vector<std::string> fields)
         {
             DBFWriteNULLAttribute(m_dbf, iRecord, i );
         }
-        else if( typeField == 0 )
+        else if( typeField == FTString )
         {
             DBFWriteStringAttribute(m_dbf, iRecord, i, fields.at(i).c_str() );
         }
-        else if (typeField == 1)
+        else if (typeField == FTInteger)
         {
             DBFWriteIntegerAttribute(m_dbf, iRecord, i, std::stoi(fields.at(i))) ;
         }
-        else if (typeField == 2)
+        else if (typeField == FTDouble)
         {
             DBFWriteDoubleAttribute(m_dbf, iRecord, i, std::stod(fields.at(i)) );
         }

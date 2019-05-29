@@ -53,15 +53,15 @@ DbfTableDialog::DbfTableDialog(Crit3DShapeHandler* shapeHandler, QString fileNam
         for (int j = 0; j < rowNumber; j++)
         {
 
-            if (typeField == 0)
+            if (typeField == FTString)
             {
                 m_DBFTableWidget->setItem(j, i, new QTableWidgetItem( QString::fromStdString(shapeHandler->readStringAttribute(j,i) )));
             }
-            else if (typeField == 1)
+            else if (typeField == FTInteger)
             {
                 m_DBFTableWidget->setItem(j, i, new QTableWidgetItem( QString::number(shapeHandler->readIntAttribute(j,i) )));
             }
-            else if (typeField == 2)
+            else if (typeField == FTDouble)
             {
                 m_DBFTableWidget->setItem(j, i, new QTableWidgetItem( QString::number(shapeHandler->readDoubleAttribute(j,i) )));
             }
@@ -193,20 +193,17 @@ void DbfTableDialog::addColClicked()
         int width;
         int decimals;
 
-        // FTString
-        if (typeField == 0)
+        if (typeField == FTString)
         {
             width = newColDialog->getWidth();
             decimals = 0;
         }
-        // FTInteger
-        else if (typeField == 1)
+        else if (typeField == FTInteger)
         {
             width = DEFAULT_INTEGER_MAX_DIGITS;
             decimals = 0;
         }
-        // FTDouble
-        else if (typeField == 2)
+        else if (typeField == FTDouble)
         {
             width = DEFAULT_DOUBLE_MAX_DIGITS;
             decimals = DEFAULT_DOUBLE_MAX_DECIMALS;
@@ -268,15 +265,15 @@ void DbfTableDialog::cellChanged(int row, int column)
     qDebug() << "Cell at row: " << QString::number(row) << " column " << QString::number(column)<<" was changed.";
     QString data = m_DBFTableWidget->item(row, column)->text();
     int typeField = shapeHandler->getFieldType(column);
-    if (typeField == 0)
+    if (typeField == FTString)
     {
         shapeHandler->writeStringAttribute(row,column,data.toStdString().c_str());
     }
-    else if (typeField == 1)
+    else if (typeField == FTInteger)
     {
         shapeHandler->writeIntAttribute(row,column, data.toInt());
     }
-    else if (typeField == 2)
+    else if (typeField == FTDouble)
     {
         shapeHandler->writeDoubleAttribute(row,column, data.toDouble());
     }

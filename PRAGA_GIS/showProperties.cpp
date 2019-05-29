@@ -99,15 +99,15 @@ void ShowProperties::onSelectShape(QTreeWidgetItem *item, int)
             {
                 std::string nameField =  shapeHandler->getFieldName(i);
                 int typeField = shapeHandler->getFieldType(i);
-                if (typeField == 0)
+                if (typeField == FTString)
                 {
                     myStr = QString::fromStdString(shapeHandler->readStringAttribute(index,i));
                 }
-                else if (typeField == 1)
+                else if (typeField == FTInteger)
                 {
                     myStr = QString::number(shapeHandler->readIntAttribute(index,i));
                 }
-                else if (typeField == 2)
+                else if (typeField == FTDouble)
                 {
                     myStr = QString::number(shapeHandler->readDoubleAttribute(index,i));
                 }
