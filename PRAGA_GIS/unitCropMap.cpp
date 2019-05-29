@@ -4,22 +4,32 @@
 #include <algorithm>
 #include <math.h>
 
-bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal, std::string valField, DBFFieldType fieldType, int cellSize, opType type)
+bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal, std::string valField, int cellSize, opType type, std::string* error)
 {
 
     // check shape type
     if ( shapeRef->getTypeString() != shapeVal->getTypeString() || shapeRef->getTypeString() != "2D Polygon" )
     {
+        *error = "shape type error: not 2D Polygon type" ;
         return false;
     }
     // check proj
     if (shapeRef->getIsWGS84() == false || shapeVal->getIsWGS84() == false)
     {
+        *error = "proj error: not WGS84" ;
         return false;
     }
     // check utm zone
     if (shapeRef->getUtmZone() != shapeVal->getUtmZone())
     {
+        *error = "utm zone error: different utm zones" ;
+        return false;
+    }
+    //check if valField exists
+    int fieldIndex = shapeVal->getDBFFieldIndex(valField.c_str());
+    if (fieldIndex == -1)
+    {
+        *error = shapeVal->getFilepath() + "has not field called " + valField.c_str();
         return false;
     }
 
@@ -31,7 +41,7 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
     fillRasterWithShapeNumber(&rasterVal, shapeVal);
 
     // add new field to shapeRef
-    int fieldIndex = shapeVal->getDBFFieldIndex(valField.c_str());
+    DBFFieldType fieldType = shapeVal->getFieldType(fieldIndex);
     shapeRef->addField(valField.c_str(), fieldType, shapeVal->nWidthField(fieldIndex), shapeVal->nDecimalsField(fieldIndex));
 
     // LC da fare restyle codice affinchè gestisca i 3 casi
@@ -41,7 +51,7 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
     int varFieldVectorSize = 0;
 
 
-    if (fieldType == 0)
+    if (fieldType == FTString)
     {
         // fill varFieldVector
         for (int record = 0; record < shapeVal->getDBFRecordCount(); record++)
@@ -70,7 +80,7 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
             }
         }
     }
-    else if (fieldType == 1)
+    else if (fieldType == FTInteger)
     {
 
         for (int record = 0; record < shapeVal->getDBFRecordCount(); record++)
@@ -99,7 +109,7 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
             }
         }
     }
-    else if (fieldType == 2)
+    else if (fieldType == FTDouble)
     {
 
         for (int record = 0; record < shapeVal->getDBFRecordCount(); record++)
@@ -190,17 +200,17 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
     // each row of matrix is a shape of shapeRef
     for (int shapeIndex = 0; shapeIndex < nrRefShapes; shapeIndex++)
     {
-        if (fieldType == 0)
+        if (fieldType == FTString)
         {
             std::string varFieldFound = varFieldVectorString[indexVector[shapeIndex]];
             shapeRef->writeStringAttribute(shapeIndex, shapeRef->getDBFFieldIndex(valField.c_str()), varFieldFound.c_str());
         }
-        else if (fieldType == 1)
+        else if (fieldType == FTInteger)
         {
             int varFieldFound = varFieldVectorInt[indexVector[shapeIndex]];
             shapeRef->writeIntAttribute(shapeIndex, shapeRef->getDBFFieldIndex(valField.c_str()), varFieldFound);
         }
-        else if (fieldType == 2)
+        else if (fieldType == FTDouble)
         {
             int varFieldFound = varFieldVectorDouble[indexVector[shapeIndex]];
             shapeRef->writeDoubleAttribute(shapeIndex, shapeRef->getDBFFieldIndex(valField.c_str()), varFieldFound);
