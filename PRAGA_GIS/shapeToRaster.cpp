@@ -8,6 +8,7 @@ gis::Crit3DRasterGrid initializeRasterFromShape(Crit3DShapeHandler shape, int ce
 {
     gis::Crit3DRasterHeader header;
     ShapeObject object;
+    Box<double> bounds;
 
     double ymin = DBL_MAX;
     double xmin = DBL_MAX;
@@ -17,22 +18,11 @@ gis::Crit3DRasterGrid initializeRasterFromShape(Crit3DShapeHandler shape, int ce
     for (int i = 0; i < shape.getShapeCount(); i++)
     {
         shape.getShape(i, object);
-        if (object.getBounds().ymin < ymin)
-        {
-            ymin = object.getBounds().ymin;
-        }
-        if (object.getBounds().xmin < xmin)
-        {
-            xmin = object.getBounds().xmin;
-        }
-        if (object.getBounds().ymax > ymax)
-        {
-            ymax = object.getBounds().ymax;
-        }
-        if (object.getBounds().xmax > xmax)
-        {
-            xmax = object.getBounds().xmax;
-        }
+        bounds = object.getBounds();
+        ymin = minValue(ymin, bounds.ymin);
+        xmin = minValue(xmin, bounds.xmin);
+        ymax = maxValue(ymax, bounds.ymax);
+        xmin = maxValue(xmax, bounds.xmax);
     }
 
     xmin = floor(xmin);

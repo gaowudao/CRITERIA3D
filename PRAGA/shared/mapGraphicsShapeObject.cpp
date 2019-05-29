@@ -84,7 +84,8 @@ void MapGraphicsShapeObject::drawShape(QPainter* myPainter)
             {
                 j = offset + v;
                 p2 = getPixel(this->geoPoints[i][j]);
-                myPainter->drawLine(p1.x, p1.y, p2.x, p2.y);
+                if (p1.x != p2.x || p1.y != p2.y)
+                    myPainter->drawLine(p1.x, p1.y, p2.x, p2.y);
                 p1 = p2;
             }
         }
