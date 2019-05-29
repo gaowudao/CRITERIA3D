@@ -129,6 +129,23 @@ void weatherGenerator2D::initializeTemperatureParameters()
 
 }
 
+void weatherGenerator2D::initializeTemperaturecorrelationMatrices()
+{
+    correlationMatrixTemperature.maxT = (double **)calloc(nrStations, sizeof(double *));
+    correlationMatrixTemperature.minT = (double **)calloc(nrStations, sizeof(double *));
+    for (int i=0;i<nrStations;i++)
+    {
+        correlationMatrixTemperature.maxT[i] = (double *)calloc(nrStations, sizeof(double));
+        correlationMatrixTemperature.minT[i] = (double *)calloc(nrStations, sizeof(double));
+        for (int j=0;j<nrStations;j++)
+        {
+            correlationMatrixTemperature.maxT[i][j] = NODATA;
+            correlationMatrixTemperature.minT[i][j] = NODATA;
+        }
+    }
+
+}
+
 
 void weatherGenerator2D::computeTemperatureParameters()
 {
@@ -765,6 +782,65 @@ void weatherGenerator2D::covarianceOfResiduals(double** covarianceMatrix, int la
         if (denominator22 != 0)
         {
             covarianceMatrix[1][1] /= denominator22;
+        }
+    }
+
+}
+
+void weatherGenerator2D::temperaturesCorrelationMatrices()
+{
+    weatherGenerator2D::initializeTemperaturecorrelationMatrices();
+    TcorrelationVar maxT;
+    TcorrelationVar minT;
+    int counterMaxT;
+    int counterMinT;
+    for (int j=0; j<nrStations-1;j++)
+    {
+        for (int i=j+1; i<nrStations;i++)
+        {
+            counterMaxT = 0;
+            maxT.meanValue1=0.;
+            maxT.meanValue2=0.;
+            maxT.covariance = maxT.variance1 = maxT.variance2 = 0.;
+            minT.meanValue1=0.;
+            minT.meanValue2=0.;
+            minT.covariance = minT.variance1 = minT.variance2 = 0.;
+
+            for (int k=0; k<nrData;k++) // compute the monthly means
+            {
+                if (((obsDataD[j][k].tMax - NODATA) > EPSILON) && ((obsDataD[i][k].tMax - NODATA) > EPSILON))
+                {
+                    counterMaxT++;
+                    maxT.meanValue1 += obsDataD[j][k].tMax ;
+                    maxT.meanValue2 += obsDataD[i][k].tMax;
+
+                }
+            }
+            if (counterMaxT != 0)
+            {
+                maxT.meanValue1 /= counterMaxT;
+                maxT.meanValue2 /= counterMaxT;
+            }
+
+            // compute the monthly rho off-diagonal elements
+            for (int k=0; k<nrData;k++)
+            {
+
+                if (((obsDataD[j][k].tMax - NODATA) > EPSILON) && ((obsDataD[i][k].tMax - NODATA) > EPSILON))
+                {
+                    double value1,value2;
+                    value1 = obsDataD[j][k].tMax;
+                    value2 = obsDataD[i][k].tMax;
+
+                    maxT.covariance += (value1 - maxT.meanValue1)*(value2 - maxT.meanValue2);
+                    maxT.variance1 += (value1 - maxT.meanValue1)*(value1 - maxT.meanValue1);
+                    maxT.variance2 += (value2 - maxT.meanValue2)*(value2 - maxT.meanValue2);
+
+                }
+
+            }
+            correlationMatrixTemperature.maxT[j][i]= maxT.covariance / sqrt(maxT.variance1*maxT.variance2);
+            correlationMatrixTemperature.maxT[i][j] = correlationMatrixTemperature.maxT[j][i];
         }
     }
 
