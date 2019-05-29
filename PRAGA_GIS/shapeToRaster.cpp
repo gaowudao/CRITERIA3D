@@ -80,7 +80,43 @@ void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler
 
 void fillRasterWithField(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler* shape, std::string valField)
 {
+    ShapeObject object;
+    int shapeFound = NODATA;
+    int fieldIndex = shape->getDBFFieldIndex(valField.c_str());
+    DBFFieldType fieldType = shape->getFieldType(fieldIndex);
 
+    for (int row = 0; row < raster->header->nrRows; row++)
+    {
+        for (int col = 0; col < raster->header->nrCols; col++)
+        {
+            gis::Crit3DUtmPoint* point = raster->utmPoint(row, col);
+            Point<double> UTMpoint;
+            UTMpoint.x = point->x;
+            UTMpoint.y = point->y;
+            for (int shapeIndex = 0; shapeIndex < shape->getShapeCount(); shapeIndex++)
+            {
+                shape->getShape(shapeIndex, object);
+                shapeFound = object.pointInPolygon(UTMpoint);
+                if (shapeFound != NODATA)
+                {
+                    if (fieldType == FTInteger)
+                    {
+                        int intValue = shape->readIntAttribute(shapeFound,fieldIndex);
+                        raster->value[row][col] = intValue;
+                    }
+                    else if (fieldType == FTDouble)
+                    {
+                        double doubleValue = shape->readDoubleAttribute(shapeFound,fieldIndex);
+                        raster->value[row][col] = float(doubleValue);
+                    }
+
+                    break;
+                }
+            }
+
+        }
+    }
+    return;
 }
 
 // TODO funzione fillRasterWithPrevailingShapeNumber con valore prevalente (nrSubdivision, minPercentage)
