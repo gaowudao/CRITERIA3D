@@ -19,6 +19,7 @@
         MapGraphicsView* view;
         Crit3DShapeHandler* shapePointer;
         gis::Crit3DGeoMap* geoMap;
+        std::vector< std::vector<ShapeObject::Part> > shapeParts;
         std::vector< std::vector<gis::Crit3DGeoPoint> > geoPoints;
         bool isDrawing;
 
