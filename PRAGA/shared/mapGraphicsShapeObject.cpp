@@ -64,29 +64,33 @@ gis::Crit3DPixel MapGraphicsShapeObject::getPixel(const gis::Crit3DGeoPoint& geo
 void MapGraphicsShapeObject::drawShape(QPainter* myPainter)
 {
     gis::Crit3DPixel p1, p2;
-    ShapeObject myShape;
-    ShapeObject::Part myPart;
 
     myPainter->setBrush(Qt::black);
 
     int nrShapes = this->shapePointer->getShapeCount();
     for (unsigned long i = 0; i < unsigned(nrShapes); i++)
     {
-        this->shapePointer->getShape(int(i), myShape);
-
-        unsigned int nrParts = myShape.getPartCount();
+        unsigned int nrParts = this->shapeParts[i].size();
         for (unsigned int p = 0; p < nrParts; p++)
         {
-            myPart = myShape.getPart(p);
-            unsigned long j = myPart.offset;
-            p1 = getPixel(this->geoPoints[i][j]);
-
-            for (unsigned long v = 1; v < myPart.length; v++)
+            if (this->geoBounds[i].bottomLeft.longitude < this->geoMap->topRight.longitude
+                && this->geoBounds[i].topRight.longitude > this->geoMap->bottomLeft.longitude
+                && this->geoBounds[i].bottomLeft.latitude < this->geoMap->topRight.latitude
+                && this->geoBounds[i].topRight.latitude > this->geoMap->bottomLeft.latitude)
             {
-                j = myPart.offset + v;
-                p2 = getPixel(this->geoPoints[i][j]);
-                myPainter->drawLine(p1.x, p1.y, p2.x, p2.y);
-                p1 = p2;
+                unsigned long offset = this->shapeParts[i][p].offset;
+                unsigned long lenght = this->shapeParts[i][p].length;
+                unsigned long j = offset;
+
+                p1 = getPixel(this->geoPoints[i][j]);
+                for (unsigned long v = 1; v < lenght; v++)
+                {
+                    j = offset + v;
+                    p2 = getPixel(this->geoPoints[i][j]);
+                    if (p1.x != p2.x || p1.y != p2.y)
+                        myPainter->drawLine(p1.x, p1.y, p2.x, p2.y);
+                    p1 = p2;
+                }
             }
         }
     }
@@ -100,16 +104,30 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr, const g
 
     double lat, lon;
     ShapeObject myShape;
+    Box<double> bounds;
 
     unsigned int nrShapes = unsigned(this->shapePointer->getShapeCount());
+    this->shapeParts.resize(nrShapes);
+    this->geoBounds.resize(nrShapes);
     this->geoPoints.resize(nrShapes);
 
     for (unsigned int i = 0; i < nrShapes; i++)
     {
         this->shapePointer->getShape(int(i), myShape);
+        this->shapeParts[i] = myShape.getParts();
+
+        // Bounds
+        bounds = myShape.getBounds();
+        gis::getLatLonFromUtm(gisSettings, bounds.xmin, bounds.ymin, &lat, &lon);
+        this->geoBounds[i].bottomLeft.latitude = lat;
+        this->geoBounds[i].bottomLeft.longitude = lon;
+        gis::getLatLonFromUtm(gisSettings, bounds.xmax, bounds.ymax, &lat, &lon);
+        this->geoBounds[i].topRight.latitude = lat;
+        this->geoBounds[i].topRight.longitude = lon;
+
+        // vertices
         unsigned long nrVertices = myShape.getVertexCount();
         this->geoPoints[i].resize(nrVertices);
-
         const Point<double> *p_ptr = myShape.getVertices();
         for (unsigned long j = 0; j < nrVertices; j++)
         {
