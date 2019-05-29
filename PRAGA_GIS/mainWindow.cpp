@@ -107,6 +107,9 @@ void MainWindow::updateCenter()
     if (! this->rasterObjList.empty())
         for (unsigned int i = 0; i < this->rasterObjList.size(); i++)
             this->rasterObjList[i]->updateCenter();
+    if (! this->shapeObjList.empty())
+        for (unsigned int i = 0; i < this->shapeObjList.size(); i++)
+            this->shapeObjList[i]->updateCenter();
 }
 
 
@@ -248,6 +251,7 @@ void MainWindow::addShapeObject(GisObject* myObject)
     ui->checkList->addItem(item);
 
     MapGraphicsShapeObject* newShapeObj = new MapGraphicsShapeObject(this->mapView);
+    newShapeObj->initializeUTM(myObject->shapePtr, myProject.gisSettings);
     this->shapeObjList.push_back(newShapeObj);
 
     this->mapView->scene()->addObject(newShapeObj);
@@ -307,12 +311,23 @@ void MainWindow::itemClicked(QListWidgetItem* item)
         myObject->isSelected = item->checkState();
         rasterObjList.at(i)->setVisible(myObject->isSelected);
     }
-    else
+    else if (myObject->type == gisObjectShape)
     {
-        // TO DO SHAPE
+        unsigned int i;
+        for (i = 0; i < shapeObjList.size(); i++)
+        {
+            if (shapeObjList.at(i)->getShape() == myObject->shapePtr)
+            {
+                break;
+            }
+        }
+
+        myObject->isSelected = item->checkState();
+        shapeObjList.at(i)->setVisible(myObject->isSelected);
     }
-    return;
+
 }
+
 
 void MainWindow::itemMenuRequested(const QPoint point)
 {

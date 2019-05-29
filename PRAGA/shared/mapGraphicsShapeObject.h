@@ -19,9 +19,12 @@
         MapGraphicsView* view;
         Crit3DShapeHandler* shapePointer;
         gis::Crit3DGeoMap* geoMap;
+        std::vector< std::vector<gis::Crit3DGeoPoint> > geoPoints;
         bool isDrawing;
 
         void setMapResolution();
+        void drawShape(QPainter* myPainter);
+        gis::Crit3DPixel getPixel(const gis::Crit3DGeoPoint& geoPoint);
 
     public:
         /*!
@@ -46,6 +49,7 @@
          */
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
+        bool initializeUTM(Crit3DShapeHandler* shapePtr, const gis::Crit3DGisSettings& gisSettings);
         void setShape(Crit3DShapeHandler* shapePtr);
         Crit3DShapeHandler* getShape();
 
