@@ -87,4 +87,6 @@ namespace gis
         this->pixelToDegreeY = dy;
         this->degreeToPixelY = 1.0 / this->pixelToDegreeY;
     }
+
+    Crit3DGeoBox::Crit3DGeoBox() {}
 }
