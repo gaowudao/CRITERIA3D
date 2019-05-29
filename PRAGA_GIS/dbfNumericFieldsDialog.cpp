@@ -13,6 +13,21 @@ DbfNumericFieldsDialog::DbfNumericFieldsDialog(Crit3DShapeHandler* shapeHandler,
     outputName->setPlaceholderText("Output Name");
     mainLayout->addWidget(outputName);
 
+    std::string nameField;
+    QStringList fieldsLabel;
+    DBFFieldType typeField;
+
+    for (int i = 0; i < shapeHandler->getFieldNumbers(); i++)
+    {
+        typeField = shapeHandler->getFieldType(i);
+        if (typeField != FTString)
+        {
+            nameField =  shapeHandler->getFieldName(i);
+            fieldsLabel << QString::fromStdString(nameField);
+        }
+    }
+    listFields->addItems(fieldsLabel);
+
 
     setLayout(mainLayout);
     exec();

@@ -39,7 +39,7 @@ DbfTableDialog::DbfTableDialog(Crit3DShapeHandler* shapeHandler, QString fileNam
     m_DBFTableWidget->setColumnCount(colNumber);
 
     std::string nameField;
-    int typeField;
+    DBFFieldType typeField;
 
     labels.clear();
     m_DBFTableHeader.clear();
