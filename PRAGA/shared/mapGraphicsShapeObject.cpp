@@ -121,14 +121,14 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr, const g
         this->shapePointer->getShape(int(i), myShape);
         this->shapeParts[i] = myShape.getParts();
 
-        // Holes
+        // clockWise polygons (check for holes)
         this->clockWise[i].resize(myShape.getPartCount());
         for (unsigned long j = 0; j < myShape.getPartCount(); j++)
         {
             clockWise[i][j] = myShape.isClockWise(j);
         }
 
-        // Bounds
+        // shape bounds
         bounds = myShape.getBounds();
         gis::getLatLonFromUtm(gisSettings, bounds.xmin, bounds.ymin, &lat, &lon);
         this->geoBounds[i].bottomLeft.latitude = lat;
