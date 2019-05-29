@@ -206,7 +206,11 @@ bool ShapeObject::isClockWise(int indexPart)
 int ShapeObject::pointInPolygon(Point<double> UTMpoint)
 {
     bool  oddNodes=false;
-    // TODO check sui bounds
+
+    if (UTMpoint.x < bounds.xmin || UTMpoint.x > bounds.xmax || UTMpoint.y < bounds.ymin || UTMpoint.y > bounds.ymax)
+    {
+        return NODATA;
+    }
 
     for (int indexPart = 0; indexPart < getPartCount(); indexPart++)
     {
