@@ -70,27 +70,31 @@ void MapGraphicsShapeObject::drawShape(QPainter* myPainter)
     myPainter->setPen(Qt::black);
     myPainter->setBrush(Qt::red);
 
-    int nrShapes = this->shapePointer->getShapeCount();
-    for (unsigned long i = 0; i < unsigned(nrShapes); i++)
+    unsigned int nrShapes = unsigned(shapePointer->getShapeCount());
+    for (unsigned long i = 0; i < nrShapes; i++)
     {
-        if (this->geoBounds[i].bottomLeft.longitude < this->geoMap->topRight.longitude
-            && this->geoBounds[i].topRight.longitude > this->geoMap->bottomLeft.longitude
-            && this->geoBounds[i].bottomLeft.latitude < this->geoMap->topRight.latitude
-            && this->geoBounds[i].topRight.latitude > this->geoMap->bottomLeft.latitude)
+        if (geoBounds[i].bottomLeft.longitude < geoMap->topRight.longitude
+            && geoBounds[i].topRight.longitude > geoMap->bottomLeft.longitude
+            && geoBounds[i].bottomLeft.latitude < geoMap->topRight.latitude
+            && geoBounds[i].topRight.latitude > geoMap->bottomLeft.latitude)
         {
-            for (unsigned int part = 0; part < this->shapeParts[i].size(); part++)
+            for (unsigned int part = 0; part < shapeParts[i].size(); part++)
             {
-                unsigned long offset = this->shapeParts[i][part].offset;
-                unsigned long lenght = this->shapeParts[i][part].length;
-
-                polygon.clear();
-                for (unsigned long v = 0; v < lenght; v++)
+                // TODO check holes
+                if (clockWise[i][part])
                 {
-                    j = offset + v;
-                    point = getPoint(this->geoPoints[i][j]);
-                    polygon.append(point);
+                    unsigned long offset = shapeParts[i][part].offset;
+                    unsigned long lenght = shapeParts[i][part].length;
+
+                    polygon.clear();
+                    for (unsigned long v = 0; v < lenght; v++)
+                    {
+                        j = offset + v;
+                        point = getPoint(geoPoints[i][j]);
+                        polygon.append(point);
+                    }
+                    myPainter->drawPolygon(polygon);
                 }
-                myPainter->drawPolygon(polygon);
             }
         }
     }
@@ -108,7 +112,7 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr, const g
 
     unsigned int nrShapes = unsigned(this->shapePointer->getShapeCount());
     this->shapeParts.resize(nrShapes);
-    this->holes.resize(nrShapes);
+    this->clockWise.resize(nrShapes);
     this->geoBounds.resize(nrShapes);
     this->geoPoints.resize(nrShapes);
 
@@ -118,10 +122,10 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr, const g
         this->shapeParts[i] = myShape.getParts();
 
         // Holes
-        this->holes[i].resize(myShape.getPartCount());
+        this->clockWise[i].resize(myShape.getPartCount());
         for (unsigned long j = 0; j < myShape.getPartCount(); j++)
         {
-            holes[i][j] = ! myShape.isClockWise(j);
+            clockWise[i][j] = myShape.isClockWise(j);
         }
 
         // Bounds
