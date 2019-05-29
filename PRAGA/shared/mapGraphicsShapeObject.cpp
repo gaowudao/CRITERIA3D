@@ -73,13 +73,12 @@ void MapGraphicsShapeObject::drawShape(QPainter* myPainter)
     int nrShapes = this->shapePointer->getShapeCount();
     for (unsigned long i = 0; i < unsigned(nrShapes); i++)
     {
-        unsigned int nrParts = this->shapeParts[i].size();
-        for (unsigned int part = 0; part < nrParts; part++)
+        if (this->geoBounds[i].bottomLeft.longitude < this->geoMap->topRight.longitude
+            && this->geoBounds[i].topRight.longitude > this->geoMap->bottomLeft.longitude
+            && this->geoBounds[i].bottomLeft.latitude < this->geoMap->topRight.latitude
+            && this->geoBounds[i].topRight.latitude > this->geoMap->bottomLeft.latitude)
         {
-            if (this->geoBounds[i].bottomLeft.longitude < this->geoMap->topRight.longitude
-                && this->geoBounds[i].topRight.longitude > this->geoMap->bottomLeft.longitude
-                && this->geoBounds[i].bottomLeft.latitude < this->geoMap->topRight.latitude
-                && this->geoBounds[i].topRight.latitude > this->geoMap->bottomLeft.latitude)
+            for (unsigned int part = 0; part < this->shapeParts[i].size(); part++)
             {
                 unsigned long offset = this->shapeParts[i][part].offset;
                 unsigned long lenght = this->shapeParts[i][part].length;
@@ -109,6 +108,7 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr, const g
 
     unsigned int nrShapes = unsigned(this->shapePointer->getShapeCount());
     this->shapeParts.resize(nrShapes);
+    this->holes.resize(nrShapes);
     this->geoBounds.resize(nrShapes);
     this->geoPoints.resize(nrShapes);
 
@@ -116,6 +116,13 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr, const g
     {
         this->shapePointer->getShape(int(i), myShape);
         this->shapeParts[i] = myShape.getParts();
+
+        // Holes
+        this->holes[i].resize(myShape.getPartCount());
+        for (unsigned long j = 0; j < myShape.getPartCount(); j++)
+        {
+            holes[i][j] = ! myShape.isClockWise(j);
+        }
 
         // Bounds
         bounds = myShape.getBounds();
