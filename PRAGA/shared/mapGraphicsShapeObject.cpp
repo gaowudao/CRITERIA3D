@@ -52,18 +52,20 @@ void MapGraphicsShapeObject::paint(QPainter *painter, const QStyleOptionGraphics
 }
 
 
-gis::Crit3DPixel MapGraphicsShapeObject::getPixel(const gis::Crit3DGeoPoint& geoPoint)
+QPointF MapGraphicsShapeObject::getPoint(const gis::Crit3DGeoPoint& geoPoint)
 {
-    gis::Crit3DPixel pixel;
-    pixel.x = int((geoPoint.longitude - this->geoMap->referencePoint.longitude) * this->geoMap->degreeToPixelX);
-    pixel.y = int((geoPoint.latitude - this->geoMap->referencePoint.latitude) * this->geoMap->degreeToPixelY);
+    QPointF pixel;
+    pixel.setX((geoPoint.longitude - this->geoMap->referencePoint.longitude) * this->geoMap->degreeToPixelX);
+    pixel.setY((geoPoint.latitude - this->geoMap->referencePoint.latitude) * this->geoMap->degreeToPixelY);
     return pixel;
 }
 
 
 void MapGraphicsShapeObject::drawShape(QPainter* myPainter)
 {
-    gis::Crit3DPixel p1, p2;
+    QPointF point;
+    QPolygonF polygon;
+    unsigned long j;
 
     myPainter->setBrush(Qt::black);
 
@@ -71,26 +73,24 @@ void MapGraphicsShapeObject::drawShape(QPainter* myPainter)
     for (unsigned long i = 0; i < unsigned(nrShapes); i++)
     {
         unsigned int nrParts = this->shapeParts[i].size();
-        for (unsigned int p = 0; p < nrParts; p++)
+        for (unsigned int part = 0; part < nrParts; part++)
         {
             if (this->geoBounds[i].bottomLeft.longitude < this->geoMap->topRight.longitude
                 && this->geoBounds[i].topRight.longitude > this->geoMap->bottomLeft.longitude
                 && this->geoBounds[i].bottomLeft.latitude < this->geoMap->topRight.latitude
                 && this->geoBounds[i].topRight.latitude > this->geoMap->bottomLeft.latitude)
             {
-                unsigned long offset = this->shapeParts[i][p].offset;
-                unsigned long lenght = this->shapeParts[i][p].length;
-                unsigned long j = offset;
+                unsigned long offset = this->shapeParts[i][part].offset;
+                unsigned long lenght = this->shapeParts[i][part].length;
 
-                p1 = getPixel(this->geoPoints[i][j]);
-                for (unsigned long v = 1; v < lenght; v++)
+                polygon.clear();
+                for (unsigned long v = 0; v < lenght; v++)
                 {
                     j = offset + v;
-                    p2 = getPixel(this->geoPoints[i][j]);
-                    if (p1.x != p2.x || p1.y != p2.y)
-                        myPainter->drawLine(p1.x, p1.y, p2.x, p2.y);
-                    p1 = p2;
+                    point = getPoint(this->geoPoints[i][j]);
+                    polygon.append(point);
                 }
+                myPainter->drawPolygon(polygon);
             }
         }
     }
@@ -163,19 +163,19 @@ void MapGraphicsShapeObject::setDrawing(bool value)
 
 void MapGraphicsShapeObject::setMapResolution()
 {
-    QPointF bottomLeft = this->view->mapToScene(QPoint(0.0, this->view->height()));
-    QPointF topRight = this->view->mapToScene(QPoint(this->view->width(),0.0));
+    QPointF bottomLeft = this->view->mapToScene(QPoint(0.f, this->view->height()));
+    QPointF topRight = this->view->mapToScene(QPoint(this->view->width(), 0.f));
 
     this->geoMap->bottomLeft.longitude = bottomLeft.x();
     this->geoMap->bottomLeft.latitude = bottomLeft.y();
     this->geoMap->topRight.longitude = topRight.x();
     this->geoMap->topRight.latitude = topRight.y();
 
-    const qreal widthLon = qAbs<qreal>(topRight.x() - bottomLeft.x());
-    const qreal heightlat = qAbs<qreal>(topRight.y() - bottomLeft.y());
+    double widthLon = topRight.x() - bottomLeft.x();
+    double heightlat = topRight.y() - bottomLeft.y();
 
-    qreal dxdegree = widthLon / this->view->width();
-    qreal dydegree = heightlat / this->view->height();
+    double dxdegree = widthLon / this->view->width();
+    double dydegree = heightlat / this->view->height();
 
     this->geoMap->setResolution(dxdegree, dydegree);
 }

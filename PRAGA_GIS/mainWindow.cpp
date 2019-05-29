@@ -152,7 +152,6 @@ void MainWindow::mouseMoveEvent(QMouseEvent * event)
 
 void MainWindow::wheelEvent(QWheelEvent * event)
 {
-    Q_UNUSED(event)
     this->updateCenter();
 }
 

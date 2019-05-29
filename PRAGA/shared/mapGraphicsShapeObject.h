@@ -26,7 +26,7 @@
 
         void setMapResolution();
         void drawShape(QPainter* myPainter);
-        gis::Crit3DPixel getPixel(const gis::Crit3DGeoPoint& geoPoint);
+        QPointF getPoint(const gis::Crit3DGeoPoint& geoPoint);
 
     public:
         /*!
