@@ -164,7 +164,7 @@ bool Crit3DShapeHandler::setUTMzone(std::string prjFileName)
             std::size_t found = line.find(utmString);
             if (found != std::string::npos)
             {
-                int start = int(found + 9);
+                std::size_t start = found + 9;
                 std::size_t foundEnd = line.find(separator);
                 std::string utm = line.substr(start, foundEnd-1-start);
                 m_utmZone = std::stoi(utm);
@@ -200,7 +200,7 @@ bool Crit3DShapeHandler::getShape(int index, ShapeObject &shape)
     return true;
 }
 
-int	Crit3DShapeHandler::getShapeCount()
+int Crit3DShapeHandler::getShapeCount()
 {
     return m_count;
 }

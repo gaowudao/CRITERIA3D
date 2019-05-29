@@ -51,7 +51,7 @@
 
         bool initializeUTM(Crit3DShapeHandler* shapePtr, const gis::Crit3DGisSettings& gisSettings);
         void setShape(Crit3DShapeHandler* shapePtr);
-        Crit3DShapeHandler* getShape();
+        Crit3DShapeHandler* getShapePointer();
 
         void setDrawing(bool value);
         void updateCenter();

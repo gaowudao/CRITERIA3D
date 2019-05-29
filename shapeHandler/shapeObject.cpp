@@ -25,7 +25,7 @@
 #define NODATA -9999
 
 
-int ShapeObject::getPartCount() const
+unsigned int ShapeObject::getPartCount() const
 {
     return partCount;
 }
@@ -99,15 +99,15 @@ void ShapeObject::assign(const SHPObject* obj)
         int *pt = obj->panPartType;
         Part part;
         parts.clear();
-        partCount = obj->nParts;
+        partCount = unsigned(obj->nParts);
         for (int n = 0; n < obj->nParts; n++) {
             part.type = *pt;
-            part.offset = *ps;
+            part.offset = unsigned(*ps);
             if ((n+1) == obj->nParts) {
-                part.length = int(vertexCount) - (*ps);
+                part.length = vertexCount - unsigned(*ps);
             }
             else {
-                part.length = *(ps+1) - *ps;
+                part.length = unsigned(*(ps+1) - *ps);
             }
             parts.push_back(part);
             ps++;
@@ -175,18 +175,23 @@ std::vector<ShapeObject::Part> ShapeObject::getParts() const
     return parts;
 }
 
-double ShapeObject::polygonArea(int indexPart)
+ShapeObject::Part ShapeObject::getPart(unsigned int indexPart) const
+{
+    return parts[indexPart];
+}
+
+double ShapeObject::polygonArea(unsigned int indexPart)
 {
     double area = 0.0;
-    long i;
-    int j;
+    unsigned long i;
+    unsigned int j;
 
     if (indexPart > getPartCount())
     {
         return NODATA;
     }
-    long offSet = getParts().at(indexPart).offset;
-    long length = getParts().at(indexPart).length;
+    unsigned long offSet = getParts().at(indexPart).offset;
+    unsigned long length = getParts().at(indexPart).length;
 
     for (i = 0; i < length; i++)
     {
@@ -197,7 +202,7 @@ double ShapeObject::polygonArea(int indexPart)
     return (area / 2);
 }
 
-bool ShapeObject::isClockWise(int indexPart)
+bool ShapeObject::isClockWise(unsigned int indexPart)
 {
     return polygonArea(indexPart) < 0;
 }
@@ -212,19 +217,19 @@ int ShapeObject::pointInPolygon(Point<double> UTMpoint)
         return NODATA;
     }
 
-    for (int indexPart = 0; indexPart < getPartCount(); indexPart++)
+    for (unsigned int indexPart = 0; indexPart < getPartCount(); indexPart++)
     {
         if (!isClockWise(indexPart))
         {
             return NODATA;  //HOLE
         }
-        long offSet = getParts().at(indexPart).offset;
-        long length = getParts().at(indexPart).length;
+        unsigned long offSet = getParts().at(indexPart).offset;
+        unsigned long length = getParts().at(indexPart).length;
 
-        int j = offSet+length - 1;
-        for (int i = offSet; i < (offSet+length); i++)
+        unsigned int j = offSet+length - 1;
+        for (unsigned int i = offSet; i < (offSet+length); i++)
         {
-            if ((vertices[i].y< UTMpoint.y && vertices[j].y >= UTMpoint.y ||   vertices[j].y < UTMpoint.y && vertices[i].y>= UTMpoint.y)
+            if (((vertices[i].y < UTMpoint.y && vertices[j].y >= UTMpoint.y) || (vertices[j].y < UTMpoint.y && vertices[i].y >= UTMpoint.y))
                 &&  (vertices[i].x <= UTMpoint.x || vertices[j].x <= UTMpoint.x))
             {
                 oddNodes^=(vertices[i].x+(UTMpoint.y-vertices[i].y)/(vertices[j].y-vertices[i].y)*(vertices[j].x-vertices[i].x)<UTMpoint.x);

@@ -63,19 +63,31 @@ gis::Crit3DPixel MapGraphicsShapeObject::getPixel(const gis::Crit3DGeoPoint& geo
 
 void MapGraphicsShapeObject::drawShape(QPainter* myPainter)
 {
-    myPainter->setBrush(Qt::black);
     gis::Crit3DPixel p1, p2;
+    ShapeObject myShape;
+    ShapeObject::Part myPart;
 
-    unsigned long nrShapes = unsigned(this->geoPoints.size());
-    for (unsigned int i = 0; i < nrShapes; i++)
+    myPainter->setBrush(Qt::black);
+
+    int nrShapes = this->shapePointer->getShapeCount();
+    for (unsigned long i = 0; i < unsigned(nrShapes); i++)
     {
-        p1 = getPixel(this->geoPoints[i][0]);
-        unsigned long nrVertices = unsigned(this->geoPoints[i].size());
-        for (unsigned long j = 1; j < nrVertices; j++)
+        this->shapePointer->getShape(int(i), myShape);
+
+        unsigned int nrParts = myShape.getPartCount();
+        for (unsigned int p = 0; p < nrParts; p++)
         {
-            p2 = getPixel(this->geoPoints[i][j]);
-            myPainter->drawLine(p1.x, p1.y, p2.x, p2.y);
-            p1 = p2;
+            myPart = myShape.getPart(p);
+            unsigned long j = myPart.offset;
+            p1 = getPixel(this->geoPoints[i][j]);
+
+            for (unsigned long v = 1; v < myPart.length; v++)
+            {
+                j = myPart.offset + v;
+                p2 = getPixel(this->geoPoints[i][j]);
+                myPainter->drawLine(p1.x, p1.y, p2.x, p2.y);
+                p1 = p2;
+            }
         }
     }
 }
@@ -89,12 +101,12 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr, const g
     double lat, lon;
     ShapeObject myShape;
 
-    unsigned int nrShapes = unsigned(shapePtr->getShapeCount());
+    unsigned int nrShapes = unsigned(this->shapePointer->getShapeCount());
     this->geoPoints.resize(nrShapes);
 
     for (unsigned int i = 0; i < nrShapes; i++)
     {
-        shapePtr->getShape(int(i), myShape);
+        this->shapePointer->getShape(int(i), myShape);
         unsigned long nrVertices = myShape.getVertexCount();
         this->geoPoints[i].resize(nrVertices);
 
@@ -119,7 +131,7 @@ void MapGraphicsShapeObject::setShape(Crit3DShapeHandler* shapePtr)
 }
 
 
-Crit3DShapeHandler* MapGraphicsShapeObject::getShape()
+Crit3DShapeHandler* MapGraphicsShapeObject::getShapePointer()
 {
     return this->shapePointer;
 }

@@ -11,14 +11,14 @@
     protected:
         SHPHandle	m_handle;
         DBFHandle   m_dbf;
-        int			m_count;
+        int         m_count;
         int			m_type;
         int         m_fields;
         std::string m_filepath;
         std::vector<std::string> m_fieldsList;
         std::vector<DBFFieldType> m_fieldsTypeList;
-        bool m_isWGS84;
-        int m_utmZone;
+        bool        m_isWGS84;
+        int         m_utmZone;
 
     public:
         Crit3DShapeHandler();

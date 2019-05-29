@@ -316,7 +316,7 @@ void MainWindow::itemClicked(QListWidgetItem* item)
         unsigned int i;
         for (i = 0; i < shapeObjList.size(); i++)
         {
-            if (shapeObjList.at(i)->getShape() == myObject->shapePtr)
+            if (shapeObjList.at(i)->getShapePointer() == myObject->shapePtr)
             {
                 break;
             }

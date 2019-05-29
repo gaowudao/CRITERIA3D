@@ -117,8 +117,8 @@
         struct Part
         {
             int type;
-            long offset;
-            long length;
+            unsigned long offset;
+            unsigned long length;
 
             Part() : type(0), offset(0), length(0) {}
         };
@@ -127,7 +127,7 @@
         int                 index;
         int					type;
         unsigned int		vertexCount;
-        int                 partCount;
+        unsigned int        partCount;
         Point<double>		*vertices;
         Box<double>			bounds;
         std::vector<Part>	parts;
@@ -149,19 +149,20 @@
         void assign(const ShapeObject& obj);
 
     public:
-        int						getIndex() const;
-        int						getType() const;
-        std::string				getTypeString() const;
+        int                     getIndex() const;
+        int                     getType() const;
+        std::string             getTypeString() const;
 
         unsigned int            getVertexCount() const;
         const Point<double>*	getVertices() const;
-        Box<double>				getBounds() const;
+        Box<double>             getBounds() const;
 
         std::vector<Part>		getParts() const;
-        int getPartCount() const;
-        double polygonArea(int indexPart);
-        bool isClockWise(int indexPart);
-        int pointInPolygon(Point<double> UTMpoint);
+        ShapeObject::Part       getPart(unsigned int indexPart) const;
+        unsigned int            getPartCount() const;
+        double                  polygonArea(unsigned int indexPart);
+        bool                    isClockWise(unsigned int indexPart);
+        int                     pointInPolygon(Point<double> UTMpoint);
     };
 
     std::string getShapeTypeAsString(int shapeType);
