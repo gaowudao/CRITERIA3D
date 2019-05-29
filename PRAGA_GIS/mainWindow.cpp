@@ -367,6 +367,17 @@ void MainWindow::itemMenuRequested(const QPoint point)
         }
         else
         {
+            unsigned int i;
+            for (i = 0; i < shapeObjList.size(); i++)
+            {
+                if (shapeObjList.at(i)->getShapePointer() == myObject->shapePtr)
+                {
+                    break;
+                }
+            }
+            // remove from scene
+            this->mapView->scene()->removeObject(shapeObjList.at(i));
+
             myProject.objectList.erase(myProject.objectList.begin()+pos);
             ui->checkList->takeItem(ui->checkList->indexAt(point).row());
             // TO DO SHAPE
