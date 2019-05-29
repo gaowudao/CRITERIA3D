@@ -26,8 +26,8 @@
     };
 
     struct TcorrelationVar{
-        double meanValueMonthlyPrec1;
-        double meanValueMonthlyPrec2;
+        double meanValue1;
+        double meanValue2;
         double covariance;
         double variance1, variance2;
     };
@@ -44,6 +44,11 @@
         double** amount;
         double** occurrence;
         int month;
+    };
+
+    struct TcorrelationMatrixTemperature{
+        double** maxT;
+        double** minT;
     };
 
     struct TseasonalCorrelationMatrix{
@@ -146,6 +151,7 @@
         // variables only for temperatures
         TtemperatureCoefficients* temperatureCoefficients;
         TdailyResidual* dailyResidual;
+        TcorrelationMatrixTemperature correlationMatrixTemperature;
 
 
         //functions
@@ -165,7 +171,6 @@
         void spatialIterationAmounts(double** correlationMatrixSimulatedData,double ** amountsCorrelationMatrix , double** randomMatrix, int length, double** occurrences, double** phatAlpha, double** phatBeta,double** simulatedPrecipitationAmounts);
         double bestFit(double *par, int nrPar, double*x, double *yObs, int nrX);
         int bestParametersNonLinearFit(double *par, int nrPar, double*x, double *yObs, int nrX);
-        void covarianceOfResiduals(double** covarianceMatrix, int lag);
 
 
 
@@ -175,6 +180,9 @@
         int  doyFromDate(int day,int month,int year);
         void harmonicsFourier(double* variable, double *par, int nrPar, double* estimatedVariable, int nrEstimatedVariable);
         void computeResiduals(double* averageTMaxDry,double* averageTMaxWet,double* stdDevTMaxDry,double* stdDevTMaxWet,double* averageTMinDry,double* averageTMinWet,double* stdDevTMinDry,double* stdDevTMinWet,int lengthArray,int idStation);
+        void temperaturesCorrelationMatrices();
+        void covarianceOfResiduals(double** covarianceMatrix, int lag);
+        void initializeTemperaturecorrelationMatrices();
 
 
     public:
