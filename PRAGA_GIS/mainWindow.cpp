@@ -38,6 +38,7 @@
 #include "gis.h"
 #include "gisProject.h"
 #include "dbfTableDialog.h"
+#include "dbfNumericFieldsDialog.h"
 
 #include "mainWindow.h"
 #include "ui_mainWindow.h"
@@ -382,5 +383,27 @@ void MainWindow::itemMenuRequested(const QPoint point)
 
     }
     return;
+}
+
+void MainWindow::on_actionRasterize_shape_triggered()
+{
+    QListWidgetItem * itemSelected = ui->checkList->currentItem();
+    if (itemSelected == nullptr)
+    {
+        QMessageBox::information(nullptr, "No items selected", "Select a shape");
+        return;
+    }
+    else if (!itemSelected->text().contains("SHAPE"))
+    {
+        QMessageBox::information(nullptr, "No shape selected", "Select a shape");
+        return;
+    }
+    else
+    {
+        int pos = ui->checkList->row(itemSelected);
+        GisObject* myObject = myProject.objectList.at(unsigned(pos));
+        DbfNumericFieldsDialog numericFields(myObject->shapePtr, myObject->fileName);
+    }
+
 }
 

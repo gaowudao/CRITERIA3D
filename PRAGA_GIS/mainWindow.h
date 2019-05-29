@@ -39,6 +39,7 @@
 
         void on_actionLoadRaster_triggered();
         void on_actionLoadShapefile_triggered();
+        void on_actionRasterize_shape_triggered();
 
     protected:
         /*!
