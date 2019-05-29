@@ -251,6 +251,7 @@ void MainWindow::addShapeObject(GisObject* myObject)
     ui->checkList->addItem(item);
 
     MapGraphicsShapeObject* newShapeObj = new MapGraphicsShapeObject(this->mapView);
+    newShapeObj->setOpacity(0.5);
     newShapeObj->initializeUTM(myObject->shapePtr, myProject.gisSettings);
     this->shapeObjList.push_back(newShapeObj);
 

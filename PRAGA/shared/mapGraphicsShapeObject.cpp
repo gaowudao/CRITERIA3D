@@ -67,7 +67,8 @@ void MapGraphicsShapeObject::drawShape(QPainter* myPainter)
     QPolygonF polygon;
     unsigned long j;
 
-    myPainter->setBrush(Qt::black);
+    myPainter->setPen(Qt::black);
+    myPainter->setBrush(Qt::red);
 
     int nrShapes = this->shapePointer->getShapeCount();
     for (unsigned long i = 0; i < unsigned(nrShapes); i++)
