@@ -43,6 +43,7 @@ void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler
 {
     ShapeObject object;
     int value = NODATA;
+    int nShape = shape->getShapeCount();
     for (int row = 0; row < raster->header->nrRows; row++)
     {
         for (int col = 0; col < raster->header->nrCols; col++)
@@ -51,7 +52,7 @@ void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler
             Point<double> UTMpoint;
             UTMpoint.x = point->x;
             UTMpoint.y = point->y;
-            for (int shapeIndex = 0; shapeIndex < shape->getShapeCount(); shapeIndex++)
+            for (int shapeIndex = 0; shapeIndex < nShape; shapeIndex++)
             {
                 shape->getShape(shapeIndex, object);
                 value = object.pointInPolygon(UTMpoint);
@@ -73,6 +74,7 @@ void fillRasterWithField(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler* shap
     ShapeObject object;
     int shapeFound = NODATA;
     int fieldIndex = shape->getDBFFieldIndex(valField.c_str());
+    int nShape = shape->getShapeCount();
     DBFFieldType fieldType = shape->getFieldType(fieldIndex);
 
     for (int row = 0; row < raster->header->nrRows; row++)
@@ -83,7 +85,7 @@ void fillRasterWithField(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler* shap
             Point<double> UTMpoint;
             UTMpoint.x = point->x;
             UTMpoint.y = point->y;
-            for (int shapeIndex = 0; shapeIndex < shape->getShapeCount(); shapeIndex++)
+            for (int shapeIndex = 0; shapeIndex < nShape; shapeIndex++)
             {
                 shape->getShape(shapeIndex, object);
                 shapeFound = object.pointInPolygon(UTMpoint);

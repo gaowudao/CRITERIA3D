@@ -48,7 +48,7 @@
 #define MAPBORDER 10
 #define TOOLSWIDTH 260
 #define INFOHEIGHT 40
-#define CELLSIZE 30
+#define CELLSIZE 500
 
 extern GisProject myProject;
 
