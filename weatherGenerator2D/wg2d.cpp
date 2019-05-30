@@ -740,7 +740,7 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
         }
         //eigenproblem::Jacobi_Cyclic_Method(eigenvalues,eigenvectors,correlationArray,nrStations);
         eigenproblem::rs(nrStations,correlationArray,eigenvalues,true,eigenvectors);
-        double sumEigenvector[9]={0,0,0,0,0,0,0,0,0};
+        /*double sumEigenvector[9]={0,0,0,0,0,0,0,0,0};
         int countEigenvector=0;
         for (int i=0;i<nrStations;i++)
         {
@@ -752,7 +752,7 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
                 }
                 countEigenvector++;
             }
-        }
+        }*/
         /*for (int i=0;i<nrStations*nrStations;i++)
         {
             //printf("sum of eigenVector %f\n",sumEigenvector[i]);
@@ -785,25 +785,6 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
         for (int i=0;i<nrStations;i++)
             for (int j=0;j<nrStations;j++) dummyMatrix[i][j] = M[i][j];
 
-        /*dummyMatrix[0][0]=1;
-        dummyMatrix[0][1]=0.9478;
-        dummyMatrix[0][2]=0.7391;
-        dummyMatrix[1][1]=1;
-        dummyMatrix[1][2]=0.7391;
-        dummyMatrix[2][2]=1;
-
-        for (int i=0;i<nrStations;i++)
-            for (int j=i+1;j<nrStations;j++)dummyMatrix[j][i]=dummyMatrix[i][j];
-        */
-        /*for (int i=0;i<nrStations;i++)
-        {
-            for (int j=0;j<nrStations;j++)
-            {
-                printf("%f\t", dummyMatrix[i][j]);
-            }
-            printf("\n");
-        } pressEnterToContinue();
-*/
 
         bool isLowerDiagonal = true;
         matricial::choleskyDecompositionTriangularMatrix(dummyMatrix,nrStations,isLowerDiagonal);

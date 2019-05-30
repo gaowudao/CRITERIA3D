@@ -12,6 +12,7 @@
 #include "eispack.h"
 #include "gammaFunction.h"
 #include "crit3dDate.h"
+#include "eispack.h"
 
 int weatherGenerator2D::doyFromDate(int day,int month,int year)
 {
@@ -36,6 +37,7 @@ void weatherGenerator2D::temperatureCompute()
 {
     // step 1 of temperature WG2D
     weatherGenerator2D::computeTemperatureParameters();
+    weatherGenerator2D::temperaturesCorrelationMatrices();
     printf("end of run\n");
     // step 2 of temperature WG2D
     // step 3 of temperature WG2D
@@ -435,6 +437,7 @@ void weatherGenerator2D::computeTemperatureParameters()
         double** matrixA = (double **) calloc(matrixRang, sizeof(double*));
         double** matrixC = (double **) calloc(matrixRang, sizeof(double*));
         double** matrixB = (double **) calloc(matrixRang, sizeof(double*));
+        double** matrixDummy = (double **) calloc(matrixRang, sizeof(double*));
         double** eigenvectors = (double **) calloc(matrixRang, sizeof(double*));
         double* eigenvalues = (double *) calloc(matrixRang, sizeof(double));
 
@@ -445,6 +448,7 @@ void weatherGenerator2D::computeTemperatureParameters()
             matrixA[i] = (double *) calloc(matrixRang, sizeof(double));
             matrixC[i] = (double *) calloc(matrixRang, sizeof(double));
             matrixB[i] = (double *) calloc(matrixRang, sizeof(double));
+            matrixDummy[i] = (double *) calloc(matrixRang, sizeof(double));
             eigenvectors[i]=  (double *) calloc(matrixRang, sizeof(double));
             for (int j=0;j<matrixRang;j++)
             {
@@ -453,6 +457,7 @@ void weatherGenerator2D::computeTemperatureParameters()
                 matrixA[i][j] = NODATA;
                 matrixC[i][j] = NODATA;
                 matrixB[i][j] = NODATA;
+                matrixDummy[i][j] = NODATA;
                 eigenvectors[i][j] = NODATA;
             }
             eigenvalues[i] = NODATA;
@@ -500,21 +505,21 @@ void weatherGenerator2D::computeTemperatureParameters()
         }
         if (negativeEigenvalues > 0)
         {
-            matricial::inverse(eigenvectors,matrixC,matrixRang); // matrix C temporarely becomes the inverse matrix of the right eigenvectors
-            matrixC[0][0] *= eigenvalues[0];
-            matrixC[0][1] *= eigenvalues[0];
-            matrixC[1][0] *= eigenvalues[1];
-            matrixC[1][1] *= eigenvalues[1];
-            matricial::matrixProduct(eigenvectors,matrixC,matrixRang,matrixRang,matrixRang,matrixRang,matrixC);
+            matricial::inverse(eigenvectors,matrixDummy,matrixRang); // matrix C temporarely becomes the inverse matrix of the right eigenvectors
+            matrixDummy[0][0] *= eigenvalues[0];
+            matrixDummy[0][1] *= eigenvalues[0];
+            matrixDummy[1][0] *= eigenvalues[1];
+            matrixDummy[1][1] *= eigenvalues[1];
+            matricial::matrixProduct(eigenvectors,matrixDummy,matrixRang,matrixRang,matrixRang,matrixRang,matrixC);
             matricial::eigenSystemMatrix2x2(matrixC,eigenvalues,eigenvectors,matrixRang);
         }
         //matricial::transposedMatrix(eigenvectors,2,2,matrixB);
-        matricial::inverse(eigenvectors,matrixB,2); // compulsory because our algorithm does not look at orthogonal vectors;
-        matrixB[0][0] *= sqrt(eigenvalues[0]);
-        matrixB[0][1] *= sqrt(eigenvalues[0]);
-        matrixB[1][0] *= sqrt(eigenvalues[1]);
-        matrixB[1][1] *= sqrt(eigenvalues[1]);
-        matricial::matrixProduct(eigenvectors,matrixB,matrixRang,matrixRang,matrixRang,matrixRang,matrixB);
+        matricial::inverse(eigenvectors,matrixDummy,2); // compulsory because our algorithm does not look at orthogonal vectors;
+        matrixDummy[0][0] *= sqrt(eigenvalues[0]);
+        matrixDummy[0][1] *= sqrt(eigenvalues[0]);
+        matrixDummy[1][0] *= sqrt(eigenvalues[1]);
+        matrixDummy[1][1] *= sqrt(eigenvalues[1]);
+        matricial::matrixProduct(eigenvectors,matrixDummy,matrixRang,matrixRang,matrixRang,matrixRang,matrixB);
 
 
         for (int i=0;i<matrixRang;i++)
@@ -534,6 +539,7 @@ void weatherGenerator2D::computeTemperatureParameters()
             free(matrixA[i]);
             free(matrixC[i]);
             free(matrixB[i]);
+            free(matrixDummy[i]);
             free(eigenvectors[i]);
         }
         free(matrixCovarianceLag0);
@@ -541,6 +547,7 @@ void weatherGenerator2D::computeTemperatureParameters()
         free(matrixA);
         free(matrixC);
         free(matrixB);
+        free(matrixDummy);
         free(eigenvalues);
         free(eigenvectors);
 
@@ -794,6 +801,13 @@ void weatherGenerator2D::temperaturesCorrelationMatrices()
     TcorrelationVar minT;
     int counterMaxT;
     int counterMinT;
+    for (int j=0; j<nrStations;j++)
+    {
+        correlationMatrixTemperature.maxT[j][j] = 1;
+        correlationMatrixTemperature.minT[j][j] = 1;
+    }
+
+    // compute correlation for tmax
     for (int j=0; j<nrStations-1;j++)
     {
         for (int i=j+1; i<nrStations;i++)
@@ -802,9 +816,6 @@ void weatherGenerator2D::temperaturesCorrelationMatrices()
             maxT.meanValue1=0.;
             maxT.meanValue2=0.;
             maxT.covariance = maxT.variance1 = maxT.variance2 = 0.;
-            minT.meanValue1=0.;
-            minT.meanValue2=0.;
-            minT.covariance = minT.variance1 = minT.variance2 = 0.;
 
             for (int k=0; k<nrData;k++) // compute the monthly means
             {
@@ -821,11 +832,12 @@ void weatherGenerator2D::temperaturesCorrelationMatrices()
                 maxT.meanValue1 /= counterMaxT;
                 maxT.meanValue2 /= counterMaxT;
             }
-
+            // printf("counter %d station1 %d station2 %d\n",counterMaxT,j,i);
+            // printf("%f  %f\n",maxT.meanValue1,maxT.meanValue2);
+            // pressEnterToContinue();
             // compute the monthly rho off-diagonal elements
             for (int k=0; k<nrData;k++)
             {
-
                 if (((obsDataD[j][k].tMax - NODATA) > EPSILON) && ((obsDataD[i][k].tMax - NODATA) > EPSILON))
                 {
                     double value1,value2;
@@ -835,13 +847,172 @@ void weatherGenerator2D::temperaturesCorrelationMatrices()
                     maxT.covariance += (value1 - maxT.meanValue1)*(value2 - maxT.meanValue2);
                     maxT.variance1 += (value1 - maxT.meanValue1)*(value1 - maxT.meanValue1);
                     maxT.variance2 += (value2 - maxT.meanValue2)*(value2 - maxT.meanValue2);
-
                 }
-
             }
             correlationMatrixTemperature.maxT[j][i]= maxT.covariance / sqrt(maxT.variance1*maxT.variance2);
             correlationMatrixTemperature.maxT[i][j] = correlationMatrixTemperature.maxT[j][i];
         }
     }
 
+    // compute correlation for tmin
+    for (int j=0; j<nrStations-1;j++)
+    {
+        for (int i=j+1; i<nrStations;i++)
+        {
+            counterMinT = 0;
+            minT.meanValue1=0.;
+            minT.meanValue2=0.;
+            minT.covariance = minT.variance1 = minT.variance2 = 0.;
+
+            for (int k=0; k<nrData;k++) // compute the monthly means
+            {
+                if (((obsDataD[j][k].tMin - NODATA) > EPSILON) && ((obsDataD[i][k].tMin - NODATA) > EPSILON))
+                {
+                    counterMinT++;
+                    minT.meanValue1 += obsDataD[j][k].tMin ;
+                    minT.meanValue2 += obsDataD[i][k].tMin;
+
+                }
+            }
+            if (counterMaxT != 0)
+            {
+                minT.meanValue1 /= counterMinT;
+                minT.meanValue2 /= counterMinT;
+            }
+             //printf("counter %d station1 %d station2 %d\n",counterMinT,j,i);
+             //printf("%f  %f\n",minT.meanValue1,minT.meanValue2);
+             //pressEnterToContinue();
+            // compute the monthly rho off-diagonal elements
+            for (int k=0; k<nrData;k++)
+            {
+                if (((obsDataD[j][k].tMin - NODATA) > EPSILON) && ((obsDataD[i][k].tMin - NODATA) > EPSILON))
+                {
+                    double value1,value2;
+                    value1 = obsDataD[j][k].tMin;
+                    value2 = obsDataD[i][k].tMin;
+
+                    minT.covariance += (value1 - minT.meanValue1)*(value2 - minT.meanValue2);
+                    minT.variance1 += (value1 - minT.meanValue1)*(value1 - minT.meanValue1);
+                    minT.variance2 += (value2 - minT.meanValue2)*(value2 - minT.meanValue2);
+                }
+            }
+            correlationMatrixTemperature.minT[j][i]= minT.covariance / sqrt(minT.variance1*minT.variance2);
+            correlationMatrixTemperature.minT[i][j] = correlationMatrixTemperature.minT[j][i];
+        }
+    }
+
+    for (int i=0;i<nrStations;i++)
+    {
+        for (int j=0; j<nrStations;j++)
+        {
+           printf("%f\t",correlationMatrixTemperature.maxT[i][j]);
+        }
+        printf("\n");
+    }
+
+
+    for (int i=0;i<nrStations;i++)
+    {
+        for (int j=0; j<nrStations;j++)
+        {
+           printf("%f\t",correlationMatrixTemperature.minT[i][j]);
+        }
+        printf("\n");
+    }
 }
+
+void weatherGenerator2D::multisiteRandomNumbersTemperature()
+{
+    int lengthOfRandomSeries;
+    lengthOfRandomSeries = parametersModel.yearOfSimulation*365;
+    int nrSquareOfStations;
+    nrSquareOfStations = nrStations*nrStations;
+    double* correlationArray = (double *) calloc(nrSquareOfStations, sizeof(double));
+    double* eigenvectors = (double *) calloc(nrSquareOfStations, sizeof(double));
+    double* eigenvalues = (double *) calloc(nrStations, sizeof(double));
+    double** dummyMatrix = (double**)calloc(nrStations, sizeof(double*));
+    double** dummyMatrix2 = (double**)calloc(nrStations, sizeof(double*));
+    double** dummyMatrix3 = (double**)calloc(nrStations, sizeof(double*));
+    //double** normRandom = (double**)calloc(nrStations, sizeof(double*));
+
+    // initialization internal arrays
+    for (int i=0;i<nrStations;i++)
+    {
+        dummyMatrix[i]= (double*)calloc(nrStations, sizeof(double));
+        dummyMatrix2[i]= (double*)calloc(nrStations, sizeof(double));
+        dummyMatrix3[i] = (double*)calloc(nrStations, sizeof(double));
+    }
+
+
+    int counter = 0;
+    for (int i=0; i<nrStations;i++)
+    {
+        for (int j=0; j<nrStations;j++)
+        {
+            correlationArray[counter] = correlationMatrixTemperature.maxT[i][j];
+            eigenvectors[counter] = NODATA;
+            counter++;
+        }
+        eigenvalues[i]= NODATA;
+    }
+
+    eigenproblem::rs(nrStations,correlationArray,eigenvalues,true,eigenvectors);
+    counter = 0;
+    for (int i=0; i<nrStations;i++)
+    {
+        if (eigenvalues[i] < 0) counter++;
+    }
+
+    if (counter > 0)
+    {
+        counter=0;
+        for (int i=0;i<nrStations;i++)
+        {
+            for (int j=0;j<nrStations;j++)
+            {
+                dummyMatrix[j][i]= eigenvectors[counter];
+                dummyMatrix2[i][j]= eigenvectors[counter]*eigenvalues[i];
+                counter++;
+            }
+        }
+        matricial::matrixProduct(dummyMatrix,dummyMatrix2,nrStations,nrStations,nrStations,nrStations,correlationMatrixTemperature.maxT);
+    }
+
+    for (int i=0;i<nrStations;i++)
+    {
+        for (int j=0;j<nrStations;j++)
+        {
+            dummyMatrix[i][j] = correlationMatrixTemperature.maxT[i][j];
+            dummyMatrix2[i][j] = correlationMatrixTemperature.maxT[i][j];
+        }
+
+    }
+
+    bool isLowerDiagonal = false;
+    matricial::choleskyDecompositionTriangularMatrix(dummyMatrix,nrStations,isLowerDiagonal);
+    isLowerDiagonal = true;
+    matricial::choleskyDecompositionTriangularMatrix(dummyMatrix2,nrStations,isLowerDiagonal);
+    matricial::matrixProduct(dummyMatrix,dummyMatrix2,nrStations,nrStations,nrStations,nrStations,dummyMatrix3);
+    isLowerDiagonal = true;
+    matricial::choleskyDecompositionTriangularMatrix(dummyMatrix3,nrStations,isLowerDiagonal);
+
+    // random numbers + the same for minimum temperatures
+
+
+
+    for (int i=0;i<nrStations;i++)
+    {
+        free(dummyMatrix[i]);
+        free(dummyMatrix2[i]);
+        free(dummyMatrix3[i]);
+    }
+
+    free(dummyMatrix);
+    free(dummyMatrix2);
+    free(dummyMatrix3);
+    free(correlationArray);
+    free(eigenvalues);
+    free(eigenvectors);
+
+}
+

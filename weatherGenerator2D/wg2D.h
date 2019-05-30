@@ -183,6 +183,7 @@
         void temperaturesCorrelationMatrices();
         void covarianceOfResiduals(double** covarianceMatrix, int lag);
         void initializeTemperaturecorrelationMatrices();
+        void multisiteRandomNumbersTemperature();
 
 
     public:
