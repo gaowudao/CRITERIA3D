@@ -939,6 +939,7 @@
      <string>Tools</string>
     </property>
     <addaction name="actionRasterize_shape"/>
+    <addaction name="actionCompute_Unit_Crop_Map"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuGIS_settings"/>
@@ -985,6 +986,11 @@
   <action name="actionRasterize_shape">
    <property name="text">
     <string>Rasterize shape</string>
+   </property>
+  </action>
+  <action name="actionCompute_Unit_Crop_Map">
+   <property name="text">
+    <string>Compute Unit Crop Map</string>
    </property>
   </action>
  </widget>
