@@ -39,6 +39,7 @@
 #include "gisProject.h"
 #include "dbfTableDialog.h"
 #include "dbfNumericFieldsDialog.h"
+#include "shapeToRaster.h"
 
 #include "mainWindow.h"
 #include "ui_mainWindow.h"
@@ -47,6 +48,7 @@
 #define MAPBORDER 10
 #define TOOLSWIDTH 260
 #define INFOHEIGHT 40
+#define CELLSIZE 30
 
 extern GisProject myProject;
 
@@ -414,6 +416,23 @@ void MainWindow::on_actionRasterize_shape_triggered()
         int pos = ui->checkList->row(itemSelected);
         GisObject* myObject = myProject.objectList.at(unsigned(pos));
         DbfNumericFieldsDialog numericFields(myObject->shapePtr, myObject->fileName);
+        if (numericFields.result() == QDialog::Accepted)
+        {
+            gis::Crit3DRasterGrid *newRaster = new(gis::Crit3DRasterGrid);
+            *newRaster = initializeRasterFromShape(myObject->shapePtr, CELLSIZE);
+            if (numericFields.getFieldSelected() == "Shape ID")
+            {
+                fillRasterWithShapeNumber(newRaster, myObject->shapePtr);
+            }
+            else
+            {
+                fillRasterWithField(newRaster, myObject->shapePtr, numericFields.getFieldSelected().toStdString());
+            }
+            myProject.addRaster(newRaster, numericFields.getOutputName());
+            addRasterObject(myProject.objectList.back());
+            //qDebug() << "field selected: "  <<  numericFields.getFieldSelected();
+            //qDebug() << "output name: "  <<  numericFields.getOutputName();
+        }
     }
 
 }

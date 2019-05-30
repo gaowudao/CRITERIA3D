@@ -16,6 +16,9 @@
         public:
             DbfNumericFieldsDialog(Crit3DShapeHandler *shapeHandler, QString fileName);
             ~DbfNumericFieldsDialog();
+            void fieldToRaster();
+            QString getOutputName();
+            QString getFieldSelected();
     };
 
 #endif // DBFNUMERICFIELDSDIALOG_H

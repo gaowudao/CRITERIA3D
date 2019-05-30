@@ -4,7 +4,7 @@
 #include <float.h>
 #include <math.h>
 
-gis::Crit3DRasterGrid initializeRasterFromShape(Crit3DShapeHandler shape, int cellSize)
+gis::Crit3DRasterGrid initializeRasterFromShape(Crit3DShapeHandler* shape, int cellSize)
 {
     gis::Crit3DRasterHeader header;
     ShapeObject object;
@@ -15,14 +15,14 @@ gis::Crit3DRasterGrid initializeRasterFromShape(Crit3DShapeHandler shape, int ce
     double ymax = DBL_MIN;
     double xmax = DBL_MIN;
 
-    for (int i = 0; i < shape.getShapeCount(); i++)
+    for (int i = 0; i < shape->getShapeCount(); i++)
     {
-        shape.getShape(i, object);
+        shape->getShape(i, object);
         bounds = object.getBounds();
         ymin = minValue(ymin, bounds.ymin);
         xmin = minValue(xmin, bounds.xmin);
         ymax = maxValue(ymax, bounds.ymax);
-        xmin = maxValue(xmax, bounds.xmax);
+        xmax = maxValue(xmax, bounds.xmax);
     }
 
     xmin = floor(xmin);

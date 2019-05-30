@@ -36,9 +36,9 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
 
     int nrRefShapes = shapeRef->getShapeCount();
 
-    gis::Crit3DRasterGrid rasterRef = initializeRasterFromShape(*shapeRef, cellSize);
+    gis::Crit3DRasterGrid rasterRef = initializeRasterFromShape(shapeRef, cellSize);
     fillRasterWithShapeNumber(&rasterRef, shapeRef);
-    gis::Crit3DRasterGrid rasterVal = initializeRasterFromShape(*shapeRef, cellSize);
+    gis::Crit3DRasterGrid rasterVal = initializeRasterFromShape(shapeRef, cellSize);
     fillRasterWithShapeNumber(&rasterVal, shapeVal);
 
     // add new field to shapeRef

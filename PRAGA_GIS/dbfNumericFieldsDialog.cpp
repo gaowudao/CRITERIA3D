@@ -4,7 +4,7 @@ DbfNumericFieldsDialog::DbfNumericFieldsDialog(Crit3DShapeHandler* shapeHandler,
     :shapeHandler(shapeHandler)
 {
 
-    this->setWindowTitle(fileName);
+    this->setWindowTitle("Choose a field of " + fileName);
     this->setFixedSize(400,300);
     QVBoxLayout* mainLayout = new QVBoxLayout;
     listFields = new QListWidget();
@@ -17,6 +17,7 @@ DbfNumericFieldsDialog::DbfNumericFieldsDialog(Crit3DShapeHandler* shapeHandler,
     QStringList fieldsLabel;
     DBFFieldType typeField;
 
+    fieldsLabel << "Shape ID";
     for (int i = 0; i < shapeHandler->getFieldNumbers(); i++)
     {
         typeField = shapeHandler->getFieldType(i);
@@ -28,7 +29,13 @@ DbfNumericFieldsDialog::DbfNumericFieldsDialog(Crit3DShapeHandler* shapeHandler,
     }
     listFields->addItems(fieldsLabel);
 
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
+                                             | QDialogButtonBox::Cancel);
 
+    connect(buttonBox, &QDialogButtonBox::accepted, [=](){ this->fieldToRaster(); });
+    connect(buttonBox, &QDialogButtonBox::rejected, [=](){ QDialog::done(QDialog::Rejected); });
+
+    mainLayout->addWidget(buttonBox);
     setLayout(mainLayout);
     exec();
 }
@@ -37,4 +44,30 @@ DbfNumericFieldsDialog::DbfNumericFieldsDialog(Crit3DShapeHandler* shapeHandler,
 DbfNumericFieldsDialog::~DbfNumericFieldsDialog()
 {
 
+}
+
+void DbfNumericFieldsDialog::fieldToRaster()
+{
+    QListWidgetItem * itemSelected = listFields->currentItem();
+    if (itemSelected == nullptr)
+    {
+        QMessageBox::information(nullptr, "No items selected", "Select a field");
+        return;
+    }
+    if (outputName->text().isEmpty())
+    {
+        QMessageBox::information(nullptr, "Empty name", "Insert output name");
+        return;
+    }
+    QDialog::done(QDialog::Accepted);
+}
+
+QString DbfNumericFieldsDialog::getOutputName()
+{
+    return outputName->text();
+}
+
+QString DbfNumericFieldsDialog::getFieldSelected()
+{
+    return listFields->currentItem()->text();
 }
