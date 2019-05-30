@@ -36,10 +36,10 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
 
     int nrRefShapes = shapeRef->getShapeCount();
 
-    gis::Crit3DRasterGrid rasterRef = initializeRasterFromShape(shapeRef, cellSize);
-    fillRasterWithShapeNumber(&rasterRef, shapeRef);
-    gis::Crit3DRasterGrid rasterVal = initializeRasterFromShape(shapeRef, cellSize);
-    fillRasterWithShapeNumber(&rasterVal, shapeVal);
+    gis::Crit3DRasterGrid* rasterRef = initializeRasterFromShape(shapeRef, cellSize);
+    fillRasterWithShapeNumber(rasterRef, shapeRef);
+    gis::Crit3DRasterGrid* rasterVal = initializeRasterFromShape(shapeRef, cellSize);
+    fillRasterWithShapeNumber(rasterVal, shapeVal);
 
     // add new field to shapeRef
     DBFFieldType fieldType = shapeVal->getFieldType(fieldIndex);
@@ -66,17 +66,17 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
         varFieldVectorSize = varFieldVectorString.size();
 
         // assign varFieldVector index to each pixel of rasterVal
-        for (int row = 0; row < rasterVal.header->nrRows; row++)
+        for (int row = 0; row < rasterVal->header->nrRows; row++)
         {
-            for (int col = 0; col < rasterVal.header->nrCols; col++)
+            for (int col = 0; col < rasterVal->header->nrCols; col++)
             {
-                int shape = int(rasterVal.value[row][col]);
+                int shape = int(rasterVal->value[row][col]);
                 if (shape!= NODATA)
                 {
                     std::string valueField = shapeVal->readStringAttribute(shape,fieldIndex);
                     int vectorFieldPos = std::distance(varFieldVectorString.begin(), std::find (varFieldVectorString.begin(), varFieldVectorString.end(), valueField));
                     //replace value
-                    rasterVal.value[row][col] = vectorFieldPos;
+                    rasterVal->value[row][col] = vectorFieldPos;
                 }
             }
         }
@@ -95,17 +95,17 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
 
         varFieldVectorSize = varFieldVectorInt.size();
 
-        for (int row = 0; row < rasterVal.header->nrRows; row++)
+        for (int row = 0; row < rasterVal->header->nrRows; row++)
         {
-            for (int col = 0; col < rasterVal.header->nrCols; col++)
+            for (int col = 0; col < rasterVal->header->nrCols; col++)
             {
-                int shape = int(rasterVal.value[row][col]);
+                int shape = int(rasterVal->value[row][col]);
                 if (shape!= NODATA)
                 {
                     int valueField = shapeVal->readIntAttribute(shape,fieldIndex);
                     int vectorFieldPos = std::distance(varFieldVectorInt.begin(), std::find (varFieldVectorInt.begin(), varFieldVectorInt.end(), valueField));
 //                    //replace value
-                    rasterVal.value[row][col] = vectorFieldPos;
+                    rasterVal->value[row][col] = vectorFieldPos;
                 }
             }
         }
@@ -124,17 +124,17 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
 
         varFieldVectorSize = varFieldVectorDouble.size();
 
-        for (int row = 0; row < rasterVal.header->nrRows; row++)
+        for (int row = 0; row < rasterVal->header->nrRows; row++)
         {
-            for (int col = 0; col < rasterVal.header->nrCols; col++)
+            for (int col = 0; col < rasterVal->header->nrCols; col++)
             {
-                int shape = rasterVal.value[row][col];
+                int shape = rasterVal->value[row][col];
                 if (shape!= NODATA)
                 {
                     double valueField = shapeVal->readDoubleAttribute(shape,fieldIndex);
                     int vectorFieldPos = std::distance(varFieldVectorDouble.begin(), std::find (varFieldVectorDouble.begin(), varFieldVectorDouble.end(), valueField));
 //                    //replace value
-                    rasterVal.value[row][col] = vectorFieldPos;
+                    rasterVal->value[row][col] = vectorFieldPos;
                 }
             }
         }
@@ -144,12 +144,12 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
     std::vector <std::vector<int> > matrix(nrRefShapes, std::vector<int>(varFieldVectorSize, 0));
 
 
-    for (int row = 0; row < rasterRef.header->nrRows; row++)
+    for (int row = 0; row < rasterRef->header->nrRows; row++)
     {
-        for (int col = 0; col < rasterRef.header->nrCols; col++)
+        for (int col = 0; col < rasterRef->header->nrCols; col++)
         {
-            int refValue = int(rasterRef.value[row][col]);
-            int valValue = int(rasterVal.value[row][col]);
+            int refValue = int(rasterRef->value[row][col]);
+            int valValue = int(rasterVal->value[row][col]);
 
             if ( refValue != NODATA && valValue != NODATA)
             {
@@ -163,10 +163,10 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
 
     if (type == MAJORITY)
     {
-        for (int row = 0; row < rasterRef.header->nrRows; row++)
+        for (int row = 0; row < rasterRef->header->nrRows; row++)
         {
             indexVector.push_back(0);
-            for (int col = 0; col < rasterRef.header->nrCols; col++)
+            for (int col = 0; col < rasterRef->header->nrCols; col++)
             {
                 if (matrix[row][col] > indexVector.at(row))
                 {
@@ -177,21 +177,21 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
     }
     else if (type == MIN)
     {
-        for (int row = 0; row < rasterRef.header->nrRows; row++)
+        for (int row = 0; row < rasterRef->header->nrRows; row++)
         {
             // TO DO
         }
     }
     else if (type == MAX)
     {
-        for (int row = 0; row < rasterRef.header->nrRows; row++)
+        for (int row = 0; row < rasterRef->header->nrRows; row++)
         {
             // TO DO
         }
     }
     else if (type == AVG)
     {
-        for (int row = 0; row < rasterRef.header->nrRows; row++)
+        for (int row = 0; row < rasterRef->header->nrRows; row++)
         {
             // TO DO
         }

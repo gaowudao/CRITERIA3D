@@ -418,8 +418,7 @@ void MainWindow::on_actionRasterize_shape_triggered()
         DbfNumericFieldsDialog numericFields(myObject->shapePtr, myObject->fileName);
         if (numericFields.result() == QDialog::Accepted)
         {
-            gis::Crit3DRasterGrid *newRaster = new(gis::Crit3DRasterGrid);
-            *newRaster = initializeRasterFromShape(myObject->shapePtr, CELLSIZE);
+            gis::Crit3DRasterGrid *newRaster = initializeRasterFromShape(myObject->shapePtr, CELLSIZE);
             if (numericFields.getFieldSelected() == "Shape ID")
             {
                 fillRasterWithShapeNumber(newRaster, myObject->shapePtr);
