@@ -152,6 +152,8 @@
         TtemperatureCoefficients* temperatureCoefficients;
         TdailyResidual* dailyResidual;
         TcorrelationMatrixTemperature correlationMatrixTemperature;
+        double** normRandomMaxT;
+        double** normRandomMinT;
 
 
         //functions
@@ -184,7 +186,7 @@
         void covarianceOfResiduals(double** covarianceMatrix, int lag);
         void initializeTemperaturecorrelationMatrices();
         void multisiteRandomNumbersTemperature();
-
+        void initializeNormalRandomMatricesTemperatures();
 
     public:
         // variables
