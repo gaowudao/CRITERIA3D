@@ -253,8 +253,13 @@ int ShapeObject::pointInPolygon(Point<double> UTMpoint)
         {
             return NODATA;  //HOLE
         }
-        unsigned long offSet = getParts().at(indexPart).offset;
-        unsigned long length = getParts().at(indexPart).length;
+        Part part = getParts().at(indexPart);
+        if (UTMpoint.x < part.boundsPart.xmin || UTMpoint.x > part.boundsPart.xmax || UTMpoint.y < part.boundsPart.ymin || UTMpoint.y > part.boundsPart.ymax)
+        {
+            continue;
+        }
+        unsigned long offSet = part.offset;
+        unsigned long length = part.length;
 
         unsigned int j = offSet+length - 1;
         for (unsigned int i = offSet; i < (offSet+length); i++)
