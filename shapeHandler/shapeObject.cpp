@@ -251,7 +251,7 @@ int ShapeObject::pointInPolygon(Point<double> UTMpoint)
     {
         if (!isClockWise(indexPart))
         {
-            return NODATA;  //HOLE
+            continue;  //HOLE
         }
         Part part = getParts().at(indexPart);
         if (UTMpoint.x < part.boundsPart.xmin || UTMpoint.x > part.boundsPart.xmax || UTMpoint.y < part.boundsPart.ymin || UTMpoint.y > part.boundsPart.ymax)
