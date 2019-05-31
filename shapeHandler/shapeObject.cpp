@@ -100,7 +100,8 @@ void ShapeObject::assign(const SHPObject* obj)
         Part part;
         parts.clear();
         partCount = unsigned(obj->nParts);
-        for (int n = 0; n < obj->nParts; n++) {
+        for (int n = 0; n < obj->nParts; n++)
+        {
             part.type = *pt;
             part.offset = unsigned(*ps);
             if ((n+1) == obj->nParts) {
@@ -109,6 +110,34 @@ void ShapeObject::assign(const SHPObject* obj)
             else {
                 part.length = unsigned(*(ps+1) - *ps);
             }
+            ////////////////////  save bb for each part /////
+            part.boundsPart.ymin = bounds.ymax;
+            part.boundsPart.xmin = bounds.xmax;
+            part.boundsPart.ymax = bounds.ymin;
+            part.boundsPart.xmax = bounds.xmin;
+
+            for (int k = part.offset; k < part.offset + part.length; k++)
+            {
+
+                Point<double> *newPoint = new Point<double>(obj->padfX[k], obj->padfY[k]);
+                if (newPoint->x < part.boundsPart.xmin)
+                {
+                    part.boundsPart.xmin = newPoint->x;
+                }
+                if (newPoint->x > part.boundsPart.xmax)
+                {
+                    part.boundsPart.xmax = newPoint->x;
+                }
+                if (newPoint->y < part.boundsPart.ymin)
+                {
+                    part.boundsPart.ymin = newPoint->y;
+                }
+                if (newPoint->y > part.boundsPart.ymax)
+                {
+                    part.boundsPart.ymax = newPoint->y;
+                }
+            }
+            /////////////////
             parts.push_back(part);
             ps++;
             pt++;
@@ -211,13 +240,14 @@ bool ShapeObject::isClockWise(unsigned int indexPart)
 int ShapeObject::pointInPolygon(Point<double> UTMpoint)
 {
     bool  oddNodes=false;
+    int nParts = getPartCount();
 
     if (UTMpoint.x < bounds.xmin || UTMpoint.x > bounds.xmax || UTMpoint.y < bounds.ymin || UTMpoint.y > bounds.ymax)
     {
         return NODATA;
     }
 
-    for (unsigned int indexPart = 0; indexPart < getPartCount(); indexPart++)
+    for (unsigned int indexPart = 0; indexPart < nParts; indexPart++)
     {
         if (!isClockWise(indexPart))
         {

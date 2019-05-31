@@ -119,6 +119,7 @@
             int type;
             unsigned long offset;
             unsigned long length;
+            Box<double>   boundsPart;
 
             Part() : type(0), offset(0), length(0) {}
         };
