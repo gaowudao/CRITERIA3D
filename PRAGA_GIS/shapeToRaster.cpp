@@ -44,27 +44,33 @@ void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler
     ShapeObject object;
     int value = NODATA;
     int nShape = shape->getShapeCount();
-    for (int row = 0; row < raster->header->nrRows; row++)
-    {
-        for (int col = 0; col < raster->header->nrCols; col++)
-        {
-            gis::Crit3DUtmPoint* point = raster->utmPoint(row, col);
-            Point<double> UTMpoint;
-            UTMpoint.x = point->x;
-            UTMpoint.y = point->y;
-            for (int shapeIndex = 0; shapeIndex < nShape; shapeIndex++)
-            {
-                shape->getShape(shapeIndex, object);
-                value = object.pointInPolygon(UTMpoint);
-                if (value != NODATA)
-                {
-                    break;
-                }
-            }
 
-            raster->value[row][col] = value;
+
+    for (int shapeIndex = 0; shapeIndex < nShape; shapeIndex++)
+    {
+        shape->getShape(shapeIndex, object);
+        for (int row = 0; row < raster->header->nrRows; row++)
+        {
+            for (int col = 0; col < raster->header->nrCols; col++)
+            {
+                value = raster->value[row][col];
+                if (value == raster->header->flag)
+                {
+                    gis::Crit3DUtmPoint* point = raster->utmPoint(row, col);
+                    Point<double> UTMpoint;
+                    UTMpoint.x = point->x;
+                    UTMpoint.y = point->y;
+                    value = object.pointInPolygon(UTMpoint);
+                    if (value != NODATA)
+                    {
+                        raster->value[row][col] = value;
+                    }
+                }
+
+            }
         }
     }
+
     return;
 }
 
@@ -77,38 +83,42 @@ void fillRasterWithField(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler* shap
     int nShape = shape->getShapeCount();
     DBFFieldType fieldType = shape->getFieldType(fieldIndex);
 
-    for (int row = 0; row < raster->header->nrRows; row++)
+
+    for (int shapeIndex = 0; shapeIndex < nShape; shapeIndex++)
     {
-        for (int col = 0; col < raster->header->nrCols; col++)
+        shape->getShape(shapeIndex, object);
+        for (int row = 0; row < raster->header->nrRows; row++)
         {
-            gis::Crit3DUtmPoint* point = raster->utmPoint(row, col);
-            Point<double> UTMpoint;
-            UTMpoint.x = point->x;
-            UTMpoint.y = point->y;
-            for (int shapeIndex = 0; shapeIndex < nShape; shapeIndex++)
+            for (int col = 0; col < raster->header->nrCols; col++)
             {
-                shape->getShape(shapeIndex, object);
-                shapeFound = object.pointInPolygon(UTMpoint);
-                if (shapeFound != NODATA)
+                shapeFound = raster->value[row][col];
+                if (shapeFound == raster->header->flag)
                 {
-                    if (fieldType == FTInteger)
+                    gis::Crit3DUtmPoint* point = raster->utmPoint(row, col);
+                    Point<double> UTMpoint;
+                    UTMpoint.x = point->x;
+                    UTMpoint.y = point->y;
+                    shapeFound = object.pointInPolygon(UTMpoint);
+                    if (shapeFound != NODATA)
                     {
-                        int intValue = shape->readIntAttribute(shapeFound,fieldIndex);
-                        raster->value[row][col] = intValue;
+                        if (fieldType == FTInteger)
+                        {
+                            int intValue = shape->readIntAttribute(shapeFound,fieldIndex);
+                            raster->value[row][col] = intValue;
+                        }
+                        else if (fieldType == FTDouble)
+                        {
+                            double doubleValue = shape->readDoubleAttribute(shapeFound,fieldIndex);
+                            raster->value[row][col] = float(doubleValue);
+                        }
                     }
-                    else if (fieldType == FTDouble)
-                    {
-                        double doubleValue = shape->readDoubleAttribute(shapeFound,fieldIndex);
-                        raster->value[row][col] = float(doubleValue);
-                    }
-
-                    break;
                 }
-            }
 
+            }
         }
     }
-    return;
+
+
 }
 
 // TODO funzione fillRasterWithPrevailingShapeNumber con valore prevalente (nrSubdivision, minPercentage)

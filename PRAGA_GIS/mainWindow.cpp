@@ -427,6 +427,7 @@ void MainWindow::on_actionRasterize_shape_triggered()
             {
                 fillRasterWithField(newRaster, myObject->shapePtr, numericFields.getFieldSelected().toStdString());
             }
+            gis::updateMinMaxRasterGrid(newRaster);
             myProject.addRaster(newRaster, numericFields.getOutputName());
             addRasterObject(myProject.objectList.back());
             //qDebug() << "field selected: "  <<  numericFields.getFieldSelected();
