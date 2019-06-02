@@ -125,7 +125,8 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr, const g
         this->clockWise[i].resize(myShape.getPartCount());
         for (unsigned long j = 0; j < myShape.getPartCount(); j++)
         {
-            clockWise[i][j] = myShape.isClockWise(j);
+            //clockWise[i][j] = myShape.isClockWise(j);
+            clockWise[i][j] = !myShape.getPart(j).hole;
         }
 
         // shape bounds

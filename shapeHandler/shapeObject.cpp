@@ -100,16 +100,24 @@ void ShapeObject::assign(const SHPObject* obj)
         Part part;
         parts.clear();
         partCount = unsigned(obj->nParts);
-        for (int n = 0; n < obj->nParts; n++)
+
+        for (int n = 0; n < partCount; n++)
         {
             part.type = *pt;
             part.offset = unsigned(*ps);
-            if ((n+1) == obj->nParts) {
+            if ((n+1) == partCount) {
                 part.length = vertexCount - unsigned(*ps);
             }
             else {
                 part.length = unsigned(*(ps+1) - *ps);
             }
+
+            // assign if the part is an hole
+            if (!isClockWise(&part))
+            {
+                part.hole = true;  //HOLE
+            }
+
             ////////////////////  save bb for each part /////
             part.boundsPart.ymin = bounds.ymax;
             part.boundsPart.xmin = bounds.xmax;
@@ -209,18 +217,18 @@ ShapeObject::Part ShapeObject::getPart(unsigned int indexPart) const
     return parts[indexPart];
 }
 
-double ShapeObject::polygonArea(unsigned int indexPart)
+double ShapeObject::polygonArea(Part* part)
 {
     double area = 0.0;
     unsigned long i;
     unsigned int j;
 
-    if (indexPart > getPartCount())
+    if (part == nullptr)
     {
         return NODATA;
     }
-    unsigned long offSet = getParts().at(indexPart).offset;
-    unsigned long length = getParts().at(indexPart).length;
+    unsigned long offSet = part->offset;
+    unsigned long length = part->length;
 
     for (i = 0; i < length; i++)
     {
@@ -231,9 +239,14 @@ double ShapeObject::polygonArea(unsigned int indexPart)
     return (area / 2);
 }
 
-bool ShapeObject::isClockWise(unsigned int indexPart)
+bool ShapeObject::isClockWise(Part* part)
 {
-    return polygonArea(indexPart) < 0;
+    return polygonArea(part) < 0;
+}
+
+bool ShapeObject::isHole(int n)
+{
+    return getPart(n).hole;
 }
 
 // LC If the test point is on the border of the polygon, this algorithm will deliver unpredictable results
@@ -249,12 +262,9 @@ int ShapeObject::pointInPolygon(Point<double> UTMpoint)
 
     for (unsigned int indexPart = 0; indexPart < nParts; indexPart++)
     {
-        if (!isClockWise(indexPart))
-        {
-            continue;  //HOLE
-        }
+
         Part part = getParts().at(indexPart);
-        if (UTMpoint.x < part.boundsPart.xmin || UTMpoint.x > part.boundsPart.xmax || UTMpoint.y < part.boundsPart.ymin || UTMpoint.y > part.boundsPart.ymax)
+        if (part.hole || UTMpoint.x < part.boundsPart.xmin || UTMpoint.x > part.boundsPart.xmax || UTMpoint.y < part.boundsPart.ymin || UTMpoint.y > part.boundsPart.ymax)
         {
             continue;
         }

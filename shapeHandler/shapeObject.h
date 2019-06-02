@@ -120,8 +120,9 @@
             unsigned long offset;
             unsigned long length;
             Box<double>   boundsPart;
+            bool hole;
 
-            Part() : type(0), offset(0), length(0) {}
+            Part() : type(0), offset(0), length(0), hole(false) {}
         };
 
     protected:
@@ -161,8 +162,9 @@
         std::vector<Part>		getParts() const;
         ShapeObject::Part       getPart(unsigned int indexPart) const;
         unsigned int            getPartCount() const;
-        double                  polygonArea(unsigned int indexPart);
-        bool                    isClockWise(unsigned int indexPart);
+        bool                    isHole(int n);
+        double                  polygonArea(Part* part);
+        bool                    isClockWise(Part *part);
         int                     pointInPolygon(Point<double> UTMpoint);
     };
 
