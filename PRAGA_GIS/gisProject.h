@@ -11,6 +11,8 @@
     #include <QString>
     #include <vector>
 
+#define CELLSIZE 500
+
     enum gisObjectType{gisObjectNone, gisObjectRaster, gisObjectShape};
 
     class GisObject
@@ -46,6 +48,8 @@
         bool loadShapefile(QString fileName);
         void addRaster(gis::Crit3DRasterGrid *myRaster, QString fileName);
         void addShapeFile(Crit3DShapeHandler *myShape, QString fileName);
+        void getRasterFromShape(Crit3DShapeHandler *shape, QString field, QString outputName);
+        bool addUnitCropMap(Crit3DShapeHandler *crop, Crit3DShapeHandler *soil, Crit3DShapeHandler *meteo, std::string idSoil, std::string idMeteo, QString fileName);
     };
 
     QString getFileName(QString fileNameComplete);

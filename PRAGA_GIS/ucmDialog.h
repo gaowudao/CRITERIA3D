@@ -37,6 +37,7 @@
             Crit3DShapeHandler *getCrop() const;
             Crit3DShapeHandler *getSoil() const;
             Crit3DShapeHandler *getMeteo() const;
+            QString getOutputName() const;
     };
 
 #endif // UCMDIALOG_H

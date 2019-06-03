@@ -27,6 +27,8 @@
 
 #include "commonConstants.h"
 #include "gisProject.h"
+#include "shapeToRaster.h"
+#include "unitCropMap.h"
 
 
 GisObject::GisObject()
@@ -127,4 +129,40 @@ QString getFileName(QString fileNameWithPath)
             return fileName;
     }
     return fileName;
+}
+
+
+void GisProject::getRasterFromShape(Crit3DShapeHandler *shape, QString field, QString outputName)
+{
+    gis::Crit3DRasterGrid *newRaster = initializeRasterFromShape(shape, CELLSIZE);
+    if (field == "Shape ID")
+    {
+        fillRasterWithShapeNumber(newRaster, shape);
+    }
+    else
+    {
+        fillRasterWithField(newRaster, shape, field.toStdString());
+    }
+    gis::updateMinMaxRasterGrid(newRaster);
+    addRaster(newRaster, outputName);
+}
+
+bool GisProject::addUnitCropMap(Crit3DShapeHandler *crop, Crit3DShapeHandler *soil, Crit3DShapeHandler *meteo, std::string idSoil, std::string idMeteo, QString fileName)
+{
+    std::string* error = new std::string();
+    GisObject* newObject = new(GisObject);
+    Crit3DShapeHandler * ucm = newObject->shapePtr;
+
+    if (unitCropMap(ucm, crop, soil, meteo, idSoil, idMeteo, CELLSIZE, error))
+    {
+        GisObject* newObject = new(GisObject);
+        newObject->setShapeFile(fileName, ucm);
+        this->objectList.push_back(newObject);
+        return true;
+    }
+    else
+    {
+        delete newObject;
+        return false;
+    }
 }

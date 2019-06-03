@@ -40,7 +40,7 @@
 #include "dbfTableDialog.h"
 #include "dbfNumericFieldsDialog.h"
 #include "ucmDialog.h"
-#include "shapeToRaster.h"
+
 
 #include "mainWindow.h"
 #include "ui_mainWindow.h"
@@ -49,7 +49,7 @@
 #define MAPBORDER 10
 #define TOOLSWIDTH 260
 #define INFOHEIGHT 40
-#define CELLSIZE 500
+
 
 extern GisProject myProject;
 
@@ -419,41 +419,29 @@ void MainWindow::on_actionRasterize_shape_triggered()
         DbfNumericFieldsDialog numericFields(myObject->shapePtr, myObject->fileName);
         if (numericFields.result() == QDialog::Accepted)
         {
-            gis::Crit3DRasterGrid *newRaster = initializeRasterFromShape(myObject->shapePtr, CELLSIZE);
-            if (numericFields.getFieldSelected() == "Shape ID")
-            {
-                fillRasterWithShapeNumber(newRaster, myObject->shapePtr);
-            }
-            else
-            {
-                fillRasterWithField(newRaster, myObject->shapePtr, numericFields.getFieldSelected().toStdString());
-            }
-            gis::updateMinMaxRasterGrid(newRaster);
-            myProject.addRaster(newRaster, numericFields.getOutputName());
+            myProject.getRasterFromShape(myObject->shapePtr, numericFields.getFieldSelected(), numericFields.getOutputName());
             addRasterObject(myProject.objectList.back());
-            //qDebug() << "field selected: "  <<  numericFields.getFieldSelected();
-            //qDebug() << "output name: "  <<  numericFields.getOutputName();
         }
     }
+    return;
 
 }
 
 void MainWindow::on_actionCompute_Unit_Crop_Map_triggered()
 {
+
     if (shapeObjList.empty())
     {
         QMessageBox::information(nullptr, "No shape loaded", "Load a shape");
         return;
     }
     UcmDialog ucmDialog(shapeObjList);
-//    qDebug() << "shape crop: "  <<  QString::fromStdString(ucmDialog.getCrop()->getFilepath());
-//    qDebug() << "shape soil: "  <<  QString::fromStdString(ucmDialog.getSoil()->getFilepath());
-//    qDebug() << "shape meteo: "  <<  QString::fromStdString(ucmDialog.getMeteo()->getFilepath());
+    if (myProject.addUnitCropMap(ucmDialog.getCrop(), ucmDialog.getSoil(), ucmDialog.getMeteo(), ucmDialog.getIdSoil().toStdString(), ucmDialog.getIdMeteo().toStdString(), ucmDialog.getOutputName()))
+    {
+        addShapeObject(myProject.objectList.back());
+    }
 
-//    qDebug() << "id crop: "  <<  ucmDialog.getIdCrop();
-//    qDebug() << "id soil: "  <<  ucmDialog.getIdSoil();
-//    qDebug() << "id meteo: "  <<  ucmDialog.getIdMeteo();
-
+    return;
 
 }
 

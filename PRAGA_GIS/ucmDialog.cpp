@@ -30,6 +30,11 @@ Crit3DShapeHandler *UcmDialog::getMeteo() const
     return meteo;
 }
 
+QString UcmDialog::getOutputName() const
+{
+    return outputName->text();
+}
+
 UcmDialog::UcmDialog(std::vector<MapGraphicsShapeObject *> shapeObjList)
     :shapeObjList(shapeObjList)
 {
