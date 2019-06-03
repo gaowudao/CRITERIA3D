@@ -113,6 +113,14 @@
 
     };
 
+    struct TmultiOccurrenceTemperature
+    {
+        int frequency;
+        int month;
+        int day;
+        int* occurrence_generated;
+    };
+
 
     void randomSet(double *arrayNormal,int dimArray);
     class weatherGenerator2D
@@ -154,6 +162,8 @@
         TcorrelationMatrixTemperature correlationMatrixTemperature;
         double** normRandomMaxT;
         double** normRandomMinT;
+        TmultiOccurrenceTemperature* multiOccurrenceTemperature;
+
 
 
         //functions
@@ -187,6 +197,8 @@
         void initializeTemperaturecorrelationMatrices();
         void multisiteRandomNumbersTemperature();
         void initializeNormalRandomMatricesTemperatures();
+        void multisiteTemperatureGeneration();
+        void initializeMultiOccurrenceTemperature(int length);
 
     public:
         // variables
