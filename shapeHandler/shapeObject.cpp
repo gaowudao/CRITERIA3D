@@ -252,7 +252,7 @@ bool ShapeObject::isHole(int n)
 // LC If the test point is on the border of the polygon, this algorithm will deliver unpredictable results
 int ShapeObject::pointInPolygon(Point<double> UTMpoint)
 {
-    bool  oddNodes=false;
+    bool  oddNodes = false;
     int nParts = getPartCount();
 
     if (UTMpoint.x < bounds.xmin || UTMpoint.x > bounds.xmax || UTMpoint.y < bounds.ymin || UTMpoint.y > bounds.ymax)

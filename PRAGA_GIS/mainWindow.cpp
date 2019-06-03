@@ -39,6 +39,7 @@
 #include "gisProject.h"
 #include "dbfTableDialog.h"
 #include "dbfNumericFieldsDialog.h"
+#include "ucmDialog.h"
 #include "shapeToRaster.h"
 
 #include "mainWindow.h"
@@ -434,6 +435,25 @@ void MainWindow::on_actionRasterize_shape_triggered()
             //qDebug() << "output name: "  <<  numericFields.getOutputName();
         }
     }
+
+}
+
+void MainWindow::on_actionCompute_Unit_Crop_Map_triggered()
+{
+    if (shapeObjList.empty())
+    {
+        QMessageBox::information(nullptr, "No shape loaded", "Load a shape");
+        return;
+    }
+    UcmDialog ucmDialog(shapeObjList);
+//    qDebug() << "shape crop: "  <<  QString::fromStdString(ucmDialog.getCrop()->getFilepath());
+//    qDebug() << "shape soil: "  <<  QString::fromStdString(ucmDialog.getSoil()->getFilepath());
+//    qDebug() << "shape meteo: "  <<  QString::fromStdString(ucmDialog.getMeteo()->getFilepath());
+
+//    qDebug() << "id crop: "  <<  ucmDialog.getIdCrop();
+//    qDebug() << "id soil: "  <<  ucmDialog.getIdSoil();
+//    qDebug() << "id meteo: "  <<  ucmDialog.getIdMeteo();
+
 
 }
 

@@ -54,7 +54,8 @@ SOURCES += main.cpp\
     ../PRAGA/shared/mapGraphicsRasterObject.cpp \
     shapeToRaster.cpp \
     zonalStatistic.cpp \
-    dbfNumericFieldsDialog.cpp
+    dbfNumericFieldsDialog.cpp \
+    ucmDialog.cpp
 
 
 HEADERS += \
@@ -69,7 +70,8 @@ HEADERS += \
     ../PRAGA/shared/mapGraphicsRasterObject.h \
     shapeToRaster.h \
     zonalStatistic.h \
-    dbfNumericFieldsDialog.h
+    dbfNumericFieldsDialog.h \
+    ucmDialog.h
 
 
 FORMS += mainWindow.ui \
