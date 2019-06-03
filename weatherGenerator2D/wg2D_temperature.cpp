@@ -38,6 +38,8 @@ void weatherGenerator2D::temperatureCompute()
     // step 1 of temperature WG2D
     weatherGenerator2D::computeTemperatureParameters();
     weatherGenerator2D::temperaturesCorrelationMatrices();
+    weatherGenerator2D::multisiteRandomNumbersTemperature();
+    weatherGenerator2D::multisiteTemperatureGeneration();
     printf("end of run\n");
     // step 2 of temperature WG2D
     // step 3 of temperature WG2D
@@ -111,12 +113,12 @@ void weatherGenerator2D::initializeTemperatureParameters()
         temperatureCoefficients[i].minTWet.standardDeviationFourierParameters.aCos2 = NODATA;
         temperatureCoefficients[i].minTWet.standardDeviationFourierParameters.aSin2 = NODATA;
 
-        for (int i=0; i<2; i++)
+        for (int k=0; k<2; k++)
         {
             for (int j=0; j<2; j++)
             {
-                temperatureCoefficients[i].A[i][j]= NODATA;
-                temperatureCoefficients[i].B[i][j]= NODATA;
+                temperatureCoefficients[i].A[k][j]= NODATA;
+                temperatureCoefficients[i].B[k][j]= NODATA;
             }
         }
      }
@@ -521,7 +523,16 @@ void weatherGenerator2D::computeTemperatureParameters()
         matrixDummy[1][1] *= sqrt(eigenvalues[1]);
         matricial::matrixProduct(eigenvectors,matrixDummy,matrixRang,matrixRang,matrixRang,matrixRang,matrixB);
 
+        for (int i=0;i<matrixRang;i++)
+        {
+            for (int j=0; j<matrixRang; j++)
+            {
+                temperatureCoefficients[iStation].A[i][j] = matrixA[i][j];
+                temperatureCoefficients[iStation].B[i][j] = matrixB[i][j];
+            }
+        }
 
+        /*
         for (int i=0;i<matrixRang;i++)
             //printf("%f\n",eigenvalues[i]);
         printf("\n");
@@ -529,7 +540,7 @@ void weatherGenerator2D::computeTemperatureParameters()
             for (int j=0; j<matrixRang; j++)
                 printf("%f\n",matrixB[i][j]);
         printf("\n"); printf("\n");
-
+        */
 
 
         for (int i=0;i<matrixRang;i++)
@@ -927,7 +938,7 @@ void weatherGenerator2D::initializeNormalRandomMatricesTemperatures()
     lengthOfRandomSeries = parametersModel.yearOfSimulation*365;
     normRandomMaxT = (double**)calloc(lengthOfRandomSeries, sizeof(double*));
     normRandomMinT = (double**)calloc(lengthOfRandomSeries, sizeof(double*));
-    for (int i=0;i<nrStations;i++)
+    for (int i=0;i<lengthOfRandomSeries;i++)
     {
         normRandomMaxT[i] = (double*)calloc(nrStations, sizeof(double));
         normRandomMinT[i] = (double*)calloc(nrStations, sizeof(double));
@@ -952,6 +963,7 @@ void weatherGenerator2D::multisiteRandomNumbersTemperature()
     lengthOfRandomSeries = parametersModel.yearOfSimulation*365;
     int nrSquareOfStations;
     nrSquareOfStations = nrStations*nrStations;
+
     double* correlationArray = (double *) calloc(nrSquareOfStations, sizeof(double));
     double* eigenvectors = (double *) calloc(nrSquareOfStations, sizeof(double));
     double* eigenvalues = (double *) calloc(nrStations, sizeof(double));
@@ -971,6 +983,7 @@ void weatherGenerator2D::multisiteRandomNumbersTemperature()
     }
     int counter;
     bool isLowerDiagonal;
+
     // for Tmax
     counter = 0;
     for (int i=0; i<nrStations;i++)
@@ -1111,6 +1124,7 @@ void weatherGenerator2D::multisiteRandomNumbersTemperature()
 
 
 
+
     for (int i=0;i<nrStations;i++)
     {
         free(dummyMatrix[i]);
@@ -1131,3 +1145,28 @@ void weatherGenerator2D::multisiteRandomNumbersTemperature()
 
 }
 
+void weatherGenerator2D::initializeMultiOccurrenceTemperature(int length)
+{
+    multiOccurrenceTemperature = (TmultiOccurrenceTemperature *) calloc(length, sizeof(TmultiOccurrenceTemperature));
+    for (int i=0;i<length;i++)
+    {
+        multiOccurrenceTemperature[i].occurrence_generated = (int *) calloc(nrStations, sizeof(int));
+        for(int j=0;j<nrStations;j++)
+        {
+            multiOccurrenceTemperature[i].occurrence_generated[j] = NODATA;
+        }
+        multiOccurrenceTemperature[i].day = NODATA;
+        multiOccurrenceTemperature[i].month = NODATA;
+        multiOccurrenceTemperature[i].frequency = NODATA;
+    }
+}
+
+
+void weatherGenerator2D::multisiteTemperatureGeneration()
+{
+    int lengthOfRandomSeries;
+    lengthOfRandomSeries = parametersModel.yearOfSimulation*365;
+    weatherGenerator2D::initializeMultiOccurrenceTemperature(lengthOfRandomSeries);
+
+
+}
