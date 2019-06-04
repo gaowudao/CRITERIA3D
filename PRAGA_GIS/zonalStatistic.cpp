@@ -58,7 +58,7 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
         for (int record = 0; record < shapeVal->getDBFRecordCount(); record++)
         {
             std::string value = shapeVal->readStringAttribute(record,fieldIndex);
-            if (std::find (varFieldVectorString.begin(), varFieldVectorString.end(), value) != varFieldVectorString.end())
+            if (std::find (varFieldVectorString.begin(), varFieldVectorString.end(), value) == varFieldVectorString.end())
             {
                 varFieldVectorString.push_back(value);
             }
@@ -87,7 +87,7 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
         for (int record = 0; record < shapeVal->getDBFRecordCount(); record++)
         {
             int value = shapeVal->readIntAttribute(record,fieldIndex);
-            if (std::find (varFieldVectorInt.begin(), varFieldVectorInt.end(), value) != varFieldVectorInt.end())
+            if (std::find (varFieldVectorInt.begin(), varFieldVectorInt.end(), value) == varFieldVectorInt.end())
             {
                 varFieldVectorInt.push_back(value);
             }
@@ -116,7 +116,7 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
         for (int record = 0; record < shapeVal->getDBFRecordCount(); record++)
         {
             double value = shapeVal->readDoubleAttribute(record,fieldIndex);
-            if (std::find (varFieldVectorDouble.begin(), varFieldVectorDouble.end(), value) != varFieldVectorDouble.end())
+            if (std::find (varFieldVectorDouble.begin(), varFieldVectorDouble.end(), value) == varFieldVectorDouble.end())
             {
                 varFieldVectorDouble.push_back(value);
             }
@@ -163,10 +163,10 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
 
     if (type == MAJORITY)
     {
-        for (int row = 0; row < rasterRef->header->nrRows; row++)
+        for (int row = 0; row < nrRefShapes; row++)
         {
             indexVector.push_back(0);
-            for (int col = 0; col < rasterRef->header->nrCols; col++)
+            for (int col = 0; col < varFieldVectorSize; col++)
             {
                 if (matrix[row][col] > indexVector.at(row))
                 {
@@ -177,21 +177,21 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
     }
     else if (type == MIN)
     {
-        for (int row = 0; row < rasterRef->header->nrRows; row++)
+        for (int row = 0; row < nrRefShapes; row++)
         {
             // TO DO
         }
     }
     else if (type == MAX)
     {
-        for (int row = 0; row < rasterRef->header->nrRows; row++)
+        for (int row = 0; row < nrRefShapes; row++)
         {
             // TO DO
         }
     }
     else if (type == AVG)
     {
-        for (int row = 0; row < rasterRef->header->nrRows; row++)
+        for (int row = 0; row < nrRefShapes; row++)
         {
             // TO DO
         }
@@ -218,6 +218,9 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
         }
     }
 
+    // close and re-open to write also the last shape
+    shapeRef->close();
+    shapeRef->open(shapeRef->getFilepath());
     return true;
 }
 
