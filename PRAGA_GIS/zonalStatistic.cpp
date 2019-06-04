@@ -163,10 +163,10 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
 
     if (type == MAJORITY)
     {
-        for (int row = 0; row < rasterRef->header->nrRows; row++)
+        for (int row = 0; row < nrRefShapes; row++)
         {
             indexVector.push_back(0);
-            for (int col = 0; col < rasterRef->header->nrCols; col++)
+            for (int col = 0; col < varFieldVectorSize; col++)
             {
                 if (matrix[row][col] > indexVector.at(row))
                 {
@@ -177,21 +177,21 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
     }
     else if (type == MIN)
     {
-        for (int row = 0; row < rasterRef->header->nrRows; row++)
+        for (int row = 0; row < nrRefShapes; row++)
         {
             // TO DO
         }
     }
     else if (type == MAX)
     {
-        for (int row = 0; row < rasterRef->header->nrRows; row++)
+        for (int row = 0; row < nrRefShapes; row++)
         {
             // TO DO
         }
     }
     else if (type == AVG)
     {
-        for (int row = 0; row < rasterRef->header->nrRows; row++)
+        for (int row = 0; row < nrRefShapes; row++)
         {
             // TO DO
         }
