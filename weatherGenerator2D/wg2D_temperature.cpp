@@ -14,6 +14,27 @@
 #include "crit3dDate.h"
 #include "eispack.h"
 
+int weatherGenerator2D::dateFromDoy(int doy,int year, int* day, int* month)
+{
+    //int leap = 0;
+    int daysOfMonth[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
+    //int startingDayOfMonth[12];
+    if (isLeapYear(year)) (daysOfMonth[1])++;
+    int counter = 0;
+    while(doy > daysOfMonth[counter])
+    {
+        doy -= daysOfMonth[counter];
+        counter++;
+        if (counter >= 12) return PARAMETER_ERROR;
+    }
+    *day = doy;
+    //counter++;
+    *month = ++counter;
+
+
+    return 0;
+}
+
 int weatherGenerator2D::doyFromDate(int day,int month,int year)
 {
     int daysOfMonth[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
@@ -1150,14 +1171,14 @@ void weatherGenerator2D::initializeMultiOccurrenceTemperature(int length)
     multiOccurrenceTemperature = (TmultiOccurrenceTemperature *) calloc(length, sizeof(TmultiOccurrenceTemperature));
     for (int i=0;i<length;i++)
     {
-        multiOccurrenceTemperature[i].occurrence_generated = (int *) calloc(nrStations, sizeof(int));
+        multiOccurrenceTemperature[i].occurrence_simulated = (double *) calloc(nrStations, sizeof(double));
         for(int j=0;j<nrStations;j++)
         {
-            multiOccurrenceTemperature[i].occurrence_generated[j] = NODATA;
+            multiOccurrenceTemperature[i].occurrence_simulated[j] = NODATA;
         }
-        multiOccurrenceTemperature[i].day = NODATA;
-        multiOccurrenceTemperature[i].month = NODATA;
-        multiOccurrenceTemperature[i].frequency = NODATA;
+        multiOccurrenceTemperature[i].day_simulated = NODATA;
+        multiOccurrenceTemperature[i].month_simulated = NODATA;
+        multiOccurrenceTemperature[i].year_simulated = NODATA;
     }
 }
 
@@ -1167,6 +1188,51 @@ void weatherGenerator2D::multisiteTemperatureGeneration()
     int lengthOfRandomSeries;
     lengthOfRandomSeries = parametersModel.yearOfSimulation*365;
     weatherGenerator2D::initializeMultiOccurrenceTemperature(lengthOfRandomSeries);
+    // fill in the data of simulations
+    int day,month;
+    int counter = 0;
+    for (int j=1;j<=parametersModel.yearOfSimulation;j++)
+    {
+        for (int i=0; i<365;i++)
+        {
+            weatherGenerator2D::dateFromDoy(i+1,1,&day,&month);
+            multiOccurrenceTemperature[counter].year_simulated = j;
+            multiOccurrenceTemperature[counter].month_simulated = month;
+            multiOccurrenceTemperature[counter].day_simulated = day;
+            counter++;
+        }
+    }
+
+    for (int j=0;j<12;j++)
+    {
+        int counter2 = 0;
+        counter = 0;
+        for (int k=0; k<lengthOfRandomSeries; k++)
+        {
+            if (multiOccurrenceTemperature[counter].month_simulated == (j+1))
+            {
+                for (int i=0;i<nrStations;i++)
+                {
+                    multiOccurrenceTemperature[counter].occurrence_simulated[i] = randomMatrix[j].matrixOccurrences[i][counter2];
+                    //printf("month %d %d %d %f\n",j+1,counter,counter2,randomMatrix[j].matrixOccurrences[i][counter2]);
+                }
+                //getchar();
+                counter2++;
+            }
+                counter++;
+        }
+    }
+
+    /*for (int j=0;j<=lengthOfRandomSeries;j++)
+    {
+        printf("%d %d %d %f %f %f",multiOccurrenceTemperature[j].year_simulated,multiOccurrenceTemperature[j].month_simulated,multiOccurrenceTemperature[j].day_simulated,multiOccurrenceTemperature[j].occurrence_simulated[0],multiOccurrenceTemperature[j].occurrence_simulated[1],multiOccurrenceTemperature[j].occurrence_simulated[2]);
+        getchar();
+    }*/
+    /*for (int j=0;j<=100;j++)
+    {
+            printf("%d %f %f %f\n",j,randomMatrix[0].matrixOccurrences[0][j],randomMatrix[0].matrixOccurrences[1][j],randomMatrix[0].matrixOccurrences[2][j]);
+    }*/
+
 
 
 }

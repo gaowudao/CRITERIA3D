@@ -626,9 +626,9 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             for (int j=0;j<nrDaysIterativeProcessMonthly[iMonth];j++)
             {
                 randomMatrix[iMonth].matrixOccurrences[i][j]= double(occurrences[i][j]);
-                //printf("%f \n",randomMatrix[iMonth].matrixOccurrences[i][j]);
+                printf("%f \n",randomMatrix[iMonth].matrixOccurrences[i][j]);
             }
-            //printf("\n");
+            printf("\n");
         }
         //pressEnterToContinue();
         randomMatrix[iMonth].month = iMonth + 1;

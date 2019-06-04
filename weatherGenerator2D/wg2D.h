@@ -115,10 +115,10 @@
 
     struct TmultiOccurrenceTemperature
     {
-        int frequency;
-        int month;
-        int day;
-        int* occurrence_generated;
+        int year_simulated;
+        int month_simulated;
+        int day_simulated;
+        double* occurrence_simulated;
     };
 
 
@@ -190,6 +190,7 @@
         void computeTemperatureParameters();
         void initializeTemperatureParameters();
         int  doyFromDate(int day,int month,int year);
+        int  dateFromDoy(int doy, int year, int *day, int *month);
         void harmonicsFourier(double* variable, double *par, int nrPar, double* estimatedVariable, int nrEstimatedVariable);
         void computeResiduals(double* averageTMaxDry,double* averageTMaxWet,double* stdDevTMaxDry,double* stdDevTMaxWet,double* averageTMinDry,double* averageTMinWet,double* stdDevTMinDry,double* stdDevTMinWet,int lengthArray,int idStation);
         void temperaturesCorrelationMatrices();

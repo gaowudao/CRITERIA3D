@@ -202,7 +202,7 @@ int main()
 
 
 
-    bool computePrecipitation = false;
+    bool computePrecipitation = true;
     bool computeTemperature = true;
     printf("weather generator\n");
     WG2D.initializeParameters(NODATA,2,2,computePrecipitation,computeTemperature);
