@@ -150,19 +150,18 @@ void GisProject::getRasterFromShape(Crit3DShapeHandler *shape, QString field, QS
 bool GisProject::addUnitCropMap(Crit3DShapeHandler *crop, Crit3DShapeHandler *soil, Crit3DShapeHandler *meteo, std::string idSoil, std::string idMeteo, QString fileName)
 {
     std::string* error = new std::string();
-    GisObject* newObject = new(GisObject);
-    Crit3DShapeHandler * ucm = newObject->shapePtr;
 
-    if (unitCropMap(ucm, crop, soil, meteo, idSoil, idMeteo, CELLSIZE, error))
+    Crit3DShapeHandler *ucm = new(Crit3DShapeHandler);
+
+    if (unitCropMap(ucm, crop, soil, meteo, idSoil, idMeteo, CELLSIZE, fileName, error))
     {
-        GisObject* newObject = new(GisObject);
-        newObject->setShapeFile(fileName, ucm);
-        this->objectList.push_back(newObject);
-        return true;
+//        GisObject* newObject = new(GisObject);
+//        newObject->setShapeFile(QString::fromStdString(ucm->getFilepath()), ucm);
+//        this->objectList.push_back(newObject);
+//        return true;
     }
     else
     {
-        delete newObject;
         return false;
     }
 }
