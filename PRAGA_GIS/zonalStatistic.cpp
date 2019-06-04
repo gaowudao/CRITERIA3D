@@ -218,6 +218,9 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
         }
     }
 
+    // close and re-open to write also the last shape
+    shapeRef->close();
+    shapeRef->open(shapeRef->getFilepath());
     return true;
 }
 
