@@ -1261,31 +1261,57 @@ void weatherGenerator2D::multisiteTemperatureGeneration()
     }
     for (int i=0;i<nrStations;i++)
     {
+        int jModulo;
         for (int j=0;j<lengthOfRandomSeries;j++)
         {
             X[j] = multiOccurrenceTemperature[j].occurrence_simulated[i];
-            averageT[0][j] = temperatureCoefficients[i].maxTDry.averageEstimation[j%365];
-            averageT[1][j] = temperatureCoefficients[i].minTDry.averageEstimation[j%365];
-            averageT[2][j] = temperatureCoefficients[i].maxTWet.averageEstimation[j%365];
-            averageT[3][j] = temperatureCoefficients[i].minTWet.averageEstimation[j%365];
+            jModulo = j%365;
 
-            stdDevT[0][j] = temperatureCoefficients[i].maxTDry.stdDevEstimation[j%365];
-            stdDevT[1][j] = temperatureCoefficients[i].minTDry.stdDevEstimation[j%365];
-            stdDevT[2][j] = temperatureCoefficients[i].maxTWet.stdDevEstimation[j%365];
-            stdDevT[3][j] = temperatureCoefficients[i].minTWet.stdDevEstimation[j%365];
+            averageT[0][j] = temperatureCoefficients[i].maxTDry.averageEstimation[jModulo];
+            averageT[1][j] = temperatureCoefficients[i].minTDry.averageEstimation[jModulo];
+            averageT[2][j] = temperatureCoefficients[i].maxTWet.averageEstimation[jModulo];
+            averageT[3][j] = temperatureCoefficients[i].minTWet.averageEstimation[jModulo];
+
+            stdDevT[0][j] = temperatureCoefficients[i].maxTDry.stdDevEstimation[jModulo];
+            stdDevT[1][j] = temperatureCoefficients[i].minTDry.stdDevEstimation[jModulo];
+            stdDevT[2][j] = temperatureCoefficients[i].maxTWet.stdDevEstimation[jModulo];
+            stdDevT[3][j] = temperatureCoefficients[i].minTWet.stdDevEstimation[jModulo];
         }
+        double* residuals = (double*)calloc(2, sizeof(double));
+        residuals[0] = residuals[1] = 0;
+        double* dummy = (double*)calloc(2, sizeof(double));
+        dummy[0] = dummy[1] = 0;
+        double** ksi = (double**)calloc(2, sizeof(double*));
+        double** eps = (double**)calloc(2, sizeof(double*));
+        for (int j=0;j<2;j++)
+        {
+            ksi[j] = (double*)calloc(lengthOfRandomSeries, sizeof(double));
+            eps[j] = (double*)calloc(lengthOfRandomSeries, sizeof(double));
+            for (int k=0;k<lengthOfRandomSeries;k++)
+            {
+               ksi[j][k] = 0;
+               eps[j][k] = 0;
+            }
+        }
+
+        for (int j=0;j<lengthOfRandomSeries;j++)
+        {
+            eps[0][j] = normRandomMaxT[j][i];
+            eps[1][j] = normRandomMinT[j][i];
+        }
+
+        for (int j=0;j<lengthOfRandomSeries;j++)
+        {
+            residuals[0] = temperatureCoefficients[i].A[0][0]*residuals[0] + temperatureCoefficients[i].A[0][1]*residuals[1];
+            residuals[0] += temperatureCoefficients[i].B[0][0]*eps[0][j] + temperatureCoefficients[i].B[0][1]*eps[1][j];
+            residuals[1] = temperatureCoefficients[i].A[1][0]*residuals[0] + temperatureCoefficients[i].A[1][1]*residuals[1];
+            residuals[1] += temperatureCoefficients[i].B[1][0]*eps[0][j] + temperatureCoefficients[i].B[1][1]*eps[1][j];
+            ksi[0][j] = residuals[0];
+            ksi[1][j] = residuals[1];
+        }
+
+
     }
-
-
-    /*for (int j=0;j<=lengthOfRandomSeries;j++)
-    {
-        printf("%d %d %d %f %f %f",multiOccurrenceTemperature[j].year_simulated,multiOccurrenceTemperature[j].month_simulated,multiOccurrenceTemperature[j].day_simulated,multiOccurrenceTemperature[j].occurrence_simulated[0],multiOccurrenceTemperature[j].occurrence_simulated[1],multiOccurrenceTemperature[j].occurrence_simulated[2]);
-        getchar();
-    }*/
-    /*for (int j=0;j<=100;j++)
-    {
-            printf("%d %f %f %f\n",j,randomMatrix[0].matrixOccurrences[0][j],randomMatrix[0].matrixOccurrences[1][j],randomMatrix[0].matrixOccurrences[2][j]);
-    }*/
 
 
 
