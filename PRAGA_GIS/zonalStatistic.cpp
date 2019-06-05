@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <math.h>
 
-bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal, std::string valField, int cellSize, opType type, std::string* error)
+bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal, gis::Crit3DRasterGrid *rasterRef, gis::Crit3DRasterGrid *rasterVal, std::string valField, int cellSize, opType type, std::string* error)
 {
 
     // check shape type
@@ -35,11 +35,6 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
     }
 
     int nrRefShapes = shapeRef->getShapeCount();
-
-    gis::Crit3DRasterGrid* rasterRef = initializeRasterFromShape(shapeRef, cellSize);
-    fillRasterWithShapeNumber(rasterRef, shapeRef);
-    gis::Crit3DRasterGrid* rasterVal = initializeRasterFromShape(shapeRef, cellSize);
-    fillRasterWithShapeNumber(rasterVal, shapeVal);
 
     // add new field to shapeRef
     DBFFieldType fieldType = shapeVal->getFieldType(fieldIndex);
