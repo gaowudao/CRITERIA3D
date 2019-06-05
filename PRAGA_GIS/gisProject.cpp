@@ -134,7 +134,8 @@ QString getFileName(QString fileNameWithPath)
 
 void GisProject::getRasterFromShape(Crit3DShapeHandler *shape, QString field, QString outputName)
 {
-    gis::Crit3DRasterGrid *newRaster = initializeRasterFromShape(shape, CELLSIZE);
+    gis::Crit3DRasterGrid *newRaster = new(gis::Crit3DRasterGrid);
+    initializeRasterFromShape(shape, newRaster, CELLSIZE);
     if (field == "Shape ID")
     {
         fillRasterWithShapeNumber(newRaster, shape);

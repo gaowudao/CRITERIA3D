@@ -4,7 +4,7 @@
 #include <float.h>
 #include <math.h>
 
-gis::Crit3DRasterGrid* initializeRasterFromShape(Crit3DShapeHandler* shape, int cellSize)
+gis::Crit3DRasterGrid* initializeRasterFromShape(Crit3DShapeHandler* shape, gis::Crit3DRasterGrid* raster, int cellSize)
 {
     gis::Crit3DRasterHeader header;
     ShapeObject object;
@@ -33,7 +33,6 @@ gis::Crit3DRasterGrid* initializeRasterFromShape(Crit3DShapeHandler* shape, int 
     header.nrRows = int(floor((ymax - ymin) / cellSize))+1;
     header.nrCols = int(floor((xmax - xmin) / cellSize))+1;
 
-    gis::Crit3DRasterGrid* raster = new(gis::Crit3DRasterGrid);
     raster->initializeGrid(header);
     return raster;
 }

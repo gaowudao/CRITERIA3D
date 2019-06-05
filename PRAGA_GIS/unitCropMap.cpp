@@ -34,9 +34,12 @@ bool unitCropMap(Crit3DShapeHandler *ucm, Crit3DShapeHandler *crop, Crit3DShapeH
         return false;
     }
 
-    gis::Crit3DRasterGrid* rasterRef = initializeRasterFromShape(ucm, cellSize);
+    gis::Crit3DRasterGrid* rasterRef = new(gis::Crit3DRasterGrid);
+    gis::Crit3DRasterGrid* rasterVal = new(gis::Crit3DRasterGrid);
+
+    initializeRasterFromShape(ucm, rasterRef, cellSize);
     fillRasterWithShapeNumber(rasterRef, ucm);
-    gis::Crit3DRasterGrid* rasterVal = initializeRasterFromShape(ucm, cellSize);
+    initializeRasterFromShape(ucm, rasterVal, cellSize);
 
     fillRasterWithShapeNumber(rasterVal, soil);
     bool ucmSoil = zonalStatisticsShape(ucm, soil, rasterRef, rasterVal, idSoil, cellSize, MAJORITY, error);
@@ -48,6 +51,9 @@ bool unitCropMap(Crit3DShapeHandler *ucm, Crit3DShapeHandler *crop, Crit3DShapeH
 
     fillRasterWithShapeNumber(rasterVal, meteo);
     bool ucmMeteo = zonalStatisticsShape(ucm, meteo, rasterRef, rasterVal, idMeteo, cellSize, MAJORITY, error);
+
+    delete rasterRef;
+    delete rasterVal;
     if (!ucmMeteo)
     {
         *error = "zonalStatisticsShape ucm meteo Error";
