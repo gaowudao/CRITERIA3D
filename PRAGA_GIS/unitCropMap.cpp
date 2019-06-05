@@ -1,5 +1,6 @@
 #include "unitCropMap.h"
 #include "zonalStatistic.h"
+#include "shapeToRaster.h"
 #include <QFile>
 #include <QFileInfo>
 
@@ -33,14 +34,20 @@ bool unitCropMap(Crit3DShapeHandler *ucm, Crit3DShapeHandler *crop, Crit3DShapeH
         return false;
     }
 
-    bool ucmSoil = zonalStatisticsShape(ucm, soil, idSoil, cellSize, MAJORITY, error);
+    gis::Crit3DRasterGrid* rasterRef = initializeRasterFromShape(ucm, cellSize);
+    fillRasterWithShapeNumber(rasterRef, ucm);
+    gis::Crit3DRasterGrid* rasterVal = initializeRasterFromShape(ucm, cellSize);
+
+    fillRasterWithShapeNumber(rasterVal, soil);
+    bool ucmSoil = zonalStatisticsShape(ucm, soil, rasterRef, rasterVal, idSoil, cellSize, MAJORITY, error);
     if (!ucmSoil)
     {
         *error = "zonalStatisticsShape ucm soil Error";
         return false;
     }
 
-    bool ucmMeteo = zonalStatisticsShape(ucm, meteo, idMeteo, cellSize, MAJORITY, error);
+    fillRasterWithShapeNumber(rasterVal, meteo);
+    bool ucmMeteo = zonalStatisticsShape(ucm, meteo, rasterRef, rasterVal, idMeteo, cellSize, MAJORITY, error);
     if (!ucmMeteo)
     {
         *error = "zonalStatisticsShape ucm meteo Error";

@@ -155,10 +155,8 @@ bool GisProject::addUnitCropMap(Crit3DShapeHandler *crop, Crit3DShapeHandler *so
 
     if (unitCropMap(ucm, crop, soil, meteo, idSoil, idMeteo, CELLSIZE, fileName, error))
     {
-//        GisObject* newObject = new(GisObject);
-//        newObject->setShapeFile(QString::fromStdString(ucm->getFilepath()), ucm);
-//        this->objectList.push_back(newObject);
-//        return true;
+        addShapeFile(ucm, QString::fromStdString(ucm->getFilepath()));
+        return true;
     }
     else
     {
