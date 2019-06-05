@@ -1182,6 +1182,24 @@ void weatherGenerator2D::initializeMultiOccurrenceTemperature(int length)
     }
 }
 
+void weatherGenerator2D::initializeTemperaturesOutput(int length)
+{
+    maxTGenerated = (double **) calloc(length, sizeof(double *));
+    minTGenerated = (double **) calloc(length, sizeof(double *));
+    for (int i=0;i<length;i++)
+    {
+        maxTGenerated[i] = (double *) calloc(nrStations, sizeof(double));
+        minTGenerated[i] = (double *) calloc(nrStations, sizeof(double));
+        for(int j=0;j<nrStations;j++)
+        {
+            maxTGenerated[i][j] = NODATA;
+            minTGenerated[i][j] = NODATA;
+        }
+
+    }
+}
+
+
 
 void weatherGenerator2D::multisiteTemperatureGeneration()
 {
@@ -1222,6 +1240,42 @@ void weatherGenerator2D::multisiteTemperatureGeneration()
                 counter++;
         }
     }
+    weatherGenerator2D::initializeTemperaturesOutput(lengthOfRandomSeries);
+    double* X = (double*)calloc(lengthOfRandomSeries, sizeof(double));
+    double** averageT = (double**)calloc(4, sizeof(double*));
+    double** stdDevT = (double**)calloc(4, sizeof(double*));
+    for (int i=0;i<4;i++)
+    {
+        averageT[i] = (double*)calloc(lengthOfRandomSeries, sizeof(double));
+        stdDevT[i] = (double*)calloc(lengthOfRandomSeries, sizeof(double));
+        for (int j=0; j<lengthOfRandomSeries;j++)
+        {
+            averageT[i][j] = NODATA;
+            stdDevT[i][j] = NODATA;
+        }
+    }
+
+    for (int i=0; i<lengthOfRandomSeries ; i++)
+    {
+        X[i] = NODATA;
+    }
+    for (int i=0;i<nrStations;i++)
+    {
+        for (int j=0;j<lengthOfRandomSeries;j++)
+        {
+            X[j] = multiOccurrenceTemperature[j].occurrence_simulated[i];
+            averageT[0][j] = temperatureCoefficients[i].maxTDry.averageEstimation[j%365];
+            averageT[1][j] = temperatureCoefficients[i].minTDry.averageEstimation[j%365];
+            averageT[2][j] = temperatureCoefficients[i].maxTWet.averageEstimation[j%365];
+            averageT[3][j] = temperatureCoefficients[i].minTWet.averageEstimation[j%365];
+
+            stdDevT[0][j] = temperatureCoefficients[i].maxTDry.stdDevEstimation[j%365];
+            stdDevT[1][j] = temperatureCoefficients[i].minTDry.stdDevEstimation[j%365];
+            stdDevT[2][j] = temperatureCoefficients[i].maxTWet.stdDevEstimation[j%365];
+            stdDevT[3][j] = temperatureCoefficients[i].minTWet.stdDevEstimation[j%365];
+        }
+    }
+
 
     /*for (int j=0;j<=lengthOfRandomSeries;j++)
     {

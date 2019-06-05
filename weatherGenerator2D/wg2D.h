@@ -163,6 +163,8 @@
         double** normRandomMaxT;
         double** normRandomMinT;
         TmultiOccurrenceTemperature* multiOccurrenceTemperature;
+        double** maxTGenerated;
+        double** minTGenerated;
 
 
 
@@ -200,6 +202,7 @@
         void initializeNormalRandomMatricesTemperatures();
         void multisiteTemperatureGeneration();
         void initializeMultiOccurrenceTemperature(int length);
+        void initializeTemperaturesOutput(int length);
 
     public:
         // variables

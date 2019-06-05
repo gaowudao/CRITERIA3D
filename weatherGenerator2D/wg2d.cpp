@@ -315,10 +315,10 @@ void weatherGenerator2D::precipitationCompute()
    weatherGenerator2D::precipitationMultisiteOccurrenceGeneration();
    printf("fase 3\n");
    // step 4 of precipitation WG2D
-   weatherGenerator2D::precipitationMultiDistributionParameterization();
+   //weatherGenerator2D::precipitationMultiDistributionParameterization();
    printf("fase 4\n");
    // step 5 of precipitation WG2D
-   weatherGenerator2D::precipitationMultisiteAmountsGeneration();
+   //weatherGenerator2D::precipitationMultisiteAmountsGeneration();
    printf("fase 5\n");
 }
 
