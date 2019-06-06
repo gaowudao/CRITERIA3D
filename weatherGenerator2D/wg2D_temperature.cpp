@@ -1279,8 +1279,6 @@ void weatherGenerator2D::multisiteTemperatureGeneration()
         }
         double* residuals = (double*)calloc(2, sizeof(double));
         residuals[0] = residuals[1] = 0;
-        double* dummy = (double*)calloc(2, sizeof(double));
-        dummy[0] = dummy[1] = 0;
         double** ksi = (double**)calloc(2, sizeof(double*));
         double** eps = (double**)calloc(2, sizeof(double*));
         for (int j=0;j<2;j++)
@@ -1310,9 +1308,82 @@ void weatherGenerator2D::multisiteTemperatureGeneration()
             ksi[1][j] = residuals[1];
         }
 
+        double** cAverage = (double**)calloc(2, sizeof(double*));
+        double** cStdDev = (double**)calloc(2, sizeof(double*));
+        double** Xp = (double**)calloc(2, sizeof(double*));
 
+        for (int j=0;j<2;j++)
+        {
+            cAverage[j] = (double*)calloc(lengthOfRandomSeries, sizeof(double));
+            cStdDev[j] = (double*)calloc(lengthOfRandomSeries, sizeof(double));
+            Xp[j] = (double*)calloc(lengthOfRandomSeries, sizeof(double));
+
+            for (int k=0;k<lengthOfRandomSeries;k++)
+            {
+                cAverage[j][k] = NODATA;
+                cStdDev[j][k] = NODATA;
+                Xp[j][k] = NODATA;
+            }
+        }
+
+        for (int j=0;j<lengthOfRandomSeries;j++)
+        {
+            cAverage[0][j] = X[j]*averageT[0][j] + (1- X[j])*averageT[2][j]; // for Tmax
+            cAverage[1][j] = X[j]*averageT[1][j] + (1- X[j])*averageT[3][j]; // for Tmin
+            cStdDev[0][j] = X[j]*stdDevT[0][j] + (1-X[j])*stdDevT[2][j]; // for Tmax
+            cStdDev[1][j] = X[j]*stdDevT[1][j] + (1-X[j])*stdDevT[3][j]; // for Tmin
+        }
+
+        for (int j=0;j<lengthOfRandomSeries;j++)
+        {
+            if(cStdDev[0][j] >= cStdDev[1][j])
+            {
+                Xp[1][j] = ksi[1][j]*cStdDev[1][j] + cAverage[1][j];
+                Xp[0][j] = ksi[0][j]*sqrt(cStdDev[0][j]*cStdDev[0][j] - cStdDev[1][j]*cStdDev[1][j]) + (cAverage[0][j] - cAverage[1][j]) + Xp[1][j];
+            }
+            else
+            {
+                Xp[0][j] = ksi[0][j]*cStdDev[0][j] + cAverage[0][j];
+                Xp[1][j] = ksi[1][j]*sqrt(cStdDev[1][j]*cStdDev[1][j] - cStdDev[0][j]*cStdDev[0][j]) - (cAverage[0][j] - cAverage[1][j]) + Xp[0][j];
+            }
+        }
+
+        for (int j=0;j<lengthOfRandomSeries;j++)
+        {
+            if (Xp[0][j] <= Xp[1][j])
+            {
+                Xp[1][j] = Xp[0][j] - 0.2*fabs(Xp[0][j]);
+            }
+        }
+        for (int j=0;j<lengthOfRandomSeries;j++)
+        {
+            maxTGenerated[j][i] = Xp[0][j];
+            minTGenerated[j][i] = Xp[1][j];
+        }
+
+        free(ksi[0]);
+        free(ksi[1]);
+        free(eps[0]);
+        free(eps[1]);
+        free(cAverage[0]);
+        free(cAverage[1]);
+        free(cStdDev[0]);
+        free(cStdDev[1]);
+        free(Xp[0]);
+        free(Xp[1]);
+        free(ksi);
+        free(eps);
+        free(cAverage);
+        free(cStdDev);
+        free(residuals);
     }
 
-
-
+    for (int i=0;i<4;i++)
+    {
+        free(averageT[i]);
+        free(stdDevT[i]);
+    }
+    free(averageT);
+    free(stdDevT);
+    free(X);
 }
