@@ -148,7 +148,7 @@ std::string getKeyStringAggregationMethod(gridAggregationMethod value);
             bool getIsElabValue() const;
             void setIsElabValue(bool isElabValue);
 
-            void saveRowColfromZone(gis::Crit3DRasterGrid* zoneGrid, std::vector<std::vector<int> > *meteoGridRow, std::vector<std::vector<int> > *meteoGridCol);
+            void saveRowColfromZone(gis::Crit3DRasterGrid* zoneGrid, std::vector<std::vector<int> > &meteoGridRow, std::vector<std::vector<int> > &meteoGridCol);
 
     private:
 

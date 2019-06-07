@@ -841,7 +841,7 @@ std::string getKeyStringAggregationMethod(gridAggregationMethod value)
 }
 
 // std::vector <std::vector<int> > meteoGridRow(zoneGrid->header->nrRows, std::vector<int>(zoneGrid->header->nrCol, NODATA));
-void Crit3DMeteoGrid::saveRowColfromZone(gis::Crit3DRasterGrid* zoneGrid, std::vector<std::vector<int> >* meteoGridRow, std::vector<std::vector<int> >* meteoGridCol)
+void Crit3DMeteoGrid::saveRowColfromZone(gis::Crit3DRasterGrid* zoneGrid, std::vector<std::vector<int> > &meteoGridRow, std::vector<std::vector<int> > &meteoGridCol)
 {
     float value;
     for (int row = 0; row < zoneGrid->header->nrRows; row++)

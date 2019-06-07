@@ -1136,3 +1136,12 @@ bool PragaProject::downloadHourlyDataArkimet(QStringList variables, QDate startD
     if (showInfo) myInfo.close();
     return true;
 }
+
+
+bool PragaProject::averageSeriesOnZonesMeteoGrid(meteoVariable variable, gridAggregationMethod spatialElab, float threshold, gis::Crit3DRasterGrid* zoneGrid, QDate startDate, QDate endDate, std::vector<float> &outputValues)
+{
+    std::vector <std::vector<int> > meteoGridRow(zoneGrid->header->nrRows, std::vector<int>(zoneGrid->header->nrCols, NODATA));
+    std::vector <std::vector<int> > meteoGridCol(zoneGrid->header->nrRows, std::vector<int>(zoneGrid->header->nrCols, NODATA));
+    meteoGridDbHandler->meteoGrid()->saveRowColfromZone(zoneGrid, meteoGridRow, meteoGridCol);
+    // TO DO
+}
