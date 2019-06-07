@@ -1138,10 +1138,53 @@ bool PragaProject::downloadHourlyDataArkimet(QStringList variables, QDate startD
 }
 
 
-bool PragaProject::averageSeriesOnZonesMeteoGrid(meteoVariable variable, gridAggregationMethod spatialElab, float threshold, gis::Crit3DRasterGrid* zoneGrid, QDate startDate, QDate endDate, std::vector<float> &outputValues)
+bool PragaProject::averageSeriesOnZonesMeteoGrid(meteoVariable variable, meteoComputation elab1MeteoComp, gridAggregationMethod spatialElab, float threshold, gis::Crit3DRasterGrid* zoneGrid, QDate startDate, QDate endDate, std::vector<float> &outputValues, bool showInfo)
 {
     std::vector <std::vector<int> > meteoGridRow(zoneGrid->header->nrRows, std::vector<int>(zoneGrid->header->nrCols, NODATA));
     std::vector <std::vector<int> > meteoGridCol(zoneGrid->header->nrRows, std::vector<int>(zoneGrid->header->nrCols, NODATA));
     meteoGridDbHandler->meteoGrid()->saveRowColfromZone(zoneGrid, meteoGridRow, meteoGridCol);
-    // TO DO
+
+
+    float percValue;
+    bool isMeteoGrid = true;
+    std::string id;
+
+    FormInfo myInfo;
+    QString infoStr;
+    int infoStep = myInfo.start(infoStr, this->meteoGridDbHandler->gridStructure().header().nrRows);
+
+    Crit3DMeteoPoint* meteoPointTemp = new Crit3DMeteoPoint;
+
+     for (int row = 0; row < meteoGridDbHandler->gridStructure().header().nrRows; row++)
+     {
+         if (showInfo && (row % infoStep) == 0)
+             myInfo.setValue(row);
+
+         for (int col = 0; col < meteoGridDbHandler->gridStructure().header().nrCols; col++)
+         {
+
+            if (meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id))
+            {
+
+                Crit3DMeteoPoint* meteoPoint = meteoGridDbHandler->meteoGrid()->meteoPointPointer(row,col);
+
+                // copy data to MPTemp
+                meteoPointTemp->id = meteoPoint->id;
+                meteoPointTemp->point.z = meteoPoint->point.z;
+                meteoPointTemp->latitude = meteoPoint->latitude;
+                meteoPointTemp->elaboration = meteoPoint->elaboration;
+
+                // meteoPointTemp should be init
+                meteoPointTemp->nrObsDataDaysH = 0;
+                meteoPointTemp->nrObsDataDaysD = 0;
+
+                bool dataLoaded = preElaboration(&errorString, nullptr, meteoGridDbHandler, meteoPointTemp, isMeteoGrid, variable, elab1MeteoComp, startDate, endDate, outputValues, &percValue, meteoSettings, clima->getElabSettings());
+                // TO DO
+            }
+
+        }
+    }
+
+
+
 }
