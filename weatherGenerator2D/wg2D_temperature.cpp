@@ -14,45 +14,7 @@
 #include "crit3dDate.h"
 #include "eispack.h"
 
-int weatherGenerator2D::dateFromDoy(int doy,int year, int* day, int* month)
-{
-    //int leap = 0;
-    int daysOfMonth[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
-    //int startingDayOfMonth[12];
-    if (isLeapYear(year)) (daysOfMonth[1])++;
-    int counter = 0;
-    while(doy > daysOfMonth[counter])
-    {
-        doy -= daysOfMonth[counter];
-        counter++;
-        if (counter >= 12) return PARAMETER_ERROR;
-    }
-    *day = doy;
-    //counter++;
-    *month = ++counter;
 
-
-    return 0;
-}
-
-int weatherGenerator2D::doyFromDate(int day,int month,int year)
-{
-    int daysOfMonth[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
-    if (isLeapYear(year)) (daysOfMonth[1])++;
-    if (month == 1)
-    {
-        return day;
-    }
-    int doy = 0;
-    int counter =0;
-    while (counter < (month-1))
-    {
-        doy += daysOfMonth[counter];
-        counter++;
-    }
-    doy += day;
-    return doy;
-}
 
 void weatherGenerator2D::temperatureCompute()
 {
