@@ -121,6 +121,18 @@
         double* occurrence_simulated;
     };
 
+    struct ToutputWeatherData
+    {
+        int* yearSimulated;
+        int* monthSimulated;
+        int* daySimulated;
+        int* doySimulated;
+        double* maxT;
+        double* minT;
+        double* precipitation;
+
+    };
+
 
     void randomSet(double *arrayNormal,int dimArray);
     class weatherGenerator2D
@@ -168,6 +180,8 @@
 
 
 
+        ToutputWeatherData *outputWeatherData;
+
         //functions
 
         void precipitationCompute();
@@ -185,7 +199,7 @@
         void spatialIterationAmounts(double** correlationMatrixSimulatedData,double ** amountsCorrelationMatrix , double** randomMatrix, int length, double** occurrences, double** phatAlpha, double** phatBeta,double** simulatedPrecipitationAmounts);
         double bestFit(double *par, int nrPar, double*x, double *yObs, int nrX);
         int bestParametersNonLinearFit(double *par, int nrPar, double*x, double *yObs, int nrX);
-
+        double inverseGammaFunction(double valueProbability, double alpha, double beta, double accuracy);
 
 
         void temperatureCompute();
@@ -204,6 +218,9 @@
         void initializeMultiOccurrenceTemperature(int length);
         void initializeTemperaturesOutput(int length);
 
+        void getWeatherGeneratorOutput();
+        void initializeOutputData();
+
     public:
         // variables
 
@@ -213,7 +230,6 @@
         void initializeParameters(float thresholdPrecipitation, int simulatedYears, int distributionType, bool computePrecWG2D, bool computeTempWG2D);
         void setObservedData(TObsDataD** observations);
         void computeWeatherGenerator2D();
-        double inverseGammaFunction(double valueProbability, double alpha, double beta, double accuracy);
         void pressEnterToContinue();
     };
 
