@@ -872,8 +872,8 @@ void Crit3DMeteoGrid::saveRowColfromZone(gis::Crit3DRasterGrid* zoneGrid, std::v
                 }
             }
         }
-        meteoGridRow->push_back(rowVector);
-        meteoGridCol->push_back(colVector);
+        meteoGridRow.push_back(rowVector);
+        meteoGridCol.push_back(colVector);
     }
 }
 
