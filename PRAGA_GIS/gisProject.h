@@ -11,7 +11,7 @@
     #include <QString>
     #include <vector>
 
-#define CELLSIZE 500
+#define CELLSIZE 500 //LC x valori inferiori il consumo di memoria è eccessivo e va in crash
 
     enum gisObjectType{gisObjectNone, gisObjectRaster, gisObjectShape};
 

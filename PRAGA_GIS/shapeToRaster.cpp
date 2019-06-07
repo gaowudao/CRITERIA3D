@@ -4,6 +4,8 @@
 #include <float.h>
 #include <math.h>
 
+#include <QtWidgets> // debug
+
 gis::Crit3DRasterGrid* initializeRasterFromShape(Crit3DShapeHandler* shape, gis::Crit3DRasterGrid* raster, int cellSize)
 {
     gis::Crit3DRasterHeader header;

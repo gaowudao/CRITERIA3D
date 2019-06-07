@@ -10,6 +10,7 @@
         #include "commonConstants.h"
     #endif
 
+
 #define GRID_MIN_COVERAGE 0
 
 enum gridAggregationMethod {aggrAvg, aggrMedian, aggrStdDeviation};
@@ -146,6 +147,8 @@ std::string getKeyStringAggregationMethod(gridAggregationMethod value);
 
             bool getIsElabValue() const;
             void setIsElabValue(bool isElabValue);
+
+            void saveRowColfromZone(gis::Crit3DRasterGrid* zoneGrid, std::vector<std::vector<int> > *meteoGridRow, std::vector<std::vector<int> > *meteoGridCol);
 
     private:
 

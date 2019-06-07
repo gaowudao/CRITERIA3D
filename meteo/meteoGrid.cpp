@@ -25,8 +25,8 @@
 
 #include "commonConstants.h"
 #include "meteoGrid.h"
-#include "statistics.h"
 #include "furtherMathFunctions.h"
+#include "statistics.h"
 #include <iostream> //debug
 
 
@@ -838,6 +838,43 @@ std::string getKeyStringAggregationMethod(gridAggregationMethod value)
         }
     }
     return key;
+}
+
+// std::vector <std::vector<int> > meteoGridRow(zoneGrid->header->nrRows, std::vector<int>(zoneGrid->header->nrCol, NODATA));
+void Crit3DMeteoGrid::saveRowColfromZone(gis::Crit3DRasterGrid* zoneGrid, std::vector<std::vector<int> >* meteoGridRow, std::vector<std::vector<int> >* meteoGridCol)
+{
+    float value;
+    for (int row = 0; row < zoneGrid->header->nrRows; row++)
+    {
+        std::vector<int> rowVector;
+        std::vector<int> colVector;
+        for (int col = 0; col < zoneGrid->header->nrCols; col++)
+        {
+            value = zoneGrid->value[row][col];
+            if (value != zoneGrid->header->flag)
+            {
+                gis::Crit3DUtmPoint* point = zoneGrid->utmPoint(row, col);
+                double x = point->x;
+                double y = point->y;
+                if (!_gridStructure.isUTM())
+                {
+                    double utmX = x;
+                    double utmY = y;
+                    gis::getLatLonFromUtm(_gisSettings, utmX, utmY, &y, &x);
+                }
+                int myRow;
+                int myCol;
+                gis::getRowColFromXY(dataMeteoGrid, x, y, &myRow, &myCol);
+                if (_meteoPoints[myRow][myCol]->active == true)
+                {
+                    rowVector.push_back(myRow);
+                    colVector.push_back(myCol);
+                }
+            }
+        }
+        meteoGridRow->push_back(rowVector);
+        meteoGridCol->push_back(colVector);
+    }
 }
 
 
