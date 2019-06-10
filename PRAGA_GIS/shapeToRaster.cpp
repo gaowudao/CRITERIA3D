@@ -54,7 +54,7 @@ void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler
         {
             for (int col = 0; col < raster->header->nrCols; col++)
             {
-                value = raster->value[row][col];
+                value = int(raster->value[row][col]);
                 if (value == raster->header->flag)
                 {
                     gis::Crit3DUtmPoint* point = raster->utmPoint(row, col);

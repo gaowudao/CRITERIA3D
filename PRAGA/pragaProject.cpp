@@ -3,6 +3,7 @@
 #include "climate.h"
 #include "dbClimate.h"
 #include "download.h"
+#include "furtherMathFunctions.h"
 #include "formInfo.h"
 
 #include <iostream> //debug
@@ -1138,8 +1139,10 @@ bool PragaProject::downloadHourlyDataArkimet(QStringList variables, QDate startD
 }
 
 
-bool PragaProject::averageSeriesOnZonesMeteoGrid(meteoVariable variable, meteoComputation elab1MeteoComp, gridAggregationMethod spatialElab, float threshold, gis::Crit3DRasterGrid* zoneGrid, QDate startDate, QDate endDate, std::vector<float> &outputValues, bool showInfo)
+void PragaProject::averageSeriesOnZonesMeteoGrid(meteoVariable variable, meteoComputation elab1MeteoComp, gridAggregationMethod spatialElab, float threshold, gis::Crit3DRasterGrid* zoneGrid, QDate startDate, QDate endDate, std::vector<float> &outputValues, bool showInfo)
 {
+
+
     std::vector <std::vector<int> > meteoGridRow(zoneGrid->header->nrRows, std::vector<int>(zoneGrid->header->nrCols, NODATA));
     std::vector <std::vector<int> > meteoGridCol(zoneGrid->header->nrRows, std::vector<int>(zoneGrid->header->nrCols, NODATA));
     meteoGridDbHandler->meteoGrid()->saveRowColfromZone(zoneGrid, meteoGridRow, meteoGridCol);
@@ -1148,6 +1151,19 @@ bool PragaProject::averageSeriesOnZonesMeteoGrid(meteoVariable variable, meteoCo
     float percValue;
     bool isMeteoGrid = true;
     std::string id;
+    unsigned int zoneIndex = 0;
+    int indexSeries = 0;
+    float value;
+    std::vector<float> outputSeries;
+    std::vector <std::vector<int>> indexRowCol(meteoGridDbHandler->gridStructure().header().nrRows, std::vector<int>(meteoGridDbHandler->gridStructure().header().nrCols, NODATA));
+
+    gis::updateMinMaxRasterGrid(zoneGrid);
+    std::vector <std::vector<float> > zoneVector(int(zoneGrid->maximum), std::vector<float>());
+    for (int i = 0; i < int(zoneGrid->maximum); i++)
+    {
+        std::vector<float> tmp(0);
+        zoneVector.push_back(tmp);
+    }
 
     FormInfo myInfo;
     QString infoStr;
@@ -1160,6 +1176,7 @@ bool PragaProject::averageSeriesOnZonesMeteoGrid(meteoVariable variable, meteoCo
          if (showInfo && (row % infoStep) == 0)
              myInfo.setValue(row);
 
+         std::vector<int> tmpRowVector;
          for (int col = 0; col < meteoGridDbHandler->gridStructure().header().nrCols; col++)
          {
 
@@ -1179,11 +1196,84 @@ bool PragaProject::averageSeriesOnZonesMeteoGrid(meteoVariable variable, meteoCo
                 meteoPointTemp->nrObsDataDaysD = 0;
 
                 bool dataLoaded = preElaboration(&errorString, nullptr, meteoGridDbHandler, meteoPointTemp, isMeteoGrid, variable, elab1MeteoComp, startDate, endDate, outputValues, &percValue, meteoSettings, clima->getElabSettings());
-                // TO DO
+                if (dataLoaded)
+                {
+                    indexSeries = indexSeries + 1;
+                    outputSeries.insert(outputSeries.end(), outputValues.begin(), outputValues.end());
+                    tmpRowVector.push_back(indexSeries);
+                }
             }
-
         }
+        indexRowCol.push_back(tmpRowVector);
     }
+
+     int nrDays = int(startDate.daysTo(endDate) + 1);
+     std::vector< std::vector<float> > dailyElabAggregation(nrDays, std::vector<float>(int(zoneGrid->maximum), NODATA));
+
+     for (int day = 0; day < nrDays; day++)
+     {
+         std::vector<float> dailyElabRow;
+         for (int zoneRow = 0; zoneRow < zoneGrid->header->nrRows; zoneRow++)
+         {
+             for (int zoneCol = 0; zoneCol < zoneGrid->header->nrRows; zoneCol++)
+             {
+
+                float zoneValue = zoneGrid->value[zoneRow][zoneCol];
+                if ( zoneValue != zoneGrid->header->flag)
+                {
+                    zoneIndex = (unsigned int)(zoneValue);
+
+                    if (meteoGridRow[zoneRow][zoneCol] != NODATA && meteoGridCol[zoneRow][zoneCol] != NODATA)
+                    {
+                        if (indexRowCol[meteoGridRow[zoneRow][zoneCol]][meteoGridCol[zoneRow][zoneCol]] != NODATA)
+                        {
+                            value = outputSeries.at(indexRowCol[meteoGridRow[zoneRow][zoneCol]][meteoGridCol[zoneRow][zoneCol]]+day);
+                            if (value != meteoGridDbHandler->gridStructure().header().flag)
+                            {
+                                zoneVector[zoneIndex].push_back(value);
+                            }
+                        }
+                    }
+                }
+             }
+         }
+
+         for (unsigned int zonePos = 0; zonePos < zoneVector.size(); zonePos++)
+         {
+            std::vector<float> validValues;
+            validValues = zoneVector[zonePos];
+            if (threshold != NODATA)
+            {
+                extractValidValuesWithThreshold(validValues, threshold);
+            }
+            // LC l'enum comprende solo questi valori a differenza di vb dove lo
+            // switch p con mean, devStd, max e min
+            float res = NODATA;
+            int size = int(validValues.size());
+            switch (spatialElab)
+            {
+                case aggrAvg:
+                    {
+                        res = statistics::mean(validValues, size);
+                        break;
+                    }
+                case aggrMedian:
+                    {
+
+                        res = sorting::percentile(validValues, &size, 50.0, true);
+                        break;
+                    }
+                case aggrStdDeviation:
+                    {
+                        res = statistics::standardDeviation(validValues, size);
+                        break;
+                    }
+            }
+            dailyElabRow.push_back(res);
+
+         }
+         dailyElabAggregation.push_back(dailyElabRow);
+     }
 
 
 
