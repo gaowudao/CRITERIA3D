@@ -12,70 +12,7 @@
 #include "furtherMathFunctions.h"
 //#include "eispack.h"
 //#include "gammaFunction.h"
-/*
-double rootMeanSquare(double* y, double* yObs, int nrObs)
-{
-    double sum=0;
-    for (int i=0;i<nrObs;i++) sum += (y[i]-yObs[i])*(y[i]-yObs[i]);
-    sum /= nrObs;
 
-    return sqrt(sum);
-}
-
-void fittingRandom(int nrIterations, double eps, double* myParameter,int nrPar, double *parMax, double *parMin, double* xObs,double* yObs, int nrObs)
-{
-    double y[nrObs];
-    double yOld[nrObs];
-    double parameters[nrPar];
-    double sum, sumOld;
-    sum = sumOld = 1000;
-    bool isFirstTime = true;
-    double deltaPar[nrPar];
-    for  (int i=0;i<nrPar;i++)
-        deltaPar[i]= parMax[i]-parMin[i];
-    srand (time(NULL));
-    int iteration = 0;
-    while (iteration<nrIterations)// && sumOld>eps)
-    {
-        double randomNumber;
-        randomNumber = (float) rand() / (RAND_MAX);
-        for  (int i=0;i<nrPar;i++)
-            parameters[i]= parMin[i] + deltaPar[i]*(randomNumber);
-        for (int i=0;i<nrObs;i++)
-        {
-            //y[i] = myParameter[0]+myParameter[1]*xObs[i]+myParameter[2]*xObs[i]*xObs[i];
-            double xPoint;
-            xPoint = xObs[i];
-            y[i]= interpolation::estimateFunction(TWOPARAMETERSPOLYNOMIAL,parameters,&xPoint);
-        }
-        printf("sum %f %f \n",sumOld, randomNumber);
-        if (isFirstTime)
-        {
-            isFirstTime = false;
-            for (int i=0;i<nrObs;i++)
-                yOld[i]=y[i];
-            sumOld = rootMeanSquare(yOld,yObs,nrObs);
-            for  (int i=0;i<nrPar;i++)
-                myParameter[i]=parameters[i];
-
-        }
-        else
-        {
-            sum = rootMeanSquare(y,yObs,nrObs);
-            if (sum < sumOld)
-            {
-                sumOld = sum;
-                for (int i=0;i<nrObs;i++)
-                    yOld[i]=y[i];
-                for  (int i=0;i<nrPar;i++)
-                    myParameter[i]=parameters[i];
-                //printf("sum %f \n",sum);
-            }
-        }
-        iteration++;
-    }
-}
-*/
 weatherGenerator2D WG2D;
 
 
@@ -179,14 +116,6 @@ int main()
         }
 
     }
-    for(int i=0;i<4;i++)
-    {
-        for (int j=0;j<1095;j++)
-        {
-            //printf("%d\n",dateArrayFourTimes[j+i*1095][2]);
-        }
-     }
-
 
     TObsDataD** observedDataDaily = (TObsDataD **)calloc(nrStations, sizeof(TObsDataD*));
     for (int i=0;i<nrStations;i++)
@@ -202,10 +131,12 @@ int main()
 
 
 
-    bool computePrecipitation = true;
+    bool computePrecipitation = false;
     bool computeTemperature = true;
     printf("weather generator\n");
-    WG2D.initializeParameters(NODATA,2,2,computePrecipitation,computeTemperature);
+    int distributionType = 2; // 1 multiexponential 2 multigamma
+    int yearsOfSimulations = 3;
+    WG2D.initializeParameters(NODATA,yearsOfSimulations,distributionType,computePrecipitation,computeTemperature);
     WG2D.computeWeatherGenerator2D();
 
     for (int i=0;i<nrStations;i++)
@@ -227,7 +158,6 @@ int main()
 
     for (int i=0;i<nrStations;i++)
     {
-        //free(observedDataDaily[i]);
         for (int j=0;j<1095*4;j++)
         {
             free(weatherArrayFourTimes[i][j]);
@@ -238,11 +168,8 @@ int main()
     {
         free(dateArrayFourTimes[j]);
     }
-    //free(observedDataDaily);
     free(weatherArrayFourTimes);
     free(dateArrayFourTimes);
-
-
     return 0;
 }
 

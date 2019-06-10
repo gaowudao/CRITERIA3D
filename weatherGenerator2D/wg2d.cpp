@@ -202,14 +202,13 @@ void weatherGenerator2D::setObservedData(TObsDataD** observations)
             //printf("%d/%d/%d,%.1f,%.1f,%.1f\n",observations[i][j].date.day,observations[i][j].date.month,observations[i][j].date.year,observations[i][j].tMin,observations[i][j].tMax,observations[i][j].prec);
 
         }
-        //pressEnterToContinue();
     }
 }
 
 
 void weatherGenerator2D::computeWeatherGenerator2D()
 {
-        weatherGenerator2D::precipitationCompute();
+    weatherGenerator2D::precipitationCompute();
     if (isTempWG2D)
         weatherGenerator2D::temperatureCompute();
 
@@ -223,101 +222,12 @@ void weatherGenerator2D::precipitationCompute()
    weatherGenerator2D::initializePrecipitationOutputs(lengthSeason);
    weatherGenerator2D::precipitationP00P10(); // it computes the monthly probabilities p00 and p10
    printf("fase 1\n");
-   /*int month = 0; // gennaio
-   precOccurence[0][month].p00 = 0.8254;
-   precOccurence[0][month].p10 = 0.4444;
-   precOccurence[1][month].p00 = 0.8413;
-   precOccurence[1][month].p10 = 0.4074;
-   precOccurence[2][month].p00 = 0.8413;
-   precOccurence[2][month].p10 = 0.4074;
-   month++; // febbraio
-   precOccurence[0][month].p00 = 0.66;
-   precOccurence[0][month].p10 = 0.4839;
-   precOccurence[1][month].p00 = 0.6981;
-   precOccurence[1][month].p10 = 0.5;
-   precOccurence[2][month].p00 = 0.6939;
-   precOccurence[2][month].p10 = 0.4063;
-   month++; // marzo
-   precOccurence[0][month].p00 = 0.7273;
-   precOccurence[0][month].p10 = 0.4286;
-   precOccurence[1][month].p00 = 0.75;
-   precOccurence[1][month].p10 = 0.4118;
-   precOccurence[2][month].p00 = 0.8033;
-   precOccurence[2][month].p10 = 0.4138;
-   month++; // aprile
-   precOccurence[0][month].p00 = 0.8806;
-   precOccurence[0][month].p10 = 0.4;
-   precOccurence[1][month].p00 = 0.8125;
-   precOccurence[1][month].p10 = 0.5652;
-   precOccurence[2][month].p00 = 0.8525;
-   precOccurence[2][month].p10 = 0.4231;
-   month++; // maggio
-   precOccurence[0][month].p00 = 0.8438;
-   precOccurence[0][month].p10 = 0.4615;
-   precOccurence[1][month].p00 = 0.8382;
-   precOccurence[1][month].p10 = 0.5455;
-   precOccurence[2][month].p00 = 0.8382;
-   precOccurence[2][month].p10 = 0.5455;
-   month++; //giugno
-   precOccurence[0][month].p00 = 0.7541;
-   precOccurence[0][month].p10 = 0.5769;
-   precOccurence[1][month].p00 = 0.8358;
-   precOccurence[1][month].p10 = 0.55;
-   precOccurence[2][month].p00 = 0.8406;
-   precOccurence[2][month].p10 = 0.6111;
-   month++; // luglio
-   precOccurence[0][month].p00 = 0.8533;
-   precOccurence[0][month].p10 = 0.7333;
-   precOccurence[1][month].p00 = 0.9;
-   precOccurence[1][month].p10 = 0.8;
-   precOccurence[2][month].p00 = 0.8684;
-   precOccurence[2][month].p10 = 0.7143;
-   month++; // agosto
-   precOccurence[0][month].p00 = 0.8182;
-   precOccurence[0][month].p10 = 1.;
-   precOccurence[1][month].p00 = 0.7778;
-   precOccurence[1][month].p10 = 0.8333;
-   precOccurence[2][month].p00 = 0.8734;
-   precOccurence[2][month].p10 = 0.9091;
-   month++; // settembre
-   precOccurence[0][month].p00 = 0.8493;
-   precOccurence[0][month].p10 = 0.7143;
-   precOccurence[1][month].p00 = 0.8611;
-   precOccurence[1][month].p10 = 0.6000;
-   precOccurence[2][month].p00 = 0.8784;
-   precOccurence[2][month].p10 = 0.6154;
-   month++; // ottobre
-   precOccurence[0][month].p00 = 0.8356;
-   precOccurence[0][month].p10 = 0.5882;
-   precOccurence[1][month].p00 = 0.7941;
-   precOccurence[1][month].p10 = 0.5455;
-   precOccurence[2][month].p00 = 0.7941;
-   precOccurence[2][month].p10 = 0.5455;
-   month++; // novembre
-   precOccurence[0][month].p00 = 0.8571;
-   precOccurence[0][month].p10 = 0.4167;
-   precOccurence[1][month].p00 = 0.8197;
-   precOccurence[1][month].p10 = 0.4615;
-   precOccurence[2][month].p00 = 0.8;
-   precOccurence[2][month].p10 = 0.6364;
-   month++; // dicembre
-   precOccurence[0][month].p00 = 0.9375;
-   precOccurence[0][month].p10 = 0.4;
-   precOccurence[1][month].p00 = 0.9259;
-   precOccurence[1][month].p10 = 0.5556;
-   precOccurence[2][month].p00 = 0.939;
-   precOccurence[2][month].p10 = 0.625;
-   */
-
-
-
    // step 2 of precipitation WG2D
    weatherGenerator2D::precipitationCorrelationMatrices();
    printf("fase 2\n");
    // step 3 of precipitation WG2D
    weatherGenerator2D::precipitationMultisiteOccurrenceGeneration();
    printf("fase 3\n");
-
    if (isPrecWG2D)
    {
     // step 4 of precipitation WG2D
@@ -360,21 +270,11 @@ void weatherGenerator2D::precipitationP00P10()
                             if (obsDataD[idStation][i+1].prec <= parametersModel.precipitationThreshold)
                                 occurrence00[month-1]++;
                         }
-                        /*if (month == 1)
-                        {
-                            printf("%d/%d/%d  ",obsDataD[idStation][i].date.day,obsDataD[idStation][i].date.month,obsDataD[idStation][i].date.year);
-                            printf("month %d n10 %d n00 %d \n",month,occurrence10[month-1],occurrence00[month-1]);
-                            pressEnterToContinue();
-                        }*/
                     }
                 }
             }
         }
-        /*for (int month=0;month<12;month++)
-        {
-            printf("month %d n10 %d n00 %d \n",month,occurrence10[month],occurrence00[month]);
-        }
-        pressEnterToContinue();*/
+
         for (int month=0;month<12;month++)
         {
             if (daysWithoutRain[month] != 0)
@@ -389,8 +289,8 @@ void weatherGenerator2D::precipitationP00P10()
             precOccurence[idStation][month].month = month +1;
         }
     }
-    /*pressEnterToContinue();
-    for (int month=0;month<12;month++)
+
+    /*for (int month=0;month<12;month++)
     {
 
            printf("%f  %f %f\n",precOccurence[0][month].p00,precOccurence[1][month].p00,precOccurence[2][month].p00);
@@ -543,7 +443,6 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
         }
 
     // arrays initialization
-    //int randomGeneration = 1;
     for (int iMonth=0; iMonth<12; iMonth++)
     {
         // initialization and definition of the random matrix
@@ -557,13 +456,7 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
                normalizedRandomMatrix[i][j]= NODATA;
             }
         }
-        //printf("mese %d\n", iMonth+1);
-        //double* arrayRandomNormal;
-        //arrayRandomNormal = (double *)calloc(nrStations*nrDaysIterativeProcessMonthly[iMonth], sizeof(double));
-        //randomSet(arrayRandomNormal,nrStations*nrDaysIterativeProcessMonthly[iMonth]);
 
-        //int counterRandomNumber = 0;
-        //double testValue;
         for (int i=0;i<nrStations;i++)
         {
             for (int j=0;j<nrStations;j++)
