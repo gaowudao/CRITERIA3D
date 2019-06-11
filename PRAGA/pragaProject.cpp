@@ -72,13 +72,13 @@ bool PragaProject::interpolationMeteoGrid(meteoVariable myVar, frequencyType myF
 {
 
     // test da cancellare//////////////////////////////////////////////
-//    meteoComputation elab1MeteoComp = average;
-//    gridAggregationMethod spatialElab = aggrAvg;
-//    QDate startDate(2018, 04, 03);
-//    QDate endDate(2018, 04, 04);
-//    std::vector<float> outputValues;
+    meteoComputation elab1MeteoComp = average;
+    gridAggregationMethod spatialElab = aggrAvg;
+    QDate startDate(2018, 04, 03);
+    QDate endDate(2018, 04, 04);
+    std::vector<float> outputValues;
 
-//    averageSeriesOnZonesMeteoGrid(myVar, elab1MeteoComp, spatialElab, NODATA, &DTM, startDate, endDate, outputValues, showInfo);
+    averageSeriesOnZonesMeteoGrid(myVar, elab1MeteoComp, spatialElab, NODATA, &DTM, startDate, endDate, outputValues, showInfo);
     //////////////////////////////////////////////////////////////////////////////////////
     if (meteoGridDbHandler != nullptr)
     {
@@ -1169,11 +1169,6 @@ void PragaProject::averageSeriesOnZonesMeteoGrid(meteoVariable variable, meteoCo
 
     gis::updateMinMaxRasterGrid(zoneGrid);
     std::vector <std::vector<float> > zoneVector(int(zoneGrid->maximum), std::vector<float>());
-    for (int i = 0; i < int(zoneGrid->maximum); i++)
-    {
-        std::vector<float> tmp(0);
-        zoneVector.push_back(tmp);
-    }
 
     FormInfo myInfo;
     QString infoStr;
@@ -1186,7 +1181,6 @@ void PragaProject::averageSeriesOnZonesMeteoGrid(meteoVariable variable, meteoCo
          if (showInfo && (row % infoStep) == 0)
              myInfo.setValue(row);
 
-         std::vector<int> tmpRowVector;
          for (int col = 0; col < meteoGridDbHandler->gridStructure().header().nrCols; col++)
          {
 
@@ -1205,16 +1199,16 @@ void PragaProject::averageSeriesOnZonesMeteoGrid(meteoVariable variable, meteoCo
                 meteoPointTemp->nrObsDataDaysH = 0;
                 meteoPointTemp->nrObsDataDaysD = 0;
 
+                outputValues.clear();
                 bool dataLoaded = preElaboration(&errorString, nullptr, meteoGridDbHandler, meteoPointTemp, isMeteoGrid, variable, elab1MeteoComp, startDate, endDate, outputValues, &percValue, meteoSettings, clima->getElabSettings());
                 if (dataLoaded)
                 {
                     indexSeries = indexSeries + 1;
                     outputSeries.insert(outputSeries.end(), outputValues.begin(), outputValues.end());
-                    tmpRowVector.push_back(indexSeries);
+                    indexRowCol[row][col] = indexSeries;
                 }
             }
         }
-        indexRowCol.push_back(tmpRowVector);
     }
 
      int nrDays = int(startDate.daysTo(endDate) + 1);
@@ -1222,7 +1216,7 @@ void PragaProject::averageSeriesOnZonesMeteoGrid(meteoVariable variable, meteoCo
 
      for (int day = 0; day < nrDays; day++)
      {
-         std::vector<float> dailyElabRow;
+
          for (int zoneRow = 0; zoneRow < zoneGrid->header->nrRows; zoneRow++)
          {
              for (int zoneCol = 0; zoneCol < zoneGrid->header->nrRows; zoneCol++)
@@ -1279,10 +1273,8 @@ void PragaProject::averageSeriesOnZonesMeteoGrid(meteoVariable variable, meteoCo
                         break;
                     }
             }
-            dailyElabRow.push_back(res);
-
+            dailyElabAggregation[day][zonePos] = res;
          }
-         dailyElabAggregation.push_back(dailyElabRow);
      }
 
 
