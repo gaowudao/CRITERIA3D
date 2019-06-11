@@ -167,6 +167,7 @@ Crit3DMeteoGrid::~Crit3DMeteoGrid()
 
 bool Crit3DMeteoGrid::createRasterGrid()
 {
+
     if (_gridStructure.isUTM())
     {
         dataMeteoGrid.header->cellSize = _gridStructure.header().dx;
@@ -840,14 +841,13 @@ std::string getKeyStringAggregationMethod(gridAggregationMethod value)
     return key;
 }
 
-// std::vector <std::vector<int> > meteoGridRow(zoneGrid->header->nrRows, std::vector<int>(zoneGrid->header->nrCol, NODATA));
+
 void Crit3DMeteoGrid::saveRowColfromZone(gis::Crit3DRasterGrid* zoneGrid, std::vector<std::vector<int> > &meteoGridRow, std::vector<std::vector<int> > &meteoGridCol)
 {
     float value;
     for (int row = 0; row < zoneGrid->header->nrRows; row++)
     {
-        std::vector<int> rowVector;
-        std::vector<int> colVector;
+
         for (int col = 0; col < zoneGrid->header->nrCols; col++)
         {
             value = zoneGrid->value[row][col];
@@ -856,24 +856,33 @@ void Crit3DMeteoGrid::saveRowColfromZone(gis::Crit3DRasterGrid* zoneGrid, std::v
                 gis::Crit3DUtmPoint* point = zoneGrid->utmPoint(row, col);
                 double x = point->x;
                 double y = point->y;
+                int myRow;
+                int myCol;
                 if (!_gridStructure.isUTM())
                 {
                     double utmX = x;
                     double utmY = y;
                     gis::getLatLonFromUtm(_gisSettings, utmX, utmY, &y, &x);
+                    gis::Crit3DGeoPoint geoPoint = gis::Crit3DGeoPoint(y, x);
+                    gis::getRowColFromLatLon(gridStructure().header(), geoPoint, &myRow, &myCol);
+
                 }
-                int myRow;
-                int myCol;
-                gis::getRowColFromXY(dataMeteoGrid, x, y, &myRow, &myCol);
-                if (_meteoPoints[myRow][myCol]->active == true)
+                else
                 {
-                    rowVector.push_back(myRow);
-                    colVector.push_back(myCol);
+                    gis::getRowColFromXY(dataMeteoGrid, x, y, &myRow, &myCol);
                 }
+
+                if (myRow >= 0 && myCol >= 0 && myRow < _gridStructure.header().nrRows && myCol < _gridStructure.header().nrCols)
+                {
+                    if (_meteoPoints[myRow][myCol]->active == true)
+                    {
+                        meteoGridRow[row][col] = myRow;
+                        meteoGridCol[row][col] = myCol;
+                    }
+                }
+
             }
         }
-        meteoGridRow.push_back(rowVector);
-        meteoGridCol.push_back(colVector);
     }
 }
 

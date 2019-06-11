@@ -71,6 +71,15 @@ bool PragaProject::interpolationMeteoGrid(meteoVariable myVar, frequencyType myF
                               gis::Crit3DRasterGrid *myRaster, bool showInfo)
 {
 
+    // test da cancellare//////////////////////////////////////////////
+//    meteoComputation elab1MeteoComp = average;
+//    gridAggregationMethod spatialElab = aggrAvg;
+//    QDate startDate(2018, 04, 03);
+//    QDate endDate(2018, 04, 04);
+//    std::vector<float> outputValues;
+
+//    averageSeriesOnZonesMeteoGrid(myVar, elab1MeteoComp, spatialElab, NODATA, &DTM, startDate, endDate, outputValues, showInfo);
+    //////////////////////////////////////////////////////////////////////////////////////
     if (meteoGridDbHandler != nullptr)
     {
         if (!interpolationDem(myVar, myTime, myRaster, showInfo))
@@ -85,6 +94,7 @@ bool PragaProject::interpolationMeteoGrid(meteoVariable myVar, frequencyType myF
         errorString = "No grid";
         return false;
     }
+
     return true;
 }
 

@@ -914,11 +914,11 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(QString *myError)
         while( qry.lastError().number() == tableNotFoundError)
         {
 
-            if ( col < _gridStructure.header().nrCols)
+            if ( col < _gridStructure.header().nrCols-1)
             {
                 col = col + 1;
             }
-            else if( row < _gridStructure.header().nrRows)
+            else if( row < _gridStructure.header().nrRows-1)
             {
                 row = row + 1;
                 col = 0;
@@ -983,11 +983,11 @@ bool Crit3DMeteoGridDbHandler::updateGridDate(QString *myError)
         while( qry.lastError().number() == tableNotFoundError)
         {
 
-            if ( col < _gridStructure.header().nrCols)
+            if ( col < _gridStructure.header().nrCols-1)
             {
                 col = col + 1;
             }
-            else if( row < _gridStructure.header().nrRows)
+            else if( row < _gridStructure.header().nrRows-1)
             {
                 row = row + 1;
                 col = 0;
