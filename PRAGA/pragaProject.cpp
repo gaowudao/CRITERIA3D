@@ -71,14 +71,14 @@ bool PragaProject::interpolationMeteoGrid(meteoVariable myVar, frequencyType myF
                               gis::Crit3DRasterGrid *myRaster, bool showInfo)
 {
 
-    // test da cancellare//////////////////////////////////////////////
-    meteoComputation elab1MeteoComp = average;
-    gridAggregationMethod spatialElab = aggrAvg;
-    QDate startDate(2018, 04, 03);
-    QDate endDate(2018, 04, 04);
-    std::vector<float> outputValues;
+    // LC test da cancellare!//////////////////////////////////////////////
+//    meteoComputation elab1MeteoComp = average;
+//    gridAggregationMethod spatialElab = aggrAvg;
+//    QDate startDate(2018, 04, 03);
+//    QDate endDate(2018, 04, 04);
+//    std::vector<float> outputValues;
 
-    averageSeriesOnZonesMeteoGrid(myVar, elab1MeteoComp, spatialElab, NODATA, &DTM, startDate, endDate, outputValues, showInfo);
+//    averageSeriesOnZonesMeteoGrid(myVar, elab1MeteoComp, spatialElab, NODATA, &DTM, startDate, endDate, outputValues, showInfo);
     //////////////////////////////////////////////////////////////////////////////////////
     if (meteoGridDbHandler != nullptr)
     {
@@ -1149,7 +1149,7 @@ bool PragaProject::downloadHourlyDataArkimet(QStringList variables, QDate startD
 }
 
 
-void PragaProject::averageSeriesOnZonesMeteoGrid(meteoVariable variable, meteoComputation elab1MeteoComp, gridAggregationMethod spatialElab, float threshold, gis::Crit3DRasterGrid* zoneGrid, QDate startDate, QDate endDate, std::vector<float> &outputValues, bool showInfo)
+std::vector< std::vector<float> > PragaProject::averageSeriesOnZonesMeteoGrid(meteoVariable variable, meteoComputation elab1MeteoComp, gridAggregationMethod spatialElab, float threshold, gis::Crit3DRasterGrid* zoneGrid, QDate startDate, QDate endDate, std::vector<float> &outputValues, bool showInfo)
 {
 
 
@@ -1168,7 +1168,7 @@ void PragaProject::averageSeriesOnZonesMeteoGrid(meteoVariable variable, meteoCo
     std::vector <std::vector<int>> indexRowCol(meteoGridDbHandler->gridStructure().header().nrRows, std::vector<int>(meteoGridDbHandler->gridStructure().header().nrCols, NODATA));
 
     gis::updateMinMaxRasterGrid(zoneGrid);
-    std::vector <std::vector<float> > zoneVector(int(zoneGrid->maximum), std::vector<float>());
+    std::vector <std::vector<float> > zoneVector((unsigned int)(zoneGrid->maximum+1), std::vector<float>());
 
     FormInfo myInfo;
     QString infoStr;
@@ -1212,7 +1212,7 @@ void PragaProject::averageSeriesOnZonesMeteoGrid(meteoVariable variable, meteoCo
     }
 
      int nrDays = int(startDate.daysTo(endDate) + 1);
-     std::vector< std::vector<float> > dailyElabAggregation(nrDays, std::vector<float>(int(zoneGrid->maximum), NODATA));
+     std::vector< std::vector<float> > dailyElabAggregation(nrDays, std::vector<float>(int(zoneGrid->maximum+1), NODATA));
 
      for (int day = 0; day < nrDays; day++)
      {
@@ -1231,6 +1231,7 @@ void PragaProject::averageSeriesOnZonesMeteoGrid(meteoVariable variable, meteoCo
                     {
                         if (indexRowCol[meteoGridRow[zoneRow][zoneCol]][meteoGridCol[zoneRow][zoneCol]] != NODATA)
                         {
+
                             value = outputSeries.at(indexRowCol[meteoGridRow[zoneRow][zoneCol]][meteoGridCol[zoneRow][zoneCol]]+day);
                             if (value != meteoGridDbHandler->gridStructure().header().flag)
                             {
@@ -1276,6 +1277,7 @@ void PragaProject::averageSeriesOnZonesMeteoGrid(meteoVariable variable, meteoCo
             dailyElabAggregation[day][zonePos] = res;
          }
      }
+     return dailyElabAggregation;
 
 
 

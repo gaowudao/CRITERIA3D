@@ -45,7 +45,7 @@
         bool deleteClima(bool isMeteoGrid, QString climaSelected);
         bool climatePointsCycle(bool showInfo);
         bool climatePointsCycleGrid(bool showInfo);
-        void averageSeriesOnZonesMeteoGrid(meteoVariable variable, meteoComputation elab1MeteoComp, gridAggregationMethod spatialElab, float threshold, gis::Crit3DRasterGrid* zoneGrid, QDate startDate, QDate endDate, std::vector<float> &outputValues, bool showInfo);
+        std::vector<std::vector<float> > averageSeriesOnZonesMeteoGrid(meteoVariable variable, meteoComputation elab1MeteoComp, gridAggregationMethod spatialElab, float threshold, gis::Crit3DRasterGrid* zoneGrid, QDate startDate, QDate endDate, std::vector<float> &outputValues, bool showInfo);
 
         bool getIsElabMeteoPointsValue() const;
         void setIsElabMeteoPointsValue(bool value);
