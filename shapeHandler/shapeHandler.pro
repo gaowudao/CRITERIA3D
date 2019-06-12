@@ -1,16 +1,16 @@
-#-------------------------------------------------
+#--------------------------------------------------
 #
 # Shapefile handler
-# this library is part of CRITERIA3D distribution
+# this library is part of CRITERIA-3D distribution
 #
-# The library uses:
+# The library includes:
 # - shapelib of Frank Warmerdam
 # http://shapelib.maptools.org/
 #
 # - shapeobject.cpp of Erik Svensson
 # https://github.com/blueluna/shapes
 #
-#-------------------------------------------------
+#--------------------------------------------------
 
 QT    -= gui core
 

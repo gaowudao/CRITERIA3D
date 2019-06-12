@@ -1,5 +1,30 @@
+/*!
+    \file shapeHandler.cpp
+
+    \abstract shapefile handler
+
+    This file is part of CRITERIA-3D distribution.
+
+    CRITERIA-3D has been developed by A.R.P.A.E. Emilia-Romagna.
+
+    \copyright
+    CRITERIA-3D is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    CRITERIA-3D is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+    You should have received a copy of the GNU Lesser General Public License
+    along with CRITERIA-3D.  If not, see <http://www.gnu.org/licenses/>.
+
+    \authors
+    Laura Costantini laura.costantini0@gmail.com
+    Fausto Tomei ftomei@arpae.it
+*/
+
 #include "shapeHandler.h"
-#include "iostream"
 #include <fstream>
 
 

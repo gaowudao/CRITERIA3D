@@ -19,7 +19,6 @@
  *******************************************************************/
 
 #include <string.h>
-#include <iostream> // debug
 #include "shapeObject.h"
 
 #define NODATA -9999
@@ -101,7 +100,7 @@ void ShapeObject::assign(const SHPObject* obj)
         parts.clear();
         partCount = unsigned(obj->nParts);
 
-        for (int n = 0; n < partCount; n++)
+        for (unsigned int n = 0; n < partCount; n++)
         {
             part.type = *pt;
             part.offset = unsigned(*ps);
@@ -124,7 +123,7 @@ void ShapeObject::assign(const SHPObject* obj)
             part.boundsPart.ymax = bounds.ymin;
             part.boundsPart.xmax = bounds.xmin;
 
-            for (int k = part.offset; k < part.offset + part.length; k++)
+            for (unsigned int k = part.offset; k < part.offset + part.length; k++)
             {
 
                 Point<double> *newPoint = new Point<double>(obj->padfX[k], obj->padfY[k]);
@@ -244,7 +243,7 @@ bool ShapeObject::isClockWise(Part* part)
     return polygonArea(part) < 0;
 }
 
-bool ShapeObject::isHole(int n)
+bool ShapeObject::isHole(unsigned int n)
 {
     return getPart(n).hole;
 }
@@ -253,7 +252,7 @@ bool ShapeObject::isHole(int n)
 int ShapeObject::pointInPolygon(Point<double> UTMpoint)
 {
     bool  oddNodes = false;
-    int nParts = getPartCount();
+    unsigned int nParts = getPartCount();
 
     if (UTMpoint.x < bounds.xmin || UTMpoint.x > bounds.xmax || UTMpoint.y < bounds.ymin || UTMpoint.y > bounds.ymax)
     {

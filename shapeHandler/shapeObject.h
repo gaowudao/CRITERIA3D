@@ -162,7 +162,7 @@
         std::vector<Part>		getParts() const;
         ShapeObject::Part       getPart(unsigned int indexPart) const;
         unsigned int            getPartCount() const;
-        bool                    isHole(int n);
+        bool                    isHole(unsigned int n);
         double                  polygonArea(Part* part);
         bool                    isClockWise(Part *part);
         int                     pointInPolygon(Point<double> UTMpoint);
