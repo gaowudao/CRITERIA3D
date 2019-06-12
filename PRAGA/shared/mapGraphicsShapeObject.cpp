@@ -80,8 +80,7 @@ void MapGraphicsShapeObject::drawShape(QPainter* myPainter)
         {
             for (unsigned int part = 0; part < shapeParts[i].size(); part++)
             {
-                // TODO check holes
-                if (clockWise[i][part])
+                if (! hole[i][part])
                 {
                     unsigned long offset = shapeParts[i][part].offset;
                     unsigned long lenght = shapeParts[i][part].length;
@@ -112,7 +111,7 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr, const g
 
     unsigned int nrShapes = unsigned(this->shapePointer->getShapeCount());
     this->shapeParts.resize(nrShapes);
-    this->clockWise.resize(nrShapes);
+    this->hole.resize(nrShapes);
     this->geoBounds.resize(nrShapes);
     this->geoPoints.resize(nrShapes);
 
@@ -121,12 +120,11 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr, const g
         this->shapePointer->getShape(int(i), myShape);
         this->shapeParts[i] = myShape.getParts();
 
-        // clockWise polygons (check for holes)
-        this->clockWise[i].resize(myShape.getPartCount());
+        // holes
+        this->hole[i].resize(myShape.getPartCount());
         for (unsigned long j = 0; j < myShape.getPartCount(); j++)
         {
-            //clockWise[i][j] = myShape.isClockWise(j);
-            clockWise[i][j] = !myShape.getPart(j).hole;
+            hole[i][j] = myShape.isHole(j);
         }
 
         // shape bounds

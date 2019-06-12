@@ -2072,7 +2072,7 @@ static unsigned char* SHPReallocObjectBufIfNecessary ( SHPHandle psSHP,
 /*                          SHPReadObject()                             */
 /*                                                                      */
 /*      Read the vertices, parts, and other non-attribute information	*/
-/*	for one shape.							*/
+/*	for one shape.                                                      */
 /************************************************************************/
 
 SHPObject SHPAPI_CALL1(*)

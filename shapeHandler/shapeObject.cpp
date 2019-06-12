@@ -69,20 +69,24 @@ void ShapeObject::destroy()
 
 void ShapeObject::assign(const SHPObject* obj)
 {
-    if (obj != nullptr) {
-        if (index >= 0) {
+    if (obj != nullptr)
+    {
+        if (index >= 0)
+        {
             destroy();
         }
         index = obj->nShapeId;
         type = obj->nSHPType;
         vertexCount = unsigned(obj->nVertices);
-        if (vertexCount > 0) {
+        if (vertexCount > 0)
+        {
             vertices = new Point<double> [vertexCount];
 
             double *xptr = obj->padfX, *yptr = obj->padfY;
             Point<double> *pptr = vertices;
             Point<double> *pend = pptr + vertexCount;
-            while (pptr < pend) {
+            while (pptr < pend)
+            {
                 pptr->set(*xptr, *yptr);
                 xptr++;
                 yptr++;
@@ -104,10 +108,12 @@ void ShapeObject::assign(const SHPObject* obj)
         {
             part.type = *pt;
             part.offset = unsigned(*ps);
-            if ((n+1) == partCount) {
+            if ((n+1) == partCount)
+            {
                 part.length = vertexCount - unsigned(*ps);
             }
-            else {
+            else
+            {
                 part.length = unsigned(*(ps+1) - *ps);
             }
 
@@ -125,7 +131,6 @@ void ShapeObject::assign(const SHPObject* obj)
 
             for (unsigned int k = part.offset; k < part.offset + part.length; k++)
             {
-
                 Point<double> *newPoint = new Point<double>(obj->padfX[k], obj->padfY[k]);
                 if (newPoint->x < part.boundsPart.xmin)
                 {
@@ -154,7 +159,8 @@ void ShapeObject::assign(const SHPObject* obj)
 
 void ShapeObject::assign(const ShapeObject& other)
 {
-    if (&other != this) {
+    if (&other != this)
+    {
         if (index >= 0) {
             destroy();
         }
@@ -162,7 +168,8 @@ void ShapeObject::assign(const ShapeObject& other)
         type = other.type;
         vertexCount = other.vertexCount;
         partCount = other.partCount;
-        if (vertexCount > 0) {
+        if (vertexCount > 0)
+        {
             vertices = new Point<double> [vertexCount];
             memcpy(vertices, other.vertices, other.vertexCount * sizeof(Point<double>));
         }
@@ -170,6 +177,7 @@ void ShapeObject::assign(const ShapeObject& other)
         parts = other.parts;
     }
 }
+
 
 bool ShapeObject::isValid() const
 {
