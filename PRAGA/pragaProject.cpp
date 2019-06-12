@@ -1167,6 +1167,7 @@ std::vector< std::vector<float> > PragaProject::averageSeriesOnZonesMeteoGrid(me
     std::vector<float> outputSeries;
     std::vector <std::vector<int>> indexRowCol(meteoGridDbHandler->gridStructure().header().nrRows, std::vector<int>(meteoGridDbHandler->gridStructure().header().nrCols, NODATA));
 
+    // LC la funzione updateMinMaxRasterGrid considera tutti i mp e non solo quelli attivi. Proporrei di limitarla a quelli
     gis::updateMinMaxRasterGrid(zoneGrid);
     std::vector <std::vector<float> > zoneVector((unsigned int)(zoneGrid->maximum+1), std::vector<float>());
 
