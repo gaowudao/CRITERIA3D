@@ -362,11 +362,17 @@ namespace gis
         double x, y;
         Crit3DUtmPoint *myPoint;
 
-
         x = header->llCorner->x + header->cellSize * (myCol + 0.5);
         y = header->llCorner->y + header->cellSize * (header->nrRows - myRow - 0.5);
         myPoint = new Crit3DUtmPoint(x, y);
         return (myPoint);
+    }
+
+
+    void Crit3DRasterGrid::getXY(int myRow, int myCol, double* x, double* y)
+    {
+        *x = header->llCorner->x + header->cellSize * (myCol + 0.5);
+        *y = header->llCorner->y + header->cellSize * (header->nrRows - myRow - 0.5);
     }
 
 

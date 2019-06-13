@@ -419,7 +419,8 @@ void MainWindow::on_actionRasterize_shape_triggered()
         DbfNumericFieldsDialog numericFields(myObject->shapePtr, myObject->fileName);
         if (numericFields.result() == QDialog::Accepted)
         {
-            myProject.getRasterFromShape(myObject->shapePtr, numericFields.getFieldSelected(), numericFields.getOutputName());
+            double cellsize = 500;
+            myProject.getRasterFromShape(myObject->shapePtr, numericFields.getFieldSelected(), numericFields.getOutputName(), cellsize);
             addRasterObject(myProject.objectList.back());
         }
     }

@@ -10,7 +10,7 @@
 // 3) zonalstatistic UCM Soil (id_soil)
 // 4) add UCM agli shape in interfaccia
 
-bool unitCropMap(Crit3DShapeHandler *ucm, Crit3DShapeHandler *crop, Crit3DShapeHandler *soil, Crit3DShapeHandler *meteo, std::string idSoil, std::string idMeteo, int cellSize, QString fileName, std::string *error)
+bool unitCropMap(Crit3DShapeHandler *ucm, Crit3DShapeHandler *crop, Crit3DShapeHandler *soil, Crit3DShapeHandler *meteo, std::string idSoil, std::string idMeteo, double cellSize, QString fileName, std::string *error)
 {
 
     // make a copy

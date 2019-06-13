@@ -257,21 +257,22 @@ bool ShapeObject::isHole(unsigned int n)
 }
 
 // LC If the test point is on the border of the polygon, this algorithm will deliver unpredictable results
-int ShapeObject::pointInPolygon(Point<double> UTMpoint)
+bool ShapeObject::pointInPolygon(double x, double y)
 {
+    if (x < bounds.xmin || x > bounds.xmax || y < bounds.ymin || y > bounds.ymax)
+    {
+        return false;
+    }
+
     bool  oddNodes = false;
     unsigned int nParts = getPartCount();
-
-    if (UTMpoint.x < bounds.xmin || UTMpoint.x > bounds.xmax || UTMpoint.y < bounds.ymin || UTMpoint.y > bounds.ymax)
-    {
-        return NODATA;
-    }
 
     for (unsigned int indexPart = 0; indexPart < nParts; indexPart++)
     {
 
-        Part part = getParts().at(indexPart);
-        if (part.hole || UTMpoint.x < part.boundsPart.xmin || UTMpoint.x > part.boundsPart.xmax || UTMpoint.y < part.boundsPart.ymin || UTMpoint.y > part.boundsPart.ymax)
+        Part part = getPart(indexPart);
+        if (part.hole || x < part.boundsPart.xmin || x > part.boundsPart.xmax
+                || y < part.boundsPart.ymin || y > part.boundsPart.ymax)
         {
             continue;
         }
@@ -281,21 +282,22 @@ int ShapeObject::pointInPolygon(Point<double> UTMpoint)
         unsigned int j = offSet+length - 1;
         for (unsigned int i = offSet; i < (offSet+length); i++)
         {
-            if (((vertices[i].y < UTMpoint.y && vertices[j].y >= UTMpoint.y) || (vertices[j].y < UTMpoint.y && vertices[i].y >= UTMpoint.y))
-                &&  (vertices[i].x <= UTMpoint.x || vertices[j].x <= UTMpoint.x))
+            if (((vertices[i].y < y && vertices[j].y >= y) || (vertices[j].y < y && vertices[i].y >= y))
+                &&  (vertices[i].x <= x || vertices[j].x <= x))
             {
-                oddNodes^=(vertices[i].x+(UTMpoint.y-vertices[i].y)/(vertices[j].y-vertices[i].y)*(vertices[j].x-vertices[i].x)<UTMpoint.x);
+                oddNodes^=(vertices[i].x+(y-vertices[i].y)/(vertices[j].y-vertices[i].y)*(vertices[j].x-vertices[i].x) < x);
             }
             j=i;
         }
         if (oddNodes == true)
         {
-            return index;
+            return true;
         }
     }
-    return NODATA;
 
+    return false;
 }
+
 
 std::string getShapeTypeAsString(int shapeType)
 {

@@ -132,10 +132,10 @@ QString getFileName(QString fileNameWithPath)
 }
 
 
-void GisProject::getRasterFromShape(Crit3DShapeHandler *shape, QString field, QString outputName)
+void GisProject::getRasterFromShape(Crit3DShapeHandler *shape, QString field, QString outputName, double cellSize)
 {
     gis::Crit3DRasterGrid *newRaster = new(gis::Crit3DRasterGrid);
-    initializeRasterFromShape(shape, newRaster, CELLSIZE);
+    initializeRasterFromShape(shape, newRaster, cellSize);
     if (field == "Shape ID")
     {
         fillRasterWithShapeNumber(newRaster, shape);
@@ -154,7 +154,8 @@ bool GisProject::addUnitCropMap(Crit3DShapeHandler *crop, Crit3DShapeHandler *so
 
     Crit3DShapeHandler *ucm = new(Crit3DShapeHandler);
 
-    if (unitCropMap(ucm, crop, soil, meteo, idSoil, idMeteo, CELLSIZE, fileName, error))
+    double cellSize = 500;
+    if (unitCropMap(ucm, crop, soil, meteo, idSoil, idMeteo, cellSize, fileName, error))
     {
         addShapeFile(ucm, QString::fromStdString(ucm->getFilepath()));
         return true;

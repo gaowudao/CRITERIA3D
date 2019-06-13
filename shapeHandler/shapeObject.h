@@ -165,7 +165,7 @@
         bool                    isHole(unsigned int n);
         double                  polygonArea(Part* part);
         bool                    isClockWise(Part *part);
-        int                     pointInPolygon(Point<double> UTMpoint);
+        bool                    pointInPolygon(double x, double y);
     };
 
     std::string getShapeTypeAsString(int shapeType);
