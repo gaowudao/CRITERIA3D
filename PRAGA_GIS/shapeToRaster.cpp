@@ -70,9 +70,7 @@ void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler
 void fillRasterWithField(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler* shapeHandler, std::string valField)
 {
     ShapeObject object;
-    gis::Crit3DUtmPoint* UTMpoint;
-    float currentValue;
-    double fieldValue;
+    double x, y, fieldValue;
     int fieldIndex = shapeHandler->getDBFFieldIndex(valField.c_str());
     int nShape = shapeHandler->getShapeCount();
     DBFFieldType fieldType = shapeHandler->getFieldType(fieldIndex);
@@ -97,11 +95,10 @@ void fillRasterWithField(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler* shap
             {
                 for (int col = 0; col < raster->header->nrCols; col++)
                 {
-                    currentValue = int(raster->value[row][col]);
-                    if (currentValue == raster->header->flag)
+                    if (raster->value[row][col] == raster->header->flag)
                     {
-                        UTMpoint = raster->utmPoint(row, col);
-                        if (object.pointInPolygon(UTMpoint->x, UTMpoint->y))
+                        raster->getXY(row, col, &x, &y);
+                        if (object.pointInPolygon(x, y))
                         {
                             raster->value[row][col] = float(fieldValue);
                         }
