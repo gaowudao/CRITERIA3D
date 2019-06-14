@@ -18,6 +18,7 @@
             QListWidget* soilField;
             QListWidget* meteoField;
             QLineEdit* outputName;
+            QLineEdit* cellSize;
             Crit3DShapeHandler *crop;
             Crit3DShapeHandler *soil;
             Crit3DShapeHandler *meteo;
@@ -38,6 +39,7 @@
             Crit3DShapeHandler *getSoil() const;
             Crit3DShapeHandler *getMeteo() const;
             QString getOutputName() const;
+            double getCellSize() const;
     };
 
 #endif // UCMDIALOG_H

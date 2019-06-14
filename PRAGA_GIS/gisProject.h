@@ -47,7 +47,7 @@
         void addRaster(gis::Crit3DRasterGrid *myRaster, QString fileName);
         void addShapeFile(Crit3DShapeHandler *myShape, QString fileName);
         void getRasterFromShape(Crit3DShapeHandler *shape, QString field, QString outputName, double cellSize);
-        bool addUnitCropMap(Crit3DShapeHandler *crop, Crit3DShapeHandler *soil, Crit3DShapeHandler *meteo, std::string idSoil, std::string idMeteo, QString fileName);
+        bool addUnitCropMap(Crit3DShapeHandler *crop, Crit3DShapeHandler *soil, Crit3DShapeHandler *meteo, std::string idSoil, std::string idMeteo, QString fileName, double cellSize);
     };
 
     QString getFileName(QString fileNameComplete);

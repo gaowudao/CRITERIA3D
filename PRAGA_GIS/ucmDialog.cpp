@@ -35,6 +35,11 @@ QString UcmDialog::getOutputName() const
     return outputName->text();
 }
 
+double UcmDialog::getCellSize() const
+{
+    return cellSize->text().toDouble();
+}
+
 UcmDialog::UcmDialog(std::vector<MapGraphicsShapeObject *> shapeObjList)
     :shapeObjList(shapeObjList)
 {
@@ -120,8 +125,12 @@ UcmDialog::UcmDialog(std::vector<MapGraphicsShapeObject *> shapeObjList)
 
 
     mainLayout->addLayout(boxLayout);
+    cellSize = new QLineEdit();
+    cellSize->setPlaceholderText("cell size [m]");
+    cellSize->setValidator(new QDoubleValidator(0, 9999.0, 2)); //LC accetta double con 2 cifre decimali da 0 a 9999
     outputName = new QLineEdit();
     outputName->setPlaceholderText("Output Name");
+    mainLayout->addWidget(cellSize);
     mainLayout->addWidget(outputName);
 
     mainLayout->addWidget(buttonBox);
@@ -239,6 +248,13 @@ void UcmDialog::ucm()
         return;
     }
     idMeteo = itemSelected->text();
+
+    // check cell Size
+    if (cellSize->text().isEmpty())
+    {
+        QMessageBox::information(nullptr, "Empty cellSize", "Insert cell size");
+        return;
+    }
 
     // check output name
     if (outputName->text().isEmpty())

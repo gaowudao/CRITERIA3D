@@ -419,7 +419,7 @@ void MainWindow::on_actionRasterize_shape_triggered()
         DbfNumericFieldsDialog numericFields(myObject->shapePtr, myObject->fileName);
         if (numericFields.result() == QDialog::Accepted)
         {
-            double cellsize = 500;
+            double cellsize = 30;
             myProject.getRasterFromShape(myObject->shapePtr, numericFields.getFieldSelected(), numericFields.getOutputName(), cellsize);
             addRasterObject(myProject.objectList.back());
         }
@@ -437,7 +437,7 @@ void MainWindow::on_actionCompute_Unit_Crop_Map_triggered()
         return;
     }
     UcmDialog ucmDialog(shapeObjList);
-    if (myProject.addUnitCropMap(ucmDialog.getCrop(), ucmDialog.getSoil(), ucmDialog.getMeteo(), ucmDialog.getIdSoil().toStdString(), ucmDialog.getIdMeteo().toStdString(), ucmDialog.getOutputName()))
+    if (myProject.addUnitCropMap(ucmDialog.getCrop(), ucmDialog.getSoil(), ucmDialog.getMeteo(), ucmDialog.getIdSoil().toStdString(), ucmDialog.getIdMeteo().toStdString(), ucmDialog.getOutputName(), ucmDialog.getCellSize()))
     {
         addShapeObject(myProject.objectList.back());
     }
