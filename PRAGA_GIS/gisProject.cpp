@@ -132,21 +132,25 @@ QString getFileName(QString fileNameWithPath)
 }
 
 
-void GisProject::getRasterFromShape(Crit3DShapeHandler *shape, QString field, QString outputName, double cellSize)
+void GisProject::getRasterFromShape(Crit3DShapeHandler *shape, QString field, QString outputName, double cellSize, bool showInfo)
 {
     gis::Crit3DRasterGrid *newRaster = new(gis::Crit3DRasterGrid);
     initializeRasterFromShape(shape, newRaster, cellSize);
+
     if (field == "Shape ID")
     {
-        fillRasterWithShapeNumber(newRaster, shape);
+        fillRasterWithShapeNumber(newRaster, shape, showInfo);
     }
     else
     {
-        fillRasterWithField(newRaster, shape, field.toStdString());
+        fillRasterWithField(newRaster, shape, field.toStdString(), showInfo);
     }
+
     gis::updateMinMaxRasterGrid(newRaster);
+    setTemperatureScale(newRaster->colorScale);
     addRaster(newRaster, outputName);
 }
+
 
 bool GisProject::addUnitCropMap(Crit3DShapeHandler *crop, Crit3DShapeHandler *soil, Crit3DShapeHandler *meteo, std::string idSoil, std::string idMeteo, QString fileName, double cellSize)
 {

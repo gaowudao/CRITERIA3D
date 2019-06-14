@@ -3,6 +3,7 @@
 #include "commonConstants.h"
 #include <float.h>
 #include <math.h>
+#include "formInfo.h"
 
 #include <QtWidgets> // debug
 
@@ -40,14 +41,22 @@ gis::Crit3DRasterGrid* initializeRasterFromShape(Crit3DShapeHandler* shape, gis:
 }
 
 
-void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler *shapeHandler)
+void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler *shapeHandler, bool showInfo)
 {
     ShapeObject object;
+    FormInfo formInfo;
     double x, y;
     int nShape = shapeHandler->getShapeCount();
 
+    if (showInfo)
+    {
+        formInfo.start("Rasterize shape...", nShape);
+    }
+
     for (int shapeIndex = 0; shapeIndex < nShape; shapeIndex++)
     {
+        if (showInfo) formInfo.setValue(shapeIndex);
+
         shapeHandler->getShape(shapeIndex, object);
         for (int row = 0; row < raster->header->nrRows; row++)
         {
@@ -64,19 +73,29 @@ void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler
             }
         }
     }
+
+    if (showInfo) formInfo.close();
 }
 
 
-void fillRasterWithField(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler* shapeHandler, std::string valField)
+void fillRasterWithField(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler* shapeHandler, std::string valField, bool showInfo)
 {
     ShapeObject object;
+    FormInfo formInfo;
     double x, y, fieldValue;
     int fieldIndex = shapeHandler->getDBFFieldIndex(valField.c_str());
     int nShape = shapeHandler->getShapeCount();
     DBFFieldType fieldType = shapeHandler->getFieldType(fieldIndex);
 
+    if (showInfo)
+    {
+        formInfo.start("Rasterize shape...", nShape);
+    }
+
     for (int shapeIndex = 0; shapeIndex < nShape; shapeIndex++)
     {
+        if (showInfo) formInfo.setValue(shapeIndex);
+
         shapeHandler->getShape(shapeIndex, object);
 
         fieldValue = NODATA;
@@ -107,6 +126,8 @@ void fillRasterWithField(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler* shap
             }
         }
     }
+
+    if (showInfo) formInfo.close();
 }
 
 

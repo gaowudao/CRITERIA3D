@@ -184,19 +184,19 @@ void RasterObject::initializeIndexesMatrix()
 
 void RasterObject::setMapResolution()
 {
-    QPointF bottomLeft = this->view->mapToScene(QPoint(0.0, this->view->height()));
-    QPointF topRight = this->view->mapToScene(QPoint(this->view->width(),0.0));
+    QPointF bottomLeft = this->view->mapToScene(QPoint(0.f, this->view->height()));
+    QPointF topRight = this->view->mapToScene(QPoint(this->view->width(), 0.f));
 
     this->geoMap->bottomLeft.longitude = bottomLeft.x();
     this->geoMap->bottomLeft.latitude = bottomLeft.y();
     this->geoMap->topRight.longitude = topRight.x();
     this->geoMap->topRight.latitude = topRight.y();
 
-    const qreal widthLon = qAbs<qreal>(topRight.x() - bottomLeft.x());
-    const qreal heightlat = qAbs<qreal>(topRight.y() - bottomLeft.y());
+    double widthLon = topRight.x() - bottomLeft.x();
+    double heightlat = topRight.y() - bottomLeft.y();
 
-    qreal dxdegree = widthLon / this->view->width();
-    qreal dydegree = heightlat / this->view->height();
+    double dxdegree = widthLon / this->view->width();
+    double dydegree = heightlat / this->view->height();
 
     this->geoMap->setResolution(dxdegree, dydegree);
 }
@@ -308,7 +308,7 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
     // lower left position
     gis::Crit3DGeoPoint llCorner;
     gis::Crit3DPixel pixelLL;
-    llCorner.longitude =this-> latLonHeader.llCorner->longitude + col0 * this->latLonHeader.dx;
+    llCorner.longitude =this->latLonHeader.llCorner->longitude + col0 * this->latLonHeader.dx;
     llCorner.latitude = this->latLonHeader.llCorner->latitude + (this->latLonHeader.nrRows-1 - rowBottom) * this->latLonHeader.dy;
     pixelLL.x = int(this->geoMap->degreeToPixelX * (llCorner.longitude - this->geoMap->referencePoint.longitude));
     pixelLL.y = int(this->geoMap->degreeToPixelY * (llCorner.latitude - this->geoMap->referencePoint.latitude));

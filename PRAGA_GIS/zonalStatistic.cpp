@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <math.h>
 
-bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal, gis::Crit3DRasterGrid *rasterRef, gis::Crit3DRasterGrid *rasterVal, std::string valField, int cellSize, opType type, std::string* error)
+bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shapeVal, gis::Crit3DRasterGrid *rasterRef, gis::Crit3DRasterGrid *rasterVal, std::string valField, opType type, std::string* error)
 {
 
     // check shape type
