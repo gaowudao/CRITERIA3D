@@ -9,8 +9,12 @@ DbfNumericFieldsDialog::DbfNumericFieldsDialog(Crit3DShapeHandler* shapeHandler,
     QVBoxLayout* mainLayout = new QVBoxLayout;
     listFields = new QListWidget();
     mainLayout->addWidget(listFields);
+    cellSize = new QLineEdit();
+    cellSize->setPlaceholderText("cell size [m]");
+    cellSize->setValidator(new QDoubleValidator(0, 9999.0, 2)); //LC accetta double con 2 cifre decimali da 0 a 9999
     outputName = new QLineEdit();
     outputName->setPlaceholderText("Output Name");
+    mainLayout->addWidget(cellSize);
     mainLayout->addWidget(outputName);
 
     std::string nameField;
@@ -65,6 +69,13 @@ void DbfNumericFieldsDialog::fieldToRaster()
 QString DbfNumericFieldsDialog::getOutputName()
 {
     return outputName->text();
+}
+
+double DbfNumericFieldsDialog::getCellSize() const
+{
+    QString cellString = cellSize->text();
+    cellString.replace(",", ".");
+    return cellString.toDouble();
 }
 
 QString DbfNumericFieldsDialog::getFieldSelected()

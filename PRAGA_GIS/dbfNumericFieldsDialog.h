@@ -12,6 +12,7 @@
             Crit3DShapeHandler *shapeHandler;
             QListWidget* listFields;
             QLineEdit* outputName;
+            QLineEdit* cellSize;
 
         public:
             DbfNumericFieldsDialog(Crit3DShapeHandler *shapeHandler, QString fileName);
@@ -19,6 +20,7 @@
             void fieldToRaster();
             QString getOutputName();
             QString getFieldSelected();
+            double getCellSize() const;
     };
 
 #endif // DBFNUMERICFIELDSDIALOG_H

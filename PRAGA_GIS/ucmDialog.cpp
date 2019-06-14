@@ -37,7 +37,9 @@ QString UcmDialog::getOutputName() const
 
 double UcmDialog::getCellSize() const
 {
-    return cellSize->text().toDouble();
+    QString cellString = cellSize->text();
+    cellString.replace(",", ".");
+    return cellString.toDouble();
 }
 
 UcmDialog::UcmDialog(std::vector<MapGraphicsShapeObject *> shapeObjList)
