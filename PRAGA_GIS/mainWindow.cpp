@@ -347,51 +347,58 @@ void MainWindow::itemMenuRequested(const QPoint point)
         submenu.addAction("Show data");
         submenu.addAction("Open attribute table");
     }
+    else if (myObject->type == gisObjectRaster)
+    {
+        submenu.addAction("Save as");
+    }
     QAction* rightClickItem = submenu.exec(itemPoint);
 
     if (rightClickItem && rightClickItem->text().contains("Close") )
     {
+        unsigned int i;
         if (myObject->type == gisObjectRaster)
         {
-            unsigned int i;
             for (i = 0; i < rasterObjList.size(); i++)
             {
-                if (rasterObjList.at(i)->getRaster() == myObject->rasterPtr)
-                {
-                    break;
-                }
+                if (rasterObjList.at(i)->getRaster() == myObject->rasterPtr) break;
             }
             // remove from scene
             this->mapView->scene()->removeObject(rasterObjList.at(i));
+            rasterObjList.at(i)->clear();
+            rasterObjList.erase(rasterObjList.begin()+i);
 
             // remove from list
+            myObject->rasterPtr->freeGrid();
             myProject.objectList.erase(myProject.objectList.begin()+pos);
-            rasterObjList.erase(rasterObjList.begin()+i);
             ui->checkList->takeItem(ui->checkList->indexAt(point).row());
         }
-        else
+        else if (myObject->type == gisObjectShape)
         {
-            unsigned int i;
             for (i = 0; i < shapeObjList.size(); i++)
             {
-                if (shapeObjList.at(i)->getShapePointer() == myObject->shapePtr)
-                {
-                    break;
-                }
+                if (shapeObjList.at(i)->getShapePointer() == myObject->shapePtr) break;
             }
             // remove from scene
             this->mapView->scene()->removeObject(shapeObjList.at(i));
+            shapeObjList.at(i)->clear();
+            shapeObjList.erase(shapeObjList.begin()+i);
 
+            // remove from list
+            myObject->shapePtr->close();
             myProject.objectList.erase(myProject.objectList.begin()+pos);
             ui->checkList->takeItem(ui->checkList->indexAt(point).row());
-            // TO DO SHAPE
         }
     }
-    else if (rightClickItem && rightClickItem->text().contains("Show data") )
+    else if (rightClickItem && rightClickItem->text().contains("Show data"))
     {
         ShowProperties showData(myObject->shapePtr, myObject->fileName);
     }
-    else if (rightClickItem && rightClickItem->text().contains("Open attribute table") )
+    else if (rightClickItem && rightClickItem->text().contains("Open attribute table"))
+    {
+        DbfTableDialog Table(myObject->shapePtr, myObject->fileName);
+
+    }
+    else if (rightClickItem && rightClickItem->text().contains("Save as"))
     {
         DbfTableDialog Table(myObject->shapePtr, myObject->fileName);
 

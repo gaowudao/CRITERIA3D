@@ -72,7 +72,7 @@
          */
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
-        void clean();
+        void clear();
         void updateCenter();
         void setDrawing(bool value);
         void setDrawBorders(bool value);

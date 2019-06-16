@@ -58,6 +58,7 @@
 
         void setDrawing(bool value);
         void updateCenter();
+        void clear();
     };
 
 

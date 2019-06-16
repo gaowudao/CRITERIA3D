@@ -63,6 +63,8 @@ void ShapeObject::destroy()
         vertexCount = 0;
         partCount = 0;
     }
+    parts.clear();
+
     type = 0;
     index = -1;
 }

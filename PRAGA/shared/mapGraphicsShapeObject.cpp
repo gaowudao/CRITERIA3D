@@ -190,3 +190,22 @@ void MapGraphicsShapeObject::setMapResolution()
 
     this->geoMap->setResolution(dxdegree, dydegree);
 }
+
+
+void MapGraphicsShapeObject::clear()
+{
+    setDrawing(false);
+
+    unsigned int nrShapes = unsigned(this->shapePointer->getShapeCount());
+    for (unsigned int i = 0; i < nrShapes; i++)
+    {
+        shapeParts[i].clear();
+        geoPoints[i].clear();
+        hole[i].clear();
+    }
+    shapeParts.clear();
+    geoPoints.clear();
+    hole.clear();
+
+    geoBounds.clear();
+}

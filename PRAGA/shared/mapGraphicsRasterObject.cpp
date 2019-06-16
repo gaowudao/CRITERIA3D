@@ -67,7 +67,7 @@ void RasterObject::setColorLegend(ColorLegend* myLegend)
 }
 
 
-void RasterObject::clean()
+void RasterObject::clear()
 {
     setDrawing(false);
     setDrawBorders(false);
