@@ -165,7 +165,7 @@ bool zonalStatisticsShape(Crit3DShapeHandler* shapeRef, Crit3DShapeHandler* shap
             {
                 if (matrix[row][col] > indexVector.at(row))
                 {
-                    indexVector.at(row) = matrix[row][col];
+                    indexVector.at(row) = col;
                 }
             }
         }
