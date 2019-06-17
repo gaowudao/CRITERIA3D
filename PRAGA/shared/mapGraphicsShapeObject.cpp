@@ -108,6 +108,7 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr, const g
     double lat, lon;
     ShapeObject myShape;
     Box<double> bounds;
+    const Point<double> *p_ptr;
 
     unsigned int nrShapes = unsigned(this->shapePointer->getShapeCount());
     this->shapeParts.resize(nrShapes);
@@ -139,7 +140,7 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr, const g
         // vertices
         unsigned long nrVertices = myShape.getVertexCount();
         this->geoPoints[i].resize(nrVertices);
-        const Point<double> *p_ptr = myShape.getVertices();
+        p_ptr = myShape.getVertices();
         for (unsigned long j = 0; j < nrVertices; j++)
         {
             gis::getLatLonFromUtm(gisSettings, p_ptr->x, p_ptr->y, &lat, &lon);
