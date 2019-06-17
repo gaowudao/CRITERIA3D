@@ -100,7 +100,6 @@ void ShapeObject::assign(const SHPObject* obj)
         bounds.ymax = obj->dfYMax;
         bounds.xmax = obj->dfXMax;
 
-        parts.clear();
         partCount = unsigned(obj->nParts);
         int *ps = obj->panPartStart;
         int *pt = obj->panPartType;

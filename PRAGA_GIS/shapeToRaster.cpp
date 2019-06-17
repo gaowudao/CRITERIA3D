@@ -4,6 +4,7 @@
 #include <float.h>
 #include <math.h>
 #include "formInfo.h"
+#include "gis.h"
 
 #include <QtWidgets> // debug
 
@@ -46,6 +47,8 @@ void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler
     ShapeObject object;
     FormInfo formInfo;
     double x, y;
+    Box<double> bounds;
+    int r0, r1, c0, c1;
     int nShape = shapeHandler->getShapeCount();
 
     if (showInfo)
@@ -58,9 +61,20 @@ void fillRasterWithShapeNumber(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler
         if (showInfo) formInfo.setValue(shapeIndex);
 
         shapeHandler->getShape(shapeIndex, object);
-        for (int row = 0; row < raster->header->nrRows; row++)
+
+        // get bounds
+        bounds = object.getBounds();
+        gis::getRowColFromXY(*(raster->header), bounds.xmin, bounds.ymax, &r0, &c0);
+        gis::getRowColFromXY(*(raster->header), bounds.xmax, bounds.ymin, &r1, &c1);
+        // check bounds
+        r0 = maxValue(r0, 0);
+        r1 = minValue(r1, raster->header->nrRows -1);
+        c0 = maxValue(c0, 0);
+        c1 = minValue(c1, raster->header->nrCols -1);
+
+        for (int row = r0; row <= r1; row++)
         {
-            for (int col = 0; col < raster->header->nrCols; col++)
+            for (int col = c0; col <= c1; col++)
             {
                 if (raster->value[row][col] == raster->header->flag)
                 {
@@ -86,6 +100,8 @@ void fillRasterWithField(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler* shap
     int fieldIndex = shapeHandler->getDBFFieldIndex(valField.c_str());
     int nShape = shapeHandler->getShapeCount();
     DBFFieldType fieldType = shapeHandler->getFieldType(fieldIndex);
+    Box<double> bounds;
+    int r0, r1, c0, c1;
 
     if (showInfo)
     {
@@ -110,9 +126,19 @@ void fillRasterWithField(gis::Crit3DRasterGrid* raster, Crit3DShapeHandler* shap
 
         if (fieldValue != NODATA)
         {
-            for (int row = 0; row < raster->header->nrRows; row++)
+            // get bounds
+            bounds = object.getBounds();
+            gis::getRowColFromXY(*(raster->header), bounds.xmin, bounds.ymax, &r0, &c0);
+            gis::getRowColFromXY(*(raster->header), bounds.xmax, bounds.ymin, &r1, &c1);
+            // check bounds
+            r0 = maxValue(r0, 0);
+            r1 = minValue(r1, raster->header->nrRows -1);
+            c0 = maxValue(c0, 0);
+            c1 = minValue(c1, raster->header->nrCols -1);
+
+            for (int row = r0; row <= r1; row++)
             {
-                for (int col = 0; col < raster->header->nrCols; col++)
+                for (int col = c0; col <= c1; col++)
                 {
                     if (raster->value[row][col] == raster->header->flag)
                     {
