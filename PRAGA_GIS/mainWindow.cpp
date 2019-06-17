@@ -363,12 +363,12 @@ void MainWindow::itemMenuRequested(const QPoint point)
                 if (rasterObjList.at(i)->getRaster() == myObject->rasterPtr) break;
             }
             // remove from scene
-            this->mapView->scene()->removeObject(rasterObjList.at(i));
-            rasterObjList.at(i)->clear();
-            rasterObjList.erase(rasterObjList.begin()+i);
+            this->mapView->scene()->removeObject(this->rasterObjList.at(i));
+            //this->rasterObjList.at(i)->clear();
+            this->rasterObjList.erase(this->rasterObjList.begin()+i);
 
             // remove from list
-            myObject->rasterPtr->freeGrid();
+            delete myObject->rasterPtr;
             myProject.objectList.erase(myProject.objectList.begin()+pos);
             ui->checkList->takeItem(ui->checkList->indexAt(point).row());
         }
@@ -379,9 +379,9 @@ void MainWindow::itemMenuRequested(const QPoint point)
                 if (shapeObjList.at(i)->getShapePointer() == myObject->shapePtr) break;
             }
             // remove from scene
-            this->mapView->scene()->removeObject(shapeObjList.at(i));
-            shapeObjList.at(i)->clear();
-            shapeObjList.erase(shapeObjList.begin()+i);
+            this->mapView->scene()->removeObject(this->shapeObjList.at(i));
+            //this->shapeObjList.at(i)->clear();
+            this->shapeObjList.erase(this->shapeObjList.begin()+i);
 
             // remove from list
             myObject->shapePtr->close();

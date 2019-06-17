@@ -109,23 +109,23 @@ Crit3DRadiationMaps::~Crit3DRadiationMaps()
 
 void Crit3DRadiationMaps::clean()
 {
-    latMap->freeGrid();
-    lonMap->freeGrid();
-    slopeMap->freeGrid();
-    aspectMap->freeGrid();
-    transmissivityMap->freeGrid();
-    globalRadiationMap->freeGrid();
-    beamRadiationMap->freeGrid();
-    diffuseRadiationMap->freeGrid();
-    sunElevationMap->freeGrid();
+    latMap->clear();
+    lonMap->clear();
+    slopeMap->clear();
+    aspectMap->clear();
+    transmissivityMap->clear();
+    globalRadiationMap->clear();
+    beamRadiationMap->clear();
+    diffuseRadiationMap->clear();
+    sunElevationMap->clear();
 
     /*
-    albedoMap->freeGrid();
-    linkeMap->freeGrid();
-    reflectedRadiationMap->freeGrid();
-    sunAzimuthMap->freeGrid();
-    sunIncidenceMap->freeGrid();
-    sunShadowMap->freeGrid();
+    albedoMap->clear();
+    linkeMap->clear();
+    reflectedRadiationMap->clear();
+    sunAzimuthMap->clear();
+    sunIncidenceMap->clear();
+    sunShadowMap->clear();
     */
 
     delete latMap;

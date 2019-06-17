@@ -216,7 +216,7 @@ namespace gis
             if (this->value[row] == nullptr)
             {
                 // Memory error: file too big
-                this->freeGrid();
+                this->clear();
                 return false;
             }
         }
@@ -238,7 +238,7 @@ namespace gis
 
     bool Crit3DRasterGrid::initializeGrid(const Crit3DRasterHeader& initHeader)
     {
-        this->freeGrid();
+        this->clear();
 
         *(this->header) = initHeader;
         this->colorScale = new Crit3DColorScale();
@@ -249,7 +249,7 @@ namespace gis
 
     bool Crit3DRasterGrid::initializeGrid(const Crit3DRasterGrid& initGrid)
     {
-        this->freeGrid();
+        this->clear();
 
         *(this->header) = *(initGrid.header);
         *(this->colorScale) = *(initGrid.colorScale);
@@ -260,7 +260,7 @@ namespace gis
 
     bool Crit3DRasterGrid::initializeGrid(const Crit3DRasterGrid& initGrid, float initValue)
     {
-        this->freeGrid();
+        this->clear();
 
         *(this->header) = *(initGrid.header);
         *(this->colorScale) = *(initGrid.colorScale);
@@ -271,7 +271,7 @@ namespace gis
 
     bool Crit3DRasterGrid::copyGrid(const Crit3DRasterGrid& initGrid)
     {
-        this->freeGrid();
+        this->clear();
 
         *(this->header) = *(initGrid.header);
         *(this->colorScale) = *(initGrid.colorScale);
@@ -319,13 +319,13 @@ namespace gis
     }
 
 
-    void Crit3DRasterGrid::freeGrid()
+    void Crit3DRasterGrid::clear()
     {
-        if (value != nullptr)
+        if (value != nullptr && header->nrRows > 0)
         {
             for (int myRow = 0; myRow < header->nrRows; myRow++)
-                if (value[myRow] != nullptr) ::free(value[myRow]);
-            if (header->nrRows != 0) ::free(value);
+                if (value[myRow] != nullptr) free(value[myRow]);
+            free(value);
         }
 
         timeString = "";
@@ -347,7 +347,7 @@ namespace gis
 
     Crit3DRasterGrid::~Crit3DRasterGrid()
     {
-        freeGrid();
+        clear();
     }
 
 

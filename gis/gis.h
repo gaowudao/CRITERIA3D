@@ -145,7 +145,7 @@
             Crit3DUtmPoint* utmPoint(int myRow, int myCol);
             void getXY(int myRow, int myCol, double* x, double* y);
 
-            void freeGrid();
+            void clear();
             void emptyGrid();
 
             Crit3DRasterGrid();

@@ -44,14 +44,14 @@ Crit3DMeteoMaps::~Crit3DMeteoMaps()
 {
     if (isInitialized)
     {      
-        airTemperatureMap->freeGrid();
-        precipitationMap->freeGrid();
-        airRelHumidityMap->freeGrid();
-        windIntensityMap->freeGrid();
-        leafWetnessMap->freeGrid();
-        ET0Map->freeGrid();
-        irrigationMap->freeGrid();
-        avgDailyTemperatureMap->freeGrid();
+        airTemperatureMap->clear();
+        precipitationMap->clear();
+        airRelHumidityMap->clear();
+        windIntensityMap->clear();
+        leafWetnessMap->clear();
+        ET0Map->clear();
+        irrigationMap->clear();
+        avgDailyTemperatureMap->clear();
     }
 }
 

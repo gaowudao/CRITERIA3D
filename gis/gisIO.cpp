@@ -239,7 +239,7 @@ namespace gis
 
         if(gis::readEsriGridHeader(myFileName, myHeader, myError))
         {
-            myGrid->freeGrid();
+            myGrid->clear();
             *(myGrid->header) = *myHeader;
 
             if (gis::readEsriGridFlt(myFileName, myGrid, myError))

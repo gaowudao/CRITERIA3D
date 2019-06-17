@@ -161,7 +161,7 @@ Crit3DMeteoGrid::~Crit3DMeteoGrid()
         }
     }
 
-    dataMeteoGrid.freeGrid();
+    dataMeteoGrid.clear();
 }
 
 

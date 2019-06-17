@@ -304,10 +304,10 @@ double Crit3DProject::getSoilVar(int soilIndex, int layerIndex, soil::soilVariab
 
 void Crit3DProject::cleanProject()
 {
-    soilIndexMap.freeGrid();
-    cropIndexMap.freeGrid();
-    boundaryMap.freeGrid();
-    indexMap.freeGrid();
+    soilIndexMap.clear();
+    cropIndexMap.clear();
+    boundaryMap.clear();
+    indexMap.clear();
 
     delete meteoMaps;
 

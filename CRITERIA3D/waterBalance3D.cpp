@@ -872,7 +872,7 @@ bool saveWaterBalanceOutput(Crit3DProject* myProject, Crit3DDate myDate, criteri
          return false;
     }
 
-    myMap->freeGrid();
+    myMap->clear();
 
     return true;
 }
@@ -917,7 +917,7 @@ bool loadWaterBalanceState(Crit3DProject* myProject, Crit3DDate myDate, std::str
             if (!setCriteria3DVarMap(layerIndex, myProject, myVar, &myMap))
                 return false;
     }
-    myMap.freeGrid();
+    myMap.clear();
     return true;
 }
 
@@ -969,7 +969,7 @@ bool saveWaterBalanceState(Crit3DProject* myProject, Crit3DDate myDate, std::str
                 return false;
             }
         }
-    myMap->freeGrid();
+    myMap->clear();
 
     return true;
 }
