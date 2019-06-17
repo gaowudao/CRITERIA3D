@@ -12,6 +12,12 @@
         #include "map.h"
     #endif
 
+    struct latLonPoint
+    {
+        double lat;
+        double lon;
+    };
+
     class MapGraphicsShapeObject : public MapGraphicsObject
     {
         Q_OBJECT
@@ -22,12 +28,12 @@
         std::vector< std::vector<ShapeObject::Part> > shapeParts;
         std::vector< std::vector<bool> > hole;
         std::vector< gis::Crit3DGeoBox > geoBounds;
-        std::vector< std::vector<gis::Crit3DGeoPoint> > geoPoints;
+        std::vector< std::vector<latLonPoint> > geoPoints;
         bool isDrawing;
 
         void setMapResolution();
         void drawShape(QPainter* myPainter);
-        QPointF getPoint(const gis::Crit3DGeoPoint& geoPoint);
+        QPointF getPoint(latLonPoint geoPoint);
 
     public:
         /*!

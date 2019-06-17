@@ -21,7 +21,7 @@ CONFIG += staticlib
 DEFINES += SHAPEHANDLER_LIBRARY
 DEFINES += _CRT_SECURE_NO_WARNINGS
 
-INCLUDEPATH =  shapelib
+INCLUDEPATH =  shapelib ../mathFunctions
 
 SOURCES += \
     shapelib/dbfopen.c      \
@@ -37,6 +37,13 @@ HEADERS += \
     shapelib/shapefil.h     \
     shapeHandler.h          \
     shapeObject.h
+
+
+CONFIG(debug, debug|release) {
+    LIBS += -L../mathFunctions/debug -lmathFunctions
+} else {
+    LIBS += -L../mathFunctions/release -lmathFunctions
+}
 
 
 unix {

@@ -52,11 +52,11 @@ void MapGraphicsShapeObject::paint(QPainter *painter, const QStyleOptionGraphics
 }
 
 
-QPointF MapGraphicsShapeObject::getPoint(const gis::Crit3DGeoPoint& geoPoint)
+QPointF MapGraphicsShapeObject::getPoint(latLonPoint geoPoint)
 {
     QPointF pixel;
-    pixel.setX((geoPoint.longitude - this->geoMap->referencePoint.longitude) * this->geoMap->degreeToPixelX);
-    pixel.setY((geoPoint.latitude - this->geoMap->referencePoint.latitude) * this->geoMap->degreeToPixelY);
+    pixel.setX((geoPoint.lon - this->geoMap->referencePoint.longitude) * this->geoMap->degreeToPixelX);
+    pixel.setY((geoPoint.lat - this->geoMap->referencePoint.latitude) * this->geoMap->degreeToPixelY);
     return pixel;
 }
 
@@ -143,8 +143,8 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr, const g
         for (unsigned long j = 0; j < nrVertices; j++)
         {
             gis::getLatLonFromUtm(gisSettings, p_ptr->x, p_ptr->y, &lat, &lon);
-            this->geoPoints[i][j].latitude = lat;
-            this->geoPoints[i][j].longitude = lon;
+            this->geoPoints[i][j].lat = lat;
+            this->geoPoints[i][j].lon = lon;
             p_ptr++;
         }
     }
@@ -196,16 +196,8 @@ void MapGraphicsShapeObject::clear()
 {
     setDrawing(false);
 
-    unsigned int nrShapes = unsigned(this->shapePointer->getShapeCount());
-    for (unsigned int i = 0; i < nrShapes; i++)
-    {
-        shapeParts[i].clear();
-        geoPoints[i].clear();
-        hole[i].clear();
-    }
     shapeParts.clear();
     geoPoints.clear();
     hole.clear();
-
     geoBounds.clear();
 }

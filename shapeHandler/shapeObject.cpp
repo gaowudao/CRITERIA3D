@@ -20,8 +20,7 @@
 
 #include <string.h>
 #include "shapeObject.h"
-
-#define NODATA -9999
+#include "commonConstants.h"
 
 
 unsigned int ShapeObject::getPartCount() const
@@ -69,6 +68,7 @@ void ShapeObject::destroy()
     index = -1;
 }
 
+
 void ShapeObject::assign(const SHPObject* obj)
 {
     if (obj != nullptr)
@@ -100,64 +100,51 @@ void ShapeObject::assign(const SHPObject* obj)
         bounds.ymax = obj->dfYMax;
         bounds.xmax = obj->dfXMax;
 
-        int *ps = obj->panPartStart;
-        int *pt = obj->panPartType;
-        Part part;
         parts.clear();
         partCount = unsigned(obj->nParts);
+        int *ps = obj->panPartStart;
+        int *pt = obj->panPartType;
 
         for (unsigned int n = 0; n < partCount; n++)
         {
-            part.type = *pt;
-            part.offset = unsigned(*ps);
+            Part* part = new Part;
+            part->type = *pt;
+            part->offset = unsigned(*ps);
             if ((n+1) == partCount)
             {
-                part.length = vertexCount - unsigned(*ps);
+                part->length = vertexCount - unsigned(*ps);
             }
             else
             {
-                part.length = unsigned(*(ps+1) - *ps);
+                part->length = unsigned(*(ps+1) - *ps);
             }
 
             // assign if the part is an hole
-            if (!isClockWise(&part))
+            if (!isClockWise(part))
             {
-                part.hole = true;  //HOLE
+                part->hole = true;  //HOLE
             }
 
-            ////////////////////  save bb for each part /////
-            part.boundsPart.ymin = bounds.ymax;
-            part.boundsPart.xmin = bounds.xmax;
-            part.boundsPart.ymax = bounds.ymin;
-            part.boundsPart.xmax = bounds.xmin;
+            // save bounds for each part
+            part->boundsPart.ymin = bounds.ymax;
+            part->boundsPart.xmin = bounds.xmax;
+            part->boundsPart.ymax = bounds.ymin;
+            part->boundsPart.xmax = bounds.xmin;
 
-            for (unsigned int k = part.offset; k < part.offset + part.length; k++)
+            for (unsigned int k = part->offset; k < part->offset + part->length; k++)
             {
-                Point<double> *newPoint = new Point<double>(obj->padfX[k], obj->padfY[k]);
-                if (newPoint->x < part.boundsPart.xmin)
-                {
-                    part.boundsPart.xmin = newPoint->x;
-                }
-                if (newPoint->x > part.boundsPart.xmax)
-                {
-                    part.boundsPart.xmax = newPoint->x;
-                }
-                if (newPoint->y < part.boundsPart.ymin)
-                {
-                    part.boundsPart.ymin = newPoint->y;
-                }
-                if (newPoint->y > part.boundsPart.ymax)
-                {
-                    part.boundsPart.ymax = newPoint->y;
-                }
+                part->boundsPart.xmin = minValue(part->boundsPart.xmin, obj->padfX[k]);
+                part->boundsPart.xmax = maxValue(part->boundsPart.xmax, obj->padfX[k]);
+                part->boundsPart.ymin = minValue(part->boundsPart.ymin, obj->padfY[k]);
+                part->boundsPart.ymax = maxValue(part->boundsPart.ymax, obj->padfY[k]);
             }
-            /////////////////
-            parts.push_back(part);
+            parts.push_back(*part);
             ps++;
             pt++;
         }
     }
 }
+
 
 void ShapeObject::assign(const ShapeObject& other)
 {
