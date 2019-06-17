@@ -362,14 +362,18 @@ void MainWindow::itemMenuRequested(const QPoint point)
             {
                 if (rasterObjList.at(i)->getRaster() == myObject->rasterPtr) break;
             }
-            // remove from scene
-            this->mapView->scene()->removeObject(this->rasterObjList.at(i));
-            //this->rasterObjList.at(i)->clear();
-            this->rasterObjList.erase(this->rasterObjList.begin()+i);
+            if (i < rasterObjList.size())
+            {
+                // remove from scene
+                this->mapView->scene()->removeObject(this->rasterObjList.at(i));
+                this->rasterObjList.at(i)->clear();
+                this->rasterObjList.erase(this->rasterObjList.begin()+i);
+            }
 
             // remove from list
-            delete myObject->rasterPtr;
             myProject.objectList.erase(myProject.objectList.begin()+pos);
+            delete myObject->rasterPtr;
+
             ui->checkList->takeItem(ui->checkList->indexAt(point).row());
         }
         else if (myObject->type == gisObjectShape)
