@@ -441,7 +441,11 @@ void MainWindow::on_actionCompute_Unit_Crop_Map_triggered()
         QMessageBox::information(nullptr, "No shape loaded", "Load a shape");
         return;
     }
+
     UcmDialog ucmDialog(shapeObjList);
+    if (ucmDialog.result() == QDialog::Rejected)
+        return;
+
     if (myProject.addUnitCropMap(ucmDialog.getCrop(), ucmDialog.getSoil(), ucmDialog.getMeteo(), ucmDialog.getIdSoil().toStdString(), ucmDialog.getIdMeteo().toStdString(), ucmDialog.getOutputName(), ucmDialog.getCellSize()))
     {
         addShapeObject(myProject.objectList.back());
