@@ -201,7 +201,7 @@ std::string ShapeObject::getTypeString() const
     return getShapeTypeAsString(type);
 }
 
-unsigned int ShapeObject::getVertexCount() const
+unsigned long ShapeObject::getVertexCount() const
 {
     return vertexCount;
 }
@@ -226,11 +226,12 @@ ShapeObject::Part ShapeObject::getPart(unsigned int indexPart) const
     return parts[indexPart];
 }
 
+
 double ShapeObject::polygonArea(Part* part)
 {
     double area = 0.0;
     unsigned long i;
-    unsigned int j;
+    unsigned long j;
 
     if (part == nullptr)
     {
@@ -245,18 +246,21 @@ double ShapeObject::polygonArea(Part* part)
         area += (vertices[i+offSet].x * vertices[j+offSet].y - vertices[j+offSet].x * vertices[i+offSet].y);
     }
 
-    return (area / 2);
+    return (area * 0.5);
 }
+
 
 bool ShapeObject::isClockWise(Part* part)
 {
     return polygonArea(part) < 0;
 }
 
+
 bool ShapeObject::isHole(unsigned int n)
 {
     return getPart(n).hole;
 }
+
 
 // LC If the test point is on the border of the polygon, this algorithm will deliver unpredictable results
 bool ShapeObject::pointInPolygon(double x, double y)

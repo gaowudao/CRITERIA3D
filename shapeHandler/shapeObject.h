@@ -128,7 +128,7 @@
     protected:
         int                 index;
         int					type;
-        unsigned int		vertexCount;
+        unsigned long		vertexCount;
         unsigned int        partCount;
         Point<double>		*vertices;
         Box<double>			bounds;
@@ -155,7 +155,7 @@
         int                     getType() const;
         std::string             getTypeString() const;
 
-        unsigned int            getVertexCount() const;
+        unsigned long           getVertexCount() const;
         const Point<double>*	getVertices() const;
         Box<double>             getBounds() const;
 
