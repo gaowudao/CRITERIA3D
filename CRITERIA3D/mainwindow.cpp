@@ -830,7 +830,7 @@ void MainWindow::on_actionClose_meteo_grid_triggered()
     if (myProject.meteoGridDbHandler != nullptr)
     {
         myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.isLoaded = false;
-        meteoGridObj->clean();
+        meteoGridObj->clear();
         meteoGridObj->redrawRequested();
         meteoGridLegend->setVisible(false);
         myProject.closeMeteoGridDB();
