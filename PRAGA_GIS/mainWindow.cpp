@@ -237,7 +237,7 @@ void MainWindow::addRasterObject(GisObject* myObject)
 
     RasterObject* newRasterObj = new RasterObject(this->mapView);
     newRasterObj->setOpacity(0.66);
-    newRasterObj->initializeUTM(myObject->rasterPtr, myProject.gisSettings, false);
+    newRasterObj->initializeUTM(myObject->getRaster(), myProject.gisSettings, false);
     this->rasterObjList.push_back(newRasterObj);
 
     this->mapView->scene()->addObject(newRasterObj);
@@ -255,7 +255,7 @@ void MainWindow::addShapeObject(GisObject* myObject)
 
     MapGraphicsShapeObject* newShapeObj = new MapGraphicsShapeObject(this->mapView);
     newShapeObj->setOpacity(0.5);
-    newShapeObj->initializeUTM(myObject->shapePtr, myProject.gisSettings);
+    newShapeObj->initializeUTM(myObject->getShapeHandler(), myProject.gisSettings);
     this->shapeObjList.push_back(newShapeObj);
 
     this->mapView->scene()->addObject(newShapeObj);
@@ -306,7 +306,7 @@ void MainWindow::itemClicked(QListWidgetItem* item)
         unsigned int i;
         for (i = 0; i < rasterObjList.size(); i++)
         {
-            if (rasterObjList.at(i)->getRaster() == myObject->rasterPtr)
+            if (rasterObjList.at(i)->getRaster() == myObject->getRaster())
             {
                 break;
             }
@@ -320,7 +320,7 @@ void MainWindow::itemClicked(QListWidgetItem* item)
         unsigned int i;
         for (i = 0; i < shapeObjList.size(); i++)
         {
-            if (shapeObjList.at(i)->getShapePointer() == myObject->shapePtr)
+            if (shapeObjList.at(i)->getShapePointer() == myObject->getShapeHandler())
             {
                 break;
             }
@@ -329,7 +329,6 @@ void MainWindow::itemClicked(QListWidgetItem* item)
         myObject->isSelected = item->checkState();
         shapeObjList.at(i)->setVisible(myObject->isSelected);
     }
-
 }
 
 
@@ -360,7 +359,7 @@ void MainWindow::itemMenuRequested(const QPoint point)
         {
             for (i = 0; i < rasterObjList.size(); i++)
             {
-                if (rasterObjList.at(i)->getRaster() == myObject->rasterPtr) break;
+                if (rasterObjList.at(i)->getRaster() == myObject->getRaster()) break;
             }
             if (i < rasterObjList.size())
             {
@@ -369,42 +368,37 @@ void MainWindow::itemMenuRequested(const QPoint point)
                 this->rasterObjList.at(i)->clear();
                 this->rasterObjList.erase(this->rasterObjList.begin()+i);
             }
-
-            // remove from list
-            myProject.objectList.erase(myProject.objectList.begin()+pos);
-            delete myObject->rasterPtr;
-
-            ui->checkList->takeItem(ui->checkList->indexAt(point).row());
         }
         else if (myObject->type == gisObjectShape)
         {
             for (i = 0; i < shapeObjList.size(); i++)
             {
-                if (shapeObjList.at(i)->getShapePointer() == myObject->shapePtr) break;
+                if (shapeObjList.at(i)->getShapePointer() == myObject->getShapeHandler()) break;
             }
             // remove from scene
             this->mapView->scene()->removeObject(this->shapeObjList.at(i));
-            //this->shapeObjList.at(i)->clear();
+            this->shapeObjList.at(i)->clear();
             this->shapeObjList.erase(this->shapeObjList.begin()+i);
-
-            // remove from list
-            myObject->shapePtr->close();
-            myProject.objectList.erase(myProject.objectList.begin()+pos);
-            ui->checkList->takeItem(ui->checkList->indexAt(point).row());
         }
+
+        myObject->close();
+        myProject.objectList.erase(myProject.objectList.begin()+pos);
+
+        ui->checkList->takeItem(ui->checkList->indexAt(point).row());
     }
+
     else if (rightClickItem && rightClickItem->text().contains("Show data"))
     {
-        ShowProperties showData(myObject->shapePtr, myObject->fileName);
+        ShowProperties showData(myObject->getShapeHandler(), myObject->fileName);
     }
     else if (rightClickItem && rightClickItem->text().contains("Open attribute table"))
     {
-        DbfTableDialog Table(myObject->shapePtr, myObject->fileName);
+        DbfTableDialog Table(myObject->getShapeHandler(), myObject->fileName);
 
     }
     else if (rightClickItem && rightClickItem->text().contains("Save as"))
     {
-        DbfTableDialog Table(myObject->shapePtr, myObject->fileName);
+        DbfTableDialog Table(myObject->getShapeHandler(), myObject->fileName);
 
     }
     return;
@@ -427,10 +421,10 @@ void MainWindow::on_actionRasterize_shape_triggered()
     {
         int pos = ui->checkList->row(itemSelected);
         GisObject* myObject = myProject.objectList.at(unsigned(pos));
-        DbfNumericFieldsDialog numericFields(myObject->shapePtr, myObject->fileName);
+        DbfNumericFieldsDialog numericFields(myObject->getShapeHandler(), myObject->fileName);
         if (numericFields.result() == QDialog::Accepted)
         {
-            myProject.getRasterFromShape(myObject->shapePtr, numericFields.getFieldSelected(), numericFields.getOutputName(), numericFields.getCellSize(), true);
+            myProject.getRasterFromShape(myObject->getShapeHandler(), numericFields.getFieldSelected(), numericFields.getOutputName(), numericFields.getCellSize(), true);
             addRasterObject(myProject.objectList.back());
             this->updateCenter();
         }

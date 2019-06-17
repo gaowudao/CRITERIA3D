@@ -56,7 +56,8 @@ SOURCES += main.cpp\
     zonalStatistic.cpp \
     dbfNumericFieldsDialog.cpp \
     ucmDialog.cpp \
-    ../PRAGA/shared/formInfo.cpp
+    ../PRAGA/shared/formInfo.cpp \
+    gisObject.cpp
 
 
 HEADERS += \
@@ -73,7 +74,8 @@ HEADERS += \
     zonalStatistic.h \
     dbfNumericFieldsDialog.h \
     ucmDialog.h \
-    ../PRAGA/shared/formInfo.h
+    ../PRAGA/shared/formInfo.h \
+    gisObject.h
 
 
 FORMS += mainWindow.ui \

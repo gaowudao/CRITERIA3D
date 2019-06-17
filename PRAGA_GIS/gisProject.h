@@ -7,30 +7,12 @@
     #ifndef SHAPEHANDLER_H
         #include "shapeHandler.h"
     #endif
+    #ifndef GISOBJECT_H
+        #include "gisObject.h"
+    #endif
 
     #include <QString>
     #include <vector>
-
-    enum gisObjectType{gisObjectNone, gisObjectRaster, gisObjectShape};
-
-    class GisObject
-    {
-    private:
-
-    public:
-        gisObjectType type;
-        QString fileNameWithPath;
-        QString fileName;
-        bool isSelected;
-
-        gis::Crit3DRasterGrid * rasterPtr;
-        Crit3DShapeHandler * shapePtr;
-
-        GisObject();
-        void setRaster(QString filename, gis::Crit3DRasterGrid* rasterPtr);
-        void setShapeFile(QString filename, Crit3DShapeHandler* shapePtr);
-    };
-
 
     class GisProject
     {
@@ -49,8 +31,6 @@
         void getRasterFromShape(Crit3DShapeHandler *shape, QString field, QString outputName, double cellSize, bool showInfo);
         bool addUnitCropMap(Crit3DShapeHandler *crop, Crit3DShapeHandler *soil, Crit3DShapeHandler *meteo, std::string idSoil, std::string idMeteo, QString fileName, double cellSize);
     };
-
-    QString getFileName(QString fileNameComplete);
 
 
 #endif // GIS_PROJECT_H

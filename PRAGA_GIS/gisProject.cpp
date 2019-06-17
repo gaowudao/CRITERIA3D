@@ -31,39 +31,6 @@
 #include "unitCropMap.h"
 
 
-GisObject::GisObject()
-{
-    this->type = gisObjectNone;
-    this->fileName = "";
-    this->fileNameWithPath = "";
-    this->isSelected = true;
-    this->rasterPtr = nullptr;
-    this->shapePtr = nullptr;
-}
-
-
-void GisObject::setRaster(QString fileNameWithPath, gis::Crit3DRasterGrid* rasterPtr)
-{
-    this->type = gisObjectRaster;
-    this->fileNameWithPath = fileNameWithPath;
-    this->fileName = getFileName(fileNameWithPath);
-    this->isSelected = true;
-
-    this->rasterPtr = rasterPtr;
-}
-
-
-void GisObject::setShapeFile(QString fileNameWithPath, Crit3DShapeHandler* shapePtr)
-{
-    this->type = gisObjectShape;
-    this->fileNameWithPath = fileNameWithPath;
-    this->fileName = getFileName(fileNameWithPath);
-    this->isSelected = true;
-
-    this->shapePtr = shapePtr;
-}
-
-
 GisProject::GisProject()
 {}
 
@@ -113,22 +80,6 @@ bool GisProject::loadShapefile(QString fileNameWithPath)
 
     addShapeFile(myShape, fileNameWithPath);
     return (true);
-}
-
-
-QString getFileName(QString fileNameWithPath)
-{
-    QString c;
-    QString fileName = "";
-    for (int i = fileNameWithPath.length()-1; i >= 0; i--)
-    {
-        c = fileNameWithPath.mid(i,1);
-        if ((c != "\\") && (c != "/"))
-            fileName = c + fileName;
-        else
-            return fileName;
-    }
-    return fileName;
 }
 
 
