@@ -176,3 +176,197 @@
     {
         return fabs(value - NODATA) < EPSILON;
     }
+
+    namespace sorting
+    {
+        void quicksortAscendingInteger(int *x, int first,int last)
+        {
+           int pivot,j,temp,i;
+
+            if(first<last){
+                pivot=first;
+                i=first;
+                j=last;
+
+                while(i<j){
+                    while(x[i]<=x[pivot]&&i<last)
+                        i++;
+                    while(x[j]>x[pivot])
+                        j--;
+                    if(i<j){
+                        temp=x[i];
+                         x[i]=x[j];
+                         x[j]=temp;
+                    }
+                }
+                temp=x[pivot];
+                x[pivot]=x[j];
+                x[j]=temp;
+                quicksortAscendingInteger(x,first,j-1);
+                quicksortAscendingInteger(x,j+1,last);
+           }
+       }
+
+        void quicksortAscendingDouble(double *x, int first,int last)
+        {
+           int pivot,j,i;
+            double temp;
+
+            if(first<last){
+                pivot=first;
+                i=first;
+                j=last;
+
+                while(i<j){
+                    while(x[i]<=x[pivot]&&i<last)
+                        i++;
+                    while(x[j]>x[pivot])
+                        j--;
+                    if(i<j){
+                        temp=x[i];
+                         x[i]=x[j];
+                         x[j]=temp;
+                    }
+                }
+                temp=x[pivot];
+                x[pivot]=x[j];
+                x[j]=temp;
+                quicksortAscendingDouble(x,first,j-1);
+                quicksortAscendingDouble(x,j+1,last);
+           }
+
+       }
+
+
+        void quicksortAscendingFloat(std::vector<float> &values, int first,int last)
+        {
+            int pivot,j,i;
+            float temp;
+
+            if(first<last){
+                pivot=first;
+                i=first;
+                j=last;
+
+                while(i<j){
+                    while(values[i]<=values[pivot]&&i<last)
+                        i++;
+                    while(values[j]>values[pivot])
+                        j--;
+                    if(i<j){
+                        temp=values[i];
+                         values[i]=values[j];
+                         values[j]=temp;
+                    }
+                }
+                temp=values[pivot];
+                values[pivot]=values[j];
+                values[j]=temp;
+                quicksortAscendingFloat(values,first,j-1);
+                quicksortAscendingFloat(values,j+1,last);
+           }
+
+       }
+
+
+        void quicksortDescendingInteger(int *x, int first,int last)
+        {
+            int temp;
+            quicksortAscendingInteger(x,first,last);
+            //temp = x[first];
+            for (int i = first ; i < (last/2) ; i++)
+            {
+                //swap
+                temp = x[i];
+                x[i]= x[last-i];
+                x[last-i] = temp;
+            }
+        }
+
+
+        double percentile(double* list, int* nList, double perc, bool sortValues)
+        {
+            // check
+            if (*nList == 0 || perc <= 0.0 || perc >= 100.0)
+                return (NODATA);
+            perc /= 100.0;
+
+            if (sortValues)
+            {
+                // clean nodata
+                double* cleanList = (double*) calloc(*nList, sizeof(double));
+                int n = 0;
+                for (int i = 0; i < *nList; i++)
+                    if (list[i] != NODATA)
+                        cleanList[n++] = list[i];
+
+                // switch
+                *nList = n;
+                *list = *cleanList;
+
+                // check on data presence
+                if (*nList == 0)
+                    return (NODATA);
+
+                // sort
+                quicksortAscendingDouble(list, 0, *nList - 1);
+            }
+
+            double rank = (*nList * perc) - 1.;
+
+            // return percentile
+            if ((rank + 1.) > (*nList - 1))
+                return list[*nList - 1];
+            else if (rank < 0.)
+                return list[0];
+            else
+                return ((rank - (int)(rank)) * (list[(int)(rank) + 1] - list[(int)(rank)])) + list[(int)(rank)];
+        }
+
+
+        float percentile(std::vector<float> &list, int* nList, float perc, bool sortValues)
+        {
+            // check
+            if (*nList == 0 || perc <= 0.0 || perc >= 100.0)
+                return (NODATA);
+
+            perc /= 100.0;
+
+            if (sortValues)
+            {
+                // clean nodata
+                std::vector<float> cleanList;
+                for (int i = 0; i < *nList; i++)
+                {
+                    if (list[i] != NODATA)
+                    {
+                        cleanList.push_back(list[i]);
+                    }
+                }
+
+                // switch
+                *nList = (int)cleanList.size();
+
+                // check on data presence
+                if (*nList == 0)
+                    return (NODATA);
+
+                // sort
+                quicksortAscendingFloat(cleanList, 0, *nList - 1);
+
+                list.erase(list.begin(),list.end());
+                list = cleanList;
+            }
+
+            float rank = (*nList * perc) - 1.f;
+
+            // return percentile
+            if ((rank + 1.) > (*nList - 1))
+                return list[*nList - 1];
+            else if (rank < 0.)
+                return list[0];
+            else
+                return ((rank - (int)(rank)) * (list[(int)(rank) + 1] - list[(int)(rank)])) + list[(int)(rank)];
+        }
+    }
+

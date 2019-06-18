@@ -9,12 +9,12 @@
                        FUNCTION_CODE_TWOPARAMETERSPOLYNOMIAL, FUNCTION_CODE_FOURIER_2_HARMONICS,
                        FUNCTION_CODE_FOURIER_GENERAL_HARMONICS};
 
-    float errorFunctionPrimitive(float x);
-    double errorFunctionPrimitive(double x);
     char *decimal_to_binary(unsigned int n, int nrBits);
     double twoParametersAndExponentialPolynomialFunctions(double x, double* par);
     double twoHarmonicsFourier(double x, double* par);
     double harmonicsFourierGeneral(double x, double* par,int nrPar);
+    float errorFunctionPrimitive(float x);
+    double errorFunctionPrimitive(double x);
 
 
     struct TfunctionInput{
@@ -41,11 +41,6 @@
     namespace integration
     {
         float trapzdParametric(float (*func)(TfunctionInput), int nrPar, float *par , float a , float b , int n);
-    }
-
-    namespace integration
-    {
-        float trapzdParametric(float (*func)(TfunctionInput), int nrPar, float *par , float a , float b , int n);
         float qsimpParametric(float (*func)(TfunctionInput), int nrPar, float *par,float a , float b , float EPS);
         float trapzd(float (*func)(float) , float a , float b , int n);
         float trapezoidalRule(float (*func)(float) , float a , float b , int n);
@@ -68,16 +63,6 @@
         bool fittingMarquardt(double *myParMin, double *myParMax,
                     double *myPar, int nrMyPar, double *myParDelta, int myMaxIterations,
                     double myEpsilon,int myFunctionCode, double *myX,int nrMyX,double *myY);
-    }
-
-    namespace sorting
-    {
-        void quicksortAscendingInteger(int *x,int first, int last);
-        void quicksortDescendingInteger(int *x, int first,int last);
-        void quicksortAscendingDouble(double *x, int first,int last);
-        void quicksortAscendingFloat(std::vector<float> &values, int first,int last);
-        double percentile(double* list, int *nList, double perc, bool sortValues);
-        float percentile(std::vector<float> &list, int* nList, float perc, bool sortValues);
     }
 
     namespace matricial
@@ -107,6 +92,14 @@
         //float gasdev(long *idum);
         float normalRandom(int *gasDevIset,float *gasDevGset);
         double normalRandom(int *gasDevIset,double *gasDevGset);
+    }
+
+    namespace statistics
+    {
+        double ERF(double x, double accuracy);
+        double ERFC(double x, double accuracy);
+        double inverseERFC(double value, double accuracy);
+        double inverseERF(double value, double accuracy);
     }
 
 

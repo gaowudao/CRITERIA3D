@@ -31,6 +31,16 @@
 #include "furtherMathFunctions.h"
 
 
+float errorFunctionPrimitive(float x)
+{
+    return expf(-x*x);
+}
+
+double errorFunctionPrimitive(double x)
+{
+    return exp(-x*x);
+}
+
 char *decimal_to_binary(unsigned int n, int nrBits)
 {
    int d, count;
@@ -63,15 +73,7 @@ float blackBodyShape(TfunctionInput fInput)
     y = b*(float)(pow(fInput.x, 3)*(1. / (exp(b*fInput.x)-0.99)));
     return (y);
 }
-float errorFunctionPrimitive(float x)
-{
-    return expf(-x*x);
-}
 
-double errorFunctionPrimitive(double x)
-{
-    return exp(-x*x);
-}
 
 double twoParametersAndExponentialPolynomialFunctions(double x, double* par)
 {
@@ -624,200 +626,6 @@ namespace interpolation
 }
 
 
-namespace sorting
-{
-    void quicksortAscendingInteger(int *x, int first,int last)
-    {
-       int pivot,j,temp,i;
-
-        if(first<last){
-            pivot=first;
-            i=first;
-            j=last;
-
-            while(i<j){
-                while(x[i]<=x[pivot]&&i<last)
-                    i++;
-                while(x[j]>x[pivot])
-                    j--;
-                if(i<j){
-                    temp=x[i];
-                     x[i]=x[j];
-                     x[j]=temp;
-                }
-            }
-            temp=x[pivot];
-            x[pivot]=x[j];
-            x[j]=temp;
-            quicksortAscendingInteger(x,first,j-1);
-            quicksortAscendingInteger(x,j+1,last);
-       }
-   }
-
-    void quicksortAscendingDouble(double *x, int first,int last)
-    {
-       int pivot,j,i;
-        double temp;
-
-        if(first<last){
-            pivot=first;
-            i=first;
-            j=last;
-
-            while(i<j){
-                while(x[i]<=x[pivot]&&i<last)
-                    i++;
-                while(x[j]>x[pivot])
-                    j--;
-                if(i<j){
-                    temp=x[i];
-                     x[i]=x[j];
-                     x[j]=temp;
-                }
-            }
-            temp=x[pivot];
-            x[pivot]=x[j];
-            x[j]=temp;
-            quicksortAscendingDouble(x,first,j-1);
-            quicksortAscendingDouble(x,j+1,last);
-       }
-
-   }
-
-
-    void quicksortAscendingFloat(std::vector<float> &values, int first,int last)
-    {
-        int pivot,j,i;
-        float temp;
-
-        if(first<last){
-            pivot=first;
-            i=first;
-            j=last;
-
-            while(i<j){
-                while(values[i]<=values[pivot]&&i<last)
-                    i++;
-                while(values[j]>values[pivot])
-                    j--;
-                if(i<j){
-                    temp=values[i];
-                     values[i]=values[j];
-                     values[j]=temp;
-                }
-            }
-            temp=values[pivot];
-            values[pivot]=values[j];
-            values[j]=temp;
-            quicksortAscendingFloat(values,first,j-1);
-            quicksortAscendingFloat(values,j+1,last);
-       }
-
-   }
-
-
-    void quicksortDescendingInteger(int *x, int first,int last)
-    {
-        int temp;
-        quicksortAscendingInteger(x,first,last);
-        //temp = x[first];
-        for (int i = first ; i < (last/2) ; i++)
-        {
-            //swap
-            temp = x[i];
-            x[i]= x[last-i];
-            x[last-i] = temp;
-        }
-    }
-
-
-    double percentile(double* list, int* nList, double perc, bool sortValues)
-    {
-        // check
-        if (*nList == 0 || perc <= 0.0 || perc >= 100.0)
-            return (NODATA);
-        perc /= 100.0;
-
-        if (sortValues)
-        {
-            // clean nodata
-            double* cleanList = (double*) calloc(*nList, sizeof(double));
-            int n = 0;
-            for (int i = 0; i < *nList; i++)
-                if (list[i] != NODATA)
-                    cleanList[n++] = list[i];
-
-            // switch
-            *nList = n;
-            *list = *cleanList;
-
-            // check on data presence
-            if (*nList == 0)
-                return (NODATA);
-
-            // sort
-            quicksortAscendingDouble(list, 0, *nList - 1);
-        }
-
-        double rank = (*nList * perc) - 1.;
-
-        // return percentile
-        if ((rank + 1.) > (*nList - 1))
-            return list[*nList - 1];
-        else if (rank < 0.)
-            return list[0];
-        else
-            return ((rank - (int)(rank)) * (list[(int)(rank) + 1] - list[(int)(rank)])) + list[(int)(rank)];
-    }
-
-
-    float percentile(std::vector<float> &list, int* nList, float perc, bool sortValues)
-    {
-        // check
-        if (*nList == 0 || perc <= 0.0 || perc >= 100.0)
-            return (NODATA);
-
-        perc /= 100.0;
-
-        if (sortValues)
-        {
-            // clean nodata
-            std::vector<float> cleanList;
-            for (int i = 0; i < *nList; i++)
-            {
-                if (list[i] != NODATA)
-                {
-                    cleanList.push_back(list[i]);
-                }
-            }
-
-            // switch
-            *nList = (int)cleanList.size();
-
-            // check on data presence
-            if (*nList == 0)
-                return (NODATA);
-
-            // sort
-            quicksortAscendingFloat(cleanList, 0, *nList - 1);
-
-            list.erase(list.begin(),list.end());
-            list = cleanList;
-        }
-
-        float rank = (*nList * perc) - 1.f;
-
-        // return percentile
-        if ((rank + 1.) > (*nList - 1))
-            return list[*nList - 1];
-        else if (rank < 0.)
-            return list[0];
-        else
-            return ((rank - (int)(rank)) * (list[(int)(rank) + 1] - list[(int)(rank)])) + list[(int)(rank)];
-    }
-}
-
-
 namespace matricial
 {
     int matrixSum(double**a , double**b, int rowA , int rowB, int colA, int colB, double **c)
@@ -1216,11 +1024,133 @@ namespace myrandom {
         }
         return normalRandom;
     }
-
-
-
-
 }
+
+namespace statistics
+{
+
+    double ERF(double x, double accuracy) // error function
+    {
+
+        return (1.12837916709551*double(integration::simpsonRule(errorFunctionPrimitive,0.,x,accuracy))); // the constant in front of integration is equal to 2*pow(PI,-0.5)
+    }
+
+    double ERFC(double x, double accuracy) // error function
+    {
+        return (1. - ERF(x, accuracy));
+    }
+
+    double inverseERF(double value, double accuracy)
+    {
+
+        if (value >=1 || value <= -1)
+        {
+            return PARAMETER_ERROR;
+        }
+        double root;
+
+        if (value == 0)
+        {
+            return 0.;
+        }
+        else if (value  > 0)
+        {
+            double leftBound, rightBound;
+            leftBound = 0.;
+            rightBound = 100.;
+            do
+            {
+                root = ERF((rightBound+leftBound)/2,accuracy);
+                if (root < value)
+                {
+                    leftBound = (rightBound+leftBound)/2;
+                }
+                else
+                {
+                    rightBound = (rightBound+leftBound)/2;
+                }
+            } while(fabs(leftBound - rightBound) > accuracy);
+
+            return (rightBound+leftBound)/2;
+        }
+        else
+        {
+            double leftBound, rightBound;
+            leftBound = -100.;
+            rightBound = 0.;
+            do
+            {
+                root = ERF((rightBound+leftBound)/2,accuracy);
+                if (root < value)
+                {
+                    leftBound = (rightBound+leftBound)/2;
+                }
+                else
+                {
+                    rightBound = (rightBound+leftBound)/2;
+                }
+            } while(fabs(leftBound - rightBound) > accuracy);
+
+            return (rightBound+leftBound)/2;
+        }
+    }
+
+
+    double inverseERFC(double value, double accuracy)
+    {
+
+        if (value >=2 || value <= 0)
+        {
+            return PARAMETER_ERROR;
+        }
+
+        double root;
+
+        if (value == 1)
+        {
+            return 0. ;
+        }
+        else if (value  < 1)
+        {
+            double leftBound, rightBound;
+            leftBound = 0.;
+            rightBound = 100.;
+            do
+            {
+                root = ERFC((rightBound+leftBound)/2,accuracy);
+                if (root > value)
+                {
+                    leftBound = (rightBound+leftBound)/2;
+                }
+                else
+                {
+                    rightBound = (rightBound+leftBound)/2;
+                }
+            } while(fabs(leftBound - rightBound) > accuracy);
+            return (rightBound+leftBound)/2;
+        }
+        else
+        {
+            double leftBound, rightBound;
+            leftBound = -100.;
+            rightBound = 0.;
+            do
+            {
+                root = ERFC((rightBound+leftBound)/2,accuracy);
+                if (root > value)
+                {
+                    leftBound = (rightBound+leftBound)/2;
+                }
+                else
+                {
+                    rightBound = (rightBound+leftBound)/2;
+                }
+            } while(fabs(leftBound - rightBound) > accuracy);
+            return (rightBound+leftBound)/2;
+        }
+    }
+}
+
 
 
 

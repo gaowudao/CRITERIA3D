@@ -46,10 +46,6 @@ namespace statistics
     float coefficientPearson(float *myList1, int nrList1,float *myList2, int nrList2);
     float** covariancesMatrix(int nrRowCol, float**myLists,int nrLists);
     void correlationsMatrix(int nrRowCol, double**myLists,int nrLists, double** c);
-    double ERF(double x, double accuracy);
-    double ERFC(double x, double accuracy);
-    double inverseERFC(double value, double accuracy);
-    double inverseERF(double value, double accuracy);
     float maxList(std::vector<float> values, int nValue);
     float minList(std::vector<float> values, int nValue);
     float sumList(std::vector<float> values, int nValue);

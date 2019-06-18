@@ -29,7 +29,7 @@
 
 #include "crit3dDate.h"
 #include "commonConstants.h"
-#include "furtherMathFunctions.h"
+//#include "furtherMathFunctions.h"
 #include "basicMath.h"
 #include "statistics.h"
 #include "physics.h"
@@ -605,126 +605,7 @@ namespace statistics
         }
     }
 
-    double ERF(double x, double accuracy) // error function
-    {
 
-        return (1.12837916709551*double(integration::simpsonRule(errorFunctionPrimitive,0.,x,accuracy))); // the constant in front of integration is equal to 2*pow(PI,-0.5)
-    }
-
-    double ERFC(double x, double accuracy) // error function
-    {
-        return (1. - ERF(x, accuracy));
-    }
-
-    double inverseERF(double value, double accuracy)
-    {
-
-        if (value >=1 || value <= -1)
-        {
-            return PARAMETER_ERROR;
-        }
-        double root;
-
-        if (value == 0)
-        {
-            return 0.;
-        }
-        else if (value  > 0)
-        {
-            double leftBound, rightBound;
-            leftBound = 0.;
-            rightBound = 100.;
-            do
-            {
-                root = ERF((rightBound+leftBound)/2,accuracy);
-                if (root < value)
-                {
-                    leftBound = (rightBound+leftBound)/2;
-                }
-                else
-                {
-                    rightBound = (rightBound+leftBound)/2;
-                }
-            } while(fabs(leftBound - rightBound) > accuracy);
-
-            return (rightBound+leftBound)/2;
-        }
-        else
-        {
-            double leftBound, rightBound;
-            leftBound = -100.;
-            rightBound = 0.;
-            do
-            {
-                root = ERF((rightBound+leftBound)/2,accuracy);
-                if (root < value)
-                {
-                    leftBound = (rightBound+leftBound)/2;
-                }
-                else
-                {
-                    rightBound = (rightBound+leftBound)/2;
-                }
-            } while(fabs(leftBound - rightBound) > accuracy);
-
-            return (rightBound+leftBound)/2;
-        }
-
-    }
-
-    double inverseERFC(double value, double accuracy)
-    {
-
-        if (value >=2 || value <= 0)
-        {
-            return PARAMETER_ERROR;
-        }
-
-        double root;
-
-        if (value == 1)
-        {
-            return 0. ;
-        }
-        else if (value  < 1)
-        {
-            double leftBound, rightBound;
-            leftBound = 0.;
-            rightBound = 100.;
-            do
-            {
-                root = ERFC((rightBound+leftBound)/2,accuracy);
-                if (root > value)
-                {
-                    leftBound = (rightBound+leftBound)/2;
-                }
-                else
-                {
-                    rightBound = (rightBound+leftBound)/2;
-                }
-            } while(fabs(leftBound - rightBound) > accuracy);
-            return (rightBound+leftBound)/2;
-        }
-        else
-        {
-            double leftBound, rightBound;
-            leftBound = -100.;
-            rightBound = 0.;
-            do
-            {
-                root = ERFC((rightBound+leftBound)/2,accuracy);
-                if (root > value)
-                {
-                    leftBound = (rightBound+leftBound)/2;
-                }
-                else
-                {
-                    rightBound = (rightBound+leftBound)/2;
-                }
-            } while(fabs(leftBound - rightBound) > accuracy);
-            return (rightBound+leftBound)/2;
-        }
-    }
 
     float maxList(std::vector<float> values, int nValue)
     {
