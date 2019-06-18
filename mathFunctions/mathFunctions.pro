@@ -2,7 +2,7 @@
 #
 #   Library mathFunctions
 #   contains common constants and defines
-#   math, physics and statistic functions
+#   basic math, physics and statistic functions
 #   this project is part of CRITERIA3D distribution
 #
 #----------------------------------------------------
@@ -27,20 +27,14 @@ win32:{
 
 INCLUDEPATH += ../crit3dDate
 
-SOURCES += \
-    basicMath.cpp \
-    furtherMathFunctions.cpp \
-    statistics.cpp \
-    gammaFunction.cpp \
-    physics.cpp \
-    eispack.cpp
-
 HEADERS += \
     commonConstants.h \
     basicMath.h \
-    furtherMathFunctions.h \
     statistics.h \
-    gammaFunction.h \
-    gammaFunction.h \
-    physics.h \
-    eispack.h
+    physics.h
+
+SOURCES += \
+    basicMath.cpp \
+    statistics.cpp \
+    physics.cpp
+
