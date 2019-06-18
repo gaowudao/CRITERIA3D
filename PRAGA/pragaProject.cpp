@@ -102,8 +102,7 @@ bool PragaProject::saveGrid(meteoVariable myVar, frequencyType myFrequency, cons
 {
     std::string id;
     FormInfo myInfo;
-    int infoStep;
-
+    int infoStep = 1;
 
     if (myFrequency == daily)
     {
@@ -115,8 +114,11 @@ bool PragaProject::saveGrid(meteoVariable myVar, frequencyType myFrequency, cons
 
         for (int row = 0; row < this->meteoGridDbHandler->gridStructure().header().nrRows; row++)
         {
-            if (showInfo && (row % infoStep) == 0)
-                myInfo.setValue(row);
+            if (showInfo)
+            {
+                if ((row % infoStep) == 0)
+                    myInfo.setValue(row);
+            }
             for (int col = 0; col < this->meteoGridDbHandler->gridStructure().header().nrCols; col++)
             {
                 if (this->meteoGridDbHandler->meteoGrid()->getMeteoPointActiveId(row, col, &id))
@@ -1275,7 +1277,7 @@ std::vector< std::vector<float> > PragaProject::averageSeriesOnZonesMeteoGrid(me
                         break;
                     }
             }
-            dailyElabAggregation[day][zonePos] = res;
+            dailyElabAggregation[unsigned(day)][zonePos] = res;
          }
      }
      return dailyElabAggregation;
