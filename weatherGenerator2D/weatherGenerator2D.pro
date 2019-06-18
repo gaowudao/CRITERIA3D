@@ -11,11 +11,11 @@ TEMPLATE = lib
 CONFIG += staticlib
 
 INCLUDEPATH += ../mathFunctions
+INCLUDEPATH += ../specialMathFunctions
 INCLUDEPATH += ../crit3dDate
 INCLUDEPATH += ../meteo
 INCLUDEPATH += ../gis
 INCLUDEPATH += ../crit3dDate
-
 
 SOURCES += wg2D.cpp \
     randomset.cpp \
