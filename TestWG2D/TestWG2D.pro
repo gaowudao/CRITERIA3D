@@ -23,10 +23,14 @@ CONFIG(release, debug|release) {
 
 TEMPLATE = app
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    inputData.cpp
 
 CONFIG += console
 CONFIG -= app_bundle
+
+HEADERS += \
+    inputData.h
 
 
 
