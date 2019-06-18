@@ -1,11 +1,13 @@
 #ifndef MATHEMATICALFUNCTIONS_H
 #define MATHEMATICALFUNCTIONS_H
 
-#include <vector>
-#include <string>
+    #include <vector>
+    #include <string>
 
-enum estimateFunction {FUNCTION_CODE_SPHERICAL, FUNCTION_CODE_LINEAR, FUNCTION_CODE_PARABOLIC,
-                       FUNCTION_CODE_EXPONENTIAL, FUNCTION_CODE_LOGARITMIC, FUNCTION_CODE_TWOPARAMETERSPOLYNOMIAL,FUNCTION_CODE_FOURIER_2_HARMONICS,FUNCTION_CODE_FOURIER_GENERAL_HARMONICS};
+    enum estimateFunction {FUNCTION_CODE_SPHERICAL, FUNCTION_CODE_LINEAR, FUNCTION_CODE_PARABOLIC,
+                       FUNCTION_CODE_EXPONENTIAL, FUNCTION_CODE_LOGARITMIC,
+                       FUNCTION_CODE_TWOPARAMETERSPOLYNOMIAL, FUNCTION_CODE_FOURIER_2_HARMONICS,
+                       FUNCTION_CODE_FOURIER_GENERAL_HARMONICS};
 
     float errorFunctionPrimitive(float x);
     double errorFunctionPrimitive(double x);
@@ -105,7 +107,6 @@ enum estimateFunction {FUNCTION_CODE_SPHERICAL, FUNCTION_CODE_LINEAR, FUNCTION_C
         //float gasdev(long *idum);
         float normalRandom(int *gasDevIset,float *gasDevGset);
         double normalRandom(int *gasDevIset,double *gasDevGset);
-
     }
 
 
