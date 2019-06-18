@@ -177,13 +177,40 @@
         return fabs(value - NODATA) < EPSILON;
     }
 
+
+    char* decimal_to_binary(unsigned int n, int nrBits)
+    {
+       int d, count;
+       char *pointer;
+
+       count = 0;
+       pointer = (char*)malloc(nrBits);
+
+       for (short c = short(nrBits-1); c >= 0 ; c--)
+       {
+          d = n >> c;
+
+          if (d & 1)
+             *(pointer+count) = 1 + '0';
+          else
+             *(pointer+count) = 0 + '0';
+
+          count++;
+       }
+       *(pointer+count) = '\0';
+
+       return  pointer;
+    }
+
+
     namespace sorting
     {
         void quicksortAscendingInteger(int *x, int first,int last)
         {
            int pivot,j,temp,i;
 
-            if(first<last){
+           if(first<last)
+           {
                 pivot=first;
                 i=first;
                 j=last;
@@ -204,15 +231,17 @@
                 x[j]=temp;
                 quicksortAscendingInteger(x,first,j-1);
                 quicksortAscendingInteger(x,j+1,last);
-           }
-       }
+            }
+        }
+
 
         void quicksortAscendingDouble(double *x, int first,int last)
         {
            int pivot,j,i;
             double temp;
 
-            if(first<last){
+            if(first<last)
+            {
                 pivot=first;
                 i=first;
                 j=last;
@@ -233,9 +262,8 @@
                 x[j]=temp;
                 quicksortAscendingDouble(x,first,j-1);
                 quicksortAscendingDouble(x,j+1,last);
-           }
-
-       }
+            }
+        }
 
 
         void quicksortAscendingFloat(std::vector<float> &values, int first,int last)
@@ -243,7 +271,8 @@
             int pivot,j,i;
             float temp;
 
-            if(first<last){
+            if(first<last)
+            {
                 pivot=first;
                 i=first;
                 j=last;
@@ -264,9 +293,8 @@
                 values[j]=temp;
                 quicksortAscendingFloat(values,first,j-1);
                 quicksortAscendingFloat(values,j+1,last);
-           }
-
-       }
+            }
+        }
 
 
         void quicksortDescendingInteger(int *x, int first,int last)
@@ -327,10 +355,10 @@
         float percentile(std::vector<float> &list, int* nList, float perc, bool sortValues)
         {
             // check
-            if (*nList == 0 || perc <= 0.0 || perc >= 100.0)
+            if (*nList == 0 || perc <= 0.f || perc >= 100.f)
                 return (NODATA);
 
-            perc /= 100.0;
+            perc /= 100.f;
 
             if (sortValues)
             {
@@ -340,12 +368,12 @@
                 {
                     if (list[i] != NODATA)
                     {
-                        cleanList.push_back(list[i]);
+                        cleanList.push_back(list[unsigned(i)]);
                     }
                 }
 
                 // switch
-                *nList = (int)cleanList.size();
+                *nList = int(cleanList.size());
 
                 // check on data presence
                 if (*nList == 0)
@@ -361,12 +389,13 @@
             float rank = (*nList * perc) - 1.f;
 
             // return percentile
-            if ((rank + 1.) > (*nList - 1))
-                return list[*nList - 1];
-            else if (rank < 0.)
+            if ((rank + 1.f) > (*nList - 1))
+                return list[unsigned(*nList - 1)];
+            else if (rank < 0.f)
                 return list[0];
             else
                 return ((rank - (int)(rank)) * (list[(int)(rank) + 1] - list[(int)(rank)])) + list[(int)(rank)];
         }
+
     }
 

@@ -9,7 +9,6 @@
                        FUNCTION_CODE_TWOPARAMETERSPOLYNOMIAL, FUNCTION_CODE_FOURIER_2_HARMONICS,
                        FUNCTION_CODE_FOURIER_GENERAL_HARMONICS};
 
-    char *decimal_to_binary(unsigned int n, int nrBits);
     double twoParametersAndExponentialPolynomialFunctions(double x, double* par);
     double twoHarmonicsFourier(double x, double* par);
     double harmonicsFourierGeneral(double x, double* par,int nrPar);

@@ -2,6 +2,7 @@
 #
 #   Library specialMathFunctions
 #   contains advanced math functions
+#
 #   this project is part of CRITERIA3D distribution
 #
 #----------------------------------------------------

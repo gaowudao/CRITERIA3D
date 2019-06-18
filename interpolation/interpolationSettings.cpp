@@ -28,7 +28,7 @@
 #include "crit3dDate.h"
 #include "interpolationSettings.h"
 #include "interpolation.h"
-#include "furtherMathFunctions.h"
+#include "basicMath.h"
 #include "commonConstants.h"
 #include "cmath"
 

@@ -30,7 +30,7 @@
 #include "commonConstants.h"
 #include "basicMath.h"
 #include "statistics.h"
-#include "furtherMathFunctions.h"
+#include "basicMath.h"
 #include "meteoPoint.h"
 #include "gis.h"
 #include "spatialControl.h"

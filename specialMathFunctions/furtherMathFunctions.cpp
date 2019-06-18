@@ -41,30 +41,6 @@ double errorFunctionPrimitive(double x)
     return exp(-x*x);
 }
 
-char *decimal_to_binary(unsigned int n, int nrBits)
-{
-   int d, count;
-   char *pointer;
-
-   count = 0;
-   pointer = (char*)malloc(nrBits);
-
-   for (short c = nrBits-1 ; c >= 0 ; c--)
-   {
-      d = n >> c;
-
-      if (d & 1)
-         *(pointer+count) = 1 + '0';
-      else
-         *(pointer+count) = 0 + '0';
-
-      count++;
-   }
-   *(pointer+count) = '\0';
-
-   return  pointer;
-}
-
 
 float blackBodyShape(TfunctionInput fInput)
 {

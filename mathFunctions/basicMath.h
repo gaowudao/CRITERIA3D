@@ -34,6 +34,7 @@
     bool findLinesIntersectionAboveThreshold(float q1, float m1, float q2, float m2, float myThreshold, float* x, float* y);
     int sgn(float v);
     bool isNODATA(double value);
+    char* decimal_to_binary(unsigned int n, int nrBits);
 ;
 
 #endif // BASICMATH_H

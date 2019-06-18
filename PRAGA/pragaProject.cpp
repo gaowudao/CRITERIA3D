@@ -3,7 +3,7 @@
 #include "climate.h"
 #include "dbClimate.h"
 #include "download.h"
-#include "furtherMathFunctions.h"
+#include "basicMath.h"
 #include "formInfo.h"
 
 #include <iostream> //debug
