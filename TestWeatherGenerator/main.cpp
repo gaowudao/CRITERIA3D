@@ -1,3 +1,12 @@
+/*-------------------------------------------------------------------
+
+   TESTWEATHERGENERATOR
+   uses testWG.ini in /data directory
+   this project is part of CRITERIA3D distribution
+
+-------------------------------------------------------------------
+*/
+
 #include <QFile>
 #include <QDir>
 #include <QStringList>

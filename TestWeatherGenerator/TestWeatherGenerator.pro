@@ -1,7 +1,8 @@
 #-------------------------------------------------------------------
 #
-# Weather generator test
-# this project is part of CRITERIA3D distribution
+#   TESTWEATHERGENERATOR
+#   1D Weather Generator test
+#   this project is part of CRITERIA3D distribution
 #
 #-------------------------------------------------------------------
 
