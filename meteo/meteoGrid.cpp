@@ -24,8 +24,8 @@
 */
 
 #include "commonConstants.h"
+#include "basicMath.h"
 #include "meteoGrid.h"
-#include "furtherMathFunctions.h"
 #include "statistics.h"
 #include <iostream> //debug
 
