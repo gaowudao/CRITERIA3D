@@ -5,11 +5,8 @@ TARGET = TestWG2D
 CONFIG += console
 CONFIG -= app_bundle
 
-INCLUDEPATH += ../weatherGenerator2D
-INCLUDEPATH += ../mathFunctions
-INCLUDEPATH += ../crit3dDate
-INCLUDEPATH += ../meteo
-INCLUDEPATH += ../gis
+INCLUDEPATH += ../weatherGenerator2D ../mathFunctions ../crit3dDate ../meteo ../gis
+
 CONFIG(release, debug|release) {
     LIBS += -L../weatherGenerator2D/release -lweatherGenerator2D
     LIBS += -L../mathFunctions/release -lmathFunctions
