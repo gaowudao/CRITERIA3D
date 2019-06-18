@@ -1,8 +1,9 @@
-#-----------------------------------------------
+#---------------------------------------------------
 #
-# grapevine library
+#   grapevine library
+#   This project is part of CRITERIA3D distribution
 #
-#-----------------------------------------------
+#---------------------------------------------------
 
 QT      -= core gui
 
@@ -26,7 +27,7 @@ win32:{
     TARGET = grapevine
 }
 
-INCLUDEPATH += ../mathFunctions ../crit3dDate ../soil ../crop
+INCLUDEPATH += ../crit3dDate ../mathFunctions ../specialMathFunctions ../soil ../crop
 
 SOURCES += grapevine.cpp \
     downyMildew.cpp \

@@ -9,7 +9,6 @@
     Fausto Tomei        ftomei@arpae.it
     Gabriele Antolini   gantolini@arpe.it
 
-
     \copyright
     This file is part of CRITERIA3D.
     CRITERIA3D has been developed under contract issued by ARPAE Emilia-Romagna
@@ -32,7 +31,6 @@
 
 #include <math.h>
 #include "commonConstants.h"
-#include "furtherMathFunctions.h"
 #include "development.h"
 #include "crop.h"
 

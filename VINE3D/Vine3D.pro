@@ -11,9 +11,10 @@ QT  += core gui widgets xml sql network
 TARGET = VINE3D
 TEMPLATE = app
 
-INCLUDEPATH += ../crit3dDate ../mathFunctions ../gis ../meteo ../interpolation ../solarRadiation \
-                ../soil ../utilities ../soilFluxes3D/header ../dbMeteoPoints ../dbMeteoGrid \
-                ../crop ../grapevine ../climate ../MapGraphics ../PRAGA/shared ../criteria3d/shared
+INCLUDEPATH +=  ../crit3dDate ../mathFunctions ../specialMathFunctions ../gis ../meteo \
+                ../interpolation ../solarRadiation ../soil ../utilities \
+                ../soilFluxes3D/header ../dbMeteoPoints ../dbMeteoGrid ../crop ../grapevine ../climate \
+                ../MapGraphics ../PRAGA/shared ../criteria3d/shared
 
 CONFIG += debug_and_release
 
@@ -31,6 +32,7 @@ win32:{
 CONFIG(debug, debug|release) {
     LIBS += -L../crit3dDate/debug -lcrit3dDate
     LIBS += -L../mathFunctions/debug -lmathFunctions
+    LIBS += -L../specialMathFunctions/debug -lspecialMathFunctions
     LIBS += -L../gis/debug -lgis
     LIBS += -L../meteo/debug -lmeteo
     LIBS += -L../interpolation/debug -lInterpolation
@@ -44,6 +46,7 @@ CONFIG(debug, debug|release) {
 } else {
     LIBS += -L../crit3dDate/release -lcrit3dDate
     LIBS += -L../mathFunctions/release -lmathFunctions
+    LIBS += -L../specialMathFunctions/release -lspecialMathFunctions
     LIBS += -L../gis/release -lgis
     LIBS += -L../meteo/release -lmeteo
     LIBS += -L../interpolation/release -lInterpolation

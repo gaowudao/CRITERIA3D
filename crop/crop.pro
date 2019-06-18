@@ -24,7 +24,7 @@ win32:{
     TARGET = crop
 }
 
-INCLUDEPATH += ../mathFunctions ../crit3dDate ../soil
+INCLUDEPATH +=  ../crit3dDate ../mathFunctions ../specialMathFunctions ../soil
 
 SOURCES += crop.cpp \
     root.cpp \
