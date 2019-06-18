@@ -41,10 +41,10 @@ int main()
     int lengthDataSeries = 1099;
     int nrVariables = 3;
     int nrDate = 3;
-    float *** weatherArray = NULL;
-    int ** dateArray = NULL;
-    float *** weatherArrayFourTimes = NULL;
-    int ** dateArrayFourTimes = NULL;
+    float *** weatherArray = nullptr;
+    int ** dateArray = nullptr;
+    float *** weatherArrayFourTimes = nullptr;
+    int ** dateArrayFourTimes = nullptr;
 
     weatherArray = (float ***)calloc(nrStations, sizeof(float**));
     for (int i=0;i<nrStations;i++)
@@ -76,7 +76,6 @@ int main()
     {
         dateArrayFourTimes[j] = (int *)calloc(nrDate, sizeof(int));
     }
-
 
     for (int i=0;i<nrStations;i++)
     {
@@ -110,9 +109,7 @@ int main()
                 dateArrayFourTimes[j+1095*2][k] = dateArray[j][k];
                 dateArrayFourTimes[j+1095*3][k] = dateArray[j][k];
             }
-
         }
-
     }
 
     TObsDataD** observedDataDaily = (TObsDataD **)calloc(nrStations, sizeof(TObsDataD*));
@@ -128,13 +125,16 @@ int main()
     WG2D.setObservedData(observedDataDaily);
 
 
-
-    bool computePrecipitation = false;
+    bool computePrecipitation = true;
     bool computeTemperature = true;
     printf("weather generator\n");
+    if (computePrecipitation) printf("compute precipitation\n");
+    if (computeTemperature) printf("compute temperature\n");
+
     int distributionType = 2; // 1 multiexponential 2 multigamma
     int yearsOfSimulations = 3;
-    WG2D.initializeParameters(NODATA,yearsOfSimulations,distributionType,computePrecipitation,computeTemperature);
+    WG2D.initializeParameters(NODATA, yearsOfSimulations, distributionType,
+                              computePrecipitation, computeTemperature);
     WG2D.computeWeatherGenerator2D();
 
     for (int i=0;i<nrStations;i++)
@@ -166,6 +166,7 @@ int main()
     {
         free(dateArrayFourTimes[j]);
     }
+
     free(weatherArrayFourTimes);
     free(dateArrayFourTimes);
     return 0;

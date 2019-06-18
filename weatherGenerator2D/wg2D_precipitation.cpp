@@ -13,8 +13,6 @@
 #include "gammaFunction.h"
 
 
-
-
 void weatherGenerator2D::initializePrecipitationInternalArrays()
 {
 
@@ -1231,7 +1229,7 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
 
       int gasDevIset = 0;
       double gasDevGset = 0;
-      srand (time(NULL));
+      srand (time(nullptr));
       for (int j=0;j<lengthSeason[iSeason]*parametersModel.yearOfSimulation;j++)
       {
           for (int i=0;i<nrStations;i++)
@@ -1811,7 +1809,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
                }
            }
        }
-       printf("step %d %f\n",ii,val);
+       //printf("step %d %f\n",ii,val);
        /*for (int i=0;i<nrStations;i++)
                {
                    for (int j=0;j<nrStations;j++) printf("%f ",amountsCorrelationMatrix[j][i]);
@@ -1820,7 +1818,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
 
    }
 
-   printf("\t");
+   //printf("\t");
    // free memory
    for (int i=0;i<nrStations;i++)
    {

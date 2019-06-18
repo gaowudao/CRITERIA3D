@@ -941,7 +941,7 @@ void weatherGenerator2D::multisiteRandomNumbersTemperature()
     weatherGenerator2D::initializeNormalRandomMatricesTemperatures();
     int gasDevIset;
     double gasDevGset;
-    srand (time(NULL));
+    srand (time(nullptr));
     int lengthOfRandomSeries;
     lengthOfRandomSeries = parametersModel.yearOfSimulation*365;
     int nrSquareOfStations;
