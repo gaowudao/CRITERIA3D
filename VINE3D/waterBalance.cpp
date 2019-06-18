@@ -1060,7 +1060,7 @@ bool saveWaterBalanceOutput(Vine3DProject* myProject, QDate myDate, criteria3DVa
          return false;
     }
 
-    myMap->freeGrid();
+    myMap->clear();
 
     return true;
 }
@@ -1105,7 +1105,7 @@ bool loadWaterBalanceState(Vine3DProject* myProject, QDate myDate, QString myAre
             if (!setCriteria3DVarMap(layerIndex, myProject, myVar, &myMap))
                 return false;
     }
-    myMap.freeGrid();
+    myMap.clear();
     return true;
 }
 
@@ -1157,7 +1157,7 @@ bool saveWaterBalanceState(Vine3DProject* myProject, QDate myDate, QString myAre
                 return false;
             }
         }
-    myMap->freeGrid();
+    myMap->clear();
 
     return true;
 }

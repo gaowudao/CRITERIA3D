@@ -392,7 +392,7 @@ bool savePlantOutput(Vine3DProject* myProject, plantVariable myVar,
         return false;
     }
 
-    outputMap.freeGrid();
+    outputMap.clear();
 
     return true;
 }

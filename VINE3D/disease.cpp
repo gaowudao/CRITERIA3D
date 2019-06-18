@@ -285,8 +285,8 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
     // Clean memory
     for (n = 0; n < nrSavingDays; n++)
     {
-        infectionMap[n]->freeGrid();
-        oilSpotMap[n]->freeGrid();
+        infectionMap[n]->clear();
+        oilSpotMap[n]->clear();
     }
     infectionMap.clear();
     oilSpotMap.clear();
