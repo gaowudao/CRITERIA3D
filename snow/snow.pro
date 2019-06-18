@@ -1,9 +1,10 @@
-#-------------------------------------------------
+#----------------------------------------------------
 #
-# CRITERIA3D distribution
-# snow accumulation and melt library
+#   SNOW
+#   Snow accumulation and melt library
+#   This library is part of CRITERIA-3D distribution
 #
-#-------------------------------------------------
+#----------------------------------------------------
 
 QT += core
 QT -= gui

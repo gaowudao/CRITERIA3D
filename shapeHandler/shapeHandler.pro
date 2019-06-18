@@ -1,15 +1,14 @@
 #--------------------------------------------------
 #
-# Shapefile handler
+#   Shapefile handler
+#   This library is part of CRITERIA-3D distribution
 #
-# This library is part of CRITERIA-3D distribution
+#   The library includes:
+#   - shapelib of Frank Warmerdam
+#   http://shapelib.maptools.org/
 #
-# The library includes:
-# - shapelib of Frank Warmerdam
-# http://shapelib.maptools.org/
-#
-# - shapeobject.cpp of Erik Svensson
-# https://github.com/blueluna/shapes
+#   - shapeobject.cpp of Erik Svensson
+#   https://github.com/blueluna/shapes
 #
 #--------------------------------------------------
 
