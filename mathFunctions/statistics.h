@@ -2,9 +2,6 @@
 #define STATISTICS_H
 
     #include <vector>
-    #include <string>
-
-    class Crit3DDate;
 
     enum meteoComputation { average, stdDev, sum, maxInList, minInList,
                             differenceWithThreshold, lastDayBelowThreshold,
@@ -21,6 +18,7 @@
     {
         float statisticalElab(meteoComputation elab, float param, std::vector<float> values, int nValues, float rainfallThreshold);
     }
+
     namespace statistics
     {
         double rootMeanSquareError(double *measured , double *simulated , int nrData);
