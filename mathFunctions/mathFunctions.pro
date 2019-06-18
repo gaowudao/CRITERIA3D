@@ -31,10 +31,12 @@ HEADERS += \
     commonConstants.h \
     basicMath.h \
     statistics.h \
-    physics.h
+    physics.h \
+    gammaFunction.h
 
 SOURCES += \
     basicMath.cpp \
     statistics.cpp \
-    physics.cpp
+    physics.cpp \
+    gammaFunction.cpp
 

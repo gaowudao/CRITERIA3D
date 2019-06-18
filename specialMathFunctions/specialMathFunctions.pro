@@ -30,10 +30,8 @@ INCLUDEPATH += ../mathFunctions
 
 SOURCES += \
     furtherMathFunctions.cpp \
-    gammaFunction.cpp \
     eispack.cpp
 
 HEADERS += \
     furtherMathFunctions.h \
-    gammaFunction.h \
     eispack.h

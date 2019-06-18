@@ -983,18 +983,17 @@
 
     //static long double const pi = 3.14159265358979323846264338L;
 
-
     // Bernoulli numbers B(2),B(4),B(6),...,B(20).  Only B(2),...,B(6) currently used.                                                                     //
-    static const long double B[] = {   1.0L / (long double)(6 * 2 * 1),
-                                      -1.0L / (long double)(30 * 4 * 3),
-                                       1.0L / (long double)(42 * 6 * 5),
-                                      -1.0L / (long double)(30 * 8 * 7),
-                                       5.0L / (long double)(66 * 10 * 9),
-                                    -691.0L / (long double)(2730 * 12 * 11),
-                                       7.0L / (long double)(6 * 14 * 13),
-                                   -3617.0L / (long double)(510 * 16 * 15),
-                                   43867.0L / (long double)(796 * 18 * 17),
-                                 -174611.0L / (long double)(330 * 20 * 19)
+    static const long double B[] = {   1.0L / (6 * 2 * 1),
+                                      -1.0L / (30 * 4 * 3),
+                                       1.0L / (42 * 6 * 5),
+                                      -1.0L / (30 * 8 * 7),
+                                       5.0L / (66 * 10 * 9),
+                                    -691.0L / (2730 * 12 * 11),
+                                       7.0L / (6 * 14 * 13),
+                                   -3617.0L / (510 * 16 * 15),
+                                   43867.0L / (796 * 18 * 17),
+                                 -174611.0L / (330 * 20 * 19)
                                };
 
     static const int n = sizeof(B) / sizeof(long double);
@@ -1014,11 +1013,9 @@
        for (i = m - 1; i >= 0; i--) sum += term[i];
        return lngamma + sum;
     }
+
     namespace gammaDistributions
     {
-
-
-
         double gammaNaturalLogarithm(double value)
         //Returns the value ln[Γ(xx)] for xx > 0.
         {
@@ -1036,8 +1033,6 @@
             for (j=0;j<=5;j++) series += coefficients[j]/++y;
             return -tmp+log(2.5066282746310005*series/x);
         }
-
-
 
 
         void gammaIncompleteP(double *gammaDevelopmentSeries, double alpha, double x, double *gammaLn)

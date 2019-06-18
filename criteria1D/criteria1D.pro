@@ -28,8 +28,8 @@ win32:{
     TARGET = criteria1D
 }
 
-INCLUDEPATH +=  ../crit3dDate ../mathFunctions ../specialMathFunctions \
-                ../utilities ../crop ../meteo ../soil ../gis
+INCLUDEPATH +=  ../crit3dDate ../mathFunctions ../crop  \
+                ../utilities ../meteo ../soil ../gis
 
 SOURCES += Criteria1D.cpp \
     modelCore.cpp \
