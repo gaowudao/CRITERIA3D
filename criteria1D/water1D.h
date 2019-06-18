@@ -11,5 +11,6 @@
 
     double getSoilWaterContent(Criteria1D* myCase);
 
+
 #endif // WATER1D_H
 

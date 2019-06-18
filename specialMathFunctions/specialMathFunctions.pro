@@ -25,7 +25,7 @@ win32:{
     TARGET = specialMathFunctions
 }
 
-INCLUDEPATH += ../crit3dDate ../mathFunctions
+INCLUDEPATH += ../mathFunctions
 
 
 SOURCES += \

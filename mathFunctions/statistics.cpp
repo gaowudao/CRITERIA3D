@@ -27,9 +27,7 @@
 #include <malloc.h>
 #include <float.h>
 
-#include "crit3dDate.h"
 #include "commonConstants.h"
-//#include "furtherMathFunctions.h"
 #include "basicMath.h"
 #include "statistics.h"
 #include "physics.h"

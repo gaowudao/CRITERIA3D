@@ -10,4 +10,5 @@
     bool runModel(Criteria1D* myCase, Criteria1DUnit *myUnit, QString* myError);
     bool computeModel(Criteria1D* myCase, const Crit3DDate& firstDate, const Crit3DDate& lastDate, QString* myError);
 
+
 #endif // MODELCORE_H

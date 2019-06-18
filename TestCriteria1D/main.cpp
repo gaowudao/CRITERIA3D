@@ -5,7 +5,7 @@
 #include <QDir>
 #include <QDate>
 
-#include "furtherMathFunctions.h"
+#include "basicMath.h"
 #include "project.h"
 #include "modelCore.h"
 #include "dbTools.h"

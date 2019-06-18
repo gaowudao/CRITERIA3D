@@ -1,3 +1,11 @@
+#-----------------------------------------------------
+#
+#   TESTCRITERIA1D
+#   Test software for Criteria1D library
+#   This project is part of CRITERIA3D distribution
+#
+#-----------------------------------------------------
+
 
 QT -= gui
 QT += core sql
@@ -32,6 +40,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../soil/debug -lsoil
     LIBS += -L../crit3dDate/debug -lcrit3dDate
     LIBS += -L../mathFunctions/debug -lmathFunctions
+    LIBS += -L../specialMathFunctions/debug -lspecialMathFunctions
 } else {
     LIBS += -L../criteria1D/release -lcriteria1D
     LIBS += -L../utilities/release -lutilities
@@ -40,6 +49,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../crop/release -lcrop
     LIBS += -L../soil/release -lsoil
     LIBS += -L../crit3dDate/release -lcrit3dDate
-    LIBS += -L../mathFunctions/release -lmathFunctions
+    LIBS += -L../mathFunctions/debug -lmathFunctions
+    LIBS += -L../specialMathFunctions/release -lspecialMathFunctions
 }
 

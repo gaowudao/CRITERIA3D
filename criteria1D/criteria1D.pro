@@ -1,13 +1,13 @@
-#-----------------------------------------------------------------------------
+#------------------------------------------------------------------
 #
-# Criteria1D library
-# Mono-dimensional water balance model
-# Algorithms for soil water infiltration, redistribution, capillary rise,
-# crop water demand and irrigation.
+#   Criteria1D library
+#   Mono-dimensional water balance model.
+#   Algorithms for soil water infiltration, redistribution,
+#   capillary rise, crop water demand and irrigation.
 #
-# This library is part of CRITERIA3D distribution
+#   This library is part of CRITERIA3D distribution
 #
-#-----------------------------------------------------------------------------
+#------------------------------------------------------------------
 
 QT      += core sql
 QT      -= gui
@@ -28,7 +28,8 @@ win32:{
     TARGET = criteria1D
 }
 
-INCLUDEPATH += ../crit3dDate ../mathFunctions ../utilities ../crop ../meteo ../soil ../gis
+INCLUDEPATH +=  ../crit3dDate ../mathFunctions ../specialMathFunctions \
+                ../utilities ../crop ../meteo ../soil ../gis
 
 SOURCES += Criteria1D.cpp \
     modelCore.cpp \
