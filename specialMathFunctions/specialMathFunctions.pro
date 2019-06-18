@@ -1,0 +1,38 @@
+#----------------------------------------------------
+#
+#   Library specialMathFunctions
+#   contains advanced math functions
+#   this project is part of CRITERIA3D distribution
+#
+#----------------------------------------------------
+
+QT       -= core gui
+
+TEMPLATE = lib
+CONFIG += staticlib
+
+CONFIG += debug_and_release
+
+unix:{
+    CONFIG(debug, debug|release) {
+        TARGET = debug/specialMathFunctions
+    } else {
+        TARGET = release/specialMathFunctions
+    }
+}
+win32:{
+    TARGET = specialMathFunctions
+}
+
+INCLUDEPATH += ../crit3dDate ../mathFunctions
+
+
+SOURCES += \
+    furtherMathFunctions.cpp \
+    gammaFunction.cpp \
+    eispack.cpp
+
+HEADERS += \
+    furtherMathFunctions.h \
+    gammaFunction.h \
+    eispack.h
