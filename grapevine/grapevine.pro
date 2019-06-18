@@ -27,7 +27,7 @@ win32:{
     TARGET = grapevine
 }
 
-INCLUDEPATH += ../crit3dDate ../mathFunctions ../specialMathFunctions ../soil ../crop
+INCLUDEPATH += ../crit3dDate ../mathFunctions ../soil ../crop
 
 SOURCES += grapevine.cpp \
     downyMildew.cpp \
