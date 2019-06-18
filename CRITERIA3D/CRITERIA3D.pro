@@ -1,9 +1,9 @@
 #-----------------------------------------------------
 #
-# CRITERIA3D
-# Soil Water Balance 3D
+#   CRITERIA3D
+#   3D Soil Water Balance
 #
-# this file is part of CRITERIA3D distribution
+#   This project is part of CRITERIA3D distribution
 #
 #-----------------------------------------------------
 
