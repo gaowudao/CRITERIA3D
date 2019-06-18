@@ -12,7 +12,6 @@
 #include "crit3dDate.h"
 #include "commonConstants.h"
 #include "basicMath.h"
-#include "furtherMathFunctions.h"
 #include "physics.h"
 #include "gammaFunction.h"
 #include "grapevine.h"
