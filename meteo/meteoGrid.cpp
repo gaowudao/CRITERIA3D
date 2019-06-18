@@ -27,7 +27,6 @@
 #include "basicMath.h"
 #include "meteoGrid.h"
 #include "statistics.h"
-#include <iostream> //debug
 
 
 Crit3DMeteoGridStructure::Crit3DMeteoGridStructure()

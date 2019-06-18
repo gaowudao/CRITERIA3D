@@ -1,11 +1,12 @@
 #ifndef METEO_H
 #define METEO_H
 
-#include <map>
+    #include <map>
 
     #ifndef CRIT3DDATE_H
         #include "crit3dDate.h"
     #endif
+
     #ifndef CRIT3DCOLOR_H
         #include "color.h"
     #endif
@@ -217,4 +218,6 @@
 
     bool checkLapseRateCode(lapseRateCodeType myType, bool useLapseRateCode, bool useSupplemental);
 
+
 #endif // METEO_H
+

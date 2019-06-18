@@ -1,7 +1,8 @@
 #--------------------------------------------------
 #
 # Shapefile handler
-# this library is part of CRITERIA-3D distribution
+#
+# This library is part of CRITERIA-3D distribution
 #
 # The library includes:
 # - shapelib of Frank Warmerdam
@@ -37,13 +38,6 @@ HEADERS += \
     shapelib/shapefil.h     \
     shapeHandler.h          \
     shapeObject.h
-
-
-CONFIG(debug, debug|release) {
-    LIBS += -L../mathFunctions/debug -lmathFunctions
-} else {
-    LIBS += -L../mathFunctions/release -lmathFunctions
-}
 
 
 unix {

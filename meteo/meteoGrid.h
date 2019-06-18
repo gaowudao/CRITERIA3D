@@ -1,27 +1,27 @@
 #ifndef METEOGRID_H
 #define METEOGRID_H
 
-#include <vector>
+    #include <vector>
 
     #ifndef METEOPOINT_H
         #include "meteoPoint.h"
     #endif
+
     #ifndef COMMONCONSTANTS_H
         #include "commonConstants.h"
     #endif
 
+    #define GRID_MIN_COVERAGE 0
 
-#define GRID_MIN_COVERAGE 0
+    enum gridAggregationMethod {aggrAvg, aggrMedian, aggrStdDeviation};
 
-enum gridAggregationMethod {aggrAvg, aggrMedian, aggrStdDeviation};
+    const std::map<std::string, gridAggregationMethod> gridAggregationMethodNames = {
+      { "average", aggrAvg },
+      { "median", aggrMedian },
+      { "stddev", aggrStdDeviation }
+    };
 
-const std::map<std::string, gridAggregationMethod> gridAggregationMethodNames = {
-  { "average", aggrAvg },
-  { "median", aggrMedian },
-  { "stddev", aggrStdDeviation }
-};
-
-std::string getKeyStringAggregationMethod(gridAggregationMethod value);
+    std::string getKeyStringAggregationMethod(gridAggregationMethod value);
 
     class Crit3DMeteoGridStructure
     {
