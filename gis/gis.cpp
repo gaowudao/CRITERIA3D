@@ -3,11 +3,10 @@
 
     \abstract Gis structures and functions
 
+    \copyright
     This file is part of CRITERIA3D.
-
     CRITERIA3D has been developed by A.R.P.A.E. Emilia-Romagna.
 
-    \copyright
     CRITERIA3D is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
