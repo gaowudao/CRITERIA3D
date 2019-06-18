@@ -1,13 +1,12 @@
 /*!
     \file mainWindow.cpp
 
-    \abstract Praga-Gis mainwindow
-
-    This file is part of CRITERIA-3D distribution.
-
-    CRITERIA-3D has been developed by A.R.P.A.E. Emilia-Romagna.
+    \abstract Praga Gis mainwindow
 
     \copyright
+    This file is part of CRITERIA-3D distribution.
+    CRITERIA-3D has been developed by A.R.P.A.E. Emilia-Romagna.
+
     CRITERIA-3D is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -34,13 +33,11 @@
 #include <QVBoxLayout>
 
 #include "tileSources/CompositeTileSource.h"
-
 #include "gis.h"
 #include "gisProject.h"
 #include "dbfTableDialog.h"
 #include "dbfNumericFieldsDialog.h"
 #include "ucmDialog.h"
-
 
 #include "mainWindow.h"
 #include "ui_mainWindow.h"
