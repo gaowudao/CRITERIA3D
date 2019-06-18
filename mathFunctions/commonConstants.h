@@ -26,7 +26,7 @@
 #ifndef COMMONCONSTANTS_H
 #define COMMONCONSTANTS_H
 
-    //general functions
+    // general functions
     #ifndef minValue
         #define minValue(a, b) (((a) < (b))? (a) : (b))
     #endif
@@ -51,7 +51,7 @@
         #define DAY_SECONDS 86400.
     #endif
 
-    //criteria3D
+    // Criteria-3D
     #define NOLINK -1
 
     #define PROCESS_WATER 0
@@ -95,7 +95,7 @@
     #define MAX_SURFACES 1024
     #define MAX_HORIZONS 20
 
-    //heat
+    // heat
     #define SAVE_HEATFLUXES_NONE 0
     #define SAVE_HEATFLUXES_TOTAL 1
     #define SAVE_HEATFLUXES_ALL 2
@@ -136,7 +136,7 @@
     // [kg m-3] air density, temperature 0 °C
     #define  AIR_DENSITY 1.29
 
-    // -----------------PHYSICS-------------------
+    // ---------------------PHYSICS-------------------
     // [kg mol-1] molecular mass of water
     #define	MH2O	0.018
     // [kg mol-1] mass of molecular oxygen (O2)
@@ -199,7 +199,7 @@
     #define TRANSMISSIVITY_SAMANI_COEFF_DEFAULT  0.17f
     #define WINKLERTHRESHOLD 10
 
-    // -----------------MATHEMATICS---------------------
+    // --------------------MATH---------------------
     #ifndef PI
         #define PI 3.141592653589793238462643383
     #endif

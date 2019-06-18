@@ -2,7 +2,7 @@
 #
 #   PRAGA GIS
 #
-#   this file is part of CRITERIA3D distribution
+#   This project is part of CRITERIA3D distribution
 #
 #-----------------------------------------------------
 

@@ -3,7 +3,7 @@
 # PRAGA
 # PRogram for AGrometeorological Analysis
 #
-# this software is part of CRITERIA3D distribution
+# this project is part of CRITERIA3D distribution
 #
 #-----------------------------------------------------
 
@@ -12,8 +12,8 @@ QT       += core gui widgets network sql xml
 TARGET = PRAGA
 TEMPLATE = app
 
-INCLUDEPATH +=  ./shared ../mapGraphics \
-                ../crit3dDate ../mathFunctions ../meteo ../gis ../utilities \
+INCLUDEPATH +=  ./shared \
+                ../mapGraphics ../crit3dDate ../mathFunctions ../meteo ../gis ../utilities \
                 ../interpolation ../solarRadiation ../dbMeteoPoints ../dbMeteoGrid ../climate
 
 CONFIG += debug_and_release
