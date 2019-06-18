@@ -1229,7 +1229,7 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
 
       int gasDevIset = 0;
       double gasDevGset = 0;
-      srand (time(nullptr));
+      srand (time(NULL));
       for (int j=0;j<lengthSeason[iSeason]*parametersModel.yearOfSimulation;j++)
       {
           for (int i=0;i<nrStations;i++)
@@ -1894,29 +1894,23 @@ void weatherGenerator2D::pressEnterToContinue()
    getchar();
 }
 
-double weatherGenerator2D::bestFit(double *par, int nrPar, double*x, double *yObs, int nrX)
+double weatherGenerator2D::bestFit(double *par, double*x, double *yObs, int nrX)
 {
    double sigma=0.;
    double diff;
-   double ySim[3];
+
    for (int i=0; i<nrX; i++)
    {
-       diff = par[0]+ par[1]*pow(x[i],par[2])-yObs[i];
+       diff = par[0] + par[1]*pow(x[i],par[2])-yObs[i];
        sigma += (diff * diff);
    }
-
-
-               //diff = ySim[i]-yObs[i];
-               //sigma += (diff * diff);
-               //nrValidValues++;
-
    return sigma;
-   //return statistics::rootMeanSquareError(yObs,ySim,nrX);
+
 }
 
 
 
-int weatherGenerator2D::bestParametersNonLinearFit(double *par, int nrPar, double*x, double *yObs, int nrX)
+int weatherGenerator2D::bestParametersNonLinearFit(double *par, double*x, double *yObs, int nrX)
 {
    par[0]= 0.;
    par[1]= 0.;
@@ -1933,11 +1927,11 @@ int weatherGenerator2D::bestParametersNonLinearFit(double *par, int nrPar, doubl
        maxPar[0]= maxValue(yObs[i],yObs[i+1])*10;
        maxPar[1]= 5*maxPar[0];
    }
-   deltaStep[0] = (int)(ceil((maxPar[0]-par[0])/accuracy));
-   deltaStep[1] = (int)(ceil((maxPar[1]-par[1])/accuracy));
+   deltaStep[0] = int(ceil((maxPar[0]-par[0])/accuracy));
+   deltaStep[1] = int(ceil((maxPar[1]-par[1])/accuracy));
    for (int i=2 ; i<20; i++)
    {
-       par[2]=(double)(i);
+       par[2]=double(i);
        //printf("esponente %d\t ",i);
        for (int j=0 ; j<deltaStep[0]; j++)
        {
@@ -1945,7 +1939,7 @@ int weatherGenerator2D::bestParametersNonLinearFit(double *par, int nrPar, doubl
            for (int k=0 ; k<deltaStep[1]; k++)
            {
                par[1] += accuracy;
-               rmsNew = weatherGenerator2D::bestFit(par,3,x,yObs,nrX);
+               rmsNew = weatherGenerator2D::bestFit(par,x,yObs,nrX);
                if (firstStep)
                {
                    rootMeanSquare = rmsNew;

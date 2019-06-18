@@ -197,8 +197,8 @@
         void initializePrecipitationOutputs(int lengthSeason[]);
         void initializePrecipitationInternalArrays();
         void spatialIterationAmounts(double** correlationMatrixSimulatedData,double ** amountsCorrelationMatrix , double** randomMatrix, int length, double** occurrences, double** phatAlpha, double** phatBeta,double** simulatedPrecipitationAmounts);
-        double bestFit(double *par, int nrPar, double*x, double *yObs, int nrX);
-        int bestParametersNonLinearFit(double *par, int nrPar, double*x, double *yObs, int nrX);
+        double bestFit(double *par, double*x, double *yObs, int nrX);
+        int bestParametersNonLinearFit(double *par, double*x, double *yObs, int nrX);
         double inverseGammaFunction(double valueProbability, double alpha, double beta, double accuracy);
 
 
