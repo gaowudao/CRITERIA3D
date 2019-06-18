@@ -1,7 +1,7 @@
 #-----------------------------------------------------
 #
 #   PRAGA GIS
-#
+#   simple gis for shapefile functions and test
 #   This project is part of CRITERIA3D distribution
 #
 #-----------------------------------------------------

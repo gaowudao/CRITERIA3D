@@ -1,6 +1,8 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2012-02-20T11:09:22
+#   HEAT1D
+#   test for soilFluxex3D library in a 1D domain
+#   This project is part of CRITERIA3D distribution
 #
 #-------------------------------------------------
 
