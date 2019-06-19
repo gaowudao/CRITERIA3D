@@ -1,12 +1,10 @@
 #include "seriesOnZonesDialog.h"
 
-#include "climate.h"
 #include "pragaProject.h"
-//#include "utilities.h"
 
 extern PragaProject myProject;
 
-QString SeriesOnZonesDialog::getVariable() const
+meteoVariable SeriesOnZonesDialog::getVariable() const
 {
     return variable;
 }
@@ -21,7 +19,7 @@ QDate SeriesOnZonesDialog::getEndDate() const
     return endDate;
 }
 
-QString SeriesOnZonesDialog::getSpatialElaboration() const
+gridAggregationMethod SeriesOnZonesDialog::getSpatialElaboration() const
 {
     return spatialElaboration;
 }
@@ -78,9 +76,9 @@ SeriesOnZonesDialog::SeriesOnZonesDialog(QSettings *settings)
     dateLayout.addWidget(&genericPeriodEnd);
 
     QLabel spatialElabLabel("Spatial Elaboration: ");
-    spatialElab.addItem("aggrAvg");
-    spatialElab.addItem("aggrMedian");
-    spatialElab.addItem("aggrStdDeviation");
+    spatialElab.addItem("average");
+    spatialElab.addItem("median");
+    spatialElab.addItem("stddev");
 
 
     spatialElabLayout.addWidget(&spatialElabLabel);
@@ -145,8 +143,9 @@ bool SeriesOnZonesDialog::checkValidData()
         return false;
     }
 
-    variable = variableList.currentText();
-    spatialElaboration = spatialElab.currentText();
+    QString var = variableList.currentText();
+    variable = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, var.toStdString());
+    spatialElaboration = getKeyGridAggregationMethod(spatialElab.currentText().toStdString());
 
     return true;
 

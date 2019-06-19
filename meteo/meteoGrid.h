@@ -13,7 +13,7 @@
 
     #define GRID_MIN_COVERAGE 0
 
-    enum gridAggregationMethod {aggrAvg, aggrMedian, aggrStdDeviation};
+    enum gridAggregationMethod {noAggrMethod, aggrAvg, aggrMedian, aggrStdDeviation};
 
     const std::map<std::string, gridAggregationMethod> gridAggregationMethodNames = {
       { "average", aggrAvg },
@@ -21,7 +21,14 @@
       { "stddev", aggrStdDeviation }
     };
 
+    const std::map<gridAggregationMethod, std::string> gridAggregationMethodNamesToString = {
+      { aggrAvg, "average" },
+      { aggrMedian, "median" },
+      { aggrStdDeviation, "stddev" }
+    };
+
     std::string getKeyStringAggregationMethod(gridAggregationMethod value);
+    gridAggregationMethod getKeyGridAggregationMethod(std::string value);
 
     class Crit3DMeteoGridStructure
     {

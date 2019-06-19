@@ -7,6 +7,7 @@
 #include <QComboBox>
 
 #include <QtWidgets>
+#include "meteoGrid.h"
 
 class SeriesOnZonesDialog: public QDialog
 {
@@ -22,20 +23,20 @@ class SeriesOnZonesDialog: public QDialog
         QDateEdit genericPeriodEnd;
         QComboBox spatialElab;
 
-        QString variable;
+        meteoVariable variable;
         QDate startDate;
         QDate endDate;
-        QString spatialElaboration;
+        gridAggregationMethod spatialElaboration;
 
     public:
         SeriesOnZonesDialog(QSettings *settings);
         void done(bool res);
         bool checkValidData();
 
-        QString getVariable() const;
+        meteoVariable getVariable() const;
         QDate getStartDate() const;
         QDate getEndDate() const;
-        QString getSpatialElaboration() const;
+        gridAggregationMethod getSpatialElaboration() const;
 };
 
 

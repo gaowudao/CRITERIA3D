@@ -1837,9 +1837,10 @@ void MainWindow::on_actionSpatial_average_series_on_zones_triggered()
         return;
     else
     {
-        qDebug() << "variable: " << zoneDialog.getVariable();
-        qDebug() << "start date: " << zoneDialog.getStartDate().toString("yyyy.MM.dd");
-        qDebug() << "end date: " << zoneDialog.getEndDate().toString("yyyy.MM.dd");
-        qDebug() << "spatial elab: " << zoneDialog.getSpatialElaboration();
+        std::vector< std::vector<float> > resultAverage;
+        std::vector<float> outputValues;
+        float threshold = NODATA; // sono mai diversi da nulli?
+        meteoComputation elab1MeteoComp = noMeteoComp; // sono mai diversi da nulli?
+        resultAverage = myProject.averageSeriesOnZonesMeteoGrid(zoneDialog.getVariable(), elab1MeteoComp, zoneDialog.getSpatialElaboration(), threshold, this->rasterObj->getRaster(), zoneDialog.getStartDate(), zoneDialog.getEndDate(), outputValues, true);
     }
 }

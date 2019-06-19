@@ -840,6 +840,22 @@ std::string getKeyStringAggregationMethod(gridAggregationMethod value)
     return key;
 }
 
+gridAggregationMethod getKeyGridAggregationMethod(std::string value)
+{
+    std::map<gridAggregationMethod, std::string>::const_iterator it;
+    gridAggregationMethod key = noAggrMethod;
+
+    for (it = gridAggregationMethodNamesToString.begin(); it != gridAggregationMethodNamesToString.end(); ++it)
+    {
+        if (it->second == value)
+        {
+            key = it->first;
+            break;
+        }
+    }
+    return key;
+}
+
 
 void Crit3DMeteoGrid::saveRowColfromZone(gis::Crit3DRasterGrid* zoneGrid, std::vector<std::vector<int> > &meteoGridRow, std::vector<std::vector<int> > &meteoGridCol)
 {
