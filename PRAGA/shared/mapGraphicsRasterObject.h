@@ -38,8 +38,8 @@
 
     struct RowCol
     {
-        unsigned int row;
-        unsigned int col;
+        int row;
+        int col;
     };
 
 

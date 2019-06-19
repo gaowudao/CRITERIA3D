@@ -34,25 +34,24 @@
 
 using namespace std;
 
+bool splitKeyValue(std::string myLine, std::string *myKey, std::string *myValue)
+{
+    *myKey = ""; *myValue = "";
+    istringstream myStream(myLine);
 
-    bool splitKeyValue(std::string myLine, std::string *myKey, std::string *myValue)
-    {
-        *myKey = ""; *myValue = "";
-        istringstream myStream(myLine);
+    myStream >> *myKey;
+    myStream >> *myValue;
+    if ((*myKey == "") || (*myValue == "")) return (false);
+    else return(true);
+}
 
-        myStream >> *myKey;
-        myStream >> *myValue;
-        if ((*myKey == "") || (*myValue == "")) return (false);
-        else return(true);
-    }
+string upperCase(string myStr)
+{
+    string upperCaseStr = myStr;
+    transform(myStr.begin(), myStr.end(), upperCaseStr.begin(), ::toupper);
+    return(upperCaseStr);
 
-    string upperCase(string myStr)
-    {
-        string upperCaseStr = myStr;
-        transform(myStr.begin(), myStr.end(), upperCaseStr.begin(), ::toupper);
-        return(upperCaseStr);
-
-    }
+}
 
 
 namespace gis
@@ -291,6 +290,7 @@ namespace gis
             URcorner.latitude = min(v[2].latitude, v[3].latitude);
         }
 
+        // rowcol nr
         latLonHeader->nrRows = utmHeader->nrRows;
         latLonHeader->nrCols = utmHeader->nrCols;
 

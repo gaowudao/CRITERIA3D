@@ -31,6 +31,7 @@
 #include <QWidget>
 #include <QFrame>
 #include <QVBoxLayout>
+#include <QMessageBox>
 
 #include "tileSources/CompositeTileSource.h"
 #include "gis.h"
@@ -43,9 +44,9 @@
 #include "ui_mainWindow.h"
 
 
-#define MAPBORDER 10
-#define TOOLSWIDTH 260
+#define MAPBORDER 11
 #define INFOHEIGHT 40
+#define TOOLSWIDTH 260
 
 
 extern GisProject myProject;
@@ -99,7 +100,7 @@ void MainWindow::resizeEvent(QResizeEvent * event)
     mapView->resize(ui->widgetMap->size());
 
     ui->checkList->move(MAPBORDER/2, MAPBORDER);
-    ui->checkList->resize(TOOLSWIDTH, this->height() - INFOHEIGHT - MAPBORDER * 2);
+    ui->checkList->resize(TOOLSWIDTH, this->height() - INFOHEIGHT - MAPBORDER*2);
 }
 
 
@@ -329,6 +330,52 @@ void MainWindow::itemClicked(QListWidgetItem* item)
 }
 
 
+void MainWindow::saveRaster(GisObject* myObject)
+{
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save raster Grid"), "", tr("ESRI grid files (*.flt)"));
+    if (fileName == "") return;
+
+    std::string error;
+    if (! gis::writeEsriGrid(fileName.toStdString(), myObject->getRaster(), &error))
+    {
+        QMessageBox::information(nullptr, "Error", QString::fromStdString(error));
+    }
+}
+
+
+void MainWindow::removeRaster(GisObject* myObject)
+{
+    unsigned int i;
+    for (i = 0; i < this->rasterObjList.size(); i++)
+    {
+        if (this->rasterObjList.at(i)->getRaster() == myObject->getRaster()) break;
+    }
+
+    if (i < this->rasterObjList.size())
+    {
+        // remove from scene
+        this->mapView->scene()->removeObject(this->rasterObjList.at(i));
+        this->rasterObjList.at(i)->clear();
+        this->rasterObjList.erase(this->rasterObjList.begin()+i);
+    }
+}
+
+
+void MainWindow::removeShape(GisObject* myObject)
+{
+    unsigned int i;
+    for (i = 0; i < shapeObjList.size(); i++)
+    {
+        if (shapeObjList.at(i)->getShapePointer() == myObject->getShapeHandler()) break;
+    }
+
+    // remove from scene
+    this->mapView->scene()->removeObject(this->shapeObjList.at(i));
+    this->shapeObjList.at(i)->clear();
+    this->shapeObjList.erase(this->shapeObjList.begin()+i);
+}
+
+
 void MainWindow::itemMenuRequested(const QPoint point)
 {
     QPoint itemPoint = ui->checkList->mapToGlobal(point);
@@ -349,54 +396,38 @@ void MainWindow::itemMenuRequested(const QPoint point)
     }
     QAction* rightClickItem = submenu.exec(itemPoint);
 
-    if (rightClickItem && rightClickItem->text().contains("Close") )
+    if (rightClickItem)
     {
-        unsigned int i;
-        if (myObject->type == gisObjectRaster)
+        if (rightClickItem->text().contains("Close") )
         {
-            for (i = 0; i < rasterObjList.size(); i++)
+            if (myObject->type == gisObjectRaster)
             {
-                if (rasterObjList.at(i)->getRaster() == myObject->getRaster()) break;
+                this->removeRaster(myObject);
             }
-            if (i < rasterObjList.size())
+            else if (myObject->type == gisObjectShape)
             {
-                // remove from scene
-                this->mapView->scene()->removeObject(this->rasterObjList.at(i));
-                this->rasterObjList.at(i)->clear();
-                this->rasterObjList.erase(this->rasterObjList.begin()+i);
+                this->removeShape(myObject);
+            }
+            myObject->close();
+            myProject.objectList.erase(myProject.objectList.begin()+pos);
+
+            ui->checkList->takeItem(ui->checkList->indexAt(point).row());
+        }
+        else if (rightClickItem->text().contains("Show data"))
+        {
+            ShowProperties showData(myObject->getShapeHandler(), myObject->fileName);
+        }
+        else if (rightClickItem->text().contains("Open attribute table"))
+        {
+            DbfTableDialog Table(myObject->getShapeHandler(), myObject->fileName);
+        }
+        else if (rightClickItem->text().contains("Save as"))
+        {
+            if (myObject->type == gisObjectRaster)
+            {
+                this->saveRaster(myObject);
             }
         }
-        else if (myObject->type == gisObjectShape)
-        {
-            for (i = 0; i < shapeObjList.size(); i++)
-            {
-                if (shapeObjList.at(i)->getShapePointer() == myObject->getShapeHandler()) break;
-            }
-            // remove from scene
-            this->mapView->scene()->removeObject(this->shapeObjList.at(i));
-            this->shapeObjList.at(i)->clear();
-            this->shapeObjList.erase(this->shapeObjList.begin()+i);
-        }
-
-        myObject->close();
-        myProject.objectList.erase(myProject.objectList.begin()+pos);
-
-        ui->checkList->takeItem(ui->checkList->indexAt(point).row());
-    }
-
-    else if (rightClickItem && rightClickItem->text().contains("Show data"))
-    {
-        ShowProperties showData(myObject->getShapeHandler(), myObject->fileName);
-    }
-    else if (rightClickItem && rightClickItem->text().contains("Open attribute table"))
-    {
-        DbfTableDialog Table(myObject->getShapeHandler(), myObject->fileName);
-
-    }
-    else if (rightClickItem && rightClickItem->text().contains("Save as"))
-    {
-        DbfTableDialog Table(myObject->getShapeHandler(), myObject->fileName);
-
     }
     return;
 }

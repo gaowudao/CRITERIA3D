@@ -487,32 +487,32 @@ namespace gis
 
     void getRowColFromXY(const Crit3DRasterGrid& myGrid, double myX, double myY, int *row, int *col)
     {
-        *row = (myGrid.header->nrRows - 1) - (int)floor((myY - myGrid.header->llCorner->y) / myGrid.header->cellSize);
-        *col = (int)floor((myX - myGrid.header->llCorner->x) / myGrid.header->cellSize);
+        *row = (myGrid.header->nrRows - 1) - int(floor((myY - myGrid.header->llCorner->y) / myGrid.header->cellSize));
+        *col = int(floor((myX - myGrid.header->llCorner->x) / myGrid.header->cellSize));
     }
 
     void getRowColFromXY(const Crit3DRasterHeader& myHeader, double myX, double myY, int *row, int *col)
     {
-        *row = (myHeader.nrRows - 1) - (int)floor((myY - myHeader.llCorner->y) / myHeader.cellSize);
-        *col = (int)floor((myX - myHeader.llCorner->x) / myHeader.cellSize);
+        *row = (myHeader.nrRows - 1) - int(floor((myY - myHeader.llCorner->y) / myHeader.cellSize));
+        *col = int(floor((myX - myHeader.llCorner->x) / myHeader.cellSize));
     }
 
     void getRowColFromXY(const Crit3DRasterHeader& myHeader, const Crit3DUtmPoint& p, int *row, int *col)
     {
-        *row = (myHeader.nrRows - 1) - (int)floor((p.y - myHeader.llCorner->y) / myHeader.cellSize);
-        *col = (int)floor((p.x - myHeader.llCorner->x) / myHeader.cellSize);
+        *row = (myHeader.nrRows - 1) - int(floor((p.y - myHeader.llCorner->y) / myHeader.cellSize));
+        *col = int(floor((p.x - myHeader.llCorner->x) / myHeader.cellSize));
     }
 
     void getRowColFromXY(const Crit3DRasterHeader& myHeader, const Crit3DUtmPoint& p, Crit3DRasterCell* v)
     {
-        v->row = (myHeader.nrRows - 1) - (int)floor((p.y - myHeader.llCorner->y) / myHeader.cellSize);
-        v->col = (int)floor((p.x - myHeader.llCorner->x) / myHeader.cellSize);
+        v->row = (myHeader.nrRows - 1) - int(floor((p.y - myHeader.llCorner->y) / myHeader.cellSize));
+        v->col = int(floor((p.x - myHeader.llCorner->x) / myHeader.cellSize));
     }
 
     void getRowColFromLatLon(const Crit3DGridHeader& latLonHeader, const Crit3DGeoPoint& p, int* myRow, int* myCol)
     {
-        *myRow = (latLonHeader.nrRows - 1) - (int)floor((p.latitude - latLonHeader.llCorner->latitude) / latLonHeader.dy);
-        *myCol = (int)floor((p.longitude - latLonHeader.llCorner->longitude) / latLonHeader.dx);
+        *myRow = (latLonHeader.nrRows - 1) - int(floor((p.latitude - latLonHeader.llCorner->latitude) / latLonHeader.dy));
+        *myCol = int(floor((p.longitude - latLonHeader.llCorner->longitude) / latLonHeader.dx));
     }
 
     bool isOutOfGridRowCol(int myRow, int myCol, const Crit3DRasterGrid& myGrid)

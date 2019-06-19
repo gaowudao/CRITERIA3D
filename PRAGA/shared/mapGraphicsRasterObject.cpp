@@ -85,8 +85,8 @@ void RasterObject::clear()
 */
  QRectF RasterObject::boundingRect() const
 {
-     return QRectF( -this->view->width() * 0.6, -this->view->height() * 0.6,
-                     this->view->width() * 1.2,  this->view->height() * 1.2);
+     return QRectF( -this->view->width() * 1.0, -this->view->height() * 1.0,
+                     this->view->width() * 2,  this->view->height() * 2);
 }
 
 
@@ -176,8 +176,8 @@ void RasterObject::initializeIndexesMatrix()
     for (int row = 0; row < this->latLonHeader.nrRows; row++)
         for (int col = 0; col < this->latLonHeader.nrCols; col++)
         {
-            this->matrix[row][col].row = NODATA_UNSIGNED_SHORT;
-            this->matrix[row][col].col = NODATA_UNSIGNED_SHORT;
+            this->matrix[row][col].row = NODATA;
+            this->matrix[row][col].col = NODATA;
         }
 }
 
@@ -230,8 +230,8 @@ bool RasterObject::initializeUTM(gis::Crit3DRasterGrid* myRaster, const gis::Cri
                 gis::getRowColFromXY(*(myRaster->header), x, y, &utmRow, &utmCol);
                 if (this->isGrid || myRaster->getValueFromRowCol(utmRow, utmCol) != myRaster->header->flag)
                 {
-                    this->matrix[row][col].row = unsigned(utmRow);
-                    this->matrix[row][col].col = unsigned(utmCol);
+                    this->matrix[row][col].row = utmRow;
+                    this->matrix[row][col].col = utmCol;
                 }
             }
         }
@@ -320,7 +320,7 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
     int x0, y0, x1, y1, lx, ly;
     Crit3DColor* myColor;
     QColor myQColor;
-    float myValue;
+    float value;
 
     y0 = pixelLL.y;
     for (int row = rowBottom; row >= rowTop; row -= step)
@@ -332,17 +332,17 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
             x1 = int(pixelLL.x + (col-col0 + step) * dx);
 
             if (this->isLatLon)
-                myValue = myRaster->value[row][col];
+                value = myRaster->value[row][col];
             else
             {
-                myValue = INDEX_ERROR;
-                if (this->matrix[row][col].row != NODATA_UNSIGNED_SHORT)
-                    myValue = myRaster->value[matrix[row][col].row][matrix[row][col].col];
+                value = INDEX_ERROR;
+                if (this->matrix[row][col].row != NODATA)
+                    value = myRaster->value[matrix[row][col].row][matrix[row][col].col];
             }
 
-            if (myValue != myRaster->header->flag && myValue != INDEX_ERROR)
+            if (int(value) != int(myRaster->header->flag) && int(value) != int(INDEX_ERROR))
             {
-                myColor = myRaster->colorScale->getColor(myValue);
+                myColor = myRaster->colorScale->getColor(value);
                 myQColor = QColor(myColor->red, myColor->green, myColor->blue);
                 myPainter->setBrush(myQColor);
 
@@ -351,7 +351,7 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
                 myPainter->fillRect(x0, y0, lx, ly, myPainter->brush());
 
             }
-            else if (this->isGrid && myValue == myRaster->header->flag && drawBorder)
+            else if (this->isGrid && value == myRaster->header->flag && drawBorder)
             {
                 lx = (x1 - x0) + 1;
                 ly = (y1 - y0) + 1;

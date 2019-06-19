@@ -78,6 +78,9 @@
         void addShapeObject(GisObject* myObject);
         void itemClicked(QListWidgetItem* item);
         void itemMenuRequested(const QPoint point);
+        void saveRaster(GisObject* myObject);
+        void removeRaster(GisObject* myObject);
+        void removeShape(GisObject* myObject);
 
         QPoint getMapPoint(QPoint* point) const;
     };
