@@ -1169,7 +1169,6 @@ std::vector< std::vector<float> > PragaProject::averageSeriesOnZonesMeteoGrid(me
     std::vector<float> outputSeries;
     std::vector <std::vector<int>> indexRowCol(meteoGridDbHandler->gridStructure().header().nrRows, std::vector<int>(meteoGridDbHandler->gridStructure().header().nrCols, NODATA));
 
-    // LC la funzione updateMinMaxRasterGrid considera tutti i mp e non solo quelli attivi. Proporrei di limitarla a quelli
     gis::updateMinMaxRasterGrid(zoneGrid);
     std::vector <std::vector<float> > zoneVector((unsigned int)(zoneGrid->maximum+1), std::vector<float>());
 
@@ -1254,8 +1253,7 @@ std::vector< std::vector<float> > PragaProject::averageSeriesOnZonesMeteoGrid(me
             {
                 extractValidValuesWithThreshold(validValues, threshold);
             }
-            // LC l'enum comprende solo questi valori a differenza di vb dove lo
-            // switch p con mean, devStd, max e min
+
             float res = NODATA;
             int size = int(validValues.size());
             switch (spatialElab)
