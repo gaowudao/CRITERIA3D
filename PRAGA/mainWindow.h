@@ -109,6 +109,8 @@
 
         void on_actionShowGridClimate_triggered();
 
+        void on_actionSpatial_average_series_on_zones_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter

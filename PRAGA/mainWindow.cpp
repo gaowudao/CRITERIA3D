@@ -27,6 +27,7 @@
 #include "pragaDialogs.h"
 #include "computationDialog.h"
 #include "climateFieldsDialog.h"
+#include "seriesOnZonesDialog.h"
 #include "interpolationDialog.h"
 #include "pragaSettingsDialog.h"
 #include "gis.h"
@@ -1817,3 +1818,28 @@ void MainWindow::setMapSource(OSMTileSource::OSMTileType mySource)
     this->mapView->setTileSource(composite);
 }
 
+
+void MainWindow::on_actionSpatial_average_series_on_zones_triggered()
+{
+    if (!ui->grid->isChecked())
+    {
+        myProject.errorString = "Load grid";
+        myProject.logError();
+        return;
+    }
+    if (this->rasterObj->getRaster() == nullptr)
+    {
+        QMessageBox::information(nullptr, "No Raster", "Load raster before");
+        return;
+    }
+    SeriesOnZonesDialog zoneDialog(myProject.parameters);
+    if (zoneDialog.result() != QDialog::Accepted)
+        return;
+    else
+    {
+        qDebug() << "variable: " << zoneDialog.getVariable();
+        qDebug() << "start date: " << zoneDialog.getStartDate().toString("yyyy.MM.dd");
+        qDebug() << "end date: " << zoneDialog.getEndDate().toString("yyyy.MM.dd");
+        qDebug() << "spatial elab: " << zoneDialog.getSpatialElaboration();
+    }
+}

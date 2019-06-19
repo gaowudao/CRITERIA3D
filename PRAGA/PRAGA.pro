@@ -106,7 +106,8 @@ SOURCES += main.cpp\
     pragaDialogs.cpp \
     climateFieldsDialog.cpp \
     keyboardFilter.cpp \
-    shared/colorLegend.cpp
+    shared/colorLegend.cpp \
+    seriesOnZonesDialog.cpp
 
 
 HEADERS  += mainWindow.h \
@@ -127,7 +128,8 @@ HEADERS  += mainWindow.h \
     pragaDialogs.h \
     climateFieldsDialog.h \
     keyboardFilter.h \
-    shared/colorLegend.h
+    shared/colorLegend.h \
+    seriesOnZonesDialog.h
 
 
 FORMS    += mainWindow.ui \
