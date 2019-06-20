@@ -1205,9 +1205,9 @@ std::vector< std::vector<float> > PragaProject::averageSeriesOnZonesMeteoGrid(me
                 bool dataLoaded = preElaboration(&errorString, nullptr, meteoGridDbHandler, meteoPointTemp, isMeteoGrid, variable, elab1MeteoComp, startDate, endDate, outputValues, &percValue, meteoSettings, clima->getElabSettings());
                 if (dataLoaded)
                 {
-                    indexSeries = indexSeries + 1;
                     outputSeries.insert(outputSeries.end(), outputValues.begin(), outputValues.end());
                     indexRowCol[row][col] = indexSeries;
+                    indexSeries = indexSeries + 1;
                 }
             }
         }
@@ -1231,9 +1231,13 @@ std::vector< std::vector<float> > PragaProject::averageSeriesOnZonesMeteoGrid(me
 
                     if (meteoGridRow[zoneRow][zoneCol] != NODATA && meteoGridCol[zoneRow][zoneCol] != NODATA)
                     {
+                        qDebug() << "zoneRow " << zoneRow;
+                        qDebug() << "zoneCol " << zoneCol;
+                        qDebug() << "meteoGridRow[zoneRow][zoneCol] " << meteoGridRow[zoneRow][zoneCol];
+                        qDebug() << " meteoGridCol[zoneRow][zoneCol] " <<  meteoGridCol[zoneRow][zoneCol];
                         if (indexRowCol[meteoGridRow[zoneRow][zoneCol]][meteoGridCol[zoneRow][zoneCol]] != NODATA)
                         {
-
+                            qDebug() << " indexRowCol[meteoGridRow[zoneRow][zoneCol]][meteoGridCol[zoneRow][zoneCol]] " <<  indexRowCol[meteoGridRow[zoneRow][zoneCol]][meteoGridCol[zoneRow][zoneCol]];
                             value = outputSeries.at(indexRowCol[meteoGridRow[zoneRow][zoneCol]][meteoGridCol[zoneRow][zoneCol]]+day);
                             if (value != meteoGridDbHandler->gridStructure().header().flag)
                             {
