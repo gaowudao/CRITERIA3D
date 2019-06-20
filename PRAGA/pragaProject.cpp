@@ -1238,7 +1238,7 @@ std::vector< std::vector<float> > PragaProject::averageSeriesOnZonesMeteoGrid(me
                         if (indexRowCol[meteoGridRow[zoneRow][zoneCol]][meteoGridCol[zoneRow][zoneCol]] != NODATA)
                         {
                             //qDebug() << " indexRowCol[meteoGridRow[zoneRow][zoneCol]][meteoGridCol[zoneRow][zoneCol]] " <<  indexRowCol[meteoGridRow[zoneRow][zoneCol]][meteoGridCol[zoneRow][zoneCol]];
-                            value = outputSeries.at(indexRowCol[meteoGridRow[zoneRow][zoneCol]][meteoGridCol[zoneRow][zoneCol]]+day);
+                            value = outputSeries.at(indexRowCol[meteoGridRow[zoneRow][zoneCol]][meteoGridCol[zoneRow][zoneCol]]*outputValues.size()+day);
                             if (value != meteoGridDbHandler->gridStructure().header().flag)
                             {
                                 zoneVector[zoneIndex].push_back(value);
