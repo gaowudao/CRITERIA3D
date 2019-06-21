@@ -310,8 +310,8 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
     gis::Crit3DPixel pixelLL;
     llCorner.longitude =this->latLonHeader.llCorner->longitude + col0 * this->latLonHeader.dx;
     llCorner.latitude = this->latLonHeader.llCorner->latitude + (this->latLonHeader.nrRows-1 - rowBottom) * this->latLonHeader.dy;
-    pixelLL.x = int(this->geoMap->degreeToPixelX * (llCorner.longitude - this->geoMap->referencePoint.longitude));
-    pixelLL.y = int(this->geoMap->degreeToPixelY * (llCorner.latitude - this->geoMap->referencePoint.latitude));
+    pixelLL.x = int(floor(this->geoMap->degreeToPixelX * (llCorner.longitude - this->geoMap->referencePoint.longitude)));
+    pixelLL.y = int(this->geoMap->degreeToPixelY * (llCorner.latitude - this->geoMap->referencePoint.latitude))-2;
 
     double dx = latLonHeader.dx * this->geoMap->degreeToPixelX;
     double dy = latLonHeader.dy * this->geoMap->degreeToPixelY;
@@ -327,6 +327,7 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
     {
         y1 = int(pixelLL.y + (rowBottom-row + step) * dy);
         x0 = pixelLL.x;
+
         for (int col = col0; col <= col1; col += step)
         {
             x1 = int(pixelLL.x + (col-col0 + step) * dx);
