@@ -860,6 +860,8 @@ gridAggregationMethod getKeyGridAggregationMethod(std::string value)
 void Crit3DMeteoGrid::saveRowColfromZone(gis::Crit3DRasterGrid* zoneGrid, std::vector<std::vector<int> > &meteoGridRow, std::vector<std::vector<int> > &meteoGridCol)
 {
     float value;
+    double x, y;
+    int myRow, myCol;
     for (int row = 0; row < zoneGrid->header->nrRows; row++)
     {
 
@@ -868,19 +870,13 @@ void Crit3DMeteoGrid::saveRowColfromZone(gis::Crit3DRasterGrid* zoneGrid, std::v
             value = zoneGrid->value[row][col];
             if (value != zoneGrid->header->flag)
             {
-                gis::Crit3DUtmPoint* point = zoneGrid->utmPoint(row, col);
-                double x = point->x;
-                double y = point->y;
-                int myRow;
-                int myCol;
+                zoneGrid->getXY(row, col, &x, &y);
                 if (!_gridStructure.isUTM())
                 {
                     double utmX = x;
                     double utmY = y;
                     gis::getLatLonFromUtm(_gisSettings, utmX, utmY, &y, &x);
-                    gis::Crit3DGeoPoint geoPoint = gis::Crit3DGeoPoint(y, x);
-                    gis::getRowColFromLatLon(gridStructure().header(), geoPoint, &myRow, &myCol);
-
+                    gis::getRowColFromXY(_gridStructure.header(), x, y, &myRow, &myCol);
                 }
                 else
                 {

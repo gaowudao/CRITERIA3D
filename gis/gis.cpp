@@ -509,6 +509,12 @@ namespace gis
         v->col = int(floor((p.x - myHeader.llCorner->x) / myHeader.cellSize));
     }
 
+    void getRowColFromXY(const Crit3DGridHeader& myHeader, double myX, double myY, int *row, int *col)
+    {
+        *row = (myHeader.nrRows - 1) - int(floor((myY - myHeader.llCorner->latitude) / myHeader.dy));
+        *col = int(floor((myX - myHeader.llCorner->longitude) / myHeader.dx));
+    }
+
     void getRowColFromLatLon(const Crit3DGridHeader& latLonHeader, const Crit3DGeoPoint& p, int* myRow, int* myCol)
     {
         *myRow = (latLonHeader.nrRows - 1) - int(floor((p.latitude - latLonHeader.llCorner->latitude) / latLonHeader.dy));
