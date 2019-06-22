@@ -509,10 +509,8 @@ namespace gis
         v->col = int(floor((p.x - myHeader.llCorner->x) / myHeader.cellSize));
     }
 
-    void getRowColFromXY(const Crit3DGridHeader& myHeader, double myX, double myY, int *row, int *col)
+    void getMeteoGridRowColFromXY (const Crit3DGridHeader& myHeader, double myX, double myY, int *row, int *col)
     {
-        //*row = (myHeader.nrRows - 1) - int(floor((myY - myHeader.llCorner->latitude) / myHeader.dy));
-        // LC su vb è come segue
         *row = int(floor((myY - myHeader.llCorner->latitude) / myHeader.dy));
         *col = int(floor((myX - myHeader.llCorner->longitude) / myHeader.dx));
     }
