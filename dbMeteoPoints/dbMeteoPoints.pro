@@ -33,12 +33,14 @@ SOURCES += \
     download.cpp \
     variableslist.cpp \
     dbArkimet.cpp \
-    dbMeteoPointsHandler.cpp
+    dbMeteoPointsHandler.cpp \
+    dbAggregationsHandler..cpp
 
 HEADERS += \
     download.h \
     variableslist.h \
     dbArkimet.h \
-    dbMeteoPointsHandler.h
+    dbMeteoPointsHandler.h \
+    dbAggregationsHandler.h
 
 
