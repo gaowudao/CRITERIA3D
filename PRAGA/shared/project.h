@@ -24,7 +24,7 @@
 #endif
 
 #ifndef DBMETEOPOINTS_H
-    #include "dbMeteoPoints.h"
+    #include "dbMeteoPointsHandler.h"
 #endif
 
 #ifndef DBMETEOGRID_H

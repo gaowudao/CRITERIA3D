@@ -4,7 +4,7 @@
 #include <QString>
 #include <QDate>
 #include "variableslist.h"
-#include "dbMeteoPoints.h"
+#include "dbMeteoPointsHandler.h"
 
 
 #define PREC_ID 250

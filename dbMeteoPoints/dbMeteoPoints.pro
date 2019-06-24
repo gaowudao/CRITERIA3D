@@ -27,18 +27,18 @@ win32:{
 
 DEFINES += DBMETEOPOINTS_LIBRARY
 
-INCLUDEPATH += ../mathFunctions ../gis ../meteo ../crit3dDate ../interpolation
+INCLUDEPATH += ../mathFunctions ../gis ../utilities ../meteo ../crit3dDate ../interpolation
 
 SOURCES += \
     download.cpp \
     variableslist.cpp \
     dbArkimet.cpp \
-    dbMeteoPoints.cpp
+    dbMeteoPointsHandler.cpp
 
 HEADERS += \
     download.h \
     variableslist.h \
     dbArkimet.h \
-    dbMeteoPoints.h
+    dbMeteoPointsHandler.h
 
 

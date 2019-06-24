@@ -28,6 +28,7 @@
 
 #include "commonConstants.h"
 #include "mapGraphicsRasterObject.h"
+#include <math.h>
 
 
 RasterObject::RasterObject(MapGraphicsView* _view, MapGraphicsObject *parent) :

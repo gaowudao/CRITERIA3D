@@ -18,7 +18,7 @@
 #include "mainWindow.h"
 #include "ui_mainWindow.h"
 #include "formInfo.h"
-#include "dbMeteoPoints.h"
+#include "dbMeteoPointsHandler.h"
 #include "dbArkimet.h"
 #include "download.h"
 #include "pragaProject.h"

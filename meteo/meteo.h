@@ -154,27 +154,6 @@
       { "ACTUAL_EVAPO", actualEvaporation }
     };
 
-    const std::map<int, meteoVariable> MapIdMeteoVar = {
-      { 101, airTemperature },
-      { 102, precipitation },
-      { 103, airRelHumidity },
-      { 104, globalIrradiance },
-      { 105, windIntensity },
-      { 106, windDirection },
-      { 151, dailyAirTemperatureMin },
-      { 152, dailyAirTemperatureMax },
-      { 153, dailyAirTemperatureAvg },
-      { 154, dailyPrecipitation },
-      { 155, dailyAirRelHumidityMin },
-      { 156, dailyAirRelHumidityMax },
-      { 157, dailyAirRelHumidityAvg },
-      { 158, dailyGlobalRadiation },
-      { 159, dailyWindIntensityAvg },
-      { 160, dailyWindDirectionPrevailing },
-      { 161, dailyWindIntensityMax }
-    };
-
-
 
     enum frequencyType {hourly, daily, monthly, noFrequency};
 

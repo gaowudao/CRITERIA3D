@@ -44,12 +44,14 @@ public:
         std::vector<float> loadDailyVar(QString *myError, meteoVariable variable, Crit3DDate dateStart, Crit3DDate dateEnd, QDate* firstDateDB, Crit3DMeteoPoint *meteoPoint);
         bool loadHourlyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3DMeteoPoint *meteoPoint);
         std::vector<float> loadHourlyVar(QString *myError, meteoVariable variable, Crit3DDate dateStart, Crit3DDate dateEnd, QDateTime* firstDateDB, Crit3DMeteoPoint *meteoPoint);
+        bool loadVariableProperties(QString *myError);
         void closeDatabase();
         QSqlDatabase getDb() const;
         void setDb(const QSqlDatabase &db);
 
 protected:
         QSqlDatabase _db;
+        std::map<int, meteoVariable> _mapIdMeteoVar;
 signals:
 
 protected slots:

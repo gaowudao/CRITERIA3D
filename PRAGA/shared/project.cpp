@@ -560,6 +560,10 @@ bool Project::loadMeteoPointsDB(QString dbName)
         return false;
     }
 
+    if (!meteoPointsDbHandler->loadVariableProperties(&errorString))
+    {
+        return false;
+    }
     QList<Crit3DMeteoPoint> listMeteoPoints = meteoPointsDbHandler->getPropertiesFromDb(gisSettings, &errorString);
 
     nrMeteoPoints = listMeteoPoints.size();

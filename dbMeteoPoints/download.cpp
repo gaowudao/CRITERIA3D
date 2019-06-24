@@ -1,7 +1,7 @@
 #include <QtNetwork>
 
 #include "download.h"
-#include "dbMeteoPoints.h"
+#include "dbMeteoPointsHandler.h"
 #include "dbArkimet.h"
 #include "commonConstants.h"
 #include "variableslist.h"
