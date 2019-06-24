@@ -1293,7 +1293,7 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
            //printf("\n");
       }
 
-      printf("fase 5b\n");
+      printf("fase 5b2\n");
 
       // free memory
       for (int i=0;i<nrStations;i++)
@@ -1572,16 +1572,17 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
    {
        dummyMatrix[i]= (double*)calloc(nrStations, sizeof(double));
        dummyMatrix2[i]= (double*)calloc(nrStations, sizeof(double));
-       correlationMatrixSimulatedData[i]= (double*)calloc(nrStations, sizeof(double));
+       //correlationMatrixSimulatedData[i]= (double*)calloc(nrStations, sizeof(double));
        initialAmountsCorrelationMatrix[i]= (double*)calloc(nrStations, sizeof(double));
        for (int j=0;j<nrStations;j++)
        {
            dummyMatrix[i][j]= NODATA;
            dummyMatrix2[i][j]= NODATA;
-           correlationMatrixSimulatedData[i][j]= NODATA;
+           //correlationMatrixSimulatedData[i][j]= NODATA;
            initialAmountsCorrelationMatrix[i][j]= NODATA;
        }
    }
+
    for (int i=0;i<nrStations;i++)
    {
        eigenvalues[i]=NODATA;
@@ -1634,7 +1635,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
        //printf("inizio sub\n");
        eigenproblem::rs(nrStations,correlationArray,eigenvalues,true,eigenvectors);
 
-
+        printf("fase 5b1 %d\n",ii);
        for (int i=0;i<nrStations;i++)
        {
            if (eigenvalues[i] <= 0)
@@ -1791,7 +1792,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
            if (val <= fabs(minimalValueToExitFromCycle) + TOLERANCE_MULGETS) exitWhileCycle = true;
        }
        //printf("contatore per uscire %d contatore %d val %f",counterConvergence, ii, val); pressEnterToContinue();
-
+        printf("fase 5b1post %d\n",ii);
        if (ii != MAX_ITERATION_MULGETS && val> TOLERANCE_MULGETS && (!exitWhileCycle))
        {
            for (int i=0;i<nrStations;i++)
