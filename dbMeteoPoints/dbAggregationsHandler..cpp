@@ -40,7 +40,7 @@ QString Crit3DAggregationsDbHandler::error() const
     return _error;
 }
 
-bool Crit3DAggregationsDbHandler::writeAggregationZones(QString name, QString filename, QString field)
+bool Crit3DAggregationsDbHandler::writeAggregationZonesTable(QString name, QString filename, QString field)
 {
 
     QSqlQuery qry(_db);
@@ -91,7 +91,7 @@ bool Crit3DAggregationsDbHandler::getAggregationZonesReference(QString name, QSt
     }
 }
 
-void Crit3DAggregationsDbHandler::initAggregationTables(int numZones, QString aggrType, QString periodType, QDate startDate, QDate endDate)
+void Crit3DAggregationsDbHandler::initAggregatedTables(int numZones, QString aggrType, QString periodType, QDate startDate, QDate endDate)
 {
 
     for (int i = 0; i < numZones; i++)
