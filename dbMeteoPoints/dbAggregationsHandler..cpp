@@ -90,3 +90,28 @@ bool Crit3DAggregationsDbHandler::getAggregationZonesReference(QString name, QSt
         }
     }
 }
+
+void Crit3DAggregationsDbHandler::initAggregationTables(int numZones, QString aggrType, QString periodType, QDate startDate, QDate endDate)
+{
+
+    for (int i = 0; i < numZones; i++)
+    {
+        QString statement = QString("CREATE TABLE IF NOT EXISTS `%1_%2_%3` "
+                                    "(date_time TEXT, id_variable INTEGER, value REAL, PRIMARY KEY(date_time,id_variable))").arg(i).arg(aggrType).arg(periodType);
+
+        QSqlQuery qry(statement, _db);
+        if( !qry.exec() )
+        {
+            _error = qry.lastError().text();
+        }
+        statement = QString("DELETE FROM `%1_%2_%3` WHERE date_time >= DATE('%2') AND date_time < DATE('%3', '+1 day')")
+                        .arg(i).arg(aggrType).arg(periodType).arg(startDate.toString("yyyy-MM-dd")).arg(endDate.toString("yyyy-MM-dd"));
+
+        qry = QSqlQuery(statement, _db);
+        if( !qry.exec() )
+        {
+            _error = qry.lastError().text();
+        }
+    }
+
+}

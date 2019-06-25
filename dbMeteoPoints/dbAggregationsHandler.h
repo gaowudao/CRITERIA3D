@@ -20,6 +20,7 @@ public:
 
     bool writeAggregationZones(QString name, QString filename, QString field);
     bool getAggregationZonesReference(QString name, QString* filename, QString* field);
+    void initAggregationTables(int numZones, QString aggrType, QString periodType, QDate startDate, QDate endDate);
 
 private:
     QSqlDatabase _db;
