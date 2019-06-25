@@ -4,7 +4,7 @@
 #include "dbMeteoPointsHandler.h"
 #include "dbArkimet.h"
 #include "commonConstants.h"
-#include "variableslist.h"
+#include "variablesList.h"
 #include "qdatetime.h"
 #include "iostream"
 

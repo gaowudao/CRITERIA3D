@@ -31,16 +31,18 @@ INCLUDEPATH += ../mathFunctions ../gis ../utilities ../meteo ../crit3dDate ../in
 
 SOURCES += \
     download.cpp \
-    variableslist.cpp \
     dbArkimet.cpp \
     dbMeteoPointsHandler.cpp \
-    dbAggregationsHandler..cpp
+    dbAggregationsHandler..cpp \
+    variableProperties.cpp \
+    variablesList.cpp
 
 HEADERS += \
     download.h \
-    variableslist.h \
     dbArkimet.h \
     dbMeteoPointsHandler.h \
-    dbAggregationsHandler.h
+    dbAggregationsHandler.h \
+    variableProperties.h \
+    variablesList.h
 
 

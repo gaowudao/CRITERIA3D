@@ -10,6 +10,9 @@
 #ifndef METEOPOINT_H
     #include "meteoPoint.h"
 #endif
+#ifndef VARIABLEPROPERTIES_H
+    #include "variableProperties.h"
+#endif
 #ifndef INTERPOLATIONSETTINGS_H
     #include "interpolationSettings.h"
 #endif
@@ -27,7 +30,6 @@ public:
 
         ~Crit3DMeteoPointsDbHandler();
         void dbManager();
-        int getIdfromMeteoVar(meteoVariable meteoVar);
         QString getDatasetURL(QString dataset);
         QString getDbName();
         QStringList getDatasetsList();
@@ -44,10 +46,11 @@ public:
         std::vector<float> loadDailyVar(QString *myError, meteoVariable variable, Crit3DDate dateStart, Crit3DDate dateEnd, QDate* firstDateDB, Crit3DMeteoPoint *meteoPoint);
         bool loadHourlyData(Crit3DDate dateStart, Crit3DDate dateEnd, Crit3DMeteoPoint *meteoPoint);
         std::vector<float> loadHourlyVar(QString *myError, meteoVariable variable, Crit3DDate dateStart, Crit3DDate dateEnd, QDateTime* firstDateDB, Crit3DMeteoPoint *meteoPoint);
-        bool loadVariableProperties(QString *myError);
         void closeDatabase();
         QSqlDatabase getDb() const;
         void setDb(const QSqlDatabase &db);
+
+        std::map<int, meteoVariable> getMapIdMeteoVar() const;
 
 protected:
         QSqlDatabase _db;

@@ -1,4 +1,4 @@
-#include "variableslist.h"
+#include "variablesList.h"
 
 VariablesList::VariablesList(int id, int arkId, QString varName, int frequency)
 {

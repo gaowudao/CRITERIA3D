@@ -3,7 +3,7 @@
 
 #include <QString>
 #include <QDate>
-#include "variableslist.h"
+#include "variablesList.h"
 #include "dbMeteoPointsHandler.h"
 
 

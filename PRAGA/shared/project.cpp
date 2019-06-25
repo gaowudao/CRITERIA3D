@@ -560,7 +560,7 @@ bool Project::loadMeteoPointsDB(QString dbName)
         return false;
     }
 
-    if (!meteoPointsDbHandler->loadVariableProperties(&errorString))
+    if (!loadVariableProperties(&errorString, meteoPointsDbHandler->getDb(), meteoPointsDbHandler->getMapIdMeteoVar() ))
     {
         return false;
     }

@@ -1,4 +1,6 @@
 #include "dbAggregationsHandler.h"
+#include "commonConstants.h"
+#include "utilities.h"
 
 Crit3DAggregationsDbHandler::Crit3DAggregationsDbHandler(QString dbname)
 {
@@ -17,6 +19,21 @@ Crit3DAggregationsDbHandler::Crit3DAggregationsDbHandler(QString dbname)
     if (!_db.open())
        _error = _db.lastError().text();
 }
+
+Crit3DAggregationsDbHandler::~Crit3DAggregationsDbHandler()
+{
+    if ((_db.isValid()) && (_db.isOpen()))
+    {
+        _db.close();
+        _db.removeDatabase(_db.connectionName());
+    }
+}
+
+QSqlDatabase Crit3DAggregationsDbHandler::db() const
+{
+    return _db;
+}
+
 
 QString Crit3DAggregationsDbHandler::error() const
 {
