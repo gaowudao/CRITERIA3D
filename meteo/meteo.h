@@ -159,6 +159,8 @@
 
     enum surfaceType   {SurfaceTypeWater, SurfaceTypeSoil, SurfaceTypeCrop};
 
+    /*
+     * LC decommentare una volta eliminati i corrispondenti in grid
     enum aggregationMethod {noAggrMethod, aggrAvg, aggrMedian, aggrStdDeviation};
 
     const std::map<std::string, aggregationMethod> MapaggregationMethodToString = {
@@ -172,6 +174,7 @@
       { aggrMedian, "MEDIAN" },
       { aggrStdDeviation, "STDDEV" }
     };
+    */
 
     class Crit3DClimateParameters
     {

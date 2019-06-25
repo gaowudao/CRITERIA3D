@@ -13,6 +13,7 @@
 
     #define GRID_MIN_COVERAGE 0
 
+
     enum gridAggregationMethod {noAggrMethod, aggrAvg, aggrMedian, aggrStdDeviation};
 
     const std::map<std::string, gridAggregationMethod> gridAggregationMethodNames = {
