@@ -94,7 +94,7 @@ bool Crit3DAggregationsDbHandler::getAggregationZonesReference(QString name, QSt
 void Crit3DAggregationsDbHandler::initAggregatedTables(int numZones, QString aggrType, QString periodType, QDateTime startDate, QDateTime endDate)
 {
 
-    for (int i = 0; i < numZones; i++)
+    for (int i = 1; i < numZones; i++)
     {
         QString statement = QString("CREATE TABLE IF NOT EXISTS `%1_%2_%3` "
                                     "(date_time TEXT, id_variable INTEGER, value REAL, PRIMARY KEY(date_time,id_variable))").arg(i).arg(aggrType).arg(periodType);
@@ -124,7 +124,7 @@ void Crit3DAggregationsDbHandler::createTmpAggrTable()
     qry.prepare("CREATE TABLE TmpAggregationData (date_time TEXT, zone TEXT, id_variable INTEGER, value REAL)");
     if( !qry.exec() )
     {
-        qDebug() << qry.lastError();
+        _error = qry.lastError().text();
     }
 }
 
@@ -183,4 +183,27 @@ bool Crit3DAggregationsDbHandler::insertTmpAggr(QDateTime startDate, QDateTime e
     else
         return true;
 
+}
+
+
+bool Crit3DAggregationsDbHandler::saveAggrData(QString aggrType, QString periodType, int nZones)
+{
+
+    QString statement;
+
+    for (int zone = 1; zone < nZones; zone++)
+    {
+        statement = QString("INSERT INTO `%1_%2_%3` ").arg(zone).arg(aggrType).arg(periodType);
+        statement += QString("SELECT date_time, id_variable, value FROM TmpAggregationData ");
+        statement += QString("WHERE zone = %1").arg(zone);
+
+        _db.exec(statement);
+        if (_db.lastError().type() != QSqlError::NoError)
+        {
+            _error = _db.lastError().text();
+            return false;
+        }
+
+    }
+    return true;
 }
