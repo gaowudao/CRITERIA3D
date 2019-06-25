@@ -20,7 +20,10 @@ public:
 
     bool writeAggregationZonesTable(QString name, QString filename, QString field);
     bool getAggregationZonesReference(QString name, QString* filename, QString* field);
-    void initAggregatedTables(int numZones, QString aggrType, QString periodType, QDate startDate, QDate endDate);
+    void initAggregatedTables(int numZones, QString aggrType, QString periodType, QDateTime startDate, QDateTime endDate);
+    void createTmpAggrTable();
+    void deleteTmpAggrTable();
+    bool insertTmpAggr(QDateTime startDate, QDateTime endDate, int idVariable, std::vector< std::vector<float> > aggregatedValues, int nZones);
 
 private:
     QSqlDatabase _db;

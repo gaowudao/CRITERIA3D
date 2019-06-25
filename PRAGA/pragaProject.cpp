@@ -3,6 +3,7 @@
 #include "climate.h"
 #include "dbClimate.h"
 #include "download.h"
+#include "dbAggregationsHandler.h"
 #include "basicMath.h"
 #include "formInfo.h"
 
@@ -1278,6 +1279,10 @@ std::vector< std::vector<float> > PragaProject::averageSeriesOnZonesMeteoGrid(me
          }
 
      }
+     // LC test
+//     Crit3DAggregationsDbHandler* aggregationDbHandler = new Crit3DAggregationsDbHandler("/home/laura/prova_agg.db");
+//     aggregationDbHandler->createTmpAggrTable();
+//     aggregationDbHandler->insertTmpAggr(QDateTime(startDate), QDateTime(endDate), 101, dailyElabAggregation, int(zoneGrid->maximum+1));
      return dailyElabAggregation;
 
 
