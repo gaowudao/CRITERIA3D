@@ -99,6 +99,8 @@
         double ERFC(double x, double accuracy);
         double inverseERFC(double value, double accuracy);
         double inverseERF(double value, double accuracy);
+        double tabulatedERF(double x);
+        double tabulatedERFC(double x);
     }
 
 

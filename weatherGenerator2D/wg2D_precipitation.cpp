@@ -1635,7 +1635,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
        //printf("inizio sub\n");
        eigenproblem::rs(nrStations,correlationArray,eigenvalues,true,eigenvectors);
 
-        printf("fase 5b1 %d\n",ii);
+
        for (int i=0;i<nrStations;i++)
        {
            if (eigenvalues[i] <= 0)
@@ -1680,6 +1680,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
        }
        pressEnterToContinue();
        */
+       printf("fase 5b1 pre %d\n",ii);
        for (int i=0;i<nrStations;i++)
        {
            // compute mean and standard deviation without NODATA check
@@ -1698,19 +1699,14 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
                normRandom[i][j]= (dummyMatrix3[i][j]-meanValue)/stdDevValue;
            }
        }
-       /*
-       for (int i=0;i<lengthSeries;i++)
-       {
-           for (int j=0;j<nrStations;j++) printf("%f ",normRandom[j][i]);
-           printf("\n");
-       }
-       pressEnterToContinue();*/
+       printf("fase 5b1 middle %d\n",ii);
 
        for (int i=0;i<nrStations;i++)
        {
            for (int j=0;j<lengthSeries;j++)
            {
-              uniformRandom[i][j] =0.5*statistics::ERFC(-normRandom[i][j]/SQRT_2,0.0001);
+              //uniformRandom[i][j] =0.5*statistics::ERFC(-normRandom[i][j]/SQRT_2,0.0001);
+               uniformRandom[i][j] =0.5*statistics::tabulatedERFC(-normRandom[i][j]/SQRT_2);
            }
        }
        /*for (int i=0;i<lengthSeries;i++)
@@ -1718,6 +1714,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
            for (int j=0;j<nrStations;j++) printf("%f ",uniformRandom[j][i]);
            printf("\n");
        }pressEnterToContinue();*/
+
        for (int i=0;i<nrStations;i++)
        {
            for (int j=0;j<lengthSeries;j++)
