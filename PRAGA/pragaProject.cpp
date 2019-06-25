@@ -70,16 +70,6 @@ bool PragaProject::loadPragaSettings()
 bool PragaProject::interpolationMeteoGrid(meteoVariable myVar, frequencyType myFrequency, const Crit3DTime& myTime,
                               gis::Crit3DRasterGrid *myRaster, bool showInfo)
 {
-
-    // LC test da cancellare!//////////////////////////////////////////////
-//    meteoComputation elab1MeteoComp = average;
-//    gridAggregationMethod spatialElab = aggrAvg;
-//    QDate startDate(2018, 04, 03);
-//    QDate endDate(2018, 04, 04);
-//    std::vector<float> outputValues;
-
-//    averageSeriesOnZonesMeteoGrid(myVar, elab1MeteoComp, spatialElab, NODATA, &DTM, startDate, endDate, outputValues, showInfo);
-    //////////////////////////////////////////////////////////////////////////////////////
     if (meteoGridDbHandler != nullptr)
     {
         if (!interpolationDem(myVar, myTime, myRaster, showInfo))
