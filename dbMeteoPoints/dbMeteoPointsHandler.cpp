@@ -20,6 +20,7 @@ Crit3DMeteoPointsDbHandler::Crit3DMeteoPointsDbHandler(QString provider_, QStrin
                                                        QString user_, QString pass_)
 {
     error = "";
+    _mapIdMeteoVar.clear();
 
     if(_db.isOpen())
     {
@@ -46,6 +47,7 @@ Crit3DMeteoPointsDbHandler::Crit3DMeteoPointsDbHandler(QString provider_, QStrin
 Crit3DMeteoPointsDbHandler::Crit3DMeteoPointsDbHandler(QString dbname_)
 {
     error = "";
+    _mapIdMeteoVar.clear();
 
     if(_db.isOpen())
     {
