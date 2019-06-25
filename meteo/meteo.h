@@ -159,6 +159,20 @@
 
     enum surfaceType   {SurfaceTypeWater, SurfaceTypeSoil, SurfaceTypeCrop};
 
+    enum aggregationMethod {noAggrMethod, aggrAvg, aggrMedian, aggrStdDeviation};
+
+    const std::map<std::string, aggregationMethod> MapaggregationMethodToString = {
+      { "AVG", aggrAvg },
+      { "MEDIAN", aggrMedian },
+      { "STDDEV", aggrStdDeviation }
+    };
+
+    const std::map<aggregationMethod, std::string> MapaggregationMethod = {
+      { aggrAvg, "AVG" },
+      { aggrMedian, "MEDIAN" },
+      { aggrStdDeviation, "STDDEV" }
+    };
+
     class Crit3DClimateParameters
     {
     public:
