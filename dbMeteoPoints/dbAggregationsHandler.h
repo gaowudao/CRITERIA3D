@@ -18,6 +18,9 @@ public:
     QSqlDatabase db() const;
     QString error() const;
 
+    bool writeAggregationZones(QString name, QString filename, QString field);
+    bool getAggregationZonesReference(QString name, QString* filename, QString* field);
+
 private:
     QSqlDatabase _db;
     std::map<int, meteoVariable> _mapIdMeteoVar;

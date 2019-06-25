@@ -39,3 +39,54 @@ QString Crit3DAggregationsDbHandler::error() const
 {
     return _error;
 }
+
+bool Crit3DAggregationsDbHandler::writeAggregationZones(QString name, QString filename, QString field)
+{
+
+    QSqlQuery qry(_db);
+
+    qry.prepare( "INSERT INTO aggregation_zones (name, filename, shape_field)"
+                                      " VALUES (:name, :filename, :shape_field)" );
+
+    qry.bindValue(":name", name);
+    qry.bindValue(":filename", filename);
+    qry.bindValue(":shape_field", field);
+
+    if( !qry.exec() )
+    {
+        _error = qry.lastError().text();
+        return false;
+    }
+    else
+        return true;
+
+}
+
+bool Crit3DAggregationsDbHandler::getAggregationZonesReference(QString name, QString* filename, QString* field)
+{
+
+    QSqlQuery qry(_db);
+
+    qry.prepare( "SELECT * FROM aggregation_zones WHERE name = :name");
+    qry.bindValue(":name", name);
+
+    if( !qry.exec() )
+    {
+        _error = qry.lastError().text();
+        return false;
+    }
+    else
+    {
+        if (qry.next())
+        {
+            getValue(qry.value("filename"), filename);
+            getValue(qry.value("shape_field"), field);
+            return true;
+        }
+        else
+        {
+            _error = "name not found";
+            return false;
+        }
+    }
+}
