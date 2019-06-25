@@ -25,7 +25,7 @@
 #include "commonConstants.h"
 #include "basicMath.h"
 #include <math.h>
-
+#include <malloc.h>
     bool sameSignNoZero(float a, float b)
     {
         return a*b > 0.0f;
