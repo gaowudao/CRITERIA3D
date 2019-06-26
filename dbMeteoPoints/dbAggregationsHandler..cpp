@@ -207,3 +207,33 @@ bool Crit3DAggregationsDbHandler::saveAggrData(QString aggrType, QString periodT
     }
     return true;
 }
+
+std::vector<float> Crit3DAggregationsDbHandler::getAggrData(QString aggrType, QString periodType, int zone, QDateTime startDate, QDateTime endDate, int idVariable)
+{
+
+    int nrDays = int(startDate.daysTo(endDate) + 1);
+    std::vector<float> values(nrDays, NODATA);
+    QDateTime date;
+    float value;
+
+    QString statement = QString( "SELECT * FROM `%1_%2_%3` WHERE date_time >= DATE('%4') AND date_time < DATE('%5', '+1 day') AND id_variable = '%6'")
+                                .arg(zone).arg(aggrType).arg(periodType).arg(startDate.toString("yyyy-MM-dd hh:mm:ss")).arg(endDate.toString("yyyy-MM-dd hh:mm:ss")).arg(idVariable);
+    QSqlQuery qry(statement, _db);
+
+    if( !qry.exec() )
+    {
+        _error = qry.lastError().text();
+        return values;
+    }
+    else
+    {
+        while (qry.next())
+        {
+            getValue(qry.value("date_time"), &date);
+            getValue(qry.value("value"), &value);
+            values[startDate.daysTo(date)] = value;
+        }
+    }
+    return values;
+}
+
