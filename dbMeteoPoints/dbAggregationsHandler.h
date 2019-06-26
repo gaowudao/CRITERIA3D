@@ -25,6 +25,7 @@ public:
     void deleteTmpAggrTable();
     bool insertTmpAggr(QDateTime startDate, QDateTime endDate, int idVariable, std::vector< std::vector<float> > aggregatedValues, int nZones);
     bool saveAggrData(QString aggrType, QString periodType, int nZones);
+    std::vector<float> getAggrData(QString aggrType, QString periodType, int zone, QDateTime startDate, QDateTime endDate, int idVariable);
 
 private:
     QSqlDatabase _db;

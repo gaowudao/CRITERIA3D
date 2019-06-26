@@ -1280,14 +1280,14 @@ std::vector< std::vector<float> > PragaProject::averageSeriesOnZonesMeteoGrid(me
 
      }
      // LC test
-     /*
-     Crit3DAggregationsDbHandler* aggregationDbHandler = new Crit3DAggregationsDbHandler("/home/laura/prova_agg.db");
-     aggregationDbHandler->initAggregatedTables(int(zoneGrid->maximum+1), "AVG", "D", QDateTime(startDate), QDateTime(endDate));
-     aggregationDbHandler->createTmpAggrTable();
-     aggregationDbHandler->insertTmpAggr(QDateTime(startDate), QDateTime(endDate), 101, dailyElabAggregation, int(zoneGrid->maximum+1));
-     aggregationDbHandler->saveAggrData("AVG", "D", int(zoneGrid->maximum+1));
-     aggregationDbHandler->deleteTmpAggrTable();
-     */
+
+//     Crit3DAggregationsDbHandler* aggregationDbHandler = new Crit3DAggregationsDbHandler("/home/laura/prova_agg.db");
+//     aggregationDbHandler->initAggregatedTables(int(zoneGrid->maximum+1), "AVG", "D", QDateTime(startDate), QDateTime(endDate));
+//     aggregationDbHandler->createTmpAggrTable();
+//     aggregationDbHandler->insertTmpAggr(QDateTime(startDate), QDateTime(endDate), 101, dailyElabAggregation, int(zoneGrid->maximum+1));
+//     aggregationDbHandler->saveAggrData("AVG", "D", int(zoneGrid->maximum+1));
+//     aggregationDbHandler->deleteTmpAggrTable();
+//     aggregationDbHandler->getAggrData( "AVG", "D", 1, QDateTime(startDate.addDays(-1)), QDateTime(endDate.addDays(1)), 101);
      return dailyElabAggregation;
 
 
