@@ -62,6 +62,10 @@
         bool fittingMarquardt(double *myParMin, double *myParMax,
                     double *myPar, int nrMyPar, double *myParDelta, int myMaxIterations,
                     double myEpsilon,int myFunctionCode, double *myX,int nrMyX,double *myY);
+
+        double cubicSpline(double x , double *firstColumn , double *secondColumn, int dim);
+        void punctualSecondDerivative(int dim, double *firstColumn , double *secondColumn, double* secondDerivative);
+        void tridiagonalThomasAlgorithm (int n, double *subDiagonal, double *mainDiagonal, double *superDiagonal, double *constantTerm, double* output);
     }
 
     namespace matricial
@@ -101,6 +105,9 @@
         double inverseERF(double value, double accuracy);
         double tabulatedERF(double x);
         double tabulatedERFC(double x);
+        double inverseTabulatedERF(double value);
+        double inverseTabulatedERFC(double value, double accuracy);
+
     }
 
 

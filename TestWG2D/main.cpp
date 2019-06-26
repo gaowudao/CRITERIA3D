@@ -37,15 +37,6 @@ void obsDataMeteoPointFormat(int nrStations, int nrData, float*** weatherArray, 
 int main()
 {
 
-
-
-
-    /*for (int i = 0; i <450 ; i++)
-    {
-        printf("%d  %f  %f\n", i, statistics::ERF(i*0.01+0.003,EPSILON),statistics::tabulatedERF(i*0.01+0.003));
-        getchar();
-    }*/
-
     int nrStations = 3;
     int lengthDataSeries = 1099;
     int nrVariables = 3;
