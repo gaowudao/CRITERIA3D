@@ -52,6 +52,7 @@
 
     namespace interpolation
     {
+        double linearInterpolation (double x, double *xColumn , double *yColumn, int dimTable);
         float linearInterpolation (float x, float *xColumn , float *yColumn, int dimTable );
         float linearExtrapolation(double x3,double x1,double y1,double x2 , double y2);
         double normGeneric(double *myParameters, int nrMyParameters, double *myX,int nrMyX, double *myY,int myFunctionCode);
@@ -106,7 +107,7 @@
         double tabulatedERF(double x);
         double tabulatedERFC(double x);
         double inverseTabulatedERF(double value);
-        double inverseTabulatedERFC(double value, double accuracy);
+        double inverseTabulatedERFC(double value);
 
     }
 
