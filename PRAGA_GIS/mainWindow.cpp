@@ -253,7 +253,7 @@ void MainWindow::addShapeObject(GisObject* myObject)
 
     MapGraphicsShapeObject* newShapeObj = new MapGraphicsShapeObject(this->mapView);
     newShapeObj->setOpacity(0.5);
-    newShapeObj->initializeUTM(myObject->getShapeHandler(), myProject.gisSettings);
+    newShapeObj->initializeUTM(myObject->getShapeHandler());
     this->shapeObjList.push_back(newShapeObj);
 
     this->mapView->scene()->addObject(newShapeObj);

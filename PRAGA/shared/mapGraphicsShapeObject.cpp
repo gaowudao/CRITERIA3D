@@ -100,7 +100,7 @@ void MapGraphicsShapeObject::drawShape(QPainter* myPainter)
 }
 
 
-bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr, const gis::Crit3DGisSettings& gisSettings)
+bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr)
 {
     if (shapePtr == nullptr) return false;
     this->setShape(shapePtr);
@@ -115,6 +115,8 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr, const g
     this->hole.resize(nrShapes);
     this->geoBounds.resize(nrShapes);
     this->geoPoints.resize(nrShapes);
+    double refLatitude = this->geoMap->referencePoint.latitude;
+    int zoneNumber = shapePtr->getUtmZone();
 
     for (unsigned int i = 0; i < nrShapes; i++)
     {
@@ -130,10 +132,10 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr, const g
 
         // shape bounds
         bounds = myShape.getBounds();
-        gis::getLatLonFromUtm(gisSettings, bounds.xmin, bounds.ymin, &lat, &lon);
+        gis::utmToLatLon(zoneNumber, refLatitude, bounds.xmin, bounds.ymin, &lat, &lon);
         this->geoBounds[i].bottomLeft.latitude = lat;
         this->geoBounds[i].bottomLeft.longitude = lon;
-        gis::getLatLonFromUtm(gisSettings, bounds.xmax, bounds.ymax, &lat, &lon);
+        gis::utmToLatLon(zoneNumber, refLatitude, bounds.xmax, bounds.ymax, &lat, &lon);
         this->geoBounds[i].topRight.latitude = lat;
         this->geoBounds[i].topRight.longitude = lon;
 
@@ -143,7 +145,7 @@ bool MapGraphicsShapeObject::initializeUTM(Crit3DShapeHandler* shapePtr, const g
         p_ptr = myShape.getVertices();
         for (unsigned long j = 0; j < nrVertices; j++)
         {
-            gis::getLatLonFromUtm(gisSettings, p_ptr->x, p_ptr->y, &lat, &lon);
+            gis::utmToLatLon(zoneNumber, refLatitude, p_ptr->x, p_ptr->y, &lat, &lon);
             this->geoPoints[i][j].lat = lat;
             this->geoPoints[i][j].lon = lon;
             p_ptr++;
