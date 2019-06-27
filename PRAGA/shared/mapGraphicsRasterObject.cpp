@@ -304,8 +304,6 @@ bool RasterObject::drawRaster(gis::Crit3DRasterGrid *myRaster, QPainter* myPaint
         gis::updateColorScale(myRaster, *utmWindow);
     }
 
-    myRaster->colorScale->minimum = -5.f;
-    myRaster->colorScale->maximum = 5.f;
     roundColorScale(myRaster->colorScale, 4, true);
 
     // lower left position
