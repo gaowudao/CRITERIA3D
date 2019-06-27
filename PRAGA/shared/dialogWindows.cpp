@@ -73,6 +73,7 @@ meteoVariable chooseColorScale()
     QRadioButton RH("Relative humidity %");
     QRadioButton Rad("Solar radiation MJ m-2");
     QRadioButton Wind("Wind intensity m s-1");
+    QRadioButton Anomaly("Anomaly");
 
     layoutVariable.addWidget(&DTM);
     layoutVariable.addWidget(&Temp);
@@ -80,6 +81,7 @@ meteoVariable chooseColorScale()
     layoutVariable.addWidget(&RH);
     layoutVariable.addWidget(&Rad);
     layoutVariable.addWidget(&Wind);
+    layoutVariable.addWidget(&Anomaly);
 
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
@@ -108,6 +110,8 @@ meteoVariable chooseColorScale()
         return globalIrradiance;
     else if (Wind.isChecked())
         return windIntensity;
+    else if (Anomaly.isChecked())
+        return anomaly;
     else
         return noMeteoTerrain;
 }

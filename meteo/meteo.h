@@ -70,7 +70,7 @@
                     referenceEvapotranspiration, dailyReferenceEvapotranspirationHS, dailyReferenceEvapotranspirationPM, actualEvaporation,
                     dailyBIC,
                     dailyWaterTableDepth,
-                    noMeteoTerrain, noMeteoVar};
+                    anomaly, noMeteoTerrain, noMeteoVar};
 
 
     const std::map<std::string, meteoVariable> MapDailyMeteoVar = {

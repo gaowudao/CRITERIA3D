@@ -161,6 +161,24 @@ bool setTemperatureScale(Crit3DColorScale* myScale)
 }
 
 
+bool setAnomalyScale(Crit3DColorScale* myScale)
+{
+    myScale->nrKeyColors = 5;
+    myScale->nrColors = 256;
+    myScale->keyColor = new Crit3DColor[unsigned(myScale->nrKeyColors)];
+    myScale->color = new Crit3DColor[unsigned(myScale->nrColors)];
+    myScale->classification = classificationMethod::EqualInterval;
+
+    myScale->keyColor[0] = Crit3DColor(0, 0, 255);         /*!< blue */
+    myScale->keyColor[1] = Crit3DColor(64, 196, 64);       /*!< green */
+    myScale->keyColor[2] = Crit3DColor(255, 255, 255);     /*!< white */
+    myScale->keyColor[3] = Crit3DColor(255, 0, 0);         /*!< red */
+    myScale->keyColor[4] = Crit3DColor(128, 0, 128);       /*!< violet */
+
+    return(myScale->classify());
+}
+
+
 bool setPrecipitationScale(Crit3DColorScale* myScale)
 {
     myScale->nrKeyColors = 6;

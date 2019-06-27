@@ -458,9 +458,13 @@ bool setColorScale(meteoVariable variable, Crit3DColorScale *colorScale)
         case windIntensity: case dailyWindIntensityAvg: case dailyWindIntensityMax:
             setWindIntensityScale(colorScale);
             break;
+        case anomaly:
+            setAnomalyScale(colorScale);
+            break;
         case noMeteoTerrain:
             setDefaultDTMScale(colorScale);
             break;
+
         default:
             setDefaultDTMScale(colorScale);
     }
