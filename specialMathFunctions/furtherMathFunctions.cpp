@@ -342,19 +342,19 @@ namespace interpolation
 
     double linearInterpolation (double x, double *xColumn , double *yColumn, int dimTable )
     {
-        double *firstColumn = (double *) calloc(dimTable, sizeof(double));
-        double *secondColumn = (double *) calloc(dimTable, sizeof(double));
-        firstColumn = xColumn ;
-        secondColumn = yColumn ;
+        //double *firstColumn = (double *) calloc(dimTable, sizeof(double));
+        //double *secondColumn = (double *) calloc(dimTable, sizeof(double));
+        //firstColumn = xColumn ;
+        //secondColumn = yColumn ;
         double slope , offset ;
         short stage=1;
-        if (x < firstColumn[0]) return secondColumn[0] ;
-        if (x > firstColumn[dimTable-1]) return secondColumn[dimTable-1];
-        while (x > firstColumn[stage]) stage++ ;
-        slope = (secondColumn[stage]- secondColumn[stage-1])/(firstColumn[stage] - firstColumn[stage-1]);
-        offset = -firstColumn[stage-1]*slope + secondColumn[stage-1];
-        free(firstColumn);
-        free(secondColumn);
+        if (x < xColumn[0]) return yColumn[0] ;
+        if (x > xColumn[dimTable-1]) return yColumn[dimTable-1];
+        while (x > xColumn[stage]) stage++ ;
+        slope = (yColumn[stage]- yColumn[stage-1])/(xColumn[stage] - xColumn[stage-1]);
+        offset = -xColumn[stage-1]*slope + yColumn[stage-1];
+        //free(firstColumn);
+        //free(secondColumn);
         return (slope * x + offset) ;
     }
 
@@ -1284,12 +1284,15 @@ namespace statistics
             extendedValueX[i] = i*0.01;
             if (i > 399)
             {
-                extendedValueY[i] = 1 - exp(-variable*variable)/(sqrt(PI)*variable);
+                extendedValueY[i] = 1 - exp(-extendedValueX[i]*extendedValueX[i])/(sqrt(PI)*variable);
+                if (extendedValueY[i] < extendedValueY[i-1]) extendedValueY[i] = extendedValueY[i-1];
             }
             else
             {
                 extendedValueY[i] = valueY[i];
             }
+            //printf("%d %f %f \n",i,extendedValueY[i],extendedValueX[i]);
+            //getchar();
         }
         output = interpolation::linearInterpolation(variable,extendedValueY,extendedValueX,1000);
 
@@ -1318,10 +1321,23 @@ namespace statistics
         {
             extendedValueX[i] = -10. + i*0.01;
             extendedValueY[i] = tabulatedERFC(extendedValueX[i]);
+            //printf("%d %f %f\n",i,extendedValueX[i],extendedValueY[i]);
+            //getchar();
         }
-        if (value > extendedValueX[0]) value =  extendedValueX[0];
-        if (value < extendedValueX[1999]) value = extendedValueX[1999];
-        output = interpolation::linearInterpolation(value,extendedValueY,extendedValueX,2000);
+        //getchar();
+        //if (value > extendedValueX[0]) value =  extendedValueX[0];
+        //if (value < extendedValueX[1999]) value = extendedValueX[1999];
+        int counter = 0;
+        if (value > extendedValueY[counter]) output = extendedValueX[counter];
+        else
+        {
+            while (value < extendedValueY[counter] && counter<1999)
+            {
+                counter++;
+            }
+            output = ((extendedValueY[counter]-value)*extendedValueX[counter] + (value-extendedValueY[counter-1])*extendedValueX[counter-1])/(extendedValueY[counter]-extendedValueY[counter-1]);
+        //output = interpolation::linearInterpolation(value,extendedValueY,extendedValueX,2000);
+        }
         free(extendedValueX);
         free(extendedValueY);
         return output;

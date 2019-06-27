@@ -36,7 +36,6 @@ void obsDataMeteoPointFormat(int nrStations, int nrData, float*** weatherArray, 
 
 int main()
 {
-
     int nrStations = 3;
     int lengthDataSeries = 1099;
     int nrVariables = 3;

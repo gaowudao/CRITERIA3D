@@ -107,7 +107,7 @@
         double tabulatedERF(double x);
         double tabulatedERFC(double x);
         double inverseTabulatedERF(double value);
-        double inverseTabulatedERFC(double value, double accuracy);
+        double inverseTabulatedERFC(double value);
 
     }
 
