@@ -324,20 +324,20 @@ namespace interpolation
 {
     float linearInterpolation (float x, float *xColumn , float *yColumn, int dimTable )
     {
-        float *firstColumn = (float *) calloc(dimTable, sizeof(float));
-        float *secondColumn = (float *) calloc(dimTable, sizeof(float));
-        firstColumn = xColumn ;
-        secondColumn = yColumn ;
-        double slope , offset ;
+        //float *firstColumn = (float *) calloc(dimTable, sizeof(float));
+        //float *secondColumn = (float *) calloc(dimTable, sizeof(float));
+        //firstColumn = xColumn ;
+        //secondColumn = yColumn ;
+        float slope , offset ;
         short stage=1;
-        if (x < firstColumn[0]) return secondColumn[0] ;
-        if (x > firstColumn[dimTable-1]) return secondColumn[dimTable-1];
-        while (x > firstColumn[stage]) stage++ ;
-        slope = (secondColumn[stage]- secondColumn[stage-1])/(firstColumn[stage] - firstColumn[stage-1]);
-        offset = -firstColumn[stage-1]*slope + secondColumn[stage-1];
-        free(firstColumn);
-        free(secondColumn);
-        return float(slope * x + offset) ;
+        if (x < xColumn[0]) return yColumn[0] ;
+        if (x > xColumn[dimTable-1]) return yColumn[dimTable-1];
+        while (x > xColumn[stage]) stage++ ;
+        slope = (yColumn[stage]- yColumn[stage-1])/(xColumn[stage] - xColumn[stage-1]);
+        offset = -xColumn[stage-1]*slope + yColumn[stage-1];
+        //free(firstColumn);
+        //free(secondColumn);
+        return (slope * x + offset) ;
     }
 
     double linearInterpolation (double x, double *xColumn , double *yColumn, int dimTable )
