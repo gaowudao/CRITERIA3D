@@ -210,15 +210,20 @@ namespace soil
 
     double getSpecificDensity(double organicMatter)
     {
-        if (int(organicMatter) == int(NODATA))
-            organicMatter = 0.01;
+        const double MINIMUM_ORGANIC_MATTER = 0.01;
+
+        if (organicMatter == NODATA)
+        {
+            organicMatter = MINIMUM_ORGANIC_MATTER;
+        }
 
         /*! [Driessen] */
         return 1.0 / ((1.0 - organicMatter) / 2.65 + organicMatter / 1.43);
     }
 
 
-    double estimateBulkDensity(Crit3DHorizon* mySoil, double totalPorosity)
+    // estimate bulk density from total porosity
+    double estimateBulkDensity(Crit3DHorizon* mySoil, double totalPorosity, bool increaseWithDepth = false)
     {
         if (int(totalPorosity) == int(NODATA))
             totalPorosity = mySoil->vanGenuchten.refThetaS;
@@ -226,15 +231,15 @@ namespace soil
         double specificDensity = getSpecificDensity(mySoil->organicMatter);
         double refBulkDensity = (1 - totalPorosity) * specificDensity;
 
-        return refBulkDensity;
-
-        /* VALUTARE se inserire (introdotto in praga)
         // increase/decrease with depth, reference thetaSat at 33cm
+        if (increaseWithDepth)
+        {
+            double depth = (mySoil->upperDepth + mySoil->lowerDepth) * 0.5;
+            double depthCoeff = (depth - 0.33) * 0.1;
+            refBulkDensity *= (1.0 + depthCoeff);
+        }
 
-        double depth = (mySoil->upperDepth + mySoil->lowerDepth) * 0.5;
-        double depthCoeff = (depth - 0.33) * 0.1;
-        return refBulkDensity * (1.0 + depthCoeff);
-        */
+        return refBulkDensity;
     }
 
 
