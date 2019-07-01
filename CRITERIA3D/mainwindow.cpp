@@ -23,6 +23,7 @@
 #include "Position.h"
 #include "crit3dProject.h"
 #include "utilities.h"
+#include "soilDbTools.h"
 #include "commonConstants.h"
 #include "dialogWindows.h"
 #include "gis.h"
@@ -904,8 +905,21 @@ void MainWindow::on_actionOpen_soil_data_triggered()
     QString fileName = QFileDialog::getOpenFileName(this, tr("Load DB soil"), "", tr("SQLite files (*.db)"));
     if (fileName == "") return;
 
-    if (myProject.loadSoilData(fileName))
+    QString error;
+    if (! loadAllSoils(fileName, &(myProject.soilList), myProject.soilClass, &error))
+    {
+        QMessageBox::critical(nullptr, "Error!", error);
+        return;
+    }
+
+    if(error != "")
+    {
+        QMessageBox::information(nullptr, "Warning", error);
+    }
+    else
+    {
         QMessageBox::information(nullptr, "", "Soil data loaded.");
+    }
 }
 
 

@@ -4,6 +4,7 @@
     #ifndef SOIL_H
         #include "soil.h"
     #endif
+    #include <vector>
     class QSqlDatabase;
     class QString;
 
@@ -17,6 +18,9 @@
                                 QSqlDatabase* dbParameters, QString *myError);
 
     QString getIdSoilString(QSqlDatabase* dbSoil, int idSoilNumber, QString *myError);
+
+    bool loadAllSoils(QString dbName, std::vector <soil::Crit3DSoil> *soilList,
+                      soil::Crit3DSoilClass *soilClassList, QString* error);
 
 
 #endif // SOILDBTOOLS_H

@@ -1,6 +1,7 @@
 #include <QString>
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QUuid>
 #include <QVariant>
 
 #include "commonConstants.h"
@@ -283,4 +284,79 @@ QString getIdSoilString(QSqlDatabase* dbSoil, int idSoilNumber, QString *myError
     getValue(query.value("soil_code"), &idSoilStr);
 
     return idSoilStr;
+}
+
+
+bool loadAllSoils(QString dbName, std::vector <soil::Crit3DSoil> *soilList,
+                  soil::Crit3DSoilClass *soilClassList, QString* error)
+{
+    soilList->clear();
+
+    QSqlDatabase dbSoil = QSqlDatabase::addDatabase("QSQLITE", QUuid::createUuid().toString());
+    dbSoil.setDatabaseName(dbName);
+
+    if (!dbSoil.open())
+    {
+       *error = "Connection with database fail";
+       return false;
+    }
+
+    if (! loadVanGenuchtenParameters(soilClassList, &dbSoil, error))
+    {
+        return false;
+    }
+
+    // query soil list
+    QString queryString = "SELECT id_soil, soil_code FROM soils";
+    QSqlQuery query = dbSoil.exec(queryString);
+
+    query.first();
+    if (! query.isValid())
+    {
+        if (query.lastError().number() > 0)
+        {
+            *error = query.lastError().text();
+        }
+        else
+        {
+            *error = "Error in reading table soils";
+        }
+        return false;
+    }
+
+    // load soil properties
+    QString soilCode;
+    int idSoil;
+    QString wrongSoils = "";
+    do
+    {
+        getValue(query.value("id_soil"), &idSoil);
+        getValue(query.value("soil_code"), &soilCode);
+        if (idSoil != NODATA && soilCode != "")
+        {
+            soil::Crit3DSoil *mySoil = new soil::Crit3DSoil;
+            if (loadSoil(&dbSoil, soilCode, mySoil, soilClassList, error))
+            {
+                mySoil->id = idSoil;
+                mySoil->code = soilCode.toStdString();
+                soilList->push_back(*mySoil);
+            }
+            else
+            {
+                wrongSoils += *error + "\n";
+            }
+        }
+    } while(query.next());
+
+    if (soilList->size() == 0)
+    {
+       *error = "Missing soil properties";
+       return false;
+    }
+    else if (wrongSoils != "")
+    {
+        *error = wrongSoils;
+    }
+
+    return true;
 }

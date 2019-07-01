@@ -23,7 +23,6 @@
             soil::Crit3DSoilClass soilClassList[13];
 
             void on_actionLoadSoil();
-            bool loadSoilData(QString dbName, QString *error);
     };
 
 #endif // SOILWIDGET_H
