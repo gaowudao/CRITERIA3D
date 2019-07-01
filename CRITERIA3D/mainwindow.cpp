@@ -21,7 +21,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "Position.h"
-#include "dbMeteoPoints.h"
 #include "crit3dProject.h"
 #include "utilities.h"
 #include "commonConstants.h"

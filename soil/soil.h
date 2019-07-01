@@ -1,6 +1,8 @@
 #ifndef SOIL_H
 #define SOIL_H
 
+    #include "string"
+
     namespace soil {
 
         enum units {METER, KPA, CM};
@@ -101,6 +103,7 @@
         class Crit3DSoil
         {
         public:
+            std::string code;
             int id;
             int nrHorizons;
             double totalDepth;          /*!<   [m] */

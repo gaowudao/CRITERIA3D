@@ -14,7 +14,8 @@ TEMPLATE = app
 
 INCLUDEPATH +=  ./shared ../PRAGA/shared  \
                 ../mapGraphics ../soilFluxes3D/header  \
-                ../crit3dDate ../mathFunctions ../soil ../crop \
+                ../crit3dDate ../mathFunctions ../crop \
+                ../soil ../soilWidget \
                 ../meteo ../gis ../utilities  \
                 ../interpolation ../solarRadiation  \
                 ../dbMeteoPoints ../dbMeteoGrid \
@@ -43,6 +44,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../crop/debug -lcrop
     LIBS += -L../soilFluxes3D/debug -lsoilFluxes3D
     LIBS += -L../soil/debug -lsoil
+    LIBS += -L../soilWidget/debug -lsoilWidget
     LIBS += -L../crit3dDate/debug -lcrit3dDate
     LIBS += -L../mathFunctions/debug -lmathFunctions
 
@@ -58,6 +60,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../crop/release -lcrop
     LIBS += -L../soilFluxes3D/release -lsoilFluxes3D
     LIBS += -L../soil/release -lsoil
+    LIBS += -L../soilWidget/release -lsoilWidget
     LIBS += -L../crit3dDate/release -lcrit3dDate
     LIBS += -L../mathFunctions/release -lmathFunctions
 }

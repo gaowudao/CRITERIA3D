@@ -31,6 +31,7 @@
 #include "utilities.h"
 #include "crit3dProject.h"
 #include "waterBalance3D.h"
+#include "soilDbTools.h"
 
 
 Crit3DProject::Crit3DProject()
