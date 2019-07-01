@@ -211,14 +211,15 @@ namespace soil
     double getSpecificDensity(double organicMatter)
     {
         const double MINIMUM_ORGANIC_MATTER = 0.01;
+        const double QUARTZ_DENSITY = 2.648;            // g/cm3
 
-        if (organicMatter == NODATA)
+        if (int(organicMatter) == int(NODATA))
         {
             organicMatter = MINIMUM_ORGANIC_MATTER;
         }
 
         /*! [Driessen] */
-        return 1.0 / ((1.0 - organicMatter) / 2.65 + organicMatter / 1.43);
+        return 1.0 / ((1.0 - organicMatter) / QUARTZ_DENSITY + organicMatter / 1.43);
     }
 
 

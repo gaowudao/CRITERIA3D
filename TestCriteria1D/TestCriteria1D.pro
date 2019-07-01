@@ -1,7 +1,7 @@
 #-----------------------------------------------------
 #
 #   TESTCRITERIA1D
-#   Test software for Criteria1D library
+#   Test for Criteria1D library
 #   This project is part of CRITERIA3D distribution
 #
 #-----------------------------------------------------
