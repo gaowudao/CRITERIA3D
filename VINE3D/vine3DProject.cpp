@@ -940,9 +940,9 @@ soil::Crit3DSoil* Vine3DProject::loadHorizons(int idSoil, QString soil_code)
         getValue(query.value("bulk_density"), &bulkDensity);
         getValue(query.value("theta_sat"), &porosity);
 
-        if (bulkDensity == NODATA)
-            bulkDensity = soil::estimateBulkDensity(&(mySoil->horizon[i]), porosity);
-        if (porosity == NODATA)
+        if (int(bulkDensity) == int(NODATA))
+            bulkDensity = soil::estimateBulkDensity(&(mySoil->horizon[i]), porosity, false);
+        if (int(porosity) == int(NODATA))
             porosity = soil::estimateTotalPorosity(&(mySoil->horizon[i]), bulkDensity);
 
         mySoil->horizon[i].bulkDensity = bulkDensity;
