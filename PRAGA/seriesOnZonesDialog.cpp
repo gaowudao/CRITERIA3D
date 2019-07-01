@@ -19,7 +19,7 @@ QDate SeriesOnZonesDialog::getEndDate() const
     return endDate;
 }
 
-gridAggregationMethod SeriesOnZonesDialog::getSpatialElaboration() const
+aggregationMethod SeriesOnZonesDialog::getSpatialElaboration() const
 {
     return spatialElaboration;
 }

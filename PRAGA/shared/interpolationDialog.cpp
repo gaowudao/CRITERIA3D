@@ -22,8 +22,8 @@ InterpolationDialog::InterpolationDialog(Project *myProject)
     QLabel *labelAggregation = new QLabel(tr("aggregation method"));
     layoutAggregation->addWidget(labelAggregation);
 
-    std::map<std::string, gridAggregationMethod>::const_iterator itAggr;
-    for (itAggr = gridAggregationMethodNames.begin(); itAggr != gridAggregationMethodNames.end(); ++itAggr)
+    std::map<std::string, aggregationMethod>::const_iterator itAggr;
+    for (itAggr = aggregationMethodToString.begin(); itAggr != aggregationMethodToString.end(); ++itAggr)
         gridAggregationMethodEdit.addItem(QString::fromStdString(itAggr->first), QString::fromStdString(itAggr->first));
 
     QString aggregationString = QString::fromStdString(getKeyStringAggregationMethod(_interpolationSettings->getMeteoGridAggrMethod()));
@@ -148,7 +148,7 @@ void InterpolationDialog::editProxies()
 void InterpolationDialog::writeInterpolationSettings()
 {
     _paramSettings->beginGroup("interpolation");
-    _paramSettings->setValue("gridAggregationMethod", gridAggregationMethodEdit.itemData(gridAggregationMethodEdit.currentIndex()).toString());
+    _paramSettings->setValue("aggregationMethod", gridAggregationMethodEdit.itemData(gridAggregationMethodEdit.currentIndex()).toString());
     _paramSettings->setValue("algorithm", algorithmEdit.itemData(algorithmEdit.currentIndex()).toString());
     _paramSettings->setValue("lapseRateCode", lapseRateCodeEdit->isChecked());
     _paramSettings->setValue("thermalInversion", thermalInversionEdit->isChecked());
@@ -190,7 +190,7 @@ void InterpolationDialog::accept()
     _interpolationSettings->setInterpolationMethod(interpolationMethodNames.at(algorithmString.toStdString()));
 
     QString aggrString = gridAggregationMethodEdit.itemData(gridAggregationMethodEdit.currentIndex()).toString();
-    _interpolationSettings->setMeteoGridAggrMethod(gridAggregationMethodNames.at(aggrString.toStdString()));
+    _interpolationSettings->setMeteoGridAggrMethod(aggregationMethodToString.at(aggrString.toStdString()));
 
     _interpolationSettings->setUseTAD(topographicDistanceEdit->isChecked());
     _interpolationSettings->setUseLapseRateCode(lapseRateCodeEdit->isChecked());
