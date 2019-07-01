@@ -73,12 +73,12 @@ void Crit3DInterpolationSettings::setUseBestDetrending(bool value)
     useBestDetrending = value;
 }
 
-gridAggregationMethod Crit3DInterpolationSettings::getMeteoGridAggrMethod() const
+aggregationMethod Crit3DInterpolationSettings::getMeteoGridAggrMethod() const
 {
     return meteoGridAggrMethod;
 }
 
-void Crit3DInterpolationSettings::setMeteoGridAggrMethod(const gridAggregationMethod &value)
+void Crit3DInterpolationSettings::setMeteoGridAggrMethod(const aggregationMethod &value)
 {
     meteoGridAggrMethod = value;
 }

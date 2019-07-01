@@ -152,7 +152,7 @@
 
      double waterConductivity(double Se, Crit3DHorizon* horizon);
 
-     double estimateBulkDensity(Crit3DHorizon* mySoil, double totalPorosity);
+     double estimateBulkDensity(Crit3DHorizon* mySoil, double totalPorosity, bool increaseWithDepth);
      double estimateSaturatedConductivity(Crit3DHorizon* mySoil, double bulkDensity);
      double estimateTotalPorosity(Crit3DHorizon* mySoil, double bulkDensity);
 

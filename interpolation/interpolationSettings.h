@@ -103,7 +103,7 @@
         bool useBestDetrending;
         bool useDewPoint;
 
-        gridAggregationMethod meteoGridAggrMethod;
+        aggregationMethod meteoGridAggrMethod;
 
         bool isKrigingReady;
         bool precipitationAllZero;
@@ -162,8 +162,8 @@
         void setUseLapseRateCode(bool value);
         bool getUseBestDetrending() const;
         void setUseBestDetrending(bool value);
-        gridAggregationMethod getMeteoGridAggrMethod() const;
-        void setMeteoGridAggrMethod(const gridAggregationMethod &value);
+        aggregationMethod getMeteoGridAggrMethod() const;
+        void setMeteoGridAggrMethod(const aggregationMethod &value);
         float getShepardInitialRadius() const;
         void setShepardInitialRadius(float value);
         int getIndexPointCV() const;

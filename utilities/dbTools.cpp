@@ -335,14 +335,14 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, 
         getValue(query.value("theta_sat"), &theta_sat);
         if (theta_sat <= 0) theta_sat = NODATA;
 
-        if ((int(theta_sat) == int(NODATA)) && (bulkDensity != int(NODATA)))
+        if (int(theta_sat) == int(NODATA) && int(bulkDensity) != int(NODATA))
             theta_sat = soil::estimateTotalPorosity(&(mySoil->horizon[i]), bulkDensity);
 
         if (int(theta_sat) != int(NODATA))
             mySoil->horizon[i].vanGenuchten.thetaS = theta_sat;
 
         if (int(bulkDensity) == int(NODATA))
-            bulkDensity = soil::estimateBulkDensity(&(mySoil->horizon[i]), theta_sat);
+            bulkDensity = soil::estimateBulkDensity(&(mySoil->horizon[i]), theta_sat, false);
 
         mySoil->horizon[i].bulkDensity = bulkDensity;
 

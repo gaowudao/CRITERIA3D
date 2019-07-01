@@ -649,7 +649,7 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
     // TO DO compute std deviation
 }
 
-void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDTM, gis::Crit3DRasterGrid dataRaster, gridAggregationMethod elab)
+void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDTM, gis::Crit3DRasterGrid dataRaster, aggregationMethod elab)
 {
     int numberOfDays = 1;
     int initialize;
@@ -732,7 +732,7 @@ void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq
 }
 
 
-double Crit3DMeteoGrid::aggregateMeteoGridPoint(Crit3DMeteoPoint myPoint, gridAggregationMethod elab)
+double Crit3DMeteoGrid::aggregateMeteoGridPoint(Crit3DMeteoPoint myPoint, aggregationMethod elab)
 {
 
     std::vector <double> validValues;
@@ -756,16 +756,16 @@ double Crit3DMeteoGrid::aggregateMeteoGridPoint(Crit3DMeteoPoint myPoint, gridAg
         return NODATA;
     }
 
-    if (elab == gridAggregationMethod::aggrAvg)
+    if (elab == aggregationMethod::aggrAvg)
     {
         return statistics::mean(validValues.data(), int(validValues.size()));
     }
-    else if (elab == gridAggregationMethod::aggrMedian)
+    else if (elab == aggregationMethod::aggrMedian)
     {
         int size = int(validValues.size());
         return sorting::percentile(validValues.data(), &size, 50.0, true);
     }
-    else if (elab == gridAggregationMethod::aggrStdDeviation)
+    else if (elab == aggregationMethod::aggrStdDeviation)
     {
         return statistics::standardDeviation(validValues.data(), int(validValues.size()));
     }
@@ -823,39 +823,6 @@ void Crit3DMeteoGrid::setLastDate(const Crit3DDate &lastDate)
 {
     _lastDate = lastDate;
 }
-
-std::string getKeyStringAggregationMethod(gridAggregationMethod value)
-{
-    std::map<std::string, gridAggregationMethod>::const_iterator it;
-    std::string key = "";
-
-    for (it = gridAggregationMethodNames.begin(); it != gridAggregationMethodNames.end(); ++it)
-    {
-        if (it->second == value)
-        {
-            key = it->first;
-            break;
-        }
-    }
-    return key;
-}
-
-gridAggregationMethod getKeyGridAggregationMethod(std::string value)
-{
-    std::map<gridAggregationMethod, std::string>::const_iterator it;
-    gridAggregationMethod key = noAggrMethod;
-
-    for (it = gridAggregationMethodNamesToString.begin(); it != gridAggregationMethodNamesToString.end(); ++it)
-    {
-        if (it->second == value)
-        {
-            key = it->first;
-            break;
-        }
-    }
-    return key;
-}
-
 
 void Crit3DMeteoGrid::saveRowColfromZone(gis::Crit3DRasterGrid* zoneGrid, std::vector<std::vector<int> > &meteoGridRow, std::vector<std::vector<int> > &meteoGridCol)
 {
