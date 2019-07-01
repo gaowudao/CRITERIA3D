@@ -159,22 +159,19 @@
 
     enum surfaceType   {SurfaceTypeWater, SurfaceTypeSoil, SurfaceTypeCrop};
 
-    /*
-     * LC decommentare una volta eliminati i corrispondenti in grid
     enum aggregationMethod {noAggrMethod, aggrAvg, aggrMedian, aggrStdDeviation};
 
-    const std::map<std::string, aggregationMethod> MapaggregationMethodToString = {
+    const std::map<std::string, aggregationMethod> aggregationMethodToString = {
       { "AVG", aggrAvg },
       { "MEDIAN", aggrMedian },
       { "STDDEV", aggrStdDeviation }
     };
 
-    const std::map<aggregationMethod, std::string> MapaggregationMethod = {
+    const std::map<aggregationMethod, std::string> aggregationStringToMethod = {
       { aggrAvg, "AVG" },
       { aggrMedian, "MEDIAN" },
       { aggrStdDeviation, "STDDEV" }
     };
-    */
 
     class Crit3DClimateParameters
     {
@@ -211,6 +208,7 @@
     std::string getKeyStringMeteoMap(std::map<std::string, meteoVariable> map, meteoVariable value);
 
     meteoVariable getKeyMeteoVarMeteoMap(std::map<meteoVariable,std::string> map, std::string value);
+    std::string getKeyStringAggregationMethod(aggregationMethod value);
 
     bool checkLapseRateCode(lapseRateCodeType myType, bool useLapseRateCode, bool useSupplemental);
 

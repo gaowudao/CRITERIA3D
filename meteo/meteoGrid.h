@@ -13,23 +13,8 @@
 
     #define GRID_MIN_COVERAGE 0
 
-
-    enum gridAggregationMethod {noAggrMethod, aggrAvg, aggrMedian, aggrStdDeviation};
-
-    const std::map<std::string, gridAggregationMethod> gridAggregationMethodNames = {
-      { "average", aggrAvg },
-      { "median", aggrMedian },
-      { "stddev", aggrStdDeviation }
-    };
-
-    const std::map<gridAggregationMethod, std::string> gridAggregationMethodNamesToString = {
-      { aggrAvg, "average" },
-      { aggrMedian, "median" },
-      { aggrStdDeviation, "stddev" }
-    };
-
-    std::string getKeyStringAggregationMethod(gridAggregationMethod value);
-    gridAggregationMethod getKeyGridAggregationMethod(std::string value);
+    std::string getKeyStringAggregationMethod(aggregationMethod value);
+    aggregationMethod getKeyGridAggregationMethod(std::string value);
 
     class Crit3DMeteoGridStructure
     {
@@ -148,9 +133,9 @@
 
             void assignCellAggregationPoints(int row, int col, gis::Crit3DRasterGrid* myDTM, bool excludeNoData);
 
-            void aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDTM, gis::Crit3DRasterGrid dataRaster, gridAggregationMethod elab);
+            void aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDTM, gis::Crit3DRasterGrid dataRaster, aggregationMethod elab);
 
-            double aggregateMeteoGridPoint(Crit3DMeteoPoint myPoint, gridAggregationMethod elab);
+            double aggregateMeteoGridPoint(Crit3DMeteoPoint myPoint, aggregationMethod elab);
 
 
             bool getIsElabValue() const;

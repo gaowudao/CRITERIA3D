@@ -201,16 +201,16 @@ bool Project::loadParameters(QString parametersFileName)
                     interpolationSettings.setInterpolationMethod(interpolationMethodNames.at(algorithm));
             }
 
-            if (parameters->contains("gridAggregationMethod"))
+            if (parameters->contains("aggregationMethod"))
             {
-                std::string aggrMethod = parameters->value("gridAggregationMethod").toString().toStdString();
-                if (gridAggregationMethodNames.find(aggrMethod) == gridAggregationMethodNames.end())
+                std::string aggrMethod = parameters->value("aggregationMethod").toString().toStdString();
+                if (aggregationMethodToString.find(aggrMethod) == aggregationMethodToString.end())
                 {
                     errorString = "Unknown aggregation method";
                     return false;
                 }
                 else
-                    interpolationSettings.setMeteoGridAggrMethod(gridAggregationMethodNames.at(aggrMethod));
+                    interpolationSettings.setMeteoGridAggrMethod(aggregationMethodToString.at(aggrMethod));
             }
 
             if (parameters->contains("thermalInversion"))
