@@ -626,7 +626,7 @@ namespace interpolation
         {
             secondDerivative[i] = NODATA;
         }
-        punctualSecondDerivative(dim,firstColumn ,secondColumn,secondDerivative);
+        punctualSecondDerivative(dim,firstColumn,secondColumn,secondDerivative);
         while (x > firstColumn[i]) i++ ;
         double step;
         step = (firstColumn[i]- firstColumn[i-1]);
@@ -651,7 +651,8 @@ namespace interpolation
         double *superDiagonal =  (double *) calloc(matrixDimension, sizeof(double));
         for (int i=0 ; i < matrixDimension; i++)
         {
-            diagonal[i]= (firstColumn[i+2]-firstColumn[i])/3 ;
+            y2[i] = 0;
+            diagonal[i] = (firstColumn[i+2]-firstColumn[i])/3 ;
             subDiagonal[i] = (firstColumn[i+1]-firstColumn[i])/6;
             superDiagonal[i] = (firstColumn[i+2]-firstColumn[i+1])/6;
             constantTerm[i] = (secondColumn[i+2]-secondColumn[i+1])/(firstColumn[i+2]-firstColumn[i+1])
@@ -1270,6 +1271,7 @@ namespace statistics
 
     double inverseTabulatedERF(double value)
     {
+        // precision on the third digit after dot
         if (fabs(value >= 1)) return PARAMETER_ERROR;
 
         double output = 0;
@@ -1291,10 +1293,9 @@ namespace statistics
             {
                 extendedValueY[i] = valueY[i];
             }
-            //printf("%d %f %f \n",i,extendedValueY[i],extendedValueX[i]);
-            //getchar();
         }
         output = interpolation::linearInterpolation(variable,extendedValueY,extendedValueX,1000);
+        //output = interpolation::cubicSpline(variable,extendedValueY,extendedValueX,1000);
 
         free(extendedValueX);
         free(extendedValueY);
@@ -1308,39 +1309,12 @@ namespace statistics
 
     double inverseTabulatedERFC(double value)
     {
-
+        // precision on the third digit after dots
         if (value >=2 || value <= 0)
         {
             return PARAMETER_ERROR;
         }
-
-        double output;
-        double* extendedValueX = (double *) calloc(2000, sizeof(double));
-        double* extendedValueY = (double *) calloc(2000, sizeof(double));
-        for (int i=0;i<2000;i++)
-        {
-            extendedValueX[i] = -10. + i*0.01;
-            extendedValueY[i] = tabulatedERFC(extendedValueX[i]);
-            //printf("%d %f %f\n",i,extendedValueX[i],extendedValueY[i]);
-            //getchar();
-        }
-        //getchar();
-        //if (value > extendedValueX[0]) value =  extendedValueX[0];
-        //if (value < extendedValueX[1999]) value = extendedValueX[1999];
-        int counter = 0;
-        if (value > extendedValueY[counter]) output = extendedValueX[counter];
-        else
-        {
-            while (value < extendedValueY[counter] && counter<1999)
-            {
-                counter++;
-            }
-            output = ((extendedValueY[counter]-value)*extendedValueX[counter] + (value-extendedValueY[counter-1])*extendedValueX[counter-1])/(extendedValueY[counter]-extendedValueY[counter-1]);
-        //output = interpolation::linearInterpolation(value,extendedValueY,extendedValueX,2000);
-        }
-        free(extendedValueX);
-        free(extendedValueY);
-        return output;
+        return statistics::inverseTabulatedERF(1-value);
     }
 }
 
