@@ -9,6 +9,7 @@
 #include "project.h"
 #include "modelCore.h"
 #include "dbTools.h"
+#include "soilDbTools.h"
 #include "commonConstants.h"
 
 

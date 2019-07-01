@@ -30,7 +30,7 @@ HEADERS += \
     project.h \
 
 INCLUDEPATH +=  ../crit3dDate ../mathFunctions ../crop ../gis   \
-                ../meteo ../soil ../utilities ../criteria1D
+                ../meteo ../soil ../soilWidget ../utilities ../criteria1D
 
 CONFIG(debug, debug|release) {
     LIBS += -L../criteria1D/debug -lcriteria1D
@@ -39,6 +39,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../gis/debug -lgis
     LIBS += -L../crop/debug -lcrop
     LIBS += -L../soil/debug -lsoil
+    LIBS += -L../soilWidget/debug -lsoilWidget
     LIBS += -L../crit3dDate/debug -lcrit3dDate
     LIBS += -L../mathFunctions/debug -lmathFunctions
 } else {
@@ -48,6 +49,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../gis/release -lgis
     LIBS += -L../crop/release -lcrop
     LIBS += -L../soil/release -lsoil
+    LIBS += -L../soilWidget/release -lsoilWidget
     LIBS += -L../crit3dDate/release -lcrit3dDate
     LIBS += -L../mathFunctions/release -lmathFunctions
 }

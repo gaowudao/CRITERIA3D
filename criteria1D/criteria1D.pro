@@ -29,7 +29,7 @@ win32:{
 }
 
 INCLUDEPATH +=  ../crit3dDate ../mathFunctions ../crop  \
-                ../utilities ../meteo ../soil ../gis
+                ../utilities ../meteo ../soil ../soilWidget ../gis
 
 SOURCES += Criteria1D.cpp \
     modelCore.cpp \

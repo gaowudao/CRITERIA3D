@@ -38,6 +38,7 @@
 #include "utilities.h"
 #include "dbTools.h"
 #include "dbToolsMOSES.h"
+#include "soilDbTools.h"
 #include "meteo.h"
 #include "root.h"
 
