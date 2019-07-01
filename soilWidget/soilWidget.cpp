@@ -1,7 +1,6 @@
 #include "commonConstants.h"
 #include "soilWidget.h"
 #include "soilDbTools.h"
-#include "utilities.h"
 
 #include <QSqlDatabase>
 #include <QSqlQuery>
