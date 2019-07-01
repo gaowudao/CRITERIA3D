@@ -19,7 +19,7 @@
 SoilWidget::SoilWidget()
 {
     this->setWindowTitle(QStringLiteral("Soil"));
-    this->resize(600, 600);
+    this->resize(800, 600);
 
     // layout
     soilCombo = new QComboBox();
