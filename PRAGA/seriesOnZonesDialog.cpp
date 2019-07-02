@@ -76,9 +76,9 @@ SeriesOnZonesDialog::SeriesOnZonesDialog(QSettings *settings)
     dateLayout.addWidget(&genericPeriodEnd);
 
     QLabel spatialElabLabel("Spatial Elaboration: ");
-    spatialElab.addItem("average");
-    spatialElab.addItem("median");
-    spatialElab.addItem("stddev");
+    spatialElab.addItem("Average");
+    spatialElab.addItem("Median");
+    spatialElab.addItem("StdDeviation");
 
 
     spatialElabLayout.addWidget(&spatialElabLabel);
@@ -145,7 +145,7 @@ bool SeriesOnZonesDialog::checkValidData()
 
     QString var = variableList.currentText();
     variable = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, var.toStdString());
-    spatialElaboration = getKeyGridAggregationMethod(spatialElab.currentText().toStdString());
+    spatialElaboration = getKeyGridAggregationMethod("aggr"+spatialElab.currentText().toStdString());
 
     return true;
 

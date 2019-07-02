@@ -1142,10 +1142,11 @@ bool PragaProject::downloadHourlyDataArkimet(QStringList variables, QDate startD
 }
 
 
-std::vector< std::vector<float> > PragaProject::averageSeriesOnZonesMeteoGrid(meteoVariable variable, meteoComputation elab1MeteoComp, aggregationMethod spatialElab, float threshold, gis::Crit3DRasterGrid* zoneGrid, QDate startDate, QDate endDate, std::vector<float> &outputValues, bool showInfo)
+std::vector< std::vector<float> > PragaProject::averageSeriesOnZonesMeteoGrid(meteoVariable variable, meteoComputation elab1MeteoComp, aggregationMethod spatialElab, float threshold, gis::Crit3DRasterGrid* zoneGrid, QDate startDate, QDate endDate, QString periodType, std::vector<float> &outputValues, bool showInfo)
 {
 
 
+    QString aggregationString = QString::fromStdString(getKeyStringAggregationMethod(spatialElab));
     std::vector <std::vector<int> > meteoGridRow(zoneGrid->header->nrRows, std::vector<int>(zoneGrid->header->nrCols, NODATA));
     std::vector <std::vector<int> > meteoGridCol(zoneGrid->header->nrRows, std::vector<int>(zoneGrid->header->nrCols, NODATA));
     meteoGridDbHandler->meteoGrid()->saveRowColfromZone(zoneGrid, meteoGridRow, meteoGridCol);
@@ -1246,9 +1247,10 @@ std::vector< std::vector<float> > PragaProject::averageSeriesOnZonesMeteoGrid(me
 
             float res = NODATA;
             int size = int(validValues.size());
+
             switch (spatialElab)
             {
-                case aggrAvg:
+                case aggrAverage:
                     {
                         res = statistics::mean(validValues, size);
                         break;
@@ -1274,7 +1276,12 @@ std::vector< std::vector<float> > PragaProject::averageSeriesOnZonesMeteoGrid(me
          }
 
      }
-     // LC test
+      aggregationDbHandler->initAggregatedTables(int(zoneGrid->maximum+1), aggregationString, periodType, QDateTime(startDate), QDateTime(endDate));
+      aggregationDbHandler->createTmpAggrTable();
+      aggregationDbHandler->insertTmpAggr(QDateTime(startDate), QDateTime(endDate), variable, dailyElabAggregation, int(zoneGrid->maximum+1));
+      aggregationDbHandler->saveAggrData(aggregationString, periodType, int(zoneGrid->maximum+1));
+      aggregationDbHandler->deleteTmpAggrTable();
+      //aggregationDbHandler->getAggrData( aggregationString, periodType, 1, QDateTime(startDate.addDays(-1)), QDateTime(endDate.addDays(1)), variable);
 
 //     Crit3DAggregationsDbHandler* aggregationDbHandler = new Crit3DAggregationsDbHandler("/home/laura/prova_agg.db");
 //     aggregationDbHandler->initAggregatedTables(int(zoneGrid->maximum+1), "AVG", "D", QDateTime(startDate), QDateTime(endDate));
@@ -1284,7 +1291,5 @@ std::vector< std::vector<float> > PragaProject::averageSeriesOnZonesMeteoGrid(me
 //     aggregationDbHandler->deleteTmpAggrTable();
 //     aggregationDbHandler->getAggrData( "AVG", "D", 1, QDateTime(startDate.addDays(-1)), QDateTime(endDate.addDays(1)), 101);
      return dailyElabAggregation;
-
-
 
 }

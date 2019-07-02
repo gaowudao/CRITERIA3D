@@ -40,6 +40,11 @@ QString Crit3DAggregationsDbHandler::error() const
     return _error;
 }
 
+std::map<int, meteoVariable> Crit3DAggregationsDbHandler::mapIdMeteoVar() const
+{
+return _mapIdMeteoVar;
+}
+
 bool Crit3DAggregationsDbHandler::writeAggregationZonesTable(QString name, QString filename, QString field)
 {
 
@@ -138,9 +143,9 @@ void Crit3DAggregationsDbHandler::deleteTmpAggrTable()
 }
 
 
-bool Crit3DAggregationsDbHandler::insertTmpAggr(QDateTime startDate, QDateTime endDate, int idVariable, std::vector< std::vector<float> > aggregatedValues, int nZones)
+bool Crit3DAggregationsDbHandler::insertTmpAggr(QDateTime startDate, QDateTime endDate, meteoVariable variable, std::vector< std::vector<float> > aggregatedValues, int nZones)
 {
-
+    int idVariable = getIdfromMeteoVar(variable, _mapIdMeteoVar);
     int nrDays = int(startDate.daysTo(endDate) + 1);
     QSqlQuery qry(_db);
     qry.prepare( "INSERT INTO `TmpAggregationData` (date_time, zone, id_variable, value)"
@@ -208,9 +213,10 @@ bool Crit3DAggregationsDbHandler::saveAggrData(QString aggrType, QString periodT
     return true;
 }
 
-std::vector<float> Crit3DAggregationsDbHandler::getAggrData(QString aggrType, QString periodType, int zone, QDateTime startDate, QDateTime endDate, int idVariable)
+std::vector<float> Crit3DAggregationsDbHandler::getAggrData(QString aggrType, QString periodType, int zone, QDateTime startDate, QDateTime endDate, meteoVariable variable)
 {
 
+    int idVariable = getIdfromMeteoVar(variable, _mapIdMeteoVar);
     int nrDays = int(startDate.daysTo(endDate) + 1);
     std::vector<float> values(nrDays, NODATA);
     QDateTime date;

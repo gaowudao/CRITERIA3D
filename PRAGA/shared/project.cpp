@@ -632,6 +632,10 @@ bool Project::loadAggregationdDB(QString dbName)
         logError(aggregationDbHandler->error());
         return false;
     }
+    if (!loadVariableProperties(&errorString, aggregationDbHandler->db(), aggregationDbHandler->mapIdMeteoVar()))
+    {
+        return false;
+    }
     return true;
 }
 

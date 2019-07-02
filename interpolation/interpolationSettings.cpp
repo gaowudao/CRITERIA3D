@@ -220,7 +220,7 @@ void Crit3DInterpolationSettings::initialize()
     useBestDetrending = false;
     useLapseRateCode = false;
     minRegressionR2 = float(PEARSONSTANDARDTHRESHOLD);
-    meteoGridAggrMethod = aggrAvg;
+    meteoGridAggrMethod = aggrAverage;
     initializeProxy();
     indexHeight = NODATA;
 

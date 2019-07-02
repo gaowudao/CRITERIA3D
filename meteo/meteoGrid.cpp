@@ -756,7 +756,7 @@ double Crit3DMeteoGrid::aggregateMeteoGridPoint(Crit3DMeteoPoint myPoint, aggreg
         return NODATA;
     }
 
-    if (elab == aggregationMethod::aggrAvg)
+    if (elab == aggregationMethod::aggrAverage)
     {
         return statistics::mean(validValues.data(), int(validValues.size()));
     }
