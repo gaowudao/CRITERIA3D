@@ -7,6 +7,7 @@
 #include "commonConstants.h"
 #include "soilDbTools.h"
 #include "utilities.h"
+#include "math.h"
 
 
 bool loadVanGenuchtenParameters(soil::Crit3DSoilClass *soilTexture, QSqlDatabase* dbParameters, QString *myError)

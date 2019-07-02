@@ -13,7 +13,7 @@ CONFIG += staticlib
 
 DEFINES += SOILWIDGET_LIBRARY
 
-INCLUDEPATH += ../mathFunctions ../soil ../utilities
+INCLUDEPATH += ../mathFunctions ../utilities ../soil
 
 SOURCES += \
         soilWidget.cpp \
@@ -27,3 +27,5 @@ unix {
     target.path = /usr/lib
     INSTALLS += target
 }
+
+
