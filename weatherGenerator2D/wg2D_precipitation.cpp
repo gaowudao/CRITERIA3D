@@ -1064,12 +1064,11 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
            for (int j=0;j<lengthSeason[iSeason]*parametersModel.yearOfSimulation;j++)
            {
                simulatedPrecipitationAmounts[iSeason].matrixAmounts[i][j]= simulatedPrecipitationAmountsSeasonal[i][j];
-               //printf("%f  ",simulatedPrecipitationAmounts[iSeason].matrixAmounts[i][j]);
            }
-           //printf("\n");
+
       }
 
-      printf("fase 5b2\n");
+
 
       // free memory
       for (int i=0;i<nrStations;i++)
@@ -1383,11 +1382,11 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
        for (int j=0;j<nrStations;j++)
        {
            initialAmountsCorrelationMatrix[i][j] = amountsCorrelationMatrix[i][j];
-           //printf("%f ",initialAmountsCorrelationMatrix[i][j]);
+
        }
-       //printf("\n");
+
    }
-   //pressEnterToContinue();
+
    double minimalValueToExitFromCycle = NODATA;
    int counterConvergence=0;
    bool exitWhileCycle = false;
@@ -1404,11 +1403,11 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
                amountsCorrelationMatrix[i][j] = minValue(amountsCorrelationMatrix[i][j],1);
                correlationArray[counter] = amountsCorrelationMatrix[i][j];
                counter++;
-               //printf("%f ",M[i][j]);
+
            }
-           //printf("\n");
+
        }
-       //printf("inizio sub\n");
+
        eigenproblem::rs(nrStations,correlationArray,eigenvalues,true,eigenvectors);
 
 
@@ -1439,23 +1438,10 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
            for (int j=0;j<nrStations;j++) dummyMatrix[i][j] = amountsCorrelationMatrix[i][j];
 
        matricial::choleskyDecompositionTriangularMatrix(dummyMatrix,nrStations,true);
-       /*printf("Cholesky\n");
-       for (int i=0;i<nrStations;i++)
-       {
-           for (int j=0;j<nrStations;j++) printf("%f ",dummyMatrix[i][j]);
-       printf("\n");
-       }*/
-       //pressEnterToContinue();
+
 
        matricial::matrixProduct(dummyMatrix,randomMatrix,nrStations,nrStations,lengthSeries,nrStations,dummyMatrix3);
-       /*printf("prodottoMatriciale\n");
-       for (int i=0;i<lengthSeries;i++)
-       {
-           for (int j=0;j<nrStations;j++) printf("%f ",dummyMatrix3[j][i]);
-       printf("\n");
-       }
-       pressEnterToContinue();
-       */
+
        printf("fase 5b1 pre %d\n",ii);
        for (int i=0;i<nrStations;i++)
        {
@@ -1485,11 +1471,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
                uniformRandom[i][j] =0.5*statistics::tabulatedERFC(-normRandom[i][j]/SQRT_2);
            }
        }
-       /*for (int i=0;i<lengthSeries;i++)
-       {
-           for (int j=0;j<nrStations;j++) printf("%f ",uniformRandom[j][i]);
-           printf("\n");
-       }pressEnterToContinue();*/
+
 
        for (int i=0;i<nrStations;i++)
        {
@@ -1521,11 +1503,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
 
            }
        }
-       /*for (int i=0;i<lengthSeries;i++)
-               {
-                   for (int j=0;j<nrStations;j++) printf("%f ",simulatedPrecipitationAmountsSeasonal[j][i]);
-                   printf("\n");
-               }pressEnterToContinue();*/
+
 
        for (int i=0;i<nrStations;i++)
        {
@@ -1535,14 +1513,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
                // da verificare dovrebbe esserci correlazione solo per i dati diversi da zero
            }
        }
-       /*printf("matrice di correlazione\n");
-       for (int i=0;i<nrStations;i++)
-               {
-                   for (int j=0;j<nrStations;j++) printf("%f ",correlationMatrixSimulatedData[j][i]);
-                   printf("\n");
-               }pressEnterToContinue();*/
 
-       //double maxValueCorrelation = NODATA;
        val = 0;
        for (int i=0;i<nrStations;i++)
        {
@@ -1583,16 +1554,10 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
                }
            }
        }
-       //printf("step %d %f\n",ii,val);
-       /*for (int i=0;i<nrStations;i++)
-               {
-                   for (int j=0;j<nrStations;j++) printf("%f ",amountsCorrelationMatrix[j][i]);
-                   printf("\n");
-               }pressEnterToContinue();*/
+
 
    }
 
-   //printf("\t");
    // free memory
    for (int i=0;i<nrStations;i++)
    {
@@ -1637,6 +1602,7 @@ double weatherGenerator2D::inverseGammaFunction(double valueProbability, double 
            counter++;
        }
    } while ((valueProbability>y) && (counter<10));
+   if (counter >= 10) return rightBound;
    counter = 0;
    x = (rightBound + leftBound)*0.5;
    y = gammaDistributions::incompleteGamma(alpha,x/beta);

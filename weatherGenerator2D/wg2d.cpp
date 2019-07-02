@@ -243,24 +243,25 @@ void weatherGenerator2D::computeWeatherGenerator2D()
 
 void weatherGenerator2D::precipitationCompute()
 {
-   // step 1 of precipitation WG2D
+   // step 0 of precipitation WG2D initialization of variables
    weatherGenerator2D::initializePrecipitationInternalArrays();
    weatherGenerator2D::initializePrecipitationOutputs(lengthSeason);
+   // step 1 of precipitation WG2D
    weatherGenerator2D::precipitationP00P10(); // it computes the monthly probabilities p00 and p10
    printf("fase 1\n");
    // step 2 of precipitation WG2D
-   weatherGenerator2D::precipitationCorrelationMatrices();
+   weatherGenerator2D::precipitationCorrelationMatrices(); // computation of monthly correlation amongst stations
    printf("fase 2\n");
    // step 3 of precipitation WG2D
-   weatherGenerator2D::precipitationMultisiteOccurrenceGeneration();
+   weatherGenerator2D::precipitationMultisiteOccurrenceGeneration(); // generation of a sequence of dry/wet days after statistics and random numbers
    printf("fase 3\n");
    if (isPrecWG2D)
    {
     // step 4 of precipitation WG2D
-    weatherGenerator2D::precipitationMultiDistributionParameterization();
+    weatherGenerator2D::precipitationMultiDistributionParameterization(); // seasonal amounts distribution
     printf("fase 4\n");
     // step 5 of precipitation WG2D
-    weatherGenerator2D::precipitationMultisiteAmountsGeneration();
+    weatherGenerator2D::precipitationMultisiteAmountsGeneration(); // generaation of synthetic series
     printf("fase 5\n");
    }
 }
@@ -492,24 +493,17 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
 
             /* since random numbers generated have a normal distribution, each p00 and
                p10 have to be recalculated according to a normal number*/
-            normalizedTransitionProbability[i][0]= - (SQRT_2*(statistics::inverseERFC(2*precOccurence[i][iMonth].p00,0.0001)));
-            normalizedTransitionProbability[i][1]= - (SQRT_2*(statistics::inverseERFC(2*precOccurence[i][iMonth].p10,0.0001)));
-            //printf("%f\t",normalizedTransitionProbability[i][0]);
-            //printf("%f\n",normalizedTransitionProbability[i][1]);
-            // checked
-
+            //normalizedTransitionProbability[i][0]= - (SQRT_2*(statistics::inverseERFC(2*precOccurence[i][iMonth].p00,0.0001)));
+            //normalizedTransitionProbability[i][1]= - (SQRT_2*(statistics::inverseERFC(2*precOccurence[i][iMonth].p10,0.0001)));
+            normalizedTransitionProbability[i][0]= - (SQRT_2*(statistics::inverseTabulatedERFC(2*precOccurence[i][iMonth].p00)));
+            normalizedTransitionProbability[i][1]= - (SQRT_2*(statistics::inverseTabulatedERFC(2*precOccurence[i][iMonth].p10)));
 
             for (int jCount=0;jCount<nrDaysIterativeProcessMonthly[iMonth];jCount++)
             {
-
                normalizedRandomMatrix[i][jCount]= myrandom::normalRandom(&gasDevIset,&gasDevGset);
-               //normalizedRandomMatrix[i][jCount]= arrayRandomNormal[counterRandomNumber];
-               //counterRandomNumber++;
-
             }
 
         }
-        //free(arrayRandomNormal);
         // initialization outputs of weatherGenerator2D::spatialIterationOccurrence
         double** M;
         double** K;
@@ -545,18 +539,18 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             {
                 randomMatrix[iMonth].matrixK[i][j] = double(K[i][j]);
                 randomMatrix[iMonth].matrixM[i][j] = double(M[i][j]);
-                //printf("%f  ",randomMatrix[iMonth].matrixM[i][j]);
+
             }
 
-            //printf("partenza");
+
             for (int j=0;j<nrDaysIterativeProcessMonthly[iMonth];j++)
             {
                 randomMatrix[iMonth].matrixOccurrences[i][j]= double(occurrences[i][j]);
-                //printf("%f \n",randomMatrix[iMonth].matrixOccurrences[i][j]);
+
             }
-            //printf("\n");
+
         }
-        //pressEnterToContinue();
+
         randomMatrix[iMonth].month = iMonth + 1;
         // free memory
         for (int i=0;i<nrStations;i++)

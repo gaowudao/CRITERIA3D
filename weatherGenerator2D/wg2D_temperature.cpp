@@ -20,14 +20,12 @@ void weatherGenerator2D::temperatureCompute()
 {
     // step 1 of temperature WG2D
     weatherGenerator2D::computeTemperatureParameters();
-    weatherGenerator2D::temperaturesCorrelationMatrices();
-    weatherGenerator2D::multisiteRandomNumbersTemperature();
-    weatherGenerator2D::multisiteTemperatureGeneration();
-    printf("end of run\n");
     // step 2 of temperature WG2D
+    weatherGenerator2D::temperaturesCorrelationMatrices();
     // step 3 of temperature WG2D
+    weatherGenerator2D::multisiteRandomNumbersTemperature();
     // step 4 of temperature WG2D
-    // step 5 of temperature WG2D
+    weatherGenerator2D::multisiteTemperatureGeneration();
 }
 
 void weatherGenerator2D::initializeTemperatureParameters()
@@ -415,7 +413,7 @@ void weatherGenerator2D::computeTemperatureParameters()
         free(par);
 
         weatherGenerator2D::computeResiduals(temperatureCoefficients[iStation].maxTDry.averageEstimation,temperatureCoefficients[iStation].maxTWet.averageEstimation,temperatureCoefficients[iStation].maxTDry.stdDevEstimation,temperatureCoefficients[iStation].maxTWet.stdDevEstimation,temperatureCoefficients[iStation].minTDry.averageEstimation,temperatureCoefficients[iStation].minTWet.averageEstimation,temperatureCoefficients[iStation].minTDry.stdDevEstimation,temperatureCoefficients[iStation].minTWet.stdDevEstimation,365,iStation);
-        //printf("che d'è?");
+
         int matrixRang = 2;
         double** matrixCovarianceLag0 = (double **) calloc(matrixRang, sizeof(double*));
         double** matrixCovarianceLag1 = (double **) calloc(matrixRang, sizeof(double*));
@@ -793,8 +791,8 @@ void weatherGenerator2D::temperaturesCorrelationMatrices()
     weatherGenerator2D::initializeTemperaturecorrelationMatrices();
     TcorrelationVar maxT;
     TcorrelationVar minT;
-    int counterMaxT;
-    int counterMinT;
+    int counterMaxT = 0;
+    int counterMinT = 0;
     for (int j=0; j<nrStations;j++)
     {
         correlationMatrixTemperature.maxT[j][j] = 1;
@@ -826,9 +824,7 @@ void weatherGenerator2D::temperaturesCorrelationMatrices()
                 maxT.meanValue1 /= counterMaxT;
                 maxT.meanValue2 /= counterMaxT;
             }
-            // printf("counter %d station1 %d station2 %d\n",counterMaxT,j,i);
-            // printf("%f  %f\n",maxT.meanValue1,maxT.meanValue2);
-            // pressEnterToContinue();
+
             // compute the monthly rho off-diagonal elements
             for (int k=0; k<nrData;k++)
             {
