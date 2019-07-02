@@ -151,6 +151,7 @@ bool loadSoil(QString dbSoilName, QString soilCode, soil::Crit3DSoil *mySoil, QS
         if (idHorizon != (i+1))
         {
             *myError = "Wrong soil: " + soilCode + " - horizons number are wrong.";
+            dbSoil.close();
             return false;
         }
 
@@ -182,7 +183,6 @@ bool loadSoil(QString dbSoilName, QString soilCode, soil::Crit3DSoil *mySoil, QS
         getValue(query.value("theta_sat"), &theta_sat);
         mySoil->horizon[i].dbSoilData.thetaS = theta_sat;
 
-
         // saturated conductivity (cm/day)
         getValue(query.value("ksat"), &ksat);
         mySoil->horizon[i].dbSoilData.kSat = ksat;
@@ -191,6 +191,7 @@ bool loadSoil(QString dbSoilName, QString soilCode, soil::Crit3DSoil *mySoil, QS
 
     } while(query.next());
 
+    dbSoil.close();
     return true;
 }
 
