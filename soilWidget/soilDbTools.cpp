@@ -10,12 +10,12 @@
 #include "math.h"
 
 
-bool loadVanGenuchtenParameters(soil::Crit3DSoilClass *soilTexture, QSqlDatabase* dbParameters, QString *myError)
+bool loadVanGenuchtenParameters(soil::Crit3DSoilClass *soilClassList, QSqlDatabase* dbSoil, QString *myError)
 {
     QString queryString = "SELECT id_texture, alpha, n, he, theta_r, theta_s, k_sat, l ";
     queryString        += "FROM soil_vangenuchten ORDER BY id_texture";
 
-    QSqlQuery query = dbParameters->exec(queryString);
+    QSqlQuery query = dbSoil->exec(queryString);
     query.last();
     int tableSize = query.at() + 1;     //SQLITE doesn't support SIZE
 
@@ -46,23 +46,23 @@ bool loadVanGenuchtenParameters(soil::Crit3DSoilClass *soilTexture, QSqlDatabase
                 return(false);
             }
 
-        soilTexture[id].vanGenuchten.alpha = query.value(1).toDouble();    //[kPa^-1]
-        soilTexture[id].vanGenuchten.n = query.value(2).toDouble();
-        soilTexture[id].vanGenuchten.he = query.value(3).toDouble();       //[kPa]
+        soilClassList[id].vanGenuchten.alpha = query.value(1).toDouble();    //[kPa^-1]
+        soilClassList[id].vanGenuchten.n = query.value(2).toDouble();
+        soilClassList[id].vanGenuchten.he = query.value(3).toDouble();       //[kPa]
 
-        m = 1.0 - 1.0 / soilTexture[id].vanGenuchten.n;
-        soilTexture[id].vanGenuchten.m = m;
-        soilTexture[id].vanGenuchten.sc = pow(1.0 + pow(soilTexture[id].vanGenuchten.alpha
-                                        * soilTexture[id].vanGenuchten.he, soilTexture[id].vanGenuchten.n), -m);
+        m = 1.0 - 1.0 / soilClassList[id].vanGenuchten.n;
+        soilClassList[id].vanGenuchten.m = m;
+        soilClassList[id].vanGenuchten.sc = pow(1.0 + pow(soilClassList[id].vanGenuchten.alpha
+                                        * soilClassList[id].vanGenuchten.he, soilClassList[id].vanGenuchten.n), -m);
 
-        soilTexture[id].vanGenuchten.thetaR = query.value(4).toDouble();
+        soilClassList[id].vanGenuchten.thetaR = query.value(4).toDouble();
 
         //reference theta at saturation
-        soilTexture[id].vanGenuchten.refThetaS = query.value(5).toDouble();
-        soilTexture[id].vanGenuchten.thetaS = soilTexture[id].vanGenuchten.refThetaS;
+        soilClassList[id].vanGenuchten.refThetaS = query.value(5).toDouble();
+        soilClassList[id].vanGenuchten.thetaS = soilClassList[id].vanGenuchten.refThetaS;
 
-        soilTexture[id].waterConductivity.kSat = query.value(6).toDouble();
-        soilTexture[id].waterConductivity.l = query.value(7).toDouble();
+        soilClassList[id].waterConductivity.kSat = query.value(6).toDouble();
+        soilClassList[id].waterConductivity.l = query.value(7).toDouble();
 
 
     } while(query.next());
@@ -288,19 +288,28 @@ QString getIdSoilString(QSqlDatabase* dbSoil, int idSoilNumber, QString *myError
 }
 
 
-bool loadAllSoils(QString dbName, std::vector <soil::Crit3DSoil> *soilList,
-                  soil::Crit3DSoilClass *soilClassList, QString* error)
+bool openDbSoil(QString dbName, QSqlDatabase* dbSoil, QString* error)
 {
-    soilList->clear();
+    *dbSoil = QSqlDatabase::addDatabase("QSQLITE", QUuid::createUuid().toString());
+    dbSoil->setDatabaseName(dbName);
 
-    QSqlDatabase dbSoil = QSqlDatabase::addDatabase("QSQLITE", QUuid::createUuid().toString());
-    dbSoil.setDatabaseName(dbName);
-
-    if (!dbSoil.open())
+    if (!dbSoil->open())
     {
        *error = "Connection with database fail";
        return false;
     }
+
+    return true;
+}
+
+
+bool loadAllSoils(QString dbSoilName, std::vector <soil::Crit3DSoil> *soilList, soil::Crit3DSoilClass *soilClassList, QString* error)
+{
+    soilList->clear();
+
+    QSqlDatabase dbSoil;
+    if (! openDbSoil(dbSoilName, &dbSoil, error))
+        return false;
 
     if (! loadVanGenuchtenParameters(soilClassList, &dbSoil, error))
     {
@@ -347,7 +356,10 @@ bool loadAllSoils(QString dbName, std::vector <soil::Crit3DSoil> *soilList,
                 wrongSoils += *error + "\n";
             }
         }
-    } while(query.next());
+    }
+    while(query.next());
+
+    dbSoil.close();
 
     if (soilList->size() == 0)
     {
