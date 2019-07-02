@@ -1844,3 +1844,43 @@ void MainWindow::on_actionSpatial_average_series_on_zones_triggered()
         resultAverage = myProject.averageSeriesOnZonesMeteoGrid(zoneDialog.getVariable(), elab1MeteoComp, zoneDialog.getSpatialElaboration(), threshold, this->rasterObj->getRaster(), zoneDialog.getStartDate(), zoneDialog.getEndDate(), outputValues, true);
     }
 }
+
+
+void MainWindow::on_actionOpen_aggregation_DB_triggered()
+{
+    QString dbName = QFileDialog::getOpenFileName(this, tr("Open DB meteo points"), "", tr("DB files (*.db)"));
+    if (dbName != "")
+    {
+        myProject.loadAggregationdDB(dbName);
+    }
+
+}
+
+void MainWindow::on_actionNew_aggregation_DB_triggered()
+{
+    QString templateFileName = myProject.getPath() + "DATA/template/template_meteo_aggregation.db";
+
+    QString dbName = QFileDialog::getSaveFileName(this, tr("Save as"), "", tr("DB files (*.db)"));
+    if (dbName == "")
+    {
+        qDebug() << "missing new db file name";
+        return;
+    }
+
+    QFile dbFile(dbName);
+    if (dbFile.exists())
+    {
+        if (!dbFile.remove())
+        {
+            myProject.logError("Remove file failed: " + dbName + "\n" + dbFile.errorString());
+            return;
+        }
+    }
+
+    if (!QFile::copy(templateFileName, dbName))
+    {
+        myProject.logError("Copy file failed: " + templateFileName);
+        return;
+    }
+    myProject.loadAggregationdDB(dbName);
+}

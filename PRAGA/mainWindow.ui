@@ -2899,6 +2899,8 @@
     <property name="title">
      <string>Analysis</string>
     </property>
+    <addaction name="actionOpen_aggregation_DB"/>
+    <addaction name="actionNew_aggregation_DB"/>
     <addaction name="actionSpatial_average_series_on_zones"/>
    </widget>
    <addaction name="menuFile"/>
@@ -3238,7 +3240,17 @@
   </action>
   <action name="actionSpatial_average_series_on_zones">
    <property name="text">
-    <string>Spatial average series on zones</string>
+    <string>Aggregate from grid</string>
+   </property>
+  </action>
+  <action name="actionOpen_aggregation_DB">
+   <property name="text">
+    <string>Open aggregation DB</string>
+   </property>
+  </action>
+  <action name="actionNew_aggregation_DB">
+   <property name="text">
+    <string>New aggregation DB</string>
    </property>
   </action>
  </widget>

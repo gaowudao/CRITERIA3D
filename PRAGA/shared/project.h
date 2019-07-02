@@ -27,6 +27,10 @@
     #include "dbMeteoPointsHandler.h"
 #endif
 
+#ifndef DBAGGREGATIONSHANDLER_H
+    #include "dbAggregationsHandler.h"
+#endif
+
 #ifndef DBMETEOGRID_H
     #include "dbMeteoGrid.h"
 #endif
@@ -69,6 +73,7 @@
         int nrMeteoPoints;
         Crit3DMeteoPoint* meteoPoints;
         Crit3DMeteoPointsDbHandler* meteoPointsDbHandler;
+        Crit3DAggregationsDbHandler* aggregationDbHandler;
         QList<gis::Crit3DGeoPoint> meteoPointsSelected;
         Crit3DMeteoGridDbHandler* meteoGridDbHandler;
 
@@ -127,6 +132,7 @@
         bool loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo);
         bool loadMeteoPointsDB(QString dbName);
         bool loadMeteoGridDB(QString xmlName);
+        bool loadAggregationdDB(QString dbName);
         bool loadMeteoGridDailyData(QDate firstDate, QDate lastDate, bool showInfo);
         bool loadMeteoGridHourlyData(QDateTime firstDate, QDateTime lastDate, bool showInfo);
         void loadMeteoGridData(QDate firstDate, QDate lastDate, bool showInfo);

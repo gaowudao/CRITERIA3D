@@ -622,6 +622,19 @@ bool Project::loadMeteoGridDB(QString xmlName)
     return true;
 }
 
+bool Project::loadAggregationdDB(QString dbName)
+{
+    if (dbName == "") return false;
+
+    aggregationDbHandler = new Crit3DAggregationsDbHandler(dbName);
+    if (aggregationDbHandler->error() != "")
+    {
+        logError(aggregationDbHandler->error());
+        return false;
+    }
+    return true;
+}
+
 bool Project::loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo)
 {
     //check

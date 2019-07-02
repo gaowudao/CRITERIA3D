@@ -111,6 +111,10 @@
 
         void on_actionSpatial_average_series_on_zones_triggered();
 
+        void on_actionOpen_aggregation_DB_triggered();
+
+        void on_actionNew_aggregation_DB_triggered();
+
     protected:
         /*!
          * \brief mouseReleaseEvent call moveCenter
