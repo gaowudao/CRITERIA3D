@@ -1,14 +1,12 @@
+#include "cropDbTools.h"
+#include "commonConstants.h"
+#include "crop.h"
+#include "utilities.h"
+
 #include <QString>
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
-#include <QtMath>
-
-#include "commonConstants.h"
-#include "dbTools.h"
-#include "crop.h"
-#include "utilities.h"
-
 
 
 bool loadCropParameters(QString idCrop, Crit3DCrop* myCrop, QSqlDatabase* dbCrop, QString *myError)

@@ -5,6 +5,7 @@
 #include <QDate>
 
 #include "commonConstants.h"
+#include "crit3dDate.h"
 #include "dbToolsMOSES.h"
 #include "utilities.h"
 #include "meteoPoint.h"
