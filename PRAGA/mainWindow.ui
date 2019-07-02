@@ -2901,7 +2901,7 @@
     </property>
     <addaction name="actionOpen_aggregation_DB"/>
     <addaction name="actionNew_aggregation_DB"/>
-    <addaction name="actionSpatial_average_series_on_zones"/>
+    <addaction name="actionAggregate_from_grid"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuShow"/>
@@ -3238,9 +3238,12 @@
     <string>Location</string>
    </property>
   </action>
-  <action name="actionSpatial_average_series_on_zones">
+  <action name="actionAggregate_from_grid">
    <property name="text">
     <string>Aggregate from grid</string>
+   </property>
+   <property name="toolTip">
+    <string>Aggregate_from_grid</string>
    </property>
   </action>
   <action name="actionOpen_aggregation_DB">

@@ -27,7 +27,8 @@
 
 #include "commonConstants.h"
 #include "formInfo.h"
-#include "dbTools.h"
+#include "soilDbTools.h"
+#include "cropDbTools.h"
 #include "utilities.h"
 #include "crit3dProject.h"
 #include "waterBalance3D.h"

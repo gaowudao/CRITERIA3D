@@ -32,7 +32,6 @@
 #include "soil.h"
 #include "Criteria1D.h"
 #include "croppingSystem.h"
-#include "dbTools.h"
 #include "root.h"
 
 

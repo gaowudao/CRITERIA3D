@@ -109,11 +109,11 @@
 
         void on_actionShowGridClimate_triggered();
 
-        void on_actionSpatial_average_series_on_zones_triggered();
-
         void on_actionOpen_aggregation_DB_triggered();
 
         void on_actionNew_aggregation_DB_triggered();
+
+        void on_actionAggregate_from_grid_triggered();
 
     protected:
         /*!
@@ -169,6 +169,7 @@
 
         bool loadMeteoPointsDB(QString dbName);
         bool loadMeteoGridDB(QString xmlName);
+        bool loadShapeOrRaster();
         void setCurrentRaster(gis::Crit3DRasterGrid *myRaster);
         void interpolateDemGUI();
         void interpolateGridGUI();

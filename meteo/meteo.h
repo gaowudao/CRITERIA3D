@@ -159,18 +159,26 @@
 
     enum surfaceType   {SurfaceTypeWater, SurfaceTypeSoil, SurfaceTypeCrop};
 
-    enum aggregationMethod {noAggrMethod, aggrAvg, aggrMedian, aggrStdDeviation};
+    enum aggregationMethod {noAggrMethod, aggrAverage, aggrMedian, aggrStdDeviation, aggrMin, aggrMax, aggrSum, aggrPrevailing};
 
     const std::map<std::string, aggregationMethod> aggregationMethodToString = {
-      { "AVG", aggrAvg },
+      { "AVG", aggrAverage },
       { "MEDIAN", aggrMedian },
-      { "STDDEV", aggrStdDeviation }
+      { "STDDEV", aggrStdDeviation },
+      { "MIN", aggrMin },
+      { "MAX", aggrMax },
+      { "SUM", aggrSum },
+      { "PREVAILING", aggrPrevailing }
     };
 
     const std::map<aggregationMethod, std::string> aggregationStringToMethod = {
-      { aggrAvg, "AVG" },
+      { aggrAverage, "AVG" },
       { aggrMedian, "MEDIAN" },
-      { aggrStdDeviation, "STDDEV" }
+      { aggrStdDeviation, "STDDEV" },
+      { aggrMin, "MIN" },
+      { aggrMax, "MAX" },
+      { aggrSum, "SUM" },
+      { aggrPrevailing, "PREVAILING" }
     };
 
     class Crit3DClimateParameters

@@ -33,9 +33,9 @@
 #include "commonConstants.h"
 #include "Criteria1D.h"
 #include "croppingSystem.h"
+#include "cropDbTools.h"
 #include "water1D.h"
 #include "modelCore.h"
-#include "dbTools.h"
 
 
 bool runModel(Criteria1D* myCase, Criteria1DUnit *myUnit, QString* myError)

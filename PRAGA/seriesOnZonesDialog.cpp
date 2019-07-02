@@ -76,9 +76,9 @@ SeriesOnZonesDialog::SeriesOnZonesDialog(QSettings *settings)
     dateLayout.addWidget(&genericPeriodEnd);
 
     QLabel spatialElabLabel("Spatial Elaboration: ");
-    spatialElab.addItem("average");
-    spatialElab.addItem("median");
-    spatialElab.addItem("stddev");
+    spatialElab.addItem("AVG");
+    spatialElab.addItem("MEDIAN");
+    spatialElab.addItem("STDDEV");
 
 
     spatialElabLayout.addWidget(&spatialElabLabel);

@@ -23,9 +23,10 @@ public:
     void initAggregatedTables(int numZones, QString aggrType, QString periodType, QDateTime startDate, QDateTime endDate);
     void createTmpAggrTable();
     void deleteTmpAggrTable();
-    bool insertTmpAggr(QDateTime startDate, QDateTime endDate, int idVariable, std::vector< std::vector<float> > aggregatedValues, int nZones);
+    bool insertTmpAggr(QDateTime startDate, QDateTime endDate, meteoVariable variable, std::vector< std::vector<float> > aggregatedValues, int nZones);
     bool saveAggrData(QString aggrType, QString periodType, int nZones);
-    std::vector<float> getAggrData(QString aggrType, QString periodType, int zone, QDateTime startDate, QDateTime endDate, int idVariable);
+    std::vector<float> getAggrData(QString aggrType, QString periodType, int zone, QDateTime startDate, QDateTime endDate, meteoVariable variable);
+    std::map<int, meteoVariable> mapIdMeteoVar() const;
 
 private:
     QSqlDatabase _db;
@@ -34,6 +35,4 @@ private:
 };
 
 #endif // DBAGGREGATIONSHANDLER_H
-
-
 

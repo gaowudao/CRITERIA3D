@@ -1818,8 +1818,51 @@ void MainWindow::setMapSource(OSMTileSource::OSMTileType mySource)
     this->mapView->setTileSource(composite);
 }
 
+bool MainWindow::loadShapeOrRaster()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open raster or Shape file"), "", tr("files (*.flt *.shp)"));
+    if (fileName == "")
+    {
+        return false;
+    }
+    // raster
+    if (fileName.contains(".flt"))
+    {
+        if (!myProject.loadDEM(fileName))
+        {
+            return false;
+        }
+        this->setCurrentRaster(&(myProject.DTM));
+        ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
+        this->ui->rasterOpacitySlider->setEnabled(true);
 
-void MainWindow::on_actionSpatial_average_series_on_zones_triggered()
+        // center map
+        gis::Crit3DGeoPoint* center = this->rasterObj->getRasterCenter();
+        this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
+
+        // resize map
+        float size = this->rasterObj->getRasterMaxSize();
+        size = log2(1000.f/size);
+        this->mapView->setZoomLevel(quint8(size));
+        this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
+
+        // active raster object
+        this->rasterObj->updateCenter();
+
+        return true;
+    }
+    // shape
+    else if (fileName.contains(".shp"))
+    {
+        // TO DO
+        // sarà necessaria una finestra in cui è selezionabile il campo dello shape
+        return false;
+    }
+
+}
+
+
+void MainWindow::on_actionAggregate_from_grid_triggered()
 {
     if (!ui->grid->isChecked())
     {
@@ -1827,11 +1870,17 @@ void MainWindow::on_actionSpatial_average_series_on_zones_triggered()
         myProject.logError();
         return;
     }
-    if (this->rasterObj->getRaster() == nullptr)
+    if (myProject.aggregationDbHandler == nullptr)
     {
-        QMessageBox::information(nullptr, "No Raster", "Load raster before");
+        QMessageBox::information(nullptr, "Missing DB", "Open or Create a Aggregation DB");
         return;
     }
+    if (loadShapeOrRaster() == false)
+    {
+        QMessageBox::information(nullptr, "No Raster or Shape", "Load raster/shape before");
+        return;
+    }
+
     SeriesOnZonesDialog zoneDialog(myProject.parameters);
     if (zoneDialog.result() != QDialog::Accepted)
         return;
@@ -1839,9 +1888,10 @@ void MainWindow::on_actionSpatial_average_series_on_zones_triggered()
     {
         std::vector< std::vector<float> > resultAverage;
         std::vector<float> outputValues;
-        float threshold = NODATA; // sono mai diversi da nulli?
-        meteoComputation elab1MeteoComp = noMeteoComp; // sono mai diversi da nulli?
-        resultAverage = myProject.averageSeriesOnZonesMeteoGrid(zoneDialog.getVariable(), elab1MeteoComp, zoneDialog.getSpatialElaboration(), threshold, this->rasterObj->getRaster(), zoneDialog.getStartDate(), zoneDialog.getEndDate(), outputValues, true);
+        float threshold = NODATA;
+        meteoComputation elab1MeteoComp = noMeteoComp;
+        QString periodType = "D";
+        resultAverage = myProject.averageSeriesOnZonesMeteoGrid(zoneDialog.getVariable(), elab1MeteoComp, zoneDialog.getSpatialElaboration(), threshold, this->rasterObj->getRaster(), zoneDialog.getStartDate(), zoneDialog.getEndDate(), periodType, outputValues, true);
     }
 }
 
@@ -1884,3 +1934,5 @@ void MainWindow::on_actionNew_aggregation_DB_triggered()
     }
     myProject.loadAggregationdDB(dbName);
 }
+
+

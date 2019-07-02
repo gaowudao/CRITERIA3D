@@ -15,7 +15,7 @@ TEMPLATE = app
 INCLUDEPATH +=  ./shared ../PRAGA/shared  \
                 ../mapGraphics ../soilFluxes3D/header  \
                 ../crit3dDate ../mathFunctions ../crop \
-                ../soil ../soilWidget \
+                ../soil ../soilWidget ../cropWidget \
                 ../meteo ../gis ../utilities  \
                 ../interpolation ../solarRadiation  \
                 ../dbMeteoPoints ../dbMeteoGrid \
@@ -36,6 +36,8 @@ win32:{
 CONFIG(debug, debug|release) {
     LIBS += -L../dbMeteoGrid/debug -ldbMeteoGrid
     LIBS += -L../dbMeteoPoints/debug -ldbMeteoPoints
+    LIBS += -L../cropWidget/debug -lcropWidget
+    LIBS += -L../soilWidget/debug -lsoilWidget
     LIBS += -L../utilities/debug -lutilities
     LIBS += -L../solarRadiation/debug -lsolarRadiation
     LIBS += -L../interpolation/debug -linterpolation
@@ -44,7 +46,6 @@ CONFIG(debug, debug|release) {
     LIBS += -L../crop/debug -lcrop
     LIBS += -L../soilFluxes3D/debug -lsoilFluxes3D
     LIBS += -L../soil/debug -lsoil
-    LIBS += -L../soilWidget/debug -lsoilWidget
     LIBS += -L../crit3dDate/debug -lcrit3dDate
     LIBS += -L../mathFunctions/debug -lmathFunctions
 
@@ -52,6 +53,8 @@ CONFIG(debug, debug|release) {
 
     LIBS += -L../dbMeteoGrid/release -ldbMeteoGrid
     LIBS += -L../dbMeteoPoints/release -ldbMeteoPoints
+    LIBS += -L../cropWidget/release -lcropWidget
+    LIBS += -L../soilWidget/release -lsoilWidget
     LIBS += -L../utilities/release -lutilities
     LIBS += -L../solarRadiation/release -lsolarRadiation
     LIBS += -L../interpolation/release -linterpolation
@@ -60,7 +63,6 @@ CONFIG(debug, debug|release) {
     LIBS += -L../crop/release -lcrop
     LIBS += -L../soilFluxes3D/release -lsoilFluxes3D
     LIBS += -L../soil/release -lsoil
-    LIBS += -L../soilWidget/release -lsoilWidget
     LIBS += -L../crit3dDate/release -lcrit3dDate
     LIBS += -L../mathFunctions/release -lmathFunctions
 }

@@ -1,15 +1,15 @@
 #include <QDateTime>
 #include <QVariant>
 #include <QString>
+#include <QStringList>
+#include <QSqlDatabase>
+#include <QSqlDriver>
+#include <QSqlRecord>
 
 #include "commonConstants.h"
 #include "crit3dDate.h"
 #include "utilities.h"
-#include <sys/stat.h>
-#include <QSqlDatabase>
-#include <QSqlDriver>
-#include <QSqlQuery>
-#include <QSqlRecord>
+
 
 QStringList getFields(QSqlDatabase* db_, QString tableName)
 {
