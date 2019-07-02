@@ -12,6 +12,20 @@
                            soilWaterPotentialFC, soilWaterPotentialWP
                           };
 
+        class Crit3DDbSoilData
+        {
+        public:
+            float sand, silt, clay;             /*!<   [-] 0-1  */
+            double upperDepth, lowerDepth;      /*!<   [m]   */
+            double coarseFragments;             /*!<   [-] 0-1  */
+            double organicMatter;               /*!<   [-] 0-1  */
+            double bulkDensity;                 /*!<   [g cm^-3]  */
+            double thetaS;                      /*!<   [m^3 m^-3] */
+            double kSat;                        /*!<   [cm day^-1] */
+
+            Crit3DDbSoilData();
+        };
+
         /*!
          * \brief The Crit3DTexture class
          */
@@ -92,6 +106,7 @@
             double PH;                          /*!<   [-]  */
             double CEC;                         /*!<   [meq/100g]  */
 
+            Crit3DDbSoilData dbSoilData;
             Crit3DTexture texture;
             Crit3DVanGenuchten vanGenuchten;
             Crit3DWaterConductivity waterConductivity;

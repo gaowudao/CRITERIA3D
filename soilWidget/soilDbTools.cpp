@@ -116,6 +116,85 @@ bool loadDriessenParameters(soil::Crit3DSoilClass *soilTexture, QSqlDatabase* db
 }
 
 
+bool loadSoil(QString dbSoilName, QString soilCode, soil::Crit3DSoil *mySoil, QString *myError)
+{
+    QSqlDatabase dbSoil;
+    if (! openDbSoil(dbSoilName, &dbSoil, myError))
+        return false;
+
+    QString queryString = "SELECT * FROM horizons ";
+    queryString += "WHERE soil_code='" + soilCode + "' ORDER BY horizon_nr";
+
+    QSqlQuery query = dbSoil.exec(queryString);
+    query.last();
+
+    if (! query.isValid())
+    {
+        if (query.lastError().number() > 0)
+            *myError = "dbSoil error: " + query.lastError().text();
+        else
+            *myError = "Missing soil:" + soilCode;
+        return false;
+    }
+
+    int nrHorizons = query.at() + 1;     //SQLITE doesn't support SIZE
+    mySoil->initialize(1, nrHorizons);
+
+    int idHorizon, i = 0;
+    float sand, silt, clay;
+    double organicMatter, coarseFragments, lowerDepth, upperDepth, bulkDensity, theta_sat, ksat;
+
+    query.first();
+    do
+    {
+        idHorizon = query.value("horizon_nr").toInt();
+        if (idHorizon != (i+1))
+        {
+            *myError = "Wrong soil: " + soilCode + " - horizons number are wrong.";
+            return false;
+        }
+
+        // upper and lower depth (cm)
+        getValue(query.value("upper_depth"), &upperDepth);
+        getValue(query.value("lower_depth"), &lowerDepth);
+        mySoil->horizon[i].dbSoilData.upperDepth = upperDepth;
+        mySoil->horizon[i].dbSoilData.lowerDepth = lowerDepth;
+
+        // sand silt clay [-]
+        getValue(query.value("sand"), &sand);
+        getValue(query.value("silt"), &silt);
+        getValue(query.value("clay"), &clay);
+        mySoil->horizon[i].dbSoilData.sand = sand;
+        mySoil->horizon[i].dbSoilData.silt = silt;
+        mySoil->horizon[i].dbSoilData.clay = clay;
+
+        // coarse fragments and organic matter (%)
+        getValue(query.value("coarse_fragment"), &coarseFragments);
+        getValue(query.value("organic_matter"), &organicMatter);
+        mySoil->horizon[i].dbSoilData.coarseFragments = coarseFragments;
+        mySoil->horizon[i].dbSoilData.organicMatter = organicMatter;
+
+        // bulk density [g/cm3]
+        getValue(query.value("bulk_density"), &bulkDensity);
+        mySoil->horizon[i].dbSoilData.bulkDensity = bulkDensity;
+
+        // theta sat [m3/m3]
+        getValue(query.value("theta_sat"), &theta_sat);
+        mySoil->horizon[i].dbSoilData.thetaS = theta_sat;
+
+
+        // saturated conductivity (cm/day)
+        getValue(query.value("ksat"), &ksat);
+        mySoil->horizon[i].dbSoilData.kSat = ksat;
+
+        i++;
+
+    } while(query.next());
+
+    return true;
+}
+
+
 bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, soil::Crit3DSoilClass *soilTexture, QString *myError)
 {
     QString idSoilStr = soilCode;
