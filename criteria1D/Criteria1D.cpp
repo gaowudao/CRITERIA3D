@@ -36,7 +36,6 @@
 #include "Criteria1D.h"
 #include "crit3dDate.h"
 #include "utilities.h"
-#include "dbTools.h"
 #include "dbToolsMOSES.h"
 #include "soilDbTools.h"
 #include "meteo.h"

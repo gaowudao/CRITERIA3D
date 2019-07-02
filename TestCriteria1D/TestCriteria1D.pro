@@ -29,27 +29,29 @@ SOURCES += main.cpp \
 HEADERS += \
     project.h \
 
-INCLUDEPATH +=  ../crit3dDate ../mathFunctions ../crop ../gis   \
+INCLUDEPATH +=  ../crit3dDate ../mathFunctions ../crop ../cropWidget ../gis   \
                 ../meteo ../soil ../soilWidget ../utilities ../criteria1D
 
 CONFIG(debug, debug|release) {
     LIBS += -L../criteria1D/debug -lcriteria1D
+    LIBS += -L../cropWidget/debug -lcropWidget
+    LIBS += -L../soilWidget/debug -lsoilWidget
     LIBS += -L../utilities/debug -lutilities
     LIBS += -L../meteo/debug -lmeteo
     LIBS += -L../gis/debug -lgis
     LIBS += -L../crop/debug -lcrop
     LIBS += -L../soil/debug -lsoil
-    LIBS += -L../soilWidget/debug -lsoilWidget
     LIBS += -L../crit3dDate/debug -lcrit3dDate
     LIBS += -L../mathFunctions/debug -lmathFunctions
 } else {
     LIBS += -L../criteria1D/release -lcriteria1D
+    LIBS += -L../cropWidget/release -lcropWidget
+    LIBS += -L../soilWidget/release -lsoilWidget
     LIBS += -L../utilities/release -lutilities
     LIBS += -L../meteo/release -lmeteo
     LIBS += -L../gis/release -lgis
     LIBS += -L../crop/release -lcrop
     LIBS += -L../soil/release -lsoil
-    LIBS += -L../soilWidget/release -lsoilWidget
     LIBS += -L../crit3dDate/release -lcrit3dDate
     LIBS += -L../mathFunctions/release -lmathFunctions
 }
