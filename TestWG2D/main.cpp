@@ -10,6 +10,7 @@
 #include "furtherMathFunctions.h"
 #include "inputData.h"
 #include "wg2D.h"
+#include "readPragaFormatData.h"
 
 
 weatherGenerator2D WG2D;
@@ -37,15 +38,37 @@ void obsDataMeteoPointFormat(int nrStations, int nrData, float*** weatherArray, 
 int main()
 {
 
+    FILE *fp;
+    fp = fopen("inputData/budrio_1961_2018.txt","r");
+    int numberMeteoLines;
+    numberMeteoLines = readPragaLineFileNumber(fp);
+    fclose(fp);
+    //fp = fopen("inputData/budrio_1961_2018.txt","r");
+    int doy,day,month,year;
+    double prec,minT,maxT,meanT;
+    doy = day = month = year = NODATA;
+    prec = minT = maxT = meanT = NODATA;
+    bool firstDay = true;
+    //readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+    /*for (int i=0;i<numberMeteoLines;i++)
+    {
+        readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+        //printf("%d  %d/%d/%d,%f,%f,%f,%f\n",doy,day,month,year,minT,maxT,meanT,prec);
+    }
+    fclose(fp);
+    printf("press return");*/
+    //getchar();
 
-    int nrStations = 3;
-    int lengthDataSeries = 1099;
+    //int nrStations = 3;
+    //int lengthDataSeries = 1099;
+    int nrStations = 10;
+    int lengthDataSeries = numberMeteoLines;
     int nrVariables = 3;
     int nrDate = 3;
     float *** weatherArray = nullptr;
     int ** dateArray = nullptr;
-    float *** weatherArrayFourTimes = nullptr;
-    int ** dateArrayFourTimes = nullptr;
+    //float *** weatherArrayFourTimes = nullptr;
+    //int ** dateArrayFourTimes = nullptr;
 
     weatherArray = (float ***)calloc(nrStations, sizeof(float**));
     for (int i=0;i<nrStations;i++)
@@ -61,8 +84,156 @@ int main()
     {
         dateArray[j] = (int *)calloc(nrDate, sizeof(int));
     }
-    fillObservationArray(lengthDataSeries,weatherArray,dateArray);
 
+    for (int i=0;i<nrStations;i++)
+    {
+        if (i==0)
+        {
+               fp = fopen("inputData/argelato_1961_2018.txt","r");
+               firstDay = true;
+               readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+               for (int j=0;j<numberMeteoLines;j++)
+               {
+                   readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+                   weatherArray[i][j][0] = minT;
+                   weatherArray[i][j][1] = maxT;
+                   weatherArray[i][j][2] = prec;
+                   dateArray[j][0] = day;
+                   dateArray[j][1] = month;
+                   dateArray[j][2] = year;
+               }
+               fclose(fp);
+        }
+        else if (i==1)
+        {
+            fp = fopen("inputData/baricella_1961_2018.txt","r");
+            firstDay = true;
+            readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+            for (int j=0;j<numberMeteoLines;j++)
+            {
+                readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+                weatherArray[i][j][0] = minT;
+                weatherArray[i][j][1] = maxT;
+                weatherArray[i][j][2] = prec;
+            }
+            fclose(fp);
+        }
+        else if (i==2)
+        {
+            fp = fopen("inputData/bologna_1961_2018.txt","r");
+            firstDay = true;
+            readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+            for (int j=0;j<numberMeteoLines;j++)
+            {
+                readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+                weatherArray[i][j][0] = minT;
+                weatherArray[i][j][1] = maxT;
+                weatherArray[i][j][2] = prec;
+            }
+            fclose(fp);
+        }
+        else if (i==3)
+        {
+            fp = fopen("inputData/budrio_1961_2018.txt","r");
+            firstDay = true;
+            readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+            for (int j=0;j<numberMeteoLines;j++)
+            {
+                readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+                weatherArray[i][j][0] = minT;
+                weatherArray[i][j][1] = maxT;
+                weatherArray[i][j][2] = prec;
+            }
+            fclose(fp);
+        }
+        else if (i==4)
+        {
+            fp = fopen("inputData/casalfiumanese_1961_2018.txt","r");
+            firstDay = true;
+            readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+            for (int j=0;j<numberMeteoLines;j++)
+            {
+                readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+                weatherArray[i][j][0] = minT;
+                weatherArray[i][j][1] = maxT;
+                weatherArray[i][j][2] = prec;
+            }
+            fclose(fp);
+        }
+        else if (i==5)
+        {
+            fp = fopen("inputData/castenaso_1961_2018.txt","r");
+            firstDay = true;
+            readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+            for (int j=0;j<numberMeteoLines;j++)
+            {
+                readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+                weatherArray[i][j][0] = minT;
+                weatherArray[i][j][1] = maxT;
+                weatherArray[i][j][2] = prec;
+            }
+            fclose(fp);
+        }
+        else if (i==6)
+        {
+            fp = fopen("inputData/mezzolara_1961_2018.txt","r");
+            firstDay = true;
+            readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+            for (int j=0;j<numberMeteoLines;j++)
+            {
+                readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+                weatherArray[i][j][0] = minT;
+                weatherArray[i][j][1] = maxT;
+                weatherArray[i][j][2] = prec;
+            }
+            fclose(fp);
+        }
+        else if (i==7)
+        {
+            fp = fopen("inputData/montecalderaro_1961_2018.txt","r");
+            firstDay = true;
+            readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+            for (int j=0;j<numberMeteoLines;j++)
+            {
+                readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+                weatherArray[i][j][0] = minT;
+                weatherArray[i][j][1] = maxT;
+                weatherArray[i][j][2] = prec;
+            }
+            fclose(fp);
+        }
+        else if (i==8)
+        {
+            fp = fopen("inputData/pievedicento_1961_2018.txt","r");
+            firstDay = true;
+            readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+            for (int j=0;j<numberMeteoLines;j++)
+            {
+                readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+                weatherArray[i][j][0] = minT;
+                weatherArray[i][j][1] = maxT;
+                weatherArray[i][j][2] = prec;
+            }
+            fclose(fp);
+        }
+        else
+        {
+            fp = fopen("inputData/sanlazzaro_1961_2018.txt","r");
+            firstDay = true;
+            readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+            for (int j=0;j<numberMeteoLines;j++)
+            {
+                readPragaERACLITODailyData(fp,&firstDay,&doy,&day,&month,&year,&minT,&maxT,&meanT,&prec);
+                weatherArray[i][j][0] = minT;
+                weatherArray[i][j][1] = maxT;
+                weatherArray[i][j][2] = prec;
+            }
+            fclose(fp);
+        }
+    }
+
+    //fillObservationArray(lengthDataSeries,weatherArray,dateArray);
+    /*
     weatherArrayFourTimes = (float ***)calloc(nrStations, sizeof(float**));
     for (int i=0;i<nrStations;i++)
     {
@@ -112,17 +283,18 @@ int main()
             }
         }
     }
+    */
 
     TObsDataD** observedDataDaily = (TObsDataD **)calloc(nrStations, sizeof(TObsDataD*));
     for (int i=0;i<nrStations;i++)
     {
-        //observedDataDaily[i] = (TObsDataD *)calloc(lengthDataSeries, sizeof(TObsDataD));
-        observedDataDaily[i] = (TObsDataD *)calloc(1095*4, sizeof(TObsDataD));
+        observedDataDaily[i] = (TObsDataD *)calloc(lengthDataSeries, sizeof(TObsDataD));
+        //observedDataDaily[i] = (TObsDataD *)calloc(1095*4, sizeof(TObsDataD));
     }
-    //obsDataMeteoPointFormat(nrStations,lengthDataSeries,weatherArray,dateArray,observedDataDaily);
-    obsDataMeteoPointFormat(nrStations,1095*4,weatherArrayFourTimes,dateArrayFourTimes,observedDataDaily);
-    //WG2D.initializeData(lengthDataSeries,nrStations);
-    WG2D.initializeData(1095*4,nrStations);
+    obsDataMeteoPointFormat(nrStations,lengthDataSeries,weatherArray,dateArray,observedDataDaily);
+    //obsDataMeteoPointFormat(nrStations,1095*4,weatherArrayFourTimes,dateArrayFourTimes,observedDataDaily);
+    WG2D.initializeData(lengthDataSeries,nrStations);
+    //WG2D.initializeData(1095*4,nrStations);
     WG2D.setObservedData(observedDataDaily);
 
 
@@ -154,7 +326,7 @@ int main()
     free(observedDataDaily);
     free(weatherArray);
     free(dateArray);
-
+/*
     for (int i=0;i<nrStations;i++)
     {
         for (int j=0;j<1095*4;j++)
@@ -170,6 +342,7 @@ int main()
 
     free(weatherArrayFourTimes);
     free(dateArrayFourTimes);
+    */
     return 0;
 }
 

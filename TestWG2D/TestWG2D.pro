@@ -27,13 +27,15 @@ CONFIG(release, debug|release) {
 TEMPLATE = app
 
 SOURCES += main.cpp \
-    inputData.cpp
+    inputData.cpp \
+    readPragaFormatData.cpp
 
 CONFIG += console
 CONFIG -= app_bundle
 
 HEADERS += \
-    inputData.h
+    inputData.h \
+    readPragaFormatData.h
 
 
 
