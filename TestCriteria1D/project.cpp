@@ -97,10 +97,10 @@ int Criteria1DProject::initializeProject(QString settingsFileName)
     if (myError != CRIT3D_OK)
         return myError;
 
-    if (! loadVanGenuchtenParameters(&(criteria.soilTexture[0]), &(criteria.dbParameters), &(this->projectError)))
+    if (! loadVanGenuchtenParameters(criteria.soilTexture, &(criteria.dbParameters), &(this->projectError)))
         return ERROR_SOIL_PARAMETERS;
 
-    if (! loadDriessenParameters(&(criteria.soilTexture[0]), &(criteria.dbParameters), &(this->projectError)))
+    if (! loadDriessenParameters(criteria.soilTexture, &(criteria.dbParameters), &(this->projectError)))
         return ERROR_SOIL_PARAMETERS;
 
     isProjectLoaded = true;

@@ -116,7 +116,7 @@ Criteria1DOutput::Criteria1DOutput()
 bool Criteria1D::setSoil(QString idSoil, QString *myError)
 {
     // load Soil
-    if (! loadSoil (&dbSoil, idSoil, &mySoil, &(soilTexture[0]), myError))
+    if (! loadSoil (&dbSoil, idSoil, &mySoil, soilTexture, myError))
         return false;
 
     // nr of layers
