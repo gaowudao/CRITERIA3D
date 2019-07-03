@@ -560,7 +560,7 @@ bool Project::loadMeteoPointsDB(QString dbName)
         return false;
     }
 
-    if (!loadVariableProperties(&errorString, meteoPointsDbHandler->getDb(), meteoPointsDbHandler->getMapIdMeteoVar() ))
+    if (meteoPointsDbHandler->loadVariableProperties())
     {
         return false;
     }
@@ -632,7 +632,7 @@ bool Project::loadAggregationdDB(QString dbName)
         logError(aggregationDbHandler->error());
         return false;
     }
-    if (!loadVariableProperties(&errorString, aggregationDbHandler->db(), aggregationDbHandler->mapIdMeteoVar()))
+    if (aggregationDbHandler->loadVariableProperties())
     {
         return false;
     }

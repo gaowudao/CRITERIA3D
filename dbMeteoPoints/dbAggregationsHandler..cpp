@@ -145,7 +145,7 @@ void Crit3DAggregationsDbHandler::deleteTmpAggrTable()
 
 bool Crit3DAggregationsDbHandler::insertTmpAggr(QDateTime startDate, QDateTime endDate, meteoVariable variable, std::vector< std::vector<float> > aggregatedValues, int nZones)
 {
-    int idVariable = getIdfromMeteoVar(variable, _mapIdMeteoVar);
+    int idVariable = getIdfromMeteoVar(variable);
     int nrDays = int(startDate.daysTo(endDate) + 1);
     QSqlQuery qry(_db);
     qry.prepare( "INSERT INTO `TmpAggregationData` (date_time, zone, id_variable, value)"
@@ -216,7 +216,7 @@ bool Crit3DAggregationsDbHandler::saveAggrData(QString aggrType, QString periodT
 std::vector<float> Crit3DAggregationsDbHandler::getAggrData(QString aggrType, QString periodType, int zone, QDateTime startDate, QDateTime endDate, meteoVariable variable)
 {
 
-    int idVariable = getIdfromMeteoVar(variable, _mapIdMeteoVar);
+    int idVariable = getIdfromMeteoVar(variable);
     int nrDays = int(startDate.daysTo(endDate) + 1);
     std::vector<float> values(nrDays, NODATA);
     QDateTime date;
@@ -241,5 +241,71 @@ std::vector<float> Crit3DAggregationsDbHandler::getAggrData(QString aggrType, QS
         }
     }
     return values;
+}
+
+
+bool Crit3DAggregationsDbHandler::loadVariableProperties()
+{
+    QSqlQuery qry(_db);
+
+    QString tableName = "variable_properties";
+    int id_variable;
+    QString variable;
+    std::string stdVar;
+    meteoVariable meteoVar;
+    std::pair<std::map<int, meteoVariable>::iterator,bool> ret;
+
+    QString statement = QString( "SELECT * FROM `%1` ").arg(tableName);
+    if( !qry.exec(statement) )
+    {
+        _error = qry.lastError().text();
+        return false;
+    }
+    else
+    {
+        while (qry.next())
+        {
+            getValue(qry.value("id_variable"), &id_variable);
+            getValue(qry.value("variable"), &variable);
+            stdVar = variable.toStdString();
+            try {
+              meteoVar = MapDailyMeteoVar.at(stdVar);
+            }
+            catch (const std::out_of_range& ) {
+                try {
+                    meteoVar = MapHourlyMeteoVar.at(stdVar);
+                }
+                catch (const std::out_of_range& ) {
+                    meteoVar = noMeteoVar;
+                }
+            }
+            if (meteoVar != noMeteoVar)
+            {
+                ret = _mapIdMeteoVar.insert(std::pair<int, meteoVariable>(id_variable,meteoVar));
+                if (ret.second==false)
+                {
+                    _error = "element 'z' already existed";
+                }
+            }
+        }
+    }
+    return true;
+}
+
+int Crit3DAggregationsDbHandler::getIdfromMeteoVar(meteoVariable meteoVar)
+{
+
+    std::map<int, meteoVariable>::const_iterator it;
+    int key = NODATA;
+
+    for (it = _mapIdMeteoVar.begin(); it != _mapIdMeteoVar.end(); ++it)
+    {
+        if (it->second == meteoVar)
+        {
+            key = it->first;
+            break;
+        }
+    }
+    return key;
 }
 

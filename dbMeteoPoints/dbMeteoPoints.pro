@@ -34,7 +34,6 @@ SOURCES += \
     dbArkimet.cpp \
     dbMeteoPointsHandler.cpp \
     dbAggregationsHandler..cpp \
-    variableProperties.cpp \
     variablesList.cpp
 
 HEADERS += \
@@ -42,7 +41,6 @@ HEADERS += \
     dbArkimet.h \
     dbMeteoPointsHandler.h \
     dbAggregationsHandler.h \
-    variableProperties.h \
     variablesList.h
 
 

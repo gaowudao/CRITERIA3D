@@ -6,9 +6,7 @@
 #ifndef METEOPOINT_H
     #include "meteo.h"
 #endif
-#ifndef VARIABLEPROPERTIES_H
-    #include "variableProperties.h"
-#endif
+
 
 class Crit3DAggregationsDbHandler
 {
@@ -27,6 +25,8 @@ public:
     bool saveAggrData(QString aggrType, QString periodType, int nZones);
     std::vector<float> getAggrData(QString aggrType, QString periodType, int zone, QDateTime startDate, QDateTime endDate, meteoVariable variable);
     std::map<int, meteoVariable> mapIdMeteoVar() const;
+    bool loadVariableProperties();
+    int getIdfromMeteoVar(meteoVariable meteoVar);
 
 private:
     QSqlDatabase _db;
