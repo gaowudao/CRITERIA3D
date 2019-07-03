@@ -68,10 +68,10 @@ CONFIG(debug, debug|release) {
 
 SOURCES += main.cpp\
     mainwindow.cpp \
-    ../PRAGA/shared/dialogWindows.cpp \
+    ../PRAGA/shared/dialogSelection.cpp \
     ../PRAGA/shared/stationMarker.cpp \
-    ../PRAGA/shared/settingsDialog.cpp \
-    ../PRAGA/shared/interpolationDialog.cpp \
+    ../PRAGA/shared/dialogSettings.cpp \
+    ../PRAGA/shared/dialogInterpolation.cpp \
     ../PRAGA/shared/interpolationCmd.cpp \
     ../PRAGA/shared/mapGraphicsRasterObject.cpp \
     ../PRAGA/shared/rubberBand.cpp \
@@ -86,10 +86,10 @@ SOURCES += main.cpp\
 
 
 HEADERS += mainwindow.h \
-    ../PRAGA/shared/dialogWindows.h \
+    ../PRAGA/shared/dialogSelection.h \
     ../PRAGA/shared/stationMarker.h \
-    ../PRAGA/shared/settingsDialog.h \
-    ../PRAGA/shared/interpolationDialog.h \
+    ../PRAGA/shared/dialogSettings.h \
+    ../PRAGA/shared/dialogInterpolation.h \
     ../PRAGA/shared/interpolationCmd.h  \
     ../PRAGA/shared/mapGraphicsRasterObject.h \
     ../PRAGA/shared/rubberBand.h \

@@ -24,12 +24,12 @@
 #include "crit3dProject.h"
 #include "utilities.h"
 #include "soilDbTools.h"
-#include "commonConstants.h"
-#include "dialogWindows.h"
 #include "gis.h"
+#include "commonConstants.h"
+#include "dialogSelection.h"
 #include "spatialControl.h"
-#include "interpolationDialog.h"
-#include "settingsDialog.h"
+#include "dialogInterpolation.h"
+#include "dialogSettings.h"
 
 #include <Qt3DRender/QCamera>
 #include <Qt3DExtras/Qt3DWindow>
@@ -858,14 +858,14 @@ void MainWindow::on_actionInterpolationSettings_triggered()
         return;
     }
 
-    InterpolationDialog* myInterpolationDialog = new InterpolationDialog(&myProject);
+    DialogInterpolation* myInterpolationDialog = new DialogInterpolation(&myProject);
     myInterpolationDialog->close();
 }
 
 
 void MainWindow::on_actionParameters_triggered()
 {
-    SettingsDialog* mySettingsDialog = new SettingsDialog(myProject.projectSettings, myProject.parameters, &myProject.gisSettings, myProject.quality, myProject.meteoSettings);
+    DialogSettings* mySettingsDialog = new DialogSettings(myProject.projectSettings, myProject.parameters, &myProject.gisSettings, myProject.quality, myProject.meteoSettings);
     mySettingsDialog->exec();
     if (startCenter->latitude() != myProject.gisSettings.startLocation.latitude
             || startCenter->longitude() != myProject.gisSettings.startLocation.longitude)
