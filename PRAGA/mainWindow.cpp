@@ -1882,12 +1882,14 @@ bool MainWindow::on_actionAggregate_from_grid_triggered()
     }
     else
     {
-        std::vector< std::vector<float> > resultAverage;
         std::vector<float> outputValues;
         float threshold = NODATA;
         meteoComputation elab1MeteoComp = noMeteoComp;
         QString periodType = "D";
-        resultAverage = myProject.averageSeriesOnZonesMeteoGrid(zoneDialog.getVariable(), elab1MeteoComp, zoneDialog.getSpatialElaboration(), threshold, myRaster, zoneDialog.getStartDate(), zoneDialog.getEndDate(), periodType, outputValues, true);
+        if (!myProject.averageSeriesOnZonesMeteoGrid(zoneDialog.getVariable(), elab1MeteoComp, zoneDialog.getSpatialElaboration(), threshold, myRaster, zoneDialog.getStartDate(), zoneDialog.getEndDate(), periodType, outputValues, true))
+        {
+            QMessageBox::information(nullptr, "Error", "Error writing aggregation data");
+        }
     }
     delete myRaster;
 }

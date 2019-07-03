@@ -1142,7 +1142,7 @@ bool PragaProject::downloadHourlyDataArkimet(QStringList variables, QDate startD
 }
 
 
-std::vector< std::vector<float> > PragaProject::averageSeriesOnZonesMeteoGrid(meteoVariable variable, meteoComputation elab1MeteoComp, aggregationMethod spatialElab, float threshold, gis::Crit3DRasterGrid* zoneGrid, QDate startDate, QDate endDate, QString periodType, std::vector<float> &outputValues, bool showInfo)
+bool PragaProject::averageSeriesOnZonesMeteoGrid(meteoVariable variable, meteoComputation elab1MeteoComp, aggregationMethod spatialElab, float threshold, gis::Crit3DRasterGrid* zoneGrid, QDate startDate, QDate endDate, QString periodType, std::vector<float> &outputValues, bool showInfo)
 {
 
 
@@ -1276,20 +1276,12 @@ std::vector< std::vector<float> > PragaProject::averageSeriesOnZonesMeteoGrid(me
          }
 
      }
-      aggregationDbHandler->initAggregatedTables(int(zoneGrid->maximum+1), aggregationString, periodType, QDateTime(startDate), QDateTime(endDate));
-      aggregationDbHandler->createTmpAggrTable();
-      aggregationDbHandler->insertTmpAggr(QDateTime(startDate), QDateTime(endDate), variable, dailyElabAggregation, int(zoneGrid->maximum+1));
-      aggregationDbHandler->saveAggrData(aggregationString, periodType, int(zoneGrid->maximum+1));
-      aggregationDbHandler->deleteTmpAggrTable();
-      //aggregationDbHandler->getAggrData( aggregationString, periodType, 1, QDateTime(startDate.addDays(-1)), QDateTime(endDate.addDays(1)), variable);
-
-//     Crit3DAggregationsDbHandler* aggregationDbHandler = new Crit3DAggregationsDbHandler("/home/laura/prova_agg.db");
-//     aggregationDbHandler->initAggregatedTables(int(zoneGrid->maximum+1), "AVG", "D", QDateTime(startDate), QDateTime(endDate));
-//     aggregationDbHandler->createTmpAggrTable();
-//     aggregationDbHandler->insertTmpAggr(QDateTime(startDate), QDateTime(endDate), 101, dailyElabAggregation, int(zoneGrid->maximum+1));
-//     aggregationDbHandler->saveAggrData("AVG", "D", int(zoneGrid->maximum+1));
-//     aggregationDbHandler->deleteTmpAggrTable();
-//     aggregationDbHandler->getAggrData( "AVG", "D", 1, QDateTime(startDate.addDays(-1)), QDateTime(endDate.addDays(1)), 101);
-     return dailyElabAggregation;
+     // save dailyElabAggregation result into DB
+     if (!aggregationDbHandler->saveAggrData(int(zoneGrid->maximum+1), aggregationString, periodType, QDateTime(startDate), QDateTime(endDate), variable, dailyElabAggregation))
+     {
+         errorString = aggregationDbHandler->error();
+         return false;
+     }
+     return true;
 
 }
