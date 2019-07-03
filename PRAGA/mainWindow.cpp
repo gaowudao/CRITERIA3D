@@ -1818,63 +1818,68 @@ void MainWindow::setMapSource(OSMTileSource::OSMTileType mySource)
     this->mapView->setTileSource(composite);
 }
 
-bool MainWindow::loadShapeOrRaster()
+bool MainWindow::openRaster(QString fileName, gis::Crit3DRasterGrid *myRaster)
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open raster or Shape file"), "", tr("files (*.flt *.shp)"));
-    if (fileName == "")
-    {
-        return false;
-    }
-    // raster
-    if (fileName.contains(".flt"))
-    {
 
         std::string* myError = new std::string();
         std::string fnWithoutExt = fileName.left(fileName.length()-4).toStdString();
 
-        gis::Crit3DRasterGrid *myRaster = new(gis::Crit3DRasterGrid);
         if (! gis::readEsriGrid(fnWithoutExt, myRaster, myError))
         {
             qDebug("Load raster failed!");
             return (false);
         }
-
-        this->setCurrentRaster(myRaster);
         return true;
+}
+
+bool MainWindow::openShape(QString fileName)
+{
+// TO DO
+    return false;
+}
+
+
+bool MainWindow::on_actionAggregate_from_grid_triggered()
+{
+    if (!ui->grid->isChecked())
+    {
+        myProject.errorString = "Load grid";
+        myProject.logError();
+        return false;
+    }
+    if (myProject.aggregationDbHandler == nullptr)
+    {
+        QMessageBox::information(nullptr, "Missing DB", "Open or Create a Aggregation DB");
+        return false;
+    }
+
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open raster or Shape file"), "", tr("files (*.flt *.shp)"));
+    if (fileName == "")
+    {
+        QMessageBox::information(nullptr, "No Raster or Shape", "Load raster/shape before");
+        return false;
+    }
+
+    gis::Crit3DRasterGrid *myRaster = new(gis::Crit3DRasterGrid);
+    // raster
+    if (fileName.contains(".flt"))
+    {
+        openRaster(fileName, myRaster);
     }
     // shape
     else if (fileName.contains(".shp"))
     {
         // TO DO
         // sarà necessaria una finestra in cui è selezionabile il campo dello shape
-        return false;
-    }
-
-}
-
-
-void MainWindow::on_actionAggregate_from_grid_triggered()
-{
-    if (!ui->grid->isChecked())
-    {
-        myProject.errorString = "Load grid";
-        myProject.logError();
-        return;
-    }
-    if (myProject.aggregationDbHandler == nullptr)
-    {
-        QMessageBox::information(nullptr, "Missing DB", "Open or Create a Aggregation DB");
-        return;
-    }
-    if (loadShapeOrRaster() == false)
-    {
-        QMessageBox::information(nullptr, "No Raster or Shape", "Load raster/shape before");
-        return;
+        openShape(fileName);
     }
 
     SeriesOnZonesDialog zoneDialog(myProject.parameters);
     if (zoneDialog.result() != QDialog::Accepted)
-        return;
+    {
+        delete myRaster;
+        return false;
+    }
     else
     {
         std::vector< std::vector<float> > resultAverage;
@@ -1882,8 +1887,9 @@ void MainWindow::on_actionAggregate_from_grid_triggered()
         float threshold = NODATA;
         meteoComputation elab1MeteoComp = noMeteoComp;
         QString periodType = "D";
-        resultAverage = myProject.averageSeriesOnZonesMeteoGrid(zoneDialog.getVariable(), elab1MeteoComp, zoneDialog.getSpatialElaboration(), threshold, this->rasterObj->getRaster(), zoneDialog.getStartDate(), zoneDialog.getEndDate(), periodType, outputValues, true);
+        resultAverage = myProject.averageSeriesOnZonesMeteoGrid(zoneDialog.getVariable(), elab1MeteoComp, zoneDialog.getSpatialElaboration(), threshold, myRaster, zoneDialog.getStartDate(), zoneDialog.getEndDate(), periodType, outputValues, true);
     }
+    delete myRaster;
 }
 
 
