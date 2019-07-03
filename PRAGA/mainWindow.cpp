@@ -1828,11 +1828,19 @@ bool MainWindow::loadShapeOrRaster()
     // raster
     if (fileName.contains(".flt"))
     {
-        if (!myProject.loadDEM(fileName))
+
+        std::string* myError = new std::string();
+        std::string fnWithoutExt = fileName.left(fileName.length()-4).toStdString();
+
+        gis::Crit3DRasterGrid *myRaster = new(gis::Crit3DRasterGrid);
+        if (! gis::readEsriGrid(fnWithoutExt, myRaster, myError))
         {
-            return false;
+            qDebug("Load raster failed!");
+            return (false);
         }
-        this->setCurrentRaster(&(myProject.DTM));
+
+        setDefaultDTMScale(myRaster->colorScale);
+        this->setCurrentRaster(myRaster);
         ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
         this->ui->rasterOpacitySlider->setEnabled(true);
 
@@ -1848,7 +1856,6 @@ bool MainWindow::loadShapeOrRaster()
 
         // active raster object
         this->rasterObj->updateCenter();
-
         return true;
     }
     // shape
