@@ -1,5 +1,5 @@
-#ifndef DIALOGWINDOWS_H
-#define DIALOGWINDOWS_H
+#ifndef DIALOGSELECTION_H
+#define DIALOGSELECTION_H
 
     #include <QString>
 
@@ -18,4 +18,4 @@
         bool chooseNetCDFVariable(int *varId, QDateTime *firstDate, QDateTime *lastDate);
     #endif
 
-#endif // DIALOGWINDOWS_H
+#endif // DIALOGSELECTION_H

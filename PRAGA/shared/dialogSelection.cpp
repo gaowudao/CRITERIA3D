@@ -15,7 +15,7 @@
 #include <QtWidgets>
 
 #include "commonConstants.h"
-#include "dialogWindows.h"
+#include "dialogSelection.h"
 #include "color.h"
 #include "project.h"
 

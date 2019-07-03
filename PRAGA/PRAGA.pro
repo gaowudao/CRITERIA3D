@@ -91,7 +91,6 @@ SOURCES += main.cpp\
     mainWindow.cpp \
     anomalyLayout.cpp \
     saveClimaLayout.cpp \
-    shared/dialogWindows.cpp \
     shared/stationMarker.cpp \
     shared/rubberBand.cpp \
     shared/formInfo.cpp \
@@ -107,13 +106,13 @@ SOURCES += main.cpp\
     shared/colorLegend.cpp \
     seriesOnZonesDialog.cpp \
     dialogMeteoComputation.cpp \
-    dialogDownloadMeteoData.cpp
+    dialogDownloadMeteoData.cpp \
+    shared/dialogSelection.cpp
 
 
 HEADERS  += mainWindow.h \
     saveClimaLayout.h \
     anomalyLayout.h \
-    shared/dialogWindows.h \
     shared/stationMarker.h \
     shared/rubberBand.h \
     shared/formInfo.h \
@@ -129,7 +128,8 @@ HEADERS  += mainWindow.h \
     shared/colorLegend.h \
     seriesOnZonesDialog.h \
     dialogMeteoComputation.h \
-    dialogDownloadMeteoData.h
+    dialogDownloadMeteoData.h \
+    shared/dialogSelection.h
 
 
 FORMS    += mainWindow.ui \

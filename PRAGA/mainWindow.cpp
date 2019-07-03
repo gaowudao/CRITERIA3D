@@ -23,7 +23,7 @@
 #include "download.h"
 #include "pragaProject.h"
 #include "commonConstants.h"
-#include "dialogWindows.h"
+#include "dialogSelection.h"
 #include "dialogDownloadMeteoData.h"
 #include "dialogMeteoComputation.h"
 #include "climateFieldsDialog.h"
