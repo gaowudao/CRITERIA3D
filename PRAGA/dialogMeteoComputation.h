@@ -1,5 +1,5 @@
-#ifndef COMPUTATIONDIALOG_H
-#define COMPUTATIONDIALOG_H
+#ifndef DIALOGMETEOCOMPUTATION_H
+#define DIALOGMETEOCOMPUTATION_H
 
 #include <QString>
 #include <QSettings>
@@ -9,11 +9,11 @@
 #include <QtWidgets>
 #include "pragaProject.h"
 #include "mainWindow.h"
-#include "anomalyLayout.h"
+#include "dialogAnomaly.h"
 #include "saveClimaLayout.h"
 
 
-class ComputationDialog : public QDialog
+class DialogMeteoComputation : public QDialog
 {
 
     Q_OBJECT
@@ -44,7 +44,7 @@ class ComputationDialog : public QDialog
         QLineEdit elab1Parameter;
         QLineEdit elab2Parameter;
 
-        AnomalyLayout anomaly;
+        DialogAnomaly anomaly;
         QPushButton copyData;
 
         QPushButton add;
@@ -58,7 +58,7 @@ class ComputationDialog : public QDialog
 
 
     public:
-        ComputationDialog(QSettings *settings, bool isAnomaly, bool saveClima);
+        DialogMeteoComputation(QSettings *settings, bool isAnomaly, bool saveClima);
         void done(bool res);
         void displayPeriod(const QString value);
         void checkYears();
@@ -73,4 +73,4 @@ class ComputationDialog : public QDialog
 };
 
 
-#endif // COMPUTATIONDIALOG_H
+#endif // DIALOGMETEOCOMPUTATION_H

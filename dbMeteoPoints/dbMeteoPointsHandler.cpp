@@ -3,6 +3,7 @@
 #include "meteo.h"
 #include "meteoPoint.h"
 #include "interpolationSettings.h"
+#include "utilities.h"
 
 #include <QDebug>
 
@@ -398,7 +399,7 @@ std::vector<float> Crit3DMeteoPointsDbHandler::loadDailyVar(QString *myError, me
     std::vector<float> dailyVarList;
     bool firstRow = true;
 
-    int idVar = getIdfromMeteoVar(variable, _mapIdMeteoVar);
+    int idVar = getIdfromMeteoVar(variable);
     QString startDate = QString::fromStdString(dateStart.toStdString());
     QString endDate = QString::fromStdString(dateEnd.toStdString());
 
@@ -462,7 +463,7 @@ std::vector<float> Crit3DMeteoPointsDbHandler::loadHourlyVar(QString *myError, m
     std::vector<float> hourlyVarList;
     bool firstRow = true;
 
-    int idVar = getIdfromMeteoVar(variable, _mapIdMeteoVar);
+    int idVar = getIdfromMeteoVar(variable);
     QString startDate = QString::fromStdString(dateStart.toStdString());
     QString endDate = QString::fromStdString(dateEnd.toStdString());
 
@@ -686,5 +687,70 @@ bool Crit3DMeteoPointsDbHandler::writePointProperties(Crit3DMeteoPoint *myPoint)
     else
         return true;
 
+}
+
+bool Crit3DMeteoPointsDbHandler::loadVariableProperties()
+{
+    QSqlQuery qry(_db);
+
+    QString tableName = "variable_properties";
+    int id_variable;
+    QString variable;
+    std::string stdVar;
+    meteoVariable meteoVar;
+    std::pair<std::map<int, meteoVariable>::iterator,bool> ret;
+
+    QString statement = QString( "SELECT * FROM `%1` ").arg(tableName);
+    if( !qry.exec(statement) )
+    {
+        error = qry.lastError().text();
+        return false;
+    }
+    else
+    {
+        while (qry.next())
+        {
+            getValue(qry.value("id_variable"), &id_variable);
+            getValue(qry.value("variable"), &variable);
+            stdVar = variable.toStdString();
+            try {
+              meteoVar = MapDailyMeteoVar.at(stdVar);
+            }
+            catch (const std::out_of_range& ) {
+                try {
+                    meteoVar = MapHourlyMeteoVar.at(stdVar);
+                }
+                catch (const std::out_of_range& ) {
+                    meteoVar = noMeteoVar;
+                }
+            }
+            if (meteoVar != noMeteoVar)
+            {
+                ret = _mapIdMeteoVar.insert(std::pair<int, meteoVariable>(id_variable,meteoVar));
+                if (ret.second==false)
+                {
+                    error = "element 'z' already existed";
+                }
+            }
+        }
+    }
+    return true;
+}
+
+int Crit3DMeteoPointsDbHandler::getIdfromMeteoVar(meteoVariable meteoVar)
+{
+
+    std::map<int, meteoVariable>::const_iterator it;
+    int key = NODATA;
+
+    for (it = _mapIdMeteoVar.begin(); it != _mapIdMeteoVar.end(); ++it)
+    {
+        if (it->second == meteoVar)
+        {
+            key = it->first;
+            break;
+        }
+    }
+    return key;
 }
 

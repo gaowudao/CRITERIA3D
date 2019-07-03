@@ -10,9 +10,6 @@
 #ifndef METEOPOINT_H
     #include "meteoPoint.h"
 #endif
-#ifndef VARIABLEPROPERTIES_H
-    #include "variableProperties.h"
-#endif
 #ifndef INTERPOLATIONSETTINGS_H
     #include "interpolationSettings.h"
 #endif
@@ -49,7 +46,8 @@ public:
         void closeDatabase();
         QSqlDatabase getDb() const;
         void setDb(const QSqlDatabase &db);
-
+        bool loadVariableProperties();
+        int getIdfromMeteoVar(meteoVariable meteoVar);
         std::map<int, meteoVariable> getMapIdMeteoVar() const;
 
 protected:

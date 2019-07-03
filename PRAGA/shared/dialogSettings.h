@@ -1,5 +1,5 @@
-#ifndef SETTINGSDIALOG_H
-#define SETTINGSDIALOG_H
+#ifndef DIALOGSETTINGS_H
+#define DIALOGSETTINGS_H
 
 #include <QDialog>
 #include <QSettings>
@@ -64,12 +64,12 @@ public:
 private:
 };
 
-class SettingsDialog : public QDialog
+class DialogSettings : public QDialog
 {
     Q_OBJECT
 
     public:
-        explicit SettingsDialog(QSettings *projectSettings, QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DMeteoSettings* meteoSettings);
+        explicit DialogSettings(QSettings *projectSettings, QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DMeteoSettings* meteoSettings);
         bool acceptValues();
         void accept();
         void saveSettings();
@@ -94,4 +94,4 @@ private:
         MeteoTab* metTab;
 };
 
-#endif // SETTINGSDIALOG_H
+#endif // DIALOGSETTINGS_H

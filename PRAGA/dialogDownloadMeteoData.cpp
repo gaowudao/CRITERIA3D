@@ -9,7 +9,7 @@
 #include <QPushButton>
 #include <QRadioButton>
 
-#include "pragaDialogs.h"
+#include "dialogDownloadMeteoData.h"
 #include "pragaProject.h"
 
 bool downloadMeteoData(PragaProject* project_)

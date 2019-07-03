@@ -113,7 +113,7 @@
 
         void on_actionNew_aggregation_DB_triggered();
 
-        void on_actionAggregate_from_grid_triggered();
+        bool on_actionAggregate_from_grid_triggered();
 
     protected:
         /*!
@@ -169,7 +169,8 @@
 
         bool loadMeteoPointsDB(QString dbName);
         bool loadMeteoGridDB(QString xmlName);
-        bool loadShapeOrRaster();
+        bool openRaster(QString fileName, gis::Crit3DRasterGrid *myRaster);
+        bool openShape(QString fileName);
         void setCurrentRaster(gis::Crit3DRasterGrid *myRaster);
         void interpolateDemGUI();
         void interpolateGridGUI();

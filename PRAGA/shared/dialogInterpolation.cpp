@@ -4,9 +4,9 @@
 
 #include "project.h"
 #include "utilities.h"
-#include "interpolationDialog.h"
+#include "dialogInterpolation.h"
 
-InterpolationDialog::InterpolationDialog(Project *myProject)
+DialogInterpolation::DialogInterpolation(Project *myProject)
 {
     _project = myProject;
     _paramSettings = myProject->parameters;
@@ -98,7 +98,7 @@ InterpolationDialog::InterpolationDialog(Project *myProject)
 
     QPushButton *editProxy = new QPushButton("Edit proxies...", this);
     layoutProxy->addWidget(editProxy);
-    connect(editProxy, &QPushButton::clicked, this, &InterpolationDialog::editProxies);
+    connect(editProxy, &QPushButton::clicked, this, &DialogInterpolation::editProxies);
     layoutDetrending->addLayout(layoutProxy);
 
     layoutMain->addLayout(layoutDetrending);
@@ -115,7 +115,7 @@ InterpolationDialog::InterpolationDialog(Project *myProject)
     exec();
 }
 
-void InterpolationDialog::redrawProxies()
+void DialogInterpolation::redrawProxies()
 {
     proxyListCheck->clear();
     for (int i = 0; i < _interpolationSettings->getProxyNr(); i++)
@@ -130,7 +130,7 @@ void InterpolationDialog::redrawProxies()
     }
 }
 
-void InterpolationDialog::editProxies()
+void DialogInterpolation::editProxies()
 {
     if (_project->meteoPointsDbHandler == nullptr)
     {
@@ -145,7 +145,7 @@ void InterpolationDialog::editProxies()
         redrawProxies();
 }
 
-void InterpolationDialog::writeInterpolationSettings()
+void DialogInterpolation::writeInterpolationSettings()
 {
     _paramSettings->beginGroup("interpolation");
     _paramSettings->setValue("aggregationMethod", gridAggregationMethodEdit.itemData(gridAggregationMethodEdit.currentIndex()).toString());
@@ -169,7 +169,7 @@ void InterpolationDialog::writeInterpolationSettings()
     }
 }
 
-void InterpolationDialog::accept()
+void DialogInterpolation::accept()
 {
     if (minRegressionR2Edit.text().isEmpty())
     {
