@@ -29,7 +29,7 @@
 #include "dialogClimateFields.h"
 #include "seriesOnZonesDialog.h"
 #include "dialogInterpolation.h"
-#include "pragaSettingsDialog.h"
+#include "dialogPragaSettings.h"
 #include "gis.h"
 #include "spatialControl.h"
 #include "keyboardFilter.h"
@@ -1665,7 +1665,7 @@ void MainWindow::on_actionInterpolationSettings_triggered()
 
 void MainWindow::on_actionParameters_triggered()
 {
-    PragaSettingsDialog* mySettingsDialog = new PragaSettingsDialog(myProject.projectSettings, myProject.parameters, &myProject.gisSettings, myProject.quality, myProject.meteoSettings, myProject.clima->getElabSettings());
+    DialogPragaSettings* mySettingsDialog = new DialogPragaSettings(myProject.projectSettings, myProject.parameters, &myProject.gisSettings, myProject.quality, myProject.meteoSettings, myProject.clima->getElabSettings());
     mySettingsDialog->exec();
     if (startCenter->latitude() != myProject.gisSettings.startLocation.latitude
         || startCenter->longitude() != myProject.gisSettings.startLocation.longitude)

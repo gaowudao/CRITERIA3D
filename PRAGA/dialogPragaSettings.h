@@ -1,5 +1,5 @@
-#ifndef PRAGASETTINGSDIALOG_H
-#define PRAGASETTINGSDIALOG_H
+#ifndef DIALOGPRAGASETTINGS_H
+#define DIALOGPRAGASETTINGS_H
 
 #include <QWidget>
 
@@ -28,12 +28,12 @@ public:
 private:
 };
 
-class PragaSettingsDialog : public DialogSettings
+class DialogPragaSettings : public DialogSettings
 {
     Q_OBJECT
 
     public:
-        explicit PragaSettingsDialog(QSettings *projectSettings,
+        explicit DialogPragaSettings(QSettings *projectSettings,
                                      QSettings *settings,
                                      gis::Crit3DGisSettings *gisSettings,
                                      Crit3DQuality *quality,
@@ -50,4 +50,4 @@ class PragaSettingsDialog : public DialogSettings
 };
 
 
-#endif // PRAGASETTINGSDIALOG_H
+#endif // DIALOGPRAGASETTINGS_H
