@@ -89,7 +89,6 @@ unix:{
 
 SOURCES += main.cpp\
     mainWindow.cpp \
-    computationDialog.cpp \
     anomalyLayout.cpp \
     saveClimaLayout.cpp \
     shared/dialogWindows.cpp \
@@ -107,12 +106,12 @@ SOURCES += main.cpp\
     climateFieldsDialog.cpp \
     keyboardFilter.cpp \
     shared/colorLegend.cpp \
-    seriesOnZonesDialog.cpp
+    seriesOnZonesDialog.cpp \
+    dialogMeteoComputation.cpp
 
 
 HEADERS  += mainWindow.h \
     saveClimaLayout.h \
-    computationDialog.h \
     anomalyLayout.h \
     shared/dialogWindows.h \
     shared/stationMarker.h \
@@ -129,7 +128,8 @@ HEADERS  += mainWindow.h \
     climateFieldsDialog.h \
     keyboardFilter.h \
     shared/colorLegend.h \
-    seriesOnZonesDialog.h
+    seriesOnZonesDialog.h \
+    dialogMeteoComputation.h
 
 
 FORMS    += mainWindow.ui \

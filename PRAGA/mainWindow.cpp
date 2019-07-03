@@ -25,7 +25,7 @@
 #include "commonConstants.h"
 #include "dialogWindows.h"
 #include "pragaDialogs.h"
-#include "computationDialog.h"
+#include "dialogMeteoComputation.h"
 #include "climateFieldsDialog.h"
 #include "seriesOnZonesDialog.h"
 #include "interpolationDialog.h"
@@ -1252,7 +1252,7 @@ void MainWindow::on_actionCompute_elaboration_triggered()
 
     if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
-        ComputationDialog compDialog(myProject.parameters, isAnomaly, saveClima);
+        DialogMeteoComputation compDialog(myProject.parameters, isAnomaly, saveClima);
         if (compDialog.result() != QDialog::Accepted)
             return;
 
@@ -1301,7 +1301,7 @@ void MainWindow::on_actionCompute_anomaly_triggered()
 
     if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
-        ComputationDialog compDialog(myProject.parameters, isAnomaly, saveClima);
+        DialogMeteoComputation compDialog(myProject.parameters, isAnomaly, saveClima);
         if (compDialog.result() != QDialog::Accepted)
             return;
 
@@ -1354,7 +1354,7 @@ void MainWindow::on_actionCompute_climate_triggered()
     if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
         myProject.clima->resetListElab();
-        ComputationDialog compDialog(myProject.parameters, isAnomaly, saveClima);
+        DialogMeteoComputation compDialog(myProject.parameters, isAnomaly, saveClima);
         if (compDialog.result() != QDialog::Accepted)
             return;
 

@@ -1,5 +1,5 @@
-#ifndef COMPUTATIONDIALOG_H
-#define COMPUTATIONDIALOG_H
+#ifndef DIALOGMETEOCOMPUTATION_H
+#define DIALOGMETEOCOMPUTATION_H
 
 #include <QString>
 #include <QSettings>
@@ -13,7 +13,7 @@
 #include "saveClimaLayout.h"
 
 
-class ComputationDialog : public QDialog
+class DialogMeteoComputation : public QDialog
 {
 
     Q_OBJECT
@@ -58,7 +58,7 @@ class ComputationDialog : public QDialog
 
 
     public:
-        ComputationDialog(QSettings *settings, bool isAnomaly, bool saveClima);
+        DialogMeteoComputation(QSettings *settings, bool isAnomaly, bool saveClima);
         void done(bool res);
         void displayPeriod(const QString value);
         void checkYears();
@@ -73,4 +73,4 @@ class ComputationDialog : public QDialog
 };
 
 
-#endif // COMPUTATIONDIALOG_H
+#endif // DIALOGMETEOCOMPUTATION_H
