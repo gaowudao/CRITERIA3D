@@ -347,10 +347,10 @@ void MainWindow::on_actionOpen_meteo_points_DB_triggered()
 {
     QString dbName = QFileDialog::getOpenFileName(this, tr("Open DB meteo points"), "", tr("DB files (*.db)"));
 
-    if (dbName != "") loadMeteoPointsDB(dbName);
+    if (dbName != "") this->loadMeteoPointsDB(dbName);
 
-    currentPointsVisualization = showLocation;
-    redrawMeteoPoints(currentPointsVisualization, true);
+    this->currentPointsVisualization = showLocation;
+    this->redrawMeteoPoints(this->currentPointsVisualization, true);
 }
 
 
