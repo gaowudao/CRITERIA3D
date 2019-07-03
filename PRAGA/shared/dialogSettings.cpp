@@ -1,4 +1,4 @@
-#include "settingsDialog.h"
+#include "dialogSettings.h"
 #include "commonConstants.h"
 
 
@@ -159,7 +159,7 @@ MeteoTab::MeteoTab(Crit3DMeteoSettings *meteoSettings)
 }
 
 
-SettingsDialog::SettingsDialog(QSettings *projectSettings, QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DMeteoSettings *meteoSettings)
+DialogSettings::DialogSettings(QSettings *projectSettings, QSettings *settings, gis::Crit3DGisSettings *gisSettings, Crit3DQuality *quality, Crit3DMeteoSettings *meteoSettings)
 {
     _pathSettings = projectSettings;
     _paramSettings = settings;
@@ -190,7 +190,7 @@ SettingsDialog::SettingsDialog(QSettings *projectSettings, QSettings *settings, 
     setLayout(mainLayout);
 }
 
-bool SettingsDialog::acceptValues()
+bool DialogSettings::acceptValues()
 {
 
     if (geoTab->startLocationLatEdit.text().isEmpty())
@@ -291,7 +291,7 @@ bool SettingsDialog::acceptValues()
     return true;
 }
 
-void SettingsDialog::accept()
+void DialogSettings::accept()
 {
     if (acceptValues())
     {
@@ -300,7 +300,7 @@ void SettingsDialog::accept()
     }
 }
 
-void SettingsDialog::saveSettings()
+void DialogSettings::saveSettings()
 {
 
     _pathSettings->beginGroup("location");
@@ -325,22 +325,22 @@ void SettingsDialog::saveSettings()
     _paramSettings->endGroup();
 }
 
-QTabWidget *SettingsDialog::getTabWidget() const
+QTabWidget *DialogSettings::getTabWidget() const
 {
     return tabWidget;
 }
 
-void SettingsDialog::setTabWidget(QTabWidget *value)
+void DialogSettings::setTabWidget(QTabWidget *value)
 {
     tabWidget = value;
 }
 
-QSettings *SettingsDialog::getParamSettings() const
+QSettings *DialogSettings::getParamSettings() const
 {
     return _paramSettings;
 }
 
-void SettingsDialog::setParamSettings(QSettings *paramSettings)
+void DialogSettings::setParamSettings(QSettings *paramSettings)
 {
     _paramSettings = paramSettings;
 }

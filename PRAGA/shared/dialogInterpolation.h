@@ -11,12 +11,12 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
-class InterpolationDialog : public QDialog
+class DialogInterpolation : public QDialog
 {
     Q_OBJECT
 
     public:
-        explicit InterpolationDialog(Project *myProject);
+        explicit DialogInterpolation(Project *myProject);
 
         QComboBox algorithmEdit;
         QLineEdit minRegressionR2Edit;

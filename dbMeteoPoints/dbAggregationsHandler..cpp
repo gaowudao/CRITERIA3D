@@ -45,6 +45,19 @@ std::map<int, meteoVariable> Crit3DAggregationsDbHandler::mapIdMeteoVar() const
 return _mapIdMeteoVar;
 }
 
+bool Crit3DAggregationsDbHandler::saveAggrData(int nZones, QString aggrType, QString periodType, QDateTime startDate, QDateTime endDate, meteoVariable variable, std::vector< std::vector<float> > aggregatedValues)
+{
+    initAggregatedTables(nZones, aggrType, periodType, QDateTime(startDate), QDateTime(endDate));
+    createTmpAggrTable();
+    insertTmpAggr(QDateTime(startDate), QDateTime(endDate), variable, aggregatedValues, nZones);
+    if (!saveTmpAggrData(aggrType, periodType, nZones))
+    {
+        return false;
+    }
+    deleteTmpAggrTable();
+    return true;
+}
+
 bool Crit3DAggregationsDbHandler::writeAggregationZonesTable(QString name, QString filename, QString field)
 {
 
@@ -191,7 +204,7 @@ bool Crit3DAggregationsDbHandler::insertTmpAggr(QDateTime startDate, QDateTime e
 }
 
 
-bool Crit3DAggregationsDbHandler::saveAggrData(QString aggrType, QString periodType, int nZones)
+bool Crit3DAggregationsDbHandler::saveTmpAggrData(QString aggrType, QString periodType, int nZones)
 {
 
     QString statement;

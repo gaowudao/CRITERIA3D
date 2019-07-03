@@ -1,4 +1,4 @@
-#include "pragaSettingsDialog.h"
+#include "dialogPragaSettings.h"
 
 ElaborationTab::ElaborationTab(Crit3DElaborationSettings *elabSettings)
 {
@@ -62,12 +62,12 @@ ElaborationTab::ElaborationTab(Crit3DElaborationSettings *elabSettings)
 }
 
 
-PragaSettingsDialog::PragaSettingsDialog(QSettings *projectSettings,
+DialogPragaSettings::DialogPragaSettings(QSettings *projectSettings,
                                          QSettings *settings,
                                          gis::Crit3DGisSettings *gisSettings,
                                          Crit3DQuality *quality,
                                          Crit3DMeteoSettings *meteoSettings,
-                                         Crit3DElaborationSettings *elabSettings) : SettingsDialog(projectSettings, settings, gisSettings, quality, meteoSettings)
+                                         Crit3DElaborationSettings *elabSettings) : DialogSettings(projectSettings, settings, gisSettings, quality, meteoSettings)
 {
     _elabSettings = elabSettings;
     elabTab = new ElaborationTab(elabSettings);
@@ -75,7 +75,7 @@ PragaSettingsDialog::PragaSettingsDialog(QSettings *projectSettings,
     getTabWidget()->addTab(elabTab, tr("ELABORATION"));
 }
 
-bool PragaSettingsDialog::acceptPragaValues()
+bool DialogPragaSettings::acceptPragaValues()
 {
     if (elabTab->anomalyPtsMaxDisEdit.text().isEmpty())
     {
@@ -109,7 +109,7 @@ bool PragaSettingsDialog::acceptPragaValues()
     return true;
 }
 
-void PragaSettingsDialog::accept()
+void DialogPragaSettings::accept()
 {
     if (acceptValues() && acceptPragaValues())
     {
@@ -118,7 +118,7 @@ void PragaSettingsDialog::accept()
     }
 }
 
-void PragaSettingsDialog::savePragaSettings()
+void DialogPragaSettings::savePragaSettings()
 {
     getParamSettings()->beginGroup("elaboration");
     getParamSettings()->setValue("anomaly_pts_max_distance", elabTab->anomalyPtsMaxDisEdit.text());

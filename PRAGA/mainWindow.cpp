@@ -23,13 +23,13 @@
 #include "download.h"
 #include "pragaProject.h"
 #include "commonConstants.h"
-#include "dialogWindows.h"
-#include "pragaDialogs.h"
-#include "computationDialog.h"
-#include "climateFieldsDialog.h"
-#include "seriesOnZonesDialog.h"
-#include "interpolationDialog.h"
-#include "pragaSettingsDialog.h"
+#include "dialogSelection.h"
+#include "dialogDownloadMeteoData.h"
+#include "dialogMeteoComputation.h"
+#include "dialogClimateFields.h"
+#include "dialogSeriesOnZones.h"
+#include "dialogInterpolation.h"
+#include "dialogPragaSettings.h"
 #include "gis.h"
 #include "spatialControl.h"
 #include "keyboardFilter.h"
@@ -1252,7 +1252,7 @@ void MainWindow::on_actionCompute_elaboration_triggered()
 
     if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
-        ComputationDialog compDialog(myProject.parameters, isAnomaly, saveClima);
+        DialogMeteoComputation compDialog(myProject.parameters, isAnomaly, saveClima);
         if (compDialog.result() != QDialog::Accepted)
             return;
 
@@ -1301,7 +1301,7 @@ void MainWindow::on_actionCompute_anomaly_triggered()
 
     if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
-        ComputationDialog compDialog(myProject.parameters, isAnomaly, saveClima);
+        DialogMeteoComputation compDialog(myProject.parameters, isAnomaly, saveClima);
         if (compDialog.result() != QDialog::Accepted)
             return;
 
@@ -1354,7 +1354,7 @@ void MainWindow::on_actionCompute_climate_triggered()
     if (myProject.elaborationCheck(isMeteoGrid, isAnomaly))
     {
         myProject.clima->resetListElab();
-        ComputationDialog compDialog(myProject.parameters, isAnomaly, saveClima);
+        DialogMeteoComputation compDialog(myProject.parameters, isAnomaly, saveClima);
         if (compDialog.result() != QDialog::Accepted)
             return;
 
@@ -1391,7 +1391,7 @@ void MainWindow::on_actionClimate_fields_triggered()
     myProject.clima->resetListElab();
     if (myProject.showClimateFields(isMeteoGrid, &climateDbElab, &climateDbVarList))
     {
-        ClimateFieldsDialog climateDialog(climateDbElab, climateDbVarList);
+        DialogClimateFields climateDialog(climateDbElab, climateDbVarList);
         if (climateDialog.result() == QDialog::Accepted)
         {
             QString climaSelected = climateDialog.getSelected();
@@ -1658,14 +1658,14 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool is
 
 void MainWindow::on_actionInterpolationSettings_triggered()
 {
-    InterpolationDialog* myInterpolationDialog = new InterpolationDialog(&myProject);
-    myInterpolationDialog->close();
+    DialogInterpolation* myDialogInterpolation = new DialogInterpolation(&myProject);
+    myDialogInterpolation->close();
 }
 
 
 void MainWindow::on_actionParameters_triggered()
 {
-    PragaSettingsDialog* mySettingsDialog = new PragaSettingsDialog(myProject.projectSettings, myProject.parameters, &myProject.gisSettings, myProject.quality, myProject.meteoSettings, myProject.clima->getElabSettings());
+    DialogPragaSettings* mySettingsDialog = new DialogPragaSettings(myProject.projectSettings, myProject.parameters, &myProject.gisSettings, myProject.quality, myProject.meteoSettings, myProject.clima->getElabSettings());
     mySettingsDialog->exec();
     if (startCenter->latitude() != myProject.gisSettings.startLocation.latitude
         || startCenter->longitude() != myProject.gisSettings.startLocation.longitude)
@@ -1818,81 +1818,83 @@ void MainWindow::setMapSource(OSMTileSource::OSMTileType mySource)
     this->mapView->setTileSource(composite);
 }
 
-bool MainWindow::loadShapeOrRaster()
+bool MainWindow::openRaster(QString fileName, gis::Crit3DRasterGrid *myRaster)
 {
+
+        std::string* myError = new std::string();
+        std::string fnWithoutExt = fileName.left(fileName.length()-4).toStdString();
+
+        if (! gis::readEsriGrid(fnWithoutExt, myRaster, myError))
+        {
+            qDebug("Load raster failed!");
+            return (false);
+        }
+        return true;
+}
+
+bool MainWindow::openShape(QString fileName)
+{
+// TO DO
+    return false;
+}
+
+
+bool MainWindow::on_actionAggregate_from_grid_triggered()
+{
+    if (!ui->grid->isChecked())
+    {
+        myProject.errorString = "Load grid";
+        myProject.logError();
+        return false;
+    }
+    if (myProject.aggregationDbHandler == nullptr)
+    {
+        QMessageBox::information(nullptr, "Missing DB", "Open or Create a Aggregation DB");
+        return false;
+    }
+
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open raster or Shape file"), "", tr("files (*.flt *.shp)"));
     if (fileName == "")
     {
+        QMessageBox::information(nullptr, "No Raster or Shape", "Load raster/shape before");
         return false;
     }
+
+    gis::Crit3DRasterGrid *myRaster = new(gis::Crit3DRasterGrid);
     // raster
     if (fileName.contains(".flt"))
     {
-        if (!myProject.loadDEM(fileName))
-        {
-            return false;
-        }
-        this->setCurrentRaster(&(myProject.DTM));
-        ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
-        this->ui->rasterOpacitySlider->setEnabled(true);
-
-        // center map
-        gis::Crit3DGeoPoint* center = this->rasterObj->getRasterCenter();
-        this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
-
-        // resize map
-        float size = this->rasterObj->getRasterMaxSize();
-        size = log2(1000.f/size);
-        this->mapView->setZoomLevel(quint8(size));
-        this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
-
-        // active raster object
-        this->rasterObj->updateCenter();
-
-        return true;
+        openRaster(fileName, myRaster);
     }
     // shape
     else if (fileName.contains(".shp"))
     {
         // TO DO
         // sarà necessaria una finestra in cui è selezionabile il campo dello shape
+        openShape(fileName);
+    }
+
+    DialogSeriesOnZones zoneDialog(myProject.parameters);
+    if (zoneDialog.result() != QDialog::Accepted)
+    {
+        delete myRaster;
         return false;
     }
-
-}
-
-
-void MainWindow::on_actionAggregate_from_grid_triggered()
-{
-    if (!ui->grid->isChecked())
-    {
-        myProject.errorString = "Load grid";
-        myProject.logError();
-        return;
-    }
-    if (myProject.aggregationDbHandler == nullptr)
-    {
-        QMessageBox::information(nullptr, "Missing DB", "Open or Create a Aggregation DB");
-        return;
-    }
-    if (loadShapeOrRaster() == false)
-    {
-        QMessageBox::information(nullptr, "No Raster or Shape", "Load raster/shape before");
-        return;
-    }
-
-    SeriesOnZonesDialog zoneDialog(myProject.parameters);
-    if (zoneDialog.result() != QDialog::Accepted)
-        return;
     else
     {
-        std::vector< std::vector<float> > resultAverage;
         std::vector<float> outputValues;
         float threshold = NODATA;
         meteoComputation elab1MeteoComp = noMeteoComp;
         QString periodType = "D";
-        resultAverage = myProject.averageSeriesOnZonesMeteoGrid(zoneDialog.getVariable(), elab1MeteoComp, zoneDialog.getSpatialElaboration(), threshold, this->rasterObj->getRaster(), zoneDialog.getStartDate(), zoneDialog.getEndDate(), periodType, outputValues, true);
+        if (!myProject.averageSeriesOnZonesMeteoGrid(zoneDialog.getVariable(), elab1MeteoComp, zoneDialog.getSpatialElaboration(), threshold, myRaster, zoneDialog.getStartDate(), zoneDialog.getEndDate(), periodType, outputValues, true))
+        {
+            QMessageBox::information(nullptr, "Error", "Error writing aggregation data");
+            delete myRaster;
+            return false;
+        }
     }
+    delete myRaster;
+    return true;
 }
 
 

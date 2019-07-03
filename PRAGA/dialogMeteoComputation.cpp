@@ -1,11 +1,11 @@
-#include "computationDialog.h"
+#include "dialogMeteoComputation.h"
 #include "climate.h"
 #include "dbClimate.h"
 #include "utilities.h"
 
 extern PragaProject myProject;
 
-ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool saveClima)
+DialogMeteoComputation::DialogMeteoComputation(QSettings *settings, bool isAnomaly, bool saveClima)
     : settings(settings), isAnomaly(isAnomaly), saveClima(saveClima)
 {
 
@@ -396,7 +396,7 @@ ComputationDialog::ComputationDialog(QSettings *settings, bool isAnomaly, bool s
 }
 
 
-void ComputationDialog::done(bool res)
+void DialogMeteoComputation::done(bool res)
 {
 
     if(res)  // ok was pressed
@@ -609,7 +609,7 @@ void ComputationDialog::done(bool res)
 }
 
 
-void ComputationDialog::checkYears()
+void DialogMeteoComputation::checkYears()
 {
     if (firstYearEdit.text().toInt() == lastYearEdit.text().toInt())
     {
@@ -623,7 +623,7 @@ void ComputationDialog::checkYears()
 }
 
 
-void ComputationDialog::displayPeriod(const QString value)
+void DialogMeteoComputation::displayPeriod(const QString value)
 {
 
     if (value == "Daily")
@@ -813,7 +813,7 @@ void ComputationDialog::displayPeriod(const QString value)
 
 }
 
-void ComputationDialog::listElaboration(const QString value)
+void DialogMeteoComputation::listElaboration(const QString value)
 {
 
     meteoVariable key = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, value.toStdString());
@@ -845,7 +845,7 @@ void ComputationDialog::listElaboration(const QString value)
 
 }
 
-void ComputationDialog::listSecondElab(const QString value)
+void DialogMeteoComputation::listSecondElab(const QString value)
 {
 
     if ( MapElabWithParam.find(value.toStdString()) == MapElabWithParam.end())
@@ -900,7 +900,7 @@ void ComputationDialog::listSecondElab(const QString value)
 
 }
 
-void ComputationDialog::activeSecondParameter(const QString value)
+void DialogMeteoComputation::activeSecondParameter(const QString value)
 {
 
         if ( MapElabWithParam.find(value.toStdString()) == MapElabWithParam.end())
@@ -915,7 +915,7 @@ void ComputationDialog::activeSecondParameter(const QString value)
 
 }
 
-void ComputationDialog::readParameter(int state)
+void DialogMeteoComputation::readParameter(int state)
 {
 
     climateDbElabList.clear();
@@ -966,7 +966,7 @@ void ComputationDialog::readParameter(int state)
 }
 
 
-void ComputationDialog::copyDataToAnomaly()
+void DialogMeteoComputation::copyDataToAnomaly()
 {
 
     if (!anomaly.AnomalyGetReadReferenceState())
@@ -1007,7 +1007,7 @@ void ComputationDialog::copyDataToAnomaly()
 
 }
 
-void ComputationDialog::copyDataToSaveLayout()
+void DialogMeteoComputation::copyDataToSaveLayout()
 {
 
     if (!checkValidData())
@@ -1082,7 +1082,7 @@ void ComputationDialog::copyDataToSaveLayout()
 
 }
 
-bool ComputationDialog::checkValidData()
+bool DialogMeteoComputation::checkValidData()
 {
 
     if (firstYearEdit.text().size() != 4)
@@ -1138,7 +1138,7 @@ bool ComputationDialog::checkValidData()
 
 }
 
-QStringList ComputationDialog::getElabSaveList()
+QStringList DialogMeteoComputation::getElabSaveList()
 {
     return saveClimaLayout.getList();
 }

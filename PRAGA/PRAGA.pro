@@ -89,47 +89,47 @@ unix:{
 
 SOURCES += main.cpp\
     mainWindow.cpp \
-    computationDialog.cpp \
-    anomalyLayout.cpp \
     saveClimaLayout.cpp \
-    shared/dialogWindows.cpp \
     shared/stationMarker.cpp \
     shared/rubberBand.cpp \
     shared/formInfo.cpp \
-    shared/settingsDialog.cpp \
     shared/mapGraphicsRasterObject.cpp \
-    shared/interpolationDialog.cpp \
     shared/interpolationCmd.cpp \
     shared/project.cpp \
     pragaProject.cpp \
-    pragaSettingsDialog.cpp \
-    pragaDialogs.cpp \
-    climateFieldsDialog.cpp \
     keyboardFilter.cpp \
     shared/colorLegend.cpp \
-    seriesOnZonesDialog.cpp
+    dialogMeteoComputation.cpp \
+    dialogDownloadMeteoData.cpp \
+    shared/dialogSelection.cpp \
+    shared/dialogInterpolation.cpp \
+    shared/dialogSettings.cpp \
+    dialogClimateFields.cpp \
+    dialogPragaSettings.cpp \
+    dialogSeriesOnZones.cpp \
+    dialogAnomaly.cpp
 
 
 HEADERS  += mainWindow.h \
     saveClimaLayout.h \
-    computationDialog.h \
-    anomalyLayout.h \
-    shared/dialogWindows.h \
     shared/stationMarker.h \
     shared/rubberBand.h \
     shared/formInfo.h \
-    shared/settingsDialog.h \
     shared/mapGraphicsRasterObject.h \
-    shared/interpolationDialog.h \
     shared/interpolationCmd.h \
     shared/project.h \
     pragaProject.h \
-    pragaSettingsDialog.h \
-    pragaDialogs.h \
-    climateFieldsDialog.h \
     keyboardFilter.h \
     shared/colorLegend.h \
-    seriesOnZonesDialog.h
+    dialogMeteoComputation.h \
+    dialogDownloadMeteoData.h \
+    shared/dialogSelection.h \
+    shared/dialogInterpolation.h \
+    shared/dialogSettings.h \
+    dialogClimateFields.h \
+    dialogPragaSettings.h \
+    dialogSeriesOnZones.h \
+    dialogAnomaly.h
 
 
 FORMS    += mainWindow.ui \
