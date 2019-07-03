@@ -1889,9 +1889,12 @@ bool MainWindow::on_actionAggregate_from_grid_triggered()
         if (!myProject.averageSeriesOnZonesMeteoGrid(zoneDialog.getVariable(), elab1MeteoComp, zoneDialog.getSpatialElaboration(), threshold, myRaster, zoneDialog.getStartDate(), zoneDialog.getEndDate(), periodType, outputValues, true))
         {
             QMessageBox::information(nullptr, "Error", "Error writing aggregation data");
+            delete myRaster;
+            return false;
         }
     }
     delete myRaster;
+    return true;
 }
 
 
