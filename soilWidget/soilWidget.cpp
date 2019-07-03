@@ -1,3 +1,34 @@
+/*!
+    CRITERIA3D
+
+    \copyright 2016 Fausto Tomei, Gabriele Antolini, Laura Costantini
+    Alberto Pistocchi, Marco Bittelli, Antonio Volta
+
+    You should have received a copy of the GNU General Public License
+    along with Nome-Programma.  If not, see <http://www.gnu.org/licenses/>.
+
+    This file is part of CRITERIA3D.
+    CRITERIA3D has been developed under contract issued by A.R.P.A. Emilia-Romagna
+
+    CRITERIA3D is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    CRITERIA3D is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with CRITERIA3D.  If not, see <http://www.gnu.org/licenses/>.
+
+    contacts:
+    fausto.tomei@gmail.com
+    ftomei@arpae.it
+*/
+
+
 #include "commonConstants.h"
 #include "soilWidget.h"
 #include "soilDbTools.h"
@@ -13,7 +44,7 @@
 #include <QMessageBox>
 
 
-SoilWidget::SoilWidget()
+Crit3DSoilWidget::Crit3DSoilWidget()
 {
     this->setWindowTitle(QStringLiteral("Soil"));
     this->resize(800, 600);
@@ -31,14 +62,14 @@ SoilWidget::SoilWidget()
     menuBar->addMenu(fileMenu);
 
     QAction* LoadSoil = new QAction(tr("&Load soil data"), this);
-    connect(LoadSoil, &QAction::triggered, this, &SoilWidget::on_actionLoadSoil);
+    connect(LoadSoil, &QAction::triggered, this, &Crit3DSoilWidget::on_actionLoadSoil);
     fileMenu->addAction(LoadSoil);
 
     this->layout()->setMenuBar(menuBar);
 }
 
 
-void SoilWidget::on_actionLoadSoil()
+void Crit3DSoilWidget::on_actionLoadSoil()
 {
     QString dbName = QFileDialog::getOpenFileName(this, tr("Load soil data"), "", tr("SQLite files (*.db)"));
     if (dbName == "") return;
@@ -65,7 +96,7 @@ void SoilWidget::on_actionLoadSoil()
 
 
 
-void SoilWidget::mouseReleaseEvent(QMouseEvent* ev)
+void Crit3DSoilWidget::mouseReleaseEvent(QMouseEvent* ev)
 {
     Q_UNUSED(ev);
 

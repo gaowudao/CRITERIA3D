@@ -7,12 +7,12 @@
     #include <QWidget>
     #include <QComboBox>
 
-    class SoilWidget : public QWidget
+    class Crit3DSoilWidget : public QWidget
     {
         Q_OBJECT
 
         public:
-            SoilWidget();
+            Crit3DSoilWidget();
 
         protected:
             void mouseReleaseEvent(QMouseEvent *ev);
