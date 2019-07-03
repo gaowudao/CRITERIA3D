@@ -26,7 +26,7 @@
 #include "dialogSelection.h"
 #include "dialogDownloadMeteoData.h"
 #include "dialogMeteoComputation.h"
-#include "climateFieldsDialog.h"
+#include "dialogClimateFields.h"
 #include "seriesOnZonesDialog.h"
 #include "dialogInterpolation.h"
 #include "pragaSettingsDialog.h"
@@ -1391,7 +1391,7 @@ void MainWindow::on_actionClimate_fields_triggered()
     myProject.clima->resetListElab();
     if (myProject.showClimateFields(isMeteoGrid, &climateDbElab, &climateDbVarList))
     {
-        ClimateFieldsDialog climateDialog(climateDbElab, climateDbVarList);
+        DialogClimateFields climateDialog(climateDbElab, climateDbVarList);
         if (climateDialog.result() == QDialog::Accepted)
         {
             QString climaSelected = climateDialog.getSelected();

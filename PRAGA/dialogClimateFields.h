@@ -1,10 +1,10 @@
-#ifndef CLIMATEFIELDSDIALOG_H
-#define CLIMATEFIELDSDIALOG_H
+#ifndef DIALOGCLIMATEFIELDS_H
+#define DIALOGCLIMATEFIELDS_H
 
 #include <QtWidgets>
 #include "meteo.h"
 
-class ClimateFieldsDialog : public QDialog
+class DialogClimateFields : public QDialog
 {
     Q_OBJECT
 
@@ -36,7 +36,7 @@ class ClimateFieldsDialog : public QDialog
         bool isShowClicked;
 
     public:
-        ClimateFieldsDialog(QStringList climateDbElab, QStringList climateDbVarList);
+        DialogClimateFields(QStringList climateDbElab, QStringList climateDbVarList);
         void variableClicked(QListWidgetItem *item);
         void elabClicked(QListWidgetItem* item);
         void indexClicked(QListWidgetItem* item);
@@ -48,4 +48,4 @@ class ClimateFieldsDialog : public QDialog
         bool getIsShowClicked() const;
 };
 
-#endif // CLIMATEFIELDSDIALOG_H
+#endif // DIALOGCLIMATEFIELDS_H

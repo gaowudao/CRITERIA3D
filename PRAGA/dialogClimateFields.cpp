@@ -1,27 +1,27 @@
-#include "climateFieldsDialog.h"
+#include "dialogClimateFields.h"
 #include "climate.h"
 
-QString ClimateFieldsDialog::getSelected() const
+QString DialogClimateFields::getSelected() const
 {
     return climaSelected;
 }
 
-meteoVariable ClimateFieldsDialog::getVar() const
+meteoVariable DialogClimateFields::getVar() const
 {
     return var;
 }
 
-QString ClimateFieldsDialog::getIndexSelected() const
+QString DialogClimateFields::getIndexSelected() const
 {
     return indexSelected;
 }
 
-bool ClimateFieldsDialog::getIsShowClicked() const
+bool DialogClimateFields::getIsShowClicked() const
 {
     return isShowClicked;
 }
 
-ClimateFieldsDialog::ClimateFieldsDialog(QStringList climateDbElab, QStringList climateDbVarList)
+DialogClimateFields::DialogClimateFields(QStringList climateDbElab, QStringList climateDbVarList)
 : climateDbElab(climateDbElab), climateDbVarList(climateDbVarList)
 {
     setWindowTitle("Climate Variables");
@@ -63,7 +63,7 @@ ClimateFieldsDialog::ClimateFieldsDialog(QStringList climateDbElab, QStringList 
     exec();
 }
 
-void ClimateFieldsDialog::variableClicked(QListWidgetItem* item)
+void DialogClimateFields::variableClicked(QListWidgetItem* item)
 {
     elabW.setVisible(true);
     indexW.setVisible(false);
@@ -93,7 +93,7 @@ void ClimateFieldsDialog::variableClicked(QListWidgetItem* item)
 
 }
 
-void ClimateFieldsDialog::elabClicked(QListWidgetItem* item)
+void DialogClimateFields::elabClicked(QListWidgetItem* item)
 {
     climaSelected = item->text();
     listIndex.clear();
@@ -143,7 +143,7 @@ void ClimateFieldsDialog::elabClicked(QListWidgetItem* item)
 }
 
 
-void ClimateFieldsDialog::indexClicked(QListWidgetItem* item)
+void DialogClimateFields::indexClicked(QListWidgetItem* item)
 {
     indexSelected = item->text();
     if (indexSelected == "MAM")
@@ -167,13 +167,13 @@ void ClimateFieldsDialog::indexClicked(QListWidgetItem* item)
     deleteButton.setEnabled(false);
 }
 
-void ClimateFieldsDialog::showClicked()
+void DialogClimateFields::showClicked()
 {
     isShowClicked = true;
     QDialog::done(QDialog::Accepted);
 }
 
-void ClimateFieldsDialog::deleteClicked()
+void DialogClimateFields::deleteClicked()
 {
     isShowClicked = false;
     QDialog::done(QDialog::Accepted);
