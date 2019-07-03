@@ -28,7 +28,7 @@
 #include "dialogMeteoComputation.h"
 #include "climateFieldsDialog.h"
 #include "seriesOnZonesDialog.h"
-#include "interpolationDialog.h"
+#include "dialogInterpolation.h"
 #include "pragaSettingsDialog.h"
 #include "gis.h"
 #include "spatialControl.h"
@@ -1658,8 +1658,8 @@ void MainWindow::showElabResult(bool updateColorSCale, bool isMeteoGrid, bool is
 
 void MainWindow::on_actionInterpolationSettings_triggered()
 {
-    InterpolationDialog* myInterpolationDialog = new InterpolationDialog(&myProject);
-    myInterpolationDialog->close();
+    DialogInterpolation* myDialogInterpolation = new DialogInterpolation(&myProject);
+    myDialogInterpolation->close();
 }
 
 

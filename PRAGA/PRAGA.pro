@@ -96,7 +96,6 @@ SOURCES += main.cpp\
     shared/formInfo.cpp \
     shared/settingsDialog.cpp \
     shared/mapGraphicsRasterObject.cpp \
-    shared/interpolationDialog.cpp \
     shared/interpolationCmd.cpp \
     shared/project.cpp \
     pragaProject.cpp \
@@ -107,7 +106,8 @@ SOURCES += main.cpp\
     seriesOnZonesDialog.cpp \
     dialogMeteoComputation.cpp \
     dialogDownloadMeteoData.cpp \
-    shared/dialogSelection.cpp
+    shared/dialogSelection.cpp \
+    shared/dialogInterpolation.cpp
 
 
 HEADERS  += mainWindow.h \
@@ -118,7 +118,6 @@ HEADERS  += mainWindow.h \
     shared/formInfo.h \
     shared/settingsDialog.h \
     shared/mapGraphicsRasterObject.h \
-    shared/interpolationDialog.h \
     shared/interpolationCmd.h \
     shared/project.h \
     pragaProject.h \
@@ -129,7 +128,8 @@ HEADERS  += mainWindow.h \
     seriesOnZonesDialog.h \
     dialogMeteoComputation.h \
     dialogDownloadMeteoData.h \
-    shared/dialogSelection.h
+    shared/dialogSelection.h \
+    shared/dialogInterpolation.h
 
 
 FORMS    += mainWindow.ui \
