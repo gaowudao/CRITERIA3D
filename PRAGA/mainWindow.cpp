@@ -24,7 +24,7 @@
 #include "pragaProject.h"
 #include "commonConstants.h"
 #include "dialogWindows.h"
-#include "pragaDialogs.h"
+#include "dialogDownloadMeteoData.h"
 #include "dialogMeteoComputation.h"
 #include "climateFieldsDialog.h"
 #include "seriesOnZonesDialog.h"

@@ -102,12 +102,12 @@ SOURCES += main.cpp\
     shared/project.cpp \
     pragaProject.cpp \
     pragaSettingsDialog.cpp \
-    pragaDialogs.cpp \
     climateFieldsDialog.cpp \
     keyboardFilter.cpp \
     shared/colorLegend.cpp \
     seriesOnZonesDialog.cpp \
-    dialogMeteoComputation.cpp
+    dialogMeteoComputation.cpp \
+    dialogDownloadMeteoData.cpp
 
 
 HEADERS  += mainWindow.h \
@@ -124,12 +124,12 @@ HEADERS  += mainWindow.h \
     shared/project.h \
     pragaProject.h \
     pragaSettingsDialog.h \
-    pragaDialogs.h \
     climateFieldsDialog.h \
     keyboardFilter.h \
     shared/colorLegend.h \
     seriesOnZonesDialog.h \
-    dialogMeteoComputation.h
+    dialogMeteoComputation.h \
+    dialogDownloadMeteoData.h
 
 
 FORMS    += mainWindow.ui \
