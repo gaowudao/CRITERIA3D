@@ -1,5 +1,5 @@
-#ifndef ANOMALYLAYOUT_H
-#define ANOMALYLAYOUT_H
+#ifndef DIALOGANOMALY_H
+#define DIALOGANOMALY_H
 
 #include <QString>
 #include <QSettings>
@@ -10,7 +10,7 @@
 #include "pragaProject.h"
 #include "mainWindow.h"
 
-class AnomalyLayout : public QDialog
+class DialogAnomaly : public QDialog
 {
 
     Q_OBJECT
@@ -66,7 +66,7 @@ class AnomalyLayout : public QDialog
         QComboBox climateDbClimaList;
 
     public:
-        AnomalyLayout();
+        DialogAnomaly();
         void build(QSettings *settings);
         void AnomalyDisplayPeriod(const QString value);
         void AnomalyCheckYears();
@@ -111,4 +111,4 @@ class AnomalyLayout : public QDialog
 };
 
 
-#endif // ANOMALYLAYOUT_H
+#endif // DIALOGANOMALY_H

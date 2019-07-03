@@ -9,7 +9,7 @@
 #include <QtWidgets>
 #include "pragaProject.h"
 #include "mainWindow.h"
-#include "anomalyLayout.h"
+#include "dialogAnomaly.h"
 #include "saveClimaLayout.h"
 
 
@@ -44,7 +44,7 @@ class DialogMeteoComputation : public QDialog
         QLineEdit elab1Parameter;
         QLineEdit elab2Parameter;
 
-        AnomalyLayout anomaly;
+        DialogAnomaly anomaly;
         QPushButton copyData;
 
         QPushButton add;

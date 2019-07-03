@@ -1,14 +1,14 @@
-#include "anomalyLayout.h"
+#include "dialogAnomaly.h"
 #include "climate.h"
 #include "dbClimate.h"
 #include "utilities.h"
 
 extern PragaProject myProject;
 
-AnomalyLayout::AnomalyLayout()
+DialogAnomaly::DialogAnomaly()
 { }
 
-void AnomalyLayout::build(QSettings *AnomalySettings)
+void DialogAnomaly::build(QSettings *AnomalySettings)
 {
 
     this->AnomalySettings = AnomalySettings;
@@ -275,12 +275,12 @@ void AnomalyLayout::build(QSettings *AnomalySettings)
 
 }
 
-void AnomalyLayout::AnomalySetVariableElab(const QString &value)
+void DialogAnomaly::AnomalySetVariableElab(const QString &value)
 {
     variableElab.setText(value);
 }
 
-void AnomalyLayout::AnomalyListElaboration(const QString value)
+void DialogAnomaly::AnomalyListElaboration(const QString value)
 {
 
     meteoVariable key = getKeyMeteoVarMeteoMap(MapDailyMeteoVarToString, value.toStdString());
@@ -317,7 +317,7 @@ void AnomalyLayout::AnomalyListElaboration(const QString value)
 }
 
 
-void AnomalyLayout::AnomalyCheckYears()
+void DialogAnomaly::AnomalyCheckYears()
 {
     if (firstYearEdit.text().toInt() == lastYearEdit.text().toInt())
     {
@@ -331,7 +331,7 @@ void AnomalyLayout::AnomalyCheckYears()
 }
 
 
-void AnomalyLayout::AnomalyDisplayPeriod(const QString value)
+void DialogAnomaly::AnomalyDisplayPeriod(const QString value)
 {
 
     if (value == "Daily")
@@ -455,7 +455,7 @@ void AnomalyLayout::AnomalyDisplayPeriod(const QString value)
 
 }
 
-void AnomalyLayout::AnomalyListSecondElab(const QString value)
+void DialogAnomaly::AnomalyListSecondElab(const QString value)
 {
 
     if ( MapElabWithParam.find(value.toStdString()) == MapElabWithParam.end())
@@ -518,7 +518,7 @@ void AnomalyLayout::AnomalyListSecondElab(const QString value)
 
 }
 
-void AnomalyLayout::AnomalyActiveSecondParameter(const QString value)
+void DialogAnomaly::AnomalyActiveSecondParameter(const QString value)
 {
 
         if ( MapElabWithParam.find(value.toStdString()) == MapElabWithParam.end())
@@ -532,7 +532,7 @@ void AnomalyLayout::AnomalyActiveSecondParameter(const QString value)
         }
 }
 
-void AnomalyLayout::AnomalyReadParameter(int state)
+void DialogAnomaly::AnomalyReadParameter(int state)
 {
 
     climateDbElabList.clear();
@@ -555,7 +555,7 @@ void AnomalyLayout::AnomalyReadParameter(int state)
 
 }
 
-void AnomalyLayout::AnomalyFillClimateDbList(QComboBox* dbList)
+void DialogAnomaly::AnomalyFillClimateDbList(QComboBox* dbList)
 {
     QStringList climateTables;
     QString myError  = myProject.errorString;
@@ -584,7 +584,7 @@ void AnomalyLayout::AnomalyFillClimateDbList(QComboBox* dbList)
     return;
 }
 
-void AnomalyLayout::AnomalyReadReferenceState(int state)
+void DialogAnomaly::AnomalyReadReferenceState(int state)
 {
 
     if (state!= 0)
@@ -606,7 +606,7 @@ void AnomalyLayout::AnomalyReadReferenceState(int state)
     }
 }
 
-void AnomalyLayout::AnomalySetAllEnable(bool set)
+void DialogAnomaly::AnomalySetAllEnable(bool set)
 {
 
     currentDay.setEnabled(set);
@@ -626,147 +626,147 @@ void AnomalyLayout::AnomalySetAllEnable(bool set)
 
 }
 
-bool AnomalyLayout::AnomalyGetReadReferenceState()
+bool DialogAnomaly::AnomalyGetReadReferenceState()
 {
     return readReference.isChecked();
 }
 
-QString AnomalyLayout::AnomalyGetPeriodTypeList() const
+QString DialogAnomaly::AnomalyGetPeriodTypeList() const
 {
     return periodTypeList.currentText();
 }
 
-void AnomalyLayout::AnomalySetPeriodTypeList(QString period)
+void DialogAnomaly::AnomalySetPeriodTypeList(QString period)
 {
     periodTypeList.setCurrentText(period);
 }
 
-int AnomalyLayout::AnomalyGetYearStart() const
+int DialogAnomaly::AnomalyGetYearStart() const
 {
     return firstYearEdit.text().toInt();
 }
 
-void AnomalyLayout::AnomalySetYearStart(QString year)
+void DialogAnomaly::AnomalySetYearStart(QString year)
 {
     firstYearEdit.setText(year);
 }
 
-int AnomalyLayout::AnomalyGetYearLast() const
+int DialogAnomaly::AnomalyGetYearLast() const
 {
     return lastYearEdit.text().toInt();
 }
 
-void AnomalyLayout::AnomalySetYearLast(QString year)
+void DialogAnomaly::AnomalySetYearLast(QString year)
 {
     lastYearEdit.setText(year);
 }
 
-QDate AnomalyLayout::AnomalyGetGenericPeriodStart() const
+QDate DialogAnomaly::AnomalyGetGenericPeriodStart() const
 {
     return genericPeriodStart.date();
 }
 
-void AnomalyLayout::AnomalySetGenericPeriodStart(QDate genericStart)
+void DialogAnomaly::AnomalySetGenericPeriodStart(QDate genericStart)
 {
     genericPeriodStart.setDate(genericStart);
 }
 
-QDate AnomalyLayout::AnomalyGetGenericPeriodEnd() const
+QDate DialogAnomaly::AnomalyGetGenericPeriodEnd() const
 {
     return genericPeriodEnd.date();
 }
 
-void AnomalyLayout::AnomalySetGenericPeriodEnd(QDate genericEnd)
+void DialogAnomaly::AnomalySetGenericPeriodEnd(QDate genericEnd)
 {
     genericPeriodEnd.setDate(genericEnd);
 }
 
-QDate AnomalyLayout::AnomalyGetCurrentDay() const
+QDate DialogAnomaly::AnomalyGetCurrentDay() const
 {
     return currentDay.date();
 }
 
-void AnomalyLayout::AnomalySetCurrentDay(QDate date)
+void DialogAnomaly::AnomalySetCurrentDay(QDate date)
 {
     currentDay.setDate(date);
 }
 
-int AnomalyLayout::AnomalyGetNyears() const
+int DialogAnomaly::AnomalyGetNyears() const
 {
     return nrYear.text().toInt();
 }
 
-void AnomalyLayout::AnomalySetNyears(QString nYears)
+void DialogAnomaly::AnomalySetNyears(QString nYears)
 {
     nrYear.setText(nYears);
 }
 
-QString AnomalyLayout::AnomalyGetElaboration() const
+QString DialogAnomaly::AnomalyGetElaboration() const
 {
     return elaborationList.currentText();
 }
 
-void AnomalyLayout::AnomalySetElaboration(QString elab)
+void DialogAnomaly::AnomalySetElaboration(QString elab)
 {
     elaborationList.setCurrentText(elab);
 }
 
-QString AnomalyLayout::AnomalyGetSecondElaboration() const
+QString DialogAnomaly::AnomalyGetSecondElaboration() const
 {
     return secondElabList.currentText();
 }
 
-void AnomalyLayout::AnomalySetSecondElaboration(QString elab)
+void DialogAnomaly::AnomalySetSecondElaboration(QString elab)
 {
     secondElabList.setCurrentText(elab);
 }
 
-QString AnomalyLayout::AnomalyGetParam1() const
+QString DialogAnomaly::AnomalyGetParam1() const
 {
     return elab1Parameter.text();
 }
 
-void AnomalyLayout::AnomalySetParam1(QString param)
+void DialogAnomaly::AnomalySetParam1(QString param)
 {
     elab1Parameter.setText(param);
 }
 
-void AnomalyLayout::AnomalySetParam1ReadOnly(bool visible)
+void DialogAnomaly::AnomalySetParam1ReadOnly(bool visible)
 {
     elab1Parameter.setReadOnly(visible);
 }
 
-QString AnomalyLayout::AnomalyGetParam2() const
+QString DialogAnomaly::AnomalyGetParam2() const
 {
     return elab2Parameter.text();
 }
 
-void AnomalyLayout::AnomalySetParam2(QString param)
+void DialogAnomaly::AnomalySetParam2(QString param)
 {
     elab2Parameter.setText(param);
 }
 
-bool AnomalyLayout::AnomalyReadParamIsChecked() const
+bool DialogAnomaly::AnomalyReadParamIsChecked() const
 {
     return readParam.isChecked();
 }
 
-void AnomalyLayout::AnomalySetReadParamIsChecked(bool set)
+void DialogAnomaly::AnomalySetReadParamIsChecked(bool set)
 {
     readParam.setChecked(set);
 }
 
-QString AnomalyLayout::AnomalyGetClimateDbElab() const
+QString DialogAnomaly::AnomalyGetClimateDbElab() const
 {
     return climateDbElabList.currentText();
 }
 
-void AnomalyLayout::AnomalySetClimateDbElab(QString elab)
+void DialogAnomaly::AnomalySetClimateDbElab(QString elab)
 {
     climateDbElabList.setCurrentText(elab);
 }
 
-QString AnomalyLayout::AnomalyGetClimateDb() const
+QString DialogAnomaly::AnomalyGetClimateDb() const
 {
     return climateDbClimaList.currentText();
 }
