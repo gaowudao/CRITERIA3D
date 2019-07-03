@@ -27,7 +27,7 @@
 #include "dialogDownloadMeteoData.h"
 #include "dialogMeteoComputation.h"
 #include "dialogClimateFields.h"
-#include "seriesOnZonesDialog.h"
+#include "dialogSeriesOnZones.h"
 #include "dialogInterpolation.h"
 #include "dialogPragaSettings.h"
 #include "gis.h"
@@ -1874,7 +1874,7 @@ bool MainWindow::on_actionAggregate_from_grid_triggered()
         openShape(fileName);
     }
 
-    SeriesOnZonesDialog zoneDialog(myProject.parameters);
+    DialogSeriesOnZones zoneDialog(myProject.parameters);
     if (zoneDialog.result() != QDialog::Accepted)
     {
         delete myRaster;

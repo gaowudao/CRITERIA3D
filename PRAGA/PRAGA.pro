@@ -100,14 +100,14 @@ SOURCES += main.cpp\
     pragaProject.cpp \
     keyboardFilter.cpp \
     shared/colorLegend.cpp \
-    seriesOnZonesDialog.cpp \
     dialogMeteoComputation.cpp \
     dialogDownloadMeteoData.cpp \
     shared/dialogSelection.cpp \
     shared/dialogInterpolation.cpp \
     shared/dialogSettings.cpp \
     dialogClimateFields.cpp \
-    dialogPragaSettings.cpp
+    dialogPragaSettings.cpp \
+    dialogSeriesOnZones.cpp
 
 
 HEADERS  += mainWindow.h \
@@ -122,14 +122,14 @@ HEADERS  += mainWindow.h \
     pragaProject.h \
     keyboardFilter.h \
     shared/colorLegend.h \
-    seriesOnZonesDialog.h \
     dialogMeteoComputation.h \
     dialogDownloadMeteoData.h \
     shared/dialogSelection.h \
     shared/dialogInterpolation.h \
     shared/dialogSettings.h \
     dialogClimateFields.h \
-    dialogPragaSettings.h
+    dialogPragaSettings.h \
+    dialogSeriesOnZones.h
 
 
 FORMS    += mainWindow.ui \

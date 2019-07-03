@@ -1,5 +1,5 @@
-#ifndef SERIESONZONESDIALOG_H
-#define SERIESONZONESDIALOG_H
+#ifndef DIALOGSERIESONZONES_H
+#define DIALOGSERIESONZONES_H
 
 #include <QString>
 #include <QSettings>
@@ -9,7 +9,7 @@
 #include <QtWidgets>
 #include "meteoGrid.h"
 
-class SeriesOnZonesDialog: public QDialog
+class DialogSeriesOnZones: public QDialog
 {
 
     Q_OBJECT
@@ -29,7 +29,7 @@ class SeriesOnZonesDialog: public QDialog
         aggregationMethod spatialElaboration;
 
     public:
-        SeriesOnZonesDialog(QSettings *settings);
+        DialogSeriesOnZones(QSettings *settings);
         void done(bool res);
         bool checkValidData();
 
@@ -40,4 +40,4 @@ class SeriesOnZonesDialog: public QDialog
 };
 
 
-#endif // SERIESONZONESDIALOG_H
+#endif // DIALOGSERIESONZONES_H

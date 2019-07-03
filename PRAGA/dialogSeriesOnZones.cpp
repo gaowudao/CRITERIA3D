@@ -1,30 +1,30 @@
-#include "seriesOnZonesDialog.h"
+#include "dialogSeriesOnZones.h"
 
 #include "pragaProject.h"
 
 extern PragaProject myProject;
 
-meteoVariable SeriesOnZonesDialog::getVariable() const
+meteoVariable DialogSeriesOnZones::getVariable() const
 {
     return variable;
 }
 
-QDate SeriesOnZonesDialog::getStartDate() const
+QDate DialogSeriesOnZones::getStartDate() const
 {
     return startDate;
 }
 
-QDate SeriesOnZonesDialog::getEndDate() const
+QDate DialogSeriesOnZones::getEndDate() const
 {
     return endDate;
 }
 
-aggregationMethod SeriesOnZonesDialog::getSpatialElaboration() const
+aggregationMethod DialogSeriesOnZones::getSpatialElaboration() const
 {
     return spatialElaboration;
 }
 
-SeriesOnZonesDialog::SeriesOnZonesDialog(QSettings *settings)
+DialogSeriesOnZones::DialogSeriesOnZones(QSettings *settings)
     : settings(settings)
 {
 
@@ -106,7 +106,7 @@ SeriesOnZonesDialog::SeriesOnZonesDialog(QSettings *settings)
 }
 
 
-void SeriesOnZonesDialog::done(bool res)
+void DialogSeriesOnZones::done(bool res)
 {
 
     if(res)  // ok was pressed
@@ -131,7 +131,7 @@ void SeriesOnZonesDialog::done(bool res)
 
 }
 
-bool SeriesOnZonesDialog::checkValidData()
+bool DialogSeriesOnZones::checkValidData()
 {
 
     startDate = genericPeriodStart.date();
