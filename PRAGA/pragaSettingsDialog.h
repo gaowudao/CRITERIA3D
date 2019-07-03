@@ -7,8 +7,8 @@
     #include "elaborationSettings.h"
 #endif
 
-#ifndef SETTINGSDIALOG_H
-    #include "settingsDialog.h"
+#ifndef DIALOGSETTINGS_H
+    #include "dialogSettings.h"
 #endif
 
 class ElaborationTab : public QWidget
@@ -28,7 +28,7 @@ public:
 private:
 };
 
-class PragaSettingsDialog : public SettingsDialog
+class PragaSettingsDialog : public DialogSettings
 {
     Q_OBJECT
 

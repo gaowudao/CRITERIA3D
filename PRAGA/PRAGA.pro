@@ -94,7 +94,6 @@ SOURCES += main.cpp\
     shared/stationMarker.cpp \
     shared/rubberBand.cpp \
     shared/formInfo.cpp \
-    shared/settingsDialog.cpp \
     shared/mapGraphicsRasterObject.cpp \
     shared/interpolationCmd.cpp \
     shared/project.cpp \
@@ -107,7 +106,8 @@ SOURCES += main.cpp\
     dialogMeteoComputation.cpp \
     dialogDownloadMeteoData.cpp \
     shared/dialogSelection.cpp \
-    shared/dialogInterpolation.cpp
+    shared/dialogInterpolation.cpp \
+    shared/dialogSettings.cpp
 
 
 HEADERS  += mainWindow.h \
@@ -116,7 +116,6 @@ HEADERS  += mainWindow.h \
     shared/stationMarker.h \
     shared/rubberBand.h \
     shared/formInfo.h \
-    shared/settingsDialog.h \
     shared/mapGraphicsRasterObject.h \
     shared/interpolationCmd.h \
     shared/project.h \
@@ -129,7 +128,8 @@ HEADERS  += mainWindow.h \
     dialogMeteoComputation.h \
     dialogDownloadMeteoData.h \
     shared/dialogSelection.h \
-    shared/dialogInterpolation.h
+    shared/dialogInterpolation.h \
+    shared/dialogSettings.h
 
 
 FORMS    += mainWindow.ui \

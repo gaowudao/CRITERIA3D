@@ -67,7 +67,7 @@ PragaSettingsDialog::PragaSettingsDialog(QSettings *projectSettings,
                                          gis::Crit3DGisSettings *gisSettings,
                                          Crit3DQuality *quality,
                                          Crit3DMeteoSettings *meteoSettings,
-                                         Crit3DElaborationSettings *elabSettings) : SettingsDialog(projectSettings, settings, gisSettings, quality, meteoSettings)
+                                         Crit3DElaborationSettings *elabSettings) : DialogSettings(projectSettings, settings, gisSettings, quality, meteoSettings)
 {
     _elabSettings = elabSettings;
     elabTab = new ElaborationTab(elabSettings);
