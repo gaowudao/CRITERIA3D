@@ -1839,23 +1839,7 @@ bool MainWindow::loadShapeOrRaster()
             return (false);
         }
 
-        setDefaultDTMScale(myRaster->colorScale);
         this->setCurrentRaster(myRaster);
-        ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
-        this->ui->rasterOpacitySlider->setEnabled(true);
-
-        // center map
-        gis::Crit3DGeoPoint* center = this->rasterObj->getRasterCenter();
-        this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
-
-        // resize map
-        float size = this->rasterObj->getRasterMaxSize();
-        size = log2(1000.f/size);
-        this->mapView->setZoomLevel(quint8(size));
-        this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
-
-        // active raster object
-        this->rasterObj->updateCenter();
         return true;
     }
     // shape
