@@ -25,9 +25,9 @@
 #include "utilities.h"
 #include "Position.h"
 #include "spatialControl.h"
-#include "interpolationDialog.h"
-#include "settingsDialog.h"
-#include "dialogWindows.h"
+#include "dialogInterpolation.h"
+#include "dialogSettings.h"
+#include "dialogSelection.h"
 #include "formInfo.h"
 #include "formPeriod.h"
 #include "mainWindow.h"
@@ -642,13 +642,13 @@ void MainWindow::on_actionInterpolation_to_DTM_triggered()
 
 void MainWindow::on_actionInterpolationSettings_triggered()
 {
-    InterpolationDialog* myInterpolationDialog = new InterpolationDialog(&myProject);
+    DialogInterpolation* myInterpolationDialog = new DialogInterpolation(&myProject);
     myInterpolationDialog->close();
 }
 
 void MainWindow::on_actionParameters_triggered()
 {
-    SettingsDialog* mySettingsDialog = new SettingsDialog(myProject.projectSettings, myProject.parameters, &myProject.gisSettings, myProject.quality, myProject.meteoSettings);
+    DialogSettings* mySettingsDialog = new DialogSettings(myProject.projectSettings, myProject.parameters, &myProject.gisSettings, myProject.quality, myProject.meteoSettings);
     mySettingsDialog->exec();
     if ((startCenter->latitude() - myProject.gisSettings.startLocation.latitude) > EPSILON || (startCenter->longitude() - myProject.gisSettings.startLocation.longitude) > EPSILON)
     {
