@@ -29,6 +29,7 @@
 #include <QDate>
 #include <QVariant>
 #include <QString>
+#include <QDebug>
 #include <iostream>
 #include <math.h>
 
@@ -116,8 +117,11 @@ Criteria1DOutput::Criteria1DOutput()
 bool Criteria1D::setSoil(QString idSoil, QString *myError)
 {
     // load Soil
-    if (! loadSoil (&dbSoil, idSoil, &mySoil, &(soilTexture[0]), myError))
+    if (! loadSoil (&dbSoil, idSoil, &mySoil, soilTexture, myError))
         return false;
+
+    qDebug() << mySoil.horizon[1].texture.classUSDA;
+    qDebug() << mySoil.horizon[1].vanGenuchten.n;
 
     // nr of layers
     this->nrLayers = int(ceil(mySoil.totalDepth / layerThickness)) + 1;

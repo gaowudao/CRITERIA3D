@@ -11,7 +11,7 @@
     bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil,
                   soil::Crit3DSoilClass *soilTexture, QString *myError);
 
-    bool loadSoil(QString dbSoilName, QString soilCode, soil::Crit3DSoil *mySoil, QString *myError);
+    bool loadDbSoilData(QString dbSoilName, QString soilCode, soil::Crit3DSoil *mySoil, QString *myError);
 
     bool loadVanGenuchtenParameters(soil::Crit3DSoilClass *soilClassList,
                                     QSqlDatabase* dbSoil, QString *myError);

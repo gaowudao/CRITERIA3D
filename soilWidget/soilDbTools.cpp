@@ -3,6 +3,7 @@
 #include <QSqlError>
 #include <QUuid>
 #include <QVariant>
+#include <QDebug>
 
 #include "commonConstants.h"
 #include "soilDbTools.h"
@@ -116,7 +117,7 @@ bool loadDriessenParameters(soil::Crit3DSoilClass *soilTexture, QSqlDatabase* db
 }
 
 
-bool loadSoil(QString dbSoilName, QString soilCode, soil::Crit3DSoil *mySoil, QString *myError)
+bool loadDbSoilData(QString dbSoilName, QString soilCode, soil::Crit3DSoil *mySoil, QString *myError)
 {
     QSqlDatabase dbSoil;
     if (! openDbSoil(dbSoilName, &dbSoil, myError))
@@ -198,6 +199,7 @@ bool loadSoil(QString dbSoilName, QString soilCode, soil::Crit3DSoil *mySoil, QS
 
 bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, soil::Crit3DSoilClass *soilTexture, QString *myError)
 {
+    qDebug() << "here!";
     QString idSoilStr = soilCode;
 
     QString queryString = "SELECT * FROM horizons ";
@@ -216,6 +218,8 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, 
     }
 
     int nrHorizons = query.at() + 1;     //SQLITE doesn't support SIZE
+    qDebug() << "nrHorizons = " << nrHorizons;
+
     mySoil->initialize(1, nrHorizons);
 
     int idTextureUSDA, idTextureNL, idHorizon;
