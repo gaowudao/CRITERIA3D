@@ -120,7 +120,7 @@ bool Criteria1D::setSoil(QString idSoil, QString *myError)
     if (! loadSoil (&dbSoil, idSoil, &mySoil, this->soilTexture, myError))
         return false;
 
-    // nr of layers
+    // nr of layers (check on last layer)
     double temp = this->mySoil.totalDepth / this->layerThickness;
     this->nrLayers = int(floor(temp)) + 1;
     if ((temp - floor(temp)) > 0.5)
@@ -128,9 +128,11 @@ bool Criteria1D::setSoil(QString idSoil, QString *myError)
         this->nrLayers++;
     }
 
-    // alloc memory
+    // alloc memory for layers
     if (this->layer != nullptr)
+    {
         free(this->layer);
+    }
     this->layer = (soil::Crit3DLayer *) calloc(unsigned(this->nrLayers), sizeof(soil::Crit3DLayer));
 
     double soilFraction, hygroscopicHumidity;
