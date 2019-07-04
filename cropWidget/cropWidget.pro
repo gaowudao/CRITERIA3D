@@ -7,9 +7,22 @@
 
 QT  += widgets sql
 
-TARGET = cropWidget
 TEMPLATE = lib
 CONFIG += staticlib
+
+CONFIG += debug_and_release
+
+unix:{
+    CONFIG(debug, debug|release) {
+        TARGET = debug/cropWidget
+    } else {
+        TARGET = release/cropWidget
+    }
+}
+win32:{
+    TARGET = cropWidget
+}
+
 
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../utilities ../soil ../crop ../gis ../meteo
 
@@ -21,9 +34,5 @@ HEADERS += \
     cropDbTools.h \
     dbToolsMOSES.h
 
-unix {
-    target.path = /usr/lib
-    INSTALLS += target
-}
 
 
