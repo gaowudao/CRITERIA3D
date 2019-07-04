@@ -34,7 +34,7 @@
 #include <math.h>
 
 #include "commonConstants.h"
-#include "Criteria1D.h"
+#include "criteriaModel.h"
 #include "crit3dDate.h"
 #include "utilities.h"
 #include "dbToolsMOSES.h"
@@ -43,7 +43,7 @@
 #include "root.h"
 
 
-Criteria1DUnit::Criteria1DUnit()
+CriteriaUnit::CriteriaUnit()
 {
     this->idCase = "";
     this->idCrop = "";
@@ -57,7 +57,7 @@ Criteria1DUnit::Criteria1DUnit()
 }
 
 
-Criteria1D::Criteria1D()
+CriteriaModel::CriteriaModel()
 {
     this->idCase = "";
     this->outputString = "";
@@ -86,7 +86,7 @@ Criteria1D::Criteria1D()
 }
 
 
-void Criteria1DOutput::initializeDaily()
+void CriteriaModelOutput::initializeDaily()
 {
     this->dailyPrec = 0.0;
     this->dailyDrainage = 0.0;
@@ -108,19 +108,19 @@ void Criteria1DOutput::initializeDaily()
 }
 
 
-Criteria1DOutput::Criteria1DOutput()
+CriteriaModelOutput::CriteriaModelOutput()
 {
     this->initializeDaily();
 }
 
 
-bool Criteria1D::setSoil(QString idSoil, QString *myError)
+bool CriteriaModel::setSoil(QString idSoil, QString *myError)
 {
     // load Soil
     if (! loadSoil (&dbSoil, idSoil, &mySoil, this->soilTexture, myError))
         return false;
 
-    // nr of layers
+    // nr of layers (check on last layer)
     double temp = this->mySoil.totalDepth / this->layerThickness;
     this->nrLayers = int(floor(temp)) + 1;
     if ((temp - floor(temp)) > 0.5)
@@ -128,9 +128,11 @@ bool Criteria1D::setSoil(QString idSoil, QString *myError)
         this->nrLayers++;
     }
 
-    // alloc memory
+    // alloc memory for layers
     if (this->layer != nullptr)
+    {
         free(this->layer);
+    }
     this->layer = (soil::Crit3DLayer *) calloc(unsigned(this->nrLayers), sizeof(soil::Crit3DLayer));
 
     double soilFraction, hygroscopicHumidity;
@@ -186,7 +188,7 @@ QString getId5Char(QString id)
 }
 
 
-bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, QString *myError)
+bool CriteriaModel::loadMeteo(QString idMeteo, QString idForecast, QString *myError)
 {
     QString queryString = "SELECT * FROM meteo_locations WHERE id_meteo='" + idMeteo + "'";
     QSqlQuery query = dbMeteo.exec(queryString);
@@ -351,7 +353,7 @@ bool Criteria1D::loadMeteo(QString idMeteo, QString idForecast, QString *myError
 
 
 // alloc memory for annual values of irrigation
-void Criteria1D::initializeSeasonalForecast(const Crit3DDate& firstDate, const Crit3DDate& lastDate)
+void CriteriaModel::initializeSeasonalForecast(const Crit3DDate& firstDate, const Crit3DDate& lastDate)
 {
     if (isSeasonalForecast)
     {
@@ -365,7 +367,7 @@ void Criteria1D::initializeSeasonalForecast(const Crit3DDate& firstDate, const C
 }
 
 
-bool Criteria1D::createOutputTable(QString* myError)
+bool CriteriaModel::createOutputTable(QString* myError)
 {
     QString queryString = "DROP TABLE '" + this->idCase + "'";
     QSqlQuery myQuery = this->dbOutput.exec(queryString);
@@ -400,7 +402,7 @@ QString getOutputString(double value)
 }
 
 
-void Criteria1D::prepareOutput(Crit3DDate myDate, bool isFirst)
+void CriteriaModel::prepareOutput(Crit3DDate myDate, bool isFirst)
 {
     if (isFirst)
         this->outputString = "INSERT INTO '" + this->idCase + "'"
@@ -432,7 +434,7 @@ void Criteria1D::prepareOutput(Crit3DDate myDate, bool isFirst)
 }
 
 
-bool Criteria1D::saveOutput(QString* myError)
+bool CriteriaModel::saveOutput(QString* myError)
 {
     QSqlQuery myQuery = this->dbOutput.exec(this->outputString);
 

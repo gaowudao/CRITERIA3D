@@ -28,7 +28,7 @@
 
 #include "commonConstants.h"
 #include "water1D.h"
-#include "Criteria1D.h"
+#include "criteriaModel.h"
 #include "soil.h"
 
 
@@ -37,7 +37,7 @@
  * assign two different initial available water
  * in the ploughed soil and in the deep soil
  */
-void initializeWater(Criteria1D* myCase)
+void initializeWater(CriteriaModel* myCase)
 {
     // TODO water content as function of month
     myCase->layer[0].waterContent = 0.0;
@@ -60,7 +60,7 @@ void initializeWater(Criteria1D* myCase)
  * \author Margot van Soetendael
  * \note P.M.Driessen, 1986, "The water balance of soil"
  */
-bool computeInfiltration(Criteria1D* myCase, float prec, float surfaceIrrigation)
+bool computeInfiltration(CriteriaModel* myCase, float prec, float surfaceIrrigation)
 {
     // TODO extend to geometric layers
     int i, j, l, nrPloughLayers;
@@ -254,7 +254,7 @@ bool computeInfiltration(Criteria1D* myCase, float prec, float surfaceIrrigation
  * \param waterTableDepth [m]
  * \return
  */
-bool computeCapillaryRise(Criteria1D* myCase, double waterTableDepth)
+bool computeCapillaryRise(CriteriaModel* myCase, double waterTableDepth)
 {
     double psi, previousPsi;             // [kPa] water potential
     double he_boundary;                  // [kPa] air entry point boundary layer
@@ -368,7 +368,7 @@ bool computeCapillaryRise(Criteria1D* myCase, double waterTableDepth)
  * \param myCase
  * \return
  */
-bool computeSurfaceRunoff(Criteria1D* myCase)
+bool computeSurfaceRunoff(CriteriaModel* myCase)
 {
     double clodHeight;           // [mm] effective height of clod
     double roughness;            // [mm]
@@ -399,7 +399,7 @@ bool computeSurfaceRunoff(Criteria1D* myCase)
  * \note P.M.Driessen, 1986, eq.58
  * \return
  */
-bool computeLateralDrainage(Criteria1D* myCase)
+bool computeLateralDrainage(CriteriaModel* myCase)
 {
     double satFactor;                       // [-]
     double hydrHead;                        // [m]
@@ -441,7 +441,7 @@ bool computeLateralDrainage(Criteria1D* myCase)
  * \param myCase
  * \return sum of water content (mm) in the first meter of soil
  */
-double getSoilWaterContent(Criteria1D* myCase)
+double getSoilWaterContent(CriteriaModel* myCase)
 {
     const double maxDepth = 1.0;            // [m]
     double lowerDepth, upperDepth;          // [m]

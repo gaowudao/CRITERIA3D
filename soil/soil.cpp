@@ -62,6 +62,8 @@ namespace soil
         this->critical = NODATA;
         this->maxInfiltration = NODATA;
         this->flux = NODATA;
+
+        this->horizon = nullptr;
     }
 
     Crit3DTexture::Crit3DTexture()

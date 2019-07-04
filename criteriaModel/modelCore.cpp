@@ -31,14 +31,14 @@
 #include <math.h>
 
 #include "commonConstants.h"
-#include "Criteria1D.h"
+#include "criteriaModel.h"
 #include "croppingSystem.h"
 #include "cropDbTools.h"
 #include "water1D.h"
 #include "modelCore.h"
 
 
-bool runModel(Criteria1D* myCase, Criteria1DUnit *myUnit, QString* myError)
+bool runModel(CriteriaModel* myCase, CriteriaUnit *myUnit, QString* myError)
 {
     myCase->idCase = myUnit->idCase;
 
@@ -68,7 +68,7 @@ bool runModel(Criteria1D* myCase, Criteria1DUnit *myUnit, QString* myError)
 }
 
 
-bool computeModel(Criteria1D* myCase, const Crit3DDate& firstDate, const Crit3DDate& lastDate, QString* myError)
+bool computeModel(CriteriaModel* myCase, const Crit3DDate& firstDate, const Crit3DDate& lastDate, QString* myError)
 {
     Crit3DDate myDate;
     long myIndex;
