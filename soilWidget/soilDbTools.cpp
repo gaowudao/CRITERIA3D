@@ -217,7 +217,6 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, 
     }
 
     int nrHorizons = query.at() + 1;     //SQLITE doesn't support SIZE
-    qDebug() << "nrHorizons = " << nrHorizons;
 
     mySoil->initialize(1, nrHorizons);
 

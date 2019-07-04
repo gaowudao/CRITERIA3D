@@ -117,19 +117,21 @@ Criteria1DOutput::Criteria1DOutput()
 bool Criteria1D::setSoil(QString idSoil, QString *myError)
 {
     // load Soil
-    if (! loadSoil (&dbSoil, idSoil, &mySoil, soilTexture, myError))
+    if (! loadSoil (&dbSoil, idSoil, &mySoil, this->soilTexture, myError))
         return false;
 
-    qDebug() << mySoil.horizon[1].texture.classUSDA;
-    qDebug() << mySoil.horizon[1].vanGenuchten.n;
-
     // nr of layers
-    this->nrLayers = int(ceil(mySoil.totalDepth / layerThickness)) + 1;
+    double temp = this->mySoil.totalDepth / this->layerThickness;
+    this->nrLayers = int(floor(temp)) + 1;
+    if ((temp - floor(temp)) > 0.5)
+    {
+        this->nrLayers++;
+    }
 
     // alloc memory
     if (this->layer != nullptr)
         free(this->layer);
-    this->layer = (soil::Crit3DLayer *) calloc(unsigned(nrLayers), sizeof(soil::Crit3DLayer));
+    this->layer = (soil::Crit3DLayer *) calloc(unsigned(this->nrLayers), sizeof(soil::Crit3DLayer));
 
     double soilFraction, hygroscopicHumidity;
     int horizonIndex;
