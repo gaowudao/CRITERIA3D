@@ -11,8 +11,6 @@ TARGET = soilWidget
 TEMPLATE = lib
 CONFIG += staticlib
 
-DEFINES += SOILWIDGET_LIBRARY
-
 INCLUDEPATH += ../mathFunctions ../soil ../utilities
 
 SOURCES += \

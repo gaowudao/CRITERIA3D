@@ -23,7 +23,6 @@ win32:{
     TARGET = crit3dDate
 }
 
-
 INCLUDEPATH += ../mathFunctions
 
 SOURCES += \

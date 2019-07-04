@@ -11,8 +11,6 @@ TARGET = cropWidget
 TEMPLATE = lib
 CONFIG += staticlib
 
-DEFINES += SOILWIDGET_LIBRARY
-
 INCLUDEPATH += ../crit3dDate ../mathFunctions ../utilities ../soil ../crop ../gis ../meteo
 
 SOURCES += \
