@@ -1,8 +1,8 @@
 #ifndef PROJECT
 #define PROJECT
 
-    #ifndef CRITERIA1D_H
-        #include "criteria1D.h"
+    #ifndef CRITERIAMODEL_H
+        #include "criteriaModel.h"
     #endif
 
     #include <fstream>
@@ -60,10 +60,10 @@
 
             QString projectError;
 
-            Criteria1D criteria;
+            CriteriaModel criteria;
 
             int nrUnits;
-            Criteria1DUnit *unit;
+            CriteriaUnit *unit;
 
             Criteria1DProject();
 

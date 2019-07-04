@@ -43,7 +43,7 @@ void Criteria1DProject::initialize()
 void Criteria1DProject::initializeUnit(int nr)
 {
     this->nrUnits = nr;
-    this->unit = new Criteria1DUnit[unsigned(nr)];
+    this->unit = new CriteriaUnit[unsigned(nr)];
 }
 
 

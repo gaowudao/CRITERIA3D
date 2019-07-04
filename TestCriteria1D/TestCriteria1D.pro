@@ -1,7 +1,7 @@
 #-----------------------------------------------------
 #
 #   TESTCRITERIA1D
-#   Test for Criteria1D library
+#   Test for CriteriaModel library
 #   This project is part of CRITERIA3D distribution
 #
 #-----------------------------------------------------
@@ -30,10 +30,10 @@ HEADERS += \
     project.h \
 
 INCLUDEPATH +=  ../crit3dDate ../mathFunctions ../crop ../cropWidget ../gis   \
-                ../meteo ../soil ../soilWidget ../utilities ../criteria1D
+                ../meteo ../soil ../soilWidget ../utilities ../criteriaModel
 
 CONFIG(debug, debug|release) {
-    LIBS += -L../criteria1D/debug -lcriteria1D
+    LIBS += -L../criteriaModel/debug -lcriteriaModel
     LIBS += -L../soilWidget/debug -lsoilWidget
     LIBS += -L../cropWidget/debug -lcropWidget
     LIBS += -L../utilities/debug -lutilities
@@ -44,7 +44,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../crit3dDate/debug -lcrit3dDate
     LIBS += -L../mathFunctions/debug -lmathFunctions
 } else {
-    LIBS += -L../criteria1D/release -lcriteria1D
+    LIBS += -L../criteriaModel/release -lcriteriaModel
     LIBS += -L../soilWidget/release -lsoilWidget
     LIBS += -L../cropWidget/release -lcropWidget
     LIBS += -L../utilities/release -lutilities
