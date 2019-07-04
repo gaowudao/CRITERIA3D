@@ -34,7 +34,7 @@
 #include <math.h>
 
 #include "commonConstants.h"
-#include "Criteria1D.h"
+#include "criteria1D.h"
 #include "crit3dDate.h"
 #include "utilities.h"
 #include "dbToolsMOSES.h"

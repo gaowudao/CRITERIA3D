@@ -31,12 +31,12 @@ win32:{
 INCLUDEPATH +=  ../crit3dDate ../mathFunctions ../soil ../crop ../gis ../meteo \
                 ../utilities ../cropWidget ../soilWidget
 
-SOURCES += Criteria1D.cpp \
+SOURCES += criteria1D.cpp \
     modelCore.cpp \
     water1D.cpp \
     croppingSystem.cpp
 
-HEADERS += Criteria1D.h \
+HEADERS += criteria1D.h \
     modelCore.h \
     water1D.h \
     croppingSystem.h
