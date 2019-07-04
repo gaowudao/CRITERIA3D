@@ -298,8 +298,8 @@ int main()
     WG2D.setObservedData(observedDataDaily);
 
 
-    bool computePrecipitation = true;
-    bool computeTemperature = true;
+    bool computePrecipitation = false;
+    bool computeTemperature = false;
     printf("weather generator\n");
     if (computePrecipitation) printf("compute precipitation\n");
     if (computeTemperature) printf("compute temperature\n");

@@ -226,7 +226,7 @@ void weatherGenerator2D::setObservedData(TObsDataD** observations)
             obsDataD[i][j].tMax = observations[i][j].tMax;
             obsDataD[i][j].prec = observations[i][j].prec;
             //printf("%d/%d/%d,%.1f,%.1f,%.1f\n",observations[i][j].date.day,observations[i][j].date.month,observations[i][j].date.year,observations[i][j].tMin,observations[i][j].tMax,observations[i][j].prec);
-
+            //getchar();
         }
     }
 }
@@ -305,11 +305,11 @@ void weatherGenerator2D::precipitationP00P10()
         for (int month=0;month<12;month++)
         {
             if (daysWithoutRain[month] != 0)
-                precOccurence[idStation][month].p00 = minValue(0.9999999,(double)((1.0*occurrence00[month])/daysWithoutRain[month]));
+                precOccurence[idStation][month].p00 = minValue(1-EPSILON,(double)((1.0*occurrence00[month])/daysWithoutRain[month]));
             else
                 precOccurence[idStation][month].p00 = 0.0;
             if (daysWithRain[month] != 0)
-                precOccurence[idStation][month].p10 = minValue(0.9999999,(double)((1.0*occurrence10[month])/daysWithRain[month]));
+                precOccurence[idStation][month].p10 = minValue(1-EPSILON,(double)((1.0*occurrence10[month])/daysWithRain[month]));
             else
                 precOccurence[idStation][month].p10 = 0.0;
 
@@ -317,15 +317,16 @@ void weatherGenerator2D::precipitationP00P10()
         }
     }
 
-    /*for (int month=0;month<12;month++)
+    for (int month=0;month<12;month++)
     {
-
-           printf("%f  %f %f\n",precOccurence[0][month].p00,precOccurence[1][month].p00,precOccurence[2][month].p00);
-           printf("%f  %f %f\n",precOccurence[0][month].p10,precOccurence[1][month].p10,precOccurence[2][month].p10);
-           pressEnterToContinue();
-
+           for (int iStation =0; iStation<nrStations;iStation++)
+           {
+            //printf("%.2f ",precOccurence[iStation][month].p10);
+            //printf("%f  %f %f\n",precOccurence[0][month].p10,precOccurence[1][month].p10,precOccurence[2][month].p10);
+           }
+           printf("\n");
     }
-    pressEnterToContinue();*/
+    //pressEnterToContinue();
 }
 
 
@@ -420,7 +421,15 @@ void weatherGenerator2D::precipitationCorrelationMatrices()
                 correlationMatrix[iMonth].occurrence[i][j] = correlationMatrix[iMonth].occurrence[j][i];
             }
         }
-
+        for (int iStation=0;iStation<nrStations;iStation++)
+        {
+            for (int jStation=0;jStation<nrStations;jStation++)
+            {
+                printf("%.2f ", correlationMatrix[iMonth].amount[jStation][iStation]);
+            }
+            printf("\n");
+        }
+        pressEnterToContinue();
     }
 }
 
