@@ -43,7 +43,9 @@ CONFIG(debug, debug|release) {
     LIBS += -L../soil/debug -lsoil
     LIBS += -L../crit3dDate/debug -lcrit3dDate
     LIBS += -L../mathFunctions/debug -lmathFunctions
+
 } else {
+
     LIBS += -L../criteriaModel/release -lcriteriaModel
     LIBS += -L../soilWidget/release -lsoilWidget
     LIBS += -L../cropWidget/release -lcropWidget
