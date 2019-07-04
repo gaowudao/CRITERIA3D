@@ -23,7 +23,7 @@ The user interface of PRAGA uses a modified version of [MapGraphics](https://git
 To compile it, firstly compile the project _MapGraphics_, then compile the project *Makeall_PRAGA*.
 
 ## TestCriteria1D
-Test program for the 1D water balance using criteria1D, crop and soil libraries.
+Test program for the 1D water balance using criteriaModel, crop and soil libraries.
 
 To compile it, use the project *Makeall_CRITERIA1D*. Example data are available in *DATA/Criteria1d* directory.
 
@@ -32,7 +32,7 @@ HEAT1D is a graphical interface for testing the soilFluxex3D library in a 1D dom
 
 Graphs are produced using the Qwt plot library (http://qwt.sourceforge.net/) which should be compiled before usage.
 
-## criteria1D library
+## criteriaModel library
 Algorithms for 1D water balance: soil water infiltration, drainage and capillary rise, crop water demand, evaporation and crop transpiration. 
 
 ## crop library
