@@ -147,6 +147,7 @@ bool CriteriaModel::setSoil(QString idSoil, QString *myError)
     for (int i = 1; i < this->nrLayers; i++)
     {
         horizonIndex = soil::getHorizonIndex(&(mySoil), currentDepth);
+
         layer[i].horizon = &(mySoil.horizon[horizonIndex]);
 
         soilFraction = (1.0 - layer[i].horizon->coarseFragments);
