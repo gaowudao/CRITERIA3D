@@ -34,8 +34,8 @@ INCLUDEPATH +=  ../crit3dDate ../mathFunctions ../crop ../cropWidget ../gis   \
 
 CONFIG(debug, debug|release) {
     LIBS += -L../criteria1D/debug -lcriteria1D
-    LIBS += -L../cropWidget/debug -lcropWidget
     LIBS += -L../soilWidget/debug -lsoilWidget
+    LIBS += -L../cropWidget/debug -lcropWidget
     LIBS += -L../utilities/debug -lutilities
     LIBS += -L../meteo/debug -lmeteo
     LIBS += -L../gis/debug -lgis
@@ -45,8 +45,8 @@ CONFIG(debug, debug|release) {
     LIBS += -L../mathFunctions/debug -lmathFunctions
 } else {
     LIBS += -L../criteria1D/release -lcriteria1D
-    LIBS += -L../cropWidget/release -lcropWidget
     LIBS += -L../soilWidget/release -lsoilWidget
+    LIBS += -L../cropWidget/release -lcropWidget
     LIBS += -L../utilities/release -lutilities
     LIBS += -L../meteo/release -lmeteo
     LIBS += -L../gis/release -lgis
