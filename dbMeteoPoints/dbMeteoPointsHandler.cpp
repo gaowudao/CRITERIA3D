@@ -689,6 +689,7 @@ bool Crit3DMeteoPointsDbHandler::writePointProperties(Crit3DMeteoPoint *myPoint)
 
 }
 
+
 bool Crit3DMeteoPointsDbHandler::loadVariableProperties()
 {
     QSqlQuery qry(_db);
@@ -736,6 +737,7 @@ bool Crit3DMeteoPointsDbHandler::loadVariableProperties()
     }
     return true;
 }
+
 
 int Crit3DMeteoPointsDbHandler::getIdfromMeteoVar(meteoVariable meteoVar)
 {

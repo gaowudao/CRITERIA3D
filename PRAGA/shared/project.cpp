@@ -560,8 +560,10 @@ bool Project::loadMeteoPointsDB(QString dbName)
         return false;
     }
 
-    if (meteoPointsDbHandler->loadVariableProperties())
+    if (! meteoPointsDbHandler->loadVariableProperties())
     {
+        logError(meteoPointsDbHandler->error);
+        closeMeteoPointsDB();
         return false;
     }
     QList<Crit3DMeteoPoint> listMeteoPoints = meteoPointsDbHandler->getPropertiesFromDb(gisSettings, &errorString);
@@ -569,7 +571,7 @@ bool Project::loadMeteoPointsDB(QString dbName)
     nrMeteoPoints = listMeteoPoints.size();
     if (nrMeteoPoints == 0)
     {
-        errorString = "It is not possible to read the point properties:\n" + errorString;
+        errorString = "Error in reading the point properties:\n" + errorString;
         this->logError();
         this->closeMeteoPointsDB();
         return false;
@@ -816,6 +818,7 @@ void Project::checkMeteoPointsDEM()
     for (int i=0; i < nrMeteoPoints; i++)
         meteoPoints[i].isInsideDem = ! gis::isOutOfGridXY(meteoPoints[i].point.utm.x, meteoPoints[i].point.utm.y, DTM.header);
 }
+
 
 bool Project::readPointProxyValues(Crit3DMeteoPoint* myPoint, QSqlDatabase* myDb)
 {

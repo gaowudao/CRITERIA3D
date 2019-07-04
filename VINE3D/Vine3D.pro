@@ -62,10 +62,15 @@ SOURCES += \
     ../PRAGA/shared/interpolationCmd.cpp \
     ../PRAGA/shared/project.cpp \
     ../PRAGA/shared/formInfo.cpp \
-    ../PRAGA/shared/settingsDialog.cpp \
+    ../PRAGA/shared/dialogSettings.cpp \
+    ../PRAGA/shared/dialogSelection.cpp \
     ../PRAGA/shared/stationMarker.cpp \
-    ../PRAGA/shared/dialogWindows.cpp \
-    ../PRAGA/shared/interpolationDialog.cpp \
+    ../PRAGA/shared/dialogInterpolation.cpp \
+    ../CRITERIA3D/shared/soil3D.cpp \
+    ../CRITERIA3D/shared/meteoMaps.cpp \
+    ../PRAGA/shared/mapGraphicsRasterObject.cpp \
+    ../PRAGA/shared/rubberBand.cpp \
+    ../PRAGA/shared/colorLegend.cpp \
     atmosphere.cpp \
     dataHandler.cpp \
     disease.cpp \
@@ -75,20 +80,21 @@ SOURCES += \
     waterBalance.cpp \
     vine3DProject.cpp \
     mainWindow.cpp \
-    formPeriod.cpp \
-    ../CRITERIA3D/shared/soil3D.cpp \
-    ../CRITERIA3D/shared/meteoMaps.cpp \
-    ../PRAGA/shared/mapGraphicsRasterObject.cpp \
-    ../PRAGA/shared/rubberBand.cpp \
-    ../PRAGA/shared/colorLegend.cpp
+    formPeriod.cpp
 
 HEADERS  += \
     ../PRAGA/shared/interpolationCmd.h \
     ../PRAGA/shared/project.h \
     ../PRAGA/shared/formInfo.h \
-    ../PRAGA/shared/settingsDialog.h \
+    ../PRAGA/shared/dialogSettings.h \
+    ../PRAGA/shared/dialogSelection.h \
     ../PRAGA/shared/stationMarker.h \
-    ../PRAGA/shared/interpolationDialog.h \
+    ../PRAGA/shared/dialogInterpolation.h \
+    ../CRITERIA3D/shared/soil3D.h \
+    ../CRITERIA3D/shared/meteoMaps.h \
+    ../PRAGA/shared/mapGraphicsRasterObject.h \
+    ../PRAGA/shared/rubberBand.h \
+    ../PRAGA/shared/colorLegend.h \
     atmosphere.h \
     dataHandler.h \
     disease.h \
@@ -97,12 +103,7 @@ HEADERS  += \
     waterBalance.h \
     vine3DProject.h \
     mainWindow.h \
-    formPeriod.h \
-    ../CRITERIA3D/shared/soil3D.h \
-    ../CRITERIA3D/shared/meteoMaps.h \
-    ../PRAGA/shared/mapGraphicsRasterObject.h \
-    ../PRAGA/shared/rubberBand.h \
-    ../PRAGA/shared/colorLegend.h
+    formPeriod.h
 
 FORMS    += \
     ../PRAGA/shared/formInfo.ui \

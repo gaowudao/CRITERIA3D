@@ -677,7 +677,9 @@ bool MainWindow::loadMeteoPointsDB(QString dbName)
     this->resetMeteoPoints();
 
     if (!myProject.loadMeteoPointsDB(dbName))
+    {
         return false;
+    }
 
     this->addMeteoPoints();
 
