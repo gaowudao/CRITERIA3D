@@ -1,6 +1,6 @@
 #------------------------------------------------------------------
 #
-#   Criteria1D library
+#   criteriaModel library
 #   Mono-dimensional water balance model.
 #   Algorithms for soil water infiltration, redistribution,
 #   capillary rise, crop water demand and irrigation.
@@ -19,33 +19,32 @@ CONFIG += debug_and_release
 
 unix:{
     CONFIG(debug, debug|release) {
-        TARGET = debug/criteria1D
+        TARGET = debug/criteriaModel
     } else {
-        TARGET = release/criteria1D
+        TARGET = release/criteriaModel
     }
 }
 win32:{
-    TARGET = criteria1D
+    TARGET = criteriaModel
 }
 
 INCLUDEPATH +=  ../crit3dDate ../mathFunctions ../soil ../crop ../gis ../meteo \
                 ../utilities ../cropWidget ../soilWidget
 
-SOURCES += criteria1D.cpp \
+SOURCES += \
     modelCore.cpp \
     water1D.cpp \
-    croppingSystem.cpp
+    croppingSystem.cpp \
+    criteriaModel.cpp
 
-HEADERS += criteria1D.h \
+HEADERS += \
     modelCore.h \
     water1D.h \
-    croppingSystem.h
+    croppingSystem.h \
+    criteriaModel.h
 
 unix {
     target.path = /usr/lib
     INSTALLS += target
 }
-
-DISTFILES +=
-
 

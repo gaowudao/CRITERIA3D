@@ -30,13 +30,13 @@
 #include "crit3dDate.h"
 #include "development.h"
 #include "soil.h"
-#include "Criteria1D.h"
+#include "criteriaModel.h"
 #include "croppingSystem.h"
 #include "root.h"
 
 
 // initialization of crop
-void initializeCrop(Criteria1D* myCase, int currentDoy)
+void initializeCrop(CriteriaModel* myCase, int currentDoy)
 {    
     // initialize root density
     if (myCase->myCrop.roots.rootDensity != nullptr) free(myCase->myCrop.roots.rootDensity);
@@ -82,7 +82,7 @@ void initializeCrop(Criteria1D* myCase, int currentDoy)
 
 
 
-bool cropWaterDemand(Criteria1D* myCase)
+bool cropWaterDemand(CriteriaModel* myCase)
 {
     double Kc;                  // crop coefficient
     double TC;                  // turbulence coefficient
@@ -109,7 +109,7 @@ bool cropWaterDemand(Criteria1D* myCase)
 
 
 
-bool updateLAI(Criteria1D* myCase, int myDoy)
+bool updateLAI(CriteriaModel* myCase, int myDoy)
 {
     double degreeDaysLai = 0;
     double myLai = 0;
@@ -173,7 +173,7 @@ bool updateLAI(Criteria1D* myCase, int myDoy)
 }
 
 
-bool updateRoots(Criteria1D* myCase)
+bool updateRoots(CriteriaModel* myCase)
 {
     root::computeRootDepth(&(myCase->myCrop), myCase->mySoil.totalDepth, myCase->myCrop.degreeDays, myCase->output.dailyWaterTable);
 
@@ -185,7 +185,7 @@ bool updateRoots(Criteria1D* myCase)
  * \brief getCropReadilyAvailableWater
  * \return sum of readily available water (mm) in the rooting zone
  */
-double getCropReadilyAvailableWater(Criteria1D* myCase)
+double getCropReadilyAvailableWater(CriteriaModel* myCase)
 {
     if (! myCase->myCrop.isLiving) return 0.;
     if (myCase->myCrop.roots.rootDepth <= myCase->myCrop.roots.rootDepthMin) return 0.;
@@ -217,7 +217,7 @@ double getCropReadilyAvailableWater(Criteria1D* myCase)
  * \return sum of readily available water (mm)
  * \note take into account at minimum the forst meter f soil and the surface water
  */
-double getTotalReadilyAvailableWater(Criteria1D* myCase)
+double getTotalReadilyAvailableWater(CriteriaModel* myCase)
 {
     if (! myCase->myCrop.isLiving) return NODATA;
     if (myCase->myCrop.roots.rootDepth <= myCase->myCrop.roots.rootDepthMin) return NODATA;
@@ -250,7 +250,7 @@ double getTotalReadilyAvailableWater(Criteria1D* myCase)
 }
 
 
-float cropIrrigationDemand(Criteria1D* myCase, int doy, float currentPrec, float nextPrec)
+float cropIrrigationDemand(CriteriaModel* myCase, int doy, float currentPrec, float nextPrec)
 {
     // update days since last irrigation
     if (myCase->myCrop.daysSinceIrrigation != NODATA)
@@ -316,7 +316,7 @@ float cropIrrigationDemand(Criteria1D* myCase, int doy, float currentPrec, float
 }
 
 
-bool optimalIrrigation(Criteria1D* myCase, float myIrrigation)
+bool optimalIrrigation(CriteriaModel* myCase, float myIrrigation)
 {
     float myDeficit;
     float residualIrrigation = myIrrigation;
@@ -340,7 +340,7 @@ bool optimalIrrigation(Criteria1D* myCase, float myIrrigation)
 }
 
 
-bool evaporation(Criteria1D* myCase)
+bool evaporation(CriteriaModel* myCase)
 {
     // evaporation on surface
     double evaporationOpenWater = minValue(myCase->output.dailyMaxEvaporation, myCase->layer[0].waterContent);
@@ -401,7 +401,7 @@ bool evaporation(Criteria1D* myCase)
 
 // return total daily transpiration [mm]
 // or percentage of water stress (if getWaterStress = true)
-double cropTranspiration(Criteria1D* myCase, bool getWaterStress)
+double cropTranspiration(CriteriaModel* myCase, bool getWaterStress)
 {
     //check
     if (myCase->myCrop.idCrop == "") return 0.0;
@@ -541,7 +541,7 @@ double cropTranspiration(Criteria1D* myCase, bool getWaterStress)
 }
 
 
-bool updateCrop(Criteria1D* myCase, QString* myError, Crit3DDate myDate,
+bool updateCrop(CriteriaModel* myCase, QString* myError, Crit3DDate myDate,
                 float tmin, float tmax, float waterTableDepth)
 {
     *myError = "";
@@ -586,7 +586,7 @@ bool updateCrop(Criteria1D* myCase, QString* myError, Crit3DDate myDate,
  * \param myCase
  * \return sum of water deficit (mm) in the rooting zone
  */
-double getCropWaterDeficit(Criteria1D* myCase)
+double getCropWaterDeficit(CriteriaModel* myCase)
 {
     //check
     if (! myCase->myCrop.isLiving) return NODATA;

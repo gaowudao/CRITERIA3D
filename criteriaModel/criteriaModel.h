@@ -1,5 +1,5 @@
-#ifndef CRITERIA1D_H
-#define CRITERIA1D_H
+#ifndef CRITERIAMODEL_H
+#define CRITERIAMODEL_H
 
     #ifndef SOIL_H
         #include "soil.h"
@@ -20,10 +20,10 @@
     #endif
 
     /*!
-     * \brief The Criteria1DOutput class
+     * \brief The CriteriaModelOutput class
      * \note all variables are in [mm]
      */
-    class Criteria1DOutput
+    class CriteriaModelOutput
     {
     public:
         double dailyPrec;
@@ -44,12 +44,12 @@
         double dailyWaterTable;
         double dailyCapillaryRise;
 
-        Criteria1DOutput();
+        CriteriaModelOutput();
         void initializeDaily();
     };
 
 
-    class Criteria1DUnit
+    class CriteriaUnit
     {
         public:
         QString idCase;
@@ -61,11 +61,11 @@
         int idSoilNumber;
         int idICM;              // for MOSES
 
-        Criteria1DUnit();
+        CriteriaUnit();
     };
 
 
-    class Criteria1D
+    class CriteriaModel
     {
     public:
         QString idCase;
@@ -108,10 +108,10 @@
         double initialAW[2];                    /*!< [-] fraction of available water (between wilting point and field capacity) */
 
         // OUTPUT
-        Criteria1DOutput output;
+        CriteriaModelOutput output;
         QString outputString;
 
-        Criteria1D();
+        CriteriaModel();
 
         bool loadMeteo(QString idMeteo, QString idForecast, QString *myError);
         bool setSoil(QString idSoil, QString *myError);
@@ -122,4 +122,4 @@
     };
 
 
-#endif // CRITERIA1D_H
+#endif // CRITERIAMODEL_H
