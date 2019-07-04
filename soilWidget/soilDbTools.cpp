@@ -199,7 +199,6 @@ bool loadDbSoilData(QString dbSoilName, QString soilCode, soil::Crit3DSoil *mySo
 
 bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, soil::Crit3DSoilClass *soilTexture, QString *myError)
 {
-    qDebug() << "here!";
     QString idSoilStr = soilCode;
 
     QString queryString = "SELECT * FROM horizons ";
