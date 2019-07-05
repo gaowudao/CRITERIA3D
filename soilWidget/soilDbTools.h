@@ -4,9 +4,13 @@
     #ifndef SOIL_H
         #include "soil.h"
     #endif
-    #include <vector>
+    #ifndef QSTRING_H
+        #include <QString>
+    #endif
+    #ifndef _VECTOR_
+        #include <vector>
+    #endif
     class QSqlDatabase;
-    class QString;
 
     bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil,
                   soil::Crit3DSoilClass *soilTexture, QString *myError);

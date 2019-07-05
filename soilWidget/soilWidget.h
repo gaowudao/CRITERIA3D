@@ -4,6 +4,7 @@
     #ifndef SOIL_H
         #include "soil.h"
     #endif
+
     #include <QWidget>
     #include <QComboBox>
 

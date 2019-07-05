@@ -1,9 +1,14 @@
 #ifndef CROPDBTOOLS_H
 #define CROPDBTOOLS_H
 
-    class Crit3DCrop;
+    #ifndef CROP_H
+        #include "crop.h"
+    #endif
+    #ifndef QSTRING_H
+        #include <QString>
+    #endif
+
     class QSqlDatabase;
-    class QString;
 
     QString getCropFromClass(QSqlDatabase* dbCrop, QString cropClassTable, QString cropClassField,
                              QString idCropClass, QString *myError);

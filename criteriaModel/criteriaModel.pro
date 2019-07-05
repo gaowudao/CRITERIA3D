@@ -35,13 +35,15 @@ SOURCES += \
     modelCore.cpp \
     water1D.cpp \
     croppingSystem.cpp \
-    criteriaModel.cpp
+    criteriaModel.cpp \
+    dbToolsMOSES.cpp
 
 HEADERS += \
     modelCore.h \
     water1D.h \
     croppingSystem.h \
-    criteriaModel.h
+    criteriaModel.h \
+    dbToolsMOSES.h
 
 unix {
     target.path = /usr/lib
