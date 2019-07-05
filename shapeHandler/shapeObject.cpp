@@ -123,6 +123,10 @@ void ShapeObject::assign(const SHPObject* obj)
             {
                 part->hole = true;  //HOLE
             }
+            else
+            {
+                part->hole = false;
+            }
 
             // save bounds for each part
             part->boundsPart.ymin = bounds.ymax;
@@ -249,8 +253,9 @@ bool ShapeObject::isHole(unsigned int n)
 
 
 // LC If the test point is on the border of the polygon, this algorithm will deliver unpredictable results
-bool ShapeObject::pointInPolygon(double x, double y)
+bool ShapeObject::pointInPolygon(double x, double y, bool* hole)
 {
+
     if (x < bounds.xmin || x > bounds.xmax || y < bounds.ymin || y > bounds.ymax)
     {
         return false;
@@ -263,7 +268,13 @@ bool ShapeObject::pointInPolygon(double x, double y)
     {
 
         Part part = getPart(indexPart);
-        if (part.hole || x < part.boundsPart.xmin || x > part.boundsPart.xmax
+
+        if (part.hole == true)
+        {
+            *hole = true;
+            continue;
+        }
+        if (x < part.boundsPart.xmin || x > part.boundsPart.xmax
                 || y < part.boundsPart.ymin || y > part.boundsPart.ymax)
         {
             continue;
@@ -342,3 +353,4 @@ std::string getShapeTypeAsString(int shapeType)
     }
     return shape;
 }
+
