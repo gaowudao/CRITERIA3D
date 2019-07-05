@@ -29,8 +29,8 @@ SOURCES += main.cpp \
 HEADERS += \
     project.h \
 
-INCLUDEPATH +=  ../crit3dDate ../mathFunctions ../crop ../cropWidget ../gis   \
-                ../meteo ../soil ../soilWidget ../utilities ../criteriaModel
+INCLUDEPATH +=  ../crit3dDate ../mathFunctions ../soil ../crop  ../gis  \
+                ../meteo ../utilities ../cropWidget ../soilWidget ../criteriaModel
 
 CONFIG(debug, debug|release) {
     LIBS += -L../criteriaModel/debug -lcriteriaModel
