@@ -5,10 +5,10 @@
         #include "soil.h"
     #endif
 
+    class Crit3DCrop;
+
     enum rootDistributionType {CYLINDRICAL_DISTRIBUTION, CARDIOID_DISTRIBUTION, GAMMA_DISTRIBUTION};
     enum rootGrowthType {LINEAR, EXPONENTIAL, LOGISTIC};
-
-    class Crit3DCrop;
 
     /*!
      * \brief The Crit3DRoot class

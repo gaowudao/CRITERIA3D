@@ -1,7 +1,7 @@
 #------------------------------------------------------------------
 #
 #   criteriaModel library
-#   Mono-dimensional water balance model.
+#   Mono-dimensional water balance.
 #   Algorithms for soil water infiltration, redistribution,
 #   capillary rise, crop water demand and irrigation.
 #

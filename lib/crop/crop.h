@@ -4,11 +4,13 @@
     #ifndef _STRING_
         #include <string>
     #endif
+    #ifndef CRIT3DDATE_H
+        #include "crit3dDate.h"
+    #endif
     #ifndef ROOT_H
         #include "root.h"
     #endif
 
-    class Crit3DDate;
 
     enum speciesType {HERBACEOUS_ANNUAL, HERBACEOUS_PERENNIAL, HORTICULTURAL, GRASS, FALLOW, FRUIT_TREE};
 
