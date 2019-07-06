@@ -33,7 +33,7 @@
     #include "MapGraphicsObject.h"
     #include "MapGraphicsView.h"
     #include "colorLegend.h"
-    #include "map.h"
+    #include "geoMap.h"
 
 
     struct RowCol

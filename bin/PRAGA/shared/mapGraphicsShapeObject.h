@@ -9,7 +9,7 @@
         #include "shapeHandler.h"
     #endif
     #ifndef MAP_H
-        #include "map.h"
+        #include "geoMap.h"
     #endif
 
     struct latLonPoint

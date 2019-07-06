@@ -12,6 +12,8 @@
 #include "utilities.h"
 
 #include <iostream> //debug
+#include <QtSql>
+
 
 Project::Project()
 {
