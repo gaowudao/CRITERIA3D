@@ -14,7 +14,16 @@
 
 QT    -= gui core
 
-TARGET = shapeHandler
+unix:{
+    CONFIG(debug, debug|release) {
+        TARGET = debug/shapeHandler
+    } else {
+        TARGET = release/shapeHandler
+    }
+}
+win32:{
+    TARGET = shapeHandler
+}
 TEMPLATE = lib
 CONFIG += staticlib
 
