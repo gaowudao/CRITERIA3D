@@ -10,7 +10,7 @@
 #include <QApplication>
 #include <qclipboard.h>
 
-#include "qwt_plot_curve.h"
+#include "qwt/qwt_plot_curve.h"
 
 #include "graphs.h"
 

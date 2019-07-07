@@ -12,19 +12,20 @@ TARGET = HEAT1D
 TEMPLATE = app
 
 INCLUDEPATH += ../../lib/mathFunctions
-INCLUDEPATH += ../../lib/soilFluxes3D/header
 INCLUDEPATH += ../../lib/gis
+INCLUDEPATH += ../../lib/soilFluxes3D/header
+
 
 CONFIG += debug_and_release
 
 CONFIG(debug, debug|release) {
-    LIBS += -L../../lib/gis/debug -lgis
     LIBS += -L../../lib/soilFluxes3D/debug -lsoilFluxes3D
+    LIBS += -L../../lib/gis/debug -lgis
     LIBS += -L../../lib/mathFunctions/debug -lmathFunctions
 } else {
-    LIBS += -L../gis/release -lgis
-    LIBS += -L../soilFluxes3D/release -lsoilFluxes3D
-    LIBS += -L../mathFunctions/release -lmathFunctions
+    LIBS += -L../../lib/soilFluxes3D/release -lsoilFluxes3D
+    LIBS += -L../../lib/gis/release -lgis
+    LIBS += -L../../lib/mathFunctions/release -lmathFunctions
 }
 
 
@@ -40,4 +41,9 @@ HEADERS  += heat1D.h \
 FORMS    += \
     mainwindow.ui
 
-include($$(QWT_ROOT)\features\qwt.prf)
+win32:{
+    include($$(QWT_ROOT)\features\qwt.prf)
+}
+unix:{
+    include(/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qwt.prf)
+}
