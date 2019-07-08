@@ -47,9 +47,9 @@
     -   wg settings in data/testWG_seasonal.ini
 */
 
-// uncomment one of these for test:
-#define TEST_WG_CLIMATE 1
-// #define TEST_WG_SEASONAL 2
+// uncomment CLIMATE or SEASONAL for test:
+// #define TEST_WG_CLIMATE 1
+#define TEST_WG_SEASONAL 2
 
 
 int main(int argc, char *argv[])
