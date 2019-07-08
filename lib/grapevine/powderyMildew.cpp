@@ -25,7 +25,7 @@ const double fi = 7.391;
 const double nu = 2.403;
 const double csi = 0.892;
 const double upsilon = 0.221;
-const double gamma = 44.7;
+const double gammaConst = 44.7;
 const double psi = 0.067;
 const double theta = 3.244;
 
@@ -244,7 +244,7 @@ float infectionRate(float temp, float vapourPressure){
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 float latencyProgress(float temp){
 
-        return float(1.0 / (gamma + psi*pow(temp,2.0) - theta*double(temp)));
+        return float(1.0 / (gammaConst + psi*pow(temp,2.0) - theta*double(temp)));
 
 }
 

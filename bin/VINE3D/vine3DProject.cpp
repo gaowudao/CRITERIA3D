@@ -6,6 +6,7 @@
 #include <QDateTime>
 
 #include <iostream>
+#include <math.h>
 
 #include "formInfo.h"
 #include "utilities.h"

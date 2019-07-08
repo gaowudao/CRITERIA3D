@@ -17,48 +17,50 @@ INCLUDEPATH +=  ../../lib/crit3dDate ../../lib/mathFunctions ../../lib/gis ../..
                 ../../lib/interpolation ../../lib/solarRadiation ../../lib/soil  \
                 ../../lib/soilFluxes3D/header ../../lib/crop ../../lib/grapevine \
                 ../../lib/utilities ../../lib/dbMeteoPoints ../../lib/dbMeteoGrid \
-                ../../MapGraphics \
+                ../../mapGraphics \
                 ../PRAGA/shared ../CRITERIA3D/shared
 
 CONFIG += debug_and_release
 
 unix:{
-    LIBS += -L../../MapGraphics/release -lMapGraphics
+    LIBS += -L../../mapGraphics/release -lMapGraphics
 }
 win32:{
     CONFIG(debug, debug|release) {
-         LIBS += -L../../MapGraphics/debug -lMapGraphics
+         LIBS += -L../../mapGraphics/debug -lMapGraphics
     } else {
-        LIBS += -L../../MapGraphics/release -lMapGraphics
+        LIBS += -L../../mapGraphics/release -lMapGraphics
     }
 }
 
 CONFIG(debug, debug|release) {
-    LIBS += -L../../lib/crit3dDate/debug -lcrit3dDate
-    LIBS += -L../../lib/mathFunctions/debug -lmathFunctions
-    LIBS += -L../../lib/gis/debug -lgis
-    LIBS += -L../../lib/meteo/debug -lmeteo
-    LIBS += -L../../lib/interpolation/debug -lInterpolation
-    LIBS += -L../../lib/solarRadiation/debug -lsolarRadiation
+
     LIBS += -L../../lib/soil/debug -lsoil
     LIBS += -L../../lib/soilFluxes3D/debug -lsoilFluxes3D
-    LIBS += -L../../lib/utilities/debug -lutilities
+    LIBS += -L../../lib/grapevine/debug -lgrapevine
     LIBS += -L../../lib/dbMeteoGrid/debug -ldbMeteoGrid
     LIBS += -L../../lib/dbMeteoPoints/debug -ldbMeteoPoints
-    LIBS += -L../../lib/grapevine/debug -lgrapevine
+    LIBS += -L../../lib/utilities/debug -lutilities
+    LIBS += -L../../lib/solarRadiation/debug -lsolarRadiation
+    LIBS += -L../../lib/interpolation/debug -linterpolation
+    LIBS += -L../../lib/meteo/debug -lmeteo
+    LIBS += -L../../lib/gis/debug -lgis
+    LIBS += -L../../lib/crit3dDate/debug -lcrit3dDate
+    LIBS += -L../../lib/mathFunctions/debug -lmathFunctions
 } else {
-    LIBS += -L../../lib/crit3dDate/release -lcrit3dDate
-    LIBS += -L../../lib/mathFunctions/release -lmathFunctions
-    LIBS += -L../../lib/gis/release -lgis
-    LIBS += -L../../lib/meteo/release -lmeteo
-    LIBS += -L../../lib/interpolation/release -lInterpolation
-    LIBS += -L../../lib/solarRadiation/release -lsolarRadiation
+
     LIBS += -L../../lib/soil/release -lsoil
-    LIBS += -L../../lib/soilFluxes3D/release -lsoilFluxes3D
-    LIBS += -L../../lib/utilities/release -lutilities
+    LIBS += -L../../lib/soilFluxes3D/release -lsoilFluxes3D 
+    LIBS += -L../../lib/grapevine/release -lgrapevine
     LIBS += -L../../lib/dbMeteoGrid/release -ldbMeteoGrid
     LIBS += -L../../lib/dbMeteoPoints/release -ldbMeteoPoints
-    LIBS += -L../../lib/grapevine/release -lgrapevine
+    LIBS += -L../../lib/utilities/release -lutilities
+    LIBS += -L../../lib/solarRadiation/release -lsolarRadiation
+    LIBS += -L../../lib/interpolation/release -linterpolation
+    LIBS += -L../../lib/meteo/release -lmeteo
+    LIBS += -L../../lib/gis/release -lgis
+    LIBS += -L../../lib/crit3dDate/release -lcrit3dDate
+    LIBS += -L../../lib/mathFunctions/release -lmathFunctions
 }
 
 SOURCES += \
