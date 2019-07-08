@@ -760,17 +760,16 @@ bool makeSeasonalForecast(QString outputFileName, char separator, TXMLSeasonalAn
 }
 
 
-/*-------------------------------------------------------------------------
-    computeSeasonalPredictions
----------------------------------------------------------------------------
-    Generates a time series of daily data (Tmin, Tmax, Prec)
-    The lenght is equals to nrRepetitions years, saved from firstYear
-    Period between wgDoy1 and wgDoy2 is produced by the WG.
+/*!
+  \name computeSeasonalPredictions
+  \brief Generates a time series of daily data (Tmin, Tmax, Prec)
+    The lenght is equals to nrRepetitions years, starting from firstYear
+    Period between wgDoy1 and wgDoy2 is produced by the WG
     Others data are a copy of the observed data of predictionYear
     Weather generator climate is stored in wgClimate
     Observed data (Tmin, Tmax, Prec) are in lastYearDailyObsData
-    Output data will be saved in outputDailyData
---------------------------------------------------------------------------*/
+  \return outputDailyData
+*/
 bool computeSeasonalPredictions(TinputObsData *lastYearDailyObsData, int dataLenght,
                                 TwheatherGenClimate* wgClimate, int predictionYear, int firstYear,
                                 int nrRepetitions, int wgDoy1, int wgDoy2, float rainfallThreshold,
