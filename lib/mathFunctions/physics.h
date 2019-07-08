@@ -1,7 +1,9 @@
 #ifndef PHYSICS_H
 #define PHYSICS_H
 
-    #include <vector>
+    #ifndef _VECTOR_
+        #include <vector>
+    #endif
 
     double PressureFromAltitude(double myHeight);
     double AirMolarDensity(double myPressure, double myT);

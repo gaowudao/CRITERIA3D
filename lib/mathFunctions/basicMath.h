@@ -1,7 +1,9 @@
 #ifndef BASICMATH_H
 #define BASICMATH_H
 
-    #include <vector>
+    #ifndef _VECTOR_
+        #include <vector>
+    #endif
 
     bool sameSignNoZero(float a, float b);
     bool sameSign(float a, float b);
@@ -35,5 +37,6 @@
         double percentile(double* list, int *nList, double perc, bool sortValues);
         float percentile(std::vector<float> &list, int* nList, float perc, bool sortValues);
     }
+
 
 #endif // BASICMATH_H
