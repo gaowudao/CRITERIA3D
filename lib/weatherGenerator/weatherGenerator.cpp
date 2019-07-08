@@ -589,13 +589,13 @@ bool assignAnomalyPrec(float myAnomaly, int anomalyMonth1, int anomalyMonth2, fl
 }
 
 
-/*------------------------------------------------------------------------------
-    makeSeasonalForecast
---------------------------------------------------------------------------------
-    Generates a time series of daily data (Tmin, Tmax, Prec)
-    for a period of nrYears = numMembers * nrRepetitions
-    Different members of anomalies loaded by xml files are added to the climate
---------------------------------------------------------------------------------*/
+/*!
+  * \name makeSeasonalForecast
+  * \brief Generates a time series of daily data (Tmin, Tmax, Prec)
+  * for a period of nrYears = numMembers * nrRepetitions
+  * Different members of anomalies loaded by xml files are added to the climate
+  * Output is written on outputFileName (csv)
+*/
 bool makeSeasonalForecast(QString outputFileName, char separator, TXMLSeasonalAnomaly* XMLAnomaly, TwheatherGenClimate wGenClimate, TinputObsData* lastYearDailyObsData, int nrRepetitions, int myPredictionYear, int wgDoy1, int wgDoy2, float rainfallThreshold)
 {
     TwheatherGenClimate wGen;
