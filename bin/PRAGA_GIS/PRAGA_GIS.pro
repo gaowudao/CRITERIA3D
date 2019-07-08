@@ -6,6 +6,7 @@
 #
 #-----------------------------------------------------
 
+
 QT       += core gui network widgets
 
 TARGET = PRAGA_GIS
