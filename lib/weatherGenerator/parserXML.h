@@ -46,7 +46,7 @@
 
     bool parseXMLFile(QString xmlFileName, QDomDocument* xmlDoc);
 
-    bool parseXMLClimate(QString xmlFileName, TXMLSeasonalAnomaly* XMLAnomaly);
+    bool parseXMLSeasonal(QString xmlFileName, TXMLSeasonalAnomaly* XMLAnomaly);
 
 
 #endif // PARSERXML_H

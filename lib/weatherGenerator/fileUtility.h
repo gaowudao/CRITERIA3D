@@ -5,7 +5,7 @@
     struct ToutputDailyMeteo;
     struct TinputObsData;
 
-    bool readMeteoDataCsv (QString namefile, char separator, float noData,  TinputObsData* inputData);
+    bool readMeteoDataCsv (QString namefile, char separator, double noData,  TinputObsData* inputData);
 
     bool writeMeteoDataCsv (QString namefile, char separator, ToutputDailyMeteo* mydailyData);
 

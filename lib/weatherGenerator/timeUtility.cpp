@@ -21,21 +21,22 @@ int numMonthsInPeriod(int m1, int m2)
 }
 
 
-// check if currentMETEO includes the last 9 months before wgDoy1
-// if it does returns the number of days equals to 9 months before wgDoy1
-int checkLastYearDate(Crit3DDate inputFirstDate, Crit3DDate inputLastDate, int dataLenght, int myPredictionYear, int* wgDoy1)
+// it checks if observed data includes the last 9 months before wgDoy1
+// it updates wgDoy1 and nrDaysBefore if some days are missing (lower than NRDAYSTOLERANCE)
+bool checkLastYearDate(Crit3DDate inputFirstDate, Crit3DDate inputLastDate, int dataLenght,
+                       int myPredictionYear, int* wgDoy1, int* nrDaysBefore)
 {
     Crit3DDate predictionFirstDate = getDateFromDoy (myPredictionYear, *wgDoy1);
 
     if (inputLastDate.addDays(NRDAYSTOLERANCE+1) <  predictionFirstDate)
     {
         qDebug() << "\nObserved days missing are more than NRDAYSTOLERANCE" << NRDAYSTOLERANCE << endl;
-        return(-1);
+        return false;
     }
 
     int predictionMonth = predictionFirstDate.month;
     int monthIndex = 0;
-    int totalDay = 0;
+    *nrDaysBefore = 0;
     for (int i = 0; i < 9; i++)
     {
         monthIndex = (predictionMonth -1) -i;
@@ -44,7 +45,7 @@ int checkLastYearDate(Crit3DDate inputFirstDate, Crit3DDate inputLastDate, int d
             monthIndex = monthIndex + 12 ;
             myPredictionYear = myPredictionYear - 1;
         }
-        totalDay += getDaysInMonth(monthIndex, myPredictionYear);
+        *nrDaysBefore += getDaysInMonth(monthIndex, myPredictionYear);
     }
 
     // shift wgDoy1 if there are missing data
@@ -52,7 +53,7 @@ int checkLastYearDate(Crit3DDate inputFirstDate, Crit3DDate inputLastDate, int d
     {
         int delta = difference(inputLastDate, predictionFirstDate) - 1;
         *wgDoy1 -= delta;
-        totalDay -= delta;
+        *nrDaysBefore -= delta;
     }
     // use or not the observed data in the forecast period
     else if (USEDATA)
@@ -60,23 +61,23 @@ int checkLastYearDate(Crit3DDate inputFirstDate, Crit3DDate inputLastDate, int d
         if (inputLastDate > predictionFirstDate.addDays(80))
         {
             qDebug() << "Check your XML: you have already all observed data" << endl;
-            return(-1);
+            return false;
         }
         if (isLeapYear(predictionFirstDate.year))
             *wgDoy1 = (*wgDoy1 + (difference(predictionFirstDate, inputLastDate)) + 1 ) % 366;
         else
             *wgDoy1 = (*wgDoy1 + (difference(predictionFirstDate, inputLastDate)) + 1 ) % 365;
 
-        totalDay += (difference(predictionFirstDate, inputLastDate)) + 1 ;
+        *nrDaysBefore += (difference(predictionFirstDate, inputLastDate)) + 1 ;
     }
 
-    if ( difference(inputFirstDate, predictionFirstDate) < totalDay || dataLenght < (totalDay-NRDAYSTOLERANCE) )
+    if ( difference(inputFirstDate, predictionFirstDate) < *nrDaysBefore || dataLenght < (*nrDaysBefore-NRDAYSTOLERANCE) )
     {
-        // currentMETEO does not include 9 months before wgDoy1 or more than NRDAYSTOLERANCE days missing
-        return(-1);
+        // observed data does not include 9 months before wgDoy1 or more than NRDAYSTOLERANCE days missing
+        return false;
     }
 
-    return totalDay ;
+    return true;
 }
 
 

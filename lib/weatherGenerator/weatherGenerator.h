@@ -107,8 +107,11 @@
                             int numRepetitions, int myPredictionYear, int wgDoy1, int wgDoy2, float minPrec);
 
     bool computeSeasonalPredictions(TinputObsData *lastYearDailyObsData, int dataLenght,
-                                    TwheatherGenClimate* wGen, int predictionYear, int firstYear, int numRepetitions,
-                                    int wgDoy1, int wgDoy2, float minPrec, ToutputDailyMeteo* mydailyData, bool last);
+                                    TwheatherGenClimate* wgClimate, int predictionYear, int firstYear,
+                                    int nrRepetitions, int wgDoy1, int wgDoy2, float minPrec,
+                                    ToutputDailyMeteo* outputDailyData, bool isLastMember);
+
+    void clearInputData(TinputObsData* myData);
 
 #endif // WEATHERGENERATOR_H
 

@@ -8,7 +8,7 @@
 #include "fileUtility.h"
 
 
-bool readMeteoDataCsv (QString namefile, char separator, float noData, TinputObsData* inputData)
+bool readMeteoDataCsv (QString namefile, char separator, double noData, TinputObsData* inputData)
 {
 
     QFile file(namefile);
@@ -26,7 +26,7 @@ bool readMeteoDataCsv (QString namefile, char separator, float noData, TinputObs
     int indexDate = 0;
     Crit3DDate tempDate;
 
-    QString noDataString = QString::number(double(noData));
+    QString noDataString = QString::number(noData);
     QString strDate;
 
     // header
@@ -153,7 +153,7 @@ bool readMeteoDataCsv (QString namefile, char separator, float noData, TinputObs
         inputData->inputPrecip[i] = listPrecip[i].toFloat();
 
         // check tmin <= tmax
-        if ((int(inputData->inputTMin[i]) != int(noData)) && (int(inputData->inputTMax[i]) != int(noData))
+        if ((inputData->inputTMin[i] != noData) && (inputData->inputTMax[i] != noData)
              && (inputData->inputTMin[i] > inputData->inputTMax[i]))
         {
             qDebug() << "WARNING: TMIN > TMAX: " << listDate[i];

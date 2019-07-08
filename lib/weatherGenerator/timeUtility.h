@@ -11,7 +11,7 @@
 
     bool getDoyFromSeason(QString season, int myPredictionYear, int* wgDoy1, int* wgDoy2);
 
-    int checkLastYearDate(Crit3DDate inputFirstDate, Crit3DDate inputLastDate, int dataLenght, int myPredictionYear, int* wgDoy1);
+    bool checkLastYearDate(Crit3DDate inputFirstDate, Crit3DDate inputLastDate, int dataLenght, int myPredictionYear, int* wgDoy1, int *nrDaysBefore);
 
     void fixWgDoy(int wgDoy1, int wgDoy2, int predictionYear, int myYear, int* fixwgDoy1, int* fixwgDoy2);
 

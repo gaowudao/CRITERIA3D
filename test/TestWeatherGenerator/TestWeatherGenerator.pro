@@ -31,7 +31,8 @@ win32:{
 
 INCLUDEPATH += ../../lib/crit3dDate ../../lib/mathFunctions ../../lib/weatherGenerator
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    wgProject.cpp
 
 CONFIG(debug, debug|release) {
     LIBS += -L../../lib/weatherGenerator/debug -lweatherGenerator
@@ -44,4 +45,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../lib/mathFunctions/release -lmathFunctions
     LIBS += -L../../lib/crit3dDate/release -lcrit3dDate
 }
+
+HEADERS += \
+    wgProject.h
 

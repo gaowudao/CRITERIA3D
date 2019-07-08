@@ -57,7 +57,8 @@ bool parseXMLFile(QString xmlFileName, QDomDocument* xmlDoc)
     return true;
 }
 
-bool parseXMLClimate(QString xmlFileName, TXMLSeasonalAnomaly* XMLAnomaly)
+
+bool parseXMLSeasonal(QString xmlFileName, TXMLSeasonalAnomaly* XMLAnomaly)
 {
     QDomDocument xmlDoc;
 
@@ -65,7 +66,7 @@ bool parseXMLClimate(QString xmlFileName, TXMLSeasonalAnomaly* XMLAnomaly)
 
      if (!parseXMLFile(xmlFileName, &xmlDoc))
     {
-        qDebug() << "parseXMLClimate error";
+        qDebug() << "parseXMLSeasonal error";
         return false;
     }
 
