@@ -214,18 +214,18 @@ bool WG_SeasonalForecast(WGSettings wgSettings)
                     srand (time(nullptr));
 
                     // SEASONAL FORECAST
-                    if (! makeSeasonalForecast(outputFileName, wgSettings.valuesSeparator, &XMLAnomaly, wGenClimate,
-                          &lastYearDailyObsData, XMLAnomaly.repetitions, XMLAnomaly.anomalyYear, wgDoy1, wgDoy2, wgSettings.rainfallThreshold))
+                    if (! makeSeasonalForecast(outputFileName, wgSettings.valuesSeparator, &XMLAnomaly,
+                                wGenClimate, &lastYearDailyObsData, XMLAnomaly.repetitions,
+                                XMLAnomaly.anomalyYear, wgDoy1, wgDoy2, wgSettings.rainfallThreshold))
                         qDebug() << "\n***** ERROR! *****" << fileName << "Computation FAILED\n";
 
                 }
             }
 
             clearInputData(&climateDailyObsData);
+            clearInputData(&lastYearDailyObsData);
         }
     }
-
-    qDebug() << "\nEND\n";
     return true;
 }
 
@@ -279,7 +279,5 @@ bool WG_Climate(WGSettings wgSettings)
 
         clearInputData(&climateDailyObsData);
     }
-
-    qDebug() << "\nEND\n";
     return true;
 }

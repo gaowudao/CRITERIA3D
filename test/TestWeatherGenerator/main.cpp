@@ -48,8 +48,8 @@
 */
 
 // uncomment one of these for test:
-// #define TEST_WG_CLIMATE 1
-#define TEST_WG_SEASONAL 2
+#define TEST_WG_CLIMATE 1
+// #define TEST_WG_SEASONAL 2
 
 
 int main(int argc, char *argv[])
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     QString appPath = wg.applicationDirPath();
     QString settingsFileName;
 
-    qDebug() << "--- Weather Generator 1D ---";
+    qDebug() << "*** Weather Generator 1D ***";
 
     #ifdef TEST_WG_CLIMATE
         settingsFileName = appPath + "/../data/testWG_Climate.ini";
@@ -92,5 +92,7 @@ int main(int argc, char *argv[])
         if (! WG_Climate(wgSettings))
             return -1;
     }
+
+    qDebug() << "\n*** END ***\n";
 }
 

@@ -596,7 +596,9 @@ bool assignAnomalyPrec(float myAnomaly, int anomalyMonth1, int anomalyMonth2, fl
   * Different members of anomalies loaded by xml files are added to the climate
   * Output is written on outputFileName (csv)
 */
-bool makeSeasonalForecast(QString outputFileName, char separator, TXMLSeasonalAnomaly* XMLAnomaly, TwheatherGenClimate wGenClimate, TinputObsData* lastYearDailyObsData, int nrRepetitions, int myPredictionYear, int wgDoy1, int wgDoy2, float rainfallThreshold)
+bool makeSeasonalForecast(QString outputFileName, char separator, TXMLSeasonalAnomaly* XMLAnomaly,
+                          TwheatherGenClimate wGenClimate, TinputObsData* lastYearDailyObsData,
+                          int nrRepetitions, int myPredictionYear, int wgDoy1, int wgDoy2, float rainfallThreshold)
 {
     TwheatherGenClimate wGen;
     ToutputDailyMeteo* myDailyPredictions;
@@ -749,10 +751,6 @@ bool makeSeasonalForecast(QString outputFileName, char separator, TXMLSeasonalAn
     qDebug() << "\nWrite output:" << outputFileName;
 
     writeMeteoDataCsv (outputFileName, separator, myDailyPredictions);
-
-    free(lastYearDailyObsData->inputTMin);
-    free(lastYearDailyObsData->inputTMax);
-    free(lastYearDailyObsData->inputPrecip);
 
     free(myDailyPredictions);
 
