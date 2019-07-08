@@ -27,19 +27,19 @@ win32:{
 
 
 CONFIG(release, debug|release) {
-    LIBS += -L../../lib/weatherGenerator2D/release -lweatherGenerator2D
-    LIBS += -L../../lib/mathFunctions/release -lmathFunctions
+    LIBS += -L../../lib/weatherGenerator2D/release -lweatherGenerator2D    
     LIBS += -L../../lib/specialMathFunctions/release -lspecialMathFunctions
-    LIBS += -L../../lib/crit3dDate/release -lcrit3dDate
     LIBS += -L../../lib/meteo/release -lmeteo
     LIBS += -L../../lib/gis/release -lgis
+    LIBS += -L../../lib/crit3dDate/release -lcrit3dDate
+    LIBS += -L../../lib/mathFunctions/release -lmathFunctions
 } else {
-    LIBS += -L../../lib/weatherGenerator2D/debug -lweatherGenerator2D
-    LIBS += -L../../lib/mathFunctions/debug -lmathFunctions
-    LIBS += -L../../lib/specialMathFunctions/debug -lspecialMathFunctions
-    LIBS += -L../../lib/crit3dDate/debug -lcrit3dDate
+    LIBS += -L../../lib/weatherGenerator2D/debug -lweatherGenerator2D 
+    LIBS += -L../../lib/specialMathFunctions/debug -lspecialMathFunctions  
     LIBS += -L../../lib/meteo/debug -lmeteo
     LIBS += -L../../lib/gis/debug -lgis
+    LIBS += -L../../lib/crit3dDate/debug -lcrit3dDate
+    LIBS += -L../../lib/mathFunctions/debug -lmathFunctions
 }
 
 
