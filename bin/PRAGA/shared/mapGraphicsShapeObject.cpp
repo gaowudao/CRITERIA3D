@@ -65,6 +65,8 @@ void MapGraphicsShapeObject::drawShape(QPainter* myPainter)
 {
     QPointF point;
     QPolygonF polygon;
+    QPainterPath path;
+    QPainterPath inner;
     unsigned long j;
 
     myPainter->setPen(Qt::black);
@@ -80,21 +82,45 @@ void MapGraphicsShapeObject::drawShape(QPainter* myPainter)
         {
             for (unsigned int part = 0; part < shapeParts[i].size(); part++)
             {
-                if (! hole[i][part])
-                {
-                    unsigned long offset = shapeParts[i][part].offset;
-                    unsigned long lenght = shapeParts[i][part].length;
+//                if (! hole[i][part])
+//                {
+//                    unsigned long offset = shapeParts[i][part].offset;
+//                    unsigned long lenght = shapeParts[i][part].length;
 
-                    polygon.clear();
-                    for (unsigned long v = 0; v < lenght; v++)
-                    {
-                        j = offset + v;
-                        point = getPoint(geoPoints[i][j]);
-                        polygon.append(point);
-                    }
-                    myPainter->drawPolygon(polygon);
+//                    polygon.clear();
+//                    for (unsigned long v = 0; v < lenght; v++)
+//                    {
+//                        j = offset + v;
+//                        point = getPoint(geoPoints[i][j]);
+//                        polygon.append(point);
+//                    }
+//                    myPainter->drawPolygon(polygon);
+//                }
+
+                polygon.clear();
+                unsigned long offset = shapeParts[i][part].offset;
+                unsigned long lenght = shapeParts[i][part].length;
+
+                for (unsigned long v = 0; v < lenght; v++)
+                {
+                    j = offset + v;
+                    point = getPoint(geoPoints[i][j]);
+                    polygon.append(point);
+                }
+
+                if (!hole[i][part])
+                {
+                    path.addPolygon(polygon);
+                }else
+                {
+                    inner.addPolygon(polygon);
+                    path = path.subtracted(inner);
                 }
             }
+            myPainter->drawPath(path);
+            path = QPainterPath();
+            inner = QPainterPath();
+
         }
     }
 }
