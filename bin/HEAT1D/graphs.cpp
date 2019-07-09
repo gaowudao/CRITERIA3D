@@ -1,4 +1,4 @@
-#include <qwt/qwt_plot_magnifier.h>
+#include <qwt_plot_magnifier.h>
 #include <qwt/qwt_plot_panner.h>
 #include <qwt/qwt_plot_curve.h>
 #include <qwt/qwt_plot_curve.h>
