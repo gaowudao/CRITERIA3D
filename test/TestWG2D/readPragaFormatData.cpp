@@ -7,7 +7,6 @@
 
 #include "readPragaFormatData.h"
 #include "commonConstants.h"
-//#include "types.h"
 
 int readPragaLineFileNumber(FILE *fp)
 {

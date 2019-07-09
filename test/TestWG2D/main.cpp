@@ -1,9 +1,7 @@
 
-#include <QCoreApplication>
 #include <malloc.h>
 #include <math.h>
 #include <time.h>
-//#include <iostream>
 
 #include "commonConstants.h"
 #include "furtherMathFunctions.h"
@@ -37,11 +35,16 @@ int main()
 {
 
     FILE *fp;
-    fp = fopen("inputData/budrio_1961_2018.txt","r");
+    fp = fopen("inputData/budrioBB_1961_2018.txt", "r");
+    if (fp == nullptr)
+    {
+        printf("Error! File not found\n");
+        return -1;
+    }
+
     int numberMeteoLines;
     numberMeteoLines = readPragaLineFileNumber(fp);
     fclose(fp);
-    //fp = fopen("inputData/budrio_1961_2018.txt","r");
     int doy,day,month,year;
     double prec,minT,maxT,meanT;
     doy = day = month = year = NODATA;

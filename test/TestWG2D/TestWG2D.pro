@@ -7,12 +7,13 @@
 #
 #-------------------------------------------------------------------
 
-QT += core
-QT -= gui
+QT -= core gui
 
 TEMPLATE = app
 CONFIG += console
 CONFIG -= app_bundle
+
+DEFINES += _CRT_SECURE_NO_WARNINGS
 
 unix:{
     CONFIG(debug, debug|release) {
