@@ -35,19 +35,22 @@
 
 namespace soil
 {
-    Crit3DDbSoilData::Crit3DDbSoilData()
+    Crit3DHorizonDbData::Crit3DHorizonDbData()
     {
+        this->upperDepth = NODATA;
+        this->lowerDepth = NODATA;
         this->sand = NODATA;
         this->silt = NODATA;
         this->clay = NODATA;
-        this->upperDepth = NODATA;
-        this->lowerDepth = NODATA;
         this->coarseFragments = NODATA;
         this->organicMatter = NODATA;
         this->bulkDensity = NODATA;
         this->thetaS = NODATA;
         this->kSat = NODATA;
+
+        waterRetention = nullptr;
     }
+
 
     Crit3DLayer::Crit3DLayer()
     {

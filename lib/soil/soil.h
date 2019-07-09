@@ -14,19 +14,29 @@
                            soilWaterPotentialFC, soilWaterPotentialWP
                           };
 
-        class Crit3DDbSoilData
+        struct obsWaterRetention
+        {
+            double water_potential;             /*!<  [kPa]      */
+            double water_content;               /*!<  [m^3 m^-3] */
+        };
+
+
+        class Crit3DHorizonDbData
         {
         public:
+            double upperDepth, lowerDepth;      /*!<   [m]      */
             float sand, silt, clay;             /*!<   [-] 0-1  */
-            double upperDepth, lowerDepth;      /*!<   [m]   */
             double coarseFragments;             /*!<   [-] 0-1  */
             double organicMatter;               /*!<   [-] 0-1  */
             double bulkDensity;                 /*!<   [g cm^-3]  */
             double thetaS;                      /*!<   [m^3 m^-3] */
             double kSat;                        /*!<   [cm day^-1] */
 
-            Crit3DDbSoilData();
+            obsWaterRetention* waterRetention;
+
+            Crit3DHorizonDbData();
         };
+
 
         /*!
          * \brief The Crit3DTexture class
@@ -108,7 +118,7 @@
             double PH;                          /*!<   [-]  */
             double CEC;                         /*!<   [meq/100g]  */
 
-            Crit3DDbSoilData dbSoilData;
+            Crit3DHorizonDbData dbData;
             Crit3DTexture texture;
             Crit3DVanGenuchten vanGenuchten;
             Crit3DWaterConductivity waterConductivity;
@@ -123,7 +133,7 @@
             std::string code;
             int id;
             int nrHorizons;
-            double totalDepth;          /*!<   [m] */
+            double totalDepth;                  /*!<   [m]  */
             Crit3DHorizon* horizon;
 
             Crit3DSoil();

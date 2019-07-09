@@ -67,7 +67,6 @@ bool loadVanGenuchtenParameters(soil::Crit3DSoilClass *soilClassList, QSqlDataba
         soilClassList[id].waterConductivity.kSat = query.value(6).toDouble();
         soilClassList[id].waterConductivity.l = query.value(7).toDouble();
 
-
     } while(query.next());
 
     return(true);
@@ -119,7 +118,7 @@ bool loadDriessenParameters(soil::Crit3DSoilClass *soilTexture, QSqlDatabase* db
 }
 
 
-bool loadDbSoilData(QString dbSoilName, QString soilCode, soil::Crit3DSoil *mySoil, QString *myError)
+bool loadSoilData(QString dbSoilName, QString soilCode, soil::Crit3DSoil *mySoil, QString *myError)
 {
     QSqlDatabase dbSoil;
     if (! openDbSoil(dbSoilName, &dbSoil, myError))
@@ -161,38 +160,46 @@ bool loadDbSoilData(QString dbSoilName, QString soilCode, soil::Crit3DSoil *mySo
         // upper and lower depth (cm)
         getValue(query.value("upper_depth"), &upperDepth);
         getValue(query.value("lower_depth"), &lowerDepth);
-        mySoil->horizon[i].dbSoilData.upperDepth = upperDepth;
-        mySoil->horizon[i].dbSoilData.lowerDepth = lowerDepth;
+        mySoil->horizon[i].dbData.upperDepth = upperDepth;
+        mySoil->horizon[i].dbData.lowerDepth = lowerDepth;
 
         // sand silt clay [-]
         getValue(query.value("sand"), &sand);
         getValue(query.value("silt"), &silt);
         getValue(query.value("clay"), &clay);
-        mySoil->horizon[i].dbSoilData.sand = sand;
-        mySoil->horizon[i].dbSoilData.silt = silt;
-        mySoil->horizon[i].dbSoilData.clay = clay;
+        mySoil->horizon[i].dbData.sand = sand;
+        mySoil->horizon[i].dbData.silt = silt;
+        mySoil->horizon[i].dbData.clay = clay;
 
         // coarse fragments and organic matter (%)
         getValue(query.value("coarse_fragment"), &coarseFragments);
         getValue(query.value("organic_matter"), &organicMatter);
-        mySoil->horizon[i].dbSoilData.coarseFragments = coarseFragments;
-        mySoil->horizon[i].dbSoilData.organicMatter = organicMatter;
+        mySoil->horizon[i].dbData.coarseFragments = coarseFragments;
+        mySoil->horizon[i].dbData.organicMatter = organicMatter;
 
         // bulk density [g/cm3]
         getValue(query.value("bulk_density"), &bulkDensity);
-        mySoil->horizon[i].dbSoilData.bulkDensity = bulkDensity;
+        mySoil->horizon[i].dbData.bulkDensity = bulkDensity;
 
         // theta sat [m3/m3]
         getValue(query.value("theta_sat"), &theta_sat);
-        mySoil->horizon[i].dbSoilData.thetaS = theta_sat;
+        mySoil->horizon[i].dbData.thetaS = theta_sat;
 
         // saturated conductivity (cm/day)
         getValue(query.value("ksat"), &ksat);
-        mySoil->horizon[i].dbSoilData.kSat = ksat;
+        mySoil->horizon[i].dbData.kSat = ksat;
 
         i++;
 
     } while(query.next());
+
+    // read water retention data
+    /*
+    queryString = "SELECT * FROM water_retention ";
+    queryString += "WHERE soil_code='" + soilCode + "' ORDER BY horizon_nr";
+    query = dbSoil.exec(queryString);
+    query.last();
+    */
 
     dbSoil.close();
     return true;
