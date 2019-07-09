@@ -24,13 +24,13 @@
         class Crit3DHorizonDbData
         {
         public:
-            double upperDepth, lowerDepth;      /*!<   [m]      */
-            float sand, silt, clay;             /*!<   [-] 0-1  */
-            double coarseFragments;             /*!<   [-] 0-1  */
-            double organicMatter;               /*!<   [-] 0-1  */
-            double bulkDensity;                 /*!<   [g cm^-3]  */
-            double thetaS;                      /*!<   [m^3 m^-3] */
-            double kSat;                        /*!<   [cm day^-1] */
+            double upperDepth, lowerDepth;      /*!<   [cm]          */
+            float sand, silt, clay;             /*!<   [%]          */
+            double coarseFragments;             /*!<   [%]          */
+            double organicMatter;               /*!<   [%]          */
+            double bulkDensity;                 /*!<   [g cm^-3]    */
+            double thetaSat;                    /*!<   [m^3 m^-3]   */
+            double kSat;                        /*!<   [cm day^-1]  */
 
             obsWaterRetention* waterRetention;
 
@@ -107,16 +107,17 @@
         class Crit3DHorizon
         {
         public:
-            double upperDepth, lowerDepth;      /*!<   [m]   */
-            double coarseFragments;             /*!<   [-] 0-1  */
-            double organicMatter;               /*!<   [-] 0-1  */
-            double bulkDensity;                 /*!<   [g/cm^3]  */
-            double fieldCapacity;               /*!<   [kPa]  */
-            double wiltingPoint;                /*!<   [kPa]  */
-            double waterContentFC;              /*!<   [m^3 m^-3]  */
-            double waterContentWP;              /*!<   [m^3 m^-3]  */
-            double PH;                          /*!<   [-]  */
-            double CEC;                         /*!<   [meq/100g]  */
+            double upperDepth, lowerDepth;      /*!<  [m]       */
+            double coarseFragments;             /*!<  [-] 0-1   */
+            double organicMatter;               /*!<  [-] 0-1   */
+            double bulkDensity;                 /*!<  [g/cm^3]  */
+            double thetaSat;                    /*!<  [m^3 m^-3]*/
+            double fieldCapacity;               /*!<  [kPa]     */
+            double wiltingPoint;                /*!<  [kPa]     */
+            double waterContentFC;              /*!<  [m^3 m^-3]*/
+            double waterContentWP;              /*!<  [m^3 m^-3]*/
+            double PH;                          /*!<  [-]       */
+            double CEC;                         /*!<  [meq/100g]*/
 
             Crit3DHorizonDbData dbData;
             Crit3DTexture texture;
@@ -161,37 +162,41 @@
             Crit3DLayer();
         };
 
+         int getUSDATextureClass(Crit3DTexture texture);
+         int getNLTextureClass(Crit3DTexture texture);
+         int getUSDATextureClass(float sand, float silt, float clay);
+         int getNLTextureClass(float sand, float silt, float clay);
 
-     int getUSDATextureClass(float sand, float silt, float clay);
-     int getNLTextureClass(float sand, float silt, float clay);
-     int getHorizonIndex(Crit3DSoil* soil, double depth);
-     double getFieldCapacity(Crit3DHorizon* horizon, soil::units unit);
-     double getWiltingPoint(soil::units unit);
-     double getThetaFC(Crit3DHorizon* horizon);
-     double getThetaWP(Crit3DHorizon* horizon);
+         int getHorizonIndex(Crit3DSoil* soil, double depth);
+         double getFieldCapacity(Crit3DHorizon* horizon, soil::units unit);
+         double getWiltingPoint(soil::units unit);
+         double getThetaFC(Crit3DHorizon* horizon);
+         double getThetaWP(Crit3DHorizon* horizon);
 
-     double kPaToMeters(double value);
-     double metersTokPa(double value);
+         double kPaToMeters(double value);
+         double metersTokPa(double value);
 
-     double kPaToCm(double value);
-     double cmTokPa(double value);
+         double kPaToCm(double value);
+         double cmTokPa(double value);
 
-     double SeFromTheta(double theta, Crit3DHorizon* horizon);
-     double psiFromTheta(double theta, Crit3DHorizon* horizon);
-     double thetaFromSignPsi(double signPsi, Crit3DHorizon* horizon);
+         double SeFromTheta(double theta, Crit3DHorizon* horizon);
+         double psiFromTheta(double theta, Crit3DHorizon* horizon);
+         double thetaFromSignPsi(double signPsi, Crit3DHorizon* horizon);
 
-     double waterConductivity(double Se, Crit3DHorizon* horizon);
+         double waterConductivity(double Se, Crit3DHorizon* horizon);
 
-     double estimateBulkDensity(Crit3DHorizon* mySoil, double totalPorosity, bool increaseWithDepth);
-     double estimateSaturatedConductivity(Crit3DHorizon* mySoil, double bulkDensity);
-     double estimateTotalPorosity(Crit3DHorizon* mySoil, double bulkDensity);
+         double estimateBulkDensity(Crit3DHorizon* mySoil, double totalPorosity, bool increaseWithDepth);
+         double estimateSaturatedConductivity(Crit3DHorizon* mySoil, double bulkDensity);
+         double estimateTotalPorosity(Crit3DHorizon* mySoil, double bulkDensity);
 
-     double getVolumetricWaterContent(Crit3DLayer* layer);
-     double getWaterContentFromPsi(double signPsi, Crit3DLayer* layer);
-     double getWaterContentFromAW(double availableWater, Crit3DLayer* layer);
+         double getVolumetricWaterContent(Crit3DLayer* layer);
+         double getWaterContentFromPsi(double signPsi, Crit3DLayer* layer);
+         double getWaterContentFromAW(double availableWater, Crit3DLayer* layer);
 
-     double getWaterPotential(Crit3DLayer* layer);
-     double getWaterConductivity(Crit3DLayer* layer);
+         double getWaterPotential(Crit3DLayer* layer);
+         double getWaterConductivity(Crit3DLayer* layer);
+
+         bool checkHorizon(Crit3DHorizon* horizon, std::string* error);
     }
 
 #endif // SOIL_H

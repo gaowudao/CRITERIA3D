@@ -183,7 +183,7 @@ bool loadSoilData(QString dbSoilName, QString soilCode, soil::Crit3DSoil *mySoil
 
         // theta sat [m3/m3]
         getValue(query.value("theta_sat"), &theta_sat);
-        mySoil->horizon[i].dbData.thetaS = theta_sat;
+        mySoil->horizon[i].dbData.thetaSat = theta_sat;
 
         // saturated conductivity (cm/day)
         getValue(query.value("ksat"), &ksat);

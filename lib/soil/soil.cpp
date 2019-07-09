@@ -45,7 +45,7 @@ namespace soil
         this->coarseFragments = NODATA;
         this->organicMatter = NODATA;
         this->bulkDensity = NODATA;
-        this->thetaS = NODATA;
+        this->thetaSat = NODATA;
         this->kSat = NODATA;
 
         waterRetention = nullptr;
@@ -121,6 +121,7 @@ namespace soil
         this->coarseFragments = NODATA;
         this->organicMatter = NODATA;
         this->bulkDensity = NODATA;
+        this->thetaSat = NODATA;
 
         this->fieldCapacity = NODATA;
         this->wiltingPoint = NODATA;
@@ -156,6 +157,12 @@ namespace soil
         this->id = NODATA;
         this->nrHorizons = 0;
         this->totalDepth = 0;
+    }
+
+
+    int getUSDATextureClass(Crit3DTexture texture)
+    {
+        return getUSDATextureClass(texture.sand, texture.silt, texture.clay);
     }
 
     // [%]
@@ -197,6 +204,11 @@ namespace soil
         return myClass;
     }
 
+
+    int getNLTextureClass(Crit3DTexture texture)
+    {
+        return getNLTextureClass(texture.sand, texture.silt, texture.clay);
+    }
 
     /*!
      * \brief NL texture (used by Driessen) different from USDA only in clay zone
@@ -243,18 +255,18 @@ namespace soil
 
 
     // estimate bulk density from total porosity
-    double estimateBulkDensity(Crit3DHorizon* mySoil, double totalPorosity, bool increaseWithDepth = false)
+    double estimateBulkDensity(Crit3DHorizon* horizon, double totalPorosity, bool increaseWithDepth = false)
     {
         if (int(totalPorosity) == int(NODATA))
-            totalPorosity = mySoil->vanGenuchten.refThetaS;
+            totalPorosity = horizon->vanGenuchten.refThetaS;
 
-        double specificDensity = getSpecificDensity(mySoil->organicMatter);
+        double specificDensity = getSpecificDensity(horizon->organicMatter);
         double refBulkDensity = (1 - totalPorosity) * specificDensity;
 
         // increase/decrease with depth, reference thetaSat at 33cm
         if (increaseWithDepth)
         {
-            double depth = (mySoil->upperDepth + mySoil->lowerDepth) * 0.5;
+            double depth = (horizon->upperDepth + horizon->lowerDepth) * 0.5;
             double depthCoeff = (depth - 0.33) * 0.1;
             refBulkDensity *= (1.0 + depthCoeff);
         }
@@ -263,25 +275,25 @@ namespace soil
     }
 
 
-    double estimateTotalPorosity(Crit3DHorizon* mySoil, double bulkDensity)
+    double estimateTotalPorosity(Crit3DHorizon* horizon, double bulkDensity)
     {
         if (int(bulkDensity) == int(NODATA)) return(NODATA);
 
-        double specificDensity = getSpecificDensity(mySoil->organicMatter);
+        double specificDensity = getSpecificDensity(horizon->organicMatter);
         return (1.0 - (bulkDensity /specificDensity));
     }
 
 
-    double estimateSaturatedConductivity(Crit3DHorizon* mySoil, double bulkDensity)
+    double estimateSaturatedConductivity(Crit3DHorizon* horizon, double bulkDensity)
     {
         if (int(bulkDensity) == int(NODATA)) return(NODATA);
 
-        double refTotalPorosity = mySoil->vanGenuchten.refThetaS;
-        double specificDensity = getSpecificDensity(mySoil->organicMatter);
+        double refTotalPorosity = horizon->vanGenuchten.refThetaS;
+        double specificDensity = getSpecificDensity(horizon->organicMatter);
         double refBulkDensity = (1.0 - refTotalPorosity) * specificDensity;
         double ratio = 1 - bulkDensity / refBulkDensity;
 
-        double refKsat = mySoil->waterConductivity.kSat;
+        double refKsat = horizon->waterConductivity.kSat;
         double factor = pow(10.0, 2.0 * ratio);
         return refKsat * factor;
     }
@@ -531,4 +543,117 @@ namespace soil
         return waterConductivity(degreeOfSaturation, layer->horizon);
     }
 
+
+    // It assumes that dbData are loaded
+    bool checkHorizon(Crit3DHorizon* horizon, std::string* error)
+    {
+        *error = "";
+
+        // depth [cm]->[m]
+        if (horizon->dbData.upperDepth != NODATA && horizon->dbData.lowerDepth != NODATA)
+        {
+            horizon->upperDepth = horizon->dbData.upperDepth / 100;
+            horizon->lowerDepth = horizon->dbData.lowerDepth / 100;
+        }
+        else
+        {
+            *error += "wrong depth";
+            return false;
+        }
+
+        // coarse fragments [%] -> 0-1
+        if (horizon->dbData.coarseFragments != NODATA && horizon->dbData.coarseFragments >= 0)
+        {
+            horizon->coarseFragments = horizon->dbData.coarseFragments / 100;
+        }
+        else
+        {
+            // default = no coarse fragment
+            horizon->coarseFragments = 0.0;
+        }
+
+        // organic matter [%] -> 0-1
+        if (horizon->dbData.organicMatter != NODATA && horizon->dbData.organicMatter > 0)
+        {
+            horizon->organicMatter = horizon->dbData.organicMatter / 100;
+        }
+        else
+        {
+            // default: 0.5%
+            horizon->organicMatter = 0.005;
+        }
+
+        // sand, silt, clay [%]
+        horizon->texture.sand = horizon->dbData.sand;
+        if (horizon->texture.sand < 1)
+            horizon->texture.sand *= 100;
+        horizon->texture.silt = horizon->dbData.silt;
+        if (horizon->texture.silt < 1)
+            horizon->texture.silt *= 100;
+        horizon->texture.clay = horizon->dbData.clay;
+        if (horizon->texture.clay < 1)
+            horizon->texture.clay *= 100;
+
+        // texture
+        horizon->texture.classUSDA = soil::getUSDATextureClass(horizon->texture);
+        if (horizon->texture.classUSDA == NODATA)
+        {
+            *error = "sand+silt+clay <> 100";
+            return false;
+        }
+
+        horizon->texture.classNL = soil::getNLTextureClass(horizon->texture);
+
+        /*
+        // assign default class parameters
+        horizon->vanGenuchten = soilTexture[idTextureUSDA].vanGenuchten;
+        horizon->waterConductivity = soilTexture[idTextureUSDA].waterConductivity;
+        horizon->Driessen = soilTexture[idTextureNL].Driessen;
+        */
+
+        // bulk density [g cm-3]
+        horizon->bulkDensity = horizon->dbData.bulkDensity;
+        if (horizon->bulkDensity <= 0 || horizon->bulkDensity >= 2.7)
+        {
+            horizon->bulkDensity = NODATA;
+        }
+
+        // theta sat [m3 m-3]
+        horizon->thetaSat = horizon->dbData.thetaSat;
+        if (horizon->thetaSat <= 0 || horizon->thetaSat > 1)
+        {
+            horizon->thetaSat = NODATA;
+        }
+
+        // check theta sat and bulk density
+        if (horizon->thetaSat != NODATA)
+        {
+            horizon->vanGenuchten.thetaS = horizon->thetaSat;
+        }
+        else if (horizon->bulkDensity != NODATA)
+        {
+            horizon->vanGenuchten.thetaS = soil::estimateTotalPorosity(horizon, horizon->bulkDensity);
+        }
+
+        if (horizon->bulkDensity == NODATA)
+        {
+            horizon->bulkDensity = soil::estimateBulkDensity(horizon, horizon->vanGenuchten.thetaS, false);
+        }
+
+        /*
+        // SATURATED CONDUCTIVITY (cm/day)
+        getValue(query.value("ksat"), &ksat);
+        if ((int(ksat) == int(NODATA)) || (ksat <= 0))
+            ksat = soil::estimateSaturatedConductivity(&(mySoil->horizon[i]), bulkDensity);
+
+        horizon->waterConductivity.kSat = ksat;
+
+        horizon->fieldCapacity = soil::getFieldCapacity(&(mySoil->horizon[i]), soil::KPA);
+        horizon->wiltingPoint = soil::getWiltingPoint(soil::KPA);
+        horizon->waterContentFC = soil::getThetaFC(&(mySoil->horizon[i]));
+        horizon->waterContentWP = soil::getThetaWP(&(mySoil->horizon[i]));
+        */
+
+        return true;
+    }
 }
