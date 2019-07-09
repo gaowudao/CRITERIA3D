@@ -12,7 +12,17 @@
 
 QT       -= core gui
 
-TARGET = weatherGenerator2D
+unix:{
+    CONFIG(debug, debug|release) {
+        TARGET = debug/weatherGenerator2D
+    } else {
+        TARGET = release/weatherGenerator2D
+    }
+}
+win32:{
+    TARGET = weatherGenerator2D
+}
+
 TEMPLATE = lib
 CONFIG += staticlib
 
