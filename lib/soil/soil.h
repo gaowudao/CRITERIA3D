@@ -112,6 +112,7 @@
             double organicMatter;               /*!<  [-] 0-1   */
             double bulkDensity;                 /*!<  [g/cm^3]  */
             double thetaSat;                    /*!<  [m^3 m^-3]*/
+
             double fieldCapacity;               /*!<  [kPa]     */
             double wiltingPoint;                /*!<  [kPa]     */
             double waterContentFC;              /*!<  [m^3 m^-3]*/
@@ -185,9 +186,9 @@
 
          double waterConductivity(double Se, Crit3DHorizon* horizon);
 
-         double estimateBulkDensity(Crit3DHorizon* mySoil, double totalPorosity, bool increaseWithDepth);
-         double estimateSaturatedConductivity(Crit3DHorizon* mySoil, double bulkDensity);
-         double estimateTotalPorosity(Crit3DHorizon* mySoil, double bulkDensity);
+         double estimateBulkDensity(Crit3DHorizon* horizon, double totalPorosity, bool increaseWithDepth);
+         double estimateSaturatedConductivity(Crit3DHorizon* horizon, double bulkDensity);
+         double estimateTotalPorosity(Crit3DHorizon* horizon, double bulkDensity);
 
          double getVolumetricWaterContent(Crit3DLayer* layer);
          double getWaterContentFromPsi(double signPsi, Crit3DLayer* layer);
