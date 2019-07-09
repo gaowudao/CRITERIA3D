@@ -35,7 +35,7 @@ int main()
 {
 
     FILE *fp;
-    fp = fopen("inputData/budrioBB_1961_2018.txt", "r");
+    fp = fopen("inputData/budrio_1961_2018.txt", "r");
     if (fp == nullptr)
     {
         printf("Error! File not found\n");
