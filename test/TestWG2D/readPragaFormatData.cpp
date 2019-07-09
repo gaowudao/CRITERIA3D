@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <tchar.h>
 #include <math.h>
