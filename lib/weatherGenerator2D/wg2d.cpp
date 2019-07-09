@@ -321,10 +321,10 @@ void weatherGenerator2D::precipitationP00P10()
     {
            for (int iStation =0; iStation<nrStations;iStation++)
            {
-            //printf("%.2f ",precOccurence[iStation][month].p10);
+            //printf("%.2f ",precOccurence[iStation][month].p00);
             //printf("%f  %f %f\n",precOccurence[0][month].p10,precOccurence[1][month].p10,precOccurence[2][month].p10);
            }
-           printf("\n");
+           //printf("\n");
     }
     //pressEnterToContinue();
 }
@@ -421,15 +421,17 @@ void weatherGenerator2D::precipitationCorrelationMatrices()
                 correlationMatrix[iMonth].occurrence[i][j] = correlationMatrix[iMonth].occurrence[j][i];
             }
         }
+        /*
         for (int iStation=0;iStation<nrStations;iStation++)
         {
             for (int jStation=0;jStation<nrStations;jStation++)
             {
-                printf("%.2f ", correlationMatrix[iMonth].amount[jStation][iStation]);
+                printf("%.3f ", correlationMatrix[iMonth].occurrence[jStation][iStation]);
             }
             printf("\n");
         }
         pressEnterToContinue();
+        */
     }
 }
 
@@ -438,7 +440,7 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
     int nrDaysIterativeProcessMonthly[12];
     int gasDevIset = 0;
     double gasDevGset = 0;
-    srand (time(NULL));
+    srand(time(NULL));
 
 
     for (int i=0;i<12;i++)
