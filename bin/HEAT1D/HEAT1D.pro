@@ -14,6 +14,9 @@ TEMPLATE = app
 INCLUDEPATH += ../../lib/mathFunctions
 INCLUDEPATH += ../../lib/gis
 INCLUDEPATH += ../../lib/soilFluxes3D/header
+unix:{
+    INCLUDEPATH += /usr/include/qwt/
+}
 
 
 CONFIG += debug_and_release
