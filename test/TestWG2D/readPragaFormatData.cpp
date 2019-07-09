@@ -1,9 +1,7 @@
 
 #include <stdlib.h>
-#include <tchar.h>
 #include <math.h>
 #include <string.h>
-#include <stdio.h>
 
 #include "readPragaFormatData.h"
 #include "commonConstants.h"

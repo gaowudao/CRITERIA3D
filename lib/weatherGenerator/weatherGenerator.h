@@ -67,7 +67,6 @@
         float minTemp;
         float maxTemp;
         float prec;
-        int dataLenght;
     };
 
     void initializeDailyDataBasic(ToutputDailyMeteo* mydailyData, Crit3DDate myDate);
@@ -106,10 +105,10 @@
                             TwheatherGenClimate wGenClimate, TinputObsData* lastYearDailyObsData,
                             int numRepetitions, int myPredictionYear, int wgDoy1, int wgDoy2, float minPrec);
 
-    bool computeSeasonalPredictions(TinputObsData *lastYearDailyObsData, int dataLenght,
-                                    TwheatherGenClimate* wgClimate, int predictionYear, int firstYear,
-                                    int nrRepetitions, int wgDoy1, int wgDoy2, float minPrec,
-                                    ToutputDailyMeteo* outputDailyData, bool isLastMember);
+    bool computeSeasonalPredictions(TinputObsData *lastYearDailyObsData, TwheatherGenClimate* wgClimate,
+                                    int predictionYear, int firstYear, int nrRepetitions,
+                                    int wgDoy1, int wgDoy2, float minPrec, bool isLastMember,
+                                    ToutputDailyMeteo* outputDailyData, int *outputDataLenght);
 
     void clearInputData(TinputObsData* myData);
 

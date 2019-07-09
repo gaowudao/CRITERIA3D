@@ -55,6 +55,7 @@ bool checkLastYearDate(Crit3DDate inputFirstDate, Crit3DDate inputLastDate, int 
         *wgDoy1 -= delta;
         *nrDaysBefore -= delta;
     }
+
     // use or not the observed data in the forecast period
     else if (USEDATA)
     {

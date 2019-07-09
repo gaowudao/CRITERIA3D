@@ -168,7 +168,7 @@ bool readMeteoDataCsv (QString namefile, char separator, double noData, TinputOb
 
 
 // write output of weather generator: a daily meteo data series
-bool writeMeteoDataCsv (QString namefile, char separator, ToutputDailyMeteo* mydailyData)
+bool writeMeteoDataCsv (QString namefile, char separator, ToutputDailyMeteo* mydailyData, long dataLenght)
 {
 
     QFile file(namefile);
@@ -185,7 +185,7 @@ bool writeMeteoDataCsv (QString namefile, char separator, ToutputDailyMeteo* myd
     stream << "date" << separator << "tmin" << separator << "tmax" << separator << "tavg"
            << separator << "prec" << separator << "etp" << separator << "watertable\n";
 
-    for (int i=0; i < mydailyData->dataLenght; i++)
+    for (int i=0; i < dataLenght; i++)
     {
         if (mydailyData[i].date.month < 10)
             month = "0" + QString::number(mydailyData[i].date.month);

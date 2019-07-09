@@ -646,13 +646,7 @@ bool makeSeasonalForecast(QString outputFileName, char separator, TXMLSeasonalAn
     else
         seasonLastDate = getDateFromDoy (myPredictionYear+1, wgDoy2);
 
-    int tmp = nrDaysBeforeWgDoy1;
-    myFirstDatePrediction = seasonFirstDate;
-    while(tmp > 0)
-    {
-        --myFirstDatePrediction;
-        tmp--;
-    }
+    myFirstDatePrediction = seasonFirstDate.addDays(-nrDaysBeforeWgDoy1);
 
     for (int i = myPredictionYear; i<=myLastYear; i++)
     {
@@ -672,7 +666,7 @@ bool makeSeasonalForecast(QString outputFileName, char separator, TXMLSeasonalAn
     // copy the last 9 months before wgDoy1
     float lastTmax = NODATA;
     float lastTmin = NODATA;
-    for (tmp = 0; tmp < nrDaysBeforeWgDoy1; tmp++)
+    for (int tmp = 0; tmp < nrDaysBeforeWgDoy1; tmp++)
     {
         myDailyPredictions[tmp].date = myFirstDatePrediction.addDays(tmp);
         obsIndex = difference(lastYearDailyObsData->inputFirstDate, myDailyPredictions[tmp].date);
@@ -711,7 +705,7 @@ bool makeSeasonalForecast(QString outputFileName, char separator, TXMLSeasonalAn
     }
 
     qDebug() << "...Observed OK";
-    myDailyPredictions->dataLenght = tmp;
+    int outputDataLenght = nrDaysBeforeWgDoy1;
 
     // store the climate without anomalies
     wGen = wGenClimate;
@@ -736,9 +730,10 @@ bool makeSeasonalForecast(QString outputFileName, char separator, TXMLSeasonalAn
             isLastMember = true;
         }
         // compute seasonal prediction
-        if ( !computeSeasonalPredictions(lastYearDailyObsData, lastYearDailyObsData->dataLenght,
-                                         &wGen, myPredictionYear, myYear, nrRepetitions,
-                                         wgDoy1, wgDoy2, rainfallThreshold, myDailyPredictions, isLastMember))
+        if (!computeSeasonalPredictions(lastYearDailyObsData, &wGen,
+                                        myPredictionYear, myYear, nrRepetitions,
+                                        wgDoy1, wgDoy2, rainfallThreshold, isLastMember,
+                                        myDailyPredictions, &outputDataLenght ))
         {
             qDebug() << "Error in computeSeasonalPredictions";
             return false;
@@ -750,7 +745,7 @@ bool makeSeasonalForecast(QString outputFileName, char separator, TXMLSeasonalAn
 
     qDebug() << "\nWrite output:" << outputFileName;
 
-    writeMeteoDataCsv (outputFileName, separator, myDailyPredictions);
+    writeMeteoDataCsv (outputFileName, separator, myDailyPredictions, outputDataLenght);
 
     free(myDailyPredictions);
 
@@ -768,10 +763,10 @@ bool makeSeasonalForecast(QString outputFileName, char separator, TXMLSeasonalAn
     Observed data (Tmin, Tmax, Prec) are in lastYearDailyObsData
   \return outputDailyData
 */
-bool computeSeasonalPredictions(TinputObsData *lastYearDailyObsData, int dataLenght,
-                                TwheatherGenClimate* wgClimate, int predictionYear, int firstYear,
-                                int nrRepetitions, int wgDoy1, int wgDoy2, float rainfallThreshold,
-                                ToutputDailyMeteo* outputDailyData, bool isLastMember)
+bool computeSeasonalPredictions(TinputObsData *lastYearDailyObsData, TwheatherGenClimate* wgClimate,
+                                int predictionYear, int firstYear, int nrRepetitions,
+                                int wgDoy1, int wgDoy2, float rainfallThreshold, bool isLastMember,
+                                ToutputDailyMeteo* outputDailyData, int *outputDataLenght)
 
 {
     Crit3DDate myDate, obsDate;
@@ -783,7 +778,7 @@ bool computeSeasonalPredictions(TinputObsData *lastYearDailyObsData, int dataLen
 
     // TODO etp e falda
 
-    currentIndex = outputDailyData->dataLenght; //
+    currentIndex = *outputDataLenght; //
 
     firstDate = outputDailyData[currentIndex-1].date.addDays(1);
 
@@ -864,7 +859,7 @@ bool computeSeasonalPredictions(TinputObsData *lastYearDailyObsData, int dataLen
 
             obsIndex = difference(lastYearDailyObsData->inputFirstDate, obsDate);
 
-            if ( ( obsIndex >= 0) && (obsIndex <= dataLenght ) )
+            if ( obsIndex >= 0 && obsIndex <= lastYearDailyObsData->dataLenght )
             {
                 outputDailyData[currentIndex].maxTemp = lastYearDailyObsData->inputTMax[obsIndex];
                 outputDailyData[currentIndex].minTemp = lastYearDailyObsData->inputTMin[obsIndex];
@@ -872,14 +867,14 @@ bool computeSeasonalPredictions(TinputObsData *lastYearDailyObsData, int dataLen
             }
             else
             {
-                qDebug() << "Error Wrong Date computeSeasonalPredictions";
+                qDebug() << "Error: wrong date in computeSeasonalPredictions";
                 return false;
             }
 
         }
         currentIndex++;
      }
-     outputDailyData->dataLenght = currentIndex;
+     *outputDataLenght = currentIndex;
      return true;
 }
 
