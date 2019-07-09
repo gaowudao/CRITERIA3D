@@ -1,6 +1,5 @@
 
 #include <QCoreApplication>
-//#include <stdio.h>
 #include <malloc.h>
 #include <math.h>
 #include <time.h>
@@ -8,7 +7,6 @@
 
 #include "commonConstants.h"
 #include "furtherMathFunctions.h"
-#include "inputData.h"
 #include "wg2D.h"
 #include "readPragaFormatData.h"
 

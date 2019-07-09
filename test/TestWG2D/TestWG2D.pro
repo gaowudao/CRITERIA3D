@@ -48,11 +48,9 @@ INCLUDEPATH += ../../lib/weatherGenerator2D ../../lib/mathFunctions ../../lib/sp
 
 
 SOURCES += main.cpp \
-    inputData.cpp \
     readPragaFormatData.cpp
 
 HEADERS += \
-    inputData.h \
     readPragaFormatData.h
 
 
