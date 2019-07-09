@@ -7,6 +7,7 @@
     #ifndef SOIL_H
         #include "soil.h"
     #endif
+
     class QString;
     class QSqlDatabase;
 

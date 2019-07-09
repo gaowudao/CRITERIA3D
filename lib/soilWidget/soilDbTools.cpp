@@ -16,7 +16,7 @@
 bool loadVanGenuchtenParameters(soil::Crit3DSoilClass *soilClassList, QSqlDatabase* dbSoil, QString *myError)
 {
     QString queryString = "SELECT id_texture, alpha, n, he, theta_r, theta_s, k_sat, l ";
-    queryString        += "FROM soil_vangenuchten ORDER BY id_texture";
+    queryString        += "FROM van_genuchten ORDER BY id_texture";
 
     QSqlQuery query = dbSoil->exec(queryString);
     query.last();
@@ -24,12 +24,12 @@ bool loadVanGenuchtenParameters(soil::Crit3DSoilClass *soilClassList, QSqlDataba
 
     if (tableSize == 0)
     {
-        *myError = "Table soil_vangenuchten\n" + query.lastError().text();
+        *myError = "Table van_genuchten\n" + query.lastError().text();
         return(false);
     }
     else if (tableSize != 12)
     {
-        *myError = "Table soil_vangenuchten: wrong number of soil textures (must be 12)";
+        *myError = "Table van_genuchten: wrong number of soil textures (must be 12)";
         return(false);
     }
 
@@ -45,7 +45,7 @@ bool loadVanGenuchtenParameters(soil::Crit3DSoilClass *soilClassList, QSqlDataba
         for (j = 0; j <= 7; j++)
             if (! getValue(query.value(j), &myValue))
             {
-                *myError = "Table soil_van_genuchten: missing data in soil texture:" + QString::number(id);
+                *myError = "Table van_genuchten: missing data in soil texture:" + QString::number(id);
                 return(false);
             }
 
