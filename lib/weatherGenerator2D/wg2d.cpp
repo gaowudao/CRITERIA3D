@@ -546,20 +546,20 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
         {
             for (int j=0;j<nrStations;j++)
             {
-                randomMatrix[iMonth].matrixK[i][j] = double(K[i][j]);
-                randomMatrix[iMonth].matrixM[i][j] = double(M[i][j]);
+                randomMatrix[iMonth].matrixK[i][j] = K[i][j];
+                randomMatrix[iMonth].matrixM[i][j] = M[i][j];
 
             }
 
 
             for (int j=0;j<nrDaysIterativeProcessMonthly[iMonth];j++)
             {
-                randomMatrix[iMonth].matrixOccurrences[i][j]= double(occurrences[i][j]);
-
+                randomMatrix[iMonth].matrixOccurrences[i][j]= occurrences[i][j];
+                //printf("%.f  ",occurrences[i][j]);
             }
-
+            //pressEnterToContinue();
         }
-
+        //pressEnterToContinue();
         randomMatrix[iMonth].month = iMonth + 1;
         // free memory
         for (int i=0;i<nrStations;i++)
@@ -628,27 +628,7 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
         }
        //printf("\n"); pressEnterToContinue();
     }
-    //M[0][2]=M[2][0]=M[2][1];
-    /*M[0][0]=1;
-    M[0][1]=0.9478;
-    M[0][2]=0.7391;
-    M[1][0]=0.9478;
-    M[2][0]=0.7391;
-    M[1][1]=1;
-    M[1][2]=0.7391;
-    M[2][1]=0.7391;
-    M[2][2]=1;
-    for (int i=0;i<nrStations;i++)
-    {
-       for (int j=0;j<nrStations;j++)
-        {
-            matrixOccurrence[i][j] = M[i][j];  // M is the matrix named mat in the original code
-            //printf("%f\t",M[i][j]);
-        }
-       //printf("\n");
-    }
 
-*/
     double minimalValueToExitFromCycle = NODATA;
     int counterConvergence=0;
     bool exitWhileCycle = false;
@@ -667,29 +647,10 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
                 counter++;
             }
         }
-        //eigenproblem::Jacobi_Cyclic_Method(eigenvalues,eigenvectors,correlationArray,nrStations);
         eigenproblem::rs(nrStations,correlationArray,eigenvalues,true,eigenvectors);
-        /*double sumEigenvector[9]={0,0,0,0,0,0,0,0,0};
-        int countEigenvector=0;
+
         for (int i=0;i<nrStations;i++)
         {
-            for (int j=0;j<nrStations;j++)
-            {
-                for (int k=0;k<nrStations;k++)
-                {
-                    sumEigenvector[countEigenvector]+= eigenvectors[3*i+k]*eigenvectors[3*j+k];
-                }
-                countEigenvector++;
-            }
-        }*/
-        /*for (int i=0;i<nrStations*nrStations;i++)
-        {
-            //printf("sum of eigenVector %f\n",sumEigenvector[i]);
-            //printf("eigenVectors %f\n",eigenvectors[i]);
-        }*/
-        for (int i=0;i<nrStations;i++)
-        {
-            //printf("%d eigenvalue %f \n",ii,eigenvalues[i]);
             if (eigenvalues[i] <= 0)
             {
                 nrEigenvaluesLessThan0++;
@@ -747,15 +708,7 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
                 normRandom[i][j]= (dummyMatrix3[i][j]-meanValue)/stdDevValue;
             }
         }
-        /*
-        for (int j=0;j<lengthSeries;j++)
-        {
-            for (int i=0;i<nrStations;i++)
-            {
-                printf("%f\t", normRandom[i][j]);
-            }
-            printf("\n");
-        } pressEnterToContinue();*/
+
         // initialize occurrence to 0
         for (int i=0;i<nrStations;i++)
         {
@@ -785,7 +738,6 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
             {
                 val = maxValue(val, fabs(K[i][j] - matrixOccurrence[i][j]));
             }
-
         }
 
         if (val < fabs(minimalValueToExitFromCycle))
@@ -806,7 +758,6 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
             M[i][i]= 1.;
         }
         if ((ii != MAX_ITERATION_MULGETS) && (val > TOLERANCE_MULGETS)  && (!exitWhileCycle))
-        //if ((ii != 2) && (val > TOLERANCE_MULGETS))
         {
             for (int i=0; i<nrStations;i++)
             {
@@ -819,7 +770,7 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
             }
         }
         //printf("contatore per uscire %d contatore %d val %f",counterConvergence, ii, val); pressEnterToContinue();
-        /*for (int i=0;i<nrStations;i++)
+        for (int i=0;i<nrStations;i++)
         {
             for (int j=0;j<nrStations;j++)
             {
@@ -835,8 +786,8 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
                 //printf("%f ", M[i][j]);
             }
            //printf("\n");
-        } printf("iterazione %d\n",ii);pressEnterToContinue();
-        */
+        }// printf("iterazione %d\n",ii);//pressEnterToContinue();
+
 
 
     }  // end of the while cycle
