@@ -13,7 +13,7 @@
 #include <QDebug>
 
 
-bool loadVanGenuchtenParameters(soil::Crit3DSoilClass *soilClassList, QSqlDatabase* dbSoil, QString *myError)
+bool loadVanGenuchtenParameters(QSqlDatabase* dbSoil, soil::Crit3DSoilClass* soilClassList, QString *error)
 {
     QString queryString = "SELECT id_texture, alpha, n, he, theta_r, theta_s, k_sat, l ";
     queryString        += "FROM van_genuchten ORDER BY id_texture";
@@ -24,13 +24,13 @@ bool loadVanGenuchtenParameters(soil::Crit3DSoilClass *soilClassList, QSqlDataba
 
     if (tableSize == 0)
     {
-        *myError = "Table van_genuchten\n" + query.lastError().text();
-        return(false);
+        *error = "Table van_genuchten\n" + query.lastError().text();
+        return false;
     }
     else if (tableSize != 12)
     {
-        *myError = "Table van_genuchten: wrong number of soil textures (must be 12)";
-        return(false);
+        *error = "Table van_genuchten: wrong number of soil textures (must be 12)";
+        return false;
     }
 
     //read values
@@ -41,12 +41,13 @@ bool loadVanGenuchtenParameters(soil::Crit3DSoilClass *soilClassList, QSqlDataba
     do
     {
         id = query.value(0).toInt();
+
         //check data
         for (j = 0; j <= 7; j++)
             if (! getValue(query.value(j), &myValue))
             {
-                *myError = "Table van_genuchten: missing data in soil texture:" + QString::number(id);
-                return(false);
+                *error = "Table van_genuchten: missing data in soil texture:" + QString::number(id);
+                return false;
             }
 
         soilClassList[id].vanGenuchten.alpha = query.value(1).toDouble();    //[kPa^-1]
@@ -69,28 +70,28 @@ bool loadVanGenuchtenParameters(soil::Crit3DSoilClass *soilClassList, QSqlDataba
 
     } while(query.next());
 
-    return(true);
+    return true;
 }
 
 
-bool loadDriessenParameters(soil::Crit3DSoilClass *soilTexture, QSqlDatabase* dbParameters, QString *myError)
+bool loadDriessenParameters(QSqlDatabase* dbSoil, soil::Crit3DSoilClass* soilClassList, QString *error)
 {
     QString queryString = "SELECT id_texture, k_sat, grav_conductivity, max_sorptivity";
     queryString += " FROM soil_driessen ORDER BY id_texture";
 
-    QSqlQuery query = dbParameters->exec(queryString);
+    QSqlQuery query = dbSoil->exec(queryString);
     query.last();
     int tableSize = query.at() + 1;     //SQLITE doesn't support SIZE
 
     if (tableSize == 0)
     {
-        *myError = "Table soil_driessen\n" + query.lastError().text();
-        return(false);
+        *error = "Table soil_driessen\n" + query.lastError().text();
+        return false;
     }
     else if (tableSize != 12)
     {
-        *myError = "Table soil_driessen: wrong number of soil textures (must be 12)";
-        return(false);
+        *error = "Table soil_driessen: wrong number of soil textures (must be 12)";
+        return false;
     }
 
     //read values
@@ -104,66 +105,57 @@ bool loadDriessenParameters(soil::Crit3DSoilClass *soilTexture, QSqlDatabase* db
         for (j = 0; j <= 3; j++)
             if (! getValue(query.value(j), &myValue))
             {
-                *myError = "Table soil_driessen: missing data in soil texture:" + QString::number(id);
-                return(false);
+                *error = "Table soil_driessen: missing data in soil texture:" + QString::number(id);
+                return false;
             }
 
-        soilTexture[id].Driessen.k0 = query.value("k_sat").toDouble();
-        soilTexture[id].Driessen.gravConductivity = query.value("grav_conductivity").toDouble();
-        soilTexture[id].Driessen.maxSorptivity = query.value("max_sorptivity").toDouble();
+        soilClassList[id].Driessen.k0 = query.value("k_sat").toDouble();
+        soilClassList[id].Driessen.gravConductivity = query.value("grav_conductivity").toDouble();
+        soilClassList[id].Driessen.maxSorptivity = query.value("max_sorptivity").toDouble();
 
     } while(query.next());
 
-    return(true);
+    return true;
 }
 
 
-bool loadSoilData(QString dbSoilName, QString soilCode, soil::Crit3DSoil *mySoil, QString *myError)
+bool loadSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil, QString *error)
 {
-    QSqlDatabase dbSoil;
-    if (! openDbSoil(dbSoilName, &dbSoil, myError))
-        return false;
-
     QString queryString = "SELECT * FROM horizons ";
     queryString += "WHERE soil_code='" + soilCode + "' ORDER BY horizon_nr";
 
-    QSqlQuery query = dbSoil.exec(queryString);
+    QSqlQuery query = dbSoil->exec(queryString);
     query.last();
 
     if (! query.isValid())
     {
         if (query.lastError().number() > 0)
-            *myError = "dbSoil error: " + query.lastError().text();
+            *error = "dbSoil error: " + query.lastError().text();
         else
-            *myError = "Missing soil:" + soilCode;
+            *error = "Missing soil:" + soilCode;
         return false;
     }
 
     int nrHorizons = query.at() + 1;     //SQLITE doesn't support SIZE
     mySoil->initialize(1, nrHorizons);
 
-    int idHorizon, i = 0;
+    int i = 0;
     float sand, silt, clay;
     double organicMatter, coarseFragments, lowerDepth, upperDepth, bulkDensity, theta_sat, ksat;
 
     query.first();
     do
     {
-        idHorizon = query.value("horizon_nr").toInt();
-        if (idHorizon != (i+1))
-        {
-            *myError = "Wrong soil: " + soilCode + " - horizons number are wrong.";
-            dbSoil.close();
-            return false;
-        }
+        // horizon number
+        mySoil->horizon[i].dbData.horizonNr = query.value("horizon_nr").toInt();
 
-        // upper and lower depth (cm)
+        // upper and lower depth [cm]
         getValue(query.value("upper_depth"), &upperDepth);
         getValue(query.value("lower_depth"), &lowerDepth);
         mySoil->horizon[i].dbData.upperDepth = upperDepth;
         mySoil->horizon[i].dbData.lowerDepth = lowerDepth;
 
-        // sand silt clay [-]
+        // sand silt clay [%]
         getValue(query.value("sand"), &sand);
         getValue(query.value("silt"), &silt);
         getValue(query.value("clay"), &clay);
@@ -171,7 +163,7 @@ bool loadSoilData(QString dbSoilName, QString soilCode, soil::Crit3DSoil *mySoil
         mySoil->horizon[i].dbData.silt = silt;
         mySoil->horizon[i].dbData.clay = clay;
 
-        // coarse fragments and organic matter (%)
+        // coarse fragments and organic matter [%]
         getValue(query.value("coarse_fragment"), &coarseFragments);
         getValue(query.value("organic_matter"), &organicMatter);
         mySoil->horizon[i].dbData.coarseFragments = coarseFragments;
@@ -185,8 +177,8 @@ bool loadSoilData(QString dbSoilName, QString soilCode, soil::Crit3DSoil *mySoil
         getValue(query.value("theta_sat"), &theta_sat);
         mySoil->horizon[i].dbData.thetaSat = theta_sat;
 
-        // saturated conductivity (cm/day)
-        getValue(query.value("ksat"), &ksat);
+        // saturated conductivity [cm day-1]
+        getValue(query.value("k_sat"), &ksat);
         mySoil->horizon[i].dbData.kSat = ksat;
 
         i++;
@@ -201,12 +193,36 @@ bool loadSoilData(QString dbSoilName, QString soilCode, soil::Crit3DSoil *mySoil
     query.last();
     */
 
-    dbSoil.close();
     return true;
 }
 
 
-bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, soil::Crit3DSoilClass *soilTexture, QString *myError)
+bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil,
+              soil::Crit3DSoilClass* soilClassList, QString* error)
+{
+    if (!loadSoilData(dbSoil, soilCode, mySoil, error))
+    {
+        return false;
+    }
+
+    // check nr horizons and depth
+
+    std::string errorString;
+    *error = "";
+    for (int i = 0; i < mySoil->nrHorizons; i++)
+    {
+        if (! soil::checkHorizon(&(mySoil->horizon[i]), soilClassList, &errorString))
+        {
+            *error += "horizon nr." + QString::number(i) + ": " + QString::fromStdString(errorString) + "\n";
+        }
+    }
+
+    return (*error == "");
+}
+
+
+
+/*bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, soil::Crit3DSoilClass *soilTexture, QString *myError)
 {
     QString idSoilStr = soilCode;
 
@@ -355,6 +371,8 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, 
 
     return true;
 }
+*/
+
 
 
 QString getIdSoilString(QSqlDatabase* dbSoil, int idSoilNumber, QString *myError)
@@ -398,18 +416,18 @@ bool loadAllSoils(QString dbSoilName, std::vector <soil::Crit3DSoil> *soilList, 
 {
     soilList->clear();
 
-    QSqlDatabase dbSoil;
-    if (! openDbSoil(dbSoilName, &dbSoil, error))
+    QSqlDatabase* dbSoil = new QSqlDatabase();
+    if (! openDbSoil(dbSoilName, dbSoil, error))
         return false;
 
-    if (! loadVanGenuchtenParameters(soilClassList, &dbSoil, error))
+    if (! loadVanGenuchtenParameters(dbSoil, soilClassList, error))
     {
         return false;
     }
 
     // query soil list
     QString queryString = "SELECT id_soil, soil_code FROM soils";
-    QSqlQuery query = dbSoil.exec(queryString);
+    QSqlQuery query = dbSoil->exec(queryString);
 
     query.first();
     if (! query.isValid())
@@ -436,7 +454,7 @@ bool loadAllSoils(QString dbSoilName, std::vector <soil::Crit3DSoil> *soilList, 
         if (idSoil != NODATA && soilCode != "")
         {
             soil::Crit3DSoil *mySoil = new soil::Crit3DSoil;
-            if (loadSoil(&dbSoil, soilCode, mySoil, soilClassList, error))
+            if (loadSoil(dbSoil, soilCode, mySoil, soilClassList, error))
             {
                 mySoil->id = idSoil;
                 mySoil->code = soilCode.toStdString();
@@ -444,13 +462,13 @@ bool loadAllSoils(QString dbSoilName, std::vector <soil::Crit3DSoil> *soilList, 
             }
             else
             {
-                wrongSoils += *error + "\n";
+                wrongSoils += soilCode + ": " + *error + "\n";
             }
         }
     }
     while(query.next());
 
-    dbSoil.close();
+    dbSoil->close();
 
     if (soilList->size() == 0)
     {

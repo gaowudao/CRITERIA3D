@@ -11,16 +11,14 @@
     class QString;
     class QSqlDatabase;
 
-    bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil,
-                  soil::Crit3DSoilClass *soilTexture, QString *myError);
+    bool loadSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, QString *myError);
 
-    bool loadSoilData(QString dbSoilName, QString soilCode, soil::Crit3DSoil *mySoil, QString *myError);
+    bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil,
+                  soil::Crit3DSoilClass* soilClassList, QString* error);
 
-    bool loadVanGenuchtenParameters(soil::Crit3DSoilClass *soilClassList,
-                                    QSqlDatabase* dbSoil, QString *myError);
+    bool loadVanGenuchtenParameters(QSqlDatabase* dbSoil, soil::Crit3DSoilClass* soilClassList, QString *error);
 
-    bool loadDriessenParameters(soil::Crit3DSoilClass *soilTexture,
-                                QSqlDatabase* dbSoil, QString *myError);
+    bool loadDriessenParameters(QSqlDatabase* dbSoil, soil::Crit3DSoilClass* soilClassList, QString *error);
 
     QString getIdSoilString(QSqlDatabase* dbSoil, int idSoilNumber, QString *myError);
 
