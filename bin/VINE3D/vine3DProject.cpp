@@ -971,8 +971,8 @@ soil::Crit3DSoil* Vine3DProject::loadHorizons(int idSoil, QString soil_code)
 
         mySoil->horizon[i].fieldCapacity = soil::getFieldCapacity(&(mySoil->horizon[i]), soil::KPA);
         mySoil->horizon[i].wiltingPoint = soil::getWiltingPoint(soil::KPA);
-        mySoil->horizon[i].waterContentFC = soil::getThetaFC(&(mySoil->horizon[i]));
-        mySoil->horizon[i].waterContentWP = soil::getThetaWP(&(mySoil->horizon[i]));
+        mySoil->horizon[i].waterContentFC = soil::thetaFromSignPsi(mySoil->horizon[i].fieldCapacity, &(mySoil->horizon[i]));
+        mySoil->horizon[i].waterContentWP = soil::thetaFromSignPsi(mySoil->horizon[i].wiltingPoint, &(mySoil->horizon[i]));
 
         i++;
     }
