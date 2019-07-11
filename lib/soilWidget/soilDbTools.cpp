@@ -13,6 +13,21 @@
 #include <QDebug>
 
 
+bool openDbSoil(QString dbName, QSqlDatabase* dbSoil, QString* error)
+{
+    *dbSoil = QSqlDatabase::addDatabase("QSQLITE", QUuid::createUuid().toString());
+    dbSoil->setDatabaseName(dbName);
+
+    if (!dbSoil->open())
+    {
+       *error = "Connection with database fail";
+       return false;
+    }
+
+    return true;
+}
+
+
 bool loadVanGenuchtenParameters(QSqlDatabase* dbSoil, soil::Crit3DSoilClass* soilClassList, QString *error)
 {
     QString queryString = "SELECT id_texture, alpha, n, he, theta_r, theta_s, k_sat, l ";
@@ -205,7 +220,7 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil,
         return false;
     }
 
-    // check nr horizons and depth
+    // TODO check nr horizons and depth
 
     std::string errorString;
     *error = "";
@@ -260,16 +275,36 @@ QString getIdSoilString(QSqlDatabase* dbSoil, int idSoilNumber, QString *myError
 }
 
 
-bool openDbSoil(QString dbName, QSqlDatabase* dbSoil, QString* error)
+bool getSoilList(QSqlDatabase* dbSoil, QStringList* soilList, QString* error)
 {
-    *dbSoil = QSqlDatabase::addDatabase("QSQLITE", QUuid::createUuid().toString());
-    dbSoil->setDatabaseName(dbName);
+    // query soil list
+    QString queryString = "SELECT soil_code FROM soils";
+    QSqlQuery query = dbSoil->exec(queryString);
 
-    if (!dbSoil->open())
+    query.first();
+    if (! query.isValid())
     {
-       *error = "Connection with database fail";
-       return false;
+        if (query.lastError().number() > 0)
+        {
+            *error = query.lastError().text();
+        }
+        else
+        {
+            *error = "Error in reading table soils";
+        }
+        return false;
     }
+
+    QString soilCode;
+    do
+    {
+        getValue(query.value("soil_code"), &soilCode);
+        if (soilCode != "")
+        {
+            soilList->append(soilCode);
+        }
+    }
+    while(query.next());
 
     return true;
 }

@@ -9,6 +9,7 @@
     #endif
 
     class QString;
+    class QStringList;
     class QSqlDatabase;
 
     bool loadSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, QString *myError);
@@ -26,5 +27,6 @@
 
     bool loadAllSoils(QString dbSoilName, std::vector <soil::Crit3DSoil> *soilList, soil::Crit3DSoilClass *soilClassList, QString* error);
 
+    bool getSoilList(QSqlDatabase* dbSoil, QStringList* soilList, QString* error);
 
 #endif // SOILDBTOOLS_H
