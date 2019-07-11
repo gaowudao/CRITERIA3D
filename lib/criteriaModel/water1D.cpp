@@ -65,7 +65,7 @@ bool computeInfiltration(CriteriaModel* myCase, float prec, float surfaceIrrigat
     // TODO extend to geometric layers
     int i, j, l, nrPloughLayers;
     int reached = NODATA;            // [-] index of reached layer for surpuls water
-    double avgPloughSat = NODATA;    // [-] average degree of saturation ploughed soil
+    double avgPloughSatDegree = NODATA;    // [-] average degree of saturation ploughed soil
     double fluxLayer = NODATA;       // [mm]
     double residualFlux = NODATA;    // [mm]
     double localFlux = NODATA;       // [mm]
@@ -88,27 +88,26 @@ bool computeInfiltration(CriteriaModel* myCase, float prec, float surfaceIrrigat
     // Average degree of saturation (ploughed soil)
     i = 1;
     nrPloughLayers = 0;
-    avgPloughSat = 0.0;
+    avgPloughSatDegree = 0;
     while ((i < myCase->nrLayers) && (myCase->layer[i].depth < myCase->depthPloughedSoil))
     {
         nrPloughLayers++;
-        avgPloughSat += (myCase->layer[i].waterContent / myCase->layer[i].SAT);
+        avgPloughSatDegree += (myCase->layer[i].waterContent / myCase->layer[i].SAT);
         i++;
     }
-    avgPloughSat /= nrPloughLayers;
+    avgPloughSatDegree /= nrPloughLayers;
 
-    // Maximum infiltration - due to gravitational force and permeability (Driessen, 1986)
-    double permFactor = 1.0 - avgPloughSat;
-    for (i = 1; i< myCase->nrLayers; i++)
+    // Maximum infiltration - due to gravitational force and permeability (Driessen 1986, eq.34)
+    for (i = 1; i < myCase->nrLayers; i++)
     {
-        maxInfiltration = 10.0 * myCase->layer[i].horizon->Driessen.gravConductivity;
+        maxInfiltration = 10 * myCase->layer[i].horizon->Driessen.gravConductivity;
         if (myCase->layer[i].depth < myCase->depthPloughedSoil)
-            maxInfiltration += 10.0 * permFactor * myCase->layer[i].horizon->Driessen.maxSorptivity;
+            maxInfiltration += 10 * (1 - avgPloughSatDegree) * myCase->layer[i].horizon->Driessen.maxSorptivity;
         myCase->layer[i].maxInfiltration = maxInfiltration;
     }
 
     myCase->layer[0].maxInfiltration = myCase->layer[1].maxInfiltration;
-    myCase->layer[0].flux = 0.0;
+    myCase->layer[0].flux = 0;
 
     for (l = myCase->nrLayers-1; l >= 0; l--)
     {

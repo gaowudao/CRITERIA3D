@@ -49,9 +49,9 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     this->resize(800, 600);
 
     // layout
-    soilCombo = new QComboBox();
+    soilListCombo = new QComboBox();
     QHBoxLayout *layout = new QHBoxLayout();
-    layout->addWidget(soilCombo);
+    layout->addWidget(soilListCombo);
     layout->setAlignment(Qt::AlignTop);
     this->setLayout(layout);
 
@@ -60,37 +60,53 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     QMenu *fileMenu = new QMenu("File");
     menuBar->addMenu(fileMenu);
 
-    QAction* LoadSoil = new QAction(tr("&Load soil data"), this);
-    connect(LoadSoil, &QAction::triggered, this, &Crit3DSoilWidget::on_actionLoadSoil);
-    fileMenu->addAction(LoadSoil);
+    QAction* OpenSoilDB = new QAction(tr("&Open soil database"), this);
+    connect(OpenSoilDB, &QAction::triggered, this, &Crit3DSoilWidget::on_actionOpenSoilDB);
+    fileMenu->addAction(OpenSoilDB);
 
     this->layout()->setMenuBar(menuBar);
 }
 
 
-void Crit3DSoilWidget::on_actionLoadSoil()
+void Crit3DSoilWidget::on_actionOpenSoilDB()
 {
-    QString dbName = QFileDialog::getOpenFileName(this, tr("Load soil data"), "", tr("SQLite files (*.db)"));
-    if (dbName == "") return;
-
-    soilCombo->clear();
+    QString dbSoilName = QFileDialog::getOpenFileName(this, tr("Load soil data"), "", tr("SQLite files (*.db)"));
+    if (dbSoilName == "") return;
 
     QString error;
-    if (! loadAllSoils(dbName, &soilList, soilClassList, &error))
+    QSqlDatabase* dbSoil = new QSqlDatabase();
+    if (! openDbSoil(dbSoilName, dbSoil, &error))
     {
         QMessageBox::critical(nullptr, "Error!", error);
         return;
     }
 
-    for (unsigned int i = 0; i < soilList.size(); i++)
+    if (! loadVanGenuchtenParameters(dbSoil, this->soilClassList, &error))
     {
-        soilCombo->addItem(QString::fromStdString(soilList[i].code));
+        QMessageBox::critical(nullptr, "Error!", error);
+        return;
+    }
+
+    this->soilListCombo->clear();
+    QStringList soilList;
+
+    if (! getSoilList(dbSoil, &soilList, &error))
+    {
+        QMessageBox::critical(nullptr, "Error!", error);
+        return;
+    }
+
+    for (int i = 0; i < soilList.size(); i++)
+    {
+        this->soilListCombo->addItem(soilList[i]);
     }
 
     if(error != "")
     {
         QMessageBox::information(nullptr, "Warning", error);
     }
+
+    dbSoil->close();
 }
 
 

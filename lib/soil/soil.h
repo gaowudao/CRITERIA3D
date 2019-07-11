@@ -24,6 +24,7 @@
         class Crit3DHorizonDbData
         {
         public:
+            int horizonNr;
             double upperDepth, lowerDepth;      /*!<   [cm]          */
             float sand, silt, clay;             /*!<   [%]          */
             double coarseFragments;             /*!<   [%]          */
@@ -171,8 +172,6 @@
          int getHorizonIndex(Crit3DSoil* soil, double depth);
          double getFieldCapacity(Crit3DHorizon* horizon, soil::units unit);
          double getWiltingPoint(soil::units unit);
-         double getThetaFC(Crit3DHorizon* horizon);
-         double getThetaWP(Crit3DHorizon* horizon);
 
          double kPaToMeters(double value);
          double metersTokPa(double value);
@@ -197,7 +196,7 @@
          double getWaterPotential(Crit3DLayer* layer);
          double getWaterConductivity(Crit3DLayer* layer);
 
-         bool checkHorizon(Crit3DHorizon* horizon, std::string* error);
+         bool setHorizon(Crit3DHorizon* horizon, Crit3DSoilClass* soilClassList, std::string* error);
     }
 
 #endif // SOIL_H

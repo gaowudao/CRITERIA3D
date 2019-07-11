@@ -37,6 +37,7 @@ namespace soil
 {
     Crit3DHorizonDbData::Crit3DHorizonDbData()
     {
+        this->horizonNr = NODATA;
         this->upperDepth = NODATA;
         this->lowerDepth = NODATA;
         this->sand = NODATA;
@@ -385,18 +386,6 @@ namespace soil
         return metersTokPa(value / 100);
     }
 
-    double getThetaFC(Crit3DHorizon* horizon)
-    {
-        double psi = getFieldCapacity(horizon, soil::KPA);
-        return thetaFromSignPsi(psi, horizon);
-    }
-
-    double getThetaWP(Crit3DHorizon* horizon)
-    {
-        double psi = getWiltingPoint(soil::KPA);
-        return thetaFromSignPsi(psi, horizon);
-    }
-
 
     /*!
      * \brief Compute degree of saturation from volumetric water content
@@ -545,7 +534,7 @@ namespace soil
 
 
     // It assumes that dbData are loaded
-    bool checkHorizon(Crit3DHorizon* horizon, std::string* error)
+    bool setHorizon(Crit3DHorizon* horizon, soil::Crit3DSoilClass *soilClassList, std::string* error)
     {
         *error = "";
 
@@ -568,7 +557,7 @@ namespace soil
         }
         else
         {
-            // default = no coarse fragment
+            // default: no coarse fragment
             horizon->coarseFragments = 0.0;
         }
 
@@ -585,14 +574,14 @@ namespace soil
 
         // sand, silt, clay [%]
         horizon->texture.sand = horizon->dbData.sand;
-        if (horizon->texture.sand < 1)
-            horizon->texture.sand *= 100;
         horizon->texture.silt = horizon->dbData.silt;
-        if (horizon->texture.silt < 1)
-            horizon->texture.silt *= 100;
         horizon->texture.clay = horizon->dbData.clay;
-        if (horizon->texture.clay < 1)
+        if (horizon->texture.sand <= 1 && horizon->texture.silt <= 1 && horizon->texture.clay <= 1)
+        {
+            horizon->texture.sand *= 100;
+            horizon->texture.silt *= 100;
             horizon->texture.clay *= 100;
+        }
 
         // texture
         horizon->texture.classUSDA = soil::getUSDATextureClass(horizon->texture);
@@ -604,12 +593,10 @@ namespace soil
 
         horizon->texture.classNL = soil::getNLTextureClass(horizon->texture);
 
-        /*
-        // assign default class parameters
-        horizon->vanGenuchten = soilTexture[idTextureUSDA].vanGenuchten;
-        horizon->waterConductivity = soilTexture[idTextureUSDA].waterConductivity;
-        horizon->Driessen = soilTexture[idTextureNL].Driessen;
-        */
+        // assign default parameters from texture class
+        horizon->vanGenuchten = soilClassList[horizon->texture.classUSDA].vanGenuchten;
+        horizon->waterConductivity = soilClassList[horizon->texture.classUSDA].waterConductivity;
+        horizon->Driessen = soilClassList[horizon->texture.classNL].Driessen;
 
         // bulk density [g cm-3]
         horizon->bulkDensity = horizon->dbData.bulkDensity;
@@ -640,19 +627,15 @@ namespace soil
             horizon->bulkDensity = soil::estimateBulkDensity(horizon, horizon->vanGenuchten.thetaS, false);
         }
 
-        /*
-        // SATURATED CONDUCTIVITY (cm/day)
-        getValue(query.value("ksat"), &ksat);
-        if ((int(ksat) == int(NODATA)) || (ksat <= 0))
-            ksat = soil::estimateSaturatedConductivity(&(mySoil->horizon[i]), bulkDensity);
+        // saturated water conductivity [cm day-1]
+        horizon->waterConductivity.kSat = horizon->dbData.kSat;
+        if (horizon->waterConductivity.kSat == NODATA || horizon->waterConductivity.kSat <= 0)
+            horizon->waterConductivity.kSat = soil::estimateSaturatedConductivity(horizon, horizon->bulkDensity);
 
-        horizon->waterConductivity.kSat = ksat;
-
-        horizon->fieldCapacity = soil::getFieldCapacity(&(mySoil->horizon[i]), soil::KPA);
+        horizon->fieldCapacity = soil::getFieldCapacity(horizon, soil::KPA);
         horizon->wiltingPoint = soil::getWiltingPoint(soil::KPA);
-        horizon->waterContentFC = soil::getThetaFC(&(mySoil->horizon[i]));
-        horizon->waterContentWP = soil::getThetaWP(&(mySoil->horizon[i]));
-        */
+        horizon->waterContentFC = soil::thetaFromSignPsi(horizon->fieldCapacity, horizon);
+        horizon->waterContentWP = soil::thetaFromSignPsi(horizon->wiltingPoint, horizon);
 
         return true;
     }

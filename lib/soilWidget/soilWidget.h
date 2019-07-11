@@ -19,11 +19,12 @@
             void mouseReleaseEvent(QMouseEvent *ev);
 
         private:
-            QComboBox* soilCombo;
-            std::vector <soil::Crit3DSoil> soilList;
+            QComboBox* soilListCombo;
+
+            soil::Crit3DSoil soil;
             soil::Crit3DSoilClass soilClassList[13];
 
-            void on_actionLoadSoil();
+            void on_actionOpenSoilDB();
     };
 
 #endif // SOILWIDGET_H
