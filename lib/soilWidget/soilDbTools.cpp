@@ -228,14 +228,15 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil,
     {
         if (! soil::setHorizon(&(mySoil->horizon[i]), soilClassList, &errorString))
         {
-            *error += "horizon nr." + QString::number(i) + ": " + QString::fromStdString(errorString) + "\n";
+            *error += "horizon nr." + QString::number(mySoil->horizon[i].dbData.horizonNr) + ": "
+                    + QString::fromStdString(errorString) + "\n";
         }
     }
 
     int lastHorizon = mySoil->nrHorizons -1;
     mySoil->totalDepth = mySoil->horizon[lastHorizon].lowerDepth;
 
-    return (*error == "");
+    return true;
 }
 
 

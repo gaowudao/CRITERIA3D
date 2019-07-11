@@ -120,15 +120,21 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
 
     // show data (example)
     this->soilTextEdit.append(soilCode);
-    this->soilTextEdit.append("Horizon nr., sand (%), silt (%), clay (%)");
+    this->soilTextEdit.append("Horizon nr., sand (%),   silt (%),   clay (%)");
     for (int i = 0; i < mySoil.nrHorizons; i++)
     {
         QString s;
-        s = QString::number(i)
-                + "\t" + QString::number(mySoil.horizon[i].texture.sand)
-                + "\t" + QString::number(mySoil.horizon[i].texture.silt)
-                + "\t" + QString::number(mySoil.horizon[i].texture.clay);
+        s = QString::number(mySoil.horizon[i].dbData.horizonNr)
+                + "\t" + QString::number(mySoil.horizon[i].dbData.sand)
+                + "\t" + QString::number(mySoil.horizon[i].dbData.silt)
+                + "\t" + QString::number(mySoil.horizon[i].dbData.clay);
         this->soilTextEdit.append(s);
+    }
+
+    // warnings
+    if (error != "")
+    {
+        QMessageBox::information(nullptr, "Warning", error);
     }
 }
 
