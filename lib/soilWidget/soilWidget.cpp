@@ -36,7 +36,7 @@
 #include <QSqlQuery>
 #include <QString>
 #include <QFileDialog>
-#include <QHBoxLayout>
+#include <QLayout>
 #include <QMenu>
 #include <QMenuBar>
 #include <QAction>
@@ -49,9 +49,9 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     this->resize(800, 600);
 
     // layout
-    soilListCombo = new QComboBox();
-    QHBoxLayout *layout = new QHBoxLayout();
-    layout->addWidget(soilListCombo);
+    QVBoxLayout *layout = new QVBoxLayout();
+    layout->addWidget(&soilListComboBox);
+    layout->addWidget(&soilTextEdit);
     layout->setAlignment(Qt::AlignTop);
     this->setLayout(layout);
 
@@ -65,6 +65,8 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     fileMenu->addAction(OpenSoilDB);
 
     this->layout()->setMenuBar(menuBar);
+
+    connect(&soilListComboBox, &QComboBox::currentTextChanged, this, &Crit3DSoilWidget::on_actionChooseSoil);
 }
 
 
@@ -73,40 +75,45 @@ void Crit3DSoilWidget::on_actionOpenSoilDB()
     QString dbSoilName = QFileDialog::getOpenFileName(this, tr("Load soil data"), "", tr("SQLite files (*.db)"));
     if (dbSoilName == "") return;
 
+    // open soil db
     QString error;
-    QSqlDatabase* dbSoil = new QSqlDatabase();
-    if (! openDbSoil(dbSoilName, dbSoil, &error))
+    if (! openDbSoil(dbSoilName, &dbSoil, &error))
     {
         QMessageBox::critical(nullptr, "Error!", error);
         return;
     }
 
-    if (! loadVanGenuchtenParameters(dbSoil, this->soilClassList, &error))
+    // load VG parameters
+    if (! loadVanGenuchtenParameters(&dbSoil, soilClassList, &error))
     {
         QMessageBox::critical(nullptr, "Error!", error);
         return;
     }
 
-    this->soilListCombo->clear();
+    // read soil list
     QStringList soilList;
-
-    if (! getSoilList(dbSoil, &soilList, &error))
+    if (! getSoilList(&dbSoil, &soilList, &error))
     {
         QMessageBox::critical(nullptr, "Error!", error);
         return;
     }
 
+    // show soil list with comboBox
+    this->soilListComboBox.clear();
     for (int i = 0; i < soilList.size(); i++)
     {
-        this->soilListCombo->addItem(soilList[i]);
+        this->soilListComboBox.addItem(soilList[i]);
     }
+}
 
-    if(error != "")
-    {
-        QMessageBox::information(nullptr, "Warning", error);
-    }
 
-    dbSoil->close();
+
+void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
+{
+    this->soilTextEdit.clear();
+    this->soilTextEdit.append(soilCode);
+
+    //if (! loadSoil)
 }
 
 
