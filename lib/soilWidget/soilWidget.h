@@ -25,7 +25,7 @@
             QTextEdit soilTextEdit;
 
             QSqlDatabase dbSoil;
-            soil::Crit3DSoil soil;
+            soil::Crit3DSoil mySoil;
             soil::Crit3DSoilClass soilClassList[13];
 
             void on_actionOpenSoilDB();
