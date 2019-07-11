@@ -394,7 +394,7 @@ bool CriteriaModel::createOutputTable(QString* myError)
 }
 
 
-QString getOutputString(double value)
+QString getOutputStringNullZero(double value)
 {
     if (int(value) != int(NODATA))
         return QString::number(value);
@@ -421,16 +421,16 @@ void CriteriaModel::prepareOutput(Crit3DDate myDate, bool isFirst)
             + "," + QString::number(this->output.dailySurfaceWaterContent)
             + "," + QString::number(this->output.dailyCropAvailableWater)
             + "," + QString::number(this->output.dailyCropWaterDeficit)
-            + "," + QString::number(this->output.dailyDrainage)
+            + "," + QString::number(this->output.dailyDrainage);
             + "," + QString::number(this->output.dailySurfaceRunoff)
             + "," + QString::number(this->output.dailyEt0)
             + "," + QString::number(this->output.dailyMaxTranspiration)
             + "," + QString::number(this->output.dailyTranspiration)
             + "," + QString::number(this->output.dailyMaxEvaporation)
             + "," + QString::number(this->output.dailyEvaporation)
-            + "," + getOutputString(this->myCrop.LAI)
-            + "," + getOutputString(this->output.dailyKc)
-            + "," + getOutputString(this->myCrop.roots.rootDepth)
+            + "," + getOutputStringNullZero(this->myCrop.LAI)
+            + "," + getOutputStringNullZero(this->output.dailyKc)
+            + "," + getOutputStringNullZero(this->myCrop.roots.rootDepth)
             + ")";
 }
 
