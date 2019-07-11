@@ -196,7 +196,7 @@
          double getWaterPotential(Crit3DLayer* layer);
          double getWaterConductivity(Crit3DLayer* layer);
 
-         bool checkHorizon(Crit3DHorizon* horizon, Crit3DSoilClass* soilClassList, std::string* error);
+         bool setHorizon(Crit3DHorizon* horizon, Crit3DSoilClass* soilClassList, std::string* error);
     }
 
 #endif // SOIL_H
