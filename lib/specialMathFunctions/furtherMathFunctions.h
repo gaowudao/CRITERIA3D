@@ -100,6 +100,8 @@
         //float gasdev(long *idum);
         float normalRandom(int *gasDevIset,float *gasDevGset);
         double normalRandom(int *gasDevIset,double *gasDevGset);
+        double normalRandomLongSeries(int *gasDevIset,double *gasDevGset,int* randomNumberInitial);
+        int getUniformallyDistributedRandomNumber(int* randomNumberInitial);
     }
 
     namespace statistics

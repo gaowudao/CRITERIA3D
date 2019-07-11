@@ -334,8 +334,8 @@ void weatherGenerator2D::computeTemperatureParameters()
         temperatureCoefficients[iStation].maxTDry.averageFourierParameters.aSin1 = par[2];
         temperatureCoefficients[iStation].maxTDry.averageFourierParameters.aCos2 = par[3];
         temperatureCoefficients[iStation].maxTDry.averageFourierParameters.aSin2 = par[4];
-        //for (int i=0;i<365;i++) printf("%d %f \n",i,temperatureCoefficients[iStation].maxTDry.averageEstimation[i]);
-
+        for (int i=0;i<365;i++) printf("%d %f \n",i,temperatureCoefficients[iStation].maxTDry.averageEstimation[i]);
+        pressEnterToContinue();
 
         for (int i=0;i<nrPar;i++)
         {
@@ -627,7 +627,6 @@ void weatherGenerator2D::harmonicsFourier(double* variable, double *par,int nrPa
     parMarquardt[2] = par[2] = 0;
     parMarquardt[3] = par[3] = 0;
     parMarquardt[4] = par[4] = 0;
-
     parMarquardt[5] = 365;
 
     interpolation::fittingMarquardt(parMin,parMax,parMarquardt,nrPar+1,parDelta,10000,0.0001,FUNCTION_CODE_FOURIER_GENERAL_HARMONICS,x,nrValidDays,y);
@@ -638,7 +637,7 @@ void weatherGenerator2D::harmonicsFourier(double* variable, double *par,int nrPa
     }
     for (int i=0;i<365;i++)
     {
-        estimatedVariable[i] = par[0] + par[1]*cos(2*PI/nrEstimatedVariable*i) + par[2]*sin(2*PI/nrEstimatedVariable*i) + par[3]*cos(4*PI/nrEstimatedVariable*i) + par[4]*sin(4*PI/nrEstimatedVariable*i);
+        estimatedVariable[i] = par[0] + par[1]*cos(2*PI/nrEstimatedVariable*i) + par[2]*sin(2*PI/nrEstimatedVariable*i) + par[3]*cos(4*PI/nrEstimatedVariable*i) + par[4]*sin(4*PI/nrEstimatedVariable*i); 
     }
 
     // free memory

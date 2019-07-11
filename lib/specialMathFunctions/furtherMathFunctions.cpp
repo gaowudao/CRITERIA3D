@@ -26,7 +26,7 @@
 #include <malloc.h>
 #include <stdlib.h>
 #include <iostream>
-
+#include <time.h>
 #include "commonConstants.h"
 #include "furtherMathFunctions.h"
 
@@ -1076,13 +1076,13 @@ namespace myrandom {
         double r = 0;
         double v1, v2, normalRandom;
         double temp;
-
         if (*gasDevIset == 0) //We don't have an extra deviate
         {
             do
             {
                 temp = (double) rand() / (RAND_MAX);
                 v1 = 2*temp - 1;
+
                 temp = (double) rand() / (RAND_MAX);
                 v2 = 2*temp - 1;
                 r = v1 * v1 + v2 * v2;
@@ -1100,6 +1100,69 @@ namespace myrandom {
             normalRandom = *gasDevGset;
         }
         return normalRandom;
+    }
+
+    double normalRandomLongSeries(int *gasDevIset, double *gasDevGset, int *randomNumberInitial)
+    {
+        double fac = 0;
+        double r = 0;
+        double v1, v2, normalRandom;
+        double temp;
+        int randomNumber;
+        //clock_t time0;
+        //clock_t time1;
+        //time1 = time0 = clock();
+        if (*gasDevIset == 0) //We don't have an extra deviate
+        {
+
+            do
+            {
+                randomNumber = myrandom::getUniformallyDistributedRandomNumber(randomNumberInitial);
+                temp = (double) randomNumber / (RAND_MAX);
+                v1 = 2*temp - 1;
+
+                randomNumber = myrandom::getUniformallyDistributedRandomNumber(randomNumberInitial);
+                temp = (double) randomNumber / (RAND_MAX);
+                v2 = 2*temp - 1;
+                r = v1 * v1 + v2 * v2;
+            } while ( (r>=1) | (r==0) ); // see if they are in the unit circle, and if they are not, try again.
+            // Box-Muller transformation to get two normal deviates. Return one and save the other for next time.
+            fac = sqrt(-2 * log(r) / r);
+            *gasDevGset = v1 * fac; //Gaussian random deviates
+            normalRandom = v2 * fac;
+            *gasDevIset = 1; //set the flag
+        }
+        // We have already an extra deviate
+        else
+        {
+            *gasDevIset = 0; //unset the flag
+            normalRandom = *gasDevGset;
+        }
+        return normalRandom;
+    }
+
+    int getUniformallyDistributedRandomNumber(int* randomNumberInitial)
+    {
+        int randomNumber = rand();
+        if (randomNumber != *randomNumberInitial)
+        {
+            return randomNumber;
+        }
+        else
+        {
+            int firstRandom;
+            int counter = 0;
+            do
+            {
+                counter++;
+                srand(time(0));
+                firstRandom = rand();
+            }
+            while(firstRandom == *randomNumberInitial);
+            printf("seed estratto %d\n",counter);
+            *randomNumberInitial = firstRandom;
+            return firstRandom;
+        }
     }
 }
 
