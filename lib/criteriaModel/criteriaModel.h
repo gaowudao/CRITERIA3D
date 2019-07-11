@@ -112,7 +112,7 @@
         CriteriaModel();
 
         bool loadMeteo(QString idMeteo, QString idForecast, QString *myError);
-        bool setSoil(QString idSoil, QString *myError);
+        bool setSoil(QString soilCode, QString *myError);
         bool createOutputTable(QString* myError);
         void prepareOutput(Crit3DDate myDate, bool isFirst);
         bool saveOutput(QString* myError);
