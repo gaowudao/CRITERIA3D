@@ -397,7 +397,7 @@ bool CriteriaModel::createOutputTable(QString* myError)
 QString getOutputStringNullZero(double value)
 {
     if (int(value) != int(NODATA))
-        return QString::number(value);
+        return QString::number(value, 'g', 4);
     else
         return QString::number(0);
 }
@@ -406,32 +406,36 @@ QString getOutputStringNullZero(double value)
 void CriteriaModel::prepareOutput(Crit3DDate myDate, bool isFirst)
 {
     if (isFirst)
+    {
         this->outputString = "INSERT INTO '" + this->idCase + "'"
             + " (DATE, PREC, IRRIGATION, WATER_CONTENT, SURFACE_WC, RAW, DEFICIT, DRAINAGE, RUNOFF, ET0,"
             + " TRANSP_MAX, TRANSP, EVAP_MAX, EVAP, LAI, KC, ROOTDEPTH) "
             + " VALUES ";
+    }
     else
+    {
         this->outputString += ",";
+    }
 
-    this->outputString
-            += "('" + QString::fromStdString(myDate.toStdString()) + "'"
-            + "," + QString::number(this->output.dailyPrec)
-            + "," + QString::number(this->output.dailyIrrigation)
-            + "," + QString::number(this->output.dailySoilWaterContent)
-            + "," + QString::number(this->output.dailySurfaceWaterContent)
-            + "," + QString::number(this->output.dailyCropAvailableWater)
-            + "," + QString::number(this->output.dailyCropWaterDeficit)
-            + "," + QString::number(this->output.dailyDrainage);
-            + "," + QString::number(this->output.dailySurfaceRunoff)
-            + "," + QString::number(this->output.dailyEt0)
-            + "," + QString::number(this->output.dailyMaxTranspiration)
-            + "," + QString::number(this->output.dailyTranspiration)
-            + "," + QString::number(this->output.dailyMaxEvaporation)
-            + "," + QString::number(this->output.dailyEvaporation)
+    this->outputString += "('" + QString::fromStdString(myDate.toStdString()) + "'"
+            + "," + QString::number(this->output.dailyPrec, 'g', 4)
+            + "," + QString::number(this->output.dailyIrrigation, 'g', 4)
+            + "," + QString::number(this->output.dailySoilWaterContent, 'g', 5)
+            + "," + QString::number(this->output.dailySurfaceWaterContent, 'g', 4)
+            + "," + QString::number(this->output.dailyCropAvailableWater, 'g', 4)
+            + "," + QString::number(this->output.dailyCropWaterDeficit, 'g', 4)
+            + "," + QString::number(this->output.dailyDrainage, 'g', 4)
+            + "," + QString::number(this->output.dailySurfaceRunoff, 'g', 4)
+            + "," + QString::number(this->output.dailyEt0, 'g', 3)
+            + "," + QString::number(this->output.dailyMaxTranspiration, 'g', 3)
+            + "," + QString::number(this->output.dailyTranspiration, 'g', 3)
+            + "," + QString::number(this->output.dailyMaxEvaporation, 'g', 3)
+            + "," + QString::number(this->output.dailyEvaporation, 'g', 3)
             + "," + getOutputStringNullZero(this->myCrop.LAI)
             + "," + getOutputStringNullZero(this->output.dailyKc)
             + "," + getOutputStringNullZero(this->myCrop.roots.rootDepth)
             + ")";
+
 }
 
 
