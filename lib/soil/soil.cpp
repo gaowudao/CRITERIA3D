@@ -532,7 +532,7 @@ namespace soil
 
 
     // It assumes that dbData are loaded
-    bool setHorizon(Crit3DHorizon* horizon, soil::Crit3DSoilClass *soilClassList, std::string* error)
+    bool setHorizon(Crit3DHorizon* horizon, soil::Crit3DTextureClass *soilClassList, std::string* error)
     {
         *error = "";
 

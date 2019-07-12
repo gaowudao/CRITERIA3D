@@ -29,7 +29,7 @@
         {
         public:
             int horizonNr;
-            double upperDepth, lowerDepth;      /*!<   [cm]          */
+            double upperDepth, lowerDepth;      /*!<   [cm]         */
             float sand, silt, clay;             /*!<   [%]          */
             double coarseFragments;             /*!<   [%]          */
             double organicMatter;               /*!<   [%]          */
@@ -101,7 +101,7 @@
             Crit3DWaterConductivity();
         };
 
-        class Crit3DSoilClass
+        class Crit3DTextureClass
         {
         public:
             Crit3DVanGenuchten vanGenuchten;
@@ -200,7 +200,7 @@
          double getWaterPotential(Crit3DLayer* layer);
          double getWaterConductivity(Crit3DLayer* layer);
 
-         bool setHorizon(Crit3DHorizon* horizon, Crit3DSoilClass* soilClassList, std::string* error);
+         bool setHorizon(Crit3DHorizon* horizon, Crit3DTextureClass* soilClassList, std::string* error);
     }
 
 #endif // SOIL_H
