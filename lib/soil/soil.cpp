@@ -48,8 +48,6 @@ namespace soil
         this->bulkDensity = NODATA;
         this->thetaSat = NODATA;
         this->kSat = NODATA;
-
-        waterRetention = nullptr;
     }
 
 

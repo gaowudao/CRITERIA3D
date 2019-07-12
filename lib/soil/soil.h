@@ -4,6 +4,10 @@
     #ifndef _STRING_
         #include <string>
     #endif
+    #ifndef _VECTOR_
+        #include <vector>
+    #endif
+
 
     namespace soil {
 
@@ -33,7 +37,7 @@
             double thetaSat;                    /*!<   [m^3 m^-3]   */
             double kSat;                        /*!<   [cm day^-1]  */
 
-            obsWaterRetention* waterRetention;
+            std::vector <obsWaterRetention> waterRetention;
 
             Crit3DHorizonDbData();
         };
