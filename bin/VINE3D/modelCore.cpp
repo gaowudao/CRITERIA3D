@@ -228,7 +228,7 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
 
                     //stress transpiration output
                     if (myCurrentTime.getHour()==checkStressHour)
-                        myProject->outputPlantMaps->stressMap->value[row][col] = float(myProject->grapevine.getStressCoefficient());
+                        myProject->outputPlantMaps->vineyardStressMap->value[row][col] = float(myProject->grapevine.getStressCoefficient());
 
                     vineTranspiration = myProject->grapevine.getRealTranspirationGrapevine(&(myProject->modelCases[modelCaseIndex]));
                     grassTranspiration = myProject->grapevine.getRealTranspirationGrass(&(myProject->modelCases[modelCaseIndex]));

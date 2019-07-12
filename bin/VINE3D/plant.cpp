@@ -196,7 +196,7 @@ void Crit3DOutputPlantMaps::initialize()
     daysFromFloweringMap = new gis::Crit3DRasterGrid;
     brixMaximumMap = new gis::Crit3DRasterGrid;
     brixBerryMap = new gis::Crit3DRasterGrid;
-    stressMap = new gis::Crit3DRasterGrid;
+    vineyardStressMap = new gis::Crit3DRasterGrid;
     vineyardTranspirationMap = new gis::Crit3DRasterGrid;
     grassTranspirationMap = new gis::Crit3DRasterGrid;
     powderyCOLMap = new gis::Crit3DRasterGrid;
@@ -218,7 +218,7 @@ void Crit3DOutputPlantMaps::initializeWithDtm(const gis::Crit3DRasterGrid &dtm)
     brixMaximumMap->initializeGrid(dtm);
     brixBerryMap->initializeGrid(dtm);
     deltaBrixMap->initializeGrid(dtm);
-    stressMap->initializeGrid(dtm);
+    vineyardStressMap->initializeGrid(dtm);
     vineyardTranspirationMap->initializeGrid(dtm);
     grassTranspirationMap->initializeGrid(dtm);
     tartaricAcidMap->initializeGrid(dtm);
@@ -248,7 +248,7 @@ gis::Crit3DRasterGrid* Crit3DOutputPlantMaps::getMapFromVar(plantVariable myVar)
     else if (myVar == daysFromFloweringVar)
         return daysFromFloweringMap;
     else if (myVar == transpirationStressVar)
-        return stressMap;
+        return vineyardStressMap;
     else if (myVar == transpirationVineyardVar)
         return vineyardTranspirationMap;
     else if (myVar == transpirationGrassVar)
