@@ -40,7 +40,7 @@
         std::vector <double> layerDepth;                 //[m]
         std::vector <double> layerThickness;             //[m]
         std::vector <soil::Crit3DSoil> soilList;
-        soil::Crit3DSoilClass soilClass[13];
+        soil::Crit3DTextureClass soilTextureClass[13];
 
         Crit3DProject();
 
