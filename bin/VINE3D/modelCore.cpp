@@ -104,6 +104,7 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
     int myTimeStep = int(myProject->getTimeStep());
     myFirstTime = Crit3DTime(myDate, myTimeStep);
     myLastTime = Crit3DTime(myDate, nrHours * 3600);
+    int nrStep = (nrHours * 3600) / myTimeStep;
     bool isNewModelCase;
     int modelCaseIndex;
     double* myProfile;
@@ -237,7 +238,6 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
                         myProject->outputPlantMaps->vineyardStressMap->value[row][col] += float(myProject->grapevine.getStressCoefficient());
                     }
 
-                    int nrStep = (nrHours * 3600) / myTimeStep;
                     if (myCurrentTime == myLastTime)
                     {
                         // average values
