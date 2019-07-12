@@ -901,6 +901,7 @@ void MainWindow::redrawMeteoGrid(visualizationType showType)
     }
 
     }
+    meteoGridObj->updateCenter();
 
 }
 
