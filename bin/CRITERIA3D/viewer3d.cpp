@@ -145,7 +145,7 @@ void Viewer3D::mouseMoveEvent(QMouseEvent *ev)
     if (isCameraChanging)
     {
         QPoint delta = ev->pos() - m_moveStartPoint;
-        if (m_button == Qt::LeftButton)
+        if (m_button == Qt::RightButton)
         {  
             /*float zoom = delta.y() * (m_size/10000000.f);
             QVector3D axis = QVector3D(1, 0, 0);
@@ -163,7 +163,7 @@ void Viewer3D::mouseMoveEvent(QMouseEvent *ev)
             m_view->camera()->transform()->setRotationZ(anglex);
             //m_view->camera()->panAboutViewCenter(angley);
         }
-        else if (m_button == Qt::RightButton)
+        else if (m_button == Qt::LeftButton)
         {
             QVector3D translation = QVector3D(m_cameraPosition.x() - delta.x() * m_zoomLevel * m_size / 3000.f,
                                               m_cameraPosition.y() + delta.y() * m_zoomLevel * m_size / 3000.f,
