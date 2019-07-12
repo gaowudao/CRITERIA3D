@@ -48,8 +48,6 @@ namespace soil
         this->bulkDensity = NODATA;
         this->thetaSat = NODATA;
         this->kSat = NODATA;
-
-        waterRetention = nullptr;
     }
 
 
@@ -534,7 +532,7 @@ namespace soil
 
 
     // It assumes that dbData are loaded
-    bool setHorizon(Crit3DHorizon* horizon, soil::Crit3DSoilClass *soilClassList, std::string* error)
+    bool setHorizon(Crit3DHorizon* horizon, soil::Crit3DTextureClass *soilClassList, std::string* error)
     {
         *error = "";
 

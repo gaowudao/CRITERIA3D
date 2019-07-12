@@ -28,7 +28,7 @@ bool openDbSoil(QString dbName, QSqlDatabase* dbSoil, QString* error)
 }
 
 
-bool loadVanGenuchtenParameters(QSqlDatabase* dbSoil, soil::Crit3DSoilClass* soilClassList, QString *error)
+bool loadVanGenuchtenParameters(QSqlDatabase* dbSoil, soil::Crit3DTextureClass* soilClassList, QString *error)
 {
     QString queryString = "SELECT id_texture, alpha, n, he, theta_r, theta_s, k_sat, l ";
     queryString        += "FROM van_genuchten ORDER BY id_texture";
@@ -89,7 +89,7 @@ bool loadVanGenuchtenParameters(QSqlDatabase* dbSoil, soil::Crit3DSoilClass* soi
 }
 
 
-bool loadDriessenParameters(QSqlDatabase* dbSoil, soil::Crit3DSoilClass* soilClassList, QString *error)
+bool loadDriessenParameters(QSqlDatabase* dbSoil, soil::Crit3DTextureClass* soilClassList, QString *error)
 {
     QString queryString = "SELECT id_texture, k_sat, grav_conductivity, max_sorptivity";
     queryString += " FROM driessen ORDER BY id_texture";
@@ -213,7 +213,7 @@ bool loadSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySo
 
 
 bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil,
-              soil::Crit3DSoilClass* soilClassList, QString* error)
+              soil::Crit3DTextureClass* soilClassList, QString* error)
 {
     if (!loadSoilData(dbSoil, soilCode, mySoil, error))
     {
@@ -311,7 +311,7 @@ bool getSoilList(QSqlDatabase* dbSoil, QStringList* soilList, QString* error)
 }
 
 
-bool loadAllSoils(QString dbSoilName, std::vector <soil::Crit3DSoil> *soilList, soil::Crit3DSoilClass *soilClassList, QString* error)
+bool loadAllSoils(QString dbSoilName, std::vector <soil::Crit3DSoil> *soilList, soil::Crit3DTextureClass *soilClassList, QString* error)
 {
     soilList->clear();
 

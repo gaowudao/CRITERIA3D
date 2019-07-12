@@ -4,6 +4,10 @@
     #ifndef _STRING_
         #include <string>
     #endif
+    #ifndef _VECTOR_
+        #include <vector>
+    #endif
+
 
     namespace soil {
 
@@ -25,7 +29,7 @@
         {
         public:
             int horizonNr;
-            double upperDepth, lowerDepth;      /*!<   [cm]          */
+            double upperDepth, lowerDepth;      /*!<   [cm]         */
             float sand, silt, clay;             /*!<   [%]          */
             double coarseFragments;             /*!<   [%]          */
             double organicMatter;               /*!<   [%]          */
@@ -33,7 +37,7 @@
             double thetaSat;                    /*!<   [m^3 m^-3]   */
             double kSat;                        /*!<   [cm day^-1]  */
 
-            obsWaterRetention* waterRetention;
+            std::vector <obsWaterRetention> waterRetention;
 
             Crit3DHorizonDbData();
         };
@@ -97,7 +101,7 @@
             Crit3DWaterConductivity();
         };
 
-        class Crit3DSoilClass
+        class Crit3DTextureClass
         {
         public:
             Crit3DVanGenuchten vanGenuchten;
@@ -196,7 +200,7 @@
          double getWaterPotential(Crit3DLayer* layer);
          double getWaterConductivity(Crit3DLayer* layer);
 
-         bool setHorizon(Crit3DHorizon* horizon, Crit3DSoilClass* soilClassList, std::string* error);
+         bool setHorizon(Crit3DHorizon* horizon, Crit3DTextureClass* soilClassList, std::string* error);
     }
 
 #endif // SOIL_H

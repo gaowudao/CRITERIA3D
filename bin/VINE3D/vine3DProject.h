@@ -66,7 +66,7 @@
         gis::Crit3DRasterGrid boundaryMap;
         gis::Crit3DRasterGrid modelCaseIndexMap;
 
-        soil::Crit3DSoilClass soilClass[13];
+        soil::Crit3DTextureClass soilClass[13];
 
         TVineCultivar* cultivar;
         int nrCultivar;
