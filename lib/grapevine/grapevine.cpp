@@ -1030,11 +1030,15 @@ void Vine3D_Grapevine::carbonWaterFluxesProfileNoStress(Crit3DModelCase* modelCa
 double Vine3D_Grapevine::getStressCoefficient()
 {
     double stomatalRatio;
-    if (totalStomatalConductanceNoStress <= 0.0)
+    if (totalStomatalConductanceNoStress == 0.0)
+    {
         stomatalRatio = 1.0;
+    }
     else
+    {
         stomatalRatio = totalStomatalConductance / totalStomatalConductanceNoStress;
-    return 1.0 - stomatalRatio;
+    }
+    return maxValue(0, 1.0 - stomatalRatio);
 }
 
 void Vine3D_Grapevine::cumulatedResults(Crit3DModelCase* modelCase)
