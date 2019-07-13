@@ -13,7 +13,7 @@ TEMPLATE = app
 
 
 INCLUDEPATH +=  ./shared ../PRAGA/shared  \
-                ../../mapGraphics \
+                ../../MapGraphics \
                 ../../lib/soilFluxes3D/header  \
                 ../../lib/crit3dDate ../../lib/mathFunctions ../../lib/crop \
                 ../../lib/soil ../../lib/soilWidget \
@@ -24,13 +24,13 @@ INCLUDEPATH +=  ./shared ../PRAGA/shared  \
 CONFIG += debug_and_release
 
 unix:{
-    LIBS += -L../../mapGraphics/release -lMapGraphics
+    LIBS += -L../../MapGraphics/release -lMapGraphics
 }
 win32:{
     CONFIG(debug, debug|release) {
-         LIBS += -L../../mapGraphics/debug -lMapGraphics
+         LIBS += -L../../MapGraphics/debug -lMapGraphics
     } else {
-        LIBS += -L../../mapGraphics/release -lMapGraphics
+        LIBS += -L../../MapGraphics/release -lMapGraphics
     }
 }
 
