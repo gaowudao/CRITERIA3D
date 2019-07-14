@@ -887,14 +887,14 @@ void weatherGenerator2D::temperaturesCorrelationMatrices()
             correlationMatrixTemperature.minT[i][j] = correlationMatrixTemperature.minT[j][i];
         }
     }
-    /*
+
     for (int i=0;i<nrStations;i++)
     {
         for (int j=0; j<nrStations;j++)
         {
-           printf("%f\t",correlationMatrixTemperature.maxT[i][j]);
+           //printf("%.4f\t",correlationMatrixTemperature.maxT[i][j]);
         }
-        printf("\n");
+        //printf("\n");
     }
 
 
@@ -902,10 +902,11 @@ void weatherGenerator2D::temperaturesCorrelationMatrices()
     {
         for (int j=0; j<nrStations;j++)
         {
-           printf("%f\t",correlationMatrixTemperature.minT[i][j]);
+           printf("%.4f\t",correlationMatrixTemperature.minT[i][j]);
         }
         printf("\n");
-    }*/
+    }
+    pressEnterToContinue();
 }
 
 void weatherGenerator2D::initializeNormalRandomMatricesTemperatures()
