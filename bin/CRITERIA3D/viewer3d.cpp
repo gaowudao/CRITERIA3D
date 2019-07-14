@@ -145,7 +145,7 @@ void Viewer3D::mouseMoveEvent(QMouseEvent *ev)
     if (isCameraChanging)
     {
         QPoint delta = ev->pos() - m_moveStartPoint;
-        if (m_button == Qt::LeftButton)
+        if (m_button == Qt::RightButton)
         {  
             /*float zoom = delta.y() * (m_size/10000000.f);
             QVector3D axis = QVector3D(1, 0, 0);
@@ -163,7 +163,7 @@ void Viewer3D::mouseMoveEvent(QMouseEvent *ev)
             m_view->camera()->transform()->setRotationZ(anglex);
             //m_view->camera()->panAboutViewCenter(angley);
         }
-        else if (m_button == Qt::RightButton)
+        else if (m_button == Qt::LeftButton)
         {
             QVector3D translation = QVector3D(m_cameraPosition.x() - delta.x() * m_zoomLevel * m_size / 3000.f,
                                               m_cameraPosition.y() + delta.y() * m_zoomLevel * m_size / 3000.f,
@@ -191,15 +191,17 @@ void Viewer3D::buildLookupTables()
 {
     for (int angle = 0; angle < 3600; angle++)
     {
-        m_cosTable[angle] = cos(float(angle) / 10.f * float(DEG_TO_RAD));
+        m_cosTable[angle] = cos(double(angle) / 10. * DEG_TO_RAD);
+        m_sinTable[angle] = sin(double(angle) / 10. * DEG_TO_RAD);
     }
 }
 
-
-float Viewer3D::getCosTable(float angle)
+double Viewer3D::getCosTable(double angle)
 {
     if (angle < 0)
-        angle += 360.f;
+        angle += 360;
+    else if (angle >= 360)
+        angle -= 360;
     return m_cosTable[int(angle * 10)];
 }
 
@@ -227,7 +229,7 @@ void setVertexColor(float* vertexColor, int vertexIndex, Crit3DColor* myColor, f
 }
 
 
-void Viewer3D::cleanScene()
+void Viewer3D::clearScene()
 {
     if (m_rootEntity != nullptr)
     {
@@ -248,14 +250,14 @@ void Viewer3D::createScene()
 
     m_vertexPositionArray.resize(m_nrVertex * 3 * int(sizeof(float)));
     m_vertexColorArray.resize(m_nrVertex * 3 * int(sizeof(float)));
-    m_triangleIndexArray.resize(m_nrVertex * 2 * 3 * int(sizeof(uint)));
+    m_triangleIndexArray.resize(m_nrVertex * 4 * 3 * int(sizeof(uint)));
 
     float *vertexPosition = reinterpret_cast<float *>(m_vertexPositionArray.data());
     float *vertexColor = reinterpret_cast<float *>(m_vertexColorArray.data());
     uint *indexData = reinterpret_cast<uint *>(m_triangleIndexArray.data());
 
-    float SlopeAmplification = 90.f / m_project->radiationMaps->slopeMap->maximum;
-    float myAspect, mySlope, shadow;
+    double SlopeAmplification = 128.0 / double(m_project->radiationMaps->slopeMap->maximum);
+    double myAspect, mySlope, shadow;
 
     // Vertices
     long index;
@@ -275,20 +277,21 @@ void Viewer3D::createScene()
 
                     vertexPosition[index*3] = x;
                     vertexPosition[index*3+1] = y;
-                    vertexPosition[index*3+2] = z  * m_magnify;
+                    vertexPosition[index*3+2] = z  * float(m_magnify);
 
                     myColor = m_project->DTM.colorScale->getColor(z);
 
-                    shadow = 0.f;
+                    shadow = 0;
                     myAspect = m_project->radiationMaps->aspectMap->value[row][col];
                     mySlope = m_project->radiationMaps->slopeMap->value[row][col];
                     if ((myAspect != m_project->radiationMaps->aspectMap->header->flag)
                             && (mySlope != m_project->radiationMaps->slopeMap->header->flag))
                     {
-                            shadow = getCosTable(myAspect) * mySlope * SlopeAmplification;
+                            // light from south-west
+                            shadow = getCosTable(myAspect+140) * mySlope * SlopeAmplification;
                     }
 
-                    setVertexColor(vertexColor, index, myColor, shadow);
+                    setVertexColor(vertexColor, index, myColor, float(shadow));
                 }
             }
         }
@@ -321,10 +324,12 @@ void Viewer3D::createScene()
     {
         for (int col = 0; col < m_project->indexMap.header->nrCols; col++)
         {
+            // initialize
             v0 = long(m_project->indexMap.value[row][col]);
             v1 = long(m_project->indexMap.header->flag);
             v2 = long(m_project->indexMap.header->flag);
             v3 = long(m_project->indexMap.header->flag);
+
             if (v0 != long(m_project->indexMap.header->flag))
             {
                 if (row < (m_project->indexMap.header->nrRows-1))
@@ -334,6 +339,7 @@ void Viewer3D::createScene()
                 if (col < (m_project->indexMap.header->nrCols-1))
                     v3 = long(m_project->indexMap.value[row][col+1]);
 
+                // clockwise
                 if (v1 != long(m_project->indexMap.header->flag) && v2 != long(m_project->indexMap.header->flag))
                 {
                     indexData[index*3] = uint(v0);
@@ -343,9 +349,25 @@ void Viewer3D::createScene()
                 }
                 if (v2 != long(m_project->indexMap.header->flag) && v3 != long(m_project->indexMap.header->flag))
                 {
-                    indexData[index*3] = uint(v2);
+                    indexData[index*3] = uint(v0);
                     indexData[index*3+1] = uint(v3);
-                    indexData[index*3+2] = uint(v0);
+                    indexData[index*3+2] = uint(v2);
+                    index++;
+                }
+
+                // anti-clockwise
+                if (v1 != long(m_project->indexMap.header->flag) && v2 != long(m_project->indexMap.header->flag))
+                {
+                    indexData[index*3] = uint(v0);
+                    indexData[index*3+1] = uint(v1);
+                    indexData[index*3+2] = uint(v2);
+                    index++;
+                }
+                if (v2 != long(m_project->indexMap.header->flag) && v3 != long(m_project->indexMap.header->flag))
+                {
+                    indexData[index*3] = uint(v0);
+                    indexData[index*3+1] = uint(v2);
+                    indexData[index*3+2] = uint(v3);
                     index++;
                 }
             }

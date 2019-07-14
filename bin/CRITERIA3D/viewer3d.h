@@ -41,15 +41,19 @@ class Viewer3D : public QWidget
         float m_zoomLevel;
         float m_size;
         float m_ratio;
-        float m_cosTable[3600];
+
+        double m_cosTable[3600];
+        double m_sinTable[3600];
+
         int m_nrVertex;
         gis::Crit3DUtmPoint m_center;
         Qt::MouseButton m_button;
 
         void buildLookupTables();
-        float getCosTable(float angle);
+        double getCosTable(double angle);
+
         void createScene();
-        void cleanScene();
+        void clearScene();
 };
 
 

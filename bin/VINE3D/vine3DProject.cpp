@@ -1593,7 +1593,9 @@ int Vine3DProject::getIndexPointFromId(QString myId)
 
 
 float Vine3DProject::getTimeStep()
-{ return (3600. / meteoSettings->getHourlyIntervals());}
+{
+    return (3600 / meteoSettings->getHourlyIntervals());
+}
 
 
 bool removeDirectory(QString myPath)

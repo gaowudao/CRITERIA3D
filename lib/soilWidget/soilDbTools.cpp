@@ -241,7 +241,7 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil,
 
 
 
-/*
+/* check depth
  * if ((mySoil->horizon[i].upperDepth == NODATA) || (mySoil->horizon[i].lowerDepth == NODATA)
             || (mySoil->horizon[i].lowerDepth < mySoil->horizon[i].upperDepth)
             || ((idHorizon == 1) && (mySoil->horizon[i].upperDepth > 0))
@@ -359,7 +359,7 @@ bool loadAllSoils(QString dbSoilName, std::vector <soil::Crit3DSoil> *soilList, 
                 mySoil->code = soilCode.toStdString();
                 soilList->push_back(*mySoil);
             }
-            else
+            if (*error != "")
             {
                 wrongSoils += soilCode + ": " + *error + "\n";
             }

@@ -18,7 +18,7 @@
                            soilWaterPotentialFC, soilWaterPotentialWP
                           };
 
-        struct obsWaterRetention
+        struct Crit3DWaterRetention
         {
             double water_potential;             /*!<  [kPa]      */
             double water_content;               /*!<  [m^3 m^-3] */
@@ -37,7 +37,7 @@
             double thetaSat;                    /*!<   [m^3 m^-3]   */
             double kSat;                        /*!<   [cm day^-1]  */
 
-            std::vector <obsWaterRetention> waterRetention;
+            std::vector <Crit3DWaterRetention> waterRetention;
 
             Crit3DHorizonDbData();
         };

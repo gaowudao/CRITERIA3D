@@ -104,15 +104,10 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
     int myTimeStep = int(myProject->getTimeStep());
     myFirstTime = Crit3DTime(myDate, myTimeStep);
     myLastTime = Crit3DTime(myDate, nrHours * 3600);
+    int nrStep = (nrHours * 3600) / myTimeStep;
     bool isNewModelCase;
     int modelCaseIndex;
     double* myProfile;
-
-    int checkStressHour;
-    if (!myProject->gisSettings.isUTC)
-        checkStressHour = 12;
-    else
-        checkStressHour = 12 - myProject->gisSettings.timeZone;
 
     for (myCurrentTime = myFirstTime; myCurrentTime <= myLastTime; myCurrentTime = myCurrentTime.addSeconds(myTimeStep))
     {
@@ -226,10 +221,6 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
                     for (int layer=0; layer < myProject->WBSettings->nrLayers; layer++)
                         myProject->outputPlantMaps->transpirationLayerMaps[layer]->value[row][col] = float(myProfile[layer]);
 
-                    //stress transpiration output
-                    if (myCurrentTime.getHour()==checkStressHour)
-                        myProject->outputPlantMaps->stressMap->value[row][col] = float(myProject->grapevine.getStressCoefficient());
-
                     vineTranspiration = myProject->grapevine.getRealTranspirationGrapevine(&(myProject->modelCases[modelCaseIndex]));
                     grassTranspiration = myProject->grapevine.getRealTranspirationGrass(&(myProject->modelCases[modelCaseIndex]));
 
@@ -237,11 +228,20 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
                     {
                         myProject->outputPlantMaps->vineyardTranspirationMap->value[row][col] = float(vineTranspiration);
                         myProject->outputPlantMaps->grassTranspirationMap->value[row][col] = float(grassTranspiration);
+                        myProject->outputPlantMaps->vineyardStressMap->value[row][col] = float(myProject->grapevine.getStressCoefficient());
                     }
                     else
                     {
+                        // summed values
                         myProject->outputPlantMaps->vineyardTranspirationMap->value[row][col] += float(vineTranspiration);
                         myProject->outputPlantMaps->grassTranspirationMap->value[row][col] += float(grassTranspiration);
+                        myProject->outputPlantMaps->vineyardStressMap->value[row][col] += float(myProject->grapevine.getStressCoefficient());
+                    }
+
+                    if (myCurrentTime == myLastTime)
+                    {
+                        // average values
+                        myProject->outputPlantMaps->vineyardStressMap->value[row][col] /= nrStep;
                     }
                 }
             }
