@@ -19,11 +19,15 @@
 void weatherGenerator2D::temperatureCompute()
 {
     // step 1 of temperature WG2D
+    printf("fase 1 temperature\n");
     weatherGenerator2D::computeTemperatureParameters();
+    printf("fase 2 temperature\n");
     // step 2 of temperature WG2D
     weatherGenerator2D::temperaturesCorrelationMatrices();
+    printf("fase 3 temperature\n");
     // step 3 of temperature WG2D
     weatherGenerator2D::multisiteRandomNumbersTemperature();
+    printf("fase 4 temperature\n");
     // step 4 of temperature WG2D
     weatherGenerator2D::multisiteTemperatureGeneration();
 }
@@ -135,7 +139,6 @@ void weatherGenerator2D::initializeTemperaturecorrelationMatrices()
 void weatherGenerator2D::computeTemperatureParameters()
 {
     weatherGenerator2D::initializeTemperatureParameters();
-    printf("temperatures \n");
     for (int iStation=0; iStation<nrStations; iStation++)
     {
         double averageTMaxDry[365];
@@ -514,11 +517,11 @@ void weatherGenerator2D::computeTemperatureParameters()
 
         for (int i=0;i<matrixRang;i++)
             //printf("%f\n",eigenvalues[i]);
-        printf("\n");
+        //printf("\n");
         for (int i=0;i<matrixRang;i++)
             for (int j=0; j<matrixRang; j++)
-                printf("%f\n",matrixB[i][j]);
-        printf("\n"); printf("\n");
+                //printf("%f\n",matrixB[i][j]);
+        //printf("\n"); printf("\n");
 
 
 
@@ -897,7 +900,7 @@ void weatherGenerator2D::temperaturesCorrelationMatrices()
         //printf("\n");
     }
 
-
+    /*
     for (int i=0;i<nrStations;i++)
     {
         for (int j=0; j<nrStations;j++)
@@ -906,7 +909,7 @@ void weatherGenerator2D::temperaturesCorrelationMatrices()
         }
         printf("\n");
     }
-    pressEnterToContinue();
+    pressEnterToContinue(); */
 }
 
 void weatherGenerator2D::initializeNormalRandomMatricesTemperatures()
@@ -933,9 +936,11 @@ void weatherGenerator2D::initializeNormalRandomMatricesTemperatures()
 void weatherGenerator2D::multisiteRandomNumbersTemperature()
 {
     weatherGenerator2D::initializeNormalRandomMatricesTemperatures();
-    int gasDevIset;
-    double gasDevGset;
-    srand (time(nullptr));
+    int gasDevIset = 0;
+    double gasDevGset = 0;
+    srand (time(nullptr));    
+    int firstRandomNumber;
+    firstRandomNumber = rand();
     int lengthOfRandomSeries;
     lengthOfRandomSeries = parametersModel.yearOfSimulation*365;
     int nrSquareOfStations;
@@ -1015,20 +1020,43 @@ void weatherGenerator2D::multisiteRandomNumbersTemperature()
     matricial::choleskyDecompositionTriangularMatrix(dummyMatrix,nrStations,isLowerDiagonal);
     isLowerDiagonal = true;
     matricial::choleskyDecompositionTriangularMatrix(dummyMatrix2,nrStations,isLowerDiagonal);
-    matricial::matrixProduct(dummyMatrix,dummyMatrix2,nrStations,nrStations,nrStations,nrStations,dummyMatrix3);
+    matricial::matrixProduct(dummyMatrix2,dummyMatrix,nrStations,nrStations,nrStations,nrStations,dummyMatrix3);
     isLowerDiagonal = true;
     matricial::choleskyDecompositionTriangularMatrix(dummyMatrix3,nrStations,isLowerDiagonal);
-    gasDevGset = 0;
-    gasDevIset = 0;
+    for (int i=0; i<nrStations; i++)
+    {
+        for (int j=0; j<nrStations; j++)
+        {
+            printf("%.4f  ",dummyMatrix3[i][j]);
+        }
+        printf("\n");
+    }
     for (int i=0;i<nrStations;i++)
     {
         for (int j=0;j<lengthOfRandomSeries;j++)
         {
-            normRandom[i][j] = myrandom::normalRandom(&gasDevIset,&gasDevGset);
+            normRandom[i][j] = myrandom::normalRandomLongSeries(&gasDevIset,&gasDevGset,&firstRandomNumber);
+            //printf("%f\n", normRandom[i][j]); //pressEnterToContinue();
         }
     }
-    matricial::matrixProduct(dummyMatrix3,normRandom,nrStations,nrStations,nrStations,lengthOfRandomSeries,normRandom2);
+    matricial::matrixProduct(dummyMatrix3,normRandom,nrStations,nrStations,lengthOfRandomSeries,nrStations,normRandom2);
+    for (int i=0; i<lengthOfRandomSeries; i++)
+    {
+        for (int j=0; j<nrStations; j++)
+        {
+            //printf("%.4f  ",normRandom2[j][i]);
+        }
+        //printf("\n");
+    }
     matricial::transposedMatrix(normRandom2,nrStations,lengthOfRandomSeries,normRandomMaxT);
+    for (int i=0; i<lengthOfRandomSeries; i++)
+    {
+        for (int j=0; j<nrStations; j++)
+        {
+            //printf("%.4f  ",normRandomMaxT[i][j]);
+        }
+        //printf("\n");
+    }
 
     // for Tmin
     counter = 0;
@@ -1067,7 +1095,7 @@ void weatherGenerator2D::multisiteRandomNumbersTemperature()
                 counter++;
             }
         }
-        matricial::matrixProduct(dummyMatrix,dummyMatrix2,nrStations,nrStations,nrStations,nrStations,correlationMatrixTemperature.maxT);
+        matricial::matrixProduct(dummyMatrix,dummyMatrix2,nrStations,nrStations,nrStations,nrStations,correlationMatrixTemperature.minT);
     }
 
     for (int i=0;i<nrStations;i++)
@@ -1084,23 +1112,27 @@ void weatherGenerator2D::multisiteRandomNumbersTemperature()
     matricial::choleskyDecompositionTriangularMatrix(dummyMatrix,nrStations,isLowerDiagonal);
     isLowerDiagonal = true;
     matricial::choleskyDecompositionTriangularMatrix(dummyMatrix2,nrStations,isLowerDiagonal);
-    matricial::matrixProduct(dummyMatrix,dummyMatrix2,nrStations,nrStations,nrStations,nrStations,dummyMatrix3);
+    matricial::matrixProduct(dummyMatrix2,dummyMatrix,nrStations,nrStations,nrStations,nrStations,dummyMatrix3);
     isLowerDiagonal = true;
     matricial::choleskyDecompositionTriangularMatrix(dummyMatrix3,nrStations,isLowerDiagonal);
-    gasDevGset = 0;
-    gasDevIset = 0;
+    for (int i=0; i<nrStations; i++)
+    {
+        for (int j=0; j<nrStations; j++)
+        {
+            //printf("%.4f  ",dummyMatrix3[i][j]);
+        }
+        //printf("\n");
+    }
+
     for (int i=0;i<nrStations;i++)
     {
         for (int j=0;j<lengthOfRandomSeries;j++)
         {
-            normRandom[i][j] = myrandom::normalRandom(&gasDevIset,&gasDevGset);
+            normRandom[i][j] = myrandom::normalRandomLongSeries(&gasDevIset,&gasDevGset,&firstRandomNumber);
         }
     }
-    matricial::matrixProduct(dummyMatrix3,normRandom,nrStations,nrStations,nrStations,lengthOfRandomSeries,normRandom2);
+    matricial::matrixProduct(dummyMatrix3,normRandom,nrStations,nrStations,lengthOfRandomSeries,nrStations,normRandom2);
     matricial::transposedMatrix(normRandom2,nrStations,lengthOfRandomSeries,normRandomMinT);
-
-
-
 
     for (int i=0;i<nrStations;i++)
     {
@@ -1169,7 +1201,7 @@ void weatherGenerator2D::multisiteTemperatureGeneration()
     {
         for (int i=0; i<365;i++)
         {
-            weatherGenerator2D::dateFromDoy(i+1,1,&day,&month);
+            weatherGenerator2D::dateFromDoy(i+1,1,&day,&month); // 1 to avoid leap years
             multiOccurrenceTemperature[counter].year_simulated = j;
             multiOccurrenceTemperature[counter].month_simulated = month;
             multiOccurrenceTemperature[counter].day_simulated = day;
@@ -1193,7 +1225,7 @@ void weatherGenerator2D::multisiteTemperatureGeneration()
                 //getchar();
                 counter2++;
             }
-                counter++;
+            counter++;
         }
     }
     weatherGenerator2D::initializeTemperaturesOutput(lengthOfRandomSeries);
@@ -1332,6 +1364,7 @@ void weatherGenerator2D::multisiteTemperatureGeneration()
         free(cAverage);
         free(cStdDev);
         free(residuals);
+        free(Xp);
     }
 
     for (int i=0;i<4;i++)
@@ -1339,6 +1372,7 @@ void weatherGenerator2D::multisiteTemperatureGeneration()
         free(averageT[i]);
         free(stdDevT[i]);
     }
+
     free(averageT);
     free(stdDevT);
     free(X);
