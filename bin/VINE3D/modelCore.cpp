@@ -228,20 +228,20 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
                     {
                         myProject->outputPlantMaps->vineyardTranspirationMap->value[row][col] = float(vineTranspiration);
                         myProject->outputPlantMaps->grassTranspirationMap->value[row][col] = float(grassTranspiration);
-                        myProject->outputPlantMaps->vineyardStressMap->value[row][col] = float(myProject->grapevine.getStressCoefficient());
+                        myProject->outputPlantMaps->vineStressMap->value[row][col] = float(myProject->grapevine.getStressCoefficient());
                     }
                     else
                     {
                         // summed values
                         myProject->outputPlantMaps->vineyardTranspirationMap->value[row][col] += float(vineTranspiration);
                         myProject->outputPlantMaps->grassTranspirationMap->value[row][col] += float(grassTranspiration);
-                        myProject->outputPlantMaps->vineyardStressMap->value[row][col] += float(myProject->grapevine.getStressCoefficient());
+                        myProject->outputPlantMaps->vineStressMap->value[row][col] += float(myProject->grapevine.getStressCoefficient());
                     }
 
                     if (myCurrentTime == myLastTime)
                     {
                         // average values
-                        myProject->outputPlantMaps->vineyardStressMap->value[row][col] /= nrStep;
+                        myProject->outputPlantMaps->vineStressMap->value[row][col] /= nrStep;
                     }
                 }
             }

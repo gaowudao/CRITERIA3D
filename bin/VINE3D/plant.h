@@ -68,7 +68,7 @@
         gis::Crit3DRasterGrid* daysFromFloweringMap;
         gis::Crit3DRasterGrid* brixMaximumMap;
         gis::Crit3DRasterGrid* brixBerryMap;
-        gis::Crit3DRasterGrid* vineyardStressMap;
+        gis::Crit3DRasterGrid* vineStressMap;
         gis::Crit3DRasterGrid* vineyardTranspirationMap;
         gis::Crit3DRasterGrid* grassTranspirationMap;
         gis::Crit3DRasterGrid* powderyCOLMap;
