@@ -828,6 +828,8 @@ void MainWindow::redrawMeteoGrid(visualizationType showType)
         myProject.meteoGridDbHandler->meteoGrid()->fillMeteoRasterNoData();
         meteoGridObj->setDrawBorders(false);
         meteoGridLegend->setVisible(false);
+        meteoGridObj->redrawRequested();
+        meteoGridLegend->update();
         break;
     }
     case showLocation:
@@ -835,6 +837,8 @@ void MainWindow::redrawMeteoGrid(visualizationType showType)
         this->ui->actionShowGridLocation->setChecked(true);
         myProject.meteoGridDbHandler->meteoGrid()->fillMeteoRasterNoData();
         meteoGridObj->setDrawBorders(true);
+        meteoGridObj->redrawRequested();
+        meteoGridLegend->update();
         break;
     }
     case showCurrentVariable:
