@@ -828,8 +828,6 @@ void MainWindow::redrawMeteoGrid(visualizationType showType)
         myProject.meteoGridDbHandler->meteoGrid()->fillMeteoRasterNoData();
         meteoGridObj->setDrawBorders(false);
         meteoGridLegend->setVisible(false);
-        meteoGridObj->redrawRequested();
-        meteoGridLegend->update();
         break;
     }
     case showLocation:
@@ -837,8 +835,6 @@ void MainWindow::redrawMeteoGrid(visualizationType showType)
         this->ui->actionShowGridLocation->setChecked(true);
         myProject.meteoGridDbHandler->meteoGrid()->fillMeteoRasterNoData();
         meteoGridObj->setDrawBorders(true);
-        meteoGridObj->redrawRequested();
-        meteoGridLegend->update();
         break;
     }
     case showCurrentVariable:
@@ -852,7 +848,6 @@ void MainWindow::redrawMeteoGrid(visualizationType showType)
         {
             meteoGridLegend->setVisible(false);
             ui->labelMeteoGridScale->setText("");
-            meteoGridObj->redrawRequested();
             return;
         }
 
@@ -875,7 +870,6 @@ void MainWindow::redrawMeteoGrid(visualizationType showType)
         setColorScale(variable, myProject.meteoGridDbHandler->meteoGrid()->dataMeteoGrid.colorScale);
         ui->labelMeteoGridScale->setText(QString::fromStdString(getVariableString(myProject.getCurrentVariable())));
 
-        meteoGridObj->redrawRequested();
         meteoGridLegend->update();
         break;
     }
@@ -906,7 +900,7 @@ void MainWindow::redrawMeteoGrid(visualizationType showType)
 
     }
     meteoGridObj->updateCenter();
-
+    meteoGridObj->redrawRequested();
 }
 
 
