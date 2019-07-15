@@ -1151,15 +1151,15 @@ namespace myrandom {
         else
         {
             int firstRandom;
-            int counter = 0;
+            //int counter = 0;
             do
             {
-                counter++;
+                //counter++;
                 srand(time(0));
                 firstRandom = rand();
             }
             while(firstRandom == *randomNumberInitial);
-            printf("seed estratto %d\n",counter);
+            //printf("seed estratto %d\n",counter);
             *randomNumberInitial = firstRandom;
             return firstRandom;
         }

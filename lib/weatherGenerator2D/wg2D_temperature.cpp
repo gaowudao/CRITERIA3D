@@ -1023,40 +1023,40 @@ void weatherGenerator2D::multisiteRandomNumbersTemperature()
     matricial::matrixProduct(dummyMatrix2,dummyMatrix,nrStations,nrStations,nrStations,nrStations,dummyMatrix3);
     isLowerDiagonal = true;
     matricial::choleskyDecompositionTriangularMatrix(dummyMatrix3,nrStations,isLowerDiagonal);
-    for (int i=0; i<nrStations; i++)
+
+    /*for (int i=0; i<nrStations; i++)
     {
         for (int j=0; j<nrStations; j++)
         {
-            printf("%.4f  ",dummyMatrix3[i][j]);
+            //printf("%.4f  ",dummyMatrix3[i][j]);
         }
-        printf("\n");
-    }
+        //printf("\n");
+    }*/
     for (int i=0;i<nrStations;i++)
     {
         for (int j=0;j<lengthOfRandomSeries;j++)
         {
             normRandom[i][j] = myrandom::normalRandomLongSeries(&gasDevIset,&gasDevGset,&firstRandomNumber);
-            //printf("%f\n", normRandom[i][j]); //pressEnterToContinue();
         }
     }
     matricial::matrixProduct(dummyMatrix3,normRandom,nrStations,nrStations,lengthOfRandomSeries,nrStations,normRandom2);
-    for (int i=0; i<lengthOfRandomSeries; i++)
+    /*for (int i=0; i<lengthOfRandomSeries; i++)
     {
         for (int j=0; j<nrStations; j++)
         {
             //printf("%.4f  ",normRandom2[j][i]);
         }
         //printf("\n");
-    }
+    }*/
     matricial::transposedMatrix(normRandom2,nrStations,lengthOfRandomSeries,normRandomMaxT);
-    for (int i=0; i<lengthOfRandomSeries; i++)
+    /*for (int i=0; i<lengthOfRandomSeries; i++)
     {
         for (int j=0; j<nrStations; j++)
         {
             //printf("%.4f  ",normRandomMaxT[i][j]);
         }
         //printf("\n");
-    }
+    }*/
 
     // for Tmin
     counter = 0;
@@ -1115,14 +1115,14 @@ void weatherGenerator2D::multisiteRandomNumbersTemperature()
     matricial::matrixProduct(dummyMatrix2,dummyMatrix,nrStations,nrStations,nrStations,nrStations,dummyMatrix3);
     isLowerDiagonal = true;
     matricial::choleskyDecompositionTriangularMatrix(dummyMatrix3,nrStations,isLowerDiagonal);
-    for (int i=0; i<nrStations; i++)
+    /*for (int i=0; i<nrStations; i++)
     {
         for (int j=0; j<nrStations; j++)
         {
             //printf("%.4f  ",dummyMatrix3[i][j]);
         }
         //printf("\n");
-    }
+    }*/
 
     for (int i=0;i<nrStations;i++)
     {
@@ -1133,7 +1133,14 @@ void weatherGenerator2D::multisiteRandomNumbersTemperature()
     }
     matricial::matrixProduct(dummyMatrix3,normRandom,nrStations,nrStations,lengthOfRandomSeries,nrStations,normRandom2);
     matricial::transposedMatrix(normRandom2,nrStations,lengthOfRandomSeries,normRandomMinT);
-
+    /*for (int i=0; i<lengthOfRandomSeries; i++)
+    {
+        for (int j=0; j<nrStations; j++)
+        {
+            printf("%.4f  ",normRandomMinT[i][j]);
+        }
+        printf("\n");
+    }*/
     for (int i=0;i<nrStations;i++)
     {
         free(dummyMatrix[i]);
