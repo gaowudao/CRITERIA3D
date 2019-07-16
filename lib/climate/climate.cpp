@@ -1860,19 +1860,13 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
             }
             default:
             {
-
-                int dOy;
-                if (clima->getCurrentPeriodType() == dailyPeriod)
-                {
-                    dOy = getDoyFromDate(firstDate);
-                }
+                int dayOfYear = getDoyFromDate(firstDate);
 
                 for (int presentYear = firstYear; presentYear <= lastYear; presentYear++)
                 {
-
                     if ( (clima->getCurrentPeriodType() == dailyPeriod) )
                     {
-                        firstDate = getDateFromDoy(presentYear, dOy);
+                        firstDate = getDateFromDoy(presentYear, dayOfYear);
                     }
                     firstDate.year = presentYear;
                     lastDate.year = presentYear;
@@ -1934,12 +1928,9 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
 
                 if (nValidValues == 0)return NODATA;
 
-
                 if (float(nValidValues) / float(nValues) * 100.f < meteoSettings->getMinimumPercentage()) return NODATA;
 
-                return elaborations::statisticalElab(elab1, param1, values, nValidValues, meteoSettings->getRainfallThreshold());
-
-                break;
+                return statisticalElab(elab1, param1, values, nValidValues, meteoSettings->getRainfallThreshold());
             }
         }
     }
@@ -1950,18 +1941,14 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
         int nValidYears = 0;
         valuesSecondElab.clear();
 
-        int dOy;
-        if (clima->getCurrentPeriodType() == dailyPeriod)
-        {
-            dOy = getDoyFromDate(firstDate);
-        }
+        int dayOfYear = getDoyFromDate(firstDate);
 
         for (int presentYear = firstYear; presentYear <= lastYear; presentYear++)
         {
 
             if ( (clima->getCurrentPeriodType() == dailyPeriod) )
             {
-                firstDate = getDateFromDoy(presentYear, dOy);
+                firstDate = getDateFromDoy(presentYear, dayOfYear);
             }
 
             firstDate.year = presentYear;
@@ -2053,7 +2040,7 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
                     {
                         if (float(nValidValues) / float(nValues) * 100.f >= meteoSettings->getMinimumPercentage())
                         {
-                            primary = elaborations::statisticalElab(elab1, param1, values, nValidValues, meteoSettings->getRainfallThreshold());
+                            primary = statisticalElab(elab1, param1, values, nValidValues, meteoSettings->getRainfallThreshold());
                         }
                     }
 
@@ -2085,9 +2072,9 @@ float computeStatistic(std::vector<float> &inputValues, Crit3DMeteoPoint* meteoP
             switch(elab2)
             {
                 case trend:
-                    return elaborations::statisticalElab(elab2, firstYear, valuesSecondElab, nValidYears, meteoSettings->getRainfallThreshold());
+                    return statisticalElab(elab2, firstYear, valuesSecondElab, nValidYears, meteoSettings->getRainfallThreshold());
                 default:
-                    return elaborations::statisticalElab(elab2, param2, valuesSecondElab, nValidYears, meteoSettings->getRainfallThreshold());
+                    return statisticalElab(elab2, param2, valuesSecondElab, nValidYears, meteoSettings->getRainfallThreshold());
             }
         }
     }

@@ -16,10 +16,8 @@
                             winkler, huglin, fregoni,
                             correctedDegreeDaysSum, erosivityFactorElab, rainIntensityElab, noMeteoComp};
 
-    namespace elaborations
-    {
-        float statisticalElab(meteoComputation elab, float param, std::vector<float> values, int nValues, float rainfallThreshold);
-    }
+
+    float statisticalElab(meteoComputation elab, float param, std::vector<float> values, int nValues, float rainfallThreshold);
 
     namespace statistics
     {

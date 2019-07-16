@@ -367,9 +367,9 @@ namespace interpolation
     }
 
 
-    bool fittingMarquardt(double *myParMin, double *myParMax,
-        double *myPar, int nrMyPar, double *myParDelta, int myMaxIterations,double myEpsilon, int myFunctionCode,
-        double *myX,int nrMyX,double *myY)
+    bool fittingMarquardt(double *myParMin, double *myParMax, double *myPar, int nrMyPar,
+                          double *myParDelta, int myMaxIterations, double myEpsilon, int myFunctionCode,
+                          double *myX,int nrMyX,double *myY)
     {
         //int i;
         int myIterations = 1;
@@ -377,9 +377,9 @@ namespace interpolation
         double mySSE;           //Sum of Squared Erros
         double myDiffSSE;
         double myNewSSE;
-        double *myParChange=(double *) calloc(nrMyPar, sizeof(double));
-        double *myNewPar =(double *) calloc(nrMyPar, sizeof(double));
-        double *L=(double *) calloc(nrMyPar, sizeof(double));
+        double* myParChange = (double *) calloc(nrMyPar, sizeof(double));
+        double* myNewPar = (double *) calloc(nrMyPar, sizeof(double));
+        double* L = (double *) calloc(nrMyPar, sizeof(double));
         static double VFACTOR = 10;
 
         /*
@@ -396,7 +396,6 @@ namespace interpolation
             L[i] = lambda ;
             myParChange[i] = 0 ;
         }
-
 
         mySSE = normGeneric(myPar, nrMyPar, myX, nrMyX, myY, myFunctionCode);
         myDiffSSE = myEpsilon * 1000 ;
