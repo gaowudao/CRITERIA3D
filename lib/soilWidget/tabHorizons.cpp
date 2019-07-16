@@ -3,7 +3,14 @@
 TabHorizons::TabHorizons()
 {
     QVBoxLayout *mainLayout = new QVBoxLayout;
+    tableDb = new QTableWidget();
+    QStringList tableHeader;
+    tableHeader << "Upper depth [cm]" << "Lower depth [cm]" << "Sand [%]" << "Silt [%]" << "Clay [%]" << "Coarse fragments [%]" << "Organic matter [%]"
+                << "Bulk density [g/cm3]" << "K Sat [cm/d]";
+    tableDb->setHorizontalHeaderLabels(tableHeader);
+    mainLayout->addWidget(tableDb);
     mainLayout->addWidget(&soilTextEdit);
+
     setLayout(mainLayout);
 }
 

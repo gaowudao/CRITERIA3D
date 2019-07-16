@@ -16,6 +16,7 @@ public:
 
 private:
     QTextEdit soilTextEdit;
+    QTableWidget* tableDb;
 };
 
 #endif // HORIZONSTAB_H
