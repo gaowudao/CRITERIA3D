@@ -4,11 +4,34 @@ TabHorizons::TabHorizons()
 {
     QVBoxLayout *mainLayout = new QVBoxLayout;
     tableDb = new QTableWidget();
-    QStringList tableHeader;
-    tableHeader << "Upper depth [cm]" << "Lower depth [cm]" << "Sand [%]" << "Silt [%]" << "Clay [%]" << "Coarse fragments [%]" << "Organic matter [%]"
+    tableDb->setColumnCount(9);
+    QStringList tableDbHeader;
+    tableDbHeader << "Upper depth [cm]" << "Lower depth [cm]" << "Sand [%]" << "Silt [%]" << "Clay [%]" << "Coarse fragments [%]" << "Organic matter [%]"
                 << "Bulk density [g/cm3]" << "K Sat [cm/d]";
-    tableDb->setHorizontalHeaderLabels(tableHeader);
+    tableDb->setHorizontalHeaderLabels(tableDbHeader);
+    tableDb->resizeColumnsToContents();
+    tableDb->setSelectionBehavior(QAbstractItemView::SelectRows);
+    tableDb->setSelectionMode(QAbstractItemView::SingleSelection);
+    tableDb->setShowGrid(true);
+    tableDb->setStyleSheet("QTableView {selection-background-color: red;}");
+
+
+    tableModel = new QTableWidget();
+    tableModel->setColumnCount(11);
+    QStringList tableModelHeader;
+    tableModelHeader << "Upper depth [cm]" << "Lower depth [cm]" << "Coarse fragments [%]" << "Organic matter [%]"
+                << "Bulk density [g/cm3]" << "K Sat [cm/d]" << "Theta R [m3/m3]" << "Theta S [m3/m3]"
+                << "alfa [KPa^-1]" << "n [-]" << "m [-]";
+    tableModel->setHorizontalHeaderLabels(tableModelHeader);
+    tableModel->resizeColumnsToContents();
+    tableModel->setSelectionBehavior(QAbstractItemView::SelectRows);
+    tableModel->setSelectionMode(QAbstractItemView::SingleSelection);
+    tableModel->setShowGrid(true);
+    tableModel->setStyleSheet("QTableView {selection-background-color: red;}");
+
+
     mainLayout->addWidget(tableDb);
+    mainLayout->addWidget(tableModel);
     mainLayout->addWidget(&soilTextEdit);
 
     setLayout(mainLayout);
