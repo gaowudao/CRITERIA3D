@@ -185,6 +185,7 @@
 
         //functions
 
+        void commonModuleCompute();
         void precipitationCompute();
         void precipitation29February(int idStation);
         void precipitationAmountsOccurences(int idStation, double* precipitationAmountsD,bool* precipitationOccurencesD);

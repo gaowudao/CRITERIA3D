@@ -16,21 +16,7 @@
 
 
 
-void weatherGenerator2D::temperatureCompute()
-{
-    // step 1 of temperature WG2D
-    printf("fase 1 temperature\n");
-    weatherGenerator2D::computeTemperatureParameters();
-    printf("fase 2 temperature\n");
-    // step 2 of temperature WG2D
-    weatherGenerator2D::temperaturesCorrelationMatrices();
-    printf("fase 3 temperature\n");
-    // step 3 of temperature WG2D
-    weatherGenerator2D::multisiteRandomNumbersTemperature();
-    printf("fase 4 temperature\n");
-    // step 4 of temperature WG2D
-    weatherGenerator2D::multisiteTemperatureGeneration();
-}
+
 
 void weatherGenerator2D::initializeTemperatureParameters()
 {
@@ -1324,7 +1310,7 @@ void weatherGenerator2D::multisiteTemperatureGeneration()
                 Xp[j][k] = NODATA;
             }
         }
-
+        // !!!!!! this part has been changed by the original one. To be verified with authors and colleagues!
         for (int j=0;j<lengthOfRandomSeries;j++)
         {
             cAverage[0][j] = X[j]*averageT[2][j] + (1- X[j])*averageT[0][j]; // for Tmax
@@ -1332,7 +1318,7 @@ void weatherGenerator2D::multisiteTemperatureGeneration()
             cStdDev[0][j] = X[j]*stdDevT[2][j] + (1-X[j])*stdDevT[0][j]; // for Tmax
             cStdDev[1][j] = X[j]*stdDevT[3][j] + (1-X[j])*stdDevT[1][j]; // for Tmin
         }
-
+        // !!!!!!
         for (int j=0;j<lengthOfRandomSeries;j++)
         {
             if(cStdDev[0][j] >= cStdDev[1][j])
@@ -1358,9 +1344,8 @@ void weatherGenerator2D::multisiteTemperatureGeneration()
         {
             maxTGenerated[j][i] = Xp[0][j];
             minTGenerated[j][i] = Xp[1][j];
-            printf("%.1f  %.1f %.f\n",maxTGenerated[j][i],minTGenerated[j][i],X[j]);
+            //printf("%.1f  %.1f %.f\n",maxTGenerated[j][i],minTGenerated[j][i],X[j]);
         }
-        pressEnterToContinue();
         free(ksi[0]);
         free(ksi[1]);
         free(eps[0]);

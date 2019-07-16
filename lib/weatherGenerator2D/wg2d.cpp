@@ -234,36 +234,59 @@ void weatherGenerator2D::setObservedData(TObsDataD** observations)
 
 void weatherGenerator2D::computeWeatherGenerator2D()
 {
-    weatherGenerator2D::precipitationCompute();
+    weatherGenerator2D::commonModuleCompute();
+
+    if (isPrecWG2D)
+        weatherGenerator2D::precipitationCompute();
+
     if (isTempWG2D)
         weatherGenerator2D::temperatureCompute();
 
     weatherGenerator2D::getWeatherGeneratorOutput();
 }
+void weatherGenerator2D::commonModuleCompute()
+{
+    // step 0 of precipitation WG2D initialization of variables
+    weatherGenerator2D::initializePrecipitationInternalArrays();
+    weatherGenerator2D::initializePrecipitationOutputs(lengthSeason);
+    // step 1 of precipitation WG2D
+    printf("fase 1: modulo comune\n");
+    weatherGenerator2D::precipitationP00P10(); // it computes the monthly probabilities p00 and p10
+    printf("fase 2: modulo comune\n");
+    // step 2 of precipitation WG2D
+    weatherGenerator2D::precipitationCorrelationMatrices(); // computation of monthly correlation amongst stations
+    printf("fase 3: modulo comune\n");
+    // step 3 of precipitation WG2D
+    weatherGenerator2D::precipitationMultisiteOccurrenceGeneration(); // generation of a sequence of dry/wet days after statistics and random numbers
+    //printf("fine modulo comune\n");
+}
+
+void weatherGenerator2D::temperatureCompute()
+{
+    // step 1 of temperature WG2D
+    printf("fase 1 temperature\n");
+    weatherGenerator2D::computeTemperatureParameters();
+    printf("fase 2 temperature\n");
+    // step 2 of temperature WG2D
+    weatherGenerator2D::temperaturesCorrelationMatrices();
+    printf("fase 3 temperature\n");
+    // step 3 of temperature WG2D
+    weatherGenerator2D::multisiteRandomNumbersTemperature();
+    printf("fase 4 temperature\n");
+    // step 4 of temperature WG2D
+    weatherGenerator2D::multisiteTemperatureGeneration();
+}
 
 void weatherGenerator2D::precipitationCompute()
 {
-   // step 0 of precipitation WG2D initialization of variables
-   weatherGenerator2D::initializePrecipitationInternalArrays();
-   weatherGenerator2D::initializePrecipitationOutputs(lengthSeason);
-   // step 1 of precipitation WG2D
-   weatherGenerator2D::precipitationP00P10(); // it computes the monthly probabilities p00 and p10
-   printf("fase 1\n");
-   // step 2 of precipitation WG2D
-   weatherGenerator2D::precipitationCorrelationMatrices(); // computation of monthly correlation amongst stations
-   printf("fase 2\n");
-   // step 3 of precipitation WG2D
-   weatherGenerator2D::precipitationMultisiteOccurrenceGeneration(); // generation of a sequence of dry/wet days after statistics and random numbers
-   printf("fase 3\n");
-   if (isPrecWG2D)
-   {
+
     // step 4 of precipitation WG2D
+    printf("fase 1: modulo precipitazione\n");
     weatherGenerator2D::precipitationMultiDistributionParameterization(); // seasonal amounts distribution
-    printf("fase 4\n");
+    printf("fase 2: modulo precipitazione\n");
     // step 5 of precipitation WG2D
     weatherGenerator2D::precipitationMultisiteAmountsGeneration(); // generaation of synthetic series
-    printf("fase 5\n");
-   }
+    printf("fine modulo precipitazione\n");
 }
 
 
