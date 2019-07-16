@@ -69,8 +69,14 @@ Crit3DSoilWidget::Crit3DSoilWidget()
 
     soilLayout->addLayout(texturalLayout);
     tabWidget = new QTabWidget;
-    horizonsTab = new HorizonsTab();
+    horizonsTab = new TabHorizons();
+    wrDataTab = new TabWaterRetentionData();
+    wrCurveTab = new TabWaterRetentionCurve();
+    hydraConducCurveTab = new TabHydraulicConductivityCurve();
     tabWidget->addTab(horizonsTab, tr("Horizons"));
+    tabWidget->addTab(wrDataTab, tr("Water Retention Data"));
+    tabWidget->addTab(wrCurveTab, tr("Water Retention Curve"));
+    tabWidget->addTab(hydraConducCurveTab, tr("Hydraulic Conductivity Curve"));
 
     soilLayout->addWidget(tabWidget);
     this->setLayout(mainLayout);

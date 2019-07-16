@@ -1,19 +1,17 @@
-#ifndef HORIZONSTAB_H
-#define HORIZONSTAB_H
+#ifndef TABHORIZONS_H
+#define TABHORIZONS_H
 
-#include <QDialog>
-#include <QSettings>
 #include <QtWidgets>
 #ifndef SOIL_H
     #include "soil.h"
 #endif
 
-class HorizonsTab : public QWidget
+class TabHorizons : public QWidget
 {
     Q_OBJECT
 
 public:
-    HorizonsTab();
+    TabHorizons();
     void fillTextEdit(QString soilCode, soil::Crit3DSoil mySoil);
 
 private:

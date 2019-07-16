@@ -1,6 +1,6 @@
-#include "horizonsTab.h"
+#include "tabHorizons.h"
 
-HorizonsTab::HorizonsTab()
+TabHorizons::TabHorizons()
 {
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(&soilTextEdit);
@@ -8,7 +8,7 @@ HorizonsTab::HorizonsTab()
 }
 
 // example
-void HorizonsTab::fillTextEdit(QString soilCode, soil::Crit3DSoil mySoil)
+void TabHorizons::fillTextEdit(QString soilCode, soil::Crit3DSoil mySoil)
 {
 
     soilTextEdit.clear();
