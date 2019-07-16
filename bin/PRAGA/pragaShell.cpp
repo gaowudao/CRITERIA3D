@@ -26,11 +26,14 @@ bool pragaShell(PragaProject* myProject)
     while (! isExit)
     {
         vector<string> command = getCommandLine("PRAGA");
-        if (! executeSharedCommand(command, &isExit))
+        if (command.size() > 0)
         {
-            if (! executePragaCommand(command, myProject))
+            if (! executeSharedCommand(command, &isExit))
             {
-                cout << "This is not a valid PRAGA command.\n";
+                if (! executePragaCommand(command, myProject))
+                {
+                    cout << "This is not a valid PRAGA command.\n";
+                }
             }
         }
     }
