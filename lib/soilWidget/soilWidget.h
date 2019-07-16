@@ -27,10 +27,15 @@
             QSqlDatabase dbSoil;
             soil::Crit3DSoil mySoil;
             soil::Crit3DTextureClass soilClassList[13];
+            QAction* useData;
+            QAction* airEntry;
 
             void on_actionOpenSoilDB();
+            void on_actionSave();
             void on_actionNewSoil();
             void on_actionDeleteSoil();
+            void on_actionUseData();
+            void on_actionAirEntry();
             void on_actionChooseSoil(QString);
     };
 

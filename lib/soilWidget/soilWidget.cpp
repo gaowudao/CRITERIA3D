@@ -61,6 +61,16 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     QMenu *fileMenu = new QMenu("File");
     QMenu *editMenu = new QMenu("Edit");
     QMenu *optionsMenu = new QMenu("Options");
+//    QString  menuStyle(
+//               "QMenu::item:checked{"
+//               "background-image: url(:/images/checked_hover.png);"
+//               "}"
+//               "QMenu::item:unchecked {"
+//               "background-image: url(:/images/unchecked_hover.png);"
+//               "}"
+//            );
+//    optionsMenu->setStyleSheet(menuStyle);
+
     menuBar->addMenu(fileMenu);
     menuBar->addMenu(editMenu);
     menuBar->addMenu(optionsMenu);
@@ -68,16 +78,33 @@ Crit3DSoilWidget::Crit3DSoilWidget()
 
     // actions
     QAction* openSoilDB = new QAction(tr("&Open dbSoil"), this);
+    QAction* saveChanges = new QAction(tr("&Save Changes"), this);
     QAction* newSoil = new QAction(tr("&New Soil"), this);
     QAction* deleteSoil = new QAction(tr("&Delete Soil"), this);
+
+    useData = new QAction(tr("&Use Water Retention Data"), this);
+    airEntry = new QAction(tr("&Air Entry fixed"), this);
+    useData->setCheckable(true);
+    airEntry->setCheckable(true);
+    airEntry->setEnabled(false);
+
     connect(openSoilDB, &QAction::triggered, this, &Crit3DSoilWidget::on_actionOpenSoilDB);
+    connect(saveChanges, &QAction::triggered, this, &Crit3DSoilWidget::on_actionSave);
     connect(newSoil, &QAction::triggered, this, &Crit3DSoilWidget::on_actionNewSoil);
     connect(deleteSoil, &QAction::triggered, this, &Crit3DSoilWidget::on_actionDeleteSoil);
+
+    connect(useData, &QAction::triggered, this, &Crit3DSoilWidget::on_actionUseData);
+    connect(airEntry, &QAction::triggered, this, &Crit3DSoilWidget::on_actionAirEntry);
+
     connect(&soilListComboBox, &QComboBox::currentTextChanged, this, &Crit3DSoilWidget::on_actionChooseSoil);
 
     fileMenu->addAction(openSoilDB);
+    fileMenu->addAction(saveChanges);
     editMenu->addAction(newSoil);
     editMenu->addAction(deleteSoil);
+    optionsMenu->addAction(useData);
+    optionsMenu->addAction(airEntry);
+
 
 }
 
@@ -188,4 +215,31 @@ void Crit3DSoilWidget::on_actionDeleteSoil()
             return;
         }
     }
+}
+
+void Crit3DSoilWidget::on_actionUseData()
+{
+    if (useData->isChecked())
+    {
+        airEntry->setEnabled(true);
+        airEntry->setChecked(false);
+        // TO DO
+    }
+    else
+    {
+        airEntry->setChecked(false);
+        airEntry->setEnabled(false);
+        // TO DO
+    }
+}
+
+void Crit3DSoilWidget::on_actionAirEntry()
+{
+    // TO DO
+}
+
+void Crit3DSoilWidget::on_actionSave()
+{
+    qDebug() << "save changes";
+    // TO DO
 }
