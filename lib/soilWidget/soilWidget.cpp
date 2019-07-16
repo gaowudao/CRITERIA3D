@@ -41,6 +41,7 @@
 #include <QMenuBar>
 #include <QAction>
 #include <QMessageBox>
+#include <QDebug> //debug
 
 
 Crit3DSoilWidget::Crit3DSoilWidget()
@@ -58,15 +59,26 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     // menu
     QMenuBar* menuBar = new QMenuBar();
     QMenu *fileMenu = new QMenu("File");
+    QMenu *editMenu = new QMenu("Edit");
+    QMenu *optionsMenu = new QMenu("Options");
     menuBar->addMenu(fileMenu);
+    menuBar->addMenu(editMenu);
+    menuBar->addMenu(optionsMenu);
     this->layout()->setMenuBar(menuBar);
 
     // actions
-    QAction* OpenSoilDB = new QAction(tr("&Open dbSoil"), this);
-    connect(OpenSoilDB, &QAction::triggered, this, &Crit3DSoilWidget::on_actionOpenSoilDB);
+    QAction* openSoilDB = new QAction(tr("&Open dbSoil"), this);
+    QAction* newSoil = new QAction(tr("&New Soil"), this);
+    QAction* deleteSoil = new QAction(tr("&Delete Soil"), this);
+    connect(openSoilDB, &QAction::triggered, this, &Crit3DSoilWidget::on_actionOpenSoilDB);
+    connect(newSoil, &QAction::triggered, this, &Crit3DSoilWidget::on_actionNewSoil);
+    connect(deleteSoil, &QAction::triggered, this, &Crit3DSoilWidget::on_actionDeleteSoil);
     connect(&soilListComboBox, &QComboBox::currentTextChanged, this, &Crit3DSoilWidget::on_actionChooseSoil);
 
-    fileMenu->addAction(OpenSoilDB);
+    fileMenu->addAction(openSoilDB);
+    editMenu->addAction(newSoil);
+    editMenu->addAction(deleteSoil);
+
 }
 
 
@@ -143,6 +155,37 @@ void Crit3DSoilWidget::mouseReleaseEvent(QMouseEvent* ev)
 {
     Q_UNUSED(ev);
 
-    //TODO
+    //TO DO
 }
 
+void Crit3DSoilWidget::on_actionNewSoil()
+{
+    //TO DO
+}
+
+
+void Crit3DSoilWidget::on_actionDeleteSoil()
+{
+    QString msg;
+    if (soilListComboBox.currentText().isEmpty())
+    {
+        msg = "Select the soil to be deleted";
+        QMessageBox::information(nullptr, "Warning", msg);
+    }
+    else
+    {
+        QMessageBox::StandardButton confirm;
+        msg = "Are you sure you want to delete "+soilListComboBox.currentText()+" ?";
+        confirm = QMessageBox::question(nullptr, "Warning", msg, QMessageBox::Yes|QMessageBox::No, QMessageBox::No);
+
+        if (confirm == QMessageBox::Yes)
+        {
+            qDebug() << "Yes was clicked";
+            //TO DO
+        }
+        else
+        {
+            return;
+        }
+    }
+}

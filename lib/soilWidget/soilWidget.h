@@ -29,6 +29,8 @@
             soil::Crit3DTextureClass soilClassList[13];
 
             void on_actionOpenSoilDB();
+            void on_actionNewSoil();
+            void on_actionDeleteSoil();
             void on_actionChooseSoil(QString);
     };
 
