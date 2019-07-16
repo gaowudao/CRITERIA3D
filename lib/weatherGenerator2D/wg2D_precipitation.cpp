@@ -156,6 +156,16 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
                }
        }
    }
+
+   /*for (int j=0;j<lengthSeason[0]*parametersModel.yearOfSimulation;j++)
+   {
+       for (int i=0;i<nrStations;i++)
+       {
+           printf("%.1f ",occurrenceMatrixSeasonDJF[i][j]);
+       }
+       printf("\n");
+   }
+    pressEnterToContinue();*/
    for (int i=0;i<nrStations;i++)
    {
        int counterMonth = 2;
@@ -209,6 +219,41 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
    statistics::correlationsMatrix(nrStations,occurrenceMatrixSeasonMAM,lengthSeason[1]*parametersModel.yearOfSimulation,wMAM);
    statistics::correlationsMatrix(nrStations,occurrenceMatrixSeasonJJA,lengthSeason[2]*parametersModel.yearOfSimulation,wJJA);
    statistics::correlationsMatrix(nrStations,occurrenceMatrixSeasonSON,lengthSeason[3]*parametersModel.yearOfSimulation,wSON);
+   /*for (int i=0;i<nrStations;i++)
+   {
+       for (int j=0;j<nrStations;j++)
+       {
+            printf("%.3f  ", wDJF[i][j]);
+       }
+       printf("\n");
+   }
+   printf("\n");
+   for (int i=0;i<nrStations;i++)
+   {
+       for (int j=0;j<nrStations;j++)
+       {
+            printf("%.3f  ", wMAM[i][j]);
+       }
+       printf("\n");
+   }
+   printf("\n");
+   for (int i=0;i<nrStations;i++)
+   {
+       for (int j=0;j<nrStations;j++)
+       {
+            printf("%.3f  ", wJJA[i][j]);
+       }
+       printf("\n");
+   }
+   printf("\n");
+   for (int i=0;i<nrStations;i++)
+   {
+       for (int j=0;j<nrStations;j++)
+       {
+            printf("%.3f  ", wSON[i][j]);
+       }
+       printf("\n");
+   }*/
 
    // initialize amounts and occurrences structures for precipitation
    // !!!!!! if precipitation is equal to threshold it could generate some computational problems

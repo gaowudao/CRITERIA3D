@@ -236,11 +236,11 @@ void weatherGenerator2D::computeWeatherGenerator2D()
 {
     weatherGenerator2D::commonModuleCompute();
 
-    if (isPrecWG2D)
-        weatherGenerator2D::precipitationCompute();
-
     if (isTempWG2D)
         weatherGenerator2D::temperatureCompute();
+
+    if (isPrecWG2D)
+        weatherGenerator2D::precipitationCompute();
 
     weatherGenerator2D::getWeatherGeneratorOutput();
 }
@@ -285,7 +285,7 @@ void weatherGenerator2D::precipitationCompute()
     weatherGenerator2D::precipitationMultiDistributionParameterization(); // seasonal amounts distribution
     printf("fase 2: modulo precipitazione\n");
     // step 5 of precipitation WG2D
-    weatherGenerator2D::precipitationMultisiteAmountsGeneration(); // generaation of synthetic series
+    //weatherGenerator2D::precipitationMultisiteAmountsGeneration(); // generation of synthetic series
     printf("fine modulo precipitazione\n");
 }
 
@@ -532,12 +532,25 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             //printf("start\n");
             for (int jCount=0;jCount<nrDaysIterativeProcessMonthly[iMonth];jCount++)
             {
-               normalizedRandomMatrix[i][jCount]= myrandom::normalRandomLongSeries(&gasDevIset,&gasDevGset,&randomNumberInitial);
+               normalizedRandomMatrix[i][jCount] = myrandom::normalRandomLongSeries(&gasDevIset,&gasDevGset,&randomNumberInitial);
                //normalizedRandomMatrix[i][jCount]= myrandom::normalRandom(&gasDevIset,&gasDevGset);
             }
+
             //printf("end\n");
 
         }
+        /*double* arrayRandomNormalNumbers = (double *)calloc(nrStations*nrDaysIterativeProcessMonthly[iMonth], sizeof(double));
+        randomSet(arrayRandomNormalNumbers,nrStations*nrDaysIterativeProcessMonthly[iMonth]);
+        int countRandom = 0;
+        for (int i=0;i<nrStations;i++)
+        {
+            for (int j=0;j<nrStations;j++)
+            {
+                normalizedRandomMatrix[i][j] = arrayRandomNormalNumbers[countRandom];
+                countRandom++;
+            }
+        }
+        free(arrayRandomNormalNumbers);*/
         // initialization outputs of weatherGenerator2D::spatialIterationOccurrence
         double** M;
         double** K;
