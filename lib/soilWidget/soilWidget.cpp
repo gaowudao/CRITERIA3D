@@ -38,6 +38,7 @@
 #include <QFileDialog>
 #include <QLayout>
 #include <QMenu>
+#include <QLabel>
 #include <QMenuBar>
 #include <QAction>
 #include <QMessageBox>
@@ -47,14 +48,28 @@
 Crit3DSoilWidget::Crit3DSoilWidget()
 {
     this->setWindowTitle(QStringLiteral("Soil"));
-    this->resize(500, 500);
+    this->resize(800, 600);
 
     // layout
-    QVBoxLayout *layout = new QVBoxLayout();
-    layout->addWidget(&soilListComboBox);
-    layout->addWidget(&soilTextEdit);
-    layout->setAlignment(Qt::AlignTop);
-    this->setLayout(layout);
+    QVBoxLayout *mainLayout = new QVBoxLayout();
+    QHBoxLayout *soilLayout = new QHBoxLayout();
+    QVBoxLayout *texturalLayout = new QVBoxLayout();
+
+    mainLayout->addWidget(&soilListComboBox);
+    mainLayout->addLayout(soilLayout);
+    mainLayout->setAlignment(Qt::AlignTop);
+
+    QPixmap pic("../../DOC/img/textural_soil.png");
+    QLabel *label = new QLabel();
+    label->setPixmap (pic);
+
+    texturalLayout->addWidget(label);
+    texturalLayout->setAlignment(Qt::AlignTop);
+
+
+    soilLayout->addLayout(texturalLayout);
+    soilLayout->addWidget(&soilTextEdit);
+    this->setLayout(mainLayout);
 
     // menu
     QMenuBar* menuBar = new QMenuBar();
