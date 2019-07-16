@@ -31,6 +31,7 @@
             QAction* airEntry;
 
             void on_actionOpenSoilDB();
+            void on_actionSave();
             void on_actionNewSoil();
             void on_actionDeleteSoil();
             void on_actionUseData();

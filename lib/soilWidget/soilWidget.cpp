@@ -78,6 +78,7 @@ Crit3DSoilWidget::Crit3DSoilWidget()
 
     // actions
     QAction* openSoilDB = new QAction(tr("&Open dbSoil"), this);
+    QAction* saveChanges = new QAction(tr("&Save Changes"), this);
     QAction* newSoil = new QAction(tr("&New Soil"), this);
     QAction* deleteSoil = new QAction(tr("&Delete Soil"), this);
 
@@ -88,6 +89,7 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     airEntry->setEnabled(false);
 
     connect(openSoilDB, &QAction::triggered, this, &Crit3DSoilWidget::on_actionOpenSoilDB);
+    connect(saveChanges, &QAction::triggered, this, &Crit3DSoilWidget::on_actionSave);
     connect(newSoil, &QAction::triggered, this, &Crit3DSoilWidget::on_actionNewSoil);
     connect(deleteSoil, &QAction::triggered, this, &Crit3DSoilWidget::on_actionDeleteSoil);
 
@@ -97,6 +99,7 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     connect(&soilListComboBox, &QComboBox::currentTextChanged, this, &Crit3DSoilWidget::on_actionChooseSoil);
 
     fileMenu->addAction(openSoilDB);
+    fileMenu->addAction(saveChanges);
     editMenu->addAction(newSoil);
     editMenu->addAction(deleteSoil);
     optionsMenu->addAction(useData);
@@ -235,3 +238,8 @@ void Crit3DSoilWidget::on_actionAirEntry()
     // TO DO
 }
 
+void Crit3DSoilWidget::on_actionSave()
+{
+    qDebug() << "save changes";
+    // TO DO
+}
