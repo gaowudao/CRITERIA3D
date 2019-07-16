@@ -546,7 +546,7 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
               binCenter[i]= bincenter[i];
            }
 
-           interpolation::fittingMarquardt(parMin,parMax,par,nrPar,parDelta,maxIterations,epsilon,functionCode,binCenter,nrBincenter,meanPFit);
+           interpolation::fittingMarquardt(parMin,parMax,par,nrPar,parDelta,maxIterations,epsilon,functionCode,binCenter,meanPFit,nrBincenter);
            //weatherGenerator2D::bestParametersNonLinearFit(par,nrPar,binCenter,meanPFit,nrBincenter);
            //for (int i=0;i<3;i++) printf("marquardt %f\n",par[i]);
            //for (int i=0;i<nrBincenter;i++) printf("marquardt %f %f \n",Pmean[i],par[0]+par[1]* pow(binCenter[i],par[2])); //pressEnterToContinue();
@@ -567,7 +567,7 @@ void weatherGenerator2D::precipitationMultiDistributionParameterization()
 
            if (parametersModel.distributionPrecipitation == 2)
            {
-               interpolation::fittingMarquardt(parMin,parMax,par,nrPar,parDelta,maxIterations,epsilon,functionCode,binCenter,nrBincenter,stdDevFit);
+               interpolation::fittingMarquardt(parMin,parMax,par,nrPar,parDelta,maxIterations,epsilon,functionCode,binCenter,stdDevFit,nrBincenter);
                //weatherGenerator2D::bestParametersNonLinearFit(par,nrPar,binCenter,stdDevFit,nrBincenter);
                //par[0] = 2.0953;
                //par[1] = 18.5122;
