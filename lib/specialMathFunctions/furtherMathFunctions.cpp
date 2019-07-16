@@ -571,18 +571,16 @@ namespace interpolation
 
     double estimateFunction(int idFunction, double *parameters, int nrParameters, double *x)
     {
-        /*
-            SPHERICAL:
-            parameters(0): range
-            parameters(1): nugget
-            parameters(2): sill
-        */
         double output;
         double myTmp;
         switch (idFunction)
         {
             case FUNCTION_CODE_SPHERICAL :
-
+                /*
+                    parameters(0): range
+                    parameters(1): nugget
+                    parameters(2): sill
+                */
                 if (parameters[0] == 0)
                 {
                     output = NODATA;
