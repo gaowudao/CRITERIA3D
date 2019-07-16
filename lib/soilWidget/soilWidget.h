@@ -4,11 +4,15 @@
     #ifndef SOIL_H
         #include "soil.h"
     #endif
+    #ifndef HORIZONSTAB_H
+        #include "horizonsTab.h"
+    #endif
 
     #include <QWidget>
     #include <QComboBox>
     #include <QTextEdit>
     #include <QSqlDatabase>
+
 
     class Crit3DSoilWidget : public QWidget
     {
@@ -22,7 +26,8 @@
 
         private:
             QComboBox soilListComboBox;
-            QTextEdit soilTextEdit;
+            QTabWidget* tabWidget;
+            HorizonsTab* horizonsTab;
 
             QSqlDatabase dbSoil;
             soil::Crit3DSoil mySoil;

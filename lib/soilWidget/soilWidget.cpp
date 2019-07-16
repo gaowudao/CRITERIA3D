@@ -68,7 +68,11 @@ Crit3DSoilWidget::Crit3DSoilWidget()
 
 
     soilLayout->addLayout(texturalLayout);
-    soilLayout->addWidget(&soilTextEdit);
+    tabWidget = new QTabWidget;
+    horizonsTab = new HorizonsTab();
+    tabWidget->addTab(horizonsTab, tr("Horizons"));
+
+    soilLayout->addWidget(tabWidget);
     this->setLayout(mainLayout);
 
     // menu
@@ -163,7 +167,6 @@ void Crit3DSoilWidget::on_actionOpenSoilDB()
 
 void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
 {
-    this->soilTextEdit.clear();
 
     QString error;
     if (! loadSoil(&dbSoil, soilCode, &mySoil, soilClassList, &error))
@@ -171,25 +174,13 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
         QMessageBox::critical(nullptr, "Error!", error);
         return;
     }
-
-    // show data (example)
-    this->soilTextEdit.append(soilCode);
-    this->soilTextEdit.append("Horizon nr., sand (%),   silt (%),   clay (%)");
-    for (int i = 0; i < mySoil.nrHorizons; i++)
-    {
-        QString s;
-        s = QString::number(mySoil.horizon[i].dbData.horizonNr)
-                + "\t" + QString::number(mySoil.horizon[i].dbData.sand)
-                + "\t" + QString::number(mySoil.horizon[i].dbData.silt)
-                + "\t" + QString::number(mySoil.horizon[i].dbData.clay);
-        this->soilTextEdit.append(s);
-    }
-
+    horizonsTab->fillTextEdit(soilCode, mySoil);
     // warnings
     if (error != "")
     {
         QMessageBox::information(nullptr, "Warning", error);
     }
+
 }
 
 

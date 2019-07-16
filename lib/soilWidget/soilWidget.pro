@@ -27,11 +27,13 @@ INCLUDEPATH += ../mathFunctions ../soil ../utilities
 
 SOURCES += \
         soilWidget.cpp \
-    soilDbTools.cpp
+    soilDbTools.cpp \
+    horizonsTab.cpp
 
 HEADERS += \
         soilWidget.h \
-    soilDbTools.h
+    soilDbTools.h \
+    horizonsTab.h
 
 unix {
     target.path = /usr/lib
