@@ -1271,6 +1271,10 @@ void weatherGenerator2D::multisiteTemperatureGeneration()
             stdDevT[1][j] = temperatureCoefficients[i].minTDry.stdDevEstimation[jModulo];
             stdDevT[2][j] = temperatureCoefficients[i].maxTWet.stdDevEstimation[jModulo];
             stdDevT[3][j] = temperatureCoefficients[i].minTWet.stdDevEstimation[jModulo];
+
+            //printf("%.2f %.2f %.2f %.2f \n",averageT[0][j],averageT[1][j],averageT[2][j],averageT[3][j] );
+            //printf("%.2f %.2f %.2f %.2f \n",stdDevT[0][j],stdDevT[1][j],stdDevT[2][j],stdDevT[3][j] );
+
         }
         double* residuals = (double*)calloc(2, sizeof(double));
         residuals[0] = residuals[1] = 0;
@@ -1282,8 +1286,8 @@ void weatherGenerator2D::multisiteTemperatureGeneration()
             eps[j] = (double*)calloc(lengthOfRandomSeries, sizeof(double));
             for (int k=0;k<lengthOfRandomSeries;k++)
             {
-               ksi[j][k] = 0;
-               eps[j][k] = 0;
+               ksi[j][k] = 0;  // initialization
+               eps[j][k] = 0;  // initialization
             }
         }
 
@@ -1323,10 +1327,10 @@ void weatherGenerator2D::multisiteTemperatureGeneration()
 
         for (int j=0;j<lengthOfRandomSeries;j++)
         {
-            cAverage[0][j] = X[j]*averageT[0][j] + (1- X[j])*averageT[2][j]; // for Tmax
-            cAverage[1][j] = X[j]*averageT[1][j] + (1- X[j])*averageT[3][j]; // for Tmin
-            cStdDev[0][j] = X[j]*stdDevT[0][j] + (1-X[j])*stdDevT[2][j]; // for Tmax
-            cStdDev[1][j] = X[j]*stdDevT[1][j] + (1-X[j])*stdDevT[3][j]; // for Tmin
+            cAverage[0][j] = X[j]*averageT[2][j] + (1- X[j])*averageT[0][j]; // for Tmax
+            cAverage[1][j] = X[j]*averageT[3][j] + (1- X[j])*averageT[1][j]; // for Tmin
+            cStdDev[0][j] = X[j]*stdDevT[2][j] + (1-X[j])*stdDevT[0][j]; // for Tmax
+            cStdDev[1][j] = X[j]*stdDevT[3][j] + (1-X[j])*stdDevT[1][j]; // for Tmin
         }
 
         for (int j=0;j<lengthOfRandomSeries;j++)
@@ -1354,8 +1358,9 @@ void weatherGenerator2D::multisiteTemperatureGeneration()
         {
             maxTGenerated[j][i] = Xp[0][j];
             minTGenerated[j][i] = Xp[1][j];
+            printf("%.1f  %.1f %.f\n",maxTGenerated[j][i],minTGenerated[j][i],X[j]);
         }
-
+        pressEnterToContinue();
         free(ksi[0]);
         free(ksi[1]);
         free(eps[0]);
