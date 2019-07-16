@@ -1,10 +1,10 @@
 #include "mainWindow.h"
+#include "pragaProject.h"
+#include "pragaShell.h"
+
 #include <QApplication>
 #include <QtNetwork/QNetworkProxy>
-#include <QDebug>
 #include <QMessageBox>
-
-#include "pragaProject.h"
 
 
 PragaProject myProject;
@@ -32,6 +32,8 @@ bool setProxy(QString hostName, unsigned short port)
 
 int main(int argc, char *argv[])
 {
+    int modality = MODE_GUI;
+
     QApplication myApp(argc, argv);
 
     QString currentPath = myApp.applicationDirPath() + "/";
@@ -46,11 +48,18 @@ int main(int argc, char *argv[])
 
     QNetworkProxyFactory::setUseSystemConfiguration(true);
 
-    QApplication::setOverrideCursor(Qt::ArrowCursor);
-    MainWindow w;
-    w.show();
+    if (modality == MODE_GUI)
+    {
+        QApplication::setOverrideCursor(Qt::ArrowCursor);
+        MainWindow w;
+        w.show();
+        return myApp.exec();
+    }
+    else if (modality == MODE_CONSOLE)
+    {
+        return pragaShell(&myProject);
+    }
 
-    return myApp.exec();
 }
 
 
