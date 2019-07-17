@@ -56,9 +56,6 @@ int main(int argc, char *argv[])
         }
     }
 
-    // uncomment to test/debug
-    // myProject.modality = MODE_BATCH;
-
     QApplication myApp(argc, argv);
 
     QString currentPath = myApp.applicationDirPath() + "/";

@@ -18,7 +18,9 @@ bool executePragaCommand(QStringList argList, PragaProject* myProject)
 
 bool pragaShell(PragaProject* myProject)
 {
-    openNewConsole();
+    #ifdef _WIN32
+        openNewConsole();
+    #endif
 
     bool isExit = false;
     while (! isExit)
