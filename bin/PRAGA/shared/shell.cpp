@@ -1,13 +1,14 @@
-#include "shell.h"
+#pragma comment(lib, "User32.lib")
 #include <iostream>
 #include <sstream>
-#include <Windows.h>
-
+#include "windows.h"
+#include "shell.h"
 
 using namespace std;
 
 
-bool attachOutputToConsole(void) {
+bool attachOutputToConsole()
+{
     HANDLE consoleHandleOut, consoleHandleError;
 
     if (AttachConsole(ATTACH_PARENT_PROCESS)) {
@@ -38,6 +39,29 @@ bool attachOutputToConsole(void) {
     return FALSE;
 }
 
+bool isConsoleForeground()
+{
+    return (GetConsoleWindow() == GetForegroundWindow());
+}
+
+void sendEnterKey(void)
+{
+    INPUT ip;
+    // Set up a generic keyboard event.
+    ip.type = INPUT_KEYBOARD;
+    ip.ki.wScan = 0; // hardware scan code for key
+    ip.ki.time = 0;
+    ip.ki.dwExtraInfo = 0;
+
+    // Send the "Enter" key
+    ip.ki.wVk = 0x0D; // virtual-key code for the "Enter" key
+    ip.ki.dwFlags = 0; // 0 for key press
+    SendInput(1, &ip, sizeof(INPUT));
+
+    // Release the "Enter" key
+    ip.ki.dwFlags = KEYEVENTF_KEYUP; // KEYEVENTF_KEYUP for key release
+    SendInput(1, &ip, sizeof(INPUT));
+}
 
 void openNewConsole()
 {

@@ -2,6 +2,7 @@
 #include "pragaProject.h"
 #include "pragaShell.h"
 
+#include <cstdio>
 #include <QApplication>
 #include <QtNetwork/QNetworkProxy>
 #include <QMessageBox>
@@ -29,22 +30,22 @@ bool setProxy(QString hostName, unsigned short port)
     return true;
 }
 
+QCoreApplication* createApplication(int &argc, char *argv[])
+{
+    for (int i = 1; i < argc; ++i)
+        if (!qstrcmp(argv[i], "-no-gui"))
+            return new QCoreApplication(argc, argv);
+    return new QApplication(argc, argv);
+}
 
 int main(int argc, char *argv[])
 {
-    int modality = MODE_CONSOLE;
 
-    //Is the program running as console or GUI application
-    bool console = attachOutputToConsole();
+    int modality = MODE_GUI;
 
-    if (console) {
-        // Print to stdout
-        printf("Program running as console application\n");
-        for (int i = 0; i < argc; i++) {
-            printf("argv[%d] %s\n", i, argv[i]);
-        }
-    }
-    return true;
+    // check if called from command prompt
+    if (attachOutputToConsole())
+        modality = MODE_BATCH;
 
     QApplication myApp(argc, argv);
 
@@ -70,6 +71,17 @@ int main(int argc, char *argv[])
     else if (modality == MODE_CONSOLE)
     {
         return pragaShell(&myProject);
+    }
+    else if (modality == MODE_BATCH)
+    {
+        printf("\n PRAGA v0.1 \n");
+        for (int i = 0; i < argc; i++)
+            printf("argv[%d] %s\n", i, argv[i]);
+
+        // Send "enter" to release application from the console
+        // This is a hack, but if not used the console doesn't know the application has
+        // returned. The "enter" key only sent if the console window is in focus.
+        if (isConsoleForeground()) sendEnterKey();
     }
 
 }
