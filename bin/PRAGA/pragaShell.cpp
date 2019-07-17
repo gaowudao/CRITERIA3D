@@ -1,15 +1,13 @@
 #include "pragaShell.h"
-#include <vector>
 #include <iostream>
-#include <sstream>
-
 
 using namespace std;
 
 
-bool executePragaCommand(vector<string> command, PragaProject* myProject)
+bool executePragaCommand(QStringList argList, PragaProject* myProject)
 {
-    int nrArgs = command.size();
+    int nrArgs = argList.size();
+    if (nrArgs == 0) return false;
 
     // specific Praga commands
     // ...
@@ -25,10 +23,10 @@ bool pragaShell(PragaProject* myProject)
     bool isExit = false;
     while (! isExit)
     {
-        vector<string> command = getCommandLine("PRAGA");
+        QStringList command = getCommandLine("PRAGA");
         if (command.size() > 0)
         {
-            if (! executeSharedCommand(command, &isExit))
+            if (! myProject->executeCommand(command, &isExit))
             {
                 if (! executePragaCommand(command, myProject))
                 {

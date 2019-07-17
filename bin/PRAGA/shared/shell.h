@@ -1,16 +1,14 @@
 #ifndef SHELL_H
 #define SHELL_H
 
-    #define MODE_GUI 0
-    #define MODE_BATCH 1
-    #define MODE_CONSOLE 2
+    class QString;
+    class QStringList;
 
-    #include <string>
-    #include <vector>
-
+    bool attachOutputToConsole();
     void openNewConsole();
-    std::vector<std::string> getCommandLine(std::string programName);
-    bool executeSharedCommand(std::vector<std::string> command, bool* isExit);
+    void sendEnterKey(void);
+    bool isConsoleForeground();
 
+    QStringList getCommandLine(QString programName);
 
 #endif // SHELL_H

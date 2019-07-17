@@ -56,6 +56,7 @@
         void inizializeDBConnection();
 
     public:
+        int modality;
         QString errorString;
         QString logFileName;
         std::ofstream logFile;
@@ -115,7 +116,7 @@
 
         bool setLogFile(QString callingProgram);
         void logError(QString myStr);
-        void log(std::string myStr);
+        void log(std::string logStr);
         void logError();
 
         void closeMeteoPointsDB();
@@ -146,6 +147,8 @@
         bool interpolationDemMain(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
         bool interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
         bool interpolateDemRadiation(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
+
+        bool executeCommand(QStringList argList, bool* isExit);
     };
 
 
