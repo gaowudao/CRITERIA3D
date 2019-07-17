@@ -7,6 +7,38 @@
 using namespace std;
 
 
+bool attachOutputToConsole(void) {
+    HANDLE consoleHandleOut, consoleHandleError;
+
+    if (AttachConsole(ATTACH_PARENT_PROCESS)) {
+        // Redirect unbuffered STDOUT to the console
+        consoleHandleOut = GetStdHandle(STD_OUTPUT_HANDLE);
+        if (consoleHandleOut != INVALID_HANDLE_VALUE) {
+            freopen("CONOUT$", "w", stdout);
+            setvbuf(stdout, NULL, _IONBF, 0);
+        }
+        else {
+            return FALSE;
+        }
+
+        // Redirect unbuffered STDERR to the console
+        consoleHandleError = GetStdHandle(STD_ERROR_HANDLE);
+        if (consoleHandleError != INVALID_HANDLE_VALUE) {
+            freopen("CONOUT$", "w", stderr);
+            setvbuf(stderr, NULL, _IONBF, 0);
+        }
+        else {
+            return FALSE;
+        }
+
+        return TRUE;
+    }
+
+    //Not a console application
+    return FALSE;
+}
+
+
 void openNewConsole()
 {
     #ifdef _WIN32
@@ -27,7 +59,6 @@ void openNewConsole()
         freopen("CON", "r", stdin);
     #endif
 }
-
 
 vector<string> getCommandLine(string programName)
 {

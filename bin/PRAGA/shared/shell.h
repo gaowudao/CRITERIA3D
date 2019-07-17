@@ -8,6 +8,7 @@
     #include <string>
     #include <vector>
 
+    bool attachOutputToConsole(void);
     void openNewConsole();
     std::vector<std::string> getCommandLine(std::string programName);
     bool executeSharedCommand(std::vector<std::string> command, bool* isExit);

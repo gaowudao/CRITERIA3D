@@ -32,7 +32,19 @@ bool setProxy(QString hostName, unsigned short port)
 
 int main(int argc, char *argv[])
 {
-    int modality = MODE_GUI;
+    int modality = MODE_CONSOLE;
+
+    //Is the program running as console or GUI application
+    bool console = attachOutputToConsole();
+
+    if (console) {
+        // Print to stdout
+        printf("Program running as console application\n");
+        for (int i = 0; i < argc; i++) {
+            printf("argv[%d] %s\n", i, argv[i]);
+        }
+    }
+    return true;
 
     QApplication myApp(argc, argv);
 
@@ -61,8 +73,3 @@ int main(int argc, char *argv[])
     }
 
 }
-
-
-
-
-
