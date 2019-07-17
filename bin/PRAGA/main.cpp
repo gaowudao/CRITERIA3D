@@ -43,9 +43,8 @@ QCoreApplication* createApplication(int &argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-    QString arg1;
-
     // set modality (default: GUI)
+    QString arg1;
     if (argc > 1)
     {
         arg1 = QString::fromStdString(argv[1]);
