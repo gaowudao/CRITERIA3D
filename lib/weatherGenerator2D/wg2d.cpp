@@ -285,7 +285,7 @@ void weatherGenerator2D::precipitationCompute()
     weatherGenerator2D::precipitationMultiDistributionParameterization(); // seasonal amounts distribution
     printf("fase 2: modulo precipitazione\n");
     // step 5 of precipitation WG2D
-    //weatherGenerator2D::precipitationMultisiteAmountsGeneration(); // generation of synthetic series
+    weatherGenerator2D::precipitationMultisiteAmountsGeneration(); // generation of synthetic series
     printf("fine modulo precipitazione\n");
 }
 
@@ -539,18 +539,21 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             //printf("end\n");
 
         }
-        /*double* arrayRandomNormalNumbers = (double *)calloc(nrStations*nrDaysIterativeProcessMonthly[iMonth], sizeof(double));
+        double* arrayRandomNormalNumbers = (double *)calloc(nrStations*nrDaysIterativeProcessMonthly[iMonth], sizeof(double));
         randomSet(arrayRandomNormalNumbers,nrStations*nrDaysIterativeProcessMonthly[iMonth]);
-        int countRandom = 0;
+        /*int countRandom = 0;
         for (int i=0;i<nrStations;i++)
         {
-            for (int j=0;j<nrStations;j++)
+            for (int j=0;j<nrDaysIterativeProcessMonthly[iMonth];j++)
             {
                 normalizedRandomMatrix[i][j] = arrayRandomNormalNumbers[countRandom];
                 countRandom++;
+                //printf("%f  ",normalizedRandomMatrix[i][j]);
             }
+            //printf("\n");
         }
         free(arrayRandomNormalNumbers);*/
+        //pressEnterToContinue();
         // initialization outputs of weatherGenerator2D::spatialIterationOccurrence
         double** M;
         double** K;
@@ -592,8 +595,9 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             for (int j=0;j<nrDaysIterativeProcessMonthly[iMonth];j++)
             {
                 randomMatrix[iMonth].matrixOccurrences[i][j]= occurrences[i][j];
-                //printf("%.f  ", randomMatrix[iMonth].matrixOccurrences[i][j]);
+                //printf("%.f  \n", randomMatrix[iMonth].matrixOccurrences[i][j]);
             }
+            //pressEnterToContinue();
         }
         randomMatrix[iMonth].month = iMonth + 1;
         // free memory
@@ -666,6 +670,7 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
     int counterConvergence=0;
     bool exitWhileCycle = false;
     while ((val>TOLERANCE_MULGETS) && (ii<MAX_ITERATION_MULGETS) && (!exitWhileCycle))
+    //while (ii<1)
     {
         ii++;
         int nrEigenvaluesLessThan0 = 0;
@@ -778,6 +783,7 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
             M[i][i]= 1.;
         }
         if ((ii != MAX_ITERATION_MULGETS) && (val > TOLERANCE_MULGETS)  && (!exitWhileCycle))
+         //if (ii <1)
         {
             for (int i=0; i<nrStations;i++)
             {
@@ -865,11 +871,19 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
                     else if (month == 6 || month == 7 || month == 8) iSeason = 2;
                     else iSeason = 3;
                     outputWeatherData[iStation].precipitation[counter] = simulatedPrecipitationAmounts[iSeason].matrixAmounts[iStation][counterSeason[iSeason]];
+                    //printf("%.2f\n",outputWeatherData[iStation].precipitation[counter]);
                     (counterSeason[iSeason])++;
                 }
                 counter++;
             }
         }
+        for(int i=0;i<parametersModel.yearOfSimulation*365;i++)
+        {
+            //printf("%d %d %.1f %.1f %.1f\n",outputWeatherData[iStation].daySimulated[i],outputWeatherData[iStation].monthSimulated[i],outputWeatherData[iStation].minT[i],outputWeatherData[iStation].maxT[i],outputWeatherData[iStation].precipitation[i]);
+            printf("%d %d %.1f %.1f %.1f\n",outputWeatherData[iStation].daySimulated[i],outputWeatherData[iStation].monthSimulated[i],outputWeatherData[iStation].minT[i],outputWeatherData[iStation].maxT[i],outputWeatherData[iStation].precipitation[i]);
+
+        }
+        pressEnterToContinue();
     }
 }
 

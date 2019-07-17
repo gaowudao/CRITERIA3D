@@ -181,6 +181,7 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
         return;
     }
     horizonsTab->fillTextEdit(soilCode, mySoil);
+    horizonsTab->insertSoilHorizons(mySoil);
     // warnings
     if (error != "")
     {

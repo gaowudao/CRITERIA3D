@@ -132,7 +132,7 @@ QStringList getCommandLine(QString programName)
 }
 
 
-bool Project::executeCommand(QStringList argList, bool* isExit)
+bool Project::executeSharedCommand(QStringList argList, bool* isExit)
 {
     int nrArgs = argList.size();
     if (nrArgs == 0) return false;

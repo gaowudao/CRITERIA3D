@@ -8,10 +8,34 @@ bool executePragaCommand(QStringList argList, PragaProject* myProject)
     int nrArgs = argList.size();
     if (nrArgs == 0) return false;
 
+    QString command = argList[0].toUpper();
+
     // specific Praga commands
     // ...
 
     return false;
+}
+
+
+bool executeCommand(QStringList argList, PragaProject* myProject, bool* isExit)
+{
+    if (argList.size() > 0)
+    {
+        if (! myProject->executeSharedCommand(argList, isExit))
+        {
+            if (! executePragaCommand(argList, myProject))
+            {
+                myProject->logError("This is not a valid PRAGA command.");
+            }
+        }
+    }
+    return true;
+}
+
+
+bool pragaBatch(PragaProject* myProject, QString batchFileName)
+{
+
 }
 
 
@@ -24,17 +48,8 @@ bool pragaShell(PragaProject* myProject)
     bool isExit = false;
     while (! isExit)
     {
-        QStringList command = getCommandLine("PRAGA");
-        if (command.size() > 0)
-        {
-            if (! myProject->executeCommand(command, &isExit))
-            {
-                if (! executePragaCommand(command, myProject))
-                {
-                    myProject->logError("This is not a valid PRAGA command.");
-                }
-            }
-        }
+        QStringList commandLine = getCommandLine("PRAGA");
+        executeCommand(commandLine, myProject, &isExit);
     }
 
     return true;
