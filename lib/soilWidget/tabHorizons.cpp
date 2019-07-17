@@ -32,29 +32,8 @@ TabHorizons::TabHorizons()
 
     mainLayout->addWidget(tableDb);
     mainLayout->addWidget(tableModel);
-    mainLayout->addWidget(&soilTextEdit);
 
     setLayout(mainLayout);
-}
-
-// example
-void TabHorizons::fillTextEdit(QString soilCode, soil::Crit3DSoil mySoil)
-{
-
-    soilTextEdit.clear();
-    // show data (example)
-    soilTextEdit.append(soilCode);
-    soilTextEdit.append("Horizon nr., sand (%),   silt (%),   clay (%)");
-    for (int i = 0; i < mySoil.nrHorizons; i++)
-    {
-        QString s;
-        s = QString::number(mySoil.horizon[i].dbData.horizonNr)
-                + "\t" + QString::number(mySoil.horizon[i].dbData.sand)
-                + "\t" + QString::number(mySoil.horizon[i].dbData.silt)
-                + "\t" + QString::number(mySoil.horizon[i].dbData.clay);
-        soilTextEdit.append(s);
-    }
-
 }
 
 void TabHorizons::insertSoilHorizons(soil::Crit3DSoil mySoil)
@@ -76,8 +55,8 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil mySoil)
 
         tableModel->setItem(i, 0, new QTableWidgetItem( QString::number(mySoil.horizon[i].upperDepth )));
         tableModel->setItem(i, 1, new QTableWidgetItem( QString::number(mySoil.horizon[i].lowerDepth )));
-        tableModel->setItem(i, 2, new QTableWidgetItem( QString::number(mySoil.horizon[i].coarseFragments )));
-        tableModel->setItem(i, 3, new QTableWidgetItem( QString::number(mySoil.horizon[i].organicMatter )));
+        tableModel->setItem(i, 2, new QTableWidgetItem( QString::number(mySoil.horizon[i].coarseFragments*100 )));
+        tableModel->setItem(i, 3, new QTableWidgetItem( QString::number(mySoil.horizon[i].organicMatter*100 )));
         tableModel->setItem(i, 4, new QTableWidgetItem( QString::number(mySoil.horizon[i].bulkDensity )));
         tableModel->setItem(i, 5, new QTableWidgetItem( QString::number(mySoil.horizon[i].waterConductivity.kSat )));
         tableModel->setItem(i, 6, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.thetaR )));
