@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
     // set modality (default: GUI)
     if (argc > 1)
     {
-        QString arg1 = QString::fromStdString(std::string(argv[1]));
+        QString arg1 = QString::fromStdString(argv[1]);
         if (arg1.toUpper() == "CONSOLE")
         {
             myProject.modality = MODE_CONSOLE;
