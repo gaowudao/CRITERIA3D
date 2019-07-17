@@ -49,6 +49,8 @@ bool attachOutputToConsole()
             return false;
         }
     #endif
+
+    return true;
 }
 
 bool isConsoleForeground()
