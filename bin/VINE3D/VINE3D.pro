@@ -69,6 +69,7 @@ SOURCES += \
     ../PRAGA/shared/formInfo.cpp \
     ../PRAGA/shared/dialogSettings.cpp \
     ../PRAGA/shared/dialogSelection.cpp \
+    ../PRAGA/shared/shell.cpp \
     ../PRAGA/shared/stationMarker.cpp \
     ../PRAGA/shared/dialogInterpolation.cpp \
     ../CRITERIA3D/shared/soil3D.cpp \
@@ -93,6 +94,7 @@ HEADERS  += \
     ../PRAGA/shared/formInfo.h \
     ../PRAGA/shared/dialogSettings.h \
     ../PRAGA/shared/dialogSelection.h \
+    ../PRAGA/shared/shell.h \
     ../PRAGA/shared/stationMarker.h \
     ../PRAGA/shared/dialogInterpolation.h \
     ../CRITERIA3D/shared/soil3D.h \

@@ -6,7 +6,10 @@
 #include <sstream>
 #include <QString>
 #include <QStringList>
-#include "Windows.h"
+
+#ifdef _WIN32
+    #include "Windows.h"
+#endif
 
 using namespace std;
 
@@ -14,7 +17,7 @@ using namespace std;
 bool attachOutputToConsole()
 {
     #ifdef _WIN32
-        HANDLE consoleHandleOut, consoleHandleError;
+        HANDLE consoleHandleOut, consoleHandleIn, consoleHandleError;
 
         if (AttachConsole(ATTACH_PARENT_PROCESS))
         {
@@ -23,7 +26,19 @@ bool attachOutputToConsole()
             if (consoleHandleOut != INVALID_HANDLE_VALUE)
             {
                 freopen("CONOUT$", "w", stdout);
-                setvbuf(stdout, NULL, _IONBF, 0);
+                setvbuf(stdout, nullptr, _IONBF, 0);
+            }
+            else
+            {
+                return false;
+            }
+
+            // Redirect STDIN to the console
+            consoleHandleIn = GetStdHandle(STD_INPUT_HANDLE);
+            if (consoleHandleIn != INVALID_HANDLE_VALUE)
+            {
+                freopen("CONIN$", "r", stdin);
+                setvbuf(stdin, nullptr, _IONBF, 0);
             }
             else
             {
@@ -55,26 +70,30 @@ bool attachOutputToConsole()
 
 bool isConsoleForeground()
 {
-    return (GetConsoleWindow() == GetForegroundWindow());
+    #ifdef _WIN32
+        return (GetConsoleWindow() == GetForegroundWindow());
+    #endif
 }
 
 void sendEnterKey(void)
 {
-    INPUT ip;
-    // Set up a generic keyboard event.
-    ip.type = INPUT_KEYBOARD;
-    ip.ki.wScan = 0; // hardware scan code for key
-    ip.ki.time = 0;
-    ip.ki.dwExtraInfo = 0;
+    #ifdef _WIN32
+        INPUT ip;
+        // Set up a generic keyboard event.
+        ip.type = INPUT_KEYBOARD;
+        ip.ki.wScan = 0; // hardware scan code for key
+        ip.ki.time = 0;
+        ip.ki.dwExtraInfo = 0;
 
-    // Send the "Enter" key
-    ip.ki.wVk = 0x0D; // virtual-key code for the "Enter" key
-    ip.ki.dwFlags = 0; // 0 for key press
-    SendInput(1, &ip, sizeof(INPUT));
+        // Send the "Enter" key
+        ip.ki.wVk = 0x0D; // virtual-key code for the "Enter" key
+        ip.ki.dwFlags = 0; // 0 for key press
+        SendInput(1, &ip, sizeof(INPUT));
 
-    // Release the "Enter" key
-    ip.ki.dwFlags = KEYEVENTF_KEYUP; // KEYEVENTF_KEYUP for key release
-    SendInput(1, &ip, sizeof(INPUT));
+        // Release the "Enter" key
+        ip.ki.dwFlags = KEYEVENTF_KEYUP; // KEYEVENTF_KEYUP for key release
+        SendInput(1, &ip, sizeof(INPUT));
+    #endif
 }
 
 void openNewConsole()
@@ -118,17 +137,20 @@ bool Project::executeCommand(QStringList argList, bool* isExit)
     int nrArgs = argList.size();
     if (nrArgs == 0) return false;
 
-    QString command = argList[0];
+    QString command = argList[0].toUpper();
 
-    if (command == "quit" || command == "exit")
+    if (command == "QUIT" || command == "EXIT")
     {
         // close project
         *isExit = true;
         return true;
     }
+    else
+    {
+        // other shared commands
+        // ...
+    }
 
-    // other shared commands
-    // ...
 
     return false;
 }

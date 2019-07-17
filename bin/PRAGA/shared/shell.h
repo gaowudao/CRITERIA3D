@@ -11,4 +11,5 @@
 
     QStringList getCommandLine(QString programName);
 
+
 #endif // SHELL_H

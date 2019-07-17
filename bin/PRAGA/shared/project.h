@@ -116,7 +116,7 @@
 
         bool setLogFile(QString callingProgram);
         void logError(QString myStr);
-        void log(std::string logStr);
+        void logInfo(QString myStr);
         void logError();
 
         void closeMeteoPointsDB();
