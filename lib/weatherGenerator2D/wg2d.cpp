@@ -539,9 +539,9 @@ void weatherGenerator2D::precipitationMultisiteOccurrenceGeneration()
             //printf("end\n");
 
         }
-        double* arrayRandomNormalNumbers = (double *)calloc(nrStations*nrDaysIterativeProcessMonthly[iMonth], sizeof(double));
+        /*double* arrayRandomNormalNumbers = (double *)calloc(nrStations*nrDaysIterativeProcessMonthly[iMonth], sizeof(double));
         randomSet(arrayRandomNormalNumbers,nrStations*nrDaysIterativeProcessMonthly[iMonth]);
-        /*int countRandom = 0;
+        int countRandom = 0;
         for (int i=0;i<nrStations;i++)
         {
             for (int j=0;j<nrDaysIterativeProcessMonthly[iMonth];j++)
