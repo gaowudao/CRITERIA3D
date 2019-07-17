@@ -76,8 +76,8 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil mySoil)
 
         tableModel->setItem(i, 0, new QTableWidgetItem( QString::number(mySoil.horizon[i].upperDepth )));
         tableModel->setItem(i, 1, new QTableWidgetItem( QString::number(mySoil.horizon[i].lowerDepth )));
-        tableModel->setItem(i, 2, new QTableWidgetItem( QString::number(mySoil.horizon[i].coarseFragments )));
-        tableModel->setItem(i, 3, new QTableWidgetItem( QString::number(mySoil.horizon[i].organicMatter )));
+        tableModel->setItem(i, 2, new QTableWidgetItem( QString::number(mySoil.horizon[i].coarseFragments*100 )));
+        tableModel->setItem(i, 3, new QTableWidgetItem( QString::number(mySoil.horizon[i].organicMatter*100 )));
         tableModel->setItem(i, 4, new QTableWidgetItem( QString::number(mySoil.horizon[i].bulkDensity )));
         tableModel->setItem(i, 5, new QTableWidgetItem( QString::number(mySoil.horizon[i].waterConductivity.kSat )));
         tableModel->setItem(i, 6, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.thetaR )));
