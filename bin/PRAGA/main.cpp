@@ -97,6 +97,6 @@ int main(int argc, char *argv[])
             if (isConsoleForeground()) sendEnterKey();
         #endif
 
-        return true;
+        return 1;
     }
 }
