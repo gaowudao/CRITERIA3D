@@ -16,7 +16,6 @@ public:
     void fillTextEdit(QString soilCode, soil::Crit3DSoil mySoil);
 
 private:
-    QTextEdit soilTextEdit;
     QTableWidget* tableDb;
     QTableWidget* tableModel;
 };
