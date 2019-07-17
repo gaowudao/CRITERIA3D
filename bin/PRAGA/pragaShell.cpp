@@ -26,6 +26,7 @@ bool executeCommand(QStringList commandLine, PragaProject* myProject, bool* isEx
             if (! executePragaCommand(commandLine, myProject))
             {
                 myProject->logError("This is not a valid PRAGA command.");
+                return false;
             }
         }
     }
@@ -45,7 +46,7 @@ bool pragaBatch(PragaProject* myProject, QString scriptFileName)
     // TODO:
     // check file
     // for each line of file:
-        // QStringList commandLine = getArgList(line)
+        // QStringList commandLine = getArgumentList(line)
         // executeCommand(commandLine)
 
     #ifdef _WIN32

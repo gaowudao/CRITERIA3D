@@ -118,7 +118,7 @@ void openNewConsole()
 }
 
 
-QStringList getArgList(string commandLine)
+QStringList getArgumentList(string commandLine)
 {
     string str;
     QStringList argList;
@@ -140,7 +140,7 @@ QStringList getCommandLine(string programName)
     cout << programName << ">";
     getline (cin, commandLine);
 
-    return getArgList(commandLine);
+    return getArgumentList(commandLine);
 }
 
 

@@ -9,7 +9,7 @@
     void sendEnterKey(void);
     bool isConsoleForeground();
 
-    QStringList getArgList(std::string commandLine);
+    QStringList getArgumentList(std::string commandLine);
     QStringList getCommandLine(std::string programName);
 
 
