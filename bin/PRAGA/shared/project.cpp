@@ -18,6 +18,7 @@
 Project::Project()
 {
     inizializeDBConnection();
+    modality = MODE_GUI;
     path = "";
     logFileName = "";
     errorString = "";
@@ -1158,11 +1159,10 @@ float Project::meteoDataConsistency(meteoVariable myVar, const Crit3DTime& timeI
 }
 
 
-/*-------------------
 
-   LOG functions
-
- -------------------*/
+/* ---------------------------------------------
+ * LOG functions
+ * --------------------------------------------*/
 
 bool Project::setLogFile(QString callingProgram)
 {
@@ -1178,10 +1178,16 @@ bool Project::setLogFile(QString callingProgram)
     return (this->logFile.is_open());
 }
 
-void Project::log(std::string myStr)
+
+void Project::log(std::string logStr)
 {
+    // standard output in all modalities
+    std::cout << logStr << std::endl;
+
     if (logFile.is_open())
-        logFile << myStr << std::endl;
+    {
+        logFile << logStr << std::endl;
+    }
 }
 
 void Project::logError(QString myStr)
@@ -1190,12 +1196,22 @@ void Project::logError(QString myStr)
     logError();
 }
 
+
 void Project::logError()
 {
     if (logFile.is_open())
+    {
         logFile << "----ERROR!----\n" << errorString.toStdString() << std::endl;
-    else
+    }
+
+    if (modality == MODE_GUI)
+    {
         QMessageBox::critical(nullptr, "Error!", errorString);
+    }
+    else
+    {
+        std::cout << "Error! " << errorString.toStdString() << std::endl;
+    }
 }
 
 

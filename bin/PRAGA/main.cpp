@@ -30,6 +30,7 @@ bool setProxy(QString hostName, unsigned short port)
     return true;
 }
 
+
 QCoreApplication* createApplication(int &argc, char *argv[])
 {
     for (int i = 1; i < argc; ++i)
@@ -38,14 +39,25 @@ QCoreApplication* createApplication(int &argc, char *argv[])
     return new QApplication(argc, argv);
 }
 
+
 int main(int argc, char *argv[])
 {
+    // set modality (default: GUI)
+    if (argc > 1)
+    {
+        std::string arg1 = argv[1];
+        if (arg1 == "CONSOLE")
+        {
+            myProject.modality = MODE_CONSOLE;
+        }
+        else
+        {
+            myProject.modality = MODE_BATCH;
+        }
+    }
 
-    int modality = MODE_GUI;
-
-    // check if called from command prompt
-    if (attachOutputToConsole())
-        modality = MODE_BATCH;
+    // uncomment to test/debug
+    myProject.modality = MODE_CONSOLE;
 
     QApplication myApp(argc, argv);
 
@@ -61,20 +73,22 @@ int main(int argc, char *argv[])
 
     QNetworkProxyFactory::setUseSystemConfiguration(true);
 
-    if (modality == MODE_GUI)
+    if (myProject.modality == MODE_GUI)
     {
         QApplication::setOverrideCursor(Qt::ArrowCursor);
         MainWindow w;
         w.show();
         return myApp.exec();
     }
-    else if (modality == MODE_CONSOLE)
+    else if (myProject.modality == MODE_CONSOLE)
     {
         return pragaShell(&myProject);
     }
-    else if (modality == MODE_BATCH)
+    else if (myProject.modality == MODE_BATCH)
     {
-        printf("\n PRAGA v0.1 \n");
+        attachOutputToConsole();
+
+        myProject.log("\nPRAGA v0.1");
         for (int i = 0; i < argc; i++)
             printf("argv[%d] %s\n", i, argv[i]);
 
@@ -83,5 +97,4 @@ int main(int argc, char *argv[])
         // returned. The "enter" key only sent if the console window is in focus.
         if (isConsoleForeground()) sendEnterKey();
     }
-
 }

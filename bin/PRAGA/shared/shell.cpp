@@ -1,42 +1,54 @@
 #pragma comment(lib, "User32.lib")
+
+#include "shell.h"
+#include "project.h"
 #include <iostream>
 #include <sstream>
-#include "windows.h"
-#include "shell.h"
+#include <QString>
+#include <QStringList>
+#include "Windows.h"
 
 using namespace std;
 
 
 bool attachOutputToConsole()
 {
-    HANDLE consoleHandleOut, consoleHandleError;
+    #ifdef _WIN32
+        HANDLE consoleHandleOut, consoleHandleError;
 
-    if (AttachConsole(ATTACH_PARENT_PROCESS)) {
-        // Redirect unbuffered STDOUT to the console
-        consoleHandleOut = GetStdHandle(STD_OUTPUT_HANDLE);
-        if (consoleHandleOut != INVALID_HANDLE_VALUE) {
-            freopen("CONOUT$", "w", stdout);
-            setvbuf(stdout, NULL, _IONBF, 0);
-        }
-        else {
-            return FALSE;
-        }
+        if (AttachConsole(ATTACH_PARENT_PROCESS))
+        {
+            // Redirect unbuffered STDOUT to the console
+            consoleHandleOut = GetStdHandle(STD_OUTPUT_HANDLE);
+            if (consoleHandleOut != INVALID_HANDLE_VALUE)
+            {
+                freopen("CONOUT$", "w", stdout);
+                setvbuf(stdout, NULL, _IONBF, 0);
+            }
+            else
+            {
+                return false;
+            }
 
-        // Redirect unbuffered STDERR to the console
-        consoleHandleError = GetStdHandle(STD_ERROR_HANDLE);
-        if (consoleHandleError != INVALID_HANDLE_VALUE) {
-            freopen("CONOUT$", "w", stderr);
-            setvbuf(stderr, NULL, _IONBF, 0);
+            // Redirect unbuffered STDERR to the console
+            consoleHandleError = GetStdHandle(STD_ERROR_HANDLE);
+            if (consoleHandleError != INVALID_HANDLE_VALUE)
+            {
+                freopen("CONOUT$", "w", stderr);
+                setvbuf(stderr, nullptr, _IONBF, 0);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
-        else {
-            return FALSE;
+        else
+        {
+            // Not a console application
+            return false;
         }
-
-        return TRUE;
-    }
-
-    //Not a console application
-    return FALSE;
+    #endif
 }
 
 bool isConsoleForeground()
@@ -84,27 +96,31 @@ void openNewConsole()
     #endif
 }
 
-vector<string> getCommandLine(string programName)
+QStringList getCommandLine(QString programName)
 {
-    vector<string> command;
+    QStringList argList;
     string str, commandLine;
 
-    cout << programName << ">";
+    cout << programName.toStdString() << ">";
     getline (cin, commandLine);
 
     istringstream stream(commandLine);
-    while (stream >> str) command.push_back(str);
+    while (stream >> str) argList.append(QString::fromStdString(str));
 
-    return command;
+    return argList;
 }
 
 
-bool executeSharedCommand(vector<string> command, bool* isExit)
+bool Project::executeCommand(QStringList argList, bool* isExit)
 {
-    int nrArgs = command.size();
+    int nrArgs = argList.size();
+    if (nrArgs == 0) return false;
 
-    if (command[0] == "quit" || command[0] == "exit")
+    QString command = argList[0];
+
+    if (command == "quit" || command == "exit")
     {
+        // close project
         *isExit = true;
         return true;
     }

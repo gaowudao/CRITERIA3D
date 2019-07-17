@@ -1,7 +1,6 @@
 #ifndef COMMONCONSTANTS_H
 #define COMMONCONSTANTS_H
 
-    // general functions
     #ifndef minValue
         #define minValue(a, b) (((a) < (b))? (a) : (b))
     #endif
@@ -26,7 +25,12 @@
         #define DAY_SECONDS 86400.
     #endif
 
-    // Criteria-3D
+    // --------------- modalities -----------------
+    #define MODE_GUI 0
+    #define MODE_BATCH 1
+    #define MODE_CONSOLE 2
+
+    // --------------- soilFluxes3D -----------------
     #define NOLINK -1
 
     #define PROCESS_WATER 0
@@ -70,7 +74,7 @@
     #define MAX_SURFACES 1024
     #define MAX_HORIZONS 20
 
-    // heat
+    // --------------- heat model -----------------
     #define SAVE_HEATFLUXES_NONE 0
     #define SAVE_HEATFLUXES_TOTAL 1
     #define SAVE_HEATFLUXES_ALL 2
