@@ -38,6 +38,7 @@
 #include <QFileDialog>
 #include <QLayout>
 #include <QMenu>
+#include <QLabel>
 #include <QMenuBar>
 #include <QAction>
 #include <QMessageBox>
@@ -47,20 +48,54 @@
 Crit3DSoilWidget::Crit3DSoilWidget()
 {
     this->setWindowTitle(QStringLiteral("Soil"));
-    this->resize(500, 500);
+    this->resize(1200, 800);
 
     // layout
-    QVBoxLayout *layout = new QVBoxLayout();
-    layout->addWidget(&soilListComboBox);
-    layout->addWidget(&soilTextEdit);
-    layout->setAlignment(Qt::AlignTop);
-    this->setLayout(layout);
+    QVBoxLayout *mainLayout = new QVBoxLayout();
+    QHBoxLayout *soilLayout = new QHBoxLayout();
+    QVBoxLayout *texturalLayout = new QVBoxLayout();
+
+    mainLayout->addWidget(&soilListComboBox);
+    mainLayout->addLayout(soilLayout);
+    mainLayout->setAlignment(Qt::AlignTop);
+
+    QPixmap pic("../../DOC/img/textural_soil.png");
+    QLabel *label = new QLabel();
+    label->setPixmap (pic);
+
+    texturalLayout->addWidget(label);
+    texturalLayout->setAlignment(Qt::AlignTop);
+
+
+    soilLayout->addLayout(texturalLayout);
+    tabWidget = new QTabWidget;
+    horizonsTab = new TabHorizons();
+    wrDataTab = new TabWaterRetentionData();
+    wrCurveTab = new TabWaterRetentionCurve();
+    hydraConducCurveTab = new TabHydraulicConductivityCurve();
+    tabWidget->addTab(horizonsTab, tr("Horizons"));
+    tabWidget->addTab(wrDataTab, tr("Water Retention Data"));
+    tabWidget->addTab(wrCurveTab, tr("Water Retention Curve"));
+    tabWidget->addTab(hydraConducCurveTab, tr("Hydraulic Conductivity Curve"));
+
+    soilLayout->addWidget(tabWidget);
+    this->setLayout(mainLayout);
 
     // menu
     QMenuBar* menuBar = new QMenuBar();
     QMenu *fileMenu = new QMenu("File");
     QMenu *editMenu = new QMenu("Edit");
     QMenu *optionsMenu = new QMenu("Options");
+//    QString  menuStyle(
+//               "QMenu::item:checked{"
+//               "background-image: url(:/images/checked_hover.png);"
+//               "}"
+//               "QMenu::item:unchecked {"
+//               "background-image: url(:/images/unchecked_hover.png);"
+//               "}"
+//            );
+//    optionsMenu->setStyleSheet(menuStyle);
+
     menuBar->addMenu(fileMenu);
     menuBar->addMenu(editMenu);
     menuBar->addMenu(optionsMenu);
@@ -68,16 +103,33 @@ Crit3DSoilWidget::Crit3DSoilWidget()
 
     // actions
     QAction* openSoilDB = new QAction(tr("&Open dbSoil"), this);
+    QAction* saveChanges = new QAction(tr("&Save Changes"), this);
     QAction* newSoil = new QAction(tr("&New Soil"), this);
     QAction* deleteSoil = new QAction(tr("&Delete Soil"), this);
+
+    useData = new QAction(tr("&Use Water Retention Data"), this);
+    airEntry = new QAction(tr("&Air Entry fixed"), this);
+    useData->setCheckable(true);
+    airEntry->setCheckable(true);
+    airEntry->setEnabled(false);
+
     connect(openSoilDB, &QAction::triggered, this, &Crit3DSoilWidget::on_actionOpenSoilDB);
+    connect(saveChanges, &QAction::triggered, this, &Crit3DSoilWidget::on_actionSave);
     connect(newSoil, &QAction::triggered, this, &Crit3DSoilWidget::on_actionNewSoil);
     connect(deleteSoil, &QAction::triggered, this, &Crit3DSoilWidget::on_actionDeleteSoil);
+
+    connect(useData, &QAction::triggered, this, &Crit3DSoilWidget::on_actionUseData);
+    connect(airEntry, &QAction::triggered, this, &Crit3DSoilWidget::on_actionAirEntry);
+
     connect(&soilListComboBox, &QComboBox::currentTextChanged, this, &Crit3DSoilWidget::on_actionChooseSoil);
 
     fileMenu->addAction(openSoilDB);
+    fileMenu->addAction(saveChanges);
     editMenu->addAction(newSoil);
     editMenu->addAction(deleteSoil);
+    optionsMenu->addAction(useData);
+    optionsMenu->addAction(airEntry);
+
 
 }
 
@@ -121,7 +173,6 @@ void Crit3DSoilWidget::on_actionOpenSoilDB()
 
 void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
 {
-    this->soilTextEdit.clear();
 
     QString error;
     if (! loadSoil(&dbSoil, soilCode, &mySoil, soilClassList, &error))
@@ -129,25 +180,13 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
         QMessageBox::critical(nullptr, "Error!", error);
         return;
     }
-
-    // show data (example)
-    this->soilTextEdit.append(soilCode);
-    this->soilTextEdit.append("Horizon nr., sand (%),   silt (%),   clay (%)");
-    for (int i = 0; i < mySoil.nrHorizons; i++)
-    {
-        QString s;
-        s = QString::number(mySoil.horizon[i].dbData.horizonNr)
-                + "\t" + QString::number(mySoil.horizon[i].dbData.sand)
-                + "\t" + QString::number(mySoil.horizon[i].dbData.silt)
-                + "\t" + QString::number(mySoil.horizon[i].dbData.clay);
-        this->soilTextEdit.append(s);
-    }
-
+    horizonsTab->fillTextEdit(soilCode, mySoil);
     // warnings
     if (error != "")
     {
         QMessageBox::information(nullptr, "Warning", error);
     }
+
 }
 
 
@@ -188,4 +227,31 @@ void Crit3DSoilWidget::on_actionDeleteSoil()
             return;
         }
     }
+}
+
+void Crit3DSoilWidget::on_actionUseData()
+{
+    if (useData->isChecked())
+    {
+        airEntry->setEnabled(true);
+        airEntry->setChecked(false);
+        // TO DO
+    }
+    else
+    {
+        airEntry->setChecked(false);
+        airEntry->setEnabled(false);
+        // TO DO
+    }
+}
+
+void Crit3DSoilWidget::on_actionAirEntry()
+{
+    // TO DO
+}
+
+void Crit3DSoilWidget::on_actionSave()
+{
+    qDebug() << "save changes";
+    // TO DO
 }

@@ -32,11 +32,10 @@
 #include "statistics.h"
 #include "physics.h"
 
-namespace elaborations {
+
 
 float statisticalElab(meteoComputation elab, float param, std::vector<float> values, int nValues, float rainfallThreshold)
 {
-
     switch(elab)
     {
         case average:
@@ -81,12 +80,10 @@ float statisticalElab(meteoComputation elab, float param, std::vector<float> val
 
         default:
             return NODATA;
-
     }
-
 }
 
-}
+
 namespace statistics
 {
 

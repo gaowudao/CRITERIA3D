@@ -108,7 +108,9 @@ SOURCES += main.cpp\
     dialogClimateFields.cpp \
     dialogPragaSettings.cpp \
     dialogSeriesOnZones.cpp \
-    dialogAnomaly.cpp
+    dialogAnomaly.cpp \
+    shared/shell.cpp \
+    pragaShell.cpp
 
 
 HEADERS  += mainWindow.h \
@@ -130,7 +132,9 @@ HEADERS  += mainWindow.h \
     dialogClimateFields.h \
     dialogPragaSettings.h \
     dialogSeriesOnZones.h \
-    dialogAnomaly.h
+    dialogAnomaly.h \
+    shared/shell.h \
+    pragaShell.h
 
 
 FORMS    += mainWindow.ui \

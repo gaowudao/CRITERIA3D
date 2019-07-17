@@ -59,14 +59,17 @@
         double linearInterpolation (double x, double *xColumn , double *yColumn, int dimTable);
         float linearInterpolation (float x, float *xColumn , float *yColumn, int dimTable );
         float linearExtrapolation(double x3,double x1,double y1,double x2 , double y2);
-        double normGeneric(double *myParameters, int nrMyParameters, double *myX,int nrMyX, double *myY,int myFunctionCode);
-        double estimateFunction(int myFunctionCode, double *myParameters, int nrMyParameters, double *myX);
-        void leastSquares(int myFunctionCode,double *myParameters, int nrMyParameters,
-                    double *myX,int nrMyX, double *myY,double *myLambda,
-                    double *myParametersDelta, double *myParametersChange);
+
+        void leastSquares(int idFunction, double* parameters, int nrParameters,
+                          double* x, double* y, int nrData, double* lambda,
+                          double* parametersDelta, double* parametersChange);
+
         bool fittingMarquardt(double *myParMin, double *myParMax,
-                    double *myPar, int nrMyPar, double *myParDelta, int myMaxIterations,
-                    double myEpsilon,int myFunctionCode, double *myX,int nrMyX,double *myY);
+                    double *myPar, int nrMyPar, double *parametersDelta, int myMaxIterations,
+                    double myEpsilon, int idFunction, double *x, double *y, int nrData);
+
+        double estimateFunction(int idFunction, double *parameters, int nrParameters, double *x);
+        double normGeneric(int idFunction, double *parameters, int nrParameters, double *x, double *y,  int nrData);
 
         double cubicSpline(double x , double *firstColumn , double *secondColumn, int dim); // not working to be checked
         void punctualSecondDerivative(int dim, double *firstColumn , double *secondColumn, double* secondDerivative); // not working to be checked

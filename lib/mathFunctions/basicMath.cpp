@@ -27,6 +27,7 @@
 #include <math.h>
 #include <malloc.h>
 
+
     bool sameSignNoZero(float a, float b)
     {
         return a*b > 0.0f;
@@ -78,11 +79,13 @@
         if (x < 0) return y1;
         else return y2;
     }
+
     double stepFunction (double x, double change, double y1, double y2)
     {
         if (x < change) return y1;
         else return y2;
     }
+
     double boundedValue (double x, double lowerBound, double upperBound)
     {
         if (x < lowerBound) return lowerBound;
@@ -130,7 +133,6 @@
         return myNorm;
     }
 
-
     bool findLinesIntersection(float q1, float m1, float q2, float m2, float* x, float* y)
     {
         if (fabs(double(m1 - m2)) >= EPSILON)
@@ -177,7 +179,6 @@
     {
         return fabs(value - NODATA) < EPSILON;
     }
-
 
     char* decimal_to_binary(unsigned int n, int nrBits)
     {

@@ -27,11 +27,19 @@ INCLUDEPATH += ../mathFunctions ../soil ../utilities
 
 SOURCES += \
         soilWidget.cpp \
-    soilDbTools.cpp
+    soilDbTools.cpp \
+    tabHorizons.cpp \
+    tabWaterRetentionCurve.cpp \
+    tabWaterRetentionData.cpp \
+    tabHydraulicConductivityCurve.cpp
 
 HEADERS += \
         soilWidget.h \
-    soilDbTools.h
+    soilDbTools.h \
+    tabHorizons.h \
+    tabWaterRetentionCurve.h \
+    tabWaterRetentionData.h \
+    tabHydraulicConductivityCurve.h
 
 unix {
     target.path = /usr/lib

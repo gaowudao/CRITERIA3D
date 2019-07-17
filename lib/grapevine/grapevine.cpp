@@ -401,7 +401,6 @@ void Vine3D_Grapevine::photosynthesisAndTranspiration(Crit3DModelCase* modelCase
     Vine3D_Grapevine::carbonWaterFluxesProfile(modelCase);
     Vine3D_Grapevine::cumulatedResults(modelCase);
     Vine3D_Grapevine::getStressCoefficient();
-
 }
 
 double Vine3D_Grapevine::getCO2()
@@ -897,7 +896,7 @@ void Vine3D_Grapevine::photosynthesisKernelSimplified(TVineCultivar* cultivar, d
             ASSOLD = NODATA ;
             //DUM1 = 1.6*mySlopeSatVapPressureVSTemp/GAMMA+ GHR/GAC;
             I = 0 ; // initialize the cycle variable
-            while ((I++ < Imax) && (deltaAssimilation > myTolerance))
+            while ((I++ < Imax) && (deltaAssimilation == NODATA_TOLERANCE || deltaAssimilation > myTolerance))
             {
                 //Assimilation
                 WC = VCmax * myStromalCarbonDioxide / (myStromalCarbonDioxide + KC * (1.0 + OSS / KO));  //RuBP-limited carboxylation (mol m-2 s-1)
@@ -909,13 +908,13 @@ void Vine3D_Grapevine::photosynthesisKernelSimplified(TVineCultivar* cultivar, d
                 //CS = maxValue(1e-4,CS);
                 //Stomatal conductance
                 *GSC = GSCD + STOMWL * (*ASS-RD) / (CS-COMP) * cultivar->parameterWangLeuning.sensitivityToVapourPressureDeficit / (cultivar->parameterWangLeuning.sensitivityToVapourPressureDeficit+VPDS); //stom conduct to CO2 (mol m-2 s-1)
-                *GSC = maxValue(*GSC,1.0e-5);
+                *GSC = maxValue(*GSC, GSCD);
                 // Stromal CO2 concentration
                 myStromalCarbonDioxide = CS - myAtmosphericPressure * (*ASS - RD) / (*GSC);	 //CO2 concentr at carboxyl sites (Pa)
                 myStromalCarbonDioxide = maxValue(1.0e-2,myStromalCarbonDioxide) ;
                 //Vapour pressure deficit at leaf surface
                 //VPDS = (mySlopeSatVapPressureVSTemp/HEAT_CAPACITY_AIR_MOLAR*RNI + myVaporPressureDeficit*GHR) / (GHR+(*GSC)*DUM1);  //VPD at the leaf surface (Pa)
-                deltaAssimilation = fabs((*ASS) - ASSOLD);
+                if (ASSOLD != NODATA) deltaAssimilation = fabs((*ASS) - ASSOLD);
                 ASSOLD = *ASS ;
             }
       }
@@ -968,12 +967,12 @@ void Vine3D_Grapevine::carbonWaterFluxesProfile(Crit3DModelCase* modelCase)
 
             if(sunlit.leafAreaIndex > 0)
             {
-                Vine3D_Grapevine::photosynthesisKernelSimplified(modelCase->cultivar, sunlit.compensationPoint,sunlit.minimalStomatalConductance,
-                                                                  sunlit.maximalElectronTrasportRate,sunlit.carbonMichaelisMentenConstant,
+                Vine3D_Grapevine::photosynthesisKernelSimplified(modelCase->cultivar, sunlit.compensationPoint, sunlit.minimalStomatalConductance,
+                                                                  sunlit.maximalElectronTrasportRate, sunlit.carbonMichaelisMentenConstant,
                                                                   sunlit.oxygenMichaelisMentenConstant,sunlit.darkRespiration,
                                                                   alphaLeuning * stressCoefficientProfile[i], sunlit.maximalCarboxylationRate,
-                                                                  &(sunlit.assimilation),&(sunlit.stomatalConductance),
-                                                                  &(sunlit.transpiration));	//sunlit big-leaf
+                                                                  &(sunlit.assimilation), &(sunlit.stomatalConductance),
+                                                                  &(sunlit.transpiration));
             }
             else
             {
@@ -986,12 +985,12 @@ void Vine3D_Grapevine::carbonWaterFluxesProfile(Crit3DModelCase* modelCase)
             transpirationInstantLayer[i] += sunlit.transpiration * modelCase->rootDensity[i] ;
             totalStomatalConductance += sunlit.stomatalConductance * modelCase->rootDensity[i] ;
             // shaded big leaf
-            Vine3D_Grapevine::photosynthesisKernelSimplified(modelCase->cultivar, shaded.compensationPoint,shaded.minimalStomatalConductance,
-                                                              shaded.maximalElectronTrasportRate,shaded.carbonMichaelisMentenConstant,
+            Vine3D_Grapevine::photosynthesisKernelSimplified(modelCase->cultivar, shaded.compensationPoint, shaded.minimalStomatalConductance,
+                                                              shaded.maximalElectronTrasportRate, shaded.carbonMichaelisMentenConstant,
                                                               shaded.oxygenMichaelisMentenConstant,shaded.darkRespiration,
-                                                              alphaLeuning * stressCoefficientProfile[i],
-                                                              shaded.maximalCarboxylationRate,&(shaded.assimilation),
-                                                              &(shaded.stomatalConductance),&(shaded.transpiration));
+                                                              alphaLeuning * stressCoefficientProfile[i], shaded.maximalCarboxylationRate,
+                                                              &(shaded.assimilation), &(shaded.stomatalConductance),
+                                                              &(shaded.transpiration));
             assimilationInstant += shaded.assimilation * modelCase->rootDensity[i] ; //canopy gross assimilation (mol m-2 s-1)
             transpirationInstantLayer[i] += shaded.transpiration * modelCase->rootDensity[i] ; //canopy transpiration (mol m-2 s-1)
             totalStomatalConductance += shaded.stomatalConductance * modelCase->rootDensity[i] ; //canopy conductance to CO2 (mol m-2 s-1)
@@ -1004,23 +1003,38 @@ void Vine3D_Grapevine::carbonWaterFluxesProfileNoStress(Crit3DModelCase* modelCa
         double assimilationInstantNoStress = 0 ;
         transpirationInstantNoStress = 0;
         totalStomatalConductanceNoStress = 0 ;
+
+        if(sunlit.leafAreaIndex > 0)
+        {
+            Vine3D_Grapevine::photosynthesisKernelSimplified(modelCase->cultivar, sunlit.compensationPoint, sunlit.minimalStomatalConductance,
+                                                             sunlit.maximalElectronTrasportRate, sunlit.carbonMichaelisMentenConstant,
+                                                             sunlit.oxygenMichaelisMentenConstant, sunlit.darkRespiration,
+                                                             alphaLeuning, sunlit.maximalCarboxylationRate,
+                                                             &(sunlit.assimilation), &(sunlit.stomatalConductance),
+                                                             &(sunlit.transpiration));
+        }
+        else
+        {
+            sunlit.assimilation = 0.0;
+            sunlit.stomatalConductance = 0.0;
+            sunlit.transpiration = 0.0;
+        }
+
+        // shaded big leaf
+        Vine3D_Grapevine::photosynthesisKernelSimplified(modelCase->cultivar, shaded.compensationPoint, shaded.minimalStomatalConductance,
+                                                         shaded.maximalElectronTrasportRate, shaded.carbonMichaelisMentenConstant,
+                                                         shaded.oxygenMichaelisMentenConstant, shaded.darkRespiration,
+                                                         alphaLeuning, shaded.maximalCarboxylationRate,
+                                                         &(shaded.assimilation), &(shaded.stomatalConductance),
+                                                         &(shaded.transpiration));
+
         for (int i=0; i < modelCase->soilLayersNr; i++)
         {
-            if(sunlit.leafAreaIndex > 0)
-            {
-                Vine3D_Grapevine::photosynthesisKernelSimplified(modelCase->cultivar, sunlit.compensationPoint,sunlit.minimalStomatalConductance,sunlit.maximalElectronTrasportRate,sunlit.carbonMichaelisMentenConstant,sunlit.oxygenMichaelisMentenConstant,sunlit.darkRespiration, alphaLeuning, sunlit.maximalCarboxylationRate,&sunlit.assimilation,&sunlit.stomatalConductance,&sunlit.transpiration);	//sunlit big-leaf
-            }
-            else
-            {
-                sunlit.assimilation = 0.0;
-                sunlit.stomatalConductance = 0.0;
-                sunlit.transpiration = 0.0;
-            }
+
             assimilationInstantNoStress += sunlit.assimilation * modelCase->rootDensity[i] ;
             transpirationInstantNoStress += sunlit.transpiration * modelCase->rootDensity[i] ;
             totalStomatalConductanceNoStress += sunlit.stomatalConductance * modelCase->rootDensity[i] ;
-            // shaded big leaf
-            Vine3D_Grapevine::photosynthesisKernelSimplified(modelCase->cultivar, shaded.compensationPoint,shaded.minimalStomatalConductance,shaded.maximalElectronTrasportRate,shaded.carbonMichaelisMentenConstant,shaded.oxygenMichaelisMentenConstant,shaded.darkRespiration, alphaLeuning, shaded.maximalCarboxylationRate,&shaded.assimilation,&shaded.stomatalConductance,&shaded.transpiration);
+
             assimilationInstantNoStress += shaded.assimilation * modelCase->rootDensity[i] ; //canopy gross assimilation (mol m-2 s-1)
             transpirationInstantNoStress += shaded.transpiration * modelCase->rootDensity[i] ; //canopy transpiration (mol m-2 s-1)
             totalStomatalConductanceNoStress += shaded.stomatalConductance * modelCase->rootDensity[i] ; //canopy conductance to CO2 (mol m-2 s-1)
@@ -1038,6 +1052,7 @@ double Vine3D_Grapevine::getStressCoefficient()
     {
         stomatalRatio = totalStomatalConductance / totalStomatalConductanceNoStress;
     }
+
     return maxValue(0, 1.0 - stomatalRatio);
 }
 
@@ -1540,7 +1555,7 @@ double Vine3D_Grapevine::getWaterStressSawFunction(int index, TVineCultivar* cul
     if (cultivar->parameterWangLeuning.waterStressThreshold < fractionTranspirableSoilWaterProfile[index])
         return 1.; // no stress
     else
-        return fractionTranspirableSoilWaterProfile[index] / cultivar->parameterWangLeuning.waterStressThreshold ;
+        return fractionTranspirableSoilWaterProfile[index] / cultivar->parameterWangLeuning.waterStressThreshold;
 }
 
 double Vine3D_Grapevine::getWaterStressSawFunctionAverage(TVineCultivar* cultivar)
