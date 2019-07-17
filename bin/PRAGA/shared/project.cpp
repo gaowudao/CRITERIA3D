@@ -593,7 +593,7 @@ bool Project::loadMeteoPointsDB(QString dbName)
     // load proxy values for detrending
     if (! readProxyValues())
     {
-        log("Error reading proxy values");
+        logInfo("Error reading proxy values");
     }
 
     //position with respect to DEM
@@ -1179,7 +1179,7 @@ bool Project::setLogFile(QString callingProgram)
 }
 
 
-void Project::log(QString myStr)
+void Project::logInfo(QString myStr)
 {
     // standard output in all modalities
     std::cout << myStr.toStdString() << std::endl;

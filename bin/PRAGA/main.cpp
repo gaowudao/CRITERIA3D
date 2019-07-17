@@ -88,13 +88,17 @@ int main(int argc, char *argv[])
     {
         attachOutputToConsole();
 
-        myProject.log("\nPRAGA v0.1");
+        myProject.logInfo("\nPRAGA v0.1");
         for (int i = 0; i < argc; i++)
             printf("argv[%d] %s\n", i, argv[i]);
 
         // Send "enter" to release application from the console
         // This is a hack, but if not used the console doesn't know the application has
         // returned. The "enter" key only sent if the console window is in focus.
-        if (isConsoleForeground()) sendEnterKey();
+        #ifdef _WIN32
+            if (isConsoleForeground()) sendEnterKey();
+        #endif
+
+        return true;
     }
 }
