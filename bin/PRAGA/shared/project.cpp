@@ -1179,14 +1179,14 @@ bool Project::setLogFile(QString callingProgram)
 }
 
 
-void Project::log(std::string logStr)
+void Project::log(QString myStr)
 {
     // standard output in all modalities
-    std::cout << logStr << std::endl;
+    std::cout << myStr.toStdString() << std::endl;
 
     if (logFile.is_open())
     {
-        logFile << logStr << std::endl;
+        logFile << myStr.toStdString() << std::endl;
     }
 }
 
