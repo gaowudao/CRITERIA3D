@@ -1953,6 +1953,7 @@ bool Vine3DProject::setLogFile()
     return (logFile.is_open());
 }
 
+/*
 void Vine3DProject::logInfo(QString myLog)
 {
     if (logFile.is_open())
@@ -1980,3 +1981,4 @@ void Vine3DProject::logError(QString myError)
     errorString = myError;
     logError();
 }
+*/
