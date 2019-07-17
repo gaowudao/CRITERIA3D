@@ -56,3 +56,36 @@ void TabHorizons::fillTextEdit(QString soilCode, soil::Crit3DSoil mySoil)
     }
 
 }
+
+void TabHorizons::insertSoilHorizons(soil::Crit3DSoil mySoil)
+{
+    int row = mySoil.nrHorizons;
+    tableDb->setRowCount(row);
+    tableModel->setRowCount(row);
+    for (int i = 0; i < row; i++)
+    {
+        tableDb->setItem(i, 0, new QTableWidgetItem( QString::number(mySoil.horizon[i].upperDepth )));
+        tableDb->setItem(i, 1, new QTableWidgetItem( QString::number(mySoil.horizon[i].lowerDepth )));
+        tableDb->setItem(i, 2, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.sand )));
+        tableDb->setItem(i, 3, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.silt )));
+        tableDb->setItem(i, 4, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.clay )));
+        tableDb->setItem(i, 5, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.coarseFragments )));
+        tableDb->setItem(i, 6, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.organicMatter )));
+        tableDb->setItem(i, 7, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.bulkDensity )));
+        tableDb->setItem(i, 8, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.kSat )));
+
+
+        tableModel->setItem(i, 0, new QTableWidgetItem( QString::number(mySoil.horizon[i].upperDepth )));
+        tableModel->setItem(i, 1, new QTableWidgetItem( QString::number(mySoil.horizon[i].lowerDepth )));
+        tableModel->setItem(i, 2, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.coarseFragments )));
+        tableModel->setItem(i, 3, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.organicMatter )));
+        tableModel->setItem(i, 4, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.bulkDensity )));
+        tableModel->setItem(i, 5, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.kSat )));
+        tableModel->setItem(i, 6, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.thetaR )));
+        tableModel->setItem(i, 7, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.thetaS )));
+        tableModel->setItem(i, 8, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.alpha )));
+        tableModel->setItem(i, 9, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.n )));
+        tableModel->setItem(i, 10, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.m )));
+    }
+
+}

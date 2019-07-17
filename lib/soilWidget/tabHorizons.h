@@ -12,6 +12,7 @@ class TabHorizons : public QWidget
 
 public:
     TabHorizons();
+    void insertSoilHorizons(soil::Crit3DSoil mySoil);
     void fillTextEdit(QString soilCode, soil::Crit3DSoil mySoil);
 
 private:
