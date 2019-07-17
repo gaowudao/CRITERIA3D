@@ -239,6 +239,29 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil,
     return true;
 }
 
+QStringList checkHorizonData(soil::Crit3DSoil* mySoil, int horizonNum)
+{
+    QStringList error;
+    if (mySoil->horizon[horizonNum].dbData.upperDepth > mySoil->horizon[horizonNum].dbData.lowerDepth)
+    {
+        error << "Upper depth" << "Lower depth";
+    }
+    if (horizonNum > 0 && mySoil->horizon[horizonNum].dbData.upperDepth != mySoil->horizon[horizonNum-1].dbData.lowerDepth)
+    {
+        if (!error.contains("Upper depth"))
+        {
+            error << "Upper depth";
+        }
+    }
+    if (mySoil->horizon[horizonNum].dbData.sand + mySoil->horizon[horizonNum].dbData.silt + mySoil->horizon[horizonNum].dbData.clay != 100)
+    {
+        error << "Sand" << "Silt" << "Clay";
+    }
+
+    return error;
+
+}
+
 
 
 /* check depth

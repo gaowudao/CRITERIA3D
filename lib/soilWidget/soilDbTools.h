@@ -14,6 +14,8 @@
 
     bool loadSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil *mySoil, QString *myError);
 
+    QStringList checkHorizonData(soil::Crit3DSoil* mySoil, int horizonNum);
+
     bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil,
                   soil::Crit3DTextureClass* soilClassList, QString* error);
 
