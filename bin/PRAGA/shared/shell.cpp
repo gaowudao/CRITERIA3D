@@ -17,7 +17,7 @@ using namespace std;
 bool attachOutputToConsole()
 {
     #ifdef _WIN32
-        HANDLE consoleHandleOut, consoleHandleError;
+        HANDLE consoleHandleOut, consoleHandleIn, consoleHandleError;
 
         if (AttachConsole(ATTACH_PARENT_PROCESS))
         {
@@ -26,7 +26,19 @@ bool attachOutputToConsole()
             if (consoleHandleOut != INVALID_HANDLE_VALUE)
             {
                 freopen("CONOUT$", "w", stdout);
-                setvbuf(stdout, NULL, _IONBF, 0);
+                setvbuf(stdout, nullptr, _IONBF, 0);
+            }
+            else
+            {
+                return false;
+            }
+
+            // Redirect STDIN to the console
+            consoleHandleIn = GetStdHandle(STD_INPUT_HANDLE);
+            if (consoleHandleIn != INVALID_HANDLE_VALUE)
+            {
+                freopen("CONIN$", "r", stdin);
+                setvbuf(stdin, nullptr, _IONBF, 0);
             }
             else
             {
@@ -125,17 +137,20 @@ bool Project::executeCommand(QStringList argList, bool* isExit)
     int nrArgs = argList.size();
     if (nrArgs == 0) return false;
 
-    QString command = argList[0];
+    QString command = argList[0].toUpper();
 
-    if (command == "quit" || command == "exit")
+    if (command == "QUIT" || command == "EXIT")
     {
         // close project
         *isExit = true;
         return true;
     }
+    else
+    {
+        // other shared commands
+        // ...
+    }
 
-    // other shared commands
-    // ...
 
     return false;
 }

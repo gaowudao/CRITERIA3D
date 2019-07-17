@@ -1,6 +1,7 @@
 #include "mainWindow.h"
 #include "pragaProject.h"
 #include "pragaShell.h"
+#include "shell.h"
 
 #include <cstdio>
 #include <QApplication>

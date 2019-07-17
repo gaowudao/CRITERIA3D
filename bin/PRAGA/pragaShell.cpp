@@ -1,7 +1,6 @@
 #include "pragaShell.h"
-#include <iostream>
+#include "shell.h"
 
-using namespace std;
 
 
 bool executePragaCommand(QStringList argList, PragaProject* myProject)
@@ -32,7 +31,7 @@ bool pragaShell(PragaProject* myProject)
             {
                 if (! executePragaCommand(command, myProject))
                 {
-                    cout << "This is not a valid PRAGA command.\n";
+                    myProject->logError("This is not a valid PRAGA command.");
                 }
             }
         }
