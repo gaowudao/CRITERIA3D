@@ -1,7 +1,7 @@
 #ifndef SHELL_H
 #define SHELL_H
 
-    class QString;
+    #include <string>
     class QStringList;
 
     bool attachOutputToConsole();
@@ -9,7 +9,8 @@
     void sendEnterKey(void);
     bool isConsoleForeground();
 
-    QStringList getCommandLine(QString programName);
+    QStringList getArgList(std::string commandLine);
+    QStringList getCommandLine(std::string programName);
 
 
 #endif // SHELL_H

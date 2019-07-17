@@ -5,8 +5,10 @@
         #include "pragaProject.h"
     #endif
 
-    bool executePragaCommand(QStringList argList, PragaProject* myProject);
+    bool executePragaCommand(QStringList commandLine, PragaProject* myProject);
+    bool executeCommand(QStringList commandLine, PragaProject* myProject, bool* isExit);
     bool pragaShell(PragaProject* myProject);
+    bool pragaBatch(PragaProject* myProject, QString batchFileName);
 
 
 #endif // PRAGASHELL_H

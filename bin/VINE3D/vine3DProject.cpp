@@ -225,7 +225,7 @@ bool Vine3DProject::loadProject(QString myFileName)
 
 bool Vine3DProject::loadGrapevineParameters()
 {
-    logInfo ("Read Grapevine parameters->..");
+    logInfo ("Read Grapevine parameters...");
     QString myQueryString =
             " SELECT id_cultivar, name,"
             " phenovitis_force_physiological_maturity, miglietta_radiation_use_efficiency,"
@@ -723,7 +723,7 @@ bool Vine3DProject::loadFieldsProperties()
 
 bool Vine3DProject::loadClimateParameters()
 {
-    logInfo ("Read climate parameters->..");
+    logInfo ("Read climate parameters...");
     QString myQueryString = "SELECT month, tmin_lapse_rate, tmax_lapse_rate, tdmin_lapse_rate, tdmax_lapse_rate";
     myQueryString += " FROM climate";
     myQueryString += " ORDER BY month";
@@ -800,7 +800,7 @@ bool Vine3DProject::loadAggregatedMeteoVarCodes()
 
 bool Vine3DProject::loadVanGenuchtenParameters()
 {
-    logInfo ("Read soil parameters->..");
+    logInfo ("Read soil parameters...");
 
     QString queryString = "SELECT id_texture, alpha, n, he, theta_r, theta_s, ksat, l";
     queryString += " FROM soil_van_genuchten";
@@ -990,7 +990,7 @@ soil::Crit3DSoil* Vine3DProject::loadHorizons(int idSoil, QString soil_code)
 
 bool Vine3DProject::loadSoils()
 {
-    logInfo ("Read soils->..");
+    logInfo ("Read soils...");
 
     QString queryString = "SELECT id_soil, soil_code FROM soils ORDER BY id_soil";
 
