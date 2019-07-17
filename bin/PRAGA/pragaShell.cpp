@@ -3,12 +3,12 @@
 
 
 
-bool executePragaCommand(QStringList argList, PragaProject* myProject)
+bool executePragaCommand(QStringList commandLine, PragaProject* myProject)
 {
-    int nrArgs = argList.size();
+    int nrArgs = commandLine.size();
     if (nrArgs == 0) return false;
 
-    QString command = argList[0].toUpper();
+    QString command = commandLine[0].toUpper();
 
     // specific Praga commands
     // ...
@@ -17,13 +17,13 @@ bool executePragaCommand(QStringList argList, PragaProject* myProject)
 }
 
 
-bool executeCommand(QStringList argList, PragaProject* myProject, bool* isExit)
+bool executeCommand(QStringList commandLine, PragaProject* myProject, bool* isExit)
 {
-    if (argList.size() > 0)
+    if (commandLine.size() > 0)
     {
-        if (! myProject->executeSharedCommand(argList, isExit))
+        if (! myProject->executeSharedCommand(commandLine, isExit))
         {
-            if (! executePragaCommand(argList, myProject))
+            if (! executePragaCommand(commandLine, myProject))
             {
                 myProject->logError("This is not a valid PRAGA command.");
             }
@@ -33,9 +33,29 @@ bool executeCommand(QStringList argList, PragaProject* myProject, bool* isExit)
 }
 
 
-bool pragaBatch(PragaProject* myProject, QString batchFileName)
+bool pragaBatch(PragaProject* myProject, QString scriptFileName)
 {
+    #ifdef _WIN32
+        attachOutputToConsole();
+    #endif
 
+    myProject->logInfo("\nPRAGA v0.1");
+    myProject->logInfo("Execute script: " + scriptFileName);
+
+    // TODO:
+    // check file
+    // for each line of file:
+        // QStringList commandLine = getArgList(line)
+        // executeCommand(commandLine)
+
+    #ifdef _WIN32
+        // Send "enter" to release application from the console
+        // This is a hack, but if not used the console doesn't know the application has
+        // returned. The "enter" key only sent if the console window is in focus.
+        if (isConsoleForeground()) sendEnterKey();
+    #endif
+
+    return true;
 }
 
 

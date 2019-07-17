@@ -117,27 +117,39 @@ void openNewConsole()
     #endif
 }
 
-QStringList getCommandLine(QString programName)
-{
-    QStringList argList;
-    string str, commandLine;
 
-    cout << programName.toStdString() << ">";
-    getline (cin, commandLine);
+QStringList getArgList(string commandLine)
+{
+    string str;
+    QStringList argList;
 
     istringstream stream(commandLine);
-    while (stream >> str) argList.append(QString::fromStdString(str));
+    while (stream >> str)
+    {
+        argList.append(QString::fromStdString(str));
+    }
 
     return argList;
 }
 
 
-bool Project::executeSharedCommand(QStringList argList, bool* isExit)
+QStringList getCommandLine(string programName)
 {
-    int nrArgs = argList.size();
+    string commandLine;
+
+    cout << programName << ">";
+    getline (cin, commandLine);
+
+    return getArgList(commandLine);
+}
+
+
+bool Project::executeSharedCommand(QStringList commandLine, bool* isExit)
+{
+    int nrArgs = commandLine.size();
     if (nrArgs == 0) return false;
 
-    QString command = argList[0].toUpper();
+    QString command = commandLine[0].toUpper();
 
     if (command == "QUIT" || command == "EXIT")
     {
