@@ -148,7 +148,7 @@ void Crit3DSoilWidget::on_actionOpenSoilDB()
     }
 
     // load default VG parameters
-    if (! loadVanGenuchtenParameters(&dbSoil, soilClassList, &error))
+    if (! loadVanGenuchtenParameters(&dbSoil, textureClassList, &error))
     {
         QMessageBox::critical(nullptr, "Error!", error);
         return;
@@ -175,7 +175,7 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
 {
 
     QString error;
-    if (! loadSoil(&dbSoil, soilCode, &mySoil, soilClassList, &error))
+    if (! loadSoil(&dbSoil, soilCode, &mySoil, textureClassList, &error))
     {
         QMessageBox::critical(nullptr, "Error!", error);
         return;

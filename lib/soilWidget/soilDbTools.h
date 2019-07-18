@@ -17,17 +17,17 @@
     QStringList checkHorizonData(soil::Crit3DSoil* mySoil, int horizonNum);
 
     bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil,
-                  soil::Crit3DTextureClass* soilClassList, QString* error);
+                  soil::Crit3DTextureClass* textureClassList, QString* error);
 
-    bool loadVanGenuchtenParameters(QSqlDatabase* dbSoil, soil::Crit3DTextureClass* soilClassList, QString *error);
+    bool loadVanGenuchtenParameters(QSqlDatabase* dbSoil, soil::Crit3DTextureClass* textureClassList, QString *error);
 
-    bool loadDriessenParameters(QSqlDatabase* dbSoil, soil::Crit3DTextureClass* soilClassList, QString *error);
+    bool loadDriessenParameters(QSqlDatabase* dbSoil, soil::Crit3DTextureClass* textureClassList, QString *error);
 
     QString getIdSoilString(QSqlDatabase* dbSoil, int idSoilNumber, QString *myError);
 
     bool openDbSoil(QString dbName, QSqlDatabase* dbSoil, QString* error);
 
-    bool loadAllSoils(QString dbSoilName, std::vector <soil::Crit3DSoil> *soilList, soil::Crit3DTextureClass *soilClassList, QString* error);
+    bool loadAllSoils(QString dbSoilName, std::vector <soil::Crit3DSoil> *soilList, soil::Crit3DTextureClass *textureClassList, QString* error);
 
     bool getSoilList(QSqlDatabase* dbSoil, QStringList* soilList, QString* error);
 

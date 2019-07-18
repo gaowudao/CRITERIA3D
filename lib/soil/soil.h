@@ -65,6 +65,7 @@
             Crit3DTexture (float sand, float silt, float clay);
         };
 
+
         class Crit3DVanGenuchten
         {
         public:
@@ -80,6 +81,7 @@
             Crit3DVanGenuchten();
         };
 
+
         /*! Driessen parameters for empirical infiltration model
          * van Keulen, Wolf, 1986 */
         class Crit3DDriessen
@@ -92,6 +94,7 @@
             Crit3DDriessen();
         };
 
+
         class Crit3DWaterConductivity
         {
         public:
@@ -101,6 +104,7 @@
             Crit3DWaterConductivity();
         };
 
+
         class Crit3DTextureClass
         {
         public:
@@ -108,6 +112,7 @@
             Crit3DWaterConductivity waterConductivity;
             Crit3DDriessen Driessen;
         };
+
 
         class Crit3DHorizon
         {
@@ -134,6 +139,7 @@
             Crit3DHorizon();
         };
 
+
         class Crit3DSoil
         {
         public:
@@ -147,6 +153,7 @@
             void initialize(int idSoil, int nrHorizons);
             void cleanSoil();
         };
+
 
         class Crit3DLayer
         {
@@ -200,7 +207,7 @@
          double getWaterPotential(Crit3DLayer* layer);
          double getWaterConductivity(Crit3DLayer* layer);
 
-         bool setHorizon(Crit3DHorizon* horizon, Crit3DTextureClass* soilClassList, std::string* error);
+         bool setHorizon(Crit3DHorizon* horizon, Crit3DTextureClass* textureClassList, std::string* error);
     }
 
 #endif // SOIL_H
