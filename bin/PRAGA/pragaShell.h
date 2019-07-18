@@ -5,6 +5,9 @@
         #include "pragaProject.h"
     #endif
 
+    QStringList getPragaCommandList();
+    bool cmdList(PragaProject* myProject);
+
     bool executeCommand(QStringList commandLine, PragaProject* myProject);
     bool pragaShell(PragaProject* myProject);
     bool pragaBatch(PragaProject* myProject, QString batchFileName);

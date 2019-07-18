@@ -1,18 +1,50 @@
 #include "pragaShell.h"
 #include "shell.h"
+#include "mainWindow.h"
+
+
+QStringList getPragaCommandList()
+{
+    QStringList cmdList = getSharedCommandList();
+
+    cmdList.append("List  | ListCommands");
+    // cmdList.append(...);
+
+    return cmdList;
+}
+
+
+bool cmdList(PragaProject* myProject)
+{
+    QStringList list = getPragaCommandList();
+
+    myProject->logInfo("Available PRAGA Console commands:");
+    for (int i = 0; i < list.size(); i++)
+    {
+        myProject->logInfo(list[i]);
+    }
+
+    return true;
+}
 
 
 bool PragaProject::executePragaCommand(QStringList argumentList, bool* isCommandFound)
 {
     *isCommandFound = false;
-
-    int nrArgs = argumentList.size();
-    if (nrArgs == 0) return false;
+    if (argumentList.size() == 0) return false;
 
     QString command = argumentList[0].toUpper();
 
-    // specific Praga commands
-    // ...
+    if (command == "LIST" || command == "LISTCOMMANDS")
+    {
+        *isCommandFound = true;
+        return cmdList(this);
+    }
+    else
+    {
+        // other specific Praga commands
+        // ...
+    }
 
     return false;
 }

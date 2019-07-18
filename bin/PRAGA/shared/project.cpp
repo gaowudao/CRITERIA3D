@@ -545,6 +545,7 @@ bool Project::loadDEM(QString myFileName)
     //check points position with respect to DEM
     checkMeteoPointsDEM();
 
+    this->logInfo("DEM = " + myFileName);
     return true;
 }
 
@@ -1158,6 +1159,20 @@ float Project::meteoDataConsistency(meteoVariable myVar, const Crit3DTime& timeI
     return dataConsistency;
 }
 
+
+
+QString Project::getCompleteFileName(QString fileName, QString secondaryPath)
+{
+    if (fileName.left(1) == ".")
+    {
+        QString completeFileName = this->path + secondaryPath + fileName;
+        return QDir().cleanPath(completeFileName);
+    }
+    else
+    {
+        return fileName;
+    }
+}
 
 
 /* ---------------------------------------------

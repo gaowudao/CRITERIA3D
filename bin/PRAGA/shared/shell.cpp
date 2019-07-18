@@ -143,36 +143,58 @@ string getCommandLine(string programName)
 }
 
 
+QStringList getSharedCommandList()
+{
+    QStringList cmdList;
+
+    cmdList.append("DEM   | LoadDEM");
+    cmdList.append("Exit  | Quit");
+
+    return cmdList;
+}
+
+
+bool cmdExit(Project* myProject)
+{
+    myProject->requestedExit = true;
+    // TODO: close project
+
+    return true;
+}
+
+
+bool cmdLoadDEM(Project* myProject, QStringList argumentList)
+{
+    if (argumentList.size() < 2)
+    {
+        myProject->logError("Missing filename.");
+        // TODO: USAGE
+        return false;
+    }
+    else
+    {
+        QString fileName = myProject->getCompleteFileName(argumentList[1], "DATA/DEM/");
+        return myProject->loadDEM(fileName);
+    }
+}
+
+
 bool Project::executeSharedCommand(QStringList argumentList, bool* isCommandFound)
 {
     *isCommandFound = false;
-
-    int nrArgs = argumentList.size();
-    if (nrArgs == 0) return false;
+    if (argumentList.size() == 0) return false;
 
     QString command = argumentList[0].toUpper();
 
     if (command == "QUIT" || command == "EXIT")
     {
         *isCommandFound = true;
-        this->requestedExit = true;
-        // TODO: close project
-        return true;
+        return cmdExit(this);
     }
-    else if (command == "LOADDEM")
+    else if (command == "DEM" || command == "LOADDEM")
     {
         *isCommandFound = true;
-        if (nrArgs < 2)
-        {
-            this->logError("Missing filename.");
-            // TODO: USAGE?
-            return false;
-        }
-        else
-        {
-            // TODO: adjust path
-            return this->loadDEM(argumentList[1]);
-        }
+        return cmdLoadDEM(this, argumentList);
     }
     else
     {

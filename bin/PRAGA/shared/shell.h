@@ -11,6 +11,7 @@
 
     QStringList getArgumentList(std::string commandLine);
     std::string getCommandLine(std::string programName);
+    QStringList getSharedCommandList();
 
 
 #endif // SHELL_H
