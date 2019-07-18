@@ -2,7 +2,6 @@
 #include "shell.h"
 
 
-
 bool executePragaCommand(QStringList commandLine, PragaProject* myProject)
 {
     int nrArgs = commandLine.size();
@@ -76,3 +75,4 @@ bool pragaShell(PragaProject* myProject)
 
     return true;
 }
+

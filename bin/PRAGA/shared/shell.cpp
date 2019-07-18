@@ -163,8 +163,6 @@ bool Project::executeSharedCommand(QStringList commandLine, bool* isExit)
         // ...
     }
 
-
     return false;
 }
-
 
