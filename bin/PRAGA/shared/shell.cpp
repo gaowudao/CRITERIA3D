@@ -117,12 +117,12 @@ void openNewConsole()
 }
 
 
-QStringList getArgumentList(string commandLine)
+QStringList getArgumentList(QString commandLine)
 {
     string str;
     QStringList argumentList;
 
-    istringstream stream(commandLine);
+    istringstream stream(commandLine.toStdString());
     while (stream >> str)
     {
         argumentList.append(QString::fromStdString(str));
@@ -132,14 +132,14 @@ QStringList getArgumentList(string commandLine)
 }
 
 
-string getCommandLine(string programName)
+QString getCommandLine(QString programName)
 {
     string commandLine;
 
-    cout << programName << ">";
+    cout << programName.toStdString() << ">";
     getline (cin, commandLine);
 
-    return commandLine;
+    return QString::fromStdString(commandLine);
 }
 
 
@@ -147,8 +147,9 @@ QStringList getSharedCommandList()
 {
     QStringList cmdList;
 
+    cmdList.append("Log   | SetLogFile");
     cmdList.append("DEM   | LoadDEM");
-    cmdList.append("Exit  | Quit");
+    cmdList.append("Quit  | Exit");
 
     return cmdList;
 }
@@ -168,7 +169,7 @@ bool cmdLoadDEM(Project* myProject, QStringList argumentList)
 {
     if (argumentList.size() < 2)
     {
-        myProject->logError("Missing filename.");
+        myProject->logError("Missing DEM file name.");
         // TODO: USAGE
         return false;
     }
@@ -176,6 +177,22 @@ bool cmdLoadDEM(Project* myProject, QStringList argumentList)
     {
         QString fileName = myProject->getCompleteFileName(argumentList[1], "DATA/DEM/");
         return myProject->loadDEM(fileName);
+    }
+}
+
+
+bool cmdSetLogFile(Project* myProject, QStringList argumentList)
+{
+    if (argumentList.size() < 2)
+    {
+        myProject->logError("Missing Log file name.");
+        // TODO: USAGE
+        return false;
+    }
+    else
+    {
+        QString fileName = myProject->getCompleteFileName(argumentList[1], "LOG/");
+        return myProject->setLogFile(fileName);
     }
 }
 
@@ -196,6 +213,11 @@ bool Project::executeSharedCommand(QStringList argumentList, bool* isCommandFoun
     {
         *isCommandFound = true;
         return cmdLoadDEM(this, argumentList);
+    }
+    else if (command == "LOG" || command == "SETLOGFILE")
+    {
+        *isCommandFound = true;
+        return cmdSetLogFile(this, argumentList);
     }
     else
     {

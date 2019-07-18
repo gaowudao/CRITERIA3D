@@ -115,7 +115,7 @@
         void setPath(QString myPath);
         QString getPath();
 
-        bool setLogFile(QString callingProgram);
+        bool setLogFile(QString fileNameWithPath);
         void logError(QString myStr);
         void logInfo(QString myStr);
         void logError();

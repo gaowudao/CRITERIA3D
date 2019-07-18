@@ -510,12 +510,17 @@ void Project::closeMeteoGridDB()
  */
 bool Project::loadDEM(QString myFileName)
 {
-    std::string* myError = new std::string();
-    std::string fileName = myFileName.left(myFileName.length()-4).toStdString();
+    std::string error, fileName;
 
-    if (! gis::readEsriGrid(fileName, &DTM, myError))
+    if (myFileName.right(4).left(1) == ".")
     {
-        this->logError("Wrong DEM file.");
+        myFileName = myFileName.left(myFileName.length()-4);
+    }
+
+    fileName = myFileName.toStdString();
+    if (! gis::readEsriGrid(fileName, &DTM, &error))
+    {
+        this->logError("Wrong DEM file.\n" + QString::fromStdString(error));
         return false;
     }
 
@@ -1160,12 +1165,11 @@ float Project::meteoDataConsistency(meteoVariable myVar, const Crit3DTime& timeI
 }
 
 
-
 QString Project::getCompleteFileName(QString fileName, QString secondaryPath)
 {
-    if (fileName.left(1) == ".")
+    if (getFilePath(fileName) == "" || fileName.left(1) == ".")
     {
-        QString completeFileName = this->path + secondaryPath + fileName;
+        QString completeFileName = this->getPath() + secondaryPath + fileName;
         return QDir().cleanPath(completeFileName);
     }
     else
@@ -1179,18 +1183,32 @@ QString Project::getCompleteFileName(QString fileName, QString secondaryPath)
  * LOG functions
  * --------------------------------------------*/
 
-bool Project::setLogFile(QString callingProgram)
+bool Project::setLogFile(QString fileNameWithPath)
 {
-    if (!QDir(this->path + "log").exists())
-         QDir().mkdir(this->path + "log");
+    QString filePath = getFilePath(fileNameWithPath);
+    QString fileName = getFileName(fileNameWithPath);
 
-    QString myDate = QDateTime().currentDateTime().toString("yyyy-MM-dd hh.mm");
-    QString fileName = myDate + callingProgram + ".txt";
+    if (!QDir(filePath).exists())
+    {
+         QDir().mkdir(filePath);
+    }
 
-    this->logFileName = this->path + "log\\" + fileName;
+    QString myDate = QDateTime().currentDateTime().toString("yyyy-MM-dd hh mm ");
+    fileName = myDate + fileName;
 
-    this->logFile.open(this->logFileName.toStdString().c_str());
-    return (this->logFile.is_open());
+    logFileName = filePath + fileName;
+
+    logFile.open(logFileName.toStdString().c_str());
+    if (logFile.is_open())
+    {
+        logInfo("LogFile: " + logFileName);
+        return true;
+    }
+    else
+    {
+        logError("Unable to open file: " + logFileName);
+        return false;
+    }
 }
 
 
@@ -1216,16 +1234,16 @@ void Project::logError()
 {
     if (logFile.is_open())
     {
-        logFile << "----ERROR!----\n" << errorString.toStdString() << std::endl;
+        logFile << "ERROR! " << errorString.toStdString() << std::endl;
     }
 
     if (modality == MODE_GUI)
     {
-        QMessageBox::critical(nullptr, "Error!", errorString);
+        QMessageBox::critical(nullptr, "ERROR!", errorString);
     }
     else
     {
-        std::cout << "Error! " << errorString.toStdString() << std::endl;
+        std::cout << "ERROR! " << errorString.toStdString() << std::endl;
     }
 }
 

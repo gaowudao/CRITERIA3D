@@ -74,7 +74,7 @@ namespace gis
 
         if (!myFile.is_open())
         {
-            *myError = "File .hdr error";
+            *myError = "Missing file: " + myFileName;
             return false;
         }
 
@@ -114,7 +114,7 @@ namespace gis
 
         if (nrKeys < 6)
         {
-            *myError = "Key missing in .hdr file.";
+            *myError = "Missing keys in .hdr file.";
             return(false);
         }
         return(true);

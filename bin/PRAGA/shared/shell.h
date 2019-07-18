@@ -2,6 +2,7 @@
 #define SHELL_H
 
     #include <string>
+    class QString;
     class QStringList;
     class Project;
 
@@ -10,11 +11,12 @@
     void sendEnterKey(void);
     bool isConsoleForeground();
 
-    QStringList getArgumentList(std::string commandLine);
-    std::string getCommandLine(std::string programName);
+    QStringList getArgumentList(QString commandLine);
+    QString getCommandLine(QString programName);
     QStringList getSharedCommandList();
 
     bool cmdLoadDEM(Project* myProject, QStringList argumentList);
+    bool cmdSetLogFile(Project* myProject, QStringList argumentList);
     bool cmdExit(Project* myProject);
 
 

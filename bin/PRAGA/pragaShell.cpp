@@ -107,9 +107,13 @@ bool pragaShell(PragaProject* myProject)
 
     while (! myProject->requestedExit)
     {
-        std::string commandLine = getCommandLine("PRAGA");
-        QStringList argumentList = getArgumentList(commandLine);
-        executeCommand(argumentList, myProject);
+        QString commandLine = getCommandLine("PRAGA");
+        if (commandLine != "")
+        {
+            myProject->logInfo(">> " + commandLine);
+            QStringList argumentList = getArgumentList(commandLine);
+            executeCommand(argumentList, myProject);
+        }
     }
 
     return true;
