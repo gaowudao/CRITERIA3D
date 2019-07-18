@@ -4,6 +4,8 @@
 TabHorizons::TabHorizons()
 {
     QVBoxLayout *mainLayout = new QVBoxLayout;
+    QLabel* dbTableLabel = new QLabel("Soil data from DB:");
+    QLabel* modelTableLabel = new QLabel("Soil parameters estimated by model:");
     tableDb = new QTableWidget();
     tableDb->setColumnCount(10);
     QStringList tableDbHeader;
@@ -31,7 +33,9 @@ TabHorizons::TabHorizons()
     tableModel->setStyleSheet("QTableView {selection-background-color: red;}");
 
 
+    mainLayout->addWidget(dbTableLabel);
     mainLayout->addWidget(tableDb);
+    mainLayout->addWidget(modelTableLabel);
     mainLayout->addWidget(tableModel);
 
     setLayout(mainLayout);
