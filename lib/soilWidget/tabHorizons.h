@@ -13,7 +13,7 @@ class TabHorizons : public QWidget
 public:
     TabHorizons();
     void insertSoilHorizons(soil::Crit3DSoil mySoil);
-    void fillTextEdit(QString soilCode, soil::Crit3DSoil mySoil);
+    bool checkHorizonDBData(soil::Crit3DSoil mySoil, int horizonNum);
 
 private:
     QTableWidget* tableDb;
