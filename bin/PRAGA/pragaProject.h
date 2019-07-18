@@ -49,6 +49,8 @@
 
         bool getIsElabMeteoPointsValue() const;
         void setIsElabMeteoPointsValue(bool value);
+
+        bool executePragaCommand(QStringList argumentList, bool* isCommandFound);
     };
 
 #endif // PRAGAPROJECT_H

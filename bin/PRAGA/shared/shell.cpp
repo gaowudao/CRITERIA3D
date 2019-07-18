@@ -143,8 +143,10 @@ string getCommandLine(string programName)
 }
 
 
-bool Project::executeSharedCommand(QStringList argumentList)
+bool Project::executeSharedCommand(QStringList argumentList, bool* isCommandFound)
 {
+    *isCommandFound = false;
+
     int nrArgs = argumentList.size();
     if (nrArgs == 0) return false;
 
@@ -152,23 +154,25 @@ bool Project::executeSharedCommand(QStringList argumentList)
 
     if (command == "QUIT" || command == "EXIT")
     {
+        *isCommandFound = true;
         // TODO: close project
         this->requestedExit = true;
         return true;
     }
     else if (command == "LOADDEM")
     {
+        *isCommandFound = true;
         if (nrArgs < 2)
         {
             this->logError("Missing filename.");
             // TODO: USAGE?
+            return false;
         }
         else
         {
             // TODO: adjust path
-            this->loadDEM(argumentList[1]);
+            return this->loadDEM(argumentList[1]);
         }
-        return true;
     }
     else
     {
