@@ -2,8 +2,10 @@
 #include "shell.h"
 
 
-bool executePragaCommand(QStringList argumentList, PragaProject* myProject)
+bool PragaProject::executePragaCommand(QStringList argumentList, bool* isCommandFound)
 {
+    *isCommandFound = false;
+
     int nrArgs = argumentList.size();
     if (nrArgs == 0) return false;
 
@@ -18,18 +20,18 @@ bool executePragaCommand(QStringList argumentList, PragaProject* myProject)
 
 bool executeCommand(QStringList commandLine, PragaProject* myProject)
 {
-    if (commandLine.size() > 0)
-    {
-        if (! myProject->executeSharedCommand(commandLine))
-        {
-            if (! executePragaCommand(commandLine, myProject))
-            {
-                myProject->logError("This is not a valid PRAGA command.");
-                return false;
-            }
-        }
-    }
-    return true;
+    if (commandLine.size() == 0) return false;
+
+    bool isCommandFound, isExecuted;
+
+    isExecuted = myProject->executeSharedCommand(commandLine, &isCommandFound);
+    if (isCommandFound) return isExecuted;
+
+    isExecuted = myProject->executePragaCommand(commandLine, &isCommandFound);
+    if (isCommandFound) return isExecuted;
+
+    myProject->logError("This is not a valid PRAGA command.");
+    return false;
 }
 
 

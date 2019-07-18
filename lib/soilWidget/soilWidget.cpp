@@ -55,13 +55,15 @@ Crit3DSoilWidget::Crit3DSoilWidget()
     QHBoxLayout *soilLayout = new QHBoxLayout();
     QVBoxLayout *texturalLayout = new QVBoxLayout();
 
-    mainLayout->addWidget(&soilListComboBox);
-    mainLayout->addLayout(soilLayout);
-    mainLayout->setAlignment(Qt::AlignTop);
-
     QPixmap pic("../../DOC/img/textural_soil.png");
     QLabel *label = new QLabel();
     label->setPixmap (pic);
+
+    soilListComboBox.setFixedWidth(pic.size().width());
+
+    mainLayout->addWidget(&soilListComboBox);
+    mainLayout->addLayout(soilLayout);
+    mainLayout->setAlignment(Qt::AlignTop);
 
     texturalLayout->addWidget(label);
     texturalLayout->setAlignment(Qt::AlignTop);
