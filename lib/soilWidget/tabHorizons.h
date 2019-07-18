@@ -13,7 +13,9 @@ class TabHorizons : public QWidget
 public:
     TabHorizons();
     void insertSoilHorizons(soil::Crit3DSoil mySoil);
-    bool checkHorizonDBData(soil::Crit3DSoil mySoil, int horizonNum);
+    void checkHorizonDBData(soil::Crit3DSoil mySoil, int horizonNum);
+    void checkMissingItem(int horizonNum);
+    void checkComputedValues(soil::Crit3DSoil mySoil, int horizonNum);
 
 private:
     QTableWidget* tableDb;

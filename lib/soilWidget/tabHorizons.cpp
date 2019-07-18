@@ -1,4 +1,5 @@
 #include "tabHorizons.h"
+#include "commonConstants.h"
 
 TabHorizons::TabHorizons()
 {
@@ -7,7 +8,7 @@ TabHorizons::TabHorizons()
     tableDb->setColumnCount(10);
     QStringList tableDbHeader;
     tableDbHeader << "Upper depth [cm]" << "Lower depth [cm]" << "Sand [%]" << "Silt  [%]" << "Clay [%]" << "Coarse frag. [%]" << "Org. matter [%]"
-                    << "Bulk density [g/cm3]" << "Theta S [-]" << "K Sat [cm/d]";
+                    << "Bulk density [g/cm3]" << "K Sat [cm/d]" << "Theta S [-]";
     tableDb->setHorizontalHeaderLabels(tableDbHeader);
     tableDb->resizeColumnsToContents();
     tableDb->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -51,8 +52,8 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil mySoil)
         tableDb->setItem(i, 5, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.coarseFragments )));
         tableDb->setItem(i, 6, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.organicMatter )));
         tableDb->setItem(i, 7, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.bulkDensity )));
-        tableDb->setItem(i, 8, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.thetaSat)));
-        tableDb->setItem(i, 9, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.kSat )));
+        tableDb->setItem(i, 8, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.kSat )));
+        tableDb->setItem(i, 9, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.thetaSat)));
 
         tableModel->setItem(i, 0, new QTableWidgetItem( QString::fromStdString(mySoil.horizon[i].texture.classNameUSDA)));
         tableModel->setItem(i, 1, new QTableWidgetItem( QString::number(mySoil.horizon[i].coarseFragments*100 )));
@@ -66,38 +67,24 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil mySoil)
         tableModel->setItem(i, 9, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.n )));
         tableModel->setItem(i, 10, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.m )));
 
-//        if (checkHorizonDBData(mySoil, i))
-//        {
-//            tableModel->item(i,0)->setBackgroundColor(Qt::red);
-//            tableModel->item(i,1)->setBackgroundColor(Qt::red);
-//            tableModel->item(i,2)->setBackgroundColor(Qt::red);
-//            tableModel->item(i,3)->setBackgroundColor(Qt::red);
-//            tableModel->item(i,4)->setBackgroundColor(Qt::red);
-//            tableModel->item(i,5)->setBackgroundColor(Qt::red);
-//            tableModel->item(i,6)->setBackgroundColor(Qt::red);
-//            tableModel->item(i,7)->setBackgroundColor(Qt::red);
-//            tableModel->item(i,8)->setBackgroundColor(Qt::red);
-//            tableModel->item(i,9)->setBackgroundColor(Qt::red);
-//            tableModel->item(i,10)->setBackgroundColor(Qt::red);
-//        }
-
+        checkHorizonDBData(mySoil, i);
+        checkComputedValues(mySoil, i);
+        checkMissingItem(i);
     }
+
 
 }
 
-bool TabHorizons::checkHorizonDBData(soil::Crit3DSoil mySoil, int horizonNum)
+void TabHorizons::checkHorizonDBData(soil::Crit3DSoil mySoil, int horizonNum)
 {
-    bool error = false;
     if (mySoil.horizon[horizonNum].dbData.upperDepth > mySoil.horizon[horizonNum].dbData.lowerDepth)
     {
         tableDb->item(horizonNum,0)->setBackgroundColor(Qt::red);
         tableDb->item(horizonNum,1)->setBackgroundColor(Qt::red);
-        error = true;
     }
     if (horizonNum > 0 && mySoil.horizon[horizonNum].dbData.upperDepth != mySoil.horizon[horizonNum-1].dbData.lowerDepth)
     {
         tableDb->item(horizonNum,0)->setBackgroundColor(Qt::red);
-        error = true;
     }
 
     if (mySoil.horizon[horizonNum].dbData.sand + mySoil.horizon[horizonNum].dbData.silt + mySoil.horizon[horizonNum].dbData.clay != 100)
@@ -105,7 +92,62 @@ bool TabHorizons::checkHorizonDBData(soil::Crit3DSoil mySoil, int horizonNum)
         tableDb->item(horizonNum,2)->setBackgroundColor(Qt::red);
         tableDb->item(horizonNum,3)->setBackgroundColor(Qt::red);
         tableDb->item(horizonNum,4)->setBackgroundColor(Qt::red);
-        error = true;
+
+        tableModel->item(horizonNum,0)->setBackgroundColor(Qt::red);
+        tableModel->item(horizonNum,1)->setBackgroundColor(Qt::red);
+        tableModel->item(horizonNum,2)->setBackgroundColor(Qt::red);
+        tableModel->item(horizonNum,3)->setBackgroundColor(Qt::red);
+        tableModel->item(horizonNum,4)->setBackgroundColor(Qt::red);
+        tableModel->item(horizonNum,5)->setBackgroundColor(Qt::red);
+        tableModel->item(horizonNum,6)->setBackgroundColor(Qt::red);
+        tableModel->item(horizonNum,7)->setBackgroundColor(Qt::red);
+        tableModel->item(horizonNum,8)->setBackgroundColor(Qt::red);
+        tableModel->item(horizonNum,9)->setBackgroundColor(Qt::red);
+        tableModel->item(horizonNum,10)->setBackgroundColor(Qt::red);
     }
-    return error;
+
+}
+
+void TabHorizons::checkMissingItem(int horizonNum)
+{
+    for (int j = 0; j < tableDb->columnCount(); j++)
+    {
+        if (tableDb->item(horizonNum,j)->text().toInt() == NODATA)
+        {
+            tableDb->item(horizonNum,j)->setBackgroundColor(Qt::yellow);
+        }
+    }
+
+    for (int j = 0; j < tableModel->columnCount(); j++)
+    {
+        if (tableModel->item(horizonNum,j)->text().toInt() == NODATA)
+        {
+            tableModel->item(horizonNum,j)->setBackgroundColor(Qt::red);
+        }
+    }
+
+}
+
+void TabHorizons::checkComputedValues(soil::Crit3DSoil mySoil, int horizonNum)
+{
+    if (mySoil.horizon[horizonNum].dbData.coarseFragments != mySoil.horizon[horizonNum].coarseFragments*100)
+    {
+        tableModel->item(horizonNum,1)->setBackgroundColor(Qt::yellow);
+    }
+    if (mySoil.horizon[horizonNum].dbData.organicMatter != mySoil.horizon[horizonNum].organicMatter*100)
+    {
+        tableModel->item(horizonNum,2)->setBackgroundColor(Qt::yellow);
+    }
+    if (mySoil.horizon[horizonNum].dbData.bulkDensity != mySoil.horizon[horizonNum].bulkDensity)
+    {
+        tableModel->item(horizonNum,3)->setBackgroundColor(Qt::yellow);
+    }
+    if (mySoil.horizon[horizonNum].dbData.thetaSat != mySoil.horizon[horizonNum].vanGenuchten.thetaS)
+    {
+        tableModel->item(horizonNum,6)->setBackgroundColor(Qt::yellow);
+    }
+    if (mySoil.horizon[horizonNum].dbData.kSat != mySoil.horizon[horizonNum].waterConductivity.kSat)
+    {
+        tableModel->item(horizonNum,4)->setBackgroundColor(Qt::yellow);
+    }
 }

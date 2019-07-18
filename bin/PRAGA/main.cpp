@@ -44,10 +44,9 @@ QCoreApplication* createApplication(int &argc, char *argv[])
 int main(int argc, char *argv[])
 {
     // set modality (default: GUI)
-    QString arg1;
     if (argc > 1)
     {
-        arg1 = QString::fromStdString(argv[1]);
+        QString arg1 = QString::fromStdString(argv[1]);
         if (arg1.toUpper() == "CONSOLE")
         {
             myProject.modality = MODE_CONSOLE;

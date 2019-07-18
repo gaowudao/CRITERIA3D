@@ -155,8 +155,8 @@ bool Project::executeSharedCommand(QStringList argumentList, bool* isCommandFoun
     if (command == "QUIT" || command == "EXIT")
     {
         *isCommandFound = true;
-        // TODO: close project
         this->requestedExit = true;
+        // TODO: close project
         return true;
     }
     else if (command == "LOADDEM")
