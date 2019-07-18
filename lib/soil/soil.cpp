@@ -75,6 +75,7 @@ namespace soil
         this->clay = NODATA;
         this->classUSDA = NODATA;
         this->classNL = NODATA;
+        this->classNameUSDA = "UNDEFINED";
     }
 
     Crit3DTexture::Crit3DTexture (float mySand, float mySilt, float myClay)
