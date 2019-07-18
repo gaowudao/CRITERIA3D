@@ -28,7 +28,7 @@ bool openDbSoil(QString dbName, QSqlDatabase* dbSoil, QString* error)
 }
 
 
-bool loadVanGenuchtenParameters(QSqlDatabase* dbSoil, soil::Crit3DTextureClass* soilClassList, QString *error)
+bool loadVanGenuchtenParameters(QSqlDatabase* dbSoil, soil::Crit3DTextureClass* textureClassList, QString *error)
 {
     QString queryString = "SELECT id_texture, alpha, n, he, theta_r, theta_s, k_sat, l ";
     queryString        += "FROM van_genuchten ORDER BY id_texture";
@@ -65,23 +65,23 @@ bool loadVanGenuchtenParameters(QSqlDatabase* dbSoil, soil::Crit3DTextureClass* 
                 return false;
             }
 
-        soilClassList[id].vanGenuchten.alpha = query.value(1).toDouble();    //[kPa^-1]
-        soilClassList[id].vanGenuchten.n = query.value(2).toDouble();
-        soilClassList[id].vanGenuchten.he = query.value(3).toDouble();       //[kPa]
+        textureClassList[id].vanGenuchten.alpha = query.value(1).toDouble();    //[kPa^-1]
+        textureClassList[id].vanGenuchten.n = query.value(2).toDouble();
+        textureClassList[id].vanGenuchten.he = query.value(3).toDouble();       //[kPa]
 
-        m = 1.0 - 1.0 / soilClassList[id].vanGenuchten.n;
-        soilClassList[id].vanGenuchten.m = m;
-        soilClassList[id].vanGenuchten.sc = pow(1.0 + pow(soilClassList[id].vanGenuchten.alpha
-                                        * soilClassList[id].vanGenuchten.he, soilClassList[id].vanGenuchten.n), -m);
+        m = 1.0 - 1.0 / textureClassList[id].vanGenuchten.n;
+        textureClassList[id].vanGenuchten.m = m;
+        textureClassList[id].vanGenuchten.sc = pow(1.0 + pow(textureClassList[id].vanGenuchten.alpha
+                                        * textureClassList[id].vanGenuchten.he, textureClassList[id].vanGenuchten.n), -m);
 
-        soilClassList[id].vanGenuchten.thetaR = query.value(4).toDouble();
+        textureClassList[id].vanGenuchten.thetaR = query.value(4).toDouble();
 
         //reference theta at saturation
-        soilClassList[id].vanGenuchten.refThetaS = query.value(5).toDouble();
-        soilClassList[id].vanGenuchten.thetaS = soilClassList[id].vanGenuchten.refThetaS;
+        textureClassList[id].vanGenuchten.refThetaS = query.value(5).toDouble();
+        textureClassList[id].vanGenuchten.thetaS = textureClassList[id].vanGenuchten.refThetaS;
 
-        soilClassList[id].waterConductivity.kSat = query.value(6).toDouble();
-        soilClassList[id].waterConductivity.l = query.value(7).toDouble();
+        textureClassList[id].waterConductivity.kSat = query.value(6).toDouble();
+        textureClassList[id].waterConductivity.l = query.value(7).toDouble();
 
     } while(query.next());
 
@@ -89,7 +89,7 @@ bool loadVanGenuchtenParameters(QSqlDatabase* dbSoil, soil::Crit3DTextureClass* 
 }
 
 
-bool loadDriessenParameters(QSqlDatabase* dbSoil, soil::Crit3DTextureClass* soilClassList, QString *error)
+bool loadDriessenParameters(QSqlDatabase* dbSoil, soil::Crit3DTextureClass* textureClassList, QString *error)
 {
     QString queryString = "SELECT id_texture, k_sat, grav_conductivity, max_sorptivity";
     queryString += " FROM driessen ORDER BY id_texture";
@@ -124,9 +124,9 @@ bool loadDriessenParameters(QSqlDatabase* dbSoil, soil::Crit3DTextureClass* soil
                 return false;
             }
 
-        soilClassList[id].Driessen.k0 = query.value("k_sat").toDouble();
-        soilClassList[id].Driessen.gravConductivity = query.value("grav_conductivity").toDouble();
-        soilClassList[id].Driessen.maxSorptivity = query.value("max_sorptivity").toDouble();
+        textureClassList[id].Driessen.k0 = query.value("k_sat").toDouble();
+        textureClassList[id].Driessen.gravConductivity = query.value("grav_conductivity").toDouble();
+        textureClassList[id].Driessen.maxSorptivity = query.value("max_sorptivity").toDouble();
 
     } while(query.next());
 
@@ -213,7 +213,7 @@ bool loadSoilData(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySo
 
 
 bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil,
-              soil::Crit3DTextureClass* soilClassList, QString* error)
+              soil::Crit3DTextureClass* textureClassList, QString* error)
 {
     if (!loadSoilData(dbSoil, soilCode, mySoil, error))
     {
@@ -226,7 +226,7 @@ bool loadSoil(QSqlDatabase* dbSoil, QString soilCode, soil::Crit3DSoil* mySoil,
     *error = "";
     for (int i = 0; i < mySoil->nrHorizons; i++)
     {
-        if (! soil::setHorizon(&(mySoil->horizon[i]), soilClassList, &errorString))
+        if (! soil::setHorizon(&(mySoil->horizon[i]), textureClassList, &errorString))
         {
             *error += "horizon nr." + QString::number(mySoil->horizon[i].dbData.horizonNr) + ": "
                     + QString::fromStdString(errorString) + "\n";
@@ -334,7 +334,7 @@ bool getSoilList(QSqlDatabase* dbSoil, QStringList* soilList, QString* error)
 }
 
 
-bool loadAllSoils(QString dbSoilName, std::vector <soil::Crit3DSoil> *soilList, soil::Crit3DTextureClass *soilClassList, QString* error)
+bool loadAllSoils(QString dbSoilName, std::vector <soil::Crit3DSoil> *soilList, soil::Crit3DTextureClass *textureClassList, QString* error)
 {
     soilList->clear();
 
@@ -342,7 +342,7 @@ bool loadAllSoils(QString dbSoilName, std::vector <soil::Crit3DSoil> *soilList, 
     if (! openDbSoil(dbSoilName, dbSoil, error))
         return false;
 
-    if (! loadVanGenuchtenParameters(dbSoil, soilClassList, error))
+    if (! loadVanGenuchtenParameters(dbSoil, textureClassList, error))
     {
         return false;
     }
@@ -376,7 +376,7 @@ bool loadAllSoils(QString dbSoilName, std::vector <soil::Crit3DSoil> *soilList, 
         if (idSoil != NODATA && soilCode != "")
         {
             soil::Crit3DSoil *mySoil = new soil::Crit3DSoil;
-            if (loadSoil(dbSoil, soilCode, mySoil, soilClassList, error))
+            if (loadSoil(dbSoil, soilCode, mySoil, textureClassList, error))
             {
                 mySoil->id = idSoil;
                 mySoil->code = soilCode.toStdString();

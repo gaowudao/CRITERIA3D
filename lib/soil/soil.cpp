@@ -532,7 +532,7 @@ namespace soil
 
 
     // It assumes that dbData are loaded
-    bool setHorizon(Crit3DHorizon* horizon, soil::Crit3DTextureClass *soilClassList, std::string* error)
+    bool setHorizon(Crit3DHorizon* horizon, soil::Crit3DTextureClass *textureClassList, std::string* error)
     {
         *error = "";
 
@@ -592,9 +592,9 @@ namespace soil
         horizon->texture.classNL = soil::getNLTextureClass(horizon->texture);
 
         // assign default parameters from texture class
-        horizon->vanGenuchten = soilClassList[horizon->texture.classUSDA].vanGenuchten;
-        horizon->waterConductivity = soilClassList[horizon->texture.classUSDA].waterConductivity;
-        horizon->Driessen = soilClassList[horizon->texture.classNL].Driessen;
+        horizon->vanGenuchten = textureClassList[horizon->texture.classUSDA].vanGenuchten;
+        horizon->waterConductivity = textureClassList[horizon->texture.classUSDA].waterConductivity;
+        horizon->Driessen = textureClassList[horizon->texture.classNL].Driessen;
 
         // bulk density [g cm-3]
         horizon->bulkDensity = horizon->dbData.bulkDensity;
