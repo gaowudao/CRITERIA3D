@@ -5,6 +5,11 @@
 #include "weatherGenerator.h"
 #include "timeUtility.h"
 #include "crit3dDate.h"
+#include <iostream>
+#include <QFile>
+#include <QTextStream>
+
+using namespace std;
 
 
 /*!
@@ -16,7 +21,9 @@
   * \param  *inputTMax      [°C] array(1..nrDays) of maximum temperature
   * \param  *inputPrec      [mm] array(1..nrDays) of precipitation
 */
-bool computeWGClimate(int nrDays, Crit3DDate inputFirstDate, float *inputTMin, float *inputTMax, float *inputPrec, float precThreshold, float minPercData, TwheatherGenClimate* wGen)
+bool computeWGClimate(int nrDays, Crit3DDate inputFirstDate, float *inputTMin, float *inputTMax,
+                      float *inputPrec, float precThreshold, float minPercData,
+                      TwheatherGenClimate* wGen, bool writeOutput)
 {
     int nValidData = 0;
     float dataPresence = 0;
@@ -111,27 +118,30 @@ bool computeWGClimate(int nrDays, Crit3DDate inputFirstDate, float *inputTMin, f
     }
 
 
-    /*
-     * --------------------------------- WRITE CLIMATE -----------------------------------
-    QString filename="climateWG.txt";
-    qDebug() << "...Write WG climate file -->" << filename;
-    QFile file(filename);
-    file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
-    QTextStream stream( &file );
-    for (m=0; m<12; m++)
+    if (writeOutput)
     {
-        stream << "month = " << m +1 << endl;
-        stream << "wGen->monthly.monthlyTmin = " << wGen->monthly.monthlyTmin[m] << endl;
-        stream << "wGen->monthly.monthlyTmax = " << wGen->monthly.monthlyTmax[m] << endl;
-        stream << "wGen->monthly.sumPrec = " << wGen->monthly.sumPrec[m] << endl;
-        stream << "wGen->monthly.stDevTmin[m] = " << wGen->monthly.stDevTmin[m] << endl;
-        stream << "wGen->monthly.stDevTmax = " << wGen->monthly.stDevTmax[m] << endl;
-        stream << "wGen->monthly.fractionWetDays[m] = " << wGen->monthly.fractionWetDays[m] << endl;
-        stream << "wGen->monthly.probabilityWetWet[m] = " << wGen->monthly.probabilityWetWet[m] << endl;
-        stream << "wGen->monthly.dw_Tmax[m] = " << wGen->monthly.dw_Tmax[m] << endl;
-        stream << "-------------------------------------------" << endl;
+        QString filename="climateWG.txt";
+        cout << "...Write WG climate file -->" << filename.toStdString();
+
+        QFile file(filename);
+        file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text);
+
+        QTextStream stream( &file );
+        stream << "----------------- CLIMATE ----------------";
+        for (m=0; m<12; m++)
+        {
+            stream << "month = " << m +1 << endl;
+            stream << "wGen->monthly.monthlyTmin = " << wGen->monthly.monthlyTmin[m] << endl;
+            stream << "wGen->monthly.monthlyTmax = " << wGen->monthly.monthlyTmax[m] << endl;
+            stream << "wGen->monthly.sumPrec = " << wGen->monthly.sumPrec[m] << endl;
+            stream << "wGen->monthly.stDevTmin[m] = " << wGen->monthly.stDevTmin[m] << endl;
+            stream << "wGen->monthly.stDevTmax = " << wGen->monthly.stDevTmax[m] << endl;
+            stream << "wGen->monthly.fractionWetDays[m] = " << wGen->monthly.fractionWetDays[m] << endl;
+            stream << "wGen->monthly.probabilityWetWet[m] = " << wGen->monthly.probabilityWetWet[m] << endl;
+            stream << "wGen->monthly.dw_Tmax[m] = " << wGen->monthly.dw_Tmax[m] << endl;
+            stream << "-------------------------------------------" << endl;
+        }
     }
-    */
 
     return true;
 }
@@ -168,7 +178,9 @@ bool climateGenerator(int nrData, TinputObsData climateDailyObsData, Crit3DDate 
         }
     }
 
-    result = computeWGClimate(nrDays, newDailyObsData.inputFirstDate, newDailyObsData.inputTMin, newDailyObsData.inputTMax, newDailyObsData.inputPrecip, precThreshold, minPercData, wGen);
+    result = computeWGClimate(nrDays, newDailyObsData.inputFirstDate, newDailyObsData.inputTMin,
+                              newDailyObsData.inputTMax, newDailyObsData.inputPrecip,
+                              precThreshold, minPercData, wGen, false);
 
     free(newDailyObsData.inputTMin);
     free(newDailyObsData.inputTMax);
