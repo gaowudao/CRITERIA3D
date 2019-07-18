@@ -85,6 +85,8 @@ int main(int argc, char *argv[])
     }
     else if (myProject.modality == MODE_BATCH)
     {
-        return pragaBatch(&myProject, arg1);
+        QString batchFile = "";
+        if (argc > 2) batchFile = QString::fromStdString(argv[2]);
+        return pragaBatch(&myProject, batchFile);
     }
 }

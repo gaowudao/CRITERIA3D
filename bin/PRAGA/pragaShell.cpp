@@ -48,6 +48,12 @@ bool pragaBatch(PragaProject* myProject, QString scriptFileName)
         // QStringList argumentList = getArgumentList(line)
         // executeCommand(argumentList)
 
+    if (scriptFileName == "")
+    {
+        myProject->logError("No script file provided");
+        return false;
+    }
+
     #ifdef _WIN32
         // Send "enter" to release application from the console
         // This is a hack, but if not used the console doesn't know the application has
