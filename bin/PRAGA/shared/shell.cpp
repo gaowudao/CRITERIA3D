@@ -1,5 +1,3 @@
-#pragma comment(lib, "User32.lib")
-
 #include "shell.h"
 #include "project.h"
 #include <iostream>
@@ -9,6 +7,7 @@
 
 #ifdef _WIN32
     #include "Windows.h"
+    #pragma comment(lib, "User32.lib")
 #endif
 
 using namespace std;
