@@ -1068,6 +1068,7 @@ void weatherGenerator2D::precipitationMultisiteAmountsGeneration()
           for (int i=0;i<nrStations;i++)
           {
                randomMatrixNormalDistribution[i][j] = myrandom::normalRandomLongSeries(&gasDevIset,&gasDevGset,&firstRandomNumber);
+               //randomMatrixNormalDistribution[i][j] = myrandom::normalRandom(&gasDevIset,&gasDevGset);
           }
       }
 
