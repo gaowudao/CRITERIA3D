@@ -19,6 +19,7 @@ Project::Project()
 {
     inizializeDBConnection();
     modality = MODE_GUI;
+    requestedExit = false;
     path = "";
     logFileName = "";
     errorString = "";

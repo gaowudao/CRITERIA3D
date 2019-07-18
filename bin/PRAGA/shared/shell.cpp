@@ -144,7 +144,7 @@ string getCommandLine(string programName)
 }
 
 
-bool Project::executeSharedCommand(QStringList argumentList, bool* isExit)
+bool Project::executeSharedCommand(QStringList argumentList)
 {
     int nrArgs = argumentList.size();
     if (nrArgs == 0) return false;
@@ -154,7 +154,7 @@ bool Project::executeSharedCommand(QStringList argumentList, bool* isExit)
     if (command == "QUIT" || command == "EXIT")
     {
         // TODO: close project
-        *isExit = true;
+        this->requestedExit = true;
         return true;
     }
     else if (command == "LOADDEM")

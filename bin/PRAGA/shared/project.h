@@ -57,6 +57,7 @@
 
     public:
         int modality;
+        bool requestedExit;
         QString errorString;
         QString logFileName;
         std::ofstream logFile;
@@ -148,7 +149,7 @@
         bool interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
         bool interpolateDemRadiation(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
 
-        bool executeSharedCommand(QStringList argumentList, bool* isExit);
+        bool executeSharedCommand(QStringList argumentList);
     };
 
 

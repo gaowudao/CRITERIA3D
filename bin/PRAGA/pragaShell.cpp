@@ -16,11 +16,11 @@ bool executePragaCommand(QStringList argumentList, PragaProject* myProject)
 }
 
 
-bool executeCommand(QStringList commandLine, PragaProject* myProject, bool* isExit)
+bool executeCommand(QStringList commandLine, PragaProject* myProject)
 {
     if (commandLine.size() > 0)
     {
-        if (! myProject->executeSharedCommand(commandLine, isExit))
+        if (! myProject->executeSharedCommand(commandLine))
         {
             if (! executePragaCommand(commandLine, myProject))
             {
@@ -71,12 +71,11 @@ bool pragaShell(PragaProject* myProject)
         openNewConsole();
     #endif
 
-    bool isExit = false;
-    while (! isExit)
+    while (! myProject->requestedExit)
     {
         std::string commandLine = getCommandLine("PRAGA");
         QStringList argumentList = getArgumentList(commandLine);
-        executeCommand(argumentList, myProject, &isExit);
+        executeCommand(argumentList, myProject);
     }
 
     return true;
