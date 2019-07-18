@@ -135,6 +135,9 @@ contributors:
 #include "eispack.h"
 #include "gammaFunction.h"
 
+#include "weatherGenerator.h"
+#include "wgClimate.h"
+
 
 int randomPseudo(int next)
 {
@@ -883,7 +886,7 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
             printf("%d %d %.1f %.1f %.1f\n",outputWeatherData[iStation].daySimulated[i],outputWeatherData[iStation].monthSimulated[i],outputWeatherData[iStation].minT[i],outputWeatherData[iStation].maxT[i],outputWeatherData[iStation].precipitation[i]);
 
         }
-        pressEnterToContinue();
+        //pressEnterToContinue();
     }
 }
 

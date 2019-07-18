@@ -10,7 +10,8 @@
 #
 #---------------------------------------------------------------------
 
-QT       -= core gui
+QT  -= gui
+QT  +=  xml
 
 unix:{
     CONFIG(debug, debug|release) {
@@ -32,6 +33,7 @@ INCLUDEPATH += ../crit3dDate
 INCLUDEPATH += ../meteo
 INCLUDEPATH += ../gis
 INCLUDEPATH += ../crit3dDate
+INCLUDEPATH += ../weatherGenerator
 
 SOURCES += wg2D.cpp \
     randomset.cpp \
