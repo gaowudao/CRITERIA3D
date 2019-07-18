@@ -54,7 +54,7 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil mySoil)
         tableDb->setItem(i, 8, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.thetaSat)));
         tableDb->setItem(i, 9, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.kSat )));
 
-        tableModel->setItem(i, 0, new QTableWidgetItem( QString::number(mySoil.horizon[i].upperDepth))); // cambiare
+        tableModel->setItem(i, 0, new QTableWidgetItem( QString::fromStdString(mySoil.horizon[i].texture.classNameUSDA)));
         tableModel->setItem(i, 1, new QTableWidgetItem( QString::number(mySoil.horizon[i].coarseFragments*100 )));
         tableModel->setItem(i, 2, new QTableWidgetItem( QString::number(mySoil.horizon[i].organicMatter*100 )));
         tableModel->setItem(i, 3, new QTableWidgetItem( QString::number(mySoil.horizon[i].bulkDensity )));

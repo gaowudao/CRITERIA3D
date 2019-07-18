@@ -30,7 +30,7 @@ bool openDbSoil(QString dbName, QSqlDatabase* dbSoil, QString* error)
 
 bool loadVanGenuchtenParameters(QSqlDatabase* dbSoil, soil::Crit3DTextureClass* textureClassList, QString *error)
 {
-    QString queryString = "SELECT id_texture, alpha, n, he, theta_r, theta_s, k_sat, l ";
+    QString queryString = "SELECT id_texture, texture, alpha, n, he, theta_r, theta_s, k_sat, l ";
     queryString        += "FROM van_genuchten ORDER BY id_texture";
 
     QSqlQuery query = dbSoil->exec(queryString);
@@ -58,30 +58,31 @@ bool loadVanGenuchtenParameters(QSqlDatabase* dbSoil, soil::Crit3DTextureClass* 
         id = query.value(0).toInt();
 
         //check data
-        for (j = 0; j <= 7; j++)
+        for (j = 0; j <= 8; j++)
             if (! getValue(query.value(j), &myValue))
             {
                 *error = "Table van_genuchten: missing data in soil texture:" + QString::number(id);
                 return false;
             }
 
-        textureClassList[id].vanGenuchten.alpha = query.value(1).toDouble();    //[kPa^-1]
-        textureClassList[id].vanGenuchten.n = query.value(2).toDouble();
-        textureClassList[id].vanGenuchten.he = query.value(3).toDouble();       //[kPa]
+        textureClassList[id].classNameUSDA = query.value(1).toString().toStdString();
+        textureClassList[id].vanGenuchten.alpha = query.value(2).toDouble();    //[kPa^-1]
+        textureClassList[id].vanGenuchten.n = query.value(3).toDouble();
+        textureClassList[id].vanGenuchten.he = query.value(4).toDouble();       //[kPa]
 
         m = 1.0 - 1.0 / textureClassList[id].vanGenuchten.n;
         textureClassList[id].vanGenuchten.m = m;
         textureClassList[id].vanGenuchten.sc = pow(1.0 + pow(textureClassList[id].vanGenuchten.alpha
                                         * textureClassList[id].vanGenuchten.he, textureClassList[id].vanGenuchten.n), -m);
 
-        textureClassList[id].vanGenuchten.thetaR = query.value(4).toDouble();
+        textureClassList[id].vanGenuchten.thetaR = query.value(5).toDouble();
 
         //reference theta at saturation
-        textureClassList[id].vanGenuchten.refThetaS = query.value(5).toDouble();
+        textureClassList[id].vanGenuchten.refThetaS = query.value(6).toDouble();
         textureClassList[id].vanGenuchten.thetaS = textureClassList[id].vanGenuchten.refThetaS;
 
-        textureClassList[id].waterConductivity.kSat = query.value(6).toDouble();
-        textureClassList[id].waterConductivity.l = query.value(7).toDouble();
+        textureClassList[id].waterConductivity.kSat = query.value(7).toDouble();
+        textureClassList[id].waterConductivity.l = query.value(8).toDouble();
 
     } while(query.next());
 

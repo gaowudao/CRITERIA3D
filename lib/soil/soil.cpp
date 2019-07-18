@@ -590,6 +590,7 @@ namespace soil
         }
 
         horizon->texture.classNL = soil::getNLTextureClass(horizon->texture);
+        horizon->texture.classNameUSDA = textureClassList[horizon->texture.classUSDA].classNameUSDA;
 
         // assign default parameters from texture class
         horizon->vanGenuchten = textureClassList[horizon->texture.classUSDA].vanGenuchten;

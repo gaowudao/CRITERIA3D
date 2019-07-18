@@ -54,6 +54,7 @@
             float clay;
             int classUSDA;
             int classNL;
+            std::string classNameUSDA;
 
             Crit3DTexture();
             /*!
@@ -111,6 +112,7 @@
             Crit3DVanGenuchten vanGenuchten;
             Crit3DWaterConductivity waterConductivity;
             Crit3DDriessen Driessen;
+            std::string classNameUSDA;
         };
 
 
