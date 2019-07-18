@@ -157,6 +157,7 @@ QStringList getSharedCommandList()
 bool cmdExit(Project* myProject)
 {
     myProject->requestedExit = true;
+
     // TODO: close project
 
     return true;
