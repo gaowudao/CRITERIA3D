@@ -144,12 +144,12 @@ string getCommandLine(string programName)
 }
 
 
-bool Project::executeSharedCommand(QStringList commandLine, bool* isExit)
+bool Project::executeSharedCommand(QStringList argumentList, bool* isExit)
 {
-    int nrArgs = commandLine.size();
+    int nrArgs = argumentList.size();
     if (nrArgs == 0) return false;
 
-    QString command = commandLine[0].toUpper();
+    QString command = argumentList[0].toUpper();
 
     if (command == "QUIT" || command == "EXIT")
     {
@@ -157,10 +157,22 @@ bool Project::executeSharedCommand(QStringList commandLine, bool* isExit)
         *isExit = true;
         return true;
     }
+    else if (command == "LOADDEM")
+    {
+        if (nrArgs < 2)
+        {
+            this->logError("Missing filename.");
+        }
+        else
+        {
+            this->loadDEM(argumentList[1]);
+        }
+        return true;
+    }
     else
     {
+        // TODO
         // other shared commands
-        // ...
     }
 
     return false;

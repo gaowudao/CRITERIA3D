@@ -2,12 +2,12 @@
 #include "shell.h"
 
 
-bool executePragaCommand(QStringList commandLine, PragaProject* myProject)
+bool executePragaCommand(QStringList argumentList, PragaProject* myProject)
 {
-    int nrArgs = commandLine.size();
+    int nrArgs = argumentList.size();
     if (nrArgs == 0) return false;
 
-    QString command = commandLine[0].toUpper();
+    QString command = argumentList[0].toUpper();
 
     // specific Praga commands
     // ...

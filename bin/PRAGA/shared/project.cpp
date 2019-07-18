@@ -504,8 +504,7 @@ void Project::closeMeteoGridDB()
 
 /*!
  * \brief loadDEM
- * \param fileName the name of the file
- * \param raster a Crit3DRasterGrid pointer
+ * \param myFileName the name of the DEM file
  * \return true if file is ok, false otherwise
  */
 bool Project::loadDEM(QString myFileName)
@@ -515,8 +514,8 @@ bool Project::loadDEM(QString myFileName)
 
     if (! gis::readEsriGrid(fileName, &DTM, myError))
     {
-        qDebug("Load raster failed!");
-        return (false);
+        this->logError("Wrong DEM file.");
+        return false;
     }
 
     setColorScale(noMeteoTerrain, DTM.colorScale);
@@ -545,7 +544,7 @@ bool Project::loadDEM(QString myFileName)
     //check points position with respect to DEM
     checkMeteoPointsDEM();
 
-    return (true);
+    return true;
 }
 
 

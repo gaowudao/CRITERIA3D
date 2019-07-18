@@ -148,7 +148,7 @@
         bool interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
         bool interpolateDemRadiation(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo);
 
-        bool executeSharedCommand(QStringList commandLine, bool* isExit);
+        bool executeSharedCommand(QStringList argumentList, bool* isExit);
     };
 
 
