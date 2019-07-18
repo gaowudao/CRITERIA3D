@@ -121,26 +121,26 @@ void openNewConsole()
 QStringList getArgumentList(string commandLine)
 {
     string str;
-    QStringList argList;
+    QStringList argumentList;
 
     istringstream stream(commandLine);
     while (stream >> str)
     {
-        argList.append(QString::fromStdString(str));
+        argumentList.append(QString::fromStdString(str));
     }
 
-    return argList;
+    return argumentList;
 }
 
 
-QStringList getCommandLine(string programName)
+string getCommandLine(string programName)
 {
     string commandLine;
 
     cout << programName << ">";
     getline (cin, commandLine);
 
-    return getArgumentList(commandLine);
+    return commandLine;
 }
 
 

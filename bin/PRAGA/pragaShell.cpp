@@ -46,8 +46,8 @@ bool pragaBatch(PragaProject* myProject, QString scriptFileName)
     // TODO:
     // check file
     // for each line of file:
-        // QStringList commandLine = getArgumentList(line)
-        // executeCommand(commandLine)
+        // QStringList argumentList = getArgumentList(line)
+        // executeCommand(argumentList)
 
     #ifdef _WIN32
         // Send "enter" to release application from the console
@@ -69,8 +69,9 @@ bool pragaShell(PragaProject* myProject)
     bool isExit = false;
     while (! isExit)
     {
-        QStringList commandLine = getCommandLine("PRAGA");
-        executeCommand(commandLine, myProject, &isExit);
+        std::string commandLine = getCommandLine("PRAGA");
+        QStringList argumentList = getArgumentList(commandLine);
+        executeCommand(argumentList, myProject, &isExit);
     }
 
     return true;
