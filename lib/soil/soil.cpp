@@ -277,24 +277,24 @@ namespace soil
 
     double estimateTotalPorosity(Crit3DHorizon* horizon, double bulkDensity)
     {
-        if (int(bulkDensity) == int(NODATA)) return(NODATA);
+        if (int(bulkDensity) == int(NODATA)) return NODATA;
 
         double specificDensity = getSpecificDensity(horizon->organicMatter);
-        return (1.0 - (bulkDensity /specificDensity));
+        return 1 - (bulkDensity /specificDensity);
     }
 
 
     double estimateSaturatedConductivity(Crit3DHorizon* horizon, double bulkDensity)
     {
-        if (int(bulkDensity) == int(NODATA)) return(NODATA);
+        if (int(bulkDensity) == int(NODATA)) return NODATA;
 
         double refTotalPorosity = horizon->vanGenuchten.refThetaS;
         double specificDensity = getSpecificDensity(horizon->organicMatter);
-        double refBulkDensity = (1.0 - refTotalPorosity) * specificDensity;
+        double refBulkDensity = (1 - refTotalPorosity) * specificDensity;
         double ratio = 1 - bulkDensity / refBulkDensity;
 
         double refKsat = horizon->waterConductivity.kSat;
-        double factor = pow(10.0, 2.0 * ratio);
+        double factor = pow(10, 2 * ratio);
         return refKsat * factor;
     }
 
@@ -628,9 +628,14 @@ namespace soil
         }
 
         // saturated water conductivity [cm day-1]
-        horizon->waterConductivity.kSat = horizon->dbData.kSat;
-        if (horizon->waterConductivity.kSat == NODATA || horizon->waterConductivity.kSat <= 0)
+        if (horizon->dbData.kSat == NODATA || horizon->dbData.kSat <= 0)
+        {
             horizon->waterConductivity.kSat = soil::estimateSaturatedConductivity(horizon, horizon->bulkDensity);
+        }
+        else
+        {
+            horizon->waterConductivity.kSat = horizon->dbData.kSat;
+        }
 
         horizon->fieldCapacity = soil::getFieldCapacity(horizon, soil::KPA);
         horizon->wiltingPoint = soil::getWiltingPoint(soil::KPA);
