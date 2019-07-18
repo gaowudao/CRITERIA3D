@@ -153,7 +153,7 @@ bool Project::executeSharedCommand(QStringList argumentList, bool* isExit)
 
     if (command == "QUIT" || command == "EXIT")
     {
-        // close project
+        // TODO: close project
         *isExit = true;
         return true;
     }
@@ -162,16 +162,18 @@ bool Project::executeSharedCommand(QStringList argumentList, bool* isExit)
         if (nrArgs < 2)
         {
             this->logError("Missing filename.");
+            // TODO: USAGE?
         }
         else
         {
+            // TODO: adjust path
             this->loadDEM(argumentList[1]);
         }
         return true;
     }
     else
     {
-        // TODO
+        // TODO:
         // other shared commands
     }
 
