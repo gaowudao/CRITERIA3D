@@ -234,12 +234,10 @@ void Crit3DSoilWidget::on_actionUseData()
     if (useData->isChecked())
     {
         airEntry->setEnabled(true);
-        airEntry->setChecked(false);
         // TO DO
     }
     else
     {
-        airEntry->setChecked(false);
         airEntry->setEnabled(false);
         // TO DO
     }
