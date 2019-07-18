@@ -4,10 +4,10 @@ TabHorizons::TabHorizons()
 {
     QVBoxLayout *mainLayout = new QVBoxLayout;
     tableDb = new QTableWidget();
-    tableDb->setColumnCount(9);
+    tableDb->setColumnCount(10);
     QStringList tableDbHeader;
-    tableDbHeader << "Upper depth [cm]" << "Lower depth [cm]" << "Sand [%]" << "Silt [%]" << "Clay [%]" << "Coarse fragments [%]" << "Organic matter [%]"
-                << "Bulk density [g/cm3]" << "K Sat [cm/d]";
+    tableDbHeader << "Upper depth [cm]" << "Lower depth [cm]" << "Sand [%]" << "Silt  [%]" << "Clay [%]" << "Coarse frag. [%]" << "Org. matter [%]"
+                    << "Bulk density [g/cm3]" << "Theta S [-]" << "K Sat [cm/d]";
     tableDb->setHorizontalHeaderLabels(tableDbHeader);
     tableDb->resizeColumnsToContents();
     tableDb->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -19,9 +19,9 @@ TabHorizons::TabHorizons()
     tableModel = new QTableWidget();
     tableModel->setColumnCount(11);
     QStringList tableModelHeader;
-    tableModelHeader << "Upper depth [cm]" << "Lower depth [cm]" << "Coarse fragments [%]" << "Organic matter [%]"
-                << "Bulk density [g/cm3]" << "K Sat [cm/d]" << "Theta R [m3/m3]" << "Theta S [m3/m3]"
-                << "alfa [KPa^-1]" << "n [-]" << "m [-]";
+    tableModelHeader << "USDA Texture" << "Coarse frag. [%]" << "Org. matter [%]"
+                    << "Bulk density [g/cm3]" << "K Sat [cm/d]" << "Theta R [-]" << "Theta S [-]" << "Air entry [KPa]"
+                    << "alpha [KPa^-1]" << "n  [-]" << "m   [-]";
     tableModel->setHorizontalHeaderLabels(tableModelHeader);
     tableModel->resizeColumnsToContents();
     tableModel->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -51,35 +51,35 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil mySoil)
         tableDb->setItem(i, 5, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.coarseFragments )));
         tableDb->setItem(i, 6, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.organicMatter )));
         tableDb->setItem(i, 7, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.bulkDensity )));
-        tableDb->setItem(i, 8, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.kSat )));
+        tableDb->setItem(i, 8, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.thetaSat)));
+        tableDb->setItem(i, 9, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.kSat )));
 
-        tableModel->setItem(i, 0, new QTableWidgetItem( QString::number(mySoil.horizon[i].upperDepth*100 )));
-        tableModel->setItem(i, 1, new QTableWidgetItem( QString::number(mySoil.horizon[i].lowerDepth*100 )));
-        tableModel->setItem(i, 2, new QTableWidgetItem( QString::number(mySoil.horizon[i].coarseFragments*100 )));
-        tableModel->setItem(i, 3, new QTableWidgetItem( QString::number(mySoil.horizon[i].organicMatter*100 )));
-        tableModel->setItem(i, 4, new QTableWidgetItem( QString::number(mySoil.horizon[i].bulkDensity )));
-        tableModel->setItem(i, 5, new QTableWidgetItem( QString::number(mySoil.horizon[i].waterConductivity.kSat )));
-        tableModel->setItem(i, 6, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.thetaR )));
-        tableModel->setItem(i, 7, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.thetaS )));
+        tableModel->setItem(i, 0, new QTableWidgetItem( QString::number(mySoil.horizon[i].upperDepth))); // cambiare
+        tableModel->setItem(i, 1, new QTableWidgetItem( QString::number(mySoil.horizon[i].coarseFragments*100 )));
+        tableModel->setItem(i, 2, new QTableWidgetItem( QString::number(mySoil.horizon[i].organicMatter*100 )));
+        tableModel->setItem(i, 3, new QTableWidgetItem( QString::number(mySoil.horizon[i].bulkDensity )));
+        tableModel->setItem(i, 4, new QTableWidgetItem( QString::number(mySoil.horizon[i].waterConductivity.kSat )));
+        tableModel->setItem(i, 5, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.thetaR )));
+        tableModel->setItem(i, 6, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.thetaS )));
+        tableModel->setItem(i, 7, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.he )));
         tableModel->setItem(i, 8, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.alpha )));
         tableModel->setItem(i, 9, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.n )));
         tableModel->setItem(i, 10, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.m )));
 
-
-        if (checkHorizonDBData(mySoil, i))
-        {
-            tableModel->item(i,0)->setBackgroundColor(Qt::red);
-            tableModel->item(i,1)->setBackgroundColor(Qt::red);
-            tableModel->item(i,2)->setBackgroundColor(Qt::red);
-            tableModel->item(i,3)->setBackgroundColor(Qt::red);
-            tableModel->item(i,4)->setBackgroundColor(Qt::red);
-            tableModel->item(i,5)->setBackgroundColor(Qt::red);
-            tableModel->item(i,6)->setBackgroundColor(Qt::red);
-            tableModel->item(i,7)->setBackgroundColor(Qt::red);
-            tableModel->item(i,8)->setBackgroundColor(Qt::red);
-            tableModel->item(i,9)->setBackgroundColor(Qt::red);
-            tableModel->item(i,10)->setBackgroundColor(Qt::red);
-        }
+//        if (checkHorizonDBData(mySoil, i))
+//        {
+//            tableModel->item(i,0)->setBackgroundColor(Qt::red);
+//            tableModel->item(i,1)->setBackgroundColor(Qt::red);
+//            tableModel->item(i,2)->setBackgroundColor(Qt::red);
+//            tableModel->item(i,3)->setBackgroundColor(Qt::red);
+//            tableModel->item(i,4)->setBackgroundColor(Qt::red);
+//            tableModel->item(i,5)->setBackgroundColor(Qt::red);
+//            tableModel->item(i,6)->setBackgroundColor(Qt::red);
+//            tableModel->item(i,7)->setBackgroundColor(Qt::red);
+//            tableModel->item(i,8)->setBackgroundColor(Qt::red);
+//            tableModel->item(i,9)->setBackgroundColor(Qt::red);
+//            tableModel->item(i,10)->setBackgroundColor(Qt::red);
+//        }
 
     }
 
