@@ -1648,7 +1648,11 @@ bool Vine3DProject::LoadObsDataFilled(QDateTime firstTime, QDateTime lastTime)
 
 bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool saveOutput, bool computeDiseases, const QString& myArea)
 {
-    if (! this->isProjectLoaded) return (false);
+    if (! this->isProjectLoaded)
+    {
+        this->logError("Load a project before.");
+        return false;
+    }
 
     if (!LoadObsDataFilled(dateTime1, dateTime2))
     {

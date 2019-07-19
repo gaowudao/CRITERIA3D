@@ -11,6 +11,7 @@ QStringList getVine3DCommandList()
     cmdList.append("List    | ListCommands");
     cmdList.append("Proj    | OpenProject");
     cmdList.append("Run     | RunModels");
+
     return cmdList;
 }
 
@@ -19,6 +20,7 @@ bool cmdList(Vine3DProject* myProject)
     QStringList list = getVine3DCommandList();
 
     myProject->logInfo("Available VINE3D console commands:");
+    myProject->logInfo("(short  | long version)");
     for (int i = 0; i < list.size(); i++)
     {
         myProject->logInfo(list[i]);
@@ -44,10 +46,15 @@ bool Vine3DProject::executeVine3DCommand(QStringList argumentList, bool *isComma
         *isCommandFound = true;
         return cmdRunModels(this, argumentList);
     }
+    if (command == "LIST" || command == "LISTCOMMANDS")
+    {
+        *isCommandFound = true;
+        return cmdList(this);
+    }
     else
     {
         // TODO:
-        // other shared commands
+        // other vine3d commands
     }
 
     return false;
@@ -75,18 +82,20 @@ bool cmdRunModels(Vine3DProject* myProject, QStringList argumentList)
 {
     //myProject.setEnvironment(batch);
 
-    if (argumentList.size() == 0)
-        return false;
+    if (argumentList.size() == 0) return false;
 
-    if (argumentList.at(1) == "?")
+    if (argumentList.size() >= 2)
     {
-        QString stringUsage = "USAGE: runModels";
-        stringUsage += "runModels [nrDays] [nrDaysForecast]\n";
-        stringUsage += "nrDaysPast: days from today when to start (default: 7)";
-        stringUsage += "nrDaysForecast: days since today when to finish (default: 0)\n";
+        if (argumentList.at(1) == "?" || argumentList.at(1) == "-?")
+        {
+            QString stringUsage = "USAGE:";
+            stringUsage += "\nrunModels [nrDaysPast] [nrDaysForecast]";
+            stringUsage += "\nnrDaysPast: days from today when to start (default: 7)";
+            stringUsage += "\nnrDaysForecast: days since today when to finish (default: 0)";
 
-        myProject->logInfo(stringUsage);
-        return true;
+            myProject->logInfo(stringUsage);
+            return true;
+        }
     }
 
     QDate today, firstDay;
@@ -104,7 +113,8 @@ bool cmdRunModels(Vine3DProject* myProject, QStringList argumentList)
     }
     else
     {
-        nrDays = 7;      //default: 1 week
+        //default: 1 week
+        nrDays = 7;
         nrDaysForecast = 0;
     }
 
@@ -125,11 +135,13 @@ bool cmdRunModels(Vine3DProject* myProject, QStringList argumentList)
     return true;
 }
 
+
 bool executeCommand(QStringList argumentList, Vine3DProject* myProject)
 {
     if (argumentList.size() == 0) return false;
-
     bool isCommandFound, isExecuted;
+
+    myProject->logInfo(getTimeStamp(argumentList));
 
     isExecuted = myProject->executeSharedCommand(argumentList, &isCommandFound);
     if (isCommandFound) return isExecuted;
@@ -206,7 +218,6 @@ bool vine3dShell(Vine3DProject* myProject)
         QString commandLine = getCommandLine("VINE3D");
         if (commandLine != "")
         {
-            myProject->logInfo(">> " + commandLine);
             QStringList argumentList = getArgumentList(commandLine);
             executeCommand(argumentList, myProject);
         }

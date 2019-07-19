@@ -51,16 +51,17 @@ bool PragaProject::executePragaCommand(QStringList argumentList, bool* isCommand
 }
 
 
-bool executeCommand(QStringList commandLine, PragaProject* myProject)
+bool executeCommand(QStringList argumentList, PragaProject* myProject)
 {
-    if (commandLine.size() == 0) return false;
-
+    if (argumentList.size() == 0) return false;
     bool isCommandFound, isExecuted;
 
-    isExecuted = myProject->executeSharedCommand(commandLine, &isCommandFound);
+    myProject->logInfo(getTimeStamp(argumentList));
+
+    isExecuted = myProject->executeSharedCommand(argumentList, &isCommandFound);
     if (isCommandFound) return isExecuted;
 
-    isExecuted = myProject->executePragaCommand(commandLine, &isCommandFound);
+    isExecuted = myProject->executePragaCommand(argumentList, &isCommandFound);
     if (isCommandFound) return isExecuted;
 
     myProject->logError("This is not a valid PRAGA command.");

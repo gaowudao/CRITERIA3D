@@ -11,6 +11,7 @@
     void sendEnterKey(void);
     bool isConsoleForeground();
 
+    QString getTimeStamp(QStringList argumentList);
     QStringList getArgumentList(QString commandLine);
     QString getCommandLine(QString programName);
     QStringList getSharedCommandList();

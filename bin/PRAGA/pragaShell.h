@@ -8,7 +8,7 @@
     QStringList getPragaCommandList();
     bool cmdList(PragaProject* myProject);
 
-    bool executeCommand(QStringList commandLine, PragaProject* myProject);
+    bool executeCommand(QStringList argumentList, PragaProject* myProject);
     bool pragaShell(PragaProject* myProject);
     bool pragaBatch(PragaProject* myProject, QString batchFileName);
 
