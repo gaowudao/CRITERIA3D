@@ -45,6 +45,8 @@
             QSqlDatabase dbSoil;
             soil::Crit3DSoil mySoil;
             soil::Crit3DTextureClass textureClassList[13];
+            int dbSoilType;
+
             QAction* useData;
             QAction* airEntry;
 

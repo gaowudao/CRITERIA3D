@@ -30,6 +30,11 @@
     #define MODE_BATCH 1
     #define MODE_CONSOLE 2
 
+    // --------------- DB types -----------------
+    #define DB_SQLITE 0
+    #define DB_MYSQL 1
+    #define DB_POSTGRES 2
+
     // --------------- soilFluxes3D -----------------
     #define NOLINK -1
 
