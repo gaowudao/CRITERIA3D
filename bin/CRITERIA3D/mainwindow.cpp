@@ -149,16 +149,24 @@ void MainWindow::resizeEvent(QResizeEvent * event)
 }
 
 
-void MainWindow::mouseReleaseEvent(QMouseEvent *event){
-    Q_UNUSED(event)
-
+void MainWindow::mouseReleaseEvent(QMouseEvent *event)
+{
     this->rasterObj->updateCenter();
     this->meteoGridObj->updateCenter();
 
-    gis::Crit3DGeoPoint pointSelected;
+    if (event->button() == Qt::LeftButton)
+    {
+        QPointF pos = event->localPos();
+
+        if (currentMap == mapType::mapSoil)
+        {
+            this->ui->statusBar->showMessage("soil!!");
+        }
+    }
 
     if (myRubberBand != nullptr && myRubberBand->isVisible())
     {
+        gis::Crit3DGeoPoint pointSelected;
         QPointF lastCornerOffset = event->localPos();
         QPointF firstCornerOffset = myRubberBand->getFirstCorner();
         QPoint pixelTopLeft;
@@ -168,14 +176,13 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event){
         {
             if (firstCornerOffset.x() > lastCornerOffset.x())
             {
-                qDebug() << "bottom to left";
+                // bottom to left
                 pixelTopLeft = lastCornerOffset.toPoint();
                 pixelBottomRight = firstCornerOffset.toPoint();
             }
             else
             {
-                qDebug() << "bottom to right";
-
+                // bottom to right
                 pixelTopLeft = QPoint(firstCornerOffset.toPoint().x(), lastCornerOffset.toPoint().y());
                 pixelBottomRight = QPoint(lastCornerOffset.toPoint().x(), firstCornerOffset.toPoint().y());
             }
@@ -184,13 +191,13 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event){
         {
             if (firstCornerOffset.x() > lastCornerOffset.x())
             {
-                qDebug() << "top to left";
+                // top to left
                 pixelTopLeft = QPoint(lastCornerOffset.toPoint().x(), firstCornerOffset.toPoint().y());
                 pixelBottomRight = QPoint(firstCornerOffset.toPoint().x(), lastCornerOffset.toPoint().y());
             }
             else
             {
-                qDebug() << "top to right";
+                // top to right
                 pixelTopLeft = firstCornerOffset.toPoint();
                 pixelBottomRight = lastCornerOffset.toPoint();
             }
@@ -260,14 +267,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     QPoint pos = event->pos();
     QPoint mapPoint = getMapPoint(&pos);
 
-    if (event->button() == Qt::LeftButton)
-    {
-        if (currentMap == mapType::mapSoil)
-        {
-            this->ui->statusBar->showMessage("soil!!");
-        }
-    }
-    else if (event->button() == Qt::RightButton)
+    if (event->button() == Qt::RightButton)
     {
         if (myRubberBand != nullptr)
         {
@@ -302,9 +302,6 @@ void MainWindow::on_meteoGridOpacitySlider_sliderMoved(int position)
 {
     this->meteoGridObj->setOpacity(position / 100.0);
 }
-
-
-
 
 
 void MainWindow::on_actionRectangle_Selection_triggered()
