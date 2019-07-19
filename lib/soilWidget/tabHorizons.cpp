@@ -79,15 +79,14 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil mySoil)
         tableModel->setItem(i, 9, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.n, 'f', 3 )));
         tableModel->setItem(i, 10, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.m, 'f', 3 )));
 
-        checkHorizonDBData(mySoil, i);
-        checkComputedValues(mySoil, i);
+        checkHorizonData(mySoil, i);
         checkMissingItem(i);
     }
 
 
 }
 
-void TabHorizons::checkHorizonDBData(soil::Crit3DSoil mySoil, int horizonNum)
+void TabHorizons::checkHorizonData(soil::Crit3DSoil mySoil, int horizonNum)
 {
     if (mySoil.horizon[horizonNum].dbData.upperDepth > mySoil.horizon[horizonNum].dbData.lowerDepth)
     {
@@ -123,18 +122,20 @@ void TabHorizons::checkHorizonDBData(soil::Crit3DSoil mySoil, int horizonNum)
         tableModel->item(horizonNum,9)->setBackgroundColor(Qt::red);
         tableModel->item(horizonNum,10)->setBackgroundColor(Qt::red);
 
-        tableModel->item(horizonNum,0)->setToolTip("wrong value");
-        tableModel->item(horizonNum,1)->setToolTip("wrong value");
-        tableModel->item(horizonNum,2)->setToolTip("wrong value");
-        tableModel->item(horizonNum,3)->setToolTip("wrong value");
-        tableModel->item(horizonNum,4)->setToolTip("wrong value");
-        tableModel->item(horizonNum,5)->setToolTip("wrong value");
-        tableModel->item(horizonNum,6)->setToolTip("wrong value");
-        tableModel->item(horizonNum,7)->setToolTip("wrong value");
-        tableModel->item(horizonNum,8)->setToolTip("wrong value");
-        tableModel->item(horizonNum,9)->setToolTip("wrong value");
-        tableModel->item(horizonNum,10)->setToolTip("wrong value");
+        tableModel->item(horizonNum,0)->setToolTip("wrong horizon");
+        tableModel->item(horizonNum,1)->setToolTip("wrong horizon");
+        tableModel->item(horizonNum,2)->setToolTip("wrong horizon");
+        tableModel->item(horizonNum,3)->setToolTip("wrong horizon");
+        tableModel->item(horizonNum,4)->setToolTip("wrong horizon");
+        tableModel->item(horizonNum,5)->setToolTip("wrong horizon");
+        tableModel->item(horizonNum,6)->setToolTip("wrong horizon");
+        tableModel->item(horizonNum,7)->setToolTip("wrong horizon");
+        tableModel->item(horizonNum,8)->setToolTip("wrong horizon");
+        tableModel->item(horizonNum,9)->setToolTip("wrong horizon");
+        tableModel->item(horizonNum,10)->setToolTip("wrong horizon");
+        return;
     }
+    checkComputedValues(mySoil, horizonNum);
 
 }
 
