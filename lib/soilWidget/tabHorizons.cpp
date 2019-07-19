@@ -1,5 +1,6 @@
 #include "tabHorizons.h"
 #include "commonConstants.h"
+#include "tableDelegate.h"
 
 TabHorizons::TabHorizons()
 {
@@ -17,7 +18,7 @@ TabHorizons::TabHorizons()
     tableDb->setSelectionMode(QAbstractItemView::SingleSelection);
     tableDb->setShowGrid(true);
     tableDb->setStyleSheet("QTableView {selection-background-color: green;}");
-
+    tableDb->setItemDelegate(new TableDelegate(tableDb));
 
     tableModel = new QTableWidget();
     tableModel->setColumnCount(11);
@@ -35,6 +36,7 @@ TabHorizons::TabHorizons()
 
 
     connect(tableDb->verticalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->tableDbVerticalHeaderClick(index); });
+    connect(tableDb, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
     connect(tableModel->verticalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->tableModelVerticalHeaderClick(index); });
 
     mainLayout->addWidget(dbTableLabel);
@@ -205,4 +207,10 @@ void TabHorizons::tableModelVerticalHeaderClick(int index)
     tableModel->horizontalHeader()->setHighlightSections(false);
     tableDb->selectRow(index);
     tableDb->horizontalHeader()->setHighlightSections(false);
+}
+
+void TabHorizons::cellChanged(int row, int column)
+{
+    qDebug() << "Cell at row: " << QString::number(row) << " column " << QString::number(column)<<" was changed.";
+    QString data = tableDb->item(row, column)->text();
 }

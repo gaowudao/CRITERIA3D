@@ -19,6 +19,7 @@ public:
     void clearSelections();
     void tableDbVerticalHeaderClick(int index);
     void tableModelVerticalHeaderClick(int index);
+    void cellChanged(int row, int column);
 
 private:
     QTableWidget* tableDb;
