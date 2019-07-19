@@ -111,11 +111,11 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
 
     for (myCurrentTime = myFirstTime; myCurrentTime <= myLastTime; myCurrentTime = myCurrentTime.addSeconds(myTimeStep))
     {
-        myProject->logInfo("\n" + getQDateTime(myCurrentTime).toString("yyyy-MM-dd hh:mm"));
+        myProject->logInfoInfo("\n" + getQDateTime(myCurrentTime).toString("yyyy-MM-dd hh:mm"));
         myProject->grapevine.setDate(myCurrentTime);
 
         // meteo interpolation
-        myProject->logInfo("Interpolate meteo data");
+        myProject->logInfoInfo("Interpolate meteo data");
         myProject->meteoMaps->clean();
         interpolateAndSaveHourlyMeteo(myProject, airTemperature, myCurrentTime, myOutputPath, saveOutput, myArea);
         interpolateAndSaveHourlyMeteo(myProject, precipitation, myCurrentTime, myOutputPath, saveOutput, myArea);
@@ -142,7 +142,7 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
 
         //Grapevine
         double vineTranspiration, grassTranspiration;
-        myProject->logInfo("Compute grapevine");
+        myProject->logInfoInfo("Compute grapevine");
         for (long row = 0; row < myProject->DTM.header->nrRows ; row++)
         {
             for (long col = 0; col < myProject->DTM.header->nrCols; col++)
@@ -185,7 +185,7 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
                     {
                         if(!myProject->grapevine.initializeStatePlant(getDoyFromDate(myDate), &(myProject->modelCases[modelCaseIndex])))
                         {
-                            myProject->logInfo("Could not initialize grapevine in the present growing season.\nIt will be replaced by a complete grass cover.");
+                            myProject->logInfoInfo("Could not initialize grapevine in the present growing season.\nIt will be replaced by a complete grass cover.");
                         }
                     }
                     else

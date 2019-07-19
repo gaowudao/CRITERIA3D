@@ -472,7 +472,7 @@ bool aggregateAndSaveDailyMap(Vine3DProject* myProject, meteoVariable myVar,
                     gis::mapAlgebra(myAggrMap, myMap, myAggrMap, operationSum);
                 else
                 {
-                    myProject->logError("wrong aggregation type in function 'aggregateAndSaveDailyMap'");
+                    myProject->logInfoError("wrong aggregation type in function 'aggregateAndSaveDailyMap'");
                     return(false);
                 }
                 nrAggrMap++;
@@ -499,7 +499,7 @@ bool aggregateAndSaveDailyMap(Vine3DProject* myProject, meteoVariable myVar,
 
     if (! isOk)
     {
-        myProject->logError("aggregateMapToDaily: " + QString::fromStdString(myError));
+        myProject->logInfoError("aggregateMapToDaily: " + QString::fromStdString(myError));
         return false;
     }
 
@@ -520,7 +520,7 @@ bool loadDailyMeteoMap(Vine3DProject* myProject, meteoVariable myDailyVar, QDate
 
     if (!gis::readEsriGrid(myFileName.toStdString(), myProject->meteoMaps->getMapFromVar(myDailyVar), &myError))
     {
-        myProject->logError(QString::fromStdString(myError));
+        myProject->logInfoError(QString::fromStdString(myError));
         return false;
     }
 
@@ -546,7 +546,7 @@ bool saveMeteoHourlyOutput(Vine3DProject* myProject, meteoVariable myVar, const 
 
     if (! gis::writeEsriGrid(outputFileName.toStdString(), myMap, &myErrorString))
     {
-        myProject->logError(QString::fromStdString(myErrorString));
+        myProject->logInfoError(QString::fromStdString(myErrorString));
         return false;
     }
 
@@ -561,7 +561,7 @@ bool interpolateAndSaveHourlyMeteo(Vine3DProject* myProject, meteoVariable myVar
     {
         Crit3DTime t = myCrit3DTime;
         QString myTimeStr = QString::fromStdString(t.toStdString());
-        myProject->logError("interpolateAndSave: interpolation of " + getVarNameFromMeteoVariable(myVar) + " at time: " + myTimeStr);
+        myProject->logInfoError("interpolateAndSave: interpolation of " + getVarNameFromMeteoVariable(myVar) + " at time: " + myTimeStr);
         return false;
     }
 

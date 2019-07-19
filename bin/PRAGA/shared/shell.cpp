@@ -184,7 +184,7 @@ bool cmdLoadDEM(Project* myProject, QStringList argumentList)
 {
     if (argumentList.size() < 2)
     {
-        myProject->logError("Missing DEM file name.");
+        myProject->logInfoError("Missing DEM file name.");
         // TODO: USAGE
         return false;
     }
@@ -200,7 +200,7 @@ bool cmdSetLogFile(Project* myProject, QStringList argumentList)
 {
     if (argumentList.size() < 2)
     {
-        myProject->logError("Missing Log file name.");
+        myProject->logInfoError("Missing Log file name.");
         // TODO: USAGE
         return false;
     }

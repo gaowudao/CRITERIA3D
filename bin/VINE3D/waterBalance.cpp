@@ -448,7 +448,7 @@ bool initializeSoilMoisture(Vine3DProject* myProject, int month)
     moistureIndex = maxValue(moistureIndex, 0.001);
     moistureIndex = log(moistureIndex) / log(0.001);
 
-    myProject->logInfo("Initialize soil moisture");
+    myProject->logInfoInfo("Initialize soil moisture");
 
     for (int layer = 0; layer < myProject->WBSettings->nrLayers; layer++)
         for (int row = 0; row < myProject->WBMaps->indexMap.at(size_t(layer)).header->nrRows; row++)
@@ -1021,7 +1021,7 @@ bool saveWaterBalanceCumulatedOutput(Vine3DProject* myProject, QDate myDate, cri
     gis::Crit3DRasterGrid* myMap = myProject->outputWaterBalanceMaps->getMapFromVar(myVar);
     if (! gis::writeEsriGrid(outputFilename.toStdString(), myMap, &myErrorString))
     {
-         myProject->logError(QString::fromStdString(myErrorString));
+         myProject->logInfoError(QString::fromStdString(myErrorString));
          return false;
     }
 
@@ -1056,7 +1056,7 @@ bool saveWaterBalanceOutput(Vine3DProject* myProject, QDate myDate, criteria3DVa
     std::string myErrorString;
     if (! gis::writeEsriGrid(outputFilename.toStdString(), myMap, &myErrorString))
     {
-         myProject->logError(QString::fromStdString(myErrorString));
+         myProject->logInfoError(QString::fromStdString(myErrorString));
          return false;
     }
 
@@ -1098,7 +1098,7 @@ bool loadWaterBalanceState(Vine3DProject* myProject, QDate myDate, QString myAre
         myMapName = statePath + myPrefix + QString::number(layerIndex);
         if (! gis::readEsriGrid(myMapName.toStdString(), &myMap, &myErrorString))
         {
-            myProject->logError(QString::fromStdString(myErrorString));
+            myProject->logInfoError(QString::fromStdString(myErrorString));
             return false;
         }
         else
@@ -1131,7 +1131,7 @@ int getLayerIndex(Vine3DProject* myProject, double depth)
     while (depth > getLayerBottom(myProject, i))
         if (++i == myProject->WBSettings->nrLayers)
         {
-            myProject->logError("getSoilLayerIndex: wrong soil depth.");
+            myProject->logInfoError("getSoilLayerIndex: wrong soil depth.");
             return INDEX_ERROR;
         }
     return i;
@@ -1153,7 +1153,7 @@ bool saveWaterBalanceState(Vine3DProject* myProject, QDate myDate, QString myAre
             QString myOutputMapName = statePath + myPrefix + QString::number(layerIndex);
             if (! gis::writeEsriGrid(myOutputMapName.toStdString(), myMap, &myErrorString))
             {
-                myProject->logError(QString::fromStdString(myErrorString));
+                myProject->logInfoError(QString::fromStdString(myErrorString));
                 return false;
             }
         }
@@ -1169,31 +1169,31 @@ bool waterBalance(Vine3DProject* myProject)
     double previousWaterContent = 0.0, currentWaterContent = 0.0;
 
     previousWaterContent = soilFluxes3D::getTotalWaterContent();
-    myProject->logInfo("total water [m^3]: " + QString::number(previousWaterContent));
+    myProject->logInfoInfo("total water [m^3]: " + QString::number(previousWaterContent));
 
     if (! waterBalanceSinkSource(myProject, &totalPrecipitation,
                              &totalEvaporation, &totalTranspiration)) return(false);
 
-    myProject->logInfo("precipitation [m^3]: " + QString::number(totalPrecipitation));
-    myProject->logInfo("evaporation [m^3]: " + QString::number(-totalEvaporation));
-    myProject->logInfo("transpiration [m^3]: " + QString::number(-totalTranspiration));
+    myProject->logInfoInfo("precipitation [m^3]: " + QString::number(totalPrecipitation));
+    myProject->logInfoInfo("evaporation [m^3]: " + QString::number(-totalEvaporation));
+    myProject->logInfoInfo("transpiration [m^3]: " + QString::number(-totalTranspiration));
 
-    myProject->logInfo("Compute water flow");
+    myProject->logInfoInfo("Compute water flow");
     soilFluxes3D::initializeBalance();
     soilFluxes3D::computePeriod(3600.0);
 
     currentWaterContent = soilFluxes3D::getTotalWaterContent();
     double runoff = soilFluxes3D::getBoundaryWaterSumFlow(BOUNDARY_RUNOFF);
-    myProject->logInfo("runoff [m^3]: " + QString::number(runoff));
+    myProject->logInfoInfo("runoff [m^3]: " + QString::number(runoff));
     double freeDrainage = soilFluxes3D::getBoundaryWaterSumFlow(BOUNDARY_FREEDRAINAGE);
-    myProject->logInfo("free drainage [m^3]: " + QString::number(freeDrainage));
+    myProject->logInfoInfo("free drainage [m^3]: " + QString::number(freeDrainage));
     double lateralDrainage = soilFluxes3D::getBoundaryWaterSumFlow(BOUNDARY_FREELATERALDRAINAGE);
-    myProject->logInfo("lateral drainage [m^3]: " + QString::number(lateralDrainage));
+    myProject->logInfoInfo("lateral drainage [m^3]: " + QString::number(lateralDrainage));
 
     double forecastWaterContent = previousWaterContent + runoff + freeDrainage + lateralDrainage
                         + totalPrecipitation - totalEvaporation - totalTranspiration;
     double massBalanceError = currentWaterContent - forecastWaterContent;
-    myProject->logInfo("Mass balance error [m^3]: " + QString::number(massBalanceError));
+    myProject->logInfoInfo("Mass balance error [m^3]: " + QString::number(massBalanceError));
 
     return(true);
 }
@@ -1201,7 +1201,7 @@ bool waterBalance(Vine3DProject* myProject)
 
 bool initializeWaterBalance(Vine3DProject* myProject)
 {
-    myProject->logInfo("\nInitialize Waterbalance...");
+    myProject->logInfoInfo("\nInitialize Waterbalance...");
 
     QString myError;
     if (! myProject->isProjectLoaded)
@@ -1219,13 +1219,13 @@ bool initializeWaterBalance(Vine3DProject* myProject)
     myProject->WBSettings->nrLayers = computeNrLayers(myProject->WBSettings->soilDepth, myProject->WBSettings->minThickness, myProject->WBSettings->maxThickness, myProject->WBSettings->thickFactor);
     setLayersDepth(myProject);
 
-    myProject->logInfo("nr of layers: " + QString::number(myProject->WBSettings->nrLayers));
+    myProject->logInfoInfo("nr of layers: " + QString::number(myProject->WBSettings->nrLayers));
 
     if (setIndexMap(myProject))
-        myProject->logInfo("nr of nodes: " + QString::number(myProject->WBSettings->nrNodes));
+        myProject->logInfoInfo("nr of nodes: " + QString::number(myProject->WBSettings->nrNodes));
     else
     {
-        myProject->logError("initializeWaterBalance: missing data in DTM");
+        myProject->logInfoError("initializeWaterBalance: missing data in DTM");
         return(false);
     }
 
@@ -1250,7 +1250,7 @@ bool initializeWaterBalance(Vine3DProject* myProject)
     soilFluxes3D::setNumericalParameters(30.0, 1800.0, 100, 10, 12, 2);  // speedy
     soilFluxes3D::setHydraulicProperties(MODIFIEDVANGENUCHTEN, MEAN_LOGARITHMIC, 10.0);
 
-    myProject->logInfo("Waterbalance initialized");
+    myProject->logInfoInfo("Waterbalance initialized");
     return(true);
 }
 

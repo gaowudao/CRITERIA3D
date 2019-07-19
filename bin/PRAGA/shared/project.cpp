@@ -510,7 +510,7 @@ void Project::closeMeteoGridDB()
  */
 bool Project::loadDEM(QString myFileName)
 {
-    this->logInfo("Read Digital Elevation Model...");
+    this->logInfoInfo("Read Digital Elevation Model...");
 
     std::string error, fileName;
     if (myFileName.right(4).left(1) == ".")
@@ -521,7 +521,7 @@ bool Project::loadDEM(QString myFileName)
 
     if (! gis::readEsriGrid(fileName, &DTM, &error))
     {
-        this->logError("Wrong DEM file.\n" + QString::fromStdString(error));
+        this->logInfoError("Wrong DEM file.\n" + QString::fromStdString(error));
         return false;
     }
 
@@ -551,7 +551,7 @@ bool Project::loadDEM(QString myFileName)
     //check points position with respect to DEM
     checkMeteoPointsDEM();
 
-    this->logInfo("DEM = " + myFileName);
+    this->logInfoInfo("DEM = " + myFileName);
     return true;
 }
 
@@ -582,7 +582,7 @@ bool Project::loadMeteoPointsDB(QString dbName)
     if (nrMeteoPoints == 0)
     {
         errorString = "Error in reading the point properties:\n" + errorString;
-        this->logError();
+        this->logInfoError();
         this->closeMeteoPointsDB();
         return false;
     }

@@ -369,7 +369,7 @@ bool initializeSoilMoisture(Crit3DProject* myProject, int month)
     moistureIndex = maxValue(moistureIndex, 0.001);
     moistureIndex = log(moistureIndex) / log(0.001);
 
-    myProject->log("Initialize soil moisture");
+    myProject->logInfo("Initialize soil moisture");
 
     for (int row = 0; row < myProject->indexMap.header->nrRows; row++)
     {
@@ -981,31 +981,31 @@ bool waterBalance(Crit3DProject* myProject)
     double previousWaterContent = 0.0, currentWaterContent = 0.0;
 
     previousWaterContent = soilFluxes3D::getTotalWaterContent();
-    myProject->log("total water [m^3]: " + std::to_string(previousWaterContent));
+    myProject->logInfo("total water [m^3]: " + std::to_string(previousWaterContent));
 
     if (! setWaterSinkSource(myProject, &totalPrecipitation,
                              &totalEvaporation, &totalTranspiration)) return(false);
 
-    myProject->log("precipitation [m^3]: " + std::to_string(totalPrecipitation));
-    myProject->log("evaporation [m^3]: " + std::to_string(-totalEvaporation));
-    myProject->log("transpiration [m^3]: " + std::to_string(-totalTranspiration));
+    myProject->logInfo("precipitation [m^3]: " + std::to_string(totalPrecipitation));
+    myProject->logInfo("evaporation [m^3]: " + std::to_string(-totalEvaporation));
+    myProject->logInfo("transpiration [m^3]: " + std::to_string(-totalTranspiration));
 
-    myProject->log("Compute water flow");
+    myProject->logInfo("Compute water flow");
     soilFluxes3D::initializeBalance();
     soilFluxes3D::computePeriod(3600.0);
 
     currentWaterContent = soilFluxes3D::getTotalWaterContent();
     double runoff = soilFluxes3D::getBoundaryWaterSumFlow(BOUNDARY_RUNOFF);
-    myProject->log("runoff [m^3]: " + std::to_string(runoff));
+    myProject->logInfo("runoff [m^3]: " + std::to_string(runoff));
     double freeDrainage = soilFluxes3D::getBoundaryWaterSumFlow(BOUNDARY_FREEDRAINAGE);
-    myProject->log("free drainage [m^3]: " + std::to_string(freeDrainage));
+    myProject->logInfo("free drainage [m^3]: " + std::to_string(freeDrainage));
     double lateralDrainage = soilFluxes3D::getBoundaryWaterSumFlow(BOUNDARY_FREELATERALDRAINAGE);
-    myProject->log("lateral drainage [m^3]: " + std::to_string(lateralDrainage));
+    myProject->logInfo("lateral drainage [m^3]: " + std::to_string(lateralDrainage));
 
     double forecastWaterContent = previousWaterContent + runoff + freeDrainage + lateralDrainage
                         + totalPrecipitation - totalEvaporation - totalTranspiration;
     double massBalanceError = currentWaterContent - forecastWaterContent;
-    myProject->log("Mass balance error [m^3]: " + std::to_string(massBalanceError));
+    myProject->logInfo("Mass balance error [m^3]: " + std::to_string(massBalanceError));
 
     return(true);
 }
@@ -1013,7 +1013,7 @@ bool waterBalance(Crit3DProject* myProject)
 
 bool initializeWaterBalance(Crit3DProject* myProject)
 {
-    myProject->log("\nInitialize Waterbalance...");
+    myProject->logInfo("\nInitialize Waterbalance...");
 
     QString myError;
 
@@ -1025,11 +1025,11 @@ bool initializeWaterBalance(Crit3DProject* myProject)
     // Layers depth
     myProject->nrLayers = computeNrLayers(myProject->soilDepth, minThickness, maxThickness, thickFactor);
     setLayersDepth(myProject, minThickness, maxThickness, thickFactor);
-    myProject->log("nr of layers: " + std::to_string(myProject->nrLayers));
+    myProject->logInfo("nr of layers: " + std::to_string(myProject->nrLayers));
 
     // Index map
     if (myProject->createIndexMap())
-        myProject->log("nr of surface cells: " + std::to_string(myProject->nrVoxelsPerLayer));
+        myProject->logInfo("nr of surface cells: " + std::to_string(myProject->nrVoxelsPerLayer));
     else
     {
         myProject->logError("initializeWaterBalance: wrong DTM");
@@ -1063,6 +1063,6 @@ bool initializeWaterBalance(Crit3DProject* myProject)
     //criteria3D::setNumericalParameters(300.0, 3600.0, 100, 10, 12, 1);   // very speedy (high error)
     soilFluxes3D::setHydraulicProperties(MODIFIEDVANGENUCHTEN, MEAN_LOGARITHMIC, 10.0);
 
-    myProject->log("Waterbalance initialized");
+    myProject->logInfo("Waterbalance initialized");
     return(true);
 }
