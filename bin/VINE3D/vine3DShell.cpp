@@ -4,6 +4,55 @@
 #include "project.h"
 #include "vine3DShell.h"
 
+QStringList getVine3DCommandList()
+{
+    QStringList cmdList = getSharedCommandList();
+
+    cmdList.append("List    | ListCommands");
+    cmdList.append("Proj    | OpenProject");
+    cmdList.append("Run     | RunModels");
+    return cmdList;
+}
+
+bool cmdList(Vine3DProject* myProject)
+{
+    QStringList list = getVine3DCommandList();
+
+    myProject->logInfo("Available VINE3D console commands:");
+    for (int i = 0; i < list.size(); i++)
+    {
+        myProject->logInfo(list[i]);
+    }
+
+    return true;
+}
+
+bool Vine3DProject::executeVine3DCommand(QStringList argumentList, bool *isCommandFound)
+{
+    *isCommandFound = false;
+    if (argumentList.size() == 0) return false;
+
+    QString command = argumentList.at(0).toUpper();
+
+    if (command == "PROJ" || command == "OPENPROJECT")
+    {
+        *isCommandFound = true;
+        return cmdOpenVine3DProject(this, argumentList);
+    }
+    else if (command == "RUN" || command == "RUNMODELS")
+    {
+        *isCommandFound = true;
+        return cmdRunModels(this, argumentList);
+    }
+    else
+    {
+        // TODO:
+        // other shared commands
+    }
+
+    return false;
+}
+
 bool cmdOpenVine3DProject(Vine3DProject* myProject, QStringList argumentList)
 {
     //myProject.setEnvironment(batch);
@@ -14,7 +63,7 @@ bool cmdOpenVine3DProject(Vine3DProject* myProject, QStringList argumentList)
         return false;
     }
 
-    QString projectName = myProject->getCompleteFileName(argumentList.at(2), "PROJECT/");
+    QString projectName = myProject->getCompleteFileName(argumentList.at(1), "PROJECT/");
 
     if (! myProject->loadProject(projectName))
         return false;
@@ -45,12 +94,12 @@ bool cmdRunModels(Vine3DProject* myProject, QStringList argumentList)
 
     if (argumentList.size() >= 3)
     {
-        nrDaysForecast = argumentList.at(3).toInt();
-        nrDays = argumentList.at(2).toInt();
+        nrDaysForecast = argumentList.at(2).toInt();
+        nrDays = argumentList.at(1).toInt();
     }
     else if (argumentList.size() == 2)
     {
-        nrDays = argumentList.at(2).toInt();
+        nrDays = argumentList.at(1).toInt();
         nrDaysForecast = 0;
     }
     else
@@ -88,7 +137,7 @@ bool executeCommand(QStringList argumentList, Vine3DProject* myProject)
     isExecuted = myProject->executeVine3DCommand(argumentList, &isCommandFound);
     if (isCommandFound) return isExecuted;
 
-    myProject->logError("This is not a valid PRAGA command.");
+    myProject->logError("This is not a valid VINE3D command.");
     return false;
 }
 

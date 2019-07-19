@@ -1952,32 +1952,6 @@ bool Vine3DProject::setLogFile()
     return (logFile.is_open());
 }
 
-bool Vine3DProject::executeVine3DCommand(QStringList argumentList, bool *isCommandFound)
-{
-    *isCommandFound = false;
-    if (argumentList.size() == 0) return false;
-
-    QString command = argumentList[0].toUpper();
-
-    if (command == "OPENPROJECT")
-    {
-        *isCommandFound = true;
-        return cmdOpenVine3DProject(this, argumentList);
-    }
-    else if (command == "RUNMODELS")
-    {
-        *isCommandFound = true;
-        return cmdRunModels(this, argumentList);
-    }
-    else
-    {
-        // TODO:
-        // other shared commands
-    }
-
-    return false;
-}
-
 /*
 void Vine3DProject::logInfo(QString myLog)
 {
