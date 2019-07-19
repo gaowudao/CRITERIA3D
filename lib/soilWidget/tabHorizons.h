@@ -13,12 +13,13 @@ class TabHorizons : public QWidget
 public:
     TabHorizons();
     void insertSoilHorizons(soil::Crit3DSoil mySoil);
-    void checkHorizonDBData(soil::Crit3DSoil mySoil, int horizonNum);
+    void checkHorizonData(soil::Crit3DSoil mySoil, int horizonNum);
     void checkMissingItem(int horizonNum);
     void checkComputedValues(soil::Crit3DSoil mySoil, int horizonNum);
     void clearSelections();
     void tableDbVerticalHeaderClick(int index);
     void tableModelVerticalHeaderClick(int index);
+    void cellChanged(int row, int column);
 
 private:
     QTableWidget* tableDb;

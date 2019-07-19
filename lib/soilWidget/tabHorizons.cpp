@@ -1,11 +1,14 @@
 #include "tabHorizons.h"
 #include "commonConstants.h"
+#include "tableDelegate.h"
 
 TabHorizons::TabHorizons()
 {
     QVBoxLayout *mainLayout = new QVBoxLayout;
     QLabel* dbTableLabel = new QLabel("Soil parameters from DB:");
+    dbTableLabel->setStyleSheet("font: 11pt;");
     QLabel* modelTableLabel = new QLabel("Soil parameters estimated by model:");
+    modelTableLabel->setStyleSheet("font: 11pt;");
     tableDb = new QTableWidget();
     tableDb->setColumnCount(10);
     QStringList tableDbHeader;
@@ -17,7 +20,7 @@ TabHorizons::TabHorizons()
     tableDb->setSelectionMode(QAbstractItemView::SingleSelection);
     tableDb->setShowGrid(true);
     tableDb->setStyleSheet("QTableView {selection-background-color: green;}");
-
+    tableDb->setItemDelegate(new TableDelegate(tableDb));
 
     tableModel = new QTableWidget();
     tableModel->setColumnCount(11);
@@ -35,6 +38,7 @@ TabHorizons::TabHorizons()
 
 
     connect(tableDb->verticalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->tableDbVerticalHeaderClick(index); });
+    connect(tableDb, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
     connect(tableModel->verticalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->tableModelVerticalHeaderClick(index); });
 
     mainLayout->addWidget(dbTableLabel);
@@ -52,20 +56,20 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil mySoil)
     tableModel->setRowCount(row);
     for (int i = 0; i < row; i++)
     {
-        tableDb->setItem(i, 0, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.upperDepth, 'f', 3)));
-        tableDb->setItem(i, 1, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.lowerDepth, 'f', 3 )));
-        tableDb->setItem(i, 2, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.sand, 'f', 3 )));
-        tableDb->setItem(i, 3, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.silt, 'f', 3 )));
-        tableDb->setItem(i, 4, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.clay , 'f', 3)));
-        tableDb->setItem(i, 5, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.coarseFragments, 'f', 3 )));
-        tableDb->setItem(i, 6, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.organicMatter, 'f', 3 )));
+        tableDb->setItem(i, 0, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.upperDepth)));
+        tableDb->setItem(i, 1, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.lowerDepth)));
+        tableDb->setItem(i, 2, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.sand, 'f', 1 )));
+        tableDb->setItem(i, 3, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.silt, 'f', 1 )));
+        tableDb->setItem(i, 4, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.clay , 'f', 1)));
+        tableDb->setItem(i, 5, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.coarseFragments, 'f', 1 )));
+        tableDb->setItem(i, 6, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.organicMatter, 'f', 1 )));
         tableDb->setItem(i, 7, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.bulkDensity, 'f', 3 )));
         tableDb->setItem(i, 8, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.kSat, 'f', 3 )));
         tableDb->setItem(i, 9, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.thetaSat, 'f', 3)));
 
         tableModel->setItem(i, 0, new QTableWidgetItem( QString::fromStdString(mySoil.horizon[i].texture.classNameUSDA)));
-        tableModel->setItem(i, 1, new QTableWidgetItem( QString::number(mySoil.horizon[i].coarseFragments*100, 'f', 3 )));
-        tableModel->setItem(i, 2, new QTableWidgetItem( QString::number(mySoil.horizon[i].organicMatter*100, 'f', 3 )));
+        tableModel->setItem(i, 1, new QTableWidgetItem( QString::number(mySoil.horizon[i].coarseFragments*100, 'f', 1 )));
+        tableModel->setItem(i, 2, new QTableWidgetItem( QString::number(mySoil.horizon[i].organicMatter*100, 'f', 1 )));
         tableModel->setItem(i, 3, new QTableWidgetItem( QString::number(mySoil.horizon[i].bulkDensity, 'f', 3 )));
         tableModel->setItem(i, 4, new QTableWidgetItem( QString::number(mySoil.horizon[i].waterConductivity.kSat, 'f', 3 )));
         tableModel->setItem(i, 5, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.thetaS, 'f', 3 )));
@@ -75,15 +79,14 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil mySoil)
         tableModel->setItem(i, 9, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.n, 'f', 3 )));
         tableModel->setItem(i, 10, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.m, 'f', 3 )));
 
-        checkHorizonDBData(mySoil, i);
-        checkComputedValues(mySoil, i);
+        checkHorizonData(mySoil, i);
         checkMissingItem(i);
     }
 
 
 }
 
-void TabHorizons::checkHorizonDBData(soil::Crit3DSoil mySoil, int horizonNum)
+void TabHorizons::checkHorizonData(soil::Crit3DSoil mySoil, int horizonNum)
 {
     if (mySoil.horizon[horizonNum].dbData.upperDepth > mySoil.horizon[horizonNum].dbData.lowerDepth)
     {
@@ -119,18 +122,20 @@ void TabHorizons::checkHorizonDBData(soil::Crit3DSoil mySoil, int horizonNum)
         tableModel->item(horizonNum,9)->setBackgroundColor(Qt::red);
         tableModel->item(horizonNum,10)->setBackgroundColor(Qt::red);
 
-        tableModel->item(horizonNum,0)->setToolTip("wrong value");
-        tableModel->item(horizonNum,1)->setToolTip("wrong value");
-        tableModel->item(horizonNum,2)->setToolTip("wrong value");
-        tableModel->item(horizonNum,3)->setToolTip("wrong value");
-        tableModel->item(horizonNum,4)->setToolTip("wrong value");
-        tableModel->item(horizonNum,5)->setToolTip("wrong value");
-        tableModel->item(horizonNum,6)->setToolTip("wrong value");
-        tableModel->item(horizonNum,7)->setToolTip("wrong value");
-        tableModel->item(horizonNum,8)->setToolTip("wrong value");
-        tableModel->item(horizonNum,9)->setToolTip("wrong value");
-        tableModel->item(horizonNum,10)->setToolTip("wrong value");
+        tableModel->item(horizonNum,0)->setToolTip("wrong horizon");
+        tableModel->item(horizonNum,1)->setToolTip("wrong horizon");
+        tableModel->item(horizonNum,2)->setToolTip("wrong horizon");
+        tableModel->item(horizonNum,3)->setToolTip("wrong horizon");
+        tableModel->item(horizonNum,4)->setToolTip("wrong horizon");
+        tableModel->item(horizonNum,5)->setToolTip("wrong horizon");
+        tableModel->item(horizonNum,6)->setToolTip("wrong horizon");
+        tableModel->item(horizonNum,7)->setToolTip("wrong horizon");
+        tableModel->item(horizonNum,8)->setToolTip("wrong horizon");
+        tableModel->item(horizonNum,9)->setToolTip("wrong horizon");
+        tableModel->item(horizonNum,10)->setToolTip("wrong horizon");
+        return;
     }
+    checkComputedValues(mySoil, horizonNum);
 
 }
 
@@ -205,4 +210,10 @@ void TabHorizons::tableModelVerticalHeaderClick(int index)
     tableModel->horizontalHeader()->setHighlightSections(false);
     tableDb->selectRow(index);
     tableDb->horizontalHeader()->setHighlightSections(false);
+}
+
+void TabHorizons::cellChanged(int row, int column)
+{
+    qDebug() << "Cell at row: " << QString::number(row) << " column " << QString::number(column)<<" was changed.";
+    QString data = tableDb->item(row, column)->text();
 }
