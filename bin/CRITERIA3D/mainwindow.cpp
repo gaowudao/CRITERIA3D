@@ -52,6 +52,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->myRubberBand = nullptr;
     this->viewer3D = nullptr;
+    this->currentMap = mapType::mapNone;
 
     // Set the MapGraphics Scene and View
     this->mapScene = new MapGraphicsScene(this);
@@ -982,6 +983,7 @@ void MainWindow::on_actionView_DTM_triggered()
         setColorScale(noMeteoTerrain, myProject.DTM.colorScale);
         this->setCurrentRaster(&(myProject.DTM));
         ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
+        this->currentMap = mapType::mapDTM;
     }
     else
     {
@@ -998,6 +1000,7 @@ void MainWindow::on_actionView_Soil_triggered()
         setColorScale(noMeteoTerrain, myProject.soilMap.colorScale);
         this->setCurrentRaster(&(myProject.soilMap));
         ui->labelRasterScale->setText("Soil map");
+        this->currentMap = mapType::mapSoil;
     }
     else
     {

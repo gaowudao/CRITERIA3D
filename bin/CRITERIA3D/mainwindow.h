@@ -16,6 +16,7 @@
     #include "viewer3d.h"
 
     enum visualizationType {showNone, showLocation, showCurrentVariable};
+    enum mapType {mapNone, mapDTM, mapSoil};
 
     namespace Ui
     {
@@ -138,6 +139,8 @@
         QActionGroup *showPointsGroup;
 
         Viewer3D *viewer3D;
+
+        int currentMap;
 
         void setMapSource(OSMTileSource::OSMTileType mySource);
 
