@@ -67,48 +67,4 @@ int main(int argc, char *argv[])
     {
         return vine3dBatch(&myProject, argv[1]);
     }
-
-    /*
-        //myProject.setEnvironment(batch);
-
-        QDate today, firstDay;
-        int nrDays, nrDaysForecast;
-
-        QString settingsFileName = QString(argv[1]);
-        if (argc > 3)
-        {
-            nrDaysForecast = QString(argv[3]).toInt();
-            nrDays = QString(argv[2]).toInt();
-        }
-        else if (argc > 2)
-        {
-            nrDays = QString(argv[2]).toInt();
-            nrDaysForecast = 9;
-        }
-        else
-        {
-            nrDays = 7;      //default: 1 week
-            nrDaysForecast = 9;
-        }
-
-        if (!myProject.loadProject(settingsFileName))
-        {
-            myProject.logError("Open project failed:\n " + settingsFileName);
-        }   
-
-        today = QDate::currentDate();
-        QDateTime lastDateTime = QDateTime(today);
-        lastDateTime = lastDateTime.addDays(nrDaysForecast);
-        lastDateTime.setTime(QTime(23,0,0,0));
-
-        firstDay = today.addDays(-nrDays);
-        QDateTime firstDateTime = QDateTime(firstDay);
-        firstDateTime.setTime(QTime(1,0,0,0));
-
-        myProject.runModels(firstDateTime, lastDateTime, true, true, myProject.idArea);
-
-        myProject.closeProject();
-
-        exit(true);
-    }*/
 }
