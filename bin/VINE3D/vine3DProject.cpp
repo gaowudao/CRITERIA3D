@@ -22,6 +22,7 @@
 #include "atmosphere.h"
 #include "disease.h"
 #include "soil3D.h"
+#include "vine3DShell.h"
 #include "vine3DProject.h"
 
 
@@ -1955,13 +1956,26 @@ bool Vine3DProject::setLogFile()
 
 bool Vine3DProject::executeVine3DCommand(QStringList argumentList, bool *isCommandFound)
 {
-    int nrArgs = argumentList.size();
-    if (nrArgs == 0) return false;
+    *isCommandFound = false;
+    if (argumentList.size() == 0) return false;
 
     QString command = argumentList[0].toUpper();
 
-    // specific Praga commands
-    // ...
+    if (command == "OPENPROJECT")
+    {
+        *isCommandFound = true;
+        return cmdOpenVine3DProject(this, argumentList);
+    }
+    else if (command == "RUNMODELS")
+    {
+        *isCommandFound = true;
+        return cmdRunModels(this, argumentList);
+    }
+    else
+    {
+        // TODO:
+        // other shared commands
+    }
 
     return false;
 }
