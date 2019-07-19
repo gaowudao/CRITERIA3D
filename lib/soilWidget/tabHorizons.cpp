@@ -6,7 +6,9 @@ TabHorizons::TabHorizons()
 {
     QVBoxLayout *mainLayout = new QVBoxLayout;
     QLabel* dbTableLabel = new QLabel("Soil parameters from DB:");
+    dbTableLabel->setStyleSheet("font: 11pt;");
     QLabel* modelTableLabel = new QLabel("Soil parameters estimated by model:");
+    modelTableLabel->setStyleSheet("font: 11pt;");
     tableDb = new QTableWidget();
     tableDb->setColumnCount(10);
     QStringList tableDbHeader;
@@ -54,20 +56,20 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil mySoil)
     tableModel->setRowCount(row);
     for (int i = 0; i < row; i++)
     {
-        tableDb->setItem(i, 0, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.upperDepth, 'f', 3)));
-        tableDb->setItem(i, 1, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.lowerDepth, 'f', 3 )));
-        tableDb->setItem(i, 2, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.sand, 'f', 3 )));
-        tableDb->setItem(i, 3, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.silt, 'f', 3 )));
-        tableDb->setItem(i, 4, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.clay , 'f', 3)));
-        tableDb->setItem(i, 5, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.coarseFragments, 'f', 3 )));
-        tableDb->setItem(i, 6, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.organicMatter, 'f', 3 )));
+        tableDb->setItem(i, 0, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.upperDepth)));
+        tableDb->setItem(i, 1, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.lowerDepth)));
+        tableDb->setItem(i, 2, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.sand, 'f', 1 )));
+        tableDb->setItem(i, 3, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.silt, 'f', 1 )));
+        tableDb->setItem(i, 4, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.clay , 'f', 1)));
+        tableDb->setItem(i, 5, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.coarseFragments, 'f', 1 )));
+        tableDb->setItem(i, 6, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.organicMatter, 'f', 1 )));
         tableDb->setItem(i, 7, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.bulkDensity, 'f', 3 )));
         tableDb->setItem(i, 8, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.kSat, 'f', 3 )));
         tableDb->setItem(i, 9, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.thetaSat, 'f', 3)));
 
         tableModel->setItem(i, 0, new QTableWidgetItem( QString::fromStdString(mySoil.horizon[i].texture.classNameUSDA)));
-        tableModel->setItem(i, 1, new QTableWidgetItem( QString::number(mySoil.horizon[i].coarseFragments*100, 'f', 3 )));
-        tableModel->setItem(i, 2, new QTableWidgetItem( QString::number(mySoil.horizon[i].organicMatter*100, 'f', 3 )));
+        tableModel->setItem(i, 1, new QTableWidgetItem( QString::number(mySoil.horizon[i].coarseFragments*100, 'f', 1 )));
+        tableModel->setItem(i, 2, new QTableWidgetItem( QString::number(mySoil.horizon[i].organicMatter*100, 'f', 1 )));
         tableModel->setItem(i, 3, new QTableWidgetItem( QString::number(mySoil.horizon[i].bulkDensity, 'f', 3 )));
         tableModel->setItem(i, 4, new QTableWidgetItem( QString::number(mySoil.horizon[i].waterConductivity.kSat, 'f', 3 )));
         tableModel->setItem(i, 5, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.thetaS, 'f', 3 )));
