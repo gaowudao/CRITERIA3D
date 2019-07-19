@@ -89,10 +89,13 @@ void TabHorizons::checkHorizonDBData(soil::Crit3DSoil mySoil, int horizonNum)
     {
         tableDb->item(horizonNum,0)->setBackgroundColor(Qt::red);
         tableDb->item(horizonNum,1)->setBackgroundColor(Qt::red);
+        tableDb->item(horizonNum,0)->setToolTip("wrong value");
+        tableDb->item(horizonNum,1)->setToolTip("wrong value");
     }
     if (horizonNum > 0 && mySoil.horizon[horizonNum].dbData.upperDepth != mySoil.horizon[horizonNum-1].dbData.lowerDepth)
     {
         tableDb->item(horizonNum,0)->setBackgroundColor(Qt::red);
+        tableDb->item(horizonNum,0)->setToolTip("wrong value");
     }
 
     if (mySoil.horizon[horizonNum].dbData.sand + mySoil.horizon[horizonNum].dbData.silt + mySoil.horizon[horizonNum].dbData.clay != 100)
@@ -100,6 +103,9 @@ void TabHorizons::checkHorizonDBData(soil::Crit3DSoil mySoil, int horizonNum)
         tableDb->item(horizonNum,2)->setBackgroundColor(Qt::red);
         tableDb->item(horizonNum,3)->setBackgroundColor(Qt::red);
         tableDb->item(horizonNum,4)->setBackgroundColor(Qt::red);
+        tableDb->item(horizonNum,2)->setToolTip("wrong value");
+        tableDb->item(horizonNum,3)->setToolTip("wrong value");
+        tableDb->item(horizonNum,4)->setToolTip("wrong value");
 
         tableModel->item(horizonNum,0)->setBackgroundColor(Qt::red);
         tableModel->item(horizonNum,1)->setBackgroundColor(Qt::red);
@@ -112,6 +118,18 @@ void TabHorizons::checkHorizonDBData(soil::Crit3DSoil mySoil, int horizonNum)
         tableModel->item(horizonNum,8)->setBackgroundColor(Qt::red);
         tableModel->item(horizonNum,9)->setBackgroundColor(Qt::red);
         tableModel->item(horizonNum,10)->setBackgroundColor(Qt::red);
+
+        tableModel->item(horizonNum,0)->setToolTip("wrong value");
+        tableModel->item(horizonNum,1)->setToolTip("wrong value");
+        tableModel->item(horizonNum,2)->setToolTip("wrong value");
+        tableModel->item(horizonNum,3)->setToolTip("wrong value");
+        tableModel->item(horizonNum,4)->setToolTip("wrong value");
+        tableModel->item(horizonNum,5)->setToolTip("wrong value");
+        tableModel->item(horizonNum,6)->setToolTip("wrong value");
+        tableModel->item(horizonNum,7)->setToolTip("wrong value");
+        tableModel->item(horizonNum,8)->setToolTip("wrong value");
+        tableModel->item(horizonNum,9)->setToolTip("wrong value");
+        tableModel->item(horizonNum,10)->setToolTip("wrong value");
     }
 
 }
@@ -125,6 +143,7 @@ void TabHorizons::checkMissingItem(int horizonNum)
         {
             tableDb->item(horizonNum,j)->setBackgroundColor(Qt::yellow);
             tableDb->item(horizonNum,j)->setText(QString::number(NODATA));
+            tableDb->item(horizonNum,j)->setToolTip("missing data");
         }
     }
 
@@ -144,22 +163,27 @@ void TabHorizons::checkComputedValues(soil::Crit3DSoil mySoil, int horizonNum)
     if (mySoil.horizon[horizonNum].dbData.coarseFragments != mySoil.horizon[horizonNum].coarseFragments*100)
     {
         tableModel->item(horizonNum,1)->setBackgroundColor(Qt::yellow);
+        tableModel->item(horizonNum,1)->setToolTip("estimated value");
     }
     if (mySoil.horizon[horizonNum].dbData.organicMatter != mySoil.horizon[horizonNum].organicMatter*100)
     {
         tableModel->item(horizonNum,2)->setBackgroundColor(Qt::yellow);
+        tableModel->item(horizonNum,2)->setToolTip("estimated value");
     }
     if (mySoil.horizon[horizonNum].dbData.bulkDensity != mySoil.horizon[horizonNum].bulkDensity)
     {
         tableModel->item(horizonNum,3)->setBackgroundColor(Qt::yellow);
+        tableModel->item(horizonNum,3)->setToolTip("estimated value");
     }
     if (mySoil.horizon[horizonNum].dbData.thetaSat != mySoil.horizon[horizonNum].vanGenuchten.thetaS)
     {
         tableModel->item(horizonNum,5)->setBackgroundColor(Qt::yellow);
+        tableModel->item(horizonNum,5)->setToolTip("estimated value");
     }
     if (mySoil.horizon[horizonNum].dbData.kSat != mySoil.horizon[horizonNum].waterConductivity.kSat)
     {
         tableModel->item(horizonNum,4)->setBackgroundColor(Qt::yellow);
+        tableModel->item(horizonNum,4)->setToolTip("estimated value");
     }
 }
 
