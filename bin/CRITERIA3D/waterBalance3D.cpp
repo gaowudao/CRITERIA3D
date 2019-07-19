@@ -907,7 +907,7 @@ bool loadWaterBalanceState(Crit3DProject* myProject, Crit3DDate myDate, std::str
 
     for (int layerIndex = 0; layerIndex < myProject->nrLayers; layerIndex++)
     {
-        myMapName = statePath + myPrefix + QString::number(layerIndex);
+        myMapName = statePath + myPrefix + std::to_string(layerIndex);
         if (! gis::readEsriGrid(myMapName, &myMap, &myErrorString))
         {
             myProject->logError(QString::fromStdString(myErrorString));
@@ -962,7 +962,7 @@ bool saveWaterBalanceState(Crit3DProject* myProject, Crit3DDate myDate, std::str
     for (int layerIndex = 0; layerIndex < myProject->nrLayers; layerIndex++)
         if (getCriteria3DVarMap(myProject, myVar, layerIndex, myMap))
         {
-            std::string myOutputMapName = statePath + myPrefix + QString::number(layerIndex);
+            std::string myOutputMapName = statePath + myPrefix + std::to_string(layerIndex);
             if (! gis::writeEsriGrid(myOutputMapName, myMap, &myErrorString))
             {
                 myProject->logError(QString::fromStdString(myErrorString));
@@ -981,7 +981,7 @@ bool waterBalance(Crit3DProject* myProject)
     double previousWaterContent = 0.0, currentWaterContent = 0.0;
 
     previousWaterContent = soilFluxes3D::getTotalWaterContent();
-    myProject->logInfo("total water [m^3]: " + QString::number(previousWaterContent);
+    myProject->logInfo("total water [m^3]: " + QString::number(previousWaterContent));
 
     if (! setWaterSinkSource(myProject, &totalPrecipitation,
                              &totalEvaporation, &totalTranspiration)) return(false);

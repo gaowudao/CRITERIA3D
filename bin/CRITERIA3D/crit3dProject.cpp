@@ -391,7 +391,7 @@ bool Crit3DProject::initializeCriteria3D()
                          nrSoilLayersWithoutRoots, soilLayerWithRoot,
                          GAMMA_DISTRIBUTION, depthModeRootDensity, depthMeanRootDensity);*/
 
-    log("Criteria3D Project initialized");
+    logInfo("Criteria3D Project initialized");
 
     this->isInitialized = true;
     return true;
