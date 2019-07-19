@@ -83,7 +83,7 @@ SOURCES += \
     main.cpp \
     modelCore.cpp \
     plant.cpp \
-    vine3dShell.cpp \
+    vine3DShell.cpp \
     waterBalance.cpp \
     vine3DProject.cpp \
     mainWindow.cpp \
@@ -108,7 +108,7 @@ HEADERS  += \
     disease.h \
     modelCore.h \
     plant.h \
-    vine3dShell.h \
+    vine3DShell.h \
     waterBalance.h \
     vine3DProject.h \
     mainWindow.h \

@@ -1953,6 +1953,19 @@ bool Vine3DProject::setLogFile()
     return (logFile.is_open());
 }
 
+bool Vine3DProject::executeVine3DCommand(QStringList argumentList, bool *isCommandFound)
+{
+    int nrArgs = argumentList.size();
+    if (nrArgs == 0) return false;
+
+    QString command = argumentList[0].toUpper();
+
+    // specific Praga commands
+    // ...
+
+    return false;
+}
+
 /*
 void Vine3DProject::logInfo(QString myLog)
 {

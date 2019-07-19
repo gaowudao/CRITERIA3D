@@ -4,6 +4,7 @@
 #include <QApplication>
 #include "commonConstants.h"
 #include "vine3DProject.h"
+#include "vine3DShell.h"
 #include "mainWindow.h"
 
 
@@ -21,34 +22,54 @@ Vine3DProject myProject;
 
 int main(int argc, char *argv[])
 {
+    // set modality (default: GUI)
+    if (argc > 1)
+    {
+        QString arg1 = QString::fromStdString(argv[1]);
+        if (arg1.toUpper() == "CONSOLE")
+        {
+            myProject.modality = MODE_CONSOLE;
+        }
+        else
+        {
+            myProject.modality = MODE_BATCH;
+        }
+    }
+
     QApplication myApp(argc, argv);
 
     QString currentPath = myApp.applicationDirPath() + "/";
 
+    if (! myProject.loadCommonSettings(currentPath + "default.ini"))
+        return -1;
+
+    if (! myProject.loadParameters(myProject.getPath() + "DATA/settings/parameters.ini"))
+        return -1;
+
     if (! myProject.loadVine3DSettings())
         return -1;
 
-    if (argc == 1)
+    QNetworkProxyFactory::setUseSystemConfiguration(true);
+
+    if (myProject.modality == MODE_GUI)
     {
-        myProject.setEnvironment(gui);
-
-        if (! myProject.loadCommonSettings(currentPath + "default.ini"))
-            return -1;
-
-        if (! myProject.loadParameters(myProject.getPath() + "DATA/settings/parameters.ini"))
-            return -1;
-
-        QNetworkProxyFactory::setUseSystemConfiguration(true);
-
+        //myProject.setEnvironment(gui);
         QApplication::setOverrideCursor(Qt::ArrowCursor);
         MainWindow w;
         w.show();
-
         return myApp.exec();
     }
-    else
+    else if (myProject.modality == MODE_CONSOLE)
     {
-        myProject.setEnvironment(batch);
+        return vine3dShell(&myProject);
+    }
+    else if (myProject.modality == MODE_BATCH)
+    {
+        return vine3dBatch(&myProject, argv[1]);
+    }
+
+    /*
+        //myProject.setEnvironment(batch);
 
         QDate today, firstDay;
         int nrDays, nrDaysForecast;
@@ -89,5 +110,5 @@ int main(int argc, char *argv[])
         myProject.closeProject();
 
         exit(true);
-    }
+    }*/
 }

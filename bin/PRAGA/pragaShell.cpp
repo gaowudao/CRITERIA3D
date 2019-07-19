@@ -76,17 +76,17 @@ bool pragaBatch(PragaProject* myProject, QString scriptFileName)
     myProject->logInfo("\nPRAGA v0.1");
     myProject->logInfo("Execute script: " + scriptFileName);
 
-    // TODO:
-    // check file
-    // for each line of file:
-        // QStringList argumentList = getArgumentList(line)
-        // executeCommand(argumentList)
-
     if (scriptFileName == "")
     {
         myProject->logError("No script file provided");
         return false;
     }
+
+    // TODO:
+    // check file
+    // for each line of file:
+        // QStringList argumentList = getArgumentList(line)
+        // executeCommand(argumentList)
 
     #ifdef _WIN32
         // Send "enter" to release application from the console

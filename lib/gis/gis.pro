@@ -25,7 +25,7 @@ win32:{
     TARGET = gis
 }
 
-INCLUDEPATH += ../mathFunctions
+INCLUDEPATH += ../mathFunctions ../utilities
 
 SOURCES += gis.cpp \
     gisIO.cpp \

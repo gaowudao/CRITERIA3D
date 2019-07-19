@@ -25,12 +25,10 @@
 
 
 #include <algorithm>
-#include <fstream>
 #include <sstream>
-
+#include <fstream>
 #include "commonConstants.h"
 #include "gis.h"
-
 
 using namespace std;
 
@@ -45,14 +43,12 @@ bool splitKeyValue(std::string myLine, std::string *myKey, std::string *myValue)
     else return(true);
 }
 
-string upperCase(string myStr)
+std::string upperCase(std::string myStr)
 {
-    string upperCaseStr = myStr;
+    std::string upperCaseStr = myStr;
     transform(myStr.begin(), myStr.end(), upperCaseStr.begin(), ::toupper);
     return(upperCaseStr);
-
 }
-
 
 namespace gis
     {

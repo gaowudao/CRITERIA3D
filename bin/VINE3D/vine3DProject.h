@@ -161,6 +161,8 @@
         soil::Crit3DHorizon* getSoilHorizon(long row, long col, int layer);
 
         bool runModels(QDateTime myTime1, QDateTime myTime2, bool saveOutput, bool computeDiseases, const QString& myArea);
+
+        bool executeVine3DCommand(QStringList argumentList, bool* isCommandFound);
     };
 
 #endif // PROJECT_H
