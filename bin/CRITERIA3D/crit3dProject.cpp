@@ -84,11 +84,12 @@ bool Crit3DProject::loadSoilMap(QString myFileName)
 
     if (! gis::readEsriGrid(fileName, &soilMap, &myError))
     {
-        logError("Load soil map failed!");
-        return (false);
+        logError("Load soil map failed.");
+        return false;
     }
 
-    return (true);
+    logInfo("Soil map = " + myFileName);
+    return true;
 }
 
 

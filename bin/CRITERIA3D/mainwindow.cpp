@@ -908,18 +908,13 @@ void MainWindow::on_actionOpen_soil_data_triggered()
     QString error;
     if (! loadAllSoils(fileName, &(myProject.soilList), myProject.soilTextureClass, &error))
     {
-        QMessageBox::critical(nullptr, "Error!", error);
+        myProject.logError(error);
         return;
     }
 
-    if(error != "")
-    {
-        QMessageBox::information(nullptr, "Warning", error);
-    }
-    else
-    {
-        QMessageBox::information(nullptr, "", "Soil data loaded.");
-    }
+    if(error != "") myProject.logInfo(error);
+
+    myProject.logInfo("Soil data = " + fileName);
 }
 
 
