@@ -82,9 +82,11 @@ bool Crit3DProject::loadSoilMap(QString myFileName)
     std::string myError;
     std::string fileName = myFileName.left(myFileName.length()-4).toStdString();
 
+    logInfo("Read soil map...");
+
     if (! gis::readEsriGrid(fileName, &soilMap, &myError))
     {
-        logError("Load soil map failed.");
+        logError("Load soil map failed: " + myFileName);
         return false;
     }
 

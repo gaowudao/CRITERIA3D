@@ -879,7 +879,6 @@ void MainWindow::on_actionParameters_triggered()
 }
 
 
-
 void MainWindow::on_actionOpen_model_parameters_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open DB parameters"), "", tr("SQLite files (*.db)"));
@@ -896,7 +895,7 @@ void MainWindow::on_actionOpen_soil_map_triggered()
     if (fileName == "") return;
 
     if (myProject.loadSoilMap(fileName))
-        QMessageBox::information(nullptr, "", "Soil map loaded.");
+        ui->rasterOpacitySlider->setEnabled(true);
 }
 
 
