@@ -7,8 +7,8 @@ QStringList getPragaCommandList()
 {
     QStringList cmdList = getSharedCommandList();
 
-    cmdList.append("List  | ListCommands");
-    // cmdList.append(...);
+    // praga commands
+    cmdList.append("List    | ListCommands");
 
     return cmdList;
 }
@@ -19,6 +19,7 @@ bool cmdList(PragaProject* myProject)
     QStringList list = getPragaCommandList();
 
     myProject->logInfo("Available PRAGA Console commands:");
+    myProject->logInfo("(short version | long version)");
     for (int i = 0; i < list.size(); i++)
     {
         myProject->logInfo(list[i]);

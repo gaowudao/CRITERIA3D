@@ -147,9 +147,9 @@ QStringList getSharedCommandList()
 {
     QStringList cmdList;
 
-    cmdList.append("Log   | SetLogFile");
-    cmdList.append("DEM   | LoadDEM");
-    cmdList.append("Quit  | Exit");
+    cmdList.append("Log     | SetLogFile");
+    cmdList.append("DEM     | LoadDEM");
+    cmdList.append("Quit    | Exit");
 
     return cmdList;
 }
