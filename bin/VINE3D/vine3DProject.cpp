@@ -151,9 +151,7 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
     parametersFile = paramFile;
 
     return true;
-
 }
-
 
 bool Vine3DProject::loadProject(QString myFileName)
 {

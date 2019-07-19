@@ -1,21 +1,23 @@
 #include <QFile>
 #include <QTextStream>
 #include "shell.h"
+#include "project.h"
 #include "vine3DShell.h"
 
 bool cmdOpenVine3DProject(Vine3DProject* myProject, QStringList argumentList)
 {
     //myProject.setEnvironment(batch);
 
-    if (argumentList.size() == 0)
+    if (argumentList.size() < 2)
+    {
+        myProject->logError("Missing project name");
         return false;
+    }
 
-    QString projectName = argumentList.at(1);
+    QString projectName = myProject->getCompleteFileName(argumentList.at(2), "PROJECT/");
 
     if (! myProject->loadProject(projectName))
-    {
-        myProject->logError("Open project failed:\n " + projectName);
-    }
+        return false;
 
     return true;
 }
@@ -27,23 +29,34 @@ bool cmdRunModels(Vine3DProject* myProject, QStringList argumentList)
     if (argumentList.size() == 0)
         return false;
 
+    if (argumentList.at(1) == "?")
+    {
+        QString stringUsage = "USAGE: runModels";
+        stringUsage += "runModels [nrDays] [nrDaysForecast]\n";
+        stringUsage += "nrDaysPast: days from today when to start (default: 7)";
+        stringUsage += "nrDaysForecast: days since today when to finish (default: 0)\n";
+
+        myProject->logInfo(stringUsage);
+        return true;
+    }
+
     QDate today, firstDay;
     int nrDays, nrDaysForecast;
 
-    if (argumentList.size() > 3)
+    if (argumentList.size() >= 3)
     {
         nrDaysForecast = argumentList.at(3).toInt();
         nrDays = argumentList.at(2).toInt();
     }
-    else if (argumentList.size() > 2)
+    else if (argumentList.size() == 2)
     {
         nrDays = argumentList.at(2).toInt();
-        nrDaysForecast = 9;
+        nrDaysForecast = 0;
     }
     else
     {
         nrDays = 7;      //default: 1 week
-        nrDaysForecast = 9;
+        nrDaysForecast = 0;
     }
 
     today = QDate::currentDate();
@@ -55,23 +68,24 @@ bool cmdRunModels(Vine3DProject* myProject, QStringList argumentList)
     QDateTime firstDateTime = QDateTime(firstDay);
     firstDateTime.setTime(QTime(1,0,0,0));
 
-    myProject->runModels(firstDateTime, lastDateTime, true, true, myProject->idArea);
+    if (! myProject->runModels(firstDateTime, lastDateTime, true, true, myProject->idArea))
+        return false;
 
     myProject->closeProject();
 
     return true;
 }
 
-bool executeCommand(QStringList commandLine, Vine3DProject* myProject)
+bool executeCommand(QStringList argumentList, Vine3DProject* myProject)
 {
-    if (commandLine.size() == 0) return false;
+    if (argumentList.size() == 0) return false;
 
     bool isCommandFound, isExecuted;
 
-    isExecuted = myProject->executeSharedCommand(commandLine, &isCommandFound);
+    isExecuted = myProject->executeSharedCommand(argumentList, &isCommandFound);
     if (isCommandFound) return isExecuted;
 
-    isExecuted = myProject->executeVine3DCommand(commandLine, &isCommandFound);
+    isExecuted = myProject->executeVine3DCommand(argumentList, &isCommandFound);
     if (isCommandFound) return isExecuted;
 
     myProject->logError("This is not a valid PRAGA command.");
