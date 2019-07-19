@@ -154,16 +154,6 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
     this->rasterObj->updateCenter();
     this->meteoGridObj->updateCenter();
 
-    if (event->button() == Qt::LeftButton)
-    {
-        QPointF pos = event->localPos();
-
-        if (currentMap == mapType::mapSoil)
-        {
-            this->ui->statusBar->showMessage("soil!!");
-        }
-    }
-
     if (myRubberBand != nullptr && myRubberBand->isVisible())
     {
         gis::Crit3DGeoPoint pointSelected;
@@ -269,7 +259,13 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
 
     if (event->button() == Qt::RightButton)
     {
-        if (myRubberBand != nullptr)
+        // soil menu
+        if (currentMap == mapType::mapSoil)
+        {
+            soilMenuRequested(event->globalPos());
+        }
+        // rubber band
+        else if (myRubberBand != nullptr)
         {
             QPointF firstCorner = event->localPos();
             myRubberBand->setFirstCorner(firstCorner);
@@ -281,7 +277,6 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
         #ifdef NETCDF
         if (myProject.netCDF.isLoaded)
         {
-            QPoint pos = event->pos();
             Position myPos = mapView->mapToScene(getMapPoint(&pos));
             gis::Crit3DGeoPoint geoPoint = gis::Crit3DGeoPoint(myPos.latitude(), myPos.longitude());
 
@@ -1226,5 +1221,21 @@ void MainWindow::on_actionCompute_AllMeteoMaps_triggered()
     {
         myProject.logError();
         return;
+    }
+}
+
+
+void MainWindow::soilMenuRequested(const QPoint pos)
+{
+    QMenu submenu;
+    submenu.addAction("Show soil data");
+    QAction* myAction = submenu.exec(pos);
+
+    if (myAction)
+    {
+        if (myAction->text().contains("Show soil data") )
+        {
+            // show soil
+        }
     }
 }
