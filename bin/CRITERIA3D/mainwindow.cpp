@@ -257,14 +257,22 @@ void MainWindow::mouseMoveEvent(QMouseEvent * event)
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::RightButton)
+    QPoint pos = event->pos();
+    QPoint mapPoint = getMapPoint(&pos);
+
+    if (event->button() == Qt::LeftButton)
+    {
+        if (currentMap == mapType::mapSoil)
+        {
+            this->ui->statusBar->showMessage("soil!!");
+        }
+    }
+    else if (event->button() == Qt::RightButton)
     {
         if (myRubberBand != nullptr)
         {
-            QPoint pos = event->pos();
             QPointF firstCorner = event->localPos();
             myRubberBand->setFirstCorner(firstCorner);
-            QPoint mapPoint = getMapPoint(&pos);
             myRubberBand->setOrigin(mapPoint);
             myRubberBand->setGeometry(QRect(mapPoint, QSize()));
             myRubberBand->show();
@@ -1081,6 +1089,7 @@ void MainWindow::setMapVariable(meteoVariable myVar, gis::Crit3DRasterGrid *myGr
     setColorScale(myVar, myGrid->colorScale);
     this->setCurrentRaster(myGrid);
     ui->labelRasterScale->setText(QString::fromStdString(getVariableString(myVar)));
+    this->currentMap = mapType::mapVariable;
 }
 
 

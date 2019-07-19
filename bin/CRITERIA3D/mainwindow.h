@@ -16,7 +16,7 @@
     #include "viewer3d.h"
 
     enum visualizationType {showNone, showLocation, showCurrentVariable};
-    enum mapType {mapNone, mapDTM, mapSoil};
+    enum mapType {mapNone, mapDTM, mapSoil, mapVariable};
 
     namespace Ui
     {
