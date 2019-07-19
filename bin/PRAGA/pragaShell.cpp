@@ -112,7 +112,6 @@ bool pragaShell(PragaProject* myProject)
         QString commandLine = getCommandLine("PRAGA");
         if (commandLine != "")
         {
-            myProject->logInfo(">> " + commandLine);
             QStringList argumentList = getArgumentList(commandLine);
             executeCommand(argumentList, myProject);
         }

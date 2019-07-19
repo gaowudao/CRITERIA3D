@@ -166,7 +166,7 @@ bool Vine3DProject::loadProject(QString myFileName)
         return false;
 
     if (this->setLogFile())
-        this->logInfo("Set LogFile: " + this->logFileName);
+        this->logInfo("LogFile = " + this->logFileName);
     else
         this->logError("LogFile Wrong.");
 
@@ -553,7 +553,7 @@ void modelCaseIndexMapIndexFromId(gis::Crit3DRasterGrid* myGrid, Crit3DModelCase
 
 bool Vine3DProject::loadFieldMap(QString myFileName)
 {
-    this->logInfo ("Read field map " + myFileName);
+    this->logInfo ("Read field map...");
 
     std::string fn = myFileName.left(myFileName.length()-4).toStdString();
     std::string* myError = new std::string();
@@ -565,17 +565,16 @@ bool Vine3DProject::loadFieldMap(QString myFileName)
         logError();
         return (false);
     }
-    else
-    {
-        // compute prevailing map
-        modelCaseIndexMap.initializeGrid(DTM);
-        gis::prevailingMap(myGrid, &(modelCaseIndexMap));
-        gis::updateMinMaxRasterGrid(&(modelCaseIndexMap));
 
-        modelCaseIndexMapIndexFromId(&modelCaseIndexMap, this->modelCases, this->nrModelCases);
+    // compute prevailing map
+    modelCaseIndexMap.initializeGrid(DTM);
+    gis::prevailingMap(myGrid, &(modelCaseIndexMap));
+    gis::updateMinMaxRasterGrid(&(modelCaseIndexMap));
 
-        return (true);
-    }
+    modelCaseIndexMapIndexFromId(&modelCaseIndexMap, this->modelCases, this->nrModelCases);
+
+    this->logInfo ("Field map = " + myFileName);
+    return (true);
 }
 
 
@@ -997,7 +996,7 @@ bool Vine3DProject::loadSoils()
     if (query.size() == -1)
     {
         this->errorString = "Function 'loadSoils' - Table 'soils'\n" + query.lastError().text();
-        return(false);
+        return false;
     }
 
     if (WBSettings->soilList != nullptr)
@@ -1034,7 +1033,7 @@ bool Vine3DProject::loadSoils()
 
     this->WBSettings->soilDepth = minValue(this->WBSettings->soilDepth, maxSoilDepth);
 
-    logInfo(QString::number(this->WBSettings->soilDepth));
+    logInfo("Soil depth = " + QString::number(this->WBSettings->soilDepth));
 
     return(true);
 }
