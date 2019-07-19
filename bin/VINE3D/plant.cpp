@@ -347,7 +347,7 @@ bool savePlantState(Vine3DProject* myProject, plantVariable myVar, QDate myDate,
 
     if (! gis::writeEsriGrid(fileName.toStdString(), myMap, &myErrorString))
     {
-        myProject->logInfoError(QString::fromStdString(myErrorString));
+        myProject->logError(QString::fromStdString(myErrorString));
         return false;
     }
 
@@ -388,7 +388,7 @@ bool savePlantOutput(Vine3DProject* myProject, plantVariable myVar,
     std::string myErrorString;
     if (! gis::writeEsriGrid(outputFileName.toStdString(), &outputMap, &myErrorString))
     {
-        myProject->logInfoError(QString::fromStdString(myErrorString));
+        myProject->logError(QString::fromStdString(myErrorString));
         return false;
     }
 
@@ -412,7 +412,7 @@ bool loadPlantState(Vine3DProject* myProject, plantVariable myVar, QDate myDate,
 
     if (! gis::readEsriGrid(fileName.toStdString(), myMap, &errorString))
     {
-        myProject->logInfoError(QString::fromStdString(errorString));
+        myProject->logError(QString::fromStdString(errorString));
         return false;
     }
 
@@ -427,7 +427,7 @@ bool updateThermalSum(Vine3DProject* myProject, QDate myDate)
     QDate firstMarch;
     QDate fifteenNovember;
 
-    myProject->logInfoInfo("\nUpdate thermal sum...");
+    myProject->logInfo("\nUpdate thermal sum...");
     firstMarch.setDate(myDate.year(),3,1);
     fifteenNovember.setDate(myDate.year(),11,15);
     flag = myProject->statePlantMaps->degreeDaysFromFirstMarchMap->header->flag;

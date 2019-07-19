@@ -18,11 +18,11 @@ bool cmdList(PragaProject* myProject)
 {
     QStringList list = getPragaCommandList();
 
-    myProject->logInfoInfo("Available PRAGA Console commands:");
-    myProject->logInfoInfo("(short  | long version)");
+    myProject->logInfo("Available PRAGA Console commands:");
+    myProject->logInfo("(short  | long version)");
     for (int i = 0; i < list.size(); i++)
     {
-        myProject->logInfoInfo(list[i]);
+        myProject->logInfo(list[i]);
     }
 
     return true;
@@ -56,7 +56,7 @@ bool executeCommand(QStringList argumentList, PragaProject* myProject)
     if (argumentList.size() == 0) return false;
     bool isCommandFound, isExecuted;
 
-    myProject->logInfoInfo(getTimeStamp(argumentList));
+    myProject->logInfo(getTimeStamp(argumentList));
 
     isExecuted = myProject->executeSharedCommand(argumentList, &isCommandFound);
     if (isCommandFound) return isExecuted;
@@ -64,7 +64,7 @@ bool executeCommand(QStringList argumentList, PragaProject* myProject)
     isExecuted = myProject->executePragaCommand(argumentList, &isCommandFound);
     if (isCommandFound) return isExecuted;
 
-    myProject->logInfoError("This is not a valid PRAGA command.");
+    myProject->logError("This is not a valid PRAGA command.");
     return false;
 }
 
@@ -75,12 +75,12 @@ bool pragaBatch(PragaProject* myProject, QString scriptFileName)
         attachOutputToConsole();
     #endif
 
-    myProject->logInfoInfo("\nPRAGA v0.1");
-    myProject->logInfoInfo("Execute script: " + scriptFileName);
+    myProject->logInfo("\nPRAGA v0.1");
+    myProject->logInfo("Execute script: " + scriptFileName);
 
     if (scriptFileName == "")
     {
-        myProject->logInfoError("No script file provided");
+        myProject->logError("No script file provided");
         return false;
     }
 

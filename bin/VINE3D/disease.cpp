@@ -18,7 +18,7 @@ bool computePowderyMildew(Vine3DProject* myProject)
     Tmildew powdery;
     float phenoPhase;
     bool isBudBurst;
-    myProject->logInfoInfo("Compute powdery mildew...");
+    myProject->logInfo("Compute powdery mildew...");
 
     for (long row = 0; row < myProject->DTM.header->nrRows ; row++)
         for (long col = 0; col < myProject->DTM.header->nrCols; col++)
@@ -85,7 +85,7 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
 {
     using namespace std;
 
-    myProject->logInfoInfo("\nCompute downy mildew...");
+    myProject->logInfo("\nCompute downy mildew...");
 
     QDate firstJanuary;
     firstJanuary.setDate(lastDate.year(), 1, 1);
@@ -102,7 +102,7 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
     //check vegetative season
     if ((lastDoy < VEGETATIVESTART) || (firstDoy >= VEGETATIVEEND))
     {
-        myProject->logInfoInfo("Out of vegetative season");
+        myProject->logInfo("Out of vegetative season");
         return true;
     }
 
@@ -126,7 +126,7 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
 
     if (!myProject->LoadObsDataFilled(firstTime, lastTime))
     {
-        myProject->logInfoError();
+        myProject->logError();
         return false;
     }
 
@@ -181,12 +181,12 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
             input.clear();
             input.resize(nrPoints*nrHours);
 
-            myProject->logInfoInfo("Interpolate hourly data... nr points: " + QString::number(nrPoints));
+            myProject->logInfo("Interpolate hourly data... nr points: " + QString::number(nrPoints));
             myTime = getCrit3DTime(firstTime);
             for (long h = 0; h < nrHours; h++)
             {
                 if ((myTime.date.day == 1) && (myTime.getHour() == 1))
-                    myProject->logInfoInfo("Compute hourly data - month: " + QString::number(myTime.date.month));
+                    myProject->logInfo("Compute hourly data - month: " + QString::number(myTime.date.month));
 
                 if (! interpolationProjectDtmMain(myProject, airTemperature, myTime, true))
                 {
@@ -224,7 +224,7 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
             // Downy cycle computation
             if (! missingData)
             {
-                myProject->logInfoInfo("Downy mildew model... nr points: " + QString::number(nrPoints));
+                myProject->logInfo("Downy mildew model... nr points: " + QString::number(nrPoints));
                 for (n = 0; n < nrPoints; n++)
                 {
                     row = rowPoint[n];
@@ -279,7 +279,7 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
             outputFileName = dailyPath + fileName;
             gis::writeEsriGrid(outputFileName.toStdString(), oilSpotMap[n], &myErrorString);
         }
-        myProject->logInfoInfo("Downy mildew computed.");
+        myProject->logInfo("Downy mildew computed.");
     }
 
     // Clean memory
@@ -294,7 +294,7 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
 
     if (missingData)
     {
-        myProject->logInfoInfo("\nMissing hourly data to compute DownyMildew:"
+        myProject->logInfo("\nMissing hourly data to compute DownyMildew:"
                 + getQDate(myTime.date).toString("yyyy/MM/dd")
                 + "\n" + variableMissing);
         return false;

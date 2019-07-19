@@ -19,11 +19,11 @@ bool cmdList(Vine3DProject* myProject)
 {
     QStringList list = getVine3DCommandList();
 
-    myProject->logInfoInfo("Available VINE3D console commands:");
-    myProject->logInfoInfo("(short  | long version)");
+    myProject->logInfo("Available VINE3D console commands:");
+    myProject->logInfo("(short  | long version)");
     for (int i = 0; i < list.size(); i++)
     {
-        myProject->logInfoInfo(list[i]);
+        myProject->logInfo(list[i]);
     }
 
     return true;
@@ -66,7 +66,7 @@ bool cmdOpenVine3DProject(Vine3DProject* myProject, QStringList argumentList)
 
     if (argumentList.size() < 2)
     {
-        myProject->logInfoError("Missing project name");
+        myProject->logError("Missing project name");
         return false;
     }
 
@@ -93,7 +93,7 @@ bool cmdRunModels(Vine3DProject* myProject, QStringList argumentList)
             stringUsage += "\nnrDaysPast: days from today when to start (default: 7)";
             stringUsage += "\nnrDaysForecast: days since today when to finish (default: 0)";
 
-            myProject->logInfoInfo(stringUsage);
+            myProject->logInfo(stringUsage);
             return true;
         }
     }
@@ -141,7 +141,7 @@ bool executeCommand(QStringList argumentList, Vine3DProject* myProject)
     if (argumentList.size() == 0) return false;
     bool isCommandFound, isExecuted;
 
-    myProject->logInfoInfo(getTimeStamp(argumentList));
+    myProject->logInfo(getTimeStamp(argumentList));
 
     isExecuted = myProject->executeSharedCommand(argumentList, &isCommandFound);
     if (isCommandFound) return isExecuted;
@@ -149,7 +149,7 @@ bool executeCommand(QStringList argumentList, Vine3DProject* myProject)
     isExecuted = myProject->executeVine3DCommand(argumentList, &isCommandFound);
     if (isCommandFound) return isExecuted;
 
-    myProject->logInfoError("This is not a valid VINE3D command.");
+    myProject->logError("This is not a valid VINE3D command.");
     return false;
 }
 
@@ -160,18 +160,18 @@ bool vine3dBatch(Vine3DProject *myProject, QString scriptFileName)
         attachOutputToConsole();
     #endif
 
-    myProject->logInfoInfo("\nVINE3D v1.0");
-    myProject->logInfoInfo("Execute script: " + scriptFileName);
+    myProject->logInfo("\nVINE3D v1.0");
+    myProject->logInfo("Execute script: " + scriptFileName);
 
     if (scriptFileName == "")
     {
-        myProject->logInfoError("No script file provided");
+        myProject->logError("No script file provided");
         return false;
     }
 
     if (! QFile(scriptFileName).exists())
     {
-        myProject->logInfoError("Script file not found: " + scriptFileName);
+        myProject->logError("Script file not found: " + scriptFileName);
         return false;
     }
 

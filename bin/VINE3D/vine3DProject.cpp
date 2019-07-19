@@ -91,7 +91,7 @@ void Vine3DProject::closeProject()
 {
     if (this->isProjectLoaded)
     {
-        this->logInfoInfo("Close Project");
+        this->logInfo("Close Project");
         this->dbConnection.close();
         this->logInfoFile.close();
         this->initializeMeteoPoints();
@@ -166,14 +166,14 @@ bool Vine3DProject::loadProject(QString myFileName)
         return false;
 
     if (this->setLogFile())
-        this->logInfoInfo("LogFile = " + this->logInfoFileName);
+        this->logInfo("LogFile = " + this->logInfoFileName);
     else
-        this->logInfoError("LogFile Wrong.");
+        this->logError("LogFile Wrong.");
 
     myFileName = path + demFileName;
     if (loadDEM(myFileName))
     {
-        this->logInfoInfo("Initialize DTM and project maps...");
+        this->logInfo("Initialize DTM and project maps...");
         meteoMaps = new Crit3DMeteoMaps(DTM);
         statePlantMaps = new Crit3DStatePlantMaps(DTM);
     }
@@ -207,7 +207,7 @@ bool Vine3DProject::loadProject(QString myFileName)
 
     if (! initializeWaterBalance(this))
     {
-        this->logInfoError();
+        this->logError();
         return(false);
     }
 
@@ -444,7 +444,7 @@ int Vine3DProject::queryFieldPoint(double x, double y)
     if (myQuery.size() == -1)
     {
         this->errorString = myQuery.lastError().text();
-        this->logInfoError();
+        this->logError();
         return(NODATA);
     }
 
@@ -462,7 +462,7 @@ bool Vine3DProject::loadFieldShape()
 {
     return false;
     /* to be revised
-    this->logInfoInfo ("Read Fields...");
+    this->logInfo ("Read Fields...");
     int dim = 1;
     int i, j, id;
     double x0, y0;
@@ -553,7 +553,7 @@ void modelCaseIndexMapIndexFromId(gis::Crit3DRasterGrid* myGrid, Crit3DModelCase
 
 bool Vine3DProject::loadFieldMap(QString myFileName)
 {
-    this->logInfoInfo ("Read field map...");
+    this->logInfo ("Read field map...");
 
     std::string fn = myFileName.left(myFileName.length()-4).toStdString();
     std::string* myError = new std::string();
@@ -573,7 +573,7 @@ bool Vine3DProject::loadFieldMap(QString myFileName)
 
     modelCaseIndexMapIndexFromId(&modelCaseIndexMap, this->modelCases, this->nrModelCases);
 
-    this->logInfoInfo ("Field map = " + myFileName);
+    this->logInfo ("Field map = " + myFileName);
     return (true);
 }
 
@@ -1628,7 +1628,7 @@ bool Vine3DProject::LoadObsDataFilled(QDateTime firstTime, QDateTime lastTime)
             || !checkLackOfData(this, precipitation, myTime, &nrReplacedData)
             || !checkLackOfData(this, airRelHumidity, myTime, &nrReplacedData))
         {
-            this->logInfoError("Weather data missing: " + getQDateTime(myTime).toString("yyyyMMdd hh:mm"));
+            this->logError("Weather data missing: " + getQDateTime(myTime).toString("yyyyMMdd hh:mm"));
             return(false);
         }
         checkLackOfData(this, windIntensity, myTime, &nrReplacedData);
@@ -1637,8 +1637,8 @@ bool Vine3DProject::LoadObsDataFilled(QDateTime firstTime, QDateTime lastTime)
 
     if(nrReplacedData > 0)
     {
-        this->logInfoInfo("\nWarning! "+ QString::number(nrReplacedData)+ " hourly data are missing.");
-        this->logInfoInfo("They was replaced by mean values.\n");
+        this->logInfo("\nWarning! "+ QString::number(nrReplacedData)+ " hourly data are missing.");
+        this->logInfo("They was replaced by mean values.\n");
     }
 
     return true;
@@ -1649,13 +1649,13 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool sav
 {
     if (! this->isProjectLoaded)
     {
-        this->logInfoError("Load a project before.");
+        this->logError("Load a project before.");
         return false;
     }
 
     if (!LoadObsDataFilled(dateTime1, dateTime2))
     {
-        this->logInfoError();
+        this->logError();
         return false;
     }
 
@@ -1668,7 +1668,7 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool sav
     int hourTime2 = dateTime2.time().hour();
     int finalHour;
 
-    this->logInfoInfo("Run models from: " + firstDate.toString() + " to: " + lastDate.toString());
+    this->logInfo("Run models from: " + firstDate.toString() + " to: " + lastDate.toString());
 
     for (QDate myDate = firstDate; myDate <= lastDate; myDate = myDate.addDays(1))
     {
@@ -1680,7 +1680,7 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool sav
                 isInitialState = false;
             else
             {
-                this->logInfoInfo("State not found.");
+                this->logInfo("State not found.");
                 isInitialState = true;
             }
         }
@@ -1700,7 +1700,7 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool sav
 
                 if ((! myDir.mkpath(myOutputPathDaily)) || (! myDir.mkpath(myOutputPathHourly)))
                 {
-                    this->logInfoError("Creation output directories failed." );
+                    this->logError("Creation output directories failed." );
                     saveOutput = false;
                 }
             }
@@ -1719,7 +1719,7 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool sav
         {
             if (saveOutput)
             {
-                this->logInfoInfo("Aggregate daily meteo data");
+                this->logInfo("Aggregate daily meteo data");
                 aggregateAndSaveDailyMap(this, airTemperature, aggregationMin, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
                 aggregateAndSaveDailyMap(this, airTemperature, aggregationMax, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
                 aggregateAndSaveDailyMap(this, airTemperature, aggregationMean, getCrit3DDate(myDate), myOutputPathDaily,myOutputPathHourly, myArea);
@@ -1732,7 +1732,7 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool sav
                 aggregateAndSaveDailyMap(this, globalIrradiance, aggregationIntegration, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
                 aggregateAndSaveDailyMap(this, leafWetness, aggregationSum, getCrit3DDate(myDate), myOutputPathDaily, myOutputPathHourly, myArea);
 
-                if (removeDirectory(myOutputPathHourly)) this->logInfoInfo("Delete hourly files");
+                if (removeDirectory(myOutputPathHourly)) this->logInfo("Delete hourly files");
             }
 
             //load daily map (for desease)
@@ -1797,7 +1797,7 @@ bool Vine3DProject::loadStates(QDate myDate, QString myArea)
 
     if (!loadWaterBalanceState(this, myDate, myArea, statePath, waterMatricPotential)) return false;
 
-    this->logInfoInfo("Load state: " + myDate.toString("yyyy-MM-dd"));
+    this->logInfo("Load state: " + myDate.toString("yyyy-MM-dd"));
     return(true);
 }
 
@@ -1809,11 +1809,11 @@ bool Vine3DProject::saveStateAndOutput(QDate myDate, QString myArea, bool saveDi
     QString outputPath = path + this->dailyOutputPath + myDate.toString("yyyy/MM/dd/");
     if (! myDir.mkpath(statePath))
     {
-        this->logInfoError("Creation directory states failed." );
+        this->logError("Creation directory states failed." );
         return(false);
     }
 
-    this->logInfoInfo("Save state and output");
+    this->logInfo("Save state and output");
 
     if (!savePlantState(this, meanTemperatureLastMonthVar, myDate, statePath, myArea)) return(false);
     if (!savePlantState(this, chillingUnitsVar, myDate, statePath, myArea)) return(false);
