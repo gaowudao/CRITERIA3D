@@ -4,7 +4,7 @@
 TabHorizons::TabHorizons()
 {
     QVBoxLayout *mainLayout = new QVBoxLayout;
-    QLabel* dbTableLabel = new QLabel("Soil data from DB:");
+    QLabel* dbTableLabel = new QLabel("Soil parameters from DB:");
     QLabel* modelTableLabel = new QLabel("Soil parameters estimated by model:");
     tableDb = new QTableWidget();
     tableDb->setColumnCount(10);
@@ -16,21 +16,21 @@ TabHorizons::TabHorizons()
     tableDb->setSelectionBehavior(QAbstractItemView::SelectRows);
     tableDb->setSelectionMode(QAbstractItemView::SingleSelection);
     tableDb->setShowGrid(true);
-    tableDb->setStyleSheet("QTableView {selection-background-color: red;}");
+    tableDb->setStyleSheet("QTableView {selection-background-color: green;}");
 
 
     tableModel = new QTableWidget();
     tableModel->setColumnCount(11);
     QStringList tableModelHeader;
     tableModelHeader << "USDA Texture" << "Coarse frag. [%]" << "Org. matter [%]"
-                    << "Bulk density [g/cm3]" << "K Sat [cm/d]" << "Theta R [-]" << "Theta S [-]" << "Air entry [KPa]"
-                    << "alpha [KPa^-1]" << "n  [-]" << "m   [-]";
+                    << "Bulk density [g/cm3]" << "K Sat [cm/d]" << "Theta S [-]" << "Theta R [-]" << "Air entry [KPa]"
+                    << "alpha [KPa^-1]" << "  n  [-] " << " m   [-] ";
     tableModel->setHorizontalHeaderLabels(tableModelHeader);
     tableModel->resizeColumnsToContents();
     tableModel->setSelectionBehavior(QAbstractItemView::SelectRows);
     tableModel->setSelectionMode(QAbstractItemView::SingleSelection);
     tableModel->setShowGrid(true);
-    tableModel->setStyleSheet("QTableView {selection-background-color: red;}");
+    tableModel->setStyleSheet("QTableView {selection-background-color: green;}");
 
 
     mainLayout->addWidget(dbTableLabel);
@@ -48,28 +48,28 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil mySoil)
     tableModel->setRowCount(row);
     for (int i = 0; i < row; i++)
     {
-        tableDb->setItem(i, 0, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.upperDepth )));
-        tableDb->setItem(i, 1, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.lowerDepth )));
-        tableDb->setItem(i, 2, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.sand )));
-        tableDb->setItem(i, 3, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.silt )));
-        tableDb->setItem(i, 4, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.clay )));
-        tableDb->setItem(i, 5, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.coarseFragments )));
-        tableDb->setItem(i, 6, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.organicMatter )));
-        tableDb->setItem(i, 7, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.bulkDensity )));
-        tableDb->setItem(i, 8, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.kSat )));
-        tableDb->setItem(i, 9, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.thetaSat)));
+        tableDb->setItem(i, 0, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.upperDepth, 'f', 3)));
+        tableDb->setItem(i, 1, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.lowerDepth, 'f', 3 )));
+        tableDb->setItem(i, 2, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.sand, 'f', 3 )));
+        tableDb->setItem(i, 3, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.silt, 'f', 3 )));
+        tableDb->setItem(i, 4, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.clay , 'f', 3)));
+        tableDb->setItem(i, 5, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.coarseFragments, 'f', 3 )));
+        tableDb->setItem(i, 6, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.organicMatter, 'f', 3 )));
+        tableDb->setItem(i, 7, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.bulkDensity, 'f', 3 )));
+        tableDb->setItem(i, 8, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.kSat, 'f', 3 )));
+        tableDb->setItem(i, 9, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.thetaSat, 'f', 3)));
 
         tableModel->setItem(i, 0, new QTableWidgetItem( QString::fromStdString(mySoil.horizon[i].texture.classNameUSDA)));
-        tableModel->setItem(i, 1, new QTableWidgetItem( QString::number(mySoil.horizon[i].coarseFragments*100 )));
-        tableModel->setItem(i, 2, new QTableWidgetItem( QString::number(mySoil.horizon[i].organicMatter*100 )));
-        tableModel->setItem(i, 3, new QTableWidgetItem( QString::number(mySoil.horizon[i].bulkDensity )));
-        tableModel->setItem(i, 4, new QTableWidgetItem( QString::number(mySoil.horizon[i].waterConductivity.kSat )));
-        tableModel->setItem(i, 5, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.thetaR )));
-        tableModel->setItem(i, 6, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.thetaS )));
-        tableModel->setItem(i, 7, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.he )));
-        tableModel->setItem(i, 8, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.alpha )));
-        tableModel->setItem(i, 9, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.n )));
-        tableModel->setItem(i, 10, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.m )));
+        tableModel->setItem(i, 1, new QTableWidgetItem( QString::number(mySoil.horizon[i].coarseFragments*100, 'f', 3 )));
+        tableModel->setItem(i, 2, new QTableWidgetItem( QString::number(mySoil.horizon[i].organicMatter*100, 'f', 3 )));
+        tableModel->setItem(i, 3, new QTableWidgetItem( QString::number(mySoil.horizon[i].bulkDensity, 'f', 3 )));
+        tableModel->setItem(i, 4, new QTableWidgetItem( QString::number(mySoil.horizon[i].waterConductivity.kSat, 'f', 3 )));
+        tableModel->setItem(i, 5, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.thetaS, 'f', 3 )));
+        tableModel->setItem(i, 6, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.thetaR, 'f', 3 )));
+        tableModel->setItem(i, 7, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.he, 'f', 3 )));
+        tableModel->setItem(i, 8, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.alpha, 'f', 3 )));
+        tableModel->setItem(i, 9, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.n, 'f', 3 )));
+        tableModel->setItem(i, 10, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.m, 'f', 3 )));
 
         checkHorizonDBData(mySoil, i);
         checkComputedValues(mySoil, i);
@@ -114,19 +114,22 @@ void TabHorizons::checkHorizonDBData(soil::Crit3DSoil mySoil, int horizonNum)
 
 void TabHorizons::checkMissingItem(int horizonNum)
 {
+    QString NODATAString = "-9999.000";
     for (int j = 0; j < tableDb->columnCount(); j++)
     {
-        if (tableDb->item(horizonNum,j)->text().toInt() == NODATA)
+        if (tableDb->item(horizonNum,j)->text() == NODATAString)
         {
             tableDb->item(horizonNum,j)->setBackgroundColor(Qt::yellow);
+            tableDb->item(horizonNum,j)->setText(QString::number(NODATA));
         }
     }
 
     for (int j = 0; j < tableModel->columnCount(); j++)
     {
-        if (tableModel->item(horizonNum,j)->text().toInt() == NODATA)
+        if (tableModel->item(horizonNum,j)->text() == NODATAString)
         {
             tableModel->item(horizonNum,j)->setBackgroundColor(Qt::red);
+            tableModel->item(horizonNum,j)->setText(QString::number(NODATA));
         }
     }
 
@@ -148,7 +151,7 @@ void TabHorizons::checkComputedValues(soil::Crit3DSoil mySoil, int horizonNum)
     }
     if (mySoil.horizon[horizonNum].dbData.thetaSat != mySoil.horizon[horizonNum].vanGenuchten.thetaS)
     {
-        tableModel->item(horizonNum,6)->setBackgroundColor(Qt::yellow);
+        tableModel->item(horizonNum,5)->setBackgroundColor(Qt::yellow);
     }
     if (mySoil.horizon[horizonNum].dbData.kSat != mySoil.horizon[horizonNum].waterConductivity.kSat)
     {
