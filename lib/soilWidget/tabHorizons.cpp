@@ -29,9 +29,13 @@ TabHorizons::TabHorizons()
     tableModel->resizeColumnsToContents();
     tableModel->setSelectionBehavior(QAbstractItemView::SelectRows);
     tableModel->setSelectionMode(QAbstractItemView::SingleSelection);
+    tableModel->setEditTriggers(QAbstractItemView::NoEditTriggers);
     tableModel->setShowGrid(true);
     tableModel->setStyleSheet("QTableView {selection-background-color: green;}");
 
+
+    connect(tableDb->verticalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->tableDbVerticalHeaderClick(index); });
+    connect(tableModel->verticalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->tableModelVerticalHeaderClick(index); });
 
     mainLayout->addWidget(dbTableLabel);
     mainLayout->addWidget(tableDb);
@@ -157,4 +161,24 @@ void TabHorizons::checkComputedValues(soil::Crit3DSoil mySoil, int horizonNum)
     {
         tableModel->item(horizonNum,4)->setBackgroundColor(Qt::yellow);
     }
+}
+
+void TabHorizons::clearSelections()
+{
+    tableDb->clearSelection();
+    tableModel->clearSelection();
+}
+
+void TabHorizons::tableDbVerticalHeaderClick(int index)
+{
+    tableDb->horizontalHeader()->setHighlightSections(false);
+    tableModel->selectRow(index);
+    tableModel->horizontalHeader()->setHighlightSections(false);
+}
+
+void TabHorizons::tableModelVerticalHeaderClick(int index)
+{
+    tableModel->horizontalHeader()->setHighlightSections(false);
+    tableDb->selectRow(index);
+    tableDb->horizontalHeader()->setHighlightSections(false);
 }

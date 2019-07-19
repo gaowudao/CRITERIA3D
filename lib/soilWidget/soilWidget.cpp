@@ -182,12 +182,9 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
         QMessageBox::critical(nullptr, "Error!", error);
         return;
     }
+    horizonsTab->clearSelections();
     horizonsTab->insertSoilHorizons(mySoil);
-    // warnings
-//    if (error != "")
-//    {
-//        QMessageBox::information(nullptr, "Warning", error);
-//    }
+
 
 }
 
