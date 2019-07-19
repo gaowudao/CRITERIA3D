@@ -1,45 +1,31 @@
-#include "vine3dShell.h"
 #include "shell.h"
-
-
-bool executeVine3DCommand(QStringList argumentList, Vine3DProject* myProject)
-{
-    int nrArgs = argumentList.size();
-    if (nrArgs == 0) return false;
-
-    QString command = argumentList[0].toUpper();
-
-    // specific Praga commands
-    // ...
-
-    return false;
-}
+#include "vine3DShell.h"
 
 
 bool executeCommand(QStringList commandLine, Vine3DProject* myProject)
 {
-    if (commandLine.size() > 0)
-    {
-        if (! myProject->executeSharedCommand(commandLine))
-        {
-            if (! executeVine3DCommand(commandLine, myProject))
-            {
-                myProject->logError("This is not a valid PRAGA command.");
-                return false;
-            }
-        }
-    }
-    return true;
+    if (commandLine.size() == 0) return false;
+
+    bool isCommandFound, isExecuted;
+
+    isExecuted = myProject->executeSharedCommand(commandLine, &isCommandFound);
+    if (isCommandFound) return isExecuted;
+
+    isExecuted = myProject->executeVine3DCommand(commandLine, &isCommandFound);
+    if (isCommandFound) return isExecuted;
+
+    myProject->logError("This is not a valid PRAGA command.");
+    return false;
 }
 
 
-bool pragaBatch(Vine3DProject *myProject, QString scriptFileName)
+bool vine3dBatch(Vine3DProject *myProject, QString scriptFileName)
 {
     #ifdef _WIN32
         attachOutputToConsole();
     #endif
 
-    myProject->logInfo("\nPRAGA v0.1");
+    myProject->logInfo("\nVINE3D v1.0");
     myProject->logInfo("Execute script: " + scriptFileName);
 
     // TODO:
@@ -65,7 +51,7 @@ bool pragaBatch(Vine3DProject *myProject, QString scriptFileName)
 }
 
 
-bool pragaShell(Vine3DProject* myProject)
+bool vine3dShell(Vine3DProject* myProject)
 {
     #ifdef _WIN32
         openNewConsole();
@@ -73,9 +59,13 @@ bool pragaShell(Vine3DProject* myProject)
 
     while (! myProject->requestedExit)
     {
-        std::string commandLine = getCommandLine("PRAGA");
-        QStringList argumentList = getArgumentList(commandLine);
-        executeCommand(argumentList, myProject);
+        QString commandLine = getCommandLine("VINE3D");
+        if (commandLine != "")
+        {
+            myProject->logInfo(">> " + commandLine);
+            QStringList argumentList = getArgumentList(commandLine);
+            executeCommand(argumentList, myProject);
+        }
     }
 
     return true;
