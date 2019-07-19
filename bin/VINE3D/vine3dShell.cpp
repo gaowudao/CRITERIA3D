@@ -3,6 +3,64 @@
 #include "shell.h"
 #include "vine3DShell.h"
 
+bool cmdOpenVine3DProject(Vine3DProject* myProject, QStringList argumentList)
+{
+    //myProject.setEnvironment(batch);
+
+    if (argumentList.size() == 0)
+        return false;
+
+    QString projectName = argumentList.at(1);
+
+    if (! myProject->loadProject(projectName))
+    {
+        myProject->logError("Open project failed:\n " + projectName);
+    }
+
+    return true;
+}
+
+bool cmdRunModels(Vine3DProject* myProject, QStringList argumentList)
+{
+    //myProject.setEnvironment(batch);
+
+    if (argumentList.size() == 0)
+        return false;
+
+    QDate today, firstDay;
+    int nrDays, nrDaysForecast;
+
+    if (argumentList.size() > 3)
+    {
+        nrDaysForecast = argumentList.at(3).toInt();
+        nrDays = argumentList.at(2).toInt();
+    }
+    else if (argumentList.size() > 2)
+    {
+        nrDays = argumentList.at(2).toInt();
+        nrDaysForecast = 9;
+    }
+    else
+    {
+        nrDays = 7;      //default: 1 week
+        nrDaysForecast = 9;
+    }
+
+    today = QDate::currentDate();
+    QDateTime lastDateTime = QDateTime(today);
+    lastDateTime = lastDateTime.addDays(nrDaysForecast);
+    lastDateTime.setTime(QTime(23,0,0,0));
+
+    firstDay = today.addDays(-nrDays);
+    QDateTime firstDateTime = QDateTime(firstDay);
+    firstDateTime.setTime(QTime(1,0,0,0));
+
+    myProject->runModels(firstDateTime, lastDateTime, true, true, myProject->idArea);
+
+    myProject->closeProject();
+
+    return true;
+}
 
 bool executeCommand(QStringList commandLine, Vine3DProject* myProject)
 {
@@ -42,7 +100,6 @@ bool vine3dBatch(Vine3DProject *myProject, QString scriptFileName)
         return false;
     }
 
-    bool isCommandFound, isExecuted;
     QString line;
     QStringList commandLine;
 
@@ -55,7 +112,11 @@ bool vine3dBatch(Vine3DProject *myProject, QString scriptFileName)
           line = in.readLine();
           commandLine = line.split(" ");
 
-          executeCommand(commandLine, myProject);
+          if (! executeCommand(commandLine, myProject))
+          {
+              inputFile.close();
+              return false;
+          }
        }
        inputFile.close();
     }
