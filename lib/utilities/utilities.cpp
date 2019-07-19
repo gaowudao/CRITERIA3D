@@ -10,7 +10,6 @@
 #include <QSqlDriver>
 #include <QSqlRecord>
 
-
 QStringList getFields(QSqlDatabase* db_, QString tableName)
 {
     QSqlDriver* driver_ = db_->driver();

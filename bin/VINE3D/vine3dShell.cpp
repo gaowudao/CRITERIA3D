@@ -1,3 +1,5 @@
+#include <QFile>
+#include <QTextStream>
 #include "shell.h"
 #include "vine3DShell.h"
 
@@ -28,16 +30,34 @@ bool vine3dBatch(Vine3DProject *myProject, QString scriptFileName)
     myProject->logInfo("\nVINE3D v1.0");
     myProject->logInfo("Execute script: " + scriptFileName);
 
-    // TODO:
-    // check file
-    // for each line of file:
-        // QStringList argumentList = getArgumentList(line)
-        // executeCommand(argumentList)
-
     if (scriptFileName == "")
     {
         myProject->logError("No script file provided");
         return false;
+    }
+
+    if (! QFile(scriptFileName).exists())
+    {
+        myProject->logError("Script file not found: " + scriptFileName);
+        return false;
+    }
+
+    bool isCommandFound, isExecuted;
+    QString line;
+    QStringList commandLine;
+
+    QFile inputFile(scriptFileName);
+    if (inputFile.open(QIODevice::ReadOnly))
+    {
+       QTextStream in(&inputFile);
+       while (!in.atEnd())
+       {
+          line = in.readLine();
+          commandLine = line.split(" ");
+
+          executeCommand(commandLine, myProject);
+       }
+       inputFile.close();
     }
 
     #ifdef _WIN32
