@@ -847,6 +847,7 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
     int counterSeason[4];
     int day,month;
     weatherGenerator2D::initializeOutputData();
+    int contatore135 = 0;
     for (int iStation=0;iStation<nrStations;iStation++)
     {
         counter = 0;
@@ -865,6 +866,7 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
                     outputWeatherData[iStation].maxT[counter] = maxTGenerated[counter][iStation];
                     outputWeatherData[iStation].minT[counter] = minTGenerated[counter][iStation];
                 }
+
                 if (isPrecWG2D)
                 {
                     //simulatedPrecipitationAmounts[iSeason].matrixAmounts[i][j]
@@ -880,14 +882,20 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
                 counter++;
             }
         }
+
         for(int i=0;i<parametersModel.yearOfSimulation*365;i++)
         {
             //printf("%d %d %.1f %.1f %.1f\n",outputWeatherData[iStation].daySimulated[i],outputWeatherData[iStation].monthSimulated[i],outputWeatherData[iStation].minT[i],outputWeatherData[iStation].maxT[i],outputWeatherData[iStation].precipitation[i]);
-            printf("%d %d %.1f %.1f %.1f\n",outputWeatherData[iStation].daySimulated[i],outputWeatherData[iStation].monthSimulated[i],outputWeatherData[iStation].minT[i],outputWeatherData[iStation].maxT[i],outputWeatherData[iStation].precipitation[i]);
-
+            //printf("%d %d %.1f %.1f %.1f\n",outputWeatherData[iStation].daySimulated[i],outputWeatherData[iStation].monthSimulated[i],outputWeatherData[iStation].minT[i],outputWeatherData[iStation].maxT[i],outputWeatherData[iStation].precipitation[i]);
+            printf("%d %d %.1f\n",outputWeatherData[iStation].daySimulated[i],outputWeatherData[iStation].monthSimulated[i],outputWeatherData[iStation].precipitation[i]);
+            if (outputWeatherData[iStation].precipitation[i] < 13.51 && outputWeatherData[iStation].precipitation[i] > 13.49)
+            {
+               contatore135++;
+            }
         }
         //pressEnterToContinue();
     }
+    printf("\n contatori %d  %d  %d\n",contatoreGammaUguale,contatoreGammaUguale2,contatore135);
 }
 
 int weatherGenerator2D::dateFromDoy(int doy,int year, int* day, int* month)

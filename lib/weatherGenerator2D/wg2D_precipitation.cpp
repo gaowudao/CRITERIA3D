@@ -1275,36 +1275,6 @@ void weatherGenerator2D::initializePrecipitationOutputs(int lengthSeason[])
 }
 
 
-
-/*void weatherGenerator2D::nonLinearFit(double* a1, double* a2, double* x, double* y,int lengthArray, int order)
-{
-   double* fitFunction;
-   fitFunction = (double*)calloc(lengthArray, sizeof(double));
-   double step = 0.001;
-   double par1 = -20.;
-   double par2 = 0.;
-   double bestFit = 1000000;
-   for (int ii=0;ii<4000;ii++)
-   {
-       for (int jj=0;jj<2000;jj++)
-       {
-
-           for (int j=0;j<lengthArray;j++)
-           {
-               fitFunction[j]= par1 + par2*pow(x[j],order);
-           }
-           statistics::rootMeanSquareError(y,fitFunction,lengthArray);
-       }
-   }
-
-}
-*/
-
-
-
-
-
-
 void weatherGenerator2D::precipitation29February(int idStation)
 {
    nrDataWithout29February = nrData;
@@ -1490,18 +1460,19 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
        }
 
 
-       for (int i=0;i<nrStations;i++)
+       /*for (int i=0;i<nrStations;i++)
        {
            for (int j=0;j<lengthSeries;j++)
            {
                simulatedPrecipitationAmountsSeasonal[i][j]=0.;
            }
-       }
+       }*/
 
        for (int i=0;i<nrStations;i++)
        {
            for (int j=0;j<lengthSeries;j++)
            {
+               simulatedPrecipitationAmountsSeasonal[i][j]=0.;
                if (fabs(occurrences[i][j]-1) <= 0.00001)
                {
                    if (parametersModel.distributionPrecipitation == 1)
@@ -1512,15 +1483,16 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
                    {
                        if (uniformRandom[i][j] <= 0) uniformRandom[i][j] = EPSILON;
                        simulatedPrecipitationAmountsSeasonal[i][j] = weatherGenerator2D::inverseGammaFunction(uniformRandom[i][j],phatAlpha[i][j],phatBeta[i][j],0.001) + parametersModel.precipitationThreshold;
-                       //printf("%f %f %f %f\n",simulatedPrecipitationAmounts[i][j], uniformRandom[i][j],phatAlpha[i][j],phatBeta[i][j]);
+
+                      printf("%.1f %f %f\n",simulatedPrecipitationAmountsSeasonal[i][j],uniformRandom[i][j],normRandom[i][j]);
                        //pressEnterToContinue();
                        // check uniformRandom phatAlpha e phatBeta i dati non vanno bene
                    }
                }
-
            }
+           printf("\n");
        }
-
+       printf("\n\n\n\n");
 
        for (int i=0;i<nrStations;i++)
        {
@@ -1536,7 +1508,7 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
        {
            for (int j=0;j<nrStations;j++)
            {
-               val = maxValue(val,fabs(correlationMatrixSimulatedData[i][j]- initialAmountsCorrelationMatrix[i][j]));
+               val = maxValue(val,fabs(correlationMatrixSimulatedData[i][j] - initialAmountsCorrelationMatrix[i][j]));
            }
        }
        if (val < fabs(minimalValueToExitFromCycle))
@@ -1617,13 +1589,27 @@ double weatherGenerator2D::inverseGammaFunction(double valueProbability, double 
            //leftBound += rightBound - 2*accuracy;
            rightBound += 25;
            counter++;
+           if (counter == 9) return rightBound;
        }
-   } while ((valueProbability>y) && (counter<10));
-   if (counter >= 10) return rightBound;
+   } while ((valueProbability>y));
+
    counter = 0;
+   //x = rightBound;
    x = (rightBound + leftBound)*0.5;
    y = gammaDistributions::incompleteGamma(alpha,x/beta);
    //printf("prova\n"); //pressEnterToContinue();
+   if (fabs(valueProbability - y) <=  accuracy)
+   {
+       ++contatoreGammaUguale;
+       //valueProbability = minValue(gammaDistributions::incompleteGamma(alpha,rightBound/beta),1.0*rand()/RAND_MAX);
+
+   }
+    /*
+   if (fabs(valueProbability - y) <=  accuracy)
+   {
+       ++contatoreGammaUguale2;
+   }*/
+
    while ((fabs(valueProbability - y) > accuracy) && (counter < 200))
    {
        if (y > valueProbability)
@@ -1637,9 +1623,11 @@ double weatherGenerator2D::inverseGammaFunction(double valueProbability, double 
        x = (rightBound + leftBound)*0.5;
        //y = gammaDistributions::incompleteGamma(alpha,x/beta,&gammaComplete);
        y = gammaDistributions::incompleteGamma(alpha,x/beta);
-       counter++;
+       ++counter;
        //printf("valore %f valore Input %f prec %f contatore %d\n",y,valueProbability,x,counter);
    }
+       //++contatoreGammaDiverso;
+
    //pressEnterToContinue();
    x = (rightBound + leftBound)*0.5;
    return x;

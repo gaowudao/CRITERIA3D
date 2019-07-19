@@ -281,7 +281,7 @@ int main()
 
 
     bool computePrecipitation = true;
-    bool computeTemperature = true;
+    bool computeTemperature = false;
     printf("weather generator\n");
     if (computePrecipitation) printf("compute precipitation\n");
     if (computeTemperature) printf("compute temperature\n");

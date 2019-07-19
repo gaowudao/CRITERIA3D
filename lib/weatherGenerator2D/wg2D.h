@@ -182,7 +182,9 @@
         double** minTGenerated;
 
         ToutputWeatherData *outputWeatherData;
-
+        int contatoreGammaUguale = 0;
+        int contatoreGammaUguale2 = 0;
+        int contatoreGammaDiverso = 0;
         //functions
 
         void commonModuleCompute();
