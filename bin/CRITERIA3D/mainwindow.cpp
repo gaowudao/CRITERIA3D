@@ -324,9 +324,7 @@ void MainWindow::on_actionLoadDEM_triggered()
 
     if (fileName == "") return;
 
-    qDebug() << "loading raster";
-    if (! myProject.setDEM(fileName))
-        return;
+    if (! myProject.setDEM(fileName)) return;
 
     this->setCurrentRaster(&(myProject.DTM));
     ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));

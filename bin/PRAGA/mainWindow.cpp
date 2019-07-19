@@ -321,7 +321,6 @@ void MainWindow::on_actionLoadDEM_triggered()
 
     if (fileName == "") return;
 
-    qDebug() << "loading raster";
     if (!myProject.loadDEM(fileName)) return;
 
     this->setCurrentRaster(&(myProject.DTM));
