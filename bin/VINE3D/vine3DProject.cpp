@@ -93,7 +93,7 @@ void Vine3DProject::closeProject()
     {
         this->logInfo("Close Project");
         this->dbConnection.close();
-        this->logInfoFile.close();
+        this->logFile.close();
         this->initializeMeteoPoints();
         this->deleteAllGrids();
 
@@ -166,7 +166,7 @@ bool Vine3DProject::loadProject(QString myFileName)
         return false;
 
     if (this->setLogFile())
-        this->logInfo("LogFile = " + this->logInfoFileName);
+        this->logInfo("LogFile = " + this->logFileName);
     else
         this->logError("LogFile Wrong.");
 
@@ -1950,8 +1950,8 @@ bool Vine3DProject::setLogFile()
     myDate = QDateTime().currentDateTime().toString("yyyyMMddhhmm");
     fileName = "log_" + idArea + "_" + myDate + ".txt";
 
-    this->logInfoFileName = myPath + fileName;
-    this->logInfoFile.open(this->logInfoFileName.toStdString().c_str());
+    this->logFileName = myPath + fileName;
+    this->logFile.open(this->logFileName.toStdString().c_str());
     return (logFile.is_open());
 }
 
