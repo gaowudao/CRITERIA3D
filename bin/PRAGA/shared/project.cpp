@@ -510,14 +510,15 @@ void Project::closeMeteoGridDB()
  */
 bool Project::loadDEM(QString myFileName)
 {
-    std::string error, fileName;
+    this->logInfo("Read Digital Elevation Model...");
 
+    std::string error, fileName;
     if (myFileName.right(4).left(1) == ".")
     {
         myFileName = myFileName.left(myFileName.length()-4);
     }
-
     fileName = myFileName.toStdString();
+
     if (! gis::readEsriGrid(fileName, &DTM, &error))
     {
         this->logError("Wrong DEM file.\n" + QString::fromStdString(error));
