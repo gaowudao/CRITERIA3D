@@ -236,8 +236,6 @@ void Crit3DProject::clear()
     boundaryMap.clear();
     indexMap.clear();
 
-    delete meteoMaps;
-
     cleanWaterBalanceMemory();
     isInitialized = false;
 }
@@ -345,8 +343,6 @@ bool Crit3DProject::computeAllMeteoMaps(const Crit3DTime& myTime, bool showInfo)
 
 bool Crit3DProject::initializeCriteria3D()
 {
-    this->clear();
-
     // check
     if (! this->DEM.isLoaded)
     {
@@ -364,6 +360,8 @@ bool Crit3DProject::initializeCriteria3D()
         return false;
     }
 
+    this->clear();
+
     if (!createSoilIndexMap())
         return false;
 
@@ -372,7 +370,7 @@ bool Crit3DProject::initializeCriteria3D()
 
     if (! initializeWaterBalance(this))
     {
-        //this->clear();
+        this->clear();
         return false;
     }
 

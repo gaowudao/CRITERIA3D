@@ -9,4 +9,6 @@ Project3D::Project3D() : Project()
     nrNodes = 0;
     nrNodesPerLayer = 0;
     nrLateralLink = 8;
+
+    meteoMaps = nullptr;
 }
