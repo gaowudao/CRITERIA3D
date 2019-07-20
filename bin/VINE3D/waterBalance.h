@@ -42,7 +42,6 @@
 
     void cleanWaterBalanceMemory();
 
-    int computeNrLayers(float totalDepth, float minThickness, float maxThickness, float factor);
     int getLayerIndex(Vine3DProject* myProject, double depth);
     double getLayerTop(Vine3DProject* myProject, int i);
     double getLayerBottom(Vine3DProject* myProject, int i);

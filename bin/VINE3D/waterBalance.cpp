@@ -169,48 +169,6 @@ bool setCrit3DSurfaces(Vine3DProject* myProject)
 }
 
 
-int computeNrLayers(float totalDepth, float minThickness, float maxThickness, float factor)
- {
-    int nrLayers = 1;
-    float nextThickness, prevThickness = minThickness;
-    float depth = minThickness * 0.5;
-    while (depth < totalDepth)
-    {
-        nextThickness = minValue(maxThickness, prevThickness * factor);
-        depth = depth + (prevThickness + nextThickness) * 0.5;
-        prevThickness = nextThickness;
-        nrLayers++;
-    }
-    return(nrLayers);
-}
-
-
-// set thickness and depth (center) of layers [m]
-bool setLayersDepth(Vine3DProject* myProject)
-{
-    int lastLayer = myProject->nrLayers-1;
-    myProject->layerDepth.resize(size_t(myProject->nrLayers));
-    myProject->layerThickness.resize(size_t(myProject->nrLayers));
-
-    myProject->layerDepth[0] = 0.0;
-    myProject->layerThickness[0] = 0.0;
-    myProject->layerThickness[1] = myProject->minThickness;
-    myProject->layerDepth[1] = myProject->minThickness * 0.5;
-    for (int i = 2; i < myProject->nrLayers; i++)
-    {
-        if (i == lastLayer)
-            myProject->layerThickness[size_t(i)] = myProject->soilDepth - (myProject->layerDepth[size_t(i-1)]
-                    + myProject->layerThickness[size_t(i-1)] / 2.0);
-        else
-            myProject->layerThickness[size_t(i)] = minValue(myProject->maxThickness,
-                                                                        myProject->layerThickness[size_t(i-1)] * myProject->thickFactor);
-
-        myProject->layerDepth[size_t(i)] = myProject->layerDepth[size_t(i-1)] +
-                (myProject->layerThickness[size_t(i-1)] + myProject->layerThickness[size_t(i)]) * 0.5;
-    }
-    return(true);
-}
-
 bool isWithinSoil(Vine3DProject* myProject, long row, long col, double depth)
 {
     int caseIndex, soilIndex, nrHorizons;
@@ -1212,8 +1170,8 @@ bool initializeWaterBalance(Vine3DProject* myProject)
 
     myProject->outputWaterBalanceMaps = new Crit3DWaterBalanceMaps(myProject->DEM);
 
-    myProject->nrLayers = computeNrLayers(myProject->soilDepth, myProject->minThickness, myProject->maxThickness, myProject->thickFactor);
-    setLayersDepth(myProject);
+    myProject->nrLayers = myProject->computeNrLayers(myProject->soilDepth);
+    myProject->setLayersDepth();
 
     myProject->logInfo("nr of layers: " + QString::number(myProject->nrLayers));
 

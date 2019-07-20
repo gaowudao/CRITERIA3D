@@ -48,6 +48,7 @@ bool Project3D::setLayersDepth()
     layerThickness[0] = 0.0;
     layerThickness[1] = minThickness;
     layerDepth[1] = minThickness * 0.5;
+
     for (unsigned int i = 2; i < unsigned(nrLayers); i++)
     {
         if (i == unsigned(lastLayer))
