@@ -12,13 +12,13 @@
 
 bool initializeGrapevine(Vine3DProject* myProject)
 {
-    myProject->outputPlantMaps = new Crit3DOutputPlantMaps(myProject->DEM, myProject->WBSettings->nrLayers);
+    myProject->outputPlantMaps = new Crit3DOutputPlantMaps(myProject->DEM, myProject->wb3DSettings->nrLayers);
 
     //initialize root density for every model case
     int soilIndex, nrHorizons;
     soil::Crit3DHorizon myHorizon;
 
-    if (! myProject->grapevine.initializeLayers(myProject->WBSettings->nrLayers))
+    if (! myProject->grapevine.initializeLayers(myProject->wb3DSettings->nrLayers))
         return false;
 
     int nrSoilLayersWithoutRoots = 2;
@@ -29,11 +29,11 @@ bool initializeGrapevine(Vine3DProject* myProject)
     for (int i = 0 ; i < myProject->nrModelCases; i++)
     {
         soilIndex = myProject->modelCases[i].soilIndex;
-        nrHorizons = myProject->WBSettings->soilList[soilIndex].nrHorizons;
-        myHorizon = myProject->WBSettings->soilList[soilIndex].horizon[nrHorizons - 1];
+        nrHorizons = myProject->wb3DSettings->soilList[soilIndex].nrHorizons;
+        myHorizon = myProject->wb3DSettings->soilList[soilIndex].horizon[nrHorizons - 1];
 
         int j=0;
-        while (j < myProject->WBSettings->nrLayers - 1 && myProject->WBSettings->layerDepth.at(size_t(j)) <= myHorizon.lowerDepth)
+        while (j < myProject->wb3DSettings->nrLayers - 1 && myProject->wb3DSettings->layerDepth.at(size_t(j)) <= myHorizon.lowerDepth)
             j++;
 
         myProject->modelCases[i].soilLayersNr = j;
@@ -46,10 +46,10 @@ bool initializeGrapevine(Vine3DProject* myProject)
         double grassRootDepth = myProject->modelCases[i].soilTotalDepth * 0.66;
         double fallowRootDepth = myProject->modelCases[i].soilTotalDepth;
 
-        myProject->grapevine.setGrassRootDensity(&(myProject->modelCases[i]), &(myProject->WBSettings->soilList[soilIndex]), myProject->WBSettings->layerDepth, myProject->WBSettings->layerThickness, 0.02, grassRootDepth);
-        myProject->grapevine.setFallowRootDensity(&(myProject->modelCases[i]), &(myProject->WBSettings->soilList[soilIndex]), myProject->WBSettings->layerDepth, myProject->WBSettings->layerThickness, 0.02, fallowRootDepth);
-        myProject->grapevine.setRootDensity(&(myProject->modelCases[i]), &(myProject->WBSettings->soilList[soilIndex]),
-                                            myProject->WBSettings->layerDepth, myProject->WBSettings->layerThickness, soilLayerWithRoot, nrSoilLayersWithoutRoots,
+        myProject->grapevine.setGrassRootDensity(&(myProject->modelCases[i]), &(myProject->wb3DSettings->soilList[soilIndex]), myProject->wb3DSettings->layerDepth, myProject->wb3DSettings->layerThickness, 0.02, grassRootDepth);
+        myProject->grapevine.setFallowRootDensity(&(myProject->modelCases[i]), &(myProject->wb3DSettings->soilList[soilIndex]), myProject->wb3DSettings->layerDepth, myProject->wb3DSettings->layerThickness, 0.02, fallowRootDepth);
+        myProject->grapevine.setRootDensity(&(myProject->modelCases[i]), &(myProject->wb3DSettings->soilList[soilIndex]),
+                                            myProject->wb3DSettings->layerDepth, myProject->wb3DSettings->layerThickness, soilLayerWithRoot, nrSoilLayersWithoutRoots,
                                             GAMMA_DISTRIBUTION, depthModeRootDensity, depthMeanRootDensity);
     }
 

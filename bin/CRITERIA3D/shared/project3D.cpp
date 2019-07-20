@@ -3,5 +3,5 @@
 
 Project3D::Project3D() : Project()
 {
-    WBSettings = new Crit3DSoilFluxesSettings();
+    wb3DSettings = new Crit3DSoilFluxesSettings();
 }

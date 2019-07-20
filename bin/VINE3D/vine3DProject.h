@@ -58,7 +58,7 @@
         QString demFileName;
         QString fieldMapName;
 
-        Crit3DSoilFluxesSettings* WBSettings;
+        Crit3DSoilFluxesSettings* wb3DSettings;
         Crit3DSoilFluxesMaps* WBMaps;
 
         gis::Crit3DRasterGrid boundaryMap;

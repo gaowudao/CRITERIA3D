@@ -17,7 +17,7 @@
     public:
         Crit3DMeteoMaps* meteoMaps;
         gis::Crit3DRasterGrid soilMap;
-        Crit3DSoilFluxesSettings* WBSettings;
+        Crit3DSoilFluxesSettings* wb3DSettings;
 
         Project3D();
 

@@ -115,8 +115,8 @@ bool Crit3DProject::createIndexMap()
 
     gis::updateMinMaxRasterGrid(&indexMap);
     indexMap.isLoaded = true;
-    WBSettings->nrNodesPerLayer = index;
-    return(WBSettings->nrNodesPerLayer > 0);
+    wb3DSettings->nrNodesPerLayer = index;
+    return(wb3DSettings->nrNodesPerLayer > 0);
 }
 
 
@@ -151,13 +151,13 @@ bool Crit3DProject::createBoundaryMap()
 bool Crit3DProject::createSoilIndexMap()
 {
     // check
-    if (!DEM.isLoaded || !soilMap.isLoaded || WBSettings->soilList.size() == 0)
+    if (!DEM.isLoaded || !soilMap.isLoaded || wb3DSettings->soilList.size() == 0)
     {
         if (!DEM.isLoaded)
             logError("Missing Digital Elevation Model.");
         else if (!soilMap.isLoaded)
             logError("Missing soil map.");
-        else if (WBSettings->soilList.size() == 0)
+        else if (wb3DSettings->soilList.size() == 0)
             logError("Missing soil properties.");
         return false;
     }
@@ -196,9 +196,9 @@ int Crit3DProject::getSoilIndex(int demRow, int demCol)
     }
 
     // search id soil
-    for (unsigned int i = 0; i < WBSettings->soilList.size(); i++)
+    for (unsigned int i = 0; i < wb3DSettings->soilList.size(); i++)
     {
-        if (WBSettings->soilList[i].id == idSoil) return(int(i));
+        if (wb3DSettings->soilList[i].id == idSoil) return(int(i));
     }
 
     // no soil data
@@ -208,20 +208,20 @@ int Crit3DProject::getSoilIndex(int demRow, int demCol)
 
 double Crit3DProject::getSoilVar(int soilIndex, int layerIndex, soil::soilVariable myVar)
 {
-    int horizonIndex = soil::getHorizonIndex(&(WBSettings->soilList[unsigned(soilIndex)]),
-                                               WBSettings->layerDepth[unsigned(layerIndex)]);
+    int horizonIndex = soil::getHorizonIndex(&(wb3DSettings->soilList[unsigned(soilIndex)]),
+                                               wb3DSettings->layerDepth[unsigned(layerIndex)]);
     if (myVar == soil::soilWaterPotentialWP)
-        return WBSettings->soilList[unsigned(soilIndex)].horizon[horizonIndex].wiltingPoint;
+        return wb3DSettings->soilList[unsigned(soilIndex)].horizon[horizonIndex].wiltingPoint;
     else if (myVar == soil::soilWaterPotentialFC)
-        return WBSettings->soilList[unsigned(soilIndex)].horizon[horizonIndex].fieldCapacity;
+        return wb3DSettings->soilList[unsigned(soilIndex)].horizon[horizonIndex].fieldCapacity;
     else if (myVar == soil::soilWaterContentFC)
-        return WBSettings->soilList[unsigned(soilIndex)].horizon[horizonIndex].waterContentFC;
+        return wb3DSettings->soilList[unsigned(soilIndex)].horizon[horizonIndex].waterContentFC;
     else if (myVar == soil::soilWaterContentSat)
-        return WBSettings->soilList[unsigned(soilIndex)].horizon[horizonIndex].vanGenuchten.thetaS;
+        return wb3DSettings->soilList[unsigned(soilIndex)].horizon[horizonIndex].vanGenuchten.thetaS;
     else if (myVar == soil::soilWaterContentWP)
     {
         double signPsiLeaf = -160;      //[m]
-        return soil::thetaFromSignPsi(signPsiLeaf, &(WBSettings->soilList[unsigned(soilIndex)].horizon[horizonIndex]));
+        return soil::thetaFromSignPsi(signPsiLeaf, &(wb3DSettings->soilList[unsigned(soilIndex)].horizon[horizonIndex]));
     }
     else
         return NODATA;
@@ -358,7 +358,7 @@ bool Crit3DProject::initializeCriteria3D()
         logError("Missing soil map.");
         return false;
     }
-    else if (this->WBSettings->soilList.size() == 0)
+    else if (this->wb3DSettings->soilList.size() == 0)
     {
         logError("Missing soil properties.");
         return false;
@@ -384,7 +384,7 @@ bool Crit3DProject::initializeCriteria3D()
     int soilLayerWithRoot = this->nrSoilLayers - nrSoilLayersWithoutRoots;
     double depthModeRootDensity = 0.35*this->soilDepth;     //[m] depth of mode of root density
     double depthMeanRootDensity = 0.5*this->soilDepth;      //[m] depth of mean of root density
-    initializeRootProperties(&(this->WBSettings->soilList[0]), this->nrSoilLayers, this->soilDepth,
+    initializeRootProperties(&(this->wb3DSettings->soilList[0]), this->nrSoilLayers, this->soilDepth,
                          this->layerDepth.data(), this->layerThickness.data(),
                          nrSoilLayersWithoutRoots, soilLayerWithRoot,
                          GAMMA_DISTRIBUTION, depthModeRootDensity, depthMeanRootDensity);*/
