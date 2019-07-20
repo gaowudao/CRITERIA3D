@@ -216,4 +216,6 @@ void TabHorizons::cellChanged(int row, int column)
 {
     qDebug() << "Cell at row: " << QString::number(row) << " column " << QString::number(column)<<" was changed.";
     QString data = tableDb->item(row, column)->text();
+    data.replace(",", ".");
+    tableDb->item(row, column)->setText(data);
 }
