@@ -2,7 +2,7 @@
 #
 #   TestSolarRadiation
 #   It computes a map of global solar irradiance (clear sky)
-#   for a specified date/time, starting from a DTM
+#   for a specified date/time, starting from a Digital Elevation Model
 #
 #   This project is part of CRITERIA3D distribution
 #

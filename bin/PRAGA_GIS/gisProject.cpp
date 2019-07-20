@@ -63,7 +63,7 @@ bool GisProject::loadRaster(QString fileNameWithPath)
         return (false);
     }
 
-    setDefaultDTMScale(myRaster->colorScale);
+    setDefaultDEMScale(myRaster->colorScale);
     addRaster(myRaster, fileNameWithPath);
     return (true);
 }
