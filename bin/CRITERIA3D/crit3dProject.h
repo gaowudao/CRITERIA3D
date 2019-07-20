@@ -23,7 +23,7 @@
         Crit3DMeteoMaps* meteoMaps;
         gis::Crit3DRasterGrid soilMap;
 
-        // same header of DTM
+        // same header of DEM
         gis::Crit3DRasterGrid soilIndexMap;
         gis::Crit3DRasterGrid cropIndexMap;
         gis::Crit3DRasterGrid indexMap;
@@ -61,7 +61,7 @@
         double* getSoilVarProfile(int row, int col, soil::soilVariable myVar);
         bool setSoilProfileCrop(int row, int col);
 
-        int getSoilIndex(int dtmRow, int dtmCol);
+        int getSoilIndex(int demRow, int demCol);
 
         bool setDEM(QString myFileName);
 

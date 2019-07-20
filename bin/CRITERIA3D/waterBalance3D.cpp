@@ -1047,8 +1047,8 @@ bool initializeWaterBalance(Crit3DProject* myProject)
                                             nrLateralLink, true, false, false);
     if (isCrit3dError(myResult, &myError))
     {
-        myProject->errorString = "initializeCriteria3D:" + myError;
-        return(false);
+        myProject->logError("initializeCriteria3D:" + myError);
+        return false;
     }
 
     // Set properties for all voxels
@@ -1063,6 +1063,6 @@ bool initializeWaterBalance(Crit3DProject* myProject)
     //criteria3D::setNumericalParameters(300.0, 3600.0, 100, 10, 12, 1);   // very speedy (high error)
     soilFluxes3D::setHydraulicProperties(MODIFIEDVANGENUCHTEN, MEAN_LOGARITHMIC, 10.0);
 
-    myProject->logInfo("Waterbalance initialized");
-    return(true);
+    myProject->logInfo("3D water balance initialized");
+    return true;
 }

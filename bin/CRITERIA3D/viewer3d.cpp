@@ -25,7 +25,7 @@ Viewer3D::Viewer3D(QWidget *parent)
     m_nrVertex = 0;
     this->buildLookupTables();
 
-    this->setWindowTitle(QStringLiteral("3D"));
+    this->setWindowTitle(QStringLiteral("3D view"));
 
     this->setAttribute(Qt::WA_DeleteOnClose);
     m_moveStartPoint.setX(-1);

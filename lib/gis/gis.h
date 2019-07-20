@@ -217,7 +217,7 @@
                                gis::Crit3DRasterGrid* latMap, gis::Crit3DRasterGrid* lonMap,
                                const gis::Crit3DGisSettings& gisSettings);
 
-        bool computeSlopeAspectMaps(const gis::Crit3DRasterGrid& myDtm,
+        bool computeSlopeAspectMaps(const gis::Crit3DRasterGrid& demMap,
                                gis::Crit3DRasterGrid* slopeMap, gis::Crit3DRasterGrid* aspectMap);
 
         bool getGeoExtentsFromUTMHeader(const Crit3DGisSettings& mySettings,

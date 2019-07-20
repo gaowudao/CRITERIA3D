@@ -1,7 +1,7 @@
 #include "meteoMaps.h"
 
 
-Crit3DMeteoMaps::Crit3DMeteoMaps(const gis::Crit3DRasterGrid& dtmGrid)
+Crit3DMeteoMaps::Crit3DMeteoMaps(const gis::Crit3DRasterGrid& DEM)
 {
     airTemperatureMap = new gis::Crit3DRasterGrid;
     precipitationMap = new gis::Crit3DRasterGrid;
@@ -12,14 +12,14 @@ Crit3DMeteoMaps::Crit3DMeteoMaps(const gis::Crit3DRasterGrid& dtmGrid)
     irrigationMap = new gis::Crit3DRasterGrid;
     avgDailyTemperatureMap = new gis::Crit3DRasterGrid;
 
-    airTemperatureMap->initializeGrid(dtmGrid);
-    precipitationMap->initializeGrid(dtmGrid);
-    airRelHumidityMap->initializeGrid(dtmGrid);
-    windIntensityMap->initializeGrid(dtmGrid);
-    avgDailyTemperatureMap->initializeGrid(dtmGrid);
-    leafWetnessMap->initializeGrid(dtmGrid);
-    ET0Map->initializeGrid(dtmGrid);
-    irrigationMap->initializeGrid(dtmGrid);
+    airTemperatureMap->initializeGrid(DEM);
+    precipitationMap->initializeGrid(DEM);
+    airRelHumidityMap->initializeGrid(DEM);
+    windIntensityMap->initializeGrid(DEM);
+    avgDailyTemperatureMap->initializeGrid(DEM);
+    leafWetnessMap->initializeGrid(DEM);
+    ET0Map->initializeGrid(DEM);
+    irrigationMap->initializeGrid(DEM);
 
     isInitialized = true;
     isComputed = false;
@@ -79,7 +79,7 @@ gis::Crit3DRasterGrid* Crit3DMeteoMaps::getMapFromVar(meteoVariable myVar)
 }
 
 
-bool Crit3DMeteoMaps::computeET0Map(gis::Crit3DRasterGrid* DTM, Crit3DRadiationMaps *radMaps)
+bool Crit3DMeteoMaps::computeET0Map(gis::Crit3DRasterGrid* DEM, Crit3DRadiationMaps *radMaps)
 {
     float globalRadiation, transmissivity, clearSkyTransmissivity;
     float temperature, relHumidity, windSpeed, height;
@@ -89,9 +89,9 @@ bool Crit3DMeteoMaps::computeET0Map(gis::Crit3DRasterGrid* DTM, Crit3DRadiationM
         {
             this->ET0Map->value[row][col] = this->ET0Map->header->flag;
 
-            height = DTM->value[row][col];
+            height = DEM->value[row][col];
 
-            if (int(height) != int(DTM->header->flag))
+            if (int(height) != int(DEM->header->flag))
             {
                 clearSkyTransmissivity = CLEAR_SKY_TRANSMISSIVITY_DEFAULT;
                 globalRadiation = radMaps->globalRadiationMap->value[row][col];

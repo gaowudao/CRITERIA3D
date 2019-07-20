@@ -63,7 +63,7 @@
         void on_dateEdit_dateChanged(const QDate &date);
         void on_actionClose_meteo_points_triggered();
         void on_actionClose_meteo_grid_triggered();
-        void on_actionInterpolation_to_DTM_triggered();
+        void on_actionInterpolation_to_DEM_triggered();
         void on_actionInterpolation_to_Grid_triggered();
         void on_actionSave_meteo_grid_triggered();
         void on_actionCompute_elaboration_triggered();

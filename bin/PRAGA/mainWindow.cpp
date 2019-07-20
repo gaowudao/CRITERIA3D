@@ -1205,7 +1205,7 @@ void MainWindow::on_actionClose_meteo_grid_triggered()
 
 }
 
-void MainWindow::on_actionInterpolation_to_DTM_triggered()
+void MainWindow::on_actionInterpolation_to_DEM_triggered()
 {
     FormInfo myInfo;
     myInfo.start("Interpolation...", 0);

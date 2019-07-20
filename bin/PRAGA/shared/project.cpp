@@ -505,7 +505,7 @@ void Project::closeMeteoGridDB()
 
 /*!
  * \brief loadDEM
- * \param myFileName the name of the DEM file
+ * \param myFileName the name of the Digital Elevation Model file
  * \return true if file is ok, false otherwise
  */
 bool Project::loadDEM(QString myFileName)
@@ -521,7 +521,7 @@ bool Project::loadDEM(QString myFileName)
 
     if (! gis::readEsriGrid(fileName, &DTM, &error))
     {
-        this->logError("Wrong DEM file.\n" + QString::fromStdString(error));
+        this->logError("Wrong Digital Elevation Model file.\n" + QString::fromStdString(error));
         return false;
     }
 
@@ -951,7 +951,7 @@ bool Project::writeTopographicDistanceMaps()
 
     if (! DTM.isLoaded)
     {
-        errorString = "Load a DEM before.";
+        errorString = "Load a Digital Elevation Map before.";
         return false;
     }
 
@@ -1126,7 +1126,7 @@ bool Project::interpolationDemMain(meteoVariable myVar, const Crit3DTime& myTime
 {
     if (! DTM.isLoaded)
     {
-        errorString = "Load a DEM before.";
+        errorString = "Load a Digital Elevation Model before.";
         return false;
     }
 
@@ -1223,6 +1223,25 @@ void Project::logInfo(QString myStr)
         logFile << myStr.toStdString() << std::endl;
     }
 }
+
+
+void Project::logInfoGUI(QString myStr)
+{
+    if (modality == MODE_GUI)
+    {
+        QMessageBox::information(nullptr, "Information", myStr);
+    }
+    else
+    {
+        std::cout << myStr.toStdString() << std::endl;
+    }
+
+    if (logFile.is_open())
+    {
+        logFile << myStr.toStdString() << std::endl;
+    }
+}
+
 
 void Project::logError(QString myStr)
 {

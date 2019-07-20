@@ -2122,7 +2122,7 @@
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <property name="palette">
@@ -2639,7 +2639,7 @@
     </widget>
     <widget class="QMenu" name="menuDEM">
      <property name="title">
-      <string>DEM</string>
+      <string>Digital Elevation Model</string>
      </property>
      <addaction name="actionView_DTM"/>
      <addaction name="separator"/>
@@ -2686,7 +2686,7 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionLoadDEM">
    <property name="text">
-    <string>&amp;Load DEM...</string>
+    <string>&amp;Load Digital Elevation Model...</string>
    </property>
   </action>
   <action name="actionMapOpenStreetMap">

@@ -118,6 +118,7 @@
         bool setLogFile(QString fileNameWithPath);
         void logError(QString myStr);
         void logInfo(QString myStr);
+        void logInfoGUI(QString myStr);
         void logError();
 
         void closeMeteoPointsDB();

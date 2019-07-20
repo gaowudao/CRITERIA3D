@@ -321,7 +321,7 @@ void MainWindow::on_actionRectangle_Selection_triggered()
 
 void MainWindow::on_actionLoadDEM_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open raster Grid"), "", tr("ESRI grid files (*.flt)"));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Digital Elevation Model"), "", tr("ESRI grid files (*.flt)"));
 
     if (fileName == "") return;
 
@@ -355,7 +355,7 @@ void MainWindow::on_actionLoadDEM_triggered()
 
 void MainWindow::on_actionOpen_meteo_points_DB_triggered()
 {
-    QString dbName = QFileDialog::getOpenFileName(this, tr("Open DB meteo"), "", tr("DB files (*.db)"));
+    QString dbName = QFileDialog::getOpenFileName(this, tr("Open meteo points DB"), "", tr("DB files (*.db)"));
 
     if (dbName != "")
     {
@@ -369,7 +369,7 @@ void MainWindow::on_actionOpen_meteo_points_DB_triggered()
 
 void MainWindow::on_actionOpen_meteo_grid_triggered()
 {
-    QString xmlName = QFileDialog::getOpenFileName(this, tr("Open XML DB grid"), "", tr("xml files (*.xml)"));
+    QString xmlName = QFileDialog::getOpenFileName(this, tr("Open XML meteo grid"), "", tr("xml files (*.xml)"));
 
     if (xmlName != "")
     {
@@ -842,12 +842,7 @@ void MainWindow::on_actionClose_meteo_grid_triggered()
 
 void MainWindow::on_actionInterpolation_to_DTM_triggered()
 {
-    /*FormInfo myInfo;
-    myInfo.start("Interpolation...", 0);*/
-
     interpolateDemGUI();
-
-    //myInfo.close();
 }
 
 
@@ -855,7 +850,7 @@ void MainWindow::on_actionInterpolationSettings_triggered()
 {
     if (myProject.meteoPointsDbHandler == nullptr)
     {
-        QMessageBox::information(nullptr, "No DB open", "Open DB Points");
+        myProject.logInfoGUI("Open a Meteo Points DB before.");
         return;
     }
 
@@ -933,8 +928,7 @@ void mouseManager(Qt3DExtras::Qt3DWindow *view3D, QMouseEvent *e)
 
 void MainWindow::on_actionCriteria3D_Initialize_triggered()
 {
-    if (myProject.initializeCriteria3D())
-        QMessageBox::information(nullptr, "", "Criteria3D initialized.");
+    myProject.initializeCriteria3D();
 }
 
 
@@ -961,7 +955,7 @@ void MainWindow::on_actionView_3D_triggered()
 {
     if (! myProject.DTM.isLoaded)
     {
-        myProject.logError("Load a DEM before.");
+        myProject.logInfoGUI("Load a Digital Elevation Model before.");
         return;
     }
 
@@ -983,11 +977,11 @@ void MainWindow::on_actionView_DTM_triggered()
         setColorScale(noMeteoTerrain, myProject.DTM.colorScale);
         this->setCurrentRaster(&(myProject.DTM));
         ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
-        this->currentMap = mapType::mapDTM;
+        this->currentMap = mapType::mapDEM;
     }
     else
     {
-        myProject.logError("Load a DEM before.");
+        myProject.logInfoGUI("Load a Digital Elevation Model before.");
         return;
     }
 }
@@ -1020,7 +1014,7 @@ void MainWindow::on_actionView_Boundary_triggered()
     }
     else
     {
-        myProject.logError("Initialize Criteria-3D model before.");
+        myProject.logInfoGUI("Initialize 3D Model before.");
         return;
     }
 }
@@ -1036,7 +1030,7 @@ void MainWindow::on_actionView_Slope_triggered()
     }
     else
     {
-        myProject.logError("Load a DEM before.");
+        myProject.logInfoGUI("Load a Digital Elevation Model before.");
         return;
     }
 }
@@ -1052,7 +1046,7 @@ void MainWindow::on_actionView_Aspect_triggered()
     }
     else
     {
-        myProject.logError("Load a DEM before.");
+        myProject.logInfoGUI("Load a Digital Elevation Model before.");
         return;
     }
 }
@@ -1062,13 +1056,13 @@ bool MainWindow::checkMapVariable(bool isComputed)
 {
     if (! myProject.DTM.isLoaded)
     {
-        myProject.logError("Load a DEM before.");
+        myProject.logInfoGUI("Load a Digital Elevation Model before.");
         return false;
     }
 
     if (! isComputed)
     {
-        myProject.logError("Compute variable before.");
+        myProject.logInfoGUI("Compute variable before.");
         return false;
     }
 
@@ -1203,7 +1197,7 @@ void MainWindow::on_actionCompute_solar_radiation_triggered()
 {
     if (myProject.nrMeteoPoints == 0)
     {
-        myProject.logError("Open a meteo points DB before.");
+        myProject.logInfoGUI("Open a Meteo Points DB before.");
         return;
     }
 

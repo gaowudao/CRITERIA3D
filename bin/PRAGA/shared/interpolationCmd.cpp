@@ -4,9 +4,9 @@
 #include "gis.h"
 
 bool interpolationRaster(std::vector <Crit3DInterpolationDataPoint> &myPoints, Crit3DInterpolationSettings* mySettings,
-                        gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGrid& myDTM, meteoVariable myVar, bool showInfo)
+                        gis::Crit3DRasterGrid* myGrid, const gis::Crit3DRasterGrid& raster, meteoVariable myVar, bool showInfo)
 {
-    if (! myGrid->initializeGrid(myDTM))
+    if (! myGrid->initializeGrid(raster))
         return false;
 
     FormInfo myInfo;
@@ -29,8 +29,8 @@ bool interpolationRaster(std::vector <Crit3DInterpolationDataPoint> &myPoints, C
         for (long myCol = 0; myCol < myGrid->header->nrCols; myCol++)
         {
             gis::getUtmXYFromRowColSinglePrecision(*myGrid, myRow, myCol, &myX, &myY);
-            float myZ = myDTM.value[myRow][myCol];
-            if (myZ != myGrid->header->flag)
+            float myZ = raster.value[myRow][myCol];
+            if (int(myZ) != int(myGrid->header->flag))
                 myGrid->value[myRow][myCol] = interpolate(myPoints, mySettings, myVar, myX, myY, myZ, getProxyValuesXY(myX, myY, mySettings), true);
         }
     }

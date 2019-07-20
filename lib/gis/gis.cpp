@@ -871,10 +871,10 @@ namespace gis
     }
 
 
-    bool computeSlopeAspectMaps(const gis::Crit3DRasterGrid& dtm,
+    bool computeSlopeAspectMaps(const gis::Crit3DRasterGrid& demMap,
                                 gis::Crit3DRasterGrid* slopeMap, gis::Crit3DRasterGrid* aspectMap)
     {
-        if (! dtm.isLoaded) return false;
+        if (! demMap.isLoaded) return false;
 
         double reciprocalCellSize;
         double dz_dx, dz_dy;
@@ -883,16 +883,16 @@ namespace gis
         double zNorth, zSouth, zEast, zWest;
         int i, nr;
 
-        slopeMap->initializeGrid(dtm);
-        aspectMap->initializeGrid(dtm);
+        slopeMap->initializeGrid(demMap);
+        aspectMap->initializeGrid(demMap);
 
-        reciprocalCellSize = 1. / dtm.header->cellSize;
+        reciprocalCellSize = 1. / demMap.header->cellSize;
 
-        for (int myRow = 0; myRow < dtm.header->nrRows; myRow++)
-            for (int myCol = 0; myCol < dtm.header->nrCols; myCol++)
+        for (int myRow = 0; myRow < demMap.header->nrRows; myRow++)
+            for (int myCol = 0; myCol < demMap.header->nrCols; myCol++)
             {
-                z = dtm.value[myRow][myCol];
-                if (z != dtm.header->flag)
+                z = demMap.value[myRow][myCol];
+                if (z != demMap.header->flag)
                 {
                     /* OLD METHOD
                     zNorth = dtm.getValueFromRowCol(myRow-1, myCol);
@@ -924,14 +924,14 @@ namespace gis
                     dz = 0;
                     for (i=-1; i <=1; i++)
                     {
-                        zNorth = dtm.getValueFromRowCol(myRow-1, myCol+i);
-                        zSouth = dtm.getValueFromRowCol(myRow+1, myCol+i);
-                        if (zNorth != dtm.header->flag)
+                        zNorth = demMap.getValueFromRowCol(myRow-1, myCol+i);
+                        zSouth = demMap.getValueFromRowCol(myRow+1, myCol+i);
+                        if (zNorth != demMap.header->flag)
                         {
                             dz += zNorth - z;
                             nr++;
                         }
-                        if (zSouth != dtm.header->flag)
+                        if (zSouth != demMap.header->flag)
                         {
                             dz += z - zSouth;
                             nr++;
@@ -940,21 +940,21 @@ namespace gis
                     if (nr == 0)
                         dz_dy = EPSILON;
                     else
-                        dz_dy = dz / (nr * dtm.header->cellSize);
+                        dz_dy = dz / (nr * demMap.header->cellSize);
 
                     /*! compute dz/dx */
                     nr = 0;
                     dz = 0;
                     for (i=-1; i <=1; i++)
                     {
-                        zWest = dtm.getValueFromRowCol(myRow+i, myCol-1);
-                        zEast = dtm.getValueFromRowCol(myRow+i, myCol+1);
-                        if (zWest != dtm.header->flag)
+                        zWest = demMap.getValueFromRowCol(myRow+i, myCol-1);
+                        zEast = demMap.getValueFromRowCol(myRow+i, myCol+1);
+                        if (zWest != demMap.header->flag)
                         {
                             dz += zWest - z;
                             nr++;
                         }
-                        if (zEast != dtm.header->flag)
+                        if (zEast != demMap.header->flag)
                         {
                             dz += z - zEast;
                             nr++;
@@ -963,7 +963,7 @@ namespace gis
                     if (nr == 0)
                         dz_dx = EPSILON;
                     else
-                        dz_dx = dz / (nr * dtm.header->cellSize);
+                        dz_dx = dz / (nr * demMap.header->cellSize);
 
                     /*! slope in degrees */
                     slope = atan(sqrt(dz_dx * dz_dx + dz_dy * dz_dy)) * RAD_TO_DEG;

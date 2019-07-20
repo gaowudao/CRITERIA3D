@@ -67,7 +67,7 @@ meteoVariable chooseColorScale()
     myDialog.setWindowTitle("Choose color scale");
     myDialog.setFixedWidth(400);
 
-    QRadioButton DTM("Elevation m");
+    QRadioButton Dem("Elevation m");
     QRadioButton Temp("Temperature °C");
     QRadioButton Prec("Precipitation mm");
     QRadioButton RH("Relative humidity %");
@@ -75,7 +75,7 @@ meteoVariable chooseColorScale()
     QRadioButton Wind("Wind intensity m s-1");
     QRadioButton Anomaly("Anomaly");
 
-    layoutVariable.addWidget(&DTM);
+    layoutVariable.addWidget(&Dem);
     layoutVariable.addWidget(&Temp);
     layoutVariable.addWidget(&Prec);
     layoutVariable.addWidget(&RH);
@@ -98,7 +98,7 @@ meteoVariable chooseColorScale()
     if (myDialog.result() != QDialog::Accepted)
         return noMeteoVar;
 
-    if (DTM.isChecked())
+    if (Dem.isChecked())
         return noMeteoTerrain;
     else if (Temp.isChecked())
         return airTemperature;

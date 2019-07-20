@@ -82,7 +82,7 @@ bool PragaProject::interpolationMeteoGrid(meteoVariable myVar, frequencyType myF
     }
     else
     {
-        errorString = "No grid";
+        errorString = "Open a Meteo Grid before.";
         return false;
     }
 

@@ -98,9 +98,9 @@ bool Crit3DProject::loadSoilMap(QString myFileName)
 bool Crit3DProject::createIndexMap()
 {
     // check
-    if (! DTM.isLoaded)
+    if (! this->DTM.isLoaded)
     {
-        logError("Missing DTM.");
+        logError("Missing Digital Elevation Model.");
         return false;
     }
 
@@ -129,9 +129,9 @@ bool Crit3DProject::createIndexMap()
 bool Crit3DProject::createBoundaryMap()
 {
     // check
-    if (! DTM.isLoaded)
+    if (! this->DTM.isLoaded)
     {
-        logError("Missing DTM.");
+        logError("Missing Missing Digital Elevation Model.");
         return false;
     }
 
@@ -160,7 +160,7 @@ bool Crit3DProject::createSoilIndexMap()
     if (!DTM.isLoaded || !soilMap.isLoaded || soilList.size() == 0)
     {
         if (!DTM.isLoaded)
-            logError("Missing DTM.");
+            logError("Missing Digital Elevation Model.");
         else if (!soilMap.isLoaded)
             logError("Missing soil map.");
         else if (soilList.size() == 0)
@@ -188,12 +188,12 @@ bool Crit3DProject::createSoilIndexMap()
 }
 
 
-int Crit3DProject::getSoilIndex(int dtmRow, int dtmCol)
+int Crit3DProject::getSoilIndex(int demRow, int demCol)
 {
     double x, y;
     int idSoil;
 
-    gis::getUtmXYFromRowCol(*(DTM.header), dtmRow, dtmCol, &x, &y);
+    gis::getUtmXYFromRowCol(*(DTM.header), demRow, demCol, &x, &y);
     idSoil = int(gis::getValueFromXY(soilMap, x, y));
 
     if (idSoil == int(this->soilMap.header->flag))
@@ -260,9 +260,9 @@ bool Crit3DProject::setDEM(QString myFileName)
 
 bool Crit3DProject::interpolationRelHumidity(const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo)
 {
-    if (! DTM.isLoaded)
+    if (! this->DTM.isLoaded)
     {
-        errorString = "Load a DEM before.";
+        errorString = "Load a Digital Elevation Model before.";
         return false;
     }
 
@@ -277,7 +277,7 @@ bool Crit3DProject::interpolationRelHumidity(const Crit3DTime& myTime, gis::Crit
         // TODO check on airTemperatureMap
 
         gis::Crit3DRasterGrid *dewT_Map = new(gis::Crit3DRasterGrid);
-        dewT_Map->initializeGrid(DTM);
+        dewT_Map->initializeGrid(this->DTM);
 
         if (! interpolationDem(airDewTemperature, myTime, dewT_Map, showInfo))
             return false;
@@ -298,9 +298,9 @@ bool Crit3DProject::interpolationRelHumidity(const Crit3DTime& myTime, gis::Crit
 
 bool Crit3DProject::computeAllMeteoMaps(const Crit3DTime& myTime, bool showInfo)
 {
-    if (! DTM.isLoaded)
+    if (! this->DTM.isLoaded)
     {
-        errorString = "Load a DEM before.";
+        errorString = "Load a Digital Elevation Model before.";
         return false;
     }
 
@@ -355,7 +355,7 @@ bool Crit3DProject::initializeCriteria3D()
     // check
     if (! this->DTM.isLoaded)
     {
-        logError("Missing DTM.");
+        logError("Missing Digital Elevation Model.");
         return false;
     }
     else if (! this->soilMap.isLoaded)
@@ -394,9 +394,9 @@ bool Crit3DProject::initializeCriteria3D()
                          nrSoilLayersWithoutRoots, soilLayerWithRoot,
                          GAMMA_DISTRIBUTION, depthModeRootDensity, depthMeanRootDensity);*/
 
-    logInfo("Criteria3D Project initialized");
-
     this->isInitialized = true;
+    logInfoGUI("Criteria3D project initialized");
+
     return true;
 }
 
