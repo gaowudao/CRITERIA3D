@@ -14,7 +14,6 @@
 
     void cleanWaterBalanceMemory();
 
-    int computeNrLayers(float totalDepth, double minThickness, double maxThickness, double factor);
     int getSoilLayerIndex(Crit3DProject* myProject, double depth);
     double getSoilLayerTop(Crit3DProject* myProject, int i);
     double getSoilLayerBottom(Crit3DProject* myProject, int i);

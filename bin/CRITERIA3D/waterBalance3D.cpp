@@ -127,51 +127,6 @@ bool setCrit3DSurfaces(Crit3DProject* myProject)
 }
 
 
-int computeNrLayers(float totalDepth, double minThickness, double maxThickness, double factor)
- {
-    int nrLayers = 1;
-    double nextThickness, prevThickness = minThickness;
-    double depth = minThickness * 0.5f;
-    while (depth < totalDepth)
-    {
-        nextThickness = minValue(maxThickness, prevThickness * factor);
-        depth = depth + (prevThickness + nextThickness) * 0.5f;
-        prevThickness = nextThickness;
-        nrLayers++;
-    }
-    return(nrLayers);
-}
-
-
-// set thickness and depth (center) of layers [m]
-bool setLayersDepth(Crit3DProject* myProject, double minThickness, double maxThickness, double factor)
-{
-    int lastLayer = myProject->nrLayers-1;
-    myProject->layerDepth.resize(myProject->nrLayers);
-    myProject->layerThickness.resize(myProject->nrLayers);
-
-    myProject->layerDepth[0] = 0.0;
-    myProject->layerThickness[0] = 0.0;
-    myProject->layerThickness[1] = minThickness;
-    myProject->layerDepth[1] = minThickness * 0.5;
-    for (unsigned int i = 2; i < unsigned(myProject->nrLayers); i++)
-    {
-        if (i == unsigned(lastLayer))
-        {
-            myProject->layerThickness[i] = myProject->soilDepth - (myProject->layerDepth[i-1]
-                                          + myProject->layerThickness[i-1] / 2.0);
-        }
-        else
-        {
-            myProject->layerThickness[i] = minValue(maxThickness, myProject->layerThickness[i-1] * factor);
-        }
-        myProject->layerDepth[i] = myProject->layerDepth[i-1] +
-                                (myProject->layerThickness[i-1] + myProject->layerThickness[i]) * 0.5f;
-    }
-    return(true);
-}
-
-
 bool setCrit3DTopography(Crit3DProject* myProject)
 {
     double x, y;
@@ -1017,14 +972,9 @@ bool initializeWaterBalance(Crit3DProject* myProject)
 
     QString myError;
 
-    // TODO parameters
-    double minThickness = 0.02;      //[m]
-    double maxThickness = 0.1;       //[m]
-    double thickFactor = 1.5;
-
     // Layers depth
-    myProject->nrLayers = computeNrLayers(myProject->soilDepth, minThickness, maxThickness, thickFactor);
-    setLayersDepth(myProject, minThickness, maxThickness, thickFactor);
+    myProject->nrLayers = myProject->computeNrLayers(myProject->soilDepth);
+    myProject->setLayersDepth();
     myProject->logInfo("nr of layers: " + QString::number(myProject->nrLayers));
 
     // Index map

@@ -1212,10 +1212,6 @@ bool initializeWaterBalance(Vine3DProject* myProject)
 
     myProject->outputWaterBalanceMaps = new Crit3DWaterBalanceMaps(myProject->DEM);
 
-    myProject->minThickness = 0.02;      //[m]
-    myProject->maxThickness = 0.1;       //[m]
-    myProject->thickFactor = 1.5;
-
     myProject->nrLayers = computeNrLayers(myProject->soilDepth, myProject->minThickness, myProject->maxThickness, myProject->thickFactor);
     setLayersDepth(myProject);
 

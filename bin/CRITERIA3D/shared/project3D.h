@@ -17,6 +17,7 @@
 
     public:
         Crit3DMeteoMaps* meteoMaps;
+
         gis::Crit3DRasterGrid soilMap;
         std::vector <gis::Crit3DRasterGrid> indexMap;
 
@@ -38,9 +39,12 @@
         std::vector <double> layerDepth;        //[m]
         std::vector <double> layerThickness;    //[m]
 
+
         Project3D();
 
 
+        int computeNrLayers(double totalDepth);
+        bool setLayersDepth();
     };
 
 
