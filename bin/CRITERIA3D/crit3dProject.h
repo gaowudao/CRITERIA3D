@@ -37,7 +37,7 @@
         bool loadSoilData(QString dbName);
         bool loadSoilMap(QString fileName);
 
-        void cleanProject();
+        void clear();
         bool initializeCriteria3D();
 
         bool createSoilIndexMap();

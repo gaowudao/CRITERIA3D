@@ -7,9 +7,10 @@
     #ifndef METEOMAPS_H
         #include "meteoMaps.h"
     #endif
-    #ifndef SOIL3D_H
-        #include "soil3D.h"
+    #ifndef SOIL_H
+        #include "soil.h"
     #endif
+
 
     class Project3D : public Project
     {
@@ -17,7 +18,24 @@
     public:
         Crit3DMeteoMaps* meteoMaps;
         gis::Crit3DRasterGrid soilMap;
-        Crit3DSoilFluxesSettings* wb3DSettings;
+
+        double minThickness;
+        double maxThickness;
+        double thickFactor;
+        int nrLateralLink;
+
+        int nrSoils;
+        int nrLayers;
+        double soilDepth;                       //[m]
+
+        std::vector <soil::Crit3DSoil> soilList;
+        soil::Crit3DTextureClass texturalClassList[13];
+
+        long nrNodes;
+        long nrNodesPerLayer;
+
+        std::vector <double> layerDepth;        //[m]
+        std::vector <double> layerThickness;    //[m]
 
         Project3D();
 

@@ -3,5 +3,10 @@
 
 Project3D::Project3D() : Project()
 {
-    wb3DSettings = new Crit3DSoilFluxesSettings();
+    soilDepth = 1.0;
+    nrSoils = 0;
+    nrLayers = 0;
+    nrNodes = 0;
+    nrNodesPerLayer = 0;
+    nrLateralLink = 8;
 }
