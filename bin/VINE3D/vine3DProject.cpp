@@ -76,7 +76,7 @@ bool Vine3DProject::loadVine3DSettings()
 
 void Vine3DProject::deleteAllGrids()
 {
-    DTM.clear();
+    DEM.clear();
     modelCaseIndexMap.clear();
     boundaryMap.clear();
 
@@ -172,9 +172,9 @@ bool Vine3DProject::loadProject(QString myFileName)
     myFileName = path + demFileName;
     if (loadDEM(myFileName))
     {
-        this->logInfo("Initialize DTM and project maps...");
-        meteoMaps = new Crit3DMeteoMaps(DTM);
-        statePlantMaps = new Crit3DStatePlantMaps(DTM);
+        this->logInfo("Initialize DEM and project maps...");
+        meteoMaps = new Crit3DMeteoMaps(DEM);
+        statePlantMaps = new Crit3DStatePlantMaps(DEM);
     }
     else
         return(false);
@@ -478,13 +478,13 @@ bool Vine3DProject::loadFieldShape()
     }
     myQuery.clear();
 
-    this->modelCaseIndexMap.initializeGrid(this->DTM);
+    this->modelCaseIndexMap.initializeGrid(this->DEM);
 
     double step = this->modelCaseIndexMap.header->cellSize / (2*dim+1);
 
     for (long row = 0; row < this->modelCaseIndexMap.header->nrRows ; row++)
         for (long col = 0; col < this->modelCaseIndexMap.header->nrCols; col++)
-            if (this->DTM.value[row][col] != this->DTM.header->flag)
+            if (this->DEM.value[row][col] != this->DEM.header->flag)
             {
                 //center
                 gis::getUtmXYFromRowCol(this->modelCaseIndexMap, row, col, &x0, &y0);
@@ -566,7 +566,7 @@ bool Vine3DProject::loadFieldMap(QString myFileName)
     }
 
     // compute prevailing map
-    modelCaseIndexMap.initializeGrid(DTM);
+    modelCaseIndexMap.initializeGrid(DEM);
     gis::prevailingMap(myGrid, &(modelCaseIndexMap));
     gis::updateMinMaxRasterGrid(&(modelCaseIndexMap));
 
@@ -1139,7 +1139,7 @@ bool Vine3DProject::loadDBPoints()
     }
 
     //position with respect to DEM
-    if (DTM.isLoaded)
+    if (DEM.isLoaded)
         checkMeteoPointsDEM();
 
     return(true);
@@ -1777,12 +1777,12 @@ bool Vine3DProject::loadStates(QDate myDate, QString myArea)
 
     if (!loadPlantState(this, isHarvestedVar, myDate, statePath, myArea))
     {
-        this->statePlantMaps->isHarvestedMap->setConstantValueWithBase(0, DTM);
+        this->statePlantMaps->isHarvestedMap->setConstantValueWithBase(0, DEM);
     }
     if (!loadPlantState(this, fruitBiomassIndexVar, myDate, statePath, myArea))
     {
         //defualt= chardonnay
-        this->statePlantMaps->fruitBiomassIndexMap->setConstantValueWithBase(this->modelCases[1].cultivar->parameterBindiMiglietta.fruitBiomassSlope, DTM);
+        this->statePlantMaps->fruitBiomassIndexMap->setConstantValueWithBase(this->modelCases[1].cultivar->parameterBindiMiglietta.fruitBiomassSlope, DEM);
     }
 
     //problema: mancano nei precedenti stati

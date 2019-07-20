@@ -186,20 +186,20 @@ bool setCrit3DTopography(Crit3DProject* myProject)
             surfaceIndex = int(myProject->indexMap.value[row][col]);
             if (surfaceIndex != myProject->indexMap.header->flag)
             {
-                gis::getUtmXYFromRowCol(*(myProject->DTM.header), row, col, &x, &y);
-                area = myProject->DTM.header->cellSize * myProject->DTM.header->cellSize;
+                gis::getUtmXYFromRowCol(*(myProject->DEM.header), row, col, &x, &y);
+                area = myProject->DEM.header->cellSize * myProject->DEM.header->cellSize;
                 slope = myProject->radiationMaps->slopeMap->value[row][col] / 100.0;
 
                 for (int layer = 0; layer < myProject->nrLayers; layer++)
                 {
                     index = layer * myProject->nrVoxelsPerLayer + surfaceIndex;
-                    z = myProject->DTM.value[row][col] - myProject->layerDepth[layer];
+                    z = myProject->DEM.value[row][col] - myProject->layerDepth[layer];
                     volume = area * myProject->layerThickness[layer];
 
                     //surface
                     if (layer == 0)
                     {
-                        lateralArea = myProject->DTM.header->cellSize;
+                        lateralArea = myProject->DEM.header->cellSize;
                         if (myProject->boundaryMap.value[row][col] == BOUNDARY_RUNOFF)
                         {
                             myResult = soilFluxes3D::setNode(index, float(x), float(y), float(z), area,
@@ -214,7 +214,7 @@ bool setCrit3DTopography(Crit3DProject* myProject)
                     //sub-surface
                     else
                     {
-                        lateralArea = myProject->DTM.header->cellSize * myProject->layerThickness[layer];
+                        lateralArea = myProject->DEM.header->cellSize * myProject->layerThickness[layer];
                         //last layer
                         if (layer == (myProject->nrLayers - 1))
                         {
@@ -427,7 +427,7 @@ double evaporation(Crit3DProject* myProject, int row, int col, long surfaceIndex
 
     double const MAX_PROF_EVAPORATION = 0.15;           //[m]
     int lastEvapLayer = getSoilLayerIndex(myProject, MAX_PROF_EVAPORATION);
-    double area = myProject->DTM.header->cellSize * myProject->DTM.header->cellSize;
+    double area = myProject->DEM.header->cellSize * myProject->DEM.header->cellSize;
     //int idField = myProject->getFieldIndex(row, col);
 
     //LAI
@@ -491,7 +491,7 @@ bool setWaterSinkSource(Crit3DProject* myProject, double* totalPrecipitation,
     for (long i = 0; i < myProject->nrVoxels; i++)
         waterSinkSource[i] = 0.0;
 
-    double area = myProject->DTM.header->cellSize * myProject->DTM.header->cellSize;
+    double area = myProject->DEM.header->cellSize * myProject->DEM.header->cellSize;
 
     // precipitation or irrigation
     *totalPrecipitation = 0.0;
@@ -1032,7 +1032,7 @@ bool initializeWaterBalance(Crit3DProject* myProject)
         myProject->logInfo("nr of surface cells: " + QString::number(myProject->nrVoxelsPerLayer));
     else
     {
-        myProject->logError("initializeWaterBalance: wrong DTM");
+        myProject->logError("initializeWaterBalance: wrong DEM");
         return(false);
     }
     myProject->nrVoxels = myProject->nrVoxelsPerLayer * myProject->nrLayers;

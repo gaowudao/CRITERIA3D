@@ -20,10 +20,10 @@ bool computePowderyMildew(Vine3DProject* myProject)
     bool isBudBurst;
     myProject->logInfo("Compute powdery mildew...");
 
-    for (long row = 0; row < myProject->DTM.header->nrRows ; row++)
-        for (long col = 0; col < myProject->DTM.header->nrCols; col++)
+    for (long row = 0; row < myProject->DEM.header->nrRows ; row++)
+        for (long col = 0; col < myProject->DEM.header->nrCols; col++)
         {
-            if (myProject->DTM.value[row][col] != myProject->DTM.header->flag)
+            if (myProject->DEM.value[row][col] != myProject->DEM.header->flag)
             {
                 phenoPhase = myProject->statePlantMaps->stageMap->value[row][col];
                 if (phenoPhase != myProject->statePlantMaps->stageMap->header->flag)
@@ -148,9 +148,9 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
     for (n = 0; n < nrSavingDays; n++)
     {
         infectionMap[n] = new gis::Crit3DRasterGrid;
-        infectionMap[n]->initializeGrid(myProject->DTM);
+        infectionMap[n]->initializeGrid(myProject->DEM);
         oilSpotMap[n] = new gis::Crit3DRasterGrid;
-        oilSpotMap[n]->initializeGrid(myProject->DTM);
+        oilSpotMap[n]->initializeGrid(myProject->DEM);
     }
 
     Crit3DTime myTime;
@@ -169,10 +169,10 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
         }
 
         col++;
-        if (col == myProject->DTM.header->nrCols)
+        if (col == myProject->DEM.header->nrCols)
         {
             row++;
-            if (row == myProject->DTM.header->nrRows) isLastCell = true;
+            if (row == myProject->DEM.header->nrRows) isLastCell = true;
             col = 0;
         }
 
@@ -188,19 +188,19 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
                 if ((myTime.date.day == 1) && (myTime.getHour() == 1))
                     myProject->logInfo("Compute hourly data - month: " + QString::number(myTime.date.month));
 
-                if (! interpolationProjectDtmMain(myProject, airTemperature, myTime, true))
+                if (! interpolationProjectDemMain(myProject, airTemperature, myTime, true))
                 {
                     missingData = true;
                     variableMissing = "Air temperature";
                     break;
                 }
-                if (! interpolationProjectDtmMain(myProject, airRelHumidity, myTime, true))
+                if (! interpolationProjectDemMain(myProject, airRelHumidity, myTime, true))
                 {
                     missingData = true;
                     variableMissing = "Air humidity";
                     break;
                 }
-                if (! interpolationProjectDtmMain(myProject, precipitation, myTime, true))
+                if (! interpolationProjectDemMain(myProject, precipitation, myTime, true))
                 {
                     missingData = true;
                     variableMissing = "Rainfall";

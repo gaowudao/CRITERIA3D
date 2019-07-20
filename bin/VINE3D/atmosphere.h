@@ -1,9 +1,6 @@
 #ifndef ATMOSPHERE_H
 #define ATMOSPHERE_H
 
-    #ifndef QSTRING_H
-        #include <QString>
-    #endif
     #ifndef CRIT3DDATE_H
         #include "crit3dDate.h"
     #endif
@@ -12,15 +9,14 @@
     #endif
 
     class Vine3DProject;
+    class QDate;
+    class QString;
 
-    enum interpolationType {interpolationTypeDtm, interpolationTypeMeteoPoint};
     enum aggregationType {aggregationMin, aggregationMax, aggregationMean, aggregationSum, aggregationIntegration};
 
     bool vine3DInterpolationDem(Vine3DProject* myProject, meteoVariable myVar, const Crit3DTime& myTime, bool loadData);
 
-    bool computeRadiationProjectDtm(Vine3DProject* myProject, const Crit3DTime& myTime, bool loadData);
-
-    bool interpolationProjectDtmMain(Vine3DProject* myProject, meteoVariable myVar, const Crit3DTime& myTime, bool isLoadData);
+    bool interpolationProjectDemMain(Vine3DProject* myProject, meteoVariable myVar, const Crit3DTime& myTime, bool isLoadData);
 
     bool saveMeteoHourlyOutput(Vine3DProject* myProject, meteoVariable myVar,
                                 const QString& myOutputPath, Crit3DTime myCrit3DTime,

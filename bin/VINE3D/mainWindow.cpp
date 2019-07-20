@@ -302,9 +302,9 @@ void MainWindow::on_actionOpen_project_triggered()
         if (myProject.loadProject(myFileName))
         {
 
-            setDefaultDEMScale(myProject.DTM.colorScale);
+            setDefaultDEMScale(myProject.DEM.colorScale);
 
-            this->setCurrentRaster(&(myProject.DTM));
+            this->setCurrentRaster(&(myProject.DEM));
             ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
             this->ui->rasterOpacitySlider->setEnabled(true);
 
@@ -613,8 +613,8 @@ void MainWindow::on_rasterRestoreButton_clicked()
         return;
     }
 
-    setDefaultDEMScale(myProject.DTM.colorScale);
-    this->setCurrentRaster(&(myProject.DTM));
+    setDefaultDEMScale(myProject.DEM.colorScale);
+    this->setCurrentRaster(&(myProject.DEM));
     ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
 }
 
@@ -663,10 +663,10 @@ void MainWindow::on_actionParameters_triggered()
 
 void MainWindow::on_actionShow_DEM_triggered()
 {
-    if (myProject.DTM.isLoaded)
+    if (myProject.DEM.isLoaded)
     {
-        setColorScale(noMeteoTerrain, myProject.DTM.colorScale);
-        this->setCurrentRaster(&(myProject.DTM));
+        setColorScale(noMeteoTerrain, myProject.DEM.colorScale);
+        this->setCurrentRaster(&(myProject.DEM));
         ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
     }
     else

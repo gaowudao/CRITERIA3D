@@ -12,7 +12,7 @@
 
 bool initializeGrapevine(Vine3DProject* myProject)
 {
-    myProject->outputPlantMaps = new Crit3DOutputPlantMaps(myProject->DTM, myProject->WBSettings->nrLayers);
+    myProject->outputPlantMaps = new Crit3DOutputPlantMaps(myProject->DEM, myProject->WBSettings->nrLayers);
 
     //initialize root density for every model case
     int soilIndex, nrHorizons;
@@ -432,11 +432,11 @@ bool updateThermalSum(Vine3DProject* myProject, QDate myDate)
     fifteenNovember.setDate(myDate.year(),11,15);
     flag = myProject->statePlantMaps->degreeDaysFromFirstMarchMap->header->flag;
 
-    for (long row = 0; row < myProject->DTM.header->nrRows ; row++)
+    for (long row = 0; row < myProject->DEM.header->nrRows ; row++)
     {
-        for (long col = 0; col < myProject->DTM.header->nrCols; col++)
+        for (long col = 0; col < myProject->DEM.header->nrCols; col++)
         {
-            if (myProject->DTM.value[row][col] != myProject->DTM.header->flag)
+            if (myProject->DEM.value[row][col] != myProject->DEM.header->flag)
             {
                 phenoPhase = myProject->statePlantMaps->stageMap->value[row][col];
                 isFruitSet = (phenoPhase >= fruitSet);

@@ -52,9 +52,9 @@ bool assignIrrigation(Vine3DProject* myProject, Crit3DTime myTime)
     int idBook;
     QDate myDate = getQDate(myTime.date);
 
-    for (long row = 0; row < myProject->DTM.header->nrRows ; row++)
-        for (long col = 0; col < myProject->DTM.header->nrCols; col++)
-            if (int(myProject->DTM.value[row][col]) != int(myProject->DTM.header->flag))
+    for (long row = 0; row < myProject->DEM.header->nrRows ; row++)
+        for (long col = 0; col < myProject->DEM.header->nrCols; col++)
+            if (int(myProject->DEM.value[row][col]) != int(myProject->DEM.header->flag))
             {
                 //initialize
                 myProject->meteoMaps->irrigationMap->value[row][col] = 0.0;
@@ -143,11 +143,11 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
         //Grapevine
         double vineTranspiration, grassTranspiration;
         myProject->logInfo("Compute grapevine");
-        for (long row = 0; row < myProject->DTM.header->nrRows ; row++)
+        for (long row = 0; row < myProject->DEM.header->nrRows ; row++)
         {
-            for (long col = 0; col < myProject->DTM.header->nrCols; col++)
+            for (long col = 0; col < myProject->DEM.header->nrCols; col++)
             {
-                if (int(myProject->DTM.value[row][col]) != int(myProject->DTM.header->flag))
+                if (int(myProject->DEM.value[row][col]) != int(myProject->DEM.header->flag))
                 {
                     modelCaseIndex = myProject->getModelCaseIndex(row,col);
                     isNewModelCase = (int(myProject->statePlantMaps->fruitBiomassMap->value[row][col])

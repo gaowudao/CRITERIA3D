@@ -35,8 +35,8 @@ void Crit3DWaterBalanceMaps::initializeWithDEM(const gis::Crit3DRasterGrid &myDE
 
 void resetWaterBalanceMap(Vine3DProject* myProject)
 {
-    myProject->outputWaterBalanceMaps->bottomDrainageMap->setConstantValueWithBase(0, myProject->DTM);
-    myProject->outputWaterBalanceMaps->waterInflowMap->setConstantValueWithBase(0, myProject->DTM);
+    myProject->outputWaterBalanceMaps->bottomDrainageMap->setConstantValueWithBase(0, myProject->DEM);
+    myProject->outputWaterBalanceMaps->waterInflowMap->setConstantValueWithBase(0, myProject->DEM);
 }
 
 
@@ -239,10 +239,10 @@ bool setIndexMap(Vine3DProject* myProject)
 
     for (i=0; i < myProject->WBSettings->nrLayers; i++)
     {
-        myProject->WBMaps->indexMap.at(size_t(i)).initializeGrid(myProject->DTM);
+        myProject->WBMaps->indexMap.at(size_t(i)).initializeGrid(myProject->DEM);
         for (row = 0; row < myProject->WBMaps->indexMap.at(size_t(i)).header->nrRows; row++)
             for (col = 0; col < myProject->WBMaps->indexMap.at(size_t(i)).header->nrCols; col++)
-                if (int(myProject->DTM.value[row][col]) != int(myProject->DTM.header->flag))
+                if (int(myProject->DEM.value[row][col]) != int(myProject->DEM.header->flag))
                 {
                     if (isWithinSoil(myProject, row, col, myProject->WBSettings->layerDepth.at(size_t(i))))
                     {
@@ -259,11 +259,11 @@ bool setIndexMap(Vine3DProject* myProject)
 
 bool setBoundary(Vine3DProject* myProject)
 {
-    myProject->boundaryMap.initializeGrid(myProject->DTM);
+    myProject->boundaryMap.initializeGrid(myProject->DEM);
     for (int row = 0; row < myProject->boundaryMap.header->nrRows; row++)
         for (int col = 0; col < myProject->boundaryMap.header->nrCols; col++)
-            if (gis::isBoundary(myProject->DTM, row, col))
-                if (! gis::isStrictMaximum(myProject->DTM, row, col))
+            if (gis::isBoundary(myProject->DEM, row, col))
+                if (! gis::isStrictMaximum(myProject->DEM, row, col))
                     myProject->boundaryMap.value[row][col] = BOUNDARY_RUNOFF;
     return true;
 }
@@ -286,16 +286,16 @@ bool setCrit3DTopography(Vine3DProject* myProject)
 
                 if (index != long(myProject->WBMaps->indexMap.at(layer).header->flag))
                 {
-                    gis::getUtmXYFromRowCol(myProject->DTM, row, col, &x, &y);
-                    area = myProject->DTM.header->cellSize * myProject->DTM.header->cellSize;
+                    gis::getUtmXYFromRowCol(myProject->DEM, row, col, &x, &y);
+                    area = myProject->DEM.header->cellSize * myProject->DEM.header->cellSize;
                     slope = myProject->radiationMaps->slopeMap->value[row][col] / 100;
-                    z = myProject->DTM.value[row][col] - float(myProject->WBSettings->layerDepth[layer]);
+                    z = myProject->DEM.value[row][col] - float(myProject->WBSettings->layerDepth[layer]);
                     volume = area * myProject->WBSettings->layerThickness[layer];
 
                     //surface
                     if (layer == 0)
                     {
-                        lateralArea = float(myProject->DTM.header->cellSize);
+                        lateralArea = float(myProject->DEM.header->cellSize);
 
                         if (int(myProject->boundaryMap.value[row][col]) == BOUNDARY_RUNOFF)
                             myResult = soilFluxes3D::setNode(index, float(x), float(y), float(z), area, true, true, BOUNDARY_RUNOFF, float(slope));
@@ -305,7 +305,7 @@ bool setCrit3DTopography(Vine3DProject* myProject)
                     //sub-surface
                     else
                     {
-                        lateralArea = float(myProject->DTM.header->cellSize * myProject->WBSettings->layerThickness[layer]);
+                        lateralArea = float(myProject->DEM.header->cellSize * myProject->WBSettings->layerThickness[layer]);
 
                         //last project layer or last soil layer
                         if (int(layer) == myProject->WBSettings->nrLayers - 1 || ! isWithinSoil(myProject, row, col, myProject->WBSettings->layerDepth.at(size_t(layer+1))))
@@ -500,7 +500,7 @@ double evaporation(Vine3DProject* myProject, int row, int col)
 
     double const MAX_PROF_EVAPORATION = 0.15;           //[m]
     int lastEvapLayer = getLayerIndex(myProject, MAX_PROF_EVAPORATION);
-    double area = myProject->DTM.header->cellSize * myProject->DTM.header->cellSize;
+    double area = myProject->DEM.header->cellSize * myProject->DEM.header->cellSize;
     int idField = myProject->getModelCaseIndex(row, col);
 
     //LAI
@@ -564,7 +564,7 @@ bool waterBalanceSinkSource(Vine3DProject* myProject, double* totalPrecipitation
     for (long i = 0; i < myProject->WBSettings->nrNodes; i++)
         myWaterSinkSource.at(size_t(i)) = 0.0;
 
-    double area = myProject->DTM.header->cellSize * myProject->DTM.header->cellSize;
+    double area = myProject->DEM.header->cellSize * myProject->DEM.header->cellSize;
 
     //precipitation - irrigation
     *totalPrecipitation = 0.0;
@@ -1210,7 +1210,7 @@ bool initializeWaterBalance(Vine3DProject* myProject)
         return(false);
     }
 
-    myProject->outputWaterBalanceMaps = new Crit3DWaterBalanceMaps(myProject->DTM);
+    myProject->outputWaterBalanceMaps = new Crit3DWaterBalanceMaps(myProject->DEM);
 
     myProject->WBSettings->minThickness = 0.02;      //[m]
     myProject->WBSettings->maxThickness = 0.1;       //[m]

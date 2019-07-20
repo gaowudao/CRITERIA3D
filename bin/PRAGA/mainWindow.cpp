@@ -323,7 +323,7 @@ void MainWindow::on_actionLoadDEM_triggered()
 
     if (!myProject.loadDEM(fileName)) return;
 
-    this->setCurrentRaster(&(myProject.DTM));
+    this->setCurrentRaster(&(myProject.DEM));
     ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
     this->ui->rasterOpacitySlider->setEnabled(true);
 
@@ -1138,8 +1138,8 @@ void MainWindow::on_rasterRestoreButton_clicked()
         return;
     }
 
-    setDefaultDEMScale(myProject.DTM.colorScale);
-    this->setCurrentRaster(&(myProject.DTM));
+    setDefaultDEMScale(myProject.DEM.colorScale);
+    this->setCurrentRaster(&(myProject.DEM));
     ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
 }
 

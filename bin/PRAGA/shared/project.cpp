@@ -86,15 +86,15 @@ void Project::setProxyDEM()
         proxyHeight = interpolationSettings.getProxy(index);
 
         // if no alternative DEM defined and project DEM loaded, use it for elevation proxy
-        if (proxyHeight->getGridName() == "" && DTM.isLoaded)
-            proxyHeight->setGrid(&DTM);
+        if (proxyHeight->getGridName() == "" && DEM.isLoaded)
+            proxyHeight->setGrid(&DEM);
     }
 
     if (indexQuality != NODATA)
     {
         proxyHeight = qualityInterpolationSettings.getProxy(indexQuality);
-        if (proxyHeight->getGridName() == "" && DTM.isLoaded)
-            proxyHeight->setGrid(&DTM);
+        if (proxyHeight->getGridName() == "" && DEM.isLoaded)
+            proxyHeight->setGrid(&DEM);
     }
 }
 
@@ -519,20 +519,20 @@ bool Project::loadDEM(QString myFileName)
     }
     fileName = myFileName.toStdString();
 
-    if (! gis::readEsriGrid(fileName, &DTM, &error))
+    if (! gis::readEsriGrid(fileName, &DEM, &error))
     {
         this->logError("Wrong Digital Elevation Model file.\n" + QString::fromStdString(error));
         return false;
     }
 
-    setColorScale(noMeteoTerrain, DTM.colorScale);
+    setColorScale(noMeteoTerrain, DEM.colorScale);
 
     // initialize radition maps: slope, aspect, lat/lon
     if (radiationMaps != nullptr)
     {
         radiationMaps->clean();
     }
-    radiationMaps = new Crit3DRadiationMaps(DTM, gisSettings);
+    radiationMaps = new Crit3DRadiationMaps(DEM, gisSettings);
 
     //reset aggregationPoints meteoGrid
     if (meteoGridDbHandler != nullptr)
@@ -545,8 +545,8 @@ bool Project::loadDEM(QString myFileName)
     setProxyDEM();
 
     //set interpolation settings DEM
-    interpolationSettings.setCurrentDEM(&DTM);
-    qualityInterpolationSettings.setCurrentDEM(&DTM);
+    interpolationSettings.setCurrentDEM(&DEM);
+    qualityInterpolationSettings.setCurrentDEM(&DEM);
 
     //check points position with respect to DEM
     checkMeteoPointsDEM();
@@ -604,7 +604,7 @@ bool Project::loadMeteoPointsDB(QString dbName)
     }
 
     //position with respect to DEM
-    if (DTM.isLoaded)
+    if (DEM.isLoaded)
         checkMeteoPointsDEM();
 
     return true;
@@ -826,7 +826,7 @@ void Project::findLastMeteoDate()
 void Project::checkMeteoPointsDEM()
 {
     for (int i=0; i < nrMeteoPoints; i++)
-        meteoPoints[i].isInsideDem = ! gis::isOutOfGridXY(meteoPoints[i].point.utm.x, meteoPoints[i].point.utm.y, DTM.header);
+        meteoPoints[i].isInsideDem = ! gis::isOutOfGridXY(meteoPoints[i].point.utm.x, meteoPoints[i].point.utm.y, DEM.header);
 }
 
 
@@ -949,7 +949,7 @@ bool Project::writeTopographicDistanceMaps()
         return false;
     }
 
-    if (! DTM.isLoaded)
+    if (! DEM.isLoaded)
     {
         errorString = "Load a Digital Elevation Map before.";
         return false;
@@ -973,7 +973,7 @@ bool Project::writeTopographicDistanceMaps()
 
         if (meteoPoints[i].active)
         {
-            if (gis::topographicDistanceMap(meteoPoints[i].point, DTM, &myMap))
+            if (gis::topographicDistanceMap(meteoPoints[i].point, DEM, &myMap))
             {
                 fileName = mapsFolder.toStdString() + "TAD_" + meteoPoints[i].id;
                 if (! gis::writeEsriGrid(fileName, &myMap, &myError))
@@ -1061,9 +1061,9 @@ bool Project::interpolationDem(meteoVariable myVar, const Crit3DTime& myTime, gi
     }
 
     // Interpolate
-    if (! interpolationRaster(interpolationPoints, &interpolationSettings, myRaster, DTM, myVar, showInfo))
+    if (! interpolationRaster(interpolationPoints, &interpolationSettings, myRaster, DEM, myVar, showInfo))
     {
-        errorString = "Interpolation: error in function interpolateGridDtm";
+        errorString = "Interpolation: error in function interpolationRaster";
         return false;
     }
 
@@ -1079,12 +1079,12 @@ bool Project::interpolateDemRadiation(const Crit3DTime& myTime, gis::Crit3DRaste
 
     radSettings.setGisSettings(&gisSettings);
 
-    gis::Crit3DPoint mapCenter = DTM.mapCenter();
+    gis::Crit3DPoint mapCenter = DEM.mapCenter();
 
-    int intervalWidth = radiation::estimateTransmissivityWindow(&radSettings, DTM, &mapCenter, myTime, int(HOUR_SECONDS));
+    int intervalWidth = radiation::estimateTransmissivityWindow(&radSettings, DEM, &mapCenter, myTime, int(HOUR_SECONDS));
 
     // almost a meteoPoint with transmissivity data
-    if (! computeTransmissivity(&radSettings, meteoPoints, nrMeteoPoints, intervalWidth, myTime, DTM))
+    if (! computeTransmissivity(&radSettings, meteoPoints, nrMeteoPoints, intervalWidth, myTime, DEM))
         if (! computeTransmissivityFromTRange(meteoPoints, nrMeteoPoints, myTime))
         {
             errorString = "Function interpolateRasterRadiation: it is not possible to compute transmissivity.";
@@ -1101,13 +1101,13 @@ bool Project::interpolateDemRadiation(const Crit3DTime& myTime, gis::Crit3DRaste
 
     preInterpolation(interpolationPoints, &interpolationSettings, meteoPoints, nrMeteoPoints, atmTransmissivity, myTime);
 
-    if (! interpolationRaster(interpolationPoints, &interpolationSettings, this->radiationMaps->transmissivityMap, DTM, atmTransmissivity, showInfo))
+    if (! interpolationRaster(interpolationPoints, &interpolationSettings, this->radiationMaps->transmissivityMap, DEM, atmTransmissivity, showInfo))
     {
         errorString = "Function interpolateRasterRadiation: error interpolating transmissivity.";
         return false;
     }
 
-    if (! radiation::computeRadiationGridPresentTime(&radSettings, this->DTM, this->radiationMaps, myTime))
+    if (! radiation::computeRadiationGridPresentTime(&radSettings, this->DEM, this->radiationMaps, myTime))
     {
         errorString = "Function interpolateRasterRadiation: error computing solar radiation";
         return false;
@@ -1124,7 +1124,7 @@ bool Project::interpolateDemRadiation(const Crit3DTime& myTime, gis::Crit3DRaste
 
 bool Project::interpolationDemMain(meteoVariable myVar, const Crit3DTime& myTime, gis::Crit3DRasterGrid *myRaster, bool showInfo)
 {
-    if (! DTM.isLoaded)
+    if (! DEM.isLoaded)
     {
         errorString = "Load a Digital Elevation Model before.";
         return false;
@@ -1142,7 +1142,7 @@ bool Project::interpolationDemMain(meteoVariable myVar, const Crit3DTime& myTime
         return false;
     }
 
-    myRaster->initializeGrid(this->DTM);
+    myRaster->initializeGrid(this->DEM);
 
     if (myVar == globalIrradiance)
     {

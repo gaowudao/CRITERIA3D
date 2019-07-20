@@ -83,7 +83,7 @@
         Crit3DRadiationSettings radSettings;
         Crit3DRadiationMaps *radiationMaps;
 
-        gis::Crit3DRasterGrid DTM;
+        gis::Crit3DRasterGrid DEM;
         gis::Crit3DRasterGrid dataRaster;
 
         Crit3DInterpolationSettings interpolationSettings;

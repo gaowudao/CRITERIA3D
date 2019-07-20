@@ -327,7 +327,7 @@ void MainWindow::on_actionLoadDEM_triggered()
 
     if (! myProject.setDEM(fileName)) return;
 
-    this->setCurrentRaster(&(myProject.DTM));
+    this->setCurrentRaster(&(myProject.DEM));
     ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
     this->ui->rasterOpacitySlider->setEnabled(true);
 
@@ -800,8 +800,8 @@ void MainWindow::on_rasterRestoreButton_clicked()
         return;
     }
 
-    setDefaultDEMScale(myProject.DTM.colorScale);
-    this->setCurrentRaster(&(myProject.DTM));
+    setDefaultDEMScale(myProject.DEM.colorScale);
+    this->setCurrentRaster(&(myProject.DEM));
     ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
 }
 
@@ -953,7 +953,7 @@ void MainWindow::initializeViewer3D()
 
 void MainWindow::on_actionView_3D_triggered()
 {
-    if (! myProject.DTM.isLoaded)
+    if (! myProject.DEM.isLoaded)
     {
         myProject.logInfoGUI("Load a Digital Elevation Model before.");
         return;
@@ -972,10 +972,10 @@ void MainWindow::on_actionView_3D_triggered()
 
 void MainWindow::on_actionView_DEM_triggered()
 {
-    if (myProject.DTM.isLoaded)
+    if (myProject.DEM.isLoaded)
     {
-        setColorScale(noMeteoTerrain, myProject.DTM.colorScale);
-        this->setCurrentRaster(&(myProject.DTM));
+        setColorScale(noMeteoTerrain, myProject.DEM.colorScale);
+        this->setCurrentRaster(&(myProject.DEM));
         ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
         this->currentMap = mapType::mapDEM;
     }
@@ -1022,7 +1022,7 @@ void MainWindow::on_actionView_Boundary_triggered()
 
 void MainWindow::on_actionView_Slope_triggered()
 {
-    if (myProject.DTM.isLoaded)
+    if (myProject.DEM.isLoaded)
     {
         setColorScale(noMeteoTerrain, myProject.radiationMaps->slopeMap->colorScale);
         this->setCurrentRaster(myProject.radiationMaps->slopeMap);
@@ -1038,7 +1038,7 @@ void MainWindow::on_actionView_Slope_triggered()
 
 void MainWindow::on_actionView_Aspect_triggered()
 {
-    if (myProject.DTM.isLoaded)
+    if (myProject.DEM.isLoaded)
     {
         setColorScale(airTemperature, myProject.radiationMaps->aspectMap->colorScale);
         this->setCurrentRaster(myProject.radiationMaps->aspectMap);
@@ -1054,7 +1054,7 @@ void MainWindow::on_actionView_Aspect_triggered()
 
 bool MainWindow::checkMapVariable(bool isComputed)
 {
-    if (! myProject.DTM.isLoaded)
+    if (! myProject.DEM.isLoaded)
     {
         myProject.logInfoGUI("Load a Digital Elevation Model before.");
         return false;

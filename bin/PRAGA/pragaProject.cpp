@@ -77,7 +77,8 @@ bool PragaProject::interpolationMeteoGrid(meteoVariable myVar, frequencyType myF
         {
             return false;
         }
-        meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, myFrequency, myTime.date, myTime.getHour(), myTime.getMinutes(), &DTM, dataRaster, interpolationSettings.getMeteoGridAggrMethod());
+        meteoGridDbHandler->meteoGrid()->aggregateMeteoGrid(myVar, myFrequency, myTime.date, myTime.getHour(),
+                            myTime.getMinutes(), &DEM, dataRaster, interpolationSettings.getMeteoGridAggrMethod());
         meteoGridDbHandler->meteoGrid()->fillMeteoRaster();
     }
     else

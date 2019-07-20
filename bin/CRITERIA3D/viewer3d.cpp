@@ -54,12 +54,12 @@ Viewer3D::Viewer3D(QWidget *parent)
 void Viewer3D::initialize(Crit3DProject *project)
 {
     m_project = project;
-    float dz = maxValue(m_project->DTM.maximum - m_project->DTM.minimum, 10.f);
-    float z = m_project->DTM.minimum + dz * 0.5f;
-    double dy = m_project->DTM.header->nrRows * m_project->DTM.header->cellSize;
-    double dx = m_project->DTM.header->nrCols * m_project->DTM.header->cellSize;
-    m_center.x = m_project->DTM.header->llCorner->x + dx * 0.5;
-    m_center.y = m_project->DTM.header->llCorner->y + dy * 0.5;
+    float dz = maxValue(m_project->DEM.maximum - m_project->DEM.minimum, 10.f);
+    float z = m_project->DEM.minimum + dz * 0.5f;
+    double dy = m_project->DEM.header->nrRows * m_project->DEM.header->cellSize;
+    double dx = m_project->DEM.header->nrCols * m_project->DEM.header->cellSize;
+    m_center.x = m_project->DEM.header->llCorner->x + dx * 0.5;
+    m_center.y = m_project->DEM.header->llCorner->y + dy * 0.5;
     m_size = float(sqrt(dx*dy));
     m_ratio = m_size / dz;
     m_magnify = maxValue(1.f, minValue(10.f, m_ratio / 5.f));
@@ -117,8 +117,8 @@ void Viewer3D::wheelEvent(QWheelEvent *we)
     else
         m_zoomLevel *= 0.8f;
 
-    float dz = maxValue(m_project->DTM.maximum - m_project->DTM.minimum, 10.f);
-    float z = m_project->DTM.minimum + dz * 0.5f;
+    float dz = maxValue(m_project->DEM.maximum - m_project->DEM.minimum, 10.f);
+    float z = m_project->DEM.minimum + dz * 0.5f;
     QVector3D translation = QVector3D(m_cameraPosition.x(), m_cameraPosition.y(), (z + dz * m_zoomLevel) * m_magnify);
 
     m_view->camera()->transform()->setTranslation(translation);
@@ -153,8 +153,8 @@ void Viewer3D::mouseMoveEvent(QMouseEvent *ev)
             QMatrix4x4 matrix = zoomMatrix * m_cameraMatrix;
             m_view->camera()->transform()->setMatrix(matrix);*/
 
-            /*float dz = maxValue(m_project->DTM.maximum - m_project->DTM.minimum, 10.f);
-            float z = m_project->DTM.minimum + dz * 0.5f;
+            /*float dz = maxValue(m_project->DEM.maximum - m_project->DEM.minimum, 10.f);
+            float z = m_project->DEM.minimum + dz * 0.5f;
             float dy = delta.y() * m_zoomLevel;
             m_view->camera()->setViewCenter(QVector3D(float(m_center.x), float(m_center.y), z * m_magnify));*/
 
@@ -270,16 +270,16 @@ void Viewer3D::createScene()
             index = long(m_project->indexMap.value[row][col]);
             if (index != long(m_project->indexMap.header->flag))
             {
-                z = m_project->DTM.value[row][col];
-                if (int(z) != int(m_project->DTM.header->flag))
+                z = m_project->DEM.value[row][col];
+                if (int(z) != int(m_project->DEM.header->flag))
                 {
-                    gis::getUtmXYFromRowColSinglePrecision(*(m_project->DTM.header), row, col, &x, &y);
+                    gis::getUtmXYFromRowColSinglePrecision(*(m_project->DEM.header), row, col, &x, &y);
 
                     vertexPosition[index*3] = x;
                     vertexPosition[index*3+1] = y;
                     vertexPosition[index*3+2] = z  * float(m_magnify);
 
-                    myColor = m_project->DTM.colorScale->getColor(z);
+                    myColor = m_project->DEM.colorScale->getColor(z);
 
                     shadow = 0;
                     myAspect = m_project->radiationMaps->aspectMap->value[row][col];
