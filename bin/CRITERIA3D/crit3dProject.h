@@ -9,38 +9,28 @@
     #ifndef PROJECT_H
         #include "project.h"
     #endif
-    #ifndef METEOMAPS_H
-        #include "meteoMaps.h"
+    #ifndef PROJECT3D_H
+        #include "project3D.h"
     #endif
 
     #include <QString>
 
-    class Crit3DProject : public Project
+    class Crit3DProject : public Project3D
     {
     private:
 
     public:
-        Crit3DMeteoMaps* meteoMaps;
-        gis::Crit3DRasterGrid soilMap;
-
         // same header of DEM
         gis::Crit3DRasterGrid soilIndexMap;
         gis::Crit3DRasterGrid cropIndexMap;
         gis::Crit3DRasterGrid indexMap;
         gis::Crit3DRasterGrid boundaryMap;
 
-        int nrSoils;
-        int nrLayers;
-        long nrVoxels;
-        long nrVoxelsPerLayer;
         bool isParametersLoaded;
         bool isInitialized;
 
-        double soilDepth;                                //[m]
         std::vector <double> layerDepth;                 //[m]
         std::vector <double> layerThickness;             //[m]
-        std::vector <soil::Crit3DSoil> soilList;
-        soil::Crit3DTextureClass soilTextureClass[13];
 
         Crit3DProject();
 

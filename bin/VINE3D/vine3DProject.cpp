@@ -24,6 +24,7 @@
 #include "soil3D.h"
 #include "vine3DShell.h"
 #include "vine3DProject.h"
+#include "soilDbTools.h"
 
 
 void Vine3DProject::initialize()
@@ -758,7 +759,7 @@ bool Vine3DProject::loadClimateParameters()
 bool Vine3DProject::loadVine3DProjectParameters()
 {
     if (!loadClimateParameters()) return false;
-    if (!loadVanGenuchtenParameters()) return false;
+    if (!loadVanGenuchtenParameters(&dbConnection, WBSettings->texturalClassList, &errorString)) return false;
     if (!loadGrapevineParameters()) return false;
 
     return true;
@@ -790,56 +791,6 @@ bool Vine3DProject::loadAggregatedMeteoVarCodes()
         if (!myQuery.value(1).isNull())
             this->aggrVarCodes[i] = myQuery.value(1).toInt();
         i++;
-    }
-
-    return(true);
-}
-
-bool Vine3DProject::loadVanGenuchtenParameters()
-{
-    logInfo ("Read soil parameters...");
-
-    QString queryString = "SELECT id_texture, alpha, n, he, theta_r, theta_s, ksat, l";
-    queryString += " FROM soil_van_genuchten";
-    queryString += " ORDER BY id_texture";
-
-    QSqlQuery query = dbConnection.exec(queryString);
-    if (query.size() == -1)
-    {
-        this->errorString = "Table 'soil_van_genuchten': " + query.lastError().text();
-        return(false);
-    }
-    else if (query.size() != 12)
-    {
-        this->errorString = "Table 'soil_van_genuchten' Wrong number of soil textures (must be 12)";
-        return(false);
-    }
-
-    //read values
-    int id, j;
-    float myValue;
-    while (query.next())
-    {
-        id = query.value(0).toInt();
-        //check data
-        for (j = 0; j <= 7; j++)
-            if (! getValue(query.value(j), &myValue))
-            {
-                this->errorString = "Table 'soil_van_genuchten' Missing data in soil texture:" + QString::number(id);
-                return(false);
-            }
-        soilClass[id].vanGenuchten.alpha = query.value(1).toDouble();
-        soilClass[id].vanGenuchten.n = query.value(2).toDouble();
-        soilClass[id].vanGenuchten.he = query.value(3).toDouble();
-        soilClass[id].vanGenuchten.thetaR = query.value(4).toDouble();
-        soilClass[id].vanGenuchten.thetaS = query.value(5).toDouble();
-        soilClass[id].waterConductivity.kSat = query.value(6).toDouble();
-        soilClass[id].waterConductivity.l = query.value(7).toDouble();
-
-        soilClass[id].vanGenuchten.m = 1.0 - 1.0 / soilClass[id].vanGenuchten.n;
-        soilClass[id].vanGenuchten.sc = pow(1.0 + pow(soilClass[id].vanGenuchten.alpha
-                                        * soilClass[id].vanGenuchten.he, soilClass[id].vanGenuchten.n), -soilClass[id].vanGenuchten.m);
-        soilClass[id].vanGenuchten.refThetaS = soilClass[id].vanGenuchten.thetaS;
     }
 
     return(true);
@@ -923,8 +874,8 @@ soil::Crit3DSoil* Vine3DProject::loadHorizons(int idSoil, QString soil_code)
 
         //default values
         mySoil->horizon[i].texture.classUSDA = idTexture;
-        mySoil->horizon[i].vanGenuchten = soilClass[idTexture].vanGenuchten;
-        mySoil->horizon[i].waterConductivity = soilClass[idTexture].waterConductivity;
+        mySoil->horizon[i].vanGenuchten = WBSettings->texturalClassList[idTexture].vanGenuchten;
+        mySoil->horizon[i].waterConductivity = WBSettings->texturalClassList[idTexture].waterConductivity;
 
         //organic matter
         getValue(query.value("organic_matter"), &organicMatter);

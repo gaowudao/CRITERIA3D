@@ -35,7 +35,6 @@
     class Project {
     private:
 
-
     protected:
         QString path;
 

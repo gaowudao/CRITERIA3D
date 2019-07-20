@@ -17,7 +17,7 @@ INCLUDEPATH +=  ../../lib/crit3dDate ../../lib/mathFunctions ../../lib/gis ../..
                 ../../lib/interpolation ../../lib/solarRadiation ../../lib/soil  \
                 ../../lib/soilFluxes3D/header ../../lib/crop ../../lib/grapevine \
                 ../../lib/utilities ../../lib/dbMeteoPoints ../../lib/dbMeteoGrid \
-                ../../mapGraphics \
+                ../../lib/soilWidget ../../mapGraphics \
                 ../PRAGA/shared ../CRITERIA3D/shared
 
 CONFIG += debug_and_release
@@ -35,6 +35,7 @@ win32:{
 
 CONFIG(debug, debug|release) {
 
+    LIBS += -L../../lib/soilWidget/debug -lsoilWidget
     LIBS += -L../../lib/soil/debug -lsoil
     LIBS += -L../../lib/soilFluxes3D/debug -lsoilFluxes3D
     LIBS += -L../../lib/grapevine/debug -lgrapevine
@@ -49,6 +50,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../lib/mathFunctions/debug -lmathFunctions
 } else {
 
+    LIBS += -L../../lib/soilWidget/release -lsoilWidget
     LIBS += -L../../lib/soil/release -lsoil
     LIBS += -L../../lib/soilFluxes3D/release -lsoilFluxes3D 
     LIBS += -L../../lib/grapevine/release -lgrapevine

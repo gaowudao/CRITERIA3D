@@ -897,7 +897,7 @@ void MainWindow::on_actionOpen_soil_data_triggered()
     if (fileName == "") return;
 
     QString error;
-    if (! loadAllSoils(fileName, &(myProject.soilList), myProject.soilTextureClass, &error))
+    if (! loadAllSoils(fileName, &(myProject.WBSettings->soilList), myProject.WBSettings->texturalClassList, &error))
     {
         myProject.logError(error);
         return;

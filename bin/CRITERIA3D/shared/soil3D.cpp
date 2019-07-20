@@ -6,8 +6,8 @@ Crit3DSoilFluxesSettings::Crit3DSoilFluxesSettings()
     nrSoils = 0;
     nrLayers = 0;
     nrNodes = 0;
+    nrNodesPerLayer = 0;
     nrLateralLink = 8;
-    soilList = nullptr;
 }
 
 Crit3DSoilFluxesMaps::Crit3DSoilFluxesMaps()

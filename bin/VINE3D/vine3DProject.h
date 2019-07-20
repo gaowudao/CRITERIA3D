@@ -29,7 +29,7 @@
     #include "project.h"
 #endif
 
-#ifndef SOILFLUXES3DSETTINGS_H
+#ifndef SOIL3D_H
     #include "soil3D.h"
 #endif
 
@@ -63,8 +63,6 @@
 
         gis::Crit3DRasterGrid boundaryMap;
         gis::Crit3DRasterGrid modelCaseIndexMap;
-
-        soil::Crit3DTextureClass soilClass[13];
 
         TVineCultivar* cultivar;
         int nrCultivar;
@@ -105,7 +103,6 @@
         bool loadAggregatedMeteoVarCodes();
         bool loadFieldsProperties();
         bool loadDBPoints();
-        bool loadVanGenuchtenParameters();
         bool loadGrapevineParameters();
         bool loadTrainingSystems();
         bool loadSoils();
