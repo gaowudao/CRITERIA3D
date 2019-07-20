@@ -121,6 +121,7 @@ bool postInterpolation(meteoVariable myVar, gis::Crit3DRasterGrid* myGrid)
 }
 
 
+/*
 bool computeLeafWetnessMap(Vine3DProject* myProject)
 {
     float relHumidity, precipitation, leafWetness;
@@ -155,10 +156,9 @@ bool computeLeafWetnessMap(Vine3DProject* myProject)
 
     return gis::updateMinMaxRasterGrid(myMap);
 }
+*/
 
-
-
-
+/*
 bool computeET0Map(Vine3DProject* myProject)
 {
     float myET0;
@@ -199,6 +199,7 @@ bool computeET0Map(Vine3DProject* myProject)
 
     return gis::updateMinMaxRasterGrid(myEt0Map);
 }
+*/
 
 bool computeHumidityMap(const gis::Crit3DRasterGrid& myTemperatureMap,
                         const gis::Crit3DRasterGrid& myDewTemperatureMap,

@@ -79,7 +79,7 @@ gis::Crit3DRasterGrid* Crit3DMeteoMaps::getMapFromVar(meteoVariable myVar)
 }
 
 
-bool Crit3DMeteoMaps::computeET0Map(gis::Crit3DRasterGrid* DEM, Crit3DRadiationMaps *radMaps)
+bool Crit3DMeteoMaps::computeET0Map(gis::Crit3DRasterGrid* myDEM, Crit3DRadiationMaps *radMaps)
 {
     float globalRadiation, transmissivity, clearSkyTransmissivity;
     float temperature, relHumidity, windSpeed, height;
@@ -89,9 +89,8 @@ bool Crit3DMeteoMaps::computeET0Map(gis::Crit3DRasterGrid* DEM, Crit3DRadiationM
         {
             this->ET0Map->value[row][col] = this->ET0Map->header->flag;
 
-            height = DEM->value[row][col];
-
-            if (int(height) != int(DEM->header->flag))
+            height = myDEM->value[row][col];
+            if (int(height) != int(myDEM->header->flag))
             {
                 clearSkyTransmissivity = CLEAR_SKY_TRANSMISSIVITY_DEFAULT;
                 globalRadiation = radMaps->globalRadiationMap->value[row][col];
@@ -114,6 +113,41 @@ bool Crit3DMeteoMaps::computeET0Map(gis::Crit3DRasterGrid* DEM, Crit3DRadiationM
 
     return gis::updateMinMaxRasterGrid(this->ET0Map);
 }
+
+
+bool Crit3DMeteoMaps::computeLeafWetnessMap(gis::Crit3DRasterGrid* myDEM)
+{
+    float relHumidity, precipitation, leafWetness;
+
+    for (long row = 0; row < leafWetnessMap->header->nrRows; row++)
+        for (long col = 0; col < leafWetnessMap->header->nrCols; col++)
+        {
+            //initialize
+            leafWetnessMap->value[row][col] = leafWetnessMap->header->flag;
+
+            if (int(myDEM->value[row][col]) != int(myDEM->header->flag))
+            {
+                relHumidity = airRelHumidityMap->value[row][col];
+                precipitation = precipitationMap->value[row][col];
+
+                if (int(relHumidity) != int(airRelHumidityMap->header->flag)
+                        && int(precipitation) != int(precipitationMap->header->flag))
+                {
+                    leafWetness = 0;
+                    if (precipitation > 0 || relHumidity > 92)
+                    {
+                        leafWetness = 1;
+                    }
+                    //TODO: ora precedente prec > 2mm ?
+
+                    leafWetnessMap->value[row][col] = leafWetness;
+                }
+            }
+        }
+
+    return gis::updateMinMaxRasterGrid(leafWetnessMap);
+}
+
 
 
 bool Crit3DMeteoMaps::computeRelativeHumidityMap(const gis::Crit3DRasterGrid& dewTemperatureMap)
@@ -140,3 +174,6 @@ bool Crit3DMeteoMaps::computeRelativeHumidityMap(const gis::Crit3DRasterGrid& de
 
     return gis::updateMinMaxRasterGrid(airRelHumidityMap);
 }
+
+
+

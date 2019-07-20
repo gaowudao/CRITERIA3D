@@ -124,13 +124,15 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
         interpolateAndSaveHourlyMeteo(myProject, globalIrradiance, myCurrentTime, myOutputPath, saveOutput, myArea);
 
         // ET0
-        if (computeET0Map(myProject) && saveOutput)
+        myProject->meteoMaps->computeET0Map(&(myProject->DEM), myProject->radiationMaps);
+        if (saveOutput)
         {
             saveMeteoHourlyOutput(myProject, referenceEvapotranspiration, myOutputPath, myCurrentTime, myArea);
         }
 
         // Leaf Wetness
-        if (computeLeafWetnessMap(myProject) && saveOutput)
+        myProject->meteoMaps->computeLeafWetnessMap(&(myProject->DEM));
+        if (saveOutput)
         {
             saveMeteoHourlyOutput(myProject, leafWetness, myOutputPath, myCurrentTime, myArea);
         }
