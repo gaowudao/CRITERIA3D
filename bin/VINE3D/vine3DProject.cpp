@@ -21,10 +21,15 @@
 #include "parserXML.h"
 #include "atmosphere.h"
 #include "disease.h"
-#include "soil3D.h"
 #include "vine3DShell.h"
 #include "vine3DProject.h"
 #include "soilDbTools.h"
+
+
+Vine3DProject::Vine3DProject() : Project3D()
+{
+    initialize();
+}
 
 
 void Vine3DProject::initialize()
@@ -56,18 +61,8 @@ void Vine3DProject::initialize()
 
     statePlant.stateGrowth.initialize();
     statePlant.statePheno.initialize();
-
-    //water balance
-    wb3DSettings = new Crit3DSoilFluxesSettings();
-    WBMaps = new Crit3DSoilFluxesMaps();
-
 }
 
-
-Vine3DProject::Vine3DProject()
-{
-    initialize();
-}
 
 bool Vine3DProject::loadVine3DSettings()
 {
@@ -81,8 +76,8 @@ void Vine3DProject::deleteAllGrids()
     modelCaseIndexMap.clear();
     boundaryMap.clear();
 
-    for (int i=0; i<wb3DSettings->nrLayers; i++)
-        WBMaps->indexMap.at(size_t(i)).clear();
+    for (int i=0; i < nrLayers; i++)
+        indexMap.at(size_t(i)).clear();
 
     delete meteoMaps;
 }
@@ -146,7 +141,7 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
     double soilDepth = projectSettings->value("soil_depth").toDouble();
     projectSettings->endGroup();
 
-    wb3DSettings->soilDepth = soilDepth;
+    soilDepth = soilDepth;
 
     parametersFile = paramFile;
 
@@ -640,8 +635,8 @@ bool Vine3DProject::readFieldQuery(QSqlQuery myQuery, int* idField, Crit3DLandus
     //SOIL
     idSoil = myQuery.value("id_soil").toInt();
     i=0;
-    while (i < this->wb3DSettings->nrSoils && idSoil != wb3DSettings->soilList[i].id) i++;
-    if (i == this->wb3DSettings->nrSoils)
+    while (i < this->nrSoils && idSoil != soilList[i].id) i++;
+    if (i == this->nrSoils)
     {
         this->errorString = "soil " + QString::number(idSoil) + " not found" + myQuery.lastError().text();
         return false;
@@ -759,7 +754,7 @@ bool Vine3DProject::loadClimateParameters()
 bool Vine3DProject::loadVine3DProjectParameters()
 {
     if (!loadClimateParameters()) return false;
-    if (!loadVanGenuchtenParameters(&dbConnection, wb3DSettings->texturalClassList, &errorString)) return false;
+    if (!loadVanGenuchtenParameters(&dbConnection, texturalClassList, &errorString)) return false;
     if (!loadGrapevineParameters()) return false;
 
     return true;
@@ -874,8 +869,8 @@ soil::Crit3DSoil* Vine3DProject::loadHorizons(int idSoil, QString soil_code)
 
         //default values
         mySoil->horizon[i].texture.classUSDA = idTexture;
-        mySoil->horizon[i].vanGenuchten = wb3DSettings->texturalClassList[idTexture].vanGenuchten;
-        mySoil->horizon[i].waterConductivity = wb3DSettings->texturalClassList[idTexture].waterConductivity;
+        mySoil->horizon[i].vanGenuchten = texturalClassList[idTexture].vanGenuchten;
+        mySoil->horizon[i].waterConductivity = texturalClassList[idTexture].waterConductivity;
 
         //organic matter
         getValue(query.value("organic_matter"), &organicMatter);
@@ -949,11 +944,10 @@ bool Vine3DProject::loadSoils()
         return false;
     }
 
-    if (wb3DSettings->soilList != nullptr)
-        free(wb3DSettings->soilList);
+    if (soilList.size() > 0) soilList.clear();
 
-    wb3DSettings->nrSoils = query.size();
-    wb3DSettings->soilList = new soil::Crit3DSoil[unsigned(wb3DSettings->nrSoils)];
+    nrSoils = query.size();
+    soilList.resize(unsigned(nrSoils));
 
     int idSoil;
     QString soilCode;
@@ -975,15 +969,15 @@ bool Vine3DProject::loadSoils()
              return(false);
         }
 
-        wb3DSettings->soilList[index] = *mySoil;
+        soilList[index] = *mySoil;
 
-        maxSoilDepth = maxValue(maxSoilDepth, wb3DSettings->soilList[index].totalDepth);
+        maxSoilDepth = maxValue(maxSoilDepth, soilList[index].totalDepth);
         index++;
     }
 
-    this->wb3DSettings->soilDepth = minValue(this->wb3DSettings->soilDepth, maxSoilDepth);
+    this->soilDepth = minValue(this->soilDepth, maxSoilDepth);
 
-    logInfo("Soil depth = " + QString::number(this->wb3DSettings->soilDepth));
+    logInfo("Soil depth = " + QString::number(this->soilDepth));
 
     return(true);
 }
@@ -1823,8 +1817,8 @@ bool Vine3DProject::saveStateAndOutput(QDate myDate, QString myArea, bool saveDi
     saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential_m", "70cm", outputPath, myArea, 0.7, 0.7);
     saveWaterBalanceOutput(this, myDate, waterMatricPotential, "matricPotential_m", "130cm", outputPath, myArea, 1.3, 1.3);
 
-    if (!saveWaterBalanceOutput(this, myDate, degreeOfSaturation, "degreeOfSaturation", "soilDepth", outputPath, myArea, 0.0, double(wb3DSettings->soilDepth) - 0.01)) return false;
-    if (!saveWaterBalanceOutput(this, myDate, availableWaterContent, "waterContent_mm", "rootZone", outputPath, myArea, 0.0, double(wb3DSettings->soilDepth))) return false;
+    if (!saveWaterBalanceOutput(this, myDate, degreeOfSaturation, "degreeOfSaturation", "soilDepth", outputPath, myArea, 0.0, double(soilDepth) - 0.01)) return false;
+    if (!saveWaterBalanceOutput(this, myDate, availableWaterContent, "waterContent_mm", "rootZone", outputPath, myArea, 0.0, double(soilDepth))) return false;
     if (!saveWaterBalanceCumulatedOutput(this, myDate, waterInflow, "waterInflow_l", "", outputPath, myArea)) return false;
     if (!saveWaterBalanceCumulatedOutput(this, myDate, bottomDrainage, "bottomDrainage_mm", "", outputPath, myArea)) return false;
 
@@ -1863,8 +1857,8 @@ int Vine3DProject::getSoilIndex(long row, long col)
 soil::Crit3DHorizon* Vine3DProject::getSoilHorizon(long row, long col, int layer)
 {
     int soilIndex = getSoilIndex(row, col);
-    int horizonIndex = soil::getHorizonIndex(&(wb3DSettings->soilList[soilIndex]), layer);
-    return &(wb3DSettings->soilList[soilIndex].horizon[horizonIndex]);
+    int horizonIndex = soil::getHorizonIndex(&(soilList[soilIndex]), layer);
+    return &(soilList[soilIndex].horizon[horizonIndex]);
 }
 
 bool Vine3DProject::getFieldBookIndex(int firstIndex, QDate myDate, int fieldIndex, int* outputIndex)

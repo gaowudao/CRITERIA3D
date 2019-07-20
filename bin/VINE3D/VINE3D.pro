@@ -74,7 +74,6 @@ SOURCES += \
     ../PRAGA/shared/shell.cpp \
     ../PRAGA/shared/stationMarker.cpp \
     ../PRAGA/shared/dialogInterpolation.cpp \
-    ../CRITERIA3D/shared/soil3D.cpp \
     ../CRITERIA3D/shared/meteoMaps.cpp \
     ../PRAGA/shared/mapGraphicsRasterObject.cpp \
     ../PRAGA/shared/rubberBand.cpp \
@@ -89,7 +88,8 @@ SOURCES += \
     waterBalance.cpp \
     vine3DProject.cpp \
     mainWindow.cpp \
-    formPeriod.cpp
+    formPeriod.cpp \
+    ../CRITERIA3D/shared/project3D.cpp
 
 HEADERS  += \
     ../PRAGA/shared/interpolationCmd.h \
@@ -100,7 +100,6 @@ HEADERS  += \
     ../PRAGA/shared/shell.h \
     ../PRAGA/shared/stationMarker.h \
     ../PRAGA/shared/dialogInterpolation.h \
-    ../CRITERIA3D/shared/soil3D.h \
     ../CRITERIA3D/shared/meteoMaps.h \
     ../PRAGA/shared/mapGraphicsRasterObject.h \
     ../PRAGA/shared/rubberBand.h \
@@ -114,7 +113,8 @@ HEADERS  += \
     waterBalance.h \
     vine3DProject.h \
     mainWindow.h \
-    formPeriod.h
+    formPeriod.h \
+    ../CRITERIA3D/shared/project3D.h
 
 FORMS    += \
     ../PRAGA/shared/formInfo.ui \

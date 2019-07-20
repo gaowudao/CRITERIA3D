@@ -18,6 +18,7 @@
     public:
         Crit3DMeteoMaps* meteoMaps;
         gis::Crit3DRasterGrid soilMap;
+        std::vector <gis::Crit3DRasterGrid> indexMap;
 
         double minThickness;
         double maxThickness;

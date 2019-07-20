@@ -220,7 +220,7 @@ bool modelDailyCycle(bool isInitialState, Crit3DDate myDate, int nrHours,
                     getStatePlantToMap(row, col, myProject, &(myProject->statePlant));
 
                     myProfile = myProject->grapevine.getExtractedWater(&(myProject->modelCases[modelCaseIndex]));
-                    for (int layer=0; layer < myProject->wb3DSettings->nrLayers; layer++)
+                    for (int layer=0; layer < myProject->nrLayers; layer++)
                         myProject->outputPlantMaps->transpirationLayerMaps[layer]->value[row][col] = float(myProfile[layer]);
 
                     vineTranspiration = myProject->grapevine.getRealTranspirationGrapevine(&(myProject->modelCases[modelCaseIndex]));

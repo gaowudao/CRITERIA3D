@@ -52,19 +52,19 @@ void updateWaterBalanceMaps(Vine3DProject* myProject)
 
     for (row = 0; row < myProject->outputWaterBalanceMaps->bottomDrainageMap->header->nrRows; row++)
         for (col = 0; col < myProject->outputWaterBalanceMaps->bottomDrainageMap->header->nrCols; col++)
-            if (int(myProject->WBMaps->indexMap.at(0).value[row][col]) != int(myProject->WBMaps->indexMap.at(0).header->flag))
+            if (int(myProject->indexMap.at(0).value[row][col]) != int(myProject->indexMap.at(0).header->flag))
             {
                 layer = 1;
                 do
                 {
-                    nodeIndex = long(myProject->WBMaps->indexMap.at(size_t(layer)).value[row][col]);
+                    nodeIndex = long(myProject->indexMap.at(size_t(layer)).value[row][col]);
                     flow = soilFluxes3D::getSumLateralWaterFlowIn(nodeIndex);
                     myProject->outputWaterBalanceMaps->waterInflowMap->value[row][col] += float(flow * 1000); //liters
 
                     layer++;
-                } while (layer < myProject->wb3DSettings->nrLayers && isWithinSoil(myProject, row, col, myProject->wb3DSettings->layerDepth.at(size_t(layer))));
+                } while (layer < myProject->nrLayers && isWithinSoil(myProject, row, col, myProject->layerDepth.at(size_t(layer))));
 
-                nodeIndex = long(myProject->WBMaps->indexMap.at(size_t(--layer)).value[row][col]);
+                nodeIndex = long(myProject->indexMap.at(size_t(--layer)).value[row][col]);
 
                 flow = soilFluxes3D::getBoundaryWaterFlow(nodeIndex); //m3
                 flow_mm = flow * 1000 / area;
@@ -113,11 +113,11 @@ bool setCrit3DSoils(Vine3DProject* myProject)
     QString myError;
     int myResult;
 
-    for (int soilIndex = 0; soilIndex < myProject->wb3DSettings->nrSoils; soilIndex++)
+    for (int soilIndex = 0; soilIndex < myProject->nrSoils; soilIndex++)
     {
-        for (int horizIndex = 0; horizIndex < myProject->wb3DSettings->soilList[soilIndex].nrHorizons; horizIndex++)
+        for (int horizIndex = 0; horizIndex < myProject->soilList[soilIndex].nrHorizons; horizIndex++)
         {
-            myHorizon = &(myProject->wb3DSettings->soilList[soilIndex].horizon[horizIndex]);
+            myHorizon = &(myProject->soilList[soilIndex].horizon[horizIndex]);
             if ((myHorizon->texture.classUSDA > 0) && (myHorizon->texture.classUSDA <= 12))
             {
                 myResult = soilFluxes3D::setSoilProperties(soilIndex, horizIndex,
@@ -135,7 +135,7 @@ bool setCrit3DSoils(Vine3DProject* myProject)
                  if (isCrit3dError(myResult, &myError))
                  {
                      myProject->errorString = "setCrit3DSoils: " + myError
-                         + " in soil nr: " + QString::number(myProject->wb3DSettings->soilList[soilIndex].id)
+                         + " in soil nr: " + QString::number(myProject->soilList[soilIndex].id)
                          + " horizon nr: " + QString::number(horizIndex);
                      return(false);
                  }
@@ -188,25 +188,25 @@ int computeNrLayers(float totalDepth, float minThickness, float maxThickness, fl
 // set thickness and depth (center) of layers [m]
 bool setLayersDepth(Vine3DProject* myProject)
 {
-    int lastLayer = myProject->wb3DSettings->nrLayers-1;
-    myProject->wb3DSettings->layerDepth.resize(size_t(myProject->wb3DSettings->nrLayers));
-    myProject->wb3DSettings->layerThickness.resize(size_t(myProject->wb3DSettings->nrLayers));
+    int lastLayer = myProject->nrLayers-1;
+    myProject->layerDepth.resize(size_t(myProject->nrLayers));
+    myProject->layerThickness.resize(size_t(myProject->nrLayers));
 
-    myProject->wb3DSettings->layerDepth[0] = 0.0;
-    myProject->wb3DSettings->layerThickness[0] = 0.0;
-    myProject->wb3DSettings->layerThickness[1] = myProject->wb3DSettings->minThickness;
-    myProject->wb3DSettings->layerDepth[1] = myProject->wb3DSettings->minThickness * 0.5;
-    for (int i = 2; i < myProject->wb3DSettings->nrLayers; i++)
+    myProject->layerDepth[0] = 0.0;
+    myProject->layerThickness[0] = 0.0;
+    myProject->layerThickness[1] = myProject->minThickness;
+    myProject->layerDepth[1] = myProject->minThickness * 0.5;
+    for (int i = 2; i < myProject->nrLayers; i++)
     {
         if (i == lastLayer)
-            myProject->wb3DSettings->layerThickness[size_t(i)] = myProject->wb3DSettings->soilDepth - (myProject->wb3DSettings->layerDepth[size_t(i-1)]
-                    + myProject->wb3DSettings->layerThickness[size_t(i-1)] / 2.0);
+            myProject->layerThickness[size_t(i)] = myProject->soilDepth - (myProject->layerDepth[size_t(i-1)]
+                    + myProject->layerThickness[size_t(i-1)] / 2.0);
         else
-            myProject->wb3DSettings->layerThickness[size_t(i)] = minValue(myProject->wb3DSettings->maxThickness,
-                                                                        myProject->wb3DSettings->layerThickness[size_t(i-1)] * myProject->wb3DSettings->thickFactor);
+            myProject->layerThickness[size_t(i)] = minValue(myProject->maxThickness,
+                                                                        myProject->layerThickness[size_t(i-1)] * myProject->thickFactor);
 
-        myProject->wb3DSettings->layerDepth[size_t(i)] = myProject->wb3DSettings->layerDepth[size_t(i-1)] +
-                (myProject->wb3DSettings->layerThickness[size_t(i-1)] + myProject->wb3DSettings->layerThickness[size_t(i)]) * 0.5;
+        myProject->layerDepth[size_t(i)] = myProject->layerDepth[size_t(i-1)] +
+                (myProject->layerThickness[size_t(i-1)] + myProject->layerThickness[size_t(i)]) * 0.5;
     }
     return(true);
 }
@@ -221,8 +221,8 @@ bool isWithinSoil(Vine3DProject* myProject, long row, long col, double depth)
 
     //read soil and last horizon
     soilIndex = myProject->modelCases[caseIndex].soilIndex;
-    nrHorizons = myProject->wb3DSettings->soilList[soilIndex].nrHorizons;
-    myHorizon = &(myProject->wb3DSettings->soilList[soilIndex].horizon[nrHorizons - 1]);
+    nrHorizons = myProject->soilList[soilIndex].nrHorizons;
+    myHorizon = &(myProject->soilList[soilIndex].horizon[nrHorizons - 1]);
 
     //check if we are within last horizon
     return (depth <= myHorizon->lowerDepth);
@@ -235,24 +235,24 @@ bool setIndexMap(Vine3DProject* myProject)
 
     int i, row, col;
 
-    myProject->WBMaps->indexMap.resize(size_t(myProject->wb3DSettings->nrLayers));
+    myProject->indexMap.resize(size_t(myProject->nrLayers));
 
-    for (i=0; i < myProject->wb3DSettings->nrLayers; i++)
+    for (i=0; i < myProject->nrLayers; i++)
     {
-        myProject->WBMaps->indexMap.at(size_t(i)).initializeGrid(myProject->DEM);
-        for (row = 0; row < myProject->WBMaps->indexMap.at(size_t(i)).header->nrRows; row++)
-            for (col = 0; col < myProject->WBMaps->indexMap.at(size_t(i)).header->nrCols; col++)
+        myProject->indexMap.at(size_t(i)).initializeGrid(myProject->DEM);
+        for (row = 0; row < myProject->indexMap.at(size_t(i)).header->nrRows; row++)
+            for (col = 0; col < myProject->indexMap.at(size_t(i)).header->nrCols; col++)
                 if (int(myProject->DEM.value[row][col]) != int(myProject->DEM.header->flag))
                 {
-                    if (isWithinSoil(myProject, row, col, myProject->wb3DSettings->layerDepth.at(size_t(i))))
+                    if (isWithinSoil(myProject, row, col, myProject->layerDepth.at(size_t(i))))
                     {
-                        myProject->WBMaps->indexMap.at(size_t(i)).value[row][col] = index;
+                        myProject->indexMap.at(size_t(i)).value[row][col] = index;
                         index++;
                     }
                 }
     }
 
-    myProject->wb3DSettings->nrNodes = index;
+    myProject->nrNodes = index;
     return(index > 0);
 }
 
@@ -278,19 +278,19 @@ bool setCrit3DTopography(Vine3DProject* myProject)
     int myResult;
     QString myError;
 
-    for (size_t layer = 0; layer < size_t(myProject->wb3DSettings->nrLayers); layer++)
-        for (int row = 0; row < myProject->WBMaps->indexMap.at(layer).header->nrRows; row++)
-            for (int col = 0; col < myProject->WBMaps->indexMap.at(layer).header->nrCols; col++)
+    for (size_t layer = 0; layer < size_t(myProject->nrLayers); layer++)
+        for (int row = 0; row < myProject->indexMap.at(layer).header->nrRows; row++)
+            for (int col = 0; col < myProject->indexMap.at(layer).header->nrCols; col++)
             {
-                index = long(myProject->WBMaps->indexMap.at(layer).value[row][col]);
+                index = long(myProject->indexMap.at(layer).value[row][col]);
 
-                if (index != long(myProject->WBMaps->indexMap.at(layer).header->flag))
+                if (index != long(myProject->indexMap.at(layer).header->flag))
                 {
                     gis::getUtmXYFromRowCol(myProject->DEM, row, col, &x, &y);
                     area = myProject->DEM.header->cellSize * myProject->DEM.header->cellSize;
                     slope = myProject->radiationMaps->slopeMap->value[row][col] / 100;
-                    z = myProject->DEM.value[row][col] - float(myProject->wb3DSettings->layerDepth[layer]);
-                    volume = area * myProject->wb3DSettings->layerThickness[layer];
+                    z = myProject->DEM.value[row][col] - float(myProject->layerDepth[layer]);
+                    volume = area * myProject->layerThickness[layer];
 
                     //surface
                     if (layer == 0)
@@ -305,10 +305,10 @@ bool setCrit3DTopography(Vine3DProject* myProject)
                     //sub-surface
                     else
                     {
-                        lateralArea = float(myProject->DEM.header->cellSize * myProject->wb3DSettings->layerThickness[layer]);
+                        lateralArea = float(myProject->DEM.header->cellSize * myProject->layerThickness[layer]);
 
                         //last project layer or last soil layer
-                        if (int(layer) == myProject->wb3DSettings->nrLayers - 1 || ! isWithinSoil(myProject, row, col, myProject->wb3DSettings->layerDepth.at(size_t(layer+1))))
+                        if (int(layer) == myProject->nrLayers - 1 || ! isWithinSoil(myProject, row, col, myProject->layerDepth.at(size_t(layer+1))))
                             myResult = soilFluxes3D::setNode(index, float(x), float(y), z, volume, false, true, BOUNDARY_FREEDRAINAGE, 0.0);
                         else
                         {
@@ -329,9 +329,9 @@ bool setCrit3DTopography(Vine3DProject* myProject)
                     //up link
                     if (layer > 0)
                     {
-                        linkIndex = long(myProject->WBMaps->indexMap.at(layer - 1).value[row][col]);
+                        linkIndex = long(myProject->indexMap.at(layer - 1).value[row][col]);
 
-                        if (linkIndex != long(myProject->WBMaps->indexMap.at(layer - 1).header->flag))
+                        if (linkIndex != long(myProject->indexMap.at(layer - 1).header->flag))
                         {
                             myResult = soilFluxes3D::setNodeLink(index, linkIndex, UP, float(area));
                             if (isCrit3dError(myResult, &myError))
@@ -343,11 +343,11 @@ bool setCrit3DTopography(Vine3DProject* myProject)
                     }
 
                     //down link
-                    if (int(layer) < (myProject->wb3DSettings->nrLayers - 1) && isWithinSoil(myProject, row, col, myProject->wb3DSettings->layerDepth.at(size_t(layer + 1))))
+                    if (int(layer) < (myProject->nrLayers - 1) && isWithinSoil(myProject, row, col, myProject->layerDepth.at(size_t(layer + 1))))
                     {
-                        linkIndex = long(myProject->WBMaps->indexMap.at(layer + 1).value[row][col]);
+                        linkIndex = long(myProject->indexMap.at(layer + 1).value[row][col]);
 
-                        if (linkIndex != long(myProject->WBMaps->indexMap.at(layer + 1).header->flag))
+                        if (linkIndex != long(myProject->indexMap.at(layer + 1).header->flag))
                         {
                             myResult = soilFluxes3D::setNodeLink(index, linkIndex, DOWN, float(area));
 
@@ -363,10 +363,10 @@ bool setCrit3DTopography(Vine3DProject* myProject)
                     for (int i=-1; i <= 1; i++)
                         for (int j=-1; j <= 1; j++)
                             if ((i != 0)||(j != 0))
-                                if (! gis::isOutOfGridRowCol(row+i, col+j, myProject->WBMaps->indexMap.at(layer)))
+                                if (! gis::isOutOfGridRowCol(row+i, col+j, myProject->indexMap.at(layer)))
                                 {
-                                    linkIndex = long(myProject->WBMaps->indexMap.at(layer).value[row+i][col+j]);
-                                    if (linkIndex != long(myProject->WBMaps->indexMap.at(layer).header->flag))
+                                    linkIndex = long(myProject->indexMap.at(layer).value[row+i][col+j]);
+                                    if (linkIndex != long(myProject->indexMap.at(layer).header->flag))
                                     {
                                         myResult = soilFluxes3D::setNodeLink(index, linkIndex, LATERAL, float(lateralArea / 2));
                                         if (isCrit3dError(myResult, &myError))
@@ -390,12 +390,12 @@ bool setCrit3DNodeSoil(Vine3DProject* myProject)
     int myResult;
     QString myError;
 
-    for (int layer = 0; layer < myProject->wb3DSettings->nrLayers; layer ++)
-        for (int row = 0; row < myProject->WBMaps->indexMap.at(layer).header->nrRows; row++)
-            for (int col = 0; col < myProject->WBMaps->indexMap.at(layer).header->nrCols; col++)
+    for (int layer = 0; layer < myProject->nrLayers; layer ++)
+        for (int row = 0; row < myProject->indexMap.at(layer).header->nrRows; row++)
+            for (int col = 0; col < myProject->indexMap.at(layer).header->nrCols; col++)
             {
-                index = myProject->WBMaps->indexMap.at(layer).value[row][col];
-                if (index != myProject->WBMaps->indexMap.at(layer).header->flag)
+                index = myProject->indexMap.at(layer).value[row][col];
+                if (index != myProject->indexMap.at(layer).header->flag)
                 {
                     soilIndex = myProject->getSoilIndex(row, col);
 
@@ -406,11 +406,11 @@ bool setCrit3DNodeSoil(Vine3DProject* myProject)
                     //sub-surface
                     else
                     {
-                        horizonIndex = soil::getHorizonIndex(&(myProject->wb3DSettings->soilList[soilIndex]), myProject->wb3DSettings->layerDepth[layer]);
+                        horizonIndex = soil::getHorizonIndex(&(myProject->soilList[soilIndex]), myProject->layerDepth[layer]);
                         if (horizonIndex == NODATA)
                         {
                             myProject->errorString = "function setCrit3DNodeSoil: \nno horizon definition in soil "
-                                    + QString::number(myProject->wb3DSettings->soilList[soilIndex].id) + " depth: " + QString::number(myProject->wb3DSettings->layerDepth[layer])
+                                    + QString::number(myProject->soilList[soilIndex].id) + " depth: " + QString::number(myProject->layerDepth[layer])
                                     +"\nCheck soil totalDepth in .xml file.";
                             return(false);
                         }
@@ -450,12 +450,12 @@ bool initializeSoilMoisture(Vine3DProject* myProject, int month)
 
     myProject->logInfo("Initialize soil moisture");
 
-    for (int layer = 0; layer < myProject->wb3DSettings->nrLayers; layer++)
-        for (int row = 0; row < myProject->WBMaps->indexMap.at(size_t(layer)).header->nrRows; row++)
-            for (int col = 0; col < myProject->WBMaps->indexMap.at(size_t(layer)).header->nrCols; col++)
+    for (int layer = 0; layer < myProject->nrLayers; layer++)
+        for (int row = 0; row < myProject->indexMap.at(size_t(layer)).header->nrRows; row++)
+            for (int col = 0; col < myProject->indexMap.at(size_t(layer)).header->nrCols; col++)
             {
-                index = long(myProject->WBMaps->indexMap.at(size_t(layer)).value[row][col]);
-                if (index != long(myProject->WBMaps->indexMap.at(size_t(layer)).header->flag))
+                index = long(myProject->indexMap.at(size_t(layer)).value[row][col]);
+                if (index != long(myProject->indexMap.at(size_t(layer)).header->flag))
                 {
                     //surface
                     if (layer == 0)
@@ -463,8 +463,8 @@ bool initializeSoilMoisture(Vine3DProject* myProject, int month)
                     else
                     {
                         soilIndex = myProject->getSoilIndex(row, col);
-                        horizonIndex = soil::getHorizonIndex(&(myProject->wb3DSettings->soilList[soilIndex]), myProject->wb3DSettings->layerDepth[size_t(layer)]);
-                        fieldCapacity = myProject->wb3DSettings->soilList[soilIndex].horizon[horizonIndex].fieldCapacity;
+                        horizonIndex = soil::getHorizonIndex(&(myProject->soilList[soilIndex]), myProject->layerDepth[size_t(layer)]);
+                        fieldCapacity = myProject->soilList[soilIndex].horizon[horizonIndex].fieldCapacity;
                         waterPotential = fieldCapacity - moistureIndex * (fieldCapacity-dry);
                         myResult = soilFluxes3D::setMatricPotential(index, waterPotential);
                     }
@@ -515,11 +515,11 @@ double evaporation(Vine3DProject* myProject, int row, int col)
 
     for (int layer=0; layer <= lastEvapLayer; layer++)
     {
-        nodeIndex = myProject->WBMaps->indexMap.at(layer).value[row][col];
+        nodeIndex = myProject->indexMap.at(layer).value[row][col];
 
         //[m]
         availableWater = getCriteria3DVar(availableWaterContent, nodeIndex);
-        if (layer > 0) availableWater *= myProject->wb3DSettings->layerThickness[layer];
+        if (layer > 0) availableWater *= myProject->layerThickness[layer];
         //->[mm]
         availableWater *= 1000.0;
 
@@ -531,8 +531,8 @@ double evaporation(Vine3DProject* myProject, int row, int col)
         }
         else
         {
-            depthCoeff = myProject->wb3DSettings->layerDepth[layer] / MAX_PROF_EVAPORATION;
-            thickCoeff = myProject->wb3DSettings->layerThickness[layer] / 0.04;
+            depthCoeff = myProject->layerDepth[layer] / MAX_PROF_EVAPORATION;
+            thickCoeff = myProject->layerThickness[layer] / 0.04;
             layerCoeff = exp(-EULER * depthCoeff) * thickCoeff;
         }
 
@@ -561,18 +561,18 @@ bool waterBalanceSinkSource(Vine3DProject* myProject, double* totalPrecipitation
     QString myError;
 
     //initialize
-    for (long i = 0; i < myProject->wb3DSettings->nrNodes; i++)
+    for (long i = 0; i < myProject->nrNodes; i++)
         myWaterSinkSource.at(size_t(i)) = 0.0;
 
     double area = myProject->DEM.header->cellSize * myProject->DEM.header->cellSize;
 
     //precipitation - irrigation
     *totalPrecipitation = 0.0;
-    for (long row = 0; row < myProject->WBMaps->indexMap.at(0).header->nrRows; row++)
-        for (long col = 0; col < myProject->WBMaps->indexMap.at(0).header->nrCols; col++)
+    for (long row = 0; row < myProject->indexMap.at(0).header->nrRows; row++)
+        for (long col = 0; col < myProject->indexMap.at(0).header->nrCols; col++)
         {
-            surfaceIndex = long(myProject->WBMaps->indexMap.at(0).value[row][col]);
-            if (surfaceIndex != long(myProject->WBMaps->indexMap.at(0).header->flag))
+            surfaceIndex = long(myProject->indexMap.at(0).value[row][col]);
+            if (surfaceIndex != long(myProject->indexMap.at(0).header->flag))
             {
                 totalWater = 0.0;
                 prec = double(myProject->meteoMaps->precipitationMap->value[row][col]);
@@ -592,11 +592,11 @@ bool waterBalanceSinkSource(Vine3DProject* myProject, double* totalPrecipitation
 
     //Evaporation
     *totalEvaporation = 0.0;
-    for (long row = 0; row < myProject->WBMaps->indexMap.at(0).header->nrRows; row++)
-        for (long col = 0; col < myProject->WBMaps->indexMap.at(0).header->nrCols; col++)
+    for (long row = 0; row < myProject->indexMap.at(0).header->nrRows; row++)
+        for (long col = 0; col < myProject->indexMap.at(0).header->nrCols; col++)
         {
-            surfaceIndex = long(myProject->WBMaps->indexMap.at(0).value[row][col]);
-            if (surfaceIndex != long(myProject->WBMaps->indexMap.at(0).header->flag))
+            surfaceIndex = long(myProject->indexMap.at(0).value[row][col]);
+            if (surfaceIndex != long(myProject->indexMap.at(0).header->flag))
             {
                 realEvap = evaporation(myProject, row, col);
 
@@ -607,12 +607,12 @@ bool waterBalanceSinkSource(Vine3DProject* myProject, double* totalPrecipitation
 
     //crop transpiration
     *totalTranspiration = 0.0;
-    for (layerIndex=1; layerIndex < myProject->wb3DSettings->nrLayers; layerIndex++)
-        for (long row = 0; row < myProject->WBMaps->indexMap.at(size_t(layerIndex)).header->nrRows; row++)
-            for (long col = 0; col < myProject->WBMaps->indexMap.at(size_t(layerIndex)).header->nrCols; col++)
+    for (layerIndex=1; layerIndex < myProject->nrLayers; layerIndex++)
+        for (long row = 0; row < myProject->indexMap.at(size_t(layerIndex)).header->nrRows; row++)
+            for (long col = 0; col < myProject->indexMap.at(size_t(layerIndex)).header->nrCols; col++)
             {
-                nodeIndex = long(myProject->WBMaps->indexMap.at(size_t(layerIndex)).value[row][col]);
-                if (nodeIndex != long(myProject->WBMaps->indexMap.at(size_t(layerIndex)).header->flag))
+                nodeIndex = long(myProject->indexMap.at(size_t(layerIndex)).value[row][col]);
+                if (nodeIndex != long(myProject->indexMap.at(size_t(layerIndex)).header->flag))
                 {
                     transp = double(myProject->outputPlantMaps->transpirationLayerMaps[layerIndex]->value[row][col]);
 
@@ -625,7 +625,7 @@ bool waterBalanceSinkSource(Vine3DProject* myProject, double* totalPrecipitation
                 }
             }
 
-    for (long i = 0; i < myProject->wb3DSettings->nrNodes; i++)
+    for (long i = 0; i < myProject->nrNodes; i++)
     {
         myResult = soilFluxes3D::setWaterSinkSource(i, myWaterSinkSource.at(size_t(i)));
         if (isCrit3dError(myResult, &myError))
@@ -641,36 +641,36 @@ bool waterBalanceSinkSource(Vine3DProject* myProject, double* totalPrecipitation
 
 double getSoilVar(Vine3DProject* myProject, int soilIndex, int layerIndex, soilVariable myVar)
 {
-    int horizonIndex = soil::getHorizonIndex(&(myProject->wb3DSettings->soilList[soilIndex]),
-                                          myProject->wb3DSettings->layerDepth[unsigned(layerIndex)]);
+    int horizonIndex = soil::getHorizonIndex(&(myProject->soilList[soilIndex]),
+                                          myProject->layerDepth[unsigned(layerIndex)]);
 
     if (int(horizonIndex) == int(NODATA)) return NODATA;
 
     if (myVar == soilWiltingPointPotential)
     {
         // [m]
-        return myProject->wb3DSettings->soilList[soilIndex].horizon[horizonIndex].wiltingPoint / GRAVITY;
+        return myProject->soilList[soilIndex].horizon[horizonIndex].wiltingPoint / GRAVITY;
     }
     else if (myVar == soilFieldCapacityPotential)
     {
         // [m]
-        return myProject->wb3DSettings->soilList[soilIndex].horizon[horizonIndex].fieldCapacity / GRAVITY;
+        return myProject->soilList[soilIndex].horizon[horizonIndex].fieldCapacity / GRAVITY;
     }
     else if (myVar == soilWaterContentFC)
     {
         // [m^3 m^-3]
-        return myProject->wb3DSettings->soilList[soilIndex].horizon[horizonIndex].waterContentFC;
+        return myProject->soilList[soilIndex].horizon[horizonIndex].waterContentFC;
     }
     else if (myVar == soilSaturation)
     {
         // [m^3 m^-3]
-        return myProject->wb3DSettings->soilList[soilIndex].horizon[horizonIndex].vanGenuchten.thetaS;
+        return myProject->soilList[soilIndex].horizon[horizonIndex].vanGenuchten.thetaS;
     }
     else if (myVar == soilWaterContentWP)
     {
         double signPsiLeaf = - myProject->cultivar->parameterWangLeuning.psiLeaf;         // [kPa]
         // [m^3 m^-3]
-        return soil::thetaFromSignPsi(signPsiLeaf, &(myProject->wb3DSettings->soilList[soilIndex].horizon[horizonIndex]));
+        return soil::thetaFromSignPsi(signPsiLeaf, &(myProject->soilList[soilIndex].horizon[horizonIndex]));
     }
     else
     {
@@ -681,20 +681,20 @@ double getSoilVar(Vine3DProject* myProject, int soilIndex, int layerIndex, soilV
 
 double* getSoilVarProfile(Vine3DProject* myProject, int row, int col, soilVariable myVar)
 {
-    double* myProfile = static_cast<double*> (calloc(size_t(myProject->wb3DSettings->nrLayers), sizeof(double)));
+    double* myProfile = static_cast<double*> (calloc(size_t(myProject->nrLayers), sizeof(double)));
 
-    for (int layerIndex = 0; layerIndex < myProject->wb3DSettings->nrLayers; layerIndex++)
+    for (int layerIndex = 0; layerIndex < myProject->nrLayers; layerIndex++)
         myProfile[layerIndex] = NODATA;
 
     int soilIndex = myProject->getSoilIndex(row, col);
 
     int nodeIndex;
 
-    for (int layerIndex = 0; layerIndex < myProject->wb3DSettings->nrLayers; layerIndex++)
+    for (int layerIndex = 0; layerIndex < myProject->nrLayers; layerIndex++)
     {
-        nodeIndex = int(myProject->WBMaps->indexMap.at(size_t(layerIndex)).value[row][col]);
+        nodeIndex = int(myProject->indexMap.at(size_t(layerIndex)).value[row][col]);
 
-        if (nodeIndex != int(myProject->WBMaps->indexMap.at(size_t(layerIndex)).header->flag))
+        if (nodeIndex != int(myProject->indexMap.at(size_t(layerIndex)).header->flag))
         {
             if (myVar == soilWiltingPointPotential || myVar == soilFieldCapacityPotential
                 || myVar == soilSaturation  || myVar == soilWaterContentFC || myVar == soilWaterContentWP)
@@ -710,18 +710,18 @@ double* getSoilVarProfile(Vine3DProject* myProject, int row, int col, soilVariab
 
 double* getCriteria3DVarProfile(Vine3DProject* myProject, int row, int col, criteria3DVariable myVar)
 {
-    double* myProfile = (double *) calloc(myProject->wb3DSettings->nrLayers, sizeof(double));
+    double* myProfile = (double *) calloc(myProject->nrLayers, sizeof(double));
 
-    for (int layerIndex = 0; layerIndex < myProject->wb3DSettings->nrLayers; layerIndex++)
+    for (int layerIndex = 0; layerIndex < myProject->nrLayers; layerIndex++)
         myProfile[layerIndex] = NODATA;
 
     long nodeIndex, layerIndex;
 
-    for (layerIndex = 0; layerIndex < myProject->wb3DSettings->nrLayers; layerIndex++)
+    for (layerIndex = 0; layerIndex < myProject->nrLayers; layerIndex++)
     {
-        nodeIndex = myProject->WBMaps->indexMap.at(layerIndex).value[row][col];
+        nodeIndex = myProject->indexMap.at(layerIndex).value[row][col];
 
-        if (nodeIndex != myProject->WBMaps->indexMap.at(layerIndex).header->flag)
+        if (nodeIndex != myProject->indexMap.at(layerIndex).header->flag)
         {
              myProfile[layerIndex] = getCriteria3DVar(myVar, nodeIndex);
         }
@@ -802,11 +802,11 @@ bool setCriteria3DVarMap(int myLayerIndex, Vine3DProject* myProject, criteria3DV
 {
     long nodeIndex;
 
-    for (int row = 0; row < myProject->WBMaps->indexMap.at(myLayerIndex).header->nrRows; row++)
-        for (int col = 0; col < myProject->WBMaps->indexMap.at(myLayerIndex).header->nrCols; col++)
+    for (int row = 0; row < myProject->indexMap.at(myLayerIndex).header->nrRows; row++)
+        for (int col = 0; col < myProject->indexMap.at(myLayerIndex).header->nrCols; col++)
         {
-            nodeIndex = myProject->WBMaps->indexMap.at(myLayerIndex).value[row][col];
-            if (nodeIndex != myProject->WBMaps->indexMap.at(myLayerIndex).header->flag)
+            nodeIndex = myProject->indexMap.at(myLayerIndex).value[row][col];
+            if (nodeIndex != myProject->indexMap.at(myLayerIndex).header->flag)
             {
                 if (! setCriteria3DVar(myVar, nodeIndex, myCriteria3DMap->value[row][col])) return false;
             }
@@ -821,13 +821,13 @@ bool getCriteria3DVarMap(Vine3DProject* myProject, criteria3DVariable myVar,
     long nodeIndex;
     double myValue;
 
-    criteria3DMap->initializeGrid(myProject->WBMaps->indexMap.at(layerIndex));
+    criteria3DMap->initializeGrid(myProject->indexMap.at(layerIndex));
 
-    for (int row = 0; row < myProject->WBMaps->indexMap.at(layerIndex).header->nrRows; row++)
-        for (int col = 0; col < myProject->WBMaps->indexMap.at(layerIndex).header->nrCols; col++)
+    for (int row = 0; row < myProject->indexMap.at(layerIndex).header->nrRows; row++)
+        for (int col = 0; col < myProject->indexMap.at(layerIndex).header->nrCols; col++)
         {
-            nodeIndex = myProject->WBMaps->indexMap.at(layerIndex).value[row][col];
-            if (nodeIndex != myProject->WBMaps->indexMap.at(layerIndex).header->flag)
+            nodeIndex = myProject->indexMap.at(layerIndex).value[row][col];
+            if (nodeIndex != myProject->indexMap.at(layerIndex).header->flag)
             {
                 myValue = getCriteria3DVar(myVar, nodeIndex);
 
@@ -853,16 +853,16 @@ bool getSoilSurfaceMoisture(Vine3DProject* myProject, gis::Crit3DRasterGrid* out
 
     lastLayer = getLayerIndex(myProject, lowerDepth);
 
-    for (int row = 0; row < myProject->WBMaps->indexMap.at(0).header->nrRows; row++)
-        for (int col = 0; col < myProject->WBMaps->indexMap.at(0).header->nrCols; col++)
+    for (int row = 0; row < myProject->indexMap.at(0).header->nrRows; row++)
+        for (int col = 0; col < myProject->indexMap.at(0).header->nrCols; col++)
         {
             outputMap->value[row][col] = outputMap->header->flag;
 
-            if (int(myProject->WBMaps->indexMap.at(0).value[row][col]) != int(myProject->WBMaps->indexMap.at(0).header->flag))
+            if (int(myProject->indexMap.at(0).value[row][col]) != int(myProject->indexMap.at(0).header->flag))
             {
                 for (layer = 0; layer <= lastLayer; layer++)
                 {
-                    nodeIndex = long(myProject->WBMaps->indexMap.at(size_t(layer)).value[row][col]);
+                    nodeIndex = long(myProject->indexMap.at(size_t(layer)).value[row][col]);
 
                     if (layer == 0)
                     {
@@ -872,14 +872,14 @@ bool getSoilSurfaceMoisture(Vine3DProject* myProject, gis::Crit3DRasterGrid* out
                     }
                     else
                     {
-                        if (int(myProject->WBMaps->indexMap.at(size_t(layer)).value[row][col]) != int(myProject->WBMaps->indexMap.at(size_t(layer)).header->flag))
+                        if (int(myProject->indexMap.at(size_t(layer)).value[row][col]) != int(myProject->indexMap.at(size_t(layer)).header->flag))
                         {
                             waterContent = soilFluxes3D::getWaterContent(nodeIndex);              //[m^3 m^-3]
-                            sumWater += waterContent * myProject->wb3DSettings->layerThickness.at(size_t(layer));
+                            sumWater += waterContent * myProject->layerThickness.at(size_t(layer));
                             wiltingPoint = getSoilVar(myProject, 0, layer, soilWaterContentWP); //[m^3 m^-3]
-                            minWater += wiltingPoint * myProject->wb3DSettings->layerThickness.at(size_t(layer));        //[m]
+                            minWater += wiltingPoint * myProject->layerThickness.at(size_t(layer));        //[m]
                             saturation = getSoilVar(myProject, 0, layer, soilSaturation);       //[m^3 m^-3]
-                            maxWater += saturation * myProject->wb3DSettings->layerThickness.at(size_t(layer));
+                            maxWater += saturation * myProject->layerThickness.at(size_t(layer));
                         }
                     }
                 }
@@ -906,7 +906,7 @@ bool getRootZoneAWCmap(Vine3DProject* myProject, gis::Crit3DRasterGrid* outputMa
             //initialize
             outputMap->value[row][col] = outputMap->header->flag;
 
-            if (myProject->WBMaps->indexMap.at(0).value[row][col] != myProject->WBMaps->indexMap.at(0).header->flag)
+            if (myProject->indexMap.at(0).value[row][col] != myProject->indexMap.at(0).header->flag)
             {
                 sumAWC = 0.0;
                 soilIndex = myProject->getSoilIndex(row, col);
@@ -914,20 +914,20 @@ bool getRootZoneAWCmap(Vine3DProject* myProject, gis::Crit3DRasterGrid* outputMa
 
                 if (soilIndex != NODATA)
                 {
-                    for (int layer = 1; layer < myProject->wb3DSettings->nrLayers; layer++)
+                    for (int layer = 1; layer < myProject->nrLayers; layer++)
                     {
-                        nodeIndex = myProject->WBMaps->indexMap.at(layer).value[row][col];
+                        nodeIndex = myProject->indexMap.at(layer).value[row][col];
 
-                        if (nodeIndex != myProject->WBMaps->indexMap.at(layer).header->flag)
+                        if (nodeIndex != myProject->indexMap.at(layer).header->flag)
                         {
                             if (myProject->grapevine.getRootDensity(&(myProject->modelCases[modelCaseIndex]), layer) > 0.0)
                             {
                                 awc = soilFluxes3D::getAvailableWaterContent(nodeIndex);  //[m3 m-3]
                                 if (awc != NODATA)
                                 {
-                                    thickness = myProject->wb3DSettings->layerThickness[layer] * 1000.0;  //[mm]
-                                    horizonIndex = soil::getHorizonIndex(&(myProject->wb3DSettings->soilList[soilIndex]),
-                                                                         myProject->wb3DSettings->layerDepth[layer]);
+                                    thickness = myProject->layerThickness[layer] * 1000.0;  //[mm]
+                                    horizonIndex = soil::getHorizonIndex(&(myProject->soilList[soilIndex]),
+                                                                         myProject->layerDepth[layer]);
                                     sumAWC += (awc * thickness);         //[mm]
                                 }
                             }
@@ -945,8 +945,8 @@ bool getRootZoneAWCmap(Vine3DProject* myProject, gis::Crit3DRasterGrid* outputMa
 bool getCriteria3DIntegrationMap(Vine3DProject* myProject, criteria3DVariable myVar,
                        double upperDepth, double lowerDepth, gis::Crit3DRasterGrid* criteria3DMap)
 {
-    if (upperDepth > myProject->wb3DSettings->soilDepth) return false;
-    lowerDepth = minValue(lowerDepth, myProject->wb3DSettings->soilDepth);
+    if (upperDepth > myProject->soilDepth) return false;
+    lowerDepth = minValue(lowerDepth, myProject->soilDepth);
 
     if (upperDepth == lowerDepth)
     {
@@ -969,12 +969,12 @@ bool getCriteria3DIntegrationMap(Vine3DProject* myProject, criteria3DVariable my
     double thickCoeff, sumCoeff;
     int soilIndex;
 
-    for (int row = 0; row < myProject->WBMaps->indexMap.at(0).header->nrRows; row++)
-        for (int col = 0; col < myProject->WBMaps->indexMap.at(0).header->nrCols; col++)
+    for (int row = 0; row < myProject->indexMap.at(0).header->nrRows; row++)
+        for (int col = 0; col < myProject->indexMap.at(0).header->nrCols; col++)
         {
             criteria3DMap->value[row][col] = criteria3DMap->header->flag;
 
-            if (myProject->WBMaps->indexMap.at(0).value[row][col] != myProject->WBMaps->indexMap.at(0).header->flag)
+            if (myProject->indexMap.at(0).value[row][col] != myProject->indexMap.at(0).header->flag)
             {
                 sumValues = 0.0;
                 sumCoeff = 0.0;
@@ -985,8 +985,8 @@ bool getCriteria3DIntegrationMap(Vine3DProject* myProject, criteria3DVariable my
                 {
                     for (int i = firstIndex; i <= lastIndex; i++)
                     {
-                        nodeIndex = myProject->WBMaps->indexMap.at(i).value[row][col];
-                        if (nodeIndex != long(myProject->WBMaps->indexMap.at(size_t(i)).header->flag))
+                        nodeIndex = myProject->indexMap.at(i).value[row][col];
+                        if (nodeIndex != long(myProject->indexMap.at(size_t(i)).header->flag))
                         {
                             myValue = getCriteria3DVar(myVar, nodeIndex);
 
@@ -997,7 +997,7 @@ bool getCriteria3DIntegrationMap(Vine3DProject* myProject, criteria3DVariable my
                                 else if (i == lastIndex)
                                     thickCoeff = lastThickness;
                                 else
-                                    thickCoeff = myProject->wb3DSettings->layerThickness[i];
+                                    thickCoeff = myProject->layerThickness[i];
 
                                 sumValues += (myValue * thickCoeff);
                                 sumCoeff += thickCoeff;
@@ -1034,7 +1034,7 @@ bool saveWaterBalanceOutput(Vine3DProject* myProject, QDate myDate, criteria3DVa
                             double upperDepth, double lowerDepth)
 {
     gis::Crit3DRasterGrid* myMap = new gis::Crit3DRasterGrid();
-    myMap->initializeGrid(myProject->WBMaps->indexMap.at(0));
+    myMap->initializeGrid(myProject->indexMap.at(0));
 
     if (myVar == soilSurfaceMoisture)
     {
@@ -1093,7 +1093,7 @@ bool loadWaterBalanceState(Vine3DProject* myProject, QDate myDate, QString myAre
 
     QString myPrefix = getPrefixFromVar(myDate, myArea, myVar);
 
-    for (int layerIndex = 0; layerIndex < myProject->wb3DSettings->nrLayers; layerIndex++)
+    for (int layerIndex = 0; layerIndex < myProject->nrLayers; layerIndex++)
     {
         myMapName = statePath + myPrefix + QString::number(layerIndex);
         if (! gis::readEsriGrid(myMapName.toStdString(), &myMap, &myErrorString))
@@ -1113,13 +1113,13 @@ bool loadWaterBalanceState(Vine3DProject* myProject, QDate myDate, QString myAre
 //[m] upper depth of layer
 double getLayerTop(Vine3DProject* myProject, int i)
 {
-    return myProject->wb3DSettings->layerDepth[i] - myProject->wb3DSettings->layerThickness[i] / 2.0;
+    return myProject->layerDepth[i] - myProject->layerThickness[i] / 2.0;
 }
 
 //lower depth of layer [m]
 double getLayerBottom(Vine3DProject* myProject, int i)
 {
-    return myProject->wb3DSettings->layerDepth[i] + myProject->wb3DSettings->layerThickness[i] / 2.0;
+    return myProject->layerDepth[i] + myProject->layerThickness[i] / 2.0;
 }
 
 
@@ -1129,7 +1129,7 @@ int getLayerIndex(Vine3DProject* myProject, double depth)
 {
     int i= 0;
     while (depth > getLayerBottom(myProject, i))
-        if (++i == myProject->wb3DSettings->nrLayers)
+        if (++i == myProject->nrLayers)
         {
             myProject->logError("getSoilLayerIndex: wrong soil depth.");
             return INDEX_ERROR;
@@ -1143,11 +1143,11 @@ bool saveWaterBalanceState(Vine3DProject* myProject, QDate myDate, QString myAre
     std::string myErrorString;
     gis::Crit3DRasterGrid* myMap;
     myMap = new gis::Crit3DRasterGrid();
-    myMap->initializeGrid(myProject->WBMaps->indexMap.at(0));
+    myMap->initializeGrid(myProject->indexMap.at(0));
 
     QString myPrefix = getPrefixFromVar(myDate, myArea, myVar);
 
-    for (int layerIndex = 0; layerIndex < myProject->wb3DSettings->nrLayers; layerIndex++)
+    for (int layerIndex = 0; layerIndex < myProject->nrLayers; layerIndex++)
         if (getCriteria3DVarMap(myProject, myVar, layerIndex, myMap))
         {
             QString myOutputMapName = statePath + myPrefix + QString::number(layerIndex);
@@ -1212,28 +1212,28 @@ bool initializeWaterBalance(Vine3DProject* myProject)
 
     myProject->outputWaterBalanceMaps = new Crit3DWaterBalanceMaps(myProject->DEM);
 
-    myProject->wb3DSettings->minThickness = 0.02;      //[m]
-    myProject->wb3DSettings->maxThickness = 0.1;       //[m]
-    myProject->wb3DSettings->thickFactor = 1.5;
+    myProject->minThickness = 0.02;      //[m]
+    myProject->maxThickness = 0.1;       //[m]
+    myProject->thickFactor = 1.5;
 
-    myProject->wb3DSettings->nrLayers = computeNrLayers(myProject->wb3DSettings->soilDepth, myProject->wb3DSettings->minThickness, myProject->wb3DSettings->maxThickness, myProject->wb3DSettings->thickFactor);
+    myProject->nrLayers = computeNrLayers(myProject->soilDepth, myProject->minThickness, myProject->maxThickness, myProject->thickFactor);
     setLayersDepth(myProject);
 
-    myProject->logInfo("nr of layers: " + QString::number(myProject->wb3DSettings->nrLayers));
+    myProject->logInfo("nr of layers: " + QString::number(myProject->nrLayers));
 
     if (setIndexMap(myProject))
-        myProject->logInfo("nr of nodes: " + QString::number(myProject->wb3DSettings->nrNodes));
+        myProject->logInfo("nr of nodes: " + QString::number(myProject->nrNodes));
     else
     {
         myProject->logError("initializeWaterBalance: missing data in Digital Elevation Model");
         return(false);
     }
 
-    myWaterSinkSource.resize(size_t(myProject->wb3DSettings->nrNodes));
+    myWaterSinkSource.resize(size_t(myProject->nrNodes));
     setBoundary(myProject);
 
-    int myResult = soilFluxes3D::initialize(myProject->wb3DSettings->nrNodes, myProject->wb3DSettings->nrLayers,
-                                            myProject->wb3DSettings->nrLateralLink, true, false, false);
+    int myResult = soilFluxes3D::initialize(myProject->nrNodes, myProject->nrLayers,
+                                            myProject->nrLateralLink, true, false, false);
 
     if (isCrit3dError(myResult, &myError))
     {

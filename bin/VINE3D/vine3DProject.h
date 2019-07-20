@@ -1,37 +1,33 @@
 #ifndef VINE3DPROJECT_H
 #define VINE3DPROJECT_H
 
-#ifndef QSTRING_H
-    #include <QString>
-#endif
+    #ifndef QSTRING_H
+        #include <QString>
+    #endif
 
-#ifndef QSQLDATABASE_H
-    #include <QSqlDatabase>
-#endif
+    #ifndef QSQLDATABASE_H
+        #include <QSqlDatabase>
+    #endif
 
-#ifndef GRAPEVINE_H
-    #include "grapevine.h"
-#endif
+    #ifndef GRAPEVINE_H
+        #include "grapevine.h"
+    #endif
 
-#ifndef METEOMAPS_H
-    #include "meteoMaps.h"
-#endif
+    #ifndef METEOMAPS_H
+        #include "meteoMaps.h"
+    #endif
 
-#ifndef PLANT_H
-    #include "plant.h"
-#endif
+    #ifndef PLANT_H
+        #include "plant.h"
+    #endif
 
-#ifndef WATERBALANCE_H
-    #include "waterBalance.h"
-#endif
+    #ifndef WATERBALANCE_H
+        #include "waterBalance.h"
+    #endif
 
-#ifndef PROJECT_H
-    #include "project.h"
-#endif
-
-#ifndef SOIL3D_H
-    #include "soil3D.h"
-#endif
+    #ifndef PROJECT3D_H
+        #include "project3D.h"
+    #endif
 
     enum Tenvironment {gui, batch};
 
@@ -43,7 +39,7 @@
     };
 
 
-    class Vine3DProject : public Project
+    class Vine3DProject : public Project3D
     {
     private:
         Tenvironment environment;
@@ -57,9 +53,6 @@
         QString dailyOutputPath;
         QString demFileName;
         QString fieldMapName;
-
-        Crit3DSoilFluxesSettings* wb3DSettings;
-        Crit3DSoilFluxesMaps* WBMaps;
 
         gis::Crit3DRasterGrid boundaryMap;
         gis::Crit3DRasterGrid modelCaseIndexMap;
@@ -83,7 +76,6 @@
 
         Crit3DQuality qualityParameters;
 
-        Crit3DMeteoMaps* meteoMaps;
         Crit3DWaterBalanceMaps* outputWaterBalanceMaps;
         Crit3DStatePlantMaps* statePlantMaps;
         Crit3DOutputPlantMaps* outputPlantMaps;
