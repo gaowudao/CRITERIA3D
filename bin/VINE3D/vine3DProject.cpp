@@ -79,7 +79,6 @@ void Vine3DProject::deleteAllGrids()
     DTM.clear();
     modelCaseIndexMap.clear();
     boundaryMap.clear();
-    interpolatedDtm.clear();
 
     for (int i=0; i<WBSettings->nrLayers; i++)
         WBMaps->indexMap.at(size_t(i)).clear();

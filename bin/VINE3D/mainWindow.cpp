@@ -302,7 +302,7 @@ void MainWindow::on_actionOpen_project_triggered()
         if (myProject.loadProject(myFileName))
         {
 
-            setDefaultDTMScale(myProject.DTM.colorScale);
+            setDefaultDEMScale(myProject.DTM.colorScale);
 
             this->setCurrentRaster(&(myProject.DTM));
             ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
@@ -613,7 +613,7 @@ void MainWindow::on_rasterRestoreButton_clicked()
         return;
     }
 
-    setDefaultDTMScale(myProject.DTM.colorScale);
+    setDefaultDEMScale(myProject.DTM.colorScale);
     this->setCurrentRaster(&(myProject.DTM));
     ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
 }
@@ -631,7 +631,7 @@ void MainWindow::on_dateEdit_dateChanged(const QDate &date)
     this->on_dateChanged();
 }
 
-void MainWindow::on_actionInterpolation_to_DTM_triggered()
+void MainWindow::on_actionInterpolation_to_DEM_triggered()
 {
     FormInfo myInfo;
     myInfo.start("Interpolation...", 0);
@@ -661,7 +661,7 @@ void MainWindow::on_actionParameters_triggered()
     mySettingsDialog->close();
 }
 
-void MainWindow::on_actionShow_DTM_triggered()
+void MainWindow::on_actionShow_DEM_triggered()
 {
     if (myProject.DTM.isLoaded)
     {
@@ -671,7 +671,7 @@ void MainWindow::on_actionShow_DTM_triggered()
     }
     else
     {
-        myProject.logError("Load DEM");
+        myProject.logInfoGUI("Load a Digital Elevation Model.");
         return;
     }
 }

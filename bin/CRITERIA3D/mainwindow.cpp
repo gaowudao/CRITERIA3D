@@ -800,7 +800,7 @@ void MainWindow::on_rasterRestoreButton_clicked()
         return;
     }
 
-    setDefaultDTMScale(myProject.DTM.colorScale);
+    setDefaultDEMScale(myProject.DTM.colorScale);
     this->setCurrentRaster(&(myProject.DTM));
     ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
 }
@@ -840,7 +840,7 @@ void MainWindow::on_actionClose_meteo_grid_triggered()
 }
 
 
-void MainWindow::on_actionInterpolation_to_DTM_triggered()
+void MainWindow::on_actionInterpolation_to_DEM_triggered()
 {
     interpolateDemGUI();
 }
@@ -970,7 +970,7 @@ void MainWindow::on_actionView_3D_triggered()
 }
 
 
-void MainWindow::on_actionView_DTM_triggered()
+void MainWindow::on_actionView_DEM_triggered()
 {
     if (myProject.DTM.isLoaded)
     {

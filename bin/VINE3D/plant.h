@@ -54,7 +54,7 @@
         gis::Crit3DRasterGrid* powderySporulatingColoniesMap;
 
         Crit3DStatePlantMaps();
-        Crit3DStatePlantMaps(const gis::Crit3DRasterGrid& myDtm);
+        Crit3DStatePlantMaps(const gis::Crit3DRasterGrid& myDEM);
         void initialize();
 
         gis::Crit3DRasterGrid* getMapFromVar(plantVariable myVar);
@@ -83,11 +83,11 @@
         gis::Crit3DRasterGrid* downyOilSpotMap;
 
         Crit3DOutputPlantMaps();
-        Crit3DOutputPlantMaps(const gis::Crit3DRasterGrid &myDtm);
-        Crit3DOutputPlantMaps(const gis::Crit3DRasterGrid &myDtm, int nrSoilLayers);
+        Crit3DOutputPlantMaps(const gis::Crit3DRasterGrid &myDEM);
+        Crit3DOutputPlantMaps(const gis::Crit3DRasterGrid &myDEM, int nrSoilLayers);
 
         void initialize();
-        void initializeWithDtm(const gis::Crit3DRasterGrid &dtm);
+        void initializeWithDEM(const gis::Crit3DRasterGrid &myDEM);
         gis::Crit3DRasterGrid* getMapFromVar(plantVariable myVar);
     };
 

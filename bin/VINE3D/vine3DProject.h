@@ -61,8 +61,6 @@
         Crit3DSoilFluxesSettings* WBSettings;
         Crit3DSoilFluxesMaps* WBMaps;
 
-        gis::Crit3DRasterGrid interpolatedDtm;
-
         gis::Crit3DRasterGrid boundaryMap;
         gis::Crit3DRasterGrid modelCaseIndexMap;
 

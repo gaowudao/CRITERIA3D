@@ -2593,7 +2593,7 @@
      <string>Data spatialization</string>
     </property>
     <addaction name="actionInterpolationSettings"/>
-    <addaction name="actionInterpolation_to_DTM"/>
+    <addaction name="actionInterpolation_to_DEM"/>
     <addaction name="separator"/>
     <addaction name="actionCompute_solar_radiation"/>
     <addaction name="actionCompute_AllMeteoMaps"/>
@@ -2641,7 +2641,7 @@
      <property name="title">
       <string>Digital Elevation Model</string>
      </property>
-     <addaction name="actionView_DTM"/>
+     <addaction name="actionView_DEM"/>
      <addaction name="separator"/>
      <addaction name="actionView_Slope"/>
      <addaction name="actionView_Aspect"/>
@@ -2755,7 +2755,7 @@
     <string>Close meteo grid...</string>
    </property>
   </action>
-  <action name="actionInterpolation_to_DTM">
+  <action name="actionInterpolation_to_DEM">
    <property name="text">
     <string>Interpolation to DEM</string>
    </property>
@@ -2812,7 +2812,7 @@
     <string>Soil map</string>
    </property>
   </action>
-  <action name="actionView_DTM">
+  <action name="actionView_DEM">
    <property name="text">
     <string>DEM</string>
    </property>

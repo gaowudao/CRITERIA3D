@@ -88,31 +88,31 @@ Crit3DStatePlantMaps::Crit3DStatePlantMaps()
     this->initialize();
 }
 
-Crit3DStatePlantMaps::Crit3DStatePlantMaps(const gis::Crit3DRasterGrid &myDtm)
+Crit3DStatePlantMaps::Crit3DStatePlantMaps(const gis::Crit3DRasterGrid &myDEM)
 {
     this->initialize();
 
-    leafAreaIndexMap->initializeGrid(myDtm);
+    leafAreaIndexMap->initializeGrid(myDEM);
 
-    pHBerryMap->initializeGrid(myDtm);
-    daysAfterBloomMap->initializeGrid(myDtm);
-    cumulatedBiomassMap->initializeGrid(myDtm);
-    fruitBiomassMap->initializeGrid(myDtm);
-    shootLeafNumberMap->initializeGrid(myDtm);
-    meanTemperatureLastMonthMap->initializeGrid(myDtm);
-    chillingStateMap->initializeGrid(myDtm);
-    forceStateBudBurstMap->initializeGrid(myDtm);
-    forceStateVegetativeSeasonMap->initializeGrid(myDtm);
-    stageMap->initializeGrid(myDtm);
-    cumulatedRadiationFromFruitsetToVeraisonMap->initializeGrid(myDtm);
-    degreeDaysFromFirstMarchMap->initializeGrid(myDtm);
-    degreeDay10FromBudBurstMap->initializeGrid(myDtm);
-    degreeDaysAtFruitSetMap->initializeGrid(myDtm);
-    powderyAICMap->initializeGrid(myDtm);
-    powderyCurrentColoniesMap->initializeGrid(myDtm);
-    powderySporulatingColoniesMap->initializeGrid(myDtm);
-    isHarvestedMap->initializeGrid(myDtm);
-    fruitBiomassIndexMap->initializeGrid(myDtm);
+    pHBerryMap->initializeGrid(myDEM);
+    daysAfterBloomMap->initializeGrid(myDEM);
+    cumulatedBiomassMap->initializeGrid(myDEM);
+    fruitBiomassMap->initializeGrid(myDEM);
+    shootLeafNumberMap->initializeGrid(myDEM);
+    meanTemperatureLastMonthMap->initializeGrid(myDEM);
+    chillingStateMap->initializeGrid(myDEM);
+    forceStateBudBurstMap->initializeGrid(myDEM);
+    forceStateVegetativeSeasonMap->initializeGrid(myDEM);
+    stageMap->initializeGrid(myDEM);
+    cumulatedRadiationFromFruitsetToVeraisonMap->initializeGrid(myDEM);
+    degreeDaysFromFirstMarchMap->initializeGrid(myDEM);
+    degreeDay10FromBudBurstMap->initializeGrid(myDEM);
+    degreeDaysAtFruitSetMap->initializeGrid(myDEM);
+    powderyAICMap->initializeGrid(myDEM);
+    powderyCurrentColoniesMap->initializeGrid(myDEM);
+    powderySporulatingColoniesMap->initializeGrid(myDEM);
+    isHarvestedMap->initializeGrid(myDEM);
+    fruitBiomassIndexMap->initializeGrid(myDEM);
 
     isLoaded = true;
 }
@@ -170,23 +170,23 @@ Crit3DOutputPlantMaps::Crit3DOutputPlantMaps()
     transpirationLayerMaps = new gis::Crit3DRasterGrid*[0];
 }
 
-Crit3DOutputPlantMaps::Crit3DOutputPlantMaps(const gis::Crit3DRasterGrid &dtm)
+Crit3DOutputPlantMaps::Crit3DOutputPlantMaps(const gis::Crit3DRasterGrid &myDEM)
 {
-    this->initializeWithDtm(dtm);
+    this->initializeWithDEM(myDEM);
     transpirationLayerMaps = new gis::Crit3DRasterGrid*[0];
-    transpirationLayerMaps[0]->initializeGrid(dtm);
+    transpirationLayerMaps[0]->initializeGrid(myDEM);
 }
 
-Crit3DOutputPlantMaps::Crit3DOutputPlantMaps(const gis::Crit3DRasterGrid &dtm, int nrSoilLayers)
+Crit3DOutputPlantMaps::Crit3DOutputPlantMaps(const gis::Crit3DRasterGrid &myDEM, int nrSoilLayers)
 {
-    this->initializeWithDtm(dtm);
+    this->initializeWithDEM(myDEM);
 
     transpirationLayerMaps = new gis::Crit3DRasterGrid*[unsigned(nrSoilLayers)];
 
     for (int layer=0; layer<nrSoilLayers; layer++)
     {
         transpirationLayerMaps[layer] = new gis::Crit3DRasterGrid();
-        transpirationLayerMaps[layer]->initializeGrid(dtm);
+        transpirationLayerMaps[layer]->initializeGrid(myDEM);
     }
 }
 
@@ -209,25 +209,25 @@ void Crit3DOutputPlantMaps::initialize()
     downyOilSpotMap = new gis::Crit3DRasterGrid;
 }
 
-void Crit3DOutputPlantMaps::initializeWithDtm(const gis::Crit3DRasterGrid &dtm)
+void Crit3DOutputPlantMaps::initializeWithDEM(const gis::Crit3DRasterGrid &myDEM)
 {
     this->initialize();
 
-    wineYieldMap->initializeGrid(dtm);
-    daysFromFloweringMap->initializeGrid(dtm);
-    brixMaximumMap->initializeGrid(dtm);
-    brixBerryMap->initializeGrid(dtm);
-    deltaBrixMap->initializeGrid(dtm);
-    vineStressMap->initializeGrid(dtm);
-    vineyardTranspirationMap->initializeGrid(dtm);
-    grassTranspirationMap->initializeGrid(dtm);
-    tartaricAcidMap->initializeGrid(dtm);
-    powderyCOLMap->initializeGrid(dtm);
-    powderyINFRMap->initializeGrid(dtm);
-    powderyPrimaryInfectionRiskMap->initializeGrid(dtm);
-    downyDormantOosporeMap->initializeGrid(dtm);
-    downyInfectionRateMap->initializeGrid(dtm);
-    downyOilSpotMap->initializeGrid(dtm);
+    wineYieldMap->initializeGrid(myDEM);
+    daysFromFloweringMap->initializeGrid(myDEM);
+    brixMaximumMap->initializeGrid(myDEM);
+    brixBerryMap->initializeGrid(myDEM);
+    deltaBrixMap->initializeGrid(myDEM);
+    vineStressMap->initializeGrid(myDEM);
+    vineyardTranspirationMap->initializeGrid(myDEM);
+    grassTranspirationMap->initializeGrid(myDEM);
+    tartaricAcidMap->initializeGrid(myDEM);
+    powderyCOLMap->initializeGrid(myDEM);
+    powderyINFRMap->initializeGrid(myDEM);
+    powderyPrimaryInfectionRiskMap->initializeGrid(myDEM);
+    downyDormantOosporeMap->initializeGrid(myDEM);
+    downyInfectionRateMap->initializeGrid(myDEM);
+    downyOilSpotMap->initializeGrid(myDEM);
 }
 
 

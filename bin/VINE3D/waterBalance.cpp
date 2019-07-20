@@ -15,9 +15,9 @@ Crit3DWaterBalanceMaps::Crit3DWaterBalanceMaps()
     initialize();
 }
 
-Crit3DWaterBalanceMaps::Crit3DWaterBalanceMaps(const gis::Crit3DRasterGrid &dtm)
+Crit3DWaterBalanceMaps::Crit3DWaterBalanceMaps(const gis::Crit3DRasterGrid &myDEM)
 {
-    initializeWithDtm(dtm);
+    initializeWithDEM(myDEM);
 }
 
 void Crit3DWaterBalanceMaps::initialize()
@@ -26,11 +26,11 @@ void Crit3DWaterBalanceMaps::initialize()
     waterInflowMap = new gis::Crit3DRasterGrid;
 }
 
-void Crit3DWaterBalanceMaps::initializeWithDtm(const gis::Crit3DRasterGrid &dtm)
+void Crit3DWaterBalanceMaps::initializeWithDEM(const gis::Crit3DRasterGrid &myDEM)
 {
     initialize();
-    bottomDrainageMap->initializeGrid(dtm);
-    waterInflowMap->initializeGrid(dtm);
+    bottomDrainageMap->initializeGrid(myDEM);
+    waterInflowMap->initializeGrid(myDEM);
 }
 
 void resetWaterBalanceMap(Vine3DProject* myProject)
@@ -1225,7 +1225,7 @@ bool initializeWaterBalance(Vine3DProject* myProject)
         myProject->logInfo("nr of nodes: " + QString::number(myProject->WBSettings->nrNodes));
     else
     {
-        myProject->logError("initializeWaterBalance: missing data in DTM");
+        myProject->logError("initializeWaterBalance: missing data in Digital Elevation Model");
         return(false);
     }
 

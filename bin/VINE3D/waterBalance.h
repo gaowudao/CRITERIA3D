@@ -33,10 +33,10 @@
             gis::Crit3DRasterGrid* waterInflowMap;
 
             Crit3DWaterBalanceMaps();
-            Crit3DWaterBalanceMaps(const gis::Crit3DRasterGrid &myDtm);
+            Crit3DWaterBalanceMaps(const gis::Crit3DRasterGrid &myDEM);
 
             void initialize();
-            void initializeWithDtm(const gis::Crit3DRasterGrid &dtm);
+            void initializeWithDEM(const gis::Crit3DRasterGrid &myDEM);
             gis::Crit3DRasterGrid* getMapFromVar(criteria3DVariable myVar);
     };
 

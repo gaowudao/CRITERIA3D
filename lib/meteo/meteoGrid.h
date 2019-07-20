@@ -130,11 +130,11 @@
 
             bool isActiveMeteoPointFromId(std::string id);
 
-            void findGridAggregationPoints(gis::Crit3DRasterGrid* myDTM);
+            void findGridAggregationPoints(gis::Crit3DRasterGrid* myDEM);
 
-            void assignCellAggregationPoints(int row, int col, gis::Crit3DRasterGrid* myDTM, bool excludeNoData);
+            void assignCellAggregationPoints(int row, int col, gis::Crit3DRasterGrid* myDEM, bool excludeNoData);
 
-            void aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDTM, gis::Crit3DRasterGrid dataRaster, aggregationMethod elab);
+            void aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDEM, gis::Crit3DRasterGrid dataRaster, aggregationMethod elab);
 
             double aggregateMeteoGridPoint(Crit3DMeteoPoint myPoint, aggregationMethod elab);
 

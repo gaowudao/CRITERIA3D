@@ -31,7 +31,7 @@
         bool setRange(float myMinimum, float myMaximum);
     };
 
-    bool setDefaultDTMScale(Crit3DColorScale* myScale);
+    bool setDefaultDEMScale(Crit3DColorScale* myScale);
     bool setTemperatureScale(Crit3DColorScale* myScale);
     bool setAnomalyScale(Crit3DColorScale* myScale);
     bool setPrecipitationScale(Crit3DColorScale* myScale);

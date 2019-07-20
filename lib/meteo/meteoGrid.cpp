@@ -508,7 +508,7 @@ bool Crit3DMeteoGrid::findFirstActiveMeteoPoint(std::string* id, int* row, int* 
     return false;
 }
 
-void Crit3DMeteoGrid::findGridAggregationPoints(gis::Crit3DRasterGrid* myDTM)
+void Crit3DMeteoGrid::findGridAggregationPoints(gis::Crit3DRasterGrid* myDEM)
 {
     bool excludeNoData = false;
 
@@ -518,14 +518,14 @@ void Crit3DMeteoGrid::findGridAggregationPoints(gis::Crit3DRasterGrid* myDTM)
         {
             if (_meteoPoints[row][col]->active)
             {
-                assignCellAggregationPoints(row, col, myDTM, excludeNoData);
+                assignCellAggregationPoints(row, col, myDEM, excludeNoData);
             }
         }
     }
     _isAggregationDefined = true;
 }
 
-void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DRasterGrid* myDTM, bool excludeNoData)
+void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DRasterGrid* myDEM, bool excludeNoData)
 {
 
     gis::Crit3DUtmPoint utmLL, utmUR;
@@ -544,19 +544,19 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
 
             _meteoPoints[row][col]->aggregationPoints.clear();
 
-            utmLL.x = _meteoPoints[row][col]->point.utm.x - (_gridStructure.header().dx / 2) + (myDTM->header->cellSize / 2);
+            utmLL.x = _meteoPoints[row][col]->point.utm.x - (_gridStructure.header().dx / 2) + (myDEM->header->cellSize / 2);
             utmUR.x = _meteoPoints[row][col]->point.utm.x + (_gridStructure.header().dx / 2);
-            utmLL.y = _meteoPoints[row][col]->point.utm.y - (_gridStructure.header().dy / 2) + (myDTM->header->cellSize / 2);
+            utmLL.y = _meteoPoints[row][col]->point.utm.y - (_gridStructure.header().dy / 2) + (myDEM->header->cellSize / 2);
             utmUR.y = _meteoPoints[row][col]->point.utm.y + (_gridStructure.header().dy / 2);
 
             _meteoPoints[row][col]->aggregationPointsMaxNr = 0;
 
-            for (double x = utmLL.x; x < utmUR.x; x=x+myDTM->header->cellSize)
+            for (double x = utmLL.x; x < utmUR.x; x=x+myDEM->header->cellSize)
             {
-                for (double y = utmLL.y; x < utmUR.y; y=y+myDTM->header->cellSize)
+                for (double y = utmLL.y; x < utmUR.y; y=y+myDEM->header->cellSize)
                 {
                     _meteoPoints[row][col]->aggregationPointsMaxNr = _meteoPoints[row][col]->aggregationPointsMaxNr + 1;
-                    if (!excludeNoData || gis::getValueFromXY(*myDTM, x, y) != myDTM->header->flag )
+                    if (!excludeNoData || gis::getValueFromXY(*myDEM, x, y) != myDEM->header->flag )
                     {
                          utmPoint.x = x;
                          utmPoint.y = y;
@@ -599,25 +599,25 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
 
             gis::Crit3DRasterCell demLL, demUR;
 
-            gis::getRowColFromXY(*myDTM, utmLL.x, utmLL.y, &demLL.row, &demLL.col);
-            gis::getRowColFromXY(*myDTM, utmUR.x, utmUR.y, &demUR.row, &demUR.col);
+            gis::getRowColFromXY(*myDEM, utmLL.x, utmLL.y, &demLL.row, &demLL.col);
+            gis::getRowColFromXY(*myDEM, utmUR.x, utmUR.y, &demUR.row, &demUR.col);
             _meteoPoints[row][col]->aggregationPoints.clear();
             _meteoPoints[row][col]->aggregationPointsMaxNr = 0;
 
-            if ( ((demUR.row >= 0) && (demUR.row < myDTM->header->nrRows)) || ((demLL.row >= 0) && (demLL.row < myDTM->header->nrRows))
-                 || ((demUR.col >= 0) && (demUR.col < myDTM->header->nrCols)) || ((demLL.col >= 0) && ( demLL.col < myDTM->header->nrCols)))
+            if ( ((demUR.row >= 0) && (demUR.row < myDEM->header->nrRows)) || ((demLL.row >= 0) && (demLL.row < myDEM->header->nrRows))
+                 || ((demUR.col >= 0) && (demUR.col < myDEM->header->nrCols)) || ((demLL.col >= 0) && ( demLL.col < myDEM->header->nrCols)))
             {
 
 
-                for (int myDTMRow = demUR.row; myDTMRow < demLL.row; myDTMRow++)
+                for (int myDEMRow = demUR.row; myDEMRow < demLL.row; myDEMRow++)
                 {
-                    for (int myDTMCol = demLL.col; myDTMCol < demUR.col; myDTMCol++)
+                    for (int myDEMCol = demLL.col; myDEMCol < demUR.col; myDEMCol++)
                     {
                         double utmX, utmY;
                         gis::Crit3DGeoPoint geoP;
                         gis::Crit3DGridHeader latLonHeader;
 
-                        gis::getUtmXYFromRowCol(*(myDTM->header), myDTMRow, myDTMCol, &utmX, &utmY);
+                        gis::getUtmXYFromRowCol(*(myDEM->header), myDEMRow, myDEMCol, &utmX, &utmY);
                         gis::getLatLonFromUtm(_gisSettings, utmX, utmY, &geoP.latitude, &geoP.longitude);
 
                         latLonHeader.llCorner->latitude = pointLatLon0.latitude;
@@ -630,9 +630,9 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
                         if (geoP.isInsideGrid(latLonHeader))
                         {
                             _meteoPoints[row][col]->aggregationPointsMaxNr = _meteoPoints[row][col]->aggregationPointsMaxNr + 1;
-                            if (!excludeNoData || myDTM->getValueFromRowCol(myDTMRow, myDTMCol) != myDTM->header->flag )
+                            if (!excludeNoData || myDEM->getValueFromRowCol(myDEMRow, myDEMCol) != myDEM->header->flag )
                             {
-                                 gis::getUtmXYFromRowCol(*(myDTM->header), myDTMRow, myDTMCol, &utmX, &utmY);
+                                 gis::getUtmXYFromRowCol(*(myDEM->header), myDEMRow, myDEMCol, &utmX, &utmY);
                                  utmPoint.x = utmX;
                                  utmPoint.y = utmY;
                                  point.utm = utmPoint;
@@ -649,14 +649,14 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
     // TO DO compute std deviation
 }
 
-void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDTM, gis::Crit3DRasterGrid dataRaster, aggregationMethod elab)
+void Crit3DMeteoGrid::aggregateMeteoGrid(meteoVariable myVar, frequencyType freq, Crit3DDate date, int  hour, int minute, gis::Crit3DRasterGrid* myDEM, gis::Crit3DRasterGrid dataRaster, aggregationMethod elab)
 {
     int numberOfDays = 1;
     int initialize;
 
     if (!_isAggregationDefined)
     {
-        findGridAggregationPoints(myDTM);
+        findGridAggregationPoints(myDEM);
     }
 
     // TO DO

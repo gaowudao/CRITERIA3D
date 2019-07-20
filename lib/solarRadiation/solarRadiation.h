@@ -28,7 +28,7 @@
         */
 
         Crit3DRadiationMaps();
-        Crit3DRadiationMaps(const gis::Crit3DRasterGrid& myDtm, const gis::Crit3DGisSettings& myGisSettings);
+        Crit3DRadiationMaps(const gis::Crit3DRasterGrid& myDEM, const gis::Crit3DGisSettings& myGisSettings);
         ~Crit3DRadiationMaps();
 
         void clean();
@@ -44,21 +44,21 @@
                                 int myHour, int myMinute, int mySecond,
                                 float temp, float pressure, float aspect, float slope, TsunPosition *mySunPosition);
 
-        int estimateTransmissivityWindow(Crit3DRadiationSettings* mySettings, const gis::Crit3DRasterGrid& myDtm,
+        int estimateTransmissivityWindow(Crit3DRadiationSettings* mySettings, const gis::Crit3DRasterGrid& myDEM,
                                          gis::Crit3DPoint* myPoint, Crit3DTime myTime, int timeStepSecond);
 
-        bool computeRadiationGridPresentTime(Crit3DRadiationSettings *mySettings, const gis::Crit3DRasterGrid& myDtm,
+        bool computeRadiationGridPresentTime(Crit3DRadiationSettings *mySettings, const gis::Crit3DRasterGrid& myDEM,
                                  Crit3DRadiationMaps* radiationMaps, const Crit3DTime& myCrit3DTime);
 
         float computePointTransmissivity(Crit3DRadiationSettings *mySettings, const gis::Crit3DPoint& myPoint, Crit3DTime UTCTime, float* measuredRad,
-                                         int windowWidth, int timeStepSecond, const gis::Crit3DRasterGrid& myDtm);
+                                         int windowWidth, int timeStepSecond, const gis::Crit3DRasterGrid& myDEM);
 
         gis::Crit3DRasterGrid* getBeamRadiationMap();
         gis::Crit3DRasterGrid* getDiffuseRadiationMap();
         gis::Crit3DRasterGrid* getReflectedRadiationMap();
         gis::Crit3DRasterGrid* getGlobalRadiationMap();
 
-        bool isGridPointComputable(Crit3DRadiationSettings* mySettings, int row, int col, const gis::Crit3DRasterGrid& myDtm, Crit3DRadiationMaps* radiationMaps);
+        bool isGridPointComputable(Crit3DRadiationSettings* mySettings, int row, int col, const gis::Crit3DRasterGrid& myDEM, Crit3DRadiationMaps* radiationMaps);
     }
 
 

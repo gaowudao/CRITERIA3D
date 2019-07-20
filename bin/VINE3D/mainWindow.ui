@@ -2380,7 +2380,7 @@
     <property name="title">
      <string>Interpolation</string>
     </property>
-    <addaction name="actionInterpolation_to_DTM"/>
+    <addaction name="actionInterpolation_to_DEM"/>
     <addaction name="actionInterpolationSettings"/>
     <addaction name="separator"/>
     <addaction name="actionVariableQualitySpatial"/>
@@ -2423,7 +2423,7 @@
     </widget>
     <addaction name="menuPoints"/>
     <addaction name="separator"/>
-    <addaction name="actionShow_DTM"/>
+    <addaction name="actionShow_DEM"/>
     <addaction name="actionShow_boundary"/>
    </widget>
    <addaction name="menuFile"/>
@@ -2474,7 +2474,7 @@
     <string>Spatial quality control</string>
    </property>
   </action>
-  <action name="actionInterpolation_to_DTM">
+  <action name="actionInterpolation_to_DEM">
    <property name="text">
     <string>Interpolation to DEM</string>
    </property>
@@ -2502,7 +2502,7 @@
     <string>Show boundary</string>
    </property>
   </action>
-  <action name="actionShow_DTM">
+  <action name="actionShow_DEM">
    <property name="text">
     <string>DEM</string>
    </property>

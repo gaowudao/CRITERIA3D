@@ -1138,7 +1138,7 @@ void MainWindow::on_rasterRestoreButton_clicked()
         return;
     }
 
-    setDefaultDTMScale(myProject.DTM.colorScale);
+    setDefaultDEMScale(myProject.DTM.colorScale);
     this->setCurrentRaster(&(myProject.DTM));
     ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
 }

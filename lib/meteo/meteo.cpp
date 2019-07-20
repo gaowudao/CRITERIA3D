@@ -495,11 +495,11 @@ bool setColorScale(meteoVariable variable, Crit3DColorScale *colorScale)
             setAnomalyScale(colorScale);
             break;
         case noMeteoTerrain:
-            setDefaultDTMScale(colorScale);
+            setDefaultDEMScale(colorScale);
             break;
 
         default:
-            setDefaultDTMScale(colorScale);
+            setDefaultDEMScale(colorScale);
     }
 
     return true;

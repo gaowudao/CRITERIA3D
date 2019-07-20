@@ -55,7 +55,7 @@
         void on_dateEdit_dateChanged(const QDate &date);
         void on_actionClose_meteo_points_triggered();
         void on_actionClose_meteo_grid_triggered();
-        void on_actionInterpolation_to_DTM_triggered();
+        void on_actionInterpolation_to_DEM_triggered();
         void on_actionOpen_model_parameters_triggered();
         void on_actionOpen_soil_map_triggered();
         void on_actionOpen_soil_data_triggered();
@@ -64,7 +64,7 @@
         void on_meteoGridOpacitySlider_sliderMoved(int position);
         void on_actionParameters_triggered();
 
-        void on_actionView_DTM_triggered();
+        void on_actionView_DEM_triggered();
 
         void on_actionView_3D_triggered();
 

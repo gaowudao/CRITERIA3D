@@ -58,11 +58,11 @@
         void on_timeEdit_timeChanged(const QTime &time);
         void on_dateEdit_dateChanged(const QDate &date);
 
-        void on_actionInterpolation_to_DTM_triggered();
+        void on_actionInterpolation_to_DEM_triggered();
         void on_actionInterpolationSettings_triggered();
 
         void on_actionShow_boundary_triggered();
-        void on_actionShow_DTM_triggered();
+        void on_actionShow_DEM_triggered();
 
         void on_actionCriteria3D_settings_triggered();
         void on_actionVine3D_InitializeWaterBalance_triggered();

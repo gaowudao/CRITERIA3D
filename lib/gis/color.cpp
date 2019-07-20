@@ -126,7 +126,7 @@ int Crit3DColorScale::getColorIndex(float myValue)
 }
 
 
-bool setDefaultDTMScale(Crit3DColorScale* myScale)
+bool setDefaultDEMScale(Crit3DColorScale* myScale)
 {
     myScale->nrKeyColors = 4;
     myScale->nrColors = 256;
