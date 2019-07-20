@@ -208,7 +208,8 @@ int Crit3DProject::getSoilIndex(int demRow, int demCol)
 
 double Crit3DProject::getSoilVar(int soilIndex, int layerIndex, soil::soilVariable myVar)
 {
-    int horizonIndex = soil::getHorizonIndex(&(WBSettings->soilList[unsigned(soilIndex)]), layerDepth[unsigned(layerIndex)]);
+    int horizonIndex = soil::getHorizonIndex(&(WBSettings->soilList[unsigned(soilIndex)]),
+                                               WBSettings->layerDepth[unsigned(layerIndex)]);
     if (myVar == soil::soilWaterPotentialWP)
         return WBSettings->soilList[unsigned(soilIndex)].horizon[horizonIndex].wiltingPoint;
     else if (myVar == soil::soilWaterPotentialFC)

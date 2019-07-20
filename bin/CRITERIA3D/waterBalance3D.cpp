@@ -147,26 +147,26 @@ int computeNrLayers(float totalDepth, double minThickness, double maxThickness, 
 bool setLayersDepth(Crit3DProject* myProject, double minThickness, double maxThickness, double factor)
 {
     int lastLayer = myProject->WBSettings->nrLayers-1;
-    myProject->layerDepth.resize(myProject->WBSettings->nrLayers);
-    myProject->layerThickness.resize(myProject->WBSettings->nrLayers);
+    myProject->WBSettings->layerDepth.resize(myProject->WBSettings->nrLayers);
+    myProject->WBSettings->layerThickness.resize(myProject->WBSettings->nrLayers);
 
-    myProject->layerDepth[0] = 0.0;
-    myProject->layerThickness[0] = 0.0;
-    myProject->layerThickness[1] = minThickness;
-    myProject->layerDepth[1] = minThickness * 0.5;
+    myProject->WBSettings->layerDepth[0] = 0.0;
+    myProject->WBSettings->layerThickness[0] = 0.0;
+    myProject->WBSettings->layerThickness[1] = minThickness;
+    myProject->WBSettings->layerDepth[1] = minThickness * 0.5;
     for (unsigned int i = 2; i < unsigned(myProject->WBSettings->nrLayers); i++)
     {
         if (i == unsigned(lastLayer))
         {
-            myProject->layerThickness[i] = myProject->WBSettings->soilDepth - (myProject->layerDepth[i-1]
-                                          + myProject->layerThickness[i-1] / 2.0);
+            myProject->WBSettings->layerThickness[i] = myProject->WBSettings->soilDepth - (myProject->WBSettings->layerDepth[i-1]
+                                          + myProject->WBSettings->layerThickness[i-1] / 2.0);
         }
         else
         {
-            myProject->layerThickness[i] = minValue(maxThickness, myProject->layerThickness[i-1] * factor);
+            myProject->WBSettings->layerThickness[i] = minValue(maxThickness, myProject->WBSettings->layerThickness[i-1] * factor);
         }
-        myProject->layerDepth[i] = myProject->layerDepth[i-1] +
-                                (myProject->layerThickness[i-1] + myProject->layerThickness[i]) * 0.5f;
+        myProject->WBSettings->layerDepth[i] = myProject->WBSettings->layerDepth[i-1] +
+                                (myProject->WBSettings->layerThickness[i-1] + myProject->WBSettings->layerThickness[i]) * 0.5f;
     }
     return(true);
 }
@@ -193,8 +193,8 @@ bool setCrit3DTopography(Crit3DProject* myProject)
                 for (int layer = 0; layer < myProject->WBSettings->nrLayers; layer++)
                 {
                     index = layer * myProject->WBSettings->nrNodesPerLayer + surfaceIndex;
-                    z = myProject->DEM.value[row][col] - myProject->layerDepth[layer];
-                    volume = area * myProject->layerThickness[layer];
+                    z = myProject->DEM.value[row][col] - myProject->WBSettings->layerDepth[layer];
+                    volume = area * myProject->WBSettings->layerThickness[layer];
 
                     //surface
                     if (layer == 0)
@@ -214,7 +214,7 @@ bool setCrit3DTopography(Crit3DProject* myProject)
                     //sub-surface
                     else
                     {
-                        lateralArea = myProject->DEM.header->cellSize * myProject->layerThickness[layer];
+                        lateralArea = myProject->DEM.header->cellSize * myProject->WBSettings->layerThickness[layer];
                         //last layer
                         if (layer == (myProject->WBSettings->nrLayers - 1))
                         {
@@ -326,11 +326,11 @@ bool setCrit3DNodeSoil(Crit3DProject* myProject)
                         //sub-surface
                         else
                         {
-                            horizonIndex = soil::getHorizonIndex(&(myProject->WBSettings->soilList[soilIndex]), myProject->layerDepth[layer]);
+                            horizonIndex = soil::getHorizonIndex(&(myProject->WBSettings->soilList[soilIndex]), myProject->WBSettings->layerDepth[layer]);
                             if (horizonIndex == NODATA)
                             {
                                 myProject->errorString = "function setCrit3DNodeSoil: \nno horizon definition in soil nr: "
-                                        + QString::number(soilIndex) + " depth: " + QString::number(myProject->layerDepth[layer])
+                                        + QString::number(soilIndex) + " depth: " + QString::number(myProject->WBSettings->layerDepth[layer])
                                         +"\nCheck soil totalDepth.";
                                 return(false);
                             }
@@ -387,7 +387,7 @@ bool initializeSoilMoisture(Crit3DProject* myProject, int month)
                     for (int layer = 1; layer < myProject->WBSettings->nrLayers; layer++)
                     {
                         index = layer * myProject->WBSettings->nrNodesPerLayer + surfaceIndex;
-                        horizonIndex = soil::getHorizonIndex(&(myProject->WBSettings->soilList[soilIndex]), myProject->layerDepth[layer]);
+                        horizonIndex = soil::getHorizonIndex(&(myProject->WBSettings->soilList[soilIndex]), myProject->WBSettings->layerDepth[layer]);
 
                         fieldCapacity = myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].fieldCapacity;
                         waterPotential = fieldCapacity - moistureIndex * (fieldCapacity-dry);
@@ -446,7 +446,7 @@ double evaporation(Crit3DProject* myProject, int row, int col, long surfaceIndex
 
         //[m]
         availableWater = getCriteria3DVar(availableWaterContent, nodeIndex);
-        if (layer > 0) availableWater *= myProject->layerThickness[layer];
+        if (layer > 0) availableWater *= myProject->WBSettings->layerThickness[layer];
         //->[mm]
         availableWater *= 1000.0;
 
@@ -458,8 +458,8 @@ double evaporation(Crit3DProject* myProject, int row, int col, long surfaceIndex
         }
         else
         {
-            depthCoeff = myProject->layerDepth[layer] / MAX_PROF_EVAPORATION;
-            thickCoeff = myProject->layerThickness[layer] / 0.04;
+            depthCoeff = myProject->WBSettings->layerDepth[layer] / MAX_PROF_EVAPORATION;
+            thickCoeff = myProject->WBSettings->layerThickness[layer] / 0.04;
             layerCoeff = exp(-EULER * depthCoeff) * thickCoeff;
         }
 
@@ -706,11 +706,11 @@ bool getSoilSurfaceMoisture(Crit3DProject* myProject, gis::Crit3DRasterGrid* out
                 {
                     nodeIndex = layer * myProject->WBSettings->nrNodesPerLayer + surfaceIndex;
                     waterContent = soilFluxes3D::getWaterContent(nodeIndex);                    //[m^3 m^-3]
-                    sumWater += waterContent * myProject->layerThickness[layer];                //[m]
+                    sumWater += waterContent * myProject->WBSettings->layerThickness[layer];                //[m]
                     wiltingPoint = myProject->getSoilVar(0, layer, soil::soilWaterContentWP);   //[m^3 m^-3]
-                    minWater += wiltingPoint * myProject->layerThickness[layer];                //[m]
+                    minWater += wiltingPoint * myProject->WBSettings->layerThickness[layer];                //[m]
                     saturation = myProject->getSoilVar(0, layer, soil::soilWaterContentSat);    //[m^3 m^-3]
-                    maxWater += saturation * myProject->layerThickness[layer];                  //[m]
+                    maxWater += saturation * myProject->WBSettings->layerThickness[layer];                  //[m]
                 }
                 soilSurfaceMoisture = 100 * ((sumWater-minWater) / (maxWater-minWater));
                 soilSurfaceMoisture = minValue(maxValue(soilSurfaceMoisture, 0), 100);
@@ -751,9 +751,9 @@ bool getRootZoneAWCmap(Crit3DProject* myProject, gis::Crit3DRasterGrid* outputMa
                             awc = soilFluxes3D::getAvailableWaterContent(nodeIndex);  //[m3 m-3]
                             if (awc != NODATA)
                             {
-                                thickness = myProject->layerThickness[layer] * 1000.0;  //[mm]
+                                thickness = myProject->WBSettings->layerThickness[layer] * 1000.0;  //[mm]
                                 horizonIndex = soil::getHorizonIndex(&(myProject->WBSettings->soilList[soilIndex]),
-                                                                     myProject->layerDepth[layer]);
+                                                                     myProject->WBSettings->layerDepth[layer]);
                                 skeleton = myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].coarseFragments;
 
                                 sumAWC += (awc * thickness * (1.0 - skeleton));         //[mm]
@@ -817,14 +817,14 @@ bool getCriteria3DIntegrationMap(Crit3DProject* myProject, criteria3DVariable my
                         myValue = getCriteria3DVar(myVar, nodeIndex);
                         if (myValue != NODATA)
                         {
-                            horizonIndex = soil::getHorizonIndex(&(myProject->WBSettings->soilList[soilIndex]), myProject->layerDepth[i]);
+                            horizonIndex = soil::getHorizonIndex(&(myProject->WBSettings->soilList[soilIndex]), myProject->WBSettings->layerDepth[i]);
                             skeleton = myProject->WBSettings->soilList[soilIndex].horizon[horizonIndex].coarseFragments;
                             if (i == firstIndex)
                                 thickCoeff = firstThickness * (1.0 - skeleton);
                             else if (i == lastIndex)
                                 thickCoeff = lastThickness * (1.0 - skeleton);
                             else
-                                thickCoeff = myProject->layerThickness[i] * (1.0 - skeleton);
+                                thickCoeff = myProject->WBSettings->layerThickness[i] * (1.0 - skeleton);
 
                             sumValues += (myValue * thickCoeff);
                             sumCoeff += thickCoeff;
@@ -925,13 +925,13 @@ bool loadWaterBalanceState(Crit3DProject* myProject, Crit3DDate myDate, std::str
 //[m] upper depth of soil layer
 double getSoilLayerTop(Crit3DProject* myProject, int i)
 {
-    return myProject->layerDepth[i] - myProject->layerThickness[i] / 2.0;
+    return myProject->WBSettings->layerDepth[i] - myProject->WBSettings->layerThickness[i] / 2.0;
 }
 
 //lower depth of soil layer [m]
 double getSoilLayerBottom(Crit3DProject* myProject, int i)
 {
-    return myProject->layerDepth[i] + myProject->layerThickness[i] / 2.0;
+    return myProject->WBSettings->layerDepth[i] + myProject->WBSettings->layerThickness[i] / 2.0;
 }
 
 

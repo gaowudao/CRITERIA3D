@@ -29,9 +29,6 @@
         bool isParametersLoaded;
         bool isInitialized;
 
-        std::vector <double> layerDepth;                 //[m]
-        std::vector <double> layerThickness;             //[m]
-
         Crit3DProject();
 
         bool readCriteria3DParameters();
