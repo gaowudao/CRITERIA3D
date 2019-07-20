@@ -74,7 +74,6 @@ SOURCES += \
     ../PRAGA/shared/shell.cpp \
     ../PRAGA/shared/stationMarker.cpp \
     ../PRAGA/shared/dialogInterpolation.cpp \
-    ../CRITERIA3D/shared/meteoMaps.cpp \
     ../PRAGA/shared/mapGraphicsRasterObject.cpp \
     ../PRAGA/shared/rubberBand.cpp \
     ../PRAGA/shared/colorLegend.cpp \
@@ -89,6 +88,7 @@ SOURCES += \
     vine3DProject.cpp \
     mainWindow.cpp \
     formPeriod.cpp \
+    ../CRITERIA3D/shared/meteoMaps.cpp \
     ../CRITERIA3D/shared/project3D.cpp
 
 HEADERS  += \
@@ -100,7 +100,6 @@ HEADERS  += \
     ../PRAGA/shared/shell.h \
     ../PRAGA/shared/stationMarker.h \
     ../PRAGA/shared/dialogInterpolation.h \
-    ../CRITERIA3D/shared/meteoMaps.h \
     ../PRAGA/shared/mapGraphicsRasterObject.h \
     ../PRAGA/shared/rubberBand.h \
     ../PRAGA/shared/colorLegend.h \
@@ -114,6 +113,7 @@ HEADERS  += \
     vine3DProject.h \
     mainWindow.h \
     formPeriod.h \
+    ../CRITERIA3D/shared/meteoMaps.h \
     ../CRITERIA3D/shared/project3D.h
 
 FORMS    += \
