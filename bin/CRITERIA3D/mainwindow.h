@@ -161,7 +161,7 @@
         void initializeViewer3D();
         bool checkMapVariable(bool isComputed);
         void setMapVariable(meteoVariable myVar, gis::Crit3DRasterGrid *myGrid);
-        void soilMenuRequested(const QPoint pos);
+        void contextMenuRequested(const QPoint globalPos);
     };
 
 

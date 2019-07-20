@@ -245,7 +245,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent * event)
     Position geoPoint = this->mapView->mapToScene(mapPoint);
     this->ui->statusBar->showMessage(QString::number(geoPoint.latitude()) + " " + QString::number(geoPoint.longitude()));
 
-    if (myRubberBand != nullptr)
+    if (myRubberBand != nullptr && myRubberBand->isActive)
     {
         myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), mapPoint).normalized());
     }
@@ -259,19 +259,20 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
 
     if (event->button() == Qt::RightButton)
     {
-        // soil menu
-        if (currentMap == mapType::mapSoil)
+        if (myRubberBand != nullptr)
         {
-            soilMenuRequested(event->globalPos());
-        }
-        // rubber band
-        else if (myRubberBand != nullptr)
-        {
+            // rubber band
             QPointF firstCorner = event->localPos();
             myRubberBand->setFirstCorner(firstCorner);
             myRubberBand->setOrigin(mapPoint);
             myRubberBand->setGeometry(QRect(mapPoint, QSize()));
+            myRubberBand->isActive = true;
             myRubberBand->show();
+        }
+        else
+        {
+            // context menu
+            contextMenuRequested(event->globalPos());
         }
 
         #ifdef NETCDF
@@ -310,12 +311,7 @@ void MainWindow::on_actionRectangle_Selection_triggered()
     if (ui->actionRectangle_Selection->isChecked())
     {
         myRubberBand = new RubberBand(QRubberBand::Rectangle, this->mapView);
-        QPoint origin(int(this->mapView->width()*0.5), int(this->mapView->height()*0.5));
-        QPoint mapPoint = getMapPoint(&origin);
-        myRubberBand->setOrigin(mapPoint);
-        myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), QSize()));
-        myRubberBand->show();
-     }
+    }
 }
 
 
@@ -1219,17 +1215,23 @@ void MainWindow::on_actionCompute_AllMeteoMaps_triggered()
 }
 
 
-void MainWindow::soilMenuRequested(const QPoint pos)
+void MainWindow::contextMenuRequested(const QPoint globalPos)
 {
     QMenu submenu;
-    submenu.addAction("Show soil data");
-    QAction* myAction = submenu.exec(pos);
+
+    submenu.addAction("Test");
+    if (myProject.soilMap.isLoaded)
+    {
+        submenu.addAction("Soil data");
+    }
+
+    QAction* myAction = submenu.exec(globalPos);
 
     if (myAction)
     {
-        if (myAction->text().contains("Show soil data") )
+        if (myAction->text().contains("Soil data") )
         {
-            // show soil
+            // shows soil
         }
     }
 }

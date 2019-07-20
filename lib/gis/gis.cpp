@@ -1267,7 +1267,7 @@ namespace gis
     }
 
     float topographicDistance(float X1, float Y1, float Z1, float X2, float Y2, float Z2, float distance,
-                              const gis::Crit3DRasterGrid& dem_)
+                              const gis::Crit3DRasterGrid& myDEM)
     {
         float x, y;
         float Xi, Yi, Zi, Xf, Yf;
@@ -1276,7 +1276,7 @@ namespace gis
         int i, nrStep;
         float maxDeltaZ;
 
-        float stepMeter = float(dem_.header->cellSize);
+        float stepMeter = float(myDEM.header->cellSize);
 
         if (distance < stepMeter)
             return 0;
@@ -1311,8 +1311,8 @@ namespace gis
         {
             x = x + Dx;
             y = y + Dy;
-            demValue = dem_.getFastValueXY(x, y);
-            if (demValue != dem_.header->flag)
+            demValue = myDEM.getFastValueXY(x, y);
+            if (demValue != myDEM.header->flag)
                 if (demValue > Zi)
                     maxDeltaZ = maxValue(maxDeltaZ, demValue - Zi);
         }
@@ -1320,7 +1320,7 @@ namespace gis
         return maxDeltaZ;
     }
 
-    bool topographicDistanceMap(Crit3DPoint point_, const gis::Crit3DRasterGrid& dem_, Crit3DRasterGrid* map_)
+    bool topographicDistanceMap(Crit3DPoint myPoint, const gis::Crit3DRasterGrid& myDEM, Crit3DRasterGrid* myMap)
     {
 
         int row, col;
@@ -1328,20 +1328,20 @@ namespace gis
         double gridX, gridY;
         float demValue;
 
-        map_->initializeGrid(dem_);
+        myMap->initializeGrid(myDEM);
 
-        for (row = 0; row < dem_.header->nrRows; row++)
-            for (col = 0; col < dem_.header->nrCols; col++)
+        for (row = 0; row < myDEM.header->nrRows; row++)
+            for (col = 0; col < myDEM.header->nrCols; col++)
             {
-                demValue = dem_.value[row][col];
-                if (demValue != dem_.header->flag)
+                demValue = myDEM.value[row][col];
+                if (demValue != myDEM.header->flag)
                 {
-                    gis::getUtmXYFromRowCol(dem_, row, col, &gridX, &gridY);
-                    distance = computeDistance(float(gridX), float(gridY), float(point_.utm.x), float(point_.utm.y));
-                    map_->value[row][col] = topographicDistance((float)gridX, (float)gridY, demValue, (float)(point_.utm.x), (float)(point_.utm.y), (float)(point_.z), distance, dem_);
+                    gis::getUtmXYFromRowCol(myDEM, row, col, &gridX, &gridY);
+                    distance = computeDistance(float(gridX), float(gridY), float(myPoint.utm.x), float(myPoint.utm.y));
+                    myMap->value[row][col] = topographicDistance((float)gridX, (float)gridY, demValue, (float)(myPoint.utm.x), (float)(myPoint.utm.y), (float)(myPoint.z), distance, myDEM);
                 }
                 else
-                    map_->value[row][col] = map_->header->flag;
+                    myMap->value[row][col] = myMap->header->flag;
             }
 
         return true;

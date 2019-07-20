@@ -217,7 +217,7 @@
                                gis::Crit3DRasterGrid* latMap, gis::Crit3DRasterGrid* lonMap,
                                const gis::Crit3DGisSettings& gisSettings);
 
-        bool computeSlopeAspectMaps(const gis::Crit3DRasterGrid& demMap,
+        bool computeSlopeAspectMaps(const gis::Crit3DRasterGrid& myDEM,
                                gis::Crit3DRasterGrid* slopeMap, gis::Crit3DRasterGrid* aspectMap);
 
         bool getGeoExtentsFromUTMHeader(const Crit3DGisSettings& mySettings,
@@ -227,8 +227,8 @@
                           const Crit3DRasterWindow &latLonWindow, Crit3DRasterWindow *UtmWindow, int utmZone);
 
         float topographicDistance(float X1, float Y1, float Z1, float X2, float Y2, float Z2, float distance,
-                                  const gis::Crit3DRasterGrid& dem_);
-        bool topographicDistanceMap(Crit3DPoint point_, const gis::Crit3DRasterGrid& dem_, Crit3DRasterGrid* map_);
+                                  const gis::Crit3DRasterGrid& myDEM);
+        bool topographicDistanceMap(Crit3DPoint myPoint, const gis::Crit3DRasterGrid& myDEM, Crit3DRasterGrid* myMap);
     }
 
 

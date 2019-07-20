@@ -246,7 +246,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent * event)
     Position geoPoint = this->mapView->mapToScene(mapPoint);
     this->ui->statusBar->showMessage(QString::number(geoPoint.latitude()) + " " + QString::number(geoPoint.longitude()));
 
-    if (myRubberBand != nullptr)
+    if (myRubberBand != nullptr && myRubberBand->isActive)
     {
         myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), mapPoint).normalized());
     }
@@ -265,6 +265,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
             QPoint mapPoint = getMapPoint(&pos);
             myRubberBand->setOrigin(mapPoint);
             myRubberBand->setGeometry(QRect(mapPoint, QSize()));
+            myRubberBand->isActive = true;
             myRubberBand->show();
         }
 
@@ -306,11 +307,6 @@ void MainWindow::on_actionRectangle_Selection_triggered()
     if (ui->actionRectangle_Selection->isChecked())
     {
         myRubberBand = new RubberBand(QRubberBand::Rectangle, this->mapView);
-        QPoint origin(int(this->mapView->width() * 0.5f) , int(this->mapView->height() * 0.5f));
-        QPoint mapPoint = getMapPoint(&origin);
-        myRubberBand->setOrigin(mapPoint);
-        myRubberBand->setGeometry(QRect(myRubberBand->getOrigin(), QSize()));
-        myRubberBand->show();
      }
 }
 

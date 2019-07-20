@@ -609,15 +609,15 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
             {
 
 
-                for (int myDEMRow = demUR.row; myDEMRow < demLL.row; myDEMRow++)
+                for (int demRow = demUR.row; demRow < demLL.row; demRow++)
                 {
-                    for (int myDEMCol = demLL.col; myDEMCol < demUR.col; myDEMCol++)
+                    for (int demCol = demLL.col; demCol < demUR.col; demCol++)
                     {
                         double utmX, utmY;
                         gis::Crit3DGeoPoint geoP;
                         gis::Crit3DGridHeader latLonHeader;
 
-                        gis::getUtmXYFromRowCol(*(myDEM->header), myDEMRow, myDEMCol, &utmX, &utmY);
+                        gis::getUtmXYFromRowCol(*(myDEM->header), demRow, demCol, &utmX, &utmY);
                         gis::getLatLonFromUtm(_gisSettings, utmX, utmY, &geoP.latitude, &geoP.longitude);
 
                         latLonHeader.llCorner->latitude = pointLatLon0.latitude;
@@ -630,9 +630,9 @@ void Crit3DMeteoGrid::assignCellAggregationPoints(int row, int col, gis::Crit3DR
                         if (geoP.isInsideGrid(latLonHeader))
                         {
                             _meteoPoints[row][col]->aggregationPointsMaxNr = _meteoPoints[row][col]->aggregationPointsMaxNr + 1;
-                            if (!excludeNoData || myDEM->getValueFromRowCol(myDEMRow, myDEMCol) != myDEM->header->flag )
+                            if (!excludeNoData || myDEM->getValueFromRowCol(demRow, demCol) != myDEM->header->flag )
                             {
-                                 gis::getUtmXYFromRowCol(*(myDEM->header), myDEMRow, myDEMCol, &utmX, &utmY);
+                                 gis::getUtmXYFromRowCol(*(myDEM->header), demRow, demCol, &utmX, &utmY);
                                  utmPoint.x = utmX;
                                  utmPoint.y = utmY;
                                  point.utm = utmPoint;

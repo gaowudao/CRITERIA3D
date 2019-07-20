@@ -3,7 +3,7 @@
 RubberBand::RubberBand(QRubberBand::Shape s, QWidget *p) :
     QRubberBand(s,p)
 {
-
+    isActive = false;
 }
 
 void RubberBand::setOrigin(QPoint origin)
