@@ -98,23 +98,25 @@ bool Crit3DProject::createIndexMap()
         return false;
     }
 
-    indexMap.initializeGrid(*(DEM.header));
+    indexMap.clear();
+    indexMap.resize(1);
+    indexMap[0].initializeGrid(*(DEM.header));
 
     long index = 0;
-    for (int row = 0; row < indexMap.header->nrRows; row++)
+    for (int row = 0; row < indexMap[0].header->nrRows; row++)
     {
-        for (int col = 0; col < indexMap.header->nrCols; col++)
+        for (int col = 0; col < indexMap[0].header->nrCols; col++)
         {
             if (int(DEM.value[row][col]) != int(DEM.header->flag))
             {
-                indexMap.value[row][col] = float(index);
+                indexMap[0].value[row][col] = float(index);
                 index++;
             }
         }
     }
 
-    gis::updateMinMaxRasterGrid(&indexMap);
-    indexMap.isLoaded = true;
+    gis::updateMinMaxRasterGrid(&indexMap[0]);
+    indexMap[0].isLoaded = true;
     nrNodesPerLayer = index;
     return(nrNodesPerLayer > 0);
 }
@@ -234,7 +236,12 @@ void Crit3DProject::clear()
     soilIndexMap.clear();
     cropIndexMap.clear();
     boundaryMap.clear();
-    indexMap.clear();
+
+    if (indexMap.size() > 0)
+    {
+        indexMap[0].clear();
+        indexMap.clear();
+    }
 
     cleanWaterBalanceMemory();
     isInitialized = false;

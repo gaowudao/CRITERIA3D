@@ -23,7 +23,6 @@
         // same header of DEM
         gis::Crit3DRasterGrid soilIndexMap;
         gis::Crit3DRasterGrid cropIndexMap;
-        gis::Crit3DRasterGrid indexMap;
         gis::Crit3DRasterGrid boundaryMap;
 
         bool isParametersLoaded;

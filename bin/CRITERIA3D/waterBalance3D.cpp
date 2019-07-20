@@ -180,11 +180,11 @@ bool setCrit3DTopography(Crit3DProject* myProject)
     int myResult;
     QString myError;
 
-    for (int row = 0; row < myProject->indexMap.header->nrRows; row++)
-        for (int col = 0; col < myProject->indexMap.header->nrCols; col++)
+    for (int row = 0; row < myProject->indexMap[0].header->nrRows; row++)
+        for (int col = 0; col < myProject->indexMap[0].header->nrCols; col++)
         {
-            surfaceIndex = int(myProject->indexMap.value[row][col]);
-            if (surfaceIndex != myProject->indexMap.header->flag)
+            surfaceIndex = int(myProject->indexMap[0].value[row][col]);
+            if (surfaceIndex != myProject->indexMap[0].header->flag)
             {
                 gis::getUtmXYFromRowCol(*(myProject->DEM.header), row, col, &x, &y);
                 area = myProject->DEM.header->cellSize * myProject->DEM.header->cellSize;
@@ -273,10 +273,10 @@ bool setCrit3DTopography(Crit3DProject* myProject)
                         {
                             if ((i != 0) || (j != 0))
                             {
-                                if (! gis::isOutOfGridRowCol(row+i, col+j, myProject->indexMap))
+                                if (! gis::isOutOfGridRowCol(row+i, col+j, myProject->indexMap[0]))
                                 {
-                                    linkIndex = long(myProject->indexMap.value[row+i][col+j]);
-                                    if (linkIndex != myProject->indexMap.header->flag)
+                                    linkIndex = long(myProject->indexMap[0].value[row+i][col+j]);
+                                    if (linkIndex != myProject->indexMap[0].header->flag)
                                     {
                                         linkIndex += layer * myProject->nrNodesPerLayer;
                                         myResult = soilFluxes3D::setNodeLink(index, linkIndex, LATERAL, float(lateralArea / 2.));
@@ -306,11 +306,11 @@ bool setCrit3DNodeSoil(Crit3DProject* myProject)
     int myResult;
     QString myError;
 
-    for (int row = 0; row < myProject->indexMap.header->nrRows; row++)
-        for (int col = 0; col < myProject->indexMap.header->nrCols; col++)
+    for (int row = 0; row < myProject->indexMap[0].header->nrRows; row++)
+        for (int col = 0; col < myProject->indexMap[0].header->nrCols; col++)
         {
-            surfaceIndex = long(myProject->indexMap.value[row][col]);
-            if (surfaceIndex != long(myProject->indexMap.header->flag))
+            surfaceIndex = long(myProject->indexMap[0].value[row][col]);
+            if (surfaceIndex != long(myProject->indexMap[0].header->flag))
             {
                 soilIndex = int(myProject->soilIndexMap.value[row][col]);
                 if (soilIndex != int(myProject->soilIndexMap.header->flag))
@@ -371,12 +371,12 @@ bool initializeSoilMoisture(Crit3DProject* myProject, int month)
 
     myProject->logInfo("Initialize soil moisture");
 
-    for (int row = 0; row < myProject->indexMap.header->nrRows; row++)
+    for (int row = 0; row < myProject->indexMap[0].header->nrRows; row++)
     {
-        for (int col = 0; col < myProject->indexMap.header->nrCols; col++)
+        for (int col = 0; col < myProject->indexMap[0].header->nrCols; col++)
         {
-            surfaceIndex = long(myProject->indexMap.value[row][col]);
-            if (surfaceIndex != long(myProject->indexMap.header->flag))
+            surfaceIndex = long(myProject->indexMap[0].value[row][col]);
+            if (surfaceIndex != long(myProject->indexMap[0].header->flag))
             {
                 //surface
                 soilFluxes3D::setWaterContent(surfaceIndex, 0.0);
@@ -495,11 +495,11 @@ bool setWaterSinkSource(Crit3DProject* myProject, double* totalPrecipitation,
 
     // precipitation or irrigation
     *totalPrecipitation = 0.0;
-    for (long row = 0; row < myProject->indexMap.header->nrRows; row++)
-        for (long col = 0; col < myProject->indexMap.header->nrCols; col++)
+    for (long row = 0; row < myProject->indexMap[0].header->nrRows; row++)
+        for (long col = 0; col < myProject->indexMap[0].header->nrCols; col++)
         {
-            surfaceIndex = long(myProject->indexMap.value[row][col]);
-            if (surfaceIndex != long(myProject->indexMap.header->flag))
+            surfaceIndex = long(myProject->indexMap[0].value[row][col]);
+            if (surfaceIndex != long(myProject->indexMap[0].header->flag))
             {
                 totalWater = 0.0;
                 prec = myProject->meteoMaps->precipitationMap->value[row][col];
@@ -519,11 +519,11 @@ bool setWaterSinkSource(Crit3DProject* myProject, double* totalPrecipitation,
 
     // evaporation
     *totalEvaporation = 0.0;
-    for (long row = 0; row < myProject->indexMap.header->nrRows; row++)
-        for (long col = 0; col < myProject->indexMap.header->nrCols; col++)
+    for (long row = 0; row < myProject->indexMap[0].header->nrRows; row++)
+        for (long col = 0; col < myProject->indexMap[0].header->nrCols; col++)
         {
-            surfaceIndex = long(myProject->indexMap.value[row][col]);
-            if (surfaceIndex != long(myProject->indexMap.header->flag))
+            surfaceIndex = long(myProject->indexMap[0].value[row][col]);
+            if (surfaceIndex != long(myProject->indexMap[0].header->flag))
             {
                 realEvap = 0.; //evaporation(myProject, row, col, surfaceIndex);
 
@@ -534,11 +534,11 @@ bool setWaterSinkSource(Crit3DProject* myProject, double* totalPrecipitation,
 
     // crop transpiration
     *totalTranspiration = 0.0;
-    for (long row = 0; row < myProject->indexMap.header->nrRows; row++)
-        for (long col = 0; col < myProject->indexMap.header->nrCols; col++)
+    for (long row = 0; row < myProject->indexMap[0].header->nrRows; row++)
+        for (long col = 0; col < myProject->indexMap[0].header->nrCols; col++)
         {    
-            surfaceIndex = long(myProject->indexMap.value[row][col]);
-            if (surfaceIndex != long(myProject->indexMap.header->flag))
+            surfaceIndex = long(myProject->indexMap[0].value[row][col]);
+            if (surfaceIndex != long(myProject->indexMap[0].header->flag))
             {
                 for (layerIndex=1; layerIndex < myProject->nrLayers; layerIndex++)
                 {
@@ -574,13 +574,13 @@ bool setWaterSinkSource(Crit3DProject* myProject, double* totalPrecipitation,
 double* getCriteria3DVarProfile(Crit3DProject* myProject, int myRow, int myCol, criteria3DVariable myVar)
 {
     double* myProfile = (double *) calloc(myProject->nrLayers, sizeof(double));
-    long firstLayerIndex = long(myProject->indexMap.value[myRow][myCol]);
+    long firstLayerIndex = long(myProject->indexMap[0].value[myRow][myCol]);
     long nodeIndex, layerIndex;
 
     for (layerIndex = 0; layerIndex < myProject->nrLayers; layerIndex++)
         myProfile[layerIndex] = NODATA;
 
-    if (firstLayerIndex != myProject->indexMap.header->flag)
+    if (firstLayerIndex != myProject->indexMap[0].header->flag)
         for (layerIndex = 0; layerIndex < myProject->nrLayers; layerIndex++)
         {
             nodeIndex = layerIndex * myProject->nrNodesPerLayer + firstLayerIndex;
@@ -639,11 +639,11 @@ bool setCriteria3DVarMap(int myLayerIndex, Crit3DProject* myProject, criteria3DV
 {
     long surfaceIndex, nodeIndex;
 
-    for (int row = 0; row < myProject->indexMap.header->nrRows; row++)
-        for (int col = 0; col < myProject->indexMap.header->nrCols; col++)
+    for (int row = 0; row < myProject->indexMap[0].header->nrRows; row++)
+        for (int col = 0; col < myProject->indexMap[0].header->nrCols; col++)
         {
-            surfaceIndex = long(myProject->indexMap.value[row][col]);
-            if (surfaceIndex != long(myProject->indexMap.header->flag))
+            surfaceIndex = long(myProject->indexMap[0].value[row][col]);
+            if (surfaceIndex != long(myProject->indexMap[0].header->flag))
             {
                 nodeIndex = myLayerIndex * myProject->nrNodesPerLayer + surfaceIndex;
                 if (! setCriteria3DVar(myVar, nodeIndex, myCriteria3DMap->value[row][col])) return false;
@@ -660,13 +660,13 @@ bool getCriteria3DVarMap(Crit3DProject* myProject, criteria3DVariable myVar,
     long surfaceIndex, nodeIndex;
     double myValue;
 
-    criteria3DMap->initializeGrid(myProject->indexMap);
+    criteria3DMap->initializeGrid(myProject->indexMap[0]);
 
-    for (int row = 0; row < myProject->indexMap.header->nrRows; row++)
-        for (int col = 0; col < myProject->indexMap.header->nrCols; col++)
+    for (int row = 0; row < myProject->indexMap[0].header->nrRows; row++)
+        for (int col = 0; col < myProject->indexMap[0].header->nrCols; col++)
         {
-            surfaceIndex = long(myProject->indexMap.value[row][col]);
-            if (surfaceIndex != long(myProject->indexMap.header->flag))
+            surfaceIndex = long(myProject->indexMap[0].value[row][col]);
+            if (surfaceIndex != long(myProject->indexMap[0].header->flag))
             {
                 nodeIndex = layerIndex * myProject->nrNodesPerLayer + surfaceIndex;
 
@@ -691,13 +691,13 @@ bool getSoilSurfaceMoisture(Crit3DProject* myProject, gis::Crit3DRasterGrid* out
     double waterContent, sumWater, wiltingPoint, minWater, saturation, maxWater;
     double soilSurfaceMoisture;     //[0-100]
 
-    for (int row = 0; row < myProject->indexMap.header->nrRows; row++)
+    for (int row = 0; row < myProject->indexMap[0].header->nrRows; row++)
     {
-        for (int col = 0; col < myProject->indexMap.header->nrCols; col++)
+        for (int col = 0; col < myProject->indexMap[0].header->nrCols; col++)
         {
             outputMap->value[row][col] = outputMap->header->flag;
-            surfaceIndex = long(myProject->indexMap.value[row][col]);
-            if (surfaceIndex != long(myProject->indexMap.header->flag))
+            surfaceIndex = long(myProject->indexMap[0].value[row][col]);
+            if (surfaceIndex != long(myProject->indexMap[0].header->flag))
             {
                 sumWater = soilFluxes3D::getWaterContent(surfaceIndex);         //[m]
                 minWater = 0.0;                                                 //[m]
@@ -729,15 +729,15 @@ bool getRootZoneAWCmap(Crit3DProject* myProject, gis::Crit3DRasterGrid* outputMa
     double awc, thickness, sumAWC, skeleton;
     int soilIndex, horizonIndex;
 
-    for (int row = 0; row < myProject->indexMap.header->nrRows; row++)
+    for (int row = 0; row < myProject->indexMap[0].header->nrRows; row++)
     {
-        for (int col = 0; col < myProject->indexMap.header->nrCols; col++)
+        for (int col = 0; col < myProject->indexMap[0].header->nrCols; col++)
         {
             //initialize
             outputMap->value[row][col] = outputMap->header->flag;
 
-            surfaceIndex = long(myProject->indexMap.value[row][col]);
-            if (surfaceIndex != long(myProject->indexMap.header->flag))
+            surfaceIndex = long(myProject->indexMap[0].value[row][col]);
+            if (surfaceIndex != long(myProject->indexMap[0].header->flag))
             {
                 sumAWC = 0.0;
                 soilIndex = int(myProject->soilIndexMap.value[row][col]);
@@ -797,16 +797,16 @@ bool getCriteria3DIntegrationMap(Crit3DProject* myProject, criteria3DVariable my
     double thickCoeff, sumCoeff;
     int soilIndex, horizonIndex;
 
-    for (int row = 0; row < myProject->indexMap.header->nrRows; row++)
+    for (int row = 0; row < myProject->indexMap[0].header->nrRows; row++)
     {
-        for (int col = 0; col < myProject->indexMap.header->nrCols; col++)
+        for (int col = 0; col < myProject->indexMap[0].header->nrCols; col++)
         {
-            surfaceIndex = long(myProject->indexMap.value[row][col]);
+            surfaceIndex = long(myProject->indexMap[0].value[row][col]);
             criteria3DMap->value[row][col] = criteria3DMap->header->flag;
             sumValues = 0.0;
             sumCoeff = 0.0;
 
-            if (surfaceIndex != myProject->indexMap.header->flag)
+            if (surfaceIndex != myProject->indexMap[0].header->flag)
             {
                 soilIndex = int(myProject->soilIndexMap.value[row][col]);
                 if (soilIndex != int(myProject->soilIndexMap.header->flag))
@@ -845,7 +845,7 @@ bool saveWaterBalanceOutput(Crit3DProject* myProject, Crit3DDate myDate, criteri
                             double upperDepth, double lowerDepth)
 {
     gis::Crit3DRasterGrid* myMap = new gis::Crit3DRasterGrid();
-    myMap->initializeGrid(myProject->indexMap);
+    myMap->initializeGrid(myProject->indexMap[0]);
 
     if (myVar == soilSurfaceMoisture)
     {
@@ -955,7 +955,7 @@ bool saveWaterBalanceState(Crit3DProject* myProject, Crit3DDate myDate, std::str
     std::string myErrorString;
     gis::Crit3DRasterGrid* myMap;
     myMap = new gis::Crit3DRasterGrid();
-    myMap->initializeGrid(myProject->indexMap);
+    myMap->initializeGrid(myProject->indexMap[0]);
 
     std::string myPrefix = getPrefixFromVar(myDate, myVar);
 

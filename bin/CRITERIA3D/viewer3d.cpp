@@ -246,7 +246,7 @@ void Viewer3D::clearScene()
 
 void Viewer3D::createScene()
 {
-    m_nrVertex = int(m_project->indexMap.maximum) + 1;
+    m_nrVertex = int(m_project->indexMap[0].maximum) + 1;
 
     m_vertexPositionArray.resize(m_nrVertex * 3 * int(sizeof(float)));
     m_vertexColorArray.resize(m_nrVertex * 3 * int(sizeof(float)));
@@ -263,12 +263,12 @@ void Viewer3D::createScene()
     long index;
     float x, y, z;
     Crit3DColor *myColor;
-    for (int row = 0; row < m_project->indexMap.header->nrRows; row++)
+    for (int row = 0; row < m_project->indexMap[0].header->nrRows; row++)
     {
-        for (int col = 0; col < m_project->indexMap.header->nrCols; col++)
+        for (int col = 0; col < m_project->indexMap[0].header->nrCols; col++)
         {
-            index = long(m_project->indexMap.value[row][col]);
-            if (index != long(m_project->indexMap.header->flag))
+            index = long(m_project->indexMap[0].value[row][col]);
+            if (index != long(m_project->indexMap[0].header->flag))
             {
                 z = m_project->DEM.value[row][col];
                 if (int(z) != int(m_project->DEM.header->flag))
@@ -320,34 +320,34 @@ void Viewer3D::createScene()
     // Indices
     long v0, v1, v2, v3;
     index = 0;
-    for (int row = 0; row < m_project->indexMap.header->nrRows; row++)
+    for (int row = 0; row < m_project->indexMap[0].header->nrRows; row++)
     {
-        for (int col = 0; col < m_project->indexMap.header->nrCols; col++)
+        for (int col = 0; col < m_project->indexMap[0].header->nrCols; col++)
         {
             // initialize
-            v0 = long(m_project->indexMap.value[row][col]);
-            v1 = long(m_project->indexMap.header->flag);
-            v2 = long(m_project->indexMap.header->flag);
-            v3 = long(m_project->indexMap.header->flag);
+            v0 = long(m_project->indexMap[0].value[row][col]);
+            v1 = long(m_project->indexMap[0].header->flag);
+            v2 = long(m_project->indexMap[0].header->flag);
+            v3 = long(m_project->indexMap[0].header->flag);
 
-            if (v0 != long(m_project->indexMap.header->flag))
+            if (v0 != long(m_project->indexMap[0].header->flag))
             {
-                if (row < (m_project->indexMap.header->nrRows-1))
-                    v1 = long(m_project->indexMap.value[row+1][col]);
-                if (row < (m_project->indexMap.header->nrRows-1) && col < (m_project->indexMap.header->nrCols-1))
-                    v2 = long(m_project->indexMap.value[row+1][col+1]);
-                if (col < (m_project->indexMap.header->nrCols-1))
-                    v3 = long(m_project->indexMap.value[row][col+1]);
+                if (row < (m_project->indexMap[0].header->nrRows-1))
+                    v1 = long(m_project->indexMap[0].value[row+1][col]);
+                if (row < (m_project->indexMap[0].header->nrRows-1) && col < (m_project->indexMap[0].header->nrCols-1))
+                    v2 = long(m_project->indexMap[0].value[row+1][col+1]);
+                if (col < (m_project->indexMap[0].header->nrCols-1))
+                    v3 = long(m_project->indexMap[0].value[row][col+1]);
 
                 // clockwise
-                if (v1 != long(m_project->indexMap.header->flag) && v2 != long(m_project->indexMap.header->flag))
+                if (v1 != long(m_project->indexMap[0].header->flag) && v2 != long(m_project->indexMap[0].header->flag))
                 {
                     indexData[index*3] = uint(v0);
                     indexData[index*3+1] = uint(v2);
                     indexData[index*3+2] = uint(v1);
                     index++;
                 }
-                if (v2 != long(m_project->indexMap.header->flag) && v3 != long(m_project->indexMap.header->flag))
+                if (v2 != long(m_project->indexMap[0].header->flag) && v3 != long(m_project->indexMap[0].header->flag))
                 {
                     indexData[index*3] = uint(v0);
                     indexData[index*3+1] = uint(v3);
@@ -356,14 +356,14 @@ void Viewer3D::createScene()
                 }
 
                 // anti-clockwise
-                if (v1 != long(m_project->indexMap.header->flag) && v2 != long(m_project->indexMap.header->flag))
+                if (v1 != long(m_project->indexMap[0].header->flag) && v2 != long(m_project->indexMap[0].header->flag))
                 {
                     indexData[index*3] = uint(v0);
                     indexData[index*3+1] = uint(v1);
                     indexData[index*3+2] = uint(v2);
                     index++;
                 }
-                if (v2 != long(m_project->indexMap.header->flag) && v3 != long(m_project->indexMap.header->flag))
+                if (v2 != long(m_project->indexMap[0].header->flag) && v3 != long(m_project->indexMap[0].header->flag))
                 {
                     indexData[index*3] = uint(v0);
                     indexData[index*3+1] = uint(v2);
