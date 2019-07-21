@@ -1483,16 +1483,37 @@ void weatherGenerator2D::spatialIterationAmounts(double** correlationMatrixSimul
                    {
                        if (uniformRandom[i][j] <= 0) uniformRandom[i][j] = EPSILON;
                        simulatedPrecipitationAmountsSeasonal[i][j] = weatherGenerator2D::inverseGammaFunction(uniformRandom[i][j],phatAlpha[i][j],phatBeta[i][j],0.001) + parametersModel.precipitationThreshold;
+                       printf("%.1f %f %f\n",simulatedPrecipitationAmountsSeasonal[i][j],uniformRandom[i][j],normRandom[i][j]);
+                       if (nrEigenvaluesLessThan0 > 0 && simulatedPrecipitationAmountsSeasonal[i][j]> 13.49 && simulatedPrecipitationAmountsSeasonal[i][j] < 13.51)
+                       {
+                         for (int istat= 0; istat<nrStations;istat++)
+                         {
+                             for (int jstat= 0; jstat<nrStations;jstat++)
+                             {
+                                printf("%f ",amountsCorrelationMatrix[istat][jstat]);
+                             }
+                             printf("\n");
+                         }
+                         nrEigenvaluesLessThan0 = nrEigenvaluesLessThan0 +2;
+                         for (int istat= 0; istat<nrStations;istat++)
+                         {
+                           //printf("eigenvalues %f \n",eigenvalues[istat]);
+                         }
+                         //pressEnterToContinue();
+                         for (int istat= 0; istat<nrStations*nrStations;istat++)
+                         {
+                            //printf("eigenvector %f \n",eigenvectors[istat]);
+                         }
+                         //pressEnterToContinue();
+                       }
 
-                      printf("%.1f %f %f\n",simulatedPrecipitationAmountsSeasonal[i][j],uniformRandom[i][j],normRandom[i][j]);
-                       //pressEnterToContinue();
                        // check uniformRandom phatAlpha e phatBeta i dati non vanno bene
                    }
                }
            }
            printf("\n");
        }
-       printf("\n\n\n\n");
+       //printf("\n\n\n\n");
 
        for (int i=0;i<nrStations;i++)
        {
