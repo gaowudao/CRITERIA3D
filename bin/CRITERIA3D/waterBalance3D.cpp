@@ -862,10 +862,12 @@ bool initializeWaterBalance3D(Crit3DProject* myProject)
     myProject->logInfo("nr of surface cells: " + QString::number(myProject->nrNodesPerLayer));
 
     myProject->nrNodes = myProject->nrNodesPerLayer * myProject->nrLayers;
-    myProject->waterSinkSource.resize(myProject->nrNodes);
+    myProject->waterSinkSource.resize(unsigned(myProject->nrNodes));
+    myProject->logInfo("nr of nodes: " + QString::number(myProject->nrNodes));
 
     // Boundary
-    myProject->setBoundary();
+    if (!myProject->setBoundary()) return false;
+    myProject->logInfo("Boundary computed");
 
     // Initiale soil fluxes
     int myResult = soilFluxes3D::initialize(myProject->nrNodes, myProject->nrLayers,
@@ -875,11 +877,18 @@ bool initializeWaterBalance3D(Crit3DProject* myProject)
         myProject->logError("initializeWaterBalance:" + myError);
         return false;
     }
+    myProject->logInfo("Memory initialized");
 
     // Set properties for all voxels
     if (! myProject->setCrit3DSurfaces()) return false;
+    myProject->logInfo("Surface initialized");
+
     if (! myProject->setCrit3DSoils()) return false;
+    myProject->logInfo("Soils initialized");
+
     if (! setCrit3DTopography(myProject)) return false;
+    myProject->logInfo("Topology initialized");
+
     if (! setCrit3DNodeSoil(myProject)) return false;
 
 
