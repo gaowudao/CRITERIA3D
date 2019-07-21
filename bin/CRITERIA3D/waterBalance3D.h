@@ -4,15 +4,13 @@
     #ifndef GIS_H
         #include "gis.h"
     #endif
+    #ifndef PROJECT3D_H
+        #include "project3D.h"
+    #endif
 
     class Crit3DProject;
     class Crit3DDate;
 
-    enum criteria3DVariable {waterContent, waterTotalPotential, waterMatricPotential,
-                            availableWaterContent, waterDeficit, degreeOfSaturation, soilTemperature,
-                            soilSurfaceMoisture};
-
-    void cleanWaterBalanceMemory();
 
     int getSoilLayerIndex(Crit3DProject* myProject, double depth);
     double getSoilLayerTop(Crit3DProject* myProject, int i);
@@ -38,8 +36,6 @@
     double getMaxEvaporation(double ET0, double LAI);
 
     double* getCriteria3DVarProfile(Crit3DProject* myProject, int myRow, int myCol, criteria3DVariable myVar);
-
-    double getCriteria3DVar(criteria3DVariable myVar, long nodeIndex);
 
     double evaporation(Crit3DProject* myProject, int row, int col, long surfaceIndex);
 

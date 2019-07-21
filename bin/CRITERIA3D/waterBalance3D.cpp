@@ -33,99 +33,6 @@
 #include "crit3dDate.h"
 
 
-static std::vector <double> waterSinkSource;     //[m^3/sec]
-
-
-void cleanWaterBalanceMemory()
-{
-    waterSinkSource.resize(0);
-    soilFluxes3D::cleanMemory();
-}
-
-bool isCrit3dError(int myResult, QString* myError)
-{
-    if (myResult == CRIT3D_OK) return(false);
-
-    if (myResult == INDEX_ERROR)
-        *myError = "Index error";
-    else if (myResult == MEMORY_ERROR)
-        *myError = "Memory error";
-    else if (myResult == TOPOGRAPHY_ERROR)
-        *myError = "Topography error";
-    else if (myResult == BOUNDARY_ERROR)
-        *myError = "Boundary error";
-    else if (myResult == PARAMETER_ERROR)
-        *myError = "Parameter error";
-    else
-        *myError = "Undefined error";
-
-    return (true);
-}
-
-
-bool setCrit3DSoils(Crit3DProject* myProject)
-{
-    soil::Crit3DHorizon* myHorizon;
-    QString myError;
-    int myResult;
-
-    for (int soilIndex = 0; soilIndex < myProject->nrSoils; soilIndex++)
-    {
-        for (int horizIndex = 0; horizIndex < myProject->soilList[soilIndex].nrHorizons; horizIndex++)
-        {
-            // TODO cec
-            myHorizon = &(myProject->soilList[soilIndex].horizon[horizIndex]);
-            if ((myHorizon->texture.classUSDA > 0) && (myHorizon->texture.classUSDA <= 12))
-            {
-                myResult = soilFluxes3D::setSoilProperties(soilIndex, horizIndex,
-                     myHorizon->vanGenuchten.alpha,
-                     myHorizon->vanGenuchten.n,
-                     myHorizon->vanGenuchten.m,
-                     myHorizon->vanGenuchten.he,
-                     myHorizon->vanGenuchten.thetaR,
-                     myHorizon->vanGenuchten.thetaS,
-                     myHorizon->waterConductivity.kSat / 360000.0,
-                     myHorizon->waterConductivity.l,
-                     myHorizon->organicMatter,
-                     myHorizon->texture.clay);
-
-                 if (isCrit3dError(myResult, &myError))
-                 {
-                     myProject->errorString = "setCrit3DSoils:" + myError
-                         + " in soil nr:" + QString::number(myProject->soilList[soilIndex].id)
-                         + " horizon nr: " + QString::number(horizIndex);
-                     return(false);
-                 }
-            }
-        }
-    }
-    return(true);
-}
-
-
-bool setCrit3DSurfaces(Crit3DProject* myProject)
-{
-    QString myError;
-    int myResult;
-
-    // TODO
-    int nrSurfaces = 1;
-    float ManningRoughness = 0.24f;         //[s m^-1/3]
-    float surfacePond = 0.002f;             //[m]
-
-    for (int surfaceIndex = 0; surfaceIndex < nrSurfaces; surfaceIndex++)
-    {
-        myResult = soilFluxes3D::setSurfaceProperties(surfaceIndex, ManningRoughness, surfacePond);
-        if (isCrit3dError(myResult, &myError))
-        {
-            myProject->errorString = "setCrit3DSurfaces:" + myError
-                + " in surface nr:" + QString::number(surfaceIndex);
-            return(false);
-        }
-    }
-    return(true);
-}
-
 
 bool setCrit3DTopography(Crit3DProject* myProject)
 {
@@ -426,7 +333,7 @@ double evaporation(Crit3DProject* myProject, int row, int col, long surfaceIndex
         {
             realEvap += layerEvap;
             flow = area * (layerEvap / 1000.0);                  //[m^3/h]
-            waterSinkSource[nodeIndex] -= (flow / 3600.0);        //[m^3/s]
+            myProject->waterSinkSource[nodeIndex] -= (flow / 3600.0);        //[m^3/s]
         }
     }
     return 0;
@@ -444,7 +351,7 @@ bool setWaterSinkSource(Crit3DProject* myProject, double* totalPrecipitation,
 
     // initialize
     for (long i = 0; i < myProject->nrNodes; i++)
-        waterSinkSource[i] = 0.0;
+        myProject->waterSinkSource[i] = 0.0;
 
     double area = myProject->DEM.header->cellSize * myProject->DEM.header->cellSize;
 
@@ -467,7 +374,7 @@ bool setWaterSinkSource(Crit3DProject* myProject, double* totalPrecipitation,
                 {
                     flow = area * (totalWater / 1000.0);                //[m^3/h]
                     *totalPrecipitation += flow;
-                    waterSinkSource[surfaceIndex] += flow / 3600.0;     //[m^3/s]
+                    myProject->waterSinkSource[surfaceIndex] += flow / 3600.0;     //[m^3/s]
                 }
             }
         }
@@ -513,7 +420,7 @@ bool setWaterSinkSource(Crit3DProject* myProject, double* totalPrecipitation,
 
     for (long i = 0; i < myProject->nrNodes; i++)
     {
-        myResult = soilFluxes3D::setWaterSinkSource(i, waterSinkSource[i]);
+        myResult = soilFluxes3D::setWaterSinkSource(i, myProject->waterSinkSource[i]);
         if (isCrit3dError(myResult, &myError))
         {
             myProject->errorString = "initializeSoilMoisture:" + myError;
@@ -545,33 +452,6 @@ double* getCriteria3DVarProfile(Crit3DProject* myProject, int myRow, int myCol, 
     return myProfile;
 }
 
-
-double getCriteria3DVar(criteria3DVariable myVar, long nodeIndex)
-{
-    double myCrit3dVar;
-
-    if (myVar == waterContent)
-        myCrit3dVar = soilFluxes3D::getWaterContent(nodeIndex);
-    else if (myVar == availableWaterContent)
-        myCrit3dVar = soilFluxes3D::getAvailableWaterContent(nodeIndex);
-    else if (myVar == waterDeficit)
-        //TODO chiamare soil per field capacity
-        myCrit3dVar = soilFluxes3D::getWaterDeficit(nodeIndex, 3.0);
-    else if (myVar == waterTotalPotential)
-        myCrit3dVar = soilFluxes3D::getTotalPotential(nodeIndex);
-    else if (myVar == waterMatricPotential)
-        myCrit3dVar = soilFluxes3D::getMatricPotential(nodeIndex);
-    else if (myVar == degreeOfSaturation)
-        myCrit3dVar = soilFluxes3D::getDegreeOfSaturation(nodeIndex);
-    else
-        myCrit3dVar = MISSING_DATA_ERROR;
-
-    if (myCrit3dVar != INDEX_ERROR && myCrit3dVar != MEMORY_ERROR &&
-            myCrit3dVar != MISSING_DATA_ERROR && myCrit3dVar != TOPOGRAPHY_ERROR)
-        return myCrit3dVar;
-    else
-        return NODATA;
-}
 
 bool setCriteria3DVar(criteria3DVariable myVar, long nodeIndex, double myValue)
 {
@@ -973,7 +853,7 @@ bool initializeWaterBalance(Crit3DProject* myProject)
     QString myError;
 
     // Layers depth
-    myProject->nrLayers = myProject->computeNrLayers(myProject->soilDepth);
+    myProject->computeNrLayers();
     myProject->setLayersDepth();
     myProject->logInfo("nr of layers: " + QString::number(myProject->nrLayers));
 
@@ -986,15 +866,14 @@ bool initializeWaterBalance(Crit3DProject* myProject)
         return(false);
     }
     myProject->nrNodes = myProject->nrNodesPerLayer * myProject->nrLayers;
-    waterSinkSource.resize(myProject->nrNodes);
+    myProject->waterSinkSource.resize(myProject->nrNodes);
 
     // Boundary
-    myProject->createBoundaryMap();
+    myProject->setBoundary();
 
     // Initiale soil fluxes
-    int nrLateralLink = 8;
     int myResult = soilFluxes3D::initialize(myProject->nrNodes, myProject->nrLayers,
-                                            nrLateralLink, true, false, false);
+                                            myProject->nrLateralLink, true, false, false);
     if (isCrit3dError(myResult, &myError))
     {
         myProject->logError("initializeCriteria3D:" + myError);
@@ -1002,10 +881,10 @@ bool initializeWaterBalance(Crit3DProject* myProject)
     }
 
     // Set properties for all voxels
-    if (! setCrit3DSurfaces(myProject)) return(false);
-    if (! setCrit3DSoils(myProject)) return(false);
-    if (! setCrit3DTopography(myProject)) return(false);
-    if (! setCrit3DNodeSoil(myProject)) return(false);
+    if (! myProject->setCrit3DSurfaces()) return false;
+    if (! myProject->setCrit3DSoils()) return false;
+    if (! setCrit3DTopography(myProject)) return false;
+    if (! setCrit3DNodeSoil(myProject)) return false;
 
 
     //criteria3D::setNumericalParameters(6.0, 600.0, 200, 10, 12, 3);   // precision

@@ -21,14 +21,15 @@
 
     public:
         // same header of DEM
+        gis::Crit3DRasterGrid soilMap;
         gis::Crit3DRasterGrid soilIndexMap;
         gis::Crit3DRasterGrid cropIndexMap;
-        gis::Crit3DRasterGrid boundaryMap;
 
         bool isParametersLoaded;
         bool isInitialized;
 
         Crit3DProject();
+
 
         bool readCriteria3DParameters();
 
@@ -41,7 +42,6 @@
 
         bool createSoilIndexMap();
         bool createIndexMap();
-        bool createBoundaryMap();
 
         double getSoilVar(int soilIndex, int layerIndex, soil::soilVariable myVar);
         double* getSoilVarProfile(int row, int col, soil::soilVariable myVar);

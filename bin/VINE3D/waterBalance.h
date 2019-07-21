@@ -1,28 +1,18 @@
 #ifndef WATERBALANCE_H
 #define WATERBALANCE_H
 
-#ifndef GIS_H
-    #include "gis.h"
-#endif
+    #ifndef GIS_H
+        #include "gis.h"
+    #endif
+    #ifndef CRIT3DDATE_H
+        #include "crit3dDate.h"
+    #endif
+    #ifndef PROJECT3D_H
+        #include "project3D.h"
+    #endif
 
-#ifndef CRIT3DDATE_H
-    #include "crit3dDate.h"
-#endif
-#ifndef QSTRING_H
-    #include <QString>
-#endif
-#ifndef QDATETIME_H
-    #include <QDateTime>
-#endif
-
-
-    enum criteria3DVariable {waterContent, waterTotalPotential, waterMatricPotential,
-                            availableWaterContent, degreeOfSaturation, soilTemperature,
-                            soilSurfaceMoisture, bottomDrainage, waterInflow, waterOutflow};
-
-    enum soilVariable {soilWaterContentFC, soilWaterContentWP, soilWiltingPointPotential,
-                       soilFieldCapacityPotential, soilSaturation, soilWaterContentUI};
-
+    class QString;
+    class QDateTime;
     class Vine3DProject;
 
 
@@ -39,8 +29,6 @@
             void initializeWithDEM(const gis::Crit3DRasterGrid &myDEM);
             gis::Crit3DRasterGrid* getMapFromVar(criteria3DVariable myVar);
     };
-
-    void cleanWaterBalanceMemory();
 
     int getLayerIndex(Vine3DProject* myProject, double depth);
     double getLayerTop(Vine3DProject* myProject, int i);
@@ -75,8 +63,7 @@
     double getMaxEvaporation(float ET0, float LAI);
 
     double* getCriteria3DVarProfile(Vine3DProject* myProject, int myRow, int myCol, criteria3DVariable myVar);
-    double* getSoilVarProfile(Vine3DProject* myProject, int myRow, int myCol, soilVariable myVar);
-    double getCriteria3DVar(criteria3DVariable myVar, long nodeIndex);
+    double* getSoilVarProfile(Vine3DProject* myProject, int myRow, int myCol, soil::soilVariable myVar);
 
     double evaporation(Vine3DProject* myProject, int row, int col);
 

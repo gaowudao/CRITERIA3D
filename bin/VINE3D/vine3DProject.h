@@ -54,7 +54,6 @@
         QString demFileName;
         QString fieldMapName;
 
-        gis::Crit3DRasterGrid boundaryMap;
         gis::Crit3DRasterGrid modelCaseIndexMap;
 
         TVineCultivar* cultivar;

@@ -45,6 +45,7 @@ Crit3DProject::Crit3DProject() : Project3D()
 
 bool Crit3DProject::readCriteria3DParameters()
 {          
+    // TODO
     return true;
 }
 
@@ -64,7 +65,7 @@ bool Crit3DProject::loadModelParameters(QString dbName)
        return false;
     }
 
-    // TODO Load crop parameters
+    // TODO: Load crop parameters
 
     isParametersLoaded = true;
     return true;
@@ -119,34 +120,6 @@ bool Crit3DProject::createIndexMap()
     indexMap[0].isLoaded = true;
     nrNodesPerLayer = index;
     return(nrNodesPerLayer > 0);
-}
-
-
-bool Crit3DProject::createBoundaryMap()
-{
-    // check
-    if (! this->DEM.isLoaded)
-    {
-        logError("Missing Missing Digital Elevation Model.");
-        return false;
-    }
-
-    boundaryMap.initializeGrid(*(DEM.header));
-
-    for (int row = 0; row < boundaryMap.header->nrRows; row++)
-    {
-        for (int col = 0; col < boundaryMap.header->nrCols; col++)
-        {
-            if (gis::isBoundary(DEM, row, col))
-            {
-                if (gis::isMinimum(DEM, row, col))
-                    boundaryMap.value[row][col] = BOUNDARY_RUNOFF;
-            }
-        }
-    }
-
-    boundaryMap.isLoaded = true;
-    return true;
 }
 
 
@@ -230,18 +203,17 @@ double Crit3DProject::getSoilVar(int soilIndex, int layerIndex, soil::soilVariab
 }
 
 
-
 void Crit3DProject::clear()
 {
     soilIndexMap.clear();
     cropIndexMap.clear();
     boundaryMap.clear();
 
-    if (indexMap.size() > 0)
+    for (unsigned int i = 0; i < indexMap.size(); i++)
     {
-        indexMap[0].clear();
-        indexMap.clear();
+        indexMap[i].clear();
     }
+    indexMap.clear();
 
     cleanWaterBalanceMemory();
     isInitialized = false;

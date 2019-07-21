@@ -21,12 +21,12 @@ extern Vine3DProject myProject;
 
 bool setSoilProfileCrop(Vine3DProject* myProject, int row, int col, Crit3DModelCase* modelCase)
 {
-    double* soilWPProfile = getSoilVarProfile(myProject, row, col, soilWiltingPointPotential);
-    double* soilFCProfile = getSoilVarProfile(myProject, row, col, soilFieldCapacityPotential) ;
+    double* soilWPProfile = getSoilVarProfile(myProject, row, col, soil::soilWaterPotentialWP);
+    double* soilFCProfile = getSoilVarProfile(myProject, row, col, soil::soilWaterPotentialFC) ;
     double* matricPotentialProfile = getCriteria3DVarProfile(myProject, row, col, waterMatricPotential);
     double* waterContentProfile = getCriteria3DVarProfile(myProject, row, col, waterContent);
-    double* waterContentProfileWP = getSoilVarProfile(myProject, row, col, soilWaterContentWP);
-    double* waterContentProfileFC = getSoilVarProfile(myProject, row, col, soilWaterContentFC);
+    double* waterContentProfileWP = getSoilVarProfile(myProject, row, col, soil::soilWaterContentWP);
+    double* waterContentProfileFC = getSoilVarProfile(myProject, row, col, soil::soilWaterContentFC);
 
     if (! myProject->grapevine.setSoilProfile(modelCase, soilWPProfile, soilFCProfile,
             matricPotentialProfile, waterContentProfile, waterContentProfileFC,

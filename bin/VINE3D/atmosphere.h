@@ -33,8 +33,6 @@
     bool loadDailyMeteoMap(Vine3DProject* myProject, meteoVariable myDailyVar, QDate myDate,
                            const QString& myArea);
 
-    // bool computeET0Map(Vine3DProject* myProject);
-    // bool computeLeafWetnessMap(Vine3DProject* myProject);
     void qualityControl(Vine3DProject* myProject, meteoVariable myVar, const Crit3DTime& myCrit3DTime);
 
     bool checkLackOfData(Vine3DProject* myProject, meteoVariable myVar, Crit3DTime myDateTime, long* nrReplacedData);

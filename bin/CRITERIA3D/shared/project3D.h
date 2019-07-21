@@ -12,40 +12,63 @@
     #endif
 
 
+    enum criteria3DVariable {waterContent, waterTotalPotential, waterMatricPotential,
+                        availableWaterContent, degreeOfSaturation, soilTemperature,
+                        soilSurfaceMoisture, bottomDrainage, waterDeficit, waterInflow, waterOutflow};
+
+
     class Project3D : public Project
     {
 
     public:
-        Crit3DMeteoMaps* meteoMaps;
-
-        gis::Crit3DRasterGrid soilMap;
-        std::vector <gis::Crit3DRasterGrid> indexMap;
-
-        double minThickness;
-        double maxThickness;
-        double thickFactor;
+        long nrNodes;
+        int nrLayers;
+        long nrNodesPerLayer;
         int nrLateralLink;
 
+        // 3D soil fluxes maps
+        // must be initialized with DEM
+        gis::Crit3DRasterGrid boundaryMap;
+        std::vector <gis::Crit3DRasterGrid> indexMap;
+
+        // soil properties
         int nrSoils;
-        int nrLayers;
-        double soilDepth;                       //[m]
+        double soilDepth;                       // [m]
 
         std::vector <soil::Crit3DSoil> soilList;
         soil::Crit3DTextureClass texturalClassList[13];
 
-        long nrNodes;
-        long nrNodesPerLayer;
+        // layers
+        double minThickness;                    // [m]
+        double maxThickness;                    // [m]
+        double thickFactor;                     // [m]
 
-        std::vector <double> layerDepth;        //[m]
-        std::vector <double> layerThickness;    //[m]
+        std::vector <double> layerDepth;        // [m]
+        std::vector <double> layerThickness;    // [m]
+
+        // sink/source
+        std::vector <double> waterSinkSource;   // [m^3/sec]
+
+        // meteo maps (move to Project ?)
+        Crit3DMeteoMaps* meteoMaps;
 
 
         Project3D();
 
+        void cleanWaterBalanceMemory();
+        void computeNrLayers();
+        void setLayersDepth();
 
-        int computeNrLayers(double totalDepth);
-        bool setLayersDepth();
+        bool setBoundary();
+        bool setCrit3DSurfaces();
+        bool setCrit3DSoils();
+
+        //bool setCrit3DTopography();
     };
+
+
+    bool isCrit3dError(int result, QString* error);
+    double getCriteria3DVar(criteria3DVariable myVar, long nodeIndex);
 
 
 #endif // PROJECT3D_H
