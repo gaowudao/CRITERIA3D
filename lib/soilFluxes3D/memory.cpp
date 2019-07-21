@@ -37,15 +37,18 @@ void cleanArrays()
     if (A != nullptr)
     {
             for (long i=0; i < myStructure.nrNodes; i++)
-                if (A[i] != nullptr) free(A[i]);
+            {
+                if (A[i] != nullptr)
+                    free(A[i]);
+            }
             free(A);
             A = nullptr;
     }
 
     /*! free arrays */
-    if (b != nullptr){ free(b); b = nullptr; }
-    if (C != nullptr){ free(C); C = nullptr; }
-    if (invariantFlux != nullptr){ free(invariantFlux); invariantFlux = nullptr; }
+    if (b != nullptr) { free(b); b = nullptr; }
+    if (C != nullptr) { free(C); C = nullptr; }
+    if (invariantFlux != nullptr) { free(invariantFlux); invariantFlux = nullptr; }
     if (X != nullptr) { free(X); X = nullptr; }
     }
 

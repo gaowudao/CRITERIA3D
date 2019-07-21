@@ -316,7 +316,7 @@ bool Crit3DProject::computeAllMeteoMaps(const Crit3DTime& myTime, bool showInfo)
 
 bool Crit3DProject::initializeCriteria3D()
 {
-    // check
+    // check data
     if (! this->DEM.isLoaded)
     {
         logError("Missing Digital Elevation Model.");

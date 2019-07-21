@@ -194,7 +194,7 @@ bool setCrit3DNodeSoil(Crit3DProject* myProject)
                                 myProject->errorString = "function setCrit3DNodeSoil: \nno horizon definition in soil nr: "
                                         + QString::number(soilIndex) + " depth: " + QString::number(myProject->layerDepth[layer])
                                         +"\nCheck soil totalDepth.";
-                                return(false);
+                                return false;
                             }
 
                             myResult = soilFluxes3D::setNodeSoil(index, soilIndex, horizonIndex);
@@ -204,14 +204,14 @@ bool setCrit3DNodeSoil(Crit3DProject* myProject)
                             {
                                 myProject->errorString = "setCrit3DNodeSoil:" + myError + " in soil nr: " + QString::number(soilIndex)
                                         + " horizon nr:" + QString::number(horizonIndex);
-                                return(false);
+                                return false;
                             }
                         }
                     }
                 }
             }
         }
-    return(true);
+    return true;
 }
 
 
@@ -889,7 +889,11 @@ bool initializeWaterBalance3D(Crit3DProject* myProject)
     if (! setCrit3DTopography(myProject)) return false;
     myProject->logInfo("Topology initialized");
 
-    if (! setCrit3DNodeSoil(myProject)) return false;
+    if (! setCrit3DNodeSoil(myProject))
+    {
+        myProject->logError();
+        return false;
+    }
 
 
     //criteria3D::setNumericalParameters(6.0, 600.0, 200, 10, 12, 3);   // precision
