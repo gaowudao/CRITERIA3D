@@ -27,7 +27,6 @@
         int nrLateralLink;
 
         // 3D soil fluxes maps
-        // must be initialized with DEM
         gis::Crit3DRasterGrid boundaryMap;
         std::vector <gis::Crit3DRasterGrid> indexMap;
 
@@ -62,8 +61,6 @@
         bool setBoundary();
         bool setCrit3DSurfaces();
         bool setCrit3DSoils();
-
-        //bool setCrit3DTopography();
     };
 
 
