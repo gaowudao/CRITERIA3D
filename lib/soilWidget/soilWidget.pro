@@ -32,7 +32,8 @@ SOURCES += \
     tabWaterRetentionCurve.cpp \
     tabWaterRetentionData.cpp \
     tabHydraulicConductivityCurve.cpp \
-    tableDelegate.cpp
+    tableDelegate.cpp \
+    tableDbOrModel.cpp
 
 HEADERS += \
         soilWidget.h \
@@ -41,7 +42,8 @@ HEADERS += \
     tabWaterRetentionCurve.h \
     tabWaterRetentionData.h \
     tabHydraulicConductivityCurve.h \
-    tableDelegate.h
+    tableDelegate.h \
+    tableDbOrModel.h
 
 unix {
     target.path = /usr/lib

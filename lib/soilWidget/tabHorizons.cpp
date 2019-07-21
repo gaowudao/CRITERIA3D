@@ -1,6 +1,6 @@
 #include "tabHorizons.h"
 #include "commonConstants.h"
-#include "tableDelegate.h"
+
 
 TabHorizons::TabHorizons()
 {
@@ -9,36 +9,13 @@ TabHorizons::TabHorizons()
     dbTableLabel->setStyleSheet("font: 11pt;");
     QLabel* modelTableLabel = new QLabel("Soil parameters estimated by model:");
     modelTableLabel->setStyleSheet("font: 11pt;");
-    tableDb = new QTableWidget();
-    tableDb->setColumnCount(10);
-    QStringList tableDbHeader;
-    tableDbHeader << "Upper depth [cm]" << "Lower depth [cm]" << "Sand [%]" << "Silt  [%]" << "Clay [%]" << "Coarse frag. [%]" << "Org. matter [%]"
-                    << "Bulk density [g/cm3]" << "K Sat [cm/d]" << "Theta S [-]";
-    tableDb->setHorizontalHeaderLabels(tableDbHeader);
-    tableDb->resizeColumnsToContents();
-    tableDb->setSelectionBehavior(QAbstractItemView::SelectRows);
-    tableDb->setSelectionMode(QAbstractItemView::SingleSelection);
-    tableDb->setShowGrid(true);
-    tableDb->setStyleSheet("QTableView {selection-background-color: green;}");
-    tableDb->setItemDelegate(new TableDelegate(tableDb));
-
-    tableModel = new QTableWidget();
-    tableModel->setColumnCount(11);
-    QStringList tableModelHeader;
-    tableModelHeader << "USDA Texture" << "Coarse frag. [%]" << "Org. matter [%]"
-                    << "Bulk density [g/cm3]" << "K Sat [cm/d]" << "Theta S [-]" << "Theta R [-]" << "Air entry [KPa]"
-                    << "alpha [KPa^-1]" << "  n  [-] " << " m   [-] ";
-    tableModel->setHorizontalHeaderLabels(tableModelHeader);
-    tableModel->resizeColumnsToContents();
-    tableModel->setSelectionBehavior(QAbstractItemView::SelectRows);
-    tableModel->setSelectionMode(QAbstractItemView::SingleSelection);
-    tableModel->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    tableModel->setShowGrid(true);
-    tableModel->setStyleSheet("QTableView {selection-background-color: green;}");
-
+    tableDb = new TableDbOrModel("Db");
+    tableModel = new TableDbOrModel("Model");
 
     connect(tableDb->verticalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->tableDbVerticalHeaderClick(index); });
     connect(tableDb, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
+    connect(tableDb, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClicked(row, column); });
+    connect(tableModel, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClicked(row, column); });
     connect(tableModel->verticalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->tableModelVerticalHeaderClick(index); });
 
     mainLayout->addWidget(dbTableLabel);
@@ -82,6 +59,7 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil mySoil)
         checkHorizonData(mySoil, i);
         checkMissingItem(i);
     }
+    clearSelections();
 
 
 }
@@ -92,13 +70,10 @@ void TabHorizons::checkHorizonData(soil::Crit3DSoil mySoil, int horizonNum)
     {
         tableDb->item(horizonNum,0)->setBackgroundColor(Qt::red);
         tableDb->item(horizonNum,1)->setBackgroundColor(Qt::red);
-        tableDb->item(horizonNum,0)->setToolTip("wrong value");
-        tableDb->item(horizonNum,1)->setToolTip("wrong value");
     }
     if (horizonNum > 0 && mySoil.horizon[horizonNum].dbData.upperDepth != mySoil.horizon[horizonNum-1].dbData.lowerDepth)
     {
         tableDb->item(horizonNum,0)->setBackgroundColor(Qt::red);
-        tableDb->item(horizonNum,0)->setToolTip("wrong value");
     }
 
     if (mySoil.horizon[horizonNum].dbData.sand + mySoil.horizon[horizonNum].dbData.silt + mySoil.horizon[horizonNum].dbData.clay != 100)
@@ -106,9 +81,6 @@ void TabHorizons::checkHorizonData(soil::Crit3DSoil mySoil, int horizonNum)
         tableDb->item(horizonNum,2)->setBackgroundColor(Qt::red);
         tableDb->item(horizonNum,3)->setBackgroundColor(Qt::red);
         tableDb->item(horizonNum,4)->setBackgroundColor(Qt::red);
-        tableDb->item(horizonNum,2)->setToolTip("wrong value");
-        tableDb->item(horizonNum,3)->setToolTip("wrong value");
-        tableDb->item(horizonNum,4)->setToolTip("wrong value");
 
         tableModel->item(horizonNum,0)->setBackgroundColor(Qt::red);
         tableModel->item(horizonNum,1)->setBackgroundColor(Qt::red);
@@ -122,17 +94,6 @@ void TabHorizons::checkHorizonData(soil::Crit3DSoil mySoil, int horizonNum)
         tableModel->item(horizonNum,9)->setBackgroundColor(Qt::red);
         tableModel->item(horizonNum,10)->setBackgroundColor(Qt::red);
 
-        tableModel->item(horizonNum,0)->setToolTip("wrong horizon");
-        tableModel->item(horizonNum,1)->setToolTip("wrong horizon");
-        tableModel->item(horizonNum,2)->setToolTip("wrong horizon");
-        tableModel->item(horizonNum,3)->setToolTip("wrong horizon");
-        tableModel->item(horizonNum,4)->setToolTip("wrong horizon");
-        tableModel->item(horizonNum,5)->setToolTip("wrong horizon");
-        tableModel->item(horizonNum,6)->setToolTip("wrong horizon");
-        tableModel->item(horizonNum,7)->setToolTip("wrong horizon");
-        tableModel->item(horizonNum,8)->setToolTip("wrong horizon");
-        tableModel->item(horizonNum,9)->setToolTip("wrong horizon");
-        tableModel->item(horizonNum,10)->setToolTip("wrong horizon");
         return;
     }
     checkComputedValues(mySoil, horizonNum);
@@ -148,7 +109,6 @@ void TabHorizons::checkMissingItem(int horizonNum)
         {
             tableDb->item(horizonNum,j)->setBackgroundColor(Qt::yellow);
             tableDb->item(horizonNum,j)->setText(QString::number(NODATA));
-            tableDb->item(horizonNum,j)->setToolTip("missing data");
         }
     }
 
@@ -168,27 +128,22 @@ void TabHorizons::checkComputedValues(soil::Crit3DSoil mySoil, int horizonNum)
     if (mySoil.horizon[horizonNum].dbData.coarseFragments != mySoil.horizon[horizonNum].coarseFragments*100)
     {
         tableModel->item(horizonNum,1)->setBackgroundColor(Qt::yellow);
-        tableModel->item(horizonNum,1)->setToolTip("estimated value");
     }
     if (mySoil.horizon[horizonNum].dbData.organicMatter != mySoil.horizon[horizonNum].organicMatter*100)
     {
         tableModel->item(horizonNum,2)->setBackgroundColor(Qt::yellow);
-        tableModel->item(horizonNum,2)->setToolTip("estimated value");
     }
     if (mySoil.horizon[horizonNum].dbData.bulkDensity != mySoil.horizon[horizonNum].bulkDensity)
     {
         tableModel->item(horizonNum,3)->setBackgroundColor(Qt::yellow);
-        tableModel->item(horizonNum,3)->setToolTip("estimated value");
     }
     if (mySoil.horizon[horizonNum].dbData.thetaSat != mySoil.horizon[horizonNum].vanGenuchten.thetaS)
     {
         tableModel->item(horizonNum,5)->setBackgroundColor(Qt::yellow);
-        tableModel->item(horizonNum,5)->setToolTip("estimated value");
     }
     if (mySoil.horizon[horizonNum].dbData.kSat != mySoil.horizon[horizonNum].waterConductivity.kSat)
     {
         tableModel->item(horizonNum,4)->setBackgroundColor(Qt::yellow);
-        tableModel->item(horizonNum,4)->setToolTip("estimated value");
     }
 }
 
@@ -215,7 +170,14 @@ void TabHorizons::tableModelVerticalHeaderClick(int index)
 void TabHorizons::cellChanged(int row, int column)
 {
     qDebug() << "Cell at row: " << QString::number(row) << " column " << QString::number(column)<<" was changed.";
+    tableModel->selectRow(row);
     QString data = tableDb->item(row, column)->text();
     data.replace(",", ".");
     tableDb->item(row, column)->setText(data);
+}
+
+void TabHorizons::cellClicked(int row, int column)
+{
+    tableDb->selectRow(row);
+    tableModel->selectRow(row);
 }

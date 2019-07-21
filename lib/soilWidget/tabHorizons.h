@@ -6,6 +6,10 @@
     #include "soil.h"
 #endif
 
+#ifndef TABLEDB_H
+#include "tableDbOrModel.h"
+#endif
+
 class TabHorizons : public QWidget
 {
     Q_OBJECT
@@ -20,10 +24,11 @@ public:
     void tableDbVerticalHeaderClick(int index);
     void tableModelVerticalHeaderClick(int index);
     void cellChanged(int row, int column);
+    void cellClicked(int row, int column);
 
 private:
-    QTableWidget* tableDb;
-    QTableWidget* tableModel;
+    TableDbOrModel* tableDb;
+    TableDbOrModel* tableModel;
 };
 
 #endif // HORIZONSTAB_H
