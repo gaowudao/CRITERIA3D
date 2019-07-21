@@ -846,7 +846,7 @@ bool waterBalance(Crit3DProject* myProject)
 }
 
 
-bool initializeWaterBalance(Crit3DProject* myProject)
+bool initializeWaterBalance3D(Crit3DProject* myProject)
 {
     myProject->logInfo("\nInitialize Waterbalance...");
 
@@ -858,13 +858,9 @@ bool initializeWaterBalance(Crit3DProject* myProject)
     myProject->logInfo("nr of layers: " + QString::number(myProject->nrLayers));
 
     // Index map
-    if (myProject->createIndexMap())
-        myProject->logInfo("nr of surface cells: " + QString::number(myProject->nrNodesPerLayer));
-    else
-    {
-        myProject->logError("initializeWaterBalance: wrong DEM");
-        return(false);
-    }
+    if (! myProject->createIndexMap()) return false;
+    myProject->logInfo("nr of surface cells: " + QString::number(myProject->nrNodesPerLayer));
+
     myProject->nrNodes = myProject->nrNodesPerLayer * myProject->nrLayers;
     myProject->waterSinkSource.resize(myProject->nrNodes);
 
@@ -876,7 +872,7 @@ bool initializeWaterBalance(Crit3DProject* myProject)
                                             myProject->nrLateralLink, true, false, false);
     if (isCrit3dError(myResult, &myError))
     {
-        myProject->logError("initializeCriteria3D:" + myError);
+        myProject->logError("initializeWaterBalance:" + myError);
         return false;
     }
 

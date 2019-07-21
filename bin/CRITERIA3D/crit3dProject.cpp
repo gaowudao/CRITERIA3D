@@ -203,19 +203,13 @@ double Crit3DProject::getSoilVar(int soilIndex, int layerIndex, soil::soilVariab
 }
 
 
-void Crit3DProject::clear()
+void Crit3DProject::clearProject()
 {
+    clearWaterBalance3D();
+
     soilIndexMap.clear();
     cropIndexMap.clear();
-    boundaryMap.clear();
 
-    for (unsigned int i = 0; i < indexMap.size(); i++)
-    {
-        indexMap[i].clear();
-    }
-    indexMap.clear();
-
-    cleanWaterBalanceMemory();
     isInitialized = false;
 }
 
@@ -339,17 +333,16 @@ bool Crit3DProject::initializeCriteria3D()
         return false;
     }
 
-    this->clear();
+    this->clearProject();
 
-    if (!createSoilIndexMap())
-        return false;
+    if (!createSoilIndexMap()) return false;
 
     // loadCropProperties()
     // load crop map
 
-    if (! initializeWaterBalance(this))
+    if (! initializeWaterBalance3D(this))
     {
-        this->clear();
+        this->clearProject();
         return false;
     }
 
@@ -367,7 +360,7 @@ bool Crit3DProject::initializeCriteria3D()
                          GAMMA_DISTRIBUTION, depthModeRootDensity, depthMeanRootDensity);*/
 
     this->isInitialized = true;
-    logInfoGUI("Criteria3D project initialized");
+    logInfoGUI("Criteria3D model initialized");
 
     return true;
 }

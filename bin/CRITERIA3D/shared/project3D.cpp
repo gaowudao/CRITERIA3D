@@ -45,10 +45,34 @@ Project3D::Project3D() : Project()
 }
 
 
-void Project3D::cleanWaterBalanceMemory()
+void Project3D::clearWaterBalance3D()
 {
-    waterSinkSource.clear();
     soilFluxes3D::cleanMemory();
+    waterSinkSource.clear();
+
+    layerThickness.clear();
+    layerDepth.clear();
+
+    for (unsigned int i = 0; i < indexMap.size(); i++)
+    {
+        indexMap[i].clear();
+    }
+    indexMap.clear();
+
+    boundaryMap.clear();
+}
+
+
+void Project3D::closeProject3D()
+{
+    clearWaterBalance3D();
+
+    for (unsigned int i = 0; i < soilList.size(); i++)
+    {
+        soilList[i].cleanSoil();
+    }
+
+    delete meteoMaps;
 }
 
 

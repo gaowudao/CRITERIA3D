@@ -24,6 +24,7 @@
 #include "vine3DShell.h"
 #include "vine3DProject.h"
 #include "soilDbTools.h"
+#include "soilFluxes3D.h"
 
 
 Vine3DProject::Vine3DProject() : Project3D()
@@ -70,17 +71,6 @@ bool Vine3DProject::loadVine3DSettings()
     return true;
 }
 
-void Vine3DProject::deleteAllGrids()
-{
-    DEM.clear();
-    modelCaseIndexMap.clear();
-    boundaryMap.clear();
-
-    for (int i=0; i < nrLayers; i++)
-        indexMap.at(size_t(i)).clear();
-
-    delete meteoMaps;
-}
 
 void Vine3DProject::closeProject()
 {
@@ -90,13 +80,15 @@ void Vine3DProject::closeProject()
         this->dbConnection.close();
         this->logFile.close();
         this->initializeMeteoPoints();
-        this->deleteAllGrids();
 
-        cleanWaterBalanceMemory();
+        modelCaseIndexMap.clear();
+
+        closeProject3D();
 
         this->isProjectLoaded = false;
     }
 }
+
 
 void Vine3DProject::setEnvironment(Tenvironment myEnvironment)
 {

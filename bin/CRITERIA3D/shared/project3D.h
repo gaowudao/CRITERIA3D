@@ -54,7 +54,9 @@
 
         Project3D();
 
-        void cleanWaterBalanceMemory();
+        void clearWaterBalance3D();
+        void closeProject3D();
+
         void computeNrLayers();
         void setLayersDepth();
 

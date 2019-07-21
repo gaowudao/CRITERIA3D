@@ -100,7 +100,6 @@
         bool loadFieldBook();
         soil::Crit3DSoil *loadHorizons(int idSoil, QString soil_code);
 
-        void deleteAllGrids();
         void initializeMeteoPoints();
         void initialize();
 
