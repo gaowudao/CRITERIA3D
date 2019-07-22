@@ -9,8 +9,8 @@ TabHorizons::TabHorizons()
     dbTableLabel->setStyleSheet("font: 11pt;");
     QLabel* modelTableLabel = new QLabel("Soil parameters estimated by model:");
     modelTableLabel->setStyleSheet("font: 11pt;");
-    tableDb = new TableDbOrModel("Db");
-    tableModel = new TableDbOrModel("Model");
+    tableDb = new TableDbOrModel(dbTable);
+    tableModel = new TableDbOrModel(modelTable);
 
     connect(tableDb->verticalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->tableDbVerticalHeaderClick(index); });
     connect(tableDb, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });

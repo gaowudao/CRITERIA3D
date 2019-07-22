@@ -3,14 +3,16 @@
 
 #include <QTableWidget>
 
+enum tableType{dbTable, modelTable};
+
 class TableDbOrModel: public QTableWidget
 {
 Q_OBJECT
 public:
-    TableDbOrModel(QString name);
+    TableDbOrModel(tableType type);
     void mouseMoveEvent(QMouseEvent *event);
 private:
-    QString name;
+    tableType type;
 
 };
 
