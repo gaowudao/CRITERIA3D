@@ -643,8 +643,8 @@ namespace soil
         }
 
         // update with coarse fragment
-        //horizon->vanGenuchten.thetaS = porosity * (1.0 - horizon->coarseFragments);
-        //horizon->vanGenuchten.thetaR = horizon->vanGenuchten.thetaR * (1.0 - horizon->coarseFragments);
+        horizon->vanGenuchten.thetaS *= (1.0 - horizon->coarseFragments);
+        horizon->vanGenuchten.thetaR *= (1.0 - horizon->coarseFragments);
 
         horizon->CEC = 50.0;
         horizon->PH = 7.7;
