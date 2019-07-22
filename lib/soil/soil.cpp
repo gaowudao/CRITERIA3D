@@ -548,7 +548,9 @@ namespace soil
         }
 
         // coarse fragments [%] -> 0-1
-        if (horizon->dbData.coarseFragments != NODATA && horizon->dbData.coarseFragments >= 0)
+        if (horizon->dbData.coarseFragments != NODATA
+                && horizon->dbData.coarseFragments >= 0
+                && horizon->dbData.coarseFragments < 100)
         {
             horizon->coarseFragments = horizon->dbData.coarseFragments / 100;
         }
@@ -559,7 +561,9 @@ namespace soil
         }
 
         // organic matter [%] -> 0-1
-        if (horizon->dbData.organicMatter != NODATA && horizon->dbData.organicMatter > 0)
+        if (horizon->dbData.organicMatter != NODATA
+                && horizon->dbData.organicMatter > 0
+                && horizon->dbData.organicMatter < 100)
         {
             horizon->organicMatter = horizon->dbData.organicMatter / 100;
         }
@@ -619,17 +623,17 @@ namespace soil
         }
 
         // Ksat = saturated water conductivity [cm day-1]
-        if (horizon->dbData.kSat != NODATA || horizon->dbData.kSat > 0)
+        if (horizon->dbData.kSat != NODATA && horizon->dbData.kSat > 0)
         {
             // check ksat value
             if (horizon->dbData.kSat < (horizon->waterConductivity.kSat / 100))
             {
-                horizon->waterConductivity.kSat = horizon->dbData.kSat / 100;
+                horizon->waterConductivity.kSat /= 100;
                 *error = "Ksat is out of class limits.";
             }
             else if (horizon->dbData.kSat > (horizon->waterConductivity.kSat * 100))
             {
-                horizon->waterConductivity.kSat = horizon->dbData.kSat * 100;
+                horizon->waterConductivity.kSat *= 100;
                 *error = "Ksat is out of class limits.";
             }
             else
