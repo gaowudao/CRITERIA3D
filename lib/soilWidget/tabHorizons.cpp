@@ -27,6 +27,7 @@ TabHorizons::TabHorizons()
 void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTextureClass* textureClassList)
 {
 
+    tableDb->blockSignals(true);
     mySoil = soil;
     myTextureClassList = textureClassList;
 
@@ -62,6 +63,8 @@ void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTexture
         checkMissingItem(i);
     }
     clearSelections();
+
+    tableDb->blockSignals(false);
 
     connect(tableDb, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
     connect(tableDb, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClicked(row, column); });
