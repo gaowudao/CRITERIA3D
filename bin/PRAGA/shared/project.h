@@ -84,7 +84,7 @@
         Project();
 
 
-        bool loadCommonSettings(QString settingsFileName);
+        bool loadProjectSettings(QString settingsFileName);
         bool loadParameters(QString parametersFileName);
         void setProxyDEM();
         bool checkProxy(std::string name_, std::string gridName_, std::string table_, std::string field_, QString *error);

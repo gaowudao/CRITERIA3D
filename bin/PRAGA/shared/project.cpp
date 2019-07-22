@@ -278,7 +278,7 @@ bool Project::loadParameters(QString parametersFileName)
 }
 
 
-bool Project::loadCommonSettings(QString settingsFileName)
+bool Project::loadProjectSettings(QString settingsFileName)
 {
     this->path = getFilePath(settingsFileName);
 
