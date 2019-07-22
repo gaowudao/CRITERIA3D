@@ -79,12 +79,19 @@ void TabHorizons::checkHorizonData(int horizonNum)
     }
     else
     {
+        if (mySoil->horizon[horizonNum].dbData.upperDepth < 0)
+        {
+            tableDb->item(horizonNum,0)->setBackgroundColor(Qt::red);
+        }
+        if (mySoil->horizon[horizonNum].dbData.lowerDepth < 0)
+        {
+            tableDb->item(horizonNum,1)->setBackgroundColor(Qt::red);
+        }
         if (horizonNum > 0 && mySoil->horizon[horizonNum].dbData.upperDepth != mySoil->horizon[horizonNum-1].dbData.lowerDepth)
         {
             tableDb->item(horizonNum,0)->setBackgroundColor(Qt::red);
         }
     }
-
 
     if (mySoil->horizon[horizonNum].dbData.sand + mySoil->horizon[horizonNum].dbData.silt + mySoil->horizon[horizonNum].dbData.clay != 100)
     {
@@ -106,6 +113,32 @@ void TabHorizons::checkHorizonData(int horizonNum)
 
         return;
     }
+
+    if (mySoil->horizon[horizonNum].dbData.coarseFragments < 0 || mySoil->horizon[horizonNum].dbData.coarseFragments > 100)
+    {
+        tableDb->item(horizonNum,5)->setBackgroundColor(Qt::red);
+    }
+
+    if (mySoil->horizon[horizonNum].dbData.organicMatter < 0 || mySoil->horizon[horizonNum].dbData.organicMatter > 100)
+    {
+        tableDb->item(horizonNum,6)->setBackgroundColor(Qt::red);
+    }
+
+    if (mySoil->horizon[horizonNum].dbData.bulkDensity < 0 || mySoil->horizon[horizonNum].dbData.bulkDensity > QUARTZ_DENSITY)
+    {
+        tableDb->item(horizonNum,7)->setBackgroundColor(Qt::red);
+    }
+
+    if (mySoil->horizon[horizonNum].dbData.kSat <= 0)
+    {
+        tableDb->item(horizonNum,8)->setBackgroundColor(Qt::red);
+    }
+
+    if (mySoil->horizon[horizonNum].dbData.thetaSat <= 0 || mySoil->horizon[horizonNum].dbData.thetaSat >= 1)
+    {
+        tableDb->item(horizonNum,9)->setBackgroundColor(Qt::red);
+    }
+
     checkComputedValues(horizonNum);
 
 }
