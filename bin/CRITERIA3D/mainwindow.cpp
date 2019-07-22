@@ -131,7 +131,7 @@ void MainWindow::resizeEvent(QResizeEvent * event)
     mapView->resize(ui->widgetMap->size());
 
     ui->groupBoxVariable->move(MAPBORDER/2, this->height()/2
-                          - ui->groupBoxVariable->height() - ui->groupBoxMeteoPoints->height() - MAPBORDER);
+                          - ui->groupBoxVariable->height() - ui->groupBoxMeteoPoints->height()*0.66);
     ui->groupBoxVariable->resize(TOOLSWIDTH, ui->groupBoxVariable->height());
 
     ui->groupBoxMeteoPoints->move(MAPBORDER/2, ui->groupBoxVariable->y() + ui->groupBoxVariable->height() + MAPBORDER);
@@ -896,16 +896,7 @@ void MainWindow::on_actionOpen_soil_data_triggered()
     QString fileName = QFileDialog::getOpenFileName(this, tr("Load DB soil"), "", tr("SQLite files (*.db)"));
     if (fileName == "") return;
 
-    QString error;
-    if (! loadAllSoils(fileName, &(myProject.soilList), myProject.texturalClassList, &error))
-    {
-        myProject.logError(error);
-        return;
-    }
-
-    if(error != "") myProject.logInfo(error);
-
-    myProject.logInfo("Soil data = " + fileName);
+    myProject.loadSoilData(fileName);
 }
 
 

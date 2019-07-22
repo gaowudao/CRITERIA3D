@@ -181,6 +181,24 @@ int Crit3DProject::getSoilIndex(int demRow, int demCol)
 }
 
 
+bool Crit3DProject::loadSoilData(QString fileName)
+{
+    QString str;
+
+    if (! loadAllSoils(fileName, &(soilList), texturalClassList, &str))
+    {
+        logError(str);
+        return false;
+    }
+    if(str != "") logInfo(str);
+
+    nrSoils = soilList.size();
+
+    logInfo("Soil data = " + fileName);
+    return true;
+}
+
+
 double Crit3DProject::getSoilVar(int soilIndex, int layerIndex, soil::soilVariable myVar)
 {
     int horizonIndex = soil::getHorizonIndex(&(soilList[unsigned(soilIndex)]),
