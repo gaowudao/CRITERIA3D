@@ -2,6 +2,7 @@
 #define TABLEDELEGATE_H
 
 #include <QStyledItemDelegate>
+// class to have finer control over the editing of items
 
 class TableDelegate : public QStyledItemDelegate
 {

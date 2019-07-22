@@ -26,7 +26,7 @@ TabHorizons::TabHorizons()
 
 void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTextureClass* textureClassList)
 {
-
+    //disable events otherwise setBackgroundColor call again cellChanged event
     tableDb->blockSignals(true);
     mySoil = soil;
     myTextureClassList = textureClassList;

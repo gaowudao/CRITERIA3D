@@ -3,6 +3,9 @@
 
 #include <QTableWidget>
 
+// custom QTableWidget to implement mouseMoveEvent and manage QToolTip timeout
+// tables can be of 2 different types: dbTable and modelTable (each with specific header and background color)
+
 enum tableType{dbTable, modelTable};
 
 class TableDbOrModel: public QTableWidget
