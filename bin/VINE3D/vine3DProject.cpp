@@ -89,12 +89,6 @@ void Vine3DProject::closeProject()
     }
 }
 
-
-void Vine3DProject::setEnvironment(Tenvironment myEnvironment)
-{
-    environment = myEnvironment;
-}
-
 bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
 {
     if (! QFile(projectFile).exists())

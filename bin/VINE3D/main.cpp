@@ -43,7 +43,6 @@ int main(int argc, char *argv[])
 
     if (myProject.modality == MODE_GUI)
     {
-        //myProject.setEnvironment(gui);
         QApplication::setOverrideCursor(Qt::ArrowCursor);
         MainWindow w;
         w.show();

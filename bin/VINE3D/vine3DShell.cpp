@@ -62,8 +62,6 @@ bool Vine3DProject::executeVine3DCommand(QStringList argumentList, bool *isComma
 
 bool cmdOpenVine3DProject(Vine3DProject* myProject, QStringList argumentList)
 {
-    //myProject.setEnvironment(batch);
-
     if (argumentList.size() < 2)
     {
         myProject->logError("Missing project name");
@@ -80,8 +78,6 @@ bool cmdOpenVine3DProject(Vine3DProject* myProject, QStringList argumentList)
 
 bool cmdRunModels(Vine3DProject* myProject, QStringList argumentList)
 {
-    //myProject.setEnvironment(batch);
-
     if (argumentList.size() == 0) return false;
 
     if (argumentList.size() >= 2)

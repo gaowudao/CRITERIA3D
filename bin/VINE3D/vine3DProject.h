@@ -29,8 +29,6 @@
         #include "project3D.h"
     #endif
 
-    enum Tenvironment {gui, batch};
-
     struct TfieldBook {
         QDate operationDate;
         TfieldOperation operation;
@@ -41,8 +39,6 @@
 
     class Vine3DProject : public Project3D
     {
-    private:
-        Tenvironment environment;
 
     public:
         Crit3DTime currentTime;
@@ -138,7 +134,6 @@
         //void logError();
         //void logError(QString myError);
         //void logInfo(QString myLog);
-        void setEnvironment(Tenvironment myEnv);
         float getTimeStep();
         int getModelCaseIndex(long row, long col);
         bool isVineyard(long row, long col);
