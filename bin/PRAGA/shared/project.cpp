@@ -302,7 +302,7 @@ bool Project::loadProjectSettings(QString settingsFileName)
         if(myPath.left(1) == ".")
         {
             path += myPath;
-            path = QDir::cleanPath(path);
+            path = QDir::cleanPath(path) + "/";
         }
         else
         {

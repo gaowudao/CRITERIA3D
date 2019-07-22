@@ -38,7 +38,7 @@
 
     private slots:
 
-        void on_actionLoadDEM_triggered();
+        void on_actionOpen_DEM_triggered();
         void on_actionNewMeteoPointsArkimet_triggered();
         void on_actionOpen_meteo_points_DB_triggered();
         void on_actionOpen_meteo_grid_triggered();
@@ -114,6 +114,8 @@
         void on_actionNew_aggregation_DB_triggered();
 
         bool on_actionAggregate_from_grid_triggered();
+
+        void on_actionOpen_project_triggered();
 
     protected:
         /*!

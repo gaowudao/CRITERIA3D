@@ -2472,7 +2472,7 @@
      <x>0</x>
      <y>0</y>
      <width>1392</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="palette">
@@ -2933,7 +2933,9 @@
      <addaction name="actionMeteoPointsCSV"/>
      <addaction name="separator"/>
     </widget>
-    <addaction name="actionLoadDEM"/>
+    <addaction name="actionOpen_project"/>
+    <addaction name="separator"/>
+    <addaction name="actionOpen_DEM"/>
     <addaction name="separator"/>
     <addaction name="actionOpen_meteo_points_DB"/>
     <addaction name="menu_New_meteo_points_DB"/>
@@ -3074,11 +3076,6 @@
    <addaction name="menuGIS_settings"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionLoadDEM">
-   <property name="text">
-    <string>&amp;Load DEM...</string>
-   </property>
-  </action>
   <action name="actionMapOpenStreetMap">
    <property name="checkable">
     <bool>true</bool>
@@ -3416,6 +3413,21 @@
   <action name="actionNew_aggregation_DB">
    <property name="text">
     <string>New aggregation DB</string>
+   </property>
+  </action>
+  <action name="actionLoad_project">
+   <property name="text">
+    <string>Load project...</string>
+   </property>
+  </action>
+  <action name="actionOpen_DEM">
+   <property name="text">
+    <string>Open DEM...</string>
+   </property>
+  </action>
+  <action name="actionOpen_project">
+   <property name="text">
+    <string>Open project..</string>
    </property>
   </action>
  </widget>

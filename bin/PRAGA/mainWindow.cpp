@@ -311,7 +311,7 @@ void MainWindow::on_actionRectangle_Selection_triggered()
 }
 
 
-void MainWindow::on_actionLoadDEM_triggered()
+void MainWindow::on_actionOpen_DEM_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open raster Grid"), "", tr("ESRI grid files (*.flt)"));
 
@@ -1932,3 +1932,31 @@ void MainWindow::on_actionNew_aggregation_DB_triggered()
 }
 
 
+void MainWindow::on_actionOpen_project_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open project file"), "", tr("ini files (*.ini)"));
+
+    if (fileName == "") return;
+
+    QMessageBox::information(nullptr, "TODO", "work in progress");
+
+    /*
+    if (!myProject.loadDEM(fileName)) return;
+
+    this->setCurrentRaster(&(myProject.DEM));
+    ui->labelRasterScale->setText(QString::fromStdString(getVariableString(noMeteoTerrain)));
+    this->ui->rasterOpacitySlider->setEnabled(true);
+
+    // center map
+    gis::Crit3DGeoPoint* center = this->rasterObj->getRasterCenter();
+    this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
+
+    // resize map
+    float size = this->rasterObj->getRasterMaxSize();
+    size = log2(1000.f/size);
+    this->mapView->setZoomLevel(quint8(size));
+    this->mapView->centerOn(qreal(center->longitude), qreal(center->latitude));
+
+    // active raster object
+    this->rasterObj->updateCenter();*/
+}
