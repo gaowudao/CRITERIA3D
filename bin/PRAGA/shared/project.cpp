@@ -280,7 +280,7 @@ bool Project::loadParameters(QString parametersFileName)
 
 bool Project::loadProjectSettings(QString settingsFileName)
 {
-    this->path = getFilePath(settingsFileName);
+    path = getFilePath(settingsFileName);
 
     if (! QFile(settingsFileName).exists())
     {
@@ -299,17 +299,14 @@ bool Project::loadProjectSettings(QString settingsFileName)
         if (myPath.right(1) != "/")
             myPath += "/";
 
-        if (myPath.left(2) == "./")
+        if(myPath.left(1) == ".")
         {
-            this->path += myPath.right(myPath.length()-2);
-        }
-        else if(myPath.left(2) == "..")
-        {
-            this->path += myPath;
+            path += myPath;
+            path = QDir::cleanPath(path);
         }
         else
         {
-            this->path = myPath;
+            path = myPath;
         }
     }
 
@@ -327,17 +324,18 @@ bool Project::loadProjectSettings(QString settingsFileName)
         return false;
     }
 
-    if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180)
-    {
-        logError("Wrong start lat/lon");
-        return false;
-    }
-
     gisSettings.startLocation.latitude = latitude;
     gisSettings.startLocation.longitude = longitude;
     gisSettings.utmZone = utmZone;
     gisSettings.isUTC = isUtc;
     gisSettings.timeZone = timeZone;
+
+    projectSettings->beginGroup("project");
+        QString projectName = projectSettings->value("name").toString();
+        QString demFilename = projectSettings->value("dem").toString();
+        QString meteoPointsName = projectSettings->value("meteo_points").toString();
+        QString meteoGridName = projectSettings->value("meteo_grid").toString();
+    projectSettings->endGroup();
 
     return true;
 }
@@ -483,6 +481,8 @@ void Project::closeMeteoGridDB()
 bool Project::loadDEM(QString myFileName)
 {
     this->logInfo("Read Digital Elevation Model...");
+
+    myFileName = getCompleteFileName(myFileName, "DATA/DEM/");
 
     std::string error, fileName;
     if (myFileName.right(4).left(1) == ".")
@@ -1133,9 +1133,14 @@ float Project::meteoDataConsistency(meteoVariable myVar, const Crit3DTime& timeI
 
 QString Project::getCompleteFileName(QString fileName, QString secondaryPath)
 {
-    if (getFilePath(fileName) == "" || fileName.left(1) == ".")
+    if (getFilePath(fileName) == "")
     {
         QString completeFileName = this->getPath() + secondaryPath + fileName;
+        return QDir().cleanPath(completeFileName);
+    }
+    else if (fileName.left(1) == ".")
+    {
+        QString completeFileName = this->getPath() + fileName;
         return QDir().cleanPath(completeFileName);
     }
     else
@@ -1151,6 +1156,8 @@ QString Project::getCompleteFileName(QString fileName, QString secondaryPath)
 
 bool Project::setLogFile(QString fileNameWithPath)
 {
+    fileNameWithPath = getCompleteFileName(fileNameWithPath, "LOG/");
+
     QString filePath = getFilePath(fileNameWithPath);
     QString fileName = getFileName(fileNameWithPath);
 

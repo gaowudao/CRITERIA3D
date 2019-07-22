@@ -190,8 +190,7 @@ bool cmdLoadDEM(Project* myProject, QStringList argumentList)
     }
     else
     {
-        QString fileName = myProject->getCompleteFileName(argumentList[1], "DATA/DEM/");
-        return myProject->loadDEM(fileName);
+        return myProject->loadDEM(argumentList[1]);
     }
 }
 
@@ -206,8 +205,7 @@ bool cmdSetLogFile(Project* myProject, QStringList argumentList)
     }
     else
     {
-        QString fileName = myProject->getCompleteFileName(argumentList[1], "LOG/");
-        return myProject->setLogFile(fileName);
+        return myProject->setLogFile(argumentList[1]);
     }
 }
 
