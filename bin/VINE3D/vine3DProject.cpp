@@ -89,6 +89,38 @@ void Vine3DProject::closeProject()
     }
 }
 
+
+void Vine3DProject::inizializeDBConnection()
+{
+    dbProvider = "QSQLITE";
+    dbHostname = "";
+    dbName = "";
+    dbPort = NODATA;
+    dbUsername = "";
+    dbPassword = "";
+}
+
+
+bool Vine3DProject::openDBConnection()
+{
+    dbConnection.close();
+
+    dbConnection = QSqlDatabase::addDatabase(dbProvider);
+    dbConnection.setHostName(dbHostname);
+    dbConnection.setDatabaseName(dbName);
+    dbConnection.setPort(dbPort);
+    dbConnection.setUserName(dbUsername);
+    dbConnection.setPassword(dbPassword);
+    if (! dbConnection.open())
+    {
+        logError("Open DB failed: " + dbHostname + "//" + dbName +"\n" + dbConnection.lastError().text());
+        dbConnection.close();
+        return(false);
+    }
+
+    return (true);
+}
+
 bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
 {
     if (! QFile(projectFile).exists())
@@ -121,6 +153,16 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
     idArea = myId;
     demFileName = demName;
     fieldMapName = fieldName;
+
+    inizializeDBConnection();
+    projectSettings->beginGroup("database");
+        if (projectSettings->contains("driver") && !projectSettings->value("driver").toString().isEmpty()) dbProvider = projectSettings->value("driver").toString();
+        if (projectSettings->contains("host") && !projectSettings->value("host").toString().isEmpty()) dbHostname = projectSettings->value("host").toString();
+        if (projectSettings->contains("port") && !projectSettings->value("port").toString().isEmpty()) dbPort = projectSettings->value("port").toInt();
+        if (projectSettings->contains("dbname") && !projectSettings->value("dbname").toString().isEmpty()) dbName = projectSettings->value("dbname").toString();
+        if (projectSettings->contains("username") && !projectSettings->value("username").toString().isEmpty()) dbUsername = projectSettings->value("username").toString();
+        if (projectSettings->contains("password") && !projectSettings->value("password").toString().isEmpty()) dbPassword = projectSettings->value("password").toString();
+    projectSettings->endGroup();
 
     projectSettings->beginGroup("settings");
     QString paramFile = path + projectSettings->value("parameters_file").toString();
@@ -890,7 +932,6 @@ soil::Crit3DSoil* Vine3DProject::loadHorizons(int idSoil, QString soil_code)
         mySoil->horizon[i].waterConductivity.kSat = ksat;
 
         //update with skeleton
-
         mySoil->horizon[i].vanGenuchten.thetaS = porosity * (1.0 - mySoil->horizon[i].coarseFragments);
         mySoil->horizon[i].vanGenuchten.thetaR = mySoil->horizon[i].vanGenuchten.thetaR * (1.0 - mySoil->horizon[i].coarseFragments);
 
@@ -1064,8 +1105,17 @@ bool Vine3DProject::loadDBPoints()
     // load proxy values for detrending
     if (! readProxyValues())
     {
-        logError("Error reading proxy values");
-        return false;
+        if (dbConnection.isOpen())
+        {
+            for (int i = 0; i < this->nrMeteoPoints; i++)
+            {
+                if (! readPointProxyValues(&(this->meteoPoints[i]), &(this->dbConnection)))
+                {
+                    logError("Error reading proxy values");
+                    return false;
+                }
+            }
+        }
     }
 
     //position with respect to DEM

@@ -312,11 +312,19 @@ bool getSoilList(QSqlDatabase* dbSoil, QStringList* soilList, QString* error)
 
 bool loadAllSoils(QString dbSoilName, std::vector <soil::Crit3DSoil> *soilList, soil::Crit3DTextureClass *textureClassList, QString* error)
 {
-    soilList->clear();
-
     QSqlDatabase* dbSoil = new QSqlDatabase();
-    if (! openDbSoil(dbSoilName, dbSoil, error))
-        return false;
+    if (! openDbSoil(dbSoilName, dbSoil, error)) return false;
+
+    bool result = loadAllSoils(dbSoil, soilList, textureClassList, error);
+    dbSoil->close();
+
+    return result;
+}
+
+
+bool loadAllSoils(QSqlDatabase* dbSoil, std::vector <soil::Crit3DSoil> *soilList, soil::Crit3DTextureClass *textureClassList, QString* error)
+{
+    soilList->clear();
 
     if (! loadVanGenuchtenParameters(dbSoil, textureClassList, error))
     {
@@ -365,8 +373,6 @@ bool loadAllSoils(QString dbSoilName, std::vector <soil::Crit3DSoil> *soilList, 
         }
     }
     while(query.next());
-
-    dbSoil->close();
 
     if (soilList->size() == 0)
     {

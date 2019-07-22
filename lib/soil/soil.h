@@ -123,7 +123,6 @@
             double coarseFragments;             /*!<  [-] 0-1   */
             double organicMatter;               /*!<  [-] 0-1   */
             double bulkDensity;                 /*!<  [g/cm^3]  */
-            double thetaSat;                    /*!<  [m^3 m^-3]*/
 
             double fieldCapacity;               /*!<  [kPa]     */
             double wiltingPoint;                /*!<  [kPa]     */

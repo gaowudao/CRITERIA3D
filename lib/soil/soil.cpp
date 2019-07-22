@@ -121,7 +121,6 @@ namespace soil
         this->coarseFragments = NODATA;
         this->organicMatter = NODATA;
         this->bulkDensity = NODATA;
-        this->thetaSat = NODATA;
 
         this->fieldCapacity = NODATA;
         this->wiltingPoint = NODATA;
@@ -242,7 +241,6 @@ namespace soil
     double getSpecificDensity(double organicMatter)
     {
         const double MINIMUM_ORGANIC_MATTER = 0.01;
-        const double QUARTZ_DENSITY = 2.648;            // g/cm3
 
         if (int(organicMatter) == int(NODATA))
         {
@@ -263,7 +261,7 @@ namespace soil
         double specificDensity = getSpecificDensity(horizon->organicMatter);
         double refBulkDensity = (1 - totalPorosity) * specificDensity;
 
-        // increase/decrease with depth, reference thetaSat at 33cm
+        // increase/decrease with depth, reference theta sat at 33cm
         if (increaseWithDepth)
         {
             double depth = (horizon->upperDepth + horizon->lowerDepth) * 0.5;
@@ -599,25 +597,18 @@ namespace soil
         horizon->Driessen = textureClassList[horizon->texture.classNL].Driessen;
 
         // bulk density [g cm-3]
-        horizon->bulkDensity = horizon->dbData.bulkDensity;
-        if (horizon->bulkDensity <= 0 || horizon->bulkDensity >= 2.7)
+        horizon->bulkDensity = NODATA;
+        if (horizon->dbData.bulkDensity > 0 && horizon->dbData.bulkDensity < QUARTZ_DENSITY)
         {
-            horizon->bulkDensity = NODATA;
+            horizon->bulkDensity = horizon->dbData.bulkDensity;
         }
 
-        // theta sat [m3 m-3]
-        horizon->thetaSat = horizon->dbData.thetaSat;
-        if (horizon->thetaSat <= 0 || horizon->thetaSat > 1)
+        // check theta sat [m3 m-3]
+        if (horizon->dbData.thetaSat != NODATA && horizon->dbData.thetaSat > 0 && horizon->dbData.thetaSat < 1)
         {
-            horizon->thetaSat = NODATA;
+            horizon->vanGenuchten.thetaS = horizon->dbData.thetaSat;
         }
-
-        // check theta sat and bulk density
-        if (horizon->thetaSat != NODATA)
-        {
-            horizon->vanGenuchten.thetaS = horizon->thetaSat;
-        }
-        else if (horizon->bulkDensity != NODATA)
+        else if(horizon->bulkDensity != NODATA)
         {
             horizon->vanGenuchten.thetaS = soil::estimateTotalPorosity(horizon, horizon->bulkDensity);
         }
@@ -627,15 +618,36 @@ namespace soil
             horizon->bulkDensity = soil::estimateBulkDensity(horizon, horizon->vanGenuchten.thetaS, false);
         }
 
-        // saturated water conductivity [cm day-1]
-        if (horizon->dbData.kSat == NODATA || horizon->dbData.kSat <= 0)
+        // Ksat = saturated water conductivity [cm day-1]
+        if (horizon->dbData.kSat != NODATA || horizon->dbData.kSat > 0)
         {
-            horizon->waterConductivity.kSat = soil::estimateSaturatedConductivity(horizon, horizon->bulkDensity);
+            // check ksat value
+            if (horizon->dbData.kSat < (horizon->waterConductivity.kSat / 100))
+            {
+                horizon->waterConductivity.kSat = horizon->dbData.kSat / 100;
+                *error = "Ksat is out of class limits.";
+            }
+            else if (horizon->dbData.kSat > (horizon->waterConductivity.kSat * 100))
+            {
+                horizon->waterConductivity.kSat = horizon->dbData.kSat * 100;
+                *error = "Ksat is out of class limits.";
+            }
+            else
+            {
+                horizon->waterConductivity.kSat = horizon->dbData.kSat;
+            }
         }
         else
         {
-            horizon->waterConductivity.kSat = horizon->dbData.kSat;
+            horizon->waterConductivity.kSat = soil::estimateSaturatedConductivity(horizon, horizon->bulkDensity);
         }
+
+        // update with coarse fragment
+        //horizon->vanGenuchten.thetaS = porosity * (1.0 - horizon->coarseFragments);
+        //horizon->vanGenuchten.thetaR = horizon->vanGenuchten.thetaR * (1.0 - horizon->coarseFragments);
+
+        horizon->CEC = 50.0;
+        horizon->PH = 7.7;
 
         horizon->fieldCapacity = soil::getFieldCapacity(horizon, soil::KPA);
         horizon->wiltingPoint = soil::getWiltingPoint(soil::KPA);

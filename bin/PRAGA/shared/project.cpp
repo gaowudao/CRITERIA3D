@@ -17,7 +17,6 @@
 
 Project::Project()
 {
-    inizializeDBConnection();
     modality = MODE_GUI;
     requestedExit = false;
     path = "";
@@ -40,35 +39,7 @@ Project::Project()
 
 }
 
-void Project::inizializeDBConnection()
-{
-    dbProvider = "QSQLITE";
-    dbHostname = "";
-    dbName = "";
-    dbPort = NODATA;
-    dbUsername = "";
-    dbPassword = "";
-}
 
-bool Project::openDBConnection()
-{
-    dbConnection.close();
-
-    dbConnection = QSqlDatabase::addDatabase(dbProvider);
-    dbConnection.setHostName(dbHostname);
-    dbConnection.setDatabaseName(dbName);
-    dbConnection.setPort(dbPort);
-    dbConnection.setUserName(dbUsername);
-    dbConnection.setPassword(dbPassword);
-    if (! dbConnection.open())
-    {
-        logError("Open DB failed: " + dbHostname + "//" + dbName +"\n" + dbConnection.lastError().text());
-        dbConnection.close();
-        return(false);
-    }
-
-    return (true);
-}
 
 
 void Project::setProxyDEM()
@@ -341,16 +312,6 @@ bool Project::loadCommonSettings(QString settingsFileName)
             this->path = myPath;
         }
     }
-
-    inizializeDBConnection();
-    projectSettings->beginGroup("database");
-        if (projectSettings->contains("driver") && !projectSettings->value("driver").toString().isEmpty()) dbProvider = projectSettings->value("driver").toString();
-        if (projectSettings->contains("host") && !projectSettings->value("host").toString().isEmpty()) dbHostname = projectSettings->value("host").toString();
-        if (projectSettings->contains("port") && !projectSettings->value("port").toString().isEmpty()) dbPort = projectSettings->value("port").toInt();
-        if (projectSettings->contains("dbname") && !projectSettings->value("dbname").toString().isEmpty()) dbName = projectSettings->value("dbname").toString();
-        if (projectSettings->contains("username") && !projectSettings->value("username").toString().isEmpty()) dbUsername = projectSettings->value("username").toString();
-        if (projectSettings->contains("password") && !projectSettings->value("password").toString().isEmpty()) dbPassword = projectSettings->value("password").toString();
-    projectSettings->endGroup();
 
     projectSettings->beginGroup("location");
         float latitude = projectSettings->value("lat").toFloat();
@@ -911,28 +872,21 @@ bool Project::loadProxyGrids()
     return true;
 }
 
+
 bool Project::readProxyValues()
 {
-    if (dbProvider == "QSQLITE")
-    {
-        if (meteoPointsDbHandler == nullptr)
-            return false;
+    if (meteoPointsDbHandler == nullptr) return false;
 
-        QSqlDatabase myDb = this->meteoPointsDbHandler->getDb();
-        for (int i = 0; i < this->nrMeteoPoints; i++)
-            if (! readPointProxyValues(&(this->meteoPoints[i]), &myDb))
-                return false;
-    }
-    else
+    QSqlDatabase myDb = this->meteoPointsDbHandler->getDb();
+
+    for (int i = 0; i < this->nrMeteoPoints; i++)
     {
-        if (dbConnection.isOpen())
-            for (int i = 0; i < this->nrMeteoPoints; i++)
-                if (! readPointProxyValues(&(this->meteoPoints[i]), &(this->dbConnection)))
-                    return false;
+        if (! readPointProxyValues(&(this->meteoPoints[i]), &myDb)) return false;
     }
 
     return true;
 }
+
 
 bool Project::updateProxy()
 {

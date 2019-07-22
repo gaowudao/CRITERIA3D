@@ -41,6 +41,16 @@
     {
 
     public:
+
+        // database connection
+        QSqlDatabase dbConnection;
+        QString dbProvider;
+        QString dbHostname;
+        QString dbName;
+        int dbPort;
+        QString dbUsername;
+        QString dbPassword;
+
         Crit3DTime currentTime;
 
         QString parametersFile;
@@ -83,6 +93,8 @@
         Vine3DProject();
 
         bool loadVine3DSettings();
+        void inizializeDBConnection();
+        bool openDBConnection();
         bool loadVine3DProjectSettings(QString projectFile);
         bool loadVine3DProjectParameters();
 

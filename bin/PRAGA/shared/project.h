@@ -38,21 +38,10 @@
     protected:
         QString path;
 
-        // database connection
-        QSqlDatabase dbConnection;
-        QString dbProvider;
-        QString dbHostname;
-        QString dbName;
-        int dbPort;
-        QString dbUsername;
-        QString dbPassword;
-
         frequencyType currentFrequency;
         meteoVariable currentVariable;
         QDate previousDate, currentDate;
         int currentHour;
-
-        void inizializeDBConnection();
 
     public:
         int modality;
@@ -94,7 +83,7 @@
 
         Project();
 
-        bool openDBConnection();
+
         bool loadCommonSettings(QString settingsFileName);
         bool loadParameters(QString parametersFileName);
         void setProxyDEM();

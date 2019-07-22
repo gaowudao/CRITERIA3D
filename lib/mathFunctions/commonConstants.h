@@ -35,6 +35,10 @@
     #define DB_MYSQL 1
     #define DB_POSTGRES 2
 
+    // --------------- Soil -----------------
+    // [g cm3-1]
+    #define QUARTZ_DENSITY 2.648
+
     // --------------- soilFluxes3D -----------------
     #define NOLINK -1
 
