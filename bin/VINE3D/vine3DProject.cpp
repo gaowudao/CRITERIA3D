@@ -131,7 +131,7 @@ bool Vine3DProject::loadVine3DProjectSettings(QString projectFile)
 
     initialize();
 
-    if (! loadCommonSettings(projectFile))
+    if (! loadProjectSettings(projectFile))
     {
         logError("Error reading common settings in " + projectFile);
         return false;

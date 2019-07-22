@@ -1,5 +1,6 @@
 #include "tabHorizons.h"
 #include "commonConstants.h"
+#include "soil.h"
 
 
 TabHorizons::TabHorizons()
@@ -13,9 +14,6 @@ TabHorizons::TabHorizons()
     tableModel = new TableDbOrModel(modelTable);
 
     connect(tableDb->verticalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->tableDbVerticalHeaderClick(index); });
-    connect(tableDb, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
-    connect(tableDb, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClicked(row, column); });
-    connect(tableModel, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClicked(row, column); });
     connect(tableModel->verticalHeader(), &QHeaderView::sectionClicked, [=](int index){ this->tableModelVerticalHeaderClick(index); });
 
     mainLayout->addWidget(dbTableLabel);
@@ -26,57 +24,68 @@ TabHorizons::TabHorizons()
     setLayout(mainLayout);
 }
 
-void TabHorizons::insertSoilHorizons(soil::Crit3DSoil mySoil)
+void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTextureClass* textureClassList)
 {
-    int row = mySoil.nrHorizons;
+    mySoil = soil;
+    myTextureClassList = textureClassList;
+
+    int row = mySoil->nrHorizons;
     tableDb->setRowCount(row);
     tableModel->setRowCount(row);
     for (int i = 0; i < row; i++)
     {
-        tableDb->setItem(i, 0, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.upperDepth)));
-        tableDb->setItem(i, 1, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.lowerDepth)));
-        tableDb->setItem(i, 2, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.sand, 'f', 1 )));
-        tableDb->setItem(i, 3, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.silt, 'f', 1 )));
-        tableDb->setItem(i, 4, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.clay , 'f', 1)));
-        tableDb->setItem(i, 5, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.coarseFragments, 'f', 1 )));
-        tableDb->setItem(i, 6, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.organicMatter, 'f', 1 )));
-        tableDb->setItem(i, 7, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.bulkDensity, 'f', 3 )));
-        tableDb->setItem(i, 8, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.kSat, 'f', 3 )));
-        tableDb->setItem(i, 9, new QTableWidgetItem( QString::number(mySoil.horizon[i].dbData.thetaSat, 'f', 3)));
+        tableDb->setItem(i, 0, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.upperDepth, 'f', 0)));
+        tableDb->setItem(i, 1, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.lowerDepth, 'f', 0)));
+        tableDb->setItem(i, 2, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.sand, 'f', 1 )));
+        tableDb->setItem(i, 3, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.silt, 'f', 1 )));
+        tableDb->setItem(i, 4, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.clay , 'f', 1)));
+        tableDb->setItem(i, 5, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.coarseFragments, 'f', 1 )));
+        tableDb->setItem(i, 6, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.organicMatter, 'f', 1 )));
+        tableDb->setItem(i, 7, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.bulkDensity, 'f', 3 )));
+        tableDb->setItem(i, 8, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.kSat, 'f', 3 )));
+        tableDb->setItem(i, 9, new QTableWidgetItem( QString::number(mySoil->horizon[i].dbData.thetaSat, 'f', 3)));
 
-        tableModel->setItem(i, 0, new QTableWidgetItem( QString::fromStdString(mySoil.horizon[i].texture.classNameUSDA)));
-        tableModel->setItem(i, 1, new QTableWidgetItem( QString::number(mySoil.horizon[i].coarseFragments*100, 'f', 1 )));
-        tableModel->setItem(i, 2, new QTableWidgetItem( QString::number(mySoil.horizon[i].organicMatter*100, 'f', 1 )));
-        tableModel->setItem(i, 3, new QTableWidgetItem( QString::number(mySoil.horizon[i].bulkDensity, 'f', 3 )));
-        tableModel->setItem(i, 4, new QTableWidgetItem( QString::number(mySoil.horizon[i].waterConductivity.kSat, 'f', 3 )));
-        tableModel->setItem(i, 5, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.thetaS, 'f', 3 )));
-        tableModel->setItem(i, 6, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.thetaR, 'f', 3 )));
-        tableModel->setItem(i, 7, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.he, 'f', 3 )));
-        tableModel->setItem(i, 8, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.alpha, 'f', 3 )));
-        tableModel->setItem(i, 9, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.n, 'f', 3 )));
-        tableModel->setItem(i, 10, new QTableWidgetItem( QString::number(mySoil.horizon[i].vanGenuchten.m, 'f', 3 )));
+        tableModel->setItem(i, 0, new QTableWidgetItem( QString::fromStdString(mySoil->horizon[i].texture.classNameUSDA)));
+        tableModel->setItem(i, 1, new QTableWidgetItem( QString::number(mySoil->horizon[i].coarseFragments*100, 'f', 1 )));
+        tableModel->setItem(i, 2, new QTableWidgetItem( QString::number(mySoil->horizon[i].organicMatter*100, 'f', 1 )));
+        tableModel->setItem(i, 3, new QTableWidgetItem( QString::number(mySoil->horizon[i].bulkDensity, 'f', 3 )));
+        tableModel->setItem(i, 4, new QTableWidgetItem( QString::number(mySoil->horizon[i].waterConductivity.kSat, 'f', 3 )));
+        tableModel->setItem(i, 5, new QTableWidgetItem( QString::number(mySoil->horizon[i].vanGenuchten.thetaS, 'f', 3 )));
+        tableModel->setItem(i, 6, new QTableWidgetItem( QString::number(mySoil->horizon[i].vanGenuchten.thetaR, 'f', 3 )));
+        tableModel->setItem(i, 7, new QTableWidgetItem( QString::number(mySoil->horizon[i].vanGenuchten.he, 'f', 3 )));
+        tableModel->setItem(i, 8, new QTableWidgetItem( QString::number(mySoil->horizon[i].vanGenuchten.alpha, 'f', 3 )));
+        tableModel->setItem(i, 9, new QTableWidgetItem( QString::number(mySoil->horizon[i].vanGenuchten.n, 'f', 3 )));
+        tableModel->setItem(i, 10, new QTableWidgetItem( QString::number(mySoil->horizon[i].vanGenuchten.m, 'f', 3 )));
 
-        checkHorizonData(mySoil, i);
+        checkHorizonData(i);
         checkMissingItem(i);
     }
     clearSelections();
 
+    connect(tableDb, &QTableWidget::cellChanged, [=](int row, int column){ this->cellChanged(row, column); });
+    connect(tableDb, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClicked(row, column); });
+    connect(tableModel, &QTableWidget::cellClicked, [=](int row, int column){ this->cellClicked(row, column); });
+
 
 }
 
-void TabHorizons::checkHorizonData(soil::Crit3DSoil mySoil, int horizonNum)
+void TabHorizons::checkHorizonData(int horizonNum)
 {
-    if (mySoil.horizon[horizonNum].dbData.upperDepth > mySoil.horizon[horizonNum].dbData.lowerDepth)
+    if (mySoil->horizon[horizonNum].dbData.upperDepth > mySoil->horizon[horizonNum].dbData.lowerDepth)
     {
         tableDb->item(horizonNum,0)->setBackgroundColor(Qt::red);
         tableDb->item(horizonNum,1)->setBackgroundColor(Qt::red);
     }
-    if (horizonNum > 0 && mySoil.horizon[horizonNum].dbData.upperDepth != mySoil.horizon[horizonNum-1].dbData.lowerDepth)
+    else
     {
-        tableDb->item(horizonNum,0)->setBackgroundColor(Qt::red);
+        if (horizonNum > 0 && mySoil->horizon[horizonNum].dbData.upperDepth != mySoil->horizon[horizonNum-1].dbData.lowerDepth)
+        {
+            tableDb->item(horizonNum,0)->setBackgroundColor(Qt::red);
+        }
     }
 
-    if (mySoil.horizon[horizonNum].dbData.sand + mySoil.horizon[horizonNum].dbData.silt + mySoil.horizon[horizonNum].dbData.clay != 100)
+
+    if (mySoil->horizon[horizonNum].dbData.sand + mySoil->horizon[horizonNum].dbData.silt + mySoil->horizon[horizonNum].dbData.clay != 100)
     {
         tableDb->item(horizonNum,2)->setBackgroundColor(Qt::red);
         tableDb->item(horizonNum,3)->setBackgroundColor(Qt::red);
@@ -96,7 +105,7 @@ void TabHorizons::checkHorizonData(soil::Crit3DSoil mySoil, int horizonNum)
 
         return;
     }
-    checkComputedValues(mySoil, horizonNum);
+    checkComputedValues(horizonNum);
 
 }
 
@@ -123,28 +132,33 @@ void TabHorizons::checkMissingItem(int horizonNum)
 
 }
 
-void TabHorizons::checkComputedValues(soil::Crit3DSoil mySoil, int horizonNum)
+void TabHorizons::checkComputedValues(int horizonNum)
 {
-    if (mySoil.horizon[horizonNum].dbData.coarseFragments != mySoil.horizon[horizonNum].coarseFragments*100)
+    if (mySoil->horizon[horizonNum].dbData.coarseFragments != mySoil->horizon[horizonNum].coarseFragments*100)
     {
         tableModel->item(horizonNum,1)->setBackgroundColor(Qt::yellow);
     }
-    if (mySoil.horizon[horizonNum].dbData.organicMatter != mySoil.horizon[horizonNum].organicMatter*100)
+
+    if (mySoil->horizon[horizonNum].dbData.organicMatter != mySoil->horizon[horizonNum].organicMatter*100)
     {
         tableModel->item(horizonNum,2)->setBackgroundColor(Qt::yellow);
     }
-    if (mySoil.horizon[horizonNum].dbData.bulkDensity != mySoil.horizon[horizonNum].bulkDensity)
+
+    if (mySoil->horizon[horizonNum].dbData.bulkDensity != mySoil->horizon[horizonNum].bulkDensity)
     {
         tableModel->item(horizonNum,3)->setBackgroundColor(Qt::yellow);
     }
-    if (mySoil.horizon[horizonNum].dbData.thetaSat != mySoil.horizon[horizonNum].vanGenuchten.thetaS)
-    {
-        tableModel->item(horizonNum,5)->setBackgroundColor(Qt::yellow);
-    }
-    if (mySoil.horizon[horizonNum].dbData.kSat != mySoil.horizon[horizonNum].waterConductivity.kSat)
+
+    if (mySoil->horizon[horizonNum].dbData.kSat != mySoil->horizon[horizonNum].waterConductivity.kSat)
     {
         tableModel->item(horizonNum,4)->setBackgroundColor(Qt::yellow);
     }
+
+    if (mySoil->horizon[horizonNum].dbData.thetaSat != mySoil->horizon[horizonNum].vanGenuchten.thetaS)
+    {
+        tableModel->item(horizonNum,5)->setBackgroundColor(Qt::yellow);
+    }
+
 }
 
 void TabHorizons::clearSelections()
@@ -173,7 +187,109 @@ void TabHorizons::cellChanged(int row, int column)
     tableModel->selectRow(row);
     QString data = tableDb->item(row, column)->text();
     data.replace(",", ".");
-    tableDb->item(row, column)->setText(data);
+
+    // set new value
+    switch (column) {
+        case 0:
+        {
+            mySoil->horizon[row].dbData.upperDepth = data.toDouble();
+            tableDb->item(row, column)->setText(QString::number(data.toDouble(), 'f', 0));
+            break;
+        }
+        case 1:
+        {
+            mySoil->horizon[row].dbData.lowerDepth = data.toDouble();
+            tableDb->item(row, column)->setText(QString::number(data.toDouble(), 'f', 0));
+            break;
+        }
+        case 2:
+        {
+            mySoil->horizon[row].dbData.sand = data.toFloat();
+            tableDb->item(row, column)->setText(QString::number(data.toFloat(), 'f', 1));
+            break;
+        }
+        case 3:
+        {
+            mySoil->horizon[row].dbData.silt = data.toFloat();
+            tableDb->item(row, column)->setText(QString::number(data.toFloat(), 'f', 1));
+            break;
+        }
+        case 4:
+        {
+            mySoil->horizon[row].dbData.clay = data.toFloat();
+            tableDb->item(row, column)->setText(QString::number(data.toFloat(), 'f', 1));
+            break;
+        }
+        case 5:
+        {
+            mySoil->horizon[row].dbData.coarseFragments = data.toDouble();
+            tableDb->item(row, column)->setText(QString::number(data.toDouble(), 'f', 1));
+            break;
+        }
+        case 6:
+        {
+            mySoil->horizon[row].dbData.organicMatter = data.toDouble();
+            tableDb->item(row, column)->setText(QString::number(data.toDouble(), 'f', 1));
+            break;
+        }
+        case 7:
+        {
+            mySoil->horizon[row].dbData.bulkDensity = data.toDouble();
+            tableDb->item(row, column)->setText(QString::number(data.toDouble(), 'f', 3));
+            break;
+        }
+        case 8:
+        {
+            mySoil->horizon[row].dbData.kSat = data.toDouble();
+            tableDb->item(row, column)->setText(QString::number(data.toDouble(), 'f', 3));
+            break;
+        }
+        case 9:
+        {
+            mySoil->horizon[row].dbData.thetaSat = data.toDouble();
+            tableDb->item(row, column)->setText(QString::number(data.toDouble(), 'f', 3));
+            break;
+        }
+    }
+
+    std::string errorString;
+//    QString error = "";
+//    if (! soil::setHorizon(&(mySoil->horizon[row]), myTextureClassList, &errorString))
+//    {
+//        error += "horizon nr." + QString::number(mySoil->horizon[row].dbData.horizonNr) + ": "
+//                + QString::fromStdString(errorString) + "\n";
+//        QMessageBox::critical(nullptr, "Error!", error);
+//        return;
+//    }
+    soil::setHorizon(&(mySoil->horizon[row]), myTextureClassList, &errorString);
+
+    // update tableModel values
+    tableModel->item(row,0)->setText(QString::fromStdString(mySoil->horizon[row].texture.classNameUSDA));
+    tableModel->item(row,1)->setText(QString::number(mySoil->horizon[row].coarseFragments*100, 'f', 1 ));
+    tableModel->item(row,2)->setText(QString::number(mySoil->horizon[row].organicMatter*100, 'f', 1));
+    tableModel->item(row,3)->setText(QString::number(mySoil->horizon[row].bulkDensity, 'f', 3));
+    tableModel->item(row,4)->setText(QString::number(mySoil->horizon[row].waterConductivity.kSat, 'f', 3));
+    tableModel->item(row,5)->setText(QString::number(mySoil->horizon[row].vanGenuchten.thetaS, 'f', 3));
+    tableModel->item(row,6)->setText(QString::number(mySoil->horizon[row].vanGenuchten.thetaR, 'f', 3));
+    tableModel->item(row,7)->setText(QString::number(mySoil->horizon[row].vanGenuchten.he, 'f', 3));
+    tableModel->item(row,8)->setText(QString::number(mySoil->horizon[row].vanGenuchten.alpha, 'f', 3));
+    tableModel->item(row,9)->setText(QString::number(mySoil->horizon[row].vanGenuchten.n, 'f', 3));
+    tableModel->item(row,10)->setText(QString::number(mySoil->horizon[row].vanGenuchten.m, 'f', 3));
+
+    // reset background color for the row changed
+//    for (int j = 0; j < tableDb->columnCount(); j++)
+//    {
+//        tableDb->item(row,j)->setBackgroundColor(Qt::white);
+//    }
+
+//    for (int j = 0; j < tableModel->columnCount(); j++)
+//    {
+//        tableModel->item(row,j)->setBackgroundColor(Qt::white);
+//    }
+
+    // check new values and assign background color
+    checkHorizonData(row);
+    checkMissingItem(row);
 }
 
 void TabHorizons::cellClicked(int row, int column)

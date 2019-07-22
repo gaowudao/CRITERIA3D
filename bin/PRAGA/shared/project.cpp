@@ -278,7 +278,7 @@ bool Project::loadParameters(QString parametersFileName)
 }
 
 
-bool Project::loadCommonSettings(QString settingsFileName)
+bool Project::loadProjectSettings(QString settingsFileName)
 {
     this->path = getFilePath(settingsFileName);
 
@@ -318,15 +318,26 @@ bool Project::loadCommonSettings(QString settingsFileName)
         float longitude = projectSettings->value("lon").toFloat();
         int utmZone = projectSettings->value("utm_zone").toInt();
         int isUtc = projectSettings->value("is_utc").toBool();
+        int timeZone = projectSettings->value("time_zone").toInt();
     projectSettings->endGroup();
 
-    if (latitude != 0 && longitude != 0)
+    if (! gis::isValidUtmTimeZone(utmZone, timeZone))
     {
-        gisSettings.startLocation.latitude = latitude;
-        gisSettings.startLocation.longitude = longitude;
-        gisSettings.utmZone = utmZone;
-        gisSettings.isUTC = isUtc;
+        logError("Wrong time zone");
+        return false;
     }
+
+    if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180)
+    {
+        logError("Wrong start lat/lon");
+        return false;
+    }
+
+    gisSettings.startLocation.latitude = latitude;
+    gisSettings.startLocation.longitude = longitude;
+    gisSettings.utmZone = utmZone;
+    gisSettings.isUTC = isUtc;
+    gisSettings.timeZone = timeZone;
 
     return true;
 }

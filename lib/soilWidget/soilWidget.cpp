@@ -185,7 +185,7 @@ void Crit3DSoilWidget::on_actionChooseSoil(QString soilCode)
         return;
     }
     horizonsTab->clearSelections();
-    horizonsTab->insertSoilHorizons(mySoil);
+    horizonsTab->insertSoilHorizons(&mySoil, textureClassList);
 
 
 }
