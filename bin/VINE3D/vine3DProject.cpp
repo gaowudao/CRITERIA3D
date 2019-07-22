@@ -781,7 +781,6 @@ bool Vine3DProject::loadClimateParameters()
 bool Vine3DProject::loadVine3DProjectParameters()
 {
     if (!loadClimateParameters()) return false;
-    if (!loadVanGenuchtenParameters(&dbConnection, texturalClassList, &errorString)) return false;
     if (!loadGrapevineParameters()) return false;
 
     return true;
@@ -819,6 +818,29 @@ bool Vine3DProject::loadAggregatedMeteoVarCodes()
 }
 
 
+bool Vine3DProject::loadSoils()
+{
+    QString error;
+
+    if (! loadAllSoils(&dbConnection, &soilList, texturalClassList, &error))
+    {
+        logError();
+        return false;
+    }
+
+    nrSoils = int(soilList.size());
+
+    for (unsigned int i = 0; i < soilList.size(); i++)
+    {
+        soilDepth = minValue(soilDepth, soilList[i].totalDepth);
+    }
+
+    logInfo("Soil depth = " + QString::number(this->soilDepth));
+    return true;
+}
+
+
+/*
 soil::Crit3DSoil* Vine3DProject::loadHorizons(int idSoil, QString soil_code)
 {
     QString queryString = "SELECT soil_code, horizon_nr, upper_depth, lower_depth, coarse_fragment, ";
@@ -957,6 +979,7 @@ soil::Crit3DSoil* Vine3DProject::loadHorizons(int idSoil, QString soil_code)
     return(mySoil);
 }
 
+
 bool Vine3DProject::loadSoils()
 {
     logInfo ("Read soils...");
@@ -1007,6 +1030,8 @@ bool Vine3DProject::loadSoils()
 
     return(true);
 }
+*/
+
 
 int Vine3DProject::getAggregatedVarCode(int rawVarCode)
 {
