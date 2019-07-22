@@ -710,11 +710,29 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
                 }
             }
             matricial::matrixProduct(dummyMatrix,dummyMatrix2,nrStations,nrStations,nrStations,nrStations,M);
+            for (int i=0;i<nrStations;i++)
+            {
+                for (int j=i;j<nrStations;j++)
+                {
+                     if (i == j)
+                     {
+                         dummyMatrix[i][j] = 1.;
+                     }
+                     else
+                     {
+                         dummyMatrix[i][j] = minValue(2*M[i][j]/(M[i][i] + M[j][j]),1-EPSILON);
+                         dummyMatrix[j][i] = dummyMatrix[i][j];
+                     }
+                }
+             }
+
         }
         // the matrix called M is the final matrix exiting from the calculation
-        for (int i=0;i<nrStations;i++)
-            for (int j=0;j<nrStations;j++) dummyMatrix[i][j] = M[i][j];
-
+        else
+        {
+            for (int i=0;i<nrStations;i++)
+                for (int j=0;j<nrStations;j++) dummyMatrix[i][j] = M[i][j];
+        }
 
         bool isLowerDiagonal = true;
         matricial::choleskyDecompositionTriangularMatrix(dummyMatrix,nrStations,isLowerDiagonal);
@@ -793,7 +811,7 @@ void weatherGenerator2D::spatialIterationOccurrence(double ** M, double** K,doub
                 for (int j=i+1;j<nrStations;j++)
                 {
                     M[i][j] += kiter*(matrixOccurrence[i][j]-K[i][j]);
-                    M[j][i] = M[i][j];
+                    M[j][i] = minValue(M[i][j],1-EPSILON);
                 }                
             }
         }
@@ -847,7 +865,7 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
     int counterSeason[4];
     int day,month;
     weatherGenerator2D::initializeOutputData();
-    int contatore135 = 0;
+    //int contatore135 = 0;
     for (int iStation=0;iStation<nrStations;iStation++)
     {
         counter = 0;
@@ -888,14 +906,14 @@ void weatherGenerator2D::getWeatherGeneratorOutput()
             //printf("%d %d %.1f %.1f %.1f\n",outputWeatherData[iStation].daySimulated[i],outputWeatherData[iStation].monthSimulated[i],outputWeatherData[iStation].minT[i],outputWeatherData[iStation].maxT[i],outputWeatherData[iStation].precipitation[i]);
             //printf("%d %d %.1f %.1f %.1f\n",outputWeatherData[iStation].daySimulated[i],outputWeatherData[iStation].monthSimulated[i],outputWeatherData[iStation].minT[i],outputWeatherData[iStation].maxT[i],outputWeatherData[iStation].precipitation[i]);
             printf("%d %d %.1f\n",outputWeatherData[iStation].daySimulated[i],outputWeatherData[iStation].monthSimulated[i],outputWeatherData[iStation].precipitation[i]);
-            if (outputWeatherData[iStation].precipitation[i] < 13.51 && outputWeatherData[iStation].precipitation[i] > 13.49)
+            /*if (outputWeatherData[iStation].precipitation[i] < 13.51 && outputWeatherData[iStation].precipitation[i] > 13.49)
             {
                contatore135++;
-            }
+            }*/
         }
         //pressEnterToContinue();
     }
-    printf("\n contatori %d  %d  %d\n",contatoreGammaUguale,contatoreGammaUguale2,contatore135);
+    //printf("\n contatori %d  %d  %d\n",contatoreGammaUguale,contatoreGammaUguale2,contatore135);
 }
 
 int weatherGenerator2D::dateFromDoy(int doy,int year, int* day, int* month)
