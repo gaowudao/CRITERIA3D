@@ -26,6 +26,7 @@ TabHorizons::TabHorizons()
 
 void TabHorizons::insertSoilHorizons(soil::Crit3DSoil *soil, soil::Crit3DTextureClass* textureClassList)
 {
+
     mySoil = soil;
     myTextureClassList = textureClassList;
 
@@ -183,6 +184,8 @@ void TabHorizons::tableModelVerticalHeaderClick(int index)
 
 void TabHorizons::cellChanged(int row, int column)
 {
+    //disable events otherwise setBackgroundColor call again cellChanged event
+    tableDb->blockSignals(true);
     qDebug() << "Cell at row: " << QString::number(row) << " column " << QString::number(column)<<" was changed.";
     tableModel->selectRow(row);
     QString data = tableDb->item(row, column)->text();
@@ -253,14 +256,6 @@ void TabHorizons::cellChanged(int row, int column)
     }
 
     std::string errorString;
-//    QString error = "";
-//    if (! soil::setHorizon(&(mySoil->horizon[row]), myTextureClassList, &errorString))
-//    {
-//        error += "horizon nr." + QString::number(mySoil->horizon[row].dbData.horizonNr) + ": "
-//                + QString::fromStdString(errorString) + "\n";
-//        QMessageBox::critical(nullptr, "Error!", error);
-//        return;
-//    }
     soil::setHorizon(&(mySoil->horizon[row]), myTextureClassList, &errorString);
 
     // update tableModel values
@@ -277,19 +272,20 @@ void TabHorizons::cellChanged(int row, int column)
     tableModel->item(row,10)->setText(QString::number(mySoil->horizon[row].vanGenuchten.m, 'f', 3));
 
     // reset background color for the row changed
-//    for (int j = 0; j < tableDb->columnCount(); j++)
-//    {
-//        tableDb->item(row,j)->setBackgroundColor(Qt::white);
-//    }
+    for (int j = 0; j < tableDb->columnCount(); j++)
+    {
+        tableDb->item(row,j)->setBackgroundColor(Qt::white);
+    }
 
-//    for (int j = 0; j < tableModel->columnCount(); j++)
-//    {
-//        tableModel->item(row,j)->setBackgroundColor(Qt::white);
-//    }
+    for (int j = 0; j < tableModel->columnCount(); j++)
+    {
+        tableModel->item(row,j)->setBackgroundColor(Qt::white);
+    }
 
     // check new values and assign background color
     checkHorizonData(row);
     checkMissingItem(row);
+    tableDb->blockSignals(false);
 }
 
 void TabHorizons::cellClicked(int row, int column)
