@@ -30,6 +30,8 @@
     public:
         Crit3DMeteoSettings();
 
+        void initialize();
+
         float getMinimumPercentage() const;
         void setMinimumPercentage(float value);
 

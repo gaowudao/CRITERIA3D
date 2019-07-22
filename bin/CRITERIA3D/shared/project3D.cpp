@@ -73,6 +73,7 @@ void Project3D::closeProject3D()
     }
 
     delete meteoMaps;
+    meteoMaps = nullptr;
 }
 
 

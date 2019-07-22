@@ -32,6 +32,11 @@
 
 Crit3DMeteoSettings::Crit3DMeteoSettings()
 {
+    initialize();
+}
+
+void Crit3DMeteoSettings::initialize()
+{
     minimumPercentage = DEFAULT_MIN_PERCENTAGE;
     rainfallThreshold = DEFAULT_RAINFALL_THRESHOLD;
     thomThreshold = DEFAULT_THOM_THRESHOLD;

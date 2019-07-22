@@ -1149,6 +1149,65 @@ QString Project::getCompleteFileName(QString fileName, QString secondaryPath)
     }
 }
 
+void Project::clear()
+{
+    modality = MODE_GUI;
+    requestedExit = false;
+    path = "";
+    logFileName = "";
+    errorString = "";
+
+    meteoSettings->initialize();
+
+    /*
+    quality = nullptr;
+    checkSpatialQuality = true;
+    currentVariable = noMeteoVar;
+    currentFrequency = noFrequency;
+    currentDate.setDate(1800,1,1);
+    previousDate = currentDate;
+    currentHour = 12;
+
+
+    delete meteoPointsColorScale = new Crit3DColorScale();
+
+    radiationMaps = nullptr;
+
+
+    std::ofstream logFile;
+
+    QSettings* parameters;
+    QSettings* projectSettings;
+
+    int nrMeteoPoints;
+    Crit3DMeteoPoint* meteoPoints;
+    Crit3DMeteoPointsDbHandler* meteoPointsDbHandler;
+    Crit3DAggregationsDbHandler* aggregationDbHandler;
+    QList<gis::Crit3DGeoPoint> meteoPointsSelected;
+    Crit3DMeteoGridDbHandler* meteoGridDbHandler;
+
+    Crit3DColorScale *meteoPointsColorScale;
+
+    Crit3DQuality* quality;
+    bool checkSpatialQuality;
+
+    Crit3DMeteoSettings* meteoSettings;
+
+    gis::Crit3DGisSettings gisSettings;
+    Crit3DRadiationSettings radSettings;
+    Crit3DRadiationMaps *radiationMaps;
+
+    gis::Crit3DRasterGrid DEM;
+    gis::Crit3DRasterGrid dataRaster;
+
+    Crit3DInterpolationSettings interpolationSettings;
+    Crit3DInterpolationSettings qualityInterpolationSettings;
+
+    */
+
+    closeMeteoPointsDB();
+    closeMeteoGridDB();
+}
 
 /* ---------------------------------------------
  * LOG functions
