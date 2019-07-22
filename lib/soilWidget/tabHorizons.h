@@ -16,10 +16,10 @@ class TabHorizons : public QWidget
 
 public:
     TabHorizons();
-    void insertSoilHorizons(soil::Crit3DSoil mySoil);
-    void checkHorizonData(soil::Crit3DSoil mySoil, int horizonNum);
+    void insertSoilHorizons(soil::Crit3DSoil* mySoil, soil::Crit3DTextureClass *textureClassList);
+    void checkHorizonData(int horizonNum);
     void checkMissingItem(int horizonNum);
-    void checkComputedValues(soil::Crit3DSoil mySoil, int horizonNum);
+    void checkComputedValues(int horizonNum);
     void clearSelections();
     void tableDbVerticalHeaderClick(int index);
     void tableModelVerticalHeaderClick(int index);
@@ -29,6 +29,9 @@ public:
 private:
     TableDbOrModel* tableDb;
     TableDbOrModel* tableModel;
+    soil::Crit3DSoil* mySoil;
+    soil::Crit3DTextureClass* myTextureClassList;
+
 };
 
 #endif // HORIZONSTAB_H
