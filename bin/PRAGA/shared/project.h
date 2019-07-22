@@ -83,6 +83,7 @@
 
         Project();
 
+        void clear();
 
         bool loadProjectSettings(QString settingsFileName);
         bool loadParameters(QString parametersFileName);
