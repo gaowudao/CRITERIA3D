@@ -42,7 +42,7 @@ void updateWaterBalanceMaps(Vine3DProject* myProject)
 {
     long row, col;
     long nodeIndex;
-    int layer;
+    int layer, soilIndex;
     double flow, flow_mm;
     double area;
 
@@ -52,6 +52,7 @@ void updateWaterBalanceMaps(Vine3DProject* myProject)
         for (col = 0; col < myProject->outputWaterBalanceMaps->bottomDrainageMap->header->nrCols; col++)
             if (int(myProject->indexMap.at(0).value[row][col]) != int(myProject->indexMap.at(0).header->flag))
             {
+                soilIndex = myProject->getSoilIndex(row,col);
                 layer = 1;
                 do
                 {
@@ -60,7 +61,7 @@ void updateWaterBalanceMaps(Vine3DProject* myProject)
                     myProject->outputWaterBalanceMaps->waterInflowMap->value[row][col] += float(flow * 1000); //liters
 
                     layer++;
-                } while (layer < myProject->nrLayers && isWithinSoil(myProject, row, col, myProject->layerDepth.at(size_t(layer))));
+                } while (layer < myProject->nrLayers && myProject->isWithinSoil(soilIndex, myProject->layerDepth.at(size_t(layer))));
 
                 nodeIndex = long(myProject->indexMap.at(size_t(--layer)).value[row][col]);
 
@@ -81,59 +82,12 @@ gis::Crit3DRasterGrid* Crit3DWaterBalanceMaps::getMapFromVar(criteria3DVariable 
 }
 
 
-bool isWithinSoil(Vine3DProject* myProject, long row, long col, double depth)
-{
-    int caseIndex, soilIndex, nrHorizons;
-    soil::Crit3DHorizon* myHorizon;
-
-    caseIndex = myProject->getModelCaseIndex(row, col);
-    if (caseIndex == NODATA) return false;
-
-    //read soil and last horizon
-    soilIndex = myProject->modelCases[caseIndex].soilIndex;
-    nrHorizons = myProject->soilList[soilIndex].nrHorizons;
-    myHorizon = &(myProject->soilList[soilIndex].horizon[nrHorizons - 1]);
-
-    //check if we are within last horizon
-    return (depth <= myHorizon->lowerDepth);
-}
-
-
-bool setIndexMap(Vine3DProject* myProject)
-{
-    long index = 0;
-
-    int i, row, col;
-
-    myProject->indexMap.resize(size_t(myProject->nrLayers));
-
-    for (i=0; i < myProject->nrLayers; i++)
-    {
-        myProject->indexMap.at(size_t(i)).initializeGrid(myProject->DEM);
-        for (row = 0; row < myProject->indexMap.at(size_t(i)).header->nrRows; row++)
-            for (col = 0; col < myProject->indexMap.at(size_t(i)).header->nrCols; col++)
-                if (int(myProject->DEM.value[row][col]) != int(myProject->DEM.header->flag))
-                {
-                    if (isWithinSoil(myProject, row, col, myProject->layerDepth.at(size_t(i))))
-                    {
-                        myProject->indexMap.at(size_t(i)).value[row][col] = index;
-                        index++;
-                    }
-                }
-    }
-
-    myProject->nrNodes = index;
-    return(index > 0);
-}
-
-
-
 bool setCrit3DTopography(Vine3DProject* myProject)
 {
     double x, y;
     float z, lateralArea, slope;
     double area, volume;
-    long index, linkIndex;
+    long index, linkIndex, soilIndex;
     int myResult;
     QString myError;
 
@@ -151,6 +105,8 @@ bool setCrit3DTopography(Vine3DProject* myProject)
                     z = myProject->DEM.value[row][col] - float(myProject->layerDepth[layer]);
                     volume = area * myProject->layerThickness[layer];
 
+                    soilIndex = myProject->getSoilIndex(row, col);
+
                     //surface
                     if (layer == 0)
                     {
@@ -167,7 +123,7 @@ bool setCrit3DTopography(Vine3DProject* myProject)
                         lateralArea = float(myProject->DEM.header->cellSize * myProject->layerThickness[layer]);
 
                         //last project layer or last soil layer
-                        if (int(layer) == myProject->nrLayers - 1 || ! isWithinSoil(myProject, row, col, myProject->layerDepth.at(size_t(layer+1))))
+                        if (int(layer) == myProject->nrLayers - 1 || ! myProject->isWithinSoil(soilIndex, myProject->layerDepth.at(size_t(layer+1))))
                             myResult = soilFluxes3D::setNode(index, float(x), float(y), z, volume, false, true, BOUNDARY_FREEDRAINAGE, 0.0);
                         else
                         {
@@ -202,7 +158,7 @@ bool setCrit3DTopography(Vine3DProject* myProject)
                     }
 
                     //down link
-                    if (int(layer) < (myProject->nrLayers - 1) && isWithinSoil(myProject, row, col, myProject->layerDepth.at(size_t(layer + 1))))
+                    if (int(layer) < (myProject->nrLayers - 1) && myProject->isWithinSoil(soilIndex, myProject->layerDepth.at(size_t(layer + 1))))
                     {
                         linkIndex = long(myProject->indexMap.at(layer + 1).value[row][col]);
 
@@ -545,9 +501,8 @@ double* getSoilVarProfile(Vine3DProject* myProject, int row, int col, soil::soil
     for (int layerIndex = 0; layerIndex < myProject->nrLayers; layerIndex++)
         myProfile[layerIndex] = NODATA;
 
-    int soilIndex = myProject->getSoilIndex(row, col);
-
     int nodeIndex;
+    int soilIndex = myProject->getSoilIndex(row, col);
 
     for (int layerIndex = 0; layerIndex < myProject->nrLayers; layerIndex++)
     {
@@ -1035,13 +990,9 @@ bool initializeWaterBalance(Vine3DProject* myProject)
 
     myProject->logInfo("nr of layers: " + QString::number(myProject->nrLayers));
 
-    if (setIndexMap(myProject))
-        myProject->logInfo("nr of nodes: " + QString::number(myProject->nrNodes));
-    else
-    {
-        myProject->logError("initializeWaterBalance: missing data in Digital Elevation Model");
-        return false;
-    }
+    if (! myProject->setIndexMaps()) return false;
+
+    myProject->logInfo("nr of nodes: " + QString::number(myProject->nrNodes));
 
     myProject->waterSinkSource.resize(size_t(myProject->nrNodes));
     myProject->setBoundary();

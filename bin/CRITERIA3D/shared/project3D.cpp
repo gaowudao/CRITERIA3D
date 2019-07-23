@@ -103,18 +103,18 @@ void Project3D::computeNrLayers()
 // set thickness and depth (center) of layers [m]
 void Project3D::setLayersDepth()
 {
-    int lastLayer = nrLayers-1;
-    layerDepth.resize(unsigned(nrLayers));
-    layerThickness.resize(unsigned(nrLayers));
+    unsigned int lastLayer = nrLayers-1;
+    layerDepth.resize(nrLayers);
+    layerThickness.resize(nrLayers);
 
     layerDepth[0] = 0.0;
     layerThickness[0] = 0.0;
     layerThickness[1] = minThickness;
     layerDepth[1] = minThickness * 0.5;
 
-    for (unsigned int i = 2; i < unsigned(nrLayers); i++)
+    for (unsigned int i = 2; i < nrLayers; i++)
     {
-        if (i == unsigned(lastLayer))
+        if (i == lastLayer)
         {
             layerThickness[i] = soilDepth - (layerDepth[i-1] + layerThickness[i-1] / 2.0);
         }
@@ -125,6 +125,49 @@ void Project3D::setLayersDepth()
 
         layerDepth[i] = layerDepth[i-1] + (layerThickness[i-1] + layerThickness[i]) * 0.5;
     }
+}
+
+
+bool Project3D::setIndexMaps()
+{
+    // check
+    if (!DEM.isLoaded || !soilIndexMap.isLoaded || soilList.size() == 0)
+    {
+        if (!DEM.isLoaded)
+            logError("Missing Digital Elevation Model.");
+        else if (!soilIndexMap.isLoaded)
+            logError("Missing soil map.");
+        else if (soilList.size() == 0)
+            logError("Missing soil properties.");
+        return false;
+    }
+
+    indexMap.resize(nrLayers);
+
+    long currentIndex = 0;
+    for (unsigned int i = 0; i < nrLayers; i++)
+    {
+        indexMap.at(i).initializeGrid(DEM);
+
+        for (int row = 0; row < indexMap.at(i).header->nrRows; row++)
+        {
+            for (int col = 0; col < indexMap.at(i).header->nrCols; col++)
+            {
+                if (int(DEM.value[row][col]) != int(DEM.header->flag))
+                {
+                    int soilIndex = getSoilIndex(row, col);
+                    if (isWithinSoil(soilIndex, layerDepth.at(i)))
+                    {
+                        indexMap.at(i).value[row][col] = currentIndex;
+                        currentIndex++;
+                    }
+                }
+            }
+        }
+    }
+
+    nrNodes = currentIndex;
+    return (currentIndex > 0);
 }
 
 
@@ -221,6 +264,31 @@ bool Project3D::setCrit3DSoils()
     return true;
 }
 
+
+int Project3D::getSoilIndex(long row, long col)
+{
+    if ( !soilIndexMap.isLoaded) return NODATA;
+
+    int soilIndex = int(soilIndexMap.getValueFromRowCol(row, col));
+    if (soilIndex == int(soilIndexMap.header->flag)) return NODATA;
+
+    return soilIndex;
+}
+
+
+bool Project3D::isWithinSoil(int soilIndex, double depth)
+{
+    if (soilIndex == int(NODATA) || soilIndex >= int(soilList.size())) return false;
+
+    // check if depth is lower than lowerDepth of last horizon
+    int lastHorizon = soilList[unsigned(soilIndex)].nrHorizons -1;
+    double lowerDepth = soilList[unsigned(soilIndex)].horizon[lastHorizon].lowerDepth;
+
+    return (depth <= lowerDepth);
+}
+
+
+// ------------------------- other functions -------------------------
 
 bool isCrit3dError(int result, QString* error)
 {

@@ -1667,7 +1667,7 @@ bool Vine3DProject::isVineyard(long row, long col)
     return (modelCases[caseIndex].landuse == landuse_vineyard);
 }
 
-int Vine3DProject::getSoilIndex(long row, long col)
+int Vine3DProject::getVine3DSoilIndex(long row, long col)
 {
     int caseIndex = this->getModelCaseIndex(row, col);
 
@@ -1681,7 +1681,7 @@ int Vine3DProject::getSoilIndex(long row, long col)
     }
 }
 
-bool Vine3DProject::setSoilIndexMap()
+bool Vine3DProject::setVine3DSoilIndexMap()
 {
     // check
     if (!DEM.isLoaded || !modelCaseIndexMap.isLoaded || soilList.size() == 0)
@@ -1703,7 +1703,7 @@ bool Vine3DProject::setSoilIndexMap()
         {
             if (int(DEM.value[row][col]) != int(DEM.header->flag))
             {
-                soilIndex = getSoilIndex(row, col);
+                soilIndex = getVine3DSoilIndex(row, col);
                 if (soilIndex != int(NODATA))
                 {
                     soilIndexMap.value[row][col] = soilIndex;
@@ -1715,6 +1715,7 @@ bool Vine3DProject::setSoilIndexMap()
     soilIndexMap.isLoaded = true;
     return true;
 }
+
 
 soil::Crit3DHorizon* Vine3DProject::getSoilHorizon(long row, long col, int layer)
 {
