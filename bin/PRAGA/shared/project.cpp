@@ -1170,10 +1170,6 @@ QString Project::getCompleteFileName(QString fileName, QString secondaryPath)
     }
 }
 
-void Project::closeDEM()
-{
-    DEM.clear();
-}
 
 void Project::clear()
 {

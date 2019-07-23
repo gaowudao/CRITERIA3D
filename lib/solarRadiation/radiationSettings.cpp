@@ -31,7 +31,6 @@
 Crit3DRadiationSettings::Crit3DRadiationSettings()
 {
     initialize();
-    gisSettings->initialize();
 }
 
 void Crit3DRadiationSettings::initialize()
