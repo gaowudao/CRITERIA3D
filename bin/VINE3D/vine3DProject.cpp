@@ -1608,7 +1608,7 @@ bool removeDirectory(QString myPath)
 }
 
 
-bool Vine3DProject::LoadObsDataFilled(QDateTime firstTime, QDateTime lastTime)
+bool Vine3DProject::loadObsDataFilled(QDateTime firstTime, QDateTime lastTime)
 {
     QDate d1 = firstTime.date().addDays(-30);
     QDate d2 = lastTime.date().addDays(30);
@@ -1651,7 +1651,7 @@ bool Vine3DProject::runModels(QDateTime dateTime1, QDateTime dateTime2, bool sav
         return false;
     }
 
-    if (!LoadObsDataFilled(dateTime1, dateTime2))
+    if (!loadObsDataFilled(dateTime1, dateTime2))
     {
         this->logError();
         return false;

@@ -124,7 +124,7 @@ bool computeDownyMildew(Vine3DProject* myProject, QDate firstDate, QDate lastDat
     lastTime.setDate(lastDate);
     lastTime.setTime(QTime(lastHour, 0, 0, 0));
 
-    if (!myProject->LoadObsDataFilled(firstTime, lastTime))
+    if (!myProject->loadObsDataFilled(firstTime, lastTime))
     {
         myProject->logError();
         return false;

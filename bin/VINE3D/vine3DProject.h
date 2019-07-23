@@ -132,7 +132,7 @@
         bool loadObsDataAllPointsVar(meteoVariable myVar, QDate d1, QDate d2);
         bool meteoDataLoaded(const Crit3DTime& myTimeIni, const Crit3DTime& myTimeFin);
         float meteoDataConsistency(meteoVariable myVar, const Crit3DTime& myTimeIni, const Crit3DTime& myTimeFin);
-        bool LoadObsDataFilled(QDateTime firstTime, QDateTime lastTime);
+        bool loadObsDataFilled(QDateTime firstTime, QDateTime lastTime);
         void findVine3DLastMeteoDate();
 
         bool loadStates(QDate myDate, QString myArea);
