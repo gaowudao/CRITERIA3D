@@ -61,6 +61,8 @@
 
         Crit3DQuality();
 
+        void initialize();
+
         quality::Range* getQualityRange(meteoVariable myVar);
 
         void syntacticQualityControl(meteoVariable myVar, Crit3DMeteoPoint* meteoPoints, int nrMeteoPoints);

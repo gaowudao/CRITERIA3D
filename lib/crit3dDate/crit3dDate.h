@@ -66,7 +66,6 @@
 
     bool isLeapYear(int year);
     int getDaysInMonth(int month, int year);
-    int getDefaultDaysInMonth(int month);
 
     int getDoyFromDate(const Crit3DDate& myDate);
     Crit3DDate getDateFromDoy(int myYear, int myDoy);

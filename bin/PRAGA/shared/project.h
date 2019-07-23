@@ -60,7 +60,7 @@
         QList<gis::Crit3DGeoPoint> meteoPointsSelected;
         Crit3DMeteoGridDbHandler* meteoGridDbHandler;
 
-        Crit3DColorScale *meteoPointsColorScale;
+        Crit3DColorScale* meteoPointsColorScale;
 
         Crit3DQuality* quality;
         bool checkSpatialQuality;
@@ -88,6 +88,7 @@
         bool loadProjectSettings(QString settingsFileName);
         bool loadParameters(QString parametersFileName);
         void setProxyDEM();
+        void clearProxyDEM();
         bool checkProxy(std::string name_, std::string gridName_, std::string table_, std::string field_, QString *error);
         void addProxy(std::string name_, std::string gridName_, std::string table_, std::string field_, bool isForQuality_, bool isActive_);
 
@@ -114,6 +115,7 @@
         void closeMeteoGridDB();
 
         bool loadDEM(QString myFileName);
+        void closeDEM();
         bool loadMeteoPointsData(QDate firstDate, QDate lastDate, bool showInfo);
         bool loadMeteoPointsDB(QString dbName);
         bool loadMeteoGridDB(QString xmlName);

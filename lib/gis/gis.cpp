@@ -40,13 +40,18 @@ namespace gis
         this->eccentricitySquared = 6.69438000426083E-03;
     }
 
+    void Crit3DGisSettings::initialize()
+    {
+        startLocation.latitude = 44.5;
+        startLocation.longitude = 11.35;
+        utmZone = 32;
+        timeZone = 1;
+        isUTC = true;
+    }
+
     Crit3DGisSettings::Crit3DGisSettings()
     {
-        this->startLocation.latitude = 44.5;
-        this->startLocation.longitude = 11.35;
-        this->utmZone = 32;
-        this->timeZone = 1;
-        this->isUTC = true;
+        initialize();
     }
 
     Crit3DPixel::Crit3DPixel()

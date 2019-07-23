@@ -39,7 +39,28 @@ Project::Project()
 
 }
 
+void Project::clearProxyDEM()
+{
+    int index = interpolationSettings.getIndexHeight();
+    int indexQuality = qualityInterpolationSettings.getIndexHeight();
 
+    // if no elevation proxy defined nothing to do
+    if (index == NODATA && indexQuality == NODATA) return;
+
+    Crit3DProxy* proxyHeight;
+
+    if (index != NODATA)
+    {
+        proxyHeight = interpolationSettings.getProxy(index);
+        proxyHeight->setGrid(nullptr);
+    }
+
+    if (indexQuality != NODATA)
+    {
+        proxyHeight = qualityInterpolationSettings.getProxy(indexQuality);
+        proxyHeight->setGrid(nullptr);
+    }
+}
 
 
 void Project::setProxyDEM()
@@ -1149,6 +1170,11 @@ QString Project::getCompleteFileName(QString fileName, QString secondaryPath)
     }
 }
 
+void Project::closeDEM()
+{
+    DEM.clear();
+}
+
 void Project::clear()
 {
     modality = MODE_GUI;
@@ -1158,9 +1184,8 @@ void Project::clear()
     errorString = "";
 
     meteoSettings->initialize();
+    quality->initialize();
 
-    /*
-    quality = nullptr;
     checkSpatialQuality = true;
     currentVariable = noMeteoVar;
     currentFrequency = noFrequency;
@@ -1168,42 +1193,26 @@ void Project::clear()
     previousDate = currentDate;
     currentHour = 12;
 
+    meteoPointsColorScale->setRange(NODATA, NODATA);
+    meteoPointsSelected.clear();
 
-    delete meteoPointsColorScale = new Crit3DColorScale();
+    if (logFile.is_open()) logFile.close();
 
-    radiationMaps = nullptr;
+    parameters->clear();
+    projectSettings->clear();
 
+    delete aggregationDbHandler;
 
-    std::ofstream logFile;
+    gisSettings.initialize();
+    radSettings.initialize();
+    delete radiationMaps;
 
-    QSettings* parameters;
-    QSettings* projectSettings;
+    clearProxyDEM();
+    DEM.clear();
+    dataRaster.clear();
 
-    int nrMeteoPoints;
-    Crit3DMeteoPoint* meteoPoints;
-    Crit3DMeteoPointsDbHandler* meteoPointsDbHandler;
-    Crit3DAggregationsDbHandler* aggregationDbHandler;
-    QList<gis::Crit3DGeoPoint> meteoPointsSelected;
-    Crit3DMeteoGridDbHandler* meteoGridDbHandler;
-
-    Crit3DColorScale *meteoPointsColorScale;
-
-    Crit3DQuality* quality;
-    bool checkSpatialQuality;
-
-    Crit3DMeteoSettings* meteoSettings;
-
-    gis::Crit3DGisSettings gisSettings;
-    Crit3DRadiationSettings radSettings;
-    Crit3DRadiationMaps *radiationMaps;
-
-    gis::Crit3DRasterGrid DEM;
-    gis::Crit3DRasterGrid dataRaster;
-
-    Crit3DInterpolationSettings interpolationSettings;
-    Crit3DInterpolationSettings qualityInterpolationSettings;
-
-    */
+    interpolationSettings.initialize();
+    qualityInterpolationSettings.initialize();
 
     closeMeteoPointsDB();
     closeMeteoGridDB();

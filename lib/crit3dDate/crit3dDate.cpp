@@ -50,16 +50,6 @@ int getDaysInMonth(int month, int year)
 }
 
 
-// index: 0 - 11
-int getDefaultDaysInMonth(int month)
-{
-    if (month < 0 || month > 11)
-        return (-1);
-
-    else return daysInMonth[month];
-}
-
-
 Crit3DDate::Crit3DDate()
 {
     day = 0; month = 0; year = 0;
@@ -277,8 +267,8 @@ int getDoyFromDate(const Crit3DDate& myDate)
     if(myDate.month > 2 && isLeapYear(myDate.year))
       myDoy = 1;
 
-    for(int myMonth = 0; myMonth < myDate.month - 1; myMonth++)
-      myDoy += daysInMonth[myMonth];
+    for(int month = 0; month < myDate.month - 1; month++)
+      myDoy += daysInMonth[month];
 
     myDoy += myDate.day;
 

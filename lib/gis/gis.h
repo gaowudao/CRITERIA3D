@@ -143,7 +143,6 @@
             Crit3DPoint mapCenter();
         };
 
-
         class Crit3DGisSettings
         {
         public:
@@ -153,6 +152,7 @@
             int timeZone;
 
             Crit3DGisSettings();
+            void initialize();
         };
 
         class Crit3DEllipsoid
