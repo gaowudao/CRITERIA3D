@@ -35,7 +35,7 @@ Project3D::Project3D() : Project()
 void Project3D::initializeProject3D()
 {
     nrSoils = 0;
-    soilDepth = 0.4;            // [m]
+    soilDepth = 1.0;            // [m]
 
     minThickness = 0.02;        // [m]
     maxThickness = 0.1;         // [m]
