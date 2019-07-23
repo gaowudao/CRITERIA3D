@@ -808,6 +808,30 @@ bool Vine3DProject::loadSoils()
     return true;
 }
 
+
+bool Vine3DProject::setSoilIndexMap()
+{
+
+    int soilIndex;
+    soilIndexMap.initializeGrid(*(DEM.header));
+    for (int row = 0; row < DEM.header->nrRows; row++)
+    {
+        for (int col = 0; col < DEM.header->nrCols; col++)
+        {
+            if (int(DEM.value[row][col]) != int(DEM.header->flag))
+            {
+                soilIndex = getSoilIndex(row, col);
+                if (soilIndex != INDEX_ERROR)
+                    soilIndexMap.value[row][col] = float(soilIndex);
+            }
+        }
+    }
+
+    soilIndexMap.isLoaded = true;
+    return true;
+}
+
+
 int Vine3DProject::getAggregatedVarCode(int rawVarCode)
 {
     for (int i=0; i<nrAggrVar; i++)

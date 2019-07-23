@@ -123,7 +123,7 @@ bool Crit3DProject::createIndexMap()
 }
 
 
-bool Crit3DProject::createSoilIndexMap()
+bool Crit3DProject::setSoilIndexMap()
 {
     // check
     if (!DEM.isLoaded || !soilMap.isLoaded || soilList.size() == 0)
@@ -221,11 +221,9 @@ double Crit3DProject::getSoilVar(int soilIndex, int layerIndex, soil::soilVariab
 }
 
 
-void Crit3DProject::clearProject()
+void Crit3DProject::clearCriteria3DProject()
 {
     clearWaterBalance3D();
-
-    soilIndexMap.clear();
     cropIndexMap.clear();
 
     isInitialized = false;
@@ -351,16 +349,16 @@ bool Crit3DProject::initializeCriteria3D()
         return false;
     }
 
-    this->clearProject();
+    this->clearCriteria3DProject();
 
-    if (!createSoilIndexMap()) return false;
+    if (!setSoilIndexMap()) return false;
 
     // loadCropProperties()
     // load crop map
 
     if (! initializeWaterBalance3D(this))
     {
-        this->clearProject();
+        this->clearCriteria3DProject();
         return false;
     }
 

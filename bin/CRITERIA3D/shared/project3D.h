@@ -28,6 +28,7 @@
 
         // 3D soil fluxes maps
         gis::Crit3DRasterGrid boundaryMap;
+        gis::Crit3DRasterGrid soilIndexMap;
         std::vector <gis::Crit3DRasterGrid> indexMap;
 
         // soil properties

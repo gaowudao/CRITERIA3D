@@ -79,7 +79,9 @@ void Project3D::clearWaterBalance3D()
     indexMap.clear();
 
     boundaryMap.clear();
+    soilIndexMap.clear();
 }
+
 
 void Project3D::computeNrLayers()
  {
